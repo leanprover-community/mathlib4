@@ -13,7 +13,7 @@ Defines the notion of a sheaf of types (usually called a sheaf of sets by mathem
 on a category equipped with a Grothendieck topology, as well as a range of equivalent
 conditions useful in different situations.
 
-In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
+In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
 sheaf *for* a particular sieve. Given a Grothendieck topology `J`, `P` is a sheaf if it is a sheaf
 for every sieve in the topology. See `IsSheaf`.
 
@@ -190,7 +190,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         exact fun _ f hf => HFs ⟨Over.mk f, hf⟩ }
   · intro H W x hx
     replace H := Classical.choice H
-    let s := compatibleYonedaFamily_toCocone S W x hx
+    let s := compatibleYonedaFamily_toCocone S.arrows W x hx
     use H.desc s
     constructor
     · exact fun _ f hf => (H.fac s) ⟨Over.mk f, hf⟩
@@ -223,16 +223,16 @@ instance : Category (SheafOfTypes J) where
   Hom := Hom
   id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.val ≫ g.val⟩
-  id_comp _ := Hom.ext _ _ <| id_comp _
-  comp_id _ := Hom.ext _ _ <| comp_id _
-  assoc _ _ _ := Hom.ext _ _ <| assoc _ _ _
+  id_comp _ := Hom.ext <| id_comp _
+  comp_id _ := Hom.ext <| comp_id _
+  assoc _ _ _ := Hom.ext <| assoc _ _ _
 
 -- Porting note (#11041): we need to restate the `ext` lemma in terms of the categorical morphism.
 -- not just the underlying structure.
 -- It would be nice if this boilerplate weren't necessary.
 @[ext]
 theorem Hom.ext' {X Y : SheafOfTypes J} (f g : X ⟶ Y) (w : f.val = g.val) : f = g :=
-  Hom.ext f g w
+  Hom.ext w
 
 -- Let's make the inhabited linter happy...
 instance (X : SheafOfTypes J) : Inhabited (Hom X X) :=

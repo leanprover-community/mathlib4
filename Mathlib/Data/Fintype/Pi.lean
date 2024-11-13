@@ -13,7 +13,7 @@ import Mathlib.Data.Fintype.Basic
 
 open Finset Function
 
-variable {α : Type*}
+variable {α β : Type*}
 
 namespace Fintype
 
@@ -25,7 +25,7 @@ analogue of `Finset.pi` where the base finset is `univ` (but formally they are n
 there is an additional condition `i ∈ Finset.univ` in the `Finset.pi` definition). -/
 def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
   (Finset.univ.pi t).map ⟨fun f a => f a (mem_univ a), fun _ _ =>
-    by simp (config := {contextual := true}) [Function.funext_iff]⟩
+    by simp (config := {contextual := true}) [funext_iff]⟩
 
 @[simp]
 theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a := by
@@ -49,12 +49,19 @@ theorem piFinset_subset (t₁ t₂ : ∀ a, Finset (δ a)) (h : ∀ a, t₁ a �
     piFinset t₁ ⊆ piFinset t₂ := fun _ hg => mem_piFinset.2 fun a => h a <| mem_piFinset.1 hg a
 
 @[simp]
-theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (δ i)) = ∅ :=
-  eq_empty_of_forall_not_mem fun _ => by simp
+theorem piFinset_eq_empty : piFinset s = ∅ ↔ ∃ i, s i = ∅ := by simp [piFinset]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
-lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by
-  simp [Finset.Nonempty, Classical.skolem]
+@[simp]
+theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (δ i)) = ∅ := by simp
+
+@[simp]
+lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by simp [piFinset]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.piFinset_nonempty_of_forall_nonempty⟩ := piFinset_nonempty
+
+lemma _root_.Finset.Nonempty.piFinset_const {ι : Type*} [Fintype ι] [DecidableEq ι] {s : Finset β}
+    (hs : s.Nonempty) : (piFinset fun _ : ι ↦ s).Nonempty := piFinset_nonempty.2 fun _ ↦ hs
 
 @[simp]
 lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s = univ :=
@@ -62,7 +69,7 @@ lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s =
 
 @[simp]
 theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
-  ext fun _ => by simp only [Function.funext_iff, Fintype.mem_piFinset, mem_singleton]
+  ext fun _ => by simp only [funext_iff, Fintype.mem_piFinset, mem_singleton]
 
 theorem piFinset_subsingleton {f : ∀ i, Finset (δ i)} (hf : ∀ i, (f i : Set (δ i)).Subsingleton) :
     (Fintype.piFinset f : Set (∀ i, δ i)).Subsingleton := fun _ ha _ hb =>
@@ -76,7 +83,7 @@ theorem piFinset_disjoint_of_disjoint (t₁ t₂ : ∀ a, Finset (δ a)) {a : α
 
 lemma piFinset_image [∀ a, DecidableEq (δ a)] (f : ∀ a, γ a → δ a) (s : ∀ a, Finset (γ a)) :
     piFinset (fun a ↦ (s a).image (f a)) = (piFinset s).image fun b a ↦ f _ (b a) := by
-  ext; simp only [mem_piFinset, mem_image, Classical.skolem, forall_and, Function.funext_iff]
+  ext; simp only [mem_piFinset, mem_image, Classical.skolem, forall_and, funext_iff]
 
 lemma eval_image_piFinset_subset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a)] :
     ((piFinset t).image fun f ↦ f a) ⊆ t a := image_subset_iff.2 fun _x hx ↦ mem_piFinset.1 hx _
@@ -97,12 +104,12 @@ lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
 variable [∀ a, DecidableEq (δ a)]
 
 lemma filter_piFinset_of_not_mem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
-    (piFinset t).filter (· a = x) = ∅ := by
+    {f ∈ piFinset t | f a = x} = ∅ := by
   simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)
 
 -- TODO: This proof looks like a good example of something that `aesop` can't do but should
 lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α) {t : Finset (δ i)}
-    (hts : t ⊆ s i) : piFinset (Function.update s i t) = (piFinset s).filter (fun f ↦ f i ∈ t) := by
+    (hts : t ⊆ s i) : piFinset (Function.update s i t) = {f ∈ piFinset s | f i ∈ t} := by
   ext f
   simp only [mem_piFinset, mem_filter]
   refine ⟨fun h ↦ ?_, fun h j ↦ ?_⟩
@@ -117,7 +124,7 @@ lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α)
 
 lemma piFinset_update_singleton_eq_filter_piFinset_eq (s : ∀ i, Finset (δ i)) (i : α) {a : δ i}
     (ha : a ∈ s i) :
-    piFinset (Function.update s i {a}) = (piFinset s).filter (fun f ↦ f i = a) := by
+    piFinset (Function.update s i {a}) = {f ∈ piFinset s | f i = a} := by
   simp [piFinset_update_eq_filter_piFinset_mem, ha]
 
 end Fintype
@@ -144,6 +151,15 @@ noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [F
   Fintype (α ↪ β) := by
   classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 
+instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}
+    {s : β → β → Prop} [DecidableRel r] [DecidableRel s] : Fintype (r →r s) :=
+  Fintype.ofEquiv {f : α → β // ∀ {x y}, r x y → s (f x) (f y)} <| Equiv.mk
+    (fun f ↦ ⟨f.1, f.2⟩) (fun f ↦ ⟨f.1, f.2⟩) (fun _ ↦ rfl) (fun _ ↦ rfl)
+
+noncomputable instance RelEmbedding.instFintype {α β} [Fintype α] [Fintype β]
+    {r : α → α → Prop} {s : β → β → Prop} : Fintype (r ↪r s) :=
+  Fintype.ofInjective _ RelEmbedding.toEmbedding_injective
+
 @[simp]
 theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] :
@@ -156,7 +172,7 @@ namespace Finset
 variable {ι : Type*} [DecidableEq (ι → α)] {s : Finset α} {f : ι → α}
 
 lemma piFinset_filter_const [DecidableEq ι] [Fintype ι] :
-    (Fintype.piFinset fun _ ↦ s).filter (∃ a ∈ s, const ι a = ·) = s.piDiag ι := by aesop
+    {f ∈ Fintype.piFinset fun _ : ι ↦ s | ∃ a ∈ s, const ι a = f} = s.piDiag ι := by aesop
 
 lemma piDiag_subset_piFinset [DecidableEq ι] [Fintype ι] :
     s.piDiag ι ⊆ Fintype.piFinset fun _ ↦ s := by simp [← piFinset_filter_const]

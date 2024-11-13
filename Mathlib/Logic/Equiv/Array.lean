@@ -28,11 +28,11 @@ introduce the "right" equivalence for `Array` (`arrayEquivList`) and align the i
 namespace Equiv
 
 -- /-- The natural equivalence between length-`n` heterogeneous arrays
--- and dependent functions from `fin n`. -/
+-- and dependent functions from `Fin n`. -/
 -- def darrayEquivFin {n : ℕ} (α : Fin n → Type*) : DArray n α ≃ ∀ i, α i :=
 --   ⟨DArray.read, DArray.mk, fun ⟨f⟩ => rfl, fun f => rfl⟩
 
--- /-- The natural equivalence between length-`n` arrays and functions from `fin n`. -/
+-- /-- The natural equivalence between length-`n` arrays and functions from `Fin n`. -/
 -- def array'EquivFin (n : ℕ) (α : Type*) : Array' n α ≃ (Fin n → α) :=
 --   darrayEquivFin _
 
@@ -42,7 +42,7 @@ namespace Equiv
 
 /-- The natural equivalence between arrays and lists. -/
 def arrayEquivList (α : Type*) : Array α ≃ List α :=
-  ⟨Array.data, Array.mk, fun _ => rfl, fun _ => rfl⟩
+  ⟨Array.toList, Array.mk, fun _ => rfl, fun _ => rfl⟩
 
 end Equiv
 

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Patrick Massot, Scott Morrison
+Authors: Reid Barton, Patrick Massot, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
@@ -191,7 +191,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
     { homEquiv := fun X Y =>
         { toFun := fun f => completionHom X ≫ f
           invFun := fun f => extensionHom f
-          left_inv := fun f => by dsimp; erw [extension_comp_coe]
+          left_inv := fun f => by dsimp; rw [extension_comp_coe]
           right_inv := fun f => by
             apply Subtype.eq; funext x; cases f
             exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)

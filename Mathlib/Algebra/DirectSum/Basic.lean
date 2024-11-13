@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Sigma
+import Mathlib.Data.DFinsupp.Submonoid
 
 /-!
 # Direct sum
@@ -25,7 +26,7 @@ open Function
 
 universe u v w u₁
 
-variable (ι : Type v) [dec_ι : DecidableEq ι] (β : ι → Type w)
+variable (ι : Type v) (β : ι → Type w)
 
 /-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
@@ -65,7 +66,8 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 --   | `(⨁ ($x:ident) ($y:ident), $p) => `(DirectSum _ (fun $x ↦ fun $y ↦ $p))
 -- end
 
-instance [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] : DecidableEq (DirectSum ι β) :=
+instance [DecidableEq ι] [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] :
+    DecidableEq (DirectSum ι β) :=
   inferInstanceAs <| DecidableEq (Π₀ i, β i)
 
 namespace DirectSum
@@ -97,6 +99,10 @@ variable {β}
 @[simp]
 theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
+
+section DecidableEq
+
+variable [DecidableEq ι]
 
 variable (β)
 
@@ -245,7 +251,7 @@ where `h : S ⊆ T`. -/
 def setToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, β i) →+ ⨁ i : T, β i :=
   toAddMonoid fun i => of (fun i : Subtype T => β i) ⟨↑i, H i.2⟩
 
-variable {β}
+end DecidableEq
 
 instance unique [∀ i, Subsingleton (β i)] : Unique (⨁ i, β i) :=
   DFinsupp.unique
@@ -267,7 +273,7 @@ protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι
       DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
         (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by
         rw [AddMonoidHom.map_add, AddMonoidHom.map_add, ihx, ihy]
-    right_inv := fun x => toAddMonoid_of _ _ _ }
+    right_inv := fun _ => toAddMonoid_of _ _ _ }
 
 section CongrLeft
 
@@ -297,7 +303,7 @@ end Option
 
 section Sigma
 
-variable {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
+variable [DecidableEq ι] {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
 
 /-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
 def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j where
@@ -336,7 +342,8 @@ protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [
     [AddSubmonoidClass S M] (A : ι → S) : (⨁ i, A i) →+ M :=
   toAddMonoid fun i => AddSubmonoidClass.subtype (A i)
 
-theorem coeAddMonoidHom_eq_dfinsupp_sum {M S : Type*} [DecidableEq M] [AddCommMonoid M]
+theorem coeAddMonoidHom_eq_dfinsupp_sum [DecidableEq ι]
+    {M S : Type*} [DecidableEq M] [AddCommMonoid M]
     [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
   simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk,
@@ -368,20 +375,28 @@ def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
 
 theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
-  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
+  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_eq_top_iff_surjective]
   exact Function.Bijective.surjective h
 
-variable  {M S : Type*} [DecidableEq ι] [DecidableEq M] [AddCommMonoid M] [SetLike S M]
-    [AddSubmonoidClass S M] (A : ι → S)
+variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]
 
-theorem support_subset (x : DirectSum ι fun i => A i) :
+theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by
   intro m
   simp only [Function.mem_support, Finset.mem_coe, DFinsupp.mem_support_toFun, not_imp_not,
     ZeroMemClass.coe_eq_zero, imp_self]
 
-theorem finite_support (x : DirectSum ι fun i => A i) :
-    (Function.support fun i => (x i : M)).Finite :=
-  Set.Finite.subset (DFinsupp.support x : Set ι).toFinite (DirectSum.support_subset _ x)
+theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
+    (Function.support fun i => (x i : M)).Finite := by
+  classical
+  exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
 end DirectSum
+
+/-- The canonical isomorphism of a finite direct sum of additive commutative monoids
+and the corresponding finite product. -/
+def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddCommMonoid (G i)] :
+    DirectSum ι G ≃+ ((i : ι) → G i) :=
+  ⟨DFinsupp.equivFunOnFintype, fun g h ↦ funext fun _ ↦ by
+    simp only [DFinsupp.equivFunOnFintype, Equiv.toFun_as_coe, Equiv.coe_fn_mk, add_apply,
+      Pi.add_apply]⟩

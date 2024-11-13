@@ -30,7 +30,7 @@ circular preorder is like a circular partial order, but several points can coexi
 
 Note that the relations between `CircularPreorder`, `CircularPartialOrder` and `CircularOrder`
 are subtler than between `Preorder`, `PartialOrder`, `LinearOrder`. In particular, one cannot
-simply extend the `btw` of a `CircularPartialOrder` to make it a `CircularOrder`.
+simply extend the `Btw` of a `CircularPartialOrder` to make it a `CircularOrder`.
 
 One can translate from usual orders to circular ones by "closing the necklace at infinity". See
 `LE.toBtw` and `LT.toSBtw`. Going the other way involves "cutting the necklace" or
@@ -346,7 +346,7 @@ See note [reducible non-instances]. -/
 abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
-  btw_refl a := Or.inl ⟨le_rfl, le_rfl⟩
+  btw_refl _ := Or.inl ⟨le_rfl, le_rfl⟩
   btw_cyclic_left {a b c} h := by
     dsimp
     rwa [← or_assoc, or_comm]

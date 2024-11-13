@@ -34,12 +34,11 @@ and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
 
 open Filter
 
-open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
+open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 
 variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
-  {ω : Ω}
 
 /-!
 ### One sided martingale bound
@@ -61,7 +60,7 @@ theorem leastGE_le {i : ℕ} {r : ℝ} (ω : Ω) : leastGE f r i ω ≤ i :=
 
 -- The following four lemmas shows `leastGE` behaves like a stopped process. Ideally we should
 -- define `leastGE` as a stopping time and take its stopped process. However, we can't do that
--- with our current definition since a stopping time takes only finite indicies. An upcomming
+-- with our current definition since a stopping time takes only finite indices. An upcoming
 -- refactor should hopefully make it possible to have stopping times taking infinity as a value
 theorem leastGE_mono {n m : ℕ} (hnm : n ≤ m) (r : ℝ) (ω : Ω) : leastGE f r n ω ≤ leastGE f r m ω :=
   hitting_mono hnm
@@ -122,21 +121,28 @@ theorem norm_stoppedValue_leastGE_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     simp only [Set.mem_union, Set.mem_Iic, Set.mem_Ici, not_or, not_le] at this
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
 
-theorem Submartingale.stoppedValue_leastGE_snorm_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
+theorem Submartingale.stoppedValue_leastGE_eLpNorm_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
-    snorm (stoppedValue f (leastGE f r i)) 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
-  refine snorm_one_le_of_le' ((hf.stoppedValue_leastGE r).integrable _) ?_
+    eLpNorm (stoppedValue f (leastGE f r i)) 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
+  refine eLpNorm_one_le_of_le' ((hf.stoppedValue_leastGE r).integrable _) ?_
     (norm_stoppedValue_leastGE_le hr hf0 hbdd i)
-  rw [← integral_univ]
+  rw [← setIntegral_univ]
   refine le_trans ?_ ((hf.stoppedValue_leastGE r).setIntegral_le (zero_le _) MeasurableSet.univ)
   simp_rw [stoppedValue, leastGE, hitting_of_le le_rfl, hf0, integral_zero', le_rfl]
 
-theorem Submartingale.stoppedValue_leastGE_snorm_le' [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
-    (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
-    snorm (stoppedValue f (leastGE f r i)) 1 μ ≤
+@[deprecated (since := "2024-07-27")]
+alias Submartingale.stoppedValue_leastGE_snorm_le := Submartingale.stoppedValue_leastGE_eLpNorm_le
+
+theorem Submartingale.stoppedValue_leastGE_eLpNorm_le' [IsFiniteMeasure μ]
+    (hf : Submartingale f ℱ μ) (hr : 0 ≤ r) (hf0 : f 0 = 0)
+    (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
+    eLpNorm (stoppedValue f (leastGE f r i)) 1 μ ≤
       ENNReal.toNNReal (2 * μ Set.univ * ENNReal.ofReal (r + R)) := by
-  refine (hf.stoppedValue_leastGE_snorm_le hr hf0 hbdd i).trans ?_
+  refine (hf.stoppedValue_leastGE_eLpNorm_le hr hf0 hbdd i).trans ?_
   simp [ENNReal.coe_toNNReal (measure_ne_top μ _), ENNReal.coe_toNNReal]
+
+@[deprecated (since := "2024-07-27")]
+alias Submartingale.stoppedValue_leastGE_snorm_le' := Submartingale.stoppedValue_leastGE_eLpNorm_le'
 
 /-- This lemma is superseded by `Submartingale.bddAbove_iff_exists_tendsto`. -/
 theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
@@ -146,7 +152,7 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     ∀ᵐ ω ∂μ, ∀ i : ℕ, ∃ c, Tendsto (fun n => stoppedValue f (leastGE f i n) ω) atTop (𝓝 c) := by
     rw [ae_all_iff]
     exact fun i => Submartingale.exists_ae_tendsto_of_bdd (hf.stoppedValue_leastGE i)
-      (hf.stoppedValue_leastGE_snorm_le' i.cast_nonneg hf0 hbdd)
+      (hf.stoppedValue_leastGE_eLpNorm_le' i.cast_nonneg hf0 hbdd)
   filter_upwards [ht] with ω hω hωb
   rw [BddAbove] at hωb
   obtain ⟨i, hi⟩ := exists_nat_gt hωb.some
@@ -340,8 +346,8 @@ theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set �
       (s (k + 1)).indicator (1 : Ω → ℝ) ω) atTop atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
-  have := tendsto_sum_indicator_atTop_iff (eventually_of_forall fun ω n => ?_) (adapted_process hs)
-    (integrable_process μ hs) (eventually_of_forall <| process_difference_le s)
+  have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_) (adapted_process hs)
+    (integrable_process μ hs) (Eventually.of_forall <| process_difference_le s)
   swap
   · rw [process, process, ← sub_nonneg, Finset.sum_apply, Finset.sum_apply,
       Finset.sum_range_succ_sub_sum]

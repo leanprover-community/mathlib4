@@ -15,10 +15,7 @@ The main definition is a `Valued` type class which equips a ring with a valuatio
 values in a group with zero. Other instances are then deduced from this.
 -/
 
-
-open scoped Classical
-open Topology uniformity
-
+open scoped Topology uniformity
 open Set Valuation
 
 noncomputable section
@@ -91,9 +88,6 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, UniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
-
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
---attribute [nolint dangerous_instance] Valued.toUniformSpace
 
 namespace Valued
 

@@ -32,6 +32,7 @@ lemma prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i ∈ s, f i :=
 /-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
 product of `f i` is less than or equal to the product of `g i`. See also `Finset.prod_le_prod'` for
 the case of an ordered commutative multiplicative monoid. -/
+@[gcongr]
 lemma prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
     ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i := by
   induction' s using Finset.cons_induction with a s has ih h
@@ -43,16 +44,6 @@ lemma prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i)
     · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact subset_cons _ H
     · apply prod_nonneg fun x H ↦ h0 x (subset_cons _ H)
     · apply le_trans (h0 a (mem_cons_self a s)) (h1 a (mem_cons_self a s))
-
-/-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
-product of `f i` is less than or equal to the product of `g i`.
-
-This is a variant (beta-reduced) version of the standard lemma `Finset.prod_le_prod`, convenient
-for the `gcongr` tactic. -/
-@[gcongr]
-lemma _root_.GCongr.prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
-    s.prod f ≤ s.prod g :=
-  s.prod_le_prod h0 h1
 
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
 See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
@@ -91,6 +82,22 @@ lemma prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f
 end PosMulStrictMono
 end CommMonoidWithZero
 
+section OrderedSemiring
+
+variable [OrderedSemiring R] {f : ι → R} {s : Finset ι}
+
+lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
+    ∑ i ∈ s, f i ^ 2 ≤ (∑ i ∈ s, f i) ^ 2 := by
+  simp only [sq, sum_mul_sum]
+  refine sum_le_sum fun i hi ↦ ?_
+  rw [← mul_sum]
+  gcongr
+  · exact hf i hi
+  · exact single_le_sum hf hi
+
+
+end OrderedSemiring
+
 section OrderedCommSemiring
 variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
 
@@ -105,7 +112,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
   · rw [right_distrib]
     refine add_le_add ?_ ?_ <;>
     · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_ <;> simp (config := { contextual := true }) [*]
+      · refine prod_le_prod ?_ ?_ <;> simp +contextual [*]
       · try apply_assumption
         try assumption
   · apply prod_nonneg
@@ -198,6 +205,7 @@ open Qq Lean Meta Finset
 
 private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and
 positive if each `f i` is.
 

@@ -46,7 +46,7 @@ This section provides a predicate for a kernel to disintegrate a measure.
 -/
 
 namespace MeasureTheory.Measure
-variable (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] (ρCond : Kernel α Ω)
+variable (ρ : Measure (α × Ω)) (ρCond : Kernel α Ω)
 
 /-- A kernel `ρCond` is a conditional kernel for a measure `ρ` if it disintegrates it in the sense
 that `ρ.fst ⊗ₘ ρCond = ρ`. -/
@@ -59,6 +59,8 @@ lemma disintegrate : ρ.fst ⊗ₘ ρCond = ρ := IsCondKernel.disintegrate
 
 lemma IsCondKernel.isSFiniteKernel (hρ : ρ ≠ 0) : IsSFiniteKernel ρCond := by
   contrapose! hρ; rwa [← ρ.disintegrate ρCond, Measure.compProd_of_not_isSFiniteKernel]
+
+variable [IsFiniteMeasure ρ]
 
 /-- Auxiliary lemma for `IsCondKernel.apply_of_ne_zero`. -/
 private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingletonClass α] {x : α}
@@ -77,7 +79,7 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
       have : Prod.mk a ⁻¹' (Prod.mk x '' s) = ∅ := by ext y; simp [Ne.symm hax]
       simp only [this, measure_empty]
   simp_rw [this]
-  rw [MeasureTheory.lintegral_indicator _ (measurableSet_singleton x)]
+  rw [MeasureTheory.lintegral_indicator (measurableSet_singleton x)]
   simp only [Measure.restrict_singleton, lintegral_smul_measure, lintegral_dirac]
   rw [← mul_assoc, ENNReal.inv_mul_cancel hx (measure_ne_top _ _), one_mul]
 
@@ -161,7 +163,7 @@ instance condKernelCountable.instIsCondKernel [∀ a, IsMarkovKernel (κCond a)]
   constructor
   ext a s hs
   conv_rhs => rw [← (κ a).disintegrate (κCond a)]
-  simp_rw [compProd_apply _ _ _ hs, condKernelCountable_apply, Measure.compProd_apply hs]
+  simp_rw [compProd_apply hs, condKernelCountable_apply, Measure.compProd_apply hs]
   congr
 
 end Countable

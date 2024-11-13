@@ -30,7 +30,7 @@ class Denumerable (α : Type*) extends Encodable α where
   /-- `decode` and `encode` are inverses. -/
   decode_inv : ∀ n, ∃ a ∈ decode n, encode a = n
 
-open Nat
+open Finset Nat
 
 namespace Denumerable
 
@@ -184,22 +184,19 @@ open Function Encodable
 
 /-! ### Subsets of `ℕ` -/
 
-
 variable {s : Set ℕ} [Infinite s]
 
 section Classical
 
-open scoped Classical
-
-theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
-  _root_.by_contradiction fun h =>
-    have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
-      lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, Nat.add_sub_cancel' hax]⟩
-    Fintype.false
-      ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
-            (fun (y : ℕ) (hy : y ∈ s) => Subtype.mk y hy)
-            (by simp [-Multiset.range_succ])).toFinset,
-        by simpa [Subtype.ext_iff_val, Multiset.mem_filter, -Multiset.range_succ] ⟩
+theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
+  by_contra h
+  have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
+    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, Nat.add_sub_cancel' hax]⟩
+  classical
+  exact Fintype.false
+    ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
+      (fun (y : ℕ) (hy : y ∈ s) => Subtype.mk y hy) (by simp [-Multiset.range_succ])).toFinset,
+      by simpa [Subtype.ext_iff_val, Multiset.mem_filter, -Multiset.range_succ] ⟩
 
 end Classical
 
@@ -276,7 +273,8 @@ theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s :
 private def toFunAux (x : s) : ℕ :=
   (List.range x).countP (· ∈ s)
 
-private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
+private theorem toFunAux_eq {s : Set ℕ} [DecidablePred (· ∈ s)] (x : s) :
+    toFunAux x = #{y ∈ Finset.range x | y ∈ s} := by
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
@@ -290,13 +288,13 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     exact bot_le.not_lt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
   | n + 1 => by
     have ih : toFunAux (ofNat s n) = n := right_inverse_aux n
-    have h₁ : (ofNat s n : ℕ) ∉ (range (ofNat s n)).filter (· ∈ s) := by simp
-    have h₂ : (range (succ (ofNat s n))).filter (· ∈ s) =
-        insert ↑(ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) := by
+    have h₁ : (ofNat s n : ℕ) ∉ {x ∈ range (ofNat s n) | x ∈ s} := by simp
+    have h₂ : {x ∈ range (succ (ofNat s n)) | x ∈ s} =
+        insert ↑(ofNat s n) {x ∈ range (ofNat s n) | x ∈ s} := by
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
         ⟨fun h => by
-          simp only [h.2, and_true_iff]
+          simp only [h.2, and_true]
           exact Or.symm (lt_or_eq_of_le ((@lt_succ_iff_le _ _ _ ⟨m, h.2⟩ _).1 h.1)),
          fun h =>
           h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>

@@ -88,7 +88,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.ae_integrable_condDistrib_map_
     Integrable f (μ.map fun a => (X a, Y a)) := by
   rw [condDistrib, ← hf.ae_integrable_condKernel_iff, Measure.fst_map_prod_mk₀ hY]
 
-variable [NormedSpace ℝ F] [CompleteSpace F]
+variable [NormedSpace ℝ F]
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condDistrib_map
     (hY : AEMeasurable Y μ) (hf : AEStronglyMeasurable f (μ.map fun a => (X a, Y a))) :
@@ -153,7 +153,7 @@ theorem _root_.MeasureTheory.Integrable.integral_norm_condDistrib (hX : AEMeasur
     Integrable (fun a => ∫ y, ‖f (X a, y)‖ ∂condDistrib Y X μ (X a)) μ :=
   (hf_int.integral_norm_condDistrib_map hY).comp_aemeasurable hX
 
-variable [NormedSpace ℝ F] [CompleteSpace F]
+variable [NormedSpace ℝ F]
 
 theorem _root_.MeasureTheory.Integrable.norm_integral_condDistrib_map
     (hY : AEMeasurable Y μ) (hf_int : Integrable f (μ.map fun a => (X a, Y a))) :
@@ -209,7 +209,7 @@ theorem condDistrib_ae_eq_condexp (hX : Measurable X) (hY : Measurable Y) (hs : 
   · exact fun t _ _ => (integrable_toReal_condDistrib hX.aemeasurable hs).integrableOn
   · intro t ht _
     rw [integral_toReal ((measurable_condDistrib hs).mono hX.comap_le le_rfl).aemeasurable
-      (eventually_of_forall fun ω => measure_lt_top (condDistrib Y X μ (X ω)) _),
+      (Eventually.of_forall fun ω => measure_lt_top (condDistrib Y X μ (X ω)) _),
       integral_indicator_const _ (hY hs), Measure.restrict_apply (hY hs), smul_eq_mul, mul_one,
       inter_comm, setLIntegral_condDistrib_of_measurableSet hX hY.aemeasurable hs ht]
   · refine (Measurable.stronglyMeasurable ?_).aeStronglyMeasurable'

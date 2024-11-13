@@ -125,7 +125,7 @@ variable {Q}
 namespace even.lift
 
 /-- An auxiliary submodule used to store the half-applied values of `f`.
-This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`.  -/
+This is the span of elements `f'` such that `∃ x m₂, ∀ m₁, f' m₁ = f m₁ m₂ * x`. -/
 private def S : Submodule R (M →ₗ[R] A) :=
   Submodule.span R
     {f' | ∃ x m₂, f' = LinearMap.lcomp R _ (f.bilin.flip m₂) (LinearMap.mulRight R x)}
@@ -157,8 +157,8 @@ private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
           LinearMap.ext fun m₃ =>
             show f.bilin m₃ (c • m) * a.1 = c • (f.bilin m₃ m * a.1) by
               rw [LinearMap.map_smul, smul_mul_assoc]))
-    (fun m a₁ a₂ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun m₃ => mul_add _ _ _))
-    fun c m a => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun m₃ => mul_smul_comm _ _ _)
+    (fun _ _ _ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ => mul_add _ _ _))
+    fun _ _ _ => Prod.ext rfl (Subtype.ext <| LinearMap.ext fun _ => mul_smul_comm _ _ _)
 
 @[simp]
 private theorem fst_fFold_fFold (m₁ m₂ : M) (x : A × S f) :
@@ -177,13 +177,13 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     rw [Algebra.smul_def, f.contract]
   · ext m₁
     change f.bilin _ _ * g m = Q m • g m₁
-    refine Submodule.span_induction' ?_ ?_ ?_ ?_ hg
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hg
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
     · change f.bilin m₁ m * 0 = Q m • (0 : A)  -- Porting note: `•` now needs the type of `0`
       rw [mul_zero, smul_zero]
-    · rintro x _hx y _hy ihx ihy
+    · rintro x y _hx _hy ihx ihy
       rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
     · rintro x hx _c ihx
       rw [LinearMap.smul_apply, LinearMap.smul_apply, mul_smul_comm, ihx, smul_comm]
@@ -245,8 +245,8 @@ multiplication. -/
 def even.lift : EvenHom Q A ≃ (CliffordAlgebra.even Q →ₐ[R] A) where
   toFun f := AlgHom.ofLinearMap (aux f) (aux_one f) (aux_mul f)
   invFun F := (even.ι Q).compr₂ F
-  left_inv f := EvenHom.ext _ _ <| LinearMap.ext₂ <| even.lift.aux_ι f
-  right_inv _ := even.algHom_ext Q <| EvenHom.ext _ _ <| LinearMap.ext₂ <| even.lift.aux_ι _
+  left_inv f := EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι f
+  right_inv _ := even.algHom_ext Q <| EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι _
 
 -- @[simp] -- Porting note: simpNF linter times out on this one
 theorem even.lift_ι (f : EvenHom Q A) (m₁ m₂ : M) :

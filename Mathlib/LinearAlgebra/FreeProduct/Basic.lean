@@ -40,8 +40,6 @@ is just `PiTensorProduct`.)
 
 ## TODO
 - Induction principle for `FreeProduct`
-- Equivalence of `FreeProduct` with `PiTensorProduct` in the commutative case and with
-  `FreeAlgebra R ⨁ (i : ι), A i`
 
 -/
 universe u v w w'
@@ -79,7 +77,7 @@ def algEquiv_quot_algEquiv
       ⟨AlgHom.comp (RingQuot.mkAlgHom R (rel on f.symm)) f,
       fun x y h_rel ↦ by
         apply RingQuot.mkAlgHom_rel
-        unfold_let rel; simpa [Function.onFun]⟩)
+        simpa [Function.onFun]⟩)
     ((RingQuot.liftAlgHom R (s := rel on f.symm)
       ⟨AlgHom.comp (RingQuot.mkAlgHom R rel) f.symm,
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))

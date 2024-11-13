@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Order-closed topologies
@@ -129,7 +129,7 @@ theorem le_of_tendsto {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
 
 theorem le_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, f c ≤ b) : a ≤ b :=
-  le_of_tendsto lim (eventually_of_forall h)
+  le_of_tendsto lim (Eventually.of_forall h)
 
 @[simp] lemma upperBounds_closure (s : Set α) : upperBounds (closure s : Set α) = upperBounds s :=
   ext fun a ↦ by simp_rw [mem_upperBounds_iff_subset_Iic, isClosed_Iic.closure_subset_iff]
@@ -237,12 +237,16 @@ theorem Ioo_mem_nhdsWithin_Iio' (H : a < b) : Ioo a b ∈ 𝓝[<] b := by
 theorem Ioo_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ioo a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio' H.1) <| Ioo_subset_Ioo_right H.2
 
-theorem CovBy.nhdsWithin_Iio (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
+protected theorem CovBy.nhdsWithin_Iio (h : a ⋖ b) : 𝓝[<] b = ⊥ :=
   empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Iio' h.1
+
+protected theorem PredOrder.nhdsWithin_Iio [PredOrder α] : 𝓝[<] a = ⊥ := by
+  if h : IsMin a then simp [h.Iio_eq]
+  else exact (Order.pred_covBy_of_not_isMin h).nhdsWithin_Iio
 
 theorem Ico_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ico_self
--- Porting note (#11215): TODO: swap `'`?
+
 -- Porting note (#11215): TODO: swap `'`?
 theorem Ico_mem_nhdsWithin_Iio' (H : a < b) : Ico a b ∈ 𝓝[<] b :=
   Ico_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
@@ -281,6 +285,12 @@ theorem continuousWithinAt_Ioo_iff_Iio (h : a < b) :
 /-!
 #### Point included
 -/
+
+protected theorem CovBy.nhdsWithin_Iic (H : a ⋖ b) : 𝓝[≤] b = pure b := by
+  rw [← Iio_insert, nhdsWithin_insert, H.nhdsWithin_Iio, sup_bot_eq]
+
+protected theorem PredOrder.nhdsWithin_Iic [PredOrder α] : 𝓝[≤] b = pure b := by
+  rw [← Iio_insert, nhdsWithin_insert, PredOrder.nhdsWithin_Iio, sup_bot_eq]
 
 theorem Ioc_mem_nhdsWithin_Iic' (H : a < b) : Ioc a b ∈ 𝓝[≤] b :=
   inter_mem (nhdsWithin_le_nhds <| Ioi_mem_nhds H) self_mem_nhdsWithin
@@ -352,7 +362,7 @@ theorem ge_of_tendsto {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
 
 theorem ge_of_tendsto' {x : Filter β} [NeBot x] (lim : Tendsto f x (𝓝 a))
     (h : ∀ c, b ≤ f c) : b ≤ a :=
-  ge_of_tendsto lim (eventually_of_forall h)
+  ge_of_tendsto lim (Eventually.of_forall h)
 
 @[simp] lemma lowerBounds_closure (s : Set α) : lowerBounds (closure s : Set α) = lowerBounds s :=
   ext fun a ↦ by simp_rw [mem_lowerBounds_iff_subset_Ici, isClosed_Ici.closure_subset_iff]
@@ -446,8 +456,11 @@ theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ �
 theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
   Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
-theorem CovBy.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
+protected theorem CovBy.nhdsWithin_Ioi {a b : α} (h : a ⋖ b) : 𝓝[>] a = ⊥ :=
   empty_mem_iff_bot.mp <| h.Ioo_eq ▸ Ioo_mem_nhdsWithin_Ioi' h.1
+
+protected theorem SuccOrder.nhdsWithin_Ioi [SuccOrder α] : 𝓝[>] a = ⊥ :=
+  PredOrder.nhdsWithin_Iio (α := αᵒᵈ)
 
 theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ioc_self
@@ -491,6 +504,12 @@ theorem continuousWithinAt_Ioo_iff_Ioi (h : a < b) :
 /-!
 ### Point included
 -/
+
+protected theorem CovBy.nhdsWithin_Ici (H : a ⋖ b) : 𝓝[≥] a = pure a :=
+  H.toDual.nhdsWithin_Iic
+
+protected theorem SuccOrder.nhdsWithin_Ici [SuccOrder α] : 𝓝[≥] a = pure a :=
+  PredOrder.nhdsWithin_Iic (α := αᵒᵈ)
 
 theorem Ico_mem_nhdsWithin_Ici' (H : a < b) : Ico a b ∈ 𝓝[≥] a :=
   inter_mem_nhdsWithin _ <| Iio_mem_nhds H
@@ -543,7 +562,7 @@ namespace Subtype
 -- todo: add `OrderEmbedding.orderClosedTopology`
 instance {p : α → Prop} : OrderClosedTopology (Subtype p) :=
   have this : Continuous fun p : Subtype p × Subtype p => ((p.fst : α), (p.snd : α)) :=
-    continuous_subtype_val.prod_map continuous_subtype_val
+    continuous_subtype_val.prodMap continuous_subtype_val
   OrderClosedTopology.mk (t.isClosed_le'.preimage this)
 
 end Subtype
@@ -580,7 +599,7 @@ alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 
 theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
-  le_of_tendsto_of_tendsto hf hg (eventually_of_forall h)
+  le_of_tendsto_of_tendsto hf hg (Eventually.of_forall h)
 
 @[simp]
 theorem closure_le_eq [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
@@ -666,7 +685,17 @@ theorem Ico_mem_nhds {a b x : α} (ha : a < x) (hb : x < b) : Ico a b ∈ 𝓝 x
 theorem Icc_mem_nhds {a b x : α} (ha : a < x) (hb : x < b) : Icc a b ∈ 𝓝 x :=
   mem_of_superset (Ioo_mem_nhds ha hb) Ioo_subset_Icc_self
 
-variable [TopologicalSpace γ]
+/-- The only order closed topology on a linear order which is a `PredOrder` and a `SuccOrder`
+is the discrete topology.
+
+This theorem is not an instance,
+because it causes searches for `PredOrder` and `SuccOrder` with their `Preorder` arguments
+and very rarely matches. -/
+theorem DiscreteTopology.of_predOrder_succOrder [PredOrder α] [SuccOrder α] :
+    DiscreteTopology α := by
+  refine discreteTopology_iff_nhds.mpr fun a ↦ ?_
+  rw [← nhdsWithin_univ, ← Iic_union_Ioi, nhdsWithin_union, PredOrder.nhdsWithin_Iic,
+    SuccOrder.nhdsWithin_Ioi, sup_bot_eq]
 
 end LinearOrder
 

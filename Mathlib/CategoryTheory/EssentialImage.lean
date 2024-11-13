@@ -89,6 +89,10 @@ instance : Full (essImageInclusion F) :=
 instance : Faithful (essImageInclusion F) :=
   (inferInstance : Faithful (fullSubcategoryInclusion _))
 
+lemma essImage_ext (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f g : X ⟶ Y)
+    (h : F.essImageInclusion.map f = F.essImageInclusion.map g) : f = g := by
+  simpa using h
+
 /--
 Given a functor `F : C ⥤ D`, we have an (essentially surjective) functor from `C` to the essential
 image of `F`.
@@ -117,6 +121,11 @@ instance EssSurj.toEssImage : EssSurj F.toEssImage where
   mem_essImage := fun ⟨_, hY⟩ =>
     ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
 
+theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
+  mem_essImage Y := by
+    obtain ⟨X, rfl⟩ := h Y
+    apply obj_mem_essImage
+
 variable (F)
 variable [F.EssSurj]
 
@@ -141,11 +150,6 @@ instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
 
 instance instEssSurjId : EssSurj (𝟭 C) where
   mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
-
-theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
-  mem_essImage Y := by
-    obtain ⟨X, rfl⟩ := h Y
-    apply obj_mem_essImage
 
 lemma essSurj_of_iso {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
   mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)

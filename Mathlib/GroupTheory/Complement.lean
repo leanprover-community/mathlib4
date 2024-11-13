@@ -119,7 +119,7 @@ theorem isComplement_univ_left : IsComplement univ S ↔ ∃ g : G, S = {g} := b
   · obtain ⟨a, _⟩ := h.2 1
     exact ⟨a.2.1, a.2.2⟩
   · have : (⟨⟨_, mem_top a⁻¹⟩, ⟨a, ha⟩⟩ : (⊤ : Set G) × S) = ⟨⟨_, mem_top b⁻¹⟩, ⟨b, hb⟩⟩ :=
-      h.1 ((inv_mul_self a).trans (inv_mul_self b).symm)
+      h.1 ((inv_mul_cancel a).trans (inv_mul_cancel b).symm)
     exact Subtype.ext_iff.mp (Prod.ext_iff.mp this).2
   · rintro ⟨g, rfl⟩
     exact isComplement_univ_singleton
@@ -131,7 +131,7 @@ theorem isComplement_univ_right : IsComplement S univ ↔ ∃ g : G, S = {g} := 
   · obtain ⟨a, _⟩ := h.2 1
     exact ⟨a.1.1, a.1.2⟩
   · have : (⟨⟨a, ha⟩, ⟨_, mem_top a⁻¹⟩⟩ : S × (⊤ : Set G)) = ⟨⟨b, hb⟩, ⟨_, mem_top b⁻¹⟩⟩ :=
-      h.1 ((mul_inv_self a).trans (mul_inv_self b).symm)
+      h.1 ((mul_inv_cancel a).trans (mul_inv_cancel b).symm)
     exact Subtype.ext_iff.mp (Prod.ext_iff.mp this).1
   · rintro ⟨g, rfl⟩
     exact isComplement_singleton_univ
@@ -201,7 +201,7 @@ theorem mem_leftTransversals_iff_existsUnique_quotient_mk''_eq :
     S ∈ leftTransversals (H : Set G) ↔
       ∀ q : Quotient (QuotientGroup.leftRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
   simp_rw [mem_leftTransversals_iff_existsUnique_inv_mul_mem, SetLike.mem_coe, ←
-    QuotientGroup.eq']
+    QuotientGroup.eq]
   exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
 
 @[to_additive]
@@ -385,12 +385,12 @@ theorem equiv_snd_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T
 theorem equiv_snd_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
     (hST.equiv g).snd = ⟨1, h1⟩ := by
   ext
-  rw [equiv_snd_eq_inv_mul, equiv_fst_eq_self_of_mem_of_one_mem _ h1 hg, inv_mul_self]
+  rw [equiv_snd_eq_inv_mul, equiv_fst_eq_self_of_mem_of_one_mem _ h1 hg, inv_mul_cancel]
 
 theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
     (hST.equiv g).fst = ⟨1, h1⟩ := by
   ext
-  rw [equiv_fst_eq_mul_inv, equiv_snd_eq_self_of_mem_of_one_mem _ h1 hg, mul_inv_self]
+  rw [equiv_fst_eq_mul_inv, equiv_snd_eq_self_of_mem_of_one_mem _ h1 hg, mul_inv_cancel]
 
 -- This lemma has always been bad, but the linter only noticed after lean4#2644.
 @[simp, nolint simpNF]

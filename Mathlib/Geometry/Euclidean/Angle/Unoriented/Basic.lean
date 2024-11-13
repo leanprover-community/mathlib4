@@ -159,7 +159,7 @@ theorem angle_smul_left_of_neg (x y : V) {r : ℝ} (hr : r < 0) : angle (r • x
 product of their norms. -/
 theorem cos_angle_mul_norm_mul_norm (x y : V) : Real.cos (angle x y) * (‖x‖ * ‖y‖) = ⟪x, y⟫ := by
   rw [cos_angle, div_mul_cancel_of_imp]
-  simp (config := { contextual := true }) [or_imp]
+  simp +contextual [or_imp]
 
 /-- The sine of the angle between two vectors, multiplied by the
 product of their norms. -/
@@ -178,7 +178,8 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
       rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy
       rw [hy, inner_zero_right, zero_mul, neg_zero]
-  · field_simp [h]
+  · -- takes 600ms; squeezing the "equivalent" simp call yields an invalid result
+    field_simp [h]
     ring_nf
 
 /-- The angle between two vectors is zero if and only if they are
@@ -204,7 +205,7 @@ theorem angle_add_angle_eq_pi_of_angle_eq_pi {x y : V} (z : V) (h : angle x y = 
 /-- Two vectors have inner product 0 if and only if the angle between
 them is π/2. -/
 theorem inner_eq_zero_iff_angle_eq_pi_div_two (x y : V) : ⟪x, y⟫ = 0 ↔ angle x y = π / 2 :=
-  Iff.symm <| by simp (config := { contextual := true }) [angle, or_imp]
+  Iff.symm <| by simp +contextual [angle, or_imp]
 
 /-- If the angle between two vectors is π, the inner product equals the negative product
 of the norms. -/

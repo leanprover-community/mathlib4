@@ -3,13 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
+import Mathlib.Data.Subtype
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -22,7 +23,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 assert_not_exists Multiplicative
 assert_not_exists DenselyOrdered
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
 
 namespace Units
@@ -66,14 +67,12 @@ theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
   mt isUnit_zero_iff.1 zero_ne_one
 
 namespace Ring
 
-open scoped Classical
-
+open Classical in
 /-- Introduce a function `inverse` on a monoid with zero `M₀`, which sends `x` to `x⁻¹` if `x` is
 invertible and to `0` otherwise.  This definition is somewhat ad hoc, but one needs a fully (rather
 than partially) defined inverse function for some purposes, including for calculus.
@@ -86,6 +85,12 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 @[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
+
+theorem IsUnit.ringInverse {x : M₀} (h : IsUnit x) : IsUnit (inverse x) :=
+  match h with
+  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inverse_unit u).symm⟩
+
+theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
 @[simp]
@@ -152,14 +157,13 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
 namespace Units
 
 variable [GroupWithZero G₀]
-variable {a b : G₀}
 
 /-- Embed a non-zero element of a `GroupWithZero` into the unit group.
   By combining this function with the operations on units,
   or the `/ₚ` operation, it is possible to write a division
   as a partial function with three arguments. -/
 def mk0 (a : G₀) (ha : a ≠ 0) : G₀ˣ :=
-  ⟨a, a⁻¹, mul_inv_cancel ha, inv_mul_cancel ha⟩
+  ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩
 
 @[simp]
 theorem mk0_one (h := one_ne_zero) : mk0 (1 : G₀) h = 1 := by
@@ -174,13 +178,11 @@ theorem val_mk0 {a : G₀} (h : a ≠ 0) : (mk0 a h : G₀) = a :=
 theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
   Units.ext rfl
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
-  mul_inv_cancel u.ne_zero
+  mul_inv_cancel₀ u.ne_zero
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
-  inv_mul_cancel u.ne_zero
+  inv_mul_cancel₀ u.ne_zero
 
 @[simp]
 theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
@@ -208,7 +210,7 @@ theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀
 end Units
 
 section GroupWithZero
-variable [GroupWithZero G₀] {a b c d : G₀} {m n : ℕ}
+variable [GroupWithZero G₀] {a b c : G₀} {m n : ℕ}
 
 theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit
@@ -322,11 +324,11 @@ lemma mul_div_mul_right (a b : G₀) (hc : c ≠ 0) : a * c / (b * c) = a / b :=
 -- TODO: Duplicate of `mul_inv_cancel_right₀`
 lemma mul_mul_div (a : G₀) (hb : b ≠ 0) : a = a * b * (1 / b) := (hb.isUnit.mul_mul_div _).symm
 
-lemma div_div_div_cancel_right (a : G₀) (hc : c ≠ 0) : a / c / (b / c) = a / b := by
+lemma div_div_div_cancel_right₀ (hc : c ≠ 0) (a b : G₀) : a / c / (b / c) = a / b := by
   rw [div_div_eq_mul_div, div_mul_cancel₀ _ hc]
 
-lemma div_mul_div_cancel (a : G₀) (hc : c ≠ 0) : a / c * (c / b) = a / b := by
-  rw [← mul_div_assoc, div_mul_cancel₀ _ hc]
+lemma div_mul_div_cancel₀ (hb : b ≠ 0) : a / b * (b / c) = a / c := by
+  rw [← mul_div_assoc, div_mul_cancel₀ _ hb]
 
 lemma div_mul_cancel_of_imp (h : b = 0 → a = 0) : a / b * b = a := by
   obtain rfl | hb := eq_or_ne b 0 <;>  simp [*]
@@ -355,6 +357,15 @@ lemma inv_pow_sub_of_lt (a : G₀) (h : n < m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹
 lemma zpow_sub₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m - n) = a ^ m / a ^ n := by
   rw [Int.sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
 
+lemma zpow_natCast_sub_natCast₀ (ha : a ≠ 0) (m n : ℕ) : a ^ (m - n : ℤ) = a ^ m / a ^ n := by
+  simpa using zpow_sub₀ ha m n
+
+lemma zpow_natCast_sub_one₀ (ha : a ≠ 0) (n : ℕ) : a ^ (n - 1 : ℤ) = a ^ n / a := by
+  simpa using zpow_sub₀ ha n 1
+
+lemma zpow_one_sub_natCast₀ (ha : a ≠ 0) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := by
+  simpa using zpow_sub₀ ha 1 n
+
 lemma zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
   | (_ : ℕ) => by rw [zpow_natCast]; exact pow_ne_zero _
   | .negSucc n => fun ha ↦ by rw [zpow_negSucc]; exact inv_ne_zero (pow_ne_zero _ ha)
@@ -370,7 +381,7 @@ lemma zpow_eq_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
 lemma zpow_ne_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (zpow_eq_zero_iff hn).ne
 
 lemma zpow_neg_mul_zpow_self (n : ℤ) (ha : a ≠ 0) : a ^ (-n) * a ^ n = 1 := by
-  rw [zpow_neg]; exact inv_mul_cancel (zpow_ne_zero n ha)
+  rw [zpow_neg]; exact inv_mul_cancel₀ (zpow_ne_zero n ha)
 
 theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
@@ -450,14 +461,16 @@ lemma div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
 lemma div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
   rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ hc]
 
+@[simp] lemma div_mul_div_cancel₀' (ha : a ≠ 0) (b c : G₀) : a / b * (c / a) = c / b := by
+  rw [mul_comm, div_mul_div_cancel₀ ha]
+
 end CommGroupWithZero
 
 section NoncomputableDefs
 
-open scoped Classical
-
 variable {M : Type*} [Nontrivial M]
 
+open Classical in
 /-- Constructs a `GroupWithZero` structure on a `MonoidWithZero`
   consisting only of units and 0. -/
 noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]

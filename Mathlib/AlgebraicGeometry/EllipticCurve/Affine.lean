@@ -5,6 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 
 /-!
 # Affine coordinates for Weierstrass curves
@@ -163,7 +164,6 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
   iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma evalEval_polynomial (x y : R) : W.polynomial.evalEval x y =
     y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) := by
   simp only [polynomial]
@@ -182,7 +182,6 @@ lemma equation_iff' (x y : R) : W.Equation x y ↔
     y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) = 0 := by
   rw [Equation, evalEval_polynomial]
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma equation_iff (x y : R) :
     W.Equation x y ↔ y ^ 2 + W.a₁ * x * y + W.a₃ * y = x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆ := by
   rw [equation_iff', sub_eq_zero]
@@ -209,7 +208,6 @@ TODO: define this in terms of `Polynomial.derivative`. -/
 noncomputable def polynomialX : R[X][Y] :=
   C (C W.a₁) * Y - C (C 3 * X ^ 2 + C (2 * W.a₂) * X + C W.a₄)
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma evalEval_polynomialX (x y : R) :
     W.polynomialX.evalEval x y = W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) := by
   simp only [polynomialX]
@@ -225,7 +223,6 @@ TODO: define this in terms of `Polynomial.derivative`. -/
 noncomputable def polynomialY : R[X][Y] :=
   C (C 2) * Y + C (C W.a₁ * X + C W.a₃)
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma evalEval_polynomialY (x y : R) :
     W.polynomialY.evalEval x y = 2 * y + W.a₁ * x + W.a₃ := by
   simp only [polynomialY]
@@ -255,7 +252,6 @@ lemma nonsingular_iff' (x y : R) : W.Nonsingular x y ↔ W.Equation x y ∧
     (W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) ≠ 0 ∨ 2 * y + W.a₁ * x + W.a₃ ≠ 0) := by
   rw [Nonsingular, equation_iff', evalEval_polynomialX, evalEval_polynomialY]
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma nonsingular_iff (x y : R) : W.Nonsingular x y ↔
     W.Equation x y ∧ (W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ ∨ y ≠ -y - W.a₁ * x - W.a₃) := by
   rw [nonsingular_iff', sub_ne_zero, ← sub_ne_zero (a := y)]
@@ -313,7 +309,6 @@ lemma negY_negY (x y : R) : W.negY x (W.negY x y) = y := by
   simp only [negY]
   ring1
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma eval_negPolynomial (x y : R) : W.negPolynomial.evalEval x y = W.negY x y := by
   rw [negY, sub_sub, negPolynomial]
   eval_simp
@@ -427,8 +422,7 @@ section Field
 
 /-! ### Group operation polynomials over a field -/
 
-open scoped Classical
-
+open Classical in
 /-- The slope of the line through two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`.
 If $x_1 \ne x_2$, then this line is the secant of `W` through $(x_1, y_1)$ and $(x_2, y_2)$,
 and has slope $(y_1 - y_2) / (x_1 - x_2)$. Otherwise, if $y_1 \ne -y_1 - a_1x_1 - a_3$,
@@ -552,11 +546,11 @@ lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     W.Nonsingular (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
   nonsingular_neg <| nonsingular_negAdd h₁ h₂ hxy
 
-variable {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂)
+variable {x₁ x₂ : F} (y₁ y₂ : F)
 
 /-- The formula x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²,
 where ψ(x,y) = 2y + a₁x + a₃. -/
-lemma addX_eq_addX_negY_sub :
+lemma addX_eq_addX_negY_sub (hx : x₁ ≠ x₂) :
     W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ (W.negY x₂ y₂))
       - (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
   simp_rw [slope_of_X_ne hx, addX, negY, ← neg_sub x₁, neg_sq]
@@ -565,7 +559,7 @@ lemma addX_eq_addX_negY_sub :
 
 /-- The formula y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0,
 assuming that P₁ + P₂ + P₃ = O. -/
-lemma cyclic_sum_Y_mul_X_sub_X :
+lemma cyclic_sum_Y_mul_X_sub_X (hx : x₁ ≠ x₂) :
     letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
   simp_rw [slope_of_X_ne hx, negAddY, addX]
@@ -575,7 +569,7 @@ lemma cyclic_sum_Y_mul_X_sub_X :
 /-- The formula
 ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁)),
 where ψ(x,y) = 2y + a₁x + a₃. -/
-lemma addY_sub_negY_addY :
+lemma addY_sub_negY_addY (hx : x₁ ≠ x₂) :
     letI x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
     letI y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
     y₃ - W.negY x₃ y₃ =
@@ -609,7 +603,6 @@ instance : Inhabited W.Point :=
 instance : Zero W.Point :=
   ⟨zero⟩
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma zero_def : (zero : W.Point) = 0 :=
   rfl
 
@@ -625,7 +618,6 @@ def neg : W.Point → W.Point
 instance : Neg W.Point :=
   ⟨neg⟩
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma neg_def (P : W.Point) : P.neg = -P :=
   rfl
 
@@ -640,10 +632,9 @@ lemma neg_some {x y : R} (h : W.Nonsingular x y) : -some h = some (nonsingular_n
 instance : InvolutiveNeg W.Point :=
   ⟨by rintro (_ | _) <;> simp [zero_def]; ring1⟩
 
-open scoped Classical
-
 variable {F : Type u} [Field F] {W : Affine F}
 
+open Classical in
 /-- The addition of two nonsingular rational points on `W`.
 
 Given two nonsingular rational points `P` and `Q` on `W`, use `P + Q` instead of `add P Q`. -/
@@ -657,7 +648,6 @@ noncomputable def add : W.Point → W.Point → W.Point
 noncomputable instance instAddPoint : Add W.Point :=
   ⟨add⟩
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma add_def (P Q : W.Point) : P.add Q = P + Q :=
   rfl
 
@@ -818,7 +808,6 @@ lemma baseChange_polynomial : (W.baseChange B).toAffine.polynomial =
     (W.baseChange A).toAffine.polynomial.map (mapRingHom f) := by
   rw [← map_polynomial, map_baseChange]
 
-variable {g} in
 lemma baseChange_equation (hf : Function.Injective f) (x y : A) :
     (W.baseChange B).toAffine.Equation (f x) (f y) ↔ (W.baseChange A).toAffine.Equation x y := by
   erw [← map_equation _ hf, map_baseChange]

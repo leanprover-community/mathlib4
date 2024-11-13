@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Center
-import Mathlib.Algebra.Group.Subsemigroup.Operations
+import Mathlib.Algebra.Group.Subsemigroup.Defs
 
 /-!
 # Centers of semigroups, as subsemigroups.
@@ -23,6 +23,8 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
   [cabreragarciarodriguezpalacios2014]
 -/
 
+-- Guard against import creep
+assert_not_exists Finset
 
 /-! ### `Set.center` as a `Subsemigroup`. -/
 
@@ -76,6 +78,3 @@ theorem center_eq_top : center M = ⊤ :=
 end CommSemigroup
 
 end Subsemigroup
-
--- Guard against import creep
-assert_not_exists Finset

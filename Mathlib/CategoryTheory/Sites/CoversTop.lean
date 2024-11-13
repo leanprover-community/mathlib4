@@ -51,6 +51,7 @@ namespace CoversTop
 
 variable {J}
 variable {I : Type*} {Y : I → C} (hY : J.CoversTop Y)
+include hY
 
 /-- The cover of any object `W : C` attached to a family of objects `Y` that satisfy
 `J.CoversTop Y` -/

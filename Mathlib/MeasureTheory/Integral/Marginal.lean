@@ -55,7 +55,7 @@ since there is no well-behaved measure on the domain of `f`.
 -/
 
 
-open scoped Classical ENNReal
+open scoped ENNReal
 open Set Function Equiv Finset
 
 noncomputable section
@@ -65,7 +65,7 @@ namespace MeasureTheory
 section LMarginal
 
 variable {δ δ' : Type*} {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
-variable {μ : ∀ i, Measure (π i)} [∀ i, SigmaFinite (μ i)] [DecidableEq δ]
+variable {μ : ∀ i, Measure (π i)} [DecidableEq δ]
 variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π i} {i : δ}
 
 /-- Integrate `f(x₁,…,xₙ)` over all variables `xᵢ` where `i ∈ s`. Return a function in the
@@ -85,7 +85,8 @@ notation "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 
 variable (μ)
 
-theorem _root_.Measurable.lmarginal (hf : Measurable f) : Measurable (∫⋯∫⁻_s, f ∂μ) := by
+theorem _root_.Measurable.lmarginal [∀ i, SigmaFinite (μ i)] (hf : Measurable f) :
+    Measurable (∫⋯∫⁻_s, f ∂μ) := by
   refine Measurable.lintegral_prod_right ?_
   refine hf.comp ?_
   rw [measurable_pi_iff]; intro i
@@ -113,6 +114,25 @@ theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
   have : j ≠ i := by rintro rfl; exact hj hi
   apply update_noteq this
 
+variable {μ} in
+theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
+    ∫⋯∫⁻_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
+  let α : Type _ := ({i} : Finset δ)
+  let e := (MeasurableEquiv.piUnique fun j : α ↦ π j).symm
+  ext1 x
+  calc (∫⋯∫⁻_{i}, f ∂μ) x
+      = ∫⁻ (y : π (default : α)), f (updateFinset x {i} (e y)) ∂μ (default : α) := by
+        simp_rw [lmarginal, measurePreserving_piUnique (fun j : ({i} : Finset δ) ↦ μ j) |>.symm _
+          |>.lintegral_map_equiv]
+    _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateFinset]; rfl
+
+variable {μ} in
+@[gcongr]
+theorem lmarginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫⋯∫⁻_s, f ∂μ ≤ ∫⋯∫⁻_s, g ∂μ :=
+  fun _ => lintegral_mono fun _ => hfg _
+
+variable [∀ i, SigmaFinite (μ i)]
+
 theorem lmarginal_union (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f)
     (hst : Disjoint s t) : ∫⋯∫⁻_s ∪ t, f ∂μ = ∫⋯∫⁻_s, ∫⋯∫⁻_t, f ∂μ ∂μ := by
   ext1 x
@@ -137,17 +157,6 @@ theorem lmarginal_union' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) 
   rw [Finset.union_comm, lmarginal_union μ f hf hst.symm]
 
 variable {μ}
-
-theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
-    ∫⋯∫⁻_{i}, f ∂μ = fun x => ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by
-  let α : Type _ := ({i} : Finset δ)
-  let e := (MeasurableEquiv.piUnique fun j : α ↦ π j).symm
-  ext1 x
-  calc (∫⋯∫⁻_{i}, f ∂μ) x
-      = ∫⁻ (y : π (default : α)), f (updateFinset x {i} (e y)) ∂μ (default : α) := by
-        simp_rw [lmarginal, measurePreserving_piUnique (fun j : ({i} : Finset δ) ↦ μ j) |>.symm _
-          |>.lintegral_map_equiv]
-    _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateFinset]; rfl
 
 /-- Peel off a single integral from a `lmarginal` integral at the beginning (compare with
 `lmarginal_insert'`, which peels off an integral at the end). -/
@@ -178,12 +187,6 @@ theorem lmarginal_erase' (f : (∀ i, π i) → ℝ≥0∞) (hf : Measurable f) 
     (hi : i ∈ s) :
     ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_(erase s i), (fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ∂μ := by
   simpa [insert_erase hi] using lmarginal_insert' _ hf (not_mem_erase i s)
-
-open Filter
-
-@[gcongr]
-theorem lmarginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : ∫⋯∫⁻_s, f ∂μ ≤ ∫⋯∫⁻_s, g ∂μ :=
-  fun _ => lintegral_mono fun _ => hfg _
 
 @[simp] theorem lmarginal_univ [Fintype δ] {f : (∀ i, π i) → ℝ≥0∞} :
     ∫⋯∫⁻_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by

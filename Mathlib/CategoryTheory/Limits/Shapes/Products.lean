@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.DiscreteCategory
@@ -245,6 +245,12 @@ theorem Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ 
     Pi.lift p ≫ Pi.π f b = p b := by
   simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
 
+/-- A version of `Cones.ext` for `Fan`s. -/
+@[simps!]
+def Fan.ext {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
+    (w : ∀ (b : β), c₁.proj b = e.hom ≫ c₂.proj b := by aesop_cat) : c₁ ≅ c₂ :=
+  Cones.ext e (fun ⟨j⟩ => w j)
+
 /-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/
 abbrev Sigma.desc {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) : ∐ f ⟶ P :=
   colimit.desc _ (Cofan.mk P p)
@@ -258,7 +264,7 @@ instance {f : β → C} [HasCoproduct f] : IsIso (Sigma.desc (fun a ↦ Sigma.ι
   ext
   simp
 
-/-- A version of `Cocones.ext` for `Cofan`s. -/
+/-- A version of `Cocones.ext` for `Cofan`s. -/
 @[simps!]
 def Cofan.ext {f : β → C} {c₁ c₂ : Cofan f} (e : c₁.pt ≅ c₂.pt)
     (w : ∀ (b : β), c₁.inj b ≫ e.hom = c₂.inj b := by aesop_cat) : c₁ ≅ c₂ :=
@@ -481,6 +487,50 @@ from a family of isomorphisms between the factors.
 abbrev Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∐ f ≅ ∐ g :=
   colim.mapIso (Discrete.natIso fun X => p X.as)
 
+section
+
+/- In this section, we provide some API for coproducts when we are given a functor
+`Discrete α ⥤ C` instead of a map `α → C`. -/
+
+variable (X : Discrete α ⥤ C) [HasCoproduct (fun j => X.obj (Discrete.mk j))]
+
+/-- A colimit cocone for `X : Discrete α ⥤ C` that is given
+by `∐ (fun j => X.obj (Discrete.mk j))`. -/
+@[simps]
+def Sigma.cocone : Cocone X where
+  pt := ∐ (fun j => X.obj (Discrete.mk j))
+  ι := Discrete.natTrans (fun _ => Sigma.ι (fun j ↦ X.obj ⟨j⟩) _)
+
+/-- The cocone `Sigma.cocone X` is a colimit cocone. -/
+def coproductIsCoproduct' :
+    IsColimit (Sigma.cocone X) where
+  desc s := Sigma.desc (fun j => s.ι.app ⟨j⟩)
+  fac s := by simp
+  uniq s m hm := by
+    dsimp
+    ext
+    simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+    apply hm
+
+variable [HasColimit X]
+
+/-- The isomorphism `∐ (fun j => X.obj (Discrete.mk j)) ≅ colimit X`. -/
+def Sigma.isoColimit :
+    ∐ (fun j => X.obj (Discrete.mk j)) ≅ colimit X :=
+  IsColimit.coconePointUniqueUpToIso (coproductIsCoproduct' X) (colimit.isColimit X)
+
+@[reassoc (attr := simp)]
+lemma Sigma.ι_isoColimit_hom (j : α) :
+    Sigma.ι _ j ≫ (Sigma.isoColimit X).hom = colimit.ι _ (Discrete.mk j) :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom (coproductIsCoproduct' X) _ _
+
+@[reassoc (attr := simp)]
+lemma Sigma.ι_isoColimit_inv (j : α) :
+    colimit.ι _ ⟨j⟩ ≫ (Sigma.isoColimit X).inv = Sigma.ι (fun j ↦ X.obj ⟨j⟩) _ :=
+  IsColimit.comp_coconePointUniqueUpToIso_inv _ _ _
+
+end
+
 /-- Two products which differ by an equivalence in the indexing type,
 and up to isomorphism in the factors, are isomorphic.
 -/
@@ -507,7 +557,8 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
   exists_limit := Nonempty.intro
     { cone := Fan.mk (∏ᶜ fun i => ∏ᶜ g i) (fun X => Pi.π (fun i => ∏ᶜ g i) X.1 ≫ Pi.π (g X.1) X.2)
       isLimit := mkFanLimit _ (fun s => Pi.lift fun b => Pi.lift fun c => s.proj ⟨b, c⟩)
-        (by aesop_cat) (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all) }
+        (by aesop_cat)
+        (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
 
 /-- An iterated product is a product over a sigma type. -/
 @[simps]
@@ -527,7 +578,8 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
         (fun s => Sigma.desc fun b => Sigma.desc fun c => s.inj ⟨b, c⟩)
-        (by aesop_cat) (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all) }
+        (by aesop_cat)
+        (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
 
 /-- An iterated coproduct is a coproduct over a sigma type. -/
 @[simps]
@@ -601,12 +653,12 @@ theorem has_smallest_coproducts_of_hasCoproducts [HasCoproducts.{w} C] : HasCopr
   hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift : Discrete (ULift.{w} J) ≌ _)
 
 theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
-    (lf_is_limit : ∀ {J : Type w} (f : J → C), IsLimit (lf f)) : HasProducts.{w} C :=
+    (lf_isLimit : ∀ {J : Type w} (f : J → C), IsLimit (lf f)) : HasProducts.{w} C :=
   fun _ : Type w =>
   { has_limit := fun F =>
       HasLimit.mk
         ⟨(Cones.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
-          (IsLimit.postcomposeInvEquiv _ _).symm (lf_is_limit _)⟩ }
+          (IsLimit.postcomposeInvEquiv _ _).symm (lf_isLimit _)⟩ }
 
 /-!
 (Co)products over a type with a unique term.
@@ -615,11 +667,9 @@ theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
 
 section Unique
 
-variable [Unique β] (f : β → C)
-
 /-- The limit cone for the product over an index type with exactly one term. -/
 @[simps]
-def limitConeOfUnique : LimitCone (Discrete.functor f) where
+def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f) where
   cone :=
     { pt := f default
       π := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
@@ -636,17 +686,18 @@ def limitConeOfUnique : LimitCone (Discrete.functor f) where
         specialize w default
         simpa using w }
 
-instance (priority := 100) hasProduct_unique : HasProduct f :=
-  HasLimit.mk (limitConeOfUnique f)
+instance (priority := 100) hasProduct_unique [Nonempty β] [Subsingleton β] (f : β → C) :
+    HasProduct f :=
+  let ⟨_⟩ := nonempty_unique β; HasLimit.mk (limitConeOfUnique f)
 
 /-- A product over an index type with exactly one term is just the object over that term. -/
 @[simps!]
-def productUniqueIso : ∏ᶜ f ≅ f default :=
+def productUniqueIso [Unique β] (f : β → C) : ∏ᶜ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit
 
 /-- The colimit cocone for the coproduct over an index type with exactly one term. -/
 @[simps]
-def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f) where
+def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.functor f) where
   cocone :=
     { pt := f default
       ι := Discrete.natTrans (fun ⟨j⟩ => eqToHom (by
@@ -664,12 +715,13 @@ def colimitCoconeOfUnique : ColimitCocone (Discrete.functor f) where
         erw [Category.id_comp] at w
         exact w }
 
-instance (priority := 100) hasCoproduct_unique : HasCoproduct f :=
-  HasColimit.mk (colimitCoconeOfUnique f)
+instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (f : β → C) :
+    HasCoproduct f :=
+  let ⟨_⟩ := nonempty_unique β; HasColimit.mk (colimitCoconeOfUnique f)
 
 /-- A coproduct over an index type with exactly one term is just the object over that term. -/
 @[simps!]
-def coproductUniqueIso : ∐ f ≅ f default :=
+def coproductUniqueIso [Unique β] (f : β → C) : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit
 
 end Unique

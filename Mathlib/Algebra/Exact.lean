@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-! # Exactness of a pair
 
@@ -173,6 +173,21 @@ lemma exact_of_comp_of_mem_range
     (h1 : g ∘ₗ f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
   exact_of_comp_eq_zero_of_ker_le_range h1 h2
 
+variable {R M N P : Type*} [CommRing R]
+  [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
+
+lemma exact_subtype_mkQ (Q : Submodule R N) :
+    Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
+  rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
+
+lemma exact_map_mkQ_range (f : M →ₗ[R] N) :
+    Exact f (Submodule.mkQ (range f)) :=
+  exact_iff.mpr <| Submodule.ker_mkQ _
+
+lemma exact_subtype_ker_map (g : N →ₗ[R] P) :
+    Exact (Submodule.subtype (ker g)) g :=
+  exact_iff.mpr <| (Submodule.range_subtype _).symm
+
 end LinearMap
 
 variable (f g) in
@@ -308,19 +323,17 @@ theorem Exact.split_tfae' (h : Function.Exact f g) :
       Function.Surjective g ∧ ∃ l, l ∘ₗ f = LinearMap.id,
       ∃ e : N ≃ₗ[R] M × P, f = e.symm ∘ₗ LinearMap.inl R M P ∧ g = LinearMap.snd R M P ∘ₗ e] := by
   tfae_have 1 → 3
-  · rintro ⟨hf, l, hl⟩
-    exact ⟨_, (h.splitSurjectiveEquiv hf ⟨l, hl⟩).2⟩
+  | ⟨hf, l, hl⟩ => ⟨_, (h.splitSurjectiveEquiv hf ⟨l, hl⟩).2⟩
   tfae_have 2 → 3
-  · rintro ⟨hg, l, hl⟩
-    exact ⟨_, (h.splitInjectiveEquiv hg ⟨l, hl⟩).2⟩
+  | ⟨hg, l, hl⟩ => ⟨_, (h.splitInjectiveEquiv hg ⟨l, hl⟩).2⟩
   tfae_have 3 → 1
-  · rintro ⟨e, e₁, e₂⟩
+  | ⟨e, e₁, e₂⟩ => by
     have : Function.Injective f := e₁ ▸ e.symm.injective.comp LinearMap.inl_injective
-    refine ⟨this, ⟨_, ((h.splitSurjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
+    exact ⟨this, ⟨_, ((h.splitSurjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
   tfae_have 3 → 2
-  · rintro ⟨e, e₁, e₂⟩
+  | ⟨e, e₁, e₂⟩ => by
     have : Function.Surjective g := e₂ ▸ Prod.snd_surjective.comp e.surjective
-    refine ⟨this, ⟨_, ((h.splitInjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
+    exact ⟨this, ⟨_, ((h.splitInjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
   tfae_finish
 
 /-- Equivalent characterizations of split exact sequences. Also known as the **Splitting lemma**. -/
@@ -332,13 +345,29 @@ theorem Exact.split_tfae
       ∃ l, g ∘ₗ l = LinearMap.id,
       ∃ l, l ∘ₗ f = LinearMap.id,
       ∃ e : N ≃ₗ[R] M × P, f = e.symm ∘ₗ LinearMap.inl R M P ∧ g = LinearMap.snd R M P ∘ₗ e] := by
-  tfae_have 1 ↔ 3
-  · simpa using (h.splitSurjectiveEquiv hf).nonempty_congr
-  tfae_have 2 ↔ 3
-  · simpa using (h.splitInjectiveEquiv hg).nonempty_congr
+  tfae_have 1 ↔ 3 := by
+    simpa using (h.splitSurjectiveEquiv hf).nonempty_congr
+  tfae_have 2 ↔ 3 := by
+    simpa using (h.splitInjectiveEquiv hg).nonempty_congr
   tfae_finish
 
 end split
+
+section Prod
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+
+lemma Exact.inr_fst : Function.Exact (LinearMap.inr R M N) (LinearMap.fst R M N) := by
+  rintro ⟨x, y⟩
+  simp only [LinearMap.fst_apply, @eq_comm _ x, LinearMap.coe_inr, Set.mem_range, Prod.mk.injEq,
+    exists_eq_right]
+
+lemma Exact.inl_snd : Function.Exact (LinearMap.inl R M N) (LinearMap.snd R M N) := by
+  rintro ⟨x, y⟩
+  simp only [LinearMap.snd_apply, @eq_comm _ y, LinearMap.coe_inl, Set.mem_range, Prod.mk.injEq,
+    exists_eq_left]
+
+end Prod
 
 section Ring
 

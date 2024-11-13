@@ -1,14 +1,14 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Category.Pairwise
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
 # Equivalent formulations of the sheaf condition
@@ -21,20 +21,21 @@ a category with objects corresponding to
 * intersections of pairs of open sets, `pair i j`,
 with morphisms from `pair i j` to both `single i` and `single j`.
 
-Any open cover `U : ι → opens X` provides a functor `diagram U : overlap ι ⥤ (opens X)ᵒᵖ`.
+Any open cover `U : ι → Opens X` provides a functor `diagram U : overlap ι ⥤ (Opens X)ᵒᵖ`.
 
-There is a canonical cone over this functor, `cone U`, whose cone point is `supr U`,
+There is a canonical cone over this functor, `cone U`, whose cone point is `isup U`,
 and in fact this is a limit cone.
 
-A presheaf `F : presheaf C X` is a sheaf precisely if it preserves this limit.
+A presheaf `F : Presheaf C X` is a sheaf precisely if it preserves this limit.
 We express this in two equivalent ways, as
-* `is_limit (F.map_cone (cone U))`, or
-* `preserves_limit (diagram U) F`
+* `isLimit (F.mapCone (cone U))`, or
+* `preservesLimit (diagram U) F`
 
 We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf condition, and
 thereby also equivalent to the default sheaf condition.
 -/
 
+assert_not_exists OrderedCommMonoid
 
 noncomputable section
 
@@ -52,8 +53,8 @@ section
 (which we prove equivalent to the usual one below as
 `isSheaf_iff_isSheafPairwiseIntersections`).
 
-A presheaf is a sheaf if `F` sends the cone `(pairwise.cocone U).op` to a limit cone.
-(Recall `Pairwise.cocone U` has cone point `supr U`, mapping down to the `U i` and the `U i ⊓ U j`.)
+A presheaf is a sheaf if `F` sends the cone `(Pairwise.cocone U).op` to a limit cone.
+(Recall `Pairwise.cocone U` has cone point `iSup U`, mapping down to the `U i` and the `U i ⊓ U j`.)
 -/
 def IsSheafPairwiseIntersections (F : Presheaf C X) : Prop :=
   ∀ ⦃ι : Type w⦄ (U : ι → Opens X), Nonempty (IsLimit (F.mapCone (Pairwise.cocone U).op))
@@ -64,7 +65,7 @@ def IsSheafPairwiseIntersections (F : Presheaf C X) : Prop :=
 
 A presheaf is a sheaf if `F` preserves the limit of `Pairwise.diagram U`.
 (Recall `Pairwise.diagram U` is the diagram consisting of the pairwise intersections
-`U i ⊓ U j` mapping into the open sets `U i`. This diagram has limit `supr U`.)
+`U i ⊓ U j` mapping into the open sets `U i`. This diagram has limit `iSup U`.)
 -/
 def IsSheafPreservesLimitPairwiseIntersections (F : Presheaf C X) : Prop :=
   ∀ ⦃ι : Type w⦄ (U : ι → Opens X), Nonempty (PreservesLimit (Pairwise.diagram U).op F)
@@ -78,7 +79,7 @@ variable {ι : Type w} (U : ι → Opens X)
 open CategoryTheory.Pairwise
 
 /-- Implementation detail:
-the object level of `pairwise_to_opens_le_cover : pairwise ι ⥤ opens_le_cover U`
+the object level of `pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U`
 -/
 @[simp]
 def pairwiseToOpensLeCoverObj : Pairwise ι → OpensLeCover U
@@ -88,7 +89,7 @@ def pairwiseToOpensLeCoverObj : Pairwise ι → OpensLeCover U
 open CategoryTheory.Pairwise.Hom
 
 /-- Implementation detail:
-the morphism level of `pairwise_to_opens_le_cover : pairwise ι ⥤ opens_le_cover U`
+the morphism level of `pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U`
 -/
 def pairwiseToOpensLeCoverMap :
     ∀ {V W : Pairwise ι}, (V ⟶ W) → (pairwiseToOpensLeCoverObj U V ⟶ pairwiseToOpensLeCoverObj U W)
@@ -103,12 +104,12 @@ of open sets below some `U i`.
 @[simps]
 def pairwiseToOpensLeCover : Pairwise ι ⥤ OpensLeCover U where
   obj := pairwiseToOpensLeCoverObj U
-  map {V W} i := pairwiseToOpensLeCoverMap U i
+  map {_ _} i := pairwiseToOpensLeCoverMap U i
 
 instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCover U)) :=
   ⟨@StructuredArrow.mk _ _ _ _ _ (single V.index) _ V.homToIndex⟩
 
--- This is a case bash: for each pair of types of objects in `pairwise ι`,
+-- This is a case bash: for each pair of types of objects in `Pairwise ι`,
 -- we have to explicitly construct a zigzag.
 /-- The diagram consisting of the `U i` and `U i ⊓ U j` is cofinal in the diagram
 of all opens contained in some `U i`.
@@ -202,7 +203,7 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                         right := left i' j' }⟩)
                   List.Chain.nil)))⟩
 
-/-- The diagram in `opens X` indexed by pairwise intersections from `U` is isomorphic
+/-- The diagram in `Opens X` indexed by pairwise intersections from `U` is isomorphic
 (in fact, equal) to the diagram factored through `OpensLeCover U`.
 -/
 def pairwiseDiagramIso :
@@ -211,7 +212,7 @@ def pairwiseDiagramIso :
   inv := { app := by rintro (i | ⟨i, j⟩) <;> exact 𝟙 _ }
 
 /--
-The cocone `Pairwise.cocone U` with cocone point `supr U` over `Pairwise.diagram U` is isomorphic
+The cocone `Pairwise.cocone U` with cocone point `iSup U` over `Pairwise.diagram U` is isomorphic
 to the cocone `opensLeCoverCocone U` (with the same cocone point)
 after appropriate whiskering and postcomposition.
 -/
@@ -228,7 +229,7 @@ open SheafCondition
 variable (F : Presheaf C X)
 
 /-- The sheaf condition
-in terms of a limit diagram over all `{ V : opens X // ∃ i, V ≤ U i }`
+in terms of a limit diagram over all `{ V : Opens X // ∃ i, V ≤ U i }`
 is equivalent to the reformulation
 in terms of a limit diagram over `U i` and `U i ⊓ U j`.
 -/
@@ -409,44 +410,5 @@ def isProductOfDisjoint (h : U ⊓ V = ⊥) :
       (BinaryFan.mk (F.1.map (homOfLE le_sup_left : _ ⟶ U ⊔ V).op)
         (F.1.map (homOfLE le_sup_right : _ ⟶ U ⊔ V).op)) :=
   isProductOfIsTerminalIsPullback _ _ _ _ (F.isTerminalOfEqEmpty h) (isLimitPullbackCone F U V)
-
-/-- `F(U ⊔ V)` is isomorphic to the `eq_locus` of the two maps `F(U) × F(V) ⟶ F(U ⊓ V)`. -/
-def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) :
-    F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
-    -- Porting note: Lean 3 is able to figure out the ring homomorphism automatically
-    RingHom.eqLocus
-      (RingHom.comp (F.val.map (homOfLE inf_le_left : U ⊓ V ⟶ U).op)
-        (RingHom.fst (F.val.obj <| op U) (F.val.obj <| op V)))
-      (RingHom.comp (F.val.map (homOfLE inf_le_right : U ⊓ V ⟶ V).op)
-        (RingHom.snd (F.val.obj <| op U) (F.val.obj <| op V))) :=
-  (F.isLimitPullbackCone U V).conePointUniqueUpToIso (CommRingCat.pullbackConeIsLimit _ _)
-
-theorem objSupIsoProdEqLocus_hom_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
-    ((F.objSupIsoProdEqLocus U V).hom x).1.fst = F.1.map (homOfLE le_sup_left).op x :=
-  ConcreteCategory.congr_hom
-    ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
-      (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.left)
-    x
-
-theorem objSupIsoProdEqLocus_hom_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
-    ((F.objSupIsoProdEqLocus U V).hom x).1.snd = F.1.map (homOfLE le_sup_right).op x :=
-  ConcreteCategory.congr_hom
-    ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
-      (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.right)
-    x
-
-theorem objSupIsoProdEqLocus_inv_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
-    F.1.map (homOfLE le_sup_left).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.1 :=
-  ConcreteCategory.congr_hom
-    ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp
-      (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.left)
-    x
-
-theorem objSupIsoProdEqLocus_inv_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
-    F.1.map (homOfLE le_sup_right).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.2 :=
-  ConcreteCategory.congr_hom
-    ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp
-      (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.right)
-    x
 
 end TopCat.Sheaf

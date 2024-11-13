@@ -23,8 +23,6 @@ and a measurable set `aeSeqSet hf p`, such that
 
 open MeasureTheory
 
-open scoped Classical
-
 variable {ι : Sort*} {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β}
   {μ : Measure α} {p : α → (ι → β) → Prop}
 
@@ -34,6 +32,7 @@ whose complement has measure 0 such that for all `x ∈ aeSeqSet`, `f i x` is eq
 def aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : Set α :=
   (toMeasurable μ { x | (∀ i, f i x = (hf i).mk (f i) x) ∧ p x fun n => f n x }ᶜ)ᶜ
 
+open Classical in
 /-- A sequence of measurable functions that are equal to `f` and verify property `p` on the
 measurable set `aeSeqSet hf p`. -/
 noncomputable def aeSeq (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : ι → α → β :=

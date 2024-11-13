@@ -40,8 +40,8 @@ section Instances
 variable (e : α ≃ β)
 
 /-- Transfer `One` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `Zero` across an `Equiv`"]
-protected def one [One β] : One α :=
+@[to_additive "Transfer `Zero` across an `Equiv`"]
+protected abbrev one [One β] : One α :=
   ⟨e.symm 1⟩
 
 @[to_additive]
@@ -55,8 +55,8 @@ noncomputable instance [Small.{v} α] [One α] : One (Shrink.{v} α) :=
   (equivShrink α).symm.one
 
 /-- Transfer `Mul` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `Add` across an `Equiv`"]
-protected def mul [Mul β] : Mul α :=
+@[to_additive "Transfer `Add` across an `Equiv`"]
+protected abbrev mul [Mul β] : Mul α :=
   ⟨fun x y => e.symm (e x * e y)⟩
 
 @[to_additive]
@@ -70,8 +70,8 @@ noncomputable instance [Small.{v} α] [Mul α] : Mul (Shrink.{v} α) :=
   (equivShrink α).symm.mul
 
 /-- Transfer `Div` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `Sub` across an `Equiv`"]
-protected def div [Div β] : Div α :=
+@[to_additive "Transfer `Sub` across an `Equiv`"]
+protected abbrev div [Div β] : Div α :=
   ⟨fun x y => e.symm (e x / e y)⟩
 
 @[to_additive]
@@ -87,8 +87,8 @@ noncomputable instance [Small.{v} α] [Div α] : Div (Shrink.{v} α) :=
 -- Porting note: this should be called `inv`,
 -- but we already have an `Equiv.inv` (which perhaps should move to `Perm.inv`?)
 /-- Transfer `Inv` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `Neg` across an `Equiv`"]
-protected def Inv [Inv β] : Inv α :=
+@[to_additive "Transfer `Neg` across an `Equiv`"]
+protected abbrev Inv [Inv β] : Inv α :=
   ⟨fun x => e.symm (e x)⁻¹⟩
 
 @[to_additive]
@@ -133,7 +133,7 @@ on `β` back along `e`. -/
 the additive structure on `α` is the one obtained by transporting an additive structure
 on `β` back along `e`."]
 def mulEquiv (e : α ≃ β) [Mul β] :
-    let mul := Equiv.mul e
+    let _ := Equiv.mul e
     α ≃* β := by
   intros
   exact
@@ -190,8 +190,8 @@ noncomputable def _root_.Shrink.ringEquiv [Small.{v} α] [Ring α] : Shrink.{v} 
   (equivShrink α).symm.ringEquiv
 
 /-- Transfer `Semigroup` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `add_semigroup` across an `Equiv`"]
-protected def semigroup [Semigroup β] : Semigroup α := by
+@[to_additive "Transfer `add_semigroup` across an `Equiv`"]
+protected abbrev semigroup [Semigroup β] : Semigroup α := by
   let mul := e.mul
   apply e.injective.semigroup _; intros; exact e.apply_symm_apply _
 
@@ -210,8 +210,8 @@ noncomputable instance [Small.{v} α] [SemigroupWithZero α] : SemigroupWithZero
   (equivShrink α).symm.semigroupWithZero
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddCommSemigroup` across an `Equiv`"]
-protected def commSemigroup [CommSemigroup β] : CommSemigroup α := by
+@[to_additive "Transfer `AddCommSemigroup` across an `Equiv`"]
+protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
 
@@ -229,8 +229,8 @@ noncomputable instance [Small.{v} α] [MulZeroClass α] : MulZeroClass (Shrink.{
   (equivShrink α).symm.mulZeroClass
 
 /-- Transfer `MulOneClass` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddZeroClass` across an `Equiv`"]
-protected def mulOneClass [MulOneClass β] : MulOneClass α := by
+@[to_additive "Transfer `AddZeroClass` across an `Equiv`"]
+protected abbrev mulOneClass [MulOneClass β] : MulOneClass α := by
   let one := e.one
   let mul := e.mul
   apply e.injective.mulOneClass _ <;> intros <;> exact e.apply_symm_apply _
@@ -250,8 +250,8 @@ noncomputable instance [Small.{v} α] [MulZeroOneClass α] : MulZeroOneClass (Sh
   (equivShrink α).symm.mulZeroOneClass
 
 /-- Transfer `Monoid` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddMonoid` across an `Equiv`"]
-protected def monoid [Monoid β] : Monoid α := by
+@[to_additive "Transfer `AddMonoid` across an `Equiv`"]
+protected abbrev monoid [Monoid β] : Monoid α := by
   let one := e.one
   let mul := e.mul
   let pow := e.pow ℕ
@@ -262,8 +262,8 @@ noncomputable instance [Small.{v} α] [Monoid α] : Monoid (Shrink.{v} α) :=
   (equivShrink α).symm.monoid
 
 /-- Transfer `CommMonoid` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddCommMonoid` across an `Equiv`"]
-protected def commMonoid [CommMonoid β] : CommMonoid α := by
+@[to_additive "Transfer `AddCommMonoid` across an `Equiv`"]
+protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
   let one := e.one
   let mul := e.mul
   let pow := e.pow ℕ
@@ -274,8 +274,8 @@ noncomputable instance [Small.{v} α] [CommMonoid α] : CommMonoid (Shrink.{v} �
   (equivShrink α).symm.commMonoid
 
 /-- Transfer `Group` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddGroup` across an `Equiv`"]
-protected def group [Group β] : Group α := by
+@[to_additive "Transfer `AddGroup` across an `Equiv`"]
+protected abbrev group [Group β] : Group α := by
   let one := e.one
   let mul := e.mul
   let inv := e.Inv
@@ -289,8 +289,8 @@ noncomputable instance [Small.{v} α] [Group α] : Group (Shrink.{v} α) :=
   (equivShrink α).symm.group
 
 /-- Transfer `CommGroup` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddCommGroup` across an `Equiv`"]
-protected def commGroup [CommGroup β] : CommGroup α := by
+@[to_additive "Transfer `AddCommGroup` across an `Equiv`"]
+protected abbrev commGroup [CommGroup β] : CommGroup α := by
   let one := e.one
   let mul := e.mul
   let inv := e.Inv
@@ -343,7 +343,7 @@ protected abbrev addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
     e.addGroup with
     intCast := fun n => e.symm n
     intCast_ofNat := fun n => by simp only [Int.cast_natCast]; rfl
-    intCast_negSucc := fun n =>
+    intCast_negSucc := fun _ =>
       congr_arg e.symm <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
 
 noncomputable instance [Small.{v} α] [AddGroupWithOne α] : AddGroupWithOne (Shrink.{v} α) :=
@@ -462,6 +462,7 @@ protected abbrev commRing [CommRing β] : CommRing α := by
 noncomputable instance [Small.{v} α] [CommRing α] : CommRing (Shrink.{v} α) :=
   (equivShrink α).symm.commRing
 
+include e in
 /-- Transfer `Nontrivial` across an `Equiv` -/
 protected theorem nontrivial [Nontrivial β] : Nontrivial α :=
   e.surjective.nontrivial
@@ -564,7 +565,7 @@ variable [Semiring R]
 
 /-- Transfer `Module` across an `Equiv` -/
 protected abbrev module (e : α ≃ β) [AddCommMonoid β] :
-    let addCommMonoid := Equiv.addCommMonoid e
+    let _ := Equiv.addCommMonoid e
     ∀ [Module R β], Module R α := by
   intros
   exact
@@ -607,7 +608,7 @@ variable [CommSemiring R]
 
 /-- Transfer `Algebra` across an `Equiv` -/
 protected abbrev algebra (e : α ≃ β) [Semiring β] :
-    let semiring := Equiv.semiring e
+    let _ := Equiv.semiring e
     ∀ [Algebra R β], Algebra R α := by
   intros
   letI : Module R α := e.module R
@@ -620,8 +621,8 @@ protected abbrev algebra (e : α ≃ β) [Semiring β] :
     simp only [apply_symm_apply, Algebra.mul_smul_comm]
 
 lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
-    let semiring := Equiv.semiring e
-    let algebra := Equiv.algebra R e
+    let _ := Equiv.semiring e
+    let _ := Equiv.algebra R e
     (algebraMap R α) r = e.symm ((algebraMap R β) r) := by
   intros
   simp only [Algebra.algebraMap_eq_smul_one]
@@ -676,11 +677,13 @@ namespace Finite
 
 attribute [-instance] Fin.instMul
 
-/-- Any finite group in universe `u` is equivalent to some finite group in universe `0`. -/
-lemma exists_type_zero_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
-    ∃ (G' : Type) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
+/-- Any finite group in universe `u` is equivalent to some finite group in universe `v`. -/
+lemma exists_type_univ_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :
+    ∃ (G' : Type v) (_ : Group G') (_ : Fintype G'), Nonempty (G ≃* G') := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin G
-  letI groupH : Group (Fin n) := Equiv.group e.symm
-  exact ⟨Fin n, inferInstance, inferInstance, ⟨MulEquiv.symm <| Equiv.mulEquiv e.symm⟩⟩
+  let f : Fin n ≃ ULift (Fin n) := Equiv.ulift.symm
+  let e : G ≃ ULift (Fin n) := e.trans f
+  letI groupH : Group (ULift (Fin n)) := e.symm.group
+  exact ⟨ULift (Fin n), groupH, inferInstance, ⟨MulEquiv.symm <| e.symm.mulEquiv⟩⟩
 
 end Finite

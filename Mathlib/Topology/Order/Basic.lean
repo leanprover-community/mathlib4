@@ -144,8 +144,8 @@ hold everywhere. -/
 theorem tendsto_of_tendsto_of_tendsto_of_le_of_le [OrderTopology α] {f g h : β → α} {b : Filter β}
     {a : α} (hg : Tendsto g b (𝓝 a)) (hh : Tendsto h b (𝓝 a)) (hgf : g ≤ f) (hfh : f ≤ h) :
     Tendsto f b (𝓝 a) :=
-  tendsto_of_tendsto_of_tendsto_of_le_of_le' hg hh (eventually_of_forall hgf)
-    (eventually_of_forall hfh)
+  tendsto_of_tendsto_of_tendsto_of_le_of_le' hg hh (Eventually.of_forall hgf)
+    (Eventually.of_forall hfh)
 
 theorem nhds_order_unbounded [OrderTopology α] {a : α} (hu : ∃ u, a < u) (hl : ∃ l, l < a) :
     𝓝 a = ⨅ (l) (_ : l < a) (u) (_ : a < u), 𝓟 (Ioo l u) := by
@@ -232,10 +232,13 @@ nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type*} [LinearOr
 
 /-- A strictly monotone function between linear orders with order topology is a topological
 embedding provided that the range of `f` is order-connected. -/
-theorem StrictMono.embedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
+theorem StrictMono.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
+    (hf : StrictMono f) (hc : OrdConnected (range f)) : IsEmbedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
+
+@[deprecated (since := "2024-10-26")]
+alias StrictMono.embedding_of_ordConnected := StrictMono.isEmbedding_of_ordConnected
 
 /-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
@@ -284,10 +287,10 @@ theorem nhdsWithin_Iic_basis [TopologicalSpace α] [LinearOrder α] [OrderTopolo
   nhdsWithin_Iic_basis' (exists_lt a)
 
 theorem nhds_top_order [TopologicalSpace α] [Preorder α] [OrderTop α] [OrderTopology α] :
-    𝓝 (⊤ : α) = ⨅ (l) (h₂ : l < ⊤), 𝓟 (Ioi l) := by simp [nhds_eq_order (⊤ : α)]
+    𝓝 (⊤ : α) = ⨅ (l) (_ : l < ⊤), 𝓟 (Ioi l) := by simp [nhds_eq_order (⊤ : α)]
 
 theorem nhds_bot_order [TopologicalSpace α] [Preorder α] [OrderBot α] [OrderTopology α] :
-    𝓝 (⊥ : α) = ⨅ (l) (h₂ : ⊥ < l), 𝓟 (Iio l) := by simp [nhds_eq_order (⊥ : α)]
+    𝓝 (⊥ : α) = ⨅ (l) (_ : ⊥ < l), 𝓟 (Iio l) := by simp [nhds_eq_order (⊥ : α)]
 
 theorem nhds_top_basis [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) fun a : α => Ioi a := by
@@ -320,11 +323,11 @@ theorem tendsto_nhds_bot_mono [TopologicalSpace β] [Preorder β] [OrderBot β] 
 
 theorem tendsto_nhds_top_mono' [TopologicalSpace β] [Preorder β] [OrderTop β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊤)) (hg : f ≤ g) : Tendsto g l (𝓝 ⊤) :=
-  tendsto_nhds_top_mono hf (eventually_of_forall hg)
+  tendsto_nhds_top_mono hf (Eventually.of_forall hg)
 
 theorem tendsto_nhds_bot_mono' [TopologicalSpace β] [Preorder β] [OrderBot β] [OrderTopology β]
     {l : Filter α} {f g : α → β} (hf : Tendsto f l (𝓝 ⊥)) (hg : g ≤ f) : Tendsto g l (𝓝 ⊥) :=
-  tendsto_nhds_bot_mono hf (eventually_of_forall hg)
+  tendsto_nhds_bot_mono hf (Eventually.of_forall hg)
 
 section LinearOrder
 

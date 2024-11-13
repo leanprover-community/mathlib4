@@ -11,8 +11,8 @@ import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 # Reflecting the property of being precoherent
 
 We prove that given a fully faithful functor `F : C ⥤ D` which preserves and reflects finite
-effective epimorphic families, such that for every object `X` of `D` there exists an object `W` of
-`C` with an effective epi `π : F.obj W ⟶ X`, the category `C` is `Precoherent` whenever `D` is.
+effective epimorphic families, such that for every object `X` of `D` there exists an object `W` of
+`C` with an effective epi `π : F.obj W ⟶ X`, the category `C` is `Precoherent` whenever `D` is.
 -/
 
 namespace CategoryTheory
@@ -22,6 +22,7 @@ variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
   [F.EffectivelyEnough]
   [Precoherent D] [F.Full] [F.Faithful]
 
+include F in
 lemma Functor.reflects_precoherent : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ _ := by
     obtain ⟨β, _, Y₂, τ₂, H, i, ι, hh⟩ := Precoherent.pullback (F.map f) _ _

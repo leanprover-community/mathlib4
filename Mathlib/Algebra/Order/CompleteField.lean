@@ -3,8 +3,8 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Algebra.Order.Pointwise
+import Mathlib.Algebra.Order.Archimedean.Hom
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -42,14 +42,13 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 reals, conditionally complete, ordered field, uniqueness
 -/
 
-
 variable {F α β γ : Type*}
 
 noncomputable section
 
 open Function Rat Real Set
 
-open scoped Classical Pointwise
+open scoped Pointwise
 
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/
@@ -203,7 +202,7 @@ theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a :
     exact mod_cast hq
 
 theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
-  ⟨fun h => (exists_rat_btwn h).imp fun q => And.imp_right coe_lt_inducedMap_iff.1,
+  ⟨fun h => (exists_rat_btwn h).imp fun _ => And.imp_right coe_lt_inducedMap_iff.1,
     fun ⟨q, hbq, hqa⟩ => hbq.trans <| by rwa [coe_lt_inducedMap_iff]⟩
 
 @[simp]
@@ -217,7 +216,6 @@ theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) =
   eq_of_forall_rat_lt_iff_lt fun q => by
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 
---@[simp] -- Porting note (#10618): simp can prove it
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by
   rw [inducedMap_inducedMap, inducedMap_self]
 

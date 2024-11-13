@@ -9,45 +9,48 @@ import Mathlib.ModelTheory.LanguageMap
 
 /-!
 # Basics on First-Order Syntax
+
 This file defines first-order terms, formulas, sentences, and theories in a style inspired by the
 [Flypitch project](https://flypitch.github.io/).
 
 ## Main Definitions
-* A `FirstOrder.Language.Term` is defined so that `L.Term α` is the type of `L`-terms with free
+
+- A `FirstOrder.Language.Term` is defined so that `L.Term α` is the type of `L`-terms with free
   variables indexed by `α`.
-* A `FirstOrder.Language.Formula` is defined so that `L.Formula α` is the type of `L`-formulas with
+- A `FirstOrder.Language.Formula` is defined so that `L.Formula α` is the type of `L`-formulas with
   free variables indexed by `α`.
-* A `FirstOrder.Language.Sentence` is a formula with no free variables.
-* A `FirstOrder.Language.Theory` is a set of sentences.
-* The variables of terms and formulas can be relabelled with `FirstOrder.Language.Term.relabel`,
-`FirstOrder.Language.BoundedFormula.relabel`, and `FirstOrder.Language.Formula.relabel`.
-* Given an operation on terms and an operation on relations,
+- A `FirstOrder.Language.Sentence` is a formula with no free variables.
+- A `FirstOrder.Language.Theory` is a set of sentences.
+- The variables of terms and formulas can be relabelled with `FirstOrder.Language.Term.relabel`,
+  `FirstOrder.Language.BoundedFormula.relabel`, and `FirstOrder.Language.Formula.relabel`.
+- Given an operation on terms and an operation on relations,
   `FirstOrder.Language.BoundedFormula.mapTermRel` gives an operation on formulas.
-* `FirstOrder.Language.BoundedFormula.castLE` adds more `Fin`-indexed variables.
-* `FirstOrder.Language.BoundedFormula.liftAt` raises the indexes of the `Fin`-indexed variables
-above a particular index.
-* `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
-variables with given terms.
-* Language maps can act on syntactic objects with functions such as
-`FirstOrder.Language.LHom.onFormula`.
-* `FirstOrder.Language.Term.constantsVarsEquiv` and
-`FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
-constants in the language and having extra variables indexed by the same type.
+- `FirstOrder.Language.BoundedFormula.castLE` adds more `Fin`-indexed variables.
+- `FirstOrder.Language.BoundedFormula.liftAt` raises the indexes of the `Fin`-indexed variables
+  above a particular index.
+- `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
+  variables with given terms.
+- Language maps can act on syntactic objects with functions such as
+  `FirstOrder.Language.LHom.onFormula`.
+- `FirstOrder.Language.Term.constantsVarsEquiv` and
+  `FirstOrder.Language.BoundedFormula.constantsVarsEquiv` switch terms and formulas between having
+  constants in the language and having extra variables indexed by the same type.
 
 ## Implementation Notes
-* Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
-is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
-`∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
-`n : Fin (n + 1)`.
+
+- Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
+  is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
+  indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
+  `∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
+  `n : Fin (n + 1)`.
 
 ## References
+
 For the Flypitch project:
 - [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-[flypitch_cpp]
+  [flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-the continuum hypothesis*][flypitch_itp]
-
+  the continuum hypothesis*][flypitch_itp]
 -/
 
 
@@ -58,8 +61,7 @@ namespace FirstOrder
 namespace Language
 
 variable (L : Language.{u, v}) {L' : Language}
-variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-variable {α : Type u'} {β : Type v'} {γ : Type*}
+variable {M : Type w} {α : Type u'} {β : Type v'} {γ : Type*}
 
 open FirstOrder
 
@@ -75,6 +77,18 @@ export Term (var func)
 variable {L}
 
 namespace Term
+
+instance instDecidableEq [DecidableEq α] [∀ n, DecidableEq (L.Functions n)] : DecidableEq (L.Term α)
+  | .var a, .var b => decidable_of_iff (a = b) <| by simp
+  | @Term.func _ _ m f xs, @Term.func _ _ n g ys =>
+      if h : m = n then
+        letI : DecidableEq (L.Term α) := instDecidableEq
+        decidable_of_iff (f = h ▸ g ∧ ∀ i : Fin m, xs i = ys (Fin.cast h i)) <| by
+          subst h
+          simp [funext_iff]
+      else
+        .isFalse <| by simp [h]
+  | .var _, .func _ _ | .func _ _, .var _ => .isFalse <| by simp
 
 open Finset
 
@@ -99,9 +113,9 @@ def relabel (g : α → β) : L.Term α → L.Term β
   | func f ts => func f fun {i} => (ts i).relabel g
 
 theorem relabel_id (t : L.Term α) : t.relabel id = t := by
-  induction' t with _ _ _ _ ih
-  · rfl
-  · simp [ih]
+  induction t with
+  | var => rfl
+  | func _ _ ih => simp [ih]
 
 @[simp]
 theorem relabel_id_eq_id : (Term.relabel id : L.Term α → L.Term α) = id :=
@@ -110,9 +124,9 @@ theorem relabel_id_eq_id : (Term.relabel id : L.Term α → L.Term α) = id :=
 @[simp]
 theorem relabel_relabel (f : α → β) (g : β → γ) (t : L.Term α) :
     (t.relabel f).relabel g = t.relabel (g ∘ f) := by
-  induction' t with _ _ _ _ ih
-  · rfl
-  · simp [ih]
+  induction t with
+  | var => rfl
+  | func _ _ ih => simp [ih]
 
 @[simp]
 theorem relabel_comp_relabel (f : α → β) (g : β → γ) :
@@ -182,9 +196,10 @@ def varsToConstants : L.Term (γ ⊕ α) → L[[γ]].Term α
 def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
   ⟨constantsToVars, varsToConstants, by
     intro t
-    induction' t with _ n f _ ih
-    · rfl
-    · cases n
+    induction t with
+    | var => rfl
+    | @func n f _ ih =>
+      cases n
       · cases f
         · simp [constantsToVars, varsToConstants, ih]
         · simp [constantsToVars, varsToConstants, Constants.term, eq_iff_true_of_subsingleton]
@@ -245,19 +260,17 @@ def onTerm (φ : L →ᴸ L') : L.Term α → L'.Term α
 @[simp]
 theorem id_onTerm : ((LHom.id L).onTerm : L.Term α → L.Term α) = id := by
   ext t
-  induction' t with _ _ _ _ ih
-  · rfl
-  · simp_rw [onTerm, ih]
-    rfl
+  induction t with
+  | var => rfl
+  | func _ _ ih => simp_rw [onTerm, ih]; rfl
 
 @[simp]
 theorem comp_onTerm {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →ᴸ L') :
     ((φ.comp ψ).onTerm : L.Term α → L''.Term α) = φ.onTerm ∘ ψ.onTerm := by
   ext t
-  induction' t with _ _ _ _ ih
-  · rfl
-  · simp_rw [onTerm, ih]
-    rfl
+  induction t with
+  | var => rfl
+  | func _ _ ih => simp_rw [onTerm, ih]; rfl
 
 end LHom
 
@@ -352,10 +365,10 @@ protected def ex (φ : L.BoundedFormula α (n + 1)) : L.BoundedFormula α n :=
 instance : Top (L.BoundedFormula α n) :=
   ⟨BoundedFormula.not ⊥⟩
 
-instance : Inf (L.BoundedFormula α n) :=
+instance : Min (L.BoundedFormula α n) :=
   ⟨fun f g => (f.imp g.not).not⟩
 
-instance : Sup (L.BoundedFormula α n) :=
+instance : Max (L.BoundedFormula α n) :=
   ⟨fun f g => f.not.imp g⟩
 
 /-- The biimplication between two bounded formulas. -/
@@ -387,25 +400,27 @@ def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.Bounded
 
 @[simp]
 theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
-  induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
-  · rfl
-  · simp [Fin.castLE_of_eq]
-  · simp [Fin.castLE_of_eq]
-  · simp [Fin.castLE_of_eq, ih1, ih2]
-  · simp [Fin.castLE_of_eq, ih3]
+  induction φ with
+  | falsum => rfl
+  | equal => simp [Fin.castLE_of_eq]
+  | rel => simp [Fin.castLE_of_eq]
+  | imp _ _ ih1 ih2 => simp [Fin.castLE_of_eq, ih1, ih2]
+  | all _ ih3 => simp [Fin.castLE_of_eq, ih3]
 
 @[simp]
 theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormula α k) :
     (φ.castLE km).castLE mn = φ.castLE (km.trans mn) := by
   revert m n
-  induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3 <;> intro m n km mn
-  · rfl
-  · simp
-  · simp only [castLE, eq_self_iff_true, heq_iff_eq, true_and_iff]
-    rw [← Function.comp.assoc, Term.relabel_comp_relabel]
+  induction φ with
+  | falsum => intros; rfl
+  | equal => simp
+  | rel =>
+    intros
+    simp only [castLE, eq_self_iff_true, heq_iff_eq]
+    rw [← Function.comp_assoc, Term.relabel_comp_relabel]
     simp
-  · simp [ih1, ih2]
-  · simp only [castLE, ih3]
+  | imp _ _ ih1 ih2 => simp [ih1, ih2]
+  | all _ ih3 => intros; simp only [castLE, ih3]
 
 @[simp]
 theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
@@ -456,8 +471,8 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Ter
 
 /-- Raises all of the `Fin`-indexed variables of a formula greater than or equal to `m` by `n'`. -/
 def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
-  fun {n} n' m φ =>
-  φ.mapTermRel (fun k t => t.liftAt n' m) (fun _ => id) fun _ =>
+  fun {_} n' m φ =>
+  φ.mapTermRel (fun _ t => t.liftAt n' m) (fun _ => id) fun _ =>
     castLE (by rw [add_assoc, add_comm 1, add_assoc])
 
 @[simp]
@@ -468,22 +483,22 @@ theorem mapTermRel_mapTermRel {L'' : Language}
     (fr' : ∀ n, L'.Relations n → L''.Relations n) {n} (φ : L.BoundedFormula α n) :
     ((φ.mapTermRel ft fr fun _ => id).mapTermRel ft' fr' fun _ => id) =
       φ.mapTermRel (fun _ => ft' _ ∘ ft _) (fun _ => fr' _ ∘ fr _) fun _ => id := by
-  induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
-  · rfl
-  · simp [mapTermRel]
-  · simp [mapTermRel]
-  · simp [mapTermRel, ih1, ih2]
-  · simp [mapTermRel, ih3]
+  induction φ with
+  | falsum => rfl
+  | equal => simp [mapTermRel]
+  | rel => simp [mapTermRel]
+  | imp _ _ ih1 ih2 => simp [mapTermRel, ih1, ih2]
+  | all _ ih3 => simp [mapTermRel, ih3]
 
 @[simp]
 theorem mapTermRel_id_id_id {n} (φ : L.BoundedFormula α n) :
     (φ.mapTermRel (fun _ => id) (fun _ => id) fun _ => id) = φ := by
-  induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
-  · rfl
-  · simp [mapTermRel]
-  · simp [mapTermRel]
-  · simp [mapTermRel, ih1, ih2]
-  · simp [mapTermRel, ih3]
+  induction φ with
+  | falsum => rfl
+  | equal => simp [mapTermRel]
+  | rel => simp [mapTermRel]
+  | imp _ _ ih1 ih2 => simp [mapTermRel, ih1, ih2]
+  | all _ ih3 => simp [mapTermRel, ih3]
 
 /-- An equivalence of bounded formulas given by an equivalence of terms and an equivalence of
 relations. -/
@@ -556,12 +571,12 @@ theorem relabel_ex (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α (k 
 theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
     (φ.relabel Sum.inl : L.BoundedFormula α (0 + n)) = φ.castLE (ge_of_eq (zero_add n)) := by
   simp only [relabel, relabelAux_sum_inl]
-  induction' φ with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
-  · rfl
-  · simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]
-  · simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
-  · simp [mapTermRel, ih1, ih2]
-  · simp [mapTermRel, ih3, castLE]
+  induction φ with
+  | falsum => rfl
+  | equal => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]
+  | rel => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
+  | imp _ _ ih1 ih2 => simp_all [mapTermRel]
+  | all _ ih3 => simp_all [mapTermRel]
 
 /-- Substitutes the variables in a given formula with terms. -/
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
@@ -592,171 +607,6 @@ noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.Bo
 noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   (s.toList.map f).foldr (· ⊓ ·) ⊤
 
-
-variable {l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
-variable {v : α → M} {xs : Fin l → M}
-
-/-- An atomic formula is either equality or a relation symbol applied to terms.
-  Note that `⊥` and `⊤` are not considered atomic in this convention. -/
-inductive IsAtomic : L.BoundedFormula α n → Prop
-  | equal (t₁ t₂ : L.Term (α ⊕ (Fin n))) : IsAtomic (t₁.bdEqual t₂)
-  | rel {l : ℕ} (R : L.Relations l) (ts : Fin l → L.Term (α ⊕ (Fin n))) :
-    IsAtomic (R.boundedFormula ts)
-
-theorem not_all_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsAtomic := fun con => by
-  cases con
-
-theorem not_ex_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsAtomic := fun con => by cases con
-
-theorem IsAtomic.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsAtomic)
-    (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsAtomic :=
-  IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
-
-theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic :=
-  IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
-
-theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
-  IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
-
-/-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
-to boolean combinations of atomic formulas. -/
-inductive IsQF : L.BoundedFormula α n → Prop
-  | falsum : IsQF falsum
-  | of_isAtomic {φ} (h : IsAtomic φ) : IsQF φ
-  | imp {φ₁ φ₂} (h₁ : IsQF φ₁) (h₂ : IsQF φ₂) : IsQF (φ₁.imp φ₂)
-
-theorem IsAtomic.isQF {φ : L.BoundedFormula α n} : IsAtomic φ → IsQF φ :=
-  IsQF.of_isAtomic
-
-theorem isQF_bot : IsQF (⊥ : L.BoundedFormula α n) :=
-  IsQF.falsum
-
-theorem IsQF.not {φ : L.BoundedFormula α n} (h : IsQF φ) : IsQF φ.not :=
-  h.imp isQF_bot
-
-theorem IsQF.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → β ⊕ (Fin n)) :
-    (φ.relabel f).IsQF :=
-  IsQF.recOn h isQF_bot (fun h => (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
-
-theorem IsQF.liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
-  IsQF.recOn h isQF_bot (fun ih => ih.liftAt.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
-
-theorem IsQF.castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
-  IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
-
-theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
-  cases' con with _ con
-  exact φ.not_all_isAtomic con
-
-theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
-  cases' con with _ con _ _ con
-  · exact φ.not_ex_isAtomic con
-  · exact not_all_isQF _ con
-
-/-- Indicates that a bounded formula is in prenex normal form - that is, it consists of quantifiers
-  applied to a quantifier-free formula. -/
-inductive IsPrenex : ∀ {n}, L.BoundedFormula α n → Prop
-  | of_isQF {n} {φ : L.BoundedFormula α n} (h : IsQF φ) : IsPrenex φ
-  | all {n} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.all
-  | ex {n} {φ : L.BoundedFormula α (n + 1)} (h : IsPrenex φ) : IsPrenex φ.ex
-
-theorem IsQF.isPrenex {φ : L.BoundedFormula α n} : IsQF φ → IsPrenex φ :=
-  IsPrenex.of_isQF
-
-theorem IsAtomic.isPrenex {φ : L.BoundedFormula α n} (h : IsAtomic φ) : IsPrenex φ :=
-  h.isQF.isPrenex
-
-theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Prop}
-    {φ : L.BoundedFormula α n} (h : IsPrenex φ)
-    (hq : ∀ {m} {ψ : L.BoundedFormula α m}, ψ.IsQF → P ψ)
-    (ha : ∀ {m} {ψ : L.BoundedFormula α (m + 1)}, P ψ → P ψ.all)
-    (hn : ∀ {m} {ψ : L.BoundedFormula α m}, P ψ → P ψ.not) : P φ :=
-  IsPrenex.recOn h hq (fun _ => ha) fun _ ih => hn (ha (hn ih))
-
-theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
-    (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsPrenex :=
-  IsPrenex.recOn h (fun h => (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
-    fun _ h => by simp [h.ex]
-
-theorem IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
-  IsPrenex.recOn (motive := @fun l φ _ => ∀ (n : ℕ) (h : l ≤ n), (φ.castLE h).IsPrenex) hφ
-    (@fun _ _ ih _ _ => ih.castLE.isPrenex)
-    (@fun _ _ _ ih _ _ => (ih _ _).all)
-    (@fun _ _ _ ih _ _ => (ih _ _).ex) _ _
-
-theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex :=
-  IsPrenex.recOn h (fun ih => ih.liftAt.isPrenex) (fun _ ih => ih.castLE.all)
-    fun _ ih => ih.castLE.ex
-
--- Porting note: universes in different order
-/-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
-  is a prenex normal form for `φ.imp ψ`. -/
-def toPrenexImpRight : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
-  | n, φ, BoundedFormula.ex ψ => ((φ.liftAt 1 n).toPrenexImpRight ψ).ex
-  | n, φ, all ψ => ((φ.liftAt 1 n).toPrenexImpRight ψ).all
-  | _n, φ, ψ => φ.imp ψ
-
-theorem IsQF.toPrenexImpRight {φ : L.BoundedFormula α n} :
-    ∀ {ψ : L.BoundedFormula α n}, IsQF ψ → φ.toPrenexImpRight ψ = φ.imp ψ
-  | _, IsQF.falsum => rfl
-  | _, IsQF.of_isAtomic (IsAtomic.equal _ _) => rfl
-  | _, IsQF.of_isAtomic (IsAtomic.rel _ _) => rfl
-  | _, IsQF.imp IsQF.falsum _ => rfl
-  | _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.equal _ _)) _ => rfl
-  | _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.rel _ _)) _ => rfl
-  | _, IsQF.imp (IsQF.imp _ _) _ => rfl
-
-theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ) :
-    IsPrenex (φ.toPrenexImpRight ψ) := by
-  induction' hψ with _ _ hψ _ _ _ ih1 _ _ _ ih2
-  · rw [hψ.toPrenexImpRight]
-    exact (hφ.imp hψ).isPrenex
-  · exact (ih1 hφ.liftAt).all
-  · exact (ih2 hφ.liftAt).ex
-
--- Porting note: universes in different order
-/-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
-  If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
-  is a prenex normal form for `φ.imp ψ`. -/
-def toPrenexImp : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n → L.BoundedFormula α n
-  | n, BoundedFormula.ex φ, ψ => (φ.toPrenexImp (ψ.liftAt 1 n)).all
-  | n, all φ, ψ => (φ.toPrenexImp (ψ.liftAt 1 n)).ex
-  | _, φ, ψ => φ.toPrenexImpRight ψ
-
-theorem IsQF.toPrenexImp :
-    ∀ {φ ψ : L.BoundedFormula α n}, φ.IsQF → φ.toPrenexImp ψ = φ.toPrenexImpRight ψ
-  | _, _, IsQF.falsum => rfl
-  | _, _, IsQF.of_isAtomic (IsAtomic.equal _ _) => rfl
-  | _, _, IsQF.of_isAtomic (IsAtomic.rel _ _) => rfl
-  | _, _, IsQF.imp IsQF.falsum _ => rfl
-  | _, _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.equal _ _)) _ => rfl
-  | _, _, IsQF.imp (IsQF.of_isAtomic (IsAtomic.rel _ _)) _ => rfl
-  | _, _, IsQF.imp (IsQF.imp _ _) _ => rfl
-
-theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ) :
-    IsPrenex (φ.toPrenexImp ψ) := by
-  induction' hφ with _ _ hφ _ _ _ ih1 _ _ _ ih2
-  · rw [hφ.toPrenexImp]
-    exact isPrenex_toPrenexImpRight hφ hψ
-  · exact (ih1 hψ.liftAt).ex
-  · exact (ih2 hψ.liftAt).all
-
--- Porting note: universes in different order
-/-- For any bounded formula `φ`, `φ.toPrenex` is a semantically-equivalent formula in prenex normal
-  form. -/
-def toPrenex : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n
-  | _, falsum => ⊥
-  | _, equal t₁ t₂ => t₁.bdEqual t₂
-  | _, rel R ts => rel R ts
-  | _, imp f₁ f₂ => f₁.toPrenex.toPrenexImp f₂.toPrenex
-  | _, all f => f.toPrenex.all
-
-theorem toPrenex_isPrenex (φ : L.BoundedFormula α n) : φ.toPrenex.IsPrenex :=
-  BoundedFormula.recOn φ isQF_bot.isPrenex (fun _ _ => (IsAtomic.equal _ _).isPrenex)
-    (fun _ _ => (IsAtomic.rel _ _).isPrenex) (fun _ _ h1 h2 => isPrenex_toPrenexImp h1 h2)
-    fun _ => IsPrenex.all
-
 end BoundedFormula
 
 namespace LHom
@@ -777,26 +627,25 @@ def onBoundedFormula (g : L →ᴸ L') : ∀ {k : ℕ}, L.BoundedFormula α k �
 theorem id_onBoundedFormula :
     ((LHom.id L).onBoundedFormula : L.BoundedFormula α n → L.BoundedFormula α n) = id := by
   ext f
-  induction' f with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
-  · rfl
-  · rw [onBoundedFormula, LHom.id_onTerm, id, id, id, Term.bdEqual]
-  · rw [onBoundedFormula, LHom.id_onTerm]
-    rfl
-  · rw [onBoundedFormula, ih1, ih2, id, id, id]
-  · rw [onBoundedFormula, ih3, id, id]
+  induction f with
+  | falsum => rfl
+  | equal => rw [onBoundedFormula, LHom.id_onTerm, id, id, id, Term.bdEqual]
+  | rel => rw [onBoundedFormula, LHom.id_onTerm]; rfl
+  | imp _ _ ih1 ih2 => rw [onBoundedFormula, ih1, ih2, id, id, id]
+  | all _ ih3 => rw [onBoundedFormula, ih3, id, id]
 
 @[simp]
 theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →ᴸ L') :
     ((φ.comp ψ).onBoundedFormula : L.BoundedFormula α n → L''.BoundedFormula α n) =
       φ.onBoundedFormula ∘ ψ.onBoundedFormula := by
   ext f
-  induction' f with _ _ _ _ _ _ _ _ _ _ _ ih1 ih2 _ _ ih3
-  · rfl
-  · simp only [onBoundedFormula, comp_onTerm, Function.comp_apply]
-  · simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]
-    rfl
-  · simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
-  · simp only [ih3, onBoundedFormula, Function.comp_apply]
+  induction f with
+  | falsum => rfl
+  | equal => simp only [onBoundedFormula, comp_onTerm, Function.comp_apply]
+  | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
+  | imp _ _ ih1 ih2 =>
+    simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
+  | all _ ih3 => simp only [ih3, onBoundedFormula, Function.comp_apply]
 
 /-- Maps a formula's symbols along a language map. -/
 def onFormula (g : L →ᴸ L') : L.Formula α → L'.Formula α :=
@@ -911,9 +760,6 @@ noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
-
-theorem isAtomic_graph (f : L.Functions n) : (graph f).IsAtomic :=
-  BoundedFormula.IsAtomic.equal _ _
 
 /-- A bijection sending formulas to sentences with constants. -/
 def equivSentence : L.Formula α ≃ L[[α]].Sentence :=

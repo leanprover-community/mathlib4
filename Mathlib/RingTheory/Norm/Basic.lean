@@ -8,7 +8,7 @@ import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Norm for (finite) ring extensions
@@ -46,7 +46,7 @@ variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K L] [Algebra K F]
 variable {ι : Type w}
 
-open FiniteDimensional
+open Module
 
 open LinearMap
 
@@ -74,7 +74,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
   have := minpoly.monic pb.isIntegral_gen
   rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, RingHom.map_mul,
     ← coeff_map,
-    prod_roots_eq_coeff_zero_of_monic_of_split (this.map _) ((splits_id_iff_splits _).2 hf),
+    prod_roots_eq_coeff_zero_of_monic_of_splits (this.map _) ((splits_id_iff_splits _).2 hf),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
   simp only [map_neg, _root_.map_one, neg_mul, neg_neg, one_pow, one_mul]
 
@@ -153,7 +153,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
-  · exact (Submodule.fg_iff_finiteDimensional _).mpr (of_fintype_basis b)
+  · exact (Submodule.fg_iff_finiteDimensional _).mpr (.of_fintype_basis b)
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
@@ -279,9 +279,8 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
     Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
   letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_
   · let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
-    rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e',
-      RingEquiv.symm_apply_apply]
-    rfl
+    rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e']
+    simp [e']
   intros c x
   apply e₂.symm.injective
   simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, _root_.map_mul,
@@ -290,6 +289,9 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
 variable {F} (L)
 
 -- TODO. Generalize this proof to rings
+/--Let $F / L / K$ be a tower of finite extensions of fields. Then
+$\text{Norm}_{F/K} = \text{Norm}_{L/K} \circ \text{Norm}_{F/L}$.-/
+@[stacks 0BIJ "This is a special case of 0BIJ norm, we require separability here. "]
 theorem norm_norm [Algebra L F] [IsScalarTower K L F] [Algebra.IsSeparable K F] (x : F) :
     norm K (norm L x) = norm K x := by
   by_cases hKF : FiniteDimensional K F

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon
 -/
 import Batteries.Data.List.Lemmas
-import Batteries.Tactic.Classical
 import Mathlib.Tactic.TypeStar
 
 /-!
@@ -33,7 +32,7 @@ theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
   ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
-    fun p hp q hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
+    fun _ hp _ hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
       by
         rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
         · rfl
@@ -79,7 +78,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
 -/
 theorem forall_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∀ a, p a)).TFAE := by
-  simp only [TFAE, List.forall_mem_map_iff]
+  simp only [TFAE, List.forall_mem_map]
   intros p₁ hp₁ p₂ hp₂
   exact forall_congr' fun a ↦ H a (p₁ a) (mem_map_of_mem (fun p ↦ p a) hp₁)
     (p₂ a) (mem_map_of_mem (fun p ↦ p a) hp₂)
@@ -98,7 +97,7 @@ example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFA
 -/
 theorem exists_tfae {α : Type*} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
     (l.map (fun p ↦ ∃ a, p a)).TFAE := by
-  simp only [TFAE, List.forall_mem_map_iff]
+  simp only [TFAE, List.forall_mem_map]
   intros p₁ hp₁ p₂ hp₂
   exact exists_congr fun a ↦ H a (p₁ a) (mem_map_of_mem (fun p ↦ p a) hp₁)
     (p₂ a) (mem_map_of_mem (fun p ↦ p a) hp₂)

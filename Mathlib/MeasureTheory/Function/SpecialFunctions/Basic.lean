@@ -17,6 +17,10 @@ See also `MeasureTheory.Function.SpecialFunctions.Arctan` and
 `MeasureTheory.Function.SpecialFunctions.Inner`, which have been split off to minimize imports.
 -/
 
+-- Guard against import creep:
+assert_not_exists InnerProductSpace
+assert_not_exists Real.arctan
+assert_not_exists FiniteDimensional.proper
 
 noncomputable section
 
@@ -129,6 +133,7 @@ section RealComposition
 open Real
 
 variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable f)
+include hf
 
 @[measurability]
 theorem Measurable.exp : Measurable fun x => Real.exp (f x) :=
@@ -165,6 +170,7 @@ section ComplexComposition
 open Complex
 
 variable {α : Type*} {m : MeasurableSpace α} {f : α → ℂ} (hf : Measurable f)
+include hf
 
 @[measurability]
 theorem Measurable.cexp : Measurable fun x => Complex.exp (f x) :=
@@ -223,8 +229,3 @@ instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
     exact Measurable.ite (measurableSet_singleton 0) measurable_const measurable_const
 
 end PowInstances
-
--- Guard against import creep:
-assert_not_exists InnerProductSpace
-assert_not_exists Real.arctan
-assert_not_exists FiniteDimensional.proper

@@ -31,13 +31,13 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
     [Add R] [Mul R] [Neg R] [Zero R] [One R]
     (add_assoc : ∀ a b c : R, a + b + c = a + (b + c))
     (zero_add : ∀ a : R, 0 + a = a)
-    (add_left_neg : ∀ a : R, -a + a = 0)
+    (neg_add_cancel : ∀ a : R, -a + a = 0)
     (mul_assoc : ∀ a b c : R, a * b * c = a * (b * c))
     (one_mul : ∀ a : R, 1 * a = a)
     (mul_one : ∀ a : R, a * 1 = a)
     (left_distrib : ∀ a b c : R, a * (b + c) = a * b + a * c)
     (right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c) : Ring R :=
-  letI := AddGroup.ofLeftAxioms add_assoc zero_add add_left_neg
+  letI := AddGroup.ofLeftAxioms add_assoc zero_add neg_add_cancel
   haveI add_comm : ∀ a b, a + b = b + a := by
     intro a b
     have h₁ : (1 + 1 : R) * (a + b) = a + (a + b) + b := by
@@ -66,7 +66,7 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
     mul_assoc := mul_assoc
     one_mul := one_mul
     mul_one := mul_one
-    add_left_neg := add_left_neg
+    neg_add_cancel := neg_add_cancel
     zsmul := (· • ·) }
 
 /-- Define a `CommRing` structure on a Type by proving a minimized set of axioms.
@@ -76,7 +76,7 @@ abbrev CommRing.ofMinimalAxioms {R : Type u}
     [Add R] [Mul R] [Neg R] [Zero R] [One R]
     (add_assoc : ∀ a b c : R, a + b + c = a + (b + c))
     (zero_add : ∀ a : R, 0 + a = a)
-    (add_left_neg : ∀ a : R, -a + a = 0)
+    (neg_add_cancel : ∀ a : R, -a + a = 0)
     (mul_assoc : ∀ a b c : R, a * b * c = a * (b * c))
     (mul_comm : ∀ a b : R, a * b = b * a)
     (one_mul : ∀ a : R, 1 * a = a)
@@ -85,6 +85,6 @@ abbrev CommRing.ofMinimalAxioms {R : Type u}
     rw [mul_comm, one_mul]
   haveI right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c := fun a b c => by
     rw [mul_comm, left_distrib, mul_comm, mul_comm b c]
-  letI := Ring.ofMinimalAxioms add_assoc zero_add add_left_neg mul_assoc
+  letI := Ring.ofMinimalAxioms add_assoc zero_add neg_add_cancel mul_assoc
     one_mul mul_one left_distrib right_distrib
   { mul_comm := mul_comm }

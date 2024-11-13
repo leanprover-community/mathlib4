@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Absolute values
@@ -76,15 +77,11 @@ def Simps.apply (f : AbsoluteValue R S) : R → S :=
 
 initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
-directly. -/
-instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
-  DFunLike.hasCoeToFun
-
 @[simp]
 theorem coe_toMulHom : ⇑abv.toMulHom = abv :=
   rfl
 
+@[bound]
 protected theorem nonneg (x : R) : 0 ≤ abv x :=
   abv.nonneg' x
 
@@ -92,10 +89,11 @@ protected theorem nonneg (x : R) : 0 ≤ abv x :=
 protected theorem eq_zero {x : R} : abv x = 0 ↔ x = 0 :=
   abv.eq_zero' x
 
+@[bound]
 protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
   abv.add_le' x y
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
+@[simp]
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
   abv.map_mul' x y
 
@@ -115,7 +113,7 @@ protected theorem ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
+@[simp]
 protected theorem map_zero : abv 0 = 0 :=
   abv.eq_zero.2 rfl
 
@@ -147,7 +145,7 @@ section IsDomain
 variable {R S : Type*} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
+@[simp]
 protected theorem map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 
@@ -172,7 +170,7 @@ def toMonoidHom : R →* S :=
 theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
   rfl
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
+@[simp]
 protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
   abv.toMonoidHom.map_pow a n
 
@@ -184,6 +182,7 @@ section Ring
 
 variable {R S : Type*} [Ring R] [OrderedRing S] (abv : AbsoluteValue R S)
 
+@[bound]
 protected theorem le_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
   sub_le_iff_le_add.2 <| by simpa using abv.add_le (a - b) b
 
@@ -205,10 +204,12 @@ protected theorem map_neg (a : R) : abv (-a) = abv a := by
 protected theorem map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← neg_sub, abv.map_neg]
 
 /-- Bound `abv (a + b)` from below -/
+@[bound]
 protected theorem le_add (a b : R) : abv a - abv b ≤ abv (a + b) := by
   simpa only [tsub_le_iff_right, add_neg_cancel_right, abv.map_neg] using abv.add_le (a + b) (-b)
 
 /-- Bound `abv (a - b)` from above -/
+@[bound]
 lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
   simpa only [← sub_eq_add_neg, AbsoluteValue.map_neg] using abv.add_le a (-b)
 
@@ -242,6 +243,7 @@ section LinearOrderedCommRing
 
 variable {R S : Type*} [Ring R] [LinearOrderedCommRing S] (abv : AbsoluteValue R S)
 
+@[bound]
 theorem abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
   abs_sub_le_iff.2 ⟨abv.le_sub _ _, by rw [abv.map_sub]; apply abv.le_sub⟩
 

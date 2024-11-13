@@ -52,15 +52,19 @@ namespace CategoryTheory
 
 open Category Limits Pretriangulated ZeroObject Preadditive
 
-variable {C D A : Type*} [Category C] [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
-  [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive] [Pretriangulated C]
+variable {C D A : Type*} [Category C] [HasShift C ℤ]
   [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (CategoryTheory.shiftFunctor D n).Additive] [Pretriangulated D]
-  [Category A] [Abelian A]
+  [Category A]
 
 namespace Functor
 
 variable (F : C ⥤ A)
+
+section Pretriangulated
+
+variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
+  [Pretriangulated C] [Abelian A]
 
 /-- A functor from a pretriangulated category to an abelian category is an homological functor
 if it sends distinguished triangles to exact sequences. -/
@@ -85,8 +89,6 @@ lemma IsHomological.mk' [F.PreservesZeroMorphisms]
     obtain ⟨T', e, h'⟩ := hF T hT
     exact (ShortComplex.exact_iff_of_iso
       (F.mapShortComplex.mapIso ((shortComplexOfDistTriangleIsoOfIso e hT)))).2 h'
-
-variable [F.IsHomological]
 
 lemma IsHomological.of_iso {F₁ F₂ : C ⥤ A} [F₁.IsHomological] (e : F₁ ≅ F₂) :
     F₂.IsHomological :=
@@ -153,28 +155,35 @@ lemma isHomological_of_localization (L : C ⥤ D)
   obtain ⟨T₀, e, hT₀⟩ := hT
   exact ⟨L.mapTriangle.obj T₀, e, (L ⋙ F).map_distinguished_exact _ hT₀⟩
 
-section
+end Pretriangulated
 
-variable [F.IsHomological] [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
-  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+section
 
 /-- The connecting homomorphism in the long exact sequence attached to an homological
 functor and a distinguished triangle. -/
-noncomputable def homologySequenceδ :
+noncomputable def homologySequenceδ
+    [F.ShiftSequence ℤ] (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (F.shift n₀).obj T.obj₃ ⟶ (F.shift n₁).obj T.obj₁ :=
   F.shiftMap T.mor₃ n₀ n₁ (by rw [add_comm 1, h])
 
 variable {T T'}
 
 @[reassoc]
-lemma homologySequenceδ_naturality :
+lemma homologySequenceδ_naturality
+    [F.ShiftSequence ℤ] (T T' : Triangle C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (F.shift n₀).map φ.hom₃ ≫ F.homologySequenceδ T' n₀ n₁ h =
       F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map φ.hom₁ := by
   dsimp only [homologySequenceδ]
   rw [← shiftMap_comp', ← φ.comm₃, shiftMap_comp]
 
 variable (T)
+variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shiftFunctor C n).Additive]
+  [Pretriangulated C] [Abelian A] [F.IsHomological]
+variable [F.ShiftSequence ℤ] (T T' : Triangle C) (hT : T ∈ distTriang C)
+  (hT' : T' ∈ distTriang C) (φ : T ⟶ T') (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
+section
+include hT
 @[reassoc]
 lemma comp_homologySequenceδ :
     (F.shift n₀).map T.mor₂ ≫ F.homologySequenceδ T n₀ n₁ h = 0 := by
@@ -199,7 +208,8 @@ lemma homologySequence_exact₂ :
   refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _
     (Triangle.shift_distinguished _ hT n₀))
   exact ShortComplex.isoMk ((F.isoShift n₀).app _)
-    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) (by simp) (by simp)
+    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _)
+    (by dsimp; simp) (by dsimp; simp)
 
 lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
@@ -214,7 +224,7 @@ lemma homologySequence_exact₁ :
     (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
   simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
-    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_self 1) n₀ n₁ (by omega)]
+    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁ (by omega)]
 
 lemma homologySequence_epi_shift_map_mor₁_iff :
     Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 :=
@@ -231,6 +241,7 @@ lemma homologySequence_epi_shift_map_mor₂_iff :
 lemma homologySequence_mono_shift_map_mor₂_iff :
     Mono ((F.shift n₀).map T.mor₂) ↔ (F.shift n₀).map T.mor₁ = 0 :=
   (F.homologySequence_exact₂ T hT n₀).mono_g_iff
+end
 
 lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.W f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
@@ -258,6 +269,7 @@ open ComposableArrows
   mk₅ ((F.shift n₀).map T.mor₁) ((F.shift n₀).map T.mor₂)
     (F.homologySequenceδ T n₀ n₁ h) ((F.shift n₁).map T.mor₁) ((F.shift n₁).map T.mor₂)
 
+include hT in
 lemma homologySequenceComposableArrows₅_exact :
     (F.homologySequenceComposableArrows₅ T n₀ n₁ h).Exact :=
   exact_of_δ₀ (F.homologySequence_exact₂ T hT n₀).exact_toComposableArrows

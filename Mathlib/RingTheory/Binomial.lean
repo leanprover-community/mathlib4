@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Polynomial.Smeval
+import Mathlib.Algebra.Order.Floor
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Binomial rings
@@ -166,13 +168,14 @@ namespace Polynomial
 theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssocSemiring S]
     [Pow S ℕ] [Module R S] [IsScalarTower R S S] [NatPowAssoc S]
     (x : S) (n : ℕ) : (ascPochhammer R n).smeval x = (ascPochhammer ℕ n).smeval x := by
-  induction' n with n hn
-  · simp only [Nat.zero_eq, ascPochhammer_zero, smeval_one, one_smul]
-  · simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
+  induction n with
+  | zero => simp only [ascPochhammer_zero, smeval_one, one_smul]
+  | succ n hn =>
+    simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
     simp only [← C_eq_natCast, smeval_C_mul, hn, Nat.cast_smul_eq_nsmul R n]
     simp only [nsmul_eq_mul, Nat.cast_id]
 
-variable {R S : Type*}
+variable {R : Type*}
 
 theorem ascPochhammer_smeval_eq_eval [Semiring R] (r : R) (n : ℕ) :
     (ascPochhammer ℕ n).smeval r = (ascPochhammer R n).eval r := by
@@ -222,7 +225,7 @@ section Basic_Instances
 open Polynomial
 
 instance Nat.instBinomialRing : BinomialRing ℕ where
-  nsmul_right_injective n hn r s hrs := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero hn) hrs
+  nsmul_right_injective _ hn _ _ hrs := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero hn) hrs
   multichoose n k := Nat.choose (n + k - 1) k
   factorial_nsmul_multichoose r n := by
     rw [smul_eq_mul, ← Nat.descFactorial_eq_factorial_mul_choose,
@@ -235,10 +238,10 @@ def Int.multichoose (n : ℤ) (k : ℕ) : ℤ :=
   | negSucc n => (-1) ^ k * Nat.choose (n + 1) k
 
 instance Int.instBinomialRing : BinomialRing ℤ where
-  nsmul_right_injective n hn r s hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
+  nsmul_right_injective _ hn _ _ hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
   multichoose := Int.multichoose
   factorial_nsmul_multichoose r k := by
-    rw [Int.multichoose, nsmul_eq_mul]
+    rw [Int.multichoose.eq_def, nsmul_eq_mul]
     cases r with
     | ofNat n =>
       simp only [multichoose, nsmul_eq_mul, Int.ofNat_eq_coe, Int.ofNat_mul_out]
@@ -286,7 +289,7 @@ theorem smeval_ascPochhammer_self_neg : ∀ n : ℕ,
 theorem smeval_ascPochhammer_succ_neg (n : ℕ) :
     smeval (ascPochhammer ℕ (n + 1)) (-n : ℤ) = 0 := by
   rw [ascPochhammer_succ_right, smeval_mul, smeval_add, smeval_X, ← C_eq_natCast, smeval_C,
-    pow_zero, pow_one, Nat.cast_id, nsmul_eq_mul, mul_one, add_left_neg, mul_zero]
+    pow_zero, pow_one, Nat.cast_id, nsmul_eq_mul, mul_one, neg_add_cancel, mul_zero]
 
 theorem smeval_ascPochhammer_neg_add (n : ℕ) : ∀ k : ℕ,
     smeval (ascPochhammer ℕ (n + k + 1)) (-n : ℤ) = 0
@@ -301,7 +304,7 @@ theorem smeval_ascPochhammer_neg_of_lt {n k : ℕ} (h : n < k) :
     smeval (ascPochhammer ℕ k) (-n : ℤ) = 0 := by
   rw [show k = n + (k - n - 1) + 1 by omega, smeval_ascPochhammer_neg_add]
 
-theorem smeval_ascPochhammer_nat_cast [NatPowAssoc R] (n k : ℕ) :
+theorem smeval_ascPochhammer_nat_cast {R} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] (n k : ℕ) :
     smeval (ascPochhammer ℕ k) (n : R) = smeval (ascPochhammer ℕ k) n := by
   rw [smeval_at_natCast (ascPochhammer ℕ k) n]
 
@@ -337,8 +340,8 @@ theorem multichoose_succ_neg_natCast [NatPowAssoc R] (n : ℕ) :
   rw [factorial_nsmul_multichoose_eq_ascPochhammer, smeval_neg_nat,
     smeval_ascPochhammer_succ_neg n, Int.cast_zero]
 
-theorem smeval_ascPochhammer_int_ofNat [NatPowAssoc R] (r : R) : ∀ n : ℕ,
-    smeval (ascPochhammer ℤ n) r = smeval (ascPochhammer ℕ n) r
+theorem smeval_ascPochhammer_int_ofNat {R} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] (r : R) :
+    ∀ n : ℕ, smeval (ascPochhammer ℤ n) r = smeval (ascPochhammer ℕ n) r
   | 0 => by
     simp only [ascPochhammer_zero, smeval_one]
   | n + 1 => by
@@ -449,7 +452,7 @@ theorem choose_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) (hkn : k ≤ n) :
   refine nsmul_right_injective (Nat.factorial n) (Nat.factorial_ne_zero n) ?_
   simp only
   rw [nsmul_left_comm, ← descPochhammer_eq_factorial_smul_choose,
-    ← Nat.choose_mul_factorial_mul_factorial hkn, ← smul_mul_smul,
+    ← Nat.choose_mul_factorial_mul_factorial hkn, ← smul_mul_smul_comm,
     ← descPochhammer_eq_factorial_smul_choose, mul_nsmul',
     ← descPochhammer_eq_factorial_smul_choose, smul_mul_assoc]
   nth_rw 2 [← Nat.sub_add_cancel hkn]

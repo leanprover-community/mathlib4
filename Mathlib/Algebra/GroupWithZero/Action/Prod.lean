@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Action.End
 
 /-!
 # Prod instances for multiplicative actions with zero
@@ -18,7 +18,7 @@ This file defines instances for `MulActionWithZero` and related structures on `�
 * `Algebra.GroupWithZero.Action.Units`
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists Ring
 
 variable {M N α β : Type*}
 
@@ -26,7 +26,7 @@ namespace Prod
 
 section
 
-variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (x : α × β)
+variable [SMul M α] [SMul M β]
 
 theorem smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
     a • ((0 : α), c) = (0, a • c) := by rw [Prod.smul_mk, smul_zero]
@@ -89,6 +89,6 @@ def DistribMulAction.prodEquiv : DistribMulAction (M × N) α ≃
     congr 1
     · funext i; congr; ext m a; clear i; (conv_rhs => rw [← one_smul N a]); rfl
     · ext n a; (conv_rhs => rw [← one_smul M (SMul.smul n a)]); rfl
-    · apply heq_prop
+    · exact proof_irrel_heq ..
 
 end Action_by_Prod

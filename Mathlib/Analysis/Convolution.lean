@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Group.Prod
@@ -49,12 +49,12 @@ This generality has several advantages
   `smul` to multiply the functions, that would be an asymmetric definition.
 
 # Main Definitions
-* `convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ` is the convolution of
-  `f` and `g` w.r.t. the continuous bilinear map `L` and measure `μ`.
-* `ConvolutionExistsAt f g x L μ` states that the convolution `(f ⋆[L, μ] g) x` is well-defined
-  (i.e. the integral exists).
-* `ConvolutionExists f g L μ` states that the convolution `f ⋆[L, μ] g` is well-defined at each
-  point.
+* `MeasureTheory.convolution f g L μ x = (f ⋆[L, μ] g) x = ∫ t, L (f t) (g (x - t)) ∂μ`
+  is the convolution of `f` and `g` w.r.t. the continuous bilinear map `L` and measure `μ`.
+* `MeasureTheory.ConvolutionExistsAt f g x L μ` states that the convolution `(f ⋆[L, μ] g) x`
+  is well-defined (i.e. the integral exists).
+* `MeasureTheory.ConvolutionExists f g L μ` states that the convolution `f ⋆[L, μ] g`
+  is well-defined at each point.
 
 # Main Results
 * `HasCompactSupport.hasFDerivAt_convolution_right` and
@@ -66,12 +66,12 @@ This generality has several advantages
 
 Versions of these statements for functions depending on a parameter are also given.
 
-* `convolution_tendsto_right`: Given a sequence of nonnegative normalized functions whose support
-  tends to a small neighborhood around `0`, the convolution tends to the right argument.
-  This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
+* `MeasureTheory.convolution_tendsto_right`: Given a sequence of nonnegative normalized functions
+  whose support tends to a small neighborhood around `0`, the convolution tends to the right
+  argument. This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
 
 # Notation
-The following notations are localized in the locale `convolution`:
+The following notations are localized in the locale `Convolution`:
 * `f ⋆[L, μ] g` for the convolution. Note: you have to use parentheses to apply the convolution
   to an argument: `(f ⋆[L, μ] g) x`.
 * `f ⋆[L] g := f ⋆[L, volume] g`
@@ -90,9 +90,8 @@ The following notations are localized in the locale `convolution`:
 -/
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open ContinuousLinearMap Metric Bornology
-
-open scoped Pointwise Topology NNReal Filter
+open Bornology ContinuousLinearMap Metric Topology
+open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 
@@ -227,7 +226,7 @@ theorem ConvolutionExistsAt.ofNorm' {x₀ : G}
     (hmf : AEStronglyMeasurable f μ) (hmg : AEStronglyMeasurable g <| map (fun t => x₀ - t) μ) :
     ConvolutionExistsAt f g x₀ L μ := by
   refine (h.const_mul ‖L‖).mono'
-    (hmf.convolution_integrand_snd' L hmg) (eventually_of_forall fun x => ?_)
+    (hmf.convolution_integrand_snd' L hmg) (Eventually.of_forall fun x => ?_)
   rw [mul_apply', ← mul_assoc]
   apply L.le_opNorm₂
 
@@ -278,15 +277,15 @@ theorem Integrable.convolution_integrand (hf : Integrable f ν) (hg : Integrable
   have h2_meas : AEStronglyMeasurable (fun y : G => ∫ x : G, ‖L (f y) (g (x - y))‖ ∂μ) ν :=
     h_meas.prod_swap.norm.integral_prod_right'
   simp_rw [integrable_prod_iff' h_meas]
-  refine ⟨eventually_of_forall fun t => (L (f t)).integrable_comp (hg.comp_sub_right t), ?_⟩
+  refine ⟨Eventually.of_forall fun t => (L (f t)).integrable_comp (hg.comp_sub_right t), ?_⟩
   refine Integrable.mono' ?_ h2_meas
-      (eventually_of_forall fun t => (?_ : _ ≤ ‖L‖ * ‖f t‖ * ∫ x, ‖g (x - t)‖ ∂μ))
+      (Eventually.of_forall fun t => (?_ : _ ≤ ‖L‖ * ‖f t‖ * ∫ x, ‖g (x - t)‖ ∂μ))
   · simp only [integral_sub_right_eq_self (‖g ·‖)]
     exact (hf.norm.const_mul _).mul_const _
   · simp_rw [← integral_mul_left]
     rw [Real.norm_of_nonneg (by positivity)]
-    exact integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
-      ((hg.comp_sub_right t).norm.const_mul _) (eventually_of_forall fun t => L.le_opNorm₂ _ _)
+    exact integral_mono_of_nonneg (Eventually.of_forall fun t => norm_nonneg _)
+      ((hg.comp_sub_right t).norm.const_mul _) (Eventually.of_forall fun t => L.le_opNorm₂ _ _)
 
 theorem Integrable.ae_convolution_exists (hf : Integrable f ν) (hg : Integrable g μ) :
     ∀ᵐ x ∂μ, ConvolutionExistsAt f g x L ν :=
@@ -545,7 +544,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
   by_cases H : ∀ p ∈ s, ∀ x, g p x = 0
   · apply (continuousOn_const (c := 0)).congr
     rintro ⟨p, x⟩ ⟨hp, -⟩
-    apply integral_eq_zero_of_ae (eventually_of_forall (fun y ↦ ?_))
+    apply integral_eq_zero_of_ae (Eventually.of_forall (fun y ↦ ?_))
     simp [H p hp _]
   have : LocallyCompactSpace G := by
     push_neg at H
@@ -572,7 +571,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rw [this]
     refine hg.comp (continuous_fst.fst.prod_mk (continuous_fst.snd.sub
       continuous_snd)).continuousOn ?_
-    simp (config := {contextual := true}) [s', MapsTo]
+    simp +contextual [s', MapsTo]
   have B : ContinuousOn (fun a ↦ ∫ x, L (f x) (g' a x) ∂μ) s' := by
     apply continuousOn_integral_bilinear_of_locally_integrable_of_compact_support L k'_comp A _
       (hf.integrableOn_isCompact k'_comp)
@@ -580,7 +579,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     apply hgs p _ hp
     contrapose! hy
     exact ⟨y - x, by simpa using hy, x, hx, by simp⟩
-  apply ContinuousWithinAt.mono_of_mem (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
+  apply ContinuousWithinAt.mono_of_mem_nhdsWithin (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
   exact mem_nhdsWithin_prod_iff.2 ⟨s, self_mem_nhdsWithin, t, nhdsWithin_le_nhds ht, Subset.rfl⟩
 
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
@@ -618,10 +617,10 @@ theorem _root_.BddAbove.continuous_convolution_right_of_integrable
     filter_upwards with x; filter_upwards with t
     apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl, le_ciSup hbg (x - t)]
   refine continuousAt_of_dominated ?_ this ?_ ?_
-  · exact eventually_of_forall fun x =>
+  · exact Eventually.of_forall fun x =>
       hf.aestronglyMeasurable.convolution_integrand_snd' L hg.aestronglyMeasurable
   · exact (hf.norm.const_mul _).mul_const _
-  · exact eventually_of_forall fun t => (L.continuous₂.comp₂ continuous_const <|
+  · exact Eventually.of_forall fun t => (L.continuous₂.comp₂ continuous_const <|
       hg.comp <| continuous_id.sub continuous_const).continuousAt
 
 end Group
@@ -752,7 +751,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
   simp_rw [dist_eq_norm] at h2 ⊢
   rw [← integral_sub hfg.integrable]; swap; · exact (L.flip z₀).integrable_comp hif
   refine (norm_integral_le_of_norm_le ((L.integrable_comp hif).norm.mul_const ε)
-    (eventually_of_forall h2)).trans ?_
+    (Eventually.of_forall h2)).trans ?_
   rw [integral_mul_right]
   refine mul_le_mul_of_nonneg_right ?_ hε
   have h3 : ∀ t, ‖L (f t)‖ ≤ ‖L‖ * ‖f t‖ := by
@@ -829,12 +828,11 @@ variable [NormedSpace 𝕜 E']
 variable [NormedSpace 𝕜 E'']
 variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
 variable {n : ℕ∞}
-variable [CompleteSpace F]
 variable [MeasurableSpace G] {μ ν : Measure G}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 section Assoc
-
+variable [CompleteSpace F]
 variable [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [CompleteSpace F']
 variable [NormedAddCommGroup F''] [NormedSpace ℝ F''] [NormedSpace 𝕜 F''] [CompleteSpace F'']
 variable {k : G → E''}
@@ -854,7 +852,7 @@ theorem integral_convolution [MeasurableAdd₂ G] [MeasurableNeg G] [NormedSpace
 variable [MeasurableAdd₂ G] [IsAddRightInvariant ν] [MeasurableNeg G]
 
 /-- Convolution is associative. This has a weak but inconvenient integrability condition.
-See also `convolution_assoc`. -/
+See also `MeasureTheory.convolution_assoc`. -/
 theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z = L₃ x (L₄ y z))
     {x₀ : G} (hfg : ∀ᵐ y ∂μ, ConvolutionExistsAt f g y L ν)
     (hgk : ∀ᵐ x ∂ν, ConvolutionExistsAt g k x L₄ μ)
@@ -900,7 +898,7 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
       ((measurable_const.sub measurable_snd).sub measurable_fst)
     refine QuasiMeasurePreserving.absolutelyContinuous ?_
     refine QuasiMeasurePreserving.prod_of_left
-      ((measurable_const.sub measurable_snd).sub measurable_fst) (eventually_of_forall fun y => ?_)
+      ((measurable_const.sub measurable_snd).sub measurable_fst) (Eventually.of_forall fun y => ?_)
     dsimp only
     exact quasiMeasurePreserving_sub_left_of_right_invariant μ _
   have h2_meas :
@@ -921,8 +919,8 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     (((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => ?_)
   simp_rw [convolution_def, mul_apply', mul_mul_mul_comm ‖L₃‖ ‖L₄‖, ← integral_mul_left]
   rw [Real.norm_of_nonneg (by positivity)]
-  refine integral_mono_of_nonneg (eventually_of_forall fun t => norm_nonneg _)
-    ((ht.const_mul _).const_mul _) (eventually_of_forall fun s => ?_)
+  refine integral_mono_of_nonneg (Eventually.of_forall fun t => norm_nonneg _)
+    ((ht.const_mul _).const_mul _) (Eventually.of_forall fun s => ?_)
   simp only [← mul_assoc ‖L₄‖]
   apply_rules [ContinuousLinearMap.le_of_opNorm₂_le_of_le, le_rfl]
 
@@ -952,7 +950,7 @@ theorem _root_.HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompact
   have : ProperSpace G := FiniteDimensional.proper_rclike 𝕜 G
   set L' := L.precompR G
   have h1 : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (fun t => L (f t) (g (x - t))) μ :=
-    eventually_of_forall
+    Eventually.of_forall
       (hf.aestronglyMeasurable.convolution_integrand_snd L hg.continuous.aestronglyMeasurable)
   have h2 : ∀ x, AEStronglyMeasurable (fun t => L' (f t) (fderiv 𝕜 g (x - t))) μ :=
     hf.aestronglyMeasurable.convolution_integrand_snd L'
@@ -972,7 +970,7 @@ theorem _root_.HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompact
         (ball_subset_closedBall hx)
   · rw [integrable_indicator_iff hK'.measurableSet]
     exact ((hf.integrableOn_isCompact hK').norm.const_mul _).mul_const _
-  · exact eventually_of_forall fun t x _ => (L _).hasFDerivAt.comp x (h3 x t)
+  · exact Eventually.of_forall fun t x _ => (L _).hasFDerivAt.comp x (h3 x t)
   · exact hcg.convolutionExists_right L hf hg.continuous x₀
 
 theorem _root_.HasCompactSupport.hasFDerivAt_convolution_left [IsNegInvariant μ]
@@ -994,7 +992,6 @@ variable [NormedSpace ℝ F] [NormedSpace 𝕜 F]
 variable {f₀ : 𝕜 → E} {g₀ : 𝕜 → E'}
 variable {n : ℕ∞}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
-variable [CompleteSpace F]
 variable {μ : Measure 𝕜}
 variable [IsAddLeftInvariant μ] [SFinite μ]
 
@@ -1016,7 +1013,7 @@ end Real
 section WithParam
 
 variable [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace ℝ F]
-  [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
+  [NormedSpace 𝕜 F] [MeasurableSpace G] [NormedAddCommGroup G] [BorelSpace G]
   [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P] {μ : Measure G}
   (L : E →L[𝕜] E' →L[𝕜] F)
 
@@ -1033,10 +1030,10 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   let g' := fderiv 𝕜 ↿g
   have A : ∀ p ∈ s, Continuous (g p) := fun p hp ↦ by
     refine hg.continuousOn.comp_continuous (continuous_const.prod_mk continuous_id') fun x => ?_
-    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hp
+    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hp
   have A' : ∀ q : P × G, q.1 ∈ s → s ×ˢ univ ∈ 𝓝 q := fun q hq ↦ by
     apply (hs.prod isOpen_univ).mem_nhds
-    simpa only [mem_prod, mem_univ, and_true_iff] using hq
+    simpa only [mem_prod, mem_univ, and_true] using hq
   -- The derivative of `g` vanishes away from `k`.
   have g'_zero : ∀ p x, p ∈ s → x ∉ k → g' (p, x) = 0 := by
     intro p x hp hx
@@ -1057,7 +1054,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
         hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
       apply exists_isOpen_isBounded_image_of_isCompact_of_continuousOn A (hs.prod isOpen_univ) _ B
       simp only [prod_subset_prod_iff, hq₀, singleton_subset_iff, subset_univ, and_self_iff,
-        true_or_iff]
+        true_or]
     obtain ⟨ε, εpos, hε, h'ε⟩ :
       ∃ ε : ℝ, 0 < ε ∧ thickening ε ({q₀.fst} ×ˢ k) ⊆ t ∧ ball q₀.1 ε ⊆ s := by
       obtain ⟨ε, εpos, hε⟩ : ∃ ε : ℝ, 0 < ε ∧ thickening ε (({q₀.fst} : Set P) ×ˢ k) ⊆ t :=
@@ -1073,10 +1070,10 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     · have H : (p, x) ∈ t := by
         apply hε
         refine mem_thickening_iff.2 ⟨(q₀.1, x), ?_, ?_⟩
-        · simp only [hx, singleton_prod, mem_image, Prod.mk.inj_iff, eq_self_iff_true, true_and_iff,
+        · simp only [hx, singleton_prod, mem_image, Prod.mk.inj_iff, eq_self_iff_true, true_and,
             exists_eq_right]
         · rw [← dist_eq_norm] at hp
-          simpa only [Prod.dist_eq, εpos, dist_self, max_lt_iff, and_true_iff] using hp
+          simpa only [Prod.dist_eq, εpos, dist_self, max_lt_iff, and_true] using hp
       have : g' (p, x) ∈ closedBall (0 : P × G →L[𝕜] E') C := hC (mem_image_of_mem _ H)
       rwa [mem_closedBall_zero_iff] at this
     · have : g' (p, x) = 0 := g'_zero _ _ hps hx
@@ -1104,7 +1101,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
     apply this.comp_continuous (continuous_const.prod_mk continuous_id')
     intro x
-    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true_iff] using hq₀
+    simpa only [prod_mk_mem_set_prod_eq, mem_univ, and_true] using hq₀
   set K' := (-k + {q₀.2} : Set G) with K'_def
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
   obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ :=
@@ -1168,7 +1165,7 @@ In this version, all the types belong to the same universe (to get an induction 
 proof). Use instead `contDiffOn_convolution_right_with_param`, which removes this restriction. -/
 theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP} {F : Type uP}
     {P : Type uP} [NormedAddCommGroup E'] [NormedAddCommGroup F] [NormedSpace 𝕜 E']
-    [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F] [MeasurableSpace G]
+    [NormedSpace ℝ F] [NormedSpace 𝕜 F] [MeasurableSpace G]
     {μ : Measure G}
     [NormedAddCommGroup G] [BorelSpace G] [NormedSpace 𝕜 G] [NormedAddCommGroup P] [NormedSpace 𝕜 P]
     {f : G → E} {n : ℕ∞} (L : E →L[𝕜] E' →L[𝕜] F) {g : P → G → E'} {s : Set P} {k : Set G}
@@ -1180,10 +1177,12 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     `n` (but for this we need the spaces at the different steps of the induction to live in the same
     universe, which is why we make the assumption in the lemma that all the relevant spaces
     come from the same universe). -/
-  induction' n using ENat.nat_induction with n ih ih generalizing g E' F
-  · rw [contDiffOn_zero] at hg ⊢
+  induction n using ENat.nat_induction generalizing g E' F with
+  | h0 =>
+    rw [contDiffOn_zero] at hg ⊢
     exact continuousOn_convolution_right_with_param L hk hgs hf hg
-  · let f' : P → G → P × G →L[𝕜] F := fun p a =>
+  | hsuc n ih =>
+    let f' : P → G → P × G →L[𝕜] F := fun p a =>
       (f ⋆[L.precompR (P × G), μ] fun x : G => fderiv 𝕜 (uncurry g) (p, x)) a
     have A : ∀ q₀ : P × G, q₀.1 ∈ s →
         HasFDerivAt (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (f' q₀.1 q₀.2) q₀ :=
@@ -1207,9 +1206,9 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
         exact hgs p y hp hy
       apply ih (L.precompR (P × G) : _) B
       convert hg.2
-  · rw [contDiffOn_top] at hg ⊢
-    intro n
-    exact ih n L hgs (hg n)
+  | htop ih =>
+    rw [contDiffOn_top] at hg ⊢
+    exact fun n ↦ ih n L hgs (hg n)
 
 /-- The convolution `f * g` is `C^n` when `f` is locally integrable and `g` is `C^n` and compactly
 supported. Version where `g` depends on an additional parameter in an open subset `s` of a
@@ -1227,10 +1226,10 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
   let eE' : Type max uE' uG uF uP := ULift.{max uG uF uP} E'
   let eF : Type max uF uG uE' uP := ULift.{max uG uE' uP} F
   let eP : Type max uP uG uE' uF := ULift.{max uG uE' uF} P
-  have isoG : eG ≃L[𝕜] G := ContinuousLinearEquiv.ulift
-  have isoE' : eE' ≃L[𝕜] E' := ContinuousLinearEquiv.ulift
-  have isoF : eF ≃L[𝕜] F := ContinuousLinearEquiv.ulift
-  have isoP : eP ≃L[𝕜] P := ContinuousLinearEquiv.ulift
+  let isoG : eG ≃L[𝕜] G := ContinuousLinearEquiv.ulift
+  let isoE' : eE' ≃L[𝕜] E' := ContinuousLinearEquiv.ulift
+  let isoF : eF ≃L[𝕜] F := ContinuousLinearEquiv.ulift
+  let isoP : eP ≃L[𝕜] P := ContinuousLinearEquiv.ulift
   let ef := f ∘ isoG
   let eμ : Measure eG := Measure.map isoG.symm μ
   let eg : eP → eG → eE' := fun ep ex => isoE'.symm (g (isoP ep) (isoG ex))
@@ -1239,28 +1238,24 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
       ((ContinuousLinearEquiv.arrowCongr isoE' isoF).symm : (E' →L[𝕜] F) →L[𝕜] eE' →L[𝕜] eF) L
   let R := fun q : eP × eG => (ef ⋆[eL, eμ] eg q.1) q.2
   have R_contdiff : ContDiffOn 𝕜 n R ((isoP ⁻¹' s) ×ˢ univ) := by
-    have hek : IsCompact (isoG ⁻¹' k) := isoG.toHomeomorph.closedEmbedding.isCompact_preimage hk
+    have hek : IsCompact (isoG ⁻¹' k) := isoG.toHomeomorph.isClosedEmbedding.isCompact_preimage hk
     have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.isOpen_preimage _ hs
     refine contDiffOn_convolution_right_with_param_aux eL hes hek ?_ ?_ ?_
     · intro p x hp hx
       simp only [eg, (· ∘ ·), ContinuousLinearEquiv.prod_apply, LinearIsometryEquiv.coe_coe,
         ContinuousLinearEquiv.map_eq_zero_iff]
       exact hgs _ _ hp hx
-    · apply (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2
-      convert hf
-      ext1 x
-      simp only [ef, ContinuousLinearEquiv.coe_toHomeomorph, (· ∘ ·),
-        ContinuousLinearEquiv.apply_symm_apply]
+    · exact (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2 hf
     · apply isoE'.symm.contDiff.comp_contDiffOn
       apply hg.comp (isoP.prod isoG).contDiff.contDiffOn
       rintro ⟨p, x⟩ ⟨hp, -⟩
       simpa only [mem_preimage, ContinuousLinearEquiv.prod_apply, prod_mk_mem_set_prod_eq, mem_univ,
-        and_true_iff] using hp
+        and_true] using hp
   have A : ContDiffOn 𝕜 n (isoF ∘ R ∘ (isoP.prod isoG).symm) (s ×ˢ univ) := by
     apply isoF.contDiff.comp_contDiffOn
     apply R_contdiff.comp (ContinuousLinearEquiv.contDiff _).contDiffOn
     rintro ⟨p, x⟩ ⟨hp, -⟩
-    simpa only [mem_preimage, mem_prod, mem_univ, and_true_iff, ContinuousLinearEquiv.prod_symm,
+    simpa only [mem_preimage, mem_prod, mem_univ, and_true, ContinuousLinearEquiv.prod_symm,
       ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.apply_symm_apply] using hp
   have : isoF ∘ R ∘ (isoP.prod isoG).symm = fun q : P × G => (f ⋆[L, μ] g q.1) q.2 := by
     apply funext
@@ -1268,14 +1263,9 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     simp only [LinearIsometryEquiv.coe_coe, (· ∘ ·), ContinuousLinearEquiv.prod_symm,
       ContinuousLinearEquiv.prod_apply]
     simp only [R, convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
-    rw [ClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
-    swap; · exact isoG.symm.toHomeomorph.closedEmbedding
-    congr 1
-    ext1 a
-    simp only [ef, eg, eL, (· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
-      ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.map_sub,
-      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
-      ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply]
+    rw [IsClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
+    · rfl
+    · exact isoG.symm.toHomeomorph.isClosedEmbedding
   simp_rw [this] at A
   exact A
 
@@ -1331,7 +1321,7 @@ end WithParam
 
 section Nonneg
 
-variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [NormedSpace ℝ F] [CompleteSpace F]
+variable [NormedSpace ℝ E] [NormedSpace ℝ E'] [NormedSpace ℝ F]
 
 /-- The forward convolution of two functions `f` and `g` on `ℝ`, with respect to a continuous
 bilinear map `L` and measure `ν`. It is defined to be the function mapping `x` to
@@ -1397,7 +1387,8 @@ theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Meas
 
 /-- The integral over `Ioi 0` of a forward convolution of two functions is equal to the product
 of their integrals over this set. (Compare `integral_convolution` for the two-sided convolution.) -/
-theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] {μ ν : Measure ℝ}
+theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {μ ν : Measure ℝ}
     [SFinite μ] [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     ∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ =

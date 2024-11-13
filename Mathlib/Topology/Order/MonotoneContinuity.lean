@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Heather Macbeth
+Authors: Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.LeftRightNhds
@@ -253,7 +253,7 @@ theorem continuousAt_of_monotoneOn_of_image_mem_nhds [DenselyOrdered β] {f : α
 theorem Monotone.continuous_of_denseRange [DenselyOrdered β] {f : α → β} (h_mono : Monotone f)
     (h_dense : DenseRange f) : Continuous f :=
   continuous_iff_continuousAt.mpr fun a =>
-    continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun x _ y _ hxy => h_mono hxy)
+    continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun _ _ _ _ hxy => h_mono hxy)
         univ_mem <|
       by simp only [image_univ, h_dense.closure_eq, univ_mem]
 

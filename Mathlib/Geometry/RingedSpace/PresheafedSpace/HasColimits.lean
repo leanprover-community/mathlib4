@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Geometry.RingedSpace.PresheafedSpace
 import Mathlib.Topology.Category.TopCat.Limits.Basic
@@ -97,19 +97,19 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
   obj j := op (colimit.ι (F ⋙ PresheafedSpace.forget C) j _* (F.obj j).presheaf)
   map {j j'} f :=
     ((pushforward C (colimit.ι (F ⋙ PresheafedSpace.forget C) j')).map (F.map f).c ≫
-      (Pushforward.comp  ((F ⋙ PresheafedSpace.forget C).map f)
+      (Pushforward.comp ((F ⋙ PresheafedSpace.forget C).map f)
         (colimit.ι (F ⋙ PresheafedSpace.forget C) j') (F.obj j).presheaf).inv ≫
       (pushforwardEq (colimit.w (F ⋙ PresheafedSpace.forget C) f) (F.obj j).presheaf).hom).op
   map_id j := by
     apply (opEquiv _ _).injective
-    refine NatTrans.ext _ _ (funext fun U => ?_)
+    refine NatTrans.ext (funext fun U => ?_)
     induction U with
     | h U =>
       simp [opEquiv]
       rfl
   map_comp {j₁ j₂ j₃} f g := by
     apply (opEquiv _ _).injective
-    refine NatTrans.ext _ _ (funext fun U => ?_)
+    refine NatTrans.ext (funext fun U => ?_)
     dsimp [opEquiv]
     have :
       op ((Opens.map (F.map g).base).obj
@@ -224,7 +224,7 @@ theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) 
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
   ext U
   · simp [desc]
-  · -- Porting note: the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
+  · -- Porting note (#11041): the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
     rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
     dsimp [desc, descCApp]
@@ -253,7 +253,7 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       simp
     ext : 1
     · exact t
-    · refine NatTrans.ext _ _ (funext fun U => limit_obj_ext fun j => ?_)
+    · refine NatTrans.ext (funext fun U => limit_obj_ext fun j => ?_)
       simp [desc, descCApp,
         PresheafedSpace.congr_app (w (unop j)).symm U,
         NatTrans.congr (limit.π (pushforwardDiagramToColimit F).leftOp j)
@@ -307,7 +307,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)
     erw [← TopCat.comp_app]
     congr
-    exact ι_preservesColimitsIso_inv (forget C) F (unop X)
+    exact ι_preservesColimitIso_inv (forget C) F (unop X)
   · intro X Y f
     change ((F.map f.unop).c.app _ ≫ _ ≫ _) ≫ (F.obj (unop Y)).presheaf.map _ = _ ≫ _
     rw [TopCat.Presheaf.Pushforward.comp_inv_app]
@@ -326,9 +326,9 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
   rw [Iso.trans_inv, Iso.trans_inv, Iso.app_inv, sheafIsoOfIso_inv, pushforwardToOfIso_app,
     congr_app (Iso.symm_inv _)]
   dsimp
-  rw [map_id, comp_id, assoc, assoc, assoc, NatTrans.naturality]
-  erw [← comp_c_app_assoc]
-  rw [congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
+  rw [map_id, comp_id, assoc, assoc, assoc, NatTrans.naturality,
+      ← comp_c_app_assoc,
+      congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
   erw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc, limMap_π_assoc]
   -- Porting note: `convert` doesn't work due to meta variable, so change to a `suffices` block
   set f := _
