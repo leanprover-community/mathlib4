@@ -41,15 +41,13 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
     ext j
     simp [Pi.single_apply]
   have hNN' : N.toAddSubgroup.index = N'.toAddSubgroup.index := by
-    let e : (ι → R) ≃+ M := bM.equivFun.symm
+    set e : (ι → R) ≃+ M := ↑bM.equivFun.symm with he
     let e' : (ι → R) →+ M := e
     have he' : Function.Surjective e' := e.surjective
-    simp only [N']
-    erw [Submodule.map_toAddSubgroup]
     convert (AddSubgroup.index_comap_of_surjective N.toAddSubgroup he').symm using 2
-    simp only [e']
-    rw [AddSubgroup.comap_equiv_eq_map_symm]
-    rfl
+    rw [AddSubgroup.comap_equiv_eq_map_symm, he, hN', LinearEquiv.coe_toAddEquiv_symm,
+    AddEquiv.symm_symm]
+    exact Submodule.map_toAddSubgroup ..
   rw [hNN']
   have hN' : N'.toAddSubgroup = AddSubgroup.pi Set.univ
       (fun i ↦ (Ideal.span {if h : ∃ j, f j = i then a h.choose else 0}).toAddSubgroup) := by
