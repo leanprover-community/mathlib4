@@ -68,13 +68,13 @@ theorem mulVec_stdBasisMatrix [NonUnitalNonAssocSemiring α] [Fintype m]
   · simp
   simp [h, h.symm]
 
--- In the following proof, we abuse the definition of `Matrix` by applying matrices.
--- We therefore need to parenthesize `Fintype.sum_apply` to convince `simp` to apply it even though
--- the type is `Matrix m n α`, not `m → _`.
 theorem matrix_eq_sum_stdBasisMatrix [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
   ext i j
   rw [← Fintype.sum_prod_type']
+  -- In this proof, we abuse the definition of `Matrix` by applying matrices.
+  -- We therefore need to parenthesize `Fintype.sum_apply` to convince `simp` to apply it even
+  -- though the type is `Matrix m n α`, not `m → _`.
   simp [stdBasisMatrix, (Fintype.sum_apply), Matrix.of_apply, ← Prod.mk.inj_iff]
 
 @[deprecated (since := "2024-08-11")] alias matrix_eq_sum_std_basis := matrix_eq_sum_stdBasisMatrix
