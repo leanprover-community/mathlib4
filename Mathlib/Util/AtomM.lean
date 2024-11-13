@@ -46,11 +46,11 @@ def AtomM.run {α : Type} (red : TransparencyMode) (m : AtomM α)
 
 /-- Get the index corresponding to an atomic expression, if it has already been encountered, or
 put it in the list of atoms and return the new index, otherwise. -/
-def AtomM.addAtom (e : Expr) : AtomM Nat := do
+def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) := do
   let c ← get
   for h : i in [:c.atoms.size] do
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
-      return i
-  modifyGet fun c ↦ (c.atoms.size, { c with atoms := c.atoms.push e })
+      return (i, c.atoms[i])
+  modifyGet fun c ↦ ((c.atoms.size, e), { c with atoms := c.atoms.push e })
 
 end Mathlib.Tactic

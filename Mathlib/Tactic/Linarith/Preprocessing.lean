@@ -273,12 +273,12 @@ partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
   | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
     | some 2 => do
       let s ← findSquares s a
-      let ai ← AtomM.addAtom a
+      let (ai, _) ← AtomM.addAtom a
       return (s.insert (ai, true))
     | _ => e.foldlM findSquares s
   | (``HMul.hMul, #[_, _, _, _, a, b]) => do
-    let ai ← AtomM.addAtom a
-    let bi ← AtomM.addAtom b
+    let (ai, _) ← AtomM.addAtom a
+    let (bi, _) ← AtomM.addAtom b
     if ai = bi then do
       let s ← findSquares s a
       return (s.insert (ai, false))

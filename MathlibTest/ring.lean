@@ -84,6 +84,16 @@ example (x : ℝ) (hx : x ≠ 0) :
   field_simp
   ring
 
+-- test that when `ring_nf` normalizes multiple expressions which contain a particular atom, it uses
+-- a form for that atom which is consistent between expressions
+example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
+  let a := x
+  have : R (a + x) (x + a) := by
+    ring_nf
+    guard_target = R (a * 2) (a * 2)
+    exact test_sorry
+  trivial
+
 -- As reported at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20failing.20to.20fully.20normalize
 example (x : ℤ) (h : x - x + x = 0) : x = 0 := by

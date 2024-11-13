@@ -464,9 +464,10 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [], q(NF.zero_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
-    let k : ℕ ← AtomM.addAtom x
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x), k)],
-      q(NF.atom_eq_eval $x)⟩
+    let (k, x') ← AtomM.addAtom x
+    have x' : Q($M) := x'
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x'), k)],
+      (q(NF.atom_eq_eval $x'):)⟩
 
 /-- Given expressions `R` and `M` representing types such that `M`'s is a module over `R`'s, and
 given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s

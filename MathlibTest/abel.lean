@@ -141,3 +141,13 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   abel_nf at *
   guard_hyp w : 0 = y + z
   assumption
+
+-- test that when `abel_nf` normalizes multiple expressions which contain a particular atom, it uses
+-- a form for that atom which is consistent between expressions
+example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
+  let a := x
+  have : R (a + x) (x + a) := by
+    abel_nf
+    guard_target = R ((2:ℤ) • a) ((2:ℤ) • a)
+    apply hR
+  trivial
