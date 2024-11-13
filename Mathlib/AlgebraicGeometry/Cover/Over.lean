@@ -135,11 +135,9 @@ def Cover.pullbackCoverOverProp : W.Cover P where
       (𝒰.map_prop _) x y hy.symm
     use (PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
       (f.asOverProp S) ((𝒰.map _).asOverProp S)).inv.base o
-    simp only [Over.forget_obj, Over.forget_map, OverClass.asOverHom_left]
-    simp only [MorphismProperty.Comma.Hom.hom_left, Functor.comp_obj,
-      MorphismProperty.Comma.forget_obj, Over.forget_obj, Functor.comp_map,
-      MorphismProperty.Comma.forget_map, MorphismProperty.Comma.Hom.hom_mk, Over.forget_map,
-      OverClass.asOverHom_left]
+    simp only [Functor.comp_obj, MorphismProperty.Comma.forget_obj, Over.forget_obj,
+      MorphismProperty.Comma.forget_map, MorphismProperty.Comma.Hom.hom_mk,
+      Over.forget_map, OverClass.asOverHom_left]
     rw [← Scheme.comp_base_apply, ← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom]
     rw [← MorphismProperty.Comma.forget_map, ← Functor.comp_map, PreservesPullback.iso_inv_fst]
     simpa
@@ -173,11 +171,9 @@ def Cover.pullbackCoverOverProp' : W.Cover P where
       (𝒰.map_prop _) y x hy
     use (PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
       ((𝒰.map _).asOverProp S) (f.asOverProp S)).inv.base o
-    simp only [Over.forget_obj, Over.forget_map, OverClass.asOverHom_left]
-    simp only [MorphismProperty.Comma.Hom.hom_left, Functor.comp_obj,
-      MorphismProperty.Comma.forget_obj, Over.forget_obj, Functor.comp_map,
-      MorphismProperty.Comma.forget_map, MorphismProperty.Comma.Hom.hom_mk, Over.forget_map,
-      OverClass.asOverHom_left]
+    simp only [Functor.comp_obj, MorphismProperty.Comma.forget_obj, Over.forget_obj,
+      MorphismProperty.Comma.forget_map, MorphismProperty.Comma.Hom.hom_mk,
+      Over.forget_map, OverClass.asOverHom_left]
     rw [← Scheme.comp_base_apply, ← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom]
     rw [← MorphismProperty.Comma.forget_map, ← Functor.comp_map, PreservesPullback.iso_inv_snd]
     simpa
