@@ -53,8 +53,8 @@ lemma isUltrametricDist_of_forall_norm_add_one_of_norm_le_one
   rcases le_or_lt ‖x‖ 1 with H|H
   · exact (h _ H).trans (le_max_right _ _)
   · suffices ‖x + 1‖ ≤ ‖x‖ from this.trans (le_max_left _ _)
-    rw [← div_le_div_right (c := ‖x‖) (H.trans' zero_lt_one), div_self (H.trans' zero_lt_one).ne',
-        ← norm_div, add_div, div_self (by simpa using (H.trans' zero_lt_one)), add_comm]
+    rw [← div_le_one (by positivity), ← norm_div, add_div,
+      div_self (by simpa using H.trans' zero_lt_one), add_comm]
     apply h
     simp [inv_le_one_iff₀, H.le]
 
