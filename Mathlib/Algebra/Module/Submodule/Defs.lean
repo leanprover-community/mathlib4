@@ -33,7 +33,8 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
-structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] extends
+structure Submodule (R : Type u) (M : Type v) [NonUnitalSemiring R] [AddCommMonoid M]
+  [NonUnitalModule R M] extends
   AddSubmonoid M, SubMulAction R M : Type v
 
 /-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/

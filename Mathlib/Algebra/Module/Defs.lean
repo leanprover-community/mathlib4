@@ -47,6 +47,14 @@ universe u v
 
 variable {R S M M₂ : Type*}
 
+/-- -/
+class NonUnitalModule (R M : Type*) [NonUnitalSemiring R] [AddCommMonoid M] extends
+  SemigroupAction R M, DistribSMul R M where
+  /-- Scalar multiplication distributes over addition from the right. -/
+  protected add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
+  /-- Scalar multiplication by zero gives zero. -/
+  protected zero_smul : ∀ x : M, (0 : R) • x = 0
+
 /-- A module is a generalization of vector spaces to a scalar semiring.
   It consists of a scalar semiring `R` and an additive monoid of "vectors" `M`,
   connected by a "scalar multiplication" operation `r • x : M`
@@ -54,11 +62,11 @@ variable {R S M M₂ : Type*}
   distributivity axioms similar to those on a ring. -/
 @[ext]
 class Module (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] extends
-  DistribMulAction R M where
-  /-- Scalar multiplication distributes over addition from the right. -/
-  protected add_smul : ∀ (r s : R) (x : M), (r + s) • x = r • x + s • x
-  /-- Scalar multiplication by zero gives zero. -/
-  protected zero_smul : ∀ x : M, (0 : R) • x = 0
+  DistribMulAction R M, NonUnitalModule R M
+
+instance (priority := 100) [NonUnitalSemiring R] [AddCommMonoid M] [NonUnitalModule R M] :
+    SMulWithZero R M where
+  zero_smul := NonUnitalModule.zero_smul
 
 section AddCommMonoid
 
@@ -70,7 +78,7 @@ instance (priority := 100) Module.toMulActionWithZero
   {R M} {_ : Semiring R} {_ : AddCommMonoid M} [Module R M] : MulActionWithZero R M :=
   { (inferInstance : MulAction R M) with
     smul_zero := smul_zero
-    zero_smul := Module.zero_smul }
+    zero_smul := zero_smul _ }
 
 instance AddCommGroup.toNatModule : Module ℕ M where
   one_smul := one_nsmul
@@ -81,7 +89,7 @@ instance AddCommGroup.toNatModule : Module ℕ M where
   add_smul r s x := add_nsmul x r s
 
 theorem add_smul : (r + s) • x = r • x + s • x :=
-  Module.add_smul r s x
+  NonUnitalModule.add_smul r s x
 
 theorem Convex.combo_self {a b : R} (h : a + b = 1) (x : M) : a • x + b • x = x := by
   rw [← add_smul, h, one_smul]
