@@ -72,6 +72,15 @@ lemma LFunction_eq_LSeries (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < r
     LFunction χ s = LSeries (χ ·) s :=
   ZMod.LFunction_eq_LSeries χ hs
 
+lemma deriv_LFunction_eq_deriv_LSeries {n : ℕ} [NeZero n] (χ : DirichletCharacter ℂ n) {s : ℂ}
+    (hs : 1 < s.re) :
+    deriv (LFunction χ) s = deriv (LSeries (χ ·)) s := by
+  refine Filter.EventuallyEq.deriv_eq ?_
+  have h : {z | 1 < z.re} ∈ nhds s :=
+    (isOpen_lt continuous_const continuous_re).mem_nhds hs
+  filter_upwards [h] with z hz
+  exact LFunction_eq_LSeries χ hz
+
 /--
 The L-function of a Dirichlet character is differentiable, except at `s = 1` if the character is
 trivial.
