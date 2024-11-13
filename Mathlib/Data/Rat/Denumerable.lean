@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Denumerability of ℚ
