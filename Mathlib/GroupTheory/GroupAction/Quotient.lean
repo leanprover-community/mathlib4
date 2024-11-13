@@ -12,6 +12,7 @@ import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Data.Finite.Prod
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 
 /-!
 # Properties of group actions involving quotient groups
