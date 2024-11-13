@@ -54,8 +54,7 @@ assert_not_exists Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
-variable {A : Type*} [AddGroup A]
+variable {G : Type*} [Group G] {A : Type*} [AddGroup A]
 
 section SubgroupClass
 
@@ -558,11 +557,7 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
     K.subtype.comp (inclusion hH) = H.subtype :=
   rfl
 
-variable {k : Set G}
-
 open Set
-
-variable {N : Type*} [Group N] {P : Type*} [Group P]
 
 /-- A subgroup is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
@@ -588,7 +583,7 @@ end AddSubgroup
 
 namespace Subgroup
 
-variable {H K : Subgroup G}
+variable {H : Subgroup G}
 
 @[to_additive]
 instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
@@ -619,7 +614,7 @@ end Subgroup
 
 namespace Subgroup
 
-variable (H : Subgroup G) {K : Subgroup G}
+variable (H : Subgroup G)
 
 section Normalizer
 

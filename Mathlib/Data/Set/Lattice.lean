@@ -1773,7 +1773,7 @@ end Function
 
 section Disjoint
 
-variable {s t u : Set α} {f : α → β}
+variable {s t : Set α}
 
 namespace Set
 

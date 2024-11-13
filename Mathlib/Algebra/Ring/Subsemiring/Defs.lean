@@ -45,7 +45,7 @@ instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
 
 end AddSubmonoidWithOneClass
 
-variable {R : Type u} {S : Type v} {T : Type w} [NonAssocSemiring R] (M : Submonoid R)
+variable {R : Type u} {S : Type v} [NonAssocSemiring R]
 
 section SubsemiringClass
 
@@ -113,7 +113,7 @@ end SubsemiringClass
 
 end SubsemiringClass
 
-variable [NonAssocSemiring S] [NonAssocSemiring T]
+variable [NonAssocSemiring S]
 
 /-- A subsemiring of a semiring `R` is a subset `s` that is both a multiplicative and an additive
 submonoid. -/
@@ -329,9 +329,7 @@ end Subsemiring
 
 namespace RingHom
 
-variable [NonAssocSemiring T] {s : Subsemiring R}
-variable {σR σS : Type*}
-variable [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R] [SubsemiringClass σS S]
+variable {s : Subsemiring R} {σR : Type*} [SetLike σR R] [SubsemiringClass σR R]
 
 open Subsemiring
 
@@ -352,15 +350,3 @@ theorem eqLocusS_same (f : R →+* S) : f.eqLocusS f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 
 end RingHom
-
-namespace Subsemiring
-
-open RingHom
-
-end Subsemiring
-
-namespace RingEquiv
-
-variable {s t : Subsemiring R}
-
-end RingEquiv
