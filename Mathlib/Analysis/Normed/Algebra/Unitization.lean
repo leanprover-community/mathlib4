@@ -138,7 +138,7 @@ theorem nnnorm_def (x : Unitization 𝕜 A) : ‖x‖₊ = ‖splitMul 𝕜 A x�
 /-- This is often the more useful lemma to rewrite the norm as opposed to `Unitization.norm_def`. -/
 theorem norm_eq_sup (x : Unitization 𝕜 A) :
     ‖x‖ = ‖x.fst‖ ⊔ ‖algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd‖ := by
-  rw [norm_def, splitMul_apply, Prod.norm_def, sup_eq_max]
+  rw [norm_def, splitMul_apply, Prod.norm_def]
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to
 `Unitization.nnnorm_def`. -/
@@ -152,7 +152,7 @@ theorem lipschitzWith_addEquiv :
   refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
   rw [norm_eq_sup, Prod.norm_def]
   refine max_le ?_ ?_
-  · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
+  · rw [mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A
     rw [two_mul]

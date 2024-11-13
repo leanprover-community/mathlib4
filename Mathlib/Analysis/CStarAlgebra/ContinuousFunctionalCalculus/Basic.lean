@@ -10,9 +10,9 @@ import Mathlib.Topology.Algebra.StarSubalgebra
 
 In this file we construct the `continuousFunctionalCalculus` for a normal element `a` of a
 (unital) C⋆-algebra over `ℂ`. This is a star algebra equivalence
-`C(spectrum ℂ a, ℂ) ≃⋆ₐ[ℂ] elementalStarAlgebra ℂ a` which sends the (restriction of) the
+`C(spectrum ℂ a, ℂ) ≃⋆ₐ[ℂ] elemental ℂ a` which sends the (restriction of) the
 identity map `ContinuousMap.id ℂ` to the (unique) preimage of `a` under the coercion of
-`elementalStarAlgebra ℂ a` to `A`.
+`elemental ℂ a` to `A`.
 
 Being a star algebra equivalence between C⋆-algebras, this map is continuous (even an isometry),
 and by the Stone-Weierstrass theorem it is the unique star algebra equivalence which extends the
@@ -32,11 +32,11 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
 
 ## Main definitions
 
-* `continuousFunctionalCalculus : C(spectrum ℂ a, ℂ) ≃⋆ₐ[ℂ] elementalStarAlgebra ℂ a`: this
+* `continuousFunctionalCalculus : C(spectrum ℂ a, ℂ) ≃⋆ₐ[ℂ] elemental ℂ a`: this
   is the composition of the inverse of the `gelfandStarTransform` with the natural isomorphism
-  induced by the homeomorphism `elementalStarAlgebra.characterSpaceHomeo`.
-* `elementalStarAlgebra.characterSpaceHomeo` :
-  `characterSpace ℂ (elementalStarAlgebra ℂ a) ≃ₜ spectrum ℂ a`: this homeomorphism is defined
+  induced by the homeomorphism `elemental.characterSpaceHomeo`.
+* `elemental.characterSpaceHomeo` :
+  `characterSpace ℂ (elemental ℂ a) ≃ₜ spectrum ℂ a`: this homeomorphism is defined
   by evaluating a character `φ` at `a`, and noting that `φ a ∈ spectrum ℂ a` since `φ` is an
   algebra homomorphism. Moreover, this map is continuous and bijective and since the spaces involved
   are compact Hausdorff, it is a homeomorphism.
@@ -46,65 +46,82 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
 
 open scoped Pointwise ENNReal NNReal ComplexOrder
 
-open WeakDual WeakDual.CharacterSpace elementalStarAlgebra
+open WeakDual WeakDual.CharacterSpace
 
 variable {A : Type*} [CStarAlgebra A]
 
+namespace StarAlgebra.elemental
+
 instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
     [ContinuousStar A] [StarModule R A] (a : A) [IsStarNormal a] :
-    NormedCommRing (elementalStarAlgebra R a) :=
-  { SubringClass.toNormedRing (elementalStarAlgebra R a) with
+    NormedCommRing (elemental R a) :=
+  { SubringClass.toNormedRing (elemental R a) with
     mul_comm := mul_comm }
 
-noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elementalStarAlgebra ℂ a) where
+noncomputable instance (a : A) [IsStarNormal a] : CommCStarAlgebra (elemental ℂ a) where
   mul_comm := mul_comm
 
 variable (a : A) [IsStarNormal a]
 
-/-- The natural map from `characterSpace ℂ (elementalStarAlgebra ℂ x)` to `spectrum ℂ x` given
+/-- The natural map from `characterSpace ℂ (elemental ℂ x)` to `spectrum ℂ x` given
 by evaluating `φ` at `x`. This is essentially just evaluation of the `gelfandTransform` of `x`,
 but because we want something in `spectrum ℂ x`, as opposed to
-`spectrum ℂ ⟨x, elementalStarAlgebra.self_mem ℂ x⟩` there is slightly more work to do. -/
+`spectrum ℂ ⟨x, elemental.self_mem ℂ x⟩` there is slightly more work to do. -/
 @[simps]
-noncomputable def elementalStarAlgebra.characterSpaceToSpectrum (x : A)
-    (φ : characterSpace ℂ (elementalStarAlgebra ℂ x)) : spectrum ℂ x where
+noncomputable def characterSpaceToSpectrum (x : A)
+    (φ : characterSpace ℂ (elemental ℂ x)) : spectrum ℂ x where
   val := φ ⟨x, self_mem ℂ x⟩
   property := by
-    simpa only [StarSubalgebra.spectrum_eq (hS := elementalStarAlgebra.isClosed ℂ x)
+    simpa only [StarSubalgebra.spectrum_eq (hS := isClosed ℂ x)
       (a := ⟨x, self_mem ℂ x⟩)] using AlgHom.apply_mem_spectrum φ ⟨x, self_mem ℂ x⟩
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12227 -/
-attribute [nolint simpNF] elementalStarAlgebra.characterSpaceToSpectrum_coe
+@[deprecated (since := "2024-11-05")]
+alias _root_.elementalStarAlgebra.characterSpaceToSpectrum := characterSpaceToSpectrum
 
-theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
-    Continuous (elementalStarAlgebra.characterSpaceToSpectrum x) :=
+theorem continuous_characterSpaceToSpectrum (x : A) :
+    Continuous (characterSpaceToSpectrum x) :=
   continuous_induced_rng.2
-    (map_continuous <| gelfandTransform ℂ (elementalStarAlgebra ℂ x) ⟨x, self_mem ℂ x⟩)
+    (map_continuous <| gelfandTransform ℂ (elemental ℂ x) ⟨x, self_mem ℂ x⟩)
 
-theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
-    Function.Bijective (elementalStarAlgebra.characterSpaceToSpectrum a) := by
+@[deprecated (since := "2024-11-05")]
+alias _root_.elementalStarAlgebra.continuous_characterSpaceToSpectrum :=
+  continuous_characterSpaceToSpectrum
+
+theorem bijective_characterSpaceToSpectrum :
+    Function.Bijective (characterSpaceToSpectrum a) := by
   refine ⟨fun φ ψ h => starAlgHomClass_ext ℂ ?_ ?_ ?_, ?_⟩
   · exact (map_continuous φ)
   · exact (map_continuous ψ)
-  · simpa only [elementalStarAlgebra.characterSpaceToSpectrum, Subtype.mk_eq_mk,
+  · simpa only [characterSpaceToSpectrum, Subtype.mk_eq_mk,
       ContinuousMap.coe_mk] using h
   · rintro ⟨z, hz⟩
-    have hz' := (StarSubalgebra.spectrum_eq (hS := elementalStarAlgebra.isClosed ℂ a)
+    have hz' := (StarSubalgebra.spectrum_eq (hS := isClosed ℂ a)
       (a := ⟨a, self_mem ℂ a⟩) ▸ hz)
     rw [CharacterSpace.mem_spectrum_iff_exists] at hz'
     obtain ⟨φ, rfl⟩ := hz'
     exact ⟨φ, rfl⟩
 
+@[deprecated (since := "2024-11-05")]
+alias _root_.elementalStarAlgebra.bijective_characterSpaceToSpectrum :=
+  bijective_characterSpaceToSpectrum
+
 /-- The homeomorphism between the character space of the unital C⋆-subalgebra generated by a
 single normal element `a : A` and `spectrum ℂ a`. -/
-noncomputable def elementalStarAlgebra.characterSpaceHomeo :
-    characterSpace ℂ (elementalStarAlgebra ℂ a) ≃ₜ spectrum ℂ a :=
+noncomputable def characterSpaceHomeo :
+    characterSpace ℂ (elemental ℂ a) ≃ₜ spectrum ℂ a :=
   @Continuous.homeoOfEquivCompactToT2 _ _ _ _ _ _
-    (Equiv.ofBijective (elementalStarAlgebra.characterSpaceToSpectrum a)
-      (elementalStarAlgebra.bijective_characterSpaceToSpectrum a))
-    (elementalStarAlgebra.continuous_characterSpaceToSpectrum a)
+    (Equiv.ofBijective (characterSpaceToSpectrum a)
+      (bijective_characterSpaceToSpectrum a))
+    (continuous_characterSpaceToSpectrum a)
+
+@[deprecated (since := "2024-11-05")]
+alias _root_.elementalStarAlgebra.characterSpaceHomeo := characterSpaceHomeo
+
+end StarAlgebra.elemental
+
+open StarAlgebra elemental
+
+variable (a : A) [IsStarNormal a]
 
 /-- **Continuous functional calculus.** Given a normal element `a : A` of a unital C⋆-algebra,
 the continuous functional calculus is a `StarAlgEquiv` from the complex-valued continuous
@@ -112,11 +129,11 @@ functions on the spectrum of `a` to the unital C⋆-subalgebra generated by `a`.
 equivalence identifies `(ContinuousMap.id ℂ).restrict (spectrum ℂ a))` with `a`; see
 `continuousFunctionalCalculus_map_id`. As such it extends the polynomial functional calculus. -/
 noncomputable def continuousFunctionalCalculus :
-    C(spectrum ℂ a, ℂ) ≃⋆ₐ[ℂ] elementalStarAlgebra ℂ a :=
-  ((elementalStarAlgebra.characterSpaceHomeo a).compStarAlgEquiv' ℂ ℂ).trans
-    (gelfandStarTransform (elementalStarAlgebra ℂ a)).symm
+    C(spectrum ℂ a, ℂ) ≃⋆ₐ[ℂ] elemental ℂ a :=
+  ((characterSpaceHomeo a).compStarAlgEquiv' ℂ ℂ).trans
+    (gelfandStarTransform (elemental ℂ a)).symm
 
 theorem continuousFunctionalCalculus_map_id :
     continuousFunctionalCalculus a ((ContinuousMap.id ℂ).restrict (spectrum ℂ a)) =
       ⟨a, self_mem ℂ a⟩ :=
-  (gelfandStarTransform (elementalStarAlgebra ℂ a)).symm_apply_apply _
+  (gelfandStarTransform (elemental ℂ a)).symm_apply_apply _

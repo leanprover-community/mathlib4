@@ -131,7 +131,10 @@ lemma continuousOn_cosKernel (a : UnitAddCircle) : ContinuousOn (cosKernel a) (I
   simp only [cosKernel_def]
   refine continuousOn_of_forall_continuousAt (fun x hx ↦ ?_)
   have : 0 < im (I * x) := by rwa [mul_im, I_re, I_im, zero_mul, one_mul, zero_add, ofReal_re]
-  exact (continuousAt_jacobiTheta₂ a' this).comp (f := fun u : ℝ ↦ (_, I * u)) (by fun_prop)
+  exact (continuousAt_jacobiTheta₂ a' this).comp
+    (g := fun p : ℂ × ℂ ↦ jacobiTheta₂ p.1 p.2)
+    (f := fun u : ℝ ↦ ((a' : ℂ), I * u))
+    (by fun_prop)
 
 lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     evenKernel a x = 1 / x ^ (1 / 2 : ℝ) * cosKernel a (1 / x) := by
