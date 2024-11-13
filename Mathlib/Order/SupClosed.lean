@@ -509,8 +509,6 @@ variable [CompleteLattice α] {f : ι → α} {s t : Set α}
 
 lemma SupClosed.biSup_mem_of_nonempty {ι : Type*} {t : Set ι} {f : ι → α} (hs : SupClosed s)
     (ht : t.Finite) (ht' : t.Nonempty) (hf : ∀ i ∈ t, f i ∈ s) : ⨆ i ∈ t, f i ∈ s := by
-  have := ht.to_subtype
-  have := ht'.to_subtype
   rw [← sSup_image]
   exact hs.sSup_mem_of_nonempty (ht.image _) (by simpa) (by simpa)
 
@@ -538,7 +536,6 @@ lemma InfClosed.sInf_mem (hs : InfClosed s) (ht : t.Finite) (htop : ⊤ ∈ s) (
 
 lemma SupClosed.biSup_mem {ι : Type*} {t : Set ι} {f : ι → α} (hs : SupClosed s)
     (ht : t.Finite) (hbot : ⊥ ∈ s) (hf : ∀ i ∈ t, f i ∈ s) : ⨆ i ∈ t, f i ∈ s := by
-  have := ht.to_subtype
   rw [← sSup_image]
   exact hs.sSup_mem (ht.image _) hbot (by simpa)
 
