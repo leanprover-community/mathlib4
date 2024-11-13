@@ -205,15 +205,10 @@ theorem isEmpty_of_isAlgebraic [Algebra.IsAlgebraic R A] : IsEmpty ι := by
 
 end AlgebraicIndependent
 
-namespace MvPolynomial
-
-variable (σ R : Type*) [CommRing R]
-
-theorem algebraicIndependent_X : AlgebraicIndependent R (X (R := R) (σ := σ)) := by
+theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [CommRing R] :
+    AlgebraicIndependent R (X (R := R) (σ := σ)) := by
   rw [AlgebraicIndependent, aeval_X_left]
   exact injective_id
-
-end MvPolynomial
 
 open AlgebraicIndependent
 
