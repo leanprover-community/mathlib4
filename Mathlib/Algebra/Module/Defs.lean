@@ -241,7 +241,8 @@ protected theorem Module.nontrivial (R M : Type*) [Semiring R] [Nontrivial M] [A
     [Module R M] : Nontrivial R :=
   MulActionWithZero.nontrivial R M
 
-instance (priority := 910) [NonUnitalSemiring R] : NonUnitalModule R R where
+instance (priority := 910) NonUnitalSemiring.toNonUnitalModule
+    [NonUnitalSemiring R] : NonUnitalModule R R where
   smul_add := mul_add
   add_smul := add_mul
   zero_smul := zero_mul
