@@ -121,22 +121,20 @@ theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
 theorem relfinrank_top_right : relfinrank A ⊤ = finrank A E := by
   simp [relfinrank_eq_toNat_relrank, finrank]
 
+theorem lift_relrank_map_map (f : E →+* L) :
+    lift.{v} (relrank (A.map f) (B.map f)) = lift.{w} (relrank A B) :=
+  -- typeclass inference is slow
+  .symm <| Algebra.lift_rank_eq_of_equiv_equiv (((A ⊓ B).equivMapOfInjective f f.injective).trans
+    <| .subringCongr <| by rw [← map_inf]; rfl) (B.equivMapOfInjective f f.injective) rfl
+
+theorem relrank_map_map {L : Type v} [Field L] (f : E →+* L) :
+    relrank (A.map f) (B.map f) = relrank A B := by
+  simpa only [lift_id] using lift_relrank_map_map A B f
+
 theorem lift_relrank_comap (f : L →+* E) (B : Subfield L) :
-    lift.{v} (relrank (A.comap f) B) = lift.{w} (relrank A (B.map f)) := by
-  let j := f.comp (A.comap f ⊓ B).subtype
-  have hj : j.fieldRange = A ⊓ B.map f := by
-    simp_rw [j]
-    apply ext
-    erw [← Set.ext_iff, RingHom.coe_fieldRange, RingHom.coe_comp, Set.range_comp, Subtype.range_coe]
-    exact Set.image_preimage_inter f B A
-  let j' : ↥(A.comap f ⊓ B) ≃+* j.fieldRange :=
-    RingEquiv.ofLeftInverse (Function.leftInverse_invFun j.injective)
-  let f' : B ≃+* (f.comp B.subtype).fieldRange :=
-    RingEquiv.ofLeftInverse (Function.leftInverse_invFun (f.comp B.subtype).injective)
-  have hf : (f.comp B.subtype).fieldRange = B.map f := by
-    rw [← RingHom.map_fieldRange, fieldRange_subtype]
-  exact Algebra.lift_rank_eq_of_equiv_equiv (j'.trans (.subfieldCongr hj))
-    (f'.trans (.subfieldCongr hf)) rfl
+    lift.{v} (relrank (A.comap f) B) = lift.{w} (relrank A (B.map f)) :=
+  (lift_relrank_map_map _ _ f).symm.trans <| congr_arg lift <| relrank_eq_of_inf_eq <| by
+    rw [map_comap_eq, f.fieldRange_eq_map, inf_assoc, ← map_inf, top_inf_eq]
 
 theorem relrank_comap {L : Type v} [Field L] (f : L →+* E)
     (B : Subfield L) : relrank (A.comap f) B = relrank A (B.map f) := by
@@ -156,14 +154,6 @@ theorem rank_comap {L : Type v} [Field L] (f : L →+* E) :
 
 theorem finrank_comap (f : L →+* E) : finrank (A.comap f) L = relfinrank A f.fieldRange := by
   simpa using congr(toNat $(lift_rank_comap A f))
-
-theorem lift_relrank_map_map (f : E →+* L) :
-    lift.{v} (relrank (A.map f) (B.map f)) = lift.{w} (relrank A B) := by
-  rw [← lift_relrank_comap, comap_map]
-
-theorem relrank_map_map {L : Type v} [Field L] (f : E →+* L) :
-    relrank (A.map f) (B.map f) = relrank A B := by
-  simpa only [lift_id] using lift_relrank_map_map A B f
 
 theorem relfinrank_map_map (f : E →+* L) :
     relfinrank (A.map f) (B.map f) = relfinrank A B := by
