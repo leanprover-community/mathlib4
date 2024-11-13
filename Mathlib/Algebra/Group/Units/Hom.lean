@@ -215,7 +215,7 @@ variable {G R S T F : Type*}
 variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
 
 /-- A local ring homomorphism is a map `f` between monoids such that `a` in the domain
-  is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
+  is a unit if `f a` is a unit for any `a`. See `IsLocalRing.local_hom_TFAE` for other equivalent
   definitions in the local ring case - from where this concept originates, but it is useful in
   other contexts, so we allow this generalisation in mathlib. -/
 class IsLocalHom (f : F) : Prop where
