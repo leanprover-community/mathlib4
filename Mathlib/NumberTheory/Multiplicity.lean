@@ -5,10 +5,12 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Prime.Int
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Multiplicity in Number Theory

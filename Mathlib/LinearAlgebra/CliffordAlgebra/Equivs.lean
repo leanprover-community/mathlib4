@@ -354,7 +354,7 @@ open scoped DualNumber
 
 open DualNumber TrivSqZeroExt
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R : Type*} [CommRing R]
 
 theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : QuadraticForm R R) r₂ = 0 := by
   rw [← mul_one r₁, ← mul_one r₂, ← smul_eq_mul R, ← smul_eq_mul R, LinearMap.map_smul,

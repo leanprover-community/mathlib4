@@ -7,8 +7,8 @@ import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.Instances.Real
 
 /-!
 # Topology on `ℝ≥0`
@@ -51,8 +51,7 @@ a few of which rely on the fact that subtraction is continuous.
 
 noncomputable section
 
-open Set TopologicalSpace Metric Filter
-open scoped Topology
+open Filter Metric Set TopologicalSpace Topology
 
 namespace NNReal
 

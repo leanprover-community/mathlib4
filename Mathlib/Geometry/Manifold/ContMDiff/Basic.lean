@@ -20,9 +20,9 @@ embedding `e : M → H`, then `e` is smooth.
 chain rule, manifolds, higher derivative
 
 -/
-open Set Filter Function
 
-open scoped Topology Manifold
+open Filter Function Set Topology
+open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare the prerequisites for a charted space `M` over the pair `(E, H)`.
@@ -63,8 +63,9 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds (I := I) x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
     simp only [e.map_source hx', true_and, e.left_inv hx', st hx's, *]
-  refine ((hg.2.comp _ (hf.2.mono inter_subset_right) inter_subset_left).mono_of_mem
-    (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
+  refine ((hg.2.comp _ (hf.2.mono inter_subset_right)
+      ((mapsTo_preimage _ _).mono_left inter_subset_left)).mono_of_mem_nhdsWithin
+      (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
     simp only [*, mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,

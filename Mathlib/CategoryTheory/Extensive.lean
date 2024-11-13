@@ -45,8 +45,7 @@ Show that the following are finitary extensive:
 
 -/
 
-
-open CategoryTheory.Limits
+open CategoryTheory.Limits Topology
 
 namespace CategoryTheory
 
@@ -321,7 +320,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ => ContinuousMap.ext fun x =>
           hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply (IsEmbedding.inl (X := X') (Y := Y')).toInducing.continuous_iff.mpr
+      apply (IsEmbedding.inl (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
@@ -338,7 +337,7 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ =>
           ContinuousMap.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
-      apply (IsEmbedding.inr (X := X') (Y := Y')).toInducing.continuous_iff.mpr
+      apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
       convert s.fst.2 using 1
       exact (funext hl).symm
   · intro Z f

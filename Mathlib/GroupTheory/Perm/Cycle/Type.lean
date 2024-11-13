@@ -79,9 +79,7 @@ theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
     Finset.card_map, Finset.card_attach]
   simp only [Function.comp_apply, Finset.card, Finset.filter_val,
     Multiset.filter_map, Multiset.card_map]
-  apply congr_arg
-  ext c
-  apply congr_arg₂ _ rfl
+  congr 1
   apply Multiset.filter_congr
   intro d h
   simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
