@@ -147,17 +147,9 @@ Alternative definition of height, with the supremum ranging only over those seri
 -/
 lemma height_eq_iSup_last_eq (a : α) :
     height a = ⨆ (p : LTSeries α) (_ : p.last = a), ↑(p.length) := by
-  apply le_antisymm
-  · apply iSup₂_le
-    intro p hlast
-    -- The proof is a bit more elaborate since we have a Preorder, not a PartialOrder
-    wlog hlenpos :  p.length ≠ 0
-    · simp_all
-    let p' := p.eraseLast.snoc a ( lt_of_lt_of_le (p.eraseLast_last_rel_last hlenpos) hlast)
-    apply le_iSup₂_of_le p' (by simp [p']) (by simp [p']; norm_cast; omega)
-  · apply iSup₂_le
-    intro p hlast
-    apply le_iSup₂_of_le p (by simp [hlast]) (by simp)
+  apply eq_of_forall_ge_iff
+  intro n
+  rw [height_le_iff', iSup₂_le_iff]
 
 /--
 Alternative definition of coheight, with the supremum only ranging over those series
@@ -297,7 +289,7 @@ private lemma exist_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α �
   use x
   simpa [hx] using h
 
-/-- There exist a series ending in a element for any lenght up to the element’s height.  -/
+/-- There exist a series ending in a element for any length up to the element’s height.  -/
 lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     ∃ p : LTSeries α, p.last = a ∧ p.length = n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
@@ -309,7 +301,7 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     contrapose! ha
     use n
     rintro m ⟨⟨p, rfl⟩, hp⟩
-    simp at hp
+    simp only at hp
     by_contra! hnm
     apply ha (p.drop ⟨m-n, by omega⟩) (by simp) (by simp; omega)
   | coe m =>
@@ -335,33 +327,6 @@ lemma exists_series_of_height_eq_coe (a : α) {n : ℕ} (h : height a = n) :
 lemma exists_series_of_coheight_eq_coe (a : α) {n : ℕ} (h : coheight a = n) :
     ∃ p : LTSeries α, p.head = a ∧ p.length = n :=
   exists_series_of_le_coheight a (le_of_eq h.symm)
-
-/--
-The height of an element is infinite if there exist series of arbitrary length ending in that
-element.
--/
-lemma height_eq_top_iff (x : α) :
-    height x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.last = x ∧ p.length = n := by
-  constructor
-  · intro h n
-    apply exists_series_of_le_height x (n := n)
-    simp [h]
-  · intro h
-    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
-    push_neg
-    intro n
-    obtain ⟨p, hlast, hp⟩ := h (n+1)
-    exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
-
-/--
-The coheight of an element is infinite if there exist series of arbitrary length ending in that
-element.
--/
-lemma coheight_eq_top_iff (x : α) :
-    coheight x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.head = x ∧ p.length = n := by
-  convert height_eq_top_iff (α := αᵒᵈ) x using 2 with n
-  exact ⟨fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩,
-         fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩⟩
 
 /-- Another characterization of height, based on the supremum of the heights of elements below. -/
 lemma height_eq_isup_lt_height (x : α) : height x = ⨆ (y : α) (_  : y < x), height y + 1 := by
@@ -397,6 +362,34 @@ lemma height_le_coe_iff (x : α) (n : ℕ) :
 lemma coheight_le_coe_iff (x : α) (n : ℕ) :
     coheight x ≤ n ↔ (∀ y, x < y → coheight y < n) :=
   height_le_coe_iff (α := αᵒᵈ) x n
+
+/--
+The height of an element is infinite if there exist series of arbitrary length ending in that
+element.
+-/
+lemma height_eq_top_iff (x : α) :
+    height x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.last = x ∧ p.length = n := by
+  constructor
+  · intro h n
+    apply exists_series_of_le_height x (n := n)
+    simp [h]
+  · intro h
+    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
+    push_neg
+    intro n
+    obtain ⟨p, hlast, hp⟩ := h (n+1)
+    exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
+
+/--
+The coheight of an element is infinite if there exist series of arbitrary length ending in that
+element.
+-/
+lemma coheight_eq_top_iff (x : α) :
+    coheight x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.head = x ∧ p.length = n := by
+  convert height_eq_top_iff (α := αᵒᵈ) x using 2 with n
+  exact ⟨fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩,
+         fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩⟩
+
 
 lemma height_eq_zero_iff (x : α) : height x = 0 ↔ (∀ y, ¬(y < x)) := by
   simpa using height_le_coe_iff x 0
