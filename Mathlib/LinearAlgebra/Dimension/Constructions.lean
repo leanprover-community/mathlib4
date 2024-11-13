@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Rank of various constructions
@@ -30,9 +29,9 @@ We have finrank variants for most lemmas as well.
 
 noncomputable section
 
-universe u v v' u₁' w w'
+universe u u' v v' u₁' w w'
 
-variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
+variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open Basis Cardinal DirectSum Function Module Set Submodule
@@ -66,28 +65,14 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   conv_lhs => simp only [Module.rank_def]
   have := nonempty_linearIndependent_set R (M ⧸ M')
   have := nonempty_linearIndependent_set R M'
-  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range.{v, v} _) _ (bddAbove_range.{v, v} _)]
+  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
-  choose f hf using Quotient.mk_surjective M'
+  choose f hf using Submodule.Quotient.mk_surjective M'
   simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
     (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
-  (mkQ p).rank_le_of_surjective (surjective_quot_mk _)
-
-theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Module R M]
-    {M' : Submodule R M} (hN : M' ≤ torsion R M) : Module.rank R (M ⧸ M') = Module.rank R M :=
-  (rank_quotient_le M').antisymm <| by
-    nontriviality R
-    rw [Module.rank]
-    have := nonempty_linearIndependent_set R M
-    refine ciSup_le fun ⟨s, hs⟩ ↦ LinearIndependent.cardinal_le_rank (v := (M'.mkQ ·)) ?_
-    rw [linearIndependent_iff'] at hs ⊢
-    simp_rw [← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]
-    intro t g hg i hi
-    obtain ⟨r, hg⟩ := hN hg
-    simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hg
-    exact r.prop _ (mul_comm (g i) r ▸ hs t _ hg i hi)
+  (mkQ p).rank_le_of_surjective Quot.mk_surjective
 
 end Quotient
 
@@ -355,10 +340,15 @@ theorem rank_tensorProduct :
 theorem rank_tensorProduct' :
     Module.rank R (M ⊗[S] M₁) = Module.rank R M * Module.rank S M₁ := by simp
 
+theorem Module.rank_baseChange :
+    Module.rank R (R ⊗[S] M') = Cardinal.lift.{u} (Module.rank S M') := by simp
+
 /-- The `S`-finrank of `M ⊗[R] M'` is `(finrank S M) * (finrank R M')`. -/
 @[simp]
 theorem Module.finrank_tensorProduct :
     finrank R (M ⊗[S] M') = finrank R M * finrank S M' := by simp [finrank]
+
+theorem Module.finrank_baseChange : finrank R (R ⊗[S] M') = finrank S M' := by simp
 
 end TensorProduct
 
@@ -391,7 +381,7 @@ theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
 /-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
     finrank R (M ⧸ s) ≤ finrank R M :=
-  toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective (surjective_quot_mk _))
+  toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
     (rank_lt_aleph0 _ _)
 
 /-- Pushforwards of finite submodules have a smaller finrank. -/

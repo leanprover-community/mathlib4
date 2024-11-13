@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Algebra.Exact
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Right-exactness properties of tensor product
@@ -419,7 +420,7 @@ variable (R) in
 theorem TensorProduct.mk_surjective (S) [Semiring S] [Algebra R S]
     (h : Surjective (algebraMap R S)) :
     Surjective (TensorProduct.mk R S M 1) := by
-  rw [← LinearMap.range_eq_top, ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
+  rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
   rintro _ ⟨x, y, rfl⟩
   obtain ⟨x, rfl⟩ := h x
   rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
