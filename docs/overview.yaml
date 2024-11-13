@@ -438,8 +438,7 @@ Combinatorics:
     Correlation inequalities:
       Four functions theorem: 'four_functions_theorem'
       Harris-Kleitman inequality: 'IsLowerSet.le_card_inter_finset'
-    Families of fixed size:
-      Kruskal-Katona theorem: 'Finset.kruskal_katona'
+    Antichains:
       Ahlswede-Zhang identity: 'AhlswedeZhang.infSum_eq_one'
       LYM inequality: 'Finset.sum_card_slice_div_choose_le_one'
       Sperner's theorem: 'Finset.IsAntichain.sperner'
@@ -449,6 +448,7 @@ Combinatorics:
     VC dimension:
       VC dimension: 'Finset.vcDim'
       Sauer-Shelah lemma: 'Finset.card_shatterer_le_sum_vcDim'
+    Kruskal-Katona theorem: 'Finset.kruskal_katona'
   Graph theory:
     simple graph: 'SimpleGraph'
     degree-sum formula: 'SimpleGraph.sum_degrees_eq_twice_card_edges'
