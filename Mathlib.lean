@@ -857,7 +857,6 @@ import Mathlib.Algebra.Ring.Subsemiring.Pointwise
 import Mathlib.Algebra.Ring.SumsOfSquares
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
-import Mathlib.Algebra.Ring.WithAbs
 import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SMulWithZero
@@ -1369,6 +1368,7 @@ import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
 import Mathlib.Analysis.Normed.Ring.SeminormFromConst
 import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Analysis.Normed.Ring.Units
+import Mathlib.Analysis.Normed.Ring.WithAbs
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.Connected
@@ -2895,7 +2895,6 @@ import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsConjRoot
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
-import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.Perfect
@@ -3168,6 +3167,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Charpoly.BaseChange
 import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.CliffordAlgebra.BaseChange
@@ -4071,6 +4071,7 @@ import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.AdicCompletion.Exactness
 import Mathlib.RingTheory.AdicCompletion.Functoriality
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Adjoin.FG
 import Mathlib.RingTheory.Adjoin.Field
 import Mathlib.RingTheory.Adjoin.PowerBasis
@@ -4252,6 +4253,7 @@ import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
