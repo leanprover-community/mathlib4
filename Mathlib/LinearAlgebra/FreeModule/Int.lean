@@ -17,6 +17,9 @@ index.
 
 namespace Basis.SmithNormalForm
 
+/-- Given a submodule `N` in Smith normal form of a Free ℤ-module, it has finite index as an
+additive subgroup (i.e., `N.toAddSubgroup.index ≠ 0`) if and only if the submodule basis has as
+many vectors as the basis for the module. -/
 lemma toAddSubgroup_index_ne_zero_iff {ι M : Type*} {n : ℕ} [Fintype ι] [AddCommGroup M]
     {N : Submodule ℤ M} (snf : Basis.SmithNormalForm N ι n) :
     N.toAddSubgroup.index ≠ 0 ↔ n = Fintype.card ι := by
