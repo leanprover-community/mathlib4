@@ -144,17 +144,15 @@ variable {A : Type*} [CommSemiring A]
 include hf
 
 /-- `AlgHom` version of `IsLocalization.lift`. -/
-noncomputable def liftAlgHom : S →ₐ[A] P :=
-  { lift hf with
-    commutes' := by
-      intro r
-      change lift hf (algebraMap A S r) = _
-      simp [IsScalarTower.algebraMap_apply A R S] }
+noncomputable def liftAlgHom : S →ₐ[A] P where
+  __ := lift hf
+  commutes' r := show lift hf (algebraMap A S r) = _ by
+    simp [IsScalarTower.algebraMap_apply A R S]
 
 theorem liftAlgHom_toRingHom : (liftAlgHom hf : S →ₐ[A] P).toRingHom = lift hf := rfl
 
 @[simp]
-theorem coe_liftAlgHom : ((liftAlgHom hf : S →ₐ[A] P) : S → P) = lift hf := rfl
+theorem coe_liftAlgHom : ⇑(liftAlgHom hf : S →ₐ[A] P) = lift hf := rfl
 
 theorem liftAlgHom_apply : liftAlgHom hf x = lift hf x := rfl
 
@@ -175,10 +173,10 @@ include H
 an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
 `S ≃ₐ[A] Q`. -/
 @[simps!]
-noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q :=
-  { ringEquivOfRingEquiv S Q h.toRingEquiv H with
-    commutes' := fun _ ↦ by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
-      RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q] }
+noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q where
+  __ := ringEquivOfRingEquiv S Q h.toRingEquiv H
+  commutes' _ := by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+    RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
 
 variable {S Q h}
 

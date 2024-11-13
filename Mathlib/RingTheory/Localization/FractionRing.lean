@@ -145,9 +145,9 @@ variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [
   [IsFractionRing A K] {g : A →+* L}
 
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
-    mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s := by
+    mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
   haveI := (algebraMap A K).domain_nontrivial
-  exact mk'_eq_iff_eq_mul.2 <|
+  mk'_eq_iff_eq_mul.2 <|
     (div_mul_cancel₀ (algebraMap A K r)
         (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hs)).symm
 
@@ -161,9 +161,9 @@ theorem div_surjective (z : K) :
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 
 theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
-    IsUnit (g y) := by
+    IsUnit (g y) :=
   haveI := g.domain_nontrivial
-  exact IsUnit.mk0 (g y) <|
+  IsUnit.mk0 (g y) <|
     show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.2
 
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
@@ -202,7 +202,7 @@ noncomputable def liftAlgHom : K →ₐ[R] L :=
 theorem liftAlgHom_toRingHom : (liftAlgHom hg : K →ₐ[R] L).toRingHom = lift hg := rfl
 
 @[simp]
-theorem coe_liftAlgHom : ((liftAlgHom hg : K →ₐ[R] L) : K → L) = lift hg := rfl
+theorem coe_liftAlgHom : ⇑(liftAlgHom hg : K →ₐ[R] L) = lift hg := rfl
 
 theorem liftAlgHom_apply : liftAlgHom hg x = lift hg x := rfl
 
