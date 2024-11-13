@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
 
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Nat.Choose.Mchoose
+import Mathlib.Combinatorics.Enumerative.Bell
 import Mathlib.Data.Nat.Choose.Multinomial
 
 /-! # Divided powers
@@ -92,7 +92,7 @@ structure DividedPowers {A : Type*} [CommSemiring A] (I : Ideal A) where
   dpow_mul : ∀ (m n) {x} (_ : x ∈ I),
     dpow m x * dpow n x = choose (m + n) m * dpow (m + n) x
   dpow_comp : ∀ (m) {n x} (_ : n ≠ 0) (_ : x ∈ I),
-    dpow m (dpow n x) = mchoose m n * dpow (m * n) x
+    dpow m (dpow n x) = uniformBell m n * dpow (m * n) x
 
 /-- The canonical `DividedPowers` structure on the zero ideal -/
 def dividedPowersBot (A : Type*) [CommSemiring A] [DecidableEq A] :
@@ -107,8 +107,7 @@ def dividedPowersBot (A : Type*) [CommSemiring A] [DecidableEq A] :
     rw [Ideal.mem_bot.mp ha]
     simp only [and_self, ite_true]
   dpow_one {a} ha := by
-    simp only [and_false, ite_false]
-    rw [Ideal.mem_bot.mp ha]
+    simp [Ideal.mem_bot.mp ha]
   dpow_mem {n a} hn _ := by
     simp only [Ideal.mem_bot, ite_eq_right_iff, and_imp]
     exact fun _ a => False.elim (hn a)
@@ -144,7 +143,7 @@ def dividedPowersBot (A : Type*) [CommSemiring A] [DecidableEq A] :
     rw [Ideal.mem_bot.mp ha]
     simp only [true_and, ite_eq_right_iff, _root_.mul_eq_zero, mul_ite, mul_one, mul_zero]
     by_cases hm: m = 0
-    · simp only [hm, and_true, true_or, ite_true, mchoose_zero, cast_one]
+    · simp only [hm, and_true, true_or, ite_true, uniformBell_zero_left, cast_one]
       rw [if_pos]
       exact fun h => False.elim (hn h)
     · simp only [hm, and_false, ite_false, false_or, if_neg hn]
@@ -199,6 +198,7 @@ section BasicLemmas
 
 variable {A : Type*} [CommSemiring A] {I : Ideal A}
 
+/-- Variant of `DividedPowers.dpow_add` with a sum on `range (n + 1)` -/
 theorem dpow_add' (hI : DividedPowers I) (n : ℕ) {x y : A} (hx : x ∈ I) (hy : y ∈ I) :
     hI.dpow n (x + y) = (range (n + 1)).sum fun k => hI.dpow k x * hI.dpow (n - k) y := by
   rw [hI.dpow_add n hx hy, sum_antidiagonal_eq_sum_range_succ_mk]
@@ -226,6 +226,7 @@ variable (hI : DividedPowers I)
 
 /- ## Rewriting lemmas -/
 
+/-- Variant of `DividedPowers.dpow_smul` with a `smul` -/
 theorem dpow_smul' (n : ℕ) (a : A) {x : A} (hx : x ∈ I) :
     hI.dpow n (a • x) = a ^ n • hI.dpow n x := by
   simp only [smul_eq_mul, hI.dpow_smul, hx]
@@ -257,7 +258,7 @@ by some nonzero integer `n`, then its `n`th power is zero.
 
 Proposition 1.2.7 of [Berthelot-1974], part (i). -/
 theorem nilpotent_of_mem_dpIdeal {n : ℕ} (hn : n ≠ 0) (hnI : ∀ {y} (_ : y ∈ I), n • y = 0)
-    {x} (hx : x ∈ I) :
+    (hI : DividedPowers I) {x} (hx : x ∈ I) :
     x ^ n = 0 := by
   have h_fac : (n.factorial : A) * hI.dpow n x =
     n • ((n - 1).factorial : A) * hI.dpow n x := by
@@ -475,18 +476,19 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
   dpow_mul m n {x} hx := by
     simp only
     rw [← map_mul, hI.dpow_mul, map_mul]
-    simp only [map_natCast]
-    rwa [Ideal.symm_apply_mem_of_equiv_iff, h]
+    · simp only [map_natCast]
+    · rwa [Ideal.symm_apply_mem_of_equiv_iff, h]
   dpow_comp m {n x} hn hx := by
     simp only [RingEquiv.symm_apply_apply]
     rw [hI.dpow_comp _ hn]
-    simp only [map_mul, map_natCast]
-    rwa [Ideal.symm_apply_mem_of_equiv_iff, h]
+    · simp only [map_mul, map_natCast]
+    · rwa [Ideal.symm_apply_mem_of_equiv_iff, h]
 
 @[simp]
 theorem ofRingEquiv_eq (hI : DividedPowers I) (n : ℕ) (b : B) :
     (ofRingEquiv h hI).dpow n b = e (hI.dpow n (e.symm b)) := rfl
 
+/-- Variant of `DividedPowers.ofRingEquiv_eq` -/
 theorem ofRingEquiv_eq' (hI : DividedPowers I) (n : ℕ) (a : A) :
     (ofRingEquiv h hI).dpow n (e a) = e (hI.dpow n a) := by
   simp
@@ -501,6 +503,7 @@ def equiv : DividedPowers I ≃ DividedPowers J where
 theorem equiv_apply (hI : DividedPowers I) (n : ℕ) (b : B) :
     (equiv h hI).dpow n b = e (hI.dpow n (e.symm b)) := rfl
 
+/-- Variant of `DividedPowers.equiv_apply` -/
 theorem equiv_apply' (hI : DividedPowers I) (n : ℕ) (a : A) :
     (equiv h hI).dpow n (e a) = e (hI.dpow n a) :=
   ofRingEquiv_eq' h hI n a
