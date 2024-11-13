@@ -390,16 +390,12 @@ theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
 theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : _root_.IsAlgebraic (⊥ : Subalgebra R S) x) :
     _root_.IsAlgebraic R x :=
   halg.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
-    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id (by ext; rfl)
+    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id rfl
 
 theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
-    _root_.IsAlgebraic (⊥ : Subalgebra R S) x ↔ _root_.IsAlgebraic R x := by
-  refine (isAlgebraic_ringHom_iff_of_comp_eq (Algebra.botEquivOfInjective h) (RingHom.id S)
-    Function.injective_id ?_).symm
-  ext x
-  obtain ⟨y, rfl⟩ := (Algebra.botEquivOfInjective h).symm.surjective x
-  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, AlgEquiv.apply_symm_apply]
-  rfl
+    _root_.IsAlgebraic (⊥ : Subalgebra R S) x ↔ _root_.IsAlgebraic R x :=
+  isAlgebraic_ringHom_iff_of_comp_eq (Algebra.botEquivOfInjective h).symm (RingHom.id S)
+    Function.injective_id (by rfl)
 
 variable (R S) in
 theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot
@@ -411,12 +407,8 @@ theorem algebra_isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) :
     Algebra.IsAlgebraic (⊥ : Subalgebra R S) S ↔ Algebra.IsAlgebraic R S := by
   simp_rw [Algebra.isAlgebraic_def, isAlgebraic_bot_iff h]
 
-instance algebra_isAlgebraic_bot [Nontrivial R] : Algebra.IsAlgebraic R (⊥ : Subalgebra R S) := by
-  rw [Algebra.isAlgebraic_def]
-  intro x
-  rw [isAlgebraic_iff_isAlgebraic_val]
-  obtain ⟨y, hy⟩ := Algebra.mem_bot.1 x.2
-  exact hy ▸ isAlgebraic_algebraMap y
+instance algebra_isAlgebraic_bot [Nontrivial R] : Algebra.IsAlgebraic R (⊥ : Subalgebra R S) :=
+  ⟨by rintro ⟨_, x, rfl⟩; exact isAlgebraic_algebraMap _⟩
 
 end Subalgebra
 
