@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrd
