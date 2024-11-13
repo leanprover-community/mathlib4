@@ -3,12 +3,9 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.TypesFiltered
-import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
+import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 
 /-!
 # The IPC property
@@ -29,6 +26,7 @@ These results will be used to show that if a category `C` has products indexed b
 does the category of Ind-objects of `C`.
 
 ## References
+* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], 3.1.10, 3.1.11, 3.1.12.
 -/
 
 universe w v v₁ v₂ u u₁ u₂
@@ -161,6 +159,7 @@ variable {α : Type u} {I : α → Type u} [∀ i, SmallCategory (I i)] [∀ i, 
 
 theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ Type u) :
     IsIso (colimitPointwiseProductToProductColimit F) := by
+  -- We follow the proof in [Kashiwara2006], Prop. 3.1.11(ii)
   refine (isIso_iff_bijective _).2 ⟨fun y y' hy => ?_, fun x => ?_⟩
   · obtain ⟨ky, yk₀, hyk₀⟩ := Types.jointly_surjective' y
     obtain ⟨ky', yk₀', hyk₀'⟩ := Types.jointly_surjective' y'
