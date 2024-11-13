@@ -101,7 +101,7 @@ arrow category composed with `F`. -/
 noncomputable def leftKanExtensionIsoFiberwiseColimit [HasLeftKanExtension L F] :
     leftKanExtension L F ≅ fiberwiseColimit (grothendieckProj L ⋙ F) :=
   letI : ∀ X, HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) :=
-      fun X =>hasColimitOfIso <| Iso.symm <| isoWhiskerRight (eqToIso ((functor L).map_id X)) _ ≪≫
+      fun X => hasColimitOfIso <| Iso.symm <| isoWhiskerRight (eqToIso ((functor L).map_id X)) _ ≪≫
       Functor.leftUnitor (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F)
   Iso.symm <| NatIso.ofComponents
     (fun X => HasColimit.isoOfNatIso (isoWhiskerRight (ιCompGrothendieckProj L X) F) ≪≫
