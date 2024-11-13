@@ -130,22 +130,14 @@ theorem continuous_C [Semiring R] :
 theorem variables_tendsto_zero [Semiring R] :
     Tendsto (X · : σ → MvPowerSeries σ R) cofinite (nhds 0) := by
   classical
-  rw [tendsto_pi_nhds]
-  simp_rw [apply_eq_coeff]
-  intro d s hs
-  replace hs : 0 ∈ s := by simpa only [map_zero] using mem_of_mem_nhds hs
-  simp_rw [mem_map, mem_cofinite, ← Set.preimage_compl, coeff_X]
+  simp only [tendsto_iff_coeff_tendsto, MvPowerSeries.apply_eq_coeff, coeff_X, coeff_zero]
+  refine fun d ↦ tendsto_nhds_of_eventually_eq ?_
   by_cases h : ∃ i, d = Finsupp.single i 1
-  · obtain ⟨i, rfl⟩ := h
-    apply (Set.finite_singleton i).subset
-    intro x
-    by_cases hx : x = i <;>
-      simp [Finsupp.single_eq_single_iff, Ne.symm, hx, hs]
-  · convert Set.finite_empty
-    rw [Set.eq_empty_iff_forall_not_mem]
-    intro x
-    rwa [Set.mem_preimage, Set.not_mem_compl_iff, if_neg]
-    tauto
+  · obtain ⟨i, hi⟩ := h
+    filter_upwards [eventually_cofinite_ne i] with j hj
+    simp only [hi, Finsupp.single_eq_single_iff, and_false, or_false, and_true, hj.symm, if_false]
+  · simpa only [ite_eq_right_iff] using 
+      eventually_of_forall fun x h' ↦ (not_exists.mp h x h').elim
 
 theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
     {f} (hf : IsNilpotent (constantCoeff σ R f)) :
