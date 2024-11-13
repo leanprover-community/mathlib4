@@ -52,9 +52,8 @@ For a free module over any ring satisfying the strong rank condition
 (e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
-In particular this agrees with the usual notion of the dimension of a vector space.
-
--/
+In particular this agrees with the usual notion of the dimension of a vector space. -/
+@[stacks 09G3 "first part"]
 protected irreducible_def Module.rank : Cardinal :=
   ⨆ ι : { s : Set M // LinearIndependent R ((↑) : s → M) }, (#ι.1)
 
