@@ -5,9 +5,9 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
 import Mathlib.Order.RelSeries
+import Mathlib.Order.Minimal
 import Mathlib.Data.ENat.Lattice
-import Mathlib.Topology.Order.Monotone
-import Mathlib.Topology.Instances.ENat
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -288,8 +288,8 @@ lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
   · simpa using height_le_height_apply_of_strictMono _ f.symm.strictMono (f x)
   · exact height_le_height_apply_of_strictMono _ f.strictMono x
 
-lemma coheight_eq_of_orderIso (f : α ≃o β) (x : α) : coheight (f x) = coheight x :=
-  height_eq_of_orderIso (α := αᵒᵈ) f.dual x
+lemma coheight_orderIso (f : α ≃o β) (x : α) : coheight (f x) = coheight x :=
+  height_orderIso (α := αᵒᵈ) f.dual x
 
 private lemma exist_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
     (h : (⨆ x, f x) = n) : ∃ x, f x = n := by
@@ -415,7 +415,7 @@ lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
   constructor
   · intro h
     obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp (LT.lt.ne_top hfin)
-    rw [hx] at h; norm_num at h
+    rw [hx] at h; norm_cast at h
     obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
     use p ⟨n, by omega⟩
     constructor
@@ -807,17 +807,17 @@ lemma coheight_coe_WithBot (x : α) : coheight (x : WithBot α) = coheight x :=
 lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_isup_lt_height]
   norm_cast
-  rw [Monotone.map_ciSup_of_continuousAt (f := (· + 1))
-    (continuousAt_id.add continuousAt_const) (monotone_id.add monotone_const)]
   apply le_antisymm
   · apply iSup₂_le
     intro x h
+    apply add_le_add_right
     cases x with
     | top => simp at h
     | coe x =>
-      simp only [height_coe_WithTop]
-      exact le_iSup_of_le x (le_refl _)
-  · apply iSup_le
+      apply le_iSup_of_le x
+      simp only [height_coe_WithTop, le_refl]
+  · rw [ENat.iSup_add]
+    apply iSup_le
     intro x
     apply le_iSup_of_le (↑x)
     apply le_iSup_of_le (WithTop.coe_lt_top x)
