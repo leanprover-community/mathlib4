@@ -160,10 +160,62 @@ theorem isAcc_iSup_of_between {δ : Ordinal.{u}} (C : Set Ordinal) (δLim : δ.I
   rw [Ordinal.lt_iSup]
   exact ⟨⟨r.1 + 1, δLim.succ_lt r.2⟩, hq.2.2⟩
 
+
+
+
+
+
+
+universe w
+-- Ordinal versions of cardinal theorems
+/-- The lift of a supremum is the supremum of the lifts. -/
+theorem lift_sSup {s : Set Ordinal} (hs : BddAbove s) :
+    lift.{u} (sSup s) = sSup (lift.{u} '' s) := by
+  apply ((le_csSup_iff' (bddAbove_image.{_,u} hs _)).2 fun c hc => _).antisymm (csSup_le' _)
+  · intro c hc
+    by_contra h
+    obtain ⟨d, rfl⟩ := Ordinal.mem_range_lift_of_le (not_le.1 h).le
+    simp_rw [lift_le] at h hc
+    rw [csSup_le_iff' hs] at h
+    exact h fun a ha => lift_le.1 <| hc (mem_image_of_mem _ ha)
+  · rintro i ⟨j, hj, rfl⟩
+    exact lift_le.2 (le_csSup hs hj)
+
+/-- The lift of a supremum is the supremum of the lifts. -/
+theorem lift_iSup {ι : Type v} {f : ι → Ordinal.{w}} (hf : BddAbove (range f)) :
+    lift.{u} (iSup f) = ⨆ i, lift.{u} (f i) := by
+  rw [iSup, iSup, lift_sSup hf, ← range_comp]
+  simp [Function.comp_def]
+-- / Ordinal versions
+
 theorem iSup_lt_ord' {ι : Type v} {f : ι → Ordinal.{u}} {c : Ordinal.{u}}
     (hι : Cardinal.lift.{u} #ι < Cardinal.lift.{v} c.cof) :
     (∀ i, f i < c) → iSup f < c := by
-  sorry
+  have : Small.{u, u + 1} ↑(range f) := by
+    have : Small.{u, v} ι := by
+      let g : ι ↪ c.cof.out := by
+        have e1 : ι ↪ (Cardinal.lift.{u} #ι).out :=
+          ((Classical.choice (out_lift_equiv.{v, u} #ι)).trans outMkEquiv).symm.toEmbedding
+        refine e1.trans ?_
+        have e2 : (Cardinal.lift.{u} #ι).out ↪ (Cardinal.lift.{v, u} c.cof).out := by
+          refine Classical.choice <| (Cardinal.le_def _ _).mp ?_
+          rw [mk_out, mk_out, lift_cof, ← lift_cof]
+          exact hι.le
+        exact e2.trans <| Equiv.toEmbedding <| Classical.choice <| out_lift_equiv.{u, v} c.cof
+      exact small_of_injective g.injective
+    exact small_range _
+  intro h
+  let g : ι → Ordinal.{max u v} := fun x ↦ lift (f x)
+  have : iSup g < lift.{v} c := by
+    apply iSup_lt_ord_lift
+    · exact (lift_cof _) ▸ hι
+    · exact fun i ↦ lift_lt.mpr (h i)
+  have aux : iSup g = lift.{v} (iSup f) := by
+    refine Eq.symm (lift_iSup (bddAbove_of_small _))
+  rw [aux] at this
+  convert this
+  simp_all only [lift_cof, lift_lt, g]
+
 
 /--
 The intersection of less than `o.cof` clubs in `o` is a club in `o`.
