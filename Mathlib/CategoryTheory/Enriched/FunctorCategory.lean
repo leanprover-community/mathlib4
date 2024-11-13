@@ -225,6 +225,10 @@ section
 variable (G : K ⥤ J) [HasEnrichedHom V F₁ F₂]
   [HasEnrichedHom V (G ⋙ F₁) (G ⋙ F₂)]
 
+/-- If `F₁` and `F₂` are functors `J ⥤ C`, and `G : K ⥤ J`,
+then this is the induced morphism
+`enrichedHom V F₁ F₂ ⟶ enrichedHom V (G ⋙ F₁) (G ⋙ F₂)` in `V`
+when `C` is a category enriched in `V`. -/
 noncomputable def precompEnrichedHom :
     enrichedHom V F₁ F₂ ⟶ enrichedHom V (G ⋙ F₁) (G ⋙ F₂) :=
   end_.lift (fun _ ↦ enrichedHomπ _ _ _ _)
@@ -239,6 +243,8 @@ end
 
 section
 
+/-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a category enriched in `V`,
+this condition allows the definition of `presheafEnrichedHom V F₁ F₂ : J ⥤ V`. -/
 abbrev HasPresheafEnrichedHom :=
   ∀ (j : J), HasEnrichedHom V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
 
@@ -249,6 +255,8 @@ instance {j j' : J} (f : j ⟶ j') :
       (Under.map f ⋙ Under.forget j ⋙ F₂) :=
   inferInstanceAs (HasEnrichedHom V (Under.forget j' ⋙ F₁) (Under.forget j' ⋙ F₂))
 
+/-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a category enriched in `V`,
+this is the enriched hom presheaf from `F₁` to `F₂` in `J ⥤ V`. -/
 @[simps!]
 noncomputable def presheafEnrichedHom : J ⥤ V where
   obj j := enrichedHom V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
@@ -270,6 +278,8 @@ noncomputable def presheafEnrichedHom : J ⥤ V where
 
 variable [HasEnrichedHom V F₁ F₂]
 
+/-- The (limit) cone expressing that the limit of `presheafEnrichedHom V F₁ F₂`
+is `enrichedHom V F₁ F₂`. -/
 @[simps pt]
 noncomputable def conePresheafEnrichedHom : Cone (presheafEnrichedHom V F₁ F₂) where
   pt := enrichedHom V F₁ F₂
@@ -288,6 +298,7 @@ namespace isLimitConePresheafEnrichedHom
 
 variable {V F₁ F₂} (s : Cone (presheafEnrichedHom V F₁ F₂))
 
+/-- Auxiliary definition for `Enriched.FunctorCategory.isLimitConePresheafEnrichedHom`. -/
 noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
   end_.lift (fun j ↦ s.π.app j ≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))) (fun j j' f ↦ by
     dsimp
@@ -314,6 +325,7 @@ lemma fac (j : J) : lift s ≫ (conePresheafEnrichedHom V F₁ F₂).π.app j = 
 end isLimitConePresheafEnrichedHom
 
 open isLimitConePresheafEnrichedHom in
+/-- The limit of `presheafEnrichedHom V F₁ F₂` is `enrichedHom V F₁ F₂`. -/
 noncomputable def isLimitConePresheafEnrichedHom :
     IsLimit (conePresheafEnrichedHom V F₁ F₂) where
   lift := lift
