@@ -2895,7 +2895,6 @@ import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsConjRoot
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
-import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.Perfect
@@ -4254,6 +4253,7 @@ import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
