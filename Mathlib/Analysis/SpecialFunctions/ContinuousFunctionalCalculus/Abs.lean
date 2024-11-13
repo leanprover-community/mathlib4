@@ -41,6 +41,7 @@ variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
   [Module ℝ≥0 A] [SMulCommClass ℝ≥0 A A] [IsScalarTower ℝ≥0 A A]
   [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
+-- Do we *really* want an `abs` section, here?
 section abs
 
 /-- The absolute value of an operator, using the nonunital continuous functional calculus. -/
@@ -48,6 +49,8 @@ noncomputable def abs (a : A) := sqrt (star a * a)
 
 @[simp]
 lemma abs_nonneg {a : A} : 0 ≤ abs a := sqrt_nonneg
+
+-- It's likely that using these variables warrants a different section
 
 variable [StarOrderedRing A] [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
 
