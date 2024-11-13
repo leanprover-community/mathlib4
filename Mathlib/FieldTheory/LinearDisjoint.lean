@@ -5,7 +5,6 @@ Authors: Jz Pan
 -/
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.RingTheory.LinearDisjoint
-import Mathlib.LinearAlgebra.TensorProduct.Field
 
 /-!
 
