@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash, Wen Yang
 -/
 import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Matrices with a single non-zero element.
@@ -158,21 +157,6 @@ theorem diag_same : diag (stdBasisMatrix i i c) = Pi.single i c := by
   by_cases hij : i = j <;> (try rw [hij]) <;> simp [hij]
 
 end
-
-section trace
-variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
-
-@[simp]
-theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
-  -- Porting note: added `-diag_apply`
-  simp [trace, -diag_apply, h]
-
-@[simp]
-theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
-  -- Porting note: added `-diag_apply`
-  simp [trace, -diag_apply]
-
-end trace
 
 section mul
 variable [Fintype n] [NonUnitalNonAssocSemiring α] (i j : n) (c : α)
