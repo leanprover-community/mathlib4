@@ -694,33 +694,6 @@ protected theorem prod [SFinite μa] [SFinite μc] {f : α → β} {g : γ → �
   have : Measurable (uncurry fun _ : α => g) := hg.1.comp measurable_snd
   hf.skew_product this <| ae_of_all _ fun _ => hg.map_eq
 
-
-variable (μa μb μc) in
-/-- The measurable equiv induced by the equiv `(α × β) × γ ≃ α × (β × γ)` is measure preserving. -/
-theorem _root_.MeasureTheory.measurePreserving_prodAssoc [SigmaFinite μa] [SigmaFinite μb]
-    [SigmaFinite μc] :
-    MeasurePreserving (MeasurableEquiv.prodAssoc : (α × β) × γ ≃ᵐ α × β × γ)
-      ((μa.prod μb).prod μc) (μa.prod (μb.prod μc)) where
-  measurable := MeasurableEquiv.prodAssoc.measurable
-  map_eq := by
-    refine (FiniteSpanningSetsIn.ext ?_
-      (isPiSystem_measurableSet.prod (isPiSystem_measurableSet.prod isPiSystem_measurableSet))
-      (μa.toFiniteSpanningSetsIn.prod (μb.toFiniteSpanningSetsIn.prod μc.toFiniteSpanningSetsIn))
-        ?_).symm
-    · refine (generateFrom_eq_prod generateFrom_measurableSet
-        (generateFrom_eq_prod ?_ ?_ ?_ ?_) ?_ (IsCountablySpanning.prod ?_ ?_)).symm
-      any_goals exact generateFrom_measurableSet
-      all_goals exact isCountablySpanning_measurableSet
-    · rintro _ ⟨s, _, _, ⟨t, _, ⟨u, _, rfl⟩⟩, rfl⟩
-      rw [MeasurableEquiv.map_apply, MeasurableEquiv.prodAssoc, MeasurableEquiv.coe_mk,
-        Equiv.prod_assoc_preimage, prod_prod, prod_prod, prod_prod, prod_prod, mul_assoc]
-
-theorem _root_.MeasureTheory.volume_preserving_prodAssoc {α₁ β₁ γ₁ : Type*} [MeasureSpace α₁]
-    [MeasureSpace β₁] [MeasureSpace γ₁] [SigmaFinite (volume : Measure α₁)]
-    [SigmaFinite (volume : Measure β₁)] [SigmaFinite (volume : Measure γ₁)] :
-    MeasurePreserving (MeasurableEquiv.prodAssoc : (α₁ × β₁) × γ₁ ≃ᵐ α₁ × β₁ × γ₁) :=
-  MeasureTheory.measurePreserving_prodAssoc volume volume volume
-
 end MeasurePreserving
 
 namespace QuasiMeasurePreserving
