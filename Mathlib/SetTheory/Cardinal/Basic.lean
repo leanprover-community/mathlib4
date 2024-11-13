@@ -446,7 +446,10 @@ theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
 theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleton :=
   le_one_iff_subsingleton.trans s.subsingleton_coe
 
-alias ⟨_, _root_.Set.Subsingleton.cardinal_mk_le_one⟩ := mk_le_one_iff_set_subsingleton
+alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
+
+@[deprecated (since := "2024-11-10")]
+alias _root_.Set.Subsingleton.cardinal_mk_le_one := Set.Subsingleton.cardinalMk_le_one
 
 instance : Add Cardinal.{u} :=
   ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
@@ -722,8 +725,6 @@ instance : WellFoundedRelation Cardinal.{u} :=
 -- Porting note: this no longer is automatically inferred.
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
-
-instance wo : @IsWellOrder Cardinal.{u} (· < ·) where
 
 instance : ConditionallyCompleteLinearOrderBot Cardinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _

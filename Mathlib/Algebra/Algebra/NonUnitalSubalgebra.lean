@@ -837,9 +837,11 @@ def toTop : A →ₙₐ[R] (⊤ : NonUnitalSubalgebra R A) :=
 
 end IsScalarTower
 
-theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B) :
+theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B) :
     NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
   NonUnitalAlgebra.eq_top_iff
+
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 end NonAssoc
 
@@ -1026,7 +1028,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
               simp only
               rw [hf i k hik, hf j k hjk]
               rfl)
-            (↑(iSup K)) (by rw [coe_iSup_of_directed dir])
+            _ (by rw [coe_iSup_of_directed dir])
         map_zero' := by
           dsimp
           exact Set.iUnionLift_const _ (fun i : ι => (0 : K i)) (fun _ => rfl) _ (by simp)

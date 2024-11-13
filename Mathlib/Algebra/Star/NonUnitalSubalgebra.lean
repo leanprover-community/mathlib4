@@ -881,10 +881,12 @@ abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [StarR
 
 end StarSubAlgebraA
 
-theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
     (f : F) : NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔
       Function.Surjective f :=
   NonUnitalStarAlgebra.eq_top_iff
+
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 @[simp]
 theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : F) :
@@ -1050,7 +1052,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
             simp only
             rw [hf i k hik, hf j k hjk]
             rfl)
-          (↑(iSup K)) (by rw [coe_iSup_of_directed dir])
+          _ (by rw [coe_iSup_of_directed dir])
       map_zero' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
