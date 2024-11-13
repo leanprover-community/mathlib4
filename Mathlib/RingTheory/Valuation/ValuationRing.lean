@@ -250,8 +250,8 @@ section
 
 variable (A : Type u) [CommRing A] [Nontrivial A] [PreValuationRing A]
 
-instance (priority := 100) localRing : LocalRing A :=
-  LocalRing.of_isUnit_or_isUnit_one_sub_self
+instance (priority := 100) isLocalRing : IsLocalRing A :=
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self
     (by
       intro a
       obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
@@ -372,7 +372,7 @@ instance (priority := 100) [ValuationRing R] : IsBezout R := by
   · rw [sup_eq_right.mpr h]; exact ⟨⟨_, rfl⟩⟩
   · rw [sup_eq_left.mpr h]; exact ⟨⟨_, rfl⟩⟩
 
-instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
+instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
   classical
   refine iff_dvd_total.mpr ⟨fun a b => ?_⟩
   obtain ⟨g, e : _ = Ideal.span _⟩ := IsBezout.span_pair_isPrincipal a b
@@ -386,17 +386,17 @@ instance (priority := 100) [LocalRing R] [IsBezout R] : ValuationRing R := by
   · simp [h]
   have : x * a + y * b = 1 := by
     apply mul_left_injective₀ h; convert e' using 1 <;> ring
-  cases' LocalRing.isUnit_or_isUnit_of_add_one this with h' h' <;> [left; right]
+  cases' IsLocalRing.isUnit_or_isUnit_of_add_one this with h' h' <;> [left; right]
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 
-theorem iff_local_bezout_domain : ValuationRing R ↔ LocalRing R ∧ IsBezout R :=
+theorem iff_local_bezout_domain : ValuationRing R ↔ IsLocalRing R ∧ IsBezout R :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ inferInstance⟩
 
 protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
     List.TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
-        IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), LocalRing R ∧ IsBezout R] := by
+        IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), IsLocalRing R ∧ IsBezout R] := by
   tfae_have 1 ↔ 2 := iff_isInteger_or_isInteger R _
   tfae_have 1 ↔ 3 := iff_dvd_total
   tfae_have 1 ↔ 4 := iff_ideal_total
@@ -416,7 +416,7 @@ theorem _root_.Function.Surjective.preValuationRing {R S : Type*} [Mul R] [PreVa
 theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsDomain R]
     [ValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
     ValuationRing S :=
-  have := Function.Surjective.preValuationRing f hf
+  have : PreValuationRing S := Function.Surjective.preValuationRing (R := R) f hf
   .mk
 
 section

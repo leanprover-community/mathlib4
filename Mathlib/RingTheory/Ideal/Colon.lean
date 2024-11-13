@@ -46,8 +46,8 @@ theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ �
 
 theorem annihilator_quotient {N : Submodule R M} :
     Module.annihilator R (M ⧸ N) = N.colon ⊤ := by
-  simp_rw [SetLike.ext_iff, Module.mem_annihilator, colon, mem_annihilator, map_top,
-    LinearMap.range_eq_top.mpr (mkQ_surjective N), mem_top, forall_true_left, forall_const]
+  simp [SetLike.ext_iff, Module.mem_annihilator, colon,
+    LinearMap.range_eq_top.mpr (mkQ_surjective N)]
 
 theorem _root_.Ideal.annihilator_quotient {I : Ideal R} [I.IsTwoSided] :
     Module.annihilator R (R ⧸ I) = I := by
