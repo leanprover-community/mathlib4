@@ -281,7 +281,7 @@ variable [HasEnrichedHom V F₁ F₂]
 
 /-- The (limit) cone expressing that the limit of `functorEnrichedHom V F₁ F₂`
 is `enrichedHom V F₁ F₂`. -/
-@[simps pt]
+@[simps pt π_app]
 noncomputable def coneFunctorEnrichedHom : Cone (functorEnrichedHom V F₁ F₂) where
   pt := enrichedHom V F₁ F₂
   π :=
@@ -383,7 +383,7 @@ lemma functorEnriched_comp_id [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnr
       functorEnrichedHom V F₁ F₂ ◁ functorEnrichedId V F₂ ≫
         functorEnrichedComp V F₁ F₂ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by aesop_cat
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma functorEnriched_assoc [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₂ F₃]
     [HasFunctorEnrichedHom V F₃ F₄] [HasFunctorEnrichedHom V F₁ F₃]
     [HasFunctorEnrichedHom V F₂ F₄] [HasFunctorEnrichedHom V F₁ F₄] :
@@ -395,14 +395,62 @@ lemma functorEnriched_assoc [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnric
   dsimp
   rw [enriched_assoc]
 
+-- to be moved: better version of `IsLimit.homIso`
+/-- The universal property of a limit cone: a map `W ⟶ X` is the same as
+  a cone on `F` with cone point `W`. -/
+@[simps]
+def _root_.CategoryTheory.Limits.IsLimit.homEquiv {F : J ⥤ C} {c : Cone F} (h : IsLimit c)
+    {W : C} : (W ⟶ c.pt) ≃ ((Functor.const J).obj W ⟶ F) where
+  toFun f := { app := fun j ↦ f ≫ c.π.app j }
+  invFun π := h.lift (Cone.mk _ π)
+  left_inv f := h.hom_ext (by simp)
+  right_inv π := by aesop_cat
+
+section
+
+variable {F₁ F₂} in
+
+noncomputable def functorHomEquiv [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂] :
+    (F₁ ⟶ F₂) ≃ (𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₂) :=
+  (homEquiv V).trans (isLimitConeFunctorEnrichedHom V F₁ F₂).homEquiv
+
+lemma functorHomEquiv_id [HasFunctorEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₁] :
+    (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by
+  ext j
+  dsimp [functorHomEquiv]
+  erw [IsLimit.homEquiv_apply_app]
+  aesop_cat
+
+variable {F₁ F₂ F₃} in
+lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂]
+    [HasFunctorEnrichedHom V F₂ F₃] [HasEnrichedHom V F₂ F₃]
+    [HasFunctorEnrichedHom V F₁ F₃] [HasEnrichedHom V F₁ F₃]
+    (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
+    (functorHomEquiv V) (f ≫ g) = (λ_ (𝟙_ (J ⥤ V))).inv ≫
+      ((functorHomEquiv V) f ⊗ (functorHomEquiv V) g) ≫ functorEnrichedComp V F₁ F₂ F₃ := by
+  ext j
+  dsimp [functorHomEquiv]
+  rw [homEquiv_comp]
+  erw [IsLimit.homEquiv_apply_app, IsLimit.homEquiv_apply_app, IsLimit.homEquiv_apply_app]
+  dsimp
+  ext k
+  rw [assoc, assoc, assoc, assoc, assoc, precompEnrichedHom_π, enrichedComp_π, enrichedComp_π,
+    ← tensor_comp_assoc, ← tensor_comp_assoc, assoc, assoc,
+    precompEnrichedHom_π, precompEnrichedHom_π]
+  dsimp
+
+end
+
 noncomputable def functorEnrichedOrdinaryCategory
-    [∀ (F₁ F₂ : J ⥤ C), HasFunctorEnrichedHom V F₁ F₂] :
+    [∀ (F₁ F₂ : J ⥤ C), HasFunctorEnrichedHom V F₁ F₂]
+    [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom V F₁ F₂] :
     EnrichedOrdinaryCategory (J ⥤ V) (J ⥤ C) where
   Hom F₁ F₂ := functorEnrichedHom V F₁ F₂
   id F := functorEnrichedId V F
   comp F₁ F₂ F₃ := functorEnrichedComp V F₁ F₂ F₃
-  homEquiv := sorry
-  homEquiv_id := sorry
-  homEquiv_comp := sorry
+  assoc F₁ F₂ F₃ F₄ := functorEnriched_assoc V F₁ F₂ F₃ F₄
+  homEquiv := functorHomEquiv V
+  homEquiv_id F := functorHomEquiv_id V F
+  homEquiv_comp f g := functorHomEquiv_comp V f g
 
 end CategoryTheory.Enriched.FunctorCategory
