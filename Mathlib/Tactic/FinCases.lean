@@ -43,19 +43,24 @@ This is useful for hypotheses of the form `h : a ∈ [l₁, l₂, ...]`,
 which will be transformed into a sequence of goals with hypotheses `h : a = l₁`, `h : a = l₂`,
 and so on.
 -/
-partial def unfoldCases (g : MVarId) (h : FVarId) : MetaM (List MVarId) := do
+partial def unfoldCases (g : MVarId) (h : FVarId)
+    (userNamePre : Name := .anonymous) (counter := 0) : MetaM (List MVarId) := do
   let gs ← g.cases h
   try
     let #[g₁, g₂] := gs | throwError "unexpected number of cases"
-    let gs ← unfoldCases g₂.mvarId g₂.fields[2]!.fvarId!
+    modifyMCtx <| fun m => m.setMVarUserName g₁.mvarId <| .num userNamePre counter
+    let gs ← unfoldCases g₂.mvarId g₂.fields[2]!.fvarId! userNamePre (counter+1)
     return g₁.mvarId :: gs
   catch _ => return []
 
 /-- Implementation of the `fin_cases` tactic. -/
 partial def finCasesAt (g : MVarId) (hyp : FVarId) : MetaM (List MVarId) := g.withContext do
   let type ← hyp.getType >>= instantiateMVars
+  let userName : Name := match (← getMCtx).findDecl? g with
+    | some decl => decl.userName
+    | none => .anonymous
   match ← getMemType type with
-  | some _ => unfoldCases g hyp
+  | some _ => unfoldCases g hyp (userNamePre := userName)
   | none =>
     -- Deal with `x : A`, where `[Fintype A]` is available:
     let inst ← synthInstance (← mkAppM ``Fintype #[type])
@@ -117,7 +122,8 @@ produces three goals with hypotheses
 
 /- TODO: In mathlib3 we ran `norm_num` when there is no `with` clause. Is this still useful? -/
 /- TODO: can we name the cases generated according to their values,
-   rather than `tail.tail.tail.head`? -/
+   rather than `tail.tail.tail.head`?
+   Update: now generates more helpful case names such as `0.2.1` -/
 
 @[tactic finCases] elab_rules : tactic
   | `(tactic| fin_cases $[$hyps:ident],*) => withMainContext <| focus do
