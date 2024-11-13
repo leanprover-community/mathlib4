@@ -373,15 +373,13 @@ instance Icc_smoothManifoldWithCorners (x y : ℝ) [Fact (x < y)] :
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
-/-! Register the manifold structure on `Icc 0 1`, and also its zero and one. -/
-
+/-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
+`IccChartedSpace` and `Icc_smoothManifoldWithCorners`. -/
 
 section
 
-instance IccZeroOneChartedSpace :
-  ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
-instance Icc_zero_one_smoothManifoldWithCorners :
-  SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 end
