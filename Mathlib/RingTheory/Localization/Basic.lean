@@ -91,6 +91,16 @@ theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R
     have := I.mul_mem_left b h
     rwa [mul_comm, mul_assoc, hb, mul_one] at this
 
+variable (M S) in
+include M in
+theorem linearMap_compatibleSMul (N₁ N₂) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁]
+    [Module S N₁] [Module R N₂] [Module S N₂] [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
+    LinearMap.CompatibleSMul N₁ N₂ S R where
+  map_smul f s s' := by
+    obtain ⟨r, m, rfl⟩ := mk'_surjective M s
+    rw [← (map_units S m).smul_left_cancel]
+    simp_rw [algebraMap_smul, ← map_smul, ← smul_assoc, smul_mk'_self, algebraMap_smul, map_smul]
+
 variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
 variable (M) in
@@ -144,18 +154,15 @@ variable {A : Type*} [CommSemiring A]
 include hf
 
 /-- `AlgHom` version of `IsLocalization.lift`. -/
-noncomputable def liftAlgHom : S →ₐ[A] P :=
-  { lift hf with
-    commutes' := by
-      intro r
-      change lift hf (algebraMap A S r) = _
-      simp [IsScalarTower.algebraMap_apply A R S]
-  }
+noncomputable def liftAlgHom : S →ₐ[A] P where
+  __ := lift hf
+  commutes' r := show lift hf (algebraMap A S r) = _ by
+    simp [IsScalarTower.algebraMap_apply A R S]
 
 theorem liftAlgHom_toRingHom : (liftAlgHom hf : S →ₐ[A] P).toRingHom = lift hf := rfl
 
 @[simp]
-theorem coe_liftAlgHom : ((liftAlgHom hf : S →ₐ[A] P) : S → P) = lift hf := rfl
+theorem coe_liftAlgHom : ⇑(liftAlgHom hf : S →ₐ[A] P) = lift hf := rfl
 
 theorem liftAlgHom_apply : liftAlgHom hf x = lift hf x := rfl
 
@@ -176,12 +183,10 @@ include H
 an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
 `S ≃ₐ[A] Q`. -/
 @[simps!]
-noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q :=
-  {
-    ringEquivOfRingEquiv S Q h.toRingEquiv H with
-    commutes' := fun _ ↦ by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
-      RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
-  }
+noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q where
+  __ := ringEquivOfRingEquiv S Q h.toRingEquiv H
+  commutes' _ := by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+    RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
 
 variable {S Q h}
 
@@ -199,6 +204,11 @@ theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
     algEquivOfAlgEquiv S Q h H (mk' S x y) =
       mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.2⟩ := by
   simp [map_mk']
+
+theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
+    algEquivOfAlgEquiv Q S h.symm (show Submonoid.map h.symm T = M by
+      erw [← H, ← Submonoid.comap_equiv_eq_map_symm,
+        Submonoid.comap_map_eq_of_injective h.injective]) := rfl
 
 end AlgEquivOfAlgEquiv
 

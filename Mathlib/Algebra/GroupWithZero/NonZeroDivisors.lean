@@ -215,16 +215,12 @@ theorem map_mem_nonZeroDivisors [Nontrivial M] [NoZeroDivisors M'] [ZeroHomClass
 theorem MulEquivClass.map_nonZeroDivisors {R S F : Type*} [MonoidWithZero R] [MonoidWithZero S]
     [EquivLike F R S] [MulEquivClass F R S] (h : F) :
     Submonoid.map h (nonZeroDivisors R) = nonZeroDivisors S := by
-  change Submonoid.map (h : R ≃* S) _ = _
-  set h' := (h : R ≃* S)
-  ext x
-  simp_rw [Submonoid.mem_map, mem_nonZeroDivisors_iff]
-  refine ⟨fun h1 z h2 ↦ ?_, fun h1 ↦ ⟨h'.symm x, ⟨fun y h2 ↦ ?_, by simp⟩⟩⟩
-  · obtain ⟨y, h1, rfl⟩ := h1
-    replace h1 := h1 (h'.symm z) (by simpa using congr(h'.symm $(h2)))
-    simpa using congr(h' $(h1))
-  · replace h1 := h1 (h' y) (by simpa using congr(h' $(h2)))
-    simpa using congr(h'.symm $(h1))
+  let h : R ≃* S := h
+  show Submonoid.map h.toMonoidHom _ = _
+  ext
+  simp_rw [Submonoid.map_equiv_eq_comap_symm, Submonoid.mem_comap, mem_nonZeroDivisors_iff,
+    ← h.symm.forall_congr_right, h.symm.coe_toMonoidHom, h.symm.toEquiv_eq_coe, h.symm.coe_toEquiv,
+    ← map_mul, map_eq_zero_iff _ h.symm.injective]
 
 theorem le_nonZeroDivisors_of_noZeroDivisors [NoZeroDivisors M] {S : Submonoid M}
     (hS : (0 : M) ∉ S) : S ≤ M⁰ := fun _ hx _ hy ↦

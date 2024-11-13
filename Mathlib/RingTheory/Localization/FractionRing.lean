@@ -122,6 +122,7 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
 
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
 See note [reducible non-instances]. -/
+@[stacks 09FJ]
 noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
@@ -144,19 +145,10 @@ end CommRing
 variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [Algebra A K]
   [IsFractionRing A K] {g : A →+* L}
 
-private lemma nontrivial_of_ringHom_nontrivial
-  {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) [Nontrivial B] : Nontrivial A := by
-  rcases subsingleton_or_nontrivial A with _ | h
-  · have : (1 : A) = 0 := Subsingleton.elim _ _
-    apply_fun f at this
-    rw [map_one, map_zero] at this
-    exact False.elim (one_ne_zero this)
-  exact h
-
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
-    mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s := by
-  haveI := nontrivial_of_ringHom_nontrivial (algebraMap A K)
-  exact mk'_eq_iff_eq_mul.2 <|
+    mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
+  haveI := (algebraMap A K).domain_nontrivial
+  mk'_eq_iff_eq_mul.2 <|
     (div_mul_cancel₀ (algebraMap A K r)
         (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hs)).symm
 
@@ -170,18 +162,18 @@ theorem div_surjective (z : K) :
   ⟨x, y, hy, by rwa [mk'_eq_div] at h⟩
 
 theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors A) :
-    IsUnit (g y) := by
-  haveI := nontrivial_of_ringHom_nontrivial g
-  exact IsUnit.mk0 (g y) <|
+    IsUnit (g y) :=
+  haveI := g.domain_nontrivial
+  IsUnit.mk0 (g y) <|
     show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.2
 
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
-  haveI := nontrivial_of_ringHom_nontrivial (algebraMap R K)
+  haveI := (algebraMap R K).domain_nontrivial
   simp [nonZeroDivisors.ne_zero]
 
 theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x = y := by
-  haveI := nontrivial_of_ringHom_nontrivial (algebraMap A K)
+  haveI := (algebraMap A K).domain_nontrivial
   refine ⟨?_, fun hxy => by rw [hxy, mk'_self']⟩
   intro hxy
   have hy : (algebraMap A K) ↑y ≠ (0 : K) :=
@@ -206,17 +198,12 @@ include hg
 
 /-- `AlgHom` version of `IsFractionRing.lift`. -/
 noncomputable def liftAlgHom : K →ₐ[R] L :=
-  { lift hg with
-    commutes' := by
-      intro r
-      change IsLocalization.lift _ (algebraMap R K r) = _
-      simp [IsScalarTower.algebraMap_apply R A K]
-  }
+  IsLocalization.liftAlgHom fun y : nonZeroDivisors A => isUnit_map_of_injective hg y
 
 theorem liftAlgHom_toRingHom : (liftAlgHom hg : K →ₐ[R] L).toRingHom = lift hg := rfl
 
 @[simp]
-theorem coe_liftAlgHom : ((liftAlgHom hg : K →ₐ[R] L) : K → L) = lift hg := rfl
+theorem coe_liftAlgHom : ⇑(liftAlgHom hg : K →ₐ[R] L) = lift hg := rfl
 
 theorem liftAlgHom_apply : liftAlgHom hg x = lift hg x := rfl
 
@@ -271,6 +258,10 @@ lemma ringEquivOfRingEquiv_algebraMap
 @[deprecated (since := "2024-11-05")]
 alias fieldEquivOfRingEquiv_algebraMap := ringEquivOfRingEquiv_algebraMap
 
+@[simp]
+lemma ringEquivOfRingEquiv_symm :
+    (ringEquivOfRingEquiv h : K ≃+* L).symm = ringEquivOfRingEquiv h.symm := rfl
+
 end ringEquivOfRingEquiv
 
 section algEquivOfAlgEquiv
@@ -290,6 +281,10 @@ noncomputable def algEquivOfAlgEquiv : K ≃ₐ[R] L :=
 lemma algEquivOfAlgEquiv_algebraMap
     (a : A) : algEquivOfAlgEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp [algEquivOfAlgEquiv]
+
+@[simp]
+lemma algEquivOfAlgEquiv_symm :
+    (algEquivOfAlgEquiv h : K ≃ₐ[R] L).symm = algEquivOfAlgEquiv h.symm := rfl
 
 end algEquivOfAlgEquiv
 
