@@ -53,6 +53,7 @@ variable {α : Type*} {r : α → α → Prop}
 
 /-! ### Cofinality of orders -/
 
+attribute [local instance] IsRefl.swap
 
 namespace Order
 
@@ -62,7 +63,7 @@ def cof (r : α → α → Prop) : Cardinal :=
   sInf { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }
 
 /-- The set in the definition of `Order.cof` is nonempty. -/
-theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
+private theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
     { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }.Nonempty :=
   ⟨_, Set.univ, fun a => ⟨a, ⟨⟩, refl _⟩, rfl⟩
 
@@ -102,35 +103,39 @@ theorem RelIso.cof_eq {α β : Type u} {r s} [IsRefl α r] [IsRefl β s] (f : r 
 
 /-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : Set α` such
 that `∀ a, ∃ b ∈ S, ¬ b ≺ a`. -/
+@[deprecated Order.cof (since := "2024-10-22")]
 def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
   Order.cof (swap rᶜ)
 
 /-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
+@[deprecated (since := "2024-10-22")]
 theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ #S = c }.Nonempty :=
   @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 
 /-! ### Cofinality of ordinals -/
 
-
 namespace Ordinal
 
-/-- Cofinality of an ordinal. This is the smallest cardinal of a
-  subset `S` of the ordinal which is unbounded, in the sense
-  `∀ a, ∃ b ∈ S, a ≤ b`. It is defined for all ordinals, but
-  `cof 0 = 0` and `cof (succ o) = 1`, so it is only really
-  interesting on limit ordinals (when it is an infinite cardinal). -/
-def cof (o : Ordinal.{u}) : Cardinal.{u} := by
-  refine o.liftOn (fun a => StrictOrder.cof a.r) ?_
-  rintro ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨⟨f, hf⟩⟩
-  refine @RelIso.cof_eq _ _ _ _ ?_ ?_ ⟨_, not_iff_not.2 hf⟩ <;>
-  exact ⟨fun _ => irrefl _⟩
+/-- Cofinality of an ordinal. This is the smallest cardinal of a subset `S` of the ordinal which is
+unbounded, in the sense `∀ a, ∃ b ∈ S, a ≤ b`.
 
-theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = StrictOrder.cof r :=
+In particular, `cof 0 = 0` and `cof (succ o) = 1`. -/
+def cof (o : Ordinal.{u}) : Cardinal.{u} :=
+  o.liftOn (fun a ↦ Order.cof (swap a.rᶜ)) fun _ _ ⟨f⟩ ↦ f.compl.swap.cof_eq
+
+theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = Order.cof (swap rᶜ) :=
   rfl
 
+theorem cof_type_lt [LinearOrder α] [IsWellOrder α (· < ·)] :
+    (@type α (· < ·) _).cof = @Order.cof α (· ≤ ·) := by
+  rw [cof_type, compl_lt, swap_ge]
+
+theorem cof_eq_cof_toType (o : Ordinal) : o.cof = @Order.cof o.toType (· ≤ ·) := by
+  conv_lhs => rw [← type_toType o, cof_type_lt]
+
 theorem le_cof_type [IsWellOrder α r] {c} : c ≤ cof (type r) ↔ ∀ S, Unbounded r S → c ≤ #S :=
-  (le_csInf_iff'' (StrictOrder.cof_nonempty r)).trans
+  (le_csInf_iff'' (Order.cof_nonempty _)).trans
     ⟨fun H S h => H _ ⟨S, h, rfl⟩, by
       rintro H d ⟨S, h, rfl⟩
       exact H _ h⟩
@@ -142,7 +147,7 @@ theorem lt_cof_type [IsWellOrder α r] {S : Set α} : #S < cof (type r) → Boun
   simpa using not_imp_not.2 cof_type_le
 
 theorem cof_eq (r : α → α → Prop) [IsWellOrder α r] : ∃ S, Unbounded r S ∧ #S = cof (type r) :=
-  csInf_mem (StrictOrder.cof_nonempty r)
+  csInf_mem (Order.cof_nonempty (swap rᶜ))
 
 theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
     ∃ S, Unbounded r S ∧ type (Subrel r S) = (cof (type r)).ord := by
@@ -497,7 +502,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
         · rcases hl x with ⟨a', aS, hn⟩
           refine absurd h ?_
           convert hn
-          change _ = ↑(⟨a', aS⟩ : S)
+          change (a : α) = ↑(⟨a', aS⟩ : S)
           have := le_one_iff_subsingleton.1 (le_of_eq e)
           congr!,
     fun ⟨a, e⟩ => by simp [e]⟩
@@ -737,7 +742,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
 /-- If the union of s is unbounded and s is smaller than the cofinality,
   then s has an unbounded member -/
 theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder α r] {s : Set (Set α)}
-    (h₁ : Unbounded r <| ⋃₀ s) (h₂ : #s < StrictOrder.cof r) : ∃ x ∈ s, Unbounded r x := by
+    (h₁ : Unbounded r <| ⋃₀ s) (h₂ : #s < Order.cof (swap rᶜ)) : ∃ x ∈ s, Unbounded r x := by
   by_contra! h
   simp_rw [not_unbounded_iff] at h
   let f : s → α := fun x : s => wo.wf.sup x (h x.1 x.2)
@@ -748,7 +753,7 @@ theorem unbounded_of_unbounded_sUnion (r : α → α → Prop) [wo : IsWellOrder
 /-- If the union of s is unbounded and s is smaller than the cofinality,
   then s has an unbounded member -/
 theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) [wo : IsWellOrder α r]
-    (s : β → Set α) (h₁ : Unbounded r <| ⋃ x, s x) (h₂ : #β < StrictOrder.cof r) :
+    (s : β → Set α) (h₁ : Unbounded r <| ⋃ x, s x) (h₂ : #β < Order.cof (swap rᶜ)) :
     ∃ x : β, Unbounded r (s x) := by
   rw [← sUnion_range] at h₁
   rcases unbounded_of_unbounded_sUnion r h₁ (mk_range_le.trans_lt h₂) with ⟨_, ⟨x, rfl⟩, u⟩

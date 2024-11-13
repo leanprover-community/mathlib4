@@ -3,12 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Algebra.Category.Ring.Colimits
+import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Topology.Sheaves.LocalPredicate
-import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
@@ -77,9 +78,9 @@ def Localizations (P : PrimeSpectrum.Top R) : Type u :=
 instance commRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
   inferInstanceAs <| CommRing <| Localization.AtPrime P.asIdeal
 
--- Porting note: can't derive `LocalRing`
-instance localRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P :=
-  inferInstanceAs <| LocalRing <| Localization.AtPrime P.asIdeal
+-- Porting note: can't derive `IsLocalRing`
+instance localRingLocalizations (P : PrimeSpectrum.Top R) : IsLocalRing <| Localizations R P :=
+  inferInstanceAs <| IsLocalRing <| Localization.AtPrime P.asIdeal
 
 instance (P : PrimeSpectrum.Top R) : Inhabited (Localizations R P) :=
   ⟨1⟩

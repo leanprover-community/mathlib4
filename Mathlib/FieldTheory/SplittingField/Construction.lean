@@ -209,6 +209,7 @@ instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
 end SplittingFieldAux
 
 /-- A splitting field of a polynomial. -/
+@[stacks 09HV "The construction of the splitting field."]
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
@@ -245,7 +246,7 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   let e := algEquivSplittingFieldAux f
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
-    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [EmbeddingLike.map_ne_zero_iff.2 ha]
     __ := e.surjective.nontrivial }
 
 instance instField : Field (SplittingField f) where
@@ -276,6 +277,7 @@ instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
     IsSplittingField K (SplittingField f) f :=
   IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm
 
+@[stacks 09HU "Splitting part"]
 protected theorem splits : Splits (algebraMap K (SplittingField f)) f :=
   IsSplittingField.splits f.SplittingField f
 
@@ -301,8 +303,8 @@ variable {K}
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
   finiteDimensional f.SplittingField f
 
-instance [Fintype K] (f : K[X]) : Fintype f.SplittingField :=
-  FiniteDimensional.fintypeOfFintype K _
+instance [Finite K] (f : K[X]) : Finite f.SplittingField :=
+  Module.finite_of_finite K
 
 instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
   inferInstance
