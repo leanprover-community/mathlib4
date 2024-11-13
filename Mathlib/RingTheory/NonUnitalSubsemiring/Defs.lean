@@ -42,10 +42,11 @@ open AddSubmonoidClass
 /-- A non-unital subsemiring of a `NonUnitalNonAssocSemiring` inherits a
 `NonUnitalNonAssocSemiring` structure -/
 instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s :=
-  Subtype.coe_injective.nonUnitalNonAssocSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.nonUnitalNonAssocSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
-  Subtype.coe_injective.noZeroDivisors (↑) rfl fun _ _ => rfl
+  Subtype.coe_injective.noZeroDivisors Subtype.val rfl fun _ _ => rfl
 
 /-- The natural non-unital ring hom from a non-unital subsemiring of a non-unital semiring `R` to
 `R`. -/
@@ -59,12 +60,13 @@ theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s :=
-  Subtype.coe_injective.nonUnitalSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.nonUnitalSemiring Subtype.val rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
 instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s :=
-  Subtype.coe_injective.nonUnitalCommSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.nonUnitalCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
+    fun _ _ => rfl
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/
 
