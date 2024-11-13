@@ -100,7 +100,7 @@ theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
   change _ ≠ _ → _
   rw [Ideal.ne_top_iff_one]
   intro h1
-  rw [eq_bot_iff]
+  rw [eq_bot_iff (a := I)]
   intro r hr
   by_cases H : r = 0; · simpa
   simpa [H, h1] using I.mul_mem_left r⁻¹ hr
