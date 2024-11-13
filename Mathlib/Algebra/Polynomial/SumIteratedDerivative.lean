@@ -184,16 +184,17 @@ theorem aeval_sumIDeriv (p : R[X]) (q : ℕ) :
   intro r p' hp
   rw [sumIDeriv_apply, map_sum]; simp_rw [hc _ r hp, map_sum, smul_sum]
 
-theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q) :
+theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q)
+    (inj_amap : Function.Injective (algebraMap R A)) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
-      ∀ (inj_amap : Function.Injective (algebraMap R A)) (r : A) {p' : A[X]},
+      ∀ (r : A) {p' : A[X]},
         p.map (algebraMap R A) = (X - C r) ^ (q - 1) * p' →
         aeval r (sumIDeriv p) = (q - 1)! • p'.eval r + q ! • aeval r gp := by
   rcases eq_or_ne p 0 with (rfl | p0)
   · use 0
     rw [natDegree_zero]
     use Nat.zero_le _
-    intro _ r p' hp
+    intro r p' hp
     rw [map_zero, map_zero, smul_zero, add_zero]
     rw [Polynomial.map_zero] at hp
     replace hp := (mul_eq_zero.mp hp.symm).resolve_left ?_
@@ -212,7 +213,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
   · refine (natDegree_sum_le _ _).trans ?_
     rw [fold_max_le]
     exact ⟨Nat.zero_le _, fun i hi => (c_le i).trans (tsub_le_tsub_left (mem_Ico.mp hi).1 _)⟩
-  intro inj_amap r p' hp
+  intro r p' hp
   have : range (p.natDegree + 1) = range q ∪ Ico q (p.natDegree + 1) := by
     rw [range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
     have h := natDegree_map_le (algebraMap R A) p

@@ -7,6 +7,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+import Mathlib.Data.Finset.Sym
 
 /-!
 # Antidiagonal of functions as finsets
@@ -127,7 +128,7 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
   constructor
   · rintro ⟨f, ⟨hf, rfl⟩, rfl⟩
     rw [sum_dite_of_true fun _ ↦ id]
-    exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp (config := { contextual := true })⟩
+    exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp +contextual⟩
   · rintro ⟨rfl, hf⟩
     refine ⟨f ∘ (↑) ∘ e.symm, ?_, by ext i; have := not_imp_comm.1 (hf i); aesop⟩
     rw [← sum_attach s]
@@ -254,7 +255,7 @@ lemma map_sym_eq_piAntidiag [DecidableEq ι] (s : Finset ι) (n : ℕ) :
     simpa [← hf, Multiset.sum_count_eq_card hm]
   · rintro ⟨rfl, hf⟩
     refine ⟨∑ a ∈ s, f a • {a}, ?_, ?_⟩
-    · simp (config := { contextual := true })
+    · simp +contextual
     · simpa [Multiset.count_sum', Multiset.count_singleton, not_imp_comm, eq_comm (a := 0)] using hf
 
 end Finset

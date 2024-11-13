@@ -82,7 +82,7 @@ def corec' (f : α → β × α) : α → Stream' β :=
 def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=
   corec Prod.fst (cmd.run ∘ Prod.snd) (cmd.run s)
 
--- corec is also known as unfold
+-- corec is also known as unfolds
 abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
   corec g f a
 

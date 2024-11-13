@@ -131,31 +131,37 @@ def unfoldFVars (fvars : Array FVarId) (e : Expr) : MetaM Expr := do
     | _ => return .continue
 
 /--
+This tactic is subsumed by the `unfold` tactic.
+
 `unfold_let x y z at loc` unfolds the local definitions `x`, `y`, and `z` at the given
 location, which is known as "zeta reduction."
 This also exists as a `conv`-mode tactic.
 
 If no local definitions are given, then all local definitions are unfolded.
 This variant also exists as the `conv`-mode tactic `zeta`.
-
-This is similar to the `unfold` tactic, which instead is for unfolding global definitions.
 -/
+@[deprecated unfold (since := "2024-11-11")]
 syntax (name := unfoldLetStx) "unfold_let" (ppSpace colGt term:max)*
   (ppSpace Parser.Tactic.location)? : tactic
 
 elab_rules : tactic
-  | `(tactic| unfold_let $[$loc?]?) =>
+  | `(tactic| unfold_let $[$loc?]?) => do
+    logWarning "The `unfold_let` tactic is deprecated. Please use `unfold` instead."
     runDefEqTactic (fun _ => zetaReduce) loc? "unfold_let"
   | `(tactic| unfold_let $hs:term* $[$loc?]?) => do
     let fvars ← getFVarIds hs
+    logWarning "The `unfold_let` tactic is deprecated. Please use `unfold` instead."
     runDefEqTactic (fun _ => unfoldFVars fvars) loc? "unfold_let"
 
-@[inherit_doc unfoldLetStx]
+@[inherit_doc unfoldLetStx, deprecated unfold (since := "2024-11-11")]
 syntax "unfold_let" (ppSpace colGt term:max)* : conv
 
 elab_rules : conv
-  | `(conv| unfold_let) => runDefEqConvTactic zetaReduce
+  | `(conv| unfold_let) => do
+    logWarning "The `unfold_let` tactic is deprecated. Please use `unfold` instead."
+    runDefEqConvTactic zetaReduce
   | `(conv| unfold_let $hs:term*) => do
+    logWarning "The `unfold_let` tactic is deprecated. Please use `unfold` instead."
     runDefEqConvTactic (unfoldFVars (← getFVarIds hs))
 
 

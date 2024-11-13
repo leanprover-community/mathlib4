@@ -22,7 +22,7 @@ variable {E : Type*}
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] {ε δ : ℝ} {s t : Set E} {x y : E}
+variable [SeminormedGroup E] {s t : Set E}
 
 -- note: we can't use `LipschitzOnWith.isBounded_image2` here without adding `[IsometricSMul E E]`
 @[to_additive]
@@ -50,7 +50,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] {ε δ : ℝ} {s t : Set E} {x y : E}
+variable [SeminormedCommGroup E] {δ : ℝ} {s : Set E} {x y : E}
 
 section EMetric
 
@@ -73,7 +73,7 @@ theorem ediam_mul_le (x y : Set E) : EMetric.diam (x * y) ≤ EMetric.diam x + E
 
 end EMetric
 
-variable (ε δ s t x y)
+variable (δ s x y)
 
 @[to_additive (attr := simp)]
 theorem inv_thickening : (thickening δ s)⁻¹ = thickening δ s⁻¹ := by
@@ -188,7 +188,7 @@ theorem ball_mul : ball x δ * s = x • thickening δ s := by rw [mul_comm, mul
 @[to_additive (attr := simp)]
 theorem ball_div : ball x δ / s = x • thickening δ s⁻¹ := by simp [div_eq_mul_inv]
 
-variable {ε δ s t x y}
+variable {δ s x y}
 
 @[to_additive]
 theorem IsCompact.mul_closedBall_one (hs : IsCompact s) (hδ : 0 ≤ δ) :

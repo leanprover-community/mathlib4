@@ -40,7 +40,7 @@ open Matrix
 
 open Finset Matrix SimpleGraph
 
-variable {V α β : Type*}
+variable {V α : Type*}
 
 namespace Matrix
 
