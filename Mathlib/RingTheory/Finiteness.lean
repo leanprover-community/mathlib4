@@ -35,7 +35,6 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 -/
 
-
 open Function (Surjective)
 open Finsupp
 
@@ -591,6 +590,10 @@ lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M :
 
 @[deprecated (since := "2024-10-13")]
 alias _root_.FiniteDimensional.finite_of_finite := finite_of_finite
+
+/-- A finite dimensional vector space over a finite field is finite -/
+@[deprecated (since := "2024-10-22")]
+alias _root_.FiniteDimensional.fintypeOfFintype := finite_of_finite
 
 -- See note [lower instance priority]
 instance (priority := 100) of_finite [Finite M] : Module.Finite R M := by

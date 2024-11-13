@@ -173,7 +173,7 @@ end Function
 
 namespace Function
 
-variable {α : Type u₁} {β : Type u₂} {φ : Type u₃}
+variable {α : Type u₁} {β : Type u₂}
 
 protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
   funext h
