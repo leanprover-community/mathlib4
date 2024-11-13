@@ -259,7 +259,7 @@ theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α 
 
 @[simp]
 theorem denseRange_discrete {ι : Type*} {f : ι → α} : DenseRange f ↔ Surjective f := by
-  rw [DenseRange, dense_discrete, range_iff_surjective]
+  rw [DenseRange, dense_discrete, range_eq_univ]
 
 @[nontriviality, continuity, fun_prop]
 theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : Continuous f :=

@@ -344,7 +344,7 @@ lemma isoSpec_inv_ι : hU.isoSpec.inv ≫ U.ι = hU.fromSpec := rfl
 theorem range_fromSpec :
     Set.range hU.fromSpec.base = (U : Set X) := by
   delta IsAffineOpen.fromSpec; dsimp [IsAffineOpen.isoSpec_inv]
-  rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+  rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
   · exact Subtype.range_coe
   rw [← coe_comp, ← TopCat.epi_iff_surjective]
   infer_instance

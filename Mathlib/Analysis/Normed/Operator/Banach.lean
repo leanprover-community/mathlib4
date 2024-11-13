@@ -284,7 +284,8 @@ theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
 theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
     (hsurj : LinearMap.range f = ⊤) :
     ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
-  choose C hC fsymm h using exists_preimage_norm_le _ (LinearMap.range_eq_top.mp hsurj)
+  choose C hC fsymm h using
+    exists_preimage_norm_le _ (LinearMap.range_eq_top.1 hsurj)
   use {
       toFun := fsymm
       nnnorm := ⟨C, hC.lt.le⟩

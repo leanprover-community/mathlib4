@@ -107,7 +107,7 @@ MonoidAddHom.map_add_cyclic := AddMonoidHom.map_addCyclic
 theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fintype.card α) :
     IsCyclic α := by
   use x
-  rw [← Set.range_iff_surjective, ← coe_zpowers]
+  rw [← Set.range_eq_univ, ← coe_zpowers]
   rw [← Fintype.card_congr (Equiv.Set.univ α), ← Fintype.card_zpowers] at hx
   convert Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 @[deprecated (since := "2024-02-21")]

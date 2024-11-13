@@ -39,7 +39,7 @@ noncomputable def quotKerEquivRange : (M ⧸ LinearMap.ker f) ≃ₗ[R] LinearMa
 /-- The **first isomorphism theorem for surjective linear maps**. -/
 noncomputable def quotKerEquivOfSurjective (f : M →ₗ[R] M₂) (hf : Function.Surjective f) :
     (M ⧸ LinearMap.ker f) ≃ₗ[R] M₂ :=
-  f.quotKerEquivRange.trans (LinearEquiv.ofTop (LinearMap.range f) (LinearMap.range_eq_top.2 hf))
+  f.quotKerEquivRange.trans <| .ofTop (LinearMap.range f) <| range_eq_top.2 hf
 
 @[simp]
 theorem quotKerEquivRange_apply_mk (x : M) :

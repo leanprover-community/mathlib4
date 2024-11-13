@@ -753,7 +753,7 @@ lemma mapRange_injective (e : M → N) (he₀ : e 0 = 0) (he : Injective e) :
 /-- `Finsupp.mapRange` of a surjective function is surjective. -/
 lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
     Surjective (Finsupp.mapRange (α := α) e he₀) := by
-  rw [← Set.range_iff_surjective, range_mapRange, he.range_eq]
+  rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
   simp
 
 end MapRange
