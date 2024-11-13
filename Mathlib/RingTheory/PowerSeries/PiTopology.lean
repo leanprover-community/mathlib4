@@ -59,20 +59,29 @@ variable [TopologicalSpace R]
 namespace WithPiTopology
 
 /-- The pointwise topology on PowerSeries -/
-scoped instance : TopologicalSpace (PowerSeries R) := Pi.topologicalSpace
+scoped instance : TopologicalSpace (PowerSeries R) := 
+  Pi.topologicalSpace
 
-variable [Semiring R]
+/-- Separation of the uniform structure on PowerSeries -/
+@[scoped instance]
+theorem instT0Space [T0Space R] : T0Space (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instT0Space
+
+/-- PowerSeries on a T2Space form a T2Space -/
+@[scoped instance]
+theorem instT2Space [T2Space R] : T2Space (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instT2Space
 
 /-- coeff are continuous -/
-theorem continuous_coeff (d : ℕ) : Continuous (PowerSeries.coeff R d) :=
+theorem continuous_coeff [Semiring R] (d : ℕ) : Continuous (PowerSeries.coeff R d) :=
   continuous_pi_iff.mp continuous_id (Finsupp.single () d)
 
 /-- constant_coeff is continuous -/
-theorem continuous_constantCoeff : Continuous (constantCoeff R) :=
+theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff R) :=
   coeff_zero_eq_constantCoeff (R := R) ▸ continuous_coeff R 0
 
 /-- A family of power series converges iff it converges coefficientwise -/
-theorem tendsto_iff_coeff_tendsto {ι : Type*}
+theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     (f : ι → PowerSeries R) (u : Filter ι) (g : PowerSeries R) :
     Tendsto f u (nhds g) ↔
     ∀ d : ℕ, Tendsto (fun i => coeff R d (f i)) u (nhds (coeff R d g)) := by
@@ -97,11 +106,6 @@ theorem instTopologicalRing [Ring R] [TopologicalRing R] :
     TopologicalRing (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instTopologicalRing Unit R
 
-/-- PowerSeries on a T2Space form a T2Space -/
-@[scoped instance]
-theorem instT2Space [T2Space R] : T2Space (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instT2Space
-
 end WithPiTopology
 
 end Topological
@@ -121,24 +125,17 @@ theorem uniformContinuous_coeff [Semiring R] (d : ℕ) :
     UniformContinuous fun f : PowerSeries R ↦ coeff R d f :=
   uniformContinuous_pi.mp uniformContinuous_id (Finsupp.single () d)
 
-variable [Ring R]
-
-/-- The uniform_add_group structure on PowerSeries of a uniform_add_group -/
-@[scoped instance]
-theorem instUniformAddGroup [UniformAddGroup R] :
-    UniformAddGroup (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instUniformAddGroup Unit R
-
 /-- Completeness of the uniform structure on PowerSeries -/
 @[scoped instance]
 theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instCompleteSpace Unit R
 
-/-- Separation of the uniform structure on PowerSeries -/
+/-- The uniform_add_group structure on PowerSeries of a uniform_add_group -/
 @[scoped instance]
-theorem instT0Space [T0Space R] : T0Space (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instT0Space
+theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
+    UniformAddGroup (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instUniformAddGroup Unit R
 
 end WithPiTopology
 
