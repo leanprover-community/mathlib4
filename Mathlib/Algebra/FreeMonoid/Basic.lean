@@ -430,7 +430,7 @@ def congrEquiv : FreeMonoid α ≃* FreeMonoid β :=
 have an underlying type of β -/
 @[to_additive "given an isomorphism between α and β, convert a relation predicate to
 have an underlying type of β"]
-def map_rel (rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  → Prop :=
+def mapRel (rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  → Prop :=
   fun a b ↦ rel (.congr_iso e.symm a) (.congr_iso e.symm b)
 
 /-- given an isomorphism between α and β, pull back a relation predicate with underlying type β to
