@@ -891,20 +891,23 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 
 variable {F} {F' : D ⥤ Cat} (α : F ⟶ F')
 
-def Grothendieck.structuredArrowToStructuredArrowMap (d : D) (f : F'.obj d) :
-    StructuredArrow f (α.app d) ⥤q StructuredArrow ⟨d, f⟩ (map α) where
-  obj X := StructuredArrow.mk (Y := ⟨d, X.right⟩) ⟨by exact 𝟙 _, eqToHom (by simp) ≫ X.hom⟩
-  map g := StructuredArrow.homMk (Hom.mk (by exact 𝟙 _) (eqToHom (by simp) ≫  g.right))
-    (by
-      simp only [map_obj_base, map_obj_fiber, id_eq, eq_mpr_eq_cast, StructuredArrow.mk_left,
-        const_obj_obj, StructuredArrow.mk_right, StructuredArrow.mk_hom_eq_self, map_id, Cat.id_obj,
-        congrArg_cast_hom_left]
-      fapply ext
-      · simp
-      · have := StructuredArrow.w g
-        dsimp [map] at this ⊢
-        rw [← this]
-        sorry)
+def Grothendieck.structuredArrowToStructuredArrowMap {d d' : D} (h : d ⟶ d') (f : F'.obj d) :
+    StructuredArrow ((F'.map h).obj f) (α.app d') ⥤q StructuredArrow ⟨d, f⟩ (map α) where
+  obj X := StructuredArrow.mk (Y := ⟨d', X.right⟩) ⟨by exact h, by exact X.hom⟩
+  map g := StructuredArrow.homMk (Hom.mk (by exact 𝟙 _) (by simp; exact g.right)) (by
+    simp
+    fapply Grothendieck.ext
+    · simp
+    · simp only [map_obj_base, map_obj_fiber, Cat.id_obj, comp_base, map_map_base, comp_fiber,
+      map_map_fiber, map_comp, eqToHom_trans_assoc]
+      rw [← StructuredArrow.w g]
+      simp only [← Category.assoc]
+      congr 1
+      simp only [Category.assoc, eqToHom_map, eqToHom_trans]
+      symm
+      apply Functor.congr_hom (F := 𝟭 _)
+      rw [F'.map_id]
+      rfl)
 
 instance Grothendieck.final_map [∀ X, Final (α.app X)] : Final (map α) := by
   constructor
@@ -916,11 +919,11 @@ instance Grothendieck.final_map [∀ X, Final (α.app X)] : Final (map α) := by
   dsimp at *
   rintro ⟨⟨⟨⟩⟩, ⟨b₀, f₀⟩, ⟨g₀, h₀⟩⟩ ⟨⟨⟨⟩⟩, ⟨b₁, f₁⟩, ⟨g₁, h₁⟩⟩
   dsimp [Grothendieck.map] at g₀ h₀ g₁ h₁ ⊢
-  have j₁ : StructuredArrow f (α.app d) := sorry
-  have j₂ : StructuredArrow f (α.app d) := sorry
-  have := zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowMap α d f)
-   (isPreconnected_zigzag j₁ j₂)
+  have := zigzag_prefunctor_obj_of_zigzag
+    (Grothendieck.structuredArrowToStructuredArrowMap α g₀ f)
+    (isPreconnected_zigzag (StructuredArrow.mk h₀) _)
   simp only [structuredArrowToStructuredArrowMap] at this
+  dsimp at this
   sorry
 
 end Grothendieck
