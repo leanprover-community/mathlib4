@@ -365,7 +365,7 @@ variable {C : Type v} [Category.{v} C] {D : Type u₁} [Category.{v} D] (F : C �
 
 namespace Final
 
-theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
+theorem zigzagable_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
     (t : Relation.EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzagable (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
   induction t with
@@ -378,7 +378,7 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ 
     exact StructuredArrow.homMk f
   | refl => fconstructor
   | symm x y _ ih =>
-    apply zigzag_symmetric
+    symm
     exact ih
   | trans x y z _ _ ih₁ ih₂ =>
     apply Relation.ReflTransGen.trans
@@ -405,7 +405,7 @@ theorem final_of_colimit_comp_coyoneda_iso_pUnit
       ext
     have t := Types.colimit_eq.{v, v} e
     clear e y₁ y₂
-    exact Final.zigzag_of_eqvGen_quot_rel t⟩
+    exact Final.zigzagable_of_eqvGen_quot_rel t⟩
 
 /-- A variant of `final_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
     about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
@@ -878,13 +878,13 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   apply zigzag_isConnected
   rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩
   dsimp at fj fi gfi gbi gbj gfj
-  apply Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bi, ((F.map gbi).obj f)⟩)
+  apply Zigzagable.trans (j₂ := StructuredArrow.mk (Y := ⟨bi, ((F.map gbi).obj f)⟩)
       (Grothendieck.Hom.mk gbi (𝟙 _)))
-    (.of_zag (.inr ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
+    (.of_zagable (.inr ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
       (eqToHom (by simp) ≫ gfi)) (by apply Grothendieck.ext <;> simp)⟩))
-  refine Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bj, ((F.map gbj).obj f)⟩)
+  refine Zigzagable.trans (j₂ := StructuredArrow.mk (Y := ⟨bj, ((F.map gbj).obj f)⟩)
       (Grothendieck.Hom.mk gbj (𝟙 _))) ?_
-    (.of_zag (.inl ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
+    (.of_zagable (.inl ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
       (eqToHom (by simp) ≫ gfj)) (by apply Grothendieck.ext <;> simp)⟩))
   exact zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
     (isPreconnected_zigzag (.mk gbi) (.mk gbj))

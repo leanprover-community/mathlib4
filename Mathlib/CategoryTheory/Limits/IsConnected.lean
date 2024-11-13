@@ -83,12 +83,12 @@ noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitPUnitCocone.{w} C)
 
 /-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the same
-element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
-theorem zigzag_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
+element of `colimit F`, then `c` and `d` are related by a `Zigzagable`. -/
+theorem zigzagable_of_eqvGen_quot_rel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
     (h : Relation.EqvGen (Quot.Rel F) c d) : Zigzagable c.1 d.1 := by
   induction h with
-  | rel _ _ h => exact Zigzag.of_hom <| Exists.choose h
-  | refl _ => exact Zigzag.refl _
+  | rel _ _ h => exact Zigzagable.of_hom <| Exists.choose h
+  | refl _ => exact Zigzagable.refl _
   | symm _ _ _ ih => exact zigzag_symmetric ih
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
@@ -100,7 +100,7 @@ theorem isConnected_iff_colimit_constPUnitFunctor_iso_pUnit
   refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => ?_⟩
   have : Nonempty C := nonempty_of_nonempty_colimit <| Nonempty.map h.inv inferInstance
   refine zigzag_isConnected <| fun c d => ?_
-  refine zigzag_of_eqvGen_quot_rel _ (constPUnitFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
+  refine zigzagable_of_eqvGen_quot_rel _ (constPUnitFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl
 
 theorem isConnected_iff_isColimit_pUnitCocone :

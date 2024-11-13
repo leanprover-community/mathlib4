@@ -35,8 +35,8 @@ lemma parallelPair_initial_mk' {X Y : C} (f g : X ⟶ Y)
       (mk (Y := zero) (h₁ Z).some) := by
         rintro ⟨(_|_), ⟨⟩, φ⟩
         · apply h₂
-        · refine Zigzag.trans ?_ (h₂ (f ≫ φ) _)
-          exact Zigzag.of_inv (homMk left)
+        · refine Zigzagable.trans ?_ (h₂ (f ≫ φ) _)
+          exact Zigzagable.of_inv (homMk left)
     exact zigzag_isConnected (fun x y => (this x).trans (this y).symm)
 
 lemma parallelPair_initial_mk {X Y : C} (f g : X ⟶ Y)
@@ -49,7 +49,7 @@ lemma parallelPair_initial_mk {X Y : C} (f g : X ⟶ Y)
       homMk left
     let f₂ : (mk (Y := zero) (g ≫ a) : CostructuredArrow (parallelPair f g) Z) ⟶ mk (Y := one) a :=
       homMk right
-    exact Zigzag.of_hom_inv f₁ f₂)
+    exact Zigzagable.of_hom_inv f₁ f₂)
 
 end Limits
 

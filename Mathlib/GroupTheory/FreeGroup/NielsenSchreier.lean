@@ -260,7 +260,7 @@ private def symgen {G : Type u} [Groupoid.{v} G] [IsFreeGroupoid G] :
     G → Symmetrify (Generators G) :=
   id
 
-/-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzag
+/-- If there exists a morphism `a → b` in a free groupoid, then there also exists a zigzagable
 from `a` to `b` in the generating quiver. -/
 theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G} :
     Nonempty (a ⟶ b) → Nonempty (Path (symgen a) (symgen b)) := by

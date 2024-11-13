@@ -72,9 +72,9 @@ instance [IsSifted C] : IsConnected C :=
         use [X.right, c₂]
         constructor
         · constructor
-          · exact Zag.of_hom X.hom.fst
+          · exact Zagable.of_hom X.hom.fst
           · simp
-            exact Zag.of_inv X.hom.snd
+            exact Zagable.of_inv X.hom.snd
         · rfl)
 
 /-- A category with binary coproducts is sifted or empty. -/
@@ -90,8 +90,8 @@ instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
     simp only [colimit.cocone_x, diag_obj, Prod.mk.eta, List.chain_cons, List.Chain.nil, and_true,
       ne_eq, reduceCtorEq, not_false_eq_true, List.getLast_cons, List.cons_ne_self,
       List.getLast_singleton]
-    exact ⟨⟨Zag.of_inv <| StructuredArrow.homMk <| coprod.desc f.fst f.snd,
-      Zag.of_hom <| StructuredArrow.homMk <| coprod.desc g.fst g.snd⟩, rfl⟩
+    exact ⟨⟨Zagable.of_inv <| StructuredArrow.homMk <| coprod.desc f.fst f.snd,
+      Zagable.of_hom <| StructuredArrow.homMk <| coprod.desc g.fst g.snd⟩, rfl⟩
 
 /-- A nonempty category with binary coproducts is sifted. -/
 instance isSifted_of_hasBinaryCoproducts_and_nonempty [_root_.Nonempty C] [HasBinaryCoproducts C] :

@@ -34,12 +34,12 @@ variable {J : Type u₁} [Category.{v₁} J]
 
 /-- This type indexes the connected components of the category `J`. -/
 def ConnectedComponents (J : Type u₁) [Category.{v₁} J] : Type u₁ :=
-  Quotient (Zigzag.setoid J)
+  Quotient (Zigzagable.setoid J)
 
 /-- The map `ConnectedComponents J → ConnectedComponents K` induced by a functor `J ⥤ K`. -/
 def Functor.mapConnectedComponents {K : Type u₂} [Category.{v₂} K] (F : J ⥤ K)
     (x : ConnectedComponents J) : ConnectedComponents K :=
-  x |> Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj)
+  x |> Quotient.lift (Quotient.mk (Zigzagable.setoid _) ∘ F.obj)
     (fun _ _ ↦ Quot.sound ∘ zigzag_obj_of_zigzag F)
 
 @[simp]
@@ -52,8 +52,8 @@ instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
 /-- Every function from connected components of a category gives a functor to discrete category -/
 def ConnectedComponents.functorToDiscrete   (X : Type*)
     (f : ConnectedComponents J → X) : J ⥤ Discrete X where
-  obj Y :=  Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
-  map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzag.of_hom g)))
+  obj Y :=  Discrete.mk (f (Quotient.mk (Zigzagable.setoid _) Y))
+  map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzagable.of_hom g)))
 
 /-- Every functor to a discrete category gives a function from connected components -/
 def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
@@ -104,23 +104,23 @@ instance (j : ConnectedComponents J) : Inhabited (Component j) :=
 
 /-- Each connected component of the category is connected. -/
 instance (j : ConnectedComponents J) : IsConnected (Component j) := by
-  -- Show it's connected by constructing a zigzag (in `Component j`) between any two objects
+  -- Show it's connected by constructing a zigzagable (in `Component j`) between any two objects
   apply isConnected_of_zigzag
   rintro ⟨j₁, hj₁⟩ ⟨j₂, rfl⟩
-  -- We know that the underlying objects j₁ j₂ have some zigzag between them in `J`
+  -- We know that the underlying objects j₁ j₂ have some zigzagable between them in `J`
   have h₁₂ : Zigzagable j₁ j₂ := Quotient.exact' hj₁
-  -- Get an explicit zigzag as a list
+  -- Get an explicit zigzagable as a list
   rcases List.exists_chain_of_relationReflTransGen h₁₂ with ⟨l, hl₁, hl₂⟩
-  -- Everything which has a zigzag to j₂ can be lifted to the same component as `j₂`.
+  -- Everything which has a zigzagable to j₂ can be lifted to the same component as `j₂`.
   let f : ∀ x, Zigzagable x j₂ → Component (Quotient.mk'' j₂) := fun x h => ⟨x, Quotient.sound' h⟩
-  -- Everything in our chosen zigzag from `j₁` to `j₂` has a zigzag to `j₂`.
+  -- Everything in our chosen zigzagable from `j₁` to `j₂` has a zigzagable to `j₂`.
   have hf : ∀ a : J, a ∈ l → Zigzagable a j₂ := by
     intro i hi
     apply hl₁.backwards_induction (fun t => Zigzagable t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
     · intro j k
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
-  -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `component j`.
+  -- Now lift the zigzagable from `j₁` to `j₂` in `J` to the same thing in `component j`.
   refine ⟨l.pmap f hf, ?_, ?_⟩
   · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
     exact zag_of_zag_obj (Component.ι _) h

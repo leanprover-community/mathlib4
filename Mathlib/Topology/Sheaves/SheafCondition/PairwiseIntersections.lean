@@ -110,7 +110,7 @@ instance (V : OpensLeCover U) : Nonempty (StructuredArrow V (pairwiseToOpensLeCo
   ⟨@StructuredArrow.mk _ _ _ _ _ (single V.index) _ V.homToIndex⟩
 
 -- This is a case bash: for each pair of types of objects in `Pairwise ι`,
--- we have to explicitly construct a zigzag.
+-- we have to explicitly construct a zigzagable.
 /-- The diagram consisting of the `U i` and `U i ⊓ U j` is cofinal in the diagram
 of all opens contained in some `U i`.
 -/

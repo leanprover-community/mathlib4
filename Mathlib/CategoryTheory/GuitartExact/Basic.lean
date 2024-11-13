@@ -298,7 +298,7 @@ instance guitartExact_id (F : C₁ ⥤ C₂) :
   have : Nonempty Z := ⟨X₀⟩
   apply zigzag_isConnected
   intro X Y
-  exact Zigzag.of_inv_hom (φ X) (φ Y)
+  exact Zigzagable.of_inv_hom (φ X) (φ Y)
 
 end TwoSquare
 

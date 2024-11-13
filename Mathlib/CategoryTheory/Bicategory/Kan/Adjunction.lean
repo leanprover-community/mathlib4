@@ -50,7 +50,7 @@ def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
           dsimp only [whisker_extension, StructuredArrow.mk_right, whisker_unit,
             StructuredArrow.mk_hom_eq_self]
           bicategory
-        _ = 𝟙 _ ⊗≫ s.unit ⊗≫ leftZigzag adj.unit adj.counit ▷ s.extension ⊗≫ 𝟙 _ := by
+        _ = 𝟙 _ ⊗≫ s.unit ⊗≫ leftZigzagable adj.unit adj.counit ▷ s.extension ⊗≫ 𝟙 _ := by
           rw [← whisker_exchange]; bicategory
         _ = s.unit := by
           rw [adj.left_triangle]; bicategory) <| by
@@ -61,10 +61,10 @@ def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
     have hτ : adj.unit ▷ h ⊗≫ f ◁ τ = s.unit := by
       simpa [bicategoricalComp] using LeftExtension.w τ₀
     calc τ
-      _ = 𝟙 _ ⊗≫ rightZigzag adj.unit adj.counit ▷ h ⊗≫ τ ⊗≫ 𝟙 _ := by
+      _ = 𝟙 _ ⊗≫ rightZigzagable adj.unit adj.counit ▷ h ⊗≫ τ ⊗≫ 𝟙 _ := by
         rw [adj.right_triangle]; bicategory
       _ = 𝟙 _ ⊗≫ u ◁ adj.unit ▷ h ⊗≫ (adj.counit ▷ _ ≫ _ ◁ τ) ⊗≫ 𝟙 _ := by
-        rw [rightZigzag]; bicategory
+        rw [rightZigzagable]; bicategory
       _ = 𝟙 _ ⊗≫ u ◁ (adj.unit ▷ h ⊗≫ f ◁ τ) ⊗≫ adj.counit ▷ s.extension ⊗≫ 𝟙 _ := by
         rw [← whisker_exchange]; bicategory
       _ = _ := by
@@ -76,8 +76,8 @@ def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
     (H : IsKan t) (H' : IsKan (t.whisker f)) :
       f ⊣ t.extension :=
   let ε : t.extension ≫ f ⟶ 𝟙 b := H'.desc <| .mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
-  have Hε : leftZigzag t.unit ε = (λ_ f).hom ≫ (ρ_ f).inv := by
-    simpa [leftZigzag, bicategoricalComp] using H'.fac <| .mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
+  have Hε : leftZigzagable t.unit ε = (λ_ f).hom ≫ (ρ_ f).inv := by
+    simpa [leftZigzagable, bicategoricalComp] using H'.fac <| .mk _ <| (λ_ f).hom ≫ (ρ_ f).inv
   { unit := t.unit
     counit := ε
     left_triangle := Hε
@@ -85,14 +85,14 @@ def LeftExtension.IsKan.adjunction {f : a ⟶ b} {t : LeftExtension f (𝟙 a)}
       apply (cancel_epi (ρ_ _).inv).mp
       apply H.hom_ext
       calc _
-        _ = 𝟙 _ ⊗≫ t.unit ⊗≫ f ◁ rightZigzag t.unit ε ⊗≫ 𝟙 _ := by
+        _ = 𝟙 _ ⊗≫ t.unit ⊗≫ f ◁ rightZigzagable t.unit ε ⊗≫ 𝟙 _ := by
           bicategory
         _ = 𝟙 _ ⊗≫ (t.unit ▷ _ ≫ _ ◁ t.unit) ⊗≫ f ◁ ε ▷ t.extension ⊗≫ 𝟙 _ := by
-          rw [rightZigzag]; bicategory
+          rw [rightZigzagable]; bicategory
         _ = 𝟙 _ ⊗≫ t.unit ⊗≫ (t.unit ▷ f ⊗≫ f ◁ ε) ▷ t.extension ⊗≫ 𝟙 _ := by
           rw [← whisker_exchange]; bicategory
         _ = _ := by
-          rw [← leftZigzag, Hε]; bicategory }
+          rw [← leftZigzagable, Hε]; bicategory }
 
 /-- For an adjuntion `f ⊣ u`, `u` is a left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
@@ -130,8 +130,8 @@ def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u)
         dsimp only [whisker_lift, StructuredArrow.mk_right, whisker_unit,
           StructuredArrow.mk_hom_eq_self]
         bicategory
-      _ = s.unit ⊗≫ s.lift ◁ (rightZigzag adj.unit adj.counit) ⊗≫ 𝟙 _ := by
-        rw [whisker_exchange, rightZigzag]; bicategory
+      _ = s.unit ⊗≫ s.lift ◁ (rightZigzagable adj.unit adj.counit) ⊗≫ 𝟙 _ := by
+        rw [whisker_exchange, rightZigzagable]; bicategory
       _ = s.unit := by
         rw [adj.right_triangle]; bicategory) <| by
       intro s τ₀
@@ -140,10 +140,10 @@ def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u)
       let τ : h ≫ f ⟶ s.lift := τ₀.right
       have hτ : h ◁ adj.unit ⊗≫ τ ▷ u = s.unit := by simpa [bicategoricalComp] using LeftLift.w τ₀
       calc τ
-        _ = 𝟙 _ ⊗≫ h ◁ leftZigzag adj.unit adj.counit ⊗≫ τ ⊗≫ 𝟙 _ := by
+        _ = 𝟙 _ ⊗≫ h ◁ leftZigzagable adj.unit adj.counit ⊗≫ τ ⊗≫ 𝟙 _ := by
           rw [adj.left_triangle]; bicategory
         _ = 𝟙 _ ⊗≫ h ◁ adj.unit ▷ f ⊗≫ (_ ◁ adj.counit ≫ τ ▷ _) ⊗≫ 𝟙 _ := by
-          rw [leftZigzag]; bicategory
+          rw [leftZigzagable]; bicategory
         _ = 𝟙 _ ⊗≫ (h ◁ adj.unit ⊗≫ τ ▷ u) ▷ f ⊗≫ s.lift ◁ adj.counit ⊗≫ 𝟙 _ := by
           rw [whisker_exchange]; bicategory
         _ = _ := by
@@ -155,22 +155,22 @@ def LeftLift.IsKan.adjunction {u : b ⟶ a} {t : LeftLift u (𝟙 a)}
     (H : IsKan t) (H' : IsKan (t.whisker u)) :
       t.lift ⊣ u :=
   let ε : u ≫ t.lift ⟶ 𝟙 b := H'.desc <| .mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
-  have Hε : rightZigzag t.unit ε = (ρ_ u).hom ≫ (λ_ u).inv := by
-    simpa [rightZigzag, bicategoricalComp] using H'.fac <| .mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
+  have Hε : rightZigzagable t.unit ε = (ρ_ u).hom ≫ (λ_ u).inv := by
+    simpa [rightZigzagable, bicategoricalComp] using H'.fac <| .mk _ <| (ρ_ u).hom ≫ (λ_ u).inv
   { unit := t.unit
     counit := ε
     left_triangle := by
       apply (cancel_epi (λ_ _).inv).mp
       apply H.hom_ext
       calc _
-        _ = 𝟙 _ ⊗≫ t.unit ⊗≫ leftZigzag t.unit ε ▷ u ⊗≫ 𝟙 _ := by
+        _ = 𝟙 _ ⊗≫ t.unit ⊗≫ leftZigzagable t.unit ε ▷ u ⊗≫ 𝟙 _ := by
           bicategory
         _ = 𝟙 _ ⊗≫ (_ ◁ t.unit ≫ t.unit ▷ _) ⊗≫ t.lift ◁ ε ▷ u ⊗≫ 𝟙 _ := by
-          rw [leftZigzag]; bicategory
+          rw [leftZigzagable]; bicategory
         _ = 𝟙 _ ⊗≫ t.unit ⊗≫ t.lift ◁ (u ◁ t.unit ⊗≫ ε ▷ u) ⊗≫ 𝟙 _ := by
           rw [whisker_exchange]; bicategory
         _ = _ := by
-          rw [← rightZigzag, Hε]; bicategory
+          rw [← rightZigzagable, Hε]; bicategory
     right_triangle := Hε }
 
 /-- For an adjuntion `f ⊣ u`, `f` is a left Kan lift of the identity along `u`.
