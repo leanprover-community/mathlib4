@@ -41,37 +41,20 @@ variable [Semiring A] [AddCommMonoid M] [Module A M]
 
 section HomogeneousDef
 
-/-- A substructure `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components
-  of `m` are in `p`. -/
-def SetLike.IsHomogeneous {P : Type*} [SetLike P M]
-    (p : P) (ℳ : ιM → σM)
-    [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ] : Prop :=
-  ∀ (i : ιM) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
-
-theorem AddSubmonoidClass.IsHomogeneous.mem_iff {P : Type*} [SetLike P M] [AddSubmonoidClass P M]
-    (ℳ : ιM → σM) {p : P}
-    [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
-    (hp : SetLike.IsHomogeneous p ℳ) {x} :
-    x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p := by
-  classical
-  refine ⟨fun hx i ↦ hp i hx, fun hx ↦ ?_⟩
-  rw [← DirectSum.sum_support_decompose ℳ x]
-  exact sum_mem (fun i _ ↦ hx i)
-
 /--
 An `A`-submodule `p ⊆ M` is homogeneous if for every `m ∈ p`, all homogeneous components of `m` are
 in `p`.
 -/
 def Submodule.IsHomogeneous (p : Submodule A M) (ℳ : ιM → σM)
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ] : Prop :=
-  SetLike.IsHomogeneous p ℳ
+  SetLike.IsHomogeneous ℳ p
 
 theorem Submodule.IsHomogeneous.mem_iff {p : Submodule A M}
     (ℳ : ιM → σM)
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
     (hp : p.IsHomogeneous ℳ) {x} :
     x ∈ p ↔ ∀ i, (decompose ℳ x i : M) ∈ p :=
-  AddSubmonoidClass.IsHomogeneous.mem_iff ℳ hp
+  AddSubmonoidClass.IsHomogeneous.mem_iff ℳ _ hp
 
 /-- For any `Semiring A`, we collect the homogeneous submodule of `A`-modules into a type. -/
 structure HomogeneousSubmodule (𝒜 : ιA → σA) (ℳ : ιM → σM)

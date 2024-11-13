@@ -154,8 +154,8 @@ theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Set.image_singleton]
   rfl
 
-theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading R) x)
-    (hy : SetLike.Homogeneous (grading R) y) (hxy : x * y ∈ I) : x ∈ I ∨ y ∈ I := by
+theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.IsHomogeneousElem (grading R) x)
+    (hy : SetLike.IsHomogeneousElem (grading R) y) (hxy : x * y ∈ I) : x ∈ I ∨ y ∈ I := by
   -- Porting note: added `h2` for later use; the proof is hideous
   have h2 : Prime (2:R) := by
     unfold Prime
