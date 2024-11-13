@@ -163,6 +163,13 @@ example (x : ℤ) : True := by
   let a := x + 1
   have : a = 1 + x := by ring1
 
+-- FIXME this ought to fail!
+-- check that `ring` does not unfold let-bindings
+example (x : ℤ) : True := by
+  let a := x + 1
+  have : a = 1 + x := by ring_nf
+  trivial
+
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 
