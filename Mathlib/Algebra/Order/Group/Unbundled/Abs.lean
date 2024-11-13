@@ -284,6 +284,3 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Latti
 lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
 
 end Pi
-
-@[deprecated (since := "2024-01-13")] alias neg_le_abs_self := neg_le_abs
-@[deprecated (since := "2024-01-13")] alias neg_abs_le_self := neg_abs_le

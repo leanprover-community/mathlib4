@@ -201,7 +201,7 @@ injective. If `α` is a separated space, then the latter assumption follows from
 @[mk_iff]
 structure IsUniformEmbedding (f : α → β) extends IsUniformInducing f : Prop where
   /-- A uniform embedding is injective. -/
-  inj : Function.Injective f
+  injective : Function.Injective f
 
 lemma IsUniformEmbedding.isUniformInducing (hf : IsUniformEmbedding f) : IsUniformInducing f :=
   hf.toIsUniformInducing
@@ -238,7 +238,7 @@ alias Filter.HasBasis.uniformEmbedding_iff := Filter.HasBasis.isUniformEmbedding
 theorem isUniformEmbedding_subtype_val {p : α → Prop} :
     IsUniformEmbedding (Subtype.val : Subtype p → α) :=
   { comap_uniformity := rfl
-    inj := Subtype.val_injective }
+    injective := Subtype.val_injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_subtype_val := isUniformEmbedding_subtype_val
@@ -246,21 +246,22 @@ alias uniformEmbedding_subtype_val := isUniformEmbedding_subtype_val
 theorem isUniformEmbedding_set_inclusion {s t : Set α} (hst : s ⊆ t) :
     IsUniformEmbedding (inclusion hst) where
   comap_uniformity := by rw [uniformity_subtype, uniformity_subtype, comap_comap]; rfl
-  inj := inclusion_injective hst
+  injective := inclusion_injective hst
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_set_inclusion := isUniformEmbedding_set_inclusion
 
 theorem IsUniformEmbedding.comp {g : β → γ} (hg : IsUniformEmbedding g) {f : α → β}
-    (hf : IsUniformEmbedding f) : IsUniformEmbedding (g ∘ f) :=
-  { hg.isUniformInducing.comp hf.isUniformInducing with inj := hg.inj.comp hf.inj }
+    (hf : IsUniformEmbedding f) : IsUniformEmbedding (g ∘ f) where
+  toIsUniformInducing := hg.isUniformInducing.comp hf.isUniformInducing
+  injective := hg.injective.comp hf.injective
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.comp := IsUniformEmbedding.comp
 
 theorem IsUniformEmbedding.of_comp_iff {g : β → γ} (hg : IsUniformEmbedding g) {f : α → β} :
     IsUniformEmbedding (g ∘ f) ↔ IsUniformEmbedding f := by
-  simp_rw [isUniformEmbedding_iff, hg.isUniformInducing.of_comp_iff, hg.inj.of_comp_iff f]
+  simp_rw [isUniformEmbedding_iff, hg.isUniformInducing.of_comp_iff, hg.injective.of_comp_iff f]
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.of_comp_iff := IsUniformEmbedding.of_comp_iff
@@ -338,7 +339,7 @@ alias uniformEmbedding_of_spaced_out := isUniformEmbedding_of_spaced_out
 protected lemma IsUniformEmbedding.isEmbedding {f : α → β} (h : IsUniformEmbedding f) :
     IsEmbedding f where
   toIsInducing := h.toIsUniformInducing.isInducing
-  inj := h.inj
+  injective := h.injective
 
 @[deprecated (since := "2024-10-26")]
 alias IsUniformEmbedding.embedding := IsUniformEmbedding.isEmbedding
@@ -389,15 +390,16 @@ theorem isUniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : Is
   { comap_uniformity := by
       simp [comap_comap, Function.comp_def, IsDenseEmbedding.subtypeEmb, uniformity_subtype,
         ue.comap_uniformity.symm]
-    inj := (de.subtype p).inj }
+    injective := (de.subtype p).injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_subtypeEmb := isUniformEmbedding_subtypeEmb
 
 theorem IsUniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformEmbedding e₁) (h₂ : IsUniformEmbedding e₂) :
-    IsUniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  { h₁.isUniformInducing.prod h₂.isUniformInducing with inj := h₁.inj.prodMap h₂.inj }
+    IsUniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) where
+  toIsUniformInducing := h₁.isUniformInducing.prod h₂.isUniformInducing
+  injective := h₁.injective.prodMap h₂.injective
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.prod := IsUniformEmbedding.prod
@@ -566,7 +568,7 @@ alias uniformEmbedding_comap := isUniformEmbedding_comap
 
 /-- Pull back a uniform space structure by an embedding, adjusting the new uniform structure to
 make sure that its topology is defeq to the original one. -/
-def IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
+def Topology.IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
     (f : α → β) (h : IsEmbedding f) : UniformSpace α :=
   (u.comap f).replaceTopology h.eq_induced
 
@@ -577,7 +579,7 @@ theorem Embedding.to_isUniformEmbedding {α β} [TopologicalSpace α] [u : Unifo
     (h : IsEmbedding f) : @IsUniformEmbedding α β (h.comapUniformSpace f) u f :=
   let _ := h.comapUniformSpace f
   { comap_uniformity := rfl
-    inj := h.inj }
+    injective := h.injective }
 
 @[deprecated (since := "2024-10-01")]
 alias Embedding.to_uniformEmbedding := Embedding.to_isUniformEmbedding

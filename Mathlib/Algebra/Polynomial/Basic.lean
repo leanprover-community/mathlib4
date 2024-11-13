@@ -6,6 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Theory of univariate polynomials
@@ -891,6 +892,35 @@ theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a => monomial n a) = p
 
 theorem sum_C_mul_X_pow_eq (p : R[X]) : (p.sum fun n a => C a * X ^ n) = p := by
   simp_rw [C_mul_X_pow_eq_monomial, sum_monomial_eq]
+
+@[elab_as_elim]
+protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (C a))
+    (h_add : ∀ p q, M p → M q → M (p + q))
+    (h_monomial : ∀ (n : ℕ) (a : R), M (C a * X ^ n) → M (C a * X ^ (n + 1))) : M p := by
+  have A : ∀ {n : ℕ} {a}, M (C a * X ^ n) := by
+    intro n a
+    induction n with
+    | zero => rw [pow_zero, mul_one]; exact h_C a
+    | succ n ih => exact h_monomial _ _ ih
+  have B : ∀ s : Finset ℕ, M (s.sum fun n : ℕ => C (p.coeff n) * X ^ n) := by
+    apply Finset.induction
+    · convert h_C 0
+      exact C_0.symm
+    · intro n s ns ih
+      rw [sum_insert ns]
+      exact h_add _ _ A ih
+  rw [← sum_C_mul_X_pow_eq p, Polynomial.sum]
+  exact B (support p)
+
+/-- To prove something about polynomials,
+it suffices to show the condition is closed under taking sums,
+and it holds for monomials.
+-/
+@[elab_as_elim]
+protected theorem induction_on' {M : R[X] → Prop} (p : R[X]) (h_add : ∀ p q, M p → M q → M (p + q))
+    (h_monomial : ∀ (n : ℕ) (a : R), M (monomial n a)) : M p :=
+  Polynomial.induction_on p (h_monomial 0) h_add fun n a _h =>
+    by rw [C_mul_X_pow_eq_monomial]; exact h_monomial _ _
 
 /-- `erase p n` is the polynomial `p` in which the `X^n` term has been erased. -/
 irreducible_def erase (n : ℕ) : R[X] → R[X]

@@ -254,7 +254,7 @@ variable [CompleteLattice α] (c : ClosureOperator α)
 @[simps!]
 def ofCompletePred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : ClosureOperator α :=
   ofPred (fun a ↦ ⨅ b : {b // a ≤ b ∧ p b}, b) p
-    (fun a ↦ by simp [forall_swap])
+    (fun a ↦ by simp (config := {contextual := true}))
     (fun _ ↦ hsinf _ <| forall_mem_range.2 fun b ↦ b.2.2)
     (fun _ b hab hb ↦ iInf_le_of_le ⟨b, hab, hb⟩ le_rfl)
 
