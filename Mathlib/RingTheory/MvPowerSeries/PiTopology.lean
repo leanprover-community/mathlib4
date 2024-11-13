@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.UniformSpace.Pi
 
 /-! # Product topology on multivariate power series
