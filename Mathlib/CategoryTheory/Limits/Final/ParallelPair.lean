@@ -25,13 +25,13 @@ open WalkingParallelPair WalkingParallelPairHom CostructuredArrow
 lemma parallelPair_initial_mk' {X Y : C} (f g : X ⟶ Y)
     (h₁ : ∀ Z, Nonempty (X ⟶ Z))
     (h₂ : ∀ ⦃Z : C⦄ (i j : X ⟶ Z),
-      Zigzag (J := CostructuredArrow (parallelPair f g) Z)
+      Zigzagable (J := CostructuredArrow (parallelPair f g) Z)
         (mk (Y := zero) i) (mk (Y := zero) j)) :
     (parallelPair f g).Initial where
   out Z := by
     have : Nonempty (CostructuredArrow (parallelPair f g) Z) :=
       ⟨mk (Y := zero) (h₁ Z).some⟩
-    have : ∀ (x : CostructuredArrow (parallelPair f g) Z), Zigzag x
+    have : ∀ (x : CostructuredArrow (parallelPair f g) Z), Zigzagable x
       (mk (Y := zero) (h₁ Z).some) := by
         rintro ⟨(_|_), ⟨⟩, φ⟩
         · apply h₂

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
 -/
 import Mathlib.Data.List.Chain
+import Mathlib.Data.TypeMax
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Category.ULift
@@ -260,97 +261,100 @@ theorem isConnected_of_isConnected_op [IsConnected Jᵒᵖ] : IsConnected J :=
   isConnected_of_equivalent (opOpEquivalence J)
 
 /-- j₁ and j₂ are related by `Zag` if there is a morphism between them. -/
-def Zag (j₁ j₂ : J) : Prop :=
+def Zagable (j₁ j₂ : J) : Prop :=
   Nonempty (j₁ ⟶ j₂) ∨ Nonempty (j₂ ⟶ j₁)
 
-theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
+@[refl] theorem Zagable.refl (X : J) : Zagable X X := Or.inl ⟨𝟙 _⟩
 
-theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
+theorem zag_symmetric : Symmetric (@Zagable J _) := fun _ _ h => h.symm
 
-theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
+@[symm] theorem Zagable.symm {j₁ j₂ : J} (h : Zagable j₁ j₂) : Zagable j₂ j₁ := zag_symmetric h
 
-theorem Zag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zag j₁ j₂ := Or.inl ⟨f⟩
+theorem Zagable.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zagable j₁ j₂ := Or.inl ⟨f⟩
 
-theorem Zag.of_inv {j₁ j₂ : J} (f : j₂ ⟶ j₁) : Zag j₁ j₂ := Or.inr ⟨f⟩
+theorem Zagable.of_inv {j₁ j₂ : J} (f : j₂ ⟶ j₁) : Zagable j₁ j₂ := Or.inr ⟨f⟩
 
 /-- `j₁` and `j₂` are related by `Zigzag` if there is a chain of
 morphisms from `j₁` to `j₂`, with backward morphisms allowed.
 -/
-def Zigzag : J → J → Prop :=
-  Relation.ReflTransGen Zag
+def Zigzagable : J → J → Prop :=
+  Relation.ReflTransGen Zagable
 
-theorem zigzag_symmetric : Symmetric (@Zigzag J _) :=
+theorem zigzag_symmetric : Symmetric (@Zigzagable J _) :=
   Relation.ReflTransGen.symmetric zag_symmetric
 
-theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
+theorem zigzag_equivalence : _root_.Equivalence (@Zigzagable J _) :=
   _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h)
   (fun h g => Relation.transitive_reflTransGen h g)
 
-theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
+@[refl] theorem Zigzagable.refl (X : J) : Zigzagable X X := zigzag_equivalence.refl _
 
-theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
+@[symm] theorem Zigzagable.symm {j₁ j₂ : J} (h : Zigzagable j₁ j₂) : Zigzagable j₂ j₁ :=
+  zigzag_symmetric h
 
-theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigzag j₂ j₃) : Zigzag j₁ j₃ :=
+@[trans] theorem Zigzagable.trans {j₁ j₂ j₃ : J} (h₁ : Zigzagable j₁ j₂) (h₂ : Zigzagable j₂ j₃) :
+    Zigzagable j₁ j₃ :=
   zigzag_equivalence.trans h₁ h₂
 
-theorem Zigzag.of_zag {j₁ j₂ : J} (h : Zag j₁ j₂) : Zigzag j₁ j₂ :=
+theorem Zigzagable.of_zagable {j₁ j₂ : J} (h : Zagable j₁ j₂) : Zigzagable j₁ j₂ :=
   Relation.ReflTransGen.single h
 
-theorem Zigzag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zigzag j₁ j₂ :=
-  of_zag (Zag.of_hom f)
+theorem Zigzagable.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zigzagable j₁ j₂ :=
+  of_zagable (Zagable.of_hom f)
 
-theorem Zigzag.of_inv {j₁ j₂ : J} (f : j₂ ⟶ j₁) : Zigzag j₁ j₂ :=
-  of_zag (Zag.of_inv f)
+theorem Zigzagable.of_inv {j₁ j₂ : J} (f : j₂ ⟶ j₁) : Zigzagable j₁ j₂ :=
+  of_zagable (Zagable.of_inv f)
 
-theorem Zigzag.of_zag_trans {j₁ j₂ j₃ : J} (h₁ : Zag j₁ j₂) (h₂ : Zag j₂ j₃) : Zigzag j₁ j₃ :=
-  trans (of_zag h₁) (of_zag h₂)
+theorem Zigzagable.of_zag_trans {j₁ j₂ j₃ : J} (h₁ : Zagable j₁ j₂) (h₂ : Zagable j₂ j₃) :
+    Zigzagable j₁ j₃ :=
+  trans (of_zagable h₁) (of_zagable h₂)
 
-theorem Zigzag.of_hom_hom {j₁ j₂ j₃ : J} (f₁₂ : j₁ ⟶ j₂) (f₂₃ : j₂ ⟶ j₃) : Zigzag j₁ j₃ :=
+theorem Zigzagable.of_hom_hom {j₁ j₂ j₃ : J} (f₁₂ : j₁ ⟶ j₂) (f₂₃ : j₂ ⟶ j₃) : Zigzagable j₁ j₃ :=
   (of_hom f₁₂).trans (of_hom f₂₃)
 
-theorem Zigzag.of_hom_inv {j₁ j₂ j₃ : J} (f₁₂ : j₁ ⟶ j₂) (f₃₂ : j₃ ⟶ j₂) : Zigzag j₁ j₃ :=
+theorem Zigzagable.of_hom_inv {j₁ j₂ j₃ : J} (f₁₂ : j₁ ⟶ j₂) (f₃₂ : j₃ ⟶ j₂) : Zigzagable j₁ j₃ :=
   (of_hom f₁₂).trans (of_inv f₃₂)
 
-theorem Zigzag.of_inv_hom {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₂₃ : j₂ ⟶ j₃) : Zigzag j₁ j₃ :=
+theorem Zigzagable.of_inv_hom {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₂₃ : j₂ ⟶ j₃) : Zigzagable j₁ j₃ :=
   (of_inv f₂₁).trans (of_hom f₂₃)
 
-theorem Zigzag.of_inv_inv {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₃₂ : j₃ ⟶ j₂) : Zigzag j₁ j₃ :=
+theorem Zigzagable.of_inv_inv {j₁ j₂ j₃ : J} (f₂₁ : j₂ ⟶ j₁) (f₃₂ : j₃ ⟶ j₂) : Zigzagable j₁ j₃ :=
   (of_inv f₂₁).trans (of_inv f₃₂)
 
 /-- The setoid given by the equivalence relation `Zigzag`. A quotient for this
 setoid is a connected component of the category.
 -/
-def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
-  r := Zigzag
+def Zigzagable.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
+  r := Zigzagable
   iseqv := zigzag_equivalence
 
 /-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
 `F j₂` as long as `F` is a prefunctor.
 -/
-theorem zigzag_prefunctor_obj_of_zigzag (F : J ⥤q K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
-    Zigzag (F.obj j₁) (F.obj j₂) :=
+theorem zigzag_prefunctor_obj_of_zigzag (F : J ⥤q K) {j₁ j₂ : J} (h : Zigzagable j₁ j₂) :
+    Zigzagable (F.obj j₁) (F.obj j₂) :=
   h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
 
 /-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
 `F j₂` as long as `F` is a functor.
 -/
-theorem zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
-    Zigzag (F.obj j₁) (F.obj j₂) :=
+theorem zigzag_obj_of_zigzag (F : J ⥤ K) {j₁ j₂ : J} (h : Zigzagable j₁ j₂) :
+    Zigzagable (F.obj j₁) (F.obj j₂) :=
   zigzag_prefunctor_obj_of_zigzag F.toPrefunctor h
 
 /-- A Zag in a discrete category entails an equality of its extremities -/
-lemma eq_of_zag (X) {a b : Discrete X} (h : Zag a b) : a.as = b.as :=
+lemma eq_of_zag (X) {a b : Discrete X} (h : Zagable a b) : a.as = b.as :=
   h.elim (fun ⟨f⟩ ↦ Discrete.eq_of_hom f) (fun ⟨f⟩ ↦ (Discrete.eq_of_hom f).symm)
 
 /-- A zigzag in a discrete category entails an equality of its extremities -/
-lemma eq_of_zigzag (X) {a b : Discrete X} (h : Zigzag a b) : a.as = b.as := by
+lemma eq_of_zigzag (X) {a b : Discrete X} (h : Zigzagable a b) : a.as = b.as := by
   induction h with
   | refl => rfl
   | tail _ h eq  => exact eq.trans (eq_of_zag _ h)
 
--- TODO: figure out the right way to generalise this to `Zigzag`.
-theorem zag_of_zag_obj (F : J ⥤ K) [F.Full] {j₁ j₂ : J} (h : Zag (F.obj j₁) (F.obj j₂)) :
-    Zag j₁ j₂ :=
+-- TODO: figure out the right way to generalise this to `Zigzagable`.
+theorem zag_of_zag_obj (F : J ⥤ K) [F.Full] {j₁ j₂ : J} (h : Zagable (F.obj j₁) (F.obj j₂)) :
+    Zagable j₁ j₂ :=
   Or.imp (Nonempty.map F.preimage) (Nonempty.map F.preimage) h
 
 /-- Any equivalence relation containing (⟶) holds for all pairs of a connected category. -/
@@ -363,13 +367,13 @@ theorem equiv_relation [IsPreconnected J] (r : J → J → Prop) (hr : _root_.Eq
   exact z j₂
 
 /-- In a connected category, any two objects are related by `Zigzag`. -/
-theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
+theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzagable j₁ j₂ :=
   equiv_relation _ zigzag_equivalence
     (fun f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 
 @[deprecated (since := "2024-02-19")] alias isConnected_zigzag := isPreconnected_zigzag
 
-theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
+theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzagable j₁ j₂) : IsPreconnected J := by
   apply IsPreconnected.of_constant_of_preserves_morphisms
   intro α F hF j j'
   specialize h j j'
@@ -381,11 +385,11 @@ theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPrec
 
 /-- If any two objects in a nonempty category are related by `Zigzag`, the category is connected.
 -/
-theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsConnected J :=
+theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzagable j₁ j₂) : IsConnected J :=
   { zigzag_isPreconnected h with }
 
 theorem exists_zigzag' [IsConnected J] (j₁ j₂ : J) :
-    ∃ l, List.Chain Zag j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂ :=
+    ∃ l, List.Chain Zagable j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂ :=
   List.exists_chain_of_relationReflTransGen (isPreconnected_zigzag _ _)
 
 /-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
@@ -394,7 +398,7 @@ morphisms, then J is connected.
 The converse of `exists_zigzag'`.
 -/
 theorem isPreconnected_of_zigzag (h : ∀ j₁ j₂ : J, ∃ l,
-    List.Chain Zag j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
+    List.Chain Zagable j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
     IsPreconnected J := by
   apply zigzag_isPreconnected
   intro j₁ j₂
@@ -407,7 +411,7 @@ morphisms, then J is connected.
 The converse of `exists_zigzag'`.
 -/
 theorem isConnected_of_zigzag [Nonempty J] (h : ∀ j₁ j₂ : J, ∃ l,
-    List.Chain Zag j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
+    List.Chain Zagable j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂) :
     IsConnected J :=
   { isPreconnected_of_zigzag h with }
 
@@ -450,5 +454,73 @@ attribute [instance] nonempty_hom_of_preconnected_groupoid
 
 @[deprecated (since := "2024-02-19")]
 alias nonempty_hom_of_connected_groupoid := nonempty_hom_of_preconnected_groupoid
+
+/-- a `Zag` is a morphism or an opposite morphism -/
+def Zag (c d : C) := (c ⟶ d) ⊕ (d ⟶ c)
+def Zag.dom {c d : C} (_ : Zag c d) := c
+def Zag.codom {c d : C} (_ : Zag c d) := d
+
+/-- a `Zigzag` is a sequence of `Zag`s -/
+inductive Zigzag : C → C → TypeMax.{w₁, w₂}
+  | refl : (c : C) → Zigzag c c
+  | cons : {c d e : C} → Zag c d → Zigzag d e → Zigzag c e
+attribute [refl] Zigzag.refl
+@[trans] def Zigzag.trans {c d e : C} (x : Zigzag c d) (z : Zigzag d e) : Zigzag c e :=
+  match x with
+  | refl d => z
+  | cons x y => cons x (y.trans z)
+def Zigzag.of_zag {c d : C} (f : Zag c d) := cons f (refl _)
+def Zigzag.append {c d e : C} (z : Zigzag c d) (f : Zag d e) := z.trans (of_zag f)
+@[symm] def Zigzag.symm {c d : C} (z : Zigzag c d) : Zigzag d c := match z with
+  | refl c => refl c
+  | cons x y => y.symm.append x.swap
+@[simp] theorem Zigzag.symm_refl {c : C} : (refl c).symm = refl c := by rfl
+
+theorem nonempty_zigzag_iff_zigzagable (c d : C) : Nonempty (Zigzag c d) ↔ Zigzagable c d := by
+  constructor
+  · intro ⟨h⟩; induction' h with _ c d e de _ ih
+    · rfl
+    · apply Zigzagable.trans _ ih -- trans tactic fails for unknown reansons
+      apply Zigzagable.of_zagable
+      rcases de with f | f <;> [left; right] <;> exact ⟨f⟩
+  · intro h; induction' h with _ _ _ de ih
+    · exact ⟨by rfl⟩
+    · obtain ⟨cih⟩ := ih; constructor; apply cih.append; apply Classical.choice
+      rcases de with f | f <;> constructor <;> [left; right] <;> exact Classical.choice f
+theorem isPreconnected_iff_nonempty_zigzag :
+  IsPreconnected C ↔ ∀ c d : C, Nonempty (Zigzag c d) := by
+  constructor <;> intro h
+  · intro c d; apply (nonempty_zigzag_iff_zigzagable _ _).mpr; apply isPreconnected_zigzag
+  · apply zigzag_isPreconnected; intro c d; apply (nonempty_zigzag_iff_zigzagable _ _).mp; apply h
+
+variable {D : Type v₂} [Category.{v₁, v₂} D]
+/-- apply a functor to a `Zigzag` componentwise -/
+def Zigzag.map {c d : C} (z : Zigzag c d) (F : C ⥤ D) :
+  Zigzag (F.obj c) (F.obj d) := match z with
+  | refl c => refl (F.obj c)
+  | cons (Sum.inl f) y => cons (Sum.inl (F.map f)) (y.map F)
+  | cons (Sum.inr f) y => cons (Sum.inr (F.map f)) (y.map F)
+@[simp] lemma Zigzag.map_refl {c : C} (F : C ⥤ D) : (refl c).map F = refl (F.obj c) := rfl
+@[simp] lemma Zigzag.map_trans {c d e : C} (F : C ⥤ D) (x : Zigzag c d) (y : Zigzag d e) :
+  (x.trans y).map F = (x.map F).trans (y.map F) := by
+  induction' x with _ _  _ _ f _ ih
+  · rfl
+  · cases f <;> simp [trans, map, ih]
+@[simp] lemma Zigzag.map_symm {c d : C} (F : C ⥤ D) (z : Zigzag c d) :
+  z.symm.map F = (z.map F).symm := by
+  induction' z with _ _ _ _ f _ ih
+  · simp
+  · cases f <;> (simp [symm, trans, map, ih, append]; rfl)
+
+/-- whether a Zigzag only consists of isos -/
+def Zigzag.of_isos {c d : C} (z : Zigzag c d) := match z with
+  | refl c => True
+  | cons (Sum.inl f) z => IsIso f ∧ z.of_isos
+  | cons (Sum.inr f) z => IsIso f ∧ z.of_isos
+/-- if a Zigzag only consists of isos, then it can be composed -/
+def Zigzag.of_isos.comp {c d : C} (z : Zigzag c d) (h : z.of_isos) : c ≅ d := match z, h with
+  | refl c, _ => Iso.refl c
+  | cons (Sum.inl f) z, h => have _: IsIso f := h.1; (asIso f).trans h.2.comp
+  | cons (Sum.inr f) z, h => have _: IsIso f := h.1; (asIso f).symm.trans h.2.comp
 
 end CategoryTheory

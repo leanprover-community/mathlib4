@@ -74,7 +74,7 @@ lemma isConnected :
   have : Nonempty (w.CostructuredArrowDownwards y) :=
     ⟨(fromRightResolution Φ L y).obj (Classical.arbitrary _)⟩
   suffices ∀ (X : w.CostructuredArrowDownwards y),
-      ∃ Y, Zigzag X ((fromRightResolution Φ L y).obj Y) by
+      ∃ Y, Zigzagable X ((fromRightResolution Φ L y).obj Y) by
     refine zigzag_isConnected (fun X X' => ?_)
     obtain ⟨Y, hX⟩ := this X
     obtain ⟨Y', hX'⟩ := this X'

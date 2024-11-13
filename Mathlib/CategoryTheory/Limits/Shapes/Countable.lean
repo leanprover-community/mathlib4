@@ -112,7 +112,7 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
       ⟨CostructuredArrow.mk (homOfLE g)⟩
     apply isConnected_of_zigzag
     refine fun i j ↦ ⟨[j], ?_⟩
-    simp only [List.chain_cons, Zag, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
+    simp only [List.chain_cons, Zagable, List.Chain.nil, and_true, ne_eq, not_false_eq_true,
       List.getLast_cons, not_true_eq_false, List.getLast_singleton', reduceCtorEq]
     clear! C
     wlog h : (unop i.left) ≤ (unop j.left)

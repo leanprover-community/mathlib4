@@ -108,15 +108,15 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   apply isConnected_of_zigzag
   rintro ⟨j₁, hj₁⟩ ⟨j₂, rfl⟩
   -- We know that the underlying objects j₁ j₂ have some zigzag between them in `J`
-  have h₁₂ : Zigzag j₁ j₂ := Quotient.exact' hj₁
+  have h₁₂ : Zigzagable j₁ j₂ := Quotient.exact' hj₁
   -- Get an explicit zigzag as a list
   rcases List.exists_chain_of_relationReflTransGen h₁₂ with ⟨l, hl₁, hl₂⟩
   -- Everything which has a zigzag to j₂ can be lifted to the same component as `j₂`.
-  let f : ∀ x, Zigzag x j₂ → Component (Quotient.mk'' j₂) := fun x h => ⟨x, Quotient.sound' h⟩
+  let f : ∀ x, Zigzagable x j₂ → Component (Quotient.mk'' j₂) := fun x h => ⟨x, Quotient.sound' h⟩
   -- Everything in our chosen zigzag from `j₁` to `j₂` has a zigzag to `j₂`.
-  have hf : ∀ a : J, a ∈ l → Zigzag a j₂ := by
+  have hf : ∀ a : J, a ∈ l → Zigzagable a j₂ := by
     intro i hi
-    apply hl₁.backwards_induction (fun t => Zigzag t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
+    apply hl₁.backwards_induction (fun t => Zigzagable t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
     · intro j k
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
