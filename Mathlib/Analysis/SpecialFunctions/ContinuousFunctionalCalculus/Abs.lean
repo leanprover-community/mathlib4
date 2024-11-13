@@ -5,7 +5,7 @@ Authors: Jon Bannon
 -/
 
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
---import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart
+import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-!
@@ -79,9 +79,9 @@ lemma abs_of_nonneg (a : A) (ha : 0 ≤ a) : abs a = a := sorry
 
 lemma abs_eq_posPart_add_negPart (a : A) (ha : IsSelfAdjoint a) : abs a = a⁺ + a⁻ := sorry
 
-lemma abs_sub_self (a : A) (ha : IsSelfAdjoint a) : abs a - a = 2 • a⁻
+lemma abs_sub_self (a : A) (ha : IsSelfAdjoint a) : abs a - a = 2 • a⁻ := sorry
 
-lemma abs_add_self (a : A) (ha : IsSelfAdjoint a) : abs a + a = 2 • a⁺
+lemma abs_add_self (a : A) (ha : IsSelfAdjoint a) : abs a + a = 2 • a⁺ := sorry
 
 end abs
 
