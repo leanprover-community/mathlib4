@@ -596,7 +596,7 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
       ≃ₗ[R ⧸ p] S ⧸ P := by
   choose a a_mem a_not_mem using
     SetLike.exists_of_lt
-      (Ideal.pow_right_strictAnti₀ P hP (Ideal.IsPrime.ne_top inferInstance) (le_refl i.succ))
+      (Ideal.pow_right_strictAnti P hP (Ideal.IsPrime.ne_top inferInstance) (le_refl i.succ))
   refine (LinearEquiv.ofBijective ?_ ⟨?_, ?_⟩).symm
   · exact quotientToQuotientRangePowQuotSucc f p P a_mem
   · exact quotientToQuotientRangePowQuotSucc_injective f p P hi a_mem a_not_mem
