@@ -98,7 +98,7 @@ please do not add new entries to these files. PRs removing (the need for) entrie
 - `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
   summaries of changes in transitive imports that the `PR_summary` message incorporates.
 - `zulip_emoji_merge_delegate.py` is called every hour by a Github action cronjob.
-  It looks through the latest 200 zulip posts: if a message mentions a PR that is delegated, or sent to bors, or merged,
+  It looks through the latest 1000 zulip posts: if a message mentions a PR that is delegated, or sent to bors, or merged,
   then this script will post an emoji reaction `:peace_sign:`, or `:bors:`, or `:merge:` respectively to the message.
 - `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
   the `linter.minImports` output, summarizing the data in a table.  See the module docs of
