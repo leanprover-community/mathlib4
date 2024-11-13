@@ -88,36 +88,33 @@ def CanonicalQuotientMap (P : ProfiniteGrp.{u}) : P ⟶
 
 theorem canonicalQuotientMap_dense (P : ProfiniteGrp.{u}) : Dense <|
     Set.range (CanonicalQuotientMap P) :=
-  dense_iff_inter_open.mpr
-    fun U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩ => (by
-      simp_rw [← hsv, Set.mem_preimage] at uDefaultSpec
-      rcases (isOpen_pi_iff.mp hsO) _ uDefaultSpec with ⟨J, fJ, hJ1, hJ2⟩
-      let M := iInf (fun (j : J) => j.1.1.1)
-      haveI hM : M.Normal := Subgroup.normal_iInf_normal fun j => j.1.isNormal'
-      haveI hMOpen : IsOpen (M : Set P) := by
-        rw [Subgroup.coe_iInf]
-        exact isOpen_iInter_of_finite fun i => i.1.1.isOpen'
-      let m : OpenNormalSubgroup P := { M with isOpen' := hMOpen }
-      rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
-      use (CanonicalQuotientMap P).toFun origin
-      refine ⟨?_, ⟨origin, rfl⟩⟩
-      rw [← hsv]
-      apply hJ2
-      intro a a_in_J
-      let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
-      rw [← (P.CanonicalQuotientMap.toFun origin).property M_to_Na]
-      show (P.QuotientOpenNormalSubgroup.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
-      rw [horigin]
-      exact Set.mem_of_eq_of_mem (hspc M_to_Na) (hJ1 a a_in_J).2 )
+  dense_iff_inter_open.mpr fun U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩ => (by
+    simp_rw [← hsv, Set.mem_preimage] at uDefaultSpec
+    rcases (isOpen_pi_iff.mp hsO) _ uDefaultSpec with ⟨J, fJ, hJ1, hJ2⟩
+    let M := iInf (fun (j : J) => j.1.1.1)
+    have hM : M.Normal := Subgroup.normal_iInf_normal fun j => j.1.isNormal'
+    have hMOpen : IsOpen (M : Set P) := by
+      rw [Subgroup.coe_iInf]
+      exact isOpen_iInter_of_finite fun i => i.1.1.isOpen'
+    let m : OpenNormalSubgroup P := { M with isOpen' := hMOpen }
+    rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
+    use (CanonicalQuotientMap P).toFun origin
+    refine ⟨?_, ⟨origin, rfl⟩⟩
+    rw [← hsv]
+    apply hJ2
+    intro a a_in_J
+    let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
+    rw [← (P.CanonicalQuotientMap.toFun origin).property M_to_Na]
+    show (P.QuotientOpenNormalSubgroup.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
+    rw [horigin]
+    exact Set.mem_of_eq_of_mem (hspc M_to_Na) (hJ1 a a_in_J).2 )
 
 theorem canonicalQuotientMap_surjective (P : ProfiniteGrp.{u}) :
     Function.Surjective (CanonicalQuotientMap P) := by
-  have : IsClosedMap P.CanonicalQuotientMap := P.CanonicalQuotientMap.continuous_toFun.isClosedMap
-  haveI compact_s: IsCompact (Set.univ : Set P) := CompactSpace.isCompact_univ
-  have : IsClosed (P.CanonicalQuotientMap '' Set.univ) := this _ <| IsCompact.isClosed compact_s
-  apply closure_eq_iff_isClosed.mpr at this
-  rw [Set.image_univ, Dense.closure_eq <| canonicalQuotientMap_dense P] at this
-  exact Set.range_iff_surjective.mp (id this.symm)
+  have : IsClosed (Set.range P.CanonicalQuotientMap) :=
+    P.CanonicalQuotientMap.continuous_toFun.isClosedMap.isClosed_range
+  rw [← Set.range_eq_univ, ← closure_eq_iff_isClosed.mpr this,
+    Dense.closure_eq <| canonicalQuotientMap_dense P]
 
 theorem canonicalQuotientMap_injective (P : ProfiniteGrp.{u}) :
     Function.Injective (CanonicalQuotientMap P) := by
