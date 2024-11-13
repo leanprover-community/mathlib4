@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Module structure and endomorphisms

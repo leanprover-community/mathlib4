@@ -6,6 +6,7 @@ Authors: Johan Commelin, Floris van Doorn
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs

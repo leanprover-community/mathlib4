@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Module.End
+import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 

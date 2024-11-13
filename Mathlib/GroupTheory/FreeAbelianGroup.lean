@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.FreeGroup.Basic
 
