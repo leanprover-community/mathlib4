@@ -131,7 +131,7 @@ theorem pi_cons (m : Multiset α) (t : ∀ a, Multiset (β a)) (a : α) :
 
 theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     card (pi m t) = prod (m.map fun a => card (t a)) :=
-  Multiset.induction_on m (by simp) (by simp (config := { contextual := true }) [mul_comm])
+  Multiset.induction_on m (by simp) (by simp +contextual [mul_comm])
 
 protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
     Nodup s → (∀ a ∈ s, Nodup (t a)) → Nodup (pi s t) :=

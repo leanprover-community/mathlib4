@@ -119,7 +119,7 @@ theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : #P.parts * 16 ^ #P.pa
     (hPε : 100 ≤ (4 : ℝ) ^ #P.parts * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
   (div_le_of_le_mul₀ (eps_pow_five_pos hPε).le (by positivity) hPε).trans <| by
     norm_cast
-    rwa [Nat.le_div_iff_mul_le' (stepBound_pos (P.parts_nonempty <|
+    rwa [Nat.le_div_iff_mul_le (stepBound_pos (P.parts_nonempty <|
       univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow]
 
 theorem hundred_le_m [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)
@@ -196,8 +196,7 @@ theorem le_bound : l ≤ bound ε l :=
 theorem bound_pos : 0 < bound ε l :=
   (initialBound_pos ε l).trans_le <| initialBound_le_bound ε l
 
-variable {ι 𝕜 : Type*} [LinearOrderedField 𝕜] (r : ι → ι → Prop) [DecidableRel r] {s t : Finset ι}
-  {x : 𝕜}
+variable {ι 𝕜 : Type*} [LinearOrderedField 𝕜] {s t : Finset ι} {x : 𝕜}
 
 theorem mul_sq_le_sum_sq (hst : s ⊆ t) (f : ι → 𝕜) (hs : x ^ 2 ≤ ((∑ i ∈ s, f i) / #s) ^ 2)
     (hs' : (#s : 𝕜) ≠ 0) : (#s : 𝕜) * x ^ 2 ≤ ∑ i ∈ t, f i ^ 2 :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Ring.Aut
+import Mathlib.Algebra.Ring.Action.Group
 
 /-!
 # Isomorphisms of `R`-algebras
@@ -43,8 +43,6 @@ class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semir
     extends RingEquivClass F A B : Prop where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
-
--- Porting note: Removed nolint dangerousInstance from AlgEquivClass.toRingEquivClass
 
 namespace AlgEquivClass
 
@@ -132,7 +130,6 @@ theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
 theorem toEquiv_eq_coe : e.toEquiv = e :=
   rfl
 
--- Porting note: `protected` used to be an attribute below
 @[simp]
 protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
     ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
@@ -141,7 +138,6 @@ protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
   DFunLike.coe_injective
 
--- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
 instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
   ⟨AlgEquiv.toRingEquiv⟩
 
@@ -219,7 +215,6 @@ protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
 protected theorem map_one : e 1 = 1 :=
   map_one e
 
--- @[simp] -- Porting note (#10618): simp can prove this
 @[deprecated map_smul (since := "2024-06-20")]
 protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
   map_smul _ _ _
@@ -258,7 +253,7 @@ section refl
 /-- Algebra equivalences are reflexive. -/
 @[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
-  { (1 : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
+  { (.refl _ : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
 
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
@@ -623,6 +618,7 @@ end OfRingEquiv
 
 -- Porting note: projections mul & one not found, removed [simps] and added theorems manually
 -- @[simps (config := .lemmasOnly) one]
+@[stacks 09HR]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
   mul_assoc _ _ _ := rfl
@@ -744,6 +740,10 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
   left_inv := fun _ ↦ rfl
   right_inv := fun _ ↦ rfl
   map_mul' := fun _ _ ↦ rfl
+
+/-- See also `Finite.algHom` -/
+instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ ≃ₐ[R] A₂) :=
+  Finite.of_injective _ AlgEquiv.coe_algHom_injective
 
 end Semiring
 

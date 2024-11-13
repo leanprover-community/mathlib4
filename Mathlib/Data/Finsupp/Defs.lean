@@ -728,13 +728,33 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
   simp only [Finsupp.mem_support_iff, Ne, Finsupp.mapRange_apply]
   exact he.ne_iff' he0
 
+lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
+    Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by
+  ext g
+  simp only [Set.mem_range, Set.mem_setOf]
+  constructor
+  · rintro ⟨g, rfl⟩ i
+    simp
+  · intro h
+    classical
+    choose f h using h
+    use onFinset g.support (Set.indicator g.support f) (by aesop)
+    ext i
+    simp only [mapRange_apply, onFinset_apply, Set.indicator_apply]
+    split_ifs <;> simp_all
+
+/-- `Finsupp.mapRange` of a injective function is injective. -/
+lemma mapRange_injective (e : M → N) (he₀ : e 0 = 0) (he : Injective e) :
+    Injective (Finsupp.mapRange (α := α) e he₀) := by
+  intro a b h
+  rw [Finsupp.ext_iff] at h ⊢
+  simpa only [mapRange_apply, he.eq_iff] using h
+
 /-- `Finsupp.mapRange` of a surjective function is surjective. -/
 lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
     Surjective (Finsupp.mapRange (α := α) e he₀) := by
-  classical
-  let d (n : N) : M := if n = 0 then 0 else surjInv he n
-  have : RightInverse d e := fun n ↦ by by_cases h : n = 0 <;> simp [d, h, he₀, surjInv_eq he n]
-  exact fun f ↦ ⟨mapRange d (by simp [d]) f, by simp [this.comp_eq_id]⟩
+  rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
+  simp
 
 end MapRange
 
@@ -1198,7 +1218,7 @@ end AddMonoid
 
 instance instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
   --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+  { DFunLike.coe_injective.addCommMonoid DFunLike.coe coe_zero coe_add (fun _ _ => rfl) with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instNeg [NegZeroClass G] : Neg (α →₀ G) :=
@@ -1243,14 +1263,14 @@ instance instIntSMul [AddGroup G] : SMul ℤ (α →₀ G) :=
 
 instance instAddGroup [AddGroup G] : AddGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+  { DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
       fun _ _ => rfl with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
-      fun _ _ => rfl with
+  { DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
+      (fun _ _ => rfl) fun _ _ => rfl with
     toAddGroup := Finsupp.instAddGroup }
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}

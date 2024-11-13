@@ -46,7 +46,6 @@ instance SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
 theorem mem_toSubsemiring {S : Subalgebra R A} {x} : x ∈ S.toSubsemiring ↔ x ∈ S :=
   Iff.rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_carrier {s : Subalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -777,7 +776,9 @@ instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 
-theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 := rfl
+/-- TODO: change proof to `rfl` when fixing #18110. -/
+theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
+  Submodule.one_eq_range.symm
 
 @[simp]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
@@ -786,9 +787,11 @@ theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top, fun h => by
     ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
-theorem range_top_iff_surjective (f : A →ₐ[R] B) :
+theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
     f.range = (⊤ : Subalgebra R B) ↔ Function.Surjective f :=
   Algebra.eq_top_iff
+
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := AlgHom.range_eq_top
 
 @[simp]
 theorem range_id : (AlgHom.id R A).range = ⊤ :=
@@ -800,7 +803,8 @@ theorem map_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R A).map f = f.range :=
 
 @[simp]
 theorem map_bot (f : A →ₐ[R] B) : (⊥ : Subalgebra R A).map f = ⊥ :=
-  Subalgebra.toSubmodule_injective <| Submodule.map_one _
+  Subalgebra.toSubmodule_injective <| by
+    simpa only [Subalgebra.map_toSubmodule, toSubmodule_bot] using Submodule.map_one _
 
 @[simp]
 theorem comap_top (f : A →ₐ[R] B) : (⊤ : Subalgebra R B).comap f = ⊤ :=
@@ -1236,7 +1240,7 @@ theorem map_comap_eq_self
 
 theorem map_comap_eq_self_of_surjective
     {f : A →ₐ[R] B} (hf : Function.Surjective f) (S : Subalgebra R B) : (S.comap f).map f = S :=
-  map_comap_eq_self <| by simp [(Algebra.range_top_iff_surjective f).2 hf]
+  map_comap_eq_self <| by simp [(AlgHom.range_eq_top f).2 hf]
 
 theorem comap_map_eq_self_of_injective
     {f : A →ₐ[R] B} (hf : Function.Injective f) (S : Subalgebra R A) : (S.map f).comap f = S :=
