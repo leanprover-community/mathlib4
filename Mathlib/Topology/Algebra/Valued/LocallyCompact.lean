@@ -168,13 +168,13 @@ lemma totallyBounded_iff_finite_residueField [DiscreteValuationRing 𝒪[K]] :
     simp only [Set.subset_univ, Set.univ_subset_iff, true_and] at this
     obtain ⟨t, ht, ht'⟩ := this
     rw [← Set.finite_univ_iff]
-    refine (ht.image (LocalRing.residue _)).subset ?_
+    refine (ht.image (IsLocalRing.residue _)).subset ?_
     rintro ⟨x⟩
     replace ht' := ht'.ge (Set.mem_univ x)
     simp only [Set.mem_iUnion, Metric.mem_ball, exists_prop] at ht'
     obtain ⟨y, hy, hy'⟩ := ht'
     simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Set.mem_univ,
-      LocalRing.residue, Set.mem_image, true_implies]
+      IsLocalRing.residue, Set.mem_image, true_implies]
     refine ⟨y, hy, ?_⟩
     convert (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr _
     -- TODO: make Valued.maximalIdeal abbreviations instead of def
