@@ -15,6 +15,21 @@ and `C(α, R)₀` into a `StarOrderedRing` for any topological space `α`, there
 by which we can ensure `C(α, R)` has this property. This condiiton is satisfied
 by `ℝ≥0`, `ℝ`, and `ℂ`, and the instances can be found in the file
 `Topology.ContinuousMap.ContinuousSqrt`.
+
+## Implementation notes
+
+Instead of asking for a well-behaved square root on `{x : R | 0 ≤ x}`, we ask for it on the set
+`{x : R × R | x.1 ≤ x.2}`. This is because we need this type class to work for `ℝ≥0` for the
+continuous functional calculus. We could instead assume `[OrderedSub R] [ContinuousSub R]`, but that
+would lead to a proliferation of type class assumptions in the general case of the continuous
+functional calculus, which we want to avoid because there is *already* a proliferation of type
+classes there. At the moment, we only expect this class to be used in that context so this is a
+reasonable compromise.
+
+The field `ContinuousSqrt.sqrt` is data, which means that, if we implement an instance of the class
+for a generic C⋆-algebra, we'll get a non-defeq diamond for the case `R := ℂ`. This shouldn't really
+be a problem since the only purpose is to obtain the instance `StarOrderedRing C(α, R)`, which is a
+`Prop`, but we note it for future reference.
 -/
 
 /-- A type class encoding the property that there is a continuous square root function on
@@ -24,7 +39,7 @@ In order for this to work on `ℝ≥0`, we actually must force our square root f
 on and well-behaved for pairs `x : R × R` with `x.1 ≤ x.2`. -/
 class ContinuousSqrt (R : Type*) [LE R] [NonUnitalSemiring R] [TopologicalSpace R] where
   /-- `sqrt (a, b)` returns a value `s` such that `b = a + s * s` when `a ≤ b`. -/
-  protected sqrt : R × R → R -- should this really be data? We'll get diamonds for `ℂ`.
+  protected sqrt : R × R → R
   protected continuousOn_sqrt : ContinuousOn sqrt {x | x.1 ≤ x.2}
   protected sqrt_nonneg (x : R × R) : x.1 ≤ x.2 → 0 ≤ sqrt x
   protected sqrt_mul_sqrt (x : R × R) : x.1 ≤ x.2 → x.2 = x.1 + sqrt x * sqrt x
