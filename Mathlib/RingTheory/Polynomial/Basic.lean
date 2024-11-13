@@ -8,8 +8,6 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
@@ -501,27 +499,6 @@ theorem coeffs_ofSubring {p : T[X]} : (↑(p.ofSubring T).coeffs : Set R) ⊆ T 
 
 end Ring
 
-section CommRing
-
-variable [CommRing R]
-
-section ModByMonic
-
-variable {q : R[X]}
-
-theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
-    p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
-  LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
-
-@[simp]
-theorem ker_modByMonicHom (hq : q.Monic) :
-    LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
-
-end ModByMonic
-
-end CommRing
-
 end Polynomial
 
 namespace Ideal
@@ -951,8 +928,6 @@ theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     support, coeff, ofFinsupp_eq_zero]
   exact Iff.rfl
 
-attribute [-instance] Ring.toNonAssocRing
-
 theorem disjoint_ker_aeval_of_coprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :
     Disjoint (LinearMap.ker (aeval f p)) (LinearMap.ker (aeval f q)) := by
   rw [disjoint_iff_inf_le]
@@ -1154,7 +1129,6 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
     apply Ideal.mem_map_of_mem _
     exact hf m
 
-attribute [-instance] Ring.toNonAssocRing in
 theorem ker_map (f : R →+* S) :
     RingHom.ker (map f : MvPolynomial σ R →+* MvPolynomial σ S) =
     Ideal.map (C : R →+* MvPolynomial σ R) (RingHom.ker f) := by

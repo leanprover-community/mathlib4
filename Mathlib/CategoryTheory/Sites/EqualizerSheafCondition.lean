@@ -130,8 +130,8 @@ theorem w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ second
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.
 -/
-theorem compatible_iff (x : FirstObj P S) :
-    ((firstObjEqFamily P S).hom x).Compatible ↔ firstMap P S x = secondMap P S x := by
+theorem compatible_iff (x : FirstObj P S.arrows) :
+    ((firstObjEqFamily P S.arrows).hom x).Compatible ↔ firstMap P S x = secondMap P S x := by
   rw [Presieve.compatible_iff_sieveCompatible]
   constructor
   · intro t

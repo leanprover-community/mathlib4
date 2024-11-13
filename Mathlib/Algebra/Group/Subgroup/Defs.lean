@@ -54,8 +54,7 @@ assert_not_exists Ring
 open Function
 open scoped Int
 
-variable {G G' G'' : Type*} [Group G] [Group G'] [Group G'']
-variable {A : Type*} [AddGroup A]
+variable {G : Type*} [Group G] {A : Type*} [AddGroup A]
 
 section SubgroupClass
 
@@ -292,7 +291,9 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note (#10675): dsimp can not prove this
+-- This is not a simp lemma,
+-- because the simp normal form left-hand side is given by `mem_toSubmonoid` below.
+@[to_additive]
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -311,8 +312,8 @@ theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv'
     mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ≤ mk ⟨⟨t, h_one'⟩, h_mul'⟩ h_inv' ↔ s ⊆ t :=
   Iff.rfl
 
-initialize_simps_projections Subgroup (carrier → coe)
-initialize_simps_projections AddSubgroup (carrier → coe)
+initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem coe_toSubmonoid (K : Subgroup G) : (K.toSubmonoid : Set G) = K :=
@@ -556,11 +557,7 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
     K.subtype.comp (inclusion hH) = H.subtype :=
   rfl
 
-variable {k : Set G}
-
 open Set
-
-variable {N : Type*} [Group N] {P : Type*} [Group P]
 
 /-- A subgroup is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
@@ -586,7 +583,7 @@ end AddSubgroup
 
 namespace Subgroup
 
-variable {H K : Subgroup G}
+variable {H : Subgroup G}
 
 @[to_additive]
 instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
@@ -617,7 +614,7 @@ end Subgroup
 
 namespace Subgroup
 
-variable (H : Subgroup G) {K : Subgroup G}
+variable (H : Subgroup G)
 
 section Normalizer
 

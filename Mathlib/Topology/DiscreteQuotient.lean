@@ -60,7 +60,7 @@ of finite discrete spaces.
 -/
 
 
-open Set Function TopologicalSpace
+open Set Function TopologicalSpace Topology
 
 variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
