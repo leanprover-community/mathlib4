@@ -127,4 +127,13 @@ lemma OverClass.asOverHom_left [OverClass X S] [OverClass Y S] (f : X ⟶ Y) [Ho
     (OverClass.asOverHom S f).left = f :=
   rfl
 
+instance OverClass.fromOver {S : C} (X : Over S) : OverClass X.left S where
+  hom := X.hom
+
+@[simp]
+lemma OverClass.fromOver_hom {S : C} (X : Over S) : X.left ↘ S = X.hom := rfl
+
+instance {S : C} {X Y : Over S} (f : X ⟶ Y) : HomIsOver f.left S where
+  comp_over := Over.w f
+
 end CategoryTheory

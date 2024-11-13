@@ -30,13 +30,14 @@ namespace AlgebraicGeometry.Scheme
 
 variable {P : MorphismProperty Scheme.{u}} (S : Scheme.{u})
 
+/-- Bundle an `S`-scheme with `P` into an object of `P.Over ⊤ S`. -/
 abbrev asOverProp (X : Scheme.{u}) (S : Scheme.{u}) [X.Over S] (h : P (X ↘ S)) : P.Over ⊤ S :=
   ⟨X.asOver S, h⟩
 
+/-- Bundle an `S`-morphism of `S`-scheme with `P` into a morphism in `P.Over ⊤ S`. -/
 abbrev Hom.asOverProp {X Y : Scheme.{u}} (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S]
     [f.IsOver S] {hX : P (X ↘ S)} {hY : P (Y ↘ S)} : X.asOverProp S hX ⟶ Y.asOverProp S hY :=
   ⟨f.asOver S, trivial, trivial⟩
-
 
 /-- A `P`-cover of a scheme `X` over `S` is a cover, where the components are over `S` and the
 component maps commute with the structure morphisms. -/
@@ -121,7 +122,45 @@ variable (hX : Q (X ↘ S)) (hW : Q (W ↘ S)) (hQ : ∀ j, Q (𝒰.obj j ↘ S)
 
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOverProp` with the arguments in the
 fiber products flipped. -/
-@[simps]
+@[simps (config := .lemmasOnly)]
+def Cover.pullbackCoverOverProp : W.Cover P where
+  J := 𝒰.J
+  obj x := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
+    ((𝒰.map x).asOverProp (hX := hQ x) (hY := hX) S)).left
+  map x := (pullback.fst (f.asOverProp S) ((𝒰.map x).asOverProp S)).left
+  f x := 𝒰.f (f.base x)
+  covers x := by
+    obtain ⟨y, hy⟩ := 𝒰.covers (f.base x)
+    obtain ⟨o, ho⟩ := IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
+      (𝒰.map_prop _) x y hy.symm
+    use (PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
+      (f.asOverProp S) ((𝒰.map _).asOverProp S)).inv.base o
+    simp only [Over.forget_obj, Over.forget_map, OverClass.asOverHom_left]
+    simp only [MorphismProperty.Comma.Hom.hom_left, Functor.comp_obj,
+      MorphismProperty.Comma.forget_obj, Over.forget_obj, Functor.comp_map,
+      MorphismProperty.Comma.forget_map, MorphismProperty.Comma.Hom.hom_mk, Over.forget_map,
+      OverClass.asOverHom_left]
+    rw [← Scheme.comp_base_apply, ← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom]
+    rw [← MorphismProperty.Comma.forget_map, ← Functor.comp_map, PreservesPullback.iso_inv_fst]
+    simpa
+  map_prop j := by
+    dsimp only
+    rw [← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom,
+      ← MorphismProperty.Comma.forget_map, ← Functor.comp_map]
+    rw [← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
+    exact P.pullback_fst _ _ (𝒰.map_prop j)
+
+instance (j : 𝒰.J) : ((𝒰.pullbackCoverOverProp S f hX hW hQ).obj j).Over S where
+  hom := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
+    ((𝒰.map j).asOverProp (hX := hQ j) (hY := hX) S)).hom
+
+instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S where
+  isOver_map j :=
+    { comp_over := by exact (pullback.fst (f.asOverProp S) ((𝒰.map j).asOverProp S)).w }
+
+/-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOverProp` with the arguments in the
+fiber products flipped. -/
+@[simps (config := .lemmasOnly)]
 def Cover.pullbackCoverOverProp' : W.Cover P where
   J := 𝒰.J
   obj x := (pullback ((𝒰.map x).asOverProp (hX := hQ x) (hY := hX) S)
@@ -135,11 +174,12 @@ def Cover.pullbackCoverOverProp' : W.Cover P where
     use (PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
       ((𝒰.map _).asOverProp S) (f.asOverProp S)).inv.base o
     simp only [Over.forget_obj, Over.forget_map, OverClass.asOverHom_left]
-    simp
-    rw [← Scheme.comp_base_apply, ← Over.forget_map]
-    rw [MorphismProperty.Comma.toCommaMorphism_eq_hom]
-    rw [← MorphismProperty.Comma.forget_map, ← Functor.comp_map]
-    rw [PreservesPullback.iso_inv_snd]
+    simp only [MorphismProperty.Comma.Hom.hom_left, Functor.comp_obj,
+      MorphismProperty.Comma.forget_obj, Over.forget_obj, Functor.comp_map,
+      MorphismProperty.Comma.forget_map, MorphismProperty.Comma.Hom.hom_mk, Over.forget_map,
+      OverClass.asOverHom_left]
+    rw [← Scheme.comp_base_apply, ← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom]
+    rw [← MorphismProperty.Comma.forget_map, ← Functor.comp_map, PreservesPullback.iso_inv_snd]
     simpa
   map_prop j := by
     dsimp only
