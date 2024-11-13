@@ -889,6 +889,40 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   exact zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
     (isPreconnected_zigzag (.mk gbi) (.mk gbj))
 
+variable {F} {F' : D ⥤ Cat} (α : F ⟶ F')
+
+def Grothendieck.structuredArrowToStructuredArrowMap (d : D) (f : F'.obj d) :
+    StructuredArrow f (α.app d) ⥤q StructuredArrow ⟨d, f⟩ (map α) where
+  obj X := StructuredArrow.mk (Y := ⟨d, X.right⟩) ⟨by exact 𝟙 _, eqToHom (by simp) ≫ X.hom⟩
+  map g := StructuredArrow.homMk (Hom.mk (by exact 𝟙 _) (eqToHom (by simp) ≫  g.right))
+    (by
+      simp only [map_obj_base, map_obj_fiber, id_eq, eq_mpr_eq_cast, StructuredArrow.mk_left,
+        const_obj_obj, StructuredArrow.mk_right, StructuredArrow.mk_hom_eq_self, map_id, Cat.id_obj,
+        congrArg_cast_hom_left]
+      fapply ext
+      · simp
+      · have := StructuredArrow.w g
+        dsimp [map] at this ⊢
+        rw [← this]
+        sorry)
+
+instance Grothendieck.final_map [∀ X, Final (α.app X)] : Final (map α) := by
+  constructor
+  rintro ⟨d, f⟩
+  obtain ⟨u, c, g⟩ : Nonempty (StructuredArrow f (α.app d)) := inferInstance
+  letI : Nonempty (StructuredArrow { base := d, fiber := f } (map α)) :=
+    ⟨u, ⟨_, c⟩, ⟨by exact 𝟙 _, by { simp; exact g }⟩⟩
+  apply zigzag_isConnected; clear this u c g
+  dsimp at *
+  rintro ⟨⟨⟨⟩⟩, ⟨b₀, f₀⟩, ⟨g₀, h₀⟩⟩ ⟨⟨⟨⟩⟩, ⟨b₁, f₁⟩, ⟨g₁, h₁⟩⟩
+  dsimp [Grothendieck.map] at g₀ h₀ g₁ h₁ ⊢
+  have j₁ : StructuredArrow f (α.app d) := sorry
+  have j₂ : StructuredArrow f (α.app d) := sorry
+  have := zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowMap α d f)
+   (isPreconnected_zigzag j₁ j₂)
+  simp only [structuredArrowToStructuredArrowMap] at this
+  sorry
+
 end Grothendieck
 
 end CategoryTheory
