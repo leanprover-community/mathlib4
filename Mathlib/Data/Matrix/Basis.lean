@@ -12,6 +12,7 @@ This file provides `Matrix.stdBasisMatrix`. The matrix `Matrix.stdBasisMatrix i 
 at position `(i, j)`, and zeroes elsewhere.
 -/
 
+assert_not_exists Matrix.trace
 
 variable {l m n : Type*}
 variable {R α : Type*}
