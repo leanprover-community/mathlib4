@@ -177,6 +177,8 @@ lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set X} :
 -- see Note [lower instance priority]
 instance (priority := 200) CompactSpace.sigmaCompact [CompactSpace X] : SigmaCompactSpace X :=
   ⟨⟨fun _ => univ, fun _ => isCompact_univ, iUnion_const _⟩⟩
+@[deprecated (since := "2024-11-13")] alias
+CompactSpace.sigma_compact := CompactSpace.sigmaCompact
 
 theorem SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
     (Hcomp : ∀ s ∈ S, IsCompact s) (HU : ⋃₀ S = univ) : SigmaCompactSpace X :=
@@ -189,6 +191,9 @@ instance (priority := 100) sigmaCompactSpace_of_locallyCompact_secondCountable
   rcases countable_cover_nhds hxK with ⟨s, hsc, hsU⟩
   refine SigmaCompactSpace.of_countable _ (hsc.image K) (forall_mem_image.2 fun x _ => hKc x) ?_
   rwa [sUnion_image]
+
+@[deprecated (since := "2024-11-13")] alias sigmaCompactSpace_of_locally_compact_second_countable :=
+  sigmaCompactSpace_of_locallyCompact_secondCountable
 
 section
 -- Porting note: doesn't work on the same line
@@ -301,7 +306,7 @@ theorem countable_cover_nhdsWithin_of_sigmaCompact {f : X → Set X} {s : Set X}
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩
 
-@[deprecated (since := "2024-11-12")] alias
+@[deprecated (since := "2024-11-13")] alias
 countable_cover_nhdsWithin_of_sigma_compact := countable_cover_nhdsWithin_of_sigmaCompact
 
 /-- In a topological space with sigma compact topology, if `f` is a function that sends each
@@ -315,7 +320,7 @@ theorem countable_cover_nhds_of_sigmaCompact {f : X → Set X} (hf : ∀ x, f x 
   exact ⟨s, hsc, univ_subset_iff.1 hsU⟩
 end
 
-@[deprecated (since := "2024-11-12")] alias
+@[deprecated (since := "2024-11-13")] alias
 countable_cover_nhds_of_sigma_compact := countable_cover_nhds_of_sigmaCompact
 
 

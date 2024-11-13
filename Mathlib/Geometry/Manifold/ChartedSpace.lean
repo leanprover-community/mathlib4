@@ -664,7 +664,7 @@ theorem ChartedSpace.secondCountable_of_sigmaCompact [SecondCountableTopology H]
     countable_cover_nhds_of_sigmaCompact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
 
-@[deprecated (since := "2024-11-12")] alias
+@[deprecated (since := "2024-11-13")] alias
 ChartedSpace.secondCountable_of_sigma_compact := ChartedSpace.secondCountable_of_sigmaCompact
 
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
