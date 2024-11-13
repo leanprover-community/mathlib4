@@ -244,11 +244,11 @@ end
 section
 
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a category enriched in `V`,
-this condition allows the definition of `presheafEnrichedHom V F₁ F₂ : J ⥤ V`. -/
-abbrev HasPresheafEnrichedHom :=
+this condition allows the definition of `functorEnrichedHom V F₁ F₂ : J ⥤ V`. -/
+abbrev HasFunctorEnrichedHom :=
   ∀ (j : J), HasEnrichedHom V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
 
-variable [HasPresheafEnrichedHom V F₁ F₂]
+variable [HasFunctorEnrichedHom V F₁ F₂]
 
 instance {j j' : J} (f : j ⟶ j') :
     HasEnrichedHom V (Under.map f ⋙ Under.forget j ⋙ F₁)
@@ -256,9 +256,9 @@ instance {j j' : J} (f : j ⟶ j') :
   inferInstanceAs (HasEnrichedHom V (Under.forget j' ⋙ F₁) (Under.forget j' ⋙ F₂))
 
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a category enriched in `V`,
-this is the enriched hom presheaf from `F₁` to `F₂` in `J ⥤ V`. -/
+this is the enriched hom functor from `F₁` to `F₂` in `J ⥤ V`. -/
 @[simps!]
-noncomputable def presheafEnrichedHom : J ⥤ V where
+noncomputable def functorEnrichedHom : J ⥤ V where
   obj j := enrichedHom V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
   map f := precompEnrichedHom V (Under.forget _ ⋙ F₁) (Under.forget _ ⋙ F₂) (Under.map f)
   map_id X := by
@@ -278,10 +278,10 @@ noncomputable def presheafEnrichedHom : J ⥤ V where
 
 variable [HasEnrichedHom V F₁ F₂]
 
-/-- The (limit) cone expressing that the limit of `presheafEnrichedHom V F₁ F₂`
+/-- The (limit) cone expressing that the limit of `functorEnrichedHom V F₁ F₂`
 is `enrichedHom V F₁ F₂`. -/
 @[simps pt]
-noncomputable def conePresheafEnrichedHom : Cone (presheafEnrichedHom V F₁ F₂) where
+noncomputable def coneFunctorEnrichedHom : Cone (functorEnrichedHom V F₁ F₂) where
   pt := enrichedHom V F₁ F₂
   π :=
     { app := fun j ↦ precompEnrichedHom V F₁ F₂ (Under.forget j)
@@ -294,16 +294,16 @@ noncomputable def conePresheafEnrichedHom : Cone (presheafEnrichedHom V F₁ F�
         rw [precompEnrichedHom_π]
         rfl }
 
-namespace isLimitConePresheafEnrichedHom
+namespace isLimitConeFunctorEnrichedHom
 
-variable {V F₁ F₂} (s : Cone (presheafEnrichedHom V F₁ F₂))
+variable {V F₁ F₂} (s : Cone (functorEnrichedHom V F₁ F₂))
 
-/-- Auxiliary definition for `Enriched.FunctorCategory.isLimitConePresheafEnrichedHom`. -/
+/-- Auxiliary definition for `Enriched.FunctorCategory.isLimitConeFunctorEnrichedHom`. -/
 noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
   end_.lift (fun j ↦ s.π.app j ≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))) (fun j j' f ↦ by
     dsimp
     rw [← s.w f, assoc, assoc, assoc]
-    dsimp [presheafEnrichedHom]
+    dsimp [functorEnrichedHom]
     erw [precompEnrichedHom_π_assoc,
       enrichedHom_condition V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
       (Under.homMk f : Under.mk (𝟙 j) ⟶ Under.mk f)]
@@ -311,8 +311,8 @@ noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
     simp [Under.map, Comma.mapLeft]
     rfl)
 
-lemma fac (j : J) : lift s ≫ (conePresheafEnrichedHom V F₁ F₂).π.app j = s.π.app j := by
-  dsimp [conePresheafEnrichedHom]
+lemma fac (j : J) : lift s ≫ (coneFunctorEnrichedHom V F₁ F₂).π.app j = s.π.app j := by
+  dsimp [coneFunctorEnrichedHom]
   ext k
   rw [assoc]
   erw [end_.lift_π, end_.lift_π, ← s.w k.hom]
@@ -322,19 +322,20 @@ lemma fac (j : J) : lift s ≫ (conePresheafEnrichedHom V F₁ F₂).π.app j = 
   simp [Under.map, Comma.mapLeft]
   rfl
 
-end isLimitConePresheafEnrichedHom
+end isLimitConeFunctorEnrichedHom
 
-open isLimitConePresheafEnrichedHom in
-/-- The limit of `presheafEnrichedHom V F₁ F₂` is `enrichedHom V F₁ F₂`. -/
-noncomputable def isLimitConePresheafEnrichedHom :
-    IsLimit (conePresheafEnrichedHom V F₁ F₂) where
+open isLimitConeFunctorEnrichedHom in
+
+/-- The limit of `functorEnrichedHom V F₁ F₂` is `enrichedHom V F₁ F₂`. -/
+noncomputable def isLimitConeFunctorEnrichedHom :
+    IsLimit (coneFunctorEnrichedHom V F₁ F₂) where
   lift := lift
   fac := fac
   uniq s m hm := by
     dsimp
     ext j
     have := ((hm j).trans (fac s j).symm) =≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))
-    dsimp [conePresheafEnrichedHom] at this
+    dsimp [coneFunctorEnrichedHom] at this
     rw [assoc, assoc, precompEnrichedHom_π] at this
     exact this
 
