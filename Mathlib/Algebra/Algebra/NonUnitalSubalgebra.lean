@@ -835,9 +835,11 @@ def toTop : A →ₙₐ[R] (⊤ : NonUnitalSubalgebra R A) :=
 
 end IsScalarTower
 
-theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B) :
+theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B) :
     NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
   NonUnitalAlgebra.eq_top_iff
+
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 end NonUnitalAlgebra
 
