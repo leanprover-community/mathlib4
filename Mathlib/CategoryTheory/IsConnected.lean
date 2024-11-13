@@ -488,15 +488,14 @@ theorem nonempty_zigzag_iff_zigzagable (c d : C) : Nonempty (Zigzag c d) ↔ Zig
     · obtain ⟨cih⟩ := ih; constructor; apply cih.append; apply Classical.choice
       rcases de with f | f <;> constructor <;> [left; right] <;> exact Classical.choice f
 theorem isPreconnected_iff_nonempty_zigzag :
-  IsPreconnected C ↔ ∀ c d : C, Nonempty (Zigzag c d) := by
+    IsPreconnected C ↔ ∀ c d : C, Nonempty (Zigzag c d) := by
   constructor <;> intro h
   · intro c d; apply (nonempty_zigzag_iff_zigzagable _ _).mpr; apply isPreconnected_zigzag
   · apply zigzag_isPreconnected; intro c d; apply (nonempty_zigzag_iff_zigzagable _ _).mp; apply h
 
 variable {D : Type v₂} [Category.{v₁, v₂} D]
 /-- apply a functor to a `Zigzag` componentwise -/
-def Zigzag.map {c d : C} (z : Zigzag c d) (F : C ⥤ D) :
-  Zigzag (F.obj c) (F.obj d) := match z with
+def Zigzag.map {c d : C} (z : Zigzag c d) (F : C ⥤ D) : Zigzag (F.obj c) (F.obj d) := match z with
   | refl c => refl (F.obj c)
   | cons (Sum.inl f) y => cons (Sum.inl (F.map f)) (y.map F)
   | cons (Sum.inr f) y => cons (Sum.inr (F.map f)) (y.map F)
