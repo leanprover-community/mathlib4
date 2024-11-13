@@ -431,14 +431,14 @@ have an underlying type of β -/
 @[to_additive "given an isomorphism between α and β, convert a relation predicate to
 have an underlying type of β"]
 def mapRel (rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  → Prop :=
-  fun a b ↦ rel (.congr_iso e.symm a) (.congr_iso e.symm b)
+  fun a b ↦ rel (.congrEquiv e.symm a) (.congrEquiv e.symm b)
 
 /-- given an isomorphism between α and β, pull back a relation predicate with underlying type β to
 one with underlying type α -/
 @[to_additive "given an isomorphism between α and β, pull back a relation predicate with underlying
 type β to one with underlying type α "]
-def comap_rel (rel : FreeMonoid β → FreeMonoid β → Prop) : FreeMonoid α → FreeMonoid α → Prop :=
-  fun a b ↦ rel (.congr_iso e a) (.congr_iso e b)
+def comapRel (rel : FreeMonoid β → FreeMonoid β → Prop) : FreeMonoid α → FreeMonoid α → Prop :=
+  fun a b ↦ rel (.congrEquiv e a) (.congrEquiv e b)
 
 end IsomorphicTypes
 
