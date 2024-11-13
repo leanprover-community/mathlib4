@@ -107,7 +107,9 @@ lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) :=
   · rw [← algebraMap_smul R a v, h, zero_smul]
     exact zero_right _
   · refine Or.inr <| Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
-    module
+    match_scalars
+    unfold Algebra.cast -- I think the `push_cast` in `match_scalars` must be doing this somehow??
+    ring
 
 /-- A nonnegative multiple of a vector is in the same ray as that vector. -/
 lemma sameRay_nonneg_smul_left (v : M) (ha : 0 ≤ a) : SameRay R (a • v) v :=

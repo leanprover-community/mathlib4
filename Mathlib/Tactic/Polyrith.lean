@@ -172,6 +172,7 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
   let .sort u ← instantiateMVars (← whnf (← inferType α)) | unreachable!
   let some v := u.dec | throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
+  let α' ← canon α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
   let c ← mkCache sα
@@ -180,7 +181,6 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
     /-- Parses a hypothesis and adds it to the `out` list. -/
     processHyp src ty out := do
       if let some (β, e₁, e₂) := (← instantiateMVars ty).eq? then
-        let α' ← canon α
         let β' ← canon β
         if α' == β' then
           return out.push (src, (← parse sα c e₁).sub (← parse sα c e₂))
