@@ -60,6 +60,8 @@ structure MeasurableEmbedding [MeasurableSpace α] [MeasurableSpace β] (f : α 
   /-- The image of a measurable set under a measurable embedding is a measurable set. -/
   protected measurableSet_image' : ∀ ⦃s⦄, MeasurableSet s → MeasurableSet (f '' s)
 
+attribute [fun_prop] MeasurableEmbedding.measurable
+
 namespace MeasurableEmbedding
 
 variable {mα : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {g : β → γ}
@@ -118,6 +120,38 @@ theorem measurable_comp_iff (hg : MeasurableEmbedding g) : Measurable (g ∘ f) 
 
 end MeasurableEmbedding
 
+section gluing
+variable {α₁ α₂ α₃ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+  {mα₁ : MeasurableSpace α₁} {mα₂ : MeasurableSpace α₂} {mα₃ : MeasurableSpace α₃}
+  {i₁ : α₁ → α} {i₂ : α₂ → α} {i₃ : α₃ → α} {s : Set α} {f : α → β}
+
+lemma MeasurableSet.of_union_range_cover (hi₁ : MeasurableEmbedding i₁)
+    (hi₂ : MeasurableEmbedding i₂) (h : univ ⊆ range i₁ ∪ range i₂)
+    (hs₁ : MeasurableSet (i₁ ⁻¹' s)) (hs₂ : MeasurableSet (i₂ ⁻¹' s)) : MeasurableSet s := by
+  convert (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂)
+  simp [image_preimage_eq_range_inter, ← union_inter_distrib_right,univ_subset_iff.1 h]
+
+lemma MeasurableSet.of_union₃_range_cover (hi₁ : MeasurableEmbedding i₁)
+    (hi₂ : MeasurableEmbedding i₂) (hi₃ : MeasurableEmbedding i₃)
+    (h : univ ⊆ range i₁ ∪ range i₂ ∪ range i₃) (hs₁ : MeasurableSet (i₁ ⁻¹' s))
+    (hs₂ : MeasurableSet (i₂ ⁻¹' s)) (hs₃ : MeasurableSet (i₃ ⁻¹' s)) : MeasurableSet s := by
+  convert (hi₁.measurableSet_image' hs₁).union (hi₂.measurableSet_image' hs₂) |>.union
+    (hi₃.measurableSet_image' hs₃)
+  simp [image_preimage_eq_range_inter, ← union_inter_distrib_right, univ_subset_iff.1 h]
+
+lemma Measurable.of_union_range_cover (hi₁ : MeasurableEmbedding i₁)
+    (hi₂ : MeasurableEmbedding i₂) (h : univ ⊆ range i₁ ∪ range i₂)
+    (hf₁ : Measurable (f ∘ i₁)) (hf₂ : Measurable (f ∘ i₂)) : Measurable f :=
+  fun _s hs ↦ .of_union_range_cover hi₁ hi₂ h (hf₁ hs) (hf₂ hs)
+
+lemma Measurable.of_union₃_range_cover (hi₁ : MeasurableEmbedding i₁)
+    (hi₂ : MeasurableEmbedding i₂) (hi₃ : MeasurableEmbedding i₃)
+    (h : univ ⊆ range i₁ ∪ range i₂ ∪ range i₃) (hf₁ : Measurable (f ∘ i₁))
+    (hf₂ : Measurable (f ∘ i₂)) (hf₃ : Measurable (f ∘ i₃)) : Measurable f :=
+  fun _s hs ↦ .of_union₃_range_cover hi₁ hi₂ hi₃ h (hf₁ hs) (hf₂ hs) (hf₃ hs)
+
+end gluing
+
 theorem MeasurableSet.exists_measurable_proj {_ : MeasurableSpace α}
     (hs : MeasurableSet s) (hne : s.Nonempty) : ∃ f : α → s, Measurable f ∧ ∀ x : s, f x = x :=
   let ⟨f, hfm, hf⟩ :=
@@ -155,7 +189,7 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
   rfl
 
-@[measurability]
+@[measurability, fun_prop]
 protected theorem measurable (e : α ≃ᵐ β) : Measurable (e : α → β) :=
   e.measurable_toFun
 
@@ -350,6 +384,18 @@ def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   measurable_toFun := measurable_fst.fst.prod_mk <| measurable_fst.snd.prod_mk measurable_snd
   measurable_invFun := (measurable_fst.prod_mk measurable_snd.fst).prod_mk measurable_snd.snd
 
+/-- `PUnit` is a left identity for product of measurable spaces up to a measurable equivalence. -/
+def punitProd : PUnit × α ≃ᵐ α where
+  toEquiv := Equiv.punitProd α
+  measurable_toFun := measurable_snd
+  measurable_invFun := measurable_prod_mk_left
+
+/-- `PUnit` is a right identity for product of measurable spaces up to a measurable equivalence. -/
+def prodPUnit : α × PUnit ≃ᵐ α where
+  toEquiv := Equiv.prodPUnit α
+  measurable_toFun := measurable_fst
+  measurable_invFun := measurable_prod_mk_right
+
 variable [MeasurableSpace δ] in
 /-- Sums of measurable spaces are symmetric. -/
 def sumCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α ⊕ γ ≃ᵐ β ⊕ δ where
@@ -495,7 +541,7 @@ Measurable version of `Fin.insertNthEquiv`. -/
 def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
   toEquiv := (Fin.insertNthEquiv α i).symm
-  measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun j =>
+  measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun _ =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
     ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩

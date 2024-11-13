@@ -3,7 +3,8 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
@@ -266,6 +267,7 @@ def coeffs (p : R[X]) : Finset R :=
 
 @[deprecated (since := "2024-05-17")] noncomputable alias frange := coeffs
 
+@[simp]
 theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
   rfl
 
@@ -290,6 +292,10 @@ theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n 
 
 @[deprecated (since := "2024-05-17")] alias coeff_mem_frange := coeff_mem_coeffs
 
+theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
+  rw [coeffs, support_monomial n hc]
+  simp
+
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
       (Finset.range n).sum fun i : ℕ => (n.choose (i + 1) : R[X]) * X ^ i := by
@@ -297,9 +303,9 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
   trans (n.choose (i + 1) : R); swap
   · simp only [finset_sum_coeff, ← C_eq_natCast, coeff_C_mul_X_pow]
     rw [Finset.sum_eq_single i, if_pos rfl]
-    · simp (config := { contextual := true }) only [@eq_comm _ i, if_false, eq_self_iff_true,
+    · simp +contextual only [@eq_comm _ i, if_false, eq_self_iff_true,
         imp_true_iff]
-    · simp (config := { contextual := true }) only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
+    · simp +contextual only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
         Nat.cast_zero, Finset.mem_range, not_lt, eq_self_iff_true, if_true, imp_true_iff]
   induction' n with n ih generalizing i
   · dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
@@ -576,7 +582,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     f ∈ (Ideal.map (C : R →+* R[X]) I : Ideal R[X]) ↔ ∀ n : ℕ, f.coeff n ∈ I := by
   constructor
   · intro hf
-    apply @Submodule.span_induction _ _ _ _ _ f _ _ hf
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
       cases' (Set.mem_image _ _ _).mp hf with x hx
       rw [← hx.right, coeff_C]
@@ -584,8 +590,8 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
       · simpa [h] using hx.left
       · simp [h]
     · simp
-    · exact fun f g hf hg n => by simp [I.add_mem (hf n) (hg n)]
-    · refine fun f g hg n => ?_
+    · exact fun f g _ _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
+    · refine fun f g _ hg n => ?_
       rw [smul_eq_mul, coeff_mul]
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf
@@ -600,8 +606,7 @@ theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
   ext
   simp only [LinearMap.mem_ker, RingHom.toSemilinearMap_apply, coe_mapRingHom]
   rw [mem_map_C_iff, Polynomial.ext_iff]
-  simp_rw [RingHom.mem_ker f]
-  simp
+  simp [RingHom.mem_ker]
 
 variable (I : Ideal R[X])
 
@@ -752,8 +757,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
           · rw [← not_le]
             intro hnj
             exact (add_lt_add_of_lt_of_le hmi hnj).ne hij.2.symm
-          · simp only [eq_self_iff_true, not_true, false_or_iff, add_right_inj,
-              not_and_self_iff] at hij
+          · simp only [eq_self_iff_true, not_true, false_or, add_right_inj, not_and_self_iff] at hij
         · rw [mul_comm]
           apply P.mul_mem_left
           exact Classical.not_not.1 (Nat.find_min hf hi)
@@ -785,7 +789,7 @@ variable (σ) {r : R}
 namespace Polynomial
 
 theorem prime_C_iff : Prime (C r) ↔ Prime r :=
-  ⟨comap_prime C (evalRingHom (0 : R)) fun r => eval_C, fun hr => by
+  ⟨comap_prime C (evalRingHom (0 : R)) fun _ => eval_C, fun hr => by
     have := hr.1
     rw [← Ideal.span_singleton_prime] at hr ⊢
     · rw [← Set.image_singleton, ← Ideal.map_span]
@@ -868,14 +872,14 @@ namespace Polynomial
 
 instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] :
     WfDvdMonoid R[X] where
-  wellFounded_dvdNotUnit := by
+  wf := by
     classical
       refine
         RelHomClass.wellFounded
           (⟨fun p : R[X] =>
               ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), ?_⟩ :
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
-          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
+          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wf)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
       dsimp
       rw [Polynomial.degree_mul, if_neg ane0]
@@ -909,7 +913,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
       let ⟨N, HN⟩ := hm
       let ⟨s, hs⟩ := I.is_fg_degreeLE N
       have hm2 : ∀ k, I.leadingCoeffNth k ≤ M := fun k =>
-        Or.casesOn (le_or_lt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h x hx =>
+        Or.casesOn (le_or_lt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
           Classical.by_contradiction fun hxm =>
             haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by
@@ -917,8 +921,8 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
             this ⟨HN ▸ I.leadingCoeffNth_mono (le_of_lt h), fun H => hxm (H hx)⟩
       have hs2 : ∀ {x}, x ∈ I.degreeLE N → x ∈ Ideal.span (↑s : Set R[X]) :=
         hs ▸ fun hx =>
-          Submodule.span_induction hx (fun _ hx => Ideal.subset_span hx) (Ideal.zero_mem _)
-            (fun _ _ => Ideal.add_mem _) fun c f hf => f.C_mul' c ▸ Ideal.mul_mem_left _ _ hf
+          Submodule.span_induction (hx := hx) (fun _ hx => Ideal.subset_span hx) (Ideal.zero_mem _)
+            (fun _ _ _ _ => Ideal.add_mem _) fun c f _ hf => f.C_mul' c ▸ Ideal.mul_mem_left _ _ hf
       ⟨s, le_antisymm (Ideal.span_le.2 fun x hx =>
           have : x ∈ I.degreeLE N := hs ▸ Submodule.subset_span hx
           this.2) <| by
@@ -1180,7 +1184,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
   classical
   constructor
   · intro hf
-    apply @Submodule.span_induction _ _ _ _ Semiring.toModule f _ _ hf
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hf
     · intro f hf n
       cases' (Set.mem_image _ _ _).mp hf with x hx
       rw [← hx.right, coeff_C]
@@ -1188,8 +1192,8 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
       · simpa [h] using hx.left
       · simp [Ne.symm h]
     · simp
-    · exact fun f g hf hg n => by simp [I.add_mem (hf n) (hg n)]
-    · refine fun f g hg n => ?_
+    · exact fun f g _ _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
+    · refine fun f g _ hg n => ?_
       rw [smul_eq_mul, coeff_mul]
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf
@@ -1210,6 +1214,11 @@ theorem ker_map (f : R →+* S) :
   ext
   rw [MvPolynomial.mem_map_C_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
   simp_rw [coeff_map, coeff_zero, RingHom.mem_ker]
+
+lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
+    [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+    RingHom.ker (MvPolynomial.mapAlgHom (σ := σ) f) = Ideal.map MvPolynomial.C (RingHom.ker f) :=
+  MvPolynomial.ker_map (f.toRingHom : S₁ →+* S₂)
 
 end MvPolynomial
 

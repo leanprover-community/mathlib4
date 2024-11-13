@@ -704,7 +704,7 @@ def injStrictMono (n : ℕ) :
     simp_rw [Subtype.mk_eq_mk, Sigma.mk.inj_iff, heq_eq_eq, true_and]
     have feq := fun i ↦ congr($(e).toFun i)
     simp_rw [mk_toFun lf f mf, mk_toFun lf g mg, mk_length lf f mf] at feq
-    rwa [Function.funext_iff]
+    rwa [funext_iff]
 
 /--
 For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
@@ -758,7 +758,7 @@ lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.le
   have ⟨j, hj⟩ := j
   simp only [Fin.mk_le_mk] at hij
   simp only at *
-  induction j, hij using Nat.le_induction  with
+  induction j, hij using Nat.le_induction with
   | base => simp
   | succ j _hij ih =>
     specialize ih (Nat.lt_of_succ_lt hj)

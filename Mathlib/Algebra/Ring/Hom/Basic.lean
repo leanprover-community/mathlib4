@@ -21,13 +21,13 @@ They could be moved to more natural homes.
 
 open Function
 
-variable {F α β γ : Type*}
+variable {α β : Type*}
 
 namespace RingHom
 
 section
 
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β) {x y : α}
+variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β)
 
 /-- `f : α →+* β` has a trivial codomain iff its range is `{0}`. -/
 theorem codomain_trivial_iff_range_eq_singleton_zero : (0 : β) = 1 ↔ Set.range f = {0} :=

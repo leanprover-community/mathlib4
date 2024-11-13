@@ -252,43 +252,35 @@ lemma coheight_mono : Antitone (α := α) coheight :=
   fun _ _ hxy => height_mono (α := αᵒᵈ) hxy
 
 private lemma height_add_const (a : α) (n : ℕ∞) :
-    height a + n = ⨆ (p : LTSeries α ) (_ : p.last = a), p.length + n := by
+    height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
-  rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype']
-  rw [Monotone.map_ciSup_of_continuousAt (f := (· + n))
-    (continuousAt_id.add continuousAt_const) (monotone_id.add monotone_const)]
+  rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype', ENat.iSup_add]
 
--- only true for finite height
-lemma height_strictMono (x y : α) (hxy : x < y) (hfin : height y < ⊤) :
+/- For elements of finite height, `height` is strictly monotone. -/
+@[gcongr] lemma height_strictMono {x y : α} (hxy : x < y) (hfin : height x < ⊤) :
     height x < height y := by
-  have : height x ≠ ⊤ := ne_top_of_lt (lt_of_le_of_lt (height_mono (le_of_lt hxy)) hfin)
-  rw [← ENat.add_one_le_iff this]
-  rw [height_add_const]
-  apply iSup₂_le
+  rw [← ENat.add_one_le_iff hfin.ne, height_add_const, iSup₂_le_iff]
   intro p hlast
-  apply le_iSup₂_of_le (p.snoc y (by simp [*])) (by simp) (by simp)
+  have := length_le_height_last (p := p.snoc y (by simp [*]))
+  simpa using this
 
-lemma coheight_strictAntitone (x y : α) (hxy : y < x) (hfin : coheight y < ⊤) :
-    coheight x < coheight y :=
-  height_strictMono (α := αᵒᵈ) x y hxy hfin
-
-lemma height_le_height_of_strictmono (f : α → β) (hf : StrictMono f) (x : α) :
+lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
     height x ≤ height (f x) := by
   simp only [height_eq_iSup_last_eq]
   apply iSup₂_le
   intro p hlast
   apply le_iSup₂_of_le (p.map f hf) (by simp [hlast]) (by simp)
 
-lemma coheight_le_coheight_of_strictmono (f : α → β) (hf : StrictMono f) (x : α) :
+lemma coheight_le_coheight_apply_of_astrictMono (f : α → β) (hf : StrictMono f) (x : α) :
     coheight x ≤ coheight (f x) := by
-  apply height_le_height_of_strictmono (α := αᵒᵈ)
+  apply height_le_height_apply_of_strictMono (α := αᵒᵈ)
   exact fun _ _ h ↦ hf h
 
 @[simp]
 lemma height_eq_of_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
   apply le_antisymm
-  · simpa using height_le_height_of_strictmono _ f.symm.strictMono (f x)
-  · exact height_le_height_of_strictmono _ f.strictMono x
+  · simpa using height_le_height_apply_of_strictMono _ f.symm.strictMono (f x)
+  · exact height_le_height_apply_of_strictMono _ f.strictMono x
 
 lemma coheight_eq_of_orderIso (f : α ≃o β) (x : α) : coheight (f x) = coheight x :=
   height_eq_of_orderIso (α := αᵒᵈ) f.dual x
@@ -426,7 +418,7 @@ lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
       simp [Fin.last]; omega
     · exact height_eq_index_of_length_eq_height_last (by simp [hlen, hp, hx]) ⟨n, by omega⟩
   · intro ⟨y, hyx, hy⟩
-    exact hy ▸ height_strictMono y x hyx hfin
+    exact hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
 lemma coe_lt_coheight_iff (x : α) (n : ℕ) (hfin : coheight x < ⊤):
     n < coheight x ↔ (∃ y, x < y ∧ coheight y = n) :=
@@ -513,6 +505,8 @@ variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
 
+lemma LTSeries.length_le_krullDim (p : LTSeries α) : p.length ≤ krullDim α := le_sSup ⟨_, rfl⟩
+
 lemma krullDim_nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
   le_sSup ⟨⟨0, fun _ ↦ @Nonempty.some α inferInstance, fun f ↦ f.elim0⟩, rfl⟩
 
@@ -552,6 +546,14 @@ lemma krullDim_eq_zero_of_unique [Unique α] : krullDim α = 0 := by
   refine (LTSeries.longestOf_len_unique (default : LTSeries α) fun q ↦ show _ ≤ 0 from ?_).symm
   by_contra r
   exact ne_of_lt (q.step ⟨0, not_le.mp r⟩) <| Subsingleton.elim _ _
+
+lemma krullDim_nonpos_of_subsingleton [Subsingleton α] : krullDim α ≤ 0 := by
+  by_cases hα : Nonempty α
+  · have := uniqueOfSubsingleton (Classical.choice hα)
+    exact le_of_eq krullDim_eq_zero_of_unique
+  · have := not_nonempty_iff.mp hα
+    exact le_of_lt <| lt_of_eq_of_lt krullDim_eq_bot_of_isEmpty <|
+      Batteries.compareOfLessAndEq_eq_lt.mp rfl
 
 lemma krullDim_le_of_strictComono_and_surj
     (f : α → β) (hf : ∀ ⦃a b⦄, f a < f b → a < b) (hf' : Function.Surjective f) :

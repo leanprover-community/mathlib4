@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.ENNReal.Inv
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.OfFun
 
 /-!
 # Extended metric spaces
@@ -25,7 +25,7 @@ to `EMetricSpace` at the end.
 -/
 
 assert_not_exists Nat.instLocallyFiniteOrder
-assert_not_exists UniformEmbedding
+assert_not_exists IsUniformEmbedding
 assert_not_exists TendstoUniformlyOnFilter
 
 open Set Filter
@@ -307,11 +307,13 @@ end ULift
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
-instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] : PseudoEMetricSpace (α × β) where
+
+noncomputable instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
+  PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
   edist_comm x y := by simp [edist_comm]
-  edist_triangle x y z :=
+  edist_triangle _ _ _ :=
     max_le (le_trans (edist_triangle _ _ _) (add_le_add (le_max_left _ _) (le_max_left _ _)))
       (le_trans (edist_triangle _ _ _) (add_le_add (le_max_right _ _) (le_max_right _ _)))
   uniformity_edist := uniformity_prod.trans <| by
@@ -447,7 +449,7 @@ theorem tendsto_nhdsWithin_nhds {a b} :
     Tendsto f (𝓝[s] a) (𝓝 b) ↔
       ∀ ε > 0, ∃ δ > 0, ∀ {x : α}, x ∈ s → edist x a < δ → edist (f x) b < ε := by
   rw [← nhdsWithin_univ b, tendsto_nhdsWithin_nhdsWithin]
-  simp only [mem_univ, true_and_iff]
+  simp only [mem_univ, true_and]
 
 theorem tendsto_nhds_nhds {a b} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃x⦄, edist x a < δ → edist (f x) b < ε :=
@@ -491,7 +493,7 @@ theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
 theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α} :
     Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
   (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
-    simp only [exists_prop, true_and_iff, mem_Ici, mem_ball]
+    simp only [exists_prop, true_and, mem_Ici, mem_ball]
 
 section Compact
 
@@ -548,7 +550,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
   refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [inducing_subtype_val.dense_iff, Subtype.forall]
+  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
 
 end Compact
 

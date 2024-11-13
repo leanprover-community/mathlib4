@@ -3,12 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Topological groups
@@ -305,6 +302,10 @@ lemma Homeomorph.coe_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [Con
     ⇑(Homeomorph.inv G) = Inv.inv := rfl
 
 @[to_additive]
+theorem nhds_inv (a : G) : 𝓝 a⁻¹ = (𝓝 a)⁻¹ :=
+  ((Homeomorph.inv G).map_nhds_eq a).symm
+
+@[to_additive]
 theorem isOpenMap_inv : IsOpenMap (Inv.inv : G → G) :=
   (Homeomorph.inv _).isOpenMap
 
@@ -373,10 +374,12 @@ theorem continuousInv_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @ContinuousIn
 end LatticeOps
 
 @[to_additive]
-theorem Inducing.continuousInv {G H : Type*} [Inv G] [Inv H] [TopologicalSpace G]
-    [TopologicalSpace H] [ContinuousInv H] {f : G → H} (hf : Inducing f)
+theorem IsInducing.continuousInv {G H : Type*} [Inv G] [Inv H] [TopologicalSpace G]
+    [TopologicalSpace H] [ContinuousInv H] {f : G → H} (hf : IsInducing f)
     (hf_inv : ∀ x, f x⁻¹ = (f x)⁻¹) : ContinuousInv G :=
   ⟨hf.continuous_iff.2 <| by simpa only [Function.comp_def, hf_inv] using hf.continuous.inv⟩
+
+@[deprecated (since := "2024-10-28")] alias Inducing.continuousInv := IsInducing.continuousInv
 
 section TopologicalGroup
 
@@ -531,7 +534,7 @@ end OrderedCommGroup
 
 @[to_additive]
 instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
-  continuous_inv := continuous_inv.prod_map continuous_inv
+  continuous_inv := continuous_inv.prodMap continuous_inv
 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
@@ -542,7 +545,7 @@ open MulOpposite
 
 @[to_additive]
 instance [Inv α] [ContinuousInv α] : ContinuousInv αᵐᵒᵖ :=
-  opHomeomorph.symm.inducing.continuousInv unop_inv
+  opHomeomorph.symm.isInducing.continuousInv unop_inv
 
 /-- If multiplication is continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
 @[to_additive "If addition is continuous in `α`, then it also is in `αᵃᵒᵖ`."]
@@ -582,24 +585,25 @@ theorem Homeomorph.shearMulRight_symm_coe :
 variable {G}
 
 @[to_additive]
-protected theorem Inducing.topologicalGroup {F : Type*} [Group H] [TopologicalSpace H]
-    [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : Inducing f) : TopologicalGroup H :=
+protected theorem IsInducing.topologicalGroup {F : Type*} [Group H] [TopologicalSpace H]
+    [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : IsInducing f) : TopologicalGroup H :=
   { toContinuousMul := hf.continuousMul _
     toContinuousInv := hf.continuousInv (map_inv f) }
 
+@[deprecated (since := "2024-10-28")] alias Inducing.topologicalGroup := IsInducing.topologicalGroup
+
 @[to_additive]
--- Porting note: removed `protected` (needs to be in namespace)
 theorem topologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F H G]
     (f : F) :
     @TopologicalGroup H (induced f ‹_›) _ :=
   letI := induced f ‹_›
-  Inducing.topologicalGroup f ⟨rfl⟩
+  IsInducing.topologicalGroup f ⟨rfl⟩
 
 namespace Subgroup
 
 @[to_additive]
 instance (S : Subgroup G) : TopologicalGroup S :=
-  Inducing.topologicalGroup S.subtype inducing_subtype_val
+  IsInducing.subtypeVal.topologicalGroup S.subtype
 
 end Subgroup
 
@@ -815,52 +819,7 @@ theorem TopologicalGroup.of_comm_of_nhds_one {G : Type u} [CommGroup G] [Topolog
     (hleft : ∀ x₀ : G, 𝓝 x₀ = map (x₀ * ·) (𝓝 1)) : TopologicalGroup G :=
   TopologicalGroup.of_nhds_one hmul hinv hleft (by simpa using tendsto_id)
 
-end TopologicalGroup
-
-section QuotientTopologicalGroup
-
-variable [TopologicalSpace G] [Group G] [TopologicalGroup G] (N : Subgroup G) (n : N.Normal)
-
-@[to_additive]
-instance QuotientGroup.Quotient.topologicalSpace {G : Type*} [Group G] [TopologicalSpace G]
-    (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
-  instTopologicalSpaceQuotient
-
-open QuotientGroup
-
-@[to_additive]
-theorem QuotientGroup.isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := by
-  intro s s_op
-  change IsOpen (((↑) : G → G ⧸ N) ⁻¹' ((↑) '' s))
-  rw [QuotientGroup.preimage_image_mk N s]
-  exact isOpen_iUnion fun n => (continuous_mul_right _).isOpen_preimage s s_op
-
-@[to_additive]
-instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
-  continuous_mul := by
-    have cont : Continuous (((↑) : G → G ⧸ N) ∘ fun p : G × G ↦ p.fst * p.snd) :=
-      continuous_quot_mk.comp continuous_mul
-    have quot : QuotientMap fun p : G × G ↦ ((p.1 : G ⧸ N), (p.2 : G ⧸ N)) := by
-      apply IsOpenMap.to_quotientMap
-      · exact (QuotientGroup.isOpenMap_coe N).prod (QuotientGroup.isOpenMap_coe N)
-      · exact continuous_quot_mk.prod_map continuous_quot_mk
-      · exact (surjective_quot_mk _).prodMap (surjective_quot_mk _)
-    exact quot.continuous_iff.2 cont
-  continuous_inv := by
-    have quot := IsOpenMap.to_quotientMap
-      (QuotientGroup.isOpenMap_coe N) continuous_quot_mk (surjective_quot_mk _)
-    rw [quot.continuous_iff]
-    exact continuous_quot_mk.comp continuous_inv
-
-/-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
-@[to_additive
-  "Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient."]
-theorem QuotientGroup.nhds_eq (x : G) : 𝓝 (x : G ⧸ N) = Filter.map (↑) (𝓝 x) :=
-  le_antisymm ((QuotientGroup.isOpenMap_coe N).nhds_le x) continuous_quot_mk.continuousAt
-
-variable (G)
-variable [FirstCountableTopology G]
-
+variable (G) in
 /-- Any first countable topological group has an antitone neighborhood basis `u : ℕ → Set G` for
 which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a key tool for
 `QuotientGroup.completeSpace` -/
@@ -868,7 +827,7 @@ which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a
   "Any first countable topological additive group has an antitone neighborhood basis
   `u : ℕ → set G` for which `u (n + 1) + u (n + 1) ⊆ u n`.
   The existence of such a neighborhood basis is a key tool for `QuotientAddGroup.completeSpace`"]
-theorem TopologicalGroup.exists_antitone_basis_nhds_one :
+theorem TopologicalGroup.exists_antitone_basis_nhds_one [FirstCountableTopology G] :
     ∃ u : ℕ → Set G, (𝓝 1).HasAntitoneBasis u ∧ ∀ n, u (n + 1) * u (n + 1) ⊆ u n := by
   rcases (𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
   have :=
@@ -885,15 +844,7 @@ theorem TopologicalGroup.exists_antitone_basis_nhds_one :
   obtain ⟨φ, -, hφ, φ_anti_basis⟩ := HasAntitoneBasis.subbasis_with_rel ⟨hu, u_anti⟩ event_mul
   exact ⟨u ∘ φ, φ_anti_basis, fun n => hφ n.lt_succ_self⟩
 
-/-- In a first countable topological group `G` with normal subgroup `N`, `1 : G ⧸ N` has a
-countable neighborhood basis. -/
-@[to_additive
-  "In a first countable topological additive group `G` with normal additive subgroup
-  `N`, `0 : G ⧸ N` has a countable neighborhood basis."]
-instance QuotientGroup.nhds_one_isCountablyGenerated : (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
-  (QuotientGroup.nhds_eq N 1).symm ▸ map.isCountablyGenerated _ _
-
-end QuotientTopologicalGroup
+end TopologicalGroup
 
 /-- A typeclass saying that `p : G × G ↦ p.1 - p.2` is a continuous function. This property
 automatically holds for topological additive groups but it also holds, e.g., for `ℝ≥0`. -/
@@ -1099,7 +1050,8 @@ theorem MulAction.isClosedMap_quotient [CompactSpace α] :
     letI := orbitRel α β
     IsClosedMap (Quotient.mk' : β → Quotient (orbitRel α β)) := by
   intro t ht
-  rw [← quotientMap_quotient_mk'.isClosed_preimage, MulAction.quotient_preimage_image_eq_union_mul]
+  rw [← isQuotientMap_quotient_mk'.isClosed_preimage,
+    MulAction.quotient_preimage_image_eq_union_mul]
   convert ht.smul_left_of_isCompact (isCompact_univ (X := α))
   rw [← biUnion_univ, ← iUnion_smul_left_image]
   rfl
@@ -1218,16 +1170,6 @@ theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
   exact IsClosed.smul_left_of_isCompact ht (hs.image continuous_op)
 
 @[to_additive]
-theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
-    IsClosedMap ((↑) : G → G ⧸ H) := by
-  intro t ht
-  rw [← quotientMap_quotient_mk'.isClosed_preimage]
-  convert ht.mul_right_of_isCompact hH
-  refine (QuotientGroup.preimage_image_mk_eq_iUnion_image _ _).trans ?_
-  rw [iUnion_subtype, ← iUnion_mul_right_image]
-  rfl
-
-@[to_additive]
 lemma subset_mul_closure_one {G} [MulOneClass G] [TopologicalSpace G] (s : Set G) :
     s ⊆ s * (closure {1} : Set G) := by
   have : s ⊆ s * ({1} : Set G) := by simp
@@ -1318,7 +1260,7 @@ variable {G}
 @[to_additive]
 theorem group_inseparable_iff {x y : G} : Inseparable x y ↔ x / y ∈ closure (1 : Set G) := by
   rw [← singleton_one, ← specializes_iff_mem_closure, specializes_comm, specializes_iff_inseparable,
-    ← (Homeomorph.mulRight y⁻¹).embedding.inseparable_iff]
+    ← (Homeomorph.mulRight y⁻¹).isEmbedding.inseparable_iff]
   simp [div_eq_mul_inv]
 
 @[to_additive]
@@ -1351,13 +1293,6 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
   _ ⊆ U := hV
 
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
-
-@[to_additive]
-instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
-    [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
-  rw [← QuotientGroup.ker_mk' S] at hS
-  haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
-  infer_instance
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the left, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
@@ -1396,7 +1331,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.op G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
-      have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prod_map continuous_id
+      have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prodMap continuous_id
       have H : Set.Finite _ :=
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
       simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
@@ -1588,18 +1523,6 @@ theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
   let ⟨K, hK₁, hKcomp, hKcl⟩ := exists_mem_nhds_isCompact_isClosed (1 : G)
   ⟨K, hKcomp, hKcl, hK₁⟩
 
-/-- A quotient of a locally compact group is locally compact. -/
-@[to_additive]
-instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
-  refine ⟨fun x n hn ↦ ?_⟩
-  let π := ((↑) : G → G ⧸ N)
-  have C : Continuous π := continuous_quotient_mk'
-  obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
-  have : π ⁻¹' n ∈ 𝓝 y := preimage_nhds_coinduced hn
-  rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
-  exact ⟨π '' s, (QuotientGroup.isOpenMap_coe N).image_mem_nhds s_mem, mapsTo'.mp hs,
-    s_comp.image C⟩
-
 end
 
 section
@@ -1635,30 +1558,6 @@ instance {G} [TopologicalSpace G] [AddGroup G] [TopologicalAddGroup G] :
     TopologicalGroup (Multiplicative G) where
   continuous_inv := @continuous_neg G _ _ _
 
-section Quotient
-
-variable [Group G] [TopologicalSpace G] [ContinuousMul G] {Γ : Subgroup G}
-
-@[to_additive]
-instance QuotientGroup.continuousConstSMul : ContinuousConstSMul G (G ⧸ Γ) where
-  continuous_const_smul g := by
-     convert ((@continuous_const _ _ _ _ g).mul continuous_id).quotient_map' _
-
-@[to_additive]
-theorem QuotientGroup.continuous_smul₁ (x : G ⧸ Γ) : Continuous fun g : G => g • x := by
-  induction x using QuotientGroup.induction_on
-  exact continuous_quotient_mk'.comp (continuous_mul_right _)
-
-/-- The quotient of a second countable topological group by a subgroup is second countable. -/
-@[to_additive
-  "The quotient of a second countable additive topological group by a subgroup is second
-  countable."]
-instance QuotientGroup.secondCountableTopology [SecondCountableTopology G] :
-    SecondCountableTopology (G ⧸ Γ) :=
-  ContinuousConstSMul.secondCountableTopology
-
-end Quotient
-
 /-- If `G` is a group with topological `⁻¹`, then it is homeomorphic to its units. -/
 @[to_additive " If `G` is an additive group with topological negation, then it is homeomorphic to
 its additive units."]
@@ -1667,9 +1566,12 @@ def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃�
   continuous_toFun := Units.continuous_iff.2 ⟨continuous_id, continuous_inv⟩
   continuous_invFun := Units.continuous_val
 
-@[to_additive] theorem Units.embedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
-    Embedding (val : Gˣ → G) :=
-  toUnits_homeomorph.symm.embedding
+@[to_additive] theorem Units.isEmbedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
+    IsEmbedding (val : Gˣ → G) :=
+  toUnits_homeomorph.symm.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias Units.embedding_val := Units.isEmbedding_val
 
 namespace Units
 
@@ -1831,7 +1733,7 @@ instance : BoundedOrder (GroupTopology α) where
   bot_le x := show ⊥ ≤ x.toTopologicalSpace from bot_le
 
 @[to_additive]
-instance : Inf (GroupTopology α) where inf x y := ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
+instance : Min (GroupTopology α) where min x y := ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_inf (x y : GroupTopology α) :
@@ -1845,8 +1747,6 @@ instance : SemilatticeInf (GroupTopology α) :=
 @[to_additive]
 instance : Inhabited (GroupTopology α) :=
   ⟨⊤⟩
-
-local notation "cont" => @Continuous _ _
 
 /-- Infimum of a collection of group topologies. -/
 @[to_additive "Infimum of a collection of additive group topologies"]
@@ -1883,7 +1783,7 @@ topologies contained in the intersection of `s` and `t`. -/
 instance : CompleteSemilatticeInf (GroupTopology α) :=
   { inferInstanceAs (InfSet (GroupTopology α)),
     inferInstanceAs (PartialOrder (GroupTopology α)) with
-    sInf_le := fun S a haS => toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
+    sInf_le := fun _ a haS => toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
     le_sInf := by
       intro S a hab
       apply (inferInstanceAs (CompleteLattice (TopologicalSpace α))).le_sInf
@@ -1916,4 +1816,4 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
 
 end GroupTopology
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2000
