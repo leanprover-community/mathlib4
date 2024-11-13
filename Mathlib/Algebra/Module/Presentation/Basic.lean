@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Presentations of modules

@@ -6,7 +6,8 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Finsupp.Basic
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.LSum
+import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # Monoid algebras

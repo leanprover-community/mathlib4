@@ -6,6 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Theory of univariate polynomials

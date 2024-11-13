@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Theory of univariate polynomials

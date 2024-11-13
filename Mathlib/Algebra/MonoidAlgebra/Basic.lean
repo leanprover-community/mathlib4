@@ -3,13 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Data.Finsupp.Basic
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Monoid algebras

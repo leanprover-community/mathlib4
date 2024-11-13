@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.LinearAlgebra.Finsupp.Span
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`

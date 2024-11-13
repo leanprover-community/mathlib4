@@ -6,9 +6,9 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Maximal
 import Mathlib.Tactic.FinCases
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 

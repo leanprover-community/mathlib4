@@ -6,8 +6,8 @@ Authors: Eric Wieser, Jujian Zhang
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Group.Action
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Span
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # Pointwise instances on `Submodule`s
 
