@@ -175,7 +175,7 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
   have := length_le_height_last (p := p.snoc y (by simp [*]))
   simpa using this
 
-lemma height_le_height_apply_of_strictmono (f : α → β) (hf : StrictMono f) (x : α) :
+lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
     height x ≤ height (f x) := by
   simp only [height_eq_iSup_last_eq]
   apply iSup₂_le
