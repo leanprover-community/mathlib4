@@ -32,7 +32,7 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- For a commutative semiring `R` and a `R`-module `M`, if `M` contains an
-  element `x` that can deduce `r = 0` given `r • x = 0` (finding such element usually
+  element `x` such that `r • x = 0` implies `r = 0` (finding such element usually
   depends on specific `•`), then the characteristic of `R` is equal to the
   characteristic of the `R`-linear endomorphisms of `M`.-/
 theorem CharP_if {p : ℕ} [hchar : CharP R p]
