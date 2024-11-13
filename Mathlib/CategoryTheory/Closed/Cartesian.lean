@@ -14,8 +14,8 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 /-!
 # Cartesian closed categories
 
-Given a category with finite products, the cartesian monoidal structure is provided by the local
-instance `monoidalOfHasFiniteProducts`.
+Given a category with chosen finite products, the cartesian monoidal structure is provided by the
+instance `monoidalOfChosenFiniteProducts`.
 
 We define exponentiable objects to be closed objects with respect to this monoidal structure,
 i.e. `(X × -)` is a left adjoint.
@@ -24,6 +24,13 @@ We say a category is cartesian closed if every object is exponentiable
 (equivalently, that the category equipped with the cartesian monoidal structure is closed monoidal).
 
 Show that exponential forms a difunctor and define the exponential comparison morphisms.
+
+## Implementation Details
+
+Cartesian closed categories require a `ChosenFiniteProducts` instance. If one whishes to state that
+a category that `hasFiniteProducts` is cartesian closed, they should first promote the
+`hasFiniteProducts` instance to a `ChosenFiniteProducts` one using
+`CategoryTheory.ChosenFiniteProducts.ofFiniteProducts`.
 
 ## TODO
 Some of the results here are true more generally for closed objects and
