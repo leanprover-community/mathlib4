@@ -313,6 +313,9 @@ namespace FixedPoints
 
 variable (G F : Type*) [Group G] [Field F] [MulSemiringAction G F]
 
+/-- Let $F$ be a field. Let $G$ be a finite group acting faithfully on $F$.
+Then $[F : F^G] = |G|$. -/
+@[stacks 09I3 "second part"]
 theorem finrank_eq_card [Fintype G] [FaithfulSMul G F] :
     finrank (FixedPoints.subfield G F) F = Fintype.card G :=
   le_antisymm (FixedPoints.finrank_le_card G F) <|
