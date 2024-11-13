@@ -5,15 +5,14 @@ Authors: Daniel Weber
 -/
 import Mathlib.Algebra.Algebra.Field
 import Mathlib.FieldTheory.Differential.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Liouville's theorem
 
-A proof of Liouville's theorem. Follows Integration in Finite Terms, Maxwell Rosenlicht
--- TODO: Add BibTex
+A proof of Liouville's theorem. Follows
+[Rosenlicht, M. Integration in finite terms][Rosenlicht_1972].
 
 ## Liouville field extension
 
@@ -110,8 +109,7 @@ private local instance liouville_of_finiteDimensional_galois [FiniteDimensional 
     have : ∀ i, u'' i ∈ fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
       rintro i ⟨e, _⟩
       change e (u'' i) = u'' i
-      unfold_let u''
-      simp only [map_prod]
+      simp only [u'', map_prod]
       apply Fintype.prod_equiv (Equiv.mulLeft e)
       simp
     have ffb := (IsGalois.tfae.out 0 1).mp (inferInstanceAs (IsGalois F K))
@@ -121,8 +119,7 @@ private local instance liouville_of_finiteDimensional_galois [FiniteDimensional 
     have : v'' ∈ fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
       rintro ⟨e, _⟩
       change e v'' = v''
-      unfold_let v''
-      simp only [map_div₀, map_sum, map_natCast]
+      simp only [v'', map_div₀, map_sum, map_natCast]
       congr 1
       apply Fintype.sum_equiv (Equiv.mulLeft e)
       simp
@@ -135,13 +132,11 @@ private local instance liouville_of_finiteDimensional_galois [FiniteDimensional 
       case inj =>
         exact NoZeroSMulDivisors.algebraMap_injective F K
       simp only [map_add, map_sum, map_mul, ← logDeriv_algebraMap, hu', ← deriv_algebraMap, hv']
-      unfold_let u'' v'' c'
+      unfold u'' v'' c'
       clear c' u'' u' hu' v'' v' hv'
-      dsimp only
       push_cast
       rw [Derivation.leibniz_div_const, smul_eq_mul, inv_mul_eq_div]
-      case h =>
-        simp
+      case h => simp
       simp only [map_sum, div_mul_eq_mul_div]
       rw [← sum_div, ← add_div]
       field_simp
@@ -169,7 +164,7 @@ instance liouville_of_finiteDimensional [FiniteDimensional F K] :
     IsLiouville F K :=
   let map := (IsAlgClosed.lift (M := AlgebraicClosure F) (R := F) (S := K))
   let K' := map.fieldRange
-  haveI : FiniteDimensional F K' :=
+  have : FiniteDimensional F K' :=
     LinearMap.finiteDimensional_range map.toLinearMap
   let K'' := normalClosure F K' (AlgebraicClosure F)
   let B : IntermediateField F K'' := IntermediateField.restrict

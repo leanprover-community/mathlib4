@@ -98,9 +98,8 @@ variable {F : Type*} [Field F] [Differential F] [CharZero F]
 
 noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     Differential (AdjoinRoot p) where
-  deriv := Derivation.liftOfSurjective (A := F[X]) (R := ℤ) (M := AdjoinRoot p)
-    (AdjoinRoot.mk p).toIntAlgHom AdjoinRoot.mk_surjective
-    (implicitDeriv <| AdjoinRoot.modByMonicHom Fact.out <|
+  deriv := Derivation.liftOfSurjective (f := (AdjoinRoot.mk p).toIntAlgHom) AdjoinRoot.mk_surjective
+    (d := implicitDeriv <| AdjoinRoot.modByMonicHom Fact.out <|
       implicitDeriv' F (AdjoinRoot.root p)) (fun x hx ↦ by
       simp_all only [RingHom.toIntAlgHom_apply, AdjoinRoot.mk_eq_zero]
       obtain ⟨q, rfl⟩ := hx
@@ -127,7 +126,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
 instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     DifferentialAlgebra F (AdjoinRoot p) where
   deriv_algebraMap a := by
-    change (Derivation.liftOfSurjective ..) ((AdjoinRoot.mk p).toIntAlgHom (C a)) = _
+    change (Derivation.liftOfSurjective _ _) ((AdjoinRoot.mk p).toIntAlgHom (C a)) = _
     rw [Derivation.liftOfSurjective_apply, implicitDeriv_C]
     rfl
 
