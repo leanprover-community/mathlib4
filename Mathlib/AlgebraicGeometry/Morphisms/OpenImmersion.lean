@@ -20,7 +20,7 @@ remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
+open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace Topology
 
 universe u
 

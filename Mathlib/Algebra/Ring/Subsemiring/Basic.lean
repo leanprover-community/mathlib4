@@ -706,7 +706,7 @@ theorem rangeSRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeS
 
 theorem rangeS_top_iff_surjective {f : R →+* S} :
     f.rangeS = (⊤ : Subsemiring S) ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_rangeS, coe_top]) Set.range_iff_surjective
+  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_rangeS, coe_top]) Set.range_eq_univ
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
 @[simp]
