@@ -183,7 +183,7 @@ theorem closedAbsConvexHull_min {s t : Set E} (hst : s ⊆ t) (h_conv : AbsConve
     (h_closed : IsClosed t) : closedAbsConvexHull 𝕜 s ⊆ t :=
   (closedAbsConvexHull 𝕜).closure_min hst ⟨h_conv, h_closed⟩
 
-theorem absConvexHull_subseteq_convexClosedHull {s : Set E} :
+theorem absConvexHull_subset_convexClosedHull {s : Set E} :
     (absConvexHull 𝕜) s ⊆ (closedAbsConvexHull 𝕜) s :=
   absConvexHull_min subset_closedAbsConvexHull absConvex_convexClosedHull
 
@@ -208,7 +208,7 @@ theorem closedAbsConvexHull_eq_closure_absConvexHull {s : Set E} :
     closedAbsConvexHull 𝕜 s = closure (absConvexHull 𝕜 s) := subset_antisymm
   (closedAbsConvexHull_min (subset_trans (subset_absConvexHull) subset_closure)
     (AbsConvex.closure absConvex_absConvexHull) isClosed_closure)
-  (closure_minimal absConvexHull_subseteq_convexClosedHull isClosed_closedAbsConvexHull)
+  (closure_minimal absConvexHull_subset_convexClosedHull isClosed_closedAbsConvexHull)
 
 end NormedField
 
