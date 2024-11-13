@@ -132,6 +132,9 @@ lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a →
   apply h
   simp [p']
 
+/--
+Variant of `height_le_iff` ranging only over those series that end exactly on `a`.
+-/
 lemma height_le_iff' {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
  constructor
@@ -167,6 +170,9 @@ lemma coheight_eq_iSup_head_eq  (a : α) :
     RelSeries.reverse_reverse⟩
   simp
 
+/--
+Variant of `coheight_le_iff` ranging only over those series that begin exactly on `a`.
+-/
 lemma coheight_le_iff' {a : α} {n : ℕ∞} :
     coheight a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.head = a → p.length ≤ n := by
   rw [coheight_eq_iSup_head_eq, iSup₂_le_iff]
