@@ -120,23 +120,6 @@ theorem colimitPointwiseProductToProductColimit_app (d : D) :
 
 end functorCategory
 
-section FME157
-
-variable {α : Type w} {I : α → Type u₁} [∀ i, Category.{v₁} (I i)]
-
-instance [∀ i, IsFilteredOrEmpty (I i)] : IsFilteredOrEmpty (∀ i, I i) where
-  cocone_objs k l := ⟨fun s => IsFiltered.max (k s) (l s),
-    fun s => IsFiltered.leftToMax (k s) (l s), fun s => IsFiltered.rightToMax (k s) (l s), trivial⟩
-  cocone_maps k l f g := ⟨fun s => IsFiltered.coeq (f s) (g s),
-    fun s => IsFiltered.coeqHom (f s) (g s),
-    funext fun s => by simp [IsFiltered.coeq_condition (f s) (g s)]⟩
-
-attribute [local instance] IsFiltered.nonempty
-
-instance [∀ i, IsFiltered (I i)] : IsFiltered (∀ i, I i) where
-
-end FME157
-
 section
 
 variable (C : Type u) [Category.{v} C]
@@ -172,15 +155,14 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
       simp only [yk, Types.Colimit.w_apply', hyk₀]
     obtain rfl : y' = colimit.ι (pointwiseProduct F) k yk' := by
       simp only [yk', Types.Colimit.w_apply', hyk₀']
-    dsimp at yk
-    dsimp at yk'
+    dsimp only [pointwiseProduct_obj] at yk yk'
     have hch : ∀ (s : α), ∃ (i' : I s) (hi' : k s ⟶ i'),
         (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk) =
           (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk') := by
       intro s
       have hy₁ := congrFun (ι_colimitPointwiseProductToProductColimit_π F k s) yk
       have hy₂ := congrFun (ι_colimitPointwiseProductToProductColimit_π F k s) yk'
-      dsimp at hy₁ hy₂
+      dsimp only [pointwiseProduct_obj, types_comp_apply] at hy₁ hy₂
       rw [← hy, hy₁, Types.FilteredColimit.colimit_eq_iff] at hy₂
       obtain ⟨i₀, f₀, g₀, h₀⟩ := hy₂
       refine ⟨IsFiltered.coeq f₀ g₀, f₀ ≫ IsFiltered.coeqHom f₀ g₀, ?_⟩
@@ -196,9 +178,7 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
     refine Types.limit_ext' _ _ _ (fun ⟨s⟩ => ?_)
     have := congrFun (ι_colimitPointwiseProductToProductColimit_π F k s)
       ((Types.productIso _).inv p)
-    dsimp at this
-    refine this.trans ?_
-    simpa using hk _
+    exact this.trans (by simpa using hk _)
 
 instance : IsIPC.{u} (Type u) where
   isIso _ _ := Types.isIso_colimitPointwiseProductToProductColimit
