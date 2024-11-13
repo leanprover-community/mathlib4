@@ -677,7 +677,7 @@ def itautoCore (g : MVarId)
           | .var i => m.insert i
           | .not (.var i) => m.insert i
           | _ => m
-      let ats := (← get).atoms
+      let ats := (← get).atomsArray
       for e in ats, i in [0:ats.size] do
         if !decided.contains i then
           decs ← addDec false decs e

@@ -311,7 +311,7 @@ elab_rules : tactic
           let q1 ← AtomM.addAtom ty.bindingDomain!
           let q2 ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
-      proveTFAE hyps (← get).atoms is tfaeListQ
+      proveTFAE hyps (← get).atomsArray is tfaeListQ
 
 end Mathlib.Tactic.TFAE
 

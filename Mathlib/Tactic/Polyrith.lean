@@ -180,7 +180,9 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
     /-- Parses a hypothesis and adds it to the `out` list. -/
     processHyp src ty out := do
       if let some (β, e₁, e₂) := (← instantiateMVars ty).eq? then
-        if ← withTransparency (← read).red <| isDefEq α β then
+        let α' ← canon α
+        let β' ← canon β
+        if α' == β' then
           return out.push (src, (← parse sα c e₁).sub (← parse sα c e₂))
       pure out
   let mut out := #[]
@@ -352,7 +354,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     | .ok { trace, data } =>
       if let some trace := trace then logInfo trace
       if let some {coeffs := polys, power := pow} := data then
-        let vars ← liftM <| (← get).atoms.mapM delab
+        let vars ← liftM <| (← get).atomsArray.mapM delab
         let p ← Poly.sumM (polys.zip hyps') fun (p, src, _) => do
           let h := .hyp (← delab (match src with | .input i => hyps[i]! | .fvar h => .fvar h))
           pure <| match p.unDiv? with

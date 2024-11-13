@@ -302,7 +302,7 @@ def nlinarithExtras : GlobalPreprocessor where
     let s ← AtomM.run .reducible do
       let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
         RBSet.empty
-      si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
+      si.toList.mapM fun (i, is_sq) => return ((← get).atomsArray[i]!, is_sq)
     let new_es ← s.filterMapM fun (e, is_sq) =>
       observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
     let new_es ← compWithZero.globalize.transform new_es

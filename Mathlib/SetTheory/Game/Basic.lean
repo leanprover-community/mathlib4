@@ -505,7 +505,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
       · change
           ⟦xL i * (y + z) + x * (yL j + z) - xL i * (yL j + z)⟧ =
             ⟦xL i * y + x * yL j - xL i * yL j + x * z⟧
-        simp only [quot_sub, quot_add]
+        simp only [quot_sub, quot_add, x, y, z]
         rw [quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_left_distrib (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
         rw [quot_left_distrib (xL i) (yL j) (mk zl zr zL zR)]
@@ -513,7 +513,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
       · change
           ⟦xL i * (y + z) + x * (y + zL k) - xL i * (y + zL k)⟧ =
             ⟦x * y + (xL i * z + x * zL k - xL i * zL k)⟧
-        simp only [quot_sub, quot_add]
+        simp only [quot_sub, quot_add, x, y, z]
         rw [quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
         rw [quot_left_distrib (xL i) (mk yl yr yL yR) (zL k)]
@@ -521,7 +521,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
       · change
           ⟦xR i * (y + z) + x * (yR j + z) - xR i * (yR j + z)⟧ =
             ⟦xR i * y + x * yR j - xR i * yR j + x * z⟧
-        simp only [quot_sub, quot_add]
+        simp only [quot_sub, quot_add, x, y, z]
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_left_distrib (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
         rw [quot_left_distrib (xR i) (yR j) (mk zl zr zL zR)]
@@ -529,7 +529,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
       · change
           ⟦xR i * (y + z) + x * (y + zR k) - xR i * (y + zR k)⟧ =
             ⟦x * y + (xR i * z + x * zR k - xR i * zR k)⟧
-        simp only [quot_sub, quot_add]
+        simp only [quot_sub, quot_add, x, y, z]
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (zR k)]
@@ -538,7 +538,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
       · change
           ⟦xL i * (y + z) + x * (yR j + z) - xL i * (yR j + z)⟧ =
             ⟦xL i * y + x * yR j - xL i * yR j + x * z⟧
-        simp only [quot_sub, quot_add]
+        simp only [quot_sub, quot_add, x, y, z]
         rw [quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_left_distrib (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
         rw [quot_left_distrib (xL i) (yR j) (mk zl zr zL zR)]
@@ -546,7 +546,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
       · change
           ⟦xL i * (y + z) + x * (y + zR k) - xL i * (y + zR k)⟧ =
             ⟦x * y + (xL i * z + x * zR k - xL i * zR k)⟧
-        simp only [quot_sub, quot_add]
+        simp only [quot_sub, quot_add, x, y, z]
         rw [quot_left_distrib (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zR k)]
         rw [quot_left_distrib (xL i) (mk yl yr yL yR) (zR k)]
@@ -554,7 +554,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
       · change
           ⟦xR i * (y + z) + x * (yL j + z) - xR i * (yL j + z)⟧ =
             ⟦xR i * y + x * yL j - xR i * yL j + x * z⟧
-        simp only [quot_sub, quot_add]
+        simp only [quot_sub, quot_add, x, y, z]
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_left_distrib (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
         rw [quot_left_distrib (xR i) (yL j) (mk zl zr zL zR)]
@@ -562,7 +562,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
       · change
           ⟦xR i * (y + z) + x * (y + zL k) - xR i * (y + zL k)⟧ =
             ⟦x * y + (xR i * z + x * zL k - xR i * zL k)⟧
-        simp only [quot_sub, quot_add]
+        simp only [quot_sub, quot_add, x, y, z]
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (zL k)]
@@ -661,7 +661,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
             ⟦xL i * (y * z) + x * (yL j * z + y * zL k - yL j * zL k) -
                 xL i * (yL j * z + y * zL k - yL j * zL k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
-                   quot_left_distrib_sub, quot_left_distrib]
+                   quot_left_distrib_sub, quot_left_distrib, x, y, z]
         rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
         rw [quot_mul_assoc (xL i) (yL j) (mk zl zr zL zR)]
@@ -676,7 +676,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
             ⟦xR i * (y * z) + x * (yR j * z + y * zL k - yR j * zL k) -
                 xR i * (yR j * z + y * zL k - yR j * zL k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
-                   quot_left_distrib_sub, quot_left_distrib]
+                   quot_left_distrib_sub, quot_left_distrib, x, y, z]
         rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
         rw [quot_mul_assoc (xR i) (yR j) (mk zl zr zL zR)]
@@ -691,7 +691,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
             ⟦xL i * (y * z) + x * (yR j * z + y * zR k - yR j * zR k) -
                 xL i * (yR j * z + y * zR k - yR j * zR k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
-                   quot_left_distrib_sub, quot_left_distrib]
+                   quot_left_distrib_sub, quot_left_distrib, x, y, z]
         rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
         rw [quot_mul_assoc (xL i) (yR j) (mk zl zr zL zR)]
@@ -706,7 +706,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
             ⟦xR i * (y * z) + x * (yL j * z + y * zR k - yL j * zR k) -
                 xR i * (yL j * z + y * zR k - yL j * zR k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
-                   quot_left_distrib_sub, quot_left_distrib]
+                   quot_left_distrib_sub, quot_left_distrib, x, y, z]
         rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
         rw [quot_mul_assoc (xR i) (yL j) (mk zl zr zL zR)]
@@ -722,7 +722,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
             ⟦xL i * (y * z) + x * (yL j * z + y * zR k - yL j * zR k) -
                 xL i * (yL j * z + y * zR k - yL j * zR k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
-                   quot_left_distrib_sub, quot_left_distrib]
+                   quot_left_distrib_sub, quot_left_distrib, x, y, z]
         rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
         rw [quot_mul_assoc (xL i) (yL j) (mk zl zr zL zR)]
@@ -737,7 +737,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
             ⟦xR i * (y * z) + x * (yR j * z + y * zR k - yR j * zR k) -
                 xR i * (yR j * z + y * zR k - yR j * zR k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
-                   quot_left_distrib_sub, quot_left_distrib]
+                   quot_left_distrib_sub, quot_left_distrib, x, y, z]
         rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
         rw [quot_mul_assoc (xR i) (yR j) (mk zl zr zL zR)]
@@ -752,7 +752,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
             ⟦xL i * (y * z) + x * (yR j * z + y * zL k - yR j * zL k) -
                 xL i * (yR j * z + y * zL k - yR j * zL k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
-                   quot_left_distrib_sub, quot_left_distrib]
+                   quot_left_distrib_sub, quot_left_distrib, x, y, z]
         rw [quot_mul_assoc (xL i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_mul_assoc (mk xl xr xL xR) (yR j) (mk zl zr zL zR)]
         rw [quot_mul_assoc (xL i) (yR j) (mk zl zr zL zR)]
@@ -767,7 +767,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
             ⟦xR i * (y * z) + x * (yL j * z + y * zL k - yL j * zL k) -
                 xR i * (yL j * z + y * zL k - yL j * zL k)⟧
         simp only [quot_sub, quot_add, quot_right_distrib_sub, quot_right_distrib,
-                   quot_left_distrib_sub, quot_left_distrib]
+                   quot_left_distrib_sub, quot_left_distrib, x, y, z]
         rw [quot_mul_assoc (xR i) (mk yl yr yL yR) (mk zl zr zL zR)]
         rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (mk zl zr zL zR)]
         rw [quot_mul_assoc (xR i) (yL j) (mk zl zr zL zR)]

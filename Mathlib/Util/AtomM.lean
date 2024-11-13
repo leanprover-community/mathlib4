@@ -31,8 +31,15 @@ structure AtomM.Context where
 
 /-- The mutable state of the `AtomM` monad. -/
 structure AtomM.State where
-  /-- The list of atoms-up-to-defeq encountered thus far, used for atom sorting. -/
+  /-- HashMap of the atoms-up-to-defeq encountered thus far, used for atom sorting. -/
   atoms : Std.HashMap Expr Nat := {}
+
+/-- The array of atoms-up-to-defeq encountered thus far, each indexed by the natural number which is
+its key in the `AtomM` state. -/
+def AtomM.State.atomsArray (s : AtomM.State) : Array Expr :=
+  let a := s.atoms.toArray
+  let a' := a.qsort fun p q ↦ Nat.blt p.2 q.2
+  a'.map Prod.fst
 
 /-- The monad that `ring` works in. This is only used for collecting atoms. -/
 abbrev AtomM := ReaderT AtomM.Context <| StateRefT AtomM.State CanonM

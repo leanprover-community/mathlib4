@@ -57,7 +57,8 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt 
     suffices pA * (ppB + gp.b * pB) - pB * (ppA + gp.b * pA) = (-1) ^ (n + 1) by
       simp only [conts, contsAux_recurrence s_nth_eq ppred_conts_eq pred_conts_eq]
       have gp_a_eq_one : gp.a = 1 := s.property _ _ (partNum_eq_s_a s_nth_eq)
-      rw [gp_a_eq_one, this.symm]
+      rw [gp_a_eq_one, this.symm,]
+      dsimp +zetaDelta
       ring
     suffices pA * ppB - pB * ppA = (-1) ^ (n + 1) by calc
       pA * (ppB + gp.b * pB) - pB * (ppA + gp.b * pA) =
