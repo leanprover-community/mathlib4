@@ -63,7 +63,8 @@ def mulMap : M ⊗[R] N →ₗ[R] S := TensorProduct.lift ((LinearMap.mul R S).d
 theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
 
 theorem mulMap_op :
-    mulMap (equivOpposite.symm (MulOpposite.op M)) (equivOpposite.symm (MulOpposite.op N)) =
+    mulMap (equivOpposite (R := R).symm (MulOpposite.op M))
+    (equivOpposite (R := R).symm (MulOpposite.op N)) =
     (MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ mulMap N M ∘ₗ
     (TensorProduct.congr
       (LinearEquiv.ofSubmodule' (MulOpposite.opLinearEquiv R).symm M)
@@ -121,7 +122,7 @@ theorem mulMap'_surjective : Function.Surjective (mulMap' M N) := by
 `i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This is promoted to an isomorphism of `R`-modules as `Submodule.lTensorOne`. Use that instead. -/
 def lTensorOne' : (⊥ : Subalgebra R S) ⊗[R] N →ₗ[R] N :=
-  show Subalgebra.toSubmodule ⊥ ⊗[R] N →ₗ[R] N from
+  show Subalgebra.toSubmodule (⊥ : Subalgebra R S) ⊗[R] N →ₗ[R] N from
     (LinearEquiv.ofEq _ _ (by rw [Algebra.toSubmodule_bot, mulMap_range, one_mul])).toLinearMap ∘ₗ
       (mulMap _ N).rangeRestrict
 
@@ -172,7 +173,7 @@ theorem mulMap_one_left_eq :
 `M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This is promoted to an isomorphism of `R`-modules as `Submodule.rTensorOne`. Use that instead. -/
 def rTensorOne' : M ⊗[R] (⊥ : Subalgebra R S) →ₗ[R] M :=
-  show M ⊗[R] Subalgebra.toSubmodule ⊥ →ₗ[R] M from
+  show M ⊗[R] Subalgebra.toSubmodule (⊥ : Subalgebra R S) →ₗ[R] M from
     (LinearEquiv.ofEq _ _ (by rw [Algebra.toSubmodule_bot, mulMap_range, mul_one])).toLinearMap ∘ₗ
       (mulMap M _).rangeRestrict
 

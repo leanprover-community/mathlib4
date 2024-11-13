@@ -1080,6 +1080,7 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V :=
       let m := (n, 0)
       use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ
       refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
+      let _ : Module 𝕜 𝓢(D, V) := inferInstance
       have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
           (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
         intro x

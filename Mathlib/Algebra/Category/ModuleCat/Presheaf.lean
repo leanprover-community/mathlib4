@@ -363,8 +363,8 @@ def forgetToPresheafModuleCatObjMap {Y Z : Cᵒᵖ} (f : Y ⟶ Z) :
   toFun x := M.map f x
   map_add' := by simp
   map_smul' r x := by
-    simp only [ModuleCat.restrictScalars.smul_def, AddHom.toFun_eq_coe, AddHom.coe_mk,
-      RingHom.id_apply, M.map_smul]
+    simp only [ModuleCat.restrictScalars.smul_def (R := R.obj X), AddHom.toFun_eq_coe,
+      AddHom.coe_mk, RingHom.id_apply, M.map_smul]
     rw [← CategoryTheory.comp_apply, ← R.map_comp]
     congr
     apply hX.hom_ext

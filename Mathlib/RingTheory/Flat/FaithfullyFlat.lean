@@ -269,7 +269,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     -- suppose `x ∈ E ⊗ M`. We will show `x = 0`.
     ext x
     simp only [Submodule.mem_top, Submodule.mem_bot, true_iff]
-    have mem : x ∈ (⊤ : Submodule R _) := ⟨⟩
+    have mem : x ∈ (⊤ : Submodule R (E ⊗[R] M)) := ⟨⟩
     rw [← TensorProduct.span_tmul_eq_top, mem_span_set] at mem
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
@@ -287,7 +287,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     rw [← hy hi, hr hi, smul_tmul, map_smul, LinearMap.rTensor_tmul, Submodule.subtype_apply, eq1,
       smul_zero, map_zero]
   have : Subsingleton (E ⊗[R] M) := subsingleton_iff_forall_eq 0 |>.2 fun x =>
-    show x ∈ (⊥ : Submodule R _) from eq0 ▸ ⟨⟩
+    show x ∈ (⊥ : Submodule R (E ⊗[R] M)) from eq0 ▸ ⟨⟩
 
   -- but `E ⊗ M = 0` implies `E = 0` because `M` is faithfully flat and this is a contradiction.
   exact not_subsingleton_iff_nontrivial.2 inferInstance <| fl.rTensor_reflects_triviality R M E

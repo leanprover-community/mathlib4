@@ -134,7 +134,7 @@ noncomputable def rTensorAlgHom :
 @[simp]
 lemma coeff_rTensorAlgHom_tmul
     (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
-    coeff d (rTensorAlgHom (p ⊗ₜ[R] n)) = (coeff d p) ⊗ₜ[R] n := by
+    coeff d (rTensorAlgHom (R := R) (p ⊗ₜ[R] n)) = (coeff d p) ⊗ₜ[R] n := by
   rw [rTensorAlgHom, Algebra.TensorProduct.lift_tmul]
   rw [AlgHom.coe_comp, IsScalarTower.coe_toAlgHom', Function.comp_apply,
     Algebra.TensorProduct.includeRight_apply]
@@ -146,7 +146,7 @@ variable [DecidableEq σ]
 
 lemma coeff_rTensorAlgHom_monomial_tmul
     (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
-    coeff d (rTensorAlgHom (monomial e s ⊗ₜ[R] n)) =
+    coeff d (rTensorAlgHom (R := R) (monomial e s ⊗ₜ[R] n)) =
       if e = d then s ⊗ₜ[R] n else 0 := by
   simp [ite_tmul]
 
@@ -164,7 +164,7 @@ lemma rTensorAlgHom_toLinearMap :
   erw [finsuppLeft_apply_tmul_apply]
 
 lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
-    rTensorAlgHom (S := S) p = rTensor p := by
+    rTensorAlgHom (R := R) p = rTensor p := by
   rw [← AlgHom.toLinearMap_apply, rTensorAlgHom_toLinearMap]
   rfl
 
@@ -178,7 +178,7 @@ noncomputable def rTensorAlgEquiv :
     rw [← LinearEquiv.symm_apply_eq]
     exact finsuppLeft_symm_apply_single (R := R) (0 : σ →₀ ℕ) (1 : S) (1 : N)
   · intro x y
-    erw [← rTensorAlgHom_apply_eq (S := S)]
+    erw [← rTensorAlgHom_apply_eq]
     simp only [_root_.map_mul, rTensorAlgHom_apply_eq]
     rfl
 
