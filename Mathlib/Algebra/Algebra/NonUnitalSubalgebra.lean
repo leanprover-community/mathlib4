@@ -893,6 +893,7 @@ abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUn
   { (adjoin R s).toNonUnitalRing, adjoinNonUnitalCommSemiringOfComm R hcomm with }
 
 end NonUnitalAlgebra
+
 namespace NonUnitalSubalgebra
 
 open NonUnitalAlgebra
