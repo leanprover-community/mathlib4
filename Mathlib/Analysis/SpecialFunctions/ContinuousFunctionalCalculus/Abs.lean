@@ -50,6 +50,10 @@ noncomputable def abs (a : A) := sqrt (star a * a)
 @[simp]
 lemma abs_nonneg {a : A} : 0 ≤ abs a := sqrt_nonneg
 
+@[simp]
+lemma abs_zero : abs (0 : A) = 0 := by
+  rw [abs, star_zero, mul_zero, sqrt_zero]
+
 -- It's likely that using these variables warrants a different section
 
 variable [StarOrderedRing A] [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
