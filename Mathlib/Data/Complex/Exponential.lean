@@ -1054,7 +1054,7 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
   (cosh_eq x).symm ▸ half_pos (add_pos (exp_pos x) (exp_pos (-x)))
 
 theorem sinh_lt_cosh : sinh x < cosh x :=
-  lt_of_pow_lt_pow_left 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
+  lt_of_pow_lt_pow_left₀ 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
 
 end Real
 

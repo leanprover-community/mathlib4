@@ -44,7 +44,7 @@ theorem sinh_half_dist (z w : ℍ) :
 
 theorem cosh_half_dist (z w : ℍ) :
     cosh (dist z w / 2) = dist (z : ℂ) (conj (w : ℂ)) / (2 * √(z.im * w.im)) := by
-  rw [← sq_eq_sq, cosh_sq', sinh_half_dist, div_pow, div_pow, one_add_div, mul_pow, sq_sqrt]
+  rw [← sq_eq_sq₀, cosh_sq', sinh_half_dist, div_pow, div_pow, one_add_div, mul_pow, sq_sqrt]
   · congr 1
     simp only [Complex.dist_eq, Complex.sq_abs, Complex.normSq_sub, Complex.normSq_conj,
       Complex.conj_conj, Complex.mul_re, Complex.conj_re, Complex.conj_im, coe_im]
@@ -87,7 +87,7 @@ theorem dist_eq_iff_eq_sinh :
 
 theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
     dist z w = r ↔ dist (z : ℂ) w ^ 2 / (4 * z.im * w.im) = sinh (r / 2) ^ 2 := by
-  rw [dist_eq_iff_eq_sinh, ← sq_eq_sq, div_pow, mul_pow, sq_sqrt, mul_assoc]
+  rw [dist_eq_iff_eq_sinh, ← sq_eq_sq₀, div_pow, mul_pow, sq_sqrt, mul_assoc]
   · norm_num
   all_goals positivity
 

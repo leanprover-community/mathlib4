@@ -451,7 +451,7 @@ def _root_.RCLike.complexLinearIsometryEquiv {𝕜 : Type*} [RCLike 𝕜]
     (h : RCLike.im (RCLike.I : 𝕜) = 1) : 𝕜 ≃ₗᵢ[ℝ] ℂ where
   map_smul' _ _ := by simp [RCLike.smul_re, RCLike.smul_im, ofReal_mul]; ring
   norm_map' _ := by
-    rw [← sq_eq_sq (by positivity) (by positivity), ← normSq_eq_norm_sq, ← RCLike.normSq_eq_def',
+    rw [← sq_eq_sq₀ (by positivity) (by positivity), ← normSq_eq_norm_sq, ← RCLike.normSq_eq_def',
       RCLike.normSq_apply]
     simp [normSq_add]
   __ := RCLike.complexRingEquiv h

@@ -1412,7 +1412,7 @@ theorem IsBigOWith.pow [NormOneClass R] {f : α → R} {g : α → 𝕜} (h : Is
 theorem IsBigOWith.of_pow {n : ℕ} {f : α → 𝕜} {g : α → R} (h : IsBigOWith c l (f ^ n) (g ^ n))
     (hn : n ≠ 0) (hc : c ≤ c' ^ n) (hc' : 0 ≤ c') : IsBigOWith c' l f g :=
   IsBigOWith.of_bound <| (h.weaken hc).bound.mono fun x hx ↦
-    le_of_pow_le_pow_left hn (by positivity) <|
+    le_of_pow_le_pow_left₀ hn (by positivity) <|
       calc
         ‖f x‖ ^ n = ‖f x ^ n‖ := (norm_pow _ _).symm
         _ ≤ c' ^ n * ‖g x ^ n‖ := hx

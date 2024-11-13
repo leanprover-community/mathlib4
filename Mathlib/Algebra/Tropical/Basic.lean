@@ -467,8 +467,8 @@ theorem add_pow [LinearOrder R] [AddMonoid R] [AddLeftMono R] [AddRightMono R]
     (x y : Tropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by
   rcases le_total x y with h | h
-  · rw [add_eq_left h, add_eq_left (pow_le_pow_left' h _)]
-  · rw [add_eq_right h, add_eq_right (pow_le_pow_left' h _)]
+  · rw [add_eq_left h, add_eq_left (pow_le_pow_left₀' h _)]
+  · rw [add_eq_right h, add_eq_right (pow_le_pow_left₀' h _)]
 
 end Distrib
 

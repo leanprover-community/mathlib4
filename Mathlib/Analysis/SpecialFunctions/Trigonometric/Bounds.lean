@@ -101,7 +101,7 @@ lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
     exact pow_lt_pow_left (sin_lt hx₀)
       (sin_nonneg_of_nonneg_of_le_pi hx₀.le (by linarith [two_le_pi])) (by simp)
   case inr =>
-    exact (sin_sq_le_one _).trans_lt (by rwa [one_lt_sq_iff hx₀.le])
+    exact (sin_sq_le_one _).trans_lt (by rwa [one_lt_sq_iff₀ hx₀.le])
 
 lemma sin_sq_le_sq : sin x ^ 2 ≤ x ^ 2 := by
   rcases eq_or_ne x 0 with rfl | hx
