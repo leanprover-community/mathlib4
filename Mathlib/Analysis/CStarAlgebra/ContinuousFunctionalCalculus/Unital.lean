@@ -10,6 +10,7 @@ import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.ContinuousMap.StarOrdered
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Topology.ContinuousMap.Ordered
+import Mathlib.Topology.ContinuousMap.Lattice
 
 /-!
 # The continuous functional calculus
