@@ -6,6 +6,7 @@ Authors: Jineon Baek, Seewoo Lee
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.MasonStothers
+import Mathlib.RingTheory.Radical
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
@@ -27,18 +28,21 @@ Proof uses Mason-Stothers theorem (Polynomial ABC theorem) and infinite descent
 
 noncomputable section
 
-open Polynomial UniqueFactorizationMonoid
+open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain
 
 variable {k : Type _} [Field k]
 variable {R : Type _} [CommRing R] [IsDomain R] [NormalizationMonoid R]
   [UniqueFactorizationMonoid R]
 
+private lemma Ne.isUnit_C {u : k} (hu : u ≠ 0) : IsUnit (C u) :=
+  Polynomial.isUnit_C.mpr hu.isUnit
+
 -- Multiplying units preserve coprimality
 private theorem isCoprime_mul_units_left {a b : k[X]} {u v : k} (hu : u ≠ 0) (hv : v ≠ 0) :
     IsCoprime (C u * a) (C v * b) ↔ IsCoprime a b :=
   Iff.trans
-    (isCoprime_mul_unit_left_left (isUnit_C.mpr hu.isUnit) _ _)
-    (isCoprime_mul_unit_left_right (isUnit_C.mpr hv.isUnit) _ _)
+    (isCoprime_mul_unit_left_left hu.isUnit_C _ _)
+    (isCoprime_mul_unit_left_right hv.isUnit_C _ _)
 
 -- auxiliary lemma that 'rotates' coprimality
 private theorem rot_coprime
@@ -65,10 +69,10 @@ lemma weighted_average_le_max₃ {p q r a b c : Nat} :
   -- exact Nat.mul_le_mul (Nat.le_refl _) (Nat.le_max₃_middle _ _ _)
   -- exact Nat.mul_le_mul (Nat.le_refl _) (Nat.le_max₃_right _ _ _)
 
-theorem Polynomial.derivative_C_mul (a : k) (p : k[X]) :
+private lemma Polynomial.derivative_C_mul {a : k} {p : k[X]} :
     derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
 
-theorem derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a : k[X]}  :
+private lemma derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a : k[X]}  :
     derivative (a ^ n) = 0 ↔ derivative a = 0 :=
   by
   constructor
@@ -83,12 +87,14 @@ theorem derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a : k[X
     · exact goal
   · intro hd; rw [derivative_pow, hd, MulZeroClass.mul_zero]
 
-theorem mul_eq_zero_left_iff
+private lemma mul_eq_zero_left_iff
     {M₀ : Type*} [MulZeroClass M₀] [NoZeroDivisors M₀]
     {a : M₀} {b : M₀}  (ha : a ≠ 0) : a * b = 0 ↔ b = 0 := by
   -- use `mul_eq_zero`, `or_iff_not_imp_left`, and `trans`
   rw [mul_eq_zero]
   tauto
+
+variable [DecidableEq k]
 
 theorem Polynomial.flt_catalan_deriv
     {p q r : ℕ} (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
@@ -101,34 +107,46 @@ theorem Polynomial.flt_catalan_deriv
   have hbc : IsCoprime b c := by apply rot_coprime heq <;> assumption
   have hca : IsCoprime c a := by
     rw [add_rotate] at heq; apply rot_coprime heq <;> assumption
-  have hap := mul_ne_zero (C_ne_zero.mpr hu) (pow_ne_zero p ha)
-  have hbp := mul_ne_zero (C_ne_zero.mpr hv) (pow_ne_zero q hb)
-  have hcp := mul_ne_zero (C_ne_zero.mpr hw) (pow_ne_zero r hc)
-  have habp : IsCoprime (C u * a ^ p) (C v * b ^ q) :=
-    (isCoprime_mul_units_left hu hv).mpr hab.pow
-  have hbcp : IsCoprime (C v * b ^ q) (C w * c ^ r) :=
-    (isCoprime_mul_units_left hv hw).mpr hbc.pow
-  have hcap : IsCoprime (C w * c ^ r) (C u * a ^ p) :=
-    (isCoprime_mul_units_left hw hu).mpr hca.pow
+  set uap := C u * a ^ p with eq_uap
+  set vbp := C v * b ^ q with eq_vbp
+  set wcr := C w * c ^ r with eq_wcr
+  have hCu := C_ne_zero.mpr hu
+  have hCv := C_ne_zero.mpr hv
+  have hCw := C_ne_zero.mpr hw
+  have hap := pow_ne_zero p ha
+  have hbq := pow_ne_zero q hb
+  have hcr := pow_ne_zero r hc
+  have habp : IsCoprime uap vbp := (isCoprime_mul_units_left hu hv).mpr hab.pow
+  have hbcp : IsCoprime vbp wcr := (isCoprime_mul_units_left hv hw).mpr hbc.pow
+  have hcap : IsCoprime wcr uap := (isCoprime_mul_units_left hw hu).mpr hca.pow
   have habcp := hcap.symm.mul_left hbcp
 
   -- Use Mason-Stothers theorem
-  cases' abc hap hbp hcp habp heq with ineq dr0
-  case inr =>
-    simp only [derivative_C_mul] at dr0
-
-    rw [mul_eq_zero_left_iff (C_ne_zero.mpr hu),
+  rcases Polynomial.abc
+      (mul_ne_zero hCu hap) (mul_ne_zero hCv hbq) (mul_ne_zero hCw hcr)
+      habp heq with nd_lt | dr0
+  · simp_rw [radical_mul habcp, radical_mul habp,
+        Nat.add_one_le_iff,
+        eq_uap, eq_vbp, eq_wcr,
+        radical_isUnit_mul_left hu.isUnit_C,
+        radical_isUnit_mul_left hv.isUnit_C,
+        radical_isUnit_mul_left hw.isUnit_C,
+        radical_pow a hp, radical_pow b hq, radical_pow c hr,
+        natDegree_mul hCu hap,
+        natDegree_mul hCv hbq,
+        natDegree_mul hCw hcr,
+        natDegree_C, natDegree_pow, zero_add] at nd_lt
+    sorry
+  · rw [derivative_C_mul, derivative_C_mul, derivative_C_mul,
+        mul_eq_zero_left_iff (C_ne_zero.mpr hu),
         mul_eq_zero_left_iff (C_ne_zero.mpr hv),
         mul_eq_zero_left_iff (C_ne_zero.mpr hw),
         derivative_pow_eq_zero_iff chp,
         derivative_pow_eq_zero_iff chq,
         derivative_pow_eq_zero_iff chr] at dr0
     exact dr0
-  case inl =>
+  /-
     -- Using `hineq`, derive a contradiction
-    rw [Nat.add_one_le_iff, Nat.add_one_le_iff, Nat.add_one_le_iff] at ineq
-    exfalso
-    rcases ineq with ⟨hp', hq', hr'⟩
     have hp'' : p * a.natDegree < (a * b * c).natDegree := by
       sorry
     have hq'' : q * b.natDegree < (a * b * c).natDegree := by
@@ -147,10 +165,8 @@ theorem Polynomial.flt_catalan_deriv
 
         sorry
       sorry
+      -/
     -- have hpqr : 0 < p * q * r := Nat.mul_pos (Nat.mul_pos hp hq) hr
-
-    linarith
-
     -- have hineq'' : m < m := by
     --   -- divide `hineq'` by `p * q * r`
     --   sorry
