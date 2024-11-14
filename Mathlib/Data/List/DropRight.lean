@@ -3,7 +3,7 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Basic
 /-!
 
 # Dropping or taking from lists on the right
@@ -155,7 +155,7 @@ variable (p) (l)
 
 theorem dropWhile_idempotent : dropWhile p (dropWhile p l) = dropWhile p l := by
   simp only [dropWhile_eq_self_iff]
-  exact fun h => dropWhile_nthLe_zero_not p l h
+  exact fun h => dropWhile_get_zero_not p l h
 
 theorem rdropWhile_idempotent : rdropWhile p (rdropWhile p l) = rdropWhile p l :=
   rdropWhile_eq_self_iff.mpr (rdropWhile_last_not _ _)
@@ -198,7 +198,7 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
   · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
     intro f; contradiction
   · simp only [rtakeWhile, reverse_append, takeWhile, ne_eq, not_false_eq_true,
-      getLast_append_of_ne_nil, getLast_singleton]
+      getLast_append_of_ne_nil, getLast_singleton, reduceCtorEq]
     refine ⟨fun h => ?_ , fun h => ?_⟩
     · split at h <;> simp_all
     · simp [h]
@@ -212,7 +212,7 @@ theorem rtakeWhile_idempotent (p : α → Bool) (l : List α) :
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 
 lemma rdrop_add (i j : ℕ) : (l.rdrop i).rdrop j = l.rdrop (i + j) := by
-  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop, Nat.add_comm]
+  simp_rw [rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop]
 
 @[simp]
 lemma rdrop_append_length {l₁ l₂ : List α} :

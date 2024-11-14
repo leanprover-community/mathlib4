@@ -126,7 +126,7 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
   apply List.Sublist.append _ (IH _ this)
-  rw [List.singleton_sublist, ← h, l'.getElem_take _ (Nat.lt_succ_self _)]
+  rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   apply List.get_mem
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
@@ -137,12 +137,14 @@ theorem sublist_iff_exists_orderEmbedding_get?_eq {l l' : List α} :
     l <+ l' ↔ ∃ f : ℕ ↪o ℕ, ∀ ix : ℕ, l.get? ix = l'.get? (f ix) := by
   constructor
   · intro H
-    induction' H with xs ys y _H IH xs ys x _H IH
-    · simp
-    · obtain ⟨f, hf⟩ := IH
+    induction H with
+    | slnil => simp
+    | cons _ _ IH =>
+      obtain ⟨f, hf⟩ := IH
       refine ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), ?_⟩
       simpa using hf
-    · obtain ⟨f, hf⟩ := IH
+    | cons₂ _ _ IH =>
+      obtain ⟨f, hf⟩ := IH
       refine
         ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) ?_, ?_⟩
       · rintro ⟨_ | a⟩ ⟨_ | b⟩ <;> simp [Nat.succ_le_succ_iff]
@@ -220,19 +222,6 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       · rintro ⟨⟨_ | i⟩, hi⟩
         · simpa using h
         · simpa using h'
-
-set_option linter.deprecated false in
-/-- An element `x : α` of `l : List α` is a duplicate iff it can be found
-at two distinct indices `n m : ℕ` inside the list `l`.
--/
-@[deprecated duplicate_iff_exists_distinct_get (since := "2023-01-19")]
-theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
-    l.Duplicate x ↔
-      ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),
-        x = l.nthLe n hn ∧ x = l.nthLe m hm :=
-  duplicate_iff_exists_distinct_get.trans
-    ⟨fun ⟨n, m, h⟩ => ⟨n.1, n.2, m.1, m.2, h⟩,
-    fun ⟨n, hn, m, hm, h⟩ => ⟨⟨n, hn⟩, ⟨m, hm⟩, h⟩⟩
 
 end Sublist
 

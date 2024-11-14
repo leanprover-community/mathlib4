@@ -22,3 +22,5 @@ elab (name := clear_) "clear_" : tactic =>
           if let none ← isClass? decl.type then
             toClear := toClear.push decl.fvarId
     goal.tryClearMany toClear
+
+end Mathlib.Tactic

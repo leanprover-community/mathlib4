@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
+import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Theory of univariate polynomials
@@ -49,8 +50,6 @@ equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. The
 in general not be used once the basic API for polynomials is constructed.
 -/
 
-
-
 noncomputable section
 
 /-- `Polynomial R` is the type of univariate polynomials over `R`.
@@ -62,11 +61,9 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 
 @[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
-open AddMonoidAlgebra
+open AddMonoidAlgebra Finset
 open Finsupp hiding single
 open Function hiding Commute
-
-open Polynomial
 
 namespace Polynomial
 
@@ -365,7 +362,7 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
 @[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 :=
   Finset.nonempty_iff_ne_empty.trans support_eq_empty.not
 
-theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
+theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
@@ -383,7 +380,7 @@ theorem toFinsupp_monomial (n : ℕ) (r : R) : (monomial n r).toFinsupp = Finsup
 theorem ofFinsupp_single (n : ℕ) (r : R) : (⟨Finsupp.single n r⟩ : R[X]) = monomial n r := by
   simp [monomial]
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
   (monomial n).map_zero
 
@@ -402,9 +399,9 @@ theorem monomial_mul_monomial (n m : ℕ) (r s : R) :
 
 @[simp]
 theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (n * k) (r ^ k) := by
-  induction' k with k ih
-  · simp [pow_zero, monomial_zero_one]
-  · simp [pow_succ, ih, monomial_mul_monomial, mul_add, add_comm]
+  induction k with
+  | zero => simp [pow_zero, monomial_zero_one]
+  | succ k ih => simp [pow_succ, ih, monomial_mul_monomial, mul_add, add_comm]
 
 theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
     a • monomial n b = monomial n (a • b) :=
@@ -416,6 +413,10 @@ theorem monomial_injective (n : ℕ) : Function.Injective (monomial n : R → R[
 @[simp]
 theorem monomial_eq_zero_iff (t : R) (n : ℕ) : monomial n t = 0 ↔ t = 0 :=
   LinearMap.map_eq_zero_iff _ (Polynomial.monomial_injective n)
+
+theorem monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
+    monomial m a = monomial n b ↔ m = n ∧ a = b ∨ a = 0 ∧ b = 0 := by
+  rw [← toFinsupp_inj, toFinsupp_monomial, toFinsupp_monomial, Finsupp.single_eq_single_iff]
 
 theorem support_add : (p + q).support ⊆ p.support ∪ q.support := by
   simpa [support] using Finsupp.support_add
@@ -455,7 +456,6 @@ theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r)
 theorem C_pow : C (a ^ n) = C a ^ n :=
   C.map_pow a n
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 
@@ -485,6 +485,10 @@ theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
 @[simp]
 theorem toFinsupp_X : X.toFinsupp = Finsupp.single 1 (1 : R) :=
   rfl
+
+theorem X_ne_C [Nontrivial R] (a : R) : X ≠ C a := by
+  intro he
+  simpa using monomial_eq_monomial_iff.1 he
 
 /-- `X` commutes with everything, even when the coefficients are noncommutative. -/
 theorem X_mul : X * p = p * X := by
@@ -539,9 +543,9 @@ theorem monomial_mul_X (n : ℕ) (r : R) : monomial n r * X = monomial (n + 1) r
 @[simp]
 theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
-  induction' k with k ih
-  · simp
-  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [ih, pow_succ, ← mul_assoc, add_assoc]
 
 @[simp]
 theorem X_mul_monomial (n : ℕ) (r : R) : X * monomial n r = monomial (n + 1) r := by
@@ -574,6 +578,13 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
   simp [coeff, Finsupp.single_apply]
+
+@[simp]
+theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
+  Finsupp.single_eq_same
+
+theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : n ≠ m) : (monomial n c).coeff m = 0 :=
+  Finsupp.single_eq_of_ne h
 
 @[simp]
 theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
@@ -882,6 +893,35 @@ theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a => monomial n a) = p
 theorem sum_C_mul_X_pow_eq (p : R[X]) : (p.sum fun n a => C a * X ^ n) = p := by
   simp_rw [C_mul_X_pow_eq_monomial, sum_monomial_eq]
 
+@[elab_as_elim]
+protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (C a))
+    (h_add : ∀ p q, M p → M q → M (p + q))
+    (h_monomial : ∀ (n : ℕ) (a : R), M (C a * X ^ n) → M (C a * X ^ (n + 1))) : M p := by
+  have A : ∀ {n : ℕ} {a}, M (C a * X ^ n) := by
+    intro n a
+    induction n with
+    | zero => rw [pow_zero, mul_one]; exact h_C a
+    | succ n ih => exact h_monomial _ _ ih
+  have B : ∀ s : Finset ℕ, M (s.sum fun n : ℕ => C (p.coeff n) * X ^ n) := by
+    apply Finset.induction
+    · convert h_C 0
+      exact C_0.symm
+    · intro n s ns ih
+      rw [sum_insert ns]
+      exact h_add _ _ A ih
+  rw [← sum_C_mul_X_pow_eq p, Polynomial.sum]
+  exact B (support p)
+
+/-- To prove something about polynomials,
+it suffices to show the condition is closed under taking sums,
+and it holds for monomials.
+-/
+@[elab_as_elim]
+protected theorem induction_on' {M : R[X] → Prop} (p : R[X]) (h_add : ∀ p q, M p → M q → M (p + q))
+    (h_monomial : ∀ (n : ℕ) (a : R), M (monomial n a)) : M p :=
+  Polynomial.induction_on p (h_monomial 0) h_add fun n a _h =>
+    by rw [C_mul_X_pow_eq_monomial]; exact h_monomial _ _
+
 /-- `erase p n` is the polynomial `p` in which the `X^n` term has been erased. -/
 irreducible_def erase (n : ℕ) : R[X] → R[X]
   | ⟨p⟩ => ⟨p.erase n⟩
@@ -934,7 +974,7 @@ section Update
 
 /-- Replace the coefficient of a `p : R[X]` at a given degree `n : ℕ`
 by a given value `a : R`. If `a = 0`, this is equal to `p.erase n`
-If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`.  -/
+If `p.natDegree < n` and `a ≠ 0`, this increases the degree to `n`. -/
 def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
   Polynomial.ofFinsupp (p.toFinsupp.update n a)
 
@@ -1007,29 +1047,25 @@ instance ring : Ring R[X] :=
 @[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by
   rcases p with ⟨⟩
-  -- Porting note: The last rule should be `apply`ed.
-  rw [← ofFinsupp_neg, coeff, coeff]; apply Finsupp.neg_apply
+  rw [← ofFinsupp_neg, coeff, coeff, Finsupp.neg_apply]
 
 @[simp]
 theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
-  -- Porting note: The last rule should be `apply`ed.
-  rw [← ofFinsupp_sub, coeff, coeff, coeff]; apply Finsupp.sub_apply
+  rw [← ofFinsupp_sub, coeff, coeff, coeff, Finsupp.sub_apply]
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
 
 theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
- rw [sub_eq_add_neg, monomial_add, monomial_neg]
- rfl
+  rw [sub_eq_add_neg, monomial_add, monomial_neg, sub_eq_add_neg]
 
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rcases p with ⟨⟩
-  -- Porting note: The last rule should be `apply`ed.
-  rw [← ofFinsupp_neg, support, support]; apply Finsupp.support_neg
+  rw [← ofFinsupp_neg, support, support, Finsupp.support_neg]
 
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
 

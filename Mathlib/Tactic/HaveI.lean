@@ -41,3 +41,5 @@ macro_rules
 -/
 macro "letI' " hd:haveDecl : doElem =>
   `(doElem| assert! letIDummy $hd:haveDecl)
+
+end Mathlib.Tactic.HaveI

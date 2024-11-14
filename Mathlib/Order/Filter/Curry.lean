@@ -49,13 +49,6 @@ namespace Filter
 
 variable {α β γ : Type*}
 
-/-- This filter is characterized by `Filter.eventually_curry_iff`:
-`(∀ᶠ (x : α × β) in f.curry g, p x) ↔ ∀ᶠ (x : α) in f, ∀ᶠ (y : β) in g, p (x, y)`. Useful
-in adding quantifiers to the middle of `Tendsto`s. See
-`hasFDerivAt_of_tendstoUniformlyOnFilter`. -/
-def curry (f : Filter α) (g : Filter β) : Filter (α × β) :=
-  bind f fun a ↦ map (a, ·) g
-
 theorem eventually_curry_iff {f : Filter α} {g : Filter β} {p : α × β → Prop} :
     (∀ᶠ x : α × β in f.curry g, p x) ↔ ∀ᶠ x : α in f, ∀ᶠ y : β in g, p (x, y) :=
   Iff.rfl
@@ -79,11 +72,11 @@ theorem frequently_curry_prod_iff {α β : Type*} {l : Filter α} {m : Filter β
   refine ⟨fun h => ?_, fun ⟨hs, ht⟩ => ?_⟩
   · exact frequently_prod_and.mp (Frequently.filter_mono h curry_le_prod)
   rw [frequently_curry_iff]
-  exact Frequently.mono hs $ fun x hx => Frequently.mono ht (by simp[hx])
+  exact Frequently.mono hs <| fun x hx => Frequently.mono ht (by simp [hx])
 
 theorem prod_mem_curry {α β : Type*} {l : Filter α} {m : Filter β} {s : Set α} {t : Set β}
     (hs : s ∈ l) (ht : t ∈ m) : s ×ˢ t ∈ l.curry m :=
-  curry_le_prod $ prod_mem_prod hs ht
+  curry_le_prod <| prod_mem_prod hs ht
 
 theorem eventually_curry_prod_iff {α β : Type*} {l : Filter α} {m : Filter β}
     [NeBot l] [NeBot m] (s : Set α) (t : Set β) :

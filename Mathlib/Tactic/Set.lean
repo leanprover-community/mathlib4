@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Benway
 -/
 import Mathlib.Init
-import Lean
+import Lean.Elab.Tactic.ElabTerm
 
 /-!
 # The `set` tactic
@@ -75,3 +75,5 @@ elab_rules : tactic
       evalTactic (← `(tactic| have%$tk
         $h : ($(← Term.exprToSyntax vale) : $(← Term.exprToSyntax ty)) = $a := rfl))
     | _, _ => pure ()
+
+end Mathlib.Tactic

@@ -66,7 +66,7 @@ structure Entries : Type where
 
 /-- Find a row where `Entry.expr` == `e`. -/
 def Entries.find? (es : Entries) (e : Expr) : Option Entry :=
-  es.s.find? e
+  es.s[e]?
 
 /-- Length of our entries. -/
 def Entries.size (es : Entries) : Nat :=
@@ -85,3 +85,7 @@ def Entries.add (entries : Entries) (expr : Expr) (entry : Entry) : Entry × Ent
 This is used by `let` bindings where `expr` is an fvar. -/
 def Entries.addSynonym (entries : Entries) (expr : Expr) (entry : Entry) : Entries :=
   ⟨entries.s.insert expr entry, entries.l⟩
+
+end Explode
+
+end Mathlib

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Daniel Selsam, Gabriel Ebner
 -/
 
 import Mathlib.Init
-import Lean
 
 /-!
 # Defines `with_weak_namespace` command.
@@ -38,3 +37,5 @@ def withWeakNamespace {α : Type} (ns : Name) (m : CommandElabM α) : CommandEla
 /-- Changes the current namespace without causing scoped things to go out of scope -/
 elab "with_weak_namespace " ns:ident cmd:command : command =>
   withWeakNamespace ns.getId (elabCommand cmd)
+
+end Lean.Elab.Command

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Lohn, Mario Carneiro
 -/
 import Mathlib.Init
-import Lean
 
 /-!
 # The `substs` macro
@@ -22,3 +21,7 @@ syntax (name := substs) "substs" (colGt ppSpace ident)* : tactic
 
 macro_rules
 | `(tactic| substs $xs:ident*) => `(tactic| ($[subst $xs]*))
+
+end Substs
+
+end Mathlib.Tactic

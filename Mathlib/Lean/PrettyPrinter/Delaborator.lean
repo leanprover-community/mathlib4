@@ -14,13 +14,6 @@ namespace Lean.PrettyPrinter.Delaborator
 
 open Lean.Meta Lean.SubExpr SubExpr
 
-namespace SubExpr
-
-variable {α : Type} [Inhabited α]
-variable {m : Type → Type} [Monad m]
-
-end SubExpr
-
 /-- Assuming the current expression in a lambda or pi,
 descend into the body using an unused name generated from the binder's name.
 Provides `d` with both `Syntax` for the bound name as an identifier
@@ -37,3 +30,5 @@ def OptionsPerPos.setBool (opts : OptionsPerPos) (p : SubExpr.Pos) (n : Name) (v
     OptionsPerPos :=
   let e := opts.findD p {} |>.setBool n v
   opts.insert p e
+
+end Lean.PrettyPrinter.Delaborator

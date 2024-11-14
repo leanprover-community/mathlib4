@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Lean.Meta.CongrTheorems
 import Lean.Meta.Tactic.Rfl
-import Batteries.Data.HashMap.Basic
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
+import Std.Data.HashMap.Basic
 
 /-!
 # Datatypes for `cc`
@@ -84,7 +84,7 @@ Once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashSet` could be more optimal. -/
 abbrev RBExprSet := Batteries.RBSet Expr compare
 
-/-- `CongrTheorem`s equiped with additional infos used by congruence closure modules. -/
+/-- `CongrTheorem`s equipped with additional infos used by congruence closure modules. -/
 structure CCCongrTheorem extends CongrTheorem where
   /-- If `heqResult` is true, then lemma is based on heterogeneous equality
       and the conclusion is a heterogeneous equality. -/
@@ -110,7 +110,7 @@ structure CCCongrTheoremKey where
   deriving BEq, Hashable
 
 /-- Caches used to find corresponding `CCCongrTheorem`s. -/
-abbrev CCCongrTheoremCache := Batteries.HashMap CCCongrTheoremKey (Option CCCongrTheorem)
+abbrev CCCongrTheoremCache := Std.HashMap CCCongrTheoremKey (Option CCCongrTheorem)
 
 /-- Configs used in congruence closure modules. -/
 structure CCConfig where
@@ -366,7 +366,7 @@ structure Entry where
       theorem prover. The basic idea is to introduce a counter gmt that records the number of
       heuristic instantiation that have occurred in the current branch. It is incremented after each
       round of heuristic instantiation. The field `mt` records the last time any proper descendant
-      of of thie entry was involved in a merge. -/
+      of this entry was involved in a merge. -/
   mt : Nat
   deriving Inhabited
 
@@ -415,7 +415,7 @@ inductive CongruencesKey
   deriving BEq, Hashable
 
 /-- Maps each expression (via `mkCongruenceKey`) to expressions it might be congruent to. -/
-abbrev Congruences := Batteries.HashMap CongruencesKey (List Expr)
+abbrev Congruences := Std.HashMap CongruencesKey (List Expr)
 
 structure SymmCongruencesKey where
   (h₁ h₂ : Expr)
@@ -426,7 +426,7 @@ structure SymmCongruencesKey where
 The `Name` identifies which relation the congruence is considered for.
 Note that this only works for two-argument relations: `ModEq n` and `ModEq m` are considered the
 same. -/
-abbrev SymmCongruences := Batteries.HashMap SymmCongruencesKey (List (Expr × Name))
+abbrev SymmCongruences := Std.HashMap SymmCongruencesKey (List (Expr × Name))
 
 /-- Stores the root representatives of subsingletons. -/
 abbrev SubsingletonReprs := RBExprMap Expr
@@ -462,7 +462,7 @@ structure CCState extends CCConfig where
   /-- Mapping from operators occurring in terms and their canonical
       representation in this module -/
   canOps : RBExprMap Expr := ∅
-  /-- Whether the canonical operator is suppoted by AC. -/
+  /-- Whether the canonical operator is supported by AC. -/
   opInfo : RBExprMap Bool := ∅
   /-- Extra `Entry` information used by the AC part of the tactic. -/
   acEntries : RBExprMap ACEntry := ∅
@@ -521,7 +521,7 @@ def isCgRoot (ccs : CCState) (e : Expr) : Bool :=
 "Modification Time". The field `mt` is used to implement the mod-time optimization introduced by the
 Simplify theorem prover. The basic idea is to introduce a counter `gmt` that records the number of
 heuristic instantiation that have occurred in the current branch. It is incremented after each round
-of heuristic instantiation. The field `mt` records the last time any proper descendant of of thie
+of heuristic instantiation. The field `mt` records the last time any proper descendant of this
 entry was involved in a merge. -/
 def mt (ccs : CCState) (e : Expr) : Nat :=
   match ccs.entries.find? e with
@@ -667,7 +667,7 @@ end CCState
 
 /-- The congruence closure module (optionally) uses a normalizer.
     The idea is to use it (if available) to normalize auxiliary expressions
-    produced by internal propagation rules (e.g., subsingleton propagator).  -/
+    produced by internal propagation rules (e.g., subsingleton propagator). -/
 structure CCNormalizer where
   normalize : Expr → MetaM Expr
 

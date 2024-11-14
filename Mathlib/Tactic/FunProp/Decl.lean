@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Init
-import Lean
 
 /-!
 ## `funProp` environment extension that stores all registered function properties
@@ -152,3 +151,7 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     let (result?, _) ← runTac?.run {} {}
 
     return result?
+
+end Meta.FunProp
+
+end Mathlib

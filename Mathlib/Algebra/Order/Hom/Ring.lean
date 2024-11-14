@@ -295,7 +295,7 @@ namespace OrderRingIso
 
 section LE
 
-variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [LE γ] [Mul δ] [Add δ] [LE δ]
+variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [LE γ]
 
 /-- Reinterpret an ordered ring isomorphism as an order isomorphism. -/
 -- Porting note: Added @[coe] attribute
@@ -388,8 +388,7 @@ def Simps.symm_apply (e : α ≃+*o β) : β → α :=
   e.symm
 
 @[simp]
-theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e :=
-  ext fun _ => rfl
+theorem symm_symm (e : α ≃+*o β) : e.symm.symm = e := rfl
 
 /-- Composition of `OrderRingIso`s as an `OrderRingIso`. -/
 @[trans]
@@ -427,8 +426,7 @@ end LE
 
 section NonAssocSemiring
 
-variable [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β] [NonAssocSemiring γ]
-  [Preorder γ]
+variable [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
 
 /-- Reinterpret an ordered ring isomorphism as an ordered ring homomorphism. -/
 def toOrderRingHom (f : α ≃+*o β) : α →+*o β :=

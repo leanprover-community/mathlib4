@@ -3,8 +3,8 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
+import Lean.Elab.Tactic.ElabTerm
 import Mathlib.Init
-import Lean
 
 /-!
 # The `rename'` tactic
@@ -38,3 +38,5 @@ elab_rules : tactic
     withMainContext do
       for fvar in ids, tgt in bs do
         Elab.Term.addTermInfo' tgt (mkFVar fvar)
+
+end Mathlib.Tactic

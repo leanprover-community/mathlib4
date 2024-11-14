@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Units
+import Mathlib.Data.Nat.Sqrt
 
 /-!
 # The natural numbers form a monoid
@@ -62,8 +62,8 @@ instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
--- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
+-- We set the simp priority slightly lower than default; later more general lemmas will replace it.
+@[simp 900] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
 
 section Multiplicative
 
@@ -96,7 +96,7 @@ lemma not_even_iff : ¬ Even n ↔ n % 2 = 1 := by rw [even_iff, mod_two_ne_zero
 @[simp] lemma not_even_one : ¬Even 1 := by simp [even_iff]
 
 @[parity_simps] lemma even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
-  cases' mod_two_eq_zero_or_one m with h₁ h₁ <;> cases' mod_two_eq_zero_or_one n with h₂ h₂ <;>
+  rcases mod_two_eq_zero_or_one m with h₁ | h₁ <;> rcases mod_two_eq_zero_or_one n with h₂ | h₂ <;>
     simp [even_iff, h₁, h₂, Nat.add_mod]
 
 @[parity_simps] lemma even_add_one : Even (n + 1) ↔ ¬Even n := by simp [even_add]
@@ -117,13 +117,13 @@ lemma two_not_dvd_two_mul_sub_one : ∀ {n}, 0 < n → ¬2 ∣ 2 * n - 1
   by_cases h : Even n <;> simp [h]
 
 @[parity_simps] lemma even_mul : Even (m * n) ↔ Even m ∨ Even n := by
-  cases' mod_two_eq_zero_or_one m with h₁ h₁ <;> cases' mod_two_eq_zero_or_one n with h₂ h₂ <;>
+  rcases mod_two_eq_zero_or_one m with h₁ | h₁ <;> rcases mod_two_eq_zero_or_one n with h₂ | h₂ <;>
     simp [even_iff, h₁, h₂, Nat.mul_mod]
 
 /-- If `m` and `n` are natural numbers, then the natural number `m^n` is even
 if and only if `m` is even and `n` is positive. -/
 @[parity_simps] lemma even_pow : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
-  induction n <;> simp (config := { contextual := true }) [*, pow_succ', even_mul]
+  induction n <;> simp +contextual [*, pow_succ', even_mul]
 
 lemma even_pow' (h : n ≠ 0) : Even (m ^ n) ↔ Even m := even_pow.trans <| and_iff_left h
 
@@ -133,13 +133,23 @@ lemma even_mul_pred_self : ∀ n : ℕ, Even (n * (n - 1))
   | 0 => even_zero
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
 
-@[deprecated (since := "2024-01-20")] alias even_mul_self_pred := even_mul_pred_self
-
 lemma two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h ↦
   Nat.mul_div_cancel_left' ((even_iff_exists_two_nsmul _).1 h)
 
 lemma div_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
   fun h ↦ Nat.div_mul_cancel ((even_iff_exists_two_nsmul _).1 h)
+
+theorem one_lt_of_ne_zero_of_even {n : ℕ} (h0 : n ≠ 0) (hn : Even n) : 1 < n := by
+  refine Nat.one_lt_iff_ne_zero_and_ne_one.mpr (And.intro h0 ?_)
+  intro h
+  rw [h] at hn
+  exact Nat.not_even_one hn
+
+theorem add_one_lt_of_even {n m : ℕ} (hn : Even n) (hm : Even m) (hnm : n < m) :
+    n + 1 < m := by
+  rcases hn with ⟨n, rfl⟩
+  rcases hm with ⟨m, rfl⟩
+  omega
 
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by simp [*, parity_simps]

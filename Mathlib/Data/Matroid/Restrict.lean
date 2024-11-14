@@ -36,7 +36,7 @@ It also proves some `Basis` analogues of `Base` lemmas that, while they could be
 ## Implementation Notes
 
 Since `R` and `M.E` are both terms in `Set α`, to define the restriction `M ↾ R`,
-we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
+we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
 outside `M.E`.
 
 It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we say the restriction
@@ -66,7 +66,7 @@ open Set
 
 namespace Matroid
 
-variable {α : Type*} {M : Matroid α} {R I J X Y : Set α}
+variable {α : Type*} {M : Matroid α} {R I X Y : Set α}
 
 section restrict
 
@@ -75,7 +75,7 @@ section restrict
   E := R
   Indep I := M.Indep I ∧ I ⊆ R
   indep_empty := ⟨M.empty_indep, empty_subset _⟩
-  indep_subset := fun I J h hIJ ↦ ⟨h.1.subset hIJ, hIJ.trans h.2⟩
+  indep_subset := fun _ _ h hIJ ↦ ⟨h.1.subset hIJ, hIJ.trans h.2⟩
   indep_aug := by
     rintro I I' ⟨hI, hIY⟩ (hIn : ¬ M.Basis' I R) (hI' : M.Basis' I' R)
     rw [basis'_iff_basis_inter_ground] at hIn hI'
@@ -111,11 +111,11 @@ section restrict
     simp only [hIJ, and_assoc, maximal_subset_iff, hJ.indep, hJ.subset, and_imp, true_and,
       hJ.subset.trans hAR]
     exact fun K hK _ hKA hJK ↦ hJ.eq_of_subset_indep hK hJK hKA
-  subset_ground I := And.right
+  subset_ground _ := And.right
 
 /-- Change the ground set of a matroid to some `R : Set α`. The independent sets of the restriction
   are the independent subsets of the new ground set. Most commonly used when `R ⊆ M.E`,
-  but it is convenient not to require this. The elements of `R \ M.E` become 'loops'.  -/
+  but it is convenient not to require this. The elements of `R \ M.E` become 'loops'. -/
 def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatroid R).matroid
 
 /-- `M ↾ R` means `M.restrict R`. -/

@@ -8,7 +8,7 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.Peel
-import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
 # Exponent of a group
@@ -106,9 +106,6 @@ theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
 
 @[to_additive]
 protected alias ⟨_, ExponentExists.exponent_ne_zero⟩ := exponent_ne_zero
-
-@[to_additive (attr := deprecated (since := "2024-01-27"))]
-theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := exponent_ne_zero.symm
 
 @[to_additive]
 theorem exponent_pos : 0 < exponent G ↔ ExponentExists G :=
@@ -213,10 +210,6 @@ theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n
 
 variable (G)
 
-@[to_additive (attr := deprecated (since := "2024-01-27"))]
-theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
-  exponent_dvd.mpr h
-
 @[to_additive]
 theorem lcm_orderOf_dvd_exponent [Fintype G] :
     (Finset.univ : Finset G).lcm orderOf ∣ exponent G := by
@@ -243,7 +236,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
       hp.one_lt.not_le
         ((mul_le_iff_le_one_left he).mp <|
           Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_primeFactors h) hd)
-  obtain ⟨k, hk : exponent G = p ^ _ * k⟩ := Nat.ord_proj_dvd _ _
+  obtain ⟨k, hk : exponent G = p ^ _ * k⟩ := Nat.ordProj_dvd _ _
   obtain ⟨t, ht⟩ := Nat.exists_eq_succ_of_ne_zero (Finsupp.mem_support_iff.mp h)
   refine ⟨g ^ k, ?_⟩
   rw [ht]
@@ -340,9 +333,6 @@ theorem lcm_orderOf_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm order
     (lcm_orderOf_dvd_exponent G)
     (exponent_dvd.mpr fun g => Finset.dvd_lcm (Finset.mem_univ g))
 
-@[to_additive (attr := deprecated (since := "2024-01-26")) AddMonoid.lcm_addOrder_eq_exponent]
-alias lcm_order_eq_exponent := lcm_orderOf_eq_exponent
-
 variable {H : Type*} [Monoid H]
 
 /--
@@ -409,6 +399,10 @@ lemma one_lt_exponent [Nontrivial G] : 1 < Monoid.exponent G := by
   rw [Nat.one_lt_iff_ne_zero_and_ne_one]
   exact ⟨exponent_ne_zero_of_finite, mt exp_eq_one_iff.mp (not_subsingleton G)⟩
 
+@[to_additive]
+instance neZero_exponent_of_finite : NeZero <| Monoid.exponent G :=
+  ⟨Monoid.exponent_ne_zero_of_finite⟩
+
 end LeftCancelMonoid
 
 section CommMonoid
@@ -435,7 +429,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   suffices orderOf t < orderOf (t ^ p ^ k * g) by
     rw [ht] at this
     exact this.not_le (le_csSup hfin.bddAbove <| Set.mem_range_self _)
-  have hpk : p ^ k ∣ orderOf t := Nat.ord_proj_dvd _ _
+  have hpk : p ^ k ∣ orderOf t := Nat.ordProj_dvd _ _
   have hpk' : orderOf (t ^ p ^ k) = orderOf t / p ^ k := by
     rw [orderOf_pow' t (pow_ne_zero k hp.ne_zero), Nat.gcd_eq_right hpk]
   obtain ⟨a, ha⟩ := Nat.exists_eq_add_of_lt hpe
@@ -452,7 +446,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   rw [(Commute.all _ g).orderOf_mul_eq_mul_orderOf_of_coprime hcoprime, hpk',
     hg, ha, hk, pow_add, pow_add, pow_one, ← mul_assoc, ← mul_assoc,
     Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| hG.orderOf_pos t, ← pow_succ]
-  · exact one_lt_pow hp.one_lt a.succ_ne_zero
+  · exact one_lt_pow₀ hp.one_lt a.succ_ne_zero
   · exact hpk
 
 @[to_additive]

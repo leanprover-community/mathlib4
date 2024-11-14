@@ -48,15 +48,17 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
       AlternatingFaceMapComplex.map_f, N₁_obj_p, Karoubi.id_f, assoc] at h₁ h₂ h₃
     -- we have to construct an inverse to f in degree n, by induction on n
     intro n
-    induction' n with n hn
+    induction n with
     -- degree 0
-    · use (inv (N₁.map f)).f.f 0
+    | zero =>
+      use (inv (N₁.map f)).f.f 0
       have h₁₀ := h₁ 0
       have h₂₀ := h₂ 0
       dsimp at h₁₀ h₂₀
       simp only [id_comp, comp_id] at h₁₀ h₂₀
       tauto
-    · haveI := hn
+    | succ n hn =>
+      haveI := hn
       use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
               b := fun i => inv (f.app (op [n])) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,

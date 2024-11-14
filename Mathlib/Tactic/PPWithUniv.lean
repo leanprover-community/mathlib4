@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Mathlib.Init
-import Lean
 
 /-!
 # Attribute to pretty-print universe level parameters by default
@@ -47,3 +46,7 @@ initialize registerBuiltinAttribute {
       let attr ← Elab.elabAttr <| ← `(Term.attrInstance| delab $(mkIdent <| `app ++ src))
       liftTermElabM <| Term.applyAttributes ``delabWithUniv #[{attr with kind}]
   | _ => throwUnsupportedSyntax }
+
+end PPWithUniv
+
+end Mathlib

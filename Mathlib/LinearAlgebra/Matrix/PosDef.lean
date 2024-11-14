@@ -18,7 +18,7 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 * `Matrix.PosSemidef` : a matrix `M : Matrix n n 𝕜` is positive semidefinite if it is hermitian
   and `xᴴMx` is nonnegative for all `x`.
 
-## Main results
+## Main results
 
 * `Matrix.posSemidef_iff_eq_transpose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
   semidefinite iff it has the form `Bᴴ * B` for some `B`.
@@ -150,7 +150,7 @@ protected lemma zpow [StarOrderedRing R] [DecidableEq n]
   · simpa using hM.pow n
   · simpa using (hM.pow n).inv
 
-protected lemma add [CovariantClass R R (· + ·) (· ≤ · )] {A : Matrix m m R} {B : Matrix m m R}
+protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosSemidef) : (A + B).PosSemidef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x => by
     rw [add_mulVec, dotProduct_add]
@@ -263,7 +263,7 @@ theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
     (M.submatrix e e).PosSemidef ↔ M.PosSemidef :=
   ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
 
-/-- The conjugate transpose of a matrix mulitplied by the matrix is positive semidefinite -/
+/-- The conjugate transpose of a matrix multiplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (Aᴴ * A) := by
   refine ⟨isHermitian_transpose_mul_self _, fun x => ?_⟩
@@ -406,21 +406,21 @@ theorem _root_.Matrix.posDef_intCast_iff [StarOrderedRing R] [DecidableEq n] [No
     PosDef (d : Matrix n n R) ↔ 0 < d :=
   posDef_diagonal_iff.trans <| by simp
 
-protected lemma add_posSemidef [CovariantClass R R (· + ·) (· ≤ · )]
+protected lemma add_posSemidef [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosSemidef) : (A + B).PosDef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
     rw [add_mulVec, dotProduct_add]
     exact add_pos_of_pos_of_nonneg (hA.2 x hx) (hB.2 x)⟩
 
-protected lemma posSemidef_add [CovariantClass R R (· + ·) (· ≤ · )]
+protected lemma posSemidef_add [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
   ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
     rw [add_mulVec, dotProduct_add]
     exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
 
-protected lemma add [CovariantClass R R (· + ·) (· ≤ · )] {A : Matrix m m R} {B : Matrix m m R}
+protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
   hA.add_posSemidef hB.posSemidef
 
@@ -449,6 +449,25 @@ theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det 
   apply Finset.prod_pos
   intro i _
   simpa using hM.eigenvalues_pos i
+
+theorem isUnit [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : IsUnit M :=
+  isUnit_iff_isUnit_det _ |>.2 <| hM.det_pos.ne'.isUnit
+
+protected theorem inv [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : M⁻¹.PosDef := by
+  refine ⟨hM.isHermitian.inv, fun x hx => ?_⟩
+  have := hM.2 (M⁻¹ *ᵥ x) ((Matrix.mulVec_injective_iff_isUnit.mpr ?_ |>.ne_iff' ?_).2 hx)
+  · let _inst := hM.isUnit.invertible
+    rwa [star_mulVec, mulVec_mulVec, Matrix.mul_inv_of_invertible, one_mulVec,
+      ← star_pos_iff, ← star_mulVec, ← star_dotProduct] at this
+  · simpa using hM.isUnit
+  · simp
+
+@[simp]
+theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
+    M⁻¹.PosDef ↔ M.PosDef :=
+  ⟨fun h =>
+    letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
+    Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
 
 end PosDef
 

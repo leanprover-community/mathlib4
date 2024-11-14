@@ -113,8 +113,8 @@ def prodEquiv [Module S M₂] [Module S M₃] [SMulCommClass R S M₂] [SMulComm
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
-  map_add' a b := rfl
-  map_smul' r a := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 section
 
@@ -399,7 +399,7 @@ theorem sup_range_inl_inr : (range <| inl R M M₂) ⊔ (range <| inr R M M₂) 
   IsCompl.sup_eq_top isCompl_range_inl_inr
 
 theorem disjoint_inl_inr : Disjoint (range <| inl R M M₂) (range <| inr R M M₂) := by
-  simp (config := { contextual := true }) [disjoint_def, @eq_comm M 0, @eq_comm M₂ 0]
+  simp +contextual [disjoint_def, @eq_comm M 0, @eq_comm M₂ 0]
 
 theorem map_coprod_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (p : Submodule R M)
     (q : Submodule R M₂) : map (coprod f g) (p.prod q) = map f p ⊔ map g q := by
@@ -440,7 +440,7 @@ theorem ker_prod_ker_le_ker_coprod {M₂ : Type*} [AddCommGroup M₂] [Module R 
     [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
     (ker f).prod (ker g) ≤ ker (f.coprod g) := by
   rintro ⟨y, z⟩
-  simp (config := { contextual := true })
+  simp +contextual
 
 theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] {M₃ : Type*}
     [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃)
@@ -449,7 +449,7 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rintro ⟨y, z⟩ h
   simp only [mem_ker, mem_prod, coprod_apply] at h ⊢
   have : f y ∈ (range f) ⊓ (range g) := by
-    simp only [true_and_iff, mem_range, mem_inf, exists_apply_eq_apply]
+    simp only [true_and, mem_range, mem_inf, exists_apply_eq_apply]
     use -z
     rwa [eq_comm, map_neg, ← sub_eq_zero, sub_neg_eq_add]
   rw [hd.eq_bot, mem_bot] at this
@@ -525,10 +525,9 @@ def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
   -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
   invFun m := ⟨⟨m, 0⟩, by simp only [fst, comap_bot, mem_ker, snd_apply]⟩
-  map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.fst_add, Subtype.forall,
-    implies_true, Prod.forall, forall_const]
+  map_add' := by simp only [coe_add, Prod.fst_add, implies_true]
   map_smul' := by simp only [SetLike.val_smul, Prod.smul_fst, RingHom.id_apply, Subtype.forall,
-    implies_true, Prod.forall, forall_const]
+    implies_true]
   left_inv := by
     rintro ⟨⟨x, y⟩, hy⟩
     simp only [fst, comap_bot, mem_ker, snd_apply] at hy
@@ -557,10 +556,9 @@ def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
   -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
   invFun n := ⟨⟨0, n⟩, by simp only [snd, comap_bot, mem_ker, fst_apply]⟩
-  map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.snd_add, Subtype.forall,
-    implies_true, Prod.forall, forall_const]
+  map_add' := by simp only [coe_add, Prod.snd_add, implies_true]
   map_smul' := by simp only [SetLike.val_smul, Prod.smul_snd, RingHom.id_apply, Subtype.forall,
-    implies_true, Prod.forall, forall_const]
+    implies_true]
   left_inv := by
     rintro ⟨⟨x, y⟩, hx⟩
     simp only [snd, comap_bot, mem_ker, fst_apply] at hx
@@ -658,6 +656,32 @@ theorem snd_comp_prodComm :
   ext <;> simp
 
 end prodComm
+
+/-- Product of modules is associative up to linear isomorphism. -/
+@[simps apply]
+def prodAssoc (R M₁ M₂ M₃ : Type*) [Semiring R]
+    [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+    [Module R M₁] [Module R M₂] [Module R M₃] : ((M₁ × M₂) × M₃) ≃ₗ[R] (M₁ × (M₂ × M₃)) :=
+  { AddEquiv.prodAssoc with
+    map_smul' := fun _r ⟨_m, _n⟩ => rfl }
+
+section prodAssoc
+
+variable {M₁ : Type*}
+variable [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M₁] [Module R M₂] [Module R M₃]
+
+theorem fst_comp_prodAssoc :
+    (LinearMap.fst R M₁ (M₂ × M₃)).comp (prodAssoc R M₁ M₂ M₃).toLinearMap =
+    (LinearMap.fst R M₁ M₂).comp (LinearMap.fst R (M₁ × M₂) M₃) := by
+  ext <;> simp
+
+theorem snd_comp_prodAssoc :
+    (LinearMap.snd R M₁ (M₂ × M₃)).comp (prodAssoc R M₁ M₂ M₃).toLinearMap =
+    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃):= by
+  ext <;> simp
+
+end prodAssoc
 
 section
 
@@ -865,16 +889,16 @@ theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) 
     Disjoint (tailing f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
   rw [disjoint_iff]
   dsimp [tailing, tunnel, tunnel']
-  erw [Submodule.map_inf_eq_map_inf_comap,
+  rw [Submodule.map_inf_eq_map_inf_comap,
     Submodule.comap_map_eq_of_injective (tunnelAux_injective _ i _), inf_comm,
     Submodule.fst_inf_snd, Submodule.map_bot]
 
 @[deprecated (since := "2024-06-05")]
 theorem tailing_sup_tunnel_succ_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
-    tailing f i n ⊔ (OrderDual.ofDual (α := Submodule R M) $ tunnel f i (n + 1)) ≤
+    tailing f i n ⊔ (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) ≤
       (OrderDual.ofDual (α := Submodule R M) <| tunnel f i n) := by
   dsimp [tailing, tunnel, tunnel', tunnelAux]
-  erw [← Submodule.map_sup, sup_comm, Submodule.fst_sup_snd, Submodule.map_comp, Submodule.map_comp]
+  rw [← Submodule.map_sup, sup_comm, Submodule.fst_sup_snd, Submodule.map_comp, Submodule.map_comp]
   apply Submodule.map_subtype_le
 
 /-- The supremum of all the copies of `N` found inside the tunnel. -/

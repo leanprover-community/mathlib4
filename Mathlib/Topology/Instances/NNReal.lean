@@ -6,8 +6,9 @@ Authors: Johan Commelin
 import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.Instances.Real
 
 /-!
 # Topology on `ℝ≥0`
@@ -50,8 +51,7 @@ a few of which rely on the fact that subtraction is continuous.
 
 noncomputable section
 
-open Set TopologicalSpace Metric Filter
-open scoped Topology
+open Filter Metric Set TopologicalSpace Topology
 
 namespace NNReal
 
@@ -92,6 +92,11 @@ noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
 
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
+
+lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
+    (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
+    ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
+  continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
 
 /-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
 @[simps (config := .asFn)]
@@ -257,7 +262,7 @@ section Monotone
 /-- A monotone, bounded above sequence `f : ℕ → ℝ` has a finite limit. -/
 theorem _root_.Real.tendsto_of_bddAbove_monotone {f : ℕ → ℝ} (h_bdd : BddAbove (Set.range f))
     (h_mon : Monotone f) : ∃ r : ℝ, Tendsto f atTop (𝓝 r) := by
-  obtain ⟨B, hB⟩ := Real.exists_isLUB  (Set.range_nonempty f) h_bdd
+  obtain ⟨B, hB⟩ := Real.exists_isLUB (Set.range_nonempty f) h_bdd
   exact ⟨B, tendsto_atTop_isLUB h_mon hB⟩
 
 /-- An antitone, bounded below sequence `f : ℕ → ℝ` has a finite limit. -/
@@ -283,7 +288,7 @@ end Monotone
 
 instance instProperSpace : ProperSpace ℝ≥0 where
   isCompact_closedBall x r := by
-    have emb : ClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.closedEmbedding fun _ ↦ congrFun rfl
+    have emb : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.isClosedEmbedding fun _ ↦ congrFun rfl
     exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 end NNReal

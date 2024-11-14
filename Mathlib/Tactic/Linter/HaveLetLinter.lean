@@ -39,7 +39,7 @@ There are three settings:
 The default value is `1`.
 -/
 register_option linter.haveLet : Nat := {
-  defValue := 1
+  defValue := 0
   descr := "enable the `have` vs `let` linter:\n\
             * 0 -- inactive;\n\
             * 1 -- active only on noisy declarations;\n\
@@ -102,7 +102,7 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     -- so that we can then isolate the `fvarId`s that are created by `have`
     let oldMvdecls := (i.goalsBefore.map (mctx.decls.find? ·)).reduceOption
     let oldLctx := oldMvdecls.map (·.lctx)
-    let oldDecls := (oldLctx.map (·.decls.toList.reduceOption)).join
+    let oldDecls := (oldLctx.map (·.decls.toList.reduceOption)).flatten
     let oldFVars := oldDecls.map (·.fvarId)
     -- `newDecls` are the local declarations whose `FVarID` did not exist before the `have`
     -- effectively they are the declarations that we want to test for being in `Prop` or not.
@@ -129,3 +129,7 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
           You can disable this linter using `set_option linter.haveLet 0`"
 
 initialize addLinter haveLetLinter
+
+end haveLet
+
+end Mathlib.Linter

@@ -82,6 +82,22 @@ lemma prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f
 end PosMulStrictMono
 end CommMonoidWithZero
 
+section OrderedSemiring
+
+variable [OrderedSemiring R] {f : ι → R} {s : Finset ι}
+
+lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
+    ∑ i ∈ s, f i ^ 2 ≤ (∑ i ∈ s, f i) ^ 2 := by
+  simp only [sq, sum_mul_sum]
+  refine sum_le_sum fun i hi ↦ ?_
+  rw [← mul_sum]
+  gcongr
+  · exact hf i hi
+  · exact single_le_sum hf hi
+
+
+end OrderedSemiring
+
 section OrderedCommSemiring
 variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
 
@@ -96,7 +112,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
   · rw [right_distrib]
     refine add_le_add ?_ ?_ <;>
     · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_ <;> simp (config := { contextual := true }) [*]
+      · refine prod_le_prod ?_ ?_ <;> simp +contextual [*]
       · try apply_assumption
         try assumption
   · apply prod_nonneg
@@ -189,6 +205,7 @@ open Qq Lean Meta Finset
 
 private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and
 positive if each `f i` is.
 

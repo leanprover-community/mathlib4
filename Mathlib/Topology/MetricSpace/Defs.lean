@@ -80,11 +80,11 @@ theorem dist_pos {x y : γ} : 0 < dist x y ↔ x ≠ y := by
 theorem eq_of_forall_dist_le {x y : γ} (h : ∀ ε > 0, dist x y ≤ ε) : x = y :=
   eq_of_dist_eq_zero (eq_of_le_of_forall_le_of_dense dist_nonneg h)
 
-/-- Deduce the equality of points from the vanishing of the nonnegative distance-/
+/-- Deduce the equality of points from the vanishing of the nonnegative distance -/
 theorem eq_of_nndist_eq_zero {x y : γ} : nndist x y = 0 → x = y := by
   simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
 
-/-- Characterize the equality of points as the vanishing of the nonnegative distance-/
+/-- Characterize the equality of points as the vanishing of the nonnegative distance -/
 @[simp]
 theorem nndist_eq_zero {x y : γ} : nndist x y = 0 ↔ x = y := by
   simp only [NNReal.eq_iff, ← dist_nndist, imp_self, NNReal.coe_zero, dist_eq_zero]
@@ -116,8 +116,9 @@ end Metric
 /-- Build a new metric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionaly) equal to some given uniform structure.
 See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
-def MetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : MetricSpace γ)
+abbrev MetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : MetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : MetricSpace γ where
   toPseudoMetricSpace := PseudoMetricSpace.replaceUniformity m.toPseudoMetricSpace H
   eq_of_dist_eq_zero := @eq_of_dist_eq_zero _ _
@@ -129,6 +130,7 @@ theorem MetricSpace.replaceUniformity_eq {γ} [U : UniformSpace γ] (m : MetricS
 /-- Build a new metric space from an old one where the bundled topological structure is provably
 (but typically non-definitionaly) equal to some given topological structure.
 See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
 abbrev MetricSpace.replaceTopology {γ} [U : TopologicalSpace γ] (m : MetricSpace γ)
     (H : U = m.toPseudoMetricSpace.toUniformSpace.toTopologicalSpace) : MetricSpace γ :=
@@ -142,8 +144,9 @@ theorem MetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m : Metri
 /-- Build a new metric space from an old one where the bundled bornology structure is provably
 (but typically non-definitionaly) equal to some given bornology structure.
 See Note [forgetful inheritance].
+See Note [reducible non-instances].
 -/
-def MetricSpace.replaceBornology {α} [B : Bornology α] (m : MetricSpace α)
+abbrev MetricSpace.replaceBornology {α} [B : Bornology α] (m : MetricSpace α)
     (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) : MetricSpace α :=
   { PseudoMetricSpace.replaceBornology _ H, m with toBornology := B }
 
@@ -172,7 +175,7 @@ instance : MetricSpace PUnit.{u + 1} where
   dist_triangle _ _ _ := show (0 : ℝ) ≤ 0 + 0 by rw [add_zero]
   toUniformSpace := inferInstance
   uniformity_dist := by
-    simp (config := { contextual := true }) [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
+    simp +contextual [principal_univ, eq_top_of_neBot (𝓤 PUnit)]
 
 /-!
 ### `Additive`, `Multiplicative`

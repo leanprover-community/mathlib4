@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Init
-import Lean
+import Lean.Meta.Tactic.TryThis
 
 /-!
 # 'Try this' tactic macro
@@ -26,3 +26,5 @@ elab tk:"try_this" tac:tactic : tactic => do
 elab tk:"try_this" tac:conv : conv => do
   Elab.Tactic.evalTactic tac
   Meta.Tactic.TryThis.addSuggestion tk tac (origSpan? := ← getRef)
+
+end Mathlib.Tactic

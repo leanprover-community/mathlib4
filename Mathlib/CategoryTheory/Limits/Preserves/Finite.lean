@@ -27,7 +27,7 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe w w₂ v₁ v₂ v₃ u₁ u₂ u₃
+universe u w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
@@ -42,6 +42,9 @@ class PreservesFiniteLimits (F : C ⥤ D) where
     ∀ (J : Type) [SmallCategory J] [FinCategory J], PreservesLimitsOfShape J F := by infer_instance
 
 attribute [instance] PreservesFiniteLimits.preservesFiniteLimits
+
+instance (F : C ⥤ D) : Subsingleton (PreservesFiniteLimits F) :=
+  ⟨fun ⟨a⟩ ⟨b⟩ => by congr; subsingleton⟩
 
 /-- Preserving finite limits also implies preserving limits over finite shapes in higher universes,
 though through a noncomputable instance. -/
@@ -84,6 +87,11 @@ def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
 
+/-- Transfer preservation of finite limits along a natural isomorphism in the functor. -/
+def preservesFiniteLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFiniteLimits F] :
+    PreservesFiniteLimits G where
+  preservesFiniteLimits _ _ _ := preservesLimitsOfShapeOfNatIso h
+
 /- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
@@ -92,6 +100,15 @@ class PreservesFiniteProducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesLimitsOfShape (Discrete J) F
 
 attribute [instance] PreservesFiniteProducts.preserves
+
+instance (F : C ⥤ D) : Subsingleton (PreservesFiniteProducts F) :=
+  ⟨fun ⟨a⟩ ⟨b⟩ => by congr; subsingleton⟩
+
+noncomputable instance (priority := 100) (F : C ⥤ D) (J : Type u) [Finite J]
+    [PreservesFiniteProducts F] : PreservesLimitsOfShape (Discrete J) F := by
+  apply Nonempty.some
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  exact ⟨preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F⟩
 
 instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteProducts F] [PreservesFiniteProducts G] :
@@ -111,6 +128,9 @@ class ReflectsFiniteLimits (F : C ⥤ D) where
 
 attribute [instance] ReflectsFiniteLimits.reflects
 
+instance (F : C ⥤ D) : Subsingleton (ReflectsFiniteLimits F) :=
+  ⟨fun ⟨a⟩ ⟨b⟩ => by congr; subsingleton⟩
+
 /- Similarly to preserving finite products, quantified classes don't behave well. -/
 /--
 A functor `F` preserves finite products if it reflects limits of shape `Discrete J` for finite `J`
@@ -119,6 +139,9 @@ class ReflectsFiniteProducts (F : C ⥤ D) where
   reflects : ∀ (J : Type) [Fintype J], ReflectsLimitsOfShape (Discrete J) F
 
 attribute [instance] ReflectsFiniteProducts.reflects
+
+instance (F : C ⥤ D) : Subsingleton (ReflectsFiniteProducts F) :=
+  ⟨fun ⟨a⟩ ⟨b⟩ => by congr; subsingleton⟩
 
 -- This is a dangerous instance as it has unbound universe variables.
 /-- If we reflect limits of some arbitrary size, then we reflect all finite limits. -/
@@ -182,6 +205,9 @@ class PreservesFiniteColimits (F : C ⥤ D) where
 
 attribute [instance] PreservesFiniteColimits.preservesFiniteColimits
 
+instance (F : C ⥤ D) : Subsingleton (PreservesFiniteColimits F) :=
+  ⟨fun ⟨a⟩ ⟨b⟩ => by congr; subsingleton⟩
+
 /--
 Preserving finite colimits also implies preserving colimits over finite shapes in higher
 universes, though through a noncomputable instance.
@@ -225,6 +251,11 @@ def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColi
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
 
+/-- Transfer preservation of finite colimits along a natural isomorphism in the functor. -/
+def preservesFiniteColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFiniteColimits F] :
+    PreservesFiniteColimits G where
+  preservesFiniteColimits _ _ _ := preservesColimitsOfShapeOfNatIso h
+
 /- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
@@ -233,21 +264,24 @@ class PreservesFiniteCoproducts (F : C ⥤ D) where
   /-- preservation of colimits indexed by `Discrete J` when `[Fintype J]` -/
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
-noncomputable instance (F : C ⥤ D) (J : Type*) [Finite J] [PreservesFiniteCoproducts F] :
-    PreservesColimitsOfShape (Discrete J) F := by
+attribute [instance] PreservesFiniteCoproducts.preserves
+
+instance (F : C ⥤ D) : Subsingleton (PreservesFiniteCoproducts F) :=
+  ⟨fun ⟨a⟩ ⟨b⟩ => by congr; subsingleton⟩
+
+noncomputable instance (priority := 100) (F : C ⥤ D) (J : Type u) [Finite J]
+    [PreservesFiniteCoproducts F] : PreservesColimitsOfShape (Discrete J) F := by
   apply Nonempty.some
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
-  have : PreservesColimitsOfShape (Discrete (Fin n)) F := PreservesFiniteCoproducts.preserves _
   exact ⟨preservesColimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F⟩
 
-noncomputable instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
+instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
     PreservesFiniteCoproducts (F ⋙ G) where
   preserves _ _ := inferInstance
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
   preserves _ _ := inferInstance
-
 
 /--
 A functor is said to reflect finite colimits, if it reflects all colimits of shape `J`,
@@ -258,6 +292,9 @@ class ReflectsFiniteColimits (F : C ⥤ D) where
     infer_instance
 
 attribute [instance] ReflectsFiniteColimits.reflects
+
+instance (F : C ⥤ D) : Subsingleton (ReflectsFiniteColimits F) :=
+  ⟨fun ⟨a⟩ ⟨b⟩ => by congr; subsingleton⟩
 
 -- This is a dangerous instance as it has unbound universe variables.
 /-- If we reflect colimits of some arbitrary size, then we reflect all finite colimits. -/
@@ -286,6 +323,9 @@ class ReflectsFiniteCoproducts (F : C ⥤ D) where
   reflects : ∀ (J : Type) [Fintype J], ReflectsColimitsOfShape (Discrete J) F
 
 attribute [instance] ReflectsFiniteCoproducts.reflects
+
+instance (F : C ⥤ D) : Subsingleton (ReflectsFiniteCoproducts F) :=
+  ⟨fun ⟨a⟩ ⟨b⟩ => by congr; subsingleton⟩
 
 /--
 If `F ⋙ G` preserves finite colimits and `G` reflects finite colimits, then `F` preserves finite
