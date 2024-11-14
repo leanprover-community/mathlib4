@@ -342,10 +342,7 @@ abbrev compHom : Algebra S A where
 
 theorem compHom_smul_def (s : S) (x : A) :
     letI := compHom A f
-    s • x = f s • x := by
-      letI := compHom A f
-      rw [Algebra.smul_def]
-      exact Eq.symm (smul_def (f s) x)
+    s • x = f s • x := rfl
 
 theorem compHom_algebraMap_eq :
     letI := compHom A f
