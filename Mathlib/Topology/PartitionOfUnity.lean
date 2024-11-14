@@ -665,8 +665,7 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
       simp only [Finset.mem_filter, Finset.mem_univ, true_and, Decidable.not_not] at hnx
       exact hnx
   intro i x
-  constructor
-  · exact f.nonneg' i x
+  refine ⟨f.nonneg' i x, ?_
   by_cases h0 : f.toFun i x = 0
   · rw [h0]
     exact zero_le_one
