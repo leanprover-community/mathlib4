@@ -58,31 +58,29 @@ noncomputable def concat (f : C(Icc a b, E)) (g : C(Icc b c, E)) :
 
 variable {f : C(Icc a b, E)} {g : C(Icc b c, E)}
 
-theorem concat_comp_left (hb : f ⊤ = g ⊥) :
-    f = (concat f g).comp subintervalLeft := by
+theorem concat_comp_subintervalLeft (hb : f ⊤ = g ⊥) :
+    (concat f g).comp subintervalLeft = f := by
   ext x
   simp [concat, IccExtendCM, hb, subintervalLeft, projIccCM, inclusion, x.2.2]
 
-theorem concat_comp_right (hb : f ⊤ = g ⊥) :
-    g = (concat f g).comp subintervalRight := by
+theorem concat_comp_subintervalRight (hb : f ⊤ = g ⊥) :
+    (concat f g).comp subintervalRight = g := by
   ext ⟨x, hx⟩
-  by_cases hxb : x = b
-  · subst x
-    symm at hb
-    simpa [concat, subintervalRight, IccExtendCM, projIccCM, inclusion, hb]
+  obtain rfl | hxb := eq_or_ne x b
+  · simpa [concat, subintervalRight, IccExtendCM, projIccCM, inclusion, hb]
   · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_le
     simp [concat, hb, subintervalRight, h, IccExtendCM, projIccCM, projIcc, inclusion, hx.2, hx.1]
 
 @[simp]
 theorem concat_left (hb : f ⊤ = g ⊥) {t : Icc a c} (ht : t ≤ b) :
     concat f g t = f ⟨t, t.2.1, ht⟩ := by
-  nth_rewrite 2 [concat_comp_left hb]
+  nth_rewrite 2 [← concat_comp_subintervalLeft hb]
   rfl
 
 @[simp]
 theorem concat_right (hb : f ⊤ = g ⊥) {t : Icc a c} (ht : b ≤ t) :
     concat f g t = g ⟨t, ht, t.2.2⟩ := by
-  nth_rewrite 2 [concat_comp_right hb]
+  nth_rewrite 2 [← concat_comp_subintervalRight hb]
   rfl
 
 theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {G : ι → C(Icc b c, E)}
@@ -99,12 +97,12 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   have hK₂ : IsCompact K₂ :=
     hK.inter_right isClosed_Ici |>.image continuous_subtype_val |>.image projIccCM.continuous
   have hfU : MapsTo f K₁ U := by
-    rw [concat_comp_left hfg']
+    rw [← concat_comp_subintervalLeft hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : z ≤ b)⟩, rfl⟩, rfl⟩
     simpa [projIccCM, projIcc, h2, hz.1] using h1
   have hgU : MapsTo g K₂ U := by
-    rw [concat_comp_right hfg']
+    rw [← concat_comp_subintervalRight hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : b ≤ z)⟩, rfl⟩, rfl⟩
     simpa [projIccCM, projIcc, h2, hz.2] using h1
