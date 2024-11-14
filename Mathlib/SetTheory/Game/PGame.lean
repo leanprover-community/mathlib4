@@ -409,22 +409,11 @@ lemma Identical.moveLeft : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveLeft i ≡ y.moveLeft j
   | mk _ _ _ _, mk _ _ _ _, ⟨hl, _⟩, i => hl.1 i
 
-/-- If `x` and `y` are identical, then a left move of `y` is identical to some left move of `x`. -/
-lemma Identical.moveLeft_symm : ∀ {x y}, x ≡ y →
-    ∀ i, ∃ j, x.moveLeft j ≡ y.moveLeft i
-  | mk _ _ _ _, mk _ _ _ _, ⟨hl, _⟩, i => hl.2 i
-
 /-- If `x` and `y` are identical, then a right move of `x` is identical to some right move of `y`.
 -/
 lemma Identical.moveRight : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight i ≡ y.moveRight j
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.1 i
-
-/-- If `x` and `y` are identical, then a right move of `y` is identical to some right move of `x`.
--/
-lemma Identical.moveRight_symm : ∀ {x y}, x ≡ y →
-    ∀ i, ∃ j, x.moveRight j ≡ y.moveRight i
-  | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.2 i
 
 /-- Uses `∈ₗ` and `∈ᵣ` instead of `≡`. -/
 theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
