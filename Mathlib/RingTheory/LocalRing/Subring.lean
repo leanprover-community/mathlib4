@@ -36,6 +36,7 @@ variable (R) in
 /-- The class of local subrings of a commutative ring. -/
 @[ext]
 structure LocalSubring where
+  /-- The underlying subring of a local subring. -/
   toSubring : Subring R
   [isLocalRing : IsLocalRing toSubring]
 
