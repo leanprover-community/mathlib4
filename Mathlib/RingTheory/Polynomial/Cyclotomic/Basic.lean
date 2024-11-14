@@ -638,12 +638,9 @@ theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul (hpos : 0 < n)
 
 /-- If there is a primitive `n`th root of unity in `R` and `n` is odd, then
 `X ^ n + Y ^ n = ∏ (X + μ Y)`, where `μ` varies over the `n`-th roots of unity. -/
-theorem _root_.IsPrimitiveRoot.pow_add_pow_eq_prod_add_mul (hodd : n % 2 = 1)
-    (h : IsPrimitiveRoot ζ n) : x ^ n + y ^ n = ∏ ζ ∈ nthRootsFinset n R, (x + ζ * y) :=  by
-  have := h.pow_sub_pow_eq_prod_sub_mul x (-y) (Nat.odd_iff.mpr hodd).pos
-  simp only [mul_neg, sub_neg_eq_add] at this
-  rw [neg_pow, neg_one_pow_eq_pow_mod_two] at this
-  simpa [hodd] using this
+theorem _root_.IsPrimitiveRoot.pow_add_pow_eq_prod_add_mul (hodd : Odd n)
+    (h : IsPrimitiveRoot ζ n) : x ^ n + y ^ n = ∏ ζ ∈ nthRootsFinset n R, (x + ζ * y) := by
+  simpa [hodd.neg_pow] using h.pow_sub_pow_eq_prod_sub_mul x (-y) hodd.pos
 
 end miscellaneous
 
