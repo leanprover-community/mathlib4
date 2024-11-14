@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Noetherian.Defs
 /-!
@@ -152,7 +153,8 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   obtain ⟨s, hs, hs'⟩ := h
   obtain ⟨t, ht⟩ := hl'
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → M)) :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
@@ -168,7 +170,8 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
   classical
   obtain ⟨s, hs, hs'⟩ := h
   have H : Function.Surjective (Finsupp.linearCombination R ((↑) : s → N)) :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   obtain ⟨f, hf⟩ : ∃ f : (s →₀ R) →ₗ[R] M, l ∘ₗ f = (Finsupp.linearCombination R Subtype.val) := by
     choose f hf using show _ from hl
     exact ⟨Finsupp.linearCombination R (fun i ↦ f i), by ext; simp [hf]⟩
@@ -200,7 +203,8 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
   refine ⟨s, hs, ?_⟩
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hs]; rfl)
   have inst : Module.Finite R (LinearMap.ker (l ∘ₗ π)) := by
     constructor
     rw [Submodule.fg_top]; exact Module.FinitePresentation.fg_ker _ (hl.comp H)
@@ -235,7 +239,8 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
   obtain ⟨σ, hσ, τ, hτ⟩ := h
   let π := Finsupp.linearCombination R ((↑) : σ → M)
   have hπ : Function.Surjective π :=
-    LinearMap.range_eq_top.mp (by rw [range_linearCombination, Subtype.range_val, ← hσ]; rfl)
+    LinearMap.range_eq_top.mp
+      (by rw [range_linearCombination, Subtype.range_val, ← hσ]; rfl)
   classical
   choose s hs using IsLocalizedModule.surj S f
   let i : σ → N :=
