@@ -286,7 +286,7 @@ instance {X : LightDiagram} : T2Space ((forget LightDiagram).obj X) :=
 namespace LightProfinite
 
 instance (S : LightProfinite) : Countable (Clopens S) := by
-  rw [TopologicalSpace.Clopens.countable_iff_second_countable]
+  rw [TopologicalSpace.Clopens.countable_iff_secondCountable]
   infer_instance
 
 instance instCountableDiscreteQuotient (S : LightProfinite)  :
@@ -310,7 +310,7 @@ noncomputable def lightProfiniteToLightDiagram : LightProfinite.{u} ⥤ LightDia
 
 open scoped Classical in
 instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
-  rw [← TopologicalSpace.Clopens.countable_iff_second_countable]
+  rw [← TopologicalSpace.Clopens.countable_iff_secondCountable]
   refine @Countable.of_equiv _ _ ?_ (LocallyConstant.equivClopens (X := S.cone.pt))
   refine @Function.Surjective.countable
     (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ ?_ ?_ ?_
