@@ -16,9 +16,6 @@ Artin's braid group on infintely many strands
 * `BraidGroupInf ` is the braid group on infinitely many strands, defined as a PresentedGroup
   on the braid relations
 
-## Main results
-* will add in as they get PR'd
-
 ## Tags
 braid group
 
