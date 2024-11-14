@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 # Ind-objects are closed under products
 
 We show that if `C` admits products indexed by `α`, then `IsIndObject` is closed under taking
-products in `Cᵒᵖ ⥤ Type v` indexed by `α`. This will apply that the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v`
+products in `Cᵒᵖ ⥤ Type v` indexed by `α`. This will imply that the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v`
 creates products indexed by `α` and that the functor `C ⥤ Ind C` preserves them.
 
 ## References
