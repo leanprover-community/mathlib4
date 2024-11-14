@@ -7,9 +7,9 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "main"
+require "JLimperg" / "batteries" from git "https://github.com/JLimperg/batteries" @ "jannis/precompile"
 require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "master"
+require "leanprover-community" / "aesop" @ git "precompile"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.46"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
@@ -67,6 +67,7 @@ lean_lib Mathlib where
   leanOptions := mathlibLeanOptions
   -- Mathlib also enforces these linter options, which are not active by default.
   moreServerOptions := mathlibOnlyLinters
+  platformIndependent := true
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
