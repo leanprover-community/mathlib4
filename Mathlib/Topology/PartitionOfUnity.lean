@@ -302,8 +302,7 @@ theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordina
 `fun x ↦ ∑ᶠ i, f i x • g i x` is a continuous function. -/
 theorem IsSubordinate.continuous_finsum_smul [ContinuousAdd E] {U : ι → Set X}
     (ho : ∀ i, IsOpen (U i)) (hf : f.IsSubordinate U) {g : ι → X → E}
-    (hg : ∀ i, ContinuousOn (g i) (U i)) :
-    Continuous fun x => ∑ᶠ i, f i x • g i x :=
+    (hg : ∀ i, ContinuousOn (g i) (U i)) : Continuous fun x => ∑ᶠ i, f i x • g i x :=
   f.continuous_finsum_smul fun i _ hx => (hg i).continuousAt <| (ho i).mem_nhds <| hf i hx
 
 end PartitionOfUnity
