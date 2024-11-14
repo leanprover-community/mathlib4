@@ -48,13 +48,13 @@ namespace BraidGroupInf
 the ith strand over the (i+1)th strand -/
 def σ (k : ℕ) : BraidGroupInf := PresentedGroup.of k
 
-theorem BraidGroupInf.braid {i j : ℕ} (h : 1 = Nat.dist i j): σ i * σ j * σ i =
+theorem braid {i j : ℕ} (h : 1 = Nat.dist i j): σ i * σ j * σ i =
     σ j * σ i * σ j := by
   symm; rw [← mul_inv_eq_one]
   exact QuotientGroup.eq.mpr <| Subgroup.subset_normalClosure <| Or.inl <| Exists.intro i <|
     Exists.intro j <| ⟨h, rfl⟩
 
-theorem BraidGroupInf.comm {i j : ℕ} (h : 2 ≤ Nat.dist i j) : σ i * σ j = σ j * σ i := by
+theorem comm {i j : ℕ} (h : 2 ≤ Nat.dist i j) : σ i * σ j = σ j * σ i := by
   symm; rw [← mul_inv_eq_one]
   apply QuotientGroup.eq.mpr
   apply Subgroup.subset_normalClosure
@@ -80,4 +80,4 @@ theorem toGroup.unique (h : ∀ r ∈ braid_rels_inf, FreeGroup.lift f r = 1) (g
   PresentedGroup.toGroup.unique h g hg
 
 end toGroup
-end BraidGroup
+end BraidGroupInf
