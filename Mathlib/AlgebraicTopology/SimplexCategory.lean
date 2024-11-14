@@ -273,7 +273,6 @@ def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
   }
 
-@[simp]
 lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
     [0].const [l] i ≫ subinterval j l hjl =
     [0].const [n] ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
