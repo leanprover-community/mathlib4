@@ -71,55 +71,23 @@ the diagonal edge of the resulting `n`-simplex. -/
 noncomputable def spineToDiagonal (f : Path X n) : X _[1] := diagonal (spineToSimplex f)
 
 @[simp]
-theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l < n + 1)  :
+theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤  n)  :
     X.map (subinterval j l hjl).op (spineToSimplex f) =
       spineToSimplex (Path.interval f j l hjl) := by
   apply (segal _).injective
   rw [StrictSegal.spineToSimplex_spine]
-  ext i
-  · simp only [mkHom, Equiv.invFun_as_coe, spine_vertex, Fin.coe_addNat,
-      ← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, len_mk, spineToSimplex_vertex]
-    congr
-    exact Fin.eq_of_val_eq (Nat.mod_eq_of_lt (by omega)).symm
-  · unfold Path.interval
-    simp only [Equiv.invFun_as_coe, spine_arrow, Fin.coe_addNat]
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-    have ceq : mkOfSucc i ≫ subinterval j l hjl = mkOfSucc ⟨i + j, (by omega)⟩ := by
-      ext ⟨e, he⟩ : 3
-      unfold subinterval
-      match e with
-      | 0 => rfl
-      | 1 => ?_
-      conv_rhs =>
-        apply mkOfSucc_homToOrderHom_one
-      simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, Fin.mk_one,
-        Fin.isValue, OrderHom.comp_coe, OrderHom.coe_mk, Function.comp_apply, Fin.succ_mk,
-        Fin.mk.injEq]
-      exact Nat.succ_add_eq_add_succ ↑i ↑j
-    rw [ceq]
-    simp only [spineToSimplex_spine_edge]
+  convert spine_map_subinterval X j l hjl (spineToSimplex f)
+  exact Eq.symm (spineToSimplex_spine f)
 
 @[simp]
-theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hn : j + l < n + 1) :
-    X.map (mkOfLe ⟨j, (by omega)⟩ ⟨j + l, hn⟩ (Nat.le_add_right j l)).op (spineToSimplex f) =
-      spineToDiagonal (Path.interval f j l hn) := by
+theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hn : j + l ≤ n) :
+    X.map
+      (mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)).op
+      (spineToSimplex f) = spineToDiagonal (Path.interval f j l hn) := by
   unfold spineToDiagonal
   rw [← congrArg diagonal (spineToSimplex_interval f j l hn)]
   unfold diagonal
-  simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-  have : mkOfLe ⟨j, (by omega)⟩ ⟨j + l, hn⟩ (Nat.le_add_right j l) =
-      mkOfDiag l ≫ subinterval j l hn := by
-    ext e : 3
-    unfold subinterval mkOfDiag mkOfLe
-    simp only [len_mk, Nat.reduceAdd, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk,
-      Fin.natCast_eq_last, comp_toOrderHom, OrderHom.mk_comp_mk, Function.comp_apply]
-    match e with
-    | 0 => simp
-    | 1 =>
-    apply Fin.eq_of_val_eq
-    simp only [Fin.isValue, Fin.val_last]
-    exact Nat.add_comm j l
-  rw [this]
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, subinterval_mkOfDiag_eq]
 
 end StrictSegal
 

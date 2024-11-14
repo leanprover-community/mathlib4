@@ -39,9 +39,9 @@ structure Path (n : ℕ) where
 
 
 variable {X} in
-/-- For `j ≤ k ≤ n`, a path of length `n` restricts to a path of length `k-j`, namely the subpath
-spanned by the vertices `j ≤ i ≤ k` and edges `j ≤ i < k`. -/
-def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l < n + 1) :
+/-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely the subpath
+spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
+def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
     Path X l where
   vertex i := f.vertex ⟨j + i, by omega⟩
   arrow i := f.arrow ⟨j + i, by omega⟩
@@ -64,6 +64,14 @@ def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
     rw [SimplexCategory.δ_zero_mkOfSucc]
 
-
+@[simp]
+lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[n]) :
+    X.spine l (X.map (subinterval j l (by omega)).op Δ) =
+      (X.spine n Δ).interval j l (by omega) := by
+  ext i
+  · simp only [spine_vertex, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
+      subinterval_const_eq]
+  · simp only [spine_arrow, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
+      subinterval_mkOfSucc_eq]
 
 end SSet

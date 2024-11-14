@@ -265,13 +265,53 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
       | 0, 2, _ => Fin.le_trans h₁ h₂
   }
 
-/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ k` of `Fin (n + 1)`.-/
-def subinterval {n} (j l : ℕ) (hjl : j + l < n + 1) :
+/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ j + l` of `Fin (n + 1)`.-/
+def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ([l] : SimplexCategory) ⟶ [n] :=
   SimplexCategory.mkHom {
     toFun := fun i => ⟨i.1 + j, (by omega)⟩
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
   }
+
+@[simp]
+lemma subinterval_const_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
+    [0].const [l] i ≫ subinterval j l hjl =
+    [0].const [n] ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
+  unfold subinterval
+  have := const_comp [0] (subinterval j l hjl) i
+  convert this
+  unfold subinterval
+  simp only [len_mk, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
+  exact Nat.add_comm j i.1
+
+@[simp]
+lemma subinterval_mkOfSucc_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
+    mkOfSucc i ≫ subinterval j l hjl =
+    mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
+  unfold subinterval mkOfSucc
+  apply Hom.ext_one_left
+  · simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+    OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.coe_castSucc,
+    Fin.castSucc_mk, Fin.succ_mk, Fin.mk.injEq]
+    exact Nat.add_comm i.1 j
+  · simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+    OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.val_succ,
+    Fin.castSucc_mk, Fin.succ_mk, Fin.mk.injEq]
+    exact Nat.add_comm (i.1 + 1) j
+
+@[simp]
+lemma subinterval_mkOfDiag_eq {n} (j l : ℕ) (hn : j + l ≤ n) :
+    mkOfDiag l ≫ subinterval j l hn =
+    mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l) := by
+  unfold subinterval mkOfDiag mkOfLe
+  apply Hom.ext_one_left
+  · simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
+    Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply,
+    Fin.val_zero, zero_add]
+  · simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
+    Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply,
+    Fin.val_last, Fin.mk.injEq]
+    exact Nat.add_comm l j
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
