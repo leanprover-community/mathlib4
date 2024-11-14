@@ -14,7 +14,7 @@ open Finset Polynomial
 theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algebra R S] (p : R[X])
     (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
     (inj : Function.Injective (algebraMap R S))
-    (card_aroots : Multiset.card (p.aroots S) = p.natDegree) :
+    (card_aroots : (p.aroots S).card = p.natDegree) :
     ∃ c, ((p.aroots S).map fun x => k ^ e • aeval x q).sum = algebraMap R S c := by
   obtain ⟨k', rfl⟩ := hk; let k := p.leadingCoeff * k'
   have :
@@ -28,12 +28,11 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type*} [CommRing R] [Field S] [Algeb
       ← mul_assoc, ← mul_pow, ← pow_add,
       add_tsub_cancel_of_le (Nat.lt_add_one_iff.mp (mem_range.mp hi))]
   rw [this, ← Multiset.map_map _ fun x => p.leadingCoeff • x]
-  have : Multiset.card ((p.aroots S).map fun x => p.leadingCoeff • x) =
-      Fintype.card (Fin (Multiset.card (p.aroots S))) := by
+  have h1 : ((p.aroots S).map fun x => p.leadingCoeff • x).card =
+      Fintype.card (Fin (p.aroots S).card) := by
     rw [Multiset.card_map, Fintype.card_fin]
-  rw [← MvPolynomial.symmetricSubalgebra.aevalMultiset_sumPolynomial _ _ this,
-    ← MvPolynomial.symmetricSubalgebra.scaleAEvalRoots_eq_aevalMultiset]
-  · exact ⟨_, rfl⟩
-  · exact inj
-  · rw [Fintype.card_fin]; exact (card_roots' _).trans (natDegree_map_le _ _)
-  · exact card_aroots
+  have h2 : Fintype.card (Fin (p.aroots S).card) ≤ p.natDegree := by
+    rw [Fintype.card_fin]; exact (card_roots' _).trans (natDegree_map_le _ _)
+  rw [← MvPolynomial.symmetricSubalgebra.aevalMultiset_sumPolynomial _ _ h1,
+    ← MvPolynomial.symmetricSubalgebra.scaleAEvalRoots_eq_aevalMultiset _ _ inj h2 card_aroots]
+  exact ⟨_, rfl⟩
