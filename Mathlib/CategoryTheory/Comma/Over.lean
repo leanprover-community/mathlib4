@@ -110,6 +110,16 @@ def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom
 -- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
 attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
+@[reassoc (attr := simp)]
+lemma hom_left_inv_left {f g : Over X} (e : f ≅ g) :
+    e.hom.left ≫ e.inv.left = 𝟙 f.left := by
+  simp [← Over.comp_left]
+
+@[reassoc (attr := simp)]
+lemma inv_left_hom_left {f g : Over X} (e : f ≅ g) :
+    e.inv.left ≫ e.hom.left = 𝟙 g.left := by
+  simp [← Over.comp_left]
+
 section
 
 variable (X)
@@ -411,6 +421,16 @@ theorem isoMk_hom_right {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom �
 theorem isoMk_inv_right {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) :
     (isoMk hr hw).inv.right = hr.inv :=
   rfl
+
+@[reassoc (attr := simp)]
+lemma hom_right_inv_right {f g : Under X} (e : f ≅ g) :
+    e.hom.right ≫ e.inv.right = 𝟙 f.right := by
+  simp [← Under.comp_right]
+
+@[reassoc (attr := simp)]
+lemma inv_right_hom_right {f g : Under X} (e : f ≅ g) :
+    e.inv.right ≫ e.hom.right = 𝟙 g.right := by
+  simp [← Under.comp_right]
 
 section
 
