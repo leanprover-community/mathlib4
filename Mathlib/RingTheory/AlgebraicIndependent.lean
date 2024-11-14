@@ -3,10 +3,6 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
@@ -540,7 +536,7 @@ theorem AlgebraicIndependent.isTranscendenceBasis_iff {ι : Type w} {R : Type u}
   · rintro p κ w i' j rfl
     have p := p.2 (range w) i'.coe_range (range_comp_subset_range _ _)
     rw [range_comp, ← @image_univ _ _ w] at p
-    exact range_iff_surjective.mp (image_injective.mpr i'.injective p)
+    exact range_eq_univ.mp (image_injective.mpr i'.injective p)
   · intro p
     use i
     intro w i' h
