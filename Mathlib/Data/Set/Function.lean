@@ -398,10 +398,6 @@ lemma mapsTo_univ_iff : MapsTo f univ t ↔ ∀ x, f x ∈ t :=
 lemma mapsTo_range_iff {g : ι → α} : MapsTo f (range g) t ↔ ∀ i, f (g i) ∈ t :=
   forall_mem_range
 
-@[deprecated mapsTo_range_iff (since := "2023-12-25")]
-theorem maps_range_to (f : α → β) (g : γ → α) (s : Set β) :
-    MapsTo f (range g) s ↔ MapsTo (f ∘ g) univ s := by rw [← image_univ, mapsTo_image_iff]
-
 theorem surjective_mapsTo_image_restrict (f : α → β) (s : Set α) :
     Surjective ((mapsTo_image f s).restrict f s (f '' s)) := fun ⟨_, x, hs, hxy⟩ =>
   ⟨⟨x, hs⟩, Subtype.ext hxy⟩
