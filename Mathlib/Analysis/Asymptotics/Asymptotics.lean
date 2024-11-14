@@ -1254,6 +1254,12 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
 lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
   isLittleO_id_const one_ne_zero
 
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
+    [TopologicalSpace α] {f : α → E} {x : α} :
+    (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
+  convert (Asymptotics.isLittleO_one_iff (f' := fun (y : α) ↦ f y - f x) (l := 𝓝 x) (F := E)).symm
+  exact tendsto_sub_nhds_zero_iff.symm
+
 /-! ### Multiplication by a constant -/
 
 
