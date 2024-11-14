@@ -166,6 +166,10 @@ theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
 theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
   simpa only [star_star] using star_mul_self_nonneg (star r)
 
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+theorem IsSelfAdjoint.mul_self_nonneg {a : A} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
+  simpa [isSelfAdjoint_iff |>.mp ha] using star_mul_self_nonneg a
+
 @[aesop safe apply]
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
