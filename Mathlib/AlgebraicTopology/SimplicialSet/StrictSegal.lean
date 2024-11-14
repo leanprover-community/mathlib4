@@ -34,8 +34,11 @@ variable (X : SSet.{u})
 /-- A simplicial set `X` satisfies the strict Segal condition if its simplices are uniquely
 determined by their spine. -/
 class StrictSegal where
+  /-- The inverse to `X.spine n`.-/
   spineToSimplex {n : ℕ} : Path X n → X _[n]
+  /-- `spineToSimplex` is a right inverse to `X.spine n`.-/
   spine_spineToSimplex {n : ℕ} (f : Path X n) : X.spine n (spineToSimplex f) = f
+  /-- `spineToSimplex` is a left inverse to `X.spine n`.-/
   spineToSimplex_spine {n : ℕ} (Δ : X _[n]) : spineToSimplex (X.spine n Δ) = Δ
 
 namespace StrictSegal
