@@ -85,7 +85,7 @@ theorem mul_iSup_eq_iSup_mul : x * ⨆ i, f i = ⨆ i, x * f i := by
   rw [iSup, mul_sSup_eq_iSup_mul, iSup_range]
 
 @[to_additive]
-theorem iSup_mul_eq_iSup_mul : (⨆ i, f i) * x = ⨆ i, f i * x := by
+theorem iSup_mul_distrib : (⨆ i, f i) * x = ⨆ i, f i * x := by
   rw [iSup, sSup_mul_eq_iSup_mul, iSup_range]
 
 @[to_additive]
@@ -93,7 +93,7 @@ theorem mul_sup_eq_sup_mul : x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
   rw [← iSup_pair, ← sSup_pair, mul_sSup_eq_iSup_mul]
 
 @[to_additive]
-theorem sup_mul_eq_sup_mul : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
+theorem sup_mul_distrib : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
   rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_eq_iSup_mul]
 
 @[to_additive]
