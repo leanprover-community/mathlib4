@@ -161,8 +161,6 @@ lemma HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSupport
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
   obtain ⟨S, hS, hS'⟩ := hK1.isBounded.exists_pos_norm_le
   refine ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) ?_)⟩
-  -- Porting note: `ENNReal.add_lt_add` should be `protected`?
-  -- [context: we used `_root_.add_lt_add` in a previous version of this proof]
   contrapose! hx
   exact lt_add_of_le_of_pos hx zero_lt_one
 

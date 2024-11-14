@@ -3,6 +3,19 @@
 # Make this script robust against unintentional errors.
 # See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
 set -euo pipefail
+
+# We need to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches.
+# We do that by making sure the entire script is parsed before execution starts
+# using the following pattern
+# {
+# # script content
+# exit
+# }
+# (see https://stackoverflow.com/a/2358432).
+# So please do not delete the following line, or the final two lines of this script.
+{
+
 IFS=$'\n\t'
 
 # `./scripts/technical-debt-metrics.sh` returns a tally of some technical debts in current Mathlib,
@@ -12,8 +25,23 @@ IFS=$'\n\t'
 # the script takes two optional arguments `<optCurrCommit> <optReferenceCommit>`
 # and tallies the same technical debts on `<optCurrCommit>` using `<optReferenceCommit>`
 # as a reference.
-currCommit="${1:-"$(git rev-parse HEAD)"}"
-refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"}"
+# If `$1` is supplied and is not `pr_summary`, then we use it; otherwise, we fall back to
+# `$(git rev-parse HEAD)`.
+# Similarly for the second argument: if `$1` (note the 1, not 2!) is `pr_summary`, then we use
+# the closest version of master that we can find to the current commit. Otherwise we use the second
+# input, falling back to a commit from last week if `$2` is not provided.
+case "${1:-}" in
+  pr_summary)
+    currCommit="$(git rev-parse HEAD)"
+    refCommit="$(git merge-base origin/master HEAD)"
+    >&2 printf '***  pr_summary passed  ***\n'
+    ;;
+  *)
+    currCommit="${1:-"$(git rev-parse HEAD)"}"
+    refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"}"
+    >&2 printf '***  NO pr_summary passed  ***\n'
+    ;;
+esac
 
 ## `computeDiff input` assumes that input consists of lines of the form `value|description`
 ## where `value` is a number and `description` is the statistic that `value` reports.
@@ -45,32 +73,33 @@ computeDiff () {
 # The script uses the fact that a line represents a technical debt if and only if the text before
 # the first `|` is a number.  This is then used for comparison and formatting.
 tdc () {
-titlesAndRegexes=(
-  "porting notes"                  "Porting note"
-  "backwards compatibility flags"  "set_option.*backward"
-  "skipAssignedInstances flags"    "set_option tactic.skipAssignedInstances"
-  "adaptation notes"               "adaptation_note"
-  "disabled simpNF lints"          "nolint simpNF"
-  "disabled deprecation lints"     "set_option linter.deprecated false"
-  "erw"                            "erw \["
-  "maxHeartBeats modifications"    "^ *set_option .*maxHeartbeats"
+titlesPathsAndRegexes=(
+  "porting notes"                  "*"      "Porting note"
+  "backwards compatibility flags"  "*"      "set_option.*backward"
+  "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
+  "adaptation notes"               "*"      "adaptation_note"
+  "disabled simpNF lints"          "*"      "nolint simpNF"
+  "disabled deprecation lints"     "*"      "set_option linter.deprecated false"
+  "erw"                            "*"      "erw \["
+  "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
 )
 
-for i in ${!titlesAndRegexes[@]}; do
-  # loop on the odd-indexed entries and name each entry and the following
-  if (( (i + 1) % 2 )); then
-    title="${titlesAndRegexes[$i]}"
-    regex="${titlesAndRegexes[$(( i + 1 ))]}"
+for i in ${!titlesPathsAndRegexes[@]}; do
+  # loop on every 3rd entry and name that entry and the following two
+  if (( i % 3 == 0 )); then
+    title="${titlesPathsAndRegexes[$i]}"
+    pathspec="${titlesPathsAndRegexes[$(( i + 1 ))]}"
+    regex="${titlesPathsAndRegexes[$(( i + 2 ))]}"
     if [ "${title}" == "porting notes" ]
     then fl="-i"  # just for porting notes we ignore the case in the regex
     else fl="--"
     fi
-    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" | wc -l)" "${title}"
+    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" -- "${pathspec}" | wc -l)" "${title}"
   fi
 done
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
-# We count the number of large files, making sure to avoid counting the test file `test/Lint.lean`.
+# We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
 printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
 
@@ -82,7 +111,9 @@ printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Deprecated\` f
 printf '%s|%s\n\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
 }
 
-# collect the technical debts and the line counts of the deprecated file from the current mathlib
+report () {
+
+# Collect the technical debt metrics and the line counts of all deprecated files from current mathlib.
 git checkout -q "${currCommit}"
 new="$(tdc)"
 newDeprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *==')"
@@ -109,3 +140,24 @@ printf $'```spoiler Changed \'Deprecated\' lines by file\n%s\n```\n' "$(
 baseURL='https://github.com/leanprover-community/mathlib4/commit'
 printf '\nCurrent commit [%s](%s)\n' "${currCommit:0:10}" "${baseURL}/${currCommit}"
 printf 'Reference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
+}
+
+if [ "${1:-}" == "pr_summary" ]
+then
+  rep="$(report | awk -F'|' 'BEGIN{backTicks=0} /^```/{backTicks++} ((!/^```/) && (backTicks % 2 == 0) && !($3 == "0")) {print $0}')"
+  if [ "$(wc -l <<<"${rep}")" -le 5 ]
+  then
+    printf '<details><summary>No changes to technical debt.</summary>\n'
+  else
+    printf '<details><summary>Changes to technical debt</summary>\n\n%s\n' "${rep}"
+  fi
+  printf '\nYou can run this locally as\n```\n./scripts/technical-debt-metrics.sh pr_summary\n```\n</details>\n'
+else
+  report
+fi
+
+# These last two lines are needed to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches
+# See the top of the file for more details.
+exit
+}

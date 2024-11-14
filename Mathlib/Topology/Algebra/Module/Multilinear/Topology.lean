@@ -17,8 +17,8 @@ where `E i` is a family of vector spaces over `𝕜` with topologies
 and `F` is a topological vector space.
 -/
 
-open Bornology Function Set
-open scoped Topology UniformConvergence Filter
+open Bornology Function Set Topology
+open scoped UniformConvergence Filter
 
 namespace ContinuousMultilinearMap
 
@@ -44,7 +44,7 @@ lemma range_toUniformOnFun [DecidableEq ι] [TopologicalSpace F] :
   ext f
   constructor
   · rintro ⟨f, rfl⟩
-    exact ⟨f.cont, f.map_add, f.map_smul⟩
+    exact ⟨f.cont, f.map_update_add, f.map_update_smul⟩
   · rintro ⟨hcont, hadd, hsmul⟩
     exact ⟨⟨⟨f, by intro; convert hadd, by intro; convert hsmul⟩, hcont⟩, rfl⟩
 
@@ -195,7 +195,7 @@ instance instContinuousSMul [ContinuousSMul 𝕜 F] :
   let φ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] (Π i, E i) → F :=
     { toFun := (↑), map_add' := fun _ _ ↦ rfl, map_smul' := fun _ _ ↦ rfl }
   UniformOnFun.continuousSMul_induced_of_image_bounded _ _ _ _ φ
-    isEmbedding_toUniformOnFun.toInducing fun _ _ hu ↦ hu.image_multilinear _
+    isEmbedding_toUniformOnFun.isInducing fun _ _ hu ↦ hu.image_multilinear _
 
 theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → Set F}
     (h : (𝓝 (0 : F)).HasBasis p b) :
