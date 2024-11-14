@@ -507,8 +507,10 @@ def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableS
   measurable_toFun _ h := by
     simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_mk]
     exact MeasurableSet.preimage h (Measurable.prod_mk
-        (measurable_pi_lambda (fun a c ↦ (a c).1) fun a ↦ (measurable_pi_apply a).fst)
-        (measurable_pi_lambda (fun a c ↦ (a c).2) fun a ↦ (measurable_pi_apply a).snd ))
+        (measurable_pi_lambda (fun (a : γ → α × β) c ↦ (a c).1)
+          fun a ↦ (measurable_pi_apply a).fst)
+        (measurable_pi_lambda (fun (a : γ → α × β) c ↦ (a c).2)
+          fun a ↦ (measurable_pi_apply a).snd))
   measurable_invFun _ h := by
     simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_symm_mk]
     exact MeasurableSet.preimage h (by measurability)
