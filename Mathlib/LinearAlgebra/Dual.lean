@@ -8,8 +8,9 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Dual vector spaces
@@ -377,7 +378,7 @@ variable [Finite ι]
 
 /-- A vector space is linearly equivalent to its dual space. -/
 def toDualEquiv : M ≃ₗ[R] Dual R M :=
-  LinearEquiv.ofBijective b.toDual ⟨ker_eq_bot.mp b.toDual_ker, range_eq_top.mp b.toDual_range⟩
+  .ofBijective b.toDual ⟨ker_eq_bot.mp b.toDual_ker, range_eq_top.mp b.toDual_range⟩
 
 -- `simps` times out when generating this
 @[simp]
@@ -589,8 +590,8 @@ lemma bijective_dual_eval [IsReflexive R M] : Bijective (Dual.eval R M) :=
 /-- See also `Module.instFiniteDimensionalOfIsReflexive` for the converse over a field. -/
 instance (priority := 900) IsReflexive.of_finite_of_free [Module.Finite R M] [Free R M] :
     IsReflexive R M where
-  bijective_dual_eval' := ⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
-                           LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩
+  bijective_dual_eval'.left := ker_eq_bot.mp (Free.chooseBasis R M).eval_ker
+  bijective_dual_eval'.right := range_eq_top.mp (Free.chooseBasis R M).eval_range
 
 variable [IsReflexive R M]
 
