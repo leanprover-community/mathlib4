@@ -65,7 +65,7 @@ def range [IsLocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S :=
 
 /--
 The domination order on local subrings.
-`A` dominates `B` if and only if `B ≤ A` and `m_A ∩ B = m_B`.
+`A` dominates `B` if and only if `B ≤ A` (as subrings) and `m_A ∩ B = m_B`.
 -/
 @[stacks 00I9]
 instance : PartialOrder (LocalSubring R) where
@@ -73,6 +73,10 @@ instance : PartialOrder (LocalSubring R) where
   le_refl a := ⟨le_rfl, ⟨fun _ ↦ id⟩⟩
   le_trans A B C h₁ h₂ := ⟨h₁.1.trans h₂.1, @RingHom.isLocalHom_comp _ _ _ _ _ _ _ _ h₂.2 h₁.2⟩
   le_antisymm A B h₁ h₂ := toSubring_injective (le_antisymm h₁.1 h₂.1)
+
+/-- `A` dominates `B` if and only if `B ≤ A` (as subrings) and `m_A ∩ B = m_B`. -/
+lemma le_def {A B : LocalSubring R} :
+    A ≤ B ↔ ∃ h : A.toSubring ≤ B.toSubring, IsLocalHom (Subring.inclusion h) := Iff.rfl
 
 lemma toSubring_mono : Monotone (toSubring (R := R)) :=
   fun _ _ e ↦ e.1
