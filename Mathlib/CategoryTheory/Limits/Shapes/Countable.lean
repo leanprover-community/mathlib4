@@ -60,6 +60,12 @@ instance [HasCountableProducts C] : HasProductsOfShape J C :=
   have : HasLimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableProducts.out _
   hasLimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
 
+instance (priority := 100) hasCountableProducts_of_hasProducts [HasProducts C] :
+    HasCountableProducts C where
+  out _ :=
+    have : HasProducts.{0} C := has_smallest_products_of_hasProducts
+    inferInstance
+
 instance (priority := 100) hasCountableProducts_of_hasCountableLimits [HasCountableLimits C] :
     HasCountableProducts C where
   out _ := inferInstance
