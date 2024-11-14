@@ -18,8 +18,8 @@ import Mathlib.Data.Set.Basic
 
 namespace Set
 
-universe u v
-variable {α : Type u} {β : Type v} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
+universe u
+variable {α : Type u} {a : α} {s t u : Set α}
 
 open scoped symmDiff
 
