@@ -375,7 +375,7 @@ lemma _root_.Set.infinite_iff_tendsto_sum_indicator_atTop (R : Type*) [StrictOrd
     · refine (eventually_constant_sum (fun k k_N ↦ indicator_of_not_mem ?_ _) n_M).le
       exact fun h ↦ not_lt_of_le (hM h) (Nat.lt_iff_add_one_le.2 k_N)
 
-theorem _root_.Set.limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R]
+lemma _root_.Set.limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R]
     [Archimedean R] (s : ℕ → Set α) : limsup s atTop = { ω | Tendsto
       (fun n ↦ ∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) atTop atTop } := by
   nth_rw 1 [← limsup_nat_add s 1, ← Nat.cofinite_eq_atTop, cofinite.limsup_set_eq]
