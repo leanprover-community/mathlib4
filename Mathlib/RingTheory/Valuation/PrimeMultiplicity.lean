@@ -36,8 +36,6 @@ alias _root_.multiplicity_addValuation_apply := multiplicity_apply
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] [UniqueFactorizationMonoid R]
 variable (p : R) [hp : Fact (Prime p)]
 
-attribute [-simp] ENat.withTop_nat_eq_enat
-
 /--
 The valuation on a fraction ring to `WithTop ℤ` given by a prime.
 -/
@@ -60,37 +58,7 @@ theorem adicValuation_coe (r : R) :
   simp [adicValuation]
   rfl
 
-@[simp]
-theorem map_natCast_nonneg {α : Type*} (n : ℕ∞) [AddMonoidWithOne α] [PartialOrder α]
-    [AddLeftMono α] [ZeroLEOneClass α] : 0 ≤ WithTop.map (Nat.cast : ℕ → α) n := by
-  cases n
-  · rw [WithTop.map_top]
-    simp
-  · rw [← ENat.some_eq_coe, WithTop.map_coe]
-    simp
-
-theorem map_eq_some_iff {α β : Type*} {f : α → β} {y : β} {v : WithTop α} :
-    WithTop.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := by
-  cases v <;> simp
-
-theorem some_eq_map_iff {α β : Type*} {f : α → β} {y : β} {v : WithTop α} :
-    .some y = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
-  cases v <;> simp [eq_comm]
-
-theorem map_eq_zero_iff {α β : Type*} {f : α → β} {v : WithTop α} [Zero β] :
-    WithTop.map f v = 0 ↔ ∃ x, v = .some x ∧ f x = 0 := map_eq_some_iff
-
-theorem zero_eq_map_iff {α β : Type*} {f : α → β} {v : WithTop α} [Zero β] :
-    0 = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = 0 := some_eq_map_iff
-
-theorem ENat.zero_eq_map_iff {β : Type*} {f : ℕ → β} {v : ℕ∞} [Zero β] :
-    0 = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = 0 := some_eq_map_iff
-
-theorem map_eq_one_iff {α β : Type*} {f : α → β} {v : WithTop α} [One β] :
-    WithTop.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := map_eq_some_iff
-
-theorem map_eq_natCast_iff {α β : Type*} {f : α → β} {n : ℕ} {v : WithTop α} [AddMonoidWithOne β] :
-    WithTop.map f v = n ↔ ∃ x, v = .some x ∧ f x = n := map_eq_some_iff
+variable {β : Type*} [Zero β]
 
 lemma adicValuation_coe_pos_iff (a : R) :
     0 < adicValuation p (algebraMap R K a) ↔ p ∣ a := by

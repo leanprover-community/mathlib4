@@ -317,4 +317,67 @@ lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < 
 lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
   WithTop.add_lt_add_iff_left h
 
+variable {α : Type*}
+
+def map (f : ℕ → α) (k : ℕ∞) : WithTop α := WithTop.map f k
+
+@[simp]
+theorem map_top (f : ℕ → α) : map f ⊤ = ⊤ := rfl
+
+@[simp]
+theorem map_coe (f : ℕ → α) (a : ℕ) : map f a = f a := rfl
+
+@[simp]
+theorem map_zero (f : ℕ → α) : map f 0 = f 0 := rfl
+
+@[simp]
+theorem map_one (f : ℕ → α) : map f 1 = f 1 := rfl
+
+@[simp]
+theorem map_ofNat (f : ℕ → α) (n : ℕ) [n.AtLeastTwo] : map f (no_index (OfNat.ofNat n)) = f n := rfl
+
+@[simp]
+lemma map_eq_top_iff {f : ℕ → α} : map f n = ⊤ ↔ n = ⊤ := WithTop.map_eq_top_iff
+
+lemma map_eq_coe_iff {f : ℕ → α} {y : α} : map f n = y ↔ ∃ a : ℕ, n = a ∧ f a = y :=
+  WithTop.map_eq_some_iff
+
+lemma coe_eq_map_iff {f : ℕ → α} {y : α} : y = map f n ↔ ∃ a : ℕ, n = a ∧ f a = y :=
+  WithTop.some_eq_map_iff
+
+lemma map_eq_zero_iff {f : ℕ → α} [Zero α] : map f n = 0 ↔ ∃ a : ℕ, n = a ∧ f a = 0 :=
+  WithTop.map_eq_some_iff
+
+lemma zero_eq_map_iff {f : ℕ → α} [Zero α] : 0 = map f n ↔ ∃ a : ℕ, n = a ∧ f a = 0 :=
+  WithTop.some_eq_map_iff
+
+lemma map_eq_one_iff {f : ℕ → α} [One α] : map f n = 1 ↔ ∃ a : ℕ, n = a ∧ f a = 1 :=
+  WithTop.map_eq_some_iff
+
+lemma one_eq_map_iff {f : ℕ → α} [One α] : 1 = map f n ↔ ∃ a : ℕ, n = a ∧ f a = 1 :=
+  WithTop.some_eq_map_iff
+
+lemma map_eq_natCast_iff {f : ℕ → α} [AddMonoidWithOne α] {m : ℕ} :
+    map f n = m ↔ ∃ a : ℕ, n = a ∧ f a = m :=
+  WithTop.map_eq_some_iff
+
+lemma natCast_eq_map_iff {f : ℕ → α} [AddMonoidWithOne α] {m : ℕ} :
+    m = map f n ↔ ∃ a : ℕ, n = a ∧ f a = m :=
+  WithTop.some_eq_map_iff
+
+lemma map_eq_ofNat_iff {f : ℕ → α} [AddMonoidWithOne α] {m : ℕ} [m.AtLeastTwo] :
+    map f n = no_index (OfNat.ofNat m) ↔ ∃ a : ℕ, n = a ∧ f a = m :=
+  WithTop.map_eq_some_iff
+
+lemma ofNat_eq_map_iff {f : ℕ → α} [AddMonoidWithOne α] {m : ℕ} [m.AtLeastTwo] :
+    no_index (OfNat.ofNat m) = map f n ↔ ∃ a : ℕ, n = a ∧ f a = m :=
+  WithTop.some_eq_map_iff
+
+@[simp]
+theorem map_natCast_nonneg [AddMonoidWithOne α] [PartialOrder α]
+    [AddLeftMono α] [ZeroLEOneClass α] : 0 ≤ n.map (Nat.cast : ℕ → α) := by
+  cases n <;> simp
+
+
+
 end ENat
