@@ -25,8 +25,8 @@ For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * `DividedPowers.dpow_add` : `dpow n (x + y) =
 (antidiagonal n).sum fun k => dpow k.1 x * dpow k.2 y`,
 this is the binomial theorem without binomial coefficients.
-* `DividedPowers.dpow_smul`: `dpow n (a * x) = a ^ n * dpow n x`
-* `DividedPowers.dpow_mul` : `dpow m x * dpow n x = choose (m + n) m * dpow (m + n) x`
+* `DividedPowers.dpow_mul`: `dpow n (a * x) = a ^ n * dpow n x`
+* `DividedPowers.mul_dpow` : `dpow m x * dpow n x = choose (m + n) m * dpow (m + n) x`
 * `DividedPowers.dpow_comp` : `dpow m (dpow n x) = uniformBell m n * dpow (m * n) x`
 
 * `DividedPowers.dividedPowersBot` : the trivial divided powers structure on the zero ideal
@@ -77,7 +77,6 @@ section DividedPowersDefinition
 open Finset Nat
 
 /-- The divided power structure on an ideal I of a commutative ring A -/
-@[ext]
 structure DividedPowers {A : Type*} [CommSemiring A] (I : Ideal A) where
   /-- The divided power function underlying a divided power structure -/
   dpow : ℕ → A → A
@@ -87,9 +86,9 @@ structure DividedPowers {A : Type*} [CommSemiring A] (I : Ideal A) where
   dpow_mem : ∀ {n x} (_ : n ≠ 0) (_ : x ∈ I), dpow n x ∈ I
   dpow_add : ∀ (n) {x y} (_ : x ∈ I) (_ : y ∈ I),
     dpow n (x + y) = (antidiagonal n).sum fun k => dpow k.1 x * dpow k.2 y
-  dpow_smul : ∀ (n) {a : A} {x} (_ : x ∈ I),
+  dpow_mul : ∀ (n) {a : A} {x} (_ : x ∈ I),
     dpow n (a * x) = a ^ n * dpow n x
-  dpow_mul : ∀ (m n) {x} (_ : x ∈ I),
+  mul_dpow : ∀ (m n) {x} (_ : x ∈ I),
     dpow m x * dpow n x = choose (m + n) m * dpow (m + n) x
   dpow_comp : ∀ (m) {n x} (_ : n ≠ 0) (_ : x ∈ I),
     dpow m (dpow n x) = uniformBell m n * dpow (m * n) x
@@ -126,13 +125,13 @@ def dividedPowersBot (A : Type*) [CommSemiring A] [DecidableEq A] :
         exact h hi.symm
       · rfl
       · rfl
-  dpow_smul n {a x} hx := by
+  dpow_mul n {a x} hx := by
     rw [Ideal.mem_bot.mp hx]
     simp only [mul_zero, true_and, mul_ite, mul_one]
     by_cases hn : n = 0
     · rw [if_pos hn, hn, if_pos rfl, _root_.pow_zero]
     · simp only [if_neg hn]
-  dpow_mul m n {x} hx := by
+  mul_dpow m n {x} hx := by
     rw [Ideal.mem_bot.mp hx]
     simp only [true_and, mul_ite, mul_one, mul_zero, add_eq_zero]
     by_cases hn : n = 0
@@ -155,12 +154,6 @@ instance {A : Type*} [CommSemiring A] [DecidableEq A] :
 instance {A : Type*} [CommSemiring A] (I : Ideal A) :
     CoeFun (DividedPowers I) fun _ => ℕ → A → A := ⟨fun hI => hI.dpow⟩
 
-
-theorem DividedPowers.coe_injective {A : Type*} [CommSemiring A] (I : Ideal A) :
-    Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
-  ext n x
-  exact congr_fun (congr_fun h n) x
-
 @[ext]
 theorem DividedPowers.ext {A : Type*} [CommSemiring A]
     {I : Ideal A} (hI : DividedPowers I) (hI' : DividedPowers I)
@@ -173,6 +166,11 @@ theorem DividedPowers.ext {A : Type*} [CommSemiring A]
   by_cases hx : x ∈ I
   · exact h_eq n hx
   · rw [h₀ hx, h₀' hx]
+
+theorem DividedPowers.coe_injective {A : Type*} [CommSemiring A] (I : Ideal A) :
+    Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
+  ext n x
+  exact congr_fun (congr_fun h n) x
 
 end DividedPowersDefinition
 
@@ -213,14 +211,13 @@ variable (hI : DividedPowers I)
 
 /- ## Rewriting lemmas -/
 
-/-- Variant of `DividedPowers.dpow_smul` with a `smul` -/
-theorem dpow_smul' (n : ℕ) (a : A) {x : A} (hx : x ∈ I) :
+theorem dpow_smul (n : ℕ) (a : A) {x : A} (hx : x ∈ I) :
     hI.dpow n (a • x) = a ^ n • hI.dpow n x := by
-  simp only [smul_eq_mul, hI.dpow_smul, hx]
+  simp only [smul_eq_mul, hI.dpow_mul, hx]
 
 theorem dpow_mul_right (n : ℕ) {a : A} (ha : a ∈ I) (x : A) :
     hI.dpow n (a * x) = hI.dpow n a * x ^ n := by
-  rw [mul_comm, hI.dpow_smul n ha, mul_comm]
+  rw [mul_comm, hI.dpow_mul n ha, mul_comm]
 
 theorem dpow_smul_right (n : ℕ) {a : A} (ha : a ∈ I) (x : A) :
     hI.dpow n (a • x) = hI.dpow n a • x ^ n := by
@@ -234,10 +231,10 @@ theorem factorial_mul_dpow_eq_pow (n : ℕ) (x : A) (hx : x ∈ I) :
     rw [factorial_succ, mul_comm (n + 1)]
     nth_rewrite 1 [← (n + 1).choose_one_right]
     rw [← choose_symm_add, cast_mul, mul_assoc,
-      ← hI.dpow_mul n 1 hx, ← mul_assoc, ih, hI.dpow_one hx, pow_succ, mul_comm]
+      ← hI.mul_dpow n 1 hx, ← mul_assoc, ih, hI.dpow_one hx, pow_succ, mul_comm]
 
 theorem dpow_eval_zero {n : ℕ} (hn : n ≠ 0) : hI.dpow n 0 = 0 := by
-  rw [← MulZeroClass.mul_zero (0 : A), hI.dpow_smul n I.zero_mem,
+  rw [← MulZeroClass.mul_zero (0 : A), hI.dpow_mul n I.zero_mem,
     zero_pow hn, zero_mul, zero_mul]
 
 /-- If an element of a divided power ideal is killed by multiplication
@@ -261,7 +258,7 @@ theorem coincide_on_smul {J : Ideal A} (hJ : DividedPowers J) {n : ℕ} {a : A} 
     hI.dpow n a = hJ.dpow n a := by
   induction ha using Submodule.smul_induction_on' generalizing n with
   | smul a ha b hb =>
-    rw [Algebra.id.smul_eq_mul, hJ.dpow_smul n hb, mul_comm a b, hI.dpow_smul n ha, ←
+    rw [Algebra.id.smul_eq_mul, hJ.dpow_mul n hb, mul_comm a b, hI.dpow_mul n ha, ←
       hJ.factorial_mul_dpow_eq_pow n b hb, ← hI.factorial_mul_dpow_eq_pow n a ha]
     ring
   | add x hx y hy hx' hy' =>
@@ -283,7 +280,7 @@ theorem prod_dpow {ι : Type*} {s : Finset ι} (n : ι → ℕ) {a : A} (ha : a 
     rw [hI.dpow_zero ha]
   | insert hi hrec =>
     rw [prod_insert hi, hrec, ← mul_assoc, mul_comm (hI.dpow (n _) a),
-      mul_assoc, dpow_mul _ _ _ ha, ← sum_insert hi, ← mul_assoc]
+      mul_assoc, mul_dpow _ _ _ ha, ← sum_insert hi, ← mul_assoc]
     apply congr_arg₂ _ _ rfl
     rw [multinomial_insert hi, mul_comm, cast_mul, sum_insert hi]
 
@@ -455,14 +452,14 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
     rw [hI.dpow_add n (Ideal.symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))
         (Ideal.symm_apply_mem_of_equiv_iff.mpr (h ▸ hy))]
     simp only [map_sum, map_mul]
-  dpow_smul n {a x} hx := by
+  dpow_mul n {a x} hx := by
     simp only [map_mul]
-    rw [hI.dpow_smul n (Ideal.symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))]
+    rw [hI.dpow_mul n (Ideal.symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))]
     rw [map_mul, map_pow]
     simp only [RingEquiv.apply_symm_apply]
-  dpow_mul m n {x} hx := by
+  mul_dpow m n {x} hx := by
     simp only
-    rw [← map_mul, hI.dpow_mul, map_mul]
+    rw [← map_mul, hI.mul_dpow, map_mul]
     · simp only [map_natCast]
     · rwa [Ideal.symm_apply_mem_of_equiv_iff, h]
   dpow_comp m {n x} hn hx := by
@@ -472,11 +469,10 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
     · rwa [Ideal.symm_apply_mem_of_equiv_iff, h]
 
 @[simp]
-theorem ofRingEquiv_eq (hI : DividedPowers I) (n : ℕ) (b : B) :
+theorem ofRingEquiv_dpow (hI : DividedPowers I) (n : ℕ) (b : B) :
     (ofRingEquiv h hI).dpow n b = e (hI.dpow n (e.symm b)) := rfl
 
-/-- Variant of `DividedPowers.ofRingEquiv_eq` -/
-theorem ofRingEquiv_eq' (hI : DividedPowers I) (n : ℕ) (a : A) :
+theorem ofRingEquiv_dpow_apply (hI : DividedPowers I) (n : ℕ) (a : A) :
     (ofRingEquiv h hI).dpow n (e a) = e (hI.dpow n a) := by
   simp
 
@@ -493,7 +489,7 @@ theorem equiv_apply (hI : DividedPowers I) (n : ℕ) (b : B) :
 /-- Variant of `DividedPowers.equiv_apply` -/
 theorem equiv_apply' (hI : DividedPowers I) (n : ℕ) (a : A) :
     (equiv h hI).dpow n (e a) = e (hI.dpow n a) :=
-  ofRingEquiv_eq' h hI n a
+  ofRingEquiv_dpow_apply h hI n a
 
 end Equiv
 
