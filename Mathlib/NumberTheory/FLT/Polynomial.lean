@@ -174,7 +174,7 @@ private lemma find_contract {a : k[X]}
   · intro h
     rw [h, map_zero] at heq
     exact ha heq
-  · rw [←natDegree_expand, ←heq]
+  · rw [← natDegree_expand, ← heq]
 
 private theorem expand_dvd {a b : k[X]} (n : ℕ) (h : a ∣ b) :
     expand k n a ∣ expand k n b := by
