@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev
 -/
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.Data.Matrix.ColumnRowPartitioned
 
 /-!
 # Totally unimodular matrices
@@ -76,11 +77,44 @@ lemma IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyUnimodul
   intro _ _ _
   apply hA
 
-lemma mapEquiv_IsTotallyUnimodular {X' Y' : Type*} (A : Matrix m n R) (eX : X' ≃ m) (eY : Y' ≃ n) :
+lemma transpose_isTotallyUnimodular_iff (A : Matrix m n R) :
+    Aᵀ.IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  constructor <;> apply IsTotallyUnimodular.transpose
+
+lemma mapEquiv_isTotallyUnimodular {X' Y' : Type*} (A : Matrix m n R) (eX : X' ≃ m) (eY : Y' ≃ n) :
     IsTotallyUnimodular ((A · ∘ eY) ∘ eX) ↔ A.IsTotallyUnimodular := by
   rw [isTotallyUnimodular_iff, isTotallyUnimodular_iff]
   constructor <;> intro hA k f g
   · simpa [submatrix] using hA k (eX.symm ∘ f) (eY.symm ∘ g)
   · simpa [submatrix] using hA k (eX ∘ f) (eY ∘ g)
+
+lemma adjoin_row0s_isTotallyUnimodular_iff (A : Matrix m n R) {m' : Type*} :
+    (fromRows A (row m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  rw [isTotallyUnimodular_iff, isTotallyUnimodular_iff]
+  constructor <;> intro hA k f g
+  · exact hA k (Sum.inl ∘ f) g
+  · if zerow : ∃ i, ∃ x', f i = Sum.inr x' then
+      obtain ⟨i, _, _⟩ := zerow
+      left
+      apply det_eq_zero_of_row_eq_zero i
+      intro
+      simp_all
+    else
+      obtain ⟨_, rfl⟩ : ∃ f₀ : Fin k → m, f = Sum.inl ∘ f₀ := by
+        have hi (i : Fin k) : ∃ x, f i = Sum.inl x :=
+          match hfi : f i with
+          | .inl x => ⟨x, rfl⟩
+          | .inr x => (zerow ⟨i, x, hfi⟩).elim
+        choose f₀ hf₀ using hi
+        use f₀
+        ext
+        apply hf₀
+      apply hA
+
+lemma adjoin_col0s_isTotallyUnimodular_iff (A : Matrix m n R) {n' : Type*} :
+    (fromColumns A (col n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  rw [← transpose_transpose (fromColumns A (col n' 0)), transpose_isTotallyUnimodular_iff,
+    transpose_fromColumns, transpose_col, adjoin_row0s_isTotallyUnimodular_iff,
+    transpose_isTotallyUnimodular_iff]
 
 end Matrix
