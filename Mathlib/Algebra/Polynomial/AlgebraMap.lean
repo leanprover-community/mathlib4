@@ -321,16 +321,16 @@ theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps!]
-def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
+def algEquivAevalXAddC {R : Type*} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
 @[simp]
-theorem algEquivAevalXAddC_eq_iff {R} [CommRing R] (t t' : R) :
+theorem algEquivAevalXAddC_eq_iff {R : Type*} [CommRing R] (t t' : R) :
     algEquivAevalXAddC t = algEquivAevalXAddC t' ↔ t = t' := by
   simp [algEquivAevalXAddC]
 
 @[simp]
-theorem algEquivAevalXAddC_symm {R} [CommRing R] (t : R) :
+theorem algEquivAevalXAddC_symm {R : Type*} [CommRing R] (t : R) :
     (algEquivAevalXAddC t).symm = algEquivAevalXAddC (-t) := by
   simp [algEquivAevalXAddC, sub_eq_add_neg]
 
@@ -339,7 +339,8 @@ theorem algEquivAevalXAddC_symm {R} [CommRing R] (t : R) :
 def algEquivAevalNegX {R : Type*} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (-X) (-X) (by simp) (by simp)
 
-theorem comp_neg_X_comp_neg_X {R : Type*} [CommRing R] (p : R[X]) : (p.comp (-X)).comp (-X) = p := by
+theorem comp_neg_X_comp_neg_X {R : Type*} [CommRing R] (p : R[X]) :
+    (p.comp (-X)).comp (-X) = p := by
   rw [comp_assoc]
   simp only [neg_comp, X_comp, neg_neg, comp_X]
 
