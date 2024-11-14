@@ -109,7 +109,7 @@ namespace Elements
 
 variable {C : Type u} [Category.{v} C] {R : Cᵒᵖ ⥤ RingCat.{v}} {M : PresheafOfModules.{v} R}
 
-/-- Given an element `m : M.Elements` of a presheaf of modules `M`, this is
+/-- Given an element `m : M.Elements` of a presheaf of modules `M`, this is the
 free presheaf of modules on the Yoneda presheaf of types corresponding to the
 underlying object of `m`. -/
 noncomputable abbrev freeYoneda (m : M.Elements) :
