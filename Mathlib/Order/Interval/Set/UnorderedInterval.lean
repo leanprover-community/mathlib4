@@ -314,11 +314,11 @@ def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
 @[simp] lemma dual_uIoo (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
   dual_Ioo (α := α)
 
-@[simp]
-lemma uIoo_of_le (h : a ≤ b) : uIoo a b = Ioo a b := by rw [uIoo, inf_eq_left.2 h, sup_eq_right.2 h]
+@[simp] lemma uIoo_of_le (h : a ≤ b) : uIoo a b = Ioo a b := by
+  rw [uIoo, inf_eq_left.2 h, sup_eq_right.2 h]
 
-@[simp]
-lemma uIoo_of_ge (h : b ≤ a) : uIoo a b = Ioo b a := by rw [uIoo, inf_eq_right.2 h, sup_eq_left.2 h]
+@[simp] lemma uIoo_of_ge (h : b ≤ a) : uIoo a b = Ioo b a := by
+  rw [uIoo, inf_eq_right.2 h, sup_eq_left.2 h]
 
 lemma uIoo_comm (a b : α) : uIoo a b = uIoo b a := by simp_rw [uIoo, inf_comm, sup_comm]
 
@@ -330,7 +330,10 @@ lemma uIoo_self : uIoo a a = ∅ := by simp [uIoo]
 
 lemma Ioo_subset_uIoo : Ioo a b ⊆ uIoo a b := Ioo_subset_Ioo inf_le_left le_sup_right
 
+/-- Same as `Ioo_subset_uIoo` but with `Ioo a b` replaced by `Ioo b a`. -/
 lemma Ioo_subset_uIoo' : Ioo b a ⊆ uIoo a b := Ioo_subset_Ioo inf_le_right le_sup_left
+
+variable {x : α}
 
 lemma mem_uIoo_of_le (ha : a < x) (hb : x < b) : x ∈ uIoo a b := Ioo_subset_uIoo ⟨ha, hb⟩
 
@@ -344,8 +347,8 @@ lemma uIoo_of_not_le (h : ¬a ≤ b) : uIoo a b = Ioo b a := uIoo_of_gt <| lt_of
 
 lemma uIoo_of_not_ge (h : ¬b ≤ a) : uIoo a b = Ioo a b := uIoo_of_lt <| lt_of_not_ge h
 
-theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) :
-    uIoo a b ⊆ uIcc a b := by simp [uIoo, uIcc, Ioo_subset_Icc_self]
+theorem uIoo_subset_uIcc {α : Type*} [LinearOrder α] (a : α) (b : α) : uIoo a b ⊆ uIcc a b := by
+  simp [uIoo, uIcc, Ioo_subset_Icc_self]
 
 end uIoo
 
