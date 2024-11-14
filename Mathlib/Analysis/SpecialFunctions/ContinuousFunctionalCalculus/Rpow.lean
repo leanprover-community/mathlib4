@@ -201,6 +201,9 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
     sqrt a = b ↔ b * b = a :=
   ⟨(mul_self_eq ·), (sqrt_unique ·)⟩
 
+lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
+  rw [sqrt_eq_iff a _, mul_zero, eq_comm]
+
 end sqrt
 
 end NonUnital
@@ -286,6 +289,11 @@ lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
     a ^ (-1 : ℝ) = (↑a⁻¹ : A) := by
   refine a.inv_eq_of_mul_eq_one_left ?_ |>.symm
   simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_not_mem ℝ≥0 a.isUnit)
+
+lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
+    [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)] (a : A) :
+    a ^ (-1 : ℝ) = cfc (·⁻¹ : ℝ≥0 → ℝ≥0) a :=
+  cfc_congr fun x _ ↦ NNReal.rpow_neg_one x
 
 lemma rpow_neg [UniqueContinuousFunctionalCalculus ℝ≥0 A] (a : Aˣ) (x : ℝ)
     (ha' : (0 : A) ≤ a := by cfc_tac) : (a : A) ^ (-x) = (↑a⁻¹ : A) ^ x := by

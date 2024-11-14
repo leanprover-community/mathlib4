@@ -644,7 +644,7 @@ theorem range_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf�
     (hf₁ : f 1 = 1) : range (γ.reparam f hfcont hf₀ hf₁) = range γ := by
   change range (γ ∘ f) = range γ
   have : range f = univ := by
-    rw [range_iff_surjective]
+    rw [range_eq_univ]
     intro t
     have h₁ : Continuous (Set.IccExtend (zero_le_one' ℝ) f) := by continuity
     have := intermediate_value_Icc (zero_le_one' ℝ) h₁.continuousOn
@@ -788,8 +788,8 @@ theorem JoinedIn.map (h : JoinedIn F x y) {f : X → Y} (hf : Continuous f) :
     JoinedIn (f '' F) (f x) (f y) :=
   h.map_continuousOn hf.continuousOn
 
-theorem Inducing.joinedIn_image {f : X → Y} (hf : Inducing f) (hx : x ∈ F) (hy : y ∈ F) :
-    JoinedIn (f '' F) (f x) (f y) ↔ JoinedIn F x y := by
+theorem Topology.IsInducing.joinedIn_image {f : X → Y} (hf : IsInducing f) (hx : x ∈ F)
+    (hy : y ∈ F) : JoinedIn (f '' F) (f x) (f y) ↔ JoinedIn F x y := by
   refine ⟨?_, (.map · hf.continuous)⟩
   rintro ⟨γ, hγ⟩
   choose γ' hγ'F hγ' using hγ
@@ -799,6 +799,8 @@ theorem Inducing.joinedIn_image {f : X → Y} (hf : Inducing f) (hx : x ∈ F) (
     refine ⟨⟨⟨γ', ?_⟩, rfl, rfl⟩, hγ'F⟩
     simpa only [hf.continuous_iff, comp_def, hγ'] using map_continuous γ
   exact (h₀.joinedIn hx (hγ'F _)).trans <| h.trans <| h₁.joinedIn (hγ'F _) hy
+
+@[deprecated (since := "2024-10-28")] alias Inducing.joinedIn_image := IsInducing.joinedIn_image
 
 /-! ### Path component -/
 
@@ -905,18 +907,21 @@ theorem IsPathConnected.image (hF : IsPathConnected F) {f : X → Y} (hf : Conti
     IsPathConnected (f '' F) :=
   hF.image' hf.continuousOn
 
-/-- If `f : X → Y` is a `Inducing`, `f(F)` is path-connected iff `F` is. -/
-nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
+/-- If `f : X → Y` is an inducing map, `f(F)` is path-connected iff `F` is. -/
+nonrec theorem Topology.IsInducing.isPathConnected_iff {f : X → Y} (hf : IsInducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   simp only [IsPathConnected, forall_mem_image, exists_mem_image]
   refine exists_congr fun x ↦ and_congr_right fun hx ↦ forall₂_congr fun y hy ↦ ?_
   rw [hf.joinedIn_image hx hy]
 
+@[deprecated (since := "2024-10-28")]
+alias Inducing.isPathConnected_iff := IsInducing.isPathConnected_iff
+
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is path-connected iff `s` is. -/
 @[simp]
 theorem Homeomorph.isPathConnected_image {s : Set X} (h : X ≃ₜ Y) :
     IsPathConnected (h '' s) ↔ IsPathConnected s :=
-  h.inducing.isPathConnected_iff.symm
+  h.isInducing.isPathConnected_iff.symm
 
 /-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is path-connected iff `s` is. -/
 @[simp]
@@ -963,7 +968,7 @@ theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPat
 ambient type `U` (when `U` contains `W`). -/
 theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU : W ⊆ U) :
     IsPathConnected (((↑) : U → X) ⁻¹' W) := by
-  rwa [inducing_subtype_val.isPathConnected_iff, Subtype.image_preimage_val, inter_eq_right.2 hWU]
+  rwa [IsInducing.subtypeVal.isPathConnected_iff, Subtype.image_preimage_val, inter_eq_right.2 hWU]
 
 theorem IsPathConnected.exists_path_through_family {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
@@ -1068,7 +1073,7 @@ theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (
   simp [pathConnectedSpace_iff, isPathConnected_iff, nonempty_iff_univ_nonempty]
 
 theorem isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConnectedSpace F := by
-  rw [pathConnectedSpace_iff_univ, inducing_subtype_val.isPathConnected_iff, image_univ,
+  rw [pathConnectedSpace_iff_univ, IsInducing.subtypeVal.isPathConnected_iff, image_univ,
     Subtype.range_val_subtype, setOf_mem_eq]
 
 theorem isPathConnected_univ [PathConnectedSpace X] : IsPathConnected (univ : Set X) :=
@@ -1086,7 +1091,7 @@ theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
 
 instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
-  (surjective_quotient_mk' X).pathConnectedSpace continuous_coinduced_rng
+  Quotient.mk'_surjective.pathConnectedSpace continuous_coinduced_rng
 
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
@@ -1187,7 +1192,7 @@ theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
 
-theorem IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbedding e) :
+theorem Topology.IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbedding e) :
     LocPathConnectedSpace Y :=
   have (y : Y) :
       (𝓝 y).HasBasis (fun s ↦ s ∈ 𝓝 (e y) ∧ IsPathConnected s ∧ s ⊆ range e) (e ⁻¹' ·) :=
@@ -1199,7 +1204,7 @@ theorem IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpenEmbeddin
 alias OpenEmbedding.locPathConnectedSpace := IsOpenEmbedding.locPathConnectedSpace
 
 theorem IsOpen.locPathConnectedSpace {U : Set X} (h : IsOpen U) : LocPathConnectedSpace U :=
-  (isOpenEmbedding_subtypeVal h).locPathConnectedSpace
+  h.isOpenEmbedding_subtypeVal.locPathConnectedSpace
 
 @[deprecated (since := "2024-10-17")]
 alias locPathConnected_of_isOpen := IsOpen.locPathConnectedSpace

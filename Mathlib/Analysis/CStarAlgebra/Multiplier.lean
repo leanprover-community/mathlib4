@@ -664,7 +664,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
         · simpa only [a.central, star_star, CStarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
-            using pow_lt_pow_left hxr zero_le' two_ne_zero
+            using pow_lt_pow_left₀ hxr zero_le' two_ne_zero
 
 end DenselyNormed
 

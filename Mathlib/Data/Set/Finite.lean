@@ -197,12 +197,9 @@ protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s �
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 
-alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
+protected alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 
-alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
-
--- Porting note: attribute [protected] doesn't work
--- attribute [protected] toFinset_mono toFinset_strictMono
+protected alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 
 -- Porting note: `simp` can simplify LHS but then it simplifies something
 -- in the generated `Fintype {x | p x}` instance and fails to apply `Set.toFinset_setOf`
@@ -1213,10 +1210,7 @@ theorem infinite_range_iff {f : α → β} (hi : Injective f) :
     (range f).Infinite ↔ Infinite α := by
   rw [← image_univ, infinite_image_iff hi.injOn, infinite_univ_iff]
 
-alias ⟨_, Infinite.image⟩ := infinite_image_iff
-
--- Porting note: attribute [protected] doesn't work
--- attribute [protected] infinite.image
+protected alias ⟨_, Infinite.image⟩ := infinite_image_iff
 
 section Image2
 
@@ -1348,6 +1342,32 @@ theorem exists_lower_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
 theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f : α → β)
     (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f b ≤ f a :=
   exists_lower_bound_image (β := βᵒᵈ) s f h
+
+lemma map_finite_biSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [SupBotHomClass F α β] {s : Set ι} (hs : s.Finite) (f : F) (g : ι → α) :
+    f (⨆ x ∈ s, g x) = ⨆ x ∈ s, f (g x) := by
+  have := map_finset_sup f hs.toFinset g
+  simp only [Finset.sup_eq_iSup, hs.mem_toFinset, comp_apply] at this
+  exact this
+
+lemma map_finite_biInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [InfTopHomClass F α β] {s : Set ι} (hs : s.Finite) (f : F) (g : ι → α) :
+    f (⨅ x ∈ s, g x) = ⨅ x ∈ s, f (g x) := by
+  have := map_finset_inf f hs.toFinset g
+  simp only [Finset.inf_eq_iInf, hs.mem_toFinset, comp_apply] at this
+  exact this
+
+lemma map_finite_iSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [SupBotHomClass F α β] [Finite ι] (f : F) (g : ι → α) :
+    f (⨆ i, g i) = ⨆ i, f (g i) := by
+  rw [← iSup_univ (f := g), ← iSup_univ (f := fun i ↦ f (g i))]
+  exact map_finite_biSup finite_univ f g
+
+lemma map_finite_iInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [InfTopHomClass F α β] [Finite ι] (f : F) (g : ι → α) :
+    f (⨅ i, g i) = ⨅ i, f (g i) := by
+  rw [← iInf_univ (f := g), ← iInf_univ (f := fun i ↦ f (g i))]
+  exact map_finite_biInf finite_univ f g
 
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}

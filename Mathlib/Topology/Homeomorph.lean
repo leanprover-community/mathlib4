@@ -27,9 +27,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 -/
 
-open Set Filter Function
-
-open Topology
+open Filter Function Set Topology
 
 variable {X Y W Z : Type*}
 
@@ -203,12 +201,12 @@ theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
 lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
   h.toEquiv.image_compl s
 
-protected theorem inducing (h : X ≃ₜ Y) : Inducing h :=
-  inducing_of_inducing_compose h.continuous h.symm.continuous <| by
-    simp only [symm_comp_self, inducing_id]
+lemma isInducing (h : X ≃ₜ Y) : IsInducing h :=
+  .of_comp h.continuous h.symm.continuous <| by simp only [symm_comp_self, IsInducing.id]
 
-theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› :=
-  h.inducing.1.symm
+@[deprecated (since := "2024-10-28")] alias inducing := isInducing
+
+theorem induced_eq (h : X ≃ₜ Y) : TopologicalSpace.induced h ‹_› = ‹_› := h.isInducing.1.symm
 
 theorem isQuotientMap (h : X ≃ₜ Y) : IsQuotientMap h :=
   IsQuotientMap.of_comp h.symm.continuous h.continuous <| by
@@ -220,7 +218,7 @@ alias quotientMap := isQuotientMap
 theorem coinduced_eq (h : X ≃ₜ Y) : TopologicalSpace.coinduced h ‹_› = ‹_› :=
   h.isQuotientMap.2.symm
 
-theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.inducing, h.injective⟩
+theorem isEmbedding (h : X ≃ₜ Y) : IsEmbedding h := ⟨h.isInducing, h.injective⟩
 
 @[deprecated (since := "2024-10-26")]
 alias embedding := isEmbedding
@@ -229,14 +227,14 @@ alias embedding := isEmbedding
 noncomputable def ofIsEmbedding (f : X → Y) (hf : IsEmbedding f) : X ≃ₜ Set.range f where
   continuous_toFun := hf.continuous.subtype_mk _
   continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
-  toEquiv := Equiv.ofInjective f hf.inj
+  toEquiv := Equiv.ofInjective f hf.injective
 
 @[deprecated (since := "2024-10-26")]
 alias ofEmbedding := ofIsEmbedding
 
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
-  h.inducing.secondCountableTopology
+  h.isInducing.secondCountableTopology
 
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is compact iff `s` is. -/
 @[simp]
@@ -388,11 +386,20 @@ theorem symm_map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h.symm (𝓝 (h x)) = �
   rw [h.symm.map_nhds_eq, h.symm_apply_apply]
 
 theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :=
-  h.inducing.nhds_eq_comap x
+  h.isInducing.nhds_eq_comap x
 
 @[simp]
 theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
   rw [h.nhds_eq_comap, h.apply_symm_apply]
+
+@[simp]
+theorem comap_coclosedCompact (h : X ≃ₜ Y) : comap h (coclosedCompact Y) = coclosedCompact X :=
+  (hasBasis_coclosedCompact.comap h).eq_of_same_basis <| by
+    simpa [comp_def] using hasBasis_coclosedCompact.comp_surjective h.injective.preimage_surjective
+
+@[simp]
+theorem map_coclosedCompact (h : X ≃ₜ Y) : map h (coclosedCompact X) = coclosedCompact Y := by
+  rw [← h.comap_coclosedCompact, map_comap_of_surjective h.surjective]
 
 /-- If the codomain of a homeomorphism is a locally connected space, then the domain is also
 a locally connected space. -/
@@ -444,11 +451,11 @@ theorem homeomorphOfContinuousOpen_symm_apply (e : X ≃ Y) (h₁ : Continuous e
 @[simp]
 theorem comp_continuousOn_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) :
     ContinuousOn (h ∘ f) s ↔ ContinuousOn f s :=
-  h.inducing.continuousOn_iff.symm
+  h.isInducing.continuousOn_iff.symm
 
 @[simp]
 theorem comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f) ↔ Continuous f :=
-  h.inducing.continuous_iff.symm
+  h.isInducing.continuous_iff.symm
 
 @[simp]
 theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ h) ↔ Continuous f :=
@@ -456,15 +463,15 @@ theorem comp_continuous_iff' (h : X ≃ₜ Y) {f : Y → Z} : Continuous (f ∘ 
 
 theorem comp_continuousAt_iff (h : X ≃ₜ Y) (f : Z → X) (z : Z) :
     ContinuousAt (h ∘ f) z ↔ ContinuousAt f z :=
-  h.inducing.continuousAt_iff.symm
+  h.isInducing.continuousAt_iff.symm
 
 theorem comp_continuousAt_iff' (h : X ≃ₜ Y) (f : Y → Z) (x : X) :
     ContinuousAt (f ∘ h) x ↔ ContinuousAt f (h x) :=
-  h.inducing.continuousAt_iff' (by simp)
+  h.isInducing.continuousAt_iff' (by simp)
 
 theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (z : Z) :
     ContinuousWithinAt f s z ↔ ContinuousWithinAt (h ∘ f) s z :=
-  h.inducing.continuousWithinAt_iff
+  h.isInducing.continuousWithinAt_iff
 
 @[simp]
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
@@ -703,6 +710,49 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
   continuous_invFun := continuous_uLift_up
   toEquiv := Equiv.ulift
 
+/-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
+`Equiv.sumArrowEquivProdArrow` as a homeomorphism. -/
+@[simps!]
+def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
+  toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
+  continuous_toFun := by
+    simp only [Equiv.sumArrowEquivProdArrow, Equiv.coe_fn_mk, continuous_prod_mk]
+    continuity
+  continuous_invFun := continuous_pi fun i ↦ match i with
+    | .inl i => by apply (continuous_apply _).comp' continuous_fst
+    | .inr i => by apply (continuous_apply _).comp' continuous_snd
+
+private theorem _root_.Fin.appendEquiv_eq_Homeomorph (m n : ℕ) : Fin.appendEquiv m n =
+    ((sumArrowHomeomorphProdArrow).symm.trans
+    (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
+  ext ⟨x1, x2⟩ l
+  simp only [sumArrowHomeomorphProdArrow, Equiv.sumArrowEquivProdArrow,
+    finSumFinEquiv, Fin.addCases, Fin.appendEquiv, Fin.append, Equiv.coe_fn_mk]
+  by_cases h : l < m
+  · simp [h]
+  · simp [h]
+
+theorem _root_.Fin.continuous_append (m n : ℕ) :
+    Continuous fun (p : (Fin m → X) × (Fin n → X)) ↦ Fin.append p.1 p.2 := by
+  suffices Continuous (Fin.appendEquiv m n) by exact this
+  rw [Fin.appendEquiv_eq_Homeomorph]
+  exact Homeomorph.continuous_toFun _
+
+/-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
+`Fin.appendEquiv` as a homeomorphism.-/
+@[simps!]
+def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
+  toEquiv := Fin.appendEquiv m n
+  continuous_toFun := Fin.continuous_append m n
+  continuous_invFun := by
+    rw [Fin.appendEquiv_eq_Homeomorph]
+    exact Homeomorph.continuous_invFun _
+
+@[simp]
+theorem _root_.Fin.appendHomeomorph_toEquiv (m n : ℕ) :
+    (Fin.appendHomeomorph (X := X) m n).toEquiv = Fin.appendEquiv m n :=
+  rfl
+
 section Distrib
 
 /-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
@@ -845,10 +895,12 @@ lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
 
 /-- An inducing equiv between topological spaces is a homeomorphism. -/
 @[simps toEquiv] -- Porting note (#11215): TODO: was `@[simps]`
-def toHomeomorphOfInducing (f : X ≃ Y) (hf : Inducing f) : X ≃ₜ Y :=
+def toHomeomorphOfIsInducing (f : X ≃ Y) (hf : IsInducing f) : X ≃ₜ Y :=
   { f with
     continuous_toFun := hf.continuous
     continuous_invFun := hf.continuous_iff.2 <| by simpa using continuous_id }
+
+@[deprecated (since := "2024-10-28")] alias toHomeomorphOfInducing := toHomeomorphOfIsInducing
 
 end Equiv
 
@@ -913,12 +965,14 @@ noncomputable def homeomorph : X ≃ₜ Y where
   toEquiv := Equiv.ofBijective f hf.bijective
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
-protected lemma inducing : Inducing f := (hf.homeomorph f).inducing
+lemma isInducing : IsInducing f := (hf.homeomorph f).isInducing
 lemma isQuotientMap : IsQuotientMap f := (hf.homeomorph f).isQuotientMap
 lemma isEmbedding : IsEmbedding f := (hf.homeomorph f).isEmbedding
 lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+
+@[deprecated (since := "2024-10-28")] alias inducing := isInducing
 
 @[deprecated (since := "2024-10-26")]
 alias embedding := isEmbedding
@@ -951,7 +1005,7 @@ lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ 
 lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f ∧ Surjective f where
   mp hf := ⟨hf.isEmbedding, hf.surjective⟩
   mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
-    h.1.inj, h.2⟩
+    h.1.injective, h.2⟩
 
 @[deprecated (since := "2024-10-26")]
 alias isHomeomorph_iff_embedding_surjective := isHomeomorph_iff_isEmbedding_surjective

@@ -3,8 +3,9 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 # The group of units of a complete normed ring
