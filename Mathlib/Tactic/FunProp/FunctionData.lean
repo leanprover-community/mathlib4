@@ -163,7 +163,7 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
   if let .some name := f.fn.constName? then
     if ← Mor.isCoeFunName name then
       let info ← getConstInfo name
-      let arity := info.type.forallArity
+      let arity := info.type.getNumHeadForalls
       match compare arity f.args.size with
       | .eq => return .exact
       | .lt => return .overApplied

@@ -294,6 +294,23 @@ jobs:
           scripts/lean-pr-testing-comments.sh lean
           scripts/lean-pr-testing-comments.sh batteries
 
+      - name: build lean4checker, but don't run it
+        if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
+        run: |
+          git clone https://github.com/leanprover/lean4checker
+          cd lean4checker
+          # Read lean-toolchain file and checkout appropriate branch
+          TOOLCHAIN=$(cat ../lean-toolchain)
+          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
+            VERSION=${TOOLCHAIN#leanprover/lean4:}
+            git checkout "$VERSION"
+          else
+            git checkout master
+          fi
+          # Build lean4checker using the same toolchain
+          cp ../lean-toolchain .
+          lake build
+
   final:
     name: Post-CI jobJOB_NAME
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'

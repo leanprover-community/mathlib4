@@ -7,8 +7,10 @@ import Mathlib.Algebra.Algebra.Subalgebra.Directed
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Adjoining Elements to Fields
@@ -38,6 +40,7 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 
 -- Porting note: not adding `neg_mem'` causes an error.
 /-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`. -/
+@[stacks 09FZ "first part"]
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
     algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
@@ -332,7 +335,7 @@ theorem _root_.AlgHom.map_fieldRange {L : Type*} [Field L] [Algebra F L]
 
 theorem _root_.AlgHom.fieldRange_eq_top {f : E →ₐ[F] K} :
     f.fieldRange = ⊤ ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans Set.range_iff_surjective
+  SetLike.ext'_iff.trans Set.range_eq_univ
 
 @[simp]
 theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :
@@ -714,8 +717,6 @@ theorem sup_toSubalgebra_of_left [FiniteDimensional K E1] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_left E1 E2
 
-@[deprecated (since := "2024-01-19")] alias sup_toSubalgebra := sup_toSubalgebra_of_left
-
 theorem sup_toSubalgebra_of_right [FiniteDimensional K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_right E1 E2
@@ -728,6 +729,31 @@ instance finiteDimensional_sup [FiniteDimensional K E1] [FiniteDimensional K E2]
       g.toLinearMap.finiteDimensional_range
     rwa [this] at h
   rw [Algebra.TensorProduct.productMap_range, E1.range_val, E2.range_val, sup_toSubalgebra_of_left]
+
+/-- If `E1` and `E2` are intermediate fields, and at least one them are algebraic, then the rank of
+the compositum of `E1` and `E2` is less than or equal to the product of that of `E1` and `E2`.
+Note that this result is also true without algebraic assumption,
+but the proof becomes very complicated. -/
+theorem rank_sup_le_of_isAlgebraic
+    (halg : Algebra.IsAlgebraic K E1 ∨ Algebra.IsAlgebraic K E2) :
+    Module.rank K ↥(E1 ⊔ E2) ≤ Module.rank K E1 * Module.rank K E2 := by
+  have := E1.toSubalgebra.rank_sup_le_of_free E2.toSubalgebra
+  rwa [← sup_toSubalgebra_of_isAlgebraic E1 E2 halg] at this
+
+/-- If `E1` and `E2` are intermediate fields, then the `Module.finrank` of
+the compositum of `E1` and `E2` is less than or equal to the product of that of `E1` and `E2`. -/
+theorem finrank_sup_le :
+    finrank K ↥(E1 ⊔ E2) ≤ finrank K E1 * finrank K E2 := by
+  by_cases h : FiniteDimensional K E1
+  · have := E1.toSubalgebra.finrank_sup_le_of_free E2.toSubalgebra
+    change _ ≤ finrank K E1 * finrank K E2 at this
+    rwa [← sup_toSubalgebra_of_left] at this
+  rw [FiniteDimensional, ← rank_lt_aleph0_iff, not_lt] at h
+  have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|
+    show Subalgebra.toSubmodule E1.toSubalgebra ≤ Subalgebra.toSubmodule (E1 ⊔ E2).toSubalgebra by
+      simp
+  rw [show finrank K E1 = 0 from Cardinal.toNat_apply_of_aleph0_le h,
+    show finrank K ↥(E1 ⊔ E2) = 0 from Cardinal.toNat_apply_of_aleph0_le (h.trans this), zero_mul]
 
 variable {ι : Type*} {t : ι → IntermediateField K L}
 
@@ -1063,6 +1089,7 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
 
 -- Porting note: original proof used `Exists.cases_on`.
 /-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
+@[stacks 09G1 "Algebraic case"]
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
     AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
   AlgEquiv.ofBijective
@@ -1127,6 +1154,9 @@ theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimension
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
+/-- If `x` is an algebraic element of field `K`, then its minimal polynomial has degree
+`[K(x) : K]`. -/
+@[stacks 09GN]
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
     Module.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
   rw [PowerBasis.finrank (adjoin.powerBasis hx : _)]
@@ -1321,6 +1351,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 /-- An intermediate field `S` is finitely generated if there exists `t : Finset E` such that
 `IntermediateField.adjoin F t = S`. -/
+@[stacks 09FZ "second part"]
 def FG (S : IntermediateField F E) : Prop :=
   ∃ t : Finset E, adjoin F ↑t = S
 
