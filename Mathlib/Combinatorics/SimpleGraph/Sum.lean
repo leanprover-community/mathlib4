@@ -83,18 +83,18 @@ def Coloring.sum (cG : G.Coloring γ) (cH : H.Coloring γ) : (G ⊕g H).Coloring
   · exact cH.valid
 
 /-- Get coloring of `G` from coloring of `G ⊕g H` -/
-def Coloring.sum_left (c : (G ⊕g H).Coloring γ) : G.Coloring γ := Coloring.mk (c ∘ Sum.inl) <| by
+def Coloring.sumLeft (c : (G ⊕g H).Coloring γ) : G.Coloring γ := Coloring.mk (c ∘ Sum.inl) <| by
   intro u v h
   exact c.valid h
 
 /-- Get coloring of `H` from coloring of `G ⊕g H` -/
-def Coloring.sum_right (c : (G ⊕g H).Coloring γ) : H.Coloring γ := Coloring.mk (c ∘ Sum.inr) <| by
+def Coloring.sumRight (c : (G ⊕g H).Coloring γ) : H.Coloring γ := Coloring.mk (c ∘ Sum.inr) <| by
   intro u v h
   exact c.valid h
 
 /-- Color `G ⊕g H` with `Fin (n + m)` given a coloring of `G` with `Fin n` and a coloring of `H`
 with `Fin m` -/
-def Coloring.sum_fin {n m : ℕ} (cG : G.Coloring (Fin n)) (cH : H.Coloring (Fin m)) :
+def Coloring.sumFin {n m : ℕ} (cG : G.Coloring (Fin n)) (cH : H.Coloring (Fin m)) :
     (G ⊕g H).Coloring (Fin (max n m)) := Coloring.mk
   (Sum.elim (Fin.castMax m ∘ cG) (Fin.castMax' n ∘ cH)) <| by
   intro u v
@@ -105,13 +105,13 @@ def Coloring.sum_fin {n m : ℕ} (cG : G.Coloring (Fin n)) (cH : H.Coloring (Fin
     exact cH.valid
 
 theorem Colorable.sum_fin {n m : ℕ} (hG : G.Colorable n) (hH : H.Colorable m) :
-    (G ⊕g H).Colorable (max n m) := Nonempty.intro (hG.some.sum_fin hH.some)
+    (G ⊕g H).Colorable (max n m) := Nonempty.intro (hG.some.sumFin hH.some)
 
 theorem Colorable.sum_left {n : ℕ} (h : (G ⊕g H).Colorable n) : G.Colorable n :=
-  Nonempty.intro (h.some.sum_left)
+  Nonempty.intro (h.some.sumLeft)
 
 theorem Colorable.sum_right {n : ℕ} (h : (G ⊕g H).Colorable n) : H.Colorable n :=
-  Nonempty.intro (h.some.sum_right)
+  Nonempty.intro (h.some.sumRight)
 
 theorem ChromaticNumber.left_le_sum : G.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
   refine chromaticNumber_le_of_forall_imp (fun n h ↦ h.sum_left)
