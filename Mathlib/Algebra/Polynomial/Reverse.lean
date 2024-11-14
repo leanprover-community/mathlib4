@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
 import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Eval.Irreducible
 
 /-!
 # Reverse of a univariate polynomial
