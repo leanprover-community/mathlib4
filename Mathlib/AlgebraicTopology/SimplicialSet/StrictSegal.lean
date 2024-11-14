@@ -65,7 +65,6 @@ theorem spineToSimplex_spine_edge (i : Fin n) (f : Path X n) :
     X.map (mkOfSucc i).op (spineToSimplex f) = f.arrow i := by
   rw [← spine_arrow, spineToSimplex_spine]
 
-
 /-- In the presence of the strict Segal condition, a path of length `n` can be "composed" by taking
 the diagonal edge of the resulting `n`-simplex. -/
 noncomputable def spineToDiagonal (f : Path X n) : X _[1] := diagonal (spineToSimplex f)
@@ -87,7 +86,7 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hn : j + l ≤ n) :
   unfold spineToDiagonal
   rw [← congrArg diagonal (spineToSimplex_interval f j l hn)]
   unfold diagonal
-  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, subinterval_mkOfDiag_eq]
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, mkOfDiag_subinterval_eq]
 
 end StrictSegal
 

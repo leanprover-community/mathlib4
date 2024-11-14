@@ -70,8 +70,8 @@ lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[
       (X.spine n Δ).interval j l (by omega) := by
   ext i
   · simp only [spine_vertex, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
-      subinterval_const_eq]
+      const_subinterval_eq]
   · simp only [spine_arrow, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
-      subinterval_mkOfSucc_eq]
+      mkOfSucc_subinterval_eq]
 
 end SSet

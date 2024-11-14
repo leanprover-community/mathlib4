@@ -274,7 +274,7 @@ def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
   }
 
 @[simp]
-lemma subinterval_const_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
+lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
     [0].const [l] i ≫ subinterval j l hjl =
     [0].const [n] ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
   unfold subinterval
@@ -285,7 +285,7 @@ lemma subinterval_const_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1))
   exact Nat.add_comm j i.1
 
 @[simp]
-lemma subinterval_mkOfSucc_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
+lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
     mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
   unfold subinterval mkOfSucc
@@ -300,7 +300,7 @@ lemma subinterval_mkOfSucc_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     exact Nat.add_comm (i.1 + 1) j
 
 @[simp]
-lemma subinterval_mkOfDiag_eq {n} (j l : ℕ) (hn : j + l ≤ n) :
+lemma mkOfDiag_subinterval_eq {n} (j l : ℕ) (hn : j + l ≤ n) :
     mkOfDiag l ≫ subinterval j l hn =
     mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l) := by
   unfold subinterval mkOfDiag mkOfLe
