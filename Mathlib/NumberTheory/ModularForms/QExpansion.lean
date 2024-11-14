@@ -8,7 +8,7 @@ import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.Identities
 
 /-!
-# Q-expansions of modular forms
+# q-expansions of modular forms
 
 We show that a modular form of level `Γ(n)` can be written as `τ ↦ F (𝕢 n τ)` where `F` is
 analytic on the open unit disc, and `𝕢 n` is the parameter `τ ↦ exp (2 * I * π * τ / n)`. As an
@@ -57,7 +57,7 @@ theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
 The analytic function `F` such that `f τ = F (exp (2 * π * I * τ / n))`, extended by a choice of
 limit at `0`.
 -/
-nonrec def cuspFunction : ℂ → ℂ := cuspFunction n (f ∘ ofComplex)
+def cuspFunction : ℂ → ℂ := _root_.cuspFunction n (f ∘ ofComplex)
 
 nonrec theorem eq_cuspFunction [NeZero n] [SlashInvariantFormClass F Γ(n) k] (τ : ℍ) :
     cuspFunction n f (𝕢 n τ) = f τ := by
