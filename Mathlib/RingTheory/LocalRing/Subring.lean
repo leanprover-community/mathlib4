@@ -14,8 +14,6 @@ import Mathlib.RingTheory.Localization.AtPrime
 # Main result
 - `LocalSubring` : The class of local subrings of a commutative ring.
 - `LocalSubring.ofPrime`: The localization of a subring as a `LocalSubring`.
-- `LocalSubring.isMax_iff`: A local subring is maximal with respect to the domination order
-  if and only if it is a valuation ring.
 -/
 
 open IsLocalRing Set
