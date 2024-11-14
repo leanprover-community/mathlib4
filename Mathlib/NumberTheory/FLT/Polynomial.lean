@@ -249,7 +249,7 @@ theorem Polynomial.flt_catalan_aux
         rw [← add_le_add_iff_right 1, eq_d, eq_deg_a]
         refine le_trans ?_ (Nat.mul_le_mul_left _ hch2)
         omega
-      · rw [eq_a, eq_b, eq_c, ←expand_C ch u, ←expand_C ch v, ←expand_C ch w] at heq
+      · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
         rw [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
         exact heq
