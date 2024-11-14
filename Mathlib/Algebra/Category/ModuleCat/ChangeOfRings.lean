@@ -819,6 +819,19 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
           dsimp
         | add => rw [map_add, map_add]; congr 1 }
 
+lemma extendRestrictScalarsAdj_homEquiv_apply
+    {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
+    {f : R →+* S} {M : ModuleCat.{max v u₂} R} {N : ModuleCat S}
+    (φ : (extendScalars f).obj M ⟶ N) (m : M):
+    (extendRestrictScalarsAdj f).homEquiv _ _ φ m = φ ((1 : S) ⊗ₜ m) :=
+  rfl
+
+lemma extendRestrictScalarsAdj_unit_app_apply
+    {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S]
+    (f : R →+* S) (M : ModuleCat.{max v u₂} R) (m : M):
+    (extendRestrictScalarsAdj f).unit.app M m = by exact (1 : S) ⊗ₜ m :=
+  rfl
+
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     (extendScalars.{u₁, u₂, max u₂ w} f).IsLeftAdjoint :=
   (extendRestrictScalarsAdj f).isLeftAdjoint
