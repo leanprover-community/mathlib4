@@ -2219,6 +2219,7 @@ import Mathlib.Condensed.Epi
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
+import Mathlib.Condensed.Light.AB
 import Mathlib.Condensed.Light.Basic
 import Mathlib.Condensed.Light.CartesianClosed
 import Mathlib.Condensed.Light.Epi
