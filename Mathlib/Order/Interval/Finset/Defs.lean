@@ -683,16 +683,16 @@ instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
   finset_mem_Ioc _ _ _ := (mem_Ico (α := α)).trans and_comm
   finset_mem_Ioo _ _ _ := (mem_Ioo (α := α)).trans and_comm
 
-lemma Icc_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Icc_orderDual_def (a b : αᵒᵈ) :
     Icc a b = (Icc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-lemma Ico_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Ico_orderDual_def (a b : αᵒᵈ) :
     Ico a b = (Ioc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-lemma Ioc_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Ioc_orderDual_def (a b : αᵒᵈ) :
     Ioc a b = (Ico (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-lemma Ioo_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Ioo_orderDual_def (a b : αᵒᵈ) :
     Ioo a b = (Ioo (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
 lemma Finset.Icc_toDual : Icc (toDual a) (toDual b) = (Icc b a).map toDual.toEmbedding :=
