@@ -12,6 +12,10 @@ import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # The Lindemann-Weierstrass theorem
+
+## References
+
+* [Jacobson, *Basic Algebra I, 4.12*][jacobson1974]
 -/
 
 open scoped Nat

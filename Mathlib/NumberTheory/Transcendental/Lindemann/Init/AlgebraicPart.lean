@@ -9,6 +9,10 @@ import Mathlib.FieldTheory.Minpoly.ConjRootClass
 
 /-!
 # The Lindemann-Weierstrass theorem
+
+## References
+
+* [Jacobson, *Basic Algebra I, 4.12*][jacobson1974]
 -/
 
 noncomputable section
