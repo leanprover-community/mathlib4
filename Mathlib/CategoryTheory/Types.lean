@@ -5,8 +5,8 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.Data.Set.Operations
 import Mathlib.Tactic.PPWithUniv
-import Mathlib.Data.Set.CoeSort
 
 /-!
 # The category `Type`.
