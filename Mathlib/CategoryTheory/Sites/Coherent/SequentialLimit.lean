@@ -39,9 +39,7 @@ variable {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)} {c : Cone F}
     (hc : IsLimit c)
     (hF : ∀ n, Sheaf.IsLocallySurjective (F.map (homOfLE (Nat.le_succ n)).op))
 
-namespace isLocallySurjectiveSequentialLimit
-
-structure struct (F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)) where
+private structure struct (F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)) where
   X (n : ℕ) : C
   x (n : ℕ) : (F.obj ⟨n⟩).val.obj ⟨X n⟩
   map (n : ℕ) : X (n + 1) ⟶ X n
@@ -74,8 +72,9 @@ private noncomputable def preimageStruct (X : C) (y : (F.obj ⟨0⟩).val.obj �
 private noncomputable def preimageDiagram (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) : ℕᵒᵖ ⥤ C :=
   Functor.ofOpSequence (preimageStruct hF X y).map
 
-private noncomputable def cone [HasLimitsOfShape ℕᵒᵖ C] (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) :
-    Cone F where
+variable [HasLimitsOfShape ℕᵒᵖ C]
+
+private noncomputable def cone (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) : Cone F where
   pt := ((coherentTopology C).yoneda).obj (limit (preimageDiagram hF X y))
   π := NatTrans.ofOpSequence
     (fun n ↦ (coherentTopology C).yoneda.map
@@ -87,10 +86,6 @@ private noncomputable def cone [HasLimitsOfShape ℕᵒᵖ C] (X : C) (y : (F.ob
     simp [GrothendieckTopology.yonedaEquiv_symm_naturality_left,
       GrothendieckTopology.yonedaEquiv_symm_naturality_right,
       preimageDiagram, (preimageStruct hF X y).w n])
-
-end isLocallySurjectiveSequentialLimit
-
-open isLocallySurjectiveSequentialLimit
 
 variable [ConcreteCategory C] (h : ∀ {X Y : C} (f : X ⟶ Y), EffectiveEpi f ↔ Function.Surjective f)
 
