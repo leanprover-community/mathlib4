@@ -147,6 +147,10 @@ theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
   dsimp
   simp
 
+lemma eqToHom_eq {X Y : Grothendieck F} (hF : X = Y) :
+    eqToHom hF = { base := eqToHom (by subst hF; rfl), fiber := eqToHom (by subst hF; simp) } := by
+  subst hF
+  rfl
 section
 
 variable (F)
@@ -317,7 +321,7 @@ variable {E : Type*} [Category E]
 variable (F) in
 /-- The inclusion of a fiber `F.obj c` of a functor `F : C ⥤ Cat` into its Grothendieck
 construction.-/
-@[simps]
+@[simps obj map]
 def ι (c : C) : F.obj c ⥤ Grothendieck F where
   obj d := ⟨c, d⟩
   map f := ⟨𝟙 _, eqToHom (by simp) ≫ f⟩
@@ -337,6 +341,15 @@ instance faithful_ι (c : C) : (ι F c).Faithful where
   map_injective f := by
     injection f with _ f
     rwa [cancel_epi] at f
+
+/-- Every morphism `f : X ⟶ Y` in the base category induces a natural transformation from the fiber
+inclusion `ι F X` to the composition `F.map f ⋙ ι F Y`. -/
+@[simps]
+def ιNatTrans {X Y : C} (f : X ⟶ Y) : ι F X ⟶ F.map f ⋙ ι F Y where
+  app d := ⟨f, 𝟙 _⟩
+  naturality _ _ _ := by
+    simp only [ι, Functor.comp_obj, Functor.comp_map]
+    exact Grothendieck.ext _ _ (by simp) (by simp [eqToHom_map])
 
 variable (fib : ∀ c, F.obj c ⥤ E) (hom : ∀ {c c' : C} (f : c ⟶ c'), fib c ⟶ F.map f ⋙ fib c')
 variable (hom_id : ∀ c, hom (𝟙 c) = eqToHom (by simp only [Functor.map_id]; rfl))

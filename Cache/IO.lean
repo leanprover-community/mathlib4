@@ -132,13 +132,15 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("Mathlib", root),
     ("Archive", root),
     ("Counterexamples", root),
+    ("MathlibTest", root),
     ("Aesop", LAKEPACKAGESDIR / "aesop"),
     ("Batteries", LAKEPACKAGESDIR / "batteries"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
     ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient")
+    ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
+    ("Plausible", LAKEPACKAGESDIR / "plausible")
   ]⟩
 
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
