@@ -85,7 +85,7 @@ private lemma derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a
   · intro apd
     rw [derivative_pow, C_eq_natCast, mul_eq_zero, mul_eq_zero] at apd
     rcases apd with (nz | powz) | goal
-    · rw [←C_eq_natCast, C_eq_zero] at nz
+    · rw [← C_eq_natCast, C_eq_zero] at nz
       exact (chn (ringChar.dvd nz)).elim
     · have az : a = 0 := pow_eq_zero powz
       rw [az, map_zero]
