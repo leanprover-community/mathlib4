@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
 import Lean.Elab.Command
+import Lean.Elab.ParseImportsFast
 
 /-!
 #  The "header" linter
@@ -206,6 +207,18 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
   return output
 
 /--
+`isInMathlib modName` returns `true` if `Mathlib.lean` imports the file `modName` and `false`
+otherwise.
+This is used by the `Header` linter as a heuristic of whether it should inspect the file or not.
+-/
+def isInMathlib (modName : Name) : IO Bool := do
+  let mlPath := ("Mathlib" : System.FilePath).addExtension "lean"
+  if ← mlPath.pathExists then
+    let ml ← parseImports' (← IO.FS.readFile mlPath) ""
+    return (ml.map (·.module == modName)).any (·)
+  else return false
+
+/--
 The "header" style linter checks that a file starts with
 ```
 /-
@@ -276,11 +289,11 @@ def duplicateImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.header (← getOptions) do
+  let mainModule ← getMainModule
+  unless Linter.getLinterValue linter.style.header (← getOptions) || (← isInMathlib mainModule) do
     return
   if (← get).messages.hasErrors then
     return
-  let mainModule ← getMainModule
   -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
   -- Since that file is imports-only, we can simply skip linting it.
   if mainModule == `Mathlib then return
@@ -290,7 +303,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let firstDocModPos := match md[0]? with
                           | none     => fm.positions.back!
                           | some doc => fm.ofPosition doc.declarationRange.endPos
-  unless stx.getTailPos? == some firstDocModPos do
+  unless stx.getTailPos?.getD default ≤ firstDocModPos do
     return
   -- We try to parse the file up to `firstDocModPos`.
   let upToStx ← parseUpToHere firstDocModPos <|> (do

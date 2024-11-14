@@ -9,8 +9,7 @@ import Mathlib.Topology.Category.TopCat.Limits.Products
 # Pullbacks and pushouts in the category of topological spaces
 -/
 
-
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open CategoryTheory
 
@@ -168,7 +167,7 @@ def pullbackHomeoPreimage
   left_inv := by
     intro x
     ext <;> dsimp
-    apply hg.inj
+    apply hg.injective
     convert x.prop
     exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
   right_inv := fun _ ↦ rfl
