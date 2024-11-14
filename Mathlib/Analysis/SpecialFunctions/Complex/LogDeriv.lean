@@ -55,9 +55,11 @@ theorem hasStrictDerivAt_log {x : ℂ} (h : x ∈ slitPlane) : HasStrictDerivAt 
 lemma hasDerivAt_log {z : ℂ} (hz : z ∈ slitPlane) : HasDerivAt log z⁻¹ z :=
   HasStrictDerivAt.hasDerivAt <| hasStrictDerivAt_log hz
 
+@[fun_prop]
 lemma differentiableAt_log {z : ℂ} (hz : z ∈ slitPlane) : DifferentiableAt ℂ log z :=
   (hasDerivAt_log hz).differentiableAt
 
+@[fun_prop]
 theorem hasStrictFDerivAt_log_real {x : ℂ} (h : x ∈ slitPlane) :
     HasStrictFDerivAt log (x⁻¹ • (1 : ℂ →L[ℝ] ℂ)) x :=
   (hasStrictDerivAt_log h).complexToReal_fderiv
@@ -76,6 +78,7 @@ open scoped Topology
 
 variable {α : Type*} [TopologicalSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
+@[fun_prop]
 theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasStrictFDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasStrictFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).comp_hasStrictFDerivAt x h₁
@@ -88,6 +91,7 @@ theorem HasStrictDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ 
     (h₂ : f x ∈ slitPlane) : HasStrictDerivAt (fun t => log (f t)) (f' / f x) x := by
   simpa only [div_eq_inv_mul] using (hasStrictFDerivAt_log_real h₂).comp_hasStrictDerivAt x h₁
 
+@[fun_prop]
 theorem HasFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasFDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivAt x h₁
@@ -101,10 +105,12 @@ theorem HasDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ : HasD
   simpa only [div_eq_inv_mul] using
     (hasStrictFDerivAt_log_real h₂).hasFDerivAt.comp_hasDerivAt x h₁
 
+@[fun_prop]
 theorem DifferentiableAt.clog {f : E → ℂ} {x : E} (h₁ : DifferentiableAt ℂ f x)
     (h₂ : f x ∈ slitPlane) : DifferentiableAt ℂ (fun t => log (f t)) x :=
   (h₁.hasFDerivAt.clog h₂).differentiableAt
 
+@[fun_prop]
 theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {s : Set E} {x : E}
     (h₁ : HasFDerivWithinAt f f' s x) (h₂ : f x ∈ slitPlane) :
     HasFDerivWithinAt (fun t => log (f t)) ((f x)⁻¹ • f') s x :=
@@ -121,15 +127,18 @@ theorem HasDerivWithinAt.clog_real {f : ℝ → ℂ} {s : Set ℝ} {x : ℝ} {f'
   simpa only [div_eq_inv_mul] using
     (hasStrictFDerivAt_log_real h₂).hasFDerivAt.comp_hasDerivWithinAt x h₁
 
+@[fun_prop]
 theorem DifferentiableWithinAt.clog {f : E → ℂ} {s : Set E} {x : E}
     (h₁ : DifferentiableWithinAt ℂ f s x) (h₂ : f x ∈ slitPlane) :
     DifferentiableWithinAt ℂ (fun t => log (f t)) s x :=
   (h₁.hasFDerivWithinAt.clog h₂).differentiableWithinAt
 
+@[fun_prop]
 theorem DifferentiableOn.clog {f : E → ℂ} {s : Set E} (h₁ : DifferentiableOn ℂ f s)
     (h₂ : ∀ x ∈ s, f x ∈ slitPlane) : DifferentiableOn ℂ (fun t => log (f t)) s :=
   fun x hx => (h₁ x hx).clog (h₂ x hx)
 
+@[fun_prop]
 theorem Differentiable.clog {f : E → ℂ} (h₁ : Differentiable ℂ f)
     (h₂ : ∀ x, f x ∈ slitPlane) : Differentiable ℂ fun t => log (f t) := fun x =>
   (h₁ x).clog (h₂ x)
