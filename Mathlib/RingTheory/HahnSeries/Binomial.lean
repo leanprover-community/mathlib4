@@ -106,6 +106,12 @@ theorem mem_onePlusPosOrderTop_iff (x : HahnSeries Γ R) :
     x ∈ onePlusPosOrderTop Γ R ↔ 0 < (x - 1).orderTop := by
   exact Eq.to_iff rfl
 
+theorem one_plus_single_mem_onePlusPosOrderTop {g : Γ} (hg : 0 < g) (r : R) :
+    1 + single g r ∈ onePlusPosOrderTop Γ R := by
+  refine (mem_onePlusPosOrderTop_iff _).mpr ?_
+  rw [add_sub_cancel_left]
+  exact lt_of_lt_of_le (WithTop.coe_pos.mpr hg) orderTop_single_le
+
 /-- A summable family of Hahn series given by `Ring.choose r n • (x-1)^n`. It is a formal expansion
 of `x^r` as `(1 + (x-1))^r`. -/
 def binomialSeries [BinomialRing R] [CommRing A] [Algebra R A] {x : HahnSeries Γ A}
@@ -160,18 +166,24 @@ theorem binomialSeries_hsum_in_onePlusPosOrderTop [BinomialRing R] (x : onePlusP
 
 instance [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] [BinomialRing R] :
     HPow (onePlusPosOrderTop Γ R) R (onePlusPosOrderTop Γ R) where
-  hPow x r := ⟨SummableFamily.hsum (binomialSeries x.2 r),
-    binomialSeries_hsum_in_onePlusPosOrderTop x r⟩
+  hPow x r := ⟨(binomialSeries x.2 r).hsum, binomialSeries_hsum_in_onePlusPosOrderTop x r⟩
 
-/-!
--- Rewrite this as binomialSeries_coeff
-theorem one_sub_single_pow_coeff [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] [BinomialRing R]
-    {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) :
-    HahnSeries.coeff ((⟨(1 - single g r), one_sub_single_sub_one_orderTop_pos hg r⟩ :
-      onePlusPosOrderTop Γ R) ^ s) (k • g) = (-1) ^ k • Ring.choose s k • r ^ k := by
-  simp
-  sorry
--/
+@[simp]
+theorem binomial_power [BinomialRing R] {x : onePlusPosOrderTop Γ R} {r : R} :
+    HPow.hPow x r = (binomialSeries x.2 r).hsum :=
+  rfl
+
+theorem binomialSeries_coeff [BinomialRing R] {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) :
+    HahnSeries.coeff ((⟨(1 + single g r), one_plus_single_mem_onePlusPosOrderTop hg r⟩ :
+      onePlusPosOrderTop Γ R) ^ s) (k • g) = Ring.choose s k • r ^ k := by
+  simp only [binomial_power, SummableFamily.hsum_coeff, binomialSeries_toFun, add_sub_cancel_left,
+    single_pow, smul_coeff, smul_eq_mul]
+  rw [finsum_eq_single _ k, single_coeff_same (k • g) (r ^ k)]
+  intro n hn
+  rw [single_coeff_of_ne, mul_zero]
+  exact (Injective.ne_iff (f := fun (k : ℕ) => k • g) <| StrictMono.injective <|
+    nsmul_left_strictMono hg).mpr hn.symm
+
 theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by
   rw [← meval_X hg, ← RingHom.map_one (meval hg r), ← RingHom.map_sub]
   refine RingHom.isUnit_map (meval hg r) ?_

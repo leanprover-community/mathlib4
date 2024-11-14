@@ -138,7 +138,7 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
   simp only [leadingCoeff, coeffTop, orderTop, AddOpposite.unop_op, mk_eq_zero,
-    AddEquivClass.map_eq_zero_iff, addOppositeEquiv_support, ne_eq]
+    addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
   simp_rw [HahnSeries.ext_iff, funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
@@ -308,6 +308,16 @@ theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
   simp
 
 @[simp]
+theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
+  simp only [orderTop, support_neg, neg_eq_zero]
+
+@[simp]
+theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
+  by_cases hf : f = 0
+  · simp only [hf, neg_zero]
+  simp only [order, support_neg, neg_eq_zero]
+
+@[simp]
 protected lemma map_neg [AddGroup S] (f : R →+ S) {x : HahnSeries Γ R} :
     ((-x).map f : HahnSeries Γ S) = -(x.map f) := by
   ext; simp
@@ -332,16 +342,6 @@ theorem sub_coeffTop {x y : HahnSeries Γ R} : (x - y).coeffTop = x.coeffTop - y
 protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
     ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
   ext; simp
-
-@[simp]
-theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
-  simp only [orderTop, support_neg, neg_eq_zero]
-
-@[simp]
-theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
-  by_cases hf : f = 0
-  · simp only [hf, neg_zero]
-  simp only [order, support_neg, neg_eq_zero]
 
 theorem min_orderTop_le_orderTop_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} :
     min x.orderTop y.orderTop ≤ (x - y).orderTop := by

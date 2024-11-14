@@ -249,7 +249,7 @@ theorem ne_zero_iff_orderTop {x : HahnSeries Γ R} : x ≠ 0 ↔ orderTop x ≠ 
   · contrapose!
     exact fun hx ↦ Eq.mpr (congrArg (fun y ↦ orderTop y = ⊤) hx) orderTop_zero
 
-theorem orderTop_eq_zero_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 :=
+theorem orderTop_eq_top_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 :=
   ⟨Mathlib.Tactic.Contrapose.mtr ne_zero_iff_orderTop.mp, fun h => h ▸ orderTop_zero⟩
 
 theorem orderTop_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
@@ -420,6 +420,10 @@ def order (x : HahnSeries Γ R) : Γ :=
 theorem order_zero : order (0 : HahnSeries Γ R) = 0 :=
   dif_pos rfl
 
+@[simp]
+theorem order_of_subsingleton [Subsingleton R] {x : HahnSeries Γ R} : x.order = 0 :=
+  (Subsingleton.eq_zero x) ▸ order_zero
+
 theorem order_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) :
     order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
   dif_neg hx
@@ -431,6 +435,11 @@ theorem ne_zero_of_order_ne {x : HahnSeries Γ R} (hx : x.order ≠ 0) : x ≠ 0
 
 theorem order_eq_orderTop_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) : order x = orderTop x := by
   rw [order_of_ne hx, orderTop_of_ne hx]
+
+theorem order_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
+    (hx : ∀ g' ∈ x.support, g ≤ g') : order x = g := by
+  rw [order_of_ne <| support_nonempty_iff.mp <| Set.nonempty_of_mem hg,
+    Set.IsWF.min_eq_of_le x.isWF_support hg hx]
 
 theorem coeff_order_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
   rw [order_of_ne hx]

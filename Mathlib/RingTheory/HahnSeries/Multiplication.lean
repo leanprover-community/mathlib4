@@ -65,21 +65,14 @@ theorem support_one_subset [Zero R] [One R] : support (1 : HahnSeries Γ R) ⊆ 
 theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries Γ R) = {0} :=
   support_single_of_ne one_ne_zero
 
-open Classical in
-theorem orderTop_one_ite [Zero R] [One R] :
-    orderTop (1 : HahnSeries Γ R) = if (0 : R) = 1 then ⊤ else 0 := by
-  by_cases h : (0 : R) = 1
-  · simp [orderTop, ← single_zero_one, ← h]
-  · simp [h, ← single_zero_one, orderTop_single (fun a ↦ h a.symm)]
-
 @[simp]
-theorem orderTop_one [MulZeroOneClass R] [Nontrivial R] : orderTop (1 : HahnSeries Γ R) = 0 := by
+theorem orderTop_one [Zero R] [One R] [NeZero (1 : R)] : orderTop (1 : HahnSeries Γ R) = 0 := by
   rw [← single_zero_one, orderTop_single one_ne_zero, WithTop.coe_eq_zero]
 
 @[simp]
 theorem order_one [MulZeroOneClass R] : order (1 : HahnSeries Γ R) = 0 := by
   cases subsingleton_or_nontrivial R
-  · rw [Subsingleton.elim (1 : HahnSeries Γ R) 0, order_zero]
+  · simp
   · exact order_single one_ne_zero
 
 @[simp]

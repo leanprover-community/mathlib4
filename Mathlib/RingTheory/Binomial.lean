@@ -394,7 +394,7 @@ alias choose_nat_cast := choose_natCast
 
 @[simp]
 theorem choose_zero_right' (r : R) : choose r 0 = (r + 1) ^ 0 := by
-  dsimp [choose]
+  dsimp only [choose]
   refine nsmul_right_injective (Nat.factorial 0) (Nat.factorial_ne_zero 0) ?_
   simp [factorial_nsmul_multichoose_eq_ascPochhammer]
 
@@ -472,7 +472,7 @@ end
 open Finset
 
 /-- Pochhammer version of Chu-Vandermonde identity -/
-theorem descPochhammer_smeval_add [Ring R] (r s : R) (k : ℕ) (h: Commute r s) :
+theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h: Commute r s) :
     (descPochhammer ℤ k).smeval (r + s) = ∑ ij ∈ antidiagonal k,
     Nat.choose k ij.1 * ((descPochhammer ℤ ij.1).smeval r * (descPochhammer ℤ ij.2).smeval s) := by
   induction k with
@@ -506,7 +506,7 @@ theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute
       ∑ ij ∈ antidiagonal k, choose r ij.1 * choose s ij.2 := by
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
-  rw [← descPochhammer_eq_factorial_smul_choose, smul_sum, descPochhammer_smeval_add _ _ _ h]
+  rw [← descPochhammer_eq_factorial_smul_choose, smul_sum, descPochhammer_smeval_add _ h]
   refine sum_congr rfl ?_
   intro x hx
   rw [← Nat.choose_mul_factorial_mul_factorial (antidiagonal.fst_le hx),
