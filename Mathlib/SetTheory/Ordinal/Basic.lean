@@ -1239,6 +1239,10 @@ theorem ord_eq_one {a : Cardinal} : a.ord = 1 ↔ a = 1 :=
 theorem omega0_le_ord {a : Cardinal} : ω ≤ a.ord ↔ ℵ₀ ≤ a := by
   rw [← ord_aleph0, ord_le_ord]
 
+@[simp]
+theorem ord_lt_omega0 {a : Cardinal} : a.ord < ω ↔ a < ℵ₀ :=
+  le_iff_le_iff_lt_iff_lt.1 omega0_le_ord
+
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
 -/
@@ -1335,6 +1339,10 @@ theorem ofNat_le_card {o} {n : ℕ} [n.AtLeastTwo] :
 @[simp]
 theorem aleph0_le_card {o} : ℵ₀ ≤ card o ↔ ω ≤ o := by
   rw [← ord_le, ord_aleph0]
+
+@[simp]
+theorem card_lt_aleph0 {o} : card o < ℵ₀ ↔ o < ω :=
+  le_iff_le_iff_lt_iff_lt.1 aleph0_le_card
 
 @[simp]
 theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o := by
