@@ -50,7 +50,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   covers := by
     intro x
     erw [TopCat.coe_comp] -- now `erw` after #13170
-    rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+    rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
     rw [← TopCat.epi_iff_surjective]
@@ -179,6 +179,24 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
   convert pullbackSymmetry_inv_comp_fst ((𝒰.obj i.1).affineCover.map i.2) (pullback.fst _ _)
   exact pullbackRightPullbackFstIso_hom_fst _ _ _
 
+/-- A family of elements spanning the unit ideal of `R` gives a affine open cover of `Spec R`. -/
+@[simps]
+noncomputable
+def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R)
+    (hs : Ideal.span (Set.range s) = ⊤) : (Spec R).AffineOpenCover where
+  J := ι
+  obj i := .of (Localization.Away (s i))
+  map i := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away (s i))))
+  f x := by
+    have : ∃ i, s i ∉ x.asIdeal := by
+      by_contra! h; apply x.2.ne_top; rwa [← top_le_iff, ← hs, Ideal.span_le, Set.range_subset_iff]
+    exact this.choose
+  covers x := by
+    generalize_proofs H
+    let i := (H x).choose
+    have := PrimeSpectrum.localization_away_comap_range (Localization.Away (s i)) (s i)
+    exact (eq_iff_iff.mp congr(x ∈ $this)).mpr (H x).choose_spec
+
 /-- Given any open cover `𝓤`, this is an affine open cover which refines it. -/
 def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
     𝓤.affineRefinement.openCover ⟶ 𝓤 where
@@ -232,7 +250,7 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   map r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
   f _ := 1
   covers r := by
-    rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp _)]
+    rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
     · -- Porting note: need more hand holding here because Lean knows that
       -- `CommRing.ofHom ...` is iso, but without `ofHom` Lean does not know what to do
