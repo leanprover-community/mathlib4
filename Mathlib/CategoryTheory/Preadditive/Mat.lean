@@ -5,14 +5,15 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Data.Matrix.DMatrix
-import Mathlib.Data.Matrix.Basic
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Ring.Opposite
+import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Preadditive.SingleObj
+import Mathlib.Data.Matrix.DMatrix
+import Mathlib.Data.Matrix.Mul
 
 /-!
 # Matrices over a category.
