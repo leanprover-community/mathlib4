@@ -27,7 +27,7 @@ universe v u
 
 open CategoryTheory
 
-open Simplicial SimplexCategory
+open Simplicial SimplicialObject SimplexCategory
 
 namespace SSet
 
@@ -38,52 +38,49 @@ determined by their spine. -/
 class StrictSegal : Prop where
   segal : ∀ (n : ℕ), Function.Bijective (X.spine n)
 
-variable {X} in
-/-- The diagonal of a simplex is the long edge of the simplex.-/
-def diagonal {n : ℕ} (Δ : X _[n]) : X _[1] := X.map ((diag n).op) Δ
+/-- In the presence of the strict Segal condition, a path of length `n` extends to an `n`-simplex
+whose spine is that path. -/
+noncomputable def spineToSimplex{X : SSet.{u}} [StrictSegal X] {n : ℕ} : Path X n → X _[n] :=
+  (Equiv.ofBijective _ (StrictSegal.segal n)).invFun
+
 
 namespace StrictSegal
 variable {X : SSet.{u}} [StrictSegal X] {n : ℕ}
 
-/-- In the presence of the strict Segal condition, a path of length `n` extends to an `n`-simplex
-whose spine is that path. -/
-noncomputable def spineToSimplex : Path X n → X _[n] :=
-  (Equiv.ofBijective _ (segal n)).invFun
-
 @[simp]
-theorem spineToSimplex_spine (f : Path X n) :
-    X.spine n (StrictSegal.spineToSimplex f) = f :=
+theorem spine_spineToSimplex (f : Path X n) :
+    X.spine n (spineToSimplex f) = f :=
   (Equiv.ofBijective _ (segal n)).right_inv f
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
     X.map (const [0] [n] i).op (spineToSimplex f) = f.vertex i := by
-  rw [← spine_vertex, spineToSimplex_spine]
+  rw [← spine_vertex, spine_spineToSimplex]
 
 @[simp]
-theorem spineToSimplex_spine_edge (i : Fin n) (f : Path X n) :
+theorem spineToSimplex_arrow (i : Fin n) (f : Path X n) :
     X.map (mkOfSucc i).op (spineToSimplex f) = f.arrow i := by
-  rw [← spine_arrow, spineToSimplex_spine]
+  rw [← spine_arrow, spine_spineToSimplex]
 
 /-- In the presence of the strict Segal condition, a path of length `n` can be "composed" by taking
 the diagonal edge of the resulting `n`-simplex. -/
-noncomputable def spineToDiagonal (f : Path X n) : X _[1] := diagonal (spineToSimplex f)
+noncomputable def spineToDiagonal (f : Path X n) : X _[1] := diagonal X (spineToSimplex f)
 
 @[simp]
 theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤  n)  :
     X.map (subinterval j l hjl).op (spineToSimplex f) =
       spineToSimplex (Path.interval f j l hjl) := by
   apply (segal _).injective
-  rw [StrictSegal.spineToSimplex_spine]
+  rw [spine_spineToSimplex]
   convert spine_map_subinterval X j l hjl (spineToSimplex f)
-  exact Eq.symm (spineToSimplex_spine f)
+  exact Eq.symm (spine_spineToSimplex f)
 
 theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hn : j + l ≤ n) :
     X.map
       (mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)).op
       (spineToSimplex f) = spineToDiagonal (Path.interval f j l hn) := by
   unfold spineToDiagonal
-  rw [← congrArg diagonal (spineToSimplex_interval f j l hn)]
+  rw [← congrArg (diagonal X) (spineToSimplex_interval f j l hn)]
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
