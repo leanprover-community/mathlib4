@@ -98,7 +98,6 @@ theorem derivative_C_mul_X_sq (a : R) : derivative (C a * X ^ 2) = C (a * 2) * X
 theorem derivative_X_pow (n : ℕ) : derivative (X ^ n : R[X]) = C (n : R) * X ^ (n - 1) := by
   convert derivative_C_mul_X_pow (1 : R) n <;> simp
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_X_sq : derivative (X ^ 2 : R[X]) = C 2 * X := by
   rw [derivative_X_pow, Nat.cast_two, pow_one]
 
@@ -120,16 +119,17 @@ theorem derivative_one : derivative (1 : R[X]) = 0 :=
 theorem derivative_add {f g : R[X]} : derivative (f + g) = derivative f + derivative g :=
   derivative.map_add f g
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_X_add_C (c : R) : derivative (X + C c) = 1 := by
   rw [derivative_add, derivative_X, derivative_C, add_zero]
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
     derivative (∑ b ∈ s, f b) = ∑ b ∈ s, derivative (f b) :=
   map_sum ..
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
+theorem iterate_derivative_sum (k : ℕ) (s : Finset ι) (f : ι → R[X]) :
+    derivative^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, derivative^[k] (f b) := by
+  simp_rw [← LinearMap.pow_apply, map_sum]
+
 theorem derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
   derivative.map_smul_of_tower s p
@@ -571,7 +571,6 @@ theorem iterate_derivative_neg {f : R[X]} {k : ℕ} : derivative^[k] (-f) = -der
 theorem derivative_sub {f g : R[X]} : derivative (f - g) = derivative f - derivative g :=
   LinearMap.map_sub derivative f g
 
--- Porting note (#10618): removed `simp`: `simp` can prove it.
 theorem derivative_X_sub_C (c : R) : derivative (X - C c) = 1 := by
   rw [derivative_sub, derivative_X, derivative_C, sub_zero]
 
@@ -642,6 +641,20 @@ theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
   rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
 
 end CommRing
+
+section NoZeroDivisors
+
+variable [Semiring R] [NoZeroDivisors R]
+
+@[simp]
+theorem dvd_derivative_iff {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 where
+  mp h := by
+    by_cases hP : P = 0
+    · simp only [hP, derivative_zero]
+    exact eq_zero_of_dvd_of_degree_lt h (degree_derivative_lt hP)
+  mpr h := by simp [h]
+
+end NoZeroDivisors
 
 end Derivative
 

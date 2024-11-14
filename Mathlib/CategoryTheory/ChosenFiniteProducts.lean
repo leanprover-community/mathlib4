@@ -5,6 +5,7 @@ Authors: Adam Topaz, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
 # Categories with chosen finite products
@@ -483,5 +484,65 @@ end prodComparison
 end ChosenFiniteProductsComparison
 
 end ChosenFiniteProducts
+
+open MonoidalCategory ChosenFiniteProducts
+
+namespace Functor
+
+variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+  {D : Type u₁} [Category.{v₁} D] [ChosenFiniteProducts D] (F : C ⥤ D)
+
+open Functor.OplaxMonoidal
+
+/- The definitions `oplaxMonoidalOfChosenFiniteProducts` and
+`monoidalOfChosenFiniteProducts` are not made instances because it would
+create a diamond for the (oplax) monoidal structure on a composition
+`F ⋙ G` of functors between categories with chosen finite products. -/
+
+/-- Any functor between categories with chosen finite products induces an oplax monoial functor. -/
+def oplaxMonoidalOfChosenFiniteProducts : F.OplaxMonoidal where
+  η' := terminalComparison F
+  δ' X Y := prodComparison F X Y
+  δ'_natural_left f X' := by simpa using (prodComparison_natural F f (𝟙 X')).symm
+  δ'_natural_right X g := by simpa using (prodComparison_natural F (𝟙 X) g).symm
+  oplax_associativity' _ _ _ := by
+    apply hom_ext
+    case' h_snd => apply hom_ext
+    all_goals simp [← Functor.map_comp]
+  oplax_left_unitality' _ := by
+    apply hom_ext
+    · exact toUnit_unique _ _
+    · simp only [leftUnitor_inv_snd, Category.assoc, whiskerRight_snd,
+        prodComparison_snd, ← F.map_comp, F.map_id]
+  oplax_right_unitality' _ := by
+    apply hom_ext
+    · simp only [rightUnitor_inv_fst, Category.assoc, whiskerLeft_fst,
+        prodComparison_fst, ← F.map_comp, F.map_id]
+    · exact toUnit_unique _ _
+
+
+attribute [local instance] oplaxMonoidalOfChosenFiniteProducts
+
+lemma η_of_chosenFiniteProducts : η F = terminalComparison F := rfl
+
+lemma δ_of_chosenFiniteProducts (X Y : C) : δ F X Y = prodComparison F X Y := rfl
+
+open Limits
+
+variable [PreservesLimit (Functor.empty.{0} C) F]
+  [PreservesLimitsOfShape (Discrete WalkingPair) F]
+
+instance : IsIso (η F) :=
+  terminalComparison_isIso_of_preservesLimits F
+
+instance (A B : C) : IsIso (δ F A B) :=
+  isIso_prodComparison_of_preservesLimit_pair F A B
+
+/-- If `F : C ⥤ D` is a functor between categories with chosen finite products
+that preserves finite products, then it is a monoidal functor. -/
+noncomputable def monoidalOfChosenFiniteProducts : F.Monoidal :=
+  Functor.Monoidal.ofOplaxMonoidal F
+
+end Functor
 
 end CategoryTheory

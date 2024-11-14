@@ -8,7 +8,6 @@ import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith

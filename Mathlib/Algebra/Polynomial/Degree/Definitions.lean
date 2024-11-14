@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.Order.Ring.WithTop
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Theory of univariate polynomials
@@ -714,7 +715,7 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
     calc
       degree (∑ i ∈ cons a s has, f i) ≤ max (degree (f a)) (degree (∑ i ∈ s, f i)) := by
         rw [Finset.sum_cons]; exact degree_add_le _ _
-      _ ≤ _ := by rw [sup_cons, sup_eq_max]; exact max_le_max le_rfl ih
+      _ ≤ _ := by rw [sup_cons]; exact max_le_max le_rfl ih
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
   simpa only [degree, ← support_toFinsupp, toFinsupp_mul]
@@ -758,11 +759,9 @@ theorem leadingCoeff_C_mul_X (a : R) : leadingCoeff (C a * X) = a := by
 theorem leadingCoeff_C (a : R) : leadingCoeff (C a) = a :=
   leadingCoeff_monomial a 0
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X_pow (n : ℕ) : leadingCoeff ((X : R[X]) ^ n) = 1 := by
   simpa only [C_1, one_mul] using leadingCoeff_C_mul_X_pow (1 : R) n
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_X : leadingCoeff (X : R[X]) = 1 := by
   simpa only [pow_one] using @leadingCoeff_X_pow R _ 1
 
@@ -774,7 +773,6 @@ theorem monic_X_pow (n : ℕ) : Monic (X ^ n : R[X]) :=
 theorem monic_X : Monic (X : R[X]) :=
   leadingCoeff_X
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem leadingCoeff_one : leadingCoeff (1 : R[X]) = 1 :=
   leadingCoeff_C 1
 

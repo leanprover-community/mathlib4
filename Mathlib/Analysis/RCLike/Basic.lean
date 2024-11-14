@@ -39,7 +39,7 @@ in `Mathlib/Data/Nat/Cast/Defs.lean`. See also Note [coercion into rings] for mo
 In addition, several lemmas need to be set at priority 900 to make sure that they do not override
 their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter errors).
 
-A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
+A few lemmas requiring heavier imports are in `Mathlib/Analysis/RCLike/Lemmas.lean`.
 -/
 
 open Fintype
@@ -299,7 +299,7 @@ theorem conj_nat_cast (n : ℕ) : conj (n : K) = n := map_natCast _ _
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : K)) = OfNat.ofNat n :=
   map_ofNat _ _
 
-@[rclike_simps] -- Porting note (#10618): was a `simp` but `simp` can prove it
+@[rclike_simps, simp]
 theorem conj_neg_I : conj (-I) = (I : K) := by rw [map_neg, conj_I, neg_neg]
 
 theorem conj_eq_re_sub_im (z : K) : conj z = re z - im z * I :=
@@ -871,6 +871,20 @@ instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrdere
   StarModule.instOrderedSMul
 
 scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
+
+theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
+    0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
+  simp only [pos_iff (K := K), neg_iff (K := K), re_ofReal_mul, im_ofReal_mul]
+  obtain hx | hx | hx := lt_trichotomy x 0
+  · simp only [mul_pos_iff, not_lt_of_gt hx, false_and, hx, true_and, false_or, mul_eq_zero, hx.ne,
+      or_false]
+  · simp only [hx, zero_mul, lt_self_iff_false, false_and, false_or]
+  · simp only [mul_pos_iff, hx, true_and, not_lt_of_gt hx, false_and, or_false, mul_eq_zero,
+      hx.ne', false_or]
+
+theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
+    x * z < 0 ↔ (x < 0 ∧ 0 < z) ∨ (0 < x ∧ z < 0) := by
+  simpa only [mul_neg, neg_pos, neg_neg_iff_pos] using ofReal_mul_pos_iff x (-z)
 
 end Order
 

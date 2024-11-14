@@ -56,7 +56,7 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 
@@ -125,9 +125,7 @@ theorem ι_isOpenEmbedding [HasLimits C] (i : D.J) : IsOpenEmbedding (𝖣.ι i)
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) _]
   -- Porting note: added this erewrite
   erw [coe_comp]
-  refine
-    IsOpenEmbedding.comp
-      (TopCat.homeoOfIso (𝖣.gluedIso (PresheafedSpace.forget _)).symm).isOpenEmbedding
+  exact (TopCat.homeoOfIso (𝖣.gluedIso (PresheafedSpace.forget _)).symm).isOpenEmbedding.comp
       (D.toTopGlueData.ι_isOpenEmbedding i)
 
 @[deprecated (since := "2024-10-18")]
@@ -425,7 +423,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_inv_app'_assoc]
   · simp only [eqToHom_op, eqToHom_trans, eqToHom_map (Functor.op _), ← Functor.map_comp]
     rfl
-  · rw [Set.range_iff_surjective.mpr _]
+  · rw [Set.range_eq_univ.mpr _]
     · simp
     · rw [← TopCat.epi_iff_surjective]
       infer_instance

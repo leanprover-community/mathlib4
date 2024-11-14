@@ -690,8 +690,8 @@ theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
   if H : k = 0 then simp [H, eq_comm]
   else
     have : q * k ≤ a ∧ a < (q + 1) * k ↔ q = a / k := by
-      rw [le_antisymm_iff, ← (@Nat.lt_succ _ q), Nat.le_div_iff_mul_le' (Nat.pos_of_ne_zero H),
-          Nat.div_lt_iff_lt_mul' (Nat.pos_of_ne_zero H)]
+      rw [le_antisymm_iff, ← (@Nat.lt_succ _ q), Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero H),
+          Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero H)]
     simpa [H, zero_lt_iff, eq_comm (b := q)]
 
 theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
@@ -945,12 +945,16 @@ theorem list_range : Primrec List.range :=
   (nat_rec' .id (const []) ((list_concat.comp snd fst).comp snd).to₂).of_eq fun n => by
     simp; induction n <;> simp [*, List.range_succ]
 
-theorem list_join : Primrec (@List.join α) :=
+theorem list_flatten : Primrec (@List.flatten α) :=
   (list_foldr .id (const []) <| to₂ <| comp (@list_append α _) snd).of_eq fun l => by
     dsimp; induction l <;> simp [*]
 
-theorem list_bind {f : α → List β} {g : α → β → List σ} (hf : Primrec f) (hg : Primrec₂ g) :
-    Primrec (fun a => (f a).bind (g a)) := list_join.comp (list_map hf hg)
+@[deprecated (since := "2024-10-15")] alias list_join := list_flatten
+
+theorem list_flatMap {f : α → List β} {g : α → β → List σ} (hf : Primrec f) (hg : Primrec₂ g) :
+    Primrec (fun a => (f a).flatMap (g a)) := list_flatten.comp (list_map hf hg)
+
+@[deprecated (since := "2024-10-16")] alias list_bind := list_flatMap
 
 theorem optionToList : Primrec (Option.toList : Option α → List α) :=
   (option_casesOn Primrec.id (const [])
@@ -959,8 +963,8 @@ theorem optionToList : Primrec (Option.toList : Option α → List α) :=
 
 theorem listFilterMap {f : α → List β} {g : α → β → Option σ}
     (hf : Primrec f) (hg : Primrec₂ g) : Primrec fun a => (f a).filterMap (g a) :=
-  (list_bind hf (comp₂ optionToList hg)).of_eq
-    fun _ ↦ Eq.symm <| List.filterMap_eq_bind_toList _ _
+  (list_flatMap hf (comp₂ optionToList hg)).of_eq
+    fun _ ↦ Eq.symm <| List.filterMap_eq_flatMap_toList _ _
 
 theorem list_length : Primrec (@List.length α) :=
   (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ <| (succ.comp <| snd.comp snd).to₂).of_eq
@@ -1008,16 +1012,16 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
     (Ord : ∀ b, ∀ b' ∈ l b, m b' < m b)
     (H : ∀ b, g b ((l b).map f) = some (f b)) : Primrec f := by
   haveI : DecidableEq β := Encodable.decidableEqOfEncodable β
-  let mapGraph (M : List (β × σ)) (bs : List β) : List σ := bs.bind (Option.toList <| M.lookup ·)
-  let bindList (b : β) : ℕ → List β := fun n ↦ n.rec [b] fun _ bs ↦ bs.bind l
+  let mapGraph (M : List (β × σ)) (bs : List β) : List σ := bs.flatMap (Option.toList <| M.lookup ·)
+  let bindList (b : β) : ℕ → List β := fun n ↦ n.rec [b] fun _ bs ↦ bs.flatMap l
   let graph (b : β) : ℕ → List (β × σ) := fun i ↦ i.rec [] fun i ih ↦
     (bindList b (m b - i)).filterMap fun b' ↦ (g b' <| mapGraph ih (l b')).map (b', ·)
   have mapGraph_primrec : Primrec₂ mapGraph :=
-    to₂ <| list_bind snd <| optionToList.comp₂ <| listLookup.comp₂ .right (fst.comp₂ .left)
+    to₂ <| list_flatMap snd <| optionToList.comp₂ <| listLookup.comp₂ .right (fst.comp₂ .left)
   have bindList_primrec : Primrec₂ (bindList) :=
     nat_rec' snd
       (list_cons.comp fst (const []))
-      (to₂ <| list_bind (snd.comp snd) (hl.comp₂ .right))
+      (to₂ <| list_flatMap (snd.comp snd) (hl.comp₂ .right))
   have graph_primrec : Primrec₂ (graph) :=
     to₂ <| nat_rec' snd (const []) <|
       to₂ <| listFilterMap
@@ -1053,7 +1057,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
       have graph_succ : ∀ i, graph b (i + 1) =
         (bindList b (m b - i)).filterMap fun b' =>
           (g b' <| mapGraph (graph b i) (l b')).map (b', ·) := fun _ => rfl
-      have bindList_succ : ∀ i, bindList b (i + 1) = (bindList b i).bind l := fun _ => rfl
+      have bindList_succ : ∀ i, bindList b (i + 1) = (bindList b i).flatMap l := fun _ => rfl
       induction' i with i ih
       · symm; simpa [graph] using bindList_eq_nil
       · simp only [graph_succ, ih (Nat.le_of_lt hi), Nat.succ_sub (Nat.lt_succ.mp hi),
@@ -1061,7 +1065,7 @@ theorem nat_omega_rec' (f : β → σ) {m : β → ℕ} {l : β → List β} {g 
         apply List.filterMap_eq_map_iff_forall_eq_some.mpr
         intro b' ha'; simp; rw [mapGraph_graph]
         · exact H b'
-        · exact (List.infix_bind_of_mem ha' l).subset
+        · exact (List.infix_flatMap_of_mem ha' l).subset
     simp [graph_eq_map_bindList (m b + 1) (Nat.le_refl _), bindList]
 
 theorem nat_omega_rec (f : α → β → σ) {m : α → β → ℕ}

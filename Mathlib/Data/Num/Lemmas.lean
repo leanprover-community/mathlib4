@@ -45,7 +45,7 @@ theorem cast_to_nat [AddMonoidWithOne α] : ∀ n : PosNum, ((n : ℕ) : α) = n
   | bit0 p => by dsimp; rw [Nat.cast_add, p.cast_to_nat]
   | bit1 p => by dsimp; rw [Nat.cast_add, Nat.cast_add, Nat.cast_one, p.cast_to_nat]
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem to_nat_to_int (n : PosNum) : ((n : ℕ) : ℤ) = n :=
   cast_to_nat _
 
@@ -1181,7 +1181,7 @@ theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n
     cases PosNum.cmp a b <;> dsimp <;> [simp; exact congr_arg pos; simp [GT.gt]]
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
-    cases PosNum.cmp b a <;> dsimp <;> [simp; simp (config := { contextual := true }); simp [GT.gt]]
+    cases PosNum.cmp b a <;> dsimp <;> [simp; simp +contextual; simp [GT.gt]]
   | pos _, 0 => PosNum.cast_pos _
   | pos _, neg _ => lt_trans (neg_lt_zero.2 <| PosNum.cast_pos _) (PosNum.cast_pos _)
   | 0, neg _ => neg_lt_zero.2 <| PosNum.cast_pos _

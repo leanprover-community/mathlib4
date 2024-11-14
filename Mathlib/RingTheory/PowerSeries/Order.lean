@@ -14,7 +14,7 @@ import Mathlib.Data.Nat.PartENat
 The `PowerSeries.order` of a formal power series `φ` is the multiplicity of the variable `X` in `φ`.
 
 If the coefficients form an integral domain, then `PowerSeries.order` is an
-additive valuation (`PowerSeries.order_mul`, `PowerSeries.le_order_add`).
+additive valuation (`PowerSeries.order_mul`, `PowerSeries.min_order_le_order_add`).
 
 We prove that if the commutative ring `R` of coefficients is an integral domain,
 then the ring `R⟦X⟧` of formal power series in one variable over `R`
@@ -146,9 +146,11 @@ theorem order_eq {φ : R⟦X⟧} {n : PartENat} :
 
 /-- The order of the sum of two formal power series
  is at least the minimum of their orders. -/
-theorem le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
+theorem min_order_le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
   refine le_order _ _ ?_
-  simp (config := { contextual := true }) [coeff_of_lt_order]
+  simp +contextual [coeff_of_lt_order]
+
+@[deprecated (since := "2024-11-12")] alias le_order_add := min_order_le_order_add
 
 private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ order ψ)
     (H : order φ < order ψ) : order (φ + ψ) ≤ order φ ⊓ order ψ := by
@@ -169,7 +171,7 @@ private theorem order_add_of_order_eq.aux (φ ψ : R⟦X⟧) (_h : order φ ≠ 
  is the minimum of their orders if their orders differ. -/
 theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
     order (φ + ψ) = order φ ⊓ order ψ := by
-  refine le_antisymm ?_ (le_order_add _ _)
+  refine le_antisymm ?_ (min_order_le_order_add _ _)
   by_cases H₁ : order φ < order ψ
   · apply order_add_of_order_eq.aux _ _ h H₁
   by_cases H₂ : order ψ < order φ
@@ -178,7 +180,7 @@ theorem order_add_of_order_eq (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
 
 /-- The order of the product of two formal power series
  is at least the sum of their orders. -/
-theorem order_mul_ge (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ) := by
+theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ) := by
   apply le_order
   intro n hn; rw [coeff_mul, Finset.sum_eq_zero]
   rintro ⟨i, j⟩ hij
@@ -190,6 +192,8 @@ theorem order_mul_ge (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
   exfalso
   apply ne_of_lt (lt_of_lt_of_le hn <| add_le_add hi hj)
   rw [← Nat.cast_add, hij]
+
+alias order_mul_ge := le_order_mul
 
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :

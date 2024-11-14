@@ -239,16 +239,21 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f :
             (half_lt_self ε_pos))
 
 /-- The topology on `α →ᵇ β` is exactly the topology induced by the natural map to `α →ᵤ β`. -/
-theorem inducing_coeFn : Inducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) := by
-  rw [inducing_iff_nhds]
+theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) := by
+  rw [isInducing_iff_nhds]
   refine fun f => eq_of_forall_le_iff fun l => ?_
   rw [← tendsto_iff_comap, ← tendsto_id', tendsto_iff_tendstoUniformly,
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
 
--- TODO: upgrade to a `IsUniformEmbedding`
-theorem embedding_coeFn : Embedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
-  ⟨inducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+@[deprecated (since := "2024-10-28")] alias inducing_coeFn := isInducing_coeFn
+
+-- TODO: upgrade to `IsUniformEmbedding`
+theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
+  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_coeFn := isEmbedding_coeFn
 
 variable (α)
 
@@ -440,6 +445,13 @@ theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α
   Isometry.of_dist_eq fun g₁ g₂ => by simp [dist_nonneg]
 
 end Extend
+
+/-- The indicator function of a clopen set, as a bounded continuous function. -/
+@[simps]
+noncomputable def indicator (s : Set α) (hs : IsClopen s) : BoundedContinuousFunction α ℝ where
+  toFun := s.indicator 1
+  continuous_toFun := continuous_indicator (by simp [hs]) <| continuous_const.continuousOn
+  map_bounded' := ⟨1, fun x y ↦ by by_cases hx : x ∈ s <;> by_cases hy : y ∈ s <;> simp [hx, hy]⟩
 
 end Basics
 
@@ -750,7 +762,7 @@ theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α 
 
 instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
     Monoid (α →ᵇ R) :=
-  Injective.monoid (↑) DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
     CommMonoid (α →ᵇ R) where
@@ -760,7 +772,7 @@ instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
 instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R]
     [BoundedAdd R] [ContinuousAdd R] :
     Semiring (α →ᵇ R) :=
-  Injective.semiring (↑) DFunLike.coe_injective'
+  Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
 end mul
@@ -1209,7 +1221,7 @@ theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index OfNat.ofNat n : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+    ((no_index (OfNat.ofNat n) : α →ᵇ R) : α → R) = OfNat.ofNat n :=
   rfl
 
 instance : IntCast (α →ᵇ R) :=
@@ -1428,8 +1440,8 @@ variable [TopologicalSpace α] [NormedLatticeAddCommGroup β]
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
 
-instance instSup : Sup (α →ᵇ β) where
-  sup f g :=
+instance instSup : Max (α →ᵇ β) where
+  max f g :=
     { toFun := f ⊔ g
       continuous_toFun := f.continuous.sup g.continuous
       map_bounded' := by
@@ -1439,8 +1451,8 @@ instance instSup : Sup (α →ᵇ β) where
         simp_rw [NormedAddCommGroup.dist_eq] at hf hg ⊢
         exact (norm_sup_sub_sup_le_add_norm _ _ _ _).trans (add_le_add (hf _ _) (hg _ _)) }
 
-instance instInf : Inf (α →ᵇ β) where
-  inf f g :=
+instance instInf : Min (α →ᵇ β) where
+  min f g :=
     { toFun := f ⊓ g
       continuous_toFun := f.continuous.inf g.continuous
       map_bounded' := by

@@ -47,7 +47,7 @@ suppress_compilation
 
 open scoped TensorProduct DirectSum
 
-variable {R ι A B : Type*}
+variable {R ι : Type*}
 
 namespace TensorProduct
 
