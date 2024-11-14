@@ -1117,16 +1117,10 @@ theorem IsCompact.closure_of_subset {s K : Set X} (hK : IsCompact K) (h : s ⊆ 
     IsCompact (closure s) :=
   hK.closure.of_isClosed_subset isClosed_closure (closure_mono h)
 
-@[deprecated (since := "2024-01-28")]
-alias isCompact_closure_of_subset_compact := IsCompact.closure_of_subset
-
 @[simp]
 theorem exists_isCompact_superset_iff {s : Set X} :
     (∃ K, IsCompact K ∧ s ⊆ K) ↔ IsCompact (closure s) :=
   ⟨fun ⟨_K, hK, hsK⟩ => hK.closure_of_subset hsK, fun h => ⟨closure s, h, subset_closure⟩⟩
-
-@[deprecated (since := "2024-01-28")]
-alias exists_compact_superset_iff := exists_isCompact_superset_iff
 
 /-- If `K` and `L` are disjoint compact sets in an R₁ topological space
 and `L` is also closed, then `K` and `L` have disjoint neighborhoods. -/
@@ -1136,9 +1130,6 @@ theorem SeparatedNhds.of_isCompact_isCompact_isClosed {K L : Set X} (hK : IsComp
     disjoint_nhds_nhds_iff_not_inseparable]
   intro x hx y hy h
   exact absurd ((h.mem_closed_iff h'L).2 hy) <| disjoint_left.1 hd hx
-
-@[deprecated (since := "2024-01-28")]
-alias separatedNhds_of_isCompact_isCompact_isClosed := SeparatedNhds.of_isCompact_isCompact_isClosed
 
 /-- If a compact set is covered by two open sets, then we can cover it by two compact subsets. -/
 theorem IsCompact.binary_compact_cover {K U V : Set X}
@@ -1301,18 +1292,12 @@ theorem exists_isOpen_superset_and_isCompact_closure {K : Set X} (hK : IsCompact
   rcases exists_compact_superset hK with ⟨K', hK', hKK'⟩
   exact ⟨interior K', isOpen_interior, hKK', hK'.closure_of_subset interior_subset⟩
 
-@[deprecated (since := "2024-01-28")]
-alias exists_open_superset_and_isCompact_closure := exists_isOpen_superset_and_isCompact_closure
-
 /-- In a weakly locally compact R₁ space,
 every point has an open neighborhood with compact closure. -/
 theorem exists_isOpen_mem_isCompact_closure (x : X) :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ IsCompact (closure U) := by
   simpa only [singleton_subset_iff]
     using exists_isOpen_superset_and_isCompact_closure isCompact_singleton
-
-@[deprecated (since := "2024-01-28")]
-alias exists_open_with_compact_closure := exists_isOpen_mem_isCompact_closure
 
 end R1Space
 
@@ -1788,9 +1773,6 @@ theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsC
   simp only [SeparatedNhds, prod_subset_compl_diagonal_iff_disjoint.symm] at hst ⊢
   exact generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
 
-@[deprecated (since := "2024-01-28")]
-alias separatedNhds_of_isCompact_isCompact := SeparatedNhds.of_isCompact_isCompact
-
 /-- In a `T2Space X`, for disjoint closed sets `s t` such that `closure sᶜ` is compact,
 there are neighbourhoods that separate `s` and `t`.-/
 lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [T2Space X] {s : Set X}
@@ -1816,15 +1798,9 @@ theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoin
     SeparatedNhds (s : Set X) t :=
   .of_isCompact_isCompact s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
 
-@[deprecated (since := "2024-01-28")]
-alias separatedNhds_of_finset_finset := SeparatedNhds.of_finset_finset
-
 theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
     SeparatedNhds ({x} : Set X) s :=
   mod_cast .of_finset_finset {x} s (Finset.disjoint_singleton_left.mpr h)
-
-@[deprecated (since := "2024-01-28")]
-alias point_disjoint_finset_opens_of_t2 := SeparatedNhds.of_singleton_finset
 
 end SeparatedFinset
 
@@ -2102,9 +2078,6 @@ lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
   simpa only [separatedNhds_iff_disjoint, hs.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
     ht.closure_eq, disjoint_left] using hst
 
-@[deprecated (since := "2024-01-28")]
-alias separatedNhds_of_isCompact_isClosed := SeparatedNhds.of_isCompact_isClosed
-
 end
 
 /-- This technique to witness `HasSeparatingCover` in regular Lindelöf topological spaces
@@ -2342,10 +2315,6 @@ instance (priority := 100) [T1Space X] [NormalSpace X] : T4Space X := ⟨⟩
 instance (priority := 100) T4Space.t3Space [T4Space X] : T3Space X where
   regular hs hxs := by simpa only [nhdsSet_singleton] using (normal_separation hs isClosed_singleton
     (disjoint_singleton_right.mpr hxs)).disjoint_nhdsSet
-
-@[deprecated inferInstance (since := "2024-01-28")]
-theorem T4Space.of_compactSpace_t2Space [CompactSpace X] [T2Space X] :
-    T4Space X := inferInstance
 
 /-- If the codomain of a closed embedding is a T₄ space, then so is the domain. -/
 protected theorem Topology.IsClosedEmbedding.t4Space [TopologicalSpace Y] [T4Space Y] {f : X → Y}

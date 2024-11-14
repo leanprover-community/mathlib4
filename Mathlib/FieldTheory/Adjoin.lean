@@ -8,8 +8,9 @@ import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Adjoining Elements to Fields
@@ -715,8 +716,6 @@ theorem sup_toSubalgebra_of_isAlgebraic
 theorem sup_toSubalgebra_of_left [FiniteDimensional K E1] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_left E1 E2
-
-@[deprecated (since := "2024-01-19")] alias sup_toSubalgebra := sup_toSubalgebra_of_left
 
 theorem sup_toSubalgebra_of_right [FiniteDimensional K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
