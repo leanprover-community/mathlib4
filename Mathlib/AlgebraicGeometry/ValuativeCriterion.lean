@@ -47,15 +47,19 @@ where `R` is a valuation ring, and `K` is its ring of fractions.
 We are interested in finding lifts `Spec R ⟶ Y` of this diagram.
 -/
 structure ValuativeCommSq {X Y : Scheme.{u}} (f : X ⟶ Y) where
+  /-- The valuation ring of a valuative commutative square. -/
   R : Type u
   [commRing : CommRing R]
   [domain : IsDomain R]
   [valuationRing : ValuationRing R]
+  /-- The field of fractions of a valuative commutative square. -/
   K : Type u
   [field : Field K]
   [algebra : Algebra R K]
   [isFractionRing : IsFractionRing R K]
+  /-- The top map in a valuative commutative map. -/
   (i₁ : Spec (.of K) ⟶ X)
+  /-- The bottom map in a valuative commutative map. -/
   (i₂ : Spec (.of R) ⟶ Y)
   (commSq : CommSq i₁ (Spec.map (CommRingCat.ofHom (algebraMap R K))) f i₂)
 
