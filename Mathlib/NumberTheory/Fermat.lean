@@ -34,7 +34,7 @@ def fermatNumber (n : ℕ) : ℕ := 2 ^ (2 ^ n) + 1
 
 theorem strictMono_fermatNumber : StrictMono fermatNumber := by
   intro m n
-  simp only [fermatNumber, add_lt_add_iff_right, pow_lt_pow_iff_right (one_lt_two : 1 < 2),
+  simp only [fermatNumber, add_lt_add_iff_right, Nat.pow_lt_pow_iff_right (one_lt_two : 1 < 2),
     imp_self]
 
 theorem two_lt_fermatNumber (n : ℕ) : 2 < fermatNumber n := by
