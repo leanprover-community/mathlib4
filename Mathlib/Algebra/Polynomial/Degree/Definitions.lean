@@ -58,12 +58,6 @@ def leadingCoeff (p : R[X]) : R :=
 def Monic (p : R[X]) :=
   leadingCoeff p = (1 : R)
 
-/-
-@[nontriviality]
-theorem monic_of_subsingleton [Subsingleton R] (p : R[X]) : Monic p :=
-  Subsingleton.elim _ _
--/
-
 theorem Monic.def : Monic p ↔ leadingCoeff p = 1 :=
   Iff.rfl
 

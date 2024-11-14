@@ -58,6 +58,14 @@ variable [Semiring R] {p q : R[X]} {ι : Type*}
 theorem zero_le_degree_iff : 0 ≤ degree p ↔ p ≠ 0 := by
   rw [← not_lt, Nat.WithBot.lt_zero_iff, degree_eq_bot]
 
+theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=
+  zero_le_degree_iff.mp <| (WithBot.coe_le_coe.mpr n.zero_le).trans hdeg
+
+theorem le_natDegree_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : n ≤ p.natDegree :=
+  -- Porting note: `.. ▸ ..` → `rwa [..] at ..`
+  WithBot.coe_le_coe.mp <| by
+    rwa [degree_eq_natDegree <| ne_zero_of_coe_le_degree hdeg] at hdeg
+
 theorem degree_linear_le : degree (C a * X + C b) ≤ 1 :=
   degree_add_le_of_degree_le (degree_C_mul_X_le _) <| le_trans degree_C_le Nat.WithBot.coe_nonneg
 
