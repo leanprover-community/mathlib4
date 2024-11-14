@@ -12,15 +12,13 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 # Strict Segal simplicial sets
 
 A simplicial set `X` satisfies the `StrictSegal` condition if for all `n`, the map
-`X.spine n : X _[n] → X.Path n` is a bijection.
+`X.spine n : X _[n] → X.Path n` is an equivalence, with equivalence inverse
+`spineToSimplex {n : ℕ} : Path X n → X _[n]`.
 
 Examples of `StrictSegal` simplicial sets are given by nerves of categories.
 
 TODO: Show that these are the only examples: that a `StrictSegal` simplicial set is isomorphic to
 the nerve of its homotopy category.
-
-`StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
-in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
 -/
 
 universe v u
@@ -40,18 +38,8 @@ class StrictSegal where
   spine_spineToSimplex {n : ℕ} (f : Path X n) : X.spine n (spineToSimplex f) = f
   spineToSimplex_spine {n : ℕ} (Δ : X _[n]) : spineToSimplex (X.spine n Δ) = Δ
 
--- /-- In the presence of the strict Segal condition, a path of length `n` extends to an `n`-simplex
--- whose spine is that path. -/
--- noncomputable def spineToSimplex {X : SSet.{u}} [StrictSegal X] {n : ℕ} : Path X n → X _[n] :=
---   (Equiv.ofBijective _ (StrictSegal.segal n)).invFun
-
 namespace StrictSegal
 variable {X : SSet.{u}} [StrictSegal X] {n : ℕ}
-
--- @[simp]
--- theorem spine_spineToSimplex (f : Path X n) :
---     X.spine n (spineToSimplex f) = f :=
---   (Equiv.ofBijective _ (segal n)).right_inv f
 
 /-- The fields of `StrictSegal` define an equivalence between `X _[n]` and `Path X n`.-/
 def spineEquiv (n : ℕ) : X _[n] ≃ Path X n where
