@@ -139,8 +139,8 @@ theorem DirichletCharacter.LSeries_eulerProduct {N : ℕ} (χ : DirichletCharact
 open LSeries
 
 /-- A variant of the Euler product for Dirichlet L-series. -/
-theorem DirichletCharacter.LSeries_eulerProduct' {N : ℕ} (χ : DirichletCharacter ℂ N) {s : ℂ}
-    (hs : 1 < s.re) :
+theorem DirichletCharacter.LSeries_eulerProduct_exp_log {N : ℕ} (χ : DirichletCharacter ℂ N)
+    {s : ℂ} (hs : 1 < s.re) :
     exp (∑' p : Nat.Primes, -log (1 - χ p * p ^ (-s))) = L ↗χ s := by
   let f := dirichletSummandHom χ <| ne_zero_of_one_lt_re hs
   have h n : term ↗χ s n = f n := by
@@ -154,15 +154,16 @@ theorem DirichletCharacter.LSeries_eulerProduct' {N : ℕ} (χ : DirichletCharac
 open DirichletCharacter
 
 /-- A variant of the Euler product for the L-series of `ζ`. -/
-theorem ArithmeticFunction.LSeries_zeta_eulerProduct' {s : ℂ} (hs : 1 < s.re) :
+theorem ArithmeticFunction.LSeries_zeta_eulerProduct_exp_log {s : ℂ} (hs : 1 < s.re) :
     exp (∑' p : Nat.Primes, -Complex.log (1 - p ^ (-s))) = L 1 s := by
-  convert modOne_eq_one (R := ℂ) ▸ LSeries_eulerProduct' (1 : DirichletCharacter ℂ 1) hs using 7
+  convert modOne_eq_one (R := ℂ) ▸
+    DirichletCharacter.LSeries_eulerProduct_exp_log (1 : DirichletCharacter ℂ 1) hs using 7
   rw [MulChar.one_apply <| isUnit_of_subsingleton _, one_mul]
 
 /-- A variant of the Euler product for the Riemann zeta function. -/
-theorem riemannZeta_eulerProduct' {s : ℂ} (hs : 1 < s.re) :
+theorem riemannZeta_eulerProduct_exp_log {s : ℂ} (hs : 1 < s.re) :
     exp (∑' p : Nat.Primes, -Complex.log (1 - p ^ (-s))) = riemannZeta s :=
-  LSeries_one_eq_riemannZeta hs ▸ ArithmeticFunction.LSeries_zeta_eulerProduct' hs
+  LSeries_one_eq_riemannZeta hs ▸ ArithmeticFunction.LSeries_zeta_eulerProduct_exp_log hs
 
 /-!
 ### Changing the level of a Dirichlet `L`-series
