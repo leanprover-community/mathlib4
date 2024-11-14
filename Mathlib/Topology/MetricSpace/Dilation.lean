@@ -50,8 +50,8 @@ needed.
 
 noncomputable section
 
-open Function Set Bornology
-open scoped Topology ENNReal NNReal
+open Bornology Function Set Topology
+open scoped ENNReal NNReal
 
 section Defs
 

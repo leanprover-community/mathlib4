@@ -8,7 +8,7 @@ import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Topology.Sheaves.Functors
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.
@@ -171,8 +171,8 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
 @[simps! toSheafedSpace presheaf]
 def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace :=
   { Spec.sheafedSpaceObj R with
-    localRing := fun x =>
-      RingEquiv.localRing (A := Localization.AtPrime x.asIdeal)
+    isLocalRing := fun x =>
+      RingEquiv.isLocalRing (A := Localization.AtPrime x.asIdeal)
         (Iso.commRingCatIsoToRingEquiv <| stalkIso R x).symm }
 
 lemma Spec.locallyRingedSpaceObj_sheaf (R : CommRingCat.{u}) :
