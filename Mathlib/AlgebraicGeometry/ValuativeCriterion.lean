@@ -16,10 +16,10 @@ import Mathlib.RingTheory.Valuation.LocalSubring
 - `AlgebraicGeometry.UniversallyClosed.eq_valuativeCriterion`:
   A morphism is universally closed if and only if
   it is quasi-compact and satisfies the existence part of the valuative criterion.
-- `AlgebraicGeometry.UniversallyClosed.eq_valuativeCriterion`:
+- `AlgebraicGeometry.IsSeparated.eq_valuativeCriterion`:
   A morphism is separated if and only if
   it is quasi-separated and satisfies the uniqueness part of the valuative criterion.
-- `AlgebraicGeometry.UniversallyClosed.eq_valuativeCriterion`:
+- `AlgebraicGeometry.IsProper.eq_valuativeCriterion`:
   A morphism is proper if and only if
   it is qcqs and of fintite type and satisfies the valuative criterion.
 
@@ -85,6 +85,22 @@ def ValuativeCriterion : MorphismProperty Scheme :=
   fun _ _ f ↦ ∀ S : ValuativeCommSq f, Nonempty (Unique (S.commSq.LiftStruct))
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+
+lemma ValuativeCriterion.iff {f : X ⟶ Y} :
+    ValuativeCriterion f ↔ Existence f ∧ Uniqueness f := by
+  show (∀ _, _) ↔ (∀ _, _) ∧ (∀ _, _)
+  simp_rw [← forall_and, unique_iff_subsingleton_and_nonempty, and_comm, CommSq.HasLift.iff]
+
+lemma ValuativeCriterion.eq :
+    ValuativeCriterion = Existence ⊓ Uniqueness := by
+  ext X Y f
+  exact iff
+
+lemma ValuativeCriterion.existence {f : X ⟶ Y} (h : ValuativeCriterion f) :
+    ValuativeCriterion.Existence f := (iff.mp h).1
+
+lemma ValuativeCriterion.uniqueness {f : X ⟶ Y} (h : ValuativeCriterion f) :
+    ValuativeCriterion.Uniqueness f := (iff.mp h).2
 
 namespace ValuativeCriterion.Existence
 
@@ -293,22 +309,6 @@ lemma IsSeparated.eq_valuativeCriterion :
     fun ⟨H, _⟩ ↦ .of_valuativeCriterion f H⟩
 
 end Uniqueness
-
-lemma ValuativeCriterion.iff {f : X ⟶ Y} :
-    ValuativeCriterion f ↔ Existence f ∧ Uniqueness f := by
-  show (∀ _, _) ↔ (∀ _, _) ∧ (∀ _, _)
-  simp_rw [← forall_and, unique_iff_subsingleton_and_nonempty, and_comm, CommSq.HasLift.iff]
-
-lemma ValuativeCriterion.eq :
-    ValuativeCriterion = Existence ⊓ Uniqueness := by
-  ext X Y f
-  exact iff
-
-lemma ValuativeCriterion.existence {f : X ⟶ Y} (h : ValuativeCriterion f) :
-    ValuativeCriterion.Existence f := (iff.mp h).1
-
-lemma ValuativeCriterion.uniqueness {f : X ⟶ Y} (h : ValuativeCriterion f) :
-    ValuativeCriterion.Uniqueness f := (iff.mp h).2
 
 /-- The **valuative criterion** for proper morphisms. -/
 @[stacks 0BX5]
