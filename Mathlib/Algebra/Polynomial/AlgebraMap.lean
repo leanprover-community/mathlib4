@@ -339,7 +339,7 @@ theorem algEquivAevalXAddC_symm {R} [CommRing R] (t : R) :
 def algEquivAevalNegX {R : Type*} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (-X) (-X) (by simp) (by simp)
 
-theorem comp_neg_X_comp_neg_X {R} [CommRing R] (p : R[X]) : (p.comp (-X)).comp (-X) = p := by
+theorem comp_neg_X_comp_neg_X {R : Type*} [CommRing R] (p : R[X]) : (p.comp (-X)).comp (-X) = p := by
   rw [comp_assoc]
   simp only [neg_comp, X_comp, neg_neg, comp_X]
 
