@@ -43,6 +43,7 @@ def processDb (decls : ConstMap) : String × String → IO Bool
     return false
 
 unsafe def main : IO Unit := do
+  Lean.enableInitializersExecution
   CoreM.withImportModules #[`Mathlib, `Archive]
       (searchPath := compile_time_search_path%) (trustLevel := 1024) do
     let decls := (←getEnv).constants
