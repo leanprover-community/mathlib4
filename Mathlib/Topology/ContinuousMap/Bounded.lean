@@ -762,7 +762,7 @@ theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α 
 
 instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
     Monoid (α →ᵇ R) :=
-  Injective.monoid (↑) DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
     CommMonoid (α →ᵇ R) where
@@ -772,7 +772,7 @@ instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
 instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R]
     [BoundedAdd R] [ContinuousAdd R] :
     Semiring (α →ᵇ R) :=
-  Injective.semiring (↑) DFunLike.coe_injective'
+  Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
 end mul
@@ -1221,7 +1221,7 @@ theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index OfNat.ofNat n : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+    ((no_index (OfNat.ofNat n) : α →ᵇ R) : α → R) = OfNat.ofNat n :=
   rfl
 
 instance : IntCast (α →ᵇ R) :=

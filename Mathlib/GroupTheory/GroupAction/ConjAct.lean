@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Subgroup.ZPowers
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.Subgroup.Centralizer
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Conjugation action of a group on itself

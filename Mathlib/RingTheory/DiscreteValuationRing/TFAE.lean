@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.Cotangent
 
 /-!
