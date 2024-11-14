@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Damiano Testa, Jens Wagema
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Induction
 import Mathlib.Algebra.Polynomial.EraseLead
 import Mathlib.Order.Interval.Finset.Nat
 

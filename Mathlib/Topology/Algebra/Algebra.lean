@@ -27,7 +27,7 @@ TODO: add continuous algebra isomorphisms.
 
 -/
 
-open Set TopologicalSpace Algebra
+open Algebra Set TopologicalSpace Topology
 
 universe u v w
 
@@ -623,7 +623,7 @@ instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
 /-- The coercion from an elemental algebra to the full algebra is a `IsClosedEmbedding`. -/
 theorem isClosedEmbedding_coe (x : A) : IsClosedEmbedding ((↑) : elemental R x → A) where
   eq_induced := rfl
-  inj := Subtype.coe_injective
+  injective := Subtype.coe_injective
   isClosed_range := by simpa using isClosed R x
 
 end Algebra.elemental

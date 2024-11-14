@@ -34,5 +34,5 @@ esac
 >&2 echo "title:      '${PR_TITLE}'"
 >&2 echo "EVENT_NAME: '${EVENT_NAME}'"
 
-printf '%s requested a maintainer %s from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D}" "${SOURCE}" "${PR}" "${URL}"
+printf '%s requested a maintainer **%s** from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D}" "${SOURCE}" "${PR}" "${URL}"
 printf '> %s\n' "${PR_TITLE}"

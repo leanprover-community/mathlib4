@@ -5,28 +5,11 @@ Authors: Winston Yin
 -/
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.ODE.PicardLindelof
+import Mathlib.Geometry.Manifold.IntegralCurve.Transform
 import Mathlib.Geometry.Manifold.InteriorBoundary
-import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 
 /-!
-# Integral curves of vector fields on a manifold
-
-Let `M` be a manifold and `v : (x : M) → TangentSpace I x` be a vector field on `M`. An integral
-curve of `v` is a function `γ : ℝ → M` such that the derivative of `γ` at `t` equals `v (γ t)`. The
-integral curve may only be defined for all `t` within some subset of `ℝ`.
-
-## Main definitions
-
-Let `v : M → TM` be a vector field on `M`, and let `γ : ℝ → M`.
-* `IsIntegralCurve γ v`: `γ t` is tangent to `v (γ t)` for all `t : ℝ`. That is, `γ` is a global
-integral curve of `v`.
-* `IsIntegralCurveOn γ v s`: `γ t` is tangent to `v (γ t)` for all `t ∈ s`, where `s : Set ℝ`.
-* `IsIntegralCurveAt γ v t₀`: `γ t` is tangent to `v (γ t)` for all `t` in some open interval
-around `t₀`. That is, `γ` is a local integral curve of `v`.
-
-For `IsIntegralCurveOn γ v s` and `IsIntegralCurveAt γ v t₀`, even though `γ` is defined for all
-time, its value outside of the set `s` or a small interval around `t₀` is irrelevant and considered
-junk.
+# Existence and uniqueness of integral curves
 
 ## Main results
 
@@ -51,262 +34,23 @@ We state simpler versions of the theorem for boundaryless manifolds as corollari
 Lee. May require submanifolds.
 
 ## Reference
-* Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.
+
+* [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
 
 ## Tags
 
 integral curve, vector field, local existence, uniqueness
 -/
 
-open scoped Manifold Topology
+open scoped Topology
 
 open Function Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-
-/-- If `γ : ℝ → M` is $C^1$ on `s : Set ℝ` and `v` is a vector field on `M`,
-`IsIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
-outside of `s` is irrelevant and considered junk. -/
-def IsIntegralCurveOn (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (s : Set ℝ) : Prop :=
-  ∀ t ∈ s, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
-
-/-- If `v` is a vector field on `M` and `t₀ : ℝ`, `IsIntegralCurveAt γ v t₀` means `γ : ℝ → M` is a
-local integral curve of `v` in a neighbourhood containing `t₀`. The value of `γ` outside of this
-interval is irrelevant and considered junk. -/
-def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ : ℝ) : Prop :=
-  ∀ᶠ t in 𝓝 t₀, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
-
-/-- If `v : M → TM` is a vector field on `M`, `IsIntegralCurve γ v` means `γ : ℝ → M` is a global
-integral curve of `v`. That is, `γ t` is tangent to `v (γ t)` for all `t : ℝ`. -/
-def IsIntegralCurve (γ : ℝ → M) (v : (x : M) → TangentSpace I x) : Prop :=
-  ∀ t : ℝ, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
-
-variable {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
-
-lemma IsIntegralCurve.isIntegralCurveOn (h : IsIntegralCurve γ v) (s : Set ℝ) :
-    IsIntegralCurveOn γ v s := fun t _ ↦ h t
-
-lemma isIntegralCurve_iff_isIntegralCurveOn : IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
-  ⟨fun h ↦ h.isIntegralCurveOn _, fun h t ↦ h t (mem_univ _)⟩
-
-lemma isIntegralCurveAt_iff :
-    IsIntegralCurveAt γ v t₀ ↔ ∃ s ∈ 𝓝 t₀, IsIntegralCurveOn γ v s := by
-  simp_rw [IsIntegralCurveOn, ← Filter.eventually_iff_exists_mem, IsIntegralCurveAt]
-
-/-- `γ` is an integral curve for `v` at `t₀` iff `γ` is an integral curve on some interval
-containing `t₀`. -/
-lemma isIntegralCurveAt_iff' :
-    IsIntegralCurveAt γ v t₀ ↔ ∃ ε > 0, IsIntegralCurveOn γ v (Metric.ball t₀ ε) := by
-  simp_rw [IsIntegralCurveOn, ← Metric.eventually_nhds_iff_ball, IsIntegralCurveAt]
-
-lemma IsIntegralCurve.isIntegralCurveAt (h : IsIntegralCurve γ v) (t : ℝ) :
-    IsIntegralCurveAt γ v t := isIntegralCurveAt_iff.mpr ⟨univ, Filter.univ_mem, fun t _ ↦ h t⟩
-
-lemma isIntegralCurve_iff_isIntegralCurveAt :
-    IsIntegralCurve γ v ↔ ∀ t : ℝ, IsIntegralCurveAt γ v t :=
-  ⟨fun h ↦ h.isIntegralCurveAt, fun h t ↦ by
-    obtain ⟨s, hs, h⟩ := isIntegralCurveAt_iff.mp (h t)
-    exact h t (mem_of_mem_nhds hs)⟩
-
-lemma IsIntegralCurveOn.mono (h : IsIntegralCurveOn γ v s) (hs : s' ⊆ s) :
-    IsIntegralCurveOn γ v s' := fun t ht ↦ h t (mem_of_mem_of_subset ht hs)
-
-lemma IsIntegralCurveOn.of_union (h : IsIntegralCurveOn γ v s) (h' : IsIntegralCurveOn γ v s') :
-    IsIntegralCurveOn γ v (s ∪ s') := fun _ ↦ fun | .inl ht => h _ ht | .inr ht => h' _ ht
-
-lemma IsIntegralCurveAt.hasMFDerivAt (h : IsIntegralCurveAt γ v t₀) :
-    HasMFDerivAt 𝓘(ℝ, ℝ) I γ t₀ ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t₀))) :=
-  have ⟨_, hs, h⟩ := isIntegralCurveAt_iff.mp h
-  h t₀ (mem_of_mem_nhds hs)
-
-lemma IsIntegralCurveOn.isIntegralCurveAt (h : IsIntegralCurveOn γ v s) (hs : s ∈ 𝓝 t₀) :
-    IsIntegralCurveAt γ v t₀ := isIntegralCurveAt_iff.mpr ⟨s, hs, h⟩
-
-/-- If `γ` is an integral curve at each `t ∈ s`, it is an integral curve on `s`. -/
-lemma IsIntegralCurveAt.isIntegralCurveOn (h : ∀ t ∈ s, IsIntegralCurveAt γ v t) :
-    IsIntegralCurveOn γ v s := by
-  intros t ht
-  obtain ⟨s, hs, h⟩ := isIntegralCurveAt_iff.mp (h t ht)
-  exact h t (mem_of_mem_nhds hs)
-
-lemma isIntegralCurveOn_iff_isIntegralCurveAt (hs : IsOpen s) :
-    IsIntegralCurveOn γ v s ↔ ∀ t ∈ s, IsIntegralCurveAt γ v t :=
-  ⟨fun h _ ht ↦ h.isIntegralCurveAt (hs.mem_nhds ht), IsIntegralCurveAt.isIntegralCurveOn⟩
-
-lemma IsIntegralCurveOn.continuousAt (hγ : IsIntegralCurveOn γ v s) (ht : t₀ ∈ s) :
-    ContinuousAt γ t₀ := (hγ t₀ ht).1
-
-lemma IsIntegralCurveOn.continuousOn (hγ : IsIntegralCurveOn γ v s) :
-    ContinuousOn γ s := fun t ht ↦ (hγ t ht).1.continuousWithinAt
-
-lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
-    ContinuousAt γ t₀ :=
-  have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
-  hγ.continuousAt <| mem_of_mem_nhds hs
-
-lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
-  continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
-
-variable [SmoothManifoldWithCorners I M] in
-/-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
-  expressed in the local chart around the initial point `γ t₀`. -/
-lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (ht : t ∈ s)
-    (hsrc : γ t ∈ (extChartAt I (γ t₀)).source) :
-    HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
-      (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
-  -- turn `HasDerivAt` into comp of `HasMFDerivAt`
-  have hsrc := extChartAt_source I (γ t₀) ▸ hsrc
-  rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
-  apply (HasMFDerivAt.comp t
-    (hasMFDerivAt_extChartAt (I := I) hsrc) (hγ _ ht)).congr_mfderiv
-  rw [ContinuousLinearMap.ext_iff]
-  intro a
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
-    ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
-    mfderiv_chartAt_eq_tangentCoordChange hsrc]
-  rfl
-
-variable [SmoothManifoldWithCorners I M] in
-lemma IsIntegralCurveAt.eventually_hasDerivAt (hγ : IsIntegralCurveAt γ v t₀) :
-    ∀ᶠ t in 𝓝 t₀, HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
-      (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
-  apply eventually_mem_nhds_iff.mpr
-    (hγ.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds (I := I) _)) |>.and hγ |>.mono
-  rintro t ⟨ht1, ht2⟩
-  have hsrc := mem_of_mem_nhds ht1
-  rw [mem_preimage, extChartAt_source I (γ t₀)] at hsrc
-  rw [hasDerivAt_iff_hasFDerivAt, ← hasMFDerivAt_iff_hasFDerivAt]
-  apply (HasMFDerivAt.comp t (hasMFDerivAt_extChartAt (I := I) hsrc) ht2).congr_mfderiv
-  rw [ContinuousLinearMap.ext_iff]
-  intro a
-  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply, map_smul,
-    ← ContinuousLinearMap.one_apply (R₁ := ℝ) a, ← ContinuousLinearMap.smulRight_apply,
-    mfderiv_chartAt_eq_tangentCoordChange hsrc]
-  rfl
-
-/-! ### Translation lemmas -/
-
-section Translation
-
-lemma IsIntegralCurveOn.comp_add (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
-    IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
-  intros t ht
-  rw [comp_apply, ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
-  apply HasMFDerivAt.comp t (hγ (t + dt) ht)
-  refine ⟨(continuous_add_right _).continuousAt, ?_⟩
-  simp only [mfld_simps, hasFDerivWithinAt_univ]
-  exact HasFDerivAt.add_const (hasFDerivAt_id _) _
-
-lemma isIntegralCurveOn_comp_add {dt : ℝ} :
-    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
-  refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
-  convert hγ.comp_add (-dt)
-  · ext t
-    simp only [Function.comp_apply, neg_add_cancel_right]
-  · simp only [mem_setOf_eq, neg_add_cancel_right, setOf_mem_eq]
-
-lemma IsIntegralCurveAt.comp_add (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
-    IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
-  rw [isIntegralCurveAt_iff'] at *
-  obtain ⟨ε, hε, h⟩ := hγ
-  refine ⟨ε, hε, ?_⟩
-  convert h.comp_add dt
-  ext t
-  rw [mem_setOf_eq, Metric.mem_ball, Metric.mem_ball, dist_sub_eq_dist_add_right]
-
-lemma isIntegralCurveAt_comp_add {dt : ℝ} :
-    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
-  refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
-  convert hγ.comp_add (-dt)
-  · ext t
-    simp only [Function.comp_apply, neg_add_cancel_right]
-  · simp only [sub_neg_eq_add, sub_add_cancel]
-
-lemma IsIntegralCurve.comp_add (hγ : IsIntegralCurve γ v) (dt : ℝ) :
-    IsIntegralCurve (γ ∘ (· + dt)) v := by
-  rw [isIntegralCurve_iff_isIntegralCurveOn] at *
-  exact hγ.comp_add _
-
-lemma isIntegralCurve_comp_add {dt : ℝ} :
-    IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· + dt)) v := by
-  refine ⟨fun hγ ↦ hγ.comp_add _, fun hγ ↦ ?_⟩
-  convert hγ.comp_add (-dt)
-  ext t
-  simp only [Function.comp_apply, neg_add_cancel_right]
-
-end Translation
-
-/-! ### Scaling lemmas -/
-
-section Scaling
-
-lemma IsIntegralCurveOn.comp_mul (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
-    IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
-  intros t ht
-  rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
-  refine HasMFDerivAt.comp t (hγ (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
-  simp only [mfld_simps, hasFDerivWithinAt_univ]
-  exact HasFDerivAt.mul_const' (hasFDerivAt_id _) _
-
-lemma isIntegralCurveOn_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
-    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
-  refine ⟨fun hγ ↦ hγ.comp_mul a, fun hγ ↦ ?_⟩
-  convert hγ.comp_mul a⁻¹
-  · ext t
-    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
-  · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
-  · simp only [mem_setOf_eq, mul_assoc, inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq]
-
-lemma IsIntegralCurveAt.comp_mul_ne_zero (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ} (ha : a ≠ 0) :
-    IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
-  rw [isIntegralCurveAt_iff'] at *
-  obtain ⟨ε, hε, h⟩ := hγ
-  refine ⟨ε / |a|, by positivity, ?_⟩
-  convert h.comp_mul a
-  ext t
-  rw [mem_setOf_eq, Metric.mem_ball, Metric.mem_ball, Real.dist_eq, Real.dist_eq,
-    lt_div_iff₀ (abs_pos.mpr ha), ← abs_mul, sub_mul, div_mul_cancel₀ _ ha]
-
-lemma isIntegralCurveAt_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
-    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
-  refine ⟨fun hγ ↦ hγ.comp_mul_ne_zero ha, fun hγ ↦ ?_⟩
-  convert hγ.comp_mul_ne_zero (inv_ne_zero ha)
-  · ext t
-    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
-  · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
-  · simp only [div_inv_eq_mul, div_mul_cancel₀ _ ha]
-
-lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
-    IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
-  rw [isIntegralCurve_iff_isIntegralCurveOn] at *
-  exact hγ.comp_mul _
-
-lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
-    IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
-  refine ⟨fun hγ ↦ hγ.comp_mul _, fun hγ ↦ ?_⟩
-  convert hγ.comp_mul a⁻¹
-  · ext t
-    simp only [Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
-  · simp only [smul_smul, inv_mul_eq_div, div_self ha, one_smul]
-
-/-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
-is a global integral curve of `v`. -/
-lemma isIntegralCurve_const {x : M} (h : v x = 0) : IsIntegralCurve (fun _ ↦ x) v := by
-  intro t
-  rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
-    ContinuousLinearMap.smulRight_one_one]
-  exact hasMFDerivAt_const ..
-
-end Scaling
-
-/-! ### Existence and uniqueness -/
-
-section ExistUnique
-
-variable [SmoothManifoldWithCorners I M] (t₀) {x₀ : M}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} (t₀ : ℝ) {x₀ : M}
 
 /-- Existence of local integral curves for a $C^1$ vector field at interior points of a smooth
 manifold. -/
@@ -533,5 +277,3 @@ lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
     · rw [not_lt] at hab
       rw [abs_of_nonneg hab]
       exact hγ.periodic_of_eq hv heq
-
-end ExistUnique
