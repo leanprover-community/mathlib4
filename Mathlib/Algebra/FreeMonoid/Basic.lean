@@ -359,11 +359,11 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 
 @[to_additive (attr := simp)]
-theorem map_invFun_map_toFun_eq {x : FreeMonoid α} (e : α ≃ β) :
+theorem map_symm_apply_map_eq {x : FreeMonoid α} (e : α ≃ β) :
     (map ⇑e.symm) ((map ⇑e) x) = x := by simp [map_map]
 
 @[to_additive (attr := simp)]
-theorem map_toFun_map_invFun_eq {x : FreeMonoid β} (e : α ≃ β) :
+theorem map_apply_map_symm_eq {x : FreeMonoid β} (e : α ≃ β) :
     (map ⇑e) ((map ⇑e.symm) x) = x := by simp [map_map]
 
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
@@ -431,8 +431,8 @@ variable {α β : Type*}
 @[to_additive "if two types are isomorphic, the additive free monoids over those types are
 isomorphic"]
 def congrEquiv (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β :=
-  MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, fun _ => map_invFun_map_toFun_eq e,
-    fun _ => map_toFun_map_invFun_eq e⟩ (by simp [map_mul])
+  MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, fun _ => map_symm_apply_map_eq e,
+    fun _ => map_apply_map_symm_eq e⟩ (by simp [map_mul])
 
 @[to_additive (attr := simp)]
 theorem congrEquiv_of (e : α ≃ β) (a : α) : congrEquiv e (of a) = of (e a) := rfl
