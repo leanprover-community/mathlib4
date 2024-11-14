@@ -20,7 +20,7 @@ TODO: Show that these are the only examples: that a `StrictSegal` simplicial set
 the nerve of its homotopy category.
 
 `StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
-elsewhere.
+in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
 -/
 
 universe v u
