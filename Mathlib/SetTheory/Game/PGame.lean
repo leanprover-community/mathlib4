@@ -348,7 +348,7 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
 /-- Two pre-games are identical if their left and right sets are identical.
 That is, `Identical x y` if every left move of `x` is identical to some left move of `y`,
 every right move of `x` is identical to some right move of `y`, and vice versa. -/
-def Identical : ∀ _ _ : PGame.{u}, Prop
+def Identical : PGame.{u} → PGame.{u} → Prop
   | mk _ _ xL xR, mk _ _ yL yR =>
     Relator.BiTotal (fun i j ↦ Identical (xL i) (yL j)) ∧
       Relator.BiTotal (fun i j ↦ Identical (xR i) (yR j))
@@ -368,7 +368,7 @@ protected theorem Identical.rfl {x} : x ≡ x := Identical.refl x
   | mk _ _ _ _, mk _ _ _ _, ⟨hL, hR⟩ => ⟨hL.symm fun _ _ h ↦ h.symm, hR.symm fun _ _ h ↦ h.symm⟩
 
 theorem identical_comm {x y} : x ≡ y ↔ y ≡ x :=
-  ⟨Identical.symm, Identical.symm⟩
+  ⟨.symm, .symm⟩
 
 @[trans] protected theorem Identical.trans : ∀ {x y z}, x ≡ y → y ≡ z → x ≡ z
   | mk _ _ _ _, mk _ _ _ _, mk _ _ _ _, ⟨hL₁, hR₁⟩, ⟨hL₂, hR₂⟩ =>
@@ -390,7 +390,7 @@ theorem memᵣ_def {x y : PGame} : x ∈ᵣ y ↔ ∃ b, x ≡ y.moveRight b := 
 theorem moveLeft_memₗ (x : PGame) (b) : x.moveLeft b ∈ₗ x := ⟨_, .rfl⟩
 theorem moveRight_memᵣ (x : PGame) (b) : x.moveRight b ∈ᵣ x := ⟨_, .rfl⟩
 
-theorem identical_of_is_empty (x y : PGame)
+theorem identical_of_isEmpty (x y : PGame)
     [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves]
     [IsEmpty y.LeftMoves] [IsEmpty y.RightMoves] : x ≡ y :=
   identical_iff.2 <| by simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
