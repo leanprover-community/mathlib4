@@ -98,7 +98,7 @@ def Coloring.sumFin {n m : ℕ} (cG : G.Coloring (Fin n)) (cH : H.Coloring (Fin 
     (G ⊕g H).Coloring (Fin (max n m)) :=
   sum (G.recolorOfEmbedding (Fin.castMaxEmb n m) cG) (H.recolorOfEmbedding (Fin.castMax'Emb n m) cH)
 
-theorem Colorable.sum_fin {n m : ℕ} (hG : G.Colorable n) (hH : H.Colorable m) :
+theorem Colorable.sum_max {n m : ℕ} (hG : G.Colorable n) (hH : H.Colorable m) :
     (G ⊕g H).Colorable (max n m) := Nonempty.intro (hG.some.sumFin hH.some)
 
 theorem Colorable.sum_left {n : ℕ} (h : (G ⊕g H).Colorable n) : G.Colorable n :=
