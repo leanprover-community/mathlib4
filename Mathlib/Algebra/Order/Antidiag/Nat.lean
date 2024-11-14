@@ -215,8 +215,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
       (mem_primeFactors_iff_mem_primeFactorsList.mp hp) t ht)
   choose f hf hf_unique using exists_unique
   refine ⟨f, ?_, ?_⟩
-  · simp only [mem_pi]
-    exact fun a h => mem_univ (f a h)
+  · simp only [mem_pi, mem_univ, forall_true_iff]
   funext i
   have : t i ∣ n := dvd_of_mem_finMulAntidiag ht _
   trans (∏ p ∈ n.primeFactors.attach, if p.1 ∣ t i then p else 1)
@@ -228,8 +227,8 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this
 
-theorem card_finMulAntidiag_pi (d n : ℕ) (hn : Squarefree n) :
-    #(n.primeFactors.pi (fun _ => (univ : Finset <| Fin d))) =
+private theorem card_finMulAntidiag_pi (d n : ℕ) (hn : Squarefree n) :
+    #(n.primeFactors.pi fun _ => (univ : Finset <| Fin d)) =
       #(finMulAntidiag d n) := by
   apply Finset.card_bij (Nat.primeFactorsPiBij d n) (primeFactorsPiBij_img d n hn)
     (primeFactorsPiBij_inj d n) (primeFactorsPiBij_surj d n hn)
