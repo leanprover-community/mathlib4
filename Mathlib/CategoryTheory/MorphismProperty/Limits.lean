@@ -61,6 +61,13 @@ theorem IsStableUnderBaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
 
+instance IsStableUnderBaseChange.isomorphisms :
+    (isomorphisms C).IsStableUnderBaseChange where
+  of_isPullback {_ _ _ _ f g _ _} h hg :=
+    have : IsIso g := hg
+    have := hasPullback_of_left_iso g f
+    h.isoPullback_hom_snd ▸ inferInstanceAs (IsIso _)
+
 variable (C) in
 instance IsStableUnderBaseChange.monomorphisms :
     (monomorphisms C).IsStableUnderBaseChange where
@@ -295,6 +302,9 @@ instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.Respect
       rw [diagonal_iff, diagonal_pullback_fst, P.cancel_left_of_respectsIso,
         P.cancel_right_of_respectsIso]
       exact P.baseChange_map f _ (by simpa))
+
+lemma diagonal_isomorphisms : (isomorphisms C).diagonal = monomorphisms C :=
+  ext _ _ fun _ _ _ ↦ pullback.isIso_diagonal_iff _
 
 end Diagonal
 

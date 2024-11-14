@@ -60,6 +60,10 @@ instance [Mono f] : IsIso (diagonal f) := by
   rw [(IsIso.inv_eq_of_inv_hom_id (diagonal_fst f)).symm]
   infer_instance
 
+lemma isIso_diagonal_iff : IsIso (diagonal f) ↔ Mono f :=
+  ⟨fun H ↦ ⟨fun _ _ e ↦ by rw [← lift_fst _ _ e, (cancel_epi (g := fst f f) (h := snd f f)
+    (diagonal f)).mp (by simp), lift_snd]⟩, fun _ ↦ inferInstance⟩
+
 /-- The two projections `Δ_{X/Y} ⟶ X` form a kernel pair for `f : X ⟶ Y`. -/
 theorem diagonal_isKernelPair : IsKernelPair f (pullback.fst f f) (pullback.snd f f) :=
   IsPullback.of_hasPullback f f

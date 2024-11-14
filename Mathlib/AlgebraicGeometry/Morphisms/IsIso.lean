@@ -42,4 +42,7 @@ instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X �
     (inferInstanceAs (IsIso (Spec.map (f.app ⊤)))),
     fun (_ : IsIso f) ↦ ⟨isAffine_of_isIso f, inferInstance⟩⟩
 
+instance : IsLocalAtTarget (monomorphisms Scheme) :=
+  diagonal_isomorphisms (C := Scheme).symm ▸ inferInstance
+
 end AlgebraicGeometry
