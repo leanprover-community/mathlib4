@@ -326,9 +326,9 @@ protected lemma inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
   have hb := ha.trans hab
   have hb_inv : (0 : A) ≤ b⁻¹ := inv_nonneg_of_nonneg b hb
   have ha_inv : (0 : A) ≤ a⁻¹ := inv_nonneg_of_nonneg a ha
-  rw [le_iff_norm_sqrt_mul_sqrt_inv ha hb, ← sq_le_one_iff (norm_nonneg _), sq,
+  rw [le_iff_norm_sqrt_mul_sqrt_inv ha hb, ← sq_le_one_iff₀ (norm_nonneg _), sq,
     ← CStarRing.norm_star_mul_self] at hab
-  rw [le_iff_norm_sqrt_mul_sqrt_inv hb_inv ha_inv, inv_inv, ← sq_le_one_iff (norm_nonneg _), sq,
+  rw [le_iff_norm_sqrt_mul_sqrt_inv hb_inv ha_inv, inv_inv, ← sq_le_one_iff₀ (norm_nonneg _), sq,
     ← CStarRing.norm_self_mul_star]
   rwa [star_mul, IsSelfAdjoint.of_nonneg sqrt_nonneg,
     IsSelfAdjoint.of_nonneg sqrt_nonneg] at hab ⊢

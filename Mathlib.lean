@@ -863,6 +863,7 @@ import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
@@ -3241,6 +3242,7 @@ import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+import Mathlib.LinearAlgebra.FreeModule.Int
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
@@ -3681,6 +3683,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
 import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+import Mathlib.NumberTheory.EulerProduct.ExpLog
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
 import Mathlib.NumberTheory.FLT.MasonStothers
@@ -4150,7 +4153,19 @@ import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Finiteness
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Finiteness.Bilinear
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Finiteness.Finsupp
+import Mathlib.RingTheory.Finiteness.Ideal
+import Mathlib.RingTheory.Finiteness.Lattice
+import Mathlib.RingTheory.Finiteness.Nakayama
+import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.RingTheory.Finiteness.Projective
+import Mathlib.RingTheory.Finiteness.Subalgebra
+import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Flat.Algebra
 import Mathlib.RingTheory.Flat.Basic
