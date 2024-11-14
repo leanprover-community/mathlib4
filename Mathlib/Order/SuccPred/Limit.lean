@@ -3,8 +3,9 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.BoundedOrder
+import Mathlib.Order.InitialSeg
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Successor and predecessor limits
@@ -24,7 +25,7 @@ predicate `Order.IsSuccLimit`.
 -/
 
 
-variable {α : Type*} {a b : α}
+variable {α β : Type*} {a b : α}
 
 namespace Order
 
@@ -192,6 +193,31 @@ variable [PartialOrder α]
 
 theorem isSuccLimit_iff [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPrelimit a := by
   rw [IsSuccLimit, isMin_iff_eq_bot]
+
+@[simp]
+theorem _root_.InitialSeg.isSuccPrelimit_apply_iff [PartialOrder β] (f : α ≤i β) :
+    IsSuccPrelimit (f a) ↔ IsSuccPrelimit a := by
+  constructor <;> intro h b hb
+  · rw [← f.apply_covBy_apply_iff] at hb
+    exact h _ hb
+  · obtain ⟨c, rfl⟩ := f.mem_range_of_rel hb.lt
+    rw [f.apply_covBy_apply_iff] at hb
+    exact h _ hb
+
+@[simp]
+theorem _root_.InitialSeg.isSuccLimit_apply_iff [PartialOrder β] (f : α ≤i β) :
+    IsSuccLimit (f a) ↔ IsSuccLimit a := by
+  simp [IsSuccLimit]
+
+@[simp]
+theorem _root_.PrincipalSeg.isSuccPrelimit_apply_iff [PartialOrder β] (f : α <i β) :
+    IsSuccPrelimit (f a) ↔ IsSuccPrelimit a :=
+  (f : α ≤i β).isSuccPrelimit_apply_iff
+
+@[simp]
+theorem _root_.PrincipalSeg.isSuccLimit_apply_iff [PartialOrder β] (f : α <i β) :
+    IsSuccLimit (f a) ↔ IsSuccLimit a :=
+  (f : α ≤i β).isSuccLimit_apply_iff
 
 variable [SuccOrder α]
 
