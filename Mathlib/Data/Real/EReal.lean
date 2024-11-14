@@ -1055,16 +1055,11 @@ lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
 
 lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le : y ≤ x) :
     (x - y).toEReal = x.toEReal - y.toEReal := by
-  by_cases hx_top : x = ∞
-  · lift y to ℝ≥0 using hy_top
-    simp only [hx_top, top_sub_coe, EReal.coe_ennreal_top]
-    norm_cast
-  have h_top : x - y ≠ ∞ := by
-    simp only [ne_eq, sub_eq_top_iff, hx_top, hy_top, not_false_eq_true, and_true]
-  nth_rw 2 [← ofReal_toReal_eq_iff.mpr hy_top, ← ofReal_toReal_eq_iff.mpr hx_top]
-  rw [← ofReal_toReal_eq_iff.mpr h_top]
-  simp only [EReal.coe_ennreal_ofReal, ge_iff_le, toReal_nonneg, max_eq_left]
-  exact toReal_sub_of_le h_le hx_top ▸ EReal.coe_sub _ _
+  lift y to ℝ≥0 using hy_top
+  cases x with
+  | top => simp [coe_nnreal_eq_coe_real]
+  | coe x =>
+    simp only [coe_nnreal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
 
 /-! ### Multiplication -/
 
