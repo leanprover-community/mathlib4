@@ -160,7 +160,7 @@ theorem ArithmeticFunction.LSeries_zeta_eulerProduct' {s : ℂ} (hs : 1 < s.re) 
   rw [MulChar.one_apply <| isUnit_of_subsingleton _, one_mul]
 
 /-- A variant of the Euler product for the Riemann zeta function. -/
-theorem riemannZeta_eulerProduct'  {s : ℂ} (hs : 1 < s.re) :
+theorem riemannZeta_eulerProduct' {s : ℂ} (hs : 1 < s.re) :
     exp (∑' p : Nat.Primes, -Complex.log (1 - p ^ (-s))) = riemannZeta s :=
   LSeries_one_eq_riemannZeta hs ▸ ArithmeticFunction.LSeries_zeta_eulerProduct' hs
 
