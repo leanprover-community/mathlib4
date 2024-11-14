@@ -39,7 +39,7 @@ lemma final_fst [R.Final] : (fst L R).Final := by
   simp only [← Category.assoc, ← Iso.comp_inv_eq, Iso.eq_comp_inv]
   simp only [ι_colimitIsoOfIsLeftKanExtension_inv, comp_obj, Category.assoc,
     HasColimit.isoOfNatIso_ι_hom, fiberwiseColimit_obj, functor_obj, Cat.of_α,
-    lanObjIsoFiberwiseColimit_hom_app, lanUnit_lanObjObjIsoColimit_hom_assoc,
+    leftKanExtensionIsoFiberwiseColimit_hom_app, lanUnit_leftKanExtensionObjIsoColimit_hom_assoc,
     HasColimit.isoOfNatIso_ι_inv_assoc, proj_obj, mk_left, Grothendieck.ι_obj, grothendieckProj_obj,
     isoWhiskerRight_inv, whiskerRight_app, ιCompGrothendieckProj_inv_app, Functor.map_id,
     Category.id_comp]
