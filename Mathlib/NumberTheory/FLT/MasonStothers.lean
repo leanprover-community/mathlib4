@@ -48,8 +48,9 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
       exact Nat.add_lt_add_right abc_dr_ndeg_lt _
 
 /-- **Polynomial ABC theorem.** -/
-theorem Polynomial.abc {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
-    (hsum : a + b + c = 0) :
+protected theorem Polynomial.abc
+    {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
+    (hab : IsCoprime a b) (hsum : a + b + c = 0) :
     ( natDegree a + 1 ≤ (radical (a * b * c)).natDegree ∧
       natDegree b + 1 ≤ (radical (a * b * c)).natDegree ∧
       natDegree c + 1 ≤ (radical (a * b * c)).natDegree ) ∨
