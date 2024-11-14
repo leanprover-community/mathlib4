@@ -560,9 +560,13 @@ theorem iff_addMonoid_fg {M : Type*} [AddCommMonoid M] : Module.Finite ℕ M ↔
   ⟨fun h => AddMonoid.fg_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).1 (finite_def.1 h), fun h =>
     finite_def.2 <| (Submodule.fg_iff_addSubmonoid_fg ⊤).2 (AddMonoid.fg_def.1 h)⟩
 
+instance {M} [AddCommMonoid M] [AddMonoid.FG M] : Module.Finite ℕ M := iff_addMonoid_fg.mpr ‹_›
+
 theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ AddGroup.FG G :=
   ⟨fun h => AddGroup.fg_def.2 <| (Submodule.fg_iff_add_subgroup_fg ⊤).1 (finite_def.1 h), fun h =>
     finite_def.2 <| (Submodule.fg_iff_add_subgroup_fg ⊤).2 (AddGroup.fg_def.1 h)⟩
+
+instance {M} [AddCommGroup M] [AddGroup.FG M] : Module.Finite ℤ M := iff_addGroup_fg.mpr ‹_›
 
 variable {R M N}
 
