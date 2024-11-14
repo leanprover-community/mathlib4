@@ -464,6 +464,24 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
       right := f.right
       w := by simp only [Functor.comp_map, ← F.map_comp, f.w] }
 
+/-- `Comma.post` is a particular case of `Comma.map`, but with better definitional properties. -/
+def postIso (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) :
+    post L R F ≅ map (F₁ := 𝟭 _) (F₂ := 𝟭 _) (L ⋙ F).leftUnitor.hom (R ⋙ F).leftUnitor.inv :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+
+instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.Faithful] : (post L R F).Faithful :=
+  Functor.Faithful.of_iso (postIso L R F).symm
+
+instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.Faithful] : (post L R F).Full :=
+  Functor.Full.of_iso (postIso L R F).symm
+
+instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.Full] : (post L R F).EssSurj :=
+  Functor.essSurj_of_iso (postIso L R F).symm
+
+/-- If `F` is an equivalence, then so is `post L R F`. -/
+lemma isEquivalence_post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.IsEquivalence] :
+    (post L R F).IsEquivalence where
+
 /-- The canonical functor from the product of two categories to the comma category of their
 respective functors into `Discrete PUnit`. -/
 @[simps]
