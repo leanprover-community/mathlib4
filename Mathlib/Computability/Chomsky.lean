@@ -5,6 +5,7 @@ Authors: Martin Dvorak
 -/
 import Mathlib.Computability.DFA
 import Mathlib.Computability.ContextFreeGrammar
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # Chomsky hierarchy
@@ -24,10 +25,10 @@ noncomputable def DFA.toContextFreeGrammar (M : DFA α σ) [DecidablePred M.acce
   NT := σ
   initial := M.start
   rules :=
-    (Finset.univ.val.map (fun s : σ => Finset.univ.val.map (fun a : α =>
-      ⟨s, [Symbol.terminal a, Symbol.nonterminal (M.step s a)]⟩
-    ))).join.toList ++
-    ((Finset.univ.val.filter M.accept).map (fun s : σ => ⟨s, []⟩)).toList
+    Finset.univ.map ⟨fun x : σ × α =>
+      ⟨x.1, [Symbol.terminal x.2, Symbol.nonterminal (M.step x.1 x.2)]⟩, fun _ => by simp⟩
+    /-∪
+    (Finset.univ.filter M.accept).map ⟨fun s : σ => ⟨s, []⟩, fun _ => by simp⟩-/
 
 lemma DFA.toContextFreeGrammar_produces (M : DFA α σ) [DecidablePred M.accept]
     (w : List (Symbol α σ)) (s : σ) (a : α) :
@@ -59,7 +60,6 @@ lemma DFA.toContextFreeGrammar_generates (M : DFA α σ) [DecidablePred M.accept
 lemma DFA.toContextFreeGrammar_mem_language {M : DFA α σ} [DecidablePred M.accept] {w : List α} :
     w ∈ M.toContextFreeGrammar.language ↔ w ∈ M.accepts := by
   rw [ContextFreeGrammar.mem_language_iff, mem_accepts]
-  -- TODO one direction is almost there, the other requires a lot of further work
   sorry
 
 theorem Language.IsRegular.isContextFree {L : Language α} (hL : L.IsRegular) : L.IsContextFree := by
