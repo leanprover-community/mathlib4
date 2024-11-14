@@ -21,12 +21,12 @@ variable {a b c : α} [Fact (a ≤ b)] [Fact (b ≤ c)]
 variable {E : Type*} [TopologicalSpace E]
 
 /-- The embedding into an interval from a sub-interval lying on the left, as a `ContinuousMap`. -/
-def subinterval_left : C(Icc a b, Icc a c) where
-  toFun x := ⟨x, x.2.1, le_trans x.2.2 Fact.out⟩
+def subintervalLeft : C(Icc a b, Icc a c) :=
+  .inclusion <| Icc_subset_Icc le_rfl Fact.out
 
 /-- The embedding into an interval from a sub-interval lying on the right, as a `ContinuousMap`. -/
-def subinterval_right : C(Icc b c, Icc a c) where
-  toFun x := ⟨x, le_trans Fact.out x.2.1, x.2.2⟩
+def subintervalRight : C(Icc b c, Icc a c) :=
+  .inclusion <| Icc_subset_Icc Fact.out le_rfl
 
 /-- The map `projIcc` from `α` onto an interval in `α`, as a `ContinuousMap`. -/
 def projIccCM : C(α, Icc a b) :=
@@ -59,19 +59,19 @@ noncomputable def concat (f : C(Icc a b, E)) (g : C(Icc b c, E)) :
 variable {f : C(Icc a b, E)} {g : C(Icc b c, E)}
 
 theorem concat_comp_left (hb : f ⊤ = g ⊥) :
-    f = (concat f g).comp subinterval_left := by
+    f = (concat f g).comp subintervalLeft := by
   ext x
-  simp [concat, IccExtendCM, hb, subinterval_left, projIccCM, x.2.2]
+  simp [concat, IccExtendCM, hb, subintervalLeft, projIccCM, inclusion, x.2.2]
 
 theorem concat_comp_right (hb : f ⊤ = g ⊥) :
-    g = (concat f g).comp subinterval_right := by
+    g = (concat f g).comp subintervalRight := by
   ext ⟨x, hx⟩
   by_cases hxb : x = b
   · subst x
     symm at hb
-    simpa [concat, subinterval_right, IccExtendCM, projIccCM, hb]
-  · have : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_le
-    simp [concat, hb, subinterval_right, this, IccExtendCM, projIccCM, projIcc, hx.2, hx.1]
+    simpa [concat, subintervalRight, IccExtendCM, projIccCM, inclusion, hb]
+  · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_le
+    simp [concat, hb, subintervalRight, h, IccExtendCM, projIccCM, projIcc, inclusion, hx.2, hx.1]
 
 @[simp]
 theorem concat_left (hb : f ⊤ = g ⊥) {t : Icc a c} (ht : t ≤ b) :
