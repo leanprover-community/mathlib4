@@ -42,7 +42,7 @@ lemma Algebra.mem_ideal_map_adjoin {R S : Type*} [CommRing R] [CommRing S] [Alge
         simp [Algebra.smul_def]
     simp_rw [this, Algebra.smul_def]
     exact sum_mem fun i _ ↦ Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (hp i))
-
+#find_home! Algebra.mem_ideal_map_adjoin
 variable {R S : Type*} [CommRing R] [CommRing S]
 variable {K : Type*} [Field K]
 
