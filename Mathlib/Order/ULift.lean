@@ -41,15 +41,15 @@ instance [Ord α] : Ord (ULift.{v} α) where compare x y := compare x.down y.dow
 @[simp] theorem down_compare [Ord α] (a b : ULift α) :
   compare (down a) (down b) = compare a b := rfl
 
-instance [Sup α] : Sup (ULift.{v} α) where sup x y := up <| x.down ⊔ y.down
+instance [Max α] : Max (ULift.{v} α) where max x y := up <| x.down ⊔ y.down
 
-@[simp] theorem up_sup [Sup α] (a b : α) : up (a ⊔ b) = up a ⊔ up b := rfl
-@[simp] theorem down_sup [Sup α] (a b : ULift α) : down (a ⊔ b) = down a ⊔ down b := rfl
+@[simp] theorem up_sup [Max α] (a b : α) : up (a ⊔ b) = up a ⊔ up b := rfl
+@[simp] theorem down_sup [Max α] (a b : ULift α) : down (a ⊔ b) = down a ⊔ down b := rfl
 
-instance [Inf α] : Inf (ULift.{v} α) where inf x y := up <| x.down ⊓ y.down
+instance [Min α] : Min (ULift.{v} α) where min x y := up <| x.down ⊓ y.down
 
-@[simp] theorem up_inf [Inf α] (a b : α) : up (a ⊓ b) = up a ⊓ up b := rfl
-@[simp] theorem down_inf [Inf α] (a b : ULift α) : down (a ⊓ b) = down a ⊓ down b := rfl
+@[simp] theorem up_inf [Min α] (a b : α) : up (a ⊓ b) = up a ⊓ up b := rfl
+@[simp] theorem down_inf [Min α] (a b : ULift α) : down (a ⊓ b) = down a ⊓ down b := rfl
 
 instance [SDiff α] : SDiff (ULift.{v} α) where sdiff x y := up <| x.down \ y.down
 

@@ -3,15 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.Topology.Category.TopCat.OpenNhds
-import Mathlib.Topology.Sheaves.Presheaf
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
-import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.Sites.Pullback
+import Mathlib.Topology.Category.TopCat.OpenNhds
+import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Stalks
@@ -45,6 +39,8 @@ https://stacks.math.columbia.edu/tag/007L
 
 -/
 
+assert_not_exists OrderedCommMonoid
+
 
 noncomputable section
 
@@ -56,7 +52,7 @@ open TopCat
 
 open CategoryTheory.Limits
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open Opposite
 
@@ -629,14 +625,5 @@ theorem isIso_iff_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) :
    fun _ => isIso_of_stalkFunctor_map_iso f⟩
 
 end Concrete
-
-instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
-    Algebra (F.obj <| op U) (F.stalk x) :=
-  (F.germ U x.1 x.2).toAlgebra
-
-@[simp]
-theorem stalk_open_algebraMap {X : TopCat} (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
-    algebraMap (F.obj <| op U) (F.stalk x) = F.germ U x.1 x.2 :=
-  rfl
 
 end TopCat.Presheaf

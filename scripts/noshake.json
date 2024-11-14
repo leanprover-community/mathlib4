@@ -164,6 +164,7 @@
   "Mathlib.Tactic.Simps.NotationClass",
   "Mathlib.Tactic.SplitIfs",
   "Mathlib.Tactic.Spread",
+  "Mathlib.Tactic.StacksAttribute",
   "Mathlib.Tactic.Substs",
   "Mathlib.Tactic.SuppressCompilation",
   "Mathlib.Tactic.SwapVar",
@@ -196,9 +197,10 @@
  {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
   "Mathlib.Topology.UniformSpace.Basic": ["Mathlib.Tactic.Monotonicity.Basic"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
+  "Mathlib.Topology.Sheaves.CommRingCat":
+  ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
-  "Mathlib.Topology.JacobsonSpace": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
@@ -312,7 +314,6 @@
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
-  "Mathlib.RingTheory.Smooth.Kaehler": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
@@ -337,7 +338,8 @@
   ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
   "Mathlib.Order.BoundedOrder": ["Mathlib.Tactic.Finiteness.Attr"],
-  "Mathlib.Order.Basic": ["Batteries.Tactic.Classical"],
+  "Mathlib.Order.Basic":
+  ["Batteries.Tactic.Classical", "Mathlib.Tactic.GCongr.Core"],
   "Mathlib.NumberTheory.Cyclotomic.Basic": ["Mathlib.Init.Core"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
@@ -381,11 +383,12 @@
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
-  "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
+  "Mathlib.Data.Finset.Insert": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Data.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Bool.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
-  "Mathlib.Control.Monad.Cont": ["Batteries.Tactic.Congr"],
+  "Mathlib.Control.Monad.Cont":
+  ["Batteries.Lean.Except", "Batteries.Tactic.Congr"],
   "Mathlib.Control.Basic": ["Mathlib.Logic.Function.Defs"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
@@ -400,7 +403,6 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
-  "Mathlib.CategoryTheory.Category.Basic": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
@@ -431,7 +433,6 @@
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
-  "Mathlib.Algebra.Group.Defs": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":

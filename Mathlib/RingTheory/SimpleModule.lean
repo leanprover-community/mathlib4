@@ -3,12 +3,13 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.Order.Atoms.Finite
-import Mathlib.Order.JordanHolder
 import Mathlib.Order.CompactlyGenerated.Intervals
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Order.JordanHolder
+import Mathlib.RingTheory.Ideal.Colon
 
 /-!
 # Simple Modules

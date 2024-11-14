@@ -22,7 +22,7 @@ noncomputable section
 open Topology TopologicalSpace Filter Encodable Set
 open scoped Uniformity
 
-variable {X Y ι : Type*} {ι' : Sort*}
+variable {X Y : Type*}
 
 section IsGδ
 
