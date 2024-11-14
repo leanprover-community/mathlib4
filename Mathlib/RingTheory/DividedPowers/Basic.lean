@@ -19,7 +19,7 @@ To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, e
 * `DividedPowers.dpow_null` asserts that `dpow n x = 0` for `x ∉ I`
 
 * `DividedPowers.dpow_mem` : `dpow n x ∈ I` for `n ≠ 0`
-For `x y : A` and `m n  : ℕ` such that `x ∈ I` and `y ∈ I`, one has
+For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
 * `DividedPowers.dpow_one` : `dpow 1 x = 1`
 * `DividedPowers.dpow_add` : `dpow n (x + y) =
@@ -27,7 +27,7 @@ For `x y : A` and `m n  : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 this is the binomial theorem without binomial coefficients.
 * `DividedPowers.dpow_smul`: `dpow n (a * x) = a ^ n * dpow n x`
 * `DividedPowers.dpow_mul` : `dpow m x * dpow n x = choose (m + n) m * dpow (m + n) x`
-* `DividedPowers.dpow_comp` : `dpow m (dpow n x) = mchoose m n * dpow (m * n) x`
+* `DividedPowers.dpow_comp` : `dpow m (dpow n x) = uniformBell m n * dpow (m * n) x`
 
 * `DividedPowers.dividedPowersBot` : the trivial divided powers structure on the zero ideal
 
@@ -44,7 +44,7 @@ for `e : R ≃+* S`, and `I : Ideal R`,  `J : Ideal S` such that `I.map e = J`
 
 * `DividedPowers.exp`: the power series `Σ (dpow n a) X ^n`
 
-* `DividedPowers, exp_add`: its multiplicativity
+* `DividedPowers.exp_add`: its multiplicativity
 
 ## References
 
@@ -62,7 +62,7 @@ modules*][Roby-1963]
 ## Discussion
 
 * In practice, one often has a single such structure to handle on a given ideal,
-but several ideals on the same ring might be considered.
+but several ideals of the same ring might be considered.
 Without any explicit mention of the ideal, it is not clear whether such structures
 should be provided as instances.
 
@@ -155,36 +155,24 @@ instance {A : Type*} [CommSemiring A] [DecidableEq A] :
 instance {A : Type*} [CommSemiring A] (I : Ideal A) :
     CoeFun (DividedPowers I) fun _ => ℕ → A → A := ⟨fun hI => hI.dpow⟩
 
-/- -- The synTaut linter complains about this theorem.
-theorem coe_apply {A : Type*} [CommSemiring A]
-    (I : Ideal A) (hI : DividedPowers I) (n : ℕ) (a : A) :
-  hI n a = hI.dpow n a := rfl -/
 
-theorem coe_injective {A : Type*} [CommSemiring A] (I : Ideal A) :
+theorem DividedPowers.coe_injective {A : Type*} [CommSemiring A] (I : Ideal A) :
     Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
   ext n x
   exact congr_fun (congr_fun h n) x
 
 @[ext]
-theorem eq_of_eq_on_ideal {A : Type*} [CommSemiring A]
+theorem DividedPowers.ext {A : Type*} [CommSemiring A]
     {I : Ideal A} (hI : DividedPowers I) (hI' : DividedPowers I)
     (h_eq : ∀ (n : ℕ) {x : A} (_ : x ∈ I), hI.dpow n x = hI'.dpow n x) :
     hI = hI' := by
+  obtain ⟨hI, h₀, _⟩ := hI
+  obtain ⟨hI', h₀', _⟩ := hI'
+  simp only [mk.injEq]
   ext n x
   by_cases hx : x ∈ I
   · exact h_eq n hx
-  · rw [hI.dpow_null hx, hI'.dpow_null hx]
-
-/- structure dpRing (A : Type*) extends CommSemiring A where
-  dpIdeal : Ideal A
-  dividedPowers : DividedPowers dpIdeal
-
-instance {A : Type*} [CommSemiring A] [DecidableEq A] : Inhabited (dpRing A)
-  where default :=
-  { toCommSemiring := inferInstance
-    dpIdeal := ⊥
-    dividedPowers := dividedPowersBot A }
--/
+  · rw [h₀ hx, h₀' hx]
 
 end DividedPowersDefinition
 
@@ -219,8 +207,7 @@ theorem exp_add_aux (dp : ℕ → A → A) {a b : A} -- (ha : a ∈ I) (hb : b �
 theorem exp_add (hI : DividedPowers I) {a b : A} (ha : a ∈ I) (hb : b ∈ I) :
     hI.exp (a + b) = hI.exp a * hI.exp b := by
   ext n
-  simp only [exp, PowerSeries.coeff_mk, PowerSeries.coeff_mul, hI.dpow_add n ha hb,
-    sum_antidiagonal_eq_sum_range_succ_mk]
+  simp only [exp, PowerSeries.coeff_mk, PowerSeries.coeff_mul, hI.dpow_add n ha hb]
 
 variable (hI : DividedPowers I)
 
