@@ -28,7 +28,7 @@ It corresponds with the adic topology but this is not proved here.
 `PowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
 of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
 
-- `PowerSeries.WithPiTopology.tendsto_pow_of_constantCoeff_nilpotent_iff` : the powers of `f`
+- `PowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent_iff` : the powers of `f`
 converge to zero iff the constant coefficient of `f` is nilpotent.
 
 - `PowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
@@ -152,7 +152,7 @@ namespace WithPiTopology
 
 open MvPowerSeries.WithPiTopology
 
-theorem continuous_C [Ring R] [TopologicalRing R] : Continuous (C R) :=
+theorem continuous_C [Semiring R] : Continuous (C R) :=
   MvPowerSeries.WithPiTopology.continuous_C
 
 theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
@@ -166,7 +166,7 @@ theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
   MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero hf
 
 /-- Bourbaki, Algèbre, chap. 4, §4, n°2, corollaire de la prop. 3 -/
-theorem tendsto_pow_of_constantCoeff_nilpotent_iff
+theorem tendsto_pow_zero_of_constantCoeff_nilpotent_iff
     [CommRing R] [DiscreteTopology R] (f : PowerSeries R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff R f) :=
