@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Localization.Integer
 
 ## Implementation notes
 
-See `RingTheory/Localization/Basic.lean` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -66,7 +66,7 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 @[simp]
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
-  simp (config := { contextual := true }) [integerNormalization, coeff_monomial,
+  simp +contextual [integerNormalization, coeff_monomial,
     coeffIntegerNormalization_of_not_mem_support]
 
 theorem integerNormalization_spec (p : S[X]) :
@@ -361,7 +361,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     letI := FractionRing.liftAlgebra R K
     have := FractionRing.isScalarTower_liftAlgebra R K
     rw [IsFractionRing.isAlgebraic_iff R (FractionRing R) K, isAlgebraic_iff_isIntegral]
-    obtain ⟨a : S, b, ha, rfl⟩ := @div_surjective S _ _ _ _ _ _ x
+    obtain ⟨a : S, b, ha, rfl⟩ := div_surjective (A := S) x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
     refine IsIntegral.mul ?_ ?_
