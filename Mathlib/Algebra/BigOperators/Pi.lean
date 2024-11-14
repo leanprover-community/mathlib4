@@ -52,7 +52,7 @@ theorem Fintype.prod_apply {α : Type*} {β : α → Type*} {γ : Type*} [Fintyp
 theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Finset γ) (f : γ → α)
     (g : γ → β) : (∏ x ∈ s, f x, ∏ x ∈ s, g x) = ∏ x ∈ s, (f x, g x) :=
   haveI := Classical.decEq γ
-  Finset.induction_on s rfl (by simp (config := { contextual := true }) [Prod.ext_iff])
+  Finset.induction_on s rfl (by simp +contextual [Prod.ext_iff])
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
 theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]
@@ -145,3 +145,39 @@ theorem snd_prod : (∏ c ∈ s, f c).2 = ∏ c ∈ s, (f c).2 :=
   map_prod (MonoidHom.snd α β) f s
 
 end Prod
+
+section MulEquiv
+
+/-- The canonical isomorphism between the monoid of homomorphisms from a finite product of
+commutative monoids to another commutative monoid and the product of the homomorphism monoids. -/
+@[to_additive "The canonical isomorphism between the additive monoid of homomorphisms from
+a finite product of additive commutative monoids to another additive commutative monoid and
+the product of the homomorphism monoids."]
+def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → Type*)
+    [(i : ι) → CommMonoid (M i)] (M' : Type*) [CommMonoid M'] :
+    (((i : ι) → M i) →* M') ≃* ((i : ι) → (M i →* M')) where
+      toFun φ i := φ.comp <| MonoidHom.mulSingle M i
+      invFun φ := ∏ (i : ι), (φ i).comp (Pi.evalMonoidHom M i)
+      left_inv φ := by
+        ext
+        simp only [MonoidHom.finset_prod_apply, MonoidHom.coe_comp, Function.comp_apply,
+          evalMonoidHom_apply, MonoidHom.mulSingle_apply, ← map_prod]
+        refine congrArg _ <| funext fun _ ↦ ?_
+        rw [Fintype.prod_apply]
+        exact Fintype.prod_pi_mulSingle ..
+      right_inv φ := by
+        ext i m
+        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
+          MonoidHom.finset_prod_apply, evalMonoidHom_apply, ]
+        let φ' i : M i → M' := ⇑(φ i)
+        conv =>
+          enter [1, 2, j]
+          rw [show φ j = φ' j from rfl, Pi.apply_mulSingle φ' (fun i ↦ map_one (φ i))]
+        rw [show φ' i = φ i from rfl]
+        exact Fintype.prod_pi_mulSingle' ..
+      map_mul' φ ψ := by
+        ext
+        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
+          MonoidHom.mul_apply, mul_apply]
+
+end MulEquiv

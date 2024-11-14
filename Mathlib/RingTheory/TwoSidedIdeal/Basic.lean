@@ -7,8 +7,6 @@ Authors: Jujian Zhang
 import Mathlib.Tactic.Abel
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Two Sided Ideals
@@ -23,8 +21,9 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
   `x ∈ I` if and only if `I.ringCon x 0`.
 * `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
 
-
 -/
+
+assert_not_exists LinearMap
 
 open MulOpposite
 
@@ -105,6 +104,7 @@ lemma lt_iff (I J : TwoSidedIdeal R) : I < J ↔ (I : Set R) ⊂ (J : Set R) := 
   rw [lt_iff_le_and_ne, Set.ssubset_iff_subset_ne, le_iff]
   simp
 
+@[simp]
 lemma zero_mem : 0 ∈ I := I.ringCon.refl 0
 
 lemma add_mem {x y} (hx : x ∈ I) (hy : y ∈ I) : x + y ∈ I := by simpa using I.ringCon.add hx hy
@@ -199,50 +199,5 @@ def coeAddMonoidHom : I →+ R where
   map_add' _ _ := rfl
 
 end NonUnitalNonAssocRing
-
-section Ring
-
-variable {R : Type*} [Ring R] (I : TwoSidedIdeal R)
-
-instance : SMul R I where smul r x := ⟨r • x.1, I.mul_mem_left _ _ x.2⟩
-
-instance : SMul Rᵐᵒᵖ I where smul r x := ⟨r • x.1, I.mul_mem_right _ _ x.2⟩
-
-instance leftModule : Module R I :=
-  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
-
-@[simp]
-lemma coe_smul {r : R} {x : I} : (r • x : R) = r * (x : R) := rfl
-
-instance rightModule : Module Rᵐᵒᵖ I :=
-  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
-
-@[simp]
-lemma coe_mop_smul {r : Rᵐᵒᵖ} {x : I} : (r • x : R) = (x : R) * r.unop := rfl
-
-instance : SMulCommClass R Rᵐᵒᵖ I where
-  smul_comm r s x := Subtype.ext <| smul_comm r s x.1
-
-/--
-For any `I : RingCon R`, when we view it as an ideal, `I.subtype` is the injective `R`-linear map
-`I → R`.
--/
-@[simps]
-def subtype : I →ₗ[R] R where
-  toFun x := x.1
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-/--
-For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective `Rᵐᵒᵖ`-linear
-map `I → Rᵐᵒᵖ`.
--/
-@[simps]
-def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
-  toFun x := MulOpposite.op x.1
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-end Ring
 
 end TwoSidedIdeal
