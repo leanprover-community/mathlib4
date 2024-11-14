@@ -58,13 +58,13 @@ protected theorem Polynomial.abc
   set w := wronskian a b with wab
   have hbc : IsCoprime b c := by
     rw [add_eq_zero_iff_neg_eq] at hsum
-    rw [←hsum, IsCoprime.neg_right_iff]
+    rw [← hsum, IsCoprime.neg_right_iff]
     convert IsCoprime.add_mul_left_right hab.symm 1
     rw [mul_one]
   have hsum' : b + c + a = 0 := by rw [add_rotate] at hsum; exact hsum
   have hca : IsCoprime c a := by
     rw [add_eq_zero_iff_neg_eq] at hsum'
-    rw [←hsum', IsCoprime.neg_right_iff]
+    rw [← hsum', IsCoprime.neg_right_iff]
     convert IsCoprime.add_mul_left_right hbc.symm 1
     rw [mul_one]
   have wbc : w = wronskian b c := wronskian_eq_of_sum_zero hsum

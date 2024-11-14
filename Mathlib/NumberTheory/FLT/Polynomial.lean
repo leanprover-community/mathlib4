@@ -46,8 +46,7 @@ private lemma rot_coprime
     {p q r : ℕ} {a b c : k[X]} {u v w : k}
     {hp : 0 < p} {hq : 0 < q} {hr : 0 < r}
     {hu : u ≠ 0} {hv : v ≠ 0} {hw : w ≠ 0}
-    (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) (hab : IsCoprime a b)
-     : IsCoprime b c := by
+    (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) (hab : IsCoprime a b) : IsCoprime b c := by
   rw [← IsCoprime.pow_iff hp hq, ← isCoprime_mul_units_left hu hv] at hab
   rw [add_eq_zero_iff_neg_eq] at heq
   rw [← IsCoprime.pow_iff hq hr, ← isCoprime_mul_units_left hv hw,
@@ -79,8 +78,7 @@ private lemma Polynomial.derivative_C_mul {a : k} {p : k[X]} :
     derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
 
 private lemma derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a : k[X]}  :
-    derivative (a ^ n) = 0 ↔ derivative a = 0 :=
-  by
+    derivative (a ^ n) = 0 ↔ derivative a = 0 := by
   constructor
   · intro apd
     rw [derivative_pow, C_eq_natCast, mul_eq_zero, mul_eq_zero] at apd
@@ -208,7 +206,7 @@ theorem Polynomial.flt_catalan_aux
     a.natDegree = 0 := by
   cases' eq_or_ne (ringChar k) 0 with ch0 chn0
   -- characteristic zero
-  · have hderiv := Polynomial.flt_catalan_deriv
+  · have hderiv := flt_catalan_deriv
       hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
     rcases hderiv with ⟨da, -, -⟩
     have czk : CharZero k := by
@@ -229,7 +227,7 @@ theorem Polynomial.flt_catalan_aux
     · intros; solve_by_elim
     · intros a b c eq_d heq ha hb hc hab
       -- have derivatives of `a, b, c` zero
-      have hderiv := Polynomial.flt_catalan_deriv
+      have hderiv := flt_catalan_deriv
         hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
       rcases hderiv with ⟨ad, bd, cd⟩
       -- find contracts `ca, cb, cc` so that `a(k) = ca(k^ch)`
@@ -254,6 +252,7 @@ theorem Polynomial.flt_catalan_aux
         rw [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
         exact heq
 
+-- Nonsolvability of Fermat-Catalan equation.
 theorem Polynomial.flt_catalan
     {p q r : ℕ} (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hineq : q * r + r * p + p * q ≤ p * q * r)
@@ -261,8 +260,7 @@ theorem Polynomial.flt_catalan
     {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
     {u v w : k} (hu : u ≠ 0) (hv : v ≠ 0) (hw : w ≠ 0)
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) :
-    a.natDegree = 0 ∧ b.natDegree = 0 ∧ c.natDegree = 0 :=
-  by
+    a.natDegree = 0 ∧ b.natDegree = 0 ∧ c.natDegree = 0 := by
   -- WLOG argument: essentially three times flt_catalan_aux
   have hbc : IsCoprime b c := by
     apply rot_coprime heq hab <;> assumption
@@ -271,30 +269,29 @@ theorem Polynomial.flt_catalan
   have hca : IsCoprime c a := by
     apply rot_coprime heq' hbc <;> assumption
   refine ⟨?_, ?_, ?_⟩
-  · apply Polynomial.flt_catalan_aux heq <;> assumption
+  · apply flt_catalan_aux heq <;> assumption
   · rw [add_rotate] at heq hineq
     rw [mul_rotate] at hineq
-    apply Polynomial.flt_catalan_aux heq <;> assumption
+    apply flt_catalan_aux heq <;> assumption
   · rw [← add_rotate] at heq hineq
     rw [← mul_rotate] at hineq
-    apply Polynomial.flt_catalan_aux heq <;> assumption
+    apply flt_catalan_aux heq <;> assumption
 
 /- FLT is special case of nonsolvability of Fermat-Catalan equation.
 Take p = q = r = n and u = v = 1, w = -1.
 -/
-theorem Polynomial.flt'
+theorem Polynomial.flt
     {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k ∣ n)
     {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
     (hab : IsCoprime a b) (heq : a ^ n + b ^ n = c ^ n) :
-    a.natDegree = 0 ∧ b.natDegree = 0 ∧ c.natDegree = 0 :=
-  by
+    a.natDegree = 0 ∧ b.natDegree = 0 ∧ c.natDegree = 0 := by
   have hn' : 0 < n := by linarith
   rw [← sub_eq_zero, ← one_mul (a ^ n), ← one_mul (b ^ n), ← one_mul (c ^ n), sub_eq_add_neg, ←
     neg_mul] at heq
   have hone : (1 : k[X]) = C 1 := by rfl
   have hneg_one : (-1 : k[X]) = C (-1) := by simp only [map_neg, map_one]
   simp_rw [hneg_one, hone] at heq
-  apply Polynomial.flt_catalan hn' hn' hn' _
+  apply flt_catalan hn' hn' hn' _
     chn chn chn ha hb hc hab one_ne_zero one_ne_zero (neg_ne_zero.mpr one_ne_zero) heq
   have eq_lhs : n * n + n * n + n * n = 3 * n * n := by ring_nf
   rw [eq_lhs]; rw [mul_assoc, mul_assoc]
@@ -335,7 +332,7 @@ theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k
     rw [← hb', C_ne_zero] at hb
     rw [← hc', C_ne_zero] at hc
     exact ⟨ha.right.isUnit_C, hb.right.isUnit_C, hc.right.isUnit_C⟩
-  apply Polynomial.flt' hn chn ha.right hb.right hc.right _ heq
+  apply flt hn chn ha.right hb.right hc.right _ heq
   convert isCoprime_div_gcd_div_gcd _
   · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_a.symm
   · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_b.symm
