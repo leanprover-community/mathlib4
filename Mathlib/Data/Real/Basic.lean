@@ -54,7 +54,7 @@ namespace Real
 
 open CauSeq CauSeq.Completion
 
-variable {x y : ℝ}
+variable {x : ℝ}
 
 theorem ext_cauchy_iff : ∀ {x y : Real}, x = y ↔ x.cauchy = y.cauchy
   | ⟨a⟩, ⟨b⟩ => by rw [ofCauchy.injEq]

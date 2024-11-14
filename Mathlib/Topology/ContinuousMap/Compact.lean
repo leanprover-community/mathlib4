@@ -65,7 +65,7 @@ alias uniformInducing_equivBoundedOfCompact := isUniformInducing_equivBoundedOfC
 
 theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoundedOfCompact α β) :=
   { isUniformInducing_equivBoundedOfCompact α β with
-    inj := (equivBoundedOfCompact α β).injective }
+    injective := (equivBoundedOfCompact α β).injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_equivBoundedOfCompact := isUniformEmbedding_equivBoundedOfCompact
@@ -328,7 +328,7 @@ theorem linearIsometryBoundedOfCompact_toIsometryEquiv :
     (linearIsometryBoundedOfCompact α E 𝕜).toIsometryEquiv = isometryEquivBoundedOfCompact α E :=
   rfl
 
-@[simp] -- Porting note: adjusted LHS because `simpNF` complained it simplified.
+@[simp]
 theorem linearIsometryBoundedOfCompact_toAddEquiv :
     ((linearIsometryBoundedOfCompact α E 𝕜).toLinearEquiv : C(α, E) ≃+ (α →ᵇ E)) =
       addEquivBoundedOfCompact α E :=

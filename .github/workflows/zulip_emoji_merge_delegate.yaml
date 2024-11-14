@@ -1,0 +1,35 @@
+name: Zulip Emoji Merge Delegate
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour
+
+jobs:
+  zulip-emoji-merge-delegate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout mathlib repository
+      uses: actions/checkout@v4
+      with:
+        sparse-checkout: |
+          scripts
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install zulip
+
+    - name: Run Zulip Emoji Merge Delegate Script
+      env:
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
+        ZULIP_SITE: https://leanprover.zulipchat.com
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$GITHUB_TOKEN"

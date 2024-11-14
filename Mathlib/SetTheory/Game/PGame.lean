@@ -297,10 +297,6 @@ theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightM
     Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
--- Porting note: linter claims these lemmas don't simplify?
-open Subsequent in attribute [nolint simpNF] mk_left mk_right mk_right'
-  moveRight_mk_left moveRight_mk_right moveLeft_mk_left moveLeft_mk_right
-
 /-! ### Basic pre-games -/
 
 
