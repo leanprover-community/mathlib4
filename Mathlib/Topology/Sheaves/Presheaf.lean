@@ -303,7 +303,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         · simp [eq_iff_true_of_subsingleton] }
   exact IsColimit.coconePointUniqueUpToIso
-    ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit ℱ (op U))
+    ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U))
     (colimitOfDiagramTerminal hx _)
 
 end

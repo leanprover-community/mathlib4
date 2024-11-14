@@ -45,7 +45,7 @@ instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
 
 end AddSubmonoidWithOneClass
 
-variable {R : Type u} {S : Type v} {T : Type w} [NonAssocSemiring R] (M : Submonoid R)
+variable {R : Type u} {S : Type v} [NonAssocSemiring R]
 
 section SubsemiringClass
 
@@ -72,7 +72,7 @@ namespace SubsemiringClass
 -- Prefer subclasses of `NonAssocSemiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
 instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s :=
-  Subtype.coe_injective.nonAssocSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.nonAssocSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
 instance nontrivial [Nontrivial R] : Nontrivial s :=
@@ -93,8 +93,8 @@ theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
     Semiring s :=
-  Subtype.coe_injective.semiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.semiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 @[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n : ℕ) :
@@ -106,14 +106,14 @@ theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
     CommSemiring s :=
-  Subtype.coe_injective.commSemiring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+  Subtype.coe_injective.commSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 end SubsemiringClass
 
 end SubsemiringClass
 
-variable [NonAssocSemiring S] [NonAssocSemiring T]
+variable [NonAssocSemiring S]
 
 /-- A subsemiring of a semiring `R` is a subset `s` that is both a multiplicative and an additive
 submonoid. -/
@@ -137,6 +137,8 @@ instance : SubsemiringClass (Subsemiring R) R where
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
   mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
 
+initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
+
 @[simp]
 theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
@@ -151,12 +153,9 @@ theorem ext {S T : Subsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 
 /-- Copy of a subsemiring with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
+@[simps coe toSubmonoid]
 protected def copy (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : Subsemiring R :=
   { S.toAddSubmonoid.copy s hs, S.toSubmonoid.copy s hs with carrier := s }
-
-@[simp]
-theorem coe_copy (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : (S.copy s hs : Set R) = s :=
-  rfl
 
 theorem copy_eq (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
@@ -170,6 +169,7 @@ theorem toAddSubmonoid_injective :
 
 /-- Construct a `Subsemiring R` from a set `s`, a submonoid `sm`, and an additive
 submonoid `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
+@[simps coe]
 protected def mk' (s : Set R) (sm : Submonoid R) (hm : ↑sm = s) (sa : AddSubmonoid R)
     (ha : ↑sa = s) : Subsemiring R where
   carrier := s
@@ -177,11 +177,6 @@ protected def mk' (s : Set R) (sm : Submonoid R) (hm : ↑sm = s) (sa : AddSubmo
   one_mem' := by exact hm ▸ sm.one_mem
   add_mem' {x y} := by simpa only [← ha] using sa.add_mem
   mul_mem' {x y} := by simpa only [← hm] using sm.mul_mem
-
-@[simp]
-theorem coe_mk' {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : AddSubmonoid R} (ha : ↑sa = s) :
-    (Subsemiring.mk' s sm hm sa ha : Set R) = s :=
-  rfl
 
 @[simp]
 theorem mem_mk' {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : AddSubmonoid R} (ha : ↑sa = s)
@@ -312,7 +307,7 @@ end Subsemiring
 namespace Subsemiring
 
 /-- The inf of two subsemirings is their intersection. -/
-instance : Inf (Subsemiring R) :=
+instance : Min (Subsemiring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubmonoid ⊓ t.toAddSubmonoid with carrier := s ∩ t }⟩
 
@@ -329,9 +324,7 @@ end Subsemiring
 
 namespace RingHom
 
-variable [NonAssocSemiring T] {s : Subsemiring R}
-variable {σR σS : Type*}
-variable [SetLike σR R] [SetLike σS S] [SubsemiringClass σR R] [SubsemiringClass σS S]
+variable {s : Subsemiring R} {σR : Type*} [SetLike σR R] [SubsemiringClass σR R]
 
 open Subsemiring
 
@@ -352,15 +345,3 @@ theorem eqLocusS_same (f : R →+* S) : f.eqLocusS f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 
 end RingHom
-
-namespace Subsemiring
-
-open RingHom
-
-end Subsemiring
-
-namespace RingEquiv
-
-variable {s t : Subsemiring R}
-
-end RingEquiv

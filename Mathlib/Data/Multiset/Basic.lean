@@ -2494,7 +2494,7 @@ theorem rel_add_right {as bs₀ bs₁} :
 
 theorem rel_map_left {s : Multiset γ} {f : γ → α} :
     ∀ {t}, Rel r (s.map f) t ↔ Rel (fun a b => r (f a) b) s t :=
-  @(Multiset.induction_on s (by simp) (by simp (config := { contextual := true }) [rel_cons_left]))
+  @(Multiset.induction_on s (by simp) (by simp +contextual [rel_cons_left]))
 
 theorem rel_map_right {s : Multiset α} {t : Multiset γ} {f : γ → β} :
     Rel r s (t.map f) ↔ Rel (fun a b => r a (f b)) s t := by
