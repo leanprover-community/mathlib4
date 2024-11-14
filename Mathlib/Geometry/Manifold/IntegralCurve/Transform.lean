@@ -13,7 +13,7 @@ curve.
 
 ## Reference
 
-* Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.
+* [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
 
 ## Tags
 

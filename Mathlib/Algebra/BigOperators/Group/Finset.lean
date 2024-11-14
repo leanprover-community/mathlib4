@@ -811,10 +811,10 @@ theorem prod_comm' {s : Finset γ} {t : γ → Finset α} {t' : Finset α} {s' :
     (h : ∀ x y, x ∈ s ∧ y ∈ t x ↔ x ∈ s' y ∧ y ∈ t') {f : γ → α → β} :
     (∏ x ∈ s, ∏ y ∈ t x, f x y) = ∏ y ∈ t', ∏ x ∈ s' y, f x y := by
   classical
-    have : ∀ z : γ × α, (z ∈ s.biUnion fun x => (t x).map <| Function.Embedding.sectr x _) ↔
+    have : ∀ z : γ × α, (z ∈ s.biUnion fun x => (t x).map <| Function.Embedding.sectR x _) ↔
       z.1 ∈ s ∧ z.2 ∈ t z.1 := by
       rintro ⟨x, y⟩
-      simp only [mem_biUnion, mem_map, Function.Embedding.sectr_apply, Prod.mk.injEq,
+      simp only [mem_biUnion, mem_map, Function.Embedding.sectR_apply, Prod.mk.injEq,
         exists_eq_right, ← and_assoc]
     exact
       (prod_finset_product' _ _ _ this).symm.trans
