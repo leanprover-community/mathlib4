@@ -277,12 +277,11 @@ def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
 lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
     [0].const [l] i ≫ subinterval j l hjl =
     [0].const [n] ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
-  unfold subinterval
-  have := const_comp [0] (subinterval j l hjl) i
-  convert this
-  unfold subinterval
-  simp only [len_mk, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
-  exact Nat.add_comm j i.1
+  rw [const_comp] 
+  congr
+  ext
+  dsimp [subinterval]
+  rw [add_comm]
 
 @[simp]
 lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
