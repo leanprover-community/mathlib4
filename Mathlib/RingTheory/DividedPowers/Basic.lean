@@ -433,10 +433,10 @@ variable {A B : Type*} [CommRing A] {I : Ideal A} [CommRing B] {J : Ideal B}
 def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
   dpow n b := e (hI.dpow n (e.symm b))
   dpow_null {n} {x} hx := by
-    rw [AddEquivClass.map_eq_zero_iff, hI.dpow_null]
+    rw [EmbeddingLike.map_eq_zero_iff, hI.dpow_null]
     rwa [Ideal.symm_apply_mem_of_equiv_iff, h]
   dpow_zero {x} hx := by
-    rw [MulEquivClass.map_eq_one_iff, hI.dpow_zero]
+    rw [EmbeddingLike.map_eq_one_iff, hI.dpow_zero]
     rwa [Ideal.symm_apply_mem_of_equiv_iff, h]
   dpow_one {x} hx := by
     simp only
