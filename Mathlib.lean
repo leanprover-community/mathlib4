@@ -5224,6 +5224,7 @@ import Mathlib.Util.IncludeStr
 import Mathlib.Util.LongNames
 import Mathlib.Util.MemoFix
 import Mathlib.Util.Notation3
+import Mathlib.Util.PPOptions
 import Mathlib.Util.Qq
 import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
