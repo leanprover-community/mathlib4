@@ -106,6 +106,8 @@ namespace ENNReal
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
 instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
 instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
+instance : Min ℝ≥0∞ := SemilatticeInf.toMin
+instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
 noncomputable instance : CanonicallyOrderedCommSemiring ℝ≥0∞ :=
   inferInstanceAs (CanonicallyOrderedCommSemiring (WithTop ℝ≥0))
