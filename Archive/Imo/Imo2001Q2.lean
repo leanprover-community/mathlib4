@@ -39,7 +39,7 @@ theorem bound (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
       = a ^ 3 * (a * sqrt ((a ^ 3) ^ 2 + (8:ℝ) * b ^ 3 * c ^ 3)) := by ring
     _ ≤ a ^ 3 * (a ^ 4 + b ^ 4 + c ^ 4) := ?_
   gcongr
-  apply le_of_pow_le_pow_left two_ne_zero (by positivity)
+  apply le_of_pow_le_pow_left₀ two_ne_zero (by positivity)
   rw [mul_pow, sq_sqrt (by positivity), ← sub_nonneg]
   calc
     (a ^ 4 + b ^ 4 + c ^ 4) ^ 2 - a ^ 2 * ((a ^ 3) ^ 2 + 8 * b ^ 3 * c ^ 3)

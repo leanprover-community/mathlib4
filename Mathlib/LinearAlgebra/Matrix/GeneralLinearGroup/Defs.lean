@@ -227,6 +227,8 @@ linear ordered ring and positive determinant. -/
 def GLPos : Subgroup (GL n R) :=
   (Units.posSubgroup R).comap GeneralLinearGroup.det
 
+@[inherit_doc] scoped[MatrixGroups] notation "GL(" n ", " R ")" "⁺" => GLPos (Fin n) R
+
 end
 
 @[simp]

@@ -30,6 +30,21 @@ open Function
 
 variable {F α β M N P G H : Type*}
 
+namespace EmbeddingLike
+variable [One M] [One N] [FunLike F M N] [EmbeddingLike F M N] [OneHomClass F M N]
+
+@[to_additive (attr := simp)]
+theorem map_eq_one_iff {f : F} {x : M} :
+    f x = 1 ↔ x = 1 :=
+  _root_.map_eq_one_iff f (EmbeddingLike.injective f)
+
+@[to_additive]
+theorem map_ne_one_iff {f : F} {x : M} :
+    f x ≠ 1 ↔ x ≠ 1 :=
+  map_eq_one_iff.not
+
+end EmbeddingLike
+
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
 @[to_additive (attr := simps)
   "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
@@ -105,6 +120,12 @@ class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLik
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
 
+@[to_additive (attr := deprecated (since := "2024-11-10"))]
+alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
+
+@[to_additive (attr := deprecated (since := "2024-11-10"))]
+alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
+
 namespace MulEquivClass
 
 variable (F)
@@ -129,18 +150,6 @@ instance (priority := 100) instMonoidHomClass
           congr_arg _ (EquivLike.right_inv e 1).symm
         _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
         _ = 1 := EquivLike.right_inv e 1 }
-
-variable {F}
-
-@[to_additive (attr := simp)]
-theorem map_eq_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
-    (h : F) {x : M} :
-    h x = 1 ↔ x = 1 := _root_.map_eq_one_iff h (EquivLike.injective h)
-
-@[to_additive]
-theorem map_ne_one_iff {M N} [MulOneClass M] [MulOneClass N] [EquivLike F M N] [MulEquivClass F M N]
-    (h : F) {x : M} :
-    h x ≠ 1 ↔ x ≠ 1 := _root_.map_ne_one_iff h (EquivLike.injective h)
 
 end MulEquivClass
 
@@ -265,7 +274,6 @@ protected theorem injective (e : M ≃* N) : Function.Injective e :=
 protected theorem surjective (e : M ≃* N) : Function.Surjective e :=
   EquivLike.surjective e
 
--- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem apply_eq_iff_eq (e : M ≃* N) {x y : M} : e x = e y ↔ x = y :=
   e.injective.eq_iff
@@ -472,11 +480,13 @@ end Mul
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
--- Porting note (#10618): `simp` can prove this
+-- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 
--- Porting note (#10618): `simp` can prove this
+-- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
     (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
@@ -505,11 +515,11 @@ protected theorem map_one (h : M ≃* N) : h 1 = 1 := map_one h
 
 @[to_additive]
 protected theorem map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
-  MulEquivClass.map_eq_one_iff h
+  EmbeddingLike.map_eq_one_iff
 
 @[to_additive]
 theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
-  MulEquivClass.map_ne_one_iff h
+  EmbeddingLike.map_ne_one_iff
 
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
 @[to_additive (attr := simps! apply) "A bijective `AddSemigroup` homomorphism is an isomorphism"]

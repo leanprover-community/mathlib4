@@ -52,7 +52,7 @@ provided.
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory
+open CategoryTheory TopologicalSpace Topology
 
 universe v u
 
@@ -85,7 +85,7 @@ conditions are stated in a less categorical way.
 -- porting note (#5171): removed @[nolint has_nonempty_instance]
 structure GlueData extends GlueData TopCat where
   f_open : ∀ i j, IsOpenEmbedding (f i j)
-  f_mono := fun i j => (TopCat.mono_iff_injective _).mpr (f_open i j).toEmbedding.inj
+  f_mono i j := (TopCat.mono_iff_injective _).mpr (f_open i j).isEmbedding.injective
 
 namespace GlueData
 
@@ -166,7 +166,7 @@ theorem eqvGen_of_π_eq
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π, ContinuousMap.toFun_eq_coe] at h
-    rw [← ι_preservesColimitsIso_hom, forget_map_eq_coe, types_comp_apply, h]
+    rw [← ι_preservesColimitIso_hom, forget_map_eq_coe, types_comp_apply, h]
     simp
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
@@ -293,7 +293,7 @@ theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' 
   exact U.isOpen
 
 theorem ι_isOpenEmbedding (i : D.J) : IsOpenEmbedding (𝖣.ι i) :=
-  isOpenEmbedding_of_continuous_injective_open (𝖣.ι i).continuous_toFun (D.ι_injective i) fun U h =>
+  .of_continuous_injective_isOpenMap (𝖣.ι i).continuous_toFun (D.ι_injective i) fun U h =>
     D.open_image_open i ⟨U, h⟩
 
 @[deprecated (since := "2024-10-18")]
@@ -453,7 +453,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     exact Set.mem_range_self _
 
 theorem fromOpenSubsetsGlue_isOpenEmbedding : IsOpenEmbedding (fromOpenSubsetsGlue U) :=
-  isOpenEmbedding_of_continuous_injective_open (ContinuousMap.continuous_toFun _)
+  .of_continuous_injective_isOpenMap (ContinuousMap.continuous_toFun _)
     (fromOpenSubsetsGlue_injective U) (fromOpenSubsetsGlue_isOpenMap U)
 
 @[deprecated (since := "2024-10-18")]
@@ -476,7 +476,7 @@ def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
   Homeomorph.homeomorphOfContinuousOpen
     (Equiv.ofBijective (fromOpenSubsetsGlue U)
       ⟨fromOpenSubsetsGlue_injective U,
-        Set.range_iff_surjective.mp ((range_fromOpenSubsetsGlue U).symm ▸ h)⟩)
+        Set.range_eq_univ.mp ((range_fromOpenSubsetsGlue U).symm ▸ h)⟩)
     (fromOpenSubsetsGlue U).2 (fromOpenSubsetsGlue_isOpenMap U)
 
 end GlueData

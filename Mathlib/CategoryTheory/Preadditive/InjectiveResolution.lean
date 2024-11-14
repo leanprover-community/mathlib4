@@ -92,13 +92,11 @@ lemma exact_succ (n : ℕ) :
 theorem ι_f_succ (n : ℕ) : I.ι.f (n + 1) = 0 :=
   (isZero_single_obj_X _ _ _ _ (by simp)).eq_of_src _ _
 
--- Porting note (#10618): removed @[simp] simp can prove this
 @[reassoc]
 theorem ι_f_zero_comp_complex_d :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 := by
   simp
 
--- Porting note (#10618): removed @[simp] simp can prove this
 theorem complex_d_comp (n : ℕ) :
     I.cocomplex.d n (n + 1) ≫ I.cocomplex.d (n + 1) (n + 2) = 0 := by
   simp

@@ -269,7 +269,7 @@ variable {ι : Type v} [dec_ι : DecidableEq ι]
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable (A : ι → Submodule R M)
 
-/-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `Submodule R M`
+/-- The canonical linear map from `⨁ i, A i` to `M` where `A` is a collection of `Submodule R M`
 indexed by `ι`. This is `DirectSum.coeAddMonoidHom` as a `LinearMap`. -/
 def coeLinearMap : (⨁ i, A i) →ₗ[R] M :=
   toModule R ι M fun i ↦ (A i).subtype
@@ -287,6 +287,9 @@ theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i
   toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
 
 variable {A}
+
+theorem range_coeLinearMap : LinearMap.range (coeLinearMap A) = ⨆ i, A i :=
+  (Submodule.iSup_eq_range_dfinsupp_lsum _).symm
 
 @[simp]
 theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)

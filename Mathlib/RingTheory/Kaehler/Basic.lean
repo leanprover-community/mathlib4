@@ -581,7 +581,7 @@ theorem KaehlerDifferential.kerTotal_eq :
 
 theorem KaehlerDifferential.linearCombination_surjective :
     Function.Surjective (Finsupp.linearCombination S (KaehlerDifferential.D R S)) := by
-  rw [← LinearMap.range_eq_top, range_linearCombination, KaehlerDifferential.span_range_derivation]
+  rw [← LinearMap.range_eq_top, range_linearCombination, span_range_derivation]
 
 @[deprecated (since := "2024-08-29")] alias KaehlerDifferential.total_surjective :=
   KaehlerDifferential.linearCombination_surjective
@@ -743,9 +743,9 @@ open IsScalarTower (toAlgHom)
 theorem KaehlerDifferential.map_surjective_of_surjective
     (h : Function.Surjective (algebraMap A B)) :
     Function.Surjective (KaehlerDifferential.map R S A B) := by
-  rw [← LinearMap.range_eq_top, _root_.eq_top_iff, ← @Submodule.restrictScalars_top A B,
-    ← KaehlerDifferential.span_range_derivation, Submodule.restrictScalars_span _ _ h,
-    Submodule.span_le]
+  rw [← LinearMap.range_eq_top, _root_.eq_top_iff,
+    ← @Submodule.restrictScalars_top A B, ← span_range_derivation,
+    Submodule.restrictScalars_span _ _ h, Submodule.span_le]
   rintro _ ⟨x, rfl⟩
   obtain ⟨y, rfl⟩ := h x
   rw [← KaehlerDifferential.map_D R S A B]
@@ -799,7 +799,7 @@ lemma KaehlerDifferential.exact_mapBaseChange_map :
 
 end
 
-/-- The map `I → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
+/-- The map `I → B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 @[simps]
 noncomputable
 def KaehlerDifferential.kerToTensor :
@@ -811,16 +811,18 @@ def KaehlerDifferential.kerToTensor :
     algebraMap_eq_smul_one, RingHom.mem_ker.mp x.prop, TensorProduct.zero_tmul, add_zero,
     RingHom.id_apply]
 
-/-- The map `I/I² → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
+/-- The map `I/I² → B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 noncomputable
 def KaehlerDifferential.kerCotangentToTensor :
     (RingHom.ker (algebraMap A B)).Cotangent →ₗ[A] B ⊗[A] Ω[A⁄R] :=
-  Submodule.liftQ _ (kerToTensor R A B) (iSup_le_iff.mpr (by
+  Submodule.liftQ _ (kerToTensor R A B) <| by
+    rw [Submodule.smul_eq_map₂]
+    apply iSup_le_iff.mpr
     simp only [Submodule.map_le_iff_le_comap, Subtype.forall]
     rintro x hx y -
     simp only [Submodule.mem_comap, LinearMap.lsmul_apply, LinearMap.mem_ker, map_smul,
       kerToTensor_apply, TensorProduct.smul_tmul', ← algebraMap_eq_smul_one,
-      RingHom.mem_ker.mp hx, TensorProduct.zero_tmul]))
+      RingHom.mem_ker.mp hx, TensorProduct.zero_tmul]
 
 @[simp]
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :
@@ -882,7 +884,7 @@ lemma KaehlerDifferential.mapBaseChange_surjective
     (h : Function.Surjective (algebraMap A B)) :
     Function.Surjective (KaehlerDifferential.mapBaseChange R A B) := by
   have := subsingleton_of_surjective A B h
-  rw [← LinearMap.range_eq_top, KaehlerDifferential.range_mapBaseChange, ← top_le_iff]
+  rw [← LinearMap.range_eq_top, range_mapBaseChange, ← top_le_iff]
   exact fun x _ ↦ Subsingleton.elim _ _
 
 end ExactSequence
