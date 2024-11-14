@@ -295,8 +295,8 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      rw [div_lt_iff_lt_mul' Nat.zero_lt_two] at h
-      rw [le_div_iff_mul_le' Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
+      rw [div_lt_iff_lt_mul Nat.zero_lt_two] at h
+      rw [le_div_iff_mul_le Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
         ← Nat.sub_le_iff_le_add', Nat.mul_two, Nat.add_sub_cancel]
       exact le_of_lt h
   · rw [choose_eq_zero_of_lt b]

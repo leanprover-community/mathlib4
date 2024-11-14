@@ -5,14 +5,14 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Submodules in localizations of commutative rings
 
 ## Implementation notes
 
-See `RingTheory/Localization/Basic.lean` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,

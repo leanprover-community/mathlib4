@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
-import Mathlib.Lean.Expr.ExtraRecognizers
-import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.Module
 import Mathlib.Tactic.NoncommRing
+import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 
@@ -637,7 +638,7 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Ring R] [Nontr
   · rintro p κ w i' j rfl
     specialize p (range w) i'.coe_range (range_comp_subset_range _ _)
     rw [range_comp, ← image_univ (f := w)] at p
-    exact range_iff_surjective.mp (image_injective.mpr i'.injective p)
+    exact range_eq_univ.mp (image_injective.mpr i'.injective p)
   · intro p w i' h
     specialize
       p w ((↑) : w → M) i' (fun i => ⟨v i, range_subset_iff.mp h i⟩)
@@ -815,8 +816,8 @@ def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
       rw [← Finsupp.range_linearCombination]
       rw [LinearMap.mem_range]
       apply mem_range_self l
-  · rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict, ←
-      LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top]
+  · rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict,
+      ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top]
     rw [Finsupp.range_linearCombination]
 
 @[deprecated (since := "2024-08-29")] noncomputable alias LinearIndependent.totalEquiv :=
@@ -1053,6 +1054,7 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'} (hv : 
 -- See, for example, Keith Conrad's note
 --  <https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf>
 /-- Dedekind's linear independence of characters -/
+@[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   -- Porting note: Some casts are required.
@@ -1143,6 +1145,7 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
         -- of `insert a s`.
         (Finset.forall_mem_insert ..).2 ⟨h4, h3⟩
 
+@[stacks 0CKM]
 lemma linearIndependent_algHom_toLinearMap
     (K M L) [CommSemiring K] [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] :
     LinearIndependent L (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) := by
@@ -1458,10 +1461,10 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
   apply
     Exists.elim
       (this (t.filter fun x => x ∉ s) (t.filter fun x => x ∈ s) (by simp [Set.subset_def])
-        (by simp (config := { contextual := true }) [Set.ext_iff]) (by rwa [eq]))
+        (by simp +contextual [Set.ext_iff]) (by rwa [eq]))
   intro u h
   exact
-    ⟨u, Subset.trans h.1 (by simp (config := { contextual := true }) [subset_def, and_imp, or_imp]),
+    ⟨u, Subset.trans h.1 (by simp +contextual [subset_def, and_imp, or_imp]),
       h.2.1, by simp only [h.2.2, eq]⟩
 
 theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span (ht : t.Finite)
