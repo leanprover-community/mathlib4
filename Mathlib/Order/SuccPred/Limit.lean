@@ -193,6 +193,9 @@ variable [PartialOrder α]
 theorem isSuccLimit_iff [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPrelimit a := by
   rw [IsSuccLimit, isMin_iff_eq_bot]
 
+theorem IsSuccLimit.bot_lt [OrderBot α] (h : IsSuccLimit a) : ⊥ < a :=
+  h.ne_bot.bot_lt
+
 variable [SuccOrder α]
 
 theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a := fun b hba =>
