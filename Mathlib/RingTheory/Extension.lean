@@ -342,7 +342,7 @@ variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
 variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
 variable [Algebra R S'] [IsScalarTower R R' S']
 
-/-- A hom between two extensions induce a map between cotangent spaces. -/
+/-- A hom between two extensions induces a map between cotangent spaces. -/
 noncomputable
 def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
   toFun x := .of (Ideal.mapCotangent (R := R) _ _ f.toAlgHom
