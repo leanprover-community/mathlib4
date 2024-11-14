@@ -66,12 +66,9 @@ def SSet.OneTruncation.Hom {S : SSet} (X Y : OneTruncation S) :=
 instance (S : SSet) : ReflQuiver (SSet.OneTruncation S) where
   Hom X Y := SSet.OneTruncation.Hom X Y
   id X := by
-    refine ⟨S.σ 0 X, ?_, ?_⟩ <;>
-    · change (S.map _ ≫ S.map _) X = X
-      rw [← map_comp, (_ : _ ≫ _ = 𝟙 _)]; simp
-      show ({..} : Opposite _) = _; congr; ext i
-      let 0 := i
-      rfl
+    refine ⟨S.σ 0 X, ?_, ?_⟩ <;> change (S.δ _ (S.σ _ _)) = X
+    · apply SSet.δ_comp_σ_succ_apply 0
+    · apply SSet.δ_comp_σ_self_apply 0
 
 /-- The functor that carries a simplicial set to its underlying refl quiver.-/
 def SSet.oneTruncation : SSet.{u} ⥤ ReflQuiv.{u,u} where
