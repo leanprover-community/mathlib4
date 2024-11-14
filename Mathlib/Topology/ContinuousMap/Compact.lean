@@ -65,7 +65,7 @@ alias uniformInducing_equivBoundedOfCompact := isUniformInducing_equivBoundedOfC
 
 theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoundedOfCompact α β) :=
   { isUniformInducing_equivBoundedOfCompact α β with
-    inj := (equivBoundedOfCompact α β).injective }
+    injective := (equivBoundedOfCompact α β).injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_equivBoundedOfCompact := isUniformEmbedding_equivBoundedOfCompact
