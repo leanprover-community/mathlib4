@@ -197,7 +197,7 @@ private theorem ξ_mulVec_eq_0 : a *ᵥ ξ K x = 0 := by
   rw [sum_comm] at this
   rw [this]; congr 1; ext1 l
   rw [ξ, mul_sum]; congr 1; ext1 l
-  rw [← lin_1]; ring
+  rw [← lin_1]; dsimp only; ring
 
 variable {A : ℝ} (habs : ∀ k l, (house ((algebraMap (𝓞 K) K) (a k l))) ≤ A)
 
