@@ -435,14 +435,10 @@ def congrEquiv (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β :=
     fun _ => map_toFun_map_invFun_eq e⟩ (by simp [map_mul])
 
 @[to_additive (attr := simp)]
-theorem congrEquiv_one (e : α ≃ β) : congrEquiv e (1) = 1 := rfl
+theorem congrEquiv_of (e : α ≃ β) (a : α) : congrEquiv e (of a) = of (e a) := rfl
 
 @[to_additive (attr := simp)]
-theorem congrEquiv_of (e : α ≃ β) (a : α) : congrEquiv e (of a) = of (e.toFun a) := rfl
-
-@[to_additive (attr := simp)]
-theorem congrEquiv_mul (e : α ≃ β) (a b : FreeMonoid α) : congrEquiv e (a * b) = congrEquiv e a *
-    congrEquiv e b := by rw [map_mul]
+theorem congrEquiv_symm_of (e : α ≃ β) (b : β) : congrEquiv e.symm (of b) = of (e.symm b) := rfl
 
 /-- given a function from β to α, convert a relation predicate on FreeMonoid α to
 have an underlying type of β -/
