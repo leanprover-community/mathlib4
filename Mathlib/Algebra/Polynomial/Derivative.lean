@@ -148,7 +148,7 @@ theorem iterate_derivative_C_mul (a : R) (p : R[X]) (k : ℕ) :
 
 @[simp]
 theorem derivative_C_mul (a : R) (p : R[X]) :
-  derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
+    derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
 
 theorem of_mem_support_derivative {p : R[X]} {n : ℕ} (h : n ∈ p.derivative.support) :
     n + 1 ∈ p.support :=
