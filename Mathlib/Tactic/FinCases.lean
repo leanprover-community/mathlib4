@@ -58,9 +58,8 @@ partial def unfoldCases (g : MVarId) (h : FVarId)
 /-- Implementation of the `fin_cases` tactic. -/
 partial def finCasesAt (g : MVarId) (hyp : FVarId) : MetaM (List MVarId) := g.withContext do
   let type ← hyp.getType >>= instantiateMVars
-  let userName : Name ← g.getTag
   match ← getMemType type with
-  | some _ => unfoldCases g hyp (userNamePre := userName)
+  | some _ => unfoldCases g hyp (userNamePre := ← g.getTag)
   | none =>
     -- Deal with `x : A`, where `[Fintype A]` is available:
     let inst ← synthInstance (← mkAppM ``Fintype #[type])
