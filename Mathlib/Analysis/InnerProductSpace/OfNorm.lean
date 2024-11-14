@@ -126,6 +126,7 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
     convert (I_smul ((I : 𝕜) • y + x)).symm using 2
     linear_combination (norm := module) congr(-$hI' • y)
   rw [h₁, h₂]
+  unfold ofReal Algebra.cast
   ring
 
 variable [InnerProductSpaceable E]

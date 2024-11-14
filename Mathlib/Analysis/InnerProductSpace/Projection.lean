@@ -238,6 +238,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
           2 * p ≤ θ * q := by
             exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
           _ ≤ p := eq₁
+      unfold p at *
       linarith
   · intro h
     apply le_antisymm
@@ -645,7 +646,7 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
           LinearEquiv.coe_ofInvolutive, LinearMap.sub_apply, LinearMap.id_apply, two_smul,
           LinearMap.add_apply, LinearMap.comp_apply, Submodule.subtype_apply,
           ContinuousLinearMap.coe_coe]
-        dsimp [v]
+        dsimp [v, w]
         abel
       · simp only [v, add_sub_cancel, eq_self_iff_true] }
 
