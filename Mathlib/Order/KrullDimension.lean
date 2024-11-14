@@ -271,6 +271,8 @@ lemma height_eq_top_iff (x : α) :
 @[simp] lemma height_eq_zero (x : α) : height x = 0 ↔ IsMin x := by
   simpa [isMin_iff_forall_not_lt] using height_le_coe_iff x 0
 
+protected alias ⟨_, IsMin.height_eq_zero⟩ := height_eq_zero
+
 @[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by simp
 
 lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
