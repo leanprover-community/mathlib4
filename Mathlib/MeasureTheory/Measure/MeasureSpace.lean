@@ -1534,6 +1534,8 @@ protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0�
   rw [smul_apply, ← smul_one_smul ℝ≥0∞, smul_eq_mul, mul_eq_zero] at hνs ⊢
   exact hνs.imp_right fun hs ↦ h hs
 
+@[deprecated (since := "2024-11-14")] protected alias smul_both := AbsolutelyContinuous.smul
+
 protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
   intro s hs
   simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
