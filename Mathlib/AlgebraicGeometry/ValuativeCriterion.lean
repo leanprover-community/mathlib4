@@ -294,11 +294,21 @@ lemma IsSeparated.eq_valuativeCriterion :
 
 end Uniqueness
 
-lemma ValuativeCriterion.eq :
-    ValuativeCriterion = ValuativeCriterion.Existence ⊓ ValuativeCriterion.Uniqueness := by
-  ext X Y f
+lemma ValuativeCriterion.iff {f : X ⟶ Y} :
+    ValuativeCriterion f ↔ Existence f ∧ Uniqueness f := by
   show (∀ _, _) ↔ (∀ _, _) ∧ (∀ _, _)
   simp_rw [← forall_and, unique_iff_subsingleton_and_nonempty, and_comm, CommSq.HasLift.iff]
+
+lemma ValuativeCriterion.eq :
+    ValuativeCriterion = Existence ⊓ Uniqueness := by
+  ext X Y f
+  exact iff
+
+lemma ValuativeCriterion.existence {f : X ⟶ Y} (h : ValuativeCriterion f) :
+    ValuativeCriterion.Existence f := (iff.mp h).1
+
+lemma ValuativeCriterion.uniqueness {f : X ⟶ Y} (h : ValuativeCriterion f) :
+    ValuativeCriterion.Uniqueness f := (iff.mp h).2
 
 /-- The **valuative criterion** for proper morphisms. -/
 @[stacks 0BX5]
