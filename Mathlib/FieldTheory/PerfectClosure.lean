@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.FieldTheory.Perfect
 
 /-!
@@ -80,7 +81,7 @@ viewed as `x ^ (p ^ -n)`. Every element of `PerfectClosure K p` is of this form
 def mk (x : ℕ × K) : PerfectClosure K p :=
   Quot.mk (R K p) x
 
-theorem mk_surjective : Function.Surjective (mk K p) := surjective_quot_mk _
+theorem mk_surjective : Function.Surjective (mk K p) := Quot.mk_surjective
 
 @[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
   Eq.symm <| Quot.sound (R.intro m x)
@@ -271,7 +272,7 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr_arg (Quot.mk _) <| by
           simp only [iterate_map_zero, iterate_zero_apply, add_zero]
-    sub_eq_add_neg := fun a b => rfl
+    sub_eq_add_neg := fun _ _ => rfl
     neg_add_cancel := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ => by
         simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, neg_add_cancel, mk_zero_right]
@@ -495,9 +496,9 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
     rw [mul_inv_cancel₀ this, iterate_map_one]
   inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
   nnqsmul := _
-  nnqsmul_def := fun q a  => rfl
+  nnqsmul_def := fun _ _  => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),

@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.Divisible
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.IsLocalHomeomorph
+import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The additive circle
@@ -152,10 +153,6 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
 theorem coe_period : (p : AddCircle p) = 0 :=
   (QuotientAddGroup.eq_zero_iff p).2 <| mem_zmultiples p
 
-/- Porting note (#10618): `simp` attribute removed because linter reports:
-simp can prove this:
-  by simp only [@mem_zmultiples, @QuotientAddGroup.mk_add_of_mem]
--/
 theorem coe_add_period (x : 𝕜) : ((x + p : 𝕜) : AddCircle p) = x := by
   rw [coe_add, ← eq_sub_iff_add_eq', sub_self, coe_period]
 
@@ -271,7 +268,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
   open_target := isOpen_compl_singleton
   continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
   continuousOn_invFun := by
-    exact ContinuousAt.continuousOn
+    exact continuousOn_of_forall_continuousAt
       (fun _ ↦ continuousAt_subtype_val.comp ∘ continuousAt_equivIco p a)
 
 lemma isLocalHomeomorph_coe [DiscreteTopology (zmultiples p)] [DenselyOrdered 𝕜] :
@@ -591,16 +588,14 @@ homeomorphism of topological spaces. -/
 def homeoIccQuot [TopologicalSpace 𝕜] [OrderTopology 𝕜] : 𝕋 ≃ₜ Quot (EndpointIdent p a) where
   toEquiv := equivIccQuot p a
   continuous_toFun := by
-    -- Porting note: was `simp_rw`
-    rw [quotientMap_quotient_mk'.continuous_iff]
-    simp_rw [continuous_iff_continuousAt,
+    simp_rw [isQuotientMap_quotient_mk'.continuous_iff, continuous_iff_continuousAt,
       continuousAt_iff_continuous_left_right]
     intro x; constructor
     on_goal 1 => erw [equivIccQuot_comp_mk_eq_toIocMod]
     on_goal 2 => erw [equivIccQuot_comp_mk_eq_toIcoMod]
     all_goals
       apply continuous_quot_mk.continuousAt.comp_continuousWithinAt
-      rw [inducing_subtype_val.continuousWithinAt_iff]
+      rw [IsInducing.subtypeVal.continuousWithinAt_iff]
     · apply continuous_left_toIocMod
     · apply continuous_right_toIcoMod
   continuous_invFun :=

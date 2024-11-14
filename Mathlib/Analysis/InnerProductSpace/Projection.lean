@@ -621,7 +621,6 @@ section reflection
 
 variable [HasOrthogonalProjection K]
 
--- Porting note: `bit0` is deprecated.
 /-- Auxiliary definition for `reflection`: the reflection as a linear equivalence. -/
 def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive

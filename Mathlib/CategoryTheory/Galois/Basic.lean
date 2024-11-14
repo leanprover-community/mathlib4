@@ -172,7 +172,7 @@ section
 then `F ⋙ E` is again a fiber functor. -/
 noncomputable def compRight (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
     FiberFunctor (F ⋙ E) where
-  preservesQuotientsByFiniteGroups G := compPreservesColimitsOfShape F E
+  preservesQuotientsByFiniteGroups _ := compPreservesColimitsOfShape F E
 
 end
 

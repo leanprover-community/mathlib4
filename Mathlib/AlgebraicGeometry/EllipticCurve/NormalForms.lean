@@ -156,7 +156,7 @@ end Quantity
 
 section VariableChange
 
-variable [Invertible (2 : R)]
+variable (E : EllipticCurve R) [Invertible (2 : R)]
 
 /-- There is an explicit change of variables of a `WeierstrassCurve` to
 a normal form of characteristic ≠ 2, provided that 2 is invertible in the ring. -/
@@ -169,6 +169,14 @@ instance toCharNeTwoNF_spec : (W.variableChange W.toCharNeTwoNF).IsCharNeTwoNF :
 theorem exists_variableChange_isCharNeTwoNF :
     ∃ C : VariableChange R, (W.variableChange C).IsCharNeTwoNF :=
   ⟨_, W.toCharNeTwoNF_spec⟩
+
+instance _root_.EllipticCurve.toCharNeTwoNF_spec :
+    (E.variableChange E.toCharNeTwoNF).IsCharNeTwoNF :=
+  E.toWeierstrassCurve.toCharNeTwoNF_spec
+
+theorem _root_.EllipticCurve.exists_variableChange_isCharNeTwoNF :
+    ∃ C : VariableChange R, (E.variableChange C).IsCharNeTwoNF :=
+  ⟨_, E.toCharNeTwoNF_spec⟩
 
 end VariableChange
 
@@ -258,7 +266,7 @@ end Quantity
 
 section VariableChange
 
-variable [Invertible (2 : R)] [Invertible (3 : R)]
+variable (E : EllipticCurve R) [Invertible (2 : R)] [Invertible (3 : R)]
 
 /-- There is an explicit change of variables of a `WeierstrassCurve` to
 a short normal form, provided that 2 and 3 are invertible in the ring.
@@ -273,6 +281,13 @@ instance toShortNF_spec : (W.variableChange W.toShortNF).IsShortNF := by
 theorem exists_variableChange_isShortNF :
     ∃ C : VariableChange R, (W.variableChange C).IsShortNF :=
   ⟨_, W.toShortNF_spec⟩
+
+instance _root_.EllipticCurve.toShortNF_spec : (E.variableChange E.toShortNF).IsShortNF :=
+  E.toWeierstrassCurve.toShortNF_spec
+
+theorem _root_.EllipticCurve.exists_variableChange_isShortNF :
+    ∃ C : VariableChange R, (E.variableChange C).IsShortNF :=
+  ⟨_, E.toShortNF_spec⟩
 
 end VariableChange
 
@@ -405,6 +420,10 @@ theorem toShortNFOfCharThree_spec (hb₂ : W.b₂ = 0) :
   have H := W.toCharNeTwoNF_spec
   exact ⟨H.a₁, hb₂ ▸ W.toShortNFOfCharThree_a₂, H.a₃⟩
 
+theorem _root_.EllipticCurve.toShortNFOfCharThree_spec (E : EllipticCurve R) (hb₂ : E.b₂ = 0) :
+    (E.variableChange E.toShortNFOfCharThree).IsShortNF :=
+  E.toWeierstrassCurve.toShortNFOfCharThree_spec hb₂
+
 variable (W : WeierstrassCurve F)
 
 /-- For a `WeierstrassCurve` defined over a field of characteristic = 3,
@@ -436,6 +455,14 @@ theorem toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : W.b₂ = 0) :
     VariableChange.id_comp]
   exact W.toShortNFOfCharThree_spec hb₂
 
+theorem _root_.EllipticCurve.toCharThreeNF_spec_of_b₂_ne_zero (hb₂ : E.b₂ ≠ 0) :
+    (E.variableChange E.toCharThreeNF).IsCharThreeJNeZeroNF :=
+  E.toWeierstrassCurve.toCharThreeNF_spec_of_b₂_ne_zero hb₂
+
+theorem _root_.EllipticCurve.toCharThreeNF_spec_of_b₂_eq_zero (hb₂ : E.b₂ = 0) :
+    (E.variableChange E.toCharThreeNF).IsShortNF :=
+  E.toWeierstrassCurve.toCharThreeNF_spec_of_b₂_eq_zero hb₂
+
 instance toCharThreeNF_spec : (W.variableChange W.toCharThreeNF).IsCharThreeNF := by
   by_cases hb₂ : W.b₂ = 0
   · haveI := W.toCharThreeNF_spec_of_b₂_eq_zero hb₂
@@ -446,6 +473,14 @@ instance toCharThreeNF_spec : (W.variableChange W.toCharThreeNF).IsCharThreeNF :
 theorem exists_variableChange_isCharThreeNF :
     ∃ C : VariableChange F, (W.variableChange C).IsCharThreeNF :=
   ⟨_, W.toCharThreeNF_spec⟩
+
+instance _root_.EllipticCurve.toCharThreeNF_spec :
+    (E.variableChange E.toCharThreeNF).IsCharThreeNF :=
+  E.toWeierstrassCurve.toCharThreeNF_spec
+
+theorem _root_.EllipticCurve.exists_variableChange_isCharThreeNF :
+    ∃ C : VariableChange F, (E.variableChange C).IsCharThreeNF :=
+  ⟨_, E.toCharThreeNF_spec⟩
 
 end VariableChange
 
@@ -663,6 +698,10 @@ theorem toCharTwoJEqZeroNF_spec (ha₁ : W.a₁ = 0) :
   · simp_rw [toCharTwoJEqZeroNF, variableChange_a₂, inv_one, Units.val_one]
     linear_combination 2 * W.a₂ * CharP.cast_eq_zero R 2
 
+theorem _root_.EllipticCurve.toCharTwoJEqZeroNF_spec (E : EllipticCurve R) (ha₁ : E.a₁ = 0) :
+    (E.variableChange E.toCharTwoJEqZeroNF).IsCharTwoJEqZeroNF :=
+  E.toWeierstrassCurve.toCharTwoJEqZeroNF_spec ha₁
+
 variable (W : WeierstrassCurve F)
 
 /-- For a `WeierstrassCurve` defined over a field of characteristic = 2,
@@ -679,6 +718,10 @@ theorem toCharTwoJNeZeroNF_spec (ha₁ : W.a₁ ≠ 0) :
     linear_combination (W.a₃ * W.a₁ ^ 3 + W.a₁ ^ 2 * W.a₄ + W.a₃ ^ 2) * CharP.cast_eq_zero F 2
   · field_simp [toCharTwoJNeZeroNF]
     linear_combination (W.a₁ ^ 4 * W.a₃ ^ 2 + W.a₁ ^ 5 * W.a₃ * W.a₂) * CharP.cast_eq_zero F 2
+
+theorem _root_.EllipticCurve.toCharTwoJNeZeroNF_spec (ha₁ : E.a₁ ≠ 0) :
+    (E.variableChange (E.toCharTwoJNeZeroNF ha₁)).IsCharTwoJNeZeroNF :=
+  E.toWeierstrassCurve.toCharTwoJNeZeroNF_spec ha₁
 
 /-- For a `WeierstrassCurve` defined over a field of characteristic = 2,
 there is an explicit change of variables of it to `WeierstrassCurve.IsCharTwoNF`, that is,
@@ -700,6 +743,15 @@ theorem exists_variableChange_isCharTwoNF :
     ∃ C : VariableChange F, (W.variableChange C).IsCharTwoNF := by
   classical
   exact ⟨_, W.toCharTwoNF_spec⟩
+
+instance _root_.EllipticCurve.toCharTwoNF_spec [DecidableEq F] :
+    (E.variableChange E.toCharTwoNF).IsCharTwoNF :=
+  E.toWeierstrassCurve.toCharTwoNF_spec
+
+theorem _root_.EllipticCurve.exists_variableChange_isCharTwoNF :
+    ∃ C : VariableChange F, (E.variableChange C).IsCharTwoNF := by
+  classical
+  exact ⟨_, E.toCharTwoNF_spec⟩
 
 end VariableChange
 

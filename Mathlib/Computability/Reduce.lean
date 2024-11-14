@@ -106,8 +106,7 @@ theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneRe
 
 namespace ComputablePred
 
-variable {α : Type*} {β : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable β] [Primcodable σ]
+variable {α : Type*} {β : Type*} [Primcodable α] [Primcodable β]
 
 open Computable
 
@@ -266,9 +265,7 @@ theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
       OneOneReducible.disjoin_right.to_many_one.trans h⟩,
     fun ⟨h₁, h₂⟩ => disjoin_manyOneReducible h₁ h₂⟩
 
-variable {α : Type u} [Primcodable α] [Inhabited α]
-variable {β : Type v} [Primcodable β] [Inhabited β]
-variable {γ : Type w} [Primcodable γ] [Inhabited γ]
+variable {α : Type u} [Primcodable α] [Inhabited α] {β : Type v} [Primcodable β] [Inhabited β]
 
 /-- Computable and injective mapping of predicates to sets of natural numbers.
 -/
@@ -325,7 +322,7 @@ protected theorem liftOn_eq {φ} (p : Set ℕ) (f : Set ℕ → φ)
 @[reducible, simp]
 protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set ℕ → φ)
     (h : ∀ p₁ p₂ q₁ q₂, ManyOneEquiv p₁ p₂ → ManyOneEquiv q₁ q₂ → f p₁ q₁ = f p₂ q₂) : φ :=
-  d₁.liftOn (fun p => d₂.liftOn (f p) fun q₁ q₂ hq => h _ _ _ _ (by rfl) hq)
+  d₁.liftOn (fun p => d₂.liftOn (f p) fun _ _ hq => h _ _ _ _ (by rfl) hq)
     (by
       intro p₁ p₂ hp
       induction d₂ using ManyOneDegree.ind_on

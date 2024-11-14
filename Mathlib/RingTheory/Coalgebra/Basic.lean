@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
@@ -15,7 +15,7 @@ In this file we define `Coalgebra`, and provide instances for:
 
 * Commutative semirings: `CommSemiring.toCoalgebra`
 * Binary products: `Prod.instCoalgebra`
-* Finitely supported functions: `Finsupp.instCoalgebra`
+* Finitely supported functions: `DFinsupp.instCoalgebra`, `Finsupp.instCoalgebra`
 
 ## References
 
@@ -258,6 +258,68 @@ instance instCoalgebra : Coalgebra R (A × B) where
         TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
 
 end Prod
+
+namespace DFinsupp
+variable (R : Type u) (ι : Type v) (A : ι → Type w)
+variable [DecidableEq ι]
+variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)] [∀ i, Coalgebra R (A i)]
+
+open LinearMap
+
+instance instCoalgebraStruct : CoalgebraStruct R (Π₀ i, A i) where
+  comul := DFinsupp.lsum R fun i =>
+    TensorProduct.map (DFinsupp.lsingle i) (DFinsupp.lsingle i) ∘ₗ comul
+  counit := DFinsupp.lsum R fun _ => counit
+
+@[simp]
+theorem comul_single (i : ι) (a : A i) :
+    comul (R := R) (DFinsupp.single i a) =
+      (TensorProduct.map (DFinsupp.lsingle i) (DFinsupp.lsingle i) : _ →ₗ[R] _) (comul a) :=
+  lsum_single _ _ _ _
+
+@[simp]
+theorem counit_single (i : ι) (a : A i) : counit (DFinsupp.single i a) = counit (R := R) a :=
+  lsum_single _ _ _ _
+
+theorem comul_comp_lsingle (i : ι) :
+    comul ∘ₗ (lsingle i : A i →ₗ[R] _) = TensorProduct.map (lsingle i) (lsingle i) ∘ₗ comul := by
+  ext; simp
+
+theorem comul_comp_lapply (i : ι) :
+    comul ∘ₗ (lapply i : _ →ₗ[R] A i) = TensorProduct.map (lapply i) (lapply i) ∘ₗ comul := by
+  ext j : 1
+  conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
+  obtain rfl | hij := eq_or_ne i j
+  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id,  TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
+      zero_comp]
+
+@[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A i →ₗ[R] _) = counit := by
+  ext; simp
+
+/-- The `R`-module whose elements are dependent functions `(i : ι) → A i` which are zero on all but
+finitely many elements of `ι` has a coalgebra structure.
+
+The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂` where `Δ(a) = a₁ ⊗ a₂` and the counit `ε`
+by `ε(fᵢ a) = ε(a)`, where `fᵢ a` is the function sending `i` to `a` and all other elements of `ι`
+to zero. -/
+instance instCoalgebra : Coalgebra R (Π₀ i, A i) where
+  rTensor_counit_comp_comul := by
+    ext : 1
+    rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, rTensor_comp_map, counit_comp_lsingle,
+      ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul, lTensor_comp_mk]
+  lTensor_counit_comp_comul := by
+    ext : 1
+    rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, lTensor_comp_map, counit_comp_lsingle,
+      ← rTensor_comp_lTensor, comp_assoc, lTensor_counit_comp_comul, rTensor_comp_flip_mk]
+  coassoc := by
+    ext i : 1
+    simp_rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, lTensor_comp_map, comul_comp_lsingle,
+      comp_assoc, ← comp_assoc comul, rTensor_comp_map, comul_comp_lsingle, ← map_comp_rTensor,
+      ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
+        TensorProduct.map_map_comp_assoc_eq]
+
+end DFinsupp
 
 namespace Finsupp
 variable (R : Type u) (ι : Type v) (A : Type w)

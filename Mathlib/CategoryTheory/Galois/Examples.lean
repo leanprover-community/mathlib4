@@ -79,8 +79,8 @@ noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCa
 
 /-- The category of finite `G`-sets is a `PreGaloisCategory`. -/
 instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
-  hasQuotientsByFiniteGroups G _ _ := inferInstance
-  monoInducesIsoOnDirectSummand {X Y} i h :=
+  hasQuotientsByFiniteGroups _ _ _ := inferInstance
+  monoInducesIsoOnDirectSummand {_ _} i _ :=
     ⟨Action.imageComplement G i, Action.imageComplementIncl G i,
      ⟨isColimitOfReflects (Action.forget _ _ ⋙ FintypeCat.incl) <|
       (isColimitMapCoconeBinaryCofanEquiv (forget _) i _).symm
@@ -90,7 +90,7 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
 noncomputable instance : FiberFunctor (Action.forget FintypeCat (MonCat.of G)) where
   preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
-  reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
+  reflectsIsos := ⟨fun f (_ : IsIso f.hom) => inferInstance⟩
 
 /-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
 noncomputable instance : FiberFunctor (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat) :=

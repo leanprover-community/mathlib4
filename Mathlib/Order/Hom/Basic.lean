@@ -148,6 +148,9 @@ protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 
 protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
 
+@[gcongr] protected lemma GCongr.mono (f : F) {a b : α} (hab : a ≤ b) : f a ≤ f b :=
+  OrderHomClass.mono f hab
+
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` into an actual
 `OrderHom`. This is declared as the default coercion from `F` to `α →o β`. -/
 @[coe]
@@ -752,8 +755,6 @@ protected theorem injective (e : α ≃o β) : Function.Injective e :=
 protected theorem surjective (e : α ≃o β) : Function.Surjective e :=
   e.toEquiv.surjective
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem apply_eq_iff_eq (e : α ≃o β) {x y : α} : e x = e y ↔ x = y :=
   e.toEquiv.apply_eq_iff_eq
 
@@ -917,9 +918,10 @@ section LE
 
 variable [LE α] [LE β]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
+
+@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_le_apply⟩ := le_iff_le
 
 theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e x ≤ y :=
   e.rel_symm_apply
@@ -940,6 +942,8 @@ protected theorem strictMono (e : α ≃o β) : StrictMono e :=
 @[simp]
 theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
   e.toOrderEmbedding.lt_iff_lt
+
+@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_lt_apply⟩ := lt_iff_lt
 
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=

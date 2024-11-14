@@ -3,12 +3,13 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee
 -/
-import Mathlib.Algebra.Ring.Int
-import Mathlib.GroupTheory.PresentedGroup
+import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.GroupTheory.Coxeter.Matrix
+import Mathlib.GroupTheory.PresentedGroup
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Use
-import Mathlib.Tactic.NormNum.DivMod
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -234,7 +235,7 @@ theorem subgroup_closure_range_simple : Subgroup.closure (range cs.simple) = ⊤
   have : cs.simple = cs.mulEquiv.symm ∘ PresentedGroup.of := rfl
   rw [this, Set.range_comp, ← MulEquiv.coe_toMonoidHom, ← MonoidHom.map_closure,
     PresentedGroup.closure_range_of, ← MonoidHom.range_eq_map]
-  exact MonoidHom.range_top_of_surjective _ (MulEquiv.surjective _)
+  exact MonoidHom.range_eq_top.2 (MulEquiv.surjective _)
 
 /-- The simple reflections of `W` generate `W` as a monoid. -/
 theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = ⊤ := by
@@ -249,7 +250,8 @@ preserved under multiplication, then it holds for all elements of `W`. -/
 theorem simple_induction {p : W → Prop} (w : W) (simple : ∀ i : B, p (s i)) (one : p 1)
     (mul : ∀ w w' : W, p w → p w' → p (w * w')) : p w := by
   have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
-  exact Submonoid.closure_induction this (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one mul
+  exact Submonoid.closure_induction (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one (fun _ _ _ _ ↦ mul _ _)
+    this
 
 /-- If `p : W → Prop` holds for the identity and it is preserved under multiplying on the left
 by a simple reflection, then it holds for all elements of `W`. -/

@@ -20,9 +20,8 @@ This file is very similar to `Data.Finset.NAry`, to `Order.Filter.NAry`, and to
 open Function
 
 namespace Set
-variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*} {f f' : α → β → γ} {g g' : α → β → γ → δ}
-variable {s s' : Set α} {t t' : Set β} {u u' : Set γ} {v : Set δ} {a a' : α} {b b' : β} {c c' : γ}
-  {d d' : δ}
+variable {α α' β β' γ γ' δ δ' ε ε' ζ ζ' ν : Type*} {f f' : α → β → γ}
+variable {s s' : Set α} {t t' : Set β} {u : Set γ} {v : Set δ} {a : α} {b : β}
 
 theorem mem_image2_iff (hf : Injective2 f) : f a b ∈ image2 f s t ↔ a ∈ s ∧ b ∈ t :=
   ⟨by

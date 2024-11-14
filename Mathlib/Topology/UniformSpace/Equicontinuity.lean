@@ -82,8 +82,8 @@ section
 
 open UniformSpace Filter Set Uniformity Topology UniformConvergence Function
 
-variable {ι κ X X' Y Z α α' β β' γ 𝓕 : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
-  [tZ : TopologicalSpace Z] [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]
+variable {ι κ X X' Y α α' β β' γ : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+  [uα : UniformSpace α] [uβ : UniformSpace β] [uγ : UniformSpace γ]
 
 /-- A family `F : ι → X → α` of functions from a topological space to a uniform space is
 *equicontinuous at `x₀ : X`* if, for all entourages `U ∈ 𝓤 α`, there is a neighborhood `V` of `x₀`
@@ -706,7 +706,7 @@ theorem Filter.HasBasis.uniformEquicontinuousOn_iff {κ₁ κ₂ : Type*} {p₁ 
 equicontinuous at `x₀`. -/
 theorem IsUniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u : α → β}
     (hu : IsUniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((u ∘ ·) ∘ F) x₀ := by
-  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).inducing
+  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).isInducing
   rw [equicontinuousAt_iff_continuousAt, equicontinuousAt_iff_continuousAt, this.continuousAt_iff]
   rfl
 
@@ -719,7 +719,7 @@ of `𝓕` by `u`, is equicontinuous at `x₀` within `S`. -/
 lemma IsUniformInducing.equicontinuousWithinAt_iff {F : ι → X → α} {S : Set X} {x₀ : X} {u : α → β}
     (hu : IsUniformInducing u) : EquicontinuousWithinAt F S x₀ ↔
       EquicontinuousWithinAt ((u ∘ ·) ∘ F) S x₀ := by
-  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).inducing
+  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).isInducing
   simp only [equicontinuousWithinAt_iff_continuousWithinAt, this.continuousWithinAt_iff]
   rfl
 

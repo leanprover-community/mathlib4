@@ -1822,14 +1822,8 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
 
 theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₁ x + f₂ x :=
-  (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun x ↦ rfl) fun x ↦ by
+  (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun _ ↦ rfl) fun x ↦ by
     rw [neg_sub, sub_neg_eq_add]
-
-@[deprecated (since := "2024-01-31")]
-alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
-
-@[deprecated (since := "2024-01-31")]
-alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
 
 theorem IsLittleO.right_isBigO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =O[l] fun x => f₂ x - f₁ x :=
@@ -1872,7 +1866,7 @@ theorem isBigO_nat_atTop_iff {f : ℕ → E''} {g : ℕ → F''} (h : ∀ x, g x
 
 theorem isBigO_one_nat_atTop_iff {f : ℕ → E''} :
     f =O[atTop] (fun _n => 1 : ℕ → ℝ) ↔ ∃ C, ∀ n, ‖f n‖ ≤ C :=
-  Iff.trans (isBigO_nat_atTop_iff fun n h => (one_ne_zero h).elim) <| by
+  Iff.trans (isBigO_nat_atTop_iff fun _ h => (one_ne_zero h).elim) <| by
     simp only [norm_one, mul_one]
 
 theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
@@ -1890,7 +1884,7 @@ theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAd
 @[simp]
 theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} : f =o[l] g' ↔ ∀ i, (fun x => f x i) =o[l] g' := by
-  simp (config := { contextual := true }) only [IsLittleO_def, isBigOWith_pi, le_of_lt]
+  simp +contextual only [IsLittleO_def, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 
 theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
@@ -1958,8 +1952,8 @@ theorem isBigOWith_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.ta
       rwa [ContinuousAt, e.rightInvOn hb] at this,
     fun h =>
     (h.comp_tendsto (e.continuousAt_symm hb)).congr' rfl
-      ((e.eventually_right_inverse hb).mono fun x hx => congr_arg f hx)
-      ((e.eventually_right_inverse hb).mono fun x hx => congr_arg g hx)⟩
+      ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg f hx)
+      ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg g hx)⟩
 
 /-- Transfer `IsBigO` over a `PartialHomeomorph`. -/
 theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
@@ -2047,5 +2041,13 @@ protected theorem isBigO_rev_principal (hf : ContinuousOn f s)
 end IsBigORev
 
 end ContinuousOn
+
+/-- The (scalar) product of a sequence that tends to zero with a bounded one also tends to zero. -/
+lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type*}
+    [NormedDivisionRing 𝕜] [NormedAddCommGroup 𝔸] [Module 𝕜 𝔸] [BoundedSMul 𝕜 𝔸] {l : Filter ι}
+    {ε : ι → 𝕜} {f : ι → 𝔸} (hε : Tendsto ε l (𝓝 0)) (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
+    Tendsto (ε • f) l (𝓝 0) := by
+  rw [← isLittleO_one_iff 𝕜] at hε ⊢
+  simpa using IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))
 
 set_option linter.style.longFile 2200

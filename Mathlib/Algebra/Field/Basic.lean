@@ -211,6 +211,9 @@ end Field
 
 namespace RingHom
 
+/-- Any ring homomorphism `f : F → R` from a `DivisionRing F` to nonzero ring `R` is injective.
+-/
+@[stacks 09FU]
 protected theorem injective [DivisionRing K] [Semiring L] [Nontrivial L] (f : K →+* L) :
     Injective f :=
   (injective_iff_map_eq_zero f).2 fun _ ↦ (map_eq_zero f).1
@@ -228,9 +231,9 @@ noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUn
   toRing := ‹Ring R›
   __ := groupWithZeroOfIsUnitOrEqZero h
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
 -- See note [reducible non-instances]

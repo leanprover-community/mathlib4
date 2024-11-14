@@ -50,8 +50,8 @@ noncomputable instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
       conj_symm := fun x y => by simp [inner_def, mul_comm]
-      nonneg_re := fun x => normSq_nonneg
-      definite := fun x => normSq_eq_zero.1
+      nonneg_re := fun _ => normSq_nonneg
+      definite := fun _ => normSq_eq_zero.1
       add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
       smul_left := fun x y r => by simp [inner_def] }
 

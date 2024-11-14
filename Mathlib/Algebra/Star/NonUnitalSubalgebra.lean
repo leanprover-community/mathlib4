@@ -556,8 +556,8 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 theorem star_adjoin_comm (s : Set A) :
     star (NonUnitalAlgebra.adjoin R s) = NonUnitalAlgebra.adjoin R (star s) :=
   have this :
-    ∀ t : Set A, NonUnitalAlgebra.adjoin R (star t) ≤ star (NonUnitalAlgebra.adjoin R t) := fun t =>
-    NonUnitalAlgebra.adjoin_le fun x hx => NonUnitalAlgebra.subset_adjoin R hx
+    ∀ t : Set A, NonUnitalAlgebra.adjoin R (star t) ≤ star (NonUnitalAlgebra.adjoin R t) := fun _ =>
+    NonUnitalAlgebra.adjoin_le fun _ hx => NonUnitalAlgebra.subset_adjoin R hx
   le_antisymm (by simpa only [star_star] using NonUnitalSubalgebra.star_mono (this (star s)))
     (this s)
 
@@ -645,17 +645,21 @@ theorem star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set 
   star_mem <| self_mem_adjoin_singleton R x
 
 @[elab_as_elim]
-lemma adjoin_induction' {s : Set A} {p : ∀ x, x ∈ adjoin R s → Prop} {a : A}
-    (ha : a ∈ adjoin R s) (mem : ∀ (x : A) (hx : x ∈ s), p x (subset_adjoin R s hx))
-    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (zero : p 0 (zero_mem _)) (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+lemma adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
+    (mem : ∀ (x : A) (hx : x ∈ s), p x (subset_adjoin R s hx))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (zero : p 0 (zero_mem _)) (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (smul : ∀ (r : R) x hx, p x hx → p (r • x) (SMulMemClass.smul_mem r hx))
-    (star : ∀ x hx, p x hx → p (star x) (star_mem hx)) : p a ha := by
-  refine NonUnitalAlgebra.adjoin_induction' (fun x hx ↦ ?_) add zero mul smul ha
+    (star : ∀ x hx, p x hx → p (star x) (star_mem hx))
+    {a : A} (ha : a ∈ adjoin R s) : p a ha := by
+  refine NonUnitalAlgebra.adjoin_induction (fun x hx ↦ ?_) add zero mul smul ha
   simp only [Set.mem_union, Set.mem_star] at hx
   obtain (hx | hx) := hx
   · exact mem x hx
   · simpa using star _ (NonUnitalAlgebra.subset_adjoin R (by simpa using Or.inl hx)) (mem _ hx)
+
+@[deprecated adjoin_induction (since := "2024-10-10")]
+alias adjoin_induction' := adjoin_induction
 
 variable {R}
 
@@ -824,10 +828,12 @@ def toTop : A →⋆ₙₐ[R] (⊤ : NonUnitalStarSubalgebra R A) :=
 
 end StarSubAlgebraA
 
-theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
     (f : F) : NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔
       Function.Surjective f :=
   NonUnitalStarAlgebra.eq_top_iff
+
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 @[simp]
 theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : F) :
@@ -993,7 +999,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
             simp only
             rw [hf i k hik, hf j k hjk]
             rfl)
-          (↑(iSup K)) (by rw [coe_iSup_of_directed dir])
+          _ (by rw [coe_iSup_of_directed dir])
       map_zero' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]

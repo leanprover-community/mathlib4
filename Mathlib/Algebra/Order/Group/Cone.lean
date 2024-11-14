@@ -117,4 +117,4 @@ def LinearOrderedCommGroup.mkOfCone
     LinearOrderedCommGroup G where
   __ := OrderedCommGroup.mkOfCone C
   le_total a b := by simpa using mem_or_inv_mem (b / a)
-  decidableLE a b := dec _
+  decidableLE _ _ := dec _

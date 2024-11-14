@@ -1016,7 +1016,7 @@ forms a Vitali family. This is essentially a restatement of the measurable Besic
 protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ where
   setsAt x := (fun r : ℝ => closedBall x r) '' Ioi (0 : ℝ)
   measurableSet _ := forall_mem_image.2 fun _ _ ↦ isClosed_ball.measurableSet
-  nonempty_interior _ := forall_mem_image.2 fun r rpos ↦
+  nonempty_interior _ := forall_mem_image.2 fun _ rpos ↦
     (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
   nontrivial x ε εpos := ⟨closedBall x ε, mem_image_of_mem _ εpos, Subset.rfl⟩
   covering := by

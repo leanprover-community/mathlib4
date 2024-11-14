@@ -615,7 +615,7 @@ theorem Continuous.map_borel_eq {X Y : Type*} [TopologicalSpace X] [PolishSpace 
 instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X]
     [BorelSpace X] {s : Setoid X} [T0Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
     BorelSpace (Quotient s) :=
-  ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
+  ⟨continuous_quotient_mk'.map_eq_borel Quotient.mk'_surjective⟩
 
 /-- When the subgroup `N < G` is not necessarily `Normal`, we have a `CosetSpace` as opposed
 to `QuotientGroup` (the next `instance`).
@@ -631,10 +631,7 @@ instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] 
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
     [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
-  -- Porting note: 1st and 3rd `haveI`s were not needed in Lean 3
-  haveI := Subgroup.t3_quotient_of_isClosed N
-  haveI := QuotientGroup.secondCountableTopology (Γ := N)
-  Quotient.borelSpace
+  ⟨continuous_mk.map_eq_borel mk_surjective⟩
 
 namespace MeasureTheory
 

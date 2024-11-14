@@ -138,7 +138,7 @@ structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [Ad
   conj_symm : ∀ x y, conj (inner y x) = inner x y
   /-- The inner product is positive (semi)definite. -/
   nonneg_re : ∀ x, 0 ≤ re (inner x x)
-  /-- The inner product is positive definite. -/
+  /-- The inner product is additive in the first coordinate. -/
   add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
   /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left : ∀ x y r, inner (r • x) y = conj r * inner x y
@@ -470,7 +470,7 @@ def toNormedAddCommGroup : NormedAddCommGroup F :=
           simp only [← inner_self_eq_norm_mul_norm, inner_add_add_self, mul_add, mul_comm, map_add]
           linarith
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this
-      eq_zero_of_map_eq_zero' := fun x hx =>
+      eq_zero_of_map_eq_zero' := fun _ hx =>
         normSq_eq_zero.1 <| (sqrt_eq_zero inner_self_nonneg).1 hx }
 
 attribute [local instance] toNormedAddCommGroup
@@ -629,12 +629,12 @@ protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι �
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp (config := { contextual := true }) only [DFinsupp.sum, sum_inner, smul_eq_mul]
+  simp +contextual only [DFinsupp.sum, sum_inner, smul_eq_mul]
 
 protected theorem DFinsupp.inner_sum {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp (config := { contextual := true }) only [DFinsupp.sum, inner_sum, smul_eq_mul]
+  simp +contextual only [DFinsupp.sum, inner_sum, smul_eq_mul]
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
@@ -2040,7 +2040,7 @@ theorem OrthogonalFamily.inner_right_dfinsupp
     ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
       DFinsupp.inner_sum (fun j => V j) l (V i v)
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
-      (congr_arg l.sum <| funext fun j => funext <| hV.eq_ite v)
+      (congr_arg l.sum <| funext fun _ => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
       simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
         DFinsupp.mem_support_toFun]
@@ -2240,7 +2240,7 @@ def InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     NormedSpace.restrictScalars ℝ 𝕜
       E with
     norm_sq_eq_inner := norm_sq_eq_inner
-    conj_symm := fun x y => inner_re_symm _ _
+    conj_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
       change re ⟪x + y, z⟫ = re ⟪x, z⟫ + re ⟪y, z⟫
       simp only [inner_add_left, map_add]

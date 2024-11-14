@@ -66,7 +66,7 @@ variable (P R)
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
-  hom t Y f hf := Pi.π (fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
+  hom t _ _ hf := Pi.π (fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
   inv := Pi.lift fun f x => x _ f.2.2
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
@@ -130,8 +130,8 @@ theorem w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ second
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.
 -/
-theorem compatible_iff (x : FirstObj P S) :
-    ((firstObjEqFamily P S).hom x).Compatible ↔ firstMap P S x = secondMap P S x := by
+theorem compatible_iff (x : FirstObj P S.arrows) :
+    ((firstObjEqFamily P S.arrows).hom x).Compatible ↔ firstMap P S x = secondMap P S x := by
   rw [Presieve.compatible_iff_sieveCompatible]
   constructor
   · intro t

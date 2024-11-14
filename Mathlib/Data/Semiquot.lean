@@ -153,9 +153,9 @@ instance : LE (Semiquot α) :=
 
 instance partialOrder : PartialOrder (Semiquot α) where
   le s t := ∀ ⦃x⦄, x ∈ s → x ∈ t
-  le_refl s := Set.Subset.refl _
-  le_trans s t u := Set.Subset.trans
-  le_antisymm s t h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
+  le_refl _ := Set.Subset.refl _
+  le_trans _ _ _ := Set.Subset.trans
+  le_antisymm _ _ h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
 
 instance : SemilatticeSup (Semiquot α) :=
   { Semiquot.partialOrder with

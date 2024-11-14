@@ -118,7 +118,7 @@ lemma nmem_nonZeroDivisors_iff {r : M} : r ∉ M⁰ ↔ {s | s * r = 0 ∧ s ≠
   simpa [mem_nonZeroDivisors_iff] using Set.nonempty_def.symm
 
 theorem mul_right_mem_nonZeroDivisors_eq_zero_iff {x r : M} (hr : r ∈ M⁰) : x * r = 0 ↔ x = 0 :=
-  ⟨hr _, by simp (config := { contextual := true })⟩
+  ⟨hr _, by simp +contextual⟩
 @[simp]
 theorem mul_right_coe_nonZeroDivisors_eq_zero_iff {x : M} {c : M⁰} : x * c = 0 ↔ x = 0 :=
   mul_right_mem_nonZeroDivisors_eq_zero_iff c.prop
@@ -211,6 +211,16 @@ theorem map_ne_zero_of_mem_nonZeroDivisors [Nontrivial M] [ZeroHomClass F M M'] 
 theorem map_mem_nonZeroDivisors [Nontrivial M] [NoZeroDivisors M'] [ZeroHomClass F M M'] (g : F)
     (hg : Function.Injective g) {x : M} (h : x ∈ M⁰) : g x ∈ M'⁰ := fun _ hz ↦
   eq_zero_of_ne_zero_of_mul_right_eq_zero (map_ne_zero_of_mem_nonZeroDivisors g hg h) hz
+
+theorem MulEquivClass.map_nonZeroDivisors {R S F : Type*} [MonoidWithZero R] [MonoidWithZero S]
+    [EquivLike F R S] [MulEquivClass F R S] (h : F) :
+    Submonoid.map h (nonZeroDivisors R) = nonZeroDivisors S := by
+  let h : R ≃* S := h
+  show Submonoid.map h.toMonoidHom _ = _
+  ext
+  simp_rw [Submonoid.map_equiv_eq_comap_symm, Submonoid.mem_comap, mem_nonZeroDivisors_iff,
+    ← h.symm.forall_congr_right, h.symm.coe_toMonoidHom, h.symm.toEquiv_eq_coe, h.symm.coe_toEquiv,
+    ← map_mul, map_eq_zero_iff _ h.symm.injective]
 
 theorem le_nonZeroDivisors_of_noZeroDivisors [NoZeroDivisors M] {S : Submonoid M}
     (hS : (0 : M) ∉ S) : S ≤ M⁰ := fun _ hx _ hy ↦

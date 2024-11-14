@@ -106,7 +106,7 @@ def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K) where
   toFun := (↑)
   map_zero' := rfl
   map_add' x y := by
-    -- Porting note: was `ext v`
+    -- Porting note (#11041): was `ext v`
     refine funext fun v => ?_
     simp only [coe_apply, Pi.add_apply, Subring.coe_add]
     -- Porting note: added
@@ -119,7 +119,7 @@ def Coe.ringHom : RingHom (R_hat R K) (K_hat R K) :=
     toFun := (↑)
     map_one' := rfl
     map_mul' := fun x y => by
-      -- Porting note: was `ext p`
+      -- Porting note (#11041): was `ext p`
       refine funext fun p => ?_
       simp only [Pi.mul_apply, Subring.coe_mul]
       -- Porting note: added
@@ -175,7 +175,7 @@ end FiniteIntegralAdeles
 /-! ### The finite adèle ring of a Dedekind domain
 We define the finite adèle ring of `R` as the restricted product over all maximal ideals `v` of `R`
 of `adicCompletion` with respect to `adicCompletionIntegers`. We prove that it is a commutative
-ring. TODO: show that it is a topological ring with the restricted product topology. -/
+ring. -/
 
 
 namespace ProdAdicCompletions
@@ -355,7 +355,7 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
   map_zero' := by ext; rfl
   map_add' _ _ := by ext; rfl
   commutes' _ _ := mul_comm _ _
-  smul_def' r x := rfl
+  smul_def' _ _ := rfl
 
 instance : CoeFun (FiniteAdeleRing R K)
     (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
@@ -429,7 +429,7 @@ theorem submodulesRingBasis : SubmodulesRingBasis
 instance : TopologicalSpace (FiniteAdeleRing R K) :=
   SubmodulesRingBasis.topology (submodulesRingBasis R K)
 
--- the point of the above: this now works
+-- the point of `submodulesRingBasis` above: this now works
 example : TopologicalRing (FiniteAdeleRing R K) := inferInstance
 
 end Topology

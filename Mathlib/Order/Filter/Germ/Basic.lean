@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Tendsto
 import Mathlib.Algebra.Module.Pi
 
 /-!
@@ -79,7 +79,6 @@ def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a
 
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
   `Filter.Germ`. -/
--- Porting note: removed @[protected]
 def Product (l : Filter α) (ε : α → Type*) : Type _ :=
   Quotient (productSetoid l ε)
 
@@ -396,7 +395,7 @@ theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : 
 -- TODO: #7432
 @[to_additive]
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
-  { Function.Surjective.monoid ofFun (surjective_quot_mk _) (by rfl)
+  { Function.Surjective.monoid ofFun Quot.mk_surjective (by rfl)
       (fun _ _ => by rfl) fun _ _ => by rfl with
     toSemigroup := instSemigroup
     toOne := instOne
@@ -690,7 +689,7 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
 instance instPreorder [Preorder β] : Preorder (Germ l β) where
   le := (· ≤ ·)
   le_refl f := inductionOn f <| EventuallyLE.refl l
-  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLE.trans
+  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun _ _ _ => EventuallyLE.trans
 
 instance instPartialOrder [PartialOrder β] : PartialOrder (Germ l β) where
   le_antisymm f g := inductionOn₂ f g fun _ _ h₁ h₂ ↦ (EventuallyLE.antisymm h₁ h₂).germ_eq
@@ -716,23 +715,25 @@ instance instBoundedOrder [LE β] [BoundedOrder β] : BoundedOrder (Germ l β) w
   __ := instOrderBot
   __ := instOrderTop
 
-instance instSup [Sup β] : Sup (Germ l β) := ⟨map₂ (· ⊔ ·)⟩
-instance instInf [Inf β] : Inf (Germ l β) := ⟨map₂ (· ⊓ ·)⟩
+instance instSup [Max β] : Max (Germ l β) := ⟨map₂ (· ⊔ ·)⟩
+instance instInf [Min β] : Min (Germ l β) := ⟨map₂ (· ⊓ ·)⟩
 
 @[simp, norm_cast]
-theorem const_sup [Sup β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Germ l β) :=
+theorem const_sup [Max β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Germ l β) :=
   rfl
 
 @[simp, norm_cast]
-theorem const_inf [Inf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l β) :=
+theorem const_inf [Min β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l β) :=
   rfl
 
 instance instSemilatticeSup [SemilatticeSup β] : SemilatticeSup (Germ l β) where
+  sup := max
   le_sup_left f g := inductionOn₂ f g fun _f _g => Eventually.of_forall fun _x ↦ le_sup_left
   le_sup_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ le_sup_right
   sup_le f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ sup_le
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (Germ l β) where
+  inf := min
   inf_le_left f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_left
   inf_le_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_right
   le_inf f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ le_inf

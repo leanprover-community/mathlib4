@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Jireh Loreaux
 -/
 
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.Congruence.Opposite
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.Order.GaloisConnection
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-!
 # Operations on two-sided ideals
@@ -108,7 +106,27 @@ def ker : TwoSidedIdeal R :=
 lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
   delta ker; rw [mem_mk']; rfl
 
+lemma ker_eq_bot : ker f = ⊥ ↔ Function.Injective f :=
+  ⟨fun h _ _ _ =>
+      sub_eq_zero.1 <| mem_bot _ |>.1 <| h.symm ▸ mem_ker _ |>.2 <| by simpa [sub_eq_zero],
+    fun h => eq_bot_iff.2 fun x hx => mem_bot _ |>.2 <| h <| by simpa [mem_ker] using hx⟩
+
 end NonUnitalNonAssocRing
+
+section NonAssocRing
+
+variable {R : Type*} [NonAssocRing R]
+
+/--
+The kernel of the ring homomorphism `R → R⧸I` is `I`.
+-/
+@[simp]
+lemma ker_ringCon_mk' (I : TwoSidedIdeal R) : ker I.ringCon.mk' = I :=
+  le_antisymm
+    (fun _ h => by simpa using I.rel_iff _ _ |>.1 (Quotient.eq'.1 h))
+    (fun _ h => Quotient.sound' <| I.rel_iff _ _ |>.2 (by simpa using h))
+
+end NonAssocRing
 
 section NonUnitalRing
 
@@ -141,10 +159,10 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
   induction principle for `AddSubgroup`, we must also have `z ∈ J`. -/
   case mem_ideal_of_subset =>
     simp only [I, SetLike.mem_coe, mem_mk'] at hz
-    induction hz using closure_induction' with
+    induction hz using closure_induction with
     | mem x hx => exact hJ hx
     | one => exact zero_mem _
-    | mul x _ y _ hx hy => exact J.add_mem hx hy
+    | mul x y _ _ hx hy => exact J.add_mem hx hy
     | inv x _ hx => exact J.neg_mem hx
 
 open Pointwise Set

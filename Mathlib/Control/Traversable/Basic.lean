@@ -144,7 +144,7 @@ end Preserves
 
 /-- The identity applicative transformation from an applicative functor to itself. -/
 def idTransformation : ApplicativeTransformation F F where
-  app α := id
+  app _ := id
   preserves_pure' := by simp
   preserves_seq' x y := by simp
 
@@ -158,7 +158,7 @@ variable {H : Type u → Type s} [Applicative H]
 /-- The composition of applicative transformations. -/
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
     ApplicativeTransformation F H where
-  app α x := η' (η x)
+  app _ x := η' (η x)
   -- Porting note: something has gone wrong with `simp [functor_norm]`,
   -- which should suffice for the next two.
   preserves_pure' x := by simp only [preserves_pure]

@@ -62,7 +62,7 @@ The pullback cone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a limit if `f` is 
 shown in `mono_of_pullback_is_id`.
 -/
 def isLimitMkIdId (f : X ⟶ Y) [Mono f] : IsLimit (mk (𝟙 X) (𝟙 X) rfl : PullbackCone f f) :=
-  IsLimit.mk _ (fun s => s.fst) (fun s => Category.comp_id _)
+  IsLimit.mk _ (fun s => s.fst) (fun _ => Category.comp_id _)
     (fun s => by rw [← cancel_mono f, Category.comp_id, s.condition]) fun s m m₁ _ => by
     simpa using m₁
 
@@ -246,7 +246,7 @@ The pushout cocone `(𝟙 X, 𝟙 X)` for the pair `(f, f)` is a colimit if `f` 
 shown in `epi_of_isColimit_mk_id_id`.
 -/
 def isColimitMkIdId (f : X ⟶ Y) [Epi f] : IsColimit (mk (𝟙 Y) (𝟙 Y) rfl : PushoutCocone f f) :=
-  IsColimit.mk _ (fun s => s.inl) (fun s => Category.id_comp _)
+  IsColimit.mk _ (fun s => s.inl) (fun _ => Category.id_comp _)
     (fun s => by rw [← cancel_epi f, Category.id_comp, s.condition]) fun s m m₁ _ => by
     simpa using m₁
 

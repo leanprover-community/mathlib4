@@ -61,6 +61,26 @@ theorem enumOrd_mem (hs : ¬ BddAbove s) (o : Ordinal) : enumOrd s o ∈ s :=
 theorem enumOrd_strictMono (hs : ¬ BddAbove s) : StrictMono (enumOrd s) :=
   fun a b ↦ (enumOrd_mem_aux hs b).2 a
 
+theorem enumOrd_injective (hs : ¬ BddAbove s) : Function.Injective (enumOrd s) :=
+  (enumOrd_strictMono hs).injective
+
+theorem enumOrd_inj (hs : ¬ BddAbove s) {a b : Ordinal} : enumOrd s a = enumOrd s b ↔ a = b :=
+  (enumOrd_injective hs).eq_iff
+
+theorem enumOrd_le_enumOrd (hs : ¬ BddAbove s) {a b : Ordinal} :
+    enumOrd s a ≤ enumOrd s b ↔ a ≤ b :=
+  (enumOrd_strictMono hs).le_iff_le
+
+theorem enumOrd_lt_enumOrd (hs : ¬ BddAbove s) {a b : Ordinal} :
+    enumOrd s a < enumOrd s b ↔ a < b :=
+  (enumOrd_strictMono hs).lt_iff_lt
+
+theorem id_le_enumOrd (hs : ¬ BddAbove s) : id ≤ enumOrd s :=
+  (enumOrd_strictMono hs).id_le
+
+theorem le_enumOrd_self (hs : ¬ BddAbove s) {a} : a ≤ enumOrd s a :=
+  (enumOrd_strictMono hs).le_apply
+
 theorem enumOrd_succ_le (hs : ¬ BddAbove s) (ha : a ∈ s) (hb : enumOrd s b < a) :
     enumOrd s (succ b) ≤ a := by
   apply enumOrd_le_of_forall_lt ha

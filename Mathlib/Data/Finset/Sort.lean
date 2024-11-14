@@ -76,6 +76,10 @@ theorem sort_insert [DecidableEq α] {a : α} {s : Finset α} (h₁ : ∀ b ∈ 
     sort r (insert a s) = a :: sort r s := by
   rw [← cons_eq_insert _ _ h₂, sort_cons r h₁]
 
+@[simp]
+theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
+  Multiset.sort_range n
+
 open scoped List in
 theorem sort_perm_toList (s : Finset α) : sort r s ~ s.toList := by
   rw [← Multiset.coe_eq_coe]
@@ -219,7 +223,7 @@ theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique' {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k ↪o α}
     (hfs : ∀ x, f x ∈ s) : f = s.orderEmbOfFin h :=
-  RelEmbedding.ext <| Function.funext_iff.1 <| orderEmbOfFin_unique h hfs f.strictMono
+  RelEmbedding.ext <| funext_iff.1 <| orderEmbOfFin_unique h hfs f.strictMono
 
 /-- Two parametrizations `orderEmbOfFin` of the same set take the same value on `i` and `j` if
 and only if `i = j`. Since they can be defined on a priori not defeq types `Fin k` and `Fin l`

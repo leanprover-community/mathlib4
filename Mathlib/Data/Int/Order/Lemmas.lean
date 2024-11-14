@@ -19,9 +19,6 @@ namespace Int
 
 /-! ### nat abs -/
 
-
-variable {a b : ℤ} {n : ℕ}
-
 theorem natAbs_eq_iff_mul_self_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a * a = b * b := by
   rw [← abs_eq_iff_mul_self_eq, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.natCast_inj.symm

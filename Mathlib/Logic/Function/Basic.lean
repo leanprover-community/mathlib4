@@ -33,7 +33,7 @@ theorem eval_apply {β : α → Sort*} (x : α) (f : ∀ x, β x) : eval x f = f
 theorem const_def {y : β} : (fun _ : α ↦ y) = const α y :=
   rfl
 
-theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun y₁ y₂ h ↦
+theorem const_injective [Nonempty α] : Injective (const α : β → α → β) := fun _ _ h ↦
   let ⟨x⟩ := ‹Nonempty α›
   congr_fun h x
 
@@ -64,6 +64,11 @@ lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
   refine ⟨fun h ↦ funext fun z ↦ ?_, fun h ↦ ?_⟩
   · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
   · rw [h, Subsingleton.elim x y]
+
+theorem swap_lt {α} [Preorder α] : swap (· < · : α → α → _) = (· > ·) := rfl
+theorem swap_le {α} [Preorder α] : swap (· ≤ · : α → α → _) = (· ≥ ·) := rfl
+theorem swap_gt {α} [Preorder α] : swap (· > · : α → α → _) = (· < ·) := rfl
+theorem swap_ge {α} [Preorder α] : swap (· ≥ · : α → α → _) = (· ≤ ·) := rfl
 
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
@@ -511,7 +516,7 @@ theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') :
 lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
     (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
   rw [← and_forall_ne a, update_same]
-  simp (config := { contextual := true })
+  simp +contextual
 
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
     (∃ x, p x (update f a b x)) ↔ p a b ∨ ∃ x ≠ a, p x (f x) := by
@@ -710,14 +715,6 @@ end FactorsThrough
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
   rfl
 
-@[simp]
-theorem uncurry_apply_pair {α β γ} (f : α → β → γ) (x : α) (y : β) : uncurry f (x, y) = f x y :=
-  rfl
-
-@[simp]
-theorem curry_apply {α β γ} (f : α × β → γ) (x : α) (y : β) : curry f x y = f (x, y) :=
-  rfl
-
 section Bicomp
 
 variable {α β γ δ ε : Type*}
@@ -839,13 +836,13 @@ protected theorem uncurry {α β γ : Type*} {f : α → β → γ} (hf : Inject
   fun ⟨_, _⟩ ⟨_, _⟩ h ↦ (hf h).elim (congr_arg₂ _)
 
 /-- As a map from the left argument to a unary function, `f` is injective. -/
-theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun a₁ a₂ h ↦
+theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun _ _ h ↦
   let ⟨b⟩ := ‹Nonempty β›
   hf.left b <| (congr_fun h b : _)
 
 /-- As a map from the right argument to a unary function, `f` is injective. -/
 theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a ↦ f a b :=
-  fun b₁ b₂ h ↦
+  fun _ _ h ↦
     let ⟨a⟩ := ‹Nonempty α›
     hf.right a <| (congr_fun h a : _)
 
@@ -893,7 +890,7 @@ lemma forall_existsUnique_iff {r : α → β → Prop} :
 if and only if it is `(f · = ·)` for some function `f`. -/
 lemma forall_existsUnique_iff' {r : α → β → Prop} :
     (∀ a, ∃! b, r a b) ↔ ∃ f : α → β, r = (f · = ·) := by
-  simp [forall_existsUnique_iff, Function.funext_iff]
+  simp [forall_existsUnique_iff, funext_iff]
 
 /-- A symmetric relation `r : α → α → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)

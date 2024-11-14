@@ -33,8 +33,8 @@ def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
   toFun f :=
     { val := ⟨fun x => f x, Units.continuous_val.comp f.continuous⟩
       inv := ⟨fun x => ↑(f x)⁻¹, Units.continuous_val.comp (continuous_inv.comp f.continuous)⟩
-      val_inv := ext fun x => Units.mul_inv _
-      inv_val := ext fun x => Units.inv_mul _ }
+      val_inv := ext fun _ => Units.mul_inv _
+      inv_val := ext fun _ => Units.inv_mul _ }
   invFun f :=
     { toFun := fun x =>
         ⟨(f : C(X, M)) x, (↑f⁻¹ : C(X, M)) x,

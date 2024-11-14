@@ -3,6 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
+import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
@@ -50,7 +51,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 * `HomogeneousLocalization.eq_num_div_den`: if `f : HomogeneousLocalization 𝒜 x`, then
   `f.val : Aₓ` is equal to `f.num / f.den`.
 
-* `HomogeneousLocalization.localRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
+* `HomogeneousLocalization.isLocalRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
   the complement of some prime ideals.
 
 * `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a grading
@@ -228,10 +229,10 @@ theorem den_add (c1 c2 : NumDenSameDeg 𝒜 x) : ((c1 + c2).den : A) = c1.den * 
 instance : CommMonoid (NumDenSameDeg 𝒜 x) where
   one := 1
   mul := (· * ·)
-  mul_assoc c1 c2 c3 := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
-  one_mul c := ext _ (zero_add _) (one_mul _) (one_mul _)
-  mul_one c := ext _ (add_zero _) (mul_one _) (mul_one _)
-  mul_comm c1 c2 := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
+  mul_assoc _ _ _ := ext _ (add_assoc _ _ _) (mul_assoc _ _ _) (mul_assoc _ _ _)
+  one_mul _ := ext _ (zero_add _) (one_mul _) (one_mul _)
+  mul_one _ := ext _ (add_zero _) (mul_one _) (mul_one _)
+  mul_comm _ _ := ext _ (add_comm _ _) (mul_comm _ _) (mul_comm _ _)
 
 instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
   pow c n :=
@@ -285,7 +286,7 @@ abbrev mk (y : HomogeneousLocalization.NumDenSameDeg 𝒜 x) : HomogeneousLocali
   Quotient.mk'' y
 
 lemma mk_surjective : Function.Surjective (mk (𝒜 := 𝒜) (x := x)) :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 /-- View an element of `HomogeneousLocalization 𝒜 x` as an element of `Aₓ` by forgetting that the
 numerator and denominator are of the same grading.
@@ -528,15 +529,15 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
       (hc ▸ Ideal.mul_mem_left _ c.1 (Ideal.mul_mem_right b _ h))
   refine isUnit_of_mul_eq_one _ (Quotient.mk'' ⟨f.1, f.3, f.2, this⟩) ?_
   rw [← mk_mul, ext_iff_val, val_mk]
-  simp [mul_comm f.den.1]
+  simp [mul_comm f.den.1, Localization.mk_eq_monoidOf_mk']
 
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, val_zero, val_one, zero_ne_one] at r⟩⟩
 
-instance localRing : LocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
-  LocalRing.of_isUnit_or_isUnit_one_sub_self fun a => by
+instance isLocalRing : IsLocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a => by
     simpa only [← isUnit_iff_isUnit_val, val_sub, val_one]
-      using LocalRing.isUnit_or_isUnit_one_sub_self _
+      using IsLocalRing.isUnit_or_isUnit_one_sub_self _
 
 end
 

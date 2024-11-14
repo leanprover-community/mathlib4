@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Howes, Newell Jensen
 -/
 import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Defining a group given by generators and relations
@@ -51,7 +51,7 @@ theorem closure_range_of (rels : Set (FreeGroup α)) :
   have : (PresentedGroup.of : α → PresentedGroup rels) = QuotientGroup.mk' _ ∘ FreeGroup.of := rfl
   rw [this, Set.range_comp, ← MonoidHom.map_closure (QuotientGroup.mk' _),
     FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
-  exact MonoidHom.range_top_of_surjective _ (QuotientGroup.mk'_surjective _)
+  exact MonoidHom.range_eq_top.2 (QuotientGroup.mk'_surjective _)
 
 section ToGroup
 
