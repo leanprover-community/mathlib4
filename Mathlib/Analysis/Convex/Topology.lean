@@ -91,7 +91,6 @@ def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterva
 end stdSimplex
 
 /-! ### Topological vector spaces -/
-
 section TopologicalSpace
 
 variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
