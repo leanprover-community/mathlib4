@@ -333,7 +333,7 @@ lemma Inducing.le_functorObj_iff {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) 
     dsimp
     rwa [Set.union_eq_right]
 
-/-- An inducing map `f : X ⟶ Y` induces an galois insertion between `Opens Y` and `Opens X`. -/
+/-- An inducing map `f : X ⟶ Y` induces a Galois insertion between `Opens Y` and `Opens X`. -/
 def Inducing.opensGI {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) :
     GaloisInsertion (Opens.map f).obj hf.functorObj :=
   ⟨_, fun _ _ ↦ hf.le_functorObj_iff.symm, fun U ↦ (hf.map_functorObj U).ge, fun _ _ ↦ rfl⟩
