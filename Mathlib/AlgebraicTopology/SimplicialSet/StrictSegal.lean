@@ -78,7 +78,6 @@ theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤  n) 
   convert spine_map_subinterval X j l hjl (spineToSimplex f)
   exact Eq.symm (spineToSimplex_spine f)
 
-@[simp]
 theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hn : j + l ≤ n) :
     X.map
       (mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)).op

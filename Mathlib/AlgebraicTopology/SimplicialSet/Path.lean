@@ -64,7 +64,6 @@ def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
     simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
     rw [SimplexCategory.δ_zero_mkOfSucc]
 
-@[simp]
 lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[n]) :
     X.spine l (X.map (subinterval j l (by omega)).op Δ) =
       (X.spine n Δ).interval j l (by omega) := by
