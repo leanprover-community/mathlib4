@@ -154,7 +154,7 @@ section
 
 variable {J} {J' : Type*} [Category J] [Category J'] (F : J ⥤ J') [F.Final]
 
-def ABOfShapeOfInitial [HasColimitsOfShape J' C] [HasColimitsOfShape J C] [ABOfShape J C] :
+def ABOfShapeOfFinal [HasColimitsOfShape J' C] [HasColimitsOfShape J C] [ABOfShape J C] :
     ABOfShape J' C where
   preservesFiniteLimits :=
     letI : PreservesFiniteLimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
@@ -176,7 +176,7 @@ def CountableAB4.ofCountableAB5 [HasColimitsOfShape ℕ C] [ABOfShape ℕ C]
   have : HasColimitsOfShape (Finset (Discrete J)) C :=
     Functor.Final.hasColimitsOfShape_of_final
       (IsFiltered.sequentialFunctor (Finset (Discrete J)))
-  have := ABOfShapeOfInitial C (IsFiltered.sequentialFunctor (Finset (Discrete J)))
+  have := ABOfShapeOfFinal C (IsFiltered.sequentialFunctor (Finset (Discrete J)))
   ABOfShapeDiscreteOfABOfShapeFinsetDiscrete _ _
 
 end
@@ -213,7 +213,7 @@ section
 variable {J} {J' : Type*} [Category J] [Category J'] (F : J ⥤ J') [F.Initial]
 
 
-def ABStarOfShapeOfFinal [HasLimitsOfShape J' C] [HasLimitsOfShape J C] [ABStarOfShape J C] :
+def ABStarOfShapeOfInitial [HasLimitsOfShape J' C] [HasLimitsOfShape J C] [ABStarOfShape J C] :
     ABStarOfShape J' C where
   preservesFiniteColimits :=
     letI : PreservesFiniteColimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
@@ -235,8 +235,28 @@ def CountableAB4Star.ofCountableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [ABStarOf
   have : HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C :=
     Functor.Initial.hasLimitsOfShape_of_initial
       (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
-  have := ABStarOfShapeOfFinal C (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
+  have := ABStarOfShapeOfInitial C (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
   ABStarOfShapeDiscreteOfABStarOfShapeFinsetDiscreteOp _ _
+
+def CountableAB4.ofABOfShapeNatAndFinite [HasCountableCoproducts C]
+    [∀ (J : Type) [Finite J], ABOfShape (Discrete J) C] [ABOfShape (Discrete ℕ) C] :
+    CountableAB4 C := fun J _ ↦ by
+  by_cases h : Finite J
+  · infer_instance
+  · have : Infinite J := ⟨h⟩
+    let _ := Encodable.ofCountable J
+    let _ := Denumerable.ofEncodableOfInfinite J
+    exact ABOfShapeOfFinal C (Discrete.equivalence (Denumerable.eqv J)).inverse
+
+def CountableAB4Star.ofABStarOfShapeNatAndFinite [HasCountableProducts C]
+    [∀ (J : Type) [Finite J], ABStarOfShape (Discrete J) C] [ABStarOfShape (Discrete ℕ) C] :
+    CountableAB4Star C := fun J _ ↦ by
+  by_cases h : Finite J
+  · infer_instance
+  · have : Infinite J := ⟨h⟩
+    let _ := Encodable.ofCountable J
+    let _ := Denumerable.ofEncodableOfInfinite J
+    exact ABStarOfShapeOfInitial C (Discrete.equivalence (Denumerable.eqv J)).inverse
 
 end
 
@@ -246,7 +266,31 @@ section EpiMono
 
 open Functor
 
-variable [Abelian C] -- Could be weakened
+section
+
+variable [HasZeroMorphisms C] [HasFiniteBiproducts C]
+
+noncomputable instance ABOfShapeDiscreteFinite (J : Type*) [Finite J] :
+    ABOfShape (Discrete J) C where
+  preservesFiniteLimits := preservesFiniteLimitsOfNatIso HasBiproductsOfShape.colimIsoLim.symm
+
+noncomputable instance ABStarOfShapeDiscreteFinite {J : Type*} [Finite J] :
+    ABStarOfShape (Discrete J) C where
+  preservesFiniteColimits := preservesFiniteColimitsOfNatIso HasBiproductsOfShape.colimIsoLim
+
+noncomputable def CountableAB4.ofABOfShapeNat [HasFiniteLimits C] [HasCountableCoproducts C]
+    [ABOfShape (Discrete ℕ) C] : CountableAB4 C := by
+  apply (config := { allowSynthFailures := true }) CountableAB4.ofABOfShapeNatAndFinite
+  exact fun _ ↦ inferInstance
+
+noncomputable def CountableAB4Star.ofABStarOfShapeNat [HasFiniteColimits C] [HasCountableProducts C]
+    [ABStarOfShape (Discrete ℕ) C] : CountableAB4Star C := by
+  apply (config := { allowSynthFailures := true }) CountableAB4Star.ofABStarOfShapeNatAndFinite
+  exact fun _ ↦ inferInstance
+
+end
+
+variable [Abelian C]
 
 variable (J : Type u') [Category.{v'} J]
 
