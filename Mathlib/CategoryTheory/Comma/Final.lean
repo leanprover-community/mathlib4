@@ -68,11 +68,13 @@ lemma final_fst [R.Final] : (fst L R).Final := by
   let sT : T ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} T := AsSmall.equiv
   let L' := sA.inverse ⋙ L ⋙ sT.functor
   let R' := sB.inverse ⋙ R ⋙ sT.functor
-  let fC : Comma L' R' ⥤ Comma L R :=
-    preLeft sA.inverse _ _ ⋙ preRight _ sB.inverse _ ⋙ (post L R sT.functor).inv
+  let fC : Comma L R ⥤ Comma L' R' :=
+    map (F₁ := sA.functor) (F := sT.functor) (F₂ := sB.functor)
+      (isoWhiskerRight sA.unitIso (L ⋙ sT.functor)).hom
+      (isoWhiskerRight sB.unitIso (R ⋙ sT.functor)).hom
   haveI : Final (fst L' R') := final_fst_small _ _
-  apply final_of_natIso (F := (fC.inv ⋙ fst L' R' ⋙ sA.inverse))
-  sorry
+  apply final_of_natIso (F := (fC ⋙ fst L' R' ⋙ sA.inverse))
+  exact (Functor.associator _ _ _).symm.trans (Iso.compInverseIso (mapFst _ _))
 
 end Comma
 
