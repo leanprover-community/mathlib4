@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
-import Mathlib.Lean.Expr.ExtraRecognizers
-import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.Module
 import Mathlib.Tactic.NoncommRing
+import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 
@@ -637,7 +638,7 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Ring R] [Nontr
   · rintro p κ w i' j rfl
     specialize p (range w) i'.coe_range (range_comp_subset_range _ _)
     rw [range_comp, ← image_univ (f := w)] at p
-    exact range_iff_surjective.mp (image_injective.mpr i'.injective p)
+    exact range_eq_univ.mp (image_injective.mpr i'.injective p)
   · intro p w i' h
     specialize
       p w ((↑) : w → M) i' (fun i => ⟨v i, range_subset_iff.mp h i⟩)
@@ -815,8 +816,8 @@ def LinearIndependent.linearCombinationEquiv (hv : LinearIndependent R v) :
       rw [← Finsupp.range_linearCombination]
       rw [LinearMap.mem_range]
       apply mem_range_self l
-  · rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict, ←
-      LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top]
+  · rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, LinearMap.map_codRestrict,
+      ← LinearMap.range_le_iff_comap, range_subtype, Submodule.map_top]
     rw [Finsupp.range_linearCombination]
 
 @[deprecated (since := "2024-08-29")] noncomputable alias LinearIndependent.totalEquiv :=

@@ -125,8 +125,8 @@ theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x
   cases' archimedean_iff_nat_lt.1 Real.instArchimedean s with n hn
   refine tendsto_atTop_mono' _ ?_ (tendsto_exp_div_pow_atTop n)
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_ge_atTop (1 : ℝ)] with x hx₀ hx₁
-  rw [div_le_div_left (exp_pos _) (pow_pos hx₀ _) (rpow_pos_of_pos hx₀ _), ← Real.rpow_natCast]
-  exact rpow_le_rpow_of_exponent_le hx₁ hn.le
+  gcongr
+  simpa using rpow_le_rpow_of_exponent_le hx₁ hn.le
 
 /-- The function `exp (b * x) / x ^ s` tends to `+∞` at `+∞`, for any real `s` and `b > 0`. -/
 theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
@@ -141,8 +141,6 @@ theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (s : ℝ) (b : ℝ) (hb : 0
     Tendsto (fun x : ℝ => x ^ s * exp (-b * x)) atTop (𝓝 0) := by
   refine (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' ?_
   filter_upwards with x using by simp [exp_neg, inv_div, div_eq_mul_inv _ (exp _)]
-@[deprecated (since := "2024-01-31")]
-alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
 
 nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0 => x ^ y) atTop atTop := by
