@@ -291,22 +291,37 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
     mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
   unfold subinterval mkOfSucc
-  apply Hom.ext_one_left
-  · simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-    OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.coe_castSucc,
-    Fin.castSucc_mk, Fin.succ_mk, Fin.mk.injEq]
-    exact Nat.add_comm i.1 j
-  · simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-    OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.val_succ,
-    Fin.castSucc_mk, Fin.succ_mk, Fin.mk.injEq]
-    exact Nat.add_comm (i.1 + 1) j
+  ext i
+  match i with
+  | 0 =>
+    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
+      Fin.succ_mk]
+    rw [add_comm]
+    rfl
+  | 1 =>
+    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
+      Fin.succ_mk]
+    rw [← Nat.add_comm j _]
+    rfl
 
 @[simp]
 lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
   unfold subinterval intervalEdge diag mkOfLe
-  apply Hom.ext_one_left <;> simp
-  exact Nat.add_comm l j
+  ext i
+  match i with
+  | 0 =>
+    simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
+      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
+    rw [Nat.add_comm]
+    rfl
+  | 1 =>
+    simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
+      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
+    rw [Nat.add_comm]
+    rfl
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
