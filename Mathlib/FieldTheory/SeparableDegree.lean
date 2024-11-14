@@ -350,11 +350,11 @@ theorem natSepDegree_eq_of_isAlgClosed [DecidableEq E] [IsAlgClosed E] :
     f.natSepDegree = (f.aroots E).toFinset.card :=
   natSepDegree_eq_of_splits f (IsAlgClosed.splits_codomain f)
 
-variable (E) in
-theorem natSepDegree_map : (f.map (algebraMap F E)).natSepDegree = f.natSepDegree := by
+theorem natSepDegree_map (f : E[X]) (i : E →+* K) : (f.map i).natSepDegree = f.natSepDegree := by
   classical
-  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure E), aroots_def, map_map,
-    ← IsScalarTower.algebraMap_eq]
+  let _ := i.toAlgebra
+  simp_rw [show i = algebraMap E K by rfl, natSepDegree_eq_of_isAlgClosed (AlgebraicClosure K),
+    aroots_def, map_map, ← IsScalarTower.algebraMap_eq]
 
 @[simp]
 theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
@@ -885,3 +885,9 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
       ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
     exact ⟨y, by rwa [← eval, eval_sub, eval_pow, eval_X, eval_C, sub_eq_zero] at hy⟩
   exact PerfectRing.toPerfectField F p
+
+variable {E K} in
+theorem PerfectField.splits_of_natSepDegree_eq_one [PerfectField K] {f : E[X]}
+    (i : E →+* K) (hf : f.natSepDegree = 1) : f.Splits i :=
+  (splits_id_iff_splits _).mp <| (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _
+    (natSepDegree_map K f i ▸ hf)
