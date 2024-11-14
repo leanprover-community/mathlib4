@@ -672,7 +672,7 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | z₀ => simp at hk
   | z₁ => simp [npowRec']
   | f b k' k'0 ih =>
-    rw [Nat.binaryRec_eq rfl, ih _ _ k'0]
+    rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, ← Nat.two_mul, npowRec'_two_mul]
     rw [npowRec'_succ (by omega), npowRec'_two_mul, ← npowRec'_two_mul,
       ← npowRec'_mul_comm (by omega), mul_assoc]
