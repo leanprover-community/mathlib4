@@ -2769,7 +2769,6 @@ import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Data.Set.Finite.List
 import Mathlib.Data.Set.Finite.Monad
-import Mathlib.Data.Set.Finite.Pi
 import Mathlib.Data.Set.Finite.Powerset
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Function
