@@ -616,6 +616,26 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) 
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 
+/-- Given a "bowtie" of morphisms
+```
+ k₁   k₂
+ |\  /|
+ | \/ |
+ | /\ |
+ |/  \∣
+ vv  vv
+ j₁  j₂
+```
+in a cofiltered category, we can construct an object `s` and two morphisms
+from `s` to `k₁` and `k₂`, making the resulting squares commute.
+-/
+theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : k₁ ⟶ j₁) (g₁ : k₂ ⟶ j₁) (f₂ : k₁ ⟶ j₂) (g₂ : k₂ ⟶ j₂) :
+    ∃ (s : C) (α : s ⟶ k₁) (β : s ⟶ k₂), α ≫ f₁ = β ≫ g₁ ∧ α ≫ f₂ = β ≫ g₂ := by
+  obtain ⟨t, k₁t, k₂t, ht⟩ := cospan f₁ g₁
+  obtain ⟨s, ts, hs⟩ := IsCofilteredOrEmpty.cone_maps (k₁t ≫ f₂) (k₂t ≫ g₂)
+  exact ⟨s, ts ≫ k₁t, ts ≫ k₂t, by simp only [Category.assoc, ht],
+    by simp only [Category.assoc, hs]⟩
+
 end AllowEmpty
 
 end IsCofiltered
