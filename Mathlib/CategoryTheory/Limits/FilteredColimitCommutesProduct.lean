@@ -6,6 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 
 /-!
 # The IPC property
@@ -69,23 +70,6 @@ theorem ι_colimitPointwiseProductToProductColimit_π (k : ∀ i, I i) (s : α) 
   simp [colimitPointwiseProductToProductColimit]
 
 end
-
-section functorCategory
-
-variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
-  {α : Type w} [HasLimitsOfShape (Discrete α) C]
-
-/-- Evaluating a product amounts to -/
-noncomputable def piObjIso (f : α → D ⥤ C) (d : D) : (∏ᶜ f).obj d ≅ ∏ᶜ (fun s => (f s).obj d) :=
-  limitObjIsoLimitCompEvaluation (Discrete.functor f) d ≪≫
-    HasLimit.isoOfNatIso (Discrete.compNatIsoDiscrete _ _)
-
-@[reassoc (attr := simp)]
-theorem piObjIso_comp_π (f : α → D ⥤ C) (d : D) (s : α) :
-    (piObjIso f d).hom ≫ Pi.π (fun s => (f s).obj d) s = (Pi.π f s).app d := by
-  simp [piObjIso]
-
-end functorCategory
 
 section functorCategory
 
