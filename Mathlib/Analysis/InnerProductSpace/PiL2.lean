@@ -862,6 +862,51 @@ end SubordinateOrthonormalBasis
 
 end FiniteDimensional
 
+section Reflection
+
+variable (K : Submodule 𝕜 E) [FiniteDimensional 𝕜 K]
+
+theorem det_reflection : LinearMap.det (reflection K).toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
+  by_cases hK : FiniteDimensional 𝕜 Kᗮ
+  swap
+  · rw [finrank_of_infinite_dimensional hK, pow_zero, LinearMap.det_eq_one_of_finrank_eq_zero]
+    exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
+  have hA := (DirectSum.isInternal_submodule_iff_isCompl ![K, Kᗮ] zero_ne_one
+    (Set.toFinset_eq_univ.1 (by rfl)).symm).2 K.isCompl_orthogonal_of_completeSpace
+  let α := ![Fin (finrank 𝕜 K), Fin (finrank 𝕜 Kᗮ)]
+  let _ : ∀ i, Fintype (α i) := (piFinTwoEquiv _).symm ⟨Fin.fintype _, Fin.fintype _⟩
+  let b := hA.collectedOrthonormalBasis (α := α) ?_ <|
+    (piFinTwoEquiv _).symm ⟨stdOrthonormalBasis 𝕜 K, stdOrthonormalBasis 𝕜 Kᗮ⟩
+  swap
+  · rw [orthogonalFamily_iff_pairwise]
+    intro i j h
+    fin_cases i, j
+    · exact (h rfl).elim
+    · exact K.isOrtho_orthogonal_right
+    · exact K.isOrtho_orthogonal_left
+    · exact (h rfl).elim
+  classical
+  have hb : (LinearMap.toMatrix b.toBasis b.toBasis) (reflection K).toLinearMap
+      = Matrix.diagonal (fun ⟨i, _⟩ ↦ if i = 0 then 1 else -1) := by
+    have h₀ := fun x ↦ reflection_mem_subspace_eq_self <|
+      show b ⟨0, x⟩ ∈ K from hA.collectedOrthonormalBasis_mem _ _ ⟨0, x⟩
+    have h₁ := fun x ↦ reflection_mem_subspace_orthogonalComplement_eq_neg <|
+      show b ⟨1, x⟩ ∈ Kᗮ from hA.collectedOrthonormalBasis_mem _ _ ⟨1, x⟩
+    ext ⟨i, _⟩ ⟨j, _⟩
+    fin_cases i, j <;>
+    simp [LinearMap.toMatrix_apply, Matrix.diagonal_apply, b.repr_apply_apply,
+      orthonormal_iff_ite.1 b.orthonormal, h₀, h₁, apply_ite]
+  rw [← LinearMap.det_toMatrix b.toBasis, hb, Matrix.det_diagonal, ← Finset.univ_sigma_univ,
+    Finset.prod_sigma, Fin.prod_univ_two, Finset.prod_ite_irrel, if_pos rfl, Finset.prod_const_one,
+    one_mul, Finset.prod_ite_irrel, if_neg one_ne_zero, Finset.prod_const, Finset.card_fin]
+
+theorem linearEquiv_det_reflection : (reflection K).det = (-1) ^ finrank 𝕜 Kᗮ := by
+  ext
+  rw [LinearEquiv.coe_det, Units.val_pow_eq_pow_val]
+  exact det_reflection K
+
+end Reflection
+
 /-- Given a natural number `n` one less than the `finrank` of a finite-dimensional inner product
 space, there exists an isometry from the orthogonal complement of a nonzero singleton to
 `EuclideanSpace 𝕜 (Fin n)`. -/
