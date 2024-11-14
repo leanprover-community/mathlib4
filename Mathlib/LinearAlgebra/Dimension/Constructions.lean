@@ -118,8 +118,8 @@ open Module.Free
 @[simp]
 theorem rank_prod : Module.rank R (M × M') =
     Cardinal.lift.{v'} (Module.rank R M) + Cardinal.lift.{v, v'} (Module.rank R M') := by
-  simpa [rank_eq_card_chooseBasisIndex R M, rank_eq_card_chooseBasisIndex R M', lift_umax,
-    lift_umax'] using ((chooseBasis R M).prod (chooseBasis R M')).mk_eq_rank.symm
+  simpa [rank_eq_card_chooseBasisIndex R M, rank_eq_card_chooseBasisIndex R M', lift_umax]
+    using ((chooseBasis R M).prod (chooseBasis R M')).mk_eq_rank.symm
 
 /-- If `M` and `M'` are free (and lie in the same universe), the rank of `M × M'` is
   `(Module.rank R M) + (Module.rank R M')`. -/

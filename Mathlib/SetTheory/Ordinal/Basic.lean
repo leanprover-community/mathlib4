@@ -639,6 +639,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
 /-- `lift.{max v u, u}` equals `lift.{v, u}`.
 
 Unfortunately, the simp lemma doesn't seem to work. -/
+@[deprecated lift_umax (since := "2024-10-24")]
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 
