@@ -35,25 +35,15 @@ private lemma final_fst_small [R.Final] : (fst L R).Final := by
     Final.colimitIso (grothendieckPrecompFunctorEquivalence L R).functor (fst L R ⋙ G)
   convert i.isIso_inv
   apply colimit.hom_ext
-  intro ⟨l, r, f⟩
-  simp only [comp_obj, fst_obj, colimit.ι_pre, grothendieckPrecompFunctorEquivalence_functor,
-    Iso.trans_inv, Iso.symm_inv, Category.assoc, i]
-  simp only [← Category.assoc, ← Iso.comp_inv_eq, Iso.eq_comp_inv]
-  simp only [ι_colimitIsoOfIsLeftKanExtension_inv, comp_obj, Category.assoc,
-    HasColimit.isoOfNatIso_ι_hom, fiberwiseColimit_obj, functor_obj, Cat.of_α,
-    leftKanExtensionIsoFiberwiseColimit_hom_app,
-    leftKanExtensionUnit_leftKanExtensionObjIsoColimit_hom_assoc,
-    HasColimit.isoOfNatIso_ι_inv_assoc, proj_obj, mk_left, Grothendieck.ι_obj, grothendieckProj_obj,
-    isoWhiskerRight_inv, whiskerRight_app, ιCompGrothendieckProj_inv_app, Functor.map_id,
-    Category.id_comp, ι_colimitIsoColimitGrothendieck_hom_assoc]
-  simp only [functor_obj, Cat.of_α, Grothendieck.ι_obj, comp_obj, grothendieckProj_obj, mk_left,
-    Final.colimitIso, asIso_inv, asIso_hom]
-  rw [← colimit.w (grothendieckProj L ⋙ G) (j' := (Grothendieck.pre _ R).obj ⟨r, .mk f⟩)
-    ⟨f, (by { simp; exact 𝟙 _ })⟩]
-  have : colimit.ι (Grothendieck.pre (functor L) R ⋙ grothendieckProj L ⋙ G) =
-    colimit.ι (grothendieckPrecompFunctorToComma L R ⋙ fst L R ⋙ G) :=
-    rfl
-  simp [this, grothendieckPrecompFunctorToComma]
+  intro ⟨a, b, f⟩
+  rw [colimit.ι_pre]
+  simp only [comp_obj, fst_obj, grothendieckPrecompFunctorEquivalence_functor, Iso.trans_inv,
+    Iso.symm_inv, Category.assoc, i]
+  change _ = colimit.ι (fst L R ⋙ G)
+    ((grothendieckPrecompFunctorToComma L R).obj ⟨b, CostructuredArrow.mk f⟩) ≫ _
+  rw [Final.ι_colimitIso_inv_assoc]
+  erw [Final.ι_colimitIso_hom_assoc (Grothendieck.pre (functor L) R) (grothendieckProj L ⋙ G)]
+  simp
 
 end Small
 
@@ -72,7 +62,7 @@ lemma final_fst [R.Final] : (fst L R).Final := by
     map (F₁ := sA.functor) (F := sT.functor) (F₂ := sB.functor)
       (isoWhiskerRight sA.unitIso (L ⋙ sT.functor)).hom
       (isoWhiskerRight sB.unitIso (R ⋙ sT.functor)).hom
-  haveI : Final (fst L' R') := final_fst_small _ _
+  have : Final (fst L' R') := final_fst_small _ _
   apply final_of_natIso (F := (fC ⋙ fst L' R' ⋙ sA.inverse))
   exact (Functor.associator _ _ _).symm.trans (Iso.compInverseIso (mapFst _ _))
 
