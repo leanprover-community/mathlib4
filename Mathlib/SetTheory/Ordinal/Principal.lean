@@ -202,7 +202,7 @@ theorem principal_add_iff_add_lt_ne_self : Principal (· + ·) a ↔ ∀ b < a, 
     rcases exists_lt_add_of_not_principal_add ha with ⟨b, hb, c, hc, rfl⟩
     exact (H b hb c hc).irrefl⟩
 
-theorem principal_add_iff_add_self_lt {a} : Principal (· + ·) a ↔ ∀ b < a, b + b < a :=
+theorem principal_add_iff_add_self_lt : Principal (· + ·) a ↔ ∀ b < a, b + b < a :=
   principal_iff_of_monotone
     (fun x _ _ h => add_le_add_left h x) (fun x _ _ h => add_le_add_right h x)
 
@@ -215,7 +215,7 @@ theorem principal_add_omega0 : Principal (· + ·) ω := fun a b ha hb =>
 @[deprecated (since := "2024-09-30")]
 alias principal_add_omega := principal_add_omega0
 
-theorem add_omega0 {a : Ordinal} : a < ω → a + ω = ω :=
+theorem add_omega0 : a < ω → a + ω = ω :=
   principal_add_omega0.add_absorp
 
 @[deprecated (since := "2024-09-30")]
@@ -225,10 +225,10 @@ alias add_omega := add_omega0
 theorem natCast_add_omega0 (n : ℕ) : n + ω = ω :=
   add_omega0 (nat_lt_omega0 n)
 
-theorem add_of_le_omega0 {a b : Ordinal} : a < ω → ω ≤ b → a + b = b :=
+theorem add_of_le_omega0 : a < ω → ω ≤ b → a + b = b :=
   principal_add_omega0.add_absorp_of_le
 
-theorem natCast_add_of_le_omega0 (n : ℕ) {a : Ordinal} (h : ω ≤ a) : n + a = a :=
+theorem natCast_add_of_le_omega0 (n : ℕ) (h : ω ≤ a) : n + a = a :=
   add_of_le_omega0 (nat_lt_omega0 n) h
 
 theorem principal_add_omega0_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
@@ -244,13 +244,13 @@ theorem principal_add_omega0_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) :
 @[deprecated (since := "2024-09-30")]
 alias principal_add_omega_opow := principal_add_omega0_opow
 
-theorem add_omega0_opow {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
+theorem add_omega0_opow : a < ω ^ b → a + ω ^ b = ω ^ b :=
   (principal_add_omega0_opow b).add_absorp
 
 @[deprecated (since := "2024-09-30")]
 alias add_omega_opow := add_omega0_opow
 
-theorem add_of_omega0_opow_le {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
+theorem add_of_omega0_opow_le : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
   (principal_add_omega0_opow b).add_absorp_of_le
 
 @[deprecated add_of_omega0_opow_le (since := "2024-09-23")]
@@ -275,7 +275,7 @@ theorem principal_add_iff_zero_or_omega0_opow :
 @[deprecated (since := "2024-09-30")]
 alias principal_add_iff_zero_or_omega_opow := principal_add_iff_zero_or_omega0_opow
 
-theorem principal_add_opow_of_principal_add {a} (ha : Principal (· + ·) a) (b : Ordinal) :
+theorem principal_add_opow_of_principal_add (ha : Principal (· + ·) a) (b : Ordinal) :
     Principal (· + ·) (a ^ b) := by
   rcases principal_add_iff_zero_or_omega0_opow.1 ha with (rfl | ⟨c, rfl⟩)
   · rcases eq_or_ne b 0 with (rfl | hb)
@@ -288,8 +288,8 @@ theorem principal_add_opow_of_principal_add {a} (ha : Principal (· + ·) a) (b 
 @[deprecated (since := "2024-10-16")]
 alias opow_principal_add_of_principal_add := principal_add_opow_of_principal_add
 
-theorem principal_add_mul_of_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
-    (hb : Principal (· + ·) b) : Principal (· + ·) (a * b) := by
+theorem principal_add_mul_of_principal_add (a : Ordinal) (hb₁ : b ≠ 1) (hb : Principal (· + ·) b) :
+    Principal (· + ·) (a * b) := by
   rcases eq_zero_or_pos a with (rfl | _)
   · rw [zero_mul]
     exact principal_zero
