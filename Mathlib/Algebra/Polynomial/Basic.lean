@@ -1047,29 +1047,25 @@ instance ring : Ring R[X] :=
 @[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by
   rcases p with ⟨⟩
-  -- Porting note: The last rule should be `apply`ed.
-  rw [← ofFinsupp_neg, coeff, coeff]; apply Finsupp.neg_apply
+  rw [← ofFinsupp_neg, coeff, coeff, Finsupp.neg_apply]
 
 @[simp]
 theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
-  -- Porting note: The last rule should be `apply`ed.
-  rw [← ofFinsupp_sub, coeff, coeff, coeff]; apply Finsupp.sub_apply
+  rw [← ofFinsupp_sub, coeff, coeff, coeff, Finsupp.sub_apply]
 
 @[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
 
 theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
- rw [sub_eq_add_neg, monomial_add, monomial_neg]
- rfl
+  rw [sub_eq_add_neg, monomial_add, monomial_neg, sub_eq_add_neg]
 
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rcases p with ⟨⟩
-  -- Porting note: The last rule should be `apply`ed.
-  rw [← ofFinsupp_neg, support, support]; apply Finsupp.support_neg
+  rw [← ofFinsupp_neg, support, support, Finsupp.support_neg]
 
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
 
