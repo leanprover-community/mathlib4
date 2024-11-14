@@ -3,8 +3,9 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.BoundedOrder
+import Mathlib.Order.InitialSeg
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Successor and predecessor limits
@@ -24,7 +25,7 @@ predicate `Order.IsSuccLimit`.
 -/
 
 
-variable {α : Type*} {a b : α}
+variable {α β : Type*} {a b : α}
 
 namespace Order
 
@@ -196,6 +197,31 @@ theorem isSuccLimit_iff [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPr
 theorem IsSuccLimit.bot_lt [OrderBot α] (h : IsSuccLimit a) : ⊥ < a :=
   h.ne_bot.bot_lt
 
+@[simp]
+theorem _root_.InitialSeg.isSuccPrelimit_apply_iff [PartialOrder β] (f : α ≤i β) :
+    IsSuccPrelimit (f a) ↔ IsSuccPrelimit a := by
+  constructor <;> intro h b hb
+  · rw [← f.apply_covBy_apply_iff] at hb
+    exact h _ hb
+  · obtain ⟨c, rfl⟩ := f.mem_range_of_rel hb.lt
+    rw [f.apply_covBy_apply_iff] at hb
+    exact h _ hb
+
+@[simp]
+theorem _root_.InitialSeg.isSuccLimit_apply_iff [PartialOrder β] (f : α ≤i β) :
+    IsSuccLimit (f a) ↔ IsSuccLimit a := by
+  simp [IsSuccLimit]
+
+@[simp]
+theorem _root_.PrincipalSeg.isSuccPrelimit_apply_iff [PartialOrder β] (f : α <i β) :
+    IsSuccPrelimit (f a) ↔ IsSuccPrelimit a :=
+  (f : α ≤i β).isSuccPrelimit_apply_iff
+
+@[simp]
+theorem _root_.PrincipalSeg.isSuccLimit_apply_iff [PartialOrder β] (f : α <i β) :
+    IsSuccLimit (f a) ↔ IsSuccLimit a :=
+  (f : α ≤i β).isSuccLimit_apply_iff
+
 variable [SuccOrder α]
 
 theorem isSuccPrelimit_of_succ_ne (h : ∀ b, succ b ≠ a) : IsSuccPrelimit a := fun b hba =>
@@ -225,6 +251,12 @@ theorem mem_range_succ_or_isSuccPrelimit (a) : a ∈ range (succ : α → α) �
 
 @[deprecated mem_range_succ_or_isSuccPrelimit (since := "2024-09-05")]
 alias mem_range_succ_or_isSuccLimit := mem_range_succ_or_isSuccPrelimit
+
+theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
+    IsMin a ∨ a ∈ range (succ : α → α) ∨ IsSuccLimit a := by
+  rw [IsSuccLimit]
+  have := mem_range_succ_or_isSuccPrelimit a
+  tauto
 
 theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b := fun a hab =>
   (H a hab.lt).ne (CovBy.succ_eq hab)
