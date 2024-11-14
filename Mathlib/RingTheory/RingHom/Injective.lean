@@ -1,8 +1,11 @@
-import Mathlib
+/-
+Copyright (c) 2024 Andrew Yang, Qi Ge, Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang, Qi Ge, Christian Merten
+-/
+import Mathlib.RingTheory.RingHomProperties
 
-open CategoryTheory CategoryTheory.Limits
-
-section
+/-! # Meta properties of injective ring homomorphisms -/
 
 lemma _root_.RingHom.injective_stableUnderComposition :
     RingHom.StableUnderComposition (fun f ↦ Function.Injective f) := by
@@ -15,13 +18,3 @@ lemma _root_.RingHom.injective_respectsIso :
   apply RingHom.injective_stableUnderComposition.respectsIso
   intro R S _ _ e
   exact e.bijective.injective
-
-end
-
-namespace AlgebraicGeometry
-
-universe u
-
-variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
-
-end AlgebraicGeometry

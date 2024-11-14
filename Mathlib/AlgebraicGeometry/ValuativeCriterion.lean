@@ -1,7 +1,32 @@
-import Mathlib.RingTheory.Valuation.ValuationRing
-import Mathlib.ValuativeCriterion.ValuationRing
-import Mathlib.ValuativeCriterion.Lemmas
-import Mathlib.ValuativeCriterion.UniversallyClosed
+/-
+Copyright (c) 2024 Andrew Yang, Qi Ge, Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang, Qi Ge, Christian Merten
+-/
+import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+import Mathlib.AlgebraicGeometry.Morphisms.Proper
+import Mathlib.RingTheory.RingHom.Injective
+import Mathlib.RingTheory.LocalRing.Subring
+
+/-!
+# Valuative criterion
+
+## Main results
+
+- `AlgebraicGeometry.UniversallyClosed.eq_valuativeCriterion`:
+  A morphism is universally closed if and only if
+  it is quasi-compact and satisfies the existence part of the valuative criterion.
+- `AlgebraicGeometry.UniversallyClosed.eq_valuativeCriterion`:
+  A morphism is separated if and only if
+  it is quasi-separated and satisfies the uniqueness part of the valuative criterion.
+- `AlgebraicGeometry.UniversallyClosed.eq_valuativeCriterion`:
+  A morphism is proper if and only if
+  it is qcqs and of fintite type and satisfies the valuative criterion.
+
+## Future projects
+Show that it suffices to check discrete valuation rings when the base is noetherian.
+
+-/
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -9,6 +34,18 @@ namespace AlgebraicGeometry
 
 universe u
 
+/--
+A valuative commutative square over a morphism `f : X ⟶ Y` is a square
+```
+Spec K ⟶ Y
+  |       |
+  ↓       ↓
+Spec R ⟶ X
+```
+where `R` is a valuation ring, and `K` is its ring of fractions.
+
+We are interested in finding lifts `Spec R ⟶ Y` of this diagram.
+-/
 structure ValuativeCommSq {X Y : Scheme.{u}} (f : X ⟶ Y) where
   R : Type u
   [commRing : CommRing R]
@@ -28,27 +65,30 @@ attribute [instance] commRing domain valuationRing field algebra isFractionRing
 
 end ValuativeCommSq
 
+/-- A morphism `f : X ⟶ Y` satisfies the existence part of the valuative criterion if
+every valuative commutative square over `f` has (at least) a lift. -/
 def ValuativeCriterion.Existence : MorphismProperty Scheme :=
   fun _ _ f ↦ ∀ S : ValuativeCommSq f, S.commSq.HasLift
 
+/-- A morphism `f : X ⟶ Y` satisfies the uniqueness part of the valuative criterion if
+every valuative commutative square over `f` has at most one lift. -/
 def ValuativeCriterion.Uniqueness : MorphismProperty Scheme :=
   fun _ _ f ↦ ∀ S : ValuativeCommSq f, Subsingleton S.commSq.LiftStruct
 
+/-- A morphism `f : X ⟶ Y` satisfies the valuative criterion if
+every valuative commutative square over `f` has a unique lift. -/
 def ValuativeCriterion : MorphismProperty Scheme :=
   fun _ _ f ↦ ∀ S : ValuativeCommSq f, Nonempty (Unique (S.commSq.LiftStruct))
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-namespace Existence
+namespace ValuativeCriterion.Existence
 
-open IsLocalRing in
-/--
-Uses `exists_factor_valuationRing` and `Scheme.fromSpecResidueField`.
+open IsLocalRing
 
-https://stacks.math.columbia.edu/tag/01KE
--/
+@[stacks 01KE]
 lemma specializingMap (H : ValuativeCriterion.Existence f) :
-    SpecializingMap f.1.base := by
+    SpecializingMap f.base := by
   intro x' y h
   let stalk_y_to_residue_x' : Y.presheaf.stalk y ⟶ X.residueField x' :=
     Y.presheaf.stalkSpecializes h ≫ f.stalkMap x' ≫ X.residue x'
@@ -73,12 +113,6 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
       comap_closedPoint (S := A) (stalk_y_to_residue_x'.codRestrict A.toSubring hA)
     rw [this, Y.fromSpecStalk_closedPoint]
 
-open IsLocalRing in
-/--
-Uses `bijective_rangeRestrict_comp_of_valuationRing` and `stalkClosedPointTo`
-
-https://stacks.math.columbia.edu/tag/01KE first half
--/
 lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
     ValuativeCriterion.Existence f := by
   rintro ⟨R, K, i₁, i₂, ⟨w⟩⟩
@@ -125,53 +159,26 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
     rw [← Spec_stalkClosedPointIso, ← Spec.map_comp_assoc,
       Iso.inv_hom_id, Spec.map_id, Category.id_comp]
 
-/-- by def -/
-instance stableUnderBaseChange :
-    ValuativeCriterion.Existence.IsStableUnderBaseChange := by
+instance stableUnderBaseChange : ValuativeCriterion.Existence.IsStableUnderBaseChange := by
   constructor
   intros Y' X X' Y  Y'_to_Y f X'_to_X f' hP hf commSq
-
-  let commSq' : ValuativeCommSq f := {
-    R := commSq.R
-    commRing := by infer_instance
-    domain := by infer_instance
-    valuationRing := by infer_instance
+  let commSq' : ValuativeCommSq f :=
+  { R := commSq.R
     K := commSq.K
-    field := by infer_instance
-    algebra := by infer_instance
-    isFractionRing := by infer_instance
     i₁ := commSq.i₁ ≫ X'_to_X
     i₂ := commSq.i₂ ≫ Y'_to_Y
-    commSq := {
-      w := by
-        simp only [Category.assoc]
-        rw [hP.w]
-        rw [reassoc_of% commSq.commSq.w]
-    }
-  }
+    commSq := ⟨by simp only [Category.assoc, hP.w, reassoc_of% commSq.commSq.w]⟩ }
+  obtain ⟨l₀, hl₁, hl₂⟩ := (hf commSq').exists_lift
+  refine ⟨⟨⟨hP.lift l₀ commSq.i₂ (by simp_all only [commSq']), ?_, hP.lift_snd _ _ _⟩⟩⟩
+  apply hP.hom_ext
+  · simpa
+  · simp only [Category.assoc]
+    rw [hP.lift_snd]
+    rw [commSq.commSq.w]
 
-  let lift := (hf commSq').exists_lift.some
-  have lift_comm₁ := lift.fac_left
-  have lift_comm₂ := lift.fac_right
-
-  have comm₁ : lift.l ≫ f = commSq.i₂ ≫ Y'_to_Y := by
-    simp_all only [commSq', lift]
-
-  let l := hP.lift lift.l commSq.i₂ comm₁
-  have fac_left :
-      Spec.map (CommRingCat.ofHom (algebraMap commSq.R commSq.K)) ≫ l = commSq.i₁ := by
-    apply hP.hom_ext
-    · simpa [l]
-    · simp only [Category.assoc]
-      rw [hP.lift_snd]
-      rw [commSq.commSq.w]
-  have fac_right : l ≫ f' = commSq.i₂ := hP.lift_snd _ _ _
-
-  exact ⟨⟨⟨l, fac_left, fac_right⟩⟩⟩
-
-/-- by the three lemmas above -/
-lemma eq : ValuativeCriterion.Existence =
-    (AlgebraicGeometry.topologically @SpecializingMap).universally := by
+@[stacks 01KE]
+protected lemma eq :
+    ValuativeCriterion.Existence = (topologically @SpecializingMap).universally := by
   ext
   constructor
   · intro _
@@ -180,41 +187,26 @@ lemma eq : ValuativeCriterion.Existence =
     · rwa [MorphismProperty.IsStableUnderBaseChange.universally_eq]
   · apply of_specializingMap
 
-/-- by `ValuativeCriterion.Existence.eq` and `universallyClosed_iff_specializingMap`. -/
-lemma _root_.AlgebraicGeometry.universallyClosed_of_valuativeCriterion [QuasiCompact f]
-    (hf : ValuativeCriterion.Existence f) : UniversallyClosed f := by
-  rw [eq] at hf
-  apply (AlgebraicGeometry.universallyClosed_iff_specializingMap f).mpr
-  exact hf
+end ValuativeCriterion.Existence
 
-/-- by `ValuativeCriterion.Existence.eq` and `universallyClosed_eq_universallySpecializing`. -/
-lemma _root_.AlgebraicGeometry.universallyClosed_eq_valuativeCriterion :
+/-- The **valuative criterion** for universally closed morphisms. -/
+@[stacks 01KF]
+lemma UniversallyClosed.eq_valuativeCriterion :
     @UniversallyClosed = ValuativeCriterion.Existence ⊓ @QuasiCompact := by
-  ext X Y f
-  constructor
-  · intro hf
-    have h₁ : ValuativeCriterion.Existence f := by
-      apply of_specializingMap
-      rwa [← AlgebraicGeometry.universallyClosed_iff_specializingMap]
-    have h₂ : QuasiCompact f := by infer_instance
-    exact ⟨h₁, h₂⟩
-  · intro ⟨h₁, h₂⟩
-    rw [AlgebraicGeometry.universallyClosed_eq_universallySpecializing]
-    have : (topologically @SpecializingMap).universally f := by
-      rwa [eq] at h₁
-    exact ⟨this, h₂⟩
+  rw [universallyClosed_eq_universallySpecializing, ValuativeCriterion.Existence.eq]
 
-end Existence
+/-- The **valuative criterion** for universally closed morphisms. -/
+@[stacks 01KF]
+lemma UniversallyClosed.of_valuativeCriterion [QuasiCompact f]
+    (hf : ValuativeCriterion.Existence f) : UniversallyClosed f := by
+  rw [eq_valuativeCriterion]
+  exact ⟨hf, ‹_›⟩
 
 section Uniqueness
 
-/--
-Needs `IsImmersion (pullback.diagonal f)`, `IsClosedImmersion.of_isImmersion`,
-`universallyClosed_of_valuativeCriterion`.
-
-https://stacks.math.columbia.edu/tag/01L0
--/
-lemma isSeparated_of_valuativeCriterion [QuasiSeparated f]
+/-- The **valuative criterion** for separated morphisms. -/
+@[stacks 01L0]
+lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
     (hf : ValuativeCriterion.Uniqueness f) : IsSeparated f where
   diagonal_isClosedImmersion := by
     suffices h : ValuativeCriterion.Existence (pullback.diagonal f) by
@@ -223,7 +215,7 @@ lemma isSeparated_of_valuativeCriterion [QuasiSeparated f]
       apply IsClosedImmersion.of_isPreimmersion
       apply IsClosedMap.isClosed_range
       apply (topologically @IsClosedMap).universally_le
-      exact (universallyClosed_of_valuativeCriterion (pullback.diagonal f) h).out
+      exact (UniversallyClosed.of_valuativeCriterion (pullback.diagonal f) h).out
     intro S
     have hc : CommSq S.i₁ (Spec.map (CommRingCat.ofHom (algebraMap S.R S.K)))
         f (S.i₂ ≫ pullback.fst f f ≫ f) := ⟨by simp [← S.commSq.w_assoc]⟩
@@ -244,11 +236,8 @@ lemma isSeparated_of_valuativeCriterion [QuasiSeparated f]
       · simp only [Category.assoc, pullback.diagonal_snd, Category.comp_id]
         exact congrArg CommSq.LiftStruct.l h₁₂
 
-/--
-https://stacks.math.columbia.edu/tag/01KZ
--/
-lemma IsSeparated.valuativeCriterion [IsSeparated f] :
-    ValuativeCriterion.Uniqueness f := by
+@[stacks 01KZ]
+lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Uniqueness f := by
   intros S
   constructor
   rintro ⟨l₁, hl₁, hl₁'⟩ ⟨l₂, hl₂, hl₂'⟩
@@ -292,44 +281,37 @@ lemma IsSeparated.valuativeCriterion [IsSeparated f] :
   · rw [@HasAffineProperty.iff_of_isAffine @IsClosedImmersion] at this
     exact this.right
 
--- by lemmas above
-lemma IsSeparated_eq_valuativeCriterion :
+/-- The **valuative criterion** for separated morphisms. -/
+lemma IsSeparated.eq_valuativeCriterion :
     @IsSeparated = ValuativeCriterion.Uniqueness ⊓ @QuasiSeparated := by
   ext X Y f
-  constructor
-  · intro hf
-    exact ⟨IsSeparated.valuativeCriterion f, inferInstance⟩
-  · intro ⟨hu, _⟩
-    exact isSeparated_of_valuativeCriterion f hu
+  exact ⟨fun _ ↦ ⟨IsSeparated.valuativeCriterion f, inferInstance⟩,
+    fun ⟨H, _⟩ ↦ .of_valuativeCriterion f H⟩
 
 end Uniqueness
 
--- by definition
-lemma valuativeCriterion_eq :
+lemma ValuativeCriterion.eq :
     ValuativeCriterion = ValuativeCriterion.Existence ⊓ ValuativeCriterion.Uniqueness := by
   ext X Y f
-  constructor
-  · intro hf
-    refine ⟨fun S ↦ ?_, fun S ↦ ?_⟩
-    · obtain ⟨(u : Unique (S.commSq.LiftStruct))⟩ := hf S
-      exact CommSq.HasLift.mk' default
-    · obtain ⟨(u : Unique (S.commSq.LiftStruct))⟩ := hf S
-      infer_instance
-  · intro ⟨he, hu⟩ S
-    rw [unique_iff_subsingleton_and_nonempty]
-    exact ⟨hu S, (he S).1⟩
+  show (∀ _, _) ↔ (∀ _, _) ∧ (∀ _, _)
+  simp_rw [← forall_and, unique_iff_subsingleton_and_nonempty, and_comm, CommSq.HasLift.iff]
 
--- by lemmas above and `isProper_eq`
-lemma proper_eq_ValuativeCriterion :
+/-- The **valuative criterion** for proper morphisms. -/
+@[stacks 0BX5]
+lemma IsProper.eq_valuativeCriterion :
     @IsProper = ValuativeCriterion ⊓ @QuasiCompact ⊓ @QuasiSeparated ⊓ @LocallyOfFiniteType := by
-  rw [isProper_eq, IsSeparated_eq_valuativeCriterion, valuativeCriterion_eq,
-    universallyClosed_eq_valuativeCriterion]
-  rw [← inf_assoc]
+  rw [isProper_eq, IsSeparated.eq_valuativeCriterion, ValuativeCriterion.eq,
+    UniversallyClosed.eq_valuativeCriterion]
+  simp_rw [inf_assoc]
   ext X Y f
-  constructor
-  · intro ⟨⟨⟨⟨h0, h1⟩, h2⟩, h3⟩, h4⟩
-    exact ⟨⟨⟨⟨h2, h0⟩, h3⟩, h1⟩, h4⟩
-  · intro ⟨⟨⟨⟨h2, h0⟩, h3⟩, h1⟩, h4⟩
-    exact ⟨⟨⟨⟨h0, h1⟩, h2⟩, h3⟩, h4⟩
+  show _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
+  tauto
+
+/-- The **valuative criterion** for proper morphisms. -/
+@[stacks 0BX5]
+lemma IsProper.of_valuativeCriterion [QuasiCompact f] [QuasiSeparated f] [LocallyOfFiniteType f]
+    (H : ValuativeCriterion f) : IsProper f := by
+  rw [eq_valuativeCriterion]
+  exact ⟨⟨⟨‹_›, ‹_›⟩, ‹_›⟩, ‹_›⟩
 
 end AlgebraicGeometry
