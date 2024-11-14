@@ -707,7 +707,7 @@ theorem IsTranscendenceBasis.isEmpty_iff_isAlgebraic [Nontrivial R]
   refine ⟨fun _ ↦ ?_, fun _ ↦ hx.1.isEmpty_of_isAlgebraic⟩
   have := hx.isAlgebraic
   rw [Set.range_eq_empty x, adjoin_empty] at this
-  exact Subalgebra.algebra_isAlgebraic_of_algebra_isAlgebraic_bot R A
+  exact algebra_isAlgebraic_of_algebra_isAlgebraic_bot_left R A
 
 /-- If `x` is a transcendence basis of `A/R`, then it is not empty if and only if
 `A/R` is transcendental. -/

@@ -398,16 +398,17 @@ theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
     Function.injective_id (by rfl)
 
 variable (R S) in
-theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot
+theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot_left
     [Algebra.IsAlgebraic (⊥ : Subalgebra R S) S] : Algebra.IsAlgebraic R S :=
   Algebra.IsAlgebraic.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
     (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id (by ext; rfl)
 
-theorem algebra_isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) :
+theorem algebra_isAlgebraic_bot_left_iff (h : Function.Injective (algebraMap R S)) :
     Algebra.IsAlgebraic (⊥ : Subalgebra R S) S ↔ Algebra.IsAlgebraic R S := by
   simp_rw [Algebra.isAlgebraic_def, isAlgebraic_bot_iff h]
 
-instance algebra_isAlgebraic_bot [Nontrivial R] : Algebra.IsAlgebraic R (⊥ : Subalgebra R S) :=
+instance algebra_isAlgebraic_bot_right [Nontrivial R] :
+    Algebra.IsAlgebraic R (⊥ : Subalgebra R S) :=
   ⟨by rintro ⟨_, x, rfl⟩; exact isAlgebraic_algebraMap _⟩
 
 end Subalgebra
