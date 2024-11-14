@@ -88,7 +88,6 @@ lemma ι_leftKanExtensionObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X) f
 
-@[reassoc (attr := simp)]
 lemma leftKanExtensionUnit_leftKanExtensionMap_leftKanExtensionObjIsoColimit_hom (X : D)
     (f : CostructuredArrow L X) :
     (leftKanExtensionUnit L F).app f.left ≫ (leftKanExtension L F).map f.hom ≫
