@@ -27,8 +27,6 @@ Proof uses Mason-Stothers theorem (Polynomial ABC theorem) and infinite descent
 
 noncomputable section
 
-open scoped Classical
-
 open Polynomial UniqueFactorizationMonoid
 
 variable {k : Type _} [Field k]
@@ -42,23 +40,19 @@ private theorem isCoprime_mul_units_left {a b : k[X]} {u v : k} (hu : u ≠ 0) (
     (isCoprime_mul_unit_left_left (isUnit_C.mpr hu.isUnit) _ _)
     (isCoprime_mul_unit_left_right (isUnit_C.mpr hv.isUnit) _ _)
 
-private theorem rot_coprime {p q r : ℕ} {a b c : k[X]} {u v w : k}
+-- auxiliary lemma that 'rotates' coprimality
+private theorem rot_coprime
+    {p q r : ℕ} {a b c : k[X]} {u v w : k}
+    {hp : 0 < p} {hq : 0 < q} {hr : 0 < r}
+    {hu : u ≠ 0} {hv : v ≠ 0} {hw : w ≠ 0}
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) (hab : IsCoprime a b)
-    (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
-    (hu : u ≠ 0) (hv : v ≠ 0) (hw : w ≠ 0) : IsCoprime b c := by
+     : IsCoprime b c := by
   rw [←IsCoprime.pow_iff hp hq, ←isCoprime_mul_units_left hu hv] at hab
-  rw [←IsCoprime.pow_iff hq hr, ←isCoprime_mul_units_left hv hw]
-
   rw [add_eq_zero_iff_neg_eq] at heq
-  rw [←heq, IsCoprime.neg_right_iff]
+  rw [←IsCoprime.pow_iff hq hr, ←isCoprime_mul_units_left hv hw,
+    ←heq, IsCoprime.neg_right_iff]
   convert IsCoprime.add_mul_left_right hab.symm 1 using 2
   rw [mul_one]
-
--- private theorem rot3_add {α : Type _} [AddCommMonoid α] {a b c : α} : a + b + c = b + c + a := by
---   rw [add_comm (b + c) a]; exact add_assoc _ _ _
-
--- private theorem mul3_add {α : Type _} [CommMonoid α] {a b c : α} : a * b * c = b * c * a := by
---   rw [mul_comm (b * c) a]; exact mul_assoc _ _ _
 
 lemma weighted_average_le_max₃ {p q r a b c : Nat} :
     p * a + q * b + r * c ≤ (p + q + r) * max (max a b) c :=
@@ -105,9 +99,8 @@ theorem Polynomial.flt_catalan_deriv
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) :
     derivative a = 0 ∧ derivative b = 0 ∧ derivative c = 0 := by
   have hbc : IsCoprime b c := by apply rot_coprime heq <;> assumption
-  have heq' : C v * b ^ q + C w * c ^ r + C u * a ^ p = 0 := by
-    rw [add_rotate] at heq; exact heq
-  have hca : IsCoprime c a := by apply rot_coprime heq' <;> assumption
+  have hca : IsCoprime c a := by
+    rw [add_rotate] at heq; apply rot_coprime heq <;> assumption
   have hap := mul_ne_zero (C_ne_zero.mpr hu) (pow_ne_zero p ha)
   have hbp := mul_ne_zero (C_ne_zero.mpr hv) (pow_ne_zero q hb)
   have hcp := mul_ne_zero (C_ne_zero.mpr hw) (pow_ne_zero r hc)
