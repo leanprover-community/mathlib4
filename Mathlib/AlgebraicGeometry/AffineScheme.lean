@@ -133,6 +133,10 @@ theorem Scheme.isoSpec_Spec (R : CommRingCat.{u}) :
     (Spec R).isoSpec.inv = Spec.map (Scheme.ΓSpecIso R).inv :=
   congr($(isoSpec_Spec R).inv)
 
+lemma ext_of_isAffine {X Y : Scheme} [IsAffine Y] {f g : X ⟶ Y} (e : f.app ⊤ = g.app ⊤) :
+    f = g := by
+  rw [← cancel_mono Y.toSpecΓ, Scheme.toSpecΓ_naturality, Scheme.toSpecΓ_naturality, e]
+
 namespace AffineScheme
 
 /-- The `Spec` functor into the category of affine schemes. -/

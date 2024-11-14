@@ -26,14 +26,15 @@ noncomputable section
 
 namespace AlgebraicGeometry
 
-universe u
+universe v u
 
-variable (n : Type) (S : Scheme.{u})
+variable (n : Type v) (S : Scheme.{max u v})
 
 local notation3 "ℤ[" n "]" => CommRingCat.of (MvPolynomial n (ULift ℤ))
+local notation3 "ℤ[" n "].{" u "}" => CommRingCat.of (MvPolynomial n (ULift.{u} ℤ))
 
 /-- `𝔸(n; S)` is the affine `n`-space over `S`. -/
-def AffineSpace (n : Type) (S : Scheme.{u}) : Scheme.{u} :=
+def AffineSpace (n : Type v) (S : Scheme.{max u v}) : Scheme.{max u v} :=
   pullback (terminal.from S) (terminal.from (Spec ℤ[n]))
 
 namespace AffineSpace
@@ -60,7 +61,7 @@ instance over : 𝔸(n; S).CanonicallyOver S where
 /-- The map from the affine `n`-space over `S` to the integral model `Spec ℤ[n]`. -/
 def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n] := pullback.snd _ _
 
-variable {X : Scheme.{u}}
+variable {X : Scheme.{max u v}}
 
 /-- Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections. -/
 @[simps]
@@ -157,10 +158,6 @@ def homOverEquiv : { f : X ⟶ 𝔸(n; S) // f.IsOver S } ≃ (n → Γ(X, ⊤))
     · rw [homOfVector_app_top_coord]
   right_inv v := by ext i; simp [-TopologicalSpace.Opens.map_top, homOfVector_app_top_coord]
 
-lemma ext_of_isAffine {X Y : Scheme} [IsAffine Y] {f g : X ⟶ Y} (e : f.app ⊤ = g.app ⊤) :
-    f = g := by
-  rw [← cancel_mono Y.toSpecΓ, Scheme.toSpecΓ_naturality, Scheme.toSpecΓ_naturality, e]
-
 variable (n) in
 /--
 The affine space over an affine base is isomorphic to the spectrum of the polynomial ring.
@@ -230,13 +227,13 @@ instance [IsAffine S] : IsAffine 𝔸(n; S) := isAffine_of_isIso (isoOfIsAffine 
 
 variable (n) in
 /-- The affine space over an affine base is isomorphic to the spectrum of the polynomial ring. -/
-def SpecIso (R : CommRingCat.{u}) :
+def SpecIso (R : CommRingCat.{max u v}) :
     𝔸(n; Spec R) ≅ Spec (.of (MvPolynomial n R)) :=
   isoOfIsAffine _ _ ≪≫ Scheme.Spec.mapIso (MvPolynomial.mapEquiv _
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv).toCommRingCatIso.op
 
 @[simp]
-lemma SpecIso_hom_app_top (R : CommRingCat.{u}) :
+lemma SpecIso_hom_app_top (R : CommRingCat.{max u v}) :
     (SpecIso n R).hom.app ⊤ = (Scheme.ΓSpecIso _).hom ≫
       eval₂Hom ((Scheme.ΓSpecIso _).inv ≫ (𝔸(n; Spec R) ↘ Spec R).app ⊤) (coord (Spec R)) := by
   simp only [SpecIso, Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, RingEquiv.toCommRingCatIso_hom,
@@ -250,7 +247,7 @@ lemma SpecIso_hom_app_top (R : CommRingCat.{u}) :
   · simp
 
 @[local simp]
-lemma SpecIso_inv_app_top_coord (R : CommRingCat.{u}) (i) :
+lemma SpecIso_inv_app_top_coord (R : CommRingCat.{max u v}) (i) :
     (SpecIso n R).inv.app ⊤ (coord _ i) = (Scheme.ΓSpecIso (.of _)).inv (.X i) := by
   simp only [SpecIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, RingEquiv.toCommRingCatIso_inv,
     mapEquiv_symm, RingEquiv.toRingHom_eq_coe, Scheme.Spec_map, Quiver.Hom.unop_op,
@@ -263,7 +260,7 @@ lemma SpecIso_inv_app_top_coord (R : CommRingCat.{u}) (i) :
   exact map_X _ _
 
 @[reassoc (attr := simp)]
-lemma SpecIso_inv_over (R : CommRingCat.{u}) :
+lemma SpecIso_inv_over (R : CommRingCat.{max u v}) :
     (SpecIso n R).inv ≫ 𝔸(n; Spec R) ↘ Spec R = Spec.map C := by
   simp only [SpecIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, RingEquiv.toCommRingCatIso_inv,
     mapEquiv_symm, RingEquiv.toRingHom_eq_coe, Scheme.Spec_map, Quiver.Hom.unop_op, Category.assoc,
@@ -277,15 +274,15 @@ section functorial
 
 variable (n) in
 /-- `𝔸(n; S)` is functorial wrt `S`. -/
-def map {S T : Scheme.{u}} (f : S ⟶ T) : 𝔸(n; S) ⟶ 𝔸(n; T) :=
+def map {S T : Scheme.{max u v}} (f : S ⟶ T) : 𝔸(n; S) ⟶ 𝔸(n; T) :=
   homOfVector (𝔸(n; S) ↘ S ≫ f) (coord S)
 
 @[reassoc (attr := simp)]
-lemma map_over {S T : Scheme.{u}} (f : S ⟶ T) : map n f ≫ 𝔸(n; T) ↘ T = 𝔸(n; S) ↘ S ≫ f :=
+lemma map_over {S T : Scheme.{max u v}} (f : S ⟶ T) : map n f ≫ 𝔸(n; T) ↘ T = 𝔸(n; S) ↘ S ≫ f :=
   pullback.lift_fst _ _ _
 
 @[local simp]
-lemma map_app_top_coord {S T : Scheme.{u}} (f : S ⟶ T) (i) :
+lemma map_app_top_coord {S T : Scheme.{max u v}} (f : S ⟶ T) (i) :
     (map n f).app ⊤ (coord T i) = coord S i :=
   homOfVector_app_top_coord _ _ _
 
@@ -302,7 +299,7 @@ lemma map_comp {S S' S'' : Scheme} (f : S ⟶ S') (g : S' ⟶ S'') :
       TopologicalSpace.Opens.map_comp_obj, Scheme.comp_app, CommRingCat.comp_apply]
     erw [map_app_top_coord, map_app_top_coord, map_app_top_coord]
 
-lemma map_Spec_map {R S : CommRingCat.{u}} (φ : R ⟶ S) :
+lemma map_Spec_map {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
     map n (Spec.map φ) =
       (SpecIso n S).hom ≫ Spec.map (MvPolynomial.map φ) ≫ (SpecIso n R).inv := by
   rw [← Iso.inv_comp_eq]
@@ -321,22 +318,22 @@ lemma map_Spec_map {R S : CommRingCat.{u}} (φ : R ⟶ S) :
 
 /-- The map between affine spaces over affine bases is
 isomorphic to the natural map between polynomial rings.  -/
-def mapSpecMap {R S : CommRingCat.{u}} (φ : R ⟶ S) :
+def mapSpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
     Arrow.mk (map n (Spec.map φ)) ≅
       Arrow.mk (Spec.map (CommRingCat.ofHom (MvPolynomial.map (σ := n) φ))) :=
   Arrow.isoMk (SpecIso n S) (SpecIso n R) (by simp [map_Spec_map]; rfl)
 
 /-- `𝔸(n; S)` is functorial wrt `n`. -/
-def reindex {n m : Type} (i : m → n) (S : Scheme.{u}) : 𝔸(n; S) ⟶ 𝔸(m; S) :=
+def reindex {n m : Type v} (i : m → n) (S : Scheme.{max u v}) : 𝔸(n; S) ⟶ 𝔸(m; S) :=
   homOfVector (𝔸(n; S) ↘ S) (coord S ∘ i)
 
 @[reassoc (attr := simp)]
-lemma reindex_over {n m : Type} (i : m → n) (S : Scheme.{u}) :
+lemma reindex_over {n m : Type v} (i : m → n) (S : Scheme.{max u v}) :
     reindex i S ≫ 𝔸(m; S) ↘ S = 𝔸(n; S) ↘ S :=
   pullback.lift_fst _ _ _
 
 @[local simp]
-lemma reindex_app_top_coord {n m : Type} (i : m → n) (S : Scheme.{u}) (j : m) :
+lemma reindex_app_top_coord {n m : Type v} (i : m → n) (S : Scheme.{max u v}) (j : m) :
     (reindex i S).app ⊤ (coord S j) = coord S (i j) :=
   homOfVector_app_top_coord _ _ _
 
@@ -344,7 +341,7 @@ lemma reindex_app_top_coord {n m : Type} (i : m → n) (S : Scheme.{u}) (j : m) 
 lemma reindex_id : reindex id S = 𝟙 𝔸(n; S) := by
   ext1 <;> simp [-TopologicalSpace.Opens.map_top]; rfl
 
-lemma reindex_comp {n₁ n₂ n₃ : Type} (i : n₁ → n₂) (j : n₂ → n₃) (S : Scheme.{u}) :
+lemma reindex_comp {n₁ n₂ n₃ : Type v} (i : n₁ → n₂) (j : n₂ → n₃) (S : Scheme.{max u v}) :
     reindex (j ∘ i) S = reindex j S ≫ reindex i S := by
   have H₁ : reindex (j ∘ i) S ≫ 𝔸(n₁; S) ↘ S = (reindex j S ≫ reindex i S) ≫ 𝔸(n₁; S) ↘ S := by simp
   have H₂ (k) : (reindex (j ∘ i) S).app ⊤ (coord S k) =
