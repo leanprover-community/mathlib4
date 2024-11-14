@@ -713,7 +713,7 @@ alias denseEmbedding := isDenseEmbedding
 
 protected theorem isDenseInducing (hp_ne_top : p ≠ ∞) :
     IsDenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.isDenseEmbedding hp_ne_top).toIsDenseInducing
+  (simpleFunc.isDenseEmbedding hp_ne_top).isDenseInducing
 
 protected theorem denseRange (hp_ne_top : p ≠ ∞) :
     DenseRange ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
@@ -742,8 +742,7 @@ variable {G : Type*} [NormedLatticeAddCommGroup G]
 theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 
-instance instCovariantClassLE :
-    CovariantClass (Lp.simpleFunc G p μ) (Lp.simpleFunc G p μ) (· + ·) (· ≤ ·) := by
+instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
   have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _
@@ -790,7 +789,8 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
       (Lp.stronglyMeasurable (g : Lp G p μ)).isSeparable_range.union
         (finite_singleton _).isSeparable
   have g_meas : Measurable (g : α → G) := (Lp.stronglyMeasurable (g : Lp G p μ)).measurable
-  let x n := SimpleFunc.approxOn g g_meas ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y }) 0 zero_mem n
+  let x n := SimpleFunc.approxOn (g : α → G) g_meas
+    ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y }) 0 zero_mem n
   have hx_nonneg : ∀ n, 0 ≤ x n := by
     intro n a
     change x n a ∈ { y : G | 0 ≤ y }

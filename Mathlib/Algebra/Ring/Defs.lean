@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
@@ -177,34 +178,6 @@ theorem mul_two (n : α) : n * 2 = n + n :=
   (congrArg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
 
 end NonAssocSemiring
-
-@[to_additive]
-theorem mul_ite {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (a * if P then b else c) = if P then a * b else a * c := by split_ifs <;> rfl
-
-@[to_additive]
-theorem ite_mul {α} [Mul α] (P : Prop) [Decidable P] (a b c : α) :
-    (if P then a else b) * c = if P then a * c else b * c := by split_ifs <;> rfl
-
--- We make `mul_ite` and `ite_mul` simp lemmas,
--- but not `add_ite` or `ite_add`.
--- The problem we're trying to avoid is dealing with
--- summations of the form `∑ x ∈ s, (f x + ite P 1 0)`,
--- in which `add_ite` followed by `sum_ite` would needlessly slice up
--- the `f x` terms according to whether `P` holds at `x`.
--- There doesn't appear to be a corresponding difficulty so far with
--- `mul_ite` and `ite_mul`.
-attribute [simp] mul_ite ite_mul
-
-theorem ite_sub_ite {α} [Sub α] (P : Prop) [Decidable P] (a b c d : α) :
-    ((if P then a else b) - if P then c else d) = if P then a - c else b - d := by
-  split
-  repeat rfl
-
-theorem ite_add_ite {α} [Add α] (P : Prop) [Decidable P] (a b c d : α) :
-    ((if P then a else b) + if P then c else d) = if P then a + c else b + d := by
-  split
-  repeat rfl
 
 section MulZeroClass
 variable [MulZeroClass α] (P Q : Prop) [Decidable P] [Decidable Q] (a b : α)
@@ -427,4 +400,5 @@ is cancellative on both sides. In other words, a nontrivial semiring `R` satisfy
 
 This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
+@[stacks 09FE]
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop

@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Finset.SymmDiff
 import Mathlib.Data.Finset.Union
 
 /-! # Image and map operations on finite sets
@@ -141,7 +142,7 @@ theorem _root_.Function.Commute.finset_map {f g : α ↪ α} (h : Function.Commu
 
 @[simp]
 theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s₁ ⊆ s₂ :=
-  ⟨fun h x xs => (mem_map' _).1 <| h <| (mem_map' f).2 xs,
+  ⟨fun h _ xs => (mem_map' _).1 <| h <| (mem_map' f).2 xs,
    fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.finsetMap_subset⟩ := map_subset_map
@@ -359,10 +360,6 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
   image_nonempty.2 h
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
-
-@[deprecated image_nonempty (since := "2023-12-29")]
-theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
-  image_nonempty
 
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
@@ -625,7 +622,7 @@ elements belong to `s`. -/
 protected def subtype {α} (p : α → Prop) [DecidablePred p] (s : Finset α) : Finset (Subtype p) :=
   (s.filter p).attach.map
     ⟨fun x => ⟨x.1, by simpa using (Finset.mem_filter.1 x.2).2⟩,
-     fun x y H => Subtype.eq <| Subtype.mk.inj H⟩
+     fun _ _ H => Subtype.eq <| Subtype.mk.inj H⟩
 
 @[simp]
 theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :

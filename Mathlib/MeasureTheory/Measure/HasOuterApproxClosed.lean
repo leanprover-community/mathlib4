@@ -80,7 +80,7 @@ theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter
   convert tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
   have aux : ∀ ω, indicator E (fun _ ↦ (1 : ℝ≥0∞)) ω = ↑(indicator E (fun _ ↦ (1 : ℝ≥0)) ω) :=
     fun ω ↦ by simp only [ENNReal.coe_indicator, ENNReal.coe_one]
-  simp_rw [← aux, lintegral_indicator _ E_mble]
+  simp_rw [← aux, lintegral_indicator E_mble]
   simp only [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
 
 /-- If a sequence of bounded continuous functions tends to the indicator of a measurable set and
@@ -162,7 +162,7 @@ approximating sequence to the indicator of the set. -/
 theorem measure_le_lintegral [MeasurableSpace X] [OpensMeasurableSpace X] (μ : Measure X) (n : ℕ) :
     μ F ≤ ∫⁻ x, (hF.apprSeq n x : ℝ≥0∞) ∂μ := by
   convert_to ∫⁻ x, (F.indicator (fun _ ↦ (1 : ℝ≥0∞))) x ∂μ ≤ ∫⁻ x, hF.apprSeq n x ∂μ
-  · rw [lintegral_indicator _ hF.measurableSet]
+  · rw [lintegral_indicator hF.measurableSet]
     simp only [lintegral_one, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
   · apply lintegral_mono
     intro x

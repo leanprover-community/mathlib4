@@ -446,7 +446,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
   left := X
   right := X₀
   hom :=
-    { app := fun i => X.map (SimplexCategory.const _ _ 0).op ≫ f
+    { app := fun _ => X.map (SimplexCategory.const _ _ 0).op ≫ f
       naturality := by
         intro i j g
         dsimp
@@ -775,7 +775,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0])
   left := X₀
   right := X
   hom :=
-    { app := fun i => f ≫ X.map (SimplexCategory.const _ _ 0)
+    { app := fun _ => f ≫ X.map (SimplexCategory.const _ _ 0)
       naturality := by
         intro i j g
         dsimp

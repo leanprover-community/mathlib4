@@ -26,7 +26,7 @@ variable {ι α β : Type*}
 /-! ### Algebraic operations on monovarying functions -/
 
 section OrderedCommGroup
-variable [OrderedCommGroup α] [OrderedCommGroup β] {s : Set ι} {f f₁ f₂ : ι → α} {g g₁ g₂ : ι → β}
+variable [OrderedCommGroup α] [OrderedCommGroup β] {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
 
 @[to_additive (attr := simp)]
 lemma monovaryOn_inv_left : MonovaryOn f⁻¹ g s ↔ AntivaryOn f g s := by
@@ -118,7 +118,7 @@ lemma Antivary.div_left (h₁ : Antivary f₁ g) (h₂ : Monovary f₂ g) : Anti
 end OrderedCommGroup
 
 section LinearOrderedCommGroup
-variable [OrderedCommGroup α] [LinearOrderedCommGroup β] {s : Set ι} {f f₁ f₂ : ι → α}
+variable [OrderedCommGroup α] [LinearOrderedCommGroup β] {s : Set ι} {f : ι → α}
   {g g₁ g₂ : ι → β}
 
 @[to_additive] lemma MonovaryOn.mul_right (h₁ : MonovaryOn f g₁ s) (h₂ : MonovaryOn f g₂ s) :
@@ -168,7 +168,7 @@ variable [OrderedCommGroup α] [LinearOrderedCommGroup β] {s : Set ι} {f f₁ 
 end LinearOrderedCommGroup
 
 section OrderedSemiring
-variable [OrderedSemiring α] [OrderedSemiring β] {s : Set ι} {f f₁ f₂ : ι → α} {g g₁ g₂ : ι → β}
+variable [OrderedSemiring α] [OrderedSemiring β] {s : Set ι} {f f₁ f₂ : ι → α} {g : ι → β}
 
 lemma MonovaryOn.mul_left₀ (hf₁ : ∀ i ∈ s, 0 ≤ f₁ i) (hf₂ : ∀ i ∈ s, 0 ≤ f₂ i)
     (h₁ : MonovaryOn f₁ g s) (h₂ : MonovaryOn f₂ g s) : MonovaryOn (f₁ * f₂) g s :=
@@ -180,11 +180,11 @@ lemma AntivaryOn.mul_left₀ (hf₁ : ∀ i ∈ s, 0 ≤ f₁ i) (hf₂ : ∀ i 
 
 lemma MonovaryOn.pow_left₀ (hf : ∀ i ∈ s, 0 ≤ f i) (hfg : MonovaryOn f g s) (n : ℕ) :
     MonovaryOn (f ^ n) g s :=
-  fun _i hi _j hj hij ↦ pow_le_pow_left (hf _ hi) (hfg hi hj hij) _
+  fun _i hi _j hj hij ↦ pow_le_pow_left₀ (hf _ hi) (hfg hi hj hij) _
 
 lemma AntivaryOn.pow_left₀ (hf : ∀ i ∈ s, 0 ≤ f i) (hfg : AntivaryOn f g s) (n : ℕ) :
     AntivaryOn (f ^ n) g s :=
-  fun _i hi _j hj hij ↦ pow_le_pow_left (hf _ hj) (hfg hi hj hij) _
+  fun _i hi _j hj hij ↦ pow_le_pow_left₀ (hf _ hj) (hfg hi hj hij) _
 
 lemma Monovary.mul_left₀ (hf₁ : 0 ≤ f₁) (hf₂ : 0 ≤ f₂) (h₁ : Monovary f₁ g) (h₂ : Monovary f₂ g) :
     Monovary (f₁ * f₂) g := fun _i _j hij ↦ mul_le_mul (h₁ hij) (h₂ hij) (hf₂ _) (hf₁ _)
@@ -193,15 +193,15 @@ lemma Antivary.mul_left₀ (hf₁ : 0 ≤ f₁) (hf₂ : 0 ≤ f₂) (h₁ : Ant
     Antivary (f₁ * f₂) g := fun _i _j hij ↦ mul_le_mul (h₁ hij) (h₂ hij) (hf₂ _) (hf₁ _)
 
 lemma Monovary.pow_left₀ (hf : 0 ≤ f) (hfg : Monovary f g) (n : ℕ) : Monovary (f ^ n) g :=
-  fun _i _j hij ↦ pow_le_pow_left (hf _) (hfg hij) _
+  fun _i _j hij ↦ pow_le_pow_left₀ (hf _) (hfg hij) _
 
 lemma Antivary.pow_left₀ (hf : 0 ≤ f) (hfg : Antivary f g) (n : ℕ) : Antivary (f ^ n) g :=
-  fun _i _j hij ↦ pow_le_pow_left (hf _) (hfg hij) _
+  fun _i _j hij ↦ pow_le_pow_left₀ (hf _) (hfg hij) _
 
 end OrderedSemiring
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] {s : Set ι} {f f₁ f₂ : ι → α}
+variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] {s : Set ι} {f : ι → α}
   {g g₁ g₂ : ι → β}
 
 lemma MonovaryOn.mul_right₀ (hg₁ : ∀ i ∈ s, 0 ≤ g₁ i) (hg₂ : ∀ i ∈ s, 0 ≤ g₂ i)
@@ -325,7 +325,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedAddCommGroup
 variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β]
-  [OrderedSMul α β] {f : ι → α} {g : ι → β} {s : Set ι} {a a₁ a₂ : α} {b b₁ b₂ : β}
+  [OrderedSMul α β] {f : ι → α} {g : ι → β} {s : Set ι}
 
 lemma monovaryOn_iff_forall_smul_nonneg :
     MonovaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → 0 ≤ (f j - f i) • (g j - g i) := by
@@ -380,7 +380,7 @@ alias ⟨AntivaryOn.smul_add_smul_le_smul_add_smul, _⟩ := antivaryOn_iff_smul_
 end LinearOrderedAddCommGroup
 
 section LinearOrderedRing
-variable [LinearOrderedRing α] {f g : ι → α} {s : Set ι} {a b c d : α}
+variable [LinearOrderedRing α] {f g : ι → α} {s : Set ι}
 
 lemma monovaryOn_iff_forall_mul_nonneg :
     MonovaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → 0 ≤ (f j - f i) * (g j - g i) := by

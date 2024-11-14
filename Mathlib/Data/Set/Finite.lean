@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Finite.Powerset
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Finite.Vector
+import Mathlib.Logic.Embedding.Set
 
 /-!
 # Finite sets
@@ -193,12 +197,9 @@ protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s �
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 
-alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
+protected alias ⟨_, toFinset_mono⟩ := Finite.toFinset_subset_toFinset
 
-alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
-
--- Porting note: attribute [protected] doesn't work
--- attribute [protected] toFinset_mono toFinset_strictMono
+protected alias ⟨_, toFinset_strictMono⟩ := Finite.toFinset_ssubset_toFinset
 
 -- Porting note: `simp` can simplify LHS but then it simplifies something
 -- in the generated `Fintype {x | p x}` instance and fails to apply `Set.toFinset_setOf`
@@ -261,8 +262,6 @@ protected theorem toFinset_image [DecidableEq β] (f : α → β) (hs : s.Finite
   ext
   simp
 
--- Porting note (#10618): now `simp` can prove it but it needs the `fintypeRange` instance
--- from the next section
 protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (h : (range f).Finite) :
     h.toFinset = Finset.univ.image f := by
   ext
@@ -477,7 +476,6 @@ This is a wrapper around `Set.toFinite`. -/
 theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
 
--- Porting note (#10618): was @[simp], now `simp` can prove it
 theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
   rw [toFinite_toFinset, toFinset_coe]
 
@@ -1009,7 +1007,7 @@ theorem eq_finite_iUnion_of_finite_subset_iUnion {ι} {s : ι → Set α} {t : S
       I.Finite ∧
         ∃ σ : { i | i ∈ I } → Set α, (∀ i, (σ i).Finite) ∧ (∀ i, σ i ⊆ s i) ∧ t = ⋃ i, σ i :=
   let ⟨I, Ifin, hI⟩ := finite_subset_iUnion tfin h
-  ⟨I, Ifin, fun x => s x ∩ t, fun i => tfin.subset inter_subset_right, fun i =>
+  ⟨I, Ifin, fun x => s x ∩ t, fun _ => tfin.subset inter_subset_right, fun _ =>
     inter_subset_left, by
     ext x
     rw [mem_iUnion]
@@ -1111,7 +1109,7 @@ theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (
     _ = s.toFinset.card :=
       Finset.card_image_of_injOn fun x hx y hy hxy =>
         H x (mem_toFinset.1 hx) y (mem_toFinset.1 hy) hxy
-    _ = Fintype.card s := (Fintype.card_of_finset' _ fun a => mem_toFinset).symm
+    _ = Fintype.card s := (Fintype.card_of_finset' _ fun _ => mem_toFinset).symm
 
 theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintype (f '' s)]
     (H : Function.Injective f) : Fintype.card (f '' s) = Fintype.card s :=
@@ -1212,10 +1210,7 @@ theorem infinite_range_iff {f : α → β} (hi : Injective f) :
     (range f).Infinite ↔ Infinite α := by
   rw [← image_univ, infinite_image_iff hi.injOn, infinite_univ_iff]
 
-alias ⟨_, Infinite.image⟩ := infinite_image_iff
-
--- Porting note: attribute [protected] doesn't work
--- attribute [protected] infinite.image
+protected alias ⟨_, Infinite.image⟩ := infinite_image_iff
 
 section Image2
 
@@ -1347,6 +1342,32 @@ theorem exists_lower_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
 theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f : α → β)
     (h : s.Finite) : ∃ a : α, ∀ b ∈ s, f b ≤ f a :=
   exists_lower_bound_image (β := βᵒᵈ) s f h
+
+lemma map_finite_biSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [SupBotHomClass F α β] {s : Set ι} (hs : s.Finite) (f : F) (g : ι → α) :
+    f (⨆ x ∈ s, g x) = ⨆ x ∈ s, f (g x) := by
+  have := map_finset_sup f hs.toFinset g
+  simp only [Finset.sup_eq_iSup, hs.mem_toFinset, comp_apply] at this
+  exact this
+
+lemma map_finite_biInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [InfTopHomClass F α β] {s : Set ι} (hs : s.Finite) (f : F) (g : ι → α) :
+    f (⨅ x ∈ s, g x) = ⨅ x ∈ s, f (g x) := by
+  have := map_finset_inf f hs.toFinset g
+  simp only [Finset.inf_eq_iInf, hs.mem_toFinset, comp_apply] at this
+  exact this
+
+lemma map_finite_iSup {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [SupBotHomClass F α β] [Finite ι] (f : F) (g : ι → α) :
+    f (⨆ i, g i) = ⨆ i, f (g i) := by
+  rw [← iSup_univ (f := g), ← iSup_univ (f := fun i ↦ f (g i))]
+  exact map_finite_biSup finite_univ f g
+
+lemma map_finite_iInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [InfTopHomClass F α β] [Finite ι] (f : F) (g : ι → α) :
+    f (⨅ i, g i) = ⨅ i, f (g i) := by
+  rw [← iInf_univ (f := g), ← iInf_univ (f := fun i ↦ f (g i))]
+  exact map_finite_biInf finite_univ f g
 
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
@@ -1574,7 +1595,7 @@ end LinearOrder
 namespace List
 variable (α) [Finite α] (n : ℕ)
 
-lemma finite_length_eq : {l : List α | l.length = n}.Finite := Vector.finite
+lemma finite_length_eq : {l : List α | l.length = n}.Finite := Mathlib.Vector.finite
 
 lemma finite_length_lt : {l : List α | l.length < n}.Finite := by
   convert (Finset.range n).finite_toSet.biUnion fun i _ ↦ finite_length_eq α i; ext; simp

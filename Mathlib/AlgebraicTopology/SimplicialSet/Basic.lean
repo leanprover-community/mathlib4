@@ -57,7 +57,6 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
--- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
@@ -164,6 +163,13 @@ def boundary (n : ℕ) : SSet.{u} where
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `{ α : Δ[n].obj m // _ }`.
+-/
+set_option linter.unusedVariables false in
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
 def boundaryInclusion (n : ℕ) : ∂Δ[n] ⟶ Δ[n] where app m (α : { α : Δ[n].obj m // _ }) := α
 
@@ -184,6 +190,13 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `{ α : Δ[n].obj m // _ }`.
+-/
+set_option linter.unusedVariables false in
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/
 def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n] where
   app m (α : { α : Δ[n].obj m // _ }) := α
@@ -208,15 +221,14 @@ def const (n : ℕ) (i k : Fin (n+3)) (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].o
 
 This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
-def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : Finset.card {i, a, b} ≤ n) :
-    Λ[n, i] _[1] := by
+def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) : Λ[n, i] _[1] := by
   refine ⟨standardSimplex.edge n a b hab, ?range⟩
   case range =>
     suffices ∃ x, ¬i = x ∧ ¬a = x ∧ ¬b = x by
-      simpa only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,
-        Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ,
-        Set.mem_insert_iff, @eq_comm _ _ i, Set.mem_range, forall_true_left, not_forall, not_or,
-        not_exists, Fin.forall_fin_two]
+      simpa only [unop_op, len_mk, Nat.reduceAdd, asOrderHom, yoneda_obj_obj, Set.union_singleton,
+        ne_eq, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_insert_iff,
+        @eq_comm _ _ i, Set.mem_range, forall_const, not_forall, not_or, not_exists,
+        Fin.forall_fin_two, Fin.isValue]
     contrapose! H
     replace H : univ ⊆ {i, a, b} :=
       fun x _ ↦ by simpa [or_iff_not_imp_left, eq_comm] using H x
@@ -340,7 +352,6 @@ simplicial sets. -/
 def Truncated.uliftFunctor (k : ℕ) : SSet.Truncated.{u} k ⥤ SSet.Truncated.{max u v} k :=
   (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
--- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=
@@ -437,11 +448,66 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
   obj Δ :=
     { left := SSet.standardSimplex.obj Δ
       right := terminal _
-      hom := { app := fun Δ' => terminal.from _ } }
+      hom := { app := fun _ => terminal.from _ } }
   map θ :=
     { left := SSet.standardSimplex.map θ
       right := terminal.from _ }
 
 end Augmented
+
+section applications
+variable {S : SSet}
+
+lemma δ_comp_δ_apply {n} {i j : Fin (n + 2)} (H : i ≤ j) (x : S _[n + 2]) :
+    S.δ i (S.δ j.succ x) = S.δ j (S.δ i.castSucc x) := congr_fun (S.δ_comp_δ H) x
+
+lemma δ_comp_δ'_apply {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j)
+    (x : S _[n + 2]) : S.δ i (S.δ j x) =
+      S.δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) (S.δ i.castSucc x) :=
+  congr_fun (S.δ_comp_δ' H) x
+
+lemma δ_comp_δ''_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j)
+    (x : S _[n + 2]) :
+    S.δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) (S.δ j.succ x) =
+      S.δ j (S.δ i x) := congr_fun (S.δ_comp_δ'' H) x
+
+lemma δ_comp_δ_self_apply {n} {i : Fin (n + 2)} (x : S _[n + 2]) :
+    S.δ i (S.δ i.castSucc x) = S.δ i (S.δ i.succ x) := congr_fun S.δ_comp_δ_self x
+
+lemma δ_comp_δ_self'_apply {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = Fin.castSucc i)
+    (x : S _[n + 2]) : S.δ i (S.δ j x) = S.δ i (S.δ i.succ x) := congr_fun (S.δ_comp_δ_self' H) x
+
+lemma δ_comp_σ_of_le_apply {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ Fin.castSucc j)
+    (x : S _[n + 1]) :
+    S.δ (Fin.castSucc i) (S.σ j.succ x) = S.σ j (S.δ i x) := congr_fun (S.δ_comp_σ_of_le H) x
+
+@[simp]
+lemma δ_comp_σ_self_apply {n} (i : Fin (n + 1)) (x : S _[n]) : S.δ i.castSucc (S.σ i x) = x :=
+  congr_fun S.δ_comp_σ_self x
+
+lemma δ_comp_σ_self'_apply {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i)
+    (x : S _[n]) : S.δ j (S.σ i x) = x := congr_fun (S.δ_comp_σ_self' H) x
+
+@[simp]
+lemma δ_comp_σ_succ_apply {n} (i : Fin (n + 1)) (x : S _[n]) : S.δ i.succ (S.σ i x) = x :=
+  congr_fun S.δ_comp_σ_succ x
+
+lemma δ_comp_σ_succ'_apply {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) (x : S _[n]) :
+    S.δ j (S.σ i x) = x := congr_fun (S.δ_comp_σ_succ' H) x
+
+lemma δ_comp_σ_of_gt_apply {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSucc j < i)
+    (x : S _[n + 1]) : S.δ i.succ (S.σ (Fin.castSucc j) x) = S.σ j (S.δ i x) :=
+  congr_fun (S.δ_comp_σ_of_gt H) x
+
+lemma δ_comp_σ_of_gt'_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i)
+    (x : S _[n + 1]) : S.δ i (S.σ j x) =
+      S.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le)))
+        (S.δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) x) :=
+  congr_fun (S.δ_comp_σ_of_gt' H) x
+
+lemma σ_comp_σ_apply {n} {i j : Fin (n + 1)} (H : i ≤ j) (x : S _[n]) :
+    S.σ i.castSucc (S.σ j x) = S.σ j.succ (S.σ i x) := congr_fun (S.σ_comp_σ H) x
+
+end applications
 
 end SSet

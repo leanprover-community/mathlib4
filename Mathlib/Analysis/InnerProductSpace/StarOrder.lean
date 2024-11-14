@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
 # Continuous linear maps on a Hilbert space are a `StarOrderedRing`
@@ -63,12 +64,12 @@ lemma instStarOrderedRingRCLike
       exact AddSubmonoid.subset_closure ⟨p, by simp only [hp₁.star_eq, sq]⟩
     · rintro ⟨p, hp, rfl⟩
       rw [le_def, add_sub_cancel_left]
-      induction hp using AddSubmonoid.closure_induction' with
+      induction hp using AddSubmonoid.closure_induction with
       | mem _ hf =>
         obtain ⟨f, rfl⟩ := hf
         simpa using ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
       | one => exact isPositive_zero
-      | mul f _ g _ hf hg => exact hf.add hg
+      | mul f g _ _ hf hg => exact hf.add hg
 
 instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=

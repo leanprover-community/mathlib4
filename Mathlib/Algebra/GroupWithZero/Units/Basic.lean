@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Contrapose
@@ -67,7 +67,6 @@ theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
   mt isUnit_zero_iff.1 zero_ne_one
 
@@ -179,11 +178,9 @@ theorem val_mk0 {a : G₀} (h : a ≠ 0) : (mk0 a h : G₀) = a :=
 theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
   Units.ext rfl
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
   mul_inv_cancel₀ u.ne_zero
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
   inv_mul_cancel₀ u.ne_zero
 

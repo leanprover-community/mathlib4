@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Int.CharZero
@@ -181,7 +182,7 @@ variable {R M}
 theorem End_algebraMap_isUnit_inv_apply_eq_iff {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' :=
-  { mp := fun H => ((congr_arg h.unit H).symm.trans (End_isUnit_apply_inv_apply_of_isUnit h _)).symm
+  { mp := fun H => H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
     mpr := fun H =>
       H.symm ▸ by
         apply_fun ⇑h.unit.val using ((Module.End_isUnit_iff _).mp h).injective
@@ -190,7 +191,7 @@ theorem End_algebraMap_isUnit_inv_apply_eq_iff {x : R}
 theorem End_algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' :=
-  { mp := fun H => ((congr_arg h.unit H).trans (End_isUnit_apply_inv_apply_of_isUnit h _)).symm
+  { mp := fun H => H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
     mpr := fun H =>
       H.symm ▸ by
         apply_fun (↑h.unit : M → M) using ((Module.End_isUnit_iff _).mp h).injective
@@ -479,8 +480,8 @@ def LinearMap.extendScalarsOfSurjectiveEquiv (h : Function.Surjective (algebraMa
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f.restrictScalars S
-  left_inv f := rfl
-  right_inv f := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- If `R →+* S` is surjective, then `R`-linear maps are also `S`-linear. -/
 abbrev LinearMap.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))

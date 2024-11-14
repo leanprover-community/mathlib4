@@ -883,7 +883,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv (hs : MeasurableSet s)
   have u_meas : ∀ n, MeasurableSet (u n) := by
     intro n
     apply MeasurableSet.disjointed fun i => ?_
-    exact measurable_spanningSets μ i
+    exact measurableSet_spanningSets μ i
   have A : s = ⋃ n, s ∩ u n := by
     rw [← inter_iUnion, iUnion_disjointed, iUnion_spanningSets, inter_univ]
   calc
@@ -1035,7 +1035,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image (hs : MeasurableSet s)
   have u_meas : ∀ n, MeasurableSet (u n) := by
     intro n
     apply MeasurableSet.disjointed fun i => ?_
-    exact measurable_spanningSets μ i
+    exact measurableSet_spanningSets μ i
   have A : s = ⋃ n, s ∩ u n := by
     rw [← inter_iUnion, iUnion_disjointed, iUnion_spanningSets, inter_univ]
   calc

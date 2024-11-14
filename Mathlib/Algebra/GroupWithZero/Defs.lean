@@ -182,15 +182,14 @@ Examples include division rings and the ordered monoids that are the
 target of valuations in general valuation theory. -/
 class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G₀, Nontrivial G₀ where
   /-- The inverse of `0` in a group with zero is `0`. -/
-  inv_zero : (0 : G₀)⁻¹ = 0
+  protected inv_zero : (0 : G₀)⁻¹ = 0
   /-- Every nonzero element of a group with zero is invertible. -/
   protected mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
 
-export GroupWithZero (inv_zero)
-attribute [simp] inv_zero
-
 section GroupWithZero
 variable [GroupWithZero G₀] {a : G₀}
+
+@[simp] lemma inv_zero : (0 : G₀)⁻¹ = 0 := GroupWithZero.inv_zero
 
 @[simp] lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
 

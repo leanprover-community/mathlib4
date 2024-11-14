@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Rat.Defs
 
 /-!
@@ -50,6 +51,8 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     zero_mul := zero_mul }
 
 instance isDomain : IsDomain ℚ := NoZeroDivisors.to_isDomain _
+/-- The characteristic of `ℚ` is 0. -/
+@[stacks 09FS "Second part."]
 instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa using congr_arg num hab
 
 /-!

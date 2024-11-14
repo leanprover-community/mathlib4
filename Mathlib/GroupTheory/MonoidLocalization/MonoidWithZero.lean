@@ -3,8 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids with zeroes
@@ -158,9 +160,6 @@ theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
   have : IsLeftCancelMulZero N :=
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
-
-@[deprecated isLeftRegular_of_le_isCancelMulZero (since := "2024-01-16")]
-alias isLeftRegular_of_le_IsCancelMulZero := isLeftRegular_of_le_isCancelMulZero
 
 end LocalizationWithZeroMap
 

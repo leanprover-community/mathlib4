@@ -276,7 +276,7 @@ alias set_integral_densityProcess := setIntegral_densityProcess
 lemma integral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫ x, densityProcess κ ν n a x s ∂(ν a) = (κ a (univ ×ˢ s)).toReal := by
-  rw [← integral_univ, setIntegral_densityProcess hκν _ _ hs MeasurableSet.univ]
+  rw [← setIntegral_univ, setIntegral_densityProcess hκν _ _ hs MeasurableSet.univ]
 
 lemma setIntegral_densityProcess_of_le (hκν : fst κ ≤ ν)
     [IsFiniteKernel ν] {n m : ℕ} (hnm : n ≤ m) (a : α) {s : Set β} (hs : MeasurableSet s)
@@ -380,17 +380,17 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : Kernel α (γ × β))
   · rw [ne_eq, ENNReal.div_eq_top]
     push_neg
     simp
-  refine ENNReal.Tendsto.div_const ?_ ?_
-  · have h := tendsto_measure_iInter (μ := κ a) (s := fun m ↦ countablePartitionSet n x ×ˢ seq m)
-      ?_ ?_ ?_
-    · convert h
-      rw [← prod_iInter, hseq_iInter]
-    · exact fun m ↦ ((measurableSet_countablePartitionSet _ _).prod (hseq_meas m)).nullMeasurableSet
-    · intro m m' hmm'
-      simp only [le_eq_subset, prod_subset_prod_iff, subset_rfl, true_and]
-      exact Or.inl <| hseq hmm'
+  refine ENNReal.Tendsto.div_const ?_ (.inr h0)
+  have : Tendsto (fun m ↦ κ a (countablePartitionSet n x ×ˢ seq m)) atTop
+      (𝓝 ((κ a) (⋂ n_1, countablePartitionSet n x ×ˢ seq n_1))) := by
+    apply tendsto_measure_iInter_atTop
+    · intro
+      -- TODO: why doesn't `measurability` work without this hint?
+      apply MeasurableSet.nullMeasurableSet
+      measurability
+    · exact fun _ _ h ↦ prod_mono_right <| hseq h
     · exact ⟨0, measure_ne_top _ _⟩
-  · exact .inr h0
+  simpa only [← prod_iInter, hseq_iInter] using this
 
 lemma tendsto_densityProcess_atTop_of_antitone (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ)
@@ -484,7 +484,7 @@ lemma tendsto_m_density (hκν : fst κ ≤ ν) (a : α) [IsFiniteKernel ν]
 lemma measurable_density (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun (p : α × γ) ↦ density κ ν p.1 p.2 s) :=
-  measurable_limsup (fun n ↦ measurable_densityProcess κ ν n hs)
+  .limsup (fun n ↦ measurable_densityProcess κ ν n hs)
 
 lemma measurable_density_left (κ : Kernel α (γ × β)) (ν : Kernel α γ) (x : γ)
     {s : Set β} (hs : MeasurableSet s) :
@@ -576,7 +576,7 @@ alias set_integral_density_of_measurableSet := setIntegral_density_of_measurable
 lemma integral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫ x, density κ ν a x s ∂(ν a) = (κ a (univ ×ˢ s)).toReal := by
-  rw [← integral_univ, setIntegral_density_of_measurableSet hκν 0 a hs MeasurableSet.univ]
+  rw [← setIntegral_univ, setIntegral_density_of_measurableSet hκν 0 a hs MeasurableSet.univ]
 
 lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :
@@ -666,21 +666,15 @@ lemma tendsto_integral_density_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKern
   have : IsFiniteKernel κ := isFiniteKernel_of_isFiniteKernel_fst (h := isFiniteKernel_of_le hκν)
   simp_rw [integral_density hκν a (hseq_meas _)]
   rw [← ENNReal.zero_toReal]
-  have h_cont := ENNReal.continuousOn_toReal.continuousAt (x := 0) ?_
-  swap
-  · rw [mem_nhds_iff]
-    refine ⟨Iio 1, fun x hx ↦ ne_top_of_lt (?_ : x < 1), isOpen_Iio, ?_⟩
-    · simpa using hx
-    · simp
+  have h_cont := ENNReal.continuousAt_toReal ENNReal.zero_ne_top
   refine h_cont.tendsto.comp ?_
-  have h := tendsto_measure_iInter (s := fun m ↦ univ ×ˢ seq m) (μ := κ a)
-    (fun m ↦ (MeasurableSet.univ.prod (hseq_meas m)).nullMeasurableSet) ?_ ?_
-  rotate_left
-  · intro n m hnm x; simp only [mem_prod, mem_univ, true_and]; exact fun h ↦ hseq hnm h
-  · refine ⟨0, measure_ne_top _ _⟩
-  convert h
-  rw [← prod_iInter, hseq_iInter]
-  simp
+  have h : Tendsto (fun m ↦ κ a (univ ×ˢ seq m)) atTop
+      (𝓝 ((κ a) (⋂ n, (fun m ↦ univ ×ˢ seq m) n))) := by
+    apply tendsto_measure_iInter_atTop
+    · measurability
+    · exact antitone_const.set_prod hseq
+    · exact ⟨0, measure_ne_top _ _⟩
+  simpa [← prod_iInter, hseq_iInter] using h
 
 lemma tendsto_density_atTop_ae_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKernel ν] (a : α)
     (seq : ℕ → Set β) (hseq : Antitone seq) (hseq_iInter : ⋂ i, seq i = ∅)

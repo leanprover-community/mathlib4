@@ -3,15 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.Topology.Category.TopCat.OpenNhds
-import Mathlib.Topology.Sheaves.Presheaf
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
-import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.Sites.Pullback
+import Mathlib.Topology.Category.TopCat.OpenNhds
+import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Stalks
@@ -45,6 +39,8 @@ https://stacks.math.columbia.edu/tag/007L
 
 -/
 
+assert_not_exists OrderedCommMonoid
+
 
 noncomputable section
 
@@ -56,7 +52,7 @@ open TopCat
 
 open CategoryTheory.Limits
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open Opposite
 
@@ -208,8 +204,8 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
   ext
   simp [germ, stalkPushforward]
 
-theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding f) (F : X.Presheaf C)
-    (x : X) : IsIso (F.stalkPushforward _ f x) := by
+theorem stalkPushforward_iso_of_isOpenEmbedding {f : X ⟶ Y} (hf : IsOpenEmbedding f)
+    (F : X.Presheaf C) (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.isOpenMap.adjunctionNhds x)
   convert
       ((Functor.Final.colimitIso (hf.isOpenMap.functorNhds x).op
@@ -221,7 +217,7 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
     · intro U
       refine F.mapIso (eqToIso ?_)
       dsimp only [Functor.op]
-      exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.inj)
+      exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.injective)
     · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1
   · change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
     ext U
@@ -233,6 +229,9 @@ theorem stalkPushforward_iso_of_openEmbedding {f : X ⟶ Y} (hf : OpenEmbedding 
     dsimp only [Functor.op]
     refine ((homOfLE ?_).op : op (unop U) ⟶ _)
     exact Set.image_preimage_subset _ _
+
+@[deprecated (since := "2024-10-18")]
+alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_isOpenEmbedding
 
 end stalkPushforward
 
@@ -255,7 +254,7 @@ lemma germ_stalkPullbackHom
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) :
     ((pullback C f).obj F).obj (op U) ⟶ F.stalk (f x) :=
-  ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F (op U)).desc
+  ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).desc
     { pt := F.stalk ((f : X → Y) (x : X))
       ι :=
         { app := fun V => F.germ _ (f x) (V.hom.unop.le hx)
@@ -271,7 +270,7 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
       ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
         ((pullback C f).obj F).map (homOfLE hV).op ≫ ψ) : φ = ψ := by
   obtain ⟨U⟩ := U
-  apply ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F _).hom_ext
+  apply ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F _).hom_ext
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
   simpa [pushforwardPullbackAdjunction, Functor.lanAdjunction_unit]
     using h V (leOfHom b)
@@ -284,7 +283,7 @@ lemma pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk
       ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx  =
         F.germ _ (f x) (hV hx) := by
   simpa [pushforwardPullbackAdjunction] using
-    ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F (op U)).fac _
+    ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).fac _
       (CostructuredArrow.mk (homOfLE hV).op)
 
 @[reassoc (attr := simp)]
@@ -389,7 +388,8 @@ theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x 
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
   ext; delta stalkFunctor; simpa [stalkSpecializes] using by rfl
 
-@[reassoc, elementwise, simp, nolint simpNF] -- see std4#365 for the simpNF issue
+-- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
+@[reassoc, elementwise, simp, nolint simpNF]
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.map_specializes h) ≫ F.stalkPushforward _ f x =
       F.stalkPushforward _ f y ≫ F.stalkSpecializes h := by
@@ -626,14 +626,5 @@ theorem isIso_iff_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) :
    fun _ => isIso_of_stalkFunctor_map_iso f⟩
 
 end Concrete
-
-instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
-    Algebra (F.obj <| op U) (F.stalk x) :=
-  (F.germ U x.1 x.2).toAlgebra
-
-@[simp]
-theorem stalk_open_algebraMap {X : TopCat} (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
-    algebraMap (F.obj <| op U) (F.stalk x) = F.germ U x.1 x.2 :=
-  rfl
 
 end TopCat.Presheaf

@@ -227,7 +227,7 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
       rw [sub_eq_add_neg, ← hz.1, ← norm_neg (F.derivative.eval z)] at hdist
       have := PadicInt.norm_eq_of_norm_add_lt_right hdist
       rwa [norm_neg, hz.1] at this
-    let ⟨q, heq⟩ := calc_eval_z' hnorm rfl hz h1 rfl
+    let ⟨_, heq⟩ := calc_eval_z' hnorm rfl hz h1 rfl
     have hnle : ‖F.eval z'‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ (n + 1) :=
       calc_eval_z'_norm hz heq h1 rfl
     ⟨hfeq, hnle⟩⟩
@@ -365,7 +365,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
       (mul_le_mul_of_nonneg_left (pow_le_pow_of_le_one (norm_nonneg _)
         (le_of_lt (T_lt_one hnorm)) this) (norm_nonneg _))
     _ < ‖F.derivative.eval a‖ * T ^ 1 :=
-      (mul_lt_mul_of_pos_left (pow_lt_pow_right_of_lt_one (T_pos hnorm hnsol)
+      (mul_lt_mul_of_pos_left (pow_lt_pow_right_of_lt_one₀ (T_pos hnorm hnsol)
         (T_lt_one hnorm) (by norm_num)) (deriv_norm_pos hnorm))
     _ = ‖F.eval a‖ / ‖F.derivative.eval a‖ := by
       rw [T_gen, sq, pow_one, norm_div, ← mul_div_assoc, PadicInt.padic_norm_e_of_padicInt,

@@ -144,7 +144,7 @@ section
 variable [HasZeroMorphisms D]
 
 instance : HasZeroMorphisms (C ⥤ D) where
-  zero F G := ⟨{ app := fun X => 0 }⟩
+  zero F G := ⟨{ app := fun _ => 0 }⟩
   comp_zero := fun η H => by
     ext X; dsimp; apply comp_zero
   zero_comp := fun F {G H} η => by
@@ -252,7 +252,7 @@ open ZeroObject
     code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
     asks for an instance of `HasZeroObjects`. -/
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
-  zero X Y := { zero := (default : X ⟶ 0) ≫ default }
+  zero X _ := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
     change ((default : X ⟶ 0) ≫ default) ≫ f = (default : X ⟶ 0) ≫ default
     rw [Category.assoc]
@@ -378,14 +378,14 @@ theorem idZeroEquivIsoZero_apply_inv (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIso
 
 /-- If `0 : X ⟶ Y` is a monomorphism, then `X ≅ 0`. -/
 @[simps]
-def isoZeroOfMonoZero {X Y : C} (h : Mono (0 : X ⟶ Y)) : X ≅ 0 where
+def isoZeroOfMonoZero {X Y : C} (_ : Mono (0 : X ⟶ Y)) : X ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := (cancel_mono (0 : X ⟶ Y)).mp (by simp)
 
 /-- If `0 : X ⟶ Y` is an epimorphism, then `Y ≅ 0`. -/
 @[simps]
-def isoZeroOfEpiZero {X Y : C} (h : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
+def isoZeroOfEpiZero {X Y : C} (_ : Epi (0 : X ⟶ Y)) : Y ≅ 0 where
   hom := 0
   inv := 0
   hom_inv_id := (cancel_epi (0 : X ⟶ Y)).mp (by simp)
@@ -523,7 +523,7 @@ def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
 -/
 def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   F := monoFactorisationZero X Y
-  isImage := { lift := fun F' => 0 }
+  isImage := { lift := fun _ => 0 }
 
 instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
   HasImage.mk <| imageFactorisationZero _ _

@@ -42,7 +42,7 @@ open scoped NNReal ENNReal MeasureTheory Topology
 
 namespace MeasureTheory.Measure
 
-variable {α β : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
+variable {α : Type*} {mα : MeasurableSpace α} (ρ : Measure (α × ℝ))
 
 /-- Measure on `α` such that for a measurable set `s`, `ρ.IicSnd r s = ρ (s ×ˢ Iic r)`. -/
 noncomputable def IicSnd (r : ℝ) : Measure α :=
@@ -99,7 +99,7 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
       simp_rw [neg_neg]
     rw [h_fun_eq]
     exact h_neg.comp tendsto_neg_atBot_atTop
-  refine tendsto_measure_iInter (fun q ↦ (hs.prod measurableSet_Iic).nullMeasurableSet)
+  refine tendsto_measure_iInter_atTop (fun q ↦ (hs.prod measurableSet_Iic).nullMeasurableSet)
     ?_ ⟨0, measure_ne_top ρ _⟩
   refine fun q r hqr ↦ Set.prod_mono subset_rfl fun x hx ↦ ?_
   simp only [Rat.cast_neg, mem_Iic] at hx ⊢
@@ -112,7 +112,7 @@ open MeasureTheory
 
 namespace ProbabilityTheory
 
-variable {α β ι : Type*} {mα : MeasurableSpace α}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 
@@ -192,7 +192,7 @@ alias set_integral_preCDF_fst := setIntegral_preCDF_fst
 
 lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ∫ x, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r univ).toReal := by
-  rw [← integral_univ, setIntegral_preCDF_fst ρ _ MeasurableSet.univ]
+  rw [← setIntegral_univ, setIntegral_preCDF_fst ρ _ MeasurableSet.univ]
 
 lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ) :
     Integrable (fun a ↦ (preCDF ρ x a).toReal) ρ.fst := by

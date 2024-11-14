@@ -180,9 +180,9 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
   map i :=
     { toFun := (structureSheafInType 𝒜).1.map i
       map_zero' := rfl
-      map_add' := fun x y => rfl
+      map_add' := fun _ _ => rfl
       map_one' := rfl
-      map_mul' := fun x y => rfl }
+      map_mul' := fun _ _ => rfl }
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF]
@@ -192,7 +192,7 @@ attribute [nolint simpNF]
 valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
-  NatIso.ofComponents (fun U => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 end ProjectiveSpectrum.StructureSheaf
 
@@ -332,7 +332,7 @@ lemma homogeneousLocalizationToStalk_stalkToFiberRingHom (x z) :
 
 lemma stalkToFiberRingHom_homogeneousLocalizationToStalk (x z) :
     stalkToFiberRingHom 𝒜 x (homogeneousLocalizationToStalk 𝒜 x z) = z := by
-  obtain ⟨z, rfl⟩ := Quotient.surjective_Quotient_mk'' z
+  obtain ⟨z, rfl⟩ := Quotient.mk''_surjective z
   rw [homogeneousLocalizationToStalk, Quotient.liftOn'_mk'',
     stalkToFiberRingHom_germ, sectionInBasicOpen]
 
@@ -361,8 +361,8 @@ theorem Proj.stalkIso'_symm_mk (x) (f) :
 /-- `Proj` of a graded ring as a `LocallyRingedSpace`-/
 def Proj.toLocallyRingedSpace : LocallyRingedSpace :=
   { Proj.toSheafedSpace 𝒜 with
-    localRing := fun x =>
-      @RingEquiv.localRing _ _ _ (show LocalRing (at x) from inferInstance) _
+    isLocalRing := fun x =>
+      @RingEquiv.isLocalRing _ _ _ (show IsLocalRing (at x) from inferInstance) _
         (Proj.stalkIso' 𝒜 x).symm }
 
 end

@@ -40,7 +40,7 @@ which removes some boilerplate code.
 noncomputable section
 
 open scoped Classical
-open Nat LocalRing Padic
+open Nat IsLocalRing Padic
 
 namespace PadicInt
 
@@ -289,7 +289,7 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction' n with n ih generalizing x
   · simp only [appr, zero_eq, _root_.pow_zero, zero_lt_one]
   simp only [appr, map_natCast, ZMod.natCast_self, RingHom.map_pow, Int.natAbs, RingHom.map_mul]
-  have hp : p ^ n < p ^ (n + 1) := by apply pow_lt_pow_right hp_prime.1.one_lt (lt_add_one n)
+  have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.1.one_lt n.lt_add_one
   split_ifs with h
   · apply lt_trans (ih _) hp
   · calc
@@ -589,7 +589,7 @@ theorem lift_sub_val_mem_span (r : R) (n : ℕ) :
     lift f_compat r - (f n r).val ∈ (Ideal.span {(p : ℤ_[p]) ^ n}) := by
   obtain ⟨k, hk⟩ :=
     limNthHom_spec f_compat r _
-      (show (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) from Nat.zpow_pos_of_pos hp_prime.1.pos _)
+      (show (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) from zpow_pos (mod_cast hp_prime.1.pos) _)
   have := le_of_lt (hk (max n k) (le_max_right _ _))
   rw [norm_le_pow_iff_mem_span_pow] at this
   dsimp [lift]

@@ -3,7 +3,7 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.FieldTheory.Finite.Basic
@@ -143,13 +143,13 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   have habs : map (Int.castRingHom (ZMod p)) P ^ 2 ∣ map (Int.castRingHom (ZMod p)) P ^ 2 * R := by
     use R
   replace habs :=
-    lt_of_lt_of_le (PartENat.coe_lt_coe.2 one_lt_two)
-      (multiplicity.le_multiplicity_of_pow_dvd (dvd_trans habs prod))
+    lt_of_lt_of_le (Nat.cast_lt.2 one_lt_two)
+      (le_emultiplicity_of_pow_dvd (dvd_trans habs prod))
   have hfree : Squarefree (X ^ n - 1 : (ZMod p)[X]) :=
     (separable_X_pow_sub_C 1 (fun h => hdiv <| (ZMod.natCast_zmod_eq_zero_iff_dvd n p).1 h)
         one_ne_zero).squarefree
   cases'
-    (multiplicity.squarefree_iff_multiplicity_le_one (X ^ n - 1)).1 hfree
+    (multiplicity.squarefree_iff_emultiplicity_le_one (X ^ n - 1)).1 hfree
       (map (Int.castRingHom (ZMod p)) P) with
     hle hunit
   · rw [Nat.cast_one] at habs; exact hle.not_lt habs
@@ -195,9 +195,10 @@ theorem pow_isRoot_minpoly {m : ℕ} (hcop : Nat.Coprime m n) :
 theorem is_roots_of_minpoly [DecidableEq K] :
     primitiveRoots n K ⊆ (map (Int.castRingHom K) (minpoly ℤ μ)).roots.toFinset := by
   by_cases hn : n = 0; · simp_all
+  have : NeZero n := ⟨hn⟩
   have hpos := Nat.pos_of_ne_zero hn
   intro x hx
-  obtain ⟨m, _, hcop, rfl⟩ := (isPrimitiveRoot_iff h hpos).1 ((mem_primitiveRoots hpos).1 hx)
+  obtain ⟨m, _, hcop, rfl⟩ := (isPrimitiveRoot_iff h).1 ((mem_primitiveRoots hpos).1 hx)
   simp only [Multiset.mem_toFinset, mem_roots]
   convert pow_isRoot_minpoly h hcop using 0
   rw [← mem_roots]

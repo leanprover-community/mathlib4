@@ -280,19 +280,19 @@ theorem sin_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : sin (n * (2 * π) - x) = -s
   sin_neg x ▸ sin_periodic.int_mul_sub_eq n
 
 theorem sin_add_int_mul_pi (x : ℝ) (n : ℤ) : sin (x + n * π) = (-1) ^ n * sin x :=
-  n.coe_negOnePow ℝ ▸ sin_antiperiodic.add_int_mul_eq n
+  n.cast_negOnePow ℝ ▸ sin_antiperiodic.add_int_mul_eq n
 
 theorem sin_add_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x + n * π) = (-1) ^ n * sin x :=
   sin_antiperiodic.add_nat_mul_eq n
 
 theorem sin_sub_int_mul_pi (x : ℝ) (n : ℤ) : sin (x - n * π) = (-1) ^ n * sin x :=
-  n.coe_negOnePow ℝ ▸ sin_antiperiodic.sub_int_mul_eq n
+  n.cast_negOnePow ℝ ▸ sin_antiperiodic.sub_int_mul_eq n
 
 theorem sin_sub_nat_mul_pi (x : ℝ) (n : ℕ) : sin (x - n * π) = (-1) ^ n * sin x :=
   sin_antiperiodic.sub_nat_mul_eq n
 
 theorem sin_int_mul_pi_sub (x : ℝ) (n : ℤ) : sin (n * π - x) = -((-1) ^ n * sin x) := by
-  simpa only [sin_neg, mul_neg, Int.coe_negOnePow] using sin_antiperiodic.int_mul_sub_eq n
+  simpa only [sin_neg, mul_neg, Int.cast_negOnePow] using sin_antiperiodic.int_mul_sub_eq n
 
 theorem sin_nat_mul_pi_sub (x : ℝ) (n : ℕ) : sin (n * π - x) = -((-1) ^ n * sin x) := by
   simpa only [sin_neg, mul_neg] using sin_antiperiodic.nat_mul_sub_eq n
@@ -363,36 +363,32 @@ theorem cos_int_mul_two_pi_sub (x : ℝ) (n : ℤ) : cos (n * (2 * π) - x) = co
   cos_neg x ▸ cos_periodic.int_mul_sub_eq n
 
 theorem cos_add_int_mul_pi (x : ℝ) (n : ℤ) : cos (x + n * π) = (-1) ^ n * cos x :=
-  n.coe_negOnePow ℝ ▸ cos_antiperiodic.add_int_mul_eq n
+  n.cast_negOnePow ℝ ▸ cos_antiperiodic.add_int_mul_eq n
 
 theorem cos_add_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x + n * π) = (-1) ^ n * cos x :=
   cos_antiperiodic.add_nat_mul_eq n
 
 theorem cos_sub_int_mul_pi (x : ℝ) (n : ℤ) : cos (x - n * π) = (-1) ^ n * cos x :=
-  n.coe_negOnePow ℝ ▸ cos_antiperiodic.sub_int_mul_eq n
+  n.cast_negOnePow ℝ ▸ cos_antiperiodic.sub_int_mul_eq n
 
 theorem cos_sub_nat_mul_pi (x : ℝ) (n : ℕ) : cos (x - n * π) = (-1) ^ n * cos x :=
   cos_antiperiodic.sub_nat_mul_eq n
 
 theorem cos_int_mul_pi_sub (x : ℝ) (n : ℤ) : cos (n * π - x) = (-1) ^ n * cos x :=
-  n.coe_negOnePow ℝ ▸ cos_neg x ▸ cos_antiperiodic.int_mul_sub_eq n
+  n.cast_negOnePow ℝ ▸ cos_neg x ▸ cos_antiperiodic.int_mul_sub_eq n
 
 theorem cos_nat_mul_pi_sub (x : ℝ) (n : ℕ) : cos (n * π - x) = (-1) ^ n * cos x :=
   cos_neg x ▸ cos_antiperiodic.nat_mul_sub_eq n
 
--- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_add_pi (n : ℕ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).add_antiperiod_eq cos_antiperiodic
 
--- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_int_mul_two_pi_add_pi (n : ℤ) : cos (n * (2 * π) + π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).add_antiperiod_eq cos_antiperiodic
 
--- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_nat_mul_two_pi_sub_pi (n : ℕ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.nat_mul n).sub_antiperiod_eq cos_antiperiodic
 
--- Porting note (#10618): was @[simp], but simp can prove it
 theorem cos_int_mul_two_pi_sub_pi (n : ℤ) : cos (n * (2 * π) - π) = -1 := by
   simpa only [cos_zero] using (cos_periodic.int_mul n).sub_antiperiod_eq cos_antiperiodic
 
@@ -502,7 +498,7 @@ theorem sin_eq_zero_iff {x : ℝ} : sin x = 0 ↔ ∃ n : ℤ, (n : ℝ) * π = 
           le_of_not_gt fun h₃ =>
             (sin_pos_of_pos_of_lt_pi h₃ (Int.sub_floor_div_mul_lt _ pi_pos)).ne
               (by simp [sub_eq_add_neg, sin_add, h, sin_int_mul_pi]))⟩,
-    fun ⟨n, hn⟩ => hn ▸ sin_int_mul_pi _⟩
+    fun ⟨_, hn⟩ => hn ▸ sin_int_mul_pi _⟩
 
 theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π ≠ x := by
   rw [← not_exists, not_iff_not, sin_eq_zero_iff]
@@ -524,7 +520,7 @@ theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * �
               mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
         rw [← hn, cos_int_mul_two_pi_add_pi] at h
         exact absurd h (by norm_num)⟩,
-    fun ⟨n, hn⟩ => hn ▸ cos_int_mul_two_pi _⟩
+    fun ⟨_, hn⟩ => hn ▸ cos_int_mul_two_pi _⟩
 
 theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x < 2 * π) :
     cos x = 1 ↔ x = 0 :=

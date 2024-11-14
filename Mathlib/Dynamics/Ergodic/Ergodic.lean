@@ -76,11 +76,15 @@ theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs
 theorem of_iterate (n : ℕ) (hf : PreErgodic f^[n] μ) : PreErgodic f μ :=
   ⟨fun _ hs hs' => hf.aeconst_set hs <| IsFixedPt.preimage_iterate hs' n⟩
 
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (hf : PreErgodic f μ) (c : R) : PreErgodic f (c • μ) where
+  aeconst_set _s hs hfs := (hf.aeconst_set hs hfs).anti <| ae_smul_measure_le _
+
 end PreErgodic
 
 namespace MeasureTheory.MeasurePreserving
 
-variable {β : Type*} {m' : MeasurableSpace β} {μ' : Measure β} {s' : Set β} {g : α → β}
+variable {β : Type*} {m' : MeasurableSpace β} {μ' : Measure β} {g : α → β}
 
 theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf : PreErgodic f μ)
     {f' : β → β} (h_comm : Semiconj g f f') : PreErgodic f' μ' where
@@ -129,6 +133,10 @@ theorem ae_mem_or_ae_nmem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.mp <| hf.aeconst_set₀ hsm hs
 
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
+  ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
+
 end QuasiErgodic
 
 namespace Ergodic
@@ -158,6 +166,10 @@ theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : NullMeasurabl
     (HasSubset.Subset.eventuallyLE (subset_preimage_image f s)).trans
       (hf.quasiMeasurePreserving.preimage_mono_ae hs')
   exact ae_empty_or_univ_of_ae_le_preimage' hf hs hs' h_fin
+
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (hf : Ergodic f μ) (c : R) : Ergodic f (c • μ) :=
+  ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
 
 section IsFiniteMeasure
 

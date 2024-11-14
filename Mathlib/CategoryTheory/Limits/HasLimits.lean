@@ -139,6 +139,12 @@ def limit (F : J ⥤ C) [HasLimit F] :=
 def limit.π (F : J ⥤ C) [HasLimit F] (j : J) : limit F ⟶ F.obj j :=
   (limit.cone F).π.app j
 
+@[reassoc]
+theorem limit.π_comp_eqToHom (F : J ⥤ C) [HasLimit F] {j j' : J} (hj : j = j') :
+    limit.π F j ≫ eqToHom (by subst hj; rfl) = limit.π F j' := by
+  subst hj
+  simp
+
 @[simp]
 theorem limit.cone_x {F : J ⥤ C} [HasLimit F] : (limit.cone F).pt = limit F :=
   rfl
@@ -494,10 +500,10 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
   homEquiv := fun c g ↦
     { toFun := fun f => limit.lift _ ⟨c, f⟩
       invFun := fun f =>
-        { app := fun j => f ≫ limit.π _ _ }
+        { app := fun _ => f ≫ limit.π _ _ }
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
-  unit := { app := fun c => limit.lift _ ⟨_, 𝟙 _⟩ }
+  unit := { app := fun _ => limit.lift _ ⟨_, 𝟙 _⟩ }
   counit := { app := fun g => { app := limit.π _ } } }
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
@@ -539,7 +545,7 @@ def isLimitConeOfAdj (F : J ⥤ C) :
     have eq := NatTrans.congr_app (adj.counit.naturality s.π) j
     have eq' := NatTrans.congr_app (adj.left_triangle_components s.pt) j
     dsimp at eq eq' ⊢
-    rw [assoc, eq, reassoc_of% eq']
+    rw [adj.homEquiv_unit, assoc, eq, reassoc_of% eq']
   uniq s m hm := (adj.homEquiv _ _).symm.injective (by ext j; simpa using hm j)
 
 end Adjunction
@@ -643,6 +649,12 @@ def colimit (F : J ⥤ C) [HasColimit F] :=
 /-- The coprojection from a value of the functor to the colimit object. -/
 def colimit.ι (F : J ⥤ C) [HasColimit F] (j : J) : F.obj j ⟶ colimit F :=
   (colimit.cocone F).ι.app j
+
+@[reassoc]
+theorem colimit.eqToHom_comp_ι (F : J ⥤ C) [HasColimit F] {j j' : J} (hj : j = j') :
+    eqToHom (by subst hj; rfl) ≫ colimit.ι F j = colimit.ι F j'  := by
+  subst hj
+  simp
 
 @[simp]
 theorem colimit.cocone_ι {F : J ⥤ C} [HasColimit F] (j : J) :
@@ -1030,7 +1042,7 @@ def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
   unit := { app := fun g => { app := colimit.ι _ } }
-  counit := { app := fun c => colimit.desc _ ⟨_, 𝟙 _⟩ } }
+  counit := { app := fun _ => colimit.desc _ ⟨_, 𝟙 _⟩ } }
 
 instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
   ⟨_, ⟨colimConstAdj⟩⟩
@@ -1119,7 +1131,7 @@ def IsLimit.unop {t : Cone F.op} (P : IsLimit t) : IsColimit t.unop where
       rw [← w]
       rfl
 
-/-- If `t : Cocone F.op` is a colimit cocone, then `t.unop : Cone F.` is a limit cone.
+/-- If `t : Cocone F.op` is a colimit cocone, then `t.unop : Cone F` is a limit cone.
 -/
 def IsColimit.unop {t : Cocone F.op} (P : IsColimit t) : IsLimit t.unop where
   lift s := (P.desc s.op).unop
@@ -1134,17 +1146,31 @@ def IsColimit.unop {t : Cocone F.op} (P : IsColimit t) : IsLimit t.unop where
       rw [← w]
       rfl
 
+/-- If `t.op : Cocone F.op` is a colimit cocone, then `t : Cone F` is a limit cone. -/
+def isLimitOfOp {t : Cone F} (P : IsColimit t.op) : IsLimit t :=
+  P.unop
+
+/-- If `t.op : Cone F.op` is a limit cone, then `t : Cocone F` is a colimit cocone. -/
+def isColimitOfOp {t : Cocone F} (P : IsLimit t.op) : IsColimit t :=
+  P.unop
+
+/-- If `t.unop : Cocone F` is a colimit cocone, then `t : Cone F.op` is a limit cone.-/
+def isLimitOfUnop {t : Cone F.op} (P : IsColimit t.unop) : IsLimit t :=
+  P.op
+
+/-- If `t.unop : Cone F` is a limit cone, then `t : Cocone F.op` is a colimit cocone. -/
+def isColimitOfUnop {t : Cocone F.op} (P : IsLimit t.unop) : IsColimit t :=
+  P.op
+
 /-- `t : Cone F` is a limit cone if and only if `t.op : Cocone F.op` is a colimit cocone.
 -/
 def isLimitEquivIsColimitOp {t : Cone F} : IsLimit t ≃ IsColimit t.op :=
-  equivOfSubsingletonOfSubsingleton IsLimit.op fun P =>
-    P.unop.ofIsoLimit (Cones.ext (Iso.refl _))
+  equivOfSubsingletonOfSubsingleton IsLimit.op isLimitOfOp
 
 /-- `t : Cocone F` is a colimit cocone if and only if `t.op : Cone F.op` is a limit cone.
 -/
 def isColimitEquivIsLimitOp {t : Cocone F} : IsColimit t ≃ IsLimit t.op :=
-  equivOfSubsingletonOfSubsingleton IsColimit.op fun P =>
-    P.unop.ofIsoColimit (Cocones.ext (Iso.refl _))
+  equivOfSubsingletonOfSubsingleton IsColimit.op isColimitOfOp
 
 end Opposite
 

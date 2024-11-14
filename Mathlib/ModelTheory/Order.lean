@@ -312,7 +312,7 @@ theorem realize_denselyOrdered [h : DenselyOrdered M] :
 
 variable (L) (M)
 
-theorem denselyOrdered_of_dlo [h: M ⊨ L.dlo] : DenselyOrdered M :=
+theorem denselyOrdered_of_dlo [M ⊨ L.dlo] : DenselyOrdered M :=
   realize_denselyOrdered_iff.1 (L.dlo.realize_sentence_of_mem (by
     simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
 
@@ -482,8 +482,8 @@ lemma dlo_isExtensionPair
         Substructure.closure_eq])).toOrderEmbedding.trans g)
   use StrongHomClass.toEmbedding g'
   ext ⟨x, xS⟩
-  refine ((funext_iff.1 hg) ⟨x, ?_⟩).symm
-  simp only [Set.Finite.coe_toFinset, SetLike.mem_coe, xS]
+  refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
+  simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by
@@ -533,7 +533,7 @@ theorem dlo_isComplete : Language.order.dlo.IsComplete :=
     ⟨by
       letI : Language.order.Structure ℚ := orderStructure ℚ
       exact Theory.ModelType.of _ ℚ⟩
-    fun M => inferInstance
+    fun _ => inferInstance
 
 end Fraisse
 
