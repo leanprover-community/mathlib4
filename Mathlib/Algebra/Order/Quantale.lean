@@ -81,7 +81,7 @@ theorem mul_sSup_eq_iSup_mul : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul
 theorem sSup_mul_eq_iSup_mul : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mul_eq_iSup_mul _ _
 
 @[to_additive]
-theorem mul_iSup_eq_iSup_mul : x * ⨆ i, f i = ⨆ i, x * f i := by
+theorem mul_iSup_distrib : x * ⨆ i, f i = ⨆ i, x * f i := by
   rw [iSup, mul_sSup_eq_iSup_mul, iSup_range]
 
 @[to_additive]
@@ -89,7 +89,7 @@ theorem iSup_mul_distrib : (⨆ i, f i) * x = ⨆ i, f i * x := by
   rw [iSup, sSup_mul_eq_iSup_mul, iSup_range]
 
 @[to_additive]
-theorem mul_sup_eq_sup_mul : x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
+theorem mul_sup_distrib : x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
   rw [← iSup_pair, ← sSup_pair, mul_sSup_eq_iSup_mul]
 
 @[to_additive]
@@ -100,14 +100,14 @@ theorem sup_mul_distrib : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
 instance : MulLeftMono α where
   elim := by
     intro _ _ _; simp only; intro
-    rw [← left_eq_sup, ← mul_sup_eq_sup_mul, sup_of_le_left]
+    rw [← left_eq_sup, ← mul_sup_distrib, sup_of_le_left]
     trivial
 
 @[to_additive]
 instance : MulRightMono α where
   elim := by
     intro _ _ _; simp only; intro
-    rw [← left_eq_sup, ← sup_mul_eq_sup_mul, sup_of_le_left]
+    rw [← left_eq_sup, ← sup_mul_distrib, sup_of_le_left]
     trivial
 
 /-- Left- and right-residuation operators on an additive quantale are similar to the Heyting
