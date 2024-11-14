@@ -140,6 +140,7 @@ theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.
   rw [splits_map_iff, RingHom.id_comp]
 
 variable {i}
+
 theorem Splits.comp_of_map_degree_le_one {f : K[X]} {p : K[X]} (hd : (p.map i).degree ≤ 1)
     (h : f.Splits i) : (f.comp p).Splits i := by
   by_cases hzero : map i (f.comp p) = 0
