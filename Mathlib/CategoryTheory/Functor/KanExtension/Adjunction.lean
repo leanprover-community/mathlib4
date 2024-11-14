@@ -81,13 +81,29 @@ lemma ι_leftKanExtensionObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
   simp [leftKanExtensionObjIsoColimit, lanUnit]
 
 @[reassoc (attr := simp)]
-lemma ι_leftKanExtensionObjIsoColimit_hom [∀ (F : C ⥤ H), HasLeftKanExtension L F] (X : D)
-    (f : CostructuredArrow L X) :
-    (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫
+lemma ι_leftKanExtensionObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
+    (L.leftKanExtensionUnit F).app f.left ≫ (L.leftKanExtension F).map f.hom ≫
       (L.leftKanExtensionObjIsoColimit F X).hom =
     Limits.colimit.ι (proj L X ⋙ F) f :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
     (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X) f
+
+@[reassoc (attr := simp)]
+lemma leftKanExtensionUnit_leftKanExtensionMap_leftKanExtensionObjIsoColimit_hom (X : D)
+    (f : CostructuredArrow L X) :
+    (leftKanExtensionUnit L F).app f.left ≫ (leftKanExtension L F).map f.hom ≫
+       (L.leftKanExtensionObjIsoColimit F X).hom =
+    Limits.colimit.ι (proj L X ⋙ F) f :=
+  LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom (F := F)
+    (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X) f
+
+@[reassoc (attr := simp)]
+lemma leftKanExtensionUnit_leftKanExtensionObjIsoColimit_hom (X : C) :
+    (L.leftKanExtensionUnit F).app X ≫ (L.leftKanExtensionObjIsoColimit F (L.obj X)).hom =
+    Limits.colimit.ι (proj L (L.obj X) ⋙ F) (CostructuredArrow.mk (𝟙 _)) := by
+  simpa using leftKanExtensionUnit_leftKanExtensionMap_leftKanExtensionObjIsoColimit_hom L F
+    (L.obj X) (CostructuredArrow.mk (𝟙 _))
+
 
 @[instance]
 theorem hasColimit_map_comp_ι_comp_grotendieckProj {X Y : D} (f : X ⟶ Y) :
