@@ -750,6 +750,37 @@ theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
   isNoetherian_submodule_left.1
     (isNoetherian_of_fg_of_noetherian _ ⟨_, degreeLE_eq_span_X_pow.symm⟩) _
 
+open Algebra in
+lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (x : S) (I : Ideal R) {y : adjoin R ({x} : Set S)} :
+    y ∈ I.map (algebraMap R (adjoin R ({x} : Set S))) ↔
+      ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by
+  constructor
+  · intro H
+    induction' H using Submodule.span_induction with a ha a b ha hb ha' hb' a b hb hb'
+    · obtain ⟨a, ha, rfl⟩ := ha
+      exact ⟨C a, fun i ↦ by rw [coeff_C]; aesop, aeval_C _ _⟩
+    · exact ⟨0, by simp, aeval_zero _⟩
+    · obtain ⟨a, ha, ha'⟩ := ha'
+      obtain ⟨b, hb, hb'⟩ := hb'
+      exact ⟨a + b, fun i ↦ by simpa using add_mem (ha i) (hb i), by simp [ha', hb']⟩
+    · obtain ⟨b', hb, hb'⟩ := hb'
+      obtain ⟨a, ha⟩ := a
+      rw [Algebra.adjoin_singleton_eq_range_aeval] at ha
+      obtain ⟨p, hp : aeval x p = a⟩ := ha
+      refine ⟨p * b', fun i ↦ ?_, by simp [hp, hb']⟩
+      rw [coeff_mul]
+      exact sum_mem fun i hi ↦ Ideal.mul_mem_left _ _ (hb _)
+  · rintro ⟨p, hp, hp'⟩
+    have : y = ∑ i in p.support, p.coeff i • ⟨_, (X ^ i).aeval_mem_adjoin_singleton _ x⟩ := by
+      trans ∑ i in p.support, ⟨_, (C (p.coeff i) * X ^ i).aeval_mem_adjoin_singleton _ x⟩
+      · ext1
+        simp only [AddSubmonoidClass.coe_finset_sum, ← map_sum, ← hp', ← as_sum_support_C_mul_X_pow]
+      · congr with i
+        simp [Algebra.smul_def]
+    simp_rw [this, Algebra.smul_def]
+    exact sum_mem fun i _ ↦ Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (hp i))
+
 end CommRing
 
 end Ideal
