@@ -267,7 +267,7 @@ end Fin
 /-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
 @[simps!]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
-  Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
+  .ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * m ^ (i : ℕ), by
       induction n with
       | zero => simp
@@ -311,7 +311,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
 
 /-- Equivalence between `(i : Fin m) × Fin (n i)` and `Fin (∑ i, n i)`. -/
 def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (∑ i, n i) :=
-  Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_sigma, Fintype.card_fin])
+  .ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_sigma, Fintype.card_fin])
     (fun ⟨i, j⟩ => if h : m = 0 then Fin.elim0 (i.cast h) else
       ⟨∑ k, n (Fin.castLE i.isLt.le k) + j, by
         have hi : i.val + 1 + (m - i.val - 1) = m := by omega
@@ -339,11 +339,12 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
         exact hk⟩
       ⟨i, j⟩)
     (by
-      intro a; revert a
-      refine Fin.consInduction (fun a => ?_) ?_ n
-      · simp only [Finset.univ_eq_empty, Finset.sum_empty] at a
+      intro a
+      induction n using Fin.consInduction with
+      | h0 =>
+        simp only [Finset.univ_eq_empty, Finset.sum_empty] at a
         exact Fin.elim0 a
-      · intro _ _ _ _ _
+      | h =>
         ext
         exact Nat.add_sub_cancel' (sum_le_of_find_eq_some (Option.some_get _).symm))
   where
@@ -355,8 +356,8 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
         simp only [univ_eq_empty, sum_empty, Nat.zero_le]
       · have : (i.val - 1) + 1 = i.val := by omega
         rw [← Fin.sum_congr' _ this]
-        have := Fin.find_min (Option.mem_def.mp hi) (j := ⟨i.val - 1, by omega⟩) <| Fin.lt_def.mpr
-          (by simp only [and_true]; omega)
+        have := Fin.find_min (Option.mem_def.mp hi) (j := ⟨i.val - 1, by omega⟩)
+          <| Fin.lt_def.mpr (by simp only [and_true]; omega)
         exact not_lt.mp this
 
 @[simp]
@@ -374,7 +375,7 @@ theorem finSigmaFinEquiv_pair {m : ℕ} {n : Fin m → ℕ} (hm : m ≠ 0) (i : 
 
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
-  Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
+  .ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
       induction m with
       | zero => simp
