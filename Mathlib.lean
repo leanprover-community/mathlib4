@@ -3832,6 +3832,7 @@ import Mathlib.Order.Category.Semilat
 import Mathlib.Order.Chain
 import Mathlib.Order.Circular
 import Mathlib.Order.Closure
+import Mathlib.Order.Cofinal
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.Order.Compare
