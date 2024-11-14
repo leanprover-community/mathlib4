@@ -89,7 +89,7 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
     (μ : Measure α := by volume_tac) : Prop :=
   @MeasurableSet (NullMeasurableSpace α μ) _ s
 
-@[simp]
+@[simp, aesop unsafe (rule_sets := [Measurable])]
 theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
   h.eventuallyMeasurableSet
 
