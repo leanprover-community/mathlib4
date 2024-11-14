@@ -479,7 +479,7 @@ instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.Full] : (post L R F).EssSu
   Functor.essSurj_of_iso (postIso L R F).symm
 
 /-- If `F` is an equivalence, then so is `post L R F`. -/
-lemma isEquivalence_post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.IsEquivalence] :
+instance isEquivalence_post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.IsEquivalence] :
     (post L R F).IsEquivalence where
 
 /-- The canonical functor from the product of two categories to the comma category of their

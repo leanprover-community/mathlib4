@@ -19,12 +19,14 @@ namespace Comma
 
 open Limits Functor CostructuredArrow
 
+section Small
+
 variable {A : Type v₁} [Category.{v₁} A]
 variable {B : Type v₁} [Category.{v₁} B]
 variable {T : Type v₁} [Category.{v₁} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
-lemma final_fst_small [R.Final] : (fst L R).Final := by
+private lemma final_fst_small [R.Final] : (fst L R).Final := by
   rw  [Functor.final_iff_isIso_colimit_pre]
   intro G
   let i : colimit G ≅ colimit (fst L R ⋙ G) :=
@@ -53,12 +55,12 @@ lemma final_fst_small [R.Final] : (fst L R).Final := by
     rfl
   simp [this, grothendieckPrecompFunctorToComma]
 
+end Small
+
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
 variable {T : Type v₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
-
-#check AsSmall.up
 
 lemma final_fst [R.Final] : (fst L R).Final := by
   let sA : A ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} A := AsSmall.equiv
@@ -67,16 +69,10 @@ lemma final_fst [R.Final] : (fst L R).Final := by
   let L' := sA.inverse ⋙ L ⋙ sT.functor
   let R' := sB.inverse ⋙ R ⋙ sT.functor
   let fC : Comma L' R' ⥤ Comma L R :=
-    preLeft sA.inverse _ _ ⋙ preRight _ sB.inverse _ ⋙ Functor.IsEquivalence.inv (post L R sT.functor)
-
-  let sC : Comma L R ≌ Comma L' R' := by
-    sorry
+    preLeft sA.inverse _ _ ⋙ preRight _ sB.inverse _ ⋙ (post L R sT.functor).inv
   haveI : Final (fst L' R') := final_fst_small _ _
-  haveI : Final (sC.functor ⋙ fst L' R' ⋙ sA.inverse) := inferInstance
-  apply final_of_natIso (F := (sC.functor ⋙ fst L' R' ⋙ sA.inverse))
+  apply final_of_natIso (F := (fC.inv ⋙ fst L' R' ⋙ sA.inverse))
   sorry
-
-#check IsEquivalence
 
 end Comma
 
