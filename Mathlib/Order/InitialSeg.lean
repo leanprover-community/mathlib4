@@ -520,7 +520,7 @@ protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s
 
 end PrincipalSeg
 
-theorem wellFounded_iff_principalSeg {β : Type u} {s : β → β → Prop} [IsTrans β s] :
+theorem wellFounded_iff_principalSeg {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ (α : Type u) (r : α → α → Prop) (_ : r ≺i s), WellFounded r :=
   ⟨fun wf _ _ f => RelHomClass.wellFounded f.toRelEmbedding wf, fun h =>
     wellFounded_iff_wellFounded_subrel.mpr fun b => h _ _ (PrincipalSeg.ofElement s b)⟩
