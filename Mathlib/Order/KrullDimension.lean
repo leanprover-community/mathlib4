@@ -283,7 +283,7 @@ lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
 lemma coheight_orderIso (f : α ≃o β) (x : α) : coheight (f x) = coheight x :=
   height_orderIso (α := αᵒᵈ) f.dual x
 
-private lemma exist_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
+private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
     (h : (⨆ x, f x) = n) : ∃ x, f x = n := by
   obtain ⟨x, hx⟩ := ENat.sSup_mem_of_Nonempty_of_lt_top (h ▸ ENat.coe_lt_top _)
   use x
@@ -297,7 +297,6 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
   | top =>
     clear h
     rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def] at ha
-    push_neg at ha
     contrapose! ha
     use n
     rintro m ⟨⟨p, rfl⟩, hp⟩
@@ -307,7 +306,7 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
   | coe m =>
     rw [ha, Nat.cast_le] at h
     rw [height_eq_iSup_last_eq, iSup_subtype'] at ha
-    obtain ⟨⟨p,hlast⟩, hlen⟩ := exist_eq_iSup_of_iSup_eq_coe ha
+    obtain ⟨⟨p, hlast⟩, hlen⟩ := exists_eq_iSup_of_iSup_eq_coe ha
     simp only [Nat.cast_inj] at hlen
     use p.drop ⟨m-n, by omega⟩
     constructor
@@ -329,7 +328,7 @@ lemma exists_series_of_coheight_eq_coe (a : α) {n : ℕ} (h : coheight a = n) :
   exists_series_of_le_coheight a (le_of_eq h.symm)
 
 /-- Another characterization of height, based on the supremum of the heights of elements below. -/
-lemma height_eq_isup_lt_height (x : α) : height x = ⨆ (y : α) (_  : y < x), height y + 1 := by
+lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ (y : α) (_  : y < x), height y + 1 := by
   apply le_antisymm
   · apply height_le
     intro p hp
@@ -348,12 +347,12 @@ lemma height_eq_isup_lt_height (x : α) : height x = ⨆ (y : α) (_  : y < x), 
 /--
 Another characterization of coheight, based on the supremum of the coheights of elements above.
 -/
-lemma coheight_eq_isup_lt_height (x : α) : coheight x = ⨆ (y : α) (_  : x < y), coheight y + 1 :=
-  height_eq_isup_lt_height (α := αᵒᵈ) x
+lemma coheight_eq_iSup_lt_height (x : α) : coheight x = ⨆ (y : α) (_  : x < y), coheight y + 1 :=
+  height_eq_iSup_lt_height (α := αᵒᵈ) x
 
 lemma height_le_coe_iff (x : α) (n : ℕ) :
     height x ≤ n ↔ (∀ y, y < x → height y < n) := by
-  conv_lhs => rw [height_eq_isup_lt_height, iSup₂_le_iff]
+  conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
   congr! 2 with y _
   cases height y
   · simp
@@ -798,7 +797,7 @@ lemma coheight_coe_WithBot (x : α) : coheight (x : WithBot α) = coheight x :=
 
 @[simp]
 lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
-  rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_isup_lt_height]
+  rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
   norm_cast
   apply le_antisymm
   · apply iSup₂_le
