@@ -118,6 +118,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
