@@ -275,7 +275,7 @@ protected alias ⟨_, IsMin.height_eq_zero⟩ := height_eq_zero
 
 @[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by simp
 
-lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
+lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤) :
     n < height x ↔ (∃ y, y < x ∧ height y = n) where
   mp h := by
     obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp (LT.lt.ne_top hfin)
@@ -290,7 +290,7 @@ lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
   mpr := fun ⟨y, hyx, hy⟩ =>
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
-lemma height_eq_coe_add_one_iff (x : α) (n : ℕ)  : height x = n + 1 ↔
+lemma height_eq_coe_add_one_iff (x : α) (n : ℕ) : height x = n + 1 ↔
     height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y, y < x → height y ≤ n) := by
   wlog hfin : height x < ⊤
   · simp_all
