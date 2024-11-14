@@ -834,7 +834,7 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
       have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by simp [@norm_sq_eq_inner 𝕜, h i i]
       have h₁ : 0 ≤ ‖v i‖ := norm_nonneg _
       have h₂ : (0 : ℝ) ≤ 1 := zero_le_one
-      rwa [sq_eq_sq h₁ h₂] at h'
+      rwa [sq_eq_sq₀ h₁ h₂] at h'
     · intro i j hij
       simpa [hij] using h i j
 
@@ -1744,7 +1744,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
   tfae_have 1 → 2 := by
     refine fun h => or_iff_not_imp_left.2 fun hx₀ => ?_
     have : ‖x‖ ^ 2 ≠ 0 := pow_ne_zero _ (norm_ne_zero_iff.2 hx₀)
-    rw [← sq_eq_sq, mul_pow, ← mul_right_inj' this, eq_comm, ← sub_eq_zero, ← mul_sub] at h <;>
+    rw [← sq_eq_sq₀, mul_pow, ← mul_right_inj' this, eq_comm, ← sub_eq_zero, ← mul_sub] at h <;>
       try positivity
     simp only [@norm_sq_eq_inner 𝕜] at h
     letI : InnerProductSpace.Core 𝕜 E := InnerProductSpace.toCore
