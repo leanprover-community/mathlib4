@@ -32,6 +32,7 @@ private lemma final_fst_small [R.Final] : (fst L R).Final := by
   let i : colimit G ≅ colimit (fst L R ⋙ G) :=
     colimitIsoColimitGrothendieck L G ≪≫
     (Final.colimitIso (Grothendieck.pre (functor L) R) (grothendieckProj L ⋙ G)).symm ≪≫
+    HasColimit.isoOfNatIso (Iso.refl _) ≪≫
     Final.colimitIso (grothendieckPrecompFunctorEquivalence L R).functor (fst L R ⋙ G)
   convert i.isIso_inv
   apply colimit.hom_ext
@@ -40,8 +41,6 @@ private lemma final_fst_small [R.Final] : (fst L R).Final := by
     Iso.trans_inv, Iso.symm_inv, Category.assoc, i]
   change _ = colimit.ι (fst L R ⋙ G)
     ((grothendieckPrecompFunctorToComma L R).obj ⟨b, CostructuredArrow.mk f⟩) ≫ _
-  rw [Final.ι_colimitIso_inv_assoc]
-  erw [Final.ι_colimitIso_hom_assoc (Grothendieck.pre (functor L) R) (grothendieckProj L ⋙ G)]
   simp
 
 end Small
