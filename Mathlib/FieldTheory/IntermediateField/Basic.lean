@@ -3,7 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.LocalRing.Basic
 
@@ -323,9 +324,11 @@ instance smulCommClass_right [SMul X Y] [SMul L Y] [SMulCommClass X L Y]
     (F : IntermediateField K L) : SMulCommClass X F Y :=
   inferInstanceAs (SMulCommClass X F.toSubfield Y)
 
---note: setting this istance the default priority may trigger trouble to synthize instance
---for field extension with more than one intermedaite field, example : in a field extension `F/E`,
---`K₁ ≤ K₂` are of type `intermediatefield F E`, the instance `IsScalarTower K₁ K₂ E`
+-- note: giving this instance the default priority may trigger trouble with synthesizing instances
+-- for field extensions with more than one intermediate field. For example, in a field extension
+-- `F/E`, and with `K₁ ≤ K₂` of type `IntermediateField F E`, this instance will cause a search
+-- for `IsScalarTower K₁ K₂ E` to trigger a search for `IsScalarTower E K₂ E` which may
+-- take a long time to fail.
 /-- Note that this provides `IsScalarTower F K K` which is needed by `smul_mul_assoc`. -/
 instance (priority := 900) [SMul X Y] [SMul L X] [SMul L Y] [IsScalarTower L X Y]
     (F : IntermediateField K L) : IsScalarTower F X Y :=

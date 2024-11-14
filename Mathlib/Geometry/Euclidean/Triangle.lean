@@ -351,6 +351,6 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
     rw [hab₁, hab'₁, dist_comm b' c', dist_comm b c, hcb]
   · have h1 : 0 ≤ r * dist a b := by rw [← hab]; exact dist_nonneg
     have h2 : 0 ≤ r := nonneg_of_mul_nonneg_left h1 (dist_pos.mpr hab₁)
-    exact (sq_eq_sq dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
+    exact (sq_eq_sq₀ dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
 
 end EuclideanGeometry

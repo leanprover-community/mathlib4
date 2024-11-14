@@ -153,9 +153,18 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   .mono hx <| .zero R
 
+/-- An alias of `IsSelfAdjoint.of_nonneg` for use with dot notation. -/
+alias LE.le.isSelfAdjoint := IsSelfAdjoint.of_nonneg
+
+/-- The combination `(IsSelfAdjoint.star_eq <| .of_nonneg ·)` for use with dot notation. -/
+lemma LE.le.star_eq {x : R} (hx : 0 ≤ x) : star x = x :=
+  hx.isSelfAdjoint.star_eq
+
+@[simp]
 theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
   StarOrderedRing.nonneg_iff.mpr <| AddSubmonoid.subset_closure ⟨r, rfl⟩
 
+@[simp]
 theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
   simpa only [star_star] using star_mul_self_nonneg (star r)
 

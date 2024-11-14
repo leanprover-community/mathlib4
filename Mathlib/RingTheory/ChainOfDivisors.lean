@@ -5,8 +5,9 @@ Authors: Anne Baanen, Paul Lezeau
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Order.Hom.Bounded
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Data.ZMod.Defs
+import Mathlib.Order.Hom.Bounded
 /-!
 
 # Chains of divisors
