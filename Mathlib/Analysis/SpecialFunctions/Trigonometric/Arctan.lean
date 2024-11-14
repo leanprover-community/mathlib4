@@ -266,8 +266,8 @@ theorem two_mul_arctan_inv_3_add_arctan_inv_7 : 2 * arctan 3⁻¹ + arctan 7⁻�
 
 /-- **John Machin's 1706 formula**, which he used to compute π to 100 decimal places. -/
 theorem four_mul_arctan_inv_5_sub_arctan_inv_239 : 4 * arctan 5⁻¹ - arctan 239⁻¹ = π / 4 := by
-  rw [show 4 * arctan _ = 2 * (2 * _) by ring, two_mul_arctan, two_mul_arctan, ← arctan_one,
-    sub_eq_iff_eq_add, arctan_add] <;> norm_num
+  rw [show 4 * arctan _ = 2 * (2 * arctan (5⁻¹)) by ring, two_mul_arctan, two_mul_arctan,
+    ← arctan_one, sub_eq_iff_eq_add, arctan_add] <;> norm_num
 
 end ArctanAdd
 
