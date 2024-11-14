@@ -1940,9 +1940,10 @@ open Set
 
 namespace Function
 
-variable {α : Type*} {β : Type*}
+variable {α β : Type*}
 
-theorem Injective.nonempty_apply_iff {f : Set α → Set β} (hf : Injective f) (h2 : f ∅ = ∅) :
+theorem Injective.nonempty_apply_iff {f : Set α → Set β} (hf : Injective f) (h2 : f ∅ = ∅)
+    {s : Set α} :
     (f s).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, ← h2, nonempty_iff_ne_empty, hf.ne_iff]
 
@@ -1995,7 +1996,7 @@ theorem inclusion_inclusion (hst : s ⊆ t) (htu : t ⊆ u) (x : s) :
   rfl
 
 @[simp]
-theorem inclusion_comp_inclusion {α} {s t u : Set α} (hst : s ⊆ t) (htu : t ⊆ u) :
+theorem inclusion_comp_inclusion (hst : s ⊆ t) (htu : t ⊆ u) :
     inclusion htu ∘ inclusion hst = inclusion (hst.trans htu) :=
   funext (inclusion_inclusion hst htu)
 
@@ -2012,16 +2013,16 @@ theorem inclusion_injective (h : s ⊆ t) : Injective (inclusion h)
 theorem inclusion_inj (h : s ⊆ t) {x y : s} : inclusion h x = inclusion h y ↔ x = y :=
   (inclusion_injective h).eq_iff
 
-theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
+theorem eq_of_inclusion_surjective {h : s ⊆ t}
     (h_surj : Function.Surjective (inclusion h)) : s = t := by
   refine Set.Subset.antisymm h (fun x hx => ?_)
   obtain ⟨y, hy⟩ := h_surj ⟨x, hx⟩
   exact mem_of_eq_of_mem (congr_arg Subtype.val hy).symm y.prop
 
-theorem inclusion_le_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
+theorem inclusion_le_inclusion [Preorder α] (h : s ⊆ t) {x y : s} :
     inclusion h x ≤ inclusion h y ↔ x ≤ y := Iff.rfl
 
-theorem inclusion_lt_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
+theorem inclusion_lt_inclusion [Preorder α] (h : s ⊆ t) {x y : s} :
     inclusion h x < inclusion h y ↔ x < y := Iff.rfl
 
 end Inclusion
