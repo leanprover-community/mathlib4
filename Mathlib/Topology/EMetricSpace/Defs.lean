@@ -28,7 +28,7 @@ assert_not_exists Nat.instLocallyFiniteOrder
 assert_not_exists IsUniformEmbedding
 assert_not_exists TendstoUniformlyOnFilter
 
-open Set Filter
+open Filter Set Topology
 
 universe u v w
 
@@ -307,7 +307,8 @@ end ULift
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
-instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] : PseudoEMetricSpace (α × β) where
+instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
+  PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
   edist_comm x y := by simp [edist_comm]
@@ -548,7 +549,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
   refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [inducing_subtype_val.dense_iff, Subtype.forall]
+  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
 
 end Compact
 

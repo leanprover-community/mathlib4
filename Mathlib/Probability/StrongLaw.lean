@@ -420,8 +420,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
           exact (hident j).aestronglyMeasurable_fst.memℒp_truncation
         · intro k _ l _ hkl
           exact (hindep hkl).comp (A k).measurable (A l).measurable
-      _ = ∑ j ∈ range (u (N - 1)),
-          (∑ i ∈ (range N).filter fun i => j < u i, ((u i : ℝ) ^ 2)⁻¹) * Var[Y j] := by
+      _ = ∑ j ∈ range (u (N - 1)), (∑ i ∈ range N with j < u i, ((u i : ℝ) ^ 2)⁻¹) * Var[Y j] := by
         simp_rw [mul_sum, sum_mul, sum_sigma']
         refine sum_nbij' (fun p ↦ ⟨p.2, p.1⟩) (fun p ↦ ⟨p.2, p.1⟩) ?_ ?_ ?_ ?_ ?_
         · simp only [mem_sigma, mem_range, filter_congr_decidable, mem_filter, and_imp,

@@ -759,6 +759,18 @@ nonrec theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - 
 nonrec theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) :=
   ofReal_injective <| by simp [cos_add_cos]
 
+theorem two_mul_sin_mul_sin (x y : ℝ) : 2 * sin x * sin y = cos (x - y) - cos (x + y) := by
+  simp [cos_add, cos_sub]
+  ring
+
+theorem two_mul_cos_mul_cos (x y : ℝ) : 2 * cos x * cos y = cos (x - y) + cos (x + y) := by
+  simp [cos_add, cos_sub]
+  ring
+
+theorem two_mul_sin_mul_cos (x y : ℝ) : 2 * sin x * cos y = sin (x - y) + sin (x + y) := by
+  simp [sin_add, sin_sub]
+  ring
+
 nonrec theorem tan_eq_sin_div_cos : tan x = sin x / cos x :=
   ofReal_injective <| by simp only [ofReal_tan, tan_eq_sin_div_cos, ofReal_div, ofReal_sin,
     ofReal_cos]
@@ -1061,13 +1073,12 @@ end Real
 namespace Complex
 
 theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
-    (∑ m ∈ filter (fun k => n ≤ k) (range j),
-      (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
+    (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
-    (∑ m ∈ filter (fun k => n ≤ k) (range j), (1 / m.factorial : α)) =
+    (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) =
         ∑ m ∈ range (j - n), (1 / ((m + n).factorial : α)) := by
         refine sum_nbij' (· - n) (· + n) ?_ ?_ ?_ ?_ ?_ <;>
-          simp (config := { contextual := true }) [lt_tsub_iff_right, tsub_add_cancel_of_le]
+          simp +contextual [lt_tsub_iff_right, tsub_add_cancel_of_le]
     _ ≤ ∑ m ∈ range (j - n), ((n.factorial : α) * (n.succ : α) ^ m)⁻¹ := by
       simp_rw [one_div]
       gcongr
@@ -1098,20 +1109,19 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
       abs x ^ n * ((n.succ : ℝ) * (n.factorial * n : ℝ)⁻¹)
   rw [sum_range_sub_sum_range hj]
   calc
-    abs (∑ m ∈ (range j).filter fun k => n ≤ k, (x ^ m / m.factorial : ℂ)) =
-      abs (∑ m ∈ (range j).filter fun k => n ≤ k,
-        (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
+    abs (∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ))
+      = abs (∑ m ∈ range j with n ≤ m, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
       refine congr_arg abs (sum_congr rfl fun m hm => ?_)
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
-    _ ≤ ∑ m ∈ filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
-      (IsAbsoluteValue.abv_sum Complex.abs _ _)
-    _ ≤ ∑ m ∈ filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) := by
+    _ ≤ ∑ m ∈ range j with n ≤ m, abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
+      IsAbsoluteValue.abv_sum Complex.abs ..
+    _ ≤ ∑ m ∈ range j with n ≤ m, abs x ^ n * (1 / m.factorial) := by
       simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
       gcongr
       rw [abv_pow abs]
       exact pow_le_one₀ (abs.nonneg _) hx
-    _ = abs x ^ n * ∑ m ∈ (range j).filter fun k => n ≤ k, (1 / m.factorial : ℝ) := by
+    _ = abs x ^ n * ∑ m ∈ range j with n ≤ m, (1 / m.factorial : ℝ) := by
       simp [abs_mul, abv_pow abs, abs_div, ← mul_sum]
     _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
       gcongr
@@ -1489,3 +1499,5 @@ theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = 
   rw [abs_exp, abs_exp, Real.exp_eq_exp]
 
 end Complex
+
+set_option linter.style.longFile 1700

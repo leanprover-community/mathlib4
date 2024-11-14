@@ -27,7 +27,8 @@ are defined on `ONote` and `NONote`.
 
 open Ordinal Order
 
--- Porting note: the generated theorem is warned by `simpNF`.
+-- The generated theorem `ONote.zero.sizeOf_spec` is flagged by `simpNF`,
+-- and we don't otherwise need it.
 set_option genSizeOfSpec false in
 /-- Recursive definition of an ordinal notation. `zero` denotes the ordinal 0, and `oadd e n a` is
 intended to refer to `ω ^ e * n + a`. For this to be a valid Cantor normal form, we must have the
@@ -134,7 +135,6 @@ theorem ofNat_one : ofNat 1 = 1 :=
 @[simp]
 theorem repr_ofNat (n : ℕ) : repr (ofNat n) = n := by cases n <;> simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem repr_one : repr (ofNat 1) = (1 : ℕ) := repr_ofNat 1
 
 theorem omega0_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
@@ -1218,8 +1218,6 @@ theorem cmp_compares : ∀ a b : NONote, (cmp a b).Compares a b
 
 instance : LinearOrder NONote :=
   linearOrderOfCompares cmp cmp_compares
-
-instance : IsWellOrder NONote (· < ·) where
 
 /-- Asserts that `repr a < ω ^ repr b`. Used in `NONote.recOn`. -/
 def below (a b : NONote) : Prop :=

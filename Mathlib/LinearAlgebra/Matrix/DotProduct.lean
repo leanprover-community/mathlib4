@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Data.Matrix.RowCol
 import Mathlib.LinearAlgebra.StdBasis
 
 /-!

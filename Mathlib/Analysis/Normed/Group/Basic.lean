@@ -516,14 +516,14 @@ theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by rw [mem_b
 @[to_additive mem_ball_iff_norm']
 theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by rw [mem_ball', dist_eq_norm_div]
 
-@[to_additive] -- Porting note (#10618): `simp` can prove it
+@[to_additive]
 theorem mem_ball_one_iff : a ∈ ball (1 : E) r ↔ ‖a‖ < r := by rw [mem_ball, dist_one_right]
 
 @[to_additive mem_closedBall_iff_norm]
 theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r := by
   rw [mem_closedBall, dist_eq_norm_div]
 
-@[to_additive] -- Porting note (#10618): `simp` can prove it
+@[to_additive]
 theorem mem_closedBall_one_iff : a ∈ closedBall (1 : E) r ↔ ‖a‖ ≤ r := by
   rw [mem_closedBall, dist_one_right]
 
@@ -773,7 +773,8 @@ theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) 
 theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
   simpa using tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (1 : E)) _ _)
 
-@[to_additive]
+/-- See `tendsto_norm_one` for a version with pointed neighborhoods. -/
+@[to_additive "See `tendsto_norm_zero` for a version with pointed neighborhoods."]
 theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := by
   simpa using tendsto_norm_div_self (1 : E)
 
@@ -1072,20 +1073,19 @@ theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ bal
   rw [nsmul_eq_mul]
   nlinarith
 
-@[to_additive] -- Porting note (#10618): `simp` can prove this
+@[to_additive]
 theorem mul_mem_closedBall_mul_iff {c : E} : a * c ∈ closedBall (b * c) r ↔ a ∈ closedBall b r := by
   simp only [mem_closedBall, dist_eq_norm_div, mul_div_mul_right_eq_div]
 
-@[to_additive] -- Porting note (#10618): `simp` can prove this
+@[to_additive]
 theorem mul_mem_ball_mul_iff {c : E} : a * c ∈ ball (b * c) r ↔ a ∈ ball b r := by
   simp only [mem_ball, dist_eq_norm_div, mul_div_mul_right_eq_div]
 
 @[to_additive]
 theorem smul_closedBall'' : a • closedBall b r = closedBall (a • b) r := by
   ext
-  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, _root_.div_eq_inv_mul, ←
+  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, div_eq_inv_mul, ←
     eq_inv_mul_iff_mul_eq, mul_assoc]
-  -- Porting note: `ENNReal.div_eq_inv_mul` should be `protected`?
 
 @[to_additive]
 theorem smul_ball'' : a • ball b r = ball (a • b) r := by
@@ -1272,6 +1272,14 @@ alias ⟨eq_of_norm_div_eq_zero, _⟩ := norm_div_eq_zero_iff
 
 attribute [to_additive] eq_of_norm_div_eq_zero
 
+@[to_additive]
+theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
+  simpa [eq_comm] using (norm_nonneg' a).eq_or_lt
+
+@[to_additive]
+theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
+  eq_one_or_norm_pos a
+
 @[to_additive (attr := simp) nnnorm_eq_zero]
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero'']
@@ -1282,6 +1290,11 @@ theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
 
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
+
+/-- See `tendsto_norm_one` for a version with full neighborhoods. -/
+@[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
+lemma tendsto_norm_one' : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
+  tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff''.2 hx
 
 @[to_additive]
 theorem tendsto_norm_div_self_punctured_nhds (a : E) :
@@ -1414,3 +1427,5 @@ instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLi
   NormedCommGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 end SubgroupClass
+
+lemma tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop := tendsto_abs_atTop_atTop

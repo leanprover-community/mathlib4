@@ -32,7 +32,6 @@ attribute [local simp] homEquiv_unit homEquiv_counit
 def leftAdjointUniq {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) : F ≅ F' :=
   ((conjugateIsoEquiv adj1 adj2).symm (Iso.refl G)).symm
 
--- Porting note (#10618): removed simp as simp can prove this
 theorem homEquiv_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : C) : adj1.homEquiv _ _ ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x := by
   simp [leftAdjointUniq]
@@ -96,7 +95,6 @@ theorem leftAdjointUniq_refl {F : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) :
 def rightAdjointUniq {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G') : G ≅ G' :=
   conjugateIsoEquiv adj1 adj2 (Iso.refl _)
 
--- Porting note (#10618): simp can prove this
 theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G)
     (adj2 : F ⊣ G') (x : D) :
     (adj2.homEquiv _ _).symm ((rightAdjointUniq adj1 adj2).hom.app x) = adj1.counit.app x := by

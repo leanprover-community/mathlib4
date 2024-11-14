@@ -19,9 +19,9 @@ exp
 
 noncomputable section
 
-open Finset Filter Metric Asymptotics Set Function Bornology
+open Asymptotics Bornology Finset Filter Function Metric Set Topology
 
-open scoped Topology Nat
+open scoped Nat
 
 namespace Complex
 
@@ -226,16 +226,11 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
 at `+∞` -/
 theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
   (tendsto_inv_atTop_zero.comp tendsto_exp_atTop).congr fun x => (exp_neg x).symm
-@[deprecated (since := "2024-01-31")]
-alias tendsto_exp_neg_atTop_nhds_0 := tendsto_exp_neg_atTop_nhds_zero
 
 /-- The real exponential function tends to `1` at `0`. -/
 theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
   convert continuous_exp.tendsto 0
   simp
-
-@[deprecated (since := "2024-01-31")]
-alias tendsto_exp_nhds_0_nhds_1 := tendsto_exp_nhds_zero_nhds_one
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
@@ -279,8 +274,6 @@ theorem tendsto_pow_mul_exp_neg_atTop_nhds_zero (n : ℕ) :
     Tendsto (fun x => x ^ n * exp (-x)) atTop (𝓝 0) :=
   (tendsto_inv_atTop_zero.comp (tendsto_exp_div_pow_atTop n)).congr fun x => by
     rw [comp_apply, inv_eq_one_div, div_div_eq_mul_div, one_mul, div_eq_mul_inv, exp_neg]
-@[deprecated (since := "2024-01-31")]
-alias tendsto_pow_mul_exp_neg_atTop_nhds_0 := tendsto_pow_mul_exp_neg_atTop_nhds_zero
 
 /-- The function `(b * exp x + c) / (x ^ n)` tends to `+∞` at `+∞`, for any natural number
 `n` and any real numbers `b` and `c` such that `b` is positive. -/
@@ -406,8 +399,6 @@ theorem isLittleO_exp_comp_exp_comp {f g : α → ℝ} :
   simp only [isLittleO_iff_tendsto, exp_ne_zero, ← exp_sub, ← tendsto_neg_atTop_iff, false_imp_iff,
     imp_true_iff, tendsto_exp_comp_nhds_zero, neg_sub]
 
--- Porting note (#10618): @[simp] can prove:  by simp only [@Asymptotics.isLittleO_one_left_iff,
---   Real.norm_eq_abs, Real.abs_exp, @Real.tendsto_exp_comp_atTop]
 theorem isLittleO_one_exp_comp {f : α → ℝ} :
     ((fun _ => 1 : α → ℝ) =o[l] fun x => exp (f x)) ↔ Tendsto f l atTop := by
   simp only [← exp_zero, isLittleO_exp_comp_exp_comp, sub_zero]

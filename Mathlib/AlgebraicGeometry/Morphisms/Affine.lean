@@ -21,7 +21,7 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 - `AlgebraicGeometry.isAffineOpen_of_isAffineOpen_basicOpen`:
   If `s` is a spanning set of `Γ(X, U)`, such that each `X.basicOpen i` is affine,
   then `U` is also affine.
-- `AlgebraicGeometry.isAffineHom_stableUnderBaseChange`:
+- `AlgebraicGeometry.isAffineHom_isStableUnderBaseChange`:
   Affine morphisms are stable under base change.
 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
@@ -45,7 +45,7 @@ the preimage of any affine open subset of `Y` is affine. -/
 class IsAffineHom {X Y : Scheme} (f : X ⟶ Y) : Prop where
   isAffine_preimage : ∀ U : Y.Opens, IsAffineOpen U → IsAffineOpen (f ⁻¹ᵁ U)
 
-lemma isAffineOpen.preimage {X Y : Scheme} {U : Y.Opens} (hU : IsAffineOpen U)
+lemma IsAffineOpen.preimage {X Y : Scheme} {U : Y.Opens} (hU : IsAffineOpen U)
     (f : X ⟶ Y) [IsAffineHom f] :
     IsAffineOpen (f ⁻¹ᵁ U) :=
   IsAffineHom.isAffine_preimage _ hU
@@ -169,11 +169,11 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       Subtype.forall, isAffineHom_iff]
     rfl
 
-lemma isAffineHom_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @IsAffineHom := by
-  apply HasAffineProperty.stableUnderBaseChange
+lemma isAffineHom_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @IsAffineHom := by
+  apply HasAffineProperty.isStableUnderBaseChange
   letI := HasAffineProperty.isLocal_affineProperty
-  apply AffineTargetMorphismProperty.StableUnderBaseChange.mk
+  apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   introv X hX H
   infer_instance
 
