@@ -246,7 +246,7 @@ variable {A K B L : Type*} [CommRing A] [CommRing B] [CommRing K] [CommRing L]
 `f : A →+* K, g : B →+* L`, an isomorphism `h : A ≃+* B` induces an isomorphism of
 fraction rings `K ≃+* L`. -/
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
-  IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
+  IsLocalization.ringEquivOfRingEquiv K L h (MulHomClass.map_nonZeroDivisors h)
 
 @[deprecated (since := "2024-11-05")]
 alias fieldEquivOfRingEquiv := ringEquivOfRingEquiv
@@ -276,7 +276,7 @@ variable {R A K B L : Type*} [CommSemiring R] [CommRing A] [CommRing B] [CommRin
 `f : A →ₐ[R] K, g : B →ₐ[R] L`, an isomorphism `h : A ≃ₐ[R] B` induces an isomorphism of
 fraction rings `K ≃ₐ[R] L`. -/
 noncomputable def algEquivOfAlgEquiv : K ≃ₐ[R] L :=
-  IsLocalization.algEquivOfAlgEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
+  IsLocalization.algEquivOfAlgEquiv K L h (MulHomClass.map_nonZeroDivisors h)
 
 @[simp]
 lemma algEquivOfAlgEquiv_algebraMap
