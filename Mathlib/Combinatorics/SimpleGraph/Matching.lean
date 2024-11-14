@@ -146,9 +146,9 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
       simp only [dite_else_false] at h
       cases' h with hl hr
       · rw [← hl.choose_spec]
-        exact hadj hl.choose
+        exact hadj ⟨v, hl.choose⟩
       · rw [← hr.choose_spec, G.adj_comm]
-        exact hadj hr.choose
+        exact hadj ⟨w, hr.choose⟩
     edge_vert := by
       intro v w hvw
       simp only [dite_else_false] at hvw
