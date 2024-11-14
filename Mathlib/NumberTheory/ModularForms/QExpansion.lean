@@ -59,10 +59,10 @@ limit at `0`.
 -/
 def cuspFunction : ℂ → ℂ := _root_.cuspFunction n (f ∘ ofComplex)
 
-nonrec theorem eq_cuspFunction [NeZero n] [SlashInvariantFormClass F Γ(n) k] (τ : ℍ) :
+theorem eq_cuspFunction [NeZero n] [SlashInvariantFormClass F Γ(n) k] (τ : ℍ) :
     cuspFunction n f (𝕢 n τ) = f τ := by
   simpa only [comp_apply, ofComplex_apply]
-    using eq_cuspFunction (NeZero.ne _) (periodic_comp_ofComplex n f) τ
+    using _root_.eq_cuspFunction (NeZero.ne _) (periodic_comp_ofComplex n f) τ
 
 end SlashInvariantFormClass
 
@@ -79,7 +79,7 @@ theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] :
   simpa only [SlashAction.slash_one, ModularForm.toSlashInvariantForm_coe]
     using (ModularFormClass.bdd_at_infty f 1).comp_tendsto tendsto_comap_im_ofComplex
 
-nonrec theorem differentiableAt_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k]
+theorem differentiableAt_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k]
     {q : ℂ} (hq : q.abs < 1) :
     DifferentiableAt ℂ (cuspFunction n f) q := by
   have npos : 0 < (n : ℝ) := mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _))
@@ -88,7 +88,7 @@ nonrec theorem differentiableAt_cuspFunction [NeZero n] [ModularFormClass F Γ(n
       (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
         (fun _ ↦ differentiableAt_comp_ofComplex f))
       (bounded_at_infty_comp_ofComplex f)
-  · exact qParam_right_inv npos.ne' hq' ▸ differentiableAt_cuspFunction npos.ne'
+  · exact qParam_right_inv npos.ne' hq' ▸ _root_.differentiableAt_cuspFunction npos.ne'
       (periodic_comp_ofComplex n f) <| differentiableAt_comp_ofComplex _
         <| im_invQParam_pos_of_abs_lt_one npos hq hq'
 
