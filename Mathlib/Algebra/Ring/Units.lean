@@ -123,3 +123,18 @@ theorem add_eq_mul_one_add_div [Semiring R] {a : Rˣ} {b : R} : ↑a + b = a * (
   rw [mul_add, mul_one, ← mul_assoc, Units.mul_inv, one_mul]
 
 end Units
+
+namespace RingHom
+
+section Semiring
+
+variable [Semiring α] [Semiring β]
+
+theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
+  IsUnit.map f
+
+end Semiring
+
+end RingHom
+
+variable [Semiring α] [Semiring β]
