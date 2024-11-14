@@ -43,19 +43,10 @@ variable {X} in
 spanned by the vertices `j ≤ i ≤ k` and edges `j ≤ i < k`. -/
 def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l < n + 1) :
     Path X l where
-  vertex i := f.vertex (Fin.addNat i j)
-  arrow i := f.arrow ⟨Fin.addNat i j, (by omega)⟩
-  arrow_src i := by
-    rw [f.arrow_src ⟨Fin.addNat i j, (by omega)⟩]
-    congr
-    refine Fin.eq_of_val_eq (Nat.mod_eq_of_lt ?_).symm
-    omega
-  arrow_tgt i := by
-    rw [f.arrow_tgt ⟨Fin.addNat i j, (by omega)⟩]
-    congr
-    simp only [Fin.coe_addNat, Fin.val_succ, Nat.add_right_comm]
-    refine Fin.eq_of_val_eq (Nat.mod_eq_of_lt ?_).symm
-    omega
+  vertex i := f.vertex ⟨j + i, by omega⟩
+  arrow i := f.arrow ⟨j + i, by omega⟩
+  arrow_src i := f.arrow_src ⟨j + i, by omega⟩
+  arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
 
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
 traversing through its vertices in order.-/
