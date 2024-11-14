@@ -29,9 +29,9 @@ braid group
 by natural numbers. commutativity holds if the generators are at least 2 apart. if two generators
 a and b are adjacent, then aba is congruent to bab -/
 def braidRelsInf : Set (FreeGroup ℕ) :=
-  { r | ∃ i j : ℕ , 1 = Nat.dist i j ∧ r = .of i * .of j * .of i *
-    (.of j)⁻¹ * (.of i)⁻¹ * (.of j)⁻¹} ∪
-  { r | ∃ i j : ℕ, 2 ≤ Nat.dist i j ∧ r = .of i * .of j * (.of i)⁻¹ * (.of j)⁻¹}
+  { r | ∃ i : ℕ , r = .of i * .of (i+1) * .of i *
+    (.of (i+1))⁻¹ * (.of i)⁻¹ * (.of (i+1))⁻¹} ∪
+  { r | ∃ i j : ℕ, i + 2 ≤ j ∧ r = .of i * .of j * (.of i)⁻¹ * (.of j)⁻¹}
 
 /-- Artin's braid group on infinitely many strands -/
 def BraidGroupInf := PresentedGroup braidRelsInf
@@ -45,14 +45,25 @@ namespace BraidGroupInf
 the ith strand over the (i+1)th strand -/
 def σ (k : ℕ) : BraidGroupInf := PresentedGroup.of k
 
-theorem braid {i j : ℕ} (h : 1 = Nat.dist i j): σ i * σ j * σ i =
-    σ j * σ i * σ j := by
+theorem braid {i : ℕ} : σ i * σ (i+1) * σ i = σ (i+1) * σ i * σ (i+1) := by
   symm; rw [← mul_inv_eq_one]
-  exact QuotientGroup.eq.mpr <| Subgroup.subset_normalClosure <| Or.inl <| Exists.intro i <|
-    Exists.intro j <| ⟨h, rfl⟩
+  exact QuotientGroup.eq.mpr (Subgroup.subset_normalClosure (Or.inl (Exists.intro i rfl)))
 
-theorem comm {i j : ℕ} (h : 2 ≤ Nat.dist i j) : σ i * σ j = σ j * σ i := by
+theorem braid_symm {i : ℕ} : σ (i+1) * σ i * σ (i+1) = σ i * σ (i+1) * σ i := by
+  rw [← mul_inv_eq_one]
+  exact QuotientGroup.eq.mpr (Subgroup.subset_normalClosure (Or.inl (Exists.intro i rfl)))
+
+theorem comm {i j : ℕ} (h : i + 2 ≤ j) : σ i * σ j = σ j * σ i := by
   symm; rw [← mul_inv_eq_one]
+  apply QuotientGroup.eq.mpr
+  apply Subgroup.subset_normalClosure
+  right
+  simp only [mul_inv_rev, inv_inv, mul_one, Set.mem_setOf_eq]
+  use i; use j
+  exact ⟨h, by simp only [mul_assoc]⟩
+
+theorem comm_symm {i j : ℕ} (h : i + 2 ≤ j) : σ j * σ i = σ i * σ j := by
+  rw [← mul_inv_eq_one]
   apply QuotientGroup.eq.mpr
   apply Subgroup.subset_normalClosure
   right
