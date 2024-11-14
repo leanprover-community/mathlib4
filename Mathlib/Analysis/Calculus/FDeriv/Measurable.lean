@@ -838,8 +838,8 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
   rintro ⟨a', x'⟩ ha'x'
   simp only [mem_prod, mem_ball] at ha'x'
   refine ⟨t', ⟨hrt', ht't.le.trans (htr'.le.trans Ir'r)⟩, fun y hy z hz ↦ ?_⟩
-  have dyx : dist y x ≤ t := by linarith [dist_triangle y x' x]
-  have dzx : dist z x ≤ t := by linarith [dist_triangle z x' x]
+  have dyx : dist y x ≤ t := by dsimp at hy hz; linarith [dist_triangle y x' x]
+  have dzx : dist z x ≤ t := by dsimp at hy hz; linarith [dist_triangle z x' x]
   calc
   ‖f a' z - f a' y - (L z - L y)‖ =
     ‖(f a' z - f a z) + (f a y - f a' y) + (f a z - f a y - (L z - L y))‖ := by congr; abel

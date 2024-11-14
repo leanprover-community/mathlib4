@@ -469,8 +469,9 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
     9 * c ^ 4 < c ^ 4 * z.im ^ 2 * (g • z).im ^ 2 * 16 := by linarith
     _ = c ^ 4 * z.im ^ 4 / nsq ^ 2 * 16 := by
       rw [ModularGroup.im_smul_eq_div_normSq, div_pow]
+      unfold nsq
       ring
-    _ ≤ 16 := by rw [← mul_pow]; linarith
+    _ ≤ 16 := by rw [← mul_pow]; unfold nsq; linarith
 
 /-- An auxiliary result en route to `ModularGroup.eq_smul_self_of_mem_fdo_mem_fdo`. -/
 theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : g 1 0 = 0 := by

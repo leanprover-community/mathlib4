@@ -235,7 +235,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
     have H := congr_arg (fun x : 𝕎 k => x * (p : 𝕎 k) ^ m * (p : 𝕎 k) ^ n)
       (frobenius_frobeniusRotation p hr' hq')
     dsimp at H
-    refine (Eq.trans ?_ H).trans ?_ <;> ring
+    refine (Eq.trans ?_ H).trans ?_ <;> unfold b <;> ring
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
     simpa only [Ne, map_zero] using
@@ -243,7 +243,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
   rw [zpow_sub₀ (FractionRing.p_nonzero p k)]
   field_simp [FractionRing.p_nonzero p k]
   convert congr_arg (fun x => algebraMap (𝕎 k) (FractionRing (𝕎 k)) x) key using 1
-  · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, frobeniusEquiv_apply]
+  · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, frobeniusEquiv_apply, FractionRing]
     ring
   · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast]
 

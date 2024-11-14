@@ -220,8 +220,8 @@ noncomputable def extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E]: (E →L[ℝ] �
       cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
   have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
   { toFun := to𝕜
-    map_add' := by intros; ext; simp [h]; ring
-    map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
+    map_add' := by intros; ext; simp [h, ofReal, Algebra.cast]; ring
+    map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul, ofReal, Algebra.cast]; ring }
 
 @[simp]
 lemma re_extendTo𝕜'ₗ [ContinuousConstSMul 𝕜 E] (g : E →L[ℝ] ℝ) (x : E) : re ((extendTo𝕜'ₗ g) x : 𝕜)
