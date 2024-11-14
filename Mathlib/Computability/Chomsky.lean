@@ -17,7 +17,7 @@ of languages: Regular ⊆ ContextFree ⊆ ContextSensitive ⊆ RecursivelyEnumer
 * `Language.IsRegular.isContextFree`: Every regular language is context-free.
 -/
 
-variable {α σ : Type*} [Fintype α] [Fintype σ]
+variable {α σ : Type*} [Fintype α] [Fintype σ] [DecidableEq α] [DecidableEq σ]
 
 /-- Convert a finite DFA to a context-free grammar. -/
 noncomputable def DFA.toContextFreeGrammar (M : DFA α σ) [DecidablePred M.accept] :
@@ -26,9 +26,8 @@ noncomputable def DFA.toContextFreeGrammar (M : DFA α σ) [DecidablePred M.acce
   initial := M.start
   rules :=
     Finset.univ.map ⟨fun x : σ × α =>
-      ⟨x.1, [Symbol.terminal x.2, Symbol.nonterminal (M.step x.1 x.2)]⟩, fun _ => by simp⟩
-    /-∪
-    (Finset.univ.filter M.accept).map ⟨fun s : σ => ⟨s, []⟩, fun _ => by simp⟩-/
+      ⟨x.1, [Symbol.terminal x.2, Symbol.nonterminal (M.step x.1 x.2)]⟩, fun _ => by simp⟩ ∪
+    (Finset.univ.filter M.accept).map ⟨fun s : σ => ⟨s, []⟩, fun _ => by simp⟩
 
 lemma DFA.toContextFreeGrammar_produces (M : DFA α σ) [DecidablePred M.accept]
     (w : List (Symbol α σ)) (s : σ) (a : α) :
