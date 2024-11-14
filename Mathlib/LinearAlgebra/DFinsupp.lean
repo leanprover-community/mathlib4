@@ -3,15 +3,16 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
+import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Properties of the module `Π₀ i, M i`
 
 Given an indexed collection of `R`-modules `M i`, the `R`-module structure on `Π₀ i, M i`
-is defined in `Mathlib.Data.DFinsupp.Basic`.
+is defined in `Mathlib.Data.DFinsupp.Module`.
 
 In this file we define `LinearMap` versions of various maps:
 
@@ -381,7 +382,7 @@ theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N
         · exact hi
       simp only [DFinsupp.sum]
       rw [Finset.sum_subset support_mk_subset, ← hμ]
-      · exact Finset.sum_congr rfl fun x hx => congr_arg Subtype.val <| mk_of_mem hx
+      · exact Finset.sum_congr rfl fun x hx => by rw [mk_of_mem hx]
       · intro x _ hx
         rw [mem_support_iff, not_ne_iff] at hx
         rw [hx]
