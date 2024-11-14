@@ -20,7 +20,7 @@ the purpose of this type.
 
 assert_not_exists StarOrderedRing
 
-open Set Function
+open Function Set Topology
 
 /-- The type of continuous maps which map zero to zero.
 
@@ -82,7 +82,7 @@ protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
 
 lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   eq_induced := rfl
-  inj _ _ h := ext fun x ↦ congr($(h) x)
+  injective _ _ h := ext fun x ↦ congr($(h) x)
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_toContinuousMap := isEmbedding_toContinuousMap
@@ -287,7 +287,7 @@ protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContin
 lemma isUniformEmbedding_toContinuousMap :
     IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   comap_uniformity := rfl
-  inj _ _ h := ext fun x ↦ congr($(h) x)
+  injective _ _ h := ext fun x ↦ congr($(h) x)
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap
@@ -366,6 +366,9 @@ noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
 
 noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖
+
+lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
+  rfl
 
 noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
   dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g

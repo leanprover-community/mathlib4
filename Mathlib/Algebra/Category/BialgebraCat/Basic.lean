@@ -44,6 +44,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgebraCat R where
+  α := X
   instBialgebra := (inferInstance : Bialgebra R X)
 
 variable {R}
