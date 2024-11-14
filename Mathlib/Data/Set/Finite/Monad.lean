@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
+import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Finite.Prod
 import Mathlib.Data.Set.Functor
 
 /-!
