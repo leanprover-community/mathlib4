@@ -28,13 +28,13 @@ braid group
 /-- the set of relations on FreeGroup ℕ corresponding to valid braid moves. generators are indexed
 by natural numbers. commutativity holds if the generators are at least 2 apart. if two generators
 a and b are adjacent, then aba is congruent to bab -/
-def braid_rels_inf : Set (FreeGroup ℕ) :=
+def braidRelsInf : Set (FreeGroup ℕ) :=
   { r | ∃ i j : ℕ , 1 = Nat.dist i j ∧ r = .of i * .of j * .of i *
     (.of j)⁻¹ * (.of i)⁻¹ * (.of j)⁻¹} ∪
   { r | ∃ i j : ℕ, 2 ≤ Nat.dist i j ∧ r = .of i * .of j * (.of i)⁻¹ * (.of j)⁻¹}
 
 /-- Artin's braid group on infinitely many strands -/
-def BraidGroupInf := PresentedGroup braid_rels_inf
+def BraidGroupInf := PresentedGroup braidRelsInf
 
 instance : Group BraidGroupInf := by
   unfold BraidGroupInf; infer_instance
@@ -65,14 +65,14 @@ variable {G : Type*} [Group G] {f : ℕ → G}
 
 /-- The extension of a map `f : α → G` that satisfies the braid relations to a group homomorphism
 from `BraidGroupInf → G`. -/
-def toGroup (h : ∀ r ∈ braid_rels_inf, FreeGroup.lift f r = 1) : BraidGroupInf →* G :=
+def toGroup (h : ∀ r ∈ braidRelsInf, FreeGroup.lift f r = 1) : BraidGroupInf →* G :=
   PresentedGroup.toGroup h
 
 @[simp]
-theorem toGroup.of (h : ∀ r ∈ braid_rels_inf, FreeGroup.lift f r = 1) {x : ℕ} :
+theorem toGroup_σ (h : ∀ r ∈ braidRelsInf, FreeGroup.lift f r = 1) {x : ℕ} :
     toGroup h (σ x) = f x := PresentedGroup.toGroup.of h
 
-theorem toGroup.unique (h : ∀ r ∈ braid_rels_inf, FreeGroup.lift f r = 1) (g : BraidGroupInf →* G)
+theorem toGroup.unique (h : ∀ r ∈ braidRelsInf, FreeGroup.lift f r = 1) (g : BraidGroupInf →* G)
     (hg : ∀ x : ℕ, g (σ x) = f x) : ∀ {x}, g x = toGroup h x :=
   PresentedGroup.toGroup.unique h g hg
 
