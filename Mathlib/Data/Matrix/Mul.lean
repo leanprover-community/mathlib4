@@ -6,7 +6,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Matrix.Defs
+import Mathlib.Data.Matrix.Diagonal
 
 /-!
 # Matrix multiplication
