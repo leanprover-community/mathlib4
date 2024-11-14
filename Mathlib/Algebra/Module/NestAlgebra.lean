@@ -40,7 +40,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 /--
 The nest algebra of a nest
 -/
-def NestAlg (N : Sublattice (Submodule R M)) : Subalgebra R (M →ₗ[R] M) where
+def NestAlg (N : Set (Submodule R M)) : Subalgebra R (M →ₗ[R] M) where
   carrier := { T | ∀ (n : N), ↑n ∈ Module.End.invtSubmodule T}
   add_mem' S T := by
     intro n x hx
