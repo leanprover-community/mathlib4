@@ -76,7 +76,7 @@ theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
     Tendsto (fun a => (m a : ℝ≥0∞)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   isEmbedding_coe.tendsto_nhds_iff.symm
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
   isEmbedding_coe.continuous
 
