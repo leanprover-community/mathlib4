@@ -106,12 +106,13 @@ private lemma recursion' (n : ℕ) :
   have (x) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
     cases n with
     | zero => simp [u₂']
-    | succ n => ring!
+    | succ n => dsimp only [u₂', Nat.add_one_sub_one]; ring!
   simp_rw [this, sub_mul, mul_assoc _ _ (v₂ _)]
   have : Continuous v₂ := by fun_prop
   rw [mul_mul_mul_comm, integral_sub, mul_sub, add_sub_assoc]
   · congr 1
-    simp_rw [integral_const_mul]
+    simp_rw [integral_const_mul, f, v₂]
+    unfold I -- FIXME if this is needed, then `ring!` can't see thru much -- what can it see thru?
     ring!
   all_goals exact Continuous.intervalIntegrable (by fun_prop) _ _
 

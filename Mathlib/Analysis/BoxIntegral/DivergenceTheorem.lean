@@ -98,7 +98,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
     convert_to ‖g (e (I.lower i) y) - g (e (I.upper i) y)‖ ≤ _
     · congr 1
       have := Fin.insertNth_sub_same (α := fun _ ↦ ℝ) i (I.upper i) (I.lower i) y
-      simp only [← this, f'.map_sub]; abel
+      simp only [← this, f'.map_sub, e]; abel
     · have : ∀ z ∈ Icc (I.lower i) (I.upper i), e z y ∈ (Box.Icc I) := fun z hz =>
         I.mapsTo_insertNth_face_Icc hz hy
       replace hε : ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * diam (Box.Icc I) := by

@@ -454,6 +454,7 @@ theorem Λ_residue_zero :
   · exact (continuous_id.smul P.differentiable_Λ₀.continuous).tendsto _
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ 0) ↦ ?_)
+    dsimp only
     match_scalars
     field_simp [sub_ne_zero.mpr hs.symm]
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
