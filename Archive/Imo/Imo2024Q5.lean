@@ -540,48 +540,39 @@ def baseMonsterData (N : ℕ) : MonsterData N where
     simp only [Fin.mk.injEq] at h
     simpa using h
 
-/-- Positions for monsters with a specified column in the second row (row 1). -/
-def monsterData1 (hN : 2 ≤ N) (c₁ : Fin (N + 1)) : MonsterData N :=
-  (baseMonsterData N).setValue (row1 hN) c₁
-
-lemma row1_mem_monsterCells_monsterData1 (hN : 2 ≤ N) (c₁ : Fin (N + 1)) :
-    (1, c₁) ∈ (monsterData1 hN c₁).monsterCells :=
-  Set.mem_range_self (row1 hN)
-
 /-- Positions for monsters with specified columns in the second and third rows (rows 1 and 2). -/
 def monsterData12 (hN : 2 ≤ N) (c₁ c₂ : Fin (N + 1)) : MonsterData N :=
-  ((baseMonsterData N).setValue (row1 hN) c₁).setValue (row2 hN) c₂
+  ((baseMonsterData N).setValue (row2 hN) c₂).setValue (row1 hN) c₁
 
-lemma monsterData12_apply_row1 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c₁ ≠ c₂) :
-    monsterData12 hN c₁ c₂ (row1 hN) = c₁ := by
+lemma monsterData12_apply_row2 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c₁ ≠ c₂) :
+    monsterData12 hN c₁ c₂ (row2 hN) = c₂ := by
   rw [monsterData12, Function.Embedding.setValue_eq_of_ne]
   · exact Function.Embedding.setValue_eq _ _ _
   · simp only [row1, row2, ne_eq, Subtype.mk.injEq]
     simp only [Fin.ext_iff, Fin.val_one]
     omega
-  · rwa [Function.Embedding.setValue_eq]
+  · rw [Function.Embedding.setValue_eq]
+    exact h.symm
 
-lemma row2_mem_monsterCells_monsterData12 (hN : 2 ≤ N) (c₁ c₂ : Fin (N + 1)) :
-    (⟨2, by omega⟩, c₂) ∈ (monsterData12 hN c₁ c₂).monsterCells := by
-  exact Set.mem_range_self (row2 hN)
-
-lemma row1_mem_monsterCells_monsterData12 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c₁ ≠ c₂) :
+lemma row1_mem_monsterCells_monsterData12 (hN : 2 ≤ N) (c₁ c₂ : Fin (N + 1)) :
     (1, c₁) ∈ (monsterData12 hN c₁ c₂).monsterCells := by
-  convert Set.mem_range_self (row1 hN)
-  exact (monsterData12_apply_row1 hN h).symm
+  exact Set.mem_range_self (row1 hN)
+
+lemma row2_mem_monsterCells_monsterData12 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1)} (h : c₁ ≠ c₂) :
+    (⟨2, by omega⟩, c₂) ∈ (monsterData12 hN c₁ c₂).monsterCells := by
+  convert Set.mem_range_self (row2 hN)
+  exact (monsterData12_apply_row2 hN h).symm
 
 lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.ForcesWinIn 2 := by
   simp only [ForcesWinIn, WinsIn, Set.mem_range, not_forall, not_exists, Option.ne_none_iff_isSome]
   let m1 : Cell N := (s Fin.elim0).findFstEq 1
   let m2 : Cell N := (s ![m1]).findFstEq 2
-  let m : MonsterData N := if m1.2 = m2.2 then monsterData1 hN m1.2 else monsterData12 hN m1.2 m2.2
+  let m : MonsterData N := monsterData12 hN m1.2 m2.2
   have h1r : m1.1 = 1 := Path.findFstEq_fst _ _
   have h2r : m2.1 = 2 := Path.findFstEq_fst _ _
   have h1 : m1 ∈ m.monsterCells := by
-    simp_rw [m]
-    split_ifs with h
-    · convert row1_mem_monsterCells_monsterData1 hN _
-    · convert row1_mem_monsterCells_monsterData12 hN h
+    convert row1_mem_monsterCells_monsterData12 hN m1.2 m2.2
+
   have h2 : ((2 : Fin (N + 2)) : ℕ) = 2 := Nat.mod_eq_of_lt (by omega : 2 < N + 2)
   refine ⟨m, fun i ↦ ?_⟩
   fin_cases i
@@ -590,19 +581,18 @@ lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.Forces
     suffices ((s ![some m1]).firstMonster m).isSome = true by
       rwa [Path.firstMonster_eq_of_findFstEq_mem h1]
     simp_rw [m]
-    split_ifs with h
+    by_cases h : m1.2 = m2.2
     · rw [Path.firstMonster_isSome]
-      refine ⟨m1, ?_, ?_⟩
-      · have h' : m1 = (⟨(((2 : Fin (N + 2)) : ℕ) - 1 : ℕ), by omega⟩, m2.2) := by
-          simp [h2, Prod.ext_iff, h1r, h2r, h]
-        nth_rw 2 [h']
-        refine Path.findFstEq_fst_sub_one_mem _ ?_
-        rw [ne_eq, Fin.ext_iff, h2]
-        norm_num
-      · convert row1_mem_monsterCells_monsterData1 hN _
+      refine ⟨m1, ?_, h1⟩
+      have h' : m1 = (⟨(((2 : Fin (N + 2)) : ℕ) - 1 : ℕ), by omega⟩, m2.2) := by
+        simp [h2, Prod.ext_iff, h1r, h2r, h]
+      nth_rw 2 [h']
+      refine Path.findFstEq_fst_sub_one_mem _ ?_
+      rw [ne_eq, Fin.ext_iff, h2]
+      norm_num
     · rw [Path.firstMonster_isSome]
       refine ⟨m2, Path.findFstEq_mem_cells _ _, ?_⟩
-      convert row2_mem_monsterCells_monsterData12 hN m1.2 m2.2 using 1
+      convert row2_mem_monsterCells_monsterData12 hN h using 1
       simp [Prod.ext_iff, h2r, Fin.ext_iff, h2]
 
 lemma Strategy.ForcesWinIn.three_le {s : Strategy N} {k : ℕ} (hf : s.ForcesWinIn k)
