@@ -191,7 +191,7 @@ attribute [simp] Hom.toRingHom_algebraMap Hom.algebraMap_toRingHom
 
 variable {P P'}
 
-/-- A hom between extensions as a algebra homomorphism. -/
+/-- A hom between extensions as an algebra homomorphism. -/
 noncomputable
 def Hom.toAlgHom [Algebra R S'] [IsScalarTower R R' S'] (f : Hom P P') :
     P.Ring →ₐ[R] P'.Ring where
