@@ -866,6 +866,7 @@ section Reflection
 
 variable (K : Submodule 𝕜 E) [FiniteDimensional 𝕜 K]
 
+@[simp]
 theorem det_reflection : LinearMap.det (reflection K).toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
   by_cases hK : FiniteDimensional 𝕜 Kᗮ
   swap
@@ -900,6 +901,7 @@ theorem det_reflection : LinearMap.det (reflection K).toLinearMap = (-1) ^ finra
     Finset.prod_sigma, Fin.prod_univ_two, Finset.prod_ite_irrel, if_pos rfl, Finset.prod_const_one,
     one_mul, Finset.prod_ite_irrel, if_neg one_ne_zero, Finset.prod_const, Finset.card_fin]
 
+@[simp]
 theorem linearEquiv_det_reflection : (reflection K).det = (-1) ^ finrank 𝕜 Kᗮ := by
   ext
   rw [LinearEquiv.coe_det, Units.val_pow_eq_pow_val]
