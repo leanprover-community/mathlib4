@@ -418,7 +418,7 @@ theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
   isLimit_ord <| aleph0_le_aleph _
 
 instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
-  toType_noMax_of_succ_lt (ord_aleph_isLimit o).2
+  toType_noMax_of_succ_lt fun _ ↦ (ord_aleph_isLimit o).succ_lt
 
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
