@@ -4265,6 +4265,7 @@ import Mathlib.RingTheory.LocalRing.Quotient
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.LocalRing.Subring
 import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Localization.AtPrime
@@ -4428,6 +4429,7 @@ import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
+import Mathlib.RingTheory.Valuation.LocalSubring
 import Mathlib.RingTheory.Valuation.Minpoly
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.Valuation.Quotient
