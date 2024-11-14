@@ -88,7 +88,7 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
           lemmas, which can be caused by how applications are unfolded. \
           Using elementwise is unnecessary."
       if simpSides then
-        let ctx := { ← Simp.Context.mkDefault with config.decide := false }
+        let ctx ← Simp.Context.mkDefault
         let (ty', eqPf'') ← simpEq (fun e => return (← simp e ctx).1) (← inferType eqPf') eqPf'
         -- check that it's not a simp-trivial equality:
         forallTelescope ty' fun _ ty' => do
