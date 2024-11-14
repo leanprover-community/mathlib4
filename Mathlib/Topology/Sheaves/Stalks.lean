@@ -52,7 +52,7 @@ open TopCat
 
 open CategoryTheory.Limits
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open Opposite
 
@@ -217,7 +217,7 @@ theorem stalkPushforward_iso_of_isOpenEmbedding {f : X ⟶ Y} (hf : IsOpenEmbedd
     · intro U
       refine F.mapIso (eqToIso ?_)
       dsimp only [Functor.op]
-      exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.inj)
+      exact congr_arg op (Opens.ext <| Set.preimage_image_eq (unop U).1.1 hf.injective)
     · intro U V i; erw [← F.map_comp, ← F.map_comp]; congr 1
   · change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
     ext U
@@ -254,7 +254,7 @@ lemma germ_stalkPullbackHom
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) :
     ((pullback C f).obj F).obj (op U) ⟶ F.stalk (f x) :=
-  ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F (op U)).desc
+  ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).desc
     { pt := F.stalk ((f : X → Y) (x : X))
       ι :=
         { app := fun V => F.germ _ (f x) (V.hom.unop.le hx)
@@ -270,7 +270,7 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
       ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
         ((pullback C f).obj F).map (homOfLE hV).op ≫ ψ) : φ = ψ := by
   obtain ⟨U⟩ := U
-  apply ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F _).hom_ext
+  apply ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F _).hom_ext
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
   simpa [pushforwardPullbackAdjunction, Functor.lanAdjunction_unit]
     using h V (leOfHom b)
@@ -283,7 +283,7 @@ lemma pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk
       ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx  =
         F.germ _ (f x) (hV hx) := by
   simpa [pushforwardPullbackAdjunction] using
-    ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit F (op U)).fac _
+    ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).fac _
       (CostructuredArrow.mk (homOfLE hV).op)
 
 @[reassoc (attr := simp)]

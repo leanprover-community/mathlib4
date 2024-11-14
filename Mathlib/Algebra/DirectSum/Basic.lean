@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Sigma
+import Mathlib.Data.DFinsupp.Submonoid
 
 /-!
 # Direct sum
@@ -374,7 +375,7 @@ def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
 
 theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
-  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
+  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_eq_top_iff_surjective]
   exact Function.Bijective.surjective h
 
 variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]
