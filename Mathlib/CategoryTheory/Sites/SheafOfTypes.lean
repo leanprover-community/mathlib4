@@ -190,7 +190,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         exact fun _ f hf => HFs ⟨Over.mk f, hf⟩ }
   · intro H W x hx
     replace H := Classical.choice H
-    let s := compatibleYonedaFamily_toCocone S W x hx
+    let s := compatibleYonedaFamily_toCocone S.arrows W x hx
     use H.desc s
     constructor
     · exact fun _ f hf => (H.fac s) ⟨Over.mk f, hf⟩

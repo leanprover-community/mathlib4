@@ -461,37 +461,30 @@ theorem top_rel_top {r : α → α → Prop} {s : β → β → Prop} {t : γ �
 @[deprecated top_rel_top (since := "2024-10-10")]
 alias topLTTop := top_rel_top
 
-/-- Any element of a well order yields a principal segment -/
-def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
+/-- Any element of a well order yields a principal segment. -/
+-- The explicit typing is required in order for `simp` to work properly.
+@[simps!]
+def ofElement {α : Type*} (r : α → α → Prop) (a : α) :
+    @PrincipalSeg { b // r b a } α (Subrel r { b | r b a }) r :=
   ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun ⟨⟨_, h⟩, rfl⟩ => h, fun h => ⟨⟨_, h⟩, rfl⟩⟩⟩
 
--- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=
   rfl
 
-@[simp]
-theorem ofElement_top {α : Type*} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
-  rfl
-
 /-- For any principal segment `r ≺i s`, there is a `Subrel` of `s` order isomorphic to `r`. -/
+-- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply]
-noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
-  RelIso.symm
-  { toEquiv := ((Equiv.ofInjective f f.injective).trans (Equiv.setCongr
-      (funext fun _ ↦ propext f.mem_range_iff_rel))),
-    map_rel_iff' := f.map_rel_iff }
+noncomputable def subrelIso (f : r ≺i s) :
+    @RelIso { b // s b f.top } α (Subrel s { b | s b f.top }) r :=
+  RelIso.symm ⟨(Equiv.ofInjective f f.injective).trans
+    (Equiv.setCongr (funext fun _ ↦ propext f.mem_range_iff_rel)), f.map_rel_iff⟩
 
--- This lemma was always bad, but the linter only noticed after lean4#2644
-attribute [nolint simpNF] PrincipalSeg.subrelIso_symm_apply
-
--- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) : f (f.subrelIso b) = b :=
   Equiv.apply_ofInjective_symm f.injective _
 
--- This lemma was always bad, but the linter only noticed after lean4#2644
-@[simp, nolint simpNF]
+@[simp]
 theorem subrelIso_apply (f : r ≺i s) (a : α) : f.subrelIso ⟨f a, f.lt_top a⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _
 
@@ -636,9 +629,6 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
         exact ⟨Sum.inl <| (f.symm.trans g.subrelIso).toInitialSeg⟩
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
           (fun a => _root_.trans (g.lt_top a) h) h).transRelIso f.subrelIso⟩
-
-attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
-  PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply
 
 /-! ### Initial or principal segments with `<` -/
 

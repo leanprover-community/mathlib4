@@ -334,6 +334,13 @@ theorem universally_le (P : MorphismProperty C) : P.universally ≤ P := by
   intro X Y f hf
   exact hf (𝟙 _) (𝟙 _) _ (IsPullback.of_vert_isIso ⟨by rw [Category.comp_id, Category.id_comp]⟩)
 
+theorem universally_inf (P Q : MorphismProperty C) :
+    (P ⊓ Q).universally = P.universally ⊓ Q.universally := by
+  ext X Y f
+  show _ ↔ _ ∧ _
+  simp_rw [universally, ← forall_and]
+  rfl
+
 theorem universally_eq_iff {P : MorphismProperty C} :
     P.universally = P ↔ P.IsStableUnderBaseChange :=
   ⟨(· ▸ P.universally_isStableUnderBaseChange),

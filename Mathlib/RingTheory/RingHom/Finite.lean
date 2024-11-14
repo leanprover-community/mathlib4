@@ -37,6 +37,8 @@ theorem finite_respectsIso : RespectsIso @Finite := by
   intros
   exact Finite.of_surjective _ (RingEquiv.toEquiv _).surjective
 
+lemma finite_containsIdentities : ContainsIdentities @Finite := Finite.id
+
 theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
   refine IsStableUnderBaseChange.mk _ finite_respectsIso ?_
   classical

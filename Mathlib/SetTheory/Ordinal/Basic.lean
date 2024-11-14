@@ -274,8 +274,8 @@ instance partialOrder : PartialOrder Ordinal where
   lt a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≺i s))
       fun _ _ _ _ ⟨f⟩ ⟨g⟩ => propext
-        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.relIsoTrans f.symm <| h.transInitial g.toInitialSeg⟩,
-          fun ⟨h⟩ => ⟨PrincipalSeg.relIsoTrans f <| h.transInitial g.symm.toInitialSeg⟩⟩
+        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.relIsoTrans f.symm <| h.transRelIso g⟩,
+          fun ⟨h⟩ => ⟨PrincipalSeg.relIsoTrans f <| h.transRelIso g.symm⟩⟩
   le_refl := Quot.ind fun ⟨_, _, _⟩ => ⟨InitialSeg.refl _⟩
   le_trans a b c :=
     Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
@@ -675,9 +675,9 @@ theorem lift_type_eq {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWel
 theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
     lift.{max v w} (type r) < lift.{max u w} (type s) ↔ Nonempty (r ≺i s) := by
   constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
-  · exact (f.equivLT (RelIso.preimage Equiv.ulift r).symm).transInitial
+  · exact (f.relIsoTrans (RelIso.preimage Equiv.ulift r).symm).transInitial
       (RelIso.preimage Equiv.ulift s).toInitialSeg
-  · exact (f.equivLT (RelIso.preimage Equiv.ulift r)).transInitial
+  · exact (f.relIsoTrans (RelIso.preimage Equiv.ulift r)).transInitial
       (RelIso.preimage Equiv.ulift s).symm.toInitialSeg
 
 @[simp]
