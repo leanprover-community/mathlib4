@@ -37,7 +37,7 @@ theorem isIndObject_limit_of_discrete (h : ∀ (g : α → C), IsIndObject (∏�
 
 theorem isIndObject_limit_of_hasLimitsOfShape [HasLimitsOfShape (Discrete α) C]
     (F : Discrete α ⥤ Cᵒᵖ ⥤ Type v) (hF : ∀ a, IsIndObject (F.obj a)) : IsIndObject (limit F) :=
-  isIndObject_limit_of_discrete (fun g => (isIndObject_limit_of_hasLimit (Discrete.functor g)).map
+  isIndObject_limit_of_discrete (fun g => (isIndObject_limit_comp_yoneda (Discrete.functor g)).map
       (HasLimit.isoOfNatIso (Discrete.compNatIsoDiscrete g yoneda)).hom) F hF
 
 end CategoryTheory.Limits
