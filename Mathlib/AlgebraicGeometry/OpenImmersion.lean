@@ -107,7 +107,7 @@ lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
 @[simp]
 lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
   apply Opens.ext
-  simp [Set.preimage_image_eq _ f.isOpenEmbedding.inj]
+  simp [Set.preimage_image_eq _ f.isOpenEmbedding.injective]
 
 lemma image_le_image_iff (f : X ⟶ Y) [IsOpenImmersion f] (U U' : X.Opens) :
     f ''ᵁ U ≤ f ''ᵁ U' ↔ U ≤ U' := by
@@ -198,7 +198,7 @@ def IsOpenImmersion.opensEquiv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion
     X.Opens ≃ { U : Y.Opens // U ≤ f.opensRange } where
   toFun U := ⟨f ''ᵁ U, Set.image_subset_range _ _⟩
   invFun U := f ⁻¹ᵁ U
-  left_inv _ := Opens.ext (Set.preimage_image_eq _ f.isOpenEmbedding.inj)
+  left_inv _ := Opens.ext (Set.preimage_image_eq _ f.isOpenEmbedding.injective)
   right_inv U := Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2))
 
 namespace Scheme
@@ -392,7 +392,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
       IsIso
         (TopCat.isoOfHomeo
             (Homeomorph.homeomorphOfContinuousOpen
-              (Equiv.ofBijective _ ⟨h₂.inj, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
+              (.ofBijective _ ⟨h₂.injective, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
               h₂.isOpenMap)).hom
     infer_instance
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).isOpenEmbedding⟩
@@ -577,7 +577,7 @@ theorem app_eq_invApp_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g :
   rw [Scheme.comp_base, Opens.map_comp_obj]
   congr 1
   ext1
-  exact (Set.preimage_image_eq _ h.base_open.inj).symm
+  exact (Set.preimage_image_eq _ h.base_open.injective).symm
 
 /-- The `fg` argument is to avoid nasty stuff about dependent types. -/
 theorem app_eq_appIso_inv_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
