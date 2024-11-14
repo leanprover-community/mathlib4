@@ -115,6 +115,8 @@ def castMaxRight (n : ℕ) {m : ℕ} (a : Fin m) : Fin (max n m) :=
 
 @[simp]
 lemma castMaxLeft_val {n : ℕ} (m : ℕ) (a : Fin n) : (castMaxLeft m a).val = a.val := rfl
+
+@[simp]
 lemma castMaxRight_val (n : ℕ) {m : ℕ} (a : Fin m) : (castMaxRight n a).val = a.val := rfl
 
 section Order
