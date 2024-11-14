@@ -342,39 +342,37 @@ section Indicator
 
 variable {α : Type*}
 
+open Finset Set
+
 lemma _root_.Set.infinite_iff_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R]
     [Archimedean R] {s : Set ℕ} : s.Infinite
-      ↔ Tendsto (fun n ↦ ∑ k ∈ Finset.range n, s.indicator (1 : ℕ → R) k) atTop atTop := by
-  have h_mono : Monotone fun n ↦ ∑ k ∈ Finset.range n, s.indicator (1 : ℕ → R) k := by
-    refine (Finset.sum_mono_set_of_nonneg ?_).comp Finset.range_mono
-    exact (fun _ ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _)
-  rw [Monotone.tendsto_atTop_atTop_iff h_mono]
+      ↔ Tendsto (fun n ↦ ∑ k ∈ range n, s.indicator (1 : ℕ → R) k) atTop atTop := by
+  have h_mono : Monotone fun n ↦ ∑ k ∈ range n, s.indicator (1 : ℕ → R) k := by
+    refine (sum_mono_set_of_nonneg ?_).comp range_mono
+    exact (fun _ ↦ indicator_nonneg (fun _ _ ↦ zero_le_one) _)
+  rw [h_mono.tendsto_atTop_atTop_iff]
   refine ⟨fun hs n ↦ ?_, ?_⟩
   · obtain ⟨n', hn'⟩ := exists_lt_nsmul zero_lt_one n
-    obtain ⟨t, t_s, t_card⟩ := Set.Infinite.exists_subset_card_eq hs n'
-    obtain ⟨M, hM⟩ := Finset.bddAbove t
-    use M + 1
-    apply hn'.le.trans
-    refine le_of_eq_of_le (b := ∑ k ∈ Finset.range (M + 1), t.toSet.indicator (1 : ℕ → R) k) ?_ ?_
-    · have h : t ⊆ Finset.range (M + 1) := by
-        intro i i_t
-        rw [Finset.mem_range]
-        exact (hM i_t).trans_lt (lt_add_one M)
-      rw [Finset.sum_indicator_subset (1 : ℕ → R) h, Finset.sum_eq_card_nsmul (b := 1) _]
-      · rw [t_card]
-      · exact fun i _ ↦ Pi.one_apply i
-    · exact Finset.sum_le_sum fun i _ ↦ (Set.indicator_le_indicator_of_subset t_s zero_le_one) i
+    obtain ⟨t, t_s, t_card⟩ := hs.exists_subset_card_eq n'
+    obtain ⟨M, hM⟩ := t.bddAbove
+    refine ⟨M + 1, hn'.le.trans ?_⟩
+    apply (sum_le_sum fun i _ ↦ (indicator_le_indicator_of_subset t_s zero_le_one) i).trans_eq'
+    have h : t ⊆ range (M + 1) := by
+      intro i i_t
+      rw [Finset.mem_range]
+      exact (hM i_t).trans_lt (lt_add_one M)
+    rw [sum_indicator_subset (1 : ℕ → R) h, sum_eq_card_nsmul (fun i _ ↦ Pi.one_apply i), t_card]
   · contrapose!
     intro hs
-    obtain ⟨M, hM⟩ := Set.Finite.bddAbove (Set.not_infinite.1 hs)
-    have : ∑ k ∈ Finset.range (M + 1), s.indicator (1 : ℕ → R) k < (M + 2) • 1 := by
-      apply (Finset.sum_le_card_nsmul _ _ 1 _).trans_lt
+    obtain ⟨M, hM⟩ := (not_infinite.1 hs).bddAbove
+    have : ∑ k ∈ range (M + 1), s.indicator (1 : ℕ → R) k < (M + 2) • 1 := by
+      apply (sum_le_card_nsmul _ _ 1 _).trans_lt
       · simp
-      · exact fun i _ ↦ Pi.le_def.1 (Set.indicator_le_self' (fun _ _ ↦ zero_le_one)) i
+      · exact fun i _ ↦ Pi.le_def.1 (indicator_le_self' (fun _ _ ↦ zero_le_one)) i
     refine ⟨(M + 2) • 1, fun n ↦ not_le_of_lt (lt_of_le_of_lt ?_ this)⟩
     rcases lt_or_le n (M + 1) with n_M | n_M
     · exact h_mono n_M.le
-    · refine (Finset.eventually_constant_sum (fun k k_N ↦ Set.indicator_of_not_mem ?_ _) n_M).le
+    · refine (eventually_constant_sum (fun k k_N ↦ indicator_of_not_mem ?_ _) n_M).le
       exact fun h ↦ not_lt_of_le (hM h) (Nat.lt_iff_add_one_le.2 k_N)
 
 theorem _root_.Set.limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R]
@@ -382,7 +380,7 @@ theorem _root_.Set.limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrde
       (fun n ↦ ∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) atTop atTop } := by
   nth_rw 1 [← limsup_nat_add s 1, ← Nat.cofinite_eq_atTop, cofinite.limsup_set_eq]
   ext ω
-  rw [Set.mem_setOf_eq, Set.mem_setOf_eq, Set.infinite_iff_tendsto_sum_indicator_atTop R, iff_eq_eq]
+  rw [mem_setOf_eq, mem_setOf_eq, infinite_iff_tendsto_sum_indicator_atTop R, iff_eq_eq]
   congr
 
 end Indicator
