@@ -7,6 +7,7 @@ import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
 
@@ -250,8 +251,10 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
-lemma uniformlyContinous_re : UniformContinuous re :=
+lemma uniformlyContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
+
+@[deprecated (since := "2024-11-04")] alias uniformlyContinous_re := uniformlyContinuous_re
 
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
@@ -269,8 +272,10 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 
-lemma uniformlyContinous_im : UniformContinuous im :=
+lemma uniformlyContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
+
+@[deprecated (since := "2024-11-04")] alias uniformlyContinous_im := uniformlyContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
@@ -358,9 +363,16 @@ theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 
+theorem isUniformEmbedding_ofReal : IsUniformEmbedding ((↑) : ℝ → ℂ) :=
+  ofRealLI.isometry.isUniformEmbedding
+
+theorem _root_.Filter.tendsto_ofReal_iff {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ} :
+    Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) ↔ Tendsto f l (𝓝 x) :=
+  isUniformEmbedding_ofReal.isClosedEmbedding.tendsto_nhds_iff.symm
+
 lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
     (hf : Tendsto f l (𝓝 x)) : Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
-  (continuous_ofReal.tendsto _).comp hf
+  tendsto_ofReal_iff.mpr hf
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
 theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = ofRealHom := by
@@ -555,6 +567,21 @@ end tsum
 end RCLike
 
 namespace Complex
+
+section tprod
+
+variable {α : Type*} {f : α → ℂ}
+
+theorem hasProd_abs {x : ℂ} (hfx : HasProd f x) : HasProd (fun i ↦ (f i).abs) x.abs :=
+  hfx.norm
+
+theorem multipliable_abs (hf : Multipliable f) : Multipliable (fun i ↦ (f i).abs) :=
+  hf.norm
+
+theorem abs_tprod (h : Multipliable f) : (∏' i, f i).abs = ∏' i, (f i).abs :=
+  norm_tprod h
+
+end tprod
 
 /-!
 We have to repeat the lemmas about `RCLike.re` and `RCLike.im` as they are not syntactic
