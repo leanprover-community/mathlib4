@@ -7,6 +7,8 @@ Authors: Jannis Limperg
 import Aesop
 import Mathlib.Tactic.Linter.UnusedTactic
 
+set_option linter.unusedTactic true
+
 /-
 The unused tactic linter should not consider tactics unused if they appear in
 Aesop's `add_aesop_rules` command...
