@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.Additive
 
 /-!
 # The extension of a homological complex by an embedding of complex shapes
 
 Given an embedding `e : Embedding c c'` of complex shapes,
-and `K : HomologicalComplex C c`, we define `K.extend e : HomologicalComplex C c'`.
+and `K : HomologicalComplex C c`, we define `K.extend e : HomologicalComplex C c'`, and this
+leads to a functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`.
 
 This construction first appeared in the Liquid Tensor Experiment.
 
@@ -22,8 +23,12 @@ variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [HasZeroObject C] [HasZeroMorphisms C]
-  (K : HomologicalComplex C c) (e : c.Embedding c')
+variable {C : Type*} [Category C] [HasZeroObject C]
+
+section
+
+variable [HasZeroMorphisms C] (K L M : HomologicalComplex C c)
+  (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
 
 namespace extend
 
@@ -58,6 +63,23 @@ lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
   subst hi hj
   dsimp [XIso, d]
   erw [id_comp, comp_id]
+
+variable {K L}
+
+/-- Auxiliary definition for `HomologicalComplex.extendMap`. -/
+noncomputable def mapX : ∀ (i : Option ι), X K i ⟶ X L i
+  | some i => φ.f i
+  | none => 0
+
+lemma mapX_some {i : Option ι} {a : ι} (hi : i = some a) :
+    mapX φ i = (XIso K hi).hom ≫ φ.f a ≫ (XIso L hi).inv := by
+  subst hi
+  dsimp [XIso]
+  erw [id_comp, comp_id]
+  rfl
+
+lemma mapX_none {i : Option ι} (hi : i = none) :
+    mapX φ i = 0 := by subst hi; rfl
 
 end extend
 
@@ -129,4 +151,106 @@ lemma extend_d_to_eq_zero (i' j' : ι') (j : ι) (hj : e.f j = j') (hj' : ¬ c.R
     obtain rfl := c.prev_eq' hij
     exact hj' hij
 
+variable {K L M}
+
+/-- Given an ambedding `e : c.Embedding c'` of complexes shapes, this is the
+morphism `K.extend e ⟶ L.extend e` induced by a morphism `K ⟶ L` in
+`HomologicalComplex C c`. -/
+noncomputable def extendMap : K.extend e ⟶ L.extend e where
+  f _ := extend.mapX φ _
+  comm' i' j' _ := by
+    dsimp
+    by_cases hi : ∃ i, e.f i = i'
+    · obtain ⟨i, hi⟩ := hi
+      by_cases hj : ∃ j, e.f j = j'
+      · obtain ⟨j, hj⟩ := hj
+        rw [K.extend_d_eq e hi hj, L.extend_d_eq e hi hj,
+          extend.mapX_some φ (e.r_eq_some hi),
+          extend.mapX_some φ (e.r_eq_some hj)]
+        simp only [extendXIso, assoc, Iso.inv_hom_id_assoc, Hom.comm_assoc]
+      · have hj' := e.r_eq_none j' (fun j'' hj'' => hj ⟨j'', hj''⟩)
+        dsimp [extend]
+        rw [extend.d_none_eq_zero' _ _ _ hj', extend.d_none_eq_zero' _ _ _ hj',
+          comp_zero, zero_comp]
+    · have hi' := e.r_eq_none i' (fun i'' hi'' => hi ⟨i'', hi''⟩)
+      dsimp [extend]
+      rw [extend.d_none_eq_zero _ _ _ hi', extend.d_none_eq_zero _ _ _ hi',
+        comp_zero, zero_comp]
+
+lemma extendMap_f {i : ι} {i' : ι'} (h : e.f i = i') :
+    (extendMap φ e).f i' =
+      (extendXIso K e h).hom ≫ φ.f i ≫ (extendXIso L e h).inv := by
+  dsimp [extendMap]
+  rw [extend.mapX_some φ (e.r_eq_some h)]
+  rfl
+
+lemma extendMap_f_eq_zero (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
+    (extendMap φ e).f i' = 0 := by
+  dsimp [extendMap]
+  rw [extend.mapX_none φ (e.r_eq_none i' hi')]
+
+@[reassoc, simp]
+lemma extendMap_comp :
+    extendMap (φ ≫ φ') e = extendMap φ e ≫ extendMap φ' e := by
+  ext i'
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · simp [extendMap_f_eq_zero _ e i' (fun i hi => hi' ⟨i, hi⟩)]
+
+variable (K L M)
+
+lemma extendMap_id_f (i' : ι') : (extendMap (𝟙 K) e).f i' = 𝟙 _ := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+@[simp]
+lemma extendMap_id : extendMap (𝟙 K) e = 𝟙 _ := by
+  ext i'
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+@[simp]
+lemma extendMap_zero : extendMap (0 : K ⟶ L) e = 0 := by
+  ext i'
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+end
+
+@[simp]
+lemma extendMap_add [Preadditive C] {K L : HomologicalComplex C c} (φ φ' : K ⟶ L)
+    (e : c.Embedding c') : extendMap (φ + φ' : K ⟶ L) e = extendMap φ e + extendMap φ' e := by
+  ext i'
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, hi⟩ := hi'
+    simp [extendMap_f _ e hi]
+  · apply (K.isZero_extend_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
 end HomologicalComplex
+
+namespace ComplexShape.Embedding
+
+variable (e : Embedding c c') (C : Type*) [Category C] [HasZeroObject C]
+
+/-- Given an embedding `e : c.Embedding c'` of complex shapes, this is
+the functor `HomologicalComplex C c ⥤ HomologicalComplex C c'` which
+extend complexes along `e`: the extended complexes are zero
+in the degrees that are not in the image of `e.f`. -/
+@[simps]
+noncomputable def extendFunctor [HasZeroMorphisms C] :
+    HomologicalComplex C c ⥤ HomologicalComplex C c' where
+  obj K := K.extend e
+  map φ := HomologicalComplex.extendMap φ e
+
+instance [HasZeroMorphisms C] : (e.extendFunctor C).PreservesZeroMorphisms where
+
+instance [Preadditive C] : (e.extendFunctor C).Additive where
+
+end ComplexShape.Embedding

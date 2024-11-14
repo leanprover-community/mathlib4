@@ -3,11 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`

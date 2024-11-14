@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Dimension.Free
+import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Rank of various constructions
@@ -29,9 +31,9 @@ We have finrank variants for most lemmas as well.
 
 noncomputable section
 
-universe u v v' u₁' w w'
+universe u u' v v' u₁' w w'
 
-variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
+variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open Basis Cardinal DirectSum Function Module Set Submodule
@@ -118,8 +120,8 @@ open Module.Free
 @[simp]
 theorem rank_prod : Module.rank R (M × M') =
     Cardinal.lift.{v'} (Module.rank R M) + Cardinal.lift.{v, v'} (Module.rank R M') := by
-  simpa [rank_eq_card_chooseBasisIndex R M, rank_eq_card_chooseBasisIndex R M', lift_umax,
-    lift_umax'] using ((chooseBasis R M).prod (chooseBasis R M')).mk_eq_rank.symm
+  simpa [rank_eq_card_chooseBasisIndex R M, rank_eq_card_chooseBasisIndex R M', lift_umax]
+    using ((chooseBasis R M).prod (chooseBasis R M')).mk_eq_rank.symm
 
 /-- If `M` and `M'` are free (and lie in the same universe), the rank of `M × M'` is
   `(Module.rank R M) + (Module.rank R M')`. -/
@@ -340,10 +342,15 @@ theorem rank_tensorProduct :
 theorem rank_tensorProduct' :
     Module.rank R (M ⊗[S] M₁) = Module.rank R M * Module.rank S M₁ := by simp
 
+theorem Module.rank_baseChange :
+    Module.rank R (R ⊗[S] M') = Cardinal.lift.{u} (Module.rank S M') := by simp
+
 /-- The `S`-finrank of `M ⊗[R] M'` is `(finrank S M) * (finrank R M')`. -/
 @[simp]
 theorem Module.finrank_tensorProduct :
     finrank R (M ⊗[S] M') = finrank R M * finrank S M' := by simp [finrank]
+
+theorem Module.finrank_baseChange : finrank R (R ⊗[S] M') = finrank S M' := by simp
 
 end TensorProduct
 

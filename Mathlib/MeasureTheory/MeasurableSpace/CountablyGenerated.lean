@@ -505,13 +505,14 @@ lemma countablePartitionSet_of_mem {n : ℕ} {a : α} {s : Set α} (hs : s ∈ c
     countablePartitionSet n a = s :=
   memPartitionSet_of_mem hs ha
 
+@[measurability]
 lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
     MeasurableSet (countablePartitionSet n a) :=
   measurableSet_countablePartition n (countablePartitionSet_mem n a)
 
 section CountableOrCountablyGenerated
 
-variable [MeasurableSpace β]
+variable {α γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 /-- A class registering that either `α` is countable or `β` is a countably generated
 measurable space. -/
@@ -522,9 +523,34 @@ class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [Measur
 instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] :
     CountableOrCountablyGenerated α β := ⟨Or.inl h1⟩
 
-instance instCountableOrCountablyGeneratedOfCountablyGenerated
-    [h : MeasurableSpace.CountablyGenerated β] :
+instance instCountableOrCountablyGeneratedOfCountablyGenerated [h : CountablyGenerated β] :
     CountableOrCountablyGenerated α β := ⟨Or.inr h⟩
+
+instance [hα : CountableOrCountablyGenerated α γ] [hβ : CountableOrCountablyGenerated β γ] :
+    CountableOrCountablyGenerated (α × β) γ := by
+  rcases hα with (hα | hα) <;> rcases hβ with (hβ | hβ) <;> infer_instance
+
+lemma countableOrCountablyGenerated_left_of_prod_left_of_nonempty [Nonempty β]
+    [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated α γ := by
+  rcases h.countableOrCountablyGenerated with (h | h)
+  · have := countable_left_of_prod_of_nonempty h
+    infer_instance
+  · infer_instance
+
+lemma countableOrCountablyGenerated_right_of_prod_left_of_nonempty [Nonempty α]
+    [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated β γ := by
+  rcases h.countableOrCountablyGenerated with (h | h)
+  · have := countable_right_of_prod_of_nonempty h
+    infer_instance
+  · infer_instance
+
+lemma countableOrCountablyGenerated_prod_left_swap [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated (β × α) γ := by
+  rcases h with (h | h)
+  · refine ⟨Or.inl countable_prod_swap⟩
+  · exact ⟨Or.inr h⟩
 
 end CountableOrCountablyGenerated
 
