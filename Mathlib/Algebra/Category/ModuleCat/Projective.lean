@@ -6,8 +6,8 @@ Authors: Markus Himmel, Kim Morrison
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Module.Projective
 import Mathlib.CategoryTheory.Preadditive.Projective
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 /-!
 # The category of `R`-modules has enough projectives.
