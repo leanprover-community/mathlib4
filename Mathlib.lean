@@ -863,6 +863,7 @@ import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
@@ -933,6 +934,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Separated
 import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
+import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.Over
@@ -2531,11 +2533,14 @@ import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.ConjTranspose
 import Mathlib.Data.Matrix.DMatrix
+import Mathlib.Data.Matrix.Defs
+import Mathlib.Data.Matrix.Diagonal
 import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.Hadamard
 import Mathlib.Data.Matrix.Invertible
 import Mathlib.Data.Matrix.Kronecker
+import Mathlib.Data.Matrix.Mul
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Rank
@@ -2913,6 +2918,7 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.FieldTheory.RatFunc.Basic
 import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.FieldTheory.RatFunc.Degree
+import Mathlib.FieldTheory.Relrank
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.FieldTheory.SeparableDegree
@@ -3240,6 +3246,7 @@ import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+import Mathlib.LinearAlgebra.FreeModule.Int
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
@@ -3625,6 +3632,7 @@ import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.ModelTheory.Algebra.Field.CharP
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Basic
+import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
@@ -3679,6 +3687,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
 import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+import Mathlib.NumberTheory.EulerProduct.ExpLog
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
 import Mathlib.NumberTheory.FLT.MasonStothers
@@ -4148,7 +4157,19 @@ import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Finiteness
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Finiteness.Bilinear
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Finiteness.Finsupp
+import Mathlib.RingTheory.Finiteness.Ideal
+import Mathlib.RingTheory.Finiteness.Lattice
+import Mathlib.RingTheory.Finiteness.Nakayama
+import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.RingTheory.Finiteness.Projective
+import Mathlib.RingTheory.Finiteness.Subalgebra
+import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Flat.Algebra
 import Mathlib.RingTheory.Flat.Basic
@@ -4379,6 +4400,7 @@ import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.RingTheory.SimpleRing.Field
 import Mathlib.RingTheory.SimpleRing.Matrix
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Smooth.Kaehler
@@ -4396,6 +4418,7 @@ import Mathlib.RingTheory.Trace.Quotient
 import Mathlib.RingTheory.TwoSidedIdeal.Basic
 import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
 import Mathlib.RingTheory.TwoSidedIdeal.Instances
+import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.RingTheory.UniqueFactorizationDomain
@@ -4408,6 +4431,7 @@ import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.Valuation.Integral
+import Mathlib.RingTheory.Valuation.LocalSubring
 import Mathlib.RingTheory.Valuation.Minpoly
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.Valuation.Quotient
