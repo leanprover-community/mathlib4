@@ -266,7 +266,7 @@ variable {u : ι → Set X} {s : Set X} [T2Space X] [LocallyCompactSpace X]
 and `i` is an index such that `i ∉ v.carrier`, then there exists a partial refinement that is
 strictly greater than `v`. -/
 theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closure w)))
-    (hs : IsCompact s) (i : ι) (hi : i ∉ v) :
+    (hs : IsCompact s) (i : ι) (hi : i ∉ v.carrier) :
     ∃ v' : PartialRefinement u s (fun w => IsCompact (closure w)),
       v < v' ∧ IsCompact (closure (v' i)) := by
   -- take `v i` such that `closure (v i)` is compact
