@@ -36,11 +36,6 @@ For convenience, `Matrix m n α` is defined as `m → n → α`, as this allows 
 to be accessed with `A i j`. However, it is not advisable to _construct_ matrices using terms of the
 form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not recognized by Lean
 as having the right type. Instead, `Matrix.of` should be used.
-
-## TODO
-
-Under various conditions, multiplication of infinite matrices makes sense.
-These have not yet been implemented.
 -/
 
 assert_not_exists Algebra
