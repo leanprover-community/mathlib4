@@ -112,9 +112,8 @@ theorem birthday_neg : ∀ x : PGame, (-x).birthday = x.birthday
 @[simp]
 theorem birthday_ordinalToPGame (o : Ordinal) : o.toPGame.birthday = o := by
   induction' o using Ordinal.induction with o IH
-  rw [toPGame_def, PGame.birthday]
+  rw [toPGame, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
-  -- Porting note: was `nth_rw 1 [← lsub_typein o]`
   conv_rhs => rw [← lsub_typein o]
   congr with x
   exact IH _ (typein_lt_self x)
