@@ -312,7 +312,8 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
 /-- Equivalence between `(i : Fin m) × Fin (n i)` and `Fin (∑ i, n i)`. -/
 def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (∑ i, n i) :=
   .ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_sigma, Fintype.card_fin])
-    (fun ⟨i, j⟩ => if h : m = 0 then Fin.elim0 (i.cast h) else
+    (fun ⟨i, j⟩ =>
+      let h : m ≠ 0 := Nat.not_eq_zero_of_lt i.prop
       ⟨∑ k, n (Fin.castLE i.isLt.le k) + j, by
         have hi : i.val + 1 + (m - i.val - 1) = m := by omega
         conv_rhs => rw [← Fin.sum_congr' n hi, Fin.sum_univ_add, Fin.sum_univ_add, add_assoc]
@@ -323,7 +324,8 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
         simp only [Finset.univ_unique, Finset.sum_singleton]
         exact Nat.lt_add_right _ (by simp only [Fin.cast, Fin.coe_castAdd, Fin.coe_natAdd,
             Fin.val_eq_zero, add_zero, Fin.is_lt])⟩)
-    (fun k => if h : m = 0 then Fin.elim0 <| k.cast (by subst h; simp) else
+    (fun k =>
+      have h : m ≠ 0 := fun h => Fin.elim0 <| k.cast (by subst h; simp)
       let i : Fin m := Fin.find (fun i => k < ∑ j, n (Fin.castLE i.isLt j)) |>.get (by
         refine Fin.isSome_find_iff.mpr ?_
         have hm : (m - 1) + 1 = m := by omega
@@ -361,17 +363,13 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
         exact not_lt.mp this
 
 @[simp]
-theorem finSigmaFinEquiv_apply_zero {n : Fin 0 → ℕ} (k : (i : Fin 0) × Fin (n i)) :
-    finSigmaFinEquiv k = Fin.elim0 k.1 := rfl
-
-@[simp]
-theorem finSigmaFinEquiv_apply_succ {m : ℕ} {n : Fin (m + 1) → ℕ}
-    (k : (i : Fin (m + 1)) × Fin (n i)) :
+theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ}
+    (k : (i : Fin m) × Fin (n i)) :
       (finSigmaFinEquiv k : ℕ) = ∑ i, n (Fin.castLE k.1.isLt.le i) + k.2 := rfl
 
-theorem finSigmaFinEquiv_pair {m : ℕ} {n : Fin m → ℕ} (hm : m ≠ 0) (i : Fin m) (k : Fin (n i)) :
+theorem finSigmaFinEquiv_pair {m : ℕ} {n : Fin m → ℕ} (i : Fin m) (k : Fin (n i)) :
     (finSigmaFinEquiv ⟨i, k⟩ : ℕ) = ∑ j, n (Fin.castLE i.isLt.le j) + k := by
-  simp only [finSigmaFinEquiv, hm, ↓reduceDIte, Equiv.ofRightInverseOfCardLE_apply]
+  simp only [finSigmaFinEquiv, ↓reduceDIte, Equiv.ofRightInverseOfCardLE_apply]
 
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
