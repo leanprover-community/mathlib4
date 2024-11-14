@@ -57,7 +57,7 @@ smooth bump function, partition of unity
 
 universe uι uE uH uM uF
 
-open Function Filter FiniteDimensional Set
+open Function Filter Module Set
 open scoped Topology Manifold
 
 noncomputable section
@@ -371,7 +371,6 @@ theorem IsSubordinate.support_subset {fs : SmoothBumpCovering ι I M s} {U : M �
   Subset.trans subset_closure (h i)
 
 variable (I) in
-
 /-- Let `M` be a smooth manifold with corners modelled on a finite dimensional real vector space.
 Suppose also that `M` is a Hausdorff `σ`-compact topological space. Let `s` be a closed set
 in `M` and `U : M → Set M` be a collection of sets such that `U x ∈ 𝓝 x` for every `x ∈ s`.
@@ -383,7 +382,7 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
   haveI : LocallyCompactSpace H := I.locallyCompactSpace
   haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
   -- Next we choose a covering by supports of smooth bump functions
-  have hB := fun x hx => SmoothBumpFunction.nhds_basis_support I (hU x hx)
+  have hB := fun x hx => SmoothBumpFunction.nhds_basis_support (I := I) (hU x hx)
   rcases refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set hs hB with
     ⟨ι, c, f, hf, hsub', hfin⟩
   choose hcs hfU using hf
@@ -718,7 +717,7 @@ theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
   · apply SmoothPartitionOfUnity.smooth_finsum_smul
     intro c x hx
     apply (g_diff c (chartAt H c x)).comp
-    exact contMDiffAt_of_mem_maximalAtlas (SmoothManifoldWithCorners.chart_mem_maximalAtlas I _)
+    exact contMDiffAt_of_mem_maximalAtlas (SmoothManifoldWithCorners.chart_mem_maximalAtlas _)
       (hf c hx)
   · intro x
     apply finsum_nonneg (fun c ↦ h''g c x)
@@ -752,7 +751,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
   · exact f_diff.div₀ (f_diff.add g_diff) (fun x ↦ ne_of_gt (A x))
   -- show that the range is included in `[0, 1]`
   · refine range_subset_iff.2 (fun x ↦ ⟨div_nonneg (f_pos x) (A x).le, ?_⟩)
-    apply div_le_one_of_le _ (A x).le
+    apply div_le_one_of_le₀ _ (A x).le
     simpa only [le_add_iff_nonneg_right] using g_pos x
   -- show that the support is `s`
   · have B : support (fun x ↦ f x + g x) = univ := eq_univ_of_forall (fun x ↦ (A x).ne')

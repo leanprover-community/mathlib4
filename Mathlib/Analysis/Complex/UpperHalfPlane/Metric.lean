@@ -25,11 +25,10 @@ ball/sphere with another center and radius.
 
 noncomputable section
 
+open Filter Metric Real Set Topology
 open scoped UpperHalfPlane ComplexConjugate NNReal Topology MatrixGroups
 
-open Set Metric Filter Real
-
-variable {z w : ℍ} {r R : ℝ}
+variable {z w : ℍ} {r : ℝ}
 
 namespace UpperHalfPlane
 
@@ -261,7 +260,7 @@ instance : MetricSpace ℍ :=
       have h₀ : 0 < R / im z + 1 := one_pos.trans h₁
       refine ⟨log (R / im z + 1), Real.log_pos h₁, ?_⟩
       refine fun w hw => (dist_coe_le w z).trans_lt ?_
-      rwa [← lt_div_iff' z.im_pos, sub_lt_iff_lt_add, ← Real.lt_log_iff_exp_lt h₀]
+      rwa [← lt_div_iff₀' z.im_pos, sub_lt_iff_lt_add, ← Real.lt_log_iff_exp_lt h₀]
 
 theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
     (h : dist w (center z r) ≤ z.im * Real.sinh r) : 0 < w.im :=
@@ -300,7 +299,7 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
 
 instance : ProperSpace ℍ := by
   refine ⟨fun z r => ?_⟩
-  rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
+  rw [IsInducing.subtypeVal.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
@@ -327,7 +326,7 @@ instance : IsometricSMul SL(2, ℝ) ℍ :=
         have h₂ : Complex.abs (y₁ * y₂) ≠ 0 := by simp [y₁.ne_zero, y₂.ne_zero]
         simp only [dist_eq, modular_S_smul, inv_neg, neg_div, div_mul_div_comm, coe_mk, mk_im,
           div_one, Complex.inv_im, Complex.neg_im, coe_im, neg_neg, Complex.normSq_neg,
-          mul_eq_mul_left_iff, Real.arsinh_inj, one_ne_zero, or_false_iff,
+          mul_eq_mul_left_iff, Real.arsinh_inj, one_ne_zero,
           dist_neg_neg, mul_neg, neg_mul, dist_inv_inv₀ y₁.ne_zero y₂.ne_zero, ←
           AbsoluteValue.map_mul, ← Complex.normSq_mul, Real.sqrt_div h₁, ← Complex.abs_apply,
           mul_div (2 : ℝ), div_div_div_comm, div_self h₂, Complex.norm_eq_abs]

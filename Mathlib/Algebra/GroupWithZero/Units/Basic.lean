@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Contrapose
@@ -23,7 +23,7 @@ We also define `Ring.inverse`, a globally defined function on any ring
 assert_not_exists Multiplicative
 assert_not_exists DenselyOrdered
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
 
 namespace Units
@@ -67,7 +67,6 @@ theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
   mt isUnit_zero_iff.1 zero_ne_one
 
@@ -86,6 +85,12 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 @[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
+
+theorem IsUnit.ringInverse {x : M₀} (h : IsUnit x) : IsUnit (inverse x) :=
+  match h with
+  | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (inverse_unit u).symm⟩
+
+theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
 @[simp]
@@ -152,7 +157,6 @@ theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
 namespace Units
 
 variable [GroupWithZero G₀]
-variable {a b : G₀}
 
 /-- Embed a non-zero element of a `GroupWithZero` into the unit group.
   By combining this function with the operations on units,
@@ -174,11 +178,9 @@ theorem val_mk0 {a : G₀} (h : a ≠ 0) : (mk0 a h : G₀) = a :=
 theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
   Units.ext rfl
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
   mul_inv_cancel₀ u.ne_zero
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
   inv_mul_cancel₀ u.ne_zero
 
@@ -208,7 +210,7 @@ theorem _root_.GroupWithZero.eq_zero_or_unit (a : G₀) : a = 0 ∨ ∃ u : G₀
 end Units
 
 section GroupWithZero
-variable [GroupWithZero G₀] {a b c d : G₀} {m n : ℕ}
+variable [GroupWithZero G₀] {a b c : G₀} {m n : ℕ}
 
 theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
   (Units.mk0 x hx).isUnit

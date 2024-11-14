@@ -194,7 +194,8 @@ lemma map_lowerCentralSeries_eq {f : M →ₗ⁅R,L⁆ M₂} (hf : Function.Surj
   apply le_antisymm (map_lowerCentralSeries_le k f)
   induction k with
   | zero =>
-    rwa [lowerCentralSeries_zero, lowerCentralSeries_zero, top_le_iff, f.map_top, f.range_eq_top]
+    rwa [lowerCentralSeries_zero, lowerCentralSeries_zero, top_le_iff, f.map_top,
+      f.range_eq_top]
   | succ =>
     simp only [lowerCentralSeries_succ, LieSubmodule.map_bracket_eq]
     apply LieSubmodule.mono_lie_right
@@ -644,10 +645,10 @@ theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
     ext x
     constructor
     · rintro ⟨⟨y, -⟩, ⟨z, hz⟩, rfl : ⁅y, z⁆ = x⟩
-      erw [← LieSubmodule.mem_coeSubmodule, ih, LieSubmodule.mem_coeSubmodule] at hz
+      rw [← LieSubmodule.mem_coeSubmodule, ih, LieSubmodule.mem_coeSubmodule] at hz
       exact ⟨⟨LieSubmodule.Quotient.mk y, LieSubmodule.mem_top _⟩, ⟨z, hz⟩, rfl⟩
     · rintro ⟨⟨⟨y⟩, -⟩, ⟨z, hz⟩, rfl : ⁅y, z⁆ = x⟩
-      erw [← LieSubmodule.mem_coeSubmodule, ← ih, LieSubmodule.mem_coeSubmodule] at hz
+      rw [← LieSubmodule.mem_coeSubmodule, ← ih, LieSubmodule.mem_coeSubmodule] at hz
       exact ⟨⟨y, LieSubmodule.mem_top _⟩, ⟨z, hz⟩, rfl⟩
 
 /-- Note that the below inequality can be strict. For example the ideal of strictly-upper-triangular

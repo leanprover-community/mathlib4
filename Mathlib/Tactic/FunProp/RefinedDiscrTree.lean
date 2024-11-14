@@ -449,7 +449,7 @@ partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
 /-- Repeatedly apply reduce while stripping lambda binders and introducing their variables -/
 @[specialize]
 partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m]
-    [Inhabited α] (e : Expr) (fvars : List FVarId) (config : WhnfCoreConfig)
+    [Nonempty α] (e : Expr) (fvars : List FVarId) (config : WhnfCoreConfig)
     (k : Expr → List FVarId → m α) : m α := do
   match ← reduce e config with
   | .lam n d b bi =>
@@ -863,8 +863,6 @@ def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
 
 
 /-! ## Inserting intro a RefinedDiscrTree -/
-
-variable {α : Type}
 
 /-- If `vs` contains an element `v'` such that `v == v'`, then replace `v'` with `v`.
 Otherwise, push `v`.

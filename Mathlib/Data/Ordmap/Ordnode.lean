@@ -313,11 +313,11 @@ def All (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => All P l ∧ P x ∧ All P r
 
 instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (All P t)
-  | nil => decidableTrue
-  | node _ l _ r =>
+  | nil => isTrue trivial
+  | node _ l m r =>
     have : Decidable (All P l) := All.decidable l
     have : Decidable (All P r) := All.decidable r
-    And.decidable
+    inferInstanceAs <| Decidable (All P l ∧ P m ∧ All P r)
 
 /-- O(n). Does any element of the map satisfy property `P`?
 
@@ -328,11 +328,11 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 
 instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
-  | nil => decidableFalse
-  | node _ l _ r =>
+  | nil => isFalse id
+  | node _ l m r =>
     have : Decidable (Any P l) := Any.decidable l
     have : Decidable (Any P r) := Any.decidable r
-    Or.decidable
+    inferInstanceAs <| Decidable (Any P l ∨ P m ∨ Any P r)
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating
 correctness properties; use `∈` for a version that actually uses the BST property
@@ -604,7 +604,8 @@ instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
 def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
 
-instance [DecidableEq α] : DecidableRel (@Equiv α) := fun _ _ => And.decidable
+instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
+  inferInstanceAs (Decidable (x.size = y.size ∧ x.toList = y.toList))
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 
@@ -845,7 +846,7 @@ def find (x : α) : Ordnode α → Option α
     | Ordering.gt => find x r
 
 instance : Membership α (Ordnode α) :=
-  ⟨fun x t => t.mem x⟩
+  ⟨fun t x => t.mem x⟩
 
 instance mem.decidable (x : α) (t : Ordnode α) : Decidable (x ∈ t) :=
   Bool.decEq _ _

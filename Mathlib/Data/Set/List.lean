@@ -48,7 +48,7 @@ theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) :
 theorem range_list_getD (d : α) : (range fun n : Nat => l[n]?.getD d) = insert d { x | x ∈ l } :=
   calc
     (range fun n => l[n]?.getD d) = (fun o : Option α => o.getD d) '' range l.get? := by
-      simp [← range_comp, (· ∘ ·)]
+      simp [← range_comp, Function.comp_def]
     _ = insert d { x | x ∈ l } := by
       simp only [range_list_get?, image_insert_eq, Option.getD, image_image, image_id']
 

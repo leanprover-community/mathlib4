@@ -45,10 +45,9 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
   [FunLike F A B] extends RingHomClass F A B : Prop where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
--- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
--- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
-
--- Porting note (#10618): simp can prove this
+-- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
+-- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
+-- 15% if we would do so (see benchmark on PR #18040).
 -- attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass
@@ -84,8 +83,6 @@ section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
-
--- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 
 instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
@@ -221,7 +218,6 @@ protected theorem map_one : φ 1 = 1 :=
 protected theorem map_pow (x : A) (n : ℕ) : φ (x ^ n) = φ x ^ n :=
   map_pow _ _ _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 @[deprecated map_smul (since := "2024-06-26")]
 protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
@@ -354,10 +350,10 @@ protected theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
 @[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := AlgHom.id R A
-  one_mul ϕ := rfl
-  mul_one ϕ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=
@@ -421,11 +417,25 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
     toFun := f
     commutes' := fun n => by simp }
 
+@[simp]
+lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
+    ⇑f.toNatAlgHom = ⇑f := rfl
+
+lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
+    f.toNatAlgHom x = f x := rfl
+
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
-def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
+def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with commutes' := fun n => by simp }
 
-lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
+@[simp]
+lemma toIntAlgHom_coe [Ring R] [Ring S] (f : R →+* S) :
+    ⇑f.toIntAlgHom = ⇑f := rfl
+
+lemma toIntAlgHom_apply [Ring R] [Ring S] (f : R →+* S) (x : R) :
+    f.toIntAlgHom x = f x := rfl
+
+lemma toIntAlgHom_injective [Ring R] [Ring S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 

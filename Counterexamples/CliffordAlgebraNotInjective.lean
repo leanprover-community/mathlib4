@@ -10,7 +10,7 @@ import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Data.ZMod.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Ideal
 
@@ -52,7 +52,7 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
   have :
       kIdeal = Ideal.span ((monomial · (1 : ZMod 2)) '' Set.range (Finsupp.single · 2)) := by
     simp_rw [kIdeal, X, monomial_mul, one_mul, ← Finsupp.single_add, ← Set.range_comp,
-      Function.comp]
+      Function.comp_def]
   rw [this, mem_ideal_span_monomial_image]
   simp
 
@@ -208,7 +208,7 @@ def Q : QuadraticForm K L :=
   QuadraticMap.ofPolar
     (fun x =>
       Quotient.liftOn' x Q' fun a b h => by
-        rw [Submodule.quotientRel_r_def] at h
+        rw [Submodule.quotientRel_def] at h
         suffices Q' (a - b) = 0 by rwa [Q'_sub, sub_eq_zero] at this
         apply Q'_zero_under_ideal (a - b) h)
     (fun a x => by
@@ -240,7 +240,7 @@ theorem quot_obv : α • x' - β • y' - γ • z' = 0 := by
     ← Submodule.Quotient.mk_sub]
   convert LinearMap.map_zero _ using 2
   rw [Submodule.Quotient.mk_eq_zero]
-  simp (config := {decide := true}) [sub_zero, Ideal.span, Pi.single_apply]
+  simp +decide [sub_zero, Ideal.span, Pi.single_apply]
 
 /-- The core of the proof - scaling `1` by `α * β * γ` gives zero -/
 theorem αβγ_smul_eq_zero : (α * β * γ) • (1 : CliffordAlgebra Q) = 0 := by

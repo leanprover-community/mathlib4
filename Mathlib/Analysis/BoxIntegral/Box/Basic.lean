@@ -90,7 +90,7 @@ theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
   (I.lower_lt_upper i).ne
 
 instance : Membership (ι → ℝ) (Box ι) :=
-  ⟨fun x I ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
+  ⟨fun I x ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
 -- Porting note: added
 /-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
@@ -140,15 +140,12 @@ theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
 theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
-  tfae_have 1 ↔ 2
-  · exact Iff.rfl
+  tfae_have 1 ↔ 2 := Iff.rfl
   tfae_have 2 → 3
-  · intro h
-    simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
-  tfae_have 3 ↔ 4
-  · exact Icc_subset_Icc_iff I.lower_le_upper
+  | h => by simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
+  tfae_have 3 ↔ 4 := Icc_subset_Icc_iff I.lower_le_upper
   tfae_have 4 → 2
-  · exact fun h x hx i ↦ Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
+  | h, x, hx, i => Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
   tfae_finish
 
 variable {I J}
@@ -218,13 +215,9 @@ theorem coe_subset_Icc : ↑I ⊆ Box.Icc I :=
 
 /-- `I ⊔ J` is the least box that includes both `I` and `J`. Since `↑I ∪ ↑J` is usually not a box,
 `↑(I ⊔ J)` is larger than `↑I ∪ ↑J`. -/
-instance : Sup (Box ι) :=
-  ⟨fun I J ↦ ⟨I.lower ⊓ J.lower, I.upper ⊔ J.upper,
-    fun i ↦ (min_le_left _ _).trans_lt <| (I.lower_lt_upper i).trans_le (le_max_left _ _)⟩⟩
-
 instance : SemilatticeSup (Box ι) :=
-  { (inferInstance : PartialOrder (Box ι)),
-    (inferInstance : Sup (Box ι)) with
+  { sup := fun I J ↦ ⟨I.lower ⊓ J.lower, I.upper ⊔ J.upper,
+    fun i ↦ (min_le_left _ _).trans_lt <| (I.lower_lt_upper i).trans_le (le_max_left _ _)⟩
     le_sup_left := fun _ _ ↦ le_iff_bounds.2 ⟨inf_le_left, le_sup_left⟩
     le_sup_right := fun _ _ ↦ le_iff_bounds.2 ⟨inf_le_right, le_sup_right⟩
     sup_le := fun _ _ _ h₁ h₂ ↦ le_iff_bounds.2
@@ -300,7 +293,7 @@ theorem coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) = pi univ fun 
     rw [coe_bot, univ_pi_eq_empty]
     exact Ioc_eq_empty hi
 
-instance WithBot.inf : Inf (WithBot (Box ι)) :=
+instance WithBot.inf : Min (WithBot (Box ι)) :=
   ⟨fun I ↦
     WithBot.recBotCoe (fun _ ↦ ⊥)
       (fun I J ↦ WithBot.recBotCoe ⊥ (fun J ↦ mk' (I.lower ⊔ J.lower) (I.upper ⊓ J.upper)) J) I⟩
@@ -318,8 +311,7 @@ theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (
     coe_coe]
 
 instance : Lattice (WithBot (Box ι)) :=
-  { WithBot.semilatticeSup,
-    Box.WithBot.inf with
+  { inf := min
     inf_le_left := fun I J ↦ by
       rw [← withBotCoe_subset_iff, coe_inf]
       exact inter_subset_left

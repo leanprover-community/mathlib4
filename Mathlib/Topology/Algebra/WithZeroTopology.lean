@@ -3,6 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
 
@@ -117,7 +118,7 @@ theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
 
 theorem isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ γ, γ ≠ 0 ∧ Iio γ ⊆ s := by
   rw [isOpen_iff_mem_nhds, ← and_forall_ne (0 : Γ₀)]
-  simp (config := { contextual := true }) [nhds_of_ne_zero, imp_iff_not_or,
+  simp +contextual [nhds_of_ne_zero, imp_iff_not_or,
     hasBasis_nhds_zero.mem_iff]
 
 theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ γ, γ ≠ 0 ∧ s ⊆ Ici γ := by
@@ -159,7 +160,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     rintro ⟨x, y⟩
     wlog hle : x ≤ y generalizing x y
     · have := (this y x (le_of_not_le hle)).comp (continuous_swap.tendsto (x, y))
-      simpa only [mul_comm, Function.comp, Prod.swap] using this
+      simpa only [mul_comm, Function.comp_def, Prod.swap] using this
     rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]
       refine ((hasBasis_nhds_zero.prod_nhds hasBasis_nhds_zero).tendsto_iff hasBasis_nhds_zero).2

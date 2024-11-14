@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.GroupTheory.Congruence.Basic
+import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.SuppressCompilation
 
@@ -427,6 +427,16 @@ theorem ite_tmul (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
 theorem tmul_ite (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
     (x₁ ⊗ₜ[R] if P then x₂ else 0) = if P then x₁ ⊗ₜ x₂ else 0 := by split_ifs <;> simp
 
+lemma tmul_single {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] (i : ι) (x : N) (m : M i) (j : ι) :
+    x ⊗ₜ[R] Pi.single i m j = (Pi.single i (x ⊗ₜ[R] m) : ∀ i, N ⊗[R] M i) j := by
+  by_cases h : i = j <;> aesop
+
+lemma single_tmul {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] (i : ι) (x : N) (m : M i) (j : ι) :
+    Pi.single i m j ⊗ₜ[R] x = (Pi.single i (m ⊗ₜ[R] x) : ∀ i, M i ⊗[R] N) j := by
+  by_cases h : i = j <;> aesop
+
 section
 
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
@@ -449,7 +459,7 @@ variable (R M N)
 
 /-- The simple (aka pure) elements span the tensor product. -/
 theorem span_tmul_eq_top : Submodule.span R { t : M ⊗[R] N | ∃ m n, m ⊗ₜ n = t } = ⊤ := by
-  ext t; simp only [Submodule.mem_top, iff_true_iff]
+  ext t; simp only [Submodule.mem_top, iff_true]
   refine t.induction_on ?_ ?_ ?_
   · exact Submodule.zero_mem _
   · intro m n
@@ -538,6 +548,49 @@ theorem lift_compr₂ (g : P →ₗ[R] Q) : lift (f.compr₂ g) = g.comp (lift f
 theorem lift_mk_compr₂ (f : M ⊗ N →ₗ[R] P) : lift ((mk R M N).compr₂ f) = f := by
   rw [lift_compr₂ f, lift_mk, LinearMap.comp_id]
 
+section ScalarTower
+
+variable (R M N A) [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M]
+  [CompatibleSMul R A M N]
+
+/-- If M and N are both R- and A-modules and their actions on them commute,
+and if the A-action on `M ⊗[R] N` can switch between the two factors, then there is a
+canonical A-linear map from `M ⊗[A] N` to `M ⊗[R] N`. -/
+def mapOfCompatibleSMul : M ⊗[A] N →ₗ[A] M ⊗[R] N :=
+  lift
+  { toFun := fun m ↦
+    { __ := mk R M N m
+      map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
+    map_add' := fun _ _ ↦ LinearMap.ext <| by simp
+    map_smul' := fun _ _ ↦ rfl }
+
+@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R M N A (m ⊗ₜ n) = m ⊗ₜ n :=
+  rfl
+
+attribute [local instance] SMulCommClass.symm
+
+/-- `mapOfCompatibleSMul R M N A` is also A-linear. -/
+def mapOfCompatibleSMul' : M ⊗[A] N →ₗ[R] M ⊗[R] N where
+  __ := mapOfCompatibleSMul R M N A
+  map_smul' _ x := x.induction_on (map_zero _) (fun _ _ ↦ by simp [smul_tmul'])
+    fun _ _ h h' ↦ by simpa using congr($h + $h')
+
+theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R M N A) :=
+  fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
+    fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
+
+/-- If the R- and A-actions on M and N satisfy `CompatibleSMul` both ways,
+then `M ⊗[A] N` is canonically isomorphic to `M ⊗[R] N`. -/
+def equivOfCompatibleSMul [CompatibleSMul A R M N] : M ⊗[A] N ≃ₗ[A] M ⊗[R] N where
+  __ := mapOfCompatibleSMul R M N A
+  invFun := mapOfCompatibleSMul A M N R
+  left_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
+    fun _ _ h h' ↦ by simpa using congr($h + $h')
+  right_inv x := x.induction_on (map_zero _) (fun _ _ ↦ rfl)
+    fun _ _ h h' ↦ by simpa using congr($h + $h')
+
+end ScalarTower
+
 /-- This used to be an `@[ext]` lemma, but it fails very slowly when the `ext` tactic tries to apply
 it in some cases, notably when one wants to show equality of two linear maps. The `@[ext]`
 attribute is now added locally where it is needed. Using this as the `@[ext]` lemma instead of
@@ -613,6 +666,8 @@ theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₗ[R] Q}
     (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext x y z
   exact H x y z
+
+@[deprecated (since := "2024-10-18")] alias ext₃ := ext_threefold
 
 -- We'll need this one for checking the pentagon identity!
 theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
@@ -1484,3 +1539,5 @@ theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor M = -f.rTensor M := by
 end LinearMap
 
 end Ring
+
+set_option linter.style.longFile 1700

@@ -200,7 +200,9 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   have hI₂ : (R ∙ (⟨x, hxK'⟩ : K')) ⊔ (LieSubmodule.toSubmodule I) = ⊤ := by
     rw [← LieIdeal.coe_to_lieSubalgebra_to_submodule R K' I, hI₁]
     apply Submodule.map_injective_of_injective (K' : Submodule R L).injective_subtype
-    simp
+    simp only [LieSubalgebra.coe_ofLe, Submodule.map_sup, Submodule.map_subtype_range_inclusion,
+      Submodule.map_top, Submodule.range_subtype]
+    rw [Submodule.map_subtype_span_singleton]
   have e : K ≃ₗ⁅R⁆ I :=
     (LieSubalgebra.equivOfLe hKK').trans
       (LieEquiv.ofEq _ _ ((LieSubalgebra.coe_set_eq _ _).mpr hI₁.symm))
@@ -258,7 +260,8 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     -- isNoetherian_of_surjective L _ (LinearMap.range_rangeRestrict (toEnd R L M))
     -- abusing the relation between `LieHom.rangeRestrict` and `LinearMap.rangeRestrict`
     refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) ?_
-    simp only [LieHom.range_coeSubmodule, LieHom.coe_toLinearMap, LinearMap.range_eq_top]
+    simp only [LieHom.range_coeSubmodule, LieHom.coe_toLinearMap,
+      LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
   obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').wf.has_min s hs
   have hK₃ : K = ⊤ := by

@@ -5,6 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Ring.Opposite
 
 /-!
 
@@ -19,28 +20,26 @@ namespace Subsemiring
 variable {ι : Sort*} {R : Type*} [NonAssocSemiring R]
 
 /-- Pull a subsemiring back to an opposite subsemiring along `MulOpposite.unop` -/
-@[simps toSubmonoid]
+@[simps! coe toSubmonoid]
 protected def op (S : Subsemiring R) : Subsemiring Rᵐᵒᵖ where
   toSubmonoid := S.toSubmonoid.op
   add_mem' {x} {y} hx hy := add_mem (show x.unop ∈ S from hx) (show y.unop ∈ S from hy)
   zero_mem' := zero_mem S
 
-@[simp, norm_cast]
-theorem op_coe (S : Subsemiring R) : S.op = MulOpposite.unop ⁻¹' (S : Set R) := rfl
+attribute [norm_cast] coe_op
 
 @[simp]
 theorem mem_op {x : Rᵐᵒᵖ} {S : Subsemiring R} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
 /-- Pull an opposite subsemiring back to a subsemiring along `MulOpposite.op` -/
-@[simps toSubmonoid]
+@[simps! coe toSubmonoid]
 protected def unop (S : Subsemiring Rᵐᵒᵖ) : Subsemiring R where
   toSubmonoid := S.toSubmonoid.unop
   add_mem' {x} {y} hx hy := add_mem
     (show MulOpposite.op x ∈ S from hx) (show MulOpposite.op y ∈ S from hy)
   zero_mem' := zero_mem S
 
-@[simp, norm_cast]
-theorem unop_coe (S : Subsemiring Rᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Rᵐᵒᵖ) := rfl
+attribute [norm_cast] coe_unop
 
 @[simp]
 theorem mem_unop {x : R} {S : Subsemiring Rᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
@@ -141,13 +140,13 @@ theorem unop_iInf (S : ι → Subsemiring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, unop_coe]
+  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
 theorem unop_closure (s : Set Rᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
   rw [← op_inj, op_unop, op_closure]
-  rfl
+  simp_rw [Set.preimage_preimage, MulOpposite.op_unop, Set.preimage_id']
 
 /-- Bijection between a subsemiring `S` and its opposite. -/
 @[simps!]
