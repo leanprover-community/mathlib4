@@ -175,12 +175,10 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
     hf_ind.stronglyMeasurable_of_measurableSpace_le_on hs_m hs fun x hxs =>
       Set.indicator_of_not_mem hxs _
 
-variable {α F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
+variable {α F 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  -- F' for integrals on a Lp submodule
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] [NormedSpace ℝ F']
 
 section LpMeas
 

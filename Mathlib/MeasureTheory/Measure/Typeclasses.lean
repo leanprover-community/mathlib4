@@ -53,7 +53,7 @@ theorem measure_lt_top (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ 
 instance isFiniteMeasureRestrict (μ : Measure α) (s : Set α) [h : IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.restrict s) := ⟨by simp⟩
 
-@[simp]
+@[simp, aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_ne_top (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ s ≠ ∞ :=
   ne_of_lt (measure_lt_top μ s)
 
@@ -179,8 +179,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
     have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
     contradiction
-  -- TODO: `by measurability` fails
-  have key := tendsto_measure_iInter (μ := μ) (fun n ↦ .iUnion fun _ ↦ .iUnion fun _ ↦ Es_mble _)
+  have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
     decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
   convert key

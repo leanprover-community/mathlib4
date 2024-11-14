@@ -94,7 +94,7 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
           trace[Tactic.norm_num] "{ext.name}:\n{e} ==> {new}"
           return new
         catch err =>
-          trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
+          trace[Tactic.norm_num] "{ext.name} failed {e}: {err.toMessageData}"
           s.restore
     throwError "{e}: no norm_nums apply"
 
@@ -315,7 +315,7 @@ and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where
 numerical expressions. It also has a relatively simple primality prover.
 -/
 elab (name := normNum)
-    "norm_num" cfg:(config ?) only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
+    "norm_num" cfg:optConfig only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
   elabNormNum cfg args loc (simpOnly := only.isSome) (useSimp := true)
 
 /-- Basic version of `norm_num` that does not call `simp`. -/
@@ -332,7 +332,7 @@ open Lean Elab Tactic
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := false))
 
 @[inherit_doc normNum] syntax (name := normNumConv)
-    "norm_num" (config)? &" only"? (simpArgs)? : conv
+    "norm_num" optConfig &" only"? (simpArgs)? : conv
 
 /-- Elaborator for `norm_num` conv tactic. -/
 @[tactic normNumConv] def elabNormNumConv : Tactic := fun stx ↦ withMainContext do
@@ -355,8 +355,8 @@ Unlike `norm_num`, this command does not fail when no simplifications are made.
 
 `#norm_num` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := normNumCmd) "#norm_num" cfg:(config)? o:(&" only")?
+macro (name := normNumCmd) "#norm_num" cfg:optConfig o:(&" only")?
     args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
-  `(command| #conv norm_num $(cfg)? $[only%$o]? $(args)? => $e)
+  `(command| #conv norm_num $cfg:optConfig $[only%$o]? $(args)? => $e)
 
 end Mathlib.Tactic

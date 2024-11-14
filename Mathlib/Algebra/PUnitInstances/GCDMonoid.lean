@@ -32,11 +32,11 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   normalize_gcd := by intros; rfl
   normalize_lcm := by intros; rfl
 
--- Porting note (#10618): simpNF lint: simp can prove this @[simp]
+@[simp]
 theorem gcd_eq {x y : PUnit} : gcd x y = unit :=
   rfl
 
--- Porting note (#10618): simpNF lint: simp can prove this @[simp]
+@[simp]
 theorem lcm_eq {x y : PUnit} : lcm x y = unit :=
   rfl
 

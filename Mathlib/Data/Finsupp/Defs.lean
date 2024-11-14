@@ -171,7 +171,7 @@ theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
   simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne]
 
-theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
+theorem card_support_eq_zero {f : α →₀ M} : #f.support = 0 ↔ f = 0 := by simp
 
 instance instDecidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
@@ -388,11 +388,11 @@ theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     fun ⟨_b, hb, hf⟩ => hf.symm ▸ support_single_ne_zero _ hb⟩
 
 theorem card_support_eq_one {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
+    #f.support = 1 ↔ ∃ a, f a ≠ 0 ∧ f = single a (f a) := by
   simp only [card_eq_one, support_eq_singleton]
 
 theorem card_support_eq_one' {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
+    #f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
 
 theorem support_subset_singleton {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ f = single a (f a) :=
@@ -403,11 +403,11 @@ theorem support_subset_singleton' {f : α →₀ M} {a : α} : f.support ⊆ {a}
     rw [hb, support_subset_singleton, single_eq_same]⟩
 
 theorem card_support_le_one [Nonempty α] {f : α →₀ M} :
-    card f.support ≤ 1 ↔ ∃ a, f = single a (f a) := by
+    #f.support ≤ 1 ↔ ∃ a, f = single a (f a) := by
   simp only [card_le_one_iff_subset_singleton, support_subset_singleton]
 
 theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
-    card f.support ≤ 1 ↔ ∃ a b, f = single a b := by
+    #f.support ≤ 1 ↔ ∃ a b, f = single a b := by
   simp only [card_le_one_iff_subset_singleton, support_subset_singleton']
 
 @[simp]
@@ -622,7 +622,7 @@ otherwise a better set representation is often available. -/
 def onFinset (s : Finset α) (f : α → M) (hf : ∀ a, f a ≠ 0 → a ∈ s) : α →₀ M where
   support :=
     haveI := Classical.decEq M
-    s.filter (f · ≠ 0)
+    {a ∈ s | f a ≠ 0}
   toFun := f
   mem_support_toFun := by classical simpa
 
@@ -637,14 +637,13 @@ theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
     (onFinset s f hf).support ⊆ s := by
   classical convert filter_subset (f · ≠ 0) s
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_support_onFinset {s : Finset α} {f : α → M} (hf : ∀ a : α, f a ≠ 0 → a ∈ s) {a : α} :
     a ∈ (Finsupp.onFinset s f hf).support ↔ f a ≠ 0 := by
   rw [Finsupp.mem_support_iff, Finsupp.onFinset_apply]
 
 theorem support_onFinset [DecidableEq M] {s : Finset α} {f : α → M}
     (hf : ∀ a : α, f a ≠ 0 → a ∈ s) :
-    (Finsupp.onFinset s f hf).support = s.filter fun a => f a ≠ 0 := by
+    (Finsupp.onFinset s f hf).support = {a ∈ s | f a ≠ 0} := by
   dsimp [onFinset]; congr
 
 end OnFinset
@@ -729,13 +728,33 @@ theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →�
   simp only [Finsupp.mem_support_iff, Ne, Finsupp.mapRange_apply]
   exact he.ne_iff' he0
 
+lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
+    Set.range (Finsupp.mapRange (α := α) e he₀) = {g | ∀ i, g i ∈ Set.range e} := by
+  ext g
+  simp only [Set.mem_range, Set.mem_setOf]
+  constructor
+  · rintro ⟨g, rfl⟩ i
+    simp
+  · intro h
+    classical
+    choose f h using h
+    use onFinset g.support (Set.indicator g.support f) (by aesop)
+    ext i
+    simp only [mapRange_apply, onFinset_apply, Set.indicator_apply]
+    split_ifs <;> simp_all
+
+/-- `Finsupp.mapRange` of a injective function is injective. -/
+lemma mapRange_injective (e : M → N) (he₀ : e 0 = 0) (he : Injective e) :
+    Injective (Finsupp.mapRange (α := α) e he₀) := by
+  intro a b h
+  rw [Finsupp.ext_iff] at h ⊢
+  simpa only [mapRange_apply, he.eq_iff] using h
+
 /-- `Finsupp.mapRange` of a surjective function is surjective. -/
 lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
     Surjective (Finsupp.mapRange (α := α) e he₀) := by
-  classical
-  let d (n : N) : M := if n = 0 then 0 else surjInv he n
-  have : RightInverse d e := fun n ↦ by by_cases h : n = 0 <;> simp [d, h, he₀, surjInv_eq he n]
-  exact fun f ↦ ⟨mapRange d (by simp [d]) f, by simp [this.comp_eq_id]⟩
+  rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
+  simp
 
 end MapRange
 
@@ -1199,7 +1218,7 @@ end AddMonoid
 
 instance instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
   --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+  { DFunLike.coe_injective.addCommMonoid DFunLike.coe coe_zero coe_add (fun _ _ => rfl) with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instNeg [NegZeroClass G] : Neg (α →₀ G) :=
@@ -1244,14 +1263,14 @@ instance instIntSMul [AddGroup G] : SMul ℤ (α →₀ G) :=
 
 instance instAddGroup [AddGroup G] : AddGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+  { DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
       fun _ _ => rfl with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
-      fun _ _ => rfl with
+  { DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
+      (fun _ _ => rfl) fun _ _ => rfl with
     toAddGroup := Finsupp.instAddGroup }
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}

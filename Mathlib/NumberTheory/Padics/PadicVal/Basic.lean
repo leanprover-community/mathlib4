@@ -7,6 +7,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
 import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Data.Nat.Prime.Int
 
 /-!
 # `p`-adic Valuation
