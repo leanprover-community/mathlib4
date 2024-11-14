@@ -10,6 +10,7 @@ import Mathlib.AlgebraicGeometry.Limits
 # Affine space
 
 ## Main definitions
+
 - `AlgebraicGeometry.AffineSpace`: `𝔸(n; S)` is the affine `n`-space over `S`.
 - `AlgebraicGeometry.AffineSpace.coord`: The standard coordinate functions on the affine space.
 - `AlgebraicGeometry.AffineSpace.homOfVector`:
