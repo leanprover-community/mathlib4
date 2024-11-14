@@ -56,7 +56,7 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 
@@ -423,7 +423,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_inv_app'_assoc]
   · simp only [eqToHom_op, eqToHom_trans, eqToHom_map (Functor.op _), ← Functor.map_comp]
     rfl
-  · rw [Set.range_iff_surjective.mpr _]
+  · rw [Set.range_eq_univ.mpr _]
     · simp
     · rw [← TopCat.epi_iff_surjective]
       infer_instance

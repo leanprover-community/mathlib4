@@ -47,8 +47,8 @@ with additional properties:
 
 noncomputable section
 
-open scoped Topology Uniformity
-open Filter TopologicalSpace Set Metric Function
+open Filter Function Metric TopologicalSpace Set Topology
+open scoped Uniformity
 
 variable {α : Type*} {β : Type*}
 
@@ -140,8 +140,8 @@ theorem exists_nat_nat_continuous_surjective (α : Type*) [TopologicalSpace α] 
   exists_nat_nat_continuous_surjective_of_completeSpace α
 
 /-- Given a closed embedding into a Polish space, the source space is also Polish. -/
-lemma _root_.IsClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β] [PolishSpace β]
-    {f : α → β} (hf : IsClosedEmbedding f) : PolishSpace α := by
+theorem _root_.Topology.IsClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β]
+    [PolishSpace β] {f : α → β} (hf : IsClosedEmbedding f) : PolishSpace α := by
   letI := upgradePolishSpace β
   letI : MetricSpace α := hf.isEmbedding.comapMetricSpace f
   haveI : SecondCountableTopology α := hf.isEmbedding.secondCountableTopology
@@ -151,7 +151,7 @@ lemma _root_.IsClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpa
   infer_instance
 
 @[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.polishSpace := _root_.IsClosedEmbedding.polishSpace
+alias _root_.ClosedEmbedding.polishSpace := IsClosedEmbedding.polishSpace
 
 /-- Any countable discrete space is Polish. -/
 instance (priority := 50) polish_of_countable [TopologicalSpace α]
