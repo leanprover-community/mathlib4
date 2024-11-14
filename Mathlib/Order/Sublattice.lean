@@ -75,12 +75,12 @@ lemma copy_eq (L : Sublattice α) (s : Set α) (hs) : L.copy s hs = L := SetLike
 lemma ext : (∀ a, a ∈ L ↔ a ∈ M) → L = M := SetLike.ext
 
 /-- A sublattice of a lattice inherits a supremum. -/
-instance instSupCoe : Sup L where
-  sup a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
+instance instSupCoe : Max L where
+  max a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
 
 /-- A sublattice of a lattice inherits an infimum. -/
-instance instInfCoe : Inf L where
-  inf a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
+instance instInfCoe : Min L where
+  min a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
 
 @[simp, norm_cast] lemma coe_sup (a b : L) : a ⊔ b = (a : α) ⊔ b := rfl
 @[simp, norm_cast] lemma coe_inf (a b : L) : a ⊓ b = (a : α) ⊓ b := rfl
@@ -136,8 +136,8 @@ instance instBot : Bot (Sublattice α) where
   bot.infClosed' := infClosed_empty
 
 /-- The inf of two sublattices is their intersection. -/
-instance instInf : Inf (Sublattice α) where
-  inf L M := { carrier := L ∩ M
+instance instInf : Min (Sublattice α) where
+  min L M := { carrier := L ∩ M
                supClosed' := L.supClosed.inter M.supClosed
                infClosed' := L.infClosed.inter M.infClosed }
 
