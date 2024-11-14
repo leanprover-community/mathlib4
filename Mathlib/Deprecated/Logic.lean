@@ -20,7 +20,7 @@ variable {α : Sort u}
 
 section Binary
 
-variable {α : Type u} {β : Type v} (f : α → α → α) (inv : α → α) (one : α)
+variable {α : Type u} (f : α → α → α) (inv : α → α) (one : α)
 
 /-- Local notation for `f`, high priority to avoid ambiguity with `HMul.hMul`. -/
 local infix:70 (priority := high) " * " => f

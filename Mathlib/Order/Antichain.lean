@@ -109,11 +109,11 @@ theorem preimage_relEmbedding {t : Set β} (ht : IsAntichain r' t) (φ : r ↪r 
   ht ha ha' (fun h => hne (φ.injective h)) (φ.map_rel_iff.mpr hle)
 
 theorem image_relIso (hs : IsAntichain r s) (φ : r ≃r r') : IsAntichain r' (φ '' s) :=
-  hs.image_relEmbedding φ
+  hs.image_relEmbedding φ.toRelEmbedding
 
 theorem preimage_relIso {t : Set β} (hs : IsAntichain r' t) (φ : r ≃r r') :
     IsAntichain r (φ ⁻¹' t) :=
-  hs.preimage_relEmbedding φ
+  hs.preimage_relEmbedding φ.toRelEmbedding
 
 theorem image_relEmbedding_iff {φ : r ↪r r'} : IsAntichain r' (φ '' s) ↔ IsAntichain r s :=
   ⟨fun h => (φ.injective.preimage_image s).subst (h.preimage_relEmbedding φ), fun h =>
