@@ -39,11 +39,7 @@ This is `Nat.divisorsAntidiagonal` without a special case for `n = 0`. -/
     aesop
   { antidiagonal := fun n ↦ divisorsAntidiagonal (Additive.toMul n) |>.map
       (.prodMap (Additive.ofMul.toEmbedding) (Additive.ofMul.toEmbedding))
-    mem_antidiagonal := fun {n a} ↦ by
-      obtain ⟨a₁, a₂⟩ := a
-      revert n a₁ a₂
-      simp_rw [Additive.ofMul.surjective.forall, ← ofMul_mul, Additive.ofMul.injective.eq_iff]
-      simp [mem_divisorsAntidiagonal] }
+    mem_antidiagonal := by simp [← ofMul_mul, mem_divisorsAntidiagonal] }
 
 end PNat
 
