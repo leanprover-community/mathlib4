@@ -307,7 +307,7 @@ theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a * X + b)`,
   with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
 @[simps!]
-def algEquivCMulXAddC {R} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
+def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (C a * X + C b) (C ⅟ a * (X - C b))
       (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
