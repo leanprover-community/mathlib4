@@ -589,6 +589,20 @@ def castLEEmb (h : n ≤ m) : Fin n ↪ Fin m where
 
 @[simp, norm_cast] lemma coe_castLEEmb {m n} (hmn : m ≤ n) : castLEEmb hmn = castLE hmn := rfl
 
+/-- `Fub.castMax` as an `Embedding`, `castMaxEmb n m i` embeds `i` into `Fin (max n m)`. -/
+@[simps! apply]
+def castMaxEmb (n m : ℕ) : Fin n ↪ Fin (max n m) := castLEEmb (n.le_max_left m)
+
+/-- `Fub.castMax'` as an `Embedding`, `castMax'Emb n m i` embeds `i` into `Fin (max n m)`. -/
+@[simps! apply]
+def castMax'Emb (n m : ℕ) : Fin m ↪ Fin (max n m) := castLEEmb (n.le_max_right m)
+
+@[simp, norm_cast]
+lemma coe_castMaxEmb {n m : ℕ} : (castMaxEmb n m : Fin n → Fin (max n m)) = castMax m := rfl
+
+@[simp, norm_cast]
+lemma coe_castMax'Emb {n m : ℕ} : (castMax'Emb n m : Fin m → Fin (max n m)) = castMax' n := rfl
+
 /- The next proof can be golfed a lot using `Fintype.card`.
 It is written this way to define `ENat.card` and `Nat.card` without a `Fintype` dependency
 (not done yet). -/
