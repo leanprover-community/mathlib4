@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.PUnit
@@ -889,9 +890,15 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   exact zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
     (isPreconnected_zigzag (.mk gbi) (.mk gbj))
 
-variable {F} {F' : D ⥤ Cat} (α : F ⟶ F')
 
-def Grothendieck.structuredArrowToStructuredArrowMap {d d' : D} (h : d ⟶ d') (f : F'.obj d) :
+-- TODO make non-small
+variable {C : Type u₁} [Category.{u₁} C]
+variable {D : Type u₁} [Category.{u₁} D]
+variable (F : D ⥤ Cat.{u₁}) (G : C ⥤ D)
+
+variable {F} {F' : D ⥤ Cat.{u₁, u₁}} (α : F ⟶ F')
+
+/-def Grothendieck.structuredArrowToStructuredArrowMap {d d' : D} (h : d ⟶ d') (f : F'.obj d) :
     StructuredArrow ((F'.map h).obj f) (α.app d') ⥤q StructuredArrow ⟨d, f⟩ (map α) where
   obj X := StructuredArrow.mk (Y := ⟨d', X.right⟩) ⟨by exact h, by exact X.hom⟩
   map g := StructuredArrow.homMk (Hom.mk (by exact 𝟙 _)
@@ -916,23 +923,18 @@ def Grothendieck.structuredArrowToStructuredArrowMap' {d' : D} (f : F.obj d') :
     StructuredArrow ⟨d', (α.app d').obj f⟩ (map α) where
   obj X := StructuredArrow.mk (Y := ⟨d', X.right⟩) ⟨by exact 𝟙 _, by { simp; exact X.hom }⟩
   map g := StructuredArrow.homMk (Hom.mk (by exact 𝟙 _) (by simp; exact g.right)) (by sorry)
+-/
+
+open Limits
 
 instance Grothendieck.final_map [hα : ∀ X, Final (α.app X)] : Final (map α) := by
-  constructor
-  rintro ⟨d, f⟩
-  obtain ⟨u, c, g⟩ : Nonempty (StructuredArrow f (α.app d)) := inferInstance
-  letI : Nonempty (StructuredArrow { base := d, fiber := f } (map α)) :=
-    ⟨u, ⟨_, c⟩, ⟨by exact 𝟙 _, by { simp; exact g }⟩⟩
-  apply zigzag_isConnected; clear this u c g
-  dsimp at *
-  rintro ⟨⟨⟨⟩⟩, ⟨b₀, f₀⟩, ⟨g₀, h₀⟩⟩ ⟨⟨⟨⟩⟩, ⟨b₁, f₁⟩, ⟨g₁, h₁⟩⟩
-  dsimp [Grothendieck.map] at g₀ h₀ g₁ h₁ ⊢
-  have := zigzag_prefunctor_obj_of_zigzag
-    (Grothendieck.structuredArrowToStructuredArrowMap' α f₀)
-    (isPreconnected_zigzag (StructuredArrow.mk (𝟙 _)) (StructuredArrow.mk (Y := _) (_ ≫ h₀)))
-  simp only [structuredArrowToStructuredArrowMap] at this
-  dsimp at this
+  rw [final_iff_isIso_colimit_pre]
+  intro G
+  let i : colimit (map α ⋙ G) ≅ colimit G := sorry
+  convert Iso.isIso_hom i
   sorry
+
+#check colimitFiberwiseColimitIso
 
 end Grothendieck
 
