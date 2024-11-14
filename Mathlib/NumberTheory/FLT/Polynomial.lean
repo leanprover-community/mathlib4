@@ -53,8 +53,8 @@ private lemma rot_coprime
      : IsCoprime b c := by
   rw [← IsCoprime.pow_iff hp hq, ← isCoprime_mul_units_left hu hv] at hab
   rw [add_eq_zero_iff_neg_eq] at heq
-  rw [←IsCoprime.pow_iff hq hr, ←isCoprime_mul_units_left hv hw,
-    ←heq, IsCoprime.neg_right_iff]
+  rw [← IsCoprime.pow_iff hq hr, ← isCoprime_mul_units_left hv hw,
+    ← heq, IsCoprime.neg_right_iff]
   convert IsCoprime.add_mul_left_right hab.symm 1 using 2
   rw [mul_one]
 
