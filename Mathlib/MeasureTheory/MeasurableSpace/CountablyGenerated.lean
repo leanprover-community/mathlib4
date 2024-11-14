@@ -505,6 +505,7 @@ lemma countablePartitionSet_of_mem {n : ℕ} {a : α} {s : Set α} (hs : s ∈ c
     countablePartitionSet n a = s :=
   memPartitionSet_of_mem hs ha
 
+@[measurability]
 lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
     MeasurableSet (countablePartitionSet n a) :=
   measurableSet_countablePartition n (countablePartitionSet_mem n a)

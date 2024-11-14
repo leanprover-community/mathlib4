@@ -461,6 +461,12 @@ protected theorem comp (hg : IsClosedMap g) (hf : IsClosedMap f) : IsClosedMap (
   rw [image_comp]
   exact hg _ (hf _ hs)
 
+protected theorem of_comp_surjective (hf : Surjective f) (hf' : Continuous f)
+    (hfg : IsClosedMap (g ∘ f)) : IsClosedMap g := by
+  intro K hK
+  rw [← image_preimage_eq K hf, ← image_comp]
+  exact hfg _ (hK.preimage hf')
+
 theorem closure_image_subset (hf : IsClosedMap f) (s : Set X) :
     closure (f '' s) ⊆ f '' closure s :=
   closure_minimal (image_subset _ subset_closure) (hf _ isClosed_closure)

@@ -3,15 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.Topology.KrullDimension
-import Mathlib.Topology.Sober
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.KrullDimension
+import Mathlib.Topology.Sober
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
