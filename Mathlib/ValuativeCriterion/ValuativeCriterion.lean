@@ -1,5 +1,3 @@
--- `Mathlib/AlgebraicGeometry/Morphisms/ValuativeCriterion
-import Mathlib.ValuativeCriterion.Immersion
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.ValuativeCriterion.ValuationRing
 import Mathlib.ValuativeCriterion.Lemmas
@@ -43,7 +41,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 namespace Existence
 
-open LocalRing in
+open IsLocalRing in
 /--
 Uses `exists_factor_valuationRing` and `Scheme.fromSpecResidueField`.
 
@@ -75,7 +73,7 @@ lemma specializingMap (H : ValuativeCriterion.Existence f) :
       comap_closedPoint (S := A) (stalk_y_to_residue_x'.codRestrict A.toSubring hA)
     rw [this, Y.fromSpecStalk_closedPoint]
 
-open LocalRing in
+open IsLocalRing in
 /--
 Uses `bijective_rangeRestrict_comp_of_valuationRing` and `stalkClosedPointTo`
 
