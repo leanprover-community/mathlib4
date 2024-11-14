@@ -2912,6 +2912,7 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.FieldTheory.RatFunc.Basic
 import Mathlib.FieldTheory.RatFunc.Defs
 import Mathlib.FieldTheory.RatFunc.Degree
+import Mathlib.FieldTheory.Relrank
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.FieldTheory.SeparableDegree
