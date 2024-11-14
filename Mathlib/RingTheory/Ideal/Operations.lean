@@ -670,12 +670,6 @@ lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (
     s.prod = ⊥ ↔ ⊥ ∈ s :=
   Multiset.prod_eq_zero_iff
 
-/-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
-@[deprecated multiset_prod_eq_bot (since := "2023-12-26")]
-theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
-    s.prod = ⊥ ↔ ∃ I ∈ s, I = ⊥ := by
-  simp
-
 theorem span_pair_mul_span_pair (w x y z : R) :
     (span {w, x} : Ideal R) * span {y, z} = span {w * y, w * z, x * y, x * z} := by
   simp_rw [span_insert, sup_mul, mul_sup, span_singleton_mul_span_singleton, sup_assoc]

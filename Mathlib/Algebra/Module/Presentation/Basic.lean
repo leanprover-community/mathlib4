@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Presentations of modules
@@ -325,6 +325,14 @@ lemma desc_var (s : relations.Solution N) (g : relations.G) :
     h.desc s (solution.var g) = s.var g := by
   dsimp [desc]
   simp only [linearEquiv_symm_var, fromQuotient_toQuotient, π_single]
+
+@[simp]
+lemma desc_comp_π (s : relations.Solution N) : (h.desc s).comp solution.π = s.π := by aesop
+
+@[simp]
+lemma π_desc_apply (s : relations.Solution N) (x : relations.G →₀ A) :
+    h.desc s (solution.π x) = s.π x :=
+  DFunLike.congr_fun (h.desc_comp_π s) x
 
 @[simp]
 lemma postcomp_desc (s : relations.Solution N) :
