@@ -16,6 +16,7 @@ Euler product for `f`.
 
 open Complex
 
+-- `local` attribute for now, see discussion on [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/fun_prop.20attribute.20for.20Complex.2Elog.20lemmas.3F/near/482347068)
 attribute [local fun_prop] DifferentiableAt.clog
 
 open Topology in
@@ -29,10 +30,6 @@ lemma Summable.clog_one_sub {α  : Type*} {f : α → ℂ} (hsum : Summable f) :
     simpa only [sub_zero, log_one] using hg.isBigO_sub
   exact this.comp_summable hsum
 
-/-- If `f : α → ℂ` is summable, then so is `n ↦ -log (1 - f n)`. -/
-lemma Summable.neg_clog_one_sub {α  : Type*} {f : α → ℂ} (hsum : Summable f) :
-    Summable fun n ↦ -log (1 - f n) :=
-  hsum.clog_one_sub.neg
 namespace EulerProduct
 
 /-- A variant of the Euler Product formula in terms of the exponential of a sum of logarithms. -/
@@ -41,17 +38,9 @@ theorem exp_tsum_primes_log_eq_tsum {f : ℕ →*₀ ℂ} (hsum : Summable (‖f
   have hs {p : ℕ} (hp : 1 < p) : ‖f p‖ < 1 := hsum.of_norm.norm_lt_one (f := f.toMonoidHom) hp
   have hp (p : Nat.Primes) : 1 - f p ≠ 0 :=
     fun h ↦ norm_one (α := ℂ) ▸ (sub_eq_zero.mp h) ▸ hs p.prop.one_lt |>.false
-  have H := hsum.of_norm.neg_clog_one_sub.subtype {p | p.Prime} |>.hasSum.cexp.tprod_eq
+  have H := hsum.of_norm.clog_one_sub.neg.subtype {p | p.Prime} |>.hasSum.cexp.tprod_eq
   simp only [Set.coe_setOf, Set.mem_setOf_eq, Function.comp_apply] at H
   conv at H => enter [1, 1, p]; rw [exp_neg, exp_log (hp p)]
   exact H.symm.trans <| eulerProduct_completely_multiplicative_tprod hsum
-
-/-- A variant of the Euler Product formula in terms of the exponential of a sum of logarithms,
-with the function unbundled. -/
-theorem exp_tsum_primes_log_eq_tsum' {f : ℕ → ℂ} (h₀ : f 0 = 0) (h₁ : f 1 = 1)
-    (hf : ∀ m n, f (m * n) = f m * f n) (hsum : Summable (‖f ·‖)) :
-    exp (∑' p : Nat.Primes, -log (1 - f p)) = ∑' n : ℕ, f n :=
-  exp_tsum_primes_log_eq_tsum (f := {toFun := f, map_zero' := h₀, map_one' := h₁, map_mul' := hf})
-    hsum
 
 end EulerProduct
