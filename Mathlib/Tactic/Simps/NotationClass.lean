@@ -7,7 +7,6 @@ Authors: Floris van Doorn
 import Mathlib.Init
 import Lean.Elab.Exception
 import Batteries.Lean.NameMapAttribute
-import Batteries.Lean.Expr
 import Batteries.Tactic.Lint
 
 /-!
