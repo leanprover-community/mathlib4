@@ -338,79 +338,52 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
     exact hω₂ ((tendsto_atBot_add_left_of_ge _ b fun n =>
       hbdd ⟨n, rfl⟩) <| tendsto_neg_atBot_iff.2 ht)
 
-
-
 section Indicator
 
 variable {α : Type*}
 
-theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
-    limsup s atTop = { ω | Tendsto
-      (fun n ↦ ∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → ℕ) ω) atTop atTop } := by
-  ext ω
-  simp only [limsup_eq_iInf_iSup_of_nat, Set.iSup_eq_iUnion, Set.iInf_eq_iInter,
-    Set.mem_iInter, Set.mem_iUnion, exists_prop, ge_iff_le, Set.mem_setOf_eq]
-  constructor
-  · intro hω
-    refine tendsto_atTop_atTop_of_monotone' (fun n m hnm ↦ Finset.sum_mono_set_of_nonneg
-      (fun i ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _) (Finset.range_mono hnm)) ?_
-    rintro ⟨i, h⟩
-    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at h
-    induction' i with k hk
-    · obtain ⟨j, hj₁, hj₂⟩ := hω 1
-      refine not_lt.2 (h <| j + 1)
-        (lt_of_le_of_lt (Finset.sum_const_zero.symm : 0 = ∑ k ∈ Finset.range (j + 1), 0).le ?_)
-      refine Finset.sum_lt_sum (fun m _ ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _)
-        ⟨j - 1, Finset.mem_range.2 (lt_of_le_of_lt (Nat.sub_le _ _) j.lt_succ_self), ?_⟩
-      rw [Nat.sub_add_cancel hj₁, Set.indicator_of_mem hj₂]
-      exact zero_lt_one
-    · rw [imp_false] at hk
-      push_neg at hk
-      obtain ⟨i, hi⟩ := hk
-      obtain ⟨j, hj₁, hj₂⟩ := hω (i + 1)
-      replace hi : (∑ k ∈ Finset.range i, (s (k + 1)).indicator 1 ω) = k + 1 :=
-        le_antisymm (h i) hi
-      refine not_lt.2 (h <| j + 1) ?_
-      rw [← Finset.sum_range_add_sum_Ico _ (i.le_succ.trans (hj₁.trans j.le_succ)), hi]
-      refine lt_add_of_pos_right _ ?_
-      rw [(Finset.sum_const_zero.symm : 0 = ∑ k ∈ Finset.Ico i (j + 1), 0)]
-      refine Finset.sum_lt_sum (fun m _ ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _)
-        ⟨j - 1, Finset.mem_Ico.2 ⟨(Nat.le_sub_iff_add_le (le_trans ((le_add_iff_nonneg_left _).2
-          zero_le') hj₁)).2 hj₁, lt_of_le_of_lt (Nat.sub_le _ _) j.lt_succ_self⟩, ?_⟩
-      rw [Nat.sub_add_cancel (le_trans ((le_add_iff_nonneg_left _).2 zero_le') hj₁),
-        Set.indicator_of_mem hj₂]
-      exact zero_lt_one
-  · rintro hω i
-    rw [tendsto_atTop_atTop] at hω
-    by_contra! hcon
-    obtain ⟨j, h⟩ := hω (i + 1)
-    have : (∑ k ∈ Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
-      have hle : ∀ j ≤ i, (∑ k ∈ Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
-        refine fun j hij ↦
-          (Finset.sum_le_card_nsmul _ _ _ ?_ : _ ≤ (Finset.range j).card • 1).trans ?_
-        · exact fun m _ ↦ Set.indicator_apply_le' (fun _ ↦ le_rfl) fun _ ↦ zero_le_one
-        · simpa only [Finset.card_range, smul_eq_mul, mul_one]
-      by_cases hij : j < i
-      · exact hle _ hij.le
-      · rw [← Finset.sum_range_add_sum_Ico _ (not_lt.1 hij)]
-        suffices (∑ k ∈ Finset.Ico i j, (s (k + 1)).indicator 1 ω) = 0 by
-          rw [this, add_zero]
-          exact hle _ le_rfl
-        refine Finset.sum_eq_zero fun m hm ↦ ?_
-        exact Set.indicator_of_not_mem (hcon _ <| (Finset.mem_Ico.1 hm).1.trans m.le_succ) _
-    exact not_le.2 (lt_of_lt_of_le i.lt_succ_self <| h _ le_rfl) this
+lemma _root_.Set.infinite_iff_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R]
+    [Archimedean R] {s : Set ℕ} : s.Infinite
+      ↔ Tendsto (fun n ↦ ∑ k ∈ Finset.range n, s.indicator (1 : ℕ → R) k) atTop atTop := by
+  have h_mono : Monotone fun n ↦ ∑ k ∈ Finset.range n, s.indicator (1 : ℕ → R) k := by
+    refine (Finset.sum_mono_set_of_nonneg ?_).comp Finset.range_mono
+    exact (fun _ ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _)
+  rw [Monotone.tendsto_atTop_atTop_iff h_mono]
+  refine ⟨fun hs n ↦ ?_, ?_⟩
+  · obtain ⟨n', hn'⟩ := exists_lt_nsmul zero_lt_one n
+    obtain ⟨t, t_s, t_card⟩ := Set.Infinite.exists_subset_card_eq hs n'
+    obtain ⟨M, hM⟩ := Finset.bddAbove t
+    use M + 1
+    apply hn'.le.trans
+    refine le_of_eq_of_le (b := ∑ k ∈ Finset.range (M + 1), t.toSet.indicator (1 : ℕ → R) k) ?_ ?_
+    · have h : t.toSet ⊆ Finset.range (M + 1) := by
+        intro i i_t
+        rw [Finset.coe_range (M + 1), Set.mem_Iio]
+        exact (hM i_t).trans_lt (lt_add_one M)
+      rw [Finset.sum_indicator_subset (1 : ℕ → R) h, Finset.sum_eq_card_nsmul (b := 1) _]
+      · rw [t_card]
+      · exact fun i _ ↦ Pi.one_apply i
+    · exact Finset.sum_le_sum fun i _ ↦ (Set.indicator_le_indicator_of_subset t_s zero_le_one) i
+  · contrapose!
+    intro hs
+    obtain ⟨M, hM⟩ := Set.Finite.bddAbove (Set.not_infinite.1 hs)
+    have : ∑ k ∈ Finset.range (M + 1), s.indicator (1 : ℕ → R) k < (M + 2) • 1 := by
+      apply (Finset.sum_le_card_nsmul _ _ 1 _).trans_lt
+      · simp
+      · exact fun i _ ↦ Pi.le_def.1 (Set.indicator_le_self' (fun _ _ ↦ zero_le_one)) i
+    refine ⟨(M + 2) • 1, fun n ↦ not_le_of_lt (lt_of_le_of_lt ?_ this)⟩
+    rcases lt_or_le n (M + 1) with n_M | n_M
+    · exact h_mono n_M.le
+    · refine (Finset.eventually_constant_sum (fun k k_N ↦ Set.indicator_of_not_mem ?_ _) n_M).le
+      exact fun h ↦ not_lt_of_le (hM h) (Nat.lt_iff_add_one_le.2 k_N)
 
-theorem limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R] [Archimedean R]
-    (s : ℕ → Set α) : limsup s atTop = { ω | Tendsto
+theorem _root_.Set.limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R]
+    [Archimedean R] (s : ℕ → Set α) : limsup s atTop = { ω | Tendsto
       (fun n ↦ ∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) atTop atTop } := by
-  rw [limsup_eq_tendsto_sum_indicator_nat_atTop s]
+  nth_rw 1 [← limsup_nat_add s 1, ← Nat.cofinite_eq_atTop, cofinite.limsup_set_eq]
   ext ω
-  simp only [Set.mem_setOf_eq]
-  rw [(_ : (fun n ↦ ∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) = fun n ↦
-    ↑(∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → ℕ) ω))]
-  · exact tendsto_natCast_atTop_iff.symm
-  · ext n
-    simp only [Set.indicator, Pi.one_apply, Finset.sum_boole, Nat.cast_id]
+  rw [Set.mem_setOf_eq, Set.mem_setOf_eq, Set.infinite_iff_tendsto_sum_indicator_atTop R, iff_eq_eq]
+  congr
 
 end Indicator
 
@@ -438,7 +411,6 @@ theorem ae_mem_limsup_atTop_iff (μ : Measure Ω) [IsFiniteMeasure μ] {s : ℕ 
     (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : ∀ᵐ ω ∂μ, ω ∈ limsup s atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop :=
-  (limsup_eq_tendsto_sum_indicator_atTop ℝ s).symm ▸ tendsto_sum_indicator_atTop_iff' hs
+  (Set.limsup_eq_tendsto_sum_indicator_atTop ℝ s).symm ▸ tendsto_sum_indicator_atTop_iff' hs
 
 end MeasureTheory
-#min_imports
