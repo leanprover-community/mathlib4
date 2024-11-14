@@ -133,7 +133,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
       _ = ↑4 ^ #P.parts * m / #U := by norm_num
       _ ≤ 1 := div_le_one_of_le₀ (pow_mul_m_le_card_part hP hU) (cast_nonneg _)
       _ ≤ ↑2 ^ #P.parts * ε ^ 2 / 10 := by
-        refine (one_le_sq_iff <| by positivity).1 ?_
+        refine (one_le_sq_iff₀ <| by positivity).1 ?_
         rw [div_pow, mul_pow, pow_right_comm, ← pow_mul ε,
           one_le_div (sq_pos_of_ne_zero <| by norm_num)]
         calc
@@ -437,7 +437,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   have hrs : |r - s| ≤ ε / 5 := abs_density_star_sub_density_le_eps hPε hε₁ hUVne hUV
   have hst : ε ≤ |s - t| := by
     -- After leanprover/lean4#2734, we need to do the zeta reduction before `mod_cast`.
-    unfold_let s t
+    unfold s t
     exact mod_cast G.nonuniformWitness_spec hUVne hUV
   have hpr : |p - r| ≤ ε ^ 5 / 49 :=
     average_density_near_total_density hPα hPε hε₁ star_subset_chunk star_subset_chunk
