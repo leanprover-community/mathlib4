@@ -111,10 +111,9 @@ lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) {m' : Type*} :
         apply hf₀
       apply hA
 
-lemma adjoin_col0s_isTotallyUnimodular_iff (A : Matrix m n R) {n' : Type*} :
+lemma fromColumns_col0_isTotallyUnimodular_iff (A : Matrix m n R) {n' : Type*} :
     (fromColumns A (col n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
-  rw [← transpose_transpose (fromColumns A (col n' 0)), transpose_isTotallyUnimodular_iff,
-    transpose_fromColumns, transpose_col, adjoin_row0s_isTotallyUnimodular_iff,
-    transpose_isTotallyUnimodular_iff]
+  rw [← transpose_isTotallyUnimodular_iff, transpose_fromColumns, transpose_col,
+    fromRows_row0_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
 
 end Matrix
