@@ -648,26 +648,27 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
       ∧ (∀ (i : Fin n), HasCompactSupport (f i)) := by
   obtain ⟨f, hfsub, hfcp⟩ := PartitionOfUnity.exists_isSubordinate_of_locallyFinite_t2space htcp s
     hs (locallyFinite_of_finite _) hst
-  use f.toFun
+  use f
   refine ⟨fun i ↦ hfsub i, ?_, ?_, fun i => hfcp i⟩
-  · intro t ht
+  · intro x hx
     simp only [Finset.sum_apply, Pi.one_apply]
-    have h := f.sum_eq_one' t ht
+    have h := f.sum_eq_one' x hx
     simp at h
-    rw [finsum_eq_sum (fun i => (f.toFun i) t)
-      (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) t)))] at h
+    rw [finsum_eq_sum (fun i => (f.toFun i) x)
+      (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) x)))] at h
     simp only [Finite.toFinset_setOf, ne_eq] at h
-    rw [← h, ← Finset.sum_subset]
-    · exact Finset.filter_subset (fun x ↦ ¬(f.toFun x) t = 0) Finset.univ
-    · intro x _ hnx
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and, Decidable.not_not] at hnx
-      exact hnx
+    rw [← h, ← Finset.sum_subset
+      (Finset.subset_univ (Finset.filter (fun (j : Fin n) ↦ ¬(f.toFun j) x = 0) Finset.univ))
+      (by intro j hju hj
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and, Decidable.not_not] at hj
+          exact hj)]
+    rfl
   intro i x
-  refine ⟨f.nonneg' i x, ?_⟩
-  by_cases h0 : f.toFun i x = 0
+  refine ⟨f.nonneg i x, ?_⟩
+  by_cases h0 : f i x = 0
   · rw [h0]
     exact zero_le_one
-  rw [← Finset.sum_singleton (f.toFun ·  x) i]
+  rw [← Finset.sum_singleton (f ·  x) i]
   apply le_trans _ (f.sum_le_one' x)
   rw [finsum_eq_sum (f.toFun ·  x) (by exact toFinite (support (f.toFun · x)))]
   simp only [Finite.toFinset_setOf, ne_eq]
