@@ -260,8 +260,8 @@ theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
     (x : Multiplicative αᵒᵈ) : OrderDual.ofDual (Multiplicative.toAdd x) = ⊤ ↔ x = 0 := Iff.rfl
 
 @[simp]
-theorem ofAdd_toDual_top [LinearOrderedAddCommMonoidWithTop α] :
-    Multiplicative.ofAdd (OrderDual.toDual (⊤ : α)) = 0 := rfl
+theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
+    Multiplicative.ofAdd ⊥ = (0 : Multiplicative αᵒᵈ) := rfl
 
 @[simp]
 theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :

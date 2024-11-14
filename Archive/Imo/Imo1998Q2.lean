@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Ring

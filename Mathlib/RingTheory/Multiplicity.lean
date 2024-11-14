@@ -62,6 +62,9 @@ theorem finite_iff_emultiplicity_ne_top :
 
 alias ⟨multiplicity.Finite.emultiplicity_ne_top, _⟩ := finite_iff_emultiplicity_ne_top
 
+@[deprecated (since := "2024-11-08")]
+alias Finite.emultiplicity_ne_top := multiplicity.Finite.emultiplicity_ne_top
+
 theorem finite_of_emultiplicity_eq_natCast {n : ℕ} (h : emultiplicity a b = n) :
     Finite a b := by
   by_contra! nh
