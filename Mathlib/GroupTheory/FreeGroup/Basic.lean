@@ -151,7 +151,7 @@ theorem not_step_singleton : ∀ {p : α × Bool}, ¬Step [p] L
 
 @[to_additive]
 theorem Step.cons_cons_iff : ∀ {p : α × Bool}, Step (p :: L₁) (p :: L₂) ↔ Step L₁ L₂ := by
-  simp (config := { contextual := true }) [Step.cons_left_iff, iff_def, or_imp]
+  simp +contextual [Step.cons_left_iff, iff_def, or_imp]
 
 @[to_additive]
 theorem Step.append_left_iff : ∀ L, Step (L ++ L₁) (L ++ L₂) ↔ Step L₁ L₂
@@ -642,7 +642,7 @@ set of generators equals `⊤`. -/
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
   rw [← lift.range_eq_closure, lift_of_eq_id]
-  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
+  exact MonoidHom.range_eq_top.2 Function.surjective_id
 
 end lift
 
@@ -808,8 +808,7 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
     revert x
-    change (FreeGroup Unit →* FreeGroup ℤ)
-    apply map fun _ => (1 : ℤ))
+    exact ↑(map fun _ => (1 : ℤ)))
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩
