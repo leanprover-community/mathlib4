@@ -64,7 +64,7 @@ theorem closure_range_of (rels : Set (FreeGroup α)) :
 @[induction_eliminator]
 theorem induction_on {rels : Set (FreeGroup α)} {C : PresentedGroup rels → Prop}
     (x : PresentedGroup rels) (H : ∀ z, C (mk rels z)) : C x :=
-  Quotient.inductionOn' x H
+  Quotient.inductionOn x H
 
 theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup rels))
     (h : ∀ j : α, PresentedGroup.of j ∈ H) (x : PresentedGroup rels) : x ∈ H := by
