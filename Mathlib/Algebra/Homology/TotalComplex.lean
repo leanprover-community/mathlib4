@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.HomologicalBicomplex
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # The total complex of a bicomplex
