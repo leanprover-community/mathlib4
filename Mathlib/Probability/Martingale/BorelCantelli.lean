@@ -356,9 +356,9 @@ lemma _root_.Set.infinite_iff_tendsto_sum_indicator_atTop (R : Type*) [StrictOrd
     use M + 1
     apply hn'.le.trans
     refine le_of_eq_of_le (b := ∑ k ∈ Finset.range (M + 1), t.toSet.indicator (1 : ℕ → R) k) ?_ ?_
-    · have h : t.toSet ⊆ Finset.range (M + 1) := by
+    · have h : t ⊆ Finset.range (M + 1) := by
         intro i i_t
-        rw [Finset.coe_range (M + 1), Set.mem_Iio]
+        rw [Finset.mem_range]
         exact (hM i_t).trans_lt (lt_add_one M)
       rw [Finset.sum_indicator_subset (1 : ℕ → R) h, Finset.sum_eq_card_nsmul (b := 1) _]
       · rw [t_card]
