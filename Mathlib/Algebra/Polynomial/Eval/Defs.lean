@@ -58,14 +58,6 @@ theorem eval₂_congr {R S : Type*} [Semiring R] [Semiring S] {f g : R →+* S} 
     {φ ψ : R[X]} : f = g → s = t → φ = ψ → eval₂ f s φ = eval₂ g t ψ := by
   rintro rfl rfl rfl; rfl
 
-/-
-@[simp]
-theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
-  simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
-    mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff,
-    RingHom.map_zero, imp_true_iff, eq_self_iff_true]
--/
-
 @[simp]
 theorem eval₂_zero : (0 : R[X]).eval₂ f x = 0 := by simp [eval₂_eq_sum]
 
@@ -92,21 +84,6 @@ theorem eval₂_add : (p + q).eval₂ f x = p.eval₂ f x + q.eval₂ f x := by
 
 @[simp]
 theorem eval₂_one : (1 : R[X]).eval₂ f x = 1 := by rw [← C_1, eval₂_C, f.map_one]
-
-/-
-@[simp]
-theorem eval₂_smul (g : R →+* S) (p : R[X]) (x : S) {s : R} :
-    eval₂ g x (s • p) = g s * eval₂ g x p := by
-  have A : p.natDegree < p.natDegree.succ := Nat.lt_succ_self _
-  have B : (s • p).natDegree < p.natDegree.succ := (natDegree_smul_le _ _).trans_lt A
-  rw [eval₂_eq_sum, eval₂_eq_sum, sum_over_range' _ _ _ A, sum_over_range' _ _ _ B] <;>
-    simp [mul_sum, mul_assoc]
-
-@[simp]
-theorem eval₂_C_X : eval₂ C X p = p :=
-  Polynomial.induction_on' p (fun p q hp hq => by simp [hp, hq]) fun n x => by
-    rw [eval₂_monomial, ← smul_X_eq_monomial, C_mul']
--/
 
 /-- `eval₂AddMonoidHom (f : R →+* S) (x : S)` is the `AddMonoidHom` from
 `R[X]` to `S` obtained by evaluating the pushforward of `p` along `f` at `x`. -/
@@ -211,25 +188,6 @@ as long as target ring is commutative
 
 section Eval₂
 
-/-
-section
-
-variable [Semiring S] (f : R →+* S) (x : S)
-
-theorem eval₂_eq_sum_range :
-    p.eval₂ f x = ∑ i ∈ Finset.range (p.natDegree + 1), f (p.coeff i) * x ^ i :=
-  _root_.trans (congr_arg _ p.as_sum_range)
-    (_root_.trans (eval₂_finset_sum f _ _ x) (congr_arg _ (by simp)))
-
-theorem eval₂_eq_sum_range' (f : R →+* S) {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
-    eval₂ f x p = ∑ i ∈ Finset.range n, f (p.coeff i) * x ^ i := by
-  rw [eval₂_eq_sum, p.sum_over_range' _ _ hn]
-  intro i
-  rw [f.map_zero, zero_mul]
-
-end
--/
-
 section
 
 variable [CommSemiring S] (f : R →+* S) (x : S)
@@ -284,16 +242,6 @@ def eval : R → R[X] → R :=
 theorem eval_eq_sum : p.eval x = p.sum fun e a => a * x ^ e := by
   rw [eval, eval₂_eq_sum]
   rfl
-
-/-
-theorem eval_eq_sum_range {p : R[X]} (x : R) :
-    p.eval x = ∑ i ∈ Finset.range (p.natDegree + 1), p.coeff i * x ^ i := by
-  rw [eval_eq_sum, sum_over_range]; simp
-
-theorem eval_eq_sum_range' {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : R) :
-    p.eval x = ∑ i ∈ Finset.range n, p.coeff i * x ^ i := by
-  rw [eval_eq_sum, p.sum_over_range' _ _ hn]; simp
--/
 
 @[simp]
 theorem eval₂_at_apply {S : Type*} [Semiring S] (f : R →+* S) (r : R) :
@@ -357,13 +305,6 @@ theorem eval_add : (p + q).eval x = p.eval x + q.eval x :=
 theorem eval_one : (1 : R[X]).eval x = 1 :=
   eval₂_one _ _
 
-/-
-@[simp]
-theorem eval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S) (p : R[X])
-    (x : R) : (s • p).eval x = s • p.eval x := by
-  rw [← smul_one_smul R s p, eval, eval₂_smul, RingHom.id_apply, smul_one_mul]
--/
-
 @[simp]
 theorem eval_C_mul : (C a * p).eval x = a * p.eval x := by
   induction p using Polynomial.induction_on' with
@@ -371,38 +312,6 @@ theorem eval_C_mul : (C a * p).eval x = a * p.eval x := by
     simp only [mul_add, eval_add, ph, qh]
   | h_monomial n b =>
     simp only [mul_assoc, C_mul_monomial, eval_monomial]
-
-/-
-/-- A reformulation of the expansion of (1 + y)^d:
-$$(d + 1) (1 + y)^d - (d + 1)y^d = \sum_{i = 0}^d {d + 1 \choose i} \cdot i \cdot y^{i - 1}.$$
--/
-theorem eval_monomial_one_add_sub [CommRing S] (d : ℕ) (y : S) :
-    eval (1 + y) (monomial d (d + 1 : S)) - eval y (monomial d (d + 1 : S)) =
-      ∑ x_1 ∈ range (d + 1), ↑((d + 1).choose x_1) * (↑x_1 * y ^ (x_1 - 1)) := by
-  have cast_succ : (d + 1 : S) = ((d.succ : ℕ) : S) := by simp only [Nat.cast_succ]
-  rw [cast_succ, eval_monomial, eval_monomial, add_comm, add_pow]
-  -- Porting note: `apply_congr` hadn't been ported yet, so `congr` & `ext` is used.
-  conv_lhs =>
-    congr
-    · congr
-      · skip
-      · congr
-        · skip
-        · ext
-          rw [one_pow, mul_one, mul_comm]
-  rw [sum_range_succ, mul_add, Nat.choose_self, Nat.cast_one, one_mul, add_sub_cancel_right,
-    mul_sum, sum_range_succ', Nat.cast_zero, zero_mul, mul_zero, add_zero]
-  refine sum_congr rfl fun y _hy => ?_
-  rw [← mul_assoc, ← mul_assoc, ← Nat.cast_mul, Nat.succ_mul_choose_eq, Nat.cast_mul,
-    Nat.add_sub_cancel]
-
-/-- `Polynomial.eval` as linear map -/
-@[simps]
-def leval {R : Type*} [Semiring R] (r : R) : R[X] →ₗ[R] R where
-  toFun f := f.eval r
-  map_add' _f _g := eval_add
-  map_smul' c f := eval_smul c f r
--/
 
 @[simp]
 theorem eval_natCast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := by
@@ -447,19 +356,6 @@ theorem IsRoot.def : IsRoot p a ↔ p.eval a = 0 :=
 
 theorem IsRoot.eq_zero (h : IsRoot p x) : eval x p = 0 :=
   h
-
-/-
-theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
-  calc
-    coeff p 0 = coeff p 0 * 0 ^ 0 := by simp
-    _ = p.eval 0 := by
-      symm
-      rw [eval_eq_sum]
-      exact Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow hb]) (by simp)
-
-theorem zero_isRoot_of_coeff_zero_eq_zero {p : R[X]} (hp : p.coeff 0 = 0) : IsRoot p 0 := by
-  rwa [coeff_zero_eq_eval_zero] at hp
--/
 
 theorem IsRoot.dvd {R : Type*} [CommSemiring R] {p q : R[X]} {x : R} (h : p.IsRoot x)
     (hpq : p ∣ q) : q.IsRoot x := by
@@ -578,37 +474,11 @@ theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
   (MonoidHom.mk (OneHom.mk (fun r : R[X] => r.comp q) one_comp) fun r s => mul_comp r s q).map_pow
     p n
 
-/-
-@[simp]
-theorem smul_comp [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S) (p q : R[X]) :
-    (s • p).comp q = s • p.comp q := by
-  rw [← smul_one_smul R s p, comp, comp, eval₂_smul, ← smul_eq_C_mul, smul_assoc, one_smul]
--/
-
 theorem comp_assoc {R : Type*} [CommSemiring R] (φ ψ χ : R[X]) :
     (φ.comp ψ).comp χ = φ.comp (ψ.comp χ) := by
   refine Polynomial.induction_on φ ?_ ?_ ?_ <;>
     · intros
       simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ, ← mul_assoc]
-
-/-
-theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
-    coeff (p.comp q) (natDegree p * natDegree q) =
-    leadingCoeff p * leadingCoeff q ^ natDegree p := by
-  rw [comp, eval₂_def, coeff_sum]
-  -- Porting note: `convert` → `refine`
-  refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
-  case h₂ =>
-    simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
-  case h₀ =>
-    intro b hbs hbp
-    refine coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt ?_)
-    rw [natDegree_C, zero_add]
-    refine natDegree_pow_le.trans_lt ((mul_lt_mul_right (pos_iff_ne_zero.mpr hqd0)).mpr ?_)
-    exact lt_of_le_of_ne (le_natDegree_of_mem_supp _ hbs) hbp
-  case h₁ =>
-    simp +contextual
--/
 
 @[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
     (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
@@ -654,12 +524,6 @@ protected theorem map_mul : (p * q).map f = p.map f * q.map f := by
   rw [map, eval₂_mul_noncomm]
   exact fun k => (commute_X _).symm
 
-/-
-@[simp]
-protected theorem map_smul (r : R) : (r • p).map f = f r • p.map f := by
-  rw [map, eval₂_smul, RingHom.comp_apply, C_mul']
--/
-
 -- `map` is a ring-hom unconditionally, and theoretically the definition could be replaced,
 -- but this turns out not to be easy because `p.map f` does not resolve to `Polynomial.map`
 -- if `map` is a `RingHom` instead of a plain function; the elaborator does not try to coerce
@@ -696,39 +560,6 @@ protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=
   (mapRingHom f).map_dvd
 
-/-
-@[simp]
-theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
-  rw [map, eval₂_def, coeff_sum, sum]
-  conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
-  refine Finset.sum_congr rfl fun x _hx => ?_
-  simp only [RingHom.coe_comp, Function.comp, coeff_C_mul_X_pow]
-  split_ifs <;> simp [f.map_zero]
-
-/-- If `R` and `S` are isomorphic, then so are their polynomial rings. -/
-@[simps!]
-def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
-  RingEquiv.ofHomInv (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext <;> simp)
-    (by ext <;> simp)
-
-theorem map_map [Semiring T] (g : S →+* T) (p : R[X]) : (p.map f).map g = p.map (g.comp f) :=
-  ext (by simp [coeff_map])
-
-@[simp]
-theorem map_id : p.map (RingHom.id _) = p := by simp [Polynomial.ext_iff, coeff_map]
-
-/-- The polynomial ring over a finite product of rings is isomorphic to
-the product of polynomial rings over individual rings. -/
-def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
-    (∀ i, R i)[X] ≃+* ∀ i, (R i)[X] :=
-  .ofBijective (Pi.ringHom fun i ↦ mapRingHom (Pi.evalRingHom R i))
-    ⟨fun p q h ↦ by ext n i; simpa using congr_arg (fun p ↦ coeff (p i) n) h,
-      fun p ↦ ⟨.ofFinsupp (.ofSupportFinite (fun n i ↦ coeff (p i) n) <|
-        (Set.finite_iUnion fun i ↦ (p i).support.finite_toSet).subset fun n hn ↦ by
-          simp only [Set.mem_iUnion, Finset.mem_coe, mem_support_iff, Function.mem_support] at hn ⊢
-          contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
--/
-
 theorem eval₂_eq_eval_map {x : S} : p.eval₂ f x = (p.map f).eval x := by
   induction p using Polynomial.induction_on' with
   | h_add p q hp hq =>
@@ -736,114 +567,12 @@ theorem eval₂_eq_eval_map {x : S} : p.eval₂ f x = (p.map f).eval x := by
   | h_monomial n r =>
     simp
 
-/-
-theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h =>
-  ext fun m => hf <| by rw [← coeff_map f, ← coeff_map f, h]
-
-theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := fun p =>
-  Polynomial.induction_on' p
-    (fun p q hp hq =>
-      let ⟨p', hp'⟩ := hp
-      let ⟨q', hq'⟩ := hq
-      ⟨p' + q', by rw [Polynomial.map_add f, hp', hq']⟩)
-    fun n s =>
-    let ⟨r, hr⟩ := hf s
-    ⟨monomial n r, by rw [map_monomial f, hr]⟩
-
-theorem degree_map_le (p : R[X]) : degree (p.map f) ≤ degree p := by
-  refine (degree_le_iff_coeff_zero _ _).2 fun m hm => ?_
-  rw [degree_lt_iff_coeff_zero] at hm
-  simp [hm m le_rfl]
-
-theorem natDegree_map_le (p : R[X]) : natDegree (p.map f) ≤ natDegree p :=
-  natDegree_le_natDegree (degree_map_le f p)
--/
-
-variable {f}
-/-
-
-protected theorem map_eq_zero_iff (hf : Function.Injective f) : p.map f = 0 ↔ p = 0 :=
-  map_eq_zero_iff (mapRingHom f) (map_injective f hf)
-
-protected theorem map_ne_zero_iff (hf : Function.Injective f) : p.map f ≠ 0 ↔ p ≠ 0 :=
-  (Polynomial.map_eq_zero_iff hf).not
-
-theorem map_monic_eq_zero_iff (hp : p.Monic) : p.map f = 0 ↔ ∀ x, f x = 0 :=
-  ⟨fun hfp x =>
-    calc
-      f x = f x * f p.leadingCoeff := by simp only [mul_one, hp.leadingCoeff, f.map_one]
-      _ = f x * (p.map f).coeff p.natDegree := congr_arg _ (coeff_map _ _).symm
-      _ = 0 := by simp only [hfp, mul_zero, coeff_zero]
-      ,
-    fun h => ext fun n => by simp only [h, coeff_map, coeff_zero]⟩
-
-theorem map_monic_ne_zero (hp : p.Monic) [Nontrivial S] : p.map f ≠ 0 := fun h =>
-  f.map_one_ne_zero ((map_monic_eq_zero_iff hp).mp h _)
--/
-
-/-
-theorem degree_map_eq_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
-    degree (p.map f) = degree p :=
-  le_antisymm (degree_map_le f _) <| by
-    have hp0 : p ≠ 0 :=
-      leadingCoeff_ne_zero.mp fun hp0 => hf (_root_.trans (congr_arg _ hp0) f.map_zero)
-    rw [degree_eq_natDegree hp0]
-    refine le_degree_of_ne_zero ?_
-    rw [coeff_map]
-    exact hf
-
-theorem natDegree_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
-    natDegree (p.map f) = natDegree p :=
-  natDegree_eq_of_degree_eq (degree_map_eq_of_leadingCoeff_ne_zero f hf)
-
-theorem leadingCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
-    leadingCoeff (p.map f) = f (leadingCoeff p) := by
-  unfold leadingCoeff
-  rw [coeff_map, natDegree_map_of_leadingCoeff_ne_zero f hf]
--/
-
-variable (f)
-
-/-
-@[simp]
-theorem mapRingHom_id : mapRingHom (RingHom.id R) = RingHom.id R[X] :=
-  RingHom.ext fun _x => map_id
-
-@[simp]
-theorem mapRingHom_comp [Semiring T] (f : S →+* T) (g : R →+* S) :
-    (mapRingHom f).comp (mapRingHom g) = mapRingHom (f.comp g) :=
-  RingHom.ext <| Polynomial.map_map g f
--/
-
 protected theorem map_list_prod (L : List R[X]) : L.prod.map f = (L.map <| map f).prod :=
   Eq.symm <| List.prod_hom _ (mapRingHom f).toMonoidHom
 
 @[simp]
 protected theorem map_pow (n : ℕ) : (p ^ n).map f = p.map f ^ n :=
   (mapRingHom f).map_pow _ _
-
-/-
-theorem mem_map_rangeS {p : S[X]} : p ∈ (mapRingHom f).rangeS ↔ ∀ n, p.coeff n ∈ f.rangeS := by
-  constructor
-  · rintro ⟨p, rfl⟩ n
-    rw [coe_mapRingHom, coeff_map]
-    exact Set.mem_range_self _
-  · intro h
-    rw [p.as_sum_range_C_mul_X_pow]
-    refine (mapRingHom f).rangeS.sum_mem ?_
-    intro i _hi
-    rcases h i with ⟨c, hc⟩
-    use C c * X ^ i
-    rw [coe_mapRingHom, Polynomial.map_mul, map_C, hc, Polynomial.map_pow, map_X]
-
-theorem mem_map_range {R S : Type*} [Ring R] [Ring S] (f : R →+* S) {p : S[X]} :
-    p ∈ (mapRingHom f).range ↔ ∀ n, p.coeff n ∈ f.range :=
-  mem_map_rangeS f
-
-theorem eval₂_map [Semiring T] (g : S →+* T) (x : T) :
-    (p.map f).eval₂ g x = p.eval₂ (g.comp f) x := by
-  rw [eval₂_eq_eval_map, eval₂_eq_eval_map, map_map]
--/
 
 theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
   (eval₂_eq_eval_map f).symm
@@ -861,125 +590,13 @@ theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
       simp +contextual only [pow_succ, ← mul_assoc, comp, forall_const,
         eval₂_mul_X, imp_true_iff, eq_self_iff_true, map_X, Polynomial.map_mul])
 
-/-
-@[simp]
-theorem eval_zero_map (f : R →+* S) (p : R[X]) : (p.map f).eval 0 = f (p.eval 0) := by
-  simp [← coeff_zero_eq_eval_zero]
-
-@[simp]
-theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1) := by
-  induction p using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
-  | h_monomial n r =>
-    simp only [one_pow, mul_one, eval_monomial, map_monomial]
-
-@[simp]
-theorem eval_natCast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
-    (p.map f).eval (n : S) = f (p.eval n) := by
-  induction p using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
-  | h_monomial n r =>
-    simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
-
-@[deprecated (since := "2024-04-17")]
-alias eval_nat_cast_map := eval_natCast_map
-
-@[simp]
-theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
-    (p.map f).eval (i : S) = f (p.eval i) := by
-  induction p using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
-  | h_monomial n r =>
-    simp only [map_intCast, eval_monomial, map_monomial, map_pow, map_mul]
-
-@[deprecated (since := "2024-04-17")]
-alias eval_int_cast_map := eval_intCast_map
--/
-
 end Map
-
-/-!
-we have made `eval₂` irreducible from the start.
-
-Perhaps we can make also `eval`, `comp`, and `map` irreducible too?
--/
-
-/-
-
-section HomEval₂
-
-variable [Semiring S] [Semiring T] (f : R →+* S) (g : S →+* T) (p)
-
-theorem hom_eval₂ (x : S) : g (p.eval₂ f x) = p.eval₂ (g.comp f) (g x) := by
-  rw [← eval₂_map, eval₂_at_apply, eval_map]
-
-end HomEval₂
--/
 
 end Semiring
 
 section CommSemiring
 
 section Eval
-
-/-
-section
-
-variable [Semiring R] {p q : R[X]} {x : R} [Semiring S] (f : R →+* S)
-
-theorem eval₂_hom (x : R) : p.eval₂ f (f x) = f (p.eval x) :=
-  RingHom.comp_id f ▸ (hom_eval₂ p (RingHom.id R) f x).symm
-
-end
--/
-
-/-
-section
-
-variable [Semiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
-
-theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q) p := by
-  rw [comp, p.as_sum_range]; simp [eval₂_finset_sum, eval₂_pow]
-
-@[simp]
-theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
-    eval₂ f t (p.comp^[k] q) = (fun x => eval₂ f x p)^[k] (eval₂ f t q) := by
-  induction k with
-  | zero => simp
-  | succ k IH => rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
-
-end
--/
-
-/-
-section Algebra
-
-variable [CommSemiring R] [Semiring S] [Algebra R S] (x : S) (p q : R[X])
-
-@[simp]
-theorem eval₂_mul' :
-    (p * q).eval₂ (algebraMap R S) x = p.eval₂ (algebraMap R S) x * q.eval₂ (algebraMap R S) x := by
-  exact eval₂_mul_noncomm _ _ fun k => Algebra.commute_algebraMap_left (coeff q k) x
-
-@[simp]
-theorem eval₂_pow' (n : ℕ) :
-    (p ^ n).eval₂ (algebraMap R S) x = (p.eval₂ (algebraMap R S) x) ^ n := by
-  induction n with
-  | zero => simp only [pow_zero, eval₂_one]
-  | succ n ih => rw [pow_succ, pow_succ, eval₂_mul', ih]
-
-@[simp]
-theorem eval₂_comp' : eval₂ (algebraMap R S) x (p.comp q) =
-    eval₂ (algebraMap R S) (eval₂ (algebraMap R S) x q) p := by
-  induction p using Polynomial.induction_on' with
-  | h_add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
-  | h_monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
-
-end Algebra
--/
 
 section
 
@@ -997,11 +614,6 @@ def evalRingHom : R → R[X] →+* R :=
 theorem coe_evalRingHom (r : R) : (evalRingHom r : R[X] → R) = eval r :=
   rfl
 
-/-
-theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
-  DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
--/
-
 @[simp]
 theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
   eval₂_pow _ _ _
@@ -1013,13 +625,6 @@ theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
     simp [add_comp, hr, hs]
   | h_monomial n a =>
     simp
-
-/-
-@[simp]
-theorem iterate_comp_eval :
-    ∀ (k : ℕ) (t : R), (p.comp^[k] q).eval t = (fun x => p.eval x)^[k] (q.eval t) :=
-  iterate_comp_eval₂ _
--/
 
 lemma isRoot_comp {R} [CommSemiring R] {p q : R[X]} {r : R} :
     (p.comp q).IsRoot r ↔ p.IsRoot (q.eval r) := by simp_rw [IsRoot, eval_comp]
@@ -1105,19 +710,6 @@ end Eval
 
 section Map
 
-/-
-theorem support_map_subset [Semiring R] [Semiring S] (f : R →+* S) (p : R[X]) :
-    (map f p).support ⊆ p.support := by
-  intro x
-  contrapose!
-  simp +contextual
-
-theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →+* S}
-    (hf : Function.Injective f) : (map f p).support = p.support := by
-  simp_rw [Finset.ext_iff, mem_support_iff, coeff_map, ← map_zero f, hf.ne_iff,
-    forall_const]
--/
-
 variable [CommSemiring R] [CommSemiring S] (f : R →+* S)
 
 protected theorem map_multiset_prod (m : Multiset R[X]) : m.prod.map f = (m.map <| map f).prod :=
@@ -1126,19 +718,6 @@ protected theorem map_multiset_prod (m : Multiset R[X]) : m.prod.map f = (m.map 
 protected theorem map_prod {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
     (∏ i ∈ s, g i).map f = ∏ i ∈ s, (g i).map f :=
   map_prod (mapRingHom f) _ _
-
-/-
-theorem IsRoot.map {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot p x) : IsRoot (p.map f) (f x) := by
-  rw [IsRoot, eval_map, eval₂_hom, h.eq_zero, f.map_zero]
-
-theorem IsRoot.of_map {R} [CommRing R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot (p.map f) (f x))
-    (hf : Function.Injective f) : IsRoot p x := by
-  rwa [IsRoot, ← (injective_iff_map_eq_zero' f).mp hf, ← eval₂_hom, ← eval_map]
-
-theorem isRoot_map_iff {R : Type*} [CommRing R] {f : R →+* S} {x : R} {p : R[X]}
-    (hf : Function.Injective f) : IsRoot (p.map f) (f x) ↔ IsRoot p x :=
-  ⟨fun h => h.of_map hf, fun h => h.map⟩
--/
 
 end Map
 
@@ -1219,56 +798,5 @@ theorem mul_X_sub_intCast_comp {n : ℕ} :
 alias mul_X_sub_int_cast_comp := mul_X_sub_intCast_comp
 
 end Ring
-
-/-
-section
-variable [Semiring R] [CommRing S] [IsDomain S] (φ : R →+* S) {f : R[X]}
-
-lemma isUnit_of_isUnit_leadingCoeff_of_isUnit_map (hf : IsUnit f.leadingCoeff)
-    (H : IsUnit (map φ f)) : IsUnit f := by
-  have dz := degree_eq_zero_of_isUnit H
-  rw [degree_map_eq_of_leadingCoeff_ne_zero] at dz
-  · rw [eq_C_of_degree_eq_zero dz]
-    refine IsUnit.map C ?_
-    convert hf
-    change coeff f 0 = coeff f (natDegree f)
-    rw [(degree_eq_iff_natDegree_eq _).1 dz]
-    · rfl
-    rintro rfl
-    simp at H
-  · intro h
-    have u : IsUnit (φ f.leadingCoeff) := IsUnit.map φ hf
-    rw [h] at u
-    simp at u
-
-end
--/
-
-/-
-section
-variable [CommRing R] [IsDomain R] [CommRing S] [IsDomain S] (φ : R →+* S)
-
-/-- A polynomial over an integral domain `R` is irreducible if it is monic and
-irreducible after mapping into an integral domain `S`.
-
-A special case of this lemma is that a polynomial over `ℤ` is irreducible if
-it is monic and irreducible over `ℤ/pℤ` for some prime `p`.
--/
-lemma Monic.irreducible_of_irreducible_map (f : R[X]) (h_mon : Monic f)
-    (h_irr : Irreducible (f.map φ)) : Irreducible f := by
-  refine ⟨h_irr.not_unit ∘ IsUnit.map (mapRingHom φ), fun a b h => ?_⟩
-  dsimp [Monic] at h_mon
-  have q := (leadingCoeff_mul a b).symm
-  rw [← h, h_mon] at q
-  refine (h_irr.isUnit_or_isUnit <|
-    (congr_arg (Polynomial.map φ) h).trans (Polynomial.map_mul φ)).imp ?_ ?_ <;>
-      apply isUnit_of_isUnit_leadingCoeff_of_isUnit_map <;>
-    apply isUnit_of_mul_eq_one
-  · exact q
-  · rw [mul_comm]
-    exact q
-
-end
--/
 
 end Polynomial
