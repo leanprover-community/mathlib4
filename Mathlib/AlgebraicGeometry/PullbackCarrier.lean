@@ -362,7 +362,7 @@ instance isJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) :
 instance : MorphismProperty.IsStableUnderBaseChange @Surjective := by
   refine .mk' ?_
   introv hg
-  simp only [surjective_iff, ← Set.range_iff_surjective, Pullback.range_fst] at hg ⊢
+  simp only [surjective_iff, ← Set.range_eq_univ, Pullback.range_fst] at hg ⊢
   rw [hg, Set.preimage_univ]
 
 end AlgebraicGeometry.Scheme
