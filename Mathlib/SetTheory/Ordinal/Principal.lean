@@ -327,6 +327,7 @@ theorem principal_mul_of_le_two (ho : o ≤ 2) : Principal (· * ·) o := by
     · rw [lt_one_iff_zero.1 ho]
       exact principal_zero
     · exact principal_mul_one
+  · exact principal_mul_two
 
 theorem principal_add_of_principal_mul (ho : Principal (· * ·) o) (ho₂ : o ≠ 2) :
     Principal (· + ·) o := by
