@@ -469,7 +469,7 @@ def postIso (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) :
     post L R F ≅ map (F₁ := 𝟭 _) (F₂ := 𝟭 _) (L ⋙ F).leftUnitor.hom (R ⋙ F).leftUnitor.inv :=
   NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
 
-instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.Faithful] : (post L R F).Faithful :=
+instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : (post L R F).Faithful :=
   Functor.Faithful.of_iso (postIso L R F).symm
 
 instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.Faithful] : (post L R F).Full :=
