@@ -291,7 +291,15 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
     mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
   unfold subinterval mkOfSucc
-  apply Hom.ext_one_left <;> simp <;> omega
+  apply Hom.ext_one_left
+  · simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+    OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.coe_castSucc,
+    Fin.castSucc_mk, Fin.succ_mk, Fin.mk.injEq]
+    exact Nat.add_comm i.1 j
+  · simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+    OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.val_succ,
+    Fin.castSucc_mk, Fin.succ_mk, Fin.mk.injEq]
+    exact Nat.add_comm (i.1 + 1) j
 
 @[simp]
 lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
