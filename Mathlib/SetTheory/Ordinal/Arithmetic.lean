@@ -582,6 +582,11 @@ theorem sub_lt_of_lt_add {a b c : Ordinal} (h : a < b + c) (hc : 0 < c) : a - b 
   · rwa [Ordinal.sub_eq_zero_iff_le.2 hab.le]
   · rwa [sub_lt_of_le hba]
 
+theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a ≤ b + d := by
+  use fun h ↦ ⟨_, sub_lt_of_lt_add h hc.bot_lt, le_add_sub a b⟩
+  rintro ⟨d, hd, ha⟩
+  exact ha.trans_lt (add_lt_add_left hd b)
+
 theorem isLimit_sub {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
   ⟨ne_of_gt <| lt_sub.2 <| by rwa [add_zero], fun c h => by
     rw [lt_sub, add_succ]; exact l.2 _ (lt_sub.1 h)⟩
@@ -1243,9 +1248,11 @@ theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i �
   Ordinal.iSup_le
 
 /-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
-protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
+protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     a < iSup f ↔ ∃ i, a < f i :=
   lt_ciSup_iff' (bddAbove_of_small _)
+
+@[deprecated (since := "2024-11-12")] alias lt_iSup := lt_iSup_iff
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
