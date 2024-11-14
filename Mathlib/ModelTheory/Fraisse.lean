@@ -29,8 +29,8 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 - A class `K` has `FirstOrder.Language.Amalgamation` when for any pair of embeddings
   of a structure `M` in `K` into other structures in `K`, those two structures can be embedded into
   a fourth structure in `K` such that the resulting square of embeddings commutes.
-- `FirstOrder.Language.IsFraisse` indicates that a class is nonempty, isomorphism-invariant,
-  essentially countable, and satisfies the hereditary, joint embedding, and amalgamation properties.
+- `FirstOrder.Language.IsFraisse` indicates that a class is nonempty, essentially countable,
+  and satisfies the hereditary, joint embedding, and amalgamation properties.
 - `FirstOrder.Language.IsFraisseLimit` indicates that a structure is a Fraïssé limit for a given
   class.
 
