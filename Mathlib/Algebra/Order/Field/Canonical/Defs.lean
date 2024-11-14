@@ -19,6 +19,14 @@ variable {α : Type*}
 class CanonicallyLinearOrderedSemifield (α : Type*) extends CanonicallyOrderedCommSemiring α,
   LinearOrderedSemifield α
 
+attribute [instance 0] CanonicallyLinearOrderedSemifield.toNontrivial
+attribute [instance 0] CanonicallyLinearOrderedSemifield.toMin
+attribute [instance 0] CanonicallyLinearOrderedSemifield.toMax
+attribute [instance 0] CanonicallyLinearOrderedSemifield.toOrd
+attribute [instance 0] CanonicallyLinearOrderedSemifield.toDiv
+attribute [instance 0] CanonicallyLinearOrderedSemifield.toInv
+attribute [instance 0] CanonicallyLinearOrderedSemifield.toNNRatCast
+
 -- See note [lower instance priority]
 instance (priority := 100) CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero
     [CanonicallyLinearOrderedSemifield α] : LinearOrderedCommGroupWithZero α :=

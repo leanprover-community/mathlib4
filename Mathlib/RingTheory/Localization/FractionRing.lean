@@ -5,7 +5,6 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Algebra.Field.Equiv
-import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.RingTheory.Localization.Basic
 
