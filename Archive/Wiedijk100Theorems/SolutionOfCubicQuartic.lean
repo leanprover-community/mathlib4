@@ -61,7 +61,7 @@ The cubic formula was originally ported from Isabelle/HOL. The
 [original file](https://isabelle.in.tum.de/dist/library/HOL/HOL-ex/Cubic_Quartic.html) was written by Amine Chaieb.
 
 The proof of the quartic formula is similar in structure to the cubic, and uses the formulation in
-CRC Standard Mathematical Tables and Formulae, Daniel Zwillinger.
+[Zwillinger, *CRC Standard Mathematical Tables and Formulae*](zwillinger2003).
 
 ## Tags
 
@@ -89,7 +89,7 @@ theorem cubic_depressed_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
     intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
   rw [h₁]
-  refine Eq.congr ?_ rfl
+  apply Eq.congr_left
   have hs_nonzero : s ≠ 0 := by
     contrapose! hp_nonzero with hs_nonzero
     linear_combination -1 * ht + t * hs_nonzero
@@ -181,7 +181,7 @@ theorem quartic_depressed_eq_zero_iff
     _ ↔ 4 * (x ^ 4 + p * x ^ 2 + q * x + r) = 0 := by simp [h4, hi2]
     _ ↔ (2 * (x * x) + 2 * s * x + (u - q / s)) * (2 * (x * x) + -(2 * s) * x + (u + q / s)) =
         0 := by
-      refine Eq.congr ?_ rfl
+      apply Eq.congr_left
       field_simp
       linear_combination -hu + (-x ^ 2 * s ^ 2 - x ^ 2 * p + x ^ 2 * u) * hw +
         (x ^ 2 * w ^ 2 + 8 * x ^ 2 * u + 8 * x ^ 2 * q / s - u ^ 2 + 4 * r) * hs
@@ -192,9 +192,8 @@ theorem quartic_depressed_eq_zero_iff
       simp [(by norm_num : (2 : K) * 2 = 4), or_assoc, or_comm]
 
 /-- **The Solution of Quartic**.
-  The roots of a quartic polynomial when q is nonzero.
-  See Beyer W. H., CRC Standard Mathematical Tables and Formulae.
-  Here, u needs to satisfy the cubic resolvent. An explicit expression of u is possible using
+  The roots of a quartic polynomial when `q` is nonzero. See [Zwillinger](zwillinger2003).
+  Here, `u` needs to satisfy the cubic resolvent. An explicit expression of `u` is possible using
   the cubic formula, but would be too long. -/
 theorem quartic_eq_zero_iff (ha : a ≠ 0)
     (hp : p = (8 * a * c - 3 * b ^ 2) / (8 * a ^ 2))
@@ -221,7 +220,7 @@ theorem quartic_eq_zero_iff (ha : a ≠ 0)
   rw [h₁, h₂, quartic_depressed_eq_zero_iff hq_nonzero hu hs hv hw]
   simp_rw [eq_sub_iff_add_eq]
 
-/-- The roots of a quartic polynomial when q equals zero. -/
+/-- The roots of a quartic polynomial when `q` equals zero. -/
 theorem quartic_eq_zero_iff_of_q_eq_zero (ha : a ≠ 0)
     (hp : p = (8 * a * c - 3 * b ^ 2) / (8 * a ^ 2))
     (hqz : b ^ 3 - 4 * a * b * c + 8 * a ^ 2 * d = 0)
@@ -241,11 +240,10 @@ theorem quartic_eq_zero_iff_of_q_eq_zero (ha : a ≠ 0)
     rw [hp, hr]
     simp [field_simps, y, ha, h4, h8, h16, h256]
     linear_combination (1048576 * a ^ 10 * x + 262144 * a ^ 9 * b) * hqz
-  have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
-  rw [h₁, h₂]
+  rw [h₁, ha.isUnit.mul_right_eq_zero]
   calc
     _ ↔ 1 * (y ^ 2 * y ^ 2) + p * y ^ 2 + r = 0 := by
-      refine Eq.congr ?_ rfl
+      apply Eq.congr_left
       ring
     _ ↔ y ^ 2 = (-p + t) / 2 ∨ y ^ 2 = (-p - t) / 2 := by
       have ht' : discrim 1 p r = t * t := by rw [discrim]; linear_combination -ht
