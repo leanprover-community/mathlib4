@@ -86,4 +86,12 @@ lemma odd_iff_mod_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : Odd k
   rw [odd_iff_of_even hn]
   exact Nat.odd_iff
 
+lemma not_odd_iff_even_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : ¬Odd k ↔ Even k := by
+  rw [even_iff_of_even hn, odd_iff_of_even hn]
+  exact Nat.not_odd_iff_even
+
+lemma not_even_iff_odd_of_even {n : ℕ} [NeZero n] (hn : Even n) {k : Fin n} : ¬Even k ↔ Odd k := by
+  rw [even_iff_of_even hn, odd_iff_of_even hn]
+  exact Nat.not_even_iff_odd
+
 end Fin
