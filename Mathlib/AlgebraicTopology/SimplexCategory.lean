@@ -3,6 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
+import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
@@ -168,6 +169,10 @@ theorem const_fac_thru_zero (n m : SimplexCategory) (i : Fin (m.len + 1)) :
     const n m i = const n [0] 0 ≫ SimplexCategory.const [0] m i := by
   rw [const_comp]; rfl
 
+theorem Hom.ext_zero_left {n : SimplexCategory} (f g : ([0] : SimplexCategory) ⟶ n)
+    (h0 : f.toOrderHom 0 = g.toOrderHom 0 := by rfl) : f = g := by
+  ext i; match i with | 0 => exact h0 ▸ rfl
+
 theorem eq_const_of_zero {n : SimplexCategory} (f : ([0] : SimplexCategory) ⟶ n) :
     f = const _ n (f.toOrderHom 0) := by
   ext x; match x with | 0 => rfl
@@ -179,6 +184,14 @@ theorem eq_const_to_zero {n : SimplexCategory} (f : n ⟶ [0]) :
     f = const n _ 0 := by
   ext : 3
   apply @Subsingleton.elim (Fin 1)
+
+theorem Hom.ext_one_left {n : SimplexCategory} (f g : ([1] : SimplexCategory) ⟶ n)
+    (h0 : f.toOrderHom 0 = g.toOrderHom 0 := by rfl)
+    (h1 : f.toOrderHom 1 = g.toOrderHom 1 := by rfl) : f = g := by
+  ext i
+  match i with
+  | 0 => exact h0 ▸ rfl
+  | 1 => exact h1 ▸ rfl
 
 theorem eq_of_one_to_one (f : ([1] : SimplexCategory) ⟶ [1]) :
     (∃ a, f = const [1] _ a) ∨ f = 𝟙 _ := by
@@ -218,6 +231,14 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
       | 0, 1, _ => h
   }
 
+/-- The morphism `[1] ⟶ [n]` that picks out the "diagonal composite" edge-/
+def diag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
+  mkOfLe 0 n (Fin.zero_le _)
+
+/-- The morphism `[1] ⟶ [n]` that picks out the edge spanning the interval from `j` to `j + l`.-/
+def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ([1] : SimplexCategory) ⟶ [n] :=
+  mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)
+
 /-- The morphism `[1] ⟶ [n]` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`.-/
 def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
   SimplexCategory.mkHom {
@@ -226,6 +247,15 @@ def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
       | 0, 0, _ | 1, 1, _ => le_rfl
       | 0, 1, _ => Fin.castSucc_le_succ i
   }
+
+@[simp]
+lemma mkOfSucc_homToOrderHom_zero {n} (i : Fin n) :
+    DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 0 = i.castSucc := rfl
+
+@[simp]
+lemma mkOfSucc_homToOrderHom_one {n} (i : Fin n) :
+    DFunLike.coe (F := Fin 2 →o Fin (n+1)) (Hom.toOrderHom (mkOfSucc i)) 1 = i.succ := rfl
+
 
 /-- The morphism `[2] ⟶ [n]` that picks out a specified composite of morphisms in `Fin (n+1)`.-/
 def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
@@ -238,6 +268,60 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
       | 1, 2, _ => h₂
       | 0, 2, _ => Fin.le_trans h₁ h₂
   }
+
+/-- The "inert" morphism associated to a subinterval `j ≤ i ≤ j + l` of `Fin (n + 1)`.-/
+def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
+    ([l] : SimplexCategory) ⟶ [n] :=
+  SimplexCategory.mkHom {
+    toFun := fun i => ⟨i.1 + j, (by omega)⟩
+    monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
+  }
+
+lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
+    [0].const [l] i ≫ subinterval j l hjl =
+    [0].const [n] ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
+  rw [const_comp]
+  congr
+  ext
+  dsimp [subinterval]
+  rw [add_comm]
+
+@[simp]
+lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
+    mkOfSucc i ≫ subinterval j l hjl =
+    mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
+  unfold subinterval mkOfSucc
+  ext i
+  match i with
+  | 0 =>
+    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
+      Fin.succ_mk]
+    rw [add_comm]
+    rfl
+  | 1 =>
+    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
+      Fin.succ_mk]
+    rw [← Nat.add_comm j _]
+    rfl
+
+@[simp]
+lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
+    diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
+  unfold subinterval intervalEdge diag mkOfLe
+  ext i
+  match i with
+  | 0 =>
+    simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
+      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
+    rw [Nat.add_comm]
+    rfl
+  | 1 =>
+    simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
+      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
+    rw [Nat.add_comm]
+    rfl
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
@@ -466,6 +550,19 @@ lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fi
       · rwa [succ_le_castSucc_iff, lt_pred_iff]
       rw [succ_pred]
 
+@[simp]
+lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :
+    δ 0 ≫ mkOfSucc i = SimplexCategory.const _ [n] i.succ := by
+  ext x
+  fin_cases x
+  rfl
+
+@[simp]
+lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
+    δ 1 ≫ mkOfSucc i = SimplexCategory.const _ _ i.castSucc := by
+  ext x
+  fin_cases x
+  aesop
 
 theorem eq_of_one_to_two (f : ([1] : SimplexCategory) ⟶ [2]) :
     f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨
