@@ -235,6 +235,10 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
 def diag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
   mkOfLe 0 n (Fin.zero_le _)
 
+/-- The morphism `[1] ⟶ [n]` that picks out the edge spanning the interval from `j` to `j + l`.-/
+def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ([1] : SimplexCategory) ⟶ [n] :=
+  mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)
+
 /-- The morphism `[1] ⟶ [n]` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`.-/
 def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
   SimplexCategory.mkHom {
@@ -290,18 +294,11 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
   apply Hom.ext_one_left <;> simp <;> omega
 
 @[simp]
-lemma diag_subinterval_eq {n} (j l : ℕ) (hn : j + l ≤ n) :
-    diag l ≫ subinterval j l hn =
-    mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l) := by
-  unfold subinterval diag mkOfLe
-  apply Hom.ext_one_left
-  · simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
-    Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply,
-    Fin.val_zero, zero_add]
-  · simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
-    Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply,
-    Fin.val_last, Fin.mk.injEq]
-    exact Nat.add_comm l j
+lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
+    diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
+  unfold subinterval intervalEdge diag mkOfLe
+  apply Hom.ext_one_left <;> simp
+  exact Nat.add_comm l j
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)

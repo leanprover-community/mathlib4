@@ -40,7 +40,7 @@ class StrictSegal : Prop where
 
 /-- In the presence of the strict Segal condition, a path of length `n` extends to an `n`-simplex
 whose spine is that path. -/
-noncomputable def spineToSimplex{X : SSet.{u}} [StrictSegal X] {n : ℕ} : Path X n → X _[n] :=
+noncomputable def spineToSimplex {X : SSet.{u}} [StrictSegal X] {n : ℕ} : Path X n → X _[n] :=
   (Equiv.ofBijective _ (StrictSegal.segal n)).invFun
 
 
@@ -75,12 +75,11 @@ theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤  n) 
   convert spine_map_subinterval X j l hjl (spineToSimplex f)
   exact Eq.symm (spine_spineToSimplex f)
 
-theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hn : j + l ≤ n) :
-    X.map
-      (mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l)).op
-      (spineToSimplex f) = spineToDiagonal (Path.interval f j l hn) := by
+theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
+    X.map (intervalEdge j l hjl).op (spineToSimplex f) =
+      spineToDiagonal (Path.interval f j l hjl) := by
   unfold spineToDiagonal
-  rw [← congrArg (diagonal X) (spineToSimplex_interval f j l hn)]
+  rw [← congrArg (diagonal X) (spineToSimplex_interval f j l hjl)]
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
