@@ -232,6 +232,7 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
       refine tsum_of_norm_bounded ?_ fun b ↦ norm_pow_le' _ (Nat.succ_pos b)
       convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
       simp
+    dsimp only at this
     linarith
   · simp [tsum_eq_zero_of_not_summable hx]
     nontriviality R

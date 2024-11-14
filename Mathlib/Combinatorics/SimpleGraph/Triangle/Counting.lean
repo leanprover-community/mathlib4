@@ -85,7 +85,7 @@ private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.e
   rw [card_image_of_injective _ (Prod.mk.inj_left _)]
   have := utu (filter_subset (G.Adj x) _) (filter_subset (G.Adj x) _) hY hZ
   have : ε ≤ G.edgeDensity {y ∈ t | G.Adj x y} {y ∈ u | G.Adj x y} := by
-    rw [abs_sub_lt_iff] at this; linarith
+    rw [abs_sub_lt_iff] at this; eta_expand at this; linarith
   rw [edgeDensity_def] at this
   push_cast at this
   have hε := utu.pos.le
