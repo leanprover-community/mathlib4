@@ -607,6 +607,9 @@ theorem image_univ {f : α → β} : f '' univ = range f := by
   ext
   simp [image, range]
 
+lemma image_compl_eq_range_sdiff_image {f : α → β} (hf : Injective f) (s : Set α) :
+    f '' sᶜ = range f \ f '' s := by rw [← image_univ, ← image_diff hf, compl_eq_univ_diff]
+
 @[simp]
 theorem preimage_eq_univ_iff {f : α → β} {s} : f ⁻¹' s = univ ↔ range f ⊆ s := by
   rw [← univ_subset_iff, ← image_subset_iff, image_univ]
