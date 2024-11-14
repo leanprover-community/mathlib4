@@ -251,6 +251,73 @@ lemma height_le_coe_iff (x : α) (n : ℕ) :
   · simp
   · norm_cast
 
+/--
+The height of an element is infinite if there exist series of arbitrary length ending in that
+element.
+-/
+lemma height_eq_top_iff (x : α) :
+    height x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.last = x ∧ p.length = n := by
+  constructor
+  · intro h n
+    apply exists_series_of_le_height x (n := n)
+    simp [h]
+  · intro h
+    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
+    push_neg
+    intro n
+    obtain ⟨p, hlast, hp⟩ := h (n+1)
+    exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
+
+lemma height_eq_zero_iff (x : α) : height x = 0 ↔ (∀ y, ¬(y < x)) := by
+  simpa using height_le_coe_iff x 0
+
+@[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by
+  simp [height_eq_zero_iff]
+
+lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
+    n < height x ↔ (∃ y, y < x ∧ height y = n) := by
+  constructor
+  · intro h
+    obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp (LT.lt.ne_top hfin)
+    rw [hx] at h; norm_cast at h
+    obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
+    use p ⟨n, by omega⟩
+    constructor
+    · rw [← hp]
+      apply LTSeries.strictMono
+      simp [Fin.last]; omega
+    · exact height_eq_index_of_length_eq_height_last (by simp [hlen, hp, hx]) ⟨n, by omega⟩
+  · intro ⟨y, hyx, hy⟩
+    exact hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
+
+lemma height_eq_coe_add_one_iff (x : α) (n : ℕ)  : height x = n + 1 ↔
+    height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y, y < x → height y ≤ n) := by
+  wlog hfin : height x < ⊤
+  · simp_all
+    exact ne_of_beq_false rfl
+  simp only [hfin, true_and]
+  trans n < height x ∧ height x ≤ n + 1
+  · rw [le_antisymm_iff, and_comm]
+    simp [hfin, ENat.lt_add_one_iff, ENat.add_one_le_iff]
+  · congr! 1
+    · exact coe_lt_height_iff x n hfin
+    · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff x (n+1)
+
+lemma height_eq_coe_iff (x : α) (n : ℕ) : height x = n ↔
+    height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y, y < x → height y < n) := by
+  wlog hfin : height x < ⊤
+  · simp_all
+  simp only [hfin, true_and]
+  cases n
+  case zero => simp_all [height_eq_zero_iff x]
+  case succ n =>
+    simp only [Nat.cast_add, Nat.cast_one, add_eq_zero, one_ne_zero, and_false, false_or]
+    rw [height_eq_coe_add_one_iff x n]
+    simp only [hfin, true_and]
+    congr! 3
+    rename_i y _
+    cases height y <;> simp; norm_cast; omega
+
 end height
 
 /-!
