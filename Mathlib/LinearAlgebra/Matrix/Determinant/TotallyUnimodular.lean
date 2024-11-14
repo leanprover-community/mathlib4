@@ -88,7 +88,7 @@ lemma mapEquiv_isTotallyUnimodular {X' Y' : Type*} (A : Matrix m n R) (eX : X' �
   · simpa [submatrix] using hA k (eX.symm ∘ f) (eY.symm ∘ g)
   · simpa [submatrix] using hA k (eX ∘ f) (eY ∘ g)
 
-lemma adjoin_row0s_isTotallyUnimodular_iff (A : Matrix m n R) {m' : Type*} :
+lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) {m' : Type*} :
     (fromRows A (row m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [isTotallyUnimodular_iff, isTotallyUnimodular_iff]
   constructor <;> intro hA k f g
