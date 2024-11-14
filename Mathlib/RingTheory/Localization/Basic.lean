@@ -216,6 +216,7 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     convert_to _ = a * (algebraMap S₂ T) ((algebraMap R S₂) n) *
         (algebraMap S₁ T) (((algebraMap R S₁) m) * hunit.unit⁻¹.val)
     · rw [map_mul]
+      dsimp only
       ring
     simp
   exists_of_eq {x y} hxy := by
@@ -231,6 +232,7 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     rw [mul_assoc, hr, mul_assoc, hs]
     apply (map_units S₁ ⟨c, hmc⟩).mul_right_cancel
     rw [← map_mul, ← map_mul, mul_assoc, mul_comm _ c, ha, map_mul, map_mul]
+    dsimp only
     ring
 
 end IsLocalization

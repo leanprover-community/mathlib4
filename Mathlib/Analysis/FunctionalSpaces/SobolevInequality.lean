@@ -146,7 +146,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
     fun {_} ↦ hf.lmarginal μ |>.comp <| measurable_update _
   have hF₀ : Measurable fun t ↦ f (X t) := hf.comp <| measurable_update _
   let k : ℝ := s.card
-  have hk' : 0 ≤ 1 - k * p := by linarith only [hp]
+  have hk' : 0 ≤ 1 - k * p := by unfold k; linarith only [hp]
   calc ∫⁻ t, f (X t) ^ (1 - k * p)
           * ∏ j in (insert i s), (∫⋯∫⁻_{j}, f ∂μ) (X t) ^ p ∂ (μ i)
       = ∫⁻ t, (∫⋯∫⁻_{i}, f ∂μ) (X t) ^ p * (f (X t) ^ (1 - k * p)
@@ -175,7 +175,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
               · exact hF₀.aemeasurable
               · intros
                 exact hF₁.aemeasurable
-              · simp only [sum_const, nsmul_eq_mul]
+              · simp only [sum_const, nsmul_eq_mul, k]
                 ring
               · exact hk'
               · exact fun _ _ ↦ hp₀
@@ -710,7 +710,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
           exact h2u.trans subset_closure
         rel [eLpNorm_le_eLpNorm_fderiv_of_eq μ hu h2u' hp (mod_cast (zero_le p).trans_lt h2p) hp']
     _ = eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
-      simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
+      simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul, C, t, p']; ring
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_le_snorm_fderiv_of_le := eLpNorm_le_eLpNorm_fderiv_of_le
