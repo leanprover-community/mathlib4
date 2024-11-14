@@ -12,7 +12,6 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Noetherian
 
 /-!
 # Flat modules
@@ -203,7 +202,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   have h₂ := F i
   rw [iff_rTensor_injective] at h₂
   have h₃ := h₂ hI
-  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, AddEquivClass.map_eq_zero_iff,
+  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, EmbeddingLike.map_eq_zero_iff,
     h₃, LinearMap.map_eq_zero_iff] at f
   simp [f]
 
@@ -329,7 +328,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
   suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
     rw [show g = ι.comp π from rfl, lTensor_comp]
     exact exact1.comp_injective _ (lTensor_preserves_injective_linearMap ι <| by
-      simpa [ι] using Subtype.val_injective) (map_zero _)
+      simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.mk''_surjective
 
 variable (M) in
@@ -346,7 +345,7 @@ lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
   suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
     rw [show g = ι.comp π from rfl, rTensor_comp]
     exact exact1.comp_injective _ (rTensor_preserves_injective_linearMap ι <| by
-      simpa [ι] using Subtype.val_injective) (map_zero _)
+      simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.rTensor_exact M (fun x => by simp [π]) Quotient.mk''_surjective
 
 /-- `M` is flat if and only if `M ⊗ -` is an exact functor. See
