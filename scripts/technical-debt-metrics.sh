@@ -149,7 +149,14 @@ then
   then
     printf '<details><summary>No changes to technical debt.</summary>\n'
   else
-    printf '<details><summary>Changes to technical debt</summary>\n\n%s\n' "${rep}"
+    printf '%s\n' "${rep}" |
+      awk -F '|' -v rep="${rep}" '
+        BEGIN{total=0; weight=0}
+        (($3+0 == $3) && (!($2+0 == 0))) {total+=1 / $2; weight+=$3 / $2}
+        END{
+          average=weight/total
+          if(average < 0) {change= "Decrease"; average=-average} else {change= "Increase"}
+          printf("<details><summary>%s in tech debt: %4.2f</summary>\n\n%s\n", change, average, rep) }'
   fi
   printf '\nYou can run this locally as\n```\n./scripts/technical-debt-metrics.sh pr_summary\n```\n</details>\n'
 else
