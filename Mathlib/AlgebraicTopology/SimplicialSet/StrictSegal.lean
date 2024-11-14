@@ -40,7 +40,7 @@ class StrictSegal : Prop where
 
 variable {X} in
 /-- The diagonal of a simplex is the long edge of the simplex.-/
-def diagonal {n : ℕ} (Δ : X _[n]) : X _[1] := X.map ((mkOfDiag n).op) Δ
+def diagonal {n : ℕ} (Δ : X _[n]) : X _[1] := X.map ((diag n).op) Δ
 
 namespace StrictSegal
 variable {X : SSet.{u}} [StrictSegal X] {n : ℕ}
@@ -86,7 +86,7 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hn : j + l ≤ n) :
   unfold spineToDiagonal
   rw [← congrArg diagonal (spineToSimplex_interval f j l hn)]
   unfold diagonal
-  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, mkOfDiag_subinterval_eq]
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
 end StrictSegal
 

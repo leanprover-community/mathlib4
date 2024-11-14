@@ -232,7 +232,7 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
   }
 
 /-- The morphism `[1] ⟶ [n]` that picks out the "diagonal composite" edge-/
-def mkOfDiag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
+def diag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
   mkOfLe 0 n (Fin.zero_le _)
 
 /-- The morphism `[1] ⟶ [n]` that picks out the arrow `i ⟶ i+1` in `Fin (n+1)`.-/
@@ -298,10 +298,10 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     exact Nat.add_comm (i.1 + 1) j
 
 @[simp]
-lemma mkOfDiag_subinterval_eq {n} (j l : ℕ) (hn : j + l ≤ n) :
-    mkOfDiag l ≫ subinterval j l hn =
+lemma diag_subinterval_eq {n} (j l : ℕ) (hn : j + l ≤ n) :
+    diag l ≫ subinterval j l hn =
     mkOfLe ⟨j, (by omega)⟩ ⟨j + l, (by omega)⟩ (Nat.le_add_right j l) := by
-  unfold subinterval mkOfDiag mkOfLe
+  unfold subinterval diag mkOfLe
   apply Hom.ext_one_left
   · simp only [len_mk, Nat.reduceAdd, mkHom, Fin.natCast_eq_last, comp_toOrderHom,
     Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply,
