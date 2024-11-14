@@ -51,7 +51,7 @@ private lemma rot_coprime
     {hu : u ≠ 0} {hv : v ≠ 0} {hw : w ≠ 0}
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) (hab : IsCoprime a b)
      : IsCoprime b c := by
-  rw [←IsCoprime.pow_iff hp hq, ←isCoprime_mul_units_left hu hv] at hab
+  rw [← IsCoprime.pow_iff hp hq, ← isCoprime_mul_units_left hu hv] at hab
   rw [add_eq_zero_iff_neg_eq] at heq
   rw [←IsCoprime.pow_iff hq hr, ←isCoprime_mul_units_left hv hw,
     ←heq, IsCoprime.neg_right_iff]
