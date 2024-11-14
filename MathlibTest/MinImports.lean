@@ -74,6 +74,8 @@ import Mathlib.Data.Nat.Notation
 #min_imports in
 lemma hi (n : ℕ) : n = n := by extract_goal; rfl
 
+section Linter.MinImports
+
 set_option linter.minImports.increases false
 set_option linter.minImports true
 /--
@@ -131,3 +133,34 @@ note: this linter can be disabled with `set_option linter.minImports false`
 run_cmd
   let _ ← `(declModifiers|@[fun_prop])
   let _ ← `(tactic|apply @Mathlib.Meta.NormNum.evalNatDvd <;> extract_goal)
+
+end Linter.MinImports
+
+section Linter.UpstreamableDecl
+
+set_option linter.upstreamableDecl true
+
+/--
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+-/
+#guard_msgs in
+theorem propose_to_move_this_theorem : (0 : ℕ) = 0 := rfl
+
+/--
+warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+-/
+#guard_msgs in
+def propose_to_move_this_def : ℕ := 0
+
+-- This theorem depends on a local definition, so should not be moved.
+#guard_msgs in
+theorem theorem_with_local_def : propose_to_move_this_def = 0 := rfl
+
+-- This definition depends on definitions in two different files, so should not be moved.
+#guard_msgs in
+def def_with_multiple_dependencies :=
+  let _ := Mathlib.Meta.FunProp.funPropAttr
+  let _ := Mathlib.Meta.NormNum.evalNatDvd
+  false
+
+end Linter.UpstreamableDecl
