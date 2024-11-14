@@ -38,14 +38,14 @@ private lemma Ne.isUnit_C {u : k} (hu : u ≠ 0) : IsUnit (C u) :=
   Polynomial.isUnit_C.mpr hu.isUnit
 
 -- Multiplying units preserve coprimality
-private theorem isCoprime_mul_units_left {a b : k[X]} {u v : k} (hu : u ≠ 0) (hv : v ≠ 0) :
+private lemma isCoprime_mul_units_left {a b : k[X]} {u v : k} (hu : u ≠ 0) (hv : v ≠ 0) :
     IsCoprime (C u * a) (C v * b) ↔ IsCoprime a b :=
   Iff.trans
     (isCoprime_mul_unit_left_left hu.isUnit_C _ _)
     (isCoprime_mul_unit_left_right hv.isUnit_C _ _)
 
 -- auxiliary lemma that 'rotates' coprimality
-private theorem rot_coprime
+private lemma rot_coprime
     {p q r : ℕ} {a b c : k[X]} {u v w : k}
     {hp : 0 < p} {hq : 0 < q} {hr : 0 < r}
     {hu : u ≠ 0} {hv : v ≠ 0} {hw : w ≠ 0}
@@ -58,16 +58,26 @@ private theorem rot_coprime
   convert IsCoprime.add_mul_left_right hab.symm 1 using 2
   rw [mul_one]
 
-lemma weighted_average_le_max₃ {p q r a b c : Nat} :
-    p * a + q * b + r * c ≤ (p + q + r) * max (max a b) c :=
-  by
-  sorry
-  -- rw [add_mul, add_mul]
-  -- apply Nat.add_le_add
-  -- apply Nat.add_le_add
-  -- exact Nat.mul_le_mul (Nat.le_refl _) (Nat.le_max₃_left _ _ _)
-  -- exact Nat.mul_le_mul (Nat.le_refl _) (Nat.le_max₃_middle _ _ _)
-  -- exact Nat.mul_le_mul (Nat.le_refl _) (Nat.le_max₃_right _ _ _)
+private lemma ineq_pqr_contradiction {p q r a b c : Nat}
+    (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
+    (hineq : q * r + r * p + p * q ≤ p * q * r)
+    (hpa : p * a < a + b + c)
+    (hqb : q * b < a + b + c)
+    (hrc : r * c < a + b + c) : False := by
+  suffices h : p * q * r * (a + b + c) + 1 ≤ p * q * r * (a + b + c) by
+    simp at h
+  calc
+    _ = (p * a) * (q * r) + (q * b) * (r * p) + (r * c) * (p * q) + 1 := by ring
+    _ ≤ (a + b + c) * (q * r) + (a + b + c) * (r * p) + (a + b + c) * (p * q) := by
+      rw [Nat.succ_le]
+      have hpq := Nat.mul_pos hp hq
+      have hqr := Nat.mul_pos hq hr
+      have hrp := Nat.mul_pos hr hp
+      refine (Nat.add_lt_add (Nat.add_lt_add ?_ ?_) ?_)
+        <;> apply (Nat.mul_lt_mul_right ?_).mpr
+        <;> assumption
+    _ = (q * r + r * p + p * q) * (a + b + c) := by ring
+    _ ≤ _ := Nat.mul_le_mul_right _ hineq
 
 private lemma Polynomial.derivative_C_mul {a : k} {p : k[X]} :
     derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
@@ -85,7 +95,8 @@ private lemma derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a
     · have az : a = 0 := pow_eq_zero powz
       rw [az, map_zero]
     · exact goal
-  · intro hd; rw [derivative_pow, hd, MulZeroClass.mul_zero]
+  · intro hd
+    rw [derivative_pow, hd, MulZeroClass.mul_zero]
 
 private lemma mul_eq_zero_left_iff
     {M₀ : Type*} [MulZeroClass M₀] [NoZeroDivisors M₀]
@@ -96,7 +107,11 @@ private lemma mul_eq_zero_left_iff
 
 variable [DecidableEq k]
 
-theorem Polynomial.flt_catalan_deriv
+private lemma radical_natDegree_le {a : k[X]} (h : a ≠ 0) :
+    (radical a).natDegree ≤ a.natDegree :=
+  natDegree_le_of_dvd (radical_dvd_self a) h
+
+private theorem Polynomial.flt_catalan_deriv
     {p q r : ℕ} (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hineq : q * r + r * p + p * q ≤ p * q * r)
     (chp : ¬ringChar k ∣ p) (chq : ¬ringChar k ∣ q) (chr : ¬ringChar k ∣ r)
@@ -107,18 +122,18 @@ theorem Polynomial.flt_catalan_deriv
   have hbc : IsCoprime b c := by apply rot_coprime heq <;> assumption
   have hca : IsCoprime c a := by
     rw [add_rotate] at heq; apply rot_coprime heq <;> assumption
-  set uap := C u * a ^ p with eq_uap
-  set vbp := C v * b ^ q with eq_vbp
-  set wcr := C w * c ^ r with eq_wcr
   have hCu := C_ne_zero.mpr hu
   have hCv := C_ne_zero.mpr hv
   have hCw := C_ne_zero.mpr hw
   have hap := pow_ne_zero p ha
   have hbq := pow_ne_zero q hb
   have hcr := pow_ne_zero r hc
-  have habp : IsCoprime uap vbp := (isCoprime_mul_units_left hu hv).mpr hab.pow
-  have hbcp : IsCoprime vbp wcr := (isCoprime_mul_units_left hv hw).mpr hbc.pow
-  have hcap : IsCoprime wcr uap := (isCoprime_mul_units_left hw hu).mpr hca.pow
+  have habp : IsCoprime (C u * a ^ p) (C v * b ^ q) :=
+    (isCoprime_mul_units_left hu hv).mpr hab.pow
+  have hbcp : IsCoprime (C v * b ^ q) (C w * c ^ r) :=
+    (isCoprime_mul_units_left hv hw).mpr hbc.pow
+  have hcap : IsCoprime (C w * c ^ r) (C u * a ^ p) :=
+    (isCoprime_mul_units_left hw hu).mpr hca.pow
   have habcp := hcap.symm.mul_left hbcp
 
   -- Use Mason-Stothers theorem
@@ -126,8 +141,6 @@ theorem Polynomial.flt_catalan_deriv
       (mul_ne_zero hCu hap) (mul_ne_zero hCv hbq) (mul_ne_zero hCw hcr)
       habp heq with nd_lt | dr0
   · simp_rw [radical_mul habcp, radical_mul habp,
-        Nat.add_one_le_iff,
-        eq_uap, eq_vbp, eq_wcr,
         radical_isUnit_mul_left hu.isUnit_C,
         radical_isUnit_mul_left hv.isUnit_C,
         radical_isUnit_mul_left hw.isUnit_C,
@@ -135,8 +148,20 @@ theorem Polynomial.flt_catalan_deriv
         natDegree_mul hCu hap,
         natDegree_mul hCv hbq,
         natDegree_mul hCw hcr,
-        natDegree_C, natDegree_pow, zero_add] at nd_lt
-    sorry
+        natDegree_C, natDegree_pow, zero_add,
+        ← radical_mul hab,
+        ← radical_mul (hca.symm.mul_left hbc)] at nd_lt
+
+    rcases nd_lt with ⟨hpa', hqb', hrc'⟩
+    have habc := mul_ne_zero (mul_ne_zero ha hb) hc
+    have hpa := hpa'.trans (radical_natDegree_le habc)
+    have hqb := hqb'.trans (radical_natDegree_le habc)
+    have hrc := hrc'.trans (radical_natDegree_le habc)
+    rw [natDegree_mul (mul_ne_zero ha hb) hc,
+        natDegree_mul ha hb, Nat.add_one_le_iff] at hpa hqb hrc
+
+    exfalso
+    exact (ineq_pqr_contradiction hp hq hr hineq hpa hqb hrc)
   · rw [derivative_C_mul, derivative_C_mul, derivative_C_mul,
         mul_eq_zero_left_iff (C_ne_zero.mpr hu),
         mul_eq_zero_left_iff (C_ne_zero.mpr hv),
@@ -145,64 +170,6 @@ theorem Polynomial.flt_catalan_deriv
         derivative_pow_eq_zero_iff chq,
         derivative_pow_eq_zero_iff chr] at dr0
     exact dr0
-  /-
-    -- Using `hineq`, derive a contradiction
-    have hp'' : p * a.natDegree < (a * b * c).natDegree := by
-      sorry
-    have hq'' : q * b.natDegree < (a * b * c).natDegree := by
-      sorry
-    have hr'' : r * c.natDegree < (a * b * c).natDegree := by
-      sorry
-    let m := max (max (a.natDegree) (b.natDegree)) (c.natDegree)
-    have hineq' : (p * q * r) * m < (p * q * r) * m := by
-      have hineqa' : p * q * r * a.natDegree < p * q * r * m := by
-        sorry
-      have hineqb' : p * q * r * b.natDegree < p * q * r * m := by
-        sorry
-      have hineqc' : p * q * r * c.natDegree < p * q * r * m := by
-        sorry
-      have hineqab' : p * q * r * (max a.natDegree b.natDegree) < p * q * r * m := by
-
-        sorry
-      sorry
-      -/
-    -- have hpqr : 0 < p * q * r := Nat.mul_pos (Nat.mul_pos hp hq) hr
-    -- have hineq'' : m < m := by
-    --   -- divide `hineq'` by `p * q * r`
-    --   sorry
-    --   -- apply lt_of_mul_lt_mul_left _ hpqr
-    --   -- exact hineq'
-    -- -- Now we have a contradiction
-    -- exact Nat.lt_asymm hineq'' hineq''
-
-    -- have hineq' : p * q * r * (m + 1) ≤ p * q * r * m := sorry
-    -- -- divide by `p * q * r` to get a contradiction
-    -- have hineq'' : m + 1 ≤ m := by
-    --   apply le_of_mul_le_mul_left _ hpqr
-    --   exact hineq'
-    -- exact Nat.lt_asymm hineq'' hineq''
-    -- exfalso; apply not_le_of_lt ineq; clear ineq
-    -- -- work on lhs
-    -- rw [radical_hMul habcp, radical_hMul habp]
-    -- rw [radical_mul_unit_left hu.isUnit_C,
-    --     radical_mul_unit_left hv.isUnit_C,
-    --     radical_mul_unit_left hw.isUnit_C]
-    -- rw [radical_pow a hp, radical_pow b hq, radical_pow c hr]
-    -- rw [← radical_hMul hab, ← radical_hMul (hca.symm.mul_left hbc)]
-    -- apply le_trans <| radical_natDegree_le _
-    -- rw [natDegree_mul (mul_ne_zero ha hb) hc]
-    -- rw [natDegree_mul ha hb]
-    -- -- work on rhs
-    -- rw [mul_ne_zero_iff] at hap hbp hcp
-    -- rw [natDegree_mul hap.left hap.right]
-    -- rw [natDegree_mul hbp.left hbp.right]
-    -- rw [natDegree_mul hcp.left hcp.right]
-    -- simp only [natDegree_C, natDegree_pow, zero_add]
-    -- have hpqr : 0 < p * q * r := Nat.mul_le_mul (Nat.mul_le_mul hp hq) hr
-    -- apply le_of_mul_le_mul_left _ hpqr
-    -- apply le_trans _ (Nat.mul_le_mul_right _ hineq)
-    -- convert weighted_average_le_max₃ using 1
-    -- ring_nf
 
 private theorem expcont {a : k[X]} (ha : a ≠ 0) (hda : derivative a = 0) (chn0 : ringChar k ≠ 0) :
     ∃ ca, ca ≠ 0 ∧ a = expand k (ringChar k) ca ∧ a.natDegree = ca.natDegree * ringChar k :=
