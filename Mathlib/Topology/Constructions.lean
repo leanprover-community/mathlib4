@@ -821,7 +821,7 @@ lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
 lemma Topology.IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Prod.map f g) where
   toIsInducing := hf.isInducing.prodMap hg.isInducing
-  inj := hf.inj.prodMap hg.inj
+  injective := hf.injective.prodMap hg.injective
 
 @[deprecated (since := "2024-10-08")] alias Embedding.prodMap := Topology.IsEmbedding.prodMap
 @[deprecated (since := "2024-10-05")] alias Embedding.prod_map := Topology.IsEmbedding.prodMap

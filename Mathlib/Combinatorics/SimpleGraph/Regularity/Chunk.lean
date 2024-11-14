@@ -133,7 +133,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
       _ = ↑4 ^ #P.parts * m / #U := by norm_num
       _ ≤ 1 := div_le_one_of_le₀ (pow_mul_m_le_card_part hP hU) (cast_nonneg _)
       _ ≤ ↑2 ^ #P.parts * ε ^ 2 / 10 := by
-        refine (one_le_sq_iff <| by positivity).1 ?_
+        refine (one_le_sq_iff₀ <| by positivity).1 ?_
         rw [div_pow, mul_pow, pow_right_comm, ← pow_mul ε,
           one_le_div (sq_pos_of_ne_zero <| by norm_num)]
         calc
