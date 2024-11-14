@@ -6,7 +6,7 @@ Authors: Andrew Yang, Qi Ge, Christian Merten
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 import Mathlib.AlgebraicGeometry.Morphisms.Proper
 import Mathlib.RingTheory.RingHom.Injective
-import Mathlib.RingTheory.LocalRing.Subring
+import Mathlib.RingTheory.Valuation.LocalSubring
 
 /-!
 # Valuative criterion
