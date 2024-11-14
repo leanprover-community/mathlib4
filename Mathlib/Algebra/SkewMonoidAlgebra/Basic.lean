@@ -6,6 +6,8 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 import Mathlib.Data.Finsupp.Basic
 
 /-!
+# Skew monoid algebras
+
 This file presents a skewed version of `Mathlib.Algebra.MonoidAlgebra.Basic` with an
 irreducible definition.
 
@@ -29,9 +31,9 @@ noncomputable section
 It is the type of finite formal `k`-linear combinations of terms of `G`,
 endowed with a skewed convolution product. -/
 structure SkewMonoidAlgebra (k : Type*) (G : Type*) [Zero k] where
-  /-- Map **from** `G →₀ k`. -/
+  /-- The natural map from `G →₀ k` to `SkewMonoidAlgebra k G`. -/
   ofFinsupp ::
-  /-- Map **to** `G →₀ k`. -/
+  /-- The natural map from `SkewMonoidAlgebra k G` to `G →₀ k`. -/
   toFinsupp : G →₀ k
 
 open Function
