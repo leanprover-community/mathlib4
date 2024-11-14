@@ -20,7 +20,7 @@ Artin's braid group on infintely many strands
 braid group
 
 ## TODO
-* `braid_group n` is the braid group on n+1 strands (thus n generators)
+* `BraidGroup n` is the braid group on n+1 strands (thus n generators)
 
 -/
 
