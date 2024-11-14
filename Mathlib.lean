@@ -760,8 +760,14 @@ import Mathlib.Algebra.Polynomial.Cardinal
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Degree.Domain
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Monomial
+import Mathlib.Algebra.Polynomial.Degree.Operations
+import Mathlib.Algebra.Polynomial.Degree.SmallDegree
+import Mathlib.Algebra.Polynomial.Degree.Support
 import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
+import Mathlib.Algebra.Polynomial.Degree.Units
 import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Algebra.Polynomial.Derivation
 import Mathlib.Algebra.Polynomial.Derivative
