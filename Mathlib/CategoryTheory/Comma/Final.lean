@@ -36,9 +36,8 @@ private lemma final_fst_small [R.Final] : (fst L R).Final := by
   convert i.isIso_inv
   apply colimit.hom_ext
   intro ⟨a, b, f⟩
-  rw [colimit.ι_pre]
-  simp only [comp_obj, fst_obj, grothendieckPrecompFunctorEquivalence_functor, Iso.trans_inv,
-    Iso.symm_inv, Category.assoc, i]
+  simp only [colimit.ι_pre, comp_obj, fst_obj, grothendieckPrecompFunctorEquivalence_functor,
+    Iso.trans_inv, Iso.symm_inv, Category.assoc, i]
   change _ = colimit.ι (fst L R ⋙ G)
     ((grothendieckPrecompFunctorToComma L R).obj ⟨b, CostructuredArrow.mk f⟩) ≫ _
   rw [Final.ι_colimitIso_inv_assoc]
