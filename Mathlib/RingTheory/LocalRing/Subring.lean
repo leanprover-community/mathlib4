@@ -33,6 +33,7 @@ instance isLocalRing_top [IsLocalRing R] : IsLocalRing (⊤ : Subring R) :=
   Subring.topEquiv.symm.isLocalRing
 
 variable (R) in
+/-- The class of local subrings of a commutative ring. -/
 @[ext]
 structure LocalSubring where
   toSubring : Subring R
@@ -201,7 +202,6 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   rw [Ideal.eq_top_iff_one] at this
   obtain ⟨p, hp, hp'⟩ := (Algebra.mem_ideal_map_adjoin _ _).mp this
   have := IsUnit.invertible (isUnit_iff_ne_zero.mpr hx0)
-  have := Polynomial.eval₂_reverse_eq_zero_iff (algebraMap R.toSubring K) x (p - .C 1)
   have : Polynomial.aeval (⅟x) (p - 1).reverse = 0 := by
     simpa [← Polynomial.aeval_def, hp'] using
       Polynomial.eval₂_reverse_eq_zero_iff (algebraMap R.toSubring K) x (p - 1)
