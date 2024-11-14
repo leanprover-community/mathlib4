@@ -21,11 +21,11 @@ variable {a b c : α} [Fact (a ≤ b)] [Fact (b ≤ c)]
 variable {E : Type*} [TopologicalSpace E]
 
 /-- The embedding into an interval from a sub-interval lying on the left, as a `ContinuousMap`. -/
-def subintervalLeft : C(Icc a b, Icc a c) :=
+def IccInclusionLeft : C(Icc a b, Icc a c) :=
   .inclusion <| Icc_subset_Icc le_rfl Fact.out
 
 /-- The embedding into an interval from a sub-interval lying on the right, as a `ContinuousMap`. -/
-def subintervalRight : C(Icc b c, Icc a c) :=
+def IccInclusionRight : C(Icc b c, Icc a c) :=
   .inclusion <| Icc_subset_Icc Fact.out le_rfl
 
 /-- The map `projIcc` from `α` onto an interval in `α`, as a `ContinuousMap`. -/
@@ -58,29 +58,29 @@ noncomputable def concat (f : C(Icc a b, E)) (g : C(Icc b c, E)) :
 
 variable {f : C(Icc a b, E)} {g : C(Icc b c, E)}
 
-theorem concat_comp_subintervalLeft (hb : f ⊤ = g ⊥) :
-    (concat f g).comp subintervalLeft = f := by
+theorem concat_comp_IccInclusionLeft (hb : f ⊤ = g ⊥) :
+    (concat f g).comp IccInclusionLeft = f := by
   ext x
-  simp [concat, IccExtendCM, hb, subintervalLeft, projIccCM, inclusion, x.2.2]
+  simp [concat, IccExtendCM, hb, IccInclusionLeft, projIccCM, inclusion, x.2.2]
 
-theorem concat_comp_subintervalRight (hb : f ⊤ = g ⊥) :
-    (concat f g).comp subintervalRight = g := by
+theorem concat_comp_IccInclusionRight (hb : f ⊤ = g ⊥) :
+    (concat f g).comp IccInclusionRight = g := by
   ext ⟨x, hx⟩
   obtain rfl | hxb := eq_or_ne x b
-  · simpa [concat, subintervalRight, IccExtendCM, projIccCM, inclusion, hb]
+  · simpa [concat, IccInclusionRight, IccExtendCM, projIccCM, inclusion, hb]
   · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_le
-    simp [concat, hb, subintervalRight, h, IccExtendCM, projIccCM, projIcc, inclusion, hx.2, hx.1]
+    simp [concat, hb, IccInclusionRight, h, IccExtendCM, projIccCM, projIcc, inclusion, hx.2, hx.1]
 
 @[simp]
 theorem concat_left (hb : f ⊤ = g ⊥) {t : Icc a c} (ht : t ≤ b) :
     concat f g t = f ⟨t, t.2.1, ht⟩ := by
-  nth_rewrite 2 [← concat_comp_subintervalLeft hb]
+  nth_rewrite 2 [← concat_comp_IccInclusionLeft hb]
   rfl
 
 @[simp]
 theorem concat_right (hb : f ⊤ = g ⊥) {t : Icc a c} (ht : b ≤ t) :
     concat f g t = g ⟨t, ht, t.2.2⟩ := by
-  nth_rewrite 2 [← concat_comp_subintervalRight hb]
+  nth_rewrite 2 [← concat_comp_IccInclusionRight hb]
   rfl
 
 theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {G : ι → C(Icc b c, E)}
@@ -97,12 +97,12 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
   have hK₂ : IsCompact K₂ :=
     hK.inter_right isClosed_Ici |>.image continuous_subtype_val |>.image projIccCM.continuous
   have hfU : MapsTo f K₁ U := by
-    rw [← concat_comp_subintervalLeft hfg']
+    rw [← concat_comp_IccInclusionLeft hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : z ≤ b)⟩, rfl⟩, rfl⟩
     simpa [projIccCM, projIcc, h2, hz.1] using h1
   have hgU : MapsTo g K₂ U := by
-    rw [← concat_comp_subintervalRight hfg']
+    rw [← concat_comp_IccInclusionRight hfg']
     apply hfgU.comp
     rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : b ≤ z)⟩, rfl⟩, rfl⟩
     simpa [projIccCM, projIcc, h2, hz.2] using h1
