@@ -729,6 +729,11 @@ alias nnnorm_le_insert := nnnorm_le_nnnorm_add_nnnorm_sub
 theorem nnnorm_le_mul_nnnorm_add (a b : E) : ‖a‖₊ ≤ ‖a * b‖₊ + ‖b‖₊ :=
   norm_le_mul_norm_add _ _
 
+/-- An analogue of `nnnorm_le_mul_nnnorm_add` for the multiplication from the left. -/
+@[to_additive "An analogue of `nnnorm_le_add_nnnorm_add` for the addition from the left."]
+theorem nnnorm_le_mul_nnnorm_add' (a b : E) : ‖b‖₊ ≤ ‖a * b‖₊ + ‖a‖₊ :=
+  norm_le_mul_norm_add' _ _
+
 @[to_additive ofReal_norm_eq_coe_nnnorm]
 theorem ofReal_norm_eq_coe_nnnorm' (a : E) : ENNReal.ofReal ‖a‖ = ‖a‖₊ :=
   ENNReal.ofReal_eq_coe_nnreal _
