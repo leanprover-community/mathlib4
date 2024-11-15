@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Une introduction à Lean par le théorème de Riesz
@@ -51,7 +51,8 @@ lemma existe_point_loin_de_sousmodule
     -- linarith
   let z := d⁻¹ • (x - y₀)
   have Nz : ‖z‖ < 2 := by
-    simpa [z, norm_smul, abs_of_nonneg d_pos.le, ← div_eq_inv_mul, div_lt_iff d_pos, ← dist_eq_norm]
+    simpa [z, norm_smul, abs_of_nonneg d_pos.le, ← div_eq_inv_mul, div_lt_iff₀ d_pos,
+      ← dist_eq_norm]
   have I : ∀ y ∈ F, 1 ≤ ‖z - y‖ := by
     intro y hyF
     have A : d ≤ dist x (y₀ + d • y) := by
