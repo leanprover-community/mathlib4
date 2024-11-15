@@ -47,8 +47,10 @@ instance : CoeSort (AlgebraCat R) (Type v) :=
 attribute [coe] AlgebraCat.carrier
 
 variable {R} in
+/-- The type of morphisms in `AlgebraCat R`. -/
 @[ext]
 structure Hom (A B : AlgebraCat.{v} R) where
+  /-- The underlying algebra map. -/
   algHom : A →ₐ[R] B
 
 instance : Category (AlgebraCat.{v} R) where
