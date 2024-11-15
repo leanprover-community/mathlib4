@@ -18,7 +18,7 @@ import Mathlib.AlgebraicGeometry.Over
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performancehttps://github.com/leanprover-community/mathlib4/issues/12737
 
 
 noncomputable section
@@ -484,13 +484,13 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.
     -- Porting note: this rewrite was not necessary
     rw [SetLike.mem_coe]
     convert hx'
-    -- Porting note (#11041): `ext1` is not compiling
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is not compiling
     refine Subtype.ext ?_
     exact (morphismRestrict_base_coe f U ⟨x, hx⟩).symm
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
     refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U).base ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
-    -- Porting note (#11041): `ext1` is compiling
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is compiling
     refine Subtype.ext ?_
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 

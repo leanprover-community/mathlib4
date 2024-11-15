@@ -518,7 +518,7 @@ namespace Matrix
 def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
   of fun x y => w x * v y
 
--- TODO: set as an equation lemma for `vecMulVec`, see mathlib4#3024
+-- TODO: set as an equation lemma for `vecMulVec`, see https://github.com/leanprover-community/mathlib4/issues/3024
 theorem vecMulVec_apply [Mul α] (w : m → α) (v : n → α) (i j) : vecMulVec w v i j = w i * v j :=
   rfl
 

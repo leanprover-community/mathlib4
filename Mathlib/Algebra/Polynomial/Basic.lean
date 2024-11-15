@@ -248,7 +248,7 @@ instance inhabited : Inhabited R[X] :=
 instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 
 instance semiring : Semiring R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/issues/7432
   { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
       toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl with
     toAdd := Polynomial.add'
@@ -259,13 +259,13 @@ instance semiring : Semiring R[X] :=
     npow := fun n x => (x ^ n) }
 
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/issues/7432
   { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
       toFinsupp_smul with
     toSMulZeroClass := Polynomial.smulZeroClass }
 
 instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/issues/7432
   { Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩
       toFinsupp_injective toFinsupp_smul with
     toSMul := Polynomial.smulZeroClass.toSMul }
@@ -275,7 +275,7 @@ instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul 
     eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
 
 instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/issues/7432
   { Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
       toFinsupp_smul with
     toDistribMulAction := Polynomial.distribMulAction }
@@ -367,9 +367,9 @@ theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨Finsupp.single n t⟩
-  -- porting note (#10745): was `simp`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`.
   map_add' x y := by simp; rw [ofFinsupp_add]
-  -- porting note (#10745): was `simp [← ofFinsupp_smul]`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [← ofFinsupp_smul]`.
   map_smul' r x := by simp; rw [← ofFinsupp_smul, smul_single']
 
 @[simp]
@@ -699,7 +699,7 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : ℕ →₀ R⟩
   rcases q with ⟨g : ℕ →₀ R⟩
-  -- porting note (#10745): was `simp [coeff, DFunLike.ext_iff]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [coeff, DFunLike.ext_iff]`
   simpa [coeff] using DFunLike.ext_iff (f := f) (g := g)
 
 @[ext]
@@ -1034,7 +1034,7 @@ variable [Ring R]
 instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
 
 instance ring : Ring R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/issues/7432
   { Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
       toFinsupp_one toFinsupp_add
       toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
@@ -1081,7 +1081,7 @@ theorem C_sub : C (a - b) = C a - C b :=
 end Ring
 
 instance commRing [CommRing R] : CommRing R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/issues/7432
   { toRing := Polynomial.ring
     mul_comm := mul_comm }
 

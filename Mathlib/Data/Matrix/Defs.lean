@@ -77,7 +77,7 @@ purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * 
 appear, as the type of `*` can be misleading.
 
 Porting note: In Lean 3, it is also safe to use pattern matching in a definition as `| i j := _`,
-which can only be unfolded when fully-applied. leanprover/lean4#2042 means this does not
+which can only be unfolded when fully-applied. https://github.com/leanprover/lean4/issues/2042 means this does not
 (currently) work in Lean 4.
 -/
 def of : (m → n → α) ≃ Matrix m n α :=
@@ -133,7 +133,7 @@ theorem map_injective {f : α → β} (hf : Function.Injective f) :
 def transpose (M : Matrix m n α) : Matrix n m α :=
   of fun x y => M y x
 
--- TODO: set as an equation lemma for `transpose`, see mathlib4#3024
+-- TODO: set as an equation lemma for `transpose`, see https://github.com/leanprover-community/mathlib4/issues/3024
 @[simp]
 theorem transpose_apply (M : Matrix m n α) (i j) : transpose M i j = M j i :=
   rfl

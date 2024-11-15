@@ -30,7 +30,7 @@ case the unit and the counit would switch to each other.
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performancehttps://github.com/leanprover-community/mathlib4/issues/12737
 
 
 noncomputable section
@@ -93,7 +93,7 @@ def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
   toFun := X.toΓSpecFun
   continuous_toFun := X.toΓSpec_continuous
 
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/issues/2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
 
 variable (r : Γ.obj (op X))

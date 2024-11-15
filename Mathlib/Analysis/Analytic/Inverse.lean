@@ -536,7 +536,7 @@ theorem radius_rightInv_pos_of_radius_pos
   let a' : NNReal := ⟨a, apos.le⟩
   suffices H : (a' : ENNReal) ≤ (p.rightInv i x).radius by
     apply lt_of_lt_of_le _ H
-    -- Prior to leanprover/lean4#2734, this was `exact_mod_cast apos`.
+    -- Prior to https://github.com/leanprover/lean4/issues/2734, this was `exact_mod_cast apos`.
     simpa only [ENNReal.coe_pos]
   apply le_radius_of_eventually_le _ ((I + 1) * a)
   filter_upwards [Ici_mem_atTop 1] with n (hn : 1 ≤ n)

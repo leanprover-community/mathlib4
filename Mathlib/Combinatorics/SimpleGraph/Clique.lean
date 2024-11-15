@@ -276,7 +276,7 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   obtain ⟨w', rfl⟩ := hw
   simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype,
     f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
-  -- This used to be the end of the proof before leanprover/lean4#2644
+  -- This used to be the end of the proof before https://github.com/leanprover/lean4/issues/2644
   erw [Function.Embedding.coe_subtype, f.map_adj_iff]
   simp
 

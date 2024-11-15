@@ -224,7 +224,7 @@ instance instZero : Zero (PerfectClosure K p) :=
 theorem zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
   rfl
 
-/-- Prior to #15862, this lemma was called `mk_zero_zero`.
+/-- Prior tohttps://github.com/leanprover-community/mathlib4/issues/15862, this lemma was called `mk_zero_zero`.
 See `mk_zero_right` for the lemma used to be called `mk_zero`. -/
 @[simp]
 theorem mk_zero : mk K p 0 = 0 :=

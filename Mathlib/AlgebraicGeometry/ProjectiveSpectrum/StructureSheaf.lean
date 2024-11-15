@@ -184,7 +184,7 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top ð
       map_one' := rfl
       map_mul' := fun _ _ => rfl }
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/issues/2644 made `simp` start noticing
 attribute [nolint simpNF]
   AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_apply
 

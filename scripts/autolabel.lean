@@ -29,7 +29,7 @@ These are printed for testing purposes.
 
 `lake exe autolabel [NUMBER]` will further try to add the applicable labels
 to the PR specified. This requires the **GitHub CLI** `gh` to be installed!
-Example: `lake exe autolabel 10402` for PR #10402.
+Example: `lake exe autolabel 10402` for PR https://github.com/leanprover-community/mathlib4/issues/10402.
 
 For the time being, the script only adds a label if it finds a **single unique label**
 which would apply. If multiple labels are found, nothing happens.

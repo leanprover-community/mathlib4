@@ -85,7 +85,7 @@ lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
       (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).cond)).bijective
     ext g X
     -- The rest of this proof was
-    -- `dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]; simp` before #16317.
+    -- `dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]; simp` beforehttps://github.com/leanprover-community/mathlib4/issues/16317.
     dsimp
     rw [← NatTrans.comp_app]
     congr

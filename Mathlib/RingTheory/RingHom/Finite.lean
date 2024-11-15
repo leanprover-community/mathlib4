@@ -84,7 +84,7 @@ lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommRing
   have hy : y ∈ Submodule.span R ↑T := by rw [hT]; trivial
   replace hy : algebraMap S Sₚ y ∈ Submodule.map (IsScalarTower.toAlgHom R S Sₚ).toLinearMap
     (Submodule.span R (T : Set S)) := Submodule.mem_map_of_mem
---     -- Note: #8386 had to specify the value of `f` below
+--     -- Note:https://github.com/leanprover-community/mathlib4/issues/8386 had to specify the value of `f` below
       (f := (IsScalarTower.toAlgHom R S Sₚ).toLinearMap) hy
   rw [Submodule.map_span (IsScalarTower.toAlgHom R S Sₚ).toLinearMap T] at hy
   have H : Submodule.span R (algebraMap S Sₚ '' T) ≤

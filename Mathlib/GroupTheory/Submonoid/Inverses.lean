@@ -24,7 +24,7 @@ related constructions.
 ## TODO
 
 Define the submonoid of right inverses and two-sided inverses.
-See the comments of #10679 for a possible implementation.
+See the comments ofhttps://github.com/leanprover-community/mathlib4/issues/10679 for a possible implementation.
 
 -/
 

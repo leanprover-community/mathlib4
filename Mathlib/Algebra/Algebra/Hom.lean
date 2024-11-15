@@ -24,7 +24,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 universe u v w u₁ v₁
 
 /-- Defining the homomorphism in the category R-Alg. -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
@@ -47,7 +47,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 
 -- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
 -- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
--- 15% if we would do so (see benchmark on PR #18040).
+-- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/issues/18040).
 -- attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass
@@ -61,7 +61,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
--- Porting note (#11445): A new definition underlying a coercion `↑`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
@@ -114,14 +114,14 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f :
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 
--- Porting note (#11445): A new definition underlying a coercion `↑`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
 instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 
--- Porting note (#11445): A new definition underlying a coercion `↑`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 

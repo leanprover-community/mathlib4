@@ -233,7 +233,7 @@ def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) whe
       map_one' := rfl
       map_mul' := fun _ _ => rfl }
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/issues/2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.structurePresheafInCommRing_map_apply
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
@@ -930,7 +930,7 @@ instance isIso_to_global : IsIso (toOpen R ⊤) := by
 def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
   asIso (toOpen R ⊤)
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/issues/2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.StructureSheaf.globalSectionsIso_hom_apply_coe
 
 @[simp]
