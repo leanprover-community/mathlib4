@@ -258,6 +258,16 @@ theorem index_map_eq {f : G →* G'} (hf1 : Function.Surjective f)
   Nat.dvd_antisymm (H.index_map_dvd hf1) (H.dvd_index_map hf2)
 
 @[to_additive]
+theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
+    (H.map f).index = H.index * f.range.index := by
+  rw [H.index_map, f.ker_eq_bot_iff.mpr hf, sup_bot_eq]
+
+@[to_additive]
+theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
+    (K.map H.subtype).index = K.index * H.index := by
+  rw [K.index_map_of_injective H.subtype_injective, H.subtype_range]
+
+@[to_additive]
 theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
   rfl
 

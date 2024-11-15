@@ -12,6 +12,7 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Finiteness.TensorProduct
 
 /-!
 # Flat modules
@@ -168,7 +169,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   haveI := Classical.decEq ι
   rw [iff_rTensor_injective]
   intro I hI
-  -- This instance was added during PR #10828,
+  -- This instance was added during PR https://github.com/leanprover-community/mathlib4/pull/10828,
   -- see https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2310828.20-.20generalizing.20CommRing.20to.20CommSemiring.20etc.2E/near/422684923
   letI : ∀ i, AddCommGroup (I ⊗[R] M i) := inferInstance
   rw [← Equiv.comp_injective _ (TensorProduct.lid R (⨁ i, M i)).toEquiv]

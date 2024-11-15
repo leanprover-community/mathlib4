@@ -492,10 +492,12 @@ theorem measure_biUnion_eq_iSup {s : ι → Set α} {t : Set ι} (ht : t.Countab
   haveI := ht.to_subtype
   rw [biUnion_eq_iUnion, hd.directed_val.measure_iUnion, ← iSup_subtype'']
 
-/-- Continuity from above: the measure of the intersection of a decreasing sequence of measurable
-sets is the infimum of the measures. -/
-theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, NullMeasurableSet (s i) μ)
-    (hd : Directed (· ⊇ ·) s) (hfin : ∃ i, μ (s i) ≠ ∞) : μ (⋂ i, s i) = ⨅ i, μ (s i) := by
+/-- **Continuity from above**:
+the measure of the intersection of a directed downwards countable family of measurable sets
+is the infimum of the measures. -/
+theorem _root_.Directed.measure_iInter [Countable ι] {s : ι → Set α}
+    (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Directed (· ⊇ ·) s) (hfin : ∃ i, μ (s i) ≠ ∞) :
+    μ (⋂ i, s i) = ⨅ i, μ (s i) := by
   rcases hfin with ⟨k, hk⟩
   have : ∀ t ⊆ s k, μ t ≠ ∞ := fun t ht => ne_top_of_le_ne_top hk (measure_mono ht)
   rw [← ENNReal.sub_sub_cancel hk (iInf_le (fun i => μ (s i)) k), ENNReal.sub_iInf, ←
@@ -510,30 +512,57 @@ theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, Nu
     gcongr
   · exact hd.mono_comp _ fun _ _ => diff_subset_diff_right
 
+@[deprecated (since := "2024-09-30")] alias measure_iInter_eq_iInf := Directed.measure_iInter
+
+/-- **Continuity from above**:
+the measure of the intersection of a monotone family of measurable sets
+indexed by a type with countably generated `atBot` filter
+is equal to the infimum of the measures. -/
+theorem _root_.Monotone.measure_iInter [Preorder ι] [IsDirected ι (· ≥ ·)]
+    [(atBot : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Monotone s)
+    (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
+    μ (⋂ i, s i) = ⨅ i, μ (s i) := by
+  refine le_antisymm (le_iInf fun i ↦ measure_mono <| iInter_subset _ _) ?_
+  have := hfin.nonempty
+  rcases exists_seq_antitone_tendsto_atTop_atBot ι with ⟨x, hxm, hx⟩
+  calc
+    ⨅ i, μ (s i) ≤ ⨅ n, μ (s (x n)) := le_iInf_comp (μ ∘ s) x
+    _ = μ (⋂ n, s (x n)) := by
+      refine .symm <| (hs.comp_antitone hxm).directed_ge.measure_iInter (fun n ↦ hsm _) ?_
+      rcases hfin with ⟨k, hk⟩
+      rcases (hx.eventually_le_atBot k).exists with ⟨n, hn⟩
+      exact ⟨n, ne_top_of_le_ne_top hk <| measure_mono <| hs hn⟩
+    _ ≤ μ (⋂ i, s i) := by
+      refine measure_mono <| iInter_mono' fun i ↦ ?_
+      rcases (hx.eventually_le_atBot i).exists with ⟨n, hn⟩
+      exact ⟨n, hs hn⟩
+
+/-- **Continuity from above**:
+the measure of the intersection of an antitone family of measurable sets
+indexed by a type with countably generated `atTop` filter
+is equal to the infimum of the measures. -/
+theorem _root_.Antitone.measure_iInter [Preorder ι] [IsDirected ι (· ≤ ·)]
+    [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Antitone s)
+    (hsm : ∀ i, NullMeasurableSet (s i) μ) (hfin : ∃ i, μ (s i) ≠ ∞) :
+    μ (⋂ i, s i) = ⨅ i, μ (s i) :=
+  hs.dual_left.measure_iInter hsm hfin
+
 /-- Continuity from above: the measure of the intersection of a sequence of
 measurable sets is the infimum of the measures of the partial intersections. -/
-theorem measure_iInter_eq_iInf' {α ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
-    [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
+theorem measure_iInter_eq_iInf_measure_iInter_le {α ι : Type*} {_ : MeasurableSpace α}
+    {μ : Measure α} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     {f : ι → Set α} (h : ∀ i, NullMeasurableSet (f i) μ) (hfin : ∃ i, μ (f i) ≠ ∞) :
     μ (⋂ i, f i) = ⨅ i, μ (⋂ j ≤ i, f j) := by
-  let s := fun i ↦ ⋂ j ≤ i, f j
-  have iInter_eq : ⋂ i, f i = ⋂ i, s i := by
-    ext x; simp only [mem_iInter, s]; constructor
-    · exact fun h _ j _ ↦ h j
-    · intro h i
-      rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
-      exact h j i rij
-  have ms (i) : NullMeasurableSet (s i) μ := .biInter (to_countable _) fun i _ ↦ h i
-  have hd : Directed (· ⊇ ·) s := by
-    intro i j
-    rcases directed_of (· ≤ ·) i j with ⟨k, rik, rjk⟩
-    exact ⟨k, biInter_subset_biInter_left fun j rji ↦ le_trans rji rik,
-      biInter_subset_biInter_left fun i rij ↦ le_trans rij rjk⟩
-  have hfin' : ∃ i, μ (s i) ≠ ∞ := by
-    rcases hfin with ⟨i, hi⟩
-    rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
-    exact ⟨j, ne_top_of_le_ne_top hi <| measure_mono <| biInter_subset_of_mem rij⟩
-  exact iInter_eq ▸ measure_iInter_eq_iInf ms hd hfin'
+  rw [← Antitone.measure_iInter]
+  · rw [iInter_comm]
+    exact congrArg μ <| iInter_congr fun i ↦ (biInf_const nonempty_Ici).symm
+  · exact fun i j h ↦ biInter_mono (Iic_subset_Iic.2 h) fun _ _ ↦ Set.Subset.rfl
+  · exact fun i ↦ .biInter (to_countable _) fun _ _ ↦ h _
+  · refine hfin.imp fun k hk ↦ ne_top_of_le_ne_top hk <| measure_mono <| iInter₂_subset k ?_
+    rfl
+
+@[deprecated (since := "2024-09-30")]
+alias measure_iInter_eq_iInf' := measure_iInter_eq_iInf_measure_iInter_le
 
 /-- Continuity from below: the measure of the union of an increasing sequence of (not necessarily
 measurable) sets is the limit of the measures. -/
@@ -566,21 +595,34 @@ alias tendsto_measure_iUnion' := tendsto_measure_iUnion_accumulate
 
 /-- Continuity from above: the measure of the intersection of a decreasing sequence of measurable
 sets is the limit of the measures. -/
-theorem tendsto_measure_iInter [Countable ι] [Preorder ι] {s : ι → Set α}
-    (hs : ∀ n, NullMeasurableSet (s n) μ) (hm : Antitone s) (hf : ∃ i, μ (s i) ≠ ∞) :
+theorem tendsto_measure_iInter_atTop [Preorder ι]
+    [IsCountablyGenerated (atTop : Filter ι)] {s : ι → Set α}
+    (hs : ∀ i, NullMeasurableSet (s i) μ) (hm : Antitone s) (hf : ∃ i, μ (s i) ≠ ∞) :
     Tendsto (μ ∘ s) atTop (𝓝 (μ (⋂ n, s n))) := by
   refine .of_neBot_imp fun h ↦ ?_
   have := (atTop_neBot_iff.1 h).2
-  rw [measure_iInter_eq_iInf hs hm.directed_ge hf]
+  rw [hm.measure_iInter hs hf]
   exact tendsto_atTop_iInf fun n m hnm => measure_mono <| hm hnm
+
+@[deprecated (since := "2024-09-30")]
+alias tendsto_measure_iInter := tendsto_measure_iInter_atTop
+
+/-- Continuity from above: the measure of the intersection of an increasing sequence of measurable
+sets is the limit of the measures. -/
+theorem tendsto_measure_iInter_atBot [Preorder ι] [IsCountablyGenerated (atBot : Filter ι)]
+    {s : ι → Set α} (hs : ∀ i, NullMeasurableSet (s i) μ) (hm : Monotone s)
+    (hf : ∃ i, μ (s i) ≠ ∞) : Tendsto (μ ∘ s) atBot (𝓝 (μ (⋂ n, s n))) :=
+  tendsto_measure_iInter_atTop (ι := ιᵒᵈ) hs hm.dual_left hf
 
 /-- Continuity from above: the measure of the intersection of a sequence of measurable
 sets such that one has finite measure is the limit of the measures of the partial intersections. -/
-theorem tendsto_measure_iInter' {α ι : Type*} {_ : MeasurableSpace α} {μ : Measure α} [Countable ι]
-    [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → Set α} (hm : ∀ i, NullMeasurableSet (f i) μ)
+theorem tendsto_measure_iInter_le {α ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
+    [Countable ι] [Preorder ι] {f : ι → Set α} (hm : ∀ i, NullMeasurableSet (f i) μ)
     (hf : ∃ i, μ (f i) ≠ ∞) :
-    Tendsto (fun i ↦ μ (⋂ j ∈ {j | j ≤ i}, f j)) atTop (𝓝 (μ (⋂ i, f i))) := by
-  rw [measure_iInter_eq_iInf' hm hf]
+    Tendsto (fun i ↦ μ (⋂ j ≤ i, f j)) atTop (𝓝 (μ (⋂ i, f i))) := by
+  refine .of_neBot_imp fun hne ↦ ?_
+  cases' atTop_neBot_iff.mp hne
+  rw [measure_iInter_eq_iInf_measure_iInter_le hm hf]
   exact tendsto_atTop_iInf
     fun i j hij ↦ measure_mono <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
 
@@ -590,36 +632,14 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     [OrderTopology ι] [DenselyOrdered ι] [FirstCountableTopology ι] {s : ι → Set α}
     {a : ι} (hs : ∀ r > a, NullMeasurableSet (s r) μ) (hm : ∀ i j, a < i → i ≤ j → s i ⊆ s j)
     (hf : ∃ r > a, μ (s r) ≠ ∞) : Tendsto (μ ∘ s) (𝓝[Ioi a] a) (𝓝 (μ (⋂ r > a, s r))) := by
-  refine tendsto_order.2 ⟨fun l hl => ?_, fun L hL => ?_⟩
-  · filter_upwards [self_mem_nhdsWithin (s := Ioi a)] with r hr using hl.trans_le
-        (measure_mono (biInter_subset_of_mem hr))
-  obtain ⟨u, u_anti, u_pos, u_lim⟩ :
-    ∃ u : ℕ → ι, StrictAnti u ∧ (∀ n : ℕ, a < u n) ∧ Tendsto u atTop (𝓝 a) := by
-    rcases hf with ⟨r, ar, _⟩
-    rcases exists_seq_strictAnti_tendsto' ar with ⟨w, w_anti, w_mem, w_lim⟩
-    exact ⟨w, w_anti, fun n => (w_mem n).1, w_lim⟩
-  have A : Tendsto (μ ∘ s ∘ u) atTop (𝓝 (μ (⋂ n, s (u n)))) := by
-    refine tendsto_measure_iInter (fun n => hs _ (u_pos n)) ?_ ?_
-    · intro m n hmn
-      exact hm _ _ (u_pos n) (u_anti.antitone hmn)
-    · rcases hf with ⟨r, rpos, hr⟩
-      obtain ⟨n, hn⟩ : ∃ n : ℕ, u n < r := ((tendsto_order.1 u_lim).2 r rpos).exists
-      refine ⟨n, ne_of_lt (lt_of_le_of_lt ?_ hr.lt_top)⟩
-      exact measure_mono (hm _ _ (u_pos n) hn.le)
-  have B : ⋂ n, s (u n) = ⋂ r > a, s r := by
-    apply Subset.antisymm
-    · simp only [subset_iInter_iff, gt_iff_lt]
-      intro r rpos
-      obtain ⟨n, hn⟩ : ∃ n, u n < r := ((tendsto_order.1 u_lim).2 _ rpos).exists
-      exact Subset.trans (iInter_subset _ n) (hm (u n) r (u_pos n) hn.le)
-    · simp only [subset_iInter_iff, gt_iff_lt]
-      intro n
-      apply biInter_subset_of_mem
-      exact u_pos n
-  rw [B] at A
-  obtain ⟨n, hn⟩ : ∃ n, μ (s (u n)) < L := ((tendsto_order.1 A).2 _ hL).exists
-  have : Ioc a (u n) ∈ 𝓝[>] a := Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, u_pos n⟩
-  filter_upwards [this] with r hr using lt_of_le_of_lt (measure_mono (hm _ _ hr.1 hr.2)) hn
+  have : (atBot : Filter (Ioi a)).IsCountablyGenerated := by
+    rw [← comap_coe_Ioi_nhdsWithin_Ioi]
+    infer_instance
+  simp_rw [← map_coe_Ioi_atBot, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
+  apply tendsto_measure_iInter_atBot
+  · rwa [Subtype.forall]
+  · exact fun i j h ↦ hm i j i.2 h
+  · simpa only [Subtype.exists, exists_prop]
 
 theorem measure_if {x : β} {t : Set β} {s : Set α} [Decidable (x ∈ t)] :
     μ (if x ∈ t then s else ∅) = indicator t (fun _ => μ s) x := by split_ifs with h <;> simp [h]
@@ -848,6 +868,13 @@ theorem coe_nnreal_smul_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Meas
 theorem nnreal_smul_coe_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Measure α) (s : Set α) :
     c • μ s = c * μ s := by
   rfl
+
+theorem ae_smul_measure {p : α → Prop} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (h : ∀ᵐ x ∂μ, p x) (c : R) : ∀ᵐ x ∂c • μ, p x :=
+  ae_iff.2 <| by rw [smul_apply, ae_iff.1 h, ← smul_one_smul ℝ≥0∞, smul_zero]
+
+theorem ae_smul_measure_le [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) :
+    ae (c • μ) ≤ ae μ := fun _ h ↦ ae_smul_measure h c
 
 section SMulWithZero
 
@@ -1107,8 +1134,10 @@ theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Meas
     simp [map_of_not_aemeasurable, hf, hg]
 
 @[simp]
-protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
-    (c • μ).map f = c • μ.map f := by
+protected theorem map_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) (μ : Measure α) (f : α → β) : (c • μ).map f = c • μ.map f := by
+  suffices ∀ c : ℝ≥0∞, (c • μ).map f = c • μ.map f by simpa using this (c • 1)
+  clear c; intro c
   rcases eq_or_ne c 0 with (rfl | hc); · simp
   by_cases hf : AEMeasurable f μ
   · have hfc : AEMeasurable f (c • μ) :=
@@ -1123,10 +1152,11 @@ protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
       exact hf ⟨hfc.mk f, hfc.measurable_mk, (ae_smul_measure_iff hc).1 hfc.ae_eq_mk⟩
     simp [map_of_not_aemeasurable hf, map_of_not_aemeasurable hfc]
 
-@[simp]
+
+@[deprecated Measure.map_smul (since := "2024-11-13")]
 protected theorem map_smul_nnreal (c : ℝ≥0) (μ : Measure α) (f : α → β) :
     (c • μ).map f = c • μ.map f :=
-  μ.map_smul (c : ℝ≥0∞) f
+  μ.map_smul c f
 
 variable {f : α → β}
 
@@ -1491,9 +1521,15 @@ protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ �
 protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
   AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
 
-protected theorem smul [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    (h : μ ≪ ν) (c : R) : c • μ ≪ ν := fun s hνs => by
-  simp only [h hνs, smul_eq_mul, smul_apply, smul_zero]
+protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
+    c • μ ≪ ν := fun s hνs => by
+  simp only [h hνs, smul_apply, smul_zero, ← smul_one_smul ℝ≥0∞ c (0 : ℝ≥0∞)]
+
+protected theorem smul_both [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
+    c • μ ≪ c • ν := by
+  intro s hνs
+  rw [smul_apply, ← smul_one_smul ℝ≥0∞, smul_eq_mul, mul_eq_zero] at hνs ⊢
+  exact hνs.imp_right fun hs ↦ h hs
 
 protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
   intro s hs
@@ -1536,11 +1572,11 @@ lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ :
   simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
   exact hνμ (hs0 i)
 
+lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := .smul .rfl _
+
 theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ'_le : μ' ≤ c • μ) :
     μ' ≪ μ :=
-  (Measure.absolutelyContinuous_of_le hμ'_le).trans (Measure.AbsolutelyContinuous.rfl.smul c)
-
-lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := absolutelyContinuous_of_le_smul le_rfl
+  (Measure.absolutelyContinuous_of_le hμ'_le).trans smul_absolutelyContinuous
 
 lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • μ := by
   simp [AbsolutelyContinuous, hc]
@@ -1617,6 +1653,10 @@ protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa
 protected theorem aemeasurable (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
 
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (hf : QuasiMeasurePreserving f μa μb) (c : R) : QuasiMeasurePreserving f (c • μa) (c • μb) :=
+  ⟨hf.1, by rw [Measure.map_smul]; exact hf.2.smul_both c⟩
+
 theorem ae_map_le (h : QuasiMeasurePreserving f μa μb) : ae (μa.map f) ≤ ae μb :=
   h.2.ae_le
 
@@ -1672,13 +1712,13 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
     replace he : (⇑e)^[k] ⁻¹' s =ᵐ[μ] s := he.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e k] at he
 
--- Need to specify `α := Set α` below because of diamond; see #10941
+-- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
 theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) : limsup (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
   limsup_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
     simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
--- Need to specify `α := Set α` below because of diamond; see #10941
+-- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
 theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
   liminf_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
@@ -1979,4 +2019,4 @@ lemma comap_swap (μ : Measure (α × β)) : μ.comap Prod.swap = μ.map Prod.sw
 end MeasureTheory.Measure
 end
 
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 2200
