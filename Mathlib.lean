@@ -4488,6 +4488,8 @@ import Mathlib.SetTheory.Game.PGame
 import Mathlib.SetTheory.Game.Short
 import Mathlib.SetTheory.Game.State
 import Mathlib.SetTheory.Lists
+import Mathlib.SetTheory.Nimber.Basic
+import Mathlib.SetTheory.Nimber.Field
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.SetTheory.Ordinal.CantorNormalForm
@@ -4496,7 +4498,6 @@ import Mathlib.SetTheory.Ordinal.Exponential
 import Mathlib.SetTheory.Ordinal.FixedPoint
 import Mathlib.SetTheory.Ordinal.FixedPointApproximants
 import Mathlib.SetTheory.Ordinal.NaturalOps
-import Mathlib.SetTheory.Ordinal.Nimber
 import Mathlib.SetTheory.Ordinal.Notation
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Rank
