@@ -204,7 +204,7 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
   ext
   simp [germ, stalkPushforward]
 
-theorem stalkPushforward_iso_of_inducing {f : X ⟶ Y} (hf : Inducing f)
+theorem stalkPushforward_iso_of_isInducing {f : X ⟶ Y} (hf : IsInducing f)
     (F : X.Presheaf C) (x : X) : IsIso (F.stalkPushforward _ f x) := by
   haveI := Functor.initial_of_adjunction (hf.adjunctionNhds x)
   convert (Functor.Final.colimitIso (OpenNhds.map f x).op ((OpenNhds.inclusion x).op ⋙ F)).isIso_hom
@@ -213,9 +213,9 @@ theorem stalkPushforward_iso_of_inducing {f : X ⟶ Y} (hf : Inducing f)
   exact colimit.ι_pre ((OpenNhds.inclusion x).op ⋙ F) (OpenNhds.map f x).op _
 
 @[deprecated (since := "2024-10-27")]
-alias stalkPushforward_iso_of_isOpenEmbedding := stalkPushforward_iso_of_inducing
+alias stalkPushforward_iso_of_isOpenEmbedding := stalkPushforward_iso_of_isInducing
 @[deprecated (since := "2024-10-18")]
-alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_inducing
+alias stalkPushforward_iso_of_openEmbedding := stalkPushforward_iso_of_isInducing
 
 end stalkPushforward
 
