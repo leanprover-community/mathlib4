@@ -109,7 +109,7 @@ theorem denseRange_zsmul_iff_surjective {a : G} :
   rcases eq_or_ne b ((m - 1) • a) with rfl | hne; · simp
   suffices (Ioo (m • a) ((m + 1) • a)).Nonempty by
     rcases h.exists_mem_open isOpen_Ioo this with ⟨l, hl⟩
-    have : m < l ∧ l < m + 1 := by simpa [zsmul_lt_zsmul_iff ha₀] using hl
+    have : m < l ∧ l < m + 1 := by simpa [zsmul_lt_zsmul_iff_left ha₀] using hl
     omega
   rcases hne.lt_or_lt with hlt | hlt
   · refine ⟨b + a + a, hm', ?_⟩

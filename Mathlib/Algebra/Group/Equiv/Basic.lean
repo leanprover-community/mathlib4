@@ -45,12 +45,6 @@ theorem map_ne_one_iff {f : F} {x : M} :
 
 end EmbeddingLike
 
-@[to_additive (attr := deprecated (since := "2024-11-10"))]
-alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
-
-@[to_additive (attr := deprecated (since := "2024-11-10"))]
-alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
-
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
 @[to_additive (attr := simps)
   "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
@@ -125,6 +119,12 @@ class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLik
     Prop where
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
+
+@[to_additive (attr := deprecated (since := "2024-11-10"))]
+alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
+
+@[to_additive (attr := deprecated (since := "2024-11-10"))]
+alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
 
 namespace MulEquivClass
 
