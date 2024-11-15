@@ -101,16 +101,6 @@ instance whiskeringLeftPreservesLimitsOfShape (J : Type u) [Category.{v} J]
       change IsLimit (((evaluation E D).obj (F.obj Y)).mapCone c)
       exact PreservesLimit.preserves hc⟩⟩
 
-instance whiskeringLeftPreservesColimitsOfShape (J : Type u) [Category.{v} J]
-    [HasColimitsOfShape J D] (F : C ⥤ E) :
-    PreservesColimitsOfShape J ((whiskeringLeft C E D).obj F) :=
-  ⟨fun {K} =>
-    ⟨fun c {hc} => by
-      apply evaluationJointlyReflectsColimits
-      intro Y
-      change IsColimit (((evaluation E D).obj (F.obj Y)).mapCocone c)
-      exact PreservesColimit.preserves hc⟩⟩
-
 instance whiskeringLeftPreservesLimits [HasLimitsOfSize.{w} D] (F : C ⥤ E) :
     PreservesLimitsOfSize.{w, w'} ((whiskeringLeft C E D).obj F) :=
   ⟨fun {J} _ => whiskeringLeftPreservesLimitsOfShape J F⟩
