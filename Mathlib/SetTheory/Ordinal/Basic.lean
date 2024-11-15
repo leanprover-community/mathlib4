@@ -333,7 +333,7 @@ theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
 instance zeroLEOneClass : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
 
-instance NeZero.one : NeZero (1 : Ordinal) :=
+instance instNeZeroOne : NeZero (1 : Ordinal) :=
   ⟨Ordinal.one_ne_zero⟩
 
 theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
