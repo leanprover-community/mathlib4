@@ -12,7 +12,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 # Absolute value of an operator defined via the continuous functional calculus
 
 This file provides API for the absolute value for (CFC) and (CFCₙ), and includes the associated
-basic API.
+basic API. THIS NEEDS UPDATING!
 
 ## Main declarations
 
@@ -39,11 +39,31 @@ section NonUnital
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
-  rw [abs, sqrt_eq_zero_iff _ (ha := star_mul_self_nonneg _), CStarRing.star_mul_self_eq_zero_iff]
+  rw [abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
+
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+theorem IsSelfAdjoint.mul_self_nonneg {a : A} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
+  simpa [ha.star_eq] using star_mul_self_nonneg a
+
+lemma sqrt_eq_cfcₙ_real_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) :
+    CFC.sqrt a = cfcₙ Real.sqrt a := by
+  rw [sqrt_eq_iff (ha := ha) (hb := cfcₙ_nonneg (A := A) (fun x _ ↦ Real.sqrt_nonneg x))]
+  simp only [← cfcₙ_mul (Real.sqrt) (Real.sqrt) _]
+  conv_lhs =>
+    lhs
+    ext
+    rw [← Real.sqrt_mul]
+
+
+
+
+
 
 lemma abs_eq_cfcₙ_norm (a : A) (ha : IsSelfAdjoint a) :
-    abs a = cfcₙ (‖·‖) a :=
+    abs a = cfcₙ (‖·‖) a := by
+  simp only [abs ,ha.star_eq, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
   sorry
+
 
 lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
     abs a = cfcₙ (fun z : ℂ ↦ (‖z‖ : ℂ)) a :=
