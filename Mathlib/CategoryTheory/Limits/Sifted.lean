@@ -167,11 +167,11 @@ private lemma factorization_prod_comparison_colim :
   erw [colimitIsoColimitCurryCompColim_ι_hom_assoc]
   simp only [externalProductFunctor_obj_obj, HasColimit.isoOfNatIso_ι_hom_assoc, comp_obj,
     colim_obj, tensorLeft_obj, isoWhiskerRight_hom, whiskerRight_app, NatIso.ofComponents_hom_app,
-    colim_map, ι_preservesColimitsIso_inv_assoc, ι_colimMap_assoc, curry_obj_obj_obj,
+    colim_map, ι_preservesColimitIso_inv_assoc, ι_colimMap_assoc, curry_obj_obj_obj,
     Monoidal.tensorObj_obj, const_obj_obj, Iso.symm_hom, mapIso_inv, tensorLeft_map,
-    Monoidal.whiskerLeft_app, ι_preservesColimitsIso_inv,
+    Monoidal.whiskerLeft_app, ι_preservesColimitIso_inv,
     BraidedCategory.braiding_naturality_right_assoc]
-  slice_lhs 2 3 => rw [← NatTrans.vcomp_app, NatTrans.vcomp_eq_comp, ι_preservesColimitsIso_inv]
+  slice_lhs 2 3 => rw [← NatTrans.vcomp_app, NatTrans.vcomp_eq_comp, ι_preservesColimitIso_inv]
   simp only [comp_obj, tensorRight_map, Monoidal.whiskerRight_app, ← comp_whiskerRight,
     const_obj_obj, Category.assoc]
   rw [← whisker_exchange, ← tensorHom_def']
@@ -185,7 +185,7 @@ private lemma factorization_prod_comparison_colim :
     rw [ChosenFiniteProducts.prodComparison_fst]
     simp only [colim_map, ι_colimMap, Monoidal.tensorObj_obj]
     congr
-    rw [← NatTrans.vcomp_app, NatTrans.vcomp_eq_comp, ι_preservesColimitsIso_inv]
+    rw [← NatTrans.vcomp_app, NatTrans.vcomp_eq_comp, ι_preservesColimitIso_inv]
     rfl
   · simp only [Category.assoc, ChosenFiniteProducts.tensorHom_snd,
     ChosenFiniteProducts.whiskerRight_snd_assoc]
@@ -244,7 +244,7 @@ empty. -/
 theorem isSiftedOrEmpty_of_colimit_preservesBinaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ Type u)] :
     IsSiftedOrEmpty C := by
-  apply cofinal_of_colimit_comp_coyoneda_iso_pUnit
+  apply final_of_colimit_comp_coyoneda_iso_pUnit
   rintro ⟨c₁, c₂⟩
   calc colimit <| diag C ⋙ coyoneda.obj (op (c₁, c₂))
     _ ≅ colimit <| _ ⋙ (coyoneda.obj _) ⊠ (coyoneda.obj _) := HasColimit.isoOfNatIso <|
