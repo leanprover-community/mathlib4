@@ -444,7 +444,7 @@ theorem congrEquiv_symm_of (e : α ≃ β) (b : β) : congrEquiv e.symm (of b) =
 have an underlying type of β -/
 @[to_additive "given a function from β to α, convert a relation predicate to
 have an underlying type of β"]
-def mapRel (f : β → α)(rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  →
+def mapRel (f : β → α) (rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  →
     Prop := fun a b ↦ rel (.map f a) (.map f b)
 
 /-- given a function from α to β, convert a relation predicate with underlying type β to
