@@ -839,9 +839,8 @@ theorem constantCoeff_X (i : σ) : constantCoeff (X i : MvPolynomial σ R) = 0 :
   simp [constantCoeff_eq]
 
 variable {R}
-/- porting note: increased priority because otherwise `simp` time outs when trying to simplify
-the left-hand side. `simpNF` linter indicated this and it was verified. -/
-@[simp 1001]
+
+@[simp]
 theorem constantCoeff_smul {R : Type*} [SMulZeroClass R S₁] (a : R) (f : MvPolynomial σ S₁) :
     constantCoeff (a • f) = a • constantCoeff f :=
   rfl

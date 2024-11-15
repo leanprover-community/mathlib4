@@ -57,6 +57,7 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) wh
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
 
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+-- It would be worth fixing these, as `ρAut_apply_inv` is used in `erw` later.
 attribute [nolint simpNF] Action.ρAut_apply_inv Action.ρAut_apply_hom
 
 variable (G : MonCat.{u})
