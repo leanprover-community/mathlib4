@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 # Sifted categories
 
 A category `C` is sifted if `C` is nonempty and the diagonal functor `C ⥤ C × C` is final.
-Sifted categories can be caracterized as those such that the colimit functor `(C ⥤ Type) ⥤ Type `
+Sifted categories can be characterized as those such that the colimit functor `(C ⥤ Type) ⥤ Type `
 preserves finite products. We achieve this characterization in this file.
 
 ## Main results
