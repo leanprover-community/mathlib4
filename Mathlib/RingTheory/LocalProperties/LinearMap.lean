@@ -83,7 +83,7 @@ noncomputable def linearEquivOfLocalizationFinitespan (h : ∀ r : s, Function.B
   LinearEquiv.ofBijective f <| bijective_of_localization_finitespan _ spn _ h
 
 lemma exact_of_localization_finitespan {M₀ M₁ M₂ : Type*} [AddCommGroup M₀] [Module R M₀]
-  [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁)
+    [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁)
     (g : M₁ →ₗ[R] M₂) (h : ∀ r : s, Function.Exact ((map (Submonoid.powers r.1) f))
       ((map (Submonoid.powers r.1) g))) : Function.Exact f g := by
   simp only [LinearMap.exact_iff] at h ⊢
