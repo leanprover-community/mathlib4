@@ -195,4 +195,27 @@ lemma LinearMap.toKerLocalized_isLocalizedModule (g : M →ₗ[R] P) :
     LinearEquiv.ofEq _ _ (localized'_ker_eq_ker_localizedMap S p f f' g)
   IsLocalizedModule.of_linearEquiv p (Submodule.toLocalized' S p f (ker g)) (e.restrictScalars R)
 
+/-Localization commutes with ranges.-/
+open Submodule IsLocalizedModule
+lemma LinearMap.localized'_range_eq_range_localizedMap (g : M →ₗ[R] P) :
+    localized' S p f' (LinearMap.range g) =
+      LinearMap.range ((map p f f' g).extendScalarsOfIsLocalization p S) := by
+  ext x
+  simp only [mem_localized', extendScalarsOfIsLocalization_apply']
+  constructor
+  · rintro ⟨r, hr, a, ha⟩
+    obtain ⟨m, hm⟩ := mem_range.mp hr
+    exact ⟨(mk' f m a), by rw [extendScalarsOfIsLocalization_apply', map_mk', hm, ha]⟩
+  · intro h
+    obtain ⟨n, hn⟩ := mem_range.mp h
+    obtain ⟨m, hm⟩ := surj p f n
+    exact ⟨(g m.1), mem_range_self g m.1, m.2, by
+      rw [← hn, extendScalarsOfIsLocalization_apply', ← mk'_eq_iff.mpr hm.symm, map_mk']⟩
+
+lemma LinearMap.range_localizedMap_eq_localized'_range (g : M →ₗ[R] P) :
+    LinearMap.range (IsLocalizedModule.map p f f' g) =
+      ((LinearMap.range g).localized' S p f').restrictScalars _ := by
+  ext
+  simp [localized'_range_eq_range_localizedMap S p f f']
+
 end LinearMap
