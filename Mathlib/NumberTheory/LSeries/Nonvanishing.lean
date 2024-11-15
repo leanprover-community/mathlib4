@@ -32,23 +32,20 @@ private lemma re_log_comb_nonneg {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z 
     simp only [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg ha₀, ha₁]
   have hac₁ : ‖a * z‖ < 1 := by rwa [norm_mul, hz, mul_one]
   have hac₂ : ‖a * z ^ 2‖ < 1 := by rwa [norm_mul, norm_pow, hz, one_pow, mul_one]
-  have H₀ := (hasSum_re <| hasSum_taylorSeries_neg_log hac₀).mul_left 3
-  have H₁ := (hasSum_re <| hasSum_taylorSeries_neg_log hac₁).mul_left 4
-  have H₂ := hasSum_re <| hasSum_taylorSeries_neg_log hac₂
-  rw [← ((H₀.add H₁).add H₂).tsum_eq]; clear H₀ H₁ H₂
+  rw [← ((hasSum_re <| hasSum_taylorSeries_neg_log hac₀).mul_left 3).add
+    ((hasSum_re <| hasSum_taylorSeries_neg_log hac₁).mul_left 4) |>.add
+    (hasSum_re <| hasSum_taylorSeries_neg_log hac₂) |>.tsum_eq]
   refine tsum_nonneg fun n ↦ ?_
   simp only [← ofReal_pow, div_natCast_re, ofReal_re, mul_pow, mul_re, ofReal_im, zero_mul,
     sub_zero]
   rcases n.eq_zero_or_pos with rfl | hn
-  · simp only [pow_zero, CharP.cast_eq_zero, div_zero, mul_zero, one_re, mul_one, add_zero,
-     le_refl]
+  · simp only [pow_zero, Nat.cast_zero, div_zero, mul_zero, one_re, mul_one, add_zero, le_refl]
   · simp only [← mul_div_assoc, ← add_div]
     refine div_nonneg ?_ n.cast_nonneg
     rw [← pow_mul, pow_mul', sq, mul_re, ← sq, ← sq, ← sq_abs_sub_sq_re, ← norm_eq_abs, norm_pow,
       hz]
-    calc
-     0 ≤ 2 * a ^ n * ((z ^ n).re + 1) ^ 2 := by positivity
-      _ = _  := by ring
+    convert (show 0 ≤ 2 * a ^ n * ((z ^ n).re + 1) ^ 2 by positivity) using 1
+    ring
 
 namespace DirichletCharacter
 
@@ -71,8 +68,7 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
     convert _root_.re_log_comb_nonneg ha₀ ha₁ hz using 6
-    · congr 2
-      exact_mod_cast (ofReal_cpow n.cast_nonneg (-x)).symm
+    · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg] 
     · congr 2
       rw [neg_add, cpow_add _ _ <| mod_cast by omega, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, mul_left_comm]
@@ -80,16 +76,14 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
         ofReal_natCast, show -(2 * I * y) = (2 : ℕ) * -(I * y) by ring, cpow_nat_mul, mul_pow,
         mul_left_comm]
   · simp only [MulChar.map_nonunit _ hn', zero_mul, sub_zero, log_one, neg_zero, zero_re, mul_zero,
-      neg_add_rev, add_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, le_refl]
+      neg_add_rev, add_zero, pow_two, le_refl]
 
 /-- The logarithms of the Euler factors of a Dirichlet L-series form a summable sequence. -/
 lemma summable_neg_log_one_sub_mul_prime_cpow {s : ℂ} (hs : 1 < s.re) :
     Summable fun p : Nat.Primes ↦ -log (1 - χ p * (p : ℂ) ^ (-s)) := by
   have (p : Nat.Primes) : ‖χ p * (p : ℂ) ^ (-s)‖ ≤ (p : ℝ) ^ (-s).re := by
-    rw [norm_mul, norm_natCast_cpow_of_re_ne_zero _ <| re_neg_ne_zero_of_one_lt_re hs]
-    conv_rhs => rw [← one_mul (_ ^ _)]
-    gcongr
-    exact DirichletCharacter.norm_le_one χ _
+    simpa only [norm_mul, norm_natCast_cpow_of_re_ne_zero _ <| re_neg_ne_zero_of_one_lt_re hs]
+      using mul_le_of_le_one_left (by positivity) (χ.norm_le_one _)
   refine (Nat.Primes.summable_rpow.mpr ?_).of_nonneg_of_le (fun _ ↦ norm_nonneg _) this
     |>.of_norm.clog_one_sub.neg
   simp only [neg_re, neg_lt_neg_iff, hs]
@@ -118,10 +112,9 @@ lemma norm_LSeries_product_ge_one {x : ℝ} (hx : 0 < x) (y : ℝ) :
     re_ofNat, im_ofNat, zero_mul, sub_zero, Real.one_le_exp_iff]
   rw [re_tsum H₀, re_tsum H₁, re_tsum H₂, ← tsum_mul_left, ← tsum_mul_left,
     ← tsum_add hsum₀ hsum₁, ← tsum_add (hsum₀.add hsum₁) hsum₂]
-  simp only [χ.pow_apply' two_ne_zero]
-  have hx₁ : (1 + x : ℂ).re = 1 + (x : ℂ) := by
-    simp only [add_re, one_re, ofReal_re, ofReal_add, ofReal_one]
-  exact tsum_nonneg fun p ↦ hx₁ ▸ χ.re_log_comb_nonneg p.prop.two_le h₀ y
+  simpa only [neg_add_rev, neg_re, mul_neg, χ.pow_apply' two_ne_zero, ge_iff_le, add_re, one_re,
+    ofReal_re, ofReal_add, ofReal_one] using
+      tsum_nonneg fun (p : Nat.Primes) ↦ χ.re_log_comb_nonneg p.prop.two_le h₀ y
 
 variable [NeZero N]
 
@@ -141,15 +134,12 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
     (fun x : ℝ ↦ LFunctionTrivChar N (1 + x)) =O[𝓝[>] 0] fun x ↦ (1 : ℂ) / x := by
   have : (fun w : ℂ ↦ LFunctionTrivChar N (1 + w)) =O[𝓝[≠] 0] (1 / ·) := by
     have H : Tendsto (fun w ↦ w * LFunctionTrivChar N (1 + w)) (𝓝[≠] 0)
-               (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
+        (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
       convert (LFunctionTrivChar_residue_one (N := N)).comp (f := fun w ↦ 1 + w) ?_ using 1
-      · ext1 w
-        simp only [Function.comp_apply, add_sub_cancel_left]
-      · refine tendsto_iff_comap.mpr <| map_le_iff_le_comap.mp <| Eq.le ?_
-        convert map_punctured_nhds_eq (Homeomorph.addLeft (1 : ℂ)) 0 using 2 <;>
-          simp only [coe_addLeft, add_zero]
-    exact ((isBigO_mul_iff_isBigO_div eventually_mem_nhdsWithin).mp <|
-      Tendsto.isBigO_one ℂ H).trans <| isBigO_refl ..
+      · simp only [Function.comp_def, add_sub_cancel_left]
+      · simpa only [tendsto_iff_comap, Homeomorph.coe_addLeft, add_zero, map_le_iff_le_comap] using
+          ((Homeomorph.addLeft (1 : ℂ)).map_punctured_nhds_eq 0).le
+    exact ((isBigO_mul_iff_isBigO_div eventually_mem_nhdsWithin).mp <| H.isBigO_one ℂ)
   exact (isBigO_comp_ofReal_nhds_ne this).mono <| nhds_right'_le_nhds_ne 0
 
 omit [NeZero N] in
