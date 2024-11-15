@@ -47,10 +47,10 @@ end Small
 
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
-variable {T : Type v₃} [Category.{v₃} T]
+variable {T : Type u₃} [Category.{v₃} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
-lemma final_fst [R.Final] : (fst L R).Final := by
+instance final_fst [R.Final] : (fst L R).Final := by
   let sA : A ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} A := AsSmall.equiv
   let sB : B ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} B := AsSmall.equiv
   let sT : T ≌ AsSmall.{max u₁ u₂ u₃ v₁ v₂ v₃} T := AsSmall.equiv
@@ -63,6 +63,12 @@ lemma final_fst [R.Final] : (fst L R).Final := by
   have : Final (fst L' R') := final_fst_small _ _
   apply final_of_natIso (F := (fC ⋙ fst L' R' ⋙ sA.inverse))
   exact (Functor.associator _ _ _).symm.trans (Iso.compInverseIso (mapFst _ _))
+
+lemma initial_snd [L.Initial] : (snd L R).Initial := by
+  haveI : ((opFunctor L R).leftOp ⋙ fst R.op L.op).Final :=
+    final_equivalence_comp (opEquiv L R).functor.leftOp (fst R.op L.op)
+  haveI : (snd L R).op.Final := final_of_natIso (opFunctorCompFst _ _)
+  apply initial_of_final_op
 
 end Comma
 

@@ -533,6 +533,45 @@ theorem toIdPUnitEquiv_functor_iso {L : Discrete PUnit ⥤ Discrete PUnit}
 
 end
 
+section Opposite
+
+open Opposite
+
+@[simps]
+def opFunctor : Comma L R ⥤ (Comma R.op L.op)ᵒᵖ where
+  obj X := ⟨op X.right, op X.left, op X.hom⟩
+  map f := ⟨op f.right, op f.left, Quiver.Hom.unop_inj (by simp)⟩
+
+@[simps!]
+def opFunctorCompFst : (opFunctor L R).leftOp ⋙ fst _ _ ≅ (snd _ _).op :=
+  Iso.refl _
+
+@[simps!]
+def opFunctorCompSnd : (opFunctor L R).leftOp ⋙ snd _ _ ≅ (fst _ _).op :=
+  Iso.refl _
+
+@[simps]
+def unopFunctor : Comma L.op R.op ⥤ (Comma R L)ᵒᵖ where
+  obj X := ⟨X.right.unop, X.left.unop, X.hom.unop⟩
+  map f := ⟨f.right.unop, f.left.unop, Quiver.Hom.op_inj (by simpa using f.w.symm)⟩
+
+@[simps!]
+def unopFunctorCompFst : unopFunctor L R ⋙ (fst _ _).op ≅ snd _ _ :=
+  Iso.refl _
+
+@[simps!]
+def unopFunctorCompSnd : unopFunctor L R ⋙ (snd _ _).op ≅ fst _ _ :=
+  Iso.refl _
+
+@[simps]
+def opEquiv : Comma L R ≌ (Comma R.op L.op)ᵒᵖ where
+  functor := opFunctor L R
+  inverse := (unopFunctor R L).leftOp
+  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+
+end Opposite
+
 end Comma
 
 end CategoryTheory
