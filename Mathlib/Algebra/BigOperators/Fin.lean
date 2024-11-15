@@ -270,7 +270,7 @@ index `i` such that `k` is smaller than `∑ j < i, n j`, and `none` otherwise.
 This is defined en-route to `Fin.divSum`, which is the dependent version of `Fin.divNat`.
 -/
 def divSum? {m : ℕ} (n : Fin m → ℕ) (k : ℕ) : Option (Fin m) :=
-  find (fun i => k < ∑ j, n (castLE i.isLt j))
+  find (fun i => k < ∑ j : Fin i.val.succ, n (castLE i.isLt j))
 
 theorem divSum?_is_some_iff_lt_sum {m : ℕ} {n : Fin m → ℕ} {k : ℕ} :
     (divSum? n k).isSome ↔ k < ∑ i, n i := by
