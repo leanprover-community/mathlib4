@@ -119,7 +119,7 @@ def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
     rfl
   · intro r x
     simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_smul]
-    erw [← map_smul (LinearEquiv.symm <| Shrink.linearEquiv _ _)]
+    erw [← LinearMapClass.map_smul (LinearEquiv.symm <| Shrink.linearEquiv _ _)]
     rfl
 
 end HasLimits

@@ -69,7 +69,7 @@ class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Mo
     (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
-    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
+    extends MulActionSemiHomClass F φ A B, NonUnitalRingHomClass F A B : Prop
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are `R`-linear.
@@ -156,8 +156,11 @@ instance : DFunLike (A →ₛₙₐ[φ] B) A fun _ => B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
-@[simp]
 theorem toFun_eq_coe (f : A →ₛₙₐ[φ] B) : f.toFun = ⇑f :=
+  rfl
+
+@[simp]
+theorem coe_toDistribMulActionHom (f : A →ₛₙₐ[φ] B) : ⇑f.toDistribMulActionHom = ⇑f :=
   rfl
 
 /-- See Note [custom simps projection] -/
@@ -175,6 +178,7 @@ protected theorem coe_coe {F : Type*} [FunLike F A B]
 
 theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (↑) := by
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+
 instance : FunLike (A →ₛₙₐ[φ] B) A B where
   coe f := f.toFun
   coe_injective' := coe_injective
@@ -463,7 +467,7 @@ variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S]
 over `S` can be viewed as a non-unital algebra homomorphism over `R`. -/
 def restrictScalars (f : A →ₙₐ[S] B) : A →ₙₐ[R] B :=
   { (f : A →ₙ+* B) with
-    map_smul' := fun r x ↦ by have := map_smul f (r • 1) x; simpa }
+    map_smul' := fun r x ↦ by have := map_smul f (r • 1 : S) x; simpa }
 
 @[simp]
 lemma restrictScalars_apply (f : A →ₙₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl

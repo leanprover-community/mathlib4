@@ -85,7 +85,7 @@ notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulA
 
 You should extend this class when you extend `MulActionHom`. -/
 class MulActionSemiHomClass (F : Type*)
-    {M N : outParam Type*} (φ : outParam (M → N))
+    {M : Type*} {N : outParam Type*} (φ : outParam (M → N))
     (X Y : outParam Type*) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
@@ -95,8 +95,8 @@ export MulActionSemiHomClass (map_smulₛₗ)
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/
-abbrev MulActionHomClass (F : Type*) (M : outParam Type*)
-    (X Y : outParam Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
+abbrev MulActionHomClass (F : Type*) (M : Type*)
+    (X Y : Type*) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
 instance : FunLike (MulActionHom φ X Y) X Y where
@@ -338,8 +338,12 @@ notation:25 (name := «DistribMulActionHomIdLocal≺»)
 
 /-- `DistribMulActionSemiHomClass F φ A B` states that `F` is a type of morphisms
   preserving the additive monoid structure and equivariant with respect to `φ`.
-    You should extend this class when you extend `DistribMulActionSemiHom`. -/
-class DistribMulActionSemiHomClass (F : Type*)
+    You should extend this class when you extend `DistribMulActionSemiHom`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[MulActionSemiHomClass F φ A B] [AddMonoidHomClass F A B]` instead. -/
+@[deprecated (since := "2024-11-08")]
+structure DistribMulActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
     (A B : outParam Type*)
     [Monoid M] [Monoid N]
@@ -347,10 +351,15 @@ class DistribMulActionSemiHomClass (F : Type*)
     [FunLike F A B]
     extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B : Prop
 
+set_option linter.deprecated false in
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
   the additive monoid structure and equivariant with respect to the action of `M`.
     It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B`
-You should extend this class when you extend `DistribMulActionHom`. -/
+You should extend this class when you extend `DistribMulActionHom`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[MulActionHomClass F M A B] [AddMonoidHomClass F A B]` instead. -/
+@[deprecated (since := "2024-11-08")]
 abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
     (A B : outParam Type*) [Monoid M] [AddMonoid A] [AddMonoid B]
     [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
@@ -372,29 +381,32 @@ instance : FunLike (A →ₑ+[φ] B) A B where
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
     cases tF; cases tG; congr
 
-instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B where
-  map_smulₛₗ m := m.map_smul'
+instance : AddMonoidHomClass (A →ₑ+[φ] B) A B where
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
+
+instance : MulActionSemiHomClass (A →ₑ+[φ] B) φ A B where
+  map_smulₛₗ m := m.map_smul'
 
 variable {φ φ' A B B₁}
 variable {F : Type*} [FunLike F A B]
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
-/-- Turn an element of a type `F` satisfying `MulActionHomClass F M X Y` into an actual
-`MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
+/-- Turn an element of a type `F` satisfying `MulActionSemiHomClass F φ X Y` and
+`AddMonoidHomClass F A B` into an actual `DistribMulActionHom`.
+This is declared as the default coercion from `F` to `DistribMulActionHom F φ X Y`. -/
 @[coe]
-def _root_.DistribMulActionSemiHomClass.toDistribMulActionHom
-    [DistribMulActionSemiHomClass F φ A B]
+def _root_.MulActionSemiHomClass.toDistribMulActionHom
+    [MulActionSemiHomClass F φ A B] [AddMonoidHomClass F A B]
     (f : F) : A →ₑ+[φ] B :=
   { (f : A →+ B),  (f : A →ₑ[φ] B) with }
 
 /-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
 via `MulActionHomClass.toMulActionHom`. -/
-instance [DistribMulActionSemiHomClass F φ A B] :
-  CoeTC F (A →ₑ+[φ] B) :=
-  ⟨DistribMulActionSemiHomClass.toDistribMulActionHom⟩
+instance [MulActionSemiHomClass F φ A B] [AddMonoidHomClass F A B] :
+    CoeTC F (A →ₑ+[φ] B) :=
+  ⟨MulActionSemiHomClass.toDistribMulActionHom⟩
 
 /-- If `DistribMulAction` of `M` and `N` on `A` commute,
   then for each `c : M`, `(c • ·)` is an `N`-action additive homomorphism. -/
@@ -577,19 +589,28 @@ notation:25 (name := «MulSemiringActionHomLocal≺»)
 notation:25 (name := «MulSemiringActionHomIdLocal≺»)
   R " →+*[" M:25 "] " S:0 => MulSemiringActionHom (MonoidHom.id M) R S
 
+set_option synthInstance.checkSynthOrder false in
 /-- `MulSemiringActionHomClass F φ R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to `φ`.
 
-You should extend this class when you extend `MulSemiringActionHom`. -/
-class MulSemiringActionSemiHomClass (F : Type*)
+You should extend this class when you extend `MulSemiringActionHom`.
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[MulActionSemiHomClass F φ R S] [RingHomClass F R S]` instead. -/
+@[deprecated (since := "2024-11-08")]
+structure MulSemiringActionSemiHomClass (F : Type*)
     {M N : outParam Type*} [Monoid M] [Monoid N]
     (φ : outParam (M → N))
     (R S : outParam Type*) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S]
-    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S : Prop
+    extends MulActionSemiHomClass F φ R S, RingHomClass F R S : Prop
 
+set_option linter.deprecated false in
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to a `DistribMulAction`of `M` on `R` and `S` .
+
+Deprecated and changed from a `class` to a `structure`.
+Use `[DistribMulActionHomClass F M R S] [RingHomClass F R S]` instead.
  -/
 abbrev MulSemiringActionHomClass
     (F : Type*)
@@ -618,11 +639,13 @@ instance : FunLike (R →ₑ+*[φ] S) R S where
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
     cases tF; cases tG; congr
 
-instance : MulSemiringActionSemiHomClass (R →ₑ+*[φ] S) φ R S where
+instance : RingHomClass (R →ₑ+*[φ] S) R S where
   map_zero m := m.map_zero'
   map_add m := m.map_add'
   map_one := MulSemiringActionHom.map_one'
   map_mul := MulSemiringActionHom.map_mul'
+
+instance : MulActionSemiHomClass (R →ₑ+*[φ] S) φ R S where
   map_smulₛₗ m := m.map_smul'
 
 variable {φ R S}
@@ -630,20 +653,20 @@ variable {F : Type*} [FunLike F R S]
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
-/-- Turn an element of a type `F` satisfying `MulSemiringActionHomClass F M R S` into an actual
-`MulSemiringActionHom`. This is declared as the default coercion from `F` to
-`MulSemiringActionHom M X Y`. -/
+/-- Turn an element of a type `F` satisfying `MulActionSemiHomClass F φ R S` and
+`RingHomClass F R S` into an actual `MulSemiringActionHom`.
+This is declared as the default coercion from `F` to `MulSemiringActionHom M X Y`. -/
 @[coe]
-def _root_.MulSemiringActionHomClass.toMulSemiringActionHom
-    [MulSemiringActionSemiHomClass F φ R S]
+def _root_.MulActionSemiHomClass.toMulSemiringActionHom
+    [MulActionSemiHomClass F φ R S] [RingHomClass F R S]
     (f : F) : R →ₑ+*[φ] S :=
  { (f : R →+* S),  (f : R →ₑ+[φ] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
-instance [MulSemiringActionSemiHomClass F φ R S] :
+instance [MulActionSemiHomClass F φ R S] [RingHomClass F R S] :
     CoeTC F (R →ₑ+*[φ] S) :=
-  ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
+  ⟨MulActionSemiHomClass.toMulSemiringActionHom⟩
 
 @[norm_cast]
 theorem coe_fn_coe (f : R →ₑ+*[φ] S) : ⇑(f : R →+* S) = f :=
