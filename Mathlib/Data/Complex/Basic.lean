@@ -495,7 +495,7 @@ theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : �
   map_ofNat _ _
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as the result could be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
 theorem conj_neg_I : conj (-I) = I :=
@@ -574,13 +574,13 @@ theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
   ext <;> simp [normSq, mul_comm, ofReal]
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_zero]` -/
 theorem normSq_zero : normSq 0 = 0 :=
   normSq.map_zero
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
@@ -758,13 +758,13 @@ theorem inv_I : I⁻¹ = -I := by
   rw [inv_eq_one_div, div_I, one_mul]
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_inv₀]` -/
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_div₀]` -/
 theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w

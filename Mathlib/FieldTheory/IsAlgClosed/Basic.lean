@@ -346,7 +346,7 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 @[stacks 09GV]
 noncomputable def equiv : L ≃ₐ[R] M :=
-  -- Porting note (#10754): added to replace local instance above
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added to replace local instance above
   haveI : IsAlgClosed L := IsAlgClosure.isAlgClosed R
   haveI : IsAlgClosed M := IsAlgClosure.isAlgClosed R
   AlgEquiv.ofBijective _ (IsAlgClosure.isAlgebraic.algHom_bijective₂
