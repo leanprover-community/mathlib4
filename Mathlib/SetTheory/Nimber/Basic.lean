@@ -53,7 +53,7 @@ instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.instSuccOrder with}
 instance Nimber.orderBot : OrderBot Nimber := {Ordinal.orderBot with}
 instance Nimber.noMaxOrder : NoMaxOrder Nimber := {Ordinal.noMaxOrder with}
 instance Nimber.zeroLEOneClass : ZeroLEOneClass Nimber := {Ordinal.zeroLEOneClass with}
-instance Nimber.NeZero.one : NeZero (1 : Nimber) := Ordinal.NeZero.one
+instance Nimber.instNeZeroOne : NeZero (1 : Nimber) := Ordinal.NeZero.one
 
 /-- The identity function between `Ordinal` and `Nimber`. -/
 @[match_pattern]
