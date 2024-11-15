@@ -562,8 +562,8 @@ example [Add α] (y : α):
 
 
 section PerformanceTests
-set_option trace.Meta.Tactic.fun_prop true
-set_option profiler true
+-- set_option trace.Meta.Tactic.fun_prop true
+-- set_option profiler true
 
 variable {R : Type*} [Add R] [∀ n, OfNat R n]
 example (f : R → R) (hf : Con f) :
