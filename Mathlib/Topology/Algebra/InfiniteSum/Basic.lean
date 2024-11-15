@@ -426,8 +426,7 @@ theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
   · simp
   · intro b' hb'; simp [hb']
 
--- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
     ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
@@ -436,8 +435,7 @@ theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
     ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by simp
 
--- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
   rw [← coe_singleton, Finset.tprod_subtype', prod_singleton]
 
@@ -480,8 +478,7 @@ theorem tprod_subtype (s : Set β) (f : β → α) : ∏' x : s, f x = ∏' x, s
   rw [← tprod_subtype_eq_of_mulSupport_subset Set.mulSupport_mulIndicator_subset, tprod_congr]
   simp
 
--- Porting note: Added nolint simpNF, simpNF falsely claims that lhs does not simplify under simp
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem tprod_univ (f : β → α) : ∏' x : (Set.univ : Set β), f x = ∏' x, f x :=
   tprod_subtype_eq_of_mulSupport_subset <| Set.subset_univ _
 

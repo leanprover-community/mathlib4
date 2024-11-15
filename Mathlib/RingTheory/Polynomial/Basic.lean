@@ -750,7 +750,70 @@ theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
   isNoetherian_submodule_left.1
     (isNoetherian_of_fg_of_noetherian _ ⟨_, degreeLE_eq_span_X_pow.symm⟩) _
 
+open Algebra in
+lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (x : S) (I : Ideal R) {y : adjoin R ({x} : Set S)} :
+    y ∈ I.map (algebraMap R (adjoin R ({x} : Set S))) ↔
+      ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by
+  constructor
+  · intro H
+    induction' H using Submodule.span_induction with a ha a b ha hb ha' hb' a b hb hb'
+    · obtain ⟨a, ha, rfl⟩ := ha
+      exact ⟨C a, fun i ↦ by rw [coeff_C]; aesop, aeval_C _ _⟩
+    · exact ⟨0, by simp, aeval_zero _⟩
+    · obtain ⟨a, ha, ha'⟩ := ha'
+      obtain ⟨b, hb, hb'⟩ := hb'
+      exact ⟨a + b, fun i ↦ by simpa using add_mem (ha i) (hb i), by simp [ha', hb']⟩
+    · obtain ⟨b', hb, hb'⟩ := hb'
+      obtain ⟨a, ha⟩ := a
+      rw [Algebra.adjoin_singleton_eq_range_aeval] at ha
+      obtain ⟨p, hp : aeval x p = a⟩ := ha
+      refine ⟨p * b', fun i ↦ ?_, by simp [hp, hb']⟩
+      rw [coeff_mul]
+      exact sum_mem fun i hi ↦ Ideal.mul_mem_left _ _ (hb _)
+  · rintro ⟨p, hp, hp'⟩
+    have : y = ∑ i in p.support, p.coeff i • ⟨_, (X ^ i).aeval_mem_adjoin_singleton _ x⟩ := by
+      trans ∑ i in p.support, ⟨_, (C (p.coeff i) * X ^ i).aeval_mem_adjoin_singleton _ x⟩
+      · ext1
+        simp only [AddSubmonoidClass.coe_finset_sum, ← map_sum, ← hp', ← as_sum_support_C_mul_X_pow]
+      · congr with i
+        simp [Algebra.smul_def]
+    simp_rw [this, Algebra.smul_def]
+    exact sum_mem fun i _ ↦ Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (hp i))
+
 end CommRing
+
+end Ideal
+
+section Ideal
+
+open Submodule Set
+
+variable [Semiring R] {f : R[X]} {I : Ideal R[X]}
+
+/-- If the coefficients of a polynomial belong to an ideal, then that ideal contains
+the ideal spanned by the coefficients of the polynomial. -/
+theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
+    Ideal.span { g | ∃ i, g = C (f.coeff i) } ≤ I := by
+  simp only [@eq_comm _ _ (C _)]
+  exact (Ideal.span_le.trans range_subset_iff).mpr cf
+
+theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) } := by
+  let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) }
+  nth_rw 2 [(sum_C_mul_X_pow_eq f).symm]
+  refine Submodule.sum_mem _ fun n _hn => ?_
+  dsimp
+  have : C (coeff f n) ∈ p := by
+    apply subset_span
+    rw [mem_setOf_eq]
+    use n
+  have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
+  convert this using 1
+  simp only [monomial_mul_C, one_mul, smul_eq_mul]
+  rw [← C_mul_X_pow_eq_monomial]
+
+theorem exists_C_coeff_not_mem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
+  Not.imp_symm fun cf => span_le_of_C_coeff_mem (not_exists_not.mp cf) mem_span_C_coeff
 
 end Ideal
 
@@ -927,8 +990,6 @@ theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
   simp only [Finsupp.linearCombination_apply, aeval_endomorphism, forall_iff_forall_finsupp, Sum,
     support, coeff, ofFinsupp_eq_zero]
   exact Iff.rfl
-
-attribute [-instance] Ring.toNonAssocRing
 
 theorem disjoint_ker_aeval_of_coprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :
     Disjoint (LinearMap.ker (aeval f p)) (LinearMap.ker (aeval f q)) := by
@@ -1131,7 +1192,6 @@ theorem mem_map_C_iff {I : Ideal R} {f : MvPolynomial σ R} :
     apply Ideal.mem_map_of_mem _
     exact hf m
 
-attribute [-instance] Ring.toNonAssocRing in
 theorem ker_map (f : R →+* S) :
     RingHom.ker (map f : MvPolynomial σ R →+* MvPolynomial σ S) =
     Ideal.map (C : R →+* MvPolynomial σ R) (RingHom.ker f) := by

@@ -79,7 +79,7 @@ such that
 We can then glue the schemes `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subschemes of the glued space.
 -/
--- Porting note(#5171): @[nolint has_nonempty_instance]; linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): @[nolint has_nonempty_instance]; linter not ported yet
 structure GlueData extends CategoryTheory.GlueData Scheme where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 
@@ -126,7 +126,7 @@ def gluedScheme : Scheme := by
   refine ⟨_, ((D.U i).affineCover.map y).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
-  · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after #13170
+  · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
     refine Set.mem_image_of_mem _ ?_
     exact (D.U i).affineCover.covers y
   · infer_instance
@@ -230,7 +230,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
       i j x y)
   rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff, ← comp_apply]
   · simp_rw [← D.ι_isoCarrier_inv]
-    rfl -- `rfl` was not needed before #13170
+    rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
   · infer_instance
 
 theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι i).base ⁻¹' U) := by
