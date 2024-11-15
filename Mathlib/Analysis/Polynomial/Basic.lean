@@ -11,7 +11,7 @@ import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 # Limits related to polynomial and rational functions
 
 This file proves basic facts about limits of polynomial and rationals functions.
-The main result is `eval_is_equivalent_at_top_eval_lead`, which states that for
+The main result is `Polynomial.isEquivalent_atTop_lead`, which states that for
 any polynomial `P` of degree `n` with leading coefficient `a`, the corresponding
 polynomial function is equivalent to `a * x^n` as `x` goes to +∞.
 
