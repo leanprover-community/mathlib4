@@ -644,15 +644,18 @@ open ShortComplex
 
 section H0
 
+/-- Linear equivalence between the kernel of the 0th differential in `inhomogeneousCochains A`
+and the invariants of `A`. -/
 def d0LEquivInvariants :
     LinearMap.ker (inhomogeneousCochains.d A 0) ≃ₗ[k] invariants A.ρ :=
   LinearEquiv.ofSubmodules (zeroCochainsLEquiv A) _ _ (by
     have := (((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dZero_comp_eq A))).symm
     simp_all [Submodule.map_equiv_eq_comap_symm, ← LinearMap.ker_comp, dZero_ker_eq_invariants])
 
-@[simp] theorem subtype_comp_d0LEquivInvariants :
-    A.ρ.invariants.subtype ∘ₗ (d0LEquivInvariants A).toLinearMap
-      = (zeroCochainsLEquiv A).toLinearMap ∘ₗ Submodule.subtype _ := by ext; rfl
+@[simp]
+theorem subtype_comp_d0LEquivInvariants :
+    A.ρ.invariants.subtype ∘ₗ (d0LEquivInvariants A).toLinearMap =
+      (zeroCochainsLEquiv A).toLinearMap ∘ₗ Submodule.subtype _ := by ext; rfl
 
 @[simp]
 lemma dZero_comp_H0_subtype : dZero A ∘ₗ (H0 A).subtype = 0 := by
@@ -711,8 +714,7 @@ theorem cocyclesIso_0_eq :
   apply (cancel_mono (HomologicalComplex.iCycles _ _)).1
   simp only [cocyclesIso_inv_comp_iCocycles, Iso.trans_inv,
     Category.assoc, isoZeroCocycles_inv_comp_iCocycles]
-  exact LinearMap.ext fun x => by simp [d0LEquivInvariants, ModuleCat.coe_of, ModuleCat.asHom,
-    ModuleCat.hom_def, ModuleCat.comp_def]
+  exact LinearMap.ext fun x => by simp [d0LEquivInvariants, moduleCat_simps]
 
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/

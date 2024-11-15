@@ -20,12 +20,13 @@ $$\rho(g_0)(f(g_1, \dots, g_n))$$
 $$+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_n)$$
 $$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representation attached to `A`).
 
-We have a `k`-linear isomorphism $\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(k[G^{n + 1}], A)$, where
-the righthand side is morphisms in `Rep k G`, and the representation on $k[G^{n + 1}]$
-is induced by the diagonal action of `G`. If we conjugate the $n$th differential in
-$\mathrm{Hom}(P, A)$ by this isomorphism, where `P` is the standard resolution of `k` as a trivial
-`k`-linear `G`-representation, then the resulting map agrees with the differential $d^n$ defined
-above, a fact we prove.
+We have a `k`-linear isomorphism
+$\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\mathrm{FinSupp}(G^n, k[G]), A)$, where
+the righthand side is morphisms in `Rep k G`, and the representation on
+$\mathrm{FinSupp}(G^n, k[G])$ is defined pointwise by the left regular representation on $k[G].$ If
+we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism, where `P` is the
+bar resolution of `k` as a trivial `k`-linear `G`-representation, then the resulting map agrees
+with the differential $d^n$ defined above, a fact we prove.
 
 This gives us for free a proof that our $d^n$ squares to zero. It also gives us an isomorphism
 $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken in the category
@@ -37,14 +38,12 @@ To talk about cohomology in low degree, please see the file
 
 ## Main definitions
 
-* `groupCohomology.linearYonedaObjResolution A`: a complex whose objects are the representation
-morphisms $\mathrm{Hom}(k[G^{n + 1}], A)$ and whose cohomology is the group cohomology
-$\mathrm{H}^n(G, A)$.
 * `groupCohomology.inhomogeneousCochains A`: a complex whose objects are
 $\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
-* `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above two complexes.
-* `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of the
-second complex, `inhomogeneousCochains A`.
+* `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above complex and the
+complex $\mathrm{Hom}(P, A),$ where `P` is the bar resolution of `k` as a trivial resolution.
+* `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of
+`inhomogeneousCochains A`.
 * `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
 (where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
 
@@ -109,14 +108,14 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) : ((Fin n → G) → A) →ₗ[k] (Fin 
 
 variable [Group G] (A : Rep k G) (n : ℕ)
 
-@[nolint checkType] theorem d_eq :
+theorem d_eq :
     d A n =
       (freeLiftEquiv (Fin n → G) A).toModuleIso.inv ≫
-        ((barResolution k G).linearYonedaObj k A).d n (n + 1) ≫
+        ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
           (freeLiftEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
   ext f g
   show _ = Finsupp.linearCombination _ _ _
-  have h := barResolution.d_single (k := k) _ g
+  have h := barComplex.d_single (k := k) _ g
   simp_all [coe_V]
 
 end inhomogeneousCochains
@@ -135,7 +134,7 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     (fun n => inhomogeneousCochains.d A n) fun n => by
     simp only [d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
-    slice_lhs 2 4 => { rw [Category.id_comp, ((barResolution k G).linearYonedaObj k A).d_comp_d] }
+    slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d] }
     simp
 
 theorem inhomogeneousCochains.d_comp_d :
@@ -150,7 +149,7 @@ theorem inhomogeneousCochains.d_def :
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso :
-    inhomogeneousCochains A ≅ (barResolution k G).linearYonedaObj k A := by
+    inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
     (fun i => (Rep.freeLiftEquiv (Fin i → G) A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)

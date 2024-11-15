@@ -156,7 +156,7 @@ end FDRep
 
 end linHom
 
-section Inf
+section QuotientGroup
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
 variable (ρ : Representation k G V) (S : Subgroup G)
@@ -164,7 +164,7 @@ variable (ρ : Representation k G V) (S : Subgroup G)
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the invariants of `ρ|_S`. -/
 @[simps]
-noncomputable def invariantsOfNormal [S.Normal] :
+noncomputable def toInvariantsOfNormalSubgroup [S.Normal] :
     Representation k G (invariants (ρ.comp S.subtype)) where
   toFun g := ((ρ g).comp (Submodule.subtype _)).codRestrict _ (fun ⟨x, hx⟩ ⟨s, hs⟩ => by
     simpa using congr(ρ g $(hx ⟨(g⁻¹ * s * g), Subgroup.Normal.conj_mem' ‹_› s hs g⟩)))
@@ -173,18 +173,18 @@ noncomputable def invariantsOfNormal [S.Normal] :
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
-noncomputable def inf [S.Normal] : Representation k (G ⧸ S) (invariants (ρ.comp S.subtype)) :=
-  (QuotientGroup.con S).lift (invariantsOfNormal ρ S)
-    fun x y ⟨⟨z, hz⟩, h⟩ => LinearMap.ext fun ⟨w, hw⟩ => Subtype.ext <| by
+noncomputable def quotientGroupToInvariants [S.Normal] :
+    Representation k (G ⧸ S) (invariants (ρ.comp S.subtype)) :=
+  (QuotientGroup.con S).lift (toInvariantsOfNormalSubgroup ρ S)
+    fun _ y ⟨⟨z, hz⟩, h⟩ => LinearMap.ext fun ⟨_, hw⟩ => Subtype.ext <| by
     simpa [← h] using congr(ρ y $(hw ⟨z.unop, hz⟩))
 
-variable {ρ S} in
 @[simp]
-lemma inf_apply [S.Normal] (g : G) (x : invariants (ρ.comp S.subtype)) :
-    (inf ρ S (g : G ⧸ S) x).1 = ρ g x :=
+lemma quotientGroupToInvariants_apply [S.Normal] (g : G) (x : invariants (ρ.comp S.subtype)) :
+    (quotientGroupToInvariants ρ S (g : G ⧸ S) x).1 = ρ g x :=
   rfl
 
-end Inf
+end QuotientGroup
 section Coinvariants
 
 variable {k G V W : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
@@ -206,6 +206,7 @@ variable (ρ)
 /-- The coinvariants of a representation, `V ⧸ ⟨{ρ g x - x | g ∈ G, x ∈ V}⟩`. -/
 abbrev coinvariants := V ⧸ coinvariantsKer ρ
 
+/-- The quotient map from a representation to its coinvariants as a linear map. -/
 abbrev coinvariantsMkQ := Submodule.mkQ (coinvariantsKer ρ)
 
 /-- A `G`-invariant linear map induces a linear map out of the coinvariants of a
@@ -217,11 +218,11 @@ def coinvariantsLift (f : V →ₗ[k] W) (h : ∀ (x : G), f ∘ₗ ρ x = f) :
       Function.comp_apply] using LinearMap.ext_iff.1 (h g) y
 
 @[simp]
-theorem coinvariantsLift_mkQ (f : V →ₗ[k] W) (h : ∀ (x : G), f ∘ₗ ρ x = f) :
+theorem coinvariantsLift_comp_mkQ (f : V →ₗ[k] W) (h : ∀ (x : G), f ∘ₗ ρ x = f) :
   coinvariantsLift ρ f h ∘ₗ (coinvariantsKer ρ).mkQ = f := rfl
 
 @[simp]
-theorem coinvariantsLift_apply (f : V →ₗ[k] W) (h : ∀ (x : G), f ∘ₗ ρ x = f) (x : V) :
+theorem coinvariantsLift_mk (f : V →ₗ[k] W) (h : ∀ (x : G), f ∘ₗ ρ x = f) (x : V) :
   coinvariantsLift ρ f h (Submodule.Quotient.mk x) = f x := rfl
 
 section Finsupp
@@ -233,14 +234,14 @@ variable (α : Type*)
 sending `⟦single a v⟧ ↦ single a ⟦v⟧`. -/
 def coinvariantsToFinsupp :
     coinvariants (ρ.finsupp α) →ₗ[k] α →₀ coinvariants ρ :=
-  (coinvariantsLift _ (mapRange.linearMap (Submodule.mkQ _)) <| fun g => lhom_ext fun i x => by
+  coinvariantsLift _ (mapRange.linearMap (Submodule.mkQ _)) <| fun g => lhom_ext fun _ x => by
     simp [mapRange.linearMap, ← (Submodule.Quotient.eq _).2
-      (mem_coinvariantsKer_of_eq g x _ rfl), finsupp])
+      (mem_coinvariantsKer_of_eq g x _ rfl), finsupp]
 
 @[simp]
 lemma coinvariantsToFinsupp_mk_single (x : α) (a : V) :
-    coinvariantsToFinsupp ρ α (Submodule.Quotient.mk (Finsupp.single x a)) =
-      Finsupp.single x (Submodule.Quotient.mk a) := by simp [coinvariantsToFinsupp]
+    coinvariantsToFinsupp ρ α (Submodule.Quotient.mk (single x a)) =
+      single x (Submodule.Quotient.mk a) := by simp [coinvariantsToFinsupp]
 
 /-- Given a `G`-representation `(V, ρ)` and a type `α`, this is the map `(α →₀ V_G) →ₗ (α →₀ V)_G`
 sending `single a ⟦v⟧ ↦ ⟦single a v⟧`. -/
@@ -251,7 +252,7 @@ def finsuppToCoinvariants :
     mem_coinvariantsKer_of_eq g (single a x) _ <| by simp
 
 @[simp]
-lemma finsuppToCoinvariants_single (a : α) (x : V) :
+lemma finsuppToCoinvariants_single_mk (a : α) (x : V) :
     finsuppToCoinvariants ρ α (single a <| Submodule.Quotient.mk x) =
       Submodule.Quotient.mk (single a x) := by simp [finsuppToCoinvariants]
 
@@ -260,9 +261,9 @@ lemma finsuppToCoinvariants_single (a : α) (x : V) :
 abbrev coinvariantsFinsuppLEquiv :
     coinvariants (ρ.finsupp α) ≃ₗ[k] α →₀ coinvariants ρ :=
   LinearEquiv.ofLinear (coinvariantsToFinsupp ρ α) (finsuppToCoinvariants ρ α)
-    (Finsupp.lhom_ext fun a x => Quotient.inductionOn' x fun y => by
+    (lhom_ext fun _ x => Quotient.inductionOn' x fun _ => by
       simp [coinvariantsToFinsupp, finsuppToCoinvariants, Submodule.Quotient.mk''_eq_mk])
-    (Submodule.linearMap_qext _ <| Finsupp.lhom_ext fun a x => by
+    (Submodule.linearMap_qext _ <| lhom_ext fun _ _ => by
       simp [finsuppToCoinvariants, coinvariantsToFinsupp])
 
 end Finsupp
@@ -271,13 +272,13 @@ section TensorProduct
 open TensorProduct
 
 @[simp]
-lemma coinvariantsMk_ρ_inv_tmul (τ : Representation k G W) (x : V) (y : W) (g : G) :
+lemma coinvariants_mk_ρ_inv_tmul (τ : Representation k G W) (x : V) (y : W) (g : G) :
     Submodule.Quotient.mk (p := (ρ.tprod τ).coinvariantsKer) (ρ g⁻¹ x ⊗ₜ[k] y) =
       Submodule.Quotient.mk (p := (ρ.tprod τ).coinvariantsKer) (x ⊗ₜ[k] τ g y) :=
   (Submodule.Quotient.eq _).2 <| mem_coinvariantsKer_of_eq g⁻¹ (x ⊗ₜ[k] τ g y) _ <| by simp
 
 @[simp]
-lemma coinvariantsMk_tmul_ρ_inv (τ : Representation k G W) (x : V) (y : W) (g : G) :
+lemma coinvariants_mk_tmul_ρ_inv (τ : Representation k G W) (x : V) (y : W) (g : G) :
     Submodule.Quotient.mk (p := (ρ.tprod τ).coinvariantsKer) (x ⊗ₜ[k] τ g⁻¹ y) =
       Submodule.Quotient.mk (p := (ρ.tprod τ).coinvariantsKer) (ρ g x ⊗ₜ[k] y) :=
   (Submodule.Quotient.eq _).2 <| mem_coinvariantsKer_of_eq g⁻¹ (ρ g x ⊗ₜ[k] y) _ <| by simp
@@ -287,10 +288,11 @@ lemma coinvariantsMk_tmul_ρ_inv (τ : Representation k G W) (x : V) (y : W) (g 
 def ofCoinvariantsTprodLeftRegular :
     coinvariants (V := V ⊗[k] (G →₀ k)) (ρ.tprod (leftRegular k G)) →ₗ[k] V :=
   coinvariantsLift _ (TensorProduct.lift (Finsupp.linearCombination _
-    fun g => ρ g⁻¹) ∘ₗ (TensorProduct.comm _ _ _).toLinearMap) fun g => TensorProduct.ext <|
-      LinearMap.ext fun (x : V) => Finsupp.lhom_ext fun a y => by simp
+    fun g => ρ g⁻¹) ∘ₗ (TensorProduct.comm _ _ _).toLinearMap) fun _ => TensorProduct.ext <|
+      LinearMap.ext fun _ => Finsupp.lhom_ext fun _ _ => by simp
 
-@[simp] lemma ofCoinvariantsTprodLeftRegular_mk_tmul_single (x : V) (g : G) (r : k) :
+@[simp]
+lemma ofCoinvariantsTprodLeftRegular_mk_tmul_single (x : V) (g : G) (r : k) :
     ofCoinvariantsTprodLeftRegular ρ (Submodule.Quotient.mk (x ⊗ₜ Finsupp.single g r)) =
       r • ρ g⁻¹ x :=
   congr($(Finsupp.linearCombination_single k (v := fun g => ρ g⁻¹) r g) x)
@@ -308,7 +310,7 @@ abbrev coinvariantsTprodLeftRegularLEquiv :
 
 end TensorProduct
 end Coinvariants
-section Coinf
+section QuotientGroup
 
 variable {k G V : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
 variable (ρ : Representation k G V) (S : Subgroup G)
@@ -316,7 +318,7 @@ variable (ρ : Representation k G V) (S : Subgroup G)
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G`-representation on the
 coinvariants of `ρ|_S`. -/
 @[simps]
-noncomputable def coinvariantsOfNormal [S.Normal] :
+noncomputable def toCoinvariantsOfNormalSubgroup [S.Normal] :
     Representation k G (coinvariants (ρ.comp S.subtype)) where
   toFun g := coinvariantsLift (ρ.comp S.subtype) ((coinvariantsKer _).mkQ ∘ₗ ρ g) fun ⟨s, hs⟩ => by
     ext x
@@ -327,22 +329,23 @@ noncomputable def coinvariantsOfNormal [S.Normal] :
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/
-noncomputable def coinf [h1 : S.Normal] :
+noncomputable def quotientGroupToCoinvariants [S.Normal] :
     Representation k (G ⧸ S) (coinvariants (ρ.comp S.subtype)) :=
-  (QuotientGroup.con S).lift (coinvariantsOfNormal ρ S)
+  (QuotientGroup.con S).lift (toCoinvariantsOfNormalSubgroup ρ S)
     fun x y ⟨⟨z, hz⟩, h⟩ => Submodule.linearMap_qext _ <| by
       ext w
       simpa [← h, Submodule.Quotient.eq] using mem_coinvariantsKer_of_eq
-        ⟨y * z.unop * y ⁻¹, h1.conj_mem z.unop hz y⟩ (ρ y w) _ (by simp)
+        ⟨y * z.unop * y ⁻¹, Subgroup.Normal.conj_mem ‹_› z.unop hz y⟩ (ρ y w) _ (by simp)
 
-variable {ρ S} in
 @[simp]
-lemma coinf_apply [S.Normal] (g : G) (x : V) :
-    coinf ρ S (g : G ⧸ S) (Submodule.Quotient.mk x) = Submodule.Quotient.mk (ρ g x) :=
+lemma quotientGroupToCoinvariants_mk [S.Normal] (g : G) (x : V) :
+    quotientGroupToCoinvariants ρ S (g : G ⧸ S) (Submodule.Quotient.mk x) =
+      Submodule.Quotient.mk (ρ g x) :=
   rfl
 
-end Coinf
+end QuotientGroup
 end Representation
+
 namespace Rep
 
 open CategoryTheory
@@ -368,54 +371,36 @@ instance : (invariantsFunctor k G).Additive where
 the functor sending a representation to its submodule of invariants. -/
 noncomputable abbrev invariantsAdjunction : trivialFunctor ⊣ invariantsFunctor k G :=
   Adjunction.mkOfHomEquiv {
-    homEquiv := fun X Y => {
+    homEquiv := fun _ _ => {
       toFun := fun f => LinearMap.codRestrict _ f.hom fun x g => (hom_comm_apply f _ _).symm
       invFun := fun f => {
         hom := Submodule.subtype _ ∘ₗ f
         comm := fun g => by ext x; exact ((f x).2 g).symm }
-      left_inv := by intros f; rfl
-      right_inv := by intros f; rfl }
+      left_inv := by intro; rfl
+      right_inv := by intro; rfl }
     homEquiv_naturality_left_symm := by intros; rfl
     homEquiv_naturality_right := by intros; rfl }
 
 noncomputable instance : Limits.PreservesLimits (invariantsFunctor k G) :=
   (invariantsAdjunction k G).rightAdjointPreservesLimits
 
-end Invariants
-section Inf
-
-variable {k G} (S : Subgroup G) [S.Normal]
+variable {k G}
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
-abbrev inf := Rep.of (A.ρ.inf S)
+abbrev quotientGroupToInvariants (S : Subgroup G) [S.Normal] :=
+  Rep.of (A.ρ.quotientGroupToInvariants S)
 
-/-- Given a normal subgroup `S ≤ G`, a `G`-representation morphism `f : A ⟶ B` induces a
-`G ⧸ S`-representation morphism `invariants ρ_A|_S ⟶ invariants ρ_B|_S`. -/
-@[simps]
-noncomputable def infMap {A B : Rep k G} (φ : A ⟶ B) :
-    inf A S ⟶ inf B S where
-  hom := (invariantsFunctor k S).map ((Action.res _ S.subtype).map φ)
-  comm g := QuotientGroup.induction_on g fun g => LinearMap.ext
-    fun x => Subtype.ext (hom_comm_apply φ g x.1)
-
-/-- Given a normal subgroup `S ≤ G`, this functor sends a `G`-representation `ρ` to the
-`G ⧸ S`-representation induced on the invariants of `ρ|_S`. -/
-@[simps]
-noncomputable def infFunctor : Rep k G ⥤ Rep k (G ⧸ S) where
-  obj A := inf A S
-  map f := infMap S f
-
-end Inf
-
+end Invariants
 section Coinvariants
 
 variable {k G A} {B C : Rep k G} {n : ℕ} {V : Type u} [AddCommGroup V] [Module k V]
 
 open Representation
 
-/-- A `G`-representation morphism `A ⟶ trivial(V)` induces a linear map `A_G →ₗ[k] V`. -/
-def coinvariantsLift (f : A ⟶ Rep.trivial k G V) :
+/-- The linear map underlying a `G`-representation morphism `A ⟶ V`, where `V` has the trivial
+representation, factors through `A_G`. -/
+abbrev coinvariantsLift (f : A ⟶ Rep.trivial k G V) :
     coinvariants A.ρ →ₗ[k] V :=
   Representation.coinvariantsLift _ f.hom f.comm
 
@@ -427,26 +412,22 @@ abbrev coinvariantsMap (f : A ⟶ B) :
       simpa using (hom_comm_apply f g x).symm
 
 @[simp]
-theorem coinvariantsMap_mkQ (f : A ⟶ B) :
-    coinvariantsMap f ∘ₗ (coinvariantsKer A.ρ).mkQ = (coinvariantsKer B.ρ).mkQ ∘ₗ f.hom := rfl
+theorem coinvariantsMap_comp_mkQ (f : A ⟶ B) :
+    coinvariantsMap f ∘ₗ coinvariantsMkQ A.ρ = coinvariantsMkQ B.ρ ∘ₗ f.hom := rfl
 
 @[simp]
-theorem coinvariantsMap_apply (f : A ⟶ B) (x : A) :
+theorem coinvariantsMap_mk (f : A ⟶ B) (x : A) :
     coinvariantsMap f (Submodule.Quotient.mk x) = Submodule.Quotient.mk (f.hom x) := rfl
-
-lemma ugh (A : ModuleCat k) : 𝟙 A = LinearMap.id := rfl
-
-attribute [moduleCat_simps] ugh
 
 @[simp]
 theorem coinvariantsMap_id (A : Rep k G) :
     coinvariantsMap (𝟙 A) = LinearMap.id := by
-  ext; simp [moduleCat_simps]
+  ext; rfl
 
 @[simp]
 theorem coinvariantsMap_comp (f : A ⟶ B) (g : B ⟶ C) :
     coinvariantsMap (f ≫ g) = coinvariantsMap g ∘ₗ coinvariantsMap f := by
-  ext; simp [moduleCat_simps]
+  ext; rfl
 
 variable (A B)
 
@@ -454,8 +435,8 @@ variable (A B)
 `A_G →ₗ[k] Aᴳ`. -/
 noncomputable def liftRestrictNorm [Fintype G] :
     A.ρ.coinvariants →ₗ[k] A.ρ.invariants :=
-  A.ρ.coinvariantsLift ((norm A).hom.codRestrict _
-    fun a g => congr($(ρ_comp_norm A g) a)) fun g => by ext x; exact congr($(norm_comp_ρ A g) x)
+  A.ρ.coinvariantsLift ((norm A).hom.codRestrict _ fun a g => congr($(norm_hom_comp_ρ A g) a))
+    fun g => LinearMap.ext fun x => Subtype.ext <| congr($(ρ_comp_norm_hom A g) x)
 
 variable (k G)
 
@@ -480,8 +461,8 @@ noncomputable def coinvariantsAdjunction : coinvariantsFunctor k G ⊣ trivialFu
           exact congr(f $((Submodule.Quotient.eq <| X.ρ.coinvariantsKer).2
             (X.ρ.mem_coinvariantsKer_of_eq g x _ rfl))) }
       invFun := fun f => coinvariantsLift f
-      left_inv := fun x => Submodule.linearMap_qext _ rfl
-      right_inv := fun x => Action.Hom.ext rfl }
+      left_inv := fun _ => Submodule.linearMap_qext _ rfl
+      right_inv := fun _ => Action.Hom.ext rfl }
     homEquiv_naturality_left_symm := by intros; apply Submodule.linearMap_qext; rfl
     homEquiv_naturality_right := by intros; rfl }
 
@@ -506,7 +487,6 @@ def coinvariantsTensorFreeToFinsupp :
 
 variable {A α}
 
-@[simp]
 lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r : k) :
     coinvariantsTensorFreeToFinsupp A α (Submodule.Quotient.mk (x ⊗ₜ single i (single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
@@ -525,11 +505,10 @@ def finsuppToCoinvariantsTensorFree :
 
 variable {A α}
 
-@[simp]
 lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
     finsuppToCoinvariantsTensorFree A α (single i x) =
       Submodule.Quotient.mk (x ⊗ₜ single i (single (1 : G) (1 : k))) := by
-  have := finsuppTensorRight_inv_apply_single (A := A) (B := leftRegular k G)
+  have := finsuppTensorRight_inv_hom (A := A) (B := leftRegular k G)
   simp_all [finsuppToCoinvariantsTensorFree, coinvariantsMap, moduleCat_simps,
     ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj]
@@ -542,8 +521,10 @@ variable (A α)
 abbrev coinvariantsTensorFreeLEquiv :
     coinvariants (A ⊗ free k G α).ρ ≃ₗ[k] (α →₀ A) :=
   LinearEquiv.ofLinear (coinvariantsTensorFreeToFinsupp A α) (finsuppToCoinvariantsTensorFree A α)
-    (lhom_ext fun i a => by
-      simp [-coe_tensor, -tensor_ρ, coinvariantsTensorFreeToFinsupp_mk_tmul_single a]) <|
+    (lhom_ext fun _ _ => by
+      rw [LinearMap.comp_apply, finsuppToCoinvariantsTensorFree_single,
+        coinvariantsTensorFreeToFinsupp_mk_tmul_single]
+      simp) <|
     Submodule.linearMap_qext _ <| TensorProduct.ext <| LinearMap.ext fun a => lhom_ext' fun i =>
       lhom_ext fun g r => by
         have := coinvariantsTensorFreeToFinsupp_mk_tmul_single a i g r
@@ -569,21 +550,6 @@ instance (A : Rep k G) : ((coinvariantsTensor k G).obj A).Additive := by
   unfold coinvariantsTensor
   infer_instance
 
-/-
-abbrev coinvariantsFinsuppIso (A : Rep k G) (α : Type u) :
-    (coinvariantsFunctor k G).obj (A.finsupp α)
-      ≅ ModuleCat.of k (α →₀ (coinvariantsFunctor k G).obj A) :=
-  (coinvariantsFinsuppLEquiv A.ρ α).toModuleIso
-
-abbrev coinvariantsTensorLeftRegular (A : Rep k G) :
-    (coinvariantsFunctor k G).obj (A ⊗ Rep.leftRegular k G) ≅ A.V :=
-  A.ρ.coinvariantsTprodLeftRegularLEquiv.toModuleIso
-
-open MonoidalCategory
-
-abbrev coinvariantsTensorFreeIso (A : Rep k G) (α : Type u) [DecidableEq α] :
-    (coinvariantsFunctor k G).obj (A ⊗ Rep.free k G α) ≅ ModuleCat.of k (α →₀ A) :=
-  (A.coinvariantsTensorFreeLEquiv α).toModuleIso-/
 end Coinvariants
 
 /-- Given a finite group `G`, this is the natural transformation sending a `G`-representation `A`
@@ -592,36 +558,8 @@ to the map `A_G →ₗ[k] Aᴳ` induced by the norm map on `A`. -/
 noncomputable def liftRestrictNormNatTrans [Fintype G] :
     coinvariantsFunctor k G ⟶ invariantsFunctor k G where
   app A := liftRestrictNorm A
-  naturality _ _ f := Submodule.linearMap_qext _ <| LinearMap.ext fun x => Subtype.ext <| by
+  naturality _ _ f := Submodule.linearMap_qext _ <| LinearMap.ext fun _ => Subtype.ext <| by
     have := hom_comm_apply f
     simp_all [norm, moduleCat_simps, liftRestrictNorm]
 
-section Coinf
-
-variable {k G} (S : Subgroup G) [S.Normal]
-
-/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
-the coinvariants of `ρ|_S`. -/
-abbrev coinf := Rep.of (A.ρ.coinf S)
-
-/-- Given a normal subgroup `S ≤ G`, a `G`-representation morphism `f : A ⟶ B` induces a
-`G ⧸ S`-representation morphism `coinvariants ρ_A|_S ⟶ coinvariants ρ_B|_S`. -/
-noncomputable abbrev coinfMap {A B : Rep k G} (φ : A ⟶ B) :
-    coinf A S ⟶ coinf B S :=
-  mkHom ((coinvariantsFunctor k S).map ((Action.res _ S.subtype).map φ))
-    fun g => QuotientGroup.induction_on g fun g => Submodule.linearMap_qext _ <|
-    LinearMap.ext fun _ => (Submodule.Quotient.eq _).2 <| by
-      have := hom_comm_apply φ
-      simp_all [moduleCat_simps]
-
-/-- Given a normal subgroup `S ≤ G`, this functor sends a `G`-representation `ρ` to the
-`G ⧸ S`-representation induced on the coinvariants of `ρ|_S`. -/
-@[simps]
-noncomputable def coinfFunctor : Rep k G ⥤ Rep k (G ⧸ S) where
-  obj A := coinf A S
-  map f := coinfMap S f
-  map_id _ := Action.Hom.ext <| coinvariantsMap_id _
-  map_comp _ _ := Action.Hom.ext <| by simp [moduleCat_simps]
-
-end Coinf
 end Rep

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Amelia Livingston. All rights reserved.
+Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 
@@ -8,12 +8,48 @@ import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
+/-!
+# The low-degree homology of a `k`-linear `G`-representation
+
+Let `k` be a commutative ring and `G` a group. This file gives simple expressions for
+the group homology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
+
+In `RepresentationTheory.GroupHomology.Basic`, we define the `n`th group homology of `A` to be
+the cohomology of a complex `inhomogeneousChains A`, whose objects are `(Fin n →₀ G) → A`; this is
+unnecessarily unwieldy in low degree. Moreover, homology of a complex is defined as an abstract
+cokernel, whereas the definitions here are explicit quotients of cocycles by coboundaries.
+
+We also show that when the representation on `A` is trivial, `H₁(G, A) ≃ Gᵃᵇ ⊗[ℤ] A`.
+
+Given an additive or multiplicative abelian group `A` with an appropriate scalar action of `G`,
+we provide support for turning a function `f : G →₀ A` satisfying the 1-cycle identity into an
+element of the `oneCycles` of the representation on `A` (or `Additive A`) corresponding to the
+scalar action. We also do this for 1-boundaries, 2-cycles and 2-boundaries. The multiplicative
+case, starting with the section `IsMulCycle`, just mirrors the additive case; unfortunately
+`@[to_additive]` can't deal with scalar actions.
+
+The file also contains an identification between the definitions in
+`RepresentationTheory.GroupHomology.Basic`, `groupHomology.cycles A n` and
+`groupHomology A n`, and the `nCycles` and `Hn A` in this file, for `n = 0, 1, 2`.
+
+## Main definitions
+
+* `groupHomology.H0 A`: the coinvariants `A_G` of the `G`-representation on `A`.
+* `groupHomology.H1 A`: 1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`) modulo
+1-boundaries (i.e. `B₁(G, A) := Im(d₁: (G² →₀ A) → (G →₀ A))`).
+* `groupHomology.H2 A`: 2-cycles (i.e. `Z₁(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo
+2-boundaries (i.e. `B₁(G, A) := Im(d₂: (G³ →₀ A) → (G² →₀ A))`).
+* `groupHomology.H1LEquivOfIsTrivial`: the isomorphism `H¹(G, A) ≃ Gᵃᵇ ⊗[ℤ] A)` when the
+representation on `A` is trivial.
+* `groupHomology.isoHn` for `n = 0, 1, 2`: an isomorphism `groupHomology A n ≅ groupHomology.Hn A`.
+
+-/
 
 universe v u
 
 noncomputable section
 
-open CategoryTheory Limits Representation Rep
+open CategoryTheory Limits Representation Rep Finsupp
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 
@@ -21,10 +57,11 @@ namespace groupHomology
 
 section Chains
 variable [DecidableEq G]
+
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
 def zeroChainsLEquiv : (inhomogeneousChains A).X 0 ≃ₗ[k] A :=
-  Finsupp.LinearEquiv.finsuppUnique _ _ _
+  LinearEquiv.finsuppUnique _ _ _
 
 /-- The 1st object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `G →₀ A` as a `k`-module. -/
@@ -48,53 +85,76 @@ section Differentials
 
 /-- The 0th differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G →₀ A) → A`. It sends `single g a ↦ ρ_A(g⁻¹)(a) - a.` -/
-abbrev dZero : (G →₀ A) →ₗ[k] A :=
-  Finsupp.lsum k fun g => A.ρ g⁻¹ - LinearMap.id
+def dZero : (G →₀ A) →ₗ[k] A := lsum k fun g => A.ρ g⁻¹ - LinearMap.id
 
-theorem dZero_range_eq_coinvariantsKer [DecidableEq G] :
+@[simp]
+theorem dZero_single (g : G) (a : A) : dZero A (single g a) = A.ρ g⁻¹ a - a := by
+  simp [dZero]
+
+theorem dZero_single_one (a : A) : dZero A (single 1 a) = 0 := by
+  simp
+
+theorem range_dZero_eq_coinvariantsKer [DecidableEq G] :
     LinearMap.range (dZero A) = coinvariantsKer A.ρ := by
   symm
   apply Submodule.span_eq_of_le
   · rintro _ ⟨x, rfl⟩
-    use Finsupp.single x.1⁻¹ x.2
+    use single x.1⁻¹ x.2
     simp
   · rintro x ⟨y, hy⟩
     induction' y using Finsupp.induction with g a s _ _ h generalizing x
     · simp [← hy]
-    · simpa [← hy, add_sub_add_comm, Finsupp.sum_add_index]
+    · simpa [← hy, add_sub_add_comm, sum_add_index]
         using Submodule.add_mem _ (mem_coinvariantsKer_of_eq _ _ _ rfl) (h rfl)
 
 @[simp]
-theorem dZero_eq_zero [A.IsTrivial] : dZero A = 0 := by
+theorem dZero_eq_zero_of_isTrivial [A.IsTrivial] : dZero A = 0 := by
   ext
   simp
 
 /-- The 1st differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G² →₀ A) → (G →₀ A)`. It sends
 `single (g₁, g₂) a ↦ single g₂ ρ_A(g₁⁻¹)(a) - single g₁g₂ a + single g₁ a`. -/
-abbrev dOne : (G × G →₀ A) →ₗ[k] G →₀ A :=
-  Finsupp.lsum k fun g => Finsupp.lsingle g.2 ∘ₗ A.ρ g.1⁻¹
-    - Finsupp.lsingle (g.1 * g.2) + Finsupp.lsingle g.1
+def dOne : (G × G →₀ A) →ₗ[k] G →₀ A :=
+  lsum k fun g => lsingle g.2 ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2) + lsingle g.1
+
+@[simp]
+lemma dOne_single (g₁ g₂ : G) (a : A) :
+    dOne A (single (g₁, g₂) a) = single g₂ (A.ρ g₁⁻¹ a) - single (g₁ * g₂) a + single g₁ a := by
+  simp [dOne]
+
+@[simp]
+lemma dOne_single_one_one (a : A) :
+    dOne A (single (1, 1) a) = single 1 a := by
+  simp [-Prod.mk_one_one]
 
 /-- The 2nd differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G³ →₀ A) → (G² →₀ A)`. It sends
-`single (g₁, g₂, g₃) a ↦ single (g₂, g₃) ρ_A(g₁⁻¹)(a) - single (g₁g₂, g₃) a
-  + single (g₁, g₂g₃) a - single (g₁, g₂) a`. -/
-abbrev dTwo : (G × G × G →₀ A) →ₗ[k] G × G →₀ A :=
-  Finsupp.lsum k fun g =>
-    Finsupp.lsingle (g.2.1, g.2.2) ∘ₗ A.ρ g.1⁻¹ - Finsupp.lsingle (g.1 * g.2.1, g.2.2)
-    + Finsupp.lsingle (g.1, g.2.1 * g.2.2) - Finsupp.lsingle (g.1, g.2.1)
+`single (g₁, g₂, g₃) a ↦ single (g₂, g₃) ρ_A(g₁⁻¹)(a) - single (g₁g₂, g₃) a`
+`+ single (g₁, g₂g₃) a - single (g₁, g₂) a`. -/
+def dTwo : (G × G × G →₀ A) →ₗ[k] G × G →₀ A :=
+  lsum k fun g => lsingle (g.2.1, g.2.2) ∘ₗ A.ρ g.1⁻¹ - lsingle (g.1 * g.2.1, g.2.2)
+    + lsingle (g.1, g.2.1 * g.2.2) - lsingle (g.1, g.2.1)
 
 @[simp]
-theorem _root_.Fin.contractNth_zero {α : Type*} (op : α → α → α)
-    (g : Fin 1 → α) (j : Fin 1) :
+lemma dTwo_single (g₁ g₂ g₃ : G) (a : A) :
+    dTwo A (single (g₁, g₂, g₃) a) = single (g₂, g₃) (A.ρ g₁⁻¹ a) - single (g₁ * g₂, g₃) a
+      + single (g₁, g₂ * g₃) a - single (g₁, g₂) a := by
+  simp [dTwo]
+
+@[simp]
+lemma dTwo_single_one_one_one (a : A) :
+    dTwo A (single (1, 1, 1) a) = 0 := by
+  simp [-Prod.mk_one_one]
+
+@[simp]
+theorem _root_.Fin.contractNth_zero {α : Type*} (op : α → α → α) (g : Fin 1 → α) (j : Fin 1) :
     Fin.contractNth j op g = g ∘ Fin.castSucc := by
   ext i
   exact Fin.elim0 i
 
 @[simp]
-theorem _root_.Fin.contractNth_one_zero {α : Type*} (op : α → α → α)
-    (g : Fin 2 → α) :
+theorem _root_.Fin.contractNth_one_zero {α : Type*} (op : α → α → α) (g : Fin 2 → α) :
     Fin.contractNth 0 op g = fun _ => op (g 0) (g 1) := by
   ext i
   rw [Subsingleton.elim i 0]
@@ -106,7 +166,6 @@ theorem _root_.Fin.contractNth_last {n : ℕ} {α : Type*} {op : α → α → �
     Fin.contractNth j op g = g ∘ Fin.castSucc := by
   ext i
   simp_all [Fin.contractNth]
-
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `dZero` gives a simpler expression for the 0th differential: that is, the following
@@ -123,9 +182,8 @@ where the vertical arrows are `oneChainsLEquiv` and `zeroChainsLEquiv` respectiv
 -/
 theorem dZero_comp_eq [DecidableEq G] :
     dZero A ∘ₗ oneChainsLEquiv A = zeroChainsLEquiv A ∘ₗ (inhomogeneousChains A).d 1 0 :=
-  Finsupp.lhom_ext fun f a => by
-  simp [ModuleCat.coe_of, zeroChainsLEquiv, oneChainsLEquiv, inhomogeneousChains.d_apply,
-    Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg]
+  lhom_ext fun _ _ => by simp [ModuleCat.coe_of, zeroChainsLEquiv, oneChainsLEquiv,
+    inhomogeneousChains.d_single, Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `dOne` gives a simpler expression for the 1st differential: that is, the following
@@ -148,13 +206,14 @@ theorem domLCongr_single {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R 
 
 theorem dOne_comp_eq [DecidableEq G] :
     dOne A ∘ₗ twoChainsLEquiv A = oneChainsLEquiv A ∘ₗ (inhomogeneousChains A).d 2 1 :=
-  Finsupp.lhom_ext fun f a => by
-  simp [inhomogeneousChains.d_apply, ModuleCat.coe_of, oneChainsLEquiv, twoChainsLEquiv,
-    Fin.contractNth_last _ (show 1 = Fin.last 1 by rfl), -Finsupp.domLCongr_apply,
+  lhom_ext fun _ _ => by simp [inhomogeneousChains.d_single, ModuleCat.coe_of, oneChainsLEquiv,
+    twoChainsLEquiv, Fin.contractNth_last _ (show 1 = Fin.last 1 by rfl), -Finsupp.domLCongr_apply,
     domLCongr_single, sub_eq_add_neg, add_assoc]
 
-lemma ffs {α : Type*} [AddCommSemigroup α] (a b c : α) : a + b + c = c + b + a := by
-  rw [add_rotate, add_comm b]
+@[to_additive]
+lemma _root_.mul_rotate_comm {α : Type*} [CommSemigroup α] (a b c : α) :
+    a * b * c = c * b * a := by
+  rw [mul_rotate, mul_comm b]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `dTwo` gives a simpler expression for the 2nd differential: that is, the following
@@ -170,19 +229,17 @@ square commutes:
 where the vertical arrows are `threeChainsLEquiv` and `twoChainsLEquiv` respectively.
 -/
 theorem dTwo_comp_eq [DecidableEq G] :
-    dTwo A ∘ₗ threeChainsLEquiv A
-      = twoChainsLEquiv A ∘ₗ (inhomogeneousChains A).d 3 2 :=
-  Finsupp.lhom_ext fun f a => by
-  simpa [inhomogeneousChains.d_apply, ModuleCat.coe_of, twoChainsLEquiv, threeChainsLEquiv,
-    Fin.contractNth_last _ (show 2 = Fin.last 2 by ext; rfl), -Finsupp.domLCongr_apply,
-    domLCongr_single, dTwo, Fin.sum_univ_three, Fin.contractNth, pow_succ, Fin.tail_def,
-    sub_eq_add_neg, add_assoc] using ffs _ _ _
+    dTwo A ∘ₗ threeChainsLEquiv A = twoChainsLEquiv A ∘ₗ (inhomogeneousChains A).d 3 2 :=
+  lhom_ext fun _ _ => by
+    simpa [inhomogeneousChains.d_single, ModuleCat.coe_of, twoChainsLEquiv, threeChainsLEquiv,
+      Fin.contractNth_last _ (show 2 = Fin.last 2 by ext; rfl), -domLCongr_apply,
+      domLCongr_single, dTwo, Fin.sum_univ_three, Fin.contractNth, pow_succ, Fin.tail_def,
+      sub_eq_add_neg, add_assoc] using add_rotate_comm _ _ _
 
 theorem dZero_comp_dOne [DecidableEq G] : dZero A ∘ₗ dOne A = 0 := by
   ext x g
-  simp [Finsupp.sum_add_index, Finsupp.sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
+  simp [dZero, dOne, sum_add_index, sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
 
-open Finsupp
 theorem dOne_comp_dTwo [DecidableEq G] : dOne A ∘ₗ dTwo A = 0 := by
   show ModuleCat.asHom (dTwo A) ≫ ModuleCat.asHom (dOne A) = _
   have h1 : _ ≫ ModuleCat.asHom (dOne A) = _ ≫ _ := congr(ModuleCat.asHom $(dOne_comp_eq A))
@@ -206,27 +263,34 @@ def twoCycles : Submodule k (G × G →₀ A) := LinearMap.ker (dOne A)
 
 variable {A}
 
-theorem mem_oneCycles_def (f : G →₀ A) :
-    f ∈ oneCycles A ↔ ∀ g : G, f.sum (fun g a => A.ρ g⁻¹ a - a) = 0 :=
-  LinearMap.mem_ker.trans <| by
-    sorry
+lemma _root_.Representation.ρ_apply_bijective {k G V : Type*} [CommSemiring k] [Group G]
+    [AddCommMonoid V] [Module k V] (ρ : Representation k G V) (g : G) :
+    Function.Bijective (ρ g) :=
+  Equiv.bijective ⟨ρ g, ρ g⁻¹, ρ_inv_self_apply ρ g, ρ_self_inv_apply ρ g⟩
 
-theorem mem_oneCycles_iff (f : G →₀ A) :
-    f ∈ oneCycles A ↔ ∀ g : G, f.sum (fun g a => A.ρ g⁻¹ a) = f.sum (fun g a => a) := by
-  sorry
+@[simp]
+theorem single_mem_oneCycles_iff (g : G) (a : A) :
+    single g a ∈ oneCycles A ↔ A.ρ g a = a := by
+  nth_rw 3 [← A.ρ.ρ_self_inv_apply g a]
+  simpa [oneCycles, -ρ_self_inv_apply, sub_eq_zero, (A.ρ.ρ_apply_bijective g).1.eq_iff]
+    using eq_comm
+
+theorem oneCycles_eq_top_of_isTrivial [A.IsTrivial] : oneCycles A = ⊤ := by
+  rw [oneCycles, dZero_eq_zero_of_isTrivial, LinearMap.ker_zero]
+
+theorem single_one_mem_oneCycles (a : A) : single 1 a ∈ oneCycles A := by
+  rw [single_mem_oneCycles_iff, map_one, LinearMap.one_apply]
+
 /-
+theorem single_inv_mem_oneCycles_iff (g : G) (a : A) :
+    single g⁻¹ a ∈ oneCycles A ↔ single g a ∈ oneCycles A := by
+  simpa [← (A.ρ.ρ_apply_bijective g⁻¹).1.eq_iff (a := A.ρ g a)] using eq_comm
+-/
+/-
+
 @[simp] theorem oneCycles_map_one (f : oneCycles A) : f.1 1 = 0 := by
   have := (mem_oneCycles_def f.1).1 f.2 1
   simpa only [map_one, LinearMap.one_apply, mul_one, sub_self, zero_add] using this
-
-@[simp] theorem oneCycles_map_inv (f : oneCycles A) (g : G) :
-    A.ρ g (f.1 g⁻¹) = - f.1 g := by
-  rw [← add_eq_zero_iff_eq_neg, ← oneCycles_map_one f, ← mul_inv_cancel g,
-    (mem_oneCycles_iff f.1).1 f.2 g g⁻¹]
-
-theorem oneCycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCycles A) (g h : G) :
-    f.1 (g * h) = f.1 g + f.1 h := by
-  rw [(mem_oneCycles_iff f.1).1 f.2, apply_eq_self A.ρ g (f.1 h), add_comm]
 
 theorem mem_oneCycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ oneCycles A :=
@@ -308,61 +372,71 @@ def twoBoundaries [DecidableEq G] : Submodule k (twoCycles A) :=
 
 end Boundaries
 
-variable {A}
-/-
-/-- Makes a 1-coboundary out of `f ∈ Im(d⁰)`. -/
-def oneBoundariesOfMemRange {f : G → A} (h : f ∈ LinearMap.range (dZero A)) :
+variable {A} [DecidableEq G]
+
+/-- Makes a 1-boundary out of `f ∈ Im(d₁)`. -/
+def oneBoundariesOfMemRange {f : G →₀ A} (h : f ∈ LinearMap.range (dOne A)) :
     oneBoundaries A :=
-  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dOne_comp_dZero A) h⟩,
+  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dZero_comp_dOne A) h⟩,
     by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
 
-theorem oneBoundaries_of_mem_range_apply {f : G → A} (h : f ∈ LinearMap.range (dZero A)) :
+@[simp]
+theorem oneBoundaries_of_mem_range_apply {f : G →₀ A} (h : f ∈ LinearMap.range (dOne A)) :
     (oneBoundariesOfMemRange h).1.1 = f := rfl
 
-/-- Makes a 1-coboundary out of `f : G → A` and `x` such that
-`ρ(g)(x) - x = f(g)` for all `g : G`. -/
-def oneBoundariesOfEq {f : G → A} {x : A} (hf : ∀ g, A.ρ g x - x = f g) :
+/-- Makes a 1-boundary out of `f : G →₀ A`, given `g h : G` and `a : A` such that
+`single h (ρ(g⁻¹) a) - single gh a + single g a = f`. -/
+def oneBoundariesOfEq {f : G →₀ A} (g h : G) (a : A)
+    (hf : single h (A.ρ g⁻¹ a) - single (g * h) a + single g a = f) :
     oneBoundaries A :=
-  oneBoundariesOfMemRange ⟨x, funext hf⟩
+  oneBoundariesOfMemRange (f := f) ⟨single (g, h) a, by simp_all⟩
 
-theorem oneBoundariesOfEq_apply {f : G → A} {x : A} (hf : ∀ g, A.ρ g x - x = f g) :
-    (oneBoundariesOfEq hf).1.1 = f := rfl
+@[simp]
+theorem oneBoundariesOfEq_apply  {f : G →₀ A} (g h : G) (a : A)
+    (hf : single h (A.ρ g⁻¹ a) - single (g * h) a + single g a = f) :
+    (oneBoundariesOfEq g h a hf).1.1 = f := rfl
 
 theorem mem_range_of_mem_oneBoundaries {f : oneCycles A} (h : f ∈ oneBoundaries A) :
-    f.1 ∈ LinearMap.range (dZero A) := by
+    f.1 ∈ LinearMap.range (dOne A) := by
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
-theorem oneBoundaries_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
-    oneBoundaries A = ⊥ := by
-  simp_rw [oneBoundaries, dZero_eq_zero]
+
+@[simp]
+theorem coinvariantsKer_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
+    coinvariantsKer A.ρ = ⊥ := by
+  simp_rw [← range_dZero_eq_coinvariantsKer, dZero_eq_zero_of_isTrivial]
   exact LinearMap.range_eq_bot.2 rfl
 
-/-- Makes a 2-coboundary out of `f ∈ Im(d¹)`. -/
-def twoBoundariesOfMemRange {f : G × G → A} (h : f ∈ LinearMap.range (dOne A)) :
+/-- Makes a 2-boundary out of `f ∈ Im(d₂)`. -/
+def twoBoundariesOfMemRange {f : G × G →₀ A} (h : f ∈ LinearMap.range (dTwo A)) :
     twoBoundaries A :=
-  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dTwo_comp_dOne A) h⟩,
+  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dOne_comp_dTwo A) h⟩,
     by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
 
-theorem twoBoundariesOfMemRange_apply {f : G × G → A} (h : f ∈ LinearMap.range (dOne A)) :
+@[simp]
+theorem twoBoundariesOfMemRange_apply {f : G × G →₀ A} (h : f ∈ LinearMap.range (dTwo A)) :
     (twoBoundariesOfMemRange h).1.1 = f := rfl
 
-/-- Makes a 2-coboundary out of `f : G × G → A` and `x : G → A` such that
-`ρ(g)(x(h)) - x(gh) + x(g) = f(g, h)` for all `g, h : G`. -/
-def twoBoundariesOfEq {f : G × G → A} {x : G → A}
-    (hf : ∀ g h, A.ρ g (x h) - x (g * h) + x g = f (g, h)) :
+/-- Makes a 2-boundary out of `f : G × G →₀ A`, given `g, h, j : G` and `a : A` such that
+`single (h, j) (ρ(g⁻¹) a) - single (g * h, j) a + single (g, h * j) a - single (g, h) a = f`. -/
+def twoBoundariesOfEq {f : G × G →₀ A} (g h j : G) (a : A)
+    (hf : single (h, j) (A.ρ g⁻¹ a) - single (g * h, j) a +
+      single (g, h * j) a - single (g, h) a = f) :
     twoBoundaries A :=
-  twoBoundariesOfMemRange ⟨x, funext fun g ↦ hf g.1 g.2⟩
+  twoBoundariesOfMemRange (f := f) ⟨single (g, h, j) a, by simp_all⟩
 
-theorem twoBoundariesOfEq_apply {f : G × G → A} {x : G → A}
-    (hf : ∀ g h, A.ρ g (x h) - x (g * h) + x g = f (g, h)) :
-    (twoBoundariesOfEq hf).1.1 = f := rfl
+@[simp]
+theorem twoBoundariesOfEq_apply {f : G × G →₀ A} {g h j : G} {a : A}
+    (hf : single (h, j) (A.ρ g⁻¹ a) - single (g * h, j) a +
+      single (g, h * j) a - single (g, h) a = f) :
+    (twoBoundariesOfEq g h j a hf).1.1 = f := rfl
 
 theorem mem_range_of_mem_twoBoundaries {f : twoCycles A} (h : f ∈ twoBoundaries A) :
-    (twoCycles A).subtype f ∈ LinearMap.range (dOne A) := by
+    (twoCycles A).subtype f ∈ LinearMap.range (dTwo A) := by
   rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
 
-end Boundaries
-
+--end Boundaries
+/-
 section IsCycle
 
 section
@@ -628,44 +702,28 @@ abbrev H2 := twoCycles A ⧸ twoBoundaries A
 end Homology
 
 section H0
-variable [DecidableEq G]
-/-
-/-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
+variable (A)
+
+/-- When the representation on `A` is trivial, then `H₀(G, A)` is all of `A.` -/
 def H0LEquivOfIsTrivial [A.IsTrivial] :
-    H0 A ≃ₗ[k] A := LinearEquiv.ofTop _ (invariants_eq_top A.ρ)
+    H0 A ≃ₗ[k] A := Submodule.quotEquivOfEqBot _ (coinvariantsKer_eq_bot_of_isTrivial A)
 
-@[simp] theorem H0LEquivOfIsTrivial_eq_subtype [A.IsTrivial] :
-    H0LEquivOfIsTrivial A = A.ρ.invariants.subtype := rfl
+@[simp]
+theorem H0LEquivOfIsTrivial_symm_eq_mkQ [A.IsTrivial] :
+    (H0LEquivOfIsTrivial A).symm = coinvariantsMkQ A.ρ := rfl
 
-theorem H0LEquivOfIsTrivial_apply [A.IsTrivial] (x : H0 A) :
-    H0LEquivOfIsTrivial A x = x := rfl
+@[simp]
+theorem H0LEquivOfIsTrivial_mk [A.IsTrivial] (x : A) :
+    H0LEquivOfIsTrivial A (Submodule.Quotient.mk x) = x := rfl
 
-@[simp] theorem H0LEquivOfIsTrivial_symm_apply [A.IsTrivial] (x : A) :
-    (H0LEquivOfIsTrivial A).symm x = x := rfl
--/
+@[simp]
+theorem H0LEquivOfIsTrivial_symm_apply [A.IsTrivial] (x : A) :
+    (H0LEquivOfIsTrivial A).symm x = Submodule.Quotient.mk x := rfl
+
 end H0
 
 section H1
-/-
-/-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
-group homs `G → A`. -/
-def H1LEquivOfIsTrivial [A.IsTrivial] :
-    H1 A ≃ₗ[k] Additive G →+ A :=
-  (Submodule.quotEquivOfEqBot _ (oneBoundaries_eq_bot_of_isTrivial A)).trans
-    (oneCyclesLEquivOfIsTrivial A)
 
-theorem H1LEquivOfIsTrivial_comp_H1π [A.IsTrivial] :
-    (H1LEquivOfIsTrivial A).comp (H1π A) = oneCyclesLEquivOfIsTrivial A := by
-  ext; rfl
-
-@[simp] theorem H1LEquivOfIsTrivial_H1π_apply_apply
-    [A.IsTrivial] (f : oneCycles A) (x : Additive G) :
-    H1LEquivOfIsTrivial A (H1π A f) x = f.1 (Additive.toMul x) := rfl
-
-@[simp] theorem H1LEquivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
-    (H1LEquivOfIsTrivial A).symm f = H1π A ((oneCyclesLEquivOfIsTrivial A).symm f) :=
-  rfl
--/
 end H1
 
 section groupHomologyIso
@@ -696,7 +754,7 @@ lemma isoZeroCycles_inv_comp_iCycles :
   simp
 
 lemma mkQ_comp_dZero : (coinvariantsKer A.ρ).mkQ ∘ₗ dZero A = 0 := by
-  rw [← dZero_range_eq_coinvariantsKer]
+  rw [← range_dZero_eq_coinvariantsKer]
   exact LinearMap.range_mkQ_comp _
 
 /-- The (exact) short complex `(G →₀ A) ⟶ A ⟶ A.ρ.coinvariants`. -/
@@ -712,7 +770,7 @@ instance : Epi (H0π A) := by
 lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro (x : A) (hx : Submodule.mkQ _ x = 0)
-  rw [← dZero_range_eq_coinvariantsKer, Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at hx
+  rw [← range_dZero_eq_coinvariantsKer, Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at hx
   rcases hx with ⟨x, hx, rfl⟩
   use x
   rfl

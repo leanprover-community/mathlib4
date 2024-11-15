@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Amelia Livingston. All rights reserved.
+Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
@@ -11,6 +11,63 @@ import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.RepresentationTheory.Invariants
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.CategoryTheory.Abelian.LeftDerived
+
+/-!
+# The group homology of a `k`-linear `G`-representation
+
+Let `k` be a commutative ring and `G` a group. This file defines the group homology of
+`A : Rep k G` to be the homology of the complex
+$$\dots \to \mathrm{FinSupp}(G^2, A) \to \mathrm{FinSupp}(G^1, A) \to \mathrm{FinSupp}(G^0, A)$$
+with differential $d_n$ sending $a\cdot (g_0, \dots, g_n)$ to
+$$\rho(g_0^{-1})(a)\cdot (g_1, \dots, g_n)$$
+$$+ \sum_{i = 0}^{n - 1}(-1)^{i + 1}a\cdot (g_0, \dots, g_ig_{i + 1}, \dots, g_n)$$
+$$+ (-1)^{n + 1}a\cdot (g_0, \dots, g_{n - 1})$$ (where `ρ` is the representation attached to `A`).
+
+We have a `k`-linear isomorphism
+$\mathrm{FinSupp}(G^n, A) \cong (A \otimes_k \mathrm{FinSupp}(G^n, k[G]))_G$ given by
+`Rep.coinvariantsTensorFreeLEquiv`. If we conjugate the $n$th differential in $(A \otimes_k P)_G$
+by this isomorphism, where `P` is the bar resolution of `k` as a trivial `k`-linear
+`G`-representation, then the resulting map agrees with the differential $d_n$ defined
+above, a fact we prove.
+
+Hence our $d_n$ squares to zero, and we get
+$\mathrm{H}_n(G, A) \cong \mathrm{Tor}_n(A, k),$ where $\mathrm{Tor}$ is defined by deriving the
+second argument of the functor $(A, B) \mapsto (A \otimes_k B)_G.$
+
+To talk about homology in low degree, please see the file
+`Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree`, which gives simpler expressions
+for `H₀`, `H₁`, `H₂` than the definition `groupHomology` in this file.
+
+## Main definitions
+
+* `Rep.coinvariantsTensorBarResolution A`: a complex whose objects are the representation
+morphisms $(A \otimes_k \mathrm{FinSupp}(G^n, k[G]))_G$ and whose homology is the group homology
+$\mathrm{H}_n(G, A)$.
+* `groupHomology.inhomogeneousChains A`: a complex whose objects are
+$\mathrm{FinSupp}(G^n, A)$ and whose homology is the group homology $\mathrm{H}_n(G, A).$
+* `groupHomology.inhomogeneousChainsIso A`: an isomorphism between the above two complexes.
+* `groupHomology A n`: this is $\mathrm{H}_n(G, A),$ defined as the $n$th homology of the
+second complex, `inhomogeneousChains A`.
+* `groupHomologyIsoTor A n`: an isomorphism $\mathrm{H}_n(G, A) \cong \mathrm{Tor}_n(A, k)$
+(where $\mathrm{Tor}$ is defined by deriving the second argument of the functor
+$(A, B) \mapsto (A \otimes_k B)_G$) induced by `inhomogeneousChainsIso A`.
+
+## Implementation notes
+
+Group homology is typically stated for `G`-modules, or equivalently modules over the group ring
+`ℤ[G].` However, `ℤ` can be generalized to any commutative ring `k`, which is what we use.
+Moreover, we express `k[G]`-module structures on a module `k`-module `A` using the `Rep`
+definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we do not run into
+possible scalar action diamonds.
+
+## TODO
+
+* API for homology in low degree: $\mathrm{H}^0, \mathrm{H}^1$ and $\mathrm{H}^2.$ For example,
+the inflation-restriction exact sequence.
+* The long exact sequence in homology attached to a short exact sequence of representations.
+* Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
+
+-/
 
 noncomputable section
 
@@ -38,47 +95,38 @@ def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
 
 variable {k G}
 variable (A : Rep k G)
-/-
-/-- `Torₙ(A, B) -/
-def torIso (B : Rep k G) (P : ProjectiveResolution B) (n : ℕ) :
-    ((Tor k G n).obj A).obj B
-      ≅ ((((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj P.complex).homology n :=
-  ProjectiveResolution.isoLeftDerivedObj P ((tensor k G).obj A) n
--/
 
-/-- Given a `k`-linear `G`-representation `A`, this is the chain complex `(A ⊗[k] P)`, where
+/-- Given a `k`-linear `G`-representation `A`, this is the chain complex `(A ⊗[k] P)_G`, where
 `P` is the bar resolution of `k` as a trivial representation. -/
 def coinvariantsTensorBarResolution :=
-  (((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj (Rep.barResolution k G)
+  (((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj (Rep.barComplex k G)
 
 end Rep
 
 namespace groupHomology
-open Rep
+open Rep Finsupp
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) {n : ℕ}
 
 namespace inhomogeneousChains
 
 /-- The differential in the complex of inhomogeneous chains used to calculate group homology. -/
 def d (n : ℕ) : ((Fin (n + 1) → G) →₀ A) →ₗ[k] (Fin n → G) →₀ A :=
-  Finsupp.lsum (R := k) k fun g => Finsupp.lsingle (fun i => g i.succ) ∘ₗ A.ρ (g 0)⁻¹
+  lsum (R := k) k fun g => lsingle (fun i => g i.succ) ∘ₗ A.ρ (g 0)⁻¹
     + Finset.univ.sum fun j : Fin (n + 1) =>
-      (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.lsingle (Fin.contractNth j (· * ·) g)
-
-theorem d_apply (n : ℕ) (x : (Fin (n + 1) → G) →₀ A) :
-    d A n x = x.sum fun g a => Finsupp.single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a)
-      + Finset.univ.sum fun j : Fin (n + 1) =>
-        (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.single (Fin.contractNth j (· * ·) g) a := by
-  ext
-  simp [d, Finsupp.sum]
+      (-1 : k) ^ ((j : ℕ) + 1) • lsingle (Fin.contractNth j (· * ·) g)
 
 @[simp]
 theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
-    d A n (Finsupp.single g a) = Finsupp.single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a)
+    d A n (single g a) = single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a)
       + Finset.univ.sum fun j : Fin (n + 1) =>
-        (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.single (Fin.contractNth j (· * ·) g) a := by
-  rw [d_apply, Finsupp.sum_single_index]
-  simp
+        (-1 : k) ^ ((j : ℕ) + 1) • single (Fin.contractNth j (· * ·) g) a := by
+  rw [d, lsum_apply, sum_single_index]
+  <;> simp
+
+attribute [moduleCat_simps] ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj
+    ModuleCat.MonoidalCategory.tensorObj
+    ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_whiskerLeft
+    ModuleCat.MonoidalCategory.whiskerLeft
 
 theorem d_eq [DecidableEq G] :
     d A n = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
@@ -86,11 +134,9 @@ theorem d_eq [DecidableEq G] :
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext g a : 2
   have := finsuppToCoinvariantsTensorFree_single (A := A) g
-  have := barResolution.d_single (k := k) _ g
+  have := barComplex.d_single (k := k) _ g
   have := coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G)
   simp_all [moduleCat_simps, coinvariantsTensorBarResolution, coinvariantsMap,
-    ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
-    ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_whiskerLeft, ModuleCat.MonoidalCategory.whiskerLeft,
     TensorProduct.tmul_add, TensorProduct.tmul_sum, Submodule.Quotient.mk_sum]
 
 end inhomogeneousChains
@@ -120,7 +166,7 @@ theorem inhomogeneousChains.d_def [DecidableEq G] (n : ℕ) :
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousChainsBarIso [DecidableEq G] :
+def inhomogeneousChainsIso [DecidableEq G] :
     inhomogeneousChains A ≅ coinvariantsTensorBarResolution A := by
   refine HomologicalComplex.Hom.isoOfComponents ?_ ?_
   · intro i
@@ -204,14 +250,9 @@ abbrev groupHomologyπ (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
 
-/-abbrev groupHomologyι (n : ℕ) :
-    groupHomology A n ⟶ opcycles A n :=
-  (inhomogeneousChains A).homologyι n-/
-
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
-`Torₙ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
+`Torₙ(A, k)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupHomologyIsoTor [Group G] (A : Rep k G) (n : ℕ) :
     groupHomology A n ≅ ((Tor k G n).obj A).obj (Rep.trivial k G k) :=
-  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsBarIso A)).hom n ≪≫
-    (ProjectiveResolution.isoLeftDerivedObj (barResolution.projectiveResolution k G)
-      ((coinvariantsTensor k G).obj A) n).symm
+  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsIso A)).hom n ≪≫
+    ((barResolution k G).isoLeftDerivedObj ((coinvariantsTensor k G).obj A) n).symm
