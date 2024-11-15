@@ -117,8 +117,8 @@ variable (f : R →+* S)
 /-- If `R` and `S` are isomorphic, then so are their polynomial rings. -/
 @[simps!]
 def mapEquiv (e : R ≃+* S) : R[X] ≃+* S[X] :=
-  RingEquiv.ofHomInv (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext; simp)
-    (by ext; simp)
+  RingEquiv.ofHomInv (mapRingHom (e : R →+* S)) (mapRingHom (e.symm : S →+* R)) (by ext <;> simp)
+    (by ext <;> simp)
 
 theorem degree_map_le (p : R[X]) : degree (p.map f) ≤ degree p := by
   refine (degree_le_iff_coeff_zero _ _).2 fun m hm => ?_

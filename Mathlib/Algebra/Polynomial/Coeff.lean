@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.EraseUpdate
+import Mathlib.Algebra.Polynomial.Sum
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
 
