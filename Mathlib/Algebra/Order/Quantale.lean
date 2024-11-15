@@ -155,7 +155,7 @@ theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := b
 
 @[to_additive]
 theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
-  rw [rightMulResiduation];
+  rw [rightMulResiduation]
   constructor
   · intro h1
     apply le_trans (mul_le_mul_left' h1 _)
