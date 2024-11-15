@@ -227,7 +227,7 @@ lemma exists_series_of_height_eq_coe (a : α) {n : ℕ} (h : height a = n) :
   exists_series_of_le_height a (le_of_eq h.symm)
 
 /-- Another characterization of height, based on the supremum of the heights of elements below. -/
-lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ (y : α) (_  : y < x), height y + 1 := by
+lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := by
   apply le_antisymm
   · apply height_le
     intro p hp
@@ -244,7 +244,7 @@ lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ (y : α) (_  : y < x), 
     apply le_iSup₂_of_le (p.snoc x (hp ▸ hyx)) (by simp) (by simp)
 
 lemma height_le_coe_iff {x : α} {n : ℕ} :
-    height x ≤ n ↔ (∀ y, y < x → height y < n) := by
+    height x ≤ n ↔ (∀ y < x, height y < n) := by
   conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
   congr! 2 with y _
   cases height y
@@ -275,7 +275,7 @@ protected alias ⟨_, IsMin.height_eq_zero⟩ := height_eq_zero
 @[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by simp
 
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
-    n < height x ↔ (∃ y, y < x ∧ height y = n) where
+    n < height x ↔ (∃ y < x, height y = n) where
   mp h := by
     obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
     rw [hx] at h; norm_cast at h
@@ -290,7 +290,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
 lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
-    height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y, y < x → height y ≤ n) := by
+    height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y < x, height y ≤ n) := by
   wlog hfin : height x < ⊤
   · simp_all
     exact ne_of_beq_false rfl
@@ -304,7 +304,7 @@ lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
 
 lemma height_eq_coe_iff {x : α} {n : ℕ} :
     height x = n ↔
-      height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y, y < x → height y < n) := by
+      height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y < x, height y < n) := by
   wlog hfin : height x < ⊤
   · simp_all
   simp only [hfin, true_and]
