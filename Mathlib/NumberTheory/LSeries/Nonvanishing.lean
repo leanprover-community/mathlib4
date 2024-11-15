@@ -139,7 +139,7 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
       · simp only [Function.comp_def, add_sub_cancel_left]
       · simpa only [tendsto_iff_comap, Homeomorph.coe_addLeft, add_zero, map_le_iff_le_comap] using
           ((Homeomorph.addLeft (1 : ℂ)).map_punctured_nhds_eq 0).le
-    exact ((isBigO_mul_iff_isBigO_div eventually_mem_nhdsWithin).mp <| H.isBigO_one ℂ)
+    exact (isBigO_mul_iff_isBigO_div eventually_mem_nhdsWithin).mp <| H.isBigO_one ℂ
   exact (isBigO_comp_ofReal_nhds_ne this).mono <| nhds_right'_le_nhds_ne 0
 
 omit [NeZero N] in
