@@ -257,11 +257,6 @@ section DerivedInstances
 instance commSemiring [CommSemiring k] [CommMonoid G] : CommSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalCommSemiring, MonoidAlgebra.semiring with }
 
-/-
-instance unique [Semiring k] [Subsingleton k] : Unique (MonoidAlgebra k G) :=
-  Finsupp.uniqueOfRight
--/
-
 instance addCommGroup [Ring k] : AddCommGroup (MonoidAlgebra k G) :=
   Finsupp.instAddCommGroup
 
@@ -928,13 +923,6 @@ def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
   toFun a := single a.2.toAdd a.1
   map_one' := rfl
   map_mul' _a _b := single_mul_single.symm
-
-/-
-/-- Copy of `Finsupp.smul_single'` that avoids the `AddMonoidAlgebra = Finsupp` defeq abuse. -/
-@[simp]
-theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
-  Finsupp.smul_single' c a b
--/
 
 theorem mul_single_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
     (H : ∀ a, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
