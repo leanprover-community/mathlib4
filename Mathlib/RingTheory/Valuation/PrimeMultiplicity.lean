@@ -92,6 +92,6 @@ lemma adicValuation_neg_iff (a : K) :
     · simp [ha] at h
     norm_cast
     exact Left.neg_pos_iff.symm
-  · exact (IsFractionRing.associated_den_num_inv a ha).dvd_iff_dvd_right
+  · exact (associated_den_num_inv a ha).dvd_iff_dvd_right
 
 end AddValuation
