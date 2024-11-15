@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
+import Mathlib.AlgebraicTopology.SimplicialSet.Quasicategory
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
@@ -86,6 +87,14 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
+instance : Quasicategory X := by
+  apply quasicategory_of_filler X
+  intro n i σ₀ h₀ hₙ
+  exists spineToSimplex ∘ mapPath σ₀ <| spineHorn n i h₀ hₙ
+  intro j hj
+  apply spineInjective
+  sorry
+
 end StrictSegal
 
 end SSet
@@ -117,5 +126,7 @@ noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (
       rfl
     · intro i hi
       apply ComposableArrows.mkOfObjOfMapSucc_map_succ
+
+instance : Quasicategory (nerve C) := inferInstance
 
 end Nerve

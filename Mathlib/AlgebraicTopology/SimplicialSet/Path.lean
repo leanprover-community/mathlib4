@@ -48,6 +48,17 @@ def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   arrow_src i := f.arrow_src ⟨j + i, by omega⟩
   arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
 
+/-- Maps of simplicial sets induce maps of paths in a simplicial set.-/
+def mapPath {X Y : SSet.{u}} {n : ℕ} (f : X ⟶ Y) (p : X.Path n) : Y.Path n where
+  vertex i := f.app (Opposite.op [0]) (p.vertex i)
+  arrow i := f.app (Opposite.op [1]) (p.arrow i)
+  arrow_src i := by
+    simp only [← p.arrow_src i]
+    exact (congr (f.naturality (δ 1).op) (by rfl)).symm
+  arrow_tgt i := by
+    simp only [← p.arrow_tgt i]
+    exact (congr (f.naturality (δ 0).op) (by rfl)).symm
+
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
 traversing through its vertices in order.-/
 @[simps]
@@ -72,5 +83,31 @@ lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[
       const_subinterval_eq]
   · simp only [spine_arrow, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
       mkOfSucc_subinterval_eq]
+
+/-- The spine of the unique non-degenerate `n`-simplex in Δ[n].-/
+def idSpine (n : ℕ) : Path Δ[n] n := spine Δ[n] n (standardSimplex.idSimplex n)
+
+/-- Inner horns always contain spines (Rezk 5.5).-/
+def spineHorn (n : ℕ) (i : Fin (n + 3))
+    (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
+    Path Λ[n + 2, i] (n + 2) := by
+  let sp := idSpine (n + 2)
+  refine {
+    vertex := fun j ↦ ⟨sp.vertex j, (horn.const n i j (Opposite.op [0])).property⟩
+    arrow := fun j ↦ ⟨sp.arrow j, ?_⟩
+    arrow_src := ?_
+    arrow_tgt := ?_ }
+  · let edge := horn.primitiveEdge h₀ hₙ j
+    have ha : sp.arrow j = edge.val := by
+      dsimp only [sp, edge, idSpine, standardSimplex.idSimplex, spine_arrow]
+      dsimp only [mkOfSucc, horn.primitiveEdge, horn.edge, standardSimplex.edge,
+        standardSimplex.map_apply]
+      aesop
+    rw [ha]
+    exact edge.property
+  · simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
+    exact sp.arrow_src
+  · simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
+    exact sp.arrow_tgt
 
 end SSet
