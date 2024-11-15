@@ -22,7 +22,7 @@ noncomputable section Real
 
 open Real Set MeasureTheory
 
-open scoped Real Topology
+open scoped ENNReal Real Topology
 
 /-- The polar coordinates partial homeomorphism in `ℝ^2`, mapping `(r cos θ, r sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℝ^2 - (-∞, 0]` and `(0, +∞) × (-π, π)`. -/
@@ -99,7 +99,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
   simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]
 
-theorem FDerivAt_polarCoord_symm_det (p : ℝ × ℝ) :
+theorem det_fderiv_polarCoord_symm (p : ℝ × ℝ) :
     (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
       !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2])).det = p.1 := by
   conv_rhs => rw [← one_mul p.1, ← cos_sq_add_sin_sq p.2]
@@ -138,12 +138,12 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
     _ = ∫ p in polarCoord.target, |p.1| • f (polarCoord.symm p) := by
       rw [← PartialHomeomorph.symm_target, integral_target_eq_integral_abs_det_fderiv_smul volume
       (fun p _ ↦ hasFDerivAt_polarCoord_symm p), PartialHomeomorph.symm_source]
-      simp_rw [FDerivAt_polarCoord_symm_det]
+      simp_rw [det_fderiv_polarCoord_symm]
     _ = ∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) := by
       apply setIntegral_congr_fun polarCoord.open_target.measurableSet fun x hx => ?_
       rw [abs_of_pos hx.1]
 
-theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ENNReal) :
+theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ℝ≥0∞) :
     ∫⁻ (p : ℝ × ℝ) in polarCoord.target, (p.1).toNNReal • f (polarCoord.symm p) =
       ∫⁻ (p : ℝ × ℝ), f p := by
   symm
@@ -154,7 +154,7 @@ theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ENNReal) :
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, |p.1|.toNNReal • f (polarCoord.symm p) := by
       rw [lintegral_image_eq_lintegral_abs_det_fderiv_mul volume _
         (fun p _ ↦ (hasFDerivAt_polarCoord_symm p).hasFDerivWithinAt)]
-      · simp_rw [FDerivAt_polarCoord_symm_det]; rfl
+      · simp_rw [det_fderiv_polarCoord_symm]; rfl
       exacts [polarCoord.symm.injOn, measurableSet_Ioi.prod measurableSet_Ioo]
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, (p.1).toNNReal • f (polarCoord.symm p) := by
       refine setLIntegral_congr_fun polarCoord.open_target.measurableSet ?_
@@ -166,7 +166,7 @@ noncomputable section Complex
 
 namespace Complex
 
-open scoped Real
+open scoped Real ENNReal
 
 /-- The polar coordinates partial homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
@@ -200,10 +200,11 @@ protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup 
     measurableEquivRealProd.symm.measurableEmbedding, ← integral_comp_polarCoord_symm]
   rfl
 
-protected theorem lintegral_comp_polarCoord_symm (f : ℂ → ENNReal) (hf : Measurable f) :
-    (∫⁻ p in polarCoord.target, (p.1).toNNReal • f (Complex.polarCoord.symm p)) = ∫⁻ p, f p := by
-  rw [← (volume_preserving_equiv_real_prod.symm).lintegral_comp hf,
-    ← lintegral_comp_polarCoord_symm]
+protected theorem lintegral_comp_polarCoord_symm (f : ℂ → ℝ≥0∞) :
+    (∫⁻ p in polarCoord.target, ENNReal.ofReal p.1 • f (Complex.polarCoord.symm p)) =
+      ∫⁻ p, f p := by
+  rw [← (volume_preserving_equiv_real_prod.symm).lintegral_comp_emb
+    measurableEquivRealProd.symm.measurableEmbedding, ← lintegral_comp_polarCoord_symm]
   rfl
 
 end Complex
