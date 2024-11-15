@@ -6,7 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Analysis.Normed.Group.Seminorm
-import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
 

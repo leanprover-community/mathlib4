@@ -3,7 +3,6 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.MulAction
 
 /-!
@@ -31,7 +30,7 @@ subspace as a submodule of `E`.
 
 noncomputable section
 
-open SeparationQuotient Set
+open Set
 
 variable {M : Type*} [SeminormedAddCommGroup M]
 
@@ -52,9 +51,10 @@ lemma isClosed_nullSubgroup : IsClosed (nullSubgroup M : Set M) :=
 @[simp]
 lemma mem_nullSubgroup_iff {x : M} : x ∈ nullSubgroup M ↔ ‖x‖ = 0 := Iff.rfl
 
-variable (𝕜 E : Type*)
+variable {𝕜 E : Type*}
 variable [SeminormedAddCommGroup E] [SeminormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
+variable (𝕜 E) in
 /-- The null space with respect to the norm. -/
 def nullSubmodule : Submodule 𝕜 E where
   __ := nullSubgroup E
