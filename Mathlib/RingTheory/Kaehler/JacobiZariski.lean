@@ -271,7 +271,7 @@ def CotangentSpace.compCotangentSpace (Q : Generators.{w} S T) (P : Generators.{
     (Q.cotangentSpaceBasis.prod (P.cotangentSpaceBasis.baseChange T)).repr.symm
 
 lemma CotangentSpace.compCotangentSpace_symm_inr
-  (Q : Generators.{w} S T) (P : Generators.{w'} R S) :
+    (Q : Generators.{w} S T) (P : Generators.{w'} R S) :
     (compCotangentSpace Q P).symm.toLinearMap ∘ₗ
       LinearMap.inr T Q.CotangentSpace (T ⊗[S] P.CotangentSpace) =
         (CotangentSpace.map (Q.toComp P)).liftBaseChange T := by
@@ -292,13 +292,13 @@ lemma CotangentSpace.compCotangentSpace_symm_inr
         RingHom.map_ite_one_zero, reduceCtorEq, ↓reduceIte]
 
 lemma CotangentSpace.compCotangentSpace_symm_zero
-  (Q : Generators.{w} S T) (P : Generators.{w'} R S) (x) :
+    (Q : Generators.{w} S T) (P : Generators.{w'} R S) (x) :
     (compCotangentSpace Q P).symm (0, x) =
         (CotangentSpace.map (Q.toComp P)).liftBaseChange T x :=
   DFunLike.congr_fun (compCotangentSpace_symm_inr Q P) x
 
 lemma CotangentSpace.fst_compCotangentSpace
-  (Q : Generators.{w} S T) (P : Generators.{w'} R S) :
+    (Q : Generators.{w} S T) (P : Generators.{w'} R S) :
     LinearMap.fst T Q.CotangentSpace (T ⊗[S] P.CotangentSpace) ∘ₗ
       (compCotangentSpace Q P).toLinearMap = CotangentSpace.map (Q.ofComp P) := by
   classical
@@ -316,7 +316,7 @@ lemma CotangentSpace.fst_compCotangentSpace
       map_zero, Finsupp.coe_zero, Pi.zero_apply, derivation_C]
 
 lemma CotangentSpace.fst_compCotangentSpace_apply
-  (Q : Generators.{w} S T) (P : Generators.{w'} R S) (x) :
+    (Q : Generators.{w} S T) (P : Generators.{w'} R S) (x) :
     (compCotangentSpace Q P x).1 = CotangentSpace.map (Q.ofComp P) x :=
   DFunLike.congr_fun (fst_compCotangentSpace Q P) x
 
