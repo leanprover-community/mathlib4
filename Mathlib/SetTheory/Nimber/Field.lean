@@ -196,9 +196,8 @@ protected theorem one_mul (a : Nimber) : 1 * a = a := by
     rw [Nimber.lt_one_iff_zero] at hx
     rw [hx, Nimber.one_mul, zero_mul, zero_mul, add_zero, zero_add]
     exact hy.ne
-  · -- by_contra! doesn't work for whatever reason.
-    by_contra h
-    replace h := lt_of_not_le h
+  · by_contra! h
+    replace h := h -- needed to remind `termination_by`
     exact (mul_left_cancel₀ one_ne_zero <| Nimber.one_mul _).not_lt h
 termination_by a
 
