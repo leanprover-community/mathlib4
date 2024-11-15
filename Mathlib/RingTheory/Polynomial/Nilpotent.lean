@@ -6,10 +6,10 @@ Authors: Emilie Uthaiwat, Oliver Nash
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
 # Nilpotency in polynomial rings.
@@ -88,7 +88,7 @@ protected lemma isNilpotent_iff :
     · simp
     simpa using hnp (isNilpotent_mul_X_iff.mp hpX) i
 
-@[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N):
+@[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
   simp only [Polynomial.isNilpotent_iff, coeff_reverse]
   refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_lt i N with hi | hi

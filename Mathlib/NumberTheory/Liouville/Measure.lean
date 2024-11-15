@@ -1,14 +1,12 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.Liouville.LiouvilleWith
 import Mathlib.Analysis.PSeries
-
-#align_import number_theory.liouville.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Volume of the set of Liouville numbers
@@ -69,7 +67,6 @@ theorem setOf_liouvilleWith_subset_aux :
   · simp only [mul_nonneg hx01.left b.cast_nonneg, neg_le_sub_iff_le_add, le_add_iff_nonneg_left]
   · rw [add_le_add_iff_left]
     exact mul_le_of_le_one_left hb0.le hx01.2.le
-#align set_of_liouville_with_subset_aux setOf_liouvilleWith_subset_aux
 
 /-- The set of numbers satisfying the Liouville condition with some exponent `p > 2` has Lebesgue
 measure zero. -/
@@ -100,29 +97,24 @@ theorem volume_iUnion_setOf_liouvilleWith :
       _ = _ := by
         have : 1 - r ≠ 0 := by linarith
         rw [ENNReal.coe_inj]
-        simp [add_mul, div_eq_mul_inv, NNReal.rpow_neg, NNReal.rpow_sub' _ this, mul_add,
+        simp [add_mul, div_eq_mul_inv, NNReal.rpow_neg, NNReal.rpow_sub' this, mul_add,
           mul_left_comm]
   refine ne_top_of_le_ne_top (ENNReal.tsum_coe_ne_top_iff_summable.2 ?_) (ENNReal.tsum_le_tsum this)
   refine (Summable.add ?_ ?_).mul_left _ <;> simp only [NNReal.summable_rpow] <;> linarith
-#align volume_Union_set_of_liouville_with volume_iUnion_setOf_liouvilleWith
 
 theorem ae_not_liouvilleWith : ∀ᵐ x, ∀ p > (2 : ℝ), ¬LiouvilleWith p x := by
   simpa only [ae_iff, not_forall, Classical.not_not, setOf_exists] using
     volume_iUnion_setOf_liouvilleWith
-#align ae_not_liouville_with ae_not_liouvilleWith
 
 theorem ae_not_liouville : ∀ᵐ x, ¬Liouville x :=
-  ae_not_liouvilleWith.mono fun x h₁ h₂ => h₁ 3 (by norm_num) (h₂.liouvilleWith 3)
-#align ae_not_liouville ae_not_liouville
+  ae_not_liouvilleWith.mono fun _ h₁ h₂ => h₁ 3 (by norm_num) (h₂.liouvilleWith 3)
 
 /-- The set of Liouville numbers has Lebesgue measure zero. -/
 @[simp]
 theorem volume_setOf_liouville : volume { x : ℝ | Liouville x } = 0 := by
   simpa only [ae_iff, Classical.not_not] using ae_not_liouville
-#align volume_set_of_liouville volume_setOf_liouville
 
 /-- The filters `residual ℝ` and `ae volume` are disjoint. This means that there exists a residual
 set of Lebesgue measure zero (e.g., the set of Liouville numbers). -/
 theorem Real.disjoint_residual_ae : Disjoint (residual ℝ) (ae volume) :=
   disjoint_of_disjoint_of_mem disjoint_compl_right eventually_residual_liouville ae_not_liouville
-#align real.disjoint_residual_ae Real.disjoint_residual_ae

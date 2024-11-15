@@ -7,8 +7,6 @@ import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Additive
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 
-#align_import analysis.box_integral.divergence_theorem from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
-
 /-!
 # Divergence integral for Henstock-Kurzweil integral
 
@@ -40,8 +38,7 @@ Henstock-Kurzweil integral.
 Henstock-Kurzweil integral, integral, Stokes theorem, divergence theorem
 -/
 
-
-open scoped Classical NNReal ENNReal Topology BoxIntegral
+open scoped NNReal ENNReal Topology BoxIntegral
 
 open ContinuousLinearMap (lsmul)
 
@@ -80,7 +77,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
     `f y - a - f' (y - x)` over each of these faces is less than or equal to `ε * c * vol I`. We
     integrate a function of the norm `≤ ε * diam I.Icc` over a box of volume
     `∏ j ≠ i, (I.upper j - I.lower j)`. Since `diam I.Icc ≤ c * (I.upper i - I.lower i)`, we get the
-    required estimate.  -/
+    required estimate. -/
   have Hl : I.lower i ∈ Icc (I.lower i) (I.upper i) := Set.left_mem_Icc.2 (I.lower_le_upper i)
   have Hu : I.upper i ∈ Icc (I.lower i) (I.upper i) := Set.right_mem_Icc.2 (I.lower_le_upper i)
   have Hi : ∀ x ∈ Icc (I.lower i) (I.upper i),
@@ -134,7 +131,6 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
     _ = 2 * ε * c * ∏ j, (I.upper j - I.lower j) := by
       rw [← Measure.toBoxAdditive_apply, Box.volume_apply, ← I.volume_face_mul i]
       ac_rfl
-#align box_integral.norm_volume_sub_integral_face_upper_sub_lower_smul_le BoxIntegral.norm_volume_sub_integral_face_upper_sub_lower_smul_le
 
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
@@ -250,8 +246,6 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     · exact ⟨hJδ hy, Box.le_iff_Icc.1 hle hy⟩
     · rw [mul_right_comm (2 : ℝ), ← Box.volume_apply]
       exact mul_le_mul_of_nonneg_right hlt.le ENNReal.toReal_nonneg
-set_option linter.uppercaseLean3 false in
-#align box_integral.has_integral_GP_pderiv BoxIntegral.hasIntegral_GP_pderiv
 
 /-- Divergence theorem for a Henstock-Kurzweil style integral.
 
@@ -276,7 +270,5 @@ theorem hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
   refine HasIntegral.sum fun i _ => ?_
   simp only [hasFDerivWithinAt_pi', continuousWithinAt_pi] at Hd Hs
   exact hasIntegral_GP_pderiv I _ _ s hs (fun x hx => Hs x hx i) (fun x hx => Hd x hx i) i
-set_option linter.uppercaseLean3 false in
-#align box_integral.has_integral_GP_divergence_of_forall_has_deriv_within_at BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
 
 end BoxIntegral

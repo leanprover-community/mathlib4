@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 
+import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.FieldTheory.Normal
 import Mathlib.Order.Closure
-
-#align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # Normal closures
 
@@ -34,6 +34,7 @@ variable (F K L : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F 
   (Since the minimal polynomial of a transcendental element is 0,
   the normal closure of `K/F` is the same as the normal closure over `F`
   of the algebraic closure of `F` in `K`.) -/
+@[stacks 0BMF "Predicate version"]
 class IsNormalClosure : Prop where
   splits (x : K) : (minpoly F x).Splits (algebraMap F L)
   adjoin_rootSet : ⨆ x : K, adjoin F ((minpoly F x).rootSet L) = ⊤
@@ -41,6 +42,7 @@ class IsNormalClosure : Prop where
   this yet because `integralClosure F K` needs to have a `Field` instance. -/
 
 /-- The normal closure of `K/F` in `L/F`. -/
+@[stacks 0BMF]
 noncomputable def normalClosure : IntermediateField F L :=
   ⨆ f : K →ₐ[F] L, f.fieldRange
 
@@ -73,6 +75,7 @@ lemma normalClosure_le_iSup_adjoin :
 
 variable (splits : ∀ x : K, (minpoly F x).Splits (algebraMap F L))
 
+include splits in
 lemma normalClosure_eq_iSup_adjoin_of_splits :
     normalClosure F K L = ⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_le_iSup_adjoin.antisymm <|
@@ -89,6 +92,7 @@ lemma isNormalClosure_iff : IsNormalClosure F K L ↔
     simpa only [normalClosure_eq_iSup_adjoin_of_splits splits] using h
 -- TODO: IntermediateField.isNormalClosure_iff similar to IntermediateField.isSplittingField_iff
 
+include splits in
 /-- `normalClosure F K L` is a valid normal closure if `K/F` is algebraic
   and all minimal polynomials of `K/F` splits in `L/F`. -/
 lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) := by
@@ -97,9 +101,9 @@ lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) 
     exact fun x ↦ splits_of_splits (splits x) ((IntermediateField.subset_adjoin F _).trans <|
       SetLike.coe_subset_coe.mpr <| by apply le_iSup _ x)
   simp_rw [normalClosure, ← top_le_iff]
-  refine fun x _ ↦ (IntermediateField.val _).injective.mem_set_image.mp ?_
-  change x.val ∈ IntermediateField.map (IntermediateField.val _) _
-  rw [IntermediateField.map_iSup]
+  refine fun x _ ↦ ((⨆ f : K →ₐ[F] L, f.fieldRange).val).injective.mem_set_image |>.mp ?_
+  rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_val, ← IntermediateField.coe_val,
+    ← IntermediateField.coe_map, IntermediateField.map_iSup]
   refine (iSup_le fun f ↦ ?_ : normalClosure F K L ≤ _) x.2
   refine le_iSup_of_le (f.codRestrict _ fun x ↦ f.fieldRange_le_normalClosure ⟨x, rfl⟩) ?_
   rw [AlgHom.map_fieldRange, val, AlgHom.val_comp_codRestrict]
@@ -148,7 +152,6 @@ theorem normalClosure_eq_iSup_adjoin' [ne : Nonempty (K →ₐ[F] L)] [h : Norma
 theorem normalClosure_eq_iSup_adjoin [Algebra K L] [IsScalarTower F K L] [Normal F L] :
     normalClosure F K L = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) :=
   normalClosure_eq_iSup_adjoin' (ne := ⟨IsScalarTower.toAlgHom F K L⟩)
-#align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure_eq_iSup_adjoin
 
 namespace normalClosure
 
@@ -159,12 +162,13 @@ noncomputable def algHomEquiv : (K →ₐ[F] normalClosure F K L) ≃ (K →ₐ[
   left_inv _ := rfl
   right_inv _ := rfl
 
+@[stacks 0BMG "(1) normality."]
 instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   obtain _ | φ := isEmpty_or_nonempty (K →ₐ[F] L)
   · rw [normalClosure, iSup_of_empty]; exact Normal.of_algEquiv (botEquiv F L).symm
   · exact (isNormalClosure_normalClosure F K L).normal
-#align normal_closure.normal normalClosure.normal
 
+@[stacks 0BMG "When `L` is normal over `K`, this agrees with 0BMG (1) finiteness."]
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
   haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
@@ -175,7 +179,7 @@ variable [Algebra K L] [IsScalarTower F K L]
 
 noncomputable instance algebra :
     Algebra K (normalClosure F K L) :=
-  IntermediateField.algebra
+  IntermediateField.algebra'
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
       algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 
@@ -273,6 +277,9 @@ lemma normal_iff_forall_map_le : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ
 lemma normal_iff_forall_map_le' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ ≤ K := by
   rw [normal_iff_normalClosure_le, normalClosure_def'', iSup_le_iff]
 
+/-- If `L/K/F` is a field tower where `L/F` is normal, then
+`K` is normal over `F` if and only if `σ(K) = K` for every `σ ∈ K →ₐ[F] L`. -/
+@[stacks 09HQ "stronger version replacing an algebraic closure by a normal extension"]
 lemma normal_iff_forall_fieldRange_eq : Normal F K ↔ ∀ σ : K →ₐ[F] L, σ.fieldRange = K :=
 ⟨@AlgHom.fieldRange_of_normal (E := K), normal_iff_forall_fieldRange_le.2 ∘ fun h σ ↦ (h σ).le⟩
 
@@ -282,5 +289,22 @@ lemma normal_iff_forall_map_eq : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ
 
 lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ = K :=
 ⟨fun h σ ↦ normal_iff_forall_map_eq.1 h σ, fun h ↦ normal_iff_forall_map_le'.2 (fun σ ↦ (h σ).le)⟩
+
+@[simp]
+lemma normalClosure_map_eq (K : IntermediateField F L) (σ : L →ₐ[F] L) :
+    normalClosure F (K.map σ) L = normalClosure F K L := by
+  have (σ : L ≃ₐ[F] L) : normalClosure F (K.map (σ : L →ₐ[F] L)) L = normalClosure F K L := by
+    simp_rw [normalClosure_def'', map_map]
+    exact (Equiv.mulRight σ).iSup_congr fun _ ↦ rfl
+  exact this ((Algebra.IsAlgebraic.algEquivEquivAlgHom _ _).symm σ)
+
+@[simp]
+theorem normalClosure_le_iff_of_normal {K₁ K₂ : IntermediateField F L} [Normal F K₂] :
+    normalClosure F K₁ L ≤ K₂ ↔ K₁ ≤ K₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [normalClosure_le_iff] at h
+    simpa only [fieldRange_val] using h K₁.val
+  · rw [← normalClosure_of_normal K₂]
+    exact normalClosure_mono K₁ K₂ h
 
 end IntermediateField

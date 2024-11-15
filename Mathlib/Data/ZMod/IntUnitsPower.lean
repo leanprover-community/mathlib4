@@ -35,12 +35,12 @@ lemma ZMod.natCast_smul_units (n : ℕ) (au : Additive ℤˣ) : (n : ZMod 2) •
 /-- This is an indirect way of saying that `ℤˣ` has a power operation by `ZMod 2`. -/
 instance : Module (ZMod 2) (Additive ℤˣ) where
   smul z au := .ofMul <| Additive.toMul au ^ z.val
-  one_smul au := Additive.toMul.injective <| pow_one _
+  one_smul _ := Additive.toMul.injective <| pow_one _
   mul_smul z₁ z₂ au := Additive.toMul.injective <| by
     dsimp only [ZMod.smul_units_def, toMul_nsmul]
     rw [← pow_mul, ZMod.val_mul, ← Int.units_pow_eq_pow_mod_two, mul_comm]
-  smul_zero z := Additive.toMul.injective <| one_pow _
-  smul_add z au₁ au₂ := Additive.toMul.injective <| mul_pow _ _ _
+  smul_zero _ := Additive.toMul.injective <| one_pow _
+  smul_add _ _ _ := Additive.toMul.injective <| mul_pow _ _ _
   add_smul z₁ z₂ au := Additive.toMul.injective <| by
     dsimp only [ZMod.smul_units_def, toMul_nsmul, toMul_add]
     rw [← pow_add, ZMod.val_add, ← Int.units_pow_eq_pow_mod_two]
@@ -58,7 +58,7 @@ instance Int.instUnitsPow : Pow ℤˣ R where
   pow u r := Additive.toMul (r • Additive.ofMul u)
 
 -- The above instances form no typeclass diamonds with the standard power operators
--- but we will need `reducible_and_instances` which currently fails #10906
+-- but we will need `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 example : Int.instUnitsPow = Monoid.toNatPow := rfl
 example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 
@@ -69,7 +69,7 @@ example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 
 @[norm_cast] lemma uzpow_natCast (u : ℤˣ) (n : ℕ) : u ^ (n : R) = u ^ n := by
   change Additive.toMul ((n : R) • Additive.ofMul u) = _
-  rw [← nsmul_eq_smul_cast, toMul_nsmul, toMul_ofMul]
+  rw [Nat.cast_smul_eq_nsmul, toMul_nsmul, toMul_ofMul]
 
 -- See note [no_index around OfNat.ofNat]
 lemma uzpow_coe_nat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
@@ -107,6 +107,6 @@ lemma uzpow_neg (s : ℤˣ) (x : R) : s ^ (-x) = (s ^ x)⁻¹ :=
 
 @[norm_cast] lemma uzpow_intCast (u : ℤˣ) (z : ℤ) : u ^ (z : R) = u ^ z := by
   change Additive.toMul ((z : R) • Additive.ofMul u) = _
-  rw [← zsmul_eq_smul_cast, toMul_zsmul, toMul_ofMul]
+  rw [Int.cast_smul_eq_zsmul, toMul_zsmul, toMul_ofMul]
 
 end CommRing

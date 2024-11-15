@@ -33,20 +33,21 @@ section Manifold
 
 variable {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
-  [MeasurableSpace M] [BorelSpace M] [SigmaCompactSpace M] [T2Space M]
+  [MeasurableSpace M] [BorelSpace M] [T2Space M]
   {f f' : M → F} {μ : Measure M}
 
 /-- If a locally integrable function `f` on a finite-dimensional real manifold has zero integral
 when multiplied by any smooth compactly supported function, then `f` vanishes almost everywhere. -/
-theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
+theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
+    (hf : LocallyIntegrable f μ)
     (h : ∀ g : M → ℝ, Smooth I 𝓘(ℝ) g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, f x = 0 := by
   -- record topological properties of `M`
   have := I.locallyCompactSpace
   have := ChartedSpace.locallyCompactSpace H M
   have := I.secondCountableTopology
-  have := ChartedSpace.secondCountable_of_sigma_compact H M
-  have := ManifoldWithCorners.metrizableSpace I M
+  have := ChartedSpace.secondCountable_of_sigmaCompact H M
+  have := Manifold.metrizableSpace I M
   let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
   -- it suffices to show that the integral of the function vanishes on any compact set `s`
   apply ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero' hf (fun s hs ↦ Eq.symm ?_)
@@ -111,6 +112,8 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
     simpa [g_supp] using vK n
   simpa [this] using L
 
+-- An instance with keys containing `Opens`
+instance (U : Opens M) : BorelSpace U := inferInstanceAs (BorelSpace (U : Set M))
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
   manifold has zero integral when multiplied by any smooth function compactly supported
@@ -138,6 +141,8 @@ nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (h
   · apply zero_smul
   · rintro ⟨x, rfl⟩; exact x.2
 
+variable [SigmaCompactSpace M]
+
 theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOpen U)
     (hf : LocallyIntegrableOn f U μ)
     (h : ∀ g : M → ℝ,
@@ -147,7 +152,7 @@ theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOp
   haveI := ChartedSpace.locallyCompactSpace H M
   haveI := hU.locallyCompactSpace
   haveI := I.secondCountableTopology
-  haveI := ChartedSpace.secondCountable_of_sigma_compact H M
+  haveI := ChartedSpace.secondCountable_of_sigmaCompact H M
   hU.ae_eq_zero_of_integral_smooth_smul_eq_zero' _
     (isSigmaCompact_iff_sigmaCompactSpace.mpr inferInstance) hf h
 

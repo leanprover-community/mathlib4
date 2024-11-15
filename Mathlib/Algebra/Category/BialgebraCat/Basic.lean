@@ -44,6 +44,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgebraCat R where
+  α := X
   instBialgebra := (inferInstance : Bialgebra R X)
 
 variable {R}
@@ -59,7 +60,7 @@ lemma of_counit {X : Type v} [Ring X] [Bialgebra R X] :
 /-- A type alias for `BialgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : BialgebraCat.{v} R) :=
+structure Hom (V W : BialgebraCat.{v} R) where
   /-- The underlying `BialgHom` -/
   toBialgHom : V →ₐc[R] W
 
@@ -76,7 +77,7 @@ instance category : Category (BialgebraCat.{v} R) where
 @[ext]
 lemma hom_ext {X Y : BialgebraCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBialgHom) :
     f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 /-- Typecheck a `BialgHom` as a morphism in `BialgebraCat R`. -/
 abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
@@ -97,7 +98,7 @@ instance concreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
     { obj := fun M => M
       map := fun f => f.toBialgHom }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toBialgHom_injective _ _ }
 
 instance hasForgetToAlgebra : HasForget₂ (BialgebraCat R) (AlgebraCat R) where
   forget₂ :=
@@ -117,7 +118,7 @@ theorem forget₂_algebra_map (X Y : BialgebraCat R) (f : X ⟶ Y) :
 instance hasForgetToCoalgebra : HasForget₂ (BialgebraCat R) (CoalgebraCat R) where
   forget₂ :=
     { obj := fun X => CoalgebraCat.of R X
-      map := fun {X Y} f => CoalgebraCat.ofHom f.toBialgHom }
+      map := fun {_ _} f => CoalgebraCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_coalgebra_obj (X : BialgebraCat R) :
@@ -145,8 +146,8 @@ variable [Bialgebra R X] [Bialgebra R Y] [Bialgebra R Z]
 def toBialgebraCatIso (e : X ≃ₐc[R] Y) : BialgebraCat.of R X ≅ BialgebraCat.of R Y where
   hom := BialgebraCat.ofHom e
   inv := BialgebraCat.ofHom e.symm
-  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
+  hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
 @[simp] theorem toBialgebraCatIso_refl : toBialgebraCatIso (BialgEquiv.refl R X) = .refl _ :=
   rfl

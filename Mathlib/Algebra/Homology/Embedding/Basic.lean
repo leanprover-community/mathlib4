@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-! # Embeddings of complex shapes
 
@@ -52,7 +52,7 @@ namespace ComplexShape
 
 /-- An embedding of a complex shape `c : ComplexShape ι` into a complex shape
 `c' : ComplexShape ι'` consists of a injective map `f : ι → ι'` which satisfies
-a compatiblity with respect to the relations `c.Rel` and `c'.Rel`. -/
+a compatibility with respect to the relations `c.Rel` and `c'.Rel`. -/
 structure Embedding where
   /-- the map between the underlying types of indices -/
   f : ι → ι'
@@ -63,6 +63,13 @@ namespace Embedding
 
 variable {c c'}
 variable (e : Embedding c c')
+
+/-- The opposite embedding in `Embedding c.symm c'.symm` of `e : Embedding c c'`. -/
+@[simps]
+def op : Embedding c.symm c'.symm where
+  f := e.f
+  injective_f := e.injective_f
+  rel h := e.rel h
 
 /-- An embedding of complex shapes `e` satisfies `e.IsRelIff` if the implication
 `e.rel` is an equivalence. -/
@@ -99,11 +106,48 @@ class IsTruncGE extends e.IsRelIff : Prop where
   mem_next {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') :
     ∃ k, e.f k = k'
 
+lemma mem_next [e.IsTruncGE] {j : ι} {k' : ι'} (h : c'.Rel (e.f j) k') : ∃ k, e.f k = k' :=
+  IsTruncGE.mem_next h
+
 /-- The condition that the image of the map `e.f` of an embedding of
 complex shapes `e : Embedding c c'` is stable by `c'.prev`. -/
 class IsTruncLE extends e.IsRelIff : Prop where
   mem_prev {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) :
     ∃ i, e.f i = i'
+
+lemma mem_prev [e.IsTruncLE] {i' : ι'} {j : ι} (h : c'.Rel i' (e.f j)) : ∃ i, e.f i = i' :=
+  IsTruncLE.mem_prev h
+
+open Classical in
+/-- The map `ι' → Option ι` which sends `e.f i` to `some i` and the other elements to `none`. -/
+noncomputable def r (i' : ι') : Option ι :=
+  if h : ∃ (i : ι), e.f i = i'
+  then some h.choose
+  else none
+
+lemma r_eq_some {i : ι} {i' : ι'} (hi : e.f i = i') :
+    e.r i' = some i := by
+  have h : ∃ (i : ι), e.f i = i' := ⟨i, hi⟩
+  have : h.choose = i := e.injective_f (h.choose_spec.trans (hi.symm))
+  dsimp [r]
+  rw [dif_pos ⟨i, hi⟩, this]
+
+lemma r_eq_none (i' : ι') (hi : ∀ i, e.f i ≠ i') :
+    e.r i' = none :=
+  dif_neg (by
+    rintro ⟨i, hi'⟩
+    exact hi i hi')
+
+@[simp] lemma r_f (i : ι) : e.r (e.f i) = some i := r_eq_some _ rfl
+
+lemma f_eq_of_r_eq_some {i : ι} {i' : ι'} (hi : e.r i' = some i) :
+    e.f i = i' := by
+  by_cases h : ∃ (k : ι), e.f k = i'
+  · obtain ⟨k, rfl⟩ := h
+    rw [r_f] at hi
+    congr 1
+    simpa using hi.symm
+  · simp [e.r_eq_none i' (by simpa using h)] at hi
 
 end Embedding
 

@@ -67,10 +67,7 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
     let ⟨i₀⟩ := ‹Nonempty ι›
     set y := I.piecewise (fun i ↦ c i • x i) x
     calc
-      a • f x = f (update y i₀ ((a / ∏ i ∈ I, c i) • y i₀)) := by
-        rw [f.map_smul, update_eq_self, f.map_piecewise_smul, div_eq_mul_inv, mul_smul,
-          inv_smul_smul₀ hc₀']
-      _ ∈ V := hft fun i hi ↦ by
+      f (update y i₀ ((a / ∏ i ∈ I, c i) • y i₀)) ∈ V := hft fun i hi => by
         rcases eq_or_ne i i₀ with rfl | hne
         · simp_rw [update_same, y, I.piecewise_eq_of_mem _ _ hi, smul_smul]
           refine hc _ _ ?_ _ hx
@@ -81,6 +78,9 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
             _ = ‖c i‖ := one_mul _
         · simp_rw [update_noteq hne, y, I.piecewise_eq_of_mem _ _ hi]
           exact hc _ _ le_rfl _ hx
+      _ = a • f x := by
+        rw [f.map_update_smul, update_eq_self, f.map_piecewise_smul, div_eq_mul_inv, mul_smul,
+          inv_smul_smul₀ hc₀']
 
 /-- The image of a von Neumann bounded set under a continuous multilinear map
 is von Neumann bounded.
@@ -94,3 +94,7 @@ theorem image_multilinear [ContinuousSMul 𝕜 F] {s : Set (∀ i, E i)} (hs : I
     exact (isBounded_iff_isVonNBounded _).1 <|
       @Set.Finite.isBounded _ (vonNBornology 𝕜 F) _ (s.toFinite.image _)
   | inr h => exact hs.image_multilinear' f
+
+end IsVonNBounded
+
+end Bornology

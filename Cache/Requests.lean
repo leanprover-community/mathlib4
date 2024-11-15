@@ -6,8 +6,6 @@ Authors: Arthur Paulino
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
-set_option autoImplicit true
-
 namespace Cache.Requests
 
 -- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
@@ -186,7 +184,7 @@ def UPLOAD_URL : String :=
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
 def mkPutConfigContent (fileNames : Array String) (token : String) : IO String := do
   let token := if useFROCache then "" else s!"?{token}" -- the FRO cache doesn't pass the token here
-  let l ← fileNames.data.mapM fun fileName : String => do
+  let l ← fileNames.toList.mapM fun fileName : String => do
     pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {mkFileURL UPLOAD_URL fileName}{token}"
   return "\n".intercalate l
 
@@ -255,7 +253,7 @@ def QueryType.prefix : QueryType → String
   | commits => "&prefix=c/"
   | all     => default
 
-def formatError : IO α :=
+def formatError {α : Type} : IO α :=
   throw <| IO.userError "Invalid format for curl return"
 
 def QueryType.desc : QueryType → String

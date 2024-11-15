@@ -74,9 +74,7 @@ lemma W_isoClosure : W (isoClosure P) = W P := by
       exact ⟨a ≫ e.inv, by simp only [reassoc_of% h, e.hom_inv_id, comp_id]⟩
 
 instance : (W P).IsMultiplicative where
-  id_mem X Z _ := by
-    simp [id_comp]
-    exact Function.bijective_id
+  id_mem X Z _ := by simpa [id_comp] using Function.bijective_id
   comp_mem f g hf hg Z hZ := by
     simpa using Function.Bijective.comp (hf Z hZ) (hg Z hZ)
 
@@ -108,18 +106,20 @@ end
 section
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : G ⊣ F) [F.Full] [F.Faithful]
+include adj
 
 lemma W_adj_unit_app (X : D) : W (· ∈ Set.range F.obj) (adj.unit.app X) := by
   rintro _ ⟨Y, rfl⟩
   convert ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.symm.trans
     (adj.homEquiv X Y)).bijective using 1
+  dsimp [Adjunction.homEquiv]
   aesop
 
 lemma W_iff_isIso_map {X Y : D} (f : X ⟶ Y) :
     W (· ∈ Set.range F.obj) f ↔ IsIso (G.map f) := by
-  rw [← MorphismProperty.postcomp_iff _ _ _ (W_adj_unit_app adj Y)]
+  rw [← (W (· ∈ Set.range F.obj)).postcomp_iff _ _ (W_adj_unit_app adj Y)]
   erw [adj.unit.naturality f]
-  rw [MorphismProperty.precomp_iff _ _ _ (W_adj_unit_app adj X),
+  rw [(W (· ∈ Set.range F.obj)).precomp_iff _ _ (W_adj_unit_app adj X),
     W_iff_isIso _ _ ⟨_, rfl⟩ ⟨_, rfl⟩]
   constructor
   · intro h

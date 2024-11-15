@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.List.Infix
@@ -19,9 +19,7 @@ This allows us to use the intermediate steps of a Levenshtein distance calculati
 to produce lower bounds on the final result.
 -/
 
-set_option autoImplicit true
-
-variable {C : Levenshtein.Cost α β δ} [CanonicallyLinearOrderedAddCommMonoid δ]
+variable {α β δ : Type*} {C : Levenshtein.Cost α β δ} [CanonicallyLinearOrderedAddCommMonoid δ]
 
 theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
     (suffixLevenshtein C xs ys).1.minimum ≤ levenshtein C xs (y :: ys) := by
