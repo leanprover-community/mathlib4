@@ -350,18 +350,18 @@ Another characterization of coheight, based on the supremum of the coheights of 
 lemma coheight_eq_iSup_lt_height (x : α) : coheight x = ⨆ y > x, coheight y + 1 :=
   height_eq_iSup_lt_height (α := αᵒᵈ) x
 
-lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ (∀ y < x, height y < n) := by
+lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ ∀ y < x, height y < n := by
   conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
   congr! 2 with y _
   cases height y
   · simp
   · norm_cast
 
-lemma coheight_le_coe_iff {x : α} {n : ℕ} : coheight x ≤ n ↔ (∀ y > x, coheight y < n) :=
+lemma coheight_le_coe_iff {x : α} {n : ℕ} : coheight x ≤ n ↔ ∀ y > x, coheight y < n :=
   height_le_coe_iff (α := αᵒᵈ)
 
 /--
-The height of an element is infinite if there exist series of arbitrary length ending in that
+The height of an element is infinite iff there exist series of arbitrary length ending in that
 element.
 -/
 lemma height_eq_top_iff {x : α} :
@@ -377,7 +377,7 @@ lemma height_eq_top_iff {x : α} :
     exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
 
 /--
-The coheight of an element is infinite if there exist series of arbitrary length ending in that
+The coheight of an element is infinite iff there exist series of arbitrary length ending in that
 element.
 -/
 lemma coheight_eq_top_iff {x : α} :
