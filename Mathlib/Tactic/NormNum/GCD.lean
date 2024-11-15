@@ -212,27 +212,26 @@ def evalIntLCM : NormNumExt where eval {u α} e := do
 
 
 theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {d : ℕ} {g : ℕ} {n' : ℤ},
-   IsRat q n d → Int.gcd n (Int.ofNat d) = g → IsInt (n / g) n' → IsInt q.num n'
-  | _, num, denom, g, _, ⟨hi, rfl⟩, hg, ⟨h'⟩ => by
-    subst g
-    have : 0 < denom := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
+    IsRat q n d → Int.gcd n (Int.ofNat d) = g → IsInt (n / g) n' → IsInt q.num n'
+  | _, num, denom, _, _, ⟨hi, rfl⟩, rfl, ⟨h'⟩ => by
     constructor
+    have : 0 < denom := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
     simp_rw [Rat.mul_num, Rat.intCast_den, invOf_eq_inv,
       Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
       Rat.intCast_num, one_mul, mul_one]
     rwa [Int.gcd, Int.ofNat_eq_natCast, Int.natAbs_ofNat] at h'
 
 theorem isNat_ratDen : ∀ {q : ℚ} {n : ℤ} {d : ℕ} {g : ℕ} {d' : ℕ},
-   IsRat q n d → Int.gcd n (Int.ofNat d) = g → IsNat (d / g) d' → IsNat q.den d'
-  | _, num, denom, g, _, ⟨hi, rfl⟩, hg, ⟨h'⟩ => by
-    subst g
-    have : 0 < denom := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
+    IsRat q n d → Int.gcd n (Int.ofNat d) = g → IsNat (d / g) d' → IsNat q.den d'
+  | _, num, denom, _, _, ⟨hi, rfl⟩, rfl, ⟨h'⟩ => by
     constructor
+    have : 0 < denom := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
     simp_rw [Rat.mul_den, Rat.intCast_den, invOf_eq_inv,
       Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
       Rat.intCast_num, one_mul, mul_one, Nat.cast_id]
     rwa [Int.gcd, Int.ofNat_eq_natCast, Int.natAbs_ofNat] at h'
 
+/-- Evaluates the `Rat.num` function. -/
 @[norm_num Rat.num _]
 def evalRatNum : NormNumExt where eval {u α} e := do
   let .proj _ _ (q : Q(ℚ)) ← Meta.whnfR e | failure
@@ -247,6 +246,7 @@ def evalRatNum : NormNumExt where eval {u α} e := do
   let plit : Q(IsInt ($n / $gcd) $lit) := q(.raw_refl $lit)
   return .isInt _ lit q'.num q(isInt_ratNum $eq $pf $plit)
 
+/-- Evaluates the `Rat.den` function. -/
 @[norm_num Rat.den _]
 def evalRatDen : NormNumExt where eval {u α} e := do
   let .proj _ _ (q : Q(ℚ)) ← Meta.whnfR e | failure
