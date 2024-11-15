@@ -537,7 +537,7 @@ lemma H1Cotangent.δ_comp_equiv
   ext x
   exact δ_map Q P Q' P' _ _
 
-/-- A variant of `exact_map_δ` that takes in an arbitrary -/
+/-- A variant of `exact_map_δ` that takes in an arbitrary map between generators. -/
 lemma H1Cotangent.exact_map_δ'
     (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S) (P' : Generators.{u₃} R T) (f : Hom P' Q) :
     Function.Exact (H1Cotangent.map f) (H1Cotangent.δ Q P) := by
