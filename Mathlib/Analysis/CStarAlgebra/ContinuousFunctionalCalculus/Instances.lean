@@ -409,7 +409,7 @@ lemma SpectrumRestricts.nnreal_add {a b : A} (ha₁ : IsSelfAdjoint a)
   gcongr
   all_goals rw [← SpectrumRestricts.nnreal_iff_nnnorm] <;> first | rfl | assumption
 
-lemma IsSelfAdjoint.sq_spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
+protected lemma IsSelfAdjoint.sq_spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
     SpectrumRestricts (a ^ 2) ContinuousMap.realToNNReal := by
   rw [SpectrumRestricts.nnreal_iff, ← cfc_id (R := ℝ) a, ← cfc_pow .., cfc_map_spectrum ..]
   rintro - ⟨x, -, rfl⟩
