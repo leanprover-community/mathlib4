@@ -504,7 +504,7 @@ variable (Ω)
 lemma isEmbedding_toWeakDualBCNN :
     IsEmbedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
   eq_induced := rfl
-  inj := injective_toWeakDualBCNN
+  injective := injective_toWeakDualBCNN
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_toWeakDualBCNN := isEmbedding_toWeakDualBCNN

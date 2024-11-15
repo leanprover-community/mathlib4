@@ -1412,7 +1412,7 @@ theorem IsBigOWith.pow [NormOneClass R] {f : α → R} {g : α → 𝕜} (h : Is
 theorem IsBigOWith.of_pow {n : ℕ} {f : α → 𝕜} {g : α → R} (h : IsBigOWith c l (f ^ n) (g ^ n))
     (hn : n ≠ 0) (hc : c ≤ c' ^ n) (hc' : 0 ≤ c') : IsBigOWith c' l f g :=
   IsBigOWith.of_bound <| (h.weaken hc).bound.mono fun x hx ↦
-    le_of_pow_le_pow_left hn (by positivity) <|
+    le_of_pow_le_pow_left₀ hn (by positivity) <|
       calc
         ‖f x‖ ^ n = ‖f x ^ n‖ := (norm_pow _ _).symm
         _ ≤ c' ^ n * ‖g x ^ n‖ := hx
@@ -1824,12 +1824,6 @@ theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₁ x + f₂ x :=
   (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun _ ↦ rfl) fun x ↦ by
     rw [neg_sub, sub_neg_eq_add]
-
-@[deprecated (since := "2024-01-31")]
-alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
-
-@[deprecated (since := "2024-01-31")]
-alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
 
 theorem IsLittleO.right_isBigO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =O[l] fun x => f₂ x - f₁ x :=

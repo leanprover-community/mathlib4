@@ -564,7 +564,7 @@ lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (
   simp [C_eq_algebraMap]
 
 lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
-  AddEquivClass.map_eq_zero_iff (algEquivAevalXAddC t)
+  EmbeddingLike.map_eq_zero_iff (f := algEquivAevalXAddC t)
 
 lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
