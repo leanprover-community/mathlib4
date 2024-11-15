@@ -3,13 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.Topology.Algebra.UniformGroup.Basic
 import Mathlib.Topology.ContinuousMap.Ordered
-import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Order.MonotoneConvergence
 import Mathlib.Topology.UniformSpace.CompactConvergence
-import Mathlib.Topology.UniformSpace.UniformConvergence
 
 /-! # Dini's Theorem
 
