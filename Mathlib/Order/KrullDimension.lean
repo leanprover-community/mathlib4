@@ -244,7 +244,7 @@ lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := 
     apply le_iSup₂_of_le (p.snoc x (hp ▸ hyx)) (by simp) (by simp)
 
 lemma height_le_coe_iff {x : α} {n : ℕ} :
-    height x ≤ n ↔ (∀ y < x, height y < n) := by
+    height x ≤ n ↔ ∀ y < x, height y < n := by
   conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
   congr! 2 with y _
   cases height y
@@ -252,7 +252,7 @@ lemma height_le_coe_iff {x : α} {n : ℕ} :
   · norm_cast
 
 /--
-The height of an element is infinite if there exist series of arbitrary length ending in that
+The height of an element is infinite iff there exist series of arbitrary length ending in that
 element.
 -/
 lemma height_eq_top_iff {x : α} :
