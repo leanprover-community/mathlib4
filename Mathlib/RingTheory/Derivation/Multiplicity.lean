@@ -68,21 +68,19 @@ lemma adicValuation_deriv_lt_neg_one_of_neg (p : F) [Fact (Prime p)] (hp : ¬p �
     AddValuation.map_inv, AddValuation.map_pow, adicValuation_coe]
   rw [adicValuation_neg_iff] at ha
   have ha2 : ¬ p ∣ num F a := Prime.not_unit Fact.out ∘ (num_den_reduced _ _).symm ha
-  simp [deriv_algebraMap, ← _root_.map_mul, ← map_sub]
+  simp only [deriv_algebraMap, ← map_mul, ← map_sub, adicValuation_coe, gt_iff_lt]
   rw [← emultiplicity_eq_zero] at ha2
   have md := multiplicity_deriv _ p Fact.out hp _ ha
   replace mf : multiplicity.Finite p (den F a)′ := finite_iff_emultiplicity_ne_top.mpr (fun h ↦
     (multiplicity.finite_prime_left Fact.out (by simp)).emultiplicity_ne_top (h ▸ md).symm)
   rw [emultiplicity_sub_of_gt]
-  · simp [emultiplicity_mul Fact.out, ha2, ← md,
-      mf.emultiplicity_eq_multiplicity]
+  · simp only [← md, mf.emultiplicity_eq_multiplicity, two_smul, neg_add_rev,
+    emultiplicity_mul Fact.out, ha2, zero_add, ENat.map_coe, WithTop.coe_natCast, gt_iff_lt]
     norm_cast
-    rw [ENat.map_coe]
     apply WithTop.coe_strictMono
-    rw [two_smul]
     dsimp
     omega
-  · simp [emultiplicity_mul Fact.out, ha2, ← md]
+  · simp only [emultiplicity_mul Fact.out, ha2, zero_add, ← md]
     exact (ENat.lt_add_one_iff mf.emultiplicity_ne_top).mpr le_rfl |>.trans_le le_self_add
 
 lemma adicValuation_deriv_ne_neg_one (p : F) [Fact (Prime p)] (hp : ¬p ∣ p′) (a : K) :
