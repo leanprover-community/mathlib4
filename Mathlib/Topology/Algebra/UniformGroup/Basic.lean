@@ -207,41 +207,47 @@ lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group 
   replace hf : Function.Injective f.rangeRestrict := by simpa
   exact f.range.tendsto_coe_cofinite_of_discrete.comp hf.tendsto_cofinite
 
-@[to_additive]
-theorem TopologicalGroup.tendstoUniformly_iff {ι α : Type*} (F : ι → α → G) (f : α → G)
-    (p : Filter ι) :
-    @TendstoUniformly α G ι (TopologicalGroup.toUniformSpace G) F f p ↔
-      ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u :=
-  ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ =>
-    mem_of_superset (h u hu) fun _ hi a => hv (hi a)⟩
+end TopologicalGroup
+
+namespace UniformGroup
+
+variable {ι α G : Type*} [Group G] [UniformSpace G] [UniformGroup G]
 
 @[to_additive]
-theorem TopologicalGroup.tendstoUniformlyOn_iff {ι α : Type*} (F : ι → α → G) (f : α → G)
-    (p : Filter ι) (s : Set α) :
-    @TendstoUniformlyOn α G ι (TopologicalGroup.toUniformSpace G) F f p s ↔
-      ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u :=
-  ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ =>
-    mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
+theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι) :
+    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u :=
+  toUniformSpace_eq (G := G) ▸
+    ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+      fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a => hv (hi a)⟩
 
 @[to_additive]
-theorem TopologicalGroup.tendstoLocallyUniformly_iff {ι α : Type*} [TopologicalSpace α]
+theorem tendstoUniformlyOn_iff (F : ι → α → G) (f : α → G) (p : Filter ι) (s : Set α) :
+    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u :=
+  toUniformSpace_eq (G := G) ▸
+    ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+      fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
+
+@[to_additive]
+theorem tendstoLocallyUniformly_iff [TopologicalSpace α]
     (F : ι → α → G) (f : α → G) (p : Filter ι) :
-    @TendstoLocallyUniformly α G ι (TopologicalGroup.toUniformSpace G) _ F f p ↔
+    TendstoLocallyUniformly F f p ↔
       ∀ u ∈ 𝓝 (1 : G), ∀ (x : α), ∃ t ∈ 𝓝 x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
+  toUniformSpace_eq (G := G) ▸
     ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
       Exists.imp (fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩)
         (h u hu x)⟩
 
 @[to_additive]
-theorem TopologicalGroup.tendstoLocallyUniformlyOn_iff {ι α : Type*} [TopologicalSpace α]
+theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α]
     (F : ι → α → G) (f : α → G) (p : Filter ι) (s : Set α) :
-    @TendstoLocallyUniformlyOn α G ι (TopologicalGroup.toUniformSpace G) _ F f p s ↔
+    TendstoLocallyUniformlyOn F f p s ↔
       ∀ u ∈ 𝓝 (1 : G), ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
-  ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
-    (Exists.imp fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩) ∘
-      h u hu x⟩
+  toUniformSpace_eq (G := G) ▸
+    ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
+      (Exists.imp fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩) ∘
+        h u hu x⟩
 
-end TopologicalGroup
+end UniformGroup
 
 open Filter Set Function
 
