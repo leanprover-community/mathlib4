@@ -264,7 +264,7 @@ theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
 and their intersection has finite measure,
 then `s \ t` and `t \ s` have equal measures too. -/
 theorem measure_diff_symm (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
-    (h : μ s = μ t) (hfin : μ (s ∩ t) ≠ ⊤) : μ (s \ t) = μ (t \ s) := by
+    (h : μ s = μ t) (hfin : μ (s ∩ t) ≠ ∞) : μ (s \ t) = μ (t \ s) := by
   rw [← ENNReal.add_right_inj hfin, measure_inter_add_diff₀ _ ht, inter_comm,
     measure_inter_add_diff₀ _ hs, h]
 
