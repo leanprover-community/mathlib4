@@ -258,7 +258,6 @@ end RightUnitor
 
 end Unitor
 
--- TODO: weaken these assumptions for some definitions/lemmas in this API
 variable [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ X₂]
   [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
   [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
