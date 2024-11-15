@@ -214,7 +214,7 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
     Even (Fintype.card c.supp) := by
   #adaptation_note
   /--
-  After lean4#5020, some instances that use the chain of coercions
+  After https://github.com/leanprover/lean4/pull/5020, some instances that use the chain of coercions
   `[SetLike X], X → Set α → Sort _` are
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
   using the double coercion but the proper fix seems to avoid the double coercion.
