@@ -685,20 +685,13 @@ theorem eq_separableClosure_iff [Algebra.IsAlgebraic F E] (L : IntermediateField
 purely inseparable. As a corollary, epimorphisms in the category of fields must be
 purely inseparable extensions. -/
 theorem IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
-    [hn : Nonempty (E →+* L)] (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
+    [Nonempty (E →+* L)] (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
     IsPurelyInseparable F E := by
-  rw [isPurelyInseparable_iff_finSepDegree_eq_one, finSepDegree, Nat.card_eq_one_iff_unique,
-    and_iff_left (by infer_instance), ← not_nontrivial_iff_subsingleton]
-  rw [Function.Injective] at h
-  contrapose! h
-  obtain ⟨f, g, hfg⟩ := exists_pair_ne (Emb F E)
-  obtain ⟨i⟩ := hn
-  letI := i.toAlgebra
+  rw [isPurelyInseparable_iff_finSepDegree_eq_one, finSepDegree, Nat.card_eq_one_iff_unique]
+  letI := (Classical.arbitrary (E →+* L)).toAlgebra
   let j : AlgebraicClosure E →ₐ[E] L := IsAlgClosed.lift
-  refine ⟨j.toRingHom.comp f.toRingHom, j.toRingHom.comp g.toRingHom, by ext; simp, fun H ↦ ?_⟩
-  apply_fun (fun x ↦ (x : E → L)) at H
-  simp_rw [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe] at H
-  exact hfg (AlgHom.coe_fn_inj.1 (j.injective.comp_left H))
+  exact ⟨⟨fun f g ↦ DFunLike.ext' <| j.injective.comp_left (congr_arg (⇑) <|
+    @h (j.toRingHom.comp f) (j.toRingHom.comp g) (by ext; simp))⟩, inferInstance⟩
 
 end IsPurelyInseparable
 

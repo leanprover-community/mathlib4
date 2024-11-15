@@ -252,35 +252,25 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
 /-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
 instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
   obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
-  haveI := hx.isAlgebraic_field
+  have := hx.isAlgebraic_field
   rw [← (embProdEmbOfIsAlgebraic F (adjoin F (Set.range x)) E).infinite_iff]
   refine @Prod.infinite_of_left _ _ ?_ _
   rw [← (embEquivOfEquiv _ _ _ hx.1.aevalEquivField).infinite_iff]
   obtain ⟨i⟩ := hx.nonempty_iff_transcendental.2 H
-  let i1 := IsScalarTower.toAlgHom F (MvPolynomial ι F)
-    (AlgebraicClosure (FractionRing (MvPolynomial ι F)))
+  let K := FractionRing (MvPolynomial ι F)
+  let i1 := IsScalarTower.toAlgHom F (MvPolynomial ι F) (AlgebraicClosure K)
   have hi1 : Function.Injective i1 := by
-    change Function.Injective (algebraMap _ _)
-    rw [IsScalarTower.algebraMap_eq _ (FractionRing (MvPolynomial ι F)), RingHom.coe_comp]
-    exact (algebraMap (FractionRing (MvPolynomial ι F)) (AlgebraicClosure _)).injective.comp
-      (IsFractionRing.injective _ _)
-  let f (n : ℕ) : Emb F (FractionRing (MvPolynomial ι F)) := IsFractionRing.liftAlgHom
-    (K := FractionRing (MvPolynomial ι F)) (g := i1.comp <| MvPolynomial.aeval (R := F)
-      fun i : ι ↦ MvPolynomial.X (R := F) i ^ (n + 1)) <| by
-        rw [AlgHom.coe_comp]
-        apply hi1.comp
-        simpa [algebraicIndependent_iff_injective_aeval] using
-          MvPolynomial.algebraicIndependent_polynomial_aeval_X _ fun i : ι ↦
-            (Polynomial.transcendental_X F).pow (Nat.succ_pos n)
-  have hf : Function.Injective f := fun m n h ↦ by
-    replace h : (MvPolynomial.X i) ^ (m + 1) = (MvPolynomial.X i) ^ (n + 1) := hi1 <| by
-      simpa [f, -map_pow] using congr($h (algebraMap _ (FractionRing (MvPolynomial ι F))
-        (MvPolynomial.X (R := F) i)))
-    apply_fun MvPolynomial.coeff (Finsupp.single i (m + 1)) at h
-    classical simp_rw [MvPolynomial.coeff_single_X_pow] at h
-    by_contra!
-    simp [if_neg this.symm] at h
-  exact Infinite.of_injective f hf
+    rw [IsScalarTower.coe_toAlgHom', IsScalarTower.algebraMap_eq _ K]
+    exact (algebraMap K (AlgebraicClosure K)).injective.comp (IsFractionRing.injective _ _)
+  let f (n : ℕ) : Emb F K := IsFractionRing.liftAlgHom
+    (g := i1.comp <| MvPolynomial.aeval fun i : ι ↦ MvPolynomial.X i ^ (n + 1)) <| hi1.comp <| by
+      simpa [algebraicIndependent_iff_injective_aeval] using
+        MvPolynomial.algebraicIndependent_polynomial_aeval_X _
+          fun i : ι ↦ (Polynomial.transcendental_X F).pow n.succ_pos
+  refine Infinite.of_injective f fun m n h ↦ ?_
+  replace h : (MvPolynomial.X i) ^ (m + 1) = (MvPolynomial.X i) ^ (n + 1) := hi1 <| by
+    simpa [f, -map_pow] using congr($h (algebraMap _ K (MvPolynomial.X (R := F) i)))
+  simpa using congr(MvPolynomial.totalDegree $h)
 
 /-- If the field extension `E / F` is transcendental, then `Field.finSepDegree F E = 0`, which
 actually means that `Field.Emb F E` is infinite (see `Field.infinite_emb_of_transcendental`). -/
