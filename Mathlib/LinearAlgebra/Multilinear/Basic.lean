@@ -1655,6 +1655,14 @@ theorem currySumEquiv_symm_apply
 @[deprecated  (since := "2024-11-01")]
 alias currySum := currySumEquiv
 
+/-- A multilinear map on `∀ i : ι, M'` taking values in the space of multilinear maps
+on `∀ i : ι', M'` defines a multilinear map on `∀ i : ι ⊕ ι', M'`.
+(Use `currySumEquiv` instead.) -/
+@[deprecated  (since := "2024-11-01")]
+def uncurrySum : MultilinearMap R (fun (i : ι) ↦ N (.inl i))
+      (MultilinearMap R (fun (i : ι') ↦ N (.inr i)) M₂) →ₗ[R] MultilinearMap R N M₂ :=
+  currySumEquiv.symm.toLinearMap
+
 variable (R M₂ M')
 
 /-- If `s : Finset (Fin n)` is a finite set of cardinality `k` and its complement has cardinality
