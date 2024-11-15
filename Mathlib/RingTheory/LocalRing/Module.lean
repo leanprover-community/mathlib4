@@ -3,13 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Nakayama
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Finite modules over local rings
@@ -17,13 +17,13 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 This file gathers various results about finite modules over a local ring `(R, 𝔪, k)`.
 
 ## Main results
-- `LocalRing.subsingleton_tensorProduct`: If `M` is finitely generated, `k ⊗ M = 0 ↔ M = 0`.
+- `IsLocalRing.subsingleton_tensorProduct`: If `M` is finitely generated, `k ⊗ M = 0 ↔ M = 0`.
 - `Module.free_of_maximalIdeal_rTensor_injective`:
   If `M` is a finitely presented module such that `m ⊗ M → M` is injective
   (for example when `M` is flat), then `M` is free.
 - `Module.free_of_lTensor_residueField_injective`: If `N → M → P → 0` is a presentation of `P` with
   `N` finite and `M` finite free, then injectivity of `k ⊗ N → k ⊗ M` implies that `P` is free.
-- `LocalRing.split_injective_iff_lTensor_residueField_injective`:
+- `IsLocalRing.split_injective_iff_lTensor_residueField_injective`:
   Given an `R`-linear map `l : M → N` with `M` finite and `N` finite free,
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
@@ -35,16 +35,16 @@ section
 variable {M N} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 open Function (Injective Surjective Exact)
-open LocalRing TensorProduct
+open IsLocalRing TensorProduct
 
 local notation "k" => ResidueField R
 local notation "𝔪" => maximalIdeal R
 
 variable {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
 
-namespace LocalRing
+namespace IsLocalRing
 
-variable [LocalRing R]
+variable [IsLocalRing R]
 
 theorem map_mkQ_eq {N₁ N₂ : Submodule R M} (h : N₁ ≤ N₂) (h' : N₂.FG) :
     N₁.map (Submodule.mkQ (𝔪 • N₂)) = N₂.map (Submodule.mkQ (𝔪 • N₂)) ↔ N₁ = N₂ := by
@@ -76,7 +76,7 @@ theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
       intro x; obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
       rw [← this, LinearMap.comp_apply]; exact ⟨_, rfl⟩
     apply_fun Submodule.map f at hN
-    rwa [← Submodule.map_comp, this, Submodule.map_top, LinearMap.range_eq_top.mpr hf,
+    rwa [← Submodule.map_comp, this, Submodule.map_top, LinearMap.range_eq_top.2 hf,
       map_mkQ_eq_top] at hN
   · rintro rfl; rw [Submodule.map_top, LinearMap.range_eq_top]
     exact TensorProduct.mk_surjective R M k Ideal.Quotient.mk_surjective
@@ -95,7 +95,22 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
     ← b.span_eq, ← Set.range_comp]
   simp only [Function.comp_def, mk_apply, hb, Basis.span_eq]
 
-end LocalRing
+end IsLocalRing
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.map_mkQ_eq := IsLocalRing.map_mkQ_eq
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.map_mkQ_eq_top := IsLocalRing.map_mkQ_eq_top
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.map_tensorProduct_mk_eq_top := IsLocalRing.map_tensorProduct_mk_eq_top
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.subsingleton_tensorProduct := IsLocalRing.subsingleton_tensorProduct
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.span_eq_top_of_tmul_eq_basis := IsLocalRing.span_eq_top_of_tmul_eq_basis
 
 open Function in
 /--
@@ -136,7 +151,7 @@ theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
 
 namespace Module
 
-variable [LocalRing R]
+variable [IsLocalRing R]
 
 /--
 If `M` is a finitely presented module over a local ring `(R, 𝔪)` such that `m ⊗ M → M` is
@@ -155,7 +170,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   let i := Finsupp.linearCombination R (f ∘ b)
   have hi : Surjective i := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
-    exact LocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := f ∘ b) b (fun _ ↦ hf _)
+    exact IsLocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := f ∘ b) b (fun _ ↦ hf _)
   have : Module.Finite R (LinearMap.ker i) := by
     constructor
     exact (Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker i hi)
@@ -164,7 +179,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   refine Module.Free.of_equiv (LinearEquiv.ofBijective i ⟨?_, hi⟩)
   -- By Nakayama's lemma, it suffices to show that `k ⊗ ker(i) = 0`.
   rw [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot,
-    ← LocalRing.subsingleton_tensorProduct (R := R), subsingleton_iff_forall_eq 0]
+    ← IsLocalRing.subsingleton_tensorProduct (R := R), subsingleton_iff_forall_eq 0]
   have : Function.Surjective (i.baseChange k) := i.lTensor_surjective _ hi
   -- By construction, `k ⊗ i : kᴵ → k ⊗ M` is bijective.
   have hi' : Function.Bijective (i.baseChange k) := by
@@ -195,10 +210,12 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
 
 -- TODO: Generalise this to finite free modules.
-theorem free_of_flat_of_localRing [Module.FinitePresentation R P] [Module.Flat R P] :
+theorem free_of_flat_of_isLocalRing [Module.FinitePresentation R P] [Module.Flat R P] :
     Module.Free R P :=
   free_of_maximalIdeal_rTensor_injective
     (Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective)
+
+@[deprecated (since := "2024-11-12")] alias free_of_flat_of_localRing := free_of_flat_of_isLocalRing
 
 /--
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
@@ -224,7 +241,7 @@ Given a linear map `l : M → N` over a local ring `(R, 𝔪, k)`
 with `M` finite and `N` finite free,
 `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
-theorem LocalRing.split_injective_iff_lTensor_residueField_injective [LocalRing R]
+theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalRing R]
     [Module.Finite R M] [Module.Finite R N] [Module.Free R N] (l : M →ₗ[R] N) :
     (∃ l', l' ∘ₗ l = LinearMap.id) ↔ Function.Injective (l.lTensor (ResidueField R)) := by
   constructor
@@ -269,10 +286,14 @@ theorem LocalRing.split_injective_iff_lTensor_residueField_injective [LocalRing 
     -- By Nakayama's lemma, `l` is injective.
     have : Function.Injective l := by
       rwa [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot,
-        ← LocalRing.subsingleton_tensorProduct (R := R)]
+        ← IsLocalRing.subsingleton_tensorProduct (R := R)]
     -- Whence `M ≃ l(M)` is projective and the result follows.
     have := (Exact.split_tfae l.exact_map_mkQ_range this (Submodule.mkQ_surjective _)).out 0 1
     rw [← this]
     exact Module.projective_lifting_property _ _ (Submodule.mkQ_surjective _)
+
+@[deprecated (since := "2024-11-09")]
+alias LocalRing.split_injective_iff_lTensor_residueField_injective :=
+  IsLocalRing.split_injective_iff_lTensor_residueField_injective
 
 end

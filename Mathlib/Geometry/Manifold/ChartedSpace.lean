@@ -183,7 +183,7 @@ instance (H : Type u) [TopologicalSpace H] :
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
-instance : Inf (StructureGroupoid H) :=
+instance : Min (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
     (trans' := fun e e' he he' =>
@@ -658,11 +658,14 @@ theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology
 
 variable (M)
 
-theorem ChartedSpace.secondCountable_of_sigma_compact [SecondCountableTopology H]
+theorem ChartedSpace.secondCountable_of_sigmaCompact [SecondCountableTopology H]
     [SigmaCompactSpace M] : SecondCountableTopology M := by
   obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ :=
-    countable_cover_nhds_of_sigma_compact fun x : M ↦ chart_source_mem_nhds H x
+    countable_cover_nhds_of_sigmaCompact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
+
+@[deprecated (since := "2024-11-13")] alias
+ChartedSpace.secondCountable_of_sigma_compact := ChartedSpace.secondCountable_of_sigmaCompact
 
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
 is locally compact. -/
@@ -704,6 +707,18 @@ theorem chartAt_comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalS
     {M : Type*} [TopologicalSpace M] [ChartedSpace H H'] [ChartedSpace H' M] (x : M) :
     (letI := ChartedSpace.comp H H' M; chartAt H x) = chartAt H' x ≫ₕ chartAt H (chartAt H' x x) :=
   rfl
+
+/-- A charted space over a T1 space is T1. Note that this is *not* true for T2 (for instance for
+the real line with a double origin). -/
+theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
+  apply t1Space_iff_exists_open.2 (fun x y hxy ↦ ?_)
+  by_cases hy : y ∈ (chartAt H x).source
+  · refine ⟨(chartAt H x).source ∩ (chartAt H x)⁻¹' ({chartAt H x y}ᶜ), ?_, ?_, by simp⟩
+    · exact PartialHomeomorph.isOpen_inter_preimage _ isOpen_compl_singleton
+    · simp only [preimage_compl, mem_inter_iff, mem_chart_source, mem_compl_iff, mem_preimage,
+        mem_singleton_iff, true_and]
+      exact (chartAt H x).injOn.ne (ChartedSpace.mem_chart_source x) hy hxy
+  · exact ⟨(chartAt H x).source, (chartAt H x).open_source, ChartedSpace.mem_chart_source x, hy⟩
 
 end
 
@@ -1085,7 +1100,7 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
 
 end PartialHomeomorph
 
-namespace IsOpenEmbedding
+namespace Topology.IsOpenEmbedding
 
 variable [Nonempty α]
 
@@ -1102,7 +1117,7 @@ theorem singleton_hasGroupoid {f : α → H} (h : IsOpenEmbedding f) (G : Struct
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ h.singletonChartedSpace G :=
   (h.toPartialHomeomorph f).singleton_hasGroupoid (toPartialHomeomorph_source _ _) G
 
-end IsOpenEmbedding
+end Topology.IsOpenEmbedding
 
 end Singleton
 

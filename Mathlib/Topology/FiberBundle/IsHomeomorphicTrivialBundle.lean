@@ -17,6 +17,7 @@ This material was formerly linked to the main definition of fiber bundles, but a
 refactors, there is no longer a direct connection.
 -/
 
+open Topology
 
 variable {B : Type*} (F : Type*) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   [TopologicalSpace Z]
