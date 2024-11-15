@@ -23,16 +23,6 @@ open Filter Topology
 
 namespace UniformGroup
 
--- we have this in Mathlib, but it uses the wrong `UniformSpace` instance.
-@[to_additive]
-theorem tendstoUniformly_iff' {ι α G : Type*} [UniformSpace G] [Group G]
-    [UniformGroup G] (F : ι → α → G) (f : α → G) (p : Filter ι) :
-    TendstoUniformly F f p ↔
-      ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u :=
-  toUniformSpace_eq (G := G) ▸
-    ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
-      fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a => hv (hi a)⟩
-
 variable {ι α G : Type*} [SemilatticeSup ι]
     [Nonempty ι] [TopologicalSpace α] [LinearOrderedCommGroup G] [UniformSpace G]
     [UniformGroup G] [OrderTopology G] [OrderClosedTopology G] [Nontrivial G]
@@ -48,7 +38,7 @@ lemma tendstoUniformly_of_forall_tendsto [CompactSpace α] (hF_cont : ∀ i, Con
     TendstoUniformly F f atTop := by
   have F_le_f (x : α) (n : ι) : F n x ≤ f x :=
     (monotone_app _ _ hF_mono).ge_of_tendsto (h_tendsto x) n
-  rw [tendstoUniformly_iff' F f atTop]
+  rw [tendstoUniformly_iff F f atTop]
   intro v hv
   simp_rw +singlePass [← tendsto_div_nhds_one_iff] at h_tendsto
   obtain ⟨y, hy⟩ := exists_one_lt' (α := G)
