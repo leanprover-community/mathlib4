@@ -12,7 +12,7 @@ import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 TODO
 -/
 
-open Filter Set Function MeasureTheory ProbabilityTheory
+open Filter Set Function MeasureTheory Measure ProbabilityTheory
 open scoped NNReal ENNReal
 
 variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {f : α → α}
@@ -67,7 +67,6 @@ theorem eq_of_absolutelyContinuous [IsProbabilityMeasure μ] [IsProbabilityMeasu
     intro s hs
     apply measure_diff_symm _ _ (hfν.measure_preimage _) <;>
       first | apply measure_ne_top | measurability
-
   obtain ⟨ρ, hρm, rfl⟩ : ∃ ρ, Measurable ρ ∧ ν = μ.withDensity ρ :=
     ⟨ν.rnDeriv μ, ν.measurable_rnDeriv μ, .symm <| Measure.withDensity_rnDeriv_eq _ _ hνμ⟩
   have : ∀ c, f ⁻¹' (ρ ⁻¹' Iio c) =ᵐ[μ] ρ ⁻¹' Iio c := by
