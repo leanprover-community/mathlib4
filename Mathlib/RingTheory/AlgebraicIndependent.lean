@@ -282,8 +282,8 @@ theorem AlgebraicIndependent.ringHom_of_comp_eq (H : AlgebraicIndependent R x)
   rw [algebraicIndependent_iff] at H ⊢
   intro p hp
   obtain ⟨q, rfl⟩ := map_surjective f hf p
-  erw [aeval_eq_eval₂Hom, eval₂Hom_map_hom, h, ← map_aeval] at hp
-  rw [H q (hg (by rwa [map_zero])), map_zero]
+  rw [H q (hg (by rwa [map_zero, ← RingHom.coe_coe g, map_aeval, ← h, ← eval₂Hom_map_hom,
+    ← aeval_eq_eval₂Hom])), map_zero]
 
 end
 
