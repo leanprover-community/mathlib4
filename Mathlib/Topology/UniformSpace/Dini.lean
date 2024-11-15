@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Order.CompletePartialOrder
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.ContinuousMap.Ordered
+import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Order.MonotoneConvergence
+import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.UniformConvergence
 
 /-! # Dini's Theorem
@@ -21,12 +24,13 @@ topology which is also order closed. Therefore it applies also when the codomain
 
 open Filter Topology
 
-namespace UniformGroup
-
 variable {ι α G : Type*} [SemilatticeSup ι]
     [Nonempty ι] [TopologicalSpace α] [LinearOrderedCommGroup G] [UniformSpace G]
     [UniformGroup G] [OrderTopology G] [OrderClosedTopology G] [Nontrivial G]
-    {F : ι → α → G} {f : α → G}
+
+namespace UniformGroup
+
+variable {F : ι → α → G} {f : α → G}
 
 /-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions on a
 compact space converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`. -/
@@ -69,3 +73,28 @@ lemma tendstoUniformlyOn_of_forall_tendsto {s : Set α} (hs : IsCompact s)
   have := isCompact_iff_compactSpace.mp hs
   exact tendstoUniformly_of_forall_tendsto (hF_cont · |>.restrict) (fun _ _ h x ↦ hF_mono _ x.2 h)
     hf.restrict (fun x ↦ h_tendsto x x.2)
+
+end UniformGroup
+
+namespace ContinuousMap
+
+variable {F : ι → C(α, G)} {f : C(α, G)}
+
+/-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions on
+converging pointwise to a continuous `f`, then `F n` converges to `f` in the
+compact-open topology.
+
+This version requires the codomain to be an `AddGroup` instead of a `Group`.
+-/
+@[to_additive tendsto_of_pointwise "**Dini's theorem** If `F n` is a monotone increasing collection
+of continuous functions on converging pointwise to a continuous `f`, then `F n` converges to `f` in
+the compact-open topology."]
+lemma tendsto_of_pointwise' (hF_mono : Monotone F)
+    (h_tendsto : ∀ x, Tendsto (F · x) atTop (𝓝 (f x))) :
+    Tendsto F atTop (𝓝 f) :=
+  tendsto_iff_forall_compact_tendstoUniformlyOn.mpr fun _ h_cpct ↦
+    UniformGroup.tendstoUniformlyOn_of_forall_tendsto h_cpct
+      (F · |>.continuous.continuousOn) (fun x _ _ _ h ↦ hF_mono h x)
+      f.continuous.continuousOn (fun x _ ↦ h_tendsto x)
+
+end ContinuousMap
