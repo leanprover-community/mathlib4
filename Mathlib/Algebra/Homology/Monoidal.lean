@@ -258,15 +258,13 @@ end RightUnitor
 
 end Unitor
 
-variable [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ X₂]
+variable (C c) [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ X₂]
   [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
   [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
   [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), GradedObject.HasTensor₄ObjExt X₁ X₂ X₃ X₄]
   [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensor₁₂Tensor X₁ X₂ X₃]
   [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensorTensor₂₃ X₁ X₂ X₃]
-
-variable (C c)
-variable [DecidableEq I]
+  [DecidableEq I]
 
 noncomputable instance monoidalCategoryStruct :
     MonoidalCategoryStruct (HomologicalComplex C c) where
