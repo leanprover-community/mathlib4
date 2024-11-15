@@ -93,6 +93,7 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     |>.insert `Mathlib.Tactic.Propose.propose'
     |>.insert `Lean.Parser.Tactic.traceState
     |>.insert `Mathlib.Tactic.tacticMatch_target_
+    |>.insert ``Lean.Parser.Tactic.change
     |>.insert `change?
     |>.insert `«tactic#adaptation_note_»
     |>.insert `tacticSleep_heartbeats_
@@ -132,6 +133,9 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     |>.insert `Mathlib.Tactic.Hint.registerHintStx
     |>.insert `Mathlib.Tactic.LinearCombination.linearCombination
     |>.insert `Mathlib.Tactic.LinearCombination'.linearCombination'
+    |>.insert `Aesop.Frontend.Parser.addRules
+    |>.insert `Aesop.Frontend.Parser.aesopTactic
+    |>.insert `Aesop.Frontend.Parser.aesopTactic?
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     |>.insert ``Lean.Parser.Tactic.failIfSuccess
     |>.insert `Mathlib.Tactic.successIfFailWithMsg

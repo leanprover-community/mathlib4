@@ -369,15 +369,20 @@ lemma Exact.inl_snd : Function.Exact (LinearMap.inl R M N) (LinearMap.snd R M N)
 
 end Prod
 
+end Function
+
 section Ring
 
 open LinearMap Submodule
 
 variable [Ring R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
     [Module R M] [Module R N] [Module R P]
+    {f : M →ₗ[R] N} {g : N →ₗ[R] P}
+
+namespace Function
 
 /-- A necessary and sufficient condition for an exact sequence to descend to a quotient. -/
-lemma Exact.exact_mapQ_iff {f : M →ₗ[R] N} {g : N →ₗ[R] P}
+lemma Exact.exact_mapQ_iff
     (hfg : Exact f g) {p q r} (hpq : p ≤ comap f q) (hqr : q ≤ comap g r) :
     Exact (mapQ p q f hpq) (mapQ q r g hqr) ↔ range g ⊓ r ≤ map g q := by
   rw [exact_iff, ← (comap_injective_of_surjective (mkQ_surjective _)).eq_iff]
@@ -387,6 +392,39 @@ lemma Exact.exact_mapQ_iff {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     ← LE.le.le_iff_eq (sup_le hqr (ker_le_comap g)),
     ← comap_map_eq, ← map_le_iff_le_comap, map_comap_eq]
 
-end Ring
-
 end Function
+
+namespace LinearMap
+
+lemma surjective_range_liftQ (h : range f ≤ ker g) (hg : Function.Surjective g) :
+    Function.Surjective ((range f).liftQ g h) := by
+  intro x₃
+  obtain ⟨x₂, rfl⟩ := hg x₃
+  exact ⟨Submodule.Quotient.mk x₂, rfl⟩
+
+lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
+    ker ((range f).liftQ g h) = ⊥ ↔ ker g = range f := by
+  simp only [Submodule.ext_iff, mem_ker, Submodule.mem_bot, mem_range]
+  constructor
+  · intro hfg x
+    simpa using hfg (Submodule.Quotient.mk x)
+  · intro hfg x
+    obtain ⟨x, rfl⟩ := Submodule.Quotient.mk_surjective _ x
+    simpa using hfg x
+
+lemma injective_range_liftQ_of_exact (h : Function.Exact f g) :
+    Function.Injective ((range f).liftQ g (h · |>.mpr)) := by
+  simpa only [← LinearMap.ker_eq_bot, ker_eq_bot_range_liftQ_iff, exact_iff] using h
+
+end LinearMap
+
+/-- The linear equivalence `(N ⧸ LinearMap.range f) ≃ₗ[A] P` associated to
+an exact sequence `M → N → P → 0` of `R`-modules. -/
+@[simps! apply]
+noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g)
+    (hg : Function.Surjective g) : (N ⧸ LinearMap.range f) ≃ₗ[R] P :=
+  LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
+      ⟨LinearMap.injective_range_liftQ_of_exact h,
+        LinearMap.surjective_range_liftQ _ hg⟩
+
+end Ring
