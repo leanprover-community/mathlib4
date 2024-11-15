@@ -157,6 +157,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
   .of_basis <| Module.Free.chooseBasis R P
 
+/-- A direct summand of a projective module is projective. -/
 theorem Projective.of_split [Module.Projective R M]
     (i : P →ₗ[R] M) (s : M →ₗ[R] P) (H : s.comp i = LinearMap.id) : Module.Projective R P := by
   obtain ⟨g, hg⟩ := projective_lifting_property (Finsupp.linearCombination R id) s
