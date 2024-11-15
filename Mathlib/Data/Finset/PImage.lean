@@ -72,7 +72,7 @@ theorem pimage_congr (h₁ : s = t) (h₂ : ∀ x ∈ t, f x = g x) : s.pimage f
   subst s
   ext y
   -- Porting note: `← exists_prop` required because `∃ x ∈ s, p x` is defined differently
-  simp (config := { contextual := true }) only [mem_pimage, ← exists_prop, h₂]
+  simp +contextual only [mem_pimage, ← exists_prop, h₂]
 
 /-- Rewrite `s.pimage f` in terms of `Finset.filter`, `Finset.attach`, and `Finset.image`. -/
 theorem pimage_eq_image_filter : s.pimage f =

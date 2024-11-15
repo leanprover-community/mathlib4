@@ -263,8 +263,6 @@
  ["docBlame", "Nat.rfindOpt"],
  ["docBlame", "Nat.rfindX"],
  ["docBlame", "Nat.subInduction"],
- ["docBlame", "Nat.«termOrd_compl[_]_»"],
- ["docBlame", "Nat.«termOrd_proj[_]_»"],
  ["docBlame", "One.one"],
  ["docBlame", "OptionT.callCC"],
  ["docBlame", "OptionT.mkLabel"],
