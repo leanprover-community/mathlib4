@@ -114,22 +114,16 @@ theorem update_inl_comp_inl_apply [DecidableEq α] [DecidableEq (α ⊕ β)] {γ
     {f : (i : α ⊕ β) → γ i} {i : α}
     {x : γ (.inl i)} (j : α) :
     update f (.inl i) x (Sum.inl j) =
-      update (fun j ↦ f (.inl j)) i x j := by
-  by_cases h : j = i
-  · subst h
-    simp
-  · rw [Function.update_noteq (by simpa using h), Function.update_noteq h]
+      update (fun j ↦ f (.inl j)) i x j :=
+  congr_fun (Function.update_comp_eq_of_injective' f Sum.inl_injective i x) j
 
 @[simp]
 theorem update_inr_comp_inr_apply {γ : α ⊕ β → Type*}
     [DecidableEq β] [DecidableEq (α ⊕ β)] {f : (i : α ⊕ β) → γ i} {i : β}
     {x : γ (.inr i)} (j : β) :
     update f (.inr i) x (Sum.inr j) =
-      update (fun j ↦ f (.inr j)) i x j := by
-  by_cases h : j = i
-  · subst h
-    simp
-  · rw [Function.update_noteq (by simpa using h), Function.update_noteq h]
+      update (fun j ↦ f (.inr j)) i x j :=
+  congr_fun (Function.update_comp_eq_of_injective' f Sum.inr_injective i x) j
 
 @[simp]
 theorem swap_leftInverse : Function.LeftInverse (@swap α β) swap :=
