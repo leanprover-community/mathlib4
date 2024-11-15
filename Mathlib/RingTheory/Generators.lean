@@ -62,6 +62,9 @@ variable (P : Generators.{w} R S)
 protected
 abbrev Ring : Type (max w u) := MvPolynomial P.vars R
 
+/-- The kernel of a presentation. -/
+abbrev ker : Ideal P.Ring := RingHom.ker (aeval P.val)
+
 /-- The designated section of wrt a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
@@ -73,7 +76,20 @@ initialize_simps_projections Algebra.Generators (σ' → σ)
 @[simp]
 lemma aeval_val_σ (s) : aeval P.val (P.σ s) = s := P.aeval_val_σ' s
 
-instance : Algebra P.Ring S := (aeval P.val).toAlgebra
+lemma σ_injective : P.σ.Injective := by
+  intro x y e
+  rw [← P.aeval_val_σ x, ← P.aeval_val_σ y, e]
+
+section Algebra
+
+/--
+`aeval P.vals` induces a natural `P.Ring`-algebra instance on `S`.
+Warning: In the case where `S` is a quotient of a polynomial algebra, this typically
+produces a diamond.
+-/
+def algebraRing : Algebra P.Ring S := (aeval P.val).toAlgebra
+
+attribute [local instance] algebraRing
 
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq'
@@ -88,11 +104,9 @@ lemma algebraMap_apply (x) : algebraMap P.Ring S x = aeval (R := R) P.val x := r
 lemma σ_smul (x y) : P.σ x • y = x * y := by
   rw [Algebra.smul_def, algebraMap_apply, aeval_val_σ]
 
-lemma σ_injective : P.σ.Injective := by
-  intro x y e
-  rw [← P.aeval_val_σ x, ← P.aeval_val_σ y, e]
-
 lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_, P.aeval_val_σ ·⟩)
+
+end Algebra
 
 section Construction
 
@@ -377,8 +391,7 @@ end Hom
 
 section Cotangent
 
-/-- The kernel of a presentation. -/
-abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
+attribute [local instance] algebraRing
 
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) :=
   rfl
