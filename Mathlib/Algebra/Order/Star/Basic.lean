@@ -299,6 +299,10 @@ lemma one_lt_star_iff {x : R} : 1 < star x ↔ 1 < x := by
 lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
   simpa using star_lt_star_iff (x := x) (y := 1)
 
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+theorem IsSelfAdjoint.sq_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a ^ 2 := by
+  simp only [sq, ha.mul_self_nonneg]
+
 end Semiring
 
 section StarModule
