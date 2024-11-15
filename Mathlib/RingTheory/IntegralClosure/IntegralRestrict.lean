@@ -58,7 +58,7 @@ Also see `galRestrict` for the `AlgEquiv` version. -/
 noncomputable
 def galRestrictHom : (L →ₐ[K] L) ≃* (B →ₐ[A] B) where
   toFun := fun f ↦ (IsIntegralClosure.equiv A (integralClosure A L) L B).toAlgHom.comp
-      (((f.restrictScalars A).comp (IsScalarTower.toAlgHom A B L)).codRestrict
+      (((f.restrictScalars A).restrictDomain B).codRestrict
         (integralClosure A L) (fun x ↦ IsIntegral.map _ (IsIntegralClosure.isIntegral A L x)))
   map_mul' := by
     intros σ₁ σ₂
