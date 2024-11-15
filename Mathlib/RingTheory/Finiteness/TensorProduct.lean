@@ -53,7 +53,7 @@ theorem exists_fg_le_subset_range_rTensor_inclusion (s : Set (I ⊗[R] M)) (hs :
   rw [← Set.finite_coe_iff] at hs
   refine ⟨⨆ x : s, J x, fg_iSup _ fun _ ↦ fg _, iSup_le fun _ ↦ hle _, fun x hx ↦
     ⟨rTensor M (inclusion <| le_iSup _ ⟨x, hx⟩) (y x), .trans ?_ (eq x).symm⟩⟩
-  rw [← comp_apply]; congr; ext; rfl
+  rw [← comp_apply, ← rTensor_comp]; rfl
 
 end Submodule
 
