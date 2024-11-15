@@ -5,14 +5,13 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.Group.Nat
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Units
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Dedup
+import Mathlib.Data.List.Flatten
+import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
-import Mathlib.Data.List.Pairwise
 
 /-!
 # Sums and products from lists
@@ -32,9 +31,9 @@ section Defs
 /-- Product of a list.
 
 `List.prod [a, b, c] = ((1 * a) * b) * c` -/
-@[to_additive "Sum of a list.\n\n`List.sum [a, b, c] = ((0 + a) + b) + c`"]
+@[to_additive existing]
 def prod {α} [Mul α] [One α] : List α → α :=
-  foldl (· * ·) 1
+  foldr (· * ·) 1
 
 /-- The alternating sum of a list. -/
 def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
@@ -51,21 +50,41 @@ def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
 
 end Defs
 
+section Mul
+
+variable [Mul M] [One M] {l : List M} {a : M}
+
+@[to_additive existing, simp]
+theorem prod_nil : ([] : List M).prod = 1 :=
+  rfl
+
+@[to_additive existing, simp]
+theorem prod_cons {a} {l : List M} : (a :: l).prod = a * l.prod := rfl
+
+@[to_additive]
+lemma prod_induction
+    (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
+    p l.prod := by
+  induction l with
+  | nil => simpa
+  | cons a l ih =>
+    rw [List.prod_cons]
+    simp only [mem_cons, forall_eq_or_imp] at base
+    exact hom _ _ (base.1) (ih base.2)
+
+end Mul
+
 section MulOneClass
 
 variable [MulOneClass M] {l : List M} {a : M}
 
-@[to_additive (attr := simp)]
-theorem prod_nil : ([] : List M).prod = 1 :=
-  rfl
-
 @[to_additive]
 theorem prod_singleton : [a].prod = a :=
-  one_mul a
+  mul_one a
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem prod_one_cons : (1 :: l).prod = l.prod := by
-  rw [prod, foldl, mul_one]
+  rw [prod, foldr, one_mul]
 
 @[to_additive]
 theorem prod_map_one {l : List ι} :
@@ -80,42 +99,32 @@ section Monoid
 
 variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
-@[to_additive (attr := simp)]
-theorem prod_cons : (a :: l).prod = a * l.prod :=
-  calc
-    (a :: l).prod = foldl (· * ·) (a * 1) l := by
-      simp only [List.prod, foldl_cons, one_mul, mul_one]
-    _ = _ := foldl_assoc
-
 @[to_additive]
-lemma prod_induction
-    (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
-    p l.prod := by
-  induction l with
-  | nil => simpa
-  | cons a l ih =>
-    rw [List.prod_cons]
-    simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
-    exact hom _ _ (base.1) (ih base.2)
+theorem prod_eq_foldl : ∀ {l : List M}, l.prod = foldl (· * ·) 1 l
+  | [] => rfl
+  | cons a l => by
+    rw [prod_cons, prod_eq_foldl, ← foldl_assoc (α := M) (op := (· * ·))]
+    simp
 
 @[to_additive (attr := simp)]
 theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
   calc
-    (l₁ ++ l₂).prod = foldl (· * ·) (foldl (· * ·) 1 l₁ * 1) l₂ := by simp [List.prod]
-    _ = l₁.prod * l₂.prod := foldl_assoc
+    (l₁ ++ l₂).prod = foldr (· * ·) (1 * foldr (· * ·) 1 l₂) l₁ := by simp [List.prod]
+    _ = l₁.prod * l₂.prod := foldr_assoc
 
 @[to_additive]
 theorem prod_concat : (l.concat a).prod = l.prod * a := by
   rw [concat_eq_append, prod_append, prod_singleton]
 
 @[to_additive (attr := simp)]
-theorem prod_join {l : List (List M)} : l.join.prod = (l.map List.prod).prod := by
-  induction l <;> [rfl; simp only [*, List.join, map, prod_append, prod_cons]]
+theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).prod := by
+  induction l <;> [rfl; simp only [*, List.flatten, map, prod_append, prod_cons]]
+
+@[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
+@[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
 
 @[to_additive]
-theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
-  | [] => rfl
-  | cons a l => by rw [prod_cons, foldr_cons, prod_eq_foldr]
+theorem prod_eq_foldr {l : List M} : l.prod = foldr (· * ·) 1 l := rfl
 
 @[to_additive (attr := simp)]
 theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
@@ -125,7 +134,7 @@ theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
 
 @[to_additive sum_eq_card_nsmul]
 theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
-  rw [← prod_replicate, ← List.eq_replicate.mpr ⟨rfl, h⟩]
+  rw [← prod_replicate, ← List.eq_replicate_iff.mpr ⟨rfl, h⟩]
 
 @[to_additive]
 theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι → N} (h₁ : r 1 1)
@@ -135,7 +144,7 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
     (Forall₂ R ⇒ R) prod prod :=
-  rel_foldl hf h
+  rel_foldr hf h
 
 @[to_additive]
 theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass F M N] (f : F)
@@ -145,8 +154,8 @@ theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass 
 @[to_additive]
 theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
-  simp only [prod, foldl_map, ← map_one f]
-  exact l.foldl_hom f (· * ·) (· * f ·) 1 (fun x y => (map_mul f x y).symm)
+  simp only [prod, foldr_map, ← map_one f]
+  exact l.foldr_hom f (· * ·) (f · * ·) 1 (fun x y => (map_mul f x y).symm)
 
 @[to_additive]
 theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
@@ -158,8 +167,8 @@ theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
 theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d)
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
-  rw [prod, prod, prod, foldl_map, foldl_map, foldl_map,
-    ← l.foldl_hom₂ f _ _ (fun x y => x * f (f₁ y) (f₂ y)) _ _ (by simp [hf]), hf']
+  rw [prod, prod, prod, foldr_map, foldr_map, foldr_map,
+    ← l.foldr_hom₂ f _ _ (fun x y => f (f₁ x) (f₂ x) * y) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α} :
@@ -189,21 +198,14 @@ theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
 
 @[to_additive (attr := simp)]
-theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * (L.drop i).prod = L.prod
-  | [], i => by simp [Nat.zero_le]
-  | L, 0 => by simp
-  | h :: t, n + 1 => by
-    dsimp
-    rw [prod_cons, prod_cons, mul_assoc, prod_take_mul_prod_drop t]
+theorem prod_take_mul_prod_drop (L : List M) (i : ℕ) :
+    (L.take i).prod * (L.drop i).prod = L.prod := by
+  simp [← prod_append]
 
 @[to_additive (attr := simp)]
-theorem prod_take_succ :
-    ∀ (L : List M) (i : ℕ) (p : i < L.length), (L.take (i + 1)).prod = (L.take i).prod * L[i]
-  | [], i, p => by cases p
-  | h :: t, 0, _ => rfl
-  | h :: t, n + 1, p => by
-    dsimp
-    rw [prod_cons, prod_cons, prod_take_succ t n (Nat.lt_of_succ_lt_succ p), mul_assoc]
+theorem prod_take_succ (L : List M) (i : ℕ) (p : i < L.length) :
+    (L.take (i + 1)).prod = (L.take i).prod * L[i] := by
+  simp [← take_concat_get', p]
 
 /-- A list with product not one must have positive length. -/
 @[to_additive "A list with sum not zero must have positive length."]
@@ -273,9 +275,9 @@ last. -/
 @[to_additive
 "A variant of `sum_range_succ` which pulls off the first term in the sum rather than the last."]
 lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
-    ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod :=
-  Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
-    rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
+    ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod := by
+  rw [range_succ_eq_map]
+  simp [Function.comp_def]
 
 @[to_additive] lemma prod_eq_one (hl : ∀ x ∈ l, x = 1) : l.prod = 1 := by
   induction l with
@@ -322,14 +324,14 @@ depend on the order of elements. -/
 @[to_additive "If elements of a list additively commute with each other, then their sum does not
 depend on the order of elements."]
 lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
-  refine h.foldl_eq' ?_ _
+  refine h.foldr_eq' ?_ _
   apply Pairwise.forall_of_forall
   · intro x y h z
     exact (h z).symm
   · intros; rfl
   · apply hc.imp
     intro a b h z
-    rw [mul_assoc z, mul_assoc z, h]
+    rw [← mul_assoc, ← mul_assoc, h]
 
 end Monoid
 
@@ -349,7 +351,7 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
     · simp only [map, erase_cons_tail (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
 
-@[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.fold_op_eq
+@[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
 @[to_additive] lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
 
@@ -426,7 +428,7 @@ theorem prod_reverse_noncomm : ∀ L : List G, L.reverse.prod = (L.map fun x => 
   "Counterpart to `List.sum_take_succ` when we have a negation operation"]
 theorem prod_drop_succ :
     ∀ (L : List G) (i : ℕ) (p : i < L.length), (L.drop (i + 1)).prod = L[i]⁻¹ * (L.drop i).prod
-  | [], i, p => False.elim (Nat.not_lt_zero _ p)
+  | [], _, p => False.elim (Nat.not_lt_zero _ p)
   | _ :: _, 0, _ => by simp
   | _ :: xs, i + 1, p => prod_drop_succ xs i (Nat.lt_of_succ_lt_succ p)
 
@@ -625,66 +627,94 @@ namespace MonoidHom
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
 
-attribute [deprecated map_list_prod (since := "2023-01-10")] MonoidHom.map_list_prod
 attribute [deprecated map_list_sum (since := "2024-05-02")] AddMonoidHom.map_list_sum
 
 end MonoidHom
 
 end MonoidHom
 
-@[simp] lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum :=
-  (List.foldl_eq_foldr Nat.add_comm Nat.add_assoc _ _).symm
+set_option linter.deprecated false in
+@[simp, deprecated (since := "2024-10-17")]
+lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 
 namespace List
 
 lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by simp [length_sigma']
+    length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by
+  induction' l₁ with x l₁ IH
+  · rfl
+  · simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
 
-lemma ranges_join (l : List ℕ) : l.ranges.join = range l.sum := by simp [ranges_join']
+lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
+  | [] => rfl
+  | a :: l => by simp only [flatten, ← map_flatten, ranges_flatten, sum_cons, range_add]
+
+/-- The members of `l.ranges` have no duplicate -/
+theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
+  (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range _).1 s hs
+
+@[deprecated (since := "2024-10-15")] alias ranges_join := ranges_flatten
 
 /-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`. -/
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
 
-lemma countP_join (p : α → Bool) : ∀ L : List (List α), countP p L.join = (L.map (countP p)).sum
-  | [] => rfl
-  | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join _ l]
-
-lemma count_join [BEq α] (L : List (List α)) (a : α) : L.join.count a = (L.map (count a)).sum :=
-  countP_join _ _
-
 @[simp]
-theorem length_bind (l : List α) (f : α → List β) :
-    length (List.bind l f) = sum (map (length ∘ f) l) := by
-  rw [List.bind, length_join, map_map, Nat.sum_eq_listSum]
+theorem length_flatMap (l : List α) (f : α → List β) :
+    length (List.flatMap l f) = sum (map (length ∘ f) l) := by
+  rw [List.flatMap, length_flatten, map_map]
 
-lemma countP_bind (p : β → Bool) (l : List α) (f : α → List β) :
-    countP p (l.bind f) = sum (map (countP p ∘ f) l) := by rw [List.bind, countP_join, map_map]
+@[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
 
-lemma count_bind [BEq β] (l : List α) (f : α → List β) (x : β) :
-    count x (l.bind f) = sum (map (count x ∘ f) l) := countP_bind _ _ _
+lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
+    countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
+  rw [List.flatMap, countP_flatten, map_map]
 
-/-- In a join, taking the first elements up to an index which is the sum of the lengths of the
-first `i` sublists, is the same as taking the join of the first `i` sublists. -/
-lemma take_sum_join (L : List (List α)) (i : ℕ) :
-    L.join.take ((L.map length).take i).sum = (L.take i).join := by simpa using take_sum_join' _ _
+@[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
 
-/-- In a join, dropping all the elements up to an index which is the sum of the lengths of the
+lemma count_flatMap [BEq β] (l : List α) (f : α → List β) (x : β) :
+    count x (l.flatMap f) = sum (map (count x ∘ f) l) := countP_flatMap _ _ _
+
+@[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
+
+/-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the
+first `i` sublists, is the same as taking the flatten of the first `i` sublists. -/
+lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
+    L.flatten.take ((L.map length).take i).sum = (L.take i).flatten := by
+  induction L generalizing i
+  · simp
+  · cases i <;> simp [take_append, *]
+
+@[deprecated (since := "2024-10-15")] alias take_sum_join := take_sum_flatten
+
+/-- In a flatten, dropping all the elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
-lemma drop_sum_join (L : List (List α)) (i : ℕ) :
-    L.join.drop ((L.map length).take i).sum = (L.drop i).join := by simpa using drop_sum_join' _ _
+lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
+    L.flatten.drop ((L.map length).take i).sum = (L.drop i).flatten := by
+  induction L generalizing i
+  · simp
+  · cases i <;> simp [take_append, *]
 
-/-- In a join of sublists, taking the slice between the indices `A` and `B - 1` gives back the
+@[deprecated (since := "2024-10-15")] alias drop_sum_join := drop_sum_flatten
+
+/-- In a flatten of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
 `B` is the sum of the lengths of sublists of index `≤ i`. -/
-lemma drop_take_succ_join_eq_getElem (L : List (List α)) (i : Nat) (h : i < L.length) :
-    (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = L[i] := by
-  simpa using drop_take_succ_join_eq_getElem' _ _ _
+lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < L.length) :
+    (L.flatten.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = L[i] := by
+  have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
+    simp [map_take, take_take, Nat.min_eq_left]
+  simp only [this, length_map, take_sum_flatten, drop_sum_flatten,
+    drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
 
-@[deprecated drop_take_succ_join_eq_getElem (since := "2024-06-11")]
+@[deprecated (since := "2024-06-11")]
+alias drop_take_succ_join_eq_getElem := drop_take_succ_flatten_eq_getElem
+
+@[deprecated drop_take_succ_flatten_eq_getElem (since := "2024-06-11")]
 lemma drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
-    (L.join.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = get L i := by
-  rw [drop_take_succ_join_eq_getElem _ _ i.2]
+    (L.flatten.take ((L.map length).take (i + 1)).sum).drop
+      ((L.map length).take i).sum = get L i := by
+  rw [drop_take_succ_flatten_eq_getElem _ _ i.2]
   simp
 
 end List

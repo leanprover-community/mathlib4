@@ -97,6 +97,9 @@ lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a →
   apply h
   simp [p']
 
+/--
+Variant of `height_le_iff` ranging only over those series that end exactly on `a`.
+-/
 lemma height_le_iff' {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
  constructor
@@ -162,6 +165,92 @@ lemma height_mono : Monotone (α := α) height :=
 @[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
     height a ≤ height b := height_mono hab
 
+private lemma height_add_const (a : α) (n : ℕ∞) :
+    height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by
+  have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
+  rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype', ENat.iSup_add]
+
+/- For elements of finite height, `height` is strictly monotone. -/
+@[gcongr] lemma height_strictMono {x y : α} (hxy : x < y) (hfin : height x < ⊤) :
+    height x < height y := by
+  rw [← ENat.add_one_le_iff hfin.ne, height_add_const, iSup₂_le_iff]
+  intro p hlast
+  have := length_le_height_last (p := p.snoc y (by simp [*]))
+  simpa using this
+
+lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
+    height x ≤ height (f x) := by
+  simp only [height_eq_iSup_last_eq]
+  apply iSup₂_le
+  intro p hlast
+  apply le_iSup₂_of_le (p.map f hf) (by simp [hlast]) (by simp)
+
+@[simp]
+lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
+  apply le_antisymm
+  · simpa using height_le_height_apply_of_strictMono _ f.symm.strictMono (f x)
+  · exact height_le_height_apply_of_strictMono _ f.strictMono x
+
+private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
+    (h : (⨆ x, f x) = n) : ∃ x, f x = n := by
+  obtain ⟨x, hx⟩ := ENat.sSup_mem_of_Nonempty_of_lt_top (h ▸ ENat.coe_lt_top _)
+  use x
+  simpa [hx] using h
+
+/-- There exist a series ending in a element for any length up to the element’s height.  -/
+lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
+    ∃ p : LTSeries α, p.last = a ∧ p.length = n := by
+  have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
+  cases ha : height a with
+  | top =>
+    clear h
+    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def] at ha
+    contrapose! ha
+    use n
+    rintro m ⟨⟨p, rfl⟩, hp⟩
+    simp only at hp
+    by_contra! hnm
+    apply ha (p.drop ⟨m-n, by omega⟩) (by simp) (by simp; omega)
+  | coe m =>
+    rw [ha, Nat.cast_le] at h
+    rw [height_eq_iSup_last_eq, iSup_subtype'] at ha
+    obtain ⟨⟨p, hlast⟩, hlen⟩ := exists_eq_iSup_of_iSup_eq_coe ha
+    simp only [Nat.cast_inj] at hlen
+    use p.drop ⟨m-n, by omega⟩
+    constructor
+    · simp [hlast]
+    · simp [hlen]; omega
+
+/-- For an element of finite height there exists a series ending in that element of that height. -/
+lemma exists_series_of_height_eq_coe (a : α) {n : ℕ} (h : height a = n) :
+    ∃ p : LTSeries α, p.last = a ∧ p.length = n :=
+  exists_series_of_le_height a (le_of_eq h.symm)
+
+/-- Another characterization of height, based on the supremum of the heights of elements below. -/
+lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ (y : α) (_  : y < x), height y + 1 := by
+  apply le_antisymm
+  · apply height_le
+    intro p hp
+    cases hlen : p.length with
+    | zero => simp
+    | succ n =>
+      apply le_iSup_of_le p.eraseLast.last
+      apply le_iSup_of_le (by rw [← hp]; apply RelSeries.eraseLast_last_rel_last _ (by omega))
+      rw [height_add_const]
+      apply le_iSup₂_of_le p.eraseLast (by rfl) (by simp [hlen])
+  · apply iSup₂_le; intro y hyx
+    rw [height_add_const]
+    apply iSup₂_le; intro p hp
+    apply le_iSup₂_of_le (p.snoc x (hp ▸ hyx)) (by simp) (by simp)
+
+lemma height_le_coe_iff (x : α) (n : ℕ) :
+    height x ≤ n ↔ (∀ y, y < x → height y < n) := by
+  conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
+  congr! 2 with y _
+  cases height y
+  · simp
+  · norm_cast
+
 end height
 
 /-!
@@ -173,6 +262,8 @@ section krullDim
 variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
+
+lemma LTSeries.length_le_krullDim (p : LTSeries α) : p.length ≤ krullDim α := le_sSup ⟨_, rfl⟩
 
 lemma krullDim_nonneg_of_nonempty [Nonempty α] : 0 ≤ krullDim α :=
   le_sSup ⟨⟨0, fun _ ↦ @Nonempty.some α inferInstance, fun f ↦ f.elim0⟩, rfl⟩
@@ -213,6 +304,14 @@ lemma krullDim_eq_zero_of_unique [Unique α] : krullDim α = 0 := by
   refine (LTSeries.longestOf_len_unique (default : LTSeries α) fun q ↦ show _ ≤ 0 from ?_).symm
   by_contra r
   exact ne_of_lt (q.step ⟨0, not_le.mp r⟩) <| Subsingleton.elim _ _
+
+lemma krullDim_nonpos_of_subsingleton [Subsingleton α] : krullDim α ≤ 0 := by
+  by_cases hα : Nonempty α
+  · have := uniqueOfSubsingleton (Classical.choice hα)
+    exact le_of_eq krullDim_eq_zero_of_unique
+  · have := not_nonempty_iff.mp hα
+    exact le_of_lt <| lt_of_eq_of_lt krullDim_eq_bot_of_isEmpty <|
+      Batteries.compareOfLessAndEq_eq_lt.mp rfl
 
 lemma krullDim_le_of_strictComono_and_surj
     (f : α → β) (hf : ∀ ⦃a b⦄, f a < f b → a < b) (hf' : Function.Surjective f) :

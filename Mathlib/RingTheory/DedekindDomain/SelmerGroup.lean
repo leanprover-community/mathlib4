@@ -67,7 +67,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
-open scoped DiscreteValuation nonZeroDivisors
+open scoped Multiplicative nonZeroDivisors
 
 universe u v
 
@@ -143,7 +143,7 @@ def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
 @[simp]
 theorem valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
     v.valuationOfNeZeroMod n (Units.map (algebraMap R K : R →* K) x : K/n) = 1 := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [valuationOfNeZeroMod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
     QuotientGroup.map_mk' (G := Kˣ) (N := MonoidHom.range (powMonoidHom n)),
     valuation_of_unit_eq, QuotientGroup.mk_one, map_one]
@@ -172,7 +172,7 @@ theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => h
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/
 def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
   toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K/n)
-  map_one' := funext fun v => map_one _
+  map_one' := funext fun _ => map_one _
   map_mul' x y := by simp only [Subgroup.coe_mul, map_mul]; rfl
 
 theorem valuation_ker_eq :

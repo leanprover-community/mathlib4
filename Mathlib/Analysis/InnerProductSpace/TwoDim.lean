@@ -71,7 +71,7 @@ noncomputable section
 
 open scoped RealInnerProductSpace ComplexConjugate
 
-open FiniteDimensional
+open Module
 
 lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
@@ -204,7 +204,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
         exact o.areaForm_le x (o.rightAngleRotationAux₁ x)
       · let K : Submodule ℝ E := ℝ ∙ x
         have : Nontrivial Kᗮ := by
-          apply @FiniteDimensional.nontrivial_of_finrank_pos ℝ
+          apply nontrivial_of_finrank_pos (R := ℝ)
           have : finrank ℝ K ≤ Finset.card {x} := by
             rw [← Set.toFinset_singleton]
             exact finrank_span_le_card ({x} : Set E)
@@ -260,7 +260,6 @@ theorem rightAngleRotation_symm :
   rw [rightAngleRotation]
   exact LinearIsometryEquiv.toLinearIsometry_injective rfl
 
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem inner_rightAngleRotation_self (x : E) : ⟪J x, x⟫ = 0 := by simp
 
 theorem inner_rightAngleRotation_swap (x y : E) : ⟪x, J y⟫ = -⟪J x, y⟫ := by simp
@@ -279,7 +278,6 @@ theorem areaForm_rightAngleRotation_left (x y : E) : ω (J x) y = -⟪x, y⟫ :=
 theorem areaForm_rightAngleRotation_right (x y : E) : ω x (J y) = ⟪x, y⟫ := by
   rw [← o.inner_rightAngleRotation_left, o.inner_comp_rightAngleRotation]
 
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem areaForm_comp_rightAngleRotation (x y : E) : ω (J x) (J y) = ω x y := by simp
 
 @[simp]
@@ -422,8 +420,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, LinearMap.map_smulₛₗ,
-      areaForm_apply_self, Algebra.id.smul_eq_mul, mul_zero, eq_self_iff_true,
-      and_true_iff]
+      areaForm_apply_self, Algebra.id.smul_eq_mul, mul_zero, eq_self_iff_true, and_true]
     positivity
 
 /-- A complex-valued real-bilinear map on an oriented real inner product space of dimension 2. Its
@@ -490,7 +487,7 @@ theorem normSq_kahler (x y : E) : Complex.normSq (o.kahler x y) = ‖x‖ ^ 2 * 
   simpa [kahler_apply_apply, Complex.normSq, sq] using o.inner_sq_add_areaForm_sq x y
 
 theorem abs_kahler (x y : E) : Complex.abs (o.kahler x y) = ‖x‖ * ‖y‖ := by
-  rw [← sq_eq_sq, Complex.sq_abs]
+  rw [← sq_eq_sq₀, Complex.sq_abs]
   · linear_combination o.normSq_kahler x y
   · positivity
   · positivity

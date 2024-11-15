@@ -61,7 +61,7 @@ instance decidableProbablePrime (n b : ℕ) : Decidable (ProbablePrime n b) :=
   Nat.decidable_dvd _ _
 
 instance decidablePsp (n b : ℕ) : Decidable (FermatPsp n b) :=
-  And.decidable
+  inferInstanceAs (Decidable (_ ∧ _))
 
 /-- If `n` passes the Fermat primality test to base `b`, then `n` is coprime with `b`, assuming that
 `n` and `b` are both positive.
@@ -94,7 +94,7 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
 
 theorem probablePrime_iff_modEq (n : ℕ) {b : ℕ} (h : 1 ≤ b) :
     ProbablePrime n b ↔ b ^ (n - 1) ≡ 1 [MOD n] := by
-  have : 1 ≤ b ^ (n - 1) := one_le_pow_of_one_le h (n - 1)
+  have : 1 ≤ b ^ (n - 1) := one_le_pow₀ h
   -- For exact mod_cast
   rw [Nat.ModEq.comm]
   constructor
@@ -127,7 +127,7 @@ private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow a 1 b
   rw [Nat.lt_div_iff_mul_lt h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
-  exact lt_self_pow (Nat.lt_of_succ_le ha) hb
+  exact lt_self_pow₀ (Nat.lt_of_succ_le ha) hb
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
@@ -135,7 +135,7 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
   calc
     2 * a + 1 ≤ a ^ 2 * a := by nlinarith
     _ = a ^ 3 := by rw [Nat.pow_succ a 2]
-    _ ≤ a ^ b := pow_le_pow_right (Nat.le_of_succ_le ha) hb
+    _ ≤ a ^ b := pow_right_mono₀ (Nat.le_of_succ_le ha) hb
 
 private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
     (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by

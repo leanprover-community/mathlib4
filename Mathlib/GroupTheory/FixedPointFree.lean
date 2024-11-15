@@ -54,8 +54,8 @@ theorem prod_pow_eq_one (hφ : FixedPointFree φ) {n : ℕ} (hn : φ^[n] = _root
 
 theorem coe_eq_inv_of_sq_eq_one (hφ : FixedPointFree φ) (h2 : φ^[2] = _root_.id) : ⇑φ = (·⁻¹) := by
   ext g
-  have key : 1 * g * φ g = 1 := hφ.prod_pow_eq_one h2 g
-  rwa [one_mul, ← inv_eq_iff_mul_eq_one, eq_comm] at key
+  have key : g * φ g = 1 := by simpa [List.range_succ] using hφ.prod_pow_eq_one h2 g
+  rwa [← inv_eq_iff_mul_eq_one, eq_comm] at key
 
 section Involutive
 

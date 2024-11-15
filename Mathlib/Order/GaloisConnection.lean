@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Synonym
 import Mathlib.Order.Hom.Set
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Image
 
 /-!
 # Galois connections, insertions and coinsertions
@@ -50,8 +50,8 @@ open Function OrderDual Set
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a a₁ a₂ : α}
-  {b b₁ b₂ : β}
+variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → Sort*} {a₁ a₂ : α}
+  {b₁ b₂ : β}
 
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
 `l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
@@ -337,7 +337,7 @@ theorem gc_Ici_sInf [CompleteSemilatticeInf α] :
     GaloisConnection (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
   fun _ _ ↦ le_sInf_iff.symm
 
-variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {f : α → β → γ} {s : Set α}
+variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {s : Set α}
   {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
 
 theorem sSup_image2_eq_sSup_sSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
@@ -407,7 +407,7 @@ theorem galoisConnection_mul_div {k : ℕ} (h : 0 < k) :
 
 end Nat
 
--- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois insertion is a Galois connection where `l ∘ u = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
@@ -551,7 +551,7 @@ abbrev liftSemilatticeSup [SemilatticeSup α] (gi : GaloisInsertion l u) : Semil
     sup := fun a b => l (u a ⊔ u b)
     le_sup_left := fun a _ => (gi.le_l_u a).trans <| gi.gc.monotone_l <| le_sup_left
     le_sup_right := fun _ b => (gi.le_l_u b).trans <| gi.gc.monotone_l <| le_sup_right
-    sup_le := fun a b c hac hbc =>
+    sup_le := fun _ _ _ hac hbc =>
       gi.gc.l_le <| sup_le (gi.gc.monotone_u hac) (gi.gc.monotone_u hbc) }
 
 -- See note [reducible non instances]
@@ -593,8 +593,8 @@ abbrev liftBoundedOrder [Preorder α] [BoundedOrder α] (gi : GaloisInsertion l 
 abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : CompleteLattice β :=
   { gi.liftBoundedOrder, gi.liftLattice with
     sSup := fun s => l (sSup (u '' s))
-    sSup_le := fun s => (gi.isLUB_of_u_image (isLUB_sSup _)).2
-    le_sSup := fun s => (gi.isLUB_of_u_image (isLUB_sSup _)).1
+    sSup_le := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).2
+    le_sSup := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).1
     sInf := fun s =>
       gi.choice (sInf (u '' s)) <|
         (isGLB_sInf _).2 <|
@@ -606,7 +606,7 @@ end lift
 
 end GaloisInsertion
 
--- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois coinsertion is a Galois connection where `u ∘ l = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/

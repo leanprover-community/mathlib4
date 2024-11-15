@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.AEDisjoint
 import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.MeasureTheory.Measure.AEDisjoint
 
 /-!
 # Null measurable sets and complete measures
@@ -88,15 +89,13 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
     (μ : Measure α := by volume_tac) : Prop :=
   @MeasurableSet (NullMeasurableSpace α μ) _ s
 
-@[simp]
+@[simp, aesop unsafe (rule_sets := [Measurable])]
 theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
   h.eventuallyMeasurableSet
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem nullMeasurableSet_empty : NullMeasurableSet ∅ μ :=
   MeasurableSet.empty
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem nullMeasurableSet_univ : NullMeasurableSet univ μ :=
   MeasurableSet.univ
 
@@ -122,6 +121,7 @@ theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
 protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
   EventuallyMeasurableSet.congr hs h.symm
 
+@[measurability]
 protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
     (h : ∀ i, NullMeasurableSet (s i) μ) : NullMeasurableSet (⋃ i, s i) μ :=
   MeasurableSet.iUnion h
@@ -135,6 +135,7 @@ protected theorem sUnion {s : Set (Set α)} (hs : s.Countable) (h : ∀ t ∈ s,
   rw [sUnion_eq_biUnion]
   exact MeasurableSet.biUnion hs h
 
+@[measurability]
 protected theorem iInter {ι : Sort*} [Countable ι] {f : ι → Set α}
     (h : ∀ i, NullMeasurableSet (f i) μ) : NullMeasurableSet (⋂ i, f i) μ :=
   MeasurableSet.iInter h
@@ -171,7 +172,6 @@ protected theorem disjointed {f : ℕ → Set α} (h : ∀ i, NullMeasurableSet 
     NullMeasurableSet (disjointed f n) μ :=
   MeasurableSet.disjointed h n
 
--- @[simp] -- Porting note (#10618): simp can prove thisrove this
 protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
   MeasurableSet.const p
 
@@ -278,6 +278,9 @@ theorem measure_union₀' (hs : NullMeasurableSet s μ) (hd : AEDisjoint μ s t)
 theorem measure_add_measure_compl₀ {s : Set α} (hs : NullMeasurableSet s μ) :
     μ s + μ sᶜ = μ univ := by rw [← measure_union₀' hs aedisjoint_compl_right, union_compl_self]
 
+lemma measure_of_measure_compl_eq_zero (hs : μ sᶜ = 0) : μ s = μ Set.univ := by
+  simpa [hs] using measure_add_measure_compl₀ <| .of_compl <| .of_null hs
+
 section MeasurableSingletonClass
 
 variable [MeasurableSingletonClass (NullMeasurableSpace α μ)]
@@ -327,6 +330,26 @@ theorem _root_.Set.Finite.nullMeasurableSet_sInter {s : Set (Set α)} (hs : s.Fi
 
 theorem nullMeasurableSet_toMeasurable : NullMeasurableSet (toMeasurable μ s) μ :=
   (measurableSet_toMeasurable _ _).nullMeasurableSet
+
+variable [MeasurableSingletonClass α] {mβ : MeasurableSpace β} [MeasurableSingletonClass β]
+
+lemma measure_preimage_fst_singleton_eq_tsum [Countable β] (μ : Measure (α × β)) (x : α) :
+    μ (Prod.fst ⁻¹' {x}) = ∑' y, μ {(x, y)} := by
+  rw [← measure_iUnion (by simp [Pairwise]) fun _ ↦ .singleton _, iUnion_singleton_eq_range,
+    preimage_fst_singleton_eq_range]
+
+lemma measure_preimage_snd_singleton_eq_tsum [Countable α] (μ : Measure (α × β)) (y : β) :
+    μ (Prod.snd ⁻¹' {y}) = ∑' x, μ {(x, y)} := by
+  have : Prod.snd ⁻¹' {y} = ⋃ x : α, {(x, y)} := by ext y; simp [Prod.ext_iff, eq_comm]
+  rw [this, measure_iUnion] <;> simp [Pairwise]
+
+lemma measure_preimage_fst_singleton_eq_sum [Fintype β] (μ : Measure (α × β)) (x : α) :
+    μ (Prod.fst ⁻¹' {x}) = ∑ y, μ {(x, y)} := by
+  rw [measure_preimage_fst_singleton_eq_tsum μ x, tsum_fintype]
+
+lemma measure_preimage_snd_singleton_eq_sum [Fintype α] (μ : Measure (α × β)) (y : β) :
+    μ (Prod.snd ⁻¹' {y}) = ∑ x, μ {(x, y)} := by
+  rw [measure_preimage_snd_singleton_eq_tsum μ y, tsum_fintype]
 
 end
 
@@ -396,7 +419,7 @@ namespace Measure
 def completion {_ : MeasurableSpace α} (μ : Measure α) :
     MeasureTheory.Measure (NullMeasurableSpace α μ) where
   toOuterMeasure := μ.toOuterMeasure
-  m_iUnion s hs hd := measure_iUnion₀ (hd.mono fun i j h => h.aedisjoint) hs
+  m_iUnion _ hs hd := measure_iUnion₀ (hd.mono fun _ _ h => h.aedisjoint) hs
   trim_le := by
     nth_rewrite 2 [← μ.trimmed]
     exact OuterMeasure.trim_anti_measurableSpace _ fun _ ↦ MeasurableSet.nullMeasurableSet

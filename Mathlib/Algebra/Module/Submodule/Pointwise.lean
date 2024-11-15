@@ -6,7 +6,8 @@ Authors: Eric Wieser, Jujian Zhang
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Group.Action
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Span
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # Pointwise instances on `Submodule`s
 
@@ -418,7 +419,7 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
     exact ⟨Finsupp.single r ⟨n, hn⟩, Finsupp.single_mem_supported _ _ hr, by simp⟩
   · intro x hx
     obtain ⟨c, hc, rfl⟩ := hx
-    simp only [LinearMap.coe_comp, coeSubtype, Finsupp.coe_lsum, Finsupp.sum, Function.comp_apply]
+    simp only [LinearMap.coe_comp, coe_subtype, Finsupp.coe_lsum, Finsupp.sum, Function.comp_apply]
     rw [AddSubmonoid.coe_finset_sum]
     refine Submodule.sum_mem (p := sR • N) (t := c.support) ?_ _ ⟨sR • N, ?_⟩
     · rintro r hr
@@ -530,7 +531,7 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
     (Ideal.span s : Set R') • N = s • N :=
   set_smul_eq_of_le _ _ _
     (by rintro r n hr hn
-        induction hr using Submodule.span_induction' with
+        induction hr using Submodule.span_induction with
         | mem _ h => exact mem_set_smul_of_mem_mem h hn
         | zero => rw [zero_smul]; exact Submodule.zero_mem _
         | add _ _ _ _ ihr ihs => rw [add_smul]; exact Submodule.add_mem _ ihr ihs
@@ -545,4 +546,13 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
 
 end set_acting_on_submodules
 
+lemma span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
+    (span ℤ {a}).toAddSubgroup = AddSubgroup.zmultiples a := by
+  ext i
+  simp [Ideal.mem_span_singleton', AddSubgroup.mem_zmultiples_iff]
+
 end Submodule
+
+@[simp] lemma Ideal.span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
+   (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a :=
+  Submodule.span_singleton_toAddSubgroup_eq_zmultiples _

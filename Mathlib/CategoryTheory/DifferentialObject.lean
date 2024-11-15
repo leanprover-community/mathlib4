@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Int.Cast.Defs
@@ -33,7 +33,7 @@ variable [HasZeroMorphisms C] [HasShift C S]
 /-- A differential object in a category with zero morphisms and a shift is
 an object `obj` equipped with
 a morphism `d : obj ⟶ obj⟦1⟧`, such that `d^2 = 0`. -/
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 structure DifferentialObject where
   /-- The underlying object of a differential object. -/
   obj : C
@@ -49,7 +49,7 @@ variable {S C}
 namespace DifferentialObject
 
 /-- A morphism of differential objects is a morphism commuting with the differentials. -/
-@[ext] -- Porting note(#5171): removed `nolint has_nonempty_instance`
+@[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `nolint has_nonempty_instance`
 structure Hom (X Y : DifferentialObject S C) where
   /-- The morphism between underlying objects of the two differentiable objects. -/
   f : X.obj ⟶ Y.obj
@@ -256,7 +256,7 @@ nonrec def shiftFunctorAdd (m n : S) :
   · dsimp
     rw [← cancel_epi ((shiftFunctorAdd C m n).inv.app X.obj)]
     simp only [Category.assoc, Iso.inv_hom_id_app_assoc]
-    erw [← NatTrans.naturality_assoc]
+    rw [← NatTrans.naturality_assoc]
     dsimp
     simp only [Functor.map_comp, Category.assoc,
       shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app 1 m n X.obj,

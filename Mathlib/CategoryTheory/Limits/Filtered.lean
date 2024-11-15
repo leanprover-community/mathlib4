@@ -77,7 +77,21 @@ class HasFilteredColimitsOfSize : Prop where
   /-- For all filtered types of a size `w`, we have colimits -/
   HasColimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsFiltered I], HasColimitsOfShape I C
 
+/-- Class for having cofiltered limits. -/
+abbrev HasCofilteredLimits := HasCofilteredLimitsOfSize.{v, v} C
+
+/-- Class for having filtered colimits. -/
+abbrev HasFilteredColimits := HasFilteredColimitsOfSize.{v, v} C
+
 end
+
+instance (priority := 100) hasFilteredColimitsOfSize_of_hasColimitsOfSize
+    [HasColimitsOfSize.{w', w} C] : HasFilteredColimitsOfSize.{w', w} C where
+  HasColimitsOfShape _ _ _ := inferInstance
+
+instance (priority := 100) hasCofilteredLimitsOfSize_of_hasLimitsOfSize
+    [HasLimitsOfSize.{w', w} C] : HasCofilteredLimitsOfSize.{w', w} C where
+  HasLimitsOfShape _ _ _ := inferInstance
 
 instance (priority := 100) hasLimitsOfShape_of_has_cofiltered_limits
     [HasCofilteredLimitsOfSize.{w', w} C] (I : Type w) [Category.{w'} I] [IsCofiltered I] :

@@ -164,11 +164,11 @@ theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading
     have aux2 : (Fin.mk 2 _ : R) = 2 := rfl
     have aux3 : (Fin.mk 3 _ : R) = -1 := rfl
     fin_cases a <;>
-      simp (config := {contextual := true}) only
+      simp +contextual only
         [Fin.mk_zero, zero_mul, dvd_zero, true_or, or_true, implies_true, forall_true_left,
           Fin.mk_one, one_mul, aux2, dvd_refl]
     fin_cases b <;>
-      simp (config := {contextual := true}) only
+      simp +contextual only
         [Fin.mk_zero, zero_mul, dvd_zero, true_or, or_true, implies_true, forall_true_left,
           Fin.mk_one, mul_one, aux2, dvd_refl, aux3, or_self, neg_one_mul, neg_neg, dvd_neg]
   simp only [I, Ideal.mem_span_singleton] at hxy ⊢

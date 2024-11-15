@@ -161,7 +161,7 @@ theorem coe_top : ((⊤ : L.Substructure M) : Set M) = Set.univ :=
   rfl
 
 /-- The inf of two substructures is their intersection. -/
-instance instInf : Inf (L.Substructure M) :=
+instance instInf : Min (L.Substructure M) :=
   ⟨fun S₁ S₂ =>
     { carrier := (S₁ : Set M) ∩ (S₂ : Set M)
       fun_mem := fun {_} f => (S₁.fun_mem f).inf (S₂.fun_mem f) }⟩
@@ -309,7 +309,7 @@ lemma closure_eq_of_isRelational [L.IsRelational] (s : Set M) : closure L s = s 
 @[simp]
 lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
     m ∈ closure L s ↔ m ∈ s := by
-  rw [← SetLike.mem_coe, ((closure L).mem_closed_iff s).1 (mem_closed_of_isRelational L s)]
+  rw [← SetLike.mem_coe, closure_eq_of_isRelational]
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
@@ -635,7 +635,7 @@ def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤
   invFun m := ⟨m, mem_top m⟩
   left_inv m := by simp
-  right_inv m := rfl
+  right_inv _ := rfl
 
 @[simp]
 theorem coe_topEquiv :
@@ -684,7 +684,7 @@ def substructureReduct (φ : L →ᴸ L') [φ.IsExpansionOn M] :
   inj' S T h := by
     simp only [SetLike.coe_set_eq, Substructure.mk.injEq] at h
     exact h
-  map_rel_iff' {S T} := Iff.rfl
+  map_rel_iff' {_ _} := Iff.rfl
 
 variable (φ : L →ᴸ L') [φ.IsExpansionOn M]
 
@@ -739,7 +739,7 @@ theorem closure_withConstants_eq :
   refine closure_eq_of_le ((A.subset_union_right).trans subset_closure) ?_
   rw [← (L.lhomWithConstants A).substructureReduct.le_iff_le]
   simp only [subset_closure, reduct_withConstants, closure_le, LHom.coe_substructureReduct,
-    Set.union_subset_iff, and_true_iff]
+    Set.union_subset_iff, and_true]
   exact subset_closure_withConstants
 
 end Substructure
@@ -757,7 +757,7 @@ hom `M → p`. -/
 def codRestrict (p : L.Substructure N) (f : M →[L] N) (h : ∀ c, f c ∈ p) : M →[L] p where
   toFun c := ⟨f c, h c⟩
   map_fun' {n} f x := by aesop
-  map_rel' {n} R x h := f.map_rel R x h
+  map_rel' {_} R x h := f.map_rel R x h
 
 @[simp]
 theorem comp_codRestrict (f : M →[L] N) (g : N →[L] P) (p : L.Substructure P) (h : ∀ b, g b ∈ p) :
@@ -799,7 +799,7 @@ theorem range_comp_le_range (f : M →[L] N) (g : N →[L] P) : range (g.comp f 
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
 theorem range_eq_top {f : M →[L] N} : range f = ⊤ ↔ Function.Surjective f := by
-  rw [SetLike.ext'_iff, range_coe, coe_top, Set.range_iff_surjective]
+  rw [SetLike.ext'_iff, range_coe, coe_top, Set.range_eq_univ]
 
 theorem range_le_iff_comap {f : M →[L] N} {p : L.Substructure N} : range f ≤ p ↔ comap f p = ⊤ := by
   rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]
@@ -847,8 +847,8 @@ theorem domRestrict_apply (f : M ↪[L] N) (p : L.Substructure M) (x : p) : f.do
 to an embedding `M → p`. -/
 def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) : M ↪[L] p where
   toFun := f.toHom.codRestrict p h
-  inj' a b ab := f.injective (Subtype.mk_eq_mk.1 ab)
-  map_fun' {n} F x := (f.toHom.codRestrict p h).map_fun' F x
+  inj' _ _ ab := f.injective (Subtype.mk_eq_mk.1 ab)
+  map_fun' {_} F x := (f.toHom.codRestrict p h).map_fun' F x
   map_rel' {n} r x := by
     simp only
     rw [← p.subtype.map_rel]
@@ -888,7 +888,7 @@ noncomputable def substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
         (Classical.choose_spec
             (codRestrict (s.map f.toHom) (f.domRestrict s) (fun ⟨m, hm⟩ => ⟨m, hm, rfl⟩)
                 ⟨m, hm⟩).2).2)
-  right_inv := fun ⟨n, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn).2
+  right_inv := fun ⟨_, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn).2
   map_fun' {n} f x := by aesop
   map_rel' {n} R x := by aesop
 
@@ -908,7 +908,7 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
   invFun n := Classical.choose n.2
   left_inv m :=
     f.injective (Classical.choose_spec (codRestrict f.toHom.range f f.toHom.mem_range_self m).2)
-  right_inv := fun ⟨n, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn)
+  right_inv := fun ⟨_, hn⟩ => Subtype.mk_eq_mk.2 (Classical.choose_spec hn)
   map_fun' {n} f x := by aesop
   map_rel' {n} R x := by aesop
 
@@ -926,7 +926,7 @@ namespace Equiv
 
 theorem toHom_range (f : M ≃[L] N) : f.toHom.range = ⊤ := by
   ext n
-  simp only [Hom.mem_range, coe_toHom, Substructure.mem_top, iff_true_iff]
+  simp only [Hom.mem_range, coe_toHom, Substructure.mem_top, iff_true]
   exact ⟨f.symm n, apply_symm_apply _ _⟩
 
 end Equiv

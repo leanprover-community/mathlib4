@@ -43,7 +43,7 @@ such that
     `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 structure GlueData where
   J : Type v
@@ -231,8 +231,8 @@ def mapGlueData : GlueData C' where
   U i := F.obj (D.U i)
   V i := F.obj (D.V i)
   f i j := F.map (D.f i j)
-  f_mono i j := preserves_mono_of_preservesLimit _ _
-  f_id i := inferInstance
+  f_mono _ _ := preserves_mono_of_preservesLimit _ _
+  f_id _ := inferInstance
   t i j := F.map (D.t i j)
   t_id i := by
     simp [D.t_id i]
@@ -251,8 +251,8 @@ def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multisp
   NatIso.ofComponents
     (fun x =>
       match x with
-      | WalkingMultispan.left a => Iso.refl _
-      | WalkingMultispan.right b => Iso.refl _)
+      | WalkingMultispan.left _ => Iso.refl _
+      | WalkingMultispan.right _ => Iso.refl _)
     (by
       rintro (⟨_, _⟩ | _) _ (_ | _ | _)
       · erw [Category.comp_id, Category.id_comp, Functor.map_id]
@@ -318,7 +318,7 @@ def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
   haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
-  erw [ι_preservesColimitsIso_hom_assoc]
+  erw [ι_preservesColimitIso_hom_assoc]
   rw [HasColimit.isoOfNatIso_ι_hom]
   erw [Category.id_comp]
   rfl
