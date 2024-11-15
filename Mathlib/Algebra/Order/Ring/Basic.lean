@@ -160,13 +160,6 @@ lemma pow_left_inj (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n = b ^ n 
   pow_left_inj₀ ha hb hn
 
 @[deprecated (since := "2024-11-12")]
-lemma pow_right_injective (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) :=
-  pow_right_injective₀ ha₀ ha₁
-
-@[deprecated (since := "2024-11-12")]
-lemma pow_right_inj (ha₀ : 0 < a) (ha₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n := pow_right_inj₀ ha₀ ha₁
-
-@[deprecated (since := "2024-11-12")]
 theorem sq_le_one_iff {a : R} (ha : 0 ≤ a) : a ^ 2 ≤ 1 ↔ a ≤ 1 := sq_le_one_iff₀ ha
 
 @[deprecated (since := "2024-11-12")]
