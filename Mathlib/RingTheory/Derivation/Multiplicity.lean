@@ -76,7 +76,6 @@ lemma adicValuation_deriv_lt_neg_one_of_neg (p : F) [Fact (Prime p)] (hp : ¬p �
   rw [emultiplicity_sub_of_gt]
   · simp only [← md, mf.emultiplicity_eq_multiplicity, two_smul, neg_add_rev,
     emultiplicity_mul Fact.out, ha2, zero_add, ENat.map_coe, WithTop.coe_natCast, gt_iff_lt]
-    norm_cast
     apply WithTop.coe_strictMono
     dsimp
     omega
