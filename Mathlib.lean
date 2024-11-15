@@ -4257,7 +4257,6 @@ import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.Localization.FieldRange
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Free
