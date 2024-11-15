@@ -895,46 +895,31 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
 variable {C : Type u₁} [Category.{u₁} C]
 variable {D : Type u₁} [Category.{u₁} D]
 variable (F : D ⥤ Cat.{u₁}) (G : C ⥤ D)
-
 variable {F} {F' : D ⥤ Cat.{u₁, u₁}} (α : F ⟶ F')
-
-/-def Grothendieck.structuredArrowToStructuredArrowMap {d d' : D} (h : d ⟶ d') (f : F'.obj d) :
-    StructuredArrow ((F'.map h).obj f) (α.app d') ⥤q StructuredArrow ⟨d, f⟩ (map α) where
-  obj X := StructuredArrow.mk (Y := ⟨d', X.right⟩) ⟨by exact h, by exact X.hom⟩
-  map g := StructuredArrow.homMk (Hom.mk (by exact 𝟙 _)
-      (by simp only [StructuredArrow.mk_right, map_id, Cat.id_obj]; exact g.right)) (by
-    simp only [StructuredArrow.mk_left, const_obj_obj, StructuredArrow.mk_right,
-      StructuredArrow.mk_hom_eq_self, eq_mpr_eq_cast, map_id, Cat.id_obj, congrArg_cast_hom_left]
-    fapply Grothendieck.ext
-    · simp
-    · simp only [map_obj_base, map_obj_fiber, Cat.id_obj, comp_base, map_map_base, comp_fiber,
-      map_map_fiber, map_comp, eqToHom_trans_assoc]
-      rw [← StructuredArrow.w g]
-      simp only [← Category.assoc]
-      congr 1
-      simp only [Category.assoc, eqToHom_map, eqToHom_trans]
-      symm
-      apply Functor.congr_hom (F := 𝟭 _)
-      rw [F'.map_id]
-      rfl)
-
-def Grothendieck.structuredArrowToStructuredArrowMap' {d' : D} (f : F.obj d') :
-    StructuredArrow ((α.app d').obj f) (α.app d') ⥤q
-    StructuredArrow ⟨d', (α.app d').obj f⟩ (map α) where
-  obj X := StructuredArrow.mk (Y := ⟨d', X.right⟩) ⟨by exact 𝟙 _, by { simp; exact X.hom }⟩
-  map g := StructuredArrow.homMk (Hom.mk (by exact 𝟙 _) (by simp; exact g.right)) (by sorry)
--/
 
 open Limits
 
 instance Grothendieck.final_map [hα : ∀ X, Final (α.app X)] : Final (map α) := by
   rw [final_iff_isIso_colimit_pre]
   intro G
-  let i : colimit (map α ⋙ G) ≅ colimit G := sorry
+  let fi : fiberwiseColimit (map α ⋙ G) ≅ fiberwiseColimit G := NatIso.ofComponents
+    (fun X =>
+      HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫
+        isoWhiskerRight (ιCompMap α X) G ≪≫  Functor.associator _ _ _) ≪≫
+      Final.colimitIso (α.app X) (ι F' X ⋙ G))
+    (fun f => colimit.hom_ext <| fun d => by
+      simp [Final.colimitIso]
+      have := Functor.congr_obj (α.naturality f) d
+      dsimp at this
+      simp only [← Category.assoc, ← G.map_comp]
+      sorry)
+  let i : colimit (map α ⋙ G) ≅ colimit G :=
+    (colimitFiberwiseColimitIso _).symm ≪≫ HasColimit.isoOfNatIso fi ≪≫
+    colimitFiberwiseColimitIso _
   convert Iso.isIso_hom i
-  sorry
-
-#check colimitFiberwiseColimitIso
+  apply colimit.hom_ext
+  intro X
+  simp [i, fi, Final.colimitIso]
 
 end Grothendieck
 

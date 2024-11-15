@@ -374,6 +374,7 @@ def ιCompFunctorFrom (c : C) : ι F c ⋙ (functorFrom fib hom hom_id hom_comp)
 end FunctorFrom
 
 /-- The fiber inclusion `ι F c` composed with `map α` is isomorphic to `α.app c ⋙ ι F' c`. -/
+@[simps!]
 def ιCompMap {F' : C ⥤ Cat} (α : F ⟶ F') (c : C) : ι F c ⋙ map α ≅ α.app c ⋙ ι F' c :=
   NatIso.ofComponents (fun X => Iso.refl _) (fun f => by simp [map])
 
