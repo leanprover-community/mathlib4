@@ -89,6 +89,7 @@ end inductionOn
 
 variable {α : Type*} {rels : FreeMonoid α → FreeMonoid α → Prop}
 
+/-- The relation which holds between elements of a Presented Monoid -/
 def rel (rels : FreeMonoid α → FreeMonoid α → Prop) := ConGen.Rel rels
 
 section relFacts
