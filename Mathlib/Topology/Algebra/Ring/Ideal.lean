@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Ideals and quotients of topological rings
@@ -15,6 +15,7 @@ ring. We also define a `TopologicalSpace` structure on the quotient of a topolog
 ideal and prove that the quotient is a topological ring.
 -/
 
+open Topology
 
 section Ring
 

@@ -107,7 +107,7 @@ MonoidAddHom.map_add_cyclic := AddMonoidHom.map_addCyclic
 theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fintype.card α) :
     IsCyclic α := by
   use x
-  rw [← Set.range_iff_surjective, ← coe_zpowers]
+  rw [← Set.range_eq_univ, ← coe_zpowers]
   rw [← Fintype.card_congr (Equiv.Set.univ α), ← Fintype.card_zpowers] at hx
   convert Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 @[deprecated (since := "2024-02-21")]
@@ -269,6 +269,16 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
       Subgroup.ext fun x =>
         ⟨fun h => by simp at *; tauto, fun h => by rw [Subgroup.mem_bot.1 h]; exact H.one_mem⟩
     subst this; infer_instance
+
+@[to_additive]
+lemma Subgroup.isCyclic_of_le {G : Type*} [Group G] {H H' : Subgroup G} (h : H ≤ H')
+    [IsCyclic H'] :
+    IsCyclic H := by
+  let e := Subgroup.subgroupOfEquivOfLe h
+  obtain ⟨g, hg⟩ := Subgroup.isCyclic <| H.subgroupOf H'
+  refine ⟨e g, fun x ↦ ?_⟩
+  obtain ⟨n, hn⟩ := hg (e.symm x)
+  exact ⟨n, by simp only at hn ⊢; rw [← map_zpow, hn, MulEquiv.apply_symm_apply]⟩
 
 open Finset Nat
 
@@ -438,7 +448,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   have hc0 : 0 < c := Fintype.card_pos_iff.2 ⟨1⟩
   apply card_orderOf_eq_totient_aux₁ hn hd
   by_contra h0
-  -- Must qualify `Finset.card_eq_zero` because of leanprover/lean4#2849
+  -- Must qualify `Finset.card_eq_zero` because of https://github.com/leanprover/lean4/issues/2849
   simp_rw [not_lt, Nat.le_zero, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
@@ -465,7 +475,8 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
       sum_erase_lt_of_pos (mem_divisors.2 ⟨hd, hc0.ne'⟩) (totient_pos.2 (pos_of_dvd_of_pos hd hc0))
     _ = c := sum_totient _
 
-@[to_additive isAddCyclic_of_card_nsmul_eq_zero_le]
+@[to_additive isAddCyclic_of_card_nsmul_eq_zero_le, stacks 09HX "This theorem is stronger than \
+09HX. It removes the abelian condition, and requires only `≤` instead of `=`."]
 theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
   have : Finset.Nonempty {a : α | orderOf a = Fintype.card α} :=
     card_pos.1 <| by

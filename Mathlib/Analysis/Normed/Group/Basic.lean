@@ -1116,9 +1116,8 @@ theorem mul_mem_ball_mul_iff {c : E} : a * c ∈ ball (b * c) r ↔ a ∈ ball b
 @[to_additive]
 theorem smul_closedBall'' : a • closedBall b r = closedBall (a • b) r := by
   ext
-  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, _root_.div_eq_inv_mul, ←
+  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, div_eq_inv_mul, ←
     eq_inv_mul_iff_mul_eq, mul_assoc]
-  -- Porting note: `ENNReal.div_eq_inv_mul` should be `protected`?
 
 @[to_additive]
 theorem smul_ball'' : a • ball b r = ball (a • b) r := by
@@ -1304,6 +1303,14 @@ theorem eq_of_norm_div_le_zero (h : ‖a / b‖ ≤ 0) : a = b := by
 alias ⟨eq_of_norm_div_eq_zero, _⟩ := norm_div_eq_zero_iff
 
 attribute [to_additive] eq_of_norm_div_eq_zero
+
+@[to_additive]
+theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
+  simpa [eq_comm] using (norm_nonneg' a).eq_or_lt
+
+@[to_additive]
+theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
+  eq_one_or_norm_pos a
 
 @[to_additive (attr := simp) nnnorm_eq_zero]
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
