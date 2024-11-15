@@ -3,8 +3,8 @@ Copyright (c) 2020 Kim Morrison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # Preserving products
@@ -30,6 +30,16 @@ variable (G : C ⥤ D)
 namespace CategoryTheory.Limits
 
 variable {J : Type w} (f : J → C)
+
+/-- The image of a fan by a functor. -/
+@[simps!]
+def Fan.map (c : Fan f) : Fan (G.obj ∘ f) :=
+  Fan.mk (G.obj c.pt) (fun j => G.map (c.proj j))
+
+/-- The map (as a cone) of a fan is limit iff the map (as a fan) is limit. -/
+def Fan.isLimitMapConeEquiv (c : Fan f) : IsLimit (G.mapCone c) ≃ IsLimit (c.map G) :=
+  (IsLimit.postcomposeHomEquiv Discrete.natIsoFunctor _).symm.trans <| IsLimit.equivIsoLimit <|
+    Cones.ext (Iso.refl _) (by aesop_cat)
 
 /-- The map of a fan is a limit iff the fan consisting of the mapped morphisms is a limit. This
 essentially lets us commute `Fan.mk` with `Functor.mapCone`.
@@ -94,7 +104,23 @@ instance : IsIso (piComparison G f) := by
   rw [← PreservesProduct.iso_hom]
   infer_instance
 
+/-- A fan in `C` is limit iff it is after the application of `coyoneda.obj X` for all `X : Cᵒᵖ`. -/
+def Fan.isLimitCoyonedaEquiv (c : Fan f) :
+    IsLimit c ≃ ∀ (X : Cᵒᵖ), IsLimit (c.map (coyoneda.obj X)) :=
+  (Cone.isLimitCoyonedaEquiv c).trans
+    (Equiv.piCongrRight (fun X => c.isLimitMapConeEquiv (coyoneda.obj X)))
+
 end
+
+/-- The image of a cofan by a functor. -/
+@[simps!]
+def Cofan.map (c : Cofan f) : Cofan (G.obj ∘ f) :=
+  Cofan.mk (G.obj c.pt) (fun j => G.map (c.inj j))
+
+/-- The map (as a cocone) of a cofan is colimit iff the map (as a cofan) is colimit. -/
+def Cofan.isColimitMapCoconeEquiv (c : Cofan f) : IsColimit (G.mapCocone c) ≃ IsColimit (c.map G) :=
+  (IsColimit.precomposeHomEquiv Discrete.natIsoFunctor.symm _).symm.trans <|
+    IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) (by aesop_cat)
 
 /-- The map of a cofan is a colimit iff the cofan consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `Cofan.mk` with `Functor.mapCocone`.
@@ -156,6 +182,28 @@ theorem PreservesCoproduct.inv_hom : (PreservesCoproduct.iso G f).inv = sigmaCom
 instance : IsIso (sigmaComparison G f) := by
   rw [← PreservesCoproduct.inv_hom]
   infer_instance
+
+end
+
+section
+
+/-- Implementation detail of `Cofan.isColimitYonedaEquiv`. -/
+@[simps!]
+private def oppositeInverseCompFunctorOp : (Discrete.opposite J).inverse ⋙ (Discrete.functor f).op ≅
+    Discrete.functor (fun j => Opposite.op (f j)) :=
+  NatIso.ofComponents (fun _ => Iso.refl _) (by rintro ⟨j₁⟩ ⟨j₂⟩ ⟨⟨⟨⟩⟩⟩; simp)
+
+/-- A cofan in `C` is colimit iff it becomes limit after the application of `yoneda.obj X` for
+all `X : C`. -/
+def Cofan.isColimitYonedaEquiv (c : Cofan f) :
+    IsColimit c ≃ ∀ (X : C), IsLimit ((Cofan.op c).map (yoneda.obj X)) :=
+  (Limits.Cocone.isColimitYonedaEquiv c).trans <| Equiv.piCongrRight fun X =>
+    (IsLimit.whiskerEquivalenceEquiv (Discrete.opposite _).symm).trans
+      (Equiv.trans
+        ((IsLimit.postcomposeHomEquiv
+          (isoWhiskerRight (oppositeInverseCompFunctorOp f) (yoneda.obj X)) _).symm.trans
+            (IsLimit.equivIsoLimit (by exact Cones.ext (Iso.refl _) (by aesop_cat))))
+        (c.op.isLimitMapConeEquiv (yoneda.obj X)))
 
 end
 
