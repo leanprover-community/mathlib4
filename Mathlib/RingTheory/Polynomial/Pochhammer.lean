@@ -3,8 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Tactic.Abel
 
 /-!

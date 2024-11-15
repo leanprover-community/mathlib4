@@ -49,7 +49,7 @@ they can be inferred from the type it is faster to use this method than to use t
 This file used to define typeclasses for order-preserving (additive) monoid homomorphisms:
 `OrderAddMonoidHomClass`, `OrderMonoidHomClass`, and `OrderMonoidWithZeroHomClass`.
 
-In #10544 we migrated from these typeclasses
+In https://github.com/leanprover-community/mathlib4/pull/10544 we migrated from these typeclasses
 to assumptions like `[FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N]`,
 making some definitions and lemmas irrelevant.
 
@@ -265,7 +265,7 @@ theorem monotone_iff_map_nonpos : Monotone (f : α → β) ↔ ∀ a ≤ 0, f a 
 theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 ≤ f a :=
   monotone_comp_ofDual_iff.symm.trans <| monotone_iff_map_nonneg (α := αᵒᵈ) (iamhc := iamhc) _
 
-variable [CovariantClass β β (· + ·) (· < ·)]
+variable [AddLeftStrictMono β]
 
 theorem strictMono_iff_map_pos :
     StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by

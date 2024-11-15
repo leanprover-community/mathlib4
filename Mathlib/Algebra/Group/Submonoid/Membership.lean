@@ -8,7 +8,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Util.AssertExists
@@ -56,7 +56,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
     (m.prod : M) = (m.map (↑)).prod :=
   (SubmonoidClass.subtype S : _ →* M).map_multiset_prod m
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast, simp)]
 theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
@@ -97,16 +97,16 @@ namespace Submonoid
 
 variable (s : Submonoid M)
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)]
 theorem coe_list_prod (l : List s) : (l.prod : M) = (l.map (↑)).prod :=
   map_list_prod s.subtype l
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)]
 theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) :
     (m.prod : M) = (m.map (↑)).prod :=
   S.subtype.map_multiset_prod m
 
-@[to_additive (attr := norm_cast, simp)]
+@[to_additive (attr := norm_cast)]
 theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s
@@ -407,8 +407,8 @@ theorem mem_powers_iff (x z : M) : x ∈ powers z ↔ ∃ n : ℕ, z ^ n = x :=
 noncomputable instance decidableMemPowers : DecidablePred (· ∈ Submonoid.powers a) :=
   Classical.decPred _
 
--- Porting note (#11215): TODO the following instance should follow from a more general principle
--- See also mathlib4#2417
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO the following instance should follow from a more general principle
+-- See also https://github.com/leanprover-community/mathlib4/issues/2417
 noncomputable instance fintypePowers [Fintype M] : Fintype (powers a) :=
   inferInstanceAs <| Fintype {y // y ∈ powers a}
 

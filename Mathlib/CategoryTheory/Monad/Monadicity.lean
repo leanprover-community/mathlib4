@@ -130,7 +130,7 @@ def leftAdjointComparison
     -- `Category.assoc`.
     -- dsimp [comparisonLeftAdjointHomEquiv]
     -- rw [← adj.homEquiv_naturality_right, Category.assoc]
-    simp [Cofork.IsColimit.homIso]
+    simp [Cofork.IsColimit.homIso, Adjunction.homEquiv_unit]
 
 /-- Provided we have the appropriate coequalizers, we have an adjunction to the comparison functor.
 -/
@@ -225,7 +225,7 @@ theorem comparisonAdjunction_counit_app
   change
     coequalizer.π _ _ ≫ coequalizer.desc ((adj.homEquiv _ B).symm (𝟙 _)) _ =
       coequalizer.π _ _ ≫ coequalizer.desc _ _
-  simp
+  simp [Adjunction.homEquiv_counit]
 
 end MonadicityInternal
 
@@ -253,7 +253,7 @@ def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : 
 
 section BeckMonadicity
 
--- Porting note: added these to replace parametric instances lean4#2311
+-- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
 -- When this is fixed the proofs below that struggle with instances should be reviewed.
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], HasCoequalizer f g]
 class HasCoequalizerOfIsSplitPair (G : D ⥤ C) : Prop where
@@ -268,7 +268,7 @@ instance [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
       (adj.counit.app (F.obj A.A)) :=
   fun _ => HasCoequalizerOfIsSplitPair.out G _ _
 
--- Porting note: added these to replace parametric instances lean4#2311
+-- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], PreservesColimit (parallelPair f g) G]
 class PreservesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], PreservesColimit (parallelPair f g) G
@@ -281,7 +281,7 @@ instance [PreservesColimitOfIsSplitPair G] : ∀ (A : Algebra adj.toMonad),
       (NatTrans.app adj.counit (F.obj A.A))) G :=
   fun _ => PreservesColimitOfIsSplitPair.out _ _
 
--- Porting note: added these to replace parametric instances lean4#2311
+-- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], ReflectsColimit (parallelPair f g) G] :
 class ReflectsColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], ReflectsColimit (parallelPair f g) G
@@ -327,7 +327,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
       infer_instance
     exact (comparisonAdjunction adj).toEquivalence.isEquivalence_inverse
 
--- Porting note: added these to replace parametric instances lean4#2311
+-- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsSplitPair f g], CreatesColimit (parallelPair f g) G] :
 class CreatesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], CreatesColimit (parallelPair f g) G
@@ -372,7 +372,7 @@ section ReflexiveMonadicity
 
 variable [HasReflexiveCoequalizers D] [G.ReflectsIsomorphisms]
 
--- Porting note: added these to replace parametric instances lean4#2311
+-- Porting note: added these to replace parametric instances https://github.com/leanprover/lean4/issues/2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsReflexivePair f g], PreservesColimit (parallelPair f g) G] :
 class PreservesColimitOfIsReflexivePair (G : C ⥤ D) where
   out : ∀ ⦃A B⦄ (f g : A ⟶ B) [IsReflexivePair f g], PreservesColimit (parallelPair f g) G

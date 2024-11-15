@@ -78,7 +78,6 @@ theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
   rw [add_assoc, add_left_comm n' o, ← add_assoc, revAt_le (le_add_right rfl.le)]
   repeat' rw [add_tsub_cancel_left]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem revAt_zero (N : ℕ) : revAt N 0 = N := by simp
 
 /-- `reflect N f` is the polynomial such that `(reflect N f).coeff i = f.coeff (revAt N i)`.
@@ -123,7 +122,6 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
   ext
   simp only [coeff_reflect, coeff_C_mul]
 
--- @[simp] -- Porting note (#10618): simp can prove this (once `reflect_monomial` is in simp scope)
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
   ext
   rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
@@ -149,8 +147,8 @@ theorem reflect_monomial (N n : ℕ) : reflect N ((X : R[X]) ^ n) = X ^ revAt N 
 theorem reflect_mul_induction (cf cg : ℕ) :
     ∀ N O : ℕ,
       ∀ f g : R[X],
-        f.support.card ≤ cf.succ →
-          g.support.card ≤ cg.succ →
+        #f.support ≤ cf.succ →
+          #g.support ≤ cg.succ →
             f.natDegree ≤ N →
               g.natDegree ≤ O → reflect (N + O) (f * g) = reflect N f * reflect O g := by
   induction' cf with cf hcf

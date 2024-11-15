@@ -87,9 +87,6 @@ theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=
 instance : WellFoundedLT NatOrdinal :=
   Ordinal.wellFoundedLT
 
-instance : IsWellOrder NatOrdinal (· < ·) :=
-  { }
-
 instance : ConditionallyCompleteLinearOrderBot NatOrdinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
@@ -319,14 +316,13 @@ open Ordinal NaturalOps
 instance : Add NatOrdinal := ⟨nadd⟩
 instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
 
-instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
+instance addLeftStrictMono : AddLeftStrictMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
 
-instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
+instance addLeftMono : AddLeftMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 
-instance add_contravariantClass_le :
-    ContravariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
+instance addLeftReflectLE : AddLeftReflectLE NatOrdinal.{u} :=
   ⟨fun a b c h => by
     by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩
@@ -447,8 +443,11 @@ theorem nmul_def (a b : Ordinal) :
 
 /-- The set in the definition of `nmul` is nonempty. -/
 private theorem nmul_nonempty (a b : Ordinal.{u}) :
-    {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'}.Nonempty :=
-  ⟨_, fun _ ha _ hb => (lt_blsub₂.{u, u, u} _ ha hb).trans_le le_self_nadd⟩
+    {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'}.Nonempty := by
+  obtain ⟨c, hc⟩ : BddAbove ((fun x ↦ x.1 ⨳ b ♯ a ⨳ x.2) '' Set.Iio a ×ˢ Set.Iio b) :=
+    bddAbove_of_small _
+  exact ⟨_, fun x hx y hy ↦
+    (lt_succ_of_le <| hc <| Set.mem_image_of_mem _ <| Set.mk_mem_prod hx hy).trans_le le_self_nadd⟩
 
 theorem nmul_nadd_lt {a' b' : Ordinal} (ha : a' < a) (hb : b' < b) :
     a' ⨳ b ♯ a ⨳ b' < a ⨳ b ♯ a' ⨳ b' := by

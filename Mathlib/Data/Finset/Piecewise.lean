@@ -26,7 +26,6 @@ variable {ι : Type*} {π : ι → Sort*} (s : Finset ι) (f g : ∀ i, π i)
 complement. -/
 def piecewise [∀ j, Decidable (j ∈ s)] : ∀ i, π i := fun i ↦ if i ∈ s then f i else g i
 
--- Porting note (#10618): @[simp] can prove this
 lemma piecewise_insert_self [DecidableEq ι] {j : ι} [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g j = f j := by simp [piecewise]
 

@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 import Mathlib.Data.Real.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
@@ -373,7 +374,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [le_tsub_iff_left hq.le]
     exact hq
   use 2 * k ^ 2
-  refine (pow_lt_pow_left hk (by positivity) (by simp [posk.ne'])).trans_le' ?_
+  refine (pow_lt_pow_left₀ hk (by positivity) (by simp [posk.ne'])).trans_le' ?_
   rcases k.zero_le.eq_or_lt with rfl|kpos
   · simp
   rw [pow_two, mul_left_comm, pow_mul]

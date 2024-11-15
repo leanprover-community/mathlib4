@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Noetherian.Orzech
 
 /-!
 # Lie submodules of a Lie algebra
@@ -83,7 +83,7 @@ instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 
--- Porting note (#10618): `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
+-- `simp` can prove this after `mem_coeSubmodule` is added to the simp set,
 -- but `dsimp` can't.
 @[simp, nolint simpNF]
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
@@ -368,7 +368,7 @@ theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
 theorem mem_top (x : M) : x ∈ (⊤ : LieSubmodule R L M) :=
   mem_univ x
 
-instance : Inf (LieSubmodule R L M) :=
+instance : Min (LieSubmodule R L M) :=
   ⟨fun N N' ↦
     { (N ⊓ N' : Submodule R M) with
       lie_mem := fun h ↦ mem_inter (N.lie_mem h.1) (N'.lie_mem h.2) }⟩
@@ -419,8 +419,8 @@ theorem iInf_coe {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M
 theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
 
-instance : Sup (LieSubmodule R L M) where
-  sup N N' :=
+instance : Max (LieSubmodule R L M) where
+  max N N' :=
     { toSubmodule := (N : Submodule R M) ⊔ (N' : Submodule R M)
       lie_mem := by
         rintro x m (hm : m ∈ (N : Submodule R M) ⊔ (N' : Submodule R M))
@@ -522,7 +522,7 @@ theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R 
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 
-instance : Add (LieSubmodule R L M) where add := Sup.sup
+instance : Add (LieSubmodule R L M) where add := max
 
 instance : Zero (LieSubmodule R L M) where zero := ⊥
 
@@ -873,7 +873,7 @@ variable (N) in
 noncomputable def equivMapOfInjective (hf : Function.Injective f) :
     N ≃ₗ⁅R,L⁆ N.map f :=
   { Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N with
-    -- Note: #8386 had to specify `invFun` explicitly this way, otherwise we'd get a type mismatch
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `invFun` explicitly this way, otherwise we'd get a type mismatch
     invFun := by exact DFunLike.coe (Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N).symm
     map_lie' := by rintro x ⟨m, hm : m ∈ N⟩; ext; exact f.map_lie x m }
 
@@ -1290,7 +1290,7 @@ theorem mem_range (n : N) : n ∈ f.range ↔ ∃ m, f m = n :=
 theorem map_top : LieSubmodule.map f ⊤ = f.range := by ext; simp [LieSubmodule.mem_map]
 
 theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
-  rw [SetLike.ext'_iff, coe_range, LieSubmodule.top_coe, Set.range_iff_surjective]
+  rw [SetLike.ext'_iff, coe_range, LieSubmodule.top_coe, Set.range_eq_univ]
 
 /-- A morphism of Lie modules `f : M → N` whose values lie in a Lie submodule `P ⊆ N` can be
 restricted to a morphism of Lie modules `M → P`. -/
@@ -1366,7 +1366,7 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
 
 variable {R L}
 
--- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
+-- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 @[simp, nolint simpNF] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
@@ -1398,7 +1398,7 @@ This is the Lie ideal version of `Submodule.topEquiv`. -/
 def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
   LieSubalgebra.topEquiv
 
--- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
+-- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 @[simp, nolint simpNF]
 theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
   rfl

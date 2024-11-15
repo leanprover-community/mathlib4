@@ -7,14 +7,13 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.RingDivision
 
 /-!
 # Sum of iterated derivatives
 
 This file introduces `Polynomial.sumIDeriv`, the sum of the iterated derivatives of a polynomial,
 as a linear map. This is used in particular in the proof of the Lindemann-Weierstrass theorem
-(see #6718).
+(see https://github.com/leanprover-community/mathlib4/pull/6718).
 
 ## Main results
 
@@ -185,20 +184,21 @@ theorem aeval_sumIDeriv (p : R[X]) (q : ℕ) :
   intro r p' hp
   rw [sumIDeriv_apply, map_sum]; simp_rw [hc _ r hp, map_sum, smul_sum]
 
-theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q) :
+theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q)
+    (inj_amap : Function.Injective (algebraMap R A)) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
-      ∀ (inj_amap : Function.Injective (algebraMap R A)) (r : A) {p' : A[X]},
+      ∀ (r : A) {p' : A[X]},
         p.map (algebraMap R A) = (X - C r) ^ (q - 1) * p' →
         aeval r (sumIDeriv p) = (q - 1)! • p'.eval r + q ! • aeval r gp := by
   rcases eq_or_ne p 0 with (rfl | p0)
   · use 0
     rw [natDegree_zero]
     use Nat.zero_le _
-    intro _ r p' hp
+    intro r p' hp
     rw [map_zero, map_zero, smul_zero, add_zero]
     rw [Polynomial.map_zero] at hp
     replace hp := (mul_eq_zero.mp hp.symm).resolve_left ?_
-    rw [hp, eval_zero, smul_zero]
+    · rw [hp, eval_zero, smul_zero]
     exact fun h => X_sub_C_ne_zero r (pow_eq_zero h)
   let c k := if hk : q ≤ k then (aeval_iterate_derivative_of_ge A p q hk).choose else 0
   have c_le (k) : (c k).natDegree ≤ p.natDegree - k := by
@@ -213,7 +213,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
   · refine (natDegree_sum_le _ _).trans ?_
     rw [fold_max_le]
     exact ⟨Nat.zero_le _, fun i hi => (c_le i).trans (tsub_le_tsub_left (mem_Ico.mp hi).1 _)⟩
-  intro inj_amap r p' hp
+  intro r p' hp
   have : range (p.natDegree + 1) = range q ∪ Ico q (p.natDegree + 1) := by
     rw [range_eq_Ico, Ico_union_Ico_eq_Ico hq.le]
     have h := natDegree_map_le (algebraMap R A) p
@@ -228,13 +228,13 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
   rw [sumIDeriv_apply, map_sum, map_sum, this]
   have : range q = range (q - 1 + 1) := by rw [tsub_add_cancel_of_le (Nat.one_le_of_lt hq)]
   rw [sum_union, this, sum_range_succ]
-  congr 2
-  · apply sum_eq_zero
-    exact fun x hx => aeval_iterate_derivative_of_lt p _ r hp (mem_range.mp hx)
-  · rw [← aeval_iterate_derivative_self _ _ _ hp]
-  · rw [smul_sum, sum_congr rfl]
-    intro k hk
-    exact hc k (mem_Ico.mp hk).1 r
+  · congr 2
+    · apply sum_eq_zero
+      exact fun x hx => aeval_iterate_derivative_of_lt p _ r hp (mem_range.mp hx)
+    · rw [← aeval_iterate_derivative_self _ _ _ hp]
+    · rw [smul_sum, sum_congr rfl]
+      intro k hk
+      exact hc k (mem_Ico.mp hk).1 r
   · rw [range_eq_Ico, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_not_mem]
     intro x hx
     rw [mem_inter, mem_Ico, mem_Ico] at hx

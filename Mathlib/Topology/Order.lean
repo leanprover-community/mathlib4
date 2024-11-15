@@ -185,7 +185,7 @@ def gciGenerateFrom (α : Type*) :
   topology whose open sets are those sets open in every member of the collection. -/
 instance : CompleteLattice (TopologicalSpace α) := (gciGenerateFrom α).liftCompleteLattice
 
-@[mono]
+@[mono, gcongr]
 theorem generateFrom_anti {α} {g₁ g₂ : Set (Set α)} (h : g₁ ⊆ g₂) :
     generateFrom g₂ ≤ generateFrom g₁ :=
   (gc_generateFrom _).monotone_u h
@@ -259,7 +259,7 @@ theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α 
 
 @[simp]
 theorem denseRange_discrete {ι : Type*} {f : ι → α} : DenseRange f ↔ Surjective f := by
-  rw [DenseRange, dense_discrete, range_iff_surjective]
+  rw [DenseRange, dense_discrete, range_eq_univ]
 
 @[nontriviality, continuity, fun_prop]
 theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : Continuous f :=
@@ -313,7 +313,9 @@ theorem discreteTopology_iff_singleton_mem_nhds [TopologicalSpace α] :
 neighbourhoods. -/
 theorem discreteTopology_iff_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝 x = pure x := by
-  simp only [discreteTopology_iff_singleton_mem_nhds, ← nhds_neBot.le_pure_iff, le_pure_iff]
+  simp [discreteTopology_iff_singleton_mem_nhds, le_pure_iff]
+  apply forall_congr' (fun x ↦ ?_)
+  simp [le_antisymm_iff, pure_le_nhds x]
 
 theorem discreteTopology_iff_nhds_ne [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, 𝓝[≠] x = ⊥ := by
@@ -394,6 +396,11 @@ theorem induced_iInf {ι : Sort w} {t : ι → TopologicalSpace α} :
   (gc_coinduced_induced g).u_iInf
 
 @[simp]
+theorem induced_sInf {s : Set (TopologicalSpace α)} :
+    TopologicalSpace.induced g (sInf s) = sInf (TopologicalSpace.induced g '' s) := by
+  rw [sInf_eq_iInf', sInf_image', induced_iInf]
+
+@[simp]
 theorem coinduced_bot : (⊥ : TopologicalSpace α).coinduced f = ⊥ :=
   (gc_coinduced_induced f).l_bot
 
@@ -405,6 +412,11 @@ theorem coinduced_sup : (t₁ ⊔ t₂).coinduced f = t₁.coinduced f ⊔ t₂.
 theorem coinduced_iSup {ι : Sort w} {t : ι → TopologicalSpace α} :
     (⨆ i, t i).coinduced f = ⨆ i, (t i).coinduced f :=
   (gc_coinduced_induced f).l_iSup
+
+@[simp]
+theorem coinduced_sSup {s : Set (TopologicalSpace α)} :
+    TopologicalSpace.coinduced f (sSup s) = sSup ((TopologicalSpace.coinduced f) '' s) := by
+  rw [sSup_eq_iSup', sSup_image', coinduced_iSup]
 
 theorem induced_id [t : TopologicalSpace α] : t.induced id = t :=
   TopologicalSpace.ext <|
@@ -589,7 +601,7 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
     @nhds α (sInf s) a = ⨅ t ∈ s, @nhds α t a :=
   (gc_nhds a).u_sInf
 
--- Porting note (#11215): TODO: timeouts without `b₁ := t₁`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: timeouts without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)

@@ -6,11 +6,12 @@ Authors: Johan Commelin, Joel Riou
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 
-/-! The free presheaf of modules on a presheaf of sets
+/-!
+# The free presheaf of modules on a presheaf of sets
 
 In this file, given a presheaf of rings `R` on a category `C`,
 we construct the functor
-`PresheafOfModules.free (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`
+`PresheafOfModules.free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`
 which sends a presheaf of types to the corresponding presheaf of free modules.
 `PresheafOfModules.freeAdjunction` shows that this functor is the left
 adjoint to the forget functor.
@@ -35,12 +36,11 @@ variable {R} in
 of modules over `R` which sends `X : Cᵒᵖ` to the free `R.obj X`-module on `F.obj X`. -/
 @[simps]
 noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R where
-  obj := fun X ↦ (ModuleCat.free (R.obj X)).obj (F.obj X)
-  map := fun {X Y} f ↦ ModuleCat.freeDesc
-      (fun x ↦ ModuleCat.freeMk (F.map f x))
+  obj X := (ModuleCat.free (R.obj X)).obj (F.obj X)
+  map {X Y} f := ModuleCat.freeDesc (fun x ↦ ModuleCat.freeMk (F.map f x))
   map_id := by aesop
 
-/-- The free presheaf of modules functors `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
+/-- The free presheaf of modules functor `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
 @[simps]
 noncomputable def free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R where
   obj := freeObj
@@ -49,16 +49,13 @@ noncomputable def free : (Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R where
       naturality := fun {X Y} f ↦ by
         dsimp
         ext x
-        simp only [ModuleCat.coe_comp, Function.comp_apply, ModuleCat.freeDesc_apply,
-          ModuleCat.restrictScalars.map_apply, ModuleCat.free_map_apply]
-        congr 1
-        exact NatTrans.naturality_apply φ f x }
+        simp [FunctorToTypes.naturality] }
 
 section
 
 variable {R}
 
-variable {F : Cᵒᵖ ⥤ Type u} {G G' : PresheafOfModules.{u} R}
+variable {F : Cᵒᵖ ⥤ Type u} {G : PresheafOfModules.{u} R}
 
 /-- The morphism of presheaves of modules `freeObj F ⟶ G` corresponding to
 a morphism `F ⟶ G.presheaf ⋙ forget _` of presheaves of types. -/

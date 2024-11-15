@@ -58,7 +58,7 @@ lemma term_nonneg (n : ℕ) (s : ℝ) : 0 ≤ term n s := by
 lemma term_welldef {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 0 < s) :
     IntervalIntegrable (fun x : ℝ ↦ (x - n) / x ^ (s + 1)) volume n (n + 1) := by
   rw [intervalIntegrable_iff_integrableOn_Icc_of_le (by linarith)]
-  refine (ContinuousAt.continuousOn fun x hx ↦ ContinuousAt.div ?_ ?_ ?_).integrableOn_Icc
+  refine (continuousOn_of_forall_continuousAt fun x hx ↦ ContinuousAt.div ?_ ?_ ?_).integrableOn_Icc
   · fun_prop
   · apply continuousAt_id.rpow_const (Or.inr <| by linarith)
   · exact (rpow_pos_of_pos ((Nat.cast_pos.mpr hn).trans_le hx.1) _).ne'
@@ -244,7 +244,7 @@ section continuity
 lemma continuousOn_term (n : ℕ) :
     ContinuousOn (fun x ↦ term (n + 1) x) (Ici 1) := by
   -- TODO: can this be shortened using the lemma
-  -- `continuous_parametric_intervalIntegral_of_continuous'` from #11185?
+  -- `continuous_parametric_intervalIntegral_of_continuous'` from https://github.com/leanprover-community/mathlib4/pull/11185?
   simp only [term, intervalIntegral.integral_of_le (by linarith : (↑(n + 1) : ℝ) ≤ ↑(n + 1) + 1)]
   apply continuousOn_of_dominated (bound := fun x ↦ (x - ↑(n + 1)) / x ^ (2 : ℝ))
   · exact fun s hs ↦ (term_welldef (by simp) (zero_lt_one.trans_le hs)).1.1
@@ -261,7 +261,7 @@ lemma continuousOn_term (n : ℕ) :
     exact_mod_cast term_welldef (by linarith : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
-    refine ContinuousAt.continuousOn (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
+    refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
     · exact continuousAt_const.rpow (continuousAt_id.add continuousAt_const) (Or.inr (by linarith))
     · exact (rpow_pos_of_pos ((Nat.cast_pos.mpr (by simp)).trans hx.1) _).ne'
 

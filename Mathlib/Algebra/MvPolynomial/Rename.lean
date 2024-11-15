@@ -206,14 +206,14 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
     refine ⟨s ∪ t, ⟨?_, ?_⟩⟩
     · refine rename (Subtype.map id ?_) p + rename (Subtype.map id ?_) q <;>
-        simp (config := { contextual := true }) only [id, true_or, or_true,
+        simp +contextual only [id, true_or, or_true,
           Finset.mem_union, forall_true_iff]
     · simp only [rename_rename, map_add]
       rfl
   · rintro p n ⟨s, p, rfl⟩
     refine ⟨insert n s, ⟨?_, ?_⟩⟩
     · refine rename (Subtype.map id ?_) p * X ⟨n, s.mem_insert_self n⟩
-      simp (config := { contextual := true }) only [id, or_true, Finset.mem_insert, forall_true_iff]
+      simp +contextual only [id, or_true, Finset.mem_insert, forall_true_iff]
     · simp only [rename_rename, rename_X, Subtype.coe_mk, map_mul]
       rfl
 
@@ -230,10 +230,10 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
     use rename (Set.inclusion s₁.subset_union_left) q₁
     use rename (Set.inclusion s₁.subset_union_right) q₂
     constructor -- Porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
-    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [rename_rename (Set.inclusion s₁.subset_union_left)]
       rfl
-    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [rename_rename (Set.inclusion s₁.subset_union_right)]
       rfl
 

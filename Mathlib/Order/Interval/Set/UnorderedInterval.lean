@@ -60,7 +60,7 @@ scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 open Interval
 
 @[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
-  -- Note: needed to hint `(α := α)` after #8386 (elaboration order?)
+  -- Note: needed to hint `(α := α)` after https://github.com/leanprover-community/mathlib4/pull/8386 (elaboration order?)
   dual_Icc (α := α)
 
 @[simp]
@@ -74,8 +74,6 @@ lemma uIcc_comm (a b : α) : [[a, b]] = [[b, a]] := by simp_rw [uIcc, inf_comm, 
 lemma uIcc_of_lt (h : a < b) : [[a, b]] = Icc a b := uIcc_of_le h.le
 lemma uIcc_of_gt (h : b < a) : [[a, b]] = Icc b a := uIcc_of_ge h.le
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 lemma uIcc_self : [[a, a]] = {a} := by simp [uIcc]
 
 @[simp] lemma nonempty_uIcc : [[a, b]].Nonempty := nonempty_Icc.2 inf_le_sup
