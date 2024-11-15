@@ -1654,8 +1654,6 @@ theorem currySumEquiv_symm_apply
 
 @[deprecated  (since := "2024-11-01")]
 alias currySum := currySumEquiv
-@[deprecated  (since := "2024-11-01")]
-alias uncurrySum := currySumEquiv
 
 variable (R M₂ M')
 
