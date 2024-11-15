@@ -13,30 +13,11 @@ import Mathlib.Algebra.Squarefree.Basic
 --/
 
 variable {M : Type*} [CommSemiring M] {F : Type*} [CommRing F] [Algebra M F]
-variable [IsDomain F] [UniqueFactorizationMonoid F] (D : Derivation M F F)
+variable [IsDomain F] [UniqueFactorizationMonoid F] (D : Derivation M F F) [Algebra ℚ F]
 
 open Differential IsFractionRing
 
 open AddValuation (adicValuation adicValuation_coe adicValuation_neg_iff adicValuation_pos_iff)
-
-section Nonneg
-
-variable [Differential F] {K : Type*} [Field K] [Algebra F K] [IsFractionRing F K] [Differential K]
-    [DifferentialAlgebra F K]
-
-lemma adicValuation_deriv_nonneg_of_nonneg (p : F) [Fact (Prime p)] (a : K)
-    (ha : 0 ≤ adicValuation p a) : 0 ≤ adicValuation p a′ := by
-  rw [← mk'_num_den' F a]
-  simp only [Derivation.leibniz_div, inv_pow, smul_eq_mul, AddValuation.map_mul,
-    AddValuation.map_inv, AddValuation.map_pow, adicValuation_coe]
-  rw [← not_lt, adicValuation_neg_iff] at ha
-  simp only [emultiplicity_eq_zero.mpr ha, ENat.map_zero, CharP.cast_eq_zero, WithTop.coe_zero,
-    smul_zero, neg_zero, zero_add, ge_iff_le]
-  simp [deriv_algebraMap, ← map_mul, ← map_sub]
-
-end Nonneg
-
-variable [Algebra ℚ F]
 
 lemma multiplicity_deriv (p : F) (hp : Prime p) (hp2 : ¬p ∣ D p) (a : F) (h : p ∣ a) :
     emultiplicity p (D a) + 1 = emultiplicity p a := by
@@ -66,8 +47,19 @@ lemma multiplicity_deriv (p : F) (hp : Prime p) (hp2 : ¬p ∣ D p) (a : F) (h :
   · norm_cast
     omega
 
-variable [Differential F] {K : Type*} [Field K] [Algebra F K] [IsFractionRing F K] [Differential K]
-    [DifferentialAlgebra F K]
+variable [Differential F] {K : Type*} [Field K] [Algebra F K] [IsFractionRing F K]
+variable [Differential K] [DifferentialAlgebra F K]
+
+omit [Algebra ℚ F] in
+lemma adicValuation_deriv_nonneg_of_nonneg (p : F) [Fact (Prime p)] (a : K)
+    (ha : 0 ≤ adicValuation p a) : 0 ≤ adicValuation p a′ := by
+  rw [← mk'_num_den' F a]
+  simp only [Derivation.leibniz_div, inv_pow, smul_eq_mul, AddValuation.map_mul,
+    AddValuation.map_inv, AddValuation.map_pow, adicValuation_coe]
+  rw [← not_lt, adicValuation_neg_iff] at ha
+  simp only [emultiplicity_eq_zero.mpr ha, ENat.map_zero, CharP.cast_eq_zero, WithTop.coe_zero,
+    smul_zero, neg_zero, zero_add, ge_iff_le]
+  simp [deriv_algebraMap, ← map_mul, ← map_sub]
 
 lemma adicValuation_deriv_lt_neg_one_of_neg (p : F) [Fact (Prime p)] (hp : ¬p ∣ p′) (a : K)
     (ha : adicValuation p a < 0) : adicValuation p a′ < -1 := by
@@ -86,15 +78,12 @@ lemma adicValuation_deriv_lt_neg_one_of_neg (p : F) [Fact (Prime p)] (hp : ¬p �
       mf.emultiplicity_eq_multiplicity]
     norm_cast
     rw [ENat.map_coe]
-    norm_cast
     apply WithTop.coe_strictMono
     rw [two_smul]
     dsimp
     omega
   · simp [emultiplicity_mul Fact.out, ha2, ← md]
-    apply (ENat.lt_add_one_iff mf.emultiplicity_ne_top).mpr le_rfl |>.trans_le
-    apply le_self_add
-
+    exact (ENat.lt_add_one_iff mf.emultiplicity_ne_top).mpr le_rfl |>.trans_le le_self_add
 
 lemma adicValuation_deriv_ne_neg_one (p : F) [Fact (Prime p)] (hp : ¬p ∣ p′) (a : K) :
     adicValuation p a′ ≠ -1 := by
