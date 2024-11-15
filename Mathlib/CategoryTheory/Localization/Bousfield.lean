@@ -117,9 +117,9 @@ lemma W_adj_unit_app (X : D) : W (· ∈ Set.range F.obj) (adj.unit.app X) := by
 
 lemma W_iff_isIso_map {X Y : D} (f : X ⟶ Y) :
     W (· ∈ Set.range F.obj) f ↔ IsIso (G.map f) := by
-  rw [← MorphismProperty.postcomp_iff _ _ _ (W_adj_unit_app adj Y)]
+  rw [← (W (· ∈ Set.range F.obj)).postcomp_iff _ _ (W_adj_unit_app adj Y)]
   erw [adj.unit.naturality f]
-  rw [MorphismProperty.precomp_iff _ _ _ (W_adj_unit_app adj X),
+  rw [(W (· ∈ Set.range F.obj)).precomp_iff _ _ (W_adj_unit_app adj X),
     W_iff_isIso _ _ ⟨_, rfl⟩ ⟨_, rfl⟩]
   constructor
   · intro h

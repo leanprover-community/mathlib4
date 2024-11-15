@@ -36,9 +36,8 @@ using a norm on the fiber model if this helps.
 
 noncomputable section
 
+open Bundle Set ContinuousLinearMap Topology
 open scoped Bundle
-
-open Bundle Set ContinuousLinearMap
 
 variable {𝕜₁ : Type*} [NontriviallyNormedField 𝕜₁] {𝕜₂ : Type*} [NontriviallyNormedField 𝕜₂]
   (σ : 𝕜₁ →+* 𝕜₂)

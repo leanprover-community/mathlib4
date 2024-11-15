@@ -81,7 +81,7 @@ viewed as `x ^ (p ^ -n)`. Every element of `PerfectClosure K p` is of this form
 def mk (x : ℕ × K) : PerfectClosure K p :=
   Quot.mk (R K p) x
 
-theorem mk_surjective : Function.Surjective (mk K p) := surjective_quot_mk _
+theorem mk_surjective : Function.Surjective (mk K p) := Quot.mk_surjective
 
 @[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
   Eq.symm <| Quot.sound (R.intro m x)
