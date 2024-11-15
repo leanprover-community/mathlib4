@@ -899,23 +899,17 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   exact zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
     (isPreconnected_zigzag (.mk gbi) (.mk gbj))
 
-
--- TODO make non-small
-variable {C : Type u₁} [Category.{u₁} C]
-variable {D : Type u₁} [Category.{u₁} D]
-variable (F : D ⥤ Cat.{u₁}) (G : C ⥤ D)
-variable {F} {F' : D ⥤ Cat.{u₁, u₁}} (α : F ⟶ F')
-
 open Limits
 
-instance Grothendieck.final_map [hα : ∀ X, Final (α.app X)] : Final (map α) := by
+private lemma Grothendieck.final_map_small {C : Type u₁} [Category.{u₁} C] {F G : C ⥤ Cat.{u₁, u₁}}
+    (α : F ⟶ G) [hα : ∀ X, Final (α.app X)] : Final (map α) := by
   rw [final_iff_isIso_colimit_pre]
-  intro G
-  let fi : fiberwiseColimit (map α ⋙ G) ≅ fiberwiseColimit G := NatIso.ofComponents
+  intro H
+  let fi : fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H := NatIso.ofComponents
     (fun X =>
       HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫
-        isoWhiskerRight (ιCompMap α X) G ≪≫  Functor.associator _ _ _) ≪≫
-      Final.colimitIso (α.app X) (ι F' X ⋙ G))
+        isoWhiskerRight (ιCompMap α X) H ≪≫  Functor.associator _ _ _) ≪≫
+      Final.colimitIso (α.app X) (ι G X ⋙ H))
     (fun f => colimit.hom_ext <| fun d => by
       simp only [map, Cat.comp_obj, comp_obj, ι_obj, fiberwiseColimit_obj, fiberwiseColimit_map,
         ιNatTrans, ιCompMap, Iso.trans_hom, Category.assoc, ι_colimMap_assoc, NatTrans.comp_app,
@@ -927,13 +921,24 @@ instance Grothendieck.final_map [hα : ∀ X, Final (α.app X)] : Final (map α)
       dsimp at this
       congr
       apply eqToHom_heq_id_dom)
-  let i : colimit (map α ⋙ G) ≅ colimit G :=
+  let i : colimit (map α ⋙ H) ≅ colimit H :=
     (colimitFiberwiseColimitIso _).symm ≪≫ HasColimit.isoOfNatIso fi ≪≫
     colimitFiberwiseColimitIso _
   convert Iso.isIso_hom i
   apply colimit.hom_ext
   intro X
   simp [i, fi]
+
+variable {G : D ⥤ Cat.{v₂, u₂}} (α : F ⟶ G)
+
+
+
+instance Grothendieck.final_map [hα : ∀ X, Final (α.app X)] : Final (map α) := by
+  let sD : D ≌ AsSmall.{max u₁ u₂ v₁ v₂} D := AsSmall.equiv
+  let F' := _
+  sorry
+
+#check whiskerLeft
 
 end Grothendieck
 

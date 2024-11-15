@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
@@ -184,6 +185,12 @@ def AsSmall.equiv : C ≌ AsSmall C where
 
 instance [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩
+
+/-- Assigning to each category `C` the small category `AsSmall C` induces a functor `Cat ⥤ Cat`. -/
+@[simps]
+def asSmall : Cat.{v₁, u₁} ⥤ Cat.{max w₁ v₁ u₁, max w₁ v₁ u₁} where
+  obj C := .of <| AsSmall C
+  map F := AsSmall.down ⋙ F ⋙ AsSmall.up
 
 /-- The equivalence between `C` and `ULiftHom (ULift C)`. -/
 def ULiftHomULiftCategory.equiv.{v', u', v, u} (C : Type u) [Category.{v} C] :
