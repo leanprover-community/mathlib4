@@ -9,11 +9,10 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 /-!
 # Nimbers
 
-The goal of this file is to define the field of nimbers, constructed as ordinals endowed with new
+The goal of this file is to define the nimbers, constructed as ordinals endowed with new
 arithmetical operations. The nim sum `a + b` is recursively defined as the least ordinal not equal
-to any `a' + b` or `a + b'` for `a' < a` and `b' < b`. The nim product `a * b` is likewise
-recursively defined as the least ordinal not equal to any `a' * b + a * b' + a' * b'` for `a' < a`
-and `b' < b`.
+to any `a' + b` or `a + b'` for `a' < a` and `b' < b`. There is also a nim product, defined in the
+`Mathlib.SetTheory.Nimber.Field` file.
 
 Nim addition arises within the context of impartial games. By the Sprague-Grundy theorem, each
 impartial game is equivalent to some game of nim. If `x ≈ nim o₁` and `y ≈ nim o₂`, then
@@ -35,13 +34,6 @@ interacting with the arithmetic in any nice way.
 To reduce API duplication, we opt not to implement operations on `Nimber` on `Ordinal`. The order
 isomorphisms `Ordinal.toNimber` and `Nimber.toOrdinal` allow us to cast between them whenever
 needed.
-
-## Todo
-
-- Add a `CharP 2` instance.
-- Define nim multiplication and prove nimbers are a commutative ring.
-- Define nim division and prove nimbers are a field.
-- Show the nimbers are algebraically closed.
 -/
 
 universe u v
@@ -54,13 +46,14 @@ noncomputable section
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def Nimber : Type _ :=
-  Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
+  Ordinal deriving Zero, Inhabited, One, Nontrivial, WellFoundedRelation
 
 instance Nimber.linearOrder : LinearOrder Nimber := {Ordinal.linearOrder with}
 instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.instSuccOrder with}
 instance Nimber.orderBot : OrderBot Nimber := {Ordinal.orderBot with}
 instance Nimber.noMaxOrder : NoMaxOrder Nimber := {Ordinal.noMaxOrder with}
 instance Nimber.zeroLEOneClass : ZeroLEOneClass Nimber := {Ordinal.zeroLEOneClass with}
+instance Nimber.NeZero.one : NeZero (1 : Nimber) := Ordinal.NeZero.one
 
 /-- The identity function between `Ordinal` and `Nimber`. -/
 @[match_pattern]
@@ -145,6 +138,9 @@ protected theorem not_lt_zero (a : Nimber) : ¬ a < 0 :=
 protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
   Ordinal.pos_iff_ne_zero
 
+theorem lt_one_iff_zero {a : Nimber} : a < 1 ↔ a = 0 :=
+  Ordinal.lt_one_iff_zero
+
 theorem eq_nat_of_le_nat {a : Nimber} {b : ℕ} (h : a ≤ ∗b) : ∃ c : ℕ, a = ∗c :=
   Ordinal.lt_omega0.1 (h.trans_lt (nat_lt_omega0 b))
 
@@ -154,6 +150,9 @@ instance small_Ico (a b : Nimber.{u}) : Small.{u} (Set.Ico a b) := Ordinal.small
 instance small_Icc (a b : Nimber.{u}) : Small.{u} (Set.Icc a b) := Ordinal.small_Icc a b
 instance small_Ioo (a b : Nimber.{u}) : Small.{u} (Set.Ioo a b) := Ordinal.small_Ioo a b
 instance small_Ioc (a b : Nimber.{u}) : Small.{u} (Set.Ioc a b) := Ordinal.small_Ioc a b
+
+theorem not_bddAbove_compl_of_small (s : Set Nimber.{u}) [Small.{u} s] : ¬ BddAbove sᶜ :=
+  Ordinal.not_bddAbove_compl_of_small s
 
 end Nimber
 
@@ -204,7 +203,7 @@ namespace Nimber
 
 variable {a b c : Nimber.{u}}
 
-/-- Nimber addition is recursively defined so that `a + b` is the smallest number not equal to
+/-- Nimber addition is recursively defined so that `a + b` is the smallest nimber not equal to
 `a' + b` or `a + b'` for `a' < a` and `b' < b`. -/
 -- We write the binders like this so that the termination checker works.
 protected def add (a b : Nimber.{u}) : Nimber.{u} :=
@@ -224,15 +223,13 @@ theorem add_def (a b : Nimber) :
 
 /-- The set in the definition of `Nimber.add` is nonempty. -/
 private theorem add_nonempty (a b : Nimber.{u}) :
-    {x | (∃ a' < a, a' + b = x) ∨ ∃ b' < b, a + b' = x}ᶜ.Nonempty := by
-  simp_rw [Set.nonempty_compl, Set.setOf_or, ← Set.mem_Iio, ← Set.image.eq_1]
-  apply_fun (fun a : Set Nimber ↦ Small.{u} a)
-  have : Small.{u} ↑((· + b) '' Set.Iio a ∪ (a + ·) '' Set.Iio b) := inferInstance
-  simpa [this, small_congr (Equiv.Set.univ _)] using not_small_nimber
+    {x | (∃ a' < a, a' + b = x) ∨ ∃ b' < b, a + b' = x}ᶜ.Nonempty :=
+  nonempty_of_not_bddAbove <| not_bddAbove_compl_of_small
+    ((· + b) '' Set.Iio a ∪ (a + ·) '' Set.Iio b)
 
 theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
-  have := not_mem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
+  have := not_mem_of_lt_csInf' h
   rwa [Set.mem_compl_iff, not_not] at this
 
 theorem add_le_of_forall_ne (h₁ : ∀ a' < a, a' + b ≠ c) (h₂ : ∀ b' < b, a + b' ≠ c) :
@@ -267,12 +264,12 @@ protected theorem add_comm (a b : Nimber) : a + b = b + a := by
   rw [add_def, add_def]
   simp_rw [or_comm]
   congr! 7 <;>
-  (rw [and_congr_right_iff]; intro; rw [Nimber.add_comm])
+    (rw [and_congr_right_iff]; intro; rw [Nimber.add_comm])
 termination_by (a, b)
 
 theorem add_eq_zero {a b : Nimber} : a + b = 0 ↔ a = b := by
   constructor <;>
-  intro hab
+    intro hab
   · obtain h | rfl | h := lt_trichotomy a b
     · have ha : a + a = 0 := add_eq_zero.2 rfl
       rwa [← ha, add_right_inj, eq_comm] at hab
@@ -298,9 +295,9 @@ theorem add_self (a : Nimber) : a + a = 0 :=
 
 protected theorem add_assoc (a b c : Nimber) : a + b + c = a + (b + c) := by
   apply le_antisymm <;>
-  apply add_le_of_forall_ne <;>
-  intro x hx <;>
-  try obtain ⟨y, hy, rfl⟩ | ⟨y, hy, rfl⟩ := exists_of_lt_add hx
+    apply add_le_of_forall_ne <;>
+    intro x hx <;>
+    try obtain ⟨y, hy, rfl⟩ | ⟨y, hy, rfl⟩ := exists_of_lt_add hx
   on_goal 1 => rw [Nimber.add_assoc y, add_ne_add_left]
   on_goal 2 => rw [Nimber.add_assoc _ y, add_ne_add_right, add_ne_add_left]
   on_goal 3 => rw [Nimber.add_assoc _ _ x, add_ne_add_right, add_ne_add_right]
