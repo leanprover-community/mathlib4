@@ -384,6 +384,10 @@ h2 : b ≥ 0
 #guard_msgs in
 example (a b : ℚ) (h1 : a ≤ 1) (h2 : b ≥ 0) : a ≤ b := by linear_combination h1
 
+/-- error: coefficients of inequalities in 'linear_combination' must be nonnegative -/
+#guard_msgs in
+example (x y : ℤ) (h : x ≤ y) : -x ≤ -y := by linear_combination 4 - h
+
 /-! ### Nonlinear inequalities -/
 
 example {a b : ℝ} (ha : 0 ≤ a) (hb : b < 1) : a * b ≤ a := by linear_combination a * hb
