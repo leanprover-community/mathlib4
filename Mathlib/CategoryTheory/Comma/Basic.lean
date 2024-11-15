@@ -537,32 +537,41 @@ section Opposite
 
 open Opposite
 
+/-- The canonical functor from `Comma L R` to `(Comma R.op L.op)ᵒᵖ`. -/
 @[simps]
 def opFunctor : Comma L R ⥤ (Comma R.op L.op)ᵒᵖ where
   obj X := ⟨op X.right, op X.left, op X.hom⟩
   map f := ⟨op f.right, op f.left, Quiver.Hom.unop_inj (by simp)⟩
 
+/-- Composing the `leftOp` of `opFunctor L R` with `fst L.op R.op` is naturally isomorphic
+to `snd L R`.-/
 @[simps!]
 def opFunctorCompFst : (opFunctor L R).leftOp ⋙ fst _ _ ≅ (snd _ _).op :=
   Iso.refl _
 
+/-- Composing the `leftOp` of `opFunctor L R` with `snd L.op R.op` is naturally isomorphic
+to `fst L R`.-/
 @[simps!]
 def opFunctorCompSnd : (opFunctor L R).leftOp ⋙ snd _ _ ≅ (fst _ _).op :=
   Iso.refl _
 
+/-- The canonical functor from `Comma L.op R.op` to `(Comma R L)ᵒᵖ`. -/
 @[simps]
 def unopFunctor : Comma L.op R.op ⥤ (Comma R L)ᵒᵖ where
   obj X := ⟨X.right.unop, X.left.unop, X.hom.unop⟩
   map f := ⟨f.right.unop, f.left.unop, Quiver.Hom.op_inj (by simpa using f.w.symm)⟩
 
+/-- Composing `unopFunctor L R` with `(fst L R).op` is isomorphic to `snd L.op R.op`. -/
 @[simps!]
 def unopFunctorCompFst : unopFunctor L R ⋙ (fst _ _).op ≅ snd _ _ :=
   Iso.refl _
 
+/-- Composing `unopFunctor L R` with `(snd L R).op` is isomorphic to `fst L.op R.op`. -/
 @[simps!]
 def unopFunctorCompSnd : unopFunctor L R ⋙ (snd _ _).op ≅ fst _ _ :=
   Iso.refl _
 
+/-- The canonical equivalence between `Comma L R` and `(Comma R.op L.op)ᵒᵖ`. -/
 @[simps]
 def opEquiv : Comma L R ≌ (Comma R.op L.op)ᵒᵖ where
   functor := opFunctor L R
