@@ -39,9 +39,7 @@ jobs:
 
           # for debugging, we print some information
           printf '%s' "${COMMENT}" | hexdump -cC
-
-          # add the cleaned up comment to the environment for including it in the Zulip post
-          printf 'comment<<EOC\n%s\nEOC' "${COMMENT}" | tee "$GITHUB_OUTPUT"
+          printf 'comment<<EOC\n%s\nEOC' "${COMMENT}"
 
           m_or_d="$(printf '%s' "${COMMENT}" |
             sed -n 's=^maintainer  *\(merge\|delegate\)$=\1=p' | head -1)"
@@ -82,7 +80,7 @@ jobs:
 
           echo ""
           message="$(
-            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${{ steps.merge_or_delegate.outputs.comment }}"
+            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}"
           )"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
 
