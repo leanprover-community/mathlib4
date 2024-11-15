@@ -60,7 +60,7 @@ private noncomputable def lmap := (eqv' M N S).extendScalarsOfIsLocalization S (
 
 private noncomputable def rmap := (eqv' M N S).symm.extendScalarsOfIsLocalization S (Localization S)
 
-noncomputable def eqv := ofLinear (lmap M N S) (rmap M N S) (re₂₁ := RingHomInvPair.ids)
+private noncomputable def eqv := ofLinear (lmap M N S) (rmap M N S) (re₂₁ := RingHomInvPair.ids)
 (re₁₂ := RingHomInvPair.ids) (by
   unfold lmap rmap
   ext x
