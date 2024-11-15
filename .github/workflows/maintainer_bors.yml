@@ -66,9 +66,9 @@ jobs:
 
       - name: Add ready-to-merge or delegated label
         id: add_label
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }} && (
-          (${{ steps.user_permission.outputs.require-result == 'true' }}) ||
-          ${{ steps.merge_or_delegate.outputs.bot == 'true' }})
+        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.merge_or_delegate.outputs.bot == 'true' ) }}
         uses: octokit/request-action@v2.x
         with:
           # check is this ok? was /repos/:repository/issues/:issue_number/labels
@@ -79,9 +79,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }} # comment uses ${{ secrets.GITHUB_TOKEN }}
 
-      - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }} && (
-          (${{ steps.user_permission.outputs.require-result == 'true' }}) ||
-          ${{ steps.merge_or_delegate.outputs.bot == 'true' }})
+      - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.merge_or_delegate.outputs.bot == 'true' ) }}
         id: remove_labels
         name: Remove "awaiting-author"
         # we use curl rather than octokit/request-action so that the job won't fail
