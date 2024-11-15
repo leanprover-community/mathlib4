@@ -422,21 +422,8 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         change (_ + ∑ y : _, _ / (x * _) % _ * (x * _)) = _
         simp_rw [← Nat.div_div_eq_div_mul, mul_left_comm (_ % _ : ℕ), ← mul_sum]
         convert Nat.mod_add_div _ _
-        -- Porting note: new
         refine (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq ?_))
-        exact Fin.prod_univ_succ _
-        -- Porting note: was:
-        /-
-        refine' Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
-        swap
-        · convert Fin.prod_univ_succ (Fin.cons x xs : _ → ℕ)
-          simp_rw [Fin.cons_succ]
-        congr with i
-        congr with j
-        · cases j
-          rfl
-        · cases j
-          rfl-/)
+        exact Fin.prod_univ_succ _)
 
 theorem finPiFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (f : ∀ i : Fin m, Fin (n i)) :
     (finPiFinEquiv f : ℕ) = ∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j) := rfl
