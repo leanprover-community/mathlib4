@@ -110,12 +110,16 @@ variable [HasProductsOfShape ℕ C]
 private noncomputable def functorObj : ℕ → C :=
   fun n ↦ ∏ᶜ (fun m ↦ if _ : m < n then M m else N m)
 
--- -- `functorObj` is off by one
--- noncomputable def functorObjZeroHom : functorObj (M := M) (N := N) 0 ⟶ ∏ᶜ N :=
---   Limits.Pi.map fun n ↦ if h : n ≤ 0 then eqToHom (functorObj_eq_pos h) ≫ f n else
---     eqToHom (functorObj_eq_neg h)
+private noncomputable def functorObjProj (n : ℕ) : (functorObj (M := M) (N := N)) n ⟶ N n :=
+  Pi.π (fun m ↦ if _ : m < n then M m else N m) n ≫ eqToHom (functorObj_eq_neg (by omega))
 
--- instance : Epi (functorObjZeroHom f) := sorry -- Use locally surjective
+private noncomputable def functorObjProj_pos (n m : ℕ) (h : m < n) :
+    (functorObj (M := M) (N := N)) n ⟶ M m :=
+  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_pos (by omega))
+
+private noncomputable def functorObjProj_neg (n m : ℕ) (h : ¬(m < n)) :
+    (functorObj (M := M) (N := N)) n ⟶ N m :=
+  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_neg (by omega))
 
 private noncomputable def functorMap : ∀ n,
     functorObj (M := M) (N := N) (n + 1) ⟶ functorObj (M := M) (N := N) n := by
@@ -263,9 +267,23 @@ end General
 
 variable {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M n ⟶ N n) [∀ n, Epi (f n)]
 
--- Use locally surjective
 instance (n : ℕ) : Epi (functorMap f n) := by
+  rw [← isLocallySurjective_iff_epi', coherentTopology.isLocallySurjective_iff,
+    regularTopology.isLocallySurjective_iff]
+  intro S y
+  have : IsLocallySurjective (f n) := by
+    rw [isLocallySurjective_iff_epi']
+    infer_instance
+  rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff] at this
+  obtain ⟨T, g, _, x, w⟩ := this S ((functorObjProj (M := M) (N := N) n).val.app _ y)
   sorry
+  -- let y' : (m : ℕ) → ((h : m < n) → (M m).val.obj ⟨S⟩) :=
+  --   fun m h ↦ (functorObjProj_pos (M := M) (N := N) _ _ h).val.app _ y
+  -- let y' : (m : ℕ) → ((h : ¬(m < n)) → (N m).val.obj ⟨S⟩) :=
+  --   fun m h ↦ (functorObjProj_neg (M := M) (N := N) _ _ h).val.app _ y
+  -- let y' : (m : ℕ) → (if _ : m < n then M m else N m).val.obj ⟨S⟩ :=
+  --   fun m ↦ if h : m < n then (functorObjProj_pos (M := M) (N := N) _ _ h).val.app _ y else _
+
 
 instance : Epi (Limits.Pi.map f) := by
   let F : ℕᵒᵖ ⥤ LightCondMod R := Functor.ofOpSequence (functorMap f)
@@ -275,7 +293,7 @@ instance : Epi (Limits.Pi.map f) := by
   infer_instance
 
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
-  preserves f := by
+  preserves f _ := by
     have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by
       apply limit.hom_ext
       intro ⟨n⟩
