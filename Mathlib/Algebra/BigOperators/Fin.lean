@@ -262,6 +262,65 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
 
 end PartialProd
 
+section DivModSum
+
+/-- Given a tuple of natural numbers `n : Fin m → ℕ` and a natural number `k`, return the first
+index `i` such that `k` is smaller than `∑ j < i, n j`, and `none` otherwise.
+
+This is defined en-route to `Fin.divSum`, which is the dependent version of `Fin.divNat`.
+-/
+def divSum? {m : ℕ} (n : Fin m → ℕ) (k : ℕ) : Option (Fin m) :=
+  find (fun i => k < ∑ j, n (castLE i.isLt j))
+
+theorem divSum?_is_some_iff_lt_sum {m : ℕ} {n : Fin m → ℕ} {k : ℕ} :
+    (divSum? n k).isSome ↔ k < ∑ i, n i := by
+  constructor
+  · intro h
+    simp only [divSum?, Nat.succ_eq_add_one, castLE, isSome_find_iff] at h
+    obtain ⟨i, hi⟩ := h
+    have : i.val + 1 + (m - i.val - 1) = m := by omega
+    rw [← sum_congr' _ this, sum_univ_add]
+    simp only [cast, coe_castAdd, coe_natAdd, gt_iff_lt]
+    exact Nat.lt_add_right _ hi
+  · intro isLt
+    have : m ≠ 0 := fun h => by subst h; simp at isLt
+    refine isSome_find_iff.mpr ?_
+    have hm : (m - 1) + 1 = m := by omega
+    refine ⟨cast hm (last (m - 1)), ?_⟩
+    simp only [coe_cast, val_last, Nat.succ_eq_add_one, castLE_of_eq hm, sum_congr' n hm, isLt]
+
+/-- The quotient of `k : Fin (∑ j, n j)` after "division" by `n : Fin m → ℕ`.
+
+This is the dependent version of `Fin.divNat`. -/
+def divSum {m : ℕ} {n : Fin m → ℕ} (k : Fin (∑ j, n j)) : Fin m :=
+  (divSum? n k).get (divSum?_is_some_iff_lt_sum.mpr k.isLt)
+
+theorem sum_le_of_divSum?_eq_some {m : ℕ} {n : Fin m → ℕ} {k : Fin (∑ j, n j)} {i : Fin m}
+    (hi : divSum? n k = some i) : ∑ j : Fin i, n (castLE i.isLt.le j) ≤ k := by
+  by_cases hi' : 0 = i.val
+  · rw [← sum_congr' _ hi']
+    simp only [univ_eq_empty, sum_empty, Nat.zero_le]
+  · have : (i.val - 1) + 1 = i.val := by omega
+    rw [← sum_congr' _ this]
+    have := find_min (Option.mem_def.mp hi) (j := ⟨i.val - 1, by omega⟩) <| lt_def.mpr
+      (by simp only [and_true]; omega)
+    exact not_lt.mp this
+
+/-- The remainder of `k : Fin (∑ j, n j)` after "division" by `n : Fin m → ℕ`, taking values in
+`Fin (n (divSum k))`.
+
+This is the dependent version of `Fin.modNat`. -/
+def modSum {m : ℕ} {n : Fin m → ℕ} (k : Fin (∑ j, n j)) : Fin (n (divSum k)) :=
+  ⟨k - ∑ j, n (castLE (divSum k).isLt.le j), by
+    have divSum_mem : divSum k ∈ divSum? n k := by
+      simp only [divSum, divSum?, Option.mem_def, Option.some_get]
+    have hk : k < ∑ j, n (castLE (divSum k).isLt j) := find_spec _ divSum_mem
+    simp only [sum_univ_succAbove _ (last (divSum k)), val_last, succAbove_last] at hk
+    rw [Nat.sub_lt_iff_lt_add' (sum_le_of_divSum?_eq_some divSum_mem)]
+    exact hk⟩
+
+end DivModSum
+
 end Fin
 
 /-- Equivalence between `Fin n → Fin m` and `Fin (m ^ n)`. -/
@@ -320,47 +379,19 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
         have hk {k : Fin i} : Fin.castLE i.isLt.le k =
               Fin.cast hi (Fin.castAdd (m - i - 1) (Fin.castAdd 1 k)) := by
           simp only [Fin.castLE, Fin.cast, Fin.coe_castAdd]
-        simp_rw [hk, Nat.add_lt_add_iff_left]
-        simp only [Finset.univ_unique, Finset.sum_singleton]
+        simp_rw [hk, Nat.add_lt_add_iff_left, univ_unique, sum_singleton]
         exact Nat.lt_add_right _ (by simp only [Fin.cast, Fin.coe_castAdd, Fin.coe_natAdd,
             Fin.val_eq_zero, add_zero, Fin.is_lt])⟩)
-    (fun k =>
-      have h : m ≠ 0 := fun h => Fin.elim0 <| k.cast (by subst h; simp)
-      let i : Fin m := Fin.find (fun i => k < ∑ j, n (Fin.castLE i.isLt j)) |>.get (by
-        refine Fin.isSome_find_iff.mpr ?_
-        have hm : (m - 1) + 1 = m := by omega
-        refine ⟨Fin.cast hm (Fin.last (m - 1)), ?_⟩
-        simp only [Fin.coe_cast, Fin.val_last, Nat.succ_eq_add_one, Fin.castLE_of_eq hm,
-          Fin.sum_congr' n hm, Fin.is_lt])
-      let j : Fin (n i) := ⟨k - ∑ j, n (Fin.castLE i.isLt.le j), by
-        have i_mem : i ∈ Fin.find (fun i => k < ∑ j, n (Fin.castLE i.isLt j)) := by
-          simp only [Option.mem_def, Option.some_get, i]
-        have hk : k < ∑ j, n (Fin.castLE i.isLt j) := Fin.find_spec _ i_mem
-        simp only [Fin.sum_univ_succAbove _ (Fin.last i), Fin.val_last, Fin.succAbove_last] at hk
-        rw [Nat.sub_lt_iff_lt_add' (sum_le_of_find_eq_some i_mem)]
-        exact hk⟩
-      ⟨i, j⟩)
+    (fun k => ⟨k.divSum, k.modSum⟩)
     (by
       intro a
       induction n using Fin.consInduction with
       | h0 =>
-        simp only [Finset.univ_eq_empty, Finset.sum_empty] at a
+        simp only [univ_eq_empty, sum_empty] at a
         exact Fin.elim0 a
       | h =>
         ext
-        exact Nat.add_sub_cancel' (sum_le_of_find_eq_some (Option.some_get _).symm))
-  where
-    sum_le_of_find_eq_some {m : ℕ} {n : Fin m → ℕ} {k : Fin (∑ j, n j)} {i : Fin m}
-        (hi : Fin.find (fun i => k < ∑ j, n (Fin.castLE i.isLt j)) = some i) :
-        ∑ j : Fin i, n (Fin.castLE i.isLt.le j) ≤ k := by
-      by_cases hi' : 0 = i.val
-      · rw [← Fin.sum_congr' _ hi']
-        simp only [univ_eq_empty, sum_empty, Nat.zero_le]
-      · have : (i.val - 1) + 1 = i.val := by omega
-        rw [← Fin.sum_congr' _ this]
-        have := Fin.find_min (Option.mem_def.mp hi) (j := ⟨i.val - 1, by omega⟩)
-          <| Fin.lt_def.mpr (by simp only [and_true]; omega)
-        exact not_lt.mp this
+        exact Nat.add_sub_cancel' (Fin.sum_le_of_divSum?_eq_some (Option.some_get _).symm))
 
 @[simp]
 theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) × Fin (n i)) :
