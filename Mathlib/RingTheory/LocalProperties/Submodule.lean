@@ -112,14 +112,14 @@ open Submodule LocalizedModule Ideal LinearMap
 
 /-- Another version, using `LocalizedModule` instead of `IsLocaliedModule`. -/
 lemma Submodule.le_of_localization_maximal' {N H : Submodule R M}
-  (h : ∀ (J : Ideal R) [J.IsMaximal], localized J.primeCompl N ≤ localized J.primeCompl H) :
+    (h : ∀ (J : Ideal R) [J.IsMaximal], localized J.primeCompl N ≤ localized J.primeCompl H) :
     N ≤ H := Submodule.le_of_localization_maximal (fun P ↦ (Localization P.primeCompl))
     (fun P ↦ (LocalizedModule P.primeCompl M))
     (fun P ↦ (mkLinearMap P.primeCompl M)) (fun P _ ↦ h P)
 
 /-- Another version, using `LocalizedModule` instead of `IsLocaliedModule`. -/
 lemma Submodule.eq_of_localization_maximal' {N P : Submodule R M}
-  (h : ∀ (J : Ideal R) (_ : J.IsMaximal), localized J.primeCompl N = localized J.primeCompl P) :
+    (h : ∀ (J : Ideal R) (_ : J.IsMaximal), localized J.primeCompl N = localized J.primeCompl P) :
     N = P :=
   eq_of_le_of_le (le_of_localization_maximal' (fun J hJ ↦ le_of_eq (h J hJ)))
   (le_of_localization_maximal' (fun J hJ ↦ le_of_eq (h J hJ).symm))
@@ -145,7 +145,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 include spn
 
 theorem eq_zero_of_localization_finitespan (x : M)
-      (h : ∀ r : s, (mkLinearMap (Submonoid.powers r.1) M ) x = 0) : x = 0 := by
+    (h : ∀ r : s, (mkLinearMap (Submonoid.powers r.1) M ) x = 0) : x = 0 := by
   rw [← Submodule.span_singleton_eq_bot (R := R), ← Submodule.annihilator_eq_top_iff]
   by_contra! H
   obtain ⟨m, maxm, lem⟩ := exists_le_maximal _ H
@@ -187,7 +187,7 @@ theorem Submodule.le_of_localization_finitespan {N P : Submodule R M}
   exact nm (maxm.isPrime.mem_of_pow_mem k (hk ▸ (lem h1)))
 
 theorem Submodule.eq_of_localization_finitespan {N P : Submodule R M}
-  (h : ∀ r : s, N.localized (Submonoid.powers r.1) = P.localized (Submonoid.powers r.1)) :
+    (h : ∀ r : s, N.localized (Submonoid.powers r.1) = P.localized (Submonoid.powers r.1)) :
     N = P :=
   eq_of_le_of_le (le_of_localization_finitespan s spn (fun r ↦ le_of_eq (h r)))
   (le_of_localization_finitespan s spn (fun r ↦ le_of_eq (h r).symm))

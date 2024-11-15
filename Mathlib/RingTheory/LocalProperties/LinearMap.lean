@@ -37,7 +37,7 @@ theorem bijective_of_localization
   surjective_of_localization _ fun J hJ => (h J hJ).2⟩
 
 theorem exact_of_localization {R M₀ M₁ M₂ : Type*} [CommRing R] [AddCommGroup M₀] [Module R M₀]
-[AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁) (g : M₁ →ₗ[R] M₂)
+    [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁) (g : M₁ →ₗ[R] M₂)
 (h : ∀ (J : Ideal R) (_ : J.IsMaximal), Function.Exact (map J.primeCompl f) (map J.primeCompl g)) :
     Function.Exact f g := by
   simp only [LinearMap.exact_iff] at h ⊢
@@ -74,8 +74,8 @@ theorem bijective_of_localization_finitespan (h : ∀ r : s, Function.Bijective
   ⟨injective_of_localization_finitespan _ spn _ fun r => (h r).1,
   surjective_of_localization_finitespan _ spn _ fun r => (h r).2⟩
 
-theorem exact_of_localization_finitespan {M₀ M₁ M₂ : Type*} [AddCommGroup M₀] [Module R M₀]
-  [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁)
+lemma exact_of_localization_finitespan {M₀ M₁ M₂ : Type*} [AddCommGroup M₀] [Module R M₀]
+    [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁)
     (g : M₁ →ₗ[R] M₂) (h : ∀ r : s, Function.Exact ((map (Submonoid.powers r.1) f))
       ((map (Submonoid.powers r.1) g))) : Function.Exact f g := by
   simp only [LinearMap.exact_iff] at h ⊢
