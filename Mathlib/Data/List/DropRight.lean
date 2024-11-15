@@ -63,7 +63,15 @@ def rtake : List α :=
   l.drop (l.length - n)
 
 @[simp]
-theorem rtake_nil : rtake ([] : List α) n = [] := by simp [rtake]
+lemma rtake_length_le {α : Type _} {n : ℕ} {l : List α} (h : List.length l ≤ n) :
+    l.rtake n  = l := by
+  unfold List.rtake
+  rw [Nat.sub_eq_zero_of_le h]
+  apply List.drop_zero
+
+@[simp]
+theorem rtake_nil : rtake ([] : List α) n = [] := by
+  simp only [length_nil, Nat.zero_le, rtake_length_le]
 
 @[simp]
 theorem rtake_zero : rtake l 0 = [] := by simp [rtake]
@@ -93,12 +101,7 @@ lemma rtake_cons_eq_self_of_le_length {l : List α} {x : α} {t : Nat} (ht : t �
   rw [List.length_cons, Nat.succ_sub ht]
   rfl
 
-@[simp]
-lemma rtake_length_le {α : Type _} {n : ℕ} {l : List α} (h : List.length l ≤ n) :
-    l.rtake n  = l := by
-  unfold List.rtake
-  rw [Nat.sub_eq_zero_of_le h]
-  apply List.drop_zero
+
 
 
 /-- Drop elements from the tail end of a list that satisfy `p : α → Bool`.
