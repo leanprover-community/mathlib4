@@ -116,13 +116,12 @@ theorem cuspFunction_apply_zero [NeZero n] [CuspFormClass F Γ(n) k] :
 
 theorem exp_decay_atImInfty [NeZero n] [CuspFormClass F Γ(n) k] :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / n) := by
-  simpa only [comp_def, ofComplex_apply] using
-    (exp_decay_of_zero_at_inf
-      (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
-      (periodic_comp_ofComplex n f)
-      (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
-        (fun _ ↦ differentiableAt_comp_ofComplex f))
-      (zero_at_infty_comp_ofComplex f)
-    ).comp_tendsto tendsto_coe_atImInfty
+  simpa only [neg_mul, comp_def, ofComplex_apply, coe_im] using
+    (exp_decay_of_zero_at_inf (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
+          (periodic_comp_ofComplex n f)
+          (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
+            (fun _ ↦ differentiableAt_comp_ofComplex f))
+          (zero_at_infty_comp_ofComplex f)).comp_tendsto
+      tendsto_coe_atImInfty
 
 end CuspFormClass
