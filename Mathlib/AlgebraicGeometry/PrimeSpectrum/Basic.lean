@@ -633,7 +633,7 @@ section IsIntegral
 
 open Polynomial
 
-theorem comap_singleton_isClosed_of_isIntegral {R S : Type*} [CommRing R] [CommRing S]
+theorem isClosed_comap_singleton_of_isIntegral {R S : Type*} [CommRing R] [CommRing S]
     (f : R →+* S) (hf : f.IsIntegral)
     (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
     IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
@@ -654,7 +654,7 @@ lemma closure_image_comap_zeroLocus {R S : Type*} [CommRing R] [CommRing S]
     apply isClosed_closure.stableUnderSpecialization ((le_iff_specializes
       (comap f ⟨p', hp'⟩) x).mp hq₂) (subset_closure (by exact ⟨_, hp'', rfl⟩))
 
-lemma isIntegral_of_isClosedMap_comap_polynomial
+lemma isIntegral_of_isClosedMap_comap_mapRingHom
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
     (h : IsClosedMap (comap (mapRingHom (algebraMap R S)))) :
     Algebra.IsIntegral R S := by
