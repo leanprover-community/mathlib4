@@ -146,7 +146,6 @@ theorem iterate_derivative_C_mul (a : R) (p : R[X]) (k : ℕ) :
     derivative^[k] (C a * p) = C a * derivative^[k] p := by
   simp_rw [← smul_eq_C_mul, iterate_derivative_smul]
 
-@[simp]
 theorem derivative_C_mul (a : R) (p : R[X]) :
     derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
 
