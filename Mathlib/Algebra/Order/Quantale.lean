@@ -143,21 +143,19 @@ scoped infixr:60 " ⇨ₗ " => leftAddResiduation
 scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
 
 @[to_additive]
-theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
-  rw [leftMulResiduation]
-  constructor
-  · intro h1
+theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z where
+  mp h1 := by
     apply le_trans (mul_le_mul_right' h1 _)
-    simp_all only [sSup_mul_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
-  · intro h1
-    apply le_sSup
-    exact h1
+    simp_all only [leftMulResiduation, sSup_mul_eq_iSup_mul, Set.mem_setOf_eq,
+      iSup_le_iff, implies_true]
+  mpr h1 := le_sSup h1
 
 @[to_additive]
 theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z where
   mp h1 := by
     apply le_trans (mul_le_mul_left' h1 _)
-    simp_all only [mul_sSup_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
+    simp_all only [rightMulResiduation, mul_sSup_eq_iSup_mul, Set.mem_setOf_eq,
+      iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
 end Quantale
