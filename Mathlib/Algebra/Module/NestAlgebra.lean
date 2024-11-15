@@ -58,7 +58,7 @@ def NestAlg (N : Set (Submodule R M)) : Subalgebra R (M →ₗ[R] M) where
 
 /-! ### Free Modules -/
 
-variable {ι : Type*} [LinearOrder ι] (v : ι → M) (bm : LinearIndependent R v)
+variable {ι : Type*} [LinearOrder ι] (v : ι → M)
 
 /--
 The lattice homomorphism from `WithBot (WithTop ι)` into `Submodule R M`
