@@ -350,7 +350,7 @@ Another characterization of coheight, based on the supremum of the coheights of 
 lemma coheight_eq_iSup_lt_height (x : α) : coheight x = ⨆ (y : α) (_  : x < y), coheight y + 1 :=
   height_eq_iSup_lt_height (α := αᵒᵈ) x
 
-lemma height_le_coe_iff (x : α) (n : ℕ) :
+lemma height_le_coe_iff {x : α} {n : ℕ} :
     height x ≤ n ↔ (∀ y, y < x → height y < n) := by
   conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
   congr! 2 with y _
@@ -358,21 +358,20 @@ lemma height_le_coe_iff (x : α) (n : ℕ) :
   · simp
   · norm_cast
 
-lemma coheight_le_coe_iff (x : α) (n : ℕ) :
+lemma coheight_le_coe_iff {x : α} {n : ℕ} :
     coheight x ≤ n ↔ (∀ y, x < y → coheight y < n) :=
-  height_le_coe_iff (α := αᵒᵈ) x n
+  height_le_coe_iff (α := αᵒᵈ)
 
 /--
 The height of an element is infinite if there exist series of arbitrary length ending in that
 element.
 -/
-lemma height_eq_top_iff (x : α) :
-    height x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.last = x ∧ p.length = n := by
-  constructor
-  · intro h n
+lemma height_eq_top_iff {x : α} :
+    height x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.last = x ∧ p.length = n where
+  mp h n := by
     apply exists_series_of_le_height x (n := n)
     simp [h]
-  · intro h
+  mpr h := by
     rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
     push_neg
     intro n
@@ -383,30 +382,33 @@ lemma height_eq_top_iff (x : α) :
 The coheight of an element is infinite if there exist series of arbitrary length ending in that
 element.
 -/
-lemma coheight_eq_top_iff (x : α) :
+lemma coheight_eq_top_iff {x : α} :
     coheight x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.head = x ∧ p.length = n := by
-  convert height_eq_top_iff (α := αᵒᵈ) x using 2 with n
-  exact ⟨fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩,
-         fun ⟨p, hp, hl⟩ => ⟨p.reverse, by simpa, by simpa⟩⟩
+  convert height_eq_top_iff (α := αᵒᵈ) (x := x) using 2 with n
+  constructor <;> (intro ⟨p, hp, hl⟩; use p.reverse; constructor <;> simpa)
 
+/-- The elements of height zero are the minimal elements. -/
+@[simp] lemma height_eq_zero {x : α} : height x = 0 ↔ IsMin x := by
+  simpa [isMin_iff_forall_not_lt] using height_le_coe_iff (x := x) (n := 0)
 
-lemma height_eq_zero_iff (x : α) : height x = 0 ↔ (∀ y, ¬(y < x)) := by
-  simpa using height_le_coe_iff x 0
+protected alias ⟨_, IsMin.height_eq_zero⟩ := height_eq_zero
 
-lemma coheight_eq_zero_iff (x : α) : coheight x = 0 ↔ (∀ y, ¬(x < y)) :=
-  height_eq_zero_iff (α := αᵒᵈ) x
+/-- The elements of coheight zero are the maximal elements. -/
+@[simp] lemma coheight_eq_zero {x : α} : coheight x = 0 ↔ IsMax x :=
+  height_eq_zero (α := αᵒᵈ)
+
+protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
 
 @[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by
-  simp [height_eq_zero_iff]
+  simp [height_eq_zero]
 
 @[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by
-  simp [coheight_eq_zero_iff]
+  simp [coheight_eq_zero]
 
-lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
-    n < height x ↔ (∃ y, y < x ∧ height y = n) := by
-  constructor
-  · intro h
-    obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp (LT.lt.ne_top hfin)
+lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
+    n < height x ↔ (∃ y, y < x ∧ height y = n) where
+  mp h := by
+    obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
     rw [hx] at h; norm_cast at h
     obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
     use p ⟨n, by omega⟩
@@ -415,15 +417,15 @@ lemma coe_lt_height_iff (x : α) (n : ℕ) (hfin : height x < ⊤):
       apply LTSeries.strictMono
       simp [Fin.last]; omega
     · exact height_eq_index_of_length_eq_height_last (by simp [hlen, hp, hx]) ⟨n, by omega⟩
-  · intro ⟨y, hyx, hy⟩
-    exact hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
+  mpr := fun ⟨y, hyx, hy⟩ =>
+    hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
-lemma coe_lt_coheight_iff (x : α) (n : ℕ) (hfin : coheight x < ⊤):
+lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤):
     n < coheight x ↔ (∃ y, x < y ∧ coheight y = n) :=
-  coe_lt_height_iff (α := αᵒᵈ) x n hfin
+  coe_lt_height_iff (α := αᵒᵈ) hfin
 
-lemma height_eq_coe_add_one_iff (x : α) (n : ℕ)  : height x = n + 1 ↔
-    height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y, y < x → height y ≤ n) := by
+lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
+    height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y, y < x → height y ≤ n) := by
   wlog hfin : height x < ⊤
   · simp_all
     exact ne_of_beq_false rfl
@@ -432,41 +434,34 @@ lemma height_eq_coe_add_one_iff (x : α) (n : ℕ)  : height x = n + 1 ↔
   · rw [le_antisymm_iff, and_comm]
     simp [hfin, ENat.lt_add_one_iff, ENat.add_one_le_iff]
   · congr! 1
-    · exact coe_lt_height_iff x n hfin
-    · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff x (n+1)
+    · exact coe_lt_height_iff hfin
+    · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff (x := x) (n := n+1)
 
-lemma coheight_eq_coe_add_one_iff (x : α) (n : ℕ) : coheight x = n + 1 ↔
-    coheight x < ⊤ ∧ (∃ y > x, coheight y = n) ∧ (∀ y, x < y → coheight y ≤ n) :=
-  height_eq_coe_add_one_iff (α := αᵒᵈ) x n
+lemma coheight_eq_coe_add_one_iff (x : α) (n : ℕ) :
+    coheight x = n + 1 ↔
+      coheight x < ⊤ ∧ (∃ y > x, coheight y = n) ∧ (∀ y, x < y → coheight y ≤ n) :=
+  height_eq_coe_add_one_iff (α := αᵒᵈ)
 
-lemma height_eq_coe_iff (x : α) (n : ℕ) : height x = n ↔
-    height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y, y < x → height y < n) := by
+lemma height_eq_coe_iff {x : α} {n : ℕ} :
+    height x = n ↔
+      height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y, y < x → height y < n) := by
   wlog hfin : height x < ⊤
   · simp_all
   simp only [hfin, true_and]
   cases n
-  case zero => simp_all [height_eq_zero_iff x]
+  case zero => simp [isMin_iff_forall_not_lt]
   case succ n =>
     simp only [Nat.cast_add, Nat.cast_one, add_eq_zero, one_ne_zero, and_false, false_or]
-    rw [height_eq_coe_add_one_iff x n]
+    rw [height_eq_coe_add_one_iff]
     simp only [hfin, true_and]
     congr! 3
     rename_i y _
     cases height y <;> simp; norm_cast; omega
 
-lemma coheight_eq_coe_iff (x : α) (n : ℕ) : coheight x = n ↔
-    coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y, y > x → coheight y < n) :=
-  height_eq_coe_iff (α := αᵒᵈ) x n
-
-/-- The elements of height zero are the minimal elements. -/
-lemma height_eq_zero_iff_isMin (a : α) :
-    IsMin a ↔ height a = 0 := by
-  simp [isMin_iff_forall_not_lt, height_eq_zero_iff]
-
-/-- The elements of coheight zero are the maximal elements. -/
-lemma coheight_eq_zero_iff_isMax (a : α) :
-    IsMax a ↔ coheight a = 0 :=
-  height_eq_zero_iff_isMin (α := αᵒᵈ) a
+lemma coheight_eq_coe_iff (x : α) (n : ℕ) :
+    coheight x = n ↔
+      coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y, y > x → coheight y < n) :=
+  height_eq_coe_iff (α := αᵒᵈ)
 
 /-- The elements of finite height `n` are the minimial elements among those of height `≥ n`. -/
 lemma height_eq_coe_iff_minimal_le_height (a : α) (n : ℕ) :
