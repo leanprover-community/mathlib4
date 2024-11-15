@@ -705,7 +705,7 @@ theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
   let ⟨S, H, e⟩ := cof_eq r
   ⟨S, fun a =>
-    let a' := enum r ⟨_, h.2 _ (typein_lt_type r a)⟩
+    let a' := enum r ⟨_, h.succ_lt (typein_lt_type r a)⟩
     let ⟨b, h, ab⟩ := H a'
     ⟨b, h,
       (IsOrderConnected.conn a b a' <|
@@ -843,11 +843,13 @@ theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit 
   · rw [beth_zero]
     exact isStrongLimit_aleph0
   · refine ⟨beth_ne_zero o, fun a ha => ?_⟩
-    rw [beth_limit ⟨h, isSuccPrelimit_iff_succ_lt.1 H⟩] at ha
-    rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
-    have := power_le_power_left two_ne_zero ha.le
-    rw [← beth_succ] at this
-    exact this.trans_lt (beth_lt.2 (H.succ_lt hi))
+    rw [beth_limit] at ha
+    · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
+      have := power_le_power_left two_ne_zero ha.le
+      rw [← beth_succ] at this
+      exact this.trans_lt (beth_lt.2 (H.succ_lt hi))
+    · rw [isLimit_iff]
+      exact ⟨h, H⟩
 
 theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α → α → Prop}
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
@@ -1146,7 +1148,7 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
     rw [derivFamily_succ]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-        ((isLimit_ord hc.1).2 _ (hb ((lt_succ b).trans hb')))
+        ((isLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
   | H₃ b hb H =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup
