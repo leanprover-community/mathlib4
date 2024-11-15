@@ -85,7 +85,7 @@ def funPropTac : Tactic
 
 
 
-/- Command that printins all function properties attached to a function.
+/-- Command that printins all function properties attached to a function.
 
 For example
 ```
