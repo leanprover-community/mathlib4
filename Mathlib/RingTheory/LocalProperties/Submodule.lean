@@ -144,7 +144,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   (s : Finset R) (spn : Ideal.span (s : Set R) = ⊤)
 include spn
 
-lemma eq_zero_of_localization_finitespan (x : M)
+theorem eq_zero_of_localization_finitespan (x : M)
       (h : ∀ r : s, (mkLinearMap (Submonoid.powers r.1) M ) x = 0) : x = 0 := by
   rw [← Submodule.span_singleton_eq_bot (R := R), ← Submodule.annihilator_eq_top_iff]
   by_contra! H
@@ -159,7 +159,7 @@ lemma eq_zero_of_localization_finitespan (x : M)
   exact nm (maxm.isPrime.mem_of_pow_mem n
     (lem ((Submodule.mem_annihilator_span_singleton x (r.1 ^ n)).mpr (hn ▸ hs))))
 
-lemma Submodule.le_of_localization_finitespan {N P : Submodule R M}
+theorem Submodule.le_of_localization_finitespan {N P : Submodule R M}
     (h : ∀ r : s, N.localized (Submonoid.powers r.1) ≤ P.localized (Submonoid.powers r.1)) :
       N ≤ P := by
   by_contra nle
@@ -186,17 +186,17 @@ lemma Submodule.le_of_localization_finitespan {N P : Submodule R M}
   obtain ⟨k, hk⟩ := (Submonoid.mem_powers_iff _ _).mp (s' * s).2
   exact nm (maxm.isPrime.mem_of_pow_mem k (hk ▸ (lem h1)))
 
-lemma Submodule.eq_of_localization_finitespan {N P : Submodule R M}
+theorem Submodule.eq_of_localization_finitespan {N P : Submodule R M}
   (h : ∀ r : s, N.localized (Submonoid.powers r.1) = P.localized (Submonoid.powers r.1)) :
     N = P :=
   eq_of_le_of_le (le_of_localization_finitespan s spn (fun r ↦ le_of_eq (h r)))
   (le_of_localization_finitespan s spn (fun r ↦ le_of_eq (h r).symm))
 
-lemma Submodule.eq_bot_of_localization_finitespan {N : Submodule R M}
+theorem Submodule.eq_bot_of_localization_finitespan {N : Submodule R M}
     (h : ∀ r : s, N.localized (Submonoid.powers r.1)= ⊥) : N = ⊥ :=
   eq_of_localization_finitespan _ spn fun _ ↦ by simp only [h, Submodule.localized'_bot]
 
-lemma Submodule.eq_top_of_localization_finitespan {N : Submodule R M}
+theorem Submodule.eq_top_of_localization_finitespan {N : Submodule R M}
     (h : ∀ r : s, N.localized (Submonoid.powers r.1) = ⊤) : N = ⊤ :=
   eq_of_localization_finitespan _ spn fun _ ↦ by simp only [h, Submodule.localized'_top]
 
