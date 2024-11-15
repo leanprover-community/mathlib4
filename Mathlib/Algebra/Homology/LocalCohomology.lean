@@ -70,7 +70,7 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   -- Porting note: was 'obviously'
   map_comp f g := by apply Submodule.linearMap_qext; rfl
 
--- Porting note (#11215): TODO:  Once this file is ported, move this instance to the right location.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO:  Once this file is ported, move this instance to the right location.
 instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
 

@@ -85,7 +85,7 @@ private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
   simp
   rfl
 
--- Porting note (#11083): writing directly the `Module` instance makes things very slow.
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/11083): writing directly the `Module` instance makes things very slow.
 instance colimitMulAction : MulAction R (M F) where
   one_smul x := by
     refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
