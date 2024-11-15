@@ -302,13 +302,16 @@ lemma Topology.IsOpenEmbedding.functor_obj_injective {X Y : TopCat} {f : X ⟶ Y
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.functor_obj_injective := IsOpenEmbedding.functor_obj_injective
 
+namespace Topology.IsInducing
+
 /-- Given an inducing map `X ⟶ Y` and some `U : Opens X`, this is the union of all open sets
 whose preimage is `U`. This is right adjoint to `Opens.map`. -/
 @[nolint unusedArguments]
-def Inducing.functorObj {X Y : TopCat} {f : X ⟶ Y} (_ : Inducing f) (U : Opens X) : Opens Y :=
+def functorObj {X Y : TopCat} {f : X ⟶ Y} (_ : IsInducing f) (U : Opens X) : Opens Y :=
   sSup { s : Opens Y | (Opens.map f).obj s = U }
 
-lemma Inducing.map_functorObj {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) (U : Opens X) :
+lemma map_functorObj {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f)
+    (U : Opens X) :
     (Opens.map f).obj (hf.functorObj U) = U := by
   apply le_antisymm
   · rintro x ⟨_, ⟨s, rfl⟩, _, ⟨rfl : _ = U, rfl⟩, hx : f x ∈ s⟩; exact hx
@@ -317,12 +320,12 @@ lemma Inducing.map_functorObj {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) (U 
     obtain ⟨t, ht, rfl⟩ := hf.isOpen_iff.mp hU
     exact Opens.mem_sSup.mpr ⟨⟨_, ht⟩, rfl, hx⟩
 
-lemma Inducing.mem_functorObj_iff {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) (U : Opens X)
+lemma mem_functorObj_iff {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f) (U : Opens X)
     {x : X} : f x ∈ hf.functorObj U ↔ x ∈ U := by
   conv_rhs => rw [← hf.map_functorObj U]
   rfl
 
-lemma Inducing.le_functorObj_iff {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) {U : Opens X}
+lemma le_functorObj_iff {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f) {U : Opens X}
     {V : Opens Y} : V ≤ hf.functorObj U ↔ (Opens.map f).obj V ≤ U := by
   obtain ⟨U, hU⟩ := U
   obtain ⟨t, ht, rfl⟩ := hf.isOpen_iff.mp hU
@@ -334,21 +337,23 @@ lemma Inducing.le_functorObj_iff {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) 
     rwa [Set.union_eq_right]
 
 /-- An inducing map `f : X ⟶ Y` induces a Galois insertion between `Opens Y` and `Opens X`. -/
-def Inducing.opensGI {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) :
+def opensGI {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f) :
     GaloisInsertion (Opens.map f).obj hf.functorObj :=
   ⟨_, fun _ _ ↦ hf.le_functorObj_iff.symm, fun U ↦ (hf.map_functorObj U).ge, fun _ _ ↦ rfl⟩
 
 /-- An inducing map `f : X ⟶ Y` induces a functor `Opens X ⥤ Opens Y`. -/
 @[simps]
-def Inducing.functor {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) :
+def functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f) :
     Opens X ⥤ Opens Y where
-  obj U := sSup { s : Opens Y | (Opens.map f).obj s = U }
+  obj := hf.functorObj
   map {U V} h := homOfLE (hf.le_functorObj_iff.mpr ((hf.map_functorObj U).trans_le h.le))
 
 /-- An inducing map `f : X ⟶ Y` induces an adjunction between `Opens Y` and `Opens X`. -/
-def Inducing.adjunction {X Y : TopCat} {f : X ⟶ Y} (hf : Inducing f) :
+def adjunction {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f) :
     Opens.map f ⊣ hf.functor :=
   hf.opensGI.gc.adjunction
+
+end Topology.IsInducing
 
 namespace TopologicalSpace.Opens
 
