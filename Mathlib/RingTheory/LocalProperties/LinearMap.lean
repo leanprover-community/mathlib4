@@ -36,10 +36,6 @@ theorem bijective_of_localization
   ⟨injective_of_localization _ fun J hJ => (h J hJ).1,
   surjective_of_localization _ fun J hJ => (h J hJ).2⟩
 
-noncomputable def linearEquivOfLocalization (h : ∀ (J : Ideal R) (_ : J.IsMaximal),
-    Function.Bijective (map J.primeCompl f)) : M ≃ₗ[R] N :=
-  LinearEquiv.ofBijective f <| bijective_of_localization _ h
-
 theorem exact_of_localization {R M₀ M₁ M₂ : Type*} [CommRing R] [AddCommGroup M₀] [Module R M₀]
 [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁) (g : M₁ →ₗ[R] M₂)
 (h : ∀ (J : Ideal R) (_ : J.IsMaximal), Function.Exact (map J.primeCompl f) (map J.primeCompl g)) :
@@ -78,11 +74,7 @@ theorem bijective_of_localization_finitespan (h : ∀ r : s, Function.Bijective
   ⟨injective_of_localization_finitespan _ spn _ fun r => (h r).1,
   surjective_of_localization_finitespan _ spn _ fun r => (h r).2⟩
 
-noncomputable def linearEquivOfLocalizationFinitespan (h : ∀ r : s, Function.Bijective
-    (map (Submonoid.powers r.1) f)) : M ≃ₗ[R] M' :=
-  LinearEquiv.ofBijective f <| bijective_of_localization_finitespan _ spn _ h
-
-lemma exact_of_localization_finitespan {M₀ M₁ M₂ : Type*} [AddCommGroup M₀] [Module R M₀]
+theorem exact_of_localization_finitespan {M₀ M₁ M₂ : Type*} [AddCommGroup M₀] [Module R M₀]
   [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁)
     (g : M₁ →ₗ[R] M₂) (h : ∀ r : s, Function.Exact ((map (Submonoid.powers r.1) f))
       ((map (Submonoid.powers r.1) g))) : Function.Exact f g := by
