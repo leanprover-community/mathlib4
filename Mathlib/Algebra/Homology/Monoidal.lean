@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Monoidal.Transport
 
 Let `c : ComplexShape I` with `I` an additive monoid. If `c` is equipped
 with the data and axioms `c.TensorSigns`, then the category
-`HomologicalComplex C c` can be eqquiped with a monoidal category
+`HomologicalComplex C c` can be equipped with a monoidal category
 structure if `C` is a monoidal category such that `C` has certain
 coproducts and both left/right tensoring commute with these.
 
