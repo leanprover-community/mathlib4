@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Degree.Support
+import Mathlib.Algebra.Polynomial.Eval.Coeff
 import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
@@ -145,6 +147,9 @@ theorem iterate_derivative_smul {S : Type*} [Monoid S] [DistribMulAction S R] [I
 theorem iterate_derivative_C_mul (a : R) (p : R[X]) (k : ℕ) :
     derivative^[k] (C a * p) = C a * derivative^[k] p := by
   simp_rw [← smul_eq_C_mul, iterate_derivative_smul]
+
+theorem derivative_C_mul (a : R) (p : R[X]) :
+    derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
 
 theorem of_mem_support_derivative {p : R[X]} {n : ℕ} (h : n ∈ p.derivative.support) :
     n + 1 ∈ p.support :=
@@ -641,6 +646,20 @@ theorem iterate_derivative_X_sub_pow_self (n : ℕ) (c : R) :
   rw [iterate_derivative_X_sub_pow, n.sub_self, pow_zero, nsmul_one, n.descFactorial_self]
 
 end CommRing
+
+section NoZeroDivisors
+
+variable [Semiring R] [NoZeroDivisors R]
+
+@[simp]
+theorem dvd_derivative_iff {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 where
+  mp h := by
+    by_cases hP : P = 0
+    · simp only [hP, derivative_zero]
+    exact eq_zero_of_dvd_of_degree_lt h (degree_derivative_lt hP)
+  mpr h := by simp [h]
+
+end NoZeroDivisors
 
 end Derivative
 

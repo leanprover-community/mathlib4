@@ -5,12 +5,12 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Opposite
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.Algebra.Group.Quotient
+import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Theory of topological modules and continuous linear maps.
@@ -94,9 +94,9 @@ end
 
 section LatticeOps
 
-variable {ι R M₁ M₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁]
-  [Module R M₂] [u : TopologicalSpace R] {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
-  (f : M₁ →ₗ[R] M₂)
+variable {R M₁ M₂ : Type*} [SMul R M₁] [SMul R M₂] [u : TopologicalSpace R]
+  {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
+  {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (f : F)
 
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
   let _ : TopologicalSpace M₁ := t.induced f
@@ -254,7 +254,7 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
 for the definition, although in applications `M` and `M₂` will be topological modules over the
 topological semiring `R`. -/
--- Porting note (#5171): linter not ported yet; was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet; was @[nolint has_nonempty_instance]
 structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
