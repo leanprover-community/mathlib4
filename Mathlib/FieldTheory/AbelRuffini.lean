@@ -258,8 +258,7 @@ theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   · exact fun _ => IsIntegral.neg
   · exact fun _ _ => IsIntegral.mul
   · intro α hα
-    exact Subalgebra.inv_mem_of_algebraic (integralClosure F (solvableByRad F E))
-      (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from hα.isAlgebraic)
+    exact IsIntegral.inv hα
   · intro α n hn hα
     obtain ⟨p, h1, h2⟩ := hα.isAlgebraic
     refine IsAlgebraic.isIntegral ⟨p.comp (X ^ n),
@@ -320,7 +319,7 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.
     apply Subtype.val_injective
-    -- This used to be `simp`, but we need `erw` and `simp` after leanprover/lean4#2644
+    -- This used to be `simp`, but we need `erw` and `simp` after https://github.com/leanprover/lean4/pull/2644
     erw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
     simp
   rw [P, key]

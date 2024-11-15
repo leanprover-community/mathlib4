@@ -119,7 +119,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       induction' y with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · -- Porting note (#11215): TODO: `simp [← coe_mul]` times out
+      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simp [← coe_mul]` times out
         simp only [map_coe, ← coe_mul, map_mul] }
 
 instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
@@ -194,6 +194,39 @@ protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSem
     [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
+
+variable [PosMulStrictMono α] {a a₁ a₂ b₁ b₂ : WithTop α}
+
+@[gcongr]
+protected lemma mul_lt_mul (ha : a₁ < a₂) (hb : b₁ < b₂) : a₁ * b₁ < a₂ * b₂ := by
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
+  lift a₁ to α using ha.lt_top.ne
+  lift b₁ to α using hb.lt_top.ne
+  obtain rfl | ha₂ := eq_or_ne a₂ ⊤
+  · rw [top_mul (by simpa [bot_eq_zero] using hb.bot_lt.ne')]
+    exact coe_lt_top _
+  obtain rfl | hb₂ := eq_or_ne b₂ ⊤
+  · rw [mul_top (by simpa [bot_eq_zero] using ha.bot_lt.ne')]
+    exact coe_lt_top _
+  lift a₂ to α using ha₂
+  lift b₂ to α using hb₂
+  norm_cast at *
+  obtain rfl | hb₁ := eq_zero_or_pos b₁
+  · rw [mul_zero]
+    exact mul_pos (by simpa [bot_eq_zero] using ha.bot_lt) hb
+  · exact mul_lt_mul ha hb.le hb₁ (zero_le _)
+
+variable [NoZeroDivisors α] [Nontrivial α] {a b : WithTop α}
+
+protected lemma pow_right_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun a : WithTop α ↦ a ^ n
+  | 0, h => absurd rfl h
+  | 1, _ => by simpa only [pow_one] using strictMono_id
+  | n + 2, _ => fun x y h ↦ by
+    simp_rw [pow_succ _ (n + 1)]
+    exact WithTop.mul_lt_mul (WithTop.pow_right_strictMono n.succ_ne_zero h) h
+
+@[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
+  WithTop.pow_right_strictMono hn hab
 
 end WithTop
 
