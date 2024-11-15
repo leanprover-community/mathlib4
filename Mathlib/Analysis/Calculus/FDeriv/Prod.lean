@@ -342,7 +342,7 @@ variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGrou
 @[simp]
 theorem hasStrictFDerivAt_pi' :
     HasStrictFDerivAt Φ Φ' x ↔ ∀ i, HasStrictFDerivAt (fun x => Φ x i) ((proj i).comp Φ') x := by
-  simp only [HasStrictFDerivAt, ContinuousLinearMap.coe_pi]
+  simp only [hasStrictFDerivAt_iff_isLittleO, ContinuousLinearMap.coe_pi]
   exact isLittleO_pi
 
 @[fun_prop]
