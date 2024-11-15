@@ -495,8 +495,8 @@ multilinear map with variables indexed by `ι` taking values in the space of con
 maps with variables indexed by `ι'`. -/
 def currySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') :
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G') :=
-  MultilinearMap.mkContinuousMultilinear (MultilinearMap.currySum f.toMultilinearMap) ‖f‖
-    fun m m' => by simpa [Fintype.prod_sum_type, mul_assoc] using f.le_opNorm (Sum.elim m m')
+  MultilinearMap.mkContinuousMultilinear (MultilinearMap.currySumEquiv f.toMultilinearMap) ‖f‖
+    fun m m' => by simpa [mul_assoc] using f.le_opNorm (Sum.elim m m')
 
 @[simp]
 theorem currySum_apply (f : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G') (m : ι → G)
@@ -510,7 +510,8 @@ def uncurrySum (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G)
     (ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G')) :
     ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' :=
   MultilinearMap.mkContinuous
-    (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap).uncurrySum ‖f‖ fun m => by
+    (MultilinearMap.currySumEquiv.symm
+      (toMultilinearMapLinear.compMultilinearMap f.toMultilinearMap)) ‖f‖ fun m => by
     simpa [Fintype.prod_sum_type, mul_assoc] using
       (f (m ∘ Sum.inl)).le_of_opNorm_le (m ∘ Sum.inr) (f.le_opNorm _)
 
@@ -571,7 +572,7 @@ variable {𝕜 G G'}
 theorem curryFinFinset_apply (hk : #s = k) (hl : #sᶜ = l) (f : G[×n]→L[𝕜] G')
     (mk : Fin k → G) (ml : Fin l → G) : curryFinFinset 𝕜 G G' hk hl f mk ml =
       f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
-  rfl
+  congr_arg f (by aesop)
 
 @[simp]
 theorem curryFinFinset_symm_apply (hk : #s = k) (hl : #sᶜ = l)
