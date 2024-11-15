@@ -911,6 +911,10 @@ theorem Frequently.mp {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p 
     (hpq : ∀ᶠ x in f, p x → q x) : ∃ᶠ x in f, q x :=
   mt (fun hq => hq.mp <| hpq.mono fun _ => mt) h
 
+lemma frequently_congr {p q : α → Prop} {f : Filter α} (h : ∀ᶠ x in f, p x ↔ q x) :
+    (∃ᶠ x in f, p x) ↔ ∃ᶠ x in f, q x :=
+  ⟨fun h' ↦ h'.mp (h.mono fun _ ↦ Iff.mp), fun h' ↦ h'.mp (h.mono fun _ ↦ Iff.mpr)⟩
+
 theorem Frequently.filter_mono {p : α → Prop} {f g : Filter α} (h : ∃ᶠ x in f, p x) (hle : f ≤ g) :
     ∃ᶠ x in g, p x :=
   mt (fun h' => h'.filter_mono hle) h
