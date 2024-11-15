@@ -31,8 +31,7 @@ Each statement about `Complex.re` listed below has a counterpart about `Complex.
 complex, real part, imaginary part, closure, interior, frontier
 -/
 
-
-open Set
+open Set Topology
 
 noncomputable section
 
