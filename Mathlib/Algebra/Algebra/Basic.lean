@@ -344,14 +344,14 @@ theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain
 variable {A}
 
 -- see Note [lower instance priority]
--- priority manually adjusted inhttps://github.com/leanprover-community/mathlib4/issues/11980, as it is a very common path
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/issues/11980, as it is a very common path
 instance (priority := 120) IsScalarTower.to_smulCommClass : SMulCommClass R A M :=
   ⟨fun r a m => by
     rw [algebra_compatible_smul A r (a • m), smul_smul, Algebra.commutes, mul_smul, ←
       algebra_compatible_smul]⟩
 
 -- see Note [lower instance priority]
--- priority manually adjusted inhttps://github.com/leanprover-community/mathlib4/issues/11980, as it is a very common path
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/issues/11980, as it is a very common path
 instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
 

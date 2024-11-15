@@ -1116,7 +1116,7 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
   left_inv := fun ⟨j, hj⟩ => by simp
   right_inv := fun ⟨j, hj⟩ => by
     simp
-    -- This used to be the end of the proof before https://github.com/leanprover/lean4/issues/2644
+    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
     erw [OrderIso.apply_symm_apply]
 
 @[simp]

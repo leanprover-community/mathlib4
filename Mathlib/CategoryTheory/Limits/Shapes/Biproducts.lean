@@ -36,7 +36,7 @@ a binary biproduct. We introduce `⨁ f` for the indexed biproduct.
 
 ## Implementation notes
 
-Prior to https://github.com/leanprover-community/mathlib3/issues/14046,
+Prior to https://github.com/leanprover-community/mathlib3/pull/14046,
 `HasFiniteBiproducts` required a `DecidableEq` instance on the indexing type.
 As this had no pay-off (everything about limits is non-constructive in mathlib),
  and occasional cost
@@ -843,7 +843,7 @@ section
 
 open scoped Classical
 
--- Per https://github.com/leanprover-community/mathlib3/issues/15067, we only allow indexing in `Type 0` here.
+-- Per https://github.com/leanprover-community/mathlib3/pull/15067, we only allow indexing in `Type 0` here.
 variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of

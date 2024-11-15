@@ -133,7 +133,7 @@ theorem map_injective {f : α → β} (hf : Function.Injective f) :
 def transpose (M : Matrix m n α) : Matrix n m α :=
   of fun x y => M y x
 
--- TODO: set as an equation lemma for `transpose`, see https://github.com/leanprover-community/mathlib4/issues/3024
+-- TODO: set as an equation lemma for `transpose`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem transpose_apply (M : Matrix m n α) (i j) : transpose M i j = M j i :=
   rfl

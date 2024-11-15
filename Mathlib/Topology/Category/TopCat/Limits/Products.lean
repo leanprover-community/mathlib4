@@ -216,7 +216,7 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
   constructor
   · rintro ⟨y, rfl⟩
     simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
-    -- sizable changes in this proof afterhttps://github.com/leanprover-community/mathlib4/issues/13170
+    -- sizable changes in this proof after https://github.com/leanprover-community/mathlib4/pull/13170
     rw [← comp_apply, ← comp_apply]
     simp_rw [Limits.prod.map_fst,
       Limits.prod.map_snd, comp_apply]
@@ -242,8 +242,8 @@ theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (h
   constructor
   simp_rw [topologicalSpace_coe, prod_topology, induced_inf, induced_compose, ← coe_comp,
     prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
-  erw [← hf.eq_induced, ← hg.eq_induced] -- now `erw` afterhttps://github.com/leanprover-community/mathlib4/issues/13170
-  rfl -- `rfl` was not needed beforehttps://github.com/leanprover-community/mathlib4/issues/13170
+  erw [← hf.eq_induced, ← hg.eq_induced] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+  rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
 
 @[deprecated (since := "2024-10-28")] alias inducing_prod_map := isInducing_prodMap
 

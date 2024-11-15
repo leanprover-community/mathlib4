@@ -33,7 +33,7 @@ We provide the following operations on `Trivialization`s.
 
 Previously, in mathlib, there was a structure `topological_vector_bundle.trivialization` which
 extended another structure `topological_fiber_bundle.trivialization` by a linearity hypothesis. As
-of PR https://github.com/leanprover-community/mathlib3/issues/17359, we have changed this to a single structure
+of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single structure
 `Trivialization` (no namespace), together with a mixin class `Trivialization.IsLinear`.
 
 This permits all the *data* of a vector bundle to be held at the level of fiber bundles, so that the

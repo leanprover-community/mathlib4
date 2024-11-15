@@ -1404,7 +1404,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     _ ≤ 1 + x + x ^ 2 := by
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
-      -- (It may also need the positivity extensions inhttps://github.com/leanprover-community/mathlib4/issues/3907.)
+      -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
       erw [Finset.sum_range_succ]
       repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]

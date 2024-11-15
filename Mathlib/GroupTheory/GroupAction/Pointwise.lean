@@ -50,7 +50,7 @@ section MulActionSemiHomClass
 variable [FunLike F M N] [MulActionSemiHomClass F σ M N]
     (c : R) (s : Set M) (t : Set N)
 
--- @[simp] -- Inhttps://github.com/leanprover-community/mathlib4/issues/8386, the `simp_nf` linter complains:
+-- @[simp] -- In https://github.com/leanprover-community/mathlib4/pull/8386, the `simp_nf` linter complains:
 -- "Left-hand side does not simplify, when using the simp lemma on itself."
 -- For now we will have to manually add `image_smul_setₛₗ _` to the `simp` argument list.
 -- TODO: when https://github.com/leanprover/lean4/issues/3107 is fixed, mark this as `@[simp]`.

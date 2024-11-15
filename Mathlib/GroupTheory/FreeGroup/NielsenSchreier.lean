@@ -159,7 +159,7 @@ variable {G : Type u} [Groupoid.{u} G] [IsFreeGroupoid G]
 private def root' : G :=
   show T from root T
 
--- this has to be marked noncomputable, see issuehttps://github.com/leanprover-community/mathlib4/issues/451.
+-- this has to be marked noncomputable, see issue https://github.com/leanprover-community/mathlib4/pull/451.
 -- It might be nicer to define this in terms of `composePath`
 /-- A path in the tree gives a hom, by composition. -/
 -- Porting note: removed noncomputable. This is already declared at the beginning of the section.

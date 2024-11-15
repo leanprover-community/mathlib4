@@ -18,7 +18,7 @@ spaces. It consists of the data of a topological space, satisfying the additiona
 being compact and Hausdorff, and satisfying `P`. We give a category structure to `CompHausLike P`
 induced by the forgetful functor to topological spaces.
 
-It used to be the case (beforehttps://github.com/leanprover-community/mathlib4/issues/12930 was merged) that several different categories of compact
+It used to be the case (before https://github.com/leanprover-community/mathlib4/pull/12930 was merged) that several different categories of compact
 Hausdorff spaces, possibly satisfying some extra property, were defined from scratch in this way.
 For example, one would define a structure `CompHaus` as follows:
 

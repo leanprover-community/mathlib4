@@ -91,7 +91,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | add x y i hx hy ihx ihy =>
-      -- Note: inhttps://github.com/leanprover-community/mathlib4/issues/8386 `map_add` had to be specialized to avoid a timeout
+      -- Note: in https://github.com/leanprover-community/mathlib4/pull/8386 `map_add` had to be specialized to avoid a timeout
       -- (the definition was already very slow)
       rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
       rfl

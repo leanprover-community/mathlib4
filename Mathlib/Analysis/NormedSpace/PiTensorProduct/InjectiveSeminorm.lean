@@ -67,7 +67,7 @@ on `⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuou
 
 * If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
 `⨂[𝕜] i, Eᵢ` is a norm. This uses the construction of a basis of the `PiTensorProduct`, hence
-depends on PR https://github.com/leanprover-community/mathlib4/issues/11156. It should probably go in a separate file.
+depends on PR https://github.com/leanprover-community/mathlib4/pull/11156. It should probably go in a separate file.
 
 * Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
 

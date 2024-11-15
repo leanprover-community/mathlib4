@@ -755,12 +755,12 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
   by_cases h : b ≤ i
   · use b
-    -- This was not needed before https://github.com/leanprover/lean4/issues/2644
+    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp
     rw [Fin.predAbove_of_le_castSucc i b (by simpa only [Fin.coe_eq_castSucc] using h)]
     simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ
-    -- This was not needed before https://github.com/leanprover/lean4/issues/2644
+    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp
     rw [Fin.predAbove_of_castSucc_lt i b.succ _, Fin.pred_succ]
     rw [not_le] at h
@@ -813,7 +813,7 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  -- Porting note: the proof was rewritten from this point inhttps://github.com/leanprover-community/mathlib4/issues/3414 (reenableeta)
+  -- Porting note: the proof was rewritten from this point in https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta)
   -- It could be investigated again to see if the original can be restored.
   ext x
   replace eq₁ := congr_arg (· x) eq₁
@@ -831,7 +831,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
   simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
     OrderHom.coe_mk, Function.comp_apply]
   by_cases h' : x ≤ Fin.castSucc i
-  · -- This was not needed before https://github.com/leanprover/lean4/issues/2644
+  · -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp
     rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
@@ -842,7 +842,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     let y := x.pred <| by rintro (rfl : x = 0); simp at h'
     have hy : x = y.succ := (Fin.succ_pred x _).symm
     rw [hy] at h' ⊢
-    -- This was not needed before https://github.com/leanprover/lean4/issues/2644
+    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     conv_rhs => dsimp
     rw [Fin.predAbove_of_castSucc_lt i y.succ h', Fin.pred_succ]
     by_cases h'' : y = i

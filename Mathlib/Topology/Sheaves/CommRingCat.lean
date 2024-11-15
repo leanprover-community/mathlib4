@@ -307,7 +307,7 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
   constructor
   · rintro rfl
     rw [← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-    -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw`https://github.com/leanprover-community/mathlib4/issues/8386
+    -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` https://github.com/leanprover-community/mathlib4/pull/8386
     repeat rw [← comp_apply]
     simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
   · rintro ⟨e₁, e₂⟩
@@ -316,11 +316,11 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
     · rw [← inf_sup_right]
       exact le_inf e le_rfl
     · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
-      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw`https://github.com/leanprover-community/mathlib4/issues/8386
+      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` https://github.com/leanprover-community/mathlib4/pull/8386
       repeat rw [← comp_apply]
       simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
     · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw`https://github.com/leanprover-community/mathlib4/issues/8386
+      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` https://github.com/leanprover-community/mathlib4/pull/8386
       repeat rw [← comp_apply]
       simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
 

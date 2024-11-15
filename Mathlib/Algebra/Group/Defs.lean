@@ -731,7 +731,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
--- Bughttps://github.com/leanprover-community/mathlib4/issues/660
+-- Bug https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive existing] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=

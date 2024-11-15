@@ -271,7 +271,7 @@ end Group
 
 namespace Measure
 
--- TODO: noncomputable has to be specified explicitly.https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
+-- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
 
 /-- The measure `A ↦ μ (A⁻¹)`, where `A⁻¹` is the pointwise inverse of `A`. -/
 @[to_additive "The measure `A ↦ μ (- A)`, where `- A` is the pointwise negation of `A`."]

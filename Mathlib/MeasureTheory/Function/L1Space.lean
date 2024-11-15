@@ -355,7 +355,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
     (∫⁻ a : α, ‖c • f a‖₊ ∂μ) ≤ ∫⁻ a : α, ‖c‖₊ * ‖f a‖₊ ∂μ := by
       refine lintegral_mono ?_
       intro i
-      -- After https://github.com/leanprover/lean4/issues/2734, we need to do beta reduction `exact mod_cast`
+      -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction `exact mod_cast`
       beta_reduce
       exact mod_cast (nnnorm_smul_le c (f i))
     _ < ∞ := by
@@ -586,7 +586,7 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
   calc
     (∫⁻ a, ‖f a + g a‖₊ ∂μ) ≤ ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ :=
       lintegral_mono fun a => by
-        -- After https://github.com/leanprover/lean4/issues/2734, we need to do beta reduction before `exact mod_cast`
+        -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `exact mod_cast`
         beta_reduce
         exact mod_cast nnnorm_add_le _ _
     _ = _ := lintegral_nnnorm_add_left hf.aestronglyMeasurable _

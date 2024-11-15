@@ -784,7 +784,7 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
   simp only [SetLike.le_def, prod_apply, mem_range, SetLike.mem_coe, mem_prod, exists_imp, and_imp,
     Prod.forall, Pi.prod]
   rintro _ _ x rfl y rfl
-  -- Note:https://github.com/leanprover-community/mathlib4/issues/8386 had to specify `(f := f)`
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify `(f := f)`
   simp only [Prod.mk.inj_iff, ← sub_mem_ker_iff (f := f)]
   have : y - x ∈ ker f ⊔ ker g := by simp only [h, mem_top]
   rcases mem_sup.1 this with ⟨x', hx', y', hy', H⟩
@@ -857,7 +857,7 @@ all isomorphic to `M`.
 -/
 @[deprecated (since := "2024-06-05")]
 def tunnel (f : M × N →ₗ[R] M) (i : Injective f) : ℕ →o (Submodule R M)ᵒᵈ :=
-  -- Note: the hint `(α := _)` had to be added inhttps://github.com/leanprover-community/mathlib4/issues/8386
+  -- Note: the hint `(α := _)` had to be added in https://github.com/leanprover-community/mathlib4/pull/8386
   ⟨fun n => OrderDual.toDual (α := Submodule R M) (tunnel' f i n).1,
     monotone_nat_of_le_succ fun n => by
       dsimp [tunnel', tunnelAux]

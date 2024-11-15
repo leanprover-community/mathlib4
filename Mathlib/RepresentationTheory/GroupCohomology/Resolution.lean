@@ -325,7 +325,7 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
   -- are still not set up properly.
   rw [ModuleCat.coe_comp]
   simp only [ModuleCat.coe_comp, Function.comp_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/issues/2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [diagonalSucc_hom_single]
   -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
   -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.

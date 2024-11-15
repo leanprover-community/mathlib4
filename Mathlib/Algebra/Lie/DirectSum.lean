@@ -73,7 +73,7 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
       refine DFinsupp.ext fun i => ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext i`
       by_cases h : j = i
       · rw [← h]; simp
-      · -- This used to be the end of the proof before https://github.com/leanprover/lean4/issues/2644
+      · -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
         -- old proof `simp [lof, lsingle, h]`
         simp only [lof, lsingle, AddHom.toFun_eq_coe, lie_module_bracket_apply]
         erw [AddHom.coe_mk]
@@ -151,14 +151,14 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
       refine DFinsupp.ext fun i => ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext i`
       by_cases h : j = i
       · rw [← h]
-        -- This used to be the end of the proof before https://github.com/leanprover/lean4/issues/2644
+        -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]
         · simp? [h] says simp only [h, ↓reduceDIte, single_apply]
         · intros
           rw [single_add]
-      · -- This used to be the end of the proof before https://github.com/leanprover/lean4/issues/2644
+      · -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
         -- with `simp [of, singleAddHom]`
         simp only [of, singleAddHom, bracket_apply]
         erw [AddHom.coe_mk, single_apply, single_apply]

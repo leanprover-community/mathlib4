@@ -34,7 +34,7 @@ The category `CompHaus` is defined using the structure `CompHausLike`. See the f
 
 universe v u
 
--- This was a global instance prior tohttps://github.com/leanprover-community/mathlib4/issues/13170. We may experiment with removing it.
+-- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 open CategoryTheory CompHausLike

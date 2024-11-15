@@ -233,7 +233,7 @@ theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := 
   intro v
   apply le_antisymm (i.hom.2 v)
   calc
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/issues/2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     ‖v‖ = ‖i.inv (i.hom v)‖ := by erw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
 

@@ -247,7 +247,7 @@ theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q 
   dsimp only [EvenHom.compr₂_bilin, LinearMap.compr₂_apply, AlgHom.toLinearMap_apply,
     AlgHom.comp_apply, AlgHom.id_apply]
   rw [evenToNeg_ι]
-  -- Needed to use `RingHom.map_neg` to avoid a timeout and now `erw`https://github.com/leanprover-community/mathlib4/issues/8386
+  -- Needed to use `RingHom.map_neg` to avoid a timeout and now `erw` https://github.com/leanprover-community/mathlib4/pull/8386
   erw [RingHom.map_neg, evenToNeg_ι, neg_neg]
 
 /-- The even subalgebras of the algebras with quadratic form `Q` and `-Q` are isomorphic.

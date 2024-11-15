@@ -47,7 +47,7 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 
 -- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
 -- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
--- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/issues/18040).
+-- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass

@@ -740,7 +740,7 @@ instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRi
     NonUnitalNormedCommRing (lp B ∞) where
   mul_comm _ _ := ext <| mul_comm ..
 
--- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for mathlib3https://github.com/leanprover-community/mathlib4/issues/13719
+-- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_assoc (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩

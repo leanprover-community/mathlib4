@@ -285,7 +285,7 @@ def obj' : ModuleCat S :=
 `l : M1 ⟶ M2` is sent to `s ⊗ m ↦ s ⊗ l m`
 -/
 def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
-  by-- The "by apply" part makes this require 75% fewer heartbeats to process (https://github.com/leanprover-community/mathlib4/issues/16371).
+  by-- The "by apply" part makes this require 75% fewer heartbeats to process (https://github.com/leanprover-community/mathlib4/pull/16371).
   apply @LinearMap.baseChange R S M1 M2 _ _ ((algebraMap S _).comp f).toAlgebra _ _ _ _ l
 
 theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ :=

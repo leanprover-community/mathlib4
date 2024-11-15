@@ -416,7 +416,7 @@ theorem Trivialization.contMDiffOn_symm_trans :
   have Hmaps : MapsTo Prod.fst (e.target ∩ e'.target) (e.baseSet ∩ e'.baseSet) := fun x hx ↦
     ⟨e.mem_target.1 hx.1, e'.mem_target.1 hx.2⟩
   rw [mapsTo_inter] at Hmaps
-  -- TODO: drop `congr`https://github.com/leanprover-community/mathlib4/issues/5473
+  -- TODO: drop `congr` https://github.com/leanprover-community/mathlib4/issues/5473
   refine (contMDiffOn_fst.prod_mk
     (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr ?_
   rintro ⟨b, x⟩ hb

@@ -301,7 +301,7 @@ def pullbackConeOfLeftFst :
                   · rintro _ ⟨_, h₁, h₂⟩
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
                     -- Porting note: need a slight hand holding
-                    -- used to be `simpa using h₁` beforehttps://github.com/leanprover-community/mathlib4/issues/13170
+                    -- used to be `simpa using h₁` before https://github.com/leanprover-community/mathlib4/pull/13170
                     change _ ∈ _ ⁻¹' _ ∧ _
                     simp only [TopCat.coe_of, restrict_carrier, Set.preimage_id', Set.mem_preimage,
                       SetLike.mem_coe]
@@ -313,7 +313,7 @@ def pullbackConeOfLeftFst :
                   · rintro _ ⟨x, h₁, rfl⟩
                     -- next line used to be
                     --  `exact ⟨_, h₁, ConcreteCategory.congr_hom pullback.condition x⟩))`
-                    -- beforehttps://github.com/leanprover-community/mathlib4/issues/13170
+                    -- before https://github.com/leanprover-community/mathlib4/pull/13170
                     refine ⟨_, h₁, ?_⟩
                     change (_ ≫ f.base) _ = (_ ≫ g.base) _
                     rw [pullback.condition]))

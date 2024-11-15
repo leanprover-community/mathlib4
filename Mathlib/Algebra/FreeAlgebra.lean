@@ -254,7 +254,7 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
   smul_def' _ _ := rfl
 
 -- verify there is no diamond at `default` transparency but we will need
--- `reducible_and_instances` which currently failshttps://github.com/leanprover-community/mathlib4/issues/10906
+-- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 variable (S : Type) [CommSemiring S] in
 example : (Semiring.toNatAlgebra : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
@@ -276,7 +276,7 @@ instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
 -- verify there is no diamond but we will need
--- `reducible_and_instances` which currently failshttps://github.com/leanprover-community/mathlib4/issues/10906
+-- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 variable (S : Type) [CommRing S] in
 example : (Ring.toIntAlgebra _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
