@@ -149,9 +149,17 @@ then
   then
     printf '<details><summary>No changes to technical debt.</summary>\n'
   else
-    printf '<details><summary>Changes to technical debt</summary>\n\n%s\n' "${rep}"
+    printf '%s\n' "${rep}" |
+      awk -F '|' -v rep="${rep}" '
+        BEGIN{total=0; weight=0}
+        (($3+0 == $3) && (!($2+0 == 0))) {total+=1 / $2; weight+=$3 / $2}
+        END{
+          average=weight/total
+          if(average < 0) {change= "Decrease"; average=-average; weight=-weight} else {change= "Increase"}
+          printf("<details><summary>%s in tech debt: (relative, absolute) = (%4.2f, %4.2f)</summary>\n\n%s\n", change, average, weight, rep) }'
   fi
-  printf '\nYou can run this locally as\n```\n./scripts/technical-debt-metrics.sh pr_summary\n```\n</details>\n'
+  printf '\nYou can run this locally as\n```\n./scripts/technical-debt-metrics.sh pr_summary\n```\n%s\n</details>\n' '* The `relative` value is the weighted *sum* of the differences with weight given by the *inverse* of the current value of the statistic.
+* The `absolute` value is the `relative` value divided by the total sum of the inverses of the current values (i.e. the weighted *average* of the differences).'
 else
   report
 fi

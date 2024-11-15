@@ -3,11 +3,12 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 import Mathlib.CategoryTheory.Monoidal.Subcategory
 import Mathlib.LinearAlgebra.Coevaluation
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+import Mathlib.RingTheory.Finiteness.TensorProduct
 
 /-!
 # The category of finitely generated modules over a ring
@@ -193,7 +194,7 @@ instance closedPredicateModuleFinite :
 
 instance : MonoidalClosed (FGModuleCat K) := by
   dsimp [FGModuleCat]
-  -- Porting note (#11187): was `infer_instance`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11187): was `infer_instance`
   exact MonoidalCategory.fullMonoidalClosedSubcategory
     (fun V : ModuleCat.{u} K => Module.Finite K V)
 

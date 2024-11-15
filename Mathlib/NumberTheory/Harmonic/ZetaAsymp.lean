@@ -244,7 +244,7 @@ section continuity
 lemma continuousOn_term (n : ℕ) :
     ContinuousOn (fun x ↦ term (n + 1) x) (Ici 1) := by
   -- TODO: can this be shortened using the lemma
-  -- `continuous_parametric_intervalIntegral_of_continuous'` from #11185?
+  -- `continuous_parametric_intervalIntegral_of_continuous'` from https://github.com/leanprover-community/mathlib4/pull/11185?
   simp only [term, intervalIntegral.integral_of_le (by linarith : (↑(n + 1) : ℝ) ≤ ↑(n + 1) + 1)]
   apply continuousOn_of_dominated (bound := fun x ↦ (x - ↑(n + 1)) / x ^ (2 : ℝ))
   · exact fun s hs ↦ (term_welldef (by simp) (zero_lt_one.trans_le hs)).1.1

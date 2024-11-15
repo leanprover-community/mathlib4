@@ -62,7 +62,7 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
               -- Porting note: simp [Finsupp.linearCombination_single] fails but rw succeeds
               dsimp [Basis.constr]
               simp only [Finsupp.lmapDomain_id, comp_id]
-              -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+              -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
               erw [Finsupp.linearCombination_single]
               rw [one_smul]
               rfl ⟩) }⟩
