@@ -39,7 +39,7 @@ jobs:
           printf '%s' "${COMMENT}" | hexdump -cC
           printf 'Comment:"%s"\n' "${COMMENT}"
           m_or_d="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^bors  *\(merge\|r+\)$=ready-to-merge=p; s=^bors  *d$=delegated=p' | head -1)"
+            sed -n 's=^bors  *\(merge\|r+\)$=ready-to-merge=p; s=^bors  *d.*=delegated=p' | head -1)"
 
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
 
