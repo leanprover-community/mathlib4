@@ -13,8 +13,9 @@ The characteristic of the ring of linear maps is determined by its base ring.
 ## Main Results
 
 - `CharP_if` : For a commutative semiring `R` and a `R`-module `M`,
-  the characteristic of `R` is equal to the characteristic of `R`-linear endomorphisms of `M` when
-  `M` contains an element `x` such that `r • x = 0` implies `r = 0`.
+  the characteristic of `R` is equal to the characteristic of the `R`-linear
+  endomorphisms of `M` when `M` contains an element `x` such that
+  `r • x = 0` implies `r = 0`.
 
 ## Notations
 
