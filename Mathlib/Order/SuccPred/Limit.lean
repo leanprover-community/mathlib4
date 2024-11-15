@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Order.BoundedOrder
-import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.Archimedean
 
 /-!
