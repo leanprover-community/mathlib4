@@ -315,9 +315,8 @@ protected theorem add_zero (a : Nimber) : a + 0 = a := by
       exact ha.ne
     · intro _ h
       exact (Nimber.not_lt_zero _ h).elim
-  · -- by_contra! doesn't work for whatever reason.
-    by_contra h
-    replace h := lt_of_not_le h
+  · by_contra! h
+    replace h := h -- needed to remind `termination_by`
     have := Nimber.add_zero (a + 0)
     rw [add_left_inj] at this
     exact this.not_lt h
