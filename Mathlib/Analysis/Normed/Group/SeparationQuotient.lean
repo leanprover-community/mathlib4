@@ -26,11 +26,6 @@ subspace as a submodule of `E`.
 
 * `nullSubmodule` : the subspace of elements `x` with `‖x‖ = 0`.
 
-## Implementation details
-
-For any `SeminormedAddCommGroup M`, we define a norm on `SeparationQuotient M` by
-`‖x‖ = ‖mk x‖` using the lift.
-
 -/
 
 
@@ -39,8 +34,6 @@ noncomputable section
 open SeparationQuotient Set
 
 variable {M : Type*} [SeminormedAddCommGroup M]
-
-namespace SeparationQuotient
 
 variable (M) in
 /-- The null subgroup with respect to the norm. -/
@@ -59,26 +52,20 @@ lemma isClosed_nullSubgroup : IsClosed (nullSubgroup M : Set M) :=
 @[simp]
 lemma mem_nullSubgroup_iff {x : M} : x ∈ nullSubgroup M ↔ ‖x‖ = 0 := Iff.rfl
 
-variable (x : SeparationQuotient M)
-
-variable (z : M)
-
-/-- If for `(m : M)` it holds that `mk m = 0`, then `m  ∈ nullSubgroup`. -/
-theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
-  rw [← norm_mk]
-  exact Iff.symm norm_eq_zero
-
 variable (𝕜 E : Type*)
-variable [SeminormedAddCommGroup E] [NormedDivisionRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [SeminormedAddCommGroup E] [SeminormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
 /-- The null space with respect to the norm. -/
 def nullSubmodule : Submodule 𝕜 E where
   __ := nullSubgroup E
-  smul_mem' c x (hx : ‖x‖ = 0) := by simp [norm_smul, hx]
+  smul_mem' c x (hx : ‖x‖ = 0) := by
+    apply le_antisymm _ (norm_nonneg _)
+    refine (norm_smul_le _ _).trans_eq ?_
+    rw [hx, mul_zero]
+
+lemma isClosed_nullSubmodule : IsClosed (nullSubmodule 𝕜 E : Set E) := isClosed_nullSubgroup
 
 @[simp]
 lemma mem_nullSubmodule_iff {x : E} : x ∈ nullSubmodule 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
-
-end SeparationQuotient
 
 end

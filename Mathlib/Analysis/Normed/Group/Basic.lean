@@ -523,7 +523,13 @@ lemma norm_mul_right_eq_norm (x : E) {y : E} (h : ‖y‖ = 0) : ‖x * y‖ = �
   · simpa [h] using norm_le_mul_norm_add x y
 
 @[to_additive]
-lemma norm_div_eq_norm (x : E) {y : E} (h : ‖y‖ = 0) : ‖x / y‖ = ‖x‖ := by
+lemma norm_div_eq_left_norm {x : E} (y : E) (h : ‖x‖ = 0) : ‖x / y‖ = ‖y‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_div_le x y
+  · simpa [h, norm_div_rev x y] using norm_sub_norm_le' y x
+
+@[to_additive]
+lemma norm_div_right_eq_norm (x : E) {y : E} (h : ‖y‖ = 0) : ‖x / y‖ = ‖x‖ := by
   apply le_antisymm ?_ ?_
   · simpa [h] using norm_div_le x y
   · simpa [h] using norm_sub_norm_le' x y
