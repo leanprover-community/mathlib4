@@ -34,11 +34,11 @@ separated morphisms and unramified morphisms, respectively.
 https://stacks.math.columbia.edu/tag/0CY0
 -/
 
-open scoped Topology
+open Topology
 
 variable {X Y A} [TopologicalSpace X] [TopologicalSpace A]
 
-protected lemma IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding (toPullbackDiag f) :=
+protected lemma Topology.IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding (toPullbackDiag f) :=
   .mk' _ (injective_toPullbackDiag f) fun x ↦ by
     rw [toPullbackDiag, nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod]
     erw [Filter.comap_id, inf_idem]
@@ -158,7 +158,7 @@ alias IsLocallyInjective_iff_openEmbedding := IsLocallyInjective_iff_isOpenEmbed
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
   IsLocallyInjective_iff_isOpenEmbedding.trans
-    ⟨IsOpenEmbedding.isOpenMap, isOpenEmbedding_of_continuous_injective_open
+    ⟨IsOpenEmbedding.isOpenMap, .of_continuous_injective_isOpenMap
       (IsEmbedding.toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
 
 theorem discreteTopology_iff_locallyInjective (y : Y) :
