@@ -253,7 +253,7 @@ lemma sigmaι_eq_iff (i j : ι) (x y) :
     by_cases h : i = j
     · subst h
       simp only [Sigma.mk.inj_iff, heq_eq_eq, true_and]
-      exact ((disjointGlueData f).ι i).isOpenEmbedding.inj H
+      exact ((disjointGlueData f).ι i).isOpenEmbedding.injective H
     · obtain (e | ⟨z, _⟩) := (Scheme.GlueData.ι_eq_iff _ _ _ _ _).mp H
       · exact (h (Sigma.mk.inj_iff.mp e).1).elim
       · simp only [disjointGlueData_J, disjointGlueData_V, h, ↓reduceIte] at z
@@ -272,7 +272,7 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
 
 lemma exists_sigmaι_eq (x : (∐ f : _)) : ∃ i y, (Sigma.ι f i).base y = x := by
   obtain ⟨i, y, e⟩ := (disjointGlueData f).ι_jointly_surjective ((sigmaIsoGlued f).hom.base x)
-  refine ⟨i, y, (sigmaIsoGlued f).hom.isOpenEmbedding.inj ?_⟩
+  refine ⟨i, y, (sigmaIsoGlued f).hom.isOpenEmbedding.injective ?_⟩
   rwa [← Scheme.comp_base_apply, ι_sigmaIsoGlued_hom]
 
 lemma iSup_opensRange_sigmaι : ⨆ i, (Sigma.ι f i).opensRange = ⊤ :=
@@ -376,7 +376,7 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
     obtain (x | x) := x
     · simp only [Sum.elim_inl, coprodMk_inl, exists_apply_eq_apply]
     · simp only [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
-  IsOpen x := x.rec (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)
+  map_prop x := x.rec (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)
 
 variable (R S : Type u) [CommRing R] [CommRing S]
 

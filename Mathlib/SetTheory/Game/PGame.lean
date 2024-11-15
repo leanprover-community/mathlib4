@@ -297,10 +297,6 @@ theorem Subsequent.mk_right' (xL : xl → PGame) (xR : xr → PGame) (j : RightM
     Subsequent ((xR i).moveLeft j) (mk xl xr xL xR) := by
   pgame_wf_tac
 
--- Porting note: linter claims these lemmas don't simplify?
-open Subsequent in attribute [nolint simpNF] mk_left mk_right mk_right'
-  moveRight_mk_left moveRight_mk_right moveLeft_mk_left moveLeft_mk_right
-
 /-! ### Basic pre-games -/
 
 
@@ -503,7 +499,7 @@ theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏
   rw [← PGame.not_le] at h₂ ⊢
   exact fun h₃ => h₂ (h₃.trans h₁)
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_le_of_lf⟩
 
 @[trans]
@@ -511,7 +507,7 @@ theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏
   rw [← PGame.not_le] at h₁ ⊢
   exact fun h₃ => h₁ (h₂.trans h₃)
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
 
 alias _root_.LE.le.trans_lf := lf_of_le_of_lf

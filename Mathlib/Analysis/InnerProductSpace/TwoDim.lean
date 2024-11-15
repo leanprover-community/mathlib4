@@ -487,7 +487,7 @@ theorem normSq_kahler (x y : E) : Complex.normSq (o.kahler x y) = ‖x‖ ^ 2 * 
   simpa [kahler_apply_apply, Complex.normSq, sq] using o.inner_sq_add_areaForm_sq x y
 
 theorem abs_kahler (x y : E) : Complex.abs (o.kahler x y) = ‖x‖ * ‖y‖ := by
-  rw [← sq_eq_sq, Complex.sq_abs]
+  rw [← sq_eq_sq₀, Complex.sq_abs]
   · linear_combination o.normSq_kahler x y
   · positivity
   · positivity

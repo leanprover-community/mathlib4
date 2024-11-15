@@ -568,12 +568,12 @@ theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [AddCommGroup M]
   · rintro ⟨u, rfl⟩
     exact (span_singleton_group_smul_eq _ _ _).symm
 
--- Should be `@[simp]` but doesn't fire due to `lean4#3701`.
+-- Should be `@[simp]` but doesn't fire due to https://github.com/leanprover/lean4/pull/3701.
 theorem span_image [RingHomSurjective σ₁₂] (f : F) :
     span R₂ (f '' s) = map f (span R s) :=
   (map_span f s).symm
 
-@[simp] -- Should be replaced with `Submodule.span_image` when `lean4#3701` is fixed.
+@[simp] -- Should be replaced with `Submodule.span_image` when https://github.com/leanprover/lean4/pull/3701 is fixed.
 theorem span_image' [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) :
     span R₂ (f '' s) = map f (span R s) :=
   span_image _

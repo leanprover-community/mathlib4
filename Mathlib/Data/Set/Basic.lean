@@ -1031,7 +1031,7 @@ theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
   ext fun _ => eq_comm
 
 -- TODO: again, annotation needed
---Porting note (#11119): removed `simp` attribute
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute
 theorem mem_singleton (a : α) : a ∈ ({a} : Set α) :=
   @rfl _ _
 
@@ -1581,7 +1581,7 @@ theorem diff_insert_of_not_mem {x : α} (h : x ∉ s) : s \ insert x t = s \ t :
 @[simp]
 theorem insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
   ext
-  constructor <;> simp (config := { contextual := true }) [or_imp, h]
+  constructor <;> simp +contextual [or_imp, h]
 
 theorem insert_diff_of_not_mem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
   classical

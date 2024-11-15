@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.Ring
@@ -466,11 +465,11 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
   let m := (q.den : ℤ)
   let n := q.num
   have hm0 : m ≠ 0 := by
-    -- Added to adapt to leanprover/lean4#2734.
-    -- Without `unfold_let`, `norm_cast` can't see the coercion.
+    -- Added to adapt to https://github.com/leanprover/lean4/pull/2734.
+    -- Without `unfold`, `norm_cast` can't see the coercion.
     -- One might try `zeta := true` in `Tactic.NormCast.derive`,
     -- but that seems to break many other things.
-    unfold_let m
+    unfold m
     norm_cast
     apply Rat.den_nz q
   have hq2 : q = n / m := (Rat.num_div_den q).symm
