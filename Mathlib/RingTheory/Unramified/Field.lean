@@ -206,7 +206,6 @@ theorem isSeparable : Algebra.IsSeparable K L := by
   rw [← separableClosure.eq_top_iff]
   have := of_comp K (separableClosure K L) L
   have := EssFiniteType.of_comp K (separableClosure K L) L
-  have := separableClosure.isPurelyInseparable K L
   ext
   show _ ↔ _ ∈ (⊤ : Subring _)
   rw [← range_eq_top_of_isPurelyInseparable (separableClosure K L) L]
