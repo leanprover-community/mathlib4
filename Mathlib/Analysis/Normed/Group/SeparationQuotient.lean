@@ -15,8 +15,6 @@ define the null space as a subgroup.
 ## Main definitions
 
 We use `M` to denote seminormed groups.
-All the following definitions are in the `SeparationQuotient` namespace. Hence we can access
-`SeparationQuotient.normedMk` as `normedMk`.
 
 * `nullSubgroup` : the subgroup of elements `x` with `‖x‖ = 0`.
 
@@ -36,8 +34,8 @@ variable {M : Type*} [SeminormedCommGroup M]
 
 variable (M) in
 /-- The null subgroup with respect to the norm. -/
-@[to_additive nullAddSubgroup "The additive null subgroup with respect to the norm."]
-def nullSubgroup' : Subgroup M where
+@[to_additive "The additive null subgroup with respect to the norm."]
+def nullSubgroup : Subgroup M where
   carrier := {x : M | ‖x‖ = 0}
   mul_mem' {x y} (hx : ‖x‖ = 0) (hy : ‖y‖ = 0) := by
     apply le_antisymm _ (norm_nonneg' _)
@@ -47,11 +45,11 @@ def nullSubgroup' : Subgroup M where
   inv_mem' {x} (hx : ‖x‖ = 0) := by simpa only [mem_setOf_eq, norm_inv'] using hx
 
 @[to_additive]
-lemma isClosed_nullSubgroup : IsClosed (nullSubgroup' M : Set M) := by
+lemma isClosed_nullSubgroup : IsClosed (nullSubgroup M : Set M) := by
   apply isClosed_singleton.preimage continuous_norm'
 
-@[simp]
-lemma mem_nullSubgroup_iff {x : M} : x ∈ nullSubgroup' M ↔ ‖x‖ = 0 := Iff.rfl
+@[to_additive (attr := simp)]
+lemma mem_nullSubgroup_iff {x : M} : x ∈ nullSubgroup M ↔ ‖x‖ = 0 := Iff.rfl
 
 variable {𝕜 E : Type*}
 variable [SeminormedAddCommGroup E] [SeminormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
