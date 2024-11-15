@@ -12,8 +12,8 @@ import Mathlib.CategoryTheory.Sites.Subcanonical
 # Limits of epimorphisms in coherent topoi
 
 This file proves that a sequential limit of epimorphisms is epimorphic in the category of sheaves
-for the coherent topology on a preregular finitary extensive concrete category where the effective
-epimorphisms are precisely the surjective ones.
+for the coherent topology on a preregular finitary extensive category where sequential limits of
+effective epimorphisms are effective epimorphisms.
 
 In other words, given epimorphisms of sheaves
 
@@ -87,19 +87,16 @@ private noncomputable def cone (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) : C
       GrothendieckTopology.yonedaEquiv_symm_naturality_right,
       preimageDiagram, (preimageStruct hF X y).w n])
 
-variable [ConcreteCategory C] (h : ∀ {X Y : C} (f : X ⟶ Y), EffectiveEpi f ↔ Function.Surjective f)
-
-variable [PreservesLimitsOfShape ℕᵒᵖ (forget C)]
+variable (h : ∀ (G : ℕᵒᵖ ⥤ C),
+  (∀ n, EffectiveEpi (G.map (homOfLE (Nat.le_succ n)).op)) → EffectiveEpi (limit.π G ⟨0⟩))
 
 include hF h hc in
-lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map :
+lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map  :
     Sheaf.IsLocallySurjective (c.π.app ⟨0⟩) := by
   rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff]
   intro X y
-  have hh : EffectiveEpi (limit.π (preimageDiagram hF X y) ⟨0⟩) := by
-    rw [h]
-    refine Concrete.surjective_π_app_zero_of_surjective_map (limit.isLimit _) fun n ↦ ?_
-    simpa [preimageDiagram, ← h] using (preimageStruct hF X y).effectiveEpi n
+  have hh : EffectiveEpi (limit.π (preimageDiagram hF X y) ⟨0⟩) :=
+    h _ fun n ↦ by simpa [preimageDiagram] using (preimageStruct hF X y).effectiveEpi n
   refine ⟨limit (preimageDiagram hF X y), limit.π (preimageDiagram hF X y) ⟨0⟩, hh,
     (coherentTopology C).yonedaEquiv (hc.lift (cone hF X y )),
     (?_ : (c.π.app (op 0)).val.app _ _ = _)⟩
