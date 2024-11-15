@@ -53,7 +53,7 @@ theorem LocalizationMap.subsingleton (f : Submonoid.LocalizationMap S N) (h : 0 
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0
@@ -160,9 +160,6 @@ theorem isLeftRegular_of_le_isCancelMulZero (f : LocalizationWithZeroMap S N)
   have : IsLeftCancelMulZero N :=
     leftCancelMulZero_of_le_isLeftRegular f (fun x h' => (h h').left)
   exact IsLeftCancelMulZero.to_isCancelMulZero
-
-@[deprecated isLeftRegular_of_le_isCancelMulZero (since := "2024-01-16")]
-alias isLeftRegular_of_le_IsCancelMulZero := isLeftRegular_of_le_isCancelMulZero
 
 end LocalizationWithZeroMap
 

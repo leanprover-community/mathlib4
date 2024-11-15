@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Induction
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Polynomial.Degree.Support
+import Mathlib.Algebra.Polynomial.Degree.Units
+import Mathlib.Algebra.Polynomial.Monomial
+import Mathlib.Algebra.Prime.Defs
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
@@ -53,7 +55,7 @@ theorem eval₂_congr {R S : Type*} [Semiring R] [Semiring S] {f g : R →+* S} 
 
 @[simp]
 theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
-  simp (config := { contextual := true }) only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
+  simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
     mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff,
     RingHom.map_zero, imp_true_iff, eq_self_iff_true]
 
@@ -583,7 +585,7 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     refine natDegree_pow_le.trans_lt ((mul_lt_mul_right (pos_iff_ne_zero.mpr hqd0)).mpr ?_)
     exact lt_of_le_of_ne (le_natDegree_of_mem_supp _ hbs) hbp
   case h₁ =>
-    simp (config := { contextual := true })
+    simp +contextual
 
 @[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
     (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
@@ -816,10 +818,10 @@ protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
 theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
   Polynomial.induction_on p (by simp only [map_C, forall_const, C_comp, eq_self_iff_true])
     (by
-      simp (config := { contextual := true }) only [Polynomial.map_add, add_comp, forall_const,
+      simp +contextual only [Polynomial.map_add, add_comp, forall_const,
         imp_true_iff, eq_self_iff_true])
     (by
-      simp (config := { contextual := true }) only [pow_succ, ← mul_assoc, comp, forall_const,
+      simp +contextual only [pow_succ, ← mul_assoc, comp, forall_const,
         eval₂_mul_X, imp_true_iff, eq_self_iff_true, map_X, Polynomial.map_mul])
 
 @[simp]
@@ -1056,7 +1058,7 @@ theorem support_map_subset [Semiring R] [Semiring S] (f : R →+* S) (p : R[X]) 
     (map f p).support ⊆ p.support := by
   intro x
   contrapose!
-  simp (config := { contextual := true })
+  simp +contextual
 
 theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →+* S}
     (hf : Function.Injective f) : (map f p).support = p.support := by
