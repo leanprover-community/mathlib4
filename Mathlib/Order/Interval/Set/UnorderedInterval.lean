@@ -337,7 +337,7 @@ variable {x : α}
 
 lemma mem_uIoo_of_lt (ha : a < x) (hb : x < b) : x ∈ uIoo a b := Ioo_subset_uIoo ⟨ha, hb⟩
 
-lemma mem_uIoo_of_ge (hb : b < x) (ha : x < a) : x ∈ uIoo a b := Ioo_subset_uIoo' ⟨hb, ha⟩
+lemma mem_uIoo_of_gt (hb : b < x) (ha : x < a) : x ∈ uIoo a b := Ioo_subset_uIoo' ⟨hb, ha⟩
 
 variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c d x : α}
 
