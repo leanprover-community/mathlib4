@@ -22,6 +22,25 @@ def conjDelab : Delab := do
   let z ← withNaryArg 5 delab
   `(conj $z)
 
+attribute [-instance] Finsupp.pointwiseScalar
+
+-- #check Coe*
+
+-- TODO can this be generalized in the direction of `Pi.smul'`
+-- (i.e. dependent functions and finsupps)
+-- TODO in theory this could be generalised, we only really need `smul_zero` for the definition
+noncomputable
+instance Finsupp.pointwiseScalar' {α β γ : Type*} [AddCommMonoid β] [CommSemiring γ] [Module γ β] :
+    HSMul (α → β) (α →₀ γ) (α →₀ β) where
+  hSMul f g :=
+    Finsupp.ofSupportFinite (fun a ↦ g a • f a) (by
+      apply Set.Finite.subset g.finite_support
+      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
+        Finsupp.fun_support_eq, Finset.mem_coe]
+      intro x hx h
+      apply hx
+      rw [h, zero_smul])
+
 def SupportedCoprime (μ : (Fin 2 → ℤ) →₀ ℝ≥0) : Prop :=
   ∀ p ∈ μ.support, IsCoprime (p 0) (p 1)
 
@@ -50,39 +69,24 @@ notation "θ" => (a:ℝ) / q + β
 
 def Finsupp.mass {α A : Type*} [AddCommMonoid A] (a : α →₀ A) : A := a.sum (fun _ ↦ id)
 
-class CoePreservesZero (A B : Type*) [Zero A] [Zero B] [Coe A B] : Prop :=
-  (coe_preserves_zero : (0:A) = (0:B))
-
-instance : CoePreservesZero ℝ≥0 ℝ where
-  coe_preserves_zero := rfl
-
-instance : CoePreservesZero ℝ ℂ where
-  coe_preserves_zero := rfl
-
-noncomputable instance {α A B : Type*} [Zero A] [Zero B] [Coe A B] [CoePreservesZero A B] :
-    Coe (α →₀ A) (α →₀ B) where
-  coe := Finsupp.mapRange (fun a ↦ a) sorry
-
 set_option quotPrecheck false in
 notation "S" => Finsupp.mass <|
- (fun (x, y) ↦ exp (2 * π * I * θ * (x ⬝ᵥ y)) : (Fin 2 → ℤ) × (Fin 2 → ℤ) → ℂ)
-  • (μ.pointwise_prod ν : (Fin 2 → ℤ) × (Fin 2 → ℤ) →₀ ℂ)
+ (fun (x, y) ↦ exp (2 * π * I * θ * (x ⬝ᵥ y)) : (Fin 2 → ℤ) × (Fin 2 → ℤ) → ℂ) • μ.pointwise_prod ν
 
 theorem cauchy_schwarz {α : Type*} (μ : α →₀ ℝ≥0) (f g : α → ℂ) :
-    ‖((f * g) • (μ : α →₀ ℂ)).mass‖ ^ 2
-    ≤ ((Complex.normSq ∘ f) • (μ : α →₀ ℝ)).mass * ((Complex.normSq ∘ g) • (μ : α →₀ ℝ)).mass :=
+    ‖((f * g) • μ).mass‖ ^ 2
+    ≤ ((fun x ↦ ‖f x‖ ^ 2) • μ).mass * ((Complex.normSq ∘ g) • μ).mass := by
   sorry
-
 
 example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
   let f : (Fin 2 → ℤ) → ℂ := 1
   let g (x : Fin 2 → ℤ) : ℂ := Finsupp.mass <|
-    (fun y ↦ exp (2 * π * I * θ * (x ⬝ᵥ y))) • (ν : (Fin 2 → ℤ) →₀ ℂ)
+    (fun y ↦ exp (2 * π * I * θ * (x ⬝ᵥ y))) • ν
   calc _ = _ := by
         simp [f, g]
         sorry
     _ ≤ _ := cauchy_schwarz μ f g
-    _ = μ.mass * ((Complex.normSq ∘ g) • (μ : (Fin 2 → ℤ) →₀ ℝ)).mass := by
+    _ = μ.mass * ((Complex.normSq ∘ g) • μ).mass := by
         simp [f]
         sorry
     _ ≤ μ.mass * ((μ.mass * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2) := ?_
