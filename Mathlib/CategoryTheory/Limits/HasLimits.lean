@@ -876,6 +876,11 @@ theorem colimit.ι_pre (k : K) : colimit.ι (E ⋙ F) k ≫ colimit.pre F E = co
   rfl
 
 @[reassoc (attr := simp)]
+theorem colimit.ι_inv_pre [IsIso (pre F E)] (k : K) :
+    colimit.ι F (E.obj k) ≫ inv (colimit.pre F E) = colimit.ι (E ⋙ F) k := by
+  simp [IsIso.comp_inv_eq]
+
+@[reassoc (attr := simp)]
 theorem colimit.pre_desc (c : Cocone F) :
     colimit.pre F E ≫ colimit.desc F c = colimit.desc (E ⋙ F) (c.whisker E) := by
   ext; rw [← assoc, colimit.ι_pre]; simp
