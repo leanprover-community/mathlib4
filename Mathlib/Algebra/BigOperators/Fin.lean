@@ -363,9 +363,8 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
         exact not_lt.mp this
 
 @[simp]
-theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ}
-    (k : (i : Fin m) × Fin (n i)) :
-      (finSigmaFinEquiv k : ℕ) = ∑ i, n (Fin.castLE k.1.isLt.le i) + k.2 := rfl
+theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) × Fin (n i)) :
+    (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.isLt.le i) + k.2 := rfl
 
 theorem finSigmaFinEquiv_pair {m : ℕ} {n : Fin m → ℕ} (i : Fin m) (k : Fin (n i)) :
     (finSigmaFinEquiv ⟨i, k⟩ : ℕ) = ∑ j, n (Fin.castLE i.isLt.le j) + k := by
