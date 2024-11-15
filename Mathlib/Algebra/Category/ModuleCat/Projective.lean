@@ -6,8 +6,8 @@ Authors: Markus Himmel, Kim Morrison
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Module.Projective
 import Mathlib.CategoryTheory.Preadditive.Projective
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 /-!
 # The category of `R`-modules has enough projectives.
@@ -62,7 +62,7 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
               -- Porting note: simp [Finsupp.linearCombination_single] fails but rw succeeds
               dsimp [Basis.constr]
               simp only [Finsupp.lmapDomain_id, comp_id]
-              -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+              -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
               erw [Finsupp.linearCombination_single]
               rw [one_smul]
               rfl ⟩) }⟩

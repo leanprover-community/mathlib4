@@ -591,7 +591,7 @@ lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈
         (by aesop) (by simp) (by simp) (by simp) (by simp)
     _ = w i j := by
       rw [← prod_univ_sum, ← prod_mul_prod_compl, Finset.prod_singleton, Finset.sum_eq_single,
-        Finset.prod_eq_one, mul_one] <;> simp (config := { contextual := true }) [hw₁]
+        Finset.prod_eq_one, mul_one] <;> simp +contextual [hw₁]
 
 @[simp] lemma convexHull_pi (s : Set ι) (t : Π i, Set (E i)) :
     convexHull 𝕜 (s.pi t) = s.pi (fun i ↦ convexHull 𝕜 (t i)) :=

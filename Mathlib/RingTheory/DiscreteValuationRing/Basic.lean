@@ -41,12 +41,12 @@ discrete valuation ring
 
 universe u
 
-open Ideal LocalRing
+open Ideal IsLocalRing
 
 /-- An integral domain is a *discrete valuation ring* (DVR) if it's a local PID which
   is not a field. -/
 class DiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R]
-    extends IsPrincipalIdealRing R, LocalRing R : Prop where
+    extends IsPrincipalIdealRing R, IsLocalRing R : Prop where
   not_a_field' : maximalIdeal R ≠ ⊥
 
 namespace DiscreteValuationRing
@@ -58,13 +58,13 @@ theorem not_a_field : maximalIdeal R ≠ ⊥ :=
 
 /-- A discrete valuation ring `R` is not a field. -/
 theorem not_isField : ¬IsField R :=
-  LocalRing.isField_iff_maximalIdeal_eq.not.mpr (not_a_field R)
+  IsLocalRing.isField_iff_maximalIdeal_eq.not.mpr (not_a_field R)
 
 variable {R}
 
 open PrincipalIdealRing
 
-theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [LocalRing R] [IsDomain R]
+theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [IsLocalRing R] [IsDomain R]
     (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine ⟨h2, ?_⟩
@@ -109,7 +109,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
     rcases id RDVR with ⟨Rlocal⟩
     constructor
     · assumption
-    use LocalRing.maximalIdeal R
+    use IsLocalRing.maximalIdeal R
     constructor
     · exact ⟨Rlocal, inferInstance⟩
     · rintro Q ⟨hQ1, hQ2⟩
@@ -123,7 +123,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
       rw [irreducible_iff_uniformizer] at hQ2
       exact hQ2.symm
   · rintro ⟨RPID, Punique⟩
-    haveI : LocalRing R := LocalRing.of_unique_nonzero_prime Punique
+    haveI : IsLocalRing R := IsLocalRing.of_unique_nonzero_prime Punique
     refine { not_a_field' := ?_ }
     rcases Punique with ⟨P, ⟨hP1, hP2⟩, _⟩
     have hPM : P ≤ maximalIdeal R := le_maximalIdeal hP2.1
@@ -454,24 +454,6 @@ section
 variable (A : Type u) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
 
 /-- A DVR is a valuation ring. -/
-instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
-  constructor
-  intro a b
-  by_cases ha : a = 0; · use 0; right; simp [ha]
-  by_cases hb : b = 0; · use 0; left; simp [hb]
-  obtain ⟨ϖ, hϖ⟩ := DiscreteValuationRing.exists_irreducible A
-  obtain ⟨m, u, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible ha hϖ
-  obtain ⟨n, v, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible hb hϖ
-  rcases le_total m n with h | h
-  · use (u⁻¹ * v : Aˣ) * ϖ ^ (n - m); left
-    simp_rw [mul_comm (u : A), Units.val_mul, ← mul_assoc, mul_assoc _ (u : A)]
-    simp only [Units.mul_inv, mul_one, mul_comm _ (v : A), mul_assoc, ← pow_add]
-    congr 2
-    exact Nat.add_sub_of_le h
-  · use (v⁻¹ * u : Aˣ) * ϖ ^ (m - n); right
-    simp_rw [mul_comm (v : A), Units.val_mul, ← mul_assoc, mul_assoc _ (v : A)]
-    simp only [Units.mul_inv, mul_one, mul_comm _ (u : A), mul_assoc, ← pow_add]
-    congr 2
-    exact Nat.add_sub_of_le h
+instance (priority := 100) of_discreteValuationRing : ValuationRing A := inferInstance
 
 end
