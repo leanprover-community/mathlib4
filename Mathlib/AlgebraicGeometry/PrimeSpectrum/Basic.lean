@@ -716,16 +716,24 @@ section IsIntegral
 
 open Polynomial
 
-theorem isClosed_comap_singleton_of_isIntegral {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (hf : f.IsIntegral)
-    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
-    IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
-  have := (isClosed_singleton_iff_isMaximal x).1 hx
-  (isClosed_singleton_iff_isMaximal _).2
-    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal)
+variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
 
-lemma closure_image_comap_zeroLocus {R S : Type*} [CommRing R] [CommRing S]
-    (f : R →+* S) (I : Ideal S) :
+theorem isClosedMap_comap_of_isIntegral (hf : f.IsIntegral) :
+    IsClosedMap (comap f) := by
+  refine fun s hs ↦ isClosed_image_of_stableUnderSpecialization _ _ hs ?_
+  rintro _ y e ⟨x, hx, rfl⟩
+  algebraize [f]
+  obtain ⟨q, hq₁, hq₂, hq₃⟩ := Ideal.exists_ideal_over_prime_of_isIntegral y.asIdeal x.asIdeal
+    ((le_iff_specializes _ _).mpr e)
+  refine ⟨⟨q, hq₂⟩, ((le_iff_specializes _ ⟨q, hq₂⟩).mp hq₁).mem_closed hs hx,
+    PrimeSpectrum.ext hq₃⟩
+
+theorem isClosed_comap_singleton_of_isIntegral (hf : f.IsIntegral)
+    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
+    IsClosed ({comap f x} : Set (PrimeSpectrum R)) := by
+  simpa using isClosedMap_comap_of_isIntegral f hf _ hx
+
+lemma closure_image_comap_zeroLocus (I : Ideal S) :
     closure (comap f '' zeroLocus I) = zeroLocus (I.comap f) := by
   apply subset_antisymm
   · rw [(isClosed_zeroLocus _).closure_subset_iff, Set.image_subset_iff, preimage_comap_zeroLocus]
@@ -737,16 +745,16 @@ lemma closure_image_comap_zeroLocus {R S : Type*} [CommRing R] [CommRing S]
     apply isClosed_closure.stableUnderSpecialization ((le_iff_specializes
       (comap f ⟨p', hp'⟩) x).mp hq₂) (subset_closure (by exact ⟨_, hp'', rfl⟩))
 
-lemma isIntegral_of_isClosedMap_comap_mapRingHom
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (h : IsClosedMap (comap (mapRingHom (algebraMap R S)))) :
-    Algebra.IsIntegral R S := by
+lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRingHom f))) :
+    f.IsIntegral := by
+  algebraize [f]
+  suffices Algebra.IsIntegral R S by rwa [Algebra.isIntegral_def] at this
   nontriviality R
   nontriviality S
   constructor
   intro r
   let p : S[X] := C r * X - 1
-  have : (1 : R[X]) ∈ Ideal.span {X} ⊔ (Ideal.span {p}).comap (mapRingHom (algebraMap R S)) := by
+  have : (1 : R[X]) ∈ Ideal.span {X} ⊔ (Ideal.span {p}).comap (mapRingHom f) := by
     have H := h _ (isClosed_zeroLocus {p})
     rw [← zeroLocus_span, ← closure_eq_iff_isClosed, closure_image_comap_zeroLocus] at H
     rw [← Ideal.eq_top_iff_one, sup_comm, ← zeroLocus_empty_iff_eq_top, zeroLocus_sup, H]
@@ -756,7 +764,7 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom
     have : 1 ∈ q.asIdeal := by simpa [p] using (sub_mem (q.asIdeal.mul_mem_left (C r) hXq) hpq)
     exact q.2.ne_top (q.asIdeal.eq_top_iff_one.mpr this)
   obtain ⟨a, b, hb, e⟩ := Ideal.mem_span_singleton_sup.mp this
-  obtain ⟨c, hc : b.map _ = _⟩ := Ideal.mem_span_singleton.mp hb
+  obtain ⟨c, hc : b.map (algebraMap R S) = _⟩ := Ideal.mem_span_singleton.mp hb
   refine ⟨b.reverse * X ^ (1 + c.natDegree), ?_, ?_⟩
   · refine Monic.mul ?_ (by simp)
     have h : b.coeff 0 = 1 := by simpa using congr(($e).coeff 0)
