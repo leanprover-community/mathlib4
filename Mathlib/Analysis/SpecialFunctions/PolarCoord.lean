@@ -144,19 +144,19 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
       rw [abs_of_pos hx.1]
 
 theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ℝ≥0∞) :
-    ∫⁻ (p : ℝ × ℝ) in polarCoord.target, (p.1).toNNReal • f (polarCoord.symm p) =
+    ∫⁻ (p : ℝ × ℝ) in polarCoord.target, ENNReal.ofReal p.1 • f (polarCoord.symm p) =
       ∫⁻ (p : ℝ × ℝ), f p := by
   symm
   calc
     _ = ∫⁻ p in polarCoord.symm '' polarCoord.target, f p := by
       rw [← setLIntegral_univ, setLIntegral_congr polarCoord_source_ae_eq_univ.symm,
         polarCoord.symm_image_target_eq_source ]
-    _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, |p.1|.toNNReal • f (polarCoord.symm p) := by
+    _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, ENNReal.ofReal |p.1| • f (polarCoord.symm p) := by
       rw [lintegral_image_eq_lintegral_abs_det_fderiv_mul volume _
         (fun p _ ↦ (hasFDerivAt_polarCoord_symm p).hasFDerivWithinAt)]
       · simp_rw [det_fderiv_polarCoord_symm]; rfl
       exacts [polarCoord.symm.injOn, measurableSet_Ioi.prod measurableSet_Ioo]
-    _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, (p.1).toNNReal • f (polarCoord.symm p) := by
+    _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, ENNReal.ofReal p.1 • f (polarCoord.symm p) := by
       refine setLIntegral_congr_fun polarCoord.open_target.measurableSet ?_
       filter_upwards with _ hx using by rw [abs_of_pos hx.1]
 
