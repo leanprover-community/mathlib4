@@ -347,19 +347,17 @@ lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := 
 /--
 Another characterization of coheight, based on the supremum of the coheights of elements above.
 -/
-lemma coheight_eq_iSup_lt_height (x : α) : coheight x = ⨆ (y : α) (_  : x < y), coheight y + 1 :=
+lemma coheight_eq_iSup_lt_height (x : α) : coheight x = ⨆ y > x, coheight y + 1 :=
   height_eq_iSup_lt_height (α := αᵒᵈ) x
 
-lemma height_le_coe_iff {x : α} {n : ℕ} :
-    height x ≤ n ↔ (∀ y < x, height y < n) := by
+lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ (∀ y < x, height y < n) := by
   conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
   congr! 2 with y _
   cases height y
   · simp
   · norm_cast
 
-lemma coheight_le_coe_iff {x : α} {n : ℕ} :
-    coheight x ≤ n ↔ (∀ y, x < y → coheight y < n) :=
+lemma coheight_le_coe_iff {x : α} {n : ℕ} : coheight x ≤ n ↔ (∀ y > x, coheight y < n) :=
   height_le_coe_iff (α := αᵒᵈ)
 
 /--
@@ -421,7 +419,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
 lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤):
-    n < coheight x ↔ (∃ y, x < y ∧ coheight y = n) :=
+    n < coheight x ↔ (∃ y > x, coheight y = n) :=
   coe_lt_height_iff (α := αᵒᵈ) hfin
 
 lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
@@ -439,7 +437,7 @@ lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
 
 lemma coheight_eq_coe_add_one_iff (x : α) (n : ℕ) :
     coheight x = n + 1 ↔
-      coheight x < ⊤ ∧ (∃ y > x, coheight y = n) ∧ (∀ y, x < y → coheight y ≤ n) :=
+      coheight x < ⊤ ∧ (∃ y > x, coheight y = n) ∧ (∀ y > x, coheight y ≤ n) :=
   height_eq_coe_add_one_iff (α := αᵒᵈ)
 
 lemma height_eq_coe_iff {x : α} {n : ℕ} :
@@ -460,7 +458,7 @@ lemma height_eq_coe_iff {x : α} {n : ℕ} :
 
 lemma coheight_eq_coe_iff (x : α) (n : ℕ) :
     coheight x = n ↔
-      coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y, y > x → coheight y < n) :=
+      coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y > x, coheight y < n) :=
   height_eq_coe_iff (α := αᵒᵈ)
 
 /-- The elements of finite height `n` are the minimial elements among those of height `≥ n`. -/
