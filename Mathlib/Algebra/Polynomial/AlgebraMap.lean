@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Polynomial.Monomial
 import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
