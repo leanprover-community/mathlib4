@@ -1652,16 +1652,20 @@ theorem currySumEquiv_symm_apply
     currySumEquiv.symm g u =
       g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i')) := rfl
 
-@[deprecated  (since := "2024-11-01")]
-alias currySum := currySumEquiv
+/-- A multilinear map on `∀ i : ι ⊕ ι', M'` defines a multilinear map on `∀ i : ι, M'`
+taking values in the space of multilinear maps on `∀ i : ι', M'`. -/
+@[deprecated "Use currySumEquiv instead" (since := "2024-11-01")]
+def currySum (f : MultilinearMap R N M₂) :
+    MultilinearMap R (fun (i : ι) ↦ N (.inl i))
+      (MultilinearMap R (fun (i : ι') ↦ N (.inr i)) M₂) := currySumEquiv f
 
 /-- A multilinear map on `∀ i : ι, M'` taking values in the space of multilinear maps
 on `∀ i : ι', M'` defines a multilinear map on `∀ i : ι ⊕ ι', M'`.
 (Use `currySumEquiv` instead.) -/
-@[deprecated  (since := "2024-11-01")]
-def uncurrySum : MultilinearMap R (fun (i : ι) ↦ N (.inl i))
-    (MultilinearMap R (fun (i : ι') ↦ N (.inr i)) M₂) →ₗ[R] MultilinearMap R N M₂ :=
-  currySumEquiv.symm.toLinearMap
+@[deprecated "Use currySumEquiv.symm instead" (since := "2024-11-01")]
+def uncurrySum (f : MultilinearMap R (fun (i : ι) ↦ N (.inl i))
+    (MultilinearMap R (fun (i : ι') ↦ N (.inr i)) M₂)) : MultilinearMap R N M₂ :=
+  currySumEquiv.symm f
 
 variable (R M₂ M')
 
