@@ -82,6 +82,12 @@ notation "S" =>
 
 -- TODO ok for both to be simp?
 
+theorem Finsupp.mass_eq_tsum {α A K : Type*} [Semiring A] [AddCommMonoid K] [TopologicalSpace K]
+    [Module A K]
+    (f : α → K) (μ : α →₀ A) :
+    ∑ x, f x ∂μ  = ∑' x, μ x • f x := by
+  sorry
+
 @[simp]
 theorem fubini {α β : Type*} {A K : Type*} [DecidableEq A] [Semiring A] [AddCommMonoid K]
     [Module A K] (f : α → β → K)
@@ -119,8 +125,54 @@ example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
     _ ≤ μ.mass * ((μ.mass * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2) := ?_
     _ = _ := by ring
   gcongr
+  rw [Finsupp.mass_eq_tsum]
+  let μ' : (Fin 2 → ℤ) → ℝ≥0 := sorry
+  have hμ : μ ≤ μ' := sorry
+  calc _ ≤ ∑' (x : Fin 2 → ℤ), μ' x • ‖g x‖ ^ 2 := by
+        apply tsum_mono
+        · sorry -- summability of finsupps
+        · sorry -- summability of the new `μ'`
+        intro x
+        dsimp
+        gcongr
+    _ ≤ _ := ?_
+  have hg (x : Fin 2 → ℤ) :=
+  calc
+    ‖g x‖ ^ 2
+      = g x * conj (g x) := sorry
+    _ = (∑ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν)
+        * conj (∑ y' : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y')) ∂ν) := sorry
+    _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
+          exp (2 * π * I * θ * (x ⬝ᵥ p.1))
+          * conj (exp (2 * π * I * θ * (x ⬝ᵥ p.2))) ∂(ν.pointwise_prod ν) := sorry
+    _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
+          exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))) ∂(ν.pointwise_prod ν) := sorry
+  have :=
+  calc ∑' (x : Fin 2 → ℤ), μ' x • ‖g x‖ ^ 2
+      = ∑' (x : Fin 2 → ℤ), μ' x • (∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
+          exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))) ∂(ν.pointwise_prod ν)) := by
+        push_cast
+        congr! with x
+        trans μ' x • ‖g x‖ ^ 2
+        · sorry -- casting issue
+        rw [hg]
+        rfl
+    _ = ∑' (x : Fin 2 → ℤ), μ' x • (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
+          (ν.pointwise_prod ν) p • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2)))) := by
+        simp_rw [Finsupp.mass_eq_tsum]
+    _ = ∑' (x : Fin 2 → ℤ), (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
+          μ' x • ((ν.pointwise_prod ν) p • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) := by sorry
+    _ = ∑' (x : Fin 2 → ℤ), (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ),
+          (ν.pointwise_prod ν) p  • (μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) := by sorry
+    _ = (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ), ∑' (x : Fin 2 → ℤ),
+          (ν.pointwise_prod ν) p  • (μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) := by sorry
+    _ = (∑' p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (ν.pointwise_prod ν) p • ∑' (x : Fin 2 → ℤ),
+          (μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) := by sorry
+    _ = ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), (∑' (x : Fin 2 → ℤ),
+          (μ' x • exp (2 * π * I * θ * (x ⬝ᵥ (p.1 - p.2))))) ∂(ν.pointwise_prod ν) := by
+        rw [Finsupp.mass_eq_tsum]
 
-  sorry
+
 
 #exit
 
