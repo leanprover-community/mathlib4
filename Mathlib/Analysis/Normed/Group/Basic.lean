@@ -502,7 +502,7 @@ theorem norm_le_mul_norm_add (u v : E) : ‖u‖ ≤ ‖u * v‖ + ‖v‖ :=
     _ ≤ ‖u * v‖ + ‖v‖ := norm_div_le _ _
 
 /-- An analogue of `norm_le_mul_norm_add` for the multiplication from the left. -/
-@[to_additive]
+@[to_additive "An analogue of `norm_le_add_norm_add` for the addition from the left."]
 theorem norm_le_mul_norm_add' (u v : E) : ‖v‖ ≤ ‖u * v‖ + ‖u‖ :=
   calc
     ‖v‖ = ‖u⁻¹ * (u * v)‖ := by rw [← mul_assoc, inv_mul_cancel, one_mul]
