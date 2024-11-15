@@ -5,6 +5,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
 import Mathlib.Order.RelSeries
+import Mathlib.Order.Minimal
 import Mathlib.Data.ENat.Lattice
 
 /-!
@@ -317,6 +318,25 @@ lemma height_eq_coe_iff {x : α} {n : ℕ} :
     congr! 3
     rename_i y _
     cases height y <;> simp; norm_cast; omega
+
+/-- The elements of finite height `n` are the minimial elements among those of height `≥ n`. -/
+lemma height_eq_coe_iff_minimal_le_height (a : α) (n : ℕ) :
+    height a = n ↔ Minimal (fun y => n ≤ height y) a := by
+  by_cases hfin : height a < ⊤
+  · suffices (n = 0 ∨ ∃ y < a, height y = ↑n - 1) ↔ ↑n ≤ height a by
+      simp [minimal_iff_forall_lt, height_eq_coe_iff, *]
+    cases n with
+    | zero => simp
+    | succ =>
+      simp [add_eq_zero, one_ne_zero, and_false, Nat.cast_add, Nat.cast_one, false_or, ne_eq,
+        ENat.coe_ne_top, not_false_eq_true, ENat.add_one_le_iff, hfin, coe_lt_height_iff]
+      rfl
+  · suffices ∃ x, ∃ (_ : x < a), ↑n ≤ height x by
+      simp_all [minimal_iff_forall_lt]
+    simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
+    obtain ⟨p, rfl, hp⟩ := hfin (n+1)
+    use p.eraseLast.last, RelSeries.eraseLast_last_rel_last _ (by omega)
+    simpa [hp] using length_le_height_last (p := p.eraseLast)
 
 end height
 
