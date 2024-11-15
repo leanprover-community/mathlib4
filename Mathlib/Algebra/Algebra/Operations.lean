@@ -70,7 +70,7 @@ variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 /-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
 TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
 once a version of `Algebra` without the `commutes'` field is introduced.
-See issue #18110.
+See issue https://github.com/leanprover-community/mathlib4/issues/18110.
 -/
 instance one : One (Submodule R A) :=
   ⟨LinearMap.range (LinearMap.toSpanSingleton R A 1)⟩
@@ -620,7 +620,7 @@ variable (R A)
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   -- Porting note: have to unfold both `HSMul.hSMul` and `SMul.smul`
-  -- Note: the hint `(α := A)` is new in #8386
+  -- Note: the hint `(α := A)` is new in https://github.com/leanprover-community/mathlib4/pull/8386
   smul s P := span R (SetSemiring.down (α := A) s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by

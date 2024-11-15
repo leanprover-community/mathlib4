@@ -689,6 +689,35 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
 
 end MvPolynomial
 
+lemma isJacobsonRing_of_finiteType {A B : Type*} [CommRing A] [CommRing B]
+    [Algebra A B] [IsJacobsonRing A] [Algebra.FiniteType A B] : IsJacobsonRing B := by
+  obtain ⟨ι, hι, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial'.mp ‹_›
+  exact isJacobsonRing_of_surjective ⟨f.toRingHom, hf⟩
+
+lemma RingHom.FiniteType.isJacobsonRing {A B : Type*} [CommRing A] [CommRing B]
+    {f : A →+* B} [IsJacobsonRing A] (H : f.FiniteType) : IsJacobsonRing B :=
+  @isJacobsonRing_of_finiteType A B _ _ f.toAlgebra _ H
+
+lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field S]
+    [Algebra R S] [IsJacobsonRing R] [Algebra.FiniteType R S] :
+    Module.Finite R S := by
+  obtain ⟨ι, hι, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial'.mp ‹_›
+  have : (algebraMap R S).IsIntegral := by
+    rw [← f.comp_algebraMap]
+    exact MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing f hf
+  have : Algebra.IsIntegral R S := Algebra.isIntegral_def.mpr this
+  exact Algebra.IsIntegral.finite
+
+/--
+If `f : R →+* S` is a ring homomorphism from a jacobson ring to a field,
+then it is finite if and only if it is finite type.
+-/
+lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
+    {R S : Type*} [CommRing R] [IsJacobsonRing R] [Field S]
+    {f : R →+* S} : f.Finite ↔ f.FiniteType :=
+  ⟨RingHom.FiniteType.of_finite,
+    by intro; algebraize [f]; exact finite_of_finite_type_of_isJacobsonRing R S⟩
+
 namespace Ideal
 
 @[deprecated (since := "2024-10-27")]
