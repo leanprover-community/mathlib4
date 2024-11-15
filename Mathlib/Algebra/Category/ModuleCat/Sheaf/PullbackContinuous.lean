@@ -48,7 +48,7 @@ noncomputable def pullback : SheafOfModules.{v} S ⥤ SheafOfModules.{v} R :=
 
 /-- Given a continuous functor between sites `F`, and a morphism of sheaves of rings
 `S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R`, this is the adjunction
-between the corresponding pullback and pushforward functors of the categories
+between the corresponding pullback and pushforward functors on the categories
 of sheaves of modules. -/
 noncomputable def pullbackPushforwardAdjunction : pullback.{v} φ ⊣ pushforward.{v} φ :=
   Adjunction.ofIsRightAdjoint (pushforward φ)
