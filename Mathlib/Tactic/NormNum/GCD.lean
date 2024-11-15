@@ -232,7 +232,7 @@ theorem isNat_ratDen : ∀ {q : ℚ} {n : ℤ} {d : ℕ} {g : ℕ} {d' : ℕ},
     rwa [Int.gcd, Int.ofNat_eq_natCast, Int.natAbs_ofNat] at h'
 
 /-- Evaluates the `Rat.num` function. -/
-@[norm_num Rat.num _]
+@[nolint unusedHavesSuffices, norm_num Rat.num _]
 def evalRatNum : NormNumExt where eval {u α} e := do
   let .proj _ _ (q : Q(ℚ)) ← Meta.whnfR e | failure
   have : u =QL 0 := ⟨⟩; have : $α =Q ℤ := ⟨⟩
@@ -247,7 +247,7 @@ def evalRatNum : NormNumExt where eval {u α} e := do
   return .isInt _ lit q'.num q(isInt_ratNum $eq $pf $plit)
 
 /-- Evaluates the `Rat.den` function. -/
-@[norm_num Rat.den _]
+@[nolint unusedHavesSuffices, norm_num Rat.den _]
 def evalRatDen : NormNumExt where eval {u α} e := do
   let .proj _ _ (q : Q(ℚ)) ← Meta.whnfR e | failure
   have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
