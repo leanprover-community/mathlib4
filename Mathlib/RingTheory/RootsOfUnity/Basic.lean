@@ -251,12 +251,12 @@ namespace IsCyclic
 `n` into another group `G'` to the group of `n`th roots of unity in `G'` determined by a generator
 `g` of `G`. It sends `φ : G →* G'` to `φ g`. -/
 noncomputable
-def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] [Fintype G] {g : G}
+def monoidHomMulEquivRootsOfUnityOfGenerator {G : Type*} [CommGroup G] {g : G}
     (hg : ∀ (x : G), x ∈ Subgroup.zpowers g) (G' : Type*) [CommGroup G'] :
-    (G →* G') ≃* rootsOfUnity (Fintype.card G) G' where
+    (G →* G') ≃* rootsOfUnity (Nat.card G) G' where
   toFun φ := ⟨(IsUnit.map φ <| Group.isUnit g).unit, by
     simp only [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec,
-      ← map_pow, pow_card_eq_one, map_one, Units.val_one]⟩
+      ← map_pow, pow_card_eq_one', map_one, Units.val_one]⟩
   invFun ζ := monoidHomOfForallMemZpowers hg (g' := (ζ.val : G')) <| by
     simpa only [orderOf_eq_card_of_forall_mem_zpowers hg, orderOf_dvd_iff_pow_eq_one,
       ← Units.val_pow_eq_pow_val, Units.val_eq_one] using ζ.prop
@@ -274,8 +274,7 @@ lemma monoidHom_mulEquiv_rootsOfUnity (G : Type*) [CommGroup G] [Finite G] [IsCy
     (G' : Type*) [CommGroup G'] :
     Nonempty <| (G →* G') ≃* rootsOfUnity (Nat.card G) G' := by
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
-  have : Fintype G := Fintype.ofFinite _
-  exact ⟨Nat.card_eq_fintype_card (α  := G) ▸ monoidHomMulEquivRootsOfUnityOfGenerator hg G'⟩
+  exact ⟨monoidHomMulEquivRootsOfUnityOfGenerator hg G'⟩
 
 end IsCyclic
 

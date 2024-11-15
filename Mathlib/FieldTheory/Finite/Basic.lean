@@ -256,7 +256,7 @@ theorem cast_card_eq_zero : (q : K) = 0 := by
 theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
   classical
     obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)
-    rw [← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
+    rw [← Nat.card_eq_fintype_card, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
       orderOf_dvd_iff_pow_eq_one]
     constructor
     · intro h; apply h
@@ -587,11 +587,12 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
       push_cast
       exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
     · subst a; intro h
-      have key : 2 * (Fintype.card F / 2) ∣ n * (Fintype.card F / 2) := by
+      rw [← Nat.card_eq_fintype_card] at hodd h
+      have key : 2 * (Nat.card F / 2) ∣ n * (Nat.card F / 2) := by
         rw [← pow_mul] at h
         rw [hodd, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
         apply orderOf_dvd_of_pow_eq_one h
-      have : 0 < Fintype.card F / 2 := Nat.div_pos Fintype.one_lt_card (by norm_num)
+      have : 0 < Nat.card F / 2 := Nat.div_pos Finite.one_lt_card (by norm_num)
       obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
       refine ⟨g ^ m, ?_⟩
       dsimp
