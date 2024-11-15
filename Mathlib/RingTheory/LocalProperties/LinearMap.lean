@@ -41,7 +41,7 @@ noncomputable def linearEquivOfLocalization (h : ∀ (J : Ideal R) (_ : J.IsMaxi
   LinearEquiv.ofBijective f <| bijective_of_localization _ h
 
 theorem exact_of_localization {R M₀ M₁ M₂ : Type*} [CommRing R] [AddCommGroup M₀] [Module R M₀]
-[AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁) (g : M₁ →ₗ[R] M₂)
+    [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁) (g : M₁ →ₗ[R] M₂)
 (h : ∀ (J : Ideal R) (_ : J.IsMaximal), Function.Exact (map J.primeCompl f) (map J.primeCompl g)) :
     Function.Exact f g := by
   simp only [LinearMap.exact_iff] at h ⊢
