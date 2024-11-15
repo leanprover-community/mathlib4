@@ -154,14 +154,10 @@ theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := b
     exact h1
 
 @[to_additive]
-theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z := by
-  rw [rightMulResiduation]
-  constructor
-  · intro h1
+theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z where
+  mp h1 := by
     apply le_trans (mul_le_mul_left' h1 _)
     simp_all only [mul_sSup_eq_iSup_mul, Set.mem_setOf_eq, iSup_le_iff, implies_true]
-  · intro h1
-    apply le_sSup
-    exact h1
+  mpr h1 := le_sSup h1
 
 end Quantale
