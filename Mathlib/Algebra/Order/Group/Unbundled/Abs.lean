@@ -162,10 +162,10 @@ lemma mabs_div_sup_mul_mabs_div_inf (a b c : α) :
     _ = |a / b|ₘ := by rw [sup_div_inf_eq_mabs_div]
 
 @[to_additive] lemma mabs_sup_div_sup_le_mabs (a b c : α) : |(a ⊔ c) / (b ⊔ c)|ₘ ≤ |a / b|ₘ := by
-  apply le_of_mul_le_of_one_le_left _ (one_le_mabs _); rw [mabs_div_sup_mul_mabs_div_inf]
+  apply le_of_mul_le_of_one_le_left _ (one_le_mabs _); swap; rw [mabs_div_sup_mul_mabs_div_inf]
 
 @[to_additive] lemma mabs_inf_div_inf_le_mabs (a b c : α) : |(a ⊓ c) / (b ⊓ c)|ₘ ≤ |a / b|ₘ := by
-  apply le_of_mul_le_of_one_le_right _ (one_le_mabs _); rw [mabs_div_sup_mul_mabs_div_inf]
+  apply le_of_mul_le_of_one_le_right _ (one_le_mabs _); swap; rw [mabs_div_sup_mul_mabs_div_inf]
 
 -- Commutative case, Zaanen, 3rd lecture
 -- For the non-commutative case, see Birkhoff Theorem 19 (27)

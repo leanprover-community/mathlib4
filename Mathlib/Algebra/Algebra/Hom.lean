@@ -347,7 +347,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
 protected theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
   map_list_prod φ s
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps (config := .lemmasOnly) toMulOneClass_toMul_mul toMulOneClass_toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
