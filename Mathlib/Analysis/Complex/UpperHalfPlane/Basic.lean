@@ -169,6 +169,16 @@ theorem normSq_ne_zero (z : ℍ) : Complex.normSq (z : ℂ) ≠ 0 :=
 theorem im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
   simpa using div_pos z.property (normSq_pos z)
 
+lemma ne_nat (z : ℍ) : ∀ n : ℕ, z.1 ≠ n := by
+  intro n
+  have h1 := z.2
+  aesop
+
+lemma ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
+  intro n
+  have h1 := z.2
+  aesop
+
 -- Porting note: removed `@[simp]` because it broke `field_simp` calls below.
 /-- Numerator of the formula for a fractional linear transformation -/
 def num (g : GL(2, ℝ)⁺) (z : ℍ) : ℂ := g 0 0 * z + g 0 1
