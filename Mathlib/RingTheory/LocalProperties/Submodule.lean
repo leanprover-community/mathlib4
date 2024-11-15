@@ -145,7 +145,7 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 include spn
 
 theorem eq_zero_of_localization_finitespan (x : M)
-      (h : ∀ r : s, (mkLinearMap (Submonoid.powers r.1) M ) x = 0) : x = 0 := by
+    (h : ∀ r : s, (mkLinearMap (Submonoid.powers r.1) M ) x = 0) : x = 0 := by
   rw [← Submodule.span_singleton_eq_bot (R := R), ← Submodule.annihilator_eq_top_iff]
   by_contra! H
   obtain ⟨m, maxm, lem⟩ := exists_le_maximal _ H
