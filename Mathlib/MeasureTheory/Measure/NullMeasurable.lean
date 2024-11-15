@@ -55,8 +55,8 @@ the output type.
 measurable, measure, null measurable, completion
 -/
 
-
 open Filter Set Encodable
+open scoped ENNReal
 
 variable {ι α β γ : Type*}
 
