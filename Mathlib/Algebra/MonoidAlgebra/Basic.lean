@@ -5,11 +5,8 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.BigOperators.Finsupp
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.Algebra.MonoidAlgebra.MapDomain
+import Mathlib.Algebra.MonoidAlgebra.Module
 
 /-!
 # Monoid algebras
