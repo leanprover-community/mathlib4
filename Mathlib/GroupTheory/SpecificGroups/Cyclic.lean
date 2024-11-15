@@ -91,9 +91,9 @@ theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   exact @isCyclic_of_subsingleton _ _ (not_nontrivial_iff_subsingleton.mp nc)
 
 @[to_additive]
-theorem MonoidHom.map_cyclic {G : Type*} [Group G] [h : IsCyclic G] (σ : G →* G) :
-    ∃ m : ℤ, ∀ g : G, σ g = g ^ m := by
-  obtain ⟨h, hG⟩ := IsCyclic.exists_generator (α := G)
+theorem MonoidHom.map_cyclic [h : IsCyclic α] (σ : α →* α) :
+    ∃ m : ℤ, ∀ g, σ g = g ^ m := by
+  obtain ⟨h, hG⟩ := IsCyclic.exists_generator (α := α)
   obtain ⟨m, hm⟩ := hG (σ h)
   refine ⟨m, fun g => ?_⟩
   obtain ⟨n, rfl⟩ := hG g
@@ -199,7 +199,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
   rw [orderOf_eq_card_of_forall_mem_zpowers h, Nat.card_eq_zero_of_infinite]
 
 @[to_additive]
-instance Bot.isCyclic {α : Type u} [Group α] : IsCyclic (⊥ : Subgroup α) :=
+instance Bot.isCyclic : IsCyclic (⊥ : Subgroup α) :=
   ⟨⟨1, fun x => ⟨0, Subtype.eq <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
 
 @[to_additive]
