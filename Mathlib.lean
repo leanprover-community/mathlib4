@@ -963,6 +963,7 @@ import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.SpreadingOut
 import Mathlib.AlgebraicGeometry.Stalk
 import Mathlib.AlgebraicGeometry.StructureSheaf
+import Mathlib.AlgebraicGeometry.ValuativeCriterion
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
@@ -4386,6 +4387,7 @@ import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.FiniteType
+import Mathlib.RingTheory.RingHom.Injective
 import Mathlib.RingTheory.RingHom.Integral
 import Mathlib.RingTheory.RingHom.Locally
 import Mathlib.RingTheory.RingHom.StandardSmooth
