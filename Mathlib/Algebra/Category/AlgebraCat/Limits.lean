@@ -40,7 +40,7 @@ instance algebraObj (j) :
 def sectionsSubalgebra : Subalgebra R (∀ j, F.obj j) :=
   { SemiRingCat.sectionsSubsemiring
       (F ⋙ forget₂ (AlgebraCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) with
-    algebraMap_mem' := fun r _ _ f => (F.map f).commutes r }
+    algebraMap_mem' := fun r _ _ f => (F.map f).algHom.commutes r }
 
 instance (F : J ⥤ AlgebraCat.{w} R) : Ring (F ⋙ forget _).sections :=
   inferInstanceAs <| Ring (sectionsSubalgebra F)
@@ -88,9 +88,10 @@ namespace HasLimits
 def limitCone : Cone F where
   pt := AlgebraCat.of R (Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
-    { app := limitπAlgHom F
-      naturality := fun _ _ f =>
-        AlgHom.coe_fn_injective ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
+    { app := fun j ↦ ofHom <| limitπAlgHom F j
+      naturality := fun _ _ f => by
+        ext : 1
+        exact AlgHom.coe_fn_injective ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
 
 /-- Witness that the limit cone in `AlgebraCat R` is a limit cone.
 (Internal use only; use the limits API.)
@@ -101,15 +102,13 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
       -- Porting note: in mathlib3 the function term
       -- `fun v => ⟨fun j => ((forget (AlgebraCat R)).mapCone s).π.app j v`
       -- was provided by unification, and the last argument `(fun s => _)` was `(fun s => rfl)`.
-      (fun s => { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_,
-                  commutes' := ?_ })
+      (fun s => ofHom
+        { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_,
+          commutes' := ?_ })
       (fun s => rfl)
   · congr
     ext j
-    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
-      forget_map_eq_coe]
-    rw [map_one]
-    rfl
+    simp
   · intro x y
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app]
     erw [← map_mul (MulEquiv.symm Shrink.mulEquiv)]
@@ -118,10 +117,9 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
       forget_map_eq_coe, map_mul]
     rfl
-  · simp only [Functor.mapCone_π_app, forget_map_eq_coe]
-    congr
-    funext j
-    simp only [map_zero, Pi.zero_apply]
+  · simp only [Types.Small.limitCone_pt, Functor.comp_obj, forget_obj, Equiv.toFun_as_coe,
+      Functor.mapCone_pt, Functor.mapCone_π_app, forget_map, map_zero]
+    rfl
   · intro x y
     simp only [Functor.mapCone_π_app]
     erw [← map_add (AddEquiv.symm Shrink.addEquiv)]
@@ -135,7 +133,7 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     apply congrArg
     apply Subtype.ext
     ext j
-    exact (s.π.app j).commutes r
+    exact (s.π.app j).algHom.commutes r
 
 end HasLimits
 

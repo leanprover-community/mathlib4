@@ -88,7 +88,7 @@ theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.X r = A
 @[simps!]
 def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
   obj A := AlgebraCat.of R A.X
-  map {_ _} f :=
+  map {_ _} f := AlgebraCat.ofHom
     { f.hom.toAddMonoidHom with
       toFun := f.hom
       map_one' := LinearMap.congr_fun f.one_hom (1 : R)
@@ -152,8 +152,8 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
 def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
   map f :=
-    { hom := f.toLinearMap
-      one_hom := LinearMap.ext f.commutes
+    { hom := f.algHom.toLinearMap
+      one_hom := LinearMap.ext f.algHom.commutes
       mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
 
 end MonModuleEquivalenceAlgebra
@@ -193,23 +193,20 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
   counitIso :=
     NatIso.ofComponents
       (fun A =>
-        { hom :=
+        { hom := AlgebraCat.ofHom
             { toFun := _root_.id
               map_zero' := rfl
               map_add' := fun _ _ => rfl
               map_one' := (algebraMap R A).map_one
               map_mul' := fun x y => @LinearMap.mul'_apply R _ _ _ _ _ _ x y
               commutes' := fun _ => rfl }
-          inv :=
+          inv := AlgebraCat.ofHom
             { toFun := _root_.id
               map_zero' := rfl
               map_add' := fun _ _ => rfl
               map_one' := (algebraMap R A).map_one.symm
               map_mul' := fun x y => (@LinearMap.mul'_apply R _ _ _ _ _ _ x y).symm
               commutes' := fun _ => rfl } })
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] ModuleCat.MonModuleEquivalenceAlgebra.functor_map_apply
 
 /-- The equivalence `Mon_ (ModuleCat R) ≌ AlgebraCat R`
 is naturally compatible with the forgetful functors to `ModuleCat R`.

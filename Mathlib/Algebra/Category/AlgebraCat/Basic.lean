@@ -46,22 +46,56 @@ instance : CoeSort (AlgebraCat R) (Type v) :=
 
 attribute [coe] AlgebraCat.carrier
 
+variable {R} in
+@[ext]
+structure Hom (A B : AlgebraCat.{v} R) where
+  algHom : A →ₐ[R] B
+
 instance : Category (AlgebraCat.{v} R) where
-  Hom A B := A →ₐ[R] B
-  id A := AlgHom.id R A
-  comp f g := g.comp f
+  Hom A B := Hom A B
+  id A := ⟨AlgHom.id R A⟩
+  comp f g := ⟨g.algHom.comp f.algHom⟩
 
-instance {M N : AlgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
-  AlgHom.funLike
+@[simp]
+lemma algHom_id {A : AlgebraCat.{v} R} : (𝟙 A : A ⟶ A).algHom = AlgHom.id R A := rfl
 
-instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N :=
-  AlgHom.algHomClass
+@[simp]
+lemma algHom_comp {A B C : AlgebraCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) :
+    (f ≫ g).algHom = g.algHom.comp f.algHom := rfl
+
+@[ext]
+lemma hom_ext {A B : AlgebraCat.{v} R} {f g : A ⟶ B} (hf : f.algHom = g.algHom) : f = g :=
+  Hom.ext hf
+
+instance {M N : AlgebraCat.{v} R} : FunLike (M ⟶ N) M N where
+  coe f := f.algHom
+  coe_injective' f g h := by
+    ext : 1
+    simpa using h
+
+@[simp]
+lemma coe_algHom {M N : AlgebraCat.{v} R} (f : M ⟶ N) : ⇑f.algHom = ⇑f := rfl
+
+instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N where
+  map_mul f := map_mul f.algHom
+  map_one f := map_one f.algHom
+  map_add f := map_add f.algHom
+  map_zero f := map_zero f.algHom
+  commutes f := f.algHom.commutes
 
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
-      map := fun f => f.toFun }
-  forget_faithful := ⟨fun h => AlgHom.ext (by intros x; dsimp at h; rw [h])⟩
+      map := fun f => f.algHom }
+  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+
+@[simp]
+lemma forget_obj {A : AlgebraCat.{v} R} : (forget _).obj A = A := rfl
+
+@[simp]
+lemma forget_map {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
+    (forget _).map f = f :=
+  rfl
 
 instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Ring S.carrier)
@@ -72,12 +106,12 @@ instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
 instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
   forget₂ :=
     { obj := fun A => RingCat.of A
-      map := fun f => RingCat.ofHom f.toRingHom }
+      map := fun f => RingCat.ofHom f.algHom.toRingHom }
 
 instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.asHom f.toLinearMap }
+      map := fun f => ModuleCat.asHom f.algHom.toLinearMap }
 
 @[simp]
 lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
@@ -86,7 +120,7 @@ lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
 
 @[simp]
 lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
-    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.asHom f.toLinearMap :=
+    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.asHom f.algHom.toLinearMap :=
   rfl
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
@@ -97,7 +131,24 @@ def of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
 /-- Typecheck a `AlgHom` as a morphism in `AlgebraCat R`. -/
 def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y] [Algebra R Y]
     (f : X →ₐ[R] Y) : of R X ⟶ of R Y :=
-  f
+  ⟨f⟩
+
+@[simp]
+lemma algHom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
+    [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).algHom = f := rfl
+
+@[simp]
+lemma ofHom_algHom {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
+    @ofHom _ _ no_index _ no_index _ _ _ _ _ (Hom.algHom f) = f := rfl
+
+@[simp]
+lemma ofHom_id {X : Type v} [Ring X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
+
+@[simp]
+lemma ofHom_comp {X Y Z : Type v} [Ring X] [Ring Y] [Ring Z] [Algebra R X] [Algebra R Y]
+    [Algebra R Z] (f : X →ₐ[R] Y) (g : Y →ₐ[R] Z) :
+    ofHom (g.comp f) = ofHom f ≫ ofHom g :=
+  rfl
 
 @[simp]
 theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
@@ -120,7 +171,7 @@ def ofSelfIso (M : AlgebraCat.{v} R) : AlgebraCat.of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M
 
-variable {M N U : ModuleCat.{v} R}
+variable {M N U : AlgebraCat.{v} R}
 
 @[simp]
 theorem id_apply (m : M) : (𝟙 M : M → M) m = m :=
@@ -133,45 +184,42 @@ theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
 variable (R)
 
 /-- The "free algebra" functor, sending a type `S` to the free algebra on `S`. -/
-@[simps!]
+@[simps! obj map]
 def free : Type u ⥤ AlgebraCat.{u} R where
-  obj S :=
-    { carrier := FreeAlgebra R S
-      isRing := Algebra.semiringToRing R }
-  map f := FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
+  obj S := of R (FreeAlgebra R S)
+  map f := ofHom <| FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
   -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
-  map_id := by intro X; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; rfl
-  map_comp := by
+  map_id X := by
+    ext : 1
+    apply FreeAlgebra.hom_ext
+    ext
+    simp
+  map_comp {X Y Z} f g := by
   -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
-    intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
-    -- Porting node: this ↓ `erw` used to be handled by the `simp` below it
-    erw [CategoryTheory.coe_comp]
-    simp only [CategoryTheory.coe_comp, Function.comp_apply, types_comp_apply]
-    -- Porting node: this ↓ `erw` and `rfl` used to be handled by the `simp` above
-    erw [FreeAlgebra.lift_ι_apply, FreeAlgebra.lift_ι_apply]
-    rfl
+    ext : 1
+    apply FreeAlgebra.hom_ext
+    ext
+    simp
 
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => (FreeAlgebra.lift _).symm
-      -- Relying on `obviously` to fill out these proofs is very slow :(
+    { homEquiv := fun _ _ =>
+        { toFun := fun f ↦ (FreeAlgebra.lift _).symm f.algHom
+          invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
+          left_inv := fun f ↦ by simp
+          right_inv := fun f ↦ by simp
+        }
       homEquiv_naturality_left_symm := by
-        -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
-        intros; apply FreeAlgebra.hom_ext; simp only [FreeAlgebra.ι_comp_lift]; ext1
-        simp only [free_map, Equiv.symm_symm, FreeAlgebra.lift_ι_apply, CategoryTheory.coe_comp,
-          Function.comp_apply, types_comp_apply]
-        -- Porting node: this ↓ `erw` and `rfl` used to be handled by the `simp` above
-        erw [FreeAlgebra.lift_ι_apply, CategoryTheory.comp_apply, FreeAlgebra.lift_ι_apply,
-          Function.comp_apply, FreeAlgebra.lift_ι_apply]
-        rfl
+        intros
+        ext : 1
+        apply FreeAlgebra.hom_ext
+        ext
+        simp
       homEquiv_naturality_right := by
-        intros; ext
-        simp only [CategoryTheory.coe_comp, Function.comp_apply,
-          FreeAlgebra.lift_symm_apply, types_comp_apply]
-        -- Porting note: proof used to be done after this ↑ `simp`; added ↓ two lines
-        erw [FreeAlgebra.lift_symm_apply, FreeAlgebra.lift_symm_apply]
-        rfl }
+        intros
+        ext
+        simp }
 
 instance : (forget (AlgebraCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
@@ -184,8 +232,8 @@ variable {X₁ X₂ : Type u}
 @[simps]
 def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
     (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
-  hom := (e : X₁ →ₐ[R] X₂)
-  inv := (e.symm : X₂ →ₐ[R] X₁)
+  hom := AlgebraCat.ofHom (e : X₁ →ₐ[R] X₂)
+  inv := AlgebraCat.ofHom (e.symm : X₂ →ₐ[R] X₁)
   hom_inv_id := by ext x; exact e.left_inv x
   inv_hom_id := by ext x; exact e.right_inv x
 
@@ -194,21 +242,17 @@ namespace CategoryTheory.Iso
 /-- Build a `AlgEquiv` from an isomorphism in the category `AlgebraCat R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
-  { i.hom with
+  { i.hom.algHom with
     toFun := i.hom
     invFun := i.inv
     left_inv := fun x => by
       -- Porting note: was `by tidy`
       change (i.hom ≫ i.inv) x = x
-      simp only [hom_inv_id]
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [id_apply]
+      simp
     right_inv := fun x => by
       -- Porting note: was `by tidy`
       change (i.inv ≫ i.hom) x = x
-      simp only [inv_hom_id]
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [id_apply] }
+      simp }
 
 end CategoryTheory.Iso
 
@@ -223,18 +267,5 @@ def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebr
 instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
-    let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
+    let e : X ≃ₐ[R] Y := { f.algHom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom
-
-/-!
-`@[simp]` lemmas for `AlgHom.comp` and categorical identities.
--/
-
-@[simp] theorem AlgHom.comp_id_algebraCat
-    {R} [CommRing R] {G : AlgebraCat.{u} R} {H : Type u} [Ring H] [Algebra R H] (f : G →ₐ[R] H) :
-    f.comp (𝟙 G) = f :=
-  Category.id_comp (AlgebraCat.ofHom f)
-@[simp] theorem AlgHom.id_algebraCat_comp
-    {R} [CommRing R] {G : Type u} [Ring G] [Algebra R G] {H : AlgebraCat.{u} R} (f : G →ₐ[R] H) :
-    AlgHom.comp (𝟙 H) f = f :=
-  Category.comp_id (AlgebraCat.ofHom f)
