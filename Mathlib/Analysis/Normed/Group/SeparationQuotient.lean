@@ -16,7 +16,7 @@ define the null space as a subgroup.
 
 We use `M` to denote seminormed groups.
 
-* `nullSubgroup` : the subgroup of elements `x` with `‖x‖ = 0`.
+* `nullAddSubgroup` : the subgroup of elements `x` with `‖x‖ = 0`.
 
 If `E` is a vector space over `𝕜` with an appropriate continuous action, we also define the null
 subspace as a submodule of `E`.
