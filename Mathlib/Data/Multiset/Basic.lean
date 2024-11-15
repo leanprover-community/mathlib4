@@ -65,7 +65,7 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
   Quotient.eq
 
 -- Porting note: new instance;
--- Porting note (#11215): TODO: move to better place
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move to better place
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
