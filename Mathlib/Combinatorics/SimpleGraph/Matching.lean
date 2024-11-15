@@ -206,16 +206,7 @@ lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMat
 @[simp]
 lemma IsPerfectMatching.toSubgraph_spanningCoe_iff (h : M.spanningCoe ≤ G') :
     (G'.toSubgraph M.spanningCoe h).IsPerfectMatching ↔ M.IsPerfectMatching := by
-  constructor
-  · intro ⟨hmatch, hspan⟩
-    rw [isPerfectMatching_iff]
-    intro v
-    simpa [toSubgraph_adj, spanningCoe_adj] using
-      (hmatch (by simp only [toSubgraph_verts, Set.mem_univ]))
-  · intro hM
-    refine ⟨?_, fun v ↦ by simp⟩
-    intro v _
-    simpa [Subgraph.IsSpanning.verts_eq_univ hM.2, Set.mem_univ] using hM.1 (hM.2 v)
+  simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
 
 end Subgraph
 
