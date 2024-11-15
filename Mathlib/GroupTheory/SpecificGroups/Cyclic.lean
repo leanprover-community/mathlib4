@@ -360,7 +360,7 @@ theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
   rw [← orderOf_eq_card_of_forall_mem_zpowers ha, IsCyclic.image_range_orderOf ha]
 
 @[to_additive]
-lemma IsCyclic.ext [IsCyclic G] [Finite G] {d : ℕ} {a b : ZMod d}
+lemma IsCyclic.ext [Finite G] [IsCyclic G] {d : ℕ} {a b : ZMod d}
     (hGcard : Nat.card G = d) (h : ∀ t : G, t ^ a.val = t ^ b.val) : a = b := by
   have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
