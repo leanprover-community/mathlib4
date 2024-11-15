@@ -27,7 +27,6 @@ jobs:
       PR_URL: ${{ github.event.issue.html_url }}${{ github.event.pull_request.html_url }}
       EVENT_NAME: ${{ github.event_name }}
     name: Add ready-to-merge or delegated label
-    #name: Ping maintainers on Zulip
     runs-on: ubuntu-latest
     steps:
       - name: Find bors merge/delegate
@@ -64,12 +63,13 @@ jobs:
           (${AUTHOR} == 'leanprover-community-bot-assistant'))
         uses: octokit/request-action@v2.x
         with:
-          route: POST /repos/:repository/issues/${PR_NUMBER}/labels  # check is this ok? was /repos/:repository/issues/:issue_number/labels
+          # check is this ok? was /repos/:repository/issues/:issue_number/labels
+          route: POST /repos/:repository/issues/${PR_NUMBER}/labels
           repository: ${{ github.repository }}
           issue_number: ${PR_NUMBER}
           labels: '["${{ steps.merge_or_delegate.outputs.mOrD }}"]'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # review(_comment): ${{ secrets.TRIAGE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }} # comment uses ${{ secrets.GITHUB_TOKEN }}
 
       - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }} && (
           (steps.user_permission.outputs.require-result == 'true') ||
@@ -82,5 +82,5 @@ jobs:
         run: |
           curl --request DELETE \
             --url https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/labels/awaiting-author \
-            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
-            # review(_comment): ${{ secrets.TRIAGE_TOKEN }}
+            --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+            # comment uses ${{ secrets.GITHUB_TOKEN }}
