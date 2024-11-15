@@ -591,3 +591,12 @@ example (f : R → R) (hf : Con f) :
 --     Con (fun x ↦ ((f (x + 3)) + 2) + f (x + 1) + x + 1) := by fun_prop -- fails in 89ms
 
 end PerformanceTests
+
+
+/--
+info: Con
+  add_Con, args: [4, 5], form: simple
+  add_Con', args: [4, 5], form: compositional
+-/
+#guard_msgs in
+#print_fun_prop_theorems HAdd.hAdd Con
