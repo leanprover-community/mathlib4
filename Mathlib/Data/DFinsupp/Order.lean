@@ -56,7 +56,7 @@ def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
 @[simp, norm_cast]
 lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl
 
--- Porting note: we added implicit arguments here in #3414.
+-- Porting note: we added implicit arguments here in https://github.com/leanprover-community/mathlib4/pull/3414.
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
     (@orderEmbeddingToFun ι α _ _ f) i = f i :=
   rfl

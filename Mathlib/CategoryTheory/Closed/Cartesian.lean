@@ -163,12 +163,12 @@ def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟹ X) :=
 def uncurry : (Y ⟶ A ⟹ X) → (A ⊗ Y ⟶ X) :=
   ((exp.adjunction A).homEquiv _ _).symm
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (exp.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟹ X) :
     ((exp.adjunction A).homEquiv _ _).symm f = uncurry f :=

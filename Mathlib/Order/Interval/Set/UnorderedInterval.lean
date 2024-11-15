@@ -60,7 +60,7 @@ scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 open Interval
 
 @[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
-  -- Note: needed to hint `(α := α)` after #8386 (elaboration order?)
+  -- Note: needed to hint `(α := α)` after https://github.com/leanprover-community/mathlib4/pull/8386 (elaboration order?)
   dual_Icc (α := α)
 
 @[simp]

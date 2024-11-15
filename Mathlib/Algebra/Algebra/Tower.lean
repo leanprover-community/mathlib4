@@ -160,7 +160,7 @@ theorem _root_.AlgHom.comp_algebraMap_of_tower (f : A →ₐ[S] B) :
 instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A :=
   of_algebraMap_eq fun _x => rfl
 
--- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed @[nolint instance_priority], linter not ported yet
 instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
     [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=
