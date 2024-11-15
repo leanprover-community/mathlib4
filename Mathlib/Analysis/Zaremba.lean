@@ -26,11 +26,8 @@ attribute [-instance] Finsupp.pointwiseScalar
 
 -- #check Coe*
 
--- TODO can this be generalized in the direction of `Pi.smul'`
--- (i.e. dependent functions and finsupps)
--- TODO in theory this could be generalised, we only really need `smul_zero` for the definition
 noncomputable
-instance Finsupp.pointwiseScalar' {α β γ : Type*} [AddCommMonoid β] [CommSemiring γ] [Module γ β] :
+instance Finsupp.pointwiseScalar' {α β γ : Type*} [AddCommMonoid β] [Semiring γ] [Module γ β] :
     HSMul (α → β) (α →₀ γ) (α →₀ β) where
   hSMul f g :=
     Finsupp.ofSupportFinite (fun a ↦ g a • f a) (by
@@ -61,34 +58,64 @@ variable (μ ν : (Fin 2 → ℤ) →₀ ℝ≥0)
 set_option quotPrecheck false in
 notation "θ" => (a:ℝ) / q + β
 
-@[simps] def Finsupp.pointwise_prod {α β A : Type*} [Semiring A] [NoZeroDivisors A]
+@[simps] def Finsupp.pointwise_prod {α β A : Type*} [Semiring A] [DecidableEq A]
     (f : α →₀ A) (g : β →₀ A) : α × β →₀ A where
-  support := f.support ×ˢ g.support
+  support := (f.support ×ˢ g.support).filter (fun x ↦ f x.1 * g x.2 ≠ 0)
   toFun p := f p.1 * g p.2
-  mem_support_toFun := by simp [mul_ne_zero_iff]
+  mem_support_toFun := by
+    intro x
+    simp [-ne_eq]
+    contrapose
+    push_neg
+    intro h
+    by_cases h' : f x.1 = 0
+    · simp [h']
+    · simp [h h']
 
 def Finsupp.mass {α A : Type*} [AddCommMonoid A] (a : α →₀ A) : A := a.sum (fun _ ↦ id)
 
+notation3 "∑ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => Finsupp.mass (r • μ)
+
 set_option quotPrecheck false in
-notation "S" => Finsupp.mass <|
- (fun (x, y) ↦ exp (2 * π * I * θ * (x ⬝ᵥ y)) : (Fin 2 → ℤ) × (Fin 2 → ℤ) → ℂ) • μ.pointwise_prod ν
+notation "S" =>
+ ∑ p : (Fin 2 → ℤ) × (Fin 2 → ℤ), exp (2 * π * I * θ * (p.1 ⬝ᵥ p.2)) ∂(μ.pointwise_prod ν)
+
+-- TODO ok for both to be simp?
+
+@[simp]
+theorem fubini {α β : Type*} {A K : Type*} [DecidableEq A] [Semiring A] [AddCommMonoid K]
+    [Module A K] (f : α → β → K)
+    (μ : α →₀ A) (ν : β →₀ A) :
+    ∑ p : α × β, f p.1 p.2 ∂(μ.pointwise_prod ν) = ∑ x, (∑ y, f x y ∂ν) ∂μ := by
+  sorry
+
+@[simp]
+theorem fubini' {α β : Type*} {A K : Type*} [DecidableEq A] [Semiring A] [AddCommMonoid K]
+    [Module A K] (f : α × β → K)
+    (μ : α →₀ A) (ν : β →₀ A) :
+    ∑ p : α × β, f p ∂(μ.pointwise_prod ν) = ∑ x, (∑ y, f (x, y) ∂ν) ∂μ := by
+  sorry
+
+@[simp]
+theorem Finsupp.sum_const {α A K : Type*} [Semiring A] [AddCommMonoid K] [Module A K] (c : K)
+    (μ : α →₀ A) :
+    ∑ x : α, c ∂μ = μ.mass • c := by
+  sorry
 
 theorem cauchy_schwarz {α : Type*} (μ : α →₀ ℝ≥0) (f g : α → ℂ) :
-    ‖((f * g) • μ).mass‖ ^ 2
-    ≤ ((fun x ↦ ‖f x‖ ^ 2) • μ).mass * ((Complex.normSq ∘ g) • μ).mass := by
+    ‖∑ x, f x * g x ∂μ‖ ^ 2 ≤ (∑ x, ‖f x‖ ^ 2 ∂μ) * (∑ x, ‖g x‖ ^ 2 ∂μ) := by
   sorry
 
 example : ‖S‖ ^ 2 ≤ (μ.mass ^ 2 * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2 := by
   let f : (Fin 2 → ℤ) → ℂ := 1
-  let g (x : Fin 2 → ℤ) : ℂ := Finsupp.mass <|
-    (fun y ↦ exp (2 * π * I * θ * (x ⬝ᵥ y))) • ν
-  calc _ = _ := by
-        simp [f, g]
-        sorry
+  let g (x : Fin 2 → ℤ) : ℂ :=  ∑ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν
+  calc _ = _ := by simp [f, g]
     _ ≤ _ := cauchy_schwarz μ f g
-    _ = μ.mass * ((Complex.normSq ∘ g) • μ).mass := by
-        simp [f]
-        sorry
+    _ = μ.mass * ∑ x, ‖g x‖ ^ 2 ∂μ := by
+        congr
+        simp only [Pi.one_apply, norm_one, one_pow, Finsupp.sum_const, f]
+        change (algebraMap NNReal ℝ μ.mass) * 1 = _
+        simp -- FIXME ought to have better simp-lemmas here
     _ ≤ μ.mass * ((μ.mass * ν.mass ^ 2 : ℝ) / (K * Q) ^ 2) := ?_
     _ = _ := by ring
   gcongr
