@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck
+Authors: Chris Birkbeck, David Loeffler
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Geometry.Manifold.ContMDiff.Atlas
@@ -41,12 +41,11 @@ lemma smoothAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
     refine Tendsto.congr' (eventuallyEq_coe_comp_ofComplex hz).symm ?_
     simpa only [ofComplex_apply_of_im_pos hz, Subtype.coe_mk] using tendsto_id
   · -- smoothness in local chart
-    simp only [extChartAt, PartialHomeomorph.extend, IsOpenEmbedding.toPartialHomeomorph_source,
-      PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
-      PartialEquiv.trans_refl, PartialHomeomorph.toFun_eq_coe,
-      IsOpenEmbedding.toPartialHomeomorph_apply, PartialHomeomorph.refl_partialEquiv,
-      PartialEquiv.refl_source, PartialEquiv.refl_symm, PartialEquiv.refl_coe, CompTriple.comp_eq,
-      modelWithCornersSelf_coe, Set.range_id, id_eq, contDiffWithinAt_univ]
+    simp only [extChartAt, PartialHomeomorph.extend, modelWithCornersSelf_partialEquiv,
+      PartialEquiv.trans_refl, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.refl_partialEquiv,
+      PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
+      PartialEquiv.refl_symm, PartialEquiv.refl_coe, CompTriple.comp_eq, modelWithCornersSelf_coe,
+      Set.range_id, id_eq, contDiffWithinAt_univ]
     exact contDiffAt_id.congr_of_eventuallyEq (eventuallyEq_coe_comp_ofComplex hz)
 
 lemma mdifferentiableAt_ofComplex {z : ℂ} (hz : 0 < z.im) :
