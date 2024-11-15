@@ -33,11 +33,16 @@ jobs:
         id: merge_or_delegate
         run: |
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
+
           # we strip `\r` since line endings from GitHub contain this character
           COMMENT="${COMMENT//$'\r'/}"
+
           # for debugging, we print some information
           printf '%s' "${COMMENT}" | hexdump -cC
-          printf 'Comment:"%s"\n' "${COMMENT}"
+
+          # add the cleaned up comment to the environment for including it in the Zulip post
+          printf 'comment<<EOC\n%s\nEOC' "${COMMENT}" | tee "$GITHUB_OUTPUT"
+
           m_or_d="$(printf '%s' "${COMMENT}" |
             sed -n 's=^maintainer  *\(merge\|delegate\)$=\1=p' | head -1)"
 
@@ -77,7 +82,7 @@ jobs:
 
           echo ""
           message="$(
-            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}"
+            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${{ steps.merge_or_delegate.outputs.comment }}"
           )"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
 
