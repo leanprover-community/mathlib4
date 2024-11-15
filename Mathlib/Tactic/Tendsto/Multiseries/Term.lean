@@ -358,6 +358,8 @@ theorem nil_tendsto_const (coef : ℝ) (basis : List (ℝ → ℝ)) :
   eta_expand
   simp [toFun]
 
+section findLimit
+
 noncomputable def findLimit (t : MS.Term) (basis : List (ℝ → ℝ))
     (h_length : t.exps.length = basis.length) (h_basis : MS.WellOrderedBasis basis) :
     FindLimitResult (t.toFun basis) :=
@@ -420,6 +422,8 @@ noncomputable def findLimit (t : MS.Term) (basis : List (ℝ → ℝ))
             simp at h_exps
             simp_all
           })
+
+end findLimit
 
 -------------------------------
 

@@ -105,18 +105,28 @@ structure PreMS.TrimmingResult {basis : Basis} (ms : PreMS basis) where
 def maxUnfoldingSteps : ℕ := 20
 
 -- def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingSteps) :
---     TendstoM <| PreMS.TrimmingResult ms :=
+--     Option (PreMS.TrimmingResult ms) :=
 --   match stepsLeft with
---   | 0 => do throw TendstoException.trimmingException
+--   | 0 => .none
 --   | stepsLeftNext + 1 => do
 --     match basis with
---     | [] => return {
+--     | [] => .some {
 --         result := ms
 --         h_wo := by simp [PreMS.WellOrdered]
 --         h_approx := by simp
 --         h_trimmed := by constructor
 --       }
 --     | List.cons basis_hd basis_tl =>
+--       match h_destruct : destruct ms with
+--       | .none => .some {
+--           result := .nil
+--           h_wo := by rw [Stream'.Seq.destruct_eq_nil h_destruct]; simp [PreMS.WellOrdered]
+--           h_approx := by rw [Stream'.Seq.destruct_eq_nil h_destruct]; simp
+--           h_trimmed := by constructor
+--         }
+--       | .some ((exp, coef), tl) => sorry
+
+-- def asd
 --       ms.casesOn (motive := fun x ↦ TendstoM (TrimmingResult (basis := basis_hd :: basis_tl) x))
 --         (nil := do return {
 --           result := .nil

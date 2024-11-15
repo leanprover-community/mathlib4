@@ -23,9 +23,9 @@ def leadingTerm {basis : Basis} (ms : PreMS basis) : MS.Term :=
   match basis with
   | [] => ⟨ms, []⟩
   | List.cons _ _ =>
-    match destruct ms with
+    match head ms with
     | none => ⟨0, List.range basis.length |>.map fun _ => 0⟩
-    | some ((exp, coef), _) =>
+    | some (exp, coef) =>
       let pre := coef.leadingTerm
       ⟨pre.coef, exp :: pre.exps⟩
 
@@ -212,22 +212,22 @@ theorem MS.IsEquivalent_leadingTerm (ms : MS) (h_basis : MS.WellOrderedBasis ms.
     (h_trimmed : ms.Trimmed) : ms.F ~[atTop] ms.leadingTerm.toFun ms.basis := by
   apply PreMS.IsEquivalent_leadingTerm ms.h_wo ms.h_approx h_trimmed h_basis
 
-noncomputable def MS.findLimitTrimmed (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
-    (h_trimmed : ms.Trimmed) :
-    FindLimitResult ms.F :=
-  let r := ms.leadingTerm.findLimit (basis := ms.basis) (by apply MS.leadingTerm_length) h_basis
-  match r with
-  | .top p => .top (by {
-      exact (IsEquivalent.tendsto_atTop_iff
-        (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
-    })
-  | .bot p => .bot (by {
-      exact (IsEquivalent.tendsto_atBot_iff
-        (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
-    })
-  | .fin c p => .fin c (by {
-      exact IsEquivalent.tendsto_nhds (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed).symm p
-    })
+-- noncomputable def MS.findLimitTrimmed (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
+--     (h_trimmed : ms.Trimmed) :
+--     FindLimitResult ms.F :=
+--   let r := ms.leadingTerm.findLimit (basis := ms.basis) MS.leadingTerm_length h_basis
+--   match r with
+--   | .top p => .top (by {
+--       exact (IsEquivalent.tendsto_atTop_iff
+--         (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
+--     })
+--   | .bot p => .bot (by {
+--       exact (IsEquivalent.tendsto_atBot_iff
+--         (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed)).mpr p
+--     })
+--   | .fin c p => .fin c (by {
+--       exact IsEquivalent.tendsto_nhds (MS.IsEquivalent_leadingTerm ms h_basis h_trimmed).symm p
+--     })
 
 -- def MS.findLimit (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis) :
 --     TendstoM <| FindLimitResult ms.F := do

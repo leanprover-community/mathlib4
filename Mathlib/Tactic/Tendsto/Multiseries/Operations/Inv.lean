@@ -77,8 +77,8 @@ theorem invSeries'_toFun_eq {x : ℝ} (hx : ‖x‖ < 1) : invSeries'.toFun x = 
 --       mulMonomial (invSeries.apply (mulMonomial tl coef.inv (-exp))) coef.inv (-exp)
 --     )
 
--- variant with true geometric series (not alternating one) but with neg
--- generaly it's easier to use `inv`, but there is no API for `[1, -1, 1, ...]`,
+-- Variant with true geometric series (not alternating one) but with neg.
+-- Generaly it's easier to use `inv`, but there is no API for `[1, -1, 1, ...]`,
 -- while enough for `[1, 1, 1, ...]`.
 noncomputable def inv' {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
