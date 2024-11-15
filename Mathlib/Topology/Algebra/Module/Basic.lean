@@ -5,12 +5,12 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Opposite
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.Algebra.Group.Quotient
+import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Theory of topological modules and continuous linear maps.
@@ -94,9 +94,9 @@ end
 
 section LatticeOps
 
-variable {ι R M₁ M₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁]
-  [Module R M₂] [u : TopologicalSpace R] {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
-  (f : M₁ →ₗ[R] M₂)
+variable {R M₁ M₂ : Type*} [SMul R M₁] [SMul R M₂] [u : TopologicalSpace R]
+  {t : TopologicalSpace M₂} [ContinuousSMul R M₂]
+  {F : Type*} [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂] (f : F)
 
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) :=
   let _ : TopologicalSpace M₁ := t.induced f
@@ -307,6 +307,10 @@ variable (F : Type*) {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R �
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
 instance (priority := 100) continuousSemilinearMapClass [EquivLike F M M₂]
     [s : ContinuousSemilinearEquivClass F σ M M₂] : ContinuousSemilinearMapClass F σ M M₂ :=
+  { s with }
+
+instance (priority := 100) HomeomorphClass [EquivLike F M M₂]
+    [s : ContinuousSemilinearEquivClass F σ M M₂] : HomeomorphClass F M M₂ :=
   { s with }
 
 end ContinuousSemilinearEquivClass

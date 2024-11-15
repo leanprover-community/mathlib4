@@ -1252,7 +1252,7 @@ alias Embedding.continuousOn_iff := IsEmbedding.continuousOn_iff
 
 lemma Topology.IsEmbedding.map_nhdsWithin_eq {f : α → β} (hf : IsEmbedding f) (s : Set α) (x : α) :
     map f (𝓝[s] x) = 𝓝[f '' s] f x := by
-  rw [nhdsWithin, Filter.map_inf hf.inj, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
+  rw [nhdsWithin, Filter.map_inf hf.injective, hf.map_nhds_eq, map_principal, ← nhdsWithin_inter',
     inter_eq_self_of_subset_right (image_subset_range _ _)]
 
 @[deprecated (since := "2024-10-26")]

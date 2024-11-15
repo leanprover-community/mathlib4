@@ -30,7 +30,11 @@ noncomputable section
 variable (K : Type u) [Field K]
 
 /-- A valuation subring of a field `K` is a subring `A` such that for every `x : K`,
-either `x ∈ A` or `x⁻¹ ∈ A`. -/
+either `x ∈ A` or `x⁻¹ ∈ A`.
+
+This is equvalent to being maximal in the domination order
+of local subrings (the stacks project definition). See `LocalSubring.isMax_iff`.
+-/
 structure ValuationSubring extends Subring K where
   mem_or_inv_mem' : ∀ x : K, x ∈ carrier ∨ x⁻¹ ∈ carrier
 

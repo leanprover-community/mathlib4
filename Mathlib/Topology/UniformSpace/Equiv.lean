@@ -221,7 +221,7 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
     rw [hf.isUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
       Equiv.self_comp_ofInjective_symm]
     exact uniformContinuous_subtype_val
-  toEquiv := Equiv.ofInjective f hf.inj
+  toEquiv := Equiv.ofInjective f hf.injective
 
 @[deprecated (since := "2024-10-03")] alias ofUniformEmbedding := ofIsUniformEmbedding
 
