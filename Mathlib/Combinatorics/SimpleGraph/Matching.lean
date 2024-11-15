@@ -136,6 +136,71 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
+lemma IsMatching.exists_of_disjoint_sets_of_card_eq {s t : Set V} (h : Disjoint s t)
+    (f : s ≃ t) (hadj : ∀ {v w : V}, v ∈ s → w ∈ t → G.Adj v w) :
+    ∃ M : Subgraph G, M.verts = s ∪ t ∧ M.IsMatching := by
+  haveI (v : V) : Decidable (v ∈ s) := Classical.dec _
+  use {
+    verts := s ∪ t
+    Adj := fun v w ↦ (if h : v ∈ s then f ⟨v, h⟩ = w else False) ∨
+          (if h : w ∈ s then f ⟨w, h⟩ = v else False)
+    adj_sub := by
+      intro v w h
+      cases' h with hl hr
+      · have hvs : v ∈ s := by
+          simp only [dite_else_false] at hl
+          obtain ⟨hv, _⟩ := hl
+          exact hv
+        simp only [hvs, ↓reduceDIte] at hl
+        have hwt : w ∈ t := by
+          rw [← hl]
+          exact Subtype.coe_prop (f ⟨v, of_eq_true (eq_true hvs)⟩)
+        exact hadj hvs hwt
+      · have hws : w ∈ s := by
+          simp only [dite_else_false] at hr
+          obtain ⟨hw, _⟩ := hr
+          exact hw
+        simp only [hws, ↓reduceDIte] at hr
+        have hvt : v ∈ t := by
+          rw [← hr]
+          exact Subtype.coe_prop (f ⟨w, of_eq_true (eq_true hws)⟩)
+        rw [SimpleGraph.adj_comm]
+        exact hadj hws hvt
+    edge_vert := by
+      intro v w hvw
+      cases' hvw with hl hr
+      · simp only [dite_else_false] at hl
+        obtain ⟨hvs, _⟩ := hl
+        left
+        exact hvs
+      · simp only [dite_else_false] at hr
+        obtain ⟨_, rfl⟩ := hr
+        right
+        exact (f _).coe_prop
+  }
+
+  simp only [dite_else_false, true_and]
+  intro v hv
+  simp only [Set.mem_union] at hv
+  cases' hv with hl hr
+  · use f ⟨v, hl⟩
+    simp only [exists_prop', nonempty_prop, and_true]
+    refine ⟨by left; exact hl, ?_⟩
+    intro y hy
+    cases' hy with h1 h2
+    · obtain ⟨_, rfl⟩ := h1; rfl
+    · obtain ⟨hys, rfl⟩ := h2
+      exact (h.ne_of_mem hl (f ⟨y, hys⟩).coe_prop rfl).elim
+  · use f.symm ⟨v, hr⟩
+    simp only [Subtype.coe_eta, Equiv.apply_symm_apply, Subtype.coe_prop, exists_const, or_true,
+      true_and]
+    intro y hy
+    cases' hy with h1 h2
+    · obtain ⟨hvs, _⟩ := h1
+      exact (h.ne_of_mem hvs hr rfl).elim
+    · obtain ⟨_, rfl⟩ := h2
+      simp only [Subtype.coe_eta, Equiv.symm_apply_apply]
+
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : SimpleGraph.Iso G G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching := by
   constructor
@@ -278,6 +343,93 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
 
 end Finite
 
+@[simp]
+theorem disjoint_insert_left {a : V} {s t : Set V} : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
+  simp only [Set.disjoint_left, Set.mem_insert_iff, forall_eq_or_imp]
+
+@[simp]
+theorem disjoint_insert_right {a : V} {s t : Set V} : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
+  disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
+
+
+lemma split_set [DecidableEq V] (u : Set V) (he : Even (Nat.card u)) : ∃ (s t : Set V),
+    s ∪ t = u  ∧ Disjoint s t ∧  Cardinal.mk s = Cardinal.mk t := by
+  obtain hfin | hnfin := u.finite_or_infinite
+  · obtain rfl | h := u.eq_empty_or_nonempty
+    · use ∅, ∅
+      simp only [Set.union_self, disjoint_self, Set.bot_eq_empty, Cardinal.mk_eq_zero, and_self]
+    · obtain ⟨x, y, hxy⟩ := Set.Finite.two_of_even_of_nonempty hfin h he
+      have hu'e := Set.Finite.even_card_diff_pair hfin he hxy.1 hxy.2.1 hxy.2.2
+      obtain ⟨s, t, hst⟩ := split_set (u \ {x, y}) hu'e
+      use insert x s, insert y t
+      refine ⟨by simp only [Set.union_insert, Set.insert_union, hst.1,
+          show u \ { x, y } = (u \ { y }) \ { x } from by
+            simp only [Set.diff_diff, Set.union_singleton],
+          Set.insert_diff_singleton, Set.insert_comm, hxy.2.1, Set.insert_eq_of_mem, hxy.1], ?_⟩
+      have hyns : y ∉ s := fun hys ↦ by simpa [hst.1] using (Set.subset_union_left hys : y ∈ s ∪ t)
+      have hxnt : x ∉ t := fun hxt ↦ by simpa [hst.1] using (Set.subset_union_right hxt : x ∈ s ∪ t)
+      have hynt : y ∉ t := fun hys ↦ by simpa [hst.1] using (Set.subset_union_right hys : y ∈ s ∪ t)
+      have hxns : x ∉ s := fun hxs ↦ by simpa [hst.1] using (Set.subset_union_left hxs : x ∈ s ∪ t)
+      constructor <;> simp [hyns, hxnt, Cardinal.mk_insert hynt, Cardinal.mk_insert hxns, hst.2.2,
+        hst.2.1, hxy.2.2.symm]
+  · have f : u ⊕ u ≃ u := by
+      have : Inhabited (u ⊕ u ≃ u) := by
+        apply Classical.inhabited_of_nonempty
+        rw [← Cardinal.eq, Cardinal.mk_sum, Cardinal.add_eq_max (by
+          rw [@Cardinal.aleph0_le_lift]
+          exact Cardinal.infinite_iff.mp (Set.infinite_coe_iff.mpr hnfin)
+          )]
+        simp only [Cardinal.lift_id, max_self]
+      exact this.default
+    use Subtype.val '' (f '' (Sum.inl '' Set.univ)), Subtype.val '' (f '' (Sum.inr '' Set.univ))
+    constructor
+    · ext v
+      simp only [Set.image_univ, Set.mem_union, Set.mem_image, Set.mem_image_equiv, Set.mem_range,
+        Subtype.exists, exists_and_right, exists_eq_right]
+      refine ⟨fun h ↦ by
+        cases' h with hl hr
+        · obtain ⟨hvu, _⟩ := hl
+          exact hvu
+        · obtain ⟨hvu, _⟩ := hr
+          exact hvu, ?_⟩
+      · intro hv
+        rw [← exists_or]
+        use hv
+        simp only [Sum.exists, Sum.inl.injEq, exists_subtype_mk_eq_iff, exists_eq, true_and,
+          Subtype.exists, reduceCtorEq, exists_false, false_and, or_false, Sum.inr.injEq, false_or]
+        obtain ⟨a, ha⟩ := f.surjective ⟨v, hv⟩
+        rw [← ha]
+        simp only [EmbeddingLike.apply_eq_iff_eq]
+        cases' a with l r
+        · left; use l, l.coe_prop
+        · right; use r, r.coe_prop
+    · constructor
+      · simp only [Set.image_univ, ← Set.image_comp]
+        apply Set.disjoint_image_of_injective (by
+          simp only [Subtype.val_injective, Injective.of_comp_iff, f.injective])
+        rw [@Set.disjoint_right]
+        intro a ha
+        simp only [Set.mem_range, Subtype.exists, not_exists] at *
+        intro v hv
+        obtain ⟨_, _, h⟩ := ha
+        rw [← h]
+        exact Sum.inl_ne_inr
+      · simp only [Set.image_univ, Subtype.val_injective, Cardinal.mk_image_eq, f.injective,
+          Sum.inl_injective, Cardinal.mk_range_eq, Sum.inr_injective]
+termination_by u.ncard
+decreasing_by
+· simp_wf
+  refine Set.ncard_lt_ncard ?_ hfin
+  exact ⟨Set.diff_subset, by
+    rw [Set.not_subset_iff_exists_mem_not_mem]
+    use x
+    exact ⟨hxy.1, by simp only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
+      not_true_eq_false, and_false, not_false_eq_true]⟩⟩
+
+lemma inf_set (u : Set V) (hinfin : u.Infinite) : ∃ (s t : Set V),
+    s ∪ t = u  ∧ Disjoint s t ∧  Cardinal.mk s = Cardinal.mk t := by
+  sorry
+
 lemma IsClique.even_card_iff_exists_isMatching [DecidableEq V] (u : Set V)
     (hc : G.IsClique u) : Even (Nat.card u) ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
   obtain hfin | hnfin := u.finite_or_infinite
@@ -309,20 +461,98 @@ lemma IsClique.even_card_iff_exists_isMatching [DecidableEq V] (u : Set V)
       simp only [support_subgraphOfAdj, hM.2.support_eq_verts, hM.1]
       exact Set.disjoint_sdiff_left
   · simp only [Set.Infinite.card_eq_zero hnfin, even_zero, true_iff]
-    have : Infinite V := by
-      rw [← @Set.infinite_univ_iff]
-      exact Set.Infinite.mono (fun _ _ ↦ by trivial) hnfin
-    have : V ≃ V ⊕ V := by
-      have : Inhabited (V ≃ V ⊕ V) := by
-        apply Classical.inhabited_of_nonempty
-        rw [← Cardinal.eq, Cardinal.mk_sum, Cardinal.add_eq_max (by
-          rw [@Cardinal.aleph0_le_lift]
-          exact Cardinal.infinite_iff.mp this
-          )]
-        simp only [Cardinal.lift_id, max_self]
-      exact this.default
+    -- have : Infinite V := by
+    --   rw [← @Set.infinite_univ_iff]
+    --   exact Set.Infinite.mono (fun _ _ ↦ by trivial) hnfin
+    -- have : V ≃ V ⊕ V := by
+    --   have : Inhabited (V ≃ V ⊕ V) := by
+    --     apply Classical.inhabited_of_nonempty
+    --     rw [← Cardinal.eq, Cardinal.mk_sum, Cardinal.add_eq_max (by
+    --       rw [@Cardinal.aleph0_le_lift]
+    --       exact Cardinal.infinite_iff.mp this
+    --       )]
+    --     simp only [Cardinal.lift_id, max_self]
+    --   exact this.default
 
-    simp_rw [← Subgraph.Iso.isMatching_map (SimpleGraph.Iso.map this G)]
+    -- simp_rw [← Subgraph.Iso.isMatching_map (SimpleGraph.Iso.map this G)]
+    obtain ⟨s, t, ⟨rfl, hst1, hst2⟩⟩ := inf_set u hnfin
+    rw [Cardinal.eq] at hst2
+    have f := (Classical.inhabited_of_nonempty hst2).default
+    haveI (v : V) : Decidable (v ∈ s) := Classical.dec _
+    use {
+      verts := s ∪ t
+      Adj := fun v w ↦ (if h : v ∈ s then f ⟨v, h⟩ = w else False) ∨
+            (if h : w ∈ s then f ⟨w, h⟩ = v else False)
+      adj_sub := by
+        intro v w h
+        cases' h with hl hr
+        · have hvs : v ∈ s := by
+            simp only [dite_else_false] at hl
+            obtain ⟨hv, _⟩ := hl
+            exact hv
+          simp only [hvs, ↓reduceDIte] at hl
+          have hwt : w ∈ t := by
+            rw [← hl]
+            exact Subtype.coe_prop (f ⟨v, of_eq_true (eq_true hvs)⟩)
+          exact hc (Set.mem_union_left t hvs)
+            (Set.mem_union_right s hwt) (Disjoint.ne_of_mem hst1 hvs hwt)
+        · have hws : w ∈ s := by
+            simp only [dite_else_false] at hr
+            obtain ⟨hw, _⟩ := hr
+            exact hw
+          simp only [hws, ↓reduceDIte] at hr
+          have hvt : v ∈ t := by
+            rw [← hr]
+            exact Subtype.coe_prop (f ⟨w, of_eq_true (eq_true hws)⟩)
+          apply hc (Set.mem_union_right s hvt) (Set.mem_union_left t hws)
+          rw [ne_comm]
+          exact Disjoint.ne_of_mem hst1 hws hvt
+      edge_vert := by
+        intro v w hvw
+        cases' hvw with hl hr
+        · simp only [dite_else_false] at hl
+          obtain ⟨hvs, _⟩ := hl
+          left
+          exact hvs
+        · simp only [dite_else_false] at hr
+          obtain ⟨_, rfl⟩ := hr
+          right
+          exact (f _).coe_prop
+    }
+    -- use {
+    --   verts := s ∪ t
+    --   Adj := fun v w ↦ (v ∈ s ∪ t) ∧ (w ∈ s ∪ t) ∧
+    --       ((h : v ∈ s) → f ⟨v, h⟩ = w) ∧ ((h : w ∈ s) → f ⟨w, h⟩ = v)
+    --   adj_sub := by
+    --     intro v w h
+    --     by_cases hv : v ∈ s
+    --     · have hvw' : v ≠ w := by
+    --         apply Disjoint.ne_of_mem hst1 hv
+    --         rw [← h.2.2.1 hv]
+    --         simp only [Subtype.coe_prop]
+    --       exact hc h.1 h.2.1 hvw'
+    --     · have hvt : v ∈ t := by
+    --         cases' h.1 with hl hr
+    --         · exfalso; exact hv hl
+    --         · exact hr
+    --       obtain ⟨w', hw', rfl⟩ : ∃ (w' : V) (hw' : w' ∈ s), f ⟨w', hw'⟩ = v := by
+    --         use f.symm ⟨v, hvt⟩
+    --         use (Subtype.coe_prop (f.symm ⟨v, hvt⟩))
+    --         simp only [Subtype.coe_eta, Equiv.apply_symm_apply]
+    --       apply hc h.1 h.2.1
+    --       intro hw
+    --       by_cases hws : w ∈ s
+    --       · rw [hw] at hv
+    --         exact hv hws
+    --       · have hwt : w ∈ t := by
+    --           cases' h.2.1 with hl hr
+    --           · exfalso; exact hws hl
+    --           · exact hr
+
+    --         sorry
+    --   edge_vert := sorry
+    --   symm := sorry
+    -- }
     sorry
 termination_by u.ncard
 decreasing_by
