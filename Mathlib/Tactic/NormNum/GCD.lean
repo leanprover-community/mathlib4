@@ -242,7 +242,9 @@ def evalRatNum : NormNumExt where eval {u α} e := do
   let ⟨q', n, d, eq⟩ ← deriveRat q
   let eq : Q(IsRat $q $n $d) := eq
   let ⟨gcd, pf⟩ := proveIntGCD q($n) q(Int.ofNat $d)
-  let ⟨lit, plit⟩ ← deriveInt q($n / $gcd) _
+  have lit : Q(ℤ) := mkRawIntLit q'.num
+  have : ($n / $gcd) =Q $lit := ⟨⟩
+  let plit : Q(IsInt ($n / $gcd) $lit) := q(.raw_refl $lit)
   return .isInt _ lit q'.num q(isInt_ratNum $eq $pf $plit)
 
 @[norm_num Rat.den _]
@@ -253,8 +255,10 @@ def evalRatDen : NormNumExt where eval {u α} e := do
   let _ : Q(DivisionRing ℚ) := q(inferInstance)
   let ⟨q', n, d, eq⟩ ← deriveRat q
   let eq : Q(IsRat $q $n $d) := eq
-  let ⟨gcd, pf⟩ := proveIntGCD q($n) q(Int.ofNat $d)
-  let ⟨lit, plit⟩ ← deriveNat q($d / $gcd) _
+  have ⟨gcd, pf⟩ := proveIntGCD q($n) q(Int.ofNat $d)
+  have lit : Q(ℕ) := mkRawNatLit q'.den
+  have : ($d / $gcd) =Q $lit := ⟨⟩
+  let plit : Q(IsNat ($d / $gcd) $lit) := q(.raw_refl $lit)
   return .isNat _ lit q(isNat_ratDen $eq $pf $plit)
 
 end NormNum
