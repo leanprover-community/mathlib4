@@ -325,6 +325,15 @@ https://stacks.math.columbia.edu/tag/04E7
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
 
+@[reassoc (attr := simp)]
+lemma ι_colimitIso_hom [HasColimit G] (X : C) :
+    colimit.ι (F ⋙ G) X ≫ (colimitIso F G).hom = colimit.ι G (F.obj X) := by
+  simp [colimitIso]
+
+lemma ι_colimitIso_inv [HasColimit G] (X : C) :
+    colimit.ι G (F.obj X) ≫ (colimitIso F G).inv = colimit.ι (F ⋙ G) X := by
+  simp [Iso.comp_inv_eq]
+
 /-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
 colimit is isomorpic to taking the colimit on the codomain of `F`. -/
 def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
@@ -908,18 +917,23 @@ instance Grothendieck.final_map [hα : ∀ X, Final (α.app X)] : Final (map α)
         isoWhiskerRight (ιCompMap α X) G ≪≫  Functor.associator _ _ _) ≪≫
       Final.colimitIso (α.app X) (ι F' X ⋙ G))
     (fun f => colimit.hom_ext <| fun d => by
-      simp [Final.colimitIso]
+      simp
       have := Functor.congr_obj (α.naturality f) d
       dsimp at this
       simp only [← Category.assoc, ← G.map_comp]
-      sorry)
+      congr 1
+      · rw [this]
+      · simp [ιCompMap, ιNatTrans, map]
+        congr
+        apply eqToHom_heq_id_dom
+      · rw [this])
   let i : colimit (map α ⋙ G) ≅ colimit G :=
     (colimitFiberwiseColimitIso _).symm ≪≫ HasColimit.isoOfNatIso fi ≪≫
     colimitFiberwiseColimitIso _
   convert Iso.isIso_hom i
   apply colimit.hom_ext
   intro X
-  simp [i, fi, Final.colimitIso]
+  simp [i, fi]
 
 end Grothendieck
 
