@@ -115,7 +115,7 @@ instance (j : 𝒰.J) : ((𝒰.pullbackCoverOver' S f).obj j).Over S where
 instance : (𝒰.pullbackCoverOver' S f).Over S where
   isOver_map j := { comp_over := by exact Over.w (pullback.snd ((𝒰.map j).asOver S) (f.asOver S)) }
 
-variable {Q : MorphismProperty Scheme.{u}} [Q.HasOfPostcompProperty]
+variable {Q : MorphismProperty Scheme.{u}} [Q.HasOfPostcompProperty Q]
   [Q.IsStableUnderBaseChange] [Q.IsStableUnderComposition]
 
 variable (hX : Q (X ↘ S)) (hW : Q (W ↘ S)) (hQ : ∀ j, Q (𝒰.obj j ↘ S))
