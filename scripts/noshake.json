@@ -321,7 +321,7 @@
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
   "Mathlib.RingTheory.KrullDimension.Basic":
-  ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
+  ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Defs"],
   "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
   ["Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Finiteness.Defs": ["Mathlib.Tactic.Algebraize"],
