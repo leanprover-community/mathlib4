@@ -109,8 +109,7 @@ private lemma isDershowitzMannaLT_singleton_insert (h : OneStep N (a ::ₘ M)) :
     rw [add_comm]
     nth_rewrite 2 [add_comm]
     rw [singleton_add, add_cons]
-  · unfold OneStep
-    refine ⟨M - {a0}, Y, a0, ?_, ?_, h2⟩
+  · refine ⟨M - {a0}, Y, a0, ?_, ?_, h2⟩
     · change Y + (M - {a0}) = (M - {a0}) + Y
       rw [add_comm]
     · change M = M - {a0} + {a0}
@@ -152,9 +151,9 @@ private lemma acc_cons_of_acc (a : α)
   induction h0 with
   | intro x wfH wfh2 =>
     apply acc_cons
-    · simpa
-    · constructor; simpa
-    · simpa
+    · assumption
+    · constructor; assumption
+    · assumption
 
 private lemma acc_cons_of_acc_of_lt (ha : Acc LT.lt a) :
     ∀ M, Acc OneStep M → Acc OneStep (a ::ₘ M) := by
@@ -253,7 +252,6 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
             · exfalso
               have : t = z := by
                 have : Z = newZ + {z} := by
-                  unfold newZ
                   rw [add_comm, singleton_add]
                   simp [cons_erase z_in_Z]
                 rw [this, mem_add] at t_in_Z
@@ -265,7 +263,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
       · refine .single ⟨X + newZ, f z, z, ?_, ?_, ?_ ⟩
         · rfl
         · have newZ_z_Z: newZ + {z} = Z := by
-            unfold newZ; rw [add_comm, singleton_add]
+            rw [add_comm, singleton_add]
             apply cons_erase z_in_Z
           have : X + newZ + {z} = X + (newZ + {z}) := by apply add_assoc
           rw [this, newZ_z_Z]
