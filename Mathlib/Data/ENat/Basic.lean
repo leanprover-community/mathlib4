@@ -378,6 +378,12 @@ theorem map_natCast_nonneg [AddMonoidWithOne α] [PartialOrder α]
     [AddLeftMono α] [ZeroLEOneClass α] : 0 ≤ n.map (Nat.cast : ℕ → α) := by
   cases n <;> simp
 
+@[simp]
+theorem strictMono_map_iff {f : ℕ → α} [Preorder α] : StrictMono (ENat.map f) ↔ StrictMono f :=
+  WithTop.strictMono_map_iff
 
+@[simp]
+theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) ↔ Monotone f :=
+  WithTop.monotone_map_iff
 
 end ENat

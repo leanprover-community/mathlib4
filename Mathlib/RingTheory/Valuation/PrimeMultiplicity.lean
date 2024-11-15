@@ -62,9 +62,7 @@ variable {β : Type*} [Zero β]
 
 lemma adicValuation_coe_pos_iff (a : R) :
     0 < adicValuation p (algebraMap R K a) ↔ p ∣ a := by
-  simp only [adicValuation_coe, lt_iff_le_and_ne, map_natCast_nonneg, ne_eq, ENat.zero_eq_map_iff,
-    ENat.some_eq_coe, Nat.cast_eq_zero, exists_eq_right, CharP.cast_eq_zero, emultiplicity_eq_zero,
-    not_not, true_and]
+  simp [lt_iff_le_and_ne, ENat.zero_eq_map_iff, emultiplicity_eq_zero]
 
 
 open IsFractionRing
@@ -73,11 +71,10 @@ lemma adicValuation_pos_iff (a : K) :
     0 < adicValuation p a ↔ p ∣ num R a := by
   nth_rw 1 [← mk'_num_den' (A := R) a]
   simp only [map_div, adicValuation_coe, LinearOrderedAddCommGroupWithTop.sub_pos,
-    WithTop.map_eq_top_iff]
-  rw [emultiplicity_eq_top]
+    ENat.map_eq_top_iff, emultiplicity_eq_top, not_not]
   have : multiplicity.Finite p (den R a) := multiplicity.finite_prime_left hp.out (by simp)
   simp only [this, not_true_eq_false, or_false]
-  rw [(WithTop.strictMono_map_iff.mpr Nat.strictMono_cast).lt_iff_lt]
+  rw [(ENat.strictMono_map_iff.mpr Nat.strictMono_cast).lt_iff_lt]
   constructor
   · exact fun h ↦ emultiplicity_ne_zero.mp (ENat.not_lt_zero _ <| · ▸ h)
   · intro h
