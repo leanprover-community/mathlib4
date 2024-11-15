@@ -404,8 +404,8 @@ open TensorProduct LinearMap
 /-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M`, where `J ≤ I` is finitely generated,
 under the tensor product of `J.inclusion ‹J ≤ I› : J → I` and the identity `M → M`. -/
 theorem exists_fg_le_eq_rTensor_inclusion (x : I ⊗ M) :
-      ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
-        x = rTensor M (J.inclusion hle) y := by
+    ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
+      x = rTensor M (J.inclusion hle) y := by
   induction x with
   | zero => exact ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
   | tmul i m => exact ⟨R ∙ i.val, fg_span_singleton i.val,
