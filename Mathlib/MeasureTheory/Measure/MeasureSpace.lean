@@ -869,6 +869,13 @@ theorem nnreal_smul_coe_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Meas
     c • μ s = c * μ s := by
   rfl
 
+theorem ae_smul_measure {p : α → Prop} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (h : ∀ᵐ x ∂μ, p x) (c : R) : ∀ᵐ x ∂c • μ, p x :=
+  ae_iff.2 <| by rw [smul_apply, ae_iff.1 h, ← smul_one_smul ℝ≥0∞, smul_zero]
+
+theorem ae_smul_measure_le [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) :
+    ae (c • μ) ≤ ae μ := fun _ h ↦ ae_smul_measure h c
+
 section SMulWithZero
 
 variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -1127,8 +1134,10 @@ theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Meas
     simp [map_of_not_aemeasurable, hf, hg]
 
 @[simp]
-protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
-    (c • μ).map f = c • μ.map f := by
+protected theorem map_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (c : R) (μ : Measure α) (f : α → β) : (c • μ).map f = c • μ.map f := by
+  suffices ∀ c : ℝ≥0∞, (c • μ).map f = c • μ.map f by simpa using this (c • 1)
+  clear c; intro c
   rcases eq_or_ne c 0 with (rfl | hc); · simp
   by_cases hf : AEMeasurable f μ
   · have hfc : AEMeasurable f (c • μ) :=
@@ -1143,10 +1152,11 @@ protected theorem map_smul (c : ℝ≥0∞) (μ : Measure α) (f : α → β) :
       exact hf ⟨hfc.mk f, hfc.measurable_mk, (ae_smul_measure_iff hc).1 hfc.ae_eq_mk⟩
     simp [map_of_not_aemeasurable hf, map_of_not_aemeasurable hfc]
 
-@[simp]
+
+@[deprecated Measure.map_smul (since := "2024-11-13")]
 protected theorem map_smul_nnreal (c : ℝ≥0) (μ : Measure α) (f : α → β) :
     (c • μ).map f = c • μ.map f :=
-  μ.map_smul (c : ℝ≥0∞) f
+  μ.map_smul c f
 
 variable {f : α → β}
 
@@ -1511,9 +1521,15 @@ protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ �
 protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
   AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
 
-protected theorem smul [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    (h : μ ≪ ν) (c : R) : c • μ ≪ ν := fun s hνs => by
-  simp only [h hνs, smul_eq_mul, smul_apply, smul_zero]
+protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
+    c • μ ≪ ν := fun s hνs => by
+  simp only [h hνs, smul_apply, smul_zero, ← smul_one_smul ℝ≥0∞ c (0 : ℝ≥0∞)]
+
+protected theorem smul_both [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
+    c • μ ≪ c • ν := by
+  intro s hνs
+  rw [smul_apply, ← smul_one_smul ℝ≥0∞, smul_eq_mul, mul_eq_zero] at hνs ⊢
+  exact hνs.imp_right fun hs ↦ h hs
 
 protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
   intro s hs
@@ -1556,11 +1572,11 @@ lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ :
   simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
   exact hνμ (hs0 i)
 
+lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := .smul .rfl _
+
 theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ'_le : μ' ≤ c • μ) :
     μ' ≪ μ :=
-  (Measure.absolutelyContinuous_of_le hμ'_le).trans (Measure.AbsolutelyContinuous.rfl.smul c)
-
-lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := absolutelyContinuous_of_le_smul le_rfl
+  (Measure.absolutelyContinuous_of_le hμ'_le).trans smul_absolutelyContinuous
 
 lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • μ := by
   simp [AbsolutelyContinuous, hc]
@@ -1637,6 +1653,10 @@ protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa
 protected theorem aemeasurable (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
 
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (hf : QuasiMeasurePreserving f μa μb) (c : R) : QuasiMeasurePreserving f (c • μa) (c • μb) :=
+  ⟨hf.1, by rw [Measure.map_smul]; exact hf.2.smul_both c⟩
+
 theorem ae_map_le (h : QuasiMeasurePreserving f μa μb) : ae (μa.map f) ≤ ae μb :=
   h.2.ae_le
 
@@ -1692,13 +1712,13 @@ theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreservi
     replace he : (⇑e)^[k] ⁻¹' s =ᵐ[μ] s := he.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e k] at he
 
--- Need to specify `α := Set α` below because of diamond; see #10941
+-- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
 theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) : limsup (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
   limsup_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
     simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
--- Need to specify `α := Set α` below because of diamond; see #10941
+-- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
 theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
   liminf_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
