@@ -156,15 +156,16 @@ termination_by (a, b, c)
 protected theorem add_mul (a b c : Nimber) : (a + b) * c = a * c + b * c := by
   rw [Nimber.mul_comm, Nimber.mul_add, Nimber.mul_comm, Nimber.mul_comm b]
 
+private theorem add_ne_zero_of_lt {a b : Nimber} (h : b < a) : a + b ≠ 0 := by
+  rw [add_ne_zero_iff]
+  exact h.ne'
+
 protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
   apply le_antisymm <;> refine mul_le_of_forall_ne fun x hx y hy ↦ ?_
   · obtain ⟨a', ha, b', hb, rfl⟩ := exists_of_lt_mul hx
     have H : (a + a') * ((b + b') * (c + y)) ≠ 0 := by
-      apply mul_ne_zero _ (mul_ne_zero _ _)
-      all_goals
-        rw [add_ne_zero_iff]
-        apply ne_of_gt
-        assumption
+      apply mul_ne_zero _ (mul_ne_zero _ _) <;> apply add_ne_zero_of_lt
+      assumption'
     simp only [Nimber.add_mul, Nimber.mul_add] at H ⊢
     iterate 7 rw [Nimber.mul_assoc]
     rw [← add_ne_add_left (a * (b * c))]
@@ -172,11 +173,8 @@ protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
     simpa only [two_zsmul, zero_add] using H
   · obtain ⟨b', hb, c', hc, rfl⟩ := exists_of_lt_mul hy
     have H : (a + x) * (b + b') * (c + c') ≠ 0 := by
-      apply mul_ne_zero (mul_ne_zero _ _)
-      all_goals
-        rw [add_ne_zero_iff]
-        apply ne_of_gt
-        assumption
+      apply mul_ne_zero (mul_ne_zero _ _) <;> apply add_ne_zero_of_lt
+      assumption'
     simp only [Nimber.add_mul, Nimber.mul_add] at H ⊢
     iterate 7 rw [← Nimber.mul_assoc]
     rw [← add_ne_add_left (a * b * c)]
