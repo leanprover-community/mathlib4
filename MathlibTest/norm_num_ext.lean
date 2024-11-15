@@ -459,5 +459,3 @@ example : (-6 / 15 : ℚ).num = -2 := by norm_num1
 example : (-6 / 15 : ℚ).den = 5 := by norm_num1
 
 end num_den
-
-end
