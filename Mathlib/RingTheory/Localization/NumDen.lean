@@ -20,9 +20,6 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
-
 namespace IsFractionRing
 
 open IsLocalization
@@ -156,7 +153,5 @@ lemma associated_num_den_inv (x : K) (hx : x ≠ 0) : Associated (num A x : A) (
   exact this
 
 end NumDen
-
-variable (S)
 
 end IsFractionRing

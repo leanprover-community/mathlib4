@@ -62,8 +62,8 @@ instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
--- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
+-- We set the simp priority slightly lower than default; later more general lemmas will replace it.
+@[simp 900] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
 
 section Multiplicative
 
@@ -132,8 +132,6 @@ lemma even_mul_succ_self (n : ℕ) : Even (n * (n + 1)) := by rw [even_mul, even
 lemma even_mul_pred_self : ∀ n : ℕ, Even (n * (n - 1))
   | 0 => even_zero
   | (n + 1) => mul_comm (n + 1 - 1) (n + 1) ▸ even_mul_succ_self n
-
-@[deprecated (since := "2024-01-20")] alias even_mul_self_pred := even_mul_pred_self
 
 lemma two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h ↦
   Nat.mul_div_cancel_left' ((even_iff_exists_two_nsmul _).1 h)

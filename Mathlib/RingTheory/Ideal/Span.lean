@@ -5,7 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.RingTheory.Ideal.Lattice
 import Mathlib.Tactic.Ring
 

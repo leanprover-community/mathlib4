@@ -282,7 +282,7 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction' m using Nat.binaryRec with b' m hm
   · simp
   induction' k using Nat.binaryRec with b'' k hk
-  -- porting note (#10745): was `simp [hn]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [hn]`
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 

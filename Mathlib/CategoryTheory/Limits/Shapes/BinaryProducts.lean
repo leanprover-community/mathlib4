@@ -1023,7 +1023,7 @@ end
 
 noncomputable section ProdFunctor
 
--- Porting note (#10754): added category instance as it did not propagate
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1044,7 +1044,7 @@ end ProdFunctor
 
 noncomputable section CoprodFunctor
 
--- Porting note (#10754): added category instance as it did not propagate
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/

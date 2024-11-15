@@ -654,6 +654,13 @@ theorem ringEquivOfRingEquiv_mk' {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (
       mk' Q (j x) ⟨j y, show j y ∈ T from H ▸ Set.mem_image_of_mem j y.2⟩ := by
   simp [map_mk']
 
+@[simp]
+theorem ringEquivOfRingEquiv_symm {j : R ≃+* P} (H : M.map j.toMonoidHom = T) :
+    (ringEquivOfRingEquiv S Q j H).symm =
+      ringEquivOfRingEquiv Q S j.symm (show T.map j.symm.toMonoidHom = M by
+        erw [← H, ← Submonoid.comap_equiv_eq_map_symm,
+          Submonoid.comap_map_eq_of_injective j.injective]) := rfl
+
 end Map
 
 section at_units
