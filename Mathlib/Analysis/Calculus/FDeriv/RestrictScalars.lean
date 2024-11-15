@@ -45,7 +45,7 @@ variable {f : E → F} {f' : E →L[𝕜'] F} {s : Set E} {x : E}
 @[fun_prop]
 theorem HasStrictFDerivAt.restrictScalars (h : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt f (f'.restrictScalars 𝕜) x :=
-  h
+  .of_isLittleO h.1
 
 theorem HasFDerivAtFilter.restrictScalars {L} (h : HasFDerivAtFilter f f' x L) :
     HasFDerivAtFilter f (f'.restrictScalars 𝕜) x L :=
