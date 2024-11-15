@@ -114,9 +114,10 @@ lemma append_left (h : rel rels c d) : rel rels (a * c) (a * d) := mul refl h
 
 lemma append_right (h : rel rels a b) : rel rels (a * c) (b * c) := mul h refl
 
-lemma mul_left (h1 : rels a b) (h2 : rel rels c d) : rel rels (a * c) (b * d) := mul (reg h1) h2
+lemma mul_reg_left (h1 : rels a b) (h2 : rel rels c d) : rel rels (a * c) (b * d) := mul (reg h1) h2
 
-lemma mul_right (h1 : rels c d) (h2 : rel rels a b) : rel rels (a * c) (b * d) := mul h2 (reg h1)
+lemma mul_reg_right (h1 : rels c d) (h2 : rel rels a b) : rel rels (a * c) (b * d) :=
+    mul h2 (reg h1)
 
 lemma reg_left (h : rels c d) : rel rels (a * c) (a * d) := mul refl (reg h)
 
