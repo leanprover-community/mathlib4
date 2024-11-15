@@ -686,7 +686,6 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
   simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
     smulRight_apply, proj_apply, pi_apply, Function.comp_def]
 
-
 @[fun_prop]
 theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
     (h : ∀ i ∈ l, HasFDerivWithinAt (f i ·) (f' i) s x) :
