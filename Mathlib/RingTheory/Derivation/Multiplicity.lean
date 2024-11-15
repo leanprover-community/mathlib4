@@ -89,7 +89,4 @@ lemma adicValuation_deriv_ne_neg_one (p : F) [Fact (Prime p)] (hp : ¬p ∣ p′
     adicValuation p a′ ≠ -1 := by
   rcases lt_or_le (adicValuation p a) 0 with ha | ha
   · exact (adicValuation_deriv_lt_neg_one_of_neg p hp a ha).ne
-  · have := adicValuation_deriv_nonneg_of_nonneg p a ha
-    intro v
-    rw [v] at this
-    norm_cast at this
+  · exact (by decide : ¬ 0 ≤ (-1 : WithTop ℤ)) ∘ (· ▸ adicValuation_deriv_nonneg_of_nonneg p a ha)
