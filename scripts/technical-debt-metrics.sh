@@ -155,8 +155,8 @@ then
         (($3+0 == $3) && (!($2+0 == 0))) {total+=1 / $2; weight+=$3 / $2}
         END{
           average=weight/total
-          if(average < 0) {change= "Decrease"; average=-average} else {change= "Increase"}
-          printf("<details><summary>%s in tech debt: %4.2f</summary>\n\n%s\n", change, average, rep) }'
+          if(average < 0) {change= "Decrease"; average=-average; weight=-weight} else {change= "Increase"}
+          printf("<details><summary>%s in tech debt: (relative, absolute) = (%4.2f, %4.2f)</summary>\n\n%s\n", change, average, weight, rep) }'
   fi
   printf '\nYou can run this locally as\n```\n./scripts/technical-debt-metrics.sh pr_summary\n```\n</details>\n'
 else
