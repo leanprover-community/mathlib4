@@ -3,8 +3,8 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.Basic
-import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.Derivation.DifferentialRing
+import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.Algebra.Squarefree.Basic
 
 /-!
@@ -13,9 +13,32 @@ import Mathlib.Algebra.Squarefree.Basic
 --/
 
 variable {M : Type*} [CommSemiring M] {F : Type*} [CommRing F] [Algebra M F]
+variable [IsDomain F] [UniqueFactorizationMonoid F] (D : Derivation M F F)
 
-lemma multiplicity_deriv [IsDomain F] [WfDvdMonoid F] (D : Derivation M F F)
-    [Algebra ℚ F] (p : F) (hp : Prime p) (hp2 : ¬p ∣ D p) (a : F) (h : p ∣ a) :
+open Differential IsFractionRing
+
+open AddValuation (adicValuation adicValuation_coe adicValuation_neg_iff adicValuation_pos_iff)
+
+section Nonneg
+
+variable [Differential F] {K : Type*} [Field K] [Algebra F K] [IsFractionRing F K] [Differential K]
+    [DifferentialAlgebra F K]
+
+lemma adicValuation_deriv_nonneg_of_nonneg (p : F) [Fact (Prime p)] (a : K)
+    (ha : 0 ≤ adicValuation p a) : 0 ≤ adicValuation p a′ := by
+  rw [← mk'_num_den' F a]
+  simp only [Derivation.leibniz_div, inv_pow, smul_eq_mul, AddValuation.map_mul,
+    AddValuation.map_inv, AddValuation.map_pow, adicValuation_coe]
+  rw [← not_lt, adicValuation_neg_iff] at ha
+  simp only [emultiplicity_eq_zero.mpr ha, ENat.map_zero, CharP.cast_eq_zero, WithTop.coe_zero,
+    smul_zero, neg_zero, zero_add, ge_iff_le]
+  simp [deriv_algebraMap, ← map_mul, ← map_sub]
+
+end Nonneg
+
+variable [Algebra ℚ F]
+
+lemma multiplicity_deriv (p : F) (hp : Prime p) (hp2 : ¬p ∣ D p) (a : F) (h : p ∣ a) :
     emultiplicity p (D a) + 1 = emultiplicity p a := by
   by_cases ha : a = 0
   · simp [ha]
@@ -42,3 +65,42 @@ lemma multiplicity_deriv [IsDomain F] [WfDvdMonoid F] (D : Derivation M F F)
   · simp only [add_top, ENat.coe_lt_top]
   · norm_cast
     omega
+
+variable [Differential F] {K : Type*} [Field K] [Algebra F K] [IsFractionRing F K] [Differential K]
+    [DifferentialAlgebra F K]
+
+lemma adicValuation_deriv_lt_neg_one_of_neg (p : F) [Fact (Prime p)] (hp : ¬p ∣ p′) (a : K)
+    (ha : adicValuation p a < 0) : adicValuation p a′ < -1 := by
+  rw [← mk'_num_den' F a]
+  simp only [Derivation.leibniz_div, inv_pow, smul_eq_mul, AddValuation.map_mul,
+    AddValuation.map_inv, AddValuation.map_pow, adicValuation_coe]
+  rw [adicValuation_neg_iff] at ha
+  have ha2 : ¬ p ∣ num F a := Prime.not_unit Fact.out ∘ (num_den_reduced _ _).symm ha
+  simp [deriv_algebraMap, ← _root_.map_mul, ← map_sub]
+  rw [← emultiplicity_eq_zero] at ha2
+  have md := multiplicity_deriv _ p Fact.out hp _ ha
+  replace mf : multiplicity.Finite p (den F a)′ := finite_iff_emultiplicity_ne_top.mpr (fun h ↦
+    (multiplicity.finite_prime_left Fact.out (by simp)).emultiplicity_ne_top (h ▸ md).symm)
+  rw [emultiplicity_sub_of_gt]
+  · simp [emultiplicity_mul Fact.out, ha2, ← md,
+      mf.emultiplicity_eq_multiplicity]
+    norm_cast
+    rw [ENat.map_coe]
+    norm_cast
+    apply WithTop.coe_strictMono
+    rw [two_smul]
+    dsimp
+    omega
+  · simp [emultiplicity_mul Fact.out, ha2, ← md]
+    apply (ENat.lt_add_one_iff mf.emultiplicity_ne_top).mpr le_rfl |>.trans_le
+    apply le_self_add
+
+
+lemma adicValuation_deriv_ne_neg_one (p : F) [Fact (Prime p)] (hp : ¬p ∣ p′) (a : K) :
+    adicValuation p a′ ≠ -1 := by
+  rcases lt_or_le (adicValuation p a) 0 with ha | ha
+  · exact (adicValuation_deriv_lt_neg_one_of_neg p hp a ha).ne
+  · have := adicValuation_deriv_nonneg_of_nonneg p a ha
+    intro v
+    rw [v] at this
+    norm_cast at this
