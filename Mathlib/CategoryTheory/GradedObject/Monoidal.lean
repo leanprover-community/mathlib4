@@ -128,6 +128,17 @@ lemma tensor_comp {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X�
   apply congr_mapMap
   simp
 
+/-- The isomorphism `tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂` induced by isomorphisms of graded
+objects `e : X₁ ≅ X₂` and `e' : Y₁ ≅ Y₂`. -/
+@[simps]
+noncomputable def tensorIso {X₁ X₂ Y₁ Y₂ : GradedObject I C} (e : X₁ ≅ X₂) (e' : Y₁ ≅ Y₂)
+    [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] :
+    tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂ where
+  hom := tensorHom e.hom e'.hom
+  inv := tensorHom e.inv e'.inv
+  hom_inv_id := by simp only [← tensor_comp, Iso.hom_inv_id, tensor_id]
+  inv_hom_id := by simp only [← tensor_comp, Iso.inv_hom_id, tensor_id]
+
 lemma tensorHom_def {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂)
     [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₂ Y₁] :
     tensorHom f g = whiskerRight f Y₁ ≫ whiskerLeft X₂ g := by

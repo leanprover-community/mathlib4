@@ -8,7 +8,8 @@ import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.GradedObject.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Transport
 
-/-! The monoidal category structure on homological complexes
+/-!
+# The monoidal category structure on homological complexes
 
 Let `c : ComplexShape I` with `I` an additive monoid. If `c` is equipped
 with the data and axioms `c.TensorSigns`, then the category
@@ -17,7 +18,7 @@ structure if `C` is a monoidal category such that `C` has certain
 coproducts and both left/right tensoring commute with these.
 
 In particular, we obtain a monoidal category structure on
-`ChainComplex C ℕ` if `C` is an additive monoidal category.
+`ChainComplex C ℕ` when `C` is an additive monoidal category.
 
 -/
 
@@ -83,7 +84,7 @@ variable (C c) in
 /-- As a graded object, the single complex `(single C c 0).obj (𝟙_ C)` identifies
 to the unit `(GradedObject.single₀ I).obj (𝟙_ C)` of the tensor product of graded objects. -/
 noncomputable def tensorUnitIso :
-    (GradedObject.single₀ I).obj (𝟙_ C) ≅ (forget C c).obj (tensorUnit C c) :=
+    (GradedObject.single₀ I).obj (𝟙_ C) ≅ (tensorUnit C c).X :=
   GradedObject.isoMk _ _ (fun i ↦
     if hi : i = 0 then
       (GradedObject.singleObjApplyIsoOfEq (0 : I) (𝟙_ C) i hi).trans
@@ -114,11 +115,15 @@ section
 
 variable (K : HomologicalComplex C c) [DecidableEq I]
 
-instance : HasTensor (tensorUnit C c) K := by
-  -- use GradedObject.hasTensor_of_iso
-  sorry
+section
 
-instance : HasTensor K (tensorUnit C c) := sorry
+variable [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
+
+instance : GradedObject.HasTensor (tensorUnit C c).X K.X :=
+  GradedObject.hasTensor_of_iso (tensorUnitIso C c) (Iso.refl _)
+
+instance : HasTensor (tensorUnit C c) K :=
+  inferInstanceAs (GradedObject.HasTensor (tensorUnit C c).X K.X)
 
 @[simp]
 lemma unit_tensor_d₁ (i₁ i₂ j : I) :
@@ -129,6 +134,18 @@ lemma unit_tensor_d₁ (i₁ i₂ j : I) :
         zero_app, zero_comp, smul_zero]
     · rw [mapBifunctor.d₁_eq_zero' _ _ _ _ h₁ _ _ h₂]
   · rw [mapBifunctor.d₁_eq_zero _ _ _ _ _ _ _ h₁]
+
+end
+
+section
+
+variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
+
+instance : GradedObject.HasTensor K.X (tensorUnit C c).X :=
+  GradedObject.hasTensor_of_iso (Iso.refl _) (tensorUnitIso C c)
+
+instance : HasTensor K (tensorUnit C c) :=
+  inferInstanceAs (GradedObject.HasTensor K.X (tensorUnit C c).X)
 
 @[simp]
 lemma tensor_unit_d₂ (i₁ i₂ j : I) :
@@ -142,31 +159,28 @@ lemma tensor_unit_d₂ (i₁ i₂ j : I) :
 
 end
 
--- TODO: weaken these assumptions for some definitions/lemmas in this API
-variable [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ X₂]
-  [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
-  [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
-  [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), GradedObject.HasTensor₄ObjExt X₁ X₂ X₃ X₄]
-  [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensor₁₂Tensor X₁ X₂ X₃]
-  [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensorTensor₂₃ X₁ X₂ X₃]
+end
 
 section Unitor
 
 variable (K : HomologicalComplex C c) [DecidableEq I]
 
+section LeftUnitor
+
+variable [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
+
 /-- Auxiliary definition for `leftUnitor`. -/
 noncomputable def leftUnitor' :
-    (forget C c).obj (tensorObj (tensorUnit C c) K) ≅ K.X :=
-  ((curriedTensor _).mapIso (tensorUnitIso C c).symm).app K.X ≪≫
-    MonoidalCategoryStruct.leftUnitor (C := GradedObject I C) K.X
+    (tensorObj (tensorUnit C c) K).X ≅ K.X :=
+  GradedObject.Monoidal.tensorIso ((tensorUnitIso C c).symm) (Iso.refl _) ≪≫
+    GradedObject.Monoidal.leftUnitor K.X
 
 lemma leftUnitor'_inv (i : I) :
     (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ (K.X i)) ≫
       ιTensorObj (tensorUnit C c) K 0 i i (zero_add i) := by
   dsimp [leftUnitor']
-  erw [GradedObject.Monoidal.leftUnitor_inv_apply]
-  rw [assoc, assoc, Iso.cancel_iso_inv_left]
-  erw [GradedObject.Monoidal.ι_tensorHom]
+  rw [GradedObject.Monoidal.leftUnitor_inv_apply, assoc, assoc, Iso.cancel_iso_inv_left,
+    GradedObject.Monoidal.ι_tensorHom]
   dsimp
   rw [tensorHom_id, ← comp_whiskerRight_assoc]
   congr 2
@@ -195,19 +209,24 @@ noncomputable def leftUnitor :
   Iso.symm (Hom.isoOfComponents (fun i ↦ (GradedObject.eval i).mapIso (leftUnitor' K).symm)
     (fun _ _ _ ↦ leftUnitor'_inv_comm _ _ _))
 
+end LeftUnitor
+
+section RightUnitor
+
+variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
+
 /-- Auxiliary definition for `rightUnitor`. -/
 noncomputable def rightUnitor' :
-    (forget C c).obj (tensorObj K (tensorUnit C c)) ≅ K.X :=
-  ((curriedTensor (GradedObject I C)).obj K.X).mapIso (tensorUnitIso C c).symm ≪≫
-    MonoidalCategoryStruct.rightUnitor (C := GradedObject I C) K.X
+    (tensorObj K (tensorUnit C c)).X ≅ K.X :=
+  GradedObject.Monoidal.tensorIso (Iso.refl _) ((tensorUnitIso C c).symm)  ≪≫
+    GradedObject.Monoidal.rightUnitor K.X
 
 lemma rightUnitor'_inv (i : I) :
     (rightUnitor' K).inv i = (ρ_ (K.X i)).inv ≫ ((K.X i) ◁ (singleObjXSelf c 0 (𝟙_ C)).inv) ≫
       ιTensorObj K (tensorUnit C c) i 0 i (add_zero i) := by
   dsimp [rightUnitor']
-  erw [GradedObject.Monoidal.rightUnitor_inv_apply]
-  rw [assoc, assoc, Iso.cancel_iso_inv_left]
-  erw [GradedObject.Monoidal.ι_tensorHom]
+  rw [GradedObject.Monoidal.rightUnitor_inv_apply, assoc, assoc, Iso.cancel_iso_inv_left,
+    GradedObject.Monoidal.ι_tensorHom]
   dsimp
   rw [id_tensorHom, ← MonoidalCategory.whiskerLeft_comp_assoc]
   congr 2
@@ -235,7 +254,17 @@ noncomputable def rightUnitor :
   Iso.symm (Hom.isoOfComponents (fun i ↦ (GradedObject.eval i).mapIso (rightUnitor' K).symm)
     (fun _ _ _ ↦ rightUnitor'_inv_comm _ _ _))
 
+end RightUnitor
+
 end Unitor
+
+-- TODO: weaken these assumptions for some definitions/lemmas in this API
+variable [∀ (X₁ X₂ : GradedObject I C), GradedObject.HasTensor X₁ X₂]
+  [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).obj X₁)]
+  [∀ X₂, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).flip.obj X₂)]
+  [∀ (X₁ X₂ X₃ X₄ : GradedObject I C), GradedObject.HasTensor₄ObjExt X₁ X₂ X₃ X₄]
+  [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensor₁₂Tensor X₁ X₂ X₃]
+  [∀ (X₁ X₂ X₃ : GradedObject I C), GradedObject.HasGoodTensorTensor₂₃ X₁ X₂ X₃]
 
 variable (C c)
 variable [DecidableEq I]
