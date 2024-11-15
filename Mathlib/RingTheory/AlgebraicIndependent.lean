@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.RingTheory.Algebraic
+import Mathlib.FieldTheory.Adjoin
 import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
