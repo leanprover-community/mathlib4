@@ -64,7 +64,6 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     [HasEnoughRootsOfUnity M n] :
     Nat.card (rootsOfUnity n M) = n := by
   obtain ⟨ζ, h⟩ := exists_primitiveRoot M n
-  have : Fintype <| rootsOfUnity n M := Fintype.ofFinite _
   rw [← IsCyclic.exponent_eq_card]
   refine dvd_antisymm ?_ ?_
   · exact Monoid.exponent_dvd_of_forall_pow_eq_one fun g ↦ OneMemClass.coe_eq_one.mp g.prop
