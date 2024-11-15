@@ -89,6 +89,10 @@ theorem get_finRange {n : ℕ} {i : ℕ} (h) :
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
 
+@[simp]
+theorem finRange_map_getElem (l : List α) : (finRange l.length).map (l[·]) = l :=
+  List.ext_getElem (by simp) (by simp)
+
 @[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
   have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
   have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
