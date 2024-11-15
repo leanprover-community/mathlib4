@@ -98,7 +98,7 @@ instance :
           (ComplexShape.π c₁₂ c₃ c₄) :=
   inferInstanceAs (HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄)
 
-instance  :
+instance :
     (((GradedObject.mapBifunctor F ι₁ ι₂₃).obj K₁.X).obj
       (GradedObject.mapBifunctorMapObj G₂₃
         (ComplexShape.π c₂ c₃ c₂₃) K₂.X K₃.X)).HasMap (ComplexShape.π c₁ c₂₃ c₄) :=
