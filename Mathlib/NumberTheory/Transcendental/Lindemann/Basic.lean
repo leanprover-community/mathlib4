@@ -8,6 +8,7 @@ import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
+import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
@@ -22,9 +23,9 @@ open scoped Nat
 
 open Complex Finset Polynomial
 
-variable {ι : Type*} [Fintype ι]
+variable {ι : Type*}
 
-private theorem linearIndependent_exp' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
+private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i))
     (h : ∑ i, v i * exp (u i) = 0) : ∀ i, v i = 0 := by
   rw [funext_iff.symm, ← Pi.zero_def]
@@ -205,8 +206,20 @@ private theorem linearIndependent_exp' (u : ι → ℂ) (hu : ∀ i, IsIntegral 
 
 theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.Injective) :
     LinearIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) :=
-  Fintype.linearIndependent_iff.mpr fun v h ↦ mod_cast
-    linearIndependent_exp' (u ·) (u · |>.2) (fun i j ↦ by simpa using @u_inj i j) (v ·) (v · |>.2) h
+  linearIndependent_iff'.mpr fun s v h ↦ by
+    simpa using linearIndependent_exp' (ι := s) (u ·) (u · |>.2)
+      (fun i j ↦ by simpa [Subtype.coe_inj] using @u_inj i j)
+      (v ·) (v · |>.2) (by simpa [sum_attach _ fun x ↦ v x * cexp (u x)])
+
+theorem algebraicIndependent_exp (u : ι → integralClosure ℚ ℂ) (hu : LinearIndependent ℕ u) :
+    AlgebraicIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) := by
+  rw [algebraicIndependent_iff]
+  intro p hp
+  simp_rw [MvPolynomial.aeval_def, MvPolynomial.eval₂_eq, ← Algebra.smul_def, ← exp_nsmul,
+    ← exp_sum] at hp
+  norm_cast at hp
+  apply linearIndependent_iff.mp (linearIndependent_exp (fun e ↦ ∑ i ∈ e.support, e i • u i) _)
+  exacts [hp, hu]
 
 theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
     Transcendental ℤ (exp a) := by

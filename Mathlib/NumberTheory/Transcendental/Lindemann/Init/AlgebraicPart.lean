@@ -59,7 +59,7 @@ variable {F R K : Type*} [Field F] [CommSemiring R] [Algebra F R] [Field K] [Alg
 
 variable (F R K) in
 def mapDomainFixed : Subalgebra R R[K] where
-  carrier := {x | ∀ f : K ≃ₐ[F] K, AddMonoidAlgebra.domCongrAut F _ f x = x}
+  carrier := {x | ∀ f : K ≃ₐ[F] K, x.domCongrAut F R f = x}
   mul_mem' {a b} ha hb f := by rw [map_mul, ha, hb]
   add_mem' {a b} ha hb f := by rw [map_add, ha, hb]
   algebraMap_mem' r f := by
@@ -69,13 +69,13 @@ def mapDomainFixed : Subalgebra R R[K] where
 theorem mem_mapDomainFixed_iff {x : R[K]} :
     x ∈ mapDomainFixed F R K ↔ ∀ i j, i ∈ MulAction.orbit (K ≃ₐ[F] K) j → x i = x j := by
   simp_rw [MulAction.mem_orbit_iff]
-  change (∀ f : K ≃ₐ[F] K, Finsupp.equivMapDomain (AlgEquiv.toAddEquiv f) x = x) ↔ _
+  change (∀ f : K ≃ₐ[F] K, Finsupp.equivMapDomain f.toAddEquiv x = x) ↔ _
   refine ⟨fun h i j hij => ?_, fun h f => ?_⟩
   · obtain ⟨f, rfl⟩ := hij
     rw [AlgEquiv.smul_def, ← DFunLike.congr_fun (h f) (f j)]
     change x (f.symm (f j)) = _; rw [AlgEquiv.symm_apply_apply]
   · ext i; change x (f.symm i) = x i
-    refine (h i ((AlgEquiv.symm f) i) ⟨f, ?_⟩).symm
+    refine (h i (f.symm i) ⟨f, ?_⟩).symm
     rw [AlgEquiv.smul_def, AlgEquiv.apply_symm_apply]
 
 variable (F R K) in
