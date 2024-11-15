@@ -38,11 +38,20 @@ scoped instance enrichedCategorySelf : EnrichedCategory C C where
   comp _ _ _ := comp _ _ _
   assoc _ _ _ _ := assoc _ _ _ _
 
+section
+
+variable {C}
+
+lemma enrichedCategorySelf_hom (X Y : C) :
+    EnrichedCategory.Hom X Y = (ihom X).obj Y := rfl
+
 lemma enrichedCategorySelf_id (X : C) :
     eId C X = id X := rfl
 
 lemma enrichedCategorySelf_comp (X Y Z : C) :
     eComp C X Y Z = comp X Y Z := rfl
+
+end
 
 attribute [local simp] enrichedCategorySelf_id enrichedCategorySelf_comp
 
@@ -58,6 +67,15 @@ scoped instance enrichedOrdinaryCategorySelf : EnrichedOrdinaryCategory C C wher
     rw [comp_eq, compTranspose_eq, ← curry_natural_left, ← curry_natural_left]
     congr 1
     sorry
+
+lemma enrichedOrdinaryCategorySelf_eHomWhiskerLeft (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) :
+    eHomWhiskerLeft C X g = (ihom X).map g := by
+  change (ρ_ _).inv ≫ _ ◁ curry ((ρ_ _).hom ≫ g) ≫ comp X Y₁ Y₂ = _
+  sorry
+
+lemma enrichedOrdinaryCategorySelf_eHomWhiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) :
+    eHomWhiskerRight C f Y = (pre f).app Y := by
+  sorry
 
 end MonoidalClosed
 

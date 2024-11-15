@@ -28,14 +28,28 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [MonoidalClose
   [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F₁ F₂]
   [∀ (F₁ F₂ : J ⥤ C), HasFunctorEnrichedHom C F₁ F₂]
 
+attribute [local simp] enrichedCategorySelf_hom enrichedCategorySelf_id
+  enrichedCategorySelf_comp enrichedOrdinaryCategorySelf_eHomWhiskerLeft
+  enrichedOrdinaryCategorySelf_eHomWhiskerRight
+
 section
 
 variable {F₁ F₂ F₂' F₃ F₃' : J ⥤ C}
 
 noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnrichedHom C F₁ F₃) where
   toFun f :=
-    { app := fun j ↦ end_.lift (fun k ↦ F₂.map k.hom ≫ curry (f.app k.right))
-        sorry
+    { app := fun j ↦ end_.lift (fun k ↦ F₂.map k.hom ≫ curry (f.app k.right)) (fun k₁ k₂ φ ↦ by
+        dsimp
+        simp only [enrichedOrdinaryCategorySelf_eHomWhiskerLeft, Category.assoc,
+          enrichedOrdinaryCategorySelf_eHomWhiskerRight]
+        rw [← curry_natural_left_assoc, ← curry_natural_left_assoc,
+          ← curry_natural_right, curry_pre_app]
+        congr 1
+        convert (_ ◁ (F₂.map k₁.hom)) ≫= (f.naturality φ.right).symm using 1
+        · simp only [Category.assoc]
+        · dsimp
+          rw [tensorHom_def_assoc, whisker_exchange_assoc,
+            ← MonoidalCategory.whiskerLeft_comp_assoc, ← Under.w φ, Functor.map_comp])
       naturality := sorry }
   invFun g :=
     { app := fun j ↦ uncurry (g.app j ≫ enrichedHomπ C _ _ (Under.mk (𝟙 j)) )
@@ -47,7 +61,7 @@ lemma homEquiv_naturality_two_symm (f₂ : F₂ ⟶ F₂') (g : F₂' ⟶ functo
     homEquiv.symm (f₂ ≫ g) = F₁ ◁ f₂ ≫ homEquiv.symm g :=
   sorry
 
-lemma homEquiv_naturality_three_symm (f : F₁ ⊗ F₂ ⟶ F₃) (f₃ : F₃ ⟶ F₃') :
+lemma homEquiv_naturality_three (f : F₁ ⊗ F₂ ⟶ F₃) (f₃ : F₃ ⟶ F₃') :
     homEquiv (f ≫ f₃) = homEquiv f ≫ (ρ_ _).inv ≫ _ ◁ functorHomEquiv _ f₃ ≫
       functorEnrichedComp C F₁ F₃ F₃' :=
   sorry
@@ -61,7 +75,7 @@ noncomputable def adj (F : J ⥤ C) :
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦ homEquiv
       homEquiv_naturality_left_symm := homEquiv_naturality_two_symm
-      homEquiv_naturality_right := homEquiv_naturality_three_symm }
+      homEquiv_naturality_right := homEquiv_naturality_three }
 
 noncomputable def closed (F : J ⥤ C) : Closed F where
   rightAdj := (eHomFunctor _ _).obj ⟨F⟩
