@@ -53,7 +53,7 @@ instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.instSuccOrder with}
 instance Nimber.orderBot : OrderBot Nimber := {Ordinal.orderBot with}
 instance Nimber.noMaxOrder : NoMaxOrder Nimber := {Ordinal.noMaxOrder with}
 instance Nimber.zeroLEOneClass : ZeroLEOneClass Nimber := {Ordinal.zeroLEOneClass with}
-instance Nimber.NeZero.one : NeZero (1 : Nimber) := Ordinal.NeZero.one
+instance Nimber.instNeZeroOne : NeZero (1 : Nimber) := Ordinal.NeZero.one
 
 /-- The identity function between `Ordinal` and `Nimber`. -/
 @[match_pattern]
@@ -318,9 +318,8 @@ protected theorem add_zero (a : Nimber) : a + 0 = a := by
       exact ha.ne
     · intro _ h
       exact (Nimber.not_lt_zero _ h).elim
-  · -- by_contra! doesn't work for whatever reason.
-    by_contra h
-    replace h := lt_of_not_le h
+  · by_contra! h
+    replace h := h -- needed to remind `termination_by`
     have := Nimber.add_zero (a + 0)
     rw [add_left_inj] at this
     exact this.not_lt h

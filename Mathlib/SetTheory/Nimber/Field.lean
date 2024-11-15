@@ -8,7 +8,7 @@ import Mathlib.SetTheory.Nimber.Basic
 import Mathlib.Tactic.Abel
 
 /-!
-# Nimber multiplication and division
+# Nimber multiplication
 
 The nim product `a * b` is recursively defined as the least nimber not equal to any
 `a' * b + a * b' + a' * b'` for `a' < a` and `b' < b`. When endowed with this operation, the nimbers
@@ -102,9 +102,7 @@ instance : NoZeroDivisors Nimber where
     simpa only [zero_add, mul_zero, zero_mul]
 
 protected theorem mul_comm (a b : Nimber) : a * b = b * a := by
-  apply le_antisymm <;>
-    apply mul_le_of_forall_ne <;>
-    intro x hx y hy
+  apply le_antisymm <;> refine mul_le_of_forall_ne fun x hx y hy ↦ ?_
   on_goal 1 => rw [add_comm (x * _), Nimber.mul_comm a, Nimber.mul_comm x, Nimber.mul_comm x]
   on_goal 2 => rw [add_comm (x * _), ← Nimber.mul_comm y, ← Nimber.mul_comm a, ← Nimber.mul_comm y]
   all_goals exact mul_ne_of_lt y hy x hx
@@ -112,10 +110,9 @@ termination_by (a, b)
 
 protected theorem mul_add (a b c : Nimber) : a * (b + c) = a * b + a * c := by
   apply le_antisymm
-  · apply mul_le_of_forall_ne
-    intro a' ha x hx
+  · refine mul_le_of_forall_ne fun a' ha x hx ↦ ?_
     obtain (⟨b', h, rfl⟩ | ⟨c', h, rfl⟩) := exists_of_lt_add hx <;>
-    rw [Nimber.mul_add a', Nimber.mul_add a, Nimber.mul_add a']
+      rw [Nimber.mul_add a', Nimber.mul_add a, Nimber.mul_add a']
     on_goal 1 => rw [← add_ne_add_left (a * c)]
     on_goal 2 => rw [← add_ne_add_left (a * b)]
     all_goals
@@ -124,8 +121,7 @@ protected theorem mul_add (a b c : Nimber) : a * (b + c) = a * b + a * c := by
       rw [← add_assoc]
       exact mul_ne_of_lt _ ha _ h
   · apply add_le_of_forall_ne <;>
-      intro x' hx' <;>
-      obtain ⟨x, hx, y, hy, rfl⟩ := exists_of_lt_mul hx'
+      (intro x' hx'; obtain ⟨x, hx, y, hy, rfl⟩ := exists_of_lt_mul hx')
     · obtain h | h | h := lt_trichotomy (y + c) (b + c)
       · have H := mul_ne_of_lt _ hx _ h
         rw [Nimber.mul_add x, Nimber.mul_add a, Nimber.mul_add x] at H
@@ -160,17 +156,16 @@ termination_by (a, b, c)
 protected theorem add_mul (a b c : Nimber) : (a + b) * c = a * c + b * c := by
   rw [Nimber.mul_comm, Nimber.mul_add, Nimber.mul_comm, Nimber.mul_comm b]
 
+private theorem add_ne_zero_of_lt {a b : Nimber} (h : b < a) : a + b ≠ 0 := by
+  rw [add_ne_zero_iff]
+  exact h.ne'
+
 protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
-  apply le_antisymm <;>
-    apply mul_le_of_forall_ne <;>
-    intro x hx y hy
+  apply le_antisymm <;> refine mul_le_of_forall_ne fun x hx y hy ↦ ?_
   · obtain ⟨a', ha, b', hb, rfl⟩ := exists_of_lt_mul hx
     have H : (a + a') * ((b + b') * (c + y)) ≠ 0 := by
-      apply mul_ne_zero _ (mul_ne_zero _ _)
-      all_goals
-        rw [add_ne_zero_iff]
-        apply ne_of_gt
-        assumption
+      apply mul_ne_zero _ (mul_ne_zero _ _) <;> apply add_ne_zero_of_lt
+      assumption'
     simp only [Nimber.add_mul, Nimber.mul_add] at H ⊢
     iterate 7 rw [Nimber.mul_assoc]
     rw [← add_ne_add_left (a * (b * c))]
@@ -178,11 +173,8 @@ protected theorem mul_assoc (a b c : Nimber) : a * b * c = a * (b * c) := by
     simpa only [two_zsmul, zero_add] using H
   · obtain ⟨b', hb, c', hc, rfl⟩ := exists_of_lt_mul hy
     have H : (a + x) * (b + b') * (c + c') ≠ 0 := by
-      apply mul_ne_zero (mul_ne_zero _ _)
-      all_goals
-        rw [add_ne_zero_iff]
-        apply ne_of_gt
-        assumption
+      apply mul_ne_zero (mul_ne_zero _ _) <;> apply add_ne_zero_of_lt
+      assumption'
     simp only [Nimber.add_mul, Nimber.mul_add] at H ⊢
     iterate 7 rw [← Nimber.mul_assoc]
     rw [← add_ne_add_left (a * b * c)]
@@ -200,14 +192,12 @@ instance : IsCancelMulZero Nimber where
 
 protected theorem one_mul (a : Nimber) : 1 * a = a := by
   apply le_antisymm
-  · apply mul_le_of_forall_ne
-    intro x hx y hy
+  · refine mul_le_of_forall_ne fun x hx y hy ↦ ?_
     rw [Nimber.lt_one_iff_zero] at hx
     rw [hx, Nimber.one_mul, zero_mul, zero_mul, add_zero, zero_add]
     exact hy.ne
-  · -- by_contra! doesn't work for whatever reason.
-    by_contra h
-    replace h := lt_of_not_le h
+  · by_contra! h
+    replace h := h -- needed to remind `termination_by`
     exact (mul_left_cancel₀ one_ne_zero <| Nimber.one_mul _).not_lt h
 termination_by a
 
