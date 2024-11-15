@@ -25,11 +25,6 @@ subspace as a submodule of `E`.
 
 -/
 
-
-noncomputable section
-
-open Set
-
 variable {M : Type*} [SeminormedCommGroup M]
 
 variable (M) in
@@ -42,7 +37,7 @@ def nullSubgroup : Subgroup M where
     refine (norm_mul_le' x y).trans_eq ?_
     rw [hx, hy, add_zero]
   one_mem' := norm_one'
-  inv_mem' {x} (hx : ‖x‖ = 0) := by simpa only [mem_setOf_eq, norm_inv'] using hx
+  inv_mem' {x} (hx : ‖x‖ = 0) := by simpa only [Set.mem_setOf_eq, norm_inv'] using hx
 
 @[to_additive]
 lemma isClosed_nullSubgroup : IsClosed (nullSubgroup M : Set M) := by
@@ -67,5 +62,3 @@ lemma isClosed_nullSubmodule : IsClosed (nullSubmodule 𝕜 E : Set E) := isClos
 
 @[simp]
 lemma mem_nullSubmodule_iff {x : E} : x ∈ nullSubmodule 𝕜 E ↔ ‖x‖ = 0 := Iff.rfl
-
-end
