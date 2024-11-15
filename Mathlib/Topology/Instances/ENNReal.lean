@@ -18,8 +18,8 @@ import Mathlib.Topology.Metrizable.Uniformity
 
 noncomputable section
 
-open Set Filter Metric Function
-open scoped Finset Topology ENNReal NNReal
+open Filter Function Metric Set Topology
+open scoped Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -191,7 +191,7 @@ theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ =
 theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ => 0 < a) Iic :=
   nhds_bot_basis_Iic
 
--- Porting note (#11215): TODO: add a TC for `≠ ∞`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a TC for `≠ ∞`?
 @[instance]
 theorem nhdsWithin_Ioi_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
   nhdsWithin_Ioi_self_neBot' ⟨∞, ENNReal.coe_lt_top⟩
@@ -481,7 +481,7 @@ protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞
   | (n : ℕ) => mod_cast ENNReal.continuous_pow n
   | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
 
-@[simp] -- Porting note (#11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
+@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
   ⟨fun h => by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩
@@ -1096,7 +1096,7 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : ball a r) : ed
   ne_of_lt <|
     calc
       edist x y ≤ edist a x + edist a y := edist_triangle_left x.1 y.1 a
-      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact add_lt_add x.2 y.2
+      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.2 y.2
       _ ≤ ∞ := le_top
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist

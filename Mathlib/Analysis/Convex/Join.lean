@@ -104,7 +104,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t u : Set E} {x y : E}
+variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) := by

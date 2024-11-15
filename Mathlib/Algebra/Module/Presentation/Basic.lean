@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Presentations of modules
@@ -386,7 +386,7 @@ lemma uniq_symm_var (g : relations.G) : (uniq h h').symm (solution'.var g) = sol
 
 end
 
-lemma ofLinearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsPresentation where
+lemma of_linearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsPresentation where
   bijective := by
     have : (solution.postcomp e.toLinearMap).fromQuotient =
       e.toLinearMap.comp (solution.fromQuotient) := by aesop
@@ -503,10 +503,12 @@ def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
   toSolution := solution
   toIsPresentation := h
 
+/-- The presentation of an `A`-module `N` that is deduced from a presentation of
+a module `M` and a linear equivalence `e : M ≃ₗ[A] N`. -/
 @[simps! toRelations toSolution]
 def Presentation.ofLinearEquiv (pres : Presentation.{w₀, w₁} A M)
     {N : Type v'} [AddCommGroup N] [Module A N] (e : M ≃ₗ[A] N) :
     Presentation A N :=
-  ofIsPresentation (pres.toIsPresentation.ofLinearEquiv e)
+  ofIsPresentation (pres.toIsPresentation.of_linearEquiv e)
 
 end Module

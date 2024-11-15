@@ -51,7 +51,7 @@ theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p 
     (h_three : p ≠ 3) : 5 ≤ p := by
   by_contra! h
   revert h_two h_three hp
-  -- Porting note (#11043): was `decide!`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
   match p with
   | 0 => decide
   | 1 => decide
@@ -135,10 +135,8 @@ theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬
 
 @[simp] lemma coprime_two_right : n.Coprime 2 ↔ Odd n := coprime_comm.trans coprime_two_left
 
-alias ⟨Coprime.odd_of_left, _root_.Odd.coprime_two_left⟩ := coprime_two_left
-alias ⟨Coprime.odd_of_right, _root_.Odd.coprime_two_right⟩ := coprime_two_right
-
--- Porting note: attributes `protected`, `nolint dup_namespace` removed
+protected alias ⟨Coprime.odd_of_left, _root_.Odd.coprime_two_left⟩ := coprime_two_left
+protected alias ⟨Coprime.odd_of_right, _root_.Odd.coprime_two_right⟩ := coprime_two_right
 
 theorem Prime.dvd_of_dvd_pow {p m n : ℕ} (pp : Prime p) (h : p ∣ m ^ n) : p ∣ m :=
   pp.prime.dvd_of_dvd_pow h

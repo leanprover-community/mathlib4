@@ -194,7 +194,7 @@ section
 
 variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
   FullSubcategory fun F : C ⥤ D => F.Additive
