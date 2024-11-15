@@ -92,7 +92,7 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
     let pre : Simp.Simproc := fun e =>
       try
         guard <| root || parent != e -- recursion guard
-        let e ← withReducible <| whnf e
+        let e ← withReducible <| whnfCore e (config := { zetaDelta := false })
         guard e.isApp -- all interesting ring expressions are applications
         let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))

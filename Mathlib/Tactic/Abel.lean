@@ -458,7 +458,7 @@ partial def abelNFCore
       let pre : Simp.Simproc := fun e =>
         try
           guard <| root || parent != e -- recursion guard
-          let e ← withReducible <| whnf e
+          let e ← withReducible <| whnfCore e (config := { zetaDelta := false })
           guard e.isApp -- all interesting group expressions are applications
           let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
           guard !a.isAtom

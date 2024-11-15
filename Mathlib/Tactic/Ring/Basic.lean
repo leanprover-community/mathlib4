@@ -1083,7 +1083,8 @@ def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   let els := try
       pure <| some (evalCast sα (← derive e))
     catch _ => pure (some none)
-  let .const n _ := (← withReducible <| whnf e).getAppFn | els
+  let e' ← withReducible <| whnfCore e (config := { zetaDelta := false })
+  let .const n _ := e'.getAppFn | els
   match n, c.rα, c.dα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _
@@ -1104,7 +1105,8 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
   let els := do
     try evalCast sα (← derive e)
     catch _ => evalAtom sα e
-  let .const n _ := (← withReducible <| whnf e).getAppFn | els
+  let e' ← withReducible <| whnfCore e (config := { zetaDelta := false })
+  let .const n _ := e'.getAppFn | els
   match n, c.rα, c.dα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
     | ~q($a + $b) =>
