@@ -52,6 +52,7 @@ jobs:
           else
             printf $'bot=false\n'
             printf $'bot=false\n' > "${GITHUB_OUTPUT}"
+          fi
 
       - name: Check whether user is a mathlib admin
         id: user_permission
