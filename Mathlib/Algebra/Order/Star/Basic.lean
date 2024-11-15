@@ -301,7 +301,7 @@ lemma star_lt_one_iff {x : R} : star x < 1 ↔ x < 1 := by
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 theorem IsSelfAdjoint.sq_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a ^ 2 := by
-  simp only [sq, ha.mul_self_nonneg]
+  simp [sq, ha.mul_self_nonneg]
 
 end Semiring
 
