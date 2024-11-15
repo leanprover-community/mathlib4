@@ -18,7 +18,7 @@ In this file, we prove that `Module.Flat` is a local property.
   spans `R`. If the localization of `M` at `s : S` is flat over `Localization.Away s`,
   then `M` is flat over `R`.
 * `flat_iff_localization` : Let `R_p` a localization of `CommRing R` and `M` be a module over `R_p`.
-  Then `M` is flat over `R` if and only if `M` is flat over `R_p`
+  Then `M` is flat over `R` if and only if `M` is flat over `R_p`.
 
 -/
 
@@ -38,8 +38,8 @@ lemma LocalizedModule.map'_mk {N :Type*} [AddCommGroup N] [Module R N] (S : Subm
     mapExtendScalars_apply_apply, IsLocalizedModule.map_mk']
 
 private noncomputable def tensor_eqv_local :
-    Localization S ⊗[R] M ≃ₗ[Localization S] LocalizedModule S M
-  := (IsLocalizedModule.isBaseChange S (Localization S) (mkLinearMap S M)).equiv
+    Localization S ⊗[R] M ≃ₗ[Localization S] LocalizedModule S M :=
+  (IsLocalizedModule.isBaseChange S (Localization S) (mkLinearMap S M)).equiv
 
 private noncomputable def eqv1 := (TensorProduct.assoc R (Localization S) M N)
   ≪≫ₗ ((tensor_eqv_local (M ⊗[R] N) S).restrictScalars R)
