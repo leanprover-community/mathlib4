@@ -116,7 +116,7 @@ theorem tendsto_concat {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {
     refine hg ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
     simp [projIccCM, projIcc, hxb, x.2.2]
 
-/-- The concatenation of compatible pairs of continuous maps on adjacent intrevals, defined as a
+/-- The concatenation of compatible pairs of continuous maps on adjacent intervals, defined as a
 `ContinuousMap` on a subtype of the product. -/
 noncomputable def concatCM :
     C({fg : C(Icc a b, E) × C(Icc b c, E) // fg.1 ⊤ = fg.2 ⊥}, C(Icc a c, E))
