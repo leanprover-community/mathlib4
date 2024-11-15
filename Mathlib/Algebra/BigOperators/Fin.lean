@@ -371,20 +371,17 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
 /-- Equivalence between `(i : Fin m) × Fin (n i)` and `Fin (∑ i, n i)`. -/
 def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (∑ i, n i) :=
   .ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_sigma, Fintype.card_fin])
-    (fun ⟨i, j⟩ =>
-      let h : m ≠ 0 := Nat.not_eq_zero_of_lt i.prop
-      ⟨∑ k, n (Fin.castLE i.isLt.le k) + j, by
-        have hi : i.val + 1 + (m - i.val - 1) = m := by omega
-        conv_rhs => rw [← Fin.sum_congr' n hi, Fin.sum_univ_add, Fin.sum_univ_add, add_assoc]
-        have hk {k : Fin i} : Fin.castLE i.isLt.le k =
-              Fin.cast hi (Fin.castAdd (m - i - 1) (Fin.castAdd 1 k)) := by
-          simp only [Fin.castLE, Fin.cast, Fin.coe_castAdd]
-        simp_rw [hk, Nat.add_lt_add_iff_left, univ_unique, sum_singleton]
-        exact Nat.lt_add_right _ (by simp only [Fin.cast, Fin.coe_castAdd, Fin.coe_natAdd,
-            Fin.val_eq_zero, add_zero, Fin.is_lt])⟩)
+    (fun ⟨i, j⟩ => ⟨∑ k, n (Fin.castLE i.isLt.le k) + j, by
+      have hi : i.val + 1 + (m - i.val - 1) = m := by omega
+      conv_rhs => rw [← Fin.sum_congr' n hi, Fin.sum_univ_add, Fin.sum_univ_add, add_assoc]
+      have hk {k : Fin i} : Fin.castLE i.isLt.le k =
+            Fin.cast hi (Fin.castAdd (m - i - 1) (Fin.castAdd 1 k)) := by
+        simp only [Fin.castLE, Fin.cast, Fin.coe_castAdd]
+      simp_rw [hk, Nat.add_lt_add_iff_left, univ_unique, sum_singleton]
+      exact Nat.lt_add_right _ (by simp only [Fin.cast, Fin.coe_castAdd, Fin.coe_natAdd,
+          Fin.val_eq_zero, add_zero, Fin.is_lt])⟩)
     (fun k => ⟨k.divSum, k.modSum⟩)
-    (by
-      intro a
+    (fun a => by
       induction n using Fin.consInduction with
       | h0 =>
         simp only [univ_eq_empty, sum_empty] at a
