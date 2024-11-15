@@ -553,7 +553,7 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 on either side). -/
 @[simps]
 def span.ringHom : SetSemiring A →+* Submodule R A where
-  -- Note: the hint `(α := A)` is new in https://github.com/leanprover-community/mathlib4/issues/8386
+  -- Note: the hint `(α := A)` is new in https://github.com/leanprover-community/mathlib4/pull/8386
   toFun s := Submodule.span R (SetSemiring.down (α := A) s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
@@ -617,7 +617,7 @@ variable (R A)
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   -- Porting note: have to unfold both `HSMul.hSMul` and `SMul.smul`
-  -- Note: the hint `(α := A)` is new in https://github.com/leanprover-community/mathlib4/issues/8386
+  -- Note: the hint `(α := A)` is new in https://github.com/leanprover-community/mathlib4/pull/8386
   smul s P := span R (SetSemiring.down (α := A) s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by
