@@ -187,7 +187,7 @@ theorem Submodule.le_of_localization_finitespan {N P : Submodule R M}
   exact nm (maxm.isPrime.mem_of_pow_mem k (hk ▸ (lem h1)))
 
 theorem Submodule.eq_of_localization_finitespan {N P : Submodule R M}
-  (h : ∀ r : s, N.localized (Submonoid.powers r.1) = P.localized (Submonoid.powers r.1)) :
+    (h : ∀ r : s, N.localized (Submonoid.powers r.1) = P.localized (Submonoid.powers r.1)) :
     N = P :=
   eq_of_le_of_le (le_of_localization_finitespan s spn (fun r ↦ le_of_eq (h r)))
   (le_of_localization_finitespan s spn (fun r ↦ le_of_eq (h r).symm))
