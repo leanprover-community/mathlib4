@@ -379,11 +379,9 @@ instance : NormedCommGroup (SeparationQuotient E) where
   __ : CommGroup (SeparationQuotient E) := instCommGroup
   dist_eq := Quotient.ind₂ dist_eq_norm_div
 
-set_option linter.docPrime false in
 @[to_additive mk_eq_zero_iff]
-theorem mk_eq_zero_iff' (p : E) : mk p = 1 ↔ ‖p‖ = 0 := by
-  rw [← norm_mk']
-  exact Iff.symm norm_eq_zero''
+theorem mk_eq_one_iff {p : E} : mk p = 1 ↔ ‖p‖ = 0 := by
+  rw [← norm_mk', norm_eq_zero'']
 
 set_option linter.docPrime false in
 @[to_additive (attr := simp) nnnorm_mk]
