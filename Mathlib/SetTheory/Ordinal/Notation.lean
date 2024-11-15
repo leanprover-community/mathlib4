@@ -801,8 +801,8 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
   · apply (mul_le_mul_left' (le_succ b) _).trans
     rw [← add_one_eq_succ, add_mul_succ _ (one_add_of_omega0_le h), add_one_eq_succ, succ_le_iff,
       Ordinal.mul_lt_mul_iff_left (Ordinal.pos_iff_ne_zero.2 e0)]
-    exact isLimit_omega0.2 _ l
-  · apply (principal_mul_omega0 (isLimit_omega0.2 _ h) l).le.trans
+    exact isLimit_omega0.succ_lt l
+  · apply (principal_mul_omega0 (isLimit_omega0.succ_lt h) l).le.trans
     simpa using mul_le_mul_right' (one_le_iff_ne_zero.2 e0) ω
 
 section
