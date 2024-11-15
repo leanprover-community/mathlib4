@@ -50,7 +50,7 @@ variable {f₂ : E → G} {f₂' : E →L[𝕜] G}
 protected theorem HasStrictFDerivAt.prod (hf₁ : HasStrictFDerivAt f₁ f₁' x)
     (hf₂ : HasStrictFDerivAt f₂ f₂' x) :
     HasStrictFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
-  hf₁.prod_left hf₂
+  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
 
 theorem HasFDerivAtFilter.prod (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' x L) :

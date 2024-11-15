@@ -111,7 +111,7 @@ section Add
 @[fun_prop]
 nonrec theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x)
     (hg : HasStrictFDerivAt g g' x) : HasStrictFDerivAt (fun y => f y + g y) (f' + g') x :=
-  (hf.add hg).congr_left fun y => by
+   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun y => by
     simp only [LinearMap.sub_apply, LinearMap.add_apply, map_sub, map_add, add_apply]
     abel
 
