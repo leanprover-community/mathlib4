@@ -44,6 +44,14 @@ jobs:
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
 
           printf $'mOrD=%s\n' "${m_or_d}" > "${GITHUB_OUTPUT}"
+          if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
+             [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ]
+          then
+            printf $'bot=true\n'
+            printf $'bot=true\n' > "${GITHUB_OUTPUT}"
+          else
+            printf $'bot=false\n'
+            printf $'bot=false\n' > "${GITHUB_OUTPUT}"
 
       - name: Check whether user is a mathlib admin
         id: user_permission
@@ -58,9 +66,8 @@ jobs:
       - name: Add ready-to-merge or delegated label
         id: add_label
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }} && (
-          (steps.user_permission.outputs.require-result == 'true') ||
-          (${AUTHOR} == 'leanprover-community-mathlib4-bot') ||
-          (${AUTHOR} == 'leanprover-community-bot-assistant'))
+          (${{ steps.user_permission.outputs.require-result == 'true' }}) ||
+          ${{ steps.merge_or_delegate.outputs.bot == 'true' }})
         uses: octokit/request-action@v2.x
         with:
           # check is this ok? was /repos/:repository/issues/:issue_number/labels
@@ -72,9 +79,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }} # comment uses ${{ secrets.GITHUB_TOKEN }}
 
       - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }} && (
-          (steps.user_permission.outputs.require-result == 'true') ||
-          (${AUTHOR} == 'leanprover-community-mathlib4-bot') ||
-          (${AUTHOR} == 'leanprover-community-bot-assistant'))
+          (${{ steps.user_permission.outputs.require-result == 'true' }}) ||
+          ${{ steps.merge_or_delegate.outputs.bot == 'true' }})
         id: remove_labels
         name: Remove "awaiting-author"
         # we use curl rather than octokit/request-action so that the job won't fail
