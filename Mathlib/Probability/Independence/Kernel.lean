@@ -833,16 +833,16 @@ theorem Indep.indepSet_of_measurableSet {m₁ m₂ _ : MeasurableSpace Ω} {κ :
     (ht : MeasurableSet[m₂] t) :
     IndepSet s t κ μ := by
   refine fun s' t' hs' ht' => h_indep s' t' ?_ ?_
-  · refine @generateFrom_induction _ (fun u => MeasurableSet[m₁] u) {s} ?_ ?_ ?_ ?_ _ hs'
-    · simp only [Set.mem_singleton_iff, forall_eq, hs]
-    · exact @MeasurableSet.empty _ m₁
-    · exact fun u hu => hu.compl
-    · exact fun f hf => MeasurableSet.iUnion hf
-  · refine @generateFrom_induction _ (fun u => MeasurableSet[m₂] u) {t} ?_ ?_ ?_ ?_ _ ht'
-    · simp only [Set.mem_singleton_iff, forall_eq, ht]
-    · exact @MeasurableSet.empty _ m₂
-    · exact fun u hu => hu.compl
-    · exact fun f hf => MeasurableSet.iUnion hf
+  · induction s', hs' using generateFrom_induction with
+    | hC t ht => exact ht ▸ hs
+    | empty => exact @MeasurableSet.empty _ m₁
+    | compl u _ hu => exact hu.compl
+    | iUnion f _ hf => exact .iUnion hf
+  · induction t', ht' using generateFrom_induction with
+    | hC s hs => exact hs ▸ ht
+    | empty => exact @MeasurableSet.empty _ m₂
+    | compl u _ hu => exact hu.compl
+    | iUnion f _ hf => exact .iUnion hf
 
 theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
     (κ : Kernel α Ω) (μ : Measure α) :
@@ -1172,8 +1172,8 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem (hf_Indep : iIndepFun (fun _ �
   have h_right : f i =
     (fun p : ({i} : Finset ι) → β => p ⟨i, Finset.mem_singleton_self i⟩) ∘
     fun a (j : ({i} : Finset ι)) => f j a := rfl
-  have h_meas_right : Measurable fun p : ({i} : Finset ι) → β
-    => p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
+  have h_meas_right : Measurable fun p : ({i} : Finset ι) → β =>
+      p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply _
   have h_left : ∏ j ∈ s, f j = (fun p : s → β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
     ext1 a
     simp only [Function.comp_apply]

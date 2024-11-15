@@ -20,7 +20,7 @@ In this file we prove a few facts like “The infimum of `-s` is `-` the supremu
 open Function Set
 open scoped Pointwise
 
-variable {ι G M : Type*}
+variable {M : Type*}
 
 section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice M]

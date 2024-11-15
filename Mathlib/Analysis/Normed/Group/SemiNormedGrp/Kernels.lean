@@ -43,7 +43,7 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       -- simp only [comp_apply, Limits.zero_comp, NormedAddGroupHom.zero_apply,
       --   SemiNormedGrp₁.mkHom_apply, SemiNormedGrp₁.zero_apply,
       --   ← NormedAddGroupHom.mem_ker, f.1.range.ker_normedMk, f.1.mem_range]
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [Limits.zero_comp, comp_apply, SemiNormedGrp₁.mkHom_apply,
         SemiNormedGrp₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.1.range.ker_normedMk,
         f.1.mem_range]
@@ -59,7 +59,7 @@ def cokernelLift {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) (s : CokernelCofork 
     rintro _ ⟨b, rfl⟩
     change (f ≫ s.π) b = 0
     simp
-    -- This used to be the end of the proof before leanprover/lean4#2644
+    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
     erw [zero_apply]
   -- The lift has norm at most one:
   exact NormedAddGroupHom.lift_normNoninc _ _ _ s.π.2
@@ -76,7 +76,7 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
               rintro _ ⟨b, rfl⟩
               change (f ≫ s.π) b = 0
               simp
-              -- This used to be the end of the proof before leanprover/lean4#2644
+              -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
               erw [zero_apply])
             fun _ _ w =>
             Subtype.eq
@@ -151,7 +151,7 @@ def cokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Cofork f 0 :=
         (inferInstance : SeminormedAddCommGroup Y)
       -- Porting note: again simp doesn't seem to be firing in the below line
       rw [← NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
-    -- This used to be `simp only [exists_apply_eq_apply]` before leanprover/lean4#2644
+    -- This used to be `simp only [exists_apply_eq_apply]` before https://github.com/leanprover/lean4/pull/2644
       convert exists_apply_eq_apply f a)
 
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp`. -/
@@ -163,7 +163,7 @@ def cokernelLift {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) (s : CokernelCofork f) 
       rintro _ ⟨b, rfl⟩
       change (f ≫ s.π) b = 0
       simp
-      -- This used to be the end of the proof before leanprover/lean4#2644
+      -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
       erw [zero_apply])
 
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp`. -/
@@ -177,7 +177,7 @@ def isColimitCokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
       rintro _ ⟨b, rfl⟩
       change (f ≫ s.π) b = 0
       simp
-      -- This used to be the end of the proof before leanprover/lean4#2644
+      -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
       erw [zero_apply])
     fun _ _ w => NormedAddGroupHom.lift_unique f.range _ _ _ w
 
@@ -210,7 +210,7 @@ def explicitCokernelπ {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Y ⟶ explicitC
 
 theorem explicitCokernelπ_surjective {X Y : SemiNormedGrp.{u}} {f : X ⟶ Y} :
     Function.Surjective (explicitCokernelπ f) :=
-  surjective_quot_mk _
+  Quot.mk_surjective
 
 @[simp, reassoc]
 theorem comp_explicitCokernelπ {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) :
