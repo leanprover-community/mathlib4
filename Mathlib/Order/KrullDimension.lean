@@ -465,15 +465,12 @@ lemma coheight_eq_coe_iff (x : α) (n : ℕ) :
 lemma height_eq_coe_iff_minimal_le_height (a : α) (n : ℕ) :
     height a = n ↔ Minimal (fun y => n ≤ height y) a := by
   by_cases hfin : height a < ⊤
-  · simp only [minimal_iff_forall_lt, not_le, height_eq_coe_iff, hfin, true_and, and_congr_left_iff]
-    intro _
-    cases n
-    case pos.zero => simp
-    case pos.succ _ =>
-      simp only [add_eq_zero, one_ne_zero, and_false, Nat.cast_add, Nat.cast_one, false_or, ne_eq,
-        ENat.coe_ne_top, not_false_eq_true, ENat.add_one_le_iff, hfin, coe_lt_height_iff]
-      rfl
-  · suffices ∃ x, ∃ (_ : x < a), ↑n ≤ height x by simp_all [minimal_iff_forall_lt]
+  · cases hn : n with
+    | zero => simp
+    | succ => simp [minimal_iff_forall_lt, height_eq_coe_add_one_iff, ENat.add_one_le_iff,
+        coe_lt_height_iff, *]
+  · suffices ∃ x, ∃ (_ : x < a), ↑n ≤ height x by
+      simp_all [minimal_iff_forall_lt]
     simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
     obtain ⟨p, rfl, hp⟩ := hfin (n+1)
     use p.eraseLast.last, RelSeries.eraseLast_last_rel_last _ (by omega)
