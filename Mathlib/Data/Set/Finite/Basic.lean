@@ -49,11 +49,6 @@ variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
 
 namespace Set
 
--- The `protected` attribute does not take effect within the same namespace block.
-end Set
-
-namespace Set
-
 theorem finite_def {s : Set α} : s.Finite ↔ Nonempty (Fintype s) :=
   finite_iff_nonempty_fintype s
 
