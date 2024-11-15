@@ -128,8 +128,7 @@ theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
   ⟨fun h => h.congr_fun hst hs, fun h => h.congr_fun hst.symm hs⟩
 
-theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ :=
-  h.mono_measure <| Measure.restrict_le_self
+theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h.restrict
 
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
     IntegrableOn f s (μ.restrict t) := by
@@ -187,6 +186,15 @@ theorem integrableOn_finite_iUnion [Finite β] {t : β → Set α} :
     IntegrableOn f (⋃ i, t i) μ ↔ ∀ i, IntegrableOn f (t i) μ := by
   cases nonempty_fintype β
   simpa using @integrableOn_finset_iUnion _ _ _ _ _ f μ Finset.univ t
+
+lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
+    {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
+  rw [← s.toSet.biUnion_of_singleton]
+  simp [integrableOn_finset_iUnion, measure_lt_top]
+
+lemma IntegrableOn.of_finite [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
+    {s : Set α} (hs : s.Finite) {f : α → E} : IntegrableOn f s μ := by
+  simpa using IntegrableOn.finset (s := hs.toFinset)
 
 theorem IntegrableOn.add_measure (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
     IntegrableOn f s (μ + ν) := by

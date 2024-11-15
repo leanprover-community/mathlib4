@@ -3,7 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Mul
 import Mathlib.Data.PEquiv
 
 /-!
@@ -49,7 +49,7 @@ open Matrix
 def toMatrix [DecidableEq n] [Zero α] [One α] (f : m ≃. n) : Matrix m n α :=
   of fun i j => if j ∈ f i then (1 : α) else 0
 
--- TODO: set as an equation lemma for `toMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `toMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
     toMatrix f i j = if j ∈ f i then (1 : α) else 0 :=
@@ -60,7 +60,7 @@ theorem mul_matrix_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m
   dsimp [toMatrix, Matrix.mul_apply]
   cases' h : f i with fi
   · simp [h]
-  · rw [Finset.sum_eq_single fi] <;> simp (config := { contextual := true }) [h, eq_comm]
+  · rw [Finset.sum_eq_single fi] <;> simp +contextual [h, eq_comm]
 
 theorem toMatrix_symm [DecidableEq m] [DecidableEq n] [Zero α] [One α] (f : m ≃. n) :
     (f.symm.toMatrix : Matrix n m α) = f.toMatrixᵀ := by
