@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Antoine Chambert-Loir. All rights reserved.
+Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
@@ -15,22 +15,21 @@ import Mathlib.Data.Setoid.Partition
 ## Definitions
 
 - `IsPreprimitive G X`
-a structure that says that the action of a type `G`
-on a type `X` (defined by an instance `SMul G X`) is *preprimitive*,
+a structure that says that the action of a type `G` on a type `X` 
+(defined by an instance `SMul G X`) is *preprimitive*,
 namely, it is pretransitive and the only blocks are ⊤ and subsingletons.
 (The pretransitivity assumption is essentially trivial,
 because orbits are blocks, unless the action itself is trivial.)
 
 The notion which is introduced in classical books on group theory
-is restricted to `mul_action` of groups.
+is restricted to group actions.
 In fact, it may be irrelevant if the action is degenerate,
 when “trivial blocks” might not be blocks.
 Moreover, the classical notion is *primitive*,
 which assumes moreover that `X` is not empty.
 
 - `IsQuasipreprimitive G X`
-a structure that says that the `mul_action`
-of the group `G` on the type `X` is *quasipreprimitive*,
+a structure that says that the action of the group `G` on the type `X` is *quasipreprimitive*,
 namely, normal subgroups of `G` which act nontrivially act pretransitively.
 
 - We prove some straightforward theorems that relate preprimitivity
@@ -54,7 +53,7 @@ preprimitive actions are quasipreprimitive
 
 open Pointwise
 
-open MulAction
+namespace MulAction
 
 section IsTrivialBlock
 
@@ -70,8 +69,7 @@ theorem IsTrivialBlock.image {φ : M → N} {f : α →ₑ[φ] β}
   cases' hB with hB hB
   · apply Or.intro_left; apply Set.Subsingleton.image hB
   · apply Or.intro_right; rw [hB]
-    simp only [Set.top_eq_univ, Set.image_univ, Set.range_iff_surjective]
-    exact hf
+    simp only [Set.top_eq_univ, Set.image_univ, Set.range_eq_univ, hf]
 
 theorem IsTrivialBlock.preimage {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Injective f) {B : Set β} (hB : IsTrivialBlock B) :
