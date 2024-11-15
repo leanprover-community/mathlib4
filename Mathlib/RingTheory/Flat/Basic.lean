@@ -61,7 +61,7 @@ open Function (Surjective)
 
 open LinearMap Submodule TensorProduct DirectSum
 
-variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- An `R`-module `M` is flat if for all finitely generated ideals `I` of `R`,
 the canonical map `I ⊗ M →ₗ M` is injective. -/
@@ -72,10 +72,10 @@ the canonical map `I ⊗ M →ₗ M` is injective. -/
 namespace Flat
 
 variable {R} in
-instance instSubalgebraToSubmodule {S : Type v} [Ring S] [Algebra R S]
+instance instSubalgebraToSubmodule {S : Type v} [Semiring S] [Algebra R S]
     (A : Subalgebra R S) [Flat R A] : Flat R (Subalgebra.toSubmodule A) := ‹Flat R A›
 
-instance self (R : Type u) [CommRing R] : Flat R R :=
+instance self (R : Type u) [CommSemiring R] : Flat R R :=
   ⟨by
     intro I _
     rw [← Equiv.injective_comp (TensorProduct.rid R I).symm.toEquiv]
@@ -96,13 +96,12 @@ inclusion `I → R` and the identity `M → M` is injective. See `iff_rTensor_in
 restrict to finitely generated ideals `I`. --/
 theorem iff_rTensor_injective' :
     Flat R M ↔ ∀ I : Ideal R, Function.Injective (rTensor M I.subtype) := by
-  rewrite [Flat.iff_rTensor_injective]
-  refine ⟨fun h I => ?_, fun h I _ => h I⟩
-  rewrite [injective_iff_map_eq_zero]
-  intro x hx₀
-  obtain ⟨J, hfg, hle, y, rfl⟩ := Submodule.exists_fg_le_eq_rTensor_inclusion x
-  rewrite [← rTensor_comp_apply] at hx₀
-  rw [(injective_iff_map_eq_zero _).mp (h hfg) y hx₀, LinearMap.map_zero]
+  refine (Flat.iff_rTensor_injective R M).trans ⟨fun h I x y eq ↦ ?_, fun h I _ ↦ h I⟩
+  have ⟨J, fg, le, mem⟩ := Submodule.exists_fg_le_subset_range_rTensor_inclusion {x, y} (by simp)
+  obtain ⟨x, rfl⟩ := mem (.inl rfl)
+  obtain ⟨y, rfl⟩ := mem (.inr rfl)
+  simp_rw [← rTensor_comp_apply] at eq
+  rw [h fg eq]
 
 @[deprecated (since := "2024-03-29")]
 alias lTensor_inj_iff_rTensor_inj := LinearMap.lTensor_inj_iff_rTensor_inj
@@ -117,7 +116,7 @@ theorem iff_lTensor_injective' :
     Module.Flat R M ↔ ∀ (I : Ideal R), Function.Injective (lTensor M I.subtype) := by
   simpa [← comm_comp_rTensor_comp_comm_eq] using Module.Flat.iff_rTensor_injective' R M
 
-variable (N : Type w) [AddCommGroup N] [Module R N]
+variable (N : Type w) [AddCommMonoid N] [Module R N]
 
 /-- A retract of a flat `R`-module is flat. -/
 lemma of_retract [f : Flat R M] (i : N →ₗ[R] M) (r : M →ₗ[R] N) (h : r.comp i = LinearMap.id) :
@@ -163,14 +162,14 @@ lemma of_shrink [Small.{v'} M] [Module.Flat R (Shrink.{v'} M)] :
   of_linearEquiv R (Shrink.{v'} M) M (Shrink.linearEquiv M R).symm
 
 /-- A direct sum of flat `R`-modules is flat. -/
-instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup (M i)]
+instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommMonoid (M i)]
     [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))] : Flat R (⨁ i, M i) := by
   haveI := Classical.decEq ι
   rw [iff_rTensor_injective]
   intro I hI
   -- This instance was added during PR #10828,
   -- see https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.2310828.20-.20generalizing.20CommRing.20to.20CommSemiring.20etc.2E/near/422684923
-  letI : ∀ i, AddCommGroup (I ⊗[R] M i) := inferInstance
+  letI : ∀ i, AddCommMonoid (I ⊗[R] M i) := inferInstance
   rw [← Equiv.comp_injective _ (TensorProduct.lid R (⨁ i, M i)).toEquiv]
   set η₁ := TensorProduct.lid R (⨁ i, M i)
   set η := fun i ↦ TensorProduct.lid R (M i)
@@ -182,7 +181,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   rw [← Equiv.injective_comp (TensorProduct.directSumRight _ _ _).symm.toEquiv]
   rw [LinearEquiv.coe_toEquiv, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
   rw [LinearEquiv.coe_toEquiv, ← LinearEquiv.coe_coe, ← LinearMap.coe_comp]
-  rw [← psi_def, injective_iff_map_eq_zero ((η₁.comp ρ).comp ψ)]
+  rw [← psi_def]
   have h₁ : ∀ (i : ι), (π i).comp ((η₁.comp ρ).comp ψ) = (η i).comp ((φ i).comp (τ i)) := by
     intro i
     apply DirectSum.linearMap_ext
@@ -195,16 +194,13 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     by_cases h₂ : j = i
     · subst j; simp
     · simp [h₂]
-  intro a ha; rw [DirectSum.ext_iff R]; intro i
-  have f := LinearMap.congr_arg (f := (π i)) ha
-  erw [LinearMap.congr_fun (h₁ i) a] at f
-  rw [(map_zero (π i) : (π i) 0 = (0 : M i))] at f
+  intro a b eq; rw [DirectSum.ext_iff R]; intro i
+  have f := LinearMap.congr_arg (f := π i) eq
+  erw [LinearMap.congr_fun (h₁ i) a, LinearMap.congr_fun (h₁ i) b] at f
   have h₂ := F i
   rw [iff_rTensor_injective] at h₂
-  have h₃ := h₂ hI
-  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, EmbeddingLike.map_eq_zero_iff,
-    h₃, LinearMap.map_eq_zero_iff] at f
-  simp [f]
+  simpa only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, EmbeddingLike.apply_eq_iff_eq,
+    (h₂ hI).eq_iff] using f
 
 open scoped Classical in
 /-- Free `R`-modules over discrete types are flat. -/
@@ -224,6 +220,9 @@ instance of_projective [h : Projective R M] : Flat R M := by
   rw [Module.projective_def'] at h
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he
+
+variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
+variable (N : Type w) [AddCommGroup N] [Module R N]
 
 /--
 Define the character module of `M` to be `M →+ ℚ ⧸ ℤ`.
