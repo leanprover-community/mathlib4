@@ -36,7 +36,8 @@ variable {M : Type*} [SeminormedAddCommGroup M]
 
 variable (M) in
 /-- The null subgroup with respect to the norm. -/
-def nullSubgroup : AddSubgroup M where
+@[to_additive nullSubgroup]
+def nullSubgroup' : Subgroup M where
   carrier := {x : M | ‖x‖ = 0}
   add_mem' {x y} (hx : ‖x‖ = 0) (hy : ‖y‖ = 0) := by
     apply le_antisymm _ (norm_nonneg _)
