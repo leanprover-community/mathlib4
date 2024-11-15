@@ -4171,7 +4171,6 @@ import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Finiteness.Bilinear
 import Mathlib.RingTheory.Finiteness.Cardinality
