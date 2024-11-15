@@ -29,11 +29,11 @@ noncomputable section
 variable {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] {Γ : Subgroup SL(2, ℤ)} (n : ℕ) (f : F)
 
 local notation "I∞" => comap Complex.im atTop
-local notation "𝕢" => qParam
+local notation "𝕢" => Periodic.qParam
 
-theorem im_invQParam_pos_of_abs_lt_one
+theorem Function.Periodic.im_invQParam_pos_of_abs_lt_one
     {h : ℝ} (hh : 0 < h) {q : ℂ} (hq : q.abs < 1) (hq_ne : q ≠ 0) :
-    0 < im (invQParam h q) :=
+    0 < im (Function.Periodic.invQParam h q) :=
   im_invQParam .. ▸ mul_pos_of_neg_of_neg
     (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) Real.two_pi_pos)
     ((Real.log_neg_iff (Complex.abs.pos hq_ne)).mpr hq)
@@ -57,12 +57,12 @@ theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
 The analytic function `F` such that `f τ = F (exp (2 * π * I * τ / n))`, extended by a choice of
 limit at `0`.
 -/
-def cuspFunction : ℂ → ℂ := _root_.cuspFunction n (f ∘ ofComplex)
+def cuspFunction : ℂ → ℂ := Function.Periodic.cuspFunction n (f ∘ ofComplex)
 
 theorem eq_cuspFunction [NeZero n] [SlashInvariantFormClass F Γ(n) k] (τ : ℍ) :
     cuspFunction n f (𝕢 n τ) = f τ := by
   simpa only [comp_apply, ofComplex_apply]
-    using _root_.eq_cuspFunction (NeZero.ne _) (periodic_comp_ofComplex n f) τ
+    using (periodic_comp_ofComplex n f).eq_cuspFunction (NeZero.ne _) τ
 
 end SlashInvariantFormClass
 
@@ -84,13 +84,13 @@ theorem differentiableAt_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k]
     DifferentiableAt ℂ (cuspFunction n f) q := by
   have npos : 0 < (n : ℝ) := mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _))
   rcases eq_or_ne q 0 with rfl | hq'
-  · exact differentiableAt_cuspFunction_zero npos (periodic_comp_ofComplex n f)
+  · exact (periodic_comp_ofComplex n f).differentiableAt_cuspFunction_zero npos
       (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
         (fun _ ↦ differentiableAt_comp_ofComplex f))
       (bounded_at_infty_comp_ofComplex f)
-  · exact qParam_right_inv npos.ne' hq' ▸ _root_.differentiableAt_cuspFunction npos.ne'
-      (periodic_comp_ofComplex n f) <| differentiableAt_comp_ofComplex _
-        <| im_invQParam_pos_of_abs_lt_one npos hq hq'
+  · exact Periodic.qParam_right_inv npos.ne' hq' ▸
+      (periodic_comp_ofComplex n f).differentiableAt_cuspFunction npos.ne'
+        <| differentiableAt_comp_ofComplex _ <| Periodic.im_invQParam_pos_of_abs_lt_one npos hq hq'
 
 lemma analyticAt_cuspFunction_zero [NeZero n] [ModularFormClass F Γ(n) k] :
     AnalyticAt ℂ (cuspFunction n f) 0 :=
@@ -110,18 +110,16 @@ theorem zero_at_infty_comp_ofComplex [CuspFormClass F Γ k] : ZeroAtFilter I∞ 
 
 theorem cuspFunction_apply_zero [NeZero n] [CuspFormClass F Γ(n) k] :
     cuspFunction n f 0 = 0 :=
-  cuspFunction_zero_of_zero_at_inf
-    (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
+  Periodic.cuspFunction_zero_of_zero_at_inf (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
     (zero_at_infty_comp_ofComplex f)
 
 theorem exp_decay_atImInfty [NeZero n] [CuspFormClass F Γ(n) k] :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / n) := by
   simpa only [neg_mul, comp_def, ofComplex_apply, coe_im] using
-    (exp_decay_of_zero_at_inf (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
-          (periodic_comp_ofComplex n f)
-          (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
-            (fun _ ↦ differentiableAt_comp_ofComplex f))
-          (zero_at_infty_comp_ofComplex f)).comp_tendsto
-      tendsto_coe_atImInfty
+    ((periodic_comp_ofComplex n f).exp_decay_of_zero_at_inf
+      (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
+      (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
+        fun _ ↦ differentiableAt_comp_ofComplex f)
+      (zero_at_infty_comp_ofComplex f)).comp_tendsto tendsto_coe_atImInfty
 
 end CuspFormClass
