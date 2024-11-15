@@ -15,7 +15,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open MonoidalCategory
+open Category Limits MonoidalCategory
 
 namespace MonoidalClosed
 
@@ -30,9 +30,27 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [MonoidalClose
 
 section
 
-variable {F₁ F₂ F₃ : J ⥤ C}
+variable {F₁ F₂ F₂' F₃ F₃' : J ⥤ C}
 
-def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnrichedHom C F₁ F₃) := sorry
+noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnrichedHom C F₁ F₃) where
+  toFun f :=
+    { app := fun j ↦ end_.lift (fun k ↦ F₂.map k.hom ≫ curry (f.app k.right))
+        sorry
+      naturality := sorry }
+  invFun g :=
+    { app := fun j ↦ uncurry (g.app j ≫ enrichedHomπ C _ _ (Under.mk (𝟙 j)) )
+      naturality := sorry }
+  left_inv := sorry
+  right_inv := sorry
+
+lemma homEquiv_naturality_two_symm (f₂ : F₂ ⟶ F₂') (g : F₂' ⟶ functorEnrichedHom C F₁ F₃) :
+    homEquiv.symm (f₂ ≫ g) = F₁ ◁ f₂ ≫ homEquiv.symm g :=
+  sorry
+
+lemma homEquiv_naturality_three_symm (f : F₁ ⊗ F₂ ⟶ F₃) (f₃ : F₃ ⟶ F₃') :
+    homEquiv (f ≫ f₃) = homEquiv f ≫ (ρ_ _).inv ≫ _ ◁ functorHomEquiv _ f₃ ≫
+      functorEnrichedComp C F₁ F₃ F₃' :=
+  sorry
 
 end
 
@@ -42,8 +60,8 @@ noncomputable def adj (F : J ⥤ C) :
     MonoidalCategory.tensorLeft F ⊣ (eHomFunctor _ _).obj ⟨F⟩ :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦ homEquiv
-      homEquiv_naturality_left_symm := sorry
-      homEquiv_naturality_right := sorry }
+      homEquiv_naturality_left_symm := homEquiv_naturality_two_symm
+      homEquiv_naturality_right := homEquiv_naturality_three_symm }
 
 noncomputable def closed (F : J ⥤ C) : Closed F where
   rightAdj := (eHomFunctor _ _).obj ⟨F⟩
