@@ -119,7 +119,7 @@ lemma Submodule.le_of_localization_maximal' {N H : Submodule R M}
 
 /-- Another version, using `LocalizedModule` instead of `IsLocaliedModule`. -/
 lemma Submodule.eq_of_localization_maximal' {N P : Submodule R M}
-  (h : ∀ (J : Ideal R) (_ : J.IsMaximal), localized J.primeCompl N = localized J.primeCompl P) :
+    (h : ∀ (J : Ideal R) (_ : J.IsMaximal), localized J.primeCompl N = localized J.primeCompl P) :
     N = P :=
   eq_of_le_of_le (le_of_localization_maximal' (fun J hJ ↦ le_of_eq (h J hJ)))
   (le_of_localization_maximal' (fun J hJ ↦ le_of_eq (h J hJ).symm))
