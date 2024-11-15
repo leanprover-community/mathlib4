@@ -346,9 +346,9 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
       f' (g p.1 - g p.2) - (p.1 - p.2) := by
     refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => ?_) fun _ => rfl
     simp
-  refine this.trans_isLittleO ?_
+  refine .of_isLittleO <| this.trans_isLittleO ?_
   clear this
-  refine ((hf.comp_tendsto hg).symm.congr'
+  refine ((hf.isLittleO.comp_tendsto hg).symm.congr'
     (hfg.mono ?_) (Eventually.of_forall fun _ => rfl)).trans_isBigO ?_
   · rintro p ⟨hp1, hp2⟩
     simp [hp1, hp2]
