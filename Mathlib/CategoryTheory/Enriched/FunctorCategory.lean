@@ -445,6 +445,8 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
 
 end
 
+variable (J C)
+
 /-- If `C` is a `V`-enriched ordinary category, and `C` has suitable limits,
 then `J ⥤ C` is also a `J ⥤ V`-enriched ordinary category. -/
 noncomputable def functorEnrichedOrdinaryCategory

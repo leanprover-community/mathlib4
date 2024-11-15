@@ -1599,6 +1599,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Enrichment
 import Mathlib.CategoryTheory.Closed.Functor
+import Mathlib.CategoryTheory.Closed.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Closed.FunctorCategory.Complete
 import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
 import Mathlib.CategoryTheory.Closed.FunctorToTypes
