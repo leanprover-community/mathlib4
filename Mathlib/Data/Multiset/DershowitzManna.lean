@@ -102,15 +102,9 @@ private lemma isDershowitzMannaLT_singleton_insert (h : OneStep N (a ::ₘ M)) :
       simp only [ext, count_cons] at h0
       by_cases h : b = a
       · have := h0 b
-        simp_all only [ite_true, ite_false, add_zero, sub_singleton, count_cons_self, ne_eq,
-          not_false_eq_true, count_erase_of_ne]
-      have := h0 b
-      simp [sub_singleton]
-      simp_all only [↓reduceIte, add_zero, ne_eq, not_false_eq_true, count_cons_of_ne]
-      split at this
-      next h_1 =>
         simp_all
-      next h_1 => simp_all only [add_zero, ne_eq, not_false_eq_true, count_erase_of_ne]
+      have := h0 b
+      aesop
     subst this
     rw [add_comm]
     nth_rewrite 2 [add_comm]
@@ -129,7 +123,7 @@ private lemma isDershowitzMannaLT_singleton_insert (h : OneStep N (a ::ₘ M)) :
           rfl
         · exact fun h ↦ hyp (Eq.symm h)
       rw [add_comm]
-      simp_all [singleton_add]
+      simp_all
 
 private lemma acc_cons (a : α) (M0 : Multiset α)
     (_ : ∀ b M , LT.lt b a → Acc OneStep M → Acc OneStep (b ::ₘ M))
@@ -138,7 +132,6 @@ private lemma acc_cons (a : α) (M0 : Multiset α)
     Acc OneStep (a ::ₘ M0) := by
   constructor
   intros N N_lt
-  change Acc OneStep N
   rcases (isDershowitzMannaLT_singleton_insert N_lt) with ⟨x, H, h0⟩
   case h.intro.inr h =>
     rcases h with ⟨H, h0⟩
@@ -148,8 +141,7 @@ private lemma acc_cons (a : α) (M0 : Multiset α)
     | empty =>
       simpa
     | cons h =>
-      simp_all only [mem_cons, or_true, implies_true, true_implies, forall_eq_or_imp,
-        add_cons]
+      simp_all
   case h.intro.inl.intro =>
     simp_all
 
@@ -161,8 +153,8 @@ private lemma acc_cons_of_acc (a : α)
   | intro x wfH wfh2 =>
     apply acc_cons
     · simpa
-    · constructor; simpa only
-    · simpa only
+    · constructor; simpa
+    · simpa
 
 private lemma acc_cons_of_acc_of_lt (ha : Acc LT.lt a) :
     ∀ M, Acc OneStep M → Acc OneStep (a ::ₘ M) := by
@@ -179,7 +171,7 @@ private lemma acc_of_acc_lt (wf_el : ∀ x ∈ M, Acc LT.lt x) : Acc OneStep M :
     absurd y_lt
     rintro ⟨X, Y, a, _, nonsense, _⟩
     have contra : a ∈ (0 : Multiset α):= by
-      simp_all only [mem_add, mem_singleton, or_true]
+      simp_all
     contradiction
   | cons _ _ ih =>
     apply acc_cons_of_acc_of_lt
@@ -213,7 +205,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
     cases em (card Z = 0)
     · simp_all
     cases em (card Z = 1)
-    case inl hyp' hyp=>
+    case inl hyp' hyp =>
       rw [card_eq_one] at hyp
       obtain ⟨z, rfl⟩ := hyp
       apply TransGen.single
@@ -232,7 +224,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
         simp [newZ, ← sub_singleton, tsub_eq_zero_iff_le]
         aesop
       have newZ_sub_Z : newZ < Z := by simp (config := {zetaDelta := true}); exact z_in_Z
-      let f : α → Multiset α := fun z => Y.filter (fun y => y < z) -- DecidableRel
+      let f : α → Multiset α := fun z => Y.filter (fun y => y < z)
       let N' := X + newZ + f z
       apply @transitive_transGen _ _ _ N'
       -- step from `N'` to `M`
@@ -246,17 +238,12 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
           let x := count a X
           let fz := count a (filter (fun x => x < z) Y)
           change x + y = x + fz + (y - fz)
-          change fz ≤ y at count_lt
-          have : y = fz + (y - fz) := by simp_all
           omega
         · unfold N'
           rw [add_assoc, add_assoc, add_comm newZ (f z)]
         · intro y y_in
           let Y_lt_Z := Y_lt_Z y
-          have y_in_Y : y ∈ Y := by
-            have Yfy_le_Y : Y - f z ≤ Y:= by simp (config := {zetaDelta := true})
-            apply mem_of_le Yfy_le_Y
-            exact y_in
+          have y_in_Y : y ∈ Y := by aesop
           let Y_lt_Z := Y_lt_Z y_in_Y
           rcases Y_lt_Z with ⟨t, t_in_Z, y_lt_t⟩
           use t
@@ -272,19 +259,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
                 rw [this, mem_add] at t_in_Z
                 have : t ∈ ( {z} : Multiset α) := Or.resolve_left t_in_Z t_in_newZ
                 rwa [← mem_singleton]
-              have y_in_fz : y ∈ f z := by
-                unfold f; simp; rw [← this]; exact ⟨y_in_Y, y_lt_t⟩
-              have y_notin_Yfz : y ∉ Y - f z := by
-                by_contra
-                let neg_f : α → Multiset α := fun y' => Y.filter (fun x => ¬ x < y')
-                have : Y - f z = neg_f z := by
-                  have fz_negfz_Y : f z + neg_f z = Y := filter_add_not _ _
-                  rw [← fz_negfz_Y, add_tsub_cancel_left]
-                have y_in_neg_fz : y ∈ neg_f z := this ▸ y_in
-                subst_eqs
-                unfold neg_f at *
-                simp_all only [mem_filter]
-              exact y_notin_Yfz y_in
+              aesop
           · exact y_lt_t
       -- single step `N` to `N'`
       · refine .single ⟨X + newZ, f z, z, ?_, ?_, ?_ ⟩
