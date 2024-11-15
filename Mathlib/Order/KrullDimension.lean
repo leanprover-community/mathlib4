@@ -328,7 +328,7 @@ lemma exists_series_of_coheight_eq_coe (a : α) {n : ℕ} (h : coheight a = n) :
   exists_series_of_le_coheight a (le_of_eq h.symm)
 
 /-- Another characterization of height, based on the supremum of the heights of elements below. -/
-lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ (y : α) (_  : y < x), height y + 1 := by
+lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := by
   apply le_antisymm
   · apply height_le
     intro p hp
@@ -351,7 +351,7 @@ lemma coheight_eq_iSup_lt_height (x : α) : coheight x = ⨆ (y : α) (_  : x < 
   height_eq_iSup_lt_height (α := αᵒᵈ) x
 
 lemma height_le_coe_iff {x : α} {n : ℕ} :
-    height x ≤ n ↔ (∀ y, y < x → height y < n) := by
+    height x ≤ n ↔ (∀ y < x, height y < n) := by
   conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
   congr! 2 with y _
   cases height y
@@ -406,7 +406,7 @@ protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
   simp [coheight_eq_zero]
 
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
-    n < height x ↔ (∃ y, y < x ∧ height y = n) where
+    n < height x ↔ (∃ y < x, height y = n) where
   mp h := by
     obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
     rw [hx] at h; norm_cast at h
@@ -425,7 +425,7 @@ lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤):
   coe_lt_height_iff (α := αᵒᵈ) hfin
 
 lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
-    height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y, y < x → height y ≤ n) := by
+    height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y < x, height y ≤ n) := by
   wlog hfin : height x < ⊤
   · simp_all
     exact ne_of_beq_false rfl
@@ -444,7 +444,7 @@ lemma coheight_eq_coe_add_one_iff (x : α) (n : ℕ) :
 
 lemma height_eq_coe_iff {x : α} {n : ℕ} :
     height x = n ↔
-      height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y, y < x → height y < n) := by
+      height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y < x, height y < n) := by
   wlog hfin : height x < ⊤
   · simp_all
   simp only [hfin, true_and]
