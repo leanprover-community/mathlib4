@@ -33,7 +33,7 @@ local notation "𝕢" => Periodic.qParam
 
 theorem Function.Periodic.im_invQParam_pos_of_abs_lt_one
     {h : ℝ} (hh : 0 < h) {q : ℂ} (hq : q.abs < 1) (hq_ne : q ≠ 0) :
-    0 < im (Function.Periodic.invQParam h q) :=
+    0 < im (Periodic.invQParam h q) :=
   im_invQParam .. ▸ mul_pos_of_neg_of_neg
     (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) Real.two_pi_pos)
     ((Real.log_neg_iff (Complex.abs.pos hq_ne)).mpr hq)
