@@ -68,7 +68,7 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
     convert _root_.re_log_comb_nonneg ha₀ ha₁ hz using 6
-    · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg] 
+    · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
     · congr 2
       rw [neg_add, cpow_add _ _ <| mod_cast by omega, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
         ofReal_natCast, mul_left_comm]
@@ -95,7 +95,7 @@ private lemma one_lt_re_one_add {x : ℝ} (hx : 0 < x) (y : ℝ) :
 
 open scoped LSeries.notation in
 /-- For positive `x` and nonzero `y` and a Dirichlet character `χ` we have that
-$|L(\chi^0, x)^3 \cdot L(\chi, x+iy)^4 \cdot L(\chi^2, x+2iy)| \ge 1$. -/
+`|L(χ^0, x)^3 L(χ, x+iy)^4 L(χ^2, x+2iy)| ≥ 1. -/
 lemma norm_LSeries_product_ge_one {x : ℝ} (hx : 0 < x) (y : ℝ) :
     ‖L ↗(1 : DirichletCharacter ℂ N) (1 + x) ^ 3 * L ↗χ (1 + x + I * y) ^ 4 *
       L ↗(χ ^ 2 :) (1 + x + 2 * I * y)‖ ≥ 1 := by
