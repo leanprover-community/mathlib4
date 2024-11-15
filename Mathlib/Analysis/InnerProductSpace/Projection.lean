@@ -992,14 +992,13 @@ theorem det_reflection : LinearMap.det (reflection K).toLinearMap = (-1) ^ finra
     exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
   let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_completeSpace
   let b := (finBasis 𝕜 K).prod (finBasis 𝕜 Kᗮ)
-  rw [← LinearMap.det_conj _ e.symm, e.symm_symm]
-  have : LinearMap.toMatrix b b (e.symm ∘ₗ (reflection K).toLinearMap ∘ₗ e) =
+  have : LinearMap.toMatrix b b (e.symm ∘ₗ (reflection K).toLinearMap ∘ₗ e.symm.symm) =
       Matrix.fromBlocks 1 0 0 (-1) := by
     ext (_ | _) (_ | _) <;>
     simp [LinearMap.toMatrix_apply, b, Matrix.one_apply, Finsupp.single_apply, e, eq_comm,
       reflection_mem_subspace_eq_self, reflection_mem_subspace_orthogonalComplement_eq_neg]
-  rw [← LinearMap.det_toMatrix b, this, Matrix.det_fromBlocks_zero₂₁, Matrix.det_one, one_mul,
-    Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
+  rw [← LinearMap.det_conj _ e.symm, ← LinearMap.det_toMatrix b, this, Matrix.det_fromBlocks_zero₂₁,
+    Matrix.det_one, one_mul, Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
 
 @[simp]
 theorem linearEquiv_det_reflection : (reflection K).det = (-1) ^ finrank 𝕜 Kᗮ := by
