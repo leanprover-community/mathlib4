@@ -162,5 +162,4 @@ noncomputable instance toPresheafPreservesFiniteLimits :
 
 end Finite
 
-
 end PresheafOfModules
