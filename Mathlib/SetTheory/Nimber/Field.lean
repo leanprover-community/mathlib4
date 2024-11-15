@@ -8,7 +8,7 @@ import Mathlib.SetTheory.Nimber.Basic
 import Mathlib.Tactic.Abel
 
 /-!
-# Nimber multiplication and division
+# Nimber multiplication
 
 The nim product `a * b` is recursively defined as the least nimber not equal to any
 `a' * b + a * b' + a' * b'` for `a' < a` and `b' < b`. When endowed with this operation, the nimbers
