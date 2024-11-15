@@ -116,4 +116,7 @@ lemma fromColumns_col0_isTotallyUnimodular_iff (A : Matrix m n R) {n' : Type*} :
   rw [← transpose_isTotallyUnimodular_iff, transpose_fromColumns, transpose_col,
     fromRows_row0_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
 
+proof_wanted fromRows_one_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
+    (fromRows A (1 : Matrix n n R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular
+
 end Matrix
