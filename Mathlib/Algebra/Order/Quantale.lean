@@ -144,7 +144,7 @@ scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
 
 @[to_additive]
 theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z := by
-  rw [leftMulResiduation];
+  rw [leftMulResiduation]
   constructor
   · intro h1
     apply le_trans (mul_le_mul_right' h1 _)
