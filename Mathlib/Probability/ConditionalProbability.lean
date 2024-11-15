@@ -147,7 +147,7 @@ variable (μ) in
 @[simp] lemma cond_univ [IsProbabilityMeasure μ] : μ[|Set.univ] = μ := by
   simp [cond, measure_univ, Measure.restrict_univ]
 
-@[simp] lemma cond_eq_zero (hμs : μ s ≠ ⊤) : μ[|s] = 0 ↔ μ s = 0 := by simp [cond, hμs]
+@[simp] lemma cond_eq_zero : μ[|s] = 0 ↔ μ s = ∞ ∨ μ s = 0 := by simp [cond]
 
 lemma cond_eq_zero_of_meas_eq_zero (hμs : μ s = 0) : μ[|s] = 0 := by simp [hμs]
 

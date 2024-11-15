@@ -221,7 +221,7 @@ theorem IsCompact.disjoint_nhdsSet_right {l : Filter X} (hs : IsCompact s) :
     Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
   simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left
 
--- Porting note (#11215): TODO: reformulate using `Disjoint`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate using `Disjoint`
 /-- For every directed family of closed sets whose intersection avoids a compact set,
 there exists a single element of the family which itself avoids this compact set. -/
 theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : IsCompact s)
@@ -237,7 +237,7 @@ theorem IsCompact.elim_directed_family_closed {ι : Type v} [Nonempty ι] (hs : 
     simpa only [subset_def, not_forall, eq_empty_iff_forall_not_mem, mem_iUnion, exists_prop,
       mem_inter_iff, not_and, mem_iInter, mem_compl_iff] using ht⟩
 
--- Porting note (#11215): TODO: reformulate using `Disjoint`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate using `Disjoint`
 /-- For every family of closed sets whose intersection avoids a compact set,
 there exists a finite subfamily whose intersection avoids this compact set. -/
 theorem IsCompact.elim_finite_subfamily_closed {ι : Type v} (hs : IsCompact s)
@@ -336,7 +336,7 @@ theorem isCompact_of_finite_subcover
   rw [subset_compl_comm, compl_iInter₂]
   simpa only [compl_compl]
 
--- Porting note (#11215): TODO: reformulate using `Disjoint`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate using `Disjoint`
 /-- A set `s` is compact if for every family of closed sets whose intersection avoids `s`,
 there exists a finite subfamily whose intersection avoids `s`. -/
 theorem isCompact_of_finite_subfamily_closed
@@ -488,7 +488,7 @@ theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪
 protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs
 
--- Porting note (#11215): TODO: reformulate using `𝓝ˢ`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate using `𝓝ˢ`
 /-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
 not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/
@@ -734,9 +734,6 @@ theorem isCompact_univ [h : CompactSpace X] : IsCompact (univ : Set X) :=
 theorem exists_clusterPt_of_compactSpace [CompactSpace X] (f : Filter X) [NeBot f] :
     ∃ x, ClusterPt x f := by
   simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
-
-@[deprecated (since := "2024-01-28")]
-alias cluster_point_of_compact := exists_clusterPt_of_compactSpace
 
 nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace X] (F : Ultrafilter X) : ↑F ≤ 𝓝 F.lim := by
   rcases isCompact_univ.ultrafilter_le_nhds F (by simp) with ⟨x, -, h⟩

@@ -75,7 +75,7 @@ theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
   simp [finRange, getElem_range, getElem_pmap]
 
--- Porting note (#10756): new theorem
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp
