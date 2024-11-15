@@ -345,10 +345,10 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
     WithBot.map f (n : WithTop α) = f n := map_coe f n
 
 lemma map_eq_ofNat_iff {β : Type*} {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
-    a.map f = (no_index (OfNat.ofNat n : WithTop α)) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+    a.map f = OfNat.ofNat n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
 
 lemma ofNat_eq_map_iff {β : Type*} {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
-    (no_index (OfNat.ofNat n : WithTop α)) = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
+    OfNat.ofNat n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
 lemma map_eq_natCast_iff {β : Type*} {f : β → α} {n : ℕ} {a : WithTop β} :
     a.map f = n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
@@ -554,10 +554,10 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
     WithBot.map f (n : WithBot α) = f n := map_coe f n
 
 lemma map_eq_ofNat_iff {β : Type*} {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
-    a.map f = (no_index (OfNat.ofNat n : WithBot α)) ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+    a.map f = OfNat.ofNat n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
 
 lemma ofNat_eq_map_iff {β : Type*} {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
-    (no_index (OfNat.ofNat n : WithBot α)) = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
+    OfNat.ofNat n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
 lemma map_eq_natCast_iff {β : Type*} {f : β → α} {n : ℕ} {a : WithBot β} :
     a.map f = n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff

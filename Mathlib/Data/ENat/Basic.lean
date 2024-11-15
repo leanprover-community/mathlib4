@@ -366,11 +366,11 @@ lemma natCast_eq_map_iff {f : ℕ → α} [AddMonoidWithOne α] {m : ℕ} :
   WithTop.some_eq_map_iff
 
 lemma map_eq_ofNat_iff {f : ℕ → α} [AddMonoidWithOne α] {m : ℕ} [m.AtLeastTwo] :
-    map f n = no_index (OfNat.ofNat m) ↔ ∃ a : ℕ, n = a ∧ f a = m :=
+    map f n = OfNat.ofNat m ↔ ∃ a : ℕ, n = a ∧ f a = m :=
   WithTop.map_eq_some_iff
 
 lemma ofNat_eq_map_iff {f : ℕ → α} [AddMonoidWithOne α] {m : ℕ} [m.AtLeastTwo] :
-    no_index (OfNat.ofNat m) = map f n ↔ ∃ a : ℕ, n = a ∧ f a = m :=
+    OfNat.ofNat m = map f n ↔ ∃ a : ℕ, n = a ∧ f a = m :=
   WithTop.some_eq_map_iff
 
 @[simp]
