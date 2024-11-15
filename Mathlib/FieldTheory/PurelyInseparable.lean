@@ -522,7 +522,7 @@ theorem isPurelyInseparable_of_finSepDegree_eq_one
       IntermediateField.finrank_eq_one_iff] at this
     simpa only [this.1] using mem_adjoin_simple_self F x
   · rw [← Algebra.transcendental_iff_not_isAlgebraic] at H
-    simp [show finSepDegree F E = 0 from Nat.card_eq_zero_of_infinite] at hdeg
+    simp [finSepDegree_eq_zero_of_transcendental F E] at hdeg
 
 namespace IsPurelyInseparable
 

@@ -282,6 +282,11 @@ instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infin
     simp [if_neg this.symm] at h
   exact Infinite.of_injective f hf
 
+/-- If the field extension `E / F` is transcendental, then `Field.finSepDegree F E = 0`, which
+actually means that `Field.Emb F E` is infinite (see `Field.infinite_emb_of_transcendental`). -/
+theorem finSepDegree_eq_zero_of_transcendental [Algebra.Transcendental F E] :
+    finSepDegree F E = 0 := Nat.card_eq_zero_of_infinite
+
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
 separable degrees satisfy the tower law
 $[E:F]_s [K:E]_s = [K:F]_s$. See also `Module.finrank_mul_finrank`. -/
