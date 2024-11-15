@@ -55,4 +55,5 @@ open scoped Classical
 
 theorem card_units_lt (M₀ : Type*) [MonoidWithZero M₀] [Nontrivial M₀] [Fintype M₀] :
     Fintype.card M₀ˣ < Fintype.card M₀ :=
-  Fintype.card_lt_of_injective_of_not_mem Units.val Units.ext not_isUnit_zero
+  Fintype.card_lt_of_injective_of_not_mem Units.val Units.ext <|
+    mt (isUnit_iff _).mpr not_isUnit_zero
