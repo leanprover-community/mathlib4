@@ -313,6 +313,10 @@ lemma exact : Function.Exact relations.map solution.π := by
   rw [LinearMap.exact_iff, range_map, ← solution.injective_fromQuotient_iff_ker_π_eq_span]
   exact h.bijective.1
 
+lemma span_var_eq_top : Submodule.span A (Set.range solution.var) = ⊤ := by
+  rw [← range_π, LinearMap.range_eq_top]
+  exact h.surjective_π
+
 variable {N : Type v'} [AddCommGroup N] [Module A N]
 
 /-- If `M` admits a presentation by generators and relations, and we have a solution of the
