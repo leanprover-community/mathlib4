@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.Normed.Group.SeparationQuotient
+import Mathlib.Analysis.Normed.Group.NullSubmodule
 
 /-!
 # The Fréchet-Riesz representation theorem
