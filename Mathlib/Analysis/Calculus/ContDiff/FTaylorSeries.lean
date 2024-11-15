@@ -317,7 +317,7 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_right {n : ℕ} :
         have :
           HasFDerivWithinAt (𝕜 := 𝕜) (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
             ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
-        rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
+        erw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
         convert this
         ext y v
         change
