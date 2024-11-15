@@ -565,6 +565,10 @@ unless `β i`'s addition is commutative. -/
 instance instNatSMul : SMul ℕ (α →₀ M) :=
   ⟨fun n v => v.mapRange (n • ·) (nsmul_zero _)⟩
 
+@[simp, norm_cast] lemma coe_nsmul (n : ℕ) (f : α →₀ M) : ⇑(n • f) = n • ⇑f := rfl
+
+lemma nsmul_apply (n : ℕ) (f : α →₀ M) (x : α) : (n • f) x = n • f x := rfl
+
 instance instAddMonoid : AddMonoid (α →₀ M) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 

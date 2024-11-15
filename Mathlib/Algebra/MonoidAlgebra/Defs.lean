@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.LinearAlgebra.Finsupp.LSum
-import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Monoid algebras
@@ -48,13 +45,15 @@ Similarly, I attempted to just define
 `Multiplicative G = G` leaks through everywhere, and seems impossible to use.
 -/
 
-assert_not_exists NonUnitalAlgHom AlgEquiv
+assert_not_exists AlgEquiv
+assert_not_exists Module
+assert_not_exists NonUnitalAlgHom
 
 noncomputable section
 
 open Finset
 
-open Finsupp hiding single mapDomain
+open Finsupp hiding single
 
 universe u₁ u₂ u₃ u₄
 
@@ -124,28 +123,6 @@ theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
 @[simp]
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
 
-abbrev mapDomain {G' : Type*} (f : G → G') (v : MonoidAlgebra k G) : MonoidAlgebra k G' :=
-  Finsupp.mapDomain f v
-
-theorem mapDomain_sum {k' G' : Type*} [Semiring k'] {f : G → G'} {s : MonoidAlgebra k' G}
-    {v : G → k' → MonoidAlgebra k G} :
-    mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
-  Finsupp.mapDomain_sum
-
-/-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
-and a homomorphism `g : G → R`, returns the additive homomorphism from
-`MonoidAlgebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f` is a ring homomorphism
-and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
-`R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra homomorphism called
-`MonoidAlgebra.lift`. -/
-def liftNC (f : k →+ R) (g : G → R) : MonoidAlgebra k G →+ R :=
-  liftAddHom fun x : G => (AddMonoidHom.mulRight (g x)).comp f
-
-@[simp]
-theorem liftNC_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
-    liftNC f g (single a b) = f b * g a :=
-  liftAddHom_apply_single _ _ _
-
 end
 
 section Mul
@@ -188,16 +165,6 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k 
 
 variable [Semiring R]
 
-theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
-    (f : k →+* R) (g : g_hom) (a b : MonoidAlgebra k G)
-    (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g y)) :
-    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b := by
-  conv_rhs => rw [← sum_single a, ← sum_single b]
-  -- Porting note: `(liftNC _ g).map_finsupp_sum` → `map_finsupp_sum`
-  simp_rw [mul_def, map_finsupp_sum, liftNC_single, Finsupp.sum_mul, Finsupp.mul_sum]
-  refine Finset.sum_congr rfl fun y hy => Finset.sum_congr rfl fun x _hx => ?_
-  simp [mul_assoc, (h_comm hy).left_comm]
-
 end Mul
 
 section Semigroup
@@ -229,11 +196,6 @@ instance one : One (MonoidAlgebra k G) :=
 
 theorem one_def : (1 : MonoidAlgebra k G) = single 1 1 :=
   rfl
-
-@[simp]
-theorem liftNC_one {g_hom : Type*} [FunLike g_hom G R] [OneHomClass g_hom G R]
-    (f : k →+* R) (g : g_hom) :
-    liftNC (f : k →+ R) g 1 = 1 := by simp [one_def]
 
 end One
 
@@ -274,13 +236,6 @@ instance semiring : Semiring (MonoidAlgebra k G) :=
 
 variable [Semiring R]
 
-/-- `liftNC` as a `RingHom`, for when `f x` and `g y` commute -/
-def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
-    MonoidAlgebra k G →+* R :=
-  { liftNC (f : k →+ R) g with
-    map_one' := liftNC_one _ _
-    map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
-
 end Semiring
 
 instance nonUnitalCommSemiring [CommSemiring k] [CommSemigroup G] :
@@ -302,8 +257,10 @@ section DerivedInstances
 instance commSemiring [CommSemiring k] [CommMonoid G] : CommSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalCommSemiring, MonoidAlgebra.semiring with }
 
+/-
 instance unique [Semiring k] [Subsingleton k] : Unique (MonoidAlgebra k G) :=
   Finsupp.uniqueOfRight
+-/
 
 instance addCommGroup [Ring k] : AddCommGroup (MonoidAlgebra k G) :=
   Finsupp.instAddCommGroup
@@ -320,7 +277,8 @@ instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G
     intCast := fun z => single 1 (z : k)
     -- Porting note: Both were `simpa`.
     intCast_ofNat := fun n => by simp; rfl
-    intCast_negSucc := fun n => by simp; rfl }
+    intCast_negSucc := fun n => by simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one,
+      neg_add_rev, Finsupp.single_add, single_neg]; rfl }
 
 theorem intCast_def [Ring k] [MulOneClass G] (z : ℤ) :
     (z : MonoidAlgebra k G) = single (1 : G) (z : k) :=
@@ -338,46 +296,6 @@ instance nonUnitalCommRing [CommRing k] [CommSemigroup G] :
 
 instance commRing [CommRing k] [CommMonoid G] : CommRing (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalCommRing, MonoidAlgebra.ring with }
-
-variable {S : Type*}
-
-instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
-  Finsupp.smulZeroClass
-
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
-    NoZeroSMulDivisors R (MonoidAlgebra k G) :=
-  Finsupp.noZeroSMulDivisors
-
-instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgebra k G) :=
-  Finsupp.distribSMul _ _
-
-instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
-    DistribMulAction R (MonoidAlgebra k G) :=
-  Finsupp.distribMulAction G k
-
-instance module [Semiring R] [Semiring k] [Module R k] : Module R (MonoidAlgebra k G) :=
-  Finsupp.module G k
-
-instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
-    FaithfulSMul R (MonoidAlgebra k G) :=
-  Finsupp.faithfulSMul
-
-instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
-    [IsScalarTower R S k] : IsScalarTower R S (MonoidAlgebra k G) :=
-  Finsupp.isScalarTower G k
-
-instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
-    SMulCommClass R S (MonoidAlgebra k G) :=
-  Finsupp.smulCommClass G k
-
-instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒᵖ k]
-    [IsCentralScalar R k] : IsCentralScalar R (MonoidAlgebra k G) :=
-  Finsupp.isCentralScalar G k
-
-/-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
--/
-def comapDistribMulActionSelf [Group G] [Semiring k] : DistribMulAction G (MonoidAlgebra k G) :=
-  Finsupp.comapDistribMulAction
 
 end DerivedInstances
 
@@ -410,31 +328,6 @@ theorem addHom_ext' {N : Type*} [Semiring k] [AddZeroClass N]
     (H : ∀ (x : G), AddMonoidHom.comp f (singleAddHom x) = AddMonoidHom.comp g (singleAddHom x)) :
     f = g :=
   Finsupp.addHom_ext' H
-
-/-- A copy of `Finsupp.distribMulActionHom_ext'` for `MonoidAlgebra`. -/
-@[ext]
-theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [Semiring k] [AddMonoid N]
-    [DistribMulAction R N] [DistribMulAction R k]
-    {f g : MonoidAlgebra k G →+[R] N}
-    (h : ∀ a : G,
-      f.comp (DistribMulActionHom.single (M := k) a) = g.comp (DistribMulActionHom.single a)) :
-    f = g :=
-  Finsupp.distribMulActionHom_ext' h
-
-/-- A copy of `Finsupp.lsingle` for `MonoidAlgebra`. -/
-abbrev lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
-    k →ₗ[R] MonoidAlgebra k G := Finsupp.lsingle a
-
-@[simp] lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
-  lsingle (R := R) a b = single a b := rfl
-
-/-- A copy of `Finsupp.lhom_ext'` for `MonoidAlgebra`. -/
-@[ext high]
-lemma lhom_ext' {N : Type*} [Semiring R] [Semiring k] [AddCommMonoid N] [Module R N] [Module R k]
-    ⦃f g : MonoidAlgebra k G →ₗ[R] N⦄
-    (H : ∀ (x : G), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) :
-    f = g :=
-  Finsupp.lhom_ext' H
 
 end ExtLemmas
 
@@ -496,27 +389,6 @@ theorem single_pow [Monoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n = si
 
 section
 
-/-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
-@[simp]
-theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [One α] [One α₂]
-    {F : Type*} [FunLike F α α₂] [OneHomClass F α α₂] (f : F) :
-    (mapDomain f (1 : MonoidAlgebra β α) : MonoidAlgebra β α₂) = (1 : MonoidAlgebra β α₂) := by
-  simp_rw [one_def, mapDomain_single, map_one]
-
-/-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
-theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Mul α] [Mul α₂]
-    {F : Type*} [FunLike F α α₂] [MulHomClass F α α₂] (f : F) (x y : MonoidAlgebra β α) :
-    mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
-  simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_mul]
-  rw [Finsupp.sum_mapDomain_index]
-  · congr
-    ext a b
-    rw [Finsupp.sum_mapDomain_index]
-    · simp
-    · simp [mul_add]
-  · simp
-  · simp [add_mul]
-
 variable (k G)
 
 /-- The embedding of a magma into its magma algebra. -/
@@ -533,14 +405,6 @@ def of [MulOneClass G] : G →* MonoidAlgebra k G :=
     map_one' := rfl }
 
 end
-
-/-- Copy of `Finsupp.smul_single'` that avoids the `MonoidAlgebra = Finsupp` defeq abuse. -/
-@[simp]
-theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
-  Finsupp.smul_single' c a b
-
-theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
-  simp
 
 theorem of_injective [MulOneClass G] [Nontrivial k] :
     Function.Injective (of k G) := fun a b h => by
@@ -619,63 +483,7 @@ theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
       exfalso
       exact h ⟨_, rfl⟩
 
-theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
-    (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
-  suffices (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
-      (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
-    DFunLike.congr_fun this φ
-  ext
-  -- Porting note: `reducible` cannot be `local` so the proof gets more complex.
-  unfold MonoidAlgebra
-  simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply, smulAddHom_apply,
-    smul_single, smul_eq_mul, AddMonoidHom.coe_mulLeft, Finsupp.singleAddHom_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [liftNC_single, liftNC_single]; rw [AddMonoidHom.coe_coe, map_mul, mul_assoc]
-
 end MiscTheorems
-
-/-! #### Non-unital, non-associative algebra structure -/
-
-
-section NonUnitalNonAssocAlgebra
-
-variable (k) [Semiring k] [DistribSMul R k] [Mul G]
-
-instance isScalarTower_self [IsScalarTower R k k] :
-    IsScalarTower R (MonoidAlgebra k G) (MonoidAlgebra k G) where
-  smul_assoc t a b := by
-    ext
-    -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
-    classical
-    simp only [smul_eq_mul, mul_apply]
-    rw [coe_smul]
-    refine Eq.trans (sum_smul_index' (g := a) (b := t) ?_) ?_ <;>
-      simp only [mul_apply, Finsupp.smul_sum, smul_ite, smul_mul_assoc,
-        zero_mul, ite_self, imp_true_iff, sum_zero, Pi.smul_apply, smul_zero]
-
-/-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
-`R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
-also commute with the algebra multiplication. -/
-instance smulCommClass_self [SMulCommClass R k k] :
-    SMulCommClass R (MonoidAlgebra k G) (MonoidAlgebra k G) where
-  smul_comm t a b := by
-    ext
-    -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
-    classical
-    simp only [smul_eq_mul, mul_apply]
-    rw [coe_smul]
-    refine Eq.symm (Eq.trans (congr_arg (sum a)
-      (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
-    simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
-      imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]
-
-instance smulCommClass_symm_self [SMulCommClass k R k] :
-    SMulCommClass (MonoidAlgebra k G) R (MonoidAlgebra k G) :=
-  ⟨fun t a b => by
-    haveI := SMulCommClass.symm k R k
-    rw [← smul_comm]⟩
-
-end NonUnitalNonAssocAlgebra
 
 theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlgebra k G) :
     single (1 : G) r * f = f * single (1 : G) r :=
@@ -687,15 +495,6 @@ def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
   { Finsupp.singleAddHom 1 with
     map_one' := rfl
     map_mul' := fun x y => by simp }
-
-/-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
-`Finsupp.mapDomain f` is a ring homomorphism between their monoid algebras. -/
-@[simps]
-def mapDomainRingHom (k : Type*) {H F : Type*} [Semiring k] [Monoid G] [Monoid H]
-    [FunLike F G H] [MonoidHomClass F G H] (f : F) : MonoidAlgebra k G →+* MonoidAlgebra k H :=
-  { (Finsupp.mapDomain.addMonoidHom f : MonoidAlgebra k G →+ MonoidAlgebra k H) with
-    map_one' := mapDomain_one f
-    map_mul' := fun x y => mapDomain_mul f x y }
 
 /-- If two ring homomorphisms from `MonoidAlgebra k G` are equal on all `single a 1`
 and `single 1 b`, then they are equal. -/
@@ -719,14 +518,6 @@ theorem ringHom_ext' {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : Monoid
       (f : MonoidAlgebra k G →* R).comp (of k G) = (g : MonoidAlgebra k G →* R).comp (of k G)) :
     f = g :=
   ringHom_ext (RingHom.congr_fun h₁) (DFunLike.congr_fun h_of)
-
-theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f : MonoidAlgebra k G)
-    (hM : ∀ g, p (of k G g)) (hadd : ∀ f g : MonoidAlgebra k G, p f → p g → p (f + g))
-    (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
-  refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
-  · simpa using hsmul 0 (of k G 1) (hM 1)
-  · convert hsmul r (of k G g) (hM g)
-    simp
 
 section
 
@@ -776,68 +567,6 @@ theorem mul_apply_right (f g : MonoidAlgebra k G) (x : G) :
     _ = _ := by simp only [mul_single_apply, Finsupp.sum]
 
 end
-
-section Opposite
-
-open Finsupp MulOpposite
-
-variable [Semiring k]
-
-/-- The opposite of a `MonoidAlgebra R I` equivalent as a ring to
-the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply]
-protected noncomputable def opRingEquiv [Monoid G] :
-    (MonoidAlgebra k G)ᵐᵒᵖ ≃+* MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ :=
-  { opAddEquiv.symm.trans <|
-      (Finsupp.mapRange.addEquiv (opAddEquiv : k ≃+ kᵐᵒᵖ)).trans <| Finsupp.domCongr opEquiv with
-    map_mul' := by
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
-      rw [← AddEquiv.coe_toAddMonoidHom]
-      refine Iff.mpr (AddMonoidHom.map_mul_iff (R := (MonoidAlgebra k G)ᵐᵒᵖ)
-        (S := MonoidAlgebra kᵐᵒᵖ Gᵐᵒᵖ) _) ?_
-      ext
-      -- Porting note: `reducible` cannot be `local` so proof gets long.
-      simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, opAddEquiv_apply,
-        Function.comp_apply, singleAddHom_apply, AddMonoidHom.compr₂_apply, AddMonoidHom.coe_mul,
-        AddMonoidHom.coe_mulLeft, AddMonoidHom.compl₂_apply]
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        AddEquiv.trans_apply, AddEquiv.trans_apply, MulOpposite.opAddEquiv_symm_apply]
-      rw [MulOpposite.unop_mul (α := MonoidAlgebra k G), unop_op, unop_op, single_mul_single]
-      simp }
-
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove this.
--- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
--- defeq abuse going on.
-theorem opRingEquiv_single [Monoid G] (r : k) (x : G) :
-    MonoidAlgebra.opRingEquiv (op (single x r)) = single (op x) (op r) := by simp
-
-theorem opRingEquiv_symm_single [Monoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
-    MonoidAlgebra.opRingEquiv.symm (single x r) = op (single x.unop r.unop) := by simp
-
-end Opposite
-
-section Submodule
-
-variable [CommSemiring k] [Monoid G]
-variable {V : Type*} [AddCommMonoid V]
-variable [Module k V] [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V]
-
-/-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
-submodule over `MonoidAlgebra k G`  -/
-def submoduleOfSMulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W → of k G g • v ∈ W) :
-    Submodule (MonoidAlgebra k G) V where
-  carrier := W
-  zero_mem' := W.zero_mem'
-  add_mem' := W.add_mem'
-  smul_mem' := by
-    intro f v hv
-    rw [← Finsupp.sum_single f, Finsupp.sum, Finset.sum_smul]
-    simp_rw [← smul_of, smul_assoc]
-    exact Submodule.sum_smul_mem W _ fun g _ => h g v hv
-
-end Submodule
 
 end MonoidAlgebra
 
@@ -912,32 +641,6 @@ theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
 @[simp]
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
 
-abbrev mapDomain {G' : Type*} (f : G → G') (v : k[G]) : k[G'] :=
-  Finsupp.mapDomain f v
-
-theorem mapDomain_sum {k' G' : Type*} [Semiring k'] {f : G → G'} {s : AddMonoidAlgebra k' G}
-    {v : G → k' → k[G]} :
-    mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
-  Finsupp.mapDomain_sum
-
-theorem mapDomain_single {G' : Type*} {f : G → G'} {a : G} {b : k} :
-    mapDomain f (single a b) = single (f a) b :=
-  Finsupp.mapDomain_single
-
-/-- A non-commutative version of `AddMonoidAlgebra.lift`: given an additive homomorphism
-`f : k →+ R` and a map `g : Multiplicative G → R`, returns the additive
-homomorphism from `k[G]` such that `liftNC f g (single a b) = f b * g a`. If `f`
-is a ring homomorphism and the range of either `f` or `g` is in center of `R`, then the result is a
-ring homomorphism.  If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
-homomorphism called `AddMonoidAlgebra.lift`. -/
-def liftNC (f : k →+ R) (g : Multiplicative G → R) : k[G] →+ R :=
-  liftAddHom fun x : G => (AddMonoidHom.mulRight (g <| Multiplicative.ofAdd x)).comp f
-
-@[simp]
-theorem liftNC_single (f : k →+ R) (g : Multiplicative G → R) (a : G) (b : k) :
-    liftNC f g (single a b) = f b * g (Multiplicative.ofAdd a) :=
-  liftAddHom_apply_single _ _ _
-
 end
 
 section Mul
@@ -974,25 +677,18 @@ instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=
     mul_zero := fun f => by
       simp only [mul_def]
       exact Eq.trans (congr_arg (sum f) (funext₂ fun a₁ b₁ => sum_zero_index)) sum_zero
-    nsmul := fun n f => n • f
+    nsmul := (· • ·)
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` → `refine Finsupp.ext fun _ => ?_`
     nsmul_zero := by
       intros
       refine Finsupp.ext fun _ => ?_
-      simp [-nsmul_eq_mul, add_smul]
+      rw [nsmul_apply, zero_nsmul, zero_apply]
     nsmul_succ := by
       intros
       refine Finsupp.ext fun _ => ?_
-      simp [-nsmul_eq_mul, add_smul] }
+      rw [nsmul_apply, succ_nsmul, add_apply, nsmul_apply] }
 
 variable [Semiring R]
-
-theorem liftNC_mul {g_hom : Type*}
-    [FunLike g_hom (Multiplicative G) R] [MulHomClass g_hom (Multiplicative G) R]
-    (f : k →+* R) (g : g_hom) (a b : k[G])
-    (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
-    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b :=
-  MonoidAlgebra.liftNC_mul f g _ _ @h_comm
 
 end Mul
 
@@ -1007,12 +703,6 @@ instance one : One k[G] :=
 
 theorem one_def : (1 : k[G]) = single 0 1 :=
   rfl
-
-@[simp]
-theorem liftNC_one {g_hom : Type*}
-    [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom (Multiplicative G) R]
-    (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 :=
-  MonoidAlgebra.liftNC_one f g
 
 end One
 
@@ -1063,13 +753,6 @@ end MulOneClass
 
 section Semiring
 
-instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R k[G] :=
-  Finsupp.smulZeroClass
-
-instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
-    NoZeroSMulDivisors R k[G] :=
-  Finsupp.noZeroSMulDivisors
-
 variable [Semiring k] [AddMonoid G]
 
 instance semiring : Semiring k[G] :=
@@ -1077,13 +760,6 @@ instance semiring : Semiring k[G] :=
     AddMonoidAlgebra.nonAssocSemiring with }
 
 variable [Semiring R]
-
-/-- `liftNC` as a `RingHom`, for when `f` and `g` commute -/
-def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) :
-    k[G] →+* R :=
-  { liftNC (f : k →+ R) g with
-    map_one' := liftNC_one _ _
-    map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
 
 end Semiring
 
@@ -1102,9 +778,6 @@ section DerivedInstances
 
 instance commSemiring [CommSemiring k] [AddCommMonoid G] : CommSemiring k[G] :=
   { AddMonoidAlgebra.nonUnitalCommSemiring, AddMonoidAlgebra.semiring with }
-
-instance unique [Semiring k] [Subsingleton k] : Unique k[G] :=
-  Finsupp.uniqueOfRight
 
 instance addCommGroup [Ring k] : AddCommGroup k[G] :=
   Finsupp.instAddCommGroup
@@ -1140,38 +813,6 @@ instance nonUnitalCommRing [CommRing k] [AddCommSemigroup G] :
 instance commRing [CommRing k] [AddCommMonoid G] : CommRing k[G] :=
   { AddMonoidAlgebra.nonUnitalCommRing, AddMonoidAlgebra.ring with }
 
-variable {S : Type*}
-
-instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R k[G] :=
-  Finsupp.distribSMul G k
-
-instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
-    DistribMulAction R k[G] :=
-  Finsupp.distribMulAction G k
-
-instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
-    FaithfulSMul R k[G] :=
-  Finsupp.faithfulSMul
-
-instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
-  Finsupp.module G k
-
-instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
-    [IsScalarTower R S k] : IsScalarTower R S k[G] :=
-  Finsupp.isScalarTower G k
-
-instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
-    SMulCommClass R S k[G] :=
-  Finsupp.smulCommClass G k
-
-instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒᵖ k]
-    [IsCentralScalar R k] : IsCentralScalar R k[G] :=
-  Finsupp.isCentralScalar G k
-
-/-! It is hard to state the equivalent of `DistribMulAction G k[G]`
-because we've never discussed actions of additive groups. -/
-
-
 end DerivedInstances
 
 /-!
@@ -1203,31 +844,6 @@ theorem addHom_ext' {N : Type*} [Semiring k] [AddZeroClass N]
     (H : ∀ (x : G), AddMonoidHom.comp f (singleAddHom x) = AddMonoidHom.comp g (singleAddHom x)) :
     f = g :=
   Finsupp.addHom_ext' H
-
-/-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/
-@[ext]
-theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [Semiring k] [AddMonoid N]
-    [DistribMulAction R N] [DistribMulAction R k]
-    {f g : AddMonoidAlgebra k G →+[R] N}
-    (h : ∀ a : G,
-      f.comp (DistribMulActionHom.single (M := k) a) = g.comp (DistribMulActionHom.single a)) :
-    f = g :=
-  Finsupp.distribMulActionHom_ext' h
-
-/-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/
-abbrev lsingle [Semiring R] [Semiring k] [Module R k] (a : G) :
-    k →ₗ[R] AddMonoidAlgebra k G := Finsupp.lsingle a
-
-@[simp] lemma lsingle_apply [Semiring R] [Semiring k] [Module R k] (a : G) (b : k) :
-  lsingle (R := R) a b = single a b := rfl
-
-/-- A copy of `Finsupp.lhom_ext'` for `AddMonoidAlgebra`. -/
-@[ext high]
-lemma lhom_ext' {N : Type*} [Semiring R] [Semiring k] [AddCommMonoid N] [Module R N] [Module R k]
-    ⦃f g : AddMonoidAlgebra k G →ₗ[R] N⦄
-    (H : ∀ (x : G), LinearMap.comp f (lsingle x) = LinearMap.comp g (lsingle x)) :
-    f = g :=
-  Finsupp.lhom_ext' H
 
 end ExtLemmas
 
@@ -1261,28 +877,6 @@ theorem single_pow [AddMonoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n =
     rfl
   | n + 1 => by
     rw [pow_succ, pow_succ, single_pow n, single_mul_single, add_nsmul, one_nsmul]
-
-/-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
-@[simp]
-theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Zero α] [Zero α₂]
-    {F : Type*} [FunLike F α α₂] [ZeroHomClass F α α₂] (f : F) :
-    (mapDomain f (1 : AddMonoidAlgebra β α) : AddMonoidAlgebra β α₂) =
-      (1 : AddMonoidAlgebra β α₂) := by
-  simp_rw [one_def, mapDomain_single, map_zero]
-
-/-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
-theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Add α] [Add α₂]
-    {F : Type*} [FunLike F α α₂] [AddHomClass F α α₂] (f : F) (x y : AddMonoidAlgebra β α) :
-    mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
-  simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_add]
-  rw [Finsupp.sum_mapDomain_index]
-  · congr
-    ext a b
-    rw [Finsupp.sum_mapDomain_index]
-    · simp
-    · simp [mul_add]
-  · simp
-  · simp [add_mul]
 
 section
 
@@ -1335,10 +929,12 @@ def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
   map_one' := rfl
   map_mul' _a _b := single_mul_single.symm
 
+/-
 /-- Copy of `Finsupp.smul_single'` that avoids the `AddMonoidAlgebra = Finsupp` defeq abuse. -/
 @[simp]
 theorem smul_single' (c : k) (a : G) (b : k) : c • single a b = single a (c * b) :=
   Finsupp.smul_single' c a b
+-/
 
 theorem mul_single_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
     (H : ∀ a, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
@@ -1372,97 +968,13 @@ theorem single_mul_apply [AddGroup G] (r : k) (x : G) (f : k[G]) (y : G) :
     (single x r * f) y = r * f (-x + y) :=
   @MonoidAlgebra.single_mul_apply k (Multiplicative G) _ _ _ _ _ _
 
-theorem liftNC_smul {R : Type*} [AddZeroClass G] [Semiring R] (f : k →+* R)
-    (g : Multiplicative G →* R) (c : k) (φ : MonoidAlgebra k G) :
-    liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ :=
-  @MonoidAlgebra.liftNC_smul k (Multiplicative G) _ _ _ _ f g c φ
-
-theorem induction_on [AddMonoid G] {p : k[G] → Prop} (f : k[G])
-    (hM : ∀ g, p (of k G (Multiplicative.ofAdd g)))
-    (hadd : ∀ f g : k[G], p f → p g → p (f + g))
-    (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
-  refine Finsupp.induction_linear f ?_ (fun f g hf hg => hadd f g hf hg) fun g r => ?_
-  · simpa using hsmul 0 (of k G (Multiplicative.ofAdd 0)) (hM 0)
-  · convert hsmul r (of k G (Multiplicative.ofAdd g)) (hM g)
-    simp
-
-/-- If `f : G → H` is an additive homomorphism between two additive monoids, then
-`Finsupp.mapDomain f` is a ring homomorphism between their add monoid algebras. -/
-@[simps]
-def mapDomainRingHom (k : Type*) [Semiring k] {H F : Type*} [AddMonoid G] [AddMonoid H]
-    [FunLike F G H] [AddMonoidHomClass F G H] (f : F) : k[G] →+* k[H] :=
-  { (Finsupp.mapDomain.addMonoidHom f : MonoidAlgebra k G →+ MonoidAlgebra k H) with
-    map_one' := mapDomain_one f
-    map_mul' := fun x y => mapDomain_mul f x y }
-
 end MiscTheorems
 
 end AddMonoidAlgebra
 
-/-!
-#### Conversions between `AddMonoidAlgebra` and `MonoidAlgebra`
-
-We have not defined `k[G] = MonoidAlgebra k (Multiplicative G)`
-because historically this caused problems;
-since the changes that have made `nsmul` definitional, this would be possible,
-but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
--/
-
-
-/-- The equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
-`Multiplicative` -/
-protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
-    AddMonoidAlgebra k G ≃+* MonoidAlgebra k (Multiplicative G) :=
-  { Finsupp.domCongr
-      Multiplicative.ofAdd with
-    toFun := equivMapDomain Multiplicative.ofAdd
-    map_mul' := fun x y => by
-      -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
-      dsimp only
-      repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
-      dsimp [Multiplicative.ofAdd]
-      exact MonoidAlgebra.mapDomain_mul (α := Multiplicative G) (β := k)
-        (MulHom.id (Multiplicative G)) x y }
-
-/-- The equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of `Additive` -/
-protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
-    MonoidAlgebra k G ≃+* AddMonoidAlgebra k (Additive G) :=
-  { Finsupp.domCongr Additive.ofMul with
-    toFun := equivMapDomain Additive.ofMul
-    map_mul' := fun x y => by
-      -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
-      dsimp only
-      repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
-      dsimp [Additive.ofMul]
-      convert MonoidAlgebra.mapDomain_mul (β := k) (MulHom.id G) x y }
-
 namespace AddMonoidAlgebra
 
 variable {k G H}
-
-/-! #### Non-unital, non-associative algebra structure -/
-
-
-section NonUnitalNonAssocAlgebra
-
-variable (k) [Semiring k] [DistribSMul R k] [Add G]
-
-instance isScalarTower_self [IsScalarTower R k k] :
-    IsScalarTower R k[G] k[G] :=
-  @MonoidAlgebra.isScalarTower_self k (Multiplicative G) R _ _ _ _
-
-/-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
-`R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
-also commute with the algebra multiplication. -/
-instance smulCommClass_self [SMulCommClass R k k] :
-    SMulCommClass R k[G] k[G] :=
-  @MonoidAlgebra.smulCommClass_self k (Multiplicative G) R _ _ _ _
-
-instance smulCommClass_symm_self [SMulCommClass k R k] :
-    SMulCommClass k[G] R k[G] :=
-  @MonoidAlgebra.smulCommClass_symm_self k (Multiplicative G) R _ _ _ _
-
-end NonUnitalNonAssocAlgebra
 
 /-! #### Algebra structure -/
 
@@ -1496,47 +1008,6 @@ theorem ringHom_ext' {R} [Semiring k] [AddMonoid G] [Semiring R] {f g : k[G] →
     f = g :=
   ringHom_ext (RingHom.congr_fun h₁) (DFunLike.congr_fun h_of)
 
-section Opposite
-
-open Finsupp MulOpposite
-
-variable [Semiring k]
-
-/-- The opposite of an `R[I]` is ring equivalent to
-the `AddMonoidAlgebra Rᵐᵒᵖ I` over the opposite ring, taking elements to their opposite. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply]
-protected noncomputable def opRingEquiv [AddCommMonoid G] :
-    k[G]ᵐᵒᵖ ≃+* kᵐᵒᵖ[G] :=
-  { MulOpposite.opAddEquiv.symm.trans
-      (Finsupp.mapRange.addEquiv (MulOpposite.opAddEquiv : k ≃+ kᵐᵒᵖ)) with
-    map_mul' := by
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      rw [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe]; erw [AddEquiv.coe_toEquiv]
-      rw [← AddEquiv.coe_toAddMonoidHom]
-      refine Iff.mpr (AddMonoidHom.map_mul_iff (R := k[G]ᵐᵒᵖ) (S := kᵐᵒᵖ[G]) _) ?_
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Was `ext`.
-      refine AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₁ => AddMonoidHom.ext fun r₁ =>
-        AddMonoidHom.mul_op_ext _ _ <| addHom_ext' fun i₂ => AddMonoidHom.ext fun r₂ => ?_
-      -- Porting note: `reducible` cannot be `local` so proof gets long.
-      dsimp
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [AddEquiv.trans_apply, AddEquiv.trans_apply, AddEquiv.trans_apply,
-        MulOpposite.opAddEquiv_symm_apply]; rw [MulOpposite.unop_mul (α := k[G])]
-      dsimp
-      rw [mapRange_single, single_mul_single, mapRange_single, mapRange_single]
-      simp only [mapRange_single, single_mul_single, ← op_mul, add_comm] }
-
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove this.
--- More specifically, the LHS simplifies to `Finsupp.single`, which implies there's some
--- defeq abuse going on.
-theorem opRingEquiv_single [AddCommMonoid G] (r : k) (x : G) :
-    AddMonoidAlgebra.opRingEquiv (op (single x r)) = single x (op r) := by simp
-
-theorem opRingEquiv_symm_single [AddCommMonoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒᵖ) :
-    AddMonoidAlgebra.opRingEquiv.symm (single x r) = op (single x r.unop) := by simp
-
-end Opposite
-
 end Algebra
 
 section
@@ -1555,5 +1026,3 @@ theorem prod_single [CommSemiring k] [AddCommMonoid G] {s : Finset ι} {a : ι �
 end
 
 end AddMonoidAlgebra
-
-set_option linter.style.longFile 1700
