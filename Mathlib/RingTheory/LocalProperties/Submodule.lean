@@ -112,7 +112,7 @@ open Submodule LocalizedModule Ideal LinearMap
 
 /-- Another version, using `LocalizedModule` instead of `IsLocaliedModule`. -/
 lemma Submodule.le_of_localization_maximal' {N H : Submodule R M}
-  (h : ∀ (J : Ideal R) [J.IsMaximal], localized J.primeCompl N ≤ localized J.primeCompl H) :
+    (h : ∀ (J : Ideal R) [J.IsMaximal], localized J.primeCompl N ≤ localized J.primeCompl H) :
     N ≤ H := Submodule.le_of_localization_maximal (fun P ↦ (Localization P.primeCompl))
     (fun P ↦ (LocalizedModule P.primeCompl M))
     (fun P ↦ (mkLinearMap P.primeCompl M)) (fun P _ ↦ h P)
