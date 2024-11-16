@@ -5249,5 +5249,6 @@ import Mathlib.Util.Superscript
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
 import Mathlib.Util.TermBeta
+import Mathlib.Util.WHNF
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace

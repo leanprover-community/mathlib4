@@ -35,6 +35,9 @@ private def cache (useCache : Bool) (e r : Expr) : MetaM Expr := do
     | _        => unreachable!
   return r
 
+/-- Compute the "weak head-normal form" of an expression.  This is a variant of the core function
+`Lean.Meta.whnf` which takes a config option of type `Lean.Meta.WhnfCoreConfig`, allowing `iota`,
+`beta`, projection, `zeta` and `zetaDelta` reduction to be turned on or off explicitly. -/
 partial def whnfWithConfig (e : Expr) (config : WhnfCoreConfig := {}) : MetaM Expr :=
   let k := fun e => do
     let useCache ← useWHNFCache e
