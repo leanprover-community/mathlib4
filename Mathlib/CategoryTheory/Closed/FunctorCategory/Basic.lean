@@ -43,13 +43,10 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
         simp only [enrichedOrdinaryCategorySelf_eHomWhiskerLeft, Category.assoc,
           enrichedOrdinaryCategorySelf_eHomWhiskerRight]
         rw [← curry_natural_left_assoc, ← curry_natural_left_assoc,
-          ← curry_natural_right, curry_pre_app]
-        congr 1
-        convert (_ ◁ (F₂.map k₁.hom)) ≫= (f.naturality φ.right).symm using 1
-        · simp only [Category.assoc]
-        · dsimp
-          rw [tensorHom_def_assoc, whisker_exchange_assoc,
-            ← MonoidalCategory.whiskerLeft_comp_assoc, ← Under.w φ, Functor.map_comp])
+          ← curry_natural_right, curry_pre_app, Category.assoc,
+          ← f.naturality φ.right, Monoidal.tensorObj_map, tensorHom_def_assoc,
+          ← Under.w φ, Functor.map_comp, MonoidalCategory.whiskerLeft_comp_assoc,
+          whisker_exchange_assoc])
       naturality := fun j j' φ ↦ by
         dsimp
         ext k
