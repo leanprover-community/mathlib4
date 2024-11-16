@@ -142,12 +142,21 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   guard_hyp w : 0 = y + z
   assumption
 
--- test that when `abel_nf` normalizes multiple expressions which contain a particular atom, it uses
--- a form for that atom which is consistent between expressions
+/-
+Test that when `abel_nf` normalizes multiple expressions which contain a particular atom, it uses a
+form for that atom which is consistent between expression.
+
+Note: This test is useless unless done at `=ₛ` (the level of syntactic equality); doing this test at
+`=` (the level of reducible equality) would not catch the erroneous old behaviour (normalizing one
+expression to `2 • a` and the other to `2 • x`).  But to get syntactic equality, we need to make the
+typeclass arguments agree, which requires some handholding in typeclass inference ... which is the
+reason for all the locally deleted instances here.
+-/
+attribute [-instance] Int.instAddGroup AddGroupWithOne.toAddGroup in
 example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
   let a := x
   have : R (a + x) (x + a) := by
     abel_nf
-    guard_target = R ((2:ℤ) • a) ((2:ℤ) • a)
+    guard_target =ₛ R ((2:ℤ) • a) ((2:ℤ) • a)
     apply hR
   trivial

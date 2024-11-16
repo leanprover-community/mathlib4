@@ -84,13 +84,25 @@ example (x : ℝ) (hx : x ≠ 0) :
   field_simp
   ring
 
--- test that when `ring_nf` normalizes multiple expressions which contain a particular atom, it uses
--- a form for that atom which is consistent between expressions
+/-
+Test that when `ring_nf` normalizes multiple expressions which contain a particular atom, it uses a
+form for that atom which is consistent between expressions.
+
+Note: This test is useless unless done at `=ₛ` (the level of syntactic equality); doing this test at
+`=` (the level of reducible equality) would not catch the erroneous old behaviour (normalizing one
+expression to `a * 2` and the other to `x * 2`).  But to get syntactic equality, we need to make the
+typeclass arguments agree, which requires some handholding in typeclass inference ... which is the
+reason for all the locally deleted instances here.
+-/
+attribute [-instance] instOfNat instNatCastInt Int.instSemiring Int.instOrderedCommRing
+  Int.instOrderedRing Int.instLinearOrderedCommRing Int.instMul NonUnitalNonAssocRing.toMul
+  NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
+  NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring in
 example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
   let a := x
   have : R (a + x) (x + a) := by
     ring_nf
-    guard_target = R (a * 2) (a * 2)
+    guard_target =ₛ R (a * 2) (a * 2)
     exact test_sorry
   trivial
 
