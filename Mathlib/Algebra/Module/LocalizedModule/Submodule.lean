@@ -28,25 +28,35 @@ Results about localizations of submodules and quotient modules are provided in t
 
 open nonZeroDivisors
 
-universe u u' v v' w w'
-
-variable {R : Type u} (S : Type u') {M : Type v} {N : Type v'}
-variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
+variable {R S M N : Type*}
+variable (S) [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
 variable (M' : Submodule R M)
 
+section Submodule
+
 /-- Let `S` be the localization of `R` at `p` and `N` be the localization of `M` at `p`.
-This is the localization of an `R`-submodule of `M` viewed as an `S`-submodule of `N`. -/
-def Submodule.localized' : Submodule S N where
+This is the localization of an `R`-submodule of `M` viewed as an `R`-submodule of `N`. -/
+def Submodule.localized₀ : Submodule R N where
   carrier := { x | ∃ m ∈ M', ∃ s : p, IsLocalizedModule.mk' f m s = x }
-  add_mem' := fun {x} {y} ⟨m, hm, s, hx⟩ ⟨n, hn, t, hy⟩ ↦ ⟨t • m + s • n, add_mem (M'.smul_mem t hm)
+  add_mem' := fun {x y} ⟨m, hm, s, hx⟩ ⟨n, hn, t, hy⟩ ↦ ⟨t • m + s • n, add_mem (M'.smul_mem t hm)
     (M'.smul_mem s hn), s * t, by rw [← hx, ← hy, IsLocalizedModule.mk'_add_mk']⟩
   zero_mem' := ⟨0, zero_mem _, 1, by simp⟩
-  smul_mem' := fun r x h ↦ by
-    have ⟨m, hm, s, hx⟩ := h
+  smul_mem' r x := by
+    rintro ⟨m, hm, s, hx⟩
+    exact ⟨r • m, smul_mem M' _ hm, s, by rw [IsLocalizedModule.mk'_smul, hx]⟩
+
+/-- Same as `Submodule.localized₀`, but viewed as an `S`-submodule. -/
+def Submodule.localized' : Submodule S N where
+  __ := Submodule.localized₀ p f M'
+  smul_mem' := fun r x ⟨m, hm, s, hx⟩ ↦ by
     have ⟨y, t, hyt⟩ := IsLocalization.mk'_surjective p r
     exact ⟨y • m, M'.smul_mem y hm, t * s, by simp [← hyt, ← hx, IsLocalizedModule.mk'_smul_mk']⟩
+
+lemma Submodule.mem_localized₀ (x : N) :
+    x ∈ Submodule.localized₀ p f M' ↔ ∃ m ∈ M', ∃ s : p, IsLocalizedModule.mk' f m s = x :=
+  Iff.rfl
 
 lemma Submodule.mem_localized' (x : N) :
     x ∈ Submodule.localized' S p f M' ↔ ∃ m ∈ M', ∃ s : p, IsLocalizedModule.mk' f m s = x :=
@@ -57,17 +67,25 @@ abbrev Submodule.localized : Submodule (Localization p) (LocalizedModule p M) :=
   M'.localized' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
 @[simp]
-lemma Submodule.localized'_bot : (⊥ : Submodule R M).localized' S p f = ⊥ := by
+lemma Submodule.localized₀_bot : (⊥ : Submodule R M).localized₀ p f = ⊥ := by
   rw [← le_bot_iff]
   rintro _ ⟨_, rfl, s, rfl⟩
   simp only [IsLocalizedModule.mk'_zero, mem_bot]
 
 @[simp]
-lemma Submodule.localized'_top : (⊤ : Submodule R M).localized' S p f = ⊤ := by
+lemma Submodule.localized'_bot : (⊥ : Submodule R M).localized' S p f = ⊥ :=
+  SetLike.ext' (by apply SetLike.ext'_iff.mp <| Submodule.localized₀_bot p f)
+
+@[simp]
+lemma Submodule.localized₀_top : (⊤ : Submodule R M).localized₀ p f = ⊤ := by
   rw [← top_le_iff]
   rintro x _
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f x
   exact ⟨x, trivial, s, rfl⟩
+
+@[simp]
+lemma Submodule.localized'_top : (⊤ : Submodule R M).localized' S p f = ⊤ :=
+  SetLike.ext' (by apply SetLike.ext'_iff.mp <| Submodule.localized₀_top p f)
 
 @[simp]
 lemma Submodule.localized'_span (s : Set M) : (span R s).localized' S p f = span S (f '' s) := by
@@ -110,6 +128,16 @@ instance Submodule.isLocalizedModule : IsLocalizedModule p (M'.toLocalized' S p 
   exists_of_eq e := by simpa [Subtype.ext_iff] using
       IsLocalizedModule.exists_of_eq (S := p) (f := f) (congr_arg Subtype.val e)
 
+end Submodule
+
+section Quotient
+
+variable {R S M N : Type*}
+variable (S) [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
+variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
+variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
+variable (M' : Submodule R M)
+
 /-- The localization map of a quotient module. -/
 def Submodule.toLocalizedQuotient' : M ⧸ M' →ₗ[R] N ⧸ M'.localized' S p f :=
   Submodule.mapQ M' ((M'.localized' S p f).restrictScalars R) f (fun x hx ↦ ⟨x, hx, 1, by simp⟩)
@@ -147,10 +175,12 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
 instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :=
   IsLocalizedModule.toLocalizedQuotient' _ _ _ _
 
+end Quotient
+
 section LinearMap
 
-variable {P : Type w} [AddCommGroup P] [Module R P]
-variable {Q : Type w'} [AddCommGroup Q] [Module R Q] [Module S Q] [IsScalarTower R S Q]
+variable {P : Type*} [AddCommGroup P] [Module R P]
+variable {Q : Type*} [AddCommGroup Q] [Module R Q] [Module S Q] [IsScalarTower R S Q]
 variable (f' : P →ₗ[R] Q) [IsLocalizedModule p f']
 
 lemma LinearMap.localized'_ker_eq_ker_localizedMap (g : M →ₗ[R] P) :
