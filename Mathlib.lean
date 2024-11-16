@@ -937,6 +937,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Finite
 import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+import Mathlib.AlgebraicGeometry.Morphisms.Integral
 import Mathlib.AlgebraicGeometry.Morphisms.IsIso
 import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
