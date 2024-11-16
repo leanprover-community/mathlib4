@@ -36,7 +36,7 @@ instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Neg (PreMS (basis_hd :: b
 open Filter Asymptotics
 
 theorem const_WellOrdered {c : ℝ} {basis : Basis} :
-    (const c basis).WellOrdered := by
+    (const basis c).WellOrdered := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
@@ -53,12 +53,12 @@ theorem zero_WellOrdered {basis : Basis} : (0 : PreMS basis).WellOrdered := by
 
 -- TODO : move it
 theorem const_Approximates_const {c : ℝ} {basis : Basis} (h_wo : MS.WellOrderedBasis basis) :
-    (const c basis).Approximates (fun _ ↦ c) := by
+    (const basis c).Approximates (fun _ ↦ c) := by
   cases basis with
   | nil => simp [Approximates, const]
   | cons basis_hd basis_tl =>
     simp [const]
-    have ih : (const c basis_tl).Approximates (fun _ ↦ c) := by
+    have ih : (const basis_tl c).Approximates (fun _ ↦ c) := by
       apply const_Approximates_const (MS.WellOrderedBasis_tail h_wo)
     apply Approximates.cons _ ih
     · apply const_majorated
@@ -156,7 +156,7 @@ theorem mulConst_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : Pre
 
 @[simp]
 theorem const_mulConst {basis : Basis} {x y : ℝ} :
-    (const x basis).mulConst y = const (x * y) basis := by
+    (const basis x).mulConst y = const basis (x * y) := by
   cases basis with
   | nil => simp [mulConst, const]
   | cons =>
@@ -282,19 +282,19 @@ theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
 
 end PreMS
 
-def MS.monomial (basis : Basis) (n : ℕ) (h : n < basis.length)
-    (h_basis : MS.WellOrderedBasis basis) : MS where
-  basis := basis
-  val := PreMS.monomial basis n
-  F := basis[n]
-  h_wo := PreMS.monomial_WellOrdered
-  h_approx := PreMS.monomial_Approximates h h_basis
+-- def MS.monomial (basis : Basis) (n : ℕ) (h : n < basis.length)
+--     (h_basis : MS.WellOrderedBasis basis) : MS where
+--   basis := basis
+--   val := PreMS.monomial basis n
+--   F := basis[n]
+--   h_wo := PreMS.monomial_WellOrdered
+--   h_approx := PreMS.monomial_Approximates h h_basis
 
-def MS.neg (x : MS) : MS where
-  basis := x.basis
-  val := x.val.neg
-  F := -x.F
-  h_wo := PreMS.neg_WellOrdered x.h_wo
-  h_approx := PreMS.neg_Approximates x.h_approx
+-- def MS.neg (x : MS) : MS where
+--   basis := x.basis
+--   val := x.val.neg
+--   F := -x.F
+--   h_wo := PreMS.neg_WellOrdered x.h_wo
+--   h_approx := PreMS.neg_Approximates x.h_approx
 
 end TendstoTactic

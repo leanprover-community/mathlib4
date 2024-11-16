@@ -209,7 +209,7 @@ theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis
 @[simp]
 theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
-    (apply (.cons s_hd s_tl) ms) = .cons (0, PreMS.const s_hd _) ((apply s_tl ms).mul ms) := by
+    (apply (.cons s_hd s_tl) ms) = .cons (0, PreMS.const _ s_hd) ((apply s_tl ms).mul ms) := by
   simp [apply]
   conv =>
     lhs
@@ -228,7 +228,7 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
       y = Seq.map (fun x ↦ x.mul ms) (Seq.corec (apply_aux ms) (X, s))
   apply Seq.Eq.coind motive
   · simp [motive]
-    use const 1 (basis_hd :: basis_tl), s_tl
+    use const (basis_hd :: basis_tl) 1, s_tl
   · intro x y ih
     simp [motive] at ih
     obtain ⟨X, s, hx, hy⟩ := ih
@@ -453,8 +453,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
             rw [mul_assoc'] at h_ms_eq
             pick_goal 2
             · exact apply_WellOrdered h_wo h_neg
-            use Y_exp, (const s_hd basis_tl).mul Y_coef,
-              (mulMonomial Y_tl (const s_hd basis_tl) 0) +
+            use Y_exp, (const basis_tl s_hd).mul Y_coef,
+              (mulMonomial Y_tl (const basis_tl s_hd) 0) +
                 ((apply s_tl ms).mul (ms.mul (Seq.cons (Y_exp, Y_coef) Y_tl))),
               fun x ↦ s_hd * (YC x)
             constructor
@@ -474,7 +474,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
                   use s_tl
                   constructor
                   · apply tail_analytic h_analytic
-                  use mulMonomial Y_tl (const s_hd basis_tl) 0,
+                  use mulMonomial Y_tl (const basis_tl s_hd) 0,
                     ms.mul (Seq.cons (Y_exp, Y_coef) Y_tl),
                     fun x ↦ s_hd * (fY x - basis_hd x ^ Y_exp * YC x), F * fY
                   constructor
@@ -489,7 +489,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
                   · apply mulMonomial_WellOrdered hY_tl_wo
                     exact const_WellOrdered
                   constructor
-                  · have := mulMonomial_Approximates h_basis (m_coef := const s_hd basis_tl)
+                  · have := mulMonomial_Approximates h_basis (m_coef := const basis_tl s_hd)
                       (m_exp := 0) hY_tl
                       (const_Approximates_const (MS.WellOrderedBasis_tail h_basis))
                     simpa using this
@@ -632,7 +632,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               · exact hY_wo
               · exact hY_approx
             · simp only [← add_assoc] at h_ms_eq
-              use Y_exp, (const s_hd basis_tl).mul Y_coef, ?_, fun x ↦ s_hd * YC x
+              use Y_exp, (const basis_tl s_hd).mul Y_coef, ?_, fun x ↦ s_hd * YC x
               constructor
               · exact h_ms_eq
               constructor
@@ -650,7 +650,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               constructor
               · apply tail_analytic h_analytic
               use HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl)
-                  (mulMonomial Y_tl (const s_hd basis_tl) 0),
+                  (mulMonomial Y_tl (const basis_tl s_hd) 0),
                 ms.mul (Seq.cons (Y_exp, Y_coef) Y_tl),
                 fun x ↦ fX x + s_hd * (fY x - basis_hd x ^ Y_exp * YC x), F * fY
               constructor
@@ -672,7 +672,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               · apply add_Approximates
                 · exact hX_approx
                 · conv =>
-                    arg 1
+                    arg 2
                     ext x
                     rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
                   apply mulMonomial_Approximates h_basis
@@ -687,7 +687,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
                 · exact hY_approx
             · have h : X_exp = Y_exp := by linarith
               simp only [← add_assoc] at h_ms_eq
-              use X_exp, X_coef + ((const s_hd basis_tl).mul Y_coef), ?_,
+              use X_exp, X_coef + ((const basis_tl s_hd).mul Y_coef), ?_,
                 fun x ↦ XC x + s_hd * YC x
               constructor
               · exact h_ms_eq
@@ -708,7 +708,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               constructor
               · exact tail_analytic h_analytic
               use HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) X_tl
-                  (mulMonomial Y_tl (const s_hd basis_tl) 0),
+                  (mulMonomial Y_tl (const basis_tl s_hd) 0),
                 ms.mul (Seq.cons (Y_exp, Y_coef) Y_tl),
                 fun x ↦ (fX x - basis_hd x ^ X_exp * XC x) + s_hd *
                   (fY x - basis_hd x ^ Y_exp * YC x),
@@ -732,7 +732,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis : B
               · apply add_Approximates
                 · exact hX_tl
                 · conv =>
-                    arg 1
+                    arg 2
                     ext x
                     rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
                   apply mulMonomial_Approximates h_basis

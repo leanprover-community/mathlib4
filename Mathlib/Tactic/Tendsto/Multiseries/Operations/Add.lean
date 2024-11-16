@@ -691,23 +691,23 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
 
 end PreMS
 
-noncomputable def MS.add (x y : MS) (h_basis : y.basis = x.basis) : MS where
-  basis := x.basis
-  val := x.val.add (h_basis ▸ y.val)
-  F := x.F + y.F
-  h_wo := by
-    have := y.h_wo
-    apply PreMS.add_WellOrdered x.h_wo
-    generalize y.val = z at *
-    generalize y.basis = b at *
-    subst h_basis
-    simpa
-  h_approx := by
-    have := y.h_approx
-    apply PreMS.add_Approximates x.h_approx
-    generalize y.val = z at *
-    generalize y.basis = b at *
-    subst h_basis
-    simpa
+-- noncomputable def MS.add (x y : MS) (h_basis : y.basis = x.basis) : MS where
+--   basis := x.basis
+--   val := x.val.add (h_basis ▸ y.val)
+--   F := x.F + y.F
+--   h_wo := by
+--     have := y.h_wo
+--     apply PreMS.add_WellOrdered x.h_wo
+--     generalize y.val = z at *
+--     generalize y.basis = b at *
+--     subst h_basis
+--     simpa
+--   h_approx := by
+--     have := y.h_approx
+--     apply PreMS.add_Approximates x.h_approx
+--     generalize y.val = z at *
+--     generalize y.basis = b at *
+--     subst h_basis
+--     simpa
 
 end TendstoTactic

@@ -177,7 +177,7 @@ theorem one_mul' {basis : Basis} {ms : PreMS basis} : mul (one basis) ms = ms :=
   | cons basis_hd basis_tl =>
     simp [one, const, mul]
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun x y =>
-      x = y.mulMonomial (const 1 basis_tl) 0
+      x = y.mulMonomial (const basis_tl 1) 0
     apply Seq.Eq.coind motive
     · simp only [motive]
     · intro x (y : PreMS (basis_hd :: basis_tl)) ih
@@ -1565,7 +1565,7 @@ theorem longAdd_Approximates {basis : Basis} {k : ℕ} {args : Fin k → PreMS b
       rfl
     | succ k ih =>
       conv =>
-        arg 1
+        arg 2
         ext x
         rw [Fin.sum_univ_castSucc]
       unfold longAdd
@@ -1731,8 +1731,8 @@ theorem longAdd_mulMonomial_tail_B_Approximates {basis_hd : _} {basis_tl : _} {k
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {exp : ℝ}
     {fB : Fin k → (ℝ → ℝ)}
     {hB_approx : ∀ j, (BM j).1.Approximates (fB j)} : ∀ (j : Fin k),
-    Approximates (longAdd_mulMonomial_tail_fB BM exp hB_approx j)
-      (longAdd_mulMonomial_tail_BM BM exp j).1 := by
+    Approximates (longAdd_mulMonomial_tail_BM BM exp j).1
+      (longAdd_mulMonomial_tail_fB BM exp hB_approx j) := by
   intro j
   cases k with
   | zero =>
@@ -2173,32 +2173,32 @@ mutual
         split_ifs with h_if
         · generalize_proofs h1 h2 h3
 
-          have hh := h1.choose_spec
-          generalize h1.choose = a at *
+          have hh := h2.choose_spec
+          generalize h2.choose = a at *
           obtain ⟨coef1, tl1⟩ := a
-          replace h1 := hh
+          replace h2 := hh
           clear hh
 
-          have hh := h3.choose_spec
-          generalize h3.choose = a at *
+          have hh := h1.choose_spec
+          generalize h1.choose = a at *
           obtain ⟨coef2, tl2⟩ := a
-          replace h3 := hh
+          replace h1 := hh
           clear hh
 
           simp only at h1 h2 h3 ⊢
           generalize_proofs
 
-          have hh := h2.choose_spec
-          generalize h2.choose = C at *
-          replace h2 := hh
+          have hh := h3.choose_spec
+          generalize h3.choose = C at *
+          replace h3 := hh
           clear hh
 
-          rw [h1] at h3
-          simp [Seq.cons_eq_cons] at h3
-          rw [← h3.left]
+          rw [h2] at h1
+          simp [Seq.cons_eq_cons] at h1
+          rw [← h1.left]
           apply mul_Approximates (MS.WellOrderedBasis_tail h_basis)
           · apply hM_approx
-          · exact h2.left
+          · exact h3.left
         · simp
           exact zero_Approximates_zero
 
@@ -2703,24 +2703,24 @@ end
 
 end PreMS
 
-noncomputable def MS.mul (x y : MS) (h_basis_eq : y.basis = x.basis)
-    (h_basis_wo : MS.WellOrderedBasis x.basis) : MS where
-  basis := x.basis
-  val := x.val.mul (h_basis_eq ▸ y.val)
-  F := x.F * y.F
-  h_wo := by
-    have := y.h_wo
-    apply PreMS.mul_WellOrdered x.h_wo
-    generalize y.val = z at *
-    generalize y.basis = b at *
-    subst h_basis_eq
-    simpa
-  h_approx := by
-    have := y.h_approx
-    apply PreMS.mul_Approximates h_basis_wo x.h_approx
-    generalize y.val = z at *
-    generalize y.basis = b at *
-    subst h_basis_eq
-    simpa
+-- noncomputable def MS.mul (x y : MS) (h_basis_eq : y.basis = x.basis)
+--     (h_basis_wo : MS.WellOrderedBasis x.basis) : MS where
+--   basis := x.basis
+--   val := x.val.mul (h_basis_eq ▸ y.val)
+--   F := x.F * y.F
+--   h_wo := by
+--     have := y.h_wo
+--     apply PreMS.mul_WellOrdered x.h_wo
+--     generalize y.val = z at *
+--     generalize y.basis = b at *
+--     subst h_basis_eq
+--     simpa
+--   h_approx := by
+--     have := y.h_approx
+--     apply PreMS.mul_Approximates h_basis_wo x.h_approx
+--     generalize y.val = z at *
+--     generalize y.basis = b at *
+--     subst h_basis_eq
+--     simpa
 
 end TendstoTactic

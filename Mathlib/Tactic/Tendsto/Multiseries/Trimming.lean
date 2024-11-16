@@ -290,14 +290,14 @@ end PreMS
 
 open PreMS.Trimming
 
-def MS.Trimmed (ms : MS) : Prop :=
-  ms.val.Trimmed
+-- def MS.Trimmed (ms : MS) : Prop :=
+--   ms.val.Trimmed
 
-structure MS.TrimmingResult (ms : MS) where
-  result : MS
-  h_eq_basis : ms.basis = result.basis
-  h_eq_F : ms.F = result.F
-  h_trimmed : result.Trimmed
+-- structure MS.TrimmingResult (ms : MS) where
+--   result : MS
+--   h_eq_basis : ms.basis = result.basis
+--   h_eq_F : ms.F = result.F
+--   h_trimmed : result.Trimmed
 
 -- def MS.trim (ms : MS) : TendstoM <| MS.TrimmingResult ms := do
 --   let r ← PreMS.trim ms.val

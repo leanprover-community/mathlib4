@@ -415,7 +415,7 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
     · right
       exact ih
 
-def Approximates (F : ℝ → ℝ) {basis : Basis} (ms : PreMS basis) : Prop :=
+def Approximates {basis : Basis} (ms : PreMS basis) (F : ℝ → ℝ)   : Prop :=
   match basis with
   | [] => F =ᶠ[atTop] fun _ ↦ ms
   | List.cons basis_hd _ =>
@@ -434,7 +434,7 @@ def Approximates (F : ℝ → ℝ) {basis : Basis} (ms : PreMS basis) : Prop :=
 
 variable {F basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
-theorem Approximates_nil (h : @Approximates F (basis_hd :: basis_tl) Seq.nil) :
+theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) Seq.nil F) :
     F =ᶠ[atTop] 0 := by
   unfold Approximates at h
   obtain ⟨Cs, _, _, h_maj⟩ := h
@@ -446,7 +446,7 @@ theorem Approximates_nil (h : @Approximates F (basis_hd :: basis_tl) Seq.nil) :
 
 theorem Approximates_cons {exp : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h : @Approximates F (basis_hd :: basis_tl) (.cons (exp, coef) tl)) :
+    (h : @Approximates (basis_hd :: basis_tl) (.cons (exp, coef) tl) F) :
     ∃ C,
       coef.Approximates C ∧
       majorated F basis_hd exp ∧
@@ -500,7 +500,7 @@ theorem Approximates.coind' {ms : PreMS (basis_hd :: basis_tl)}
         majorated F basis_hd exp ∧
         (motive (fun x ↦ F x - (basis_hd x)^exp * (C x)) basis_hd basis_tl tl)
       )
-    ) : Approximates F ms := by
+    ) : ms.Approximates F := by
   simp [Approximates]
   let T := Approximates_coind_auxT motive basis_hd basis_tl
   let g : T → Option ((ℝ → ℝ) × T) := fun ⟨val, F, h⟩ =>
@@ -668,7 +668,7 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
         (motive (fun x ↦ F x - (basis_hd x)^exp * (C x)) tl)
       )
     )
-    : Approximates F ms := by
+    : ms.Approximates F := by
   let motive' : (F : ℝ → ℝ) → (basis_hd : ℝ → ℝ) →
     (basis_tl : Basis) → (ms : PreMS (basis_hd :: basis_tl)) → Prop :=
     fun F' basis_hd' basis_tl' ms' =>
@@ -699,7 +699,7 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
       simpa
 
 theorem Approximates.nil (h : F =ᶠ[atTop] 0) :
-    @Approximates F (basis_hd :: basis_tl) .nil := by
+    @Approximates (basis_hd :: basis_tl) .nil F := by
   simp [Approximates]
   use .nil
   simpa [partialSums, partialSumsFrom]
@@ -708,7 +708,7 @@ theorem Approximates.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis
     (C : ℝ → ℝ) (h_coef : coef.Approximates C)
     (h_maj : majorated F basis_hd exp)
     (h_tl : tl.Approximates (fun x ↦ F x - (basis_hd x)^exp * (C x))) :
-    @Approximates F (basis_hd :: basis_tl) (.cons (exp, coef) tl) := by
+    @Approximates (basis_hd :: basis_tl) (.cons (exp, coef) tl) F := by
   simp [Approximates] at h_tl ⊢
   obtain ⟨Cs, h_tl_alal, h_tl_coef, h_tl_maj⟩ := h_tl
   use .cons C Cs
@@ -745,7 +745,7 @@ theorem Approximates_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F' : 
   | List.cons basis_hd basis_tl => by
     let motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop :=
       fun F' ms =>
-        ∃ F, F =ᶠ[atTop] F' ∧ Approximates F ms
+        ∃ F, F =ᶠ[atTop] F' ∧ ms.Approximates F
     apply Approximates.coind motive
     · simp only [motive]
       use F
@@ -782,11 +782,11 @@ end Approximates
 
 --------------------------------
 
-def const (c : ℝ) (basis : Basis) : PreMS basis :=
+def const (basis : Basis) (c : ℝ) : PreMS basis :=
   match basis with
   | [] => c
   | List.cons _ basis_tl =>
-    .cons (0, const c basis_tl) .nil
+    .cons (0, const basis_tl c) .nil
 
 def zero (basis) : PreMS basis :=
   match basis with
@@ -794,7 +794,7 @@ def zero (basis) : PreMS basis :=
   | List.cons _ _ => .nil
 
 def one (basis : Basis) : PreMS basis :=
-  const 1 basis
+  const basis 1
 
 def monomial (basis : Basis) (n : ℕ) : PreMS basis :=
   match n, basis with
@@ -807,12 +807,5 @@ instance instZero {basis : Basis} : Zero (PreMS basis) where
   zero := zero basis
 
 end PreMS
-
-structure MS where
-  basis : Basis
-  val : PreMS basis
-  F : ℝ → ℝ
-  h_wo : val.WellOrdered
-  h_approx : val.Approximates F
 
 end TendstoTactic

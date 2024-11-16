@@ -1,5 +1,5 @@
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Tendsto.Main
+import Mathlib.Tactic.Tendsto.Multiseries.Main
 import Qq
 
 set_option linter.style.header false
@@ -16,10 +16,15 @@ def PreMS.nil : PreMS (basis_hd :: basis_tl) := .nil
 def PreMS.cons (hd : (ℝ × PreMS basis_tl)) (tl : PreMS (basis_hd :: basis_tl)) :
     PreMS (basis_hd :: basis_tl) := .cons hd tl
 
+theorem const_const (c : ℝ) : PreMS.const [] c = c := by rfl
 theorem one_const : PreMS.one [] = 1 := by rfl
 theorem neg_const (x : PreMS []) : (x.neg) = -x := by simp [PreMS.neg, PreMS.mulConst]
 theorem add_const (x y : PreMS []) : (PreMS.add x y) = x + y := by rfl
 theorem mul_const (x y : PreMS []) : (PreMS.mul x y) = x * y := by simp [PreMS.mul]
+
+theorem const_destruct (c : ℝ) : destruct (PreMS.const (basis_hd :: basis_tl) c) =
+    .some ((0, PreMS.const basis_tl c), @PreMS.nil basis_hd basis_tl) := by
+  rfl
 
 theorem monomial_zero_destruct : destruct (PreMS.monomial (basis_hd :: basis_tl) 0) =
     .some ((1, PreMS.one _), @PreMS.nil basis_hd basis_tl) := by
@@ -35,7 +40,7 @@ theorem neg_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.neg =
     | some ((exp, coef), tl) => .some ((exp, coef.neg), PreMS.neg (basis := basis_hd :: basis_tl) tl) := by
   cases ms <;> simp
 
-theorem add_destruct (x y : PreMS (basis_hd :: basis_tl)) : destruct (x.add y) =
+theorem add_destruct (x y : PreMS (basis_hd :: basis_tl)) : destruct (x + y) =
     match destruct x, destruct y with
     | none, none => none
     | none, some r => some r
@@ -47,8 +52,11 @@ theorem add_destruct (x y : PreMS (basis_hd :: basis_tl)) : destruct (x.add y) =
         .some ((y_exp, y_coef), (PreMS.add x y_tl))
       else
         .some ((x_exp, x_coef.add y_coef), (@PreMS.add (basis_hd :: basis_tl) x_tl y_tl)) := by
-  cases x <;> cases y <;> simp [PreMS.add_nil]
-  all_goals sorry -- we need translate `+` back to `.add`
+  rw [PreMS.add_unfold]
+  simp [PreMS.add']
+  cases x <;> cases y <;> simp
+  split_ifs <;> simp <;> try rfl
+  constructor <;> rfl
 
 theorem mul_destruct (x y : PreMS (basis_hd :: basis_tl)) : destruct (x.mul y) =
     match destruct x, destruct y with
@@ -83,6 +91,10 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
             expr := ← mkAppM ``Option.some #[← mkAppM ``Prod.mk #[hd, tl]],
             proof? := ← mkAppM ``Stream'.Seq.destruct_cons #[hd, tl]
           }
+        | (``PreMS.const, #[basis, c]) =>
+          let pf ← mkAppOptM ``const_destruct #[basis_hd, basis_tl, c]
+          let some (_, _, rhs) := (← inferType pf).eq? | return .continue
+          return .visit {expr := rhs, proof? := pf}
         | (``PreMS.monomial, #[basis, n]) =>
           match (← getNatValue? n).get! with
           | 0 =>
@@ -115,9 +127,9 @@ macro_rules
 | `(tactic| elim_destruct) =>
     `(tactic|
       repeat (
-        simp only [elimDestruct, one_const, neg_const, add_const, mul_const];
+        simp only [elimDestruct, const_const, one_const, neg_const, add_const, mul_const];
         try norm_num1;
-        try simp only [↓reduceIte, one_const, neg_const, add_const, mul_const]
+        try simp only [↓reduceIte, const_const, one_const, neg_const, add_const, mul_const]
       )
     )
 
@@ -128,6 +140,7 @@ def basis : List (ℝ → ℝ) := [fun (x : ℝ) ↦ x]
 theorem basis_wo : MS.WellOrderedBasis basis := by sorry
 theorem zero_aux : 0 < basis.length := by simp [basis]
 
+def ms_const : PreMS [id] := PreMS.const [id] 42
 
 def ms_monom : PreMS [id] := PreMS.monomial [id] 0
 
@@ -200,6 +213,16 @@ example :
   intro ms_monom2
   unfold ms_monom2
   elim_destruct
+
+example : destruct ms_const = .some ((0, 42), .nil) := by
+  unfold ms_const
+  elim_destruct
+  rfl
+
+example : destruct (PreMS.mul ms_const ms_cons)  = .some ((0, 42), .nil) := by
+  unfold ms_const ms_cons
+  elim_destruct
+  sorry
 
 example : (if (1 : ℝ) < (3/2 : ℝ) then 1 else 0) = 1 := by
   norm_num1

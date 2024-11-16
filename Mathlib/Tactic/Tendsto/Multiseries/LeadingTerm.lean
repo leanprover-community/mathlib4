@@ -200,17 +200,88 @@ theorem eventually_ne_zero_of_not_FlatZero {basis : Basis} {ms : PreMS basis} {F
   · linarith
   · exact h_leadingTerm
 
+theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
+    (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates F)
+    (h_trimmed : ms.Trimmed)
+    (h_basis : MS.WellOrderedBasis basis)
+    {t_coef : ℝ} {t_exps : List ℝ}
+    (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
+    (h_coef : t_coef = 0) :
+    Tendsto F atTop (nhds 0) := by
+  apply (IsEquivalent.tendsto_nhds_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  rw [h_eq]
+  apply MS.Term.tendsto_zero_of_coef_zero _ h_coef
+
+theorem tendsto_const_of_AllZero {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
+    (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates F)
+    (h_trimmed : ms.Trimmed)
+    (h_basis : MS.WellOrderedBasis basis)
+    {t_coef : ℝ} {t_exps : List ℝ}
+    (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
+    (h_exps : MS.Term.AllZero t_exps) :
+    Tendsto F atTop (nhds t_coef) := by
+  apply (IsEquivalent.tendsto_nhds_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  rw [h_eq]
+  apply MS.Term.tendsto_const_of_AllZero _ h_exps
+  · convert PreMS.leadingTerm_length (ms := ms)
+    simp [h_eq]
+
+theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
+    (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates F)
+    (h_trimmed : ms.Trimmed)
+    (h_basis : MS.WellOrderedBasis basis)
+    {t_coef : ℝ} {t_exps : List ℝ}
+    (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
+    (h_exps : MS.Term.FirstIsNeg t_exps) :
+    Tendsto F atTop (nhds 0) := by
+  apply (IsEquivalent.tendsto_nhds_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  apply MS.Term.tendsto_zero_of_FirstIsNeg h_basis PreMS.leadingTerm_length
+  simpa [h_eq]
+
+theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
+    (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates F)
+    (h_trimmed : ms.Trimmed)
+    (h_basis : MS.WellOrderedBasis basis)
+    {t_coef : ℝ} {t_exps : List ℝ}
+    (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
+    (h_exps : MS.Term.FirstIsPos t_exps)
+    (h_coef : 0 < t_coef) :
+    Tendsto F atTop atTop := by
+  apply (IsEquivalent.tendsto_atTop_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  apply MS.Term.tendsto_top_of_FirstIsPos h_basis PreMS.leadingTerm_length
+  all_goals simpa [h_eq]
+
+theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
+    (h_wo : ms.WellOrdered)
+    (h_approx : ms.Approximates F)
+    (h_trimmed : ms.Trimmed)
+    (h_basis : MS.WellOrderedBasis basis)
+    {t_coef : ℝ} {t_exps : List ℝ}
+    (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
+    (h_exps : MS.Term.FirstIsPos t_exps)
+    (h_coef : t_coef < 0) :
+    Tendsto F atTop atBot := by
+  apply (IsEquivalent.tendsto_atBot_iff (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)).mpr
+  apply MS.Term.tendsto_bot_of_FirstIsPos h_basis PreMS.leadingTerm_length
+  all_goals simpa [h_eq]
+
 end PreMS
 
-def MS.leadingTerm (ms : MS) : MS.Term :=
-  PreMS.leadingTerm ms.val
 
-theorem MS.leadingTerm_length {ms : MS} : ms.leadingTerm.exps.length = ms.basis.length := by
-  apply PreMS.leadingTerm_length
 
-theorem MS.IsEquivalent_leadingTerm (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
-    (h_trimmed : ms.Trimmed) : ms.F ~[atTop] ms.leadingTerm.toFun ms.basis := by
-  apply PreMS.IsEquivalent_leadingTerm ms.h_wo ms.h_approx h_trimmed h_basis
+-- def MS.leadingTerm (ms : MS) : MS.Term :=
+--   PreMS.leadingTerm ms.val
+
+-- theorem MS.leadingTerm_length {ms : MS} : ms.leadingTerm.exps.length = ms.basis.length := by
+--   apply PreMS.leadingTerm_length
+
+-- theorem MS.IsEquivalent_leadingTerm (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
+--     (h_trimmed : ms.Trimmed) : ms.F ~[atTop] ms.leadingTerm.toFun ms.basis := by
+--   apply PreMS.IsEquivalent_leadingTerm ms.h_wo ms.h_approx h_trimmed h_basis
 
 -- noncomputable def MS.findLimitTrimmed (ms : MS) (h_basis : MS.WellOrderedBasis ms.basis)
 --     (h_trimmed : ms.Trimmed) :

@@ -358,72 +358,206 @@ theorem nil_tendsto_const (coef : ℝ) (basis : List (ℝ → ℝ)) :
   eta_expand
   simp [toFun]
 
-section findLimit
+--- NEW
 
-noncomputable def findLimit (t : MS.Term) (basis : List (ℝ → ℝ))
-    (h_length : t.exps.length = basis.length) (h_basis : MS.WellOrderedBasis basis) :
-    FindLimitResult (t.toFun basis) :=
-  match h_exps : t.exps with
-  | [] => .fin t.coef (by {
-      have := MS.Term.nil_tendsto_const t.coef basis
-      cases t
-      simp_all
-    })
-  | exp :: tl =>
-    if h_exp : 0 < exp then
-      if h_coef : 0 < t.coef then
-        .top (by {
-          have := MS.Term.tendsto_top (h_exps ▸ h_length) h_basis h_coef h_exp
-          cases t
-          simp_all
-        })
-      else if h_coef : t.coef < 0 then
-        .bot (by {
-          have := MS.Term.tendsto_bot (h_exps ▸ h_length) h_basis h_coef h_exp
-          cases t
-          simp_all
-        })
-      else
-        have h_coef : t.coef = 0 := by linarith
-        .fin 0 (by {
-          rw [MS.Term.zero_coef_fun basis h_coef]
-          apply tendsto_const_nhds
-        })
-    else if h_exp : exp < 0 then
-      .fin 0 (by {
-        have := MS.Term.tendsto_zero t.coef (h_exps ▸ h_length) h_exp
-        cases t
-        simp_all
-      })
-    else
-      have h_exp : exp = 0 := by linarith
-      match basis with
-      | [] => by simp [h_exps] at h_length
-      | basis_hd :: basis_tl =>
+theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : List ℝ} (basis : List (ℝ → ℝ))
+    (h_coef : coef = 0) :
+    let t : MS.Term := ⟨coef, exps⟩;
+    Tendsto (t.toFun basis) atTop (nhds 0) := by
+  intro t
+  rw [zero_coef_fun]
+  · eta_expand
+    simp
+  · simpa [t]
 
-        let r := MS.Term.findLimit ⟨t.coef, tl⟩ basis_tl
-          (by simpa [h_exps] using h_length) (by simp [MS.WellOrderedBasis] at h_basis; tauto)
-        match r with
-        | .top p => .top (by {
-            have := MS.Term.trim_zero_head t.coef (h_exps ▸ h_length) h_exp
-            cases t
-            simp at h_exps
-            simp_all
-          })
-        | .bot p => .bot (by {
-            have := MS.Term.trim_zero_head t.coef (h_exps ▸ h_length) h_exp
-            cases t
-            simp at h_exps
-            simp_all
-          })
-        | .fin c p => .fin c (by {
-            have := MS.Term.trim_zero_head t.coef (h_exps ▸ h_length) h_exp
-            cases t
-            simp at h_exps
-            simp_all
-          })
+def FirstIsPos (x : List ℝ) : Prop := match x with
+| [] => False
+| hd :: tl => 0 < hd ∨ (hd = 0 ∧ FirstIsPos tl)
 
-end findLimit
+def FirstIsNeg (x : List ℝ) : Prop := match x with
+| [] => False
+| hd :: tl => hd < 0 ∨ (hd = 0 ∧ FirstIsNeg tl)
+
+def AllZero (x : List ℝ) : Prop := match x with
+| [] => True
+| hd :: tl => hd = 0 ∧ AllZero tl
+
+theorem AllZero_of_nil : AllZero [] := by
+  simp [AllZero]
+
+theorem AllZero_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0) (h_tl : AllZero tl) : AllZero (hd :: tl) := by
+  simp [AllZero]
+  tauto
+
+theorem FirstIsPos_of_head {hd : ℝ} (tl : List ℝ) (h : 0 < hd) : FirstIsPos (hd :: tl) := by
+  simp [FirstIsPos]
+  tauto
+
+theorem FirstIsPos_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0) (h_tl : FirstIsPos tl) :
+    FirstIsPos (hd :: tl) := by
+  simp [FirstIsPos]
+  tauto
+
+theorem FirstIsNeg_of_head {hd : ℝ} (tl : List ℝ) (h : hd < 0) : FirstIsNeg (hd :: tl) := by
+  simp [FirstIsNeg]
+  tauto
+
+theorem FirstIsNeg_of_tail {hd : ℝ} {tl : List ℝ} (h_hd : hd = 0) (h_tl : FirstIsNeg tl) :
+    FirstIsNeg (hd :: tl) := by
+  simp [FirstIsNeg]
+  tauto
+
+theorem tendsto_const_of_AllZero {coef : ℝ} {exps : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_length : exps.length = basis.length)
+    (h_exps : AllZero exps) :
+    let t : MS.Term := ⟨coef, exps⟩
+    Tendsto (t.toFun basis) atTop (nhds coef) := by
+  cases exps with
+  | nil =>
+    exact MS.Term.nil_tendsto_const coef basis
+  | cons exps_hd exps_tl =>
+    cases basis with
+    | nil => simp at h_length
+    | cons basis_hd basis_tl =>
+      simp [AllZero] at h_exps
+      have := MS.Term.trim_zero_head coef h_length h_exps.left
+      simp [this]
+      simp at h_length
+      exact tendsto_const_of_AllZero h_length h_exps.right
+
+theorem tendsto_zero_of_FirstIsNeg {coef : ℝ} {exps : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_basis : MS.WellOrderedBasis basis)
+    (h_length : exps.length = basis.length)
+    (h_exps : FirstIsNeg exps) :
+    let t : MS.Term := ⟨coef, exps⟩
+    Tendsto (t.toFun basis) atTop (nhds 0) := by
+  cases exps with
+  | nil =>
+    simp [FirstIsNeg] at h_exps
+  | cons exps_hd exps_tl =>
+    cases basis with
+    | nil => simp at h_length
+    | cons basis_hd basis_tl =>
+      simp [FirstIsNeg] at h_exps
+      cases' h_exps with h_exps h_exps
+      · exact MS.Term.tendsto_zero coef h_length h_exps h_basis
+      · have := MS.Term.trim_zero_head coef h_length h_exps.left
+        simp [this]
+        simp at h_length
+        exact tendsto_zero_of_FirstIsNeg (MS.WellOrderedBasis_tail h_basis) h_length h_exps.right
+
+theorem tendsto_top_of_FirstIsPos {coef : ℝ} {exps : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_basis : MS.WellOrderedBasis basis)
+    (h_length : exps.length = basis.length)
+    (h_coef : 0 < coef)
+    (h_exps : FirstIsPos exps) :
+    let t : MS.Term := ⟨coef, exps⟩
+    Tendsto (t.toFun basis) atTop atTop := by
+  cases exps with
+  | nil =>
+    simp [FirstIsPos] at h_exps
+  | cons exps_hd exps_tl =>
+    cases basis with
+    | nil => simp at h_length
+    | cons basis_hd basis_tl =>
+      simp [FirstIsPos] at h_exps
+      cases' h_exps with h_exps h_exps
+      · exact MS.Term.tendsto_top h_length h_basis h_coef h_exps
+      · have := MS.Term.trim_zero_head coef h_length h_exps.left
+        simp [this]
+        simp at h_length
+        exact tendsto_top_of_FirstIsPos (MS.WellOrderedBasis_tail h_basis) h_length h_coef
+          h_exps.right
+
+theorem tendsto_bot_of_FirstIsPos {coef : ℝ} {exps : List ℝ} {basis : List (ℝ → ℝ)}
+    (h_basis : MS.WellOrderedBasis basis)
+    (h_length : exps.length = basis.length)
+    (h_coef : coef < 0)
+    (h_exps : FirstIsPos exps) :
+    let t : MS.Term := ⟨coef, exps⟩
+    Tendsto (t.toFun basis) atTop atBot := by
+  cases exps with
+  | nil =>
+    simp [FirstIsPos] at h_exps
+  | cons exps_hd exps_tl =>
+    cases basis with
+    | nil => simp at h_length
+    | cons basis_hd basis_tl =>
+      simp [FirstIsPos] at h_exps
+      cases' h_exps with h_exps h_exps
+      · exact MS.Term.tendsto_bot h_length h_basis h_coef h_exps
+      · have := MS.Term.trim_zero_head coef h_length h_exps.left
+        simp [this]
+        simp at h_length
+        exact tendsto_bot_of_FirstIsPos (MS.WellOrderedBasis_tail h_basis) h_length h_coef
+          h_exps.right
+
+-- section findLimit
+
+-- noncomputable def findLimit (t : MS.Term) (basis : List (ℝ → ℝ))
+--     (h_length : t.exps.length = basis.length) (h_basis : MS.WellOrderedBasis basis) :
+--     FindLimitResult (t.toFun basis) :=
+--   match h_exps : t.exps with
+--   | [] => .fin t.coef (by {
+--       have := MS.Term.nil_tendsto_const t.coef basis
+--       cases t
+--       simp_all
+--     })
+--   | exp :: tl =>
+--     if h_exp : 0 < exp then
+--       if h_coef : 0 < t.coef then
+--         .top (by {
+--           have := MS.Term.tendsto_top (h_exps ▸ h_length) h_basis h_coef h_exp
+--           cases t
+--           simp_all
+--         })
+--       else if h_coef : t.coef < 0 then
+--         .bot (by {
+--           have := MS.Term.tendsto_bot (h_exps ▸ h_length) h_basis h_coef h_exp
+--           cases t
+--           simp_all
+--         })
+--       else
+--         have h_coef : t.coef = 0 := by linarith
+--         .fin 0 (by {
+--           rw [MS.Term.zero_coef_fun basis h_coef]
+--           apply tendsto_const_nhds
+--         })
+--     else if h_exp : exp < 0 then
+--       .fin 0 (by {
+--         have := MS.Term.tendsto_zero t.coef (h_exps ▸ h_length) h_exp
+--         cases t
+--         simp_all
+--       })
+--     else
+--       have h_exp : exp = 0 := by linarith
+--       match basis with
+--       | [] => by simp [h_exps] at h_length
+--       | basis_hd :: basis_tl =>
+
+--         let r := MS.Term.findLimit ⟨t.coef, tl⟩ basis_tl
+--           (by simpa [h_exps] using h_length) (by simp [MS.WellOrderedBasis] at h_basis; tauto)
+--         match r with
+--         | .top p => .top (by {
+--             have := MS.Term.trim_zero_head t.coef (h_exps ▸ h_length) h_exp
+--             cases t
+--             simp at h_exps
+--             simp_all
+--           })
+--         | .bot p => .bot (by {
+--             have := MS.Term.trim_zero_head t.coef (h_exps ▸ h_length) h_exp
+--             cases t
+--             simp at h_exps
+--             simp_all
+--           })
+--         | .fin c p => .fin c (by {
+--             have := MS.Term.trim_zero_head t.coef (h_exps ▸ h_length) h_exp
+--             cases t
+--             simp at h_exps
+--             simp_all
+--           })
+
+-- end findLimit
 
 -------------------------------
 

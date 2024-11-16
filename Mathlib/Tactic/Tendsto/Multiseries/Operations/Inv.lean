@@ -224,12 +224,12 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
 
 end PreMS
 
-noncomputable def MS.inv (x : MS) (h_basis : MS.WellOrderedBasis x.basis) (h_trimmed : x.Trimmed) :
-    MS where
-  basis := x.basis
-  val := x.val.inv'
-  F := x.F⁻¹
-  h_wo := PreMS.inv'_WellOrdered x.h_wo
-  h_approx := PreMS.inv'_Approximates h_basis x.h_wo h_trimmed x.h_approx
+-- noncomputable def MS.inv (x : MS) (h_basis : MS.WellOrderedBasis x.basis) (h_trimmed : x.Trimmed) :
+--     MS where
+--   basis := x.basis
+--   val := x.val.inv'
+--   F := x.F⁻¹
+--   h_wo := PreMS.inv'_WellOrdered x.h_wo
+--   h_approx := PreMS.inv'_Approximates h_basis x.h_wo h_trimmed x.h_approx
 
 end TendstoTactic
