@@ -15,15 +15,19 @@ takes a config option of type `Lean.Meta.WhnfCoreConfig`, allowing `iota`, `beta
 
 namespace Lean.Meta
 
-@[inline] private def useWHNFCache (e : Expr) : MetaM Bool := do
+instance : BEq WhnfCoreConfig :=
+  { beq := fun c1 c2 =>
+    c1.iota == c2.iota && c1.beta == c2.beta && c1.proj == c2.proj && c1.zeta == c2.zeta
+    && c1.zetaDelta == c2.zetaDelta }
+
+@[inline] private def useWHNFCache (e : Expr) (config : WhnfCoreConfig := {}) : MetaM Bool := do
   -- We cache only closed terms without expr metavars.
   -- Potential refinement: cache if `e` is not stuck at a metavariable
   if e.hasFVar || e.hasExprMVar || (← read).canUnfold?.isSome then
     return false
   else
     match (← getConfig).transparency with
-    | .default => return true
-    | .all     => return true
+    | .default | .all => return config == {} -- do not cache if using a nonstandard whnf config
     | _        => return false
 
 @[inline] private def cached? (useCache : Bool) (e : Expr) : MetaM (Option Expr) := do
