@@ -6,7 +6,6 @@ Authors: Jineon Baek, Seewoo Lee
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.MasonStothers
-import Mathlib.RingTheory.Radical
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
@@ -73,9 +72,6 @@ private lemma ineq_pqr_contradiction {p q r a b c : Nat}
         <;> assumption
     _ = (q * r + r * p + p * q) * (a + b + c) := by ring
     _ ≤ _ := Nat.mul_le_mul_right _ hineq
-
-private lemma Polynomial.derivative_C_mul {a : k} {p : k[X]} :
-    derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
 
 private lemma derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a : k[X]}  :
     derivative (a ^ n) = 0 ↔ derivative a = 0 := by
