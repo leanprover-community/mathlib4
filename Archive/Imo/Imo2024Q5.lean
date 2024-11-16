@@ -186,9 +186,8 @@ lemma Path.exists_mem_fst_eq (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells,
     simp
   have hig : r ≤ (p.cells[i]).1 := of_decide_eq_true (List.findIdx_getElem (w := hi))
   refine ⟨p.cells[i], List.getElem_mem _, ?_⟩
-  rcases lt_trichotomy (p.cells[i]).1 r with h | h | h
-  · omega
-  · exact h
+  rcases hig.lt_or_eq.symm with h | h
+  · exact h.symm
   · rcases Nat.eq_zero_or_pos i with hi | hi
     · simp only [hi, List.getElem_zero, p.head_first_row, Fin.not_lt_zero] at h
     · suffices r ≤ p.cells[i - 1].1 by
@@ -923,48 +922,46 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
     {m : MonsterData N} (hc₁0 : m (row1 hN) = 0) :
     (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ = none ∨
       (winningStrategy hN).play m 3 ⟨2, by norm_num⟩ = none := by
-  by_cases h : (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ = none
-  · exact .inl h
-  · refine .inr ?_
-    rw [← ne_eq, Option.ne_none_iff_exists] at h
-    rcases h with ⟨x, hx⟩
-    rw [winningStrategy_play_one] at hx
-    rw [winningStrategy_play_two, ← hx, Option.getD_some]
-    rw [path1, dif_pos hc₁0] at hx
-    have h1 := Path.mem_of_firstMonster_eq_some (hx.symm)
-    have hx2N : 2 ≤ (x.1 : ℕ) ∧ (x.1 : ℕ) ≤ N := by
-      rw [path1OfEdge0, Path.ofFn_cells, List.mem_ofFn] at h1
-      rcases h1 with ⟨⟨i, rfl⟩, hm⟩
-      refine ⟨?_, m.le_N_of_mem_monsterCells hm⟩
-      rcases i with ⟨i, hi⟩
-      have hi : 3 ≤ i := by
-        by_contra hi
-        interval_cases i <;> rw [fn1OfEdge0] at hm <;> split_ifs at hm with h
-        · simp at h
-          omega
-        · simp at hm
-          exact m.not_mem_monsterCells_of_fst_eq_zero rfl hm
-        · simp at h
-          omega
-        · simp only [Nat.reduceAdd, Nat.ofNat_pos, Nat.div_self, Fin.mk_one, Nat.reduceDiv,
-            zero_add] at hm
-          have h1N : 1 ≤ N := by omega
-          rw [m.mk_mem_monsterCells_iff_of_le (le_refl _) h1N] at hm
-          rw [row1, hm, Fin.ext_iff] at hc₁0
-          simp at hc₁0
-        · simp at h
-          omega
-        · simp only at hm
-          norm_num at hm
-          have h1N : 1 ≤ N := by omega
-          rw [m.mk_mem_monsterCells_iff_of_le (le_refl _) h1N] at hm
-          rw [row1, hm, Fin.ext_iff] at hc₁0
-          simp at hc₁0
-      rw [fn1OfEdge0]
-      split_ifs <;> simp <;> omega
-    rw [path2, if_pos hc₁0, path2OfEdge0Def, dif_pos hx2N]
-    exact path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some hN hx2N.1
-      hx2N.2 hc₁0 hx.symm
+  rw [or_iff_not_imp_left]
+  intro h
+  rw [← ne_eq, Option.ne_none_iff_exists] at h
+  rcases h with ⟨x, hx⟩
+  rw [winningStrategy_play_one] at hx
+  rw [winningStrategy_play_two, ← hx, Option.getD_some]
+  rw [path1, dif_pos hc₁0] at hx
+  have h1 := Path.mem_of_firstMonster_eq_some (hx.symm)
+  have hx2N : 2 ≤ (x.1 : ℕ) ∧ (x.1 : ℕ) ≤ N := by
+    rw [path1OfEdge0, Path.ofFn_cells, List.mem_ofFn] at h1
+    rcases h1 with ⟨⟨i, rfl⟩, hm⟩
+    refine ⟨?_, m.le_N_of_mem_monsterCells hm⟩
+    rcases i with ⟨i, hi⟩
+    have hi : 3 ≤ i := by
+      by_contra hi
+      interval_cases i <;> rw [fn1OfEdge0] at hm <;> split_ifs at hm with h
+      · simp at h
+        omega
+      · simp at hm
+        exact m.not_mem_monsterCells_of_fst_eq_zero rfl hm
+      · simp at h
+        omega
+      · dsimp only [Nat.reduceAdd, Nat.reduceDiv, Fin.mk_one] at hm
+        have h1N : 1 ≤ N := by omega
+        rw [m.mk_mem_monsterCells_iff_of_le (le_refl _) h1N] at hm
+        rw [row1, hm, Fin.ext_iff] at hc₁0
+        simp at hc₁0
+      · simp at h
+        omega
+      · simp only at hm
+        norm_num at hm
+        have h1N : 1 ≤ N := by omega
+        rw [m.mk_mem_monsterCells_iff_of_le (le_refl _) h1N] at hm
+        rw [row1, hm, Fin.ext_iff] at hc₁0
+        simp at hc₁0
+    rw [fn1OfEdge0]
+    split_ifs <;> simp <;> omega
+  rw [path2, if_pos hc₁0, path2OfEdge0Def, dif_pos hx2N]
+  exact path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some hN hx2N.1
+    hx2N.2 hc₁0 hx.symm
 
 lemma winningStrategy_play_one_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
     (hc₁N : (m (row1 hN) : ℕ) = N) : (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ =
