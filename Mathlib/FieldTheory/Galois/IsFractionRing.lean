@@ -120,7 +120,7 @@ end
 -/
 theorem IsGalois.of_isGalois_isFractionRing
     (A B K L K' L' : Type*)
-    [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
+    [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
     [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K]
     [Algebra B L] [IsFractionRing B L]
@@ -150,7 +150,7 @@ theorem IsGalois.of_isGalois_isFractionRing
 
 theorem IsGalois.iff_isGalois_isFractionRing
     (A B K L K' L' : Type*)
-    [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
+    [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
     [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K]
     [Algebra B L] [IsFractionRing B L]
