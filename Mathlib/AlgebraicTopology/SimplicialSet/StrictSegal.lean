@@ -87,13 +87,71 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
+/-- TODO: Is spine_face or spine_face'' a better api? -/
+lemma spine_face (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
+    (h : j.castSucc < i):
+    (X.spine n (X.δ i (spineToSimplex f))).vertex j = f.vertex j := by
+  simp [SimplicialObject.δ]
+  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  simp [Hom.toOrderHom, SimplexCategory.δ, Hom.mk]
+  rw [Fin.succAbove_of_castSucc_lt]
+  exact h
+
+lemma spine_face'' (f : Path X (n + 1)) (i j : Fin (n + 2)) (h : j < i) :
+    (X.spine n (X.δ i (spineToSimplex f))).vertex j = f.vertex j := by
+  simp [SimplicialObject.δ]
+  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  simp [Hom.toOrderHom, SimplexCategory.δ, Hom.mk]
+  apply congr_arg
+  have hcast : (j : Fin (n + 1)).castSucc = j := by
+    simp [← Fin.val_eq_val]
+    omega
+  rw [Fin.succAbove_of_castSucc_lt]
+  · exact hcast
+  · rw [hcast]
+    exact h
+
+/- set_option pp.coercions false -/
+lemma spine_face' (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
+    (h : i ≤ j.castSucc) :
+    (X.spine n (X.δ i (spineToSimplex f))).vertex j = f.vertex j.succ := by
+  simp [SimplicialObject.δ]
+  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  simp [Hom.toOrderHom, SimplexCategory.δ, Hom.mk]
+  apply congr_arg
+  rw [Fin.succAbove_of_le_castSucc]
+  exact h
+
+open Opposite in
 instance : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
   exists spineToSimplex ∘ mapPath σ₀ <| spineHorn n i h₀ hₙ
   intro j hj
   apply spineInjective
-  sorry
+  ext k
+  · simp only [spineEquiv, Function.comp_apply, Equiv.coe_fn_mk]
+    have hh : k.castSucc < j ∨ j ≤ k.castSucc := by
+      exact Nat.lt_or_ge (k.castSucc) j
+    rcases hh with hcmp | hcmp
+    · rw [spine_face _ _ _ hcmp]
+      simp [mapPath, spineHorn, idSpine]
+      sorry
+    · rw [spine_face' _ _ _ hcmp]
+      simp [mapPath, spineHorn, idSpine]
+      sorry
+    /- simp only [spine_vertex] -/
+    /- simp [mapPath, spineHorn, horn.face, standardSimplex.objEquiv, Equiv.ulift, -/
+    /-   idSpine, standardSimplex.idSimplex, yonedaEquiv, yonedaCompUliftFunctorEquiv] -/
+    /- nth_rewrite 2 [← spineToSimplex_vertex] -/
+    /- simp only [spineEquiv, SimplicialObject.δ] -/
+  · sorry
+
+/- instance : Quasicategory X := by -/
+/-   constructor -/
+/-   intro n i σ₀ h₀ hₙ -/
+/-   exists (yonedaEquiv _ _).symm <| spineToSimplex ∘ mapPath σ₀ <| spineHorn n i h₀ hₙ -/
+/-   ext x h -/
 
 end StrictSegal
 
