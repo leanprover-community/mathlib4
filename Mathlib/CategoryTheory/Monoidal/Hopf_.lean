@@ -268,14 +268,14 @@ theorem antipode_comul (A : Hopf_ C) :
     simp only [Bimon_.toComon__obj_X, Mon_.monMonoidalStruct_tensorObj_X, Bimon_.toComon__obj_comul,
       comp_whiskerRight, tensor_whiskerLeft, Mon_.tensorObj_mul, Category.assoc,
       Bimon_.toComon__obj_counit, Mon_.tensorObj_one]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₁ A
   · erw [Conv.mul_eq, Conv.one_eq]
     simp only [Bimon_.toComon__obj_X, Mon_.monMonoidalStruct_tensorObj_X, Bimon_.toComon__obj_comul,
       MonoidalCategory.whiskerLeft_comp, tensor_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc,
       Mon_.tensorObj_mul, Bimon_.toComon__obj_counit, Mon_.tensorObj_one]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₂ A
 
@@ -444,18 +444,32 @@ theorem mul_antipode (A : Hopf_ C) :
   · -- Unfold the algebra structure in the convolution monoid,
     -- then `simp?, simp only [tensor_μ], simp?`.
     erw [Conv.mul_eq, Conv.one_eq]
-    simp only [Comon_.monoidal_tensorObj_X, Bimon_.toComon__obj_X, Comon_.monoidal_tensorObj_comul,
-      Bimon_.toComon__obj_comul, whiskerRight_tensor, comp_whiskerRight, Category.assoc,
-      Comon_.monoidal_tensorObj_counit, Bimon_.toComon__obj_counit]
-    simp only [tensor_μ]
-    simp only [Category.assoc, pentagon_hom_inv_inv_inv_inv_assoc]
+    simp only [Monoidal.transportStruct_tensorObj, Equivalence.symm_functor,
+      Comon_.Comon_EquivMon_OpOp_inverse, Equivalence.symm_inverse,
+      Comon_.Comon_EquivMon_OpOp_functor, Comon_.Comon_ToMon_OpOp_obj, Comon_.Mon_OpOpToComon__obj,
+      unop_tensorObj, Comon_.Mon_OpOpToComon_obj'_X, Mon_.monMonoidalStruct_tensorObj_X,
+      Comon_.Comon_ToMon_OpOp_obj'_X, Bimon_.toComon__obj_X, Comon_.Mon_OpOpToComon_obj'_comul,
+      Mon_.tensorObj_mul, Comon_.Comon_ToMon_OpOp_obj'_mul, Bimon_.toComon__obj_comul, unop_comp,
+      unop_tensorHom, Quiver.Hom.unop_op, whiskerRight_tensor, comp_whiskerRight, Category.assoc,
+      Comon_.Mon_OpOpToComon_obj'_counit, Mon_.tensorObj_one, Comon_.Comon_ToMon_OpOp_obj'_one,
+      Bimon_.toComon__obj_counit, unop_tensorUnit, unop_inv_leftUnitor]
+    simp only [tensorμ]
+    simp only [unop_comp, unop_tensorObj, unop_inv_associator, unop_whiskerLeft,
+      unop_hom_associator, unop_whiskerRight, unop_hom_braiding, Category.assoc,
+      pentagon_hom_inv_inv_inv_inv_assoc]
     exact mul_antipode₁ A
   · erw [Conv.mul_eq, Conv.one_eq]
-    simp only [Comon_.monoidal_tensorObj_X, Bimon_.toComon__obj_X, Comon_.monoidal_tensorObj_comul,
-      Bimon_.toComon__obj_comul, whiskerRight_tensor, BraidedCategory.braiding_naturality_assoc,
-      MonoidalCategory.whiskerLeft_comp, Category.assoc, Comon_.monoidal_tensorObj_counit,
-      Bimon_.toComon__obj_counit]
-    simp only [tensor_μ]
+    simp only [Monoidal.transportStruct_tensorObj, Equivalence.symm_functor,
+      Comon_.Comon_EquivMon_OpOp_inverse, Equivalence.symm_inverse,
+      Comon_.Comon_EquivMon_OpOp_functor, Comon_.Comon_ToMon_OpOp_obj, Comon_.Mon_OpOpToComon__obj,
+      unop_tensorObj, Comon_.Mon_OpOpToComon_obj'_X, Mon_.monMonoidalStruct_tensorObj_X,
+      Comon_.Comon_ToMon_OpOp_obj'_X, Bimon_.toComon__obj_X, Comon_.Mon_OpOpToComon_obj'_comul,
+      Mon_.tensorObj_mul, Comon_.Comon_ToMon_OpOp_obj'_mul, Bimon_.toComon__obj_comul, unop_comp,
+      unop_tensorHom, Quiver.Hom.unop_op, whiskerRight_tensor,
+      BraidedCategory.braiding_naturality_assoc, MonoidalCategory.whiskerLeft_comp, Category.assoc,
+      Comon_.Mon_OpOpToComon_obj'_counit, Mon_.tensorObj_one, Comon_.Comon_ToMon_OpOp_obj'_one,
+      Bimon_.toComon__obj_counit, unop_tensorUnit, unop_inv_leftUnitor]
+    simp only [tensorμ]
     simp only [unop_comp, unop_tensorObj, unop_inv_associator, unop_whiskerLeft,
       unop_hom_associator, unop_whiskerRight, unop_hom_braiding, Category.assoc,
       pentagon_hom_inv_inv_inv_inv_assoc]

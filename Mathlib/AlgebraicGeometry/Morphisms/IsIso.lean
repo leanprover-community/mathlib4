@@ -30,8 +30,8 @@ lemma isomorphisms_eq_stalkwise :
   congr 1
   ext X Y f
   exact ⟨fun H ↦ inferInstanceAs (IsIso (TopCat.isoOfHomeo
-    (H.1.1.toHomeomeomorph_of_surjective H.2)).hom), fun (_ : IsIso f.base) ↦
-    let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.openEmbedding, e.surjective⟩⟩
+    (H.1.1.toHomeomorph_of_surjective H.2)).hom), fun (_ : IsIso f.base) ↦
+    let e := (TopCat.homeoOfIso <| asIso f.base); ⟨e.isOpenEmbedding, e.surjective⟩⟩
 
 instance : IsLocalAtTarget (isomorphisms Scheme) :=
   isomorphisms_eq_isOpenImmersion_inf_surjective ▸ inferInstance
@@ -41,5 +41,8 @@ instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X �
   exact ⟨fun ⟨_, _⟩ ↦ (arrow_mk_iso_iff (isomorphisms _) (arrowIsoSpecΓOfIsAffine f)).mpr
     (inferInstanceAs (IsIso (Spec.map (f.app ⊤)))),
     fun (_ : IsIso f) ↦ ⟨isAffine_of_isIso f, inferInstance⟩⟩
+
+instance : IsLocalAtTarget (monomorphisms Scheme) :=
+  diagonal_isomorphisms (C := Scheme).symm ▸ inferInstance
 
 end AlgebraicGeometry

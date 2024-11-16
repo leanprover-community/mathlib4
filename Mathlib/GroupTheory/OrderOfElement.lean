@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Order.Group.Action
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
-import Mathlib.Algebra.Group.Subgroup.Finite
 
 /-!
 # Order of an element
@@ -36,7 +37,7 @@ variable [Monoid G] {a b x y : G} {n m : ℕ}
 
 section IsOfFinOrder
 
--- Porting note(#12129): additional beta reduction needed
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
 @[to_additive]
 theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt (x * ·) n 1 ↔ x ^ n = 1 := by
   rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; beta_reduce; rw [mul_one]
@@ -161,7 +162,7 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
   convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
-  -- Porting note(#12129): additional beta reduction needed in the middle of the rewrite
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed in the middle of the rewrite
   rw [orderOf, mul_left_iterate]; beta_reduce; rw [mul_one]
 
 @[to_additive]
@@ -317,7 +318,7 @@ theorem orderOf_injective {H : Type*} [Monoid H] (f : G →* H) (hf : Function.I
 @[to_additive (attr := simp) "An additive equivalence preserves orders of elements."]
 lemma MulEquiv.orderOf_eq {H : Type*} [Monoid H] (e : G ≃* H) (x : G) :
     orderOf (e x) = orderOf x :=
-  orderOf_injective e e.injective x
+  orderOf_injective e.toMonoidHom e.injective x
 
 @[to_additive]
 theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Injective f) :
@@ -574,7 +575,7 @@ theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_
 namespace Subgroup
 variable {H : Subgroup G}
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): simp can prove this (so removed simp)
+@[to_additive (attr := norm_cast)]
 lemma orderOf_coe (a : H) : orderOf (a : G) = orderOf a :=
   orderOf_injective H.subtype Subtype.coe_injective _
 
@@ -649,12 +650,12 @@ noncomputable def finEquivZPowers (x : G) (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ (zpowers x : Set G) :=
   (finEquivPowers x hx).trans <| Equiv.Set.ofEq hx.powers_eq_zpowers
 
--- This lemma has always been bad, but the linter only noticed after leaprover/lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[to_additive (attr := simp, nolint simpNF)]
 lemma finEquivZPowers_apply (hx) {n : Fin (orderOf x)} :
     finEquivZPowers x hx n = ⟨x ^ (n : ℕ), n, zpow_natCast x n⟩ := rfl
 
- -- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
+ -- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[to_additive (attr := simp, nolint simpNF)]
 lemma finEquivZPowers_symm_apply (x : G) (hx) (n : ℕ) :
     (finEquivZPowers x hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =
@@ -942,11 +943,11 @@ noncomputable def powCoprime {G : Type*} [Group G] (h : (Nat.card G).Coprime n) 
     rwa [zpow_add, zpow_mul, zpow_mul', zpow_natCast, zpow_natCast, zpow_natCast, h.gcd_eq_one,
       pow_one, pow_card_eq_one', one_zpow, one_mul, eq_comm] at key
 
-@[to_additive] -- Porting note (#10618): simp can prove this (so removed simp)
+@[to_additive]
 theorem powCoprime_one {G : Type*} [Group G] (h : (Nat.card G).Coprime n) : powCoprime h 1 = 1 :=
   one_pow n
 
-@[to_additive] -- Porting note (#10618): simp can prove this (so removed simp)
+@[to_additive]
 theorem powCoprime_inv {G : Type*} [Group G] (h : (Nat.card G).Coprime n) {g : G} :
     powCoprime h g⁻¹ = (powCoprime h g)⁻¹ :=
   inv_pow g n
@@ -977,6 +978,22 @@ theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ gcd n (Fintype.card G) = 1 :
   ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h => by
     let ⟨m, hm⟩ := gcd_dvd_left n (Fintype.card G)
     rw [hm, pow_mul, h, one_pow]⟩
+
+lemma smul_eq_of_le_smul
+    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : a ≤ g • a) : g • a = a := by
+  have key := smul_mono_right g (le_pow_smul h (Nat.card G - 1))
+  rw [smul_smul, ← _root_.pow_succ',
+    Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key
+  exact le_antisymm key h
+
+lemma smul_eq_of_smul_le
+    {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
+    [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le] (h : g • a ≤ a) : g • a = a := by
+  have key := smul_mono_right g (pow_smul_le h (Nat.card G - 1))
+  rw [smul_smul, ← _root_.pow_succ',
+    Nat.sub_one_add_one_eq_of_pos Nat.card_pos, pow_card_eq_one', one_smul] at key
+  exact le_antisymm h key
 
 end FiniteGroup
 
@@ -1145,3 +1162,12 @@ lemma orderOf_eq [Group G] (a : G) {x y : G} (h : SemiconjBy a x y) : orderOf x 
   exact (h.pow_right n).eq_one_iff
 
 end SemiconjBy
+
+section single
+
+lemma orderOf_piMulSingle {ι : Type*} [DecidableEq ι] {M : ι → Type*} [(i : ι) → Monoid (M i)]
+    (i : ι) (g : M i) :
+    orderOf (Pi.mulSingle i g) = orderOf g :=
+  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective M i) g
+
+end single

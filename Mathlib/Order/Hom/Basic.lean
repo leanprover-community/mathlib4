@@ -233,7 +233,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note (#11215): TODO: all other DFunLike classes use `apply` instead of `coe`
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -755,8 +755,6 @@ protected theorem injective (e : α ≃o β) : Function.Injective e :=
 protected theorem surjective (e : α ≃o β) : Function.Surjective e :=
   e.toEquiv.surjective
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem apply_eq_iff_eq (e : α ≃o β) {x y : α} : e x = e y ↔ x = y :=
   e.toEquiv.apply_eq_iff_eq
 
@@ -920,7 +918,6 @@ section LE
 
 variable [LE α] [LE β]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 

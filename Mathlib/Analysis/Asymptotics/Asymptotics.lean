@@ -1254,6 +1254,11 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
 lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
   isLittleO_id_const one_ne_zero
 
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
+    [TopologicalSpace α] {f : α → E} {x : α} :
+    (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
+  simp [ContinuousAt, ← tendsto_sub_nhds_zero_iff]
+
 /-! ### Multiplication by a constant -/
 
 
@@ -1412,7 +1417,7 @@ theorem IsBigOWith.pow [NormOneClass R] {f : α → R} {g : α → 𝕜} (h : Is
 theorem IsBigOWith.of_pow {n : ℕ} {f : α → 𝕜} {g : α → R} (h : IsBigOWith c l (f ^ n) (g ^ n))
     (hn : n ≠ 0) (hc : c ≤ c' ^ n) (hc' : 0 ≤ c') : IsBigOWith c' l f g :=
   IsBigOWith.of_bound <| (h.weaken hc).bound.mono fun x hx ↦
-    le_of_pow_le_pow_left hn (by positivity) <|
+    le_of_pow_le_pow_left₀ hn (by positivity) <|
       calc
         ‖f x‖ ^ n = ‖f x ^ n‖ := (norm_pow _ _).symm
         _ ≤ c' ^ n * ‖g x ^ n‖ := hx
@@ -1825,12 +1830,6 @@ theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
   (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun _ ↦ rfl) fun x ↦ by
     rw [neg_sub, sub_neg_eq_add]
 
-@[deprecated (since := "2024-01-31")]
-alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
-
-@[deprecated (since := "2024-01-31")]
-alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
-
 theorem IsLittleO.right_isBigO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =O[l] fun x => f₂ x - f₁ x :=
   ((h.def' one_half_pos).right_le_sub_of_lt_one one_half_lt_one).isBigO
@@ -1890,7 +1889,7 @@ theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAd
 @[simp]
 theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} : f =o[l] g' ↔ ∀ i, (fun x => f x i) =o[l] g' := by
-  simp (config := { contextual := true }) only [IsLittleO_def, isBigOWith_pi, le_of_lt]
+  simp +contextual only [IsLittleO_def, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 
 theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
@@ -2047,5 +2046,13 @@ protected theorem isBigO_rev_principal (hf : ContinuousOn f s)
 end IsBigORev
 
 end ContinuousOn
+
+/-- The (scalar) product of a sequence that tends to zero with a bounded one also tends to zero. -/
+lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 𝔸 : Type*}
+    [NormedDivisionRing 𝕜] [NormedAddCommGroup 𝔸] [Module 𝕜 𝔸] [BoundedSMul 𝕜 𝔸] {l : Filter ι}
+    {ε : ι → 𝕜} {f : ι → 𝔸} (hε : Tendsto ε l (𝓝 0)) (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
+    Tendsto (ε • f) l (𝓝 0) := by
+  rw [← isLittleO_one_iff 𝕜] at hε ⊢
+  simpa using IsLittleO.smul_isBigO hε (hf.isBigO_const (one_ne_zero : (1 : 𝕜) ≠ 0))
 
 set_option linter.style.longFile 2200

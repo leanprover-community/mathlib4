@@ -28,9 +28,8 @@ open Set Filter
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
-  [NormedSpace 𝕜 H]
+variable {E F : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-!
 ### Basic properties
@@ -113,6 +112,7 @@ result for `AnalyticOn`, as this requires a bit more work to show that local ext
 be stitched together.
 -/
 
+set_option linter.style.multiGoal false in
 /-- `f` has power series `p` at `x` iff some local extension of `f` has that series -/
 lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpace F] {f : E → F}
     {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞} :

@@ -45,10 +45,8 @@ This file contains the basic theory for the resolvent and spectrum of a Banach a
 
 -/
 
-
+open NormedSpace Topology -- For `NormedSpace.exp`.
 open scoped ENNReal NNReal
-
-open NormedSpace -- For `NormedSpace.exp`.
 
 /-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
     coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
@@ -133,7 +131,7 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 section QuasispectrumCompact
 
@@ -154,9 +152,26 @@ instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScal
     CompactSpace (quasispectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← quasispectrum.preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 end QuasispectrumCompact
+
+section NNReal
+
+open NNReal
+
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
+
+theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
+    r ≤ ‖a‖₊ := calc
+  r ≤ ‖(r : ℝ)‖ := Real.le_norm_self _
+  _ ≤ ‖a‖       := norm_le_norm_of_mem hr
+
+theorem coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
+    r ≤ ‖a‖ :=
+  coe_mono <| le_nnnorm_of_mem hr
+
+end NNReal
 
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
   refine iSup₂_le fun k hk => ?_

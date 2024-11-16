@@ -3,7 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.FreeAlgebra
 import Mathlib.RingTheory.Adjoin.Tower
+import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Noetherian.Orzech
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -111,6 +114,10 @@ theorem trans [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : 
     FiniteType R A :=
   ⟨fg_trans' hRS.1 hSA.1⟩
 
+instance quotient (R : Type*) {S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
+    [h : Algebra.FiniteType R S] : Algebra.FiniteType R (S ⧸ I) :=
+  Algebra.FiniteType.trans h inferInstance
+
 /-- An algebra is finitely generated if and only if it is a quotient
 of a free algebra whose variables are indexed by a finset. -/
 theorem iff_quotient_freeAlgebra :
@@ -189,7 +196,7 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   apply
     isNoetherianRing_of_surjective (MvPolynomial s R) S
       (MvPolynomial.aeval (↑) : MvPolynomial s R →ₐ[R] S).toRingHom
-  erw [← Set.range_iff_surjective, ← AlgHom.coe_range, ←
+  erw [← Set.range_eq_univ, ← AlgHom.coe_range, ←
     Algebra.adjoin_range_eq_range_aeval, Subtype.range_coe_subtype, Finset.setOf_mem, hs]
   rfl
 

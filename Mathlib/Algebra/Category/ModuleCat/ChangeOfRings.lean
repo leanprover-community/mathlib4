@@ -285,7 +285,7 @@ def obj' : ModuleCat S :=
 `l : M1 ⟶ M2` is sent to `s ⊗ m ↦ s ⊗ l m`
 -/
 def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
-  by-- The "by apply" part makes this require 75% fewer heartbeats to process (#16371).
+  by-- The "by apply" part makes this require 75% fewer heartbeats to process (https://github.com/leanprover-community/mathlib4/pull/16371).
   apply @LinearMap.baseChange R S M1 M2 _ _ ((algebraMap S _).comp f).toAlgebra _ _ _ _ l
 
 theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ :=
@@ -526,7 +526,7 @@ protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScala
   app Y := app' f Y
   naturality Y Y' g :=
     LinearMap.ext fun y : Y => LinearMap.ext fun s : S => by
-      -- Porting note (#10745): previously simp [CoextendScalars.map_apply]
+      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): previously simp [CoextendScalars.map_apply]
       simp only [ModuleCat.coe_comp, Functor.id_map, Functor.id_obj, Functor.comp_obj,
         Functor.comp_map]
       rw [coe_comp, coe_comp, Function.comp, Function.comp]
@@ -570,12 +570,12 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
       { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u₁,u₂,v} f
         invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u₁,u₂,v} f
         left_inv := fun g => LinearMap.ext fun x : X => by
-          -- Porting note (#10745): once just simp
+          -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): once just simp
           rw [RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
             LinearMap.coe_toAddHom, RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
             one_smul]
         right_inv := fun g => LinearMap.ext fun x => LinearMap.ext fun s : S => by
-          -- Porting note (#10745): once just simp
+          -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): once just simp
           rw [RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
             RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
             LinearMap.coe_toAddHom, LinearMap.map_smulₛₗ, RingHom.id_apply,
@@ -584,7 +584,7 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
     counit := RestrictionCoextensionAdj.counit'.{u₁,u₂,v} f
     homEquiv_unit := LinearMap.ext fun _ => rfl
     homEquiv_counit := fun {X Y g} => LinearMap.ext <| by
-      -- Porting note (#10745): previously simp [RestrictionCoextensionAdj.counit']
+      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): previously simp [RestrictionCoextensionAdj.counit']
       intro x; dsimp
       rw [coe_comp, Function.comp]
       change _ = (((restrictScalars f).map g) x).toFun (1 : S)
@@ -784,7 +784,7 @@ def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ �
       dsimp
       rw [ModuleCat.coe_comp, ModuleCat.coe_comp, Function.comp_apply, Function.comp_apply,
         ExtendScalars.map_tmul, restrictScalars.map_apply]
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [Counit.map_apply]
       rw [lift.tmul, LinearMap.coe_mk, LinearMap.coe_mk]
       set s' : S := s'
@@ -808,21 +808,15 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
       rw [ModuleCat.coe_comp, Function.comp_apply, restrictScalars.map_apply]
       rfl
     homEquiv_counit := fun {X Y g} ↦ LinearMap.ext fun x => by
-        -- Porting note: once again reminding Lean of the instances
-        letI m1 : Module R S := Module.compHom S f
-        letI m2 : Module R Y := Module.compHom Y f
         induction x using TensorProduct.induction_on with
         | zero => rw [map_zero, map_zero]
         | tmul =>
           rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply]
-          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-          erw [ModuleCat.coe_comp]
-          rw [Function.comp_apply, ExtendRestrictScalarsAdj.counit_app]
-          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+          dsimp
+          rw [ModuleCat.coe_comp, Function.comp_apply]
+          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
           erw [ExtendRestrictScalarsAdj.Counit.map_apply]
-          set_option tactic.skipAssignedInstances false in dsimp
-          rw [TensorProduct.lift.tmul]
-          rfl
+          dsimp
         | add => rw [map_add, map_add]; congr 1 }
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :

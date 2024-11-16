@@ -3,9 +3,10 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Set.Card
 import Mathlib.Order.Minimal
-import Mathlib.Data.Matroid.Init
 
 /-!
 # Matroids
@@ -133,7 +134,7 @@ There are a few design decisions worth discussing.
   so our notation mirrors common practice.
 
 ### Notation
-  We use a couple of nonstandard conventions in theorem names that are related to the above.
+  We use a few nonstandard conventions in theorem names that are related to the above.
   First, we mirror common informal practice by referring explicitly to the `ground` set rather
   than the notation `E`. (Writing `ground` everywhere in a proof term would be unwieldy, and
   writing `E` in theorem names would be unnatural to read.)
@@ -145,6 +146,10 @@ There are a few design decisions worth discussing.
   For this reason, we use the term `compl` in theorem names to refer to taking a set difference
   with respect to the ground set, rather than a complement within a type. The lemma
   `compl_base_dual` is one of the many examples of this.
+
+  Finally, in theorem names, matroid predicates that apply to sets
+  (such as `Base`, `Indep`, `Basis`) are typically used as suffixes rather than prefixes.
+  For instance, we have `ground_indep_iff_base` rather than `indep_ground_iff_base`.
 
 ## References
 

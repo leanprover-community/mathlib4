@@ -124,8 +124,7 @@ theorem Finset.centerMass_subset {t' : Finset ι} (ht : t ⊆ t') (h : ∀ i ∈
   intro i hit' hit
   rw [h i hit' hit, zero_smul, smul_zero]
 
-theorem Finset.centerMass_filter_ne_zero :
-    (t.filter fun i => w i ≠ 0).centerMass w z = t.centerMass w z :=
+theorem Finset.centerMass_filter_ne_zero : {i ∈ t | w i ≠ 0}.centerMass w z = t.centerMass w z :=
   Finset.centerMass_subset z (filter_subset _ _) fun i hit hit' => by
     simpa only [hit, mem_filter, true_and, Ne, Classical.not_not] using hit'
 
@@ -264,7 +263,7 @@ theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
   rw [s.centroid_eq_centerMass hs]
   apply s.centerMass_id_mem_convexHull
   · simp only [inv_nonneg, imp_true_iff, Nat.cast_nonneg, Finset.centroidWeights_apply]
-  · have hs_card : (s.card : R) ≠ 0 := by simp [Finset.nonempty_iff_ne_empty.mp hs]
+  · have hs_card : (#s : R) ≠ 0 := by simp [Finset.nonempty_iff_ne_empty.mp hs]
     simp only [hs_card, Finset.sum_const, nsmul_eq_mul, mul_inv_cancel₀, Ne, not_false_iff,
       Finset.centroidWeights_apply, zero_lt_one]
 
@@ -592,7 +591,7 @@ lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈
         (by aesop) (by simp) (by simp) (by simp) (by simp)
     _ = w i j := by
       rw [← prod_univ_sum, ← prod_mul_prod_compl, Finset.prod_singleton, Finset.sum_eq_single,
-        Finset.prod_eq_one, mul_one] <;> simp (config := { contextual := true }) [hw₁]
+        Finset.prod_eq_one, mul_one] <;> simp +contextual [hw₁]
 
 @[simp] lemma convexHull_pi (s : Set ι) (t : Π i, Set (E i)) :
     convexHull 𝕜 (s.pi t) = s.pi (fun i ↦ convexHull 𝕜 (t i)) :=

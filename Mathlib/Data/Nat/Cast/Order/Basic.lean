@@ -26,7 +26,7 @@ we use a generic collection of instances so that it applies in other settings (e
 `StarOrderedRing`, or the `selfAdjoint` or `StarOrderedRing.positive` parts thereof). -/
 
 variable [AddMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
+variable [AddLeftMono α] [ZeroLEOneClass α]
 
 @[mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
@@ -149,7 +149,7 @@ variable [m.AtLeastTwo]
 
 -- TODO: These lemmas need to be `@[simp]` for confluence in the presence of `cast_lt`, `cast_le`,
 -- and `Nat.cast_ofNat`, but their LHSs match literally every inequality, so they're too expensive.
--- If lean4#2867 is fixed in a performant way, these can be made `@[simp]`.
+-- If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, these can be made `@[simp]`.
 
 -- See note [no_index around OfNat.ofNat]
 -- @[simp]

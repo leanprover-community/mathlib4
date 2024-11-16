@@ -90,10 +90,6 @@ instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=
-  DFunLike.hasCoeToFun
-
 /-- All derivatives of a Schwartz function are rapidly decaying. -/
 theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
     ∃ C : ℝ, 0 < C ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ C := by
@@ -514,7 +510,7 @@ instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
 
 instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
-  (schwartz_withSeminorms ℝ E F).first_countable
+  (schwartz_withSeminorms ℝ E F).firstCountableTopology
 
 end Topology
 
@@ -823,9 +819,7 @@ section Comp
 variable (𝕜)
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-variable [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/

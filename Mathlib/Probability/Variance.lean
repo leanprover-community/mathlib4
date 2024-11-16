@@ -30,8 +30,11 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
   random variables is the sum of the variances.
 * `ProbabilityTheory.IndepFun.variance_sum`: the variance of a finite sum of pairwise
   independent random variables is the sum of the variances.
+* `ProbabilityTheory.variance_le_sub_mul_sub`: the variance of a random variable `X` satisfying
+  `a ≤ X ≤ b` almost everywhere is at most `(b - 𝔼 X) * (𝔼 X - a)`.
+* `ProbabilityTheory.variance_le_sq_of_bounded`: the variance of a random variable `X` satisfying
+  `a ≤ X ≤ b` almost everywhere is at most`((b - a) / 2) ^ 2`.
 -/
-
 
 open MeasureTheory Filter Finset
 
@@ -340,5 +343,50 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
     _ = variance (X k) μ + ∑ i ∈ s, variance (X i) μ := by
       rw [IH (fun i hi => hs i (mem_insert_of_mem hi))
           (h.mono (by simp only [coe_insert, Set.subset_insert]))]
+
+/-- **The Bhatia-Davis inequality on variance**
+
+The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most
+`(b - 𝔼 X) * (𝔼 X - a)`. -/
+lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
+    variance X μ ≤ (b - μ[X]) * (μ[X] - a) := by
+  have ha : ∀ᵐ ω ∂μ, a ≤ X ω := h.mono fun ω h => h.1
+  have hb : ∀ᵐ ω ∂μ, X ω ≤ b := h.mono fun ω h => h.2
+  have hX_int₂ : Integrable (fun ω ↦ -X ω ^ 2) μ :=
+    (memℒp_of_bounded h hX.aestronglyMeasurable 2).integrable_sq.neg
+  have hX_int₁ : Integrable (fun ω ↦ (a + b) * X ω) μ :=
+    ((integrable_const (max |a| |b|)).mono' hX.aestronglyMeasurable
+      (by filter_upwards [ha, hb] with ω using abs_le_max_abs_abs)).const_mul (a + b)
+  have h0 : 0 ≤ - μ[X ^ 2] + (a + b) * μ[X] - a * b :=
+    calc
+      _ ≤ ∫ ω, (b - X ω) * (X ω - a) ∂μ := by
+        apply integral_nonneg_of_ae
+        filter_upwards [ha, hb] with ω ha' hb'
+        exact mul_nonneg (by linarith : 0 ≤ b - X ω) (by linarith : 0 ≤ X ω - a)
+      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω - a * b ∂μ :=
+        integral_congr_ae <| ae_of_all μ fun ω ↦ by ring
+      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - ∫ _, a * b ∂μ :=
+        integral_sub (hX_int₂.add hX_int₁) (integrable_const (a * b))
+      _ = ∫ ω, - X ω ^ 2 + (a + b) * X ω ∂μ - a * b := by simp
+      _ = - μ[X ^ 2] + (a + b) * μ[X] - a * b := by
+        simp [← integral_neg, ← integral_mul_left, integral_add hX_int₂ hX_int₁]
+  calc
+    _ ≤ (a + b) * μ[X] - a * b - μ[X] ^ 2 := by
+      rw [variance_def' (memℒp_of_bounded h hX.aestronglyMeasurable 2)]
+      linarith
+    _ = (b - μ[X]) * (μ[X] - a) := by ring
+
+/-- **Popoviciu's inequality on variance**
+
+The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most
+`((b - a) / 2) ^ 2`. -/
+lemma variance_le_sq_of_bounded [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → ℝ}
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (hX : AEMeasurable X μ) :
+    variance X μ ≤ ((b - a) / 2) ^ 2 :=
+  calc
+    _ ≤ (b - μ[X]) * (μ[X] - a) := variance_le_sub_mul_sub h hX
+    _ = ((b - a) / 2) ^ 2 - (μ[X] - (b + a) / 2) ^ 2 := by ring
+    _ ≤ ((b - a) / 2) ^ 2 := sub_le_self _ (sq_nonneg _)
 
 end ProbabilityTheory

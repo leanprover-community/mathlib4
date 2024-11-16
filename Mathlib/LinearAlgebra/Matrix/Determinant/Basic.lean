@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
+import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.RowCol
@@ -75,7 +76,6 @@ theorem det_diagonal {d : n → R} : det (diagonal d) = ∏ i, d i := by
   · simp
   · simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem det_zero (_ : Nonempty n) : det (0 : Matrix n n R) = 0 :=
   (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_zero
 
@@ -131,12 +131,9 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
     det (M * N) = ∑ p : n → n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
       simp only [det_apply', mul_apply, prod_univ_sum, mul_sum, Fintype.piFinset_univ]
       rw [Finset.sum_comm]
-    _ =
-        ∑ p ∈ (@univ (n → n) _).filter Bijective,
-          ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i :=
-      (Eq.symm <|
-        sum_subset (filter_subset _ _) fun f _ hbij =>
-          det_mul_aux <| by simpa only [true_and, mem_filter, mem_univ] using hbij)
+    _ = ∑ p : n → n with Bijective p, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i := by
+      refine (sum_subset (filter_subset _ _) fun f _ hbij ↦ det_mul_aux ?_).symm
+      simpa only [true_and, mem_filter, mem_univ] using hbij
     _ = ∑ τ : Perm n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (τ i) * N (τ i) i :=
       sum_bij (fun p h ↦ Equiv.ofBijective p (mem_filter.1 h).2) (fun _ _ ↦ mem_univ _)
         (fun _ _ _ _ h ↦ by injection h)
@@ -183,12 +180,12 @@ theorem det_mul_left_comm (M N P : Matrix m m R) : det (M * (N * P)) = det (N * 
 theorem det_mul_right_comm (M N P : Matrix m m R) : det (M * N * P) = det (M * P * N) := by
   rw [Matrix.mul_assoc, Matrix.mul_assoc, det_mul, det_mul_comm N P, ← det_mul]
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
+-- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so `val` isn't needed
 theorem det_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     det (M.val * N * M⁻¹.val) = det N := by
   rw [det_mul_right_comm, Units.mul_inv, one_mul]
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
+-- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so `val` isn't needed
 theorem det_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     det (M⁻¹.val * N * ↑M.val) = det N :=
   det_units_conj M⁻¹ N
@@ -343,7 +340,7 @@ end DetZero
 
 theorem det_updateRow_add (M : Matrix n n R) (j : n) (u v : n → R) :
     det (updateRow M j <| u + v) = det (updateRow M j u) + det (updateRow M j v) :=
-  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_add M j u v
+  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_update_add M j u v
 
 theorem det_updateColumn_add (M : Matrix n n R) (j : n) (u v : n → R) :
     det (updateColumn M j <| u + v) = det (updateColumn M j u) + det (updateColumn M j v) := by
@@ -352,21 +349,25 @@ theorem det_updateColumn_add (M : Matrix n n R) (j : n) (u v : n → R) :
 
 theorem det_updateRow_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow M j <| s • u) = s * det (updateRow M j u) :=
-  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_smul M j s u
+  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_update_smul M j s u
 
 theorem det_updateColumn_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateColumn M j <| s • u) = s * det (updateColumn M j u) := by
   rw [← det_transpose, ← updateRow_transpose, det_updateRow_smul]
   simp [updateRow_transpose, det_transpose]
 
-theorem det_updateRow_smul' (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
+theorem det_updateRow_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow (s • M) j u) = s ^ (Fintype.card n - 1) * det (updateRow M j u) :=
-  MultilinearMap.map_update_smul _ M j s u
+  MultilinearMap.map_update_smul_left _ M j s u
 
-theorem det_updateColumn_smul' (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
+@[deprecated (since := "2024-11-03")] alias det_updateRow_smul' := det_updateRow_smul_left
+
+theorem det_updateColumn_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateColumn (s • M) j u) = s ^ (Fintype.card n - 1) * det (updateColumn M j u) := by
-  rw [← det_transpose, ← updateRow_transpose, transpose_smul, det_updateRow_smul']
+  rw [← det_transpose, ← updateRow_transpose, transpose_smul, det_updateRow_smul_left]
   simp [updateRow_transpose, det_transpose]
+
+@[deprecated (since := "2024-11-03")] alias det_updateColumn_smul' := det_updateColumn_smul_left
 
 theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j ∉ s) (c : n → R)
     (a : R) :
@@ -543,8 +544,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
   simp_rw [Finset.prod_attach_univ, Finset.univ_pi_univ]
   -- We claim that the only permutations contributing to the sum are those that
   -- preserve their second component.
-  let preserving_snd : Finset (Equiv.Perm (n × o)) :=
-    Finset.univ.filter fun σ => ∀ x, (σ x).snd = x.snd
+  let preserving_snd : Finset (Equiv.Perm (n × o)) := {σ | ∀ x, (σ x).snd = x.snd}
   have mem_preserving_snd :
     ∀ {σ : Equiv.Perm (n × o)}, σ ∈ preserving_snd ↔ ∀ x, (σ x).snd = x.snd := fun {σ} =>
     Finset.mem_filter.trans ⟨fun h => h.2, fun h => ⟨Finset.mem_univ _, h⟩⟩

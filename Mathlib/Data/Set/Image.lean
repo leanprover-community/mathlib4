@@ -8,6 +8,7 @@ import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Images and preimages of sets
@@ -400,8 +401,6 @@ theorem Nonempty.of_image {f : α → β} {s : Set α} : (f '' s).Nonempty → s
 theorem image_nonempty {f : α → β} {s : Set α} : (f '' s).Nonempty ↔ s.Nonempty :=
   ⟨Nonempty.of_image, fun h => h.image f⟩
 
-@[deprecated (since := "2024-01-06")] alias nonempty_image_iff := image_nonempty
-
 theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : Surjective f) :
     (f ⁻¹' s).Nonempty :=
   let ⟨y, hy⟩ := hs
@@ -592,10 +591,12 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
     exact ⟨i, ha⟩,
    fun ⟨_, hi⟩ => ⟨_, hi⟩⟩
 
-theorem range_iff_surjective : range f = univ ↔ Surjective f :=
+theorem range_eq_univ : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
 
-alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_iff_surjective
+@[deprecated (since := "2024-11-11")] alias range_iff_surjective := range_eq_univ
+
+alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_eq_univ
 
 @[simp]
 theorem subset_range_of_surjective {f : α → β} (h : Surjective f) (s : Set β) :
@@ -738,7 +739,7 @@ theorem preimage_image_preimage {f : α → β} {s : Set β} : f ⁻¹' (f '' (f
 
 @[simp, mfld_simps]
 theorem range_id : range (@id α) = univ :=
-  range_iff_surjective.2 surjective_id
+  range_eq_univ.2 surjective_id
 
 @[simp, mfld_simps]
 theorem range_id' : (range fun x : α => x) = univ :=
@@ -816,12 +817,12 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
-  (surjective_quot_mk r).range_eq
+  Quot.mk_surjective.range_eq
 
 @[simp]
 theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y) :
     range (Quot.lift f hf) = range f :=
-  ext fun _ => (surjective_quot_mk _).exists
+  ext fun _ => Quot.mk_surjective.exists
 
 @[simp]
 theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=
@@ -836,7 +837,7 @@ theorem range_quotient_lift [s : Setoid ι] (hf) :
 theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotient s) = univ :=
   range_quot_mk _
 
-@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
   range_quotient_mk
 
 @[simp]

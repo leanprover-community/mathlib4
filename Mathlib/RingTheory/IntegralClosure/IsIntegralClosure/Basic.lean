@@ -3,11 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -356,6 +357,33 @@ theorem isIntegral_leadingCoeff_smul [Algebra R S] (h : aeval x p = 0) :
 
 end
 
+lemma Polynomial.Monic.quotient_isIntegralElem {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
+    (h : g ∈ I) :
+    ((Ideal.Quotient.mk I).comp (algebraMap S S[X])).IsIntegralElem (Ideal.Quotient.mk I X) := by
+  exact ⟨g, mon, by
+  rw [← (Ideal.Quotient.eq_zero_iff_mem.mpr h), eval₂_eq_sum_range]
+  nth_rw 3 [(as_sum_range_C_mul_X_pow g)]
+  simp only [map_sum, algebraMap_eq, RingHom.coe_comp, Function.comp_apply, map_mul, map_pow]⟩
+
+/- If `I` is an ideal of the polynomial ring `S[X]` and contains a monic polynomial `f`,
+then `S[X]/I` is integral over `S`. -/
+lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
+    (h : g ∈ I) :
+      ((Ideal.Quotient.mkₐ S I).comp (Algebra.ofId S S[X])).IsIntegral := by
+  have eq_top : Algebra.adjoin S {(Ideal.Quotient.mkₐ S I) X} = ⊤ := by
+    ext g
+    constructor
+    · simp only [Algebra.mem_top, implies_true]
+    · intro _
+      obtain ⟨g', hg⟩ := Ideal.Quotient.mkₐ_surjective S I g
+      have : g = (Polynomial.aeval ((Ideal.Quotient.mkₐ S I) X)) g' := by
+        nth_rw 1 [← hg, aeval_eq_sum_range' (lt_add_one _),
+          as_sum_range_C_mul_X_pow g', map_sum]
+        simp only [Polynomial.C_mul', ← map_pow, map_smul]
+      exact this ▸ (aeval_mem_adjoin_singleton S ((Ideal.Quotient.mk I) Polynomial.X))
+  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure ( mon.quotient_isIntegralElem h)))
+    Algebra.mem_top
+
 end
 
 section IsIntegralClosure
@@ -558,6 +586,18 @@ nonrec theorem RingHom.IsIntegral.tower_bot (hg : Function.Injective g)
   haveI : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
   fun x ↦ IsIntegral.tower_bot hg (hfg (g x))
 
+variable (T) in
+/-- Let `T / S / R` be a tower of algebras, `T` is non-trivial and is a torsion free `S`-module,
+  then if `T` is an integral `R`-algebra, then `S` is an integral `R`-algebra. -/
+theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
+    [NoZeroSMulDivisors S T] [Nontrivial T] [IsScalarTower R S T]
+    [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
+  isIntegral := by
+    apply RingHom.IsIntegral.tower_bot (algebraMap R S) (algebraMap S T)
+      (NoZeroSMulDivisors.algebraMap_injective S T)
+    rw [← IsScalarTower.algebraMap_eq R S T]
+    exact h.isIntegral
+
 theorem IsIntegral.tower_bot_of_field {R A B : Type*} [CommRing R] [Field A]
     [CommRing B] [Nontrivial B] [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
     {x : A} (h : IsIntegral R (algebraMap A B x)) : IsIntegral R x :=
@@ -571,12 +611,25 @@ theorem RingHom.isIntegralElem.of_comp {x : T} (h : (g.comp f).IsIntegralElem x)
 theorem RingHom.IsIntegral.tower_top (h : (g.comp f).IsIntegral) : g.IsIntegral :=
   fun x ↦ RingHom.isIntegralElem.of_comp f g (h x)
 
+variable (R) in
+/-- Let `T / S / R` be a tower of algebras, `T` is an integral `R`-algebra, then it is integral
+  as an `S`-algebra. -/
+theorem Algebra.IsIntegral.tower_top [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [h : Algebra.IsIntegral R T] : Algebra.IsIntegral S T where
+  isIntegral := by
+    apply RingHom.IsIntegral.tower_top (algebraMap R S) (algebraMap S T)
+    rw [← IsScalarTower.algebraMap_eq R S T]
+    exact h.isIntegral
+
 theorem RingHom.IsIntegral.quotient {I : Ideal S} (hf : f.IsIntegral) :
     (Ideal.quotientMap I f le_rfl).IsIntegral := by
   rintro ⟨x⟩
   obtain ⟨p, p_monic, hpx⟩ := hf x
   refine ⟨p.map (Ideal.Quotient.mk _), p_monic.map _, ?_⟩
   simpa only [hom_eval₂, eval₂_map] using congr_arg (Ideal.Quotient.mk I) hpx
+
+instance {I : Ideal A} [Algebra.IsIntegral R A] : Algebra.IsIntegral R (A ⧸ I) :=
+  Algebra.IsIntegral.trans A
 
 instance Algebra.IsIntegral.quotient {I : Ideal A} [Algebra.IsIntegral R A] :
     Algebra.IsIntegral (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=

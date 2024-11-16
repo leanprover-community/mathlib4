@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Convex.Complex
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.PartialHomeomorph
@@ -21,23 +21,27 @@ various instances.
 
 noncomputable section
 
-open Set Filter Function TopologicalSpace Complex
-
-open scoped Filter Topology UpperHalfPlane
+open Complex Filter Function Set TopologicalSpace Topology
 
 namespace UpperHalfPlane
 
 instance : TopologicalSpace ℍ :=
   instTopologicalSpaceSubtype
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : ℍ → ℂ) :=
-  IsOpen.openEmbedding_subtype_val <| isOpen_lt continuous_const Complex.continuous_im
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
+  IsOpen.isOpenEmbedding_subtypeVal <| isOpen_lt continuous_const Complex.continuous_im
 
-theorem embedding_coe : Embedding ((↑) : ℍ → ℂ) :=
-  embedding_subtype_val
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_coe := isOpenEmbedding_coe
+
+theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
+  IsEmbedding.subtypeVal
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe := isEmbedding_coe
 
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
-  embedding_coe.continuous
+  isEmbedding_coe.continuous
 
 theorem continuous_re : Continuous re :=
   Complex.continuous_re.comp continuous_coe
@@ -53,9 +57,9 @@ instance : T3Space ℍ := Subtype.t3Space
 instance : T4Space ℍ := inferInstance
 
 instance : ContractibleSpace ℍ :=
-  (convex_halfspace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
+  (convex_halfSpace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
-instance : LocPathConnectedSpace ℍ := openEmbedding_coe.locPathConnectedSpace
+instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpace
 
 instance : NoncompactSpace ℍ := by
   refine ⟨fun h => ?_⟩
@@ -65,7 +69,7 @@ instance : NoncompactSpace ℍ := by
   exact absurd ((this 0).1 (@left_mem_Ici ℝ _ 0)) (@lt_irrefl ℝ _ 0)
 
 instance : LocallyCompactSpace ℍ :=
-  openEmbedding_coe.locallyCompactSpace
+  isOpenEmbedding_coe.locallyCompactSpace
 
 section strips
 
@@ -118,13 +122,13 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
 end strips
 
 /-- A continuous section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
-def ofComplex : PartialHomeomorph ℂ ℍ := (openEmbedding_coe.toPartialHomeomorph _).symm
+def ofComplex : PartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
 scoped notation "↑ₕ" f => f ∘ ofComplex
 
 lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
-  OpenEmbedding.toPartialHomeomorph_left_inv ..
+  IsOpenEmbedding.toPartialHomeomorph_left_inv ..
 
 lemma ofComplex_apply_eq_ite (w : ℂ) :
     ofComplex w = if hw : 0 < w.im then ⟨w, hw⟩ else Classical.choice inferInstance := by
@@ -154,17 +158,3 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
 end UpperHalfPlane
-
-lemma Complex.isConnected_of_upperHalfPlane {s : Set ℂ} (hs₁ : {z | 0 < z.im} ⊆ s)
-    (hs₂ : s ⊆ {z | 0 ≤ z.im}) : IsConnected s := by
-  refine IsConnected.subset_closure ?_ hs₁ (by simpa using hs₂)
-  rw [isConnected_iff_connectedSpace]
-  exact inferInstanceAs (ConnectedSpace UpperHalfPlane)
-
-lemma Complex.isConnected_of_lowerHalfPlane {s : Set ℂ} (hs₁ : {z | z.im < 0} ⊆ s)
-    (hs₂ : s ⊆ {z | z.im ≤ 0}) : IsConnected s := by
-  rw [← Equiv.star.surjective.image_preimage s]
-  refine IsConnected.image (f := Equiv.star) ?_ continuous_star.continuousOn
-  apply Complex.isConnected_of_upperHalfPlane
-  · exact fun z hz ↦ hs₁ <| show star z ∈ _ by simpa
-  · exact fun z hz ↦ by simpa using show (star z).im ≤ 0 from hs₂ hz

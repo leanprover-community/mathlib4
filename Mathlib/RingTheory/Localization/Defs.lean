@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
 
 /-!
@@ -593,7 +595,7 @@ theorem map_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSemiring
     map W l hl (map Q g hy x) = map W (l.comp g) (fun _ hx => hl (hy hx)) x := by
   rw [← map_comp_map (Q := Q) hy hl]; rfl
 
-theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
+protected theorem map_smul (x : S) (z : R) : map Q g hy (z • x : S) = g z • map Q g hy x := by
   rw [Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, map_eq]
 
 end
@@ -639,7 +641,6 @@ theorem ringEquivOfRingEquiv_eq_map {j : R ≃+* P} (H : M.map j.toMonoidHom = T
       map Q (j : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) :=
   rfl
 
--- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem ringEquivOfRingEquiv_eq {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (x) :
     ringEquivOfRingEquiv S Q j H ((algebraMap R S) x) = algebraMap P Q (j x) := by
   simp
@@ -648,6 +649,13 @@ theorem ringEquivOfRingEquiv_mk' {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (
     ringEquivOfRingEquiv S Q j H (mk' S x y) =
       mk' Q (j x) ⟨j y, show j y ∈ T from H ▸ Set.mem_image_of_mem j y.2⟩ := by
   simp [map_mk']
+
+@[simp]
+theorem ringEquivOfRingEquiv_symm {j : R ≃+* P} (H : M.map j.toMonoidHom = T) :
+    (ringEquivOfRingEquiv S Q j H).symm =
+      ringEquivOfRingEquiv Q S j.symm (show T.map j.symm.toMonoidHom = M by
+        erw [← H, ← Submonoid.comap_equiv_eq_map_symm,
+          Submonoid.comap_map_eq_of_injective j.injective]) := rfl
 
 end Map
 

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Nat.Set
+import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
@@ -295,8 +296,6 @@ class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlge
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α where
   __ := i
-  min := Inf.inf
-  max := Sup.sup
   min_def a b := by
     split_ifs with h
     · simp [h]
@@ -1003,12 +1002,12 @@ theorem iSup_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨆ i : s, f i = ⨆ 
 theorem iInf_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨅ i : s, f i = ⨅ (t : ι) (_ : t ∈ s), f t :=
   iInf_subtype
 
-theorem biSup_const {ι : Sort _} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
+theorem biSup_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
   haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
   rw [← iSup_subtype'', iSup_const]
 
-theorem biInf_const {ι : Sort _} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨅ i ∈ s, a = a :=
-  @biSup_const αᵒᵈ _ ι _ s hs
+theorem biInf_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨅ i ∈ s, a = a :=
+  biSup_const (α := αᵒᵈ) hs
 
 theorem iSup_sup_eq : ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ ⨆ x, g x :=
   le_antisymm (iSup_le fun _ => sup_le_sup (le_iSup _ _) <| le_iSup _ _)
@@ -1071,6 +1070,41 @@ theorem biInf_inf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i,
 theorem inf_biInf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (a ⊓ ⨅ (i) (h : p i), f i h) = ⨅ (i) (h : p i), a ⊓ f i h :=
   @sup_biSup αᵒᵈ ι _ p f _ h
+
+lemma biSup_lt_eq_iSup {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
+    ⨆ (i) (j < i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · refine iSup_le fun j ↦ ?_
+    obtain ⟨i, jlt⟩ := exists_gt j
+    exact le_iSup_of_le i (le_iSup₂_of_le j jlt le_rfl)
+
+lemma biSup_le_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} :
+    ⨆ (i) (j ≤ i), f j = ⨆ i, f i := by
+  apply le_antisymm
+  · exact iSup_le fun _ ↦ iSup₂_le fun _ _ ↦ le_iSup _ _
+  · exact iSup_le fun j ↦ le_iSup_of_le j (le_iSup₂_of_le j le_rfl le_rfl)
+
+lemma biInf_lt_eq_iInf {ι : Type*} [LT ι] [NoMaxOrder ι] {f : ι → α} :
+    ⨅ (i) (j < i), f j = ⨅ i, f i :=
+  biSup_lt_eq_iSup (α := αᵒᵈ)
+
+lemma biInf_le_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≤ i), f j = ⨅ i, f i :=
+  biSup_le_eq_iSup (α := αᵒᵈ)
+
+lemma biSup_gt_eq_iSup {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
+    ⨆ (i) (j > i), f j = ⨆ i, f i :=
+  biSup_lt_eq_iSup (ι := ιᵒᵈ)
+
+lemma biSup_ge_eq_iSup {ι : Type*} [Preorder ι] {f : ι → α} : ⨆ (i) (j ≥ i), f j = ⨆ i, f i :=
+  biSup_le_eq_iSup (ι := ιᵒᵈ)
+
+lemma biInf_gt_eq_iInf {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
+    ⨅ (i) (j > i), f j = ⨅ i, f i :=
+  biInf_lt_eq_iInf (ι := ιᵒᵈ)
+
+lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≥ i), f j = ⨅ i, f i :=
+  biInf_le_eq_iInf (ι := ιᵒᵈ)
 
 /-! ### `iSup` and `iInf` under `Prop` -/
 
@@ -1237,7 +1271,7 @@ theorem iInf_image :
 theorem iSup_extend_bot {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨆ j, extend e f ⊥ j = ⨆ i, f i := by
   rw [iSup_split _ fun j => ∃ i, e i = j]
-  simp (config := { contextual := true }) [he.extend_apply, extend_apply', @iSup_comm _ β ι]
+  simp +contextual [he.extend_apply, extend_apply', @iSup_comm _ β ι]
 
 theorem iInf_extend_top {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨅ j, extend e f ⊤ j = iInf f :=
@@ -1693,7 +1727,7 @@ end CompleteLattice
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
-protected abbrev Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [InfSet α] [Top α]
+protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
