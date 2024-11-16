@@ -12,6 +12,8 @@ import Mathlib.Logic.Denumerable
 # Denumerability of ℚ
 
 This file proves that ℚ is denumerable.
+
+The fact that ℚ has cardinality ℵ₀ is proved in `Data.Rat.Cardinal`
 -/
 
 assert_not_exists Module
