@@ -432,14 +432,8 @@ open Generators in
 /-- The connecting homomorphism in the Jacobi-Zariski sequence for a given family of generators. -/
 noncomputable
 def H1Cotangent.δ :
-    Q.H1Cotangent →ₗ[T] T ⊗[S] Ω[S⁄R] := by
-  classical
-  haveI : SMulCommClass (Q.comp P).Ring S T := by infer_instance
-  letI H := @SnakeLemma.δ' T _
-    (T ⊗[S] P.Cotangent) (Q.comp P).Cotangent Q.Cotangent
-    (T ⊗[S] P.CotangentSpace) (Q.comp P).CotangentSpace Q.CotangentSpace
-    _ _ _ _ _ _ _ _ _ _ _ _
-  haveI := H
+    Q.H1Cotangent →ₗ[T] T ⊗[S] Ω[S⁄R] :=
+  SnakeLemma.δ'
     (P.cotangentComplex.baseChange T)
     (Q.comp P).cotangentComplex
     Q.cotangentComplex
@@ -457,7 +451,6 @@ def H1Cotangent.δ :
     (lTensor_exact T P.exact_cotangentComplex_toKaehler P.toKaehler_surjective)
     (Cotangent.surjective_map_ofComp Q P)
     (CotangentSpace.map_toComp_injective Q P)
-  exact this
 
 lemma H1Cotangent.exact_δ_map :
     Function.Exact (H1Cotangent.δ Q P) (mapBaseChange R S T) := by
