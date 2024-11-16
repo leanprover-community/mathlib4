@@ -31,8 +31,8 @@ variable [AddCommGroup N'] [Module R N'] (S : Submonoid R)
 theorem Module.projective_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
     (S) (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Projective R M] :
-      Module.Projective Rₛ Mₛ :=
-    Projective.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
+    Module.Projective Rₛ Mₛ :=
+  Projective.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
 
 theorem LinearMap.split_surjective_of_localization_maximal
     (f : M →ₗ[R] N) [Module.FinitePresentation R N]
@@ -41,18 +41,8 @@ theorem LinearMap.split_surjective_of_localization_maximal
       (LocalizedModule.map I.primeCompl f).comp g = LinearMap.id) :
     ∃ (g : N →ₗ[R] M), f.comp g = LinearMap.id := by
   show LinearMap.id ∈ LinearMap.range (LinearMap.llcomp R N M N f)
-  have inst₁ (I : Ideal R) [I.IsMaximal] :
-    IsLocalizedModule I.primeCompl (LocalizedModule.map (M := N) (N := N) I.primeCompl) :=
-      inferInstance
-  have inst₂ (I : Ideal R) [I.IsMaximal] :
-    IsLocalizedModule I.primeCompl (LocalizedModule.map (M := N) (N := M) I.primeCompl) :=
-      inferInstance
-  apply
-    @Submodule.mem_of_localization_maximal R (N →ₗ[R] N) _ _ _
-      (fun P _ ↦ Localization.AtPrime P) _ _ _ _ _ _ _ _
-      (fun P _ ↦ LocalizedModule.map P.primeCompl)
-      (fun P _ ↦ inst₁ P)
-  intro I hI
+  refine Submodule.mem_of_localization_maximal _ (fun P _ ↦ LocalizedModule.map P.primeCompl) _ _
+    fun I hI ↦ ?_
   rw [LocalizedModule.map_id]
   have : LinearMap.id ∈ LinearMap.range (LinearMap.llcomp _
     (LocalizedModule I.primeCompl N) _ _ (LocalizedModule.map I.primeCompl f)) := H I hI

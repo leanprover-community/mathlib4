@@ -20,7 +20,7 @@ variable {R A M} [CommSemiring R] [CommSemiring A] [AddCommMonoid M]
 
 variable
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], AddCommGroup (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
