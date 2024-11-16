@@ -25,20 +25,29 @@ variable {C : Type u} [Category.{v} C]
 /-- `f : X ⟶ Y` is a retract of `g : Z ⟶ W` if there are morphisms `i : f ⟶ g`
 and `r : g ⟶ f` in the arrow category of `C` such that `i ≫ r = 𝟙 f`. -/
 class IsRetract {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶ W) where
+  /-- `i : f ⟶ g` -/
   i : Arrow.mk f ⟶ Arrow.mk g
+  /-- `r : g ⟶ f` -/
   r : Arrow.mk g ⟶ Arrow.mk f
+  /-- `i ≫ r = 𝟙 f` -/
   retract : i ≫ r = 𝟙 Arrow.mk f
+
+namespace MorphismProperty
+
+section Retract
 
 /-- A class of morphisms is stable under retracts if the retract of a morphism still
 lies in the class. -/
-def MorphismProperty.IsStableUnderRetracts (P : MorphismProperty C) : Prop :=
-  ∀ ⦃X Y Z W : C⦄ ⦃f : X ⟶ Y⦄ ⦃g : Z ⟶ W⦄ (_ : IsRetract f g)
-    (_ : P g), P f
+class IsStableUnderRetracts (P : MorphismProperty C) : Prop where
+  of_isRetract {X Y Z W : C} {f : X ⟶ Y} {g : Z ⟶ W} (h : IsRetract f g) (hg : P g) : P f
 
-instance MorphismProperty.monomorphisms.IsStableUnderRetracts :
-    IsStableUnderRetracts (monomorphisms C) := by
-  intro X Y _ _ f g H p
-  refine ⟨fun α β ω ↦ ?_⟩
+lemma of_isRetract {P : MorphismProperty C} [P.IsStableUnderRetracts]
+    {X Y Z W : C} {f : X ⟶ Y} {g : Z ⟶ W} (h : IsRetract f g) (hg : P g) : P f :=
+  IsStableUnderRetracts.of_isRetract h hg
+
+instance IsStableUnderRetracts.monomorphisms :
+    (monomorphisms C).IsStableUnderRetracts := by
+  refine ⟨fun {X Y} _ _ f g H p ↦ ⟨fun α β ω ↦ ?_⟩⟩
   have h : H.i.left ≫ g = f ≫ H.i.right := H.i.w
   have := ω =≫ H.i.right
   rw [Category.assoc, Category.assoc, ← h, ← Category.assoc, ← Category.assoc] at this
@@ -46,7 +55,7 @@ instance MorphismProperty.monomorphisms.IsStableUnderRetracts :
   have : H.i.left ≫ H.r.left = 𝟙 X := Arrow.hom.congr_left H.retract
   rwa [Category.assoc, Category.assoc, this, Category.comp_id, Category.comp_id] at ω'
 
-namespace MorphismProperty
+end Retract
 
 /-- The left lifting property (llp) with respect to a class of morphisms. -/
 def Llp (T : MorphismProperty C) : MorphismProperty C := fun _ _ f ↦
@@ -56,9 +65,8 @@ def Llp (T : MorphismProperty C) : MorphismProperty C := fun _ _ f ↦
 def Rlp (T : MorphismProperty C) : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ ⦃g : X ⟶ Y⦄ (_ : T g), HasLiftingProperty g f
 
-instance Llp.IsStableUnderRetracts {T : MorphismProperty C} : IsStableUnderRetracts T.Llp := by
-  intro X Y _ _ f f' H L _ _ g h
-  refine ⟨fun {u v} sq ↦ ?_⟩
+lemma Llp.IsStableUnderRetracts {T : MorphismProperty C} : T.Llp.IsStableUnderRetracts := by
+  refine ⟨fun {X Y} _ _ f f' H L _ _ g h ↦ ⟨fun {u v} sq ↦ ?_⟩⟩
   have : (H.r.left ≫ u) ≫ g = f' ≫ (H.r.right ≫ v) := by simp [sq.w]
   obtain lift := ((L h).sq_hasLift (CommSq.mk this)).exists_lift.some
   refine ⟨H.i.right ≫ lift.l, ?_, ?_⟩
@@ -69,9 +77,8 @@ instance Llp.IsStableUnderRetracts {T : MorphismProperty C} : IsStableUnderRetra
   · have : H.i.right ≫ H.r.right = 𝟙 Y := Arrow.hom.congr_right H.retract
     rw [Category.assoc, lift.fac_right, ← Category.assoc, this, Category.id_comp]
 
-instance Rlp.IsStableUnderRetracts {T : MorphismProperty C} : IsStableUnderRetracts T.Rlp := by
-  intro X Y _ _ f f' H L _ _ g h
-  refine ⟨fun {u v} sq ↦ ?_⟩
+lemma Rlp.IsStableUnderRetracts {T : MorphismProperty C} : T.Rlp.IsStableUnderRetracts := by
+  refine ⟨fun {X Y} _ _ f f' H L _ _ g h ↦ ⟨fun {u v} sq ↦ ?_⟩⟩
   have : (u ≫ H.i.left) ≫ f' = g ≫ (v ≫ H.i.right) := by
     rw [← Category.assoc, ← sq.w]
     aesop
@@ -85,7 +92,7 @@ instance Rlp.IsStableUnderRetracts {T : MorphismProperty C} : IsStableUnderRetra
 
 open Limits.PushoutCocone in
 instance Llp.IsStableUnderCobaseChange {T : MorphismProperty C} :
-    IsStableUnderCobaseChange T.Llp := by
+    T.Llp.IsStableUnderCobaseChange := by
   refine ⟨fun {A B A' B'} f s f' t P L X Y g hg ↦ ⟨fun {u v} sq ↦ ?_⟩⟩
   have w : (s ≫ u) ≫ g = f ≫ (t ≫ v) := by
     rw [← Category.assoc, ← P.toCommSq.w, Category.assoc, Category.assoc, sq.w]
@@ -106,7 +113,7 @@ instance Llp.IsStableUnderCobaseChange {T : MorphismProperty C} :
 
 open Limits.PullbackCone in
 instance Rlp.IsStableUnderBaseChange {T : MorphismProperty C} :
-    IsStableUnderBaseChange T.Rlp := by
+    T.Rlp.IsStableUnderBaseChange := by
   refine ⟨fun {B' A A' B} t f s f' P L X Y g hg ↦ ⟨fun {u v} sq ↦ ?_⟩⟩
   have w : (u ≫ s) ≫ f = g ≫ v ≫ t := by
     rw [Category.assoc, P.toCommSq.w, ← Category.assoc, ← Category.assoc, sq.w]
@@ -128,7 +135,7 @@ instance Rlp.IsStableUnderBaseChange {T : MorphismProperty C} :
     exact sq.w
 
 instance Rlp.IsStableUnderComposition (T : MorphismProperty C) :
-    IsStableUnderComposition T.Rlp := by
+    T.Rlp.IsStableUnderComposition := by
   refine ⟨fun p q hp hq _ _ i hi ↦ ⟨fun {f g} sq ↦ ?_⟩⟩
   have q_sq_comm : (f ≫ p) ≫ q = i ≫ g := by rw [Category.assoc, sq.w]
   obtain ⟨q_lift, q_fac_left, q_fac_right⟩ :=
@@ -138,7 +145,7 @@ instance Rlp.IsStableUnderComposition (T : MorphismProperty C) :
   refine ⟨p_lift, p_fac_left, by rw [← Category.assoc, p_fac_right, q_fac_right]⟩
 
 instance Llp.IsStableUnderComposition (T : MorphismProperty C) :
-    IsStableUnderComposition T.Llp := by
+    T.Llp.IsStableUnderComposition := by
   refine ⟨fun p q hp hq _ _ i hi ↦ ⟨fun {f g} sq ↦ ?_⟩⟩
   have q_sq_comm : f ≫ i = p ≫ (q ≫ g) := by rw [← Category.assoc, ← sq.w]
   obtain ⟨p_lift, p_fac_left, p_fac_right⟩ :=
