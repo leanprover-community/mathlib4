@@ -30,6 +30,7 @@ variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
 
 /-- An element of an R-algebra is algebraic over R if it is a root of a nonzero polynomial
 with coefficients in R. -/
+@[stacks 09GC "Algebraic elements"]
 def IsAlgebraic (x : A) : Prop :=
   ∃ p : R[X], p ≠ 0 ∧ aeval x p = 0
 
@@ -131,6 +132,7 @@ def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
 variable (R A)
 
 /-- An algebra is algebraic if all its elements are algebraic. -/
+@[stacks 09GC "Algebraic extensions"]
 protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 
@@ -249,10 +251,14 @@ theorem isAlgebraic_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f)
 section RingHom
 
 omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B]
-variable [Algebra S B] {FRS FAB : Type*} [FunLike FAB A B] [RingHomClass FAB A B]
+variable [Algebra S B] {FRS FAB : Type*}
 
-protected theorem IsAlgebraic.ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R S]
-    (f : FRS) (g : FAB) {a : A} (halg : IsAlgebraic R a)
+section
+
+variable [FunLike FRS R S] [RingHomClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+  (f : FRS) (g : FAB) {a : A}
+
+theorem IsAlgebraic.ringHom_of_comp_eq (halg : IsAlgebraic R a)
     (hf : Function.Injective f)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic S (g a) := by
@@ -261,8 +267,15 @@ protected theorem IsAlgebraic.ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass
   change aeval ((g : A →+* B) a) _ = 0
   rw [← map_aeval_eq_aeval_map h, h2, map_zero]
 
-theorem IsAlgebraic.of_ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R S]
-    (f : FRS) (g : FAB) {a : A} (halg : IsAlgebraic S (g a))
+theorem Algebra.IsAlgebraic.ringHom_of_comp_eq [Algebra.IsAlgebraic R A]
+    (hf : Function.Injective f) (hg : Function.Surjective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.IsAlgebraic S B := by
+  refine ⟨fun b ↦ ?_⟩
+  obtain ⟨a, rfl⟩ := hg b
+  exact (Algebra.IsAlgebraic.isAlgebraic a).ringHom_of_comp_eq f g hf h
+
+theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (hf : Function.Surjective f) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic R a := by
@@ -275,12 +288,29 @@ theorem IsAlgebraic.of_ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R 
   change (g : A →+* B) _ = _
   rw [map_zero, map_aeval_eq_aeval_map h, h2]
 
-theorem isAlgebraic_ringHom_iff_of_comp_eq [EquivLike FRS R S] [RingEquivClass FRS R S]
+theorem Algebra.IsAlgebraic.of_ringHom_of_comp_eq [Algebra.IsAlgebraic S B]
+    (hf : Function.Surjective f) (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.IsAlgebraic R A :=
+  ⟨fun a ↦ (Algebra.IsAlgebraic.isAlgebraic (g a)).of_ringHom_of_comp_eq f g hf hg h⟩
+
+end
+
+theorem isAlgebraic_ringHom_iff_of_comp_eq
+    [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
     (f : FRS) (g : FAB) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) {a : A} :
     IsAlgebraic S (g a) ↔ IsAlgebraic R a :=
   ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) hg h,
     fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) h⟩
+
+theorem algebra_isAlgebraic_ringHom_iff_of_comp_eq
+    [EquivLike FRS R S] [RingEquivClass FRS R S] [EquivLike FAB A B] [RingEquivClass FAB A B]
+    (f : FRS) (g : FAB)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.IsAlgebraic S B ↔ Algebra.IsAlgebraic R A :=
+  ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) (EquivLike.injective g) h,
+    fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) (EquivLike.surjective g) h⟩
 
 end RingHom
 
@@ -444,6 +474,7 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 variable (L)
 
 /-- If `x` is algebraic over `K`, then `x` is algebraic over `L` when `L` is an extension of `K` -/
+@[stacks 09GF "part one"]
 theorem IsAlgebraic.tower_top {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
   A_alg.tower_top_of_injective (algebraMap K L).injective
@@ -455,6 +486,7 @@ theorem Transcendental.of_tower_top {x : A} (h : Transcendental L x) :
     Transcendental K x := fun H ↦ h (H.tower_top L)
 
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
+@[stacks 09GF "part two"]
 theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlgebraic L A :=
   Algebra.IsAlgebraic.tower_top_of_injective (algebraMap K L).injective
 
@@ -466,6 +498,7 @@ theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
+@[stacks 09GG "first part"]
 instance Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : Algebra.IsAlgebraic K A :=
   (IsIntegral.of_finite K A).isAlgebraic
 
@@ -486,6 +519,7 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
 then A is algebraic over K. -/
+@[stacks 09GJ]
 protected theorem Algebra.IsAlgebraic.trans
     [L_alg : Algebra.IsAlgebraic K L] [A_alg : Algebra.IsAlgebraic L A] :
     Algebra.IsAlgebraic K A := by
@@ -667,6 +701,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
       exact A.zero_mem
 
 /-- In an algebraic extension L/K, an intermediate subalgebra is a field. -/
+@[stacks 0BID]
 theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
     mul_inv_cancel := fun {a} ha =>

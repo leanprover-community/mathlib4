@@ -93,8 +93,8 @@ instance instLT : LT (Booleanisation α) where
 * `a ⊔ bᶜ` is `(b \ a)ᶜ`
 * `aᶜ ⊔ b` is `(a \ b)ᶜ`
 * `aᶜ ⊔ bᶜ` is `(a ⊓ b)ᶜ` -/
-instance instSup : Sup (Booleanisation α) where
-  sup x y := match x, y with
+instance instSup : Max (Booleanisation α) where
+  max x y := match x, y with
     | lift a, lift b => lift (a ⊔ b)
     | lift a, comp b => comp (b \ a)
     | comp a, lift b => comp (a \ b)
@@ -105,8 +105,8 @@ instance instSup : Sup (Booleanisation α) where
 * `a ⊓ bᶜ` is `a \ b`
 * `aᶜ ⊓ b` is `b \ a`
 * `aᶜ ⊓ bᶜ` is `(a ⊔ b)ᶜ` -/
-instance instInf : Inf (Booleanisation α) where
-  inf x y := match x, y with
+instance instInf : Min (Booleanisation α) where
+  min x y := match x, y with
     | lift a, lift b => lift (a ⊓ b)
     | lift a, comp b => lift (a \ b)
     | comp a, lift b => lift (b \ a)
@@ -184,6 +184,7 @@ instance instPartialOrder : PartialOrder (Booleanisation α) where
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeSup : SemilatticeSup (Booleanisation α) where
+  sup x y := max x y
   le_sup_left x y := match x, y with
     | lift a, lift b => LE.lift le_sup_left
     | lift a, comp b => LE.sep disjoint_sdiff_self_right
@@ -204,6 +205,7 @@ instance instSemilatticeSup : SemilatticeSup (Booleanisation α) where
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeInf : SemilatticeInf (Booleanisation α) where
+  inf x y := min x y
   inf_le_left x y := match x, y with
     | lift a, lift b => LE.lift inf_le_left
     | lift a, comp b => LE.lift sdiff_le
@@ -227,7 +229,7 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
   le_inf _ _ _ := le_inf
   le_sup_inf x y z := match x, y, z with
     | lift _, lift _, lift _ => LE.lift le_sup_inf
-    | lift a, lift b, comp c => LE.lift <| by simp [sup_left_comm, sup_comm]
+    | lift a, lift b, comp c => LE.lift <| by simp [sup_left_comm, sup_comm, sup_assoc]
     | lift a, comp b, lift c => LE.lift <| by
       simp [sup_left_comm (a := b \ a), sup_comm (a := b \ a)]
     | lift a, comp b, comp c => LE.comp <| by rw [sup_sdiff]
