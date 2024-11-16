@@ -53,7 +53,25 @@ def zeroAtImInftySubmodule (α : Type*) [NormedField α] : Submodule α (ℍ →
 def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (ℍ → α) :=
   boundedFilterSubalgebra _ atImInfty
 
-@[deprecated (since := "2024-08-27")] alias IsBoundedAtImInfty.mul := BoundedAtFilter.mul
+section BasicOperations
+
+variable {β : Type*} [SeminormedRing β] {f : ℍ → β} (hf : IsBoundedAtImInfty f)
+
+nonrec def IsBoundedAtImInfty.add {g : ℍ → β} (hg : IsBoundedAtImInfty g) :
+    IsBoundedAtImInfty (f + g) :=
+  hf.add hg
+
+nonrec def IsBoundedAtImInfty.neg : IsBoundedAtImInfty (-f) :=
+  hf.neg
+
+nonrec def IsBoundedAtImInfty.smul (c : β) : IsBoundedAtImInfty (c • f) :=
+  hf.smul c
+
+nonrec def IsBoundedAtImInfty.mul {g : ℍ → β} (hg : IsBoundedAtImInfty g) :
+    IsBoundedAtImInfty (f * g) :=
+  hf.mul hg
+
+end BasicOperations
 
 theorem isBoundedAtImInfty_iff {α : Type*} [Norm α] {f : ℍ → α} :
     IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ M := by
