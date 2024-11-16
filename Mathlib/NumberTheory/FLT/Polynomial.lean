@@ -6,6 +6,7 @@ Authors: Jineon Baek, Seewoo Lee
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.MasonStothers
+import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
