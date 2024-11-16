@@ -34,7 +34,10 @@ variable {F : ι → α → G} {f : α → G}
 namespace Monotone
 
 /-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions on a
-converging pointwise to a continuous function `f`, then `F n` converges locally uniformly to `f`. -/
+converging pointwise to a continuous function `f`, then `F n` converges locally uniformly to `f`.
+
+This version requires the codomain to be a `Group` instead of an `AddGroup`.
+ -/
 @[to_additive tendstoLocallyUniformly_of_forall_tendsto
 "**Dini's theorem** If `F n` is a monotone increasing collection of continuous
 functions on a converging pointwise to a continuous function `f`, then `F n` converges locally
@@ -70,7 +73,10 @@ lemma tendstoLocallyUniformly_of_forall_tendsto'
   exact h <| mono_preimage_Ioo hnm hz
 
 /-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions on a
-compact space converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`. -/
+compact space converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`.
+
+This version requires the codomain to be a `Group` instead of an `AddGroup`.
+ -/
 @[to_additive tendstoUniformly_of_forall_tendsto
 "**Dini's theorem** If `F n` is a monotone increasing collection of continuous
 functions on a compact space converging pointwise to a continuous `f`, then `F n` converges
@@ -83,7 +89,10 @@ lemma tendstoUniformly_of_forall_tendsto' [CompactSpace α] (hF_cont : ∀ i, Co
     tendstoLocallyUniformly_of_forall_tendsto' hF_cont hF_mono hf h_tendsto hu
 
 /-- **Dini's theorem** If `F n` is a monotone increasing collection of continuous functions on a
-compact set `s` converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`. -/
+compact set `s` converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`.
+
+This version requires the codomain to be a `Group` instead of an `AddGroup`.
+-/
 @[to_additive tendstoUniformlyOn_of_forall_tendsto
 "**Dini's theorem** If `F n` is a monotone increasing collection of continuous
 functions on a compact set `s` converging pointwise to a continuous `f`, then `F n` converges
@@ -102,7 +111,10 @@ end Monotone
 namespace Antitone
 
 /-- **Dini's theorem** If `F n` is a monotone decreasing collection of continuous functions on a
-converging pointwise to a continuous function `f`, then `F n` converges locally uniformly to `f`. -/
+converging pointwise to a continuous function `f`, then `F n` converges locally uniformly to `f`.
+
+This version requires the codomain to be a `Group` instead of an `AddGroup`.
+ -/
 @[to_additive tendstoLocallyUniformly_of_forall_tendsto
 "**Dini's theorem** If `F n` is a monotone decreasing collection of continuous
 functions on a converging pointwise to a continuous function `f`, then `F n` converges locally
@@ -115,7 +127,10 @@ lemma tendstoLocallyUniformly_of_forall_tendsto'
   Monotone.tendstoLocallyUniformly_of_forall_tendsto' (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto hu
 
 /-- **Dini's theorem** If `F n` is a monotone decreasing collection of continuous functions on a
-compact space converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`. -/
+compact space converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`.
+
+This version requires the codomain to be a `Group` instead of an `AddGroup`.
+-/
 @[to_additive tendstoUniformly_of_forall_tendsto
 "**Dini's theorem** If `F n` is a monotone decreasing collection of continuous
 functions on a compact space converging pointwise to a continuous `f`, then `F n` converges
@@ -127,7 +142,10 @@ lemma tendstoUniformly_of_forall_tendsto' [CompactSpace α] (hF_cont : ∀ i, Co
   Monotone.tendstoUniformly_of_forall_tendsto' (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto hu
 
 /-- **Dini's theorem** If `F n` is a monotone decreasing collection of continuous functions on a
-compact set `s` converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`. -/
+compact set `s` converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`.
+
+This version requires the codomain to be a `Group` instead of an `AddGroup`.
+-/
 @[to_additive tendstoUniformlyOn_of_forall_tendsto
 "**Dini's theorem** If `F n` is a monotone decreasing collection of continuous
 functions on a compact set `s` converging pointwise to a continuous `f`, then `F n` converges
@@ -152,7 +170,7 @@ variable {F : ι → C(α, G)} {f : C(α, G)}
 converging pointwise to a continuous `f`, then `F n` converges to `f` in the
 compact-open topology.
 
-This version requires the codomain to be an `AddGroup` instead of a `Group`.
+This version requires the codomain to be a `Group` instead of an `AddGroup`.
 -/
 @[to_additive tendsto_of_monotone_of_pointwise
 "**Dini's theorem** If `F n` is a monotone increasing collection
@@ -169,7 +187,7 @@ lemma tendsto_of_monotone_of_pointwise' (hF_mono : Monotone F)
 converging pointwise to a continuous `f`, then `F n` converges to `f` in the
 compact-open topology.
 
-This version requires the codomain to be an `AddGroup` instead of a `Group`.
+This version requires the codomain to be a `Group` instead of an `AddGroup`.
 -/
 @[to_additive tendsto_of_antitone_of_pointwise
 "**Dini's theorem** If `F n` is a monotone decreasing collection
