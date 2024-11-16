@@ -42,16 +42,16 @@ open Cardinal
 
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 
-/-- The index of a subgroup as a natural number, and returns 0 if the index is infinite. -/
+/-- The index of a subgroup as a natural number. Returns `0` if the index is infinite. -/
 @[to_additive "The index of a subgroup as a natural number,
 and returns 0 if the index is infinite."]
 noncomputable def index : ℕ :=
   Nat.card (G ⧸ H)
 
-/-- The relative index of a subgroup as a natural number,
-  and returns 0 if the relative index is infinite. -/
-@[to_additive "The relative index of a subgroup as a natural number,
-and returns 0 if the relative index is infinite."]
+/-- If `H` and `K` are subgroups of a group `G`, then `relindex H K : ℕ` is the index
+of `H ∩ K` in `K`. The function returns `0` if the index is infinite. -/
+@[to_additive "If `H` and `K` are subgroups of an additive group `G`, then `relindex H K : ℕ`
+is the index of `H ∩ K` in `K`. The function returns `0` if the index is infinite."]
 noncomputable def relindex : ℕ :=
   (H.subgroupOf K).index
 
