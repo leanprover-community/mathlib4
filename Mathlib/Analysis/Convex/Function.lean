@@ -523,13 +523,11 @@ variable [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f :
 
 theorem ConvexOn.convex_lt (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x ∈ s | f x < r }) :=
   convex_iff_forall_pos.2 fun x hx y hy a b ha hb hab =>
-    ⟨hf.1 hx.1 hy.1 ha.le hb.le hab,
-      calc
-        f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx.1 hy.1 ha.le hb.le hab
-        _ < a • r + b • r :=
-          (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos_left hx.2 ha)
-            (smul_le_smul_of_nonneg_left hy.2.le hb.le))
-        _ = r := Convex.combo_self hab _⟩
+    ⟨hf.1 hx.1 hy.1 ha.le hb.le hab, by
+      linear_combination (norm := skip)
+        hf.2 hx.1 hy.1 ha.le hb.le hab + a • hx.2 + b • hy.2 + hab • r
+      apply le_of_eq
+      match_scalars <;> noncomm_ring⟩
 
 theorem ConcaveOn.convex_gt (hf : ConcaveOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x ∈ s | r < f x }) :=
   hf.dual.convex_lt r
@@ -670,13 +668,11 @@ variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f g :
 
 theorem ConvexOn.le_left_of_right_le' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) (hfy : f y ≤ f (a • x + b • y)) :
-    f (a • x + b • y) ≤ f x :=
-  le_of_not_lt fun h ↦ lt_irrefl (f (a • x + b • y)) <|
-    calc
-      f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb hab
-      _ < a • f (a • x + b • y) + b • f (a • x + b • y) := add_lt_add_of_lt_of_le
-          (smul_lt_smul_of_pos_left h ha) (smul_le_smul_of_nonneg_left hfy hb)
-      _ = f (a • x + b • y) := Convex.combo_self hab _
+    f (a • x + b • y) ≤ f x := by
+  refine le_of_smul_le_smul_left ?_ ha
+  linear_combination (norm := skip) b • hfy + hab • f (a • x + b • y) + hf.2 hx hy ha.le hb hab
+  apply le_of_eq
+  match_scalars <;> noncomm_ring
 
 theorem ConcaveOn.left_le_of_le_right' (hf : ConcaveOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) (hfy : f (a • x + b • y) ≤ f y) :
@@ -722,13 +718,11 @@ variable [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f g
 the writing, we decided the resulting lemmas wouldn't be useful. Feel free to reintroduce them. -/
 theorem ConvexOn.lt_left_of_right_lt' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) (hfy : f y < f (a • x + b • y)) :
-    f (a • x + b • y) < f x :=
-  not_le.1 fun h ↦ lt_irrefl (f (a • x + b • y)) <|
-    calc
-      f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb.le hab
-      _ < a • f (a • x + b • y) + b • f (a • x + b • y) := add_lt_add_of_le_of_lt
-          (smul_le_smul_of_nonneg_left h ha.le) (smul_lt_smul_of_pos_left hfy hb)
-      _ = f (a • x + b • y) := Convex.combo_self hab _
+    f (a • x + b • y) < f x := by
+  apply lt_of_smul_lt_smul_left ?_ ha.le
+  linear_combination (norm := skip) hf.2 hx hy ha.le hb.le hab + b • hfy + hab • f (a • x + b • y)
+  apply le_of_eq
+  match_scalars <;> noncomm_ring
 
 theorem ConcaveOn.left_lt_of_lt_right' (hf : ConcaveOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) (hfy : f (a • x + b • y) < f y) :

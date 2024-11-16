@@ -157,6 +157,13 @@ example [OrderedCommSemiring K] [OrderedCancelAddCommMonoid V] [Module K V] [Ord
   apply le_of_eq
   module
 
+example [OrderedCommSemiring K] [OrderedCancelAddCommMonoid V] [Module K V] [OrderedSMul K V]
+    {x y z : V} (hyz : y ≤ z) {a b : K} (hb : 0 ≤ b) (hab : a + b = 1) (H : z ≤ a • x + b • y) :
+    a • z ≤ a • x := by
+  linear_combination (norm := skip) b • hyz + hab • z + H
+  apply le_of_eq
+  module
+
 end
 
 /-! ### Tests in semirings -/
