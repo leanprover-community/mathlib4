@@ -221,17 +221,17 @@ theorem _root_.IsLocalization.AtPrime.prime_unique_of_minimal {S} [CommSemiring 
     (a₁ := ⟨J, ‹_›⟩) (a₂ := ⟨K, ‹_›⟩) (Subsingleton.elim _ _)
 
 theorem prime_unique_of_minimal (J : Ideal (Localization I.primeCompl)) [J.IsPrime] :
-    J = LocalRing.maximalIdeal (Localization I.primeCompl) :=
+    J = IsLocalRing.maximalIdeal (Localization I.primeCompl) :=
   IsLocalization.AtPrime.prime_unique_of_minimal hMin
 
 theorem nilpotent_iff_mem_maximal_of_minimal {x : _} :
-    IsNilpotent x ↔ x ∈ LocalRing.maximalIdeal (Localization I.primeCompl) := by
+    IsNilpotent x ↔ x ∈ IsLocalRing.maximalIdeal (Localization I.primeCompl) := by
   rw [nilpotent_iff_mem_prime]
-  exact ⟨(· (LocalRing.maximalIdeal _) (Ideal.IsMaximal.isPrime' _)), fun _ J _ =>
+  exact ⟨(· (IsLocalRing.maximalIdeal _) (Ideal.IsMaximal.isPrime' _)), fun _ J _ =>
     by simpa [prime_unique_of_minimal hMin J]⟩
 
 theorem nilpotent_iff_not_unit_of_minimal {x : Localization I.primeCompl} :
     IsNilpotent x ↔ x ∈ nonunits _ := by
-  simpa only [← LocalRing.mem_maximalIdeal] using nilpotent_iff_mem_maximal_of_minimal hMin
+  simpa only [← IsLocalRing.mem_maximalIdeal] using nilpotent_iff_mem_maximal_of_minimal hMin
 
 end Localization.AtPrime

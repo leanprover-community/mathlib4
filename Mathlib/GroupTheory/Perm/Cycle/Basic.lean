@@ -657,9 +657,9 @@ theorem IsCycle.isConj (hσ : IsCycle σ) (hτ : IsCycle τ) (h : #σ.support = 
   erw [hσ.zpowersEquivSupport_symm_apply n]
   simp only [← Perm.mul_apply, ← pow_succ']
   erw [hσ.zpowersEquivSupport_symm_apply (n + 1)]
-  -- This used to be a `simp only` before leanprover/lean4#2644
+  -- This used to be a `simp only` before https://github.com/leanprover/lean4/pull/2644
   erw [zpowersEquivZPowers_apply, zpowersEquivZPowers_apply, zpowersEquivSupport_apply]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   simp_rw [pow_succ', Perm.mul_apply]
   rfl
 
@@ -782,7 +782,7 @@ theorem IsCycleOn.pow_apply_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ 
       (hf.isCycle_subtypePerm hs).pow_eq_one_iff'
         (ne_of_apply_ne ((↑) : s → α) <| hf.apply_ne hs (⟨a, ha⟩ : s).2)]
     simp
-    -- This used to be the end of the proof before leanprover/lean4#2644
+    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
     erw [subtypePerm_apply]
     simp
 

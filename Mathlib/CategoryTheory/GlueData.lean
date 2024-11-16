@@ -43,7 +43,7 @@ such that
     `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 structure GlueData where
   J : Type v
