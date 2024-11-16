@@ -46,7 +46,7 @@ variable [Semiring R] {φ : R⟦X⟧}
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
   refine not_iff_not.mp ?_
   push_neg
-  -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after #8386?
+  -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after https://github.com/leanprover-community/mathlib4/pull/8386?
   simp [PowerSeries.ext_iff, (coeff R _).map_zero]
 
 /-- The order of a formal power series `φ` is the greatest `n : PartENat`

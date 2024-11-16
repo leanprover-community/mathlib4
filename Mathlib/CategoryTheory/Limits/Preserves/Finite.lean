@@ -93,7 +93,7 @@ def preservesFiniteLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFinite
   preservesFiniteLimits _ _ _ := preservesLimitsOfShapeOfNatIso h
 
 /- Porting note: adding this class because quantified classes don't behave well
-[#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
+https://github.com/leanprover-community/mathlib4/pull/2764 -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
 class PreservesFiniteProducts (F : C ⥤ D) where
@@ -257,7 +257,7 @@ def preservesFiniteColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFini
   preservesFiniteColimits _ _ _ := preservesColimitsOfShapeOfNatIso h
 
 /- Porting note: adding this class because quantified classes don't behave well
-[#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
+https://github.com/leanprover-community/mathlib4/pull/2764 -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
 class PreservesFiniteCoproducts (F : C ⥤ D) where

@@ -169,7 +169,7 @@ section
 
 variable {W : Type v} [Category.{w} W] [MonoidalCategory W] [EnrichedCategory W C]
 
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the (honest) category structure
 so that `X ⟶ Y` is `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -370,7 +370,7 @@ coming from the ambient braiding on `V`.)
 -/
 
 
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
 This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.
 -/
