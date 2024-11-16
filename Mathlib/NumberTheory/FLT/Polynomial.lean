@@ -231,7 +231,7 @@ theorem Polynomial.flt_catalan_aux
       rcases find_contract ha ad chn0 with ⟨ca, ca_nz, eq_a, eq_deg_a⟩
       rcases find_contract hb bd chn0 with ⟨cb, cb_nz, eq_b, eq_deg_b⟩
       rcases find_contract hc cd chn0 with ⟨cc, cc_nz, eq_c, eq_deg_c⟩
-      set ch := ringChar k with eq_ch
+      set ch := ringChar k
       suffices hca : ca.natDegree = 0 by
         rw [eq_d, eq_deg_a, hca, zero_mul]
       by_contra hnca; apply hnca
