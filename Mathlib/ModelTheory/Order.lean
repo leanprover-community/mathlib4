@@ -483,8 +483,8 @@ lemma dlo_isExtensionPair
         Substructure.closure_eq])).toOrderEmbedding.trans g)
   use StrongHomClass.toEmbedding g'
   ext ⟨x, xS⟩
-  refine ((funext_iff.1 hg) ⟨x, ?_⟩).symm
-  simp only [Set.Finite.coe_toFinset, SetLike.mem_coe, xS]
+  refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
+  simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by

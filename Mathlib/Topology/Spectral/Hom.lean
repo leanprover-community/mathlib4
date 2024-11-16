@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
@@ -33,6 +34,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {f : 
 
 /-- A function between topological spaces is spectral if it is continuous and the preimage of every
 compact open set is compact open. -/
+@[stacks 005A, stacks 08YG]
 structure IsSpectralMap (f : α → β) extends Continuous f : Prop where
   /-- A function between topological spaces is spectral if it is continuous and the preimage of
    every compact open set is compact open. -/
@@ -48,6 +50,7 @@ theorem IsSpectralMap.continuous {f : α → β} (hf : IsSpectralMap f) : Contin
 theorem isSpectralMap_id : IsSpectralMap (@id α) :=
   ⟨continuous_id, fun _s _ => id⟩
 
+@[stacks 005B]
 theorem IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f) (hg : IsSpectralMap g) :
     IsSpectralMap (f ∘ g) :=
   ⟨hf.continuous.comp hg.continuous, fun _s hs₀ hs₁ =>
