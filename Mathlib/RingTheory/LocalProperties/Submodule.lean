@@ -5,6 +5,7 @@ Authors: Andrew Yang, David Swinarski
 -/
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 # Local properties of modules and submodules
@@ -14,15 +15,29 @@ In this file, we show that several conditions on submodules can be checked on st
 
 open scoped nonZeroDivisors
 
-variable {R A M} [CommSemiring R] [CommSemiring A] [AddCommMonoid M]
-  [Algebra R A] [Module R M] [Module A M]
+-- TODO: move this?
+private def equalizer (R) {M} [Semiring R] [AddCommMonoid M] [Module R M] (m m' : M) : Ideal R where
+  carrier := {r : R | r • m = r • m'}
+  add_mem' h h' := by simpa [add_smul] using congr($h + $h')
+  zero_mem' := by simp_rw [Set.mem_setOf, zero_smul]
+  smul_mem' _ _ h := by simpa [mul_smul] using congr(_ • $h)
+
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+
+section maximal
 
 variable
+  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
+  [∀ (P : Ideal R) [P.IsMaximal], CommSemiring (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (Mₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
-  [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
 theorem Submodule.mem_of_localization_maximal (m : M) (N : Submodule R M)
     (h : ∀ (P : Ideal R) [P.IsMaximal], f P m ∈ N.localized₀ P.primeCompl (f P)) :
@@ -54,9 +69,14 @@ theorem Submodule.eq_of_localization₀_maximal {N₁ N₂ : Submodule R M}
     (Submodule.le_of_localization_maximal Mₚ f fun P _ ↦ (h P).ge)
 
 /-- A submodule is trivial if its localization at every maximal ideal is trivial. -/
-theorem Submodule.eq_bot_of_localization_maximal (N : Submodule R M)
+theorem Submodule.eq_bot_of_localization₀_maximal (N : Submodule R M)
     (h : ∀ (P : Ideal R) [P.IsMaximal], N.localized₀ P.primeCompl (f P) = ⊥) :
     N = ⊥ :=
+  Submodule.eq_of_localization₀_maximal Mₚ f fun P hP ↦ by simpa using h P
+
+theorem Submodule.eq_top_of_localization₀_maximal (N : Submodule R M)
+    (h : ∀ (P : Ideal R) [P.IsMaximal], N.localized₀ P.primeCompl (f P) = ⊤) :
+    N = ⊤ :=
   Submodule.eq_of_localization₀_maximal Mₚ f fun P hP ↦ by simpa using h P
 
 theorem Module.eq_of_localization_maximal (m m' : M)
@@ -64,12 +84,7 @@ theorem Module.eq_of_localization_maximal (m m' : M)
     m = m' := by
   by_contra! ne
   rw [← one_smul R m, ← one_smul R m'] at ne
-  let I : Ideal R :=
-  { carrier := {r : R | r • m = r • m'}
-    add_mem' := fun h h' ↦ by simpa [add_smul] using congr($h + $h')
-    zero_mem' := by simp_rw [Set.mem_setOf, zero_smul]
-    smul_mem' := fun _ _ h ↦ by simpa [mul_smul] using congr(_ • $h) }
-  have ⟨P, mP, le⟩ := I.exists_le_maximal (I.ne_top_iff_one.mpr ne)
+  have ⟨P, mP, le⟩ := (equalizer R m m').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
   have ⟨s, hs⟩ := (IsLocalizedModule.eq_iff_exists P.primeCompl _).mp (h P)
   exact s.2 (le hs)
 
@@ -86,16 +101,20 @@ theorem Module.subsingleton_of_localization_maximal
   intro x
   exact Module.eq_of_localization_maximal Mₚ f x 0 fun _ _ ↦ Subsingleton.elim _ _
 
-variable
-  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
-  [∀ (P : Ideal R) [P.IsMaximal], CommSemiring (Rₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
-  [∀ (P : Ideal R) [P.IsMaximal], Module (Rₚ P) (Mₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
-
 theorem Submodule.eq_of_localization_maximal {N₁ N₂ : Submodule R M}
     (h : ∀ (P : Ideal R) [P.IsMaximal],
       N₁.localized' (Rₚ P) P.primeCompl (f P) = N₂.localized' (Rₚ P) P.primeCompl (f P)) :
     N₁ = N₂ :=
   eq_of_localization₀_maximal Mₚ f fun P _ ↦ congr(restrictScalars _ $(h P))
+
+theorem Submodule.eq_bot_of_localization_maximal (N : Submodule R M)
+    (h : ∀ (P : Ideal R) [P.IsMaximal], N.localized' (Rₚ P) P.primeCompl (f P) = ⊥) :
+    N = ⊥ :=
+  Submodule.eq_of_localization_maximal Rₚ Mₚ f fun P hP ↦ by simpa using h P
+
+theorem Submodule.eq_top_of_localization_maximal (N : Submodule R M)
+    (h : ∀ (P : Ideal R) [P.IsMaximal], N.localized' (Rₚ P) P.primeCompl (f P) = ⊤) :
+    N = ⊤ :=
+  Submodule.eq_of_localization_maximal Rₚ Mₚ f fun P hP ↦ by simpa using h P
+
+end maximal
