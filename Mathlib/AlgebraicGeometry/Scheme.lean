@@ -108,6 +108,11 @@ this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
 abbrev app (U : Y.Opens) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.c.app (op U)
 
+/-- Given a morphism of schemes `f : X ⟶ Y`,
+this is the induced map `Γ(Y, ⊤) ⟶ Γ(X, ⊤)`. -/
+abbrev appTop : Γ(Y, ⊤) ⟶ Γ(X, ⊤) :=
+  f.app ⊤
+
 @[reassoc]
 lemma naturality (i : op U' ⟶ op U) :
     Y.presheaf.map i ≫ f.app U = f.app U' ≫ X.presheaf.map ((Opens.map f.base).map i.unop).op :=
@@ -238,6 +243,11 @@ theorem id.base (X : Scheme) : (𝟙 X : _).base = 𝟙 _ :=
 theorem id_app {X : Scheme} (U : X.Opens) :
     (𝟙 X : _).app U = 𝟙 _ := rfl
 
+@[simp]
+theorem id_appTop {X : Scheme} :
+    (𝟙 X : _).appTop = 𝟙 _ :=
+  rfl
+
 @[reassoc]
 theorem comp_toLRSHom {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toLRSHom = f.toLRSHom ≫ g.toLRSHom :=
@@ -261,6 +271,11 @@ theorem comp_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).app U = g.app U ≫ f.app _ :=
+  rfl
+
+@[simp, reassoc] -- reassoc lemma does not need `simp`
+theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).appTop = g.appTop ≫ f.appTop :=
   rfl
 
 @[deprecated (since := "2024-06-23")] alias comp_val_c_app := comp_app
@@ -324,7 +339,7 @@ theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
     Scheme.id_app, Category.id_comp]
 
 theorem inv_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
-    (inv f).app ⊤ = inv (f.app ⊤) := by simp
+    (inv f).appTop = inv (f.appTop) := by simp
 
 end Scheme
 
@@ -428,10 +443,10 @@ theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = Γ(X, ⊤) :=
   rfl
 
 @[simp]
-theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.app ⊤ :=
+theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.appTop :=
   rfl
 
-theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.app ⊤ :=
+theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
   rfl
 
 /--
@@ -454,13 +469,13 @@ def ΓSpecIso : Γ(Spec R, ⊤) ≅ R := SpecΓIdentity.app R
 
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    (Spec.map f).app ⊤ ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
+    (Spec.map f).appTop ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
 
 -- The RHS is not necessarily simpler than the LHS, but this direction coincides with the simp
 -- direction of `NatTrans.naturality`.
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (Spec.map f).app ⊤ := SpecΓIdentity.inv.naturality f
+    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (Spec.map f).appTop := SpecΓIdentity.inv.naturality f
 
 -- This is not marked simp to respect the abstraction
 lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
@@ -525,6 +540,10 @@ lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
 theorem preimage_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (r : Γ(Y, U)) :
     f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.app U r) :=
   LocallyRingedSpace.preimage_basicOpen f.toLRSHom r
+
+theorem preimage_basicOpen_top {X Y : Scheme.{u}} (f : X ⟶ Y) (r : Γ(Y, ⊤)) :
+    f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.appTop r) :=
+  preimage_basicOpen ..
 
 lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e : U ≤ f ⁻¹ᵁ V)
     (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by

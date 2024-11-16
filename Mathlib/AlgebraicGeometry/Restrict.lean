@@ -69,6 +69,11 @@ lemma ι_app (V) : U.ι.app V = X.presheaf.map
   rfl
 
 @[simp]
+lemma ι_appTop :
+    U.ι.appTop = X.presheaf.map (homOfLE (x := U.ι ''ᵁ ⊤) le_top).op :=
+  rfl
+
+@[simp]
 lemma ι_appLE (V W e) :
     U.ι.appLE V W e =
       X.presheaf.map (homOfLE (x := U.ι ''ᵁ W) (Set.image_subset_iff.mpr ‹_›)).op := by
@@ -168,7 +173,7 @@ def opensRestrict :
 
 instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
     Algebra (Γ(X, ⊤)) Γ(U, ⊤) :=
-  (U.ι.app ⊤).toAlgebra
+  U.ι.appTop.toAlgebra
 
 lemma Scheme.map_basicOpen (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen
@@ -242,6 +247,12 @@ theorem Scheme.homOfLE_app {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
   rw [e₃, ← Functor.map_comp]
   congr 1
 
+@[simp]
+theorem Scheme.homOfLE_appTop {U V : X.Opens} (e : U ≤ V) :
+    (X.homOfLE e).appTop =
+      X.presheaf.map (homOfLE <| X.ι_image_homOfLE_le_ι_image e ⊤).op :=
+  homOfLE_app ..
+
 instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.homOfLE e) := by
   delta Scheme.homOfLE
   infer_instance
@@ -291,7 +302,7 @@ def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ S
     (by
       intro U V i
       dsimp
-      rw [X.homOfLE_app, ← Functor.map_comp, ← Functor.map_comp]
+      rw [X.homOfLE_appTop, ← Functor.map_comp, ← Functor.map_comp]
       congr 1)
 
 /-- `X ∣_ U ∣_ V` is isomorphic to `X ∣_ V ∣_ U` -/
@@ -512,6 +523,11 @@ theorem morphismRestrict_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
     Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE]
   rw [this, Hom.appLE_map, Hom.appLE_map, Hom.appLE_map]
 
+theorem morphismRestrict_appTop {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
+    (f ∣_ U).appTop = f.app (U.ι ''ᵁ ⊤) ≫
+        X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U ⊤)).op :=
+  morphismRestrict_app ..
+
 @[simp]
 theorem morphismRestrict_app' {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : Opens U) :
     (f ∣_ U).app V = f.appLE _ _ (image_morphismRestrict_preimage f U V).le :=
@@ -528,7 +544,7 @@ theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     Scheme.Γ.map (f ∣_ U).op =
       Y.presheaf.map (eqToHom U.isOpenEmbedding_obj_top.symm).op ≫
         f.app U ≫ X.presheaf.map (eqToHom (f ⁻¹ᵁ U).isOpenEmbedding_obj_top).op := by
-  rw [Scheme.Γ_map_op, morphismRestrict_app f U ⊤, f.naturality_assoc, ← X.presheaf.map_comp]
+  rw [Scheme.Γ_map_op, morphismRestrict_appTop f U, f.naturality_assoc, ← X.presheaf.map_comp]
   rfl
 
 /-- Restricting a morphism onto the image of an open immersion is isomorphic to the base change
@@ -675,11 +691,11 @@ end Scheme.Hom
 
 /-- `f.resLE U V` induces `f.appLE U V` on global sections. -/
 noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e : V ≤ f ⁻¹ᵁ U) :
-    Arrow.mk ((f.resLE U V e).app ⊤) ≅ Arrow.mk (f.appLE U V e) :=
+    Arrow.mk ((f.resLE U V e).appTop) ≅ Arrow.mk (f.appLE U V e) :=
   Arrow.isoMk U.topIso V.topIso <| by
   simp only [Opens.map_top, Arrow.mk_left, Arrow.mk_right, Functor.id_obj, Scheme.Opens.topIso_hom,
     eqToHom_op, Arrow.mk_hom, Scheme.Hom.map_appLE]
-  rw [← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
+  rw [Scheme.Hom.appTop, ← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
 
 end MorphismRestrict
 

@@ -415,12 +415,12 @@ theorem Scheme.toSpecΓ_base (X : Scheme.{u}) (x) :
 
 @[reassoc (attr := simp)]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.app ⊤) :=
+    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.appTop) :=
   ΓSpec.adjunction.unit.naturality f
 
 @[simp]
 theorem Scheme.toSpecΓ_app_top (X : Scheme.{u}) :
-    X.toSpecΓ.app ⊤ = (Scheme.ΓSpecIso Γ(X, ⊤)).hom := by
+    X.toSpecΓ.appTop = (Scheme.ΓSpecIso Γ(X, ⊤)).hom := by
   have := ΓSpec.adjunction.left_triangle_components X
   dsimp at this
   rw [← IsIso.eq_comp_inv] at this
@@ -437,7 +437,7 @@ theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
 
 lemma Scheme.toSpecΓ_preimage_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
     X.toSpecΓ ⁻¹ᵁ (PrimeSpectrum.basicOpen r) = X.basicOpen r := by
-  rw [← basicOpen_eq_of_affine, Scheme.preimage_basicOpen]
+  rw [← basicOpen_eq_of_affine, Scheme.preimage_basicOpen, ← Scheme.Hom.appTop]
   congr
   rw [Scheme.toSpecΓ_app_top]
   exact Iso.inv_hom_id_apply _ _
@@ -456,18 +456,17 @@ theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
   exact Category.id_comp _
 
 lemma ΓSpecIso_inv_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
-    (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤ = φ := by
+    (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = φ := by
   simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.comp_app]
   simp
 
 lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
-    (((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤) = (Scheme.ΓSpecIso B).hom ≫ φ := by
-  simp_rw [← ΓSpecIso_inv_ΓSpec_adjunction_homEquiv φ]
-  simp
+    ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).appTop = (Scheme.ΓSpecIso B).hom ≫ φ := by
+  rw [← Iso.inv_comp_eq, ΓSpecIso_inv_ΓSpec_adjunction_homEquiv]
 
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
-    (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).app ⊤ ≫
-      U.toScheme.toSpecΓ.app ⊤ ≫ U.topIso.hom := by simp
+    (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).appTop ≫
+      U.toScheme.toSpecΓ.appTop ≫ U.topIso.hom := by simp
 
 @[deprecated (since := "2024-07-24")]
 alias ΓSpec.adjunction_unit_naturality := Scheme.toSpecΓ_naturality
