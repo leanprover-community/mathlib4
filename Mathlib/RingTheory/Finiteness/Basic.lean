@@ -66,7 +66,7 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     choose t htf hts using hsb
     refine
       ⟨⋃ i, (LinearMap.single R _ i) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
-    -- Note: #8386 changed `span_image` into `span_image _`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `span_image` into `span_image _`
     simp_rw [span_iUnion, span_image _, hts, Submodule.iSup_map_single]
 
 theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=

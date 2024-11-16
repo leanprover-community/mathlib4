@@ -436,7 +436,7 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   set t : ℝ := ↑(G.edgeDensity U V)
   have hrs : |r - s| ≤ ε / 5 := abs_density_star_sub_density_le_eps hPε hε₁ hUVne hUV
   have hst : ε ≤ |s - t| := by
-    -- After leanprover/lean4#2734, we need to do the zeta reduction before `mod_cast`.
+    -- After https://github.com/leanprover/lean4/pull/2734, we need to do the zeta reduction before `mod_cast`.
     unfold s t
     exact mod_cast G.nonuniformWitness_spec hUVne hUV
   have hpr : |p - r| ≤ ε ^ 5 / 49 :=

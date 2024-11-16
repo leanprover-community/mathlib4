@@ -183,12 +183,12 @@ theorem rightDual_v [RightRigidCategory V] : Xᘁ.V = X.Vᘁ :=
 theorem leftDual_v [LeftRigidCategory V] : (ᘁX).V = ᘁX.V :=
   rfl
 
--- This lemma was always bad, but the linter only noticed after lean4#2644
+-- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
 @[simp, nolint simpNF]
 theorem rightDual_ρ [RightRigidCategory V] (h : H) : Xᘁ.ρ h = (X.ρ (h⁻¹ : H))ᘁ := by
   rw [← SingleObj.inv_as_inv]; rfl
 
--- This lemma was always bad, but the linter only noticed after lean4#2644
+-- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
 @[simp, nolint simpNF]
 theorem leftDual_ρ [LeftRigidCategory V] (h : H) : (ᘁX).ρ h = ᘁX.ρ (h⁻¹ : H) := by
   rw [← SingleObj.inv_as_inv]; rfl
@@ -220,7 +220,7 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
         refine Prod.ext rfl ?_
         rw [tensor_ρ, tensor_ρ]
         dsimp
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
         erw [leftRegular_ρ_apply]
         rw [map_mul]
         rfl }
