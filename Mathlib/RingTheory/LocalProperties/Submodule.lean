@@ -5,7 +5,6 @@ Authors: Andrew Yang, David Swinarski
 -/
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.RingTheory.Localization.AtPrime
-import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 # Local properties of modules and submodules
