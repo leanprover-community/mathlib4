@@ -193,8 +193,8 @@ theorem Submodule.eq_top_of_localization₀_span' {N : Submodule R M}
   eq_of_localization₀_span' s span_eq Mₚ f fun _ ↦ by simp only [h, Submodule.localized₀_top]
 
 /-- A variant of `eq_of_localization_span` that accepts `IsLocalizedModule`.-/
-theorem Submodule.eq_of_localization_span' {N P : Submodule R M} (h : ∀ r : s,
-      N.localized' (Rₚ r) (.powers r.1) (f r) = P.localized' (Rₚ r) (.powers r.1) (f r)) :
+theorem Submodule.eq_of_localization_span' {N P : Submodule R M}
+    (h : ∀ r, N.localized' (Rₚ r) (.powers r.1) (f r) = P.localized' (Rₚ r) (.powers r.1) (f r)) :
     N = P :=
   eq_of_localization₀_span' s span_eq _ f fun r ↦ congr(restrictScalars _ $(h r))
 
