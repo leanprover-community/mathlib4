@@ -87,19 +87,6 @@ theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
-lemma LinearMap.rank_ker_of_nat (f : M →ₗ[R] M') {m n : ℕ} (hm : Module.rank R M = m)
-    (hn : Module.rank R (LinearMap.range f) = n) : Module.rank R (LinearMap.ker f) = m - n := by
-  have hle : Cardinal.lift.{u, v} (Module.rank R (LinearMap.range f)) ≤
-    Cardinal.lift.{v, u} (Module.rank R M) := lift_rank_range_le f
-  have hnm : n ≤ m := by simp_all
-  have h3 := congrArg Cardinal.lift.{v, u} (Submodule.rank_quotient_add_rank (LinearMap.ker f))
-  rw [Cardinal.lift_add, LinearEquiv.lift_rank_eq (f).quotKerEquivRange, hm, hn] at h3
-  refine Cardinal.lift_injective.{v, u} ?_
-  rw [show m = n + (m - n) by omega, Nat.cast_add, Cardinal.lift_add] at h3
-  have h6 : Cardinal.lift.{v,u} n < Cardinal.aleph0 :=
-    Cardinal.lift_lt_aleph0.mpr (Cardinal.nat_lt_aleph0 n)
-  exact Cardinal.eq_of_add_eq_add_left (by simpa [Cardinal.lift_natCast] using h3) h6
-
 theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndependent (ι := s) R Subtype.val) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndependent (ι := t) R Subtype.val := by
@@ -216,12 +203,22 @@ lemma Submodule.finrank_quotient_add_finrank [Module.Finite R M] (N : Submodule 
     Submodule.finrank_eq_rank]
   exact HasRankNullity.rank_quotient_add_rank _
 
-
 /-- Rank-nullity theorem using `finrank` and subtraction. -/
 lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul R S] [Module S M]
     [IsScalarTower R S M] (N : Submodule S M) : finrank R (M ⧸ N) = finrank R M - finrank R N := by
   rw [← (N.restrictScalars R).finrank_quotient_add_finrank]
   exact Nat.eq_sub_of_add_eq rfl
+
+lemma Submodule.disjoint_of_finrank_eq [NoZeroSMulDivisors R M] {N : Type*} [AddCommGroup N]
+    [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
+    (h : finrank R (L.map f) = finrank R L) :
+    Disjoint L (LinearMap.ker f) := by
+  refine disjoint_iff.mpr <| LinearMap.injective_domRestrict_iff.mp <| LinearMap.ker_eq_bot.mp <|
+    Submodule.rank_eq_zero.mp ?_
+  rw [← Submodule.finrank_eq_rank, Nat.cast_eq_zero]
+  rw [← LinearMap.range_domRestrict] at h
+  have := (LinearMap.ker (f.domRestrict L)).finrank_quotient_add_finrank
+  rwa [LinearEquiv.finrank_eq (f.domRestrict L).quotKerEquivRange, h, Nat.add_eq_left] at this
 
 end Finrank
 

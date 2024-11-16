@@ -3,8 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Ring.SumsOfSquares
+import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # The canonical bilinear form on a finite root pairing
@@ -42,8 +43,9 @@ Weyl group.
   we restrict to weights between 0 and 4.
 -/
 
-open Function
+open Set Function
 open Module hiding reflection
+open Submodule (span)
 
 noncomputable section
 
@@ -134,8 +136,7 @@ lemma rootForm_root_self (j : ι) :
   simp [rootForm_apply_apply]
 
 theorem range_polarization_domRestrict_le_span_coroot :
-    LinearMap.range (P.Polarization.domRestrict (Submodule.span R (Set.range P.root))) ≤
-      (Submodule.span R (Set.range P.coroot)) := by
+    LinearMap.range (P.Polarization.domRestrict P.rootSpan) ≤ P.corootSpan := by
   intro y hy
   obtain ⟨x, hx⟩ := hy
   rw [← hx, LinearMap.domRestrict_apply, Polarization_apply]
@@ -145,23 +146,10 @@ theorem range_polarization_domRestrict_le_span_coroot :
 
 end CommRing
 
-theorem sum_mul_self_eq_zero_iff {ι : Type*} {R} [LinearOrderedCommRing R] (s : Finset ι)
-    (f : ι → R) : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons i s his h =>
-    simp only [Finset.sum_cons, Finset.mem_cons, forall_eq_or_imp]
-    refine ⟨fun hc => ?_, fun hz => by simpa [hz.1] using h.mpr hz.2⟩
-    have hhi : f i * f i ≤ 0 := by
-      rw [← hc, le_add_iff_nonneg_right]
-      exact Finset.sum_nonneg fun i _ ↦ mul_self_nonneg (f i)
-    have hiz : f i * f i = 0 := (eq_of_le_of_le (mul_self_nonneg (f i)) hhi).symm
-    exact ⟨zero_eq_mul_self.mp hiz.symm, h.mp (by rw [← hc, hiz, zero_add])⟩
-
 section LinearOrderedCommRing
 
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-[Module R N] (P : RootPairing ι R M N)
+  [Module R N] (P : RootPairing ι R M N)
 
 theorem rootForm_self_non_neg (x : M) : 0 ≤ P.RootForm x x :=
   IsSumSq.nonneg (P.rootForm_self_sum_of_squares x)
@@ -170,10 +158,8 @@ theorem rootForm_self_zero_iff (x : M) :
     P.RootForm x x = 0 ↔ ∀ i, P.coroot' i x = 0 := by
   simp only [rootForm_apply_apply, PerfectPairing.toLin_apply, LinearMap.coe_comp, comp_apply,
     Polarization_apply, map_sum, map_smul, smul_eq_mul]
-  convert sum_mul_self_eq_zero_iff Finset.univ fun i => P.coroot' i x
-  refine { mp := fun x _ => x, mpr := ?_ }
-  rename_i i
-  exact fun x => x (Finset.mem_univ i)
+  convert Finset.sum_mul_self_eq_zero_iff Finset.univ fun i => P.coroot' i x
+  simp
 
 lemma rootForm_root_self_pos (j : ι) :
     0 < P.RootForm (P.root j) (P.root j) := by
@@ -181,18 +167,17 @@ lemma rootForm_root_self_pos (j : ι) :
     rootForm_apply_apply, toLin_toPerfectPairing]
   refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
   use j
-  exact ⟨Finset.mem_univ j, by simp⟩
+  simp
 
 lemma prod_rootForm_root_self_pos :
     0 < ∏ i, P.RootForm (P.root i) (P.root i) :=
   Finset.prod_pos fun i _ => rootForm_root_self_pos P i
 
-lemma prod_rootForm_smul_coroot_in_range_domRestrict (i : ι) :
+lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
     (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈
-      LinearMap.range (P.Polarization.domRestrict (Submodule.span R (Set.range P.root))) := by
-  have hdvd : P.RootForm (P.root i) (P.root i) ∣ ∏ a : ι, P.RootForm (P.root a) (P.root a) :=
-    Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a)) (Finset.mem_univ i)
-  obtain ⟨c, hc⟩ := hdvd
+      LinearMap.range (P.Polarization.domRestrict (P.rootSpan)) := by
+  obtain ⟨c, hc⟩ := Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a))
+    (Finset.mem_univ i)
   rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
   refine LinearMap.mem_range.mpr ?_
   use ⟨(c • 2 • P.root i), by aesop⟩

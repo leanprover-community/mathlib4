@@ -353,17 +353,12 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
     subsingleton
   · exact hw.trans_eq (Cardinal.mk_singleton _).symm
 
-lemma rank_le_of_smul_regular (L L' : Submodule R M) {r : R} (hr : IsSMulRegular M r)
-    (hrc : IsMulCentral r) (h : ∀ x ∈ L, r • x ∈ L') :
-    Module.rank R L ≤ Module.rank R L' := by
-  let f : L →ₗ[R] L' :=
-    { toFun := fun x => ⟨r • x, h x x.2⟩
-      map_add' := fun x y => by simp
-      map_smul' := fun s x => by simp [← smul_assoc, IsMulCentral.comm hrc s] }
-  refine LinearMap.rank_le_of_injective (R := R) f (fun x y hxy => ?_)
-  rw [show f x = ⟨r • x, h x x.2⟩ by rfl, show f y = ⟨r • y, h y y.2⟩ by rfl] at hxy
-  simp only [Subtype.mk.injEq] at hxy
-  exact SetLike.coe_eq_coe.mp (hr (hr (congrArg (HSMul.hSMul r) hxy)))
+lemma rank_le_of_smul_regular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
+    [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)
+    (h : ∀ x ∈ L, s • x ∈ L') :
+    Module.rank R L ≤ Module.rank R L' :=
+  ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
+    fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
 
 end
 
