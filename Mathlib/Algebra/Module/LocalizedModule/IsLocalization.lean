@@ -34,11 +34,11 @@ instance {A Aₛ} [CommSemiring A] [Algebra R A][CommSemiring Aₛ] [Algebra A A
   isLocalizedModule_iff_isLocalization.mpr h
 
 lemma isLocalizedModule_iff_isLocalization' (R') [CommSemiring R'] [Algebra R R'] :
-    IsLocalizedModule S (Algebra.ofId R R').toLinearMap ↔ IsLocalization S R' := by
+    IsLocalizedModule S (Algebra.linearMap R R') ↔ IsLocalization S R' := by
   convert isLocalizedModule_iff_isLocalization (S := S) (A := R) (Aₛ := R')
   exact (Submonoid.map_id S).symm
 
-instance {A} [CommRing A] [Algebra R A] [IsLocalization S A] :
+instance {A} [CommSemiring A] [Algebra R A] [IsLocalization S A] :
     IsLocalizedModule S (Algebra.linearMap R A) :=
   (isLocalizedModule_iff_isLocalization' S _).mpr inferInstance
 
