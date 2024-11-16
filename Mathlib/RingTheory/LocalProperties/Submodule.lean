@@ -6,6 +6,7 @@ Authors: Andrew Yang, David Swinarski
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 # Local properties of modules and submodules
@@ -201,3 +202,81 @@ theorem Submodule.eq_top_of_localization_span {N : Submodule R M}
   eq_of_localization_span _ spn fun _ ↦ by simp only [h, Submodule.localized'_top]
 
 end span
+
+section span'
+
+open IsLocalizedModule LocalizedModule Ideal
+
+variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A]
+  [AddCommGroup M] [Module R M] [Module A M] (s : Set R) (spn : Ideal.span s = ⊤)
+include spn
+
+variable
+  (Rₚ : ∀ _ : s, Type*)
+  [∀ r : s, CommRing (Rₚ r)]
+  [∀ r : s, Algebra R (Rₚ r)]
+  [∀ r : s, IsLocalization.Away r.1 (Rₚ r)]
+  (Mₚ : ∀ _ : s, Type*)
+  [∀ r : s, AddCommGroup (Mₚ r)]
+  [∀ r : s, Module R (Mₚ r)]
+  [∀ r : s, Module (Rₚ r) (Mₚ r)]
+  [∀ r : s, IsScalarTower R (Rₚ r) (Mₚ r)]
+  (f : ∀ r : s, M →ₗ[R] Mₚ r)
+  [inst : ∀ r : s, IsLocalizedModule (Submonoid.powers r.1) (f r)]
+
+theorem eq_zero_of_localization_span' (x : M)
+    (h : ∀ r : s, f r x = 0) : x = 0 := by
+  rw [← Submodule.span_singleton_eq_bot (R := R), ← Submodule.annihilator_eq_top_iff]
+  by_contra! H
+  obtain ⟨m, maxm, lem⟩ := exists_le_maximal _ H
+  have exr : ∃ r : s, r.1 ∉ m := by
+    by_contra! H
+    exact maxm.ne_top (top_le_iff.mp (spn ▸ (Ideal.span_le.mpr (Subtype.forall.mp H))))
+  obtain ⟨r, nm⟩ := exr
+  obtain ⟨t, ht⟩ := (IsLocalizedModule.eq_zero_iff (Submonoid.powers r.1) (f r)).mp <| h r
+  obtain ⟨n, hn⟩ := (Submonoid.mem_powers_iff _ _).mp t.2
+  exact nm (maxm.isPrime.mem_of_pow_mem n
+    (lem ((Submodule.mem_annihilator_span_singleton x (r.1 ^ n)).mpr (hn ▸ ht))))
+
+theorem Submodule.le_of_localization_span' {N P : Submodule R M} (h : ∀ r : s,
+    N.localized' (Rₚ r) (Submonoid.powers r.1) (f r) ≤
+    P.localized' (Rₚ r) (Submonoid.powers r.1) (f r)) : N ≤ P := by
+  by_contra nle
+  obtain ⟨n, hn, hp⟩ := Set.not_subset.mp nle
+  set I := P.colon (Submodule.span R {n})
+  obtain ⟨m ,maxm, lem⟩ := exists_le_maximal _ ((ne_top_iff_one _).mpr
+    fun H ↦ (one_smul R n ▸ hp) (Submodule.mem_colon_singleton.mp H))
+  have exr : ∃ r : s, r.1 ∉ m := by
+    by_contra! H
+    exact maxm.ne_top (top_le_iff.mp (spn ▸ (Ideal.span_le.mpr (Subtype.forall.mp H))))
+  obtain ⟨r, nm⟩ := exr
+  have mem : (f r) n ∈ N.localized' (Rₚ r) (Submonoid.powers r.1) (f r) := (mem_localized'
+    (Rₚ r) _ (f r) N ((f r) n)).mpr ⟨n, hn, 1, mk'_one _ (f r) n⟩
+  apply (h r) at mem
+  simp only [mkLinearMap_apply, Submodule.mem_localized', mk_eq_mk'] at mem
+  obtain ⟨p, inp, s, hs⟩ := mem
+  rw [← mk'_one (Submonoid.powers r.1) (f r) n] at hs
+  obtain ⟨s', eq⟩ := (mk'_eq_mk'_iff _ p n s 1).mp hs
+  simp only [one_smul, smul_smul] at eq
+  have h1 : (s' * s).1 ∈ I := by
+    have : (s'.1 * s.1) • n = (s' * s) • n := rfl
+    rw [Submonoid.coe_mul, Submodule.mem_colon_singleton, this, eq]
+    exact P.smul_mem ((Submonoid.powers r.1).subtype s') inp
+  obtain ⟨k, hk⟩ := (Submonoid.mem_powers_iff _ _).mp (s' * s).2
+  exact nm (maxm.isPrime.mem_of_pow_mem k (hk ▸ (lem h1)))
+
+theorem Submodule.eq_of_localization_span' {N P : Submodule R M}
+    (h : ∀ r : s, N.localized' (Rₚ r) (Submonoid.powers r.1) (f r) =
+    P.localized' (Rₚ r) (Submonoid.powers r.1) (f r)) : N = P :=
+  eq_of_le_of_le (le_of_localization_span' s spn _ _ _ (fun r ↦ le_of_eq (h r)))
+  (le_of_localization_span' s spn _ _ _ (fun r ↦ le_of_eq (h r).symm))
+
+theorem Submodule.eq_bot_of_localization_span' {N : Submodule R M}
+    (h : ∀ r : s, N.localized' (Rₚ r) (Submonoid.powers r.1) (f r) = ⊥) : N = ⊥ :=
+  eq_of_localization_span' s spn Rₚ Mₚ f fun _ ↦ by simp only [h, Submodule.localized'_bot]
+
+theorem Submodule.eq_top_of_localization_span' {N : Submodule R M}
+    (h : ∀ r : s, N.localized' (Rₚ r) (Submonoid.powers r.1) (f r) = ⊤) : N = ⊤ :=
+  eq_of_localization_span' s spn Rₚ Mₚ f fun _ ↦ by simp only [h, Submodule.localized'_top]
+
+end span'
