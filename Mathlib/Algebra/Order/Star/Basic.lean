@@ -169,7 +169,7 @@ theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
   simpa only [star_star] using star_mul_self_nonneg (star r)
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
-theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
+protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
 @[aesop safe apply]
