@@ -158,6 +158,13 @@ theorem IsStableUnderCobaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
 
+instance IsStableUnderCobaseChange.isomorphisms :
+    (isomorphisms C).IsStableUnderCobaseChange where
+  of_isPushout {_ _ _ _ f g _ _} h hf :=
+    have : IsIso f := hf
+    have := hasPushout_of_right_iso g f
+    h.inl_isoPushout_inv ▸ inferInstanceAs (IsIso _)
+
 variable (C) in
 instance IsStableUnderCobaseChange.epimorphisms :
     (epimorphisms C).IsStableUnderCobaseChange where
