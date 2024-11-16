@@ -8,7 +8,7 @@ import Mathlib.Algebra.Exact
 /-!
 # Local properties about linear maps
 
-In this file, we show that injective, surjective, bijective (of linear maps) are local properties.
+In this file, we show that injectivity, surjectivity, bijectivity and exactness of linear maps are local properties. More precisely, we show that these can be checked at maximal ideals and on finite standard covers.
 
 -/
 open Submodule LocalizedModule Ideal LinearMap
