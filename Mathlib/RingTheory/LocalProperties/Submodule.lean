@@ -224,6 +224,7 @@ variable
   (f : ∀ r : s, M →ₗ[R] Mₚ r)
   [inst : ∀ r : s, IsLocalizedModule (Submonoid.powers r.1) (f r)]
 
+/-- A variant of `eq_zero_of_localization_span` that accepts `IsLocalizedModule`.-/
 theorem eq_zero_of_localization_span' (x : M)
     (h : ∀ r : s, f r x = 0) : x = 0 := by
   rw [← Submodule.span_singleton_eq_bot (R := R), ← Submodule.annihilator_eq_top_iff]
@@ -238,6 +239,7 @@ theorem eq_zero_of_localization_span' (x : M)
   exact nm (maxm.isPrime.mem_of_pow_mem n
     (lem ((Submodule.mem_annihilator_span_singleton x (r.1 ^ n)).mpr (hn ▸ ht))))
 
+/-- A variant of `le_of_localization_span` that accepts `IsLocalizedModule`.-/
 theorem Submodule.le_of_localization_span' {N P : Submodule R M} (h : ∀ r : s,
     N.localized' (Rₚ r) (Submonoid.powers r.1) (f r) ≤
     P.localized' (Rₚ r) (Submonoid.powers r.1) (f r)) : N ≤ P := by
@@ -265,16 +267,19 @@ theorem Submodule.le_of_localization_span' {N P : Submodule R M} (h : ∀ r : s,
   obtain ⟨k, hk⟩ := (Submonoid.mem_powers_iff _ _).mp (s' * s).2
   exact nm (maxm.isPrime.mem_of_pow_mem k (hk ▸ (lem h1)))
 
+/-- A variant of `eq_of_localization_span` that accepts `IsLocalizedModule`.-/
 theorem Submodule.eq_of_localization_span' {N P : Submodule R M}
     (h : ∀ r : s, N.localized' (Rₚ r) (Submonoid.powers r.1) (f r) =
     P.localized' (Rₚ r) (Submonoid.powers r.1) (f r)) : N = P :=
   eq_of_le_of_le (le_of_localization_span' s spn _ _ _ (fun r ↦ le_of_eq (h r)))
   (le_of_localization_span' s spn _ _ _ (fun r ↦ le_of_eq (h r).symm))
 
+/-- A variant of `eq_bot_of_localization_span` that accepts `IsLocalizedModule`.-/
 theorem Submodule.eq_bot_of_localization_span' {N : Submodule R M}
     (h : ∀ r : s, N.localized' (Rₚ r) (Submonoid.powers r.1) (f r) = ⊥) : N = ⊥ :=
   eq_of_localization_span' s spn Rₚ Mₚ f fun _ ↦ by simp only [h, Submodule.localized'_bot]
 
+/-- A variant of `eq_top_of_localization_span` that accepts `IsLocalizedModule`.-/
 theorem Submodule.eq_top_of_localization_span' {N : Submodule R M}
     (h : ∀ r : s, N.localized' (Rₚ r) (Submonoid.powers r.1) (f r) = ⊤) : N = ⊤ :=
   eq_of_localization_span' s spn Rₚ Mₚ f fun _ ↦ by simp only [h, Submodule.localized'_top]
