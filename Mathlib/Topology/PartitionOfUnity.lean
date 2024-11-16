@@ -636,7 +636,9 @@ theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T
 
 end PartitionOfUnity
 
-/-- A variation of Urysohn's lemma. In a locally compact T2 space `X`, for a compact set `t` and a
+/-- A variation of **Urysohn's lemma**.
+
+In a locally compact T2 space `X`, for a compact set `t` and a
 finite family of open sets `{s i}_i` such that `t ⊆ ⋃ i, s i`, there is a family of compactly
 supported continuous functions `{f i}_i` supported in `s i`, `∑ i, f i x = 1` on `t` and
 `0 ≤ f i x ≤ 1`. -/
