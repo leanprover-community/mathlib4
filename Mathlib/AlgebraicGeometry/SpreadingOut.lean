@@ -103,7 +103,7 @@ lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f]:
   obtain ⟨V, hV⟩ := (IsOpenImmersion.affineOpensEquiv f).surjective ⟨⟨U, hU⟩, hU'⟩
   obtain rfl : f ''ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
   obtain ⟨y, hy, e : f.base y = f.base x⟩ := hxU
-  obtain rfl := f.isOpenEmbedding.inj e
+  obtain rfl := f.isOpenEmbedding.injective e
   refine ⟨V, hy, V.2, ?_⟩
   replace H := ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
     (f.stalkMap y)).mpr H

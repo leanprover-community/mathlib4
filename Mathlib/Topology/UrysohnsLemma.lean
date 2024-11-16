@@ -374,10 +374,7 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.one_apply, sub_eq_self]
     exact hgs hx
   · intro x
-    simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, mem_Icc, sub_nonneg,
-      tsub_le_iff_right, le_add_iff_nonneg_right]
-    refine ⟨(hicc x).2, (hicc x).1⟩
-
+    simpa [and_comm] using hicc x
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
@@ -465,8 +462,8 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
 compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`,
 `f x = 1` on `t` and `0 ≤ f x ≤ 1`. -/
 lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
-    (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ),
-    tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
+    (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) :
+    ∃ f : C(X, ℝ), tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
 -- separate `sᶜ` and `t` by `u` and `v`.
   rw [← compl_compl s] at hscp
   obtain ⟨u, v, huIsOpen, hvIsOpen, hscompl_subset_u, ht_subset_v, hDjsjointuv⟩ :=

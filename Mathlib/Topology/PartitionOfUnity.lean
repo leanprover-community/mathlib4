@@ -436,17 +436,18 @@ theorem exists_isSubordinate_of_locallyFinite_of_prop_t2space [LocallyCompactSpa
     (p : (X → ℝ) → Prop) (h01 : ∀ s t, IsClosed s → IsCompact t → Disjoint s t → ∃ f : C(X, ℝ),
     p f ∧ EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1)
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U ∧
-    ∀ i, HasCompactSupport (f i) := by
+    (hU : s ⊆ ⋃ i, U i) :
+    ∃ f : BumpCovering ι X s, (∀ i, p (f i)) ∧ f.IsSubordinate U ∧
+      ∀ i, HasCompactSupport (f i) := by
   rcases exists_subset_iUnion_closure_subset_t2space hs ho (fun x _ => hf.point_finite x) hU with
     ⟨V, hsV, hVo, hVU, hcp⟩
-  have hVU' : ∀ i, V i ⊆ U i := fun i => Subset.trans subset_closure (hVU i)
+  have hVU' i : V i ⊆ U i := subset_closure.trans (hVU i)
   rcases exists_subset_iUnion_closure_subset_t2space hs hVo
     (fun x _ => (hf.subset hVU').point_finite x) hsV with ⟨W, hsW, hWo, hWV, hWc⟩
   choose f hfp hf0 hf1 hf01 using fun i =>
     h01 _ _ (isClosed_compl_iff.2 <| hVo i) (hWc i)
       (disjoint_right.2 fun x hx => Classical.not_not.2 (hWV i hx))
-  have hsupp : ∀ i, support (f i) ⊆ V i := fun i => support_subset_iff'.2 (hf0 i)
+  have hsupp i : support (f i) ⊆ V i := support_subset_iff'.2 (hf0 i)
   refine ⟨⟨f, hf.subset fun i => Subset.trans (hsupp i) (hVU' i), fun i x => (hf01 i x).1,
       fun i x => (hf01 i x).2, fun x hx => ?_⟩,
     hfp, fun i => Subset.trans (closure_mono (hsupp i)) (hVU i),
@@ -461,15 +462,14 @@ paracompact space, then the assumption `hf : LocallyFinite U` can be omitted, se
 theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [LocallyCompactSpace X]
     [T2Space X]
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : BumpCovering ι X s, f.IsSubordinate U ∧
-    ∀ i, HasCompactSupport (f i):=
+    (hU : s ⊆ ⋃ i, U i) :
+    ∃ f : BumpCovering ι X s, f.IsSubordinate U ∧ ∀ i, HasCompactSupport (f i) := by
   -- need to switch 0 and 1 in `exists_continuous_zero_one_of_isCompact`
-  let ⟨f, _, hfU⟩ :=
+  simpa using
     exists_isSubordinate_of_locallyFinite_of_prop_t2space (fun _ => True)
       (fun _ _ ht hs hd =>
         (exists_continuous_zero_one_of_isCompact' hs ht hd.symm).imp fun _ hf => ⟨trivial, hf⟩)
       hs U ho hf hU
-  ⟨f, hfU⟩
 
 /-- Index of a bump function such that `fs i =ᶠ[𝓝 x] 1`. -/
 def ind (x : X) (hx : x ∈ s) : ι :=
@@ -627,8 +627,8 @@ theorem exists_isSubordinate [NormalSpace X] [ParacompactSpace X] (hs : IsClosed
 compact set `s`, then there exists a `PartitionOfUnity ι X s` that is subordinate to `U`. -/
 theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T2Space X]
     (hs : IsCompact s) (U : ι → Set X) (ho : ∀ i, IsOpen (U i)) (hf : LocallyFinite U)
-    (hU : s ⊆ ⋃ i, U i) : ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U ∧
-    ∀ i, HasCompactSupport (f i) :=
+    (hU : s ⊆ ⋃ i, U i) :
+    ∃ f : PartitionOfUnity ι X s, f.IsSubordinate U ∧ ∀ i, HasCompactSupport (f i) :=
   let ⟨f, hfsub, hfcp⟩ :=
     BumpCovering.exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space hs U ho hf hU
   ⟨f.toPartitionOfUnity, hfsub.toPartitionOfUnity, fun i => IsCompact.of_isClosed_subset (hfcp i)
@@ -636,45 +636,42 @@ theorem exists_isSubordinate_of_locallyFinite_t2space [LocallyCompactSpace X] [T
 
 end PartitionOfUnity
 
-/-- A variation of Urysohn's lemma. In a locally compact T2 space `X`, for a compact set `t` and a
-finite family of open sets `{s i}_i` such that `t ⊆ ⋃ i, s i`, there is a family of compactly
-supported continuous functions `{f i}_i` supported in `s i`, `∑ i, f i x = 1` on `t` and
-`0 ≤ f i x ≤ 1`. -/
+/-- A variation of **Urysohn's lemma**.
+
+In a locally compact T2 space `X`, for a compact set `t` and a finite family of open sets `{s i}_i`
+such that `t ⊆ ⋃ i, s i`, there is a family of compactly supported continuous functions `{f i}_i`
+supported in `s i`, `∑ i, f i x = 1` on `t` and `0 ≤ f i x ≤ 1`. -/
 theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompactSpace X]
     {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
-    (hst : t ⊆ ⋃ i, s i) : ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧
-    EqOn (∑ i, f i) 1 t ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1) ∧ (∀ (i : Fin n),
-    HasCompactSupport (f i)) := by
-  have hlf : LocallyFinite s := by
-    intro x
-    use univ
-    refine ⟨univ_mem, ?_⟩
-    exact toFinite {i | (s i ∩ univ).Nonempty}
+    (hst : t ⊆ ⋃ i, s i) :
+    ∃ f : Fin n → C(X, ℝ), (∀ (i : Fin n), tsupport (f i) ⊆ s i) ∧ EqOn (∑ i, f i) 1 t
+      ∧ (∀ (i : Fin n), ∀ (x : X), f i x ∈ Icc (0 : ℝ) 1)
+      ∧ (∀ (i : Fin n), HasCompactSupport (f i)) := by
   obtain ⟨f, hfsub, hfcp⟩ := PartitionOfUnity.exists_isSubordinate_of_locallyFinite_t2space htcp s
-    hs hlf hst
-  use f.toFun
+    hs (locallyFinite_of_finite _) hst
+  use f
   refine ⟨fun i ↦ hfsub i, ?_, ?_, fun i => hfcp i⟩
-  · intro t ht
+  · intro x hx
     simp only [Finset.sum_apply, Pi.one_apply]
-    have h := f.sum_eq_one' t ht
+    have h := f.sum_eq_one' x hx
     simp at h
-    rw [finsum_eq_sum (fun i => (f.toFun i) t)
-      (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) t)))] at h
+    rw [finsum_eq_sum (fun i => (f.toFun i) x)
+      (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) x)))] at h
     simp only [Finite.toFinset_setOf, ne_eq] at h
-    rw [← h, ← Finset.sum_subset]
-    · exact Finset.filter_subset (fun x ↦ ¬(f.toFun x) t = 0) Finset.univ
-    · intro x _ hnx
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and, Decidable.not_not] at hnx
-      exact hnx
+    rw [← h, ← Finset.sum_subset
+      (Finset.subset_univ (Finset.filter (fun (j : Fin n) ↦ ¬(f.toFun j) x = 0) Finset.univ))
+      (by intro j hju hj
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and, Decidable.not_not] at hj
+          exact hj)]
+    rfl
   intro i x
-  constructor
-  · exact f.nonneg' i x
-  by_cases h0 : f.toFun i x = 0
+  refine ⟨f.nonneg i x, ?_⟩
+  by_cases h0 : f i x = 0
   · rw [h0]
     exact zero_le_one
-  rw [← Finset.sum_singleton (f.toFun ·  x) i]
+  rw [← Finset.sum_singleton (f ·  x) i]
   apply le_trans _ (f.sum_le_one' x)
-  rw [finsum_eq_sum (f.toFun ·  x) (by exact toFinite (support fun x_1 ↦ (f.toFun x_1) x))]
+  rw [finsum_eq_sum (f.toFun ·  x) (by exact toFinite (support (f.toFun · x)))]
   simp only [Finite.toFinset_setOf, ne_eq]
   gcongr with z hz
   · exact fun j _ _ => f.nonneg j x
