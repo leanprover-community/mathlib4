@@ -152,7 +152,7 @@ example (h : a + b ≠ 0) (H : a • x = b • y) : x = (b / (a + b)) • (x + y
 end
 
 example [OrderedSemiring K] [OrderedCancelAddCommMonoid V] [Module K V] [OrderedSMul K V]
-    {x y r : V} (hx : x < r) (hy : y < r) {a b : K} (hb : 0 ≤ b) (hab : a + b = 1) (ha' : 0 < a) :
+    {x y r : V} (hx : x < r) (hy : y < r) {a b : K} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) :
     a • x + b • y < r := by
   linear_combination (norm := skip) a • hx + b • hy + hab • r
   apply le_of_eq
