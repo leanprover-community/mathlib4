@@ -48,13 +48,16 @@ theorem Matrix.of_update_right [DecidableEq n'] (f : m → n → α) (v : m' →
   simp only [of_apply, updateColumn_apply, Function.update_apply]
   rw [apply_ite (f (v i))]
 
-theorem Matrix.det_of_updateColumn_right [Fintype n] [DecidableEq n] [CommRing α] (f : n → n → α)
-  (j' : n) (u v w : n → α) : w = u + v →
-  ((Matrix.of (fun i j ↦ f i j)).updateColumn j' w).det =
-  ((Matrix.of (fun i j ↦ f i j)).updateColumn j' u).det +
-  ((Matrix.of (fun i j ↦ f i j)).updateColumn j' v).det := by
-  intro h; rw [h]
-  rw [Matrix.det_updateColumn_add]
+theorem Matrix.det_of_updateColumn_add [CommRing α] [DecidableEq n'] [Fintype n']
+  (f : n → n → α) (v w : n' → n)
+  (j' : n') (x y : n) :
+  ((Matrix.of (fun i j ↦ f (v i) (w j))).updateColumn j' (fun i ↦ f (v i) x + f (v i) y)).det =
+  ((Matrix.of (fun i j ↦ f (v i) (w j))).updateColumn j' (fun i ↦ f (v i) x)).det +
+  ((Matrix.of (fun i j ↦ f (v i) (w j))).updateColumn j' (fun i ↦ f (v i) y)).det := by
+  rw [← Matrix.det_updateColumn_add]
+  rfl
+
+
 
 end matrix
 
@@ -65,6 +68,16 @@ variable (B : LinearMap.BilinForm R M)
 variable {k : ℕ}
 
 section inducedForm
+
+theorem Matrix.bilin_det_of_updateColumn_add (v w : Fin k → M)
+  (j' : Fin k) (x y : M) :
+  ((Matrix.of (fun i j ↦ B (v i) (w j))).updateColumn j' (fun i ↦ B (v i) x + B (v i) y)).det =
+  ((Matrix.of (fun i j ↦ B (v i) (w j))).updateColumn j' (fun i ↦ B (v i) x)).det +
+  ((Matrix.of (fun i j ↦ B (v i) (w j))).updateColumn j' (fun i ↦ B (v i) y)).det := by
+  rw [← Matrix.det_updateColumn_add]
+  rfl
+
+#check Matrix.bilin_det_of_updateColumn_add B ?v ?w ?j' ?x ?y
 
 #check Matrix.det_updateColumn_add
 
@@ -77,7 +90,7 @@ private def BilinFormAux :
         dsimp
         simp only [Matrix.of_update_right]
         simp only [B.add_right]
-
+        --rw [← Matrix.bilin_det_of_updateColumn_add B v w j' x y]
         sorry
       map_smul' := sorry
       map_eq_zero_of_eq' := sorry }
