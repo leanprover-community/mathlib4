@@ -393,7 +393,6 @@ lemma krullDim_eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β :=
   le_antisymm (iSup_le fun i ↦ le_sSup ⟨i.reverse, rfl⟩) <|
     iSup_le fun i ↦ le_sSup ⟨i.reverse, rfl⟩
 
-
 /--
 The Krull dimension is the supremum of the elements' heights.
 
