@@ -379,6 +379,14 @@ lemma uc1 :
   UniformConvergenceCLM.topologicalSpace_mono _ _ (fun _ hC => IsCompact.totallyBounded hC)
 
 /-
+
+- Definitions and basic properties of absolutely convex hulls
+  https://github.com/leanprover-community/mathlib4/pull/17029
+- Definitions and basic properties of closed convex and closed absolutely convex hulls
+  https://github.com/leanprover-community/mathlib4/pull/17983 -  TVS II.13
+- The absolutely convex hull of a totally bounded (precompact) set is totally bounded (precompact)
+  https://github.com/leanprover-community/mathlib4/pull/17204 - Proposition 3 TVS II.25
+
 From TVS IV.3 Example - when E is complete the T of compact convergence coincides with compact
 convex convergence (III p8). The topology of compact convex convergence is compatible with the
 duality. This is used in corollary 2 of the BD theorem
@@ -391,9 +399,6 @@ uniformly on the closed convex balanced envelope?
 
 Terminology: A set is stb "absolutely convex" or "disked" if it is convex and balanced
 Mathlib considers absolutely convex in `Analysis/LocallyConvex/AbsConvex`
-
-We have `convexHull` and `balancedHull` but there is a note about defining the disked hull as a TODO
-in `Analysis/LocallyConvex/AbsConvex`.
 
 -/
 
