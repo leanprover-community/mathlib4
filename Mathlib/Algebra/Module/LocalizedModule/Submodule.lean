@@ -206,7 +206,7 @@ lemma LinearMap.localized'_range_eq_range_localizedMap (g : M →ₗ[R] P) :
   constructor
   · rintro ⟨r, hr, a, ha⟩
     obtain ⟨m, hm⟩ := mem_range.mp hr
-    exact ⟨(mk' f m a), by rw [extendScalarsOfIsLocalization_apply', map_mk', hm, ha]⟩
+    exact ⟨(mk' f m a), by simp [hm, ha]⟩
   · intro h
     obtain ⟨n, hn⟩ := mem_range.mp h
     obtain ⟨m, hm⟩ := surj p f n
