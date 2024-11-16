@@ -136,15 +136,15 @@ lemma Submodule.eq_top_of_localization_maximal' {N : Submodule R M}
 
 end localization_maximal
 
-section finitespan
+section span
 
 open IsLocalizedModule LocalizedModule Ideal
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-  (s : Set R) (spn : Ideal.span (s : Set R) = ⊤)
+  (s : Set R) (spn : Ideal.span s = ⊤)
 include spn
 
-theorem eq_zero_of_localization_finitespan (x : M)
+theorem eq_zero_of_localization_span (x : M)
     (h : ∀ r : s, (mkLinearMap (Submonoid.powers r.1) M ) x = 0) : x = 0 := by
   rw [← Submodule.span_singleton_eq_bot (R := R), ← Submodule.annihilator_eq_top_iff]
   by_contra! H
@@ -159,7 +159,7 @@ theorem eq_zero_of_localization_finitespan (x : M)
   exact nm (maxm.isPrime.mem_of_pow_mem n
     (lem ((Submodule.mem_annihilator_span_singleton x (r.1 ^ n)).mpr (hn ▸ hs))))
 
-theorem Submodule.le_of_localization_finitespan {N P : Submodule R M}
+theorem Submodule.le_of_localization_span {N P : Submodule R M}
     (h : ∀ r : s, N.localized (Submonoid.powers r.1) ≤ P.localized (Submonoid.powers r.1)) :
       N ≤ P := by
   by_contra nle
@@ -186,18 +186,18 @@ theorem Submodule.le_of_localization_finitespan {N P : Submodule R M}
   obtain ⟨k, hk⟩ := (Submonoid.mem_powers_iff _ _).mp (s' * s).2
   exact nm (maxm.isPrime.mem_of_pow_mem k (hk ▸ (lem h1)))
 
-theorem Submodule.eq_of_localization_finitespan {N P : Submodule R M}
+theorem Submodule.eq_of_localization_span {N P : Submodule R M}
     (h : ∀ r : s, N.localized (Submonoid.powers r.1) = P.localized (Submonoid.powers r.1)) :
     N = P :=
-  eq_of_le_of_le (le_of_localization_finitespan s spn (fun r ↦ le_of_eq (h r)))
-  (le_of_localization_finitespan s spn (fun r ↦ le_of_eq (h r).symm))
+  eq_of_le_of_le (le_of_localization_span s spn (fun r ↦ le_of_eq (h r)))
+  (le_of_localization_span s spn (fun r ↦ le_of_eq (h r).symm))
 
-theorem Submodule.eq_bot_of_localization_finitespan {N : Submodule R M}
+theorem Submodule.eq_bot_of_localization_span {N : Submodule R M}
     (h : ∀ r : s, N.localized (Submonoid.powers r.1)= ⊥) : N = ⊥ :=
-  eq_of_localization_finitespan _ spn fun _ ↦ by simp only [h, Submodule.localized'_bot]
+  eq_of_localization_span _ spn fun _ ↦ by simp only [h, Submodule.localized'_bot]
 
-theorem Submodule.eq_top_of_localization_finitespan {N : Submodule R M}
+theorem Submodule.eq_top_of_localization_span {N : Submodule R M}
     (h : ∀ r : s, N.localized (Submonoid.powers r.1) = ⊤) : N = ⊤ :=
-  eq_of_localization_finitespan _ spn fun _ ↦ by simp only [h, Submodule.localized'_top]
+  eq_of_localization_span _ spn fun _ ↦ by simp only [h, Submodule.localized'_top]
 
-end finitespan
+end span

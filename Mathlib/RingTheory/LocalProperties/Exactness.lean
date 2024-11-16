@@ -10,7 +10,7 @@ import Mathlib.Algebra.Exact
 
 In this file, we show that
 injectivity, surjectivity, bijectivity and exactness of linear maps are local properties.
-More precisely, we show that these can be checked at maximal ideals and on finite standard covers.
+More precisely, we show that these can be checked at maximal ideals and on standard covers.
 
 -/
 open Submodule LocalizedModule Ideal LinearMap
@@ -53,40 +53,40 @@ theorem exact_of_localization {M₀ M₁ M₂ : Type*} [AddCommGroup M₀] [Modu
 
 end localization_maximal
 
-section localization_finitespan
+section localization_span
 
 variable {R M M' : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
-  (s : Finset R) (spn : span (s : Set R) = ⊤) (f : M →ₗ[R] M')
+  (s : Set R) (spn : span s = ⊤) (f : M →ₗ[R] M')
 include spn
 
-theorem injective_of_localization_finitespan (h : ∀ r : s, Function.Injective
+theorem injective_of_localization_span (h : ∀ r : s, Function.Injective
     (map (Submonoid.powers r.1) f)) :
     Function.Injective f :=
-  ker_eq_bot.mp <| eq_bot_of_localization_finitespan _ spn <|
+  ker_eq_bot.mp <| eq_bot_of_localization_span _ spn <|
   fun r ↦ (localized'_ker_eq_ker_localizedMap _ _ _ _ f).trans <| ker_eq_bot.mpr <| h r
 
-theorem surjective_of_localization_finitespan (h : ∀ r : s, Function.Surjective
+theorem surjective_of_localization_span (h : ∀ r : s, Function.Surjective
     (map (Submonoid.powers r.1) f)) :
     Function.Surjective f :=
-  range_eq_top.mp <| eq_top_of_localization_finitespan _ spn <|
+  range_eq_top.mp <| eq_top_of_localization_span _ spn <|
   fun r ↦ (localized'_range_eq_range_localizedMap _ _ _ _ f).trans <| range_eq_top.mpr <| h r
 
-theorem bijective_of_localization_finitespan (h : ∀ r : s, Function.Bijective
+theorem bijective_of_localization_span (h : ∀ r : s, Function.Bijective
     (map (Submonoid.powers r.1) f)) :
     Function.Bijective f :=
-  ⟨injective_of_localization_finitespan _ spn _ fun r => (h r).1,
-  surjective_of_localization_finitespan _ spn _ fun r => (h r).2⟩
+  ⟨injective_of_localization_span _ spn _ fun r => (h r).1,
+  surjective_of_localization_span _ spn _ fun r => (h r).2⟩
 
-lemma exact_of_localization_finitespan {M₀ M₁ M₂ : Type*} [AddCommGroup M₀] [Module R M₀]
+lemma exact_of_localization_span {M₀ M₁ M₂ : Type*} [AddCommGroup M₀] [Module R M₀]
     [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂] (f : M₀ →ₗ[R] M₁)
     (g : M₁ →ₗ[R] M₂) (h : ∀ r : s, Function.Exact ((map (Submonoid.powers r.1) f))
       ((map (Submonoid.powers r.1) g))) : Function.Exact f g := by
   simp only [LinearMap.exact_iff] at h ⊢
-  apply Submodule.eq_of_localization_finitespan _ spn
+  apply Submodule.eq_of_localization_span _ spn
   intro r
   unfold localized
   rw [LinearMap.localized'_range_eq_range_localizedMap _ _ (mkLinearMap (Submonoid.powers r.1) M₀),
     LinearMap.localized'_ker_eq_ker_localizedMap _ _ _ (mkLinearMap (Submonoid.powers r.1) M₂)]
   exact h r
 
-end localization_finitespan
+end localization_span
