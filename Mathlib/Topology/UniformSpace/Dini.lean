@@ -13,7 +13,15 @@ This file proves Dini's theorem, which states that if `F n` is a monotone increa
 continuous real-valued functions on a compact set `s` converging pointwise to a continuous function
 `f`, then `F n` converges uniformly to `f`.
 
-We generalize the codomain from `ℝ` to a normed latttice additive commutative group `G`. -/
+We generalize the codomain from `ℝ` to a normed latttice additive commutative group `G`.
+This theorem is true in a different generality as well: when `G` is a linearly ordered topological
+group with the order topology. This weakens the assumptions of the norm and commutativity, in
+exchange for strengthening to a linear order. This separate generality is not included in this file,
+but that generality was included in initial drafts of the original
+[PR #19068](https://github.com/leanprover-community/mathlib4/pull/19068) and can be recovered if
+necessary.
+
+-/
 
 open Filter Topology
 
