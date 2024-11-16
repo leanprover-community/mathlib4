@@ -1,4 +1,5 @@
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Module
@@ -141,6 +142,12 @@ example (h1 : a • x + b • y = 0) (h2 : a • μ • x + b • ν • y = 0) 
 
 example (h₁ : x - y = -(v - w)) (h₂ : x + y = v + w) : x = w := by
   linear_combination (norm := module) (2:K)⁻¹ • h₁ + (2:K)⁻¹ • h₂
+
+example (h : a + b ≠ 0) (H : a • x = b • y) : x = (b / (a + b)) • (x + y) := by
+  linear_combination (norm := match_scalars) (a + b)⁻¹ • H
+  · field_simp
+    ring
+  · ring
 
 end
 
