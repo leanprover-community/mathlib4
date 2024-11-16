@@ -62,7 +62,7 @@ partial def whnfWithConfig (e : Expr) (config : WhnfCoreConfig := {}) : MetaM Ex
           | some v => cache useCache e v
           | none   =>
             match (← unfoldDefinition? e') with
-            | some e'' => cache useCache e (← whnfImp e'')
+            | some e'' => cache useCache e (← whnfWithConfig e'' config)
             | none => cache useCache e e'
   withIncRecDepth <| whnfEasyCases e k config
 
