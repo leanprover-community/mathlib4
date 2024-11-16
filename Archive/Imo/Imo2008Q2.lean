@@ -105,7 +105,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
             · simp only [t, gt_iff_lt, lt_max_iff]; right; trivial
             exact ⟨rfl, rfl, rfl⟩
         · have hg : -z = g (x, y, z) := rfl
-          rw [hg, hz_def]; ring
+          rw [hg, hz_def]; unfold g; ring
       have h₂ : q < t * (t + 1) := by
         calc
           q < q + 1 := by linarith
