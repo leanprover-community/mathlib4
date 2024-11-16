@@ -142,6 +142,15 @@ example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
   have : 3 = 3 := rfl
   ring_nf -- reduced to `True` with mdata
 
+-- check that ring_nf does not unfold lets whose head is an algebraic operation
+example (a : ℤ) : True := by
+  have h1 : a + (1 - a) = 1 := by ring
+  set b := 1 - a
+  have h2 := congr((a - b) * $h1)
+  ring_nf at h2
+  guard_hyp h2 : a ^ 2 - b ^ 2 = a - b
+  trivial
+
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 

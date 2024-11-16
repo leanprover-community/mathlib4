@@ -141,3 +141,12 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   abel_nf at *
   guard_hyp w : 0 = y + z
   assumption
+
+-- check that abel_nf does not unfold lets whose head is an algebraic operation
+example (a : ℤ) : True := by
+  have h1 : a + (1 - a) = 1 := by abel
+  set b := 1 - a
+  have h2 := congr(3 • $h1)
+  abel_nf at h2
+  guard_hyp h2 : (3:ℤ) • a + (3:ℤ) • b = (3:ℤ) • 1
+  trivial
