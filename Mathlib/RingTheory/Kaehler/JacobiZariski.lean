@@ -16,14 +16,13 @@ Given `R → S → T`, the Jacobi-Zariski exact sequence is
 H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R] → Ω[T/S] → 0
 ```
 The maps are
-- `Algebra.H1Cotangnet.map`
-- `Algebra.H1Cotangnet.δ`
-- `Algebra.H1Cotangnet.δ`
+- `Algebra.H1Cotangent.map`
+- `Algebra.H1Cotangent.δ`
 - `KaehlerDifferential.mapBaseChange`
 - `KaehlerDifferential.map`
 and the exactness lemmas are
 - `Algebra.H1Cotangent.exact_map_δ`
-- `Algebra.H1Cotangent.exact_δ_map`
+- `Algebra.H1Cotangent.exact_δ_mapBaseChange`
 - `KaehlerDifferential.exact_mapBaseChange_map`
 - `KaehlerDifferential.map_surjective`
 -/
@@ -554,7 +553,7 @@ lemma H1Cotangent.exact_map_δ : Function.Exact (map R S T T) (δ R S T) :=
   Generators.H1Cotangent.exact_map_δ' (Generators.self S T)
     (Generators.self R S) (Generators.self R T) (Generators.defaultHom _ _)
 
-lemma H1Cotangent.exact_δ_map : Function.Exact (δ R S T) (mapBaseChange R S T) :=
+lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseChange R S T) :=
   Generators.H1Cotangent.exact_δ_map (Generators.self S T) (Generators.self R S)
 
 end Algebra
