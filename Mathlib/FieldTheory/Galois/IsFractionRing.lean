@@ -40,7 +40,6 @@ import Mathlib.Tactic.LiftLets
   K -> L -> L' = K -> K' -> L'
   which induced by the fact that they are both lifting functions of A -> L'
 -/
-#check Equiv.algEquiv
 section
 variable (A B K L K' L' : Type*)
     [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
