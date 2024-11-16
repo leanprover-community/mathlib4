@@ -669,7 +669,7 @@ section primesOver
 
 variable {A : Type*} [CommSemiring A] (p : Ideal A) (B : Type*) [Semiring B] [Algebra A B]
 
-/-- The set of all prime ideals in `B` that lie over an ideal `p` in `A`. -/
+/-- The set of all prime ideals in `B` that lie over an ideal `p` of `A`. -/
 def primesOver : Set (Ideal B) :=
   { P : Ideal B | P.IsPrime ∧ P.LiesOver p }
 
@@ -681,6 +681,7 @@ instance primesOver.isPrime (Q : primesOver p B) : Q.1.IsPrime :=
 instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
   Q.2.2
 
+/-- If an ideal `P` of `B` is prime and lying over `p`, then it is in `primesOver p B`. -/
 def primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=
   ⟨P, ⟨hPp, hp⟩⟩
 

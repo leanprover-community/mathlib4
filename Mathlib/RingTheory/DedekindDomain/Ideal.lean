@@ -1458,6 +1458,7 @@ section primesOverFinset
 open UniqueFactorizationMonoid Ideal
 
 open scoped Classical in
+/-- The finite set of all prime factors of the pushforward of `p`. -/
 noncomputable abbrev primesOverFinset {A : Type*} [CommRing A] (p : Ideal A) (B : Type*)
     [CommRing B] [IsDedekindDomain B] [Algebra A B] : Finset (Ideal B) :=
   (factors (p.map (algebraMap A B))).toFinset
