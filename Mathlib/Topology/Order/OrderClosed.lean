@@ -230,7 +230,7 @@ in another file.
 #### Point excluded
 -/
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ioo_mem_nhdsWithin_Iio' (H : a < b) : Ioo a b ∈ 𝓝[<] b := by
   simpa only [← Iio_inter_Ioi] using inter_mem_nhdsWithin _ (Ioi_mem_nhds H)
 
@@ -247,14 +247,14 @@ protected theorem PredOrder.nhdsWithin_Iio [PredOrder α] : 𝓝[<] a = ⊥ := b
 theorem Ico_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ico_self
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ico_mem_nhdsWithin_Iio' (H : a < b) : Ico a b ∈ 𝓝[<] b :=
   Ico_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
 
 theorem Ioc_mem_nhdsWithin_Iio (H : b ∈ Ioc a c) : Ioc a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Iio H) Ioo_subset_Ioc_self
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ioc_mem_nhdsWithin_Iio' (H : a < b) : Ioc a b ∈ 𝓝[<] b :=
   Ioc_mem_nhdsWithin_Iio ⟨H, le_rfl⟩
 
@@ -452,7 +452,7 @@ theorem Ioo_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioo a c ∈ �
   mem_nhdsWithin.2
     ⟨Iio c, isOpen_Iio, H.2, by rw [inter_comm, Ioi_inter_Iio]; exact Ioo_subset_Ioo_left H.1⟩
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ioo_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioo a b ∈ 𝓝[>] a :=
   Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
@@ -465,21 +465,21 @@ protected theorem SuccOrder.nhdsWithin_Ioi [SuccOrder α] : 𝓝[>] a = ⊥ :=
 theorem Ioc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ioc_self
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ioc_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ioc a b ∈ 𝓝[>] a :=
   Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
 theorem Ico_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Ico a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Ico_self
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Ico_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Ico a b ∈ 𝓝[>] a :=
   Ico_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 
 theorem Icc_mem_nhdsWithin_Ioi {a b c : α} (H : b ∈ Ico a c) : Icc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsWithin_Ioi H) Ioo_subset_Icc_self
 
--- Porting note (#11215): TODO: swap `'`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 theorem Icc_mem_nhdsWithin_Ioi' {a b : α} (H : a < b) : Icc a b ∈ 𝓝[>] a :=
   Icc_mem_nhdsWithin_Ioi ⟨le_rfl, H⟩
 

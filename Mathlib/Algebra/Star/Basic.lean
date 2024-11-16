@@ -330,7 +330,7 @@ scoped[ComplexConjugate] notation "conj" => starRingEnd _
  into the bare function `star x` automatically since most lemmas are about `conj x`. -/
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 
-/- Porting note (#11119): removed `simp` attribute due to report by linter:
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute due to report by linter:
 
 simp can prove this:
   by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]

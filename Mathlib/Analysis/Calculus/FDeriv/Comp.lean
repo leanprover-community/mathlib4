@@ -30,12 +30,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable (e : E →L[𝕜] F)
-variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
+variable {f g : E → F} {f' g' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter E}
 
 section Composition
 
@@ -209,9 +204,10 @@ theorem Differentiable.comp_differentiableOn {g : F → G} (hg : Differentiable 
 protected theorem HasStrictFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G}
     (hg : HasStrictFDerivAt g g' (f x)) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => g (f x)) (g'.comp f') x :=
-  ((hg.comp_tendsto (hf.continuousAt.prodMap' hf.continuousAt)).trans_isBigO
-      hf.isBigO_sub).triangle <| by
-    simpa only [g'.map_sub, f'.coe_comp'] using (g'.isBigO_comp _ _).trans_isLittleO hf
+  .of_isLittleO <|
+    ((hg.isLittleO.comp_tendsto (hf.continuousAt.prodMap' hf.continuousAt)).trans_isBigO
+        hf.isBigO_sub).triangle <| by
+      simpa only [g'.map_sub, f'.coe_comp'] using (g'.isBigO_comp _ _).trans_isLittleO hf.isLittleO
 
 @[fun_prop]
 protected theorem Differentiable.iterate {f : E → E} (hf : Differentiable 𝕜 f) (n : ℕ) :

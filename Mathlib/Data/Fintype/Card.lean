@@ -401,7 +401,7 @@ instance (priority := 100) Finite.of_subsingleton {α : Sort*} [Subsingleton α]
   Finite.of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
 
 -- Higher priority for `Prop`s
--- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed @[nolint instance_priority], linter not ported yet
 instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 
