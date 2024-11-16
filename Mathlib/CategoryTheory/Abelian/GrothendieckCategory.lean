@@ -40,6 +40,7 @@ variable (C : Type u) [Category.{v} C]
 An abelian category `C` is called a Grothendieck category provided that it has `AB5` and a
 separator (see `HasSeparator`).
 -/
+@[stacks 079B]
 class GrothendieckCategory [Abelian C] [HasFilteredColimits C] [AB5 C] [HasSeparator C] : Prop where
 
 section Instances

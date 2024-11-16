@@ -56,6 +56,7 @@ attribute [local instance] hasCoproducts_of_finite_and_filtered
 A category `C` which has coproducts is said to have `AB4` provided that
 coproducts are exact.
 -/
+@[stacks 079B]
 class AB4 [HasCoproducts C] where
   /-- Exactness of coproducts stated as `colim : (Discrete α ⥤ C) ⥤ C` preserving limits. -/
   preservesFiniteLimits (α : Type v) :
@@ -65,6 +66,7 @@ attribute [instance] AB4.preservesFiniteLimits
 
 /-- A category `C` which has products is said to have `AB4Star` (in literature `AB4*`)
 provided that products are exact. -/
+@[stacks 079B]
 class AB4Star [HasProducts C] where
   /-- Exactness of products stated as `lim : (Discrete α ⥤ C) ⥤ C` preserving colimits. -/
   preservesFiniteColimits (α : Type v) :
@@ -76,6 +78,7 @@ attribute [instance] AB4Star.preservesFiniteColimits
 A category `C` which has filtered colimits is said to have `AB5` provided that
 filtered colimits are exact.
 -/
+@[stacks 079B]
 class AB5 [HasFilteredColimits C] where
   /-- Exactness of filtered colimits stated as `colim : (J ⥤ C) ⥤ C` on filtered `J`
   preserving limits. -/
@@ -88,6 +91,7 @@ attribute [instance] AB5.preservesFiniteLimits
 A category `C` which has cofiltered limits is said to have `AB5Star` (in literature `AB5*`)
 provided that cofiltered limits are exact.
 -/
+@[stacks 079B]
 class AB5Star [HasCofilteredLimits C] where
   /-- Exactness of cofiltered limits stated as `lim : (J ⥤ C) ⥤ C` on cofiltered `J`
   preserving colimits. -/
