@@ -52,7 +52,7 @@ private def cache (useCache : Bool) (e r : Expr) : MetaM Expr := do
 `beta`, projection, `zeta` and `zetaDelta` reduction to be turned on or off explicitly. -/
 partial def whnfWithConfig (e : Expr) (config : WhnfCoreConfig := {}) : MetaM Expr :=
   let k := fun e => do
-    let useCache ← useWHNFCache e
+    let useCache ← useWHNFCache e config
     match (← cached? useCache e) with
     | some e' => pure e'
     | none    =>
