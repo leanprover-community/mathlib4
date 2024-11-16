@@ -186,7 +186,7 @@ theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
   ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix, of_apply]
   by_cases h₁ : i = a
-  -- porting note (#10745): was `simp [h₁, h, h.symm]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [h₁, h, h.symm]`
   · simp only [h₁, true_and, mul_ite, ite_mul, zero_mul, mul_zero, ← ite_and, zero_apply]
     refine Finset.sum_eq_zero (fun x _ => ?_)
     apply if_neg

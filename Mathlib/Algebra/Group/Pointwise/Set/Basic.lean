@@ -855,7 +855,7 @@ lemma smul_set_iInter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
 
 end SMulSet
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
+variable {s : Set α} {t : Set β} {a : α} {b : β}
 
 @[to_additive]
 lemma range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :

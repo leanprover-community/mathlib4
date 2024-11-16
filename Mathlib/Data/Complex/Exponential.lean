@@ -184,7 +184,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
   simp only [hj]
   exact cauchy_product (isCauSeq_abs_exp x) (isCauSeq_exp y)
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
@@ -688,7 +688,7 @@ theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
@@ -1404,7 +1404,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     _ ≤ 1 + x + x ^ 2 := by
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
-      -- (It may also need the positivity extensions in #3907.)
+      -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
       erw [Finset.sum_range_succ]
       repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
