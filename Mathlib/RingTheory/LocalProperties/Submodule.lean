@@ -118,3 +118,94 @@ theorem Submodule.eq_top_of_localization_maximal (N : Submodule R M)
   Submodule.eq_of_localization_maximal Rₚ Mₚ f fun P hP ↦ by simpa using h P
 
 end maximal
+
+section span'
+
+open IsLocalizedModule LocalizedModule Ideal
+
+variable (s : Set R) (span_eq : Ideal.span s = ⊤)
+include span_eq
+
+variable
+  (Rₚ : ∀ _ : s, Type*)
+  [∀ r : s, CommSemiring (Rₚ r)]
+  [∀ r : s, Algebra R (Rₚ r)]
+  [∀ r : s, IsLocalization.Away r.1 (Rₚ r)]
+  (Mₚ : ∀ _ : s, Type*)
+  [∀ r : s, AddCommMonoid (Mₚ r)]
+  [∀ r : s, Module R (Mₚ r)]
+  [∀ r : s, Module (Rₚ r) (Mₚ r)]
+  [∀ r : s, IsScalarTower R (Rₚ r) (Mₚ r)]
+  (f : ∀ r : s, M →ₗ[R] Mₚ r)
+  [∀ r : s, IsLocalizedModule (.powers r.1) (f r)]
+
+/-- A variant of `eq_of_localization_span` that accepts `IsLocalizedModule`.-/
+theorem eq_of_localization_span' (x y : M) (h : ∀ r : s, f r x = f r y) : x = y := by
+  suffices equalizer R x y = ⊤ by simpa [equalizer] using (eq_top_iff_one _).mp this
+  refine Not.imp_symm (exists_le_maximal _) fun ⟨P, hP, le⟩ ↦ ?_
+  have := hP.1.1
+  rw [Ne, eq_top_iff, ← span_eq, span_le] at this
+  have ⟨r, hrs, hre⟩ := Set.not_subset.mp this
+  let r : s := ⟨r, hrs⟩
+  have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalizedModule.eq_iff_exists (.powers r.1) _).mp (h r)
+  exact hre (hP.isPrime.mem_of_pow_mem _ <| le eq)
+
+/-- A variant of `eq_zero_of_localization_span` that accepts `IsLocalizedModule`.-/
+theorem eq_zero_of_localization_span' (x : M) (h : ∀ r : s, f r x = 0) : x = 0 :=
+  eq_of_localization_span' s span_eq _ f x 0 <| by simpa only [map_zero] using h
+
+/-- A variant of `mem_of_localization_span` that accepts `IsLocalizedModule`.-/
+theorem Submodule.mem_of_localization_span' {m : M} {N : Submodule R M}
+    (h : ∀ r : s, f r m ∈ N.localized₀ (.powers r.1) (f r)) : m ∈ N := by
+  let I : Ideal R := N.comap (LinearMap.toSpanSingleton R M m)
+  suffices I = ⊤ by simpa [I] using I.eq_top_iff_one.mp this
+  refine Not.imp_symm I.exists_le_maximal fun ⟨P, hP, le⟩ ↦ ?_
+  have := hP.1.1
+  rw [Ne, eq_top_iff, ← span_eq, Ideal.span_le] at this
+  have ⟨r, hrs, hre⟩ := Set.not_subset.mp this
+  let r : s := ⟨r, hrs⟩
+  obtain ⟨a, ha, t, e⟩ := h r
+  rw [← IsLocalizedModule.mk'_one (.powers r.1), IsLocalizedModule.mk'_eq_mk'_iff] at e
+  have ⟨u, hu⟩ := e
+  simp_rw [smul_smul, Submonoid.smul_def] at hu
+  rw [← (u * t).2.choose_spec] at hu
+  exact hre (hP.isPrime.mem_of_pow_mem _ <| le <| hu ▸ smul_mem _ _ ha)
+
+/-- A variant of `le_of_localization_span` that accepts `IsLocalizedModule`.-/
+theorem Submodule.le_of_localization₀_span' {N P : Submodule R M}
+    (h : ∀ r : s, N.localized₀ (.powers r.1) (f r) ≤ P.localized₀ (.powers r.1) (f r)) : N ≤ P :=
+  fun m hm ↦ mem_of_localization_span' s span_eq _ f fun r ↦ h r ⟨m, hm, 1, by simp⟩
+
+/-- A variant of `eq_of_localization₀_span` that accepts `IsLocalizedModule`.-/
+theorem Submodule.eq_of_localization₀_span' {N P : Submodule R M}
+    (h : ∀ r : s, N.localized₀ (.powers r.1) (f r) = P.localized₀ (.powers r.1) (f r)) : N = P :=
+  le_antisymm (le_of_localization₀_span' s span_eq _ _ fun r ↦ (h r).le)
+    (le_of_localization₀_span' s span_eq _ _ fun r ↦ (h r).ge)
+
+/-- A variant of `eq_bot_of_localization₀_span` that accepts `IsLocalizedModule`.-/
+theorem Submodule.eq_bot_of_localization₀_span' {N : Submodule R M}
+    (h : ∀ r : s, N.localized₀ (.powers r.1) (f r) = ⊥) : N = ⊥ :=
+  eq_of_localization₀_span' s span_eq Mₚ f fun _ ↦ by simp only [h, Submodule.localized₀_bot]
+
+/-- A variant of `eq_top_of_localization₀_span` that accepts `IsLocalizedModule`.-/
+theorem Submodule.eq_top_of_localization₀_span' {N : Submodule R M}
+    (h : ∀ r : s, N.localized₀ (.powers r.1) (f r) = ⊤) : N = ⊤ :=
+  eq_of_localization₀_span' s span_eq Mₚ f fun _ ↦ by simp only [h, Submodule.localized₀_top]
+
+/-- A variant of `eq_of_localization_span` that accepts `IsLocalizedModule`.-/
+theorem Submodule.eq_of_localization_span' {N P : Submodule R M} (h : ∀ r : s,
+      N.localized' (Rₚ r) (.powers r.1) (f r) = P.localized' (Rₚ r) (.powers r.1) (f r)) :
+    N = P :=
+  eq_of_localization₀_span' s span_eq _ f fun r ↦ congr(restrictScalars _ $(h r))
+
+/-- A variant of `eq_bot_of_localization_span` that accepts `IsLocalizedModule`.-/
+theorem Submodule.eq_bot_of_localization_span' {N : Submodule R M}
+    (h : ∀ r : s, N.localized' (Rₚ r) (.powers r.1) (f r) = ⊥) : N = ⊥ :=
+  eq_of_localization_span' s span_eq Rₚ Mₚ f fun _ ↦ by simp only [h, Submodule.localized'_bot]
+
+/-- A variant of `eq_top_of_localization_span` that accepts `IsLocalizedModule`.-/
+theorem Submodule.eq_top_of_localization_span' {N : Submodule R M}
+    (h : ∀ r : s, N.localized' (Rₚ r) (.powers r.1) (f r) = ⊤) : N = ⊤ :=
+  eq_of_localization_span' s span_eq Rₚ Mₚ f fun _ ↦ by simp only [h, Submodule.localized'_top]
+
+end span'
