@@ -110,26 +110,26 @@ section localization_maximal
 
 open Submodule LocalizedModule Ideal LinearMap
 
-/-- Another version, using `LocalizedModule` instead of `IsLocaliedModule`. -/
+/-- Another version, using `LocalizedModule` instead of `IsLocalizedModule`. -/
 lemma Submodule.le_of_localization_maximal' {N H : Submodule R M}
     (h : ∀ (J : Ideal R) [J.IsMaximal], localized J.primeCompl N ≤ localized J.primeCompl H) :
     N ≤ H := Submodule.le_of_localization_maximal (fun P ↦ (Localization P.primeCompl))
     (fun P ↦ (LocalizedModule P.primeCompl M))
     (fun P ↦ (mkLinearMap P.primeCompl M)) (fun P _ ↦ h P)
 
-/-- Another version, using `LocalizedModule` instead of `IsLocaliedModule`. -/
+/-- Another version, using `LocalizedModule` instead of `IsLocalizedModule`. -/
 lemma Submodule.eq_of_localization_maximal' {N P : Submodule R M}
     (h : ∀ (J : Ideal R) (_ : J.IsMaximal), localized J.primeCompl N = localized J.primeCompl P) :
     N = P :=
   eq_of_le_of_le (le_of_localization_maximal' (fun J hJ ↦ le_of_eq (h J hJ)))
   (le_of_localization_maximal' (fun J hJ ↦ le_of_eq (h J hJ).symm))
 
-/-- Another version, using `LocalizedModule` instead of `IsLocaliedModule`. -/
+/-- Another version, using `LocalizedModule` instead of `IsLocalizedModule`. -/
 lemma Submodule.eq_bot_of_localization_maximal' {N : Submodule R M}
     (h : ∀ (J : Ideal R) (_ : J.IsMaximal), localized J.primeCompl N = ⊥) :
   N = ⊥ := eq_of_localization_maximal' fun _ _ ↦ by simp only [h, localized'_bot]
 
-/-- Another version, using `LocalizedModule` instead of `IsLocaliedModule`. -/
+/-- Another version, using `LocalizedModule` instead of `IsLocalizedModule`. -/
 lemma Submodule.eq_top_of_localization_maximal' {N : Submodule R M}
     (h : ∀ (J : Ideal R) (_ : J.IsMaximal), localized J.primeCompl N = ⊤) :
   N = ⊤ := eq_of_localization_maximal' fun _ _ ↦ by simp only [h, localized'_top]
