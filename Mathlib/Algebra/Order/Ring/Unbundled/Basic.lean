@@ -703,7 +703,7 @@ theorem pos_iff_neg_of_mul_neg [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α
     (hab : a * b < 0) : 0 < a ↔ b < 0 :=
   ⟨neg_of_mul_neg_right hab ∘ le_of_lt, pos_of_mul_neg_left hab ∘ le_of_lt⟩
 
-lemma sq_nonneg [IsRightCancelAdd α]
+protected lemma sq_nonneg [IsRightCancelAdd α]
     [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α] [AddLeftStrictMono α]
     (a : α) : 0 ≤ a ^ 2 := by
   obtain ha | ha := le_total 0 a
