@@ -683,6 +683,18 @@ instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
   finset_mem_Ioc _ _ _ := (mem_Ico (α := α)).trans and_comm
   finset_mem_Ioo _ _ _ := (mem_Ioo (α := α)).trans and_comm
 
+lemma Finset.Icc_orderDual_def (a b : αᵒᵈ) :
+    Icc a b = (Icc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
+lemma Finset.Ico_orderDual_def (a b : αᵒᵈ) :
+    Ico a b = (Ioc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
+lemma Finset.Ioc_orderDual_def (a b : αᵒᵈ) :
+    Ioc a b = (Ico (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
+lemma Finset.Ioo_orderDual_def (a b : αᵒᵈ) :
+    Ioo a b = (Ioo (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
 lemma Finset.Icc_toDual : Icc (toDual a) (toDual b) = (Icc b a).map toDual.toEmbedding :=
   map_refl.symm
 
@@ -725,6 +737,9 @@ instance OrderDual.instLocallyFiniteOrderBot : LocallyFiniteOrderBot αᵒᵈ wh
   finset_mem_Iic _ _ := mem_Ici (α := α)
   finset_mem_Iio _ _ := mem_Ioi (α := α)
 
+lemma Iic_orderDual_def (a : αᵒᵈ) : Iic a = (Ici (ofDual a)).map toDual.toEmbedding := map_refl.symm
+lemma Iio_orderDual_def (a : αᵒᵈ) : Iio a = (Ioi (ofDual a)).map toDual.toEmbedding := map_refl.symm
+
 lemma Finset.Iic_toDual (a : α) : Iic (toDual a) = (Ici a).map toDual.toEmbedding :=
   map_refl.symm
 
@@ -754,6 +769,9 @@ instance OrderDual.instLocallyFiniteOrderTop : LocallyFiniteOrderTop αᵒᵈ wh
   finsetIoi a := @Iio α _ _ (ofDual a)
   finset_mem_Ici _ _ := mem_Iic (α := α)
   finset_mem_Ioi _ _ := mem_Iio (α := α)
+
+lemma Ici_orderDual_def (a : αᵒᵈ) : Ici a = (Iic (ofDual a)).map toDual.toEmbedding := map_refl.symm
+lemma Ioi_orderDual_def (a : αᵒᵈ) : Ioi a = (Iio (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
 lemma Finset.Ici_toDual (a : α) : Ici (toDual a) = (Iic a).map toDual.toEmbedding :=
   map_refl.symm
@@ -883,7 +901,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
           top_le_iff, reduceCtorEq]
     | (a : α), (b : α), (x : α) => by
         simp only [le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk, coe_le_coe]
-        -- This used to be in the above `simp` before leanprover/lean4#2644
+        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
         erw [aux]
   finset_mem_Ico a b x :=
     match a, b, x with
@@ -892,12 +910,12 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, (x : α) => by
         simp only [Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, coe_le_coe, aux,
           coe_lt_top, and_true]
-        -- This used to be in the above `simp` before leanprover/lean4#2644
+        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
         erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
                                       -- This used to be in the above `simp` before
-                                      -- leanprover/lean4#2644
+                                      -- https://github.com/leanprover/lean4/pull/2644
                                       erw [aux]
   finset_mem_Ioc a b x :=
     match a, b, x with
@@ -905,12 +923,12 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                 -- This used to be in the above `simp` before
-                                -- leanprover/lean4#2644
+                                -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                       -- This used to be in the above `simp` before
-                                      -- leanprover/lean4#2644
+                                      -- https://github.com/leanprover/lean4/pull/2644
                                       erw [aux]
   finset_mem_Ioo a b x :=
     match a, b, x with
@@ -918,13 +936,13 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
                                 -- This used to be in the above `simp` before
-                                -- leanprover/lean4#2644
+                                -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by
       simp [some, Embedding.some, insertNone, aux]
       -- This used to be in the above `simp` before
-      -- leanprover/lean4#2644
+      -- https://github.com/leanprover/lean4/pull/2644
       erw [aux]
 
 variable (a b : α)
@@ -1289,3 +1307,20 @@ lemma toFinset_Iio (a : α) [Fintype (Iio a)] : (Iio a).toFinset = Finset.Iio a 
 
 end LocallyFiniteOrderBot
 end Set
+
+/-- A `LocallyFiniteOrder` can be transferred across an order isomorphism. -/
+-- See note [reducible non instances]
+abbrev LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder N]
+    [EquivLike F M N] [OrderIsoClass F M N] (f : F) [LocallyFiniteOrder N] :
+    LocallyFiniteOrder M where
+  finsetIcc x y := (finsetIcc (f x) (f y)).map ⟨EquivLike.inv f, (EquivLike.right_inv f).injective⟩
+  finsetIco x y := (finsetIco (f x) (f y)).map ⟨EquivLike.inv f, (EquivLike.right_inv f).injective⟩
+  finsetIoc x y := (finsetIoc (f x) (f y)).map ⟨EquivLike.inv f, (EquivLike.right_inv f).injective⟩
+  finsetIoo x y := (finsetIoo (f x) (f y)).map ⟨EquivLike.inv f, (EquivLike.right_inv f).injective⟩
+  finset_mem_Icc := by simp [finset_mem_Icc, EquivLike.inv_apply_eq_iff_eq_apply]
+  finset_mem_Ico := by
+    simp [finset_mem_Ico, EquivLike.inv_apply_eq_iff_eq_apply, map_lt_map_iff]
+  finset_mem_Ioc := by
+    simp [finset_mem_Ioc, EquivLike.inv_apply_eq_iff_eq_apply, map_lt_map_iff]
+  finset_mem_Ioo := by
+    simp [finset_mem_Ioo, EquivLike.inv_apply_eq_iff_eq_apply, map_lt_map_iff]

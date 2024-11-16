@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Geometry.RingedSpace.Basic
 import Mathlib.Geometry.RingedSpace.Stalks
+import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # The category of locally ringed spaces
@@ -14,7 +16,7 @@ stalks are local rings), and morphisms between these (morphisms in `SheafedSpace
 `IsLocalHom` on the stalk maps).
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 universe u
 
@@ -22,7 +24,7 @@ open CategoryTheory
 
 open TopCat
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open Opposite
 
@@ -37,9 +39,9 @@ A morphism of locally ringed spaces is a morphism of ringed spaces
 such that the morphisms induced on stalks are local ring homomorphisms. -/
 structure LocallyRingedSpace extends SheafedSpace CommRingCat.{u} where
   /-- Stalks of a locally ringed space are local rings. -/
-  localRing : ∀ x, LocalRing (presheaf.stalk x)
+  isLocalRing : ∀ x, IsLocalRing (presheaf.stalk x)
 
-attribute [instance] LocallyRingedSpace.localRing
+attribute [instance] LocallyRingedSpace.isLocalRing
 
 namespace LocallyRingedSpace
 
@@ -58,8 +60,8 @@ def toTopCat : TopCat :=
 instance : CoeSort LocallyRingedSpace (Type u) :=
   ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
 
-instance (x : X) : LocalRing (X.presheaf.stalk x) :=
-  X.localRing x
+instance (x : X) : IsLocalRing (X.presheaf.stalk x) :=
+  X.isLocalRing x
 
 -- PROJECT: how about a typeclass "HasStructureSheaf" to mediate the 𝒪 notation, rather
 -- than defining it over and over for `PresheafedSpace`, `LocallyRingedSpace`, `Scheme`, etc.
@@ -219,10 +221,10 @@ instance is_sheafedSpace_iso {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsIso
 @[simps!]
 def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat}
     (h : IsOpenEmbedding f) : LocallyRingedSpace where
-  localRing := by
+  isLocalRing := by
     intro x
     -- We show that the stalk of the restriction is isomorphic to the original stalk,
-    apply @RingEquiv.localRing _ _ _ (X.localRing (f x))
+    apply @RingEquiv.isLocalRing _ _ _ (X.isLocalRing (f x))
     exact (X.restrictStalkIso h x).symm.commRingCatIsoToRingEquiv
   toSheafedSpace := X.toSheafedSpace.restrict h
 
@@ -264,7 +266,7 @@ def empty : LocallyRingedSpace.{u} where
   carrier := TopCat.of PEmpty
   presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
-  localRing x := PEmpty.elim x
+  isLocalRing x := PEmpty.elim x
 
 instance : EmptyCollection LocallyRingedSpace.{u} := ⟨LocallyRingedSpace.empty⟩
 

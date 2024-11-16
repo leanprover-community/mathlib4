@@ -3,9 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Defs
 
 /-!
@@ -581,7 +582,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
   "This instance asserts that if `G` has a right-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`." ]
 instance (priority := 100) of_covariant_right [IsRightCancelMul G]
-    [LinearOrder G] [CovariantClass G G (· * ·) (· < ·)] :
+    [LinearOrder G] [MulLeftStrictMono G] :
     TwoUniqueProds G where
   uniqueMul_of_one_lt_card {A B} hc := by
     obtain ⟨hA, hB, -⟩ := Nat.one_lt_mul_iff.mp hc
@@ -615,10 +616,10 @@ open MulOpposite in
   "This instance asserts that if `G` has a left-cancellative addition, a linear order, and
   addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`." ]
 instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
-    [LinearOrder G] [CovariantClass G G (Function.swap (· * ·)) (· < ·)] :
+    [LinearOrder G] [MulRightStrictMono G] :
     TwoUniqueProds G :=
   let _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
-  let _ : CovariantClass Gᵐᵒᵖ Gᵐᵒᵖ (· * ·) (· < ·) :=
+  let _ : MulLeftStrictMono Gᵐᵒᵖ :=
     { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
   of_mulOpposite of_covariant_right
 

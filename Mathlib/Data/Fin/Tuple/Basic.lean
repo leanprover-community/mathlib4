@@ -394,6 +394,11 @@ lemma append_comp_rev {m n} (xs : Fin m → α) (ys : Fin n → α) :
     append xs ys ∘ rev = append (ys ∘ rev) (xs ∘ rev) ∘ cast (Nat.add_comm ..) :=
   funext <| append_rev xs ys
 
+theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
+    append (fun i ↦ f (castAdd n i)) (fun i ↦ f (natAdd m i)) = f := by
+  unfold append addCases
+  simp
+
 end Append
 
 section Repeat
@@ -405,7 +410,7 @@ variable {α : Sort*}
 def «repeat» (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
   | i => a i.modNat
 
--- Porting note: added (leanprover/lean4#2042)
+-- Porting note: added (https://github.com/leanprover/lean4/issues/2042)
 @[simp]
 theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
     Fin.repeat m a i = a i.modNat :=
@@ -464,22 +469,20 @@ inductively from `Fin n` starting from the left, not from the right. This implie
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
 
--- Porting note: `i.castSucc` does not work like it did in Lean 3;
--- `(castSucc i)` must be used.
 variable {α : Fin (n + 1) → Sort*} (x : α (last n)) (q : ∀ i, α i)
-  (p : ∀ i : Fin n, α (castSucc i)) (i : Fin n) (y : α (castSucc i)) (z : α (last n))
+  (p : ∀ i : Fin n, α i.castSucc) (i : Fin n) (y : α i.castSucc) (z : α (last n))
 
 /-- The beginning of an `n+1` tuple, i.e., its first `n` entries -/
-def init (q : ∀ i, α i) (i : Fin n) : α (castSucc i) :=
-  q (castSucc i)
+def init (q : ∀ i, α i) (i : Fin n) : α i.castSucc :=
+  q i.castSucc
 
 theorem init_def {q : ∀ i, α i} :
-    (init fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q (castSucc k) :=
+    (init fun k : Fin (n + 1) ↦ q k) = fun k : Fin n ↦ q k.castSucc :=
   rfl
 
 /-- Adding an element at the end of an `n`-tuple, to get an `n+1`-tuple. The name `snoc` comes from
 `cons` (i.e., adding an element to the left of a tuple) read in reverse order. -/
-def snoc (p : ∀ i : Fin n, α (castSucc i)) (x : α (last n)) (i : Fin (n + 1)) : α i :=
+def snoc (p : ∀ i : Fin n, α i.castSucc) (x : α (last n)) (i : Fin (n + 1)) : α i :=
   if h : i.val < n then _root_.cast (by rw [Fin.castSucc_castLT i h]) (p (castLT i h))
   else _root_.cast (by rw [eq_last_of_not_lt h]) x
 
@@ -490,7 +493,7 @@ theorem init_snoc : init (snoc p x) = p := by
   convert cast_eq rfl (p i)
 
 @[simp]
-theorem snoc_castSucc : snoc p x (castSucc i) = p i := by
+theorem snoc_castSucc : snoc p x i.castSucc = p i := by
   simp only [snoc, coe_castSucc, is_lt, cast_eq, dite_true]
   convert cast_eq rfl (p i)
 
@@ -520,7 +523,7 @@ theorem snoc_comp_nat_add {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a :
     rw [natAdd_castSucc, snoc_castSucc]
 
 @[simp]
-theorem snoc_cast_add {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α (castSucc i))
+theorem snoc_cast_add {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m), α i.castSucc)
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
   dif_pos _
 
@@ -532,20 +535,20 @@ theorem snoc_comp_cast_add {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a 
 
 /-- Updating a tuple and adding an element at the end commute. -/
 @[simp]
-theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y := by
+theorem snoc_update : snoc (update p i y) x = update (snoc p x) i.castSucc y := by
   ext j
   by_cases h : j.val < n
   · rw [snoc]
     simp only [h]
     simp only [dif_pos]
     by_cases h' : j = castSucc i
-    · have C1 : α (castSucc i) = α j := by rw [h']
-      have E1 : update (snoc p x) (castSucc i) y j = _root_.cast C1 y := by
+    · have C1 : α i.castSucc = α j := by rw [h']
+      have E1 : update (snoc p x) i.castSucc y j = _root_.cast C1 y := by
         have : update (snoc p x) j (_root_.cast C1 y) j = _root_.cast C1 y := by simp
         convert this
         · exact h'.symm
         · exact heq_of_cast_eq (congr_arg α (Eq.symm h')) rfl
-      have C2 : α (castSucc i) = α (castSucc (castLT j h)) := by rw [castSucc_castLT, h']
+      have C2 : α i.castSucc = α (castLT j h).castSucc := by rw [castSucc_castLT, h']
       have E2 : update p i y (castLT j h) = _root_.cast C2 y := by
         have : update p (castLT j h) (_root_.cast C2 y) (castLT j h) = _root_.cast C2 y := by simp
         convert this
@@ -588,7 +591,7 @@ theorem init_update_last : init (update q (last n) z) = init q := by
 
 /-- Updating an element and taking the beginning commute. -/
 @[simp]
-theorem init_update_castSucc : init (update q (castSucc i) y) = update (init q) i y := by
+theorem init_update_castSucc : init (update q i.castSucc y) = update (init q) i y := by
   ext j
   by_cases h : j = i
   · rw [h]
@@ -740,11 +743,11 @@ alias forall_iff_succ := forall_fin_succ
 alias exists_iff_succ := exists_fin_succ
 
 lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
-    (∀ i, P i) ↔ P (last n) ∧ ∀ i, P (castSucc i) :=
+    (∀ i, P i) ↔ P (last n) ∧ ∀ i : Fin n, P i.castSucc :=
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ lastCases h.1 h.2⟩
 
 lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
-    (∃ i, P i) ↔ P (last n) ∨ ∃ i, P (castSucc i) where
+    (∃ i, P i) ↔ P (last n) ∨ ∃ i : Fin n, P i.castSucc where
   mp := by
     rintro ⟨i, hi⟩
     induction' i using lastCases
@@ -854,7 +857,7 @@ theorem insertNth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAb
   refine insertNth_eq_iff.2 ⟨by simp, ?_⟩
   ext j
   apply eq_of_heq
-  trans snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x (castSucc j)
+  trans snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x j.castSucc
   · rw [snoc_castSucc]
     exact (cast_heq _ _).symm
   · apply congr_arg_heq

@@ -176,7 +176,7 @@ protected theorem antitone [IsFiniteMeasure μ] {p q : ℝ≥0∞} (hpq : p ≤ 
 theorem coeFn_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩ : Lp E p μ) : α → E) = f :=
   rfl
 
--- @[simp] -- Porting note (#10685): dsimp can prove this
+-- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem coe_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩ : Lp E p μ) : α →ₘ[μ] E) = f :=
   rfl
 
@@ -1064,7 +1064,7 @@ theorem MeasureTheory.Memℒp.of_comp_antilipschitzWith {α E F} {K'} [Measurabl
     rw [← dist_zero_right, ← dist_zero_right, ← g0]
     apply hg'.le_mul_dist
   have B : AEStronglyMeasurable f μ :=
-    (hg'.isUniformEmbedding hg).embedding.aestronglyMeasurable_comp_iff.1 hL.1
+    (hg'.isUniformEmbedding hg).isEmbedding.aestronglyMeasurable_comp_iff.1 hL.1
   exact hL.of_le_mul B (Filter.Eventually.of_forall A)
 
 namespace LipschitzWith

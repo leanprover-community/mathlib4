@@ -59,7 +59,7 @@ instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
--- Porting note (#11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
@@ -327,12 +327,14 @@ theorem measurableSet_generateFrom {s : Set (Set α)} {t : Set α} (ht : t ∈ s
   .basic t ht
 
 @[elab_as_elim]
-theorem generateFrom_induction (p : Set α → Prop) (C : Set (Set α)) (hC : ∀ t ∈ C, p t)
-    (h_empty : p ∅) (h_compl : ∀ t, p t → p tᶜ)
-    (h_Union : ∀ f : ℕ → Set α, (∀ n, p (f n)) → p (⋃ i, f i)) {s : Set α}
-    (hs : MeasurableSet[generateFrom C] s) : p s := by
+theorem generateFrom_induction (C : Set (Set α))
+    (p : ∀ s : Set α, MeasurableSet[generateFrom C] s → Prop) (hC : ∀ t ∈ C, ∀ ht, p t ht)
+    (empty : p ∅ (measurableSet_empty _)) (compl : ∀ t ht, p t ht → p tᶜ ht.compl)
+    (iUnion : ∀ (s : ℕ → Set α) (hs : ∀ n, MeasurableSet[generateFrom C] (s n)),
+      (∀ n, p (s n) (hs n)) → p (⋃ i, s i) (.iUnion hs)) (s : Set α)
+    (hs : MeasurableSet[generateFrom C] s) : p s hs := by
   induction hs
-  exacts [hC _ ‹_›, h_empty, h_compl _ ‹_›, h_Union ‹_› ‹_›]
+  exacts [hC _ ‹_› _, empty, compl _ ‹_› ‹_›, iUnion ‹_› ‹_› ‹_›]
 
 theorem generateFrom_le {s : Set (Set α)} {m : MeasurableSpace α}
     (h : ∀ t ∈ s, MeasurableSet[m] t) : generateFrom s ≤ m :=
@@ -352,10 +354,10 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
     (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
   refine ⟨fun H s hs ↦ H s (.basic s hs), fun H s ↦ ?_⟩
   apply generateFrom_induction
-  · exact H
+  · exact fun s hs _ ↦ H s hs
   · rfl
-  · exact fun _ ↦ Iff.not
-  · intro f hf
+  · exact fun _ _ ↦ Iff.not
+  · intro f _ hf
     simp only [mem_iUnion, hf]
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
@@ -417,7 +419,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
   let b : MeasurableSpace α :=
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
-      measurableSet_compl := by simp (config := { contextual := true }) [or_imp]
+      measurableSet_compl := by simp +contextual [or_imp]
       measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
     bot_unique fun _ hs =>
@@ -427,7 +429,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 
-@[simp, nolint simpNF] -- Porting note (#11215): TODO: `simpNF` claims that
+@[simp, nolint simpNF] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simpNF` claims that
 -- this lemma doesn't simplify LHS
 theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=

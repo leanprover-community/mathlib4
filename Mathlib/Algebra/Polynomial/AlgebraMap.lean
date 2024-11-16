@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.Polynomial.Eval.Algebra
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Polynomial.Monomial
+import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -294,11 +296,31 @@ def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R
   refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
     exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
 
+@[simp]
+theorem algEquivOfCompEqX_eq_iff (p q p' q' : R[X])
+    (hpq : p.comp q = X) (hqp : q.comp p = X) (hpq' : p'.comp q' = X) (hqp' : q'.comp p' = X) :
+    algEquivOfCompEqX p q hpq hqp = algEquivOfCompEqX p' q' hpq' hqp' ↔ p = p' :=
+  ⟨fun h ↦ by simpa using congr($h X), fun h ↦ by ext1; simp [h]⟩
+
+@[simp]
+theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) :
+    (algEquivOfCompEqX p q hpq hqp).symm = algEquivOfCompEqX q p hqp hpq := rfl
+
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps!]
 def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
+
+@[simp]
+theorem algEquivAevalXAddC_eq_iff {R} [CommRing R] (t t' : R) :
+    algEquivAevalXAddC t = algEquivAevalXAddC t' ↔ t = t' := by
+  simp [algEquivAevalXAddC]
+
+@[simp]
+theorem algEquivAevalXAddC_symm {R} [CommRing R] (t : R) :
+    (algEquivAevalXAddC t).symm = algEquivAevalXAddC (-t) := by
+  simp [algEquivAevalXAddC, sub_eq_add_neg]
 
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
   algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
@@ -544,9 +566,19 @@ lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (
   simp [C_eq_algebraMap]
 
 lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
-  AddEquivClass.map_eq_zero_iff (algEquivAevalXAddC t)
+  EmbeddingLike.map_eq_zero_iff (f := algEquivAevalXAddC t)
 
 lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
+
+lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
+    p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
+  convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
+  rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
+  simp [comp_assoc]
+
+lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
+    p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
+  simpa using dvd_comp_X_sub_C_iff p q (-a)
 
 variable [IsDomain R]
 
