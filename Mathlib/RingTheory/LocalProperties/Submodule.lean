@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, David Swinarski
 -/
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
-import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.AtPrime
 
 /-!
@@ -55,8 +54,8 @@ theorem Submodule.eq_of_localization₀_maximal {N₁ N₂ : Submodule R M}
     (h : ∀ (P : Ideal R) [P.IsMaximal],
       N₁.localized₀ P.primeCompl (f P) = N₂.localized₀ P.primeCompl (f P)) :
     N₁ = N₂ :=
-  le_antisymm (Submodule.le_of_localization_maximal Mₚ f fun P _ => (h P).le)
-    (Submodule.le_of_localization_maximal Mₚ f fun P _ => (h P).ge)
+  le_antisymm (Submodule.le_of_localization_maximal Mₚ f fun P _ ↦ (h P).le)
+    (Submodule.le_of_localization_maximal Mₚ f fun P _ ↦ (h P).ge)
 
 /-- A submodule is trivial if its localization at every maximal ideal is trivial. -/
 theorem Submodule.eq_bot_of_localization_maximal (N : Submodule R M)
