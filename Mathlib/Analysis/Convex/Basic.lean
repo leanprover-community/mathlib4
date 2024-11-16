@@ -268,11 +268,10 @@ theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
   obtain rfl | ha' := ha.eq_or_lt
   · rw [zero_add] at hab
     rwa [zero_smul, zero_add, hab, one_smul]
-  rw [mem_Iio] at hx hy
-  calc
-    a • x + b • y < a • r + b • r := add_lt_add_of_lt_of_le
-        (smul_lt_smul_of_pos_left hx ha') (smul_le_smul_of_nonneg_left hy.le hb)
-    _ = r := Convex.combo_self hab _
+  rw [mem_Iio] at hx hy ⊢
+  linear_combination (norm := skip) a • hx + b • hy + hab • r
+  apply le_of_eq
+  match_scalars <;> noncomm_ring
 
 theorem convex_Ioi (r : β) : Convex 𝕜 (Ioi r) :=
   convex_Iio (β := βᵒᵈ) r

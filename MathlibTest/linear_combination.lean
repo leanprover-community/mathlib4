@@ -1,6 +1,8 @@
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.NoncommRing
 
 
 set_option autoImplicit true
@@ -122,6 +124,34 @@ example (x y z w : ℚ) (hzw : z = w) : x * z + 2 * y * z = x * w + 2 * y * w :=
   linear_combination (x + 2 * y) * hzw
 
 example (x y : ℤ) (h : x = 0) : y ^ 2 * x = 0 := by linear_combination y ^ 2 * h
+
+/-! ### Scalar multiplication -/
+
+section
+variable {K V : Type*}
+
+section
+variable [AddCommGroup V] [Field K] [CharZero K] [Module K V] {a b μ ν : K} {v w x y : V}
+
+example  (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
+  linear_combination (norm := module) h • x
+
+example (h1 : a • x + b • y = 0) (h2 : a • μ • x + b • ν • y = 0) : (μ - ν) • a • x = 0 := by
+  linear_combination (norm := module) h2 - ν • h1
+
+example (h₁ : x - y = -(v - w)) (h₂ : x + y = v + w) : x = w := by
+  linear_combination (norm := module) (2:K)⁻¹ • h₁ + (2:K)⁻¹ • h₂
+
+end
+
+example [OrderedSemiring K] [OrderedCancelAddCommMonoid V] [Module K V] [OrderedSMul K V]
+    {x y r : V} (hx : x < r) (hy : y < r) {a b : K} (hb : 0 ≤ b) (hab : a + b = 1) (ha' : 0 < a) :
+    a • x + b • y < r := by
+  linear_combination (norm := skip) a • hx + b • hy + hab • r
+  apply le_of_eq
+  match_scalars <;> noncomm_ring
+
+end
 
 /-! ### Tests in semirings -/
 
