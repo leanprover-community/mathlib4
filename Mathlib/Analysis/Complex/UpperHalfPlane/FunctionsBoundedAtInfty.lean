@@ -70,7 +70,6 @@ theorem isZeroAtImInfty_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α
 
 theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
-  -- hf.boundedAtFilter requires a stronger condition than we do :)
-  isBoundedAtImInfty_iff.mpr ⟨1, (isZeroAtImInfty_iff.mp hf) 1 zero_lt_one⟩
+  hf.boundedAtFilter
 
 end UpperHalfPlane

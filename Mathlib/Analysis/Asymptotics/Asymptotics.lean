@@ -65,6 +65,7 @@ variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
+variable {f''' : α → E'''}
 variable {l l' : Filter α}
 
 section Defs
@@ -1149,7 +1150,7 @@ theorem isLittleO_const_iff_isLittleO_one {c : F''} (hc : c ≠ 0) :
    fun h => h.trans_isBigO <| isBigO_const_const _ hc _⟩
 
 @[simp]
-theorem isLittleO_one_iff : f' =o[l] (fun _x => 1 : α → F) ↔ Tendsto f' l (𝓝 0) := by
+theorem isLittleO_one_iff : f''' =o[l] (fun _x => 1 : α → F) ↔ Tendsto f''' l (𝓝 0) := by
   simp only [isLittleO_iff, norm_one, mul_one, Metric.nhds_basis_closedBall.tendsto_right_iff,
     Metric.mem_closedBall, dist_zero_right]
 
