@@ -5,9 +5,14 @@ Authors: Jack McKoen
 -/
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.Tactic.ApplyFun
 
 /-!
+# Left and right lifting properties
+
+Given a morphism property `T`, we define the left and right lifting property with respect to `T`.
+
+We show that the left lifting property is stable under retracts, cobase change, and composition,
+with dual statements for the right lifting property.
 
 -/
 
@@ -24,65 +29,45 @@ class IsRetract {X Y Z W : C} (f : X ⟶ Y) (g : Z ⟶ W) where
   r : Arrow.mk g ⟶ Arrow.mk f
   retract : i ≫ r = 𝟙 Arrow.mk f
 
-namespace MorphismProperty
-
 /-- A class of morphisms is stable under retracts if the retract of a morphism still
 lies in the class. -/
-def IsStableUnderRetracts (P : MorphismProperty C) : Prop :=
+def MorphismProperty.IsStableUnderRetracts (P : MorphismProperty C) : Prop :=
   ∀ ⦃X Y Z W : C⦄ ⦃f : X ⟶ Y⦄ ⦃g : Z ⟶ W⦄ (_ : IsRetract f g)
     (_ : P g), P f
 
-/-- The morphism property of having the left lifting property (llp) with respect to another class of
-morphisms. -/
+instance MorphismProperty.monomorphisms.IsStableUnderRetracts :
+    IsStableUnderRetracts (monomorphisms C) := by
+  intro X Y _ _ f g H p
+  refine ⟨fun α β ω ↦ ?_⟩
+  have h : H.i.left ≫ g = f ≫ H.i.right := H.i.w
+  have := ω =≫ H.i.right
+  rw [Category.assoc, Category.assoc, ← h, ← Category.assoc, ← Category.assoc] at this
+  have ω' := p.right_cancellation (α ≫ H.i.left) (β ≫ H.i.left) this =≫ H.r.left
+  have : H.i.left ≫ H.r.left = 𝟙 X := Arrow.hom.congr_left H.retract
+  rwa [Category.assoc, Category.assoc, this, Category.comp_id, Category.comp_id] at ω'
+
+namespace MorphismProperty
+
+/-- The left lifting property (llp) with respect to a class of morphisms. -/
 def Llp (T : MorphismProperty C) : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ ⦃g : X ⟶ Y⦄ (_ : T g), HasLiftingProperty f g
 
-/-- The morphism property of having the right lifting property (rlp) with respect to a class of
-morphisms. -/
+/-- The right lifting property (rlp) with respect to a class of morphisms. -/
 def Rlp (T : MorphismProperty C) : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ ⦃g : X ⟶ Y⦄ (_ : T g), HasLiftingProperty g f
 
-/-- Inductive definition of the class of a single morphism, to take advantage
-of the `MorphismProperty` API. -/
-inductive Morphism {A B : C} (p : A ⟶ B) : {X Y : C} → (X ⟶ Y) → Prop
-  | mk : (Morphism p) p
-
-/-- The class of a single morphism `p`. -/
-def MorphismClass {X Y : C} (p : X ⟶ Y) : MorphismProperty C := fun _ _ i ↦ (Morphism p) i
-
-lemma classRlp_iff_LlpMorphism (T : MorphismProperty C) {X Y : C} (p : X ⟶ Y) :
-    T.Rlp p ↔ ∀ {A B} (i : A ⟶ B) (_ : T i), (MorphismClass p).Llp i := by
-  refine ⟨fun hp _ _ _ hi _ _ _ h ↦ by induction h; exact hp hi, fun h _ _ i hi ↦ h i hi .mk⟩
-
-lemma classLlp_iff_RlpMorphism (T : MorphismProperty C) {X Y : C} (p : X ⟶ Y) :
-    T.Llp p ↔ ∀ {A B} (i : A ⟶ B) (_ : T i), (MorphismClass p).Rlp i := by
-  refine ⟨fun hp _ _ _ hi _ _ _ h ↦ by induction h; exact hp hi, fun h _ _ i hi ↦ h i hi .mk⟩
-
-instance monomorphisms.IsStableUnderRetracts : IsStableUnderRetracts (monomorphisms C) := by
-  intro _ _ _ _ f g H p
-  refine ⟨fun α β ω ↦ ?_⟩
-  have h : IsRetract.i.left ≫ g = f ≫ IsRetract.i.right := H.i.w
-  have := ω =≫ H.i.right
-  rw [Category.assoc, Category.assoc, ← h, ← Category.assoc, ← Category.assoc] at this
-  have ω' := (p.right_cancellation (α ≫ H.i.left) (β ≫ H.i.left) this) =≫ H.r.left
-  have := Arrow.hom.congr_left H.retract
-  aesop
-
 instance Llp.IsStableUnderRetracts {T : MorphismProperty C} : IsStableUnderRetracts T.Llp := by
-  intro _ _ _ _ f f' H L _ _ g h
+  intro X Y _ _ f f' H L _ _ g h
   refine ⟨fun {u v} sq ↦ ?_⟩
   have : (H.r.left ≫ u) ≫ g = f' ≫ (H.r.right ≫ v) := by simp [sq.w]
   obtain lift := ((L h).sq_hasLift (CommSq.mk this)).exists_lift.some
   refine ⟨H.i.right ≫ lift.l, ?_, ?_⟩
-  · rw [← Category.assoc]
-    have := H.i.w
-    dsimp at this
-    rw [← this, Category.assoc, lift.fac_left, ← Category.assoc]
-    have := Arrow.hom.congr_left H.retract
-    aesop
-  · rw [Category.assoc, lift.fac_right, ← Category.assoc]
-    have := Arrow.hom.congr_right H.retract
-    aesop
+  · have h : H.i.left ≫ f' = f ≫ H.i.right := H.i.w
+    have h' : H.i.left ≫ H.r.left = 𝟙 X := Arrow.hom.congr_left H.retract
+    rw [← Category.assoc, ← h, Category.assoc, lift.fac_left, ← Category.assoc, h',
+      Category.id_comp]
+  · have : H.i.right ≫ H.r.right = 𝟙 Y := Arrow.hom.congr_right H.retract
+    rw [Category.assoc, lift.fac_right, ← Category.assoc, this, Category.id_comp]
 
 instance Rlp.IsStableUnderRetracts {T : MorphismProperty C} : IsStableUnderRetracts T.Rlp := by
   intro X Y _ _ f f' H L _ _ g h
@@ -111,11 +96,8 @@ instance Llp.IsStableUnderCobaseChange {T : MorphismProperty C} :
   let newCocone := mk (f' ≫ v) (t ≫ v) (by have := P.w; apply_fun (fun f ↦ f ≫ v) at this; aesop)
   refine ⟨lift', l,
     (P.isColimit.uniq newCocone (lift' ≫ g) ?_).trans (P.isColimit.uniq newCocone v ?_).symm⟩
-  all_goals
-    dsimp [newCocone]
-    intro j
-    cases j
-    simp only [Limits.span_zero, condition_zero, IsPushout.cocone_inl, Category.assoc]
+  all_goals dsimp [newCocone]; intro j; cases j; simp only [Limits.span_zero, condition_zero,
+    IsPushout.cocone_inl, Category.assoc]
   · rw [← Category.assoc, ← Category.assoc, Category.assoc s f' lift', l, ← sq.w, Category.assoc]
   · rename_i k; cases k; all_goals dsimp
     · rw [← Category.assoc, l, sq.w]
