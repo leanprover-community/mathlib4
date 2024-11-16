@@ -4256,8 +4256,8 @@ import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.LinearDisjoint
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.LocalProperties.Exactness
 import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
-import Mathlib.RingTheory.LocalProperties.LinearMap
 import Mathlib.RingTheory.LocalProperties.Projective
 import Mathlib.RingTheory.LocalProperties.Reduced
 import Mathlib.RingTheory.LocalProperties.Submodule
