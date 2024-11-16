@@ -151,6 +151,17 @@ example (a : ℤ) : True := by
   guard_hyp h2 : a ^ 2 - b ^ 2 = a - b
   trivial
 
+-- check that ring_nf does not unfold lets whose head is an algebraic operation
+/--
+warning: 'ring_nf at _h' tactic does nothing
+note: this linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example (a : ℤ) (f : ℤ → ℤ) (_h : f (1 - a) = a) : True := by
+  set b := 1 - a
+  ring_nf at _h
+  trivial
+
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 

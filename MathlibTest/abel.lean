@@ -150,3 +150,10 @@ example (a : ℤ) : True := by
   abel_nf at h2
   guard_hyp h2 : (3:ℤ) • a + (3:ℤ) • b = (3:ℤ) • 1
   trivial
+
+-- check that abel_nf does not unfold lets whose head is an algebraic operation
+/-- error: abel_nf made no progress -/
+#guard_msgs in
+example (a : ℤ) (f : ℤ → ℤ) (h : f (1 - a) = a) : True := by
+  set b := 1 - a
+  abel_nf at h
