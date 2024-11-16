@@ -14,13 +14,6 @@ In this file, we show that several conditions on submodules can be checked on st
 
 open scoped nonZeroDivisors
 
--- TODO: move this?
-private def equalizer (R) {M} [Semiring R] [AddCommMonoid M] [Module R M] (m m' : M) : Ideal R where
-  carrier := {r : R | r • m = r • m'}
-  add_mem' h h' := by simpa [add_smul] using congr($h + $h')
-  zero_mem' := by simp_rw [Set.mem_setOf, zero_smul]
-  smul_mem' _ _ h := by simpa [mul_smul] using congr(_ • $h)
-
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 section maximal
@@ -83,7 +76,7 @@ theorem Module.eq_of_localization_maximal (m m' : M)
     m = m' := by
   by_contra! ne
   rw [← one_smul R m, ← one_smul R m'] at ne
-  have ⟨P, mP, le⟩ := (equalizer R m m').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
+  have ⟨P, mP, le⟩ := (eqIdeal R m m').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
   have ⟨s, hs⟩ := (IsLocalizedModule.eq_iff_exists P.primeCompl _).mp (h P)
   exact s.2 (le hs)
 
