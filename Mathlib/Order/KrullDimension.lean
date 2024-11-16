@@ -5,6 +5,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
 import Mathlib.Order.RelSeries
+import Mathlib.Order.Minimal
 import Mathlib.Data.ENat.Lattice
 
 /-!
@@ -317,6 +318,21 @@ lemma height_eq_coe_iff {x : α} {n : ℕ} :
     congr! 3
     rename_i y _
     cases height y <;> simp; norm_cast; omega
+
+/-- The elements of finite height `n` are the minimial elements among those of height `≥ n`. -/
+lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
+    height a = n ↔ Minimal (fun y => n ≤ height y) a := by
+  by_cases hfin : height a < ⊤
+  · cases hn : n with
+    | zero => simp
+    | succ => simp [minimal_iff_forall_lt, height_eq_coe_add_one_iff, ENat.add_one_le_iff,
+        coe_lt_height_iff, *]
+  · suffices ∃ x < a, ↑n ≤ height x by
+      simp_all [minimal_iff_forall_lt]
+    simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
+    obtain ⟨p, rfl, hp⟩ := hfin (n+1)
+    use p.eraseLast.last, RelSeries.eraseLast_last_rel_last _ (by omega)
+    simpa [hp] using length_le_height_last (p := p.eraseLast)
 
 end height
 
