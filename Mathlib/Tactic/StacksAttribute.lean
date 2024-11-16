@@ -143,24 +143,19 @@ syntax (name := stacksTag) stacksTagDB stacksTagParser (ppSpace str)? : attr
 initialize Lean.registerBuiltinAttribute {
   name := `stacksTag
   descr := "Apply a Stacks or Kerodon project tag to a theorem."
-  add := fun decl stx _attrKind => match stx with
-    | `(attr| stacks $tag $[$comment]?) => do
-      let tagStr ← tag.getStacksTag
-      let comment := (comment.map (·.getString)).getD ""
-      let oldDoc := (← findDocString? (← getEnv) decl).getD default
-      addDocString decl
-        s!"{oldDoc}{if comment == "" then "" else ("\n\n" ++ comment)}\n\n\
-          [Stacks Tag {tagStr}](https://stacks.math.columbia.edu/tag/{tagStr})"
-      addTagEntry decl .stacks tagStr <| comment
-    | `(attr| kerodon $tag $[$comment]?) => do
-      let tagStr ← tag.getStacksTag
-      let comment := (comment.map (·.getString)).getD ""
-      let oldDoc := (← findDocString? (← getEnv) decl).getD default
-      addDocString decl
-        s!"{oldDoc}{if comment == "" then "" else ("\n\n" ++ comment)}\n\n\
-          [Kerodon Tag {tagStr}](https://kerodon.net/tag/{tagStr})"
-      addTagEntry decl .kerodon tagStr <| comment
-    | _ => throwUnsupportedSyntax
+  add := fun decl stx _attrKind => do
+    let oldDoc := (← findDocString? (← getEnv) decl).getD ""
+    let (database, url, tag, comment) := ← match stx with
+      | `(attr| stacks $tag $[$comment]?) =>
+        return ("Stacks", "https://stacks.math.columbia.edu/tag", tag, comment)
+      | `(attr| kerodon $tag $[$comment]?) =>
+        return ("Kerodon", "https://kerodon.net/tag", tag, comment)
+      | _ => throwUnsupportedSyntax
+    let tagStr ← tag.getStacksTag
+    let comment := (comment.map (·.getString)).getD ""
+    let newDoc := [oldDoc, s!"[{database} Tag {tagStr}]({url}/{tagStr})", comment]
+    addDocString decl <| "\n\n".intercalate (newDoc.filter (· != ""))
+    addTagEntry decl .stacks tagStr <| comment
 }
 
 end Mathlib.StacksTag
