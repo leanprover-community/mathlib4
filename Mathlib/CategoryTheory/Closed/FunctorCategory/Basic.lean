@@ -66,9 +66,37 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
         rw [← uncurry_natural_right, tensorHom_def'_assoc, ← uncurry_pre_app,
           ← uncurry_natural_left]
         congr 1
-        sorry }
-  left_inv := sorry
-  right_inv := sorry
+        rw [Category.assoc, Category.assoc, NatTrans.naturality_assoc,
+          functorEnrichedHom_map]
+        erw [precompEnrichedHom_π_assoc]
+        congr 1
+        dsimp
+        let α : Under.mk (𝟙 j) ⟶ (Under.map φ).obj (Under.mk (𝟙 j')) := Under.homMk φ
+        convert (enrichedHom_condition C (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₃) α).symm
+            using 1
+        · dsimp
+          congr 1
+          erw [enrichedOrdinaryCategorySelf_homEquiv]
+          dsimp [comp, α]
+          sorry
+        · sorry }
+  left_inv f := by
+    dsimp
+    ext j
+    dsimp
+    rw [end_.lift_π]
+    dsimp
+    rw [Functor.map_id, Category.id_comp, uncurry_curry]
+  right_inv g := by
+    ext j
+    dsimp
+    ext k
+    rw [end_.lift_π, curry_uncurry, NatTrans.naturality_assoc]
+    erw [precompEnrichedHom_π]
+    congr
+    dsimp [Under.map, Comma.mapLeft]
+    simp only [Category.comp_id]
+    rfl
 
 lemma homEquiv_naturality_two_symm (f₂ : F₂ ⟶ F₂') (g : F₂' ⟶ functorEnrichedHom C F₁ F₃) :
     homEquiv.symm (f₂ ≫ g) = F₁ ◁ f₂ ≫ homEquiv.symm g :=

@@ -77,6 +77,12 @@ lemma enrichedOrdinaryCategorySelf_eHomWhiskerRight {X₁ X₂ : C} (f : X₁ �
     eHomWhiskerRight C f Y = (pre f).app Y := by
   sorry
 
+lemma enrichedOrdinaryCategorySelf_homEquiv {X Y : C} (f : X ⟶ Y) :
+    eHomEquiv C f = curry ((ρ_ _).hom ≫ f) := rfl
+
+lemma enrichedOrdinaryCategorySelf_homEquiv_symm {X Y : C} (g : 𝟙_ C ⟶ (ihom X).obj Y):
+    (eHomEquiv C).symm g = (ρ_ _).inv ≫ uncurry g := rfl
+
 end MonoidalClosed
 
 end CategoryTheory
