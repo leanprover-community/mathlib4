@@ -34,7 +34,8 @@ variable (n : Type v) (S : Scheme.{max u v})
 local notation3 "ℤ[" n "]" => CommRingCat.of (MvPolynomial n (ULift ℤ))
 local notation3 "ℤ[" n "].{" u "}" => CommRingCat.of (MvPolynomial n (ULift.{u} ℤ))
 
-/-- `𝔸(n; S)` is the affine `n`-space over `S`. -/
+/-- `𝔸(n; S)` is the affine `n`-space over `S`.
+Note that `n` is an arbitrary index type (e.g. `Fin m`). -/
 def AffineSpace (n : Type v) (S : Scheme.{max u v}) : Scheme.{max u v} :=
   pullback (terminal.from S) (terminal.from (Spec ℤ[n]))
 
@@ -64,7 +65,10 @@ def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n] := pullback.snd _ _
 
 variable {X : Scheme.{max u v}}
 
-/-- Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections. -/
+/--
+Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections.
+Use `homOverEquiv` instead.
+-/
 @[simps]
 def toSpecMvPolyIntEquiv : (X ⟶ Spec ℤ[n]) ≃ (n → Γ(X, ⊤)) where
   toFun f i := f.app ⊤ ((Scheme.ΓSpecIso ℤ[n]).inv (.X i))
@@ -354,6 +358,26 @@ lemma reindex_comp {n₁ n₂ n₃ : Type v} (i : n₁ → n₂) (j : n₂ → n
 -- These time out if added to `reindex_comp` directly.
 attribute [reassoc] reindex_comp
 attribute [simp] reindex_comp
+
+lemma map_reindex {n₁ n₂ : Type v} (i : n₁ → n₂) {S T : Scheme.{max u v}} (f : S ⟶ T) :
+    map n₂ f ≫ reindex i T = reindex i S ≫ map n₁ f := by
+  apply hom_ext
+  · simp
+  · intro j
+    simp only [Scheme.comp_coeBase, TopologicalSpace.Opens.map_comp_obj, Scheme.comp_app,
+      CommRingCat.comp_apply, map_app_top_coord, reindex_app_top_coord]
+    simp only [TopologicalSpace.Opens.map_top]
+    erw [map_app_top_coord f (i j), reindex_app_top_coord i S]
+
+attribute [reassoc (attr := simp)] map_reindex
+
+/-- The affine space as a functor. -/
+@[simps]
+def functor : (Type v)ᵒᵖ ⥤ Scheme.{max u v} ⥤ Scheme.{max u v} where
+  obj n := { obj := AffineSpace n.unop, map := map n.unop, map_id := map_id, map_comp := map_comp }
+  map {n m} i := { app := reindex i.unop, naturality := fun _ _ ↦ map_reindex i.unop }
+  map_id n := by ext: 2; exact reindex_id _
+  map_comp f g := by ext: 2; dsimp; exact reindex_comp _ _ _
 
 end functorial
 
