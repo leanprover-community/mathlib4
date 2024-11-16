@@ -50,7 +50,15 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
         · dsimp
           rw [tensorHom_def_assoc, whisker_exchange_assoc,
             ← MonoidalCategory.whiskerLeft_comp_assoc, ← Under.w φ, Functor.map_comp])
-      naturality := sorry }
+      naturality := fun j j' φ ↦ by
+        dsimp
+        ext k
+        dsimp
+        rw [Category.assoc, Category.assoc, end_.lift_π]
+        erw [precompEnrichedHom_π]
+        rw [end_.lift_π]
+        dsimp
+        rw [Functor.map_comp, Category.assoc] }
   invFun g :=
     { app := fun j ↦ uncurry (g.app j ≫ enrichedHomπ C _ _ (Under.mk (𝟙 j)) )
       naturality := sorry }
