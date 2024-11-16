@@ -638,10 +638,9 @@ end PartitionOfUnity
 
 /-- A variation of **Urysohn's lemma**.
 
-In a locally compact T2 space `X`, for a compact set `t` and a
-finite family of open sets `{s i}_i` such that `t ⊆ ⋃ i, s i`, there is a family of compactly
-supported continuous functions `{f i}_i` supported in `s i`, `∑ i, f i x = 1` on `t` and
-`0 ≤ f i x ≤ 1`. -/
+In a locally compact T2 space `X`, for a compact set `t` and a finite family of open sets `{s i}_i`
+such that `t ⊆ ⋃ i, s i`, there is a family of compactly supported continuous functions `{f i}_i`
+supported in `s i`, `∑ i, f i x = 1` on `t` and `0 ≤ f i x ≤ 1`. -/
 theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompactSpace X]
     {n : ℕ} {t : Set X} {s : Fin n → Set X} (hs : ∀ (i : Fin n), IsOpen (s i)) (htcp : IsCompact t)
     (hst : t ⊆ ⋃ i, s i) :
