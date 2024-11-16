@@ -189,15 +189,15 @@ instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :
 
 end Quotient
 
-section LinearMap
+namespace LinearMap
 
-variable {P : Type*} [AddCommGroup P] [Module R P]
-variable {Q : Type*} [AddCommGroup Q] [Module R Q] [Module S Q] [IsScalarTower R S Q]
+variable {P : Type*} [AddCommMonoid P] [Module R P]
+variable {Q : Type*} [AddCommMonoid Q] [Module R Q] [Module S Q] [IsScalarTower R S Q]
 variable (f' : P →ₗ[R] Q) [IsLocalizedModule p f']
 
-lemma LinearMap.localized'_ker_eq_ker_localizedMap (g : M →ₗ[R] P) :
-    Submodule.localized' S p f (LinearMap.ker g) =
-      LinearMap.ker ((IsLocalizedModule.map p f f' g).extendScalarsOfIsLocalization p S) := by
+lemma localized'_ker_eq_ker_localizedMap (g : M →ₗ[R] P) :
+    Submodule.localized' S p f (ker g) =
+      ker ((IsLocalizedModule.map p f f' g).extendScalarsOfIsLocalization p S) := by
   ext x
   simp only [Submodule.mem_localized', mem_ker, extendScalarsOfIsLocalization_apply']
   constructor
@@ -211,9 +211,8 @@ lemma LinearMap.localized'_ker_eq_ker_localizedMap (g : M →ₗ[R] P) :
     obtain ⟨c, hc⟩ := h
     refine ⟨c • a, by simpa, c * b, by simp⟩
 
-lemma LinearMap.ker_localizedMap_eq_localized'_ker (g : M →ₗ[R] P) :
-    LinearMap.ker (IsLocalizedModule.map p f f' g) =
-      ((LinearMap.ker g).localized' S p f).restrictScalars _ := by
+lemma ker_localizedMap_eq_localized'_ker (g : M →ₗ[R] P) :
+    ker (IsLocalizedModule.map p f f' g) = ((ker g).localized' S p f).restrictScalars _ := by
   ext
   simp [localized'_ker_eq_ker_localizedMap S p f f']
 
@@ -223,18 +222,29 @@ The canonical map from the kernel of `g` to the kernel of `g` localized at a sub
 This is a localization map by `LinearMap.toKerLocalized_isLocalizedModule`.
 -/
 @[simps!]
-noncomputable def LinearMap.toKerIsLocalized (g : M →ₗ[R] P) :
+noncomputable def toKerIsLocalized (g : M →ₗ[R] P) :
     ker g →ₗ[R] ker (IsLocalizedModule.map p f f' g) :=
-  f.restrict (fun x hx ↦ by simp [LinearMap.mem_ker, LinearMap.mem_ker.mp hx])
+  f.restrict (fun x hx ↦ by simp [mem_ker, mem_ker.mp hx])
 
 include S in
 /-- The canonical map to the kernel of the localization of `g` is localizing.
 In other words, localization commutes with kernels. -/
-lemma LinearMap.toKerLocalized_isLocalizedModule (g : M →ₗ[R] P) :
+lemma toKerLocalized_isLocalizedModule (g : M →ₗ[R] P) :
     IsLocalizedModule p (toKerIsLocalized p f f' g) :=
   let e : Submodule.localized' S p f (ker g) ≃ₗ[S]
       ker ((IsLocalizedModule.map p f f' g).extendScalarsOfIsLocalization p S) :=
     LinearEquiv.ofEq _ _ (localized'_ker_eq_ker_localizedMap S p f f' g)
   IsLocalizedModule.of_linearEquiv p (Submodule.toLocalized' S p f (ker g)) (e.restrictScalars R)
+
+open Submodule IsLocalizedModule
+
+lemma range_localizedMap_eq_localized₀_range (g : M →ₗ[R] P) :
+    range (IsLocalizedModule.map p f f' g) = (range g).localized₀ p f' := by
+  ext; simp [mem_localized₀, mem_range, (mk'_surjective p f).exists]
+
+/-- Localization commutes with ranges. -/
+lemma localized'_range_eq_range_localizedMap (g : M →ₗ[R] P) :
+    localized' S p f' (range g) = range ((map p f f' g).extendScalarsOfIsLocalization p S) :=
+  SetLike.ext (by apply SetLike.ext_iff.mp (f.range_localizedMap_eq_localized₀_range p f' g).symm)
 
 end LinearMap
