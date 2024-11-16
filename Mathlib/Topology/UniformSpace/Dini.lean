@@ -22,22 +22,9 @@ topology which is also order closed. Therefore it applies also when the codomain
 
 open Filter Topology
 
-namespace OrderDual
-
-instance instUniformSpace {X : Type*} [UniformSpace X] : UniformSpace Xᵒᵈ := ‹_›
-
-@[to_additive]
-instance instContinuousInv {X : Type*} [TopologicalSpace X] [Inv X] [ContinuousInv X] :
-    ContinuousInv Xᵒᵈ := ‹ContinuousInv X›
-
-@[to_additive]
-instance instTopologicalGroup {X : Type*} [TopologicalSpace X] [Group X] [TopologicalGroup X] :
-    TopologicalGroup Xᵒᵈ where
-
-end OrderDual
-
 variable {ι α G : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     [TopologicalSpace α] [LinearOrderedCommGroup G]
+
 section Unbundled
 
 open TopologicalGroup
