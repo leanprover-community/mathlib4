@@ -1148,6 +1148,10 @@ lemma comm_comp_rTensor_comp_comm_eq (g : N →ₗ[R] P) :
       lTensor Q g :=
   TensorProduct.ext rfl
 
+theorem rTensor_tensor : rTensor (M ⊗[R] N) g =
+    TensorProduct.assoc R Q M N ∘ₗ rTensor N (rTensor M g) ∘ₗ (TensorProduct.assoc R P M N).symm :=
+  TensorProduct.ext <| LinearMap.ext fun _ ↦ TensorProduct.ext rfl
+
 lemma comm_comp_lTensor_comp_comm_eq (g : N →ₗ[R] P) :
     TensorProduct.comm R Q P ∘ₗ lTensor Q g ∘ₗ TensorProduct.comm R N Q =
       rTensor Q g :=

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
