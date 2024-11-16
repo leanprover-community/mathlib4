@@ -141,7 +141,7 @@ section finitespan
 open IsLocalizedModule LocalizedModule Ideal
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-  (s : Finset R) (spn : Ideal.span (s : Set R) = ⊤)
+  (s : Set R) (spn : Ideal.span (s : Set R) = ⊤)
 include spn
 
 theorem eq_zero_of_localization_finitespan (x : M)
