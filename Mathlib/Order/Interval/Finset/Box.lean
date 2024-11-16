@@ -77,7 +77,7 @@ end Prod
 /-! ### `ℤ × ℤ` -/
 
 namespace Int
-variable {n : ℕ} {x : ℤ × ℤ}
+variable {x : ℤ × ℤ}
 
 attribute [norm_cast] toNat_ofNat
 
