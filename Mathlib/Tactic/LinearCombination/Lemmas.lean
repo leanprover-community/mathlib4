@@ -91,17 +91,17 @@ theorem smul_lt_const_weak [OrderedRing K] [OrderedAddCommGroup α] [Module K α
 
 theorem smul_const_eq [SMul K α] (p : b = c) (s : K) : s • b = s • c := p ▸ rfl
 
-theorem smul_const_le [OrderedRing K] [OrderedAddCommGroup α] [Module K α]
+theorem smul_const_le [OrderedSemiring K] [OrderedAddCommMonoid α] [Module K α]
     [OrderedSMul K α] (p : b ≤ c) {s : K} (hs : 0 ≤ s) :
     s • b ≤ s • c :=
   smul_le_smul_of_nonneg_left p hs
 
-theorem smul_const_lt [OrderedRing K] [OrderedAddCommGroup α] [Module K α]
+theorem smul_const_lt [OrderedSemiring K] [OrderedAddCommMonoid α] [Module K α]
     [OrderedSMul K α] (p : b < c) {s : K} (hs : 0 < s) :
     s • b < s • c :=
   smul_lt_smul_of_pos_left p hs
 
-theorem smul_const_lt_weak [OrderedRing K] [OrderedAddCommGroup α] [Module K α]
+theorem smul_const_lt_weak [OrderedSemiring K] [OrderedAddCommMonoid α] [Module K α]
     [OrderedSMul K α] (p : b < c) {s : K} (hs : 0 ≤ s) :
     s • b ≤ s • c :=
   smul_le_smul_of_nonneg_left p.le hs
