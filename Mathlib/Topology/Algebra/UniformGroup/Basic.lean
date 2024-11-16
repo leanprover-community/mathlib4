@@ -245,7 +245,7 @@ theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α] (F : ι → α → G
     (Exists.imp fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩) ∘
       h u hu x⟩
 
-end UniformGroup
+end TopologicalGroup
 
 open Filter Set Function
 
