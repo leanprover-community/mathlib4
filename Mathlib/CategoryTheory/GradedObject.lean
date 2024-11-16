@@ -61,7 +61,7 @@ variable {C : Type u} [Category.{v} C]
 instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObject β C) :=
   CategoryTheory.pi fun _ => C
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext

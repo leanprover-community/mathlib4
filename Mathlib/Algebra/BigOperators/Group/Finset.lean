@@ -5,7 +5,9 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Piecewise
+import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Fintype.Pi
 
 /-!
 # Big operators
@@ -811,10 +813,10 @@ theorem prod_comm' {s : Finset γ} {t : γ → Finset α} {t' : Finset α} {s' :
     (h : ∀ x y, x ∈ s ∧ y ∈ t x ↔ x ∈ s' y ∧ y ∈ t') {f : γ → α → β} :
     (∏ x ∈ s, ∏ y ∈ t x, f x y) = ∏ y ∈ t', ∏ x ∈ s' y, f x y := by
   classical
-    have : ∀ z : γ × α, (z ∈ s.biUnion fun x => (t x).map <| Function.Embedding.sectr x _) ↔
+    have : ∀ z : γ × α, (z ∈ s.biUnion fun x => (t x).map <| Function.Embedding.sectR x _) ↔
       z.1 ∈ s ∧ z.2 ∈ t z.1 := by
       rintro ⟨x, y⟩
-      simp only [mem_biUnion, mem_map, Function.Embedding.sectr_apply, Prod.mk.injEq,
+      simp only [mem_biUnion, mem_map, Function.Embedding.sectR_apply, Prod.mk.injEq,
         exists_eq_right, ← and_assoc]
     exact
       (prod_finset_product' _ _ _ this).symm.trans
@@ -926,9 +928,8 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
           h₀ c hc ⟨ne_of_mem_of_not_mem hc h₁, ne_of_mem_of_not_mem hc h₂⟩)
         prod_const_one
 
--- Porting note: simpNF linter complains that LHS doesn't simplify, but it does
 /-- A product over `s.subtype p` equals one over `{x ∈ s | p x}`. -/
-@[to_additive (attr := simp, nolint simpNF)
+@[to_additive (attr := simp)
 "A sum over `s.subtype p` equals one over `{x ∈ s | p x}`."]
 theorem prod_subtype_eq_prod_filter (f : α → β) {p : α → Prop} [DecidablePred p] :
     ∏ x ∈ s.subtype p, f x = ∏ x ∈ s with p x, f x := by
