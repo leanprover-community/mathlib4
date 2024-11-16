@@ -36,6 +36,10 @@ variable {J : Type w} (f : J → C)
 def Fan.map (c : Fan f) : Fan (G.obj ∘ f) :=
   Fan.mk (G.obj c.pt) (fun j => G.map (c.proj j))
 
+def Fan.isLimitMapCongr (H : C ⥤ D) (i : G ≅ H) (c : Fan f) :
+    IsLimit (c.map G) ≃ IsLimit (c.map H) :=
+  Fan.isLimitCongr _ _ (i.app c.pt) (fun _ => i.app _) (fun _ => (i.hom.naturality _).symm)
+
 /-- The map (as a cone) of a fan is limit iff the map (as a fan) is limit. -/
 def Fan.isLimitMapConeEquiv (c : Fan f) : IsLimit (G.mapCone c) ≃ IsLimit (c.map G) :=
   (IsLimit.postcomposeHomEquiv Discrete.natIsoFunctor _).symm.trans <| IsLimit.equivIsoLimit <|
@@ -57,6 +61,10 @@ def isLimitFanMkObjOfIsLimit [PreservesLimit (Discrete.functor f) G] {P : C} (g 
     (t : IsLimit (Fan.mk _ g)) :
     IsLimit (Fan.mk (G.obj P) fun j => G.map (g j) : Fan fun j => G.obj (f j)) :=
   isLimitMapConeFanMkEquiv _ _ _ (PreservesLimit.preserves t)
+
+def isLimitFanMapOfIsLimit [PreservesLimit (Discrete.functor f) G] (c : Fan f)
+    (hc : IsLimit c) : IsLimit (c.map G) :=
+  Fan.isLimitMapConeEquiv _ _ _ (PreservesLimit.preserves hc)
 
 /-- The property of reflecting products expressed in terms of fans. -/
 def isLimitOfIsLimitFanMkObj [ReflectsLimit (Discrete.functor f) G] {P : C} (g : ∀ j, P ⟶ f j)
@@ -137,6 +145,10 @@ def isColimitCofanMkObjOfIsColimit [PreservesColimit (Discrete.functor f) G] {P 
     (g : ∀ j, f j ⟶ P) (t : IsColimit (Cofan.mk _ g)) :
     IsColimit (Cofan.mk (G.obj P) fun j => G.map (g j) : Cofan fun j => G.obj (f j)) :=
   isColimitMapCoconeCofanMkEquiv _ _ _ (PreservesColimit.preserves t)
+
+def isColimitCofanMapOfIsColimit [PreservesColimit (Discrete.functor f) G] (c : Cofan f)
+    (hc : IsColimit c) : IsColimit (c.map G) :=
+  Cofan.isColimitMapCoconeEquiv _ _ _ (PreservesColimit.preserves hc)
 
 /-- The property of reflecting coproducts expressed in terms of cofans. -/
 def isColimitOfIsColimitCofanMkObj [ReflectsColimit (Discrete.functor f) G] {P : C}

@@ -133,6 +133,12 @@ lemma Fan.IsLimit.hom_ext {I : Type*} {F : I → C} {c : Fan F} (hc : IsLimit c)
     (f g : A ⟶ c.pt) (h : ∀ i, f ≫ c.proj i = g ≫ c.proj i) : f = g :=
   hc.hom_ext (fun ⟨i⟩ => h i)
 
+def Fan.isLimitCongr {f g : β → C} (c : Fan f) (d : Fan g)
+    (ipt : c.pt ≅ d.pt) (ilg : ∀ b, f b ≅ g b)
+    (h : ∀ b, ipt.hom ≫ d.proj b = c.proj b ≫ (ilg b).hom) : IsLimit c ≃ IsLimit d :=
+  IsLimit.equivOfNatIsoOfIso (Discrete.natIso (fun s => ilg s.as)) _ _
+    (Cones.ext ipt (fun ⟨j⟩ => by simpa using (h j).symm))
+
 /-- Make a cofan `f` into a colimit cofan by providing `desc`, `fac`, and `uniq` --
   just a convenience lemma to avoid having to go through `Discrete` -/
 @[simps]

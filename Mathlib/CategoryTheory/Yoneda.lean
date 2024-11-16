@@ -824,6 +824,13 @@ def homNatIsoMaxRight {D : Type u₂} [Category.{max v₁ v₂} D] {F : C ⥤ D}
     (fun Y => Equiv.toIso (hF.homEquiv.symm.trans Equiv.ulift.symm))
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
+@[simps!]
+def homNatIsoSmall {D : Type u₂} [Category.{v₁} D] {F : C ⥤ D} (hF : F.FullyFaithful)
+    (X : C) : F ⋙ coyoneda.obj (op (F.obj X)) ≅ coyoneda.obj (op X) :=
+  NatIso.ofComponents
+    (fun Y => Equiv.toIso hF.homEquiv.symm)
+    (fun f => by ext; exact hF.map_injective (by simp))
+
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
 @[simps!]
 def compYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ D}
@@ -840,6 +847,13 @@ def compYonedaCompWhiskeringLeftMaxRight {D : Type u₂} [Category.{max v₁ v�
       yoneda ⋙ (CategoryTheory.whiskeringRight _ _ _).obj uliftFunctor.{v₂} :=
   NatIso.ofComponents (fun X => hF.homNatIsoMaxRight _)
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
+
+@[simps!]
+def compCoyonedaSmall {D : Type u₂} [Category.{v₁} D] {F : C ⥤ D}
+    (hF : F.FullyFaithful) :
+      F.op ⋙ coyoneda ⋙ (CategoryTheory.whiskeringLeft _ _ _).obj F ≅ coyoneda :=
+  NatIso.ofComponents (fun X => hF.homNatIsoSmall _)
+    (fun f => by ext; exact hF.map_injective (by simp))
 
 end Functor.FullyFaithful
 
