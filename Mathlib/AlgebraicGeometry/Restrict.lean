@@ -247,7 +247,6 @@ theorem Scheme.homOfLE_app {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
   rw [e₃, ← Functor.map_comp]
   congr 1
 
-@[simp]
 theorem Scheme.homOfLE_appTop {U V : X.Opens} (e : U ≤ V) :
     (X.homOfLE e).appTop =
       X.presheaf.map (homOfLE <| X.ι_image_homOfLE_le_ι_image e ⊤).op :=

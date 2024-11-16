@@ -341,7 +341,7 @@ lemma reindex_app_top_coord {n m : Type v} (i : m → n) (S : Scheme.{max u v}) 
 lemma reindex_id : reindex id S = 𝟙 𝔸(n; S) := by
   ext1 <;> simp
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma reindex_comp {n₁ n₂ n₃ : Type v} (i : n₁ → n₂) (j : n₂ → n₃) (S : Scheme.{max u v}) :
     reindex (j ∘ i) S = reindex j S ≫ reindex i S := by
   have H₁ : reindex (j ∘ i) S ≫ 𝔸(n₁; S) ↘ S = (reindex j S ≫ reindex i S) ≫ 𝔸(n₁; S) ↘ S := by simp
