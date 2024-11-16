@@ -27,11 +27,7 @@ variable
 theorem Submodule.mem_of_localization_maximal (m : M) (N : Submodule R M)
     (h : ∀ (P : Ideal R) [P.IsMaximal], f P m ∈ N.localized₀ P.primeCompl (f P)) :
     m ∈ N := by
-  let I : Ideal R :=
-  { carrier := { r : R | r • m ∈ N }
-    add_mem' := fun h h' ↦ by simpa [add_smul] using add_mem h h'
-    zero_mem' := by simp
-    smul_mem' := fun _ _ h ↦ by simpa [mul_smul] using smul_mem _ _ h }
+  let I : Ideal R := N.comap (LinearMap.toSpanSingleton R M m)
   suffices I = ⊤ by simpa [I] using I.eq_top_iff_one.mp this
   refine Not.imp_symm I.exists_le_maximal fun ⟨P, hP, le⟩ ↦ ?_
   obtain ⟨a, ha, s, e⟩ := h P
