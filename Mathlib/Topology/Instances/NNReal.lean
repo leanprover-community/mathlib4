@@ -51,8 +51,7 @@ a few of which rely on the fact that subtraction is continuous.
 
 noncomputable section
 
-open Set TopologicalSpace Metric Filter
-open scoped Topology
+open Filter Metric Set TopologicalSpace Topology
 
 namespace NNReal
 
@@ -254,7 +253,7 @@ nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
   StrictMono.orderIsoOfSurjective (fun x ↦ x ^ n) (fun x y h =>
-      pow_left_strictMonoOn hn (zero_le x) (zero_le y) h) <|
+      pow_left_strictMonoOn₀ hn (zero_le x) (zero_le y) h) <|
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
 

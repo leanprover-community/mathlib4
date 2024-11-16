@@ -753,7 +753,7 @@ lemma mapRange_injective (e : M → N) (he₀ : e 0 = 0) (he : Injective e) :
 /-- `Finsupp.mapRange` of a surjective function is surjective. -/
 lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
     Surjective (Finsupp.mapRange (α := α) e he₀) := by
-  rw [← Set.range_iff_surjective, range_mapRange, he.range_eq]
+  rw [← Set.range_eq_univ, range_mapRange, he.range_eq]
   simp
 
 end MapRange
@@ -1218,7 +1218,7 @@ end AddMonoid
 
 instance instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
   --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+  { DFunLike.coe_injective.addCommMonoid DFunLike.coe coe_zero coe_add (fun _ _ => rfl) with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instNeg [NegZeroClass G] : Neg (α →₀ G) :=
@@ -1263,14 +1263,14 @@ instance instIntSMul [AddGroup G] : SMul ℤ (α →₀ G) :=
 
 instance instAddGroup [AddGroup G] : AddGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+  { DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
       fun _ _ => rfl with
     toAddMonoid := Finsupp.instAddMonoid }
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
-  { DFunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
-      fun _ _ => rfl with
+  { DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
+      (fun _ _ => rfl) fun _ _ => rfl with
     toAddGroup := Finsupp.instAddGroup }
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}

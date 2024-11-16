@@ -21,7 +21,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 namespace AlgebraicGeometry
 
-open CategoryTheory Opposite TopologicalSpace LocalRing
+open CategoryTheory Opposite TopologicalSpace IsLocalRing
 
 universe u
 
@@ -158,7 +158,7 @@ lemma range_fromSpecStalk {x : X} :
   ext y
   constructor
   · rintro ⟨y, rfl⟩
-    exact ((LocalRing.specializes_closedPoint y).map (X.fromSpecStalk x).base.2).trans
+    exact ((IsLocalRing.specializes_closedPoint y).map (X.fromSpecStalk x).base.2).trans
       (specializes_of_eq fromSpecStalk_closedPoint)
   · rintro (hy : y ⤳ x)
     have := fromSpecStalk_closedPoint (x := y)
@@ -202,7 +202,7 @@ end Scheme
 
 end fromSpecStalk
 
-variable (R : CommRingCat.{u}) [LocalRing R]
+variable (R : CommRingCat.{u}) [IsLocalRing R]
 
 section stalkClosedPointIso
 
@@ -260,14 +260,14 @@ instance isLocalHom_stalkClosedPointTo :
 
 lemma preimage_eq_top_of_closedPoint_mem
     {U : Opens X} (hU : f.base (closedPoint R) ∈ U) : f ⁻¹ᵁ U = ⊤ :=
-  LocalRing.closed_point_mem_iff.mp hU
+  IsLocalRing.closed_point_mem_iff.mp hU
 
 lemma stalkClosedPointTo_comp (g : X ⟶ Y) :
     stalkClosedPointTo (f ≫ g) = g.stalkMap _ ≫ stalkClosedPointTo f := by
   rw [stalkClosedPointTo, Scheme.stalkMap_comp]
   exact Category.assoc _ _ _
 
-lemma germ_stalkClosedPointTo_Spec {R S : CommRingCat} [LocalRing S] (φ : R ⟶ S):
+lemma germ_stalkClosedPointTo_Spec {R S : CommRingCat} [IsLocalRing S] (φ : R ⟶ S):
     (Spec R).presheaf.germ ⊤ _ trivial ≫ stalkClosedPointTo (Spec.map φ) =
       (ΓSpecIso R).hom ≫ φ := by
   rw [stalkClosedPointTo, Scheme.stalkMap_germ_assoc, ← Iso.inv_comp_eq,
@@ -329,7 +329,7 @@ end stalkClosedPointTo
 
 variable {R}
 
-omit [LocalRing R] in
+omit [IsLocalRing R] in
 /-- useful lemma for applications of `SpecToEquivOfLocalRing` -/
 lemma SpecToEquivOfLocalRing_eq_iff
     {f₁ f₂ : Σ x, { f : X.presheaf.stalk x ⟶ R // IsLocalHom f }} :
