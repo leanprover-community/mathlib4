@@ -79,8 +79,10 @@ see `Deriv.lean`.
 
 ## Implementation details
 
-The derivative is defined in terms of the `isLittleO` relation, but also
-characterized in terms of the `Tendsto` relation.
+The derivative is defined in terms of the `IsLittleOTVS` relation to ensure the definition does not
+ingrain a choice of norm, and is then quickly translated to the more convenient `IsLittleO` in the
+subsequent theorems.
+It is also characterized in terms of the `Tendsto` relation.
 
 We also introduce predicates `DifferentiableWithinAt 𝕜 f s x` (where `𝕜` is the base field,
 `f` the function to be differentiated, `x` the point at which the derivative is asserted to exist,
