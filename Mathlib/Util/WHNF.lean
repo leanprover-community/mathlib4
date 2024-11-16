@@ -36,7 +36,7 @@ private def cache (useCache : Bool) (e r : Expr) : MetaM Expr := do
   return r
 
 partial def whnfWithConfig (e : Expr) (config : WhnfCoreConfig := {}) : MetaM Expr :=
-  withIncRecDepth <| whnfEasyCases e fun e => do
+  let k := fun e => do
     let useCache ← useWHNFCache e
     match (← cached? useCache e) with
     | some e' => pure e'
@@ -53,5 +53,6 @@ partial def whnfWithConfig (e : Expr) (config : WhnfCoreConfig := {}) : MetaM Ex
             match (← unfoldDefinition? e') with
             | some e'' => cache useCache e (← whnfImp e'')
             | none => cache useCache e e'
+  withIncRecDepth <| whnfEasyCases e k config
 
 end Lean.Meta
