@@ -111,6 +111,7 @@ import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
+import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 
 /-!
