@@ -1213,6 +1213,10 @@ theorem UniformContinuous.continuous [UniformSpace α] [UniformSpace β] {f : α
 instance ULift.uniformSpace [UniformSpace α] : UniformSpace (ULift α) :=
   UniformSpace.comap ULift.down ‹_›
 
+/-- Uniform space structure on `αᵒᵈ`. -/
+instance OrderDual.instUniformSpace [UniformSpace α] : UniformSpace (αᵒᵈ) :=
+  ‹UniformSpace α›
+
 section UniformContinuousInfi
 
 -- Porting note: renamed for dot notation; add an `iff` lemma?

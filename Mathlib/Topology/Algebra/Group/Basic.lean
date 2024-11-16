@@ -234,6 +234,9 @@ theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
   Filter.Tendsto.inv hf
 
 @[to_additive]
+instance OrderDual.instContinuousInv : ContinuousInv Gᵒᵈ := ‹ContinuousInv G›
+
+@[to_additive]
 instance Prod.continuousInv [TopologicalSpace H] [Inv H] [ContinuousInv H] :
     ContinuousInv (G × H) :=
   ⟨continuous_inv.fst'.prod_mk continuous_inv.snd'⟩
@@ -535,6 +538,9 @@ end OrderedCommGroup
 @[to_additive]
 instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
   continuous_inv := continuous_inv.prodMap continuous_inv
+
+@[to_additive]
+instance OrderDual.instTopologicalGroup : TopologicalGroup Gᵒᵈ where
 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
