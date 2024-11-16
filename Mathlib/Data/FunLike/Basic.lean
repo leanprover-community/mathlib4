@@ -117,7 +117,7 @@ instead of linearly increasing the work per `MyHom`-related declaration.
 
 ## Design rationale
 
-The current form of FunLike was set up in pull request #8386:
+The current form of FunLike was set up in pull request https://github.com/leanprover-community/mathlib4/pull/8386:
 https://github.com/leanprover-community/mathlib4/pull/8386
 We made `FunLike` *unbundled*: child classes don't extend `FunLike`, they take a `[FunLike F A B]`
 parameter instead. This suits the instance synthesis algorithm better: it's easy to verify a type

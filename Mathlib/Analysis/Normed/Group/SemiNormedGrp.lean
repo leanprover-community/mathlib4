@@ -53,7 +53,7 @@ def of (M : Type u) [SeminormedAddCommGroup M] : SemiNormedGrp :=
 instance (M : SemiNormedGrp) : SeminormedAddCommGroup M :=
   M.str
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance funLike {V W : SemiNormedGrp} : FunLike (V ⟶ W) V W where
   coe := (forget SemiNormedGrp).map
   coe_injective' f g h := by cases f; cases g; congr
@@ -62,7 +62,7 @@ instance toAddMonoidHomClass {V W : SemiNormedGrp} : AddMonoidHomClass (V ⟶ W)
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma ext {M N : SemiNormedGrp} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
   DFunLike.ext _ _ h
@@ -133,7 +133,7 @@ instance : LargeCategory.{u} SemiNormedGrp₁ where
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
   comp {_ _ _} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance instFunLike (X Y : SemiNormedGrp₁) : FunLike (X ⟶ Y) X Y where
   coe f := f.1.toFun
   coe_injective' _ _ h := Subtype.val_inj.mp (NormedAddGroupHom.coe_injective h)
@@ -149,7 +149,7 @@ instance : ConcreteCategory.{u} SemiNormedGrp₁ where
       map := fun f => f }
   forget_faithful := { }
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance toAddMonoidHomClass {V W : SemiNormedGrp₁} : AddMonoidHomClass (V ⟶ W) V W where
   map_add f := f.1.map_add'
   map_zero f := (AddMonoidHom.mk' f.1 f.1.map_add').map_zero
@@ -233,7 +233,7 @@ theorem iso_isometry {V W : SemiNormedGrp₁} (i : V ≅ W) : Isometry i.hom := 
   intro v
   apply le_antisymm (i.hom.2 v)
   calc
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     ‖v‖ = ‖i.inv (i.hom v)‖ := by erw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := i.inv.2 _
 
