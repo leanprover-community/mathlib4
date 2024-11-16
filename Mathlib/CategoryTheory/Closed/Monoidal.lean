@@ -234,6 +234,11 @@ theorem coev_app_comp_pre_app (f : B ⟶ A) :
     (ihom.coev A).app X ≫ (pre f).app (A ⊗ X) = (ihom.coev B).app X ≫ (ihom B).map (f ▷ _) :=
   unit_conjugateEquiv _ _ ((tensoringLeft C).map f) X
 
+@[reassoc]
+lemma uncurry_pre_app (f : Y ⟶ A ⟶[C] X) (g : B ⟶ A) :
+    uncurry (f ≫ (pre g).app X) = g ▷ _ ≫ uncurry f := curry_injective (by
+  rw [curry_uncurry, ← curry_pre_app, curry_uncurry])
+
 @[simp]
 theorem pre_id (A : C) [Closed A] : pre (𝟙 A) = 𝟙 _ := by
   rw [pre, Functor.map_id]

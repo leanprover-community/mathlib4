@@ -61,7 +61,12 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
         rw [Functor.map_comp, Category.assoc] }
   invFun g :=
     { app := fun j ↦ uncurry (g.app j ≫ enrichedHomπ C _ _ (Under.mk (𝟙 j)) )
-      naturality := sorry }
+      naturality := fun j j' φ ↦ by
+        dsimp
+        rw [← uncurry_natural_right, tensorHom_def'_assoc, ← uncurry_pre_app,
+          ← uncurry_natural_left]
+        congr 1
+        sorry }
   left_inv := sorry
   right_inv := sorry
 
