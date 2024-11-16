@@ -36,7 +36,7 @@ variable (M' : Submodule R M)
 
 section Submodule
 
-/-- Let `S` be the localization of `R` at `p` and `N` be the localization of `M` at `p`.
+/-- Let `N` be a localization of an `R`-module `M` at `p`.
 This is the localization of an `R`-submodule of `M` viewed as an `R`-submodule of `N`. -/
 def Submodule.localized₀ : Submodule R N where
   carrier := { x | ∃ m ∈ M', ∃ s : p, IsLocalizedModule.mk' f m s = x }
@@ -47,7 +47,8 @@ def Submodule.localized₀ : Submodule R N where
     rintro ⟨m, hm, s, hx⟩
     exact ⟨r • m, smul_mem M' _ hm, s, by rw [IsLocalizedModule.mk'_smul, hx]⟩
 
-/-- Same as `Submodule.localized₀`, but viewed as an `S`-submodule. -/
+/-- Let `S` be the localization of `R` at `p` and `N` be a localization of `M` at `p`.
+This is the localization of an `R`-submodule of `M` viewed as an `S`-submodule of `N`. -/
 def Submodule.localized' : Submodule S N where
   __ := Submodule.localized₀ p f M'
   smul_mem' := fun r x ⟨m, hm, s, hx⟩ ↦ by
