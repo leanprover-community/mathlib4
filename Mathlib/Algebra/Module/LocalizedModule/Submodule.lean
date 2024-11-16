@@ -195,8 +195,9 @@ lemma LinearMap.toKerLocalized_isLocalizedModule (g : M →ₗ[R] P) :
     LinearEquiv.ofEq _ _ (localized'_ker_eq_ker_localizedMap S p f f' g)
   IsLocalizedModule.of_linearEquiv p (Submodule.toLocalized' S p f (ker g)) (e.restrictScalars R)
 
-/-Localization commutes with ranges.-/
 open Submodule IsLocalizedModule
+
+/-- Localization commutes with ranges. -/
 lemma LinearMap.localized'_range_eq_range_localizedMap (g : M →ₗ[R] P) :
     localized' S p f' (LinearMap.range g) =
       LinearMap.range ((map p f f' g).extendScalarsOfIsLocalization p S) := by
