@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Kim Morrison
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
 import Mathlib.Util.AtomM
+import Mathlib.Util.WHNF
 
 /-!
 # The `abel` tactic
@@ -458,7 +459,7 @@ partial def abelNFCore
       let pre : Simp.Simproc := fun e =>
         try
           guard <| root || parent != e -- recursion guard
-          let e ← withReducible <| whnfCore e (config := { zetaDelta := false })
+          let e ← withReducible <| whnfWithConfig e (config := { zetaDelta := false })
           guard e.isApp -- all interesting group expressions are applications
           let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
           guard !a.isAtom

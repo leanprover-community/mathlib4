@@ -1,0 +1,57 @@
+/-
+Copyright (c) 2019 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura
+-/
+import Lean
+
+namespace Lean.Meta
+
+@[inline] private def useWHNFCache (e : Expr) : MetaM Bool := do
+  -- We cache only closed terms without expr metavars.
+  -- Potential refinement: cache if `e` is not stuck at a metavariable
+  if e.hasFVar || e.hasExprMVar || (← read).canUnfold?.isSome then
+    return false
+  else
+    match (← getConfig).transparency with
+    | .default => return true
+    | .all     => return true
+    | _        => return false
+
+@[inline] private def cached? (useCache : Bool) (e : Expr) : MetaM (Option Expr) := do
+  if useCache then
+    match (← getConfig).transparency with
+    | .default => return (← get).cache.whnfDefault.find? e
+    | .all     => return (← get).cache.whnfAll.find? e
+    | _        => unreachable!
+  else
+    return none
+
+private def cache (useCache : Bool) (e r : Expr) : MetaM Expr := do
+  if useCache then
+    match (← getConfig).transparency with
+    | .default => modify fun s => { s with cache.whnfDefault := s.cache.whnfDefault.insert e r }
+    | .all     => modify fun s => { s with cache.whnfAll     := s.cache.whnfAll.insert e r }
+    | _        => unreachable!
+  return r
+
+partial def whnfWithConfig (e : Expr) (config : WhnfCoreConfig := {}) : MetaM Expr :=
+  withIncRecDepth <| whnfEasyCases e fun e => do
+    let useCache ← useWHNFCache e
+    match (← cached? useCache e) with
+    | some e' => pure e'
+    | none    =>
+      withTraceNode `Meta.whnf (fun _ => return m!"Non-easy whnf: {e}") do
+        checkSystem "whnf"
+        let e' ← whnfCore e config
+        match (← reduceNat? e') with
+        | some v => cache useCache e v
+        | none   =>
+          match (← reduceNative? e') with
+          | some v => cache useCache e v
+          | none   =>
+            match (← unfoldDefinition? e') with
+            | some e'' => cache useCache e (← whnfImp e'')
+            | none => cache useCache e e'
+
+end Lean.Meta
