@@ -164,6 +164,14 @@ example [OrderedCommSemiring K] [OrderedCancelAddCommMonoid V] [Module K V] [Ord
   apply le_of_eq
   module
 
+example [OrderedCommRing K] [OrderedAddCommGroup V] [Module K V] [OrderedSMul K V]
+    {x y : V} (hx : 0 < x) (hxy : x < y) {a b c : K} (hc : 0 < c) (hac : c < a) (hab : a + b ≤ 1):
+    c • x + b • y < y := by
+  have := hx.trans hxy
+  linear_combination (norm := skip) hab • y + hac • y + c • hxy
+  apply le_of_eq
+  module
+
 end
 
 /-! ### Tests in semirings -/
