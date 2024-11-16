@@ -1,7 +1,7 @@
 import Mathlib.Util.TransImports
 
 /--
-info: 'MathlibTest.TransImports' has 427 transitive imports
+info: 'MathlibTest.TransImports' has 483 transitive imports
 
 3 starting with "Lean.Elab.I":
 [Lean.Elab.InfoTree, Lean.Elab.InfoTree.Main, Lean.Elab.InfoTree.Types]
