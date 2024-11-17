@@ -35,6 +35,10 @@ private theorem opow_of_ne_zero {a b : Ordinal} (h : a ≠ 0) : a ^ b =
 private theorem zero_opow' (a : Ordinal) : 0 ^ a = 1 - a :=
   if_pos rfl
 
+theorem zero_opow_le (a : Ordinal) : (0 : Ordinal) ^ a ≤ 1 := by
+  rw [zero_opow']
+  exact sub_le_self 1 a
+
 @[simp]
 theorem zero_opow {a : Ordinal} (a0 : a ≠ 0) : (0 : Ordinal) ^ a = 0 := by
   rwa [zero_opow', Ordinal.sub_eq_zero_iff_le, one_le_iff_ne_zero]
@@ -325,8 +329,7 @@ theorem lt_opow_succ_log_self {b : Ordinal} (hb : 1 < b) (x : Ordinal) :
 
 theorem opow_log_le_self (b : Ordinal) {x : Ordinal} (hx : x ≠ 0) : b ^ log b x ≤ x := by
   rcases eq_or_ne b 0 with (rfl | b0)
-  · rw [zero_opow']
-    exact (sub_le_self _ _).trans (one_le_iff_ne_zero.2 hx)
+  · exact (zero_opow_le _).trans (one_le_iff_ne_zero.2 hx)
   rcases lt_or_eq_of_le (one_le_iff_ne_zero.2 b0) with (hb | rfl)
   · refine le_of_not_lt fun h => (lt_succ (log b x)).not_le ?_
     have := @csInf_le' _ _ { o | x < b ^ o } _ h
