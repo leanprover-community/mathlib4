@@ -220,12 +220,18 @@ theorem Lfunction_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hχs : χ ≠ 1 ∨ s ≠ 
   hs.eq_or_lt.casesOn (fun hs ↦ Lfunction_ne_zero_of_re_eq_one χ hs.symm hχs)
     fun hs ↦ LFunction_eq_LSeries χ hs ▸ LSeries_ne_zero_of_one_lt_re χ hs
 
+-- Interesting special case:
+variable {χ} in
+/-- The L-function of a nontrivial Dirichlet character does not vanish at `s = 1`. -/
+theorem L_function_apply_one_ne_zero (hχ : χ ≠ 1) : LFunction χ 1 ≠ 0 :=
+  Lfunction_ne_zero_of_one_le_re χ (.inl hχ) <| one_re ▸ le_rfl
+
 end DirichletCharacter
 
 open DirichletCharacter in
-/-- The Riemann Zeta Function does not vanish on the closed half-plane `re z ≥ 1`. -/
-lemma riemannZeta_ne_zero_of_one_le_re ⦃z : ℂ⦄ (hz : z ≠ 1) (hz' : 1 ≤ z.re) :
-    riemannZeta z ≠ 0 :=
+/-- The Riemann Zeta Function does not vanish on the closed half-plane `re s ≥ 1`. -/
+lemma riemannZeta_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hz : s ≠ 1) (hz' : 1 ≤ s.re) :
+    riemannZeta s ≠ 0 :=
   LFunction_modOne_eq (χ := 1) ▸ Lfunction_ne_zero_of_one_le_re _ (.inr hz) hz'
 
 end nonvanishing
