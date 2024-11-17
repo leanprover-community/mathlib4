@@ -398,14 +398,14 @@ theorem pow_right_mono (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
 
 namespace IsTwoSided
 
-instance [J.IsTwoSided] : (I * J).IsTwoSided :=
+instance (priority := low) [J.IsTwoSided] : (I * J).IsTwoSided :=
   ⟨fun b ha ↦ Submodule.mul_induction_on ha
     (fun i hi j hj ↦ by rw [mul_assoc]; exact mul_mem_mul hi (mul_mem_right _ _ hj))
     fun x y hx hy ↦ by rw [right_distrib]; exact add_mem hx hy⟩
 
 variable [I.IsTwoSided] (m n : ℕ)
 
-instance : (I ^ n).IsTwoSided :=
+instance (priority := low) : (I ^ n).IsTwoSided :=
   n.rec
     (by rw [Submodule.pow_zero, one_eq_top]; infer_instance)
     (fun _ _ ↦ by rw [Submodule.pow_succ]; infer_instance)

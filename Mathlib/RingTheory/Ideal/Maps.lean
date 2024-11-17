@@ -102,7 +102,7 @@ theorem map_le_comap_of_inverse [RingHomClass G S R] (g : G) (I : Ideal R)
 
 variable [RingHomClass F R S]
 
-instance [K.IsTwoSided] : (comap f K).IsTwoSided :=
+instance (priority := low) [K.IsTwoSided] : (comap f K).IsTwoSided :=
   ⟨fun b ha ↦ by rw [mem_comap, map_mul]; exact mul_mem_right _ _ ha⟩
 
 /-- The `Ideal` version of `Set.preimage_subset_image_of_inverse`. -/
@@ -323,7 +323,7 @@ theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Idea
     I.map f = Submodule.map f.toSemilinearMap I :=
   Submodule.ext fun _ => mem_map_iff_of_surjective f h.1
 
-instance (f : R →+* S) [RingHomSurjective f] (I : Ideal R) [I.IsTwoSided] :
+instance (priority := low) (f : R →+* S) [RingHomSurjective f] (I : Ideal R) [I.IsTwoSided] :
     (I.map f).IsTwoSided where
   mul_mem_of_left b ha := by
     rw [map_eq_submodule_map] at ha ⊢
@@ -581,7 +581,7 @@ variable (f : F) (g : G)
 def ker : Ideal R :=
   Ideal.comap f ⊥
 
-instance : (ker f).IsTwoSided := inferInstanceAs (Ideal.comap f ⊥).IsTwoSided
+instance (priority := low) : (ker f).IsTwoSided := inferInstanceAs (Ideal.comap f ⊥).IsTwoSided
 
 variable {f} in
 /-- An element is in the kernel if and only if it maps to zero. -/
@@ -688,7 +688,8 @@ def Module.annihilator : Ideal R := RingHom.ker (Module.toAddMonoidEnd R M)
 theorem Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M, r • m = 0 :=
   ⟨fun h ↦ (congr($h ·)), (AddMonoidHom.ext ·)⟩
 
-instance : (Module.annihilator R M).IsTwoSided := inferInstanceAs (RingHom.ker _).IsTwoSided
+instance (priority := low) : (Module.annihilator R M).IsTwoSided :=
+  inferInstanceAs (RingHom.ker _).IsTwoSided
 
 theorem LinearMap.annihilator_le_of_injective (f : M →ₗ[R] M') (hf : Function.Injective f) :
     Module.annihilator R M' ≤ Module.annihilator R M := fun x h ↦ by
