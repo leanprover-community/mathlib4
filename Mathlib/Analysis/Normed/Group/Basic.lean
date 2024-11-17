@@ -1322,13 +1322,6 @@ theorem eq_of_norm_div_le_zero (h : ‖a / b‖ ≤ 0) : a = b := by
 
 alias ⟨eq_of_norm_div_eq_zero, _⟩ := norm_div_eq_zero_iff
 
-@[to_additive]
-theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
-  by_cases h : a = 1
-  · exact Or.inl h
-  · apply Or.inr
-    simpa [← norm_pos_iff''] using h
-
 attribute [to_additive] eq_of_norm_div_eq_zero
 
 @[to_additive]
