@@ -321,6 +321,9 @@ lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m
 
 variable {α : Type*}
 
+/--
+Specialization of `WithTop.map` to `ENat`.
+-/
 def map (f : ℕ → α) (k : ℕ∞) : WithTop α := WithTop.map f k
 
 @[simp]
