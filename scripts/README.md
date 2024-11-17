@@ -72,9 +72,6 @@ to learn about it as well!
 - `technical-debt-metrics.sh`
   Prints information on certain kind of technical debt in Mathlib.
   This output is automatically posted to zulip once a week.
-- `init_creation.sh`
-  makes sure that every file in Mathlib transitively imports `Mathlib.init`
-  This may be removed soon, and replaced by a different mechanism.
 
 **Mathlib tactics**
 - `polyrith_sage.py`, `polyrith_sage_helper.py` are required for `polyrith`

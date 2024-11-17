@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
@@ -234,24 +235,20 @@ def lift (c : Cardinal.{v}) : Cardinal.{max v u} :=
 theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
   rfl
 
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
-@[simp, nolint simpNF]
+/-- `lift.{max u v, u}` equals `lift.{v, u}`.
+
+Unfortunately, the simp lemma doesn't work. -/
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
 /-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
-@[simp, nolint simpNF]
+@[deprecated lift_umax (since := "2024-10-24")]
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- A cardinal lifted to a lower or equal universe equals itself. -/
-@[simp, nolint simpNF]
+/-- A cardinal lifted to a lower or equal universe equals itself.
+
+Unfortunately, the simp lemma doesn't work. -/
 theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
   inductionOn a fun _ => mk_congr Equiv.ulift
 
@@ -261,6 +258,7 @@ theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
   lift_id'.{u, u} a
 
 /-- A cardinal lifted to the zero universe equals itself. -/
+@[simp]
 theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
   lift_id'.{0, u} a
 
@@ -323,7 +321,7 @@ theorem lift_mk_shrink' (α : Type u) [Small.{v} α] :
 @[simp]
 theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
     Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
-  rw [← lift_umax', lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
+  rw [← lift_umax, lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
 
 /-- `Cardinal.lift` as an `InitialSeg`. -/
 @[simps!]
@@ -1203,7 +1201,7 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
   · intro f
     rw [Fintype.univ_pempty, Finset.prod_empty, lift_one, Cardinal.prod, mk_eq_one]
   · intro α hα h f
-    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax'.{v, u}, mk_out, ←
+    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax.{v, u}, mk_out, ←
         Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
     simp only [lift_id]
 
