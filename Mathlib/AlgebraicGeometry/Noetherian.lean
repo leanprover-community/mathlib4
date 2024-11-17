@@ -146,7 +146,7 @@ theorem isLocallyNoetherian_iff_of_affine_openCover (𝒰 : Scheme.OpenCover.{v,
 lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [IsLocallyNoetherian Y] : IsLocallyNoetherian X := by
   refine ⟨fun U => ?_⟩
-  let V : Y.affineOpens := ⟨f ''ᵁ U, IsAffineOpen.image_of_isOpenImmersion U.prop _⟩
+  let V : Y.affineOpens := ⟨f ~~ᵁ U, IsAffineOpen.image_of_isOpenImmersion U.prop _⟩
   suffices Γ(X, U) ≅ Γ(Y, V) by
     convert isNoetherianRing_of_ringEquiv (R := Γ(Y, V)) _
     · apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
