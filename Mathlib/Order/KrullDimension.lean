@@ -615,7 +615,7 @@ lemma krullDim_eq_iSup_height_add_coheight_of_nonempty [Nonempty α] :
         apply le_iSup_of_le a (by simpa)
       | coe m =>
         obtain ⟨p₁, hlast, hlen₁⟩ := exists_series_of_height_eq_coe a hh
-        obtain ⟨p₂, hhead, hlen⟩ := exists_series_of_coheight_eq_coe a hch
+        obtain ⟨p₂, hhead, hlen₂⟩ := exists_series_of_coheight_eq_coe a hch
         apply le_iSup_of_le ((p₁.smash p₂) (by simp [*])) (by simp [*])
 
 /--
