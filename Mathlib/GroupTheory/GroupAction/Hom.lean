@@ -26,7 +26,7 @@ import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
 The above types have corresponding classes:
 * `MulActionHomClass F φ X Y` states that `F` is a type of bundled `X → Y` homs
-  which are `φ`-equivariant; 
+  which are `φ`-equivariant;
   `AddActionHomClass F φ X Y` is its additive version.
 * `DistribMulActionHomClass F φ A B` states that `F` is a type of bundled `A → B` homs
   preserving the additive monoid structure and `φ`-equivariant
@@ -70,7 +70,7 @@ structure MulActionHom where
   protected map_smul' : ∀ (m : M) (x : X), toFun (m • x) = (φ m) • toFun x
 
 /-- Equivariant functions :
-When `φ : M → N` is a function, and types `X` and `Y` are endowed with additive actions 
+When `φ : M → N` is a function, and types `X` and `Y` are endowed with additive actions
 of `M` and `N`, a function `f : X → Y` is `φ`-equivariant if `f (m +ᵥ x) = (φ m) +ᵥ (f x)`. -/
 structure AddActionHom {M N : Type*} (φ: M → N) (X : Type*) [VAdd M X] (Y : Type*) [VAdd N Y] where
   /-- The underlying function. -/
@@ -78,7 +78,7 @@ structure AddActionHom {M N : Type*} (φ: M → N) (X : Type*) [VAdd M X] (Y : T
   /-- The proposition that the function commutes with the additive actions. -/
   protected map_vadd' : ∀ (m : M) (x : X), toFun (m +ᵥ x) = (φ m) +ᵥ toFun x
 
-attribute [to_additive] MulActionHom 
+attribute [to_additive] MulActionHom
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
  see https://github.com/leanprover/lean4/issues/2000 -/
