@@ -3,10 +3,10 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Algebra.UniformGroup.Basic
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul
-import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Normed groups are uniform groups
@@ -378,6 +378,10 @@ theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
 instance : NormedCommGroup (SeparationQuotient E) where
   __ : CommGroup (SeparationQuotient E) := instCommGroup
   dist_eq := Quotient.ind₂ dist_eq_norm_div
+
+@[to_additive]
+theorem mk_eq_one_iff {p : E} : mk p = 1 ↔ ‖p‖ = 0 := by
+  rw [← norm_mk', norm_eq_zero'']
 
 set_option linter.docPrime false in
 @[to_additive (attr := simp) nnnorm_mk]

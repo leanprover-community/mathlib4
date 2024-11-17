@@ -341,7 +341,9 @@ theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
   rfl
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
+-- dsimp cannot prove this
+@[simp, nolint simpNF]
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
@@ -349,7 +351,9 @@ theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ 
 theorem coe_toSubmonoid (s : Subring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 
-@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
+-- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
+-- dsimp cannot prove this
+@[simp, nolint simpNF]
 theorem mem_toAddSubgroup {s : Subring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 

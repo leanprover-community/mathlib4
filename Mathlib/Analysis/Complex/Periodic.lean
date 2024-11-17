@@ -20,7 +20,7 @@ for all sufficiently large `im z`, then `F` extends to a holomorphic function on
 to zero. These results are important in the theory of modular forms.
 -/
 
-open Complex Filter Asymptotics Function
+open Complex Filter Asymptotics
 
 open scoped Real Topology
 
@@ -29,6 +29,8 @@ noncomputable section
 local notation "I∞" => comap im atTop
 
 variable (h : ℝ)
+
+namespace Function.Periodic
 
 /-- Parameter for q-expansions, `qParam h z = exp (2 * π * I * z / h)` -/
 def qParam (z : ℂ) : ℂ := exp (2 * π * I * z / h)
@@ -214,3 +216,5 @@ theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
       nhdsWithin_le_nhds
 
 end HoloAtInfC
+
+end Function.Periodic

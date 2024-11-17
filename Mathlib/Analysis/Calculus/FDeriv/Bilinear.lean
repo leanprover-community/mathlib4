@@ -36,11 +36,11 @@ variable {b : E × F → G} {u : Set (E × F)}
 
 open NormedField
 
--- Porting note (#11215): TODO: rewrite/golf using analytic functions?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: rewrite/golf using analytic functions?
 @[fun_prop]
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by
-  simp only [HasStrictFDerivAt]
+  simp only [hasStrictFDerivAt_iff_isLittleO]
   simp only [← map_add_left_nhds_zero (p, p), isLittleO_map]
   set T := (E × F) × E × F
   calc
