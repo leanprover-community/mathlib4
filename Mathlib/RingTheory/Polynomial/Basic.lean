@@ -577,9 +577,9 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
     exact (I.map C : Ideal R[X]).mul_mem_left _ (mem_map_of_mem _ (hf n))
 
 theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
-    LinearMap.ker (Polynomial.mapRingHom f).toSemilinearMap = f.ker.map (C : R →+* R[X]) := by
+    RingHom.ker (Polynomial.mapRingHom f) = f.ker.map (C : R →+* R[X]) := by
   ext
-  simp only [LinearMap.mem_ker, RingHom.toSemilinearMap_apply, coe_mapRingHom]
+  simp only [RingHom.mem_ker, coe_mapRingHom]
   rw [mem_map_C_iff, Polynomial.ext_iff]
   simp [RingHom.mem_ker]
 
