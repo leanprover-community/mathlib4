@@ -42,9 +42,8 @@ defined so that
 -/
 @[pp_nodot]
 def veblenWith (f : Ordinal.{u} → Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} → Ordinal.{u} :=
-  if o = 0 then f else derivFamily fun x : Set.Iio o ↦ veblenWith f x.1
+  if o = 0 then f else derivFamily fun (⟨x, _⟩ : Set.Iio o) ↦ veblenWith f x
 termination_by o
-decreasing_by exact x.2
 
 @[simp]
 theorem veblenWith_zero (f : Ordinal → Ordinal) : veblenWith f 0 = f := by
