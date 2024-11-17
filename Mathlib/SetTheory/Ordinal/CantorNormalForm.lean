@@ -61,7 +61,7 @@ theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o �
 
 This differs from `CNFRec` in that every instance of `ω ^ a` is considered separately. -/
 @[elab_as_elim]
-noncomputable def CNFRec_omega {C : Ordinal → Sort*} (H0 : C 0)
+noncomputable def CNFRecOmega {C : Ordinal → Sort*} (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o - ω ^ log ω o) → C o) (o : Ordinal) : C o :=
   if h : o = 0 then h ▸ H0 else H o h (CNFRec_omega H0 H (o - ω ^ log ω o))
 termination_by o
