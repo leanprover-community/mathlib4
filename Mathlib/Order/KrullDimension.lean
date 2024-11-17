@@ -32,7 +32,7 @@ coheight is defined to be `sup {n | a ≤ a₀ < a₁ < ... < aₙ}` .
 
 * The height in the dual order equals the coheight, and vice versa.
 
-* The height is monotone, and strictly monone if finite.
+* The height is monotone, and strictly monotone if finite.
 
 * The height is the supremum of the successor of the height of all elements of lower height.
 
