@@ -30,7 +30,7 @@ Assume `B / A` is a finite extension of dedekind Domains, `K` is the fraction ri
 
 * `exists_map_eq_of_isGalois`: If `p` is a maximal ideal of `A`, `P` and `Q` are prime ideals
   lying over `p`, then there exists `σ ∈ Aut (B / A)` such that `σ P = Q`. In other words,
-  the Galois group `Gal(K/L)` acts transitively on the set of all prime ideals lying over `p`.
+  the Galois group `Gal(L / K)` acts transitively on the set of all prime ideals lying over `p`.
 
 * `ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn`: Let `p` be a maximal ideal of `A`,
   `r` be the number of prime ideals lying over `p`, `e` be the ramification index of `p` in `B`,
@@ -106,7 +106,7 @@ variable {A B : Type*} [CommRing A] [IsDomain A] [IsIntegrallyClosed A] [CommRin
 include p in
 /-- If `p` is a maximal ideal of `A`, `P` and `Q` are prime ideals
   lying over `p`, then there exists `σ ∈ Aut (B / A)` such that `σ P = Q`. In other words,
-  the Galois group `Gal(K/L)` acts transitively on the set of all prime ideals lying over `p`. -/
+  the Galois group `Gal(L / K)` acts transitively on the set of all prime ideals lying over `p`. -/
 theorem exists_map_eq_of_isGalois [IsGalois K L] : ∃ σ : B ≃ₐ[A] B, map σ P = Q := by
   haveI := IsGalois.fractionRing_of_isGalois_isFractionRing A B K L
   haveI : P.IsMaximal := IsMaximal.of_liesOver_isMaximal P p
