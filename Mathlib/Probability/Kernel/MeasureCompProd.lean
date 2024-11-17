@@ -67,12 +67,12 @@ lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]
   rw [Set.indicator_apply]
   split_ifs with ha <;> simp [ha]
 
-lemma _root_.ProbabilityTheory.Kernel.compProd_apply_eq_compProd_sectr {γ : Type*}
+lemma _root_.ProbabilityTheory.Kernel.compProd_apply_eq_compProd_sectR {γ : Type*}
     {mγ : MeasurableSpace γ} (κ : Kernel α β) (η : Kernel (α × β) γ)
     [IsSFiniteKernel κ] [IsSFiniteKernel η] (a : α) :
-    (κ ⊗ₖ η) a = (κ a) ⊗ₘ (Kernel.sectr η a) := by
+    (κ ⊗ₖ η) a = (κ a) ⊗ₘ (Kernel.sectR η a) := by
   ext s hs
-  simp_rw [Kernel.compProd_apply _ _ _ hs, compProd_apply hs, Kernel.sectr_apply]
+  simp_rw [Kernel.compProd_apply _ _ _ hs, compProd_apply hs, Kernel.sectR_apply]
   rfl
 
 lemma compProd_congr [IsSFiniteKernel κ] [IsSFiniteKernel η]
