@@ -3,10 +3,11 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
+import Mathlib.CategoryTheory.Functor.Flat
+import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Functor.Flat
 
 /-!
 # The category of Ind-objects
@@ -20,13 +21,16 @@ reinterpret them in terms of `Ind C`.
 We show that
 * `Ind C` has filtered colimits,
 * `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates filtered colimits,
-* `C ⥤ Ind C` preserves finite colimits.
-
-Additionally, in the file `Coproducts.lean` we show that
+* `C ⥤ Ind C` preserves finite colimits,
 * if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `a`,
 * if `C` has finite coproducts, then `Ind C` has small coproducts.
 
 More limit-colimit properties will follow.
+
+Note that:
+* the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` does not preserve any kind of colimit in general except for
+  filtered colimits and
+* the functor `C ⥤ Ind C` preserves finite limits, but not infinite limits in general.
 
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
@@ -130,5 +134,34 @@ instance : RepresentablyCoflat (Ind.yoneda (C := C)) := by
 
 noncomputable instance : PreservesFiniteColimits (Ind.yoneda (C := C)) :=
   preservesFiniteColimitsOfCoflat _
+
+section
+
+variable {α : Type v} [Finite α]
+
+instance [HasColimitsOfShape (Discrete α) C] : HasColimitsOfShape (Discrete α) (Ind C) := by
+  refine ⟨fun F => ?_⟩
+  let I : α → Type v := fun s => (F.obj ⟨s⟩).presentation.I
+  let G : ∀ s, I s ⥤ C := fun s => (F.obj ⟨s⟩).presentation.F
+  let iso : Discrete.functor (fun s => Pi.eval I s ⋙ G s) ⋙
+      (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim ≅ F := by
+    refine Discrete.natIso (fun s => ?_)
+    refine (Functor.Final.colimitIso (Pi.eval I s.as) (G s.as ⋙ Ind.yoneda)) ≪≫ ?_
+    exact Ind.colimitPresentationCompYoneda _
+  -- The actual proof happens during typeclass resolution in the following line, which deduces
+  -- ```
+  -- HasColimit Discrete.functor (fun s => Pi.eval I s ⋙ G s) ⋙
+  --    (whiskeringRight _ _ _).obj Ind.yoneda ⋙ colim
+  -- ```
+  -- from the fact that finite limits commute with filtered colimits and from the fact that
+  -- `Ind.yoneda` preserves finite colimits.
+  apply hasColimitOfIso iso.symm
+
+end
+
+instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
+  have : HasFiniteCoproducts (Ind C) :=
+    ⟨fun _ => hasColimitsOfShape_of_equivalence (Discrete.equivalence Equiv.ulift)⟩
+  hasCoproducts_of_finite_and_filtered
 
 end CategoryTheory
