@@ -849,7 +849,7 @@ theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
 /-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
   and `p` and `P` are maximal. If `p = P ∩ S` and `P = I ∩ S`,
   then `f (I | p) = f (P | p) * f (I | P)`. -/
-theorem inertiaDeg_algebra_tower {p : Ideal R} {P : Ideal S} {I : Ideal T} [p.IsMaximal]
+theorem inertiaDeg_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.IsMaximal]
     [P.IsMaximal] [P.LiesOver p] [I.LiesOver P] : inertiaDeg (algebraMap R T) p I =
     inertiaDeg (algebraMap R S) p P * inertiaDeg (algebraMap S T) P I := by
   rw [IsScalarTower.algebraMap_eq R S T]
