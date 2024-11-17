@@ -83,9 +83,10 @@ variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
 
-lemma height_orderDual (x : αᵒᵈ) : height x = coheight (α := α) x := rfl
-
-lemma coheight_orderDual (x : αᵒᵈ) : coheight x = height (α := α) x := rfl
+@[simp] lemma height_toDual (x : α) : height (OrderDual.toDual x) = coheight x := rfl
+@[simp] lemma height_ofDual (x : αᵒᵈ) : height (OrderDual.ofDual x) = coheight x := rfl
+@[simp] lemma coheight_toDual (x : α) : coheight (OrderDual.toDual x) = height x := rfl
+@[simp] lemma coheight_ofDual (x : αᵒᵈ) : coheight (OrderDual.ofDual x) = height x := rfl
 
 /--
 The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
@@ -145,7 +146,8 @@ that begin at `a`.
 -/
 lemma coheight_eq_iSup_head_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length) := by
-  rw [← height_orderDual, height_eq_iSup_last_eq]
+  show height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length)
+  rw [height_eq_iSup_last_eq]
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
     RelSeries.reverse_reverse⟩
   simp
@@ -234,7 +236,7 @@ lemma height_mono : Monotone (α := α) height :=
 @[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
     height a ≤ height b := height_mono hab
 
-lemma coheight_mono : Antitone (α := α) coheight :=
+lemma coheight_anti : Antitone (α := α) coheight :=
   fun _ _ hxy => height_mono (α := αᵒᵈ) hxy
 
 private lemma height_add_const (a : α) (n : ℕ∞) :
