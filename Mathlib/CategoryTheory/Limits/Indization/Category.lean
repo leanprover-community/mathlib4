@@ -136,11 +136,8 @@ instance : RepresentablyCoflat (Ind.yoneda (C := C)) := by
 noncomputable instance : PreservesFiniteColimits (Ind.yoneda (C := C)) :=
   preservesFiniteColimitsOfCoflat _
 
-section
-
-variable {α : Type v} [Finite α]
-
-instance [HasColimitsOfShape (Discrete α) C] : HasColimitsOfShape (Discrete α) (Ind C) := by
+instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
+    HasColimitsOfShape (Discrete α) (Ind C) := by
   refine ⟨fun F => ?_⟩
   let I : α → Type v := fun s => (F.obj ⟨s⟩).presentation.I
   let G : ∀ s, I s ⥤ C := fun s => (F.obj ⟨s⟩).presentation.F
@@ -157,8 +154,6 @@ instance [HasColimitsOfShape (Discrete α) C] : HasColimitsOfShape (Discrete α)
   -- from the fact that finite limits commute with filtered colimits and from the fact that
   -- `Ind.yoneda` preserves finite colimits.
   apply hasColimitOfIso iso.symm
-
-end
 
 instance [HasFiniteCoproducts C] : HasCoproducts.{v} (Ind C) :=
   have : HasFiniteCoproducts (Ind C) :=
