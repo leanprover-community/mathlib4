@@ -728,31 +728,3 @@ lemma liminf_sub_const (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [C
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt cobdd bdd_below).symm
 
 end LiminfLimsupAddSub -- section
-
-lemma le_iff_forall_le_mul_of_one_lt_right (a : ℝ) {b : ℝ} (hb : 0 ≤ b) :
-    a ≤ b ↔ (∀ (ε : ℝ), 1 < ε → a ≤ b * ε) := by
-  constructor
-  · intro h ε hε
-    apply le_trans h
-    by_cases hbzero : b = 0
-    · rw [hbzero]
-      simp only [zero_mul, le_refl]
-    · push_neg at hbzero
-      exact le_mul_of_one_le_right hb <| le_of_lt hε
-  · intro h
-    by_cases hbzero : b = 0
-    · rw [hbzero, ← zero_mul 2, ← hbzero]
-      exact h 2 one_lt_two
-    · push_neg at hbzero
-      apply le_iff_forall_pos_le_add.mpr
-      intro ε hε
-      have bpos : 0 < b := lt_of_le_of_ne hb (id (Ne.symm hbzero))
-      have bdiv : 1 < (b + ε) / b := (one_lt_div bpos).mpr <| lt_add_of_pos_right b hε
-      have : a ≤ b * ((b + ε) / b) := h ((b + ε) / b) bdiv
-      rw [← mul_div_assoc, mul_comm, mul_div_assoc, div_self (ne_of_gt bpos), mul_one] at this
-      exact this
-
-lemma le_iff_forall_le_mul_of_one_lt_left (a : ℝ) {b : ℝ} (hb : 0 ≤ b) :
-    a ≤ b ↔ (∀ (ε : ℝ), 1 < ε → a ≤ ε * b) := by
-  simp_rw [mul_comm]
-  exact le_iff_forall_le_mul_of_one_lt_right a hb
