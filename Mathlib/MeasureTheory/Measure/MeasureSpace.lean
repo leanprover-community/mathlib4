@@ -1521,15 +1521,20 @@ protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ �
 protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
   AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
 
-protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
+protected theorem smul_left [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
     c • μ ≪ ν := fun s hνs => by
   simp only [h hνs, smul_apply, smul_zero, ← smul_one_smul ℝ≥0∞ c (0 : ℝ≥0∞)]
 
-protected theorem smul_both [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
+/-- If `μ ≪ ν`, then `c • μ ≪ c • ν`.
+
+Earlier, this name was used for what's now called `AbsolutelyContinuous.smul_left`. -/
+protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
     c • μ ≪ c • ν := by
   intro s hνs
   rw [smul_apply, ← smul_one_smul ℝ≥0∞, smul_eq_mul, mul_eq_zero] at hνs ⊢
   exact hνs.imp_right fun hs ↦ h hs
+
+@[deprecated (since := "2024-11-14")] protected alias smul_both := AbsolutelyContinuous.smul
 
 protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
   intro s hs
@@ -1541,9 +1546,8 @@ lemma add_left_iff {μ₁ μ₂ ν : Measure α} :
   refine ⟨fun h ↦ ?_, fun h ↦ (h.1.add h.2).trans ?_⟩
   · have : ∀ s, ν s = 0 → μ₁ s = 0 ∧ μ₂ s = 0 := by intro s hs0; simpa using h hs0
     exact ⟨fun s hs0 ↦ (this s hs0).1, fun s hs0 ↦ (this s hs0).2⟩
-  · have : ν + ν = 2 • ν := by ext; simp [two_mul]
-    rw [this]
-    exact AbsolutelyContinuous.rfl.smul 2
+  · rw [← two_smul ℝ≥0]
+    exact AbsolutelyContinuous.rfl.smul_left 2
 
 lemma add_left {μ₁ μ₂ ν : Measure α} (h₁ : μ₁ ≪ ν) (h₂ : μ₂ ≪ ν) : μ₁ + μ₂ ≪ ν :=
   Measure.AbsolutelyContinuous.add_left_iff.mpr ⟨h₁, h₂⟩
@@ -1572,7 +1576,7 @@ lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ :
   simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
   exact hνμ (hs0 i)
 
-lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := .smul .rfl _
+lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := .smul_left .rfl _
 
 theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ'_le : μ' ≤ c • μ) :
     μ' ≪ μ :=
@@ -1655,7 +1659,7 @@ protected theorem aemeasurable (hf : QuasiMeasurePreserving f μa μb) : AEMeasu
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiMeasurePreserving f μa μb) (c : R) : QuasiMeasurePreserving f (c • μa) (c • μb) :=
-  ⟨hf.1, by rw [Measure.map_smul]; exact hf.2.smul_both c⟩
+  ⟨hf.1, by rw [Measure.map_smul]; exact hf.2.smul c⟩
 
 theorem ae_map_le (h : QuasiMeasurePreserving f μa μb) : ae (μa.map f) ≤ ae μb :=
   h.2.ae_le
