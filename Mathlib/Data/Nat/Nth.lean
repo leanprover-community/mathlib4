@@ -252,6 +252,18 @@ theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a
   · rcases subset_range_nth ha with ⟨n, rfl⟩
     rwa [nth_lt_nth hf, Nat.lt_succ_iff, ← nth_le_nth hf] at h
 
+lemma nth_mem_anti {a b : ℕ} (hab : a ≤ b) (h : p (nth p b)) : p (nth p a) := by
+  by_cases h' : ∀ hf : (setOf p).Finite, a < #hf.toFinset
+  · exact nth_mem a h'
+  · simp only [not_forall, not_lt] at h'
+    have h'b : ∃ hf : (setOf p).Finite, #hf.toFinset ≤ b := by
+      rcases h' with ⟨hf, ha⟩
+      exact ⟨hf, ha.trans hab⟩
+    have ha0 : nth p a = 0 := by simp [nth_eq_zero, h']
+    have hb0 : nth p b = 0 := by simp [nth_eq_zero, h'b]
+    rw [ha0]
+    rwa [hb0] at h
+
 section Count
 
 variable (p) [DecidablePred p]
