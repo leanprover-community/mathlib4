@@ -130,7 +130,7 @@ theorem IsGalois.of_isGalois_isFractionRing
     [Algebra B L'] [IsFractionRing B L']
     [Algebra K' L'] [Algebra A L']
     [IsScalarTower A B L'] [IsScalarTower A K' L']
-    [IsGalois K L]: IsGalois K' L' := by
+    [IsGalois K L] : IsGalois K' L' := by
   let _ := alg_KL' A K K' L'
   let LL' := LL' B L L'
   let KK' := KK' A K K'
@@ -159,7 +159,7 @@ theorem IsGalois.iff_isGalois_isFractionRing
     [Algebra A K'] [IsFractionRing A K']
     [Algebra B L'] [IsFractionRing B L']
     [Algebra K' L'] [Algebra A L']
-    [IsScalarTower A B L'] [IsScalarTower A K' L']:
+    [IsScalarTower A B L'] [IsScalarTower A K' L'] :
     IsGalois K L ↔ IsGalois K' L' :=
   Iff.intro
     (fun _ => IsGalois.of_isGalois_isFractionRing A B K L K' L')
@@ -175,7 +175,7 @@ theorem IsGalois.isFractionRing_of_isGalois_fractionRing
     [Algebra B L] [IsFractionRing B L]
     [Algebra K L] [Algebra A L]
     [IsScalarTower A B L] [IsScalarTower A K L]
-    [IsGalois (FractionRing A) (FractionRing B)]: IsGalois K L :=
+    [IsGalois (FractionRing A) (FractionRing B)] : IsGalois K L :=
   IsGalois.of_isGalois_isFractionRing A B (FractionRing A) (FractionRing B) K L
 
 
