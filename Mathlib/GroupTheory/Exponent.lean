@@ -494,7 +494,7 @@ end Monoid
 
 section Group
 
-variable [Group G] {g : G} {n m : ℤ}
+variable [Group G] {n m : ℤ}
 
 @[to_additive (attr := deprecated Monoid.one_lt_exponent (since := "2024-02-17"))
   AddGroup.one_lt_exponent]
@@ -526,15 +526,9 @@ theorem Group.exponent_dvd_iff_forall_zpow_eq_one :
   simp_rw [Int.natCast_dvd, Monoid.exponent_dvd_iff_forall_pow_eq_one, pow_natAbs_eq_one]
 
 @[to_additive]
-theorem zpow_eq_one_of_exponent_dvd (h : (Monoid.exponent G : ℤ) ∣ n) : g ^ n = 1 :=
-  orderOf_dvd_iff_zpow_eq_one.mp <|
-    dvd_trans (Int.natCast_dvd_natCast.mpr <| Monoid.order_dvd_exponent g) h
-
-@[to_additive]
-theorem zpow_eq_zpow_of_exponent_dvd_sub (h : (Monoid.exponent G : ℤ) ∣ n - m) :
-    g ^ n = g ^ m :=
-  orderOf_dvd_sub_iff_zpow_eq_zpow.mp <|
-    dvd_trans (Int.natCast_dvd_natCast.mpr <| Monoid.order_dvd_exponent g) h
+theorem Group.exponent_dvd_sub_iff_zpow_eq_zpow :
+    (Monoid.exponent G : ℤ) ∣ n - m ↔ ∀ g : G, g ^ n = g ^ m := by
+  simp_rw [Group.exponent_dvd_iff_forall_zpow_eq_one, zpow_sub, mul_inv_eq_one]
 
 end Group
 
