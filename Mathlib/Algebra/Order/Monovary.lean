@@ -180,11 +180,11 @@ lemma AntivaryOn.mul_left₀ (hf₁ : ∀ i ∈ s, 0 ≤ f₁ i) (hf₂ : ∀ i 
 
 lemma MonovaryOn.pow_left₀ (hf : ∀ i ∈ s, 0 ≤ f i) (hfg : MonovaryOn f g s) (n : ℕ) :
     MonovaryOn (f ^ n) g s :=
-  fun _i hi _j hj hij ↦ pow_le_pow_left (hf _ hi) (hfg hi hj hij) _
+  fun _i hi _j hj hij ↦ pow_le_pow_left₀ (hf _ hi) (hfg hi hj hij) _
 
 lemma AntivaryOn.pow_left₀ (hf : ∀ i ∈ s, 0 ≤ f i) (hfg : AntivaryOn f g s) (n : ℕ) :
     AntivaryOn (f ^ n) g s :=
-  fun _i hi _j hj hij ↦ pow_le_pow_left (hf _ hj) (hfg hi hj hij) _
+  fun _i hi _j hj hij ↦ pow_le_pow_left₀ (hf _ hj) (hfg hi hj hij) _
 
 lemma Monovary.mul_left₀ (hf₁ : 0 ≤ f₁) (hf₂ : 0 ≤ f₂) (h₁ : Monovary f₁ g) (h₂ : Monovary f₂ g) :
     Monovary (f₁ * f₂) g := fun _i _j hij ↦ mul_le_mul (h₁ hij) (h₂ hij) (hf₂ _) (hf₁ _)
@@ -193,10 +193,10 @@ lemma Antivary.mul_left₀ (hf₁ : 0 ≤ f₁) (hf₂ : 0 ≤ f₂) (h₁ : Ant
     Antivary (f₁ * f₂) g := fun _i _j hij ↦ mul_le_mul (h₁ hij) (h₂ hij) (hf₂ _) (hf₁ _)
 
 lemma Monovary.pow_left₀ (hf : 0 ≤ f) (hfg : Monovary f g) (n : ℕ) : Monovary (f ^ n) g :=
-  fun _i _j hij ↦ pow_le_pow_left (hf _) (hfg hij) _
+  fun _i _j hij ↦ pow_le_pow_left₀ (hf _) (hfg hij) _
 
 lemma Antivary.pow_left₀ (hf : 0 ≤ f) (hfg : Antivary f g) (n : ℕ) : Antivary (f ^ n) g :=
-  fun _i _j hij ↦ pow_le_pow_left (hf _) (hfg hij) _
+  fun _i _j hij ↦ pow_le_pow_left₀ (hf _) (hfg hij) _
 
 end OrderedSemiring
 
