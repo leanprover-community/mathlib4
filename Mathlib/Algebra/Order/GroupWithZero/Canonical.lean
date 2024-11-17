@@ -305,7 +305,7 @@ theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x
 @[simp] lemma unzero_le_unzero {a b : WithZero α} (ha hb) :
     unzero (x := a) ha ≤ unzero (x := b) hb ↔ a ≤ b := by
   -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
-  -- impossible to do so
+  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
   lift a to α using id ha
   lift b to α using id hb
   simp
