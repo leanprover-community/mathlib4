@@ -18,12 +18,13 @@ We define the `v`-category of Ind-objects of a category `C`, called `Ind C`, as 
 This file will mainly collect results about ind-objects (stated in terms of `IsIndObject`) and
 reinterpret them in terms of `Ind C`.
 
-We show that
-* `Ind C` has filtered colimits,
-* `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates filtered colimits,
-* `C ⥤ Ind C` preserves finite colimits,
-* if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `a`,
-* if `C` has finite coproducts, then `Ind C` has small coproducts.
+Adopting the theorem numbering of [Kashiwara2006], we show that
+* `Ind C` has filtered colimits (6.1.8),
+* `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates filtered colimits (6.1.8),
+* `C ⥤ Ind C` preserves finite colimits (6.1.6),
+* if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `a`
+  (6.1.18(ii)),
+* if `C` has finite coproducts, then `Ind C` has small coproducts (6.1.18(ii)).
 
 More limit-colimit properties will follow.
 
