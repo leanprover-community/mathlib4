@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Hall's Marriage Theorem for finite index types

@@ -198,7 +198,7 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
 expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 
-Porting note (#11215): TODO: use one of generic theorems about Taylor's series
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use one of generic theorems about Taylor's series
 to prove this estimate.
 -/
 theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
@@ -266,9 +266,6 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     _ ≤ |x| ^ i := by
       simpa [pow_succ] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
 
-@[deprecated (since := "2024-01-31")]
-alias hasSum_pow_div_log_of_abs_lt_1 := hasSum_pow_div_log_of_abs_lt_one
-
 /-- Power series expansion of `log(1 + x) - log(1 - x)` for `|x| < 1`. -/
 theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * x ^ (2 * k + 1))
@@ -289,9 +286,6 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm
     dsimp [term]
     rw [Even.neg_pow hm, neg_one_mul, neg_add_cancel]
-
-@[deprecated (since := "2024-01-31")]
-alias hasSum_log_sub_log_of_abs_lt_1 := hasSum_log_sub_log_of_abs_lt_one
 
 /-- Expansion of `log (1 + a⁻¹)` as a series in powers of `1 / (2 * a + 1)`. -/
 theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :

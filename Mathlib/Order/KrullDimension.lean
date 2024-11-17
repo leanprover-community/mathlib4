@@ -5,6 +5,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
 import Mathlib.Order.RelSeries
+import Mathlib.Order.Minimal
 import Mathlib.Data.ENat.Lattice
 
 /-!
@@ -97,6 +98,9 @@ lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a →
   apply h
   simp [p']
 
+/--
+Variant of `height_le_iff` ranging only over those series that end exactly on `a`.
+-/
 lemma height_le_iff' {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
  constructor
@@ -161,6 +165,174 @@ lemma height_mono : Monotone (α := α) height :=
 
 @[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
     height a ≤ height b := height_mono hab
+
+private lemma height_add_const (a : α) (n : ℕ∞) :
+    height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by
+  have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
+  rw [height_eq_iSup_last_eq, iSup_subtype', iSup_subtype', ENat.iSup_add]
+
+/- For elements of finite height, `height` is strictly monotone. -/
+@[gcongr] lemma height_strictMono {x y : α} (hxy : x < y) (hfin : height x < ⊤) :
+    height x < height y := by
+  rw [← ENat.add_one_le_iff hfin.ne, height_add_const, iSup₂_le_iff]
+  intro p hlast
+  have := length_le_height_last (p := p.snoc y (by simp [*]))
+  simpa using this
+
+lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
+    height x ≤ height (f x) := by
+  simp only [height_eq_iSup_last_eq]
+  apply iSup₂_le
+  intro p hlast
+  apply le_iSup₂_of_le (p.map f hf) (by simp [hlast]) (by simp)
+
+@[simp]
+lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
+  apply le_antisymm
+  · simpa using height_le_height_apply_of_strictMono _ f.symm.strictMono (f x)
+  · exact height_le_height_apply_of_strictMono _ f.strictMono x
+
+private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
+    (h : (⨆ x, f x) = n) : ∃ x, f x = n := by
+  obtain ⟨x, hx⟩ := ENat.sSup_mem_of_nonempty_of_lt_top (h ▸ ENat.coe_lt_top _)
+  use x
+  simpa [hx] using h
+
+/-- There exist a series ending in a element for any length up to the element’s height.  -/
+lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
+    ∃ p : LTSeries α, p.last = a ∧ p.length = n := by
+  have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
+  cases ha : height a with
+  | top =>
+    clear h
+    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def] at ha
+    contrapose! ha
+    use n
+    rintro m ⟨⟨p, rfl⟩, hp⟩
+    simp only at hp
+    by_contra! hnm
+    apply ha (p.drop ⟨m-n, by omega⟩) (by simp) (by simp; omega)
+  | coe m =>
+    rw [ha, Nat.cast_le] at h
+    rw [height_eq_iSup_last_eq, iSup_subtype'] at ha
+    obtain ⟨⟨p, hlast⟩, hlen⟩ := exists_eq_iSup_of_iSup_eq_coe ha
+    simp only [Nat.cast_inj] at hlen
+    use p.drop ⟨m-n, by omega⟩
+    constructor
+    · simp [hlast]
+    · simp [hlen]; omega
+
+/-- For an element of finite height there exists a series ending in that element of that height. -/
+lemma exists_series_of_height_eq_coe (a : α) {n : ℕ} (h : height a = n) :
+    ∃ p : LTSeries α, p.last = a ∧ p.length = n :=
+  exists_series_of_le_height a (le_of_eq h.symm)
+
+/-- Another characterization of height, based on the supremum of the heights of elements below. -/
+lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := by
+  apply le_antisymm
+  · apply height_le
+    intro p hp
+    cases hlen : p.length with
+    | zero => simp
+    | succ n =>
+      apply le_iSup_of_le p.eraseLast.last
+      apply le_iSup_of_le (by rw [← hp]; apply RelSeries.eraseLast_last_rel_last _ (by omega))
+      rw [height_add_const]
+      apply le_iSup₂_of_le p.eraseLast (by rfl) (by simp [hlen])
+  · apply iSup₂_le; intro y hyx
+    rw [height_add_const]
+    apply iSup₂_le; intro p hp
+    apply le_iSup₂_of_le (p.snoc x (hp ▸ hyx)) (by simp) (by simp)
+
+lemma height_le_coe_iff {x : α} {n : ℕ} :
+    height x ≤ n ↔ ∀ y < x, height y < n := by
+  conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
+  congr! 2 with y _
+  cases height y
+  · simp
+  · norm_cast
+
+/--
+The height of an element is infinite iff there exist series of arbitrary length ending in that
+element.
+-/
+lemma height_eq_top_iff {x : α} :
+    height x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.last = x ∧ p.length = n where
+  mp h n := by
+    apply exists_series_of_le_height x (n := n)
+    simp [h]
+  mpr h := by
+    rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
+    push_neg
+    intro n
+    obtain ⟨p, hlast, hp⟩ := h (n+1)
+    exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
+
+@[simp] lemma height_eq_zero {x : α} : height x = 0 ↔ IsMin x := by
+  simpa [isMin_iff_forall_not_lt] using height_le_coe_iff (x := x) (n := 0)
+
+protected alias ⟨_, IsMin.height_eq_zero⟩ := height_eq_zero
+
+@[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by simp
+
+lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
+    n < height x ↔ (∃ y < x, height y = n) where
+  mp h := by
+    obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
+    rw [hx] at h; norm_cast at h
+    obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
+    use p ⟨n, by omega⟩
+    constructor
+    · rw [← hp]
+      apply LTSeries.strictMono
+      simp [Fin.last]; omega
+    · exact height_eq_index_of_length_eq_height_last (by simp [hlen, hp, hx]) ⟨n, by omega⟩
+  mpr := fun ⟨y, hyx, hy⟩ =>
+    hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
+
+lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
+    height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y < x, height y ≤ n) := by
+  wlog hfin : height x < ⊤
+  · simp_all
+    exact ne_of_beq_false rfl
+  simp only [hfin, true_and]
+  trans n < height x ∧ height x ≤ n + 1
+  · rw [le_antisymm_iff, and_comm]
+    simp [hfin, ENat.lt_add_one_iff, ENat.add_one_le_iff]
+  · congr! 1
+    · exact coe_lt_height_iff hfin
+    · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff (x := x) (n := n+1)
+
+lemma height_eq_coe_iff {x : α} {n : ℕ} :
+    height x = n ↔
+      height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y < x, height y < n) := by
+  wlog hfin : height x < ⊤
+  · simp_all
+  simp only [hfin, true_and]
+  cases n
+  case zero => simp [isMin_iff_forall_not_lt]
+  case succ n =>
+    simp only [Nat.cast_add, Nat.cast_one, add_eq_zero, one_ne_zero, and_false, false_or]
+    rw [height_eq_coe_add_one_iff]
+    simp only [hfin, true_and]
+    congr! 3
+    rename_i y _
+    cases height y <;> simp; norm_cast; omega
+
+/-- The elements of finite height `n` are the minimial elements among those of height `≥ n`. -/
+lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
+    height a = n ↔ Minimal (fun y => n ≤ height y) a := by
+  by_cases hfin : height a < ⊤
+  · cases hn : n with
+    | zero => simp
+    | succ => simp [minimal_iff_forall_lt, height_eq_coe_add_one_iff, ENat.add_one_le_iff,
+        coe_lt_height_iff, *]
+  · suffices ∃ x < a, ↑n ≤ height x by
+      simp_all [minimal_iff_forall_lt]
+    simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
+    obtain ⟨p, rfl, hp⟩ := hfin (n+1)
+    use p.eraseLast.last, RelSeries.eraseLast_last_rel_last _ (by omega)
+    simpa [hp] using length_le_height_last (p := p.eraseLast)
 
 end height
 
@@ -239,22 +411,73 @@ lemma krullDim_eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β :=
 
 /--
 The Krull dimension is the supremum of the elements' heights.
+
+This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
+`WithBot ℕ∞` is on the outside fo the right-hand side, which is usually more convenient.
+
+If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_height` for the more general
+version, with the coercion under the supremum.
+-/
+lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ↑(⨆ (a : α), height a) := by
+  apply le_antisymm
+  · apply iSup_le
+    intro p
+    suffices p.length ≤ ⨆ (a : α), height a by
+      exact (WithBot.unbot'_le_iff fun _ => this).mp this
+    apply le_iSup_of_le p.last (length_le_height_last (p := p))
+  · rw [krullDim_eq_iSup_length]
+    simp only [WithBot.coe_le_coe, iSup_le_iff]
+    intro x
+    exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
+
+/--
+The Krull dimension is the supremum of the elements' coheights.
+
+This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
+`WithBot ℕ∞` is on the outside of the right-hand side, which is usually more convenient.
+
+If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_coheight` for the more general
+version, with the coercion under the supremum.
+-/
+lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] :
+    krullDim α = ↑(⨆ (a : α), coheight a) := by
+  rw [← krullDim_orderDual]
+  exact krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
+
+/--
+The Krull dimension is the supremum of the elements' heights.
+
+If `α` is `Nonempty`, then `krullDim_eq_iSup_height_of_nonempty`, with the coercion from
+`ℕ∞` to `WithBot ℕ∞` outside the supremum, can be more convenient.
 -/
 lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
   cases isEmpty_or_nonempty α with
-  | inl h => simp [krullDim_eq_bot_of_isEmpty]
-  | inr h =>
-    rw [← WithBot.coe_iSup (OrderTop.bddAbove _)]
-    apply le_antisymm
-    · apply iSup_le
-      intro p
-      suffices p.length ≤ ⨆ (a : α), height a by
-        exact (WithBot.unbot'_le_iff fun _ => this).mp this
-      apply le_iSup_of_le p.last (length_le_height_last (p := p))
-    · rw [krullDim_eq_iSup_length]
-      simp only [WithBot.coe_le_coe, iSup_le_iff]
-      intro x
-      exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
+  | inl h => rw [krullDim_eq_bot_of_isEmpty, ciSup_of_empty]
+  | inr h => rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
+
+/--
+The Krull dimension is the supremum of the elements' coheights.
+
+If `α` is `Nonempty`, then `krullDim_eq_iSup_coheight_of_nonempty`, with the coercion from
+`ℕ∞` to `WithBot ℕ∞` outside the supremum, can be more convenient.
+-/
+lemma krullDim_eq_iSup_coheight : krullDim α = ⨆ (a : α), ↑(coheight a) := by
+  cases isEmpty_or_nonempty α with
+  | inl h => rw [krullDim_eq_bot_of_isEmpty, ciSup_of_empty]
+  | inr h => rw [krullDim_eq_iSup_coheight_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
+
+@[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
+lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := by
+  rw [krullDim_eq_iSup_length]
+  simp only [WithBot.coe_inj]
+  apply le_antisymm
+  · exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
+  · exact iSup_le fun _ => length_le_height le_top
+
+@[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
+lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α := by
+  rw [← krullDim_orderDual]
+  exact height_top_eq_krullDim (α := αᵒᵈ)
 
 end krullDim
 

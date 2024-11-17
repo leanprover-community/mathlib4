@@ -3,15 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.Topology.KrullDimension
-import Mathlib.Topology.Sober
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.KrullDimension
+import Mathlib.Topology.Sober
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
@@ -342,7 +343,7 @@ theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
 
 lemma isClosedEmbedding_comap_of_surjective (hf : Surjective f) : IsClosedEmbedding (comap f) where
   toIsInducing := comap_isInducing_of_surjective S f hf
-  inj := comap_injective_of_surjective f hf
+  injective := comap_injective_of_surjective f hf
   isClosed_range := isClosed_range_comap_of_surjective S f hf
 
 @[deprecated (since := "2024-10-20")]
@@ -728,8 +729,8 @@ Localizations at minimal primes have single-point prime spectra.
 def primeSpectrum_unique_of_localization_at_minimal (h : I ∈ minimalPrimes R) :
     Unique (PrimeSpectrum (Localization.AtPrime I)) where
   default :=
-    ⟨LocalRing.maximalIdeal (Localization I.primeCompl),
-    (LocalRing.maximalIdeal.isMaximal _).isPrime⟩
+    ⟨IsLocalRing.maximalIdeal (Localization I.primeCompl),
+    (IsLocalRing.maximalIdeal.isMaximal _).isPrime⟩
   uniq x := PrimeSpectrum.ext (Localization.AtPrime.prime_unique_of_minimal h x.asIdeal)
 
 end LocalizationAtMinimal
@@ -794,9 +795,9 @@ end PrimeSpectrum
 
 end CommSemiring
 
-namespace LocalRing
+namespace IsLocalRing
 
-variable [CommSemiring R] [LocalRing R]
+variable [CommSemiring R] [IsLocalRing R]
 
 /-- The closed point in the prime spectrum of a local ring. -/
 def closedPoint : PrimeSpectrum R :=
@@ -804,7 +805,7 @@ def closedPoint : PrimeSpectrum R :=
 
 variable {R}
 
-theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
+theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S]
     (f : R →+* S) : IsLocalHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note: inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
@@ -815,12 +816,12 @@ theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRin
 alias isLocalRingHom_iff_comap_closedPoint := isLocalHom_iff_comap_closedPoint
 
 @[simp]
-theorem comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S)
+theorem comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S] (f : R →+* S)
     [IsLocalHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
   (isLocalHom_iff_comap_closedPoint f).mp inferInstance
 
 theorem specializes_closedPoint (x : PrimeSpectrum R) : x ⤳ closedPoint R :=
-  (PrimeSpectrum.le_iff_specializes _ _).mp (LocalRing.le_maximalIdeal x.2.1)
+  (PrimeSpectrum.le_iff_specializes _ _).mp (IsLocalRing.le_maximalIdeal x.2.1)
 
 theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
     closedPoint R ∈ U ↔ U = ⊤ := by
@@ -835,13 +836,34 @@ lemma closed_point_mem_iff {U : TopologicalSpace.Opens (PrimeSpectrum R)} :
   ⟨(eq_top_iff.mpr fun x _ ↦ (specializes_closedPoint x).mem_open U.2 ·), (· ▸ trivial)⟩
 
 @[simp]
-theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
+theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [IsLocalRing T]
     (x : PrimeSpectrum (ResidueField T)) : PrimeSpectrum.comap (residue T) x = closedPoint T := by
   rw [Subsingleton.elim x ⊥]
   ext1
   exact Ideal.mk_ker
 
-end LocalRing
+end IsLocalRing
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.closedPoint := IsLocalRing.closedPoint
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.isLocalHom_iff_comap_closedPoint := IsLocalRing.isLocalHom_iff_comap_closedPoint
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.comap_closedPoint := IsLocalRing.comap_closedPoint
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.specializes_closedPoint := IsLocalRing.specializes_closedPoint
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.closedPoint_mem_iff := IsLocalRing.closedPoint_mem_iff
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.closed_point_mem_iff := IsLocalRing.closed_point_mem_iff
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.PrimeSpectrum.comap_residue := IsLocalRing.PrimeSpectrum.comap_residue
 
 section KrullDimension
 

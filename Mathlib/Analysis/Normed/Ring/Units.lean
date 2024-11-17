@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Topology.Algebra.Ring.Ideal
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 # The group of units of a complete normed ring
