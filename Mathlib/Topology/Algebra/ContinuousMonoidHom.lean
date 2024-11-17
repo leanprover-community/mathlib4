@@ -347,7 +347,8 @@ instance (F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [MonoidHomClass 
 variable {A} in
 /-- For `f : F`, where `F` is a class of continuous monoid homomorphisms, `toMonoidHom f`
 gives an element of `ContinuousMonoidHom A B`. -/
-@[to_additive (attr := coe)]
+@[to_additive (attr := coe) "For `f : F`, where `F` is a class of continuous additive monoid
+homomorphisms, `toAddMonoidHom f` gives an element of `ContinuousAddMonoidHom A B`."]
 def toContinuousMonoidHom {F : Type*} [FunLike F A B] [ContinuousMapClass F A B]
     [MonoidHomClass F A B] (f : F) : ContinuousMonoidHom A B :=
     ⟨MonoidHomClass.toMonoidHom f, (_root_.toContinuousMap f).continuous⟩
