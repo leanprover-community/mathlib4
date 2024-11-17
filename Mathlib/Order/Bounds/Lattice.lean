@@ -16,24 +16,24 @@ In a separate file as we need to import `Mathlib.Data.Set.Lattice` for `subset_i
 
 -/
 
-variable {γ : Type*} [Preorder γ]
+variable {α : Type*} [Preorder α]
 
 open Set
 
-theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set γ} :
+theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set α} :
     upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := Subset.antisymm
   (fun _ hb => mem_iInter.mpr
     (fun i => upperBounds_mono_set (subset_iUnion_of_subset i (by rfl)) hb))
   (fun _ _ _ _ => by aesop)
 
-theorem lowerBounds_iUnion {ι : Sort*} {s : ι → Set γ} :
+theorem lowerBounds_iUnion {ι : Sort*} {s : ι → Set α} :
     lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) := Subset.antisymm
   (fun _ hb => mem_iInter.mpr
     (fun i => lowerBounds_mono_set (subset_iUnion_of_subset i (by rfl)) hb))
   (fun _ _ _ _ => by aesop)
 
-theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀ (i : ι), IsLUB (s i) (u i))
-    (c : γ) (hc : IsLUB (Set.range u ) c) : IsLUB (⋃ i, s i) c := by
+theorem IsLUB.iUnion {ι : Sort*} {u : ι → α}  {s : ι → Set α} (hs : ∀ (i : ι), IsLUB (s i) (u i))
+    (c : α) (hc : IsLUB (Set.range u ) c) : IsLUB (⋃ i, s i) c := by
   constructor
   · intro e he
     obtain ⟨i,hi⟩ := mem_iUnion.mp he
@@ -48,8 +48,8 @@ theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀
     simp only [upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
     exact fun i => (hs i).2 (he _ (mem_range_self i))
 
-theorem IsGLB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀ (i : ι), IsGLB (s i) (u i))
-    (c : γ) (hc : IsGLB (Set.range u ) c) : IsGLB (⋃ i, s i) c := by
+theorem IsGLB.iUnion {ι : Sort*} {u : ι → α}  {s : ι → Set α} (hs : ∀ (i : ι), IsGLB (s i) (u i))
+    (c : α) (hc : IsGLB (Set.range u ) c) : IsGLB (⋃ i, s i) c := by
   constructor
   · intro e he
     obtain ⟨i,hi⟩ := mem_iUnion.mp he
