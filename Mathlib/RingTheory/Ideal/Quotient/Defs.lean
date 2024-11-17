@@ -34,6 +34,14 @@ open Set
 variable {R : Type u} [Ring R] (I J : Ideal R) {a b : R}
 variable {S : Type v}
 
+/-- The quotient `R/I` of a ring `R` by an ideal `I`.
+The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
+This definition uses `abbrev` so that typeclass instances can be shared between
+`Ideal.Quotient I` and `Submodule.Quotient I`.
+-/
+@[instance] abbrev instHasQuotient : HasQuotient R (Ideal R) :=
+  Submodule.hasQuotient
+
 namespace Quotient
 
 variable {I} {x y : R}
