@@ -137,7 +137,7 @@ theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
 
 /-- The operator norm of the projection is `1` if there is an element whose norm is different from
 `0`. -/
-theorem norm_normedMk (h : ∃ x : M, ‖x‖ ≠ 0) :
+theorem norm_normedMk_eq_one (h : ∃ x : M, ‖x‖ ≠ 0) :
     ‖normedMk (M := M)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
   · simp only [normedMk_apply, one_mul]
