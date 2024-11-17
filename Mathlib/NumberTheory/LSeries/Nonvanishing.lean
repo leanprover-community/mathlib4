@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 import Mathlib.NumberTheory.LSeries.QuadraticNonvanishing
 
 /-!
@@ -156,7 +157,7 @@ lemma LFunction_isBigO_horizontal {y : ℝ} (hy : y ≠ 0 ∨ χ ≠ 1) :
   rw [← zero_add (1 + _)] at this
   exact this.comp (f := fun x : ℝ ↦ x + (1 + I * y)) (x := 0) (by fun_prop) |>.tendsto.isBigO_one ℂ
 
-lemma LFunction_isBigO_horizontal_of_eq_zero {y : ℝ} (hy : y ≠ 0 ∨ χ ≠ 1)
+private lemma LFunction_isBigO_horizontal_of_eq_zero {y : ℝ} (hy : y ≠ 0 ∨ χ ≠ 1)
     (h : LFunction χ (1 + I * y) = 0) :
     (fun x : ℝ ↦ LFunction χ (1 + x + I * y)) =O[𝓝[>] 0] fun x : ℝ ↦ (x : ℂ) := by
   simp_rw [add_comm (1 : ℂ), add_assoc]
@@ -171,10 +172,10 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
     LFunction χ (1 + I * t) ≠ 0 := by
   intro Hz
   have hz₁ : t ≠ 0 ∨ χ ≠ 1 := by
-    refine h.casesOn (fun h ↦ .inr fun H ↦ ?_) .inl
+    refine h.symm.imp_right (fun h H ↦ ?_)
     simp only [H, one_pow, ne_eq, not_true_eq_false] at h
   have hz₂ : 2 * t ≠ 0 ∨ χ ^ 2 ≠ 1 :=
-    h.casesOn .inr (fun h ↦ .inl <| mul_ne_zero two_ne_zero h)
+    h.symm.imp_left <| mul_ne_zero two_ne_zero
   have help (x : ℝ) : ((1 / x) ^ 3 * x ^ 4 * 1 : ℂ) = x := by
     rcases eq_or_ne x 0 with rfl | h
     · rw [ofReal_zero, zero_pow (by omega), mul_zero, mul_one]
@@ -194,15 +195,12 @@ private lemma LFunction_ne_zero_of_not_quadratic_or_ne_one {t : ℝ} (h : χ ^ 2
   -- go via absolute value to translate into a statement over `ℝ`
   replace H := (H₀.trans H).norm_right
   simp only [norm_eq_abs, abs_ofReal] at H
-  refine isLittleO_irrefl ?_ <| H.of_abs_right.trans_isLittleO <|
-    isLittleO_id_one.mono nhdsWithin_le_nhds
-  -- remaining goal: `∃ᶠ (x : ℝ) in 𝓝[>] 0, 1 ≠ 0`
-  simp only [ne_eq, one_ne_zero, not_false_eq_true, frequently_true_iff_neBot]
-  exact mem_closure_iff_nhdsWithin_neBot.mp <| closure_Ioi (0 : ℝ) ▸ Set.left_mem_Ici
+  exact isLittleO_irrefl (.of_forall (fun _ ↦ one_ne_zero)) <| H.of_norm_right.trans_isLittleO
+    <| isLittleO_id_one.mono nhdsWithin_le_nhds
 
 /-- If `χ` is a Dirichlet character, then `L(χ, s)` does not vanish when `s.re = 1`
 except when `χ` is trivial and `s = 1` (then `L(χ, s)` has a simple pole at `s = 1`). -/
-theorem Lfunction_ne_zero_of_re_eq_one {s : ℂ} (hs : s.re = 1) (hχs : χ ≠ 1 ∨ s ≠ 1) :
+theorem LFunction_ne_zero_of_re_eq_one {s : ℂ} (hs : s.re = 1) (hχs : χ ≠ 1 ∨ s ≠ 1) :
     LFunction χ s ≠ 0 := by
   by_cases h : χ ^ 2 = 1 ∧ s = 1
   · exact h.2 ▸ LFunction_at_one_ne_zero_of_quadratic h.1 <| hχs.neg_resolve_right h.2
@@ -210,28 +208,31 @@ theorem Lfunction_ne_zero_of_re_eq_one {s : ℂ} (hs : s.re = 1) (hχs : χ ≠ 
       conv_lhs => rw [← re_add_im s, hs, ofReal_one, mul_comm]
     rw [not_and_or, ← ne_eq, ← ne_eq, hs', add_right_ne_self] at h
     replace h : χ ^ 2 ≠ 1 ∨ s.im ≠ 0 :=
-      h.casesOn .inl (fun H ↦ .inr <| by exact_mod_cast right_ne_zero_of_mul H)
+      h.imp_right (fun H ↦ by exact_mod_cast right_ne_zero_of_mul H)
     exact hs'.symm ▸ χ.LFunction_ne_zero_of_not_quadratic_or_ne_one h
 
 /-- If `χ` is a Dirichlet character, then `L(χ, s)` does not vanish for `s.re ≥ 1`
 except when `χ` is trivial and `s = 1` (then `L(χ, s)` has a simple pole at `s = 1`). -/
-theorem Lfunction_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hχs : χ ≠ 1 ∨ s ≠ 1) (hs : 1 ≤ s.re) :
+theorem LFunction_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hχs : χ ≠ 1 ∨ s ≠ 1) (hs : 1 ≤ s.re) :
     LFunction χ s ≠ 0 :=
-  hs.eq_or_lt.casesOn (fun hs ↦ Lfunction_ne_zero_of_re_eq_one χ hs.symm hχs)
+  hs.eq_or_lt.casesOn (fun hs ↦ LFunction_ne_zero_of_re_eq_one χ hs.symm hχs)
     fun hs ↦ LFunction_eq_LSeries χ hs ▸ LSeries_ne_zero_of_one_lt_re χ hs
 
 -- Interesting special case:
 variable {χ} in
 /-- The L-function of a nontrivial Dirichlet character does not vanish at `s = 1`. -/
-theorem Lfunction_apply_one_ne_zero (hχ : χ ≠ 1) : LFunction χ 1 ≠ 0 :=
-  Lfunction_ne_zero_of_one_le_re χ (.inl hχ) <| one_re ▸ le_rfl
+theorem LFunction_apply_one_ne_zero (hχ : χ ≠ 1) : LFunction χ 1 ≠ 0 :=
+  LFunction_ne_zero_of_one_le_re χ (.inl hχ) <| one_re ▸ le_rfl
 
 end DirichletCharacter
 
 open DirichletCharacter in
-/-- The Riemann Zeta Function does not vanish on the closed half-plane `re s ≥ 1`. -/
-lemma riemannZeta_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hz : s ≠ 1) (hz' : 1 ≤ s.re) :
-    riemannZeta s ≠ 0 :=
-  LFunction_modOne_eq (χ := 1) ▸ Lfunction_ne_zero_of_one_le_re _ (.inr hz) hz'
+/-- The Riemann Zeta Function does not vanish on the closed half-plane `re s ≥ 1`.
+(Note that the value at `s = 1` is a junk value, which happens to be nonzero.) -/
+lemma riemannZeta_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hs : 1 ≤ s.re) :
+    riemannZeta s ≠ 0 := by
+  rcases eq_or_ne s 1 with rfl | hs₀
+  · exact riemannZeta_one_ne_zero
+  · exact LFunction_modOne_eq (χ := 1) ▸ LFunction_ne_zero_of_one_le_re _ (.inr hs₀) hs
 
 end nonvanishing
