@@ -340,7 +340,7 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B
 
 @[to_additive]
 instance toContinuousMonoidHom (F : Type*) [FunLike F A B] [ContinuousMapClass F A B]
-    [MonoidHomClass F A B] : CoeTC F (ContinuousMonoidHom A B) where
+    [MonoidHomClass F A B] : CoeOut F (ContinuousMonoidHom A B) where
   coe := fun f => ⟨MonoidHomClass.toMonoidHom f, (_root_.toContinuousMap f).continuous⟩
 
 section LocallyCompact
