@@ -314,6 +314,47 @@ def pre (G : D ⥤ C) : Grothendieck (G ⋙ F) ⥤ Grothendieck F where
   map_id X := Grothendieck.ext _ _ (G.map_id _) (by simp)
   map_comp f g := Grothendieck.ext _ _ (G.map_comp _ _) (by simp)
 
+variable (F) in
+@[simps]
+def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) where
+  obj X := ⟨G.inverse.obj X.base, (F.map (G.counitInv.app X.base)).obj X.fiber⟩
+  map {X Y} f := ⟨G.inverse.map f.base, eqToHom (by
+      have := Functor.congr_obj (F.congr_map (G.counitInv.naturality f.base).symm) X.fiber;
+      simp only [Functor.map_comp] at this
+      exact this) ≫ (F.map (G.counitInv.app _)).map f.fiber⟩
+  map_id X := by
+    simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map, Cat.comp_obj,
+      eq_mp_eq_cast, id_base, id_fiber, eqToHom_map, eqToHom_trans]
+    apply Grothendieck.ext <;> simp
+  map_comp {X Y Z} f g := by
+    simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map, Cat.comp_obj,
+      eq_mp_eq_cast, comp_base, comp_fiber, Functor.map_comp, eqToHom_map, eqToHom_trans_assoc]
+    apply Grothendieck.ext
+    · simp only [Functor.comp_obj, Functor.id_obj, Functor.comp_map, Functor.id_map, Cat.comp_obj,
+        eq_mp_eq_cast, comp_base, id_eq, eq_mpr_eq_cast, cast_eq, eqToHom_trans_assoc, comp_fiber,
+        Functor.map_comp, eqToHom_map, Category.assoc]
+      rw [eqToHom_comp_iff, eqToHom_trans_assoc, ← Category.assoc, ← Category.assoc]
+      congr
+      have := Functor.congr_hom (F.congr_map (G.counitInv.naturality g.base).symm) f.fiber
+      have := (F.congr_map (G.counitInv.naturality g.base).symm)
+      simp only [Functor.map_comp] at this
+      have := Functor.congr_hom this f.fiber
+      simp only [Functor.comp_obj, Functor.id_obj, Functor.comp_map, Cat.comp_obj, Cat.comp_map,
+        Functor.id_map] at this
+      have := this.symm
+      rw [eqToHom_comp_iff, comp_eqToHom_iff] at this
+      exact this
+    · simp
+
+#check Equivalence.mk
+
+-- TODO make `congr_hom` reassoc
+
+def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendieck F :=
+  Equivalence.mk (pre F G.functor) (preInv F G)
+   (NatIso.ofComponents (fun ⟨d, f⟩ => by { dsimp [pre, preInv];  }) _)
+   (NatIso.ofComponents (fun X => _) _)
+
 section FunctorFrom
 
 variable {E : Type*} [Category E]
