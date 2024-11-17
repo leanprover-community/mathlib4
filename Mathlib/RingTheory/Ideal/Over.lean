@@ -682,7 +682,7 @@ instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
   Q.2.2
 
 /-- If an ideal `P` of `B` is prime and lying over `p`, then it is in `primesOver p B`. -/
-def primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=
+abbrev primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=
   ⟨P, ⟨hPp, hp⟩⟩
 
 end primesOver
