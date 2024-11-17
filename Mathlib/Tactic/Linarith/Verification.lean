@@ -19,7 +19,7 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Mathlib
 
 namespace Qq
 
@@ -123,12 +123,13 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
-  let (t, _) ← getRelSides (← inferType prf)
+  let (_, _, t, _) ← (← inferType prf).ineq?
   return t
 
 /-- If `prf` is a proof of `t R s`, `typeOfIneqProof prf` returns the type of `t`. -/
 def typeOfIneqProof (prf : Expr) : MetaM Expr := do
-  inferType (← leftOfIneqProof prf)
+  let (_, ty, _) ← (← inferType prf).ineq?
+  return ty
 
 /--
 `mkNegOneLtZeroProof tp` returns a proof of `-1 < 0`,

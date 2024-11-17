@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.MvPolynomial.Supported
 
 /-!
@@ -30,6 +29,7 @@ variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
 
 /-- An element of an R-algebra is algebraic over R if it is a root of a nonzero polynomial
 with coefficients in R. -/
+@[stacks 09GC "Algebraic elements"]
 def IsAlgebraic (x : A) : Prop :=
   ∃ p : R[X], p ≠ 0 ∧ aeval x p = 0
 
@@ -131,6 +131,7 @@ def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
 variable (R A)
 
 /-- An algebra is algebraic if all its elements are algebraic. -/
+@[stacks 09GC "Algebraic extensions"]
 protected class Algebra.IsAlgebraic : Prop where
   isAlgebraic : ∀ x : A, IsAlgebraic R x
 
@@ -249,10 +250,14 @@ theorem isAlgebraic_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f)
 section RingHom
 
 omit [Algebra R S] [Algebra S A] [IsScalarTower R S A] [Algebra R B]
-variable [Algebra S B] {FRS FAB : Type*} [FunLike FAB A B] [RingHomClass FAB A B]
+variable [Algebra S B] {FRS FAB : Type*}
 
-protected theorem IsAlgebraic.ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R S]
-    (f : FRS) (g : FAB) {a : A} (halg : IsAlgebraic R a)
+section
+
+variable [FunLike FRS R S] [RingHomClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+  (f : FRS) (g : FAB) {a : A}
+
+theorem IsAlgebraic.ringHom_of_comp_eq (halg : IsAlgebraic R a)
     (hf : Function.Injective f)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic S (g a) := by
@@ -261,26 +266,95 @@ protected theorem IsAlgebraic.ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass
   change aeval ((g : A →+* B) a) _ = 0
   rw [← map_aeval_eq_aeval_map h, h2, map_zero]
 
-theorem IsAlgebraic.of_ringHom_of_comp_eq [FunLike FRS R S] [RingHomClass FRS R S]
-    (f : FRS) (g : FAB) {a : A} (halg : IsAlgebraic S (g a))
+theorem Transcendental.of_ringHom_of_comp_eq (H : Transcendental S (g a))
+    (hf : Function.Injective f)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Transcendental R a := fun halg ↦ H (halg.ringHom_of_comp_eq f g hf h)
+
+theorem Algebra.IsAlgebraic.ringHom_of_comp_eq [Algebra.IsAlgebraic R A]
+    (hf : Function.Injective f) (hg : Function.Surjective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.IsAlgebraic S B := by
+  refine ⟨fun b ↦ ?_⟩
+  obtain ⟨a, rfl⟩ := hg b
+  exact (Algebra.IsAlgebraic.isAlgebraic a).ringHom_of_comp_eq f g hf h
+
+theorem Algebra.Transcendental.of_ringHom_of_comp_eq [H : Algebra.Transcendental S B]
+    (hf : Function.Injective f) (hg : Function.Surjective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.Transcendental R A := by
+  rw [Algebra.transcendental_iff_not_isAlgebraic] at H ⊢
+  exact fun halg ↦ H (halg.ringHom_of_comp_eq f g hf hg h)
+
+theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (hf : Function.Surjective f) (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic R a := by
   obtain ⟨p, h1, h2⟩ := halg
-  obtain ⟨q, rfl⟩ : ∃ q : R[X], q.map f = p := by
-    rw [← mem_lifts, lifts_iff_coeff_lifts]
-    simp [hf.range_eq]
+  obtain ⟨q, rfl⟩ := map_surjective f hf p
   refine ⟨q, fun h' ↦ by simp [h'] at h1, hg ?_⟩
   change aeval ((g : A →+* B) a) _ = 0 at h2
   change (g : A →+* B) _ = _
   rw [map_zero, map_aeval_eq_aeval_map h, h2]
 
-theorem isAlgebraic_ringHom_iff_of_comp_eq [EquivLike FRS R S] [RingEquivClass FRS R S]
-    (f : FRS) (g : FAB) (hg : Function.Injective g)
+theorem Transcendental.ringHom_of_comp_eq (H : Transcendental R a)
+    (hf : Function.Surjective f) (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Transcendental S (g a) := fun halg ↦ H (halg.of_ringHom_of_comp_eq f g hf hg h)
+
+theorem Algebra.IsAlgebraic.of_ringHom_of_comp_eq [Algebra.IsAlgebraic S B]
+    (hf : Function.Surjective f) (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.IsAlgebraic R A :=
+  ⟨fun a ↦ (Algebra.IsAlgebraic.isAlgebraic (g a)).of_ringHom_of_comp_eq f g hf hg h⟩
+
+theorem Algebra.Transcendental.ringHom_of_comp_eq [H : Algebra.Transcendental R A]
+    (hf : Function.Surjective f) (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.Transcendental S B := by
+  rw [Algebra.transcendental_iff_not_isAlgebraic] at H ⊢
+  exact fun halg ↦ H (halg.of_ringHom_of_comp_eq f g hf hg h)
+
+end
+
+section
+
+variable [EquivLike FRS R S] [RingEquivClass FRS R S] [FunLike FAB A B] [RingHomClass FAB A B]
+  (f : FRS) (g : FAB)
+
+theorem isAlgebraic_ringHom_iff_of_comp_eq
+    (hg : Function.Injective g)
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) {a : A} :
     IsAlgebraic S (g a) ↔ IsAlgebraic R a :=
   ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) hg h,
     fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) h⟩
+
+theorem transcendental_ringHom_iff_of_comp_eq
+    (hg : Function.Injective g)
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) {a : A} :
+    Transcendental S (g a) ↔ Transcendental R a :=
+  not_congr (isAlgebraic_ringHom_iff_of_comp_eq f g hg h)
+
+end
+
+section
+
+variable [EquivLike FRS R S] [RingEquivClass FRS R S] [EquivLike FAB A B] [RingEquivClass FAB A B]
+  (f : FRS) (g : FAB)
+
+theorem Algebra.isAlgebraic_ringHom_iff_of_comp_eq
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.IsAlgebraic S B ↔ Algebra.IsAlgebraic R A :=
+  ⟨fun H ↦ H.of_ringHom_of_comp_eq f g (EquivLike.surjective f) (EquivLike.injective g) h,
+    fun H ↦ H.ringHom_of_comp_eq f g (EquivLike.injective f) (EquivLike.surjective g) h⟩
+
+theorem Algebra.transcendental_ringHom_iff_of_comp_eq
+    (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
+    Algebra.Transcendental S B ↔ Algebra.Transcendental R A := by
+  simp_rw [Algebra.transcendental_iff_not_isAlgebraic,
+    Algebra.isAlgebraic_ringHom_iff_of_comp_eq f g h]
+
+end
 
 end RingHom
 
@@ -306,6 +380,38 @@ theorem isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S
 theorem transcendental_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S A)) :
     Transcendental R (algebraMap S A a) ↔ Transcendental R a := by
   simp_rw [Transcendental, isAlgebraic_algebraMap_iff h]
+
+namespace Subalgebra
+
+theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
+    _root_.IsAlgebraic R x ↔ _root_.IsAlgebraic R x.1 :=
+  (isAlgebraic_algHom_iff S.val Subtype.val_injective).symm
+
+theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : _root_.IsAlgebraic (⊥ : Subalgebra R S) x) :
+    _root_.IsAlgebraic R x :=
+  halg.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
+    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id rfl
+
+theorem isAlgebraic_bot_iff (h : Function.Injective (algebraMap R S)) {x : S} :
+    _root_.IsAlgebraic (⊥ : Subalgebra R S) x ↔ _root_.IsAlgebraic R x :=
+  isAlgebraic_ringHom_iff_of_comp_eq (Algebra.botEquivOfInjective h).symm (RingHom.id S)
+    Function.injective_id (by rfl)
+
+variable (R S) in
+theorem algebra_isAlgebraic_of_algebra_isAlgebraic_bot_left
+    [Algebra.IsAlgebraic (⊥ : Subalgebra R S) S] : Algebra.IsAlgebraic R S :=
+  Algebra.IsAlgebraic.of_ringHom_of_comp_eq (algebraMap R (⊥ : Subalgebra R S))
+    (RingHom.id S) (by rintro ⟨_, r, rfl⟩; exact ⟨r, rfl⟩) Function.injective_id (by ext; rfl)
+
+theorem algebra_isAlgebraic_bot_left_iff (h : Function.Injective (algebraMap R S)) :
+    Algebra.IsAlgebraic (⊥ : Subalgebra R S) S ↔ Algebra.IsAlgebraic R S := by
+  simp_rw [Algebra.isAlgebraic_def, isAlgebraic_bot_iff h]
+
+instance algebra_isAlgebraic_bot_right [Nontrivial R] :
+    Algebra.IsAlgebraic R (⊥ : Subalgebra R S) :=
+  ⟨by rintro ⟨_, x, rfl⟩; exact isAlgebraic_algebraMap _⟩
+
+end Subalgebra
 
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
     IsAlgebraic R r := by
@@ -444,6 +550,7 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 variable (L)
 
 /-- If `x` is algebraic over `K`, then `x` is algebraic over `L` when `L` is an extension of `K` -/
+@[stacks 09GF "part one"]
 theorem IsAlgebraic.tower_top {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
   A_alg.tower_top_of_injective (algebraMap K L).injective
@@ -455,6 +562,7 @@ theorem Transcendental.of_tower_top {x : A} (h : Transcendental L x) :
     Transcendental K x := fun H ↦ h (H.tower_top L)
 
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
+@[stacks 09GF "part two"]
 theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlgebraic L A :=
   Algebra.IsAlgebraic.tower_top_of_injective (algebraMap K L).injective
 
@@ -466,6 +574,7 @@ theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
+@[stacks 09GG "first part"]
 instance Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : Algebra.IsAlgebraic K A :=
   (IsIntegral.of_finite K A).isAlgebraic
 
@@ -486,6 +595,7 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
 then A is algebraic over K. -/
+@[stacks 09GJ]
 protected theorem Algebra.IsAlgebraic.trans
     [L_alg : Algebra.IsAlgebraic K L] [A_alg : Algebra.IsAlgebraic L A] :
     Algebra.IsAlgebraic K A := by
@@ -562,6 +672,46 @@ end Field
 
 end
 
+section
+
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+
+theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
+    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+    ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
+  obtain ⟨p, hp0, hp⟩ := hRs
+  obtain ⟨q, hpq, hq⟩ := Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
+  simp only [C_0, sub_zero, X_pow_mul, X_dvd_iff] at hpq hq
+  rw [hpq, map_mul, aeval_X_pow] at hp
+  exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
+
+theorem IsAlgebraic.exists_nonzero_dvd
+    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+    ∃ r : R, r ≠ 0 ∧ s ∣ (algebraMap R S) r := by
+  obtain ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
+  have key := map_dvd (Polynomial.aeval s) (Polynomial.X_dvd_sub_C (p := q))
+  rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
+  exact ⟨q.coeff 0, hq0, key⟩
+
+/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
+if `b` is algebraic over `R`. -/
+theorem IsAlgebraic.exists_smul_eq_mul
+    (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ nonZeroDivisors S) :
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
+  obtain ⟨r, hr, s, h⟩ := IsAlgebraic.exists_nonzero_dvd (R := R) (S := S) hRb hb
+  exact ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
+
+variable (R)
+
+/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
+if `b` is algebraic over `R`. -/
+theorem Algebra.IsAlgebraic.exists_smul_eq_mul [IsDomain S] [Algebra.IsAlgebraic R S]
+    (a : S) {b : S} (hb : b ≠ 0) :
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+  (Algebra.IsAlgebraic.isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_iff_ne_zero.mpr hb)
+
+end
+
 variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
@@ -574,22 +724,6 @@ theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     ⟨p.integralNormalization, monic_integralNormalization p_ne_zero,
       integralNormalization_aeval_eq_zero px inj⟩
   exact ⟨⟨_, x_integral⟩, a, a_ne_zero, rfl⟩
-
-/-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
-if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
-theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S] [Algebra S L]
-    [Algebra R L] [IsScalarTower R S L] [IsIntegralClosure S R L] [Algebra.IsAlgebraic R L]
-    (inj : Function.Injective (algebraMap R L)) (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
-  obtain ⟨c, d, d_ne, hx⟩ :=
-    exists_integral_multiple (Algebra.IsAlgebraic.isAlgebraic (algebraMap _ L a / algebraMap _ L b))
-      ((injective_iff_map_eq_zero _).mp inj)
-  refine
-    ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L ?_⟩
-  simp only [Algebra.smul_def, RingHom.map_mul, IsIntegralClosure.algebraMap_mk', ← hx, ←
-    IsScalarTower.algebraMap_apply]
-  rw [← mul_assoc _ (_ / _), mul_div_cancel₀ (algebraMap S L a), mul_comm]
-  exact mt ((injective_iff_map_eq_zero _).mp (IsIntegralClosure.algebraMap_injective S R L) _) hb
 
 section Field
 
@@ -643,6 +777,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
       exact A.zero_mem
 
 /-- In an algebraic extension L/K, an intermediate subalgebra is a field. -/
+@[stacks 0BID]
 theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
     mul_inv_cancel := fun {a} ha =>
