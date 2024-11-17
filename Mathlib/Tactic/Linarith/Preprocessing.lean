@@ -30,7 +30,7 @@ namespace Linarith
 
 /-! ### Preprocessing -/
 
-open Lean hiding Rat
+open Lean
 open Elab Tactic Meta
 open Qq
 open Mathlib
