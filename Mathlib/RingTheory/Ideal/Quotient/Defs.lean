@@ -153,7 +153,7 @@ theorem factor_comp_mk (H : S ≤ T) : (factor S T H).comp (mk S) = mk T := by
 
 end Quotient
 
-variable {R : Type*} [CommRing R] {I J : Ideal R}
+variable {I J} [I.IsTwoSided] [J.IsTwoSided]
 
 /-- Quotienting by equal ideals gives equivalent rings.
 
