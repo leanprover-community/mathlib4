@@ -87,10 +87,12 @@ instance : MulAction (L ≃ₐ[K] L) (primesOver p B) where
     exact (Q.1.map_map ((galRestrict A K L B) τ).toRingHom ((galRestrict A K L B) σ).toRingHom).symm
 
 theorem coe_smul_primesOver (σ : L ≃ₐ[K] L) (P : primesOver p B):
-  (σ • P).1 = map (galRestrict A K L B σ) P := rfl
+    (σ • P).1 = map (galRestrict A K L B σ) P :=
+  rfl
 
 theorem coe_smul_primesOver_mk (σ : L ≃ₐ[K] L) (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-  (σ • primesOver.mk p P).1 = map (galRestrict A K L B σ) P := rfl
+    (σ • primesOver.mk p P).1 = map (galRestrict A K L B σ) P :=
+  rfl
 
 end MulAction
 
