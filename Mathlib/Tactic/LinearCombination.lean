@@ -45,9 +45,9 @@ inductive Expanded
   /-- A value, equivalently a proof of `c = c`. -/
   | const (c : Syntax.Term)
 
-/-- The handling in `linear_combination` of left- and right-multiplication and of division all three
-proceed according to the same logic, specified here: given a proof `p` of an (in)equality and a
-constant `c`,
+/-- The handling in `linear_combination` of left- and right-multiplication and scalar-multiplication
+and of division all five proceed according to the same logic, specified here: given a proof `p` of
+an (in)equality and a constant `c`,
 * if `p` is a proof of an equation, multiply/divide through by `c`;
 * if `p` is a proof of a non-strict inequality, run `positivity` to find a proof that `c` is
   nonnegative, then multiply/divide through by `c`, invoking the nonnegativity of `c` where needed;
