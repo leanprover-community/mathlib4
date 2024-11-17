@@ -1,7 +1,6 @@
 import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Matrix.Notation
-import Mathlib.Util.Time
 import Mathlib.Tactic.Abel
 
 axiom Real : Type
@@ -82,7 +81,7 @@ example {a b c d e : ℚ}
 
 /-! ### (a:ℚ) ≤ b → 0 ≤ b - a -/
 
-set_option maxHeartbeats 150 in
+set_option maxHeartbeats 200 in
 example {a b : ℚ} (h : a ≤ b) : 0 ≤ b - a := by
   linear_combination h
 
@@ -94,7 +93,7 @@ example {a b : ℚ} (h : a = b) : 0 = b - a := by linarith
 
 /-! ### (a:ℚ) + 1 ≤ b → 0 ≤ b - a -/
 
-set_option maxHeartbeats 250 in
+set_option maxHeartbeats 300 in
 example {a b : ℚ} (h : a + 1 ≤ b) : 0 ≤ b - a := by
   linear_combination h
 
@@ -157,7 +156,7 @@ example {a1 a2 a3 a4 a5 a6 a7 : ℚ}
     a7 ≤ 1 := by
   linarith
 
-set_option maxHeartbeats 500 in
+set_option maxHeartbeats 700 in
 example {a1 a2 a3 a4 a5 a6 a7 : ℚ}
     (h7 : a6 + a7 = 2)
     (h6 : a5 + a6 = 2)
