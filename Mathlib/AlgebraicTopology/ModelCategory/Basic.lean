@@ -64,10 +64,10 @@ class ModelCategory where
       HasLiftingProperty i p := by infer_instance
   cm4b {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) [Cofibration i] [Fibration p] [WeakEquivalence p] :
       HasLiftingProperty i p := by infer_instance
-  cm5a : MorphismProperty.HasFactorization (trivialCofibrations C) (fibrations C) :=
-    by infer_instance
-  cm5b : MorphismProperty.HasFactorization (cofibrations C) (trivialFibrations C) :=
-    by infer_instance
+  cm5a : MorphismProperty.HasFactorization (trivialCofibrations C) (fibrations C) := by
+    infer_instance
+  cm5b : MorphismProperty.HasFactorization (cofibrations C) (trivialFibrations C) := by
+    infer_instance
 
 namespace ModelCategory
 
