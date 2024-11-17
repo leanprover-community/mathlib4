@@ -6,6 +6,7 @@ Authors: Pieter Cuijpers
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Order.CompleteLattice
+import Mathlib.Tactic.Variable
 
 /-!
 # Theory of quantales
@@ -32,6 +33,10 @@ integral, and involutive quantales easier to add on later.
   over a complete lattice, i.e satisfying `x * (sSup s) = ⨆ y ∈ s, x * y` and
   `(sSup s) * y = ⨆ x ∈ s, x * y`;
 
+* `Quantale` and `AddQuantale` : Structures serving as a typeclass alias, so one can write
+  `variable? [Quantale α]` for `[Semigroup α] [CompleteLattice α] [IsQuantale α]` and similar
+  for the additive variant.
+
 * `leftMulResiduation`, `rightMulResiduation`, `leftAddResiduation`, `rightAddResiduation` :
   Defining the left- and right- residuations of the semigroup (see notation below).
 
@@ -54,14 +59,17 @@ integral, and involutive quantales easier to add on later.
 
 open Function
 
-namespace Quantale
-
 /-- An additive quantale is an additive semigroup distributing over a complete lattice. -/
 class IsAddQuantale (α : Type*) [AddSemigroup α] [CompleteLattice α] where
   /-- Addition is distributive over join in a quantale -/
   protected add_sSup_eq_iSup_add (x : α) (s : Set α) : x + sSup s = ⨆ y ∈ s, x + y
   /-- Addition is distributive over join in a quantale -/
   protected sSup_add_eq_iSup_add (s : Set α) (y : α) : sSup s + y = ⨆ x ∈ s, x + y
+
+/-- A quantale is a semigroup distributing over a complete lattice. -/
+@[variable_alias]
+structure AddQuantale (α : Type*)
+  [AddSemigroup α] [CompleteLattice α] [IsAddQuantale α]
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[to_additive]
@@ -71,8 +79,15 @@ class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
   /-- Multiplication is distributive over join in a quantale -/
   protected sSup_mul_eq_iSup_mul (s : Set α) (y : α) : sSup s * y = ⨆ x ∈ s, x * y
 
+/-- A quantale is a semigroup distributing over a complete lattice. -/
+@[variable_alias, to_additive]
+structure Quantale (α : Type*)
+  [Semigroup α] [CompleteLattice α] [IsQuantale α]
+
+namespace Quantale
+
 variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
-variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable? [Quantale α]
 
 @[to_additive]
 theorem mul_sSup_eq_iSup_mul : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_eq_iSup_mul _ _
@@ -131,16 +146,16 @@ I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z 
 def rightMulResiduation (x y : α) := sSup {z | x * z ≤ y}
 
 @[inherit_doc]
-scoped infixr:60 " ⇨ₗ " => leftMulResiduation
+scoped infixr:60 " ⇨ₗ " => Quantale.leftMulResiduation
 
 @[inherit_doc]
-scoped infixr:60 " ⇨ᵣ " => rightMulResiduation
+scoped infixr:60 " ⇨ᵣ " => Quantale.rightMulResiduation
 
 @[inherit_doc]
-scoped infixr:60 " ⇨ₗ " => leftAddResiduation
+scoped infixr:60 " ⇨ₗ " => AddQuantale.leftAddResiduation
 
 @[inherit_doc]
-scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
+scoped infixr:60 " ⇨ᵣ " => AddQuantale.rightAddResiduation
 
 @[to_additive]
 theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z where
