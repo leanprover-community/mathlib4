@@ -145,17 +145,17 @@ initialize Lean.registerBuiltinAttribute {
   descr := "Apply a Stacks or Kerodon project tag to a theorem."
   add := fun decl stx _attrKind => do
     let oldDoc := (← findDocString? (← getEnv) decl).getD ""
-    let (database, url, tag, comment) := ← match stx with
+    let (SorK, database, url, tag, comment) := ← match stx with
       | `(attr| stacks $tag $[$comment]?) =>
-        return ("Stacks", "https://stacks.math.columbia.edu/tag", tag, comment)
+        return ("Stacks", Database.stacks, "https://stacks.math.columbia.edu/tag", tag, comment)
       | `(attr| kerodon $tag $[$comment]?) =>
-        return ("Kerodon", "https://kerodon.net/tag", tag, comment)
+        return ("Kerodon", Database.kerodon, "https://kerodon.net/tag", tag, comment)
       | _ => throwUnsupportedSyntax
     let tagStr ← tag.getStacksTag
     let comment := (comment.map (·.getString)).getD ""
-    let newDoc := [oldDoc, s!"[{database} Tag {tagStr}]({url}/{tagStr})", comment]
+    let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr})", comment]
     addDocString decl <| "\n\n".intercalate (newDoc.filter (· != ""))
-    addTagEntry decl .stacks tagStr <| comment
+    addTagEntry decl database tagStr <| comment
 }
 
 end Mathlib.StacksTag
