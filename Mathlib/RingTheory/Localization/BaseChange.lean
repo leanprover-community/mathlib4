@@ -51,11 +51,14 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
 
 namespace IsLocalization
 
-include S
 open TensorProduct Algebra.TensorProduct
+
+instance tensorProduct_isLocalizedModule : IsLocalizedModule S (TensorProduct.mk R A M 1) :=
+  (isLocalizedModule_iff_isBaseChange _ A _).mpr (TensorProduct.isBaseChange _ _ _)
 
 variable (M₁ M₂) [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
   [Module A M₁] [Module A M₂] [IsScalarTower R A M₁] [IsScalarTower R A M₂]
+include S
 
 theorem tensorProduct_compatibleSMul : CompatibleSMul R A M₁ M₂ where
   smul_tmul a _ _ := by
