@@ -20,7 +20,7 @@ The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivi
 and elsewhere.
 -/
 
-open Lean hiding Rat
+open Lean
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `positivity` extensions. -/

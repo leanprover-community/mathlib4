@@ -19,7 +19,7 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
 
 namespace Mathlib.Tactic
-open Lean hiding Rat
+open Lean
 open Qq Meta
 
 namespace Ring

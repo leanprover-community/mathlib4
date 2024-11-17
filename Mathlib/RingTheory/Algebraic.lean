@@ -291,7 +291,7 @@ theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic R a := by
   obtain ⟨p, h1, h2⟩ := halg
-  obtain ⟨q, rfl⟩ := map_surjective f hf p
+  obtain ⟨q, rfl⟩ := map_surjective (f : R →+* S) hf p
   refine ⟨q, fun h' ↦ by simp [h'] at h1, hg ?_⟩
   change aeval ((g : A →+* B) a) _ = 0 at h2
   change (g : A →+* B) _ = _

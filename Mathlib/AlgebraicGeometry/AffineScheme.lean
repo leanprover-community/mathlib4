@@ -406,7 +406,7 @@ protected theorem isCompact :
 
 include hU in
 theorem image_of_isOpenImmersion (f : X ⟶ Y) [H : IsOpenImmersion f] :
-    IsAffineOpen (f ''ᵁ U) := by
+    IsAffineOpen (f ~~ᵁ U) := by
   have : IsAffine _ := hU
   convert isAffineOpen_opensRange (U.ι ≫ f)
   ext1
@@ -419,7 +419,7 @@ theorem preimage_of_isIso {U : Y.Opens} (hU : IsAffineOpen U) (f : X ⟶ Y) [IsI
 
 theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     (f : AlgebraicGeometry.Scheme.Hom X Y) [H : IsOpenImmersion f] {U : X.Opens} :
-    IsAffineOpen (f ''ᵁ U) ↔ IsAffineOpen U := by
+    IsAffineOpen (f ~~ᵁ U) ↔ IsAffineOpen U := by
   refine ⟨fun hU => @isAffine_of_isIso _ _
     (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.isOpenEmbedding ≫ f) (Y.ofRestrict _) ?_).hom
       ?_ hU, fun hU => hU.image_of_isOpenImmersion f⟩
@@ -434,9 +434,9 @@ the affine open sets containing in the image. -/
 @[simps]
 def _root_.AlgebraicGeometry.IsOpenImmersion.affineOpensEquiv (f : X ⟶ Y) [H : IsOpenImmersion f] :
     X.affineOpens ≃ { U : Y.affineOpens // U ≤ f.opensRange } where
-  toFun U := ⟨⟨f ''ᵁ U, U.2.image_of_isOpenImmersion f⟩, Set.image_subset_range _ _⟩
+  toFun U := ⟨⟨f ~~ᵁ U, U.2.image_of_isOpenImmersion f⟩, Set.image_subset_range _ _⟩
   invFun U := ⟨f ⁻¹ᵁ U, f.isAffineOpen_iff_of_isOpenImmersion.mp (by
-    rw [show f ''ᵁ f ⁻¹ᵁ U = U from Opens.ext (Set.image_preimage_eq_of_subset U.2)]; exact U.1.2)⟩
+    rw [show f ~~ᵁ f ⁻¹ᵁ U = U from Opens.ext (Set.image_preimage_eq_of_subset U.2)]; exact U.1.2)⟩
   left_inv _ := Subtype.ext (Opens.ext (Set.preimage_image_eq _ H.base_open.injective))
   right_inv U := Subtype.ext (Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2)))
 
@@ -489,7 +489,7 @@ theorem fromSpec_preimage_basicOpen :
   rw [fromSpec_preimage_basicOpen', ← basicOpen_eq_of_affine]
 
 theorem fromSpec_image_basicOpen :
-    hU.fromSpec ''ᵁ (PrimeSpectrum.basicOpen f) = X.basicOpen f := by
+    hU.fromSpec ~~ᵁ (PrimeSpectrum.basicOpen f) = X.basicOpen f := by
   rw [← hU.fromSpec_preimage_basicOpen]
   ext1
   change hU.fromSpec.base '' (hU.fromSpec.base ⁻¹' (X.basicOpen f : Set X)) = _
@@ -533,7 +533,7 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
     (isBasis_basicOpen U).exists_subset_of_mem_open (x.2 : (⟨x, h⟩ : U) ∈ _)
       ((Opens.map U.inclusion').obj V).isOpen
   have :
-    U.ι ''ᵁ (U.toScheme.basicOpen r) =
+    U.ι ~~ᵁ (U.toScheme.basicOpen r) =
       X.basicOpen (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top.symm).op r) := by
     refine (Scheme.image_basicOpen U.ι r).trans ?_
     rw [Scheme.basicOpen_res_eq]
