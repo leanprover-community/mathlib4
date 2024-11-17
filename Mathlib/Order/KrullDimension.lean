@@ -387,8 +387,7 @@ protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
 
 @[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by simp
 
-@[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 :=
-  by simp
+@[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by simp
 
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ (∃ y < x, height y = n) where
@@ -466,7 +465,7 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
 /-- The elements of finite coheight `n` are the maximal elements among those of coheight `≥ n`. -/
 lemma coheight_eq_coe_iff_maximal_le_coheight (a : α) (n : ℕ) :
     coheight a = n ↔ Maximal (fun y => n ≤ coheight y) a :=
-  height_eq_coe_iff_minimal_le_height (α := αᵒᵈ) a n
+  height_eq_coe_iff_minimal_le_height (α := αᵒᵈ)
 
 end height
 
