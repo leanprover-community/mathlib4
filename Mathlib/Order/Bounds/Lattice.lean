@@ -7,6 +7,11 @@ import Mathlib.Data.Set.Lattice
 
 /-!
 # Unions and intersections of bounds
+
+## Implementation notes
+
+`Mathlib.Data.Set.Lattice` is needed for `subset_iUnion_of_subset`.
+
 -/
 
 variable {γ : Type*} [Preorder γ]
