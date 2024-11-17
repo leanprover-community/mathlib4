@@ -38,6 +38,5 @@ theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀
   · intro e he
     rw [upperBounds_iUnion] at he
     apply hc.2
-    rw [upperBounds]
-    simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
+    simp only [upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
     exact fun i => (hs i).2 (he _ (mem_range_self i))
