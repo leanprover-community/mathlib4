@@ -626,7 +626,10 @@ variable {ι κ : Sort*} {f g : ι → ℝ≥0∞} {s : Set ℝ≥0∞} {a : ℝ
 
 @[simp] lemma iSup_eq_zero : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := iSup_eq_bot
 
-@[simp] lemma iSup_zero_eq_zero : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
+@[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
+
+@[deprecated (since := "2024-10-22")]
+alias iSup_zero_eq_zero := iSup_zero
 
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)
@@ -665,7 +668,8 @@ lemma mul_iSup (a : ℝ≥0∞) (f : ι → ℝ≥0∞) : a * ⨆ i, f i = ⨆ i
   · simp
   obtain rfl | ha := eq_or_ne a ∞
   · obtain ⟨i, hi⟩ := not_forall.1 hf
-    simpa [iSup_eq_zero.not.2 hf, eq_comm (a := ⊤)] using le_iSup_of_le i (top_mul hi).ge
+    simpa [iSup_eq_zero.not.2 hf, eq_comm (a := ⊤)]
+      using le_iSup_of_le (f := fun i => ⊤ * f i) i (top_mul hi).ge
   · exact (mulLeftOrderIso _ <| isUnit_iff.2 ⟨ha₀, ha⟩).map_iSup _
 
 lemma iSup_mul (f : ι → ℝ≥0∞) (a : ℝ≥0∞) : (⨆ i, f i) * a = ⨆ i, f i * a := by

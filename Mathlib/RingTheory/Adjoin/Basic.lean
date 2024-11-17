@@ -6,10 +6,10 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.Prod
 /-!
 # Adjoining elements to form subalgebras
 

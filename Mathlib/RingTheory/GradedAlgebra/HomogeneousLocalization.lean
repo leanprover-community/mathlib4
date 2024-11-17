@@ -3,6 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
+import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
@@ -50,7 +51,7 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 * `HomogeneousLocalization.eq_num_div_den`: if `f : HomogeneousLocalization 𝒜 x`, then
   `f.val : Aₓ` is equal to `f.num / f.den`.
 
-* `HomogeneousLocalization.localRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
+* `HomogeneousLocalization.isLocalRing`: `HomogeneousLocalization 𝒜 x` is a local ring when `x` is
   the complement of some prime ideals.
 
 * `HomogeneousLocalization.map`: Let `A` and `B` be two graded rings and `g : A → B` a grading
@@ -86,7 +87,7 @@ section
 /-- Let `x` be a submonoid of `A`, then `NumDenSameDeg 𝒜 x` is a structure with a numerator and a
 denominator with same grading such that the denominator is contained in `x`.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure NumDenSameDeg where
   deg : ι
@@ -269,7 +270,7 @@ end HomogeneousLocalization
 kernel of `embedding 𝒜 x`. This is essentially the subring of `Aₓ` where the numerator and
 denominator share the same grading.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def HomogeneousLocalization : Type _ :=
   Quotient (Setoid.ker <| HomogeneousLocalization.NumDenSameDeg.embedding 𝒜 x)
@@ -533,10 +534,10 @@ theorem isUnit_iff_isUnit_val (f : HomogeneousLocalization.AtPrime 𝒜 𝔭) :
 instance : Nontrivial (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
   ⟨⟨0, 1, fun r => by simp [ext_iff_val, val_zero, val_one, zero_ne_one] at r⟩⟩
 
-instance localRing : LocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
-  LocalRing.of_isUnit_or_isUnit_one_sub_self fun a => by
+instance isLocalRing : IsLocalRing (HomogeneousLocalization.AtPrime 𝒜 𝔭) :=
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a => by
     simpa only [← isUnit_iff_isUnit_val, val_sub, val_one]
-      using LocalRing.isUnit_or_isUnit_one_sub_self _
+      using IsLocalRing.isUnit_or_isUnit_one_sub_self _
 
 end
 

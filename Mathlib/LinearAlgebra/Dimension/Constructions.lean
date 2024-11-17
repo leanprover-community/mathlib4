@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.Algebra.Module.Torsion
+import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Rank of various constructions
@@ -30,9 +31,9 @@ We have finrank variants for most lemmas as well.
 
 noncomputable section
 
-universe u v v' u₁' w w'
+universe u u' v v' u₁' w w'
 
-variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
+variable {R : Type u} {S : Type u'} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open Basis Cardinal DirectSum Function Module Set Submodule
@@ -74,20 +75,6 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective Quot.mk_surjective
-
-theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Module R M]
-    {M' : Submodule R M} (hN : M' ≤ torsion R M) : Module.rank R (M ⧸ M') = Module.rank R M :=
-  (rank_quotient_le M').antisymm <| by
-    nontriviality R
-    rw [Module.rank]
-    have := nonempty_linearIndependent_set R M
-    refine ciSup_le fun ⟨s, hs⟩ ↦ LinearIndependent.cardinal_le_rank (v := (M'.mkQ ·)) ?_
-    rw [linearIndependent_iff'] at hs ⊢
-    simp_rw [← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]
-    intro t g hg i hi
-    obtain ⟨r, hg⟩ := hN hg
-    simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hg
-    exact r.prop _ (mul_comm (g i) r ▸ hs t _ hg i hi)
 
 end Quotient
 
@@ -133,8 +120,8 @@ open Module.Free
 @[simp]
 theorem rank_prod : Module.rank R (M × M') =
     Cardinal.lift.{v'} (Module.rank R M) + Cardinal.lift.{v, v'} (Module.rank R M') := by
-  simpa [rank_eq_card_chooseBasisIndex R M, rank_eq_card_chooseBasisIndex R M', lift_umax,
-    lift_umax'] using ((chooseBasis R M).prod (chooseBasis R M')).mk_eq_rank.symm
+  simpa [rank_eq_card_chooseBasisIndex R M, rank_eq_card_chooseBasisIndex R M', lift_umax]
+    using ((chooseBasis R M).prod (chooseBasis R M')).mk_eq_rank.symm
 
 /-- If `M` and `M'` are free (and lie in the same universe), the rank of `M × M'` is
   `(Module.rank R M) + (Module.rank R M')`. -/
@@ -355,10 +342,15 @@ theorem rank_tensorProduct :
 theorem rank_tensorProduct' :
     Module.rank R (M ⊗[S] M₁) = Module.rank R M * Module.rank S M₁ := by simp
 
+theorem Module.rank_baseChange :
+    Module.rank R (R ⊗[S] M') = Cardinal.lift.{u} (Module.rank S M') := by simp
+
 /-- The `S`-finrank of `M ⊗[R] M'` is `(finrank S M) * (finrank R M')`. -/
 @[simp]
 theorem Module.finrank_tensorProduct :
     finrank R (M ⊗[S] M') = finrank R M * finrank S M' := by simp [finrank]
+
+theorem Module.finrank_baseChange : finrank R (R ⊗[S] M') = finrank S M' := by simp
 
 end TensorProduct
 

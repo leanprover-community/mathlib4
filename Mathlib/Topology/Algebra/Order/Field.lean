@@ -135,6 +135,10 @@ theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Ten
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_atTop_zero.comp hg)
 
+lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜)  :
+    Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
+  tendsto_const_nhds.div_atTop hg
+
 theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
   tendsto_inv_atTop_zero.comp h
 
@@ -237,7 +241,7 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
 instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 
--- Porting note (#11215): TODO: generalize to a `GroupWithZero`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a `GroupWithZero`
 theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
     comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
