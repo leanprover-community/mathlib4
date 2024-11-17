@@ -892,6 +892,24 @@ theorem singleton_nonempty (u : ZFSet) : ZFSet.Nonempty {u} :=
 theorem mem_pair {x y z : ZFSet.{u}} : x ∈ ({y, z} : ZFSet) ↔ x = y ∨ x = z := by
   simp
 
+@[simp]
+theorem pair_self (x : ZFSet) : {x, x} = ({x} : ZFSet) := by
+  ext
+  simp
+
+@[simp]
+theorem pair_eq_singleton {x y z : ZFSet} : ({x, y} : ZFSet) = {z} ↔ x = z ∧ y = z := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rw [← mem_singleton, ← mem_singleton]
+    simp [← h]
+  · rintro ⟨rfl, rfl⟩
+    exact pair_self y
+
+@[simp]
+theorem singleton_eq_pair {x y z : ZFSet} : ({x} : ZFSet) = {y, z} ↔ x = y ∧ x = z := by
+  rw [eq_comm, pair_eq_singleton]
+  simp_rw [eq_comm]
+
 /-- `omega` is the first infinite von Neumann ordinal -/
 def omega : ZFSet :=
   mk PSet.omega
@@ -1194,7 +1212,7 @@ theorem toSet_pair (x y : ZFSet.{u}) : (pair x y).toSet = {{x}, {x, y}} := by si
 
 /-- A subset of pairs `{(a, b) ∈ x × y | p a b}` -/
 def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u} :=
-  ZFSet.sep (fun z => ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b) (powerset (powerset (x ∪ y)))
+  (powerset (powerset (x ∪ y))).sep fun z => ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b
 
 @[simp]
 theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
@@ -1207,26 +1225,17 @@ theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
     exact Or.inl ax
   · rintro (rfl | rfl) <;> [left; right] <;> assumption
 
-theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
-  have ae := ZFSet.ext_iff.1 H
-  simp only [pair, mem_pair] at ae
-  obtain rfl : x = x' := by
-    cases' (ae {x}).1 (by simp) with h h
-    · exact singleton_injective h
-    · have m : x' ∈ ({x} : ZFSet) := by simp [h]
-      rw [mem_singleton.mp m]
-  have he : x = y → y = y' := by
+theorem pair_injective : Function.Injective2 pair := by
+  intro x x' y y' H
+  simp_rw [ZFSet.ext_iff, pair, mem_pair] at H
+  obtain rfl : x = x' := And.left <| by simpa [or_and_left] using (H {x}).1 (Or.inl rfl)
+  have he : y = x → y = y' := by
     rintro rfl
-    cases' (ae {x, y'}).2 (by simp only [eq_self_iff_true, or_true]) with xy'x xy'xx
-    · rw [eq_comm, ← mem_singleton, ← xy'x, mem_pair]
-      exact Or.inr rfl
-    · simpa [eq_comm] using (ZFSet.ext_iff.1 xy'xx y').1 (by simp)
-  obtain xyx | xyy' := (ae {x, y}).1 (by simp)
-  · obtain rfl := mem_singleton.mp ((ZFSet.ext_iff.1 xyx y).1 <| by simp)
-    simp [he rfl]
-  · obtain rfl | yy' := mem_pair.mp ((ZFSet.ext_iff.1 xyy' y).1 <| by simp)
-    · simp [he rfl]
-    · simp [yy']
+    simpa [eq_comm] using H {y, y'}
+  have hx := H {x, y}
+  simp_rw [pair_eq_singleton, true_and, or_true, true_iff] at hx
+  refine ⟨rfl, hx.elim he fun hy ↦ Or.elim ?_ he id⟩
+  simpa using ZFSet.ext_iff.1 hy y
 
 @[simp]
 theorem pair_inj {x y x' y' : ZFSet} : pair x y = pair x' y' ↔ x = x' ∧ y = y' :=
