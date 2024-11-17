@@ -907,6 +907,7 @@ import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.Algebra.Vertex.HVertexOperator
 import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.AffineSpace
 import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 import Mathlib.AlgebraicGeometry.Cover.Open
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
@@ -2775,7 +2776,13 @@ import Mathlib.Data.Set.Countable
 import Mathlib.Data.Set.Defs
 import Mathlib.Data.Set.Enumerate
 import Mathlib.Data.Set.Equitable
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.Set.Finite.List
+import Mathlib.Data.Set.Finite.Monad
+import Mathlib.Data.Set.Finite.Powerset
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
@@ -2912,6 +2919,7 @@ import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Fixed
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.Galois.GaloisClosure
+import Mathlib.FieldTheory.Galois.IsFractionRing
 import Mathlib.FieldTheory.Galois.Profinite
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.IntermediateField.Basic
@@ -4984,6 +4992,7 @@ import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.ContinuousMap.Ideals
+import Mathlib.Topology.ContinuousMap.Interval
 import Mathlib.Topology.ContinuousMap.Lattice
 import Mathlib.Topology.ContinuousMap.LocallyConstant
 import Mathlib.Topology.ContinuousMap.Ordered

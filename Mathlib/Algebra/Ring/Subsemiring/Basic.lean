@@ -9,7 +9,6 @@ import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
