@@ -223,7 +223,7 @@ theorem Lfunction_ne_zero_of_one_le_re ⦃s : ℂ⦄ (hχs : χ ≠ 1 ∨ s ≠ 
 -- Interesting special case:
 variable {χ} in
 /-- The L-function of a nontrivial Dirichlet character does not vanish at `s = 1`. -/
-theorem L_function_apply_one_ne_zero (hχ : χ ≠ 1) : LFunction χ 1 ≠ 0 :=
+theorem Lfunction_apply_one_ne_zero (hχ : χ ≠ 1) : LFunction χ 1 ≠ 0 :=
   Lfunction_ne_zero_of_one_le_re χ (.inl hχ) <| one_re ▸ le_rfl
 
 end DirichletCharacter
