@@ -99,9 +99,8 @@ end MulAction
 section RamificationInertia
 
 variable {A B : Type*} [CommRing A] [IsDomain A] [IsIntegrallyClosed A] [CommRing B] [IsDomain B]
-  [IsIntegrallyClosed B] [Algebra A B] [NoZeroSMulDivisors A B] [Module.Finite A B]
-  (p : Ideal A) (P Q : Ideal B) [p.IsMaximal] [hPp : P.IsPrime] [hp : P.LiesOver p]
-  [hQp : Q.IsPrime] [Q.LiesOver p]
+  [IsIntegrallyClosed B] [Algebra A B] [Module.Finite A B] (p : Ideal A) (P Q : Ideal B)
+  [p.IsMaximal] [hPp : P.IsPrime] [hp : P.LiesOver p] [hQp : Q.IsPrime] [Q.LiesOver p]
   (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
   [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
 
@@ -110,6 +109,7 @@ include p in
   lying over `p`, then there exists `σ ∈ Aut (B / A)` such that `σ P = Q`. In other words,
   the Galois group `Gal(L / K)` acts transitively on the set of all prime ideals lying over `p`. -/
 theorem exists_map_eq_of_isGalois [IsGalois K L] : ∃ σ : B ≃ₐ[A] B, map σ P = Q := by
+  haveI : NoZeroSMulDivisors A B := NoZeroSMulDivisors.of_field_isFractionRing A B K L
   haveI := IsGalois.fractionRing_of_isGalois_isFractionRing A B K L
   haveI : P.IsMaximal := IsMaximal.of_liesOver_isMaximal P p
   haveI hQm : Q.IsMaximal := IsMaximal.of_liesOver_isMaximal Q p
@@ -175,7 +175,7 @@ end RamificationInertia
 section fundamental_identity
 
 variable {A B : Type*} [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekindDomain B]
-  [Algebra A B] [NoZeroSMulDivisors A B] [Module.Finite A B]
+  [Algebra A B] [Module.Finite A B]
   {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal] (P : Ideal B) [P.IsPrime] [hp : P.LiesOver p]
   (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
   [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
@@ -187,6 +187,7 @@ include hpb in
   in the case of Galois extension. -/
 theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn [IsGalois K L] :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Module.finrank K L := by
+  haveI : NoZeroSMulDivisors A B := NoZeroSMulDivisors.of_field_isFractionRing A B K L
   rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_Finset, ← Finset.sum_const]
   rw [← sum_ramification_inertia B p K L hpb]
   apply Finset.sum_congr rfl
