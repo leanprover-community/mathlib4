@@ -323,7 +323,6 @@ lemma fac (j : J) : lift s ≫ (coneFunctorEnrichedHom V F₁ F₂).π.app j = s
 end isLimitConeFunctorEnrichedHom
 
 open isLimitConeFunctorEnrichedHom in
-
 /-- The limit of `functorEnrichedHom V F₁ F₂` is `enrichedHom V F₁ F₂`. -/
 noncomputable def isLimitConeFunctorEnrichedHom :
     IsLimit (coneFunctorEnrichedHom V F₁ F₂) where
