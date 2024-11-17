@@ -56,7 +56,7 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 
@@ -90,7 +90,7 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure GlueData extends GlueData (PresheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, IsOpenImmersion (f i j)
@@ -125,9 +125,7 @@ theorem ι_isOpenEmbedding [HasLimits C] (i : D.J) : IsOpenEmbedding (𝖣.ι i)
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) _]
   -- Porting note: added this erewrite
   erw [coe_comp]
-  refine
-    IsOpenEmbedding.comp
-      (TopCat.homeoOfIso (𝖣.gluedIso (PresheafedSpace.forget _)).symm).isOpenEmbedding
+  exact (TopCat.homeoOfIso (𝖣.gluedIso (PresheafedSpace.forget _)).symm).isOpenEmbedding.comp
       (D.toTopGlueData.ι_isOpenEmbedding i)
 
 @[deprecated (since := "2024-10-18")]
@@ -247,7 +245,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe]
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) i, ←
     show _ = (𝖣.ι j).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) j]
-  -- Porting note (#11224): change `rw` to `erw` on `coe_comp`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw` on `coe_comp`
   erw [coe_comp, coe_comp, coe_comp]
   rw [Set.image_comp, Set.preimage_comp]
   erw [Set.preimage_image_eq]
@@ -425,7 +423,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_inv_app'_assoc]
   · simp only [eqToHom_op, eqToHom_trans, eqToHom_map (Functor.op _), ← Functor.map_comp]
     rfl
-  · rw [Set.range_iff_surjective.mpr _]
+  · rw [Set.range_eq_univ.mpr _]
     · simp
     · rw [← TopCat.epi_iff_surjective]
       infer_instance
@@ -449,7 +447,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     rw [congr_app (D.t_id _), id_c_app]
     simp_rw [Category.assoc]
     rw [← Functor.map_comp_assoc]
-    -- Porting note (#11224): change `rw` to `erw`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
     erw [IsOpenImmersion.inv_naturality_assoc]
     erw [IsOpenImmersion.app_invApp_assoc]
     iterate 3 rw [← Functor.map_comp_assoc]
@@ -518,7 +516,7 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
         replace this := reassoc_of% this
         exact this _
       rw [← Set.image_subset_iff, ← Set.image_univ, ← Set.image_comp, Set.image_univ]
-      -- Porting note (#11224): change `rw` to `erw`
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
       erw [← coe_comp]
       rw [this, coe_comp, ← Set.image_univ, Set.image_comp]
       exact Set.image_subset_range _ _
@@ -555,7 +553,7 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData (SheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, SheafedSpace.IsOpenImmersion (f i j)
@@ -628,7 +626,7 @@ such that
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure GlueData extends CategoryTheory.GlueData LocallyRingedSpace where
   f_open : ∀ i j, LocallyRingedSpace.IsOpenImmersion (f i j)

@@ -166,7 +166,6 @@ class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyComplet
 instance ConditionallyCompleteLinearOrder.toLinearOrder [ConditionallyCompleteLinearOrder α] :
     LinearOrder α :=
   { ‹ConditionallyCompleteLinearOrder α› with
-    max := Sup.sup, min := Inf.inf,
     min_def := fun a b ↦ by
       by_cases hab : a = b
       · simp [hab]
@@ -472,6 +471,14 @@ alias csSup_lower_bounds_eq_csInf := csSup_lowerBounds_eq_csInf
 @[deprecated (since := "2024-08-25")]
 alias csInf_upper_bounds_eq_csSup := csInf_upperBounds_eq_csSup
 
+theorem csSup_lowerBounds_range [Nonempty β] {f : β → α} (hf : BddBelow (range f)) :
+    sSup (lowerBounds (range f)) = ⨅ i, f i :=
+  csSup_lowerBounds_eq_csInf hf <| range_nonempty _
+
+theorem csInf_upperBounds_range [Nonempty β] {f : β → α} (hf : BddAbove (range f)) :
+    sInf (upperBounds (range f)) = ⨆ i, f i :=
+  csInf_upperBounds_eq_csSup hf <| range_nonempty _
+
 theorem not_mem_of_lt_csInf {x : α} {s : Set α} (h : x < sInf s) (hs : BddBelow s) : x ∉ s :=
   fun hx => lt_irrefl _ (h.trans_le (csInf_le hs hx))
 
@@ -654,7 +661,7 @@ instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α] {s t : Set α} {a b : α}
+variable [ConditionallyCompleteLinearOrder α] {s : Set α} {a b : α}
 
 /-- When `b < sSup s`, there is an element `a` in `s` with `b < a`, if `s` is nonempty and the order
 is a linear order. -/
@@ -783,7 +790,7 @@ section ConditionallyCompleteLinearOrderBot
 theorem csInf_univ [ConditionallyCompleteLinearOrder α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
   isLeast_univ.csInf_eq
 
-variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {f : ι → α} {a : α}
+variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
 
 @[simp]
 theorem csSup_empty : (sSup ∅ : α) = ⊥ :=
@@ -1008,7 +1015,7 @@ a binary function whose partial evaluations are lower/upper adjoints of Galois c
 section
 
 variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β]
-  [ConditionallyCompleteLattice γ] {f : α → β → γ} {s : Set α} {t : Set β}
+  [ConditionallyCompleteLattice γ] {s : Set α} {t : Set β}
 
 variable {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
 

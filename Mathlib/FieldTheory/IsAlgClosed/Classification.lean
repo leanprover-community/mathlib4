@@ -36,7 +36,7 @@ namespace Algebra.IsAlgebraic
 variable (R : Type u) (L : Type v) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
 variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
 
-theorem cardinal_mk_le_sigma_polynomial :
+theorem cardinalMk_le_sigma_polynomial :
     lift #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
   @mk_le_of_injective (ULift L) (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun ⟨x⟩ =>
@@ -57,12 +57,15 @@ theorem cardinal_mk_le_sigma_polynomial :
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
       simp only [h.1, forall_true_iff]
 
+@[deprecated (since := "2024-11-10")]
+alias cardinal_mk_le_sigma_polynomial := cardinalMk_le_sigma_polynomial
+
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
 of the base ring or `ℵ₀` -/
-theorem cardinal_mk_le_max : lift.{u} #L ≤ lift (max #R ℵ₀) :=
+theorem cardinalMk_le_max : lift.{u} #L ≤ lift (max #R ℵ₀) :=
   calc
     lift.{u} #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
-      cardinal_mk_le_sigma_polynomial R L
+      cardinalMk_le_sigma_polynomial R L
     _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
       rw [← mk_sigma]; rfl
     _ ≤ Cardinal.sum fun _ : R[X] => ℵ₀ :=
@@ -72,9 +75,11 @@ theorem cardinal_mk_le_max : lift.{u} #L ≤ lift (max #R ℵ₀) :=
     _ = lift.{v, u} (max #(R[X]) ℵ₀) := by simp only [lift_aleph0, le_max_iff,
         aleph0_le_lift, le_refl, or_true, max_eq_left, lift_max]
     _ ≤ lift.{v, u} (max (max #R ℵ₀) ℵ₀) :=
-      lift_le.2 (max_le_max Polynomial.cardinal_mk_le_max le_rfl)
+      lift_le.2 (max_le_max Polynomial.cardinalMk_le_max le_rfl)
     _ = lift (max #R ℵ₀) := by simp only [le_max_iff, le_refl, or_true, max_eq_left, lift_max,
       lift_aleph0]
+
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_max := cardinalMk_le_max
 
 end Algebra.IsAlgebraic
 
@@ -133,7 +138,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     Cardinal.lift.{max u w} #K ≤ Cardinal.lift.{max u w}
         (max #(Algebra.adjoin R (Set.range v)) ℵ₀) := by
       letI := isAlgClosure_of_transcendence_basis v hv
-      simpa using Algebra.IsAlgebraic.cardinal_mk_le_max (Algebra.adjoin R (Set.range v)) K
+      simpa using Algebra.IsAlgebraic.cardinalMk_le_max (Algebra.adjoin R (Set.range v)) K
     _ = Cardinal.lift.{v} (max #(MvPolynomial ι R) ℵ₀) := by
       rw [lift_max, ← Cardinal.lift_mk_eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩, lift_aleph0,
         ← lift_aleph0.{max u v w, max u w}, ← lift_max, lift_umax'.{max u w, v}]

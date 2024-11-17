@@ -3,14 +3,15 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
+import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.Data.Finite.Prod
 
 /-!
 # Properties of group actions involving quotient groups
@@ -306,7 +307,7 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
         rw [mem_orbit_iff]
         exact ⟨⟨g₁ * g₂⁻¹, r⟩, by simp [mul_smul]⟩
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
-      (Quotient.surjective_Quotient_mk''.comp (MulAction.surjective_smul _ _)))
+      (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
 
 variable {β}
 

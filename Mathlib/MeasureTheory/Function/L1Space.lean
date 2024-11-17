@@ -355,7 +355,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
     (∫⁻ a : α, ‖c • f a‖₊ ∂μ) ≤ ∫⁻ a : α, ‖c‖₊ * ‖f a‖₊ ∂μ := by
       refine lintegral_mono ?_
       intro i
-      -- After leanprover/lean4#2734, we need to do beta reduction `exact mod_cast`
+      -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction `exact mod_cast`
       beta_reduce
       exact mod_cast (nnnorm_smul_le c (f i))
     _ < ∞ := by
@@ -586,7 +586,7 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
   calc
     (∫⁻ a, ‖f a + g a‖₊ ∂μ) ≤ ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ :=
       lintegral_mono fun a => by
-        -- After leanprover/lean4#2734, we need to do beta reduction before `exact mod_cast`
+        -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `exact mod_cast`
         beta_reduce
         exact mod_cast nnnorm_add_le _ _
     _ = _ := lintegral_nnnorm_add_left hf.aestronglyMeasurable _
@@ -1402,9 +1402,9 @@ lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
   convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
   exact Measure.restrict_univ.symm
 
-lemma Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
-    Integrable f (μ.restrict s) :=
-  ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
+/-- One should usually use `MeasureTheory.Integrable.IntegrableOn` instead. -/
+lemma Integrable.restrict (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) :=
+  hf.mono_measure Measure.restrict_le_self
 
 end restrict
 

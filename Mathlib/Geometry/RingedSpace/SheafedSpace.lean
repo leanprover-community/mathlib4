@@ -18,7 +18,7 @@ presheaves.
 -/
 
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
-  CategoryTheory.Functor
+  CategoryTheory.Functor Topology
 
 universe u v
 

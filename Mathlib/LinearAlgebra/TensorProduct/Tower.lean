@@ -219,6 +219,38 @@ theorem map_smul_left (b : B) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (b �
   simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
     smul_apply, smul_tmul']
 
+variable (A M) in
+/-- Heterobasic version of `LinearMap.lTensor` -/
+def lTensor : (N →ₗ[R] Q) →ₗ[R] M ⊗[R] N →ₗ[A] M ⊗[R] Q where
+  toFun f := map LinearMap.id f
+  map_add' f₁ f₂ := map_add_right _ f₁ f₂
+  map_smul' _ _ := map_smul_right _ _ _
+
+@[simp]
+lemma coe_lTensor (f : N →ₗ[R] Q) :
+    (lTensor A M f : M ⊗[R] N → M ⊗[R] Q) = f.lTensor M := rfl
+
+@[simp]
+lemma restrictScalars_lTensor (f : N →ₗ[R] Q) :
+    LinearMap.restrictScalars R (lTensor A M f) = f.lTensor M := rfl
+
+@[simp] lemma lTensor_tmul (f : N →ₗ[R] Q) (m : M) (n : N) :
+    lTensor A M f (m ⊗ₜ[R] n) = m ⊗ₜ f n :=
+  rfl
+
+@[simp] lemma lTensor_id : lTensor A M (id : N →ₗ[R] N) = .id :=
+  ext fun _ _ => rfl
+
+lemma lTensor_comp (f₂ : Q →ₗ[R] Q') (f₁ : N →ₗ[R] Q) :
+    lTensor A M (f₂.comp f₁) = (lTensor A M f₂).comp (lTensor A M f₁) :=
+  ext fun _ _ => rfl
+
+@[simp]
+lemma lTensor_one : lTensor A M (1 : N →ₗ[R] N) = 1 := map_id
+
+lemma lTensor_mul (f₁ f₂ : N →ₗ[R] N) :
+    lTensor A M (f₁ * f₂) = lTensor A M f₁ * lTensor A M f₂ := lTensor_comp _ _
+
 variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.map_bilinear` -/
@@ -306,8 +338,9 @@ variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module A P]
+variable [AddCommMonoid P'] [Module A P']
 variable [AddCommMonoid Q] [Module R Q]
-variable (R A B M N P Q)
+variable (R A B M N P P' Q)
 
 attribute [local ext high] TensorProduct.ext
 
@@ -340,6 +373,11 @@ theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
     (assoc R A B M P Q).symm (m ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ q :=
   rfl
 
+theorem rTensor_tensor [Module R P'] [IsScalarTower R A P'] (g : P →ₗ[A] P') :
+    rTensor (M ⊗[R] N) g =
+      assoc R A A P' M N ∘ₗ map (rTensor M g) id ∘ₗ (assoc R A A P M N).symm.toLinearMap :=
+  TensorProduct.ext <| LinearMap.ext fun _ ↦ ext fun _ _ ↦ rfl
+
 end assoc
 
 section cancelBaseChange
@@ -347,10 +385,13 @@ variable [Algebra A B] [IsScalarTower A B M]
 
 /-- `B`-linear equivalence between `M ⊗[A] (A ⊗[R] N)` and `M ⊗[R] N`.
 In particular useful with `B = A`. -/
-def cancelBaseChange : M ⊗[A] (A ⊗[R] N) ≃ₗ[B] M ⊗[R] N := by
-  letI g : (M ⊗[A] A) ⊗[R] N ≃ₗ[B] M ⊗[R] N :=
-    AlgebraTensorModule.congr (AlgebraTensorModule.rid A B M) (LinearEquiv.refl R N)
-  exact (AlgebraTensorModule.assoc R A B M A N).symm ≪≫ₗ g
+def cancelBaseChange : M ⊗[A] (A ⊗[R] N) ≃ₗ[B] M ⊗[R] N :=
+  letI g : (M ⊗[A] A) ⊗[R] N ≃ₗ[B] M ⊗[R] N := congr (AlgebraTensorModule.rid A B M) (.refl R N)
+  (assoc R A B M A N).symm ≪≫ₗ g
+
+/-- Base change distributes over tensor product. -/
+def distribBaseChange : A ⊗[R] (M ⊗[R] N) ≃ₗ[A] (A ⊗[R] M) ⊗[A] (A ⊗[R] N) :=
+  (cancelBaseChange _ _ _ _ _ ≪≫ₗ assoc _ _ _ _ _ _).symm
 
 variable {M P N Q}
 

@@ -14,12 +14,7 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 # Products and coproducts in the category of topological spaces
 -/
 
-
-open TopologicalSpace
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits Set TopologicalSpace Topology
 
 universe v u w
 
@@ -123,7 +118,7 @@ theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i 
 theorem induced_of_isLimit {F : J ⥤ TopCat.{max v u}} (C : Cone F) (hC : IsLimit C) :
     C.pt.str = ⨅ j, (F.obj j).str.induced (C.π.app j) := by
   let homeo := homeoOfIso (hC.conePointUniqueUpToIso (limitConeInfiIsLimit F))
-  refine homeo.inducing.induced.trans ?_
+  refine homeo.isInducing.eq_induced.trans ?_
   change induced homeo (⨅ j : J, _) = _
   simp [induced_iInf, induced_compose]
   rfl
@@ -159,7 +154,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by
     intro S m h
-    -- Porting note (#11041): used to be `ext x`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext x`
     refine ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext ?_ ?_)
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x at h
@@ -190,7 +185,7 @@ theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
 theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
     (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x,
     (Limits.prod.snd : X ⨯ Y ⟶ _) x) := by
-  -- Porting note (#11041): `ext` didn't pick this up.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` didn't pick this up.
   apply Prod.ext
   · exact ConcreteCategory.congr_hom (prodIsoProd_hom_fst X Y) x
   · exact ConcreteCategory.congr_hom (prodIsoProd_hom_snd X Y) x
@@ -208,7 +203,7 @@ theorem prod_topology {X Y : TopCat.{u}} :
       induced (Limits.prod.fst : X ⨯ Y ⟶ _) X.str ⊓
         induced (Limits.prod.snd : X ⨯ Y ⟶ _) Y.str := by
   let homeo := homeoOfIso (prodIsoProd X Y)
-  refine homeo.inducing.induced.trans ?_
+  refine homeo.isInducing.eq_induced.trans ?_
   change induced homeo (_ ⊓ _) = _
   simp [induced_compose]
   rfl
@@ -221,7 +216,7 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
   constructor
   · rintro ⟨y, rfl⟩
     simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
-    -- sizable changes in this proof after #13170
+    -- sizable changes in this proof after https://github.com/leanprover-community/mathlib4/pull/13170
     rw [← comp_apply, ← comp_apply]
     simp_rw [Limits.prod.map_fst,
       Limits.prod.map_snd, comp_apply]
@@ -242,19 +237,21 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
       rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
       exact hx₂
 
-theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Inducing f)
-    (hg : Inducing g) : Inducing (Limits.prod.map f g) := by
+theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsInducing f)
+    (hg : IsInducing g) : IsInducing (Limits.prod.map f g) := by
   constructor
   simp_rw [topologicalSpace_coe, prod_topology, induced_inf, induced_compose, ← coe_comp,
     prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
-  erw [← hf.induced, ← hg.induced] -- now `erw` after #13170
-  rfl -- `rfl` was not needed before #13170
+  erw [← hf.eq_induced, ← hg.eq_induced] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+  rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
+
+@[deprecated (since := "2024-10-28")] alias inducing_prod_map := isInducing_prodMap
 
 theorem isEmbedding_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Limits.prod.map f g) :=
-  ⟨inducing_prod_map hf.toInducing hg.toInducing, by
-    haveI := (TopCat.mono_iff_injective _).mpr hf.inj
-    haveI := (TopCat.mono_iff_injective _).mpr hg.inj
+  ⟨isInducing_prodMap hf.isInducing hg.isInducing, by
+    haveI := (TopCat.mono_iff_injective _).mpr hf.injective
+    haveI := (TopCat.mono_iff_injective _).mpr hg.injective
     exact (TopCat.mono_iff_injective _).mp inferInstance⟩
 
 @[deprecated (since := "2024-10-26")]
@@ -284,8 +281,7 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
 
 theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
-      IsOpenEmbedding c.inl ∧ IsOpenEmbedding c.inr ∧
-        IsCompl (Set.range c.inl) (Set.range c.inr) := by
+      IsOpenEmbedding c.inl ∧ IsOpenEmbedding c.inr ∧ IsCompl (range c.inl) (range c.inr) := by
   classical
     constructor
     · rintro ⟨h⟩
@@ -295,9 +291,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
           h.comp_coconePointUniqueUpToIso_inv (binaryCofanIsColimit X Y) ⟨WalkingPair.right⟩]
       dsimp
       refine ⟨(homeoOfIso <| h.coconePointUniqueUpToIso
-        (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp isOpenEmbedding_inl,
+        (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp .inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
-            (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp isOpenEmbedding_inr, ?_⟩
+            (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp .inr, ?_⟩
       erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
@@ -309,8 +305,8 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
       · intro T f g
         refine ContinuousMap.mk ?_ ?_
         · exact fun x =>
-            if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁.inj).symm ⟨x, h⟩)
-            else g ((Equiv.ofInjective _ h₂.inj).symm ⟨x, (this x).resolve_left h⟩)
+            if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁.injective).symm ⟨x, h⟩)
+            else g ((Equiv.ofInjective _ h₂.injective).symm ⟨x, (this x).resolve_left h⟩)
         rw [continuous_iff_continuousAt]
         intro x
         by_cases h : x ∈ Set.range c.inl
@@ -338,7 +334,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             · exact g.continuous_toFun
             · apply Continuous.comp
               · continuity
-              · rw [IsEmbedding.subtypeVal.toInducing.continuous_iff]
+              · rw [IsEmbedding.subtypeVal.isInducing.continuous_iff]
                 exact continuous_subtype_val
           · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]

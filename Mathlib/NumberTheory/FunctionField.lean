@@ -54,7 +54,6 @@ Note that `F` can be a function field over multiple, non-isomorphic, `Fq`.
 abbrev FunctionField [Algebra (RatFunc Fq) F] : Prop :=
   FiniteDimensional (RatFunc Fq) F
 
--- Porting note: Removed `protected`
 /-- `F` is a function field over `Fq` iff it is a finite extension of `Fq(t)`. -/
 theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     [IsFractionRing Fq[X] Fqt] [Algebra (RatFunc Fq) F] [Algebra Fqt F] [Algebra Fq[X] F]
