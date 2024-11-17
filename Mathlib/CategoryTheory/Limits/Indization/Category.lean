@@ -15,8 +15,18 @@ We define the `v`-category of Ind-objects of a category `C`, called `Ind C`, as 
 `Ind.yoneda : C ⥤ Ind C` and `Ind.inclusion C : Ind C ⥤ Cᵒᵖ ⥤ Type v`.
 
 This file will mainly collect results about ind-objects (stated in terms of `IsIndObject`) and
-reinterpret them in terms of `Ind C`. For now, we show that `Ind C` has filtered colimits and that
-`Ind.inclusion C` creates them. Many other limit-colimit properties will follow.
+reinterpret them in terms of `Ind C`.
+
+We show that
+* `Ind C` has filtered colimits,
+* `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates filtered colimits,
+* `C ⥤ Ind C` preserves finite colimits.
+
+Additionally, in the file `Coproducts.lean` we show that
+* if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `a`,
+* if `C` has finite coproducts, then `Ind C` has small coproducts.
+
+More limit-colimit properties will follow.
 
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
