@@ -556,14 +556,16 @@ lemma krullDim_eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β :=
   le_antisymm (iSup_le fun i ↦ le_sSup ⟨i.reverse, rfl⟩) <|
     iSup_le fun i ↦ le_sSup ⟨i.reverse, rfl⟩
 
-
 /--
 The Krull dimension is the supremum of the elements' heights.
 
-See `krullDim_eq_iSup_height` for the more general, but less convenient version without the
-`Nonempty` requirement.
+This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
+`WithBot ℕ∞` is on the outside fo the right-hand side, which is usually more convenient.
+
+If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_height` for the more general
+version, with the coercion under the supremum.
 -/
-lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ⨆ (a : α), height a := by
+lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ↑(⨆ (a : α), height a) := by
   apply le_antisymm
   · apply iSup_le
     intro p
@@ -578,10 +580,14 @@ lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ⨆ (a :
 /--
 The Krull dimension is the supremum of the elements' coheights.
 
-See `krullDim_eq_iSup_coheight` for the more general, but less convenient version without the
-`Nonempty` requirement.
+This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
+`WithBot ℕ∞` is on the outside fo the right-hand side, which is usually more convenient.
+
+If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_coheight` for the more general
+version, with the coercion under the supremum.
 -/
-lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] : krullDim α = ⨆ (a : α), coheight a := by
+lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] :
+    krullDim α = ↑(⨆ (a : α), coheight a) := by
   rw [← krullDim_orderDual]
   exact krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
 
@@ -635,22 +641,10 @@ The Krull dimension is the supremum of the element's coheights.
 If `α` is `Nonempty`, then `krullDim_eq_iSup_coheight_of_nonempty`, with the coercion from
 `ℕ∞` to `WithBot ℕ∞` outside the supremum, can be more convenient.
 -/
-lemma krullDim_eq_iSup_coheight : krullDim α = ⨆ (a : α), (coheight a : WithBot ℕ∞) := by
-  rw [← krullDim_orderDual]
-  exact krullDim_eq_iSup_height (α := αᵒᵈ)
-
-/--
-The Krull dimension is the supremum of the element's height plus coheight.
-
-If `α` is `Nonempty`, then `krullDim_eq_iSup_height_add_coheight_of_nonempty`, with the coercion
-from `ℕ∞` to `WithBot ℕ∞` outside the supremum, can be more convenient.
--/
-lemma krullDim_eq_iSup_height_add_coheight :
-    krullDim α = ⨆ (a : α), ↑(height a + coheight a) := by
+lemma krullDim_eq_iSup_coheight : krullDim α = ⨆ (a : α), ↑(coheight a) := by
   cases isEmpty_or_nonempty α with
   | inl h => rw [krullDim_eq_bot_of_isEmpty, ciSup_of_empty]
-  | inr h => rw [krullDim_eq_iSup_height_add_coheight_of_nonempty,
-    WithBot.coe_iSup (OrderTop.bddAbove _)]
+  | inr h => rw [krullDim_eq_iSup_coheight_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
 
 @[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
 lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := by
