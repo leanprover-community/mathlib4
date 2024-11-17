@@ -48,6 +48,8 @@ lemma BddAbove.mul (hs : BddAbove s) (ht : BddAbove t) : BddAbove (s * t) :=
 lemma BddBelow.mul (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
   (Nonempty.mul hs ht).mono (subset_lowerBounds_mul s t)
 
+@[to_additive (attr := deprecated (since := "2024-11-13"))] alias Set.BddAbove.mul := BddAbove.mul
+
 @[to_additive]
 lemma BddAbove.range_mul (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
     BddAbove (range fun i ↦ f i * g i) :=
