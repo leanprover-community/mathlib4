@@ -825,8 +825,7 @@ theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cyc
   Quotient.inductionOn s fun l => by
     cases' l with a l
     · rfl
-    dsimp only [Chain, Quotient.liftOn_mk, Cycle.map, Quotient.map', Quot.map,
-      Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
+    simp only [mk''_eq_coe, map_coe, map_cons, chain_coe_cons]
     rw [← concat_eq_append, ← List.map_concat, List.chain_map f]
     simp
 
