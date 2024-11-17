@@ -569,7 +569,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
       rw [h_eq, ← norm_embedding_eq, Real.lt_sqrt (norm_nonneg _), ← Complex.re_add_im
         (embedding w₀ _), Complex.norm_eq_abs, Complex.abs_add_mul_I, Real.sq_sqrt (by positivity)]
       refine add_lt_add ?_ ?_
-      · rw [← sq_abs, sq_lt_one_iff (abs_nonneg _)]
+      · rw [← sq_abs, sq_lt_one_iff₀ (abs_nonneg _)]
         exact h_le₀.1
       · rw [sq_lt_sq, NNReal.abs_eq, ← NNReal.sq_sqrt B]
         exact h_le₀.2

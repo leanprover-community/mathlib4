@@ -51,7 +51,7 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
--- Porting note (#10754): manually added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): manually added instance
 instance alternatingGroup.instFintype : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
