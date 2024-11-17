@@ -445,6 +445,35 @@ lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] :
   exact krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
 
 /--
+The Krull dimension is the supremum of the elements' height plus coheight.
+-/
+lemma krullDim_eq_iSup_height_add_coheight_of_nonempty [Nonempty α] :
+    krullDim α = ↑(⨆ (a : α), height a + coheight a) := by
+  apply le_antisymm
+  · rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_le_coe]
+    apply ciSup_mono (by bddDefault) (by simp)
+  · wlog hnottop : krullDim α < ⊤
+    · simp_all
+    rw [krullDim_eq_iSup_length, WithBot.coe_le_coe]
+    apply iSup_le
+    intro a
+    cases hh : height a with
+    | top =>
+      suffices (⊤ : ℕ∞) ≤ krullDim α by simp_all
+      rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_le_coe]
+      apply le_iSup_of_le a (by simpa)
+    | coe n =>
+      cases hch : coheight a with
+      | top =>
+        suffices (⊤ : ℕ∞) ≤ krullDim α by simp_all
+        rw [krullDim_eq_iSup_coheight_of_nonempty, WithBot.coe_le_coe]
+        apply le_iSup_of_le a (by simpa)
+      | coe m =>
+        obtain ⟨p₁, hlast, hlen₁⟩ := exists_series_of_height_eq_coe a hh
+        obtain ⟨p₂, hhead, hlen⟩ := exists_series_of_coheight_eq_coe a hch
+        apply le_iSup_of_le ((p₁.smash p₂) (by simp [*])) (by simp [*])
+
+/--
 The Krull dimension is the supremum of the elements' heights.
 
 If `α` is `Nonempty`, then `krullDim_eq_iSup_height_of_nonempty`, with the coercion from
