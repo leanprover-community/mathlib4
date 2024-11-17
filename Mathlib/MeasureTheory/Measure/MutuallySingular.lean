@@ -128,7 +128,7 @@ theorem add_right (h₁ : μ ⟂ₘ ν₁) (h₂ : μ ⟂ₘ ν₂) : μ ⟂ₘ 
   add_right_iff.2 ⟨h₁, h₂⟩
 
 theorem smul (r : ℝ≥0∞) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
-  h.mono_ac (AbsolutelyContinuous.rfl.smul r) AbsolutelyContinuous.rfl
+  h.mono_ac (AbsolutelyContinuous.rfl.smul_left r) AbsolutelyContinuous.rfl
 
 theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
   h.smul r
