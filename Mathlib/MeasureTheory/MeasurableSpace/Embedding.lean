@@ -506,6 +506,11 @@ def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableS
   __ := Equiv.arrowProdEquivProdArrow α β γ
   measurable_toFun _ h := by
     simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_mk]
+    #adaptation_note
+    /--
+    After https://github.com/leanprover/lean4/pull/6024
+    we need provide the type hints `(a : γ → α × β)`, to avoid unification issues.
+    -/
     exact MeasurableSet.preimage h (Measurable.prod_mk
         (measurable_pi_lambda (fun (a : γ → α × β) c ↦ (a c).1)
           fun a ↦ (measurable_pi_apply a).fst)
