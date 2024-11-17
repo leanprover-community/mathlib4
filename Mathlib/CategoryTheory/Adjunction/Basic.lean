@@ -319,7 +319,7 @@ structure CoreHomEquivUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
 See `Adjunction.mkOfHomEquiv`.
 This structure won't typically be used anywhere else.
 -/
--- Porting note(#5171): `has_nonempty_instance` linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): `has_nonempty_instance` linter not ported yet
 -- @[nolint has_nonempty_instance]
 structure CoreHomEquiv (F : C ⥤ D) (G : D ⥤ C) where
   /-- The equivalence between `Hom (F X) Y` and `Hom X (G Y)` -/
@@ -355,7 +355,7 @@ end CoreHomEquiv
 See `Adjunction.mkOfUnitCounit`.
 This structure won't typically be used anywhere else.
 -/
--- Porting note(#5171): `has_nonempty_instance` linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): `has_nonempty_instance` linter not ported yet
 -- @[nolint has_nonempty_instance]
 structure CoreUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   /-- The unit of an adjunction between `F` and `G` -/
@@ -395,14 +395,15 @@ def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
   unit := adj.unit
   counit := adj.counit
   left_triangle_components X := by
-    rw [← adj.homEquiv_counit, (adj.homEquiv _ _).symm_apply_eq]
+    rw [← adj.homEquiv_counit, (adj.homEquiv _ _).symm_apply_eq, adj.homEquiv_unit]
     simp
   right_triangle_components Y := by
-    rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply]
+    rw [← adj.homEquiv_unit, ← (adj.homEquiv _ _).eq_symm_apply, adj.homEquiv_counit]
     simp
 
 lemma mk'_homEquiv (adj : CoreHomEquivUnitCounit F G) : (mk' adj).homEquiv = adj.homEquiv := by
-  ext; simp
+  ext
+  rw [homEquiv_unit, adj.homEquiv_unit, mk'_unit]
 
 /-- Construct an adjunction between `F` and `G` out of a natural bijection between each
 `F.obj X ⟶ Y` and `X ⟶ G.obj Y`. -/

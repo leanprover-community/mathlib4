@@ -90,9 +90,6 @@ theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=
 instance : WellFoundedLT NatOrdinal :=
   Ordinal.wellFoundedLT
 
-instance : IsWellOrder NatOrdinal (· < ·) :=
-  { }
-
 instance : ConditionallyCompleteLinearOrderBot NatOrdinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
