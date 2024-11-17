@@ -736,6 +736,12 @@ theorem biInter_eq_iInter (s : Set α) (t : ∀ x ∈ s, Set β) :
     ⋂ x ∈ s, t x ‹_› = ⋂ x : s, t x x.2 :=
   iInf_subtype'
 
+@[simp] lemma biUnion_const {s : Set α} (hs : s.Nonempty) (t : Set β) : ⋃ a ∈ s, t = t :=
+  biSup_const hs
+
+@[simp] lemma biInter_const {s : Set α} (hs : s.Nonempty) (t : Set β) : ⋂ a ∈ s, t = t :=
+  biInf_const hs
+
 theorem iUnion_subtype (p : α → Prop) (s : { x // p x } → Set β) :
     ⋃ x : { x // p x }, s x = ⋃ (x) (hx : p x), s ⟨x, hx⟩ :=
   iSup_subtype
@@ -1773,7 +1779,7 @@ end Function
 
 section Disjoint
 
-variable {s t u : Set α} {f : α → β}
+variable {s t : Set α}
 
 namespace Set
 
