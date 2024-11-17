@@ -755,11 +755,11 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   haveI := (nf_repr_split' e₂).1
   cases' a with a0 n a'
   · cases' m with m
-    · by_cases o₂ = 0 <;> simp only [(· ^ ·), Pow.pow, pow, opow, opowAux2, *] <;> decide
+    · by_cases o₂ = 0 <;> simp only [(· ^ ·), Pow.pow, opow, opowAux2, *] <;> decide
     · by_cases m = 0
-      · simp only [(· ^ ·), Pow.pow, pow, opow, opowAux2, *, zero_def]
+      · simp only [(· ^ ·), Pow.pow, opow, opowAux2, *, zero_def]
         decide
-      · simp only [(· ^ ·), Pow.pow, pow, opow, opowAux2, mulNat_eq_mul, ofNat, *]
+      · simp only [(· ^ ·), Pow.pow, opow, opowAux2, mulNat_eq_mul, ofNat, *]
         infer_instance
   · simp only [(· ^ ·), Pow.pow, opow, opowAux2, e₁, split_eq_scale_split' e₂, mulNat_eq_mul]
     have := na.fst
