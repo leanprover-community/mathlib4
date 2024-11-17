@@ -138,9 +138,7 @@ theorem inverse_one_sub_norm : (fun t : R => inverse (1 - t)) =O[𝓝 0] (fun _t
   simp only [IsBigO, IsBigOWith, Metric.eventually_nhds_iff]
   refine ⟨‖(1 : R)‖ + 1, (2 : ℝ)⁻¹, by norm_num, fun t ht ↦ ?_⟩
   rw [dist_zero_right] at ht
-  have ht' : ‖t‖ < 1 := by
-    have : (2 : ℝ)⁻¹ < 1 := by cancel_denoms
-    linarith
+  have ht' : ‖t‖ < 1 := by linarith
   simp only [inverse_one_sub t ht', norm_one, mul_one, Set.mem_setOf_eq]
   change ‖∑' n : ℕ, t ^ n‖ ≤ _
   have := tsum_geometric_le_of_norm_lt_one t ht'
