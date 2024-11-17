@@ -109,6 +109,9 @@ def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
 /-- The unique non-degenerate `n`-simplex in Δ[n]. -/
 def idSimplex (n : ℕ) : Δ[n] _[n] := yonedaEquiv Δ[n] [n] (𝟙 Δ[n])
 
+lemma idSimplex_objEquiv (n : ℕ) :
+    idSimplex n = (objEquiv [n] (op [n])).symm (Hom.mk OrderHom.id) := rfl
+
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
   objMk (OrderHom.const _ k )

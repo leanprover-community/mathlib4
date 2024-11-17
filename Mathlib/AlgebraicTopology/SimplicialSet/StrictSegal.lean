@@ -87,9 +87,10 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
-/-- TODO: Is spine_face or spine_face'' a better api? -/
-lemma spine_face (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
-    (h : j.castSucc < i):
+/-- If we take the path along the spine of a face of a `spineToSimplex`, the
+common vertices will still agree with those of the original path. -/
+lemma spine_face_lt (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
+    (h : j.castSucc < i) :
     (X.spine n (X.δ i (spineToSimplex f))).vertex j = f.vertex j := by
   simp [SimplicialObject.δ]
   simp [← FunctorToTypes.map_comp_apply, ← op_comp]
@@ -97,22 +98,9 @@ lemma spine_face (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
   rw [Fin.succAbove_of_castSucc_lt]
   exact h
 
-lemma spine_face'' (f : Path X (n + 1)) (i j : Fin (n + 2)) (h : j < i) :
-    (X.spine n (X.δ i (spineToSimplex f))).vertex j = f.vertex j := by
-  simp [SimplicialObject.δ]
-  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  simp [Hom.toOrderHom, SimplexCategory.δ, Hom.mk]
-  apply congr_arg
-  have hcast : (j : Fin (n + 1)).castSucc = j := by
-    simp [← Fin.val_eq_val]
-    omega
-  rw [Fin.succAbove_of_castSucc_lt]
-  · exact hcast
-  · rw [hcast]
-    exact h
-
-/- set_option pp.coercions false -/
-lemma spine_face' (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
+/-- If we take the path along the spine of a face of a `spineToSimplex`, the
+common vertices will still agree with those of the original path. -/
+lemma spine_face_ge (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
     (h : i ≤ j.castSucc) :
     (X.spine n (X.δ i (spineToSimplex f))).vertex j = f.vertex j.succ := by
   simp [SimplicialObject.δ]
@@ -122,6 +110,7 @@ lemma spine_face' (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
   rw [Fin.succAbove_of_le_castSucc]
   exact h
 
+/- set_option pp.coercions false -/
 open Opposite in
 instance : Quasicategory X := by
   apply quasicategory_of_filler X
@@ -131,27 +120,25 @@ instance : Quasicategory X := by
   apply spineInjective
   ext k
   · simp only [spineEquiv, Function.comp_apply, Equiv.coe_fn_mk]
-    have hh : k.castSucc < j ∨ j ≤ k.castSucc := by
-      exact Nat.lt_or_ge (k.castSucc) j
-    rcases hh with hcmp | hcmp
-    · rw [spine_face _ _ _ hcmp]
-      simp [mapPath, spineHorn, idSpine]
-      sorry
-    · rw [spine_face' _ _ _ hcmp]
-      simp [mapPath, spineHorn, idSpine]
-      sorry
-    /- simp only [spine_vertex] -/
-    /- simp [mapPath, spineHorn, horn.face, standardSimplex.objEquiv, Equiv.ulift, -/
-    /-   idSpine, standardSimplex.idSimplex, yonedaEquiv, yonedaCompUliftFunctorEquiv] -/
-    /- nth_rewrite 2 [← spineToSimplex_vertex] -/
-    /- simp only [spineEquiv, SimplicialObject.δ] -/
+    have hkj : k.castSucc < j ∨ j ≤ k.castSucc := Nat.lt_or_ge k.castSucc j
+    rcases hkj with hcmp | hcmp
+    · rw [spine_face_lt _ _ _ hcmp]
+      simp only [mapPath, spine_vertex, Fin.coe_eq_castSucc]
+      rw [← types_comp_apply (σ₀.app _) (X.map _)]
+      rw [← σ₀.naturality ([0].const [n + 1] k).op]
+      have hcast : j.succAbove k = k.castSucc :=
+        Fin.succAbove_of_castSucc_lt j k hcmp
+      rw [← hcast]
+      rfl
+    · rw [spine_face_ge _ _ _ hcmp]
+      simp only [mapPath, spine_vertex, Fin.coe_eq_castSucc]
+      rw [← types_comp_apply (σ₀.app _) (X.map _)]
+      rw [← σ₀.naturality ([0].const [n + 1] k).op]
+      have hsucc : j.succAbove k = k.succ := 
+        Fin.succAbove_of_le_castSucc j k hcmp
+      rw[← hsucc]
+      rfl
   · sorry
-
-/- instance : Quasicategory X := by -/
-/-   constructor -/
-/-   intro n i σ₀ h₀ hₙ -/
-/-   exists (yonedaEquiv _ _).symm <| spineToSimplex ∘ mapPath σ₀ <| spineHorn n i h₀ hₙ -/
-/-   ext x h -/
 
 end StrictSegal
 
