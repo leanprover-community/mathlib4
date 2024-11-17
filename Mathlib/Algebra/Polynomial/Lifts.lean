@@ -153,7 +153,7 @@ theorem lifts_and_degree_eq_and_monic [Nontrivial S] {p : S[X]} (hlifts : p ∈ 
     (hp : p.Monic) : ∃ q : R[X], map f q = p ∧ q.degree = p.degree ∧ q.Monic := by
   rw [lifts_iff_coeff_lifts] at hlifts
   let g : ℕ → R := fun k ↦ (hlifts k).choose
-  have hg : ∀ k, f (g k) = p.coeff k := fun k ↦ (hlifts k).choose_spec
+  have hg k : f (g k) = p.coeff k := (hlifts k).choose_spec
   let q : R[X] := X ^ p.natDegree + ∑ k ∈ Finset.range p.natDegree, C (g k) * X ^ k
   have hq : map f q = p := by
     simp_rw [q, Polynomial.map_add, Polynomial.map_sum, Polynomial.map_mul, Polynomial.map_pow,
