@@ -70,13 +70,13 @@ def findLinearCombination (transparency : TransparencyMode) (oracle : Certificat
     trace[linarith] e.toMessageData
     throwError "linarith? failed to find a contradiction"
   trace[linarith] "linarith? has found a contradiction: {certificate.toList}"
-  match certificate.find? 0 with
+  match certificate[0]? with
   | none => throwError "no need to use linear_combination: hypotheses are mutually contradictory"
   | some denom =>
   let enum_inputsAux := inputsAux.enum
   -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
   let zip : List ((Bool × Term) × ℕ) :=
-    enum_inputsAux.filterMap fun ⟨n, e⟩ => (certificate.find? (n + 2)).map (e.1, ·)
+    enum_inputsAux.filterMap fun ⟨n, e⟩ => certificate[n+2]?.map (e.1, ·)
   mkLinearCombinationTerm denom zip.reverse
 
 end Linarith

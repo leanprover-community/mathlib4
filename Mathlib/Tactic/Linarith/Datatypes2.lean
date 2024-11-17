@@ -18,10 +18,10 @@ def Preprocessor.globalTransform (pp : Preprocessor) :
     List Expr → MetaM (List Expr) :=
   fun input ↦ do
     let l ← input.mapM pp.transform
-    pure l.join
+    pure l.flatten
 
 def Preprocessor.globalTransformAugmented (pp : Preprocessor) :
     List (Term × Expr) → MetaM (List (Term × Expr)) :=
   fun input ↦ do
     let l ← input.mapM pp.transformAugmented
-    pure l.join
+    pure l.flatten

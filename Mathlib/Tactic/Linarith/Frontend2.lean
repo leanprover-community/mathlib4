@@ -89,4 +89,4 @@ elab_rules : tactic
     let arithTerm : Syntax.Term ← Linarith.linarith? g
     let a : Syntax.Tactic := Unhygienic.run `(tactic | linear_combination ($arithTerm))
     TryThis.addSuggestion tk a
-    Mathlib.Tactic.LinearCombination.elabLinearCombination none none arithTerm
+    Mathlib.Tactic.LinearCombination.elabLinearCombination missing none none arithTerm
