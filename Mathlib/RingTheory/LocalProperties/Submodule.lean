@@ -142,13 +142,11 @@ variable
 /-- A variant of `eq_of_localization_span` that accepts `IsLocalizedModule`.-/
 theorem eq_of_localization_span' (x y : M) (h : ∀ r : s, f r x = f r y) : x = y := by
   suffices equalizer R x y = ⊤ by simpa [equalizer] using (eq_top_iff_one _).mp this
-  refine Not.imp_symm (exists_le_maximal _) fun ⟨P, hP, le⟩ ↦ ?_
-  have := hP.1.1
-  rw [Ne, eq_top_iff, ← span_eq, span_le] at this
-  have ⟨r, hrs, hre⟩ := Set.not_subset.mp this
+  by_contra! ne
+  have ⟨r, hrs, disj⟩ := exists_disjoint_powers_of_span_eq_top s span_eq _ ne
   let r : s := ⟨r, hrs⟩
   have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalizedModule.eq_iff_exists (.powers r.1) _).mp (h r)
-  exact hre (hP.isPrime.mem_of_pow_mem _ <| le eq)
+  exact Set.disjoint_left.mp disj eq ⟨n, rfl⟩
 
 /-- A variant of `eq_zero_of_localization_span` that accepts `IsLocalizedModule`.-/
 theorem eq_zero_of_localization_span' (x : M) (h : ∀ r : s, f r x = 0) : x = 0 :=
@@ -159,17 +157,14 @@ theorem Submodule.mem_of_localization_span' {m : M} {N : Submodule R M}
     (h : ∀ r : s, f r m ∈ N.localized₀ (.powers r.1) (f r)) : m ∈ N := by
   let I : Ideal R := N.comap (LinearMap.toSpanSingleton R M m)
   suffices I = ⊤ by simpa [I] using I.eq_top_iff_one.mp this
-  refine Not.imp_symm I.exists_le_maximal fun ⟨P, hP, le⟩ ↦ ?_
-  have := hP.1.1
-  rw [Ne, eq_top_iff, ← span_eq, Ideal.span_le] at this
-  have ⟨r, hrs, hre⟩ := Set.not_subset.mp this
+  by_contra! ne
+  have ⟨r, hrs, disj⟩ := exists_disjoint_powers_of_span_eq_top s span_eq _ ne
   let r : s := ⟨r, hrs⟩
   obtain ⟨a, ha, t, e⟩ := h r
   rw [← IsLocalizedModule.mk'_one (.powers r.1), IsLocalizedModule.mk'_eq_mk'_iff] at e
   have ⟨u, hu⟩ := e
-  simp_rw [smul_smul, Submonoid.smul_def] at hu
-  rw [← (u * t).2.choose_spec] at hu
-  exact hre (hP.isPrime.mem_of_pow_mem _ <| le <| hu ▸ smul_mem _ _ ha)
+  simp_rw [smul_smul] at hu
+  exact Set.disjoint_right.mp disj (u * t).2 (by apply hu ▸ smul_mem _ _ ha)
 
 /-- A variant of `le_of_localization_span` that accepts `IsLocalizedModule`.-/
 theorem Submodule.le_of_localization₀_span' {N P : Submodule R M}

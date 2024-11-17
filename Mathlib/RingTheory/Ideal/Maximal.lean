@@ -162,6 +162,15 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
 instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMaximal], I.IsPrime :=
   @IsMaximal.isPrime _ _ _
 
+theorem exists_disjoint_powers_of_span_eq_top (s : Set α) (hs : span s = ⊤) (I : Ideal α)
+    (hI : I ≠ ⊤) : ∃ r ∈ s, Disjoint (I : Set α) (Submonoid.powers r) := by
+  have ⟨M, hM, le⟩ := exists_le_maximal I hI
+  have := hM.1.1
+  rw [Ne, eq_top_iff, ← hs, span_le, Set.not_subset] at this
+  have ⟨a, has, haM⟩ := this
+  exact ⟨a, has, Set.disjoint_left.mpr fun x hx ⟨n, hn⟩ ↦
+    haM (hM.isPrime.mem_of_pow_mem _ (le <| hn ▸ hx))⟩
+
 theorem span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
     span ({x} : Set α) < span ({y} : Set α) ↔ DvdNotUnit y x := by
   rw [lt_iff_le_not_le, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
