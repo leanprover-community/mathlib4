@@ -17,7 +17,7 @@ The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Ba
 and elsewhere.
 -/
 
-open Lean hiding Rat mkRat
+open Lean
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `norm_num` extensions. -/
