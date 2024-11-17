@@ -149,7 +149,7 @@ theorem norm_normedMk_eq_one (h : ∃ x : M, ‖x‖ ≠ 0) :
     exact one_le_of_le_mul_right₀ this (hle x)
 
 /-- The the projection is `0` if all the elements have norm `0`. -/
-theorem norm_trivial_separationQuotient_mk (h : ∀ x : M, ‖x‖ = 0) :
+theorem normedMk_eq_zero (h : ∀ x : M, ‖x‖ = 0) :
     normedMk (M := M) = 0 := by
   ext x
   simp only [normedMk_apply, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mkAddMonoidHom_apply,
