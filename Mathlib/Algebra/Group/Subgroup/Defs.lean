@@ -140,8 +140,6 @@ end InvMemClass
 
 namespace SubgroupClass
 
-@[to_additive (attr := deprecated (since := "2024-01-15"))] alias coe_inv := InvMemClass.coe_inv
-
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
 -- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
@@ -501,7 +499,7 @@ theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
 theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10685): dsimp can prove this
+@[to_additive (attr := norm_cast)] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 

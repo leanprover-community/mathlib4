@@ -594,14 +594,22 @@ theorem isWF_min_singleton (a) {hs : IsWF ({a} : Set α)} {hn : ({a} : Set α).N
     hs.min hn = a :=
   eq_of_mem_singleton (IsWF.min_mem hs hn)
 
+theorem IsWF.min_eq_of_lt (hs : s.IsWF) (ha : a ∈ s) (hlt : ∀ b ∈ s, b ≠ a → a < b) :
+    hs.min (nonempty_of_mem ha) = a := by
+  by_contra h
+  exact (hs.not_lt_min (nonempty_of_mem ha) ha) (hlt (hs.min (nonempty_of_mem ha))
+    (hs.min_mem (nonempty_of_mem ha)) h)
+
 end Preorder
 
 section PartialOrder
 
-theorem IsWF.min_eq_of_le [PartialOrder α] {s : Set α} {a : α} (hs : s.IsWF)
-    (ha : a ∈ s) (hle : ∀ b ∈ s, a ≤ b) : hs.min (nonempty_of_mem ha) = a :=
-  Eq.symm <| eq_of_le_of_not_lt (hle (hs.min (nonempty_of_mem ha))
-    (min_mem hs (nonempty_of_mem ha))) (not_lt_min hs (nonempty_of_mem ha) ha)
+variable [PartialOrder α] {s : Set α} {a : α}
+
+theorem IsWF.min_eq_of_le (hs : s.IsWF) (ha : a ∈ s) (hle : ∀ b ∈ s, a ≤ b) :
+    hs.min (nonempty_of_mem ha) = a :=
+  (eq_of_le_of_not_lt (hle (hs.min (nonempty_of_mem ha))
+    (hs.min_mem (nonempty_of_mem ha))) (hs.not_lt_min (nonempty_of_mem ha) ha)).symm
 
 end PartialOrder
 
