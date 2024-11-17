@@ -146,7 +146,7 @@ instance : IsOpenImmersion (Proj.awayι 𝒜 f f_deg hm) :=
 
 lemma opensRange_awayι :
     (Proj.awayι 𝒜 f f_deg hm).opensRange = Proj.basicOpen 𝒜 f :=
-  (opensRange_comp_of_isIso _ _).trans (basicOpen 𝒜 f).opensRange_ι
+  (Scheme.Hom.opensRange_comp_of_isIso _ _).trans (basicOpen 𝒜 f).opensRange_ι
 
 include f_deg hm in
 lemma isAffineOpen_basicOpen : IsAffineOpen (basicOpen 𝒜 f) := by
