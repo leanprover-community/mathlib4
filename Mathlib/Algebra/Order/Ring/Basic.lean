@@ -35,7 +35,7 @@ end MonoidHom
 
 section OrderedSemiring
 
-variable [OrderedSemiring R] {a b x y : R} {n m : ℕ}
+variable [OrderedSemiring R] {a b x y : R} {n : ℕ}
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_add_one_of_ne_zero hn with ⟨k, rfl⟩
