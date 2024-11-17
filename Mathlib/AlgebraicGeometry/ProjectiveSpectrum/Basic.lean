@@ -31,22 +31,6 @@ namespace AlgebraicGeometry.Proj
 
 open HomogeneousLocalization CategoryTheory
 
-section utils
-
-lemma opensRange_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [IsOpenImmersion f] [IsOpenImmersion g] : (f ≫ g).opensRange = g ''ᵁ f.opensRange :=
-  TopologicalSpace.Opens.ext (Set.range_comp g.base f.base)
-
-lemma opensRange_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
-    f.opensRange = ⊤ :=
-  TopologicalSpace.Opens.ext (Set.range_eq_univ.mpr f.homeomorph.surjective)
-
-lemma opensRange_comp_of_isIso {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [IsIso f] [IsOpenImmersion g] : (f ≫ g).opensRange = g.opensRange := by
-  rw [opensRange_comp, opensRange_of_isIso, Scheme.Hom.image_top_eq_opensRange]
-
-end utils
-
 variable {R A : Type*}
 variable [CommRing R] [CommRing A] [Algebra R A]
 variable (𝒜 : ℕ → Submodule R A)
