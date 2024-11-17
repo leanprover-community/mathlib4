@@ -98,14 +98,14 @@ variable {R : Type*} (M N : Type*) [CommRing R] (S : Submonoid R) [AddCommGroup 
   (N P Q : Type*) [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
   [Module R N] [Module R P] [Module R Q]
 
-lemma TensorProduct.lift_flip (f : M →ₗ[R] N →ₗ[R] P) :
+/-lemma TensorProduct.lift_flip (f : M →ₗ[R] N →ₗ[R] P) :
     lift f.flip = lift f ∘ₗ TensorProduct.comm R N M := by
   ext; rfl
 
 variable (R) in
 lemma Module.flat_iff_flip : Module.Flat R M ↔ ∀ ⦃I : Ideal R⦄, I.FG →
     Function.Injective (TensorProduct.lift (LinearMap.lsmul R M ∘ₗ I.subtype).flip) := by
-  simp [flat_iff, TensorProduct.lift_flip]
+  simp [flat_iff, TensorProduct.lift_flip] -/
 
 variable {M N P Q} in
 lemma IsLocalizedModule.linearMap_ext (f : M →ₗ[R] N) [IsLocalizedModule S f]
@@ -117,11 +117,11 @@ lemma IsLocalizedModule.linearMap_ext (f : M →ₗ[R] N) [IsLocalizedModule S f
 
 private lemma aux (I : Ideal R) (s : Submonoid R) :
     have hM := isBaseChange s (Localization s) (mkLinearMap s M)
-    have hMI := isBaseChange s (Localization s) (mkLinearMap s (M ⊗[R] I))
-    let e := (TensorProduct.assoc _ _ _ _ ≪≫ₗ hMI.equiv.restrictScalars R).symm ≪≫ₗ
-      (hM.equiv.restrictScalars R).rTensor I
-    LocalizedModule.map s (TensorProduct.lift (lsmul R M ∘ₗ I.subtype).flip) =
-      TensorProduct.lift (lsmul R (LocalizedModule s M) ∘ₗ I.subtype).flip ∘ₗ e.toLinearMap := by
+    have hIM := isBaseChange s (Localization s) (mkLinearMap s (I ⊗[R] M))
+    let e := (hIM.equiv.restrictScalars R).symm ≪≫ₗ
+      leftComm _ _ _ _ ≪≫ₗ (hM.equiv.restrictScalars R).lTensor I
+    LocalizedModule.map s (TensorProduct.lift <| lsmul R M ∘ₗ I.subtype) =
+      TensorProduct.lift (lsmul R (LocalizedModule s M) ∘ₗ I.subtype) ∘ₗ e.toLinearMap := by
   refine linearMap_ext s (mkLinearMap s _) (mkLinearMap s _) ?_
   ext m i
   show LocalizedModule.map s _ _ = _
@@ -132,9 +132,9 @@ private lemma aux (I : Ideal R) (s : Submonoid R) :
 theorem flat_of_localization_maximal
     (h : ∀ (J : Ideal R) (_ : J.IsMaximal), Module.Flat R (LocalizedModule J.primeCompl M)) :
     Module.Flat R M :=
-  (Module.flat_iff_flip _ _).mpr fun I fg ↦ injective_of_localization _ fun J hJ ↦ by
+  (Module.flat_iff _ _).mpr fun I fg ↦ injective_of_localization _ fun J hJ ↦ by
     rw [← LinearMap.coe_restrictScalars R, aux]
-    simpa using (Module.flat_iff_flip _ _).mp (h J hJ) fg
+    simpa using (Module.flat_iff _ _).mp (h J hJ) fg
 
 variable (s : Finset R) (spn : span (s : Set R) = ⊤)
 include spn
@@ -142,9 +142,9 @@ include spn
 theorem Flat_of_localization_finitespan
     (h : ∀ r : s, Module.Flat R (LocalizedModule (Submonoid.powers r.1) M)) :
     Module.Flat R M :=
-  (Module.flat_iff_flip _ _).mpr fun I fg ↦ injective_of_localization_finitespan s spn _ fun r ↦ by
+  (Module.flat_iff _ _).mpr fun I fg ↦ injective_of_localization_finitespan s spn _ fun r ↦ by
     rw [← LinearMap.coe_restrictScalars R, aux]
-    simpa using (Module.flat_iff_flip _ _).mp (h r) fg
+    simpa using (Module.flat_iff _ _).mp (h r) fg
 
 end flatlocal
 
