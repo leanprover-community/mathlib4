@@ -140,19 +140,24 @@ def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
   mkAppM `neg_neg_of_pos #[zero_lt_one]
 
 /--
+`addNegEqProof l` inspects a proof and returns a list containing it, together with, if it is of the
+form `t = 0`, a proof of `-t = 0`.
+-/
+def addNegEqProof (h : Expr) : MetaM (List (Bool × Expr)) := do
+  let (iq, t) ← parseCompAndExpr (← inferType h)
+  match iq with
+  | Ineq.eq => do
+    let nep := mkAppN (← mkAppM `Iff.mpr #[← mkAppOptM ``neg_eq_zero #[none, none, t]]) #[h]
+    return [(true, h), (false, nep)]
+  | _ => return [(true, h)]
+
+/--
 `addNegEqProofs l` inspects the list of proofs `l` for proofs of the form `t = 0`. For each such
 proof, it adds a proof of `-t = 0` to the list.
 -/
 def addNegEqProofs : List Expr → MetaM (List Expr)
   | [] => return []
-  | (h::tl) => do
-    let (iq, t) ← parseCompAndExpr (← inferType h)
-    match iq with
-    | Ineq.eq => do
-      let nep := mkAppN (← mkAppM `Iff.mpr #[← mkAppOptM ``neg_eq_zero #[none, none, t]]) #[h]
-      let tl ← addNegEqProofs tl
-      return h::nep::tl
-    | _ => return h :: (← addNegEqProofs tl)
+  | (h::tl) => return (← addNegEqProof h).map Prod.snd ++ (← addNegEqProofs tl)
 
 /--
 `proveEqZeroUsing tac e` tries to use `tac` to construct a proof of `e = 0`.
@@ -200,7 +205,8 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       let inputs := (← mkNegOneLtZeroProof (← typeOfIneqProof h))::l'.reverse
       trace[linarith.detail] "... finished `mkNegOneLtZeroProof`."
       trace[linarith.detail] (← inputs.mapM inferType)
-      let (comps, max_var) ← linearFormsAndMaxVar transparency inputs
+      let inputtps ← (inputs.mapM inferType)
+      let (comps, max_var) ← linearFormsAndMaxVar transparency inputtps
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
       -- perform the elimination and fail if no contradiction is found.

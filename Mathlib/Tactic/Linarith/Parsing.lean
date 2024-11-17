@@ -231,14 +231,13 @@ def toCompFold (red : TransparencyMode) : ExprMap → List Expr → Map Monom �
 
 /--
 `linearFormsAndMaxVar red pfs` is the main interface for computing the linear forms of a list
-of expressions. Given a list `pfs` of proofs of comparisons, it produces a list `c` of `Comp`s of
-the same length, such that `c[i]` represents the linear form of the type of `pfs[i]`.
+of expressions. Given a list `pftps` of types of comparisons, it produces a list `c` of `Comp`s of
+the same length, such that `c[i]` represents the linear form of the `pftps[i]`.
 
 It also returns the largest variable index that appears in comparisons in `c`.
 -/
-def linearFormsAndMaxVar (red : TransparencyMode) (pfs : List Expr) :
+def linearFormsAndMaxVar (red : TransparencyMode) (pftps : List Expr) :
     MetaM (List Comp × ℕ) := do
-  let pftps ← (pfs.mapM inferType)
   let (l, _, map) ← toCompFold red [] pftps RBMap.empty
   trace[linarith.detail] "monomial map: {map.toList.map fun ⟨k,v⟩ => (k.toList, v)}"
   return (l, map.size - 1)
