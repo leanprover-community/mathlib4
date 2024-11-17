@@ -21,10 +21,8 @@ open Set
 @[simp]
 theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set γ} :
     upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := Subset.antisymm
-  (fun _ hb => by
-    rw [mem_iInter]
-    intro i
-    exact upperBounds_mono_set (subset_iUnion_of_subset i (by rfl)) hb)
+  (fun _ hb => mem_iInter.mpr
+    (fun i => upperBounds_mono_set (subset_iUnion_of_subset i (by rfl)) hb))
   (fun _ _ _ _ => by aesop)
 
 theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀ (i : ι), IsLUB (s i) (u i))
