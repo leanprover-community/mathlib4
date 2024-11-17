@@ -31,7 +31,7 @@ More limit-colimit properties will follow.
 Note that:
 * the functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` does not preserve any kind of colimit in general except for
   filtered colimits and
-* the functor `C ⥤ Ind C` preserves finite limits, but not infinite limits in general.
+* the functor `C ⥤ Ind C` preserves finite colimits, but not infinite colimits in general.
 
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
