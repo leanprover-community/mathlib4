@@ -542,6 +542,9 @@ def mapRingHom (f : R →+* S) : R[X] →+* S[X] where
 theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
   rfl
 
+lemma mapRingHom_comp_C (f : R →+* S) :
+    (mapRingHom f).comp C = C.comp f := by ext; simp
+
 -- This is protected to not clash with the global `map_natCast`.
 @[simp]
 protected theorem map_natCast (n : ℕ) : (n : R[X]).map f = n :=
