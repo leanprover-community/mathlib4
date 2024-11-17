@@ -110,7 +110,7 @@ lemma image_top_eq_opensRange : f ~~ᵁ ⊤ = f.opensRange := by
   simp
 
 lemma opensRange_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [IsOpenImmersion f] [IsOpenImmersion g] : (f ≫ g).opensRange = g ''ᵁ f.opensRange :=
+    [IsOpenImmersion f] [IsOpenImmersion g] : (f ≫ g).opensRange = g ~~ᵁ f.opensRange :=
   TopologicalSpace.Opens.ext (Set.range_comp g.base f.base)
 
 lemma opensRange_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :

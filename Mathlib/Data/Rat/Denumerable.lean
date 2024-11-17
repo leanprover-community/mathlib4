@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Rat.Encodable
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Logic.Denumerable
