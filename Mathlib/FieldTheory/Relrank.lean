@@ -35,6 +35,12 @@ variable {E : Type v} [Field E] {L : Type w} [Field L]
 
 variable (A B C : Subfield E)
 
+#adaptation_note
+/--
+This `synthInstance.maxHeartbeats` (and below) was required after nightly-2024-11-14;
+it's not exactly clear why, but we were very close to the limit previously,
+so probably we should not particularly blame changes in Lean, and instead optimize in Mathlib.
+-/
 set_option synthInstance.maxHeartbeats 400000 in
 /-- `Subfield.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.

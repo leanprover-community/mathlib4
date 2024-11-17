@@ -764,6 +764,11 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
     [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
   let f : G ≃ₜ H := .mk e
+  #adaptation_note
+  /--
+  After https://github.com/leanprover/lean4/pull/6024
+  we needed to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
+  -/
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
