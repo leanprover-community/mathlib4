@@ -314,7 +314,8 @@ variable [TopologicalSpace E]
 theorem comap_gauge_nhds_zero_le (ha : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
     comap (gauge s) (𝓝 0) ≤ 𝓝 0 := fun u hu ↦ by
   rcases (hb hu).exists_pos with ⟨r, hr₀, hr⟩
-  filter_upwards [preimage_mem_comap (eventually_lt_nhds (inv_pos.2 hr₀))] with x (hx : gauge s x < r⁻¹)
+  filter_upwards [preimage_mem_comap (eventually_lt_nhds (inv_pos.2 hr₀))]
+    with x (hx : gauge s x < r⁻¹)
   rcases exists_lt_of_gauge_lt ha hx with ⟨c, hc₀, hcr, y, hy, rfl⟩
   have hrc := (lt_inv_comm₀ hr₀ hc₀).2 hcr
   rcases hr c⁻¹ (hrc.le.trans (le_abs_self _)) hy with ⟨z, hz, rfl⟩

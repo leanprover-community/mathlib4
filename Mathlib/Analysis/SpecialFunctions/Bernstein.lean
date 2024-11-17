@@ -218,9 +218,10 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
   simp only [Metric.nhds_basis_ball.tendsto_right_iff, Metric.mem_ball, dist_eq_norm]
   intro ε h
   let δ := δ f ε h
-  have nhds_zero := tendsto_const_div_atTop_nhds_zero_nat (2 * ‖f‖ * δ ^ (-2 : ℤ))
-  filter_upwards [nhds_zero.eventually (eventually_lt_nhds (half_pos h)), eventually_gt_atTop 0] with n nh
-    npos'
+  have nhds_zero : Tendsto (fun n : ℕ ↦ 2 * ‖f‖ * δ ^ (-2 : ℤ) / n) atTop (𝓝 0) :=
+    tendsto_const_div_atTop_nhds_zero_nat _
+  filter_upwards [nhds_zero.eventually (eventually_lt_nhds (half_pos h)), eventually_gt_atTop 0]
+    with n nh npos'
   have npos : 0 < (n : ℝ) := by positivity
   -- As `[0,1]` is compact, it suffices to check the inequality pointwise.
   rw [ContinuousMap.norm_lt_iff _ h]

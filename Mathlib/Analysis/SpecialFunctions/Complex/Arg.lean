@@ -515,7 +515,7 @@ end slitPlane
 section Continuity
 
 theorem arg_eq_nhds_of_re_pos (hx : 0 < x.re) : arg =ᶠ[𝓝 x] fun x => Real.arcsin (x.im / abs x) :=
-  ((continuous_re.tendsto _).eventually (eventually_gt_nhds hx)).mono fun _ hy => arg_of_re_nonneg hy.le
+  (eventually_gt_of_tendsto_gt hx (continuous_re.tendsto _)).mono fun _ hy ↦ arg_of_re_nonneg hy.le
 
 theorem arg_eq_nhds_of_re_neg_of_im_pos (hx_re : x.re < 0) (hx_im : 0 < x.im) :
     arg =ᶠ[𝓝 x] fun x => Real.arcsin ((-x).im / abs x) + π := by
