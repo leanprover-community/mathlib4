@@ -80,12 +80,12 @@ section step1
 
 variable (i : ∀ s, I s)
 
-noncomputable def collection : α → Ind C := fun s => Ind.yoneda.obj ((F s).obj (i s))
+-- noncomputable def collection : α → Ind C := fun s => Ind.yoneda.obj ((F s).obj (i s))
 
--- Could be streamlined using a `Cofan.map` definition
-noncomputable def cofan : Cofan (collection F i) :=
-  Cofan.mk (Ind.yoneda.obj (∐ fun s => (F s).obj (i s)))
-    (fun s => Ind.yoneda.map (Sigma.ι (fun s => (F s).obj (i s)) s))
+-- -- Could be streamlined using a `Cofan.map` definition
+-- noncomputable def cofan : Cofan (collection F i) :=
+--   Cofan.mk (Ind.yoneda.obj (∐ fun s => (F s).obj (i s)))
+--     (fun s => Ind.yoneda.map (Sigma.ι (fun s => (F s).obj (i s)) s))
 
 noncomputable def collection00 : α → C := fun s => (F s).obj (i s)
 
@@ -96,27 +96,12 @@ noncomputable def cofan00 : Cofan (collection00 F i) :=
 noncomputable def stepM (X : C) : IsLimit (Fan.map (yoneda.obj X) _ ((cofan00 F i).op)) :=
   Cofan.isColimitYonedaEquiv _ _ (coproductIsCoproduct _) X
 
--- noncomputable def x {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
---     J ⥤
-
--- noncomputable def step03 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) (j : J)
---     IsLimit (Fan.map )
-
-
--- noncomputable def step03 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
---     IsLimit (Fan.map (colimit (G ⋙ Ind.yoneda ⋙ yoneda)) _ (cofan F i).op) := sorry
-
-noncomputable def help {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
-    Ind.yoneda.op ⋙ (G ⋙ Ind.yoneda ⋙ yoneda).flip ≅
-      Ind.yoneda.op ⋙ coyoneda ⋙
-      (whiskeringLeft _ _ _).obj Ind.yoneda ⋙ (whiskeringLeft _ _ _).obj G :=
-  Iso.refl _
-
 noncomputable def step0000 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) (j : J) :
     IsLimit
       (Fan.map (Ind.yoneda.op ⋙
        (G ⋙ Ind.yoneda ⋙ yoneda).flip ⋙ (evaluation _ _).obj j) _ (cofan00 F i).op) := by
   refine Fan.isLimitMapCongr _ _ _ (Iso.symm ?_) _ (stepM F i (G.obj j))
+
   calc
     Ind.yoneda.op ⋙ (G ⋙ Ind.yoneda ⋙ yoneda).flip ⋙ (evaluation J (Type v)).obj j ≅
       (Ind.yoneda.op ⋙ coyoneda ⋙
@@ -133,11 +118,11 @@ noncomputable def step0000 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J 
 
 noncomputable def step000 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) (j : J) :
     IsLimit
-      (Fan.map ((G ⋙ Ind.yoneda ⋙ yoneda).flip ⋙ (evaluation _ _).obj j) _ (cofan F i).op) :=
+      (Fan.map (Ind.yoneda.op ⋙ (G ⋙ Ind.yoneda ⋙ yoneda).flip ⋙ (evaluation _ _).obj j) _ (cofan00 F i).op) :=
   step0000 F i G j
 
 noncomputable def step00 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
-    IsLimit (Fan.map (G ⋙ Ind.yoneda ⋙ yoneda).flip _ (cofan F i).op) := by
+    IsLimit (Fan.map (Ind.yoneda.op ⋙ (G ⋙ Ind.yoneda ⋙ yoneda).flip) _ (cofan00 F i).op) := by
   apply evaluationJointlyReflectsLimits
   intro j
   refine (Fan.isLimitMapConeEquiv _ _ _).symm ?_
@@ -147,17 +132,17 @@ noncomputable def step00 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J �
 
 
 noncomputable def step01 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
-    IsLimit (Fan.map colim _ (Fan.map ((G ⋙ Ind.yoneda ⋙ yoneda).flip) _ (cofan F i).op)) :=
+    IsLimit (Fan.map colim _ (Fan.map (Ind.yoneda.op ⋙ (G ⋙ Ind.yoneda ⋙ yoneda).flip) _ (cofan00 F i).op)) :=
   isLimitFanMapOfIsLimit _ _ _ (step00 F i G)
 
 noncomputable def step02 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
-    IsLimit (Fan.map ((G ⋙ Ind.yoneda ⋙ yoneda).flip ⋙ colim) _ (cofan F i).op) :=
+    IsLimit (Fan.map (Ind.yoneda.op ⋙ (G ⋙ Ind.yoneda ⋙ yoneda).flip ⋙ colim) _ (cofan00 F i).op) :=
   step01 F i G
 
 noncomputable def step03 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
-    IsLimit (Fan.map (colimit (G ⋙ Ind.yoneda ⋙ yoneda)) _ (cofan F i).op) := by
+    IsLimit (Fan.map (Ind.yoneda.op ⋙ colimit (G ⋙ Ind.yoneda ⋙ yoneda)) _ (cofan00 F i).op) := by
   refine Fan.isLimitMapCongr _ _ _ ?_ _ (step02 F i G)
-  exact (colimitIsoFlipCompColim _).symm
+  exact isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
 
 noncomputable def step04 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
     IsLimit (Fan.map (Ind.yoneda.op ⋙ colimit (G ⋙ Ind.yoneda ⋙ yoneda)) _ (cofan00 F i).op) := by
@@ -171,47 +156,19 @@ noncomputable def step044 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J �
   exact (Ind.yonedaYonedaColimit (G ⋙ Ind.yoneda)).symm
 
 noncomputable def step045 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
-    IsLimit (Fan.map (yoneda.obj (colimit (G ⋙ Ind.yoneda))) _ (cofan F i).op) :=
+    IsLimit (Fan.map (Ind.yoneda.op ⋙ yoneda.obj (colimit (G ⋙ Ind.yoneda))) _ (cofan00 F i).op) :=
   step044 F i G
 
--- noncomputable def step05 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
---     IsLimit (Fan.map (yoneda.obj (colimit (G ⋙ Ind.yoneda))) _ (cofan F i).op) := by
-
 noncomputable def step05 {J : Type v} [SmallCategory J] [IsFiltered J] (G : J ⥤ C) :
-    IsLimit (Fan.map (yoneda.obj (colimit (G ⋙ Ind.yoneda))) _ (cofan F i).op) := by
+    IsLimit (Fan.map (Ind.yoneda.op ⋙ yoneda.obj (colimit (G ⋙ Ind.yoneda))) _ (cofan00 F i).op) := by
   exact step045 F i G
-  -- refine IsLimit.isoOfNatIso ?_ (step045 F i G)
-  -- refine Fan.isLimitCongr _ _ ?_ (fun s => ?_) ?_ (step045 F i G)
-  -- ·--dsimp [cofan, cofan0]
-  --   refine Equiv.toIso ?_
-  --   refine Equiv.trans ?_ Equiv.ulift.symm
-  --   let r : (Ind.inclusion C).FullyFaithful := .ofFullyFaithful _
-  --   refine Equiv.trans ?_ r.homEquiv.symm
-  --   refine Iso.homCongr (Ind.yonedaCompInclusion.symm.app _) ?_
-  --   refine (HasColimit.isoOfNatIso (isoWhiskerLeft G (Ind.yonedaCompInclusion.symm))) ≪≫ ?_
-  --   refine (HasColimit.isoOfNatIso (Functor.associator _ _ _).symm) ≪≫ ?_
-  --   exact (preservesColimitIso _ _).symm
-  -- · dsimp [collection, collection0]
-  --   refine Equiv.toIso ?_
-  --   refine Equiv.trans ?_ Equiv.ulift.symm
-  --   let r : (Ind.inclusion C).FullyFaithful := .ofFullyFaithful _
-  --   refine Equiv.trans ?_ r.homEquiv.symm
-  --   refine Iso.homCongr (Ind.yonedaCompInclusion.symm.app _) ?_
-  --   refine (HasColimit.isoOfNatIso (isoWhiskerLeft G (Ind.yonedaCompInclusion.symm))) ≪≫ ?_
-  --   refine (HasColimit.isoOfNatIso (Functor.associator _ _ _).symm) ≪≫ ?_
-  --   exact (preservesColimitIso _ _).symm
-  -- · intro s
-  --   ext x
-  --   dsimp [cofan0] at x
-  --   simp [cofan0, cofan, collection, collection0]
-  --   sorry
 
-  noncomputable def step1 : IsColimit (cofan F i) := by
-  refine (Cofan.isColimitYonedaEquiv _ (cofan F i)).symm ?_
+  noncomputable def step1 : IsColimit (Cofan.map Ind.yoneda _ (cofan00 F i)) := by
+  refine (Cofan.isColimitYonedaEquiv _ (Cofan.map Ind.yoneda _ (cofan00 F i))).symm ?_
   intro L
+  change IsLimit (Fan.map (Ind.yoneda.op ⋙ yoneda.obj L) _ (cofan00 F i).op)
   refine Fan.isLimitMapCongr _ _ _ ?_ _ (step05 F i L.2.presentation.F)
-  apply yoneda.mapIso
-
+  refine isoWhiskerLeft _ (yoneda.mapIso ?_)
   have hInc : (Ind.inclusion C).FullyFaithful := .ofFullyFaithful _
   refine hInc.isoEquiv.symm ?_
   refine preservesColimitIso _ _ ≪≫ ?_
@@ -233,7 +190,7 @@ noncomputable def collection15 : α → (∀ s, I s) ⥤ Ind C := fun s => Pi.ev
 
 noncomputable def collection15CompEvaluation (i : ∀ s, I s) :
     Discrete.functor (collection15 F) ⋙ (evaluation _ _).obj i ≅
-      Discrete.functor (collection F i) :=
+      Discrete.functor (collection00 (fun s => F s ⋙ Ind.yoneda) i) :=
   Discrete.compNatIsoDiscrete _ _
 
 noncomputable def cofan15 : Cofan (collection15 F) :=
@@ -304,6 +261,8 @@ instance final (f : α → Ind C) : HasColimit (Discrete.functor f) := by
 
 theorem done : HasColimitsOfShape (Discrete α) (Ind C) where
   has_colimit _ := hasColimitOfIso (Discrete.natIsoFunctor)
+
+#print axioms done
 
 end
 
