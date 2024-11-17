@@ -244,7 +244,7 @@ end ScalarTower
 
 section CommSemiringUnit
 
-variable {R : Type*} [CommSemiring R] {x u v: R}
+variable {R : Type*} [CommSemiring R] {x u v : R}
 
 theorem isCoprime_mul_unit_left_left (hu : IsUnit x) (y z : R) :
     IsCoprime (x * y) z ↔ IsCoprime y z :=
@@ -272,13 +272,13 @@ theorem isCoprime_mul_unit_right (hu : IsUnit x) (y z : R) :
     IsCoprime (y * x) (z * x) ↔ IsCoprime y z :=
   (isCoprime_mul_unit_right_left hu y (z * x)).trans (isCoprime_mul_unit_right_right hu y z)
 
-theorem isCoprime_mul_units_left (hu : IsUnit u) (hv: IsUnit v) (y z: R) :
+theorem isCoprime_mul_units_left (hu : IsUnit u) (hv : IsUnit v) (y z : R) :
     IsCoprime (u * y) (v * z) ↔ IsCoprime y z :=
   Iff.trans
     (isCoprime_mul_unit_left_left hu _ _)
     (isCoprime_mul_unit_left_right hv _ _)
 
-theorem isCoprime_mul_units_right (hu : IsUnit u) (hv: IsUnit v) (y z : R) :
+theorem isCoprime_mul_units_right (hu : IsUnit u) (hv : IsUnit v) (y z : R) :
     IsCoprime (y * u) (z * v) ↔ IsCoprime y z :=
   Iff.trans
     (isCoprime_mul_unit_right_left hu _ _)
