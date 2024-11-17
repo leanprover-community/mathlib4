@@ -77,9 +77,9 @@ variable (H)
 theorem le_centralizer [h : H.IsCommutative] : H ≤ centralizer H :=
   le_centralizer_iff_isCommutative.mpr h
 
-/-- The homomorphism `Normalizer(H) → Aut(H)` with kernel `Centralizer(H)`. -/
+/-- The homomorphism N(H) → Aut(H) with kernel C(H). -/
 @[simps]
-def normalizer_monoidHom : H.normalizer →* MulAut H where
+def normalizerMonoidHom : H.normalizer →* MulAut H where
   toFun := fun g ↦
     { toFun := fun h ↦ ⟨g * h * g⁻¹, (g.2 h).mp h.2⟩
       invFun := fun h ↦ ⟨g⁻¹ * h * g, (mem_normalizer_iff''.mp g.2 h).mp h.2⟩
@@ -89,10 +89,10 @@ def normalizer_monoidHom : H.normalizer →* MulAut H where
   map_one' := by simp [DFunLike.ext_iff]
   map_mul' := by simp [DFunLike.ext_iff, mul_assoc]
 
-/-- The `N/C` theorem: `N(H)/C(H)` is isomorphic to a subgroup of `Aut(H)`. -/
-theorem normalizer_monoidHom_ker :
-    H.normalizer_monoidHom.ker = (Subgroup.centralizer H).subgroupOf H.normalizer := by
+/-- The N/C theorem: N(H)/C(H) is isomorphic to a subgroup of Aut(H). -/
+theorem normalizerMonoidHom_ker :
+    H.normalizerMonoidHom.ker = (Subgroup.centralizer H).subgroupOf H.normalizer := by
   simp [Subgroup.ext_iff, DFunLike.ext_iff, mem_subgroupOf, mem_centralizer_iff,
-    normalizer_monoidHom, eq_mul_inv_iff_mul_eq, eq_comm]
+    normalizerMonoidHom, eq_mul_inv_iff_mul_eq, eq_comm]
 
 end Subgroup
