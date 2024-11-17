@@ -22,7 +22,7 @@ Adopting the theorem numbering of [Kashiwara2006], we show that
 * `Ind C` has filtered colimits (6.1.8),
 * `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates filtered colimits (6.1.8),
 * `C ⥤ Ind C` preserves finite colimits (6.1.6),
-* if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `a`
+* if `C` has coproducts indexed by a finite type `α`, then `Ind C` has coproducts indexed by `α`
   (6.1.18(ii)),
 * if `C` has finite coproducts, then `Ind C` has small coproducts (6.1.18(ii)).
 
