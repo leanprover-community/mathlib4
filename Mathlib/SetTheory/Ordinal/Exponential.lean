@@ -325,6 +325,11 @@ theorem opow_log_le_self (b : Ordinal) {x : Ordinal} (hx : x ≠ 0) : b ^ log b 
     rwa [← succ_log_def hb hx] at this
   · rwa [one_opow, one_le_iff_ne_zero]
 
+theorem add_sub_cancel_opow_log {a : Ordinal} (ha : a ≠ 0) (b : Ordinal) :
+    b ^ log b a + (a - b ^ log b a) = a := by
+  rw [Ordinal.add_sub_cancel_of_le]
+  exact opow_log_le_self b ha
+
 /-- `opow b` and `log b` (almost) form a Galois connection.
 
 See `opow_le_iff_le_log'` for a variant assuming `c ≠ 0` rather than `x ≠ 0`. See also
@@ -506,24 +511,12 @@ theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a
   refine ⟨n, hn.trans_le (mul_le_mul_right' ?_ _)⟩
   rwa [opow_le_opow_iff_right one_lt_omega0, ← lt_succ_iff]
 
-theorem sub_opow_log_omega_lt {a : Ordinal} (ha : a ≠ 0) : a - ω ^ log ω a < a := by
-  have H := div_add_mod a (ω ^ log ω a)
-  conv_lhs => left; rw [← H]
-  conv_rhs => rw [← H]
-  obtain ⟨n, hn⟩ := lt_omega.1 (div_opow_log_lt a one_lt_omega)
-  obtain rfl | n := n
-  · have := div_opow_log_pos ω ha
-    rw [hn, Nat.cast_zero] at this
-    exact (irrefl 0 this).elim
-  · rw [hn]
-    conv_lhs => rw [add_comm, Nat.cast_add, Nat.cast_one, mul_one_add, add_assoc, add_sub_cancel]
-    rw [Nat.cast_succ, mul_add_one, add_assoc, add_lt_add_iff_left]
-    exact (mod_lt a (opow_ne_zero _ omega_ne_zero)).trans_le <| le_add_right _ _
-
-theorem add_sub_cancel_omega_opow_log {a : Ordinal} (ha : a ≠ 0) :
-    ω ^ log ω a + (a - ω ^ log ω a) = a := by
-  rw [Ordinal.add_sub_cancel_of_le]
-  exact opow_log_le_self ω ha
+theorem sub_opow_log_lt {a b : Ordinal} (ha : a ≠ 0) (hb₁ : 1 < b) (hb : b ≤ ω) :
+    a - b ^ log b a < a := by
+  have h := opow_ne_zero (log b a) hb₁.ne_bot
+  apply sub_lt_of_lt_add (lt_add_right_of_lt_mul_omega0 h _) ha.bot_lt
+  rw [← div_lt h]
+  exact (div_opow_log_lt _ hb₁).trans_le hb
 
 /-! ### Interaction with `Nat.cast` -/
 

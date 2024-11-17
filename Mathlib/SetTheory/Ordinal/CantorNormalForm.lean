@@ -57,25 +57,25 @@ theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o �
     CNFRec b H0 H o = H o ho (@CNFRec b C H0 H _) := by
   rw [CNFRec, dif_neg]
 
-/-- Inducts on the base `ω` expansion of an ordinal.
+/-- Inducts on the base `b` expansion of an ordinal, for `1 < b ≤ ω`.
 
-This differs from `CNFRec` in that every instance of `ω ^ a` is considered separately. -/
+This differs from `CNFRec` in that every instance of `b ^ a` is considered separately. -/
 @[elab_as_elim]
-noncomputable def CNFRecOmega {C : Ordinal → Sort*} (H0 : C 0)
-    (H : ∀ o, o ≠ 0 → C (o - ω ^ log ω o) → C o) (o : Ordinal) : C o :=
-  if h : o = 0 then h ▸ H0 else H o h (CNFRec_omega H0 H (o - ω ^ log ω o))
+noncomputable def CNFRec' {C : Ordinal → Sort*} {b : Ordinal} (hb₁ : 1 < b) (hb : b ≤ ω) (H0 : C 0)
+    (H : ∀ o, o ≠ 0 → C (o - b ^ log b o) → C o) (o : Ordinal) : C o :=
+  if h : o = 0 then h ▸ H0 else H o h (CNFRec' hb₁ hb H0 H (o - b ^ log b o))
 termination_by o
-decreasing_by exact sub_opow_log_omega_lt h
+decreasing_by exact sub_opow_log_lt h hb₁ hb
 
 @[simp]
-theorem CNFRec_omega_zero {C : Ordinal → Sort*} (H0 : C 0)
-    (H : ∀ o, o ≠ 0 → C (o - ω ^ log ω o) → C o) : CNFRec_omega H0 H 0 = H0 := by
-  rw [CNFRec_omega, dif_pos rfl]
+theorem CNFRec'_zero {C : Ordinal → Sort*} {b : Ordinal} (hb₁ : 1 < b) (hb : b ≤ ω) (H0 : C 0)
+    (H : ∀ o, o ≠ 0 → C (o - b ^ log b o) → C o) : CNFRec' hb₁ hb H0 H 0 = H0 := by
+  rw [CNFRec', dif_pos rfl]
 
-theorem CNFRec_omega_pos {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
-    (H : ∀ o, o ≠ 0 → C (o - ω ^ log ω o) → C o) :
-    CNFRec_omega H0 H o = H o ho (@CNFRec_omega C H0 H _) := by
-  rw [CNFRec_omega, dif_neg ho]
+theorem CNFRec'_pos {o b : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0)
+    (hb₁ : 1 < b) (hb : b ≤ ω) (H0 : C 0) (H : ∀ o, o ≠ 0 → C (o - b ^ log b o) → C o) :
+    CNFRec' hb₁ hb H0 H o = H o ho (@CNFRec' C b hb₁ hb H0 H _) := by
+  rw [CNFRec', dif_neg ho]
 
 /-! ### Cantor normal form as a list -/
 
