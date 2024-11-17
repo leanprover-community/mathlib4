@@ -128,7 +128,7 @@ unbounded, in the sense `∀ a, ∃ b ∈ S, a ≤ b`.
 
 In particular, `cof 0 = 0` and `cof (succ o) = 1`. -/
 def cof (o : Ordinal.{u}) : Cardinal.{u} :=
-  o.liftOn _ fun _ _ ⟨f⟩ ↦ f.compl.swap.cof_eq
+  o.liftOn (fun a ↦ Order.cof (swap a.rᶜ)) fun _ _ ⟨f⟩ ↦ f.compl.swap.cof_eq
 
 theorem cof_type (r : α → α → Prop) [IsWellOrder α r] : (type r).cof = Order.cof (swap rᶜ) :=
   rfl
