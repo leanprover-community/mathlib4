@@ -95,6 +95,7 @@ theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
 
 /-- The equivalence between `NormedAddGroupHom M N` vanishing on the inseparable setoid and
 `NormedAddGroupHom (SeparationQuotient M) N`. -/
+@[simps]
 def liftNormedAddGroupHom_equiv {N : Type*} [SeminormedAddCommGroup N] :
     {f : NormedAddGroupHom M N // ∀ x, ‖x‖ = 0 → f x = 0} ≃
     NormedAddGroupHom (SeparationQuotient M) N where
