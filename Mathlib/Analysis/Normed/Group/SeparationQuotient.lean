@@ -45,9 +45,6 @@ variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 
 namespace SeparationQuotient
 
-theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ ‖m‖ = 0 := by
-  rw [← norm_mk, norm_eq_zero]
-
 open NormedAddGroupHom
 
 /-- The morphism from a seminormed group to the quotient by the inseparable setoid. -/
