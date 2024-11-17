@@ -3,6 +3,7 @@ Copyright (c) 2024 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu, Jiedong Jiang
 -/
+import Mathlib.FieldTheory.Galois.IsFractionRing
 import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
@@ -107,7 +108,7 @@ include p in
   lying over `p`, then there exists `σ ∈ Aut (B / A)` such that `σ P = Q`. In other words,
   the Galois group `Gal(K/L)` acts transitively on the set of all prime ideals lying over `p`. -/
 theorem exists_map_eq_of_isGalois [IsGalois K L] : ∃ σ : B ≃ₐ[A] B, map σ P = Q := by
-  haveI : IsGalois (FractionRing A) (FractionRing B) := sorry
+  haveI := IsGalois.fractionRing_of_isGalois_isFractionRing A B K L
   haveI : P.IsMaximal := IsMaximal.of_liesOver_isMaximal P p
   haveI hQm : Q.IsMaximal := IsMaximal.of_liesOver_isMaximal Q p
   by_contra hs
