@@ -31,18 +31,15 @@ theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀
     (c : γ) (hc : IsLUB (Set.range u ) c) : IsLUB (⋃ i, s i) c := by
   constructor
   · intro e he
-    simp at he
-    obtain ⟨i,hi⟩ := he
-    rw [IsLUB, IsLeast] at hc
+    obtain ⟨i,hi⟩ := mem_iUnion.mp he
     obtain ⟨hc₁,hc₂⟩ := hc
-    rw [upperBounds] at hc₁
-    simp at hc₁
+    simp only [upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff,
+      mem_setOf_eq] at hc₁
     obtain ⟨hs₁,_⟩ := hs i
     exact Preorder.le_trans e (u i) c (hs₁ hi) (hc₁ i)
   · intro e he
     rw [upperBounds_iUnion] at he
-    have e1 : ∀ (i : ι), u i ≤ e := fun i => (hs i).2 (he _ (mem_range_self i))
     apply hc.2
     rw [upperBounds]
     simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
-    exact e1
+    exact fun i => (hs i).2 (he _ (mem_range_self i))
