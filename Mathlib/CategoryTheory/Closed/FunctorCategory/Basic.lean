@@ -25,7 +25,6 @@ open Enriched.FunctorCategory
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [MonoidalClosed C]
   {J : Type u₂} [Category.{v₂} J]
-  [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F₁ F₂]
   [∀ (F₁ F₂ : J ⥤ C), HasFunctorEnrichedHom C F₁ F₂]
 
 attribute [local simp] enrichedCategorySelf_hom enrichedCategorySelf_id
@@ -96,16 +95,31 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
     rfl
 
 lemma homEquiv_naturality_two_symm (f₂ : F₂ ⟶ F₂') (g : F₂' ⟶ functorEnrichedHom C F₁ F₃) :
-    homEquiv.symm (f₂ ≫ g) = F₁ ◁ f₂ ≫ homEquiv.symm g :=
-  sorry
+    homEquiv.symm (f₂ ≫ g) = F₁ ◁ f₂ ≫ homEquiv.symm g := by
+  dsimp [homEquiv]
+  ext j
+  dsimp
+  rw [← uncurry_natural_left]
+  congr 1
+  simp only [Category.assoc]
 
-lemma homEquiv_naturality_three (f : F₁ ⊗ F₂ ⟶ F₃) (f₃ : F₃ ⟶ F₃') :
+
+lemma homEquiv_naturality_three [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F₁ F₂]
+    (f : F₁ ⊗ F₂ ⟶ F₃) (f₃ : F₃ ⟶ F₃') :
     homEquiv (f ≫ f₃) = homEquiv f ≫ (ρ_ _).inv ≫ _ ◁ functorHomEquiv _ f₃ ≫
-      functorEnrichedComp C F₁ F₃ F₃' :=
+      functorEnrichedComp C F₁ F₃ F₃' := by
+  dsimp [homEquiv]
+  ext j
+  dsimp
+  ext k
+  dsimp
+  rw [Category.assoc, Category.assoc, Category.assoc, end_.lift_π, enrichedComp_π]
+  dsimp
   sorry
 
 end
 
+variable [∀ (F₁ F₂ : J ⥤ C), HasEnrichedHom C F₁ F₂]
 attribute [local instance] Enriched.FunctorCategory.functorEnrichedOrdinaryCategory
 
 noncomputable def adj (F : J ⥤ C) :
