@@ -13,7 +13,7 @@ import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 In this file, we discuss the ramification theory in Galois extensions of Dedekind domains, which is
   also called Hilbert's Ramification Theory.
 
-Assume `B / A` is a finite extension of dedekind Domains, `K` is the fraction ring of `A`,
+Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ring of `A`,
   `L` is the fraction ring of `K`, `L / K` is a Galois extension.
 
 ## Main definitions
@@ -39,7 +39,7 @@ Assume `B / A` is a finite extension of dedekind Domains, `K` is the fraction ri
 
 ## References
 
- * [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 -/
 
