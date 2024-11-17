@@ -139,7 +139,7 @@ theorem coequalizer_π_app_isLocalHom
   rw [← PreservesCoequalizer.iso_hom] at this
   erw [SheafedSpace.congr_app this.symm (op U)]
   rw [PresheafedSpace.comp_c_app, ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
-  -- Porting note (#10754): this instance has to be manually added
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): this instance has to be manually added
   haveI : IsIso (PreservesCoequalizer.iso
       SheafedSpace.forgetToPresheafedSpace f.toShHom g.toShHom).hom.c :=
     PresheafedSpace.c_isIso_of_iso _
@@ -195,7 +195,7 @@ theorem imageBasicOpen_image_preimage :
     delta imageBasicOpen
     rw [preimage_basicOpen f, preimage_basicOpen g]
     dsimp only [Functor.op, unop_op]
-    -- Porting note (#11224): change `rw` to `erw`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
     erw [← comp_apply, ← SheafedSpace.comp_c_app', ← comp_apply, ← SheafedSpace.comp_c_app',
       SheafedSpace.congr_app (coequalizer.condition f.toShHom g.toShHom), comp_apply,
       X.toRingedSpace.basicOpen_res]
@@ -210,7 +210,7 @@ theorem imageBasicOpen_image_open :
   erw [← TopCat.coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]
   dsimp only [SheafedSpace.forget]
-  -- Porting note (#11224): change `rw` to `erw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
   erw [imageBasicOpen_image_preimage]
   exact (imageBasicOpen f g U s).2
 
@@ -240,7 +240,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.toShHom g.toShHom : _).c.app _), ← comp_apply,
     NatTrans.naturality, comp_apply, ← isUnit_map_iff (Y.presheaf.map (eqToHom hV').op)]
-  -- Porting note (#11224): change `rw` to `erw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
   erw [← comp_apply, ← comp_apply, ← Y.presheaf.map_comp]
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.toShHom g.toShHom).c.app (op U)) s)
