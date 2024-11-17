@@ -6,6 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.Indization.LocallySmall
 import Mathlib.CategoryTheory.Limits.Indization.FilteredColimits
 import Mathlib.CategoryTheory.Limits.FullSubcategory
+import Mathlib.CategoryTheory.Functor.Flat
 
 /-!
 # The category of Ind-objects
@@ -54,6 +55,10 @@ instance : (Ind.inclusion C).Full :=
 instance : (Ind.inclusion C).Faithful :=
   inferInstanceAs <| ((Ind.equivalence C).functor ⋙ fullSubcategoryInclusion _).Faithful
 
+/-- The functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` is fully faithful. -/
+protected noncomputable def Ind.inclusion.fullyFaithful : (Ind.inclusion C).FullyFaithful :=
+  .ofFullyFaithful _
+
 /-- The inclusion of `C` into `Ind C` induced by the Yoneda embedding. -/
 protected noncomputable def Ind.yoneda : C ⥤ Ind C :=
   FullSubcategory.lift _ CategoryTheory.yoneda isIndObject_yoneda ⋙ (Ind.equivalence C).inverse
@@ -65,6 +70,10 @@ instance : (Ind.yoneda (C := C)).Full :=
 instance : (Ind.yoneda (C := C)).Faithful :=
   inferInstanceAs <| Functor.Faithful <|
     FullSubcategory.lift _ CategoryTheory.yoneda isIndObject_yoneda ⋙ (Ind.equivalence C).inverse
+
+/-- The functor `C ⥤ Ind C` is fully faithful. -/
+protected noncomputable def Ind.yoneda.fullyFaithful : (Ind.yoneda (C := C)).FullyFaithful :=
+  .ofFullyFaithful _
 
 /-- The composition `C ⥤ Ind C ⥤ (Cᵒᵖ ⥤ Type v)` is just the Yoneda embedding. -/
 noncomputable def Ind.yonedaCompInclusion : Ind.yoneda ⋙ Ind.inclusion C ≅ CategoryTheory.yoneda :=
@@ -82,5 +91,34 @@ noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
 instance : HasFilteredColimits (Ind C) where
   HasColimitsOfShape _ _ _ :=
     hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape (Ind.inclusion C)
+
+theorem Ind.isIndObject_inclusion_obj (X : Ind C) : IsIndObject ((Ind.inclusion C).obj X) :=
+  X.2
+
+/-- Pick a presentation of an ind-object `X` using choice. -/
+noncomputable def Ind.presentation (X : Ind C) : IndObjectPresentation ((Ind.inclusion C).obj X) :=
+  X.isIndObject_inclusion_obj.presentation
+
+/-- An ind-object `X` is the colimit (in `Ind C`!) of the filtered diagram presenting it. -/
+noncomputable def Ind.colimitPresentationCompYoneda (X : Ind C) :
+    colimit (X.presentation.F ⋙ Ind.yoneda) ≅ X :=
+  Ind.inclusion.fullyFaithful.isoEquiv.symm <| calc
+    (Ind.inclusion C).obj (colimit (X.presentation.F ⋙ Ind.yoneda))
+      ≅ colimit (X.presentation.F ⋙ Ind.yoneda ⋙ Ind.inclusion C) := preservesColimitIso _ _
+    _ ≅ colimit (X.presentation.F ⋙ yoneda) :=
+          HasColimit.isoOfNatIso (isoWhiskerLeft X.presentation.F Ind.yonedaCompInclusion)
+    _ ≅ (Ind.inclusion C).obj X :=
+          IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) X.presentation.isColimit
+
+instance : RepresentablyCoflat (Ind.yoneda (C := C)) := by
+  refine ⟨fun X => ?_⟩
+  suffices IsFiltered (CostructuredArrow yoneda ((Ind.inclusion C).obj X)) from
+    IsFiltered.of_equivalence
+      ((CostructuredArrow.post Ind.yoneda (Ind.inclusion C) X).asEquivalence.trans
+      (CostructuredArrow.mapNatIso Ind.yonedaCompInclusion)).symm
+  exact ((isIndObject_iff _).1 (Ind.isIndObject_inclusion_obj X)).1
+
+noncomputable instance : PreservesFiniteColimits (Ind.yoneda (C := C)) :=
+  preservesFiniteColimitsOfCoflat _
 
 end CategoryTheory
