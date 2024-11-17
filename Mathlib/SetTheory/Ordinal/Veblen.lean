@@ -171,6 +171,10 @@ theorem isNormal_veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     rw [Order.lt_succ_iff]
     exact le_max_left _ b
 
+/-- `veblenWith f a b < veblenWith f c d` iff one of the following holds:
+* `a = c` and `b < d`
+* `a < c` and `b < veblenWith f c d`
+* `a > c` and `veblenWith f a b < d` -/
 theorem veblenWith_lt_veblenWith_iff : veblenWith f a b < veblenWith f c d ↔
     a = c ∧ b < d ∨ a < c ∧ b < veblenWith f c d ∨ c < a ∧ veblenWith f a b < d := by
   obtain h | rfl | h := lt_trichotomy a c
@@ -180,6 +184,10 @@ theorem veblenWith_lt_veblenWith_iff : veblenWith f a b < veblenWith f c d ↔
   · simp_rw [h, h.ne', h.not_lt, false_and, false_or, true_and]
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_lt_veblenWith_right_iff hf]
 
+/-- `veblenWith f a b ≤ veblenWith f c d` iff one of the following holds:
+* `a = c` and `b ≤ d`
+* `a < c` and `b ≤ veblenWith f c d`
+* `a > c` and `veblenWith f a b ≤ d` -/
 theorem veblenWith_le_veblenWith_iff : veblenWith f a b ≤ veblenWith f c d ↔
     a = c ∧ b ≤ d ∨ a < c ∧ b ≤ veblenWith f c d ∨ c < a ∧ veblenWith f a b ≤ d := by
   obtain h | rfl | h := lt_trichotomy a c
@@ -189,6 +197,10 @@ theorem veblenWith_le_veblenWith_iff : veblenWith f a b ≤ veblenWith f c d ↔
   · simp_rw [h, h.ne', h.not_lt, false_and, false_or, true_and]
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_le_veblenWith_right_iff hf]
 
+/-- `veblenWith f a b = veblenWith f c d` iff one of the following holds:
+* `a = c` and `b = d`
+* `a < c` and `b = veblenWith f c d`
+* `a > c` and `veblenWith f a b = d` -/
 theorem veblenWith_eq_veblenWith_iff : veblenWith f a b = veblenWith f c d ↔
     a = c ∧ b = d ∨ a < c ∧ b = veblenWith f c d ∨ c < a ∧ veblenWith f a b = d := by
   obtain h | rfl | h := lt_trichotomy a c
@@ -290,14 +302,26 @@ theorem left_le_veblen (a b : Ordinal) : a ≤ veblen a b :=
 theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
   isNormal_veblenWith_zero isNormal_omega0_opow omega0_opow_zero_pos
 
+/-- `veblen a b < veblen c d` iff one of the following holds:
+* `a = c` and `b < d`
+* `a < c` and `b < veblen c d`
+* `a > c` and `veblen a b < d` -/
 theorem veblen_lt_veblen_iff :
     veblen a b < veblen c d ↔ a = c ∧ b < d ∨ a < c ∧ b < veblen c d ∨ c < a ∧ veblen a b < d :=
   veblenWith_lt_veblenWith_iff isNormal_omega0_opow
 
+/-- `veblen a b ≤ veblen c d` iff one of the following holds:
+* `a = c` and `b ≤ d`
+* `a < c` and `b ≤ veblen c d`
+* `a > c` and `veblen a b ≤ d` -/
 theorem veblen_le_veblen_iff :
     veblen a b ≤ veblen c d ↔ a = c ∧ b ≤ d ∨ a < c ∧ b ≤ veblen c d ∨ c < a ∧ veblen a b ≤ d :=
   veblenWith_le_veblenWith_iff isNormal_omega0_opow
 
+/-- `veblen a b = veblen c d` iff one of the following holds:
+* `a = c` and `b = d`
+* `a < c` and `b = veblen c d`
+* `a > c` and `veblen a b = d` -/
 theorem veblen_eq_veblen_iff :
     veblen a b = veblen c d ↔ a = c ∧ b = d ∨ a < c ∧ b = veblen c d ∨ c < a ∧ veblen a b = d :=
  veblenWith_eq_veblenWith_iff isNormal_omega0_opow
