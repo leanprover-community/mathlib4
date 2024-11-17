@@ -602,7 +602,7 @@ theorem equivSym_map_comm {f : α → β} {s : Sym2 α} :
   rfl
 
 theorem IsDiag.equivSym_symm_replicate (a : α) :
-    ((equivSym α).symm (Sym.replicate 2 a)).IsDiag  := by
+    ((equivSym α).symm (Sym.replicate 2 a)).IsDiag := by
   simp only [replicate, Multiset.replicate_succ, Multiset.replicate_zero, Multiset.cons_zero,
     equivSym_symm_eq_pair, isDiag_iff_proj_eq]
 
