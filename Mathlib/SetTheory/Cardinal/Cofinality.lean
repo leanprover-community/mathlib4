@@ -493,7 +493,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
         · rcases hl x with ⟨a', aS, hn⟩
           refine absurd h ?_
           convert hn
-          change _ = ↑(⟨a', aS⟩ : S)
+          change (a : α) = ↑(⟨a', aS⟩ : S)
           have := le_one_iff_subsingleton.1 (le_of_eq e)
           congr!,
     fun ⟨a, e⟩ => by simp [e]⟩

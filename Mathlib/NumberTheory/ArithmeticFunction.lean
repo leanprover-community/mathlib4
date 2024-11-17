@@ -776,7 +776,7 @@ end IsMultiplicative
 section SpecialFunctions
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
-nonrec  -- Porting note (#11445): added
+nonrec  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): added
 def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 

@@ -312,7 +312,7 @@ variable {S φ hφ hS}
 theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := by
   rw [liftCover, coe_mk, Set.liftCover_coe _]
 
--- @[simp] -- Porting note: the simpNF linter complained
+@[simp]
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
@@ -349,6 +349,11 @@ theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := ext <| liftCover_coe' (hF := hF) (hA := hA)
 
 end Gluing
+
+/-- `Set.inclusion` as a bundled continuous map. -/
+def inclusion {s t : Set α} (h : s ⊆ t) : C(s, t) where
+  toFun := Set.inclusion h
+  continuous_toFun := continuous_inclusion h
 
 end ContinuousMap
 

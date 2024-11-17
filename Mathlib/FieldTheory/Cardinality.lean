@@ -6,9 +6,8 @@ Authors: Eric Rodriguez
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.Data.Rat.Denumerable
+import Mathlib.Data.Rat.Encodable
 import Mathlib.FieldTheory.Finite.GaloisField
-import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.SetTheory.Cardinal.Divisibility
 
@@ -51,7 +50,9 @@ theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ I
   refine ⟨fun ⟨h⟩ => Fintype.isPrimePow_card_of_field, ?_⟩
   rintro ⟨p, n, hp, hn, hα⟩
   haveI := Fact.mk hp.nat_prime
-  exact ⟨(Fintype.equivOfCardEq ((GaloisField.card p n hn.ne').trans hα)).symm.field⟩
+  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
+  exact ⟨(Fintype.equivOfCardEq
+    (((Fintype.card_eq_nat_card).trans (GaloisField.card p n hn.ne')).trans hα)).symm.field⟩
 
 theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
     ¬IsPrimePow ‖α‖ → ¬IsField α :=
