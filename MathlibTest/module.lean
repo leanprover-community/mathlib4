@@ -157,8 +157,7 @@ example (h : a = b) : a • x = b • x := by
   linear_combination h
 
 example (h : a = b) : a • x = b • x := by
-  apply eq_of_eq (congr($h • x):)
-  module
+  linear_combination (norm := module) h • x
 
 example (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
   match_scalars
