@@ -143,7 +143,7 @@ lemma height_eq_iSup_last_eq (a : α) :
 Alternative definition of coheight, with the supremum only ranging over those series
 that begin at `a`.
 -/
-lemma coheight_eq_iSup_head_eq  (a : α) :
+lemma coheight_eq_iSup_head_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length) := by
   rw [← height_orderDual, height_eq_iSup_last_eq]
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
@@ -421,7 +421,7 @@ lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
     · exact coe_lt_height_iff hfin
     · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff (x := x) (n := n+1)
 
-lemma coheight_eq_coe_add_one_iff (x : α) (n : ℕ) :
+lemma coheight_eq_coe_add_one_iff {x : α} {n : ℕ} :
     coheight x = n + 1 ↔
       coheight x < ⊤ ∧ (∃ y > x, coheight y = n) ∧ (∀ y > x, coheight y ≤ n) :=
   height_eq_coe_add_one_iff (α := αᵒᵈ)
@@ -442,7 +442,7 @@ lemma height_eq_coe_iff {x : α} {n : ℕ} :
     rename_i y _
     cases height y <;> simp; norm_cast; omega
 
-lemma coheight_eq_coe_iff (x : α) (n : ℕ) :
+lemma coheight_eq_coe_iff {x : α} {n : ℕ} :
     coheight x = n ↔
       coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y > x, coheight y < n) :=
   height_eq_coe_iff (α := αᵒᵈ)
@@ -463,7 +463,7 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
     simpa [hp] using length_le_height_last (p := p.eraseLast)
 
 /-- The elements of finite coheight `n` are the maximal elements among those of coheight `≥ n`. -/
-lemma coheight_eq_coe_iff_maximal_le_coheight (a : α) (n : ℕ) :
+lemma coheight_eq_coe_iff_maximal_le_coheight {a : α} {n : ℕ} :
     coheight a = n ↔ Maximal (fun y => n ≤ coheight y) a :=
   height_eq_coe_iff_minimal_le_height (α := αᵒᵈ)
 
