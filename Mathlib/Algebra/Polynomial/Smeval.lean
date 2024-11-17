@@ -5,6 +5,7 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Scalar-multiple polynomial evaluation

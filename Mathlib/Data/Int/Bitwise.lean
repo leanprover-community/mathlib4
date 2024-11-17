@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Size
 
@@ -128,7 +128,7 @@ theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd :=
 
 @[simp]
 theorem bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
-  cases n <;> simp (config := {decide := true})
+  cases n <;> simp +decide
   rfl
 
 @[simp]
@@ -231,7 +231,7 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
     simp only [bit_negSucc]
     cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
 
--- Porting note (#11215): TODO
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
 
@@ -309,10 +309,10 @@ theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
   cases' m with m m <;> cases' n with n n <;>
   simp [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
     bit_negSucc]
-  · by_cases h : f false false <;> simp (config := {decide := true}) [h]
-  · by_cases h : f false true <;> simp (config := {decide := true}) [h]
-  · by_cases h : f true false <;> simp (config := {decide := true}) [h]
-  · by_cases h : f true true <;> simp (config := {decide := true}) [h]
+  · by_cases h : f false false <;> simp +decide [h]
+  · by_cases h : f false true <;> simp +decide [h]
+  · by_cases h : f true false <;> simp +decide [h]
+  · by_cases h : f true true <;> simp +decide [h]
 
 @[simp]
 theorem lor_bit (a m b n) : lor (bit a m) (bit b n) = bit (a || b) (lor m n) := by

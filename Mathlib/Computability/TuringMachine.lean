@@ -320,7 +320,7 @@ instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : Inhabited (PointedMap Γ Γ')
 instance {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] : CoeFun (PointedMap Γ Γ') fun _ ↦ Γ → Γ' :=
   ⟨PointedMap.f⟩
 
--- @[simp] -- Porting note (#10685): dsimp can prove this
+-- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem PointedMap.mk_val {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : Γ → Γ') (pt) :
     (PointedMap.mk f pt : Γ → Γ') = f :=
   rfl
@@ -909,7 +909,7 @@ inductive Stmt
   | move : Dir → Stmt
   | write : Γ → Stmt
 
-local notation "Stmt₀" => Stmt Γ  -- Porting note (#10750): added this to clean up types.
+local notation "Stmt₀" => Stmt Γ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 instance Stmt.inhabited [Inhabited Γ] : Inhabited Stmt₀ :=
   ⟨Stmt.write default⟩
@@ -927,7 +927,7 @@ instance Stmt.inhabited [Inhabited Γ] : Inhabited Stmt₀ :=
 def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × Stmt₀)
 
-local notation "Machine₀" => Machine Γ Λ  -- Porting note (#10750): added this to clean up types.
+local notation "Machine₀" => Machine Γ Λ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 instance Machine.inhabited [Inhabited Λ] : Inhabited Machine₀ := by
   unfold Machine; infer_instance
@@ -943,7 +943,7 @@ structure Cfg [Inhabited Γ] where
   /-- The current state of the tape: current symbol, left and right parts. -/
   Tape : Tape Γ
 
-local notation "Cfg₀" => Cfg Γ Λ  -- Porting note (#10750): added this to clean up types.
+local notation "Cfg₀" => Cfg Γ Λ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 variable {Γ Λ}
 variable [Inhabited Λ]
@@ -1115,7 +1115,7 @@ inductive Stmt
   | goto : (Γ → σ → Λ) → Stmt
   | halt : Stmt
 
-local notation "Stmt₁" => Stmt Γ Λ σ  -- Porting note (#10750): added this to clean up types.
+local notation "Stmt₁" => Stmt Γ Λ σ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 open Stmt
 
@@ -1131,7 +1131,7 @@ structure Cfg [Inhabited Γ] where
   /-- The current state of the tape -/
   Tape : Tape Γ
 
-local notation "Cfg₁" => Cfg Γ Λ σ  -- Porting note (#10750): added this to clean up types.
+local notation "Cfg₁" => Cfg Γ Λ σ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 instance Cfg.inhabited [Inhabited Γ] [Inhabited σ] : Inhabited Cfg₁ :=
   ⟨⟨default, default, default⟩⟩
@@ -1304,7 +1304,7 @@ reachable. -/
 def Λ' (M : Λ → TM1.Stmt Γ Λ σ) :=
   Option Stmt₁ × σ
 
-local notation "Λ'₁₀" => Λ' M -- Porting note (#10750): added this to clean up types.
+local notation "Λ'₁₀" => Λ' M -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 instance : Inhabited Λ'₁₀ :=
   ⟨(some (M default), default)⟩
@@ -1465,7 +1465,7 @@ inductive Λ'
   | normal : Λ → Λ'
   | write : Γ → Stmt₁ → Λ'
 
-local notation "Λ'₁" => @Λ' Γ Λ σ  -- Porting note (#10750): added this to clean up types.
+local notation "Λ'₁" => @Λ' Γ Λ σ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 instance [Inhabited Λ] : Inhabited Λ'₁ :=
   ⟨Λ'.normal default⟩
@@ -1487,7 +1487,7 @@ variable {n : ℕ} (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ)
 def move (d : Dir) (q : Stmt'₁) : Stmt'₁ :=
   (Stmt.move d)^[n] q
 
-local notation "moveₙ" => @move Γ Λ σ n  -- Porting note (#10750): added this to clean up types.
+local notation "moveₙ" => @move Γ Λ σ n  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 /-- To read a symbol from the tape, we use `readAux` to traverse the symbol,
 then return to the original position with `n` moves to the left. -/
@@ -1786,7 +1786,7 @@ inductive Λ'
   | normal : Λ → Λ'
   | act : TM0.Stmt Γ → Λ → Λ'
 
-local notation "Λ'₁" => @Λ' Γ Λ  -- Porting note (#10750): added this to clean up types.
+local notation "Λ'₁" => @Λ' Γ Λ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 instance : Inhabited Λ'₁ :=
   ⟨Λ'.normal default⟩
@@ -1897,7 +1897,7 @@ inductive Stmt
   | goto : (σ → Λ) → Stmt
   | halt : Stmt
 
-local notation "Stmt₂" => Stmt Γ Λ σ  -- Porting note (#10750): added this to clean up types.
+local notation "Stmt₂" => Stmt Γ Λ σ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 open Stmt
 
@@ -1915,7 +1915,7 @@ structure Cfg where
   /-- The (finite) collection of internal stacks -/
   stk : ∀ k, List (Γ k)
 
-local notation "Cfg₂" => Cfg Γ Λ σ  -- Porting note (#10750): added this to clean up types.
+local notation "Cfg₂" => Cfg Γ Λ σ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 instance Cfg.inhabited [Inhabited σ] : Inhabited Cfg₂ :=
   ⟨⟨default, default, default⟩⟩
@@ -2119,7 +2119,7 @@ plus a vector of stack elements for each stack, or none if the stack does not ex
 def Γ' :=
   Bool × ∀ k, Option (Γ k)
 
-local notation "Γ'₂₁" => @Γ' K Γ  -- Porting note (#10750): added this to clean up types.
+local notation "Γ'₂₁" => @Γ' K Γ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 instance Γ'.inhabited : Inhabited Γ'₂₁ :=
   ⟨⟨false, fun _ ↦ none⟩⟩
@@ -2165,7 +2165,7 @@ inductive StAct (k : K)
   | peek : (σ → Option (Γ k) → σ) → StAct k
   | pop : (σ → Option (Γ k) → σ) → StAct k
 
-local notation "StAct₂" => @StAct K Γ σ  -- Porting note (#10750): added this to clean up types.
+local notation "StAct₂" => @StAct K Γ σ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 instance StAct.inhabited {k : K} : Inhabited (StAct₂ k) :=
   ⟨StAct.peek fun s _ ↦ s⟩
@@ -2223,7 +2223,7 @@ inductive Λ'
   | go (k : K) : StAct₂ k → Stmt₂ → Λ'
   | ret : Stmt₂ → Λ'
 
-local notation "Λ'₂₁" => @Λ' K Γ Λ σ  -- Porting note (#10750): added this to clean up types.
+local notation "Λ'₂₁" => @Λ' K Γ Λ σ  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10750): added this to clean up types.
 
 open Λ'
 
@@ -2447,7 +2447,7 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
 attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
-  -- Porting note(#12129): additional beta reduction needed
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   intro c₁ c₂ h
   cases' h with l v S L hT
   cases' l with l; · constructor

@@ -423,7 +423,7 @@ instance faithful : compactumToCompHaus.Faithful where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
     intro _ _ _ _ h
-    -- Porting note (#11041): `ext` gets confused by coercion using forget.
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
     apply congrArg (fun f => f.toFun) h
 

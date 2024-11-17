@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Module.Projective
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.RingTheory.Finiteness.Subalgebra
 
 /-!
 # Finite dimensional vector spaces
@@ -103,10 +104,6 @@ instance finiteDimensional_pi {ι : Type*} [Finite ι] : FiniteDimensional K (ι
 instance finiteDimensional_pi' {ι : Type*} [Finite ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
     [∀ i, Module K (M i)] [∀ i, FiniteDimensional K (M i)] : FiniteDimensional K (∀ i, M i) :=
   Finite.pi
-
-/-- A finite dimensional vector space over a finite field is finite -/
-noncomputable def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype V :=
-  Module.fintypeOfFintype (@finsetBasis K V _ _ _ (iff_fg.2 inferInstance))
 
 variable {K V}
 
@@ -527,8 +524,8 @@ theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (
     g * f = 1 := by
   have ginj : Injective g :=
     HasLeftInverse.injective ⟨f, fun x => show (f * g) x = (1 : V →ₗ[K] V) x by rw [hfg]⟩
-  let ⟨i, hi⟩ :=
-    g.exists_rightInverse_of_surjective (range_eq_top.2 (injective_iff_surjective.1 ginj))
+  let ⟨i, hi⟩ := g.exists_rightInverse_of_surjective
+    (range_eq_top.2 (injective_iff_surjective.1 ginj))
   have : f * (g * i) = f * 1 := congr_arg _ hi
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
 
