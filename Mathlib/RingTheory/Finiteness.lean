@@ -397,11 +397,13 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
         span_eq_iSup_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
 
-open TensorProduct LinearMap in
+variable {R M N : Type*} [CommSemiring R] [AddCommMonoid M]
+  [AddCommMonoid N] [Module R M] [Module R N] {I : Submodule R N}
+
+open TensorProduct LinearMap
 /-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M`, where `J ≤ I` is finitely generated,
 under the tensor product of `J.inclusion ‹J ≤ I› : J → I` and the identity `M → M`. -/
-theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommGroup M]
-    [AddCommGroup N] [Module R M] [Module R N] {I : Submodule R N} (x : I ⊗ M) :
+theorem exists_fg_le_eq_rTensor_inclusion (x : I ⊗ M) :
       ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
         x = rTensor M (J.inclusion hle) y := by
   induction x with
@@ -417,6 +419,15 @@ theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommG
         rTensor M (J₂.inclusion (le_sup_right : J₂ ≤ J₁ ⊔ J₂)) y₂, ?_⟩
     rewrite [map_add, ← rTensor_comp_apply, ← rTensor_comp_apply]
     rfl
+
+theorem exists_fg_le_subset_range_rTensor_inclusion (s : Set (I ⊗[R] M)) (hs : s.Finite) :
+    ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I),
+      s ⊆ LinearMap.range (rTensor M (J.inclusion hle)) := by
+  choose J fg hle y eq using exists_fg_le_eq_rTensor_inclusion (M := M) (I := I)
+  rw [← Set.finite_coe_iff] at hs
+  refine ⟨⨆ x : s, J x, fg_iSup _ fun _ ↦ fg _, iSup_le fun _ ↦ hle _, fun x hx ↦
+    ⟨rTensor M (inclusion <| le_iSup _ ⟨x, hx⟩) (y x), .trans ?_ (eq x).symm⟩⟩
+  rw [← comp_apply]; congr; ext; rfl
 
 end Submodule
 
