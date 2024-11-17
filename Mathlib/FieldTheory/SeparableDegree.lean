@@ -7,6 +7,7 @@ import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.NormalClosure
+import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
@@ -70,6 +71,8 @@ This file contains basics about the separable degree of a field extension.
   In particular, the separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
   (see also `Module.finrank_mul_finrank`).
 
+- `Field.infinite_emb_of_transcendental`: `Field.Emb` is infinite for transcendental extensions.
+
 - `Polynomial.natSepDegree_le_natDegree`: the separable degree of a polynomial is smaller than
   its degree.
 
@@ -132,7 +135,7 @@ namespace Field
 
 /-- `Field.Emb F E` is the type of `F`-algebra homomorphisms from `E` to the algebraic closure
 of `E`. -/
-def Emb := E →ₐ[F] AlgebraicClosure E
+abbrev Emb := E →ₐ[F] AlgebraicClosure E
 
 /-- If `E / F` is an algebraic extension, then the (finite) separable degree of `E / F`
 is the number of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`,
@@ -246,6 +249,34 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
         (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K)
           (AlgebraicClosure E)).restrictScalars F).symm
 
+/-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
+instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
+  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
+  have := hx.isAlgebraic_field
+  rw [← (embProdEmbOfIsAlgebraic F (adjoin F (Set.range x)) E).infinite_iff]
+  refine @Prod.infinite_of_left _ _ ?_ _
+  rw [← (embEquivOfEquiv _ _ _ hx.1.aevalEquivField).infinite_iff]
+  obtain ⟨i⟩ := hx.nonempty_iff_transcendental.2 H
+  let K := FractionRing (MvPolynomial ι F)
+  let i1 := IsScalarTower.toAlgHom F (MvPolynomial ι F) (AlgebraicClosure K)
+  have hi1 : Function.Injective i1 := by
+    rw [IsScalarTower.coe_toAlgHom', IsScalarTower.algebraMap_eq _ K]
+    exact (algebraMap K (AlgebraicClosure K)).injective.comp (IsFractionRing.injective _ _)
+  let f (n : ℕ) : Emb F K := IsFractionRing.liftAlgHom
+    (g := i1.comp <| MvPolynomial.aeval fun i : ι ↦ MvPolynomial.X i ^ (n + 1)) <| hi1.comp <| by
+      simpa [algebraicIndependent_iff_injective_aeval] using
+        MvPolynomial.algebraicIndependent_polynomial_aeval_X _
+          fun i : ι ↦ (Polynomial.transcendental_X F).pow n.succ_pos
+  refine Infinite.of_injective f fun m n h ↦ ?_
+  replace h : (MvPolynomial.X i) ^ (m + 1) = (MvPolynomial.X i) ^ (n + 1) := hi1 <| by
+    simpa [f, -map_pow] using congr($h (algebraMap _ K (MvPolynomial.X (R := F) i)))
+  simpa using congr(MvPolynomial.totalDegree $h)
+
+/-- If the field extension `E / F` is transcendental, then `Field.finSepDegree F E = 0`, which
+actually means that `Field.Emb F E` is infinite (see `Field.infinite_emb_of_transcendental`). -/
+theorem finSepDegree_eq_zero_of_transcendental [Algebra.Transcendental F E] :
+    finSepDegree F E = 0 := Nat.card_eq_zero_of_infinite
+
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
 separable degrees satisfy the tower law
 $[E:F]_s [K:E]_s = [K:F]_s$. See also `Module.finrank_mul_finrank`. -/
@@ -350,11 +381,11 @@ theorem natSepDegree_eq_of_isAlgClosed [DecidableEq E] [IsAlgClosed E] :
     f.natSepDegree = (f.aroots E).toFinset.card :=
   natSepDegree_eq_of_splits f (IsAlgClosed.splits_codomain f)
 
-variable (E) in
-theorem natSepDegree_map : (f.map (algebraMap F E)).natSepDegree = f.natSepDegree := by
+theorem natSepDegree_map (f : E[X]) (i : E →+* K) : (f.map i).natSepDegree = f.natSepDegree := by
   classical
-  simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure E), aroots_def, map_map,
-    ← IsScalarTower.algebraMap_eq]
+  let _ := i.toAlgebra
+  simp_rw [show i = algebraMap E K by rfl, natSepDegree_eq_of_isAlgClosed (AlgebraicClosure K),
+    aroots_def, map_map, ← IsScalarTower.algebraMap_eq]
 
 @[simp]
 theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
@@ -885,3 +916,9 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
       ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
     exact ⟨y, by rwa [← eval, eval_sub, eval_pow, eval_X, eval_C, sub_eq_zero] at hy⟩
   exact PerfectRing.toPerfectField F p
+
+variable {E K} in
+theorem PerfectField.splits_of_natSepDegree_eq_one [PerfectField K] {f : E[X]}
+    (i : E →+* K) (hf : f.natSepDegree = 1) : f.Splits i :=
+  (splits_id_iff_splits _).mp <| (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _
+    (natSepDegree_map K f i ▸ hf)

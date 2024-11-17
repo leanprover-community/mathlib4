@@ -123,7 +123,7 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f := by
-  -- Porting note (#11041): `ext` did not pick up `NatTrans.ext`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ rfl <| NatTrans.ext <| funext fun x => ?_
   simp only [isoRestrict_hom_c_app, NatTrans.comp_app, eqToHom_refl,
     ofRestrict_c_app, Category.assoc, whiskerRight_id']
@@ -301,7 +301,7 @@ def pullbackConeOfLeftFst :
                   · rintro _ ⟨_, h₁, h₂⟩
                     use (TopCat.pullbackIsoProdSubtype _ _).inv ⟨⟨_, _⟩, h₂⟩
                     -- Porting note: need a slight hand holding
-                    -- used to be `simpa using h₁` before #13170
+                    -- used to be `simpa using h₁` before https://github.com/leanprover-community/mathlib4/pull/13170
                     change _ ∈ _ ⁻¹' _ ∧ _
                     simp only [TopCat.coe_of, restrict_carrier, Set.preimage_id', Set.mem_preimage,
                       SetLike.mem_coe]
@@ -313,7 +313,7 @@ def pullbackConeOfLeftFst :
                   · rintro _ ⟨x, h₁, rfl⟩
                     -- next line used to be
                     --  `exact ⟨_, h₁, ConcreteCategory.congr_hom pullback.condition x⟩))`
-                    -- before #13170
+                    -- before https://github.com/leanprover-community/mathlib4/pull/13170
                     refine ⟨_, h₁, ?_⟩
                     change (_ ≫ f.base) _ = (_ ≫ g.base) _
                     rw [pullback.condition]))
@@ -330,7 +330,7 @@ def pullbackConeOfLeftFst :
         rfl }
 
 theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.ofRestrict _ ≫ g := by
-  -- Porting note (#11041): `ext` did not pick up `NatTrans.ext`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun U => ?_
   · simpa using pullback.condition
   · induction U using Opposite.rec'
@@ -388,7 +388,7 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
 -- this lemma is not a `simp` lemma, because it is an implementation detail
 theorem pullbackConeOfLeftLift_fst :
     pullbackConeOfLeftLift f g s ≫ (pullbackConeOfLeft f g).fst = s.fst := by
-  -- Porting note (#11041): `ext` did not pick up `NatTrans.ext`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun x => ?_
   · change pullback.lift _ _ _ ≫ pullback.fst _ _ = _
     simp
@@ -407,7 +407,7 @@ theorem pullbackConeOfLeftLift_fst :
 -- this lemma is not a `simp` lemma, because it is an implementation detail
 theorem pullbackConeOfLeftLift_snd :
     pullbackConeOfLeftLift f g s ≫ (pullbackConeOfLeft f g).snd = s.snd := by
-  -- Porting note (#11041): `ext` did not pick up `NatTrans.ext`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext <| funext fun x => ?_
   · change pullback.lift _ _ _ ≫ pullback.snd _ _ = _
     simp
@@ -895,7 +895,7 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
     suffices IsIso <| (colimit.ι (F ⋙ SheafedSpace.forgetToPresheafedSpace) i ≫
         (preservesColimitIso SheafedSpace.forgetToPresheafedSpace F).inv).c.app <|
       op (H.isOpenMap.functor.obj U) by
-      -- Porting note (#11083): just `convert` is very slow, so helps it a bit
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): just `convert` is very slow, so helps it a bit
       convert this using 2 <;> congr
     rw [PresheafedSpace.comp_c_app,
       ← PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit_hom_π]
@@ -1104,7 +1104,7 @@ image is contained in the image of `f`, we can lift this morphism to a unique `Y
 commutes with these maps.
 -/
 def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
-  -- Porting note (#10754): added instance manually
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   inv (pullback.snd f g) ≫ pullback.fst _ _
 
@@ -1117,7 +1117,7 @@ theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl
 
 theorem lift_range (H' : Set.range g.base ⊆ Set.range f.base) :
     Set.range (lift f g H').base = f.base ⁻¹' Set.range g.base := by
-  -- Porting note (#10754): added instance manually
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   dsimp only [lift]
   have : _ = (pullback.fst f g).base :=
@@ -1125,7 +1125,7 @@ theorem lift_range (H' : Set.range g.base ⊆ Set.range f.base) :
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
   rw [LocallyRingedSpace.comp_base, ← this, ← Category.assoc, coe_comp, Set.range_comp,
       Set.range_eq_univ.mpr, Set.image_univ]
-  -- Porting note (#11224): change `rw` to `erw` on this lemma
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw` on this lemma
   · erw [TopCat.pullback_fst_range]
     ext
     constructor
