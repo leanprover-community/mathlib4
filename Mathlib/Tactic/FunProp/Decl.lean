@@ -61,7 +61,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   let lvls := info.levelParams.map (fun l => Level.param l)
   let e := mkAppN (.const declName lvls) xs
-  let path ← DiscrTree.mkPath e {}
+  let path ← DiscrTree.mkPath e
 
   -- find the argument position of the function `f` in `P f`
   let mut .some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
