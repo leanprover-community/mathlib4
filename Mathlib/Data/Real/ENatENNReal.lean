@@ -39,7 +39,7 @@ def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
 /-- Coercion `ℕ∞ → ℝ≥0∞` as a ring homomorphism. -/
 @[simps! (config := .asFn)]
 def toENNRealRingHom : ℕ∞ →+* ℝ≥0∞ :=
-  .withTopMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
+  .ENatMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
 
 @[simp, norm_cast]
 theorem toENNReal_top : ((⊤ : ℕ∞) : ℝ≥0∞) = ⊤ :=
