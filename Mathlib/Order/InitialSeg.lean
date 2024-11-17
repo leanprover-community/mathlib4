@@ -7,7 +7,9 @@ import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Cover
 import Mathlib.Order.RelIso.Set
+import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.WellFounded
+
 /-!
 # Initial and principal segments
 
@@ -671,11 +673,8 @@ theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α ≤i β) :
   (map_isMin f isMin_bot).eq_bot
 
 @[simp]
-theorem apply_covBy_apply_iff [PartialOrder α] (f : α ≤i β) : f a ⋖ f a' ↔ a ⋖ a' := by
-  refine ⟨CovBy.of_image f.toOrderEmbedding, fun h ↦ ⟨(lt_iff_lt f).2 h.lt, fun b ha hb ↦ ?_⟩⟩
-  obtain ⟨c, rfl⟩ := f.mem_range_of_rel hb
-  rw [lt_iff_lt] at ha hb
-  exact h.2 ha hb
+theorem apply_covBy_apply_iff [PartialOrder α] (f : α ≤i β) : f a ⋖ f a' ↔ a ⋖ a' :=
+  Set.OrdConnected.apply_covBy_apply_iff f.toOrderEmbedding (isLowerSet_range f).ordConnected
 
 @[simp]
 theorem apply_wCovBy_apply_iff [PartialOrder α] (f : α ≤i β) : f a ⩿ f a' ↔ a ⩿ a' := by
