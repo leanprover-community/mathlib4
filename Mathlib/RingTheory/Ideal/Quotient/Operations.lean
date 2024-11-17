@@ -506,7 +506,7 @@ lemma ker_quotientMap_mk {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided] :
 
 section quotientEquiv
 
-variable {R S : Type*} [CommRing R] [CommRing S] (I : Ideal R) (J : Ideal S)
+variable (I : Ideal R) (J : Ideal S) [I.IsTwoSided] [J.IsTwoSided]
     (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S))
 
 /-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+* S`, where `J = f(I)`. -/
@@ -596,8 +596,7 @@ theorem quotient_map_comp_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
 variable (I) in
 /-- The algebra equiv `A/I ≃ₐ[R] B/J` induced by an algebra equiv `f : A ≃ₐ[R] B`,
 where`J = f(I)`. -/
-def quotientEquivAlg {A B} [CommRing A] [CommRing B] [Algebra R₁ A] [Algebra R₁ B]
-    (I : Ideal A) (J : Ideal B) (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
+def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' := fun r => by
@@ -629,20 +628,20 @@ theorem algebraMap_quotient_injective {R} [CommRing R] {I : Ideal A} [I.IsTwoSid
   rw [← RingHom.map_sub] at hab
   exact Quotient.eq.mpr hab
 
-variable (R₁) {A : Type*} [CommRing A] [Algebra R₁ A]
+variable (R₁)
 
 /-- Quotienting by equal ideals gives equivalent algebras. -/
-def quotientEquivAlgOfEq {I J : Ideal A} (h : I = J) :
+def quotientEquivAlgOfEq {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
     (A ⧸ I) ≃ₐ[R₁] A ⧸ J :=
   quotientEquivAlg I J AlgEquiv.refl <| h ▸ (map_id I).symm
 
 @[simp]
-theorem quotientEquivAlgOfEq_mk {I J : Ideal A} (h : I = J) (x : A) :
+theorem quotientEquivAlgOfEq_mk {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) (x : A) :
     quotientEquivAlgOfEq R₁ h (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J x :=
   rfl
 
 @[simp]
-theorem quotientEquivAlgOfEq_symm {I J : Ideal A} (h : I = J) :
+theorem quotientEquivAlgOfEq_symm {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
     (quotientEquivAlgOfEq R₁ h).symm = quotientEquivAlgOfEq R₁ h.symm := by
   ext
   rfl
@@ -653,7 +652,7 @@ lemma comap_map_mk {I J : Ideal R} [I.IsTwoSided] (h : I ≤ J) :
 
 /-- The **first isomorphism theorem** for commutative algebras (`AlgHom.range` version). -/
 noncomputable def quotientKerEquivRange
-    {R A B : Type*} [CommSemiring R] [CommRing A] [Algebra R A] [Semiring B] [Algebra R B]
+    {R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Semiring B] [Algebra R B]
     (f : A →ₐ[R] B) :
     (A ⧸ RingHom.ker f) ≃ₐ[R] f.range :=
   (Ideal.quotientEquivAlgOfEq R (AlgHom.ker_rangeRestrict f).symm).trans <|
