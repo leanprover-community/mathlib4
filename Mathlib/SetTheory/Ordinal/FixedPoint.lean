@@ -163,6 +163,10 @@ theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.
 @[deprecated isNormal_derivFamily (since := "2024-10-11")]
 alias derivFamily_isNormal := isNormal_derivFamily
 
+theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
+    StrictMono (derivFamily f) :=
+  (isNormal_derivFamily f).strictMono
+
 theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     f i (derivFamily f o) = derivFamily f o := by
   induction' o using limitRecOn with o _ o l IH
@@ -218,11 +222,6 @@ theorem derivFamily_eq_enumOrd [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
     exact derivFamily_fp (H i) a
   rw [Set.mem_iInter] at ha
   rwa [← fp_iff_derivFamily H]
-
-theorem derivFamily_strictMono [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :
-    StrictMono (derivFamily f) := by
-  rw [derivFamily_eq_enumOrd H]
-  exact enumOrd_strictMono (not_bddAbove_fp_family H)
 
 end
 
@@ -523,6 +522,9 @@ theorem isNormal_deriv (f) : IsNormal (deriv f) :=
 @[deprecated isNormal_deriv (since := "2024-10-11")]
 alias deriv_isNormal := isNormal_deriv
 
+theorem deriv_strictMono (f) : StrictMono (deriv f) :=
+  derivFamily_strictMono _
+
 theorem deriv_id_of_nfp_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
   ((isNormal_deriv _).eq_iff_zero_and_succ IsNormal.refl).2 (by simp [h])
 
@@ -544,9 +546,6 @@ theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoi
 
 theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : deriv f = id :=
   (IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) IsNormal.refl).2 <| by simp [h]
-
-theorem deriv_strictMono {f} (H : IsNormal f) : StrictMono (deriv f) :=
-  derivFamily_strictMono fun _ ↦ H
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← iSup_iterate_eq_nfp]
