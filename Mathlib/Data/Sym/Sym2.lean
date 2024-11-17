@@ -606,7 +606,7 @@ theorem IsDiag.equivSym_symm_replicate (a : α) :
   simp only [replicate, Multiset.replicate_succ, Multiset.replicate_zero, Multiset.cons_zero,
     equivSym_symm_eq_pair, isDiag_iff_proj_eq]
 
-theorem equivSym_IsDiag_eq_replicate {s : Sym2 α} :
+theorem isDiag_iff_equivSym_eq_replicate {s : Sym2 α} :
     s.IsDiag ↔ ∃ a, equivSym α s = replicate 2 a := by
   induction' s with x y
   simp_rw [eq_replicate_iff]
