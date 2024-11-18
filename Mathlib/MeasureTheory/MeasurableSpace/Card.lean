@@ -75,11 +75,6 @@ theorem generateMeasurableRec_mono (s : Set (Set α)) : Monotone (generateMeasur
   · convert iUnion_mem_generateMeasurableRec fun _ => ⟨i, h, hx⟩
     exact (iUnion_const x).symm
 
-@[deprecated generateMeasurableRec_mono (since := "2024-08-29")]
-theorem generateMeasurableRec_subset (s : Set (Set α)) {i j : Ordinal} (h : i ≤ j) :
-    generateMeasurableRec s i ⊆ generateMeasurableRec s j :=
-  generateMeasurableRec_mono s h
-
 /-- An inductive principle for the elements of `generateMeasurableRec`. -/
 @[elab_as_elim]
 theorem generateMeasurableRec_induction {s : Set (Set α)} {i : Ordinal} {t : Set α}
@@ -126,7 +121,7 @@ theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     rw [mk_nat, lift_aleph0, isRegular_aleph_one.cof_omega_eq]
     exact aleph0_lt_aleph_one
 
-theorem generateMeasurableRec_subset_rec (s : Set (Set α)) (i : Ordinal) :
+theorem generateMeasurableRec_subset (s : Set (Set α)) (i : Ordinal) :
     generateMeasurableRec s i ⊆ { t | GenerateMeasurable s t } := by
   apply WellFoundedLT.induction i
   exact fun i IH t ht => generateMeasurableRec_induction .basic .empty
@@ -135,7 +130,7 @@ theorem generateMeasurableRec_subset_rec (s : Set (Set α)) (i : Ordinal) :
 /-- `generateMeasurableRec s ω₁` generates precisely the smallest sigma-algebra containing `s`. -/
 theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     { t | GenerateMeasurable s t } = generateMeasurableRec s ω₁ := by
-  apply (generateMeasurableRec_subset_rec s _).antisymm'
+  apply (generateMeasurableRec_subset s _).antisymm'
   intro t ht
   induction' ht with u hu u _ IH f _ IH
   · exact self_subset_generateMeasurableRec s _ hu
@@ -152,7 +147,7 @@ theorem generateMeasurableRec_of_omega1_le (s : Set (Set α)) {i : Ordinal.{v}} 
     generateMeasurableRec s i = generateMeasurableRec s (ω₁ : Ordinal.{v}) := by
   apply (generateMeasurableRec_mono s hi).antisymm'
   rw [← generateMeasurable_eq_rec]
-  exact generateMeasurableRec_subset_rec s i
+  exact generateMeasurableRec_subset s i
 
 /-- At each step of the inductive construction, the cardinality bound `≤ #s ^ ℵ₀` holds. -/
 theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :

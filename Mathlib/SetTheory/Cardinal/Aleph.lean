@@ -315,11 +315,6 @@ theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
     Ordinal.lift.{v} (preOmega o) = preOmega (Ordinal.lift.{v} o) := by
   rw [← ord_preAleph, lift_ord, lift_preAleph, ord_preAleph]
 
-@[simp]
-theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
-    Ordinal.lift.{v} (preOmega o) = preOmega (Ordinal.lift.{v} o) := by
-  rw [← ord_preAleph, lift_ord, lift_preAleph, ord_preAleph]
-
 theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
   ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h => by
