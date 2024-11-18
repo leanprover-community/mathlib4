@@ -22,11 +22,10 @@ coercions both to `ℝ` and `ℝ≥0∞`. We do not require `0 < K` in the defin
 we do not have a `posreal` type.
 -/
 
+open Bornology Filter Set Topology
+open scoped NNReal ENNReal Uniformity
 
 variable {α β γ : Type*}
-
-open scoped NNReal ENNReal Uniformity Topology
-open Set Filter Bornology
 
 /-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
 `edist x y ≤ K * edist (f x) (f y)`. -/

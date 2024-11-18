@@ -78,9 +78,6 @@ theorem _root_.Filter.HasBasis.isVonNBounded_iff {q : ι → Prop} {s : ι → S
   rcases h.mem_iff.mp hV with ⟨i, hi, hV⟩
   exact (hA i hi).mono_left hV
 
-@[deprecated (since := "2024-01-12")]
-alias _root_.Filter.HasBasis.isVonNBounded_basis_iff := Filter.HasBasis.isVonNBounded_iff
-
 /-- Subsets of bounded sets are bounded. -/
 theorem IsVonNBounded.subset {s₁ s₂ : Set E} (h : s₁ ⊆ s₂) (hs₂ : IsVonNBounded 𝕜 s₂) :
     IsVonNBounded 𝕜 s₁ := fun _ hV => (hs₂ hV).mono_right h
