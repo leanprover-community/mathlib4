@@ -146,18 +146,18 @@ theorem isAcc_iSup_of_between {δ : Ordinal.{u}} (C : Set Ordinal) (δLim : δ.I
   have : Small.{max u v, u + 1} (Iio δ) := small_lift _
   rw [isAcc_iff]
   constructor
-  · rw [← Ordinal.pos_iff_ne_zero, Ordinal.lt_iSup]
+  · rw [← Ordinal.pos_iff_ne_zero, Ordinal.lt_iSup_iff]
     use ⟨1, δLim.one_lt⟩
     refine lt_of_le_of_lt (Ordinal.zero_le (s ⟨0, δLim.pos⟩)) ?_
     convert sInc ⟨0, δLim.pos⟩
     exact succ_zero.symm
   intro p hp
-  rw [Ordinal.lt_iSup] at hp
+  rw [Ordinal.lt_iSup_iff] at hp
   obtain ⟨r, hr⟩ := hp
   obtain ⟨q, hq⟩ := h r
   use q
   refine ⟨hq.1, ⟨hr.trans hq.2.1, ?_⟩⟩
-  rw [Ordinal.lt_iSup]
+  rw [Ordinal.lt_iSup_iff]
   exact ⟨⟨r.1 + 1, δLim.succ_lt r.2⟩, hq.2.2⟩
 
 /--
@@ -200,7 +200,7 @@ theorem IsClub.sInter (hCof : ℵ₀ < o.cof) (hS : ∀ C ∈ S, IsClub C o) (hS
       exact hf.1 n s hs
     · exact isLimit_omega0
   · constructor
-    · rw [Ordinal.lt_iSup]
+    · rw [Ordinal.lt_iSup_iff]
       exact ⟨⟨0, omega0_pos⟩, hf.2.2⟩
     · exact suplt
 
