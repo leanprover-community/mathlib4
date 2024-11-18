@@ -254,10 +254,20 @@ jobs:
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe check-yaml
 
-      - name: verify `lake exe graph` works
-        run: |
-          lake exe graph
-          rm import_graph.dot
+      - name: generate our import graph
+        run: lake exe graph
+
+      - name: upload the import graph
+        uses: actions/upload-artifact@v4
+        with:
+          name: import-graph
+          path: import_graph.dot
+          ## the default is 90, but we build often, so unless there's a reason
+          ## to care about old copies in the future, just say 7 days for now
+          retention-days: 7
+
+      - name: clean up the import graph file
+        run: rm import_graph.dot
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
