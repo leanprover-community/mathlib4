@@ -72,7 +72,7 @@ theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
 
 @[simp]
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 :=
-  (card_Icc _ _).trans <| by rw [← Int.natCast_inj, sup_eq_max, inf_eq_min, Int.ofNat_sub] <;> omega
+  (card_Icc _ _).trans <| by rw [← Int.natCast_inj, Int.ofNat_sub] <;> omega
 
 @[simp]
 lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zero, Nat.sub_zero]

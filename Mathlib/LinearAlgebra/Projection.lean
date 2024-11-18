@@ -132,7 +132,9 @@ theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
     LinearEquiv.prodComm R q p ≪≫ₗ prodEquivOfIsCompl p q h = prodEquivOfIsCompl q p h.symm :=
   LinearEquiv.ext fun _ => add_comm _ _
 
-/-- Projection to a submodule along its complement. -/
+/-- Projection to a submodule along a complement.
+
+See also `LinearMap.linearProjOfIsCompl`. -/
 def linearProjOfIsCompl (h : IsCompl p q) : E →ₗ[R] p :=
   LinearMap.fst R p q ∘ₗ ↑(prodEquivOfIsCompl p q h).symm
 
@@ -191,6 +193,26 @@ end Submodule
 namespace LinearMap
 
 open Submodule
+
+/-- Projection to the image of an injection along a complement.
+
+This has an advantage over `Submodule.linearProjOfIsCompl` in that it allows the user better
+definitional control over the type. -/
+def linearProjOfIsCompl {F : Type*} [AddCommGroup F] [Module R F]
+    (i : F →ₗ[R] E) (hi : Function.Injective i)
+    (h : IsCompl (LinearMap.range i) q) : E →ₗ[R] F :=
+  (LinearEquiv.ofInjective i hi).symm ∘ₗ (LinearMap.range i).linearProjOfIsCompl q h
+
+@[simp]
+theorem linearProjOfIsCompl_apply_left {F : Type*} [AddCommGroup F] [Module R F]
+    (i : F →ₗ[R] E) (hi : Function.Injective i)
+    (h : IsCompl (LinearMap.range i) q) (x : F) :
+    linearProjOfIsCompl q i hi h (i x) = x := by
+  let ix : LinearMap.range i := ⟨i x, mem_range_self i x⟩
+  change linearProjOfIsCompl q i hi h ix = x
+  rw [linearProjOfIsCompl, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    LinearEquiv.symm_apply_eq, Submodule.linearProjOfIsCompl_apply_left, Subtype.ext_iff,
+    LinearEquiv.ofInjective_apply]
 
 /-- Given linear maps `φ` and `ψ` from complement submodules, `LinearMap.ofIsCompl` is
 the induced linear map over the entire module. -/
