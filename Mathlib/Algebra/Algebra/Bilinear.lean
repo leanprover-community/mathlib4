@@ -112,8 +112,8 @@ theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
 end NonUnitalNonAssoc
 
 section NonUnital
-
 variable (R A B : Type*)
+
 section one_side
 variable [Semiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
 
