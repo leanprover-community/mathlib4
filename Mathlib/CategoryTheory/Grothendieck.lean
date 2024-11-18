@@ -355,26 +355,19 @@ lemma base_eqToHom {x y : Grothendieck F} (h : x = y) : (eqToHom h).base = eqToH
 @[simp]
 lemma fiber_eqToHom {x y : Grothendieck F} (h : x = y) :
     (eqToHom h).fiber = (eqToHom (by cases h ; simp)) := by cases h ; rfl
-set_option diagnostics true
-def transport.iso (x : Grothendieck F) {c : C} (t : x.base ≅ c) :
-    x.transport t.hom ≅ x := by
-  refine ⟨(x.transport t.hom).transport_hom t.inv ≫ ?_, x.transport_hom t.hom, ?_, ?_⟩
-  · apply eqToHom
-    simp only [transport, ← Functor.comp_obj, Functor.map_comp]
-    show { base := x.base, fiber := (F.map t.hom ≫ F.map t.inv).obj x.fiber } = x
-    cases x
-    congr
-    simp only [← Functor.map_comp]
-    rw [t.hom_inv_id]
-    simp only [Functor.map_id]
-    simp
-  · simp only [transport, transport_hom]
-    simp only [Category.assoc]
-    apply Grothendieck.ext
-    · simp only [id_base, Cat.comp_obj, id_eq, Cat.id_obj, eq_mpr_eq_cast, comp_base, comp_fiber,
-      Functor.map_id, fiber_eqToHom, eqToHom_map, Category.comp_id, eqToHom_trans, Category.id_comp,
-      id_fiber]
-    · refine Eq.trans ?_ rfl
+
+noncomputable def transport.iso (x : Grothendieck F) {c : C} (t : x.base ⟶ c) [IsIso t] :
+    x.transport t ≅ x := by
+  refine ⟨?_, x.transport_hom t, ?_, ?_⟩
+  · refine ⟨inv t, eqToHom ?_⟩
+    simp only [transport]
+    rw [← Functor.comp_obj, Functor.map_inv]
+    show (F.map t ≫ inv (F.map t)).obj x.fiber = x.fiber
+    rw [comp_inv_eq_id _ |>.mpr rfl]
+    simp only [Cat.id_obj]
+  · apply Grothendieck.ext <;> simp [transport_hom]
+  · apply Grothendieck.ext <;> simp [transport_hom]
+
 
 def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendieck F :=
   Equivalence.mk (pre F G.functor) (preInv F G)
