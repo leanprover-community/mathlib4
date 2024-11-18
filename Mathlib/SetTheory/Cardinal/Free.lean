@@ -44,7 +44,7 @@ end Infinite
 namespace Cardinal
 
 theorem mk_abelianization_le (G : Type u) [Group G] :
-    #(Abelianization G) ≤ #G := Cardinal.mk_le_of_surjective <| surjective_quotient_mk _
+    #(Abelianization G) ≤ #G := Cardinal.mk_le_of_surjective Quotient.mk_surjective
 
 @[to_additive (attr := simp)]
 theorem mk_freeMonoid [Nonempty α] : #(FreeMonoid α) = max #α ℵ₀ :=

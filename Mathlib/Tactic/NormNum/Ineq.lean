@@ -108,6 +108,7 @@ theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
   not_lt_of_le (isInt_le_true hb ha h)
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ ≤ _] def evalLE : NormNumExt where eval {v β} e := do
@@ -172,6 +173,7 @@ where
     else -- Nats can appear in an `OrderedRing` without `CharZero`.
       intArm
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ < _] def evalLT : NormNumExt where eval {v β} e := do

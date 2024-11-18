@@ -13,7 +13,7 @@ and `Submodule.annihilator`.
 -/
 
 assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
-assert_not_exists Submodule.hasQuotient -- See `RingTheory.Ideal.QuotientOperations`
+assert_not_exists Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
 
 universe u v w x
 
@@ -257,11 +257,7 @@ is also the smallest `R`-submodule that does so. -/
 @[simp]
 theorem restrictScalars_mul {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
     (I J : Ideal S) : (I * J).restrictScalars R = I.restrictScalars R * J.restrictScalars R :=
-  le_antisymm
-    (fun _ hx =>
-      Submodule.mul_induction_on hx (fun _ hx _ hy => Submodule.mul_mem_mul hx hy) fun _ _ =>
-        Submodule.add_mem _)
-    (Submodule.mul_le.mpr fun _ hx _ hy => Ideal.mul_mem_mul hx hy)
+  rfl
 
 section Surjective
 
@@ -315,6 +311,10 @@ theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := 
   map_comap_of_surjective f hf K ▸ map_mono h
 
 end
+
+theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+    (I : Ideal S) : map e (comap e I) = I :=
+  I.map_comap_of_surjective e (EquivLike.surjective e)
 
 theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Ideal R) :
     I.map f = Submodule.map f.toSemilinearMap I :=
@@ -721,6 +721,14 @@ theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
       (fun i ↦ mem_annihilator.1 <| (mem_iInf _).mp H i) (smul_zero _)
       fun m₁ m₂ h₁ h₂ ↦ by simp_rw [smul_add, h₁, h₂, add_zero]
 
+@[simp]
+theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
+  eq_bot_iff.2 (smul_le.2 fun _ => mem_annihilator.1)
+
+@[simp]
+theorem annihilator_mul (I : Ideal R) : annihilator I * I = ⊥ :=
+  annihilator_smul I
+
 end Submodule
 
 end Semiring
@@ -750,14 +758,6 @@ theorem mem_annihilator_span (s : Set M) (r : R) :
 
 theorem mem_annihilator_span_singleton (g : M) (r : R) :
     r ∈ (Submodule.span R ({g} : Set M)).annihilator ↔ r • g = 0 := by simp [mem_annihilator_span]
-
-@[simp]
-theorem annihilator_smul (N : Submodule R M) : annihilator N • N = ⊥ :=
-  eq_bot_iff.2 (smul_le.2 fun _ => mem_annihilator.1)
-
-@[simp]
-theorem annihilator_mul (I : Ideal R) : annihilator I * I = ⊥ :=
-  annihilator_smul I
 
 @[simp]
 theorem mul_annihilator (I : Ideal R) : I * annihilator I = ⊥ := by rw [mul_comm, annihilator_mul]

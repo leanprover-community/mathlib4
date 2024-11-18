@@ -20,9 +20,9 @@ embedding `e : M → H`, then `e` is smooth.
 chain rule, manifolds, higher derivative
 
 -/
-open Set Filter Function
 
-open scoped Topology Manifold
+open Filter Function Set Topology
+open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare the prerequisites for a charted space `M` over the pair `(E, H)`.
@@ -284,8 +284,6 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
   · exact hf x hx
   · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const
       (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
-
-@[deprecated (since := "2024-01-15")] alias contMDiff_of_support := contMDiff_of_tsupport
 
 @[to_additive contMDiffWithinAt_of_not_mem]
 theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}

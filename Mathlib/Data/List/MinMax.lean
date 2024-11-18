@@ -50,16 +50,16 @@ private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (som
       intro tl hd ih a m
       simp only [foldl_append, foldl_cons, foldl_nil, argAux]
       cases hf : foldl (argAux r) (some a) tl
-      · simp (config := { contextual := true })
+      · simp +contextual
       · dsimp only
         split_ifs
-        · simp (config := { contextual := true })
+        · simp +contextual
         · -- `finish [ih _ _ hf]` closes this goal
           simp only [List.mem_cons] at ih
           rcases ih _ _ hf with rfl | H
-          · simp (config := { contextual := true }) only [Option.mem_def, Option.some.injEq,
+          · simp +contextual only [Option.mem_def, Option.some.injEq,
               find?, eq_comm, mem_cons, mem_append, mem_singleton, true_or, implies_true]
-          · simp (config := { contextual := true }) [@eq_comm _ _ m, H])
+          · simp +contextual [@eq_comm _ _ m, H])
 
 @[simp]
 theorem argAux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a :=
@@ -443,7 +443,7 @@ lemma getD_max?_eq_unbot'_maximum (l : List α) (d : α) :
     cases hz : l.max? with
     | none => simp [List.max?_eq_none_iff.mp hz] at hy
     | some z =>
-      have : Antisymm (α := α) (· ≤ ·) := ⟨_root_.le_antisymm⟩
+      have : Std.Antisymm (α := α) (· ≤ ·) := ⟨_root_.le_antisymm⟩
       rw [List.max?_eq_some_iff] at hz
       · rw [Option.getD_some]
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)

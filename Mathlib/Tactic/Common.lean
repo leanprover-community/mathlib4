@@ -14,6 +14,7 @@ import ImportGraph.Imports
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Where
 import Batteries.Tactic.Basic
+import Batteries.Tactic.HelpCmd
 
 -- Import syntax for leansearch
 import LeanSearchClient
