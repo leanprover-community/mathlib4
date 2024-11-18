@@ -15,12 +15,6 @@ import hierarchy. This is intended to assist with splitting files.
 
 open Lean Elab Command
 
-/-!
-#  The `upstreamableDecl` linter
-
-The `upstreamableDecl` linter warns if a declaration could be moved to an upstream file.
--/
-
 /-- Does this declaration come from the current file? -/
 def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
   (env.getModuleIdxFor? decl).isNone
