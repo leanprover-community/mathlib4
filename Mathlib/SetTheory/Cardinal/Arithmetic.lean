@@ -878,8 +878,8 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
 theorem card_opow_le_of_omega0_le_right (a : Ordinal) {b : Ordinal} (hb : ω ≤ b) :
     (a ^ b).card ≤ max a.card b.card := by
   obtain ⟨n, rfl⟩ | ha := eq_nat_or_omega0_le a
-  · apply (card_le_card <| opow_le_opow_left b (nat_lt_omega0 n).le).trans <|
-      (card_opow_le_of_omega0_le_left le_rfl _).trans _
+  · apply (card_le_card <| opow_le_opow_left b (nat_lt_omega0 n).le).trans
+    apply (card_opow_le_of_omega0_le_left le_rfl _).trans
     simp [hb]
   · exact card_opow_le_of_omega0_le_left ha b
 
