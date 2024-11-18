@@ -50,6 +50,14 @@ def add (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   h_approx := q(PreMS.add_Approximates $x.h_approx $y.h_approx)
   h_basis := x.h_basis
 
+def sub (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
+  basis := x.basis
+  val := q(PreMS.add $x.val (PreMS.neg $y.val))
+  F := q($x.F - $y.F)
+  h_wo := q(PreMS.sub_WellOrdered $x.h_wo $y.h_wo)
+  h_approx := q(PreMS.sub_Approximates $x.h_approx $y.h_approx)
+  h_basis := x.h_basis
+
 def mul (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   basis := x.basis
   val := q(PreMS.mul $x.val $y.val)

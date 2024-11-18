@@ -38,6 +38,9 @@ noncomputable def add {basis : Basis} (a b : PreMS basis) : PreMS basis :=
           some ((x_exp, x_coef.add y_coef), (x_tl, y_tl))
     Seq.corec g (a, b)
 
+noncomputable def sub {basis : Basis} (a b : PreMS basis) : PreMS basis :=
+  a.add b.neg
+
 noncomputable instance instAdd {basis : List (ℝ → ℝ)} : Add (PreMS basis) where
   add := add
 
@@ -688,6 +691,20 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             constructor
             · exact hX_tl
             · exact hY_tl
+
+theorem sub_WellOrdered {basis : Basis} {x y : PreMS basis}
+    (h_x_wo : x.WellOrdered) (h_y_wo : y.WellOrdered) : (x.sub y).WellOrdered := by
+  unfold sub
+  apply add_WellOrdered h_x_wo
+  apply neg_WellOrdered h_y_wo
+
+theorem sub_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
+    (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY) :
+    (X.sub Y).Approximates (fX - fY) := by
+  rw [sub_eq_add_neg]
+  unfold sub
+  apply add_Approximates hX_approx
+  apply neg_Approximates hY_approx
 
 end PreMS
 

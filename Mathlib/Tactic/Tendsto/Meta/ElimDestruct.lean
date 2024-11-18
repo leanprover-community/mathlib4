@@ -68,6 +68,14 @@ theorem mul_destruct (x y : PreMS (basis_hd :: basis_tl)) : destruct (x.mul y) =
   cases' x with x_exp x_coef x_tl <;> cases' y with y_exp y_coef y_tl <;> simp
   rfl
 
+theorem mulMonomial_destruct (b : PreMS (basis_hd :: basis_tl)) (m_coef : PreMS basis_tl)
+    (m_exp : ℝ) : destruct (b.mulMonomial m_coef m_exp) =
+    match destruct b with
+    | none => none
+    | some ((b_exp, b_coef), b_tl) =>
+      some ((m_exp + b_exp, m_coef.mul b_coef), PreMS.mulMonomial (basis_hd := basis_hd) b_tl m_coef m_exp) := by
+  cases b <;> simp
+
 open Lean Elab Meta Tactic Qq
 
 simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
@@ -117,6 +125,10 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
           let pf ← mkAppOptM ``mul_destruct #[none, none, arg1, arg2]
           let some (_, _, rhs) := (← inferType pf).eq? | return .continue
           return .visit {expr := rhs, proof? := pf}
+        | (``PreMS.mulMonomial, #[_, _, b, m_coef, m_exp]) =>
+          let pf ← mkAppOptM ``mulMonomial_destruct #[none, none, b, m_coef, m_exp]
+          let some (_, _, rhs) := (← inferType pf).eq? | return .continue
+          return .visit {expr := rhs, proof? := pf}
         | _ => return .continue
       | _ => return .continue
     | _ => return .continue
@@ -127,9 +139,7 @@ macro_rules
 | `(tactic| elim_destruct) =>
     `(tactic|
       repeat (
-        simp only [elimDestruct, const_const, one_const, neg_const, add_const, mul_const];
-        try norm_num1;
-        try simp only [↓reduceIte, const_const, one_const, neg_const, add_const, mul_const]
+        first | norm_num1; simp only [elimDestruct, const_const, one_const, neg_const, add_const, mul_const] | norm_num1; simp only [↓reduceIte, const_const, one_const, neg_const, add_const, mul_const]
       )
     )
 
@@ -222,7 +232,20 @@ example : destruct ms_const = .some ((0, 42), .nil) := by
 example : destruct (PreMS.mul ms_const ms_cons)  = .some ((0, 42), .nil) := by
   unfold ms_const ms_cons
   elim_destruct
-  sorry
+  sorry -- OK
+
+example : destruct (PreMS.add (PreMS.add ms_cons.neg ms_cons) ms_cons) = .none := by
+  unfold ms_cons
+  elim_destruct
+  sorry -- OK
+
+example :
+    let ms_zero : PreMS [id] := PreMS.const [id] 0;
+    destruct (PreMS.mul ms_cons ms_zero) = .none := by
+  intro ms_zero
+  unfold ms_zero ms_cons
+  elim_destruct
+  sorry -- TODO : PreMS [] --> Real
 
 example : (if (1 : ℝ) < (3/2 : ℝ) then 1 else 0) = 1 := by
   norm_num1

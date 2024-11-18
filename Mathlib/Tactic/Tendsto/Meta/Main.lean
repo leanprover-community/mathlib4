@@ -37,6 +37,11 @@ partial def createMS (body : Expr) : MetaM MS := do
     let ms2 ← createMS arg2
     -- if h_basis_eq : ms1.basis =Q ms2.basis then
     return MS.add ms1 ms2 ⟨⟩
+  | (``HSub.hSub, #[_, _, _, _, arg1, arg2]) =>
+    let ms1 ← createMS arg1
+    let ms2 ← createMS arg2
+    -- if h_basis_eq : ms1.basis =Q ms2.basis then
+    return MS.sub ms1 ms2 ⟨⟩
   | (``HMul.hMul, #[_, _, _, _, arg1, arg2]) =>
     let ms1 ← createMS arg1
     let ms2 ← createMS arg2
@@ -146,35 +151,3 @@ elab "compute_asymptotics" : tactic =>
       | _ => throwError "function should be lambda"
     | _ =>
       dbg_trace f!"no"
-
-example :
-  let f := fun (y : ℝ) ↦ -y;
-  Tendsto f atTop atBot := by
-  simp
-  compute_asymptotics
-
-lemma lol :
-  let f := fun (y : ℝ) ↦ y + y;
-  Tendsto f atTop atTop := by
-  simp
-  compute_asymptotics
-
-#print axioms lol
-
-example :
-  let f := fun (y : ℝ) ↦ (-y) + y;
-  Tendsto f atTop (nhds 0) := by
-  simp only
-  compute_asymptotics
-
-example :
-  let f := fun (y : ℝ) ↦ (-y) * y;
-  Tendsto f atTop atBot := by
-  simp only
-  compute_asymptotics
-
-example :
-  let f := fun (y : ℝ) ↦ -2 * y;
-  Tendsto f atTop atBot := by
-  simp only
-  compute_asymptotics
