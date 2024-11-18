@@ -838,9 +838,8 @@ instance [inst : Invertible (2 : R)] : Invertible (2 : Module.End R M) :=
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
 @[simp]
 lemma half_moduleEnd_apply_eq_half_smul [Invertible (2 : R)] (x : M) :
-    ⅟ (2 : Module.End R M) x = ⅟ (2 : R) • x := by
-  rw [← LinearMap.smul_def, invOf_smul_eq_iff, two_smul, ← add_smul, invOf_two_add_invOf_two,
-    one_smul]
+    ⅟ (2 : Module.End R M) x = ⅟ (2 : R) • x :=
+  rfl
 
 variable [AddCommGroup N] [Module R N]
 variable (S) [CommSemiring S] [Algebra S R] [Module S N] [IsScalarTower S R N]
