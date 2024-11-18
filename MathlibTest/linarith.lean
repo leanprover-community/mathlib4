@@ -8,6 +8,12 @@ private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
 set_option autoImplicit false
 
+open Lean.Elab.Tactic in
+def testSorryTac : TacticM Unit := do
+  let e ← getMainTarget
+  let t ← `(test_sorry)
+  closeMainGoalUsing `sorry fun _ _ => elabTerm t e
+
 example {α} [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
 
@@ -274,6 +280,20 @@ example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z >
 
 example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34*y) : x ≤ 5 := by
   linarith only [hx]
+
+/- The speed of `linarith` is very sensitive to how much typeclass inference is demanded by the
+lemmas it orchestrates.
+
+This example took 3318 heartbeats (and 110 ms on a good laptop) on an earlier implementation, which
+in several places used off-the-shelf library lemmas requiring low-level typeclasses, e.g.
+`Add{Left,Right}{Strict}Mono`.
+
+After a tweak to rely only on custom `linarith` clones of these lemmas taking high-level typeclasses,
+this now (November 2024) takes 1647 heartbeats (63 ms on a good laptop). -/
+set_option maxHeartbeats 2000 in
+example {K : Type*} [LinearOrderedField K] {x y : K}
+    (h : x + y = 10) (h' : x + 2 * y ≤ 18) (h : x < 2) : False := by
+  linarith (config := {discharger := testSorryTac})
 
 example (u v x y A B : ℚ)
     (a : 0 < A)
