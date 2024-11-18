@@ -448,6 +448,10 @@ lemma under_smul {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G 
   ext a
   rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
 
+variable (B) in
+@[simp]
+theorem under_top : under A (⊤ : Ideal B) = ⊤ := comap_top
+
 variable {A}
 
 /-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
@@ -461,6 +465,10 @@ theorem over_def [P.LiesOver p] : p = P.under A := LiesOver.over
 theorem mem_of_liesOver [P.LiesOver p] (x : A) : x ∈ p ↔ algebraMap A B x ∈ P := by
   rw [P.over_def p]
   rfl
+
+variable (A B) in
+instance top_liesOver_top : (⊤ : Ideal B).LiesOver (⊤ : Ideal A) where
+  over := (under_top A B).symm
 
 theorem eq_top_iff_of_liesOver [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
   rw [P.over_def p]
@@ -527,8 +535,7 @@ theorem under_bot : under A (⊥ : Ideal B) = ⊥ :=
 instance bot_liesOver_bot : (⊥ : Ideal B).LiesOver (⊥ : Ideal A) where
   over := (under_bot A B).symm
 
-variable {A} {B}
-
+variable {A B} in
 theorem ne_bot_of_liesOver_of_ne_bot (hp : p ≠ ⊥) (P : Ideal B) [P.LiesOver p] : P ≠ ⊥ := by
   contrapose! hp
   rw [over_def P p, hp, under_bot]
@@ -690,7 +697,7 @@ variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommR
 instance primesOver.isMaximal : Q.1.IsMaximal :=
   Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p
 
-variable (A) (B) in
+variable (A B) in
 lemma primesOver_bot [Nontrivial A] [IsDomain B] : primesOver (⊥ : Ideal A) B = {⊥} := by
   ext p
   refine ⟨fun ⟨_, ⟨h⟩⟩ ↦ p.eq_bot_of_comap_eq_bot h.symm, ?_⟩
