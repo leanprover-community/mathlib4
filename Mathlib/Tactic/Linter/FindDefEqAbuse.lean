@@ -47,7 +47,7 @@ elab "find_defeq_abuse" tk:("!")? ppSpace id:ident : command => do
     | false, _ => return
 
 namespace FindDefEqAbuse
-#check Expr.containsConst
+
 @[inherit_doc Mathlib.Linter.linter.findDefEqAbuse]
 def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.findDefEqAbuse (← getOptions) do
