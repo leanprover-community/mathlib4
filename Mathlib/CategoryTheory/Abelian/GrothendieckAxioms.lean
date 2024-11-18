@@ -120,7 +120,7 @@ instance preservesFiniteLimits_liftToFinset : PreservesFiniteLimits (liftToFinse
     preservesFiniteLimits_of_natIso (liftToFinsetEvaluationIso  I).symm
 
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
-def AB4.ofAB5 [HasFilteredColimits C] [AB5 C] : AB4 C where
+lemma AB4.of_AB5 [HasFilteredColimits C] [AB5 C] : AB4 C where
   preservesFiniteLimits J :=
     letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
       comp_preservesFiniteLimits _ _

@@ -54,7 +54,7 @@ work to convert to this version: namely, the natural isomorphism
 `(evaluation C D).obj k ⋙ prod.functor.obj (F.obj k) ≅
   prod.functor.obj F ⋙ (evaluation C D).obj k`
 -/
-def FunctorCategory.prod_preservesColimits [HasBinaryProducts D] [HasColimits D]
+lemma FunctorCategory.prod_preservesColimits [HasBinaryProducts D] [HasColimits D]
     [∀ X : D, PreservesColimits (prod.functor.obj X)] (F : C ⥤ D) :
     PreservesColimits (prod.functor.obj F) where
   preservesColimitsOfShape {J : Type u} [Category.{u, u} J] :=
@@ -190,20 +190,20 @@ instance whiskeringRightPreservesColimits {C : Type*} [Category C] {D : Type*} [
 
 -- Porting note: fixed spelling mistake in def
 /-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
-noncomputable def preservesLimit_of_lan_preservesLimit {C D : Type u} [SmallCategory C]
+lemma preservesLimit_of_lan_preservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
     [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
   apply @preservesLimitsOfShape_of_reflects_of_preserves _ _ _ _ _ _ _ _ F yoneda ?_
   exact preservesLimitsOfShape_of_natIso (Presheaf.compYonedaIsoYonedaCompLan F).symm
 
 /-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
-def preservesFiniteLimits_of_evaluation {D : Type*} [Category D] {E : Type*} [Category E]
+lemma preservesFiniteLimits_of_evaluation {D : Type*} [Category D] {E : Type*} [Category E]
     (F : C ⥤ D ⥤ E) (h : ∀ d : D, PreservesFiniteLimits (F ⋙ (evaluation D E).obj d)) :
     PreservesFiniteLimits F :=
   ⟨fun J _ _ => preservesLimitsOfShape_of_evaluation F J fun k => (h k).preservesFiniteLimits _⟩
 
 /-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
-def preservesFiniteColimits_of_evaluation {D : Type*} [Category D] {E : Type*} [Category E]
+lemma preservesFiniteColimits_of_evaluation {D : Type*} [Category D] {E : Type*} [Category E]
     (F : C ⥤ D ⥤ E) (h : ∀ d : D, PreservesFiniteColimits (F ⋙ (evaluation D E).obj d)) :
     PreservesFiniteColimits F :=
   ⟨fun J _ _ => preservesColimitsOfShape_of_evaluation F J fun k => (h k).preservesFiniteColimits _⟩

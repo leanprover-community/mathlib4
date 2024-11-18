@@ -457,7 +457,7 @@ end PreservesLimitPairs
 section ProdComparisonIso
 
 /-- If `prodComparison F A B` is an isomorphism, then `F` preserves the limit of `pair A B`. -/
-noncomputable def preservesLimit_pair_of_isIso_prodComparison (A B : C)
+lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
     [IsIso (prodComparison F A B)] :
     PreservesLimit (pair A B) F := by
  apply preservesLimit_of_preserves_limit_cone (product A B).isLimit

@@ -187,11 +187,12 @@ def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cones.functori
   unit := functorialityUnit' adj K
   counit := functorialityCounit' adj K
 
+include adj in
 /-- A right adjoint preserves limits.
 
 See <https://stacks.math.columbia.edu/tag/0038>.
 -/
-def rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
+lemma rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
   preservesLimitsOfShape :=
     { preservesLimit :=
         { preserves := fun hc =>

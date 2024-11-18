@@ -85,14 +85,15 @@ noncomputable instance isPreservedBy_of_preservesHomology [F.PreservesHomology] 
 
 variable [h.IsPreservedBy F]
 
+include h in
 /-- When a left homology data is preserved by a functor `F`, this functor
 preserves the kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
-def IsPreservedBy.hg : PreservesLimit (parallelPair S.g 0) F :=
+lemma IsPreservedBy.hg : PreservesLimit (parallelPair S.g 0) F :=
   @IsPreservedBy.g _ _ _ _ _ _ _ h F _ _
 
 /-- When a left homology data `h` is preserved by a functor `F`, this functor
 preserves the cokernel of `h.f' : S.X₁ ⟶ h.K`. -/
-def IsPreservedBy.hf' : PreservesColimit (parallelPair h.f' 0) F := IsPreservedBy.f'
+lemma IsPreservedBy.hf' : PreservesColimit (parallelPair h.f' 0) F := IsPreservedBy.f'
 
 /-- When a left homology data `h` of a short complex `S` is preserved by a functor `F`,
 this is the induced left homology data `h.map F` for the short complex `S.map F`. -/
@@ -164,14 +165,15 @@ noncomputable instance isPreservedBy_of_preservesHomology [F.PreservesHomology] 
 
 variable [h.IsPreservedBy F]
 
+include h in
 /-- When a right homology data is preserved by a functor `F`, this functor
 preserves the cokernel of `S.f : S.X₁ ⟶ S.X₂`. -/
-def IsPreservedBy.hf : PreservesColimit (parallelPair S.f 0) F :=
+lemma IsPreservedBy.hf : PreservesColimit (parallelPair S.f 0) F :=
   @IsPreservedBy.f _ _ _ _ _ _ _ h F _ _
 
 /-- When a right homology data `h` is preserved by a functor `F`, this functor
 preserves the kernel of `h.g' : h.Q ⟶ S.X₃`. -/
-def IsPreservedBy.hg' : PreservesLimit (parallelPair h.g' 0) F :=
+lemma IsPreservedBy.hg' : PreservesLimit (parallelPair h.g' 0) F :=
   @IsPreservedBy.g' _ _ _ _ _ _ _ h F _ _
 
 /-- When a right homology data `h` of a short complex `S` is preserved by a functor `F`,
@@ -276,7 +278,7 @@ variable {S}
 
 /-- If a functor preserves a certain left homology data of a short complex `S`, then it
 preserves the left homology of `S`. -/
-def PreservesLeftHomologyOf.mk' (h : S.LeftHomologyData) [h.IsPreservedBy F] :
+lemma PreservesLeftHomologyOf.mk' (h : S.LeftHomologyData) [h.IsPreservedBy F] :
     F.PreservesLeftHomologyOf S where
   isPreservedBy h' :=
     { g := ShortComplex.LeftHomologyData.IsPreservedBy.hg h F
@@ -289,7 +291,7 @@ def PreservesLeftHomologyOf.mk' (h : S.LeftHomologyData) [h.IsPreservedBy F] :
 
 /-- If a functor preserves a certain right homology data of a short complex `S`, then it
 preserves the right homology of `S`. -/
-def PreservesRightHomologyOf.mk' (h : S.RightHomologyData) [h.IsPreservedBy F] :
+lemma PreservesRightHomologyOf.mk' (h : S.RightHomologyData) [h.IsPreservedBy F] :
     F.PreservesRightHomologyOf S where
   isPreservedBy h' :=
     { f := ShortComplex.RightHomologyData.IsPreservedBy.hf h F

@@ -178,7 +178,7 @@ instance [HasFiniteColimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Ep
 
 /-- A functor `D ⥤ HomologicalComplex C c` preserves limits of shape `J`
 if for any `i`, `G ⋙ eval C c i` does. -/
-def preservesLimitsOfShape_of_eval {D : Type*} [Category D]
+lemma preservesLimitsOfShape_of_eval {D : Type*} [Category D]
     (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesLimitsOfShape J (G ⋙ eval C c i)) :
     PreservesLimitsOfShape J G :=
@@ -187,7 +187,7 @@ def preservesLimitsOfShape_of_eval {D : Type*} [Category D]
 
 /-- A functor `D ⥤ HomologicalComplex C c` preserves colimits of shape `J`
 if for any `i`, `G ⋙ eval C c i` does. -/
-def preservesColimitsOfShape_of_eval {D : Type*} [Category D]
+lemma preservesColimitsOfShape_of_eval {D : Type*} [Category D]
     (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesColimitsOfShape J (G ⋙ eval C c i)) :
     PreservesColimitsOfShape J G :=

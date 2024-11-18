@@ -450,7 +450,7 @@ theorem hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts
       (hasBinaryCoproducts_of_hasInitial_and_pushouts C) inferInstance)
 
 /-- If G preserves initial objects and pushouts, it preserves all finite colimits. -/
-noncomputable def preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
+lemma preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
     [HasPushouts C] (G : C ⥤ D) [PreservesColimitsOfShape (Discrete.{0} PEmpty) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesFiniteColimits G := by
   haveI : HasFiniteColimits C := hasFiniteColimits_of_hasInitial_and_pushouts

@@ -292,7 +292,7 @@ open Limits
 If a reflective subcategory is an exponential ideal, then the reflector preserves binary products.
 This is the converse of `exponentialIdeal_of_preserves_binary_products`.
 -/
-noncomputable def preservesBinaryProductsOfExponentialIdeal :
+lemma preservesBinaryProducts_of_exponentialIdeal :
     PreservesLimitsOfShape (Discrete WalkingPair) (reflector i) where
   preservesLimit {K} :=
     letI := preservesLimit_pair_of_isIso_prodComparison
@@ -302,7 +302,7 @@ noncomputable def preservesBinaryProductsOfExponentialIdeal :
 /--
 If a reflective subcategory is an exponential ideal, then the reflector preserves finite products.
 -/
-noncomputable def preservesFiniteProductsOfExponentialIdeal (J : Type) [Fintype J] :
+lemma preservesFiniteProducts_of_exponentialIdeal (J : Type) [Fintype J] :
     PreservesLimitsOfShape (Discrete J) (reflector i) := by
   letI := preservesBinaryProductsOfExponentialIdeal i
   letI : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i
