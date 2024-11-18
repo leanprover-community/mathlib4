@@ -101,7 +101,7 @@ lemma algHom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R 
 
 @[simp]
 lemma ofHom_algHom {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
-    @ofHom _ _ no_index _ no_index _ _ _ _ _ (Hom.algHom f) = f := rfl
+    ofHom (Hom.algHom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type v} [Ring X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
@@ -233,7 +233,7 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
     { homEquiv := fun _ _ =>
         { toFun := fun f ↦ (FreeAlgebra.lift _).symm f.algHom
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
-          left_inv := fun f ↦ by simp
+          left_inv := fun f ↦ by ext; simp
           right_inv := fun f ↦ by simp
         }
       homEquiv_naturality_left_symm := by
