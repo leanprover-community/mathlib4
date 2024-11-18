@@ -106,7 +106,6 @@ def normalizerMonoidHom : H.normalizer →* MulAut H where
   map_one' := by simp [DFunLike.ext_iff]
   map_mul' := by simp [DFunLike.ext_iff, mul_assoc]
 
-/-- The N/C theorem: N(H)/C(H) is isomorphic to a subgroup of Aut(H). -/
 theorem normalizerMonoidHom_ker :
     H.normalizerMonoidHom.ker = (Subgroup.centralizer H).subgroupOf H.normalizer := by
   simp [Subgroup.ext_iff, DFunLike.ext_iff, mem_subgroupOf, mem_centralizer_iff,
