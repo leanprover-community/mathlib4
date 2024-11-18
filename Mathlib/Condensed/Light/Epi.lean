@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
 import Mathlib.Condensed.Light.Limits
@@ -21,6 +22,7 @@ universe v u w u' v'
 open CategoryTheory Sheaf Limits ConcreteCategory GrothendieckTopology
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+  Abelian.hasFiniteBiproducts
 
 namespace LightCondensed
 
@@ -269,22 +271,30 @@ end General
 variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M n ⟶ N n) [∀ n, Epi (f n)]
 
 instance (n : ℕ) : Epi (functorMap f n) := by
-  rw [← isLocallySurjective_iff_epi', coherentTopology.isLocallySurjective_iff,
-    regularTopology.isLocallySurjective_iff]
-  intro S y
-  have : IsLocallySurjective (f n) := by
-    rw [isLocallySurjective_iff_epi']
-    infer_instance
-  rw [coherentTopology.isLocallySurjective_iff, regularTopology.isLocallySurjective_iff] at this
-  obtain ⟨T, g, _, x, w⟩ := this S ((functorObjProj (M := M) (N := N) n).val.app _ y)
-  sorry
-  -- let y' : (m : ℕ) → ((h : m < n) → (M m).val.obj ⟨S⟩) :=
-  --   fun m h ↦ (functorObjProj_pos (M := M) (N := N) _ _ h).val.app _ y
-  -- let y' : (m : ℕ) → ((h : ¬(m < n)) → (N m).val.obj ⟨S⟩) :=
-  --   fun m h ↦ (functorObjProj_neg (M := M) (N := N) _ _ h).val.app _ y
-  -- let y' : (m : ℕ) → (if _ : m < n then M m else N m).val.obj ⟨S⟩ :=
-  --   fun m ↦ if h : m < n then (functorObjProj_pos (M := M) (N := N) _ _ h).val.app _ y else _
-
+  rw [functorMap, Pi.map_eq_prod_map (P := fun m : ℕ ↦ m < n + 1)]
+  apply (config := { allowSynthFailures := true }) epi_comp
+  apply (config := { allowSynthFailures := true }) epi_comp
+  apply (config := { allowSynthFailures := true }) prod.map_epi
+  · apply (config := { allowSynthFailures := true }) Pi.map_epi
+    intro ⟨j, hj⟩
+    split_ifs with hh
+    · by_cases j < n
+      · split_ifs
+        infer_instance
+      · split_ifs
+        infer_instance
+    · dsimp at hh
+      omega
+  · apply (config := { allowSynthFailures := true }) IsIso.epi_of_iso
+    apply (config := { allowSynthFailures := true }) Pi.map_isIso
+    intro ⟨i, hi⟩
+    split_ifs with hh
+    · dsimp at hh
+      omega
+    · by_cases i < n
+      · omega
+      · split_ifs
+        infer_instance
 
 instance : Epi (Limits.Pi.map f) := by
   let F : ℕᵒᵖ ⥤ LightCondMod R := Functor.ofOpSequence (functorMap f)

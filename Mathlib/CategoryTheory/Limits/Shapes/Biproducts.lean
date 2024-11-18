@@ -610,6 +610,43 @@ def biproduct.mapIso {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ 
   hom := biproduct.map fun b => (p b).hom
   inv := biproduct.map fun b => (p b).inv
 
+instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
+    [∀ j, Epi (p j)] : Epi (biproduct.map p) := by
+  have : biproduct.map p =
+      (biproduct.isoCoproduct _).hom ≫ Sigma.map p ≫ (biproduct.isoCoproduct _).inv := by
+    ext
+    simp only [map_π, isoCoproduct_hom, isoCoproduct_inv, Category.assoc, ι_desc_assoc,
+      ι_colimMap_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app, colimit.ι_desc_assoc,
+      Cofan.mk_pt, Cofan.mk_ι_app, ι_π, ι_π_assoc]
+    split_ifs
+    all_goals aesop
+  rw [this]
+  infer_instance
+
+instance Pi.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
+    [∀ j, Epi (p j)] : Epi (Pi.map p) := by
+  have : Pi.map p = (biproduct.isoProduct _).inv ≫ biproduct.map p ≫
+      (biproduct.isoProduct _).hom := by
+    aesop
+  rw [this]
+  infer_instance
+
+instance biproduct.map_mono {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
+    [∀ j, Mono (p j)] : Mono (biproduct.map p) := by
+  have : biproduct.map p =
+      (biproduct.isoProduct _).hom ≫ Pi.map p ≫ (biproduct.isoProduct _).inv := by
+    aesop
+  rw [this]
+  infer_instance
+
+instance Sigma.map_mono {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
+    [∀ j, Mono (p j)] : Mono (Sigma.map p) := by
+  have : Sigma.map p = (biproduct.isoCoproduct _).inv ≫ biproduct.map p ≫
+      (biproduct.isoCoproduct _).hom := by
+    aesop
+  rw [this]
+  infer_instance
+
 /-- Two biproducts which differ by an equivalence in the indexing type,
 and up to isomorphism in the factors, are isomorphic.
 
@@ -1701,6 +1738,30 @@ theorem biprod.isIso_inl_iff_id_eq_fst_comp_inl (X Y : C) [HasBinaryBiproduct X 
     rw [this, IsIso.inv_hom_id]
   · intro h
     exact ⟨⟨biprod.fst, biprod.inl_fst, h.symm⟩⟩
+
+instance biprod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
+    [Epi g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Epi (biprod.map f g) := by
+  rw [show biprod.map f g =
+    (biprod.isoCoprod _ _).hom ≫ coprod.map f g ≫ (biprod.isoCoprod _ _).inv by aesop]
+  infer_instance
+
+instance prod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
+    [Epi g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Epi (prod.map f g) := by
+  rw [show prod.map f g = (biprod.isoProd _ _).inv ≫ biprod.map f g ≫
+    (biprod.isoProd _ _).hom by aesop]
+  infer_instance
+
+instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
+    [Mono g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Mono (biprod.map f g) := by
+  rw [show biprod.map f g = (biprod.isoProd _ _).hom ≫ prod.map f g ≫
+    (biprod.isoProd _ _).inv by aesop]
+  infer_instance
+
+instance coprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
+    [Mono g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Mono (coprod.map f g) := by
+  rw [show coprod.map f g = (biprod.isoCoprod _ _).inv ≫ biprod.map f g ≫
+    (biprod.isoCoprod _ _).hom by aesop]
+  infer_instance
 
 section BiprodKernel
 

@@ -373,6 +373,10 @@ from a family of isomorphisms between the factors.
 abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ᶜ f ≅ ∏ᶜ g :=
   lim.mapIso (Discrete.natIso fun X => p X.as)
 
+instance Pi.map_isIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ⟶ g b)
+    [∀ i, IsIso (p i)] : IsIso <| Pi.map p :=
+  inferInstanceAs (IsIso (Pi.mapIso (fun b ↦ asIso (p b))).hom)
+
 section
 
 /- In this section, we provide some API for products when we are given a functor
