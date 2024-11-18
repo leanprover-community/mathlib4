@@ -70,7 +70,7 @@ variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 /-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
 TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
 once a version of `Algebra` without the `commutes'` field is introduced.
-See issue #18110.
+See issue https://github.com/leanprover-community/mathlib4/issues/18110.
 -/
 instance one : One (Submodule R A) :=
   ⟨LinearMap.range (LinearMap.toSpanSingleton R A 1)⟩
@@ -158,6 +158,9 @@ theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
 
 theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
   AddSubmonoid.mul_le_mul_right h
+
+theorem mul_comm_of_commute (h : ∀ m ∈ M, ∀ n ∈ N, Commute m n) : M * N = N * M :=
+  toAddSubmonoid_injective <| AddSubmonoid.mul_comm_of_commute h
 
 variable (M N P)
 
@@ -505,14 +508,17 @@ protected theorem pow_induction_on_right {C : A → Prop} (hr : ∀ r : R, C (al
     (fun x y _i _hx _hy => hadd x y)
     (fun _i _x _hx => hmul _) hx
 
-/-- `Submonoid.map` as a `MonoidWithZeroHom`, when applied to `AlgHom`s. -/
+/-- `Submonoid.map` as a `RingHom`, when applied to an `AlgHom`. -/
 @[simps]
 def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
-    Submodule R A →*₀ Submodule R A' where
+    Submodule R A →+* Submodule R A' where
   toFun := map f.toLinearMap
   map_zero' := Submodule.map_bot _
+  map_add' := (Submodule.map_sup · · _)
   map_one' := Submodule.map_one _
-  map_mul' _ _ := Submodule.map_mul _ _ _
+  map_mul' := (Submodule.map_mul · · _)
+
+theorem mapHom_id : mapHom (.id R A) = .id _ := RingHom.ext map_id
 
 /-- The ring of submodules of the opposite algebra is isomorphic to the opposite ring of
 submodules. -/
@@ -553,14 +559,11 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 on either side). -/
 @[simps]
 def span.ringHom : SetSemiring A →+* Submodule R A where
-  -- Note: the hint `(α := A)` is new in #8386
-  toFun s := Submodule.span R (SetSemiring.down (α := A) s)
+  toFun s := Submodule.span R (SetSemiring.down s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
   map_add' := span_union
-  map_mul' s t := by
-    dsimp only -- Porting note: new, needed due to new-style structures
-    rw [SetSemiring.down_mul, span_mul_span]
+  map_mul' s t := by simp_rw [SetSemiring.down_mul, span_mul_span]
 
 section
 
@@ -617,7 +620,7 @@ variable (R A)
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   -- Porting note: have to unfold both `HSMul.hSMul` and `SMul.smul`
-  -- Note: the hint `(α := A)` is new in #8386
+  -- Note: the hint `(α := A)` is new in https://github.com/leanprover-community/mathlib4/pull/8386
   smul s P := span R (SetSemiring.down (α := A) s) * P
   smul_add _ _ _ := mul_add _ _ _
   add_smul s t P := by

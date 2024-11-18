@@ -105,14 +105,14 @@ partial def expandLinearCombo (ty : Expr) (stx : Syntax.Term) : TermElabM Expand
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
       pure (.proof rel p)
-    | .const c, .proof rel p =>
+    | .const c, .proof eq p =>
       logWarningAt c "this constant has no effect on the linear combination; it can be dropped \
         from the term"
-      .proof rel <$> ``(Eq.symm $p)
+      .proof eq <$> ``(Eq.symm $p)
     | .proof rel₁ p₁, .proof eq p₂ =>
       let i := mkIdent <| Ineq.addRelRelData rel₁ eq
       .proof rel₁ <$> ``($i $p₁ (Eq.symm $p₂))
-    | .proof _ _, .proof _ _ =>
+    | _, .proof _ _ =>
       throwError "coefficients of inequalities in 'linear_combination' must be nonnegative"
   | `(-$e) => do
       match ← expandLinearCombo ty e with

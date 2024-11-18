@@ -1106,11 +1106,11 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
         refine Subfield.closure_le.mpr (Set.union_subset (fun x hx => ?_) ?_)
         · obtain ⟨y, hy⟩ := hx
           refine ⟨y, ?_⟩
-          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
           exact hy
         · refine Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), ?_⟩
-          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
           rfl)
 
@@ -1144,7 +1144,7 @@ noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K
   dim := (minpoly K x).natDegree
   basis := powerBasisAux hx
   basis_eq_pow i := by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [powerBasisAux, Basis.map_apply, PowerBasis.basis_eq_pow, AlgEquiv.toLinearEquiv_apply,
       map_pow, AdjoinRoot.powerBasis_gen, adjoinRootEquivAdjoin_apply_root]
 
@@ -1306,7 +1306,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     have := Fact.mk hf
     intro e
     apply not_irreducible_C ((g.map (algebraMap _ _)).coeff 0 - AdjoinSimple.gen K (root f))
-    -- Needed to specialize `map_sub` to avoid a timeout #8386
+    -- Needed to specialize `map_sub` to avoid a timeout https://github.com/leanprover-community/mathlib4/pull/8386
     rw [RingHom.map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
     apply hg (AdjoinRoot f)
     rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]

@@ -87,7 +87,7 @@ section
 /-- Let `x` be a submonoid of `A`, then `NumDenSameDeg 𝒜 x` is a structure with a numerator and a
 denominator with same grading such that the denominator is contained in `x`.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure NumDenSameDeg where
   deg : ι
@@ -270,7 +270,7 @@ end HomogeneousLocalization
 kernel of `embedding 𝒜 x`. This is essentially the subring of `Aₓ` where the numerator and
 denominator share the same grading.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def HomogeneousLocalization : Type _ :=
   Quotient (Setoid.ker <| HomogeneousLocalization.NumDenSameDeg.embedding 𝒜 x)
@@ -463,6 +463,15 @@ lemma mk_eq_zero_of_num (f : NumDenSameDeg 𝒜 x) (h : f.num = 0) : mk f = 0 :=
 lemma mk_eq_zero_of_den (f : NumDenSameDeg 𝒜 x) (h : f.den = 0) : mk f = 0 := by
   have := subsingleton 𝒜 (h ▸ f.den_mem)
   exact Subsingleton.elim _ _
+
+variable (𝒜 x) in
+/-- The map from `𝒜 0` to the degree `0` part of `𝒜ₓ` sending `f ↦ f/1`. -/
+def fromZeroRingHom : 𝒜 0 →+* HomogeneousLocalization 𝒜 x where
+  toFun f := .mk ⟨0, f, 1, one_mem _⟩
+  map_one' := rfl
+  map_mul' f g := by ext; simp [Localization.mk_mul]
+  map_zero' := rfl
+  map_add' f g := by ext; simp [Localization.add_mk, add_comm f.1 g.1]
 
 end HomogeneousLocalization
 
