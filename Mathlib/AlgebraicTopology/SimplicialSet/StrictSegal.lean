@@ -106,9 +106,85 @@ lemma spine_face_ge (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
   simp [SimplicialObject.δ]
   simp [← FunctorToTypes.map_comp_apply, ← op_comp]
   simp [Hom.toOrderHom, SimplexCategory.δ, Hom.mk]
-  apply congr_arg
   rw [Fin.succAbove_of_le_castSucc]
   exact h
+
+/-- If `i + 1 = j`, `mkOfSucc i ≫ δ j` is a composition of two arrows and
+therefore not in the image of `mkOfSucc`. -/
+lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
+    (h : i.succ.castSucc < j) :
+    mkOfSucc i ≫ SimplexCategory.δ j = mkOfSucc i.castSucc := by
+  ext x
+  simp [SimplexCategory.δ]
+  fin_cases x
+  · simp
+    rw [Fin.succAbove_of_castSucc_lt]
+    · rfl
+    · refine Nat.lt_trans ?_ h
+      simp
+  · simp
+    rw [Fin.succAbove_of_castSucc_lt]
+    · rfl
+    · exact h
+
+/-- If `i + 1 = j`, `mkOfSucc i ≫ δ j` is a composition of two arrows and
+therefore not in the image of `mkOfSucc`. -/
+lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
+    (h : j < i.succ.castSucc) :
+    mkOfSucc i ≫ SimplexCategory.δ j = mkOfSucc i.succ := by
+  ext x
+  simp [SimplexCategory.δ]
+  fin_cases x
+  · simp
+    rw [Fin.succAbove_of_le_castSucc]
+    · rfl
+    · exact Nat.le_of_lt_succ h
+  · simp
+    rw [Fin.succAbove_of_le_castSucc]
+    · rfl
+    · exact Nat.le_of_lt h
+
+lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
+    (h : j = i.succ.castSucc) :
+    mkOfSucc i ≫ SimplexCategory.δ j = intervalEdge i 2 (by omega) := by
+  ext x
+  simp [SimplexCategory.δ]
+  fin_cases x
+  · simp
+    rw [Fin.succAbove_of_castSucc_lt]
+    · simp
+      simp [Hom.toOrderHom, intervalEdge, mkOfLe, Hom.mk]
+    · rw [h]
+      simp
+  · simp
+    rw [h]
+    rw [Fin.succAbove_castSucc_self]
+    simp [Hom.toOrderHom, intervalEdge, mkOfLe, Hom.mk, mkHom, ]
+
+lemma spine_face_arrow_lt (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin n)
+    (h : j.succ.castSucc < i) :
+    (X.spine n (X.δ i (spineToSimplex f))).arrow j = f.arrow j := by
+  simp [SimplicialObject.δ]
+  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [mkOfSucc_δ_lt h]
+  rw [spineToSimplex_arrow]
+
+lemma spine_face_arrow_gt (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin n)
+    (h : i < j.succ.castSucc) :
+    (X.spine n (X.δ i (spineToSimplex f))).arrow j = f.arrow j.succ := by
+  simp [SimplicialObject.δ]
+  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [mkOfSucc_δ_gt h]
+  rw [spineToSimplex_arrow]
+
+lemma spine_face_arrow_eq (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin n)
+    (h : i = j.succ.castSucc) :
+    (X.spine n (X.δ i (spineToSimplex f))).arrow j
+      = spineToDiagonal (Path.interval f j 2 (by omega)) := by
+  simp [SimplicialObject.δ]
+  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [mkOfSucc_δ_eq h]
+  rw [spineToSimplex_edge]
 
 /- set_option pp.coercions false -/
 open Opposite in
@@ -120,25 +196,68 @@ instance : Quasicategory X := by
   apply spineInjective
   ext k
   · simp only [spineEquiv, Function.comp_apply, Equiv.coe_fn_mk]
-    have hkj : k.castSucc < j ∨ j ≤ k.castSucc := Nat.lt_or_ge k.castSucc j
+    have hkj : k.castSucc < j ∨ j ≤ k.castSucc := Nat.lt_or_ge k j
     rcases hkj with hcmp | hcmp
     · rw [spine_face_lt _ _ _ hcmp]
       simp only [mapPath, spine_vertex, Fin.coe_eq_castSucc]
       rw [← types_comp_apply (σ₀.app _) (X.map _)]
-      rw [← σ₀.naturality ([0].const [n + 1] k).op]
-      have hcast : j.succAbove k = k.castSucc :=
-        Fin.succAbove_of_castSucc_lt j k hcmp
-      rw [← hcast]
+      rw [← σ₀.naturality]
+      /- apply congr_arg -/
+      /- simp [spineHorn, idSpine, horn, standardSimplex.idSimplex_objEquiv] -/
+      /- simp [Hom.mk, standardSimplex.objEquiv, Equiv.ulift] -/
+      /- simp [SimplexCategory.δ, Hom.mk] -/
+      rw [← Fin.succAbove_of_castSucc_lt j k hcmp]
       rfl
     · rw [spine_face_ge _ _ _ hcmp]
       simp only [mapPath, spine_vertex, Fin.coe_eq_castSucc]
       rw [← types_comp_apply (σ₀.app _) (X.map _)]
-      rw [← σ₀.naturality ([0].const [n + 1] k).op]
-      have hsucc : j.succAbove k = k.succ := 
-        Fin.succAbove_of_le_castSucc j k hcmp
-      rw[← hsucc]
+      rw [← σ₀.naturality]
+      rw [← Fin.succAbove_of_le_castSucc j k hcmp]
       rfl
-  · sorry
+  · simp only [spineEquiv, Function.comp_apply, Equiv.coe_fn_mk]
+    have hkj : k.succ.castSucc < j ∨ j < k.succ.castSucc ∨ j = k.succ.castSucc := by omega
+    rcases hkj with hcmp | hcmp | heq
+    · rw [spine_face_arrow_lt _ _ _ hcmp]
+      simp only [mapPath, spine_arrow, Fin.coe_eq_castSucc]
+      rw [← types_comp_apply (σ₀.app _) (X.map _)]
+      rw [← σ₀.naturality]
+      apply congr_arg
+      simp [spineHorn, idSpine, horn, standardSimplex.idSimplex_objEquiv]
+      simp [Hom.mk, standardSimplex.objEquiv, Equiv.ulift]
+      simp [standardSimplex, uliftFunctor]
+      rw [mkOfSucc_δ_lt hcmp]
+      rfl
+    · rw [spine_face_arrow_gt _ _ _ hcmp]
+      simp only [mapPath, spine_arrow, Fin.coe_eq_castSucc]
+      rw [← types_comp_apply (σ₀.app _) (X.map _)]
+      rw [← σ₀.naturality]
+      apply congr_arg
+      simp [spineHorn, idSpine, horn, standardSimplex.idSimplex_objEquiv]
+      simp [Hom.mk, standardSimplex.objEquiv, Equiv.ulift]
+      simp [standardSimplex, uliftFunctor]
+      rw [mkOfSucc_δ_gt hcmp]
+      rfl
+    · rw [spine_face_arrow_eq _ _ _ heq]
+      simp [spineToDiagonal, spine_arrow, Fin.coe_eq_castSucc, diagonal]
+      rw [← spineToSimplex_interval]
+      rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      rw [diag_subinterval_eq]
+      simp [horn.face, standardSimplex.objEquiv, Equiv.ulift]
+
+      rw [← types_comp_apply (σ₀.app _) (X.map _)]
+      rw [← σ₀.naturality]
+      simp [horn, standardSimplex.idSimplex_objEquiv]
+
+      simp [standardSimplex.objEquiv, Equiv.ulift, standardSimplex, uliftFunctor]
+      rw [← mkOfSucc_δ_eq heq]
+      /- simp [mapPath, spineHorn, idSpine, standardSimplex.idSimplex, yonedaEquiv, yonedaCompUliftFunctorEquiv] -/
+      /- conv => -/ 
+      /-   rhs -/
+      /-   congr -/
+      /-   rfl -/
+      /-   left -/
+      /-   rw [mkOfSucc_δ_eq heq] -/
+      sorry
 
 end StrictSegal
 
