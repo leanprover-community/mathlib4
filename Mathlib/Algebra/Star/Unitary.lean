@@ -174,7 +174,9 @@ theorem unitary.inv_mem {g : G} (hg : g ∈ unitary G) : g⁻¹ ∈ unitary G :=
 variable (G) in
 /-- `unitary` as a `Subgroup` of a group.
 
-Note the group structure on this type is not defeq to the one on `unitary`. -/
+Note the group structure on this type is not defeq to the one on `unitary`.
+This situation naturally arises when considering the unitary elements as a 
+subgroup of the group of units of a star monoid. -/
 def unitarySubgroup : Subgroup G where
   toSubmonoid := unitary G
   inv_mem' := unitary.inv_mem
@@ -183,7 +185,7 @@ def unitarySubgroup : Subgroup G where
 theorem unitarySubgroup_toSubmonoid : (unitarySubgroup G).toSubmonoid = unitary G := rfl
 
 @[simp]
-theorem mem_unitarySubgroup_iff {U : G} : U ∈ unitarySubgroup G ↔ U ∈ unitary G :=
+theorem mem_unitarySubgroup_iff {g : G} : g ∈ unitarySubgroup G ↔ g ∈ unitary G :=
   Iff.rfl
 
 nonrec theorem unitary.inv_mem_iff {g : G} : g⁻¹ ∈ unitary G ↔ g ∈ unitary G :=
