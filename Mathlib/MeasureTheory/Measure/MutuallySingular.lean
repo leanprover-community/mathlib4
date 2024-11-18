@@ -197,8 +197,8 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
 
 lemma MutuallySingular.disjoint (h : μ ⟂ₘ ν) : Disjoint μ ν := by
   have h_bot_iff (ξ : Measure α) : ξ ≤ ⊥ ↔ ξ = 0 := by
-      rw [le_bot_iff]
-      rfl
+    rw [le_bot_iff]
+    rfl
   intro ξ hξμ hξν
   rw [h_bot_iff]
   ext s hs
@@ -246,11 +246,9 @@ lemma disjoint_of_disjoint_ae (h : Disjoint (ae μ) (ae ν)) : Disjoint μ ν :=
     exact ht₂
 
 lemma mutuallySingular_tfae : List.TFAE
-    [
-      μ ⟂ₘ ν,
+    [ μ ⟂ₘ ν,
       Disjoint μ ν,
-      Disjoint (ae μ) (ae ν)
-    ] := by
+      Disjoint (ae μ) (ae ν) ] := by
   tfae_have 1 → 2
   | h =>  h.disjoint
   tfae_have 2 → 1
