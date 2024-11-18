@@ -95,9 +95,10 @@ variable {α β : Type*}
 
 variable [Preorder α] [Preorder β]
 
-lemma height_orderDual (x : αᵒᵈ) : height x = coheight (α := α) x := rfl
-
-lemma coheight_orderDual (x : αᵒᵈ) : coheight x = height (α := α) x := rfl
+@[simp] lemma height_toDual (x : α) : height (OrderDual.toDual x) = coheight x := rfl
+@[simp] lemma height_ofDual (x : αᵒᵈ) : height (OrderDual.ofDual x) = coheight x := rfl
+@[simp] lemma coheight_toDual (x : α) : coheight (OrderDual.toDual x) = height x := rfl
+@[simp] lemma coheight_ofDual (x : αᵒᵈ) : coheight (OrderDual.ofDual x) = height x := rfl
 
 /--
 The **coheight** of an element `a` in a preorder `α` is the supremum of the rightmost index of all
@@ -155,9 +156,10 @@ lemma height_eq_iSup_last_eq (a : α) :
 Alternative definition of coheight, with the supremum only ranging over those series
 that begin at `a`.
 -/
-lemma coheight_eq_iSup_head_eq  (a : α) :
+lemma coheight_eq_iSup_head_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length) := by
-  rw [← height_orderDual, height_eq_iSup_last_eq]
+  show height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length)
+  rw [height_eq_iSup_last_eq]
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
     RelSeries.reverse_reverse⟩
   simp
@@ -204,7 +206,7 @@ lemma length_le_height_last {p : LTSeries α} : p.length ≤ height p.last :=
 /--
 The coheight of the first element in a series is larger or equal to the length of the series.
 -/
-lemma length_le_coheight_last {p : LTSeries α} : p.length ≤ coheight p.head :=
+lemma length_le_coheight_head {p : LTSeries α} : p.length ≤ coheight p.head :=
   length_le_coheight le_rfl
 
 /--
@@ -216,7 +218,7 @@ lemma index_le_height (p : LTSeries α) (i : Fin (p.length + 1)) : i ≤ height 
 /--
 The coheight of an element in a series is larger or equal to its reverse index in the series.
 -/
-lemma index_le_coheight (p : LTSeries α) (i : Fin (p.length + 1)) : i.rev ≤ coheight (p i) := by
+lemma rev_index_le_coheight (p : LTSeries α) (i : Fin (p.length + 1)) : i.rev ≤ coheight (p i) := by
   simpa using index_le_height (α := αᵒᵈ) p.reverse i.rev
 
 /--
@@ -246,8 +248,8 @@ lemma height_mono : Monotone (α := α) height :=
 @[gcongr] protected lemma _root_.GCongr.height_le_height (a b : α) (hab : a ≤ b) :
     height a ≤ height b := height_mono hab
 
-lemma coheight_mono : Antitone (α := α) coheight :=
-  fun _ _ hxy => height_mono (α := αᵒᵈ) hxy
+lemma coheight_anti : Antitone (α := α) coheight :=
+  (height_mono (α := αᵒᵈ)).dual_left
 
 private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by
@@ -269,7 +271,7 @@ lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (
   intro p hlast
   apply le_iSup₂_of_le (p.map f hf) (by simp [hlast]) (by simp)
 
-lemma coheight_le_coheight_apply_of_astrictMono (f : α → β) (hf : StrictMono f) (x : α) :
+lemma coheight_le_coheight_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
     coheight x ≤ coheight (f x) := by
   apply height_le_height_apply_of_strictMono (α := αᵒᵈ)
   exact fun _ _ h ↦ hf h
@@ -285,7 +287,7 @@ lemma coheight_orderIso (f : α ≃o β) (x : α) : coheight (f x) = coheight x 
 
 private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
     (h : (⨆ x, f x) = n) : ∃ x, f x = n := by
-  obtain ⟨x, hx⟩ := ENat.sSup_mem_of_Nonempty_of_lt_top (h ▸ ENat.coe_lt_top _)
+  obtain ⟨x, hx⟩ := ENat.sSup_mem_of_nonempty_of_lt_top (h ▸ ENat.coe_lt_top _)
   use x
   simpa [hx] using h
 
@@ -347,7 +349,7 @@ lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := 
 /--
 Another characterization of coheight, based on the supremum of the coheights of elements above.
 -/
-lemma coheight_eq_iSup_lt_height (x : α) : coheight x = ⨆ y > x, coheight y + 1 :=
+lemma coheight_eq_iSup_gt_coheight (x : α) : coheight x = ⨆ y > x, coheight y + 1 :=
   height_eq_iSup_lt_height (α := αᵒᵈ) x
 
 lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ ∀ y < x, height y < n := by
@@ -402,7 +404,7 @@ protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
 @[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by simp
 
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
-    n < height x ↔ (∃ y < x, height y = n) where
+    n < height x ↔ ∃ y < x, height y = n where
   mp h := by
     obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
     rw [hx] at h; norm_cast at h
@@ -417,7 +419,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
 lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤):
-    n < coheight x ↔ (∃ y > x, coheight y = n) :=
+    n < coheight x ↔ ∃ y > x, coheight y = n :=
   coe_lt_height_iff (α := αᵒᵈ) hfin
 
 lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
@@ -433,7 +435,7 @@ lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
     · exact coe_lt_height_iff hfin
     · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff (x := x) (n := n+1)
 
-lemma coheight_eq_coe_add_one_iff (x : α) (n : ℕ) :
+lemma coheight_eq_coe_add_one_iff {x : α} {n : ℕ} :
     coheight x = n + 1 ↔
       coheight x < ⊤ ∧ (∃ y > x, coheight y = n) ∧ (∀ y > x, coheight y ≤ n) :=
   height_eq_coe_add_one_iff (α := αᵒᵈ)
@@ -454,7 +456,7 @@ lemma height_eq_coe_iff {x : α} {n : ℕ} :
     rename_i y _
     cases height y <;> simp; norm_cast; omega
 
-lemma coheight_eq_coe_iff (x : α) (n : ℕ) :
+lemma coheight_eq_coe_iff {x : α} {n : ℕ} :
     coheight x = n ↔
       coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y > x, coheight y < n) :=
   height_eq_coe_iff (α := αᵒᵈ)
@@ -475,7 +477,7 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
     simpa [hp] using length_le_height_last (p := p.eraseLast)
 
 /-- The elements of finite coheight `n` are the maximal elements among those of coheight `≥ n`. -/
-lemma coheight_eq_coe_iff_maximal_le_coheight (a : α) (n : ℕ) :
+lemma coheight_eq_coe_iff_maximal_le_coheight {a : α} {n : ℕ} :
     coheight a = n ↔ Maximal (fun y => n ≤ coheight y) a :=
   height_eq_coe_iff_minimal_le_height (α := αᵒᵈ)
 
