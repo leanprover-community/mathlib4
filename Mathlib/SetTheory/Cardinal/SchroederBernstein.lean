@@ -101,8 +101,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
     show ∃ i, Surjective fun x : s => x.val i from
       Classical.by_contradiction fun h =>
         have h : ∀ i, ∃ y, ∀ x ∈ s, (x : ∀ i, β i) i ≠ y := by
-          simpa only [ne_eq, Surjective, Subtype.exists, exists_prop, not_exists, not_forall,
-            not_and] using h
+          simpa [Surjective] using h
         let ⟨f, hf⟩ := Classical.axiom_of_choice h
         have : f ∈ s :=
           have : insert f s ∈ sets β := fun i x hx y hy => by

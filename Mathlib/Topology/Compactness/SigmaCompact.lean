@@ -97,10 +97,10 @@ lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSig
 lemma IsSigmaCompact.image {f : X → Y} (hf : Continuous f) {s : Set X} (hs : IsSigmaCompact s) :
     IsSigmaCompact (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
-/-- If `f : X → Y` is `Inducing`, the image `f '' s` of a set `s` is σ-compact
+/-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
-lemma Inducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
-    (hf : Inducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
+lemma IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
+    (hf : IsInducing f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) := by
   constructor
   · exact fun h ↦ h.image hf.continuous
   · rintro ⟨L, hcomp, hcov⟩
@@ -118,11 +118,14 @@ lemma Inducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
         _ = f ⁻¹' (f '' s) ∩ s := by rw [hcov]
         _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
 
+@[deprecated (since := "2024-10-28")]
+alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
+
 /-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
   if and only `s` is σ-compact. -/
 lemma IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
-  hf.toInducing.isSigmaCompact_iff
+  hf.isInducing.isSigmaCompact_iff
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.isSigmaCompact_iff := IsEmbedding.isSigmaCompact_iff
@@ -265,7 +268,7 @@ theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactS
   hs.isClosedEmbedding_subtypeVal.sigmaCompactSpace
 
 instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
-  ULift.isClosedEmbedding_down.sigmaCompactSpace
+  IsClosedEmbedding.uliftDown.sigmaCompactSpace
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
 only countably many elements, `Set.Countable` version. -/

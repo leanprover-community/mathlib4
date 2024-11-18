@@ -52,7 +52,7 @@ open scoped FinsetFamily
 
 namespace Finset
 namespace Colex
-variable {α : Type*} [LinearOrder α] {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α)} {s t : Finset α} {r : ℕ}
+variable {α : Type*} [LinearOrder α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
 
 /-- This is important for iterating Kruskal-Katona: the shadow of an initial segment is also an
 initial segment. -/

@@ -44,10 +44,13 @@ instance pseudoMetrizableSpace_prod [PseudoMetrizableSpace X] [PseudoMetrizableS
 
 /-- Given an inducing map of a topological space into a pseudo metrizable space, the source space
 is also pseudo metrizable. -/
-theorem _root_.Inducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
-    (hf : Inducing f) : PseudoMetrizableSpace X :=
+theorem _root_.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
+    (hf : IsInducing f) : PseudoMetrizableSpace X :=
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
   ⟨⟨hf.comapPseudoMetricSpace, rfl⟩⟩
+
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.pseudoMetrizableSpace := _root_.IsInducing.pseudoMetrizableSpace
 
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
@@ -59,7 +62,7 @@ instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
 
 instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
     PseudoMetrizableSpace s :=
-  inducing_subtype_val.pseudoMetrizableSpace
+  IsInducing.subtypeVal.pseudoMetrizableSpace
 
 instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (π i)] :
     PseudoMetrizableSpace (∀ i, π i) := by

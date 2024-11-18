@@ -239,16 +239,18 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f :
             (half_lt_self ε_pos))
 
 /-- The topology on `α →ᵇ β` is exactly the topology induced by the natural map to `α →ᵤ β`. -/
-theorem inducing_coeFn : Inducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) := by
-  rw [inducing_iff_nhds]
+theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) := by
+  rw [isInducing_iff_nhds]
   refine fun f => eq_of_forall_le_iff fun l => ?_
   rw [← tendsto_iff_comap, ← tendsto_id', tendsto_iff_tendstoUniformly,
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
 
+@[deprecated (since := "2024-10-28")] alias inducing_coeFn := isInducing_coeFn
+
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
-  ⟨inducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
+  ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_coeFn := isEmbedding_coeFn
@@ -1438,8 +1440,8 @@ variable [TopologicalSpace α] [NormedLatticeAddCommGroup β]
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
 
-instance instSup : Sup (α →ᵇ β) where
-  sup f g :=
+instance instSup : Max (α →ᵇ β) where
+  max f g :=
     { toFun := f ⊔ g
       continuous_toFun := f.continuous.sup g.continuous
       map_bounded' := by
@@ -1449,8 +1451,8 @@ instance instSup : Sup (α →ᵇ β) where
         simp_rw [NormedAddCommGroup.dist_eq] at hf hg ⊢
         exact (norm_sup_sub_sup_le_add_norm _ _ _ _).trans (add_le_add (hf _ _) (hg _ _)) }
 
-instance instInf : Inf (α →ᵇ β) where
-  inf f g :=
+instance instInf : Min (α →ᵇ β) where
+  min f g :=
     { toFun := f ⊓ g
       continuous_toFun := f.continuous.inf g.continuous
       map_bounded' := by

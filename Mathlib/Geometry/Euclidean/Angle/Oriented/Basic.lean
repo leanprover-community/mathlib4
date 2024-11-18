@@ -794,7 +794,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
   have hc : IsConnected s := isConnected_univ.image _ (continuous_const.prod_mk
     ((continuous_id.smul continuous_const).add continuous_const)).continuousOn
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
-    refine ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle ?_ ?_
+    refine continuousOn_of_forall_continuousAt fun z hz => o.continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz

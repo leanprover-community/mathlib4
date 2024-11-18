@@ -6,9 +6,10 @@ Authors: Anne Baanen
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.QuotientPi
+import Mathlib.LinearAlgebra.Quotient.Pi
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.Data.ZMod.Quotient
 
 /-! # Ideals in free modules over PIDs
 

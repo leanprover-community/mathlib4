@@ -139,6 +139,27 @@ theorem splits_X_pow (n : ℕ) : (X ^ n).Splits i :=
 theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.Splits i := by
   rw [splits_map_iff, RingHom.id_comp]
 
+theorem Splits.comp_X_sub_C {i : L →+* F} (a : L) {f : L[X]}
+    (h : f.Splits i) : (f.comp (X - C a)).Splits i := by
+  cases h with
+  | inl h0 =>
+    left
+    simp only [map_eq_zero] at h0 ⊢
+    exact h0.symm ▸ zero_comp
+  | inr h =>
+    right
+    intro g irr dvd
+    rw [map_comp, Polynomial.map_sub, map_X, map_C, dvd_comp_X_sub_C_iff] at dvd
+    have := h (irr.map (algEquivAevalXAddC _)) dvd
+    rw [degree_eq_natDegree irr.ne_zero]
+    rwa [algEquivAevalXAddC_apply, ← comp_eq_aeval,
+      degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
+      natDegree_comp, natDegree_X_add_C, mul_one] at this
+
+theorem Splits.comp_X_add_C {i : L →+* F} (a : L) {f : L[X]}
+    (h : f.Splits i) : (f.comp (X + C a)).Splits i := by
+  simpa only [map_neg, sub_neg_eq_add] using h.comp_X_sub_C (-a)
+
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 :=
   letI := Classical.decEq L
@@ -300,6 +321,23 @@ theorem eq_prod_roots_of_splits {p : K[X]} {i : K →+* L} (hsplit : Splits i p)
 theorem eq_prod_roots_of_splits_id {p : K[X]} (hsplit : Splits (RingHom.id K) p) :
     p = C p.leadingCoeff * (p.roots.map fun a => X - C a).prod := by
   simpa using eq_prod_roots_of_splits hsplit
+
+theorem Splits.dvd_of_roots_le_roots {p q : K[X]} (hp : p.Splits (RingHom.id _)) (hp0 : p ≠ 0)
+    (hq : p.roots ≤ q.roots) : p ∣ q := by
+  by_cases hq0 : q = 0
+  · simp [hq0]
+  · rw [eq_prod_roots_of_splits_id hp, C_mul_dvd (leadingCoeff_ne_zero.2 hp0)]
+    exact dvd_trans
+      (Multiset.prod_dvd_prod_of_le (Multiset.map_le_map hq))
+      (prod_multiset_X_sub_C_dvd _)
+
+theorem Splits.dvd_iff_roots_le_roots {p q : K[X]}
+    (hp : p.Splits (RingHom.id _)) (hp0 : p ≠ 0) (hq0 : q ≠ 0) :
+    p ∣ q ↔ p.roots ≤ q.roots := by
+  refine ⟨?_, hp.dvd_of_roots_le_roots hp0⟩
+  rintro ⟨r, rfl⟩
+  rw [roots_mul hq0]
+  exact le_self_add
 
 theorem aeval_eq_prod_aroots_sub_of_splits [Algebra K L] {p : K[X]}
     (hsplit : Splits (algebraMap K L) p) (v : L) :
