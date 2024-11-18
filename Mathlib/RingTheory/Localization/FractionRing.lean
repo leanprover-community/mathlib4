@@ -222,10 +222,7 @@ such that `z = f x * (f y)⁻¹`. -/
 noncomputable def lift (hg : Injective g) : K →+* L :=
   IsLocalization.lift fun y : nonZeroDivisors A => isUnit_map_of_injective hg y
 
-theorem lift_unique
-    {L : Type*} [Field L]
-    {g : A →+* L} (hg : Function.Injective g)
-    {f : K →+* L}
+theorem lift_unique (hg : Function.Injective g) {f : K →+* L}
     (hf1 : ∀ x, f (algebraMap A K x) = g x) : IsFractionRing.lift hg = f :=
   IsLocalization.lift_unique _ hf1
 
