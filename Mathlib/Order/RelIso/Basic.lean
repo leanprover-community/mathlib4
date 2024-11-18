@@ -682,10 +682,6 @@ protected theorem surjective (e : r ≃r s) : Surjective e :=
 theorem eq_iff_eq (f : r ≃r s) {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 
-theorem isWellOrder {α : Type u} {β : Type v} {r : α → α → Prop}
-    {s : β → β → Prop} [IsWellOrder α r] (f : r ≃r s) : IsWellOrder β s :=
-  f.symm.toRelEmbedding.isWellOrder
-
 /-- Any equivalence lifts to a relation isomorphism between `s` and its preimage. -/
 protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s :=
   ⟨f, Iff.rfl⟩
