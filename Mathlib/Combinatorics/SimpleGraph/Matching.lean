@@ -6,6 +6,7 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Data.Fintype.Order
+import Mathlib.Data.Set.Functor
 
 /-!
 # Matchings

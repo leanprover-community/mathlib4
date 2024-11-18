@@ -1449,7 +1449,7 @@ end DecidablePiExists
 
 section
 
-variable [DecidableEq α] {s t u : Multiset α} {a b : α}
+variable [DecidableEq α] {s t u : Multiset α} {a : α}
 
 /-- `s - t` is the multiset such that `count a (s - t) = count a s - count a t` for all `a`
   (note that it is truncated subtraction, so it is `0` if `count a t ≥ count a s`). -/
