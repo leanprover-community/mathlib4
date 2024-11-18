@@ -62,7 +62,6 @@ def toWithTop : ℕ∞ ≃o WithTop ℕ := OrderIso.refl _
 @[simp]
 lemma toWithTop_top : toWithTop ⊤ = ⊤ := rfl
 
-@[simp]
 lemma toWithTop_eq_top_iff (a : ℕ∞) : toWithTop a = ⊤ ↔ a = ⊤ := Iff.rfl
 
 @[simp]
@@ -86,7 +85,6 @@ def ofWithTop : WithTop ℕ ≃o ℕ∞ := OrderIso.refl _
 @[simp]
 lemma ofWithTop_top : ofWithTop ⊤ = ⊤ := rfl
 
-@[simp]
 lemma ofWithTop_eq_top_iff (a : WithTop ℕ) : ofWithTop a = ⊤ ↔ a = ⊤ := Iff.rfl
 
 @[simp]
