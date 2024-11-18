@@ -374,7 +374,7 @@ abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ 
   lim.mapIso (Discrete.natIso fun X => p X.as)
 
 instance Pi.map_isIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ⟶ g b)
-    [∀ i, IsIso (p i)] : IsIso <| Pi.map p :=
+    [∀ b, IsIso <| p b] : IsIso <| Pi.map p :=
   inferInstanceAs (IsIso (Pi.mapIso (fun b ↦ asIso (p b))).hom)
 
 section
@@ -490,6 +490,10 @@ from a family of isomorphisms between the factors.
 -/
 abbrev Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∐ f ≅ ∐ g :=
   colim.mapIso (Discrete.natIso fun X => p X.as)
+
+instance Sigma.map_isIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ⟶ g b)
+    [∀ b, IsIso <| p b] : IsIso (Sigma.map p) :=
+  inferInstanceAs (IsIso (Sigma.mapIso (fun b ↦ asIso (p b))).hom)
 
 section
 
@@ -666,6 +670,9 @@ theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
 
 instance (priority := 100) hasProductsOfShape_of_hasProducts [HasProducts.{w} C] (J : Type w) :
     HasProductsOfShape J C := inferInstance
+
+instance (priority := 100) hasCoproductsOfShape_of_hasCoproducts [HasCoproducts.{w} C]
+    (J : Type w) : HasCoproductsOfShape J C := inferInstance
 
 /-!
 (Co)products over a type with a unique term.
