@@ -135,7 +135,7 @@ theorem colimitLimitToLimitColimit_injective :
     -- Now it's just a calculation using `W` and `w`.
     simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
     rw [← W _ _ (fH j), ← W _ _ (gH j)]
-    -- Porting note(#10745): had to add `Limit.map_π_apply`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): had to add `Limit.map_π_apply`
     -- (which was un-tagged simp since "simp can prove it")
     simp [Limit.map_π_apply, w]
 

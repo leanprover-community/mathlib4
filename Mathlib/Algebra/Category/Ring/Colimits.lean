@@ -280,18 +280,13 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     refine Quot.inductionOn x ?_
     intro x
     induction x with
-    | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]
-    | one => erw [quot_one, map_one (f := m), (descMorphism F s).map_one]
-    -- extra rfl with leanprover/lean4#2644
-    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]; rfl
+    | zero => simp
+    | one => simp
+    | neg x ih => simp [ih]
     | of j x =>
       exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
-    | add x y ih_x ih_y =>
-    -- extra rfl with leanprover/lean4#2644
-        erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]; rfl
-    | mul x y ih_x ih_y =>
-    -- extra rfl with leanprover/lean4#2644
-        erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]; rfl
+    | add x y ih_x ih_y => simp [ih_x, ih_y]
+    | mul x y ih_x ih_y => simp [ih_x, ih_y]
 
 instance hasColimits_ringCat : HasColimits RingCat where
   has_colimits_of_shape _ _ :=
@@ -589,18 +584,13 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     refine Quot.inductionOn x ?_
     intro x
     induction x with
-    | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]
-    | one => erw [quot_one, map_one (f := m), (descMorphism F s).map_one]
-    -- extra rfl with leanprover/lean4#2644
-    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]; rfl
+    | zero => simp
+    | one => simp
+    | neg x ih => simp [ih]
     | of j x =>
       exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
-    | add x y ih_x ih_y =>
-    -- extra rfl with leanprover/lean4#2644
-        erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]; rfl
-    | mul x y ih_x ih_y =>
-    -- extra rfl with leanprover/lean4#2644
-        erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]; rfl
+    | add x y ih_x ih_y => simp [ih_x, ih_y]
+    | mul x y ih_x ih_y => simp [ih_x, ih_y]
 
 instance hasColimits_commRingCat : HasColimits CommRingCat where
   has_colimits_of_shape _ _ :=
