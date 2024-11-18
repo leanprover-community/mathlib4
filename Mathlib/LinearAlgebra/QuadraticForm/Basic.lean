@@ -826,12 +826,12 @@ section AssociatedHom
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-/-- If `2` is invertible in `R`, then it is also invertible in `End_R M`. -/
+/-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
 instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) :=
   map_ofNat (algebraMap R (Module.End R M)) 2 ▸ Invertible.map (algebraMap R (Module.End R M)) 2
 
-/-- If `2` is invertible in `R`, then applying the inverse of `2` in `End_R M` to an element
-of `M` is the same as multplying by the inverse of `2` in `R`. -/
+/-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
+of `M` is the same as multiplying by the inverse of `2` in `R`. -/
 @[simp]
 lemma half_moduleEnd_apply_eq_half_smul [Invertible (2 : R)] (x : M) :
     ⅟ (2 : Module.End R M) x = ⅟ (2 : R) • x := by
@@ -852,7 +852,7 @@ Over a commutative ring, use `QuadraticMap.associated`, which gives an `R`-linea
 general ring with no nontrivial distinguished commutative subring, use `QuadraticMap.associated'`,
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
 def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) :=
-  -- TODO: this `center` stuff is vertigial from an incorrect non-commutative version, but we leave
+  -- TODO: this `center` stuff is vestigial from an incorrect non-commutative version, but we leave
   -- it behind to make a future refactor to a *correct* non-commutative version easier in future.
   -- This was the code prior to weakining the invertibility hypothesis on 2:
   --   (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
@@ -860,11 +860,11 @@ def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) :=
   --      map_add' := fun _x _y => LinearMap.ext₂ <| polar_add _ _
   --      map_smul' := fun _c _x => LinearMap.ext₂ <| polar_smul _ _ }
     { toFun := fun Q ↦ ⅟ (2 : Module.End R N) • polarBilin Q
-      map_add' := fun _x _y ↦
+      map_add' := fun _ _ ↦
         LinearMap.ext₂ fun _ _ ↦ by
           simp only [LinearMap.smul_apply, polarBilin_apply_apply, coeFn_add, polar_add,
             LinearMap.smul_def, LinearMap.map_add, LinearMap.add_apply]
-      map_smul' := fun _c _x ↦
+      map_smul' := fun _ _ ↦
         LinearMap.ext₂ fun _ _ ↦ by
           simp only [LinearMap.smul_apply, polarBilin_apply_apply, coeFn_smul, polar_smul,
             LinearMap.smul_def, LinearMap.map_smul_of_tower, RingHom.id_apply] }
@@ -887,8 +887,9 @@ theorem associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
     (associatedHom S Q).IsSymm := fun x y ↦ by
   simp only [associated_apply, sub_eq_add_neg, add_assoc, RingHom.id_apply, add_comm, add_left_comm]
 
-/-- A version of `QuadraticMap.associated_isSymm` for general targets. -/
-lemma associated_isSymm' : (associatedHom S Q).flip = associatedHom S Q := by
+/-- A version of `QuadraticMap.associated_isSymm` for general targets
+(using `flip` because `IsSymm` does not apply here). -/
+lemma associated_flip : (associatedHom S Q).flip = associatedHom S Q := by
   ext
   simp only [LinearMap.flip_apply, associated_apply, add_comm, sub_eq_add_neg, add_left_comm,
     add_assoc]
