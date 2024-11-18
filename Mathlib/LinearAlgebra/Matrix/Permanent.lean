@@ -7,13 +7,13 @@ import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Matrix.Diagonal
 /-!
-# permanentanent of a matrix
+# Permanent of a matrix
 
-This file defines the permanentanent of a matrix, `Matrix.permanent`, and some of its properties.
+This file defines the permanent of a matrix, `Matrix.permanent`, and some of its properties.
 
 ## Main definitions
 
-* `Matrix.permanent`: the permanentanent of a square matrix, as a sum over permanentutations
+* `Matrix.permanent`: the permanent of a square matrix, as a sum over permutations
 
 -/
 
@@ -26,7 +26,7 @@ open Matrix
 variable {n : Type*} [DecidableEq n] [Fintype n]
 variable {R : Type*} [CommSemiring R]
 
-/-- The permanentanent of a matrix defined as a sum over all permanentutations -/
+/-- The permanent of a matrix defined as a sum over all permutations -/
 def permanent (M : Matrix n n R) : R := ∑ σ : Perm n, ∏ i, M (σ i) i
 
 @[simp]
@@ -49,7 +49,7 @@ theorem permanent_eq_one_of_card_eq_zero {A : Matrix n n R} (h : card n = 0) : p
   haveI : IsEmpty n := card_eq_zero_iff.mp h
   permanent_isEmpty
 
-/-- If `n` has only one element, the permanentanent of an `n` by `n` matrix is just that element.
+/-- If `n` has only one element, the permanent of an `n` by `n` matrix is just that element.
 Although `Unique` implies `DecidableEq` and `Fintype`, the instances might
 not be syntactically equal. Thus, we need to fill in the args explicitly. -/
 @[simp]
@@ -66,7 +66,7 @@ theorem permanent_eq_elem_of_card_eq_one {A : Matrix n n R} (h : card n = 1) (k 
   haveI : Subsingleton n := card_le_one_iff_subsingleton.mp h.le
   permanent_eq_elem_of_subsingleton _ _
 
-/-- Transposing a matrix preserves the permanentanent. -/
+/-- Transposing a matrix preserves the permanent. -/
 @[simp]
 theorem permanent_transpose (M : Matrix n n R) : Mᵀ.permanent = M.permanent := by
   refine sum_bijective _ inv_involutive.bijective _ _ ?_
@@ -74,12 +74,12 @@ theorem permanent_transpose (M : Matrix n n R) : Mᵀ.permanent = M.permanent :=
   apply Fintype.prod_equiv σ
   simp
 
-/-- permuting the columns does not change the permanentanent. -/
+/-- Permuting the columns does not change the permanent. -/
 theorem permanent_permute_cols (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix σ id).permanent = M.permanent :=
   (Group.mulLeft_bijective σ).sum_comp fun τ ↦ ∏ i : n, M (τ i) i
 
-/-- permuting the rows does not change the permanentanent. -/
+/-- Permuting the rows does not change the permanent. -/
 theorem permanent_permute_rows (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix id σ).permanent = M.permanent := by
   rw [← permanent_transpose, transpose_submatrix, permanent_permute_cols, permanent_transpose]
