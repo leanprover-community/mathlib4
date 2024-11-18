@@ -39,5 +39,7 @@ esac
 # replace backticks in the title with single quotes
 unbacktickedTitle="${PR_TITLE//\`/\'}"
 
+>&2 echo "neat title: '${unbacktickedTitle}'"
+
 printf '%s requested a maintainer **%s** from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D}" "${SOURCE}" "${PR}" "${URL}"
 printf '```spoiler %s\n%s\n```\n' "${unbacktickedTitle}" "${PR_COMMENT}"
