@@ -4988,7 +4988,7 @@ import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Star
 import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 import Mathlib.Topology.ContinuousMap.CocompactMap
 import Mathlib.Topology.ContinuousMap.Compact
