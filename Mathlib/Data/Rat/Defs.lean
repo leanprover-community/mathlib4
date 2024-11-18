@@ -79,7 +79,7 @@ lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
 @[simp, nolint simpNF, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
 @[simp, nolint simpNF, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
 
--- Porting note (#11215): TODO Should this be namespaced?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO Should this be namespaced?
 
 lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
 

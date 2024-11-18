@@ -427,6 +427,11 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 --- Porting note: syntactically the same as the above
 
+theorem val_add_eq_of_add_lt {n : ℕ} {a b : Fin n} (huv : a.val + b.val < n) :
+    (a + b).val = a.val + b.val := by
+  rw [val_add]
+  simp [Nat.mod_eq_of_lt huv]
+
 lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
     ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
   split <;> fin_omega
@@ -1512,9 +1517,8 @@ theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
   rfl
 
 -- See note [no_index around OfNat.ofNat]
-@[simp]
 theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
-    ((no_index OfNat.ofNat n : Fin m) : ℕ) = OfNat.ofNat n % m :=
+    ((no_index (OfNat.ofNat n) : Fin m) : ℕ) = OfNat.ofNat n % m :=
   rfl
 
 section Mul
