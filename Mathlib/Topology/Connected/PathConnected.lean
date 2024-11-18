@@ -1197,7 +1197,7 @@ theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
 
-theorem open_pathConnected_basis (x : X) :
+theorem isOpen_isPathConnected_basis (x : X) :
     (𝓝 x).HasBasis (fun s : Set X ↦ IsOpen s ∧ x ∈ s ∧ IsPathConnected s) id := by
   refine ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ mem_nhds_iff.mpr ⟨u, hu.2, hu.1.1, hu.1.2.1⟩⟩⟩
   have ⟨u, hus, hu, hxu⟩ := mem_nhds_iff.mp hs
@@ -1229,7 +1229,7 @@ theorem IsOpen.isConnected_iff_isPathConnected {U : Set X} (U_op : IsOpen U) :
 
 /-- Locally path-connected spaces are locally connected. -/
 instance : LocallyConnectedSpace X := by
-  refine ⟨forall_imp (fun x h ↦ ⟨fun s ↦ ?_⟩) open_pathConnected_basis⟩
+  refine ⟨forall_imp (fun x h ↦ ⟨fun s ↦ ?_⟩) isOpen_isPathConnected_basis⟩
   refine ⟨fun hs ↦ ?_, fun ⟨u, ⟨hu, hxu, _⟩, hus⟩ ↦ mem_nhds_iff.mpr ⟨u, hus, hu, hxu⟩⟩
   let ⟨u, ⟨hu, hxu, hu'⟩, hus⟩ := (h.mem_iff' s).mp hs
   exact ⟨u, ⟨hu, hxu, hu'.isConnected⟩, hus⟩
