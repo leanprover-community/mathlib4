@@ -621,12 +621,12 @@ theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul (hpos : 0 < n)
   symm
   refine prod_nbij (algebraMap R K) (fun a ha ↦ mem_nthRootsFinset_map ha _) (fun a _ b _ H ↦
     NoZeroSMulDivisors.algebraMap_injective R K H) (fun a ha ↦ ?_) (fun _ _ ↦ rfl)
-  rw [mem_coe, Polynomial.mem_nthRootsFinset hpos] at ha
-  simp only [Set.mem_image, mem_coe]
-  have : NeZero n := ⟨hpos.ne'⟩
-  obtain ⟨i, -, hζ⟩ := h'.eq_pow_of_pow_eq_one ha
-  refine ⟨ζ ^ i, ?_, by rwa [map_pow]⟩
-  rw [Polynomial.mem_nthRootsFinset hpos, ← pow_mul, mul_comm, pow_mul, h.pow_eq_one, one_pow]
+  have := Set.surj_on_of_inj_on_of_ncard_le (s := nthRootsFinset n R)
+    (t := nthRootsFinset n K) _ (fun _ hr ↦ mem_nthRootsFinset_map hr _)
+    (fun a _ b _ H ↦ NoZeroSMulDivisors.algebraMap_injective R K H)
+    (by simp [h.card_nthRootsFinset, h'.card_nthRootsFinset])
+  obtain ⟨x, hx, hx1⟩ := this _ ha
+  exact ⟨x, hx, hx1.symm⟩
 
 /-- If there is a primitive `n`th root of unity in `R` and `n` is odd, then
 `X ^ n + Y ^ n = ∏ (X + μ Y)`, where `μ` varies over the `n`-th roots of unity. -/
