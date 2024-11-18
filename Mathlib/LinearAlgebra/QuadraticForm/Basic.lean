@@ -663,6 +663,9 @@ between quadratic maps `Q` over `R` from `M` to `N` and symmetric bilinear maps
 (see `QuadraticMap.associated_rightInverse`). The associated bilinear map is half
 `Q.polarBilin` (see `QuadraticMap.two_nsmul_associated`); this is where the invertibility condition
 comes from. We spell the condition as `[Invertible (2 : Module.End R N)]`.
+
+Note that this makes the bijection available in more cases than the simpler condition
+`Invertible (2 : R)`, e.g., when `R = ℤ` and `N = ℝ`.
 -/
 
 namespace LinearMap
@@ -827,8 +830,9 @@ section AssociatedHom
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
-instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) :=
-  map_ofNat (algebraMap R (Module.End R M)) 2 ▸ Invertible.map (algebraMap R (Module.End R M)) 2
+instance [inst : Invertible (2 : R)] : Invertible (2 : Module.End R M) :=
+  (Invertible.map (algebraMap R (Module.End R M)) 2).copy 2 <|
+    (map_ofNat (algebraMap R (Module.End R M)) 2).symm
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
