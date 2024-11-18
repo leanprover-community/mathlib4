@@ -93,18 +93,17 @@ def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, |(A.1 1 0)| = 0 → C A)
     simpa only [Fin.isValue, ne_eq, abs_eq_zero] using h
 
 /--Map from `Δ m → Δ m` which reduces a FixedDetMatrix towards a representative element in reps. -/
-def reduce : Δ m → Δ m := fun A => by
+def reduce : Δ m → Δ m := fun A ↦
   if |(A.1 1 0)| = 0 then
-    if  0 < A.1 0 0 then exact (T ^ (-(A.1 0 1/A.1 1 1))) • A else exact
+    if  0 < A.1 0 0 then (T ^ (-(A.1 0 1/A.1 1 1))) • A else
       (T ^ (-(-A.1 0 1/ -A.1 1 1))) • ( S • ( S • A)) --the -/- don't cancel with ℤ divs.
   else
-    exact reduce (reduce_step m A)
+    reduce (reduce_step m A)
   termination_by b => Int.natAbs (b.1 1 0)
   decreasing_by
       next a h =>
       zify
-      apply reduce_aux m
-      simpa only [Fin.isValue, ne_eq, abs_eq_zero] using h
+      exact reduce_aux m _ h
 
 lemma reduce_eqn1 (A : Δ m) (hc : |(A.1 1 0)| = 0) (ha : 0 < A.1 0 0) :
     reduce m A = (T ^ (-(A.1 0 1/A.1 1 1))) • A := by
