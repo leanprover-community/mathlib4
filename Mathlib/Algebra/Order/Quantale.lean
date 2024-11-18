@@ -62,9 +62,9 @@ open Function
 /-- An additive quantale is an additive semigroup distributing over a complete lattice. -/
 class IsAddQuantale (α : Type*) [AddSemigroup α] [CompleteLattice α] where
   /-- Addition is distributive over join in a quantale -/
-  protected add_sSup_eq_iSup_add (x : α) (s : Set α) : x + sSup s = ⨆ y ∈ s, x + y
+  protected add_sSup_distrib (x : α) (s : Set α) : x + sSup s = ⨆ y ∈ s, x + y
   /-- Addition is distributive over join in a quantale -/
-  protected sSup_add_eq_iSup_add (s : Set α) (y : α) : sSup s + y = ⨆ x ∈ s, x + y
+  protected sSup_add_distrib (s : Set α) (y : α) : sSup s + y = ⨆ x ∈ s, x + y
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[variable_alias]
@@ -75,9 +75,9 @@ structure AddQuantale (α : Type*)
 @[to_additive]
 class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
   /-- Multiplication is distributive over join in a quantale -/
-  protected mul_sSup_eq_iSup_mul (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
+  protected mul_sSup_distrib (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
   /-- Multiplication is distributive over join in a quantale -/
-  protected sSup_mul_eq_iSup_mul (s : Set α) (y : α) : sSup s * y = ⨆ x ∈ s, x * y
+  protected sSup_mul_distrib (s : Set α) (y : α) : sSup s * y = ⨆ x ∈ s, x * y
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[variable_alias, to_additive]
@@ -90,26 +90,26 @@ variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
 variable [Semigroup α][CompleteLattice α][IsQuantale α]
 
 @[to_additive]
-theorem mul_sSup_eq_iSup_mul : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_eq_iSup_mul _ _
+theorem mul_sSup_distrib : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_distrib _ _
 
 @[to_additive]
-theorem sSup_mul_eq_iSup_mul : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mul_eq_iSup_mul _ _
+theorem sSup_mul_distrib : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mul_distrib _ _
 
 @[to_additive]
 theorem mul_iSup_distrib : x * ⨆ i, f i = ⨆ i, x * f i := by
-  rw [iSup, mul_sSup_eq_iSup_mul, iSup_range]
+  rw [iSup, mul_sSup_distrib, iSup_range]
 
 @[to_additive]
 theorem iSup_mul_distrib : (⨆ i, f i) * x = ⨆ i, f i * x := by
-  rw [iSup, sSup_mul_eq_iSup_mul, iSup_range]
+  rw [iSup, sSup_mul_distrib, iSup_range]
 
 @[to_additive]
 theorem mul_sup_distrib : x * (y ⊔ z) = (x * y) ⊔ (x * z) := by
-  rw [← iSup_pair, ← sSup_pair, mul_sSup_eq_iSup_mul]
+  rw [← iSup_pair, ← sSup_pair, mul_sSup_distrib]
 
 @[to_additive]
 theorem sup_mul_distrib : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
-  rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_eq_iSup_mul]
+  rw [← (@iSup_pair _ _ _ (fun _? => _? * z) _ _), ← sSup_pair, sSup_mul_distrib]
 
 @[to_additive]
 instance : MulLeftMono α where
@@ -155,7 +155,7 @@ scoped infixr:60 " ⇨ᵣ " => rightMulResiduation
 theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z where
   mp h1 := by
     apply le_trans (mul_le_mul_right' h1 _)
-    simp_all only [leftMulResiduation, sSup_mul_eq_iSup_mul, Set.mem_setOf_eq,
+    simp_all only [leftMulResiduation, sSup_mul_distrib, Set.mem_setOf_eq,
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
@@ -163,7 +163,7 @@ theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z wher
 theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z where
   mp h1 := by
     apply le_trans (mul_le_mul_left' h1 _)
-    simp_all only [rightMulResiduation, mul_sSup_eq_iSup_mul, Set.mem_setOf_eq,
+    simp_all only [rightMulResiduation, mul_sSup_distrib, Set.mem_setOf_eq,
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
