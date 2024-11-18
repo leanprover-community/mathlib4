@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init
 import Lean.Meta.Tactic.Simp.Types
+import Qq
 
 /-!
 # A monad for tracking and deduplicating atoms
@@ -54,5 +55,12 @@ def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) := do
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
       return (i, c.atoms[i])
   modifyGet fun c ↦ ((c.atoms.size, e), { c with atoms := c.atoms.push e })
+
+open Qq in
+/-- If an atomic expression has already been encountered, get the index and the stored form of the
+atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
+If the atomic expression has *not* already been encountered, store it in the list of atoms, and
+return the new index (and the stored form of the atom, which will be itself). -/
+def AtomM.addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) : AtomM (Nat × Q($α)) := AtomM.addAtom e
 
 end Mathlib.Tactic
