@@ -132,7 +132,7 @@ def seminormFromConst : RingSeminorm R where
     have h_add : f ((x + y) * c ^ n) ≤ f (x * c ^ n) + f (y * c ^ n) := by
       simp only [add_mul, map_add_le_add f _ _]
     simp only [seminormFromConst_seq, div_add_div_same]
-    exact (div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f _) hc.symm) _)).mpr h_add
+    gcongr
   neg' x := by
     apply tendsto_nhds_unique_of_eventuallyEq (seminormFromConst_isLimit hf1 hc hpm (-x))
       (seminormFromConst_isLimit hf1 hc hpm x)
@@ -171,8 +171,8 @@ theorem seminormFromConst_isNonarchimedean (hna : IsNonarchimedean f) :
   have hmax : f ((x + y) * c ^ n) ≤ max (f (x * c ^ n)) (f (y * c ^ n)) := by
     simp only [add_mul, hna _ _]
   rw [le_max_iff] at hmax ⊢
-  rcases hmax with hmax | hmax <;> [left; right] <;>
-  exact (div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f c) hc.symm) _)).mpr hmax
+  unfold seminormFromConst_seq
+  apply hmax.imp <;> intro <;> gcongr
 
 /-- The function `seminormFromConst' hf1 hc hpm` is power-multiplicative. -/
 theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' hf1 hc hpm) := fun x m hm ↦ by
@@ -193,9 +193,8 @@ theorem seminormFromConst_le_seminorm (x : R) : seminormFromConst' hf1 hc hpm x 
   simp only [eventually_atTop, ge_iff_le]
   use 1
   intro n hn
-  apply le_trans ((div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f c) hc.symm) _)).mpr
-    (map_mul_le_mul _ _ _))
-  rw [hpm c hn, mul_div_assoc, div_self (pow_ne_zero n hc), mul_one]
+  rw [seminormFromConst_seq, div_le_iff₀ (by positivity), ← hpm c hn]
+  exact map_mul_le_mul ..
 
 /-- If `x : R` is multiplicative for `f`, then `seminormFromConst' hf1 hc hpm x = f x`. -/
 theorem seminormFromConst_apply_of_isMul {x : R} (hx : ∀ y : R, f (x * y) = f x * f y) :

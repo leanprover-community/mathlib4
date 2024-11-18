@@ -180,11 +180,6 @@ lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
     Continuous fun x => (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg)
 
-@[deprecated _root_.Continuous.compCM (since := "2024-01-30")]
-lemma continuous.comp' (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun x => (g x).comp (f x) :=
-  hg.compCM hf
-
 end Functorial
 
 section Ev
