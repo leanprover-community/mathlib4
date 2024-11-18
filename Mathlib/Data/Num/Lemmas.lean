@@ -308,7 +308,6 @@ theorem of_to_nat' : ∀ n : Num, Num.ofNat' (n : ℕ) = n
   | 0 => ofNat'_zero
   | pos p => p.of_to_nat'
 
-set_option linter.deprecated false in
 lemma toNat_injective : Injective (castNum : Num → ℕ) := LeftInverse.injective of_to_nat'
 
 @[norm_cast]

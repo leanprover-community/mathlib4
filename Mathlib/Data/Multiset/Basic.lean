@@ -1719,15 +1719,10 @@ def filter (s : Multiset α) : Multiset α :=
 theorem filter_zero : filter p 0 = 0 :=
   rfl
 
-#adaptation_note
-/--
-Please re-enable the linter once we moved to `nightly-2024-06-22` or later.
--/
-set_option linter.deprecated false in
 @[congr]
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
-  Quot.inductionOn s fun _l h => congr_arg ofList <| filter_congr' <| by simpa using h
+  Quot.inductionOn s fun _l h => congr_arg ofList <| List.filter_congr <| by simpa using h
 
 @[simp]
 theorem filter_add (s t : Multiset α) : filter p (s + t) = filter p s + filter p t :=

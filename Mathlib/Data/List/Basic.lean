@@ -737,7 +737,6 @@ end IndexOf
 /-! ### nth element -/
 
 section deprecated
-set_option linter.deprecated false
 
 @[simp]
 theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_len_le le_rfl
@@ -754,19 +753,20 @@ theorem getElem_map_rev (f : α → β) {l} {n : Nat} {h : n < l.length} :
 /-- A version of `get_map` that can be used for rewriting. -/
 @[deprecated getElem_map_rev (since := "2024-06-12")]
 theorem get_map_rev (f : α → β) {l n} :
-    f (get l n) = get (map f l) ⟨n.1, (l.length_map f).symm ▸ n.2⟩ := Eq.symm (get_map _)
+    f (get l n) = get (map f l) ⟨n.1, (l.length_map f).symm ▸ n.2⟩ := Eq.symm (getElem_map _)
 
 theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
     l.get ⟨l.length - 1, h⟩ = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
-  (getLast_eq_get l _).symm
+  (getLast_eq_getElem l _).symm
 
 theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
     (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
-  rw [drop_eq_get_cons h, take, take]
+  rw [drop_eq_getElem_cons h, take, take]
+  simp
 
 theorem ext_get?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁.get? n = l₂.get? n) :
     l₁ = l₂ := by
-  apply ext
+  apply ext_get?
   intro n
   rcases Nat.lt_or_ge n <| max l₁.length l₂.length with hn | hn
   · exact h' n hn
@@ -830,6 +830,8 @@ theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
   congr
   dsimp
   omega
+
+set_option linter.deprecated false
 
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
