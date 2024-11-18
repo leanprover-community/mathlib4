@@ -270,13 +270,12 @@ end General
 
 variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M n ⟶ N n) [∀ n, Epi (f n)]
 
-instance (n : ℕ) : Epi (functorMap f n) := by
+local instance (n : ℕ) : Epi (functorMap f n) := by
   rw [functorMap, Pi.map_eq_prod_map (P := fun m : ℕ ↦ m < n + 1)]
-  apply (config := { allowSynthFailures := true }) epi_comp
-  apply (config := { allowSynthFailures := true }) epi_comp
+  refine @epi_comp _ _ _ _ _ _ _ _ (@epi_comp _ _ _ _ _ _ ?_ _ _)
   apply (config := { allowSynthFailures := true }) prod.map_epi
   · apply (config := { allowSynthFailures := true }) Pi.map_epi
-    intro ⟨j, hj⟩
+    intro ⟨j, _⟩
     split_ifs with hh
     · by_cases j < n
       · split_ifs
@@ -287,11 +286,11 @@ instance (n : ℕ) : Epi (functorMap f n) := by
       omega
   · apply (config := { allowSynthFailures := true }) IsIso.epi_of_iso
     apply (config := { allowSynthFailures := true }) Pi.map_isIso
-    intro ⟨i, hi⟩
+    intro ⟨j, _⟩
     split_ifs with hh
     · dsimp at hh
       omega
-    · by_cases i < n
+    · by_cases j < n
       · omega
       · split_ifs
         infer_instance
