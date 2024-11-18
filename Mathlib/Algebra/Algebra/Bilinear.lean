@@ -21,8 +21,10 @@ open TensorProduct Module
 namespace LinearMap
 
 section NonUnitalNonAssoc
+variable (R A : Type*)
 
-variable (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+section one_side
+variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
 section left
 variable {A} [SMulCommClass R A A]
@@ -70,6 +72,9 @@ theorem mulRight_zero_eq_zero : mulRight R (0 : A) = 0 := ext fun _ => mul_zero 
 
 end right
 
+end one_side
+
+variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
@@ -109,7 +114,8 @@ end NonUnitalNonAssoc
 section NonUnital
 
 variable (R A B : Type*)
-variable [CommSemiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
+section one_side
+variable [Semiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
 
 @[simp]
 theorem mulLeft_mul [SMulCommClass R A A] (a b : A) :
@@ -123,6 +129,9 @@ theorem mulRight_mul [IsScalarTower R A A] (a b : A) :
   ext
   simp only [mulRight_apply, comp_apply, mul_assoc]
 
+end one_side
+
+variable [CommSemiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 variable [SMulCommClass R B B] [IsScalarTower R B B]
 
@@ -158,7 +167,9 @@ end NonUnital
 
 section Semiring
 
-variable (R A : Type*) [CommSemiring R] [Semiring A]
+variable (R A : Type*)
+section one_side
+variable [Semiring R] [Semiring A]
 
 section left
 variable [Module R A] [SMulCommClass R A A]
@@ -204,7 +215,9 @@ theorem pow_mulRight (a : A) (n : ℕ) : mulRight R a ^ n = mulRight R (a ^ n) :
 
 end right
 
-variable [Algebra R A]
+end one_side
+
+variable [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.
