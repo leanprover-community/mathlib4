@@ -21,8 +21,6 @@ open Equiv Fintype Finset
 
 namespace Matrix
 
-open Matrix
-
 variable {n : Type*} [DecidableEq n] [Fintype n]
 variable {R : Type*} [CommSemiring R]
 
