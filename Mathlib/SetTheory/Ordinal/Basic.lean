@@ -1240,12 +1240,16 @@ theorem omega0_le_ord {a : Cardinal} : ω ≤ a.ord ↔ ℵ₀ ≤ a := by
   rw [← ord_aleph0, ord_le_ord]
 
 @[simp]
+theorem ord_le_omega0 {a : Cardinal} : a.ord ≤ ω ↔ a ≤ ℵ₀ := by
+  rw [← ord_aleph0, ord_le_ord]
+
+@[simp]
 theorem ord_lt_omega0 {a : Cardinal} : a.ord < ω ↔ a < ℵ₀ :=
   le_iff_le_iff_lt_iff_lt.1 omega0_le_ord
 
 @[simp]
-theorem ord_le_omega0 {a : Cardinal} : a.ord ≤ ω ↔ a ≤ ℵ₀ := by
-  rw [← ord_aleph0, ord_le_ord]
+theorem omega0_lt_ord {a : Cardinal} : ω < a.ord ↔ ℵ₀ < a :=
+  le_iff_le_iff_lt_iff_lt.1 ord_le_omega0
 
 @[simp]
 theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
