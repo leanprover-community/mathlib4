@@ -92,7 +92,7 @@ lemma finrank_corootSpan_eq :
 lemma disjoint_rootSpan_ker_polarization :
     Disjoint P.rootSpan (LinearMap.ker P.Polarization) := by
   have : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
-  refine Submodule.disjoint_of_finrank_eq (L := P.rootSpan) P.Polarization ?_
+  refine Submodule.disjoint_ker_of_finrank_eq (L := P.rootSpan) P.Polarization ?_
   rw [finrank_rootSpan_map_polarization_eq_finrank_corootSpan, finrank_corootSpan_eq]
 
 lemma mem_ker_polarization_of_rootForm_self_eq_zero {x : M} (hx : P.RootForm x x = 0) :
@@ -107,7 +107,7 @@ lemma eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero {x : M}
   rw [← Submodule.mem_bot (R := R), ← P.disjoint_rootSpan_ker_polarization.eq_bot]
   exact ⟨hx, P.mem_ker_polarization_of_rootForm_self_eq_zero hx'⟩
 
-lemma _root_.RootSystem.rootFormAnisotropic (P : RootSystem ι R M N) :
+lemma _root_.RootSystem.rootForm_anisotropic (P : RootSystem ι R M N) :
     P.RootForm.toQuadraticMap.Anisotropic := by
   refine fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero ?_
   rw [rootSpan, P.span_eq_top]

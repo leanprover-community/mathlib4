@@ -209,7 +209,7 @@ lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul 
   rw [← (N.restrictScalars R).finrank_quotient_add_finrank]
   exact Nat.eq_sub_of_add_eq rfl
 
-lemma Submodule.disjoint_of_finrank_eq [NoZeroSMulDivisors R M] {N : Type*} [AddCommGroup N]
+lemma Submodule.disjoint_ker_of_finrank_eq [NoZeroSMulDivisors R M] {N : Type*} [AddCommGroup N]
     [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
     (h : finrank R (L.map f) = finrank R L) :
     Disjoint L (LinearMap.ker f) := by
