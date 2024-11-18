@@ -89,10 +89,9 @@ lemma isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm
   -- `‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m`, so we're done
   -- we can distribute powers into the right term of `max`
   have hp : max 1 ‖x‖ ^ m = max 1 (‖x‖ ^ m) := by
-    have : MonotoneOn (fun a : ℝ ↦ a ^ m) (Set.Ici _) := fun a h b _ h' ↦ pow_le_pow_left h h' _
-    rw [this.map_max (by simp [zero_le_one]) (norm_nonneg x), one_pow]
+    rw [pow_left_monotoneOn.map_max (by simp [zero_le_one]) (norm_nonneg x), one_pow]
   rw [hp] at hm
-  refine le_of_pow_le_pow_left (fun h ↦ ?_) (zero_lt_one.trans ha').le ((h _ _).trans hm.le)
+  refine le_of_pow_le_pow_left₀ (fun h ↦ ?_) (zero_lt_one.trans ha').le ((h _ _).trans hm.le)
   simp only [h, zero_add, pow_zero, max_self, one_smul, lt_self_iff_false] at hm
 
 /-- To prove that a normed division ring is nonarchimedean, it suffices to prove that the norm
