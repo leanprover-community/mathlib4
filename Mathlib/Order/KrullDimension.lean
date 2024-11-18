@@ -7,7 +7,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 import Mathlib.Order.RelSeries
 import Mathlib.Order.Minimal
 import Mathlib.Data.ENat.Lattice
-import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Order.Group.Int
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -660,22 +660,6 @@ variable {α : Type*} [Preorder α]
 lemma coheight_nat (n : ℕ) : coheight n = ⊤ := coheight_of_noMaxOrder ..
 
 lemma krullDim_nat : krullDim ℕ = ⊤ := krullDim_of_noMaxOrder ..
-
-instance Int.instNoMaxOrder : NoMaxOrder ℤ where
-  exists_gt n := ⟨n + 1, n.lt_succ_self⟩
-
-instance Int.instNoMinOrder : NoMinOrder ℤ where
-  exists_lt n := ⟨n - 1, n.pred_self_lt⟩
-
--- TODO: Where to put these:
-/--
-info: [Mathlib.Algebra.BigOperators.Group.List,
- Mathlib.Algebra.Order.Monoid.Unbundled.Defs,
- Mathlib.Algebra.Group.Support,
- Mathlib.Algebra.Order.SuccPred]
--/
-#guard_msgs in
-#find_home Int.instNoMinOrder
 
 lemma height_int (n : ℤ) : height n = ⊤ := height_of_noMinOrder ..
 
