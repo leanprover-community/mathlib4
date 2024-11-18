@@ -220,38 +220,43 @@ instance : CancelMonoidWithZero Nimber where
 
 /-! ### Nimber division -/
 
+mutual
+
 /-- The nimber inverse `a⁻¹` is recursively defined as the smallest nimber not in the set `s`, which
 itself is recursively defined as the smallest set with `0 ∈ s` and `(1 + (a + a') * b) / a' ∈ s`
 for `0 < a' < a` and `b ∈ s`.
 
-This preliminary definition "accidentally" satisfies `inv 0 = 1`, which the real inverse corrects.
+This preliminary definition "accidentally" satisfies `invAux 0 = 1`, which the real inverse
+corrects.
 -/
-def inv (a : Nimber) : Nimber :=
-  sInf (⋂₀ {s | 0 ∈ s ∧ ∀ a' < a, a' ≠ 0 → ∀ b ∈ s, inv a' * (1 + (a + a') * b) ∈ s})ᶜ
-termination_by a
+def invAux (a : Nimber) : Nimber :=
+  sInf (invSet a)ᶜ
+termination_by (a, 1)
 
-/-- The set in the definition of `inv a`. -/
+/-- The set in the definition of `invAux a`. -/
 def invSet (a : Nimber) : Set Nimber :=
-  ⋂₀ {s | 0 ∈ s ∧ ∀ a' < a, a' ≠ 0 → ∀ b ∈ s, inv a' * (1 + (a + a') * b) ∈ s}
+  ⋂₀ {s | 0 ∈ s ∧ ∀ a' < a, a' ≠ 0 → ∀ b ∈ s, invAux a' * (1 + (a + a') * b) ∈ s}
+termination_by (a, 0)
 
-theorem inv_def (a : Nimber) : inv a = sInf (invSet a)ᶜ := by
-  rw [inv]
-  rfl
+end
 
-theorem zero_mem_invSet (a : Nimber) : 0 ∈ invSet a :=
-  Set.mem_sInter.2 fun _ hs => hs.1
+theorem zero_mem_invSet (a : Nimber) : 0 ∈ invSet a := by
+  rw [invSet]
+  exact Set.mem_sInter.2 fun _ hs => hs.1
 
 /-- "cons" is our operation `(1 + (a + a') * b) / a'` in the definition of the inverse. -/
 theorem cons_mem_invSet {a' : Nimber} (ha₀ : a' ≠ 0) (ha : a' < a) (hb : b ∈ invSet a) :
-    inv a' * (1 + (a + a') * b) ∈ invSet a :=
-  Set.mem_sInter.2 fun _ hs => hs.2 _ ha ha₀ _ (Set.mem_sInter.1 hb _ hs)
+    invAux a' * (1 + (a + a') * b) ∈ invSet a := by
+  rw [invSet] at hb ⊢
+  exact Set.mem_sInter.2 fun _ hs => hs.2 _ ha ha₀ _ (Set.mem_sInter.1 hb _ hs)
 
 /-- A recursion principle for `invSet`. -/
 @[elab_as_elim]
-theorem inv_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
-    (hi : ∀ a' < a, a' ≠ 0 → ∀ b, p b → p (inv a' * (1 + (a + a') * b))) (x : Nimber)
+theorem invSet_recOn {p : Nimber → Prop} (a : Nimber) (h0 : p 0)
+    (hi : ∀ a' < a, a' ≠ 0 → ∀ b, p b → p (invAux a' * (1 + (a + a') * b))) (x : Nimber)
     (hx : x ∈ invSet a) : p x := by
   revert x
+  rw [invSet]
   exact Set.sInter_subset_of_mem ⟨h0, hi⟩
 
 /--- An auxiliary type for enumerating the elements of `invSet`, and proving that its complement
@@ -263,42 +268,43 @@ private inductive InvTy (a : Nimber.{u}) : Type u
 /-- An enumeration of elements in the complement of `invSet` by a type in the same universe. -/
 private def InvTy.toNimber {a : Nimber} : InvTy a → Nimber
   | zero => 0
-  | cons x b => let a' := Ordinal.toNimber ((Ordinal.enumIsoToType (toOrdinal a)).symm x)
-      inv a' * (1 + (a + a') * (toNimber b))
+  | cons x b =>
+    let a' := Ordinal.toNimber ((Ordinal.enumIsoToType (toOrdinal a)).symm x)
+    invAux a' * (1 + (a + a') * (toNimber b))
 
 /-- The complement of `invSet a` is nonempty. -/
 private theorem invSet_nonempty (a : Nimber.{u}) : (invSet a)ᶜ.Nonempty := by
   refine nonempty_of_not_bddAbove <| @Ordinal.not_bddAbove_compl_of_small _ <|
     @small_subset.{u, u + 1} _ _ _ ?_ (small_range (@InvTy.toNimber a))
-  refine fun x hx ↦ inv_recOn a ⟨InvTy.zero, rfl⟩ ?_ x hx
+  refine fun x hx ↦ invSet_recOn a ⟨InvTy.zero, rfl⟩ ?_ x hx
   rintro a' ha _ _ ⟨b, rfl⟩
   use InvTy.cons (Ordinal.enumIsoToType _ ⟨toOrdinal a', ha⟩) b
   rw [InvTy.toNimber]
   simp
 
-theorem inv_ne_zero (a : Nimber) : inv a ≠ 0 := by
-  rw [inv_def]
+theorem invAux_ne_zero (a : Nimber) : invAux a ≠ 0 := by
+  rw [invAux]
   exact fun h ↦ h ▸ csInf_mem (invSet_nonempty a) <| zero_mem_invSet a
 
-theorem mem_invSet_of_lt_inv (h : b < inv a) : b ∈ invSet a := by
-  rw [inv_def] at h
+theorem mem_invSet_of_lt_invAux (h : b < invAux a) : b ∈ invSet a := by
+  rw [invAux] at h
   have := not_mem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
   rwa [Set.not_mem_compl_iff] at this
 
-theorem inv_not_mem_invSet (a : Nimber) : inv a ∉ invSet a := by
-  rw [inv_def]
+theorem invAux_not_mem_invSet (a : Nimber) : invAux a ∉ invSet a := by
+  rw [invAux]
   exact csInf_mem (invSet_nonempty a)
 
-theorem inv_mem_invSet_of_lt (ha : a ≠ 0) (hb : a < b) : inv a ∈ invSet b := by
+theorem invAux_mem_invSet_of_lt (ha : a ≠ 0) (hb : a < b) : invAux a ∈ invSet b := by
   have H := cons_mem_invSet ha hb (zero_mem_invSet b)
   rwa [mul_zero, add_zero, mul_one] at H
 
-/-- We set up a simultaneous induction to prove that `inv a` is the inverse of `a`, and no element
-in its defining set `invSet a` is. -/
+/-- We set up a simultaneous induction to prove that `invAux a` is the inverse of `a`, and no
+element in its defining set `invSet a` is. -/
 private theorem mul_inv_cancel_aux (a : Nimber) :
-    (∀ b ∈ invSet a, a * b ≠ 1) ∧ (a ≠ 0 → a * inv a = 1) := by
+    (∀ b ∈ invSet a, a * b ≠ 1) ∧ (a ≠ 0 → a * invAux a = 1) := by
   have H₁ : ∀ b ∈ invSet a, a * b ≠ 1 := by
-    refine fun b hb ↦ inv_recOn a ?_ ?_ b hb
+    refine fun b hb ↦ invSet_recOn a ?_ ?_ b hb
     · rw [mul_zero]
       exact zero_ne_one
     · intro a' ha ha' b hb
@@ -309,30 +315,29 @@ private theorem mul_inv_cancel_aux (a : Nimber) :
       exact ⟨ha.ne', hb.symm⟩
   refine ⟨H₁, fun ha₀ => le_antisymm ?_ ?_⟩
   · apply mul_le_of_forall_ne fun a' ha b hb H ↦ ?_
-    replace hb := mem_invSet_of_lt_inv hb
+    replace hb := mem_invSet_of_lt_invAux hb
     rw [add_assoc, ← add_mul, ← CharTwo.eq_add_iff_add_eq] at H
     obtain rfl | ha' := eq_or_ne a' 0
     · rw [zero_mul, add_zero, ← add_eq_iff_eq_add, zero_add] at H
       exact H₁ _ hb H
-    · rw [← mul_right_inj' (inv_ne_zero a'), ← mul_assoc, mul_comm _ a',
+    · rw [← mul_right_inj' (invAux_ne_zero a'), ← mul_assoc, mul_comm _ a',
         (mul_inv_cancel_aux a').2 ha', one_mul] at H
-      exact inv_not_mem_invSet a (H ▸ cons_mem_invSet ha' ha hb)
+      exact invAux_not_mem_invSet a (H ▸ cons_mem_invSet ha' ha hb)
   · rw [one_le_iff_ne_zero, mul_ne_zero_iff]
-    exact ⟨ha₀, inv_ne_zero a⟩
+    exact ⟨ha₀, invAux_ne_zero a⟩
 termination_by a
 
-/-- This proves that `inv a` is the multiplicative inverse of `a`. -/
-theorem mul_inv_cancel' (h : a ≠ 0) : a * inv a = 1 :=
+theorem mul_invAux_cancel (h : a ≠ 0) : a * invAux a = 1 :=
   (mul_inv_cancel_aux a).2 h
 
 instance : Inv Nimber :=
-  ⟨fun a => if a = 0 then 0 else inv a⟩
+  ⟨fun a => if a = 0 then 0 else invAux a⟩
 
-theorem inv_eq_inv (ha : a ≠ 0) : a⁻¹ = inv a :=
+theorem inv_eq_invAux (ha : a ≠ 0) : a⁻¹ = invAux a :=
   dif_neg ha
 
 instance : Field Nimber where
-  mul_inv_cancel a ha := by rw [inv_eq_inv ha, mul_inv_cancel' ha]
+  mul_inv_cancel a ha := by rw [inv_eq_invAux ha, mul_invAux_cancel ha]
   inv_zero := dif_pos rfl
   nnqsmul := _
   qsmul := _
