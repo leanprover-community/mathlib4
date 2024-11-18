@@ -64,7 +64,6 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
   -- but it created invalid goals
   induction hx using Submodule.pow_induction_on_left' with
   | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-  -- FIXME: specialized `map_add` to avoid a (whole-declaration) timeout
   | add _ _ _ _ _ ihx ihy => simp_rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
   | mem_mul _ hm _ _ _ ih =>
       obtain ⟨_, rfl⟩ := hm
