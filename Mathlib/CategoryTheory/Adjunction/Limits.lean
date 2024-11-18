@@ -112,8 +112,10 @@ noncomputable instance (priority := 100)
         { reflects := fun t =>
           ⟨(isColimitOfPreserves E.inv t).mapCoconeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
-@[deprecated (since := "2024-11-18")] lemma isEquivalenceReflectsColimits :=
-  Functor.reflectsColimits_of_isEquivalence
+@[deprecated (since := "2024-11-18")]
+lemma isEquivalenceReflectsColimits (E : D ⥤ C) [E.IsEquivalence] :
+    ReflectsColimitsOfSize.{v, u} E :=
+  Functor.reflectsColimits_of_isEquivalence E
 
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100)
@@ -228,8 +230,10 @@ noncomputable instance (priority := 100)
         { reflects := fun t =>
             ⟨(isLimitOfPreserves E.inv t).mapConeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
-@[deprecated (since := "2024-11-18")] lemma isEquivalenceReflectsLimits :=
-  Functor.reflectsLimits_of_isEquivalence
+@[deprecated (since := "2024-11-18")]
+lemma isEquivalenceReflectsLimits (E : D ⥤ C) [E.IsEquivalence] :
+    ReflectsLimitsOfSize.{v, u} E :=
+  Functor.reflectsLimits_of_isEquivalence E
 
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100)
