@@ -40,20 +40,6 @@ they unfold around `Polynomial.ofFinsupp` and `Polynomial.toFinsupp`.
 
 section AddMonoidAlgebra
 
-instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
-  smul r p := ⟨r • p.toFinsupp⟩
-  smul_zero a := congr_arg ofFinsupp (smul_zero a)
-
-@[simp]
-theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b) :
-    (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
-  rfl
-
-@[simp]
-theorem toFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b : R[X]) :
-    (a • b).toFinsupp = a • b.toFinsupp :=
-  rfl
-
 theorem _root_.IsSMulRegular.polynomial {S : Type*} [Monoid S] [DistribMulAction S R] {a : S}
     (ha : IsSMulRegular R a) : IsSMulRegular R[X] a
   | ⟨_x⟩, ⟨_y⟩, h => congr_arg _ <| ha.finsupp (Polynomial.ofFinsupp.inj h)
