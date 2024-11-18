@@ -346,9 +346,7 @@ end Semiring
 namespace Ring
 
 variable [CommRing R]
-variable [∀ i, AddCommGroup (Mᵢ i)] [∀ i, AddCommGroup (Nᵢ i)] [AddCommGroup P]
-variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)] [Module R P]
-variable [Fintype ι]
+variable [∀ i, AddCommGroup (Mᵢ i)] [AddCommGroup P] [∀ i, Module R (Mᵢ i)] [Module R P] [Fintype ι]
 
 @[simp] theorem polar_pi (Q : ∀ i, QuadraticMap R (Mᵢ i) P) (x y : ∀ i, Mᵢ i) :
     polar (pi Q) x y = ∑ i, polar (Q i) (x i) (y i) := by

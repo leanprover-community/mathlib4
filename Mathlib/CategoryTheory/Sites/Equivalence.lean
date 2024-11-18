@@ -167,9 +167,6 @@ theorem hasSheafCompose : J.HasSheafCompose F where
       e.functor.op_comp_isSheaf _ _ ⟨_, hP'⟩
     exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
 
-variable [ConcreteCategory.{w} A]
-variable {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
-
 end Equivalence
 
 variable (B : Type u₄) [Category.{v₄} B] (F : A ⥤ B)

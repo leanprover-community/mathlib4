@@ -68,15 +68,13 @@ h: a = a + b
 This new instance of `a` also turns out to be the third _occurrence_ of `a`.  Therefore,
 the next `nth_rewrite` with `h` rewrites this `a`.
 -/
-syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num+ rwRuleSeq (location)? : tactic
+syntax (name := nthRewriteSeq) "nth_rewrite" optConfig ppSpace num+ rwRuleSeq (location)? : tactic
 
 @[inherit_doc nthRewriteSeq, tactic nthRewriteSeq] def evalNthRewriteSeq : Tactic := fun stx => do
   match stx with
-  | `(tactic| nth_rewrite $[$_cfg]? $[$n]* $_rules:rwRuleSeq $[$_loc]?) =>
-    -- [TODO] `stx` should not be used directly, but the corresponding functions do not yet exist
-    -- in Lean 4 core
-    let cfg ← elabRewriteConfig stx[1]
-    let loc := expandOptLocation stx[4]
+  | `(tactic| nth_rewrite $cfg:optConfig $[$n]* $_rules:rwRuleSeq $[$loc]?) =>
+    let cfg ← elabRewriteConfig cfg
+    let loc := expandOptLocation (mkOptionalNode loc)
     let occ := Occurrences.pos (n.map TSyntax.getNat).toList
     let cfg := { cfg with occs := occ }
     withRWRulesSeq stx[0] stx[3] fun symm term => do
@@ -138,12 +136,12 @@ the next `nth_rw` with `h` rewrites this `a`.
 
 Further, `nth_rw` will close the remaining goal with `rfl` if possible.
 -/
-macro (name := nthRwSeq) "nth_rw" c:(config)? ppSpace n:num+ s:rwRuleSeq l:(location)? : tactic =>
+macro (name := nthRwSeq) "nth_rw" c:optConfig ppSpace n:num+ s:rwRuleSeq l:(location)? : tactic =>
   -- Note: This is a direct copy of `nth_rw` from core.
   match s with
   | `(rwRuleSeq| [$rs,*]%$rbrak) =>
     -- We show the `rfl` state on `]`
-    `(tactic| (nth_rewrite $(c)? $[$n]* [$rs,*] $(l)?; with_annotate_state $rbrak
+    `(tactic| (nth_rewrite $c:optConfig $[$n]* [$rs,*] $(l)?; with_annotate_state $rbrak
       (try (with_reducible rfl))))
   | _ => Macro.throwUnsupported
 

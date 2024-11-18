@@ -63,7 +63,6 @@ instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
 
 /-- A version of `CliffordAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `CliffordAlgebra.gradedAlgebra`. -/
--- Porting note: added `protected`
 protected def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ZMod 2, evenOdd Q i :=
   DirectSum.lof R (ZMod 2) (fun i => ↥(evenOdd Q i)) 1 ∘ₗ (ι Q).codRestrict _ (ι_mem_evenOdd_one Q)
 
@@ -92,7 +91,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | add x y i hx hy ihx ihy =>
-      -- Note: in #8386 `map_add` had to be specialized to avoid a timeout
+      -- Note: in https://github.com/leanprover-community/mathlib4/pull/8386 `map_add` had to be specialized to avoid a timeout
       -- (the definition was already very slow)
       rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
       rfl

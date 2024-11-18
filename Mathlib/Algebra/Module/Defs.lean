@@ -240,6 +240,9 @@ instance (priority := 910) Semiring.toModule [Semiring R] : Module R R where
   zero_smul := zero_mul
   smul_zero := mul_zero
 
+instance [NonUnitalNonAssocSemiring R] : DistribSMul R R where
+  smul_add := left_distrib
+
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
@@ -282,7 +285,7 @@ lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
 /-- `nsmul` is equal to any other module structure via a cast. -/
 -- See note [no_index around OfNat.ofNat]
 lemma ofNat_smul_eq_nsmul (n : ℕ) [n.AtLeastTwo] (b : M) :
-    (no_index OfNat.ofNat n : R) • b = OfNat.ofNat n • b := Nat.cast_smul_eq_nsmul ..
+    (no_index (OfNat.ofNat n) : R) • b = OfNat.ofNat n • b := Nat.cast_smul_eq_nsmul ..
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
 @[deprecated Nat.cast_smul_eq_nsmul (since := "2024-07-23")]

@@ -3,7 +3,7 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Rat
@@ -442,7 +442,7 @@ theorem val_smul [SMul R A] [StarModule R A] (r : R) (x : selfAdjoint A) : ↑(r
   rfl
 
 instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) :=
-  Function.Injective.mulAction (↑) Subtype.coe_injective val_smul
+  Function.Injective.mulAction Subtype.val Subtype.coe_injective val_smul
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=
   Function.Injective.distribMulAction (selfAdjoint A).subtype Subtype.coe_injective val_smul

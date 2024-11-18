@@ -132,6 +132,14 @@ protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C
   | (a : ℝ) => h_real a
   | ⊤ => h_top
 
+protected lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r where
+  mp h := ⟨h _, h _, fun _ ↦ h _⟩
+  mpr h := EReal.rec h.1 h.2.2 h.2.1
+
+protected lemma «exists» {p : EReal → Prop} : (∃ r, p r) ↔ p ⊥ ∨ p ⊤ ∨ ∃ r : ℝ, p r where
+  mp := by rintro ⟨r, hr⟩; cases r <;> aesop
+  mpr := by rintro (h | h | ⟨r, hr⟩) <;> exact ⟨_, ‹_›⟩
+
 /-- The multiplication on `EReal`. Our definition satisfies `0 * x = x * 0 = 0` for any `x`, and
 picks the only sensible value elsewhere. -/
 protected def mul : EReal → EReal → EReal
@@ -790,7 +798,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | (y : ℝ), (z : ℝ), h => by
     simpa only [← coe_add, EReal.coe_le_coe_iff, add_le_add_iff_left] using h
 
--- Porting note (#11215): TODO: add `MulLECancellable.strictMono*` etc
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
   not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
 
@@ -1045,6 +1053,14 @@ lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   · norm_cast; linarith
   · rw [top_add_of_ne_bot (coe_ne_bot b), top_sub_coe]
 
+lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le : y ≤ x) :
+    (x - y).toEReal = x.toEReal - y.toEReal := by
+  lift y to ℝ≥0 using hy_top
+  cases x with
+  | top => simp [coe_nnreal_eq_coe_real]
+  | coe x =>
+    simp only [coe_nnreal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
+
 /-! ### Multiplication -/
 
 @[simp] lemma top_mul_top : (⊤ : EReal) * ⊤ = ⊤ := rfl
@@ -1229,7 +1245,7 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
 
 /-! ### Absolute value -/
 
--- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
 /-- The absolute value from `EReal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
 a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞
@@ -1485,7 +1501,7 @@ lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 
 
 /-! ### Division -/
 
-lemma div_eq_inv_mul (a b : EReal) : a / b = b⁻¹ * a := EReal.mul_comm a b⁻¹
+protected lemma div_eq_inv_mul (a b : EReal) : a / b = b⁻¹ * a := EReal.mul_comm a b⁻¹
 
 lemma coe_div (a b : ℝ) : (a / b : ℝ) = (a : EReal) / (b : EReal) := rfl
 

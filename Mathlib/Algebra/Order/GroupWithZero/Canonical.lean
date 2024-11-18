@@ -57,7 +57,7 @@ The following facts are true more generally in a (linearly) ordered commutative 
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
 See note [reducible non-instances]. -/
 abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [One β] [Mul β]
-    [Pow β ℕ] [Sup β] [Inf β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
+    [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrderedCommMonoidWithZero β :=
@@ -225,23 +225,15 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   ext
   rfl
 
-#adaptation_note /-- 2024-04-23
-After https://github.com/leanprover/lean4/pull/3965,
-we need to either write `@inv_zero (G₀ := α) (_)` in `neg_top`,
-or use `set_option backward.isDefEq.lazyProjDelta false`.
-See https://github.com/leanprover-community/mathlib4/issues/12535 -/
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
-    neg_top := set_option backward.isDefEq.lazyProjDelta false in @inv_zero _ (_)
+    neg_top := inv_zero (G₀ := α)
     add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
   rw [← one_mul (a ^ n), pow_succ']
   exact mul_lt_mul_of_pos_right ha (pow_pos (zero_lt_one.trans ha) _)
-
-lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
-  induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 
 end LinearOrderedCommGroupWithZero
 
@@ -249,12 +241,28 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
-    zero := Multiplicative.ofAdd (⊤ : α)
+    zero := Multiplicative.ofAdd (OrderDual.toDual ⊤)
     zero_mul := @top_add _ (_)
     -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3. See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
     mul_zero := @add_top _ (_)
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
+
+@[simp]
+theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
+    (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ := Iff.rfl
+
+@[simp]
+theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
+    (x : Multiplicative αᵒᵈ) : OrderDual.ofDual (Multiplicative.toAdd x) = ⊤ ↔ x = 0 := Iff.rfl
+
+@[simp]
+theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
+    Multiplicative.ofAdd ⊥ = (0 : Multiplicative αᵒᵈ) := rfl
+
+@[simp]
+theorem ofDual_toAdd_zero [LinearOrderedAddCommMonoidWithTop α] :
+    OrderDual.ofDual (Multiplicative.toAdd (0 : Multiplicative αᵒᵈ)) = ⊤ := rfl
 
 instance [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
@@ -290,6 +298,14 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
 theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
   WithBot.coe_le_iff
+
+@[simp] lemma unzero_le_unzero {a b : WithZero α} (ha hb) :
+    unzero (x := a) ha ≤ unzero (x := b) hb ↔ a ≤ b := by
+  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
+  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
+  lift a to α using id ha
+  lift b to α using id hb
+  simp
 
 instance mulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by

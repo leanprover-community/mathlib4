@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Constructing finite products from binary products and terminal.
