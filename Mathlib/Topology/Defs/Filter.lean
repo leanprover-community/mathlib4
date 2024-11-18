@@ -202,8 +202,8 @@ infixl:300 " ⤳ " => Specializes
 equivalent properties hold:
 
 - `𝓝 x = 𝓝 y`; we use this property as the definition;
-- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_open`;
-- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `inseparable_iff_closed`;
+- for any open set `s`, `x ∈ s ↔ y ∈ s`, see `Inseparable.mem_open_iff`;
+- for any closed set `s`, `x ∈ s ↔ y ∈ s`, see `Inseparable.mem_closed_iff`;
 - `x ∈ closure {y}` and `y ∈ closure {x}`, see `inseparable_iff_mem_closure`;
 - `closure {x} = closure {y}`, see `inseparable_iff_closure_eq`.
 -/
