@@ -66,7 +66,7 @@ def reps (m : ℤ) : Set (Δ m) :=
 /--Reduction step for matrices in `Δ m` which moves the matrices towards `reps`.-/
 def reduce_step (A : Δ m) : Δ m := S • (T ^ (-(A.1 0 0 / A.1 1 0))) • A
 
-private lemma reduce_aux (m : ℤ) (A : Δ m) (h : |(A.1 1 0)| ≠ 0) :
+private lemma reduce_aux {A : Δ m} (h : |(A.1 1 0)| ≠ 0) :
     |((reduce_step A).1 1 0)| < |(A.1 1 0)| := by
   simp_rw [reduce_step, smul_coe, coe_T_zpow, S]
   simpa only [Int.reduceNeg, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul,
@@ -89,7 +89,7 @@ def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, |(A.1 1 0)| = 0 → C A)
   termination_by A => Int.natAbs (A.1 1 0)
   decreasing_by
     zify
-    exact reduce_aux m A h
+    exact reduce_aux h
 
 /--Map from `Δ m → Δ m` which reduces a FixedDetMatrix towards a representative element in reps. -/
 def reduce : Δ m → Δ m := fun A ↦
@@ -102,7 +102,7 @@ def reduce : Δ m → Δ m := fun A ↦
   decreasing_by
       next a h =>
       zify
-      exact reduce_aux m _ h
+      exact reduce_aux h
 
 lemma reduce_of_pos {A : Δ m} (hc : |(A.1 1 0)| = 0) (ha : 0 < A.1 0 0) :
     reduce A = (T ^ (-(A.1 0 1/A.1 1 1))) • A := by
@@ -256,7 +256,7 @@ private lemma prop_red4 {C : Δ m → Prop} (hS : ∀ B, C B → C (S • B)) (h
       coe_mul, mul_inv_cancel T, one_mul]
 
 @[elab_as_elim]
-theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
+theorem induction_on {C : Δ m → Prop} {A : Δ m} (hm : m ≠ 0)
     (h0 : ∀ A : Δ m, A.1 1 0 = 0 → 0 < A.1 0 0 → 0 ≤ A.1 0 1 →
       |(A.1 0 1)| < |(A.1 1 1)| → C A)
     (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) : C A := by
