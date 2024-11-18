@@ -7,6 +7,7 @@ import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Compact convergence (uniform convergence on compact sets)

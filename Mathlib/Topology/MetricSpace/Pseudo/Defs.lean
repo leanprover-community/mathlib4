@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 import Mathlib.Data.ENNReal.Real
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Topology.EMetricSpace.Defs
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 ## Pseudo-metric spaces
