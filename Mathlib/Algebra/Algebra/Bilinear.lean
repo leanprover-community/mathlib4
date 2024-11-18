@@ -158,7 +158,7 @@ end NonUnital
 
 section Semiring
 
-variable (R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B]
+variable (R A : Type*) [CommSemiring R] [Semiring A]
 
 section left
 variable [Module R A] [SMulCommClass R A A]
@@ -204,7 +204,7 @@ theorem pow_mulRight (a : A) (n : ℕ) : mulRight R a ^ n = mulRight R (a ^ n) :
 
 end right
 
-variable [Algebra R A] [Algebra R B]
+variable [Algebra R A]
 
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.
