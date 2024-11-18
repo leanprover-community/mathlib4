@@ -737,8 +737,8 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : IsOpenEmbedding 
       rintro ⟨_, y, hy, rfl⟩
       specialize H y
       delta PresheafedSpace.Hom.stalkMap at H
-      haveI H' :=
-        TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_isOpenEmbedding C hf X.presheaf y
+      haveI H' := TopCat.Presheaf.stalkPushforward.stalkPushforward_iso_of_isInducing C
+        hf.toIsInducing X.presheaf y
       have := IsIso.comp_isIso' H (@IsIso.inv_isIso _ _ _ _ _ H')
       rwa [Category.assoc, IsIso.hom_inv_id, Category.comp_id] at this }
 
