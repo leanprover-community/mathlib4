@@ -44,8 +44,10 @@ def AtomM.run {α : Type} (red : TransparencyMode) (m : AtomM α)
     MetaM α :=
   (m { red, evalAtom }).run' {}
 
-/-- Get the index corresponding to an atomic expression, if it has already been encountered, or
-put it in the list of atoms and return the new index, otherwise. -/
+/-- If an atomic expression has already been encountered, get the index and the stored form of the
+atom (which will be defeq at the specified transparency, but not necessarily syntactically equal).
+If the atomic expression has *not* already been encountered, store it in the list of atoms, and
+return the new index (and the stored form of the atom, which will be itself). -/
 def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) := do
   let c ← get
   for h : i in [:c.atoms.size] do
