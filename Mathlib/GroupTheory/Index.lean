@@ -398,7 +398,7 @@ lemma index_mono (h : H ≤ K) [h₁ : Finite (G ⧸ H)] : K.index ≤ H.index :
   · rw [index_eq_zero_iff_infinite] at h0
     exfalso
     exact not_finite (G ⧸ H)
-  refine Nat.le_of_dvd (Nat.zero_lt_of_ne_zero h0) (index_dvd_of_le h)
+  exact Nat.le_of_dvd (Nat.zero_lt_of_ne_zero h0) (index_dvd_of_le h)
 
 @[to_additive]
 lemma index_strict_mono (h : H < K) [h₁ : Finite (G ⧸ H)] : K.index < H.index := by
