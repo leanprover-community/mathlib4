@@ -21,9 +21,9 @@ universe u
 
 open TensorProduct CategoryTheory Limits
 
-namespace CommRingCat
-
 variable {R S : CommRingCat.{u}}
+
+namespace CommRingCat
 
 instance : CoeSort (Under R) (Type u) where
   coe A := A.right
@@ -50,64 +50,77 @@ lemma toAlgHom_apply {A B : Under R} (f : A ⟶ B) (a : A) :
   rfl
 
 variable (R) in
-/-- -/
+/-- Make an object of `Under R` from an `R`-algebra. -/
 @[simps! hom, simps! (config := .lemmasOnly) right]
 def mkUnder (A : Type u) [CommRing A] [Algebra R A] : Under R :=
   Under.mk (CommRingCat.ofHom <| algebraMap R A)
 
+@[ext]
+lemma mkUnder_ext {A : Type u} [CommRing A] [Algebra R A] {B : Under R}
+    {f g : mkUnder R A ⟶ B} (h : ∀ a : A, f.right a = g.right a) :
+    f = g := by
+  ext x
+  exact h x
+
+end CommRingCat
+
+namespace AlgHom
+
 /-- Make a morphism in `Under R` from an algebra map. -/
-def fromAlgHom {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-    (f : A →ₐ[R] B) : mkUnder R A ⟶ mkUnder R B :=
+def toUnder {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+    (f : A →ₐ[R] B) : CommRingCat.mkUnder R A ⟶ CommRingCat.mkUnder R B :=
   Under.homMk f.toRingHom <| by
     ext a
     exact f.commutes' a
 
 @[simp]
-lemma fromAlgHom_right_apply {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-    (f : A →ₐ[R] B) (a : A) :
-    (fromAlgHom f).right a = f a :=
+lemma toUnder_right {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
+    [Algebra R B] (f : A →ₐ[R] B) (a : A) :
+    f.toUnder.right a = f a :=
   rfl
 
 @[simp]
-lemma fromAlgHom_comp {A B C : Type u} [CommRing A] [CommRing B] [CommRing C] [Algebra R A]
-    [Algebra R B] [Algebra R C] (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
-    (fromAlgHom (g.comp f)) = fromAlgHom f ≫ fromAlgHom g :=
+lemma toUnder_comp {A B C : Type u} [CommRing A] [CommRing B] [CommRing C]
+    [Algebra R A] [Algebra R B] [Algebra R C] (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
+    (g.comp f).toUnder = f.toUnder ≫ g.toUnder :=
   rfl
 
-lemma mkUnder_ext {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-    {f g : mkUnder R A ⟶ mkUnder R B} (h : ∀ a : A, f.right a = g.right a) :
-    f = g := by
-  ext x
-  exact h x
+end AlgHom
+
+namespace AlgEquiv
 
 /-- Make an isomorphism in `Under R` from an algebra isomorphism. -/
-def fromAlgEquiv {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+def toUnder {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
     (f : A ≃ₐ[R] B) :
-    mkUnder R A ≅ mkUnder R B where
-  hom := fromAlgHom f.toAlgHom
-  inv := fromAlgHom f.symm.toAlgHom
+    CommRingCat.mkUnder R A ≅ CommRingCat.mkUnder R B where
+  hom := f.toAlgHom.toUnder
+  inv := f.symm.toAlgHom.toUnder
   hom_inv_id := by
-    ext (a : (mkUnder R A).right)
+    ext (a : (CommRingCat.mkUnder R A).right)
     simp
   inv_hom_id := by
     ext a
     simp
 
 @[simp]
-lemma fromAlgEquiv_hom_right_apply {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
+lemma toUnder_hom_right_apply {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
     [Algebra R B] (f : A ≃ₐ[R] B) (a : A) :
-    (fromAlgEquiv f).hom.right a = f a := rfl
+    f.toUnder.hom.right a = f a := rfl
 
 @[simp]
-lemma fromAlgEquiv_inv_right_apply {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
+lemma toUnder_inv_right_apply {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
     [Algebra R B] (f : A ≃ₐ[R] B) (b : B) :
-    (fromAlgEquiv f).inv.right b = f.symm b := rfl
+    f.toUnder.inv.right b = f.symm b := rfl
 
 @[simp]
-lemma fromAlgEquiv_trans {A B C : Type u} [CommRing A] [CommRing B] [CommRing C] [Algebra R A]
-    [Algebra R B] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
-    (fromAlgEquiv (f.trans g)) = fromAlgEquiv f ≪≫ fromAlgEquiv g :=
+lemma toUnder_trans {A B C : Type u} [CommRing A] [CommRing B] [CommRing C]
+    [Algebra R A] [Algebra R B] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
+    (f.trans g).toUnder = f.toUnder ≪≫ g.toUnder :=
   rfl
+
+end AlgEquiv
+
+namespace CommRingCat
 
 variable [Algebra R S]
 
@@ -116,7 +129,7 @@ variable (R S) in
 @[simps! map_right]
 def tensorProd : Under R ⥤ Under S where
   obj A := mkUnder S (S ⊗[R] A)
-  map f := fromAlgHom <| Algebra.TensorProduct.map (AlgHom.id S S) (toAlgHom f)
+  map f := Algebra.TensorProduct.map (AlgHom.id S S) (toAlgHom f) |>.toUnder
   map_comp {X Y Z} f g := by simp [Algebra.TensorProduct.map_id_comp]
 
 variable (S) in
@@ -141,6 +154,7 @@ lemma pushout_inr_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
       (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
+variable (R S) in
 /-- `A ↦ S ⊗[R] A` is naturally isomorphic to `A ↦ pushout A.hom (algebraMap R S)`. -/
 def tensorProdIsoPushout : tensorProd R S ≅ Under.pushout (algebraMap R S) :=
   NatIso.ofComponents (fun A ↦ tensorProdObjIsoPushoutObj S A) <| by
@@ -155,5 +169,10 @@ def tensorProdIsoPushout : tensorProd R S ≅ Under.pushout (algebraMap R S) :=
     · rw [← cancel_mono (tensorProdObjIsoPushoutObj S B).inv.right]
       ext (x : S)
       simp [mkUnder_right]
+
+@[simp]
+lemma tensorProdIsoPushout_app (A : Under R) :
+    (tensorProdIsoPushout R S).app A = tensorProdObjIsoPushoutObj S A :=
+  rfl
 
 end CommRingCat
