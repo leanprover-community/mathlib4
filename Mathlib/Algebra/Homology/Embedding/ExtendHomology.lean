@@ -18,58 +18,6 @@ the homology is obviously zero. When `e.f j = j`, we shall construct an isomorph
 
 open CategoryTheory Limits Category
 
-namespace CategoryTheory
-
-namespace Limits
-
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
-
--- to be moved
-def KernelFork.isLimitOfIsLimitOfIff {X Y : C} {g : X ⟶ Y} {c : KernelFork g} (hc : IsLimit c)
-    {X' Y' : C} (g' : X' ⟶ Y') (e : X ≅ X')
-    (iff : ∀ ⦃W : C⦄ (φ : W ⟶ X), φ ≫ g = 0 ↔ φ ≫ e.hom ≫ g' = 0) :
-    IsLimit (KernelFork.ofι (f := g') (c.ι ≫ e.hom) (by simp [← iff])) :=
-  KernelFork.IsLimit.ofι _ _
-    (fun s hs ↦ hc.lift (KernelFork.ofι (ι := s ≫ e.inv)
-      (by rw [iff, assoc, Iso.inv_hom_id_assoc, hs])))
-    (fun s hs ↦ by
-      rw [← cancel_mono e.inv, assoc, assoc, e.hom_inv_id]
-      dsimp
-      rw [comp_id, Fork.IsLimit.lift_ι, Fork.ι_ofι])
-    (fun s hs m hm ↦ Fork.IsLimit.hom_ext hc (by simpa [← cancel_mono e.hom] using hm))
-
-def KernelFork.isLimitOfIsLimitOfIff' {X Y : C} {g : X ⟶ Y} {c : KernelFork g} (hc : IsLimit c)
-    {Y' : C} (g' : X ⟶ Y')
-    (iff : ∀ ⦃W : C⦄ (φ : W ⟶ X), φ ≫ g = 0 ↔ φ ≫ g' = 0) :
-    IsLimit (KernelFork.ofι (f := g') c.ι (by simp [← iff])) :=
-  IsLimit.ofIsoLimit (isLimitOfIsLimitOfIff hc g' (Iso.refl _) (by simpa using iff))
-    (Fork.ext (Iso.refl _))
-
-def CokernelCofork.isColimitOfIsColimitOfIff {X Y : C} {f : X ⟶ Y} {c : CokernelCofork f}
-    (hc : IsColimit c) {X' Y' : C} (f' : X' ⟶ Y') (e : Y' ≅ Y)
-    (iff : ∀ ⦃W : C⦄ (φ : Y ⟶ W), f ≫ φ = 0 ↔ f' ≫ e.hom ≫ φ = 0) :
-    IsColimit (CokernelCofork.ofπ (f := f') (e.hom ≫ c.π) (by simp [← iff])) :=
-  CokernelCofork.IsColimit.ofπ _ _
-    (fun s hs ↦ hc.desc (CokernelCofork.ofπ (π := e.inv ≫ s)
-      (by rw [iff, e.hom_inv_id_assoc, hs])))
-    (fun s hs ↦ by
-      rw [← cancel_epi e.inv, assoc, e.inv_hom_id_assoc,
-        Cofork.IsColimit.π_desc, Cofork.π_ofπ])
-    (fun s hs m hm ↦ Cofork.IsColimit.hom_ext hc (by simpa [← cancel_epi e.hom] using hm))
-
-def CokernelCofork.isColimitOfIsColimitOfIff' {X Y : C} {f : X ⟶ Y} {c : CokernelCofork f}
-    (hc : IsColimit c) {X' : C} (f' : X' ⟶ Y)
-    (iff : ∀ ⦃W : C⦄ (φ : Y ⟶ W), f ≫ φ = 0 ↔ f' ≫ φ = 0) :
-    IsColimit (CokernelCofork.ofπ (f := f') c.π (by simp [← iff])) :=
-  IsColimit.ofIsoColimit (isColimitOfIsColimitOfIff hc f' (Iso.refl _) (by simpa using iff))
-    (Cofork.ext (Iso.refl _))
-
-
-end Limits
-
-end CategoryTheory
-
-
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
@@ -179,7 +127,6 @@ noncomputable def leftHomologyData (h : (K.sc' i j k).LeftHomologyData) :
     rw [← lift_d_comp_eq_zero_iff K e hj' hi hi' hk hk' _ h.hi]
     exact h.wπ
   hπ := isColimitCokernelCofork K e hj' hi hi' hk hk' _ h.hi _ h.hπ
-
 
 end HomologyData
 
