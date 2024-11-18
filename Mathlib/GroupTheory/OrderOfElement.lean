@@ -37,7 +37,7 @@ variable [Monoid G] {a b x y : G} {n m : ℕ}
 
 section IsOfFinOrder
 
--- Porting note(#12129): additional beta reduction needed
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
 @[to_additive]
 theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt (x * ·) n 1 ↔ x ^ n = 1 := by
   rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; beta_reduce; rw [mul_one]
@@ -162,7 +162,7 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
   convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
-  -- Porting note(#12129): additional beta reduction needed in the middle of the rewrite
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed in the middle of the rewrite
   rw [orderOf, mul_left_iterate]; beta_reduce; rw [mul_one]
 
 @[to_additive]
@@ -572,6 +572,10 @@ theorem orderOf_dvd_iff_zpow_eq_one : (orderOf x : ℤ) ∣ i ↔ x ^ i = 1 := b
 @[to_additive (attr := simp)]
 theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_orderOf_iff]
 
+@[to_additive]
+theorem orderOf_dvd_sub_iff_zpow_eq_zpow {a b : ℤ} : (orderOf x : ℤ) ∣ a - b ↔ x ^ a = x ^ b := by
+  rw [orderOf_dvd_iff_zpow_eq_one, zpow_sub, mul_inv_eq_one]
+
 namespace Subgroup
 variable {H : Subgroup G}
 
@@ -650,12 +654,12 @@ noncomputable def finEquivZPowers (x : G) (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ (zpowers x : Set G) :=
   (finEquivPowers x hx).trans <| Equiv.Set.ofEq hx.powers_eq_zpowers
 
--- This lemma has always been bad, but the linter only noticed after leaprover/lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[to_additive (attr := simp, nolint simpNF)]
 lemma finEquivZPowers_apply (hx) {n : Fin (orderOf x)} :
     finEquivZPowers x hx n = ⟨x ^ (n : ℕ), n, zpow_natCast x n⟩ := rfl
 
- -- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
+ -- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[to_additive (attr := simp, nolint simpNF)]
 lemma finEquivZPowers_symm_apply (x : G) (hx) (n : ℕ) :
     (finEquivZPowers x hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =

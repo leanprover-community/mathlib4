@@ -65,7 +65,7 @@ theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) 
 def adj : free ⊣ forget AddCommGrp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => FreeAbelianGroup.lift.symm
-      -- Porting note (#11041): used to be just `by intros; ext; rfl`.
+      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext
@@ -112,10 +112,10 @@ def free : Type u ⥤ Grp where
   obj α := of (FreeGroup α)
   map := FreeGroup.map
   map_id := by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     intros; ext1; erw [← FreeGroup.map.unique] <;> intros <;> rfl
   map_comp := by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     intros; ext1; erw [← FreeGroup.map.unique] <;> intros <;> rfl
 
 /-- The free-forgetful adjunction for groups.
@@ -123,7 +123,7 @@ def free : Type u ⥤ Grp where
 def adj : free ⊣ forget Grp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => FreeGroup.lift.symm
-      -- Porting note (#11041): used to be just `by intros; ext1; rfl`.
+      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext1
@@ -154,7 +154,7 @@ def abelianize : Grp.{u} ⥤ CommGrp.{u} where
 def abelianizeAdj : abelianize ⊣ forget₂ CommGrp.{u} Grp.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => Abelianization.lift.symm
-      -- Porting note (#11041): used to be just `by intros; ext1; rfl`.
+      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
         intros
         ext1

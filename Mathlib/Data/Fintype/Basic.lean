@@ -705,7 +705,7 @@ theorem toFinset_empty [Fintype (∅ : Set α)] : (∅ : Set α).toFinset = ∅ 
 
 /- TODO Without the coercion arrow (`↥`) there is an elaboration bug in the following two;
 it essentially infers `Fintype.{v} (Set.univ.{u} : Set α)` with `v` and `u` distinct.
-Reported in leanprover-community/lean#672 -/
+Reported in https://github.com/leanprover-community/lean/issues/672 -/
 @[simp]
 theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
     (Set.univ : Set α).toFinset = Finset.univ := by
@@ -1174,13 +1174,14 @@ function `f : ℕ → α` such that `r (f m) (f n)` holds whenever `m ≠ n`.
 We also ensure that all constructed points satisfy a given predicate `P`. -/
 theorem exists_seq_of_forall_finset_exists' {α : Type*} (P : α → Prop) (r : α → α → Prop)
     [IsSymm α r] (h : ∀ s : Finset α, (∀ x ∈ s, P x) → ∃ y, P y ∧ ∀ x ∈ s, r x y) :
-    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise fun m n => r (f m) (f n) := by
+    ∃ f : ℕ → α, (∀ n, P (f n)) ∧ Pairwise (r on f) := by
   rcases exists_seq_of_forall_finset_exists P r h with ⟨f, hf, hf'⟩
   refine ⟨f, hf, fun m n hmn => ?_⟩
   rcases lt_trichotomy m n with (h | rfl | h)
   · exact hf' m n h
   · exact (hmn rfl).elim
-  · apply symm
+  · unfold Function.onFun
+    apply symm
     exact hf' n m h
 
 open Batteries.ExtendedBinder Lean Meta

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Topology.Bornology.BoundedOperation
 import Mathlib.Tactic.Monotonicity
 
@@ -18,6 +17,8 @@ The type of bounded continuous functions taking values in a metric space, with
 the uniform distance.
 
 -/
+
+assert_not_exists CStarAlgebra.star
 
 noncomputable section
 
@@ -189,7 +190,7 @@ instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
   dist_comm f g := by simp [dist_eq, dist_comm]
   dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
-  -- Porting note (#10888): added proof for `edist_dist`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `edist_dist`
   edist_dist x y := by dsimp; congr; simp [dist_nonneg']
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
@@ -953,7 +954,7 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) wher
 instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with
-    -- Porting note (#10888): Added a proof for `eq_of_dist_eq_zero`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added a proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
@@ -1265,13 +1266,13 @@ instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
 instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
   __ := instCommRing
   __ := instSeminormedAddCommGroup
-  -- Porting note (#10888): Added proof for `norm_mul`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added proof for `norm_mul`
   norm_mul := norm_mul_le
 
 instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
   __ := instCommRing
   __ := instNormedAddCommGroup
-  -- Porting note (#10888): Added proof for `norm_mul`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added proof for `norm_mul`
   norm_mul := norm_mul_le
 
 end NormedCommRing
@@ -1367,72 +1368,6 @@ theorem NNReal.upper_bound {α : Type*} [TopologicalSpace α] (f : α →ᵇ ℝ
   simp only [coe_zero, Pi.zero_apply] at key
   rwa [NNReal.nndist_zero_eq_val' (f x)] at key
 
-/-!
-### Star structures
-
-In this section, if `β` is a normed ⋆-group, then so is the space of bounded
-continuous functions from `α` to `β`, by using the star operation pointwise.
-
-If `𝕜` is normed field and a ⋆-ring over which `β` is a normed algebra and a
-star module, then the space of bounded continuous functions from `α` to `β`
-is a star module.
-
-If `β` is a ⋆-ring in addition to being a normed ⋆-group, then `α →ᵇ β`
-inherits a ⋆-ring structure.
-
-In summary, if `β` is a C⋆-algebra over `𝕜`, then so is `α →ᵇ β`; note that
-completeness is guaranteed when `β` is complete (see
-`BoundedContinuousFunction.complete`). -/
-
-
-section NormedAddCommGroup
-
-variable {𝕜 : Type*} [NormedField 𝕜] [StarRing 𝕜] [TopologicalSpace α] [SeminormedAddCommGroup β]
-  [StarAddMonoid β] [NormedStarGroup β]
-
-variable [NormedSpace 𝕜 β] [StarModule 𝕜 β]
-
-instance instStarAddMonoid : StarAddMonoid (α →ᵇ β) where
-  star f := f.comp star starNormedAddGroupHom.lipschitz
-  star_involutive f := ext fun x => star_star (f x)
-  star_add f g := ext fun x => star_add (f x) (g x)
-
-/-- The right-hand side of this equality can be parsed `star ∘ ⇑f` because of the
-instance `Pi.instStarForAll`. Upon inspecting the goal, one sees `⊢ ↑(star f) = star ↑f`. -/
-@[simp]
-theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star (⇑f) := rfl
-
-@[simp]
-theorem star_apply (f : α →ᵇ β) (x : α) : star f x = star (f x) := rfl
-
-instance instNormedStarGroup : NormedStarGroup (α →ᵇ β) where
-  norm_star f := by simp only [norm_eq, star_apply, norm_star]
-
-instance instStarModule : StarModule 𝕜 (α →ᵇ β) where
-  star_smul k f := ext fun x => star_smul k (f x)
-
-end NormedAddCommGroup
-
-section CStarRing
-
-variable [TopologicalSpace α]
-variable [NonUnitalNormedRing β] [StarRing β]
-
-instance instStarRing [NormedStarGroup β] : StarRing (α →ᵇ β) where
-  __ := instStarAddMonoid
-  star_mul f g := ext fun x ↦ star_mul (f x) (g x)
-
-variable [CStarRing β]
-
-instance instCStarRing : CStarRing (α →ᵇ β) where
-  norm_mul_self_le f := by
-    rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _), norm_le (Real.sqrt_nonneg _)]
-    intro x
-    rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self]
-    exact norm_coe_le_norm (star f * f) x
-
-end CStarRing
-
 section NormedLatticeOrderedGroup
 
 variable [TopologicalSpace α] [NormedLatticeAddCommGroup β]
@@ -1494,7 +1429,7 @@ instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β
       have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t)
-    -- Porting note (#10888): added proof for `eq_of_dist_eq_zero`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 end NormedLatticeOrderedGroup
@@ -1560,5 +1495,3 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 end
 
 end BoundedContinuousFunction
-
-set_option linter.style.longFile 1700

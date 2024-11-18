@@ -85,7 +85,7 @@ instance : Inhabited GHSpace :=
   ⟨Quot.mk _ ⟨⟨{0}, isCompact_singleton⟩, singleton_nonempty _⟩⟩
 
 /-- A metric space representative of any abstract point in `GHSpace` -/
--- Porting note(#5171): linter not yet ported; removed @[nolint has_nonempty_instance]; why?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported; removed @[nolint has_nonempty_instance]; why?
 def GHSpace.Rep (p : GHSpace) : Type :=
   (Quotient.out p : NonemptyCompacts ℓ_infty_ℝ)
 
@@ -414,9 +414,9 @@ instance : MetricSpace GHSpace where
       funext
       simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
       congr
-      -- The next line had `singlePass := true` before #9928,
+      -- The next line had `singlePass := true` before https://github.com/leanprover-community/mathlib4/pull/9928,
       -- then was changed to be `simp only [hausdorffDist_comm]`,
-      -- then `singlePass := true` was readded in #8386 because of timeouts.
+      -- then `singlePass := true` was readded in https://github.com/leanprover-community/mathlib4/pull/8386 because of timeouts.
       -- TODO: figure out what causes the slowdown and make it a `simp only` again?
       simp (config := { singlePass := true }) only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
