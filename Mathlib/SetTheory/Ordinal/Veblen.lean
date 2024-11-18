@@ -40,7 +40,7 @@ section veblenWith
 defined so that
 
 - `veblenWith f 0 = f`.
-- `veblenWith f a` enumerates the fixed points of `veblenWith f b` for `b < a` when `a ≠ 0`.
+- `veblenWith f a` enumerates the common fixed points of `veblenWith f b` for `b < a` when `a ≠ 0`.
 -/
 @[pp_nodot]
 def veblenWith (f : Ordinal.{u} → Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} → Ordinal.{u} :=
@@ -97,9 +97,6 @@ theorem veblenWith_right_strictMono (o : Ordinal) : StrictMono (veblenWith f o) 
   · rw [veblenWith_of_ne_zero f h]
     exact derivFamily_strictMono _
 
-theorem veblenWith_right_monotone (o : Ordinal) : Monotone (veblenWith f o) :=
-  (veblenWith_right_strictMono hf o).monotone
-
 theorem veblenWith_lt_veblenWith_right_iff : veblenWith f o a < veblenWith f o b ↔ a < b :=
   (veblenWith_right_strictMono hf o).lt_iff_lt
 
@@ -115,8 +112,7 @@ theorem veblenWith_inj : veblenWith f o a = veblenWith f o b ↔ a = b :=
 theorem right_le_veblenWith (a b : Ordinal) : b ≤ veblenWith f a b :=
   (veblenWith_right_strictMono hf a).le_apply
 
-theorem veblenWith_left_monotone (o : Ordinal) :
-    Monotone fun a ↦ veblenWith f a o := by
+theorem veblenWith_left_monotone (o : Ordinal) : Monotone (veblenWith f · o) := by
   rw [monotone_iff_forall_lt]
   intro a b h
   rw [← veblenWith_veblenWith_of_lt hf h]
@@ -137,9 +133,6 @@ theorem veblenWith_zero_strictMono (hp : 0 < f 0) : StrictMono (veblenWith f · 
   rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_lt_veblenWith_right_iff hf]
   exact veblenWith_pos hf hp b 0
 
-theorem veblenWith_zero_monotone (hp : 0 < f 0) : Monotone (veblenWith f · 0) :=
-  (veblenWith_zero_strictMono hf hp).monotone
-
 theorem veblenWith_zero_lt_iff (hp : 0 < f 0) : veblenWith f a 0 < veblenWith f b 0 ↔ a < b :=
   (veblenWith_zero_strictMono hf hp).lt_iff_lt
 
@@ -151,7 +144,7 @@ theorem veblenWith_zero_inj (hp : 0 < f 0) : veblenWith f a 0 = veblenWith f b 0
 
 theorem left_le_veblenWith (hp : 0 < f 0) (a b : Ordinal) : a ≤ veblenWith f a b :=
   (veblenWith_zero_strictMono hf hp).le_apply.trans <|
-    veblenWith_right_monotone hf _ (Ordinal.zero_le _)
+    (veblenWith_right_strictMono hf _).monotone (Ordinal.zero_le _)
 
 theorem isNormal_veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) := by
   rw [isNormal_iff_strictMono_limit]
@@ -165,8 +158,9 @@ theorem isNormal_veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
   | nil => use 0; simp [ho.pos]
   | cons a l IH =>
     obtain ⟨b, hb, hb'⟩ := IH
-    refine ⟨_, ho.succ_lt (max_lt a.2 hb), (veblenWith_right_monotone hf _ <| hb'.trans <|
-      veblenWith_left_monotone hf _ <| (le_max_right a.1 b).trans (Order.le_succ _)).trans ?_⟩
+    refine ⟨_, ho.succ_lt (max_lt a.2 hb), ((veblenWith_right_strictMono hf _).monotone <|
+      hb'.trans <| veblenWith_left_monotone hf _ <|
+        (le_max_right a.1 b).trans (Order.le_succ _)).trans ?_⟩
     rw [veblenWith_veblenWith_of_lt hf]
     rw [Order.lt_succ_iff]
     exact le_max_left _ b
@@ -250,9 +244,6 @@ theorem veblen_succ (o : Ordinal) : veblen (Order.succ o) = deriv (veblen o) :=
 theorem veblen_right_strictMono (o : Ordinal) : StrictMono (veblen o) :=
   veblenWith_right_strictMono isNormal_omega0_opow o
 
-theorem veblen_right_monotone (o : Ordinal) : Monotone (veblen o) :=
-  (veblen_right_strictMono o).monotone
-
 @[simp]
 theorem veblen_lt_veblen_right_iff : veblen o a < veblen o b ↔ a < b :=
   veblenWith_lt_veblenWith_right_iff isNormal_omega0_opow
@@ -271,7 +262,7 @@ theorem veblen_inj : veblen o a = veblen o b ↔ a = b :=
 theorem right_le_veblen (a b : Ordinal) : b ≤ veblen a b :=
   right_le_veblenWith isNormal_omega0_opow a b
 
-theorem veblen_left_monotone (o : Ordinal) : Monotone fun a ↦ veblen a o :=
+theorem veblen_left_monotone (o : Ordinal) : Monotone (veblen · o) :=
   veblenWith_left_monotone isNormal_omega0_opow o
 
 @[simp]
@@ -280,9 +271,6 @@ theorem veblen_pos (a b : Ordinal) : 0 < veblen a b :=
 
 theorem veblen_zero_strictMono : StrictMono (veblen · 0) :=
   veblenWith_zero_strictMono isNormal_omega0_opow omega0_opow_zero_pos
-
-theorem veblen_zero_monotone : Monotone (veblen · 0) :=
-  veblen_zero_strictMono.monotone
 
 @[simp]
 theorem veblen_zero_lt_iff : veblen a 0 < veblen b 0 ↔ a < b :=
