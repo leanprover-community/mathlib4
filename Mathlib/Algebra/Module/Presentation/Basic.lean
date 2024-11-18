@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Presentations of modules
@@ -111,6 +111,14 @@ lemma range_map :
     LinearMap.range relations.map = Submodule.span A (Set.range relations.relation) :=
   Finsupp.range_linearCombination _
 
+@[simp]
+lemma toQuotient_map : relations.toQuotient.comp relations.map = 0 := by aesop
+
+@[simp]
+lemma toQuotient_map_apply (x : relations.R →₀ A) :
+    relations.toQuotient (relations.map x) = 0 :=
+  DFunLike.congr_fun relations.toQuotient_map x
+
 variable (M : Type v) [AddCommGroup M] [Module A M]
 
 /-- The type of solutions in a module `M` of the equations given by `relations : Relations A`. -/
@@ -149,14 +157,8 @@ lemma π_comp_map_apply (x : relations.R →₀ A) : solution.π (relations.map 
   change solution.π.comp relations.map x = 0
   rw [π_comp_map, LinearMap.zero_apply]
 
-/-- Given `relations : Relations A` and `solution : relations.Solution M`,
-this is the canonical linear map from `relations.R →₀ A` to the kernel
-of `solution.π : (relations.G →₀ A) →ₗ[A] M`. -/
-noncomputable def mapToKer : (relations.R →₀ A) →ₗ[A] (LinearMap.ker solution.π) :=
-  LinearMap.codRestrict _ relations.map (by simp)
-
-@[simp]
-lemma mapToKer_coe (x : relations.R →₀ A) : (solution.mapToKer x).1 = relations.map x := rfl
+lemma range_π : LinearMap.range solution.π = Submodule.span A (Set.range solution.var) :=
+  Finsupp.range_linearCombination _
 
 lemma span_relation_le_ker_π :
     Submodule.span A (Set.range relations.relation) ≤ LinearMap.ker solution.π := by
@@ -241,6 +243,40 @@ lemma ofπ'_π : (ofπ' π hπ).π = π := by simp [ofπ']
 
 end
 
+section
+
+variable (solution : relations.Solution M)
+
+lemma injective_fromQuotient_iff_ker_π_eq_span :
+    Function.Injective solution.fromQuotient ↔
+      LinearMap.ker solution.π = Submodule.span A (Set.range relations.relation) := by
+  constructor
+  · intro h
+    rw [← ker_toQuotient, ← fromQuotient_comp_toQuotient, LinearMap.ker_comp,
+      LinearMap.ker_eq_bot.2 h, Submodule.comap_bot]
+  · intro h
+    rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+    intro x hx
+    obtain ⟨x, rfl⟩ := relations.surjective_toQuotient x
+    replace hx : x ∈ LinearMap.ker solution.π := by
+      simpa only [LinearMap.mem_ker, fromQuotient_toQuotient] using hx
+    rw [h, ← range_map] at hx
+    obtain ⟨x, rfl⟩ := hx
+    simp only [toQuotient_map_apply, Submodule.zero_mem]
+
+lemma surjective_fromQuotient_iff_surjective_π :
+    Function.Surjective solution.fromQuotient ↔ Function.Surjective solution.π := by
+  simpa only [← fromQuotient_comp_toQuotient] using
+    (Function.Surjective.of_comp_iff (f := solution.fromQuotient)
+      relations.surjective_toQuotient).symm
+
+lemma surjective_π_iff_span_eq_top :
+    Function.Surjective solution.π ↔
+      Submodule.span A (Set.range solution.var) = ⊤ := by
+  rw [← LinearMap.range_eq_top, range_π]
+
+end
+
 /-- Given `relations : Relations A`, an `A`-module `M` and `solution : relations.Solution M`,
 this property asserts that `solution` gives a presentation of `M` by generators and relations. -/
 structure IsPresentation (solution : relations.Solution M) : Prop where
@@ -267,28 +303,15 @@ lemma linearEquiv_symm_var (g : relations.G) :
   h.linearEquiv.injective (by simp)
 
 lemma surjective_π : Function.Surjective solution.π := by
-  rw [← fromQuotient_comp_toQuotient, LinearMap.coe_comp]
-  exact h.bijective.2.comp relations.surjective_toQuotient
+  simpa only [← surjective_fromQuotient_iff_surjective_π] using h.bijective.2
 
 lemma ker_π : LinearMap.ker solution.π = Submodule.span A (Set.range relations.relation) := by
-  rw [← ker_toQuotient, ← fromQuotient_comp_toQuotient, LinearMap.ker_comp,
-    LinearMap.ker_eq_bot.2 h.bijective.1, Submodule.comap_bot]
-
-lemma surjective_mapToKer : Function.Surjective solution.mapToKer := by
-  rintro ⟨x, hx⟩
-  rw [h.ker_π, ← relations.range_map] at hx
-  obtain ⟨r, rfl⟩ := hx
-  exact ⟨r, rfl⟩
+  simpa only [← injective_fromQuotient_iff_ker_π_eq_span] using h.bijective.1
 
 /-- The sequence `(relations.R →₀ A) → (relations.G →₀ A) → M → 0` is exact. -/
 lemma exact : Function.Exact relations.map solution.π := by
-  intro x₂
-  constructor
-  · intro hx₂
-    obtain ⟨x₁, hx₁⟩ := h.surjective_mapToKer ⟨x₂, hx₂⟩
-    exact ⟨x₁, by simpa only [mapToKer_coe, Subtype.ext_iff] using hx₁⟩
-  · rintro ⟨x₁, rfl⟩
-    rw [π_comp_map_apply]
+  rw [LinearMap.exact_iff, range_map, ← solution.injective_fromQuotient_iff_ker_π_eq_span]
+  exact h.bijective.1
 
 variable {N : Type v'} [AddCommGroup N] [Module A N]
 
@@ -302,6 +325,14 @@ lemma desc_var (s : relations.Solution N) (g : relations.G) :
     h.desc s (solution.var g) = s.var g := by
   dsimp [desc]
   simp only [linearEquiv_symm_var, fromQuotient_toQuotient, π_single]
+
+@[simp]
+lemma desc_comp_π (s : relations.Solution N) : (h.desc s).comp solution.π = s.π := by aesop
+
+@[simp]
+lemma π_desc_apply (s : relations.Solution N) (x : relations.G →₀ A) :
+    h.desc s (solution.π x) = s.π x :=
+  DFunLike.congr_fun (h.desc_comp_π s) x
 
 @[simp]
 lemma postcomp_desc (s : relations.Solution N) :
@@ -355,7 +386,7 @@ lemma uniq_symm_var (g : relations.G) : (uniq h h').symm (solution'.var g) = sol
 
 end
 
-lemma ofLinearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsPresentation where
+lemma of_linearEquiv (e : M ≃ₗ[A] N) : (solution.postcomp e.toLinearMap).IsPresentation where
   bijective := by
     have : (solution.postcomp e.toLinearMap).fromQuotient =
       e.toLinearMap.comp (solution.fromQuotient) := by aesop
@@ -434,6 +465,22 @@ lemma isPresentation {solution : relations.Solution M}
 
 end IsPresentationCore
 
+variable (solution : relations.Solution M)
+
+lemma isPresentation_iff :
+    solution.IsPresentation ↔
+      Submodule.span A (Set.range solution.var) = ⊤ ∧
+      LinearMap.ker solution.π = Submodule.span A (Set.range relations.relation) := by
+  rw [← injective_fromQuotient_iff_ker_π_eq_span,
+    ← surjective_π_iff_span_eq_top, ← surjective_fromQuotient_iff_surjective_π, ]
+  exact ⟨fun h ↦ ⟨h.bijective.2, h.bijective.1⟩, fun h ↦ ⟨⟨h.2, h.1⟩⟩⟩
+
+lemma isPresentation_mk
+    (h₁ : Submodule.span A (Set.range solution.var) = ⊤)
+    (h₂ : LinearMap.ker solution.π = Submodule.span A (Set.range relations.relation)) :
+    solution.IsPresentation := by
+  rw [isPresentation_iff]; constructor <;> assumption
+
 end Solution
 
 end Relations
@@ -455,5 +502,13 @@ def Presentation.ofIsPresentation {relations : Relations.{w₀, w₁} A}
     Presentation.{w₀, w₁} A M where
   toSolution := solution
   toIsPresentation := h
+
+/-- The presentation of an `A`-module `N` that is deduced from a presentation of
+a module `M` and a linear equivalence `e : M ≃ₗ[A] N`. -/
+@[simps! toRelations toSolution]
+def Presentation.ofLinearEquiv (pres : Presentation.{w₀, w₁} A M)
+    {N : Type v'} [AddCommGroup N] [Module A N] (e : M ≃ₗ[A] N) :
+    Presentation A N :=
+  ofIsPresentation (pres.toIsPresentation.of_linearEquiv e)
 
 end Module

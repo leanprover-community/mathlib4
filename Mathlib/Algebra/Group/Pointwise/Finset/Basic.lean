@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Yaël Dillies
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Finset.Density
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.ListOfFn
@@ -1019,6 +1020,17 @@ theorem univ_pow [Fintype α] (hn : n ≠ 0) : (univ : Finset α) ^ n = univ :=
 @[to_additive]
 protected theorem _root_.IsUnit.finset : IsUnit a → IsUnit ({a} : Finset α) :=
   IsUnit.map (singletonMonoidHom : α →* Finset α)
+
+@[to_additive]
+lemma image_op_pow (s : Finset α) : ∀ n : ℕ, (s ^ n).image op = s.image op ^ n
+  | 0 => by simp [singleton_one]
+  | n + 1 => by rw [pow_succ, pow_succ', image_op_mul, image_op_pow]
+
+@[to_additive]
+lemma map_op_pow (s : Finset α) :
+    ∀ n : ℕ, (s ^ n).map opEquiv.toEmbedding = s.map opEquiv.toEmbedding ^ n
+  | 0 => by simp [singleton_one]
+  | n + 1 => by rw [pow_succ, pow_succ', map_op_mul, map_op_pow]
 
 end Monoid
 

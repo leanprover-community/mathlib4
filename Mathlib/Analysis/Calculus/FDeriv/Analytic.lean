@@ -89,7 +89,8 @@ theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWith
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x := by
-  simpa only [Set.insert_eq_of_mem, Set.mem_univ, Set.univ_prod_univ, nhdsWithin_univ]
+  simpa only [hasStrictFDerivAt_iff_isLittleO, Set.insert_eq_of_mem, Set.mem_univ,
+      Set.univ_prod_univ, nhdsWithin_univ]
     using (h.hasFPowerSeriesWithinAt (s := Set.univ)).hasStrictFDerivWithinAt
 
 theorem HasFPowerSeriesWithinAt.hasFDerivWithinAt (h : HasFPowerSeriesWithinAt f p s x) :
@@ -145,7 +146,7 @@ theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
   have Z := (h.analyticWithinAt_of_mem hy).differentiableWithinAt
   rcases eq_or_ne y x with rfl | hy
   · exact Z.mono inter_subset_left
-  · apply (Z.mono (subset_insert _ _)).mono_of_mem
+  · apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
     suffices s ∈ 𝓝[insert x s] y from nhdsWithin_mono _ inter_subset_left this
     rw [nhdsWithin_insert_of_ne hy]
     exact self_mem_nhdsWithin
@@ -169,7 +170,7 @@ theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
   · convert (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
     simp
   · have Z := (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
-    apply (Z.mono (subset_insert _ _)).mono_of_mem
+    apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
     rw [nhdsWithin_insert_of_ne]
     · exact self_mem_nhdsWithin
     · simpa using h''y

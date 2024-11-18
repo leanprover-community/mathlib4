@@ -162,20 +162,20 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
 elab_rules : tactic
-  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none False
+  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none false
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName) => withMainContext <| Lift.main e t h newVarName none False
+    with $newVarName) => withMainContext <| Lift.main e t h newVarName none false
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName False
+    with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName false
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
     with $newVarName $newEqName $newPrfName) => withMainContext do
-  if h.isNone then Lift.main e t h newVarName newEqName False
+  if h.isNone then Lift.main e t h newVarName newEqName false
   else
     let some h := h | unreachable!
-    if h.raw == newPrfName then Lift.main e t h newVarName newEqName True
-    else Lift.main e t h newVarName newEqName False
+    if h.raw == newPrfName then Lift.main e t h newVarName newEqName true
+    else Lift.main e t h newVarName newEqName false
 
 end Mathlib.Tactic

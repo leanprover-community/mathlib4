@@ -221,6 +221,7 @@ theorem omega0_le_omega (o : Ordinal) : ω ≤ ω_ o := by
   rw [← omega_zero, omega_le_omega]
   exact Ordinal.zero_le o
 
+/-- For the theorem `0 < ω`, see `omega0_pos`. -/
 theorem omega_pos (o : Ordinal) : 0 < ω_ o :=
   omega0_pos.trans_le (omega0_le_omega o)
 
@@ -306,8 +307,13 @@ theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
 
 @[simp]
 theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
-  ((InitialSeg.ofIso preAleph.toRelIsoLT).trans liftInitialSeg).eq
-    (Ordinal.liftInitialSeg.trans (InitialSeg.ofIso preAleph.toRelIsoLT)) o
+  (preAleph.toInitialSeg.trans liftInitialSeg).eq
+    (Ordinal.liftInitialSeg.trans preAleph.toInitialSeg) o
+
+@[simp]
+theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
+    Ordinal.lift.{v} (preOmega o) = preOmega (Ordinal.lift.{v} o) := by
+  rw [← ord_preAleph, lift_ord, lift_preAleph, ord_preAleph]
 
 @[simp]
 theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
@@ -391,6 +397,7 @@ theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_preAleph, add_zero, preA
 theorem lift_aleph (o : Ordinal.{u}) : lift.{v} (aleph o) = aleph (Ordinal.lift.{v} o) := by
   simp [aleph_eq_preAleph]
 
+/-- For the theorem `lift ω = ω`, see `lift_omega0`. -/
 @[simp]
 theorem _root_.Ordinal.lift_omega (o : Ordinal.{u}) :
     Ordinal.lift.{v} (ω_ o) = ω_ (Ordinal.lift.{v} o) := by
@@ -435,6 +442,17 @@ theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
 theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
   isLimit_ord <| aleph0_le_aleph _
 
+@[simp]
+theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
+  ext c
+  refine ⟨fun ⟨o, e⟩ => e ▸ aleph0_le_aleph _, fun hc ↦ ⟨preAleph.symm c - ω, ?_⟩⟩
+  rw [aleph_eq_preAleph, Ordinal.add_sub_cancel_of_le, preAleph.apply_symm_apply]
+  rwa [← aleph0_le_preAleph, preAleph.apply_symm_apply]
+
+theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c := by
+  rw [range_aleph, mem_Ici]
+
+@[deprecated mem_range_aleph_iff (since := "2024-10-24")]
 theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = ℵ_ o :=
   ⟨fun h =>
     ⟨preAleph.symm c - ω, by

@@ -412,6 +412,15 @@ protected theorem ciSup_mul_ciSup (g : ι' → Cardinal.{v}) :
     (⨆ i, f i) * (⨆ j, g j) = ⨆ (i) (j), f i * g j := by
   simp_rw [Cardinal.ciSup_mul f, Cardinal.mul_ciSup g]
 
+theorem sum_eq_iSup_lift {f : ι → Cardinal.{max u v}} (hι : ℵ₀ ≤ #ι)
+    (h : lift.{v} #ι ≤ iSup f) : sum f = iSup f := by
+  apply (iSup_le_sum f).antisymm'
+  convert sum_le_iSup_lift f
+  rw [mul_eq_max (aleph0_le_lift.mpr hι) ((aleph0_le_lift.mpr hι).trans h), max_eq_right h]
+
+theorem sum_eq_iSup {f : ι → Cardinal.{u}} (hι : ℵ₀ ≤ #ι) (h : #ι ≤ iSup f) : sum f = iSup f :=
+  sum_eq_iSup_lift hι ((lift_id #ι).symm ▸ h)
+
 end ciSup
 
 /-! ### Properties of `aleph` -/
@@ -837,7 +846,7 @@ lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
 
 end Cardinal
 
-@[deprecated mk_iUnion_Ordinal_le_of_le (since := "2024-08-30")]
+@[deprecated mk_iUnion_Ordinal_le_of_le (since := "2024-11-02")]
 alias Ordinal.Cardinal.mk_iUnion_Ordinal_le_of_le := mk_iUnion_Ordinal_le_of_le
 
 /-! ### Cardinality of ordinals -/
@@ -852,7 +861,7 @@ theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordi
     (mem_Iio.mp ((enumIsoToType _).symm _).2).trans_le (Ordinal.le_iSup _ _)⟩))
   rw [EquivLike.comp_surjective]
   rintro ⟨x, hx⟩
-  obtain ⟨i, hi⟩ := Ordinal.lt_iSup.mp hx
+  obtain ⟨i, hi⟩ := Ordinal.lt_iSup_iff.mp hx
   exact ⟨⟨i, enumIsoToType _ ⟨x, hi⟩⟩, by simp⟩
 
 theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :

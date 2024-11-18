@@ -29,7 +29,7 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 
 
 variable {𝕜 : Type*} [RCLike 𝕜]
-variable {n : Type*} [LinearOrder n] [IsWellOrder n (· < ·)] [LocallyFiniteOrderBot n]
+variable {n : Type*} [LinearOrder n] [WellFoundedLT n] [LocallyFiniteOrderBot n]
 
 section set_options
 
