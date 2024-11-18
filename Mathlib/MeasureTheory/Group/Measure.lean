@@ -271,7 +271,7 @@ end Group
 
 namespace Measure
 
--- TODO: noncomputable has to be specified explicitly. #1074 (item 8)
+-- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
 
 /-- The measure `A ↦ μ (A⁻¹)`, where `A⁻¹` is the pointwise inverse of `A`. -/
 @[to_additive "The measure `A ↦ μ (- A)`, where `- A` is the pointwise negation of `A`."]
@@ -611,12 +611,6 @@ lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s)
   · rintro f - - h''f
     simp only [iUnion_smul, h''f]
 
-/-- If a compact set is included in a measurable set, then so is its closure. -/
-@[to_additive (attr := deprecated IsCompact.closure_subset_measurableSet (since := "2024-01-28"))]
-lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
-    (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s :=
-  hk.closure_subset_measurableSet hs h
-
 @[to_additive (attr := simp)]
 lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
     μ (s * (closure {1} : Set G)) = μ s := by
@@ -627,11 +621,6 @@ lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
   apply measure_mono
   rw [← t_meas.mul_closure_one_eq]
   exact smul_subset_smul_right kt
-
-@[to_additive (attr := deprecated IsCompact.measure_closure (since := "2024-01-28"))]
-lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
-    μ (closure k) = μ k :=
-  hk.measure_closure μ
 
 end IsMulLeftInvariant
 

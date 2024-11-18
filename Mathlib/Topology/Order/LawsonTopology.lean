@@ -122,10 +122,8 @@ namespace WithLawson
 @[simp] lemma toLawson_ofLawson (a : WithLawson α) : toLawson (ofLawson a) = a := rfl
 @[simp] lemma ofLawson_toLawson (a : α) : ofLawson (toLawson a) = a := rfl
 
-@[simp, nolint simpNF]
 lemma toLawson_inj {a b : α} : toLawson a = toLawson b ↔ a = b := Iff.rfl
 
-@[simp, nolint simpNF]
 lemma ofLawson_inj {a b : WithLawson α} : ofLawson a = ofLawson b ↔ a = b := Iff.rfl
 
 /-- A recursor for `WithLawson`. Use as `induction' x`. -/

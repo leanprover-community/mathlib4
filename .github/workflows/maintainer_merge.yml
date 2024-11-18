@@ -39,7 +39,7 @@ jobs:
           printf '%s' "${COMMENT}" | hexdump -cC
           printf 'Comment:"%s"\n' "${COMMENT}"
           m_or_d="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^maintainer  *\(merge\|delegate\)$=\1=p' | head -1)"
+            sed -n 's=^maintainer  *\(merge\|delegate\) *$=\1=p' | head -1)"
 
           printf $'"maintainer delegate" or "maintainer merge" found? \'%s\'\n' "${m_or_d}"
 
@@ -79,7 +79,7 @@ jobs:
           message="$(
             ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}"
           )"
-          printf 'title<<EOF\n%s\n[CI run](%s)\nEOF' "${message}" "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" | tee "$GITHUB_OUTPUT"
+          printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
 
       - name: Send message on Zulip
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
