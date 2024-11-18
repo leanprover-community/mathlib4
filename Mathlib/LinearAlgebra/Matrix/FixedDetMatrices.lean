@@ -160,9 +160,9 @@ lemma reps_entries_le_m' (hm : m ≠ 0) (A : Δ m) (h : A ∈ reps m) (i j : Fin
       omega
     · simp_rw [← A_c_eq_zero m A h.1, abs_mul]
       exact (le_abs_self (A.1 0 1)).trans <| h.2.2.2.le.trans (le_mul_of_one_le_left h1.le h2)
-  · simp only [Fin.mk_one, Fin.isValue, Fin.zero_eta, h.1, Finset.mem_Icc, Left.neg_nonpos_iff,
-    abs_nonneg, and_self]
-  · simp only [Fin.mk_one, Fin.isValue, ← A_c_eq_zero m A h.1, abs_mul, Finset.mem_Icc]
+  · simp only [Fin.mk_one, Fin.zero_eta, h.1, Finset.mem_Icc, Left.neg_nonpos_iff, abs_nonneg,
+      and_self]
+  · simp only [Fin.mk_one, ← A_c_eq_zero m A h.1, abs_mul, Finset.mem_Icc]
     constructor
     · rw [neg_le]
       apply le_trans (neg_le_abs (A.1 1 1)) ((le_mul_iff_one_le_left h1).mpr h2)
