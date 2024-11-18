@@ -178,7 +178,7 @@ theorem IsClub.sInter (hCof : ℵ₀ < o.cof) (hS : ∀ C ∈ S, IsClub C o) (hS
   let sup := iSup (fun n ↦ (f n).1)
   use sup
   have suplt : sup < o := by
-    apply iSup_lt_ord'
+    apply iSup_lt_ord_lift'
     · rw [mk_Iio_ordinal, card_omega0, lift_aleph0, lift_aleph0]
       exact aleph0_lt_lift.mpr hCof
     intro n

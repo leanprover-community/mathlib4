@@ -329,7 +329,8 @@ theorem iSup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
     (∀ i, f i < c) → iSup f < c :=
   iSup_lt_ord_lift (by rwa [(#ι).lift_id])
 
-theorem iSup_lt_ord' {ι : Type v} {f : ι → Ordinal.{u}} {c : Ordinal.{u}}
+/-- A version of `iSup_lt_ord_lift` with more general universes -/
+theorem iSup_lt_ord_lift' {ι : Type v} {f : ι → Ordinal.{u}} {c : Ordinal.{u}}
     (hι : Cardinal.lift.{u} #ι < Cardinal.lift.{v} c.cof) : (∀ i, f i < c) → iSup f < c := by
   have : Small.{u, u + 1} ↑(range f) := by
     have : Small.{u, v} ι := by
