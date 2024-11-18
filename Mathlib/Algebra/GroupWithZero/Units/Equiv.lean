@@ -38,6 +38,13 @@ protected def mulRight₀ (a : G) (ha : a ≠ 0) : Perm G :=
 theorem _root_.mulRight_bijective₀ (a : G) (ha : a ≠ 0) : Function.Bijective ((· * a) : G → G) :=
   (Equiv.mulRight₀ a ha).bijective
 
+@[simps! (config := { simpRhs := true })]
+def divRight₀ {G₀} [GroupWithZero G₀] (a : G₀) (ha : a ≠ 0) : G₀ ≃ G₀ where
+  toFun := (· / a)
+  invFun := (· * a)
+  left_inv _ := by simp [ha]
+  right_inv _ := by simp [ha]
+
 end GroupWithZero
 
 end Equiv
