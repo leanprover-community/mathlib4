@@ -194,7 +194,7 @@ lemma length_le_height_last {p : LTSeries α} : p.length ≤ height p.last :=
 /--
 The coheight of the first element in a series is larger or equal to the length of the series.
 -/
-lemma length_le_coheight_last {p : LTSeries α} : p.length ≤ coheight p.head :=
+lemma length_le_coheight_head {p : LTSeries α} : p.length ≤ coheight p.head :=
   length_le_coheight le_rfl
 
 /--
