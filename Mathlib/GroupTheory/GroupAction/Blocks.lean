@@ -123,8 +123,11 @@ lemma isBlock_iff_smul_eq_smul_or_disjoint :
     IsBlock G B ↔ ∀ g₁ g₂ : G, g₁ • B = g₂ • B ∨ Disjoint (g₁ • B) (g₂ • B) :=
   forall₂_congr fun _ _ ↦ or_iff_not_imp_left.symm
 
+@[to_additive]
 alias ⟨IsBlock.smul_eq_smul_of_nonempty, _⟩ := isBlock_iff_smul_eq_smul_of_nonempty
+@[to_additive]
 alias ⟨IsBlock.pairwiseDisjoint_range_smul, _⟩ := isBlock_iff_pairwiseDisjoint_range_smul
+@[to_additive]
 alias ⟨IsBlock.smul_eq_smul_or_disjoint, _⟩ := isBlock_iff_smul_eq_smul_or_disjoint
 
 /-- A fixed block is a block. -/
@@ -303,9 +306,10 @@ variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
   for the action of `G` -/
 @[to_additive "For `VAdd G X`, a block system of `X` is a partition of `X` into blocks 
- for the additive action of `G`]
+ for the additive action of `G`"]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
+#check MulAction.IsBlock.smul_eq_smul_of_nonempty
 /-- Translates of a block form a block system. -/
 @[to_additive]
 theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
