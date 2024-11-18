@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.InitialSeg
+import Mathlib.Order.Cover
 import Mathlib.Order.Iterate
 
 /-!
@@ -351,14 +351,6 @@ variable [NoMaxOrder α]
 
 theorem succ_eq_iff_covBy : succ a = b ↔ a ⋖ b :=
   ⟨by rintro rfl; exact covBy_succ _, CovBy.succ_eq⟩
-
-theorem _root_.InitialSeg.map_succ [PartialOrder β] [SuccOrder β] (f : α ≤i β) (a : α) :
-    f (succ a) = succ (f a) :=
-  (f.apply_covBy_apply_iff.2 (covBy_succ a)).succ_eq.symm
-
-theorem _root_.PrincipalSeg.map_succ [PartialOrder β] [SuccOrder β] (f : α <i β) (a : α) :
-    f (succ a) = succ (f a) :=
-  (f : α ≤i β).map_succ a
 
 end NoMaxOrder
 

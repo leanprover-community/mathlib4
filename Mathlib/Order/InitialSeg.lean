@@ -5,9 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.Cover
 import Mathlib.Order.RelIso.Set
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.WellFounded
 
 /-!
@@ -672,14 +670,6 @@ alias ⟨_, map_isMin⟩ := isMin_apply_iff
 theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α ≤i β) : f ⊥ = ⊥ :=
   (map_isMin f isMin_bot).eq_bot
 
-@[simp]
-theorem apply_covBy_apply_iff [PartialOrder α] (f : α ≤i β) : f a ⋖ f a' ↔ a ⋖ a' :=
-  Set.OrdConnected.apply_covBy_apply_iff f.toOrderEmbedding (isLowerSet_range f).ordConnected
-
-@[simp]
-theorem apply_wCovBy_apply_iff [PartialOrder α] (f : α ≤i β) : f a ⩿ f a' ↔ a ⩿ a' := by
-  simp [wcovBy_iff_eq_or_covBy]
-
 theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
   · intro h
@@ -735,14 +725,6 @@ alias ⟨_, map_isMin⟩ := isMin_apply_iff
 @[simp]
 theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α <i β) : f ⊥ = ⊥ :=
   (f : α ≤i β).map_bot
-
-@[simp]
-theorem apply_covBy_apply_iff [PartialOrder α] (f : α <i β) : f a ⋖ f a' ↔ a ⋖ a' :=
-  (f : α ≤i β).apply_covBy_apply_iff
-
-@[simp]
-theorem apply_wCovBy_apply_iff [PartialOrder α] (f : α <i β) : f a ⩿ f a' ↔ a ⩿ a' :=
-  (f : α ≤i β).apply_wCovBy_apply_iff
 
 theorem le_apply_iff [LinearOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
   (f : α ≤i β).le_apply_iff
