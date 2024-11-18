@@ -286,13 +286,15 @@ lemma isQuotientMap_iff : IsQuotientMap f ↔ Surjective f ∧ ∀ s, IsOpen s �
 @[deprecated (since := "2024-10-22")]
 alias quotientMap_iff := isQuotientMap_iff
 
-theorem isQuotientMap_iff_closed :
+theorem isQuotientMap_iff_isClosed :
     IsQuotientMap f ↔ Surjective f ∧ ∀ s : Set Y, IsClosed s ↔ IsClosed (f ⁻¹' s) :=
   isQuotientMap_iff.trans <| Iff.rfl.and <| compl_surjective.forall.trans <| by
     simp only [isOpen_compl_iff, preimage_compl]
 
 @[deprecated (since := "2024-10-22")]
-alias quotientMap_iff_closed := isQuotientMap_iff_closed
+alias quotientMap_iff_closed := isQuotientMap_iff_isClosed
+@[deprecated (since := "2024-11-19")]
+alias isQuotientMap_iff_closed := isQuotientMap_iff_isClosed
 
 namespace IsQuotientMap
 
