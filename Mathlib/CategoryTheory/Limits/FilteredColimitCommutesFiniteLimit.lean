@@ -135,7 +135,7 @@ theorem colimitLimitToLimitColimit_injective :
     -- Now it's just a calculation using `W` and `w`.
     simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
     rw [← W _ _ (fH j), ← W _ _ (gH j)]
-    -- Porting note(#10745): had to add `Limit.map_π_apply`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): had to add `Limit.map_π_apply`
     -- (which was un-tagged simp since "simp can prove it")
     simp [Limit.map_π_apply, w]
 
@@ -373,11 +373,15 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesColimitsOfSh
   intro J _ _
   infer_instance
 
+end
+
 section
 
+variable {C : Type u} [Category.{v} C]
+variable {J : Type u₁} [Category.{v₁} J]
+variable {K : Type u₂} [Category.{v₂} K]
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-variable [PreservesLimitsOfShape J (forget C)]
+variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
 /-- A curried version of the fact that filtered colimits commute with finite limits. -/
 noncomputable def colimitLimitIso (F : J ⥤ K ⥤ C) : colimit (limit F) ≅ limit (colimit F.flip) :=
@@ -399,8 +403,6 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
   dsimp
   simp
-
-end
 
 end
 

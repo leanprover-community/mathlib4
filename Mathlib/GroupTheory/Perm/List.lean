@@ -354,7 +354,7 @@ theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 :
   · simp
   · rw [← formPerm_apply_mem_eq_self_iff _ hl hd (mem_cons_self _ _)]
     constructor
-    · simp (config := { contextual := true })
+    · simp +contextual
     · intro h
       simp only [(hd :: tl).formPerm_apply_mem_eq_self_iff hl hd (mem_cons_self hd tl),
         add_le_iff_nonpos_left, length, nonpos_iff_eq_zero, length_eq_zero] at h

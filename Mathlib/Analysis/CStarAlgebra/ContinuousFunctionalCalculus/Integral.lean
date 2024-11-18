@@ -30,7 +30,7 @@ that the integral commutes with the continuous functional calculus under appropr
 + Use this to prove operator monotonicity and concavity/convexity of `rpow` and `log`
 -/
 
-open MeasureTheory
+open MeasureTheory Topology
 open scoped ContinuousMapZero
 
 section unital

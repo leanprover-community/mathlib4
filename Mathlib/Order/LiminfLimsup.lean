@@ -154,6 +154,14 @@ lemma _root_.BddBelow.isBoundedUnder (hs : s ∈ f) (hu : BddBelow (u '' s)) :
 lemma _root_.BddBelow.isBoundedUnder_of_range (hu : BddBelow (Set.range u)) :
     f.IsBoundedUnder (· ≥ ·) u := BddBelow.isBoundedUnder (s := univ) f.univ_mem (by simpa)
 
+lemma IsBoundedUnder.le_of_finite [Nonempty α] [IsDirected α (· ≤ ·)] [Finite β]
+    {f : Filter β} {u : β → α} : IsBoundedUnder (· ≤ ·) f u :=
+  (Set.toFinite _).bddAbove.isBoundedUnder_of_range
+
+lemma IsBoundedUnder.ge_of_finite [Nonempty α] [IsDirected α (· ≥ ·)] [Finite β]
+    {f : Filter β} {u : β → α} : IsBoundedUnder (· ≥ ·) f u :=
+  (Set.toFinite _).bddBelow.isBoundedUnder_of_range
+
 end Preorder
 
 theorem _root_.Monotone.isBoundedUnder_le_comp [Preorder α] [Preorder β] {l : Filter γ} {u : γ → α}
@@ -289,7 +297,7 @@ lemma isCoboundedUnder_ge_of_le [Preorder α] (l : Filter ι) [NeBot l] {f : ι 
 theorem isCobounded_bot : IsCobounded r ⊥ ↔ ∃ b, ∀ x, r b x := by simp [IsCobounded]
 
 theorem isCobounded_top : IsCobounded r ⊤ ↔ Nonempty α := by
-  simp (config := { contextual := true }) [IsCobounded, eq_univ_iff_forall,
+  simp +contextual [IsCobounded, eq_univ_iff_forall,
     exists_true_iff_nonempty]
 
 theorem isCobounded_principal (s : Set α) :
@@ -1620,7 +1628,7 @@ theorem isCoboundedUnder_le_max [LinearOrder β] {f : Filter α} {u v : α → �
     apply hb c
     rw [eventually_map] at hc ⊢
     refine hc.mono (fun _ ↦ ?_)
-    simp (config := { contextual := true }) only [implies_true, max_le_iff, and_imp]
+    simp +contextual only [implies_true, max_le_iff, and_imp]
 
 theorem limsup_max [ConditionallyCompleteLinearOrder β] {f : Filter α} {u v : α → β}
     (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)

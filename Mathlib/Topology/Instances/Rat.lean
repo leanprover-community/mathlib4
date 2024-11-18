@@ -13,8 +13,7 @@ import Mathlib.Topology.Instances.Real
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
 
-
-open Metric Set Filter
+open Filter Metric Set Topology
 
 namespace Rat
 

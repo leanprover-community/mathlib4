@@ -510,7 +510,7 @@ instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
 
 instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
-  (schwartz_withSeminorms ℝ E F).first_countable
+  (schwartz_withSeminorms ℝ E F).firstCountableTopology
 
 end Topology
 
@@ -869,7 +869,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
           simp only [le_add_iff_nonneg_right, norm_nonneg]
       have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 le_top x hbound hgrowth'
       have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
-        pow_le_pow_left (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
+        pow_le_pow_left₀ (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
       refine le_trans (mul_le_mul hxk this (by positivity) (by positivity)) ?_
       have rearrange :
         (1 + ‖x‖) ^ k *

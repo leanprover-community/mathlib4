@@ -5,7 +5,7 @@ Authors: Devon Tuma
 -/
 import Mathlib.RingTheory.Jacobson
 import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.MvPolynomial
+import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.PrimeSpectrum
 
 /-!
@@ -21,7 +21,6 @@ Suggestions for better ways to state this theorem or organize things are welcome
 The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only added lemmas
   directly needed in this proof, since I'm not sure if they are the right approach.
 -/
-
 
 open Ideal
 

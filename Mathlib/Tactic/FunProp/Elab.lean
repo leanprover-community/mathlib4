@@ -21,7 +21,7 @@ declare_config_elab elabFunPropConfig FunProp.Config
 
 /-- Tactic to prove function properties -/
 syntax (name := funPropTacStx)
-  "fun_prop" (config)? (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
+  "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
@@ -32,7 +32,7 @@ private def emptyDischarge : Expr → MetaM (Option Expr) :=
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
 def funPropTac : Tactic
-  | `(tactic| fun_prop $[$cfg]? $[$d]? $[[$names,*]]?) => do
+  | `(tactic| fun_prop $cfg:optConfig $[$d]? $[[$names,*]]?) => do
 
     let goal ← getMainGoal
     goal.withContext do
@@ -49,7 +49,6 @@ def funPropTac : Tactic
             else ""
           throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
 
-      let cfg := cfg.map (fun c => mkNullNode #[c.raw]) |>.getD (mkNullNode #[])
       let cfg ← elabFunPropConfig cfg
 
       let disch ← show MetaM (Expr → MetaM (Option Expr)) from do

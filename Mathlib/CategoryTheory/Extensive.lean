@@ -45,8 +45,7 @@ Show that the following are finitary extensive:
 
 -/
 
-
-open CategoryTheory.Limits
+open CategoryTheory.Limits Topology
 
 namespace CategoryTheory
 
