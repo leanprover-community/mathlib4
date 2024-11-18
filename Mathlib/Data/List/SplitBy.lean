@@ -28,6 +28,10 @@ variable {α : Type*} {m : List α}
 theorem splitBy_nil (r : α → α → Bool) : splitBy r [] = [] :=
   rfl
 
+@[simp]
+theorem splitBy_singleton (r : α → α → Bool) (a : α) : splitBy r [a] = [[a]] :=
+  rfl
+
 private theorem splitByLoop_eq_append {r : α → α → Bool} {l : List α} {a : α} {g : List α}
     (gs : List (List α)) : splitBy.loop r l a g gs = gs.reverse ++ splitBy.loop r l a g [] := by
   induction l generalizing a g gs with
@@ -173,10 +177,6 @@ theorem splitBy_of_chain' {r : α → α → Bool} {l : List α} (hn : l ≠ [])
   | nil => contradiction
   | cons a l => rw [splitBy, ← append_nil l, splitByLoop_append] <;> simp [h]
 
-@[simp]
-theorem splitBy_singleton {r : α → α → Bool} (a : α) : splitBy r [a] = [[a]] := by
-  apply splitBy_of_chain' <;> simp
-
 theorem splitBy_append {r : α → α → Bool} {l : List α} (hn : l ≠ [])
     (h : l.Chain' fun x y ↦ r x y) (ha : ∀ h : m ≠ [], r (l.getLast hn) (m.head h) = false) :
     (l ++ m).splitBy r = l :: m.splitBy r := by
@@ -214,11 +214,11 @@ theorem splitBy_flatten {r : α → α → Bool} {l : List (List α)} (hn : [] �
 * The last element of each list in `l` is not related by `r` to the head of the next.
 -/
 theorem splitBy_eq_iff {r : α → α → Bool} {l : List (List α)} :
-    m.splitBy r = l ↔ l.flatten = m ∧ [] ∉ l ∧ (∀ m ∈ l, m.Chain' fun x y ↦ r x y) ∧
+    m.splitBy r = l ↔ m = l.flatten ∧ [] ∉ l ∧ (∀ m ∈ l, m.Chain' fun x y ↦ r x y) ∧
       l.Chain' fun a b ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false := by
   constructor
   · rintro rfl
-    exact ⟨flatten_splitBy r m, nil_not_mem_splitBy r m, fun _ ↦ chain'_of_mem_splitBy,
+    exact ⟨(flatten_splitBy r m).symm, nil_not_mem_splitBy r m, fun _ ↦ chain'_of_mem_splitBy,
       chain'_getLast_head_splitBy r m⟩
   · rintro ⟨rfl, hn, hc, hc'⟩
     exact splitBy_flatten hn hc hc'
