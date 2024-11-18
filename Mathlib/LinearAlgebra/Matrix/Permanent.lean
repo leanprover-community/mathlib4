@@ -3,8 +3,9 @@ Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Diagonal
 /-!
 # permanentanent of a matrix
 
