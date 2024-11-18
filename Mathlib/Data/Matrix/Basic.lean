@@ -348,7 +348,8 @@ end LinearMap
 ### Bundled versions of multiplication
 -/
 
-variable [Fintype m] [CommSemiring R] [NonAssocSemiring S] [Module R S]
+section
+variable [Fintype m] [Semiring R] [NonUnitalNonAssocSemiring S] [Module R S]
 
 /-- A version of `LinearMap.mulLeft` for matrix multiplication. -/
 @[simps]
@@ -365,6 +366,10 @@ def mulRightLinearMap [IsScalarTower R S S] (Y : Matrix m n S) :
   toFun := (· * Y)
   map_smul' _ _ := Matrix.smul_mul _ _ _
   map_add' _ _ := Matrix.add_mul _ _ _
+
+end
+
+variable [Fintype m] [CommSemiring R] [NonUnitalNonAssocSemiring S] [Module R S]
 
 /-- A version of `LinearMap.mul` for matrix multiplication. -/
 @[simps!]
