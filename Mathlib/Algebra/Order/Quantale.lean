@@ -87,7 +87,7 @@ structure Quantale (α : Type*)
 namespace Quantale
 
 variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
-variable? [Quantale α]
+variable [Semigroup α][CompleteLattice α][IsQuantale α]
 
 @[to_additive]
 theorem mul_sSup_eq_iSup_mul : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_eq_iSup_mul _ _
@@ -146,16 +146,10 @@ I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z 
 def rightMulResiduation (x y : α) := sSup {z | x * z ≤ y}
 
 @[inherit_doc]
-scoped infixr:60 " ⇨ₗ " => Quantale.leftMulResiduation
+scoped infixr:60 " ⇨ₗ " => leftMulResiduation
 
 @[inherit_doc]
-scoped infixr:60 " ⇨ᵣ " => Quantale.rightMulResiduation
-
-@[inherit_doc]
-scoped infixr:60 " ⇨ₗ " => AddQuantale.leftAddResiduation
-
-@[inherit_doc]
-scoped infixr:60 " ⇨ᵣ " => AddQuantale.rightAddResiduation
+scoped infixr:60 " ⇨ᵣ " => rightMulResiduation
 
 @[to_additive]
 theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z where
@@ -174,3 +168,13 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
   mpr h1 := le_sSup h1
 
 end Quantale
+
+namespace AddQuantale
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ₗ " => leftAddResiduation
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
+
+end AddQuantale
