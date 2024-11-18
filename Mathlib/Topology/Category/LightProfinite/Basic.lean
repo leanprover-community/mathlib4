@@ -297,10 +297,11 @@ instance instCountableDiscreteQuotient (S : LightProfinite)  :
 
 /-- A profinite space which is light gives rise to a light profinite space. -/
 noncomputable def toLightDiagram (S : LightProfinite.{u}) : LightDiagram.{u} where
-  diagram := sequentialFunctor _ ⋙ (lightToProfinite.obj S).fintypeDiagram
-  cone := (Functor.Initial.limitConeComp (sequentialFunctor _) (lightToProfinite.obj S).lim).cone
-  isLimit :=
-    (Functor.Initial.limitConeComp (sequentialFunctor _) (lightToProfinite.obj S).lim).isLimit
+  diagram := IsCofiltered.sequentialFunctor _ ⋙ (lightToProfinite.obj S).fintypeDiagram
+  cone := (Functor.Initial.limitConeComp (IsCofiltered.sequentialFunctor _)
+    (lightToProfinite.obj S).lim).cone
+  isLimit := (Functor.Initial.limitConeComp (IsCofiltered.sequentialFunctor _)
+    (lightToProfinite.obj S).lim).isLimit
 
 end LightProfinite
 
