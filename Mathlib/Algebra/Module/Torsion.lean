@@ -67,7 +67,7 @@ variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 /-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`. -/
 @[simps!]
 def torsionOf (x : M) : Ideal R :=
-  -- Porting note (#11036): broken dot notation on LinearMap.ker Lean4#1910
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1910
   LinearMap.ker (LinearMap.toSpanSingleton R M x)
 
 @[simp]
@@ -149,7 +149,7 @@ variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
   `a • x = 0`. -/
 @[simps!]
 def torsionBy (a : R) : Submodule R M :=
-  -- Porting note (#11036): broken dot notation on LinearMap.ker Lean4#1910
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1910
   LinearMap.ker (DistribMulAction.toLinearMap R M a)
 
 /-- The submodule containing all elements `x` of `M` such that `a • x = 0` for all `a` in `s`. -/

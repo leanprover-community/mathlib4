@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectLimit
 import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.Polynomial.Eval.Irreducible
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 
@@ -128,7 +129,7 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AdjoinMonic k, f.eval₂ (toAdjoinMonic k) x = 0 :=
   ⟨Ideal.Quotient.mk _ <| X (⟨f, hfm, hfi⟩ : MonicIrreducible k), by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
     exact le_maxIdeal k (Ideal.subset_span <| ⟨_, rfl⟩)⟩
 
@@ -370,7 +371,7 @@ instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
   let e := algEquivAlgebraicClosureAux k
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
-    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [EmbeddingLike.map_ne_zero_iff.2 ha]
     __ := e.surjective.nontrivial }
 
 instance instField : Field (AlgebraicClosure k) where

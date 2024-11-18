@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
-import Mathlib.Lean.Expr.ExtraRecognizers
-import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.Module
 import Mathlib.Tactic.NoncommRing
+import Mathlib.LinearAlgebra.Pi
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 
@@ -1039,7 +1040,7 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     (ht : LinearIndependent R (fun x => x : t → M')) :
     LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
   refine (hs.image_subtype ?_).union (ht.image_subtype ?_) ?_ <;> [simp; simp; skip]
-  -- Note: #8386 had to change `span_image` into `span_image _`
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `span_image` into `span_image _`
   simp only [span_image _]
   simp [disjoint_iff, prod_inf_prod]
 

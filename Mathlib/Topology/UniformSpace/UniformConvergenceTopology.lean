@@ -382,9 +382,9 @@ More precisely, if `f : γ → β` is a uniform embedding,
 then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is a uniform embedding. -/
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) :
- IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
+    IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toIsUniformInducing := UniformFun.postcomp_isUniformInducing hf.isUniformInducing
-  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
 alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
@@ -890,7 +890,7 @@ More precisely, if `f : γ → β` is a uniform embedding, then
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toIsUniformInducing := UniformOnFun.postcomp_isUniformInducing hf.isUniformInducing
-  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
 alias postcomp_uniformEmbedding := UniformOnFun.postcomp_isUniformEmbedding

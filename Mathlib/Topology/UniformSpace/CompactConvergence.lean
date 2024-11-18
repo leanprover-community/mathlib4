@@ -171,7 +171,7 @@ instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
 theorem isUniformEmbedding_toUniformOnFunIsCompact :
     IsUniformEmbedding (toUniformOnFunIsCompact : C(α, β) → α →ᵤ[{K | IsCompact K}] β) where
   comap_uniformity := rfl
-  inj := DFunLike.coe_injective
+  injective := DFunLike.coe_injective
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_toUniformOnFunIsCompact := isUniformEmbedding_toUniformOnFunIsCompact

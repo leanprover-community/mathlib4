@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Noetherian.Defs
 /-!

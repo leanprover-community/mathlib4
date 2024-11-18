@@ -356,7 +356,7 @@ theorem smul_toNNReal (a : ℝ≥0) (b : ℝ≥0∞) : (a • b).toNNReal = a * 
   change ((a : ℝ≥0∞) * b).toNNReal = a * b.toNNReal
   simp only [ENNReal.toNNReal_mul, ENNReal.toNNReal_coe]
 
--- Porting note (#11215): TODO: upgrade to `→*₀`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toNNReal` as a `MonoidHom`. -/
 def toNNRealHom : ℝ≥0∞ →* ℝ≥0 where
   toFun := ENNReal.toNNReal
@@ -372,7 +372,7 @@ theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i ∈ s, f i).toNNReal = ∏ i ∈ s, (f i).toNNReal :=
   map_prod toNNRealHom _ _
 
--- Porting note (#11215): TODO: upgrade to `→*₀`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toReal` as a `MonoidHom`. -/
 def toRealHom : ℝ≥0∞ →* ℝ :=
   (NNReal.toRealHom : ℝ≥0 →* ℝ).comp toNNRealHom
