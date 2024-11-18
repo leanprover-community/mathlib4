@@ -6,6 +6,7 @@ Authors: Damiano Testa
 
 import Lean.Elab.Command
 import Mathlib.Tactic.DeclarationNames
+import Mathlib.Lean.Expr.Basic
 
 /-!
 #  The "findDefEqAbuse" linter
@@ -46,7 +47,7 @@ elab "find_defeq_abuse" tk:("!")? ppSpace id:ident : command => do
     | false, _ => return
 
 namespace FindDefEqAbuse
-
+#check Expr.containsConst
 @[inherit_doc Mathlib.Linter.linter.findDefEqAbuse]
 def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.findDefEqAbuse (← getOptions) do
@@ -57,7 +58,17 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless stx.isOfKind ``declaration do
     return
   let id := mkIdent nm
-  if ((← getEnv).find? nm).isNone then return
+  let env ← getEnv
+  if (env.find? nm).isNone then return
+  let declIds := ← getNamesFrom <| stx.getPos?.getD default
+  let names := declIds.map (·.getId)
+  -- ignore the declarations that do not contain `nm` in their *type*
+  let names := ← names.filterM fun n => do
+    if let some cinfo := env.find? n then
+      return cinfo.type.containsConst (· == nm)
+    else return false
+  if names.isEmpty then return
+  -- creating the syntax `attribute [local irreducible] nm`
   let irred := mkIdent `irreducible
   let preMkIrred ← `(command| attribute [$(⟨irred⟩)] $id)
   let mkIrred : Syntax := preMkIrred.raw.replaceM (m := Id) fun s =>
@@ -68,18 +79,18 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
         .node default `Lean.Parser.Attr.simple #[s, mkNullNode]]
     else none
   let s ← get
-  let mut msg := ""
+  -- we re-elaborate the declaration in a new namespace, opening the old one
   withScope (fun s => {s with
       currNamespace := s.currNamespace ++ `another
       openDecls := .simple s.currNamespace [] :: s.openDecls
     }) do
     elabCommand <| mkNullNode #[mkIrred, stx]
-  msg := s!"Abuse of defeq of '{id}'"
-  let names ← getNamesFrom <| stx.getPos?.getD default
+  -- if the new elaboration produced errors, the linter assumes that the error was a defeq (ab)use
+  -- this may not always be correct!
   if (← get).messages.hasErrors then
     set s
     let declId := match stx.find? (·.isOfKind ``declId) with
-      | none => names.back?.getD default
+      | none => declIds.back?.getD default
       |some d => d
     logWarningAt declId m!"'{declId}' relies on the definition of '{nm}'"
 
