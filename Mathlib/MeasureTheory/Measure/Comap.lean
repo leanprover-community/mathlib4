@@ -7,6 +7,14 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
 # Pullback of a measure
+
+In this file we define the pullback `MeasureTheory.Measure.comap f μ`
+of a measure `μ` along an injective map `f`
+such that the image of any measurable set under `f` is a null-measurable set.
+If `f` does not have these properties, then we define `comap f μ` to be zero.
+
+In the future, we may decide to redefine `comap f μ` so that it gives meaningful results, e.g.,
+for covering maps like `(↑) : ℝ → AddCircle (1 : ℝ)`.
 -/
 
 open Function Set Filter
