@@ -73,7 +73,14 @@ def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
       match minImports with
       | ⟨(RBNode.node _ .leaf upstream _ .leaf), _⟩ => do
         if !(← env.localDefDependencies stx id) then
-          logWarning f!"Consider moving this declaration to the module {upstream}."
+          let p : GoToModuleLinkProps := { modName := upstream }
+          let widget : MessageData := .ofWidget
+            (← liftCoreM <| Widget.WidgetInstance.ofHash
+              GoToModuleLink.javascriptHash <|
+              Server.RpcEncodable.rpcEncode p)
+            (toString upstream)
+          Linter.logLint linter.upstreamableDecl id
+            m!"Consider moving this declaration to the module {widget}."
       | _ => pure ()
 
 initialize addLinter upstreamableDeclLinter

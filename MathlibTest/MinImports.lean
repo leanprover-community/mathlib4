@@ -142,12 +142,14 @@ set_option linter.upstreamableDecl true
 
 /--
 warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
 #guard_msgs in
 theorem propose_to_move_this_theorem : (0 : ℕ) = 0 := rfl
 
 /--
 warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
 #guard_msgs in
 def propose_to_move_this_def : ℕ := 0
