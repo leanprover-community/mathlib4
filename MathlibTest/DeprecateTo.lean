@@ -1,4 +1,4 @@
-import Mathlib.Tactic.DeprecateMe
+import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.ToAdditive
 
 /--

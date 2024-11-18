@@ -4251,7 +4251,8 @@ import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Maximal
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Nonunits
-import Mathlib.RingTheory.Ideal.Norm
+import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+import Mathlib.RingTheory.Ideal.Norm.RelNorm
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Ideal.Pointwise
@@ -4610,7 +4611,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DeclarationNames
 import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Tactic.DeprecateMe
+import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.DeriveTraversable
