@@ -244,6 +244,7 @@ protected lemma IsBlock.orbit (a : X) : IsBlock G (orbit G a) := (IsFixedBlock.o
 lemma isBlock_top : IsBlock (⊤ : Subgroup G) B ↔ IsBlock G B :=
   Subgroup.topEquiv.toEquiv.forall_congr fun _ ↦ Subgroup.topEquiv.toEquiv.forall_congr_left
 
+@[to_additive]
 lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
     {φ : H → G} (j : Y →ₑ[φ] X) (hB : IsBlock G B) :
     IsBlock H (j ⁻¹' B) := by
@@ -251,6 +252,7 @@ lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
   rw [← Group.preimage_smul_setₛₗ, ← Group.preimage_smul_setₛₗ] at hg ⊢
   exact (hB <| ne_of_apply_ne _ hg).preimage _
 
+@[to_additive]
 theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
     {φ : G →* H} (j : X →ₑ[φ] Y)
     (hφ : Function.Surjective φ) (hj : Function.Injective j)
@@ -259,16 +261,19 @@ theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
   simp only [IsBlock, hφ.forall, ← image_smul_setₛₗ]
   exact fun g₁ g₂ hg ↦ disjoint_image_of_injective hj <| hB <| ne_of_apply_ne _ hg
 
+@[to_additive]
 theorem IsBlock.subtype_val_preimage {C : SubMulAction G X} (hB : IsBlock G B) :
     IsBlock G (Subtype.val ⁻¹' B : Set C) :=
   hB.preimage C.inclusion
 
+@[to_additive]
 theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
     IsBlock G (Subtype.val '' B : Set X) ↔ IsBlock G B := by
   refine forall₂_congr fun g₁ g₂ ↦ ?_
   rw [← SubMulAction.inclusion.coe_eq, ← image_smul_set, ← image_smul_set, ne_eq,
     Set.image_eq_image C.inclusion_injective, disjoint_image_iff C.inclusion_injective]
 
+@[to_additive]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (Subgroup.map (MulEquiv.toMonoidHom (MulAut.conj g)) H) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -285,6 +290,7 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
   rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
 /-- A translate of a block is a block -/
+@[to_additive]
 theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
   rw [← isBlock_top] at hB ⊢
@@ -296,9 +302,12 @@ theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
 variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
   for the action of `G` -/
+@[to_additive "For `VAdd G X`, a block system of `X` is a partition of `X` into blocks 
+ for the additive action of `G`]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
 /-- Translates of a block form a block system. -/
+@[to_additive]
 theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     (hB : IsBlock G B) (hBe : B.Nonempty) :
     IsBlockSystem G (Set.range fun g : G => g • B) := by
