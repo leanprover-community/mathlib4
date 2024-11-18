@@ -84,7 +84,7 @@ def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, |(A.1 1 0)| = 0 → C A)
     (h1 : ∀ A : Δ m, |(A.1 1 0)| ≠ 0 → C (reduce_step m A) → C A) :
     ∀ A, C A := fun A => by
   by_cases h : |(A.1 1 0)| = 0
-  · apply h0 _ h
+  · exact h0 _ h
   · exact h1 A h (reduce_rec h0 h1 (reduce_step m A))
   termination_by A => Int.natAbs (A.1 1 0)
   decreasing_by
