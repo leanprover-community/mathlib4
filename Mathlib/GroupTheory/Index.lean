@@ -407,7 +407,7 @@ lemma index_strict_mono (h : H < K) [h₁ : Finite (G ⧸ H)] : K.index < H.inde
     exact Finite.card_pos
   apply lt_of_le_of_ne
   · exact Nat.le_of_dvd (by rw [index_eq_card]; apply Finite.card_pos) <| index_dvd_of_le h.le
-  rw [←mul_one K.index, ←relindex_mul_index h.le, mul_comm, Ne, eq_comm]
+  rw [← mul_one K.index, ← relindex_mul_index h.le, mul_comm, Ne, eq_comm]
   simp [h0, h.not_le]
 
 @[to_additive one_lt_index_of_ne_top]
