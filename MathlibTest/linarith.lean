@@ -92,6 +92,16 @@ example (x : Rat) (h : 0 < x) : 0 < x/2/3 := by linarith
 
 example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
 
+variable {K : Type*} [LinearOrderedField K]
+
+example (a : K) (ha : 10 / (8 + 2) ≤ a) : 1 ≤ a := by linarith
+
+example (a : K) (ha : 10 / 10 ^ 1 ≤ a) : 1 ≤ a := by linarith
+
+example (a : K) (ha : 10⁻¹ * 10 ≤ a) : 1 ≤ a := by linarith
+
+example (a : K) (ha : 1.0 ≤ a) : 1 ≤ a := by linarith
+
 end cancel_denoms
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
