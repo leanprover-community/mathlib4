@@ -134,9 +134,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
-    dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, LinearMap.compr₂_apply,
-      Function.comp_apply, ModuleCat.MonoidalCategory.tensorHom_tmul, AlgebraCat.coe_comp,
-      MonoidalCategory.associator_hom_apply]
+    dsimp only [compr₂_apply, TensorProduct.mk_apply]
     rw [compr₂_apply, compr₂_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [CategoryTheory.comp_apply,
@@ -154,7 +152,7 @@ def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   map f :=
     { hom := f.algHom.toLinearMap
       one_hom := LinearMap.ext f.algHom.commutes
-      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
+      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.algHom }
 
 end MonModuleEquivalenceAlgebra
 
