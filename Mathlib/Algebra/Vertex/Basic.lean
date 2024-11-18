@@ -71,7 +71,7 @@ section NonUnital
 variable [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
 
 theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s t =
-    ncoef R (Y R (ncoef R (Y R a) t b)) s c := by
+    ncoef (Y R (ncoef (Y R a) t b)) s c := by
   unfold Borcherds_sum_1
   cases h : (Int.toNat (-t - order R a b)) with
     | zero =>
@@ -88,9 +88,9 @@ theorem associativity_left (a b c : V) (s t : ℤ) : Borcherds_sum_1 R a b c 0 s
 
 theorem associativity_right (a b c : V) (s t : ℤ) : Borcherds_sum_2 R a b c 0 s t +
     Borcherds_sum_3 R a b c 0 s t = Finset.sum (Finset.range (Int.toNat (-s - order R b c)))
-    (fun i ↦ (-1)^i • (Ring.choose (t : ℤ) i) • ncoef R (Y R a) (t-i) (ncoef R (Y R b) (s+i) c)) +
+    (fun i ↦ (-1)^i • (Ring.choose (t : ℤ) i) • ncoef (Y R a) (t-i) (ncoef (Y R b) (s+i) c)) +
     Finset.sum (Finset.range (Int.toNat (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i+1) •
-    (Ring.choose t i) • ncoef R (Y R b) (s+t-i) (ncoef R (Y R a) i c)) := by
+    (Ring.choose t i) • ncoef (Y R b) (s+t-i) (ncoef (Y R a) i c)) := by
   unfold Borcherds_sum_2 Borcherds_sum_3
   simp only [neg_zero, zero_sub, zero_add]
 
@@ -101,7 +101,7 @@ theorem Borcherds_id_at_zero_iff_associativity (a b c : V) (s t : ℤ) :
   exact Eq.congr rfl rfl
 
 theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s 0 =
-    ncoef R (Y R a) r (ncoef R (Y R b) s c) := by
+    ncoef (Y R a) r (ncoef (Y R b) s c) := by
   unfold Borcherds_sum_2
   cases h : (Int.toNat (-s - order R b c)) with
   | zero =>
@@ -116,7 +116,7 @@ theorem commutator_right_2 (a b c : V) (r s : ℤ) : Borcherds_sum_2 R a b c r s
       zero_smul, smul_zero]
 
 theorem commutator_right_3 (a b c : V) (r s : ℤ) : Borcherds_sum_3 R a b c r s 0 =
-    -ncoef R (Y R b) s (ncoef R (Y R a) r c) := by
+    -ncoef (Y R b) s (ncoef (Y R a) r c) := by
   unfold Borcherds_sum_3
   cases h : (Int.toNat (-r - order R a c)) with
   | zero =>
@@ -251,6 +251,7 @@ theorem toNat_neg_succ_sub_eq_Nat (x y : ℤ) (n : ℕ) (h : Int.toNat (-x - y) 
   rw [neg_add', sub_right_comm]
   exact h
 
+/-!
 theorem borcherds1Recursion
     (a b c : V) (r s t : ℤ) : Borcherds_sum_1 R a b c (r + 1) s t =
     Borcherds_sum_1 R a b c r (s + 1) t + Borcherds_sum_1 R a b c r s (t + 1) := by
@@ -261,15 +262,14 @@ theorem borcherds1Recursion
   | succ n =>
     simp_rw [Finset.sum_range_succ', Nat.add_one, Ring.choose_succ_succ, add_smul]
     rw [Finset.sum_add_distrib, add_assoc, add_comm]
-    refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
-    · refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
-      · rw [add_comm s 1, add_assoc r 1 s] -- end first sum
-      simp only [Ring.choose_zero_right, add_comm s 1, add_assoc r 1 s] -- end second sum
-    rw [← toNat_neg_succ_sub_eq_Nat _ _ _ h]
-    refine Finset.sum_congr rfl ?_
-    intro k _
-    rw [← Nat.add_one, Nat.cast_add, sub_add_eq_sub_sub_swap, add_assoc t, add_comm 1, Nat.cast_one,
-      add_sub_right_comm, Int.add_sub_cancel] -- end third sum
+    have h1 : (-1 + -t - order R a b).toNat = n := by omega
+    simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, add_assoc r 1 s,
+      Ring.choose_zero_right', pow_zero, CharP.cast_eq_zero, add_zero, sub_zero, one_smul,
+      add_comm s 1, neg_add_rev, Int.reduceNeg, h1, add_assoc t 1, add_right_inj]
+    congr
+    ext n
+    have h2 : r + (1 + s) - (n + 1) = r + s - n := by omega
+    rw [h2, add_comm _ 1]
 
 theorem borcherds2Recursion
     (a b c : V) (r s t : ℤ) : Borcherds_sum_2 R a b c (r + 1) s t =
@@ -281,7 +281,7 @@ theorem borcherds2Recursion
     | succ n =>
       simp_rw [Finset.sum_range_succ', Nat.add_one, Ring.choose_succ_succ, add_smul, smul_add]
       rw [Finset.sum_add_distrib, ← add_assoc]
-      refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
+      simp
       · refine eq_add_of_sub_eq' ?_
         rw [sub_eq_neg_add]
         refine Mathlib.Tactic.LinearCombination.add_pf ?_ ?_
@@ -324,7 +324,7 @@ theorem borcherds3Recursion
           mul_self_zpow, add_comm 1 t, add_right_comm t 1 _] -- end second sum
       rw [← Units.neg_smul, neg_eq_neg_one_mul, mul_self_zpow, add_comm 1 t]
       simp only [Ring.choose_zero_right, Nat.cast_zero, add_zero, zero_add] -- end third sum
-
+-/
 -- theorem Borcherds on r s+1 t, r s t+1 implies r+1 s t (and two other versions)
 
 -- theorem Borcherds_on_r_hyperplane_implies_r_half_space (and two other versions)

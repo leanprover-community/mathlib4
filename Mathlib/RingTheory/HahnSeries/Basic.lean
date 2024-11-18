@@ -255,11 +255,6 @@ theorem orderTop_eq_top_iff {x : HahnSeries Γ R} : orderTop x = ⊤ ↔ x = 0 :
 theorem orderTop_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
     (hx : ∀ g' ∈ x.support, g ≤ g') : orderTop x = g := by
   rw [orderTop_of_ne <| support_nonempty_iff.mp <| Set.nonempty_of_mem hg,
-    Set.IsWF.min_eq_of_le x.isWF_support hg hx]
-
-theorem orderTop_eq_of_le {x : HahnSeries Γ R} {g : Γ} (hg : g ∈ x.support)
-    (hx : ∀ g' ∈ x.support, g ≤ g') : orderTop x = g := by
-  rw [orderTop_of_ne <| support_nonempty_iff.mp <| Set.nonempty_of_mem hg,
     x.isWF_support.min_eq_of_le hg hx]
 
 theorem untop_orderTop_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :

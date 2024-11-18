@@ -20,15 +20,13 @@ We introduce binomial expansions using `embDomain`.
   * coefficients of powers of binomials
 
 ## To do
-
+  * Use RingTheory.PowerSeries.Binomial
   * coefficients of negative powers.
   * Change API to use `R`-algebra hom `R[[X]] →ₐ[R] HahnSeries Γ R` given by substitution.  Then we
     can use the power series API for expansion of `1/(u-x)`.
   * Allow "arbitrary" powers of `1 - single g r`, where arbitrary means coming from a binomial ring
     over which `R` is an algebra?
 
-## References
-- [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 
 open Finset Function
@@ -183,6 +181,7 @@ theorem binomialSeries_coeff [BinomialRing R] {g : Γ} (hg : 0 < g) (r s : R) (k
   rw [single_coeff_of_ne, mul_zero]
   exact (Injective.ne_iff (f := fun (k : ℕ) => k • g) <| StrictMono.injective <|
     nsmul_left_strictMono hg).mpr hn.symm
+
 
 theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by
   rw [← meval_X hg, ← RingHom.map_one (meval hg r), ← RingHom.map_sub]
