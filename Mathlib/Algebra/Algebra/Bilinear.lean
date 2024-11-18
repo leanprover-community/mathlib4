@@ -31,7 +31,9 @@ variable {A} [SMulCommClass R A A]
 
 /-- The multiplication on the left in a algebra is a linear map.
 
-Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`. -/
+Note that this only assumes `SMulCommClass R A A`, so that it also works for `R := Aᵐᵒᵖ`.
+
+When `A` is unital and associative, this is the same as `DistribMulAction.toLinearMap R A a` -/
 def mulLeft (a : A) : A →ₗ[R] A where
   toFun := (a * ·)
   map_add' := mul_add _
@@ -54,7 +56,10 @@ variable {A} [IsScalarTower R A A]
 
 /-- The multiplication on the right in an algebra is a linear map.
 
-Note that this only assumes `IsScalarTower R A A`, so that it also works for `R := A`. -/
+Note that this only assumes `IsScalarTower R A A`, so that it also works for `R := A`.
+
+When `A` is unital and associative, this is the same as
+`DistribMulAction.toLinearMap R A (MulOpposite.op b)`. -/
 def mulRight (b : A) : A →ₗ[R] A where
   toFun := (· * b)
   map_add' _ _ := add_mul _ _ _
