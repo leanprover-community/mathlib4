@@ -211,55 +211,47 @@ def evalIntLCM : NormNumExt where eval {u α} e := do
   return .isNat _ ed q(isInt_lcm $p $q $pf)
 
 
-theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {d : ℕ} {g : ℕ} {n' : ℤ},
-    IsRat q n d → Int.gcd n (Int.ofNat d) = g → IsInt (n / g) n' → IsInt q.num n'
-  | _, num, denom, _, _, ⟨hi, rfl⟩, rfl, ⟨h'⟩ => by
+theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
+    IsRat q n d → n.natAbs = n' → n'.Coprime d → IsInt q.num n
+  | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
     constructor
-    have : 0 < denom := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
+    have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
     simp_rw [Rat.mul_num, Rat.intCast_den, invOf_eq_inv,
       Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
-      Rat.intCast_num, one_mul, mul_one]
-    rwa [Int.gcd, Int.ofNat_eq_natCast, Int.natAbs_ofNat] at h'
+      Rat.intCast_num, one_mul, mul_one, h, Nat.cast_one, Int.ediv_one, Int.cast_id]
 
-theorem isNat_ratDen : ∀ {q : ℚ} {n : ℤ} {d : ℕ} {g : ℕ} {d' : ℕ},
-    IsRat q n d → Int.gcd n (Int.ofNat d) = g → IsNat (d / g) d' → IsNat q.den d'
-  | _, num, denom, _, _, ⟨hi, rfl⟩, rfl, ⟨h'⟩ => by
+theorem isNat_ratDen : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
+    IsRat q n d → n.natAbs = n' → n'.Coprime d → IsNat q.den d
+  | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
     constructor
-    have : 0 < denom := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
+    have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
     simp_rw [Rat.mul_den, Rat.intCast_den, invOf_eq_inv,
       Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
-      Rat.intCast_num, one_mul, mul_one, Nat.cast_id]
-    rwa [Int.gcd, Int.ofNat_eq_natCast, Int.natAbs_ofNat] at h'
+      Rat.intCast_num, one_mul, mul_one, Nat.cast_id, h, Nat.div_one]
 
 /-- Evaluates the `Rat.num` function. -/
 @[nolint unusedHavesSuffices, norm_num Rat.num _]
 def evalRatNum : NormNumExt where eval {u α} e := do
   let .proj _ _ (q : Q(ℚ)) ← Meta.whnfR e | failure
-  have : u =QL 0 := ⟨⟩; have : $α =Q ℤ := ⟨⟩
-  have : $e =Q Rat.num $q := ⟨⟩
-  let _ : Q(DivisionRing ℚ) := q(inferInstance)
-  let ⟨q', n, d, eq⟩ ← deriveRat q
-  let eq : Q(IsRat $q $n $d) := eq
-  let ⟨gcd, pf⟩ := proveIntGCD q($n) q(Int.ofNat $d)
-  have lit : Q(ℤ) := mkRawIntLit q'.num
-  have : ($n / $gcd) =Q $lit := ⟨⟩
-  let plit : Q(IsInt ($n / $gcd) $lit) := q(.raw_refl $lit)
-  return .isInt _ lit q'.num q(isInt_ratNum $eq $pf $plit)
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℤ := ⟨⟩; have : $e =Q Rat.num $q := ⟨⟩
+  let ⟨q', n, d, eq⟩ ← deriveRat q (_inst := q(inferInstance))
+  let ⟨n', hn⟩ := rawIntLitNatAbs n
+  -- deriveRat ensures these are coprime, so the gcd will be 1
+  let ⟨gcd, pf⟩ := proveNatGCD q($n') q($d)
+  have : $gcd =Q nat_lit 1 := ⟨⟩
+  return .isInt _ n q'.num q(isInt_ratNum $eq $hn $pf)
 
 /-- Evaluates the `Rat.den` function. -/
 @[nolint unusedHavesSuffices, norm_num Rat.den _]
 def evalRatDen : NormNumExt where eval {u α} e := do
   let .proj _ _ (q : Q(ℚ)) ← Meta.whnfR e | failure
-  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
-  have : $e =Q Rat.den $q := ⟨⟩
-  let _ : Q(DivisionRing ℚ) := q(inferInstance)
-  let ⟨q', n, d, eq⟩ ← deriveRat q
-  let eq : Q(IsRat $q $n $d) := eq
-  have ⟨gcd, pf⟩ := proveIntGCD q($n) q(Int.ofNat $d)
-  have lit : Q(ℕ) := mkRawNatLit q'.den
-  have : ($d / $gcd) =Q $lit := ⟨⟩
-  let plit : Q(IsNat ($d / $gcd) $lit) := q(.raw_refl $lit)
-  return .isNat _ lit q(isNat_ratDen $eq $pf $plit)
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; have : $e =Q Rat.den $q := ⟨⟩
+  let ⟨q', n, d, eq⟩ ← deriveRat q (_inst := q(inferInstance))
+  let ⟨n', hn⟩ := rawIntLitNatAbs n
+  -- deriveRat ensures these are coprime, so the gcd will be 1
+  let ⟨gcd, pf⟩ := proveNatGCD q($n') q($d)
+  have : $gcd =Q nat_lit 1 := ⟨⟩
+  return .isNat _ d q(isNat_ratDen $eq $hn $pf)
 
 end NormNum
 
