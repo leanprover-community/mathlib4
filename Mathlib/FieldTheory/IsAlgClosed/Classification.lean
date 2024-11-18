@@ -141,7 +141,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
       simpa using Algebra.IsAlgebraic.cardinalMk_le_max (Algebra.adjoin R (Set.range v)) K
     _ = Cardinal.lift.{v} (max #(MvPolynomial ι R) ℵ₀) := by
       rw [lift_max, ← Cardinal.lift_mk_eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩, lift_aleph0,
-        ← lift_aleph0.{max u v w, max u w}, ← lift_max, lift_umax'.{max u w, v}]
+        ← lift_aleph0.{max u v w, max u w}, ← lift_max, lift_umax.{max u w, v}]
     _ ≤ Cardinal.lift.{v} (max (max (max (Cardinal.lift #R) (Cardinal.lift #ι)) ℵ₀) ℵ₀) :=
         lift_le.2 (max_le_max MvPolynomial.cardinal_lift_mk_le_max le_rfl)
     _ = _ := by simp
