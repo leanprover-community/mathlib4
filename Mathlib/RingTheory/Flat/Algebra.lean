@@ -37,17 +37,32 @@ attribute [instance] out
 instance self (R : Type u) [CommRing R] : Algebra.Flat R R where
   out := Module.Flat.self R
 
-variable (R : Type u) (S : Type v) (T : Type w) [CommRing R] [CommRing S] [CommRing T]
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S]
 
 /-- If `T` is a flat `S`-algebra and `S` is a flat `R`-algebra,
 then `T` is a flat `R`-algebra. -/
-theorem comp [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    [Algebra.Flat R S] [Algebra.Flat S T] : Algebra.Flat R T where
-  out := Module.Flat.comp R S T
+theorem trans (T : Type w) [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] [Algebra.Flat R S] [Algebra.Flat S T] : Algebra.Flat R T where
+  out := Module.Flat.trans R S T
+
+@[deprecated (since := "2024-11-08")] alias comp := trans
+
+/-- If `S` is a flat `R`-algebra and `T` is any `R`-algebra,
+then `T ⊗[R] S` is a flat `T`-algebra. -/
+instance baseChange (T : Type w) [CommRing T] [Algebra R S] [Algebra R T] [Algebra.Flat R S] :
+    Algebra.Flat T (T ⊗[R] S) where
+  out := Module.Flat.baseChange R T S
+
+/-- A base change of a flat algebra is flat. -/
+theorem isBaseChange [Algebra R S] (R' : Type w) (S' : Type t) [CommRing R'] [CommRing S']
+    [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S'] [IsScalarTower R R' S']
+    [IsScalarTower R S S'] [h : IsPushout R S R' S'] [Algebra.Flat R R'] : Algebra.Flat S S' where
+  out := Module.Flat.isBaseChange R S R' S' h.out
 
 end Algebra.Flat
 
-/-- A `RingHom` is flat if `R` is flat as an `S` algebra. -/
+/-- A ring homomorphism `f : R →+* S` is flat if `S` is flat as an `R` algebra. -/
+@[algebraize RingHom.Flat.out]
 class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
   out : f.toAlgebra.Flat := by infer_instance
 
@@ -63,11 +78,8 @@ variable {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [CommR
 
 /-- Composition of flat ring homomorphisms is flat. -/
 instance comp [RingHom.Flat f] [RingHom.Flat g] : RingHom.Flat (g.comp f) where
-  out :=
-    letI : Algebra R S := f.toAlgebra
-    letI : Algebra S T := g.toAlgebra
-    letI : Algebra R T := (g.comp f).toAlgebra
-    letI : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq (congrFun rfl)
-    Algebra.Flat.comp R S T
+  out := by
+    algebraize_only [f, g, g.comp f]
+    exact Algebra.Flat.trans R S T
 
 end RingHom.Flat

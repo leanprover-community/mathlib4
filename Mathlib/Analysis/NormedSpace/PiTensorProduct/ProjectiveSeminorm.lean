@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.PiTensorProduct
 Let `𝕜` be a nontrivially normed field and `E` be a family of normed `𝕜`-vector spaces `Eᵢ`,
 indexed by a finite type `ι`. We define a seminorm on `⨂[𝕜] i, Eᵢ`, which we call the
 "projective seminorm". For `x` an element of `⨂[𝕜] i, Eᵢ`, its projective seminorm is the
-infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` in `Π i, Eᵢ`)
+infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` ∈ `Π i, Eᵢ`)
 of `∑ j, Π i, ‖mⱼ i‖`.
 
 In particular, every norm `‖.‖` on `⨂[𝕜] i, Eᵢ` satisfying `‖⨂ₜ[𝕜] i, m i‖ ≤ Π i, ‖m i‖`
@@ -39,12 +39,9 @@ universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]
 variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
-variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)]
 
 open scoped TensorProduct
-
-open BigOperators
 
 namespace PiTensorProduct
 
@@ -83,6 +80,8 @@ theorem projectiveSeminormAux_smul (p : FreeAddMonoid (𝕜 × Π i, E i)) (a : 
   simp only [Function.comp_apply, norm_mul, smul_eq_mul]
   rw [mul_assoc]
 
+variable [∀ i, NormedSpace 𝕜 (E i)]
+
 theorem bddBelow_projectiveSemiNormAux (x : ⨂[𝕜] i, E i) :
     BddBelow (Set.range (fun (p : lifts x) ↦ projectiveSeminormAux p.1)) := by
   existsi 0
@@ -92,7 +91,7 @@ theorem bddBelow_projectiveSemiNormAux (x : ⨂[𝕜] i, E i) :
   exact fun p _ ↦ projectiveSeminormAux_nonneg p
 
 /-- The projective seminorm on `⨂[𝕜] i, Eᵢ`. It sends an element `x` of `⨂[𝕜] i, Eᵢ` to the
-infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` in `Π i, Eᵢ`)
+infimum over all expressions of `x` as `∑ j, ⨂ₜ[𝕜] mⱼ i` (with the `mⱼ` ∈ `Π i, Eᵢ`)
 of `∑ j, Π i, ‖mⱼ i‖`.
 -/
 noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by

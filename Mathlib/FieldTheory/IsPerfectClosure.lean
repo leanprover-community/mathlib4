@@ -60,9 +60,7 @@ perfect ring, perfect closure, purely inseparable
 
 -/
 
-open scoped Classical Polynomial
-
-open FiniteDimensional Polynomial IntermediateField Field
+open Module Polynomial IntermediateField Field
 
 noncomputable section
 
@@ -105,8 +103,7 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
   · by_cases hn : n = 0
     · rwa [hn, pow_zero, pow_one] at h
     rw [hp, zero_pow hn, pow_zero] at h
-    haveI := subsingleton_of_zero_eq_one h.symm
-    exact Subsingleton.elim _ _
+    subsingleton [subsingleton_of_zero_eq_one h.symm]
   rwa [hp, one_pow, pow_one] at h
 
 theorem sub_mem_pNilradical_iff_pow_expChar_pow_eq {R : Type*} [CommRing R] {p : ℕ} [ExpChar R p]
@@ -133,8 +130,7 @@ variable {K L M N : Type*}
 section CommSemiring
 
 variable [CommSemiring K] [CommSemiring L] [CommSemiring M]
-  (i : K →+* L) (j : K →+* M) (f : L →+* M)
-  (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p]
+  (i : K →+* L) (j : K →+* M) (f : L →+* M) (p : ℕ)
 
 /-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it is called
 `p`-radical if the following conditions are satisfied:
@@ -180,7 +176,7 @@ theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
     rw [RingHom.mem_ker, RingHom.comp_apply, ← RingHom.mem_ker] at h
     simpa only [← Ideal.mem_comap, comap_pNilradical] using ker_le f p h
 
-/-- If `i : K →+* L` is a `p`-radical ring homomorphism , then it makes `L` a perfect closure
+/-- If `i : K →+* L` is a `p`-radical ring homomorphism, then it makes `L` a perfect closure
 of `K`, if `L` is perfect.
 In this case the kernel of `i` is equal to the `p`-nilradical of `K`
 (see `IsPerfectClosure.ker_eq`).
@@ -189,17 +185,18 @@ Our definition makes it synonymous to `IsPRadical` if `PerfectRing L p` is prese
 that you need to write `[PerfectRing L p] [IsPerfectClosure i p]`. This is similar to
 `PerfectRing` which has `ExpChar` as a prerequisite. -/
 @[nolint unusedArguments]
-abbrev IsPerfectClosure [PerfectRing L p] := IsPRadical i p
+abbrev IsPerfectClosure [ExpChar L p] [PerfectRing L p] := IsPRadical i p
 
 /-- If `i : K →+* L` is a ring homomorphism of exponential characteristic `p` rings, such that `L`
 is perfect, then the `p`-nilradical of `K` is contained in the kernel of `i`. -/
-theorem RingHom.pNilradical_le_ker_of_perfectRing [PerfectRing L p] :
+theorem RingHom.pNilradical_le_ker_of_perfectRing [ExpChar L p] [PerfectRing L p] :
     pNilradical K p ≤ RingHom.ker i := fun x h ↦ by
   obtain ⟨n, h⟩ := mem_pNilradical.1 h
   replace h := congr((iterateFrobeniusEquiv L p n).symm (i $h))
   rwa [map_pow, ← iterateFrobenius_def, ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply,
     map_zero, map_zero] at h
 
+variable [ExpChar L p] in
 theorem IsPerfectClosure.ker_eq [PerfectRing L p] [IsPerfectClosure i p] :
     RingHom.ker i = pNilradical K p :=
   IsPRadical.ker_le'.antisymm (i.pNilradical_le_ker_of_perfectRing p)
@@ -209,7 +206,7 @@ namespace PerfectRing
 /- NOTE: To define `PerfectRing.lift_aux`, only the `IsPRadical.pow_mem` is required, but not
 `IsPRadical.ker_le`. But in order to use typeclass, here we require the whole `IsPRadical`. -/
 
-variable [PerfectRing M p] [IsPRadical i p]
+variable [ExpChar M p] [PerfectRing M p] [IsPRadical i p]
 
 theorem lift_aux (x : L) : ∃ y : ℕ × K, i y.2 = x ^ p ^ y.1 := by
   obtain ⟨n, y, h⟩ := IsPRadical.pow_mem i p x
@@ -223,12 +220,13 @@ def liftAux (x : L) : M := (iterateFrobeniusEquiv M p (Classical.choose (lift_au
   (j (Classical.choose (lift_aux i p x)).2)
 
 @[simp]
-theorem liftAux_self_apply [PerfectRing L p] (x : L) : liftAux i i p x = x := by
+theorem liftAux_self_apply [ExpChar L p] [PerfectRing L p] (x : L) : liftAux i i p x = x := by
   rw [liftAux, Classical.choose_spec (lift_aux i p x), ← iterateFrobenius_def,
     ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply]
 
 @[simp]
-theorem liftAux_self [PerfectRing L p] : liftAux i i p = id := funext (liftAux_self_apply i p)
+theorem liftAux_self [ExpChar L p] [PerfectRing L p] : liftAux i i p = id :=
+  funext (liftAux_self_apply i p)
 
 @[simp]
 theorem liftAux_id_apply (x : K) : liftAux (RingHom.id K) j p x = j x := by
@@ -247,7 +245,8 @@ section CommRing
 
 variable [CommRing K] [CommRing L] [CommRing M] [CommRing N]
   (i : K →+* L) (j : K →+* M) (k : K →+* N) (f : L →+* M) (g : L →+* N)
-  (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p] [ExpChar N p]
+  (p : ℕ) [ExpChar M p]
+
 
 namespace IsPRadical
 
@@ -282,7 +281,7 @@ end IsPRadical
 
 namespace PerfectRing
 
-variable [PerfectRing M p] [IsPRadical i p]
+variable [ExpChar K p] [PerfectRing M p] [IsPRadical i p]
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
 `i` is `p`-radical, and `M` is a perfect ring, then `PerfectRing.liftAux` is well-defined. -/
@@ -302,6 +301,8 @@ theorem liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
     iterateFrobeniusEquiv_def, iterateFrobeniusEquiv_def,
     ← sub_eq_zero, ← map_pow, ← map_pow, ← map_sub,
     add_comm m, add_comm m, pow_add, pow_mul, pow_add, pow_mul, ← sub_pow_expChar_pow, h, map_zero]
+
+variable [ExpChar L p]
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
 `i` is `p`-radical, and `M` is a perfect ring, then `PerfectRing.liftAux`
@@ -385,7 +386,7 @@ theorem liftEquiv_id : liftEquiv M (RingHom.id K) p = Equiv.refl _ :=
 
 section comp
 
-variable [PerfectRing N p] [IsPRadical j p]
+variable [ExpChar N p] [PerfectRing N p] [IsPRadical j p]
 
 @[simp]
 theorem lift_comp_lift : (lift j k p).comp (lift i j p) = lift i k p :=
@@ -407,7 +408,7 @@ end comp
 
 section liftEquiv_comp
 
-variable [IsPRadical g p] [IsPRadical (g.comp i) p]
+variable [ExpChar N p] [IsPRadical g p] [IsPRadical (g.comp i) p]
 
 @[simp]
 theorem lift_lift : lift g (lift i j p) p = lift (g.comp i) j p := by
@@ -432,7 +433,8 @@ end PerfectRing
 
 namespace IsPerfectClosure
 
-variable [PerfectRing L p] [IsPerfectClosure i p] [PerfectRing M p] [IsPerfectClosure j p]
+variable [ExpChar K p] [ExpChar L p] [PerfectRing L p] [IsPerfectClosure i p] [PerfectRing M p]
+  [IsPerfectClosure j p]
 
 /-- If `L` and `M` are both perfect closures of `K`, then there is a ring isomorphism `L ≃+* M`.
 This is similar to `IsAlgClosure.equiv` and `IsSepClosure.equiv`. -/
@@ -475,7 +477,7 @@ theorem equiv_comp : RingHom.comp (equiv i j p) i = j :=
 
 section comp
 
-variable [PerfectRing N p] [IsPerfectClosure k p]
+variable [ExpChar N p] [PerfectRing N p] [IsPerfectClosure k p]
 
 @[simp]
 theorem equiv_comp_equiv_apply (x : L) :

@@ -3,8 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Pointwise
-import Mathlib.GroupTheory.QuotientGroup
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Stabilizer of a set under a pointwise action
@@ -74,7 +74,7 @@ lemma stabilizer_subgroup (s : Subgroup G) : stabilizer G (s : Set G) = s := by
 @[to_additive (attr := simp)]
 lemma stabilizer_op_subgroup (s : Subgroup G) : stabilizer Gᵐᵒᵖ (s : Set G) = s.op := by
   simp_rw [SetLike.ext_iff, mem_stabilizer_set]
-  simp? says simp only [smul_eq_mul_unop, SetLike.mem_coe, Subgroup.mem_op]
+  simp only [smul_eq_mul_unop, SetLike.mem_coe, Subgroup.mem_op, «forall», unop_op]
   refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_right ha⟩
   simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using (h 1).2 s.one_mem
 
@@ -170,7 +170,7 @@ local notation " q " => ((↑) : G → Q)
 @[to_additive]
 lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by
   ext a
-  induction' a using QuotientGroup.induction_on' with a
+  induction' a using QuotientGroup.induction_on with a
   simp only [mem_stabilizer_iff, Subgroup.mem_bot, QuotientGroup.eq_one_iff]
   have : q a • q '' s = q '' (a • s) :=
     (image_smul_distrib (QuotientGroup.mk' <| stabilizer G s) _ _).symm
