@@ -97,7 +97,7 @@ structure Context where
 /-- `fun_prop` state -/
 structure State where
   /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
-  utilize its cache. It holds succesfull goals. -/
+  utilize its cache. It holds successful goals. -/
   cache : Simp.Cache := {}
   /-- Cache storing failed goals such that they are not tried again. -/
   failureCache : ExprSet := {}
