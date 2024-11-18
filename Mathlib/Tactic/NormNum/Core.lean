@@ -60,9 +60,6 @@ structure NormNums where
   erased : PHashSet Name := {}
   deriving Inhabited
 
-/-- Configuration for `DiscrTree`. -/
-def discrTreeConfig : WhnfCoreConfig := {}
-
 /-- Environment extensions for `norm_num` declarations -/
 initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums ←
   -- we only need this to deduplicate entries in the DiscrTree
@@ -86,7 +83,7 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
   profileitM Exception "norm_num" (← getOptions) do
     let s ← saveState
     let normNums := normNumExt.getState (← getEnv)
-    let arr ← normNums.tree.getMatch e discrTreeConfig
+    let arr ← normNums.tree.getMatch e
     for ext in arr do
       if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
@@ -180,7 +177,7 @@ initialize registerBuiltinAttribute {
             let e ← elabTerm stx none
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
-        DiscrTree.mkPath e discrTreeConfig
+        DiscrTree.mkPath e
       normNumExt.add ((keys, declName), ext) kind
     | _ => throwUnsupportedSyntax
   erase := fun declName => do
