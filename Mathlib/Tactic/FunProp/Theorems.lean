@@ -226,16 +226,16 @@ structure GeneralTheorem where
 def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
-/-- -/
+/-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
 structure GeneralTheorems where
-  /-- -/
+  /-- Discrimination tree indexing theorems. -/
   theorems     : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
-/-- -/
+/-- Extendions for transition or morphism theorems -/
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
 
-/-- -/
+/-- Environment extension for transition theorems. -/
 initialize transitionTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
@@ -244,7 +244,18 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
       {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
   }
 
-/-- -/
+/-- Get transition theorems applicable to `e`.
+
+For example calling on `e` equal to `Continuous f` might return theorems implying continuity
+from linearity over finite dimensional spaces or differentiability.  -/
+def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
+  let ext := transitionTheoremsExt.getState (← getEnv)
+  let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    ext.theorems.getMatchWithScore e false
+  let candidates := candidates.map (·.1) |>.flatten
+  return candidates
+
+/-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
@@ -253,6 +264,17 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
       {d with theorems := e.keys.foldl (RefinedDiscrTree.insertDTExpr · · e) d.theorems}
   }
 
+
+/-- Get morphism theorems applicable to `e`.
+
+For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
+infering continuity from the bundled morphism. -/
+def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
+  let ext := morTheoremsExt.getState (← getEnv)
+  let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    ext.theorems.getMatchWithScore e false
+  let candidates := candidates.map (·.1) |>.flatten
+  return candidates
 
 
 --------------------------------------------------------------------------------
