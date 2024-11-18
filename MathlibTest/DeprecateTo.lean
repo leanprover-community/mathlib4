@@ -1,6 +1,5 @@
 import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.ToAdditive
---import Mathlib.Tactic
 
 /--
 info: * Pairings:
