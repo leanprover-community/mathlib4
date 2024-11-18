@@ -200,7 +200,7 @@ def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     (fun β => by
       simp only [Functor.comp_obj, lim_obj, Functor.comp_map, lim_map, Iso.symm_hom]
       ext J
-      simp [leftToFinset])
+      simp [liftToFinset])
 
 /-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
 with `colim`. -/
