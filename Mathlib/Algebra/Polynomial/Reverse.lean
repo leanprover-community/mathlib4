@@ -19,7 +19,7 @@ coefficients of `f` and `g` do not multiply to zero.
 
 namespace Polynomial
 
-open Polynomial Finsupp Finset
+open Finsupp Finset
 
 open Polynomial
 

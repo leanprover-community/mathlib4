@@ -44,7 +44,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits MonoidalCategory
+open Category Limits MonoidalCategory
 
 /-- An object `X` is *exponentiable* if `(X × -)` is a left adjoint.
 We define this as being `Closed` in the cartesian monoidal structure.
