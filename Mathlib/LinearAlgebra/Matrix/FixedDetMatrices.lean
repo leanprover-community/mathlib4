@@ -187,12 +187,9 @@ noncomputable instance reps_fintype (k : ℤ) : Fintype (reps k) := by
     intro M N h
     ext i j
     rw [Prod.ext_iff] at h
-    simp only [Fin.isValue, Subtype.mk.injEq, Prod.mk.injEq] at h
-    fin_cases i <;> fin_cases j --is there an easy way to golf this?
-    · exact h.1
-    · exact h.2.1
-    · exact h.2.2.1
-    · exact h.2.2.2
+    simp only [Subtype.mk.injEq, Prod.mk.injEq] at h
+    obtain ⟨_, _, _, _⟩ := h
+    fin_cases i <;> fin_cases j <;> assumption
   · simp only [ne_eq, Decidable.not_not] at hk
     rw [hk, reps_zero_empty]
     exact Set.fintypeEmpty
