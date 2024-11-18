@@ -165,8 +165,8 @@ lemma reps_entries_le_m' (hm : m ≠ 0) (A : Δ m) (h : A ∈ reps m) (i j : Fin
   · simp only [Fin.mk_one, ← A_c_eq_zero m A h.1, abs_mul, Finset.mem_Icc]
     constructor
     · rw [neg_le]
-      apply le_trans (neg_le_abs (A.1 1 1)) ((le_mul_iff_one_le_left h1).mpr h2)
-    · exact le_trans (le_abs_self (A.1 1 1)) ((le_mul_iff_one_le_left h1).mpr h2)
+      exact (neg_le_abs (A.1 1 1)).trans ((le_mul_iff_one_le_left h1).mpr h2)
+    · exact (le_abs_self (A.1 1 1)).trans ((le_mul_iff_one_le_left h1).mpr h2)
 
 lemma reps_zero_empty : (reps 0) = ∅ := by
   rw [reps]
