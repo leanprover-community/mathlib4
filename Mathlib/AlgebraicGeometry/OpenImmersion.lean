@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 
 noncomputable section
@@ -57,7 +57,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    · exact Opens.isOpenEmbedding _ -- Porting note (#11187): was `infer_instance`
+    · exact Opens.isOpenEmbedding _ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
 
 end LocallyRingedSpace.IsOpenImmersion
 
@@ -103,6 +103,18 @@ lemma opensFunctor_map_homOfLE {U V : X.Opens} (e : U ≤ V) :
 lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
   apply Opens.ext
   simp
+
+lemma opensRange_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsOpenImmersion f] [IsOpenImmersion g] : (f ≫ g).opensRange = g ''ᵁ f.opensRange :=
+  TopologicalSpace.Opens.ext (Set.range_comp g.base f.base)
+
+lemma opensRange_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    f.opensRange = ⊤ :=
+  TopologicalSpace.Opens.ext (Set.range_eq_univ.mpr f.homeomorph.surjective)
+
+lemma opensRange_comp_of_isIso {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsIso f] [IsOpenImmersion g] : (f ≫ g).opensRange = g.opensRange := by
+  rw [opensRange_comp, opensRange_of_isIso, image_top_eq_opensRange]
 
 @[simp]
 lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
@@ -492,7 +504,7 @@ theorem range_pullback_snd_of_left :
   rw [← show _ = (pullback.snd f g).base from
     PreservesPullback.iso_hom_snd Scheme.forgetToTop f g, TopCat.coe_comp, Set.range_comp,
     Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.fst f.base g.base)]
-  -- Porting note (#11224): was `rw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   · erw [TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
     rfl
@@ -509,7 +521,7 @@ theorem range_pullback_fst_of_right :
   rw [← show _ = (pullback.fst g f).base from
     PreservesPullback.iso_hom_fst Scheme.forgetToTop g f, TopCat.coe_comp, Set.range_comp,
     Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.snd g.base f.base)]
-  -- Porting note (#11224): was `rw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   · erw [TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
     rfl

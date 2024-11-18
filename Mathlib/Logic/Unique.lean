@@ -261,3 +261,5 @@ instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
 
 end Subtype
+
+instance Fin.instUnique : Unique (Fin 1) where uniq _ := Subsingleton.elim _ _
