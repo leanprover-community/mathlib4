@@ -198,7 +198,7 @@ lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) : Injective (quotientInfT
   rw [quotientInfToPiQuotient, injective_lift_iff, ker_Pi_Quotient_mk]
 
 lemma quotientInfToPiQuotient_surj [Finite ι] {I : ι → Ideal R}
-    (hI : Pairwise fun i j => IsCoprime (I i) (I j)) : Surjective (quotientInfToPiQuotient I) := by
+    (hI : Pairwise (IsCoprime on I)) : Surjective (quotientInfToPiQuotient I) := by
   classical
   cases nonempty_fintype ι
   intro g
@@ -224,7 +224,7 @@ lemma quotientInfToPiQuotient_surj [Finite ι] {I : ι → Ideal R}
 /-- **Chinese Remainder Theorem**. Eisenbud Ex.2.6.
 Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
 noncomputable def quotientInfRingEquivPiQuotient [Finite ι] (f : ι → Ideal R)
-    (hf : Pairwise fun i j => IsCoprime (f i) (f j)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
+    (hf : Pairwise (IsCoprime on f)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
 
@@ -250,7 +250,7 @@ lemma exists_forall_sub_mem_ideal {R : Type*} [CommRing R] {ι : Type*} [Finite 
 noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I ⊓ J ≃+* (R ⧸ I) × R ⧸ J :=
   let f : Fin 2 → Ideal R := ![I, J]
-  have hf : Pairwise fun i j => IsCoprime (f i) (f j) := by
+  have hf : Pairwise (IsCoprime on f) := by
     intro i j h
     fin_cases i <;> fin_cases j <;> try contradiction
     · assumption

@@ -208,15 +208,12 @@ theorem relindex_bot_right : H.relindex ⊥ = 1 := by rw [relindex, subgroupOf_b
 theorem relindex_self : H.relindex H = 1 := by rw [relindex, subgroupOf_self, index_top]
 
 @[to_additive]
-theorem index_ker (f : G →* G') : f.ker.index = Nat.card (Set.range f) := by
+theorem index_ker (f : G →* G') : f.ker.index = Nat.card f.range := by
   rw [← MonoidHom.comap_bot, index_comap, relindex_bot_left]
-  rfl
 
 @[to_additive]
-theorem relindex_ker (f : G →* G') (K : Subgroup G) :
-    f.ker.relindex K = Nat.card (f '' K) := by
+theorem relindex_ker (f : G →* G') : f.ker.relindex K = Nat.card (K.map f) := by
   rw [← MonoidHom.comap_bot, relindex_comap, relindex_bot_left]
-  rfl
 
 @[to_additive (attr := simp) card_mul_index]
 theorem card_mul_index : Nat.card H * H.index = Nat.card G := by

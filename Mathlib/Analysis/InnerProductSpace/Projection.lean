@@ -978,6 +978,36 @@ theorem reflection_sub {v w : F} (h : ‖v‖ = ‖w‖) : reflection (ℝ ∙ (
 
 variable (K)
 
+section FiniteDimensional
+
+open Module
+
+variable [FiniteDimensional 𝕜 K]
+
+@[simp]
+theorem det_reflection : LinearMap.det (reflection K).toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
+  by_cases hK : FiniteDimensional 𝕜 Kᗮ
+  swap
+  · rw [finrank_of_infinite_dimensional hK, pow_zero, LinearMap.det_eq_one_of_finrank_eq_zero]
+    exact finrank_of_infinite_dimensional fun h ↦ hK (h.finiteDimensional_submodule _)
+  let e := K.prodEquivOfIsCompl _ K.isCompl_orthogonal_of_completeSpace
+  let b := (finBasis 𝕜 K).prod (finBasis 𝕜 Kᗮ)
+  have : LinearMap.toMatrix b b (e.symm ∘ₗ (reflection K).toLinearMap ∘ₗ e.symm.symm) =
+      Matrix.fromBlocks 1 0 0 (-1) := by
+    ext (_ | _) (_ | _) <;>
+    simp [LinearMap.toMatrix_apply, b, Matrix.one_apply, Finsupp.single_apply, e, eq_comm,
+      reflection_mem_subspace_eq_self, reflection_mem_subspace_orthogonalComplement_eq_neg]
+  rw [← LinearMap.det_conj _ e.symm, ← LinearMap.det_toMatrix b, this, Matrix.det_fromBlocks_zero₂₁,
+    Matrix.det_one, one_mul, Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
+
+@[simp]
+theorem linearEquiv_det_reflection : (reflection K).det = (-1) ^ finrank 𝕜 Kᗮ := by
+  ext
+  rw [LinearEquiv.coe_det, Units.val_pow_eq_pow_val]
+  exact det_reflection K
+
+end FiniteDimensional
+
 -- Porting note: relax assumptions, swap LHS with RHS
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
 orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
