@@ -228,6 +228,8 @@ theorem smul_sup' (a : α) (S T : Submodule R M) : a • (S ⊔ T) = a • S ⊔
 theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
   map_span _ _
 
+lemma smul_def (a : α) (s : Submodule R M) : a • s = span R (a • s : Set M) := by simp [← smul_span]
+
 theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
   Eq.symm (span_image _).symm
 
