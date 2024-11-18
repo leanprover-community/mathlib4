@@ -600,16 +600,10 @@ private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Ty
   · simp only [hy, zero_pow (Nat.not_eq_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
     congr
     rw [h.card_nthRootsFinset]
-  have := congr_arg (eval (x/y)) <| X_pow_sub_one_eq_prod hpos h
-  rw [eval_sub, eval_pow, eval_one, eval_X, eval_prod] at this
-  simp_rw [eval_sub, eval_X, eval_C] at this
-  apply_fun (· * y ^ n) at this
-  rw [sub_mul, one_mul, div_pow, div_mul_cancel₀ _ (pow_ne_zero n hy)] at this
-  nth_rw 4 [← h.card_nthRootsFinset] at this
-  rw [mul_comm, pow_card_mul_prod] at this
-  convert this using 2
-  field_simp [hy]
-  rw [mul_comm]
+  convert congr_arg (eval (x/y) · * y ^ card (nthRootsFinset n K)) <| X_pow_sub_one_eq_prod hpos h
+    using 1
+  · simp [sub_mul, div_pow, hy, h.card_nthRootsFinset]
+  · simp [eval_prod, prod_mul_pow_card, sub_mul, hy]
 
 variable [IsDomain R]
 
