@@ -79,7 +79,7 @@ titlesPathsAndRegexes=(
   "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
   "adaptation notes"               "*"      "adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
-  "disabled deprecation lints"     "*"      "set_option linter.deprecated false"
+  "disabled deprecation lints (outside of \`Deprecated\` dir)"     ":^Mathlib/Deprecated"      "set_option linter.deprecated false"
   "erw"                            "*"      "erw \["
   "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
 )
