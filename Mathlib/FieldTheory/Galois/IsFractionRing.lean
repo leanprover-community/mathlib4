@@ -90,17 +90,15 @@ private def scalar_tower_K_L_L':
   rw [<-Function.comp_apply (x := x) (g := algebraMap K L) (f := algebraMap L L')]
   apply congrFun
   rw [<-RingHom.coe_comp, DFunLike.coe_fn_eq]
-  apply IsFractionRing.lift_unique' (A := A) (g := algebraMap A L')
-  · rw [IsScalarTower.algebraMap_eq A B L', RingHom.coe_comp]
-    apply Function.Injective.comp <;> apply NoZeroSMulDivisors.algebraMap_injective
-  · intro x
-    rw [@IsScalarTower.algebraMap_eq K K' L' _ _ _ _ _ _ _KK'L']
+  apply IsFractionRing.lift_unique' (A := A)
+  intro x
+  trans (algebraMap A L' x)
+  · rw [@IsScalarTower.algebraMap_eq K K' L' _ _ _ _ _ _ _KK'L']
     simp only [RingHom.algebraMap_toAlgebra, AlgEquiv.toRingEquiv_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp, RingHom.coe_coe,
       Function.comp_apply, AlgEquiv.commutes]
     exact Eq.symm (IsScalarTower.algebraMap_apply _ _ _ _)
-  · intro x
-    rw [IsScalarTower.algebraMap_eq A B L']
+  · rw [IsScalarTower.algebraMap_eq A B L']
     have : algebraMap B L' = (algebraMap L L').comp (algebraMap B L) := by
       ext x
       simp only [RingHom.algebraMap_toAlgebra, AlgEquiv.toRingEquiv_eq_coe,
@@ -117,8 +115,7 @@ end
 
 /- Galois extension is transfered between two pairs of fraction rings
 -/
-theorem IsGalois.of_isGalois_isFractionRing
-    (A B K L K' L' : Type*)
+theorem IsGalois.of_isGalois_isFractionRing (A B K L K' L' : Type*)
     [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
     [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K]
@@ -147,8 +144,7 @@ theorem IsGalois.of_isGalois_isFractionRing
     exact fun _ => rfl
   exact @IsGalois.tower_top_of_isGalois K K' L' _ _ _ _ _ _ KK'L' _
 
-theorem IsGalois.iff_isGalois_isFractionRing
-    (A B K L K' L' : Type*)
+theorem IsGalois.iff_isGalois_isFractionRing (A B K L K' L' : Type*)
     [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
     [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K]
@@ -167,8 +163,7 @@ theorem IsGalois.iff_isGalois_isFractionRing
 
 attribute [local instance] FractionRing.liftAlgebra
 
-theorem IsGalois.isFractionRing_of_isGalois_fractionRing
-    (A B K L : Type*)
+theorem IsGalois.isFractionRing_of_isGalois_fractionRing (A B K L : Type*)
     [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
     [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K]
@@ -179,8 +174,7 @@ theorem IsGalois.isFractionRing_of_isGalois_fractionRing
   IsGalois.of_isGalois_isFractionRing A B (FractionRing A) (FractionRing B) K L
 
 
-theorem IsGalois.fractionRing_of_isGalois_isFractionRing
-    (A B K L : Type*)
+theorem IsGalois.fractionRing_of_isGalois_isFractionRing (A B K L : Type*)
     [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
     [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K]
