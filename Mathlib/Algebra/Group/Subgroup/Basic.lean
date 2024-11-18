@@ -436,27 +436,6 @@ theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k �
     closure_induction (fun _ h ↦ subset_closure h) (one_mem _) (fun _ _ _ _ ↦ mul_mem)
       (fun _ _ ↦ inv_mem) hx'
 
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative group. -/
-@[to_additive
-      "If all the elements of a set `s` commute, then `closure s` is an additive
-      commutative group."]
-def closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x * y = y * x) :
-    CommGroup (closure k) :=
-  { (closure k).toGroup with
-    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
-      ext
-      simp only [Subgroup.coe_mul]
-      induction hx, hy using closure_induction₂ with
-      | mem x y hx hy => exact hcomm x hx y hy
-      | one_left x _ => exact Commute.one_left x
-      | one_right x _ => exact Commute.one_right x
-      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
-      | inv_left _ _ _ _ h => -- `Commute.inv_left` is not imported
-        rw [inv_mul_eq_iff_eq_mul, ← mul_assoc, h, mul_assoc, mul_inv_cancel, mul_one]
-      | inv_right _ _ _ _ h =>
-        rw [mul_inv_eq_iff_eq_mul, mul_assoc, h, ← mul_assoc, inv_mul_cancel, one_mul] }
-
 variable (G)
 
 /-- `closure` forms a Galois insertion with the coercion to set. -/
