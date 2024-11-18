@@ -32,7 +32,7 @@ and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
 -- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
 -- structured arrows.
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 def StructuredArrow (S : D) (T : C ⥤ D) :=
   Comma (Functor.fromPUnit.{0} S) T
@@ -91,7 +91,7 @@ theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
   simp only [eqToHom_refl, id_right]
 
 @[simp]
-theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 _ := rfl
+theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 X.left := rfl
 
 /-- To construct a morphism of structured arrows,
 we need a morphism of the objects underlying the target,
@@ -100,7 +100,7 @@ and to check that the triangle commutes.
 @[simps]
 def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
     (w : f.hom ≫ T.map g = f'.hom := by aesop_cat) : f ⟶ f' where
-  left := 𝟙 _
+  left := 𝟙 f.left
   right := g
   w := by
     dsimp
@@ -374,7 +374,7 @@ and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
 -- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
 -- costructured arrows.
--- @[nolint has_nonempty_instance] -- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 def CostructuredArrow (S : C ⥤ D) (T : D) :=
   Comma S (Functor.fromPUnit.{0} T)
 
@@ -431,7 +431,7 @@ theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
   simp only [eqToHom_refl, id_left]
 
 @[simp]
-theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙 _ := rfl
+theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙 X.right := rfl
 
 /-- To construct a morphism of costructured arrows,
 we need a morphism of the objects underlying the source,
@@ -441,7 +441,7 @@ and to check that the triangle commutes.
 def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
     (w : S.map g ≫ f'.hom = f.hom := by aesop_cat) : f ⟶ f' where
   left := g
-  right := 𝟙 _
+  right := 𝟙 f.right
 
 /- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp can prove this -/

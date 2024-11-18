@@ -78,7 +78,7 @@ These definitions were equal (but not definitionally equal)
 to `{x : α × α | Inseparable x.1 x.2}` and `SeparationQuotient α`, respectively,
 and were added to the library before their geneeralizations to topological spaces.
 
-In #10644, we migrated from these definitions
+In https://github.com/leanprover-community/mathlib4/pull/10644, we migrated from these definitions
 to more general `Inseparable` and `SeparationQuotient`.
 
 ## TODO
@@ -88,7 +88,7 @@ rely on `UniformSpace` structures in the domain and in the codomain.
 We should generalize them to topological spaces.
 This generalization will drop `UniformContinuous` assumptions in some lemmas,
 and add these assumptions in other lemmas,
-so it was not done in #10644 to keep it reasonably sized.
+so it was not done in https://github.com/leanprover-community/mathlib4/pull/10644 to keep it reasonably sized.
 
 ## Keywords
 

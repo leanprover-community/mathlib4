@@ -17,8 +17,7 @@ be satisfied by itself and all stricter types.
 -/
 
 
-open Function
-open scoped Topology
+open Function Topology
 
 section ContinuousMapClass
 
@@ -313,7 +312,7 @@ variable {S φ hφ hS}
 theorem liftCover_coe {i : ι} (x : S i) : liftCover S φ hφ hS x = φ i x := by
   rw [liftCover, coe_mk, Set.liftCover_coe _]
 
--- @[simp] -- Porting note: the simpNF linter complained
+@[simp]
 theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = φ i := by
   ext
   simp only [coe_restrict, Function.comp_apply, liftCover_coe]
@@ -351,6 +350,11 @@ theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
 
 end Gluing
 
+/-- `Set.inclusion` as a bundled continuous map. -/
+def inclusion {s t : Set α} (h : s ⊆ t) : C(s, t) where
+  toFun := Set.inclusion h
+  continuous_toFun := continuous_inclusion h
+
 end ContinuousMap
 
 section Lift
@@ -366,7 +370,7 @@ def Function.RightInverse.homeomorph {f' : C(Y, X)} (hf : Function.RightInverse 
   continuous_toFun := isQuotientMap_quot_mk.continuous_iff.mpr (map_continuous f)
   continuous_invFun := continuous_quotient_mk'.comp (map_continuous f')
 
-namespace IsQuotientMap
+namespace Topology.IsQuotientMap
 
 /--
 The homeomorphism from the quotient of a quotient map to its codomain. This is
@@ -420,8 +424,7 @@ noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ 
     ext a
     simpa using congrArg g (Function.rightInverse_surjInv hf.surjective a)
 
-end IsQuotientMap
-
+end Topology.IsQuotientMap
 end Lift
 
 namespace Homeomorph

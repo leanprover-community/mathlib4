@@ -413,7 +413,7 @@ implicit arguments, requires us to unfold the defs and split the `if`s in the de
 macro "compareOfLessAndEq_rfl" : tactic =>
   `(tactic| (intros a b; first | rfl |
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
-    (induction a <;> induction b <;> simp (config := {decide := true}) only [])))
+    (induction a <;> induction b <;> simp +decide only)))
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/

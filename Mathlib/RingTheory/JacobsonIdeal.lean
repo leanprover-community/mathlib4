@@ -440,4 +440,8 @@ def jacobson (I : TwoSidedIdeal R) : TwoSidedIdeal R :=
 lemma asIdeal_jacobson (I : TwoSidedIdeal R) : asIdeal I.jacobson = (asIdeal I).jacobson := by
   ext; simp [jacobson]
 
+theorem mem_jacobson_iff {x : R} {I : TwoSidedIdeal R} :
+    x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x + z - 1 ∈ I := by
+  simp [jacobson, Ideal.mem_jacobson_iff]
+
 end TwoSidedIdeal

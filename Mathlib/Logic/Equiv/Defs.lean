@@ -854,3 +854,22 @@ protected def congrRight {r r' : Setoid α}
   Quot.congrRight eq
 
 end Quotient
+
+/-- Equivalence between `Fin 0` and `Empty`. -/
+def finZeroEquiv : Fin 0 ≃ Empty := .equivEmpty _
+
+/-- Equivalence between `Fin 0` and `PEmpty`. -/
+def finZeroEquiv' : Fin 0 ≃ PEmpty.{u} := .equivPEmpty _
+
+/-- Equivalence between `Fin 1` and `Unit`. -/
+def finOneEquiv : Fin 1 ≃ Unit := .equivPUnit _
+
+/-- Equivalence between `Fin 2` and `Bool`. -/
+def finTwoEquiv : Fin 2 ≃ Bool where
+  toFun i := i == 1
+  invFun b := bif b then 1 else 0
+  left_inv i :=
+    match i with
+    | 0 => by simp
+    | 1 => by simp
+  right_inv b := by cases b <;> simp
