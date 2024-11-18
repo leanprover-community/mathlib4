@@ -237,7 +237,7 @@ lemma height_mono : Monotone (α := α) height :=
     height a ≤ height b := height_mono hab
 
 lemma coheight_anti : Antitone (α := α) coheight :=
-  fun _ _ hxy => height_mono (α := αᵒᵈ) hxy
+  (height_mono (α := αᵒᵈ)).dual_left
 
 private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by
