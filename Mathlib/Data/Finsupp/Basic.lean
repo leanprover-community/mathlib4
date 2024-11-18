@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Data.Finsupp.SMulWithZero
 import Mathlib.Data.Rat.BigOperators
 
 /-!
@@ -1285,24 +1286,10 @@ end
 
 section
 
-instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
-  smul a v := v.mapRange (a • ·) (smul_zero _)
-  smul_zero a := by
-    ext
-    apply smul_zero
-
 /-!
 Throughout this section, some `Monoid` and `Semiring` arguments are specified with `{}` instead of
 `[]`. See note [implicit instance arguments].
 -/
-
-@[simp, norm_cast]
-theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
-  rfl
-
-theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
-    (b • v) a = b • v a :=
-  rfl
 
 theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
     (hk : IsSMulRegular M k) : IsSMulRegular (α →₀ M) k :=
@@ -1314,15 +1301,7 @@ instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun m : M => by simpa using DFunLike.congr_fun (h (single a m)) a
 
-instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
-  zero_smul f := by ext i; exact zero_smul _ _
-
 variable (α M)
-
-instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
-  smul := (· • ·)
-  smul_add _ _ _ := ext fun _ => smul_add _ _ _
-  smul_zero _ := ext fun _ => smul_zero _
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (α →₀ M) :=
@@ -1330,29 +1309,12 @@ instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     one_smul := fun x => ext fun y => one_smul R (x y)
     mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
 
-instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
-  [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
-  smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
-
-instance smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCommClass R S M] :
-  SMulCommClass R S (α →₀ M) where
-  smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
-
-instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
-  IsCentralScalar R (α →₀ M) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
-
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
   { toDistribMulAction := Finsupp.distribMulAction α M
     zero_smul := fun _ => ext fun _ => zero_smul _ _
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
 
 variable {α M}
-
-theorem support_smul [AddMonoid M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
-    (b • g).support ⊆ g.support := fun a => by
-  simp only [smul_apply, mem_support_iff, Ne]
-  exact mt fun h => h.symm ▸ smul_zero _
 
 @[simp]
 theorem support_smul_eq [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] {b : R}
@@ -1376,24 +1338,10 @@ theorem mapDomain_smul {_ : Monoid R} [AddCommMonoid M] [DistribMulAction R M] {
     (v : α →₀ M) : mapDomain f (b • v) = b • mapDomain f v :=
   mapDomain_mapRange _ _ _ _ (smul_add b)
 
-@[simp]
-theorem smul_single [Zero M] [SMulZeroClass R M] (c : R) (a : α) (b : M) :
-    c • Finsupp.single a b = Finsupp.single a (c • b) :=
-  mapRange_single
-
 -- Porting note: removed `simp` because `simpNF` can prove it.
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
     c • Finsupp.single a b = Finsupp.single a (c * b) :=
   smul_single _ _ _
-
-theorem mapRange_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] [AddMonoid N]
-    [DistribMulAction R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
-    (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
-  erw [← mapRange_comp]
-  · have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
-    simp_rw [this]
-    apply mapRange_comp
-  simp only [Function.comp_apply, smul_zero, hf]
 
 theorem smul_single_one [Semiring R] (a : α) (b : R) : b • single a (1 : R) = single a b := by
   rw [smul_single, smul_eq_mul, mul_one]
@@ -1702,4 +1650,4 @@ end Sigma
 
 end Finsupp
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 1700
