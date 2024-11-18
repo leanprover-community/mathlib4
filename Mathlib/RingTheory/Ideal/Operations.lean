@@ -1277,12 +1277,12 @@ instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
     rintro _ ⟨r, hr, rfl⟩ a ha; rw [Algebra.linearMap_apply, ← Algebra.smul_def]
     exact Submodule.smul_mem_smul hr ha)
 
-/-- `Submonoid.map` as a `AlgHom`, when applied to an `AlgHom`. -/
+/-- `Submonoid.map` as an `AlgHom`, when applied to an `AlgHom`. -/
 @[simps!] def mapAlgHom (f : A →ₐ[R] B) : Submodule R A →ₐ[Ideal R] Submodule R B where
   __ := mapHom f
   commutes' I := (map_comp _ _ I).symm.trans (congr_arg (map · I) <| LinearMap.ext f.commutes)
 
-/-- `Submonoid.map` as a `AlgEquiv`, when applied to an `AlgEquiv`. -/
+/-- `Submonoid.map` as an `AlgEquiv`, when applied to an `AlgEquiv`. -/
 -- TODO: when A, B noncommutative, still has `MulEquiv`.
 @[simps!] def mapAlgEquiv (f : A ≃ₐ[R] B) : Submodule R A ≃ₐ[Ideal R] Submodule R B where
   __ := mapAlgHom f
