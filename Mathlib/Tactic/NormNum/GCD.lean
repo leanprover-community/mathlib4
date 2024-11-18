@@ -211,7 +211,7 @@ def evalIntLCM : NormNumExt where eval {u α} e := do
   return .isNat _ ed q(isInt_lcm $p $q $pf)
 
 theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
-    IsRat q n d → n.natAbs = n' → n'.Coprime d → IsInt q.num n
+    IsRat q n d → n.natAbs = n' → n'.gcd d = 1 → IsInt q.num n
   | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
     constructor
     have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
@@ -220,7 +220,7 @@ theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
       Rat.intCast_num, one_mul, mul_one, h, Nat.cast_one, Int.ediv_one, Int.cast_id]
 
 theorem isNat_ratDen : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
-    IsRat q n d → n.natAbs = n' → n'.Coprime d → IsNat q.den d
+    IsRat q n d → n.natAbs = n' → n'.gcd d = 1 → IsNat q.den d
   | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
     constructor
     have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
