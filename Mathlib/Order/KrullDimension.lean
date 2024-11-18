@@ -206,7 +206,7 @@ lemma index_le_height (p : LTSeries α) (i : Fin (p.length + 1)) : i ≤ height 
 /--
 The coheight of an element in a series is larger or equal to its reverse index in the series.
 -/
-lemma index_le_coheight (p : LTSeries α) (i : Fin (p.length + 1)) : i.rev ≤ coheight (p i) := by
+lemma rev_index_le_coheight (p : LTSeries α) (i : Fin (p.length + 1)) : i.rev ≤ coheight (p i) := by
   simpa using index_le_height (α := αᵒᵈ) p.reverse i.rev
 
 /--
@@ -259,7 +259,7 @@ lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (
   intro p hlast
   apply le_iSup₂_of_le (p.map f hf) (by simp [hlast]) (by simp)
 
-lemma coheight_le_coheight_apply_of_astrictMono (f : α → β) (hf : StrictMono f) (x : α) :
+lemma coheight_le_coheight_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
     coheight x ≤ coheight (f x) := by
   apply height_le_height_apply_of_strictMono (α := αᵒᵈ)
   exact fun _ _ h ↦ hf h
@@ -337,7 +337,7 @@ lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := 
 /--
 Another characterization of coheight, based on the supremum of the coheights of elements above.
 -/
-lemma coheight_eq_iSup_lt_height (x : α) : coheight x = ⨆ y > x, coheight y + 1 :=
+lemma coheight_eq_iSup_gt_coheight (x : α) : coheight x = ⨆ y > x, coheight y + 1 :=
   height_eq_iSup_lt_height (α := αᵒᵈ) x
 
 lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ ∀ y < x, height y < n := by
@@ -392,7 +392,7 @@ protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
 @[simp] lemma coheight_top (α : Type*) [Preorder α] [OrderTop α] : coheight (⊤ : α) = 0 := by simp
 
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
-    n < height x ↔ (∃ y < x, height y = n) where
+    n < height x ↔ ∃ y < x, height y = n where
   mp h := by
     obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
     rw [hx] at h; norm_cast at h
@@ -407,7 +407,7 @@ lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     hy ▸ height_strictMono hyx (lt_of_le_of_lt (height_mono hyx.le) hfin)
 
 lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤):
-    n < coheight x ↔ (∃ y > x, coheight y = n) :=
+    n < coheight x ↔ ∃ y > x, coheight y = n :=
   coe_lt_height_iff (α := αᵒᵈ) hfin
 
 lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
