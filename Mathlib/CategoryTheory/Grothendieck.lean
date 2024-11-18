@@ -332,28 +332,56 @@ def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) whe
     apply Grothendieck.ext
     · simp only [Functor.comp_obj, Functor.id_obj, Functor.comp_map, Functor.id_map, Cat.comp_obj,
         eq_mp_eq_cast, comp_base, id_eq, eq_mpr_eq_cast, cast_eq, eqToHom_trans_assoc, comp_fiber,
-        Functor.map_comp, eqToHom_map, Category.assoc]
-      rw [eqToHom_comp_iff, eqToHom_trans_assoc, ← Category.assoc, ← Category.assoc]
-      congr
-      have := Functor.congr_hom (F.congr_map (G.counitInv.naturality g.base).symm) f.fiber
-      have := (F.congr_map (G.counitInv.naturality g.base).symm)
+        Functor.map_comp, eqToHom_map, Category.assoc, eqToHom_comp_iff, eqToHom_trans_assoc]
+      have := F.congr_map (G.counitInv.naturality g.base)
       simp only [Functor.map_comp] at this
-      have := Functor.congr_hom this f.fiber
-      simp only [Functor.comp_obj, Functor.id_obj, Functor.comp_map, Cat.comp_obj, Cat.comp_map,
-        Functor.id_map] at this
-      have := this.symm
-      rw [eqToHom_comp_iff, comp_eqToHom_iff] at this
-      exact this
+      exact Functor.congr_hom_assoc this f.fiber ((F.map (G.counitInv.app Z.base)).map g.fiber)
     · simp
 
-#check Equivalence.mk
+def transport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) :
+    Grothendieck F := by
+  exact ⟨c, (F.map t).obj x.fiber⟩
 
--- TODO make `congr_hom` reassoc
+def transport_hom (x : Grothendieck F) {c : C} (t : x.base ⟶ c) :
+    x ⟶ x.transport t := ⟨_, CategoryStruct.id _⟩
+
+-- theorem transport_hom_comp (x : Grothendieck F) {c c' : C} (t : x.base ⟶ c) (t' : c ⟶ c') :
+--     x.transport_hom (t ≫ t') = (x.transport_hom t) ≫ (x.transport t).transport_hom t' := sorry
+
+@[simp]
+lemma base_eqToHom {x y : Grothendieck F} (h : x = y) : (eqToHom h).base = eqToHom (by congr) := by
+  cases h ; rfl
+
+@[simp]
+lemma fiber_eqToHom {x y : Grothendieck F} (h : x = y) :
+    (eqToHom h).fiber = (eqToHom (by cases h ; simp)) := by cases h ; rfl
+set_option diagnostics true
+def transport.iso (x : Grothendieck F) {c : C} (t : x.base ≅ c) :
+    x.transport t.hom ≅ x := by
+  refine ⟨(x.transport t.hom).transport_hom t.inv ≫ ?_, x.transport_hom t.hom, ?_, ?_⟩
+  · apply eqToHom
+    simp only [transport, ← Functor.comp_obj, Functor.map_comp]
+    show { base := x.base, fiber := (F.map t.hom ≫ F.map t.inv).obj x.fiber } = x
+    cases x
+    congr
+    simp only [← Functor.map_comp]
+    rw [t.hom_inv_id]
+    simp only [Functor.map_id]
+    simp
+  · simp only [transport, transport_hom]
+    simp only [Category.assoc]
+    apply Grothendieck.ext
+    · simp only [id_base, Cat.comp_obj, id_eq, Cat.id_obj, eq_mpr_eq_cast, comp_base, comp_fiber,
+      Functor.map_id, fiber_eqToHom, eqToHom_map, Category.comp_id, eqToHom_trans, Category.id_comp,
+      id_fiber]
+    · refine Eq.trans ?_ rfl
 
 def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendieck F :=
   Equivalence.mk (pre F G.functor) (preInv F G)
-   (NatIso.ofComponents (fun ⟨d, f⟩ => by { dsimp [pre, preInv];  }) _)
-   (NatIso.ofComponents (fun X => _) _)
+   (NatIso.ofComponents (fun ⟨d, f⟩ => by
+     dsimp [pre, preInv]
+     sorry))
+   (NatIso.ofComponents (fun X => sorry) sorry)
 
 section FunctorFrom
 
