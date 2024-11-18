@@ -274,15 +274,15 @@ instance partialOrder : PartialOrder Ordinal where
   lt a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≺i s))
       fun _ _ _ _ ⟨f⟩ ⟨g⟩ => propext
-        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.equivLT f.symm <| h.ltLe g.toInitialSeg⟩, fun ⟨h⟩ =>
-          ⟨PrincipalSeg.equivLT f <| h.ltLe g.symm.toInitialSeg⟩⟩
+        ⟨fun ⟨h⟩ => ⟨PrincipalSeg.relIsoTrans f.symm <| h.transRelIso g⟩,
+          fun ⟨h⟩ => ⟨PrincipalSeg.relIsoTrans f <| h.transRelIso g.symm⟩⟩
   le_refl := Quot.ind fun ⟨_, _, _⟩ => ⟨InitialSeg.refl _⟩
   le_trans a b c :=
     Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
   lt_iff_le_not_le a b :=
     Quotient.inductionOn₂ a b fun _ _ =>
-      ⟨fun ⟨f⟩ => ⟨⟨f⟩, fun ⟨g⟩ => (f.ltLe g).irrefl⟩, fun ⟨⟨f⟩, h⟩ =>
-        f.ltOrEq.recOn (fun g => ⟨g⟩) fun g => (h ⟨g.symm.toInitialSeg⟩).elim⟩
+      ⟨fun ⟨f⟩ => ⟨⟨f⟩, fun ⟨g⟩ => (f.transInitial g).irrefl⟩, fun ⟨⟨f⟩, h⟩ =>
+        f.principalSumRelIso.recOn (fun g => ⟨g⟩) fun g => (h ⟨g.symm.toInitialSeg⟩).elim⟩
   le_antisymm a b :=
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
@@ -497,7 +497,7 @@ theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β �
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
     ∀ (hr : o < type r) (hs : o < type s), f (enum r ⟨o, hr⟩) = enum s ⟨o, hs⟩ := by
   refine inductionOn o ?_; rintro γ t wo ⟨g⟩ ⟨h⟩
-  rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
+  rw [enum_type g, enum_type (g.transRelIso f)]; rfl
 
 theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) (hr : o < type r) :
@@ -562,7 +562,7 @@ theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ 
 
 theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
     (f : r ≼i s) (a : α) : typein s (f a) = typein r a := by
-  rw [← f.leLT_apply _ a, (f.leLT _).eq]
+  rw [← f.transPrincipal_apply _ a, (f.transPrincipal _).eq]
 
 /-! ### Cardinality of ordinals -/
 
@@ -639,6 +639,7 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
 /-- `lift.{max v u, u}` equals `lift.{v, u}`.
 
 Unfortunately, the simp lemma doesn't seem to work. -/
+@[deprecated lift_umax (since := "2024-10-24")]
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 
@@ -675,9 +676,9 @@ theorem lift_type_eq {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWel
 theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
     lift.{max v w} (type r) < lift.{max u w} (type s) ↔ Nonempty (r ≺i s) := by
   constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
-  · exact (f.equivLT (RelIso.preimage Equiv.ulift r).symm).ltLe
+  · exact (f.relIsoTrans (RelIso.preimage Equiv.ulift r).symm).transInitial
       (RelIso.preimage Equiv.ulift s).toInitialSeg
-  · exact (f.equivLT (RelIso.preimage Equiv.ulift r)).ltLe
+  · exact (f.relIsoTrans (RelIso.preimage Equiv.ulift r)).transInitial
       (RelIso.preimage Equiv.ulift s).symm.toInitialSeg
 
 @[simp]
@@ -777,9 +778,6 @@ theorem card_omega0 : card ω = ℵ₀ :=
 @[simp]
 theorem lift_omega0 : lift ω = ω :=
   lift_lift _
-
-@[deprecated (since := "2024-09-30")]
-alias lift_omega := lift_omega0
 
 /-!
 ### Definition and first properties of addition on ordinals
@@ -1234,6 +1232,26 @@ theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=
 theorem ord_eq_one {a : Cardinal} : a.ord = 1 ↔ a = 1 :=
   ord_injective.eq_iff' ord_one
 
+@[simp]
+theorem omega0_le_ord {a : Cardinal} : ω ≤ a.ord ↔ ℵ₀ ≤ a := by
+  rw [← ord_aleph0, ord_le_ord]
+
+@[simp]
+theorem ord_le_omega0 {a : Cardinal} : a.ord ≤ ω ↔ a ≤ ℵ₀ := by
+  rw [← ord_aleph0, ord_le_ord]
+
+@[simp]
+theorem ord_lt_omega0 {a : Cardinal} : a.ord < ω ↔ a < ℵ₀ :=
+  le_iff_le_iff_lt_iff_lt.1 omega0_le_ord
+
+@[simp]
+theorem omega0_lt_ord {a : Cardinal} : ω < a.ord ↔ ℵ₀ < a :=
+  le_iff_le_iff_lt_iff_lt.1 ord_le_omega0
+
+@[simp]
+theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
+  ord_injective.eq_iff' ord_aleph0
+
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
 -/
@@ -1326,6 +1344,14 @@ theorem one_le_card {o} : 1 ≤ card o ↔ 1 ≤ o := by
 theorem ofNat_le_card {o} {n : ℕ} [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : Cardinal)) ≤ card o ↔ (OfNat.ofNat n : Ordinal) ≤ o :=
   nat_le_card
+
+@[simp]
+theorem aleph0_le_card {o} : ℵ₀ ≤ card o ↔ ω ≤ o := by
+  rw [← ord_le, ord_aleph0]
+
+@[simp]
+theorem card_lt_aleph0 {o} : card o < ℵ₀ ↔ o < ω :=
+  le_iff_le_iff_lt_iff_lt.1 aleph0_le_card
 
 @[simp]
 theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o := by

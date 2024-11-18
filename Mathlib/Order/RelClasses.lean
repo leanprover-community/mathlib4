@@ -270,8 +270,8 @@ namespace IsWellFounded
 variable (r) [IsWellFounded α r]
 
 /-- Induction on a well-founded relation. -/
-theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, r y x → C y) → C x) → C a :=
-  wf.induction
+theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, r y x → C y) → C x) : C a :=
+  wf.induction _ ind
 
 /-- All values are accessible under the well-founded relation. -/
 theorem apply : ∀ a, Acc r a :=
@@ -362,8 +362,8 @@ namespace WellFoundedLT
 variable [LT α] [WellFoundedLT α]
 
 /-- Inducts on a well-founded `<` relation. -/
-theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, y < x → C y) → C x) → C a :=
-  IsWellFounded.induction _
+theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, y < x → C y) → C x) : C a :=
+  IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `<`. -/
 theorem apply : ∀ a : α, Acc (· < ·) a :=
@@ -390,8 +390,8 @@ namespace WellFoundedGT
 variable [LT α] [WellFoundedGT α]
 
 /-- Inducts on a well-founded `>` relation. -/
-theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, x < y → C y) → C x) → C a :=
-  IsWellFounded.induction _
+theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, x < y → C y) → C x) : C a :=
+  IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `>`. -/
 theorem apply : ∀ a : α, Acc (· > ·) a :=

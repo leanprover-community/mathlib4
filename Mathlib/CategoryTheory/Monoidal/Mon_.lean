@@ -658,7 +658,7 @@ end Mon_
 Projects:
 * Check that `Mon_ MonCat ≌ CommMonCat`, via the Eckmann-Hilton argument.
   (You'll have to hook up the cartesian monoidal structure on `MonCat` first,
-  available in mathlib3#3463)
+  available in https://github.com/leanprover-community/mathlib3/pull/3463)
 * More generally, check that `Mon_ (Mon_ C) ≌ CommMon_ C` when `C` is braided.
 * Check that `Mon_ TopCat ≌ [bundled topological monoids]`.
 * Check that `Mon_ AddCommGrp ≌ RingCat`.

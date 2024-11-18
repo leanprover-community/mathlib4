@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Yaël Dillies
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Finset.Density
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.ListOfFn

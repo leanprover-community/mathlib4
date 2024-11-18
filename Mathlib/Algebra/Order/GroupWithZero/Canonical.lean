@@ -235,9 +235,6 @@ lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
   rw [← one_mul (a ^ n), pow_succ']
   exact mul_lt_mul_of_pos_right ha (pow_pos (zero_lt_one.trans ha) _)
 
-lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
-  induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
-
 end LinearOrderedCommGroupWithZero
 
 instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
@@ -301,6 +298,14 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
 theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
   WithBot.coe_le_iff
+
+@[simp] lemma unzero_le_unzero {a b : WithZero α} (ha hb) :
+    unzero (x := a) ha ≤ unzero (x := b) hb ↔ a ≤ b := by
+  -- TODO: Fix `lift` so that it doesn't try to clear the hypotheses I give it when it is
+  -- impossible to do so. See https://github.com/leanprover-community/mathlib4/issues/19160
+  lift a to α using id ha
+  lift b to α using id hb
+  simp
 
 instance mulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by

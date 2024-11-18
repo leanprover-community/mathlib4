@@ -45,12 +45,6 @@ theorem map_ne_one_iff {f : F} {x : M} :
 
 end EmbeddingLike
 
-@[to_additive (attr := deprecated (since := "2024-11-10"))]
-alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
-
-@[to_additive (attr := deprecated (since := "2024-11-10"))]
-alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
-
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
 @[to_additive (attr := simps)
   "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
@@ -125,6 +119,12 @@ class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLik
     Prop where
   /-- Preserves multiplication. -/
   map_mul : ∀ (f : F) (a b), f (a * b) = f a * f b
+
+@[to_additive (attr := deprecated (since := "2024-11-10"))]
+alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
+
+@[to_additive (attr := deprecated (since := "2024-11-10"))]
+alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
 
 namespace MulEquivClass
 
@@ -237,7 +237,7 @@ theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
 @[to_additive (attr := simp)]
 theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 
--- Porting note (#11215): TODO: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
 -- not `f.toEquiv.toFun`; use higher priority as a workaround
 @[to_additive (attr := simp 1100)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
@@ -480,12 +480,12 @@ end Mul
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
--- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
 -- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 
--- Porting note (#10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
 -- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
 @[to_additive]
 lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
@@ -527,7 +527,7 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
     (f : F) (hf : Bijective f) : M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }
 
--- Porting note (#11215): TODO: simplify `symm_apply` to `surjInv`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: simplify `symm_apply` to `surjInv`?
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n
