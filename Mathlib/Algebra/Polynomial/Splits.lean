@@ -181,7 +181,7 @@ theorem splits_iff_comp_splits_of_degree_eq_one {f : K[X]} {p : K[X]} (hd : (p.m
     nth_rw 1 [eq_X_add_C_of_degree_eq_one hd]
     simp only [coeff_map, invOf_eq_inv, mul_sub, ← C_mul, add_comp, mul_comp, C_comp, X_comp,
       ← mul_assoc]
-    field_simp
+    simp
   refine this ▸ Splits.comp_of_map_degree_le_one ?_ h
   simp [degree_C (inv_ne_zero (Invertible.ne_zero (a := (map i p).leadingCoeff)))]
 
