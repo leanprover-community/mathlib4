@@ -1033,6 +1033,9 @@ theorem pow_le_pow_left₀ (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^
   | n + 1 => by simpa only [pow_succ']
       using mul_le_mul hab (pow_le_pow_left₀ ha hab _) (pow_nonneg ha _) (ha.trans hab)
 
+lemma pow_left_monotoneOn : MonotoneOn (fun a : M₀ ↦ a ^ n) {x | 0 ≤ x} :=
+  fun _a ha _b _ hab ↦ pow_le_pow_left₀ ha hab _
+
 end
 
 variable [Preorder α] {f g : α → M₀}
