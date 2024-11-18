@@ -189,7 +189,7 @@ instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
   dist_comm f g := by simp [dist_eq, dist_comm]
   dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
-  -- Porting note (#10888): added proof for `edist_dist`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `edist_dist`
   edist_dist x y := by dsimp; congr; simp [dist_nonneg']
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
@@ -762,7 +762,7 @@ theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α 
 
 instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
     Monoid (α →ᵇ R) :=
-  Injective.monoid (↑) DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
     CommMonoid (α →ᵇ R) where
@@ -772,7 +772,7 @@ instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
 instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R]
     [BoundedAdd R] [ContinuousAdd R] :
     Semiring (α →ᵇ R) :=
-  Injective.semiring (↑) DFunLike.coe_injective'
+  Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
 end mul
@@ -953,7 +953,7 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) wher
 instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with
-    -- Porting note (#10888): Added a proof for `eq_of_dist_eq_zero`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added a proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
@@ -1221,7 +1221,7 @@ theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index OfNat.ofNat n : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+    ((no_index (OfNat.ofNat n) : α →ᵇ R) : α → R) = OfNat.ofNat n :=
   rfl
 
 instance : IntCast (α →ᵇ R) :=
@@ -1265,13 +1265,13 @@ instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
 instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
   __ := instCommRing
   __ := instSeminormedAddCommGroup
-  -- Porting note (#10888): Added proof for `norm_mul`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added proof for `norm_mul`
   norm_mul := norm_mul_le
 
 instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
   __ := instCommRing
   __ := instNormedAddCommGroup
-  -- Porting note (#10888): Added proof for `norm_mul`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added proof for `norm_mul`
   norm_mul := norm_mul_le
 
 end NormedCommRing
@@ -1494,7 +1494,7 @@ instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β
       have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t)
-    -- Porting note (#10888): added proof for `eq_of_dist_eq_zero`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 end NormedLatticeOrderedGroup

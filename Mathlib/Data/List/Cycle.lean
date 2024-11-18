@@ -398,7 +398,7 @@ namespace Cycle
 
 variable {α : Type*}
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The coercion from `List α` to `Cycle α` -/
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
@@ -825,10 +825,7 @@ theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cyc
   Quotient.inductionOn s fun l => by
     cases' l with a l
     · rfl
-    dsimp only [Chain, Quotient.liftOn_mk, Cycle.map, Quotient.map', Quot.map,
-      Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
-    rw [← concat_eq_append, ← List.map_concat, List.chain_map f]
-    simp
+    · simp [← concat_eq_append, ← List.map_concat, List.chain_map f]
 
 nonrec theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain r (List.range n.succ) ↔ r n 0 ∧ ∀ m < n, r m m.succ := by

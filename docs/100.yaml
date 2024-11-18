@@ -176,6 +176,8 @@
   decl   : Theorems100.partition_theorem
 46:
   title  : The Solution of the General Quartic Equation
+  decl   : Theorems100.quartic_eq_zero_iff
+  author : Thomas Zhu
 47:
   title  : The Central Limit Theorem
 48:

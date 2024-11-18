@@ -427,6 +427,16 @@ theorem ite_tmul (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
 theorem tmul_ite (x₁ : M) (x₂ : N) (P : Prop) [Decidable P] :
     (x₁ ⊗ₜ[R] if P then x₂ else 0) = if P then x₁ ⊗ₜ x₂ else 0 := by split_ifs <;> simp
 
+lemma tmul_single {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] (i : ι) (x : N) (m : M i) (j : ι) :
+    x ⊗ₜ[R] Pi.single i m j = (Pi.single i (x ⊗ₜ[R] m) : ∀ i, N ⊗[R] M i) j := by
+  by_cases h : i = j <;> aesop
+
+lemma single_tmul {ι : Type*} [DecidableEq ι] {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] (i : ι) (x : N) (m : M i) (j : ι) :
+    Pi.single i m j ⊗ₜ[R] x = (Pi.single i (m ⊗ₜ[R] x) : ∀ i, M i ⊗[R] N) j := by
+  by_cases h : i = j <;> aesop
+
 section
 
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
@@ -1133,6 +1143,10 @@ lemma comm_comp_rTensor_comp_comm_eq (g : N →ₗ[R] P) :
     TensorProduct.comm R P Q ∘ₗ rTensor Q g ∘ₗ TensorProduct.comm R Q N =
       lTensor Q g :=
   TensorProduct.ext rfl
+
+theorem rTensor_tensor : rTensor (M ⊗[R] N) g =
+    TensorProduct.assoc R Q M N ∘ₗ rTensor N (rTensor M g) ∘ₗ (TensorProduct.assoc R P M N).symm :=
+  TensorProduct.ext <| LinearMap.ext fun _ ↦ TensorProduct.ext rfl
 
 lemma comm_comp_lTensor_comp_comm_eq (g : N →ₗ[R] P) :
     TensorProduct.comm R Q P ∘ₗ lTensor Q g ∘ₗ TensorProduct.comm R N Q =

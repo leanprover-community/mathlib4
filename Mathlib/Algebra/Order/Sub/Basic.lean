@@ -32,6 +32,7 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
 
 alias ⟨_, tsub_eq_zero_of_le⟩ := tsub_eq_zero_iff_le
 
+@[simp]
 theorem tsub_self (a : α) : a - a = 0 :=
   tsub_eq_zero_of_le le_rfl
 
