@@ -30,20 +30,72 @@ convex, uniformly convex
 -/
 
 
-open Set Metric
+open Set Metric Filter Topology Uniformity
 
 open Convex Pointwise
 
 /-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
 uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above
 by a constant `< 2` when `‖x - y‖` is uniformly bounded below by a positive constant. -/
+@[mk_iff uniformConvexSpace_iff_comap_le_uniformity]
 class UniformConvexSpace (E : Type*) [SeminormedAddCommGroup E] : Prop where
+  change_me : ∀ a b : ℝ,
+    comap (fun xy ↦ ⟨‖xy.1‖, ‖xy.2‖, ‖xy.1 + xy.2‖⟩ : E × E → ℝ × ℝ × ℝ) (𝓝 ⟨a, b, a+b⟩) ≤ 𝓤 E
+
+/-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
+uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above
+by a constant `< 2` when `‖x - y‖` is uniformly bounded below by a positive constant. -/
+@[mk_iff]
+class UniformConvexSpace' (E : Type*) [SeminormedAddCommGroup E] : Prop where
   uniform_convex : ∀ ⦃ε : ℝ⦄,
     0 < ε → ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ
 
 variable {E : Type*}
 
 section SeminormedAddCommGroup
+
+variable {E : Type*} [SeminormedAddCommGroup E]
+
+theorem uniformConvexSpace_iff_tendsto_uniformity_of_norm_add :
+    UniformConvexSpace E ↔ ∀ a b : ℝ, ∀ 𝓕 : Filter (E × E),
+      Tendsto (fun xy ↦ ‖xy.1‖) 𝓕 (𝓝 a) →
+      Tendsto (fun xy ↦ ‖xy.2‖) 𝓕 (𝓝 b) →
+      Tendsto (fun xy ↦ ‖xy.1 + xy.2‖) 𝓕 (𝓝 (a+b)) →
+      𝓕 ≤ 𝓤 E := by
+  rw [uniformConvexSpace_iff_comap_le_uniformity]
+  congrm ∀ a b, ?_
+  rw [← forall_le_iff_le]
+  congrm ∀ 𝓕, ?_
+  simp_rw [← tendsto_iff_comap, nhds_prod_eq, tendsto_prod_iff', and_imp]
+
+theorem uniformConvexSpace_iff_tendsto_uniformity_of_norm_add_of_le :
+    UniformConvexSpace E ↔ ∀ a b : ℝ, ∀ 𝓕 : Filter (E × E),
+      ∀ᶠ xy in 𝓕, ‖xy.1‖ ≤ a →
+      ∀ᶠ xy in 𝓕, ‖xy.2‖ ≤ b →
+      Tendsto (fun xy ↦ ‖xy.1 + xy.2‖) 𝓕 (𝓝 (a+b)) →
+      𝓕 ≤ 𝓤 E := by
+  rw [uniformConvexSpace_iff_tendsto_uniformity_of_norm_add]
+  congrm ∀ a b 𝓕, ?_
+  constructor <;> intro H
+  · sorry
+  · sorry
+
+
+theorem uniformConvexSpace_iff_comap_sphere_le_uniformity :
+    UniformConvexSpace E ↔ comap (fun (xy : E × E) ↦ ‖xy.1 + xy.2‖) (𝓝 2 : Filter ℝ) ⊓
+      𝓟 (sphere 0 1 ×ˢ sphere 0 1) ≤ 𝓤 E := by
+  have : (sphere 0 1 : Set E) = (‖·‖) ⁻¹' {1} := ext fun _ ↦ mem_sphere_zero_iff_norm
+  simp_rw [uniformConvexSpace_iff, Metric.uniformity_eq_comap_nhds_zero, dist_eq_norm,
+    this, ← prod_principal_principal, ← comap_principal, ← comap_prod]
+  sorry
+
+theorem uniformConvexSpace_iff_filter_sphere :
+    UniformConvexSpace E :=
+  UniformConvexSpace.uniform_convex hε
+
+theorem uniformConvexSpace_iff_comap_sphere_le_uniformity :
+    ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ :=
+  UniformConvexSpace.uniform_convex hε
 
 variable (E) [SeminormedAddCommGroup E] [UniformConvexSpace E] {ε : ℝ}
 
