@@ -321,3 +321,65 @@ instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsD
 -- see Note [lower instance priority]
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
+
+namespace DirectedOn
+
+section Pi
+
+namespace Pi
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)]
+
+lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) (i : ι) :
+    DirectedOn (· ≤ ·) ((fun a => a i) '' d) := by
+  intro p ⟨a, ha⟩ q ⟨b, hb⟩
+  obtain ⟨z,hz⟩ := hd a ha.1 b hb.1
+  use z i
+  aesop
+
+lemma prodMk {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (· ≤ ·) (d i)) :
+    DirectedOn (· ≤ ·) (Set.pi  Set.univ d) := by
+  intro a ha b hb
+  dsimp
+  choose f hf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
+  simpa [Pi.le_def, ← forall_and] using ⟨f, hf⟩
+
+end Pi
+
+end Pi
+
+section Prod
+
+variable {r₂ : β → β → Prop}
+
+/-- Local notation for a relation -/
+local infixl:50 " ≼₁ " => r
+/-- Local notation for a relation -/
+local infixl:50 " ≼₂ " => r₂
+
+namespace Prod
+
+lemma fst {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
+    DirectedOn (· ≼₁ ·) (Prod.fst '' d) := by
+  intro a ⟨p,hp⟩ b ⟨q,hq⟩
+  obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
+  aesop
+
+lemma snd {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
+    DirectedOn (· ≼₂ ·) (Prod.snd '' d) := by
+  intro a ⟨p,hp⟩ b ⟨q,hq⟩
+  obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
+  aesop
+
+lemma prodMk {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≼₁ ·) d₁) (h₂ : DirectedOn (· ≼₂ ·) d₂) :
+    DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) (d₁ ×ˢ d₂) := fun _ hpd _ hqd => by
+  obtain ⟨r₁,hr₁⟩ := h₁ _ hpd.1 _ hqd.1
+  obtain ⟨r₂,hr₂⟩ := h₂ _ hpd.2 _ hqd.2
+  use (r₁, r₂)
+  aesop
+
+end Prod
+
+end Prod
+
+end DirectedOn
