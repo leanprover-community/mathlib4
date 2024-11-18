@@ -325,9 +325,8 @@ section
 end
 
 section compHom
-variable {R : Type u} {S : Type v} (A : Type w)
-    [CommSemiring R] [Semiring A] [Algebra R A] [CommSemiring S]
-    (f : S →+* R)
+
+variable (A) (f : S →+* R)
 
 /--
 Compose an `Algebra` with a `RingHom`, with action `f s • m`.
