@@ -48,8 +48,6 @@ lemma comp_d_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ K.X j) :
 include hi hi' in
 lemma d_comp_eq_zero_iff ⦃W : C⦄ (φ : K.X j ⟶ W) :
     K.d i j ≫ φ = 0 ↔ (K.extend e).d i' j' ≫ (K.extendXIso e hj').hom ≫ φ = 0 := by
-  have := hi
-  have := hi'
   by_cases hij : c.Rel i j
   · have hi' : e.f i = i' := by rw [← hi', ← hj', c'.prev_eq' (e.rel hij)]
     rw [K.extend_d_eq e hi' hj', assoc, assoc, Iso.inv_hom_id_assoc,
@@ -154,11 +152,15 @@ namespace rightHomologyData
 
 variable (cocone : CokernelCofork (K.d i j)) (hcocone : IsColimit cocone)
 
+/-- The cokernel cofork of `(K.extend e).d i' j'` that is deduced from a cokernel
+cofork of `K.d i j`. -/
 @[simp]
 noncomputable def cokernelCofork : CokernelCofork ((K.extend e).d i' j') :=
   CokernelCofork.ofπ ((extendXIso K e hj').hom ≫ cocone.π) (by
     rw [← d_comp_eq_zero_iff K e hj' hi hi' cocone.π, cocone.condition])
 
+/-- The colimit cokernel cofork of `(K.extend e).d i' j'` that is deduced from a
+colimit cokernel cofork of `K.d i j`. -/
 noncomputable def isColimitCokernelCofork : IsColimit (cokernelCofork K e hj' hi hi' cocone) :=
   CokernelCofork.isColimitOfIsColimitOfIff hcocone ((K.extend e).d i' j')
     (extendXIso K e hj') (d_comp_eq_zero_iff K e hj' hi hi')
@@ -173,9 +175,6 @@ lemma d_comp_desc_eq_zero_iff' ⦃W : C⦄ (f' : cocone.pt ⟶ K.X k)
     (hf'' : (extendXIso K e hj').hom ≫ cocone.π ≫ f'' = (K.extend e).d j' k')
     (φ : W ⟶ cocone.pt) :
     φ ≫ f' = 0 ↔ φ ≫ f'' = 0 := by
-  have := hk
-  have := hk'
-  have := hj'
   by_cases hjk : c.Rel j k
   · have hk'' : e.f k = k' := by rw [← hk', ← hj', c'.next_eq' (e.rel hjk)]
     have : f' ≫ (K.extendXIso e hk'').inv = f'' := by
@@ -203,6 +202,7 @@ lemma d_comp_desc_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ cocone.pt) :
     simpa using (isColimitCokernelCofork K e hj' hi hi' cocone hcocone).fac _
       WalkingParallelPair.one) _
 
+/-- Auxiliary definition for `extend.rightHomologyData`. -/
 noncomputable def kernelFork :
     KernelFork ((isColimitCokernelCofork K e hj' hi hi' cocone hcocone).desc
       (CokernelCofork.ofπ ((K.extend e).d j' k') (d_comp_d _ _ _ _))) :=
@@ -210,6 +210,7 @@ noncomputable def kernelFork :
     rw [← d_comp_desc_eq_zero_iff K e hj' hi hi' hk hk' cocone hcocone]
     exact cone.condition)
 
+/-- Auxiliary definition for `extend.rightHomologyData`. -/
 noncomputable def isLimitKernelFork :
     IsLimit (kernelFork K e hj' hi hi' hk hk' cocone hcocone cone) :=
   KernelFork.isLimitOfIsLimitOfIff' hcone _
@@ -218,6 +219,8 @@ noncomputable def isLimitKernelFork :
 end rightHomologyData
 
 open rightHomologyData in
+/-- The right homology data of `(K.extend e).sc' i' j' k'` that is deduced
+from a right homology data of `K.sc' i j k`. -/
 @[simps]
 noncomputable def rightHomologyData (h : (K.sc' i j k).RightHomologyData) :
     ((K.extend e).sc' i' j' k').RightHomologyData where
@@ -236,6 +239,8 @@ noncomputable def rightHomologyData (h : (K.sc' i j k).RightHomologyData) :
     exact h.wι
   hι := isLimitKernelFork K e hj' hi hi' hk hk' _ h.hp _ h.hι
 
+/-- The homology data of `(K.extend e).sc' i' j' k'` that is deduced
+from a homology data of `K.sc' i j k`. -/
 @[simps]
 noncomputable def homologyData (h : (K.sc' i j k).HomologyData) :
     ((K.extend e).sc' i' j' k').HomologyData where
@@ -243,6 +248,8 @@ noncomputable def homologyData (h : (K.sc' i j k).HomologyData) :
   right := rightHomologyData K e hj' hi hi' hk hk' h.right
   iso := h.iso
 
+/-- The homology data of `(K.extend e).sc j'` that is deduced
+from a homology data of `K.sc' i j k`. -/
 @[simps!]
 noncomputable def homologyData' (h : (K.sc' i j k).HomologyData) :
     ((K.extend e).sc j').HomologyData :=
