@@ -123,7 +123,7 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
 variable (D) in
 /-- Jacobson-Noether theorem: For a non-commutative algebraic
   division algebra `D` (with base ring being its center `k`), if `k ≠ D`, then
-  there exist an element `x` of `D \ k` that is separable over its center.-/
+  there exists an element `x` of `D \ k` that is separable over `k`. -/
 theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
   obtain ⟨p, hp⟩ := ExpChar.exists D
