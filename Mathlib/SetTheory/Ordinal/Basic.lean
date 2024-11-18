@@ -1243,6 +1243,14 @@ theorem omega0_le_ord {a : Cardinal} : ω ≤ a.ord ↔ ℵ₀ ≤ a := by
 theorem ord_lt_omega0 {a : Cardinal} : a.ord < ω ↔ a < ℵ₀ :=
   le_iff_le_iff_lt_iff_lt.1 omega0_le_ord
 
+@[simp]
+theorem ord_le_omega0 {a : Cardinal} : a.ord ≤ ω ↔ a ≤ ℵ₀ := by
+  rw [← ord_aleph0, ord_le_ord]
+
+@[simp]
+theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
+  ord_injective.eq_iff' ord_aleph0
+
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
 -/
