@@ -435,7 +435,7 @@ theorem inv_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => (a ^ n)⁻¹ := fu
 theorem inv_pow_strictAnti (a1 : 1 < a) : StrictAnti fun n : ℕ => (a ^ n)⁻¹ := fun _ _ =>
   inv_pow_lt_inv_pow_of_lt a1
 
-theorem le_iff_forall_one_lt_le_mul₀ {α : Type*} [LinearOrderedField α]
+theorem le_iff_forall_one_lt_le_mul₀ {α : Type*} [LinearOrderedSemifield α]
     {a b : α} (hb : 0 ≤ b) : a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε := by
   refine ⟨fun h _ hε ↦ h.trans <| le_mul_of_one_le_right hb hε.le, fun h ↦ ?_⟩
   obtain rfl|hb := hb.eq_or_lt
