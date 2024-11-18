@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Finsupp.SMulWithZero
 
 /-!
 # Monoid algebras
@@ -222,6 +223,30 @@ theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k)
 alias nat_cast_def := natCast_def
 
 end MulOneClass
+
+section SMul
+
+variable {S : Type*}
+
+instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
+  Finsupp.smulZeroClass
+
+instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgebra k G) :=
+  Finsupp.distribSMul _ _
+
+instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
+    [IsScalarTower R S k] : IsScalarTower R S (MonoidAlgebra k G) :=
+  Finsupp.isScalarTower G k
+
+instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
+    SMulCommClass R S (MonoidAlgebra k G) :=
+  Finsupp.smulCommClass G k
+
+instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒᵖ k]
+    [IsCentralScalar R k] : IsCentralScalar R (MonoidAlgebra k G) :=
+  Finsupp.isCentralScalar G k
+
+end SMul
 
 /-! #### Semiring structure -/
 
@@ -742,6 +767,30 @@ theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
 alias nat_cast_def := natCast_def
 
 end MulOneClass
+
+section SMul
+
+variable {S : Type*}
+
+instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (AddMonoidAlgebra k G) :=
+  Finsupp.smulZeroClass
+
+instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R k[G] :=
+  Finsupp.distribSMul G k
+
+instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
+    [IsScalarTower R S k] : IsScalarTower R S k[G] :=
+  Finsupp.isScalarTower G k
+
+instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
+    SMulCommClass R S k[G] :=
+  Finsupp.smulCommClass G k
+
+instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒᵖ k]
+    [IsCentralScalar R k] : IsCentralScalar R k[G] :=
+  Finsupp.isCentralScalar G k
+
+end SMul
 
 /-! #### Semiring structure -/
 
