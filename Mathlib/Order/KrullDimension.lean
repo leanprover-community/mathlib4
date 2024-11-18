@@ -7,6 +7,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 import Mathlib.Order.RelSeries
 import Mathlib.Order.Minimal
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -615,5 +616,168 @@ lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α
   exact height_top_eq_krullDim (α := αᵒᵈ)
 
 end krullDim
+
+/-!
+## Concrete calculations
+-/
+
+section calculations
+
+variable {α : Type*} [Preorder α]
+
+@[simp] lemma height_nat (n : ℕ) : height n = n := by
+  induction n using Nat.strongRecOn with | ind n ih =>
+  apply le_antisymm
+  · apply (height_le_coe_iff ..).mpr
+    simp (config := { contextual := true }) only [ih, Nat.cast_lt, implies_true]
+  · exact length_le_height_last (p := .range n)
+
+@[simp] lemma coheight_nat (n : ℕ) : coheight n = ⊤ := by
+  rw [coheight_eq_top_iff]
+  intro m
+  use (LTSeries.range m).map (· + n) (StrictMono.add_const (fun _ _ x ↦ x) n)
+  simp
+
+@[simp]
+lemma krullDim_nat : krullDim ℕ = ⊤ := by
+  simp only [krullDim_eq_iSup_height, height_nat]
+  rw [← WithBot.coe_iSup (OrderTop.bddAbove _)]
+  simp only [WithBot.coe_eq_top]
+  show ⨆ (i : ℕ), ↑i = (⊤ : ℕ∞) -- nothing simpler from here on?
+  rw [iSup_eq_top]
+  intro n hn
+  cases n with
+  | top => contradiction
+  | coe n =>
+    use n+1
+    norm_cast
+    simp
+
+@[simp] lemma height_int (a : ℤ) : height a = ⊤ := by
+  rw [height_eq_top_iff]
+  intro n
+  use (LTSeries.range n).map (a - (n : ℤ) + ·)
+    (StrictMono.const_add Int.natCast_strictMono (a - (n : ℤ)))
+  simp
+
+@[simp] lemma coheight_int (a : ℤ) : coheight a = ⊤ := by
+  rw [coheight_eq_top_iff]
+  intro n
+  use (LTSeries.range n).map (fun i => a + (i : ℤ)) (StrictMono.const_add Int.natCast_strictMono a)
+  simp
+
+@[simp]
+lemma height_coe_WithBot (x : α) : height (x : WithBot α) = height x + 1 := by
+  apply le_antisymm
+  · apply height_le
+    intro p hlast
+    wlog hlenpos : p.length ≠ 0
+    · simp_all
+    let p' : LTSeries α := {
+      length := p.length - 1
+      toFun := fun ⟨i, hi⟩ => (p ⟨i+1, by omega⟩).unbot (by
+        apply LT.lt.ne_bot (a := p.head)
+        apply p.strictMono
+        exact compare_gt_iff_gt.mp rfl)
+      step := by
+        intro ⟨i, hi⟩
+        simp only [Fin.castSucc_mk, Nat.succ_eq_add_one, Fin.succ_mk, WithBot.unbot_lt_iff,
+          WithBot.coe_unbot, gt_iff_lt]
+        exact p.step ⟨i + 1, by omega⟩
+      }
+    have hlast' : p'.last = x := by
+      simp only [RelSeries.last, Fin.val_last, WithBot.unbot_eq_iff, ← hlast]
+      congr
+      omega
+    suffices p'.length ≤ height p'.last by
+      simpa [p', hlast'] using this
+    apply length_le_height_last
+  · rw [height_add_const]
+    apply iSup₂_le
+    intro p hlast
+    let p' := (p.map _ WithBot.coe_strictMono).cons ⊥ (by simp)
+    apply le_iSup₂_of_le p' (by simp [p', hlast]) (by simp [p'])
+
+@[simp]
+lemma coheight_coe_WithTop (x : α) : coheight (x : WithTop α) = coheight x + 1 :=
+  height_coe_WithBot (α := αᵒᵈ) x
+
+@[simp]
+lemma height_coe_WithTop (x : α) : height (x : WithTop α) = height x := by
+  apply le_antisymm
+  · apply height_le
+    intro p hlast
+    let p' : LTSeries α := {
+      length := p.length
+      toFun := fun i => (p i).untop (by
+        apply WithTop.lt_top_iff_ne_top.mp
+        apply lt_of_le_of_lt
+        · exact p.monotone (Fin.le_last _)
+        · rw [RelSeries.last] at hlast
+          simp [hlast])
+      step := by
+        intro i
+        simp only [WithTop.untop_lt_iff, WithTop.coe_untop]
+        exact p.step i
+      }
+    have hlast' : p'.last = x := by
+      simp only [RelSeries.last, Fin.val_last, WithTop.untop_eq_iff, ← hlast]
+    suffices p'.length ≤ height p'.last by
+      rw [hlast'] at this
+      simpa [p'] using this
+    apply length_le_height_last
+  · apply height_le
+    intro p hlast
+    let p' := p.map _ WithTop.coe_strictMono
+    apply le_iSup₂_of_le p' (by simp [p', hlast]) (by simp [p'])
+
+@[simp]
+lemma coheight_coe_WithBot (x : α) : coheight (x : WithBot α) = coheight x :=
+  height_coe_WithTop (α := αᵒᵈ) x
+
+@[simp]
+lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
+  rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
+  norm_cast
+  apply le_antisymm
+  · apply iSup₂_le
+    intro x h
+    apply add_le_add_right
+    cases x with
+    | top => simp at h
+    | coe x =>
+      apply le_iSup_of_le x
+      simp only [height_coe_WithTop, le_refl]
+  · rw [ENat.iSup_add]
+    apply iSup_le
+    intro x
+    apply le_iSup_of_le (↑x)
+    apply le_iSup_of_le (WithTop.coe_lt_top x)
+    simp only [height_coe_WithTop, le_refl]
+
+@[simp]
+lemma krullDim_WithBot [Nonempty α] : krullDim (WithBot α) = krullDim α + 1 := by
+  conv_lhs => rw [← krullDim_orderDual]
+  conv_rhs => rw [← krullDim_orderDual]
+  exact krullDim_WithTop (α := αᵒᵈ)
+
+@[simp]
+lemma krullDim_ENat : krullDim ℕ∞ = ⊤ := by
+  show (krullDim (WithTop ℕ) = ↑⊤)
+  simp only [krullDim_WithTop, krullDim_nat]
+  rfl
+
+@[simp]
+lemma height_ENat (n : ℕ∞) : height n = n := by
+  cases n with
+  | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_ENat, WithBot.coe_top]
+  | coe n => exact (height_coe_WithTop _).trans (height_nat _)
+
+@[simp]
+lemma coheight_coe_ENat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
+  apply (coheight_coe_WithTop _).trans
+  simp only [Nat.cast_id, coheight_nat, top_add]
+
+end calculations
 
 end Order
