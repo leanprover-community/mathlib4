@@ -323,8 +323,8 @@
   ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
   "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
   ["Mathlib.Tactic.Algebraize"],
-  "Mathlib.RingTheory.Finiteness":
-  ["Mathlib.Algebra.Algebra.RestrictScalars", "Mathlib.Tactic.Algebraize"],
+  "Mathlib.RingTheory.Finiteness.Defs":
+  ["Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
@@ -365,6 +365,7 @@
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
   "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
+  "Mathlib.Data.ENat.Lattice": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],

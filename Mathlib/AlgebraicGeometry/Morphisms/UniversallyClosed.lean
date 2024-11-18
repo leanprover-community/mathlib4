@@ -67,6 +67,14 @@ instance universallyClosed_isStableUnderComposition :
   rw [universallyClosed_eq]
   infer_instance
 
+lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [UniversallyClosed (f ≫ g)] [Surjective f] : UniversallyClosed g := by
+  constructor
+  intro X' Y' i₁ i₂ f' H
+  have := UniversallyClosed.out _ _ _ ((IsPullback.of_hasPullback i₁ f).paste_horiz H)
+  exact IsClosedMap.of_comp_surjective (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).1
+    (Scheme.Hom.continuous _) this
+
 instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : UniversallyClosed f] [hg : UniversallyClosed g] : UniversallyClosed (f ≫ g) :=
   comp_mem _ _ _ hf hg

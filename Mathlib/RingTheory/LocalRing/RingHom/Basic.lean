@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Logic.Equiv.TransferInstance
 
@@ -115,6 +115,16 @@ theorem of_surjective [CommSemiring R] [IsLocalRing R] [CommSemiring S] [Nontriv
     exact
       (isUnit_or_isUnit_of_isUnit_add <| IsLocalHom.map_nonunit _ hab).imp f.isUnit_map
         f.isUnit_map)
+
+lemma _root_.IsLocalHom.of_surjective [CommRing R] [CommRing S] [Nontrivial S] [IsLocalRing R]
+    (f : R →+* S) (hf : Function.Surjective f) :
+    IsLocalHom f := by
+  have := IsLocalRing.of_surjective' f ‹_›
+  refine ((local_hom_TFAE f).out 3 0).mp ?_
+  have := Ideal.comap_isMaximal_of_surjective f hf (K := maximalIdeal S)
+  exact ((maximal_ideal_unique R).unique (inferInstanceAs (maximalIdeal R).IsMaximal) this).le
+
+alias _root_.Function.Surjective.isLocalHom := _root_.IsLocalHom.of_surjective
 
 /-- If `f : R →+* S` is a surjective local ring hom, then the induced units map is surjective. -/
 theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R →+* S)

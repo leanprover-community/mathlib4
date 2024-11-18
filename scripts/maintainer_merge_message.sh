@@ -7,6 +7,7 @@ EVENT_NAME="${3:-EVENT_NAME not set}" # one of `issue_comment`, `pull_request_re
 PR="${4:-PR not set}"                 # the number of the PR
 URL="${5:-URL not set}"               # the url link to the PR
 PR_TITLE="${6:-PR_TITLE not set}"     # the title of the PR
+PR_COMMENT="${7:-PR_COMMENT not set}" # the comment that triggered the `maintainer merge` action
 
 # figure out if the GitHub event starting this action is a comment, a review or a review comment
 # and set the `SOURCE` variable accordingly
@@ -33,6 +34,7 @@ esac
 >&2 echo "PR_URL:     '${PR_URL}'"
 >&2 echo "title:      '${PR_TITLE}'"
 >&2 echo "EVENT_NAME: '${EVENT_NAME}'"
+>&2 printf 'COMMENT\n%s\nEND COMMENT\n' "${PR_COMMENT}"
 
 printf '%s requested a maintainer **%s** from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D}" "${SOURCE}" "${PR}" "${URL}"
-printf '> %s\n' "${PR_TITLE}"
+printf '```spoiler %s\n%s\n```\n' "${PR_TITLE}" "${PR_COMMENT}"

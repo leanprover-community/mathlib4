@@ -341,7 +341,7 @@ theorem summable_geometric_iff_norm_lt_one : (Summable fun n : ℕ ↦ ξ ^ n) �
     (h.tendsto_cofinite_zero.eventually (ball_mem_nhds _ zero_lt_one)).exists
   simp only [norm_pow, dist_zero_right] at hk
   rw [← one_pow k] at hk
-  exact lt_of_pow_lt_pow_left _ zero_le_one hk
+  exact lt_of_pow_lt_pow_left₀ _ zero_le_one hk
 
 end Geometric
 
