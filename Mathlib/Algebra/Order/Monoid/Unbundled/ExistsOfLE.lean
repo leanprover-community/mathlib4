@@ -82,9 +82,8 @@ theorem le_iff_forall_one_lt_lt_mul' [MulLeftStrictMono α] :
     a ≤ b ↔ ∀ ε, 1 < ε → a < b * ε :=
   ⟨fun h _ => lt_mul_of_le_of_one_lt h, le_of_forall_one_lt_lt_mul'⟩
 
-set_option linter.docPrime false
 @[to_additive]
-theorem le_iff_forall_one_lt_le_mul' [MulLeftStrictMono α] :
+theorem le_iff_forall_one_lt_le_mul [MulLeftStrictMono α] :
     a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε :=
   ⟨fun h _ hε ↦ lt_mul_of_le_of_one_lt h hε |>.le, le_of_forall_one_lt_le_mul⟩
 
