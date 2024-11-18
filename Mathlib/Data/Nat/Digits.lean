@@ -415,8 +415,8 @@ theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
     let h1 := digits_def' hb hmb
     have h2 : m = m * b / b :=
       Nat.eq_div_of_mul_eq_left (not_eq_zero_of_lt hb) rfl
-    simp only [mul_mod_left, ←h2] at h1
-    rw [List.replicate_succ', List.append_assoc, List.singleton_append, ←h1, ←ih hmb]
+    simp only [mul_mod_left, ← h2] at h1
+    rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
     ring_nf
 
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
@@ -439,7 +439,7 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
 theorem digits_append_zeroes_append_digits {b k m n : ℕ} (hb : 1 < b) (hm : 0 < m) :
     digits b n ++ List.replicate k 0 ++ digits b m =
     digits b (n + b ^ ((digits b n).length + k) * m) := by
-  rw [List.append_assoc, ←digits_base_pow_mul hb hm]
+  rw [List.append_assoc, ← digits_base_pow_mul hb hm]
   simp only [digits_append_digits (zero_lt_of_lt hb), digits_inj_iff, add_right_inj]
   ring
 
