@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Embedding.Extend
-import Mathlib.Algebra.Homology.QuasiIso
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # Homology of the extension of an homological complex
@@ -49,11 +49,15 @@ namespace leftHomologyData
 
 variable (cone : KernelFork (K.d j k)) (hcone : IsLimit cone)
 
+/-- The kernel fork of `(K.extend e).d j' k'` that is deduced from a kernel
+fork of `K.d j k `. -/
 @[simp]
 noncomputable def kernelFork : KernelFork ((K.extend e).d j' k') :=
   KernelFork.ofι (cone.ι ≫ (extendXIso K e hj').inv)
     (by rw [assoc, ← comp_d_eq_zero_iff K e hj' hk hk' cone.ι, cone.condition])
 
+/-- The limit kernel fork of `(K.extend e).d j' k'` that is deduced from a limit
+kernel fork of `K.d j k `. -/
 noncomputable def isLimitKernelFork : IsLimit (kernelFork K e hj' hk hk' cone) :=
   KernelFork.isLimitOfIsLimitOfIff hcone ((K.extend e).d j' k')
     (extendXIso K e hj').symm (comp_d_eq_zero_iff K e hj' hk hk')
@@ -95,6 +99,7 @@ lemma lift_d_comp_eq_zero_iff ⦃W : C⦄ (φ : cone.pt ⟶ W) :
   lift_d_comp_eq_zero_iff' K e hj' hi hi' cone hcone _ (hcone.fac _ _) _
     (IsLimit.fac _ _ WalkingParallelPair.zero) _
 
+/-- Auxiliary definition for `extend.leftHomologyData`. -/
 noncomputable def cokernelCofork :
     CokernelCofork ((isLimitKernelFork K e hj' hk hk' cone hcone).lift
       (KernelFork.ofι ((K.extend e).d i' j') (d_comp_d _ _ _ _))) :=
@@ -102,6 +107,7 @@ noncomputable def cokernelCofork :
     rw [← lift_d_comp_eq_zero_iff K e hj' hi hi' hk hk' cone hcone]
     exact cocone.condition)
 
+/-- Auxiliary definition for `extend.leftHomologyData`. -/
 noncomputable def isColimitCokernelCofork :
     IsColimit (cokernelCofork K e hj' hi hi' hk hk' cone hcone cocone) :=
   CokernelCofork.isColimitOfIsColimitOfIff' hcocone _
@@ -110,6 +116,8 @@ noncomputable def isColimitCokernelCofork :
 end leftHomologyData
 
 open leftHomologyData in
+/-- The left homology data of `(K.extend e).sc' i' j' k'` that is deduced
+from a left homology data of `K.sc' i j k`. -/
 @[simps]
 noncomputable def leftHomologyData (h : (K.sc' i j k).LeftHomologyData) :
     ((K.extend e).sc' i' j' k').LeftHomologyData where
