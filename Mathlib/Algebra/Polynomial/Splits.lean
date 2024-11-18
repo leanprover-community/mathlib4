@@ -324,20 +324,15 @@ theorem eq_prod_roots_of_splits_id {p : K[X]} (hsplit : Splits (RingHom.id K) p)
 
 theorem Splits.dvd_of_roots_le_roots {p q : K[X]} (hp : p.Splits (RingHom.id _)) (hp0 : p ≠ 0)
     (hq : p.roots ≤ q.roots) : p ∣ q := by
-  by_cases hq0 : q = 0
-  · simp [hq0]
-  · rw [eq_prod_roots_of_splits_id hp, C_mul_dvd (leadingCoeff_ne_zero.2 hp0)]
-    exact dvd_trans
-      (Multiset.prod_dvd_prod_of_le (Multiset.map_le_map hq))
-      (prod_multiset_X_sub_C_dvd _)
+  rw [eq_prod_roots_of_splits_id hp, C_mul_dvd (leadingCoeff_ne_zero.2 hp0)]
+  exact dvd_trans
+    (Multiset.prod_dvd_prod_of_le (Multiset.map_le_map hq))
+    (prod_multiset_X_sub_C_dvd _)
 
 theorem Splits.dvd_iff_roots_le_roots {p q : K[X]}
     (hp : p.Splits (RingHom.id _)) (hp0 : p ≠ 0) (hq0 : q ≠ 0) :
-    p ∣ q ↔ p.roots ≤ q.roots := by
-  refine ⟨?_, hp.dvd_of_roots_le_roots hp0⟩
-  rintro ⟨r, rfl⟩
-  rw [roots_mul hq0]
-  exact le_self_add
+    p ∣ q ↔ p.roots ≤ q.roots :=
+  ⟨Polynomial.roots.le_of_dvd hq0, hp.dvd_of_roots_le_roots hp0⟩
 
 theorem aeval_eq_prod_aroots_sub_of_splits [Algebra K L] {p : K[X]}
     (hsplit : Splits (algebraMap K L) p) (v : L) :
