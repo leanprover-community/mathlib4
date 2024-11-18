@@ -41,11 +41,18 @@ An abelian category `C` is called a Grothendieck category provided that it has `
 separator (see `HasSeparator`).
 -/
 @[stacks 079B]
-class GrothendieckCategory [Abelian C] [HasFilteredColimits C] [AB5 C] [HasSeparator C] : Prop where
+class GrothendieckCategory [Abelian C] where
+  -- necessary for AB5
+  hasFilteredColimits : HasFilteredColimits C := by infer_instance
+  ab5 : AB5 C := by infer_instance
+  hasSeparator : HasSeparator C := by infer_instance
+
+attribute [instance] GrothendieckCategory.hasSeparator GrothendieckCategory.hasFilteredColimits
+  GrothendieckCategory.ab5
 
 section Instances
 
-variable [HasFilteredColimits C] [AB5 C] [Abelian C] [HasSeparator C] [GrothendieckCategory C]
+variable [Abelian C] [GrothendieckCategory C]
 
 instance GrothendieckCategory.hasColimits : HasColimits C := has_colimits_of_finite_and_filtered
 instance GrothendieckCategory.hasLimits : HasLimits C := hasLimits_of_hasColimits_of_hasSeparator
