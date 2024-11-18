@@ -118,7 +118,7 @@ protected theorem star_inv [Group α] [StarMul α] (s : Set α) : s⁻¹⋆ = s�
 
 protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
-  simp only [mem_star, mem_inv, star_inv']
+  simp only [mem_star, mem_inv, star_inv₀]
 
 end Set
 
