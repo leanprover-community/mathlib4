@@ -125,8 +125,8 @@ lemma reduce_of_reduce_step {A : Δ m} (hc : ¬ |(A.1 1 0)| = 0) :
 private lemma A_c_eq_zero {A : Δ m} (ha : A.1 1 0 = 0) : A.1 0 0 * A.1 1 1 = m := by
   simpa only [det_fin_two, ha, mul_zero, sub_zero] using A.2
 
-private lemma A_d_ne_zero {A : Δ m} (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 1 1 ≠ 0 :=
-  right_ne_zero_of_mul (A_c_eq_zero ha ▸ hm)
+private lemma A_d_ne_zero {A : Δ m} (ha : |A.1 1 0| = 0) (hm : m ≠ 0) : A.1 1 1 ≠ 0 :=
+  right_ne_zero_of_mul (A_c_eq_zero (abs_eq_zero.mp ha) ▸ hm)
 
 private lemma A_a_ne_zero {A : Δ m} (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 0 0 ≠ 0 :=
   left_ne_zero_of_mul (A_c_eq_zero ha ▸ hm)
@@ -134,7 +134,7 @@ private lemma A_a_ne_zero {A : Δ m} (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 0 0
 /--An auxiliary result bounding the size of the entries of the representatives in `reps`. -/
 lemma reps_entries_le_m' (hm : m ≠ 0) {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
     A.1 i j ∈ Finset.Icc (-|m|) |m|:= by
-  have h1 : 0 < |A.1 1 1| := abs_pos.mpr (A_d_ne_zero h.left hm)
+  have h1 : 0 < |A.1 1 1| := abs_pos.mpr (A_d_ne_zero (abs_eq_zero.mpr h.left) hm)
   have h2 : 0 < |A.1 0 0| := abs_pos.mpr (A_a_ne_zero h.left hm)
   fin_cases i <;> fin_cases j
   · simp only [← A_c_eq_zero h.1, Fin.zero_eta, Finset.mem_Icc, abs_mul]
@@ -194,10 +194,10 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) : ∀ A : Δ m, reduce A ∈ reps
         cons_val_one, cons_val_zero, lt_add_neg_iff_add_lt, le_add_neg_iff_add_le]
       refine ⟨abs_eq_zero.mp h, ?_, ?_, ?_⟩
       · simp only [abs_eq_zero.mp h, mul_zero, h1]
-      · exact Int.ediv_mul_le _ <| A_d_ne_zero (abs_eq_zero.mp h) hm
+      · exact Int.ediv_mul_le _ <| A_d_ne_zero h hm
       · rw [mul_comm, ← Int.sub_eq_add_neg, ← Int.emod_def]
-        apply le_trans _ (Int.emod_lt (A.1 0 1) (A_d_ne_zero (abs_eq_zero.mp h) hm))
-        rw [abs_eq_self.mpr (Int.emod_nonneg (A.1 0 1) (A_d_ne_zero (abs_eq_zero.mp h) hm))]
+        apply le_trans _ (Int.emod_lt (A.1 0 1) (A_d_ne_zero h hm))
+        rw [abs_eq_self.mpr (Int.emod_nonneg (A.1 0 1) (A_d_ne_zero h hm))]
     · simp only [reps, reduce_of_not_pos h h1, Int.ediv_neg, neg_neg, smul_def, ←
         mul_assoc, S_mul_S_eq, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
         Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty,
@@ -209,10 +209,10 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) : ∀ A : Δ m, reduce A ∈ reps
       · simp only [abs_eq_zero.mp h, mul_zero, neg_zero, Int.lt_iff_le_and_ne, ne_eq]
         refine ⟨not_lt.mp h1, A_a_ne_zero (abs_eq_zero.mp h) hm⟩
       · rw [le_neg]
-        exact Int.ediv_mul_le _ <| A_d_ne_zero (abs_eq_zero.mp h) hm
+        exact Int.ediv_mul_le _ <| A_d_ne_zero h hm
       · rw [mul_comm, add_comm, ← Int.sub_eq_add_neg, ← Int.emod_def]
-        apply le_trans _ (Int.emod_lt (-A.1 0 1) (A_d_ne_zero (abs_eq_zero.mp h) hm))
-        rw [abs_eq_self.mpr (Int.emod_nonneg (-A.1 0 1) (A_d_ne_zero (abs_eq_zero.mp h) hm))]
+        apply le_trans _ (Int.emod_lt (-A.1 0 1) (A_d_ne_zero h hm))
+        rw [abs_eq_self.mpr (Int.emod_nonneg (-A.1 0 1) (A_d_ne_zero h hm))]
   · exact fun A h1 h2 ↦ reduce_of_reduce_step h1 ▸ h2
 
 lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
@@ -257,12 +257,12 @@ private lemma prop_red4 {C : Δ m → Prop} (hS : ∀ B, C B → C (S • B)) (h
 
 @[elab_as_elim]
 theorem induction_on {C : Δ m → Prop} (A : Δ m) (hm : m ≠ 0)
-    (h0 : ∀ A : Δ m, A.1 1 0 = 0 → A.1 0 0 * A.1 1 1 = m → 0 < A.1 0 0 → 0 ≤ A.1 0 1 →
+    (h0 : ∀ A : Δ m, A.1 1 0 = 0 → 0 < A.1 0 0 → 0 ≤ A.1 0 1 →
       |(A.1 0 1)| < |(A.1 1 1)| → C A)
     (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) : C A := by
   have h_reduce : C (reduce A) := by
     rcases reduce_mem_reps hm A with ⟨H1, H2, H3, H4⟩
-    exact h0 _ H1 (A_c_eq_zero H1) H2 H3 H4
+    exact h0 _ H1 H2 H3 H4
   suffices ∀ A : Δ m, C (reduce A) → C A from this _ h_reduce
   apply reduce_rec
   · intro A h
