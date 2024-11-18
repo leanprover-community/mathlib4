@@ -53,7 +53,7 @@ def IsDershowitzMannaLT (M N : Multiset α) : Prop :=
 lemma IsDershowitzMannaLT.trans :
     IsDershowitzMannaLT M N → IsDershowitzMannaLT N P → IsDershowitzMannaLT M P := by
   classical
-  rintro ⟨X₁, Y₁, Z₁, hZ₁, rfl, rfl, hYZ₁⟩ ⟨X₂, Y₂, Z₂, hZ₂, hXZXY, rfl, hYZ₂⟩
+  rintro ⟨X₁, Y₁, Z₁, _, rfl, rfl, hYZ₁⟩ ⟨X₂, Y₂, Z₂, hZ₂, hXZXY, rfl, hYZ₂⟩
   rw [add_comm X₁,add_comm X₂] at hXZXY
   refine ⟨X₁ ∩ X₂, Y₁ + (Y₂ - Z₁), Z₂ + (Z₁ - Y₂), ?_, ?_, ?_, ?_⟩
   · simpa [-not_and, not_and_or] using .inl hZ₂
