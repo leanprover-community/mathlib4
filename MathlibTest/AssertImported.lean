@@ -6,4 +6,5 @@ This file checks that every declaration and import that have been flagged with
 all of `Mathlib` is available.
 -/
 
+#guard_msgs in
 #check_assertions!
