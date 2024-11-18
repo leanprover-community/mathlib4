@@ -24,7 +24,7 @@ assert_not_exists Monoid
 open Nat
 
 namespace List
-variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
+variable {α β : Type*} {l : List α}
 
 instance : Trans (@List.Perm α) (@List.Perm α) List.Perm where
   trans := @List.Perm.trans α
