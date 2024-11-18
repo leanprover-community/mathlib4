@@ -664,8 +664,8 @@ theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
         ⟨(Cones.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
           (IsLimit.postcomposeInvEquiv _ _).symm (lf_isLimit _)⟩ }
 
-instance (priority := 100) hasProductsOfShape_of_hasProducts [h : HasProducts.{w} C] (J : Type w) :
-    HasProductsOfShape J C := h J
+instance (priority := 100) hasProductsOfShape_of_hasProducts [HasProducts.{w} C] (J : Type w) :
+    HasProductsOfShape J C := inferInstance
 
 /-!
 (Co)products over a type with a unique term.
