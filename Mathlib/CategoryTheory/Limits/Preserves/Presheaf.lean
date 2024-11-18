@@ -56,9 +56,8 @@ One direction of Proposition 3.3.13 of [Kashiwara2006].
 -/
 theorem isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits
     [PreservesFiniteLimits A] : IsFiltered (CostructuredArrow yoneda A) := by
-  suffices IsFiltered A.Elementsᵒᵖ from
+  suffices IsCofiltered A.Elements from
     IsFiltered.of_equivalence (CategoryOfElements.costructuredArrowYonedaEquivalence _)
-  suffices IsCofiltered A.Elements from isFiltered_op_of_isCofiltered A.Elements
   suffices HasFiniteLimits A.Elements from IsCofiltered.of_hasFiniteLimits A.Elements
   exact ⟨fun J _ _ => inferInstance⟩
 
@@ -81,7 +80,7 @@ def functorToInterchange : J ⥤ CostructuredArrow yoneda A ⥤ Type u :=
 @[simps!]
 def functorToInterchangeIso : functorToInterchange A K ≅
     K ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj (CostructuredArrow.proj _ _) :=
-  NatIso.ofComponents (fun _ => Iso.refl _)
+  Iso.refl _
 
 /-- (Implementation) One way to express the flipped version of our functor. We choose this
 association because the type of `Presheaf.tautologicalCocone` is
@@ -90,15 +89,15 @@ proof.-/
 @[simps!]
 def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
     ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) :=
-  NatIso.ofComponents (fun _ => Iso.refl _)
+  Iso.refl _
 
 /-- (Implementation) A natural isomorphism we will need to construct `iso`. -/
 @[simps! (config := { fullyApplied := false }) hom_app]
 noncomputable def isoAux :
-  (CostructuredArrow.proj yoneda A ⋙ yoneda ⋙ (evaluation Cᵒᵖ (Type u)).obj (limit K)) ≅
-    ((coyoneda ⋙ (whiskeringLeft (CostructuredArrow yoneda A) C (Type u)).obj
-      (CostructuredArrow.proj yoneda A)).obj (limit K)) :=
-  NatIso.ofComponents (fun _ => Iso.refl _)
+    (CostructuredArrow.proj yoneda A ⋙ yoneda ⋙ (evaluation Cᵒᵖ (Type u)).obj (limit K)) ≅
+      ((coyoneda ⋙ (whiskeringLeft (CostructuredArrow yoneda A) C (Type u)).obj
+        (CostructuredArrow.proj yoneda A)).obj (limit K)) :=
+  Iso.refl _
 
 /-- (Implementation) The isomorphism that proves that `A` preserves finite limits. -/
 noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
