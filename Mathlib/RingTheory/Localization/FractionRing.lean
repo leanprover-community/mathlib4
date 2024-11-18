@@ -227,13 +227,11 @@ theorem lift_unique (hg : Function.Injective g) {f : K →+* L}
   IsLocalization.lift_unique _ hf1
 
 /-- Another version of unique to give two lift maps should be equal -/
-theorem lift_unique'
-    {L : Type*} [Field L]
-    {g : A →+* L} (hg : Function.Injective g)
-    {f1 f2 : K →+* L}
-    (hf1 : ∀ x, f1 (algebraMap A K x) = g x)
-    (hf2 : ∀ x, f2 (algebraMap A K x) = g x) : f1 = f2 :=
-  Eq.trans (lift_unique hg hf1).symm (lift_unique hg hf2)
+theorem lift_unique' {f1 f2 : K →+* L}
+    (hf : ∀ x : A, f1 (algebraMap A K x) = f2 (algebraMap A K x)) : f1 = f2 := by
+  ext z
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) z
+  rw [map_div₀, map_div₀, hf, hf]
 
 
 section liftAlgHom
