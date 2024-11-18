@@ -90,12 +90,20 @@ end coe
 
 open NumberField.InfinitePlace
 
+variable {K}
+
 @[simp]
 protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
     |Algebra.norm ℚ (x : K)| = 1 := by
   rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
 
+@[simp]
+theorem pos_at_place (x : (𝓞 K)ˣ) (w : InfinitePlace K) :
+    0 < w x := pos_iff.mpr (coe_ne_zero x)
+
 section torsion
+
+variable (K)
 
 /-- The torsion subgroup of the group of units. -/
 def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
