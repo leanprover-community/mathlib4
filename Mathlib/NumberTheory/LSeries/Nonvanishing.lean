@@ -192,7 +192,7 @@ end BadChar
 
 /-- If `χ` is a nontrivial quadratic Dirichlet character, then `L(χ, 1) ≠ 0`. This is private
 since it is later superseded by `LFunction_apply_one_ne_zero`. -/
-private theorem LFunction_at_one_ne_zero_of_quadratic {χ : DirichletCharacter ℂ N}
+private theorem LFunction_apply_one_ne_zero_of_quadratic {χ : DirichletCharacter ℂ N}
     (hχ : χ ^ 2 = 1) (χ_ne : χ ≠ 1) :
     χ.LFunction 1 ≠ 0 := by
   intro hL
@@ -382,7 +382,7 @@ except when `χ` is trivial and `s = 1` (then `L(χ, s)` has a simple pole at `s
 theorem LFunction_ne_zero_of_re_eq_one {s : ℂ} (hs : s.re = 1) (hχs : χ ≠ 1 ∨ s ≠ 1) :
     LFunction χ s ≠ 0 := by
   by_cases h : χ ^ 2 = 1 ∧ s = 1
-  · exact h.2 ▸ LFunction_at_one_ne_zero_of_quadratic h.1 <| hχs.neg_resolve_right h.2
+  · exact h.2 ▸ LFunction_apply_one_ne_zero_of_quadratic h.1 <| hχs.neg_resolve_right h.2
   · have hs' : s = 1 + I * s.im := by
       conv_lhs => rw [← re_add_im s, hs, ofReal_one, mul_comm]
     rw [not_and_or, ← ne_eq, ← ne_eq, hs', add_right_ne_self] at h
