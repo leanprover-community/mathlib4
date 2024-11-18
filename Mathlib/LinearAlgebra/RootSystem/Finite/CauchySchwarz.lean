@@ -34,6 +34,7 @@ lemma CS_aux [CommRing R] [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm
   simp only [LinearMap.map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul,
     mul_sub]
   ring
+--#find_home! CS_aux --[Mathlib.RingTheory.TensorProduct.Basic]
 
 lemma zero_le_inner_self_mul [LinearOrderedCommRing R] [AddCommGroup M] [Module R M]
     (B : LinearMap.BilinForm R M) (hs : ∀ x, 0 ≤ B x x) (x y : M) :
@@ -118,7 +119,7 @@ lemma coxeterWeight_le_4 (i j : ι) : P.coxeterWeight i j ≤ 4 := by
       P.rootForm_self_non_neg (P.root i) (P.root j)) (rootForm_root_self_pos P i)
   linarith
 
-lemma coxeterWeight_Icc (i j : ι) (hP : P.IsCrystallographic) (hO : ¬ P.IsOrthogonal i j)
+lemma coxeterWeight123 (i j : ι) (hP : P.IsCrystallographic) (hO : ¬ P.IsOrthogonal i j)
     (h : LinearIndependent R ![P.root i, P.root j]) :
     P.coxeterWeight i j = 1 ∨ P.coxeterWeight i j = 2 ∨ P.coxeterWeight i j = 3 := by
   have h4 := P.coxeterWeight_le_4 i j

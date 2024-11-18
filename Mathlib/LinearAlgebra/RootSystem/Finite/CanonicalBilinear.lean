@@ -57,19 +57,6 @@ noncomputable section
 
 variable {ι R M N : Type*}
 
-lemma rank_le_of_smul_regular [CommRing R] [AddCommGroup M] [Module R M]
-    (L L' : Submodule R M) {r : R} (hr : IsSMulRegular M r) (h : ∀ x ∈ L, r • x ∈ L') :
-    Module.rank R L ≤ Module.rank R L' := by
-  let f : L →ₗ[R] L' :=
-    { toFun := fun x => ⟨r • x, h x x.2⟩
-      map_add' := fun x y => by simp
-      map_smul' := fun s x => by simp [← smul_assoc, mul_comm] }
-  refine LinearMap.rank_le_of_injective f (fun x y hxy => ?_)
-  rw [show f x = ⟨r • x, h x x.2⟩ by rfl, show f y = ⟨r • y, h y y.2⟩ by rfl] at hxy
-  simp only [Subtype.mk.injEq] at hxy
-  exact SetLike.coe_eq_coe.mp (hr (hr (congrArg (HSMul.hSMul r) hxy)))
---#find_home! rank_le_of_smul_regular --[Mathlib.LinearAlgebra.Dimension.Basic]
-
 lemma torsion_free_of_reflexive [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
     [IsReflexive R M] {r : R} {m : M} (h : r • m = 0) (hr : r ≠ 0) : m = 0 := by
   suffices Dual.eval R M m = Dual.eval R M 0 by exact (bijective_dual_eval R M).injective this
@@ -242,7 +229,7 @@ theorem rootForm_self_zero_iff (x : M) :
     P.RootForm x x = 0 ↔ ∀ i, P.coroot' i x = 0 := by
   simp only [rootForm_apply_apply, PerfectPairing.toLin_apply, LinearMap.coe_comp, comp_apply,
     Polarization_apply, map_sum, map_smul, smul_eq_mul]
-  convert sum_mul_self_eq_zero_iff Finset.univ fun i => P.coroot' i x
+  convert Finset.sum_mul_self_eq_zero_iff Finset.univ fun i => P.coroot' i x
   refine { mp := fun x _ => x, mpr := ?_ }
   rename_i i
   exact fun x => x (Finset.mem_univ i)
@@ -264,7 +251,7 @@ lemma prod_rootForm_root_self_pos :
     0 < ∏ i, P.RootForm (P.root i) (P.root i) :=
   Finset.prod_pos fun i _ => rootForm_root_self_pos P i
 
-lemma prod_rootForm_smul_coroot_in_range_domRestrict (i : ι) :
+lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
     (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈
       LinearMap.range (P.Polarization.domRestrict (span R (range P.root))) := by
   have hdvd : P.RootForm (P.root i) (P.root i) ∣ ∏ a : ι, P.RootForm (P.root a) (P.root a) :=
