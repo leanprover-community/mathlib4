@@ -449,7 +449,6 @@ lemma under_smul {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G 
   rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
 
 variable (B) in
-@[simp]
 theorem under_top : under A (⊤ : Ideal B) = ⊤ := comap_top
 
 variable {A}
