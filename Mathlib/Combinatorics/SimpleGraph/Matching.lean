@@ -204,6 +204,11 @@ lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMat
     (c : ConnectedComponent G) : (M.induce c.supp).IsMatching := by
   simpa [h.2.verts_eq_univ] using h.1.induce_connectedComponent c
 
+@[simp]
+lemma IsPerfectMatching.toSubgraph_spanningCoe_iff (h : M.spanningCoe ≤ G') :
+    (G'.toSubgraph M.spanningCoe h).IsPerfectMatching ↔ M.IsPerfectMatching := by
+  simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
+
 end Subgraph
 
 namespace ConnectedComponent
