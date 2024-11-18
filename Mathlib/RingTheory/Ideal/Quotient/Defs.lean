@@ -36,11 +36,11 @@ variable {S : Type v}
 
 /-- The quotient `R/I` of a ring `R` by an ideal `I`.
 The ideal quotient of `I` is defined to equal the quotient of `I` as an `R`-submodule of `R`.
-This definition uses `abbrev` so that typeclass instances can be shared between
-`Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
-@[instance] abbrev instHasQuotient : HasQuotient R (Ideal R) :=
-  Submodule.hasQuotient
+instance instHasQuotient : HasQuotient R (Ideal R) := inferInstance
+
+/-- shortcut instance for commutative rings. -/
+instance {R} [CommRing R] : HasQuotient R (Ideal R) := inferInstance
 
 namespace Quotient
 
