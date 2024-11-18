@@ -12,7 +12,7 @@ This file defines the permanent of a matrix, `Matrix.perm`, and some of its prop
 
 ## Main definitions
 
- - `Matrix.perm`: the permanent of a square matrix, as a sum over permutations
+* `Matrix.perm`: the permanent of a square matrix, as a sum over permutations
 
 -/
 
@@ -25,7 +25,7 @@ namespace Matrix
 open Matrix
 
 variable {n : Type*} [DecidableEq n] [Fintype n]
-variable {R : Type v} [CommRing R]
+variable {R : Type v} [CommSemiring R]
 
 /-- The permanent of a matrix defined as a sum over all permutations -/
 def perm (M : Matrix n n R) : R := ∑ σ : Perm n, ∏ i, M (σ i) i
@@ -33,16 +33,13 @@ def perm (M : Matrix n n R) : R := ∑ σ : Perm n, ∏ i, M (σ i) i
 
 @[simp]
 theorem perm_diagonal {d : n → R} : perm (diagonal d) = ∏ i, d i := by
-  refine (Finset.sum_eq_single 1 ?_ ?_).trans ?_
-  · rintro σ - h2
-    cases' not_forall.1 (mt Equiv.ext h2) with x h3
-    apply Finset.prod_eq_zero (mem_univ x)
-    exact if_neg h3
-  · simp
-  · simp
+  refine (sum_eq_single 1 (fun σ _ hσ ↦ ?_) (fun h ↦ (h <| mem_univ _).elim)).trans ?_
+  · match not_forall.mp (mt Equiv.ext hσ) with 
+    | ⟨x, hx⟩ => exact Finset.prod_eq_zero (mem_univ x) (if_neg hx)
+  · simp only [Perm.one_apply, diagonal_apply_eq]
 
 @[simp]
-theorem perm_zero (_ : Nonempty n) : perm (0 : Matrix n n R) = 0 := by simp [perm]
+theorem perm_zero [Nonempty n] : perm (0 : Matrix n n R) = 0 := by simp [perm]
 
 @[simp]
 theorem perm_one : perm (1 : Matrix n n R) = 1 := by rw [← diagonal_one]; simp [-diagonal_one]
@@ -86,18 +83,12 @@ theorem perm_transpose (M : Matrix n n R) : Mᵀ.perm = M.perm := by
 
 /-- Permuting the columns does not change the permanent. -/
 theorem perm_permute (σ : Perm n) (M : Matrix n n R) :
-    (M.submatrix σ id).perm = M.perm := by
-  refine Fintype.sum_bijective _ (Group.mulLeft_bijective σ) _ _ ?_
-  intro τ
-  rfl
+    (M.submatrix σ id).perm = M.perm := 
+  (Group.mulLeft_bijective σ).sum_comp fun τ ↦ ∏ i : n, M (τ i) i
 
 /-- Permuting the rows does not change the permanent. -/
 theorem perm_permute' (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix id σ).perm = M.perm := by
-  rw [perm, perm]
-  refine Fintype.sum_bijective _ (Group.mulRight_bijective σ⁻¹) _ _ ?_
-  intro τ
-  refine Fintype.prod_bijective _ (Equiv.bijective σ) _ _ ?_
-  simp
+  rw [← perm_transpose, transpose_submatrix, perm_permute, perm_transpose]
 
 end Matrix
