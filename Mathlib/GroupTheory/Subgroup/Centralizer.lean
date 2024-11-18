@@ -3,6 +3,7 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.GroupTheory.Subgroup.Center
 import Mathlib.GroupTheory.Submonoid.Centralizer
 
@@ -94,21 +95,23 @@ abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x *
       have := closure_le_centralizer_centralizer k
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
-/-- The homomorphism N(H) → Aut(H) with kernel C(H). -/
+/-- The conjugation action of N(H) on H. -/
 @[simps]
-def normalizerMonoidHom : H.normalizer →* MulAut H where
-  toFun := fun g ↦
-    { toFun := fun h ↦ ⟨g * h * g⁻¹, (g.2 h).mp h.2⟩
-      invFun := fun h ↦ ⟨g⁻¹ * h * g, (mem_normalizer_iff''.mp g.2 h).mp h.2⟩
-      left_inv := fun _ ↦ by simp [mul_assoc]
-      right_inv := fun _ ↦ by simp [mul_assoc]
-      map_mul' := by simp [mul_assoc] }
-  map_one' := by simp [DFunLike.ext_iff]
-  map_mul' := by simp [DFunLike.ext_iff, mul_assoc]
+instance : MulDistribMulAction H.normalizer H where
+  smul g h := ⟨g * h * g⁻¹, (g.2 h).mp h.2⟩
+  one_smul g := by simp [HSMul.hSMul]
+  mul_smul := by simp [HSMul.hSMul, mul_assoc]
+  smul_one := by simp [HSMul.hSMul]
+  smul_mul := by simp [HSMul.hSMul]
+
+/-- The homomorphism N(H) → Aut(H) with kernel C(H). -/
+@[simps!]
+def normalizerMonoidHom : H.normalizer →* MulAut H :=
+  MulDistribMulAction.toMulAut H.normalizer H
 
 theorem normalizerMonoidHom_ker :
     H.normalizerMonoidHom.ker = (Subgroup.centralizer H).subgroupOf H.normalizer := by
-  simp [Subgroup.ext_iff, DFunLike.ext_iff, mem_subgroupOf, mem_centralizer_iff,
-    normalizerMonoidHom, eq_mul_inv_iff_mul_eq, eq_comm]
+  simp [Subgroup.ext_iff, DFunLike.ext_iff, Subtype.ext_iff,
+    mem_subgroupOf, mem_centralizer_iff, eq_mul_inv_iff_mul_eq, eq_comm]
 
 end Subgroup
