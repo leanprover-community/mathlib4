@@ -198,19 +198,15 @@ theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
 theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext <| φ.commutes
 
-@[deprecated map_add (since := "2024-06-26")]
 protected theorem map_add (r s : A) : φ (r + s) = φ r + φ s :=
   map_add _ _ _
 
-@[deprecated map_zero (since := "2024-06-26")]
 protected theorem map_zero : φ 0 = 0 :=
   map_zero _
 
-@[deprecated map_mul (since := "2024-06-26")]
 protected theorem map_mul (x y) : φ (x * y) = φ x * φ y :=
   map_mul _ _ _
 
-@[deprecated map_one (since := "2024-06-26")]
 protected theorem map_one : φ 1 = 1 :=
   map_one _
 
