@@ -618,9 +618,8 @@ theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul (hpos : 0 < n)
   have h' : IsPrimitiveRoot (algebraMap R K ζ) n :=
     h.map_of_injective <| NoZeroSMulDivisors.algebraMap_injective R K
   rw [h'.pow_sub_pow_eq_prod_sub_mul_field _ _ hpos]
-  symm
-  refine prod_nbij (algebraMap R K) (fun a ha ↦ mem_nthRootsFinset_map ha _) (fun a _ b _ H ↦
-    NoZeroSMulDivisors.algebraMap_injective R K H) (fun a ha ↦ ?_) (fun _ _ ↦ rfl)
+  refine (prod_nbij (algebraMap R K) (fun a ha ↦ mem_nthRootsFinset_map ha _) (fun a _ b _ H ↦
+    NoZeroSMulDivisors.algebraMap_injective R K H) (fun a ha ↦ ?_) (fun _ _ ↦ rfl)).symm
   have := Set.surj_on_of_inj_on_of_ncard_le (s := nthRootsFinset n R)
     (t := nthRootsFinset n K) _ (fun _ hr ↦ mem_nthRootsFinset_map hr _)
     (fun a _ b _ H ↦ NoZeroSMulDivisors.algebraMap_injective R K H)
