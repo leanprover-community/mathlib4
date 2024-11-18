@@ -373,6 +373,10 @@ from a family of isomorphisms between the factors.
 abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ᶜ f ≅ ∏ᶜ g :=
   lim.mapIso (Discrete.natIso fun X => p X.as)
 
+instance Pi.map_isIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ⟶ g b)
+    [∀ i, IsIso (p i)] : IsIso <| Pi.map p :=
+  inferInstanceAs (IsIso (Pi.mapIso (fun b ↦ asIso (p b))).hom)
+
 section
 
 /- In this section, we provide some API for products when we are given a functor
@@ -659,6 +663,9 @@ theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
       HasLimit.mk
         ⟨(Cones.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
           (IsLimit.postcomposeInvEquiv _ _).symm (lf_isLimit _)⟩ }
+
+instance (priority := 100) hasProductsOfShape_of_hasProducts [h : HasProducts.{w} C] (J : Type w) :
+    HasProductsOfShape J C := h J
 
 /-!
 (Co)products over a type with a unique term.
