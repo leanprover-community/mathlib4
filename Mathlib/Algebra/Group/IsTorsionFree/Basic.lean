@@ -29,6 +29,7 @@ theorem pow_right_injective (h : x ≠ 1) : Function.Injective fun n : ℕ ↦ x
   rw [Nat.add_assoc, pow_add, self_eq_mul_right, pow_eq_one_iff] at heq
   exact heq.elim h (by simp)
 
+/-- Earlier, this name was used for what's now called `pow_right_inj₀`. -/
 @[to_additive (attr := simp) nsmul_left_inj]
 theorem pow_right_inj (h : x ≠ 1) : x ^ m = x ^ n ↔ m = n := (pow_right_injective h).eq_iff
 
