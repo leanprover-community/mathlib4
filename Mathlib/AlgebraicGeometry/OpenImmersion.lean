@@ -104,6 +104,18 @@ lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
   apply Opens.ext
   simp
 
+lemma opensRange_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsOpenImmersion f] [IsOpenImmersion g] : (f ≫ g).opensRange = g ''ᵁ f.opensRange :=
+  TopologicalSpace.Opens.ext (Set.range_comp g.base f.base)
+
+lemma opensRange_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    f.opensRange = ⊤ :=
+  TopologicalSpace.Opens.ext (Set.range_eq_univ.mpr f.homeomorph.surjective)
+
+lemma opensRange_comp_of_isIso {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsIso f] [IsOpenImmersion g] : (f ≫ g).opensRange = g.opensRange := by
+  rw [opensRange_comp, opensRange_of_isIso, image_top_eq_opensRange]
+
 @[simp]
 lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
   apply Opens.ext
