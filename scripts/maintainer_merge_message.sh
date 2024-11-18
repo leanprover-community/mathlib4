@@ -36,5 +36,8 @@ esac
 >&2 echo "EVENT_NAME: '${EVENT_NAME}'"
 >&2 printf 'COMMENT\n%s\nEND COMMENT\n' "${PR_COMMENT}"
 
+# replace backticks in the title with single quotes
+unbacktickedTitle="${PR_TITLE//\`/\'}"
+
 printf '%s requested a maintainer **%s** from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D}" "${SOURCE}" "${PR}" "${URL}"
-printf '```spoiler %s\n%s\n```\n' "${PR_TITLE}" "${PR_COMMENT}"
+printf '```spoiler %s\n%s\n```\n' "${unbacktickedTitle}" "${PR_COMMENT}"
