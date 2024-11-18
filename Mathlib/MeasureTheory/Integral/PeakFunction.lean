@@ -317,12 +317,12 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
               exact lt_of_le_of_lt (measure_mono inter_subset_right) hs.measure_lt_top
             · exact (I n).mono inter_subset_right le_rfl
             · intro x hx
-              exact pow_le_pow_left t'_pos.le (le_of_lt (hv hx)) _
+              exact pow_le_pow_left₀ t'_pos.le (hv hx).le _
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
             setIntegral_mono_set (I n) (J n) (Eventually.of_forall inter_subset_right)
       simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
       apply div_le_div (pow_nonneg t_pos n) _ _ B
-      · exact pow_le_pow_left (hnc _ hx.1) (ht x hx) _
+      · exact pow_le_pow_left₀ (hnc _ hx.1) (ht x hx) _
       · apply mul_pos (pow_pos (t_pos.trans_lt tt') _) (ENNReal.toReal_pos (hμ v v_open x₀_v).ne' _)
         have : μ (v ∩ s) ≤ μ s := measure_mono inter_subset_right
         exact ne_of_lt (lt_of_le_of_lt this hs.measure_lt_top)
