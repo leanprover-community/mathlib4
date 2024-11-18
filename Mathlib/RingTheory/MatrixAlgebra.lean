@@ -16,8 +16,6 @@ universe u v w
 
 open TensorProduct
 
-open TensorProduct
-
 open Algebra.TensorProduct
 
 open Matrix

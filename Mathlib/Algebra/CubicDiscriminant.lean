@@ -42,8 +42,6 @@ namespace Cubic
 
 open Polynomial
 
-open Polynomial
-
 variable {R S F K : Type*}
 
 instance [Inhabited R] : Inhabited (Cubic R) :=
