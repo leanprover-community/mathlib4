@@ -19,11 +19,11 @@ the noncommutative division algebra `D` with center `k`.
 
 - `exists_separable_mem_of_not_central` : (Jacobson-Noether theorem) For a
   non-commutative algebraic division algebra `D` (with base ring
-  being its center `k`), if `k ≠ D`, then there exist an element `x` of
+  being its center `k`), then there exist an element `x` of
   `D \ k` that is separable over its center.
 - `exists_separable_mem_of_not_central'` : (Jacobson-Noether theorem) For a
   non-commutative algebraic division algebra `D` (with base ring
-  being a field `L`), if the center of `D` over `L` is `L` and `L ≠ D`,
+  being a field `L`), if the center of `D` over `L` is `L`,
   then there exist an element `x` of `D \ L` that is separable over `L`.
 
 ## Notations
@@ -87,21 +87,21 @@ lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : 
   have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.center_expChar_iff.1 hchar)).1
   have pure : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, fun x hx ↦ by
     rw [RingHom.mem_range, Subtype.exists]
-    exact ⟨x, ⟨(hinsep x hx), rfl⟩⟩⟩
-  obtain ⟨n, ⟨m, hm⟩⟩ := (this pure) a
-  have := Subalgebra.range_subset (R := k) ⟨(k).toSubsemiring, by intro r; exact r.2⟩
+    exact ⟨x, ⟨hinsep x hx, rfl⟩⟩⟩
+  obtain ⟨n, ⟨m, hm⟩⟩ := this pure a
+  have := Subalgebra.range_subset (R := k) ⟨(k).toSubsemiring, fun r ↦ r.2⟩
   exact ⟨n, Set.mem_of_subset_of_mem this <| Set.mem_range.2 ⟨m, hm⟩⟩
 
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
   then for every element `a` of `D \ k`, there exists a natural number `n`
   **greater than 0** such that `a ^ (p ^ n)` is contained in `k`. -/
 lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
-    (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n ≥ 1, a ^ (p ^ n) ∈ k := by
+    (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, 1 ≤ n ∧ a ^ (p ^ n) ∈ k := by
   obtain ⟨n, hn⟩ := exists_pow_mem_center_of_inseparable p a hinsep
   by_cases nzero : n = 0
   · rw [nzero, pow_zero, pow_one] at hn
     exact (ha hn).elim
-  · exact ⟨n, ⟨by omega, hn⟩⟩
+  · exact ⟨n, ⟨Nat.one_le_iff_ne_zero.mpr nzero, hn⟩⟩
 
 /-- If `D` is a purely inseparable extension of `k` of characteristic `p`,
   then for every element `a` of `D \ k`, there exists a natural number `m`
@@ -109,7 +109,7 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
   every `n` greater than `(p ^ m)`. -/
 lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
     {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k):
-  ∃ m ≥ 1, ∀ n ≥ (p ^ m), (δ a) ^ n = 0 := by
+  ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (δ a) ^ n = 0 := by
   obtain ⟨m, hm⟩ := exists_pow_mem_center_of_inseparable' p ha hinsep
   refine ⟨m, ⟨hm.1, fun n hn ↦ ?_⟩⟩
   have inter : (δ a) ^ (p ^ m) = 0 := by
@@ -118,11 +118,11 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
     rw [sub_apply, l_pow, r_pow, sub_eq_zero_of_eq]; rfl
     suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
     exact hm.2
-  rw [((Nat.sub_eq_iff_eq_add hn).1 rfl), pow_add, inter, mul_zero]
+  rw [(Nat.sub_eq_iff_eq_add hn).1 rfl, pow_add, inter, mul_zero]
 
 variable (D) in
 /-- Jacobson-Noether theorem: For a non-commutative algebraic
-  division algebra `D` (with base ring being its center `k`), if `k ≠ D`, then
+  division algebra `D` (with base ring being its center `k`), then
   there exists an element `x` of `D \ k` that is separable over `k`. -/
 theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
@@ -140,10 +140,10 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     show a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(δ a) ^ n b ≠ 0`.
-  obtain ⟨n, hn, hb⟩ : ∃ n, (0 < n) ∧ ((δ a) ^ n) b ≠ 0 ∧ ((δ a) ^ (n + 1)) b = 0 := by
+  obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ ((δ a) ^ n) b ≠ 0 ∧ ((δ a) ^ (n + 1)) b = 0 := by
     obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha insep
-    have h_exist : ∃ n > 0, ((δ a) ^ (n + 1)) b = 0 := ⟨(p ^ m),
-      ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (by omega)]; rfl⟩⟩
+    have h_exist : ∃ n, 0 < n ∧ ((δ a) ^ (n + 1)) b = 0 := ⟨p ^ m,
+      ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (Nat.le_add_right _ _)]; rfl⟩⟩
     classical
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
@@ -156,7 +156,7 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
       linarith [(Nat.find_spec h_exist).1]
   -- We define `c` to be the value that we proved above to be non-zero.
   set c := ((δ a) ^ n) b with hc_def
-  letI : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ (hb.1), mul_inv_cancel₀ (hb.1)⟩
+  letI : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ hb.1, mul_inv_cancel₀ hb.1⟩
   -- We prove that `c` commutes with `a`.
   have hc : a * c = c * a := by
     apply eq_of_sub_eq_zero
@@ -181,7 +181,7 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
   -- This then derives a contradiction.
   apply_fun (a⁻¹ * · ) at deq
   rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
-  obtain ⟨r, hr⟩ := (exists_pow_mem_center_of_inseparable p d insep)
+  obtain ⟨r, hr⟩ := exists_pow_mem_center_of_inseparable p d insep
   apply_fun (· ^ (p ^ r)) at deq
   rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
     ← DivisionSemiring.conj_pow ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
@@ -191,7 +191,7 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
 open Subring Algebra in
 /-- Jacobson-Noether theorem: For a non-commutative algebraic
   division algebra `D` (with base ring being a field `L`), if the center of
-  `D` over `L` is `L` and `L ≠ D`, then there exist an element `x` of `D \ L`
+  `D` over `L` is `L`, then there exist an element `x` of `D \ L`
   that is separable over `L`. -/
 theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D]
@@ -200,7 +200,7 @@ theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRi
   have ntrivial : center D ≠ ⊤ :=
     congr(Subalgebra.toSubring $hcenter).trans_ne (Subalgebra.toSubring_injective.ne hneq)
   set φ := Subalgebra.equivOfEq (⊥ : Subalgebra L D) (Subalgebra.center L D) hcenter.symm
-  set equiv : L ≃+* (center D) := (((botEquiv L D).symm).trans φ).toRingEquiv
+  set equiv : L ≃+* (center D) := ((botEquiv L D).symm.trans φ).toRingEquiv
   letI : Algebra L (center D) := equiv.toRingHom.toAlgebra
   letI : Algebra (center D) L := equiv.symm.toRingHom.toAlgebra
   haveI : IsScalarTower L (center D) D := .of_algebraMap_eq fun _ ↦ rfl
@@ -210,6 +210,6 @@ theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRi
     exact (equiv.apply_symm_apply x).symm
   haveI : Algebra.IsAlgebraic (center D) D := .tower_top (K := L) _
   obtain ⟨x, hxd, hx⟩ := exists_separable_mem_of_not_central D ntrivial
-  refine ⟨x, ⟨by rwa [← Subalgebra.center_toSubring L, hcenter] at hxd, IsSeparable.tower_top _ hx⟩⟩
+  exact ⟨x, ⟨by rwa [← Subalgebra.center_toSubring L, hcenter] at hxd, IsSeparable.tower_top _ hx⟩⟩
 
 end JacobsonNoether
