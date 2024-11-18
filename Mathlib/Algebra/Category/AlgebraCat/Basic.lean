@@ -25,6 +25,7 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of R-algebras and their morphisms. -/
 structure AlgebraCat where
+  /-- The underlying type. -/
   carrier : Type v
   [isRing : Ring carrier]
   [isAlgebra : Algebra R carrier]
@@ -46,6 +47,15 @@ instance : CoeSort (AlgebraCat R) (Type v) :=
 
 attribute [coe] AlgebraCat.carrier
 
+/-- The object in the category of R-algebras associated to a type equipped with the appropriate
+typeclasses. -/
+def of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
+  ⟨X⟩
+
+@[simp]
+lemma coe_of (X : Type v) [Ring X] [Algebra R X] : (of R X : Type v) = X :=
+  rfl
+
 variable {R} in
 /-- The type of morphisms in `AlgebraCat R`. -/
 @[ext]
@@ -58,32 +68,55 @@ instance : Category (AlgebraCat.{v} R) where
   id A := ⟨AlgHom.id R A⟩
   comp f g := ⟨g.algHom.comp f.algHom⟩
 
+instance {M N : AlgebraCat.{v} R} : CoeFun (M ⟶ N) (fun _ ↦ M → N) where
+  coe f := f.algHom
+
 @[simp]
 lemma algHom_id {A : AlgebraCat.{v} R} : (𝟙 A : A ⟶ A).algHom = AlgHom.id R A := rfl
+
+/- Provided for rewriting. -/
+lemma id_apply (A : AlgebraCat.{v} R) (a : A) :
+    (𝟙 A : A ⟶ A) a = a := by simp
 
 @[simp]
 lemma algHom_comp {A B C : AlgebraCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) :
     (f ≫ g).algHom = g.algHom.comp f.algHom := rfl
 
+/- Provided for rewriting. -/
+lemma comp_apply {A B C : AlgebraCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) (a : A) :
+    (f ≫ g) a = g (f a) := by simp
+
 @[ext]
 lemma hom_ext {A B : AlgebraCat.{v} R} {f g : A ⟶ B} (hf : f.algHom = g.algHom) : f = g :=
   Hom.ext hf
 
-instance {M N : AlgebraCat.{v} R} : FunLike (M ⟶ N) M N where
-  coe f := f.algHom
-  coe_injective' f g h := by
-    ext : 1
-    simpa using h
+/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
+def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y] [Algebra R Y]
+    (f : X →ₐ[R] Y) : of R X ⟶ of R Y :=
+  ⟨f⟩
 
 @[simp]
-lemma coe_algHom {M N : AlgebraCat.{v} R} (f : M ⟶ N) : ⇑f.algHom = ⇑f := rfl
+lemma algHom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
+    [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).algHom = f := rfl
 
-instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N where
-  map_mul f := map_mul f.algHom
-  map_one f := map_one f.algHom
-  map_add f := map_add f.algHom
-  map_zero f := map_zero f.algHom
-  commutes f := f.algHom.commutes
+@[simp]
+lemma ofHom_algHom {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
+    @ofHom _ _ no_index _ no_index _ _ _ _ _ (Hom.algHom f) = f := rfl
+
+@[simp]
+lemma ofHom_id {X : Type v} [Ring X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
+
+@[simp]
+lemma ofHom_comp {X Y Z : Type v} [Ring X] [Ring Y] [Ring Z] [Algebra R X] [Algebra R Y]
+    [Algebra R Z] (f : X →ₐ[R] Y) (g : Y →ₐ[R] Z) :
+    ofHom (g.comp f) = ofHom f ≫ ofHom g :=
+  rfl
+
+lemma ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
+    [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
+
+instance : Inhabited (AlgebraCat R) :=
+  ⟨of R R⟩
 
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
@@ -125,47 +158,7 @@ lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
     (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.asHom f.algHom.toLinearMap :=
   rfl
 
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. -/
-def of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
-  ⟨X⟩
-
-/-- Typecheck a `AlgHom` as a morphism in `AlgebraCat R`. -/
-def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y] [Algebra R Y]
-    (f : X →ₐ[R] Y) : of R X ⟶ of R Y :=
-  ⟨f⟩
-
-@[simp]
-lemma algHom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
-    [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).algHom = f := rfl
-
-@[simp]
-lemma ofHom_algHom {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
-    @ofHom _ _ no_index _ no_index _ _ _ _ _ (Hom.algHom f) = f := rfl
-
-@[simp]
-lemma ofHom_id {X : Type v} [Ring X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
-
-@[simp]
-lemma ofHom_comp {X Y Z : Type v} [Ring X] [Ring Y] [Ring Z] [Algebra R X] [Algebra R Y]
-    [Algebra R Z] (f : X →ₐ[R] Y) (g : Y →ₐ[R] Z) :
-    ofHom (g.comp f) = ofHom f ≫ ofHom g :=
-  rfl
-
-@[simp]
-theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
-    [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x :=
-  rfl
-
-instance : Inhabited (AlgebraCat R) :=
-  ⟨of R R⟩
-
-@[simp]
-theorem coe_of (X : Type u) [Ring X] [Algebra R X] : (of R X : Type u) = X :=
-  rfl
-
-variable {R}
-
+variable {R} in
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 algebra. -/
 @[simps]
@@ -173,17 +166,48 @@ def ofSelfIso (M : AlgebraCat.{v} R) : AlgebraCat.of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M
 
-variable {M N U : AlgebraCat.{v} R}
+section Test
 
-@[simp]
-theorem id_apply (m : M) : (𝟙 M : M → M) m = m :=
-  rfl
+/- We test if all the coercions and `map_add` lemmas trigger correctly. -/
 
-@[simp]
-theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
-  rfl
+example (X : Type u) [CommRing X] [Algebra R X] : ⇑(𝟙 (of R X)) = id := by simp
 
-variable (R)
+example {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y] (f : X →ₐ[R] Y) :
+    ⇑(ofHom f) = ⇑f := by simp
+
+example {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y] (f : X →ₐ[R] Y)
+    (x : X) : (ofHom f) x = f x := by simp
+
+example {X Y Z : AlgebraCat R} (f : X ⟶ Y) (g : Y ⟶ Z) : ⇑(f ≫ g) = ⇑g ∘ ⇑f := by simp
+
+example {X Y Z : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y] [CommRing Z]
+    [Algebra R Z] (f : X →ₐ[R] Y) (g : Y →ₐ[R] Z) :
+    ⇑(ofHom f ≫ ofHom g) = g ∘ f := by simp
+
+example {X Y : Type v} [CommRing X] [Algebra R X] [CommRing Y] [Algebra R Y] {Z : AlgebraCat R}
+    (f : X →ₐ[R] Y) (g : of R Y ⟶ Z) :
+    ⇑(ofHom f ≫ g) = g ∘ f := by simp
+
+example {X Y : AlgebraCat R} {Z : Type v} [CommRing Z] [Algebra R Z] (f : X ⟶ Y) (g : Y ⟶ of R Z) :
+    ⇑(f ≫ g) = g ∘ f := by simp
+
+example {Y Z : AlgebraCat R} {X : Type v} [CommRing X] [Algebra R X] (f : of R X ⟶ Y) (g : Y ⟶ Z) :
+    ⇑(f ≫ g) = g ∘ f := by simp
+
+example {X Y Z : AlgebraCat R} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) := by simp
+
+example (X : AlgebraCat R) : ⇑(𝟙 X) = id := by simp
+
+example {M N : AlgebraCat.{v} R} (f : M ⟶ N) (x y : M) : f (x + y) = f x + f y := by
+  simp
+
+example {M N : AlgebraCat.{v} R} (f : M ⟶ N) : f 0 = 0 := by
+  simp
+
+example {M N : AlgebraCat.{v} R} (f : M ⟶ N) (r : R) (m : M) : f (r • m) = r • f m := by
+  simp
+
+end Test
 
 /-- The "free algebra" functor, sending a type `S` to the free algebra on `S`. -/
 @[simps! obj map]
