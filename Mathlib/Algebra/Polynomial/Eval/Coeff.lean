@@ -80,6 +80,9 @@ theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   simp only [RingHom.coe_comp, Function.comp, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
 
+lemma coeff_map_eq_comp (p : R[X]) (f : R →+* S) : (p.map f).coeff = f ∘ p.coeff := by
+  ext n; exact coeff_map ..
+
 theorem map_map [Semiring T] (g : S →+* T) (p : R[X]) : (p.map f).map g = p.map (g.comp f) :=
   ext (by simp [coeff_map])
 

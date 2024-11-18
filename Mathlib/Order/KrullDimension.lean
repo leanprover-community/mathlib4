@@ -275,7 +275,7 @@ lemma coheight_orderIso (f : α ≃o β) (x : α) : coheight (f x) = coheight x 
 
 private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α → ℕ∞} {n : ℕ}
     (h : (⨆ x, f x) = n) : ∃ x, f x = n := by
-  obtain ⟨x, hx⟩ := ENat.sSup_mem_of_Nonempty_of_lt_top (h ▸ ENat.coe_lt_top _)
+  obtain ⟨x, hx⟩ := ENat.sSup_mem_of_nonempty_of_lt_top (h ▸ ENat.coe_lt_top _)
   use x
   simpa [hx] using h
 
@@ -546,22 +546,73 @@ lemma krullDim_eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β :=
 
 /--
 The Krull dimension is the supremum of the elements' heights.
+
+This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
+`WithBot ℕ∞` is on the outside fo the right-hand side, which is usually more convenient.
+
+If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_height` for the more general
+version, with the coercion under the supremum.
+-/
+lemma krullDim_eq_iSup_height_of_nonempty [Nonempty α] : krullDim α = ↑(⨆ (a : α), height a) := by
+  apply le_antisymm
+  · apply iSup_le
+    intro p
+    suffices p.length ≤ ⨆ (a : α), height a by
+      exact (WithBot.unbot'_le_iff fun _ => this).mp this
+    apply le_iSup_of_le p.last (length_le_height_last (p := p))
+  · rw [krullDim_eq_iSup_length]
+    simp only [WithBot.coe_le_coe, iSup_le_iff]
+    intro x
+    exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
+
+/--
+The Krull dimension is the supremum of the elements' coheights.
+
+This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
+`WithBot ℕ∞` is on the outside of the right-hand side, which is usually more convenient.
+
+If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_coheight` for the more general
+version, with the coercion under the supremum.
+-/
+lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] :
+    krullDim α = ↑(⨆ (a : α), coheight a) := by
+  rw [← krullDim_orderDual]
+  exact krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
+
+/--
+The Krull dimension is the supremum of the elements' heights.
+
+If `α` is `Nonempty`, then `krullDim_eq_iSup_height_of_nonempty`, with the coercion from
+`ℕ∞` to `WithBot ℕ∞` outside the supremum, can be more convenient.
 -/
 lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
   cases isEmpty_or_nonempty α with
-  | inl h => simp [krullDim_eq_bot_of_isEmpty]
-  | inr h =>
-    rw [← WithBot.coe_iSup (OrderTop.bddAbove _)]
-    apply le_antisymm
-    · apply iSup_le
-      intro p
-      suffices p.length ≤ ⨆ (a : α), height a by
-        exact (WithBot.unbot'_le_iff fun _ => this).mp this
-      apply le_iSup_of_le p.last (length_le_height_last (p := p))
-    · rw [krullDim_eq_iSup_length]
-      simp only [WithBot.coe_le_coe, iSup_le_iff]
-      intro x
-      exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
+  | inl h => rw [krullDim_eq_bot_of_isEmpty, ciSup_of_empty]
+  | inr h => rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
+
+/--
+The Krull dimension is the supremum of the elements' coheights.
+
+If `α` is `Nonempty`, then `krullDim_eq_iSup_coheight_of_nonempty`, with the coercion from
+`ℕ∞` to `WithBot ℕ∞` outside the supremum, can be more convenient.
+-/
+lemma krullDim_eq_iSup_coheight : krullDim α = ⨆ (a : α), ↑(coheight a) := by
+  cases isEmpty_or_nonempty α with
+  | inl h => rw [krullDim_eq_bot_of_isEmpty, ciSup_of_empty]
+  | inr h => rw [krullDim_eq_iSup_coheight_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
+
+@[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
+lemma height_top_eq_krullDim [OrderTop α] : height (⊤ : α) = krullDim α := by
+  rw [krullDim_eq_iSup_length]
+  simp only [WithBot.coe_inj]
+  apply le_antisymm
+  · exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
+  · exact iSup_le fun _ => length_le_height le_top
+
+@[simp] -- not as useful as a simp lemma as it looks, due to the coe on the left
+lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α := by
+  rw [← krullDim_orderDual]
+  exact height_top_eq_krullDim (α := αᵒᵈ)
 
 end krullDim
 
