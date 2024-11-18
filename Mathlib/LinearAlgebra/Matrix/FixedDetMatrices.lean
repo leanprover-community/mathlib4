@@ -170,17 +170,10 @@ lemma reps_entries_le_m' (hm : m ≠ 0) (A : Δ m) (h : A ∈ reps m) (i j : Fin
 
 lemma reps_zero_empty : (reps 0) = ∅ := by
   rw [reps]
-  ext A
-  constructor
-  · intro h
-    have := A_c_eq_zero 0 _ h.1
-    simp only [Fin.isValue, Set.mem_setOf_eq, mul_eq_zero, Set.mem_empty_iff_false] at *
-    rcases this with hl | hr
-    · exfalso
-      simp only [hl, Fin.isValue, lt_self_iff_false, false_and, and_false] at h
-    · simp only [hr, Fin.isValue, abs_zero] at h
-      exact Lean.Omega.Int.le_lt_asymm (abs_nonneg (A.1 0 1)) (h.2.2.2)
-  · simp only [Set.mem_empty_iff_false, Fin.isValue, Set.mem_setOf_eq, false_implies]
+  refine Set.eq_empty_iff_forall_not_mem.mpr fun A h ↦ ?_
+  obtain ⟨h₁, h₂, -, h₄⟩ := Set.mem_setOf.mpr h
+  simp only [eq_zero_of_ne_zero_of_mul_left_eq_zero h₂.ne' <| A_c_eq_zero 0 _ h₁, abs_zero] at h₄
+  exact ((abs_nonneg _).trans_lt h₄).false
 
 noncomputable instance reps_fintype (k : ℤ) : Fintype (reps k) := by
   by_cases hk : k ≠ 0
