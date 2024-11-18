@@ -131,19 +131,19 @@ attribute [instance] preservesTerminalObjects preservesPullbacks preservesEpis
   preservesFiniteCoproducts reflectsIsos preservesQuotientsByFiniteGroups
 
 noncomputable instance : ReflectsLimitsOfShape (Discrete PEmpty.{1}) F :=
-  reflectsLimitsOfShapeOfReflectsIsomorphisms
+  reflectsLimitsOfShape_of_reflectsIsomorphisms
 
 noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
-  reflectsColimitsOfShapeOfReflectsIsomorphisms
+  reflectsColimitsOfShape_of_reflectsIsomorphisms
 
 noncomputable instance : PreservesFiniteLimits F :=
-  preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
+  preservesFiniteLimits_of_preservesTerminal_and_pullbacks F
 
 /-- Fiber functors preserve quotients by finite groups in arbitrary universes. -/
-noncomputable instance {G : Type*} [Group G] [Finite G] :
+instance {G : Type*} [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) F := by
   choose G' hg hf he using Finite.exists_type_univ_nonempty_mulEquiv G
-  exact Limits.preservesColimitsOfShapeOfEquiv he.some.toSingleObjEquiv.symm F
+  exact Limits.preservesColimitsOfShape_of_equiv he.some.toSingleObjEquiv.symm F
 
 /-- Fiber functors reflect monomorphisms. -/
 instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
@@ -172,7 +172,7 @@ section
 then `F ⋙ E` is again a fiber functor. -/
 noncomputable def compRight (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
     FiberFunctor (F ⋙ E) where
-  preservesQuotientsByFiniteGroups _ := compPreservesColimitsOfShape F E
+  preservesQuotientsByFiniteGroups _ := comp_preservesColimitsOfShape F E
 
 end
 

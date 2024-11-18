@@ -378,7 +378,7 @@ lemma preservesLimits_of_evaluation (F : D ⥤ K ⥤ C)
 /-- The constant functor `C ⥤ (D ⥤ C)` preserves limits. -/
 instance preservesLimits_const : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _) :=
   preservesLimits_of_evaluation _ fun _ =>
-    preservesLimitsOfNatIso <| Iso.symm <| constCompEvaluationObj _ _
+    preservesLimits_of_natIso <| Iso.symm <| constCompEvaluationObj _ _
 
 instance evaluation_preservesColimits [HasColimits C] (k : K) :
     PreservesColimits ((evaluation K C).obj k) where
