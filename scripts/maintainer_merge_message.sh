@@ -36,5 +36,12 @@ esac
 >&2 echo "EVENT_NAME: '${EVENT_NAME}'"
 >&2 printf 'COMMENT\n%s\nEND COMMENT\n' "${PR_COMMENT}"
 
-printf '%s requested a maintainer **%s** from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D}" "${SOURCE}" "${PR}" "${URL}"
-printf '```spoiler %s\n%s\n```\n' "${PR_TITLE}" "${PR_COMMENT}"
+printf '%s requested a maintainer **%s** from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D/$'!'/}" "${SOURCE}" "${PR}" "${URL}"
+# if `maintainer merge/delegate` is followed by `!`, then print a `spoiler` with the full comment
+if [ ${M_or_D: -1} == $'!' ]
+then
+  printf '```spoiler %s\n%s\n```\n' "${PR_TITLE}" "${PR_COMMENT}"
+# otherwise, just print the title of the PR
+else
+  printf '> %s\n' "${PR_TITLE}"
+fi
