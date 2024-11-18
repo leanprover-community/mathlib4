@@ -16,7 +16,6 @@ with the forgetful functors to `RingCat` and `ModuleCat`. We furthermore show th
 associating to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
 -/
 
-
 open CategoryTheory Limits
 
 universe v u
@@ -124,12 +123,10 @@ instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
       map := fun ⟨f⟩ => f }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
 
-@[simp]
-lemma forget_obj {A : AlgebraCat.{v} R} : (forget _).obj A = A := rfl
+lemma forget_obj {A : AlgebraCat.{v} R} : (forget (AlgebraCat.{v} R)).obj A = A := rfl
 
-@[simp]
 lemma forget_map {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
-    (forget _).map f = f :=
+    (forget (AlgebraCat.{v} R)).map f = f :=
   rfl
 
 instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
@@ -233,8 +230,8 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
     { homEquiv := fun _ _ =>
         { toFun := fun ⟨f⟩ ↦ (FreeAlgebra.lift _).symm f
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
-          left_inv := fun f ↦ by ext; simp
-          right_inv := fun f ↦ by simp
+          left_inv := fun f ↦ by ext; simp [forget_obj, forget_map]
+          right_inv := fun f ↦ by simp [forget_obj, forget_map]
         }
       homEquiv_naturality_left_symm := by
         intros
@@ -245,7 +242,7 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
       homEquiv_naturality_right := by
         intros
         ext
-        simp }
+        simp [forget_obj, forget_map] }
 
 instance : (forget (AlgebraCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
