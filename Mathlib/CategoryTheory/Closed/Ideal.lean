@@ -304,7 +304,7 @@ If a reflective subcategory is an exponential ideal, then the reflector preserve
 -/
 lemma preservesFiniteProducts_of_exponentialIdeal (J : Type) [Fintype J] :
     PreservesLimitsOfShape (Discrete J) (reflector i) := by
-  letI := preservesBinaryProductsOfExponentialIdeal i
+  letI := preservesBinaryProducts_of_exponentialIdeal i
   letI : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i
   apply preservesFiniteProducts_of_preserves_binary_and_terminal (reflector i) J
 
