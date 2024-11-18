@@ -328,7 +328,7 @@ section Pi
 
 namespace Pi
 
-variable {ι : Type*} {α : ι → Type*} {t : (Π i, α i) → (Π i, α i) → Prop} [∀ i, LE (α i)]
+variable {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)]
 
 lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) (i : ι) :
     DirectedOn (· ≤ ·) ((fun a => a i) '' d) := by
