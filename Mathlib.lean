@@ -5228,7 +5228,7 @@ import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.Ultrafilter
 import Mathlib.Topology.UniformSpace.AbsoluteValue
 import Mathlib.Topology.UniformSpace.AbstractCompletion
-import Mathlib.Topology.UniformSpace.Ascoli
+import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.UniformSpace.Compact
