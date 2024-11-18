@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
+import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
@@ -736,6 +737,13 @@ noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Fintype G] [Fintype G'] [Grou
   apply mulEquivOfCyclicCardEq
   rw [← Nat.card_eq_fintype_card] at hG hH
   exact hG.trans hH.symm
+
+theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :
+    Nat.card (MulAut G) = Nat.totient (Nat.card G) := by
+  have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
+  rw [← ZMod.card_units_eq_totient, ← Nat.card_eq_fintype_card]
+  exact Nat.card_congr ((MulAut.congr (zmodCyclicMulEquiv h)).toEquiv.symm.trans
+    (MulEquiv.toAdditive.trans (ZMod.AddAutEquivUnits (Nat.card G)).toEquiv))
 
 end ZMod
 
