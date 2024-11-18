@@ -259,7 +259,7 @@ theorem nodup_flatten {L : List (List α)} :
 
 theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
     Nodup (l₁.flatMap f) ↔
-      (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (fun a b : α => Disjoint (f a) (f b)) l₁ := by
+      (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (Disjoint on f) l₁ := by
   simp only [List.flatMap, nodup_flatten, pairwise_map, and_comm, and_left_comm, mem_map,
     exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
