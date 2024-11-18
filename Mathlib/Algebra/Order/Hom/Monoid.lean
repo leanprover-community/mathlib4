@@ -118,7 +118,8 @@ structure OrderMonoidHom (α β : Type*) [Preorder α] [Preorder β] [MulOneClas
 /-- Infix notation for `OrderMonoidHom`. -/
 infixr:25 " →*o " => OrderMonoidHom
 
-variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
+variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β]
+
 
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` and `MonoidHomClass F α β`
 into an actual `OrderMonoidHom`. This is declared as the default coercion from `F` to `α →*o β`. -/
@@ -126,7 +127,8 @@ into an actual `OrderMonoidHom`. This is declared as the default coercion from `
   "Turn an element of a type `F` satisfying `OrderHomClass F α β` and `AddMonoidHomClass F α β`
   into an actual `OrderAddMonoidHom`.
   This is declared as the default coercion from `F` to `α →+o β`."]
-def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
+def OrderMonoidHomClass.toOrderMonoidHom [FunLike F α β] [OrderHomClass F α β]
+    [MonoidHomClass F α β] (f : F) :
     α →*o β :=
   { (f : α →* β) with monotone' := OrderHomClass.monotone f }
 
@@ -134,7 +136,7 @@ def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
 @[to_additive "Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom` via
   `OrderAddMonoidHomClass.toOrderAddMonoidHom`"]
-instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
+instance [FunLike F α β] [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
 /-- `α ≃*o β` is the type of isomorphisms `α ≃ β` that preserve the `OrderedCommMonoid` structure.
@@ -153,8 +155,6 @@ structure OrderMonoidIso (α β : Type*) [Preorder α] [Preorder β] [MulOneClas
 /-- Infix notation for `OrderMonoidIso`. -/
 infixr:25 " ≃*o " => OrderMonoidIso
 
-variable [Preorder α] [Preorder β] [MulOneClass α] [MulOneClass β] [FunLike F α β]
-
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` and `MulEquivClass F α β`
 into an actual `OrderMonoidIso`. This is declared as the default coercion from `F` to `α ≃*o β`. -/
 @[to_additive (attr := coe)
@@ -162,22 +162,15 @@ into an actual `OrderMonoidIso`. This is declared as the default coercion from `
   into an actual `OrderAddMonoidIso`.
   This is declared as the default coercion from `F` to `α ≃+o β`."]
 def OrderMonoidIsoClass.toOrderMonoidIso [EquivLike F α β] [OrderIsoClass F α β]
-    [MulEquivClass F α β] (f : F) :
+    [MulHomClass F α β] (f : F) :
     α ≃*o β :=
   { (f : α ≃* β) with map_le_map_iff' := OrderIsoClass.map_le_map_iff f }
-
-/-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
-  `OrderMonoidHomClass.toOrderMonoidHom`. -/
-@[to_additive "Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom` via
-  `OrderAddMonoidHomClass.toOrderAddMonoidHom`"]
-instance [OrderHomClass F α β] [MonoidHomClass F α β] : CoeTC F (α →*o β) :=
-  ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
 /-- Any type satisfying `OrderMonoidIsoClass` can be cast into `OrderMonoidIso` via
   `OrderMonoidIsoClass.toOrderMonoidIso`. -/
 @[to_additive "Any type satisfying `OrderAddMonoidIsoClass` can be cast into `OrderAddMonoidIso` via
   `OrderAddMonoidIsoClass.toOrderAddMonoidIso`"]
-instance [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β] : CoeTC F (α ≃*o β) :=
+instance [EquivLike F α β] [OrderIsoClass F α β] [MulHomClass F α β] : CoeTC F (α ≃*o β) :=
   ⟨OrderMonoidIsoClass.toOrderMonoidIso⟩
 
 end Monoid
@@ -531,7 +524,7 @@ instance : OrderIsoClass (α ≃*o β) α β where
   map_le_map_iff f := f.map_le_map_iff'
 
 @[to_additive]
-instance : MulEquivClass (α ≃*o β) α β where
+instance : MulHomClass (α ≃*o β) α β where
   map_mul f := map_mul f.toMulEquiv
 
 -- Other lemmas should be accessed through the `FunLike` API
