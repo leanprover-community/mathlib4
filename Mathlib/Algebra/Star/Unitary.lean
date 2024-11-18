@@ -175,7 +175,7 @@ variable (G) in
 /-- `unitary` as a `Subgroup` of a group.
 
 Note the group structure on this type is not defeq to the one on `unitary`.
-This situation naturally arises when considering the unitary elements as a 
+This situation naturally arises when considering the unitary elements as a
 subgroup of the group of units of a star monoid. -/
 def unitarySubgroup : Subgroup G where
   toSubmonoid := unitary G
