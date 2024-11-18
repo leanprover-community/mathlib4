@@ -1509,9 +1509,6 @@ private theorem lintegral_rpow_sum_coe_nnnorm_sub_le_rpow_tsum
     · rw [Real.norm_of_nonneg _]
       exact Finset.sum_nonneg fun x _ => norm_nonneg _
     · exact fun x _ => norm_nonneg _
-  change
-    (∫⁻ a, (fun x => ↑‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖‖₊ ^ p) a ∂μ) ^ p⁻¹ ≤
-      ∑' i, B i at hn
   rwa [h_nnnorm_nonneg] at hn
 
 private theorem lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum {f : ℕ → α → E}
