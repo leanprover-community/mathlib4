@@ -35,7 +35,7 @@ open scoped NNReal Topology
 
 namespace IsUnifLocDoublingMeasure
 
-variable {α : Type*} [MetricSpace α] [MeasurableSpace α] (μ : Measure α)
+variable {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α] (μ : Measure α)
   [IsUnifLocDoublingMeasure μ]
 
 section
@@ -123,7 +123,7 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type*} {l : Filter 
     apply (((Metric.tendsto_nhds.mp δlim _ (div_pos hε hK)).and δpos).and xmem).mono
     rintro j ⟨⟨hjε, hj₀ : 0 < δ j⟩, hx⟩ y hy
     replace hjε : (K + 1) * δ j < ε := by
-      simpa [abs_eq_self.mpr hj₀.le] using (lt_div_iff' hK).mp hjε
+      simpa [abs_eq_self.mpr hj₀.le] using (lt_div_iff₀' hK).mp hjε
     simp only [mem_closedBall] at hx hy ⊢
     linarith [dist_triangle_right y x (w j)]
 
@@ -139,8 +139,8 @@ not required to be fixed.
 
 See also `Besicovitch.ae_tendsto_measure_inter_div`. -/
 theorem ae_tendsto_measure_inter_div (S : Set α) (K : ℝ) : ∀ᵐ x ∂μ.restrict S,
-    ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0))
-      (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
+    ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (_ : Tendsto δ l (𝓝[>] 0))
+      (_ : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
       Tendsto (fun j => μ (S ∩ closedBall (w j) (δ j)) / μ (closedBall (w j) (δ j))) l (𝓝 1) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_measure_inter_div S] with x hx ι l w δ δlim
     xmem using hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
@@ -148,8 +148,8 @@ theorem ae_tendsto_measure_inter_div (S : Set α) (K : ℝ) : ∀ᵐ x ∂μ.res
 /-- A version of **Lebesgue differentiation theorem** for a sequence of closed balls whose
 centers are not required to be fixed. -/
 theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
-    ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0))
-      (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
+    ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (_ : Tendsto δ l (𝓝[>] 0))
+      (_ : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
       Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), ‖f y - f x‖ ∂μ) l (𝓝 0) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_average_norm_sub hf] with x hx ι l w δ δlim
     xmem using hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
@@ -158,8 +158,8 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
 centers are not required to be fixed. -/
 theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E]
     {f : α → E} (hf : LocallyIntegrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
-      ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0))
-        (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
+      ∀ {ι : Type*} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (_ : Tendsto δ l (𝓝[>] 0))
+        (_ : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
         Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), f y ∂μ) l (𝓝 (f x)) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_average hf] with x hx ι l w δ δlim xmem using
     hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)

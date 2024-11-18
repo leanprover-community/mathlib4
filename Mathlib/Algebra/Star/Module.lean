@@ -75,10 +75,42 @@ theorem star_ratCast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAd
 @[deprecated (since := "2024-04-17")]
 alias star_rat_cast_smul := star_ratCast_smul
 
-@[simp]
-theorem star_rat_smul {R : Type*} [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (x : R) (n : ℚ) :
-    star (n • x) = n • star x :=
+/-!
+Per the naming convention, these two lemmas call `(q • ·)` `nnrat_smul` and `rat_smul` respectively,
+rather than `nnqsmul` and `qsmul` because the latter are reserved to the actions coming from
+`DivisionSemiring` and `DivisionRing`. We provide aliases with `nnqsmul` and `qsmul` for
+discoverability.
+-/
+
+/-- Note that this lemma holds for an arbitrary `ℚ≥0`-action, rather than merely one coming from a
+`DivisionSemiring`. We keep both the `nnqsmul` and `nnrat_smul` naming conventions for
+discoverability. See `star_nnqsmul`. -/
+@[simp high]
+lemma star_nnrat_smul [AddCommMonoid R] [StarAddMonoid R] [Module ℚ≥0 R] (q : ℚ≥0) (x : R) :
+    star (q • x) = q • star x := map_nnrat_smul (starAddEquiv : R ≃+ R) _ _
+
+/-- Note that this lemma holds for an arbitrary `ℚ`-action, rather than merely one coming from a
+`DivisionRing`. We keep both the `qsmul` and `rat_smul` naming conventions for discoverability.
+See `star_qsmul`. -/
+@[simp high] lemma star_rat_smul [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (q : ℚ) (x : R) :
+    star (q • x) = q • star x :=
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
+
+/-- Note that this lemma holds for an arbitrary `ℚ≥0`-action, rather than merely one coming from a
+`DivisionSemiring`. We keep both the `nnqsmul` and `nnrat_smul` naming conventions for
+discoverability. See `star_nnrat_smul`. -/
+alias star_nnqsmul := star_nnrat_smul
+
+/-- Note that this lemma holds for an arbitrary `ℚ`-action, rather than merely one coming from a
+`DivisionRing`. We keep both the `qsmul` and `rat_smul` naming conventions for
+discoverability. See `star_rat_smul`. -/
+alias star_qsmul := star_rat_smul
+
+instance StarAddMonoid.toStarModuleNNRat [AddCommMonoid R] [Module ℚ≥0 R] [StarAddMonoid R] :
+    StarModule ℚ≥0 R where star_smul := star_nnrat_smul
+
+instance StarAddMonoid.toStarModuleRat [AddCommGroup R] [Module ℚ R] [StarAddMonoid R] :
+    StarModule ℚ R where star_smul := star_rat_smul
 
 end SMulLemmas
 
@@ -148,7 +180,7 @@ theorem IsSelfAdjoint.selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     selfAdjointPart R x = ⟨x, hx⟩ :=
   Subtype.eq (hx.coe_selfAdjointPart_apply R)
 
--- Porting note (#11215): TODO: make it a `simp`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
 theorem selfAdjointPart_comp_subtype_selfAdjoint :
     (selfAdjointPart R).comp (selfAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun x ↦ x.2.selfAdjointPart_apply R
@@ -157,17 +189,17 @@ theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     skewAdjointPart R x = 0 := Subtype.eq <| by
   rw [skewAdjointPart_apply_coe, hx.star_eq, sub_self, smul_zero, ZeroMemClass.coe_zero]
 
--- Porting note (#11215): TODO: make it a `simp`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
 theorem skewAdjointPart_comp_subtype_selfAdjoint :
     (skewAdjointPart R).comp (selfAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun x ↦ x.2.skewAdjointPart_apply R
 
--- Porting note (#11215): TODO: make it a `simp`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
 theorem selfAdjointPart_comp_subtype_skewAdjoint :
     (selfAdjointPart R).comp (skewAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by simp [hx]
 
--- Porting note (#11215): TODO: make it a `simp`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
 theorem skewAdjointPart_comp_subtype_skewAdjoint :
     (skewAdjointPart R).comp (skewAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by
@@ -184,8 +216,8 @@ def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
     (LinearMap.coprod ((selfAdjoint.submodule R A).subtype) (skewAdjoint.submodule R A).subtype)
     ?_ (LinearMap.ext <| StarModule.selfAdjointPart_add_skewAdjointPart R)
-  -- Note: with #6965 `Submodule.coeSubtype` doesn't fire in `dsimp` or `simp`
-  ext x <;> dsimp <;> erw [Submodule.coeSubtype, Submodule.coeSubtype] <;> simp
+  -- Note: with https://github.com/leanprover-community/mathlib4/pull/6965 `Submodule.coe_subtype` doesn't fire in `dsimp` or `simp`
+  ext x <;> dsimp <;> erw [Submodule.coe_subtype, Submodule.coe_subtype] <;> simp
 
 end SelfSkewAdjoint
 

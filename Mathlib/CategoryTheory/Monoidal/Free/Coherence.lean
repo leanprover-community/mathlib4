@@ -50,7 +50,7 @@ variable (C)
 
 /-- We say an object in the free monoidal category is in normal form if it is of the form
     `(((𝟙_ C) ⊗ X₁) ⊗ X₂) ⊗ ⋯`. -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 inductive NormalMonoidalObject : Type u
   | unit : NormalMonoidalObject
   | tensor : NormalMonoidalObject → C → NormalMonoidalObject
@@ -161,7 +161,7 @@ def fullNormalize : F C ⥤ N C where
 @[simp]
 def tensorFunc : F C ⥤ N C ⥤ F C where
   obj X := Discrete.functor fun n => inclusion.obj ⟨n⟩ ⊗ X
-  map f := Discrete.natTrans (fun n => _ ◁ f)
+  map f := Discrete.natTrans (fun _ => _ ◁ f)
 
 theorem tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f).app n = _ ◁ f :=
   rfl
@@ -197,7 +197,7 @@ def normalizeIsoApp' :
 
 theorem normalizeIsoApp_eq :
     ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
-  | of X, _ => rfl
+  | of _, _ => rfl
   | unit, _ => rfl
   | tensor X Y, n => by
       rw [normalizeIsoApp, normalizeIsoApp']

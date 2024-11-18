@@ -87,10 +87,10 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
 
 instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
   { instBooleanAlgebraSet with
-    le_sSup := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
-    sSup_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
-    le_sInf := fun s t h a a_in t' t'_in => h t' t'_in a_in
-    sInf_le := fun s t t_in a h => h _ t_in
+    le_sSup := fun _ t t_in _ a_in => ⟨t, t_in, a_in⟩
+    sSup_le := fun _ _ h _ ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
+    le_sInf := fun _ _ h _ a_in t' t'_in => h t' t'_in a_in
+    sInf_le := fun _ _ t_in _ h => h _ t_in
     iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
 
 section GaloisConnection
@@ -239,7 +239,6 @@ theorem subset_iInter_iff {s : Set α} {t : ι → Set α} : (s ⊆ ⋂ i, t i) 
   le_iInf_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem subset_iInter₂_iff {s : Set α} {t : ∀ i, κ i → Set α} :
     (s ⊆ ⋂ (i) (j), t i j) ↔ ∀ i j, s ⊆ t i j := by simp_rw [subset_iInter_iff]
 
@@ -568,7 +567,6 @@ theorem iInter_eq_univ : ⋂ i, s i = univ ↔ ∀ i, s i = univ :=
 theorem nonempty_iUnion : (⋃ i, s i).Nonempty ↔ ∃ i, (s i).Nonempty := by
   simp [nonempty_iff_ne_empty]
 
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem nonempty_biUnion {t : Set α} {s : α → Set β} :
     (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp
 
@@ -737,6 +735,12 @@ theorem biUnion_eq_iUnion (s : Set α) (t : ∀ x ∈ s, Set β) :
 theorem biInter_eq_iInter (s : Set α) (t : ∀ x ∈ s, Set β) :
     ⋂ x ∈ s, t x ‹_› = ⋂ x : s, t x x.2 :=
   iInf_subtype'
+
+@[simp] lemma biUnion_const {s : Set α} (hs : s.Nonempty) (t : Set β) : ⋃ a ∈ s, t = t :=
+  biSup_const hs
+
+@[simp] lemma biInter_const {s : Set α} (hs : s.Nonempty) (t : Set β) : ⋂ a ∈ s, t = t :=
+  biInf_const hs
 
 theorem iUnion_subtype (p : α → Prop) (s : { x // p x } → Set β) :
     ⋃ x : { x // p x }, s x = ⋃ (x) (hx : p x), s ⟨x, hx⟩ :=
@@ -1019,7 +1023,6 @@ theorem nonempty_iInter {f : ι → Set α} : (⋂ i, f i).Nonempty ↔ ∃ x, �
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 -- classical
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem nonempty_iInter₂ {s : ∀ i, κ i → Set α} :
     (⋂ (i) (j), s i j).Nonempty ↔ ∃ a, ∀ i j, a ∈ s i j := by
   simp
@@ -1173,6 +1176,30 @@ theorem union_distrib_iInter_right (s : ι → Set α) (t : Set α) : (⋂ i, s 
 theorem union_distrib_iInter₂_right (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) ∪ t = ⋂ (i) (j), s i j ∪ t := by simp_rw [union_distrib_iInter_right]
 
+lemma biUnion_lt_eq_iUnion [LT α] [NoMaxOrder α] {s : α → Set β} :
+    ⋃ (n) (m < n), s m = ⋃ n, s n := biSup_lt_eq_iSup
+
+lemma biUnion_le_eq_iUnion [Preorder α] {s : α → Set β} :
+    ⋃ (n) (m ≤ n), s m = ⋃ n, s n := biSup_le_eq_iSup
+
+lemma biInter_lt_eq_iInter [LT α] [NoMaxOrder α] {s : α → Set β} :
+    ⋂ (n) (m < n), s m = ⋂ (n), s n := biInf_lt_eq_iInf
+
+lemma biInter_le_eq_iInter [Preorder α] {s : α → Set β} :
+    ⋂ (n) (m ≤ n), s m = ⋂ (n), s n := biInf_le_eq_iInf
+
+lemma biUnion_gt_eq_iUnion [LT α] [NoMinOrder α] {s : α → Set β} :
+    ⋃ (n) (m > n), s m = ⋃ n, s n := biSup_gt_eq_iSup
+
+lemma biUnion_ge_eq_iUnion [Preorder α] {s : α → Set β} :
+    ⋃ (n) (m ≥ n), s m = ⋃ n, s n := biSup_ge_eq_iSup
+
+lemma biInter_gt_eq_iInf [LT α] [NoMinOrder α] {s : α → Set β} :
+    ⋂ (n) (m > n), s m = ⋂ n, s n := biInf_gt_eq_iInf
+
+lemma biInter_ge_eq_iInf [Preorder α] {s : α → Set β} :
+    ⋂ (n) (m ≥ n), s m = ⋂ n, s n := biInf_ge_eq_iInf
+
 section Function
 
 /-! ### Lemmas about `Set.MapsTo`
@@ -1242,6 +1269,14 @@ theorem image_iInter₂_subset (s : ∀ i, κ i → Set α) (f : α → β) :
 theorem image_sInter_subset (S : Set (Set α)) (f : α → β) : f '' ⋂₀ S ⊆ ⋂ s ∈ S, f '' s := by
   rw [sInter_eq_biInter]
   apply image_iInter₂_subset
+
+theorem image2_sInter_right_subset (t : Set α) (S : Set (Set β)) (f : α → β → γ) :
+    image2 f t (⋂₀ S) ⊆ ⋂ s ∈ S, image2 f t s := by
+  aesop
+
+theorem image2_sInter_left_subset (S : Set (Set α)) (t : Set β)  (f : α → β → γ) :
+    image2 f (⋂₀ S) t ⊆ ⋂ s ∈ S, image2 f s t := by
+  aesop
 
 /-! ### `restrictPreimage` -/
 
@@ -1575,6 +1610,14 @@ theorem image2_iUnion_right (s : Set α) (t : ι → Set β) :
     image2 f s (⋃ i, t i) = ⋃ i, image2 f s (t i) := by
   simp only [← image_prod, prod_iUnion, image_iUnion]
 
+theorem image2_sUnion_left (S : Set (Set α)) (t : Set β) :
+    image2 f (⋃₀ S) t = ⋃ s ∈ S, image2 f s t := by
+  aesop
+
+theorem image2_sUnion_right (s : Set α) (T : Set (Set β)) :
+    image2 f s (⋃₀ T) = ⋃ t ∈ T, image2 f s t := by
+  aesop
+
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_iUnion₂_left (s : ∀ i, κ i → Set α) (t : Set β) :
@@ -1609,6 +1652,16 @@ theorem image2_iInter₂_subset_right (s : Set α) (t : ∀ i, κ i → Set β) 
     image2 f s (⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), image2 f s (t i j) := by
   simp_rw [image2_subset_iff, mem_iInter]
   exact fun x hx y hy i j => mem_image2_of_mem hx (hy _ _)
+
+theorem image2_sInter_subset_left (S : Set (Set α)) (t : Set β) :
+    image2 f (⋂₀ S) t ⊆ ⋂ s ∈ S, image2 f s t := by
+  rw [sInter_eq_biInter]
+  exact image2_iInter₂_subset_left ..
+
+theorem image2_sInter_subset_right (s : Set α) (T : Set (Set β)) :
+    image2 f s (⋂₀ T) ⊆ ⋂ t ∈ T, image2 f s t := by
+  rw [sInter_eq_biInter]
+  exact image2_iInter₂_subset_right ..
 
 theorem prod_eq_biUnion_left : s ×ˢ t = ⋃ a ∈ s, (fun b => (a, b)) '' t := by
   rw [iUnion_image_left, image2_mk_eq_prod]
@@ -1726,7 +1779,7 @@ end Function
 
 section Disjoint
 
-variable {s t u : Set α} {f : α → β}
+variable {s t : Set α}
 
 namespace Set
 
@@ -1741,13 +1794,11 @@ theorem disjoint_iUnion_right {ι : Sort*} {s : ι → Set α} :
   disjoint_iSup_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_left {s : ∀ i, κ i → Set α} {t : Set α} :
     Disjoint (⋃ (i) (j), s i j) t ↔ ∀ i j, Disjoint (s i j) t :=
   iSup₂_disjoint_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_right {s : Set α} {t : ∀ i, κ i → Set α} :
     Disjoint s (⋃ (i) (j), t i j) ↔ ∀ i j, Disjoint s (t i j) :=
   disjoint_iSup₂_iff
@@ -1842,7 +1893,7 @@ theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)
     let ⟨a, hb⟩ := this
     ⟨⟨a, b, hb⟩, rfl⟩
 
-theorem sigmaToiUnion_injective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_injective (h : Pairwise (Disjoint on t)) :
     Injective (sigmaToiUnion t)
   | ⟨a₁, b₁, h₁⟩, ⟨a₂, b₂, h₂⟩, eq =>
     have b_eq : b₁ = b₂ := congr_arg Subtype.val eq
@@ -1852,7 +1903,7 @@ theorem sigmaToiUnion_injective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
         (h ne).le_bot this
     Sigma.eq a_eq <| Subtype.eq <| by subst b_eq; subst a_eq; rfl
 
-theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
+theorem sigmaToiUnion_bijective (h : Pairwise (Disjoint on t)) :
     Bijective (sigmaToiUnion t) :=
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 
@@ -1867,7 +1918,7 @@ noncomputable def sigmaEquiv (s : α → Set β) (hs : ∀ b, ∃! i, b ∈ s i)
 
 /-- Equivalence between a disjoint union and a dependent sum. -/
 noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
-    (h : Pairwise fun i j => Disjoint (t i) (t j)) :
+    (h : Pairwise (Disjoint on t)) :
     (⋃ i, t i) ≃ Σi, t i :=
   (Equiv.ofBijective _ <| sigmaToiUnion_bijective t h).symm
 

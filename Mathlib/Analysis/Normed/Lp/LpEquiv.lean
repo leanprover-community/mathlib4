@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # Equivalences among $L^p$ spaces
@@ -152,7 +152,7 @@ dependencies. -/
 /-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as a `LinearIsometryEquiv`. -/
 noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →ᵇ E :=
   { AddEquiv.lpBCF with
-    map_smul' := fun k f ↦ rfl
+    map_smul' := fun _ _ ↦ rfl
     norm_map' := fun f ↦ by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
 
 @[deprecated (since := "2024-03-16")] alias lpBcfₗᵢ := lpBCFₗᵢ

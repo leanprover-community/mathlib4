@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Environment
+import Mathlib.Init
 
 /-!
 # Environment extension for tracking existence of declarations and imports
@@ -12,8 +13,7 @@ import Lean.Environment
 This is used by the `assert_not_exists` and `assert_not_imported` commands.
 -/
 
-section
-open Lean Elab Meta
+open Lean
 
 namespace Mathlib.AssertNotExist
 

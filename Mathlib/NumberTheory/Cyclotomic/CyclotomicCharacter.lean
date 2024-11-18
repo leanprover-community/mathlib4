@@ -3,7 +3,7 @@ Copyright (c) 2023 Hanneke Wiersema. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Hanneke Wiersema
 -/
-import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 
@@ -67,7 +67,7 @@ variable {L : Type u} [CommRing L] [IsDomain L]
 
 -/
 
-variable (n : ℕ+)
+variable (n : ℕ) [NeZero n]
 
 theorem rootsOfUnity.integer_power_of_ringEquiv (g : L ≃+* L) :
     ∃ m : ℤ, ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
@@ -81,18 +81,18 @@ theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
 /-- `ModularCyclotomicCharacter_aux g n` is a non-canonical auxiliary integer `j`,
    only well-defined modulo the number of `n`'th roots of unity in `L`, such that `g(ζ)=ζ^j`
    for all `n`'th roots of unity `ζ` in `L`. -/
-noncomputable def ModularCyclotomicCharacter_aux (g : L ≃+* L) (n : ℕ+) : ℤ :=
+noncomputable def ModularCyclotomicCharacter_aux (g : L ≃+* L) (n : ℕ) [NeZero n] : ℤ :=
   (rootsOfUnity.integer_power_of_ringEquiv n g).choose
 
 -- the only thing we know about `ModularCyclotomicCharacter_aux g n`
-theorem ModularCyclotomicCharacter_aux_spec (g : L ≃+* L) (n : ℕ+) :
+theorem ModularCyclotomicCharacter_aux_spec (g : L ≃+* L) (n : ℕ) [NeZero n] :
     ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ (ModularCyclotomicCharacter_aux g n) : Lˣ) :=
   (rootsOfUnity.integer_power_of_ringEquiv n g).choose_spec
 
 /-- If `g` is a ring automorphism of `L`, and `n : ℕ+`, then
   `ModularCyclotomicCharacter.toFun n g` is the `j : ZMod d` such that `g(ζ)=ζ^j` for all
   `n`'th roots of unity. Here `d` is the number of `n`th roots of unity in `L`. -/
-noncomputable def ModularCyclotomicCharacter.toFun (n : ℕ+) (g : L ≃+* L) :
+noncomputable def ModularCyclotomicCharacter.toFun (n : ℕ) [NeZero n] (g : L ≃+* L) :
     ZMod (Fintype.card (rootsOfUnity n L)) :=
   ModularCyclotomicCharacter_aux g n
 
@@ -101,25 +101,25 @@ namespace ModularCyclotomicCharacter
 local notation "χ₀" => ModularCyclotomicCharacter.toFun
 
 /-- The formula which characterises the output of `ModularCyclotomicCharacter g n`. -/
-theorem toFun_spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
+theorem toFun_spec (g : L ≃+* L) {n : ℕ} [NeZero n] (t : rootsOfUnity n L) :
     g (t : Lˣ) = (t ^ (χ₀ n g).val : Lˣ) := by
   rw [ModularCyclotomicCharacter_aux_spec g n t, ← zpow_natCast, ModularCyclotomicCharacter.toFun,
     ZMod.val_intCast, ← Subgroup.coe_zpow]
   exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <|
     zpow_eq_zpow_emod _ pow_card_eq_one (G := rootsOfUnity n L)
 
-theorem toFun_spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
+theorem toFun_spec' (g : L ≃+* L) {n : ℕ} [NeZero n] {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
     g t = t ^ (χ₀ n g).val :=
   toFun_spec g ⟨t, ht⟩
 
-theorem toFun_spec'' (g : L ≃+* L) {n : ℕ+} {t : L} (ht : IsPrimitiveRoot t n) :
+theorem toFun_spec'' (g : L ≃+* L) {n : ℕ} [NeZero n] {t : L} (ht : IsPrimitiveRoot t n) :
     g t = t ^ (χ₀ n g).val :=
   toFun_spec' g (SetLike.coe_mem ht.toRootsOfUnity)
 
 /-- If g(t)=t^c for all roots of unity, then c=χ(g). -/
 theorem toFun_unique (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)))
     (hc : ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ c.val : Lˣ)) : c = χ₀ n g := by
-  apply IsCyclic.ext rfl (fun ζ ↦ ?_)
+  apply IsCyclic.ext Nat.card_eq_fintype_card (fun ζ ↦ ?_)
   specialize hc ζ
   suffices ((ζ ^ c.val : Lˣ) : L) = (ζ ^ (χ₀ n g).val : Lˣ) by exact_mod_cast this
   rw [← toFun_spec g ζ, hc]
@@ -159,7 +159,7 @@ where `d` is the number of `n`'th roots of unity in `L`. It is uniquely
 characterised by the property that `g(ζ)=ζ^(ModularCyclotomicCharacter n g)`
 for `g` an automorphism of `L` and `ζ` an `n`th root of unity. -/
 noncomputable
-def ModularCyclotomicCharacter' (n : ℕ+) :
+def ModularCyclotomicCharacter' (n : ℕ) [NeZero n] :
     (L ≃+* L) →* (ZMod (Fintype.card { x // x ∈ rootsOfUnity n L }))ˣ := MonoidHom.toHomUnits
   { toFun := ModularCyclotomicCharacter.toFun n
     map_one' := ModularCyclotomicCharacter.id n
@@ -180,7 +180,7 @@ of unity, `ModularCyclotomicCharacter n` is a multiplicative homomorphism from t
 automorphisms of `L` to `(ℤ/nℤ)ˣ`. It is uniquely characterised by the property that
 `g(ζ)=ζ^(ModularCyclotomicCharacter n g)` for `g` an automorphism of `L` and `ζ` any `n`th root
 of unity. -/
-noncomputable def ModularCyclotomicCharacter {n : ℕ+}
+noncomputable def ModularCyclotomicCharacter {n : ℕ} [NeZero n]
     (hn : Fintype.card { x // x ∈ rootsOfUnity n L } = n) :
     (L ≃+* L) →* (ZMod n)ˣ :=
   (Units.mapEquiv <| (ZMod.ringEquivCongr hn).toMulEquiv).toMonoidHom.comp
@@ -188,7 +188,7 @@ noncomputable def ModularCyclotomicCharacter {n : ℕ+}
 
 namespace ModularCyclotomicCharacter
 
-variable {n : ℕ+} (hn : Fintype.card { x // x ∈ rootsOfUnity n L } = n)
+variable {n : ℕ} [NeZero n] (hn : Fintype.card { x // x ∈ rootsOfUnity n L } = n)
 
 lemma spec (g : L ≃+* L) {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
     g t = t ^ ((ModularCyclotomicCharacter L hn g) : ZMod n).val := by
@@ -210,11 +210,14 @@ variable {L}
 /-- The relationship between `IsPrimitiveRoot.autToPow` and
 `ModularCyclotomicCharacter`. Note that `IsPrimitiveRoot.autToPow`
 needs an explicit root of unity, and also an auxiliary "base ring" `R`. -/
-lemma IsPrimitiveRoot.autToPow_eq_ModularCyclotomicCharacter (n : ℕ+)
+lemma IsPrimitiveRoot.autToPow_eq_ModularCyclotomicCharacter (n : ℕ) [NeZero n]
     (R : Type*) [CommRing R] [Algebra R L] {μ : L} (hμ : IsPrimitiveRoot μ n) (g : L ≃ₐ[R] L) :
     hμ.autToPow R g = ModularCyclotomicCharacter L hμ.card_rootsOfUnity g := by
   ext
   apply ZMod.val_injective
   apply hμ.pow_inj (ZMod.val_lt _) (ZMod.val_lt _)
-  simpa [autToPow_spec R hμ g, ModularCyclotomicCharacter', ModularCyclotomicCharacter,
-    ZMod.ringEquivCongr_val] using ModularCyclotomicCharacter.toFun_spec'' g hμ
+  simpa only [autToPow_spec R hμ g, ModularCyclotomicCharacter, RingEquiv.toMulEquiv_eq_coe,
+    MulEquiv.toMonoidHom_eq_coe, ModularCyclotomicCharacter', MonoidHom.coe_comp, MonoidHom.coe_coe,
+    Function.comp_apply, Units.coe_mapEquiv, MonoidHom.coe_toHomUnits, MonoidHom.coe_mk,
+    OneHom.coe_mk, RingEquiv.coe_toMulEquiv, ZMod.ringEquivCongr_val, AlgEquiv.coe_ringEquiv]
+    using ModularCyclotomicCharacter.toFun_spec'' g hμ

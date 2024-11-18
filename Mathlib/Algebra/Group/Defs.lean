@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Data.Int.Notation
+import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Lemma
@@ -35,7 +36,7 @@ actions and register the following instances:
 - `SMul ℕ M` for additive monoids `M`, and `SMul ℤ G` for additive groups `G`.
 
 `SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
-See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition)`.
+See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition).
 
 ## Notation
 
@@ -167,6 +168,73 @@ class Inv (α : Type u) where
 
 @[inherit_doc]
 postfix:max "⁻¹" => Inv.inv
+
+section ite
+variable {α : Type*} (P : Prop) [Decidable P]
+
+section Mul
+variable [Mul α]
+
+@[to_additive]
+lemma mul_dite (a : α) (b : P → α) (c : ¬ P → α) :
+    (a * if h : P then b h else c h) = if h : P then a * b h else a * c h := by split <;> rfl
+
+@[to_additive]
+lemma mul_ite (a b c : α) : (a * if P then b else c) = if P then a * b else a * c := mul_dite ..
+
+@[to_additive]
+lemma dite_mul (a : P → α) (b : ¬ P → α) (c : α) :
+    (if h : P then a h else b h) * c = if h : P then a h * c else b h * c := by split <;> rfl
+
+@[to_additive]
+lemma ite_mul (a b c : α) : (if P then a else b) * c = if P then a * c else b * c := dite_mul ..
+
+-- We make `mul_ite` and `ite_mul` simp lemmas, but not `add_ite` or `ite_add`.
+-- The problem we're trying to avoid is dealing with sums of the form `∑ x ∈ s, (f x + ite P 1 0)`,
+-- in which `add_ite` followed by `sum_ite` would needlessly slice up
+-- the `f x` terms according to whether `P` holds at `x`.
+-- There doesn't appear to be a corresponding difficulty so far with `mul_ite` and `ite_mul`.
+attribute [simp] mul_dite dite_mul mul_ite ite_mul
+
+@[to_additive]
+lemma dite_mul_dite (a : P → α) (b : ¬ P → α) (c : P → α) (d : ¬ P → α) :
+    ((if h : P then a h else b h) * if h : P then c h else d h) =
+      if h : P then a h * c h else b h * d h := by split <;> rfl
+
+@[to_additive]
+lemma ite_mul_ite (a b c d : α) :
+    ((if P then a else b) * if P then c else d) = if P then a * c else b * d := by split <;> rfl
+
+end Mul
+
+section Div
+variable [Div α]
+
+@[to_additive]
+lemma div_dite (a : α) (b : P → α) (c : ¬ P → α) :
+    (a / if h : P then b h else c h) = if h : P then a / b h else a / c h := by split <;> rfl
+
+@[to_additive]
+lemma div_ite (a b c : α) : (a / if P then b else c) = if P then a / b else a / c := div_dite ..
+
+@[to_additive]
+lemma dite_div (a : P → α) (b : ¬ P → α) (c : α) :
+    (if h : P then a h else b h) / c = if h : P then a h / c else b h / c := by split <;> rfl
+
+@[to_additive]
+lemma ite_div (a b c : α) : (if P then a else b) / c = if P then a / c else b / c := dite_div ..
+
+@[to_additive]
+lemma dite_div_dite (a : P → α) (b : ¬ P → α) (c : P → α) (d : ¬ P → α) :
+    ((if h : P then a h else b h) / if h : P then c h else d h) =
+      if h : P then a h / c h else b h / d h := by split <;> rfl
+
+@[to_additive]
+lemma ite_div_ite (a b c d : α) :
+    ((if P then a else b) / if P then c else d) = if P then a / c else b / d := dite_div_dite ..
+
+end Div
+end ite
 
 section Mul
 
@@ -436,6 +504,18 @@ def nsmulRec [Zero M] [Add M] : ℕ → M → M
 
 attribute [to_additive existing] npowRec
 
+variable [One M] [Semigroup M] (m n : ℕ) (hn : n ≠ 0) (a : M) (ha : 1 * a = a)
+include hn ha
+
+@[to_additive] theorem npowRec_add : npowRec (m + n) a = npowRec m a * npowRec n a := by
+  obtain _ | n := n; · exact (hn rfl).elim
+  induction n with
+  | zero => simp only [Nat.zero_add, npowRec, ha]
+  | succ n ih => rw [← Nat.add_assoc, npowRec, ih n.succ_ne_zero]; simp only [npowRec, mul_assoc]
+
+@[to_additive] theorem npowRec_succ : npowRec (n + 1) a = a * npowRec n a := by
+  rw [Nat.add_comm, npowRec_add 1 n hn a ha, npowRec, npowRec, ha]
+
 end
 
 library_note "forgetful inheritance"/--
@@ -516,6 +596,117 @@ needed. These problems do not come up in practice, so most of the time we will n
 the `npow` field when defining multiplicative objects.
 -/
 
+/-- Exponentiation by repeated squaring. -/
+@[to_additive "Scalar multiplication by repeated self-addition,
+the additive version of exponentation by repeated squaring."]
+def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
+  npowBinRec.go k 1
+where
+  /-- Auxiliary tail-recursive implementation for `npowBinRec`. -/
+  @[to_additive nsmulBinRec.go "Auxiliary tail-recursive implementation for `nsmulBinRec`."]
+  go (k : ℕ) : M → M → M :=
+    k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
+
+/--
+A variant of `npowRec` which is a semigroup homomorphisms from `ℕ₊` to `M`.
+-/
+def npowRec' {M : Type*} [One M] [Mul M] : ℕ → M → M
+  | 0, _ => 1
+  | 1, m => m
+  | k + 2, m => npowRec' (k + 1) m * m
+
+/--
+A variant of `nsmulRec` which is a semigroup homomorphisms from `ℕ₊` to `M`.
+-/
+def nsmulRec' {M : Type*} [Zero M] [Add M] : ℕ → M → M
+  | 0, _ => 0
+  | 1, m => m
+  | k + 2, m => nsmulRec' (k + 1) m + m
+
+attribute [to_additive existing] npowRec'
+
+@[to_additive]
+theorem npowRec'_succ {M : Type*} [Semigroup M] [One M] {k : ℕ} (_ : k ≠ 0) (m : M) :
+    npowRec' (k + 1) m = npowRec' k m * m :=
+  match k with
+  | _ + 1 => rfl
+
+@[to_additive]
+theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
+    npowRec' (2 * k) m = npowRec' k (m * m) := by
+  induction k using Nat.strongRecOn with
+  | ind k' ih =>
+    match k' with
+    | 0 => rfl
+    | 1 => simp [npowRec']
+    | k + 2 => simp [npowRec', ← mul_assoc, ← ih]
+
+@[to_additive]
+theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k ≠ 0) (m : M) :
+    m * npowRec' k m = npowRec' k m * m := by
+  induction k using Nat.strongRecOn with
+  | ind k' ih =>
+    match k' with
+    | 1 => simp [npowRec', mul_assoc]
+    | k + 2 => simp [npowRec', ← mul_assoc, ih]
+
+@[to_additive]
+theorem npowRec_eq {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
+    npowRec (k + 1) m = 1 * npowRec' (k + 1) m := by
+  induction k using Nat.strongRecOn with
+  | ind k' ih =>
+    match k' with
+    | 0 => rfl
+    | k + 1 =>
+      rw [npowRec, npowRec'_succ k.succ_ne_zero, ← mul_assoc]
+      congr
+      simp [ih]
+
+@[to_additive]
+theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M) :
+    npowBinRec.go (k + 1) m n = m * npowRec' (k + 1) n := by
+  unfold go
+  generalize hk : k + 1 = k'
+  replace hk : k' ≠ 0 := by omega
+  induction k' using Nat.binaryRecFromOne generalizing n m with
+  | z₀ => simp at hk
+  | z₁ => simp [npowRec']
+  | f b k' k'0 ih =>
+    rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
+    cases b <;> simp only [Nat.bit, cond_false, cond_true, ← Nat.two_mul, npowRec'_two_mul]
+    rw [npowRec'_succ (by omega), npowRec'_two_mul, ← npowRec'_two_mul,
+      ← npowRec'_mul_comm (by omega), mul_assoc]
+
+/--
+An abbreviation for `npowRec` with an additional typeclass assumption on associativity
+so that we can use `@[csimp]` to replace it with an implementation by repeated squaring
+in compiled code.
+-/
+@[to_additive
+"An abbreviation for `nsmulRec` with an additional typeclass assumptions on associativity
+so that we can use `@[csimp]` to replace it with an implementation by repeated doubling in compiled
+code as an automatic parameter."]
+abbrev npowRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
+  npowRec k m
+
+/--
+An abbreviation for `npowBinRec` with an additional typeclass assumption on associativity
+so that we can use it in `@[csimp]` for more performant code generation.
+-/
+@[to_additive
+"An abbreviation for `nsmulBinRec` with an additional typeclass assumption on associativity
+so that we can use it in `@[csimp]` for more performant code generation
+as an automatic parameter."]
+abbrev npowBinRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
+  npowBinRec k m
+
+@[to_additive (attr := csimp)]
+theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
+  funext M _ _ k m
+  rw [npowBinRecAuto, npowRecAuto, npowBinRec]
+  match k with
+  | 0 => rw [npowRec, npowBinRec.go, Nat.binaryRec_zero]
+  | k + 1 => rw [npowBinRec.go_spec, npowRec_eq]
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
@@ -534,13 +725,13 @@ attribute [instance 50] AddZeroClass.toAdd
 @[to_additive]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power of a natural number. -/
-  protected npow : ℕ → M → M := npowRec
+  protected npow : ℕ → M → M := npowRecAuto
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
--- Bug #660
+-- Bug https://github.com/leanprover-community/mathlib4/issues/660
 attribute [to_additive existing] Monoid.toMulOneClass
 
 @[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
@@ -552,7 +743,7 @@ instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
 attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section Monoid
-variable {M : Type*} [Monoid M] {a b c : M} {m n : ℕ}
+variable {M : Type*} [Monoid M] {a b c : M}
 
 @[to_additive (attr := simp) nsmul_eq_smul]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
@@ -807,7 +998,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   /-- `a ^ 0 = 1` -/
   protected zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
   /-- `a ^ (n + 1) = a ^ n * a` -/
-  protected zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = zpow (Int.ofNat n) a * a := by
+  protected zpow_succ' (n : ℕ) (a : G) : zpow n.succ a = zpow n a * a := by
     intros; rfl
   /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
   protected zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
@@ -848,7 +1039,7 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected zsmul : ℤ → G → G
   protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
   protected zsmul_succ' (n : ℕ) (a : G) :
-      zsmul (Int.ofNat n.succ) a = zsmul (Int.ofNat n) a + a := by
+      zsmul n.succ a = zsmul n a + a := by
     intros; rfl
   protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
     intros; rfl
@@ -879,7 +1070,7 @@ theorem exists_zpow_surjective (G : Type*) [Pow G ℤ] [IsCyclic G] :
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] {a b : G}
+variable [DivInvMonoid G]
 
 @[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=
@@ -959,7 +1150,7 @@ class InvOneClass (G : Type*) extends One G, Inv G where
 @[to_additive]
 class DivInvOneMonoid (G : Type*) extends DivInvMonoid G, InvOneClass G
 
--- FIXME: `to_additive` is not operating on the second parent. (#660)
+-- FIXME: `to_additive` is not operating on the second parent. (https://github.com/leanprover-community/mathlib4/issues/660)
 attribute [to_additive existing] DivInvOneMonoid.toInvOneClass
 
 variable [InvOneClass G]
@@ -1050,7 +1241,7 @@ attribute [to_additive] Group
 
 section Group
 
-variable [Group G] {a b c : G}
+variable [Group G] {a b : G}
 
 @[to_additive (attr := simp)]
 theorem inv_mul_cancel (a : G) : a⁻¹ * a = 1 :=

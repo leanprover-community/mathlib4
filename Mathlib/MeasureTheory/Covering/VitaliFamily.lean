@@ -49,7 +49,7 @@ Vitali relations there)
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 open scoped Topology
 
-variable {X : Type*} [MetricSpace X]
+variable {X : Type*} [PseudoMetricSpace X]
 
 /-- On a metric space `X` with a measure `μ`, consider for each `x : X` a family of measurable sets
 with nonempty interiors, called `setsAt x`. This family is a Vitali family if it satisfies the
@@ -61,7 +61,7 @@ Vitali families are provided by covering theorems such as the Besicovitch coveri
 Vitali covering theorem. They make it possible to formulate general versions of theorems on
 differentiations of measure that apply in both contexts.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure VitaliFamily {m : MeasurableSpace X} (μ : Measure X) where
   /-- Sets of the family "centered" at a given point. -/

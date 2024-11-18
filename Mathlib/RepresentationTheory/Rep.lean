@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -145,8 +145,12 @@ variable (k G)
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-noncomputable def linearization : MonoidalFunctor (Action (Type u) (MonCat.of G)) (Rep k G) :=
-  (ModuleCat.monoidalFree k).mapAction (MonCat.of G)
+noncomputable def linearization : (Action (Type u) (MonCat.of G)) ⥤ (Rep k G) :=
+  (ModuleCat.free k).mapAction (MonCat.of G)
+
+instance : (linearization k G).Monoidal := by
+  dsimp only [linearization]
+  infer_instance
 
 variable {k G}
 
@@ -160,7 +164,7 @@ theorem linearization_of (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) :
       = Finsupp.single (X.ρ g x) (1 : k) := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
 
--- Porting note (#11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
 theorem linearization_single (X : Action (Type u) (MonCat.of G)) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
   rw [linearization_obj_ρ, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
@@ -175,29 +179,25 @@ theorem linearization_map_hom_single (x : X.V) (r : k) :
     ((linearization k G).map f).hom (Finsupp.single x r) = Finsupp.single (f.hom x) r :=
   Finsupp.mapDomain_single
 
+open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
+
 @[simp]
 theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
-    ((linearization k G).μ X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).toLinearMap :=
+    (μ (linearization k G) X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).toLinearMap :=
   rfl
 
 @[simp]
-theorem linearization_μ_inv_hom (X Y : Action (Type u) (MonCat.of G)) :
-    (inv ((linearization k G).μ X Y)).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap := by
--- Porting note (#11039): broken proof was
-/- simp_rw [← Action.forget_map, Functor.map_inv, Action.forget_map, linearization_μ_hom]
-  apply IsIso.inv_eq_of_hom_inv_id _
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply _ _-/
-  rw [← Action.forget_map, Functor.map_inv]
-  apply IsIso.inv_eq_of_hom_inv_id
-  exact LinearMap.ext fun x => LinearEquiv.symm_apply_apply (finsuppTensorFinsupp' k X.V Y.V) x
-
-@[simp]
-theorem linearization_ε_hom : (linearization k G).ε.hom = Finsupp.lsingle PUnit.unit :=
+theorem linearization_δ_hom (X Y : Action (Type u) (MonCat.of G)) :
+    (δ (linearization k G) X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap :=
   rfl
 
-theorem linearization_ε_inv_hom_apply (r : k) :
-    (inv (linearization k G).ε).hom (Finsupp.single PUnit.unit r) = r :=
-  IsIso.hom_inv_id_apply (linearization k G).ε r
+@[simp]
+theorem linearization_ε_hom : (ε (linearization k G)).hom = Finsupp.lsingle PUnit.unit :=
+  rfl
+
+theorem linearization_η_hom_apply (r : k) :
+    (η (linearization k G)).hom (Finsupp.single PUnit.unit r) = r :=
+  (εIso (linearization k G)).hom_inv_id_apply r
 
 variable (k G)
 
@@ -283,7 +283,7 @@ noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G �
 
 theorem leftRegularHom_apply {A : Rep k G} (x : A) :
     (leftRegularHom A x).hom (Finsupp.single 1 1) = x := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [leftRegularHom_hom, Finsupp.lift_apply, Finsupp.sum_single_index, one_smul,
     A.ρ.map_one, LinearMap.one_apply]
   rw [zero_smul]
@@ -293,8 +293,8 @@ representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
 noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶ A) ≃ₗ[k] A where
   toFun f := f.hom (Finsupp.single 1 1)
-  map_add' x y := rfl
-  map_smul' r x := rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
   invFun x := leftRegularHom A x
   left_inv f := by
     refine Action.Hom.ext (Finsupp.lhom_ext' fun x : G => LinearMap.ext_ring ?_)
@@ -311,7 +311,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (Rep.ofMulAction k G G ⟶
 
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (Finsupp.single g 1) = A.ρ g x := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [leftRegularHomEquiv_symm_apply, leftRegularHom_hom, Finsupp.lift_apply,
     Finsupp.sum_single_index, one_smul]
   rw [zero_smul]
@@ -332,7 +332,7 @@ variable [Group G] (A B C : Rep k G)
 protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
-    { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom)
+    { hom := ModuleCat.asHom (LinearMap.llcomp k _ _ _ f.hom)
       comm := fun g => LinearMap.ext fun x => LinearMap.ext fun y => by
         show f.hom (X.ρ g _) = _
         simp only [hom_comm_apply]; rfl }
@@ -361,19 +361,19 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
       comm := fun g => TensorProduct.ext' fun x y => by
 /- Porting note: rest of broken proof was
         dsimp only [MonoidalCategory.tensorLeft_obj, ModuleCat.comp_def, LinearMap.comp_apply,
-          tensor_rho, ModuleCat.MonoidalCategory.hom_apply, TensorProduct.map_tmul]
+          tensor_ρ, ModuleCat.MonoidalCategory.hom_apply, TensorProduct.map_tmul]
         simp only [TensorProduct.uncurry_apply f.hom.flip, LinearMap.flip_apply, Action_ρ_eq_ρ,
           hom_comm_apply f g y, Rep.ihom_obj_ρ_apply, LinearMap.comp_apply, ρ_inv_self_apply] -/
         change TensorProduct.uncurry k _ _ _ f.hom.flip (A.ρ g x ⊗ₜ[k] B.ρ g y) =
           C.ρ g (TensorProduct.uncurry k _ _ _ f.hom.flip (x ⊗ₜ[k] y))
-        -- The next 3 tactics used to be `rw` before leanprover/lean4#2644
+        -- The next 3 tactics used to be `rw` before https://github.com/leanprover/lean4/pull/2644
         erw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply,
           Rep.ihom_obj_ρ_apply,
           LinearMap.comp_apply, LinearMap.comp_apply] --, ρ_inv_self_apply (A := C)]
         dsimp
-        erw [ρ_inv_self_apply]
+        rw [ρ_inv_self_apply]
         rfl}
-  left_inv f := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
+  left_inv _ := Action.Hom.ext (TensorProduct.ext' fun _ _ => rfl)
   right_inv f := by ext; rfl
 
 variable {A B C}
@@ -569,7 +569,7 @@ theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
 /- Porting note: rest of broken proof was
   simp only [AddEquiv.apply_eq_iff_eq, AddEquiv.apply_symm_apply,
     Representation.asModuleEquiv_symm_map_rho, Representation.ofModule_asModule_act] -/
-  erw [Representation.asModuleEquiv_symm_map_rho]
+  rw [Representation.asModuleEquiv_symm_map_rho]
   rfl
 
 /-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
@@ -582,7 +582,7 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
 /- Porting note: rest of broken proof was
           simp only [Representation.asModuleEquiv_symm_map_smul,
             RestrictScalars.addEquiv_symm_map_algebraMap_smul] -/
-          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
           erw [AddEquiv.trans_apply,
             Representation.asModuleEquiv_symm_map_smul]
           rfl })

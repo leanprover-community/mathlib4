@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Denominators of evaluation of polynomials at ratios

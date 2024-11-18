@@ -58,12 +58,12 @@ theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
 theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
   rfl
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[simp, reassoc]
 theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).left = f.left ≫ g.left := rfl
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[simp, reassoc]
 theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).right = f.right ≫ g.right := rfl
@@ -88,7 +88,6 @@ theorem mk_injective (A B : T) :
 theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
   (mk_injective A B).eq_iff
 
-/- Porting note: was marked as dangerous instance so changed from `Coe` to `CoeOut` -/
 instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
   coe := mk
 
@@ -152,7 +151,7 @@ theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ�
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
   have eq := Arrow.hom.congr_right e.inv_hom_id
   rw [Arrow.comp_right, Arrow.id_right] at eq
-  erw [Arrow.w_assoc, eq, Category.comp_id]
+  rw [Arrow.w_assoc, eq, Category.comp_id]
 
 theorem iso_w' {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) :
     g = e.inv.left ≫ f ≫ e.hom.right :=
@@ -184,11 +183,9 @@ theorem inv_left [IsIso sq] : (inv sq).left = inv sq.left :=
 theorem inv_right [IsIso sq] : (inv sq).right = inv sq.right :=
   IsIso.eq_inv_of_hom_inv_id <| by rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]
 
-/- Porting note (#10618): simp can prove this so removed @[simp] -/
 theorem left_hom_inv_right [IsIso sq] : sq.left ≫ g.hom ≫ inv sq.right = f.hom := by
   simp only [← Category.assoc, IsIso.comp_inv_eq, w]
 
--- simp proves this
 theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.hom := by
   simp only [w, IsIso.inv_comp_eq]
 

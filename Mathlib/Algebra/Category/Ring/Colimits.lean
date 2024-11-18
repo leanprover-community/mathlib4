@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
@@ -135,14 +135,14 @@ instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
 instance : Ring (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
-    one_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.one_mul _
-    mul_one := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_one _
-    add_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.add_comm _ _
+    one_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
+    mul_one := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
+    add_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
     mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
-    mul_zero := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_zero _
-    zero_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.zero_mul _
+    mul_zero := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
+    zero_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
     left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
@@ -280,18 +280,13 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     refine Quot.inductionOn x ?_
     intro x
     induction x with
-    | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]
-    | one => erw [quot_one, map_one (f := m), (descMorphism F s).map_one]
-    -- extra rfl with leanprover/lean4#2644
-    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]; rfl
+    | zero => simp
+    | one => simp
+    | neg x ih => simp [ih]
     | of j x =>
       exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
-    | add x y ih_x ih_y =>
-    -- extra rfl with leanprover/lean4#2644
-        erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]; rfl
-    | mul x y ih_x ih_y =>
-    -- extra rfl with leanprover/lean4#2644
-        erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]; rfl
+    | add x y ih_x ih_y => simp [ih_x, ih_y]
+    | mul x y ih_x ih_y => simp [ih_x, ih_y]
 
 instance hasColimits_ringCat : HasColimits RingCat where
   has_colimits_of_shape _ _ :=
@@ -442,15 +437,15 @@ instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
 instance : CommRing (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
-    one_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.one_mul _
-    mul_one := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_one _
-    add_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.add_comm _ _
-    mul_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.mul_comm _ _
+    one_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
+    mul_one := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
+    add_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
+    mul_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.mul_comm _ _
     mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
-    mul_zero := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_zero _
-    zero_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.zero_mul _
+    mul_zero := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
+    zero_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
     left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
@@ -589,18 +584,13 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     refine Quot.inductionOn x ?_
     intro x
     induction x with
-    | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]
-    | one => erw [quot_one, map_one (f := m), (descMorphism F s).map_one]
-    -- extra rfl with leanprover/lean4#2644
-    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]; rfl
+    | zero => simp
+    | one => simp
+    | neg x ih => simp [ih]
     | of j x =>
       exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
-    | add x y ih_x ih_y =>
-    -- extra rfl with leanprover/lean4#2644
-        erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]; rfl
-    | mul x y ih_x ih_y =>
-    -- extra rfl with leanprover/lean4#2644
-        erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]; rfl
+    | add x y ih_x ih_y => simp [ih_x, ih_y]
+    | mul x y ih_x ih_y => simp [ih_x, ih_y]
 
 instance hasColimits_commRingCat : HasColimits CommRingCat where
   has_colimits_of_shape _ _ :=

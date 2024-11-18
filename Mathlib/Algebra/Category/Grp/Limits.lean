@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
@@ -97,7 +97,7 @@ noncomputable instance Forget₂.createsLimit :
       validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
       makesLimit :=
         IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
-          (fun s => _) fun s => rfl }
+          (fun _ => _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `Grp`.
 (Generally, you'll just want to use `limit F`.)
@@ -422,7 +422,7 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
         simp }
   inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by ext x; exact x.2
   hom_inv_id := by
-    -- Porting note (#11041): it would be nice to do the next two steps by a single `ext`,
+    -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): it would be nice to do the next two steps by a single `ext`,
     -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.
     refine equalizer.hom_ext ?_
     ext x
@@ -451,13 +451,8 @@ theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrp.{u}} (f : G ⟶ H) :
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
 agrees with the `AddSubgroup.subtype` map.
 -/
-@[simps! hom_left_apply_coe inv_left_apply]
 def kernelIsoKerOver {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGrp.of f.ker) (AddSubgroup.subtype f.ker) :=
   Over.isoMk (kernelIsoKer f)
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] AddCommGrp.kernelIsoKerOver_inv_left_apply
-  AddCommGrp.kernelIsoKerOver_hom_left_apply_coe
 
 end AddCommGrp

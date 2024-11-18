@@ -220,12 +220,16 @@ theorem forall₂_reverse_iff {l₁ l₂} : Forall₂ R (reverse l₁) (reverse 
       exact rel_reverse h)
     fun h => rel_reverse h
 
-theorem rel_join : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) join join
+theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
   | [], [], Forall₂.nil => Forall₂.nil
-  | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_join h₂)
+  | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_flatten h₂)
 
-theorem rel_bind : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.bind List.bind :=
-  fun _ _ h₁ _ _ h₂ => rel_join (rel_map (@h₂) h₁)
+@[deprecated (since := "2025-10-15")] alias rel_join := rel_flatten
+
+theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.flatMap List.flatMap :=
+  fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
+
+@[deprecated (since := "2025-10-16")] alias rel_bind := rel_flatMap
 
 theorem rel_foldl : ((P ⇒ R ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldl foldl
   | _, _, _, _, _, h, _, _, Forall₂.nil => h

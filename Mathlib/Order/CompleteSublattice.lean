@@ -3,6 +3,7 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Data.Set.Functor
 import Mathlib.Order.Sublattice
 import Mathlib.Order.Hom.CompleteLattice
 
@@ -90,12 +91,24 @@ theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
 
 -- Redeclaring to get proper keys for these instances
-instance : Sup {x // x ∈ L} := Sublattice.instSupCoe
-instance : Inf {x // x ∈ L} := Sublattice.instInfCoe
+instance : Max {x // x ∈ L} := Sublattice.instSupCoe
+instance : Min {x // x ∈ L} := Sublattice.instInfCoe
 
 instance instCompleteLattice : CompleteLattice L :=
   Subtype.coe_injective.completeLattice _
     Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
+
+/-- The natural complete lattice hom from a complete sublattice to the original lattice. -/
+def subtype (L : CompleteSublattice α) : CompleteLatticeHom L α where
+  toFun := Subtype.val
+  map_sInf' _ := rfl
+  map_sSup' _ := rfl
+
+@[simp, norm_cast] lemma coe_subtype (L : CompleteSublattice α) : L.subtype = ((↑) : L → α) := rfl
+lemma subtype_apply (L : Sublattice α) (a : L) : L.subtype a = a := rfl
+
+lemma subtype_injective (L : CompleteSublattice α) :
+    Injective <| subtype L := Subtype.coe_injective
 
 /-- The push forward of a complete sublattice under a complete lattice hom is a complete
 sublattice. -/

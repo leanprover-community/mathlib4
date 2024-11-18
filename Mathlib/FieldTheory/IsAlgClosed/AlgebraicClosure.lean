@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectLimit
 import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.Polynomial.Eval.Irreducible
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 
@@ -79,7 +80,7 @@ theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   rw [map_one, Finsupp.linearCombination_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
   · exact zero_ne_one hv
   intro j hj
-  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf (s := v.support) hj,
+  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf _ (s := v.support) hj,
     mul_zero]
 
 /-- A random maximal ideal that contains `spanEval k` -/
@@ -128,7 +129,7 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AdjoinMonic k, f.eval₂ (toAdjoinMonic k) x = 0 :=
   ⟨Ideal.Quotient.mk _ <| X (⟨f, hfm, hfi⟩ : MonicIrreducible k), by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
     exact le_maxIdeal k (Ideal.subset_span <| ⟨_, rfl⟩)⟩
 
@@ -164,12 +165,8 @@ instance Step.algebraSucc (n) : Algebra (Step k n) (Step k (n + 1)) :=
   (toStepSucc k n).toAlgebra
 
 theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
-    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 := by
--- Porting note: original proof was `@AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi`,
--- but it timeouts.
-  obtain ⟨x, hx⟩ := @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
--- Porting note: using `hx` instead of `by apply hx` timeouts.
-  exact ⟨x, by apply hx⟩
+    (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 :=
+  @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
 
 -- Porting note: the following two declarations were added during the port to be used in the
 -- definition of toStepOfLE
@@ -186,29 +183,24 @@ private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
 def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
   toFun := toStepOfLE' k m n h
   map_one' := by
--- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 1`
---                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_one]`
     induction' h with a h ih
     · exact Nat.leRecOn_self 1
-    · rw [toStepOfLE'.succ k m a h]; simp [ih]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_mul' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_mul]`
+    simp only
     induction' h with a h ih
-    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
--- Porting note: original proof was `induction' h with n h ih; · exact Nat.leRecOn_self 0`
---                                   `rw [Nat.leRecOn_succ h, ih, RingHom.map_zero]`
+    · simp_rw [toStepOfLE', Nat.leRecOn_self]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_zero' := by
+    simp only
     induction' h with a h ih
     · exact Nat.leRecOn_self 0
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+    · simp [toStepOfLE'.succ k m a h, ih]
   map_add' x y := by
--- Porting note: original proof was `induction' h with n h ih; · simp_rw [Nat.leRecOn_self]`
---                                   `simp_rw [Nat.leRecOn_succ h, ih, RingHom.map_add]`
+    simp only
     induction' h with a h ih
-    · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
-    · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
+    · simp_rw [toStepOfLE', Nat.leRecOn_self]
+    · simp [toStepOfLE'.succ k m a h, ih]
 
 @[simp]
 theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
@@ -254,7 +246,7 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     · convert h -- Porting note: This times out at 500000
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
-  ⟨fun _ x _ => Nat.leRecOn_self x, fun h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
+  ⟨fun _ => Nat.leRecOn_self, fun _ _ _ h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
 
 end AlgebraicClosure
 
@@ -346,6 +338,7 @@ attribute [local instance] AlgebraicClosureAux.field AlgebraicClosureAux.instAlg
 
 /-- The canonical algebraic closure of a field, the direct limit of adding roots to the field for
 each polynomial over the field. -/
+@[stacks 09GT]
 def AlgebraicClosure : Type u :=
   MvPolynomial (AlgebraicClosureAux k) k ⧸
     RingHom.ker (MvPolynomial.aeval (R := k) id).toRingHom
@@ -378,7 +371,7 @@ instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
   let e := algEquivAlgebraicClosureAux k
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
-    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [EmbeddingLike.map_ne_zero_iff.2 ha]
     __ := e.surjective.nontrivial }
 
 instance instField : Field (AlgebraicClosure k) where
@@ -404,12 +397,17 @@ instance : IsAlgClosure k (AlgebraicClosure k) := by
   exact ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic⟩
 
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
-  IsAlgClosure.algebraic
+  IsAlgClosure.isAlgebraic
 
 instance [CharZero k] : CharZero (AlgebraicClosure k) :=
   charZero_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k)))
 
 instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
+
+instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
+    IsAlgClosure k (AlgebraicClosure L) where
+  isAlgebraic := .trans (L := L)
+  isAlgClosed := inferInstance
 
 end AlgebraicClosure

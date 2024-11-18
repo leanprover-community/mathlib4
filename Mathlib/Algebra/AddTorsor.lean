@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Torsors of additive group actions
@@ -51,14 +51,11 @@ class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction 
   /-- Torsor addition and subtraction with the same element cancels out. -/
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 
- -- Porting note(#12096): removed `nolint instance_priority`; lint not ported yet
+ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed `nolint instance_priority`; lint not ported yet
 attribute [instance 100] AddTorsor.nonempty
 
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
---attribute [nolint dangerous_instance] AddTorsor.toVSub
-
 /-- An `AddGroup G` is a torsor for itself. -/
--- Porting note(#12096): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): linter not ported yet
 --@[nolint instance_priority]
 instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G where
   vsub := Sub.sub
@@ -168,8 +165,6 @@ namespace Set
 
 open Pointwise
 
--- porting note (#10618): simp can prove this
---@[simp]
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
 
@@ -248,7 +243,6 @@ instance instAddTorsor : AddTorsor (G × G') (P × P') where
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
-  nonempty := Prod.instNonempty
   vsub_vadd' _ _ := Prod.ext (vsub_vadd _ _) (vsub_vadd _ _)
   vadd_vsub' _ _ := Prod.ext (vadd_vsub _ _) (vadd_vsub _ _)
 

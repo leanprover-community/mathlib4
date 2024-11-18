@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Transfer
@@ -207,7 +207,7 @@ section HasZeroMorphisms
 
 variable [HasZeroMorphisms V]
 
--- porting note (#10688): in order to ease automation, the `Zero` instance is introduced separately,
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): in order to ease automation, the `Zero` instance is introduced separately,
 -- and the lemma `Action.zero_hom` was moved just below
 instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
 

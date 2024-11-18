@@ -97,10 +97,26 @@ theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScala
     x ∈ (algebraMap K L).range :=
   int.mem_range_algHom_of_minpoly_splits h (IsScalarTower.toAlgHom R K L)
 
+theorem minpoly_add_algebraMap_splits [Algebra K L] {x : L} (r : K)
+    (g : (minpoly K x).Splits (algebraMap K L)) :
+    (minpoly K (x + algebraMap K L r)).Splits (algebraMap K L) := by
+  simpa [minpoly.add_algebraMap] using g.comp_X_sub_C r
+
+theorem minpoly_sub_algebraMap_splits [Algebra K L] {x : L} (r : K)
+    (g : (minpoly K x).Splits (algebraMap K L)) :
+    (minpoly K (x - algebraMap K L r)).Splits (algebraMap K L) := by
+  simpa only [sub_eq_add_neg, map_neg] using minpoly_add_algebraMap_splits (-r) g
+
+theorem minpoly_algebraMap_add_splits [Algebra K L] {x : L} (r : K)
+    (g : (minpoly K x).Splits (algebraMap K L)) :
+    (minpoly K (algebraMap K L r + x)).Splits (algebraMap K L) := by
+  simpa only [add_comm] using minpoly_add_algebraMap_splits r g
+
 end
 
 variable [Algebra K M] [IsScalarTower R K M] {x : M}
 
+/-- The `RingHom` version of `IsIntegral.minpoly_splits_tower_top`.  -/
 theorem IsIntegral.minpoly_splits_tower_top' (int : IsIntegral R x) {f : K →+* L}
     (h : Splits (f.comp <| algebraMap R K) (minpoly R x)) :
     Splits f (minpoly K x) :=

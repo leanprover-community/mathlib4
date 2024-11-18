@@ -419,8 +419,8 @@ theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i
 
 
 section
-variable {α β γ : TypeVec.{u} n}
-variable (p : α ⟹ «repeat» n Prop) (r : α ⊗ α ⟹ «repeat» n Prop)
+variable {α β : TypeVec.{u} n}
+variable (p : α ⟹ «repeat» n Prop)
 
 /-- left projection of a `prod` vector -/
 def prod.fst : ∀ {n} {α β : TypeVec.{u} n}, α ⊗ β ⟹ α
@@ -604,9 +604,7 @@ theorem dropFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
 
 @[simp]
 theorem lastFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
-    lastFun (ofSubtype p) = _root_.id := by
-  ext i : 2
-  induction i; simp [dropFun, *]; rfl
+    lastFun (ofSubtype p) = _root_.id := rfl
 
 @[simp]
 theorem dropFun_RelLast' {α : TypeVec n} {β} (R : β → β → Prop) :

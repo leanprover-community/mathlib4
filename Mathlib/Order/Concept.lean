@@ -37,8 +37,7 @@ concept, formal concept analysis, intent, extend, attribute
 
 open Function OrderDual Set
 
-variable {ι : Sort*} {α β γ : Type*} {κ : ι → Sort*} (r : α → β → Prop) {s s₁ s₂ : Set α}
-  {t t₁ t₂ : Set β}
+variable {ι : Sort*} {α β : Type*} {κ : ι → Sort*} (r : α → β → Prop) {s : Set α} {t : Set β}
 
 /-! ### Intent and extent -/
 
@@ -173,7 +172,7 @@ theorem fst_injective : Injective fun c : Concept α β r => c.fst := fun _ _ =>
 
 theorem snd_injective : Injective fun c : Concept α β r => c.snd := fun _ _ => ext'
 
-instance instSupConcept : Sup (Concept α β r) :=
+instance instSupConcept : Max (Concept α β r) :=
   ⟨fun c d =>
     { fst := extentClosure r (c.snd ∩ d.snd)
       snd := c.snd ∩ d.snd
@@ -182,7 +181,7 @@ instance instSupConcept : Sup (Concept α β r) :=
           intentClosure_extentClosure_intentClosure]
       closure_snd := rfl }⟩
 
-instance instInfConcept : Inf (Concept α β r) :=
+instance instInfConcept : Min (Concept α β r) :=
   ⟨fun c d =>
     { fst := c.fst ∩ d.fst
       snd := intentClosure r (c.fst ∩ d.fst)
@@ -223,8 +222,8 @@ theorem strictAnti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → S
 instance instLatticeConcept : Lattice (Concept α β r) :=
   { Concept.instSemilatticeInfConcept with
     sup := (· ⊔ ·)
-    le_sup_left := fun c d => snd_subset_snd_iff.1 inter_subset_left
-    le_sup_right := fun c d => snd_subset_snd_iff.1 inter_subset_right
+    le_sup_left := fun _ _ => snd_subset_snd_iff.1 inter_subset_left
+    le_sup_right := fun _ _ => snd_subset_snd_iff.1 inter_subset_right
     sup_le := fun c d e => by
       simp_rw [← snd_subset_snd_iff]
       exact subset_inter }
@@ -256,11 +255,11 @@ instance : InfSet (Concept α β r) :=
 instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConcept with
-    sup := Concept.instSupConcept.sup
+    sup := Concept.instSupConcept.max
     le_sSup := fun _ _ hc => snd_subset_snd_iff.1 <| biInter_subset_of_mem hc
     sSup_le := fun _ _ hc =>
       snd_subset_snd_iff.1 <| subset_iInter₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
-    inf := Concept.instInfConcept.inf
+    inf := Concept.instInfConcept.min
     sInf_le := fun _ _ => biInter_subset_of_mem
     le_sInf := fun _ _ => subset_iInter₂ }
 
