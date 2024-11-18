@@ -13,10 +13,10 @@ A left adjoint preserves colimits (`CategoryTheory.Adjunction.leftAdjoint_preser
 and a right adjoint preserves limits (`CategoryTheory.Adjunction.rightAdjoint_preservesLimits`).
 
 Equivalences create and reflect (co)limits.
-(`CategoryTheory.Adjunction.isEquivalenceCreatesLimits`,
-`CategoryTheory.Adjunction.isEquivalenceCreatesColimits`,
-`CategoryTheory.Adjunction.isEquivalence_reflectsLimits`,
-`CategoryTheory.Adjunction.isEquivalence_reflectsColimits`,)
+(`CategoryTheory.Functor.createsLimitsOfIsEquivalence`,
+`CategoryTheory.Functor.createsColimitsOfIsEquivalence`,
+`CategoryTheory.Functor.reflectsLimits_of_isEquivalence`,
+`CategoryTheory.Functor.reflectsColimits_of_isEquivalence`.)
 
 In `CategoryTheory.Adjunction.coconesIso` we show that
 when `F ⊣ G`,
@@ -103,7 +103,8 @@ noncomputable instance (priority := 100) isEquivalence_preservesColimits
   leftAdjoint_preservesColimits E.adjunction
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalence_reflectsColimits
+noncomputable instance (priority := 100)
+    _root_.CategoryTheory.Functor.reflectsColimits_of_isEquivalence
     (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsColimitsOfSize.{v, u} E where
   reflectsColimitsOfShape :=
@@ -111,8 +112,12 @@ noncomputable instance (priority := 100) isEquivalence_reflectsColimits
         { reflects := fun t =>
           ⟨(isColimitOfPreserves E.inv t).mapCoconeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
+@[deprecated (since := "2024-11-18")] alias isEquivalenceReflectsColimits :=
+  Functor.reflectsColimits_of_isEquivalence
+
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤ C)
+noncomputable instance (priority := 100)
+    _root_.CategoryTheory.Functor.createsColimitsOfIsEquivalence (H : D ⥤ C)
     [H.IsEquivalence] :
     CreatesColimitsOfSize.{v, u} H where
   CreatesColimitsOfShape :=
@@ -120,6 +125,9 @@ noncomputable instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤
         { lifts := fun c _ =>
             { liftedCocone := mapCoconeInv H c
               validLift := mapCoconeMapCoconeInv H c } } }
+
+@[deprecated (since := "2024-11-18")] alias isEquivalenceCreatesColimits :=
+  Functor.createsColimitsOfIsEquivalence
 
 -- verify the preserve_colimits instance works as expected:
 noncomputable example (E : C ⥤ D) [E.IsEquivalence] (c : Cocone K) (h : IsColimit c) :
@@ -211,7 +219,8 @@ instance (priority := 100) isEquivalencePreservesLimits
   rightAdjoint_preservesLimits E.asEquivalence.symm.toAdjunction
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalence_reflectsLimits
+noncomputable instance (priority := 100)
+    _root_.CategoryTheory.Functor.reflectsLimits_of_isEquivalence
     (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsLimitsOfSize.{v, u} E where
   reflectsLimitsOfShape :=
@@ -219,14 +228,21 @@ noncomputable instance (priority := 100) isEquivalence_reflectsLimits
         { reflects := fun t =>
             ⟨(isLimitOfPreserves E.inv t).mapConeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
+@[deprecated (since := "2024-11-18")] alias isEquivalenceReflectsLimits :=
+  Functor.reflectsLimits_of_isEquivalence
+
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C) [H.IsEquivalence] :
+noncomputable instance (priority := 100)
+    _root_.CategoryTheory.Functor.createsLimitsOfIsEquivalence (H : D ⥤ C) [H.IsEquivalence] :
     CreatesLimitsOfSize.{v, u} H where
   CreatesLimitsOfShape :=
     { CreatesLimit :=
         { lifts := fun c _ =>
             { liftedCone := mapConeInv H c
               validLift := mapConeMapConeInv H c } } }
+
+@[deprecated (since := "2024-11-18")] alias isEquivalenceCreatesLimits :=
+  Functor.createsLimitsOfIsEquivalence
 
 -- verify the preserve_limits instance works as expected:
 noncomputable example (E : D ⥤ C) [E.IsEquivalence] (c : Cone K) (h : IsLimit c) :
