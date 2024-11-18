@@ -23,7 +23,7 @@ simply by proving:
 2. `0 ≤ x ↔ IsSelfAdjoint x ∧ SpectrumRestricts Real.toNNReal x`.
 -/
 
-open Set
+open Set Topology
 
 namespace SpectrumRestricts
 

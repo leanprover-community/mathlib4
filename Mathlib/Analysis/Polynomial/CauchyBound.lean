@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Analysis.Normed.Field.Basic
 

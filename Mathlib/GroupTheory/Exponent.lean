@@ -107,9 +107,6 @@ theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
 @[to_additive]
 protected alias ⟨_, ExponentExists.exponent_ne_zero⟩ := exponent_ne_zero
 
-@[to_additive (attr := deprecated (since := "2024-01-27"))]
-theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := exponent_ne_zero.symm
-
 @[to_additive]
 theorem exponent_pos : 0 < exponent G ↔ ExponentExists G :=
   pos_iff_ne_zero.trans exponent_ne_zero
@@ -212,10 +209,6 @@ theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n
   simp_rw [exponent_dvd_iff_forall_pow_eq_one, orderOf_dvd_iff_pow_eq_one]
 
 variable (G)
-
-@[to_additive (attr := deprecated (since := "2024-01-27"))]
-theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
-  exponent_dvd.mpr h
 
 @[to_additive]
 theorem lcm_orderOf_dvd_exponent [Fintype G] :
@@ -339,9 +332,6 @@ theorem lcm_orderOf_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm order
   Nat.dvd_antisymm
     (lcm_orderOf_dvd_exponent G)
     (exponent_dvd.mpr fun g => Finset.dvd_lcm (Finset.mem_univ g))
-
-@[to_additive (attr := deprecated (since := "2024-01-26")) AddMonoid.lcm_addOrder_eq_exponent]
-alias lcm_order_eq_exponent := lcm_orderOf_eq_exponent
 
 variable {H : Type*} [Monoid H]
 
@@ -511,9 +501,11 @@ variable [Group G]
 lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
   Monoid.one_lt_exponent
 
+@[to_additive]
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
   Monoid.exponent_dvd.mpr <| fun _ => orderOf_dvd_card
 
+@[to_additive]
 theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
   Monoid.exponent_dvd.mpr orderOf_dvd_natCard
 

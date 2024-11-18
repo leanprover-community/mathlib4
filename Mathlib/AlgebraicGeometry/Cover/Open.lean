@@ -49,8 +49,8 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   f x := x
   covers := by
     intro x
-    erw [TopCat.coe_comp] -- now `erw` after #13170
-    rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+    erw [TopCat.coe_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+    rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
     rw [← TopCat.epi_iff_surjective]
@@ -250,7 +250,7 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   map r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
   f _ := 1
   covers r := by
-    rw [Set.range_iff_surjective.mpr ((TopCat.epi_iff_surjective _).mp _)]
+    rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
     · -- Porting note: need more hand holding here because Lean knows that
       -- `CommRing.ofHom ...` is iso, but without `ofHom` Lean does not know what to do

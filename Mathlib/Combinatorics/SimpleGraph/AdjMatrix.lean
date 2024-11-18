@@ -143,7 +143,7 @@ def adjMatrix [Zero α] [One α] : Matrix V V α :=
 
 variable {α}
 
--- TODO: set as an equation lemma for `adjMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `adjMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
     G.adjMatrix α v w = if G.Adj v w then 1 else 0 :=

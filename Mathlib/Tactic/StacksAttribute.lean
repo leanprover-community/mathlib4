@@ -186,14 +186,13 @@ def traceStacksTags (db : Database) (verbose : Bool := false) :
   if entries.isEmpty then logInfo "No tags found." else
   let mut msgs := #[m!""]
   for d in entries do
-    let dname ← Command.liftCoreM do realizeGlobalConstNoOverloadWithInfo (mkIdent d.declName)
     let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
     let cmt := parL ++ d.comment ++ parR
     msgs := msgs.push
       m!"[Stacks Tag {d.tag}]({databaseURL db ++ d.tag}) \
-        corresponds to declaration '{dname}'.{cmt}"
+        corresponds to declaration '{.ofConstName d.declName}'.{cmt}"
     if verbose then
-      let dType := ((env.find? dname).getD default).type
+      let dType := ((env.find? d.declName).getD default).type
       msgs := (msgs.push m!"{dType}").push ""
   let msg := MessageData.joinSep msgs.toList "\n"
   logInfo msg

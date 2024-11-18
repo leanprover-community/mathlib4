@@ -64,7 +64,7 @@ lemma Even.pow_abs (hn : Even n) (a : α) : |a| ^ n = a ^ n := by
 lemma abs_neg_one_pow (n : ℕ) : |(-1 : α) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 
 lemma abs_pow_eq_one (a : α) (h : n ≠ 0) : |a ^ n| = 1 ↔ |a| = 1 := by
-  convert pow_left_inj (abs_nonneg a) zero_le_one h
+  convert pow_left_inj₀ (abs_nonneg a) zero_le_one h
   exacts [(pow_abs _ _).symm, (one_pow _).symm]
 
 @[simp] lemma abs_mul_abs_self (a : α) : |a| * |a| = a * a :=
@@ -95,14 +95,14 @@ lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self
 
 lemma sq_lt_sq : a ^ 2 < b ^ 2 ↔ |a| < |b| := by
   simpa only [sq_abs] using
-    (pow_left_strictMonoOn two_ne_zero).lt_iff_lt (abs_nonneg a) (abs_nonneg b)
+    (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt (abs_nonneg a) (abs_nonneg b)
 
 lemma sq_lt_sq' (h1 : -b < a) (h2 : a < b) : a ^ 2 < b ^ 2 :=
   sq_lt_sq.2 (lt_of_lt_of_le (abs_lt.2 ⟨h1, h2⟩) (le_abs_self _))
 
 lemma sq_le_sq : a ^ 2 ≤ b ^ 2 ↔ |a| ≤ |b| := by
   simpa only [sq_abs] using
-    (pow_left_strictMonoOn two_ne_zero).le_iff_le (abs_nonneg a) (abs_nonneg b)
+    (pow_left_strictMonoOn₀ two_ne_zero).le_iff_le (abs_nonneg a) (abs_nonneg b)
 
 lemma sq_le_sq' (h1 : -b ≤ a) (h2 : a ≤ b) : a ^ 2 ≤ b ^ 2 :=
   sq_le_sq.2 (le_trans (abs_le.mpr ⟨h1, h2⟩) (le_abs_self _))
@@ -184,7 +184,7 @@ variable {R : Type*} [LinearOrderedRing R] {a b : R} {n : ℕ}
 lemma pow_eq_pow_iff_of_ne_zero (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
   match n.even_xor_odd with
   | .inl hne => by simp only [*, and_true, ← abs_eq_abs,
-    ← pow_left_inj (abs_nonneg a) (abs_nonneg b) hn, hne.1.pow_abs]
+    ← pow_left_inj₀ (abs_nonneg a) (abs_nonneg b) hn, hne.1.pow_abs]
   | .inr hn => by simp [hn, (hn.1.strictMono_pow (R := R)).injective.eq_iff]
 
 lemma pow_eq_pow_iff_cases : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by

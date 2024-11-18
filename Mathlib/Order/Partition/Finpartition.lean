@@ -6,8 +6,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Setoid.Basic
-import Mathlib.Order.SupIndep
 import Mathlib.Order.Atoms
+import Mathlib.Order.SupIndep
 
 /-!
 # Finite partitions
