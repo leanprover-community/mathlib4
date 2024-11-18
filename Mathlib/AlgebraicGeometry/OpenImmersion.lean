@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 
 noncomputable section
@@ -57,7 +57,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    · exact Opens.isOpenEmbedding _ -- Porting note (#11187): was `infer_instance`
+    · exact Opens.isOpenEmbedding _ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
 
 end LocallyRingedSpace.IsOpenImmersion
 
@@ -107,7 +107,7 @@ lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
 @[simp]
 lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
   apply Opens.ext
-  simp [Set.preimage_image_eq _ f.isOpenEmbedding.inj]
+  simp [Set.preimage_image_eq _ f.isOpenEmbedding.injective]
 
 lemma image_le_image_iff (f : X ⟶ Y) [IsOpenImmersion f] (U U' : X.Opens) :
     f ''ᵁ U ≤ f ''ᵁ U' ↔ U ≤ U' := by
@@ -198,7 +198,7 @@ def IsOpenImmersion.opensEquiv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion
     X.Opens ≃ { U : Y.Opens // U ≤ f.opensRange } where
   toFun U := ⟨f ''ᵁ U, Set.image_subset_range _ _⟩
   invFun U := f ⁻¹ᵁ U
-  left_inv _ := Opens.ext (Set.preimage_image_eq _ f.isOpenEmbedding.inj)
+  left_inv _ := Opens.ext (Set.preimage_image_eq _ f.isOpenEmbedding.injective)
   right_inv U := Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2))
 
 namespace Scheme
@@ -392,7 +392,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
       IsIso
         (TopCat.isoOfHomeo
             (Homeomorph.homeomorphOfContinuousOpen
-              (Equiv.ofBijective _ ⟨h₂.inj, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
+              (.ofBijective _ ⟨h₂.injective, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
               h₂.isOpenMap)).hom
     infer_instance
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).isOpenEmbedding⟩
@@ -491,8 +491,8 @@ theorem range_pullback_snd_of_left :
     Set.range (pullback.snd f g).base = (g ⁻¹ᵁ f.opensRange).1 := by
   rw [← show _ = (pullback.snd f g).base from
     PreservesPullback.iso_hom_snd Scheme.forgetToTop f g, TopCat.coe_comp, Set.range_comp,
-    Set.range_iff_surjective.mpr, ← @Set.preimage_univ _ _ (pullback.fst f.base g.base)]
-  -- Porting note (#11224): was `rw`
+    Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.fst f.base g.base)]
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   · erw [TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
     rfl
@@ -508,8 +508,8 @@ theorem range_pullback_fst_of_right :
       ((Opens.map g.base).obj ⟨Set.range f.base, H.base_open.isOpen_range⟩).1 := by
   rw [← show _ = (pullback.fst g f).base from
     PreservesPullback.iso_hom_fst Scheme.forgetToTop g f, TopCat.coe_comp, Set.range_comp,
-    Set.range_iff_surjective.mpr, ← @Set.preimage_univ _ _ (pullback.snd g.base f.base)]
-  -- Porting note (#11224): was `rw`
+    Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.snd g.base f.base)]
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   · erw [TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
     rfl
@@ -577,7 +577,7 @@ theorem app_eq_invApp_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g :
   rw [Scheme.comp_base, Opens.map_comp_obj]
   congr 1
   ext1
-  exact (Set.preimage_image_eq _ h.base_open.inj).symm
+  exact (Set.preimage_image_eq _ h.base_open.injective).symm
 
 /-- The `fg` argument is to avoid nasty stuff about dependent types. -/
 theorem app_eq_appIso_inv_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)

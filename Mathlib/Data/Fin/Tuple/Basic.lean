@@ -410,7 +410,7 @@ variable {α : Sort*}
 def «repeat» (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
   | i => a i.modNat
 
--- Porting note: added (leanprover/lean4#2042)
+-- Porting note: added (https://github.com/leanprover/lean4/issues/2042)
 @[simp]
 theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
     Fin.repeat m a i = a i.modNat :=

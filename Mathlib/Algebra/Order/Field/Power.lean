@@ -43,9 +43,6 @@ protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a :
 theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=
   zpow_ne_zero _ (mod_cast h.ne')
 
-@[deprecated one_lt_zpow₀ (since := "2024-10-08")]
-theorem one_lt_zpow (ha : 1 < a) (n : ℤ) (hn : 0 < n) : 1 < a ^ n := one_lt_zpow₀ ha hn
-
 @[deprecated zpow_right_strictMono₀ (since := "2024-10-08")]
 theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) :=
   zpow_right_strictMono₀ hx

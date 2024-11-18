@@ -285,8 +285,6 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
   · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const
       (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
 
-@[deprecated (since := "2024-01-15")] alias contMDiff_of_support := contMDiff_of_tsupport
-
 @[to_additive contMDiffWithinAt_of_not_mem]
 theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by

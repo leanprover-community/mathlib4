@@ -33,7 +33,7 @@ We also define predicates about affine schemes and affine open sets.
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 noncomputable section
 
@@ -46,7 +46,7 @@ namespace AlgebraicGeometry
 open Spec (structureSheaf)
 
 /-- The category of affine schemes -/
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 def AffineScheme :=
   Scheme.Spec.EssImageSubcategory
@@ -134,19 +134,23 @@ theorem Scheme.isoSpec_Spec (R : CommRingCat.{u}) :
     (Spec R).isoSpec.inv = Spec.map (Scheme.ΓSpecIso R).inv :=
   congr($(isoSpec_Spec R).inv)
 
+lemma ext_of_isAffine {X Y : Scheme} [IsAffine Y] {f g : X ⟶ Y} (e : f.app ⊤ = g.app ⊤) :
+    f = g := by
+  rw [← cancel_mono Y.toSpecΓ, Scheme.toSpecΓ_naturality, Scheme.toSpecΓ_naturality, e]
+
 namespace AffineScheme
 
 /-- The `Spec` functor into the category of affine schemes. -/
 def Spec : CommRingCatᵒᵖ ⥤ AffineScheme :=
   Scheme.Spec.toEssImage
 
--- Porting note (#11081): cannot automatically derive
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
 instance Spec_full : Spec.Full := Functor.Full.toEssImage _
 
--- Porting note (#11081): cannot automatically derive
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
 instance Spec_faithful : Spec.Faithful := Functor.Faithful.toEssImage _
 
--- Porting note (#11081): cannot automatically derive
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
 instance Spec_essSurj : Spec.EssSurj := Functor.EssSurj.toEssImage (F := _)
 
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
@@ -154,11 +158,11 @@ instance Spec_essSurj : Spec.EssSurj := Functor.EssSurj.toEssImage (F := _)
 def forgetToScheme : AffineScheme ⥤ Scheme :=
   Scheme.Spec.essImageInclusion
 
--- Porting note (#11081): cannot automatically derive
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
 instance forgetToScheme_full : forgetToScheme.Full :=
 show (Scheme.Spec.essImageInclusion).Full from inferInstance
 
--- Porting note (#11081): cannot automatically derive
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
 instance forgetToScheme_faithful : forgetToScheme.Faithful :=
 show (Scheme.Spec.essImageInclusion).Faithful from inferInstance
 
@@ -344,7 +348,7 @@ lemma isoSpec_inv_ι : hU.isoSpec.inv ≫ U.ι = hU.fromSpec := rfl
 theorem range_fromSpec :
     Set.range hU.fromSpec.base = (U : Set X) := by
   delta IsAffineOpen.fromSpec; dsimp [IsAffineOpen.isoSpec_inv]
-  rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+  rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
   · exact Subtype.range_coe
   rw [← coe_comp, ← TopCat.epi_iff_surjective]
   infer_instance
@@ -421,7 +425,7 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
       ?_ hU, fun hU => hU.image_of_isOpenImmersion f⟩
   · rw [Scheme.comp_base, coe_comp, Set.range_comp]
     dsimp [Opens.coe_inclusion', Scheme.restrict]
-    erw [Subtype.range_coe, Subtype.range_coe] -- now `erw` after #13170
+    erw [Subtype.range_coe, Subtype.range_coe] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
     rfl
   · infer_instance
 
@@ -433,7 +437,7 @@ def _root_.AlgebraicGeometry.IsOpenImmersion.affineOpensEquiv (f : X ⟶ Y) [H :
   toFun U := ⟨⟨f ''ᵁ U, U.2.image_of_isOpenImmersion f⟩, Set.image_subset_range _ _⟩
   invFun U := ⟨f ⁻¹ᵁ U, f.isAffineOpen_iff_of_isOpenImmersion.mp (by
     rw [show f ''ᵁ f ⁻¹ᵁ U = U from Opens.ext (Set.image_preimage_eq_of_subset U.2)]; exact U.1.2)⟩
-  left_inv _ := Subtype.ext (Opens.ext (Set.preimage_image_eq _ H.base_open.inj))
+  left_inv _ := Subtype.ext (Opens.ext (Set.preimage_image_eq _ H.base_open.injective))
   right_inv U := Subtype.ext (Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2)))
 
 /-- The affine open sets of an open subscheme
@@ -458,7 +462,7 @@ theorem fromSpec_preimage_self :
     hU.fromSpec ⁻¹ᵁ U = ⊤ := by
   ext1
   rw [Opens.map_coe, Opens.coe_top, ← hU.range_fromSpec, ← Set.image_univ]
-  exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
+  exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.injective
 
 theorem ΓSpecIso_hom_fromSpec_app :
     (Scheme.ΓSpecIso Γ(X, U)).hom ≫ hU.fromSpec.app U =
