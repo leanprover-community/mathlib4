@@ -210,7 +210,6 @@ def evalIntLCM : NormNumExt where eval {u α} e := do
   let ⟨ed, pf⟩ := proveIntLCM ex ey
   return .isNat _ ed q(isInt_lcm $p $q $pf)
 
-
 theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
     IsRat q n d → n.natAbs = n' → n'.Coprime d → IsInt q.num n
   | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
