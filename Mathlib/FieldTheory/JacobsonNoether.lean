@@ -192,7 +192,7 @@ open Subring Algebra in
 /-- Jacobson-Noether theorem: For a non-commutative algebraic
   division algebra `D` (with base ring being a field `L`), if the center of
   `D` over `L` is `L` and `L ≠ D`, then there exist an element `x` of `D \ L`
-  that is separable over `L`.-/
+  that is separable over `L`. -/
 theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D]
     (hcenter : Subalgebra.center L D = ⊥) (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
