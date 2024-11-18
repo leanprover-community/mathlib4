@@ -632,29 +632,56 @@ variable {α : Type*} [Preorder α]
     simp +contextual only [ih, Nat.cast_lt, implies_true]
   · exact length_le_height_last (p := LTSeries.range n)
 
-@[simp] lemma coheight_nat (n : ℕ) : coheight n = ⊤ := by
+@[simp] lemma coheight_of_noMaxOrder [NoMaxOrder α] (a : α) : coheight a = ⊤ := by
+  obtain ⟨f, hstrictmono⟩ := Nat.exists_strictMono ↑(Set.Ioi a)
   apply coheight_eq_top_iff.mpr
   intro m
-  use (LTSeries.range m).map (· + n) (StrictMono.add_const (fun _ _ x ↦ x) n)
-  simp
+  use {length := m, toFun := fun i => if i = 0 then a else f i, step := ?step }
+  case h => simp [RelSeries.head]
+  case step =>
+    intro ⟨i, hi⟩
+    by_cases hzero : i = 0
+    · subst i
+      exact (f 1).prop
+    · suffices f i < f (i + 1) by simp [Fin.ext_iff, hzero, this]
+      apply hstrictmono
+      omega
 
-@[simp] lemma krullDim_nat : krullDim ℕ = ⊤ := by
-  simp only [krullDim_eq_iSup_height, height_nat]
-  rw [← WithBot.coe_iSup (by bddDefault)]
-  simp [WithBot.coe_eq_top, ENat.iSup_natCast]
+@[simp] lemma height_of_noMinOrder [NoMinOrder α] (a : α) : height a = ⊤ :=
+  -- Implementation note: Here it's a bit easier to define the coheight variant first
+  coheight_of_noMaxOrder (α := αᵒᵈ) a
 
-@[simp] lemma height_int (a : ℤ) : height a = ⊤ := by
-  apply height_eq_top_iff.mpr
-  intro n
-  use (LTSeries.range n).map (a - (n : ℤ) + ·)
-    (StrictMono.const_add Int.natCast_strictMono (a - (n : ℤ)))
-  simp
+@[simp] lemma krullDim_of_noMaxOrder [Nonempty α] [NoMaxOrder α] : krullDim α = ⊤ := by
+  simp [krullDim_eq_iSup_coheight, coheight_of_noMaxOrder]
 
-@[simp] lemma coheight_int (a : ℤ) : coheight a = ⊤ := by
-  apply coheight_eq_top_iff.mpr
-  intro n
-  use (LTSeries.range n).map (fun i => a + (i : ℤ)) (StrictMono.const_add Int.natCast_strictMono a)
-  simp
+@[simp] lemma krullDim_of_noMinOrder [Nonempty α] [NoMinOrder α] : krullDim α = ⊤ := by
+  simp [krullDim_eq_iSup_height, height_of_noMinOrder]
+
+lemma coheight_nat (n : ℕ) : coheight n = ⊤ := coheight_of_noMaxOrder ..
+
+lemma krullDim_nat : krullDim ℕ = ⊤ := krullDim_of_noMaxOrder ..
+
+instance Int.instNoMaxOrder : NoMaxOrder ℤ where
+  exists_gt n := ⟨n + 1, n.lt_succ_self⟩
+
+instance Int.instNoMinOrder : NoMinOrder ℤ where
+  exists_lt n := ⟨n - 1, n.pred_self_lt⟩
+
+-- TODO: Where to put these:
+/--
+info: [Mathlib.Algebra.BigOperators.Group.List,
+ Mathlib.Algebra.Order.Monoid.Unbundled.Defs,
+ Mathlib.Algebra.Group.Support,
+ Mathlib.Algebra.Order.SuccPred]
+-/
+#guard_msgs in
+#find_home Int.instNoMinOrder
+
+lemma height_int (n : ℤ) : height n = ⊤ := height_of_noMinOrder ..
+
+lemma coheight_int (n : ℤ) : coheight n = ⊤ := coheight_of_noMaxOrder ..
+
+lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 
 @[simp] lemma height_coe_WithBot (x : α) : height (x : WithBot α) = height x + 1 := by
   apply le_antisymm
@@ -734,7 +761,7 @@ variable {α : Type*} [Preorder α]
 
 @[simp]
 lemma krullDim_ENat : krullDim ℕ∞ = ⊤ := by
-  show (krullDim (WithTop ℕ) = ↑⊤)
+  show (krullDim (WithTop ℕ) = ⊤)
   simp only [krullDim_WithTop, krullDim_nat]
   rfl
 
