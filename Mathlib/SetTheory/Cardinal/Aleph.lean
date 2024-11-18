@@ -390,8 +390,8 @@ theorem lift_aleph (o : Ordinal.{u}) : lift.{v} (aleph o) = aleph (Ordinal.lift.
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : ℵ_ o = ⨆ a : Iio o, ℵ_ a := by
   rw [aleph_eq_preAleph, preAleph_limit (isLimit_add ω ho)]
   apply le_antisymm <;>
-  apply ciSup_mono' (bddAbove_of_small _) <;>
-  intro i
+    apply ciSup_mono' (bddAbove_of_small _) <;>
+    intro i
   · refine ⟨⟨_, sub_lt_of_lt_add i.2 ho.pos⟩, ?_⟩
     simpa [aleph_eq_preAleph] using le_add_sub _ _
   · exact ⟨⟨_, add_lt_add_left i.2 ω⟩, le_rfl⟩
