@@ -534,9 +534,7 @@ theorem map_ne_bot_of_ne_bot {I : Ideal A} (h : I ≠ ⊥) : map (algebraMap A B
 
 theorem ne_bot_of_liesOver_of_ne_bot (hp : p ≠ ⊥) (P : Ideal B) [P.LiesOver p] : P ≠ ⊥ := by
   contrapose! hp
-  apply (over_def P p).trans
-  rw [hp]
-  exact under_bot A B
+  rw [over_def P p, hp, under_bot]
 
 end CommRing
 
