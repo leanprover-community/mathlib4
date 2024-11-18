@@ -301,13 +301,11 @@ type of theorem it is. -/
 def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : MetaM Theorem := do
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
-
     let .some (decl,f) ← getFunProp? b
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
-
-    let fData? ← getFunctionData? f defaultUnfoldPred {zeta := false}
-
+    let fData? ←
+      withConfig (fun cfg => { cfg with zeta := false}) <| getFunctionData? f defaultUnfoldPred
     if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {
         funPropName := funPropName
@@ -338,7 +336,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys := ← RefinedDiscrTree.mkDTExprs b' {} false
+      let keys := ← RefinedDiscrTree.mkDTExprs b' false
       let thm : GeneralTheorem := {
         funPropName := funPropName
         thmName := declName

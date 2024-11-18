@@ -88,7 +88,7 @@ the function it talks about. -/
 def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
   let ext := funPropDeclsExt.getState (← getEnv)
 
-  let decls ← ext.decls.getMatch e {}
+  let decls ← ext.decls.getMatch e (← read)
 
   if decls.size = 0 then
     return none

@@ -325,7 +325,8 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   | .exact =>
 
     let ext := morTheoremsExt.getState (← getEnv)
-    let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
+    let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+      ext.theorems.getMatchWithScore e false
     let candidates := candidates.map (·.1) |>.flatten
 
     trace[Meta.Tactic.fun_prop]
@@ -344,7 +345,8 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
   withIncreasedTransitionDepth do
 
   let ext := transitionTheoremsExt.getState (← getEnv)
-  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
+  let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    ext.theorems.getMatchWithScore e false
   let candidates := candidates.map (·.1) |>.flatten
 
   trace[Meta.Tactic.fun_prop]
@@ -433,7 +435,8 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
-      let .data fData ← getFunctionData? f (← unfoldNamePred) {zeta := false, zetaDelta := false}
+      let .data fData ← withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) <|
+        getFunctionData? f (← unfoldNamePred)
         | return none
       unless (fData.getFnOrigin == funOrigin) do return none
 
@@ -654,7 +657,8 @@ mutual
         let e' := e.setArg funPropDecl.funArgId b
         funProp (← mkLambdaFVars xs e')
 
-    match ← getFunctionData? f (← unfoldNamePred) {zeta := false, zetaDelta := false} with
+    match ← withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) <|
+      getFunctionData? f (← unfoldNamePred) with
     | .letE f =>
       trace[Debug.Meta.Tactic.fun_prop] "let case on {← ppExpr f}"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f
