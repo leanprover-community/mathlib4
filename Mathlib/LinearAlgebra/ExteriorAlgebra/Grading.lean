@@ -58,10 +58,6 @@ theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
     GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
   cases' x with x hx
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
-  -- Porting note: original statement was
-  --  refine Submodule.pow_induction_on_left' _ (fun r => ?_) (fun x y i hx hy ihx ihy => ?_)
-  --    (fun m hm i x hx ih => ?_) hx
-  -- but it created invalid goals
   induction hx using Submodule.pow_induction_on_left' with
   | algebraMap => simp_rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
   | add _ _ _ _ _ ihx ihy => simp_rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl

@@ -75,7 +75,6 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 
-count_heartbeats in
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     -- Porting note: added a second `by apply`
     lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩ x' =
@@ -85,8 +84,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
   induction hx' using Submodule.iSup_induction' with
   | mem i x hx =>
     obtain ⟨i, rfl⟩ := i
-    -- Porting note: `dsimp only [Subtype.coe_mk] at hx` doesn't work, use `change` instead
-    change x ∈ LinearMap.range (ι Q) ^ i at hx
+    dsimp only [Subtype.coe_mk] at hx
     induction hx using Submodule.pow_induction_on_left' with
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
