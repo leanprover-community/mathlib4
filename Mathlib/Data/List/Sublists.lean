@@ -317,7 +317,7 @@ theorem Pairwise.sublists' {R} :
     exact Lex.rel (H₁ _ <| sl₁.subset <| mem_cons_self _ _)
 
 theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
-    Pairwise (fun l₁ l₂ => Lex R (reverse l₁) (reverse l₂)) (sublists l) := by
+    Pairwise (Lex R on reverse) (sublists l) := by
   have := (pairwise_reverse.2 H).sublists'
   rwa [sublists'_reverse, pairwise_map] at this
 

@@ -484,7 +484,7 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
       rw [nodup_permutations'Aux_iff, hy.mem_iff]
       exact fun H => h x H rfl
     · refine IH.pairwise_of_forall_ne fun as ha bs hb H => ?_
-      rw [disjoint_iff_ne]
+      rw [Function.onFun, disjoint_iff_ne]
       rintro a ha' b hb' rfl
       obtain ⟨⟨n, hn⟩, hn'⟩ := get_of_mem ha'
       obtain ⟨⟨m, hm⟩, hm'⟩ := get_of_mem hb'
