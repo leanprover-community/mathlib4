@@ -102,10 +102,11 @@ deprecs="$(git grep -c -- "set_option linter.deprecated false" -- ":^Mathlib/Dep
   awk -F: 'BEGIN{total=0} {total+=$2} END{print total}')"
 
 # count the `linter.deprecated` exceptions that are themselves followed by `deprecated ...(since`
+# we subtract these from `deprecs`
 doubleDeprecs="$(git grep -A1 -- "set_option linter.deprecated false" -- ":^Mathlib/Deprecated" |
   grep -c "deprecated .*(since")"
 
-printf '%s|disabled deprecation lints' "$(( deprecs - doubleDeprecs ))"
+printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
 # We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
