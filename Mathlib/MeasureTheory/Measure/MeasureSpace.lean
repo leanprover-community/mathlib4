@@ -698,7 +698,7 @@ section
 /- Porting note: These variables are wrapped by an anonymous section because they interrupt
 synthesizing instances in `MeasureSpace` section. -/
 
-variable {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
+variable {m0 : MeasurableSpace α} {mβ : MeasurableSpace β} [MeasurableSpace γ]
 variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
 namespace Measure
 
@@ -1058,7 +1058,7 @@ lemma nonempty_of_neZero (μ : Measure α) [NeZero μ] : Nonempty α :=
 
 /-- Lift a linear map between `OuterMeasure` spaces such that for each measure `μ` every measurable
 set is caratheodory-measurable w.r.t. `f μ` to a linear map between `Measure` spaces. -/
-def liftLinear {m0 : MeasurableSpace α} (f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β)
+def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β)
     (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) :
     Measure α →ₗ[ℝ≥0∞] Measure β where
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
@@ -1086,7 +1086,7 @@ theorem le_liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure
 open Classical in
 /-- The pushforward of a measure as a linear map. It is defined to be `0` if `f` is not
 a measurable function. -/
-def mapₗ [MeasurableSpace α] (f : α → β) : Measure α →ₗ[ℝ≥0∞] Measure β :=
+def mapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure α →ₗ[ℝ≥0∞] Measure β :=
   if hf : Measurable f then
     liftLinear (OuterMeasure.map f) fun μ _s hs t =>
       le_toOuterMeasure_caratheodory μ _ (hf hs) (f ⁻¹' t)
@@ -1101,7 +1101,8 @@ theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (
 open Classical in
 /-- The pushforward of a measure. It is defined to be `0` if `f` is not an almost everywhere
 measurable function. -/
-irreducible_def map [MeasurableSpace α] (f : α → β) (μ : Measure α) : Measure β :=
+irreducible_def map [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure α) :
+    Measure β :=
   if hf : AEMeasurable f μ then mapₗ (hf.mk f) μ else 0
 
 theorem mapₗ_mk_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) :
