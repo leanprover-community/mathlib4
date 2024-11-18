@@ -779,9 +779,6 @@ theorem card_omega0 : card ω = ℵ₀ :=
 theorem lift_omega0 : lift ω = ω :=
   lift_lift _
 
-@[deprecated (since := "2024-09-30")]
-alias lift_omega := lift_omega0
-
 /-!
 ### Definition and first properties of addition on ordinals
 
