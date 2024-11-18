@@ -89,8 +89,7 @@ def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, |(A.1 1 0)| = 0 → C A)
   termination_by A => Int.natAbs (A.1 1 0)
   decreasing_by
     zify
-    apply reduce_aux m A
-    simpa only [Fin.isValue, ne_eq, abs_eq_zero] using h
+    exact reduce_aux m A h
 
 /--Map from `Δ m → Δ m` which reduces a FixedDetMatrix towards a representative element in reps. -/
 def reduce : Δ m → Δ m := fun A => by
@@ -184,7 +183,9 @@ lemma reps_zero_empty : (reps 0) = ∅ := by
   · simp only [Set.mem_empty_iff_false, Fin.isValue, Set.mem_setOf_eq, false_implies]
 
 noncomputable instance reps_fintype (k : ℤ) : Fintype (reps k) := by
-  by_cases hk : k ≠ 0
+  by_cases hk : k = 0
+  · rw [hk, reps_zero_empty]
+    exact Set.fintypeEmpty
   · let H := Finset.Icc (-|k|) |k|
     let H4 :=  H × H × H × H
     apply Fintype.ofInjective (β := H4) (f := fun (M : reps k) =>
@@ -201,9 +202,6 @@ noncomputable instance reps_fintype (k : ℤ) : Fintype (reps k) := by
     · exact h.2.1
     · exact h.2.2.1
     · exact h.2.2.2
-  · simp only [ne_eq, Decidable.not_not] at hk
-    rw [hk, reps_zero_empty]
-    exact Set.fintypeEmpty
 
 lemma reduce_mem_reps (m : ℤ) (hm : m ≠ 0) : ∀ A : Δ m, reduce m A ∈ reps m := by
   apply reduce_rec
