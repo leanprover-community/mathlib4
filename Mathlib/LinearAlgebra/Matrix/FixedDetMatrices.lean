@@ -153,7 +153,7 @@ lemma reps_entries_le_m' (hm : m ≠ 0) (A : Δ m) (h : A ∈ reps m) (i j : Fin
     · rw [neg_le]
       exact (neg_le_abs (A.1 0 0)).trans ((le_mul_iff_one_le_right h2).mpr h1)
     · exact (le_abs_self (A.1 0 0)).trans ((le_mul_iff_one_le_right h2).mpr h1)
-  · simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Finset.mem_Icc]
+  · simp only [Fin.zero_eta, Fin.mk_one, Finset.mem_Icc]
     constructor
     · have := abs_pos.mpr hm
       have := h.2.2.1
