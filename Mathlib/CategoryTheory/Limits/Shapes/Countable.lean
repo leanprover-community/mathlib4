@@ -52,6 +52,7 @@ instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimi
   have : HasLimitsOfShape (HomAsType J) C := HasCountableLimits.out (HomAsType J)
   hasLimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
+/-- A category has countable products if it has all products indexed by countable types. -/
 class HasCountableProducts where
   out (J : Type) [Countable J] : HasProductsOfShape J C
 
@@ -96,6 +97,7 @@ instance [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasCo
   have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
   hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
+/-- A category has countable coproducts if it has all coproducts indexed by countable types. -/
 class HasCountableCoproducts where
   out (J : Type) [Countable J] : HasCoproductsOfShape J C
 
@@ -263,5 +265,6 @@ end Preorder
   IsCofiltered.sequentialFunctor_initial_aux
 @[deprecated (since := "2024-11-01")] alias sequentialFunctor_initial :=
   IsCofiltered.sequentialFunctor_initial
+attribute [nolint defLemma] sequentialFunctor_initial
 
 end CategoryTheory.Limits
