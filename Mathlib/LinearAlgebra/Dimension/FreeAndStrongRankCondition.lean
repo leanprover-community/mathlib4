@@ -214,7 +214,7 @@ theorem Module.finrank_le_one_iff_top_isPrincipal [Module.Free K V] [Module.Fini
   rw [← Module.rank_le_one_iff_top_isPrincipal, ← finrank_eq_rank, Nat.cast_le_one]
 
 variable (K V) in
-theorem lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank [Module.Free K V]
+theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
     [Module.Finite K V] : lift.{u} #V = lift.{v} #K ^ lift.{u} (Module.rank K V) := by
   haveI := nontrivial_of_invariantBasisNumber K
   obtain ⟨s, hs⟩ := Module.Free.exists_basis (R := K) (M := V)
@@ -224,17 +224,24 @@ theorem lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank [Module.Free K 
     exact basis_finite_of_finite_spans _ t.finite_toSet ht hs
   have := lift_mk_eq'.2 ⟨hs.repr.toEquiv⟩
   rwa [Finsupp.equivFunOnFinite.cardinal_eq, mk_arrow, hs.mk_eq_rank'', lift_power, lift_lift,
-    lift_lift, lift_umax'] at this
+    lift_lift, lift_umax] at this
 
-theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
+@[deprecated (since := "2024-11-10")]
+alias lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank :=
+  lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank
+
+theorem cardinalMk_eq_cardinalMk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
     [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
     #V = #K ^ Module.rank K V := by
-  simpa using lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank K V
+  simpa using lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank K V
+
+@[deprecated (since := "2024-11-10")]
+alias cardinal_mk_eq_cardinal_mk_field_pow_rank := cardinalMk_eq_cardinalMk_field_pow_rank
 
 variable (K V) in
 theorem cardinal_lt_aleph0_of_finiteDimensional [Finite K] [Module.Free K V] [Module.Finite K V] :
     #V < ℵ₀ := by
-  rw [← lift_lt_aleph0.{v, u}, lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank K V]
+  rw [← lift_lt_aleph0.{v, u}, lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank K V]
   exact power_lt_aleph0 (lift_lt_aleph0.2 (lt_aleph0_of_finite K))
     (lift_lt_aleph0.2 (rank_lt_aleph0 K V))
 

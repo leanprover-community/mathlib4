@@ -144,6 +144,74 @@ protected lemma bijective (f : S →+* Q) (hf : f.comp (algebraMap R S) = algebr
 
 end AlgEquiv
 
+section liftAlgHom
+
+variable {A : Type*} [CommSemiring A]
+  {R : Type*} [CommSemiring R] [Algebra A R] {M : Submonoid R}
+  {S : Type*} [CommSemiring S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
+  {P : Type*} [CommSemiring P] [Algebra A P] [IsLocalization M S]
+  {f : R →ₐ[A] P} (hf : ∀ y : M, IsUnit (f y)) (x : S)
+include hf
+
+/-- `AlgHom` version of `IsLocalization.lift`. -/
+noncomputable def liftAlgHom : S →ₐ[A] P where
+  __ := lift hf
+  commutes' r := show lift hf (algebraMap A S r) = _ by
+    simp [IsScalarTower.algebraMap_apply A R S]
+
+theorem liftAlgHom_toRingHom : (liftAlgHom hf : S →ₐ[A] P).toRingHom = lift hf := rfl
+
+@[simp]
+theorem coe_liftAlgHom : ⇑(liftAlgHom hf : S →ₐ[A] P) = lift hf := rfl
+
+theorem liftAlgHom_apply : liftAlgHom hf x = lift hf x := rfl
+
+end liftAlgHom
+
+section AlgEquivOfAlgEquiv
+
+variable {A : Type*} [CommSemiring A]
+  {R : Type*} [CommSemiring R] [Algebra A R] {M : Submonoid R} (S : Type*)
+  [CommSemiring S] [Algebra A S] [Algebra R S] [IsScalarTower A R S] [IsLocalization M S]
+  {P : Type*} [CommSemiring P] [Algebra A P] {T : Submonoid P} (Q : Type*)
+  [CommSemiring Q] [Algebra A Q] [Algebra P Q] [IsScalarTower A P Q] [IsLocalization T Q]
+  (h : R ≃ₐ[A] P) (H : Submonoid.map h M = T)
+
+include H
+
+/-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M`, `T` respectively,
+an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
+`S ≃ₐ[A] Q`. -/
+@[simps!]
+noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q where
+  __ := ringEquivOfRingEquiv S Q h.toRingEquiv H
+  commutes' _ := by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+    RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
+
+variable {S Q h}
+
+theorem algEquivOfAlgEquiv_eq_map :
+    (algEquivOfAlgEquiv S Q h H : S →+* Q) =
+      map Q (h : R →+* P) (M.le_comap_of_map_le (le_of_eq H)) :=
+  rfl
+
+theorem algEquivOfAlgEquiv_eq (x : R) :
+    algEquivOfAlgEquiv S Q h H ((algebraMap R S) x) = algebraMap P Q (h x) := by
+  simp
+
+set_option linter.docPrime false in
+theorem algEquivOfAlgEquiv_mk' (x : R) (y : M) :
+    algEquivOfAlgEquiv S Q h H (mk' S x y) =
+      mk' Q (h x) ⟨h y, show h y ∈ T from H ▸ Set.mem_image_of_mem h y.2⟩ := by
+  simp [map_mk']
+
+theorem algEquivOfAlgEquiv_symm : (algEquivOfAlgEquiv S Q h H).symm =
+    algEquivOfAlgEquiv Q S h.symm (show Submonoid.map h.symm T = M by
+      erw [← H, ← Submonoid.comap_equiv_eq_map_symm,
+        Submonoid.comap_map_eq_of_injective h.injective]) := rfl
+
+end AlgEquivOfAlgEquiv
+
 section at_units
 
 variable (R M)

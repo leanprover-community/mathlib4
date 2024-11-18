@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
 import Mathlib.Algebra.Field.Subfield.Basic
-import Mathlib.Algebra.Ring.WithAbs
 import Mathlib.Analysis.Normed.Module.Completion
+import Mathlib.Analysis.Normed.Ring.WithAbs
 import Mathlib.NumberTheory.NumberField.Embeddings
 
 /-!

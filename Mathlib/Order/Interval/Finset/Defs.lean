@@ -683,16 +683,16 @@ instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
   finset_mem_Ioc _ _ _ := (mem_Ico (α := α)).trans and_comm
   finset_mem_Ioo _ _ _ := (mem_Ioo (α := α)).trans and_comm
 
-lemma Icc_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Icc_orderDual_def (a b : αᵒᵈ) :
     Icc a b = (Icc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-lemma Ico_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Ico_orderDual_def (a b : αᵒᵈ) :
     Ico a b = (Ioc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-lemma Ioc_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Ioc_orderDual_def (a b : αᵒᵈ) :
     Ioc a b = (Ico (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-lemma Ioo_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Ioo_orderDual_def (a b : αᵒᵈ) :
     Ioo a b = (Ioo (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
 lemma Finset.Icc_toDual : Icc (toDual a) (toDual b) = (Icc b a).map toDual.toEmbedding :=
@@ -901,7 +901,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
           top_le_iff, reduceCtorEq]
     | (a : α), (b : α), (x : α) => by
         simp only [le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk, coe_le_coe]
-        -- This used to be in the above `simp` before leanprover/lean4#2644
+        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
         erw [aux]
   finset_mem_Ico a b x :=
     match a, b, x with
@@ -910,12 +910,12 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, (x : α) => by
         simp only [Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, coe_le_coe, aux,
           coe_lt_top, and_true]
-        -- This used to be in the above `simp` before leanprover/lean4#2644
+        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
         erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
                                       -- This used to be in the above `simp` before
-                                      -- leanprover/lean4#2644
+                                      -- https://github.com/leanprover/lean4/pull/2644
                                       erw [aux]
   finset_mem_Ioc a b x :=
     match a, b, x with
@@ -923,12 +923,12 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                 -- This used to be in the above `simp` before
-                                -- leanprover/lean4#2644
+                                -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                       -- This used to be in the above `simp` before
-                                      -- leanprover/lean4#2644
+                                      -- https://github.com/leanprover/lean4/pull/2644
                                       erw [aux]
   finset_mem_Ioo a b x :=
     match a, b, x with
@@ -936,13 +936,13 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
                                 -- This used to be in the above `simp` before
-                                -- leanprover/lean4#2644
+                                -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by
       simp [some, Embedding.some, insertNone, aux]
       -- This used to be in the above `simp` before
-      -- leanprover/lean4#2644
+      -- https://github.com/leanprover/lean4/pull/2644
       erw [aux]
 
 variable (a b : α)

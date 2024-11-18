@@ -180,7 +180,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
 theorem card_parts_equitabilise (hm : m ≠ 0) : #(P.equitabilise h).parts = a + b := by
   rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or,
     card_union_of_disjoint, P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
-  -- Porting note (#11187): was `infer_instance`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
   exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
 
 theorem card_parts_equitabilise_subset_le :
