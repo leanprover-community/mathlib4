@@ -199,10 +199,11 @@ local prefix:100 "s" => cs.simple
 @[simp]
 theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
-  have : (QuotientGroup.mk (FreeGroup.of i * FreeGroup.of i) : M.Group) = 1 :=
+  have : (PresentedGroup.mk _ (FreeGroup.of i * FreeGroup.of i) : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
   unfold simple
-  rw [← map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul, this, map_one]
+  rw [← map_mul, PresentedGroup.of, map_mul]
+  exact map_mul_eq_one cs.mulEquiv.symm this
 
 @[simp]
 theorem simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
@@ -221,11 +222,11 @@ theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
 @[simp]
 theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
-  have : (QuotientGroup.mk ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
+  have : (PresentedGroup.mk _ ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
   unfold simple
-  rw [← map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
-      ← QuotientGroup.mk_mul, ← QuotientGroup.mk_pow, this, map_one]
+  rw [← map_mul, ← map_pow]
+  exact (MulEquiv.map_eq_one_iff cs.mulEquiv.symm).mpr this
 
 @[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
   M.symmetric i' i ▸ cs.simple_mul_simple_pow i' i

@@ -105,7 +105,8 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
     · intro a b
       simp only [MulEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_le_mk]
       generalize_proofs A B C D
-      simp [zpow_le_zpow_iff ypos, ← zpow_le_zpow_iff xpos, A.choose_spec, B.choose_spec]
+      simp [zpow_le_zpow_iff_right ypos, ← zpow_le_zpow_iff_right xpos, A.choose_spec,
+        B.choose_spec]
 
 variable {G : Type*} [LinearOrderedCommGroup G] [MulArchimedean G]
 
@@ -138,7 +139,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     · intro x
       simp only [mem_closure_singleton, mem_setOf_eq, and_imp, forall_exists_index]
       rintro k rfl hk
-      rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff h, ← zero_add 1,
+      rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff_right h, ← zero_add 1,
           ← Int.lt_iff_add_one_le]
       contrapose! hk
       rw [← Left.one_le_inv_iff, ← zpow_neg]
