@@ -20,7 +20,7 @@ remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
+open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace Topology
 
 universe u
 
@@ -46,7 +46,7 @@ instance : IsLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
   rw [RingHom.toMorphismProperty_respectsIso_iff]
   convert (inferInstanceAs (MorphismProperty.isomorphisms CommRingCat).RespectsIso)
   ext
-  -- Regression in #17583: have to specify C explicitly below.
+  -- Regression in https://github.com/leanprover-community/mathlib4/pull/17583: have to specify C explicitly below.
   exact (ConcreteCategory.isIso_iff_bijective (C := CommRingCat) _).symm
 
 instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion :=

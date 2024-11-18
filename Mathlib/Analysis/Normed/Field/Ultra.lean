@@ -53,8 +53,8 @@ lemma isUltrametricDist_of_forall_norm_add_one_of_norm_le_one
   rcases le_or_lt ‖x‖ 1 with H|H
   · exact (h _ H).trans (le_max_right _ _)
   · suffices ‖x + 1‖ ≤ ‖x‖ from this.trans (le_max_left _ _)
-    rw [← div_le_div_right (c := ‖x‖) (H.trans' zero_lt_one), div_self (H.trans' zero_lt_one).ne',
-        ← norm_div, add_div, div_self (by simpa using (H.trans' zero_lt_one)), add_comm]
+    rw [← div_le_one (by positivity), ← norm_div, add_div,
+      div_self (by simpa using H.trans' zero_lt_one), add_comm]
     apply h
     simp [inv_le_one_iff₀, H.le]
 
@@ -89,10 +89,9 @@ lemma isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm
   -- `‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m`, so we're done
   -- we can distribute powers into the right term of `max`
   have hp : max 1 ‖x‖ ^ m = max 1 (‖x‖ ^ m) := by
-    have : MonotoneOn (fun a : ℝ ↦ a ^ m) (Set.Ici _) := fun a h b _ h' ↦ pow_le_pow_left h h' _
-    rw [this.map_max zero_le_one (norm_nonneg x), one_pow]
+    rw [pow_left_monotoneOn.map_max (by simp [zero_le_one]) (norm_nonneg x), one_pow]
   rw [hp] at hm
-  refine le_of_pow_le_pow_left (fun h ↦ ?_) (zero_lt_one.trans ha').le ((h _ _).trans hm.le)
+  refine le_of_pow_le_pow_left₀ (fun h ↦ ?_) (zero_lt_one.trans ha').le ((h _ _).trans hm.le)
   simp only [h, zero_add, pow_zero, max_self, one_smul, lt_self_iff_false] at hm
 
 /-- To prove that a normed division ring is nonarchimedean, it suffices to prove that the norm
