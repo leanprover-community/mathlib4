@@ -22,6 +22,7 @@ every point on `M` has a global integral curve passing through it.
 
 integral curve, vector field, global existence
 -/
+
 open scoped Topology
 
 open Function Set
