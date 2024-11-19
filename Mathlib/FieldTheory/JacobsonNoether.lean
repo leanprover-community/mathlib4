@@ -5,10 +5,8 @@ Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Y
 -/
 import Mathlib.Algebra.CharP.LinearMaps
 import Mathlib.Algebra.CharP.Subring
-import Mathlib.Algebra.Field.Power
-import Mathlib.FieldTheory.PurelyInseparable
 import Mathlib.Algebra.GroupWithZero.Conj
-import Mathlib.Algebra.Central.Defs
+import Mathlib.FieldTheory.PurelyInseparable
 
 /-!
 # The Jacobson-Noether theorem
