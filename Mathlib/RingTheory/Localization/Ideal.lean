@@ -231,11 +231,11 @@ theorem ideal_eq_iInf_comap_map_away {S : Finset R} (hS : Ideal.span (α := R) S
     rw [pow_add, mul_assoc, ← mul_comm x, e]
     exact I.mul_mem_left _ y.2
 
-lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ) [CommRing Rₚ] [CommRing Sₚ] [Algebra R Rₚ]
-    [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
-    (M : Submonoid R) (hM : M ≤ R⁰) [IsLocalization M Rₚ]
-    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [NoZeroSMulDivisors R S]
-    [IsDomain S] :
+variable (R) in
+lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ]
+    [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ]
+    [IsScalarTower R Rₚ Sₚ] (M : Submonoid R) (hM : M ≤ R⁰) [IsLocalization M Rₚ]
+    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [NoZeroSMulDivisors R S] [IsDomain S] :
     NoZeroSMulDivisors Rₚ Sₚ := by
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| hM.trans
