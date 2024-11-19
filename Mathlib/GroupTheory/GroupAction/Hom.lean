@@ -37,12 +37,12 @@ The above types have corresponding classes:
 
 We introduce the following notation to code equivariant maps
 (the subscript index `ₑ` is for *equivariant*) :
-* `X →ₑ[φ] Y` is `MulActionHom φ X Y` and `X →ₑᵥ[φ] Y` is `AddActionHom φ X Y`
+* `X →ₑ[φ] Y` is `MulActionHom φ X Y` and `AddActionHom φ X Y`
 * `A →ₑ+[φ] B` is `DistribMulActionHom φ A B`.
 * `R →ₑ+*[φ] S` is `MulSemiringActionHom φ R S`.
 
 When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notation :
-* `X →[M] Y` is `MulActionHom (@id M) X Y` and `X →ᵥ[M] Y` is `AddActionHom (@id M) X Y`
+* `X →[M] Y` is `MulActionHom (@id M) X Y` and `AddActionHom (@id M) X Y`
 * `A →+[M] B` is `DistribMulActionHom (MonoidHom.id M) A B`
 * `R →+*[M] S` is `MulSemiringActionHom (MonoidHom.id M) R S`
 -/
@@ -59,17 +59,6 @@ variable (Y : Type*) [SMul N Y] [SMul M' Y]
 variable (Z : Type*) [SMul P Z]
 
 /-- Equivariant functions :
-When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
-a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
-structure MulActionHom where
-  /-- The underlying function. -/
-  protected toFun : X → Y
-  /-- The proposition that the function commutes with the actions. -/
-  protected map_smul' : ∀ (m : M) (x : X), toFun (m • x) = (φ m) • toFun x
-
-/-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with additive actions
 of `M` and `N`, a function `f : X → Y` is `φ`-equivariant if `f (m +ᵥ x) = (φ m) +ᵥ (f x)`. -/
 structure AddActionHom {M N : Type*} (φ: M → N) (X : Type*) [VAdd M X] (Y : Type*) [VAdd N Y] where
@@ -78,7 +67,17 @@ structure AddActionHom {M N : Type*} (φ: M → N) (X : Type*) [VAdd M X] (Y : T
   /-- The proposition that the function commutes with the additive actions. -/
   protected map_vadd' : ∀ (m : M) (x : X), toFun (m +ᵥ x) = (φ m) +ᵥ toFun x
 
-attribute [to_additive] MulActionHom
+/-- Equivariant functions :
+When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
+a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`. -/
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
+@[to_additive]
+structure MulActionHom where
+  /-- The underlying function. -/
+  protected toFun : X → Y
+  /-- The proposition that the function commutes with the actions. -/
+  protected map_smul' : ∀ (m : M) (x : X), toFun (m • x) = (φ m) • toFun x
 
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
  see https://github.com/leanprover/lean4/issues/2000 -/
@@ -93,25 +92,12 @@ notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulA
 
 /-- `φ`-equivariant functions `X → Y`,
 where `φ : M → N`, where `M` and `N` act additively on `X` and `Y` respectively -/
-notation:25 (name := «AddActionHomLocal≺») X " →ₑᵥ[" φ:25 "] " Y:0 => AddActionHom φ X Y
+notation:25 (name := «AddActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => AddActionHom φ X Y
 
 /-- `M`-equivariant functions `X → Y` with respect to the additive action of `M`
 
 This is the same as `X →ₑ[@id M] Y` -/
-notation:25 (name := «AddActionHomIdLocal≺») X " →ᵥ[" M:25 "] " Y:0 => AddActionHom (@id M) X Y
-
-
-/-- `MulActionSemiHomClass F φ X Y` states that
-  `F` is a type of morphisms which are `φ`-equivariant.
-
-You should extend this class when you extend `MulActionHom`. -/
-class MulActionSemiHomClass (F : Type*)
-    {M N : outParam Type*} (φ : outParam (M → N))
-    (X Y : outParam Type*) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
-  /-- The proposition that the function preserves the action. -/
-  map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
-
-export MulActionSemiHomClass (map_smulₛₗ)
+notation:25 (name := «AddActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => AddActionHom (@id M) X Y
 
 /-- `AddActionSemiHomClass F φ X Y` states that
   `F` is a type of morphisms which are `φ`-equivariant.
@@ -123,8 +109,18 @@ class AddActionSemiHomClass (F : Type*)
   /-- The proposition that the function preserves the action. -/
   map_vaddₛₗ : ∀ (f : F) (c : M) (x : X), f (c +ᵥ x) = (φ c) +ᵥ (f x)
 
-attribute [to_additive] MulActionSemiHomClass
+/-- `MulActionSemiHomClass F φ X Y` states that
+  `F` is a type of morphisms which are `φ`-equivariant.
 
+You should extend this class when you extend `MulActionHom`. -/
+@[to_additive]
+class MulActionSemiHomClass (F : Type*)
+    {M N : outParam Type*} (φ : outParam (M → N))
+    (X Y : outParam Type*) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
+  /-- The proposition that the function preserves the action. -/
+  map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
+
+export MulActionSemiHomClass (map_smulₛₗ)
 export AddActionSemiHomClass (map_vaddₛₗ)
 
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
