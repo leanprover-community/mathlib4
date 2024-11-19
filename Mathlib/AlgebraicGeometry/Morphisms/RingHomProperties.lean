@@ -106,10 +106,10 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso P) :
     (sourceAffineLocally P).toProperty.RespectsIso := by
   apply AffineTargetMorphismProperty.respectsIso_mk
   · introv H U
-    have : IsIso (e.hom.appLE (e.hom ''ᵁ U) U.1 (e.hom.preimage_image_eq _).ge) :=
+    have : IsIso (e.hom.appLE (e.hom ~~ᵁ U) U.1 (e.hom.preimage_image_eq _).ge) :=
       inferInstanceAs (IsIso (e.hom.app _ ≫
         X.presheaf.map (eqToHom (e.hom.preimage_image_eq _).symm).op))
-    rw [← Scheme.appLE_comp_appLE _ _ ⊤ (e.hom ''ᵁ U) U.1 le_top (e.hom.preimage_image_eq _).ge,
+    rw [← Scheme.appLE_comp_appLE _ _ ⊤ (e.hom ~~ᵁ U) U.1 le_top (e.hom.preimage_image_eq _).ge,
       h₁.cancel_right_isIso]
     exact H ⟨_, U.prop.image_of_isOpenImmersion e.hom⟩
   · introv H U
@@ -277,10 +277,10 @@ theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
     P (f ≫ g) := by
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le] at H ⊢
   intro U V e
-  have : IsIso (f.appLE (f ''ᵁ V) V.1 (f.preimage_image_eq _).ge) :=
+  have : IsIso (f.appLE (f ~~ᵁ V) V.1 (f.preimage_image_eq _).ge) :=
     inferInstanceAs (IsIso (f.app _ ≫
       X.presheaf.map (eqToHom (f.preimage_image_eq _).symm).op))
-  rw [← Scheme.appLE_comp_appLE _ _ _ (f ''ᵁ V) V.1
+  rw [← Scheme.appLE_comp_appLE _ _ _ (f ~~ᵁ V) V.1
     (Set.image_subset_iff.mpr e) (f.preimage_image_eq _).ge,
     (isLocal_ringHomProperty P).respectsIso.cancel_right_isIso]
   exact H _ ⟨_, V.2.image_of_isOpenImmersion _⟩ _

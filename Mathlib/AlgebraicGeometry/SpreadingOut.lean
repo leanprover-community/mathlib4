@@ -87,7 +87,7 @@ lemma Scheme.exists_le_and_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInje
 instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
     Y.IsGermInjectiveAt (f.base x) := by
   obtain ⟨U, hxU, hU, H⟩ := X.exists_germ_injective x
-  refine ⟨⟨f ''ᵁ U, ⟨x, hxU, rfl⟩, hU.image_of_isOpenImmersion f, ?_⟩⟩
+  refine ⟨⟨f ~~ᵁ U, ⟨x, hxU, rfl⟩, hU.image_of_isOpenImmersion f, ?_⟩⟩
   refine ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
     (f.stalkMap x)).mp ?_
   refine ((MorphismProperty.injective CommRingCat).cancel_left_of_respectsIso
@@ -101,7 +101,7 @@ lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f]:
   obtain ⟨U, hxU, hU, hU', H⟩ :=
     Y.exists_le_and_germ_injective (f.base x) (V := f.opensRange) ⟨x, rfl⟩
   obtain ⟨V, hV⟩ := (IsOpenImmersion.affineOpensEquiv f).surjective ⟨⟨U, hU⟩, hU'⟩
-  obtain rfl : f ''ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
+  obtain rfl : f ~~ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
   obtain ⟨y, hy, e : f.base y = f.base x⟩ := hxU
   obtain rfl := f.isOpenEmbedding.injective e
   refine ⟨V, hy, V.2, ?_⟩

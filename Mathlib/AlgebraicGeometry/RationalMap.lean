@@ -217,7 +217,7 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
   have := spread_out_unique_of_isGermInjective' (X := (f.domain ⊓ g.domain).toScheme)
     (X.homOfLE inf_le_left ≫ f.hom) (X.homOfLE inf_le_right ≫ g.hom) (x := ⟨x, hxf, hxg⟩) ?_
   · obtain ⟨U, hxU, e⟩ := this
-    refine ⟨(f.domain ⊓ g.domain).ι ''ᵁ U, ((f.domain ⊓ g.domain).ι ''ᵁ U).2.dense
+    refine ⟨(f.domain ⊓ g.domain).ι ~~ᵁ U, ((f.domain ⊓ g.domain).ι ~~ᵁ U).2.dense
       ⟨_, ⟨_, hxU, rfl⟩⟩,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_left,
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
