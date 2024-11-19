@@ -387,21 +387,22 @@ lemma uc1 :
 - The absolutely convex hull of a totally bounded (precompact) set is totally bounded (precompact)
   https://github.com/leanprover-community/mathlib4/pull/17204 - Proposition 3 TVS II.25
 
+N.B. absolutely convex = convex and balanced.
+
 III.3 Prop 2 - In a locally convex space , every precompact (TotallyBounded) set is bounded
 I think we have this as `TotallyBounded.isVonNBounded`
 
 III.8 Def 6 An LCS is stb quasi-complete if every closed and bounded subset is complete.
-A complete LCS is quasi-complete.
+A complete LCS is quasi-complete. https://en.wikipedia.org/wiki/Quasi-complete_space
 
 In a Hausdorff quasi-complete space, the closure and the closed convex balanced envelope of a
 precompact (TotallyBounded) subset are compact, in fact they are precompact (II, p25, prop3) and
-complete being closed and (von Neumann) bounded. For complete spaces we already have
-`isCompact_of_totallyBounded_isClosed`
+complete being closed and (von Neumann) bounded. We have given this for complete spaces as
+`isCompact_closedAbsConvexHull_of_totallyBounded`.
 
-Let S be precompact. closure S is precompact (`TotallyBounded.closure`) and VN Bounded
+(Let S be precompact. closure S is precompact (`TotallyBounded.closure`) and VN Bounded
 (`TotallyBounded.isVonNBounded`) and closed. Hence complete by the defining property of quasi-
-complete. By `isCompact_iff_totallyBounded_isComplete` it is compact.
-
+complete. By `isCompact_iff_totallyBounded_isComplete` it is compact.)
 
 From TVS IV.3 Example - when E is complete the T of compact convergence coincides with compact
 convex convergence (III p8). The topology of compact convex convergence is compatible with the
