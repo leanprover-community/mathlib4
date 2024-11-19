@@ -35,10 +35,9 @@ Per the above explanation, this file contains the following variants of inclusio
 
 ## TODO
 
-Use (a slight variant of) `Finset.prod_indicator_biUnion_sub_indicator` to prove the integral
-version of inclusion-exclusion.
-
-Prove that truncating the series alternatively gives an upper/lower bound to the true value.
+* Use (a slight variant of) `Finset.prod_indicator_biUnion_sub_indicator` to prove the integral
+  version of inclusion-exclusion.
+* Prove that truncating the series alternatively gives an upper/lower bound to the true value.
 -/
 
 namespace Finset
