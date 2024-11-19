@@ -398,6 +398,8 @@ I think we have this as `TotallyBounded.isVonNBounded`
 III.8 Def 6 An LCS is stb quasi-complete if every closed and bounded subset is complete.
 A complete LCS is quasi-complete. https://en.wikipedia.org/wiki/Quasi-complete_space
 
+The totally bounded sets form a Bornology `totallyBoundedBornology`
+
 In a Hausdorff quasi-complete space, the closure and the closed convex balanced envelope of a
 precompact (TotallyBounded) subset are compact, in fact they are precompact (II, p25, prop3) and
 complete being closed and (von Neumann) bounded. We have given this for complete spaces as
@@ -410,6 +412,10 @@ complete. By `isCompact_iff_totallyBounded_isComplete` it is compact.)
 From TVS IV.3 Example - when E is complete the T of compact convergence coincides with compact
 convex convergence (III p8). The topology of compact convex convergence is compatible with the
 duality. This is used in corollary 2 of the BD theorem
+
+The topology of compact convex convergence is defined in TVS III.14 and is denoted `ℒ_cc(E;F)`
+
+I think the key point is III.15 Prop 2 1) ?
 
 III p8 In a Hausdorff quasi-complete space the closed convex balanced envelope of a totally bounded
 subset is compact. In particular this is true for compact subsets.
