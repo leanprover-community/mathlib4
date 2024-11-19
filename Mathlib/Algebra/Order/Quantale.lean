@@ -72,7 +72,7 @@ class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
 section
 
 variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
-variable [Semigroup α][CompleteLattice α][IsQuantale α]
+variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
 
 @[to_additive]
 theorem mul_sSup_distrib : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_distrib _ _
@@ -85,7 +85,7 @@ end
 namespace IsAddQuantale
 
 variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
-variable [AddSemigroup α][CompleteLattice α][IsAddQuantale α]
+variable [AddSemigroup α] [CompleteLattice α] [IsAddQuantale α]
 
 /-- Left- and right- residuation operators on an additive quantale are similar
 to the Heyting operator on complete lattices, but for a non-commutative logic.
@@ -108,7 +108,7 @@ end IsAddQuantale
 namespace IsQuantale
 
 variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
-variable [Semigroup α][CompleteLattice α][IsQuantale α]
+variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
 
 /-- Left- and right-residuation operators on an additive quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
