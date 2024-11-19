@@ -739,15 +739,10 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 @[simp] lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
   norm_cast
+  simp_rw [WithTop.lt_top_iff_ne_top]
   rw [ENat.iSup_add, iSup_subtype']
-  symm
-  let e : α ≃ {y : WithTop α // y < ⊤} :=
-    { toFun := fun x => ⟨x, WithTop.coe_lt_top x⟩
-      invFun := fun ⟨x,h⟩ => WithTop.untop x (ne_top_of_lt h)
-      left_inv := fun _ => by simp,
-      right_inv := fun _ => by simp }
-  apply Equiv.iSup_congr e
-  simp [e]
+  apply WithTop.equiv_subtype.iSup_congr
+  simp
 
 @[simp] lemma krullDim_withBot [Nonempty α] : krullDim (WithBot α) = krullDim α + 1 := by
   conv_lhs => rw [← krullDim_orderDual]
