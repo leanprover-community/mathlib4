@@ -272,6 +272,7 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
       toFun
       ((lift.tprod _).trans Finset.prod_const_one)
       (by
+        letI := IsScalarTower.right (R := R) (A := ⨂[R] (x : ι), R)
         rw [LinearMap.map_mul_iff]
         ext x y
         show toFun (tprod R x * tprod R y) = toFun (tprod R x) * toFun (tprod R y)
