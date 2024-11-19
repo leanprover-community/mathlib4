@@ -88,15 +88,8 @@ lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
   --somehow have to get this to revert back to the real case.
   sorry
 
-/- This result can surely be substantially golfed! -/
 lemma abs_of_nonneg {a : A} (ha : 0 ≤ a) : abs a = a := by
-  rw [abs, ha.star_eq,← cfcₙ_id' ℝ a]
-  conv_lhs =>
-    rhs
-    rw [← cfcₙ_mul ..]
-  rw [← mul_self_eq_mul_self, cfcₙ_id' ℝ a]
-  · simp only [sqrt_mul_self a ha]
-  · exact IsSelfAdjoint.of_nonneg ha
+  rw [abs, ha.star_eq, sqrt_mul_self a ha]
 
 #exit
 
