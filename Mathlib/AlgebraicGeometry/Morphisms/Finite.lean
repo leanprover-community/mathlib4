@@ -81,7 +81,7 @@ lemma eq_inf :
     @IsFinite = (@IsIntegralHom ⊓ @LocallyOfFiniteType : MorphismProperty Scheme) := by
   ext; exact IsFinite.iff_isIntegralHom_and_locallyOfFiniteType _
 
-instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsFinite f] : IsIntegralHom f :=
+instance (priority := 900) [IsFinite f] : IsIntegralHom f :=
   ((IsFinite.iff_isIntegralHom_and_locallyOfFiniteType f).mp ‹_›).1
 
 instance (priority := 900) [hf : IsFinite f] : LocallyOfFiniteType f :=
