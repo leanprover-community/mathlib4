@@ -45,5 +45,5 @@ noncomputable instance :
 instance : HasFilteredColimits (AddCommGrp.{u}) where
   HasColimitsOfShape := inferInstance
 
-noncomputable instance : AB5 (AddCommGrp.{u}) :=
-  fun _ ↦ { preservesFiniteLimits := inferInstance }
+noncomputable instance : AB5 (AddCommGrp.{u}) where
+  ofShape _ := { preservesFiniteLimits := inferInstance }
