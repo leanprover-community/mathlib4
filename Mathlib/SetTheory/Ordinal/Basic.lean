@@ -1397,10 +1397,6 @@ theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
   card_le_nat
 
 @[simp]
-theorem aleph0_le_card (o : Ordinal) : ℵ₀ ≤ o.card ↔ ω ≤ o := by
-  rw [← ord_le, ord_aleph0]
-
-@[simp]
 theorem card_eq_nat {o} {n : ℕ} : card o = n ↔ o = n := by
   simp only [le_antisymm_iff, card_le_nat, nat_le_card]
 
