@@ -24,6 +24,7 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of R-algebras and their morphisms. -/
 structure AlgebraCat where
+  private mk ::
   /-- The underlying type. -/
   carrier : Type v
   [isRing : Ring carrier]
@@ -47,7 +48,7 @@ instance : CoeSort (AlgebraCat R) (Type v) :=
 attribute [coe] AlgebraCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. -/
+typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
 abbrev of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
   ⟨X⟩
 
