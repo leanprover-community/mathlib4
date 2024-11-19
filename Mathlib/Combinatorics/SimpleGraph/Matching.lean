@@ -27,13 +27,13 @@ one edge, and the edges of the subgraph represent the paired vertices.
 * `SimpleGraph.Subgraph.IsPerfectMatching` defines when a subgraph `M` of a simple graph is a
   perfect matching, denoted `M.IsPerfectMatching`.
 
-* `SimpleGraph.IsMatchingFree` means that a simple graph `G` has no perfect matchings.
+* `SimpleGraph.IsMatchingFree` means that a graph `G` has no perfect matchings.
 
 * `SimpleGraph.IsCycles` means that a graph consists of cycles (including cycles of length 0,
   also known as isolated vertices)
 
-* `SimpleGraph.IsAlternating` means that edges in a SimpleGraph `G` are alternatingly
-  also included and not included in some other SimpleGraph `G'`
+* `SimpleGraph.IsAlternating` means that edges in a graph `G` are alternatingly
+  also included and not included in some other graph `G'`
 
 ## TODO
 
@@ -323,7 +323,7 @@ The definition of `symmDiff` that makes sense is the one for `SimpleGraph`. This
 definition is for graphs, rather than subgraphs.
 -/
 def IsCycles (G : SimpleGraph V) := ∀ ⦃v⦄, (G.neighborSet v).Nonempty → (G.neighborSet v).ncard = 2
-
+-- def IsCycles (G : SimpleGraph V) := (∀ v : V, (G.neighborSet v) = ∅ ∨ (G.neighborSet v).ncard = 2)
 /--
 Given a vertex with one edge in a graph of cycles this gives the other edge incident
 to the same vertex.
@@ -331,10 +331,13 @@ to the same vertex.
 lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
     ∃ w', w ≠ w' ∧ G.Adj v w' := by
   simp_rw [← SimpleGraph.mem_neighborSet] at hadj ⊢
-  cases' h v with hl hr
+  cases' (G.neighborSet v).eq_empty_or_nonempty with hl hr
   · exact ((Set.eq_empty_iff_forall_not_mem.mp hl) _ hadj).elim
-  · obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
+  · have := h hr
+    obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
     exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
+
+open scoped symmDiff
 
 lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
     {M : Subgraph G} {M' : Subgraph G'} (hM : M.IsPerfectMatching)
@@ -342,11 +345,11 @@ lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
   intro v
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   obtain ⟨w', hw'⟩ := hM'.1 (hM'.2 v)
-  simp only [symmDiff_def, Set.eq_empty_iff_forall_not_mem, SimpleGraph.mem_neighborSet,
-    SimpleGraph.sup_adj, sdiff_adj, spanningCoe_adj, not_or, not_and, not_not, Set.ncard_eq_two,
-    ne_eq]
+  simp only [symmDiff_def, Set.ncard_eq_two, ne_eq, imp_iff_not_or, Set.not_nonempty_iff_eq_empty,
+    Set.eq_empty_iff_forall_not_mem, SimpleGraph.mem_neighborSet, SimpleGraph.sup_adj, sdiff_adj,
+    spanningCoe_adj, not_or, not_and, not_not]
   by_cases hww' : w = w'
-  · simp_all [hww']
+  · simp_all [← imp_iff_not_or, hww']
   · right
     use w, w'
     aesop
@@ -355,7 +358,8 @@ lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
 A graph `G` is alternating with respect to some other graph `G'`, if exactly every other edge in
 `G` is in `G'`. Note that the degree of each vertex needs to be bounded by 2 for this to be
 possible. This property is used to create new matchings using `symmDiff`. The definition of
-`symmDiff` for `SimpleGraph` is the on
+`symmDiff` for `SimpleGraph` is the one that makes sense, so this property is defined
+for `SimpleGraph` as well.
 -/
 def IsAlternating (G  G' : SimpleGraph V) :=
   ∀ {v w w': V}, w ≠ w' → G.Adj v w → G.Adj v w' → (G'.Adj v w ↔ ¬ G'.Adj v w')
