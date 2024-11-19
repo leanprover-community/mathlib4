@@ -136,49 +136,31 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
 lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s t)
     (f : s ≃ t) (hadj : ∀ v : s, G.Adj v (f v)) :
     ∃ M : Subgraph G, M.verts = s ∪ t ∧ M.IsMatching := by
-  haveI (v : V) : Decidable (v ∈ s) := Classical.dec _
+  have (v : V) : Decidable (v ∈ s) := Classical.dec _
   use {
     verts := s ∪ t
-    Adj := fun v w ↦ (if h : v ∈ s then f ⟨v, h⟩ = w else False) ∨
-          (if h : w ∈ s then f ⟨w, h⟩ = v else False)
+    Adj := fun v w ↦ (∃ h : v ∈ s, f ⟨v, h⟩ = w) ∨ (∃ h : w ∈ s, f ⟨w, h⟩ = v)
     adj_sub := by
       intro v w h
-      simp only [dite_else_false] at h
-      cases' h with hl hr
-      · rw [← hl.choose_spec]
-        exact hadj ⟨v, hl.choose⟩
-      · rw [← hr.choose_spec, G.adj_comm]
-        exact hadj ⟨w, hr.choose⟩
-    edge_vert := by
-      intro v w hvw
-      simp only [dite_else_false] at hvw
-      cases' hvw with hl hr
-      · exact Set.mem_union_left t hl.choose
-      · rw [← hr.choose_spec]
-        exact Set.mem_union_right s (f _).coe_prop
-  }
+      obtain (⟨hv, rfl⟩ | ⟨hw, rfl⟩) := h
+      · exact hadj ⟨v, _⟩
+      · exact (hadj ⟨w, _⟩).symm
+    edge_vert := by aesop }
 
-  simp only [dite_else_false, true_and]
+  simp only [Subgraph.IsMatching, Set.mem_union, true_and]
   intro v hv
-  simp only [Set.mem_union] at hv
   cases' hv with hl hr
   · use f ⟨v, hl⟩
-    simp only [exists_prop', nonempty_prop, and_true]
-    refine ⟨by left; exact hl, ?_⟩
-    intro y hy
-    cases' hy with h1 h2
-    · simp_all only [exists_true_left]
-    · obtain ⟨hys, rfl⟩ := h2
-      exact (h.ne_of_mem hl (f ⟨y, hys⟩).coe_prop rfl).elim
+    simp only [hl, exists_const, true_or, exists_true_left, true_and]
+    rintro y (rfl | ⟨hys, rfl⟩)
+    · rfl
+    · exact (h.ne_of_mem hl (f ⟨y, hys⟩).coe_prop rfl).elim
   · use f.symm ⟨v, hr⟩
     simp only [Subtype.coe_eta, Equiv.apply_symm_apply, Subtype.coe_prop, exists_const, or_true,
       true_and]
-    intro y hy
-    cases' hy with h1 h2
-    · obtain ⟨hvs, _⟩ := h1
-      exact (h.ne_of_mem hvs hr rfl).elim
-    · obtain ⟨_, rfl⟩ := h2
-      simp only [Subtype.coe_eta, Equiv.symm_apply_apply]
+    rintro y (⟨hy, rfl⟩ | ⟨hy, rfl⟩)
+    · exact (h.ne_of_mem hy hr rfl).elim
+    · simp
 
 protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
     (hf : Injective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
