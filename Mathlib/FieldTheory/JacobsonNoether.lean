@@ -179,7 +179,7 @@ open Subring Algebra in
   `D` coincides with `L`, then there exist an element `x` of `D \ L`
   that is separable over `L`. -/
 theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRing D]
-  [Algebra L D] [Algebra.IsAlgebraic L D] [Algebra.IsCentral L D]
+    [Algebra L D] [Algebra.IsAlgebraic L D] [Algebra.IsCentral L D]
   (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
   have hcenter : Subalgebra.center L D = ⊥ := le_bot_iff.mp IsCentral.out
