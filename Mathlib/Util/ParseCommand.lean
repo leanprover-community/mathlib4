@@ -5,6 +5,7 @@ Authors: Matthew Robert Ballard, Damiano Testa
 -/
 
 import Lean.Elab.Command
+import Mathlib.Init
 
 /-!
 # `#parse` -- a command to parse text and log outputs
