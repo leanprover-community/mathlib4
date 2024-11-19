@@ -59,6 +59,7 @@ variable {R} in
 /-- The type of morphisms in `AlgebraCat R`. -/
 @[ext]
 structure Hom (A B : AlgebraCat.{v} R) where
+  private mk ::
   /-- The underlying algebra map. -/
   hom : A →ₐ[R] B
 
@@ -90,11 +91,10 @@ lemma hom_ext {A B : AlgebraCat.{v} R} {f g : A ⟶ B} (hf : f.hom = g.hom) : f 
   Hom.ext hf
 
 /-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
-def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y] [Algebra R Y]
+abbrev ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y] [Algebra R Y]
     (f : X →ₐ[R] Y) : of R X ⟶ of R Y :=
   ⟨f⟩
 
-@[simp]
 lemma hom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
     [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
 
