@@ -34,12 +34,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable (e : E →L[𝕜] F)
-variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
+variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E}
 
 namespace ContinuousLinearEquiv
 
@@ -346,9 +341,9 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
       f' (g p.1 - g p.2) - (p.1 - p.2) := by
     refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => ?_) fun _ => rfl
     simp
-  refine this.trans_isLittleO ?_
+  refine .of_isLittleO <| this.trans_isLittleO ?_
   clear this
-  refine ((hf.comp_tendsto hg).symm.congr'
+  refine ((hf.isLittleO.comp_tendsto hg).symm.congr'
     (hfg.mono ?_) (Eventually.of_forall fun _ => rfl)).trans_isBigO ?_
   · rintro p ⟨hp1, hp2⟩
     simp [hp1, hp2]
@@ -454,7 +449,7 @@ theorem HasFDerivWithinAt.mapsTo_tangent_cone {x : E} (h : HasFDerivWithinAt f f
   rintro v ⟨c, d, dtop, clim, cdlim⟩
   refine
     ⟨c, fun n => f (x + d n) - f x, mem_of_superset dtop ?_, clim, h.lim atTop dtop clim cdlim⟩
-  simp (config := { contextual := true }) [-mem_image, mem_image_of_mem]
+  simp +contextual [-mem_image, mem_image_of_mem]
 
 /-- If a set has the unique differentiability property at a point x, then the image of this set
 under a map with onto derivative has also the unique differentiability property at the image point.

@@ -38,7 +38,7 @@ add_decl_doc RingCon.toCon
 /-- The induced additive congruence from a `RingCon`. -/
 add_decl_doc RingCon.toAddCon
 
-variable {α R : Type*}
+variable {R : Type*}
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/

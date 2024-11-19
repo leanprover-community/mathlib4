@@ -36,11 +36,11 @@ variable {b : E × F → G} {u : Set (E × F)}
 
 open NormedField
 
--- Porting note (#11215): TODO: rewrite/golf using analytic functions?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: rewrite/golf using analytic functions?
 @[fun_prop]
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by
-  simp only [HasStrictFDerivAt]
+  simp only [hasStrictFDerivAt_iff_isLittleO]
   simp only [← map_add_left_nhds_zero (p, p), isLittleO_map]
   set T := (E × F) × E × F
   calc
@@ -103,19 +103,23 @@ theorem IsBoundedBilinearMap.differentiableOn (h : IsBoundedBilinearMap 𝕜 b) 
 
 variable (B : E →L[𝕜] F →L[𝕜] G)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G' → F}
     {f' : G' →L[𝕜] E} {g' : G' →L[𝕜] F} {x : G'} {s : Set G'} (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun y => B (f y) (g y))
-      (B.precompR G' (f x) g' + B.precompL G' f' (g x)) s x :=
-  (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
+      (B.precompR G' (f x) g' + B.precompL G' f' (g x)) s x := by
+  exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  need `by exact` to deal with tricky unification -/
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivAt_of_bilinear {f : G' → E} {g : G' → F} {f' : G' →L[𝕜] E}
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
-    HasFDerivAt (fun y => B (f y) (g y)) (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x :=
-  (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
+    HasFDerivAt (fun y => B (f y) (g y)) (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x := by
+  exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
 
 @[fun_prop]
 theorem ContinuousLinearMap.hasStrictFDerivAt_of_bilinear

@@ -3,13 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Data.Finsupp.Basic
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Monoid algebras
@@ -63,7 +63,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     { liftAddHom fun x => (smulAddHom k A).flip (f x) with
       toFun := fun a => a.sum fun m t => t • f m
       map_smul' := fun t' a => by
-        -- Porting note(#12129): additional beta reduction needed
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
         beta_reduce
         rw [Finsupp.smul_sum, sum_smul_index']
         · simp_rw [smul_assoc, MonoidHom.id_apply]

@@ -510,9 +510,6 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (Eventually.of_forall hC)
 
-@[deprecated (since := "2024-01-31")]
-alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace
-
 variable (E)
 lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E] :
     ProperSpace 𝕜 :=
@@ -522,9 +519,6 @@ lemma ProperSpace.of_locallyCompact_module [Nontrivial E] [LocallyCompactSpace E
     have : IsClosedEmbedding L := isClosedEmbedding_smul_left hv
     apply IsClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
-
-@[deprecated (since := "2024-01-31")]
-alias properSpace_of_locallyCompact_module := ProperSpace.of_locallyCompact_module
 
 end Riesz
 

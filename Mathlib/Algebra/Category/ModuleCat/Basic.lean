@@ -391,7 +391,7 @@ instance : Module R (mkOfSMul' φ) where
 given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+-- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 @[simp, nolint simpNF]
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 
@@ -445,4 +445,3 @@ end ModuleCat
     {R} [Ring R] {G : Type u} [AddCommGroup G] [Module R G] {H : ModuleCat.{u} R} (f : G →ₗ[R] H) :
     LinearMap.comp (𝟙 H) f = f :=
   Category.comp_id (ModuleCat.asHom f)
-

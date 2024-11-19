@@ -65,7 +65,7 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
   Quotient.eq
 
 -- Porting note: new instance;
--- Porting note (#11215): TODO: move to better place
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move to better place
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
@@ -1449,7 +1449,7 @@ end DecidablePiExists
 
 section
 
-variable [DecidableEq α] {s t u : Multiset α} {a b : α}
+variable [DecidableEq α] {s t u : Multiset α} {a : α}
 
 /-- `s - t` is the multiset such that `count a (s - t) = count a s - count a t` for all `a`
   (note that it is truncated subtraction, so it is `0` if `count a t ≥ count a s`). -/
@@ -2494,7 +2494,7 @@ theorem rel_add_right {as bs₀ bs₁} :
 
 theorem rel_map_left {s : Multiset γ} {f : γ → α} :
     ∀ {t}, Rel r (s.map f) t ↔ Rel (fun a b => r (f a) b) s t :=
-  @(Multiset.induction_on s (by simp) (by simp (config := { contextual := true }) [rel_cons_left]))
+  @(Multiset.induction_on s (by simp) (by simp +contextual [rel_cons_left]))
 
 theorem rel_map_right {s : Multiset α} {t : Multiset γ} {f : γ → β} :
     Rel r s (t.map f) ↔ Rel (fun a b => r a (f b)) s t := by
