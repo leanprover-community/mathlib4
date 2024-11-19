@@ -40,7 +40,7 @@ instance algebraObj (j) :
 def sectionsSubalgebra : Subalgebra R (∀ j, F.obj j) :=
   { SemiRingCat.sectionsSubsemiring
       (F ⋙ forget₂ (AlgebraCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) with
-    algebraMap_mem' := fun r _ _ f => (F.map f).algHom.commutes r }
+    algebraMap_mem' := fun r _ _ f => (F.map f).hom.commutes r }
 
 instance (F : J ⥤ AlgebraCat.{w} R) : Ring (F ⋙ forget _).sections :=
   inferInstanceAs <| Ring (sectionsSubalgebra F)
@@ -131,7 +131,7 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     apply congrArg
     apply Subtype.ext
     ext j
-    exact (s.π.app j).algHom.commutes r
+    exact (s.π.app j).hom.commutes r
 
 end HasLimits
 

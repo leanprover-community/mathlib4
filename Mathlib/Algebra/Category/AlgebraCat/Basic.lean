@@ -60,7 +60,7 @@ variable {R} in
 @[ext]
 structure Hom (A B : AlgebraCat.{v} R) where
   /-- The underlying algebra map. -/
-  algHom : A →ₐ[R] B
+  hom : A →ₐ[R] B
 
 instance : Category (AlgebraCat.{v} R) where
   Hom A B := Hom A B
@@ -68,25 +68,25 @@ instance : Category (AlgebraCat.{v} R) where
   comp := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
 
 instance {M N : AlgebraCat.{v} R} : CoeFun (M ⟶ N) (fun _ ↦ M → N) where
-  coe f := f.algHom
+  coe f := f.hom
 
 @[simp]
-lemma algHom_id {A : AlgebraCat.{v} R} : (𝟙 A : A ⟶ A).algHom = AlgHom.id R A := rfl
+lemma hom_id {A : AlgebraCat.{v} R} : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
 
 /- Provided for rewriting. -/
 lemma id_apply (A : AlgebraCat.{v} R) (a : A) :
     (𝟙 A : A ⟶ A) a = a := by simp
 
 @[simp]
-lemma algHom_comp {A B C : AlgebraCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) :
-    (f ≫ g).algHom = g.algHom.comp f.algHom := rfl
+lemma hom_comp {A B C : AlgebraCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) :
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {A B C : AlgebraCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) (a : A) :
     (f ≫ g) a = g (f a) := by simp
 
 @[ext]
-lemma hom_ext {A B : AlgebraCat.{v} R} {f g : A ⟶ B} (hf : f.algHom = g.algHom) : f = g :=
+lemma hom_ext {A B : AlgebraCat.{v} R} {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 /-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
@@ -95,12 +95,12 @@ def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring 
   ⟨f⟩
 
 @[simp]
-lemma algHom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
-    [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).algHom = f := rfl
+lemma hom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
+    [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
 
 @[simp]
-lemma ofHom_algHom {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
-    ofHom (Hom.algHom f) = f := rfl
+lemma ofHom_hom {A B : AlgebraCat.{v} R} (f : A ⟶ B) :
+    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type v} [Ring X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
@@ -152,7 +152,7 @@ lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
 
 @[simp]
 lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
-    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.asHom f.algHom.toLinearMap :=
+    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.asHom f.hom.toLinearMap :=
   rfl
 
 variable {R} in
@@ -265,7 +265,7 @@ namespace CategoryTheory.Iso
 /-- Build a `AlgEquiv` from an isomorphism in the category `AlgebraCat R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
-  { i.hom.algHom with
+  { i.hom.hom with
     toFun := i.hom
     invFun := i.inv
     left_inv := fun x => by
@@ -290,5 +290,5 @@ def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebr
 instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
-    let e : X ≃ₐ[R] Y := { f.algHom, i.toEquiv with }
+    let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom

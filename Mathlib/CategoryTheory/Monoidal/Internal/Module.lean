@@ -150,9 +150,9 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
 def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
   map f :=
-    { hom := f.algHom.toLinearMap
-      one_hom := LinearMap.ext f.algHom.commutes
-      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.algHom }
+    { hom := f.hom.toLinearMap
+      one_hom := LinearMap.ext f.hom.commutes
+      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f.hom }
 
 end MonModuleEquivalenceAlgebra
 
