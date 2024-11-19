@@ -330,11 +330,11 @@ variable (n : ℕ) [NeZero n]
 character `χ`. Its (negative) logarithmic derivative is used to prove Dirichlet's Theorem
 on primes in arithmetic progression. -/
 noncomputable abbrev LFunctionTrivChar₁ : ℂ → ℂ :=
-  Function.update (fun s ↦ LFunctionTrivChar n s * (s - 1)) 1
+  Function.update (fun s ↦ (s - 1) * LFunctionTrivChar n s) 1
     (∏ p ∈ n.primeFactors, (1 - (p : ℂ)⁻¹))
 
 lemma LFunctionTrivChar₁_apply_of_ne_one {s : ℂ} (hs : s ≠ 1) :
-    LFunctionTrivChar₁ n s = LFunctionTrivChar n s * (s - 1) := by
+    LFunctionTrivChar₁ n s = (s - 1) * LFunctionTrivChar n s := by
   simp only [ne_eq, hs, not_false_eq_true, Function.update_noteq]
 
 lemma LFunctionTrivChar₁_apply_one_ne_zero : LFunctionTrivChar₁ n 1 ≠ 0 := by
@@ -347,7 +347,7 @@ lemma LFunctionTrivChar₁_apply_one_ne_zero : LFunctionTrivChar₁ n 1 ≠ 0 :=
 lemma LFunctionTrivChar₁_differentiable : Differentiable ℂ (LFunctionTrivChar₁ n) := by
   rw [← differentiableOn_univ,
     ← differentiableOn_compl_singleton_and_continuousAt_iff (c := 1) Filter.univ_mem]
-  refine ⟨DifferentiableOn.congr (f := fun s ↦ LFunctionTrivChar n s * (s - 1))
+  refine ⟨DifferentiableOn.congr (f := fun s ↦ (s - 1) * LFunctionTrivChar n s)
     (fun _ hs ↦ DifferentiableAt.differentiableWithinAt <| by fun_prop (disch := simp_all [hs]))
     fun _ hs ↦ by rw [LFunctionTrivChar₁_apply_of_ne_one n (Set.mem_diff_singleton.mp hs).2],
     continuousWithinAt_compl_self.mp ?_⟩
@@ -357,16 +357,16 @@ lemma LFunctionTrivChar₁_differentiable : Differentiable ℂ (LFunctionTrivCha
 
 lemma deriv_LFunctionTrivChar₁_apply_of_ne_one  {s : ℂ} (hs : s ≠ 1) :
     deriv (LFunctionTrivChar₁ n) s =
-      deriv (LFunctionTrivChar n) s * (s - 1) + LFunctionTrivChar n s := by
+      (s - 1) * deriv (LFunctionTrivChar n) s + LFunctionTrivChar n s := by
   have H : deriv (LFunctionTrivChar₁ n) s =
-      deriv (fun w ↦ LFunctionTrivChar n w * (w - 1)) s := by
+      deriv (fun w ↦ (w - 1) * LFunctionTrivChar n w) s := by
     refine Filter.eventuallyEq_iff_exists_mem.mpr ?_ |>.deriv_eq
-    refine ⟨{w | w ≠ 1}, IsOpen.mem_nhds isOpen_ne hs, fun w hw ↦ ?_⟩
-    simp only [ne_eq, Set.mem_setOf.mp hw, not_false_eq_true, Function.update_noteq]
-  rw [H, deriv_mul (differentiableAt_LFunction _ s (.inl hs)) <| by fun_prop, deriv_sub_const,
-    deriv_id'', mul_one]
+    exact ⟨{w | w ≠ 1}, IsOpen.mem_nhds isOpen_ne hs,
+      fun w hw ↦ LFunctionTrivChar₁_apply_of_ne_one n (Set.mem_setOf.mp hw)⟩
+  rw [H, deriv_mul (by fun_prop) (differentiableAt_LFunction _ s (.inl hs)), deriv_sub_const,
+    deriv_id'', one_mul, add_comm]
 
-/-- The negative logarithmtic derivative of `s ↦ (L χ s) * (s - 1)` for a trivial
+/-- The negative logarithmtic derivative of `s ↦ (s - 1) * L χ s` for a trivial
 Dirichlet character `χ` is continuous away from the zeros of `L χ` (including at `s = 1`). -/
 lemma continuousOn_neg_logDeriv_LFunctionTrivChar₁ :
     ContinuousOn (fun s ↦ -deriv (LFunctionTrivChar₁ n) s / LFunctionTrivChar₁ n s)
@@ -378,7 +378,7 @@ lemma continuousOn_neg_logDeriv_LFunctionTrivChar₁ :
   rcases eq_or_ne w 1 with rfl | hw'
   · exact LFunctionTrivChar₁_apply_one_ne_zero _
   · rw [LFunctionTrivChar₁_apply_of_ne_one n hw', mul_ne_zero_iff]
-    exact ⟨(Set.mem_setOf.mp hw).resolve_left hw', sub_ne_zero_of_ne hw'⟩
+    exact ⟨sub_ne_zero_of_ne hw', (Set.mem_setOf.mp hw).resolve_left hw'⟩
 
 end trivial
 
