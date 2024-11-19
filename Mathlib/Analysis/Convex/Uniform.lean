@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.StrictConvexSpace
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 
 /-!
 # Uniformly convex spaces
@@ -34,13 +35,39 @@ open Set Metric Filter Topology Uniformity
 
 open Convex Pointwise
 
+theorem dist_div_norm_self_div_norm_self_le {E : Type*} [SeminormedAddCommGroup E]
+    [NormedSpace ℝ E] {x y : E} (hx : ‖x‖ ≠ 0) (hy : ‖y‖ ≠ 0) :
+    dist (‖x‖⁻¹ • x) (‖y‖⁻¹ • y) ≤ ‖x‖⁻¹ * dist x y + (‖y‖ - ‖x‖) :=
+  calc dist (‖x‖⁻¹ • x) (‖y‖⁻¹ • y)
+    _ = ‖(‖x‖⁻¹ • x - ‖x‖⁻¹ • y) + (‖x‖⁻¹ • y - ‖y‖⁻¹ • y)‖ := by
+        simp_rw [dist_eq_norm, sub_add_sub_cancel]
+    _ ≤ ‖‖x‖⁻¹ • x - ‖x‖⁻¹ • y‖ + ‖‖x‖⁻¹ • y - ‖y‖⁻¹ • y‖ := norm_add_le _ _
+    _ = ‖x‖⁻¹ * ‖x - y‖ + ‖‖x‖⁻¹ • y - ‖y‖⁻¹ • y‖ := norm_add_le _ _
+    _ ≤ ‖x‖⁻¹ * dist x y + (‖y‖ - ‖x‖) := sorry
+
+theorem div_norm_self_tendsto_uniformity_iff
+
+-- This can probably stay here
+theorem norm_tendsto_of_norm_add_of_le {ι E : Type*} [SeminormedAddCommGroup E]
+    {a : ℝ} {𝓕 : Filter ι} {f g : ι → E}
+    (norm_f : ∀ᶠ i in 𝓕, ‖f i‖ ≤ a)
+    (norm_g : ∀ᶠ i in 𝓕, ‖g i‖ ≤ a)
+    (norm_add : Tendsto (fun i ↦ ‖f i + g i‖) 𝓕 (𝓝 (a+a))) :
+    Tendsto (fun i ↦ ‖f i‖) 𝓕 (𝓝 a) := by
+  have : ∀ᶠ i in 𝓕, ‖f i + g i‖ - a ≤ ‖f i‖ := by
+    filter_upwards [norm_g] with i hgi
+    rw [sub_le_iff_le_add]
+    exact norm_add_le _ _ |>.trans (add_le_add_left hgi _)
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ tendsto_const_nhds this norm_f
+  simpa only [add_sub_cancel_right a a] using norm_add.sub_const a
+
 /-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
 uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above
 by a constant `< 2` when `‖x - y‖` is uniformly bounded below by a positive constant. -/
-@[mk_iff uniformConvexSpace_iff_comap_le_uniformity]
+@[mk_iff uniformConvexSpace_iff_comap_norm_add_le_uniformity]
 class UniformConvexSpace (E : Type*) [SeminormedAddCommGroup E] : Prop where
-  change_me : ∀ a b : ℝ,
-    comap (fun xy ↦ ⟨‖xy.1‖, ‖xy.2‖, ‖xy.1 + xy.2‖⟩ : E × E → ℝ × ℝ × ℝ) (𝓝 ⟨a, b, a+b⟩) ≤ 𝓤 E
+  protected comap_norm_add_le_uniformity : ∀ a : ℝ,
+    comap (fun xy ↦ ⟨‖xy.1‖, ‖xy.2‖, ‖xy.1 + xy.2‖⟩ : E × E → ℝ × ℝ × ℝ) (𝓝 ⟨a, a, a+a⟩) ≤ 𝓤 E
 
 /-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
 uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above
@@ -56,30 +83,95 @@ section SeminormedAddCommGroup
 
 variable {E : Type*} [SeminormedAddCommGroup E]
 
-theorem uniformConvexSpace_iff_tendsto_uniformity_of_norm_add :
-    UniformConvexSpace E ↔ ∀ a b : ℝ, ∀ 𝓕 : Filter (E × E),
+theorem uniformConvexSpace_iff_le_uniformity_of_norm_add :
+    UniformConvexSpace E ↔ ∀ a : ℝ, ∀ 𝓕 : Filter (E × E),
       Tendsto (fun xy ↦ ‖xy.1‖) 𝓕 (𝓝 a) →
-      Tendsto (fun xy ↦ ‖xy.2‖) 𝓕 (𝓝 b) →
-      Tendsto (fun xy ↦ ‖xy.1 + xy.2‖) 𝓕 (𝓝 (a+b)) →
+      Tendsto (fun xy ↦ ‖xy.2‖) 𝓕 (𝓝 a) →
+      Tendsto (fun xy ↦ ‖xy.1 + xy.2‖) 𝓕 (𝓝 (a+a)) →
       𝓕 ≤ 𝓤 E := by
-  rw [uniformConvexSpace_iff_comap_le_uniformity]
-  congrm ∀ a b, ?_
+  rw [uniformConvexSpace_iff_comap_norm_add_le_uniformity]
+  congrm ∀ a, ?_
   rw [← forall_le_iff_le]
   congrm ∀ 𝓕, ?_
   simp_rw [← tendsto_iff_comap, nhds_prod_eq, tendsto_prod_iff', and_imp]
 
-theorem uniformConvexSpace_iff_tendsto_uniformity_of_norm_add_of_le :
-    UniformConvexSpace E ↔ ∀ a b : ℝ, ∀ 𝓕 : Filter (E × E),
-      ∀ᶠ xy in 𝓕, ‖xy.1‖ ≤ a →
-      ∀ᶠ xy in 𝓕, ‖xy.2‖ ≤ b →
-      Tendsto (fun xy ↦ ‖xy.1 + xy.2‖) 𝓕 (𝓝 (a+b)) →
-      𝓕 ≤ 𝓤 E := by
-  rw [uniformConvexSpace_iff_tendsto_uniformity_of_norm_add]
-  congrm ∀ a b 𝓕, ?_
-  constructor <;> intro H
-  · sorry
-  · sorry
+theorem tendsto_uniformity_of_norm_add {ι : Type*} [H : UniformConvexSpace E]
+    {a : ℝ} {𝓕 : Filter ι} {f g : ι → E} (norm_f : Tendsto (fun i ↦ ‖f i‖) 𝓕 (𝓝 a))
+    (norm_g : Tendsto (fun i ↦ ‖g i‖) 𝓕 (𝓝 a))
+    (norm_add : Tendsto (fun i ↦ ‖f i + g i‖) 𝓕 (𝓝 (a+a))) :
+    Tendsto (fun i ↦ (f i, g i)) 𝓕 (𝓤 E) := by
+  apply uniformConvexSpace_iff_le_uniformity_of_norm_add.mp H a (map (fun i ↦ (f i, g i)) 𝓕) <;>
+  rwa [tendsto_map'_iff]
 
+theorem tendsto_uniformity_of_norm_add_of_closedBall {ι : Type*}
+    [UniformConvexSpace E] {a : ℝ} {𝓕 : Filter ι} {f g : ι → E}
+    (norm_f : ∀ᶠ i in 𝓕, ‖f i‖ ≤ a)
+    (norm_g : ∀ᶠ i in 𝓕, ‖g i‖ ≤ a)
+    (norm_add : Tendsto (fun i ↦ ‖f i + g i‖) 𝓕 (𝓝 (a+a))) :
+    Tendsto (fun i ↦ (f i, g i)) 𝓕 (𝓤 E) :=
+  tendsto_uniformity_of_norm_add
+    (norm_tendsto_of_norm_add_of_le norm_f norm_g norm_add)
+    (norm_tendsto_of_norm_add_of_le norm_g norm_f (by simpa [add_comm] using norm_add)) norm_add
+
+theorem tendsto_uniformity_of_norm_add_of_sphere {ι : Type*}
+    [UniformConvexSpace E] {a : ℝ} {𝓕 : Filter ι} {f g : ι → E}
+    (norm_f : ∀ᶠ i in 𝓕, ‖f i‖ = a)
+    (norm_g : ∀ᶠ i in 𝓕, ‖g i‖ = a)
+    (norm_add : Tendsto (fun i ↦ ‖f i + g i‖) 𝓕 (𝓝 (a+a))) :
+    Tendsto (fun i ↦ (f i, g i)) 𝓕 (𝓤 E) :=
+  tendsto_uniformity_of_norm_add_of_closedBall
+    (EventuallyEq.le norm_f) (EventuallyEq.le norm_g) norm_add
+
+theorem exists_forall_closedBall_norm_add_le_add_sub [UniformConvexSpace E]
+    {a ε : ℝ} (ε_pos : 0 < ε) :
+    ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ a → ∀ ⦃y⦄, ‖y‖ ≤ a → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ (a + a) - δ := by
+  set φ : E × E → ℝ × ℝ × ℝ := fun xy ↦ ⟨‖xy.1‖, ‖xy.2‖, ‖xy.1 + xy.2‖⟩
+  set 𝓕 := comap φ (𝓟 (Iic a) ×ˢ 𝓟 (Iic a) ×ˢ (𝓝 (a+a)))
+  have norm_fst : ∀ᶠ xy in 𝓕, ‖xy.1‖ ≤ a := (tendsto_fst.eventually <| mem_principal_self _).comap φ
+  have norm_snd : ∀ᶠ xy in 𝓕, ‖xy.2‖ ≤ a :=
+    (tendsto_snd.eventually <| tendsto_fst.eventually <| mem_principal_self _).comap φ
+  have norm_add : Tendsto (fun xy ↦ ‖xy.1 + xy.2‖) 𝓕 (𝓝 (a+a)) :=
+    tendsto_snd.comp <| tendsto_snd.comp tendsto_comap
+  have := tendsto_uniformity_of_norm_add_of_closedBall norm_fst norm_snd norm_add
+    |>.eventually (dist_mem_uniformity ε_pos)
+  simp_rw [𝓕, comap_prod, comap_principal, inf_comm (𝓟 _),
+    eventually_inf_principal, nhds_basis_ball.comap _ |>.eventually_iff, Prod.forall,
+    Real.ball_eq_Ioo, dist_eq_norm] at this
+  rcases this with ⟨δ, δ_pos, hδ⟩
+  exact ⟨δ, δ_pos, fun _ hxa _ hyb ↦ le_imp_le_of_lt_imp_lt fun hxy ↦ hδ _ _
+    ⟨hxy, lt_add_of_le_of_pos (norm_add_le_of_le hxa hyb) δ_pos⟩ hyb hxa⟩
+
+#check Real.uniformContinuous_mul
+
+theorem uniformConvexSpace_iff_tendsto_uniformity_of_norm_add_of_unit_sphere
+    [NormedSpace ℝ E] :
+    UniformConvexSpace E ↔ ∀ 𝓕 : Filter (E × E),
+      (∀ᶠ xy in 𝓕, ‖xy.1‖ = 1) →
+      (∀ᶠ xy in 𝓕, ‖xy.2‖ = 1) →
+      Tendsto (fun xy ↦ ‖xy.1 + xy.2‖) 𝓕 (𝓝 2) →
+      𝓕 ≤ 𝓤 E := by
+  refine ⟨fun H 𝓕 ↦ one_add_one_eq_two (R := ℝ) ▸ tendsto_uniformity_of_norm_add_of_sphere,
+    fun H ↦ uniformConvexSpace_iff_le_uniformity_of_norm_add.mpr
+      fun a' 𝓕 norm_fst norm_snd norm_add ↦ ?_⟩
+  rcases eq_or_ne a' 0 with (rfl|ha)
+  · rw [← tendsto_zero_iff_norm_tendsto_zero] at norm_fst norm_snd
+    exact le_trans (Filter.le_prod.mpr ⟨norm_fst, norm_snd⟩)
+      (nhds_prod_eq (X := E) (Y := E) ▸ nhds_le_uniformity (0 : E))
+  --have ρ_tendsto : Tendsto ρ 𝓕 (𝓝 (a⁻¹ * a')) :=
+  --  .const_mul a⁻¹ (max_self a' ▸ .max norm_fst norm_snd)
+  set Φ : E × E → E × E := fun xy ↦ (‖xy.1‖ • xy.1, ‖xy.2‖ • xy.2) with Φ_def
+  have Φ_tendsto : map Φ 𝓕 ≤ 𝓤 E := H _ sorry sorry sorry
+  have : 𝓕 ⊓ 𝓤 E = 𝓕 ⊓ comap Φ (𝓤 E) := by
+    refine le_antisymm (le_inf inf_le_left <| inf_le_of_left_le <|
+      map_le_iff_le_comap.mp Φ_tendsto) (le_inf inf_le_left ?_)
+    simp_rw [Metric.uniformity_eq_comap_nhds_zero, dist_eq_norm, comap_comap, Φ_def,
+      Function.comp_def, ← tendsto_iff_comap]
+    have key : ∀ p : E × E, ‖‖p.1‖ • p.1 ‖
+    refine tendsto_inf_right tendsto_comap |>.congr_dist ?_
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ _ _
+    --have : Tendsto (fun )
+    --refine (mul_zero ‖a‖ ▸ (tendsto_inf_left tendsto_comap).const_mul ‖a‖).congr_dist ?_
+  rwa [← inf_eq_left, this, inf_eq_left, ← map_le_iff_le_comap]
 
 theorem uniformConvexSpace_iff_comap_sphere_le_uniformity :
     UniformConvexSpace E ↔ comap (fun (xy : E × E) ↦ ‖xy.1 + xy.2‖) (𝓝 2 : Filter ℝ) ⊓
