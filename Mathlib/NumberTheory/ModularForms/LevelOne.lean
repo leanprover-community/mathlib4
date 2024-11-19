@@ -10,7 +10,7 @@ import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 This file contains results specific to modular forms of level one, ie. modular forms for `SL(2, ℤ)`.
 
-TODO: Add finite dimisionality of these spaces of modular forms.
+TODO: Add finite-dimensionality of these spaces of modular forms.
 
 -/
 
@@ -20,7 +20,7 @@ open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex MatrixGr
 lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
     [SlashInvariantFormClass F ⊤ k] (f : F) (τ : ℍ) :
     ∃ ξ : ℍ, 1/2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ := by
-  obtain ⟨γ, hγ, hdenom⟩ := exists_translate' τ
+  obtain ⟨γ, hγ, hdenom⟩ := exists_one_half_le_im_smul_and_norm_denom_le τ
   refine ⟨γ • τ, hγ, ?_⟩
   rw [slash_action_eqn'' _ (show γ ∈ ⊤ by tauto), norm_mul, norm_zpow]
   have h3 : 1 ≤ ‖denom (γ : SL(2, ℤ)) τ‖ ^ k := by
@@ -41,12 +41,12 @@ lemma SlashInvariantForm.wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k : �
     [SlashInvariantFormClass F ⊤ k] (hf : ⇑f = (fun _ => c)) : k = 0 ∨ c = 0 := by
   have hI := slash_action_eqn'' f (by tauto : ModularGroup.S ∈ ⊤) I
   have h2I2 := slash_action_eqn'' f (by tauto : ModularGroup.S ∈ ⊤) ⟨2 * Complex.I, by simp⟩
-  simp only [hf, sl_moeb, denom_S] at *
+  simp only [hf, sl_moeb, denom_S, coe_mk_subtype] at *
   nth_rw 1 [h2I2] at hI
   simp only [mul_eq_mul_right_iff] at hI
   rcases hI with H | H
   · left
-    rw [UpperHalfPlane.I, mul_zpow, mul_left_eq_self₀] at H
+    rw [UpperHalfPlane.I, coe_mk_subtype, mul_zpow, mul_left_eq_self₀] at H
     rcases H with H | H
     · apply Complex.zpow_eq_one k (one_lt_two) H
     · exact False.elim (zpow_ne_zero k I_ne_zero H)

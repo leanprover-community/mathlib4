@@ -239,7 +239,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
     (p 1 : ℂ) * z - p 0 = (p 1 * z - p 0) * ↑(Matrix.det (↑g : Matrix (Fin 2) (Fin 2) ℤ)))]
   rw [← hg, det_fin_two]
   simp only [Int.coe_castRingHom, coe_matrix_coe, Int.cast_mul, ofReal_intCast, map_apply, denom,
-    Int.cast_sub, coe_GLPos_coe_GL_coe_matrix, coe'_apply_complex]
+    Int.cast_sub, coe_GLPos_coe_GL_coe_matrix, coe_apply_complex]
   ring
 
 theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
@@ -460,20 +460,18 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
   intro hc
   replace hc : 0 < c ^ 4 := by
     change 0 < c ^ (2 * 2); rw [pow_mul]; apply sq_pos_of_pos (sq_pos_of_ne_zero hc)
-  have h₁ :=
-    mul_lt_mul_of_pos_right
+  have h₁ := mul_lt_mul_of_pos_right
       (mul_lt_mul'' (three_lt_four_mul_im_sq_of_mem_fdo hg) (three_lt_four_mul_im_sq_of_mem_fdo hz)
-        (by linarith) (by linarith))
-      hc
+      (by norm_num) (by norm_num)) hc
   have h₂ : (c * z.im) ^ 4 / normSq (denom (↑g) z) ^ 2 ≤ 1 :=
     div_le_one_of_le₀
-      (pow_four_le_pow_two_of_pow_two_le (UpperHalfPlane.c_mul_im_sq_le_normSq_denom z g))
+      (pow_four_le_pow_two_of_pow_two_le (z.c_mul_im_sq_le_normSq_denom g))
       (sq_nonneg _)
   let nsq := normSq (denom g z)
   calc
     9 * c ^ 4 < c ^ 4 * z.im ^ 2 * (g • z).im ^ 2 * 16 := by linarith
     _ = c ^ 4 * z.im ^ 4 / nsq ^ 2 * 16 := by
-      rw [ModularGroup.im_smul_eq_div_normSq, div_pow]
+      rw [im_smul_eq_div_normSq, div_pow]
       ring
     _ ≤ 16 := by rw [← mul_pow]; linarith
 
@@ -509,26 +507,21 @@ end UniqueRepresentative
 
 end FundamentalDomain
 
-section UpperHalfPlane
-
-lemma exists_translate (τ : ℍ) : ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) := by
-  obtain ⟨γ, hγ⟩ := ModularGroup.exists_smul_mem_fd τ
+lemma exists_one_half_le_im_smul (τ : ℍ) : ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) := by
+  obtain ⟨γ, hγ⟩ := exists_smul_mem_fd τ
   use γ
-  nlinarith [ModularGroup.three_le_four_mul_im_sq_of_mem_fd hγ, UpperHalfPlane.im_pos (γ • τ)]
+  nlinarith [three_le_four_mul_im_sq_of_mem_fd hγ, im_pos (γ • τ)]
 
 /-- For every `τ : ℍ` there is some `γ ∈ SL(2, ℤ)` that sends it to an element whose
 imaginary part is at least `1/2` and such that `denom γ τ` has norm at most 1. -/
-lemma exists_translate' (τ : ℍ) : ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) ∧ ‖denom γ τ‖ ≤ 1 := by
-  by_cases h : 1 / 2 ≤ τ.im
-  · exact ⟨1, (one_smul SL(2, ℤ) τ).symm ▸ h,
-      by simp only [ModularGroup.coe_one, denom_one, norm_one, le_refl]⟩
-  · refine (exists_translate τ).imp (fun γ hγ ↦ ⟨hγ, ?_⟩)
-    have h1 : τ.im ≤ (γ • τ).im := by linarith
-    rw [ModularGroup.im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos (↑γ) τ),
-      normSq_eq_norm_sq] at h1
+lemma exists_one_half_le_im_smul_and_norm_denom_le (τ : ℍ) :
+    ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) ∧ ‖denom γ τ‖ ≤ 1 := by
+  rcases le_total (1 / 2) τ.im with h | h
+  · exact ⟨1, (one_smul SL(2, ℤ) τ).symm ▸ h, by simp only [coe_one, denom_one, norm_one, le_refl]⟩
+  · refine (exists_one_half_le_im_smul τ).imp (fun γ hγ ↦ ⟨hγ, ?_⟩)
+    have h1 : τ.im ≤ (γ • τ).im := h.trans hγ
+    rw [im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos (↑γ) τ), normSq_eq_norm_sq] at h1
     simpa only [norm_eq_abs, sq_le_one_iff_abs_le_one, Complex.abs_abs] using
       (mul_le_iff_le_one_right τ.2).mp h1
-
-end UpperHalfPlane
 
 end ModularGroup
