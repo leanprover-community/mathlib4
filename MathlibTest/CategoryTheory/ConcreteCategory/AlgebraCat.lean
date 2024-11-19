@@ -37,6 +37,10 @@ example {Y Z : AlgebraCat R} {X : Type v} [Ring X] [Algebra R X] (f : of R X ⟶
 
 example {X Y Z : AlgebraCat R} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) := by simp
 
+example {X Y : AlgebraCat R} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by simp
+
+example {X Y : AlgebraCat R} (e : X ≅ Y) (y : Y) : e.hom (e.inv y) = y := by simp
+
 example (X : AlgebraCat R) : ⇑(𝟙 X) = id := by simp
 
 example {M N : AlgebraCat.{v} R} (f : M ⟶ N) (x y : M) : f (x + y) = f x + f y := by
