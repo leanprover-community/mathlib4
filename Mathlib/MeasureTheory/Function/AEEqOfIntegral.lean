@@ -198,7 +198,7 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
       have : Tendsto (fun n : ℕ => ((n : ℝ≥0) : ℝ≥0∞)) atTop (𝓝 ∞) := by
         simp only [ENNReal.coe_natCast]
         exact ENNReal.tendsto_nat_nhds_top
-      this.eventually_const_le (hx.trans_le le_top) 
+      this.eventually_const_le (hx.trans_le le_top)
     apply Set.mem_iUnion.2
     exact ((L1.and L2).and (eventually_mem_spanningSets μ x)).exists
   refine le_antisymm ?_ bot_le
