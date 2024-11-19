@@ -1,5 +1,5 @@
 import Mathlib.Tactic.StacksAttribute
-import Mathlib.Util.CaptureException
+import Mathlib.Util.ParseCommand
 
 /-- info: No tags found. -/
 #guard_msgs in
