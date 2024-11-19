@@ -178,7 +178,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         rw [ENNReal.mul_inv_cancel (ENNReal.coe_pos.2 εpos).ne' ENNReal.coe_ne_top, one_mul]
       _ ≤ (ε : ℝ≥0∞)⁻¹ * ρ (s ∩ o) := by
         gcongr
-        refine v.measure_le_of_frequently_le ρ ((Measure.AbsolutelyContinuous.refl μ).smul ε) _ ?_
+        refine v.measure_le_of_frequently_le ρ smul_absolutelyContinuous _ ?_
         intro x hx
         rw [hs] at hx
         simp only [mem_inter_iff, not_lt, not_eventually, mem_setOf_eq] at hx
@@ -224,9 +224,7 @@ theorem null_of_frequently_le_of_frequently_ge {c d : ℝ≥0} (hcd : c < d) (s 
     _ < d * μ s' := by
       apply (ENNReal.mul_lt_mul_right h _).2 (ENNReal.coe_lt_coe.2 hcd)
       exact (lt_of_le_of_lt (measure_mono inter_subset_right) μo).ne
-    _ ≤ ρ s' :=
-      v.measure_le_of_frequently_le ρ ((Measure.AbsolutelyContinuous.refl μ).smul d) s' fun x hx =>
-        hd x hx.1
+    _ ≤ ρ s' := v.measure_le_of_frequently_le ρ smul_absolutelyContinuous s' fun x hx ↦ hd x hx.1
 
 /-- If `ρ` is absolutely continuous with respect to `μ`, then for almost every `x`,
 the ratio `ρ a / μ a` converges as `a` shrinks to `x` along a Vitali family for `μ`. -/
@@ -383,7 +381,7 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
         rw [inter_comm, measure_toMeasurable_add_inter_right (measurableSet_toMeasurable _ _) J]
       _ ≤ ρ (toMeasurable (ρ + μ) (u m) ∩ w n) := by
         rw [← coe_nnreal_smul_apply]
-        refine v.measure_le_of_frequently_le _ (AbsolutelyContinuous.rfl.smul _) _ ?_
+        refine v.measure_le_of_frequently_le _ (.smul_left .rfl _) _ ?_
         intro x hx
         have L : Tendsto (fun a : Set α => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatio ρ x)) :=
           tendsto_nhds_limUnder hx.2.1.1
@@ -464,7 +462,7 @@ theorem mul_measure_le_of_subset_lt_limRatioMeas {q : ℝ≥0} {s : Set α}
     _ ≤ ρ (s ∩ t) + (q • μ) tᶜ := by gcongr; apply inter_subset_right
     _ = ρ (s ∩ t) := by simp [A]
     _ ≤ ρ s := by gcongr; apply inter_subset_left
-  refine v.measure_le_of_frequently_le _ (AbsolutelyContinuous.rfl.smul _) _ ?_
+  refine v.measure_le_of_frequently_le _ (.smul_left .rfl _) _ ?_
   intro x hx
   have I : ∀ᶠ a in v.filterAt x, (q : ℝ≥0∞) < ρ a / μ a := (tendsto_order.1 hx.2).1 _ (h hx.1)
   apply I.frequently.mono fun a ha => ?_

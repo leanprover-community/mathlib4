@@ -5,7 +5,7 @@ Authors: Devon Tuma
 -/
 import Mathlib.RingTheory.Jacobson
 import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.MvPolynomial
+import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.PrimeSpectrum
 
 /-!

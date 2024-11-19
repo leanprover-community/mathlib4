@@ -798,7 +798,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | (y : ℝ), (z : ℝ), h => by
     simpa only [← coe_add, EReal.coe_le_coe_iff, add_le_add_iff_left] using h
 
--- Porting note (#11215): TODO: add `MulLECancellable.strictMono*` etc
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
   not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
 
@@ -1089,6 +1089,14 @@ lemma le_add_of_forall_gt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂
 @[deprecated (since := "2024-11-11")] alias add_le_of_forall_add_le := add_le_of_forall_lt
 @[deprecated (since := "2024-11-11")] alias le_add_of_forall_le_add := le_add_of_forall_gt
 
+lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le : y ≤ x) :
+    (x - y).toEReal = x.toEReal - y.toEReal := by
+  lift y to ℝ≥0 using hy_top
+  cases x with
+  | top => simp [coe_nnreal_eq_coe_real]
+  | coe x =>
+    simp only [coe_nnreal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
+
 /-! ### Multiplication -/
 
 @[simp] lemma top_mul_top : (⊤ : EReal) * ⊤ = ⊤ := rfl
@@ -1273,7 +1281,7 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
 
 /-! ### Absolute value -/
 
--- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
 /-- The absolute value from `EReal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
 a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞
