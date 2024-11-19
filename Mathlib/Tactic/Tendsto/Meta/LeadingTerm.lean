@@ -3,7 +3,9 @@ import Mathlib.Tactic.Tendsto.Meta.MS
 import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
 import Mathlib.Tactic.Tendsto.Meta.CompareReal
 
-open Lean Qq Meta Elab  Tactic TendstoTactic
+open Lean Meta Elab Tactic Qq
+
+namespace TendstoTactic
 
 /-- Given `ms`, computes its leading term `t`. -/
 partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(MS.Term) := do
@@ -13,25 +15,23 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(M
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
     | ~q(PreMS.nil) =>
-      throwError "ms = nil"
-      -- let exps : List Q(ℝ) := List.range basis.length |>.map fun _ => q(0)
+      throwError "Unexpected ms = nil in getLeadingTerm"
     | ~q(PreMS.cons $hd $tl) =>
       match hd with
-      | ~q( ($exp, $coef) ) =>
-        let pre ← getLeadingTerm coef
-        match pre with
-        | ~q(MS.Term.mk $pre_coef $pre_exps) =>
-          return q(⟨$pre_coef, $exp :: $pre_exps⟩)
-        | _ => throwError "strange pre"
-      | _ => throwError "strange head"
-    | _ => throwError "strange PreMS"
+      | ~q(($exp, $coef)) =>
+        match ← getLeadingTerm coef with
+        | ~q(⟨$coef_coef, $coef_exps⟩) =>
+          return q(⟨$coef_coef, $exp :: $coef_exps⟩)
+        | _ => throwError "Unexpected pre in getLeadingTerm"
+      | _ => throwError "Unexpected head in getLeadingTerm"
+    | _ => throwError "Unexpected ms in getLeadingTerm"
 
-def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM (Q(MS.Term) × Expr) := do
+def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
+    MetaM ((t : Q(MS.Term)) × Q(PreMS.leadingTerm $ms = $t)) := do
   let rhs ← getLeadingTerm ms
-  let target : Q(Prop) := q(PreMS.leadingTerm $ms = $rhs)
-  let e ← mkFreshExprMVar target
+  let e ← mkFreshExprMVar q(PreMS.leadingTerm $ms = $rhs)
   e.mvarId!.applyRfl
-  return (rhs, e)
+  return ⟨rhs, e⟩
 
 inductive FirstIsResult (x : Q(List ℝ))
 | zero (pf : Q(MS.Term.AllZero $x))
@@ -40,21 +40,15 @@ inductive FirstIsResult (x : Q(List ℝ))
 
 partial def getFirstIs (x : Q(List ℝ)) : TacticM (FirstIsResult x) := do
   match x with
-  | ~q(List.nil) =>
-    return .zero q(MS.Term.AllZero_of_nil)
+  | ~q(List.nil) => return .zero q(MS.Term.AllZero_of_nil)
   | ~q(List.cons $hd $tl) =>
-    let comp_res ← compareReal hd
-    match comp_res with
-    | .pos h_hd =>
-      return .pos q(MS.Term.FirstIsPos_of_head $tl $h_hd)
-    | .neg h_hd =>
-      return .neg q(MS.Term.FirstIsNeg_of_head $tl $h_hd)
+    match ← compareReal hd with
+    | .pos h_hd => return .pos q(MS.Term.FirstIsPos_of_head $tl $h_hd)
+    | .neg h_hd => return .neg q(MS.Term.FirstIsNeg_of_head $tl $h_hd)
     | .zero h_hd =>
-      let rl_res ← getFirstIs tl
-      match rl_res with
-      | .zero h_tl =>
-        return .zero q(MS.Term.AllZero_of_tail $h_hd $h_tl)
-      | .pos h_tl =>
-        return .pos q(MS.Term.FirstIsPos_of_tail $h_hd $h_tl)
-      | .neg h_tl =>
-        return .neg q(MS.Term.FirstIsNeg_of_tail $h_hd $h_tl)
+      return match ← getFirstIs tl with
+      | .zero h_tl => .zero q(MS.Term.AllZero_of_tail $h_hd $h_tl)
+      | .pos h_tl => .pos q(MS.Term.FirstIsPos_of_tail $h_hd $h_tl)
+      | .neg h_tl => .neg q(MS.Term.FirstIsNeg_of_tail $h_hd $h_tl)
+
+end TendstoTactic

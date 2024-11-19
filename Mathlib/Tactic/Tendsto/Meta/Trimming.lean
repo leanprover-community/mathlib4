@@ -4,114 +4,36 @@ import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
 import Mathlib.Tactic.Tendsto.Meta.CompareReal
 import Qq
 
-open Filter Asymptotics TendstoTactic Stream' Seq
+open Filter Asymptotics Stream' Seq TendstoTactic ElimDestruct
 
 open Lean Elab Meta Tactic Qq
 
-def extract' {basis : Basis} (ms : PreMS basis) : PreMS basis :=
+namespace TendstoTactic
+
+#check instantiateMVars
+
+/-- brings `ms` to normal form: `const`, `nil`, or `cons` with proof of equality. -/
+def extractMS (basis : Q(Basis)) (ms : Q(PreMS $basis)) : TacticM ((ms' : Q(PreMS $basis)) × Q($ms = $ms')) := do
   match basis with
-  | [] => ms
-  | List.cons _ _ =>
-    match destruct ms with
-    | .none => .nil
-    | .some (hd, tl) => .cons hd tl
-
-theorem extract'_eq {basis : Basis} {ms : PreMS basis} : ms = extract' ms := by
-  cases basis with
-  | nil => simp [extract']
-  | cons =>
-    cases ms with
-    | nil => simp [extract']
-    | cons => simp [extract']
-
-theorem nil_of_destruct {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    (h_destruct : destruct ms = .none) :
-    ms = PreMS.nil :=
-  Stream'.Seq.destruct_eq_nil h_destruct
-
-theorem cons_of_destruct {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    {hd : ℝ × PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h_destruct : destruct ms = .some (hd, tl)) :
-    ms = PreMS.cons hd tl :=
-  Stream'.Seq.destruct_eq_cons h_destruct
-
-namespace Test
-
-example : ms_cons = PreMS.cons (1, 1) PreMS.nil := by
-  have h_destruct : destruct ms_cons = ?_ := by
-    unfold ms_cons
-    elim_destruct
-    exact Eq.refl _
-  exact cons_of_destruct h_destruct
-
-end Test
-
--- brings `ms` to normal form: `const`, `nil`, or `cons` with proof of equality
-def extractMS (basis : Q(Basis)) (ms : Q(PreMS $basis)) : TacticM (Q(PreMS $basis) × Expr) := do
-  match basis with
-  | ~q(List.nil) => return (ms, ← mkAppM ``Eq.refl #[ms]) -- const
+  | ~q(List.nil) => return ⟨ms, q(Eq.refl $ms)⟩ -- const
   | ~q(List.cons $basis_hd $basis_tl) =>
-    let h_eq_expr ← mkFreshExprMVar (← mkEq (← mkAppM ``destruct #[ms]) (← mkFreshExprMVar q(Option (Seq1 (ℝ × PreMS $basis_tl)))))
-    let res ← evalTacticAt (← `(tactic| elim_destruct; exact Eq.refl _)) h_eq_expr.mvarId!
-    if !res.isEmpty then
-      throwError "elim_destruct can't prove the goal"
-    let res_type ← instantiateMVars (← h_eq_expr.mvarId!.getType)
-    let some (_, _, rhs) := res_type.eq? | throwError "should be Eq"
-    match rhs.consumeMData.getAppFnArgs with
-    | (``Option.none, _) =>
-      return (← mkAppOptM ``PreMS.nil #[basis_hd, basis_tl], ← mkAppM ``nil_of_destruct #[h_eq_expr])
-    | (``Option.some, #[_, val]) =>
-      match val.getAppFnArgs with
-      | (``Prod.mk, #[_, _, hd, tl]) =>
-        return (
-          ← mkAppOptM ``PreMS.cons #[basis_hd, basis_tl, hd, tl],
-          ← mkAppM ``cons_of_destruct #[h_eq_expr]
-        )
-      | _ => throwError "strange Prod"
-    | _ =>
-      throwError f!"Strange Option:\n{← ppExpr rhs.consumeMData}"
-  | _ => throwError "strage basis"
-
-elab "kek" : tactic =>
-  Lean.Elab.Tactic.withMainContext do
-    let ctx ← Lean.MonadLCtx.getLCtx -- get the local context.
-    let ms_decl := (ctx.getAt? 1).get!
-    -- dbg_trace ms_decl.type
-    match ms_decl.type.getAppFnArgs with
-    | (``PreMS, #[basis]) =>
-      let (rhs, proof) ← extractMS basis ms_decl.value
-      liftMetaTactic fun mvarId => do
-        let mvarIdNew ← mvarId.assert `h_eq (← mkEq ms_decl.toExpr rhs) proof
-        let (fvar, mvarIdNew) ← mvarIdNew.intro1P
-        return [mvarIdNew]
-    | _ => throwError "strange ms type"
-
-example :
-    let ms_nil : PreMS [id] := PreMS.mul PreMS.nil PreMS.nil;
-    ms_nil = PreMS.nil := by
-  intro ms_nil
-  kek
-  exact h_eq
-
-example :
-    let ms_cons : PreMS [id] := PreMS.add (PreMS.cons (1, 1) PreMS.nil) (PreMS.cons (1, 1) PreMS.nil);
-    ms_cons = PreMS.cons (1, 2) PreMS.nil := by
-  intro ms_nil
-  kek
-  convert h_eq
-  sorry -- It's ok, we don't need tail
+    let destruct_res ← mkFreshExprMVarQ q(Option (Seq1 (ℝ × PreMS $basis_tl)))
+    let h_eq ← mkFreshExprMVarQ q(Stream'.Seq.destruct $ms = $destruct_res)
+    try
+      let _ ← evalTacticAt (← `(tactic| elim_destruct; exact Eq.refl _)) h_eq.mvarId!
+    catch _ =>
+      throwError "elim_destruct cannot solve the goal"
+    let destruct_res' ← instantiateMVarsQ destruct_res
+    haveI' : $destruct_res' =Q $destruct_res := ⟨⟩
+    match destruct_res with
+    | ~q(Option.none) =>
+      return ⟨q(@PreMS.nil $basis_hd $basis_tl), q(PreMS.nil_of_destruct $h_eq)⟩
+    | ~q(@Option.some ((Seq1 (ℝ × PreMS «$basis_tl»))) ($hd, $tl)) => -- why do i need explicitly put the type?
+      return ⟨q(PreMS.cons $hd $tl), q(PreMS.cons_of_destruct $h_eq)⟩
+    | _ => throwError f!"Unexpected destruct_res in extractMS:\n{← ppExpr destruct_res.consumeMData}"
+  | _ => throwError "Unexpected basis in extractMS"
 
 section Trimming
-
-lemma PreMS.pos_ne_zero {x : PreMS []} (h_pos : 0 < x) : ¬ PreMS.FlatZero x := by
-  intro h_zero
-  cases h_zero
-  linarith
-
-lemma PreMS.neg_ne_zero {x : PreMS []} (h_neg : x < 0) : ¬ PreMS.FlatZero x := by
-  intro h_zero
-  cases h_zero
-  linarith
 
 -- TODO: rename
 lemma approx_cons_zero {basis_hd : ℝ → ℝ}  {F : ℝ → ℝ} {exp : ℝ}
@@ -159,120 +81,115 @@ lemma approx_cons_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} (F : ℝ → �
   exact h_coef_approx _ h_coef
 
 structure TrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
-  result : Q(PreMS $basis) -- TODO: rename to val
-  h_wo : Q(PreMS.WellOrdered $result)
-  h_approx : Q(∀ F, PreMS.Approximates $ms F → PreMS.Approximates $result F)
-  h_trimmed : Q(PreMS.Trimmed $result)
+  val : Q(PreMS $basis)
+  h_wo : Q(PreMS.WellOrdered $val)
+  h_approx : Q(∀ F, PreMS.Approximates $ms F → PreMS.Approximates $val F)
+  h_trimmed : Q(PreMS.Trimmed $val)
 
 def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
     (h_wo : Q(PreMS.WellOrdered $ms))
     (destructStepsLeft := 20)
     : TacticM (TrimmingResult ms) := do
   match destructStepsLeft with
-  | 0 => throwError "no destruction steps left"
+  | 0 => throwError "No destruction steps left"
   | destructStepsLeftNext + 1 =>
   match basis with
   | ~q(List.nil) => -- const
     return {
-      result := ms
+      val := ms
       h_wo := h_wo
       h_approx := q(fun _ h ↦ h)
       h_trimmed := ← mkAppOptM ``PreMS.Trimmed.const #[ms]
     }
   | ~q(List.cons $basis_hd $basis_tl) =>
-    let (ms_extracted, h_eq_extracted) ← extractMS basis ms
-    let h_eq_extracted : Q($ms = $ms_extracted) := h_eq_extracted -- TODO
-
+    let ⟨ms_extracted, h_eq_extracted⟩ ← extractMS basis ms
     let h_extracted_wo : Q(PreMS.WellOrdered $ms_extracted) := q(Eq.subst $h_eq_extracted $h_wo)
 
     match ms_extracted with
     | ~q(PreMS.nil) =>
       return {
-        result := ms_extracted
+        val := ms_extracted
         h_wo := h_extracted_wo
         h_approx := q(fun F h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h)
         h_trimmed := ← mkAppOptM ``PreMS.Trimmed.nil #[basis_hd, basis_tl]
       }
-    | ~q(PreMS.cons $hd $tl) =>
-      match hd with
-      | ~q( ($exp, $coef) ) =>
-        let h_coef_wo : Q(PreMS.WellOrdered $coef) :=
-          q((PreMS.WellOrdered_cons $h_extracted_wo).left)
-        let h_comp : Q(PreMS.leadingExp $tl < $exp) :=
-          q((PreMS.WellOrdered_cons $h_extracted_wo).right.left)
-        let h_tl_wo : Q(PreMS.WellOrdered $tl) :=
-          q((PreMS.WellOrdered_cons $h_extracted_wo).right.right)
+    | ~q(PreMS.cons ($exp, $coef) $tl) =>
+      let h_coef_wo : Q(PreMS.WellOrdered $coef) :=
+        q((PreMS.WellOrdered_cons $h_extracted_wo).left)
+      let h_comp : Q(PreMS.leadingExp $tl < $exp) :=
+        q((PreMS.WellOrdered_cons $h_extracted_wo).right.left)
+      let h_tl_wo : Q(PreMS.WellOrdered $tl) :=
+        q((PreMS.WellOrdered_cons $h_extracted_wo).right.right)
 
-        match basis_tl with
-        | ~q(List.nil) =>
-          let comp_result ← compareReal coef
-          match comp_result with
-          | .pos pf =>
-            let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-            let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef) := q(PreMS.pos_ne_zero $pf)
-            return {
-              result := ms_extracted
-              h_wo := h_extracted_wo
-              h_approx := q(fun F h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h)
-              h_trimmed := q(PreMS.Trimmed.cons $h_coef_trimmed $h_coef_ne_zero)
-            }
-          | .neg pf =>
-            let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-            let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef) := q(PreMS.neg_ne_zero $pf)
-            return {
-              result := ms_extracted
-              h_wo := h_extracted_wo
-              h_approx := q(fun F h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h)
-              h_trimmed := q(PreMS.Trimmed.cons $h_coef_trimmed $h_coef_ne_zero)
-            }
-          | .zero pf =>
-            -- TODO : tl_trimmed -> tl_result
-            -- let h_coef_zero : Q(PreMS.FlatZero $coef) := q(PreMS.FlatZero.const $pf)
-            let tl_trimmed ← trim tl h_tl_wo destructStepsLeftNext
-            return {
-              result := tl_trimmed.result
-              h_wo := tl_trimmed.h_wo
-              h_approx :=
-                q(fun F h ↦ $tl_trimmed.h_approx F
-                  (approx_cons_zero $pf (Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h)))
-              h_trimmed := tl_trimmed.h_trimmed
-            }
-        | ~q(List.cons $basis_tl_hd $basis_tl_tl) =>
-          let coef_result ← trim coef h_coef_wo destructStepsLeftNext
-          match coef_result.result with
-          | ~q(PreMS.nil) =>
-            let tl_trimmed ← trim tl h_tl_wo destructStepsLeftNext
-            return {
-              result := tl_trimmed.result
-              h_wo := tl_trimmed.h_wo
-              h_approx := q(fun F h ↦ $tl_trimmed.h_approx F
-                (approx_cons_nil (Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h) $coef_result.h_approx))
-              h_trimmed := tl_trimmed.h_trimmed
-            }
-          | ~q(PreMS.cons $coef_hd $coef_tl) =>
-            let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef_result.result) := q(PreMS.FlatZero_cons)
-            return {
-              result := q(PreMS.cons ($exp, $coef_result.result) $tl)
-              h_wo := q(PreMS.WellOrdered.cons $coef_result.h_wo $h_comp $h_tl_wo)
-              h_approx :=
-                q(fun F h ↦ approx_cons_aux F (Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h) $coef_result.h_approx)
-              h_trimmed := q(PreMS.Trimmed.cons $coef_result.h_trimmed $h_coef_ne_zero)
-            }
-          | _ => throwError "trim returned wrong ms"
-        | _ => throwError "strange basis_tl"
-      | _ => throwError "strange Prod"
+      match basis_tl with
+      | ~q(List.nil) =>
+        let comp_result ← compareReal coef
+        match comp_result with
+        | .pos pf =>
+          let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
+          let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef) := q(PreMS.pos_not_FlatZero $pf)
+          return {
+            val := ms_extracted
+            h_wo := h_extracted_wo
+            h_approx := q(fun F h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h)
+            h_trimmed := q(PreMS.Trimmed.cons $h_coef_trimmed $h_coef_ne_zero)
+          }
+        | .neg pf =>
+          let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
+          let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef) := q(PreMS.neg_not_FlatZero $pf)
+          return {
+            val := ms_extracted
+            h_wo := h_extracted_wo
+            h_approx := q(fun F h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h)
+            h_trimmed := q(PreMS.Trimmed.cons $h_coef_trimmed $h_coef_ne_zero)
+          }
+        | .zero pf =>
+          let tl_trimmed ← trim tl h_tl_wo destructStepsLeftNext
+          return {
+            val := tl_trimmed.val
+            h_wo := tl_trimmed.h_wo
+            h_approx :=
+              q(fun F h ↦ $tl_trimmed.h_approx F
+                (approx_cons_zero $pf (Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h)))
+            h_trimmed := tl_trimmed.h_trimmed
+          }
+      | ~q(List.cons $basis_tl_hd $basis_tl_tl) =>
+        let coef_trimmed ← trim coef h_coef_wo destructStepsLeftNext
+        match coef_trimmed.val with
+        | ~q(PreMS.nil) =>
+          let tl_trimmed ← trim tl h_tl_wo destructStepsLeftNext
+          return {
+            val := tl_trimmed.val
+            h_wo := tl_trimmed.h_wo
+            h_approx := q(fun F h ↦ $tl_trimmed.h_approx F
+              (approx_cons_nil (Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h) $coef_trimmed.h_approx))
+            h_trimmed := tl_trimmed.h_trimmed
+          }
+        | ~q(PreMS.cons $coef_hd $coef_tl) =>
+          let h_coef_ne_zero : Q(¬ PreMS.FlatZero $coef_trimmed.val) := q(PreMS.FlatZero_cons)
+          return {
+            val := q(PreMS.cons ($exp, $coef_trimmed.val) $tl)
+            h_wo := q(PreMS.WellOrdered.cons $coef_trimmed.h_wo $h_comp $h_tl_wo)
+            h_approx :=
+              q(fun F h ↦ approx_cons_aux F (Eq.subst (motive := fun x ↦ PreMS.Approximates x F) $h_eq_extracted h) $coef_trimmed.h_approx)
+            h_trimmed := q(PreMS.Trimmed.cons $coef_trimmed.h_trimmed $h_coef_ne_zero)
+          }
+        | _ => throwError "trim returned wrong ms"
+      | _ => throwError "Unexpected basis_tl in trim"
     | _ => throwError "extractMS returned wrong ms"
 
-def trimMS (ms : MS) : TacticM (MS × Expr) := do
+def trimMS (ms : MS) : TacticM ((ms' : MS) × Q(PreMS.Trimmed $ms'.val)) := do
   let res ← trim ms.val ms.h_wo
   let newMs : MS := {
     basis := ms.basis
-    val := res.result
+    val := res.val
     F := ms.F
     h_wo := res.h_wo
     h_approx := q($res.h_approx _ $ms.h_approx)
     h_basis := ms.h_basis
   }
-  return (newMs, res.h_trimmed)
+  return ⟨newMs, res.h_trimmed⟩
 
 end Trimming
+
+end TendstoTactic

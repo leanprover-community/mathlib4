@@ -31,6 +31,17 @@ theorem FlatZero_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
   have := h.casesOn (motive := motive) (by simp [motive]) (by simp [motive])
   simp [motive] at this
 
+
+theorem pos_not_FlatZero {x : PreMS []} (h_pos : 0 < x) : ¬ PreMS.FlatZero x := by
+  intro h_zero
+  cases h_zero
+  linarith
+
+theorem neg_not_FlatZero {x : PreMS []} (h_neg : x < 0) : ¬ PreMS.FlatZero x := by
+  intro h_zero
+  cases h_zero
+  linarith
+
 inductive Trimmed : {basis : Basis} → PreMS basis → Prop
 | const {c : ℝ} : Trimmed (basis := []) c
 | nil {basis_hd} {basis_tl} : Trimmed (basis := basis_hd :: basis_tl) Seq.nil

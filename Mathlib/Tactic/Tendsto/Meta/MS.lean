@@ -2,6 +2,8 @@ import Mathlib.Tactic.Tendsto.Multiseries.Main
 
 open Lean Qq TendstoTactic
 
+namespace TendstoTactic
+
 structure MS where
   basis : Q(Basis)
   val : Q(PreMS $basis)
@@ -11,8 +13,6 @@ structure MS where
   h_basis : Q(MS.WellOrderedBasis $basis)
 
 namespace MS
-
-section Operations
 
 def const (basis : Q(Basis)) (c : Q(ℝ)) (h_basis : Q(MS.WellOrderedBasis $basis))  : MS where
   basis := basis
@@ -79,6 +79,6 @@ def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis 
   h_approx := q(PreMS.div_Approximates $x.h_basis $y.h_wo $h_trimmed $x.h_approx $y.h_approx)
   h_basis := x.h_basis
 
-end Operations
-
 end MS
+
+end TendstoTactic
