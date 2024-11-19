@@ -19,8 +19,9 @@ theorem AbelSummation (c : ℕ → ℂ) {f : ℝ → ℂ} {a b : ℝ} (ha : 0 �
     (hf_int : IntervalIntegrable (deriv f) volume a b) :
     ∑ k ∈ Ioc ⌊a⌋₊ ⌊b⌋₊, f k * c k =
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - f a * (∑ k ∈ Icc 0 ⌊a⌋₊, c k) -
-        ∫ t in a..b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
-   -- We prove some inequalities to be used later on by linarith / positivity
+        ∫ t in Set.Ioc a b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
+  rw [← integral_of_le hab]
+  -- We prove some inequalities to be used later on by linarith / positivity
   have : ⌊a⌋₊ ≤ a := Nat.floor_le ha
   have : a < ⌊a⌋₊ + 1 := Nat.lt_floor_add_one _
   have : b < ⌊b⌋₊ + 1 := Nat.lt_floor_add_one _
@@ -50,7 +51,7 @@ theorem AbelSummation (c : ℕ → ℂ) {f : ℝ → ℂ} {a b : ℝ} (ha : 0 �
   have : ⌊b⌋₊ ≤ b := Nat.floor_le (by positivity)
   have : ⌊a⌋₊ + 1 ≤ b := by rwa [← Nat.cast_add_one,  ← Nat.le_floor_iff (by positivity)]
   have : a < ⌊b⌋₊ := by rwa [← Nat.floor_lt ha]
-  -- And some additional properties
+  -- And then some additional properties
   have h_Icck : ∀ ⦃k⦄, k ∈ Set.Ico (⌊a⌋₊ + 1) ⌊b⌋₊ → Set.Icc (k : ℝ) (k + 1) ⊆ Set.Icc a b := by
     refine fun k hk ↦ Set.Icc_subset_Icc ?_ ?_
     · have := (Nat.succ_eq_add_one _) ▸ (Set.mem_Ico.mp hk).1
@@ -123,21 +124,25 @@ theorem AbelSummation₀ (c : ℕ → ℂ) {f : ℝ → ℂ} {b : ℝ} (hb : 0 �
     (hf_diff : ∀ t ∈ Set.Icc 0 b, DifferentiableAt ℝ f t)
     (hf_int : IntervalIntegrable (deriv f) volume 0 b) :
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
-      f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in (0 : ℝ)..b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
+      f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 0 b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
   nth_rewrite 1 [Finset.Icc_eq_cons_Ioc (Nat.zero_le _)]
   rw [sum_cons, ← Nat.floor_zero (α := ℝ), AbelSummation c le_rfl hb hf_diff hf_int,
     Nat.floor_zero, Nat.cast_zero, Icc_self, sum_singleton]
   ring
 
-theorem AbelSummation₁ (c : ℕ → ℂ) (hc : c 0 = 0) {f : ℝ → ℂ} {b : ℝ} (hb : 1 ≤ b)
+theorem AbelSummation₁ (c : ℕ → ℂ) (hc : c 0 = 0) {f : ℝ → ℂ} {b : ℝ}
     (hf_diff : ∀ t ∈ Set.Icc 1 b, DifferentiableAt ℝ f t)
     (hf_int : IntervalIntegrable (deriv f) volume 1 b) :
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
-      f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in (1: ℝ)..b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
-  have : 1 ≤ ⌊b⌋₊ := (Nat.one_le_floor_iff _).mpr hb
-  nth_rewrite 1 [Finset.Icc_eq_cons_Ioc (by linarith), sum_cons, ← Nat.Icc_succ_left,
-    Finset.Icc_eq_cons_Ioc (by linarith), sum_cons]
-  rw [Nat.succ_eq_add_one, zero_add, ← Nat.floor_one (α := ℝ), AbelSummation c zero_le_one hb
-    hf_diff hf_int, Nat.floor_one, Nat.cast_one, Finset.Icc_eq_cons_Ioc zero_le_one, sum_cons,
-    show 1 = 0 + 1 by rfl, Nat.Ioc_succ_singleton, zero_add, sum_singleton, hc, mul_zero, zero_add]
-  ring
+      f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 1 b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
+  obtain hb | hb := le_or_gt 1 b
+  · have : 1 ≤ ⌊b⌋₊ := (Nat.one_le_floor_iff _).mpr hb
+    nth_rewrite 1 [Finset.Icc_eq_cons_Ioc (by linarith), sum_cons, ← Nat.Icc_succ_left,
+      Finset.Icc_eq_cons_Ioc (by linarith), sum_cons]
+    rw [Nat.succ_eq_add_one, zero_add, ← Nat.floor_one (α := ℝ), AbelSummation c zero_le_one hb
+      hf_diff hf_int, Nat.floor_one, Nat.cast_one, Finset.Icc_eq_cons_Ioc zero_le_one, sum_cons,
+      show 1 = 0 + 1 by rfl, Nat.Ioc_succ_singleton, zero_add, sum_singleton, hc, mul_zero,
+      zero_add]
+    ring
+  · simp_rw [Nat.floor_eq_zero.mpr hb, Icc_self, sum_singleton, Nat.cast_zero, hc, mul_zero,
+    Set.Ioc_eq_empty_of_le hb.le, Measure.restrict_empty, integral_zero_measure, sub_self]
