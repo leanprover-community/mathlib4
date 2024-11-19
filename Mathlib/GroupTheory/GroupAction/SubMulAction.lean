@@ -191,7 +191,8 @@ theorem ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 
 /-- Copy of a sub_mul_action with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
-@[to_additive]
+@[to_additive "Copy of a sub_mul_action with a new `carrier` equal to the old one. 
+  Useful to fix definitional equalities."]
 protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M where
   carrier := s
   smul_mem' := hs.symm ▸ p.smul_mem'
@@ -242,7 +243,7 @@ theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
 variable (p)
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
-@[to_additive]
+@[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
 protected def subtype : p →[R] M where
   toFun := Subtype.val
   map_smul' := by simp [val_smul]
@@ -264,12 +265,12 @@ variable [hA : SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `MulAction` over `SMulMemClass`.
 /-- A `SubMulAction` of a `MulAction` is a `MulAction`. -/
-@[to_additive]
+@[to_additive "A `SubAddAction` of an `AddAction` is an `AddAction`."]
 instance (priority := 75) toMulAction : MulAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
-@[to_additive]
+@[to_additive "The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`."]
 protected def subtype : S' →[R] M where
   toFun := Subtype.val; map_smul' _ _ := rfl
 
@@ -453,7 +454,7 @@ variable {M α : Type*} [Monoid M] [MulAction M α]
 
 
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
-@[to_additive]
+@[to_additive  "The inclusion of a SubAddAction into the ambient set, as an equivariant map."]
 def inclusion (s : SubMulAction M α) : s →[M] α where
 -- The inclusion map of the inclusion of a SubMulAction
   toFun := Subtype.val

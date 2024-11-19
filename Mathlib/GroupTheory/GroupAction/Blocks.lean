@@ -496,7 +496,9 @@ variable (G)
 
 /-- Order equivalence between blocks in `X` containing a point `a`
  and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)-/
-@[to_additive]
+@[to_additive
+  "Order equivalence between blocks in `X` containing a point `a`
+ and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
 def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     { B : Set X // a ∈ B ∧ IsBlock G B } ≃o Set.Ici (stabilizer G a) where
   toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩
