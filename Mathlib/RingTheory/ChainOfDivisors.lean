@@ -7,6 +7,7 @@ import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Data.ZMod.Defs
+import Mathlib.Order.Atoms
 import Mathlib.Order.Hom.Bounded
 /-!
 
