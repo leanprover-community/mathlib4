@@ -650,6 +650,10 @@ theorem isCompact_closure_of_totallyBounded [CompleteSpace α] {s : Set α} (ht 
     IsCompact (closure s) :=
   isCompact_of_totallyBounded_isClosed (TotallyBounded.closure ht) isClosed_closure
 
+abbrev totallyBoundedBornology : Bornology α :=
+  Bornology.ofBounded (setOf (TotallyBounded)) (totallyBounded_empty)
+    (fun _ hs _ ht => hs.subset ht) (fun _ hs _ => hs.union) totallyBounded_singleton
+
 /-!
 ### Sequentially complete space
 
