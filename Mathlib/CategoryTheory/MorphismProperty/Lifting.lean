@@ -40,9 +40,9 @@ lemma liftOfRetractLeft {X Y Z W Z' W' : C} {f : X ⟶ Y} {g : Z ⟶ W} {g' : Z'
   have : (h.r.left ≫ u) ≫ f = g ≫ (h.r.right ≫ v) := by simp [sq.w]
   obtain lift := (h'.sq_hasLift (CommSq.mk this)).exists_lift.some
   refine ⟨h.i.right ≫ lift.l, ?_, ?_⟩
-  · rw [← Category.assoc, ← leftSqComm, Category.assoc, lift.fac_left, ← Category.assoc, topCompId,
+  · rw [← Category.assoc, ← i_w, Category.assoc, lift.fac_left, ← Category.assoc, retract_left,
       Category.id_comp]
-  · rw [Category.assoc, lift.fac_right, ← Category.assoc, bottomCompId, Category.id_comp]
+  · rw [Category.assoc, lift.fac_right, ← Category.assoc, retract_right, Category.id_comp]
 
 open RetractArrow in
 lemma liftOfRetractRight {X Y Z W X' Y' : C} {f : X ⟶ Y} {f' : X' ⟶ Y'} {g : Z ⟶ W}
@@ -53,8 +53,8 @@ lemma liftOfRetractRight {X Y Z W X' Y' : C} {f : X ⟶ Y} {f' : X' ⟶ Y'} {g :
     aesop
   obtain lift := (h'.sq_hasLift (CommSq.mk this)).exists_lift.some
   refine ⟨lift.l ≫ h.r.left, ?_, ?_⟩
-  · rw [← Category.assoc, lift.fac_left, Category.assoc, topCompId, Category.comp_id]
-  · rw [Category.assoc, rightSqComm, ← Category.assoc, lift.fac_right, Category.assoc, bottomCompId,
+  · rw [← Category.assoc, lift.fac_left, Category.assoc, retract_left, Category.comp_id]
+  · rw [Category.assoc, r_w, ← Category.assoc, lift.fac_right, Category.assoc, retract_right,
       Category.comp_id]
 
 lemma llp.IsStableUnderRetracts {T : MorphismProperty C} : T.llp.IsStableUnderRetracts :=
@@ -157,8 +157,20 @@ instance llp.RespectsIso (T : MorphismProperty C) : T.llp.RespectsIso where
     refine ⟨r ≫ l, by rwa [Category.assoc, ← Category.assoc i, h₁, Category.id_comp],
       by rw [Category.assoc, fac_right, ← Category.assoc, h₂, Category.id_comp]⟩⟩
 
-instance rlp.RespectsIso (T : MorphismProperty C) : T.rlp.RespectsIso := by
-  sorry
+instance rlp.RespectsIso (T : MorphismProperty C) : T.rlp.RespectsIso where
+  precomp i hi f hf _ _ g hg := ⟨fun {u v} sq ↦ by
+    obtain ⟨r, h₁, h₂⟩  := hi.out
+    have : (u ≫ i) ≫ f = g ≫ v := by rw [Category.assoc, sq.w]
+    obtain ⟨l, fac_left, fac_right⟩ := ((hf hg).sq_hasLift (CommSq.mk this)).exists_lift.some
+    exact ⟨l ≫ r, by rw [← Category.assoc, fac_left, Category.assoc, h₁, Category.comp_id],
+      by rwa [Category.assoc, ← Category.assoc r, h₂, Category.id_comp]⟩⟩
+  postcomp {X Y Z} i hi f hf A B g hg := ⟨fun {u v} sq ↦ by
+    obtain ⟨r, h₁, h₂⟩  := hi.out
+    have : u ≫ f = g ≫ (v ≫ r) := by
+      have := sq.w =≫ r
+      aesop
+    obtain ⟨l, fac_left, fac_right⟩ := ((hf hg).sq_hasLift (CommSq.mk this)).exists_lift.some
+    exact ⟨l, fac_left, by rw [← Category.assoc, fac_right, Category.assoc, h₂, Category.comp_id]⟩⟩
 
 end MorphismProperty
 
