@@ -72,7 +72,7 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
   RingQuot.instAlgebra _
 
 -- verify there is no diamond
--- but doesn't work at `reducible_and_instances` #10906
+-- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Semiring.toNatAlgebra : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
@@ -93,7 +93,7 @@ instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
 
 -- verify there is no diamond
--- but doesn't work at `reducible_and_instances` #10906
+-- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
 example : (Ring.toIntAlgebra _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
 
@@ -288,7 +288,7 @@ theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
 theorem ι_range_disjoint_one :
     Disjoint (LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M))
       (1 : Submodule R (TensorAlgebra R M)) := by
-  rw [Submodule.disjoint_def]
+  rw [Submodule.disjoint_def, Submodule.one_eq_range]
   rintro _ ⟨x, hx⟩ ⟨r, rfl⟩
   rw [Algebra.linearMap_apply, ι_eq_algebraMap_iff] at hx
   rw [hx.2, map_zero]

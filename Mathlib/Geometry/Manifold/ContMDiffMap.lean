@@ -14,8 +14,8 @@ bundled maps.
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
-  [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] (I : ModelWithCorners 𝕜 E H)
-  (I' : ModelWithCorners 𝕜 E' H') (M : Type*) [TopologicalSpace M] [ChartedSpace H M] (M' : Type*)
+  [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {I : ModelWithCorners 𝕜 E H}
+  {I' : ModelWithCorners 𝕜 E' H'} (M : Type*) [TopologicalSpace M] [ChartedSpace H M] (M' : Type*)
   [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [NormedAddCommGroup E'']
   [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
@@ -24,10 +24,12 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N] (n : ℕ∞)
 
+variable (I I') in
 /-- Bundled `n` times continuously differentiable maps. -/
 def ContMDiffMap :=
   { f : M → M' // ContMDiff I I' n f }
 
+variable (I I') in
 /-- Bundled smooth maps. -/
 abbrev SmoothMap :=
   ContMDiffMap I I' M M' ⊤
@@ -43,7 +45,7 @@ open scoped Manifold
 
 namespace ContMDiffMap
 
-variable {I} {I'} {M} {M'} {n}
+variable {M} {M'} {n}
 
 instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val

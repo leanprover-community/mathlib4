@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Results on finitely supported functions.

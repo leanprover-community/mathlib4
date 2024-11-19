@@ -32,7 +32,7 @@ def nontrivialityByElim {u : Level} (α : Q(Type u)) (g : MVarId) (simpArgs : Ar
     let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
     let (_, g₁') ← g₁.mvarId!.intro1
     g₁'.withContext try
-      -- FIXME: restore after lean4#2054 is fixed
+      -- FIXME: restore after https://github.com/leanprover/lean4/issues/2054 is fixed
       -- g₁'.inferInstance <|> do
       (do g₁'.assign (← synthInstance (← g₁'.getType))) <|> do
         let simpArgs := simpArgs.push (Unhygienic.run `(Parser.Tactic.simpLemma| nontriviality))

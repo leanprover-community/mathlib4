@@ -3,8 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.Bounds.OrderIso
 
 /-!

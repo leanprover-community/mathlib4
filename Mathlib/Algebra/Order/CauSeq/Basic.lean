@@ -374,21 +374,21 @@ def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
 
 theorem add_limZero {f g : CauSeq β abv} (hf : LimZero f) (hg : LimZero g) : LimZero (f + g)
   | ε, ε0 =>
-    (exists_forall_ge_and (hf _ <| half_pos ε0) (hg _ <| half_pos ε0)).imp fun i H j ij => by
+    (exists_forall_ge_and (hf _ <| half_pos ε0) (hg _ <| half_pos ε0)).imp fun _ H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
       simpa [add_halves ε] using lt_of_le_of_lt (abv_add abv _ _) (add_lt_add H₁ H₂)
 
 theorem mul_limZero_right (f : CauSeq β abv) {g} (hg : LimZero g) : LimZero (f * g)
   | ε, ε0 =>
     let ⟨F, F0, hF⟩ := f.bounded' 0
-    (hg _ <| div_pos ε0 F0).imp fun i H j ij => by
+    (hg _ <| div_pos ε0 F0).imp fun _ H j ij => by
       have := mul_lt_mul' (le_of_lt <| hF j) (H _ ij) (abv_nonneg abv _) F0
       rwa [mul_comm F, div_mul_cancel₀ _ (ne_of_gt F0), ← abv_mul] at this
 
 theorem mul_limZero_left {f} (g : CauSeq β abv) (hg : LimZero f) : LimZero (f * g)
   | ε, ε0 =>
     let ⟨G, G0, hG⟩ := g.bounded' 0
-    (hg _ <| div_pos ε0 G0).imp fun i H j ij => by
+    (hg _ <| div_pos ε0 G0).imp fun _ H j ij => by
       have := mul_lt_mul'' (H _ ij) (hG j) (abv_nonneg abv _) (abv_nonneg abv _)
       rwa [div_mul_cancel₀ _ (ne_of_gt G0), ← abv_mul] at this
 
@@ -430,7 +430,7 @@ theorem sub_equiv_sub {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
 
 theorem equiv_def₃ {f g : CauSeq β abv} (h : f ≈ g) {ε : α} (ε0 : 0 < ε) :
     ∃ i, ∀ j ≥ i, ∀ k ≥ j, abv (f k - g j) < ε :=
-  (exists_forall_ge_and (h _ <| half_pos ε0) (f.cauchy₃ <| half_pos ε0)).imp fun i H j ij k jk => by
+  (exists_forall_ge_and (h _ <| half_pos ε0) (f.cauchy₃ <| half_pos ε0)).imp fun _ H j ij k jk => by
     let ⟨h₁, h₂⟩ := H _ ij
     have := lt_of_le_of_lt (abv_add abv (f j - g j) _) (add_lt_add h₁ (h₂ _ jk))
     rwa [sub_add_sub_cancel', add_halves] at this
@@ -678,7 +678,7 @@ instance : Preorder (CauSeq α abs) where
     | Or.inr fg, Or.inl gh => Or.inl <| lt_of_eq_of_lt fg gh
     | Or.inr fg, Or.inr gh => Or.inr <| Setoid.trans fg gh
   lt_iff_le_not_le _ _ :=
-    ⟨fun h => ⟨Or.inl h, not_or_of_not (mt (lt_trans h) lt_irrefl) (not_limZero_of_pos h)⟩,
+    ⟨fun h => ⟨Or.inl h, not_or_intro (mt (lt_trans h) lt_irrefl) (not_limZero_of_pos h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_right (mt (fun h => Or.inr (Setoid.symm h)) h₂)⟩
 
 theorem le_antisymm {f g : CauSeq α abs} (fg : f ≤ g) (gf : g ≤ f) : f ≈ g :=
@@ -725,14 +725,14 @@ theorem rat_inf_continuous_lemma {ε : α} {a₁ a₂ b₁ b₂ : α} :
     abs (a₁ - b₁) < ε → abs (a₂ - b₂) < ε → abs (a₁ ⊓ a₂ - b₁ ⊓ b₂) < ε := fun h₁ h₂ =>
   (abs_min_sub_min_le_max _ _ _ _).trans_lt (max_lt h₁ h₂)
 
-instance : Sup (CauSeq α abs) :=
+instance : Max (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊔ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>
         let ⟨H₁, H₂⟩ := H _ le_rfl
         rat_sup_continuous_lemma (H₁ _ ij) (H₂ _ ij)⟩⟩
 
-instance : Inf (CauSeq α abs) :=
+instance : Min (CauSeq α abs) :=
   ⟨fun f g =>
     ⟨f ⊓ g, fun _ ε0 =>
       (exists_forall_ge_and (f.cauchy₃ ε0) (g.cauchy₃ ε0)).imp fun _ H _ ij =>
@@ -749,14 +749,14 @@ theorem coe_inf (f g : CauSeq α abs) : ⇑(f ⊓ g) = (f : ℕ → α) ⊓ g :=
 
 theorem sup_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : LimZero (f ⊔ g)
   | ε, ε0 =>
-    (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
+    (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun _ H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
       rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_sup_iff.mpr (Or.inl H₁.1), sup_lt_iff.mpr ⟨H₁.2, H₂.2⟩⟩
 
 theorem inf_limZero {f g : CauSeq α abs} (hf : LimZero f) (hg : LimZero g) : LimZero (f ⊓ g)
   | ε, ε0 =>
-    (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun i H j ij => by
+    (exists_forall_ge_and (hf _ ε0) (hg _ ε0)).imp fun _ H j ij => by
       let ⟨H₁, H₂⟩ := H _ ij
       rw [abs_lt] at H₁ H₂ ⊢
       exact ⟨lt_inf_iff.mpr ⟨H₁.1, H₂.1⟩, inf_lt_iff.mpr (Or.inl H₁.2)⟩
@@ -808,7 +808,7 @@ protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈
   · intro _ _
     refine ⟨i, fun j hj => ?_⟩
     dsimp
-    erw [← max_sub_sub_right]
+    rw [← max_sub_sub_right]
     rwa [sub_self, max_eq_right, abs_zero]
     rw [sub_nonpos, ← sub_nonneg]
     exact ε0.le.trans (h _ hj)
@@ -820,7 +820,7 @@ protected theorem inf_eq_right {a b : CauSeq α abs} (h : b ≤ a) : a ⊓ b ≈
   · intro _ _
     refine ⟨i, fun j hj => ?_⟩
     dsimp
-    erw [← min_sub_sub_right]
+    rw [← min_sub_sub_right]
     rwa [sub_self, min_eq_right, abs_zero]
     exact ε0.le.trans (h _ hj)
   · refine Setoid.trans (inf_equiv_inf (Setoid.symm h) (Setoid.refl _)) ?_

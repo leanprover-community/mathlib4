@@ -32,7 +32,7 @@ variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α}
 measure such that for a measurable set `s` we have `μ.withDensity f s = ∫⁻ a in s, f a ∂μ`. -/
 noncomputable
 def Measure.withDensity {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) : Measure α :=
-  Measure.ofMeasurable (fun s _ => ∫⁻ a in s, f a ∂μ) (by simp) fun s hs hd =>
+  Measure.ofMeasurable (fun s _ => ∫⁻ a in s, f a ∂μ) (by simp) fun _ hs hd =>
     lintegral_iUnion hs hd _
 
 @[simp]
@@ -170,7 +170,7 @@ theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0�
 theorem withDensity_indicator {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     μ.withDensity (s.indicator f) = (μ.restrict s).withDensity f := by
   ext1 t ht
-  rw [withDensity_apply _ ht, lintegral_indicator _ hs, restrict_comm hs, ←
+  rw [withDensity_apply _ ht, lintegral_indicator hs, restrict_comm hs, ←
     withDensity_apply _ ht]
 
 theorem withDensity_indicator_one {s : Set α} (hs : MeasurableSet s) :
@@ -235,14 +235,14 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     simp only [Pi.zero_apply, mem_setOf_eq, Filter.mem_mk] at A
     convert A using 2
     ext x
-    simp only [and_comm, exists_prop, mem_inter_iff, iff_self_iff, mem_setOf_eq,
+    simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
       mem_compl_iff, not_forall]
   · intro hs
     let t := toMeasurable μ ({ x | f x ≠ 0 } ∩ s)
     have A : s ⊆ t ∪ { x | f x = 0 } := by
       intro x hx
       rcases eq_or_ne (f x) 0 with (fx | fx)
-      · simp only [fx, mem_union, mem_setOf_eq, eq_self_iff_true, or_true_iff]
+      · simp only [fx, mem_union, mem_setOf_eq, eq_self_iff_true, or_true]
       · left
         apply subset_toMeasurable _ _
         exact ⟨fx, hx⟩
@@ -271,7 +271,7 @@ theorem ae_withDensity_iff' {p : α → Prop} {f : α → ℝ≥0∞} (hf : AEMe
   rw [ae_iff, ae_iff, withDensity_apply_eq_zero' hf, iff_iff_eq]
   congr
   ext x
-  simp only [exists_prop, mem_inter_iff, iff_self_iff, mem_setOf_eq, not_forall]
+  simp only [exists_prop, mem_inter_iff, mem_setOf_eq, not_forall]
 
 theorem ae_withDensity_iff {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measurable f) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ, f x ≠ 0 → p x :=
@@ -615,8 +615,8 @@ instance Measure.withDensity.instSFinite [SFinite μ] {f : α → ℝ≥0∞} :
   · rcases exists_measurable_le_withDensity_eq μ f with ⟨g, hgm, -, h⟩
     exact h ▸ this hgm
   wlog hμ : IsFiniteMeasure μ generalizing μ
-  · rw [← sum_sFiniteSeq μ, withDensity_sum]
-    have (n : ℕ) : SFinite ((sFiniteSeq μ n).withDensity f) := this inferInstance
+  · rw [← sum_sfiniteSeq μ, withDensity_sum]
+    have (n : ℕ) : SFinite ((sfiniteSeq μ n).withDensity f) := this inferInstance
     infer_instance
   set s := {x | f x = ∞}
   have hs : MeasurableSet s := hfm (measurableSet_singleton _)
