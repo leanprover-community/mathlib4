@@ -66,7 +66,7 @@ structure Hom (A B : AlgebraCat.{v} R) where
 instance : Category (AlgebraCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id R A⟩
-  comp f g := ⟨g.algHom.comp f.algHom⟩
+  comp f g := ⟨g.hom.comp f.hom⟩
 
 instance {M N : AlgebraCat.{v} R} : CoeFun (M ⟶ N) (fun _ ↦ M → N) where
   coe f := f.hom
@@ -130,7 +130,7 @@ instance : Inhabited (AlgebraCat R) :=
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
-      map := fun f => f.algHom }
+      map := fun f => f.hom }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
 
 lemma forget_obj {A : AlgebraCat.{v} R} : (forget (AlgebraCat.{v} R)).obj A = A := rfl
@@ -148,12 +148,12 @@ instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
 instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
   forget₂ :=
     { obj := fun A => RingCat.of A
-      map := fun f => RingCat.ofHom f.algHom.toRingHom }
+      map := fun f => RingCat.ofHom f.hom.toRingHom }
 
 instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.asHom f.algHom.toLinearMap }
+      map := fun f => ModuleCat.asHom f.hom.toLinearMap }
 
 @[simp]
 lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
@@ -183,7 +183,7 @@ def free : Type u ⥤ AlgebraCat.{u} R where
 def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ =>
-        { toFun := fun f ↦ (FreeAlgebra.lift _).symm f.algHom
+        { toFun := fun f ↦ (FreeAlgebra.lift _).symm f.hom
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
           left_inv := fun f ↦ by aesop
           right_inv := fun f ↦ by simp [forget_obj, forget_map] } }
