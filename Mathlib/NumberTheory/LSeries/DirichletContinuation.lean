@@ -343,7 +343,7 @@ lemma LFunctionTrivChar₁_apply_one_ne_zero : LFunctionTrivChar₁ n 1 ≠ 0 :=
   rw [sub_ne_zero, ne_eq, one_eq_inv]
   exact_mod_cast (Nat.prime_of_mem_primeFactors hp).ne_one
 
-/-- `s ↦ (L χ s) * (s - 1)` is an entire function when `χ` is a trivial Dirichlet character. -/
+/-- `s ↦ (s - 1) * L χ s` is an entire function when `χ` is a trivial Dirichlet character. -/
 lemma LFunctionTrivChar₁_differentiable : Differentiable ℂ (LFunctionTrivChar₁ n) := by
   rw [← differentiableOn_univ,
     ← differentiableOn_compl_singleton_and_continuousAt_iff (c := 1) Filter.univ_mem]
