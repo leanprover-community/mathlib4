@@ -923,8 +923,9 @@ def negOrderIso : EReal ≃o ERealᵒᵈ :=
     invFun := fun x => -OrderDual.ofDual x
     map_rel_iff' := neg_le_neg_iff }
 
-theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by
-  rw [← neg_lt_neg_iff, neg_neg]
+theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_iff, neg_neg]
+
+@[deprecated (since := "2024-11-19")] alias neg_lt_iff_neg_lt := neg_lt_comm
 
 theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_comm.1 h
 
@@ -1000,7 +1001,7 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
   lift y to ℝ using ⟨hy, h'y⟩
   rfl
 
-lemma add_sub_cancel_left {a : EReal} {b : Real} : a - b + b = a := by
+lemma sub_add_cancel_left {a : EReal} {b : Real} : a - b + b = a := by
   induction a
   · rw [bot_sub b, bot_add b]
   · norm_cast; linarith
@@ -1008,7 +1009,7 @@ lemma add_sub_cancel_left {a : EReal} {b : Real} : a - b + b = a := by
 
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   rw [sub_eq_add_neg, add_assoc, add_comm (b : EReal), ← add_assoc, ← sub_eq_add_neg]
-  exact add_sub_cancel_left
+  exact sub_add_cancel_left
 
 lemma le_sub_iff_add_le {a b c : EReal} (hb : b ≠ ⊥ ∨ c ≠ ⊥) (ht : b ≠ ⊤ ∨ c ≠ ⊤) :
     a ≤ c - b ↔ a + b ≤ c := by
@@ -1017,7 +1018,7 @@ lemma le_sub_iff_add_le {a b c : EReal} (hb : b ≠ ⊥ ∨ c ≠ ⊥) (ht : b �
     simp only [ne_eq, not_true_eq_false, false_or] at hb
     simp only [sub_bot hb, le_top, add_bot, bot_le]
   | h_real b =>
-    rw [← (addLECancellable_coe b).add_le_add_iff_right, add_sub_cancel_left]
+    rw [← (addLECancellable_coe b).add_le_add_iff_right, sub_add_cancel_left]
   | h_top =>
     simp only [ne_eq, not_true_eq_false, false_or, sub_top, le_bot_iff] at ht ⊢
     refine ⟨fun h ↦ h ▸ (bot_add ⊤).symm ▸ bot_le, fun h ↦ ?_⟩
@@ -1064,6 +1065,16 @@ lemma sub_lt_of_lt_add' {a b c : EReal} (h : a < b + c) : a - b < c :=
 
 /-! ### Addition and order -/
 
+lemma le_of_forall_lt_iff_le {x y : EReal} : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
+  refine ⟨fun h ↦ WithBot.le_of_forall_lt_iff_le.1 ?_, fun h _ x_z ↦ h.trans x_z.le⟩
+  rw [WithTop.forall]
+  aesop
+
+lemma ge_of_forall_gt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
+  refine ⟨fun h ↦ WithBot.ge_of_forall_gt_iff_ge.1 ?_, fun h _ x_z ↦ x_z.le.trans h⟩
+  rw [WithTop.forall]
+  aesop
+
 private lemma exists_lt_add_left {a b c : EReal} (hc : c < a + b) : ∃ a' < a, c < a' + b := by
   obtain ⟨a', hc', ha'⟩ := exists_between (sub_lt_of_lt_add hc)
   refine ⟨a', ha', (sub_lt_iff (.inl ?_) (.inr hc.ne_top)).1 hc'⟩
@@ -1086,8 +1097,9 @@ lemma le_add_of_forall_gt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂
     <| (h (-a') (lt_neg_of_lt_neg ha') (-b') (lt_neg_of_lt_neg hb')).trans_eq
     (neg_add (.inr hb'.ne_top) (.inl ha'.ne_top)).symm
 
-@[deprecated (since := "2024-11-11")] alias add_le_of_forall_add_le := add_le_of_forall_lt
-@[deprecated (since := "2024-11-11")] alias le_add_of_forall_le_add := le_add_of_forall_gt
+@[deprecated (since := "2024-11-19")] alias top_add_le_of_forall_add_le := add_le_of_forall_lt
+@[deprecated (since := "2024-11-19")] alias add_le_of_forall_add_le := add_le_of_forall_lt
+@[deprecated (since := "2024-11-19")] alias le_add_of_forall_le_add := le_add_of_forall_gt
 
 lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le : y ≤ x) :
     (x - y).toEReal = x.toEReal - y.toEReal := by
