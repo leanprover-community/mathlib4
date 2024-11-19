@@ -501,8 +501,6 @@ end NonUnitalAlgHom
 
 namespace NonUnitalAlgebra
 
-section NonAssoc
-
 variable {F : Type*} (R : Type u) {A : Type v} {B : Type w}
 variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
@@ -843,8 +841,6 @@ theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙ�
 
 @[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
-end NonAssoc
-
 end NonUnitalAlgebra
 
 namespace NonUnitalSubalgebra
@@ -1183,7 +1179,6 @@ abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUn
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
     (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (adjoin R s) :=
   { (adjoin R s).toNonUnitalRing, adjoinNonUnitalCommSemiringOfComm R hcomm with }
-
 
 end NonUnitalAlgebra
 
