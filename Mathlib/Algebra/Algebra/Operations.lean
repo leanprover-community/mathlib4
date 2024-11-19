@@ -369,6 +369,9 @@ instance [SMulCommClass A B B] : SMulCommClass A (Submodule R B) (Submodule R B)
     rw [← S.span_eq, ← T.span_eq, smul_span, smul_eq_mul, smul_eq_mul, span_mul_span, span_mul_span,
       smul_span, mul_smul_comm]
 
+instance [SMulCommClass B A B] : SMulCommClass (Submodule R B) A (Submodule R B) :=
+  have := SMulCommClass.symm B A B; .symm ..
+
 end
 
 section
