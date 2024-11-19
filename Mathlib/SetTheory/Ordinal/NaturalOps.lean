@@ -206,8 +206,12 @@ scoped[NaturalOps] infixl:70 " ⨳ " => Ordinal.nmul
 
 /-! ### Natural addition -/
 
-theorem lt_nadd_iff : a < b ♯ c ↔ (∃ b' < b, a ≤ b' ♯ c) ∨ ∃ c' < c, a ≤ b ♯ c' := by
+theorem nadd_def (a b : Ordinal) : a ♯ b =
+    max (⨆ a' : Iio a, succ (a'.1 ♯ b)) (⨆ b' : Iio b, succ (a ♯ b'.1)) := by
   rw [nadd]
+
+theorem lt_nadd_iff : a < b ♯ c ↔ (∃ b' < b, a ≤ b' ♯ c) ∨ ∃ c' < c, a ≤ b ♯ c' := by
+  rw [nadd_def]
   simp [Ordinal.lt_iSup_iff]
 
 theorem nadd_le_iff : b ♯ c ≤ a ↔ (∀ b' < b, b' ♯ c < a) ∧ ∀ c' < c, b ♯ c' < a := by
@@ -233,14 +237,13 @@ theorem nadd_le_nadd_right (h : b ≤ c) (a) : b ♯ a ≤ c ♯ a := by
 variable (a b)
 
 theorem nadd_comm (a b) : a ♯ b = b ♯ a := by
-  rw [nadd, nadd, max_comm]
+  rw [nadd_def, nadd_def, max_comm]
   congr <;> ext x <;> cases x <;> apply congr_arg _ (nadd_comm _ _)
 termination_by (a, b)
 
 @[deprecated "blsub will soon be deprecated" (since := "2024-11-18")]
 theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     (hf : ∀ {i j} (hi hj), i ≤ j → f i hi ≤ f j hj) :
-    -- Porting note: needed to add universe hint blsub.{u,v} in the line below
     blsub.{u,v} _ f =
       max (blsub.{u, v} a fun a' ha' => f (a' ♯ b) <| nadd_lt_nadd_right ha' b)
         (blsub.{u, v} b fun b' hb' => f (a ♯ b') <| nadd_lt_nadd_left hb' a) := by
@@ -279,7 +282,7 @@ termination_by (a, b, c)
 
 @[simp]
 theorem nadd_zero (a : Ordinal) : a ♯ 0 = a := by
-  rw [nadd, ciSup_of_empty fun _ : Iio 0 ↦ _, sup_bot_eq]
+  rw [nadd_def, ciSup_of_empty fun _ : Iio 0 ↦ _, sup_bot_eq]
   convert iSup_succ a
   rename_i x
   cases x
@@ -291,8 +294,8 @@ theorem zero_nadd : 0 ♯ a = a := by rw [nadd_comm, nadd_zero]
 
 @[simp]
 theorem nadd_one (a : Ordinal) : a ♯ 1 = succ a := by
-  rw [nadd, ciSup_unique (s := fun _ : Iio 1 ↦ _), Iio_one_default_eq, nadd_zero, max_eq_right_iff,
-    Ordinal.iSup_le_iff]
+  rw [nadd_def, ciSup_unique (s := fun _ : Iio 1 ↦ _), Iio_one_default_eq, nadd_zero,
+    max_eq_right_iff, Ordinal.iSup_le_iff]
   rintro ⟨i, hi⟩
   rwa [nadd_one, succ_le_succ_iff, succ_le_iff]
 termination_by a
