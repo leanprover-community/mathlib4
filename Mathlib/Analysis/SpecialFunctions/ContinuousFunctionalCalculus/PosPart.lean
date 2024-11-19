@@ -16,6 +16,8 @@ the continuous functional calculus and develops the basic API, including the uni
 positive and negative parts.
 -/
 
+open scoped NNReal
+
 section NonUnital
 
 variable {A : Type*} [NonUnitalRing A] [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
@@ -92,7 +94,6 @@ section SMul
 
 variable [StarModule ℝ A]
 
-open NNReal in
 @[simp]
 lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   by_cases ha : IsSelfAdjoint a
@@ -105,6 +106,10 @@ lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
     · have := (not_iff_not.mpr <| (IsSelfAdjoint.all r).smul_iff hr.isUnit (x := a)) |>.mpr ha
       simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha,
         cfcₙ_apply_of_not_predicate _ this]
+
+@[simp]
+lemma negPart_smul {r : ℝ≥0} {a : A} : (r • a)⁻ = r • a⁻ := by
+  simpa using posPart_smul (r := r) (a := -a)
 
 lemma posPart_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) {a : A} : (r • a)⁺ = r • a⁺ :=
   posPart_smul (r := ⟨r, hr⟩)
@@ -146,6 +151,13 @@ lemma negPart_eq_of_eq_PosPart_sub {a c : A} (hac : a = a⁺ - c) (hc : 0 ≤ c 
   have ha := hac.symm ▸ (posPart_nonneg a).isSelfAdjoint.sub hc.isSelfAdjoint
   nth_rw 1 [← posPart_sub_negPart a] at hac
   simpa using hac
+
+lemma le_posPart {a : A} (ha : IsSelfAdjoint a) : a ≤ a⁺ := by
+  simpa [posPart_sub_negPart a] using sub_le_self a⁺ (negPart_nonneg a)
+
+lemma neg_negPart_le {a : A} (ha : IsSelfAdjoint a) : -a⁻ ≤ a := by
+  simpa only [posPart_sub_negPart a, ← sub_eq_add_neg]
+    using le_add_of_nonneg_left (a := -a⁻) (posPart_nonneg a)
 
 variable [NonnegSpectrumClass ℝ A]
 
