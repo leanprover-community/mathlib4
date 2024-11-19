@@ -140,6 +140,7 @@ variable {α : Type w} [HasZeroMorphisms C] [HasFiniteBiproducts C] [HasFiniteLi
 
 section
 
+open CoproductsFromFiniteFiltered
 
 instance preservesFiniteLimits_liftToFinset : PreservesFiniteLimits (liftToFinset C α) :=
   preservesFiniteLimits_of_evaluation _ fun I =>
