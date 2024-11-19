@@ -180,12 +180,10 @@ to normal ordinal addition, it is commutative.
 
 Natural addition can equivalently be characterized as the ordinal resulting from adding up
 corresponding coefficients in the Cantor normal forms of `a` and `b`. -/
-noncomputable def nadd (a b : Ordinal.{u}) : Ordinal.{u} := max
-  (⨆ x : Iio a, succ (nadd x.1 b)) (⨆ x : Iio b, succ (nadd a x.1))
+noncomputable def nadd (a b : Ordinal.{u}) : Ordinal.{u} :=
+  max (⨆ x : Iio a, succ (nadd x.1 b)) (⨆ x : Iio b, succ (nadd a x.1))
 termination_by (a, b)
-decreasing_by all_goals
-  cases x
-  decreasing_tactic
+decreasing_by all_goals cases x; decreasing_tactic
 
 @[inherit_doc]
 scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
