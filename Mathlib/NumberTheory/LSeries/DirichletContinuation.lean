@@ -327,9 +327,8 @@ section trivial
 variable (n : ℕ) [NeZero n]
 
 /-- The function obtained by "multiplying away" the pole of `L χ` for a trivial Dirichlet
-character `χ`. Its (negative) logarithmic derivative is used in the Wiener-Ikehara Theorem
-to prove the Prime Number Theorem version of Dirichlet's Theorem on primes in arithmetic
-progressions. -/
+character `χ`. Its (negative) logarithmic derivative is used to prove Dirichlet's Theorem
+on primes in arithmetic progression. -/
 noncomputable abbrev LFunctionTrivChar₁ : ℂ → ℂ :=
   Function.update (fun s ↦ LFunctionTrivChar n s * (s - 1)) 1
     (∏ p ∈ n.primeFactors, (1 - (p : ℂ)⁻¹))
@@ -350,13 +349,11 @@ lemma LFunctionTrivChar₁_differentiable : Differentiable ℂ (LFunctionTrivCha
     ← differentiableOn_compl_singleton_and_continuousAt_iff (c := 1) Filter.univ_mem]
   refine ⟨DifferentiableOn.congr (f := fun s ↦ LFunctionTrivChar n s * (s - 1))
     (fun _ hs ↦ DifferentiableAt.differentiableWithinAt <| by fun_prop (disch := simp_all [hs]))
-    fun _ hs ↦ ?_,
+    fun _ hs ↦ by rw [LFunctionTrivChar₁_apply_of_ne_one n (Set.mem_diff_singleton.mp hs).2],
     continuousWithinAt_compl_self.mp ?_⟩
-  · simp only [Set.mem_diff, Set.mem_univ, Set.mem_singleton_iff, true_and] at hs
-    simp only [ne_eq, hs, not_false_eq_true, Function.update_noteq]
-  · simpa only [mul_comm (LFunctionTrivChar ..), continuousWithinAt_compl_self,
-      continuousAt_update_same]
-      using LFunctionTrivChar_residue_one
+  simpa only [mul_comm (LFunctionTrivChar ..), continuousWithinAt_compl_self,
+    continuousAt_update_same]
+    using LFunctionTrivChar_residue_one
 
 lemma deriv_LFunctionTrivChar₁_apply_of_ne_one  {s : ℂ} (hs : s ≠ 1) :
     deriv (LFunctionTrivChar₁ n) s =
