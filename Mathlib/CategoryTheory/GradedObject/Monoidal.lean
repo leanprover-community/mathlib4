@@ -546,6 +546,7 @@ lemma triangle :
       tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by
   convert mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C)
     (rightUnitorNatIso C) (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
+  all_goals assumption
 
 end Triangle
 

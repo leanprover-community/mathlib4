@@ -19,7 +19,7 @@ variable {α : Type*}
 
 /-! ### powerset -/
 
--- Porting note (#11215): TODO: Write a more efficient version
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Write a more efficient version
 /-- A helper function for the powerset of a multiset. Given a list `l`, returns a list
 of sublists of `l` as multisets. -/
 def powersetAux (l : List α) : List (Multiset α) :=
@@ -67,7 +67,7 @@ theorem powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux l
   powersetAux_perm_powersetAux'.trans <|
     (powerset_aux'_perm p).trans powersetAux_perm_powersetAux'.symm
 
---Porting note (#11083): slightly slower implementation due to `map ofList`
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): slightly slower implementation due to `map ofList`
 /-- The power set of a multiset. -/
 def powerset (s : Multiset α) : Multiset (Multiset α) :=
   Quot.liftOn s

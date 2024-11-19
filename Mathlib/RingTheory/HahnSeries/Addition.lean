@@ -109,7 +109,7 @@ lemma addOppositeEquiv_symm_support (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_orderTop (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.orderTop = x.orderTop := by
-  simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
+  simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
   simp_rw [HahnSeries.ext_iff, funext_iff]
@@ -123,7 +123,7 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
-  simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
+  simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, EmbeddingLike.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
   simp_rw [HahnSeries.ext_iff, funext_iff]

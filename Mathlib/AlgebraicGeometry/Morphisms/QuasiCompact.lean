@@ -191,7 +191,7 @@ lemma isCompact_iff_exists {U : X.Opens} :
   refine isCompact_iff_compactSpace.trans ((compactSpace_iff_exists (X := U)).trans ?_)
   refine ⟨fun ⟨R, f, hf⟩ ↦ ⟨R, f ≫ U.ι, by simp [hf.range_comp]⟩, fun ⟨R, f, hf⟩ ↦ ?_⟩
   refine ⟨R, IsOpenImmersion.lift U.ι f (by simp [hf]), ?_⟩
-  rw [← Set.range_iff_surjective]
+  rw [← Set.range_eq_univ]
   apply show Function.Injective (U.ι.base '' ·) from Set.image_val_injective
   simp only [Set.image_univ, Scheme.Opens.range_ι]
   rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, IsOpenImmersion.lift_fac]

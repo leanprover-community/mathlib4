@@ -16,7 +16,7 @@ stalks are local rings), and morphisms between these (morphisms in `SheafedSpace
 `IsLocalHom` on the stalk maps).
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 universe u
 

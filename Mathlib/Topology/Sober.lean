@@ -178,7 +178,7 @@ lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedd
     obtain ⟨x, hx⟩ := QuasiSober.sober hS'' (hf.isClosedMap _ hS')
     obtain ⟨y, -, rfl⟩ := hx.mem
     use y
-    apply image_injective.mpr hf.inj
+    apply image_injective.mpr hf.injective
     rw [← hx.def, ← hf.closure_image_eq, image_singleton]
 
 @[deprecated (since := "2024-10-20")]
@@ -201,7 +201,7 @@ theorem Topology.IsOpenEmbedding.quasiSober {f : α → β} (hf : IsOpenEmbeddin
     use y
     change _ = _
     rw [hf.isEmbedding.closure_eq_preimage_closure_image, image_singleton, show _ = _ from hx]
-    apply image_injective.mpr hf.inj
+    apply image_injective.mpr hf.injective
     ext z
     simp only [image_preimage_eq_inter_range, mem_inter_iff, and_congr_left_iff]
     exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
