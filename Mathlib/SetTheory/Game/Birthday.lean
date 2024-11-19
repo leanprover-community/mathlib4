@@ -133,7 +133,7 @@ theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
 @[simp]
 theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.birthday
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
-    rw [birthday_def, nadd_def, lsub_sum, lsub_sum]
+    rw [birthday_def, nadd, lsub_sum, lsub_sum]
     simp only [mk_add_moveLeft_inl, mk_add_moveLeft_inr, mk_add_moveRight_inl, mk_add_moveRight_inr,
       moveLeft_mk, moveRight_mk]
     -- Porting note: Originally `simp only [birthday_add]`, but this causes an error in

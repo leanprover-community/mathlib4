@@ -181,8 +181,11 @@ to normal ordinal addition, it is commutative.
 Natural addition can equivalently be characterized as the ordinal resulting from adding up
 corresponding coefficients in the Cantor normal forms of `a` and `b`. -/
 noncomputable def nadd (a b : Ordinal.{u}) : Ordinal.{u} := max
-  (⨆ a' : Iio a, have := a'.2; succ (nadd a'.1 b)) (⨆ b' : Iio b, have := b'.2; succ (nadd a b'.1))
+  (⨆ x : Iio a, succ (nadd x.1 b)) (⨆ x : Iio b, succ (nadd a x.1))
 termination_by (a, b)
+decreasing_by all_goals
+  cases x
+  decreasing_tactic
 
 @[inherit_doc]
 scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
@@ -206,12 +209,8 @@ scoped[NaturalOps] infixl:70 " ⨳ " => Ordinal.nmul
 
 /-! ### Natural addition -/
 
-theorem nadd_def (a b : Ordinal) : a ♯ b =
-    max (⨆ a' : Iio a, succ (a'.1 ♯ b)) (⨆ b' : Iio b, succ (a ♯ b'.1)) := by
-  rw [nadd]
-
 theorem lt_nadd_iff : a < b ♯ c ↔ (∃ b' < b, a ≤ b' ♯ c) ∨ ∃ c' < c, a ≤ b ♯ c' := by
-  rw [nadd_def]
+  rw [nadd]
   simp [Ordinal.lt_iSup_iff]
 
 theorem nadd_le_iff : b ♯ c ≤ a ↔ (∀ b' < b, b' ♯ c < a) ∧ ∀ c' < c, b ♯ c' < a := by
@@ -237,7 +236,7 @@ theorem nadd_le_nadd_right (h : b ≤ c) (a) : b ♯ a ≤ c ♯ a := by
 variable (a b)
 
 theorem nadd_comm (a b) : a ♯ b = b ♯ a := by
-  rw [nadd_def, nadd_def, max_comm]
+  rw [nadd, nadd, max_comm]
   congr <;> ext x <;> cases x <;> apply congr_arg _ (nadd_comm _ _)
 termination_by (a, b)
 
@@ -282,7 +281,7 @@ termination_by (a, b, c)
 
 @[simp]
 theorem nadd_zero (a : Ordinal) : a ♯ 0 = a := by
-  rw [nadd_def, ciSup_of_empty fun _ : Iio 0 ↦ _, sup_bot_eq]
+  rw [nadd, ciSup_of_empty fun _ : Iio 0 ↦ _, sup_bot_eq]
   convert iSup_succ a
   rename_i x
   cases x
@@ -294,7 +293,7 @@ theorem zero_nadd : 0 ♯ a = a := by rw [nadd_comm, nadd_zero]
 
 @[simp]
 theorem nadd_one (a : Ordinal) : a ♯ 1 = succ a := by
-  rw [nadd_def, ciSup_unique (s := fun _ : Iio 1 ↦ _), Iio_one_default_eq, nadd_zero,
+  rw [nadd, ciSup_unique (s := fun _ : Iio 1 ↦ _), Iio_one_default_eq, nadd_zero,
     max_eq_right_iff, Ordinal.iSup_le_iff]
   rintro ⟨i, hi⟩
   rwa [nadd_one, succ_le_succ_iff, succ_le_iff]
