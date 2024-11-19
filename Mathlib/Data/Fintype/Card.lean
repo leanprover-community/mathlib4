@@ -841,10 +841,11 @@ instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
 
 end Finite
 
--- Shortcut instances
+-- Shortcut instances to make sure those are found even in the presence of other instances
+-- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/WellFoundedLT.20Prop.20is.20not.20found.20when.20importing.20too.20much
 instance Bool.instWellFoundedLT : WellFoundedLT Bool := inferInstance
-instance Prop.instWellFoundedLT : WellFoundedLT Prop := inferInstance
 instance Bool.instWellFoundedGT : WellFoundedGT Bool := inferInstance
+instance Prop.instWellFoundedLT : WellFoundedLT Prop := inferInstance
 instance Prop.instWellFoundedGT : WellFoundedGT Prop := inferInstance
 
 -- @[nolint fintype_finite] -- Porting note: do we need this?
