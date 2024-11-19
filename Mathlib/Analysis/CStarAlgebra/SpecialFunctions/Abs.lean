@@ -36,27 +36,26 @@ namespace CFC
 
 section NonUnital
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*} [NonUnitalNormedRing A] [StarRing A]
+  [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
+  [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
 
-lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
-  rw [abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
+lemma mul_self_eq_mul_self {a : A} (ha : IsSelfAdjoint a) : a * a =
+    cfcₙ (fun (x : ℝ) ↦ x * x) a := by
+  conv_lhs => rw [← cfcₙ_id' ℝ a, ← cfcₙ_mul ..]
 
-@[aesop safe apply (rule_sets := [CStarAlgebra])]
-theorem IsSelfAdjoint.mul_self_nonneg {a : A} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
-  simpa [ha.star_eq] using star_mul_self_nonneg a
+variable [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
 
--- Jireh identified this more spartan set of typeclasses for proving `sqrt_eq_cfcₙ_real_sqrt`.
--- Maybe incorporate these? From Jireh:
+lemma sqrt_silly {a : A} (ha : IsSelfAdjoint a) :
+    cfcₙ Real.sqrt (a * a) = cfcₙ (fun x ↦ √(x * x)) a := by
+  rw [mul_self_eq_mul_self ha, ← cfcₙ_comp a (f := fun x ↦ x * x) (g := fun x ↦ √x)]
+  rfl --there is probably a simp/aesop lemma needed here because of this `rfl`
 
--- I modified these classes, these suffice to prove `sqrt_eq_cfcₙ_real_sqrt`
--- however, I think there's an issue in the library: `CFC.sqrt_eq_iff` (and probably lots around it)
--- requires `NonUnitalNormedRing`. I don't think it should and this is a mistake.
-
---variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
---   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
---   [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
---   [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
---   [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
+variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
+   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
+   [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+   [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+   [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
 
 lemma sqrt_eq_cfcₙ_real_sqrt {a : A} (ha : 0 ≤ a := by cfc_tac) :
     CFC.sqrt a = cfcₙ Real.sqrt a := by
@@ -67,18 +66,21 @@ lemma sqrt_eq_cfcₙ_real_sqrt {a : A} (ha : 0 ≤ a := by cfc_tac) :
   refine Real.mul_self_sqrt ?_
   exact quasispectrum_nonneg_of_nonneg a ha x hx
 
-lemma sq {a : A} (ha : IsSelfAdjoint a) : a * a = cfcₙ (fun (x : ℝ) ↦ x ^ 2) a := by
-  sorry
-
-lemma sqrt_silly {a : A} (ha : IsSelfAdjoint a) :
-    cfcₙ Real.sqrt (a * a) = cfcₙ (fun x ↦ √(x ^ 2)) a := by
-  rw [sq ha, ← cfcₙ_comp a (f := fun x ↦ x ^ 2) (g := fun x ↦ √x)]
-  rfl
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 lemma abs_eq_cfcₙ_norm {a : A} (ha : IsSelfAdjoint a) :
     abs a = cfcₙ (‖·‖) a := by
    simp only [abs, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
    rw [sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a), ha.star_eq, sqrt_silly ha]
+
+lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
+  rw [abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
+
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+theorem IsSelfAdjoint.mul_self_nonneg {a : A} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
+  simpa [ha.star_eq] using star_mul_self_nonneg a
+
+#exit
 
 lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
     abs a = cfcₙ (fun z : ℂ ↦ (‖z‖ : ℂ)) a :=
