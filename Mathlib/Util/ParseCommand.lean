@@ -30,7 +30,7 @@ def captureException (env : Environment) (s : ParserFn) (input : String) : Excep
     .error ((s.mkError "end of input").toErrorMsg ictx)
 
 /-- `#parse parserFnId => str` allows to capture parsing exceptions.
-`parserFnId` is the identifier of a `parserFn` and `str` is the string that `parserFn` will parse.
+`parserFnId` is the identifier of a `ParserFn` and `str` is the string that `parserFnId` should parse.
 
 If the parse is successful, then the output is logged;
 if the parse is successful, then the output is captured in an exception.
