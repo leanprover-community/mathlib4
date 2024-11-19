@@ -40,7 +40,12 @@ printf '%s requested a maintainer **%s** from %s on PR [#%s](%s):\n' "${AUTHOR}"
 # if `maintainer merge/delegate` is followed by `!`, then print a `spoiler` with the full comment
 if [ ${M_or_D: -1} == $'!' ]
 then
-  printf '```spoiler %s\n%s\n```\n' "${PR_TITLE}" "${PR_COMMENT}"
+  # replace backticks in the title with single quotes
+  unbacktickedTitle="${PR_TITLE//\`/\'}"
+
+  >&2 echo "neat title: '${unbacktickedTitle}'"
+
+  printf '```spoiler %s\n%s\n```\n' "${unbacktickedTitle}" "${PR_COMMENT}"
 # otherwise, just print the title of the PR
 else
   printf '> %s\n' "${PR_TITLE}"
