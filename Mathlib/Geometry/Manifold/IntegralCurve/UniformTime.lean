@@ -16,7 +16,7 @@ every point on `M` has a global integral curve passing through it.
 
 ## Reference
 
-* Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.
+* [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
 
 ## Tags
 
@@ -77,9 +77,9 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold
   · rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_,
       exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux hv h⟩
-    · have := lt_add_of_pos_right |t| zero_lt_one
-      rw [abs_lt] at this
-      exact Ioo_mem_nhds this.1 this.2
+    have : |t| < |t| + 1 := lt_add_of_pos_right |t| zero_lt_one
+    rw [abs_lt] at this
+    exact Ioo_mem_nhds this.1 this.2
 
 lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
@@ -88,7 +88,11 @@ lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManif
   ⟨fun ⟨γ, h1, h2⟩ _ ↦ ⟨γ, h1, h2.isIntegralCurveOn _⟩,
    exists_integralCurve_of_exists_isIntegralCurveOn_Ioo hv⟩
 
-lemma piecewise_eqOn_symm [BoundarylessManifold I M]
+/-- Let `γ` and `γ'` be integral curves defined on `Ioo a b` and `Ioo a' b'`, respectively. Then,
+  `piecewise (Ioo a b) γ γ'` is equal to `γ` and `γ'` in their respective domains.
+  `Set.piecewise_eqOn` shows the equality for `γ` by definition, while this lemma shows the equality
+  for `γ'` by the uniqueness of integral curves. -/
+lemma piecewise_eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
     (hγ' : IsIntegralCurveOn γ' v (Ioo a' b'))
@@ -133,19 +137,20 @@ lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
     rw [piecewise, if_neg hmem]
     apply (hγ' t hmem').congr_of_eventuallyEq
     rw [Filter.eventuallyEq_iff_exists_mem]
-    refine ⟨Ioo a' b', isOpen_Ioo.mem_nhds hmem', piecewise_eqOn_symm hv hγ hγ' ht₀ h⟩
+    exact ⟨Ioo a' b', isOpen_Ioo.mem_nhds hmem',
+      piecewise_eqOn_of_isIntegralCurveOn_Ioo hv hγ hγ' ht₀ h⟩
 
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
   least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral
   curve passing through it.
 
-  See Lemma 9.15, Lee -/
+  See Lemma 9.15, [J.M. Lee (2012)][lee2012]. -/
 lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     {v : (x : M) → TangentSpace I x}
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {ε : ℝ} (hε : 0 < ε) (h : ∀ x : M, ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-ε) ε))
     (x : M) : ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurve γ v := by
-  let s := {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)}
+  let s := { a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) }
   suffices hbdd : ¬BddAbove s by
     rw [not_bddAbove_iff] at hbdd
     rw [exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo hv]
@@ -196,6 +201,6 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
       ⟨⟨by linarith, hlt⟩, ⟨by linarith, by linarith⟩⟩
       (by rw [piecewise, if_pos ⟨by linarith, hlt⟩, ← heq2])).mono
     (Ioo_subset_Ioo_union_Ioo le_rfl (by linarith) (by linarith))
-  apply (isIntegralCurveOn_piecewise (t₀ := -(asup - ε / 2)) hv hγ hγ1
+  exact (isIntegralCurveOn_piecewise (t₀ := -(asup - ε / 2)) hv hγ hγ1
       ⟨⟨neg_lt_neg hlt, by linarith⟩, ⟨by linarith, by linarith⟩⟩ heq1.symm).mono
     (union_comm _ _ ▸ Ioo_subset_Ioo_union_Ioo (by linarith) (by linarith) le_rfl)
