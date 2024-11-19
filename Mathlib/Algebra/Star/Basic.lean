@@ -3,7 +3,6 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Regular.Basic
@@ -38,7 +37,6 @@ assert_not_exists Rat.instField
 universe u v w
 
 open MulOpposite
-open scoped NNRat
 
 /-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
 -/
