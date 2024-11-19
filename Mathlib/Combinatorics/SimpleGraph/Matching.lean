@@ -33,7 +33,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
   also known as isolated vertices)
 
 * `SimpleGraph.IsAlternating` means that edges in a graph `G` are alternatingly
-  also included and not included in some other graph `G'`
+  included and not included in some other graph `G'`
 
 ## TODO
 
@@ -320,7 +320,7 @@ lemma exists_maximal_isMatchingFree [Finite V] (h : G.IsMatchingFree) :
 /-- A graph `G` consists of a set of cycles, if each vertex is either isolated or connected to
 exactly two vertices. This is used to create new matchings by taking the `symmDiff` with cycles.
 The definition of `symmDiff` that makes sense is the one for `SimpleGraph`. This is why this
-definition is for graphs, rather than subgraphs.
+definition is for `SimpleGraph`, rather than `SimpleGraph.Subgraph`.
 -/
 def IsCycles (G : SimpleGraph V) := ∀ ⦃v⦄, (G.neighborSet v).Nonempty → (G.neighborSet v).ncard = 2
 -- def IsCycles (G : SimpleGraph V) := (∀ v : V, (G.neighborSet v) = ∅ ∨ (G.neighborSet v).ncard = 2)
