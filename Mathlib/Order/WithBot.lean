@@ -159,7 +159,7 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   · simp
 
 /-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
-def subType_ne_bot_equiv : {y : WithBot α // y ≠ ⊥} ≃ α where
+@[simps] def subType_ne_bot_equiv : {y : WithBot α // y ≠ ⊥} ≃ α where
   toFun := fun ⟨x,h⟩ => WithBot.unbot x h
   invFun x := ⟨x, WithBot.coe_ne_bot⟩
   left_inv _ := by simp
