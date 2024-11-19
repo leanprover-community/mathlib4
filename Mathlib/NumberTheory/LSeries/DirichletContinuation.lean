@@ -354,7 +354,7 @@ lemma LFunctionTrivChar₁_differentiable : Differentiable ℂ (LFunctionTrivCha
   simpa only [continuousWithinAt_compl_self, continuousAt_update_same]
     using LFunctionTrivChar_residue_one
 
-lemma deriv_LFunctionTrivChar₁_apply_of_ne_one  {s : ℂ} (hs : s ≠ 1) :
+lemma deriv_LFunctionTrivChar₁_apply_of_ne_one {s : ℂ} (hs : s ≠ 1) :
     deriv (LFunctionTrivChar₁ n) s =
       (s - 1) * deriv (LFunctionTrivChar n) s + LFunctionTrivChar n s := by
   have H : deriv (LFunctionTrivChar₁ n) s =
