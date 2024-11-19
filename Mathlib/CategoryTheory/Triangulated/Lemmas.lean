@@ -404,6 +404,23 @@ open Category Opposite
 
 variable (C)
 
+lemma shiftEquiv'_unit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).unit = (shiftFunctorCompIsoId C a a' h).inv := sorry
+
+lemma shiftEquiv'_counit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).counit = (shiftFunctorCompIsoId C a' a
+    (by simp only [eq_neg_of_add_eq_zero_left h, add_right_neg])).hom := sorry
+
+
+lemma shiftEquiv'_symm_unit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).symm.unit = (shiftFunctorCompIsoId C a' a
+    (by simp only [eq_neg_of_add_eq_zero_right h, add_left_neg])).inv := sorry
+
+lemma shiftEquiv'_symm_counit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).symm.counit = (shiftFunctorCompIsoId C a a' h).hom := sorry
+
+
+
 lemma shiftEquiv_homEquiv_zero'_app (a : A) (ha : a = 0) (X Y : C) (u : X⟦-a⟧ ⟶ Y) :
     (shiftEquiv C a).symm.toAdjunction.homEquiv X Y u =
     (shiftFunctorZero' C (-a) (by simp [ha])).inv.app X ≫ u ≫
