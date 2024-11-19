@@ -33,18 +33,15 @@ lemma Complex.zpow_eq_one (k : ℤ) {n : ℝ} (hn : 1 < n) (h : (n : ℂ) ^ k = 
   replace h : (n : ℝ) ^ k = (n : ℝ) ^ (0 : ℤ) := by simp only [zpow_zero, ← h]
   exact zpow_right_injective₀ (a := (n : ℝ)) (by norm_cast at *; linarith) (by aesop) h
 
-/-- If a non-zero constant is modular of weight `k`, then we must have `k = 0`.  -/
-lemma SlashInvariantForm.wt_const_eq_zero {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) (f : F) (c : ℂ)
-    [SlashInvariantFormClass F ⊤ k] (hf : ⇑f = (fun _ => c)) : k = 0 ∨ c = 0 := by
+/-- If a constant funciton is modular of weight `k`, then either `k = 0`, or the constant is `0`. -/
+lemma SlashInvariantForm.wt_eq_zero_of_eq_const
+    {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) [SlashInvariantFormClass F ⊤ k]
+    {f : F} {c : ℂ} (hf : ∀ τ, f τ = c) : k = 0 ∨ c = 0 := by
   have hI := slash_action_eqn'' f (by tauto : ModularGroup.S ∈ ⊤) I
   have h2I2 := slash_action_eqn'' f (by tauto : ModularGroup.S ∈ ⊤) ⟨2 * Complex.I, by simp⟩
-  simp only [hf, sl_moeb, denom_S, coe_mk_subtype] at *
+  simp only [sl_moeb, hf, denom_S, coe_mk_subtype] at hI h2I2
   nth_rw 1 [h2I2] at hI
-  simp only [mul_eq_mul_right_iff] at hI
-  rcases hI with H | H
-  · left
-    rw [UpperHalfPlane.I, coe_mk_subtype, mul_zpow, mul_left_eq_self₀] at H
-    rcases H with H | H
-    · apply Complex.zpow_eq_one k (one_lt_two) H
-    · exact False.elim (zpow_ne_zero k I_ne_zero H)
-  · exact Or.inr H
+  simp only [mul_zpow, coe_I, mul_eq_mul_right_iff, mul_left_eq_self₀] at hI
+  refine hI.imp_left (Or.casesOn · (fun H ↦ ?_) (False.elim ∘ zpow_ne_zero k I_ne_zero))
+  rwa [← Complex.ofReal_ofNat, ← ofReal_zpow, ← ofReal_one, ofReal_inj,
+    zpow_eq_one_iff_right₀ (by norm_num) (by norm_num)] at H
