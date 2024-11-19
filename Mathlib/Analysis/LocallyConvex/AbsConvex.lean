@@ -7,6 +7,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Analysis.Convex.TotallyBounded
+import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Absolutely convex sets
@@ -324,6 +325,37 @@ theorem isCompact_closedAbsConvexHull_of_totallyBounded [CompleteSpace E] {s : S
     (ht : TotallyBounded s) : IsCompact (closedAbsConvexHull ℝ s) := by
   rw [closedAbsConvexHull_eq_closure_absConvexHull]
   exact isCompact_closure_of_totallyBounded (totallyBounded_absConvexHull E ht)
+
+open RingHom in
+lemma easy_direction :
+    (UniformConvergenceCLM.instTopologicalSpace (id _) ℝ {(C : Set E) | IsCompact C }) ≤
+    (UniformConvergenceCLM.instTopologicalSpace (id ℝ) ℝ {(C : Set E) | IsCompact C ∧ Convex ℝ C })
+    := by
+  apply UniformConvergenceCLM.topologicalSpace_mono _ _
+  simp_all only [setOf_subset_setOf, implies_true]
+
+open RingHom in
+lemma hard_direction :
+    (UniformConvergenceCLM.instTopologicalSpace (id _) ℝ {(C : Set E) | IsCompact C ∧ Convex ℝ C })
+    ≤ (UniformConvergenceCLM.instTopologicalSpace (id ℝ) ℝ {(C : Set E) | IsCompact C })
+    := by
+  apply UniformConvergenceCLM.topologicalSpace_mono _ _
+  sorry
+  --simp_all only [setOf_subset_setOf, implies_true]
+
+/-
+  ext U
+  constructor
+  · intro h
+    apply?
+    --rw [IsOpen]
+    --simp at U
+    --aesop
+    sorry
+  · intro h
+    sorry
+  --UniformConvergenceCLM.topologicalSpace_mono _ _ (fun _ hC => IsCompact.totallyBounded hC)
+-/
 
 end
 

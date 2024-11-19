@@ -375,7 +375,6 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
 -- TVS.24 Theorem 1 Banach-Dieudonné
 -- b) (the topology of uniform convergence on compact subsets) is coarser than c) (the topology of
 -- uniform convergence on compact subsets)
-
 open RingHom in
 lemma uc1 :
     (UniformConvergenceCLM.instTopologicalSpace (id _) 𝕜₁ {(C : Set E₁) | TotallyBounded C}) ≤
