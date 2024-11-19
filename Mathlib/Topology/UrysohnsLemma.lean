@@ -406,7 +406,6 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
 function `f : X → ℝ` such that
-
 * `f` equals one on `s`;
 * `f` equals zero on `t`;
 * `0 ≤ f x ≤ 1` for all `x`.
