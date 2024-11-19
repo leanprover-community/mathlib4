@@ -3,7 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.SmallObject.Iteration.ExtendToSucc
+import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
+import Mathlib.CategoryTheory.SmallObject.Iteration.UniqueHom
 
 /-!
 # Existence of objects in the category of iterations of functors
@@ -89,6 +92,76 @@ noncomputable def mkOfSucc {j : J} (hj : ¬IsMax j) (iter : Iteration ε j) :
     rw [assoc, extendToSuccObjIso_hom_naturality hj iter.F (whiskerLeft _ ε)]
     dsimp
     rw [Iso.inv_hom_id_assoc]
+
+section
+
+variable [WellFoundedLT J] {j : J} (hj : Order.IsSuccLimit j)
+  (iter : ∀ (i : J) (_ : i < j), Iteration ε i)
+
+namespace mkOfLimit
+
+abbrev obj (i : J) (hi : i < j) : C ⥤ C := (iter i hi).F.obj ⟨i, by simp⟩
+
+noncomputable def map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ < j) :
+    obj iter i₁ (lt_of_le_of_lt hi hi₂) ⟶ obj iter i₂ hi₂ :=
+  ((iter i₁ (lt_of_le_of_lt hi hi₂)).iso ((iter i₂ hi₂).trunc hi)).hom.natTrans.app
+    ⟨i₁, by simp⟩ ≫ (iter i₂ hi₂).F.map (homOfLE hi)
+
+@[simp]
+lemma map_id (i : J) (hi : i < j) :
+    map iter i i (by rfl) hi = 𝟙 _ := by
+  simp [map]
+
+lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (hi₃ : i₃ < j) :
+    map iter i₁ i₃ (hi.trans hi') hi₃ =
+      map iter i₁ i₂ hi (lt_of_le_of_lt hi' hi₃) ≫
+        map iter i₂ i₃ hi' hi₃ := by
+  dsimp [map]
+  rw [assoc, NatTrans.naturality_assoc]
+  dsimp
+  rw [← truncFunctor_map_natTrans_app _ hi i₁ (by rfl), truncFunctor_map_iso_hom,
+    ← NatTrans.comp_app_assoc, ← natTrans_comp, ← Functor.map_comp]
+  dsimp only [truncFunctor_obj, trunc_trunc]
+  rw [iso_hom_comp_iso_hom, homOfLE_comp]
+
+@[simps]
+noncomputable def functor : Set.Iio j ⥤ C ⥤ C where
+  obj i := obj iter i.1 i.2
+  map f := map iter _ _ (leOfHom f) _
+  map_id _ := map_id iter _ _
+  map_comp _ _ := map_comp iter _ _ _ _ _ _
+
+end mkOfLimit
+
+section
+
+open mkOfLimit
+
+variable [HasColimit (functor iter)]
+
+include hj iter in
+noncomputable def mkOfLimit :
+    Iteration ε j where
+  F := Functor.ofCocone (colimit.cocone (functor iter))
+  isoZero := by
+    have := hj
+    sorry
+  isoSucc := sorry
+  mapSucc'_eq := sorry
+  isColimit := sorry
+
+end
+end
+
+instance [WellFoundedLT J] [HasIterationOfShape C J] (j : J) : Nonempty (Iteration ε j) := by
+  induction j using SuccOrder.limitRecOn with
+  | hm i hi =>
+      obtain rfl : i = ⊥ := by simpa using hi
+      exact ⟨mkOfBot ε J⟩
+  | hs i hi hi' => exact ⟨mkOfSucc hi hi'.some⟩
+  | hl i hi hi' =>
+      have := hasColimitOfShape_of_isSuccLimit C i hi
+      exact ⟨mkOfLimit hi (fun a ha ↦ (hi' a ha).some)⟩
 
 end Iteration
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 
@@ -239,6 +239,14 @@ def trunc (iter : Iteration ε j) {i : J} (hi : i ≤ j) : Iteration ε i where
   mapSucc'_eq k hk := iter.mapSucc'_eq k (lt_of_lt_of_le hk hi)
   isColimit k hk' hk := iter.isColimit k hk' (hk.trans hi)
 
+@[simp]
+lemma trunc_refl (iter : Iteration ε j) :
+    iter.trunc (Preorder.le_refl j) = iter := rfl
+
+@[simp]
+lemma trunc_trunc (iter : Iteration ε j) {i : J} (hi : i ≤ j) {k : J} (hk : k ≤ i) :
+    (iter.trunc hi).trunc hk = iter.trunc (hk.trans hi) := rfl
+
 variable (ε) in
 /-- The truncation functor `Iteration ε j ⥤ Iteration ε i` when `i ≤ j`. -/
 @[simps obj]
@@ -271,5 +279,23 @@ end Hom
 end Iteration
 
 end Functor
+
+open Limits
+
+variable (C J) [Preorder J]
+
+class HasIterationOfShape where
+  hasColimitsOfShape_of_isSuccLimit (j : J) (hj : Order.IsSuccLimit j) :
+    HasColimitsOfShape (Set.Iio j) C := by infer_instance
+  hasColimitsOfShape : HasColimitsOfShape J C := by infer_instance
+
+attribute [instance] HasIterationOfShape.hasColimitsOfShape
+
+variable {J}
+
+lemma hasColimitOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
+    (hj : Order.IsSuccLimit j) :
+    HasColimitsOfShape (Set.Iio j) C :=
+    HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
 
 end CategoryTheory
