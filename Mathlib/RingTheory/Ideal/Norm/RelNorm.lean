@@ -172,8 +172,7 @@ theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
 /-- This condition `eq_bot_or_top` is equivalent to being a field.
 However, `Ideal.spanNorm_mul_of_field` is harder to apply since we'd need to upgrade a `CommRing R`
 instance to a `Field R` instance. -/
-theorem spanNorm_mul_of_bot_or_top [Module.Free R S]
-    (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨ I = ⊤) (I J : Ideal S) :
+theorem spanNorm_mul_of_bot_or_top (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨ I = ⊤) (I J : Ideal S) :
     spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
   refine le_antisymm ?_ (spanNorm_mul_spanNorm_le R _ _)
   cases' eq_bot_or_top (spanNorm R I) with hI hI
