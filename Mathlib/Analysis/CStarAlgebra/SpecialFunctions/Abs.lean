@@ -46,10 +46,11 @@ lemma mul_self_eq_mul_self {a : A} (ha : IsSelfAdjoint a) : a * a =
 
 variable [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
 
+/-- Needs a real name. -/
 lemma sqrt_silly {a : A} (ha : IsSelfAdjoint a) :
     cfcₙ Real.sqrt (a * a) = cfcₙ (fun x ↦ √(x * x)) a := by
-  rw [mul_self_eq_mul_self ha, ← cfcₙ_comp a (f := fun x ↦ x * x) (g := fun x ↦ √x)]
-  rfl --there is probably a simp/aesop lemma needed here because of this `rfl`
+  rw [mul_self_eq_mul_self ha, ← cfcₙ_comp a (f := fun x ↦ x * x) (g := fun x ↦ √x),
+     Function.comp_def]
 
 variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
    [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
