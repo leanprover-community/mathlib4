@@ -405,8 +405,7 @@ lemma index_strictAnti (h : H < K) [h₁ : Finite (G ⧸ H)] : K.index < H.index
   rcases eq_or_ne K.index 0 with h0 | h0
   · rw [h0, index_eq_card]
     exact Finite.card_pos
-  apply lt_of_le_of_ne
-  · exact Nat.le_of_dvd (by rw [index_eq_card]; apply Finite.card_pos) <| index_dvd_of_le h.le
+  apply lt_of_le_of_ne (index_antitone h.le)
   rw [← mul_one K.index, ← relindex_mul_index h.le, mul_comm, Ne, eq_comm]
   simp [h0, h.not_le]
 
