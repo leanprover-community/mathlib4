@@ -324,7 +324,7 @@ theorem MonoidHom.uniformContinuous_of_continuousAt_one [UniformSpace β] [Group
 its kernel is open. -/
 @[to_additive "A homomorphism from a uniform additive group to a discrete uniform additive group is
 continuous if and only if its kernel is open."]
-theorem UniformGroup.uniformContinuous_iff_open_ker {hom : Type*} [UniformSpace β]
+theorem UniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSpace β]
     [DiscreteTopology β] [Group β] [UniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     {f : hom} :
     UniformContinuous f ↔ IsOpen ((f : α →* β).ker : Set α) := by
@@ -333,6 +333,11 @@ theorem UniformGroup.uniformContinuous_iff_open_ker {hom : Type*} [UniformSpace 
   · apply uniformContinuous_of_continuousAt_one
     rw [ContinuousAt, nhds_discrete β, map_one, tendsto_pure]
     exact hf.mem_nhds (map_one f)
+
+@[deprecated (since := "2024-11-18")] alias UniformGroup.uniformContinuous_iff_open_ker :=
+  UniformGroup.uniformContinuous_iff_isOpen_ker
+@[deprecated (since := "2024-11-18")] alias UniformAddGroup.uniformContinuous_iff_open_ker :=
+  UniformAddGroup.uniformContinuous_iff_isOpen_ker
 
 @[to_additive]
 theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β] [Group β]
