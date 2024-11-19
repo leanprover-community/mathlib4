@@ -42,6 +42,6 @@ end
 theorem rank_eq [CommRing R] [Nontrivial R] :
     Module.rank R (FreeAlgebra R X) = Cardinal.lift.{u} (Cardinal.mk (List X)) := by
   rw [← (Basis.mk_eq_rank'.{_,_,_,u} (basisFreeMonoid R X)).trans (Cardinal.lift_id _),
-    Cardinal.lift_umax'.{v,u}, FreeMonoid]
+    Cardinal.lift_umax.{v, u}, FreeMonoid]
 
 end FreeAlgebra
