@@ -27,7 +27,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 * `SimpleGraph.Subgraph.IsPerfectMatching` defines when a subgraph `M` of a simple graph is a
   perfect matching, denoted `M.IsPerfectMatching`.
 
-* `SimpleGraph.IsMatchingFree` means that a SimpleGraph `G` has no perfect matchings.
+* `SimpleGraph.IsMatchingFree` means that a simple graph `G` has no perfect matchings.
 
 * `SimpleGraph.IsCycles` means that a graph consists of cycles (including cycles of length 0,
   also known as isolated vertices)
@@ -322,7 +322,7 @@ exactly two vertices. This is used to create new matchings by taking the `symmDi
 The definition of `symmDiff` that makes sense is the one for `SimpleGraph`. This is why this
 definition is for graphs, rather than subgraphs.
 -/
-def IsCycles (G : SimpleGraph V) := (∀ v : V, (G.neighborSet v) = ∅ ∨ (G.neighborSet v).ncard = 2)
+def IsCycles (G : SimpleGraph V) := ∀ ⦃v⦄, (G.neighborSet v).Nonempty → (G.neighborSet v).ncard = 2
 
 /--
 Given a vertex with one edge in a graph of cycles this gives the other edge incident
@@ -338,7 +338,7 @@ lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
 
 lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
     {M : Subgraph G} {M' : Subgraph G'} (hM : M.IsPerfectMatching)
-    (hM' : M'.IsPerfectMatching) : (symmDiff M.spanningCoe M'.spanningCoe).IsCycles := by
+    (hM' : M'.IsPerfectMatching) : (M.spanningCoe ∆ M'.spanningCoe).IsCycles := by
   intro v
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   obtain ⟨w', hw'⟩ := hM'.1 (hM'.2 v)
@@ -357,10 +357,10 @@ A graph `G` is alternating with respect to some other graph `G'`, if exactly eve
 possible. This property is used to create new matchings using `symmDiff`. The definition of
 `symmDiff` for `SimpleGraph` is the on
 -/
-def IsAlternating (G : SimpleGraph V) (G' : SimpleGraph V) :=
+def IsAlternating (G  G' : SimpleGraph V) :=
   ∀ {v w w': V}, w ≠ w' → G.Adj v w → G.Adj v w' → (G'.Adj v w ↔ ¬ G'.Adj v w')
 
-lemma IsPerfectMatching.symmDiff_spanningCoe_of_IsAlternating {M : Subgraph G}
+lemma IsPerfectMatching.symmDiff_spanningCoe_of_isAlternating {M : Subgraph G}
     (hM : M.IsPerfectMatching) (hG' : G'.IsAlternating M.spanningCoe) (hG'cyc : G'.IsCycles)  :
     ((symmDiff M.spanningCoe G').toSubgraph (symmDiff M.spanningCoe G')
     (by rfl)).IsPerfectMatching := by
