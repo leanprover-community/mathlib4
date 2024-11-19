@@ -168,9 +168,6 @@ def ofSelfIso (M : AlgebraCat.{v} R) : AlgebraCat.of R M ≅ M where
 def free : Type u ⥤ AlgebraCat.{u} R where
   obj S := of R (FreeAlgebra R S)
   map f := ofHom <| FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
-  -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
-  map_id X := by aesop
-  map_comp {X Y Z} f g := by aesop
 
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
@@ -178,9 +175,8 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
     { homEquiv := fun _ _ =>
         { toFun := fun ⟨f⟩ ↦ (FreeAlgebra.lift _).symm f
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
-          left_inv := fun f ↦ by ext; simp [forget_obj, forget_map]
-          right_inv := fun f ↦ by simp [forget_obj, forget_map]
-        } }
+          left_inv := fun f ↦ by aesop
+          right_inv := fun f ↦ by simp [forget_obj, forget_map] } }
 
 instance : (forget (AlgebraCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
@@ -195,8 +191,6 @@ def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra 
     (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
   hom := AlgebraCat.ofHom (e : X₁ →ₐ[R] X₂)
   inv := AlgebraCat.ofHom (e.symm : X₂ →ₐ[R] X₁)
-  hom_inv_id := by ext x; exact e.left_inv x
-  inv_hom_id := by ext x; exact e.right_inv x
 
 namespace CategoryTheory.Iso
 
