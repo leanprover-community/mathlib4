@@ -84,10 +84,11 @@ lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[
   · simp only [spine_arrow, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
       mkOfSucc_subinterval_eq]
 
-/-- The spine of the unique non-degenerate `n`-simplex in Δ[n].-/
+/-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`.-/
 def idSpine (n : ℕ) : Path Δ[n] n := spine Δ[n] n (standardSimplex.idSimplex n)
 
-/-- Inner horns always contain spines (Rezk 5.5).-/
+/-- Any inner horn, `Λ[n, i]`, contains the spine of the unique non-degenerate
+`n`-simplex in `Δ[n]`. -/
 def spineHorn (n : ℕ) (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path Λ[n + 2, i] (n + 2) := by

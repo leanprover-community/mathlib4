@@ -564,6 +564,60 @@ lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
   fin_cases x
   aesop
 
+/-- If `j > i + 1`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
+picks out arrow `i`. -/
+lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
+    (h : i.succ.castSucc < j) :
+    mkOfSucc i ≫ δ j = mkOfSucc i.castSucc := by
+  ext x
+  simp [δ]
+  fin_cases x
+  · simp
+    rw [Fin.succAbove_of_castSucc_lt]
+    · rfl
+    · refine Nat.lt_trans ?_ h
+      simp
+  · simp
+    rw [Fin.succAbove_of_castSucc_lt]
+    · rfl
+    · exact h
+
+/-- If `j < i + 1`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
+picks out arrow `i + 1`. -/
+lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
+    (h : j < i.succ.castSucc) :
+    mkOfSucc i ≫ δ j = mkOfSucc i.succ := by
+  ext x
+  simp [δ]
+  fin_cases x
+  · simp
+    rw [Fin.succAbove_of_le_castSucc]
+    · rfl
+    · exact Nat.le_of_lt_succ h
+  · simp
+    rw [Fin.succAbove_of_le_castSucc]
+    · rfl
+    · exact Nat.le_of_lt h
+
+/-- If `j = i + 1`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
+picks out the composite of arrows `i` and `i + 1`. -/
+lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
+    (h : j = i.succ.castSucc) :
+    mkOfSucc i ≫ δ j = intervalEdge i 2 (by omega) := by
+  ext x
+  simp [δ]
+  fin_cases x
+  · simp
+    rw [Fin.succAbove_of_castSucc_lt]
+    · simp
+      simp [Hom.toOrderHom, intervalEdge, mkOfLe, Hom.mk]
+    · rw [h]
+      simp
+  · simp
+    rw [h]
+    rw [Fin.succAbove_castSucc_self]
+    simp [Hom.toOrderHom, intervalEdge, mkOfLe, Hom.mk, mkHom, ]
+
 theorem eq_of_one_to_two (f : ([1] : SimplexCategory) ⟶ [2]) :
     f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨
       ∃ a, f = SimplexCategory.const _ _ a := by

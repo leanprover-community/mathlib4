@@ -106,7 +106,7 @@ def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
     (standardSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
   yonedaCompUliftFunctorEquiv X n
 
-/-- The unique non-degenerate `n`-simplex in Δ[n]. -/
+/-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
 def idSimplex (n : ℕ) : Δ[n] _[n] := yonedaEquiv Δ[n] [n] (𝟙 Δ[n])
 
 lemma idSimplex_objEquiv (n : ℕ) :
