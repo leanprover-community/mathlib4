@@ -360,9 +360,8 @@ variable {α : Type*} [Monoid α] [DistribMulAction α A] [SMulCommClass α R A]
 
 instance [IsScalarTower α A A] : IsScalarTower α (Submodule R A) (Submodule R A) where
   smul_assoc a S T := by
-    rw [← S.span_eq, ← T.span_eq]
-    rw [smul_span, smul_eq_mul, smul_eq_mul, span_mul_span,  span_mul_span, smul_span,
-      smul_mul_assoc]
+    rw [← S.span_eq, ← T.span_eq, smul_span, smul_eq_mul, smul_eq_mul, span_mul_span, span_mul_span,
+      smul_span, smul_mul_assoc]
 
 instance [SMulCommClass α A A] : SMulCommClass α (Submodule R A) (Submodule R A) where
   smul_comm a S T := by
