@@ -37,7 +37,7 @@ esac
 >&2 printf 'COMMENT\n%s\nEND COMMENT\n' "${PR_COMMENT}"
 
 printf '%s requested a maintainer **%s** from %s on PR [#%s](%s):\n' "${AUTHOR}" "${M_or_D/$'?'/}" "${SOURCE}" "${PR}" "${URL}"
-# if `maintainer merge/delegate` is followed by `!`, then print a `spoiler` with the full comment
+# if `maintainer merge/delegate` is followed by `?`, then print a `spoiler` with the full comment
 if [ ${M_or_D: -1} == $'?' ]
 then
   # replace backticks in the title with single quotes
