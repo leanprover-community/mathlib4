@@ -893,21 +893,21 @@ theorem mem_pair {x y z : ZFSet.{u}} : x ∈ ({y, z} : ZFSet) ↔ x = y ∨ x = 
   simp
 
 @[simp]
-theorem pair_self (x : ZFSet) : {x, x} = ({x} : ZFSet) := by
+theorem pair_eq_singleton (x : ZFSet) : {x, x} = ({x} : ZFSet) := by
   ext
   simp
 
 @[simp]
-theorem pair_eq_singleton {x y z : ZFSet} : ({x, y} : ZFSet) = {z} ↔ x = z ∧ y = z := by
+theorem pair_eq_singleton_iff {x y z : ZFSet} : ({x, y} : ZFSet) = {z} ↔ x = z ∧ y = z := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · rw [← mem_singleton, ← mem_singleton]
     simp [← h]
   · rintro ⟨rfl, rfl⟩
-    exact pair_self y
+    exact pair_eq_singleton y
 
 @[simp]
-theorem singleton_eq_pair {x y z : ZFSet} : ({x} : ZFSet) = {y, z} ↔ x = y ∧ x = z := by
-  rw [eq_comm, pair_eq_singleton]
+theorem singleton_eq_pair_iff {x y z : ZFSet} : ({x} : ZFSet) = {y, z} ↔ x = y ∧ x = z := by
+  rw [eq_comm, pair_eq_singleton_iff]
   simp_rw [eq_comm]
 
 /-- `omega` is the first infinite von Neumann ordinal -/
@@ -1233,7 +1233,7 @@ theorem pair_injective : Function.Injective2 pair := by
     rintro rfl
     simpa [eq_comm] using H {y, y'}
   have hx := H {x, y}
-  simp_rw [pair_eq_singleton, true_and, or_true, true_iff] at hx
+  simp_rw [pair_eq_singleton_iff, true_and, or_true, true_iff] at hx
   refine ⟨rfl, hx.elim he fun hy ↦ Or.elim ?_ he id⟩
   simpa using ZFSet.ext_iff.1 hy y
 
