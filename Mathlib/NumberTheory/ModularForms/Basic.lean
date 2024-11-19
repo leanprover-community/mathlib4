@@ -227,7 +227,7 @@ def mul {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1) (g :
   toSlashInvariantForm := f.1.mul g.1
   holo' := f.holo'.mul g.holo'
   bdd_at_infty' A := by
-    simpa [-SL_slash, mul_slash_SL2] using (f.bdd_at_infty' A).mul (g.bdd_at_infty' A)
+    simpa only [coe_mul, mul_slash_SL2] using (f.bdd_at_infty' A).mul (g.bdd_at_infty' A)
 
 @[simp]
 theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1)
