@@ -184,7 +184,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
   simp only [hj]
   exact cauchy_product (isCauSeq_abs_exp x) (isCauSeq_exp y)
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
@@ -688,7 +688,7 @@ theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
@@ -1404,7 +1404,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     _ ≤ 1 + x + x ^ 2 := by
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
-      -- (It may also need the positivity extensions in #3907.)
+      -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
       erw [Finset.sum_range_succ]
       repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
@@ -1441,13 +1441,12 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
     rwa [Nat.cast_zero] at ht'
-  convert pow_le_pow_left ?_ (one_sub_le_exp_neg (t / n)) n using 2
-  · rw [← Real.exp_nat_mul]
-    congr 1
-    field_simp
-    ring_nf
-  · rwa [sub_nonneg, div_le_one]
-    positivity
+  calc
+    (1 - t / n) ^ n ≤ rexp (-(t / n)) ^ n := by
+      gcongr
+      · exact sub_nonneg.2 <| div_le_one_of_le₀ ht' n.cast_nonneg
+      · exact one_sub_le_exp_neg _
+    _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
 
 end Real
 

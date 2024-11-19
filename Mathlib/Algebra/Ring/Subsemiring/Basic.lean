@@ -9,7 +9,6 @@ import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
@@ -792,7 +791,7 @@ theorem ofLeftInverseS_symm_apply {g : S → R} {f : R →+* S} (h : Function.Le
 def subsemiringMap (e : R ≃+* S) (s : Subsemiring R) : s ≃+* s.map e.toRingHom :=
   { e.toAddEquiv.addSubmonoidMap s.toAddSubmonoid, e.toMulEquiv.submonoidMap s.toSubmonoid with }
 
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] RingEquiv.subsemiringMap_symm_apply_coe RingEquiv.subsemiringMap_apply_coe
 
 end RingEquiv
@@ -887,23 +886,17 @@ instance center.smulCommClass_left : SMulCommClass (center R') R' R' :=
 instance center.smulCommClass_right : SMulCommClass R' (center R') R' :=
   Submonoid.center.smulCommClass_right
 
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
-def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+lemma closure_le_centralizer_centralizer (s : Set R') :
+    closure s ≤ centralizer (centralizer s) :=
+  closure_le.mpr Set.subset_centralizer_centralizer
+
+/-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
+abbrev closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
     CommSemiring (closure s) :=
   { (closure s).toSemiring with
-    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
-      ext
-      simp only [MulMemClass.mk_mul_mk]
-      induction hx, hy using closure_induction₂ with
-      | mem_mem x y hx hy => exact hcomm x hx y hy
-      | zero_left x _ => exact Commute.zero_left x
-      | zero_right x _ => exact Commute.zero_right x
-      | one_left x _ => exact Commute.one_left x
-      | one_right x _ => exact Commute.one_right x
-      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
-      | add_left _ _ _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
-      | add_right _ _ _ _ _ _ h₁ h₂ => exact Commute.add_right h₁ h₂ }
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
+      have := closure_le_centralizer_centralizer s
+      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
 end Subsemiring
 
