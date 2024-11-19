@@ -844,6 +844,8 @@ end Finite
 -- Shortcut instances
 instance Bool.instWellFoundedLT : WellFoundedLT Bool := inferInstance
 instance Prop.instWellFoundedLT : WellFoundedLT Prop := inferInstance
+instance Bool.instWellFoundedGT : WellFoundedGT Bool := inferInstance
+instance Prop.instWellFoundedGT : WellFoundedGT Prop := inferInstance
 
 -- @[nolint fintype_finite] -- Porting note: do we need this?
 protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
