@@ -16,7 +16,6 @@ TODO: Add finite-dimensionality of these spaces of modular forms.
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex MatrixGroups
 
-
 lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
     [SlashInvariantFormClass F ⊤ k] (f : F) (τ : ℍ) :
     ∃ ξ : ℍ, 1/2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ :=
@@ -24,14 +23,6 @@ lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [Fu
   ⟨γ • τ, hγ, by simpa only [slash_action_eqn'' _ (show γ ∈ ⊤ by tauto), norm_mul, norm_zpow]
     using le_mul_of_one_le_left (norm_nonneg _) <|
       one_le_zpow_of_nonpos₀ (norm_pos_iff.2 (denom_ne_zero _ _)) hdenom hk⟩
-
--- find_home suggests Mathlib.Topology.ContinuousMap.StarOrdered which seems wrong..
-lemma Complex.zpow_eq_one (k : ℤ) {n : ℝ} (hn : 1 < n) (h : (n : ℂ) ^ k = 1) : k = 0 := by
-  have : (n : ℂ)^k = (n : ℝ)^k := by simp only [ofReal_natCast]
-  rw [this] at h
-  norm_cast at h
-  replace h : (n : ℝ) ^ k = (n : ℝ) ^ (0 : ℤ) := by simp only [zpow_zero, ← h]
-  exact zpow_right_injective₀ (a := (n : ℝ)) (by norm_cast at *; linarith) (by aesop) h
 
 /-- If a constant funciton is modular of weight `k`, then either `k = 0`, or the constant is `0`. -/
 lemma SlashInvariantForm.wt_eq_zero_of_eq_const
