@@ -19,14 +19,11 @@ open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex MatrixGr
 
 lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
     [SlashInvariantFormClass F ⊤ k] (f : F) (τ : ℍ) :
-    ∃ ξ : ℍ, 1/2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ := by
-  obtain ⟨γ, hγ, hdenom⟩ := exists_one_half_le_im_smul_and_norm_denom_le τ
-  refine ⟨γ • τ, hγ, ?_⟩
-  rw [slash_action_eqn'' _ (show γ ∈ ⊤ by tauto), norm_mul, norm_zpow]
-  have h3 : 1 ≤ ‖denom (γ : SL(2, ℤ)) τ‖ ^ k := by
-    apply one_le_zpow_of_nonpos₀ _ hdenom hk
-    exact norm_pos_iff.2 (denom_ne_zero _ _)
-  exact le_mul_of_one_le_left (norm_nonneg (f τ)) h3
+    ∃ ξ : ℍ, 1/2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ :=
+  let ⟨γ, hγ, hdenom⟩ := exists_one_half_le_im_smul_and_norm_denom_le τ
+  ⟨γ • τ, hγ, by simpa only [slash_action_eqn'' _ (show γ ∈ ⊤ by tauto), norm_mul, norm_zpow]
+    using le_mul_of_one_le_left (norm_nonneg _) <|
+      one_le_zpow_of_nonpos₀ (norm_pos_iff.2 (denom_ne_zero _ _)) hdenom hk⟩
 
 -- find_home suggests Mathlib.Topology.ContinuousMap.StarOrdered which seems wrong..
 lemma Complex.zpow_eq_one (k : ℤ) {n : ℝ} (hn : 1 < n) (h : (n : ℂ) ^ k = 1) : k = 0 := by
