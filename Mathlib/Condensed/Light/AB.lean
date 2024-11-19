@@ -21,7 +21,7 @@ variable {R : Type u} [Ring R]
 attribute [local instance] Abelian.hasFiniteBiproducts
 
 noncomputable instance : CountableAB4Star (LightCondMod.{u} R) :=
-  have := ABStarOfShapeOfPreservesEpi (LightCondMod R) (Discrete ℕ)
-  CountableAB4Star.ofABStarOfShapeNat _
+  have := ABStarOfShape_of_preservesEpi (LightCondMod R) (Discrete ℕ)
+  CountableAB4Star.of_ABStarOfShape_nat _
 
 end LightCondensed
