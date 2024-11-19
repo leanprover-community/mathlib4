@@ -37,12 +37,12 @@ The above types have corresponding classes:
 
 We introduce the following notation to code equivariant maps
 (the subscript index `ₑ` is for *equivariant*) :
-* `X →ₑ[φ] Y` is `MulActionHom φ X Y` and `X →ₑᵥ[φ] Y` is `AddActionHom φ X Y`
+* `X →ₑ[φ] Y` is `MulActionHom φ X Y` and `AddActionHom φ X Y`
 * `A →ₑ+[φ] B` is `DistribMulActionHom φ A B`.
 * `R →ₑ+*[φ] S` is `MulSemiringActionHom φ R S`.
 
 When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notation :
-* `X →[M] Y` is `MulActionHom (@id M) X Y` and `X →ᵥ[M] Y` is `AddActionHom (@id M) X Y`
+* `X →[M] Y` is `MulActionHom (@id M) X Y` and `AddActionHom (@id M) X Y`
 * `A →+[M] B` is `DistribMulActionHom (MonoidHom.id M) A B`
 * `R →+*[M] S` is `MulSemiringActionHom (MonoidHom.id M) R S`
 -/
@@ -93,13 +93,12 @@ notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulA
 
 /-- `φ`-equivariant functions `X → Y`,
 where `φ : M → N`, where `M` and `N` act additively on `X` and `Y` respectively -/
-notation:25 (name := «AddActionHomLocal≺») X " →ₑᵥ[" φ:25 "] " Y:0 => AddActionHom φ X Y
+notation:25 (name := «AddActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => AddActionHom φ X Y
 
 /-- `M`-equivariant functions `X → Y` with respect to the additive action of `M`
 
 This is the same as `X →ₑ[@id M] Y` -/
-notation:25 (name := «AddActionHomIdLocal≺») X " →ᵥ[" M:25 "] " Y:0 => AddActionHom (@id M) X Y
-
+notation:25 (name := «AddActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => AddActionHom (@id M) X Y
 
 /-- `MulActionSemiHomClass F φ X Y` states that
   `F` is a type of morphisms which are `φ`-equivariant.
