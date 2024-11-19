@@ -353,21 +353,24 @@ theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
   simp only [num, denom, Complex.ofReal_neg, neg_mul, GLPos.coe_neg_GL, Units.val_neg, neg_apply]
   ring_nf
 
+lemma denom_one (τ : ℍ) : denom 1 τ = 1 := by
+  simp [denom]
+
 section SLModularAction
 
-namespace ModularGroup
+open ModularGroup
 
 variable (g : SL(2, ℤ)) (z : ℍ) (Γ : Subgroup SL(2, ℤ))
 
 @[simp]
-theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
+theorem ModularGroup.sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
   rfl
 
 @[simp high]
 theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
   simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul, coe']
 
-nonrec theorem im_smul_eq_div_normSq :
+nonrec theorem ModularGroup.im_smul_eq_div_normSq :
     (g • z).im = z.im / Complex.normSq (denom g z) := by
   convert im_smul_eq_div_normSq g z
   simp only [GeneralLinearGroup.val_det_apply, coe_GLPos_coe_GL_coe_matrix,
@@ -377,9 +380,6 @@ theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
     denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
   simp [denom, coe']
 
-lemma denom_one (τ : ℍ) : denom 1 τ = 1 := by
-  simp [denom]
-
 @[simp]
 lemma denom_S (z : ℍ) : denom (ModularGroup.S) z = z.1 := by
   rw [ModularGroup.S, denom]
@@ -388,8 +388,6 @@ lemma denom_S (z : ℍ) : denom (ModularGroup.S) z = z.1 := by
     Matrix.cons_val_one, Matrix.head_fin_const, Int.cast_one, one_mul, Matrix.head_cons,
     Int.cast_zero, add_zero]
   rfl
-
-end ModularGroup
 
 end SLModularAction
 
