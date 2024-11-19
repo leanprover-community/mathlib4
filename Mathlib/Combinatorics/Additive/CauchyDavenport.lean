@@ -181,9 +181,9 @@ by `|s| + |t| - 1`. -/
 @[to_additive
 "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is lower-bounded
 by `|s| + |t| - 1`."]
-lemma cauchy_davenport_mul_of_isTorsionFree (h : IsTorsionFree α)
+lemma cauchy_davenport_mul_of_isTorsionFree [IsMulTorsionFree α]
     (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
-  simpa only [h.minOrder, min_eq_right, le_top, Nat.cast_le]
+  simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
     using cauchy_davenport_minOrder_mul hs ht
 
 end General

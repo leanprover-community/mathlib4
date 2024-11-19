@@ -146,7 +146,6 @@ theorem smul_add_one_sub_smul {R : Type*} [Ring R] [Module R M] {r : R} {m : M} 
 
 end AddCommMonoid
 
-
 section AddCommGroup
 
 variable (R M) [Semiring R] [AddCommGroup M]

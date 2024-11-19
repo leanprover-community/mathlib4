@@ -3,10 +3,11 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Algebra.Group.IsTorsionFree.Defs
 
 /-!
 # Basic lemmas about ordered rings
@@ -21,17 +22,20 @@ variable {α M R : Type*}
 
 namespace MonoidHom
 
-variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)
+variable [Monoid R] [HasDistribNeg R] [Monoid M] [IsMulTorsionFree M]
 
-theorem map_neg_one : f (-1) = 1 :=
-  (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
+theorem map_neg_one (f : R →* M) : f (-1) = 1 :=
+  (pow_eq_one_iff_left (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
 
 @[simp]
-theorem map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
-
-theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, neg_sub]
+theorem map_neg (f : R →* M) (x : R) : f (-x) = f x := by
+  rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
 
 end MonoidHom
+
+theorem MonoidHom.map_sub_swap [Ring R] [Monoid M] [IsMulTorsionFree M] (f : R →* M) (x y : R) :
+    f (x - y) = f (y - x) := by
+  rw [← map_neg, neg_sub]
 
 section OrderedSemiring
 
@@ -154,13 +158,6 @@ lemma pow_lt_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n <
 @[deprecated pow_left_inj₀ (since := "2024-11-12")]
 lemma pow_left_inj (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   pow_left_inj₀ ha hb hn
-
-@[deprecated pow_right_injective₀ (since := "2024-11-12")]
-lemma pow_right_injective (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) :=
-  pow_right_injective₀ ha₀ ha₁
-
-@[deprecated pow_right_inj₀ (since := "2024-11-12")]
-lemma pow_right_inj (ha₀ : 0 < a) (ha₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n := pow_right_inj₀ ha₀ ha₁
 
 @[deprecated sq_le_one_iff₀ (since := "2024-11-12")]
 theorem sq_le_one_iff {a : R} (ha : 0 ≤ a) : a ^ 2 ≤ 1 ↔ a ≤ 1 := sq_le_one_iff₀ ha
