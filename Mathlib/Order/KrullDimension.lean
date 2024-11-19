@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
-import Mathlib.Order.RelSeries
-import Mathlib.Order.Minimal
-import Mathlib.Data.ENat.Lattice
 import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Data.ENat.Lattice
+import Mathlib.Order.Minimal
+import Mathlib.Order.RelSeries
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -744,19 +744,19 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
   exact krullDim_WithTop (α := αᵒᵈ)
 
 @[simp]
-lemma krullDim_ENat : krullDim ℕ∞ = ⊤ := by
+lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
   show (krullDim (WithTop ℕ) = ⊤)
   simp only [krullDim_WithTop, krullDim_nat]
   rfl
 
 @[simp]
-lemma height_ENat (n : ℕ∞) : height n = n := by
+lemma height_enat (n : ℕ∞) : height n = n := by
   cases n with
-  | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_ENat, WithBot.coe_top]
+  | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_enat, WithBot.coe_top]
   | coe n => exact (height_coe_withTop _).trans (height_nat _)
 
 @[simp]
-lemma coheight_coe_ENat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
+lemma coheight_coe_enat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
   apply (coheight_coe_withTop _).trans
   simp only [Nat.cast_id, coheight_nat, top_add]
 
