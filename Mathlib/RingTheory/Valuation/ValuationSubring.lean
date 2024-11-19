@@ -50,7 +50,9 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove that
+-- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+-- simp cannot prove this
+@[simp, nolint simpNF]
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 
 @[simp]
@@ -269,7 +271,7 @@ instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
   Subalgebra.algebra (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    -- porting note (#10754): added instance
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
     IsScalarTower A (A.ofPrime P) K :=
   IsScalarTower.subalgebra' A K K

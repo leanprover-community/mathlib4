@@ -5,6 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Comm
 -/
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.SetTheory.Cardinal.Basic
 

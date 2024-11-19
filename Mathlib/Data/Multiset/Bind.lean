@@ -194,7 +194,7 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
   rw [count_bind, hm', sum_cons]
   exact Nat.le_add_right _ _
 
--- Porting note (#11119): @[simp] removed because not in normal form
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed because not in normal form
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
     (s.attach.bind fun i => f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _

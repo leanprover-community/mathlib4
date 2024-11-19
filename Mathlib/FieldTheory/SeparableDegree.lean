@@ -7,6 +7,7 @@ import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.NormalClosure
+import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
@@ -70,6 +71,8 @@ This file contains basics about the separable degree of a field extension.
   In particular, the separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
   (see also `Module.finrank_mul_finrank`).
 
+- `Field.infinite_emb_of_transcendental`: `Field.Emb` is infinite for transcendental extensions.
+
 - `Polynomial.natSepDegree_le_natDegree`: the separable degree of a polynomial is smaller than
   its degree.
 
@@ -132,7 +135,7 @@ namespace Field
 
 /-- `Field.Emb F E` is the type of `F`-algebra homomorphisms from `E` to the algebraic closure
 of `E`. -/
-def Emb := E →ₐ[F] AlgebraicClosure E
+abbrev Emb := E →ₐ[F] AlgebraicClosure E
 
 /-- If `E / F` is an algebraic extension, then the (finite) separable degree of `E / F`
 is the number of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`,
@@ -245,6 +248,34 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
       fun _ : Emb E K ↦ AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) <|
         (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K)
           (AlgebraicClosure E)).restrictScalars F).symm
+
+/-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
+instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
+  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
+  have := hx.isAlgebraic_field
+  rw [← (embProdEmbOfIsAlgebraic F (adjoin F (Set.range x)) E).infinite_iff]
+  refine @Prod.infinite_of_left _ _ ?_ _
+  rw [← (embEquivOfEquiv _ _ _ hx.1.aevalEquivField).infinite_iff]
+  obtain ⟨i⟩ := hx.nonempty_iff_transcendental.2 H
+  let K := FractionRing (MvPolynomial ι F)
+  let i1 := IsScalarTower.toAlgHom F (MvPolynomial ι F) (AlgebraicClosure K)
+  have hi1 : Function.Injective i1 := by
+    rw [IsScalarTower.coe_toAlgHom', IsScalarTower.algebraMap_eq _ K]
+    exact (algebraMap K (AlgebraicClosure K)).injective.comp (IsFractionRing.injective _ _)
+  let f (n : ℕ) : Emb F K := IsFractionRing.liftAlgHom
+    (g := i1.comp <| MvPolynomial.aeval fun i : ι ↦ MvPolynomial.X i ^ (n + 1)) <| hi1.comp <| by
+      simpa [algebraicIndependent_iff_injective_aeval] using
+        MvPolynomial.algebraicIndependent_polynomial_aeval_X _
+          fun i : ι ↦ (Polynomial.transcendental_X F).pow n.succ_pos
+  refine Infinite.of_injective f fun m n h ↦ ?_
+  replace h : (MvPolynomial.X i) ^ (m + 1) = (MvPolynomial.X i) ^ (n + 1) := hi1 <| by
+    simpa [f, -map_pow] using congr($h (algebraMap _ K (MvPolynomial.X (R := F) i)))
+  simpa using congr(MvPolynomial.totalDegree $h)
+
+/-- If the field extension `E / F` is transcendental, then `Field.finSepDegree F E = 0`, which
+actually means that `Field.Emb F E` is infinite (see `Field.infinite_emb_of_transcendental`). -/
+theorem finSepDegree_eq_zero_of_transcendental [Algebra.Transcendental F E] :
+    finSepDegree F E = 0 := Nat.card_eq_zero_of_infinite
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
 separable degrees satisfy the tower law

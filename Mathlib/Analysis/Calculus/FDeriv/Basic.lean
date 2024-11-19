@@ -151,9 +151,10 @@ def HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
 if `f x - f y - f' (x - y) = o(x - y)` as `x, y → a`. This form of differentiability is required,
 e.g., by the inverse function theorem. Any `C^1` function on a vector space over `ℝ` is strictly
 differentiable but this definition works, e.g., for vector spaces over `p`-adic numbers. -/
-@[fun_prop]
-def HasStrictFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
-  (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2)) =o[𝓝 (x, x)] fun p : E × E => p.1 - p.2
+@[fun_prop, mk_iff hasStrictFDerivAt_iff_isLittleO]
+structure HasStrictFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) where
+  of_isLittleO :: isLittleO :
+      (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2)) =o[𝓝 (x, x)] fun p : E × E => p.1 - p.2
 
 variable (𝕜)
 
@@ -403,7 +404,7 @@ theorem hasFDerivWithinAt_diff_singleton (y : E) :
 
 theorem HasStrictFDerivAt.isBigO_sub (hf : HasStrictFDerivAt f f' x) :
     (fun p : E × E => f p.1 - f p.2) =O[𝓝 (x, x)] fun p : E × E => p.1 - p.2 :=
-  hf.isBigO.congr_of_sub.2 (f'.isBigO_comp _ _)
+  hf.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_comp _ _)
 
 theorem HasFDerivAtFilter.isBigO_sub (h : HasFDerivAtFilter f f' x L) :
     (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
@@ -413,7 +414,7 @@ theorem HasFDerivAtFilter.isBigO_sub (h : HasFDerivAtFilter f f' x L) :
 protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) :
     HasFDerivAt f f' x := by
   rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff]
-  exact fun c hc => tendsto_id.prod_mk_nhds tendsto_const_nhds (isLittleO_iff.1 hf hc)
+  exact fun c hc => tendsto_id.prod_mk_nhds tendsto_const_nhds (isLittleO_iff.1 hf.isLittleO hc)
 
 protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f' x) :
     DifferentiableAt 𝕜 f x :=
@@ -423,7 +424,7 @@ protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f
 `K`-Lipschitz in a neighborhood of `x`. -/
 theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDerivAt f f' x)
     (K : ℝ≥0) (hK : ‖f'‖₊ < K) : ∃ s ∈ 𝓝 x, LipschitzOnWith K f s := by
-  have := hf.add_isBigOWith (f'.isBigOWith_comp _ _) hK
+  have := hf.isLittleO.add_isBigOWith (f'.isBigOWith_comp _ _) hK
   simp only [sub_add_cancel, IsBigOWith] at this
   rcases exists_nhds_square this with ⟨U, Uo, xU, hU⟩
   exact
@@ -760,7 +761,8 @@ protected theorem HasStrictFDerivAt.continuousAt (hf : HasStrictFDerivAt f f' x)
 theorem HasStrictFDerivAt.isBigO_sub_rev {f' : E ≃L[𝕜] F}
     (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) x) :
     (fun p : E × E => p.1 - p.2) =O[𝓝 (x, x)] fun p : E × E => f p.1 - f p.2 :=
-  ((f'.isBigO_comp_rev _ _).trans (hf.trans_isBigO (f'.isBigO_comp_rev _ _)).right_isBigO_add).congr
+  ((f'.isBigO_comp_rev _ _).trans
+      (hf.isLittleO.trans_isBigO (f'.isBigO_comp_rev _ _)).right_isBigO_add).congr
     (fun _ => rfl) fun _ => sub_add_cancel _ _
 
 theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' x L) {C}
@@ -820,6 +822,7 @@ theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
 
 theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (h' : ∀ y, f₀' y = f₁' y) :
     HasStrictFDerivAt f₀ f₀' x ↔ HasStrictFDerivAt f₁ f₁' x := by
+  rw [hasStrictFDerivAt_iff_isLittleO, hasStrictFDerivAt_iff_isLittleO]
   refine isLittleO_congr ((h.prod_mk_nhds h).mono ?_) .rfl
   rintro p ⟨hp₁, hp₂⟩
   simp only [*]
@@ -982,7 +985,7 @@ section id
 
 @[fun_prop]
 theorem hasStrictFDerivAt_id (x : E) : HasStrictFDerivAt id (id 𝕜 E) x :=
-  (isLittleO_zero _ _).congr_left <| by simp
+  .of_isLittleO <| (isLittleO_zero _ _).congr_left <| by simp
 
 theorem hasFDerivAtFilter_id (x : E) (L : Filter E) : HasFDerivAtFilter id (id 𝕜 E) x L :=
   .of_isLittleO <| (isLittleO_zero _ _).congr_left <| by simp
@@ -1042,7 +1045,7 @@ section Const
 @[fun_prop]
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
     HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
-  (isLittleO_zero _ _).congr_left fun _ => by simp only [zero_apply, sub_self]
+  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun _ => by simp only [zero_apply, sub_self]
 
 theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
     HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=

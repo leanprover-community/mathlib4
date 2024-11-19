@@ -773,7 +773,7 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
           exact mul_le_of_limit_aux h H⟩
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
-  -- Porting note(#12129): additional beta reduction needed
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   ⟨fun b => by
       beta_reduce
       rw [mul_succ]

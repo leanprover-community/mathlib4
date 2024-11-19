@@ -414,7 +414,7 @@ variable [ConcreteCategory.{v} C]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
--- Porting note (#11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : F.obj (op U)} {sV : F.obj (op V)}
