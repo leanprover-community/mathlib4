@@ -45,25 +45,49 @@ lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
 theorem IsSelfAdjoint.mul_self_nonneg {a : A} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
-lemma quasispectrum_sqrt_mul_self_eq_id {a : A} (ha : 0 ≤ a := by cfc_tac) :
-    Set.EqOn (fun (x : ℝ) ↦ √x * √x) (fun (x : ℝ) ↦ x) (quasispectrum _ a) :=
-  fun y hy ↦ (by
-     simp only
-     rw [← Real.sqrt_mul, Real.sqrt_mul_self]
-      <;>
-    exact StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) (A := A)
-      (ha := IsSelfAdjoint.of_nonneg ha).mp ha y hy)
+-- Jireh identified this more spartan set of typeclasses for proving `sqrt_eq_cfcₙ_real_sqrt`.
+-- Maybe incorporate these?
+
+--variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
+--   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
+--   [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+--   [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+--   [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
 
 lemma sqrt_eq_cfcₙ_real_sqrt {a : A} (ha : 0 ≤ a := by cfc_tac) :
     CFC.sqrt a = cfcₙ Real.sqrt a := by
   rw [sqrt_eq_iff _ (hb := cfcₙ_nonneg (A := A) (fun x _ ↦ Real.sqrt_nonneg x)),
     ← cfcₙ_mul ..]
-  have := cfcₙ_congr (f := fun x ↦ √x * √x) (g := id) (hfg := quasispectrum_sqrt_mul_self_eq_id ha)
-  simpa only [cfcₙ_id (R := ℝ) a]
+  conv_rhs => rw [← cfcₙ_id (R := ℝ) a]
+  refine cfcₙ_congr fun x hx ↦ ?_
+  refine Real.mul_self_sqrt ?_
+  exact quasispectrum_nonneg_of_nonneg a ha x hx
 
-lemma abs_eq_cfcₙ_norm (a : A) (ha : IsSelfAdjoint a) :
+lemma sqrt_silly {a : A} (ha : IsSelfAdjoint a) :
+    cfcₙ Real.sqrt (a * a) = cfcₙ (fun x ↦ √(x * x)) a := by
+  have A := cfcₙ_comp a (f := fun x ↦ x * x) (g := fun x ↦ √x)
+  have B : cfcₙ ((fun x ↦ √x) ∘ fun x ↦ x * x) a = cfcₙ (fun x ↦ √(x * x)) a := rfl
+  have C : cfcₙ ((fun x ↦ √x) ∘ fun x ↦ x * x) a = cfcₙ Real.sqrt (a * a) := by
+    sorry
+  rw [← B , ← C]
+
+--the above lemma is a bit tricky. We need to identify the quasispectra of the square
+--or write it in terms of the quasispectrum of a. This sounds tough.
+-- Is there another approach?
+-- maybe cfc composition will work?
+
+#exit
+
+lemma abs_eq_cfcₙ_norm {a : A} (ha : IsSelfAdjoint a) :
     abs a = cfcₙ (‖·‖) a := by
-  simp only [abs ,ha.star_eq, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
+  simp only [abs, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
+  have H := sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a)
+  rw [ha.star_eq] at *
+  simp only [H]
+  exact sqrt_silly ha
+
+
+  --simp only [abs, ha.star_eq, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
   sorry
 
 
