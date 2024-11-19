@@ -48,7 +48,7 @@ attribute [coe] AlgebraCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. -/
-def of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
+abbrev of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
   ⟨X⟩
 
 @[simp]
@@ -168,18 +168,6 @@ def ofSelfIso (M : AlgebraCat.{v} R) : AlgebraCat.of R M ≅ M where
 def free : Type u ⥤ AlgebraCat.{u} R where
   obj S := of R (FreeAlgebra R S)
   map f := ofHom <| FreeAlgebra.lift _ <| FreeAlgebra.ι _ ∘ f
-  -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
-  map_id X := by
-    ext : 1
-    apply FreeAlgebra.hom_ext
-    ext
-    simp
-  map_comp {X Y Z} f g := by
-  -- Porting note (#11041): `apply FreeAlgebra.hom_ext` was `ext1`.
-    ext : 1
-    apply FreeAlgebra.hom_ext
-    ext
-    simp
 
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
@@ -187,19 +175,9 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
     { homEquiv := fun _ _ =>
         { toFun := fun ⟨f⟩ ↦ (FreeAlgebra.lift _).symm f
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
-          left_inv := fun f ↦ by ext; simp [forget_obj, forget_map]
+          left_inv := fun f ↦ by aesop
           right_inv := fun f ↦ by simp [forget_obj, forget_map]
-        }
-      homEquiv_naturality_left_symm := by
-        intros
-        ext : 1
-        apply FreeAlgebra.hom_ext
-        ext
-        simp
-      homEquiv_naturality_right := by
-        intros
-        ext
-        simp [forget_obj, forget_map] }
+        } }
 
 instance : (forget (AlgebraCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
@@ -214,8 +192,6 @@ def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra 
     (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
   hom := AlgebraCat.ofHom (e : X₁ →ₐ[R] X₂)
   inv := AlgebraCat.ofHom (e.symm : X₂ →ₐ[R] X₁)
-  hom_inv_id := by ext x; exact e.left_inv x
-  inv_hom_id := by ext x; exact e.right_inv x
 
 namespace CategoryTheory.Iso
 
