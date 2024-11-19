@@ -6,6 +6,7 @@ Authors: Violeta Hernández Palacios, Mario Carneiro
 import Mathlib.Logic.Small.List
 import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.SetTheory.Ordinal.Exponential
+import Mathlib.Logic.UnivLE
 
 /-!
 # Fixed points of normal functions

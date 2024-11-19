@@ -3,7 +3,8 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.ZFC.Basic
+import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.ZFC.Rank
 
 /-!
 # Von Neumann ordinals
@@ -30,8 +31,11 @@ universe u
 
 variable {x y z : ZFSet.{u}}
 
+open Order
+
 namespace ZFSet
 
+/-! ### Transitive sets -/
 
 /-- A transitive set is one where every element is a subset. -/
 def IsTransitive (x : ZFSet) : Prop :=
