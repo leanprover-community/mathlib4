@@ -330,8 +330,8 @@ termination_by a
 theorem mul_invAux_cancel (h : a ≠ 0) : a * invAux a = 1 :=
   (mul_inv_cancel_aux a).2 h
 
-instance : Inv Nimber :=
-  ⟨fun a => if a = 0 then 0 else invAux a⟩
+instance : Inv Nimber where
+  inv a := if a = 0 then 0 else invAux a
 
 theorem inv_eq_invAux (ha : a ≠ 0) : a⁻¹ = invAux a :=
   dif_neg ha
