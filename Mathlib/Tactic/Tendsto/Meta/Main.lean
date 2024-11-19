@@ -17,7 +17,7 @@ def basis_wo : MS.WellOrderedBasis [fun (x : ℝ) ↦ x] := by
   simp [MS.WellOrderedBasis]
   exact fun ⦃U⦄ a ↦ a
 
-partial def createMS (body : Expr) : MetaM MS := do
+partial def createMS (body : Expr) : TacticM MS := do
   let basis : Q(List (ℝ → ℝ)) := q([fun (x : ℝ) ↦ x])
   let basis_wo : Q(MS.WellOrderedBasis $basis) := q(basis_wo)
   let zero_aux : Q(0 < List.length $basis) := q(by decide)
@@ -47,6 +47,14 @@ partial def createMS (body : Expr) : MetaM MS := do
     let ms2 ← createMS arg2
     -- if h_basis_eq : ms1.basis =Q ms2.basis then
     return MS.mul ms1 ms2 ⟨⟩
+  | (``Inv.inv, #[_, _, arg]) =>
+    let (ms, h_trimmed) ← trimMS (← createMS arg)
+    return MS.inv ms h_trimmed
+  | (``HDiv.hDiv, #[_, _, _, _, arg1, arg2]) =>
+    let ms1 ← createMS arg1
+    let (ms2, h_trimmed) ← trimMS (← createMS arg2)
+    -- if h_basis_eq : ms1.basis =Q ms2.basis then
+    return MS.div ms1 ms2 h_trimmed ⟨⟩
   | _ => throwError f!"unsupported body : {body}"
 
 elab "compute_asymptotics" : tactic =>
@@ -139,7 +147,21 @@ elab "compute_asymptotics" : tactic =>
                   | .zero h_exps =>
                     return ← mkAppM ``PreMS.tendsto_const_of_AllZero #[ms_trimmed.h_wo, ms_trimmed.h_approx, h_trimmed, ms_trimmed.h_basis, h_leading_eq_expr, h_exps]
               | _ => throwError "strange leading"
-            (← getMainGoal).assign h_tendsto
+            let target : Q(Prop) ← (← getMainGoal).getType
+            let result : Q(Prop) ← inferType h_tendsto
+            if !(← isDefEq target result) then
+              match target, result with
+              | ~q(Filter.Tendsto $f $l₁ (nhds (X := ℝ) $a)), ~q(Filter.Tendsto $f $l₁ (nhds (X := ℝ) $b)) =>
+                let h_eq_target : Q(Prop) := q($b = $a)
+                let h_eq : Q($b = $a) ← mkFreshExprMVar h_eq_target
+                let h_tendsto : Q(Filter.Tendsto $f $l₁ (nhds (X := ℝ) $b)) := h_tendsto
+                h_tendsto.check
+                (← getMainGoal).assign q(Eq.subst (motive := fun x ↦ Filter.Tendsto $f $l₁ (nhds (X := ℝ) x)) $h_eq $h_tendsto)
+                setGoals (← evalTacticAt (← `(tactic| try norm_num1)) h_eq.mvarId!)
+              | _ =>
+                throwError m!"I've proved that {← ppExpr (← inferType h_tendsto)}. Is this what you expect?"
+            else
+              (← getMainGoal).assign h_tendsto
 
             -- let kek_fvar : FVarId ← liftMetaTacticAux fun mvarId => do
             --   let mvarIdNew ← mvarId.assert `h_tendsto (← inferType h_tendsto) h_tendsto
@@ -149,5 +171,4 @@ elab "compute_asymptotics" : tactic =>
           | _ => throwError "strange ms"
         | _ => throwError "strange basis"
       | _ => throwError "function should be lambda"
-    | _ =>
-      dbg_trace f!"no"
+    | _ => dbg_trace f!"no"

@@ -21,6 +21,7 @@ theorem one_const : PreMS.one [] = 1 := by rfl
 theorem neg_const (x : PreMS []) : (x.neg) = -x := by simp [PreMS.neg, PreMS.mulConst]
 theorem add_const (x y : PreMS []) : (PreMS.add x y) = x + y := by rfl
 theorem mul_const (x y : PreMS []) : (PreMS.mul x y) = x * y := by simp [PreMS.mul]
+theorem inv'_const (x : PreMS []) : (PreMS.inv' x) = x⁻¹ := by rfl
 
 theorem const_destruct (c : ℝ) : destruct (PreMS.const (basis_hd :: basis_tl) c) =
     .some ((0, PreMS.const basis_tl c), @PreMS.nil basis_hd basis_tl) := by
@@ -76,19 +77,45 @@ theorem mulMonomial_destruct (b : PreMS (basis_hd :: basis_tl)) (m_coef : PreMS 
       some ((m_exp + b_exp, m_coef.mul b_coef), PreMS.mulMonomial (basis_hd := basis_hd) b_tl m_coef m_exp) := by
   cases b <;> simp
 
+theorem apply_destruct (s : PreMS.LazySeries) (ms : PreMS (basis_hd :: basis_tl)) :
+    destruct (s.apply ms) =
+    match destruct s with
+    | none => none
+    | some (s_hd, s_tl) =>
+       .some ((0, PreMS.const _ s_hd), (PreMS.LazySeries.apply s_tl ms).mul ms) := by
+  cases s <;> simp
+
+theorem inv'_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.inv' =
+    match destruct ms with
+    | none => none
+    | some ((exp, coef), tl) => destruct (PreMS.mulMonomial (basis_hd := basis_hd)
+      (PreMS.invSeries'.apply (PreMS.mulMonomial (PreMS.neg tl) coef.inv' (-exp))) coef.inv' (-exp)) := by
+  cases ms
+  · simp [PreMS.inv']
+  · conv => lhs; unfold PreMS.inv'
+    simp only [Stream'.Seq.destruct_cons]
+
+theorem invSeries'_destruct : destruct PreMS.invSeries' = .some (1, PreMS.invSeries') := by
+  conv => lhs; rw [PreMS.invSeries'_eq_cons_self]; simp
+
 open Lean Elab Meta Tactic Qq
 
 simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
   match e.getAppFnArgs with
-  | (``Stream'.Seq.destruct, #[_, ms]) =>
-    match (← inferType ms).getAppFnArgs with
+  | (``Stream'.Seq.destruct, #[_, x]) =>
+    if (← inferType x) == mkConst ``PreMS.LazySeries then
+      if x == mkConst ``PreMS.invSeries' then
+        let pf := mkConst ``invSeries'_destruct
+        let some (_, _, rhs) := (← inferType pf).eq? | return .continue
+        return .visit {expr := rhs, proof? := pf}
+    match (← inferType x).getAppFnArgs with
     | (``PreMS, #[basis]) =>
       match basis.getAppFnArgs with
       | (``List.nil, _) =>
         return .continue
       | (``List.cons, #[_, basis_hd, basis_tl]) =>
         let basis_tl : Q(Basis) := basis_tl
-        match ms.getAppFnArgs with
+        match x.getAppFnArgs with
         | (``PreMS.nil, _) =>
           return .done {
             expr := ← mkAppOptM ``Option.none #[q(Seq1 (ℝ × PreMS $basis_tl))],
@@ -129,6 +156,14 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
           let pf ← mkAppOptM ``mulMonomial_destruct #[none, none, b, m_coef, m_exp]
           let some (_, _, rhs) := (← inferType pf).eq? | return .continue
           return .visit {expr := rhs, proof? := pf}
+        | (``PreMS.LazySeries.apply, #[s, _, _, ms]) =>
+          let pf ← mkAppOptM ``apply_destruct #[none, none, s, ms]
+          let some (_, _, rhs) := (← inferType pf).eq? | return .continue
+          return .visit {expr := rhs, proof? := pf}
+        | (``PreMS.inv', #[_, arg]) =>
+          let pf ← mkAppOptM ``inv'_destruct #[none, none, arg]
+          let some (_, _, rhs) := (← inferType pf).eq? | return .continue
+          return .visit {expr := rhs, proof? := pf}
         | _ => return .continue
       | _ => return .continue
     | _ => return .continue
@@ -139,7 +174,7 @@ macro_rules
 | `(tactic| elim_destruct) =>
     `(tactic|
       repeat (
-        first | norm_num1; simp only [elimDestruct, const_const, one_const, neg_const, add_const, mul_const] | norm_num1; simp only [↓reduceIte, const_const, one_const, neg_const, add_const, mul_const]
+        first | norm_num1; simp only [elimDestruct, const_const, one_const, neg_const, add_const, mul_const, inv'_const] | norm_num1; simp only [↓reduceIte, const_const, one_const, neg_const, add_const, mul_const, inv'_const]
       )
     )
 
@@ -246,6 +281,20 @@ example :
   unfold ms_zero ms_cons
   elim_destruct
   sorry -- TODO : PreMS [] --> Real
+
+example : destruct (PreMS.invSeries'.apply ms_nil) = .none := by
+  unfold ms_nil
+  elim_destruct
+  sorry -- OK
+
+example : destruct (ms_nil.inv') = .none := by
+  unfold ms_nil
+  simp only [elimDestruct]
+
+example : destruct (ms_cons.inv') = .none := by
+  unfold ms_cons
+  elim_destruct
+  sorry -- OK
 
 example : (if (1 : ℝ) < (3/2 : ℝ) then 1 else 0) = 1 := by
   norm_num1

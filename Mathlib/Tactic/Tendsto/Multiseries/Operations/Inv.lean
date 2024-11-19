@@ -89,6 +89,9 @@ noncomputable def inv' {basis : Basis} (ms : PreMS basis) : PreMS basis :=
     | some ((exp, coef), tl) => mulMonomial
       (invSeries'.apply (mulMonomial (neg tl) coef.inv' (-exp))) coef.inv' (-exp)
 
+noncomputable def div {basis : Basis} (x y : PreMS basis) : PreMS basis :=
+  x.mul (y.inv')
+
 theorem inv'_WellOrdered {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) : ms.inv'.WellOrdered := by
   cases basis with
@@ -221,6 +224,22 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
         | bot => simp [Ne.bot_lt']
         | coe => simpa [← WithBot.coe_add] using h_comp
       · exact this
+
+theorem div_WellOrdered {basis : Basis} {x y : PreMS basis}
+    (hx_wo : x.WellOrdered) (hy_wo : y.WellOrdered) : (x.div y).WellOrdered := by
+  unfold div
+  apply mul_WellOrdered hx_wo
+  exact inv'_WellOrdered hy_wo
+
+theorem div_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
+    (h_basis : MS.WellOrderedBasis basis)
+    (hY_wo : Y.WellOrdered)
+    (hY_trimmed : Y.Trimmed)
+    (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY)
+    : (X.div Y).Approximates (fX / fY) := by
+  unfold div
+  apply mul_Approximates h_basis hX_approx
+  exact inv'_Approximates h_basis hY_wo hY_trimmed hY_approx
 
 end PreMS
 

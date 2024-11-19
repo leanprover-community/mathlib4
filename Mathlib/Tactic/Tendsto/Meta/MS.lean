@@ -10,9 +10,6 @@ structure MS where
   h_approx : Q(PreMS.Approximates $val $F)
   h_basis : Q(MS.WellOrderedBasis $basis)
 
--- TODO:
--- 5. inv
-
 namespace MS
 
 section Operations
@@ -64,6 +61,22 @@ def mul (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
   F := q($x.F * $y.F)
   h_wo := q(PreMS.mul_WellOrdered $x.h_wo $y.h_wo)
   h_approx := q(PreMS.mul_Approximates $x.h_basis $x.h_approx $y.h_approx)
+  h_basis := x.h_basis
+
+def inv (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
+  basis := x.basis
+  val := q(PreMS.inv' $x.val)
+  F := q($x.F⁻¹)
+  h_wo := q(PreMS.inv'_WellOrdered $x.h_wo)
+  h_approx := q(PreMS.inv'_Approximates $x.h_basis $x.h_wo $h_trimmed $x.h_approx)
+  h_basis := x.h_basis
+
+def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis =Q $y.basis) : MS where
+  basis := x.basis
+  val := q(PreMS.mul $x.val (PreMS.inv' $y.val))
+  F := q($x.F / $y.F)
+  h_wo := q(PreMS.div_WellOrdered $x.h_wo $y.h_wo)
+  h_approx := q(PreMS.div_Approximates $x.h_basis $y.h_wo $h_trimmed $x.h_approx $y.h_approx)
   h_basis := x.h_basis
 
 end Operations
