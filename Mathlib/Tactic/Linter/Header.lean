@@ -218,6 +218,15 @@ def isInMathlib (modName : Name) : IO Bool := do
     return (ml.map (·.module == modName)).any (·)
   else return false
 
+/-- `InMathlibRef` is
+* `none` at initialization time;
+* `some true` if the `header` linter has already discovered that the current file
+  is imported in `Mathlib.lean`;
+* `some false` if the `header` linter has already discovered that the current file
+  is *not* imported in `Mathlib.lean`.
+-/
+initialize InMathlibRef : IO.Ref (Option Bool) ← IO.mkRef none
+
 /--
 The "header" style linter checks that a file starts with
 ```
@@ -290,7 +299,15 @@ def duplicateImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mainModule ← getMainModule
-  unless Linter.getLinterValue linter.style.header (← getOptions) || (← isInMathlib mainModule) do
+  let inMathlib? := ← match ← InMathlibRef.get with
+    | some false => return false
+    | some true => return true
+    | none => do
+      let val ← isInMathlib mainModule
+      InMathlibRef.set (some val)
+      return val
+  unless inMathlib? do return
+  unless Linter.getLinterValue linter.style.header (← getOptions) do
     return
   if (← get).messages.hasErrors then
     return
