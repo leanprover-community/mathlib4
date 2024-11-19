@@ -153,7 +153,8 @@ initialize Lean.registerBuiltinAttribute {
       | _ => throwUnsupportedSyntax
     let tagStr ← tag.getStacksTag
     let comment := (comment.map (·.getString)).getD ""
-    let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr})", comment]
+    let comment := if comment = "" then "" else s!" ({comment})"
+    let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr}){comment}"]
     addDocString decl <| "\n\n".intercalate (newDoc.filter (· != ""))
     addTagEntry decl database tagStr <| comment
 }
