@@ -439,6 +439,7 @@ theorem nadd_right_comm : ∀ a b c, a ♯ b ♯ c = a ♯ c ♯ b :=
 
 variable {a b c d : Ordinal.{u}}
 
+@[deprecated (since := "2024-11-19")]
 theorem nmul_def (a b : Ordinal) :
     a ⨳ b = sInf {c | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'} := by
   rw [nmul]
@@ -453,7 +454,7 @@ private theorem nmul_nonempty (a b : Ordinal.{u}) :
 
 theorem nmul_nadd_lt {a' b' : Ordinal} (ha : a' < a) (hb : b' < b) :
     a' ⨳ b ♯ a ⨳ b' < a ⨳ b ♯ a' ⨳ b' := by
-  rw [nmul_def a b]
+  conv_rhs => rw [nmul]
   exact csInf_mem (nmul_nonempty a b) a' ha b' hb
 
 theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
@@ -466,7 +467,7 @@ theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
 
 theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' ≤ a' ⨳ b ♯ a ⨳ b' := by
   refine ⟨fun h => ?_, ?_⟩
-  · rw [nmul_def] at h
+  · rw [nmul] at h
     simpa using not_mem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
   · rintro ⟨a', ha, b', hb, h⟩
     have := h.trans_lt (nmul_nadd_lt ha hb)
@@ -476,7 +477,7 @@ theorem nmul_le_iff : a ⨳ b ≤ c ↔ ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a �
   rw [← not_iff_not]; simp [lt_nmul_iff]
 
 theorem nmul_comm (a b) : a ⨳ b = b ⨳ a := by
-  rw [nmul_def, nmul_def]
+  rw [nmul, nmul]
   congr; ext x; constructor <;> intro H c hc d hd
   · rw [nadd_comm, ← nmul_comm, ← nmul_comm a, ← nmul_comm d]
     exact H _ hd _ hc
@@ -494,7 +495,7 @@ theorem zero_nmul (a) : 0 ⨳ a = 0 := by rw [nmul_comm, nmul_zero]
 
 @[simp]
 theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
-  rw [nmul_def]
+  rw [nmul]
   convert csInf_Ici
   ext b
   refine ⟨fun H => le_of_forall_lt fun c hc => ?_, fun ha c hc => ?_⟩
