@@ -329,7 +329,7 @@ Given a vertex with one edge in a graph of cycles this gives the other edge inci
 to the same vertex.
 -/
 lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
-  ∃ w', w ≠ w' ∧ G.Adj v w' := by
+    ∃ w', w ≠ w' ∧ G.Adj v w' := by
   simp_rw [← SimpleGraph.mem_neighborSet] at hadj ⊢
   cases' h v with hl hr
   · exact ((Set.eq_empty_iff_forall_not_mem.mp hl) _ hadj).elim
