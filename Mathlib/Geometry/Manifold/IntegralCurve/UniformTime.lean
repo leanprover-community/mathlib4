@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2024 Winston Yin. All rights reserved.
+Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
 import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
 /-!
-# Uniform time lemma of integral curves
+# Uniform time lemma for the global existence integral curves
 
 ## Main results
 
@@ -24,7 +24,7 @@ integral curve, vector field, global existence
 -/
 open scoped Topology
 
-open Function Set Classical
+open Function Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -35,7 +35,7 @@ variable
 /-- This is the uniqueness theorem of integral curves applied to a real-indexed family of integral
   curves with the same starting point. -/
 lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
     {a a' : ℝ} (hpos : 0 < a') (hle : a' ≤ a) :
     EqOn (γ a') (γ a) (Ioo (-a') a') := by
@@ -49,12 +49,12 @@ lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
   same starting point `γ 0 = x`. Then, the global curve `γ_ext := fun t ↦ γ (|t| + 1) t` agrees with
   each `γ a` on `Ioo (-a) a`. This will help us show that `γ_ext` is a global integral curve. -/
 lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux [BoundarylessManifold I M]
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a : ℝ} :
-    EqOn (fun t' ↦ choose (h (|t'| + 1)) t') (choose (h a)) (Ioo (-a) a) := by
-  let γ := fun a' ↦ choose (h a')
-  have hγx := fun a' ↦ (choose_spec (h a')).1
-  have hγ := fun a' ↦ (choose_spec (h a')).2
+    EqOn (fun t' ↦ Classical.choose (h (|t'| + 1)) t') (Classical.choose (h a)) (Ioo (-a) a) := by
+  let γ := fun a' ↦ Classical.choose (h a')
+  have hγx := fun a' ↦ (Classical.choose_spec (h a')).1
+  have hγ := fun a' ↦ (Classical.choose_spec (h a')).2
   intros t' ht'
   by_cases hlt : |t'| + 1 < a
   · exact eqOn_of_isIntegralCurveOn_Ioo hv γ hγx hγ
@@ -65,13 +65,13 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux [Boundaryles
 /-- If for every `a : ℝ`, there exists an integral curve defined on `Ioo (-a) a`, all with the
   same starting point `x`, then there exists a global integral curve starting at `x`. -/
 lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) {x : M}
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) :
     ∃ γ, γ 0 = x ∧ IsIntegralCurve γ v := by
-  refine ⟨fun t' ↦ choose (h (|t'| + 1)) t', (choose_spec (h (|0| + 1))).1, ?_⟩
+  refine ⟨fun t' ↦ Classical.choose (h (|t'| + 1)) t', (Classical.choose_spec (h (|0| + 1))).1, ?_⟩
   intro t
-  apply HasMFDerivAt.congr_of_eventuallyEq (f := choose (h (|t| + 1)))
-  · apply (choose_spec (h (|t| + 1))).2 t
+  apply HasMFDerivAt.congr_of_eventuallyEq (f := Classical.choose (h (|t| + 1)))
+  · apply (Classical.choose_spec (h (|t| + 1))).2 t
     rw [mem_Ioo, ← abs_lt]
     exact lt_add_one _
   · rw [Filter.eventuallyEq_iff_exists_mem]
@@ -82,14 +82,14 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold
       exact Ioo_mem_nhds this.1 this.2
 
 lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
     (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
       ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) :=
   ⟨fun ⟨γ, h1, h2⟩ _ ↦ ⟨γ, h1, h2.isIntegralCurveOn _⟩,
    exists_integralCurve_of_exists_isIntegralCurveOn_Ioo hv⟩
 
 lemma piecewise_eqOn_symm [BoundarylessManifold I M]
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
     (hγ' : IsIntegralCurveOn γ' v (Ioo a' b'))
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
@@ -112,9 +112,10 @@ lemma piecewise_eqOn_symm [BoundarylessManifold I M]
   their common domain, then they can be patched together to form a longer integral curve.
 
   This is stated for manifolds without boundary for simplicity. We actually only need to assume that
-  the images of `γ` and `γ'` lie in the interior of the manifold. -/
+  the images of `γ` and `γ'` lie in the interior of the manifold. TODO: Generalise to manifolds with
+  boundary. -/
 lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
     (hγ' : IsIntegralCurveOn γ' v (Ioo a' b')) {t₀ : ℝ}
     (ht₀ : t₀ ∈ Ioo a b ∩ Ioo a' b') (h : γ t₀ = γ' t₀) :
@@ -141,7 +142,7 @@ lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
   See Lemma 9.15, Lee -/
 lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     {v : (x : M) → TangentSpace I x}
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {ε : ℝ} (hε : 0 < ε) (h : ∀ x : M, ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-ε) ε))
     (x : M) : ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurve γ v := by
   let s := {a | ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)}
@@ -149,7 +150,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     rw [not_bddAbove_iff] at hbdd
     rw [exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo hv]
     intro a
-    obtain ⟨⟨γ, hγ1, hγ2⟩, hlt⟩ := choose_spec (hbdd a)
+    obtain ⟨⟨γ, hγ1, hγ2⟩, hlt⟩ := Classical.choose_spec (hbdd a)
     exact ⟨γ, hγ1, hγ2.mono <| Ioo_subset_Ioo (neg_le_neg <| le_of_lt hlt) (le_of_lt hlt)⟩
   intro hbdd
   set asup := sSup s with hasup
