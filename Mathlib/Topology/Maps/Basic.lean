@@ -328,7 +328,7 @@ protected lemma isOpen_preimage (hf : IsQuotientMap f) {s : Set Y} : IsOpen (f �
 
 protected theorem isClosed_preimage (hf : IsQuotientMap f) {s : Set Y} :
     IsClosed (f ⁻¹' s) ↔ IsClosed s :=
-  ((isQuotientMap_iff_closed.1 hf).2 s).symm
+  ((isQuotientMap_iff_isClosed.1 hf).2 s).symm
 
 end IsQuotientMap
 
@@ -491,7 +491,7 @@ theorem isClosed_range (hf : IsClosedMap f) : IsClosed (range f) :=
 
 theorem isQuotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : IsQuotientMap f :=
-  isQuotientMap_iff_closed.2 ⟨hsurj, fun s =>
+  isQuotientMap_iff_isClosed.2 ⟨hsurj, fun s =>
     ⟨fun hs => hs.preimage hcont, fun hs => hsurj.image_preimage s ▸ hcl _ hs⟩⟩
 
 @[deprecated (since := "2024-10-22")]
