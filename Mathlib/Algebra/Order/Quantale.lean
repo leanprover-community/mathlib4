@@ -6,7 +6,7 @@ Authors: Pieter Cuijpers
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Order.CompleteLattice
-import Mathlib.Tactic.Variable
+--import Mathlib.Tactic.Variable
 
 /-!
 # Theory of quantales
@@ -66,8 +66,8 @@ class IsAddQuantale (α : Type*) [AddSemigroup α] [CompleteLattice α] where
   /-- Addition is distributive over join in a quantale -/
   protected sSup_add_distrib (s : Set α) (y : α) : sSup s + y = ⨆ x ∈ s, x + y
 
-@[variable_alias]
-structure AddQuantale (α : Type*)[AddSemigroup α][CompleteLattice α][IsAddQuantale α]
+--@[variable_alias]
+--structure AddQuantale (α : Type*)[AddSemigroup α][CompleteLattice α][IsAddQuantale α]
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[to_additive]
@@ -77,10 +77,46 @@ class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
   /-- Multiplication is distributive over join in a quantale -/
   protected sSup_mul_distrib (s : Set α) (y : α) : sSup s * y = ⨆ x ∈ s, x * y
 
-@[variable_alias, to_additive]
-structure Quantale (α : Type*)[Semigroup α][CompleteLattice α][IsQuantale α]
+--@[variable_alias, to_additive]
+--structure Quantale (α : Type*)[Semigroup α][CompleteLattice α][IsQuantale α]
 
-namespace Quantale
+section
+
+variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
+variable [Semigroup α][CompleteLattice α][IsQuantale α]
+
+@[to_additive]
+theorem mul_sSup_distrib : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_distrib _ _
+
+@[to_additive]
+theorem sSup_mul_distrib : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mul_distrib _ _
+
+end
+
+namespace IsAddQuantale
+
+variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
+variable [AddSemigroup α][CompleteLattice α][IsAddQuantale α]
+
+/-- Left- and right- residuation operators on an additive quantale are similar
+to the Heyting operator on complete lattices, but for a non-commutative logic.
+I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`. -/
+def leftAddResiduation (x y : α) := sSup {z | z + x ≤ y}
+
+/-- Left- and right- residuation operators on an additive quantale are similar
+to the Heyting operator on complete lattices, but for a non-commutative logic.
+I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`." -/
+def rightAddResiduation (x y : α) := sSup {z | x + z ≤ y}
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ₗ " => leftAddResiduation
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
+
+end IsAddQuantale
+
+namespace IsQuantale
 
 variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
 variable [Semigroup α][CompleteLattice α][IsQuantale α]
@@ -89,33 +125,23 @@ variable [Semigroup α][CompleteLattice α][IsQuantale α]
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ₗ z ↔ x * y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
-@[to_additive "Left- and right- residuation operators on an additive quantale are similar
-to the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`."]
+@[to_additive existing]
 def leftMulResiduation (x y : α) := sSup {z | z * x ≤ y}
 
 /-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
 operator on complete lattices, but for a non-commutative logic.
 I.e. `x ≤ y ⇨ᵣ z ↔ y * x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x * z ≤ y }`.
 -/
-@[to_additive "Left- and right- residuation operators on an additive quantale are similar
-to the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`."]
+@[to_additive existing]
 def rightMulResiduation (x y : α) := sSup {z | x * z ≤ y}
 
-@[inherit_doc]
+@[inherit_doc, to_additive existing]
 scoped infixr:60 " ⇨ₗ " => leftMulResiduation
 
-@[inherit_doc]
+@[inherit_doc, to_additive existing]
 scoped infixr:60 " ⇨ᵣ " => rightMulResiduation
 
 /- Basic distribution theorems for mul and Sup, and basic equivalences on residuation -/
-
-@[to_additive]
-theorem mul_sSup_distrib : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSup_distrib _ _
-
-@[to_additive]
-theorem sSup_mul_distrib : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mul_distrib _ _
 
 @[to_additive]
 theorem mul_iSup_distrib : x * ⨆ i, f i = ⨆ i, x * f i := by
@@ -163,4 +189,4 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
-end Quantale
+end IsQuantale
