@@ -91,6 +91,11 @@ lemma leftAdjoint_preservesColimits : PreservesColimitsOfSize.{v, u} F where
               @Equiv.unique _ _ (IsColimit.isoUniqueCoconeMorphism.hom hc _)
                 ((adj.functorialityAdjunction _).homEquiv _ _)⟩ } }
 
+include adj in
+@[deprecated (since := "2024-11-19")]
+lemma leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F :=
+  adj.leftAdjoint_preservesColimits
+
 noncomputable
 instance colim_preservesColimits [HasColimitsOfShape J C] :
     PreservesColimits (colim (J := J) (C := C)) :=
@@ -209,6 +214,11 @@ lemma rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
             ⟨IsLimit.isoUniqueConeMorphism.inv fun _ =>
               @Equiv.unique _ _ (IsLimit.isoUniqueConeMorphism.hom hc _)
                 ((adj.functorialityAdjunction' _).homEquiv _ _).symm⟩ } }
+
+include adj in
+@[deprecated (since := "2024-11-19")]
+lemma rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G :=
+  adj.rightAdjoint_preservesLimits
 
 instance lim_preservesLimits [HasLimitsOfShape J C] :
     PreservesLimits (lim (J := J) (C := C)) :=
