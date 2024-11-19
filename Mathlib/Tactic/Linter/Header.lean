@@ -306,7 +306,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let val ← isInMathlib mainModule
       InMathlibRef.set (some val)
       return val
-  unless inMathlib? do return
+  unless inMathlib? || mainModule == `MathlibTest.Header do return
   unless Linter.getLinterValue linter.style.header (← getOptions) do
     return
   if (← get).messages.hasErrors then
