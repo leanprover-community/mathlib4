@@ -287,7 +287,7 @@ instance partialOrder : PartialOrder Ordinal where
     Quotient.inductionOn₂ a b fun _ _ ⟨h₁⟩ ⟨h₂⟩ =>
       Quot.sound ⟨InitialSeg.antisymm h₁ h₂⟩
 
-instance linearOrder : LinearOrder Ordinal :=
+instance : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
@@ -309,7 +309,7 @@ theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s 
 protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
   inductionOn o fun _ r _ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 
-instance orderBot : OrderBot Ordinal where
+instance : OrderBot Ordinal where
   bot := 0
   bot_le := Ordinal.zero_le
 
@@ -333,10 +333,10 @@ protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
 theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
   eq_bot_or_bot_lt
 
-instance zeroLEOneClass : ZeroLEOneClass Ordinal :=
+instance : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
 
-instance NeZero.one : NeZero (1 : Ordinal) :=
+instance instNeZeroOne : NeZero (1 : Ordinal) :=
   ⟨Ordinal.one_ne_zero⟩
 
 theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
@@ -878,13 +878,13 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b := by
   · apply (RelEmbedding.ofMonotone (Sum.recOn · f fun _ ↦ f.top) ?_).ordinal_type_le
     simpa [f.map_rel_iff] using f.lt_top
 
-instance noMaxOrder : NoMaxOrder Ordinal :=
+instance : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
 
-instance instSuccOrder : SuccOrder Ordinal.{u} :=
+instance : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) succ_le_iff'
 
-instance instSuccAddOrder : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
+instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
 @[simp]
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
