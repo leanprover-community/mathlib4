@@ -17,12 +17,6 @@ beyond those needed for the basic definition.
 
 variable {α : Type*}
 
-/-- a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s when a is not zero -/
-lemma DivisionSemiring.conj_pow [DivisionSemiring α] {s : ℕ} {a d : α} (ha : a ≠ 0) :
-    a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s := by
-  let u : αˣ := ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩
-  exact (Units.conj_pow' u d s).symm
-
 section DivisionRing
 
 variable [DivisionRing α] {n : ℤ}

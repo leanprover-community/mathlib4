@@ -30,13 +30,15 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
 
 -/
 
+namespace Module
+
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- For a commutative semiring `R` and a `R`-module `M`, if `M` contains an
   element `x` such that `r • x = 0` implies `r = 0` (finding such element usually
   depends on specific `•`), then the characteristic of `R` is equal to the
   characteristic of the `R`-linear endomorphisms of `M`.-/
-theorem CharP_if {p : ℕ} [hchar : CharP R p]
+theorem charP_end {p : ℕ} [hchar : CharP R p]
     (hreduction : ∃ x : M, ∀ r : R, r • x = 0 → r = 0) : CharP (M →ₗ[R] M) p where
   cast_eq_zero_iff' n := by
     have exact : (n : M →ₗ[R] M) = (n : R) • 1 := by
@@ -44,6 +46,8 @@ theorem CharP_if {p : ℕ} [hchar : CharP R p]
     rw [exact, LinearMap.ext_iff, ← hchar.1]
     exact ⟨fun h ↦ Exists.casesOn hreduction fun x hx ↦ hx n (h x),
       fun h ↦ (congrArg (fun t ↦ ∀ x, t • x = 0) h).mpr fun x ↦ zero_smul R x⟩
+
+end Module
 
 /-- For a division ring `D` with center `k`, the ring of `k`-linear endomorphisms
   of `D` has the same characteristic as `D`-/

@@ -7,6 +7,8 @@ import Mathlib.Algebra.CharP.LinearMaps
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.Field.Power
 import Mathlib.FieldTheory.PurelyInseparable
+import Mathlib.Algebra.GroupWithZero.Conj
+import Mathlib.Algebra.Central.Defs
 
 /-!
 # The Jacobson-Noether theorem
@@ -55,22 +57,6 @@ private def δ : D → D →ₗ[k] D := mulLeft k - mulRight k
 
 private lemma δ_def (a x : D) : δ a x = mulLeft k a x - mulRight k a x := rfl
 
-private lemma l_pow (a : D) (n : ℕ) : ∀ x : D, ((mulLeft k a) ^ n) x = (a ^ n) * x := by
-  intro x
-  rw [pow_apply]
-  induction n with
-  | zero => rw [Function.iterate_zero, id_eq, pow_zero, one_mul]
-  | succ _ h => rw [Function.iterate_succ', Function.comp_apply, h,
-    pow_succ', mul_assoc, mulLeft_apply]
-
-private lemma r_pow (a : D) (n : ℕ) : ∀ x : D, ((mulRight k a) ^ n) x = x * (a ^ n) := by
-  intro x
-  rw [pow_apply]
-  induction n with
-  | zero => rw [Function.iterate_zero, id_eq, pow_zero, mul_one]
-  | succ _ h => rw [Function.iterate_succ', Function.comp_apply, h,
-    pow_add, pow_one, mulRight_apply, mul_assoc]
-
 private lemma δ_iterate_succ (x y : D) (n : ℕ) :
     δ x (((δ x) ^ n) y) = ((δ x) ^ (n + 1)) y := by
   simp only [pow_apply, δ_def, mulLeft_apply, mulRight_apply, Function.iterate_succ_apply']
@@ -84,7 +70,7 @@ open Polynomial
   such that `a ^ (p ^ n)` is contained in `k`. -/
 lemma exists_pow_mem_center_of_inseparable (p : ℕ) [hchar : ExpChar D p] (a : D)
     (hinsep : ∀ x : D, IsSeparable k x → x ∈ k) : ∃ n, a ^ (p ^ n) ∈ k := by
-  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.center_expChar_iff.1 hchar)).1
+  have := (@isPurelyInseparable_iff_pow_mem k D _ _ _ _ p (ExpChar.expChar_center_iff.2 hchar)).1
   have pure : IsPurelyInseparable k D := ⟨Algebra.IsAlgebraic.isIntegral, fun x hx ↦ by
     rw [RingHom.mem_range, Subtype.exists]
     exact ⟨x, ⟨hinsep x hx, rfl⟩⟩⟩
@@ -115,15 +101,16 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
   have inter : (δ a) ^ (p ^ m) = 0 := by
     ext x
     rw [δ, Pi.sub_apply, sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a)]
-    rw [sub_apply, l_pow, r_pow, sub_eq_zero_of_eq]; rfl
+    simp_rw [sub_apply, pow_mulLeft, mulLeft_apply, pow_mulRight,
+      mulRight_apply, zero_apply, sub_eq_zero]
     suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
     exact hm.2
   rw [(Nat.sub_eq_iff_eq_add hn).1 rfl, pow_add, inter, mul_zero]
 
 variable (D) in
-/-- Jacobson-Noether theorem: For a non-commutative algebraic
-  division algebra `D` (with base ring being its center `k`), then
-  there exists an element `x` of `D \ k` that is separable over `k`. -/
+/-- Jacobson-Noether theorem: For a non-commutative division algebra
+  `D` that is algebraic over its center `k`, there exists an element
+  `x` of `D \ k` that is separable over `k`. -/
 theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
   obtain ⟨p, hp⟩ := ExpChar.exists D
@@ -178,20 +165,20 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     nth_rw 3 [← mul_one a]
     rw [hd_def, ← eq1, mul_sub, mul_assoc _ _ a, sub_right_inj, hc',
       ← mul_assoc, ← mul_assoc, ← mul_assoc]
-  -- This then derives a contradiction.
+  -- This then yields a contradiction.
   apply_fun (a⁻¹ * · ) at deq
   rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
   obtain ⟨r, hr⟩ := exists_pow_mem_center_of_inseparable p d insep
   apply_fun (· ^ (p ^ r)) at deq
   rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
-    ← DivisionSemiring.conj_pow ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
+    conj_pow₀ ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
     self_eq_add_left] at deq
   exact one_ne_zero deq
 
 open Subring Algebra in
-/-- Jacobson-Noether theorem: For a non-commutative algebraic
-  division algebra `D` (with base ring being a field `L`), if the center of
-  `D` over `L` is `L`, then there exist an element `x` of `D \ L`
+/-- Jacobson-Noether theorem: For a non-commutative division algebra `D`
+  that is algebraic over a field `L`, if the center of
+  `D` coincides with `L`, then there exist an element `x` of `D \ L`
   that is separable over `L`. -/
 theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D]
@@ -199,16 +186,16 @@ theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRi
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
   have ntrivial : center D ≠ ⊤ :=
     congr(Subalgebra.toSubring $hcenter).trans_ne (Subalgebra.toSubring_injective.ne hneq)
-  set φ := Subalgebra.equivOfEq (⊥ : Subalgebra L D) (Subalgebra.center L D) hcenter.symm
+  set φ := Subalgebra.equivOfEq (⊥ : Subalgebra L D) (.center L D) hcenter.symm
   set equiv : L ≃+* (center D) := ((botEquiv L D).symm.trans φ).toRingEquiv
-  letI : Algebra L (center D) := equiv.toRingHom.toAlgebra
-  letI : Algebra (center D) L := equiv.symm.toRingHom.toAlgebra
-  haveI : IsScalarTower L (center D) D := .of_algebraMap_eq fun _ ↦ rfl
-  haveI : IsScalarTower (center D) L D := .of_algebraMap_eq fun x ↦ by
+  let _ : Algebra L (center D) := equiv.toRingHom.toAlgebra
+  let _ : Algebra (center D) L := equiv.symm.toRingHom.toAlgebra
+  have _ : IsScalarTower L (center D) D := .of_algebraMap_eq fun _ ↦ rfl
+  have _ : IsScalarTower (center D) L D := .of_algebraMap_eq fun x ↦ by
     rw [IsScalarTower.algebraMap_apply L (center D)]
     congr
     exact (equiv.apply_symm_apply x).symm
-  haveI : Algebra.IsAlgebraic (center D) D := .tower_top (K := L) _
+  have _ : Algebra.IsAlgebraic (center D) D := .tower_top (K := L) _
   obtain ⟨x, hxd, hx⟩ := exists_separable_mem_of_not_central D ntrivial
   exact ⟨x, ⟨by rwa [← Subalgebra.center_toSubring L, hcenter] at hxd, IsSeparable.tower_top _ hx⟩⟩
 
