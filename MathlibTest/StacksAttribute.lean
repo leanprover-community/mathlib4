@@ -12,6 +12,15 @@ theorem tagged : True := .intro
 
 end X
 
+/--
+info: some ([Stacks Tag A04Q](https://stacks.math.columbia.edu/tag/A04Q) (A comment)
+
+[Kerodon Tag B15R](https://kerodon.net/tag/B15R) (Also a comment))
+-/
+#guard_msgs in
+run_cmd
+  Lean.logInfo m!"{← Lean.findDocString? (← Lean.getEnv) `X.tagged}"
+
 #guard_msgs in
 @[stacks 0BR2, kerodon 0X12]
 example : True := .intro

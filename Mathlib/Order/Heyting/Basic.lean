@@ -970,7 +970,7 @@ section lift
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedHeytingAlgebra` along an injection. -/
-protected abbrev Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] [Top α]
+protected abbrev Function.Injective.generalizedHeytingAlgebra [Max α] [Min α] [Top α]
     [HImp α] [GeneralizedHeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : GeneralizedHeytingAlgebra α :=
@@ -987,7 +987,7 @@ protected abbrev Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] 
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedCoheytingAlgebra` along an injection. -/
-protected abbrev Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [Bot α]
+protected abbrev Function.Injective.generalizedCoheytingAlgebra [Max α] [Min α] [Bot α]
     [SDiff α] [GeneralizedCoheytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_bot : f ⊥ = ⊥) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
@@ -1005,7 +1005,7 @@ protected abbrev Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α
 
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/
-protected abbrev Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
+protected abbrev Function.Injective.heytingAlgebra [Max α] [Min α] [Top α] [Bot α]
     [HasCompl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
@@ -1021,7 +1021,7 @@ protected abbrev Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [B
 
 -- See note [reducible non-instances]
 /-- Pullback a `CoheytingAlgebra` along an injection. -/
-protected abbrev Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
+protected abbrev Function.Injective.coheytingAlgebra [Max α] [Min α] [Top α] [Bot α]
     [HNot α] [SDiff α] [CoheytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
@@ -1037,7 +1037,7 @@ protected abbrev Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] 
 
 -- See note [reducible non-instances]
 /-- Pullback a `BiheytingAlgebra` along an injection. -/
-protected abbrev Function.Injective.biheytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
+protected abbrev Function.Injective.biheytingAlgebra [Max α] [Min α] [Top α] [Bot α]
     [HasCompl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
     (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
