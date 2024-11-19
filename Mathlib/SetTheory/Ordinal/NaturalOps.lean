@@ -206,10 +206,6 @@ scoped[NaturalOps] infixl:70 " ⨳ " => Ordinal.nmul
 
 /-! ### Natural addition -/
 
-private theorem nadd_def (a b : Ordinal) : a ♯ b = max
-    (⨆ a' : Set.Iio a, succ (a'.1 ♯ b)) (⨆ b' : Set.Iio b, succ (a ♯ b'.1)) := by
-  rw [nadd]
-
 theorem lt_nadd_iff : a < b ♯ c ↔ (∃ b' < b, a ≤ b' ♯ c) ∨ ∃ c' < c, a ≤ b ♯ c' := by
   rw [nadd]
   simp [Ordinal.lt_iSup_iff]
@@ -454,7 +450,6 @@ theorem nadd_right_comm : ∀ a b c, a ♯ b ♯ c = a ♯ c ♯ b :=
   @add_right_comm NatOrdinal _
 
 /-! ### Natural multiplication -/
-
 
 variable {a b c d : Ordinal.{u}}
 
