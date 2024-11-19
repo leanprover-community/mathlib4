@@ -23,7 +23,7 @@ use to show the class number of the ring of integers of a function field is fini
 
 namespace Polynomial
 
-open AbsoluteValue Real
+open scoped AbsoluteValue Real
 
 variable {Fq : Type*} [Fintype Fq]
 

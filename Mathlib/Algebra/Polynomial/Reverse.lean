@@ -21,7 +21,7 @@ namespace Polynomial
 
 open Finsupp Finset
 
-open Polynomial
+open scoped Polynomial
 
 section Semiring
 
