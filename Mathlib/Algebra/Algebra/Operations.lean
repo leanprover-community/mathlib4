@@ -285,14 +285,14 @@ theorem mul_eq_map₂ : M * N = map₂ (LinearMap.mul R A) M N :=
   le_antisymm (mul_le.mpr fun _m hm _n ↦ apply_mem_map₂ _ hm)
     (map₂_le.mpr fun _m hm _n ↦ mul_mem_mul hm)
 
-variable (R)
+variable (R M N)
 
 theorem span_mul_span : span R S * span R T = span R (S * T) := by
   rw [mul_eq_map₂]; apply map₂_span_span
 
-lemma mul_def (S T : Submodule R A) : S * T = span R (S * T : Set A) := by simp [← span_mul_span]
+lemma mul_def : M * N = span R (M * N : Set A) := by simp [← span_mul_span]
 
-variable {R} (M N P Q)
+variable {R} (P Q)
 
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
