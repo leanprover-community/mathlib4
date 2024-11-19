@@ -24,7 +24,8 @@ namespace Matrix
 variable {n : Type*} [DecidableEq n] [Fintype n]
 variable {R : Type*} [CommSemiring R]
 
-/-- The permanent of a matrix defined as a sum over all permutations -/
+/-- The permanent of a square matrix defined as a sum over all permutations. This is analogous to
+the determinant but without alternating signs. -/
 def permanent (M : Matrix n n R) : R := ∑ σ : Perm n, ∏ i, M (σ i) i
 
 @[simp]
