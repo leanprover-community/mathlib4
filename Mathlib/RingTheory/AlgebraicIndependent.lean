@@ -273,7 +273,7 @@ theorem AlgebraicIndependent.of_ringHom_of_comp_eq (H : AlgebraicIndependent S (
   have := H (p.map f) <| by
     have : (g : A →+* B) _ = _ := congr(g $hp)
     rwa [map_zero, map_aeval, ← h, ← eval₂Hom_map_hom, ← aeval_eq_eval₂Hom] at this
-  exact map_injective f hf (by rwa [map_zero])
+  exact map_injective (f : R →+* S) hf (by rwa [map_zero])
 
 theorem AlgebraicIndependent.ringHom_of_comp_eq (H : AlgebraicIndependent R x)
     (hf : Function.Surjective f) (hg : Function.Injective g)
@@ -281,7 +281,7 @@ theorem AlgebraicIndependent.ringHom_of_comp_eq (H : AlgebraicIndependent R x)
     AlgebraicIndependent S (g ∘ x) := by
   rw [algebraicIndependent_iff] at H ⊢
   intro p hp
-  obtain ⟨q, rfl⟩ := map_surjective f hf p
+  obtain ⟨q, rfl⟩ := map_surjective (f : R →+* S) hf p
   rw [H q (hg (by rwa [map_zero, ← RingHom.coe_coe g, map_aeval, ← h, ← eval₂Hom_map_hom,
     ← aeval_eq_eval₂Hom])), map_zero]
 
