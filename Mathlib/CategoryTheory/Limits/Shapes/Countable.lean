@@ -52,6 +52,7 @@ instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimi
   have : HasLimitsOfShape (HomAsType J) C := HasCountableLimits.out (HomAsType J)
   hasLimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
+/-- A category has countable products if it has all products indexed by countable types. -/
 class HasCountableProducts where
   out (J : Type) [Countable J] : HasProductsOfShape J C
 
@@ -96,8 +97,15 @@ instance [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasCo
   have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
   hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
+/-- A category has countable coproducts if it has all coproducts indexed by countable types. -/
 class HasCountableCoproducts where
   out (J : Type) [Countable J] : HasCoproductsOfShape J C
+
+instance (priority := 100) hasCountableCoproducts_of_hasCoproducts [HasCoproducts C] :
+    HasCountableCoproducts C where
+  out _ :=
+    have : HasCoproducts.{0} C := has_smallest_coproducts_of_hasCoproducts
+    inferInstance
 
 instance [HasCountableCoproducts C] : HasCoproductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
@@ -247,6 +255,17 @@ proof_wanted hasCountableColimits_of_hasFiniteColimits_and_hasSequentialColimits
 end IsCofiltered
 
 end Preorder
+
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor := IsCofiltered.sequentialFunctor
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor_obj :=
+  IsCofiltered.sequentialFunctor_obj
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor_map :=
+  IsCofiltered.sequentialFunctor_map
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor_initial_aux :=
+  IsCofiltered.sequentialFunctor_initial_aux
+@[deprecated (since := "2024-11-01")] alias sequentialFunctor_initial :=
+  IsCofiltered.sequentialFunctor_initial
+attribute [nolint defLemma] sequentialFunctor_initial
 
 @[deprecated (since := "2024-11-01")] alias sequentialFunctor := IsCofiltered.sequentialFunctor
 @[deprecated (since := "2024-11-01")] alias sequentialFunctor_obj :=

@@ -191,25 +191,20 @@ def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) 
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
 
-variable [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C] [HasLimitsOfShape (Discrete α) C]
-
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
 functor. -/
-def liftToFinsetLimIso : liftToFinset C α ⋙ lim ≅ lim :=
+def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
+    [HasLimitsOfShape (Discrete α) C] : liftToFinset C α ⋙ lim ≅ lim :=
   NatIso.ofComponents
     (fun F => Iso.symm <| limit.isoLimitCone (liftToFinsetLimitCone F))
     (fun β => by
       simp only [Functor.comp_obj, lim_obj, Functor.comp_map, lim_map, Iso.symm_hom]
       ext J
-      simp only [Category.assoc, limit.isoLimitCone_inv_π, liftToFinsetLimitCone_cone_pt,
-        liftToFinsetLimitCone_cone_π_app, limMap_π, limit.isoLimitCone_inv_π_assoc]
-      erw [limMap_π_assoc]
-      simp
-      rfl)
+      simp [liftToFinset])
 
 /-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
 with `colim`. -/
-def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
+def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj ⟨I⟩ ≅
     (whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
   NatIso.ofComponents (fun _ => HasLimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
