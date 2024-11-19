@@ -81,13 +81,24 @@ lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
 theorem IsSelfAdjoint.mul_self_nonneg {a : A} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
-#exit
-
 lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
-    abs a = cfcₙ (fun z : ℂ ↦ (‖z‖ : ℂ)) a :=
+    abs a = cfcₙ (fun z : ℂ ↦ (‖z‖ : ℂ)) a := by
+  simp only [abs, Complex.norm_eq_abs, Complex.ofReal]
+  rw [sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a)]
+  --somehow have to get this to revert back to the real case.
   sorry
 
-lemma abs_of_nonneg (a : A) (ha : 0 ≤ a) : abs a = a := sorry
+/- This result can surely be substantially golfed! -/
+lemma abs_of_nonneg {a : A} (ha : 0 ≤ a) : abs a = a := by
+  rw [abs, ha.star_eq,← cfcₙ_id' ℝ a]
+  conv_lhs =>
+    rhs
+    rw [← cfcₙ_mul ..]
+  rw [← mul_self_eq_mul_self, cfcₙ_id' ℝ a]
+  · simp only [sqrt_mul_self a ha]
+  · exact IsSelfAdjoint.of_nonneg ha
+
+#exit
 
 lemma abs_eq_posPart_add_negPart (a : A) (ha : IsSelfAdjoint a) : abs a = a⁺ + a⁻ := sorry
 
