@@ -169,7 +169,7 @@ see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `MulActionSemiHomClass F φ X Y`
   into an actual `MulActionHom`.
   This is declared as the default coercion from `F` to `MulActionSemiHom φ X Y`. -/
-@[to_additive (attr := coe) 
+@[to_additive (attr := coe)
   "Turn an element of a type `F` satisfying `AddActionSemiHomClass F φ X Y`
   into an actual `AddActionHom`.
   This is declared as the default coercion from `F` to `AddActionSemiHom φ X Y`."]
