@@ -15,7 +15,7 @@ import Mathlib.Data.Setoid.Partition
 ## Definitions
 
 - `IsPreprimitive G X`
-a structure that says that the action of a type `G` on a type `X` 
+a structure that says that the action of a type `G` on a type `X`
 (defined by an instance `SMul G X`) is *preprimitive*,
 namely, it is pretransitive and the only blocks are ⊤ and subsingletons.
 (The pretransitivity assumption is essentially trivial,

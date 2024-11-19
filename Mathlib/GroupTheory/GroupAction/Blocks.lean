@@ -280,7 +280,7 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (Subgroup.map (MulEquiv.toMonoidHom (MulAut.conj g)) H) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
-  have : MulAction H X := by 
+  have : MulAction H X := by
     exact instMulAction H
   intro h'
   obtain ⟨h, hH, hh⟩ := Subgroup.mem_map.mp (SetLike.coe_mem h')
@@ -322,7 +322,7 @@ theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
 variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
   for the action of `G` -/
-@[to_additive "For `VAdd G X`, a block system of `X` is a partition of `X` into blocks 
+@[to_additive "For `VAdd G X`, a block system of `X` is a partition of `X` into blocks
  for the additive action of `G`"]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
