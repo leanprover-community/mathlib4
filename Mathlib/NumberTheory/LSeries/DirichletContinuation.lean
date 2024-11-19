@@ -351,8 +351,7 @@ lemma LFunctionTrivChar₁_differentiable : Differentiable ℂ (LFunctionTrivCha
     (fun _ hs ↦ DifferentiableAt.differentiableWithinAt <| by fun_prop (disch := simp_all [hs]))
     fun _ hs ↦ by rw [LFunctionTrivChar₁_apply_of_ne_one n (Set.mem_diff_singleton.mp hs).2],
     continuousWithinAt_compl_self.mp ?_⟩
-  simpa only [mul_comm (LFunctionTrivChar ..), continuousWithinAt_compl_self,
-    continuousAt_update_same]
+  simpa only [continuousWithinAt_compl_self, continuousAt_update_same]
     using LFunctionTrivChar_residue_one
 
 lemma deriv_LFunctionTrivChar₁_apply_of_ne_one  {s : ℂ} (hs : s ≠ 1) :
