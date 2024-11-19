@@ -6,7 +6,6 @@ Authors: Pieter Cuijpers
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Order.CompleteLattice
---import Mathlib.Tactic.Variable
 
 /-!
 # Theory of quantales
@@ -66,9 +65,6 @@ class IsAddQuantale (α : Type*) [AddSemigroup α] [CompleteLattice α] where
   /-- Addition is distributive over join in a quantale -/
   protected sSup_add_distrib (s : Set α) (y : α) : sSup s + y = ⨆ x ∈ s, x + y
 
---@[variable_alias]
---structure AddQuantale (α : Type*)[AddSemigroup α][CompleteLattice α][IsAddQuantale α]
-
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[to_additive]
 class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
@@ -76,9 +72,6 @@ class IsQuantale (α : Type*) [Semigroup α] [CompleteLattice α] where
   protected mul_sSup_distrib (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
   /-- Multiplication is distributive over join in a quantale -/
   protected sSup_mul_distrib (s : Set α) (y : α) : sSup s * y = ⨆ x ∈ s, x * y
-
---@[variable_alias, to_additive]
---structure Quantale (α : Type*)[Semigroup α][CompleteLattice α][IsQuantale α]
 
 section
 
