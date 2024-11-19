@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
+import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.RowCol
@@ -179,12 +180,12 @@ theorem det_mul_left_comm (M N P : Matrix m m R) : det (M * (N * P)) = det (N * 
 theorem det_mul_right_comm (M N P : Matrix m m R) : det (M * N * P) = det (M * P * N) := by
   rw [Matrix.mul_assoc, Matrix.mul_assoc, det_mul, det_mul_comm N P, ← det_mul]
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
+-- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so `val` isn't needed
 theorem det_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     det (M.val * N * M⁻¹.val) = det N := by
   rw [det_mul_right_comm, Units.mul_inv, one_mul]
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
+-- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so `val` isn't needed
 theorem det_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     det (M⁻¹.val * N * ↑M.val) = det N :=
   det_units_conj M⁻¹ N
