@@ -614,7 +614,8 @@ theorem nmul_le_iff₃ : a ⨳ b ⨳ c ≤ d ↔ ∀ a' < a, ∀ b' < b, ∀ c' 
   rw [← not_iff_not]
   simp [lt_nmul_iff₃]
 
-private theorem lt_nmul_iff₃' : d < a ⨳ (b ⨳ c) ↔ ∃ a' < a, ∃ b' < b, ∃ c' < c,
+@[deprecated lt_nmul_iff₃ (since := "2024-11-19")]
+theorem lt_nmul_iff₃' : d < a ⨳ (b ⨳ c) ↔ ∃ a' < a, ∃ b' < b, ∃ c' < c,
     d ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') ≤
       a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') := by
   simp only [nmul_comm _ (_ ⨳ _), lt_nmul_iff₃, nadd_eq_add, toOrdinal_toNatOrdinal]
@@ -625,8 +626,10 @@ private theorem lt_nmul_iff₃' : d < a ⨳ (b ⨳ c) ↔ ∃ a' < a, ∃ b' < b
 private theorem nmul_le_iff₃' : a ⨳ (b ⨳ c) ≤ d ↔ ∀ a' < a, ∀ b' < b, ∀ c' < c,
     a' ⨳ (b ⨳ c) ♯ a ⨳ (b' ⨳ c) ♯ a ⨳ (b ⨳ c') ♯ a' ⨳ (b' ⨳ c') <
       d ♯ a' ⨳ (b' ⨳ c) ♯ a' ⨳ (b ⨳ c') ♯ a ⨳ (b' ⨳ c') := by
-  rw [← not_iff_not]
-  simp [lt_nmul_iff₃']
+  simp only [nmul_comm _ (_ ⨳ _), nmul_le_iff₃, nadd_eq_add, toOrdinal_toNatOrdinal]
+  constructor <;> intro h a' ha b' hb c' hc
+  · convert h b' hb c' hc a' ha using 1 <;> abel_nf
+  · convert h c' hc a' ha b' hb using 1 <;> abel_nf
 
 theorem nmul_assoc (a b c : Ordinal) : a ⨳ b ⨳ c = a ⨳ (b ⨳ c) := by
   apply le_antisymm
