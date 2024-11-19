@@ -46,7 +46,11 @@ theorem IsSelfAdjoint.mul_self_nonneg {a : A} (ha : IsSelfAdjoint a) : 0 ≤ a *
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
 -- Jireh identified this more spartan set of typeclasses for proving `sqrt_eq_cfcₙ_real_sqrt`.
--- Maybe incorporate these?
+-- Maybe incorporate these? From Jireh:
+
+-- I modified these classes, these suffice to prove `sqrt_eq_cfcₙ_real_sqrt`
+-- however, I think there's an issue in the library: `CFC.sqrt_eq_iff` (and probably lots around it)
+-- requires `NonUnitalNormedRing`. I don't think it should and this is a mistake.
 
 --variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
 --   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
@@ -63,18 +67,13 @@ lemma sqrt_eq_cfcₙ_real_sqrt {a : A} (ha : 0 ≤ a := by cfc_tac) :
   refine Real.mul_self_sqrt ?_
   exact quasispectrum_nonneg_of_nonneg a ha x hx
 
+lemma sq {a : A} (ha : IsSelfAdjoint a) : a * a = cfcₙ (fun (x : ℝ) ↦ x * x) a := by
+  sorry
+
 lemma sqrt_silly {a : A} (ha : IsSelfAdjoint a) :
     cfcₙ Real.sqrt (a * a) = cfcₙ (fun x ↦ √(x * x)) a := by
-  have A := cfcₙ_comp a (f := fun x ↦ x * x) (g := fun x ↦ √x)
-  have B : cfcₙ ((fun x ↦ √x) ∘ fun x ↦ x * x) a = cfcₙ (fun x ↦ √(x * x)) a := rfl
-  have C : cfcₙ ((fun x ↦ √x) ∘ fun x ↦ x * x) a = cfcₙ Real.sqrt (a * a) := by
-    sorry
-  rw [← B , ← C]
-
---the above lemma is a bit tricky. We need to identify the quasispectra of the square
---or write it in terms of the quasispectrum of a. This sounds tough.
--- Is there another approach?
--- maybe cfc composition will work?
+  rw [sq ha, ← cfcₙ_comp a (f := fun x ↦ x * x) (g := fun x ↦ √x)]
+  rfl
 
 #exit
 
