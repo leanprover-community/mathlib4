@@ -38,7 +38,7 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
   all linear maps `f : N → N'`, `f = 0` iff `f ⊗ M = 0`.
 
 - `Module.FaithfullyFlat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
-- `Module.FaithfullyFlat.comp`: if `S` is `R`-faithfully flat and `M` is `S`-faithfully flat, then
+- `Module.FaithfullyFlat.trans`: if `S` is `R`-faithfully flat and `M` is `S`-faithfully flat, then
   `M` is `R`-faithfully flat.
 
 - `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
@@ -465,7 +465,7 @@ end fixed_universe
 
 end linearMap
 
-section comp
+section trans
 
 open TensorProduct LinearMap
 
@@ -477,10 +477,9 @@ variable [FaithfullyFlat R S] [FaithfullyFlat S M]
 include S in
 /-- If `S` is a faithfully flat `R`-algebra, then any faithfully flat `S`-Module is faithfully flat
 as an `R`-module. -/
-theorem comp  :
-    FaithfullyFlat R M := by
+theorem trans : FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
-  refine ⟨Module.Flat.comp R S M, @fun N _ _ N' _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
+  refine ⟨Module.Flat.trans R S M, @fun N _ _ N' _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
   rw [zero_iff_lTensor_zero (R:= R) (M := S) f,
     show f.lTensor S = (AlgebraTensorModule.map (A:= S) LinearMap.id f).restrictScalars R by aesop,
     show (0 :  S ⊗[R] N →ₗ[R] S ⊗[R] N') = (0 : S ⊗[R] N →ₗ[S] S ⊗[R] N').restrictScalars R by rfl,
@@ -489,7 +488,9 @@ theorem comp  :
   apply_fun AlgebraTensorModule.cancelBaseChange R S S M N' using LinearEquiv.injective _
   simpa using congr($aux (m ⊗ₜ[R] n))
 
-end comp
+@[deprecated (since := "2024-11-08")] alias comp := trans
+
+end trans
 
 end FaithfullyFlat
 

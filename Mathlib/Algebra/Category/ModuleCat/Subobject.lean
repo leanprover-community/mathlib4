@@ -44,7 +44,8 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           constructor
           · simp [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
             rw [ker_eq_bot_of_mono]
-          · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict, Submodule.comap_subtype_self]
+          · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
+              Submodule.comap_subtype_self]
             exact LinearMap.mem_range_self _
         · apply LinearMap.ext
           intro x
@@ -82,7 +83,7 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
-  -- Porting note (#10959): the whole proof was just `simp [toKernelSubobject]`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): the whole proof was just `simp [toKernelSubobject]`.
   suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by
     convert this
   rw [Iso.trans_inv, ← coe_comp, Category.assoc]
@@ -95,7 +96,7 @@ are equal if they differ by an element of the image.
 The application is for homology:
 two elements in homology are equal if they differ by a boundary.
 -/
--- Porting note (#11215): TODO compiler complains that this is marked with `@[ext]`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/11215): TODO compiler complains that this is marked with `@[ext]`.
 -- Should this be changed?
 -- @[ext] this is no longer an ext lemma under the current interpretation see eg
 -- the conversation beginning at
@@ -105,7 +106,7 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
     (g : (imageSubobject f : ModuleCat.{v} R) ⟶ N) [HasCokernel g] {x y : N} (l : L)
     (w : x = y + g (factorThruImageSubobject f l)) : cokernel.π g x = cokernel.π g y := by
   subst w
-  -- Porting note (#10959): The proof from here used to just be `simp`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): The proof from here used to just be `simp`.
   simp only [map_add, add_right_eq_self]
   change ((cokernel.π g) ∘ (g) ∘ (factorThruImageSubobject f)) l = 0
   rw [← coe_comp, ← coe_comp, Category.assoc]

@@ -130,6 +130,12 @@ theorem not_isSuccPrelimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccPrelim
 theorem not_isSuccLimit_succ_of_not_isMax (ha : ¬ IsMax a) : ¬ IsSuccLimit (succ a) :=
   mt IsSuccLimit.isMax ha
 
+/-- Given `j < i` with `i` a prelimit, `IsSuccPrelimit.mid` picks an arbitrary element strictly
+between `j` and `i`. -/
+noncomputable def IsSuccPrelimit.mid {i j : α} (hi : IsSuccPrelimit i) (hj : j < i) :
+    Ioo j i :=
+  Classical.indefiniteDescription _ ((not_covBy_iff hj).mp <| hi j)
+
 section NoMaxOrder
 
 variable [NoMaxOrder α]

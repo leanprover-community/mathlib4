@@ -247,7 +247,7 @@ include hl in
 lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
     Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2) =
     Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2) := by
-  rw [Set.Icc_inter_Icc, inf_eq_min, sup_eq_max, max_div_div_right zero_le_two,
+  rw [Set.Icc_inter_Icc, max_div_div_right zero_le_two,
     min_div_div_right zero_le_two, neg_mul, max_neg_neg, mul_comm,
     min_eq_right (mul_le_of_le_of_le_one_of_nonneg h θ.sin_le_one hl.le)]
 
@@ -304,7 +304,7 @@ lemma integral_zero_to_arcsin_min :
   have : Set.EqOn (fun θ => min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
     intro θ ⟨hθ₁, hθ₂⟩
     have : 0 ≤ (d / l).arcsin := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
-    simp only [sup_eq_max, inf_eq_min, min_eq_left this, max_eq_right this] at hθ₁ hθ₂
+    simp only [min_eq_left this, max_eq_right this] at hθ₁ hθ₂
     have hθ_mem : θ ∈ Set.Ioc (-(π / 2)) (π / 2) := by
       exact ⟨lt_of_lt_of_le (neg_lt_zero.mpr (div_pos Real.pi_pos two_pos)) hθ₁,
         le_trans hθ₂ (d / l).arcsin_mem_Icc.right⟩
@@ -324,7 +324,7 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
     wlog hθ_ne_pi_div_two : θ ≠ π / 2
     · simp only [ne_eq, not_not] at hθ_ne_pi_div_two
       simp only [hθ_ne_pi_div_two, Real.sin_pi_div_two, one_mul, min_eq_left h]
-    simp only [sup_eq_max, inf_eq_min, min_eq_left (d / l).arcsin_le_pi_div_two,
+    simp only [min_eq_left (d / l).arcsin_le_pi_div_two,
       max_eq_right (d / l).arcsin_le_pi_div_two] at hθ₁ hθ₂
     have hθ_mem : θ ∈ Set.Ico (-(π / 2)) (π / 2) := by
       exact ⟨le_trans (Real.arcsin_mem_Icc (d / l)).left hθ₁, lt_of_le_of_ne hθ₂ hθ_ne_pi_div_two⟩
@@ -340,7 +340,7 @@ theorem buffon_long (h : d ≤ l) :
   simp only [
     buffon_integral d l hd B hBₘ hB, MeasureTheory.integral_const, smul_eq_mul, mul_one,
     MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, Set.Icc_inter_Icc, Real.volume_Icc,
-    sup_eq_max, inf_eq_min, min_div_div_right zero_le_two d, max_div_div_right zero_le_two (-d),
+    min_div_div_right zero_le_two d, max_div_div_right zero_le_two (-d),
     div_sub_div_same, neg_mul, max_neg_neg, sub_neg_eq_add, ← mul_two,
     mul_div_cancel_right₀ (min d (Real.sin _ * l)) two_ne_zero
   ]

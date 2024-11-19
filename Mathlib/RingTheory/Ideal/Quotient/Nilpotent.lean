@@ -15,7 +15,7 @@ theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal
   conv_lhs => rw [← @Ideal.mk_ker R _ I]
   exact RingHom.ker_isRadical_iff_reduced_of_surjective (@Ideal.Quotient.mk_surjective R _ I)
 
-variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
+variable {S : Type*} [CommRing S] (I : Ideal S)
 
 /-- Let `P` be a property on ideals. If `P` holds for square-zero ideals, and if
   `P I → P (J ⧸ I) → P J`, then `P` holds for all nilpotent ideals. -/

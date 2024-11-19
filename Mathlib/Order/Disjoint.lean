@@ -660,10 +660,10 @@ end Lattice
 
 variable [DistribLattice α] [BoundedOrder α] {a b : Complementeds α}
 
-instance : Sup (Complementeds α) :=
+instance : Max (Complementeds α) :=
   ⟨fun a b => ⟨a ⊔ b, a.2.sup b.2⟩⟩
 
-instance : Inf (Complementeds α) :=
+instance : Min (Complementeds α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 @[simp, norm_cast]

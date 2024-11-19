@@ -57,7 +57,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
   have g'g : LeftInverse g' g := leftInverse_invFun hg
   have hg'ns : g' '' sᶜ = (f '' s)ᶜ := by rw [← hns, g'g.image_image]
   set h : α → β := s.piecewise f g'
-  have : Surjective h := by rw [← range_iff_surjective, range_piecewise, hg'ns, union_compl_self]
+  have : Surjective h := by rw [← range_eq_univ, range_piecewise, hg'ns, union_compl_self]
   have : Injective h := by
     refine (injective_piecewise_iff _).2 ⟨hf.injOn, ?_, ?_⟩
     · intro x hx y hy hxy
