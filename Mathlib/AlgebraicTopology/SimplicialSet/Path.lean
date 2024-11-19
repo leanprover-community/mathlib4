@@ -48,17 +48,6 @@ def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   arrow_src i := f.arrow_src ⟨j + i, by omega⟩
   arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
 
-/-- Maps of simplicial sets induce maps of paths in a simplicial set.-/
-def mapPath {X Y : SSet.{u}} {n : ℕ} (f : X ⟶ Y) (p : X.Path n) : Y.Path n where
-  vertex i := f.app (Opposite.op [0]) (p.vertex i)
-  arrow i := f.app (Opposite.op [1]) (p.arrow i)
-  arrow_src i := by
-    simp only [← p.arrow_src i]
-    exact (congr (f.naturality (δ 1).op) (by rfl)).symm
-  arrow_tgt i := by
-    simp only [← p.arrow_tgt i]
-    exact (congr (f.naturality (δ 0).op) (by rfl)).symm
-
 /-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
 traversing through its vertices in order.-/
 @[simps]
@@ -83,6 +72,22 @@ lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[
       const_subinterval_eq]
   · simp only [spine_arrow, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
       mkOfSucc_subinterval_eq]
+
+/-- Maps of simplicial sets induce maps of paths in a simplicial set.-/
+def mapPath {X Y : SSet.{u}} {n : ℕ} (σ : X ⟶ Y) (f : X.Path n) : Y.Path n where
+  vertex i := σ.app (Opposite.op [0]) (f.vertex i)
+  arrow i := σ.app (Opposite.op [1]) (f.arrow i)
+  arrow_src i := by
+    simp only [← f.arrow_src i]
+    exact (congr (σ.naturality (δ 1).op) (by rfl)).symm
+  arrow_tgt i := by
+    simp only [← f.arrow_tgt i]
+    exact (congr (σ.naturality (δ 0).op) (by rfl)).symm
+
+/-- `mapPath` respects subintervals of paths.-/
+lemma mapPath_interval {X Y : SSet.{u}} {n : ℕ} (σ : X ⟶ Y) (f : X.Path n)
+    (j l : ℕ) (hjl : j + l ≤ n) :
+    (mapPath σ f).interval j l hjl = mapPath σ (f.interval j l hjl) := rfl
 
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`.-/
 def idSpine (n : ℕ) : Path Δ[n] n := spine Δ[n] n (standardSimplex.idSimplex n)

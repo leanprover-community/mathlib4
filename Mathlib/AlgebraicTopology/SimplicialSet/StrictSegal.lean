@@ -87,6 +87,8 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
+/-- For any `σ: X ⟶ Y` between `StrictSegal` simplicial sets, `mapPath σ`
+commutes with `spineToSimplex`. -/
 lemma spineToSimplex_mapPath {X Y : SSet.{u}} [StrictSegal X] [StrictSegal Y]
     {n : ℕ} (σ : X ⟶ Y) (f : Path X (n + 1)) :
     spineToSimplex (mapPath σ f) = σ.app _ (spineToSimplex f) := by
@@ -212,6 +214,7 @@ instance : Quasicategory X := by
       rw [← types_comp_apply (σ₀.app _) (X.map _)]
       rw [← σ₀.naturality]
       simp [horn, standardSimplex.objEquiv, standardSimplex, uliftFunctor]
+      conv => rhs; congr; rfl; left; rw [mkOfSucc_δ_eq heq];
       sorry
 
 end StrictSegal
