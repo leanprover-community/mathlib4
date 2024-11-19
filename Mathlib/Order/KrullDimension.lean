@@ -741,7 +741,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
   norm_cast
   simp_rw [WithTop.lt_top_iff_ne_top]
   rw [ENat.iSup_add, iSup_subtype']
-  apply WithTop.equiv_subtype.iSup_congr
+  apply Equiv.withTopSubtypeNe.iSup_congr
   simp
 
 @[simp] lemma krullDim_withBot [Nonempty α] : krullDim (WithBot α) = krullDim α + 1 := by
