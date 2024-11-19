@@ -645,6 +645,11 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
   rcases le_total m n with hm | hm
   exacts [⟨m, hm, refl_mem_uniformity ha⟩, ⟨n, le_refl n, hn m hm n le_rfl⟩]
 
+/- TVS III.8 for complete spaces -/
+theorem isCompact_closure_of_totallyBounded [CompleteSpace α] {s : Set α} (ht : TotallyBounded s) :
+    IsCompact (closure s) :=
+  isCompact_of_totallyBounded_isClosed (TotallyBounded.closure ht) isClosed_closure
+
 /-!
 ### Sequentially complete space
 
