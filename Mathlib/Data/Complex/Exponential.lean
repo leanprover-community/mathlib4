@@ -456,9 +456,6 @@ theorem cos_zero : cos 0 = 1 := by simp [cos]
 @[simp]
 theorem cos_neg : cos (-x) = cos x := by simp [cos, sub_eq_add_neg, exp_neg, add_comm]
 
-private theorem cos_add_aux {a b c d : ℂ} :
-    (a + b) * (c + d) - (b - a) * (d - c) * -1 = 2 * (a * c + b * d) := by ring
-
 theorem cos_add : cos (x + y) = cos x * cos y - sin x * sin y := by
   rw [← cosh_mul_I, add_mul, cosh_add, cosh_mul_I, cosh_mul_I, sinh_mul_I, sinh_mul_I,
     mul_mul_mul_comm, I_mul_I, mul_neg_one, sub_eq_add_neg]
