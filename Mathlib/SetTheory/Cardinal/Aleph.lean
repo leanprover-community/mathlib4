@@ -437,10 +437,6 @@ theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
 theorem ord_aleph_isLimit (o : Ordinal) : (ℵ_ o).ord.IsLimit :=
   isLimit_ord <| aleph0_le_aleph _
 
--- TODO: get rid of this instance where it's used.
-instance (o : Ordinal) : NoMaxOrder (ℵ_ o).ord.toType :=
-  toType_noMax_of_succ_lt (isLimit_ord <| aleph0_le_aleph o).2
-
 @[simp]
 theorem range_aleph : range aleph = Set.Ici ℵ₀ := by
   ext c
