@@ -401,7 +401,7 @@ lemma index_antitone (h : H ≤ K) [h₁ : Finite (G ⧸ H)] : K.index ≤ H.ind
   exact Nat.le_of_dvd (Nat.zero_lt_of_ne_zero h0) (index_dvd_of_le h)
 
 @[to_additive (attr := gcongr)]
-lemma index_Anti (h : H < K) [h₁ : Finite (G ⧸ H)] : K.index < H.index := by
+lemma index_strictAnti (h : H < K) [h₁ : Finite (G ⧸ H)] : K.index < H.index := by
   rcases eq_or_ne K.index 0 with h0 | h0
   · rw [h0, index_eq_card]
     exact Finite.card_pos
