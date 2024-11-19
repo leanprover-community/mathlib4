@@ -276,9 +276,26 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
   rw [← SubMulAction.inclusion.coe_eq, ← image_smul_set, ← image_smul_set, ne_eq,
     Set.image_eq_image C.inclusion_injective, disjoint_image_iff C.inclusion_injective]
 
-@[to_additive]
+-- @[to_additive]
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (Subgroup.map (MulEquiv.toMonoidHom (MulAut.conj g)) H) (g • B) := by
+  rw [isBlock_iff_smul_eq_or_disjoint]
+  have : MulAction H X := by 
+    exact instMulAction H
+  intro h'
+  obtain ⟨h, hH, hh⟩ := Subgroup.mem_map.mp (SetLike.coe_mem h')
+  simp only [MulEquiv.coe_toMonoidHom, MulAut.conj_apply] at hh
+  suffices h' • g • B = g • h • B by
+    simp only [this]
+    apply (hB.smul_eq_or_disjoint ⟨h, hH⟩).imp
+    · intro; congr
+    · exact Set.disjoint_image_of_injective (MulAction.injective g)
+  suffices (h' : G) • g • B = g • h • B by
+    rw [← this]; rfl
+  rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
+
+theorem _root_.AddAction.IsBlock.of_subgroup_of_conjugate {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
+    IsBlock (Subgroup.map (AddEquiv.toAddMonoidHom (AddAut.conj g)) H) (g +ᵥ B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
   intro h'
   obtain ⟨h, hH, hh⟩ := Subgroup.mem_map.mp (SetLike.coe_mem h')
