@@ -67,15 +67,13 @@ lemma sqrt_eq_cfcₙ_real_sqrt {a : A} (ha : 0 ≤ a := by cfc_tac) :
   refine Real.mul_self_sqrt ?_
   exact quasispectrum_nonneg_of_nonneg a ha x hx
 
-lemma sq {a : A} (ha : IsSelfAdjoint a) : a * a = cfcₙ (fun (x : ℝ) ↦ x * x) a := by
+lemma sq {a : A} (ha : IsSelfAdjoint a) : a * a = cfcₙ (fun (x : ℝ) ↦ x ^ 2) a := by
   sorry
 
 lemma sqrt_silly {a : A} (ha : IsSelfAdjoint a) :
-    cfcₙ Real.sqrt (a * a) = cfcₙ (fun x ↦ √(x * x)) a := by
-  rw [sq ha, ← cfcₙ_comp a (f := fun x ↦ x * x) (g := fun x ↦ √x)]
+    cfcₙ Real.sqrt (a * a) = cfcₙ (fun x ↦ √(x ^ 2)) a := by
+  rw [sq ha, ← cfcₙ_comp a (f := fun x ↦ x ^ 2) (g := fun x ↦ √x)]
   rfl
-
-#exit
 
 lemma abs_eq_cfcₙ_norm {a : A} (ha : IsSelfAdjoint a) :
     abs a = cfcₙ (‖·‖) a := by
@@ -83,11 +81,11 @@ lemma abs_eq_cfcₙ_norm {a : A} (ha : IsSelfAdjoint a) :
   have H := sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a)
   rw [ha.star_eq] at *
   simp only [H]
-  exact sqrt_silly ha
+  apply sqrt_silly ha
 
 
   --simp only [abs, ha.star_eq, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
-  sorry
+
 
 
 lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
