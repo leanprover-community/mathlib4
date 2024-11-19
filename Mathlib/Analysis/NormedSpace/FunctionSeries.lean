@@ -47,16 +47,15 @@ theorem tendstoUniformlyOn_tsum_nat {f : ℕ → β → F} {u : ℕ → ℝ} (hu
 /-- An infinite sum of functions with eventually summable sup norm is the uniform limit of its
 partial sums. Version relative to a set, with general index set. -/
 theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → β → F} {u : ι → ℝ}
-    (hu : Summable u) {s : Set β}
-    (hfu : ∀ᶠ n in cofinite, ∀ x ∈ s, ‖f n x‖ ≤ u n) :
+    (hu : Summable u) {s : Set β} (hfu : ∀ᶠ n in cofinite, ∀ x ∈ s, ‖f n x‖ ≤ u n) :
     TendstoUniformlyOn (fun t x => ∑ n ∈ t, f n x) (fun x => ∑' n, f n x) atTop s := by
   classical
   refine tendstoUniformlyOn_iff.2 fun ε εpos => ?_
   have := (tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos
-  simp only [ not_forall, Classical.not_imp, not_le, gt_iff_lt,
+  simp only [not_forall, Classical.not_imp, not_le, gt_iff_lt,
     eventually_atTop, ge_iff_le, Finset.le_eq_subset] at *
   obtain ⟨t, ht⟩ := this
-  rw [@eventually_iff_exists_mem] at hfu
+  rw [eventually_iff_exists_mem] at hfu
   obtain ⟨N, hN, HN⟩ := hfu
   refine ⟨hN.toFinset ∪ t, fun n hn x hx => ?_⟩
   have A : Summable fun n => ‖f n x‖ := by
@@ -69,11 +68,8 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
   apply tsum_le_tsum _ (A.subtype _) (hu.subtype _)
   simp only [comp_apply, Subtype.forall, imp_false]
-  intro i hi
-  apply HN i _ x hx
-  have : ¬ i ∈ hN.toFinset := by
-    exact fun hg ↦
-      hi (of_eq_true (eq_true (Finset.union_subset_left hn hg)))
+  apply fun i hi => HN i ?_ x hx
+  have : ¬ i ∈ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
   aesop
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
