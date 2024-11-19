@@ -18,8 +18,16 @@ This file defines the pointwise scalar multiplication on `Finsupp`, assuming it 
 
 ## Implementation notes
 
+This file is intermediate between `Finsupp.Defs` and `Finsupp.Module` in that it covers scalar
+multiplication but does not rely on the definition of `Module`. Scalar multiplication is needed to
+supply the `nsmul` (and `zsmul`) fields of (semi)ring structures which are fundamental for e.g.
+`Polynomial`, so we want to keep the imports requied for the `Finsupp.smulZeroClass` instance
+reasonably light.
+
 This file is a `noncomputable theory` and uses classical logic throughout.
 -/
+
+assert_not_exists Module
 
 noncomputable section
 
