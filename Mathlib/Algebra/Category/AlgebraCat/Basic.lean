@@ -51,7 +51,6 @@ typeclasses. -/
 abbrev of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
   ⟨X⟩
 
-@[simp]
 lemma coe_of (X : Type v) [Ring X] [Algebra R X] : (of R X : Type v) = X :=
   rfl
 
