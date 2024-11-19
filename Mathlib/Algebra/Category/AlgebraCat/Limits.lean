@@ -112,20 +112,20 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
   · intro x y
     ext j
     simp only [Functor.comp_obj, forget_obj, Equiv.toFun_as_coe, Functor.mapCone_pt,
-      Functor.mapCone_π_app, forget_map, map_mul, Equiv.symm_apply_apply,
+      Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
       Types.Small.limitCone_pt, equivShrink_symm_mul]
-    rfl
+    apply map_mul
   · ext j
     simp only [Functor.comp_obj, forget_obj, Equiv.toFun_as_coe, Functor.mapCone_pt,
-      Functor.mapCone_π_app, forget_map, map_zero, Equiv.symm_apply_apply,
+      Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
       equivShrink_symm_zero]
-    rfl
+    apply map_zero
   · intro x y
     ext j
     simp only [Functor.comp_obj, forget_obj, Equiv.toFun_as_coe, Functor.mapCone_pt,
-      Functor.mapCone_π_app, forget_map, map_add, Equiv.symm_apply_apply,
+      Functor.mapCone_π_app, forget_map, Equiv.symm_apply_apply,
       Types.Small.limitCone_pt, equivShrink_symm_add]
-    rfl
+    apply map_add
   · intro r
     simp only [← Shrink.algEquiv_symm_apply _ R, limitCone, Equiv.algebraMap_def, Equiv.symm_symm]
     apply congrArg
