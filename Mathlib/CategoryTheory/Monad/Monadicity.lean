@@ -244,10 +244,8 @@ def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : 
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
   apply (config := {allowSynthFailures := true}) monadicCreatesColimitOfPreservesColimit
     -- Porting note: oddly (config := {allowSynthFailures := true}) had no effect here and below
-  · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
-    dsimp
-    infer_instance
-  · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
+  all_goals
+    apply @preservesColimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
     infer_instance
 
@@ -363,7 +361,7 @@ def monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms [G.ReflectsIso
     MonadicRightAdjoint G := by
   have : ReflectsColimitOfIsSplitPair G := ⟨fun f g _ => by
     have := HasCoequalizerOfIsSplitPair.out G f g
-    apply reflectsColimitOfReflectsIsomorphisms⟩
+    apply reflectsColimit_of_reflectsIsomorphisms⟩
   apply monadicOfHasPreservesReflectsGSplitCoequalizers adj
 
 end BeckMonadicity
@@ -409,7 +407,7 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
       infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
-      apply reflectsColimitOfReflectsIsomorphisms
+      apply reflectsColimit_of_reflectsIsomorphisms
     exact (comparisonAdjunction adj).toEquivalence.isEquivalence_inverse
 
 end ReflexiveMonadicity
