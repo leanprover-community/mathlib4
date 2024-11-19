@@ -21,13 +21,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
-  -- declare a smooth manifold `M'` over the pair `(E', H')`.
-  {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
+  -- declare a topological space `M'`.
+  {M' : Type*} [TopologicalSpace M']
   -- declare functions, sets, points and smoothness indices
-  {e : PartialHomeomorph M H} {x : M} {m n : ℕ∞}
+  {e : PartialHomeomorph M H} {x : M} {n : ℕ∞}
 
 /-! ### Atlas members are smooth -/
 
@@ -101,6 +98,17 @@ theorem contMDiffOn_extChartAt_symm (x : M) :
     ContMDiffOn 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target := by
   convert contMDiffOn_extend_symm (chart_mem_maximalAtlas (I := I) x)
   rw [extChartAt_target, I.image_eq]
+
+theorem contMDiffWithinAt_extChartAt_symm_target
+    (x : M) {y : E} (hy : y ∈ (extChartAt I x).target) :
+    ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target y :=
+  contMDiffOn_extChartAt_symm x y hy
+
+theorem contMDiffWithinAt_extChartAt_symm_range
+    (x : M) {y : E} (hy : y ∈ (extChartAt I x).target) :
+    ContMDiffWithinAt 𝓘(𝕜, E) I n (extChartAt I x).symm (range I) y :=
+  (contMDiffWithinAt_extChartAt_symm_target x hy).mono_of_mem_nhdsWithin
+    (extChartAt_target_mem_nhdsWithin_of_mem hy)
 
 /-- An element of `contDiffGroupoid ⊤ I` is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_contDiffGroupoid {e' : PartialHomeomorph H H}

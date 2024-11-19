@@ -65,7 +65,7 @@ namespace ProbabilityTheory
 
 namespace Kernel
 
-variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 section CompositionProduct
 
@@ -335,7 +335,7 @@ end Ae
 
 section Restrict
 
-variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η] {a : α}
+variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η]
 
 theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     Kernel.restrict κ hs ⊗ₖ Kernel.restrict η ht = Kernel.restrict (κ ⊗ₖ η) (hs.prod ht) := by
@@ -379,8 +379,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
     [IsSFiniteKernel η] (a : α) {f : β → γ → ℝ≥0∞} (hf : Measurable (Function.uncurry f)) :
     ∫⁻ bc, f bc.1 bc.2 ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, f b c ∂η (a, b) ∂κ a := by
   let F : ℕ → SimpleFunc (β × γ) ℝ≥0∞ := SimpleFunc.eapprox (Function.uncurry f)
-  have h : ∀ a, ⨆ n, F n a = Function.uncurry f a :=
-    SimpleFunc.iSup_eapprox_apply (Function.uncurry f) hf
+  have h : ∀ a, ⨆ n, F n a = Function.uncurry f a := SimpleFunc.iSup_eapprox_apply hf
   simp only [Prod.forall, Function.uncurry_apply_pair] at h
   simp_rw [← h]
   have h_mono : Monotone F := fun i j hij b =>
@@ -759,7 +758,7 @@ def prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β) : Kernel (�
 def prodMkRight (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β) : Kernel (α × γ) β :=
   comap κ Prod.fst measurable_fst
 
-variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ : Type*} {mγ : MeasurableSpace γ}
 
 @[simp]
 theorem prodMkLeft_apply (κ : Kernel α β) (ca : γ × α) : prodMkLeft γ κ ca = κ ca.snd :=

@@ -189,13 +189,13 @@ theorem seminormFromBounded_mul (f_nonneg : 0 ≤ f)
       simp_rw [mul_comm, hxyz, zero_div]
       exact div_nonneg (mul_nonneg (seminormFromBounded_nonneg f_nonneg f_mul y) (f_nonneg _))
         (f_nonneg _)
-    · rw [div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz), mul_comm (f (x * z))]
+    · rw [div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), mul_comm (f (x * z))]
       by_cases hxz : f (x * z) = 0
       · rw [mul_comm x y, mul_assoc, mul_comm y, map_mul_zero_of_map_zero f_nonneg f_mul hxz y]
         exact mul_nonneg (seminormFromBounded_nonneg f_nonneg f_mul y) (f_nonneg _)
       · rw [← div_le_iff₀ (lt_of_le_of_ne' (f_nonneg _) hxz)]
         apply le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) (x * z)
-        rw [div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hxz), mul_comm x y, mul_assoc]
+        rw [div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hxz), mul_comm x y, mul_assoc]
 
 /-- If `f : R → ℝ` is a nonzero, nonnegative, multiplicatively bounded function, then
   `seminormFromBounded' f 1 = 1`. -/
@@ -242,7 +242,7 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
       (le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) z (le_refl _)))
   by_cases hz : f z = 0
   · simp only [hz, div_zero, zero_add, le_refl, or_self_iff]
-  · rw [div_add_div_same, div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
+  · rw [div_add_div_same, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
     exact f_add _ _
 
 /-- `seminormFromBounded'` is a ring seminorm on `R`. -/
@@ -268,8 +268,8 @@ theorem seminormFromBounded_isNonarchimedean (f_nonneg : 0 ≤ f)
     · exact Or.inr <| le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) z hfy
   by_cases hz : f z = 0
   · simp only [hz, div_zero, le_refl, or_self_iff]
-  · rw [div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz),
-      div_le_div_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul, ← le_max_iff]
+  · rw [div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz),
+      div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul, ← le_max_iff]
     exact hna _ _
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function and `x : R` is

@@ -111,6 +111,20 @@ lemma norm_term_le_of_re_le_re (f : ℕ → ℂ) {s s' : ℂ} (h : s.re ≤ s'.r
   next => rfl
   next hn => gcongr; exact Nat.one_le_cast.mpr <| Nat.one_le_iff_ne_zero.mpr hn
 
+section positivity
+
+open scoped ComplexOrder
+
+lemma term_nonneg {a : ℕ → ℂ} {n : ℕ} (h : 0 ≤ a n) (x : ℝ) : 0 ≤ term a x n := by
+  rw [term_def]
+  split_ifs with hn
+  exacts [le_rfl, mul_nonneg h (inv_natCast_cpow_ofReal_pos hn x).le]
+
+lemma term_pos {a : ℕ → ℂ} {n : ℕ} (hn : n ≠ 0) (h : 0 < a n) (x : ℝ) : 0 < term a x n := by
+  simpa only [term_of_ne_zero hn] using mul_pos h <| inv_natCast_cpow_ofReal_pos hn x
+
+end positivity
+
 end LSeries
 
 /-!

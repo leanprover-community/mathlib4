@@ -168,11 +168,6 @@ end Monoid
 section Ring
 variable [Ring α] {a b : α} {n : ℕ}
 
-/- Porting note (#10618): attribute `simp` removed based on linter report
-simp can prove this:
-  by simp only [even_neg, even_two]
--/
--- @[simp]
 lemma even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
 
 lemma Odd.neg (hp : Odd a) : Odd (-a) := by
@@ -183,11 +178,6 @@ lemma Odd.neg (hp : Odd a) : Odd (-a) := by
 
 @[simp] lemma odd_neg : Odd (-a) ↔ Odd a := ⟨fun h ↦ neg_neg a ▸ h.neg, Odd.neg⟩
 
-/- Porting note (#10618): attribute `simp` removed based on linter report
-simp can prove this:
-  by simp only [odd_neg, odd_one]
--/
--- @[simp]
 lemma odd_neg_one : Odd (-1 : α) := by simp
 
 lemma Odd.sub_even (ha : Odd a) (hb : Even b) : Odd (a - b) := by

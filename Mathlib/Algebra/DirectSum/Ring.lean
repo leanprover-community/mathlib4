@@ -288,7 +288,7 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
   -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
   -- add_monoid_hom.dfinsupp_sum_apply, flip_apply, add_monoid_hom.dfinsupp_sum_add_hom_apply],
   rw [mulHom, toAddMonoid, DFinsupp.liftAddHom_apply]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [DFinsupp.sumAddHom_apply]
   rw [AddMonoidHom.dfinsupp_sum_apply]
   apply congrArg _
@@ -553,7 +553,6 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
       simp_rw [of_mul_of, toAddMonoid_of]
       exact hmul _ _ }
 
--- Porting note (#10618): removed @[simp] as simp can prove this
 theorem toSemiring_of (f : ∀ i, A i →+ R) (hone hmul) (i : ι) (x : A i) :
     toSemiring f hone hmul (of _ i x) = f _ x :=
   toAddMonoid_of f i x

@@ -6,7 +6,8 @@ Authors: Eric Wieser, Jujian Zhang
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Group.Action
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Span
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # Pointwise instances on `Submodule`s
 
@@ -545,4 +546,13 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
 
 end set_acting_on_submodules
 
+lemma span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
+    (span ℤ {a}).toAddSubgroup = AddSubgroup.zmultiples a := by
+  ext i
+  simp [Ideal.mem_span_singleton', AddSubgroup.mem_zmultiples_iff]
+
 end Submodule
+
+@[simp] lemma Ideal.span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
+   (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a :=
+  Submodule.span_singleton_toAddSubgroup_eq_zmultiples _
