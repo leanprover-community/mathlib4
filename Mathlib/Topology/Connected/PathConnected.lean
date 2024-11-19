@@ -1281,6 +1281,29 @@ instance Quot.locPathConnectedSpace {r : X → X → Prop} : LocPathConnectedSpa
 instance Quotient.locPathConnectedSpace {s : Setoid X} : LocPathConnectedSpace (Quotient s) :=
   isQuotientMap_quotient_mk'.locPathConnectedSpace
 
+
+/-- Disjoint unions of locally path-connected spaces are locally path-connected. -/
+instance Sum.locPathConnectedSpace.{u} {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+    [LocPathConnectedSpace X] [LocPathConnectedSpace Y] :
+    LocPathConnectedSpace (X ⊕ Y) := by
+  rw [locPathConnectedSpace_iff_pathComponentIn_mem_nhds]; intro x u hu hxu; rw [mem_nhds_iff]
+  obtain x | y := x
+  · refine ⟨Sum.inl '' (pathComponentIn x (Sum.inl ⁻¹' u)), ?_, ?_, ?_⟩
+    · apply IsPathConnected.subset_pathComponentIn
+      · exact (isPathConnected_pathComponentIn (by exact hxu)).image continuous_inl
+      · exact ⟨x, mem_pathComponentIn_self hxu, rfl⟩
+      · exact (image_mono pathComponentIn_subset).trans (u.image_preimage_subset _)
+    · exact isOpenMap_inl _ <| (hu.preimage continuous_inl).pathComponentIn _
+    · exact ⟨x, mem_pathComponentIn_self hxu, rfl⟩
+  · refine ⟨Sum.inr '' (pathComponentIn y (Sum.inr ⁻¹' u)), ?_, ?_, ?_⟩
+    · apply IsPathConnected.subset_pathComponentIn
+      · exact (isPathConnected_pathComponentIn (by exact hxu)).image continuous_inr
+      · exact ⟨y, mem_pathComponentIn_self hxu, rfl⟩
+      · exact (image_mono pathComponentIn_subset).trans (u.image_preimage_subset _)
+    · exact isOpenMap_inr _ <| (hu.preimage continuous_inr).pathComponentIn _
+    · exact ⟨y, mem_pathComponentIn_self hxu, rfl⟩
+
+
 /-- Disjoint unions of locally path-connected spaces are locally path-connected. -/
 instance Sigma.locPathConnectedSpace {X : ι → Type*}
     [(i : ι) → TopologicalSpace (X i)] [(i : ι) → LocPathConnectedSpace (X i)] :
