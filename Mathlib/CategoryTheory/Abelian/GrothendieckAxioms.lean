@@ -136,13 +136,13 @@ instance preservesFiniteLimits_liftToFinset : PreservesFiniteLimits (liftToFinse
       ⟨fun J _ _ => whiskeringLeft_preservesLimitsOfShape J _⟩
     letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor (·.val)) ⋙ colim) :=
-      compPreservesFiniteLimits _ _
-    preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso I).symm
+      comp_preservesFiniteLimits _ _
+    preservesFiniteLimits_of_natIso (liftToFinsetEvaluationIso I).symm
 
 variable (J : Type*)
 
 /-- `ABOfShape (Finset (Discrete J)) C` implies `ABOfShape (Discrete J) C` -/
-def ABOfShapeDiscreteOfABOfShapeFinsetDiscrete [HasColimitsOfShape (Discrete J) C]
+def ABOfShape_discrete_of_ABOfShape_finset_discrete [HasColimitsOfShape (Discrete J) C]
     [HasColimitsOfShape (Finset (Discrete J)) C] [ABOfShape (Finset (Discrete J)) C] :
     ABOfShape (Discrete J) C where
   preservesFiniteLimits :=
@@ -155,30 +155,30 @@ section
 variable {J} {J' : Type*} [Category J] [Category J'] (F : J ⥤ J') [F.Final]
 
 /-- `ABOfShape` can be "pushed forward" along final functors -/
-def ABOfShapeOfFinal [HasColimitsOfShape J' C] [HasColimitsOfShape J C] [ABOfShape J C] :
+def ABOfShape_of_final [HasColimitsOfShape J' C] [HasColimitsOfShape J C] [ABOfShape J C] :
     ABOfShape J' C where
   preservesFiniteLimits :=
     letI : PreservesFiniteLimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
-    letI := compPreservesFiniteLimits ((whiskeringLeft J J' C).obj F) colim
-    preservesFiniteLimitsOfNatIso (Functor.Final.colimIso F)
+    letI := comp_preservesFiniteLimits ((whiskeringLeft J J' C).obj F) colim
+    preservesFiniteLimits_of_natIso (Functor.Final.colimIso F)
 
 end
 
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
-def AB4.ofAB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C := fun _ ↦
-  ABOfShapeDiscreteOfABOfShapeFinsetDiscrete _ _
+def AB4.of_AB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C := fun _ ↦
+  ABOfShape_discrete_of_ABOfShape_finset_discrete _ _
 
 /--
 A category with finite biproducts and finite limits has countable AB4 if sequential colimits are
 exact.
 -/
-def CountableAB4.ofCountableAB5 [HasColimitsOfShape ℕ C] [ABOfShape ℕ C]
+def CountableAB4.of_countableAB5 [HasColimitsOfShape ℕ C] [ABOfShape ℕ C]
     [HasCountableCoproducts C] : CountableAB4 C := fun J _ ↦
   have : HasColimitsOfShape (Finset (Discrete J)) C :=
     Functor.Final.hasColimitsOfShape_of_final
       (IsFiltered.sequentialFunctor (Finset (Discrete J)))
-  have := ABOfShapeOfFinal C (IsFiltered.sequentialFunctor (Finset (Discrete J)))
-  ABOfShapeDiscreteOfABOfShapeFinsetDiscrete _ _
+  have := ABOfShape_of_final C (IsFiltered.sequentialFunctor (Finset (Discrete J)))
+  ABOfShape_discrete_of_ABOfShape_finset_discrete _ _
 
 end
 
@@ -188,62 +188,62 @@ section
 
 open ProductsFromFiniteCofiltered
 
-instance preservesFiniteColimitsLiftToFinset : PreservesFiniteColimits (liftToFinset C α) :=
-  preservesFiniteColimitsOfEvaluation _ fun ⟨I⟩ =>
+instance preservesFiniteColimits_liftToFinset : PreservesFiniteColimits (liftToFinset C α) :=
+  preservesFiniteColimits_of_evaluation _ fun ⟨I⟩ =>
     letI : PreservesFiniteColimits (lim (J := Discrete I) (C := C)) :=
-      preservesFiniteColimitsOfNatIso HasBiproductsOfShape.colimIsoLim
+      preservesFiniteColimits_of_natIso HasBiproductsOfShape.colimIsoLim
     letI : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor fun x ↦ ↑x)) := ⟨fun _ _ _ => inferInstance⟩
     letI : PreservesFiniteColimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor (·.val)) ⋙ lim) :=
-      compPreservesFiniteColimits _ _
-    preservesFiniteColimitsOfNatIso (liftToFinsetEvaluationIso _ _ I).symm
+      comp_preservesFiniteColimits _ _
+    preservesFiniteColimits_of_natIso (liftToFinsetEvaluationIso _ _ I).symm
 
 variable (J : Type*)
 
 /-- `ABStarOfShape (Finset (Discrete J))ᵒᵖ C` implies `ABStarOfShape (Discrete J) C` -/
-def ABStarOfShapeDiscreteOfABStarOfShapeFinsetDiscreteOp [HasLimitsOfShape (Discrete J) C]
+def ABStarOfShape_discrete_ofABStarOfShape_finset_discrete_op [HasLimitsOfShape (Discrete J) C]
     [HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C] [ABStarOfShape (Finset (Discrete J))ᵒᵖ C] :
     ABStarOfShape (Discrete J) C where
   preservesFiniteColimits :=
     letI : PreservesFiniteColimits (ProductsFromFiniteCofiltered.liftToFinset C J ⋙ lim) :=
-      compPreservesFiniteColimits _ _
-    preservesFiniteColimitsOfNatIso (ProductsFromFiniteCofiltered.liftToFinsetLimIso _ _)
+      comp_preservesFiniteColimits _ _
+    preservesFiniteColimits_of_natIso (ProductsFromFiniteCofiltered.liftToFinsetLimIso _ _)
 
 section
 
 variable {J} {J' : Type*} [Category J] [Category J'] (F : J ⥤ J') [F.Initial]
 
 /-- `ABStarOfShape` can be "pushed forward" along initial functors -/
-def ABStarOfShapeOfInitial [HasLimitsOfShape J' C] [HasLimitsOfShape J C] [ABStarOfShape J C] :
+def ABStarOfShape_of_initial [HasLimitsOfShape J' C] [HasLimitsOfShape J C] [ABStarOfShape J C] :
     ABStarOfShape J' C where
   preservesFiniteColimits :=
     letI : PreservesFiniteColimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩
-    letI := compPreservesFiniteColimits ((whiskeringLeft J J' C).obj F) lim
-    preservesFiniteColimitsOfNatIso (Functor.Initial.limIso F)
+    letI := comp_preservesFiniteColimits ((whiskeringLeft J J' C).obj F) lim
+    preservesFiniteColimits_of_natIso (Functor.Initial.limIso F)
 
 end
 
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
-def AB4Star.ofAB5Star [HasProducts C] [HasCofilteredLimits C] [AB5Star C] : AB4Star C :=
-  fun _ ↦ ABStarOfShapeDiscreteOfABStarOfShapeFinsetDiscreteOp _ _
+def AB4Star.of_AB5Star [HasProducts C] [HasCofilteredLimits C] [AB5Star C] : AB4Star C :=
+  fun _ ↦ ABStarOfShape_discrete_ofABStarOfShape_finset_discrete_op _ _
 
 /--
 A category with finite biproducts and finite limits has countable AB4* if sequential limits are
 exact.
 -/
-def CountableAB4Star.ofCountableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [ABStarOfShape ℕᵒᵖ C]
+def CountableAB4Star.of_countableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [ABStarOfShape ℕᵒᵖ C]
     [HasCountableProducts C] : CountableAB4Star C := fun J _ ↦
   have : HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C :=
     Functor.Initial.hasLimitsOfShape_of_initial
       (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
-  have := ABStarOfShapeOfInitial C (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
-  ABStarOfShapeDiscreteOfABStarOfShapeFinsetDiscreteOp _ _
+  have := ABStarOfShape_of_initial C (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
+  ABStarOfShape_discrete_ofABStarOfShape_finset_discrete_op _ _
 
 /--
 Checking AB of shape `Discrete ℕ` and `Discrete J` for finite `J` is enough for countable AB.
 -/
-def CountableAB4.ofABOfShapeNatAndFinite [HasCountableCoproducts C]
+def CountableAB4.of_ABOfShape_nat_and_finite [HasCountableCoproducts C]
     [∀ (J : Type) [Finite J], ABOfShape (Discrete J) C] [ABOfShape (Discrete ℕ) C] :
     CountableAB4 C := fun J _ ↦ by
   by_cases h : Finite J
@@ -251,12 +251,12 @@ def CountableAB4.ofABOfShapeNatAndFinite [HasCountableCoproducts C]
   · have : Infinite J := ⟨h⟩
     let _ := Encodable.ofCountable J
     let _ := Denumerable.ofEncodableOfInfinite J
-    exact ABOfShapeOfFinal C (Discrete.equivalence (Denumerable.eqv J)).inverse
+    exact ABOfShape_of_final C (Discrete.equivalence (Denumerable.eqv J)).inverse
 
 /--
 Checking AB* of shape `Discrete ℕ` and `Discrete J` for finite `J` is enough for countable AB*.
 -/
-def CountableAB4Star.ofABStarOfShapeNatAndFinite [HasCountableProducts C]
+def CountableAB4Star.of_ABStarOfShape_nat_and_finite [HasCountableProducts C]
     [∀ (J : Type) [Finite J], ABStarOfShape (Discrete J) C] [ABStarOfShape (Discrete ℕ) C] :
     CountableAB4Star C := fun J _ ↦ by
   by_cases h : Finite J
@@ -264,7 +264,7 @@ def CountableAB4Star.ofABStarOfShapeNatAndFinite [HasCountableProducts C]
   · have : Infinite J := ⟨h⟩
     let _ := Encodable.ofCountable J
     let _ := Denumerable.ofEncodableOfInfinite J
-    exact ABStarOfShapeOfInitial C (Discrete.equivalence (Denumerable.eqv J)).inverse
+    exact ABStarOfShape_of_initial C (Discrete.equivalence (Denumerable.eqv J)).inverse
 
 end
 
@@ -278,59 +278,59 @@ section
 
 variable [HasZeroMorphisms C] [HasFiniteBiproducts C]
 
-noncomputable instance ABOfShapeDiscreteFinite (J : Type*) [Finite J] :
+noncomputable instance ABOfShape_discrete_finite (J : Type*) [Finite J] :
     ABOfShape (Discrete J) C where
-  preservesFiniteLimits := preservesFiniteLimitsOfNatIso HasBiproductsOfShape.colimIsoLim.symm
+  preservesFiniteLimits := preservesFiniteLimits_of_natIso HasBiproductsOfShape.colimIsoLim.symm
 
-noncomputable instance ABStarOfShapeDiscreteFinite {J : Type*} [Finite J] :
+noncomputable instance ABStarOfShape_discrete_finite {J : Type*} [Finite J] :
     ABStarOfShape (Discrete J) C where
-  preservesFiniteColimits := preservesFiniteColimitsOfNatIso HasBiproductsOfShape.colimIsoLim
+  preservesFiniteColimits := preservesFiniteColimits_of_natIso HasBiproductsOfShape.colimIsoLim
 
 /--
 Checking AB of shape `Discrete ℕ` is enough for countable AB, provided that the category has
 finite biproducts and finite limits.
 -/
-noncomputable def CountableAB4.ofABOfShapeNat [HasFiniteLimits C] [HasCountableCoproducts C]
+noncomputable def CountableAB4.of_ABOfShape_nat [HasFiniteLimits C] [HasCountableCoproducts C]
     [ABOfShape (Discrete ℕ) C] : CountableAB4 C := by
-  apply (config := { allowSynthFailures := true }) CountableAB4.ofABOfShapeNatAndFinite
+  apply (config := { allowSynthFailures := true }) CountableAB4.of_ABOfShape_nat_and_finite
   exact fun _ ↦ inferInstance
 
 /--
 Checking AB* of shape `Discrete ℕ` is enough for countable AB*, provided that the category has
 finite biproducts and finite colimits.
 -/
-noncomputable def CountableAB4Star.ofABStarOfShapeNat [HasFiniteColimits C] [HasCountableProducts C]
-    [ABStarOfShape (Discrete ℕ) C] : CountableAB4Star C := by
-  apply (config := { allowSynthFailures := true }) CountableAB4Star.ofABStarOfShapeNatAndFinite
+noncomputable def CountableAB4Star.of_ABStarOfShape_nat [HasFiniteColimits C]
+    [HasCountableProducts C] [ABStarOfShape (Discrete ℕ) C] : CountableAB4Star C := by
+  apply (config := { allowSynthFailures := true }) CountableAB4Star.of_ABStarOfShape_nat_and_finite
   exact fun _ ↦ inferInstance
 
 end
 
 variable [Abelian C] (J : Type u') [Category.{v'} J]
 
-attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryCoproducts
-  preservesBinaryBiproductsOfPreservesBinaryProducts
+attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
+  preservesBinaryBiproducts_of_preservesBinaryProducts
 
 /--
 If `colim` of shape `J` into an abelian category `C` preserves monomorphisms, then `C` has AB of
 shape `J`.
 -/
-noncomputable def ABOfShapeOfPreservesMono [HasColimitsOfShape J C]
+noncomputable def ABOfShape_of_preservesMono [HasColimitsOfShape J C]
     [PreservesMonomorphisms (colim (J := J) (C := C))] : ABOfShape J C where
   preservesFiniteLimits := by
-    apply (config := { allowSynthFailures := true }) preservesFiniteLimitsOfPreservesHomology
-    · exact preservesHomologyOfPreservesMonosAndCokernels _
+    apply (config := { allowSynthFailures := true }) preservesFiniteLimits_of_preservesHomology
+    · exact preservesHomology_of_preservesMonos_and_cokernels _
     · exact additive_of_preservesBinaryBiproducts _
 
 /--
 If `lim` of shape `J` into an abelian category `C` preserves epimorphisms, then `C` has AB* of
 shape `J`.
 -/
-noncomputable def ABStarOfShapeOfPreservesEpi [HasLimitsOfShape J C]
+noncomputable def ABStarOfShape_of_preservesEpi [HasLimitsOfShape J C]
     [PreservesEpimorphisms (lim (J := J) (C := C))] : ABStarOfShape J C where
   preservesFiniteColimits := by
-    apply (config := { allowSynthFailures := true }) preservesFiniteColimitsOfPreservesHomology
-    · exact preservesHomologyOfPreservesEpisAndKernels _
+    apply (config := { allowSynthFailures := true }) preservesFiniteColimits_of_preservesHomology
+    · exact preservesHomology_of_preservesEpis_and_kernels _
     · exact additive_of_preservesBinaryBiproducts _
 
 end EpiMono
