@@ -356,7 +356,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_spanningCoe_IsCycles
 
 /--
 A graph `G` is alternating with respect to some other graph `G'`, if exactly every other edge in
-`G` is in `G'`. Note that the degree of each vertex needs to be bounded by 2 for this to be
+`G` is in `G'`. Note that the degree of each vertex needs to be at most 2 for this to be
 possible. This property is used to create new matchings using `symmDiff`. The definition of
 `symmDiff` for `SimpleGraph` is the one that makes sense, so this property is defined
 for `SimpleGraph` as well.
