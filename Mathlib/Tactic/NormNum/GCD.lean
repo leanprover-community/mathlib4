@@ -3,6 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller, Eric Wieser
 -/
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Int.GCD
 import Mathlib.Tactic.NormNum
 
