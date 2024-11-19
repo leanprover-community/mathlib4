@@ -131,6 +131,14 @@ lemma id_hom (X : P.Comma L R Q W) : (𝟙 X : X ⟶ X).hom = 𝟙 X.toComma := 
 lemma comp_hom {X Y Z : P.Comma L R Q W} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
+@[reassoc]
+lemma comp_left {X Y Z : P.Comma L R Q W} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).left = f.left ≫ g.left := rfl
+
+@[reassoc]
+lemma comp_right {X Y Z : P.Comma L R Q W} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).right = f.right ≫ g.right := rfl
+
 /-- If `i` is an isomorphism in `Comma L R`, it is also a morphism in `P.Comma L R Q W`. -/
 @[simps hom]
 def homFromCommaOfIsIso [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W}
@@ -203,6 +211,102 @@ def forgetFullyFaithful : (forget L R P ⊤ ⊤).FullyFaithful where
 instance : (forget L R P ⊤ ⊤).Full :=
   Functor.FullyFaithful.full (forgetFullyFaithful L R P)
 
+section
+
+variable {L R}
+
+@[simp]
+lemma eqToHom_left {X Y : P.Comma L R Q W} (h : X = Y) :
+    (eqToHom h).left = eqToHom (by rw [h]) := by
+  subst h
+  rfl
+
+@[simp]
+lemma eqToHom_right {X Y : P.Comma L R Q W} (h : X = Y) :
+    (eqToHom h).right = eqToHom (by rw [h]) := by
+  subst h
+  rfl
+
+end
+
+section Functoriality
+
+variable {L R P Q W}
+variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
+
+/-- Lift a functor `F : C ⥤ Comma L R` to the subcategory `P.Comma L R Q W` under
+suitable assumptions on `F`. -/
+def lift {C : Type*} [Category C] (F : C ⥤ Comma L R)
+    (hP : ∀ X, P (F.obj X).hom)
+    (hQ : ∀ {X Y} (f : X ⟶ Y), Q (F.map f).left)
+    (hW : ∀ {X Y} (f : X ⟶ Y), W (F.map f).right) :
+    C ⥤ P.Comma L R Q W where
+  obj X :=
+    { __ := F.obj X
+      prop := hP X }
+  map {X Y} f :=
+    { __ := F.map f
+      prop_hom_left := hQ f
+      prop_hom_right := hW f }
+
+variable (R) in
+/-- A natural transformation `L₁ ⟶ L₂` induces a functor `P.Comma L₂ R Q W ⥤ P.Comma L₁ R Q W`. -/
+@[simps obj_left obj_right]
+def mapLeft (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.left ≫ X.hom)) :
+    P.Comma L₂ R Q W ⥤ P.Comma L₁ R Q W where
+  obj X :=
+    { left := X.left
+      right := X.right
+      hom := l.app X.left ≫ X.hom
+      prop := hl X }
+  map {X Y} f :=
+    { left := f.left
+      right := f.right
+      prop_hom_left := f.prop_hom_left
+      prop_hom_right := f.prop_hom_right }
+
+@[simp]
+lemma mapLeft_map_left (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.left ≫ X.hom))
+    {X Y : P.Comma L₂ R Q W} (f : X ⟶ Y) :
+    ((mapLeft R l hl).map f).left = f.left :=
+  rfl
+
+@[simp]
+lemma mapLeft_map_right (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.left ≫ X.hom))
+    {X Y : P.Comma L₂ R Q W} (f : X ⟶ Y) :
+    ((mapLeft R l hl).map f).right = f.right :=
+  rfl
+
+variable (L) in
+/-- A natural transformation `R₁ ⟶ R₂` induces a functor `P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W`. -/
+@[simps obj_left obj_right]
+def mapRight (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right)) :
+    P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W where
+  obj X :=
+    { left := X.left
+      right := X.right
+      hom := X.hom ≫ r.app X.right
+      prop := hr X }
+  map {X Y} f :=
+    { left := f.left
+      right := f.right
+      prop_hom_left := f.prop_hom_left
+      prop_hom_right := f.prop_hom_right }
+
+@[simp]
+lemma mapRight_map_left (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right))
+    {X Y : P.Comma L R₁ Q W} (f : X ⟶ Y) :
+    ((mapRight L r hr).map f).left = f.left :=
+  rfl
+
+@[simp]
+lemma mapRight_map_right (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right))
+    {X Y : P.Comma L R₁ Q W} (f : X ⟶ Y) :
+    ((mapRight L r hr).map f).right = f.right :=
+  rfl
+
+end Functoriality
+
 end Comma
 
 end Comma
@@ -246,6 +350,23 @@ protected def Over.homMk {A B : P.Over Q X} (f : A.left ⟶ B.left)
   prop_hom_left := hf
   prop_hom_right := trivial
 
+/-- Make an isomorphism in `P.Over Q X` from an isomorphism in `T` with compatibilities. -/
+@[simps! hom_left inv_left]
+protected def Over.isoMk [Q.RespectsIso] {A B : P.Over Q X} (f : A.left ≅ B.left)
+    (w : f.hom ≫ B.hom = A.hom := by aesop_cat) : A ≅ B :=
+  Comma.isoMk f (Discrete.eqToIso' rfl)
+
+@[ext]
+lemma Over.Hom.ext {A B : P.Over Q X} {f g : A ⟶ B} (h : f.left = g.left) : f = g := by
+  ext
+  · exact h
+  · simp
+
+@[reassoc]
+lemma Over.w {A B : P.Over Q X} (f : A ⟶ B) :
+    f.left ≫ B.hom = A.hom := by
+  simp
+
 end Over
 
 section Under
@@ -286,6 +407,23 @@ protected def Under.homMk {A B : P.Under Q X} (f : A.right ⟶ B.right)
   __ := CategoryTheory.Under.homMk f w
   prop_hom_left := trivial
   prop_hom_right := hf
+
+/-- Make an isomorphism in `P.Under Q X` from an isomorphism in `T` with compatibilities. -/
+@[simps! hom_right inv_right]
+protected def Under.isoMk [Q.RespectsIso] {A B : P.Under Q X} (f : A.right ≅ B.right)
+    (w : A.hom ≫ f.hom = B.hom := by aesop_cat) : A ≅ B :=
+  Comma.isoMk (Discrete.eqToIso' rfl) f
+
+@[ext]
+lemma Under.Hom.ext {A B : P.Under Q X} {f g : A ⟶ B} (h : f.right = g.right) : f = g := by
+  ext
+  · simp
+  · exact h
+
+@[reassoc]
+lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
+    A.hom ≫ f.right = B.hom := by
+  simp
 
 end Under
 
