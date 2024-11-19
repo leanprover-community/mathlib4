@@ -77,16 +77,8 @@ lemma sqrt_silly {a : A} (ha : IsSelfAdjoint a) :
 
 lemma abs_eq_cfcₙ_norm {a : A} (ha : IsSelfAdjoint a) :
     abs a = cfcₙ (‖·‖) a := by
-  simp only [abs, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
-  have H := sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a)
-  rw [ha.star_eq] at *
-  simp only [H]
-  apply sqrt_silly ha
-
-
-  --simp only [abs, ha.star_eq, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
-
-
+   simp only [abs, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
+   rw [sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a), ha.star_eq, sqrt_silly ha]
 
 lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
     abs a = cfcₙ (fun z : ℂ ↦ (‖z‖ : ℂ)) a :=
