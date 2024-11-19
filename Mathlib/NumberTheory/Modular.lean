@@ -279,7 +279,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
   obtain ⟨g, -, hg⟩ := bottom_row_surj hp_coprime
   refine ⟨g, fun g' => ?_⟩
   rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
-    div_le_div_left]
+    div_le_div_iff_of_pos_left]
   · simpa [← hg] using hp (g' 1) (bottom_row_coprime g')
   · exact z.im_pos
   · exact normSq_denom_pos g' z
