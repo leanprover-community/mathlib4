@@ -97,6 +97,10 @@ theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 
+@[simp]
+lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
+    map f a = ⊥ ↔ a = ⊥ := Option.map_eq_none'
+
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
@@ -653,6 +657,10 @@ theorem map_top (f : α → β) : map f ⊤ = ⊤ :=
 @[simp]
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
+
+@[simp]
+lemma map_eq_top_iff {f : α → β} {a : WithTop α} :
+    map f a = ⊤ ↔ a = ⊤ := Option.map_eq_none'
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=

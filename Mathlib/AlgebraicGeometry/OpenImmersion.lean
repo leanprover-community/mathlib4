@@ -6,18 +6,19 @@ Authors: Andrew Yang
 import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Open immersions of schemes
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 
 noncomputable section
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits
 
@@ -56,7 +57,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    · exact Opens.isOpenEmbedding _ -- Porting note (#11187): was `infer_instance`
+    · exact Opens.isOpenEmbedding _ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
 
 end LocallyRingedSpace.IsOpenImmersion
 
@@ -86,10 +87,15 @@ def opensRange : Y.Opens :=
 abbrev opensFunctor : X.Opens ⥤ Y.Opens :=
   LocallyRingedSpace.IsOpenImmersion.opensFunctor f.toLRSHom
 
-/-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
-scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
+#adaptation_note
+/--
+https://github.com/leanprover/lean4/pull/6012 disallowed the `''ᵁ` notation,
+presumably unintentionally. This is a *temporary* workaround.
+-/
+/-- `f ~~ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`. -/
+scoped[AlgebraicGeometry] notation3:90 f:91 " ~~ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
 
-lemma image_le_image_of_le {U V : X.Opens} (e : U ≤ V) : f ''ᵁ U ≤ f ''ᵁ V := by
+lemma image_le_image_of_le {U V : X.Opens} (e : U ≤ V) : f ~~ᵁ U ≤ f ~~ᵁ V := by
   rintro a ⟨u, hu, rfl⟩
   exact Set.mem_image_of_mem (⇑f.base) (e hu)
 
@@ -99,41 +105,53 @@ lemma opensFunctor_map_homOfLE {U V : X.Opens} (e : U ≤ V) :
   rfl
 
 @[simp]
-lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
+lemma image_top_eq_opensRange : f ~~ᵁ ⊤ = f.opensRange := by
   apply Opens.ext
   simp
 
+lemma opensRange_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsOpenImmersion f] [IsOpenImmersion g] : (f ≫ g).opensRange = g ~~ᵁ f.opensRange :=
+  TopologicalSpace.Opens.ext (Set.range_comp g.base f.base)
+
+lemma opensRange_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    f.opensRange = ⊤ :=
+  TopologicalSpace.Opens.ext (Set.range_eq_univ.mpr f.homeomorph.surjective)
+
+lemma opensRange_comp_of_isIso {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsIso f] [IsOpenImmersion g] : (f ≫ g).opensRange = g.opensRange := by
+  rw [opensRange_comp, opensRange_of_isIso, image_top_eq_opensRange]
+
 @[simp]
-lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
+lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ~~ᵁ U = U := by
   apply Opens.ext
-  simp [Set.preimage_image_eq _ f.isOpenEmbedding.inj]
+  simp [Set.preimage_image_eq _ f.isOpenEmbedding.injective]
 
 lemma image_le_image_iff (f : X ⟶ Y) [IsOpenImmersion f] (U U' : X.Opens) :
-    f ''ᵁ U ≤ f ''ᵁ U' ↔ U ≤ U' := by
+    f ~~ᵁ U ≤ f ~~ᵁ U' ↔ U ≤ U' := by
   refine ⟨fun h ↦ ?_, image_le_image_of_le f⟩
   rw [← preimage_image_eq f U, ← preimage_image_eq f U']
   apply preimage_le_preimage_of_le f h
 
-lemma image_preimage_eq_opensRange_inter (U : Y.Opens) : f ''ᵁ f ⁻¹ᵁ U = f.opensRange ⊓ U := by
+lemma image_preimage_eq_opensRange_inter (U : Y.Opens) : f ~~ᵁ f ⁻¹ᵁ U = f.opensRange ⊓ U := by
   apply Opens.ext
   simp [Set.image_preimage_eq_range_inter]
 
-lemma image_injective : Function.Injective (f ''ᵁ ·) := by
+lemma image_injective : Function.Injective (f ~~ᵁ ·) := by
   intro U V hUV
   simpa using congrArg (f ⁻¹ᵁ ·) hUV
 
 lemma image_iSup {ι : Sort*} (s : ι → X.Opens) :
-    (f ''ᵁ ⨆ (i : ι), s i) = ⨆ (i : ι), f ''ᵁ s i := by
+    (f ~~ᵁ ⨆ (i : ι), s i) = ⨆ (i : ι), f ~~ᵁ s i := by
   ext : 1
   simp [Set.image_iUnion]
 
 lemma image_iSup₂ {ι : Sort*} {κ : ι → Sort*} (s : (i : ι) → κ i → X.Opens) :
-    (f ''ᵁ ⨆ (i : ι), ⨆ (j : κ i), s i j) = ⨆ (i : ι), ⨆ (j : κ i), f ''ᵁ s i j := by
+    (f ~~ᵁ ⨆ (i : ι), ⨆ (j : κ i), s i j) = ⨆ (i : ι), ⨆ (j : κ i), f ~~ᵁ s i j := by
   ext : 1
   simp [Set.image_iUnion₂]
 
 /-- The isomorphism `Γ(Y, f(U)) ≅ Γ(X, U)` induced by an open immersion `f : X ⟶ Y`. -/
-def appIso (U) : Γ(Y, f ''ᵁ U) ≅ Γ(X, U) :=
+def appIso (U) : Γ(Y, f ~~ᵁ U) ≅ Γ(X, U) :=
   (asIso <| LocallyRingedSpace.IsOpenImmersion.invApp f.toLRSHom U).symm
 
 @[reassoc (attr := simp)]
@@ -143,12 +161,12 @@ theorem appIso_inv_naturality {U V : X.Opens} (i : op U ⟶ op V) :
   PresheafedSpace.IsOpenImmersion.inv_naturality _ _
 
 theorem appIso_hom (U) :
-    (f.appIso U).hom = f.app (f ''ᵁ U) ≫ X.presheaf.map
+    (f.appIso U).hom = f.app (f ~~ᵁ U) ≫ X.presheaf.map
       (eqToHom (preimage_image_eq f U).symm).op :=
   (PresheafedSpace.IsOpenImmersion.inv_invApp f.toPshHom U).trans (by rw [eqToHom_op])
 
 theorem appIso_hom' (U) :
-    (f.appIso U).hom = f.appLE (f ''ᵁ U) U (preimage_image_eq f U).ge :=
+    (f.appIso U).hom = f.appLE (f ~~ᵁ U) U (preimage_image_eq f U).ge :=
   f.appIso_hom U
 
 @[reassoc (attr := simp)]
@@ -166,7 +184,7 @@ theorem app_invApp' (U) (hU : U ≤ f.opensRange) :
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem appIso_inv_app (U) :
-    (f.appIso U).inv ≫ f.app (f ''ᵁ U) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op :=
+    (f.appIso U).inv ≫ f.app (f ~~ᵁ U) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op :=
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
 @[reassoc (attr := simp), elementwise]
@@ -182,8 +200,8 @@ lemma appLE_appIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U :
 
 @[reassoc (attr := simp)]
 lemma appIso_inv_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U V : X.Opens}
-    (e : V ≤ f ⁻¹ᵁ f ''ᵁ U) :
-    (f.appIso U).inv ≫ f.appLE (f ''ᵁ U) V e =
+    (e : V ≤ f ⁻¹ᵁ f ~~ᵁ U) :
+    (f.appIso U).inv ≫ f.appLE (f ~~ᵁ U) V e =
         X.presheaf.map (homOfLE (by rwa [preimage_image_eq] at e)).op := by
   simp only [appLE, appIso_inv_app_assoc, eqToHom_op]
   rw [← Functor.map_comp]
@@ -195,9 +213,9 @@ end Scheme.Hom
 @[simps]
 def IsOpenImmersion.opensEquiv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     X.Opens ≃ { U : Y.Opens // U ≤ f.opensRange } where
-  toFun U := ⟨f ''ᵁ U, Set.image_subset_range _ _⟩
+  toFun U := ⟨f ~~ᵁ U, Set.image_subset_range _ _⟩
   invFun U := f ⁻¹ᵁ U
-  left_inv _ := Opens.ext (Set.preimage_image_eq _ f.isOpenEmbedding.inj)
+  left_inv _ := Opens.ext (Set.preimage_image_eq _ f.isOpenEmbedding.injective)
   right_inv U := Subtype.ext (Opens.ext (Set.image_preimage_eq_of_subset U.2))
 
 namespace Scheme
@@ -322,7 +340,7 @@ instance IsOpenImmersion.ofRestrict : IsOpenImmersion (X.ofRestrict h) :=
 @[simp]
 lemma Scheme.ofRestrict_appLE (V W e) :
     (X.ofRestrict h).appLE V W e = X.presheaf.map
-      (homOfLE (show X.ofRestrict h ''ᵁ _ ≤ _ by exact Set.image_subset_iff.mpr e)).op := by
+      (homOfLE (show X.ofRestrict h ~~ᵁ _ ≤ _ by exact Set.image_subset_iff.mpr e)).op := by
   dsimp [Hom.appLE]
   exact (X.presheaf.map_comp _ _).symm
 
@@ -335,8 +353,8 @@ lemma Scheme.ofRestrict_appIso (U) :
 
 @[simp]
 lemma Scheme.restrict_presheaf_map (V W) (i : V ⟶ W) :
-    (X.restrict h).presheaf.map i = X.presheaf.map (homOfLE (show X.ofRestrict h ''ᵁ W.unop ≤
-      X.ofRestrict h ''ᵁ V.unop from Set.image_subset _ i.unop.le)).op := rfl
+    (X.restrict h).presheaf.map i = X.presheaf.map (homOfLE (show X.ofRestrict h ~~ᵁ W.unop ≤
+      X.ofRestrict h ~~ᵁ V.unop from Set.image_subset _ i.unop.le)).op := rfl
 
 end Restrict
 
@@ -391,7 +409,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
       IsIso
         (TopCat.isoOfHomeo
             (Homeomorph.homeomorphOfContinuousOpen
-              (Equiv.ofBijective _ ⟨h₂.inj, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
+              (.ofBijective _ ⟨h₂.injective, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
               h₂.isOpenMap)).hom
     infer_instance
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).isOpenEmbedding⟩
@@ -490,8 +508,8 @@ theorem range_pullback_snd_of_left :
     Set.range (pullback.snd f g).base = (g ⁻¹ᵁ f.opensRange).1 := by
   rw [← show _ = (pullback.snd f g).base from
     PreservesPullback.iso_hom_snd Scheme.forgetToTop f g, TopCat.coe_comp, Set.range_comp,
-    Set.range_iff_surjective.mpr, ← @Set.preimage_univ _ _ (pullback.fst f.base g.base)]
-  -- Porting note (#11224): was `rw`
+    Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.fst f.base g.base)]
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   · erw [TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
     rfl
@@ -507,8 +525,8 @@ theorem range_pullback_fst_of_right :
       ((Opens.map g.base).obj ⟨Set.range f.base, H.base_open.isOpen_range⟩).1 := by
   rw [← show _ = (pullback.fst g f).base from
     PreservesPullback.iso_hom_fst Scheme.forgetToTop g f, TopCat.coe_comp, Set.range_comp,
-    Set.range_iff_surjective.mpr, ← @Set.preimage_univ _ _ (pullback.snd g.base f.base)]
-  -- Porting note (#11224): was `rw`
+    Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.snd g.base f.base)]
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   · erw [TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
     rfl
@@ -571,17 +589,17 @@ lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 theorem app_eq_invApp_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : U.Opens) :
-    f ⁻¹ᵁ V = fg ⁻¹ᵁ (g ''ᵁ V) := by
+    f ⁻¹ᵁ V = fg ⁻¹ᵁ (g ~~ᵁ V) := by
   subst H
   rw [Scheme.comp_base, Opens.map_comp_obj]
   congr 1
   ext1
-  exact (Set.preimage_image_eq _ h.base_open.inj).symm
+  exact (Set.preimage_image_eq _ h.base_open.injective).symm
 
 /-- The `fg` argument is to avoid nasty stuff about dependent types. -/
 theorem app_eq_appIso_inv_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : U.Opens) :
-    f.app V = (g.appIso V).inv ≫ fg.app (g ''ᵁ V) ≫ Y.presheaf.map
+    f.app V = (g.appIso V).inv ≫ fg.app (g ~~ᵁ V) ≫ Y.presheaf.map
       (eqToHom <| IsOpenImmersion.app_eq_invApp_app_of_comp_eq_aux f g fg H V).op := by
   subst H
   rw [Scheme.comp_app, Category.assoc, Scheme.Hom.appIso_inv_app_assoc, f.naturality_assoc,
@@ -590,7 +608,7 @@ theorem app_eq_appIso_inv_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g :
 
 theorem lift_app {X Y U : Scheme.{u}} (f : U ⟶ Y) (g : X ⟶ Y) [IsOpenImmersion f] (H)
     (V : U.Opens) :
-    (IsOpenImmersion.lift f g H).app V = (f.appIso V).inv ≫ g.app (f ''ᵁ V) ≫
+    (IsOpenImmersion.lift f g H).app V = (f.appIso V).inv ≫ g.app (f ~~ᵁ V) ≫
       X.presheaf.map (eqToHom <| IsOpenImmersion.app_eq_invApp_app_of_comp_eq_aux _ _ _
         (IsOpenImmersion.lift_fac f g H).symm V).op :=
   IsOpenImmersion.app_eq_appIso_inv_app_of_comp_eq _ _ _ (lift_fac _ _ _).symm _
@@ -636,11 +654,34 @@ instance {Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [IsOpenImmersion f]
 
 end IsOpenImmersion
 
+section MorphismProperty
+
+instance isOpenImmersion_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition @IsOpenImmersion where
+  comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
+
+instance isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
+  apply MorphismProperty.respectsIso_of_isStableUnderComposition
+  intro _ _ f (hf : IsIso f)
+  have : IsIso f := hf
+  infer_instance
+
+instance isOpenImmersion_isMultiplicative :
+    MorphismProperty.IsMultiplicative @IsOpenImmersion where
+  id_mem _ := inferInstance
+
+instance isOpenImmersion_stableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @IsOpenImmersion :=
+  MorphismProperty.IsStableUnderBaseChange.mk' <| by
+    intro X Y Z f g _ H; infer_instance
+
+end MorphismProperty
+
 namespace Scheme
 
 theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f] {U : X.Opens}
     (r : Γ(X, U)) :
-    f ''ᵁ X.basicOpen r = Y.basicOpen ((f.appIso U).inv r) := by
+    f ~~ᵁ X.basicOpen r = Y.basicOpen ((f.appIso U).inv r) := by
   have e := Scheme.preimage_basicOpen f ((f.appIso U).inv r)
   rw [Scheme.Hom.appIso_inv_app_apply, Scheme.basicOpen_res, inf_eq_right.mpr _] at e
   · rw [← e, f.image_preimage_eq_opensRange_inter, inf_eq_right]

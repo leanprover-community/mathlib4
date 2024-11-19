@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
@@ -91,6 +91,10 @@ example (a b c d : ℕ) (h1 : a ≤ b) (h2 : c ≤ d) : a * c ≤ b * d := by gc
 -- this tests that the tactic prioritizes applying hypotheses (such as, here, `0 ≤ a ^ 6`) over the
 -- greedy application of nonnegativity lemmas
 example {a b : ℚ} (h : 0 ≤ a ^ 6) : 0 + b ≤ a ^ 6 + b := by gcongr
+
+example {a b : ℚ} (h₁ : a ≤ b) (c : ℝ) : (a + c : ℝ) ≤ b + c := by gcongr
+
+example {a b : ℚ} (h₁ : a < b) (c : ℝ) : (a + c : ℝ) < b + c := by gcongr
 
 -- another priority test
 example {k m n : ℤ} (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by gcongr

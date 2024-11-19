@@ -289,13 +289,25 @@ theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * �
 theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
   Subtype.ext <| norm_algebraMap 𝕜' x
 
+theorem dist_algebraMap (x y : 𝕜) :
+    (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y * ‖(1 : 𝕜')‖ := by
+  simp only [dist_eq_norm, ← map_sub, norm_algebraMap]
+
+/-- This is a simpler version of `norm_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
 @[simp]
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
 
+/-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
 @[simp]
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
+
+/-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
+@[simp]
+theorem dist_algebraMap' [NormOneClass 𝕜'] (x y : 𝕜) :
+    (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y := by
+  simp only [dist_eq_norm, ← map_sub, norm_algebraMap']
 
 section NNReal
 

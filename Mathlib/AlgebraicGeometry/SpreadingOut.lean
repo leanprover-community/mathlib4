@@ -87,7 +87,7 @@ lemma Scheme.exists_le_and_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInje
 instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
     Y.IsGermInjectiveAt (f.base x) := by
   obtain ⟨U, hxU, hU, H⟩ := X.exists_germ_injective x
-  refine ⟨⟨f ''ᵁ U, ⟨x, hxU, rfl⟩, hU.image_of_isOpenImmersion f, ?_⟩⟩
+  refine ⟨⟨f ~~ᵁ U, ⟨x, hxU, rfl⟩, hU.image_of_isOpenImmersion f, ?_⟩⟩
   refine ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
     (f.stalkMap x)).mp ?_
   refine ((MorphismProperty.injective CommRingCat).cancel_left_of_respectsIso
@@ -101,9 +101,9 @@ lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f]:
   obtain ⟨U, hxU, hU, hU', H⟩ :=
     Y.exists_le_and_germ_injective (f.base x) (V := f.opensRange) ⟨x, rfl⟩
   obtain ⟨V, hV⟩ := (IsOpenImmersion.affineOpensEquiv f).surjective ⟨⟨U, hU⟩, hU'⟩
-  obtain rfl : f ''ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
+  obtain rfl : f ~~ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
   obtain ⟨y, hy, e : f.base y = f.base x⟩ := hxU
-  obtain rfl := f.isOpenEmbedding.inj e
+  obtain rfl := f.isOpenEmbedding.injective e
   refine ⟨V, hy, V.2, ?_⟩
   replace H := ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
     (f.stalkMap y)).mpr H
@@ -225,7 +225,7 @@ lemma spread_out_unique_of_isGermInjective' {x : X} [X.IsGermInjectiveAt x]
     (e : X.fromSpecStalk x ≫ f = X.fromSpecStalk x ≫ g) :
     ∃ (U : X.Opens), x ∈ U ∧ U.ι ≫ f = U.ι ≫ g := by
   fapply spread_out_unique_of_isGermInjective
-  · simpa using congr(($e).base (LocalRing.closedPoint _))
+  · simpa using congr(($e).base (IsLocalRing.closedPoint _))
   · apply Spec.map_injective
     rw [← cancel_mono (Y.fromSpecStalk _)]
     simpa [Scheme.Spec_map_stalkSpecializes_fromSpecStalk]

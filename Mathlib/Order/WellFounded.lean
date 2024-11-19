@@ -227,7 +227,7 @@ noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
 theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
--- Porting note (#11119): @[simp] removed as it will never apply
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
     (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
   WellFounded.not_lt_min (InvImage.wf f h) s hs ha
@@ -238,11 +238,11 @@ section LinearOrder
 
 variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop))
 
--- Porting note (#11119): @[simp] removed as it will never apply
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
   not_lt.mp <| not_lt_argmin f h a
 
--- Porting note (#11119): @[simp] removed as it will never apply
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f h s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f h s ha hs
@@ -296,30 +296,6 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
   hwf.induction_bot' ih
 
 end Induction
-
-section WellFoundedLT
-
-variable [Preorder α] [Preorder β] {f : α → β}
-
-theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α where
-  wf := WellFounded.wellFounded_iff_has_min.2 fun s hne ↦ by
-    have hs' : (f '' s).Nonempty := ⟨f hne.some, _, hne.some_mem, rfl⟩
-    obtain ⟨x, hx, hex⟩ := WellFounded.min_mem wellFounded_lt (f '' s) hs'
-    refine ⟨x, hx, fun y hy hlt ↦ ?_⟩
-    apply WellFounded.not_lt_min wellFounded_lt (s.image f) hs' (Set.mem_image_of_mem _ hy)
-    rw [← hex]
-    exact hf hlt
-
-theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
-  StrictMono.wellFoundedLT (β := βᵒᵈ) hf
-
-theorem StrictMono.wellFoundedGT [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
-  StrictMono.wellFoundedLT (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
-
-theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
-  StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
-
-end WellFoundedLT
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
 noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :

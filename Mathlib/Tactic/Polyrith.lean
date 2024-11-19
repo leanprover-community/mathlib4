@@ -60,7 +60,7 @@ remember to force recompilation of any files that call `polyrith`.
 -/
 
 namespace Mathlib.Tactic.Polyrith
-open Lean hiding Rat
+open Lean
 open Meta Ring Qq PrettyPrinter AtomM
 initialize registerTraceClass `Meta.Tactic.polyrith
 
@@ -127,6 +127,7 @@ def Poly.toSyntax : Poly → Unhygienic Syntax.Term
   | .pow p q => do `($(← p.toSyntax) ^ $(← q.toSyntax))
   | .neg p => do `(-$(← p.toSyntax))
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
 partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
