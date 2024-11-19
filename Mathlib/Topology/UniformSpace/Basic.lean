@@ -651,7 +651,7 @@ theorem nhdsWithin_eq_comap_uniformity {x : α} (S : Set α) :
     𝓝[S] x = (𝓤 α ⊓ 𝓟 (univ ×ˢ S)).comap (Prod.mk x) :=
   nhdsWithin_eq_comap_uniformity_of_mem (mem_univ _) S
 
-/-- See also `isOpen_iff_open_ball_subset`. -/
+/-- See also `isOpen_iff_isOpen_ball_subset`. -/
 theorem isOpen_iff_ball_subset {s : Set α} : IsOpen s ↔ ∀ x ∈ s, ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
   simp_rw [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap, ball]
 
@@ -863,7 +863,7 @@ theorem mem_uniformity_isClosed {s : Set (α × α)} (h : s ∈ 𝓤 α) : ∃ t
   let ⟨t, ⟨ht_mem, htc⟩, hts⟩ := uniformity_hasBasis_closed.mem_iff.1 h
   ⟨t, ht_mem, htc, hts⟩
 
-theorem isOpen_iff_open_ball_subset {s : Set α} :
+theorem isOpen_iff_isOpen_ball_subset {s : Set α} :
     IsOpen s ↔ ∀ x ∈ s, ∃ V ∈ 𝓤 α, IsOpen V ∧ ball x V ⊆ s := by
   rw [isOpen_iff_ball_subset]
   constructor <;> intro h x hx
@@ -873,6 +873,9 @@ theorem isOpen_iff_open_ball_subset {s : Set α} :
         (ball_mono interior_subset x).trans hV'⟩
   · obtain ⟨V, hV, -, hV'⟩ := h x hx
     exact ⟨V, hV, hV'⟩
+
+@[deprecated (since := "2024-11-18")] alias
+isOpen_iff_open_ball_subset := isOpen_iff_isOpen_ball_subset
 
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :
