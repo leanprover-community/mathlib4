@@ -66,6 +66,9 @@ If the atomic expression has *not* already been encountered, store it in the lis
 return the new index (and the stored form of the atom, which will be itself).
 
 In a normalizing tactic, the expression returned by `addAtom` should be considered the normal form. -/
-def AtomM.addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) : AtomM (Nat × Q($α)) := AtomM.addAtom e
+def AtomM.addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
+    AtomM (Nat × {e' : Q($α) // $e =Q $e'}) := do
+  let (n, e') ← AtomM.addAtom e
+  return (n, ⟨e, ⟨⟩⟩)
 
 end Mathlib.Tactic
