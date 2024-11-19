@@ -384,7 +384,7 @@ theorem mker_swap : MonoidHom.mker (swap M N) = ⊥ := Submonoid.ext fun _ ↦ s
 
 @[to_additive (attr := simp)]
 theorem mrange_swap : MonoidHom.mrange (swap M N) = ⊤ :=
-  MonoidHom.mrange_top_of_surjective _ swap_surjective
+  MonoidHom.mrange_eq_top_of_surjective _ swap_surjective
 
 end MulOneClass
 
@@ -609,7 +609,7 @@ theorem codisjoint_range_inl_range_inr :
   codisjoint_iff.2 range_inl_sup_range_inr
 
 @[to_additive (attr := simp)] theorem range_swap : MonoidHom.range (swap G H) = ⊤ :=
-  MonoidHom.range_top_of_surjective _ swap_surjective
+  MonoidHom.range_eq_top.2 swap_surjective
 
 variable {K : Type*} [Group K]
 
