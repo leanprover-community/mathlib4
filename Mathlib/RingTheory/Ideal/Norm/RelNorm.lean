@@ -184,7 +184,7 @@ theorem spanNorm_mul_of_bot_or_top (eq_bot_or_top : ∀ I : Ideal R, I = ⊥ ∨
   rw [hJ]
   exact le_top
 
-variable [IsDedekindDomain R] [IsDedekindDomain S] [Module.Free R S]
+variable [IsDedekindDomain R] [IsDedekindDomain S]
 
 /-- Multiplicativity of `Ideal.spanNorm`. simp-normal form is `map_mul (Ideal.relNorm R)`. -/
 theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanNorm R J := by
@@ -279,7 +279,8 @@ theorem relNorm_eq_bot_iff {I : Ideal S} : relNorm R I = ⊥ ↔ I = ⊥ :=
 
 variable (R)
 
-theorem norm_mem_relNorm (I : Ideal S) {x : S} (hx : x ∈ I) : Algebra.norm R x ∈ relNorm R I :=
+theorem norm_mem_relNorm [Module.Free R S] (I : Ideal S) {x : S} (hx : x ∈ I) :
+    Algebra.norm R x ∈ relNorm R I :=
   norm_mem_spanNorm R x hx
 
 @[simp]
