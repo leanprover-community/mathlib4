@@ -100,10 +100,8 @@ variable [WellFoundedLT J] {j : J} (hj : Order.IsSuccLimit j)
 
 namespace mkOfLimit
 
-abbrev obj (i : J) (hi : i < j) : C ⥤ C := (iter i hi).F.obj ⟨i, by simp⟩
-
 noncomputable def map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ < j) :
-    obj iter i₁ (lt_of_le_of_lt hi hi₂) ⟶ obj iter i₂ hi₂ :=
+    (iter i₁ (lt_of_le_of_lt hi hi₂)).F.obj ⟨i₁, by simp⟩ ⟶ (iter i₂ hi₂).F.obj ⟨i₂, by simp⟩ :=
   ((iter i₁ (lt_of_le_of_lt hi hi₂)).iso ((iter i₂ hi₂).trunc hi)).hom.natTrans.app
     ⟨i₁, by simp⟩ ≫ (iter i₂ hi₂).F.map (homOfLE hi)
 
@@ -126,14 +124,12 @@ lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (
 
 @[simps]
 noncomputable def functor : Set.Iio j ⥤ C ⥤ C where
-  obj i := obj iter i.1 i.2
+  obj i := (iter i.1 i.2).F.obj ⟨i.1, by simp⟩
   map f := map iter _ _ (leOfHom f) _
   map_id _ := map_id iter _ _
   map_comp _ _ := map_comp iter _ _ _ _ _ _
 
 end mkOfLimit
-
-section
 
 open mkOfLimit
 
@@ -143,14 +139,21 @@ include hj iter in
 noncomputable def mkOfLimit :
     Iteration ε j where
   F := Functor.ofCocone (colimit.cocone (functor iter))
-  isoZero := by
+  isoZero := (Functor.ofCoconeObjIso _ ⊥ (Ne.bot_lt (by simpa using hj.1))).trans
+    ((iter ⊥ _).isoZero)
+  isoSucc i hi :=
+    Functor.ofCoconeObjIso _ (Order.succ i) ((Order.IsSuccLimit.succ_lt_iff hj).2 hi) ≪≫
+      (iter (Order.succ i) ((Order.IsSuccLimit.succ_lt_iff hj).2 hi)).isoSucc i (by
+        rw [Order.lt_succ_iff_not_isMax, not_isMax_iff]
+        exact ⟨_, hi⟩) ≪≫
+        isoWhiskerRight ((Iteration.eval ε (Preorder.le_refl i)).mapIso
+            (((iter (Order.succ i) _).trunc (Order.le_succ i)).iso (iter i hi)) ≪≫
+            (Functor.ofCoconeObjIso (colimit.cocone (functor iter)) i hi).symm) Φ
+  mapSucc'_eq := sorry
+  isColimit := by
     have := hj
     sorry
-  isoSucc := sorry
-  mapSucc'_eq := sorry
-  isColimit := sorry
 
-end
 end
 
 instance [WellFoundedLT J] [HasIterationOfShape C J] (j : J) : Nonempty (Iteration ε j) := by
