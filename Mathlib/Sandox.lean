@@ -115,8 +115,7 @@ theorem AbelSummation (c : ℕ → ℂ) {f : ℝ → ℂ} {a b : ℝ} (ha : 0 �
   · refine h_int.mono_set ?_
     rw [Set.uIcc_of_le (by linarith), Set.uIcc_of_le (by linarith)]
     exact Set.Icc_subset_Icc_right (by linarith)
-  · intro k hk
-    refine h_int.mono_set ?_
+  · refine fun k hk ↦ h_int.mono_set ?_
     rw [Set.uIcc_of_le (by simp), Set.uIcc_of_le (by linarith), Nat.cast_add_one]
     exact h_Icck hk
 
