@@ -130,8 +130,6 @@ scoped infixr:60 " ⇨ₗ " => leftMulResiduation
 @[inherit_doc, to_additive existing]
 scoped infixr:60 " ⇨ᵣ " => rightMulResiduation
 
-/- Basic distribution theorems for mul and Sup, and basic equivalences on residuation -/
-
 @[to_additive]
 theorem mul_iSup_distrib : x * ⨆ i, f i = ⨆ i, x * f i := by
   rw [iSup, mul_sSup_distrib, iSup_range]
