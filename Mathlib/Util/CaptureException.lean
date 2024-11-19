@@ -7,7 +7,7 @@ Authors: Matthew Robert Ballard, Damiano Testa
 import Lean.Elab.Command
 
 /-!
-# `#guard_exceptions` -- an analogue of `#guard_msgs` for parsers
+# `#parse` -- a command to parse text and log outputs
 -/
 
 namespace Mathlib.GuardExceptions
