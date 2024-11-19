@@ -841,6 +841,10 @@ instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
 
 end Finite
 
+-- Shortcut instances
+instance Bool.instWellFoundedLT : WellFoundedLT Bool := inferInstance
+instance Prop.instWellFoundedLT : WellFoundedLT Prop := inferInstance
+
 -- @[nolint fintype_finite] -- Porting note: do we need this?
 protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
   not_finite α
