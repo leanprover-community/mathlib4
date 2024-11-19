@@ -21,7 +21,7 @@ namespace InitialSeg
 
 @[simp]
 theorem apply_covBy_apply_iff (f : α ≤i β) : f a ⋖ f b ↔ a ⋖ b :=
-  Set.OrdConnected.apply_covBy_apply_iff f.toOrderEmbedding (isLowerSet_range f).ordConnected
+  (isLowerSet_range f).ordConnected.apply_covBy_apply_iff f.toOrderEmbedding
 
 @[simp]
 theorem apply_wCovBy_apply_iff (f : α ≤i β) : f a ⩿ f b ↔ a ⩿ b := by
