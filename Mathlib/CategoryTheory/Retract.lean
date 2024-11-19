@@ -83,19 +83,19 @@ lemma retract_right : h.i.right ≫ h.r.right = 𝟙 Y := Arrow.hom.congr_right 
 lemma fac : h.i.left ≫ g ≫ h.r.right = f := by simp
 
 /-- the bottom of a retract diagram determines a split epimorphism. -/
-@[simps] def splitEpi_left : SplitEpi h.r.left where
+@[simps] def splitEpiLeft : SplitEpi h.r.left where
   section_ := h.i.left
 
 /-- the top of a retract diagram determines a split epimorphism. -/
-@[simps] def splitEpi_right : SplitEpi h.r.right where
+@[simps] def splitEpiRight : SplitEpi h.r.right where
   section_ := h.i.right
 
 /-- the bottom of a retract diagram determines a split monomorphism. -/
-@[simps] def splitMono_left : SplitMono h.i.left where
+@[simps] def splitMonoLeft : SplitMono h.i.left where
   retraction := h.r.left
 
 /-- the top of a retract diagram determines a split monomorphism. -/
-@[simps] def splitMono_right : SplitMono h.i.right where
+@[simps] def splitMonoRight : SplitMono h.i.right where
   retraction := h.r.right
 
 instance : IsSplitEpi h.r.left := ⟨⟨h.splitEpi_left⟩⟩
@@ -130,12 +130,10 @@ instance IsStableUnderRetracts.epimorphisms : (epimorphisms C).IsStableUnderRetr
       Category.assoc, Category.assoc, w]⟩
 
 instance IsStableUnderRetracts.isomorphisms : (isomorphisms C).IsStableUnderRetracts where
-  of_retract {X Y Z W f g} h:= fun ⟨inv, ⟨h₁, h₂⟩⟩ ↦ ⟨by
-    refine ⟨h.i.right ≫ inv ≫ h.r.left, ?_, ?_⟩
-    · rw [← Category.assoc, ← h.i_w, Category.assoc, ← Category.assoc g, h₁,
-        Category.id_comp, h.retract_left]
-    · rw [Category.assoc, Category.assoc, h.r_w, ← Category.assoc inv, h₂, Category.id_comp,
-        h.retract_right]⟩
+  of_retract {X Y Z W f g} h (_ : IsIso _) := by
+    refine ⟨h.i.right ≫ inv g ≫ h.r.left, ?_, ?_⟩
+    · rw [← h.i_w_assoc, IsIso.hom_inv_id_assoc, h.retract_left]
+    · rw [Category.assoc, Category.assoc, h.r_w, IsIso.inv_hom_id_assoc, h.retract_right]
 
 end MorphismProperty
 
