@@ -825,14 +825,26 @@ namespace QuadraticMap
 
 open LinearMap (BilinMap)
 
-section AssociatedHom
+section
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
+
+instance : SMulCommClass R (Submonoid.center R) M where
+  smul_comm r r' m := by
+    simp_rw [Submonoid.smul_def, smul_smul, (Set.mem_center_iff.1 r'.prop).1]
 
 /-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
-instance [inst : Invertible (2 : R)] : Invertible (2 : Module.End R M) :=
-  (Invertible.map (algebraMap R (Module.End R M)) 2).copy 2 <|
-    (map_ofNat (algebraMap R (Module.End R M)) 2).symm
+instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
+  invOf := (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
+    (1 : Module.End R M)
+  invOf_mul_self := by
+    ext m
+    dsimp [Submonoid.smul_def]
+    rw [← ofNat_smul_eq_nsmul R, invOf_smul_smul (2 : R) m]
+  mul_invOf_self := by
+    ext m
+    dsimp [Submonoid.smul_def]
+    rw [← ofNat_smul_eq_nsmul R, smul_invOf_smul (2 : R) m]
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End R M` to an element
 of `M` is the same as multiplying by the inverse of `2` in `R`. -/
@@ -841,6 +853,11 @@ lemma half_moduleEnd_apply_eq_half_smul [Invertible (2 : R)] (x : M) :
     ⅟ (2 : Module.End R M) x = ⅟ (2 : R) • x :=
   rfl
 
+end
+
+section AssociatedHom
+
+variable [CommRing R] [AddCommGroup M] [Module R M]
 variable [AddCommGroup N] [Module R N]
 variable (S) [CommSemiring S] [Algebra S R] [Module S N] [IsScalarTower S R N]
 
@@ -854,23 +871,16 @@ where `S` is a commutative ring and `R` is an `S`-algebra.
 Over a commutative ring, use `QuadraticMap.associated`, which gives an `R`-linear map.  Over a
 general ring with no nontrivial distinguished commutative subring, use `QuadraticMap.associated'`,
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
-def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) :=
-  -- TODO: this `center` stuff is vestigial from an incorrect non-commutative version, but we leave
-  -- it behind to make a future refactor to a *correct* non-commutative version easier in future.
-  -- This was the code prior to weakining the invertibility hypothesis on 2:
-  --   (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
-  --    { toFun := polarBilin
-  --      map_add' := fun _x _y => LinearMap.ext₂ <| polar_add _ _
-  --      map_smul' := fun _c _x => LinearMap.ext₂ <| polar_smul _ _ }
-    { toFun := fun Q ↦ ⅟ (2 : Module.End R N) • polarBilin Q
-      map_add' := fun _ _ ↦
-        LinearMap.ext₂ fun _ _ ↦ by
-          simp only [LinearMap.smul_apply, polarBilin_apply_apply, coeFn_add, polar_add,
-            LinearMap.smul_def, LinearMap.map_add, LinearMap.add_apply]
-      map_smul' := fun _ _ ↦
-        LinearMap.ext₂ fun _ _ ↦ by
-          simp only [LinearMap.smul_apply, polarBilin_apply_apply, coeFn_smul, polar_smul,
-            LinearMap.smul_def, LinearMap.map_smul_of_tower, RingHom.id_apply] }
+def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) where
+  toFun Q := ⅟ (2 : Module.End R N) • polarBilin Q
+  map_add' _ _ :=
+    LinearMap.ext₂ fun _ _ ↦ by
+      simp only [LinearMap.smul_apply, polarBilin_apply_apply, coeFn_add, polar_add,
+        LinearMap.smul_def, LinearMap.map_add, LinearMap.add_apply]
+  map_smul' _ _ :=
+    LinearMap.ext₂ fun _ _ ↦ by
+      simp only [LinearMap.smul_apply, polarBilin_apply_apply, coeFn_smul, polar_smul,
+        LinearMap.smul_def, LinearMap.map_smul_of_tower, RingHom.id_apply]
 
 variable (Q : QuadraticMap R M N)
 
