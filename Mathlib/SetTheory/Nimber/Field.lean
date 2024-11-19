@@ -16,7 +16,6 @@ form a field.
 
 ## Todo
 
-- Define nim division and prove nimbers are a field.
 - Show the nimbers are algebraically closed.
 -/
 
