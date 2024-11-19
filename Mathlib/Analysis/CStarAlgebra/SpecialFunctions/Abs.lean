@@ -49,15 +49,16 @@ lemma sqrt_eq_cfcₙ_real_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) :
     CFC.sqrt a = cfcₙ Real.sqrt a := by
   rw [sqrt_eq_iff (ha := ha) (hb := cfcₙ_nonneg (A := A) (fun x _ ↦ Real.sqrt_nonneg x))]
   simp only [← cfcₙ_mul (Real.sqrt) (Real.sqrt) _]
-  conv_lhs =>
-    lhs
-    ext
-    rw [← Real.sqrt_mul]
-
-
-
-
-
+  have dango : Set.EqOn (fun (x : ℝ) ↦ √x * √x) (fun (x : ℝ) ↦ x) (quasispectrum ℝ a)
+      := by
+    intro x hx
+    simp only
+    rw [← Real.sqrt_mul, Real.sqrt_mul_self]
+    <;>
+    exact StarOrderedRing.nonneg_iff_quasispectrum_nonneg (R := ℝ) (A := A)
+      (ha := IsSelfAdjoint.of_nonneg ha).mp ha x hx
+  have := cfcₙ_congr (f := fun x ↦ √x * √x) (g := id) (hfg := dango)
+  simpa only [cfcₙ_id (R := ℝ) a]
 
 lemma abs_eq_cfcₙ_norm (a : A) (ha : IsSelfAdjoint a) :
     abs a = cfcₙ (‖·‖) a := by
