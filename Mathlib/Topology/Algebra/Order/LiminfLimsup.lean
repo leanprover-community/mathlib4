@@ -422,7 +422,7 @@ variable [CompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 theorem iInf_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (x_le : ∀ i, x ≤ as i) {F : Filter ι}
     [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : ⨅ i, as i = x := by
   refine iInf_eq_of_forall_ge_of_forall_gt_exists_lt (fun i ↦ x_le i) ?_
-  apply fun w x_lt_w ↦ ‹Filter.NeBot F›.nonempty_of_mem (eventually_lt_of_tendsto_lt x_lt_w as_lim)
+  apply fun w x_lt_w ↦ ‹Filter.NeBot F›.nonempty_of_mem (as_lim.eventually_lt_const x_lt_w)
 
 theorem iSup_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (le_x : ∀ i, as i ≤ x) {F : Filter ι}
     [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : ⨆ i, as i = x :=
