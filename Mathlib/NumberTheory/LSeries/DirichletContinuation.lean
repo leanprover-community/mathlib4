@@ -115,7 +115,7 @@ lemma Even.LFunction_neg_two_mul_nat {χ : DirichletCharacter ℂ N} (hχ : Even
   ZMod.LFunction_neg_two_mul_nat_sub_one hχ.to_fun n
 
 /-!
-## Results on changing levels
+### Results on changing levels
 -/
 
 private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
@@ -158,7 +158,7 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
   · exact LFunction_changeLevel_aux hMN χ h
 
 /-!
-## The `L`-function of the trivial character mod `N`
+### The `L`-function of the trivial character mod `N`
 -/
 
 /-- The `L`-function of the trivial character mod `N`. -/
@@ -191,7 +191,7 @@ lemma LFunctionTrivChar_residue_one :
     fun_prop
 
 /-!
-## Completed L-functions and the functional equation
+### Completed L-functions and the functional equation
 -/
 
 section gammaFactor
