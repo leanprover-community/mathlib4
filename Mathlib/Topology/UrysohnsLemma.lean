@@ -491,4 +491,3 @@ theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x
   have := fk (mem_of_mem_nhds k_mem)
   simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
   simp [this]
-#min_imports
