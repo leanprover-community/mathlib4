@@ -166,7 +166,7 @@ see also Algebra.Hom.Group -/
   This is declared as the default coercion from `F` to `MulActionSemiHom φ X Y`. -/
 @[to_additive (attr := coe) "Turn an element of a type `F` satisfying `AddActionSemiHomClass F φ X Y`
   into an actual `AddActionHom`.
-  This is declared as the default coercion from `F` to `AddActionSemiHom φ X Y`."] 
+  This is declared as the default coercion from `F` to `AddActionSemiHom φ X Y`."]
 def _root_.MulActionSemiHomClass.toMulActionHom [MulActionSemiHomClass F φ X Y] (f : F) :
     X →ₑ[φ] Y where
   toFun := DFunLike.coe f
