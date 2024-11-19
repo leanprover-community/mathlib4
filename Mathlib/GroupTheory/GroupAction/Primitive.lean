@@ -129,10 +129,10 @@ the only blocks are the trivial ones -/
 
 /-- An additive action of an additive group is quasipreprimitive if any normal subgroup
   that has no fixed point acts pretransitively -/
-class _root_.AddAction.IsQuasipreprimitive 
+class _root_.AddAction.IsQuasipreprimitive
     [AddGroup G] [AddAction G X] extends AddAction.IsPretransitive G X : Prop where
   pretransitive_of_normal :
-    ∀ {N : AddSubgroup G} (_ : N.Normal), AddAction.fixedPoints N X ≠ ⊤ → 
+    ∀ {N : AddSubgroup G} (_ : N.Normal), AddAction.fixedPoints N X ≠ ⊤ →
       AddAction.IsPretransitive N X
 
 /-- A `mul_action` of a group is quasipreprimitive if any normal subgroup
@@ -170,7 +170,7 @@ open scoped BigOperators Pointwise
 
 /-- If the action is pretransitive, then the trivial blocks condition implies preprimitivity
 (based condition) -/
-@[to_additive 
+@[to_additive
 "If the action is pretransitive, then the trivial blocks condition implies preprimitivity
 (based condition)"]
 theorem mk_mem_of_pretransitive [htGX : IsPretransitive G X] (a : X)

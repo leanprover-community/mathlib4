@@ -40,7 +40,7 @@ variable {G}
 
 /-- An action of a group is pretransitive iff any element can be moved from a fixed given one. -/
 @[to_additive
-  "An additive action of an additive group is pretransitive 
+  "An additive action of an additive group is pretransitive
   iff any element can be moved from a fixed given one."]
 theorem mk_base_iff (a : X) :
     IsPretransitive G X ↔ ∀ x : X, ∃ g : G, g • a = x := by
@@ -54,7 +54,7 @@ theorem mk_base_iff (a : X) :
     exact ⟨h * g⁻¹, by rw [← hx, smul_smul, inv_mul_cancel_right, hy]⟩
 
 /-- An action of a group is pretransitive iff the orbit of every given element is full -/
-@[to_additive 
+@[to_additive
   "An action of a group is pretransitive iff the orbit of every given element is full"]
 theorem iff_orbit_eq_top (a : X) :
     IsPretransitive G X ↔ orbit G a = ⊤ := by
