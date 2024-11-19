@@ -356,21 +356,21 @@ theorem comap_op_mul (M N : Submodule R Aᵐᵒᵖ) :
   simp_rw [comap_equiv_eq_map_symm, map_unop_mul]
 
 section
-variable {B : Type*} [Semiring B] [Algebra R B] [Module A B] [SMulCommClass A R B]
+variable {α : Type*} [Monoid α] [DistribMulAction α A] [SMulCommClass α R A]
 
-instance [IsScalarTower A B B] : IsScalarTower A (Submodule R B) (Submodule R B) where
+instance [IsScalarTower α A A] : IsScalarTower α (Submodule R A) (Submodule R A) where
   smul_assoc a S T := by
     rw [← S.span_eq, ← T.span_eq]
     rw [smul_span, smul_eq_mul, smul_eq_mul, span_mul_span,  span_mul_span, smul_span,
       smul_mul_assoc]
 
-instance [SMulCommClass A B B] : SMulCommClass A (Submodule R B) (Submodule R B) where
+instance [SMulCommClass α A A] : SMulCommClass α (Submodule R A) (Submodule R A) where
   smul_comm a S T := by
     rw [← S.span_eq, ← T.span_eq, smul_span, smul_eq_mul, smul_eq_mul, span_mul_span, span_mul_span,
       smul_span, mul_smul_comm]
 
-instance [SMulCommClass B A B] : SMulCommClass (Submodule R B) A (Submodule R B) :=
-  have := SMulCommClass.symm B A B; .symm ..
+instance [SMulCommClass A α A] : SMulCommClass (Submodule R A) α (Submodule R A) :=
+  have := SMulCommClass.symm A α A; .symm ..
 
 end
 
