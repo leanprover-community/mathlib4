@@ -516,19 +516,18 @@ lemma exists_translate (τ : ℍ) : ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ
   use γ
   nlinarith [ModularGroup.three_le_four_mul_im_sq_of_mem_fd hγ, UpperHalfPlane.im_pos (γ • τ)]
 
-/--For every `τ : ℍ` there is some matrix in `γ ∈ SL(2, ℤ)` that sends it to an element whose
-imaginary part is at least `1/2` and `denom γ τ` has norm at most 1. -/
+/-- For every `τ : ℍ` there is some `γ ∈ SL(2, ℤ)` that sends it to an element whose
+imaginary part is at least `1/2` and such that `denom γ τ` has norm at most 1. -/
 lemma exists_translate' (τ : ℍ) : ∃ γ : SL(2, ℤ), 1 / 2 ≤ im (γ • τ) ∧ ‖denom γ τ‖ ≤ 1 := by
   by_cases h : 1 / 2 ≤ τ.im
-  · refine ⟨1, by simpa using h, by simp [ModularGroup.coe_one, denom_one]⟩
-  · obtain ⟨γ, hγ⟩ := exists_translate τ
-    refine ⟨γ, hγ, ?_⟩
-    have h0 :=  ModularGroup.im_smul_eq_div_normSq γ τ
-    simp only [ModularGroup.det_coe', one_mul, ← UpperHalfPlane.ModularGroup.sl_moeb] at h0
-    have h1 : τ.im ≤ (γ • τ).im := by nlinarith
-    rw [h0, le_div_iff₀ (normSq_denom_pos (↑γ) τ), normSq_eq_norm_sq] at h1
-    have H : ‖denom γ τ‖^2 ≤ 1 := (mul_le_iff_le_one_right τ.2).mp h1
-    simpa using H
+  · exact ⟨1, (one_smul SL(2, ℤ) τ).symm ▸ h,
+      by simp only [ModularGroup.coe_one, denom_one, norm_one, le_refl]⟩
+  · refine (exists_translate τ).imp (fun γ hγ ↦ ⟨hγ, ?_⟩)
+    have h1 : τ.im ≤ (γ • τ).im := by linarith
+    rw [ModularGroup.im_smul_eq_div_normSq, le_div_iff₀ (normSq_denom_pos (↑γ) τ),
+      normSq_eq_norm_sq] at h1
+    simpa only [norm_eq_abs, sq_le_one_iff_abs_le_one, Complex.abs_abs] using
+      (mul_le_iff_le_one_right τ.2).mp h1
 
 end UpperHalfPlane
 
