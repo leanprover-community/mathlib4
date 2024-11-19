@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.LinearMaps
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.GroupWithZero.Conj
 import Mathlib.FieldTheory.PurelyInseparable
+import Mathlib.Algebra.Central.Defs
 
 /-!
 # The Jacobson-Noether theorem
@@ -98,11 +99,10 @@ lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
   refine ⟨m, ⟨hm.1, fun n hn ↦ ?_⟩⟩
   have inter : (δ a) ^ (p ^ m) = 0 := by
     ext x
-    rw [δ, Pi.sub_apply, sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a)]
-    simp_rw [sub_apply, pow_mulLeft, mulLeft_apply, pow_mulRight,
+    simp_rw [δ, Pi.sub_apply, sub_pow_expChar_pow_of_commute p m
+      (commute_mulLeft_right a a), sub_apply, pow_mulLeft, mulLeft_apply, pow_mulRight,
       mulRight_apply, zero_apply, sub_eq_zero]
-    suffices h : a ^ (p ^ m) ∈ k from (Subring.mem_center_iff.1 h x).symm
-    exact hm.2
+    exact Subring.mem_center_iff.1 hm.2 x |>.symm
   rw [(Nat.sub_eq_iff_eq_add hn).1 rfl, pow_add, inter, mul_zero]
 
 variable (D) in
@@ -179,9 +179,10 @@ open Subring Algebra in
   `D` coincides with `L`, then there exist an element `x` of `D \ L`
   that is separable over `L`. -/
 theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRing D]
-    [Algebra L D] [Algebra.IsAlgebraic L D]
-    (hcenter : Subalgebra.center L D = ⊥) (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
+  [Algebra L D] [Algebra.IsAlgebraic L D] [Algebra.IsCentral L D]
+  (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
+  have hcenter : Subalgebra.center L D = ⊥ := le_bot_iff.mp IsCentral.out
   have ntrivial : center D ≠ ⊤ :=
     congr(Subalgebra.toSubring $hcenter).trans_ne (Subalgebra.toSubring_injective.ne hneq)
   set φ := Subalgebra.equivOfEq (⊥ : Subalgebra L D) (.center L D) hcenter.symm
