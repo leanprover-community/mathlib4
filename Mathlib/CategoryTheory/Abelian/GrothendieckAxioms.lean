@@ -73,16 +73,21 @@ attribute [instance] ABOfShape.preservesFiniteLimits
 A category `C` which has coproducts is said to have `AB4` provided that
 coproducts are exact.
 -/
-abbrev AB4 [HasCoproducts C] := ∀ (α : Type v), ABOfShape (Discrete α) C
+class AB4 [HasCoproducts C] where
+  ofShape (α : Type v) : ABOfShape (Discrete α) C
+
+attribute [instance] AB4.ofShape
 
 /--
 A category `C` which has countable coproducts is said to have countable `AB4` provided that
 countable coproducts are exact.
 -/
-abbrev CountableAB4 [HasCountableCoproducts C] :=
-  ∀ (α : Type) [Countable α], ABOfShape (Discrete α) C
+class CountableAB4 [HasCountableCoproducts C] where
+  ofShape (α : Type) [Countable α] : ABOfShape (Discrete α) C
 
-instance [HasCoproducts C] [AB4 C] (J : Type v) : ABOfShape (Discrete J) C := inferInstance
+attribute [instance] CountableAB4.ofShape
+
+-- instance [HasCoproducts C] [AB4 C] (J : Type v) : ABOfShape (Discrete J) C := inferInstance
 
 /--
 A category `C` which has limits of shape `J` is said to have `ABStar` of shape `J` provided that
@@ -97,27 +102,37 @@ attribute [instance] ABStarOfShape.preservesFiniteColimits
 
 /-- A category `C` which has products is said to have `AB4Star` (in literature `AB4*`)
 provided that products are exact. -/
-abbrev AB4Star [HasProducts C] := ∀ (α : Type v), ABStarOfShape (Discrete α) C
+class AB4Star [HasProducts C] where
+  ofShape (α : Type v) : ABStarOfShape (Discrete α) C
+
+attribute [instance] AB4Star.ofShape
 
 /--
 A category `C` which has countable coproducts is said to have countable `AB4Star` provided that
 countable products are exact.
 -/
-abbrev CountableAB4Star [HasCountableProducts C] :=
-  ∀ (α : Type) [Countable α], ABStarOfShape (Discrete α) C
+class CountableAB4Star [HasCountableProducts C] where
+  ofShape (α : Type) [Countable α] : ABStarOfShape (Discrete α) C
+
+attribute [instance] CountableAB4Star.ofShape
 
 /--
 A category `C` which has filtered colimits is said to have `AB5` provided that
 filtered colimits are exact.
 -/
-abbrev AB5 [HasFilteredColimits C] := ∀ (J : Type v) [SmallCategory J] [IsFiltered J], ABOfShape J C
+class AB5 [HasFilteredColimits C] where
+  ofShape (J : Type v) [SmallCategory J] [IsFiltered J] : ABOfShape J C
+
+attribute [instance] AB5.ofShape
 
 /--
 A category `C` which has cofiltered limits is said to have `AB5Star` (in literature `AB5*`)
 provided that cofiltered limits are exact.
 -/
-abbrev AB5Star [HasCofilteredLimits C] :=
-  ∀ (J : Type v) [SmallCategory J] [IsCofiltered J], ABStarOfShape J C
+class AB5Star [HasCofilteredLimits C] where
+  ofShape (J : Type v) [SmallCategory J] [IsCofiltered J] : ABStarOfShape J C
+
+attribute [instance] AB5Star.ofShape
 
 noncomputable section
 
@@ -165,20 +180,21 @@ def ABOfShape_of_final [HasColimitsOfShape J' C] [HasColimitsOfShape J C] [ABOfS
 end
 
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
-def AB4.of_AB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C := fun _ ↦
-  ABOfShape_discrete_of_ABOfShape_finset_discrete _ _
+def AB4.of_AB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C where
+  ofShape _ := ABOfShape_discrete_of_ABOfShape_finset_discrete _ _
 
 /--
 A category with finite biproducts and finite limits has countable AB4 if sequential colimits are
 exact.
 -/
 def CountableAB4.of_countableAB5 [HasColimitsOfShape ℕ C] [ABOfShape ℕ C]
-    [HasCountableCoproducts C] : CountableAB4 C := fun J _ ↦
-  have : HasColimitsOfShape (Finset (Discrete J)) C :=
-    Functor.Final.hasColimitsOfShape_of_final
-      (IsFiltered.sequentialFunctor (Finset (Discrete J)))
-  have := ABOfShape_of_final C (IsFiltered.sequentialFunctor (Finset (Discrete J)))
-  ABOfShape_discrete_of_ABOfShape_finset_discrete _ _
+    [HasCountableCoproducts C] : CountableAB4 C where
+  ofShape J :=
+    have : HasColimitsOfShape (Finset (Discrete J)) C :=
+      Functor.Final.hasColimitsOfShape_of_final
+        (IsFiltered.sequentialFunctor (Finset (Discrete J)))
+    have := ABOfShape_of_final C (IsFiltered.sequentialFunctor (Finset (Discrete J)))
+    ABOfShape_discrete_of_ABOfShape_finset_discrete _ _
 
 end
 
@@ -225,46 +241,49 @@ def ABStarOfShape_of_initial [HasLimitsOfShape J' C] [HasLimitsOfShape J C] [ABS
 end
 
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
-def AB4Star.of_AB5Star [HasProducts C] [HasCofilteredLimits C] [AB5Star C] : AB4Star C :=
-  fun _ ↦ ABStarOfShape_discrete_ofABStarOfShape_finset_discrete_op _ _
+def AB4Star.of_AB5Star [HasProducts C] [HasCofilteredLimits C] [AB5Star C] : AB4Star C where
+  ofShape _ := ABStarOfShape_discrete_ofABStarOfShape_finset_discrete_op _ _
 
 /--
 A category with finite biproducts and finite limits has countable AB4* if sequential limits are
 exact.
 -/
 def CountableAB4Star.of_countableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [ABStarOfShape ℕᵒᵖ C]
-    [HasCountableProducts C] : CountableAB4Star C := fun J _ ↦
-  have : HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C :=
-    Functor.Initial.hasLimitsOfShape_of_initial
-      (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
-  have := ABStarOfShape_of_initial C (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
-  ABStarOfShape_discrete_ofABStarOfShape_finset_discrete_op _ _
+    [HasCountableProducts C] : CountableAB4Star C where
+  ofShape J :=
+    have : HasLimitsOfShape (Finset (Discrete J))ᵒᵖ C :=
+      Functor.Initial.hasLimitsOfShape_of_initial
+        (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
+    have := ABStarOfShape_of_initial C (IsFiltered.sequentialFunctor (Finset (Discrete J))).op
+    ABStarOfShape_discrete_ofABStarOfShape_finset_discrete_op _ _
 
 /--
 Checking AB of shape `Discrete ℕ` and `Discrete J` for finite `J` is enough for countable AB.
 -/
 def CountableAB4.of_ABOfShape_nat_and_finite [HasCountableCoproducts C]
     [∀ (J : Type) [Finite J], ABOfShape (Discrete J) C] [ABOfShape (Discrete ℕ) C] :
-    CountableAB4 C := fun J _ ↦ by
-  by_cases h : Finite J
-  · infer_instance
-  · have : Infinite J := ⟨h⟩
-    let _ := Encodable.ofCountable J
-    let _ := Denumerable.ofEncodableOfInfinite J
-    exact ABOfShape_of_final C (Discrete.equivalence (Denumerable.eqv J)).inverse
+    CountableAB4 C where
+  ofShape J := by
+    by_cases h : Finite J
+    · infer_instance
+    · have : Infinite J := ⟨h⟩
+      let _ := Encodable.ofCountable J
+      let _ := Denumerable.ofEncodableOfInfinite J
+      exact ABOfShape_of_final C (Discrete.equivalence (Denumerable.eqv J)).inverse
 
 /--
 Checking AB* of shape `Discrete ℕ` and `Discrete J` for finite `J` is enough for countable AB*.
 -/
 def CountableAB4Star.of_ABStarOfShape_nat_and_finite [HasCountableProducts C]
     [∀ (J : Type) [Finite J], ABStarOfShape (Discrete J) C] [ABStarOfShape (Discrete ℕ) C] :
-    CountableAB4Star C := fun J _ ↦ by
-  by_cases h : Finite J
-  · infer_instance
-  · have : Infinite J := ⟨h⟩
-    let _ := Encodable.ofCountable J
-    let _ := Denumerable.ofEncodableOfInfinite J
-    exact ABStarOfShape_of_initial C (Discrete.equivalence (Denumerable.eqv J)).inverse
+    CountableAB4Star C where
+  ofShape J := by
+    by_cases h : Finite J
+    · infer_instance
+    · have : Infinite J := ⟨h⟩
+      let _ := Encodable.ofCountable J
+      let _ := Denumerable.ofEncodableOfInfinite J
+      exact ABStarOfShape_of_initial C (Discrete.equivalence (Denumerable.eqv J)).inverse
 
 end
 
