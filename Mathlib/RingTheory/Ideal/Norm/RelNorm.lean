@@ -63,7 +63,7 @@ theorem spanNorm_eq_bot_iff {I : Ideal S} : spanNorm R I = ⊥ ↔ I = ⊥ := by
 
 variable (R)
 
-theorem intNorm_mem_spanNorm {I : Ideal S} (x : S) (hx : x ∈ I) :
+theorem intNorm_mem_spanNorm {I : Ideal S} {x : S} (hx : x ∈ I) :
     Algebra.intNorm R S x ∈ I.spanNorm R :=
   subset_span (Set.mem_image_of_mem _ hx)
 
@@ -81,7 +81,7 @@ theorem spanNorm_singleton {r : S} :
         (by
           obtain ⟨x, hx', rfl⟩ := (Set.mem_image _ _ _).mp hx
           exact map_dvd _ (mem_span_singleton.mp hx')))
-    ((span_singleton_le_iff_mem _).mpr (intNorm_mem_spanNorm _ _ (mem_span_singleton_self _)))
+    ((span_singleton_le_iff_mem _).mpr (intNorm_mem_spanNorm _ (mem_span_singleton_self _)))
 
 @[simp]
 theorem spanNorm_top : spanNorm R (⊤ : Ideal S) = ⊤ := by
@@ -137,12 +137,12 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
   rw [map_spanIntNorm]
   refine span_eq_span (Set.image_subset_iff.mpr ?_) (Set.image_subset_iff.mpr ?_)
-  · rintro a' ha'
+  · intro a' ha'
     simp only [Set.mem_preimage, submodule_span_eq, ← map_spanIntNorm, SetLike.mem_coe,
       IsLocalization.mem_map_algebraMap_iff (Algebra.algebraMapSubmonoid S M) Sₘ,
       IsLocalization.mem_map_algebraMap_iff M Rₘ, Prod.exists] at ha' ⊢
     obtain ⟨⟨a, ha⟩, ⟨_, ⟨s, hs, rfl⟩⟩, has⟩ := ha'
-    refine ⟨⟨Algebra.intNorm R S a, intNorm_mem_spanNorm _ _ ha⟩,
+    refine ⟨⟨Algebra.intNorm R S a, intNorm_mem_spanNorm _ ha⟩,
       ⟨s ^ Module.finrank K L, pow_mem hs _⟩, ?_⟩
     simp only [Submodule.coe_mk, Subtype.coe_mk, map_pow] at has ⊢
     apply_fun algebraMap _ L at has
