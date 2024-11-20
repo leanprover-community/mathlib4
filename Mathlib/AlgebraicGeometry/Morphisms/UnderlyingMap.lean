@@ -85,6 +85,14 @@ instance surjective_isLocalAtTarget : IsLocalAtTarget @Surjective := by
 
 end Surjective
 
+section Injective
+
+instance injective_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition (topologically (Function.Injective ·)) where
+  comp_mem _ _ hf hg := hg.comp hf
+
+end Injective
+
 section IsOpenMap
 
 instance : (topologically IsOpenMap).RespectsIso :=

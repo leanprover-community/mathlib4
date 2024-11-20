@@ -468,7 +468,7 @@ theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     refine pow_pos ?_ m
     exact mod_cast hp.1.pos
   rw [inv_le_inv₀ (aux _) (aux _)]
-  have : p ^ n ≤ p ^ k ↔ n ≤ k := (pow_right_strictMono hp.1.one_lt).le_iff_le
+  have : p ^ n ≤ p ^ k ↔ n ≤ k := (pow_right_strictMono₀ hp.1.one_lt).le_iff_le
   rw [← this]
   norm_cast
 

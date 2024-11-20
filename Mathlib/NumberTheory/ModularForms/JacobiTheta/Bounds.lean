@@ -99,8 +99,8 @@ lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_na
   simp_rw [← mul_assoc, f_nat, norm_mul, norm_eq_abs, abs_exp,
     mul_le_mul_iff_of_pos_right (exp_pos _), ← mul_pow, abs_pow, two_mul]
   filter_upwards [eventually_ge_atTop (Nat.ceil |a|)] with n hn
-  apply pow_le_pow_left (abs_nonneg _) ((abs_add_le _ _).trans
-    (add_le_add (le_of_eq (Nat.abs_cast _)) (Nat.ceil_le.mp hn)))
+  gcongr
+  exact (abs_add_le ..).trans (add_le_add (Nat.abs_cast _).le (Nat.ceil_le.mp hn))
 
 section k_eq_zero
 

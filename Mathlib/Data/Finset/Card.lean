@@ -139,8 +139,6 @@ theorem card_pair_eq_one_or_two : #{a, b} = 1 ∨ #{a, b} = 2 := by
 theorem card_pair (h : a ≠ b) : #{a, b} = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
 
-@[deprecated (since := "2024-01-04")] alias card_doubleton := Finset.card_pair
-
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
 theorem card_erase_of_mem : a ∈ s → #(s.erase a) = #s - 1 :=

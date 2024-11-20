@@ -667,6 +667,14 @@ section LinearOrder
 
 variable [LinearOrder α] {a b c d : α}
 
+@[deprecated "is syntactical" (since := "2024-11-13"), nolint synTaut]
+theorem sup_eq_max : a ⊔ b = max a b :=
+  rfl
+
+@[deprecated "is syntactical" (since := "2024-11-13"), nolint synTaut]
+theorem inf_eq_min : a ⊓ b = min a b :=
+  rfl
+
 theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b) :=
   (IsTotal.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by
   rwa [sup_eq_left.2 h]

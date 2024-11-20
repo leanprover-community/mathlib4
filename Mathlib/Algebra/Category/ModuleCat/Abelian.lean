@@ -82,19 +82,19 @@ instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) :=
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
-instance forgetReflectsLimitsOfSize :
+instance forget_reflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{v, w} R)) :=
-  reflectsLimitsOfReflectsIsomorphisms
+  reflectsLimits_of_reflectsIsomorphisms
 
-instance forget₂ReflectsLimitsOfSize :
+instance forget₂_reflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{v, w} R) AddCommGrp.{max v w}) :=
-  reflectsLimitsOfReflectsIsomorphisms
+  reflectsLimits_of_reflectsIsomorphisms
 
-instance forgetReflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
-  ModuleCat.forgetReflectsLimitsOfSize.{v, v}
+instance forget_reflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
+  ModuleCat.forget_reflectsLimitsOfSize.{v, v}
 
-instance forget₂ReflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) :=
-  ModuleCat.forget₂ReflectsLimitsOfSize.{v, v}
+instance forget₂_reflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGrp.{v}) :=
+  ModuleCat.forget₂_reflectsLimitsOfSize.{v, v}
 
 end ReflectsLimits
 
