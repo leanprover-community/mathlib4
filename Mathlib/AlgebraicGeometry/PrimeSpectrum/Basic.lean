@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Localization.Away.Lemmas
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
@@ -1051,10 +1051,6 @@ lemma PrimeSpectrum.basicOpen_isIdempotentElemEquivIsClopen_symm (s) :
     basicOpen (isIdempotentElemEquivIsClopen (R := R).symm s).1 = s.1 :=
   congr_arg (·.1) (isIdempotentElemEquivIsClopen.apply_symm_apply s)
 
-lemma IsLocalization.away_quotient_of_isIdempotentElem {e : R} (he : IsIdempotentElem e) :
-    IsLocalization.Away e (R ⧸ Ideal.span {1 - e}) :=
-  away_of_isIdempotentElem he Ideal.mk_ker Quotient.mk_surjective
-
 open PrimeSpectrum in
 /-- If the prime spectrum of a commutative ring R has discrete Zariski topology, then R is
 canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
@@ -1068,7 +1064,7 @@ def RingHom.toLocalizationIsMaximalEquiv [DiscreteTopology (PrimeSpectrum R)] : 
     let toSpec (I : {I : Ideal R | I.IsMaximal}) : PrimeSpectrum R := ⟨I.1, I.2.isPrime⟩
     have loc I : IsLocalization.AtPrime (R ⧸ ideal I) I.1 := by
       rw [← isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton]
-      exacts [IsLocalization.away_quotient_of_isIdempotentElem (idem I).2,
+      exacts [IsLocalization.Away.quotient_of_isIdempotentElem (idem I).2,
        (basicOpen_isIdempotentElemEquivIsClopen_symm ⟨{I}, isClopen_discrete _⟩)]
     let equiv I := IsLocalization.algEquiv I.1.primeCompl (Localization.AtPrime I.1) (R ⧸ ideal I)
     have := (discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical.mp ‹_›).1
