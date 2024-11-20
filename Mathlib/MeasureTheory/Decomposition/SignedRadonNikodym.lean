@@ -89,10 +89,8 @@ section IntegralRNDerivMul
 
 open Measure
 
-variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HaveLebesgueDecomposition μ ν]
-  [SigmaFinite μ] {f : α → E}
+variable {α E : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {μ ν : Measure α} [SigmaFinite μ] [HaveLebesgueDecomposition μ ν] {f : α → E}
 
 theorem integrable_rnDeriv_smul_iff (hμν : μ ≪ ν) :
     Integrable (fun x ↦ (μ.rnDeriv ν x).toReal • f x) ν ↔ Integrable f μ := by
