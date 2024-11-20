@@ -73,4 +73,26 @@ lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[
   · simp only [spine_arrow, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
       mkOfSucc_subinterval_eq]
 
+@[ext]
+lemma Path.ext₁ {f g : Path X 1} (h : f.arrow 0 = g.arrow 0) :
+    f = g := by
+  ext i
+  · fin_cases i
+    · erw [← f.arrow_src 0, ← g.arrow_src 0, h]
+    · erw [← f.arrow_tgt 0, ← g.arrow_tgt 0, h]
+  · fin_cases i
+    exact h
+
+@[ext]
+lemma Path.ext₂ {f g : Path X 2} (h₀ : f.arrow 0 = g.arrow 0) (h₁ : f.arrow 1 = g.arrow 1) :
+    f = g := by
+  ext i
+  · fin_cases i
+    · erw [← f.arrow_src 0, ← g.arrow_src 0, h₀]
+    · erw [← f.arrow_tgt 0, ← g.arrow_tgt 0, h₀]
+    · erw [← f.arrow_tgt 1, ← g.arrow_tgt 1, h₁]
+  · fin_cases i
+    · exact h₀
+    · exact h₁
+
 end SSet
