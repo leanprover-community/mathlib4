@@ -307,6 +307,15 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
   classical
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
 
+lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : q.vars.toSet ⊆ s)
+    [∀ i, Decidable (i ∈ s)] :
+    MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q = q := by
+  rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
+  refine Finset.sum_congr rfl fun u hu ↦ ?_
+  rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
+  congr 1
+  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((MvPolynomial.mem_vars _).mpr ⟨u, hu, hi⟩)])
+
 end EvalVars
 
 section Lex

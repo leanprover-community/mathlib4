@@ -120,7 +120,6 @@ instance : Category (Bimod A B) where
   id := id'
   comp f g := comp f g
 
--- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Bimod A B} (f g : M ⟶ N) (h : f.hom = g.hom) : f = g :=
   Hom.ext h

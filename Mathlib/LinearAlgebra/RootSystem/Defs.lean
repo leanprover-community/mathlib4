@@ -501,12 +501,12 @@ lemma reflection_perm_eq_reflection_perm_iff_of_span :
     P.reflection_perm i = P.reflection_perm j ↔
     ∀ x ∈ span R (range P.root), P.reflection i x = P.reflection j x := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
-  · induction hx using Submodule.span_induction' with
+  · induction hx using Submodule.span_induction with
     | mem x hx =>
       obtain ⟨k, rfl⟩ := hx
       simp only [← root_reflection_perm, h]
     | zero => simp
-    | add x _ y _ hx hy => simp [hx, hy]
+    | add x y _ _ hx hy => simp [hx, hy]
     | smul t x _ hx => simp [hx]
   · ext k
     apply P.root.injective

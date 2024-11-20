@@ -756,7 +756,7 @@ end HasImageMap
 
 section
 
-variable (C) [Category.{v} C] [HasImages C]
+variable (C) [HasImages C]
 
 /-- If a category `has_image_maps`, then all commutative squares induce morphisms on images. -/
 class HasImageMaps : Prop where
@@ -830,7 +830,7 @@ end StrongEpiMonoFactorisation
 
 section HasStrongEpiImages
 
-variable (C) [Category.{v} C] [HasImages C]
+variable (C) [HasImages C]
 
 /-- A category has strong epi images if it has all images and `factorThruImage f` is a strong
     epimorphism for all `f`. -/

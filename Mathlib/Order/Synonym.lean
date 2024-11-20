@@ -34,7 +34,7 @@ This file is similar to `Algebra.Group.TypeTags`.
 -/
 
 
-variable {α β γ : Type*}
+variable {α : Type*}
 
 /-! ### Order dual -/
 

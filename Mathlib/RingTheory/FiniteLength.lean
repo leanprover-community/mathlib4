@@ -3,7 +3,6 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Order.Atoms.Finite
 import Mathlib.RingTheory.Artinian
 
 /-!
@@ -76,3 +75,30 @@ theorem isFiniteLength_iff_exists_compositionSeries :
   ⟨fun h ↦ have ⟨_, _⟩ := isFiniteLength_iff_isNoetherian_isArtinian.mp h
     exists_compositionSeries_of_isNoetherian_isArtinian R M,
     isFiniteLength_of_exists_compositionSeries⟩
+
+theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
+    List.TFAE [Module.Finite R M, IsNoetherian R M, IsArtinian R M, IsFiniteLength R M,
+      ∃ s : Set (Submodule R M), s.Finite ∧ CompleteLattice.SetIndependent s ∧
+        sSup s = ⊤ ∧ ∀ m ∈ s, IsSimpleModule R m] := by
+  rw [isFiniteLength_iff_isNoetherian_isArtinian]
+  obtain ⟨s, hs⟩ := IsSemisimpleModule.exists_setIndependent_sSup_simples_eq_top R M
+  tfae_have 1 ↔ 2 := ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+  tfae_have 2 → 5 := fun _ ↦ ⟨s, CompleteLattice.WellFoundedGT.finite_of_setIndependent hs.1, hs⟩
+  tfae_have 3 → 5 := fun _ ↦ ⟨s, CompleteLattice.WellFoundedLT.finite_of_setIndependent hs.1, hs⟩
+  tfae_have 5 → 4 := fun ⟨s, fin, _, sSup_eq_top, simple⟩ ↦ by
+    rw [← isNoetherian_top_iff, ← Submodule.topEquiv.isArtinian_iff,
+      ← sSup_eq_top, sSup_eq_iSup, ← iSup_subtype'']
+    rw [SetCoe.forall'] at simple
+    have := fin.to_subtype
+    exact ⟨isNoetherian_iSup, isArtinian_iSup⟩
+  tfae_have 4 → 2 := And.left
+  tfae_have 4 → 3 := And.right
+  tfae_finish
+
+instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
+  (IsSemisimpleModule.finite_tfae.out 0 2).mp ‹_›
+
+/- The following instances are now automatic:
+example [IsSemisimpleRing R] : IsNoetherianRing R := inferInstance
+example [IsSemisimpleRing R] : IsArtinianRing R := inferInstance
+-/
