@@ -20,6 +20,9 @@ This file defines morphisms between (additive) quantales
 * `ZeroAddQuantaleHom`: Additive unital quantale homomorphisms (i.e. on an additive monoid)
 * `OneQuantaleHom`: Unital quantale homomorphisms (i.e. on a monoid)
 
+As isomorphism, `OrderMonoidIso` - denoted `α ≃*o` works for both Quantales and OneQuantales,
+and similar for the additive versions.
+
 ## Notation
 
 * `→ₙ+q`: Bundled additive (non-unital) quantale homs.
@@ -49,9 +52,8 @@ quantale, ordered semigroup, complete lattice
 Why is there notation `→ₙ*` defined for non-unital Mul homomorphisms, but
 no notation `→ₙ+` for non-unital Add homomorphisms? Create a PR for this?
 
-Isomorphisms on quantales are simply `OrderAddIso` and `OrderMulIso`,
-but `Mathlib.Algebra.Order.Hom` needs to be updated to support this.
-Create a PR for this?
+Isomorphisms on quantales are simply `OrderAddMonoidIso` and `OrderMonoidIso`.
+But it needs to be proven that both the iso and its inverse are OneQuantaleHom's.
 
 -/
 
