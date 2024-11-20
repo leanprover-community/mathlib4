@@ -520,6 +520,7 @@ import Mathlib.Algebra.Module.LocalizedModule.Int
 import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.Algebra.Module.MinimalAxioms
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
@@ -533,6 +534,7 @@ import Mathlib.Algebra.Module.Presentation.Tautological
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Module.SnakeLemma
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Bilinear
@@ -3786,6 +3788,7 @@ import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+import Mathlib.NumberTheory.ModularForms.LevelOne
 import Mathlib.NumberTheory.ModularForms.QExpansion
 import Mathlib.NumberTheory.ModularForms.SlashActions
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
