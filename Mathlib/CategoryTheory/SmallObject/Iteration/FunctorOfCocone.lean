@@ -108,6 +108,7 @@ lemma ofCocone_map_to_top (i : J) (hi : i < j) :
   dsimp [ofCocone, ofCocone.map, ofCoconeObjIso, ofCoconeObjIsoPt]
   rw [dif_neg (by simp), dif_pos hi, comp_id]
 
+@[reassoc]
 lemma ofCocone_map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ < j) :
     (ofCocone c).map (homOfLE hi : ⟨i₁, hi.trans hi₂.le⟩ ⟶ ⟨i₂, hi₂.le⟩) =
       (ofCoconeObjIso c i₁ (lt_of_le_of_lt hi hi₂)).hom ≫ F.map (homOfLE hi) ≫
@@ -129,6 +130,16 @@ def restrictionLTOfCoconeIso :
     Iteration.restrictionLT (ofCocone c) (Preorder.le_refl j) ≅ F :=
   NatIso.ofComponents (fun ⟨i, hi⟩ ↦ ofCoconeObjIso c i hi)
     (by intros; apply ofCoconeObjIso_hom_naturality)
+
+variable {c} in
+/-- If `c` is a colimit cocone, then so is `coconeOfLE (ofCocone c) (Preorder.le_refl j)`. -/
+def isColimitCoconeOfLEOfCocone (hc : IsColimit c) :
+    IsColimit (Iteration.coconeOfLE (ofCocone c) (Preorder.le_refl j)) :=
+  (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).1
+    (IsColimit.ofIsoColimit hc
+      (Cocones.ext (ofCoconeObjIsoPt c).symm (fun ⟨i, hi⟩ ↦ by
+        dsimp
+        rw [ofCocone_map_to_top _ _ hi, Iso.inv_hom_id_assoc])))
 
 end Functor
 

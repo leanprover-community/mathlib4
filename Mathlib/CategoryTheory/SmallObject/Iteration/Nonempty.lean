@@ -100,6 +100,7 @@ variable [WellFoundedLT J] {j : J} (hj : Order.IsSuccLimit j)
 
 namespace mkOfLimit
 
+/-- Auxiliary definition for `mkOfLimit`. -/
 noncomputable def map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ < j) :
     (iter i₁ (lt_of_le_of_lt hi hi₂)).F.obj ⟨i₁, by simp⟩ ⟶ (iter i₂ hi₂).F.obj ⟨i₂, by simp⟩ :=
   ((iter i₁ (lt_of_le_of_lt hi hi₂)).iso ((iter i₂ hi₂).trunc hi)).hom.natTrans.app
@@ -122,12 +123,40 @@ lemma map_comp (i₁ i₂ i₃ : J) (hi : i₁ ≤ i₂) (hi' : i₂ ≤ i₃) (
   dsimp only [truncFunctor_obj, trunc_trunc]
   rw [iso_hom_comp_iso_hom, homOfLE_comp]
 
+/-- Auxiliary definition for `mkOfLimit`. -/
 @[simps]
 noncomputable def functor : Set.Iio j ⥤ C ⥤ C where
   obj i := (iter i.1 i.2).F.obj ⟨i.1, by simp⟩
   map f := map iter _ _ (leOfHom f) _
   map_id _ := map_id iter _ _
   map_comp _ _ := map_comp iter _ _ _ _ _ _
+
+/-- Auxiliary definition for `mkOfLimit`. -/
+noncomputable def restrictionLTFunctorIso (i : J) (hi : i < j) :
+    (monotone_inclusion_lt_lt_of_le hi.le).functor ⋙ functor iter ≅
+      restrictionLT (iter i hi).F (by rfl) :=
+  NatIso.ofComponents (fun ⟨k, hk⟩ ↦ (eval ε (Preorder.le_refl k)).mapIso
+    ((iter k (hk.trans hi)).iso ((iter i hi).trunc hk.le))) (by
+      rintro ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩ f
+      dsimp [map]
+      rw [assoc, NatTrans.naturality]
+      dsimp
+      simp only [← assoc]; congr 1
+      dsimp
+      rw [← truncFunctor_map_natTrans_app _ (i := k₁) (j := k₂) (leOfHom f) _ (by rfl),
+        truncFunctor_map_iso_hom, ← NatTrans.comp_app, ← natTrans_comp]
+      erw [iso_hom_comp_iso_hom]
+      rfl)
+
+@[reassoc]
+lemma restrictionLTFunctorIso_inv_app_map (k i : J) (hik : k < i) (hij : i < j) :
+    (restrictionLTFunctorIso iter i hij).inv.app ⟨k, hik⟩ ≫ map iter k i hik.le hij =
+      (iter i hij).F.map (homOfLE hik.le) := by
+  dsimp [restrictionLTFunctorIso, map]
+  rw [← NatTrans.comp_app_assoc, ← natTrans_comp, Iso.inv_hom_id, natTrans_id,
+    NatTrans.id_app]
+  dsimp
+  rw [id_comp]
 
 end mkOfLimit
 
@@ -136,6 +165,9 @@ open mkOfLimit
 variable [HasColimit (functor iter)]
 
 include hj iter in
+/-- When `j : J` satisfies `Order.IsSuccLimit j` and we have `iter i hij : Iteration ε i`
+for any `i : J` such that `hij : i < j`, then this is a term in `Iteration ε j`,
+provided a suitable colimit indexed by `Set.Iio j` exists. -/
 noncomputable def mkOfLimit :
     Iteration ε j where
   F := Functor.ofCocone (colimit.cocone (functor iter))
@@ -149,10 +181,34 @@ noncomputable def mkOfLimit :
         isoWhiskerRight ((Iteration.eval ε (Preorder.le_refl i)).mapIso
             (((iter (Order.succ i) _).trunc (Order.le_succ i)).iso (iter i hi)) ≪≫
             (Functor.ofCoconeObjIso (colimit.cocone (functor iter)) i hi).symm) Φ
-  mapSucc'_eq := sorry
-  isColimit := by
-    have := hj
-    sorry
+  mapSucc'_eq i hi := by
+    have hi' : Order.succ i < j := (Order.IsSuccLimit.succ_lt_iff hj).mpr hi
+    have hi'' : i < Order.succ i := by
+      simp only [Order.lt_succ_iff_not_isMax, not_isMax_iff]
+      exact ⟨_, hi⟩
+    have := (iter _ hi').mapSucc_eq i hi''
+    dsimp [mapSucc', mapSucc] at this ⊢
+    rw [ofCocone_map _ _ _ _ hi', functor_map, map, this]
+    ext X
+    dsimp
+    rw [assoc, assoc, assoc, map_comp_assoc]
+    erw [← ε.naturality_assoc, ← ε.naturality_assoc]
+    rfl
+  isColimit i hi hij := by
+    apply Nonempty.some
+    obtain hij' | rfl := hij.lt_or_eq
+    · refine ⟨(IsColimit.precomposeInvEquiv
+        (isoWhiskerLeft (monotone_inclusion_lt_lt_of_le hij).functor
+          (restrictionLTOfCoconeIso (colimit.cocone (functor iter))) ≪≫
+          restrictionLTFunctorIso iter i hij') _).1
+        (IsColimit.ofIsoColimit ((iter i hij').isColimit i hi (by rfl))
+        (Cocones.ext
+          (ofCoconeObjIso (colimit.cocone (functor iter)) i hij').symm (fun ⟨k, hk⟩ ↦ ?_)))⟩
+      dsimp
+      rw [ofCocone_map _ _ _ _ hij', assoc]
+      dsimp
+      rw [Iso.inv_hom_id_assoc, restrictionLTFunctorIso_inv_app_map_assoc]
+    · exact ⟨Functor.isColimitCoconeOfLEOfCocone (colimit.isColimit _)⟩
 
 end
 
