@@ -1057,7 +1057,7 @@ canonically isomorphic to the product of its localizations at the (finitely many
 @[stacks 00JA
 "See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
 def RingHom.toLocalizationIsMaximalEquiv [DiscreteTopology (PrimeSpectrum R)] : R ≃+*
-    ∀ I : {I : Ideal R | I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
+    Π I : {I : Ideal R | I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
   .ofBijective _ ⟨RingHom.toLocalizationIsMaximal_injective R, fun x ↦ by
     let idem I := isIdempotentElemEquivIsClopen (R := R).symm ⟨{I}, isClopen_discrete _⟩
     let ideal I := Ideal.span {1 - (idem I).1}
