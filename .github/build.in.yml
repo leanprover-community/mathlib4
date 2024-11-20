@@ -185,7 +185,7 @@ jobs:
 
       - name: print the sizes of the oleans
         run: |
-          du .lake/build/lib/Mathlib
+          du .lake/build/lib/Mathlib || echo "This code should be unreachable"
 
       - name: build archive
         id: archive
