@@ -43,6 +43,16 @@ We follow that approach here as well, and only define `AddQuantaleHom` without n
 ## Tags
 
 quantale, ordered semigroup, complete lattice
+
+## Todo
+
+Why is there notation `→ₙ*` defined for non-unital Mul homomorphisms, but
+no notation `→ₙ+` for non-unital Add homomorphisms? Create a PR for this?
+
+Isomorphisms on quantales are simply `OrderAddIso` and `OrderMulIso`,
+but `Mathlib.Algebra.Order.Hom` needs to be updated to support this.
+Create a PR for this?
+
 -/
 
 open Function
@@ -56,7 +66,7 @@ structure.
 
 When possible, instead of parametrizing results over `(f : α →ₙ+q β)`,
 you should parametrize over
-`(F : Type*) [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
+`(F : Type*) [FunLike F M N] [AddHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
 structure AddQuantaleHom (α β : Type*)
   [AddSemigroup α] [CompleteLattice α] [AddSemigroup β] [CompleteLattice β]
   extends AddHom α β, CompleteLatticeHom α β
@@ -64,42 +74,49 @@ structure AddQuantaleHom (α β : Type*)
 /-- Infix notation for `AddQuantaleHom`. -/
 infixr:25 " →ₙ+q " => AddQuantaleHom
 
-/-- `α ≃+q β` is the type of monotone isomorphisms `α ≃ β` that preserve the `AddQuantale`
-structure.
+/-- `α →+q β` is the type of monotone functions `α → β` that preserve the `AddQuantale`
+structure in case of a unital quantale.
 
-When possible, instead of parametrizing results over `(f : α ≃+q β)`,
+When possible, instead of parametrizing results over `(f : α →+q β)`,
 you should parametrize over
-`(F : Type*) [FunLike F M N] [AddEquivClass F M N] [OrderIsoClass F M N] (f : F)`. -/
-structure AddQuantaleIso (α β : Type*)
-  [AddSemigroup α] [CompleteLattice α] [AddSemigroup β] [CompleteLattice β]
-  extends α ≃+ β, α ≃o β where
+`(F : Type*) [FunLike F M N] [AddMonoidHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
+structure ZeroAddQuantaleHom (α β : Type*)
+  [AddMonoid α] [CompleteLattice α] [AddMonoid β] [CompleteLattice β]
+  extends α →+ β, CompleteLatticeHom α β
 
-/-- Infix notation for `AddQuantaleIso`. -/
-infixr:25 " ≃+q " => AddQuantaleIso
+/-- Infix notation for `ZeroAddQuantaleHom`. -/
+infixr:25 " →+q " => ZeroAddQuantaleHom
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 
 end AddQuantale
 
-/-
-## Doubt!
+section Quantale
 
-In `Mathlib.Algebra.Order.Hom.Monoid` the definition of `OrderAddMonoidHom` seems to
-not depend on the `[AddZeroClass α]` and `[AddZeroClass β]` assumption at all. If those
-would be left out, a better name would be `OrderAddSemigroupHom` and the resulting
-`OrderAddSemigroupIso` would be the appropriate isomorphism for `Quantales` as well,
-i.e. we would not have to worry about isomorphisms at all in this file.
+/-- `α →ₙ*q β` is the type of monotone functions `α → β` that preserve the `Quantale`
+structure.
 
-An `OrderAddSemigroupHom` is not a `AddQuantaleHom` because the `Sup` is not preserved,
-but for isomorhpisms this is the case.
+When possible, instead of parametrizing results over `(f : α →ₙ*q β)`,
+you should parametrize over
+`(F : Type*) [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
+structure QuantaleHom (α β : Type*)
+  [Semigroup α] [CompleteLattice α] [Semigroup β] [CompleteLattice β]
+  extends α →ₙ* β, CompleteLatticeHom α β
 
-My worry, only, is that `OrderAddSemigroupHom` applied to `Monoids` does not preserve
-the unit/zero element. So it could be that there is something missing in the definitions
-in `Mathlib.Algebra.Order.Hom.Monoid`.
+/-- Infix notation for `AddQuantaleHom`. -/
+infixr:25 " →ₙ*q " => QuantaleHom
 
-## Other notes:
+/-- `α →*q β` is the type of monotone functions `α → β` that preserve the `AddQuantale`
+structure in case of a unital quantale.
 
-Why is there notation `→ₙ*` defined for non-unital Mul homomorphisms, but
-no notation `→ₙ+` for non-unital Add homomorphisms?
+When possible, instead of parametrizing results over `(f : α →*q β)`,
+you should parametrize over
+`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
+structure OneQuantaleHom (α β : Type*)
+  [Monoid α] [CompleteLattice α] [Monoid β] [CompleteLattice β]
+  extends α →* β, CompleteLatticeHom α β
 
--/
+/-- Infix notation for `ZeroAddQuantaleHom`. -/
+infixr:25 " →*q " => OneQuantaleHom
+
+end Quantale
