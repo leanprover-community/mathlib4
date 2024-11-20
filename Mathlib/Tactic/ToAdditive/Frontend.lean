@@ -1097,7 +1097,7 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
 will insert translations from `src.a_i` to `tgt.b_i`
 (or from `a_i` to `b_i` if `prependName` is false). -/
 def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name))
-  (prependName := true) : CoreM Unit := do
+    (prependName := true) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
   if srcFields.size != tgtFields.size then
