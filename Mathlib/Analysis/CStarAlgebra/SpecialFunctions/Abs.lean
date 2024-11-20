@@ -46,8 +46,8 @@ lemma mul_self_eq_mul_self {a : A} (ha : IsSelfAdjoint a) : a * a =
 
 variable [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
 
-/-- Needs a real name. -/
-lemma sqrt_silly {a : A} (ha : IsSelfAdjoint a) :
+/-- Needs a new name. -/
+lemma sqrt_mul_self_rfl {a : A} (ha : IsSelfAdjoint a) :
     cfcₙ Real.sqrt (a * a) = cfcₙ (fun x ↦ √(x * x)) a := by
   rw [mul_self_eq_mul_self ha, ← cfcₙ_comp a (f := fun x ↦ x * x) (g := fun x ↦ √x),
      Function.comp_def]
@@ -72,7 +72,7 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 lemma abs_eq_cfcₙ_norm {a : A} (ha : IsSelfAdjoint a) :
     abs a = cfcₙ (‖·‖) a := by
    simp only [abs, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq]
-   rw [sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a), ha.star_eq, sqrt_silly ha]
+   rw [sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a), ha.star_eq, sqrt_mul_self_rfl ha]
 
 lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
   rw [abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
@@ -81,9 +81,17 @@ lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
 theorem IsSelfAdjoint.mul_self_nonneg {a : A} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
+open ComplexConjugate in
 lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
     abs a = cfcₙ (fun z : ℂ ↦ (‖z‖ : ℂ)) a := by
-  simp only [abs, Complex.norm_eq_abs, Complex.ofReal]
+  rw [abs]
+  --abs a becomes √(star a * a).
+  --We need that ‖z‖ = √(star z * z), where star z is the complex conjugate of z.
+  --Somehow the square root should be real, but our theorem above might handle this.
+  have H (z : ℂ) := (Complex.conj_mul' z)--note complex hPow.
+  have K (z : ℂ) : Complex.im (star z * z) = 0 := by
+    simp only [RCLike.star_def, Complex.mul_im, Complex.conj_re, Complex.conj_im, neg_mul]
+    rw [mul_comm, add_neg_cancel]--I can't believe this isn't in the library already!
   rw [sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a)]
   --somehow have to get this to revert back to the real case.
   sorry
@@ -92,6 +100,8 @@ lemma abs_of_nonneg {a : A} (ha : 0 ≤ a) : abs a = a := by
   rw [abs, ha.star_eq, sqrt_mul_self a ha]
 
 #exit
+
+--The following results seem to amount to translating over to functions.
 
 lemma abs_eq_posPart_add_negPart (a : A) (ha : IsSelfAdjoint a) : abs a = a⁺ + a⁻ := sorry
 
