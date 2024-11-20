@@ -850,7 +850,7 @@ namespace Monoid
 variable (M) [MulOneClass M]
 
 /-- The monoid of endomorphisms. -/
-@[to_additive, to_additive_dont_translate]
+@[to_additive "The monoid of endomorphisms.", to_additive_dont_translate]
 protected def End := M →* M
 
 namespace End
