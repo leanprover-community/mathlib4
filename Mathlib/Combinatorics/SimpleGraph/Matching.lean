@@ -323,7 +323,7 @@ The definition of `symmDiff` that makes sense is the one for `SimpleGraph`. This
 definition is for `SimpleGraph`, rather than `SimpleGraph.Subgraph`.
 -/
 def IsCycles (G : SimpleGraph V) := ∀ ⦃v⦄, (G.neighborSet v).Nonempty → (G.neighborSet v).ncard = 2
--- def IsCycles (G : SimpleGraph V) := (∀ v : V, (G.neighborSet v) = ∅ ∨ (G.neighborSet v).ncard = 2)
+
 /--
 Given a vertex with one edge in a graph of cycles this gives the other edge incident
 to the same vertex.
