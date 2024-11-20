@@ -324,12 +324,6 @@ theorem cardinal_eq_of_isSeparable [Algebra.IsSeparable F E] :
   rw [← Module.finrank_eq_rank, ← toNat_eq_iff Module.finrank_pos.ne',
     ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable]
 
-theorem cardinal_separableClosure [Algebra.IsAlgebraic F E] :
-    #(Field.Emb F <| separableClosure F E) = #(Field.Emb F E) := by
-  have := separableClosure.isPurelyInseparable F E
-  rw [← (embProdEmbOfIsAlgebraic F (separableClosure F E) E).cardinal_eq,
-    mk_prod, mk_eq_one (Emb _ E), lift_one, mul_one, lift_id]
-
 theorem cardinal_eq_two_pow_sepDegree [Algebra.IsAlgebraic F E]
     (rank_inf : ℵ₀ ≤ sepDegree F E) : #(Field.Emb F E) = 2 ^ sepDegree F E := by
   rw [← cardinal_separableClosure, cardinal_eq_two_pow_rank rank_inf]
