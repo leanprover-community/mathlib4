@@ -456,9 +456,9 @@ lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 
   simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ √(f x)) (fun x ↦ √(g x))
 
 /-- **Sedrakyan's lemma**, also known by other names such as Titu's lemma or Engel's form. This is a
-specialization of the Cauchy-Schwarz inequality with the sequences `x n / √(y n)` and `√(y n)`. -/
+specialization of the Cauchy-Schwarz inequality with the sequences `f n / √(g n)` and `√(g n)`. -/
 theorem sq_sum_div_le_sum_sq_div {s : Finset ι} (f : ι → ℝ) {g : ι → ℝ} (hg : ∀ i ∈ s, 0 < g i) :
-    (∑ n ∈ s, f n) ^ 2 / (∑ n ∈ s, g n) ≤ ∑ n ∈ s, (f n) ^ 2 / g n := by
+    (∑ n ∈ s, f n) ^ 2 / ∑ n ∈ s, g n ≤ ∑ n ∈ s, (f n) ^ 2 / g n := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   have := Finset.sum_pos hg hs
