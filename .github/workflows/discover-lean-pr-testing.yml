@@ -39,10 +39,12 @@ jobs:
         cd lean4-nightly || exit 1
 
         # Shallow fetch of the last two tags
-        LAST_TWO_TAGS=$(git ls-remote --tags | tail -2 | cut -f2)
+        LAST_TWO_TAGS=$(git ls-remote --tags | grep nightly | tail -2 | cut -f2)
         OLD=$(echo "$LAST_TWO_TAGS" | head -1)
         NEW=$(echo "$LAST_TWO_TAGS" | tail -1)
         git fetch --depth=1 origin tag "$OLD" --no-tags
+        # Fetch the latest 100 commits prior to the $NEW tag.
+        # This should cover the terrain between $OLD and $NEW while still being a speedy download.
         git fetch --depth=100 origin tag "$NEW" --no-tags
 
         PRS=$(git log --oneline "$OLD..$NEW" | sed 's/.*(#\([0-9]\+\))$/\1/')
