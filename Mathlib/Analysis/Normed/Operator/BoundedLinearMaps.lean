@@ -145,7 +145,7 @@ theorem comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinea
 protected theorem tendsto (x : E) (hf : IsBoundedLinearMap 𝕜 f) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
   let ⟨hf, M, _, hM⟩ := hf
   tendsto_iff_norm_sub_tendsto_zero.2 <|
-    squeeze_zero (fun e => norm_nonneg _)
+    squeeze_zero (fun _ => norm_nonneg _)
       (fun e =>
         calc
           ‖f e - f x‖ = ‖hf.mk' f (e - x)‖ := by rw [(hf.mk' _).map_sub e x]; rfl
@@ -304,7 +304,7 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
         (f.le_opNorm₂ x y).trans <| by
           apply_rules [mul_le_mul_of_nonneg_right, norm_nonneg, le_max_left] ⟩ }
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- A bounded bilinear map `f : E × F → G` defines a continuous linear map
 `f : E →L[𝕜] F →L[𝕜] G`. -/
 def IsBoundedBilinearMap.toContinuousLinearMap (hf : IsBoundedBilinearMap 𝕜 f) :

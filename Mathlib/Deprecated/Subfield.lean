@@ -5,6 +5,7 @@ Authors: Andreas Swerdlow
 -/
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Deprecated.Subring
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Unbundled subfields (deprecated)

@@ -27,10 +27,22 @@ theorem IsComplete.isClosed [UniformSpace α] [T0Space α] {s : Set α} (h : IsC
     rcases h f this inf_le_right with ⟨y, ys, fy⟩
     rwa [(tendsto_nhds_unique' ha inf_le_left fy : a = y)]
 
-theorem UniformEmbedding.toClosedEmbedding [UniformSpace α] [UniformSpace β] [CompleteSpace α]
-    [T0Space β] {f : α → β} (hf : UniformEmbedding f) :
-    ClosedEmbedding f :=
-  ⟨hf.embedding, hf.toUniformInducing.isComplete_range.isClosed⟩
+theorem IsUniformEmbedding.isClosedEmbedding [UniformSpace α] [UniformSpace β] [CompleteSpace α]
+    [T0Space β] {f : α → β} (hf : IsUniformEmbedding f) :
+    IsClosedEmbedding f :=
+  ⟨hf.isEmbedding, hf.isUniformInducing.isComplete_range.isClosed⟩
+
+@[deprecated (since := "2024-10-30")]
+alias IsUniformEmbedding.toIsClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
+
+@[deprecated (since := "2024-10-20")]
+alias IsUniformEmbedding.toClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
+
+@[deprecated (since := "2024-10-01")]
+alias UniformEmbedding.toIsClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
+
+@[deprecated (since := "2024-10-20")]
+alias UniformEmbedding.toClosedEmbedding := IsUniformEmbedding.isClosedEmbedding
 
 namespace IsDenseInducing
 

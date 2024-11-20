@@ -302,7 +302,7 @@ lemma inf_orthogonal_self_le_ker_restrict {W : Submodule R M} (b₁ : B.IsRefl) 
 
 variable [FiniteDimensional K V]
 
-open FiniteDimensional Submodule
+open Module Submodule
 
 variable {B : BilinForm K V}
 

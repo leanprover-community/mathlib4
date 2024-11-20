@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
@@ -162,13 +161,13 @@ lemma RespectsIso.postcomp (P : MorphismProperty C) [P.RespectsIso] {X Y Z : C} 
     [IsIso e] (f : X ⟶ Y) (hf : P f) : P (f ≫ e) :=
   RespectsRight.postcomp (Q := isomorphisms C) e ‹IsIso e› f hf
 
-instance RespectsIso.op (P : MorphismProperty C) [h : RespectsIso P] : RespectsIso P.op where
-  precomp e (_ : IsIso e) f hf := h.postcomp e.unop f.unop hf
-  postcomp e (_ : IsIso e) f hf := h.precomp e.unop f.unop hf
+instance RespectsIso.op (P : MorphismProperty C) [RespectsIso P] : RespectsIso P.op where
+  precomp e (_ : IsIso e) f hf := postcomp P e.unop f.unop hf
+  postcomp e (_ : IsIso e) f hf := precomp P e.unop f.unop hf
 
-instance RespectsIso.unop (P : MorphismProperty Cᵒᵖ) [h : RespectsIso P] : RespectsIso P.unop where
-  precomp e (_ : IsIso e) f hf := h.postcomp e.op f.op hf
-  postcomp e (_ : IsIso e) f hf := h.precomp e.op f.op hf
+instance RespectsIso.unop (P : MorphismProperty Cᵒᵖ) [RespectsIso P] : RespectsIso P.unop where
+  precomp e (_ : IsIso e) f hf := postcomp P e.op f.op hf
+  postcomp e (_ : IsIso e) f hf := precomp P e.op f.op hf
 
 /-- The closure by isomorphisms of a `MorphismProperty` -/
 def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
@@ -190,16 +189,20 @@ lemma monotone_isoClosure : Monotone (isoClosure (C := C)) := by
 
 theorem cancel_left_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] : P (f ≫ g) ↔ P g :=
-  ⟨fun h => by simpa using hP.precomp (inv f) (f ≫ g) h, hP.precomp f g⟩
+  ⟨fun h => by simpa using RespectsIso.precomp P (inv f) (f ≫ g) h, RespectsIso.precomp P f g⟩
 
 theorem cancel_right_of_respectsIso (P : MorphismProperty C) [hP : RespectsIso P] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] : P (f ≫ g) ↔ P f :=
-  ⟨fun h => by simpa using hP.postcomp (inv g) (f ≫ g) h, hP.postcomp g f⟩
+  ⟨fun h => by simpa using RespectsIso.postcomp P (inv g) (f ≫ g) h, RespectsIso.postcomp P g f⟩
+
+lemma comma_iso_iff (P : MorphismProperty C) [P.RespectsIso] {A B : Type*} [Category A] [Category B]
+    {L : A ⥤ C} {R : B ⥤ C} {f g : Comma L R} (e : f ≅ g) :
+    P f.hom ↔ P g.hom := by
+  simp [← Comma.inv_left_hom_right e.hom, cancel_left_of_respectsIso, cancel_right_of_respectsIso]
 
 theorem arrow_iso_iff (P : MorphismProperty C) [RespectsIso P] {f g : Arrow C}
-    (e : f ≅ g) : P f.hom ↔ P g.hom := by
-  simp [← Arrow.inv_left_hom_right e.hom, cancel_left_of_respectsIso,
-    cancel_right_of_respectsIso]
+    (e : f ≅ g) : P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
 
 theorem arrow_mk_iso_iff (P : MorphismProperty C) [RespectsIso P] {W X Y Z : C}
     {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) : P f ↔ P g :=

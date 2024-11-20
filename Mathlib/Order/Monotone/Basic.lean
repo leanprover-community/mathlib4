@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
@@ -66,7 +67,6 @@ open Function OrderDual
 universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {π : ι → Type*}
-  {r : α → α → Prop}
 
 section MonotoneDef
 
@@ -302,6 +302,24 @@ alias ⟨_, StrictMonoOn.dual⟩ := strictMonoOn_dual_iff
 alias ⟨_, StrictAntiOn.dual⟩ := strictAntiOn_dual_iff
 
 end OrderDual
+
+section WellFounded
+
+variable [Preorder α] [Preorder β] {f : α → β}
+
+theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α :=
+  Subrelation.isWellFounded (InvImage (· < ·) f) @hf
+
+theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
+  StrictMono.wellFoundedLT (β := βᵒᵈ) hf
+
+theorem StrictMono.wellFoundedGT [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
+
+theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
+
+end WellFounded
 
 /-! ### Monotonicity in function spaces -/
 
@@ -1025,7 +1043,7 @@ theorem Subtype.strictMono_coe [Preorder α] (t : Set α) :
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {f : α → γ} {g : β → δ} {a b : α}
+variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {f : α → γ} {g : β → δ}
 
 theorem monotone_fst : Monotone (@Prod.fst α β) := fun _ _ ↦ And.left
 
@@ -1074,7 +1092,7 @@ theorem const_strictMono [Nonempty β] : StrictMono (const β : α → β → α
 end Function
 
 section apply
-variable {ι α : Type*} {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
+variable {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
 
 lemma monotone_iff_apply₂ : Monotone f ↔ ∀ i, Monotone (f · i) := by
   simp [Monotone, Pi.le_def, @forall_swap ι]

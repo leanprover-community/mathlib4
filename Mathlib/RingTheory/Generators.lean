@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.Extension
 
 /-!
 
@@ -128,7 +129,7 @@ def ofAlgHom {I} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) 
 noncomputable
 def ofSet {s : Set S} (hs : Algebra.adjoin R s = ⊤) : Generators R S := by
   refine ofSurjective (Subtype.val : s → S) ?_
-  rwa [← Algebra.range_top_iff_surjective, ← Algebra.adjoin_range_eq_range_aeval,
+  rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
     Subtype.range_coe_subtype, Set.setOf_mem_eq]
 
 variable (R S) in
@@ -140,6 +141,14 @@ def self : Generators R S where
   val := _root_.id
   σ' := X
   aeval_val_σ' := aeval_X _
+
+/-- The extension `R[X₁,...,Xₙ] → S` given a family of generators. -/
+@[simps]
+noncomputable
+def toExtension : Extension R S where
+  Ring := P.Ring
+  σ := P.σ
+  algebraMap_σ := P.aeval_val_σ
 
 section Localization
 
@@ -373,160 +382,33 @@ def toExtendScalars (P : Generators R T) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
+variable {P P'} in
+/-- Reinterpret a hom between generators as a hom between extensions. -/
+@[simps]
+noncomputable
+def Hom.toExtensionHom [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
+    (f : P.Hom P') : P.toExtension.Hom P'.toExtension where
+  toRingHom := f.toAlgHom.toRingHom
+  toRingHom_algebraMap x := by simp
+  algebraMap_toRingHom x := by simp
+
+@[simp]
+lemma Hom.toExtensionHom_id : Hom.toExtensionHom (.id P) = .id _ := by ext; simp
+
+@[simp]
+lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
+    [Algebra R R''] [Algebra R S''] [IsScalarTower R R'' S'']
+    [IsScalarTower R S S''] [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
+    [IsScalarTower S S' S''] [IsScalarTower R R' R''] [IsScalarTower R R' S']
+    (f : P'.Hom P'') (g : P.Hom P') :
+    toExtensionHom (f.comp g) = f.toExtensionHom.comp g.toExtensionHom := by ext; simp
+
 end Hom
 
-section Cotangent
-
 /-- The kernel of a presentation. -/
-abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
+noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) :=
   rfl
-
-/-- The cotangent space of a presentation.
-This is a type synonym so that `P = R[X]` can act on it through the action of `S` without creating
-a diamond. -/
-def Cotangent : Type _ := P.ker.Cotangent
-
-noncomputable
-instance : AddCommGroup P.Cotangent := inferInstanceAs (AddCommGroup P.ker.Cotangent)
-
-variable {P}
-
-/-- The identity map `P.ker.Cotangent → P.Cotangent` into the type synonym. -/
-def Cotangent.of (x : P.ker.Cotangent) : P.Cotangent := x
-
-/-- The identity map `P.Cotangent → P.ker.Cotangent` from the type synonym. -/
-def Cotangent.val (x : P.Cotangent) : P.ker.Cotangent := x
-
-@[ext]
-lemma Cotangent.ext {x y : P.Cotangent} (e : x.val = y.val) : x = y := e
-
-namespace Cotangent
-
-variable (x y : P.Cotangent) (w z : P.ker.Cotangent)
-
-@[simp] lemma val_add : (x + y).val = x.val + y.val := rfl
-@[simp] lemma val_zero : (0 : P.Cotangent).val = 0 := rfl
-@[simp] lemma of_add : of (w + z) = of w + of z := rfl
-@[simp] lemma of_zero : (of 0 : P.Cotangent) = 0 := rfl
-@[simp] lemma of_val : of x.val = x := rfl
-@[simp] lemma val_of : (of w).val = w := rfl
-@[simp] lemma val_sub : (x - y).val = x.val - y.val := rfl
-
-end Cotangent
-
-lemma Cotangent.smul_eq_zero_of_mem (p : P.Ring) (hp : p ∈ P.ker) (m : P.ker.Cotangent) :
-    p • m = 0 := by
-  obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ m
-  rw [← map_smul, Ideal.toCotangent_eq_zero, Submodule.coe_smul, smul_eq_mul, pow_two]
-  exact Ideal.mul_mem_mul hp x.2
-
-attribute [local simp] RingHom.mem_ker
-
-noncomputable
-instance Cotangent.module : Module S P.Cotangent where
-  smul := fun r s ↦ .of (P.σ r • s.val)
-  smul_zero := fun r ↦ ext (smul_zero (P.σ r))
-  smul_add := fun r x y ↦ ext (smul_add (P.σ r) x.val y.val)
-  add_smul := fun r s x ↦ by
-    have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp ) x
-    simpa only [sub_smul, add_smul, sub_eq_zero]
-  zero_smul := fun x ↦ smul_eq_zero_of_mem (P.σ 0 : P.Ring) (by simp) x
-  one_smul := fun x ↦ by
-    have := smul_eq_zero_of_mem (P.σ 1 - 1 : P.Ring) (by simp) x
-    simpa [sub_eq_zero, sub_smul]
-  mul_smul := fun r s x ↦ by
-    have := smul_eq_zero_of_mem (P.σ (r * s) - (P.σ r * P.σ s) : P.Ring) (by simp) x
-    simpa only [sub_smul, mul_smul, sub_eq_zero] using this
-
-noncomputable
-instance Cotangent.module' {R₀} [CommRing R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
-  Module.compHom P.Cotangent (algebraMap R₀ S)
-
-instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂]
-    [IsScalarTower R₁ R₂ S] :
-  IsScalarTower R₁ R₂ P.Cotangent := by
-  constructor
-  intros r s m
-  show algebraMap R₂ S (r • s) • m = (algebraMap _ S r) • (algebraMap _ S s) • m
-  rw [Algebra.smul_def, map_mul, mul_smul, ← IsScalarTower.algebraMap_apply]
-
-lemma Cotangent.val_smul''' {R₀} [CommRing R₀] [Algebra R₀ S] (r : R₀) (x : P.Cotangent) :
-    (r • x).val = P.σ (algebraMap R₀ S r) • x.val := rfl
-
-@[simp]
-lemma Cotangent.val_smul (r : S) (x : P.Cotangent) : (r • x).val = P.σ r • x.val := rfl
-
-@[simp]
-lemma Cotangent.val_smul' (r : P.Ring) (x : P.Cotangent) : (r • x).val = r • x.val := by
-  rw [val_smul''', ← sub_eq_zero, ← sub_smul]
-  exact Cotangent.smul_eq_zero_of_mem _ (by simp) _
-
-@[simp]
-lemma Cotangent.val_smul'' (r : R) (x : P.Cotangent) : (r • x).val = r • x.val := by
-  rw [← algebraMap_smul P.Ring, val_smul', algebraMap_smul]
-
-/-- The quotient map from the kernel of `P = R[X] → S` onto the cotangent space. -/
-def Cotangent.mk : P.ker →ₗ[P.Ring] P.Cotangent where
-  toFun x := .of (Ideal.toCotangent _ x)
-  map_add' x y := by simp
-  map_smul' x y := ext <| by simp
-
-@[simp]
-lemma Cotangent.val_mk (x : P.ker) : (mk x).val = Ideal.toCotangent _ x := rfl
-
-lemma Cotangent.mk_surjective : Function.Surjective (mk (P := P)) :=
-  fun x ↦ Ideal.toCotangent_surjective P.ker x.val
-
-variable {P'}
-variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
-variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
-variable [Algebra R S'] [IsScalarTower R R' S'] [IsScalarTower R S S']
-
-/-- A hom between families of generators induce a map between cotangent spaces. -/
-noncomputable
-def Cotangent.map (f : Hom P P') : P.Cotangent →ₗ[S] P'.Cotangent where
-  toFun x := .of (Ideal.mapCotangent (R := R) _ _ f.toAlgHom
-    (fun x hx ↦ by simpa using RingHom.congr_arg (algebraMap S S') hx) x.val)
-  map_add' x y := ext (map_add _ x.val y.val)
-  map_smul' r x := by
-    ext
-    obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-    obtain ⟨r, rfl⟩ := P.algebraMap_surjective r
-    simp only [algebraMap_smul, val_smul', val_mk, val_of, Ideal.mapCotangent_toCotangent,
-      RingHomCompTriple.comp_apply, ← (Ideal.toCotangent _).map_smul]
-    conv_rhs => rw [algebraMap_apply, ← algebraMap_smul S', ← f.algebraMap_toAlgHom,
-      ← algebraMap_apply, algebraMap_smul, val_smul', val_of, ← (Ideal.toCotangent _).map_smul]
-    congr 1
-    ext1
-    simp only [SetLike.val_smul, smul_eq_mul, map_mul]
-
-@[simp]
-lemma Cotangent.map_mk (f : Hom P P') (x) :
-    Cotangent.map f (.mk x) =
-      .mk ⟨f.toAlgHom x, by simpa [-map_aeval] using RingHom.congr_arg (algebraMap S S') x.2⟩ :=
-  rfl
-
-@[simp]
-lemma Cotangent.map_id :
-    Cotangent.map (.id P) = LinearMap.id := by
-  ext x
-  obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-  simp only [map_mk, Hom.toAlgHom_id, AlgHom.coe_id, id_eq, Subtype.coe_eta, val_mk,
-    LinearMap.id_coe]
-
-variable [Algebra R R''] [IsScalarTower R R' R''] [IsScalarTower R' R'' S'']
-  [IsScalarTower R' S' S''] [IsScalarTower S S' S'']
-  [Algebra R S''] [IsScalarTower R R'' S''] [IsScalarTower R S S'']
-
-lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
-    Cotangent.map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
-  ext x
-  obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-  simp only [map_mk, val_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-    Function.comp_apply, Hom.toAlgHom_comp_apply]
-
-end Cotangent
 
 end Algebra.Generators

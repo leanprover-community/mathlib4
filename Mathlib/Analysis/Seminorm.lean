@@ -38,7 +38,7 @@ open NormedField Set Filter
 
 open scoped NNReal Pointwise Topology Uniformity
 
-variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F G ι : Type*}
+variable {R R' 𝕜 𝕜₂ 𝕜₃ 𝕝 E E₂ E₃ F ι : Type*}
 
 /-- A seminorm on a module over a normed ring is a function to the reals that is positive
 semidefinite, positive homogeneous, and subadditive. -/
@@ -60,9 +60,6 @@ class SeminormClass (F : Type*) (𝕜 E : outParam Type*) [SeminormedRing 𝕜] 
   map_smul_eq_mul (f : F) (a : 𝕜) (x : E) : f (a • x) = ‖a‖ * f x
 
 export SeminormClass (map_smul_eq_mul)
-
--- Porting note: dangerous instances no longer exist
--- attribute [nolint dangerousInstance] SeminormClass.toAddGroupSeminormClass
 
 section Of
 
@@ -141,7 +138,7 @@ theorem zero_apply (x : E) : (0 : Seminorm 𝕜 E) x = 0 :=
 instance : Inhabited (Seminorm 𝕜 E) :=
   ⟨0⟩
 
-variable (p : Seminorm 𝕜 E) (c : 𝕜) (x y : E) (r : ℝ)
+variable (p : Seminorm 𝕜 E) (x : E) (r : ℝ)
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to a seminorm. -/
 instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E) where
@@ -211,8 +208,8 @@ instance instModule [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower 
     Module R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).module R _ (by intros; rfl)
 
-instance instSup : Sup (Seminorm 𝕜 E) where
-  sup p q :=
+instance instSup : Max (Seminorm 𝕜 E) where
+  max p q :=
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
       smul' := fun x v =>
@@ -231,7 +228,7 @@ theorem smul_sup [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
   have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
       mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
-  ext fun x => real.smul_max _ _
+  ext fun _ => real.smul_max _ _
 
 instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ DFunLike.coe_injective
@@ -264,8 +261,7 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 variable {σ₂₃ : 𝕜₂ →+* 𝕜₃} [RingHomIsometric σ₂₃]
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomIsometric σ₁₃]
 variable [AddCommGroup E] [AddCommGroup E₂] [AddCommGroup E₃]
-variable [AddCommGroup F] [AddCommGroup G]
-variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module 𝕜 F] [Module 𝕜 G]
+variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃]
 
 -- Porting note: even though this instance is found immediately by typeclass search,
 -- it seems to be needed below!?
@@ -279,7 +275,7 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
     toFun := fun x => p (f x)
     -- Porting note: the `simp only` below used to be part of the `rw`.
     -- I'm not sure why this change was needed, and am worried by it!
-    -- Note: #8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
     smul' := fun _ _ => by simp only [map_smulₛₗ _]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
@@ -348,8 +344,7 @@ theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
   induction' s using Finset.cons_induction_on with a s ha ih
   · rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
     norm_cast
-  · rw [Finset.sup_cons, Finset.sup_cons, coe_sup, sup_eq_max, Pi.sup_apply, sup_eq_max,
-      NNReal.coe_max, NNReal.coe_mk, ih]
+  · rw [Finset.sup_cons, Finset.sup_cons, coe_sup, Pi.sup_apply, NNReal.coe_max, NNReal.coe_mk, ih]
 
 theorem exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) {s : Finset ι} (hs : s.Nonempty) (x : E) :
     ∃ i ∈ s, s.sup p x = p i x := by
@@ -429,8 +424,8 @@ theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
     rintro _ ⟨x, rfl⟩
     dsimp; positivity⟩
 
-noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
-  inf p q :=
+noncomputable instance instInf : Min (Seminorm 𝕜 E) where
+  min p q :=
     { p.toAddGroupSeminorm ⊓ q.toAddGroupSeminorm with
       toFun := fun x => ⨅ u : E, p u + q (x - u)
       smul' := by
@@ -462,8 +457,8 @@ noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
     inf_le_right := fun p q x =>
       ciInf_le_of_le bddBelow_range_add 0 <| by
         simp only [sub_self, map_zero, zero_add, sub_zero]; rfl
-    le_inf := fun a b c hab hac x =>
-      le_ciInf fun u => (le_map_add_map_sub a _ _).trans <| add_le_add (hab _) (hac _) }
+    le_inf := fun a _ _ hab hac _ =>
+      le_ciInf fun _ => (le_map_add_map_sub a _ _).trans <| add_le_add (hab _) (hac _) }
 
 theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p q : Seminorm 𝕜 E) :
     r • (p ⊓ q) = r • p ⊓ r • q := by
@@ -533,7 +528,7 @@ protected theorem coe_sSup_eq' {s : Set <| Seminorm 𝕜 E}
 
 protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
     BddAbove s ↔ BddAbove ((↑) '' s : Set (E → ℝ)) :=
-  ⟨fun ⟨q, hq⟩ => ⟨q, forall_mem_image.2 fun p hp => hq hp⟩, fun H =>
+  ⟨fun ⟨q, hq⟩ => ⟨q, forall_mem_image.2 fun _ hp => hq hp⟩, fun H =>
     ⟨sSup s, fun p hp x => by
       dsimp
       rw [Seminorm.coe_sSup_eq' H, iSup_apply]
@@ -870,8 +865,7 @@ end SeminormedRing
 
 section NormedField
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {A B : Set E} {a : 𝕜}
-  {r : ℝ} {x : E}
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {r : ℝ} {x : E}
 
 theorem closedBall_iSup {ι : Sort*} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E)
     {r : ℝ} (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
@@ -1190,7 +1184,7 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
   · show ε / ‖c‖ ≤ p (c ^ (-(n + 1)) • x)
     rw [zpow_neg, div_le_iff₀ cpos, map_smul_eq_mul, norm_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos),
         zpow_one, mul_inv_rev, mul_comm, ← mul_assoc, ← mul_assoc, mul_inv_cancel₀ (ne_of_gt cpos),
-        one_mul, ← div_eq_inv_mul, le_div_iff₀ (zpow_pos_of_pos cpos _), mul_comm]
+        one_mul, ← div_eq_inv_mul, le_div_iff₀ (zpow_pos cpos _), mul_comm]
     exact (le_div_iff₀ εpos).1 hn.1
   · show ‖(c ^ (-(n + 1)))‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x
     have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring

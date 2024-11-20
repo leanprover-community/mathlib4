@@ -21,8 +21,8 @@ open scoped Pointwise
 variable {ι G M : Type*}
 
 section Mul
-variable [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
-  [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {f g : ι → M} {s t : Set M} {a b : M}
+variable [Mul M] [Preorder M] [MulLeftMono M]
+  [MulRightMono M] {f g : ι → M} {s t : Set M} {a b : M}
 
 @[to_additive]
 lemma mul_mem_upperBounds_mul (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
@@ -48,6 +48,8 @@ lemma BddAbove.mul (hs : BddAbove s) (ht : BddAbove t) : BddAbove (s * t) :=
 lemma BddBelow.mul (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
   (Nonempty.mul hs ht).mono (subset_lowerBounds_mul s t)
 
+@[to_additive (attr := deprecated (since := "2024-11-13"))] alias Set.BddAbove.mul := BddAbove.mul
+
 @[to_additive]
 lemma BddAbove.range_mul (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
     BddAbove (range fun i ↦ f i * g i) :=
@@ -61,8 +63,8 @@ lemma BddBelow.range_mul (hf : BddBelow (range f)) (hg : BddBelow (range g)) :
 end Mul
 
 section InvNeg
-variable [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
-  [CovariantClass G G (swap (· * ·)) (· ≤ ·)] {s : Set G} {a : G}
+variable [Group G] [Preorder G] [MulLeftMono G]
+  [MulRightMono G] {s : Set G} {a : G}
 
 @[to_additive (attr := simp)]
 theorem bddAbove_inv : BddAbove s⁻¹ ↔ BddBelow s :=

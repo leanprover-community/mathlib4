@@ -22,7 +22,7 @@ assert_not_exists OrderedAddCommMonoid
 open Function
 open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {α : Type*}
 
 namespace Set
 
@@ -32,8 +32,7 @@ protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistr
   neg_mul _ _ := by simp_rw [← image_neg]; exact image2_image_left_comm neg_mul
   mul_neg _ _ := by simp_rw [← image_neg]; exact image_image2_right_comm mul_neg
 
-scoped[Pointwise]
-  attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid Set.hasDistribNeg
+scoped[Pointwise] attribute [instance] Set.hasDistribNeg
 
 section Distrib
 variable [Distrib α] (s t u : Set α)

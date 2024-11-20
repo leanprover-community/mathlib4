@@ -6,7 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.RepresentationTheory.Action.Basic
 
 /-!
@@ -38,7 +38,7 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
     LimitCone (Discrete.functor fun i : ι => Action.ofMulAction G (F i)) where
   cone :=
     { pt := Action.ofMulAction G (∀ i : ι, F i)
-      π := Discrete.natTrans (fun i => ⟨fun x => x i.as, fun g => rfl⟩) }
+      π := Discrete.natTrans (fun i => ⟨fun x => x i.as, fun _ => rfl⟩) }
   isLimit :=
     { lift := fun s =>
         { hom := fun x i => (s.π.app ⟨i⟩).hom x
@@ -46,7 +46,7 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
             ext x
             funext j
             exact congr_fun ((s.π.app ⟨j⟩).comm g) x }
-      fac := fun s j => rfl
+      fac := fun _ _ => rfl
       uniq := fun s f h => by
         ext x
         funext j
@@ -149,7 +149,7 @@ lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :
 /-- If `N` and `H` are subgroups of a group `G` with `N ≤ H`, this is the canonical
 `G`-morphism `G ⧸ N ⟶ G ⧸ H`. -/
 def quotientToQuotientOfLE [Fintype (G ⧸ H)] (h : N ≤ H) : (G ⧸ₐ N) ⟶ (G ⧸ₐ H) where
-  hom := Quotient.lift _ <| fun a b hab ↦ Quotient.sound <|
+  hom := Quotient.lift _ <| fun _ _ hab ↦ Quotient.sound <|
     (QuotientGroup.leftRel_apply).mpr (h <| (QuotientGroup.leftRel_apply).mp hab)
   comm g := by
     ext (x : G ⧸ N)

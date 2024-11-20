@@ -77,11 +77,6 @@ def Simps.apply (f : AbsoluteValue R S) : R → S :=
 
 initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
 
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
-directly. -/
-instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
-  DFunLike.hasCoeToFun
-
 @[simp]
 theorem coe_toMulHom : ⇑abv.toMulHom = abv :=
   rfl
@@ -98,7 +93,7 @@ protected theorem eq_zero {x : R} : abv x = 0 ↔ x = 0 :=
 protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
   abv.add_le' x y
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
+@[simp]
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
   abv.map_mul' x y
 
@@ -118,7 +113,7 @@ protected theorem ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
+@[simp]
 protected theorem map_zero : abv 0 = 0 :=
   abv.eq_zero.2 rfl
 
@@ -150,7 +145,7 @@ section IsDomain
 variable {R S : Type*} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
+@[simp]
 protected theorem map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 
@@ -175,7 +170,7 @@ def toMonoidHom : R →* S :=
 theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
   rfl
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
+@[simp]
 protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
   abv.toMonoidHom.map_pow a n
 

@@ -127,7 +127,7 @@ private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a
   change 1 < _
   have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using nat_sub_dvd_pow_sub_pow a 1 b
   rw [Nat.lt_div_iff_mul_lt h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
-  exact lt_self_pow (Nat.lt_of_succ_le ha) hb
+  exact lt_self_pow₀ (Nat.lt_of_succ_le ha) hb
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
@@ -135,7 +135,7 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
   calc
     2 * a + 1 ≤ a ^ 2 * a := by nlinarith
     _ = a ^ 3 := by rw [Nat.pow_succ a 2]
-    _ ≤ a ^ b := pow_le_pow_right (Nat.le_of_succ_le ha) hb
+    _ ≤ a ^ b := pow_right_mono₀ (Nat.le_of_succ_le ha) hb
 
 private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
     (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by

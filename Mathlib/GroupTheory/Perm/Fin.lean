@@ -151,7 +151,7 @@ theorem cycleRange_of_gt {n : ℕ} {i j : Fin n.succ} (h : i < j) : cycleRange i
 theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
   cases n
-  · exact Subsingleton.elim (α := Fin 1) _ _  --Porting note; was `simp`
+  · subsingleton
   have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt))
     ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ := by simp
   ext

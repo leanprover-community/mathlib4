@@ -201,7 +201,7 @@ theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Ab
     exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
 theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
-  starConvex_zero_iff.2 fun x hx a ha₀ ha₁ =>
+  starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
     hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
 
 theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :
@@ -214,7 +214,7 @@ theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s 
   have ha := hb.trans hba
   refine ⟨(a⁻¹ * b) • x, hs₀ hx' (by positivity) ?_, ?_⟩
   · rw [← div_eq_inv_mul]
-    exact div_le_one_of_le hba.le ha.le
+    exact div_le_one_of_le₀ hba.le ha.le
   · dsimp only
     rw [← mul_smul, mul_inv_cancel_left₀ ha.ne']
 
@@ -316,7 +316,7 @@ theorem comap_gauge_nhds_zero_le (ha : Absorbent ℝ s) (hb : Bornology.IsVonNBo
   rcases (hb hu).exists_pos with ⟨r, hr₀, hr⟩
   filter_upwards [preimage_mem_comap (gt_mem_nhds (inv_pos.2 hr₀))] with x (hx : gauge s x < r⁻¹)
   rcases exists_lt_of_gauge_lt ha hx with ⟨c, hc₀, hcr, y, hy, rfl⟩
-  have hrc := (lt_inv hr₀ hc₀).2 hcr
+  have hrc := (lt_inv_comm₀ hr₀ hc₀).2 hcr
   rcases hr c⁻¹ (hrc.le.trans (le_abs_self _)) hy with ⟨z, hz, rfl⟩
   simpa only [smul_inv_smul₀ hc₀.ne']
 
