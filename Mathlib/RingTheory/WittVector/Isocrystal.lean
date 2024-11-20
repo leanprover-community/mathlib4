@@ -74,7 +74,7 @@ variable [IsDomain k] [CharP k p] [PerfectRing k p]
 
 /-- The Frobenius automorphism of `k` induces an automorphism of `K`. -/
 def FractionRing.frobenius : K(p, k) ≃+* K(p, k) :=
-  IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
+  IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
 
 /-- The Frobenius automorphism of `k` induces an endomorphism of `K`. For notation purposes. -/
 def FractionRing.frobeniusRingHom : K(p, k) →+* K(p, k) :=
@@ -116,19 +116,19 @@ variable {V}
 Project the Frobenius automorphism from an isocrystal. Denoted by `Φ(p, k)` when V can be inferred.
 -/
 def Isocrystal.frobenius : V ≃ᶠˡ[p, k] V :=
-  @Isocrystal.frob p _ k _ _ _ _ _ _ _
+  Isocrystal.frob (p := p) (k := k) (V := V)
 
 variable (V)
 
 scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
 /-- A homomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalHom extends V →ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearMap x) = toLinearMap (Φ(p, k) x)
 
 /-- An isomorphism between isocrystals respects the Frobenius map. -/
--- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalEquiv extends V ≃ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearEquiv x) = toLinearEquiv (Φ(p, k) x)
 
@@ -146,7 +146,7 @@ open scoped Isocrystal
 of slope `m : ℤ`.
 -/
 @[nolint unusedArguments]
--- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
 

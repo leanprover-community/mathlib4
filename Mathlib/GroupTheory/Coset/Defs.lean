@@ -160,7 +160,7 @@ theorem mk_surjective : Function.Surjective <| @mk _ _ s :=
   Quotient.mk''_surjective
 
 @[to_additive (attr := simp)]
-lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_iff_surjective.mpr mk_surjective
+lemma range_mk : range (QuotientGroup.mk (s := s)) = univ := range_eq_univ.mpr mk_surjective
 
 @[to_additive (attr := elab_as_elim)]
 theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (QuotientGroup.mk z)) : C x :=
@@ -197,17 +197,20 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
 @[to_additive (attr := deprecated (since := "2024-08-04"))] alias eq' := QuotientGroup.eq
 
 @[to_additive]
-theorem out_eq' (a : α ⧸ s) : mk a.out' = a :=
+theorem out_eq' (a : α ⧸ s) : mk a.out = a :=
   Quotient.out_eq' a
 
 variable (s)
 
-/- It can be useful to write `obtain ⟨h, H⟩ := mk_out'_eq_mul ...`, and then `rw [H]` or
+/- It can be useful to write `obtain ⟨h, H⟩ := mk_out_eq_mul ...`, and then `rw [H]` or
   `simp_rw [H]` or `simp only [H]`. In order for `simp_rw` and `simp only` to work, this lemma is
-  stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out'`. -/
-@[to_additive QuotientAddGroup.mk_out'_eq_mul]
-theorem mk_out'_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out' = g * h :=
-  ⟨⟨g⁻¹ * (mk g).out', QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
+  stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out`. -/
+@[to_additive QuotientAddGroup.mk_out_eq_mul]
+theorem mk_out_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out = g * h :=
+  ⟨⟨g⁻¹ * (mk g).out, QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
+
+@[to_additive (attr := deprecated (since := "2024-10-19")) QuotientAddGroup.mk_out'_eq_mul]
+alias mk_out'_eq_mul := mk_out_eq_mul
 
 variable {s} {a b : α}
 

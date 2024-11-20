@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Int
 import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Join
+import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.ProdSigma

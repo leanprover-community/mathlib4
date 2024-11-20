@@ -191,7 +191,7 @@ noncomputable def piQuotEquiv : ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] ι → 
         funext fun i => (Submodule.Quotient.eq' _).2 (QuotientAddGroup.leftRel_apply.mp hab i)
   map_add' := by rintro ⟨_⟩ ⟨_⟩; rfl
   map_smul' := by rintro ⟨_⟩ ⟨_⟩; rfl
-  invFun := fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out' (x i)
+  invFun := fun x ↦ Ideal.Quotient.mk (I.pi ι) fun i ↦ Quotient.out (x i)
   left_inv := by
     rintro ⟨x⟩
     exact Ideal.Quotient.eq.2 fun i => Ideal.Quotient.eq.1 (Quotient.out_eq' _)
@@ -216,7 +216,7 @@ end Pi
 open scoped Pointwise in
 /-- A ring is made up of a disjoint union of cosets of an ideal. -/
 lemma univ_eq_iUnion_image_add {R : Type*} [Ring R] (I : Ideal R) :
-    (Set.univ (α := R)) = ⋃ x : R ⧸ I, x.out' +ᵥ (I : Set R) :=
+    (Set.univ (α := R)) = ⋃ x : R ⧸ I, x.out +ᵥ (I : Set R) :=
   QuotientAddGroup.univ_eq_iUnion_vadd I.toAddSubgroup
 
 lemma _root_.Finite.of_finite_quot_finite_ideal {R : Type*} [Ring R] {I : Ideal R}

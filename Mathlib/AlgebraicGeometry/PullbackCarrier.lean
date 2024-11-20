@@ -24,7 +24,7 @@ We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
 
 -/
 
-open CategoryTheory Limits TopologicalSpace LocalRing TensorProduct
+open CategoryTheory Limits TopologicalSpace IsLocalRing TensorProduct
 
 noncomputable section
 
@@ -358,5 +358,11 @@ instance isJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) :
   exists_preimage_fst_triplet_of_prop {X Y S} f g _ hg x y hxy := by
     obtain ⟨a, b, h⟩ := Pullback.exists_preimage_pullback x y hxy
     use a
+
+instance : MorphismProperty.IsStableUnderBaseChange @Surjective := by
+  refine .mk' ?_
+  introv hg
+  simp only [surjective_iff, ← Set.range_eq_univ, Pullback.range_fst] at hg ⊢
+  rw [hg, Set.preimage_univ]
 
 end AlgebraicGeometry.Scheme

@@ -493,8 +493,7 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     mfderiv (I.prod I') I'' f p =
         mfderiv (I.prod I') I'' (fun z : M × M' => f (z.1, p.2)) p +
           mfderiv (I.prod I') I'' (fun z : M × M' => f (p.1, z.2)) p := by
-  erw [mfderiv_comp_of_eq hf (mdifferentiableAt_fst.prod_mk mdifferentiableAt_const)
-      rfl,
+  erw [mfderiv_comp_of_eq hf (mdifferentiableAt_fst.prod_mk mdifferentiableAt_const) rfl,
     mfderiv_comp_of_eq hf (mdifferentiableAt_const.prod_mk mdifferentiableAt_snd) rfl,
     ← ContinuousLinearMap.comp_add,
     mdifferentiableAt_fst.mfderiv_prod mdifferentiableAt_const,
@@ -520,7 +519,7 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
     rw [this, mfderiv_comp (I' := I)]
     · simp only [mfderiv_fst, id_eq]
       rfl
-    · apply hf.comp _  (mdifferentiableAt_id.prod_mk mdifferentiableAt_const)
+    · exact hf.comp _  (mdifferentiableAt_id.prod_mk mdifferentiableAt_const)
     · exact mdifferentiableAt_fst
   · have : (fun z : M × M' => f (p.1, z.2)) = (fun z : M' => f (p.1, z)) ∘ Prod.snd := rfl
     rw [this, mfderiv_comp (I' := I')]
@@ -535,8 +534,8 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
 theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : TangentSpace (I.prod I') p}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p v =
-      (mfderiv I I'' (fun z : M => f (z, p.2)) p.1 v.1) +
-      (mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2 v.2) := by
+      mfderiv I I'' (fun z : M => f (z, p.2)) p.1 v.1 +
+      mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2 v.2 := by
   rw [mfderiv_prod_eq_add_comp hf]
   rfl
 
