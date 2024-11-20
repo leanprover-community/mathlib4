@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Tactic.LinearCombination.Lemmas
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Compare
 

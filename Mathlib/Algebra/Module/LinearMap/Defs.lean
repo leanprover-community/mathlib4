@@ -5,6 +5,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth
 -/
 import Mathlib.Algebra.Group.Hom.Instances
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.GroupTheory.GroupAction.Hom
 
