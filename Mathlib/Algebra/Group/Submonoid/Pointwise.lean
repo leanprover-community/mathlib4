@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.WellFoundedSet
