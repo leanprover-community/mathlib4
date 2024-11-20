@@ -43,6 +43,9 @@ jobs:
 
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
           printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
+          printf $'PR_NUMBER: \'%s\'\n' "${PR_NUMBER}"
+          printf $'OTHER_NUMBER: \'%s\'\n' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
+          printf $'%s' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}" | hexdump -cC
 
           printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
           if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
@@ -73,9 +76,9 @@ jobs:
         uses: octokit/request-action@v2.x
         with:
           # check is this ok? was /repos/:repository/issues/:issue_number/labels
-          route: POST /repos/:repository/issues/${PR_NUMBER}/labels
+          route: POST /repos/:repository/issues/:issue_number/labels
           repository: ${{ github.repository }}
-          issue_number: ${PR_NUMBER}
+          issue_number: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
           labels: '["${{ steps.merge_or_delegate.outputs.mOrD }}"]'
         env:
           GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }} # comment uses ${{ secrets.GITHUB_TOKEN }}
