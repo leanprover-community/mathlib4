@@ -175,22 +175,21 @@ map `f` in `c.length` variables, one may form a continuous multilinear map in `n
 applying the right coefficient of `p` to each block of the composition, and then applying `f` to
 the resulting vector. It is called `f.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) :
-    ContinuousMultilinearMap 𝕜 (fun _i : Fin n => E) G where
+    (f : F [×c.length]→L[𝕜] G) : E [×n]→L[𝕜] G where
   toFun v := f (p.applyComposition c v)
-  map_add' v i x y := by
+  map_update_add' v i x y := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_add]
-  map_smul' v i c x := by
+    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_add]
+  map_update_smul' v i c x := by
     cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_smul]
+    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_smul]
   cont :=
     f.cont.comp <|
       continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
 
 @[simp]
 theorem compAlongComposition_apply {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) (v : Fin n → E) :
+    (f : F [×c.length]→L[𝕜] G) (v : Fin n → E) :
     (f.compAlongComposition p c) v = f (p.applyComposition c v) :=
   rfl
 
@@ -207,8 +206,7 @@ form a continuous multilinear map in `n` variables by applying the right coeffic
 block of the composition, and then applying `q c.length` to the resulting vector. It is
 called `q.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
-    (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
-    ContinuousMultilinearMap 𝕜 (fun _i : Fin n => E) G :=
+    (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) : (E [×n]→L[𝕜] G) :=
   (q c.length).compAlongComposition p c
 
 @[simp]
@@ -290,7 +288,7 @@ namespace FormalMultilinearSeries
 /-- The norm of `f.compAlongComposition p c` is controlled by the product of
 the norms of the relevant bits of `f` and `p`. -/
 theorem compAlongComposition_bound {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length => F) G) (v : Fin n → E) :
+    (f : F [×c.length]→L[𝕜] G) (v : Fin n → E) :
     ‖f.compAlongComposition p c v‖ ≤ (‖f‖ * ∏ i, ‖p (c.blocksFun i)‖) * ∏ i : Fin n, ‖v i‖ :=
   calc
     ‖f.compAlongComposition p c v‖ = ‖f (p.applyComposition c v)‖ := rfl

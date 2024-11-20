@@ -293,7 +293,7 @@ theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' 
   exact U.isOpen
 
 theorem ι_isOpenEmbedding (i : D.J) : IsOpenEmbedding (𝖣.ι i) :=
-  isOpenEmbedding_of_continuous_injective_open (𝖣.ι i).continuous_toFun (D.ι_injective i) fun U h =>
+  .of_continuous_injective_isOpenMap (𝖣.ι i).continuous_toFun (D.ι_injective i) fun U h =>
     D.open_image_open i ⟨U, h⟩
 
 @[deprecated (since := "2024-10-18")]
@@ -453,7 +453,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     exact Set.mem_range_self _
 
 theorem fromOpenSubsetsGlue_isOpenEmbedding : IsOpenEmbedding (fromOpenSubsetsGlue U) :=
-  isOpenEmbedding_of_continuous_injective_open (ContinuousMap.continuous_toFun _)
+  .of_continuous_injective_isOpenMap (ContinuousMap.continuous_toFun _)
     (fromOpenSubsetsGlue_injective U) (fromOpenSubsetsGlue_isOpenMap U)
 
 @[deprecated (since := "2024-10-18")]

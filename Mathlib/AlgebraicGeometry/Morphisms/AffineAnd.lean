@@ -90,11 +90,11 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
       rwa [hPi.cancel_right_isIso] at hf
 
 /-- If `P` is stable under base change, so is `affineAnd P`. -/
-lemma affineAnd_stableUnderBaseChange (hQi : RingHom.RespectsIso Q)
-    (hQb : RingHom.StableUnderBaseChange Q) :
-    (affineAnd Q).StableUnderBaseChange := by
+lemma affineAnd_isStableUnderBaseChange (hQi : RingHom.RespectsIso Q)
+    (hQb : RingHom.IsStableUnderBaseChange Q) :
+    (affineAnd Q).IsStableUnderBaseChange := by
   haveI : (affineAnd Q).toProperty.RespectsIso := affineAnd_respectsIso hQi
-  apply AffineTargetMorphismProperty.StableUnderBaseChange.mk
+  apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g ⟨hY, hg⟩
   exact ⟨inferInstance, hQb.pullback_fst_app_top _ hQi f _ hg⟩
 
@@ -137,12 +137,12 @@ lemma HasAffineProperty.affineAnd_isStableUnderComposition {P : MorphismProperty
 
 /-- If `P` is a morphism property affine locally defined by `affineAnd Q`, `P` is stable under
 base change if `Q` is. -/
-lemma HasAffineProperty.affineAnd_stableUnderBaseChange {P : MorphismProperty Scheme.{u}}
+lemma HasAffineProperty.affineAnd_isStableUnderBaseChange {P : MorphismProperty Scheme.{u}}
     (_ : HasAffineProperty P (affineAnd Q)) (hQi : RingHom.RespectsIso Q)
-    (hQb : RingHom.StableUnderBaseChange Q) :
-    P.StableUnderBaseChange :=
-  HasAffineProperty.stableUnderBaseChange
-    (AlgebraicGeometry.affineAnd_stableUnderBaseChange hQi hQb)
+    (hQb : RingHom.IsStableUnderBaseChange Q) :
+    P.IsStableUnderBaseChange :=
+  HasAffineProperty.isStableUnderBaseChange
+    (AlgebraicGeometry.affineAnd_isStableUnderBaseChange hQi hQb)
 
 /-- If `Q` contains identities and respects isomorphisms (i.e. is satisfied by isomorphisms),
 and `P` is affine locally defined by `affineAnd Q`, then `P` contains identities. -/

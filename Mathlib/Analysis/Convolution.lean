@@ -572,7 +572,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rw [this]
     refine hg.comp (continuous_fst.fst.prod_mk (continuous_fst.snd.sub
       continuous_snd)).continuousOn ?_
-    simp (config := {contextual := true}) [s', MapsTo]
+    simp +contextual [s', MapsTo]
   have B : ContinuousOn (fun a ↦ ∫ x, L (f x) (g' a x) ∂μ) s' := by
     apply continuousOn_integral_bilinear_of_locally_integrable_of_compact_support L k'_comp A _
       (hf.integrableOn_isCompact k'_comp)

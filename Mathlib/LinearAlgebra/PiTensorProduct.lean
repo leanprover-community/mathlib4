@@ -277,8 +277,8 @@ variable (R)
 `tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
 def tprod : MultilinearMap R s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
-  map_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
-  map_smul' {_ f} i r x := by
+  map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
+  map_update_smul' {_ f} i r x := by
     rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_same]
 
 variable {R}
@@ -398,9 +398,9 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
   liftAddHom (fun p : R × Π i, s i ↦ p.1 • φ p.2)
     (fun z f i hf ↦ by simp_rw [map_coord_zero φ i hf, smul_zero])
     (fun f ↦ by simp_rw [zero_smul])
-    (fun z f i m₁ m₂ ↦ by simp_rw [← smul_add, φ.map_add])
+    (fun z f i m₁ m₂ ↦ by simp_rw [← smul_add, φ.map_update_add])
     (fun z₁ z₂ f ↦ by rw [← add_smul])
-    fun z f i r ↦ by simp [φ.map_smul, smul_smul, mul_comm]
+    fun z f i r ↦ by simp [φ.map_update_smul, smul_smul, mul_comm]
 
 theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
@@ -551,18 +551,22 @@ private theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : 
   exact apply_update (fun i F => F (x i)) f i u j
 
 open Function in
-protected theorem map_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
+protected theorem map_update_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
     map (update f i (u + v)) = map (update f i u) + map (update f i v) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.add_apply,
-    MultilinearMap.map_add]
+    MultilinearMap.map_update_add]
+
+@[deprecated (since := "2024-11-03")] protected alias map_add := PiTensorProduct.map_update_add
 
 open Function in
-protected theorem map_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] t i) :
+protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] t i) :
     map (update f i (c • u)) = c • map (update f i u) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
-    MultilinearMap.map_smul]
+    MultilinearMap.map_update_smul]
+
+@[deprecated (since := "2024-11-03")] protected alias map_smul := PiTensorProduct.map_update_smul
 
 variable (R s t)
 
@@ -573,8 +577,8 @@ the family.
 noncomputable def mapMultilinear :
     MultilinearMap R (fun (i : ι) ↦ s i →ₗ[R] t i) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
   toFun := map
-  map_smul' _ _ _ _ := PiTensorProduct.map_smul _ _ _ _
-  map_add' _ _ _ _ := PiTensorProduct.map_add _ _ _ _
+  map_update_smul' _ _ _ _ := PiTensorProduct.map_update_smul _ _ _ _
+  map_update_add' _ _ _ _ := PiTensorProduct.map_update_add _ _ _ _
 
 variable {R s t}
 
@@ -831,9 +835,9 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
     refine x.induction_on ?_ ?_
     · intro r f
       simp only [LinearMap.map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,
-        this f, MultilinearMap.map_smul, update_eq_self]
+        this f, MultilinearMap.map_update_smul, update_eq_self]
     · intro x y hx hy
-      rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_add, ← this 0 (lift _ _), hx,
+      rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_update_add, ← this 0 (lift _ _), hx,
         ← this 0 (lift _ _), hy]
   right_inv t := by simp only [ofSubsingleton_apply_apply, LinearMap.id_apply, lift.tprod]
   map_add' := LinearMap.map_add _

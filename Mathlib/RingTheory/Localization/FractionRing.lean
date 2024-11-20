@@ -3,7 +3,6 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Ring.Int
@@ -301,6 +300,14 @@ lemma fieldEquivOfAlgEquivHom_apply (f : B ≃ₐ[A] B) :
     fieldEquivOfAlgEquivHom K L f = fieldEquivOfAlgEquiv K L L f :=
   rfl
 
+variable (A B)
+
+lemma fieldEquivOfAlgEquivHom_injective :
+    Function.Injective (fieldEquivOfAlgEquivHom K L : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L)) := by
+  intro f g h
+  ext b
+  simpa using AlgEquiv.ext_iff.mp h (algebraMap B L b)
+
 end fieldEquivOfAlgEquivHom
 
 theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
@@ -331,6 +338,22 @@ protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing
         (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
 
 end IsFractionRing
+
+section algebraMap_injective
+
+theorem algebraMap_injective_of_field_isFractionRing (K L : Type*) [Field K] [Semiring L]
+    [Nontrivial L] [Algebra R K] [IsFractionRing R K] [Algebra S L] [Algebra K L] [Algebra R L]
+    [IsScalarTower R S L] [IsScalarTower R K L] : Function.Injective (algebraMap R S) := by
+  refine Function.Injective.of_comp (f := algebraMap S L) ?_
+  rw [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R K L]
+  exact (algebraMap K L).injective.comp (IsFractionRing.injective R K)
+
+theorem NoZeroSMulDivisors.of_field_isFractionRing [NoZeroDivisors S] (K L : Type*) [Field K]
+    [Semiring L] [Nontrivial L] [Algebra R K] [IsFractionRing R K] [Algebra S L] [Algebra K L]
+    [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] : NoZeroSMulDivisors R S :=
+  of_algebraMap_injective (algebraMap_injective_of_field_isFractionRing R S K L)
+
+end algebraMap_injective
 
 variable (A)
 

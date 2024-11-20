@@ -139,7 +139,7 @@ theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List
     l' ∈ (permutationsAux2 t ts [] ys (l ++ ·)).2 ↔
       ∃ l₁ l₂, l₂ ≠ [] ∧ ys = l₁ ++ l₂ ∧ l' = l ++ l₁ ++ t :: l₂ ++ ts := by
   induction' ys with y ys ih generalizing l
-  · simp (config := { contextual := true })
+  · simp +contextual
   rw [permutationsAux2_snd_cons,
     show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ ·) by funext _; simp, mem_cons, ih]
   constructor

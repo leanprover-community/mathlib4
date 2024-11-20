@@ -65,6 +65,12 @@ noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
     Spec (X.presheaf.stalk x) ⟶ X :=
   (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
 
+@[simps over] noncomputable
+instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).Over X := ⟨X.fromSpecStalk x⟩
+
+@[simps! over] noncomputable
+instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).CanonicallyOver X where
+
 @[simp]
 theorem IsAffineOpen.fromSpecStalk_eq_fromSpecStalk {x : X} (hxU : x ∈ U) :
     hU.fromSpecStalk hxU = X.fromSpecStalk x := fromSpecStalk_eq ..
@@ -106,7 +112,7 @@ lemma fromSpecStalk_app {x : X} (hxU : x ∈ U) :
     hV.fromSpec_app_of_le _ hVU, ← X.presheaf.germ_res (homOfLE hVU) x hxV]
   simp [Category.assoc, ← ΓSpecIso_inv_naturality_assoc]
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma Spec_map_stalkSpecializes_fromSpecStalk {x y : X} (h : x ⤳ y) :
     Spec.map (X.presheaf.stalkSpecializes h) ≫ X.fromSpecStalk y = X.fromSpecStalk x := by
   obtain ⟨_, ⟨U, hU, rfl⟩, hyU, -⟩ :=
@@ -115,6 +121,8 @@ lemma Spec_map_stalkSpecializes_fromSpecStalk {x y : X} (h : x ⤳ y) :
   rw [← hU.fromSpecStalk_eq_fromSpecStalk hyU, ← hU.fromSpecStalk_eq_fromSpecStalk hxU,
     IsAffineOpen.fromSpecStalk, IsAffineOpen.fromSpecStalk, ← Category.assoc, ← Spec.map_comp,
     TopCat.Presheaf.germ_stalkSpecializes]
+
+instance {x y : X} (h : x ⤳ y) : (Spec.map (X.presheaf.stalkSpecializes h)).IsOver X where
 
 @[reassoc (attr := simp)]
 lemma Spec_map_stalkMap_fromSpecStalk {x} :
@@ -128,6 +136,8 @@ lemma Spec_map_stalkMap_fromSpecStalk {x} :
     IsAffineOpen.fromSpecStalk, Spec.map_comp_assoc, ← X.presheaf.germ_res (homOfLE hVU) x hxV,
     Spec.map_comp_assoc, Category.assoc, ← Spec.map_comp_assoc (f.app _),
       Hom.app_eq_appLE, Hom.appLE_map, IsAffineOpen.Spec_map_appLE_fromSpec]
+
+instance [X.Over Y] {x} : Spec.map ((X ↘ Y).stalkMap x) |>.IsOver Y where
 
 lemma Spec_fromSpecStalk (R : CommRingCat) (x) :
     (Spec R).fromSpecStalk x =
@@ -166,6 +176,9 @@ lemma Opens.fromSpecStalkOfMem_ι {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : 
     U.fromSpecStalkOfMem x hxU ≫ U.ι = X.fromSpecStalk x := by
   simp only [Opens.fromSpecStalkOfMem, Spec.map_inv, Category.assoc, IsIso.inv_comp_eq]
   exact (Scheme.Spec_map_stalkMap_fromSpecStalk U.ι (x := ⟨x, hxU⟩)).symm
+
+instance {X : Scheme.{u}} (U : X.Opens) (x : X) (hxU : x ∈ U) :
+    (U.fromSpecStalkOfMem x hxU).IsOver X where
 
 @[reassoc]
 lemma fromSpecStalk_toSpecΓ (X : Scheme.{u}) (x : X) :

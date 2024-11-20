@@ -409,6 +409,10 @@ lemma one_lt_exponent [Nontrivial G] : 1 < Monoid.exponent G := by
   rw [Nat.one_lt_iff_ne_zero_and_ne_one]
   exact ⟨exponent_ne_zero_of_finite, mt exp_eq_one_iff.mp (not_subsingleton G)⟩
 
+@[to_additive]
+instance neZero_exponent_of_finite : NeZero <| Monoid.exponent G :=
+  ⟨Monoid.exponent_ne_zero_of_finite⟩
+
 end LeftCancelMonoid
 
 section CommMonoid

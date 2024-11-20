@@ -41,8 +41,8 @@ We introduce two convenience definitions:
 * `VectorFourier.fourierSMulRight L f`: given `f : V → E` and `L` a bilinear pairing
   between `V` and `W`, then this is the function `fun v ↦ -(2 * π * I) (L v ⬝) • f v`,
   from `V` to `Hom (W, E)`.
-  This is essentially `ContinousLinearMap.smulRight`, up to the factor `- 2πI` designed to make sure
-  that the Fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
+  This is essentially `ContinuousLinearMap.smulRight`, up to the factor `- 2πI` designed to make
+  sure that the Fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
   integral of `f`.
 * `VectorFourier.fourierPowSMulRight` is the higher order analogue for higher derivatives:
   `fourierPowSMulRight L f v n` is informally `(-(2 * π * I))^n (L v ⬝)^n • f v`, in

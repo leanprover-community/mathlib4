@@ -70,14 +70,32 @@ and scaled by the inverse of `μ s` (to make it a probability measure):
 def cond (s : Set Ω) : Measure Ω :=
   (μ s)⁻¹ • μ.restrict s
 
-@[inherit_doc] scoped notation μ "[" s "|" t "]" => ProbabilityTheory.cond μ t s
-@[inherit_doc] scoped notation:max μ "[|" t "]" => ProbabilityTheory.cond μ t
+@[inherit_doc] scoped notation:max μ "[" t " | " s "]" => ProbabilityTheory.cond μ s t
+@[inherit_doc] scoped notation:max μ "[|" s "]" => ProbabilityTheory.cond μ s
+
+/-- The conditional probability measure of measure `μ` on `{ω | X ω ∈ s}`.
+
+It is `μ` restricted to `{ω | X ω ∈ s}` and scaled by the inverse of `μ {ω | X ω ∈ s}`
+(to make it a probability measure): `(μ {ω | X ω ∈ s})⁻¹ • μ.restrict {ω | X ω ∈ s}`. -/
+scoped notation:max μ "[|" X " in " s "]" => μ[|X ⁻¹' s]
+
+/-- The conditional probability measure of measure `μ` on set `{ω | X ω = x}`.
+
+It is `μ` restricted to `{ω | X ω = x}` and scaled by the inverse of `μ {ω | X ω = x}`
+(to make it a probability measure): `(μ {ω | X ω = x})⁻¹ • μ.restrict {ω | X ω = x}`. -/
+scoped notation:max μ "[" s " | "  X " in " t "]" => μ[s | X ⁻¹' t]
 
 /-- The conditional probability measure of measure `μ` on `{ω | X ω = x}`.
 
 It is `μ` restricted to `{ω | X ω = x}` and scaled by the inverse of `μ {ω | X ω = x}`
 (to make it a probability measure): `(μ {ω | X ω = x})⁻¹ • μ.restrict {ω | X ω = x}`. -/
-scoped notation:max μ "[|" X " ← " x "]" => μ[|X ⁻¹' {x}]
+scoped notation:max μ "[|" X " ← " x "]" => μ[|X in {x}]
+
+/-- The conditional probability measure of measure `μ` on set `{ω | X ω = x}`.
+
+It is `μ` restricted to `{ω | X ω = x}` and scaled by the inverse of `μ {ω | X ω = x}`
+(to make it a probability measure): `(μ {ω | X ω = x})⁻¹ • μ.restrict {ω | X ω = x}`. -/
+scoped notation:max μ "[" s " | "  X " ← " x "]" => μ[s | X in {x}]
 
 /-- The conditional probability measure of any measure on any set of finite positive measure
 is a probability measure. -/
@@ -201,7 +219,7 @@ theorem cond_eq_inv_mul_cond_mul (hms : MeasurableSet s) (hmt : MeasurableSet t)
 end Bayes
 
 lemma comap_cond {i : Ω' → Ω} (hi : MeasurableEmbedding i) (hi' : ∀ᵐ ω ∂μ, ω ∈ range i)
-    (hs : MeasurableSet s) : comap i μ[|s] = (comap i μ)[|i ⁻¹' s] := by
+    (hs : MeasurableSet s) : comap i μ[|s] = (comap i μ)[|i in s] := by
   ext t ht
   change μ (range i)ᶜ = 0 at hi'
   rw [cond_apply, comap_apply, cond_apply, comap_apply, comap_apply, image_inter,

@@ -159,7 +159,7 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
     (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens)
       (_ : iSup U = ⊤), (∀ i, P (f ∣_ U i)) → P f) : IsLocalAtTarget P.universally := by
   apply IsLocalAtTarget.mk'
-  · exact fun {X Y} f U => P.universally_stableUnderBaseChange
+  · exact fun {X Y} f U => P.universally.of_isPullback
       (isPullback_morphismRestrict f U).flip
   · intros X Y f ι U hU H X' Y' i₁ i₂ f' h
     apply hP₂ _ (fun i ↦ i₂ ⁻¹ᵁ U i)
@@ -297,12 +297,12 @@ namespace AffineTargetMorphismProperty
 
 /-- If `P` is local at the target, to show that `P` is stable under base change, it suffices to
 check this for base change along a morphism of affine schemes. -/
-lemma stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
+lemma isStableUnderBaseChange_of_isStableUnderBaseChangeOnAffine_of_isLocalAtTarget
     (P : MorphismProperty Scheme) [IsLocalAtTarget P]
-    (hP₂ : (of P).StableUnderBaseChange) :
-    P.StableUnderBaseChange :=
+    (hP₂ : (of P).IsStableUnderBaseChange) :
+    P.IsStableUnderBaseChange :=
   letI := HasAffineProperty.of_isLocalAtTarget P
-  HasAffineProperty.stableUnderBaseChange hP₂
+  HasAffineProperty.isStableUnderBaseChange hP₂
 
 end AffineTargetMorphismProperty
 

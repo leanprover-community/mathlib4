@@ -14,12 +14,8 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 # Products and coproducts in the category of topological spaces
 -/
 
-
-open TopologicalSpace
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
+open Set TopologicalSpace
 
 universe v u w
 
@@ -286,8 +282,7 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
 
 theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
-      IsOpenEmbedding c.inl ∧ IsOpenEmbedding c.inr ∧
-        IsCompl (Set.range c.inl) (Set.range c.inr) := by
+      IsOpenEmbedding c.inl ∧ IsOpenEmbedding c.inr ∧ IsCompl (range c.inl) (range c.inr) := by
   classical
     constructor
     · rintro ⟨h⟩
@@ -297,9 +292,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
           h.comp_coconePointUniqueUpToIso_inv (binaryCofanIsColimit X Y) ⟨WalkingPair.right⟩]
       dsimp
       refine ⟨(homeoOfIso <| h.coconePointUniqueUpToIso
-        (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp isOpenEmbedding_inl,
+        (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp .inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
-            (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp isOpenEmbedding_inr, ?_⟩
+            (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp .inr, ?_⟩
       erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]

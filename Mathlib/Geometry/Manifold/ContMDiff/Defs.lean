@@ -654,10 +654,16 @@ theorem ContMDiffWithinAt.mono (hf : ContMDiffWithinAt I I' n f s x) (hts : t �
     ContMDiffWithinAt I I' n f t x :=
   hf.mono_of_mem_nhdsWithin <| mem_of_superset self_mem_nhdsWithin hts
 
-theorem contMDiffWithinAt_congr_nhds (hst : 𝓝[s] x = 𝓝[t] x) :
+theorem contMDiffWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
     ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x :=
-  ⟨fun h => h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin, fun h =>
-    h.mono_of_mem_nhdsWithin <| hst.symm ▸ self_mem_nhdsWithin⟩
+  (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_set h
+
+theorem ContMDiffWithinAt.congr_set (h : ContMDiffWithinAt I I' n f s x) (hst : s =ᶠ[𝓝 x] t) :
+    ContMDiffWithinAt I I' n f t x :=
+  (contMDiffWithinAt_congr_set hst).1 h
+
+@[deprecated (since := "2024-10-23")]
+alias contMDiffWithinAt_congr_nhds := contMDiffWithinAt_congr_set
 
 theorem contMDiffWithinAt_insert_self :
     ContMDiffWithinAt I I' n f (insert x s) x ↔ ContMDiffWithinAt I I' n f s x := by
@@ -669,24 +675,32 @@ theorem contMDiffWithinAt_insert_self :
 alias ⟨ContMDiffWithinAt.of_insert, _⟩ := contMDiffWithinAt_insert_self
 
 -- TODO: use `alias` again once it can make protected theorems
-theorem ContMDiffWithinAt.insert (h : ContMDiffWithinAt I I' n f s x) :
+protected theorem ContMDiffWithinAt.insert (h : ContMDiffWithinAt I I' n f s x) :
     ContMDiffWithinAt I I' n f (insert x s) x :=
   contMDiffWithinAt_insert_self.2 h
 
-theorem ContMDiffAt.contMDiffWithinAt (hf : ContMDiffAt I I' n f x) :
+/-- Being `C^n` in a set only depends on the germ of the set. Version where one only requires
+the two sets to coincide locally in the complement of a point `y`. -/
+theorem contMDiffWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    ContMDiffWithinAt I I' n f s x ↔ ContMDiffWithinAt I I' n f t x := by
+  have : T1Space M := I.t1Space M
+  rw [← contMDiffWithinAt_insert_self (s := s), ← contMDiffWithinAt_insert_self (s := t)]
+  exact contMDiffWithinAt_congr_set (eventuallyEq_insert h)
+
+protected theorem ContMDiffAt.contMDiffWithinAt (hf : ContMDiffAt I I' n f x) :
     ContMDiffWithinAt I I' n f s x :=
   ContMDiffWithinAt.mono hf (subset_univ _)
 
-theorem SmoothAt.smoothWithinAt (hf : SmoothAt I I' f x) : SmoothWithinAt I I' f s x :=
+protected theorem SmoothAt.smoothWithinAt (hf : SmoothAt I I' f x) : SmoothWithinAt I I' f s x :=
   ContMDiffAt.contMDiffWithinAt hf
 
 theorem ContMDiffOn.mono (hf : ContMDiffOn I I' n f s) (hts : t ⊆ s) : ContMDiffOn I I' n f t :=
   fun x hx => (hf x (hts hx)).mono hts
 
-theorem ContMDiff.contMDiffOn (hf : ContMDiff I I' n f) : ContMDiffOn I I' n f s := fun x _ =>
-  (hf x).contMDiffWithinAt
+protected theorem ContMDiff.contMDiffOn (hf : ContMDiff I I' n f) : ContMDiffOn I I' n f s :=
+  fun x _ => (hf x).contMDiffWithinAt
 
-theorem Smooth.smoothOn (hf : Smooth I I' f) : SmoothOn I I' f s :=
+protected theorem Smooth.smoothOn (hf : Smooth I I' f) : SmoothOn I I' f s :=
   ContMDiff.contMDiffOn hf
 
 theorem contMDiffWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
@@ -697,19 +711,20 @@ theorem contMDiffWithinAt_inter (ht : t ∈ 𝓝 x) :
     ContMDiffWithinAt I I' n f (s ∩ t) x ↔ ContMDiffWithinAt I I' n f s x :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_inter ht
 
-theorem ContMDiffWithinAt.contMDiffAt (h : ContMDiffWithinAt I I' n f s x) (ht : s ∈ 𝓝 x) :
+protected theorem ContMDiffWithinAt.contMDiffAt
+    (h : ContMDiffWithinAt I I' n f s x) (ht : s ∈ 𝓝 x) :
     ContMDiffAt I I' n f x :=
   (contDiffWithinAt_localInvariantProp n).liftPropAt_of_liftPropWithinAt h ht
 
-theorem SmoothWithinAt.smoothAt (h : SmoothWithinAt I I' f s x) (ht : s ∈ 𝓝 x) :
+protected theorem SmoothWithinAt.smoothAt (h : SmoothWithinAt I I' f s x) (ht : s ∈ 𝓝 x) :
     SmoothAt I I' f x :=
   ContMDiffWithinAt.contMDiffAt h ht
 
-theorem ContMDiffOn.contMDiffAt (h : ContMDiffOn I I' n f s) (hx : s ∈ 𝓝 x) :
+protected theorem ContMDiffOn.contMDiffAt (h : ContMDiffOn I I' n f s) (hx : s ∈ 𝓝 x) :
     ContMDiffAt I I' n f x :=
   (h x (mem_of_mem_nhds hx)).contMDiffAt hx
 
-theorem SmoothOn.smoothAt (h : SmoothOn I I' f s) (hx : s ∈ 𝓝 x) : SmoothAt I I' f x :=
+protected theorem SmoothOn.smoothAt (h : SmoothOn I I' f s) (hx : s ∈ 𝓝 x) : SmoothAt I I' f x :=
   h.contMDiffAt hx
 
 theorem contMDiffOn_iff_source_of_mem_maximalAtlas [SmoothManifoldWithCorners I M]
@@ -719,9 +734,8 @@ theorem contMDiffOn_iff_source_of_mem_maximalAtlas [SmoothManifoldWithCorners I 
   simp_rw [ContMDiffOn, Set.forall_mem_image]
   refine forall₂_congr fun x hx => ?_
   rw [contMDiffWithinAt_iff_source_of_mem_maximalAtlas he (hs hx)]
-  apply contMDiffWithinAt_congr_nhds
-  simp_rw [nhdsWithin_eq_iff_eventuallyEq,
-    e.extend_symm_preimage_inter_range_eventuallyEq hs (hs hx)]
+  apply contMDiffWithinAt_congr_set
+  simp_rw [e.extend_symm_preimage_inter_range_eventuallyEq hs (hs hx)]
 
 -- Porting note: didn't compile; fixed by golfing the proof and moving parts to lemmas
 /-- A function is `C^n` within a set at a point, for `n : ℕ`, if and only if it is `C^n` on
@@ -757,6 +771,29 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
     rwa [contMDiffOn_iff_of_subset_source' hv₁ hv₂, PartialEquiv.image_symm_image_of_subset_target]
     exact hsub.trans inter_subset_left
 
+/-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
+this set on an open set around the basepoint.
+-/
+theorem ContMDiffWithinAt.contMDiffOn'
+    [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
+    {m : ℕ} (hm : (m : ℕ∞) ≤ n)
+    (h : ContMDiffWithinAt I I' n f s x) :
+    ∃ u, IsOpen u ∧ x ∈ u ∧ ContMDiffOn I I' m f (insert x s ∩ u) := by
+  rcases contMDiffWithinAt_iff_contMDiffOn_nhds.1 (h.of_le hm) with ⟨t, ht, h't⟩
+  rcases mem_nhdsWithin.1 ht with ⟨u, u_open, xu, hu⟩
+  rw [inter_comm] at hu
+  exact ⟨u, u_open, xu, h't.mono hu⟩
+
+/-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
+this set on a neighborhood of the basepoint. -/
+theorem ContMDiffWithinAt.contMDiffOn
+    [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
+    {m : ℕ} (hm : (m : ℕ∞) ≤ n)
+    (h : ContMDiffWithinAt I I' n f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, u ⊆ insert x s ∧ ContMDiffOn I I' m f u := by
+  let ⟨_u, uo, xu, h⟩ := h.contMDiffOn' hm
+  exact ⟨_, inter_mem_nhdsWithin _ (uo.mem_nhds xu), inter_subset_left, h⟩
+
 /-- A function is `C^n` at a point, for `n : ℕ`, if and only if it is `C^n` on
 a neighborhood of this point. -/
 theorem contMDiffAt_iff_contMDiffOn_nhds
@@ -775,6 +812,19 @@ theorem contMDiffAt_iff_contMDiffAt_nhds
   refine (eventually_mem_nhds_iff.mpr hu).mono fun x' hx' => ?_
   exact (h x' <| mem_of_mem_nhds hx').contMDiffAt hx'
 
+/-- Note: This does not hold for `n = ∞`. `f` being `C^∞` at `x` means that for every `n`, `f` is
+`C^n` on some neighborhood of `x`, but this neighborhood can depend on `n`. -/
+theorem contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin
+    [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] {n : ℕ} :
+    ContMDiffWithinAt I I' n f s x ↔
+      ∀ᶠ x' in 𝓝[insert x s] x, ContMDiffWithinAt I I' n f s x' := by
+  refine ⟨?_, fun h ↦ mem_of_mem_nhdsWithin (mem_insert x s) h⟩
+  rw [contMDiffWithinAt_iff_contMDiffOn_nhds]
+  rintro ⟨u, hu, h⟩
+  filter_upwards [hu, eventually_mem_nhdsWithin_iff.mpr hu] with x' h'x' hx'
+  apply (h x' h'x').mono_of_mem_nhdsWithin
+  exact nhdsWithin_mono _ (subset_insert x s) hx'
+
 /-! ### Congruence lemmas -/
 
 theorem ContMDiffWithinAt.congr (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y)
@@ -785,9 +835,22 @@ theorem contMDiffWithinAt_congr (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : f₁ x 
     ContMDiffWithinAt I I' n f₁ s x ↔ ContMDiffWithinAt I I' n f s x :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_iff h₁ hx
 
+theorem ContMDiffWithinAt.congr_of_mem
+    (h : ContMDiffWithinAt I I' n f s x) (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : x ∈ s) :
+    ContMDiffWithinAt I I' n f₁ s x :=
+  (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_of_mem h h₁ hx
+
+theorem contMDiffWithinAt_congr_of_mem (h₁ : ∀ y ∈ s, f₁ y = f y) (hx : x ∈ s) :
+    ContMDiffWithinAt I I' n f₁ s x ↔ ContMDiffWithinAt I I' n f s x :=
+  (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_iff_of_mem h₁ hx
+
 theorem ContMDiffWithinAt.congr_of_eventuallyEq (h : ContMDiffWithinAt I I' n f s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContMDiffWithinAt I I' n f₁ s x :=
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_of_eventuallyEq h h₁ hx
+
+theorem ContMDiffWithinAt.congr_of_eventuallyEq_of_mem (h : ContMDiffWithinAt I I' n f s x)
+    (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : ContMDiffWithinAt I I' n f₁ s x :=
+  (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_congr_of_eventuallyEq_of_mem h h₁ hx
 
 theorem Filter.EventuallyEq.contMDiffWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     ContMDiffWithinAt I I' n f₁ s x ↔ ContMDiffWithinAt I I' n f s x :=

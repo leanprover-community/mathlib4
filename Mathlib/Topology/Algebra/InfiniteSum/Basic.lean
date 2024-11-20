@@ -46,11 +46,17 @@ theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) :=
 theorem multipliable_empty [IsEmpty β] : Multipliable f :=
   hasProd_empty.multipliable
 
-@[to_additive]
+/-- See `multipliable_congr_cofinite` for a version allowing the functions to
+disagree on a finite set. -/
+@[to_additive "See `summable_congr_cofinite` for a version allowing the functions to
+disagree on a finite set."]
 theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f ↔ Multipliable g :=
   iff_of_eq (congr_arg Multipliable <| funext hfg)
 
-@[to_additive]
+/-- See `Multipliable.congr_cofinite` for a version allowing the functions to
+disagree on a finite set. -/
+@[to_additive "See `Summable.congr_cofinite` for a version allowing the functions to
+disagree on a finite set."]
 theorem Multipliable.congr (hf : Multipliable f) (hfg : ∀ b, f b = g b) : Multipliable g :=
   (multipliable_congr hfg).mp hf
 
@@ -266,7 +272,7 @@ theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
   classical
   exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
     -- Porting note: with some help, `simp` used to be able to close the goal
-    simp (config := { contextual := true }) only [mem_insert, forall_eq_or_imp, not_false_iff,
+    simp +contextual only [mem_insert, forall_eq_or_imp, not_false_iff,
       prod_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.mul (IH h)
 

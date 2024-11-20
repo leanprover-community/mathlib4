@@ -151,7 +151,7 @@ theorem not_step_singleton : ∀ {p : α × Bool}, ¬Step [p] L
 
 @[to_additive]
 theorem Step.cons_cons_iff : ∀ {p : α × Bool}, Step (p :: L₁) (p :: L₂) ↔ Step L₁ L₂ := by
-  simp (config := { contextual := true }) [Step.cons_left_iff, iff_def, or_imp]
+  simp +contextual [Step.cons_left_iff, iff_def, or_imp]
 
 @[to_additive]
 theorem Step.append_left_iff : ∀ L, Step (L ++ L₁) (L ++ L₂) ↔ Step L₁ L₂

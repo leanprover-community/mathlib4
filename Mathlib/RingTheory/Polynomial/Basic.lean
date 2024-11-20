@@ -303,9 +303,9 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
   trans (n.choose (i + 1) : R); swap
   · simp only [finset_sum_coeff, ← C_eq_natCast, coeff_C_mul_X_pow]
     rw [Finset.sum_eq_single i, if_pos rfl]
-    · simp (config := { contextual := true }) only [@eq_comm _ i, if_false, eq_self_iff_true,
+    · simp +contextual only [@eq_comm _ i, if_false, eq_self_iff_true,
         imp_true_iff]
-    · simp (config := { contextual := true }) only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
+    · simp +contextual only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
         Nat.cast_zero, Finset.mem_range, not_lt, eq_self_iff_true, if_true, imp_true_iff]
   induction' n with n ih generalizing i
   · dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]

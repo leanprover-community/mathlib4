@@ -171,6 +171,7 @@ namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 open scoped BigOperators
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Positivity extension for `Finset.expect`. -/
 @[positivity Finset.expect _ _]
 def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do

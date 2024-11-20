@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Rank of various constructions
@@ -74,20 +73,6 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective Quot.mk_surjective
-
-theorem rank_quotient_eq_of_le_torsion {R M} [CommRing R] [AddCommGroup M] [Module R M]
-    {M' : Submodule R M} (hN : M' ≤ torsion R M) : Module.rank R (M ⧸ M') = Module.rank R M :=
-  (rank_quotient_le M').antisymm <| by
-    nontriviality R
-    rw [Module.rank]
-    have := nonempty_linearIndependent_set R M
-    refine ciSup_le fun ⟨s, hs⟩ ↦ LinearIndependent.cardinal_le_rank (v := (M'.mkQ ·)) ?_
-    rw [linearIndependent_iff'] at hs ⊢
-    simp_rw [← map_smul, ← map_sum, mkQ_apply, Quotient.mk_eq_zero]
-    intro t g hg i hi
-    obtain ⟨r, hg⟩ := hN hg
-    simp_rw [Finset.smul_sum, Submonoid.smul_def, smul_smul] at hg
-    exact r.prop _ (mul_comm (g i) r ▸ hs t _ hg i hi)
 
 end Quotient
 

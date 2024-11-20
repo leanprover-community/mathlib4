@@ -51,7 +51,7 @@ variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 theorem orbit.eq_or_disjoint (a b : X) :
     orbit G a = orbit G b ∨ Disjoint (orbit G a) (orbit G b) := by
   apply (em (Disjoint (orbit G a) (orbit G b))).symm.imp _ id
-  simp (config := { contextual := true })
+  simp +contextual
     only [Set.not_disjoint_iff, ← orbit_eq_iff, forall_exists_index, and_imp, eq_comm, implies_true]
 
 @[to_additive]

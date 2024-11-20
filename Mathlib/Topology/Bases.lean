@@ -899,8 +899,8 @@ theorem IsTopologicalBasis.sum {s : Set (Set α)} (hs : IsTopologicalBasis s) {t
     IsTopologicalBasis ((fun u => Sum.inl '' u) '' s ∪ (fun u => Sum.inr '' u) '' t) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro u (⟨w, hw, rfl⟩ | ⟨w, hw, rfl⟩)
-    · exact isOpenEmbedding_inl.isOpenMap w (hs.isOpen hw)
-    · exact isOpenEmbedding_inr.isOpenMap w (ht.isOpen hw)
+    · exact IsOpenEmbedding.inl.isOpenMap w (hs.isOpen hw)
+    · exact IsOpenEmbedding.inr.isOpenMap w (ht.isOpen hw)
   · rintro (x | x) u hxu u_open
     · obtain ⟨v, vs, xv, vu⟩ : ∃ v ∈ s, x ∈ v ∧ v ⊆ Sum.inl ⁻¹' u :=
         hs.exists_subset_of_mem_open hxu (isOpen_sum_iff.1 u_open).1

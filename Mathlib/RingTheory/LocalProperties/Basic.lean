@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Submodule
@@ -305,7 +306,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
 
 section
 
-variable (hP : RingHom.StableUnderBaseChange @P)
+variable (hP : RingHom.IsStableUnderBaseChange @P)
 variable {R S Rᵣ Sᵣ : Type u} [CommRing R] [CommRing S] [CommRing Rᵣ] [CommRing Sᵣ] [Algebra R Rᵣ]
   [Algebra S Sᵣ]
 
@@ -314,7 +315,7 @@ include hP
 /-- Let `S` be an `R`-algebra and `Sᵣ` and `Rᵣ` be the respective localizations at a submonoid
 `M` of `R`. If `P` is stable under base change and `P` holds for `algebraMap R S`, then
 `P` holds for `algebraMap Rᵣ Sᵣ`. -/
-lemma RingHom.StableUnderBaseChange.of_isLocalization [Algebra R S] [Algebra R Sᵣ] [Algebra Rᵣ Sᵣ]
+lemma RingHom.IsStableUnderBaseChange.of_isLocalization [Algebra R S] [Algebra R Sᵣ] [Algebra Rᵣ Sᵣ]
     [IsScalarTower R S Sᵣ] [IsScalarTower R Rᵣ Sᵣ]
     (M : Submonoid R) [IsLocalization M Rᵣ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ]
     (h : P (algebraMap R S)) : P (algebraMap Rᵣ Sᵣ) :=
@@ -323,7 +324,7 @@ lemma RingHom.StableUnderBaseChange.of_isLocalization [Algebra R S] [Algebra R S
 
 /-- If `P` is stable under base change and holds for `f`, then `P` holds for `f` localized
 at any submonoid `M` of `R`. -/
-lemma RingHom.StableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLocalization M Rᵣ]
+lemma RingHom.IsStableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLocalization M Rᵣ]
     (f : R →+* S) [IsLocalization (M.map f) Sᵣ] (hf : P f) :
     P (IsLocalization.map Sᵣ f M.le_comap_map : Rᵣ →+* Sᵣ) := by
   algebraize [f, IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map,
@@ -334,7 +335,7 @@ lemma RingHom.StableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLoca
     inferInstanceAs <| IsLocalization (M.map f) Sᵣ
   apply hP.of_isLocalization M hf
 
-lemma RingHom.StableUnderBaseChange.localizationPreserves : LocalizationPreserves P := by
+lemma RingHom.IsStableUnderBaseChange.localizationPreserves : LocalizationPreserves P := by
   introv R hf
   exact hP.isLocalization_map _ _ hf
 

@@ -387,7 +387,7 @@ theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.c
   generalize hd : f.support = s
   revert f
   refine Finset.induction_on s ?_ ?_ <;> clear s
-  · simp (config := { contextual := true }) only [Polynomial.support_eq_empty, map_zero,
+  · simp +contextual only [Polynomial.support_eq_empty, map_zero,
       Finsupp.support_zero, eq_self_iff_true, imp_true_iff, Finset.map_empty,
       Finsupp.support_eq_empty]
   · intro a s as hf f fs

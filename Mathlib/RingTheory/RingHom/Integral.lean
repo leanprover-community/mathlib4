@@ -28,8 +28,8 @@ theorem isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
   rw [← e.apply_symm_apply x]
   apply RingHom.isIntegralElem_map
 
-theorem isIntegral_stableUnderBaseChange : StableUnderBaseChange fun f => f.IsIntegral := by
-  refine StableUnderBaseChange.mk _ isIntegral_respectsIso ?_
+theorem isIntegral_isStableUnderBaseChange : IsStableUnderBaseChange fun f => f.IsIntegral := by
+  refine IsStableUnderBaseChange.mk _ isIntegral_respectsIso ?_
   introv h x
   refine TensorProduct.induction_on x ?_ ?_ ?_
   · apply isIntegral_zero

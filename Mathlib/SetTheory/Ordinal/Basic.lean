@@ -119,8 +119,8 @@ instance hasWellFounded_toType (o : Ordinal) : WellFoundedRelation o.toType :=
 instance linearOrder_toType (o : Ordinal) : LinearOrder o.toType :=
   @IsWellOrder.linearOrder _ o.out.r o.out.wo
 
-instance isWellOrder_toType_lt (o : Ordinal) : IsWellOrder o.toType (· < ·) :=
-  o.out.wo
+instance wellFoundedLT_toType_lt (o : Ordinal) : WellFoundedLT o.toType :=
+  o.out.wo.toIsWellFounded
 
 namespace Ordinal
 
@@ -300,14 +300,6 @@ instance linearOrder : LinearOrder Ordinal :=
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
     decidableLE := Classical.decRel _ }
 
-theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
-    [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ≼i s) :=
-  Iff.rfl
-
-theorem type_le_iff' {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
-    [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ↪r s) :=
-  ⟨fun ⟨f⟩ => ⟨f⟩, fun ⟨f⟩ => ⟨f.collapse⟩⟩
-
 theorem _root_.InitialSeg.ordinal_type_le {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≼i s) : type r ≤ type s :=
   ⟨h⟩
@@ -315,11 +307,6 @@ theorem _root_.InitialSeg.ordinal_type_le {α β} {r : α → α → Prop} {s : 
 theorem _root_.RelEmbedding.ordinal_type_le {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (h : r ↪r s) : type r ≤ type s :=
   ⟨h.collapse⟩
-
-@[simp]
-theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
-    [IsWellOrder β s] : type r < type s ↔ Nonempty (r ≺i s) :=
-  Iff.rfl
 
 theorem _root_.PrincipalSeg.ordinal_type_lt {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≺i s) : type r < type s :=
@@ -356,6 +343,18 @@ instance zeroLEOneClass : ZeroLEOneClass Ordinal :=
 instance NeZero.one : NeZero (1 : Ordinal) :=
   ⟨Ordinal.one_ne_zero⟩
 
+theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
+    [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ≼i s) :=
+  Iff.rfl
+
+theorem type_le_iff' {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
+    [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ↪r s) :=
+  ⟨fun ⟨f⟩ => ⟨f⟩, fun ⟨f⟩ => ⟨f.collapse⟩⟩
+
+theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
+    [IsWellOrder β s] : type r < type s ↔ Nonempty (r ≺i s) :=
+  Iff.rfl
+
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.toType` into `β.toType`. -/
 def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.toType ≤i β.toType := by
@@ -373,6 +372,8 @@ def principalSegToType {α β : Ordinal} (h : α < β) : α.toType <i β.toType 
 
 @[deprecated principalSegToType (since := "2024-08-26")]
 noncomputable alias principalSegOut := principalSegToType
+
+/-! ### Enumerating elements in a well-order with ordinals -/
 
 /-- The order type of an element inside a well order.
 
@@ -424,6 +425,17 @@ theorem typein_lt_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} 
     typein r a < typein r b ↔ r a b :=
   (typein r).map_rel_iff
 
+@[simp]
+theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} :
+    typein r a ≤ typein r b ↔ ¬r b a := by
+  rw [← not_lt, typein_lt_typein]
+
+theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective (typein r) :=
+  (typein r).injective
+
+theorem typein_inj (r : α → α → Prop) [IsWellOrder α r] {a b} : typein r a = typein r b ↔ a = b :=
+  (typein_injective r).eq_iff
+
 theorem mem_range_typein_iff (r : α → α → Prop) [IsWellOrder α r] {o} :
     o ∈ Set.range (typein r) ↔ o < type r :=
   (typein r).mem_range_iff_rel
@@ -435,14 +447,6 @@ theorem typein_surj (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < typ
 theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
     Set.SurjOn (typein r) Set.univ (Set.Iio (type r)) :=
   (typein r).surjOn
-
-theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective (typein r) :=
-  (typein r).injective
-
-theorem typein_inj (r : α → α → Prop) [IsWellOrder α r] {a b} : typein r a = typein r b ↔ a = b :=
-  (typein r).inj
-
-/-! ### Enumerating elements in a well-order with ordinals. -/
 
 /-- A well order `r` is order-isomorphic to the set of ordinals smaller than `type r`.
 `enum r ⟨o, h⟩` is the `o`-th element of `α` ordered by `r`.
@@ -470,8 +474,31 @@ theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
   enum_type (PrincipalSeg.ofElement r a)
 
 theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
-    r (enum r o₁) (enum r o₂) ↔ o₁ < o₂ := by
-  rw [← typein_lt_typein r, typein_enum, typein_enum, Subtype.coe_lt_coe]
+    r (enum r o₁) (enum r o₂) ↔ o₁ < o₂ :=
+  (enum _).map_rel_iff
+
+theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+    ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
+  rw [enum_lt_enum (r := r), not_lt]
+
+@[simp]
+theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : {o // o < type (· < ·)}} :
+    enum (· < ·) o₁ ≤ enum (α := a.toType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
+  rw [← enum_le_enum, not_lt]
+
+theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+    enum r o₁ = enum r o₂ ↔ o₁ = o₂ :=
+  EmbeddingLike.apply_eq_iff_eq _
+
+theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type r) (a : α) :
+    ¬r a (enum r ⟨0, h0⟩) := by
+  rw [← enum_typein r a, enum_le_enum r]
+  apply Ordinal.zero_le
+
+theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.toType) :
+    enum (α := o.toType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
+  rw [← not_lt]
+  apply enum_zero_le
 
 theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
@@ -484,6 +511,43 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
     f (enum r ⟨o, hr⟩) = enum s ⟨o, hr.trans_eq (Quotient.sound ⟨f⟩)⟩ :=
   relIso_enum' _ _ _ _
 
+/-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
+@[simps! (config := .lemmasOnly)]
+noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
+  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
+  invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
+  left_inv _ := Subtype.ext_val (typein_enum _ _)
+  right_inv _ := enum_typein _ _
+  map_rel_iff' := enum_le_enum' _
+
+@[deprecated (since := "2024-08-26")]
+alias enumIsoOut := enumIsoToType
+
+instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
+  ⟨_, ⟨(enumIsoToType _).toEquiv⟩⟩
+
+instance small_Iic (o : Ordinal.{u}) : Small.{u} (Iic o) := by
+  rw [← Iio_union_right]
+  infer_instance
+
+instance small_Ico (a b : Ordinal.{u}) : Small.{u} (Ico a b) := small_subset Ico_subset_Iio_self
+instance small_Icc (a b : Ordinal.{u}) : Small.{u} (Icc a b) := small_subset Icc_subset_Iic_self
+instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo_subset_Iio_self
+instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
+
+/-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
+def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
+  bot_le := enum_zero_le' ho
+
+@[deprecated toTypeOrderBotOfPos (since := "2024-08-26")]
+noncomputable alias outOrderBotOfPos := toTypeOrderBotOfPos
+
+theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
+    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
+      have H := toTypeOrderBotOfPos ho
+      (⊥ : o.toType) :=
+  rfl
+
 theorem lt_wf : @WellFounded Ordinal (· < ·) :=
   wellFounded_iff_wellFounded_subrel.mpr (·.induction_on fun ⟨_, _, wo⟩ ↦
     RelHomClass.wellFounded (enum _) wo.wf)
@@ -493,8 +557,6 @@ instance wellFoundedRelation : WellFoundedRelation Ordinal :=
 
 instance wellFoundedLT : WellFoundedLT Ordinal :=
   ⟨lt_wf⟩
-
-instance isWellOrder : IsWellOrder Ordinal (· < ·) where
 
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
@@ -901,7 +963,6 @@ alias one_out_eq := one_toType_eq
 
 /-! ### Extra properties of typein and enum -/
 
--- TODO: move this section with the other properties of `typein` and `enum`.
 -- TODO: use `enumIsoToType` for lemmas on `toType` rather than `enum` and `typein`.
 
 @[simp]
@@ -911,33 +972,9 @@ theorem typein_one_toType (x : toType 1) : typein (α := toType 1) (· < ·) x =
 @[deprecated typein_one_toType (since := "2024-08-26")]
 alias typein_one_out := typein_one_toType
 
-@[simp]
-theorem typein_le_typein (r : α → α → Prop) [IsWellOrder α r] {x y : α} :
-    typein r x ≤ typein r y ↔ ¬r y x := by
-  rw [← not_lt, typein_lt_typein]
-
 theorem typein_le_typein' (o : Ordinal) {x y : o.toType} :
     typein (α := o.toType) (· < ·) x ≤ typein (α := o.toType) (· < ·) y ↔ x ≤ y := by
   simp
-
-theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
-    ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
-  rw [← @not_lt _ _ o₁ o₂, enum_lt_enum (r := r)]
-
-@[simp]
-theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : {o // o < type (· < ·)}} :
-    enum (· < ·) o₁ ≤ enum (α := a.toType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
-  rw [← enum_le_enum (α := a.toType) (· < ·), ← not_lt]
-
-theorem enum_zero_le {r : α → α → Prop} [IsWellOrder α r] (h0 : 0 < type r) (a : α) :
-    ¬r a (enum r ⟨0, h0⟩) := by
-  rw [← enum_typein r a, enum_le_enum r]
-  apply Ordinal.zero_le
-
-theorem enum_zero_le' {o : Ordinal} (h0 : 0 < o) (a : o.toType) :
-    enum (α := o.toType) (· < ·) ⟨0, type_toType _ ▸ h0⟩ ≤ a := by
-  rw [← not_lt]
-  apply enum_zero_le
 
 theorem le_enum_succ {o : Ordinal} (a : (succ o).toType) :
     a ≤ enum (α := (succ o).toType) (· < ·) ⟨o, (type_toType _ ▸ lt_succ o)⟩ := by
@@ -945,49 +982,7 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).toType) :
     ← lt_succ_iff]
   apply typein_lt_self
 
-theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
-    enum r o₁ = enum r o₂ ↔ o₁ = o₂ := by
-  rw [EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]
-
-/-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
-@[simps! (config := .lemmasOnly)]
-noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
-  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
-  invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  left_inv := fun ⟨_, _⟩ => Subtype.ext_val (typein_enum _ _)
-  right_inv _ := enum_typein _ _
-  map_rel_iff' := enum_le_enum' _
-
-@[deprecated (since := "2024-08-26")]
-alias enumIsoOut := enumIsoToType
-
-instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
-  ⟨_, ⟨(enumIsoToType _).toEquiv⟩⟩
-
-instance small_Iic (o : Ordinal.{u}) : Small.{u} (Iic o) := by
-  rw [← Iio_succ]
-  exact small_Iio _
-
-instance small_Ico (a b : Ordinal.{u}) : Small.{u} (Ico a b) := small_subset Ico_subset_Iio_self
-instance small_Icc (a b : Ordinal.{u}) : Small.{u} (Icc a b) := small_subset Icc_subset_Iic_self
-instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo_subset_Iio_self
-instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
-
-/-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
-def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
-  bot_le := enum_zero_le' ho
-
-@[deprecated toTypeOrderBotOfPos (since := "2024-08-26")]
-noncomputable alias outOrderBotOfPos := toTypeOrderBotOfPos
-
-theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
-    enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
-      have _ := toTypeOrderBotOfPos ho
-      (⊥ : o.toType) :=
-  rfl
-
 /-! ### Universal ordinal -/
-
 
 -- intended to be used with explicit universe parameters
 /-- `univ.{u v}` is the order type of the ordinals of `Type u` as a member
@@ -1425,9 +1420,10 @@ end Ordinal
 
 /-! ### Sorted lists -/
 
-theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [IsWellOrder α (· < ·)] {l m : List α}
+theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List α}
     {o : Ordinal} (hl : l.Sorted (· > ·)) (hm : m.Sorted (· > ·)) (hmltl : m < l)
-    (hlt : ∀ i ∈ l, Ordinal.typein (· < ·) i < o) : ∀ i ∈ m, Ordinal.typein (· < ·) i < o := by
+    (hlt : ∀ i ∈ l, Ordinal.typein (α := α) (· < ·) i < o) :
+      ∀ i ∈ m, Ordinal.typein (α := α) (· < ·) i < o := by
   replace hmltl : List.Lex (· < ·) m l := hmltl
   cases l with
   | nil => simp at hmltl
