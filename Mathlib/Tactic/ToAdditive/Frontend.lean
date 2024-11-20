@@ -79,7 +79,14 @@ The arguments `n₁ ...` are the positions of the numeral arguments (starting co
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 
 /-- The `to_additive_dont_translate` attribute, used to specify types that should be translated by
-  `to_additive`, but its operations should remain multiplicative. -/
+`to_additive`, but its operations should remain multiplicative.
+
+Usage notes:
+* Apply this together with the `to_additive` attribute.
+* The name generation of `to_additive` is not aware that the operations on this type should not be
+  translated, so you generally have to specify the name itself, if the name should remain
+  multiplicative.
+-/
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
 /-- An `attr := ...` option for `to_additive`. -/
