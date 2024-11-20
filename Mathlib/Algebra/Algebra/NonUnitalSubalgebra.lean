@@ -501,8 +501,6 @@ end NonUnitalAlgHom
 
 namespace NonUnitalAlgebra
 
-section NonAssoc
-
 variable {F : Type*} (R : Type u) {A : Type v} {B : Type w}
 variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
@@ -845,54 +843,6 @@ theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙ�
 
 end NonUnitalAlgebra
 
-variable {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
-variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-
-lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
-    (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) :
-    Commute a b := by
-  induction hb using adjoin_induction with
-  | mem x hx => exact h x hx
-  | zero => exact Commute.zero_right a
-  | add y z _ _ hy hz => exact hy.add_right hz
-  | mul y z _ _ hy hz => exact hy.mul_right hz
-  | smul r x _ hx => exact hx.smul_right r
-
-lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}
-    (hc : c ∈ adjoin R {b}) (h : Commute a b) :
-    Commute a c :=
-  commute_of_mem_adjoin_of_forall_mem_commute hc <| by simpa
-
-lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
-    Commute a b :=
-  commute_of_mem_adjoin_singleton_of_commute hb rfl
-
-variable (R) in
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
-semiring.
-
-See note [reducible non-instances]. -/
-abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
-    NonUnitalCommSemiring (adjoin R s) :=
-  { (adjoin R s).toNonUnitalSemiring with
-    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
-      induction hx using adjoin_induction with
-      | mem x hx => ext; exact commute_of_mem_adjoin_of_forall_mem_commute hy (hcomm x hx) |>.eq
-      | add _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
-      | mul _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | zero => exact Commute.zero_left _
-      | smul r _ _ h => exact Commute.smul_left h r }
-
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
-ring.
-
-See note [reducible non-instances]. -/
-abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
-    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (adjoin R s) :=
-  { (adjoin R s).toNonUnitalRing, adjoinNonUnitalCommSemiringOfComm R hcomm with }
-
-end NonUnitalAlgebra
 namespace NonUnitalSubalgebra
 
 open NonUnitalAlgebra

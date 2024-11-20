@@ -827,58 +827,6 @@ theorem comap_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (
 def toTop : A →⋆ₙₐ[R] (⊤ : NonUnitalStarSubalgebra R A) :=
   NonUnitalStarAlgHom.codRestrict (NonUnitalStarAlgHom.id R A) ⊤ fun _ => mem_top
 
-lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
-    (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) (h_star : ∀ b ∈ s, Commute a (star b)) :
-    Commute a b :=
-  NonUnitalAlgebra.commute_of_mem_adjoin_of_forall_mem_commute hb fun b hb ↦
-    hb.elim (h b) (by simpa using h_star (star b))
-
-lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}
-    (hc : c ∈ adjoin R {b}) (h : Commute a b) (h_star : Commute a (star b)) :
-    Commute a c :=
-  commute_of_mem_adjoin_of_forall_mem_commute hc (by simpa) (by simpa)
-
-lemma commute_of_mem_adjoin_self {a b : A} [IsStarNormal a] (hb : b ∈ adjoin R {a}) :
-    Commute a b :=
-  commute_of_mem_adjoin_singleton_of_commute hb rfl (isStarNormal_iff a |>.mp inferInstance).symm
-
-variable (R) in
-/-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
-is a non-unital commutative semiring.
-
-See note [reducible non-instances]. -/
-abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a)
-    (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) :
-    NonUnitalCommSemiring (adjoin R s) where
-  mul_comm := by
-    rintro ⟨a, ha⟩ ⟨b, hb⟩
-    ext
-    simp only [MulMemClass.mk_mul_mk]
-    induction ha using NonUnitalAlgebra.adjoin_induction with
-    | mem a ha =>
-      refine commute_of_mem_adjoin_of_forall_mem_commute hb ?_ ?_
-      all_goals
-        simp only [Set.mem_union, Set.mem_star] at ha
-        obtain (ha | ha) := ha
-      · exact hcomm a ha
-      · exact fun b hb ↦ by simpa using Commute.star_star <| hcomm_star _ ha b hb
-      · exact hcomm_star a ha
-      · exact fun b hb ↦ by simpa using Commute.star_star <| hcomm _ ha b hb
-    | add _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
-    | mul _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-    | zero => exact Commute.zero_left _
-    | smul r _ _ h => exact Commute.smul_left h r
-
-/-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
-is a non-unital commutative ring.
-
-See note [reducible non-instances]. -/
-abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [StarRing R]
-    [NonUnitalRing A] [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-    [StarModule R A] {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a)
-    (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) : NonUnitalCommRing (adjoin R s) :=
-  { (adjoin R s).toNonUnitalRing, adjoinNonUnitalCommSemiringOfComm R hcomm hcomm_star with }
-
 end StarSubAlgebraA
 
 theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
