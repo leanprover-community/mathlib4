@@ -11,6 +11,7 @@ import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # Nondegeneracy of the polarization on a finite root pairing
+
 We show that if the base ring of a finite root pairing is linearly ordered, then the canonical
 bilinear form is root-positive and positive-definite on the span of roots.
 From these facts, it is easy to show that Coxeter weights in a finite root pairing are bounded
@@ -31,11 +32,11 @@ Weyl group.
   non-positive norm.
 
 ## References:
- * SGAIII Exp. XXI
- * Bourbaki, Lie groups and Lie algebras
+ * [N. Bourbaki, *Lie groups and {L}ie algebras. {C}hapters 4--6*][bourbaki1968]
+ * [M. Demazure, *SGA III, Expos\'{e} XXI, Don\'{e}es Radicielles*][demazure1970]
 
 ## Todo
- * Weyl-invariance of RootForm and CorootForm
+ * Weyl-invariance of `RootForm` and `CorootForm`
  * Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
  * Relation to Coxeter weight.  In particular, positivity constraints for finite root pairings mean
   we restrict to weights between 0 and 4.
@@ -67,7 +68,7 @@ instance : Module.Finite R P.corootSpan := Finite.span_of_finite R <| finite_ran
 lemma finrank_rootSpan_map_polarization_eq_finrank_corootSpan :
     finrank R (P.rootSpan.map P.Polarization) = finrank R P.corootSpan := by
   rw [← LinearMap.range_domRestrict]
-  refine eq_of_le_of_le (Submodule.finrank_mono P.range_polarization_domRestrict_le_span_coroot) ?_
+  apply (Submodule.finrank_mono P.range_polarization_domRestrict_le_span_coroot).antisymm
   have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
   refine LinearMap.finrank_le_of_smul_regular P.corootSpan
     (LinearMap.range (P.Polarization.domRestrict P.rootSpan))
@@ -108,14 +109,13 @@ lemma eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero {x : M}
   exact ⟨hx, P.mem_ker_polarization_of_rootForm_self_eq_zero hx'⟩
 
 lemma _root_.RootSystem.rootForm_anisotropic (P : RootSystem ι R M N) :
-    P.RootForm.toQuadraticMap.Anisotropic := by
-  refine fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero ?_
-  rw [rootSpan, P.span_eq_top]
-  exact Submodule.mem_top
+    P.RootForm.toQuadraticMap.Anisotropic :=
+  fun x ↦ P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero <| by
+    simpa only [rootSpan, P.span_eq_top] using Submodule.mem_top
 
 lemma rootForm_pos_of_nonzero {x : M} (hx : x ∈ P.rootSpan) (h : x ≠ 0) :
     0 < P.RootForm x x := by
-  refine lt_of_le_of_ne (P.rootForm_self_non_neg x) ?_
+  apply (P.rootForm_self_non_neg x).lt_of_ne
   contrapose! h
   exact eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero P hx h.symm
 

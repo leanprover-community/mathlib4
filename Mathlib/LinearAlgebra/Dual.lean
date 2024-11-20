@@ -718,12 +718,12 @@ instance instFiniteDimensionalOfIsReflexive (K V : Type*)
 instance [IsDomain R] : NoZeroSMulDivisors R M := by
   refine (noZeroSMulDivisors_iff R M).mpr ?_
   intro r m hrm
-  by_cases hr : r = 0; · exact Or.inl hr
-  right
-  suffices Dual.eval R M m = Dual.eval R M 0 by exact (bijective_dual_eval R M).injective this
+  rw [or_iff_not_imp_left]
+  intro hr
+  suffices Dual.eval R M m = Dual.eval R M 0 from (bijective_dual_eval R M).injective this
   ext n
   simp only [Dual.eval_apply, map_zero, LinearMap.zero_apply]
-  suffices r • n m = 0 by exact eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
+  suffices r • n m = 0 from eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
   rw [← LinearMap.map_smul_of_tower, hrm, LinearMap.map_zero]
 
 end IsReflexive

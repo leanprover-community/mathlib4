@@ -32,11 +32,10 @@ Weyl group.
  * `rootForm_self_non_neg`: `RootForm` is positive semidefinite.
 
 ## References:
- * SGAIII Exp. XXI
- * Bourbaki, Lie groups and Lie algebras
+ * [N. Bourbaki, *Lie groups and {L}ie algebras. {C}hapters 4--6*][bourbaki1968]
+ * [M. Demazure, *SGA III, Expos\'{e} XXI, Don\'{e}es Radicielles*][demazure1970]
 
 ## TODO (possibly in other files)
- * Positivity and nondegeneracy
  * Weyl-invariance
  * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
  * Relation to Coxeter weight.  In particular, positivity constraints for finite root pairings mean
