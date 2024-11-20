@@ -95,6 +95,56 @@ theorem mul_sSup_distrib : x * sSup s = ⨆ y ∈ s, x * y := IsQuantale.mul_sSu
 @[to_additive]
 theorem sSup_mul_distrib : sSup s * x = ⨆ y ∈ s, y * x := IsQuantale.sSup_mul_distrib _ _
 
+end
+
+namespace IsAddQuantale
+
+variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
+variable [AddSemigroup α] [CompleteLattice α] [IsAddQuantale α]
+
+/-- Left- and right- residuation operators on an additive quantale are similar
+to the Heyting operator on complete lattices, but for a non-commutative logic.
+I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`. -/
+def leftAddResiduation (x y : α) := sSup {z | z + x ≤ y}
+
+/-- Left- and right- residuation operators on an additive quantale are similar
+to the Heyting operator on complete lattices, but for a non-commutative logic.
+I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`." -/
+def rightAddResiduation (x y : α) := sSup {z | x + z ≤ y}
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ₗ " => leftAddResiduation
+
+@[inherit_doc]
+scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
+
+end IsAddQuantale
+
+namespace IsQuantale
+
+variable {α : Type*} {ι : Type*} {x y z : α} {s : Set α} {f : ι → α}
+variable [Semigroup α] [CompleteLattice α] [IsQuantale α]
+
+/-- Left- and right-residuation operators on an additive quantale are similar to the Heyting
+operator on complete lattices, but for a non-commutative logic.
+I.e. `x ≤ y ⇨ₗ z ↔ x * y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
+-/
+@[to_additive existing]
+def leftMulResiduation (x y : α) := sSup {z | z * x ≤ y}
+
+/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
+operator on complete lattices, but for a non-commutative logic.
+I.e. `x ≤ y ⇨ᵣ z ↔ y * x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x * z ≤ y }`.
+-/
+@[to_additive existing]
+def rightMulResiduation (x y : α) := sSup {z | x * z ≤ y}
+
+@[inherit_doc, to_additive existing]
+scoped infixr:60 " ⇨ₗ " => leftMulResiduation
+
+@[inherit_doc, to_additive existing]
+scoped infixr:60 " ⇨ᵣ " => rightMulResiduation
+
 @[to_additive]
 theorem mul_iSup_distrib : x * ⨆ i, f i = ⨆ i, x * f i := by
   rw [iSup, mul_sSup_distrib, iSup_range]
@@ -125,32 +175,6 @@ instance : MulRightMono α where
     rw [← left_eq_sup, ← sup_mul_distrib, sup_of_le_left]
     trivial
 
-/-- Left- and right-residuation operators on an additive quantale are similar to the Heyting
-operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ₗ z ↔ x * y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
--/
-@[to_additive "Left- and right- residuation operators on an additive quantale are similar to
-the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ₗ z ↔ x + y ≤ z` or alternatively `x ⇨ₗ y = sSup { z | z + x ≤ y }`.
-"]
-def leftMulResiduation (x y : α) := sSup {z | z * x ≤ y}
-
-/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
-operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ᵣ z ↔ y * x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x * z ≤ y }`.
--/
-@[to_additive "Left- and right- residuation operators on an additive quantale are similar to
-the Heyting operator on complete lattices, but for a non-commutative logic.
-I.e. `x ≤ y ⇨ᵣ z ↔ y + x ≤ z` or alternatively `x ⇨ₗ y = sSup { z | x + z ≤ y }`.
-"]
-def rightMulResiduation (x y : α) := sSup {z | x * z ≤ y}
-
-@[inherit_doc]
-scoped infixr:60 " ⇨ₗ " => leftMulResiduation
-
-@[inherit_doc]
-scoped infixr:60 " ⇨ᵣ " => rightMulResiduation
-
 @[to_additive]
 theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z where
   mp h1 := by
@@ -167,14 +191,4 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
-end Quantale
-
-namespace AddQuantale
-
-@[inherit_doc]
-scoped infixr:60 " ⇨ₗ " => leftAddResiduation
-
-@[inherit_doc]
-scoped infixr:60 " ⇨ᵣ " => rightAddResiduation
-
-end AddQuantale
+end IsQuantale

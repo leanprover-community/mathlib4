@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.

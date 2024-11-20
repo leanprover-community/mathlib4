@@ -75,7 +75,7 @@ instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
 
 noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
   show PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
-  apply compPreservesFiniteLimits
+  apply comp_preservesFiniteLimits
 
 /-- The category of finite `G`-sets is a `PreGaloisCategory`. -/
 instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
