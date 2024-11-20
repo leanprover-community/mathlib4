@@ -412,7 +412,7 @@ section ToList
 
 /-- Produces a list of the elements in the multiset using choice. -/
 noncomputable def toList (s : Multiset α) :=
-  s.out'
+  s.out
 
 @[simp, norm_cast]
 theorem coe_toList (s : Multiset α) : (s.toList : Multiset α) = s :=

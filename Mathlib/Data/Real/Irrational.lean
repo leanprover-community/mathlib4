@@ -452,8 +452,6 @@ section Polynomial
 
 open Polynomial
 
-open Polynomial
-
 variable (x : ℝ) (p : ℤ[X])
 
 theorem one_lt_natDegree_of_irrational_root (hx : Irrational x) (p_nonzero : p ≠ 0)
