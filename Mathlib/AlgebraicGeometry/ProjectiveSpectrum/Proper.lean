@@ -29,7 +29,7 @@ variable [GradedAlgebra 𝒜]
 
 open Scheme CategoryTheory Limits pullback HomogeneousLocalization
 
-lemma awayTensorMap_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜 d)
+lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜 d)
     {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g) (hd : 0 < d) :
     Function.Surjective
       (Algebra.TensorProduct.lift (awayMapₐ 𝒜 hg hx) (awayMapₐ 𝒜 hf (hx.trans (mul_comm _ _)))
@@ -59,7 +59,7 @@ lemma awayTensorMap_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜 d)
   let y0 : NumDenSameDeg 𝒜 (.powers g) :=
   { deg := j * (d * e)
     num := ⟨f ^ (j * e), by convert SetLike.pow_mem_graded _ hf using 2; ring⟩
-    den := ⟨g ^ (j * d),by convert SetLike.pow_mem_graded _ hg using 2; ring⟩
+    den := ⟨g ^ (j * d), by convert SetLike.pow_mem_graded _ hg using 2; ring⟩
     den_mem := ⟨_,rfl⟩ }
   use mk x0 ⊗ₜ mk y0
   ext
@@ -95,7 +95,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   let F : Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1 →+* Away 𝒜 (i.2.1 * j.2.1) :=
     (Algebra.TensorProduct.lift (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _))
       (fun _ _ ↦ .all _ _)).toRingHom
-  have : Function.Surjective F := awayTensorMap_surjective 𝒜 i.2.2 j.2.2 rfl i.1.2
+  have : Function.Surjective F := lift_awayMapₐ_awayMapₐ_surjective 𝒜 i.2.2 j.2.2 rfl i.1.2
   convert IsClosedImmersion.spec_of_surjective
     (CommRingCat.ofHom (R := Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1) F) this using 1
   rw [← cancel_mono (pullbackSpecIso ..).inv]
