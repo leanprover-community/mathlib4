@@ -2916,6 +2916,7 @@ import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.AlgebraicClosure
 import Mathlib.FieldTheory.AxGrothendieck
+import Mathlib.FieldTheory.CardinalEmb
 import Mathlib.FieldTheory.Cardinality
 import Mathlib.FieldTheory.ChevalleyWarning
 import Mathlib.FieldTheory.Differential.Basic
