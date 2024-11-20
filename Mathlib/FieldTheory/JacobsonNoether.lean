@@ -3,11 +3,12 @@ Copyright (c) 2024 F. Nuccio, H. Zheng, W. He, S. Wu, Y. Yuan, W. Jiao. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Yi Yuan
 -/
+import Mathlib.Algebra.Central.Defs
 import Mathlib.Algebra.CharP.LinearMaps
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.GroupWithZero.Conj
+import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.FieldTheory.PurelyInseparable
-import Mathlib.Algebra.Central.Defs
 
 /-!
 # The Jacobson-Noether theorem
@@ -47,22 +48,11 @@ separate variables constrained by certain relations.
 
 namespace JacobsonNoether
 
-variable {D : Type*} [DivisionRing D]
-
-open LinearMap
+variable {D : Type*} [DivisionRing D] [Algebra.IsAlgebraic (Subring.center D) D]
 
 local notation3 "k" => (Subring.center D)
-private def δ : D → D →ₗ[k] D := mulLeft k - mulRight k
 
-private lemma δ_def (a x : D) : δ a x = mulLeft k a x - mulRight k a x := rfl
-
-private lemma δ_iterate_succ (x y : D) (n : ℕ) :
-    δ x (((δ x) ^ n) y) = ((δ x) ^ (n + 1)) y := by
-  simp only [pow_apply, δ_def, mulLeft_apply, mulRight_apply, Function.iterate_succ_apply']
-
-variable [Algebra.IsAlgebraic (Subring.center D) D]
-
-open Polynomial
+open Polynomial LinearMap LieAlgebra
 
 /-- If `D` is a purely inseparable extension of `k` with characteristic `p`,
   then for every element `a` of `D`, there exists a natural number `n`
@@ -94,16 +84,18 @@ lemma exists_pow_mem_center_of_inseparable' (p : ℕ) [ExpChar D p] {a : D}
   every `n` greater than `(p ^ m)`. -/
 lemma exist_pow_eq_zero_of_le (p : ℕ) [hchar : ExpChar D p]
     {a : D} (ha : a ∉ k) (hinsep : ∀ x : D, IsSeparable k x → x ∈ k):
-  ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (δ a) ^ n = 0 := by
+  ∃ m, 1 ≤ m ∧ ∀ n, p ^ m ≤ n → (ad k D a)^[n] = 0 := by
   obtain ⟨m, hm⟩ := exists_pow_mem_center_of_inseparable' p ha hinsep
   refine ⟨m, ⟨hm.1, fun n hn ↦ ?_⟩⟩
-  have inter : (δ a) ^ (p ^ m) = 0 := by
+  have inter : (ad k D a)^[p ^ m] = 0 := by
     ext x
-    simp_rw [δ, Pi.sub_apply, sub_pow_expChar_pow_of_commute p m
-      (commute_mulLeft_right a a), sub_apply, pow_mulLeft, mulLeft_apply, pow_mulRight,
-      mulRight_apply, zero_apply, sub_eq_zero]
-    exact Subring.mem_center_iff.1 hm.2 x |>.symm
-  rw [(Nat.sub_eq_iff_eq_add hn).1 rfl, pow_add, inter, mul_zero]
+    rw [ad_eq_lmul_left_sub_lmul_right, ← pow_apply, Pi.sub_apply,
+      sub_pow_expChar_pow_of_commute p m (commute_mulLeft_right a a), sub_apply,
+      pow_mulLeft, mulLeft_apply, pow_mulRight, mulRight_apply, Pi.zero_apply,
+      Subring.mem_center_iff.1 hm.2 x]
+    exact sub_eq_zero_of_eq rfl
+  rw [(Nat.sub_eq_iff_eq_add hn).1 rfl, Function.iterate_add, inter, Pi.comp_zero,
+    iterate_map_zero, Function.const_zero]
 
 variable (D) in
 /-- Jacobson-Noether theorem: For a non-commutative division algebra
@@ -111,6 +103,9 @@ variable (D) in
   `x` of `D \ k` that is separable over `k`. -/
 theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
+  have ad_iterate_succ (x y : D) (n : ℕ) :
+    ad k D x ((ad k D x)^[n] y) = (ad k D x)^[n + 1] y := by
+    simp only [ad_apply, Function.iterate_succ_apply']
   obtain ⟨p, hp⟩ := ExpChar.exists D
   by_contra! insep
   replace insep : ∀ x : D, IsSeparable k x → x ∈ k :=
@@ -119,15 +114,15 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
   obtain ⟨a, ha⟩ := not_forall.mp <| mt (Subring.eq_top_iff' k).mpr H
   have ha₀ : a ≠ 0 := fun nh ↦ nh ▸ ha <| Subring.zero_mem k
   -- We construct another element `b` that does not commute with `a`.
-  obtain ⟨b, hb1⟩ : ∃ b : D , (δ a) b ≠ 0 := by
+  obtain ⟨b, hb1⟩ : ∃ b : D , ad k D a b ≠ 0 := by
     rw [Subring.mem_center_iff, not_forall] at ha
     use ha.choose
     show a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
   -- We find a maximum natural number `n` such that `(δ a) ^ n b ≠ 0`.
-  obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ ((δ a) ^ n) b ≠ 0 ∧ ((δ a) ^ (n + 1)) b = 0 := by
+  obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n + 1] b = 0 := by
     obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha insep
-    have h_exist : ∃ n, 0 < n ∧ ((δ a) ^ (n + 1)) b = 0 := ⟨p ^ m,
+    have h_exist : ∃ n, 0 < n ∧ (ad k D a)^[n + 1] b = 0 := ⟨p ^ m,
       ⟨expChar_pow_pos D p m, by rw [hm2 (p ^ m + 1) (Nat.le_add_right _ _)]; rfl⟩⟩
     classical
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
@@ -136,27 +131,29 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by omega)) h_pos
       omega
     · suffices h_find: Nat.find h_exist = 1 by
-        rwa [h_find, pow_one]
+        rwa [h_find]
       rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
       linarith [(Nat.find_spec h_exist).1]
   -- We define `c` to be the value that we proved above to be non-zero.
-  set c := ((δ a) ^ n) b with hc_def
-  letI : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ hb.1, mul_inv_cancel₀ hb.1⟩
+  set c := (ad k D a)^[n] b with hc_def
+  let _ : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ hb.1, mul_inv_cancel₀ hb.1⟩
   -- We prove that `c` commutes with `a`.
   have hc : a * c = c * a := by
     apply eq_of_sub_eq_zero
-    rw [← mulLeft_apply (R := k), ← mulRight_apply (R := k),
-      ← δ_def, δ_iterate_succ a b n, hb.2]
+    rw [← mulLeft_apply (R := k), ← mulRight_apply (R := k)]
+    suffices ad k D a c = 0 from by
+      rw [← this]; rfl
+    rw [ad_iterate_succ a b n, hb.2]
   -- We now make some computation to obtain the final equation.
-  set d := c⁻¹ * a * ((δ a) ^ (n - 1)) b with hd_def
+  set d := c⁻¹ * a * (ad k D a)^[n - 1] b with hd_def
   have hc': c⁻¹ * a = a * c⁻¹ := by
     apply_fun (c⁻¹ * · * c⁻¹) at hc
     rw [mul_assoc, mul_assoc, mul_inv_cancel₀ hb.1, mul_one, ← mul_assoc,
       inv_mul_cancel₀ hb.1, one_mul] at hc
     exact hc
-  have c_eq : a * ((δ a) ^ (n - 1)) b - ((δ a) ^ (n - 1)) b * a = c := by
-    rw [hc_def, ← Nat.sub_add_cancel hn, ← δ_iterate_succ, δ_def]; rfl
-  have eq1 : c⁻¹ * a * ((δ a)^ (n - 1)) b - c⁻¹ * ((δ a) ^ (n - 1)) b * a = 1 := by
+  have c_eq : a * (ad k D a)^[n - 1] b - (ad k D a)^[n - 1] b * a = c := by
+    rw [hc_def, ← Nat.sub_add_cancel hn, ← ad_iterate_succ]; rfl
+  have eq1 : c⁻¹ * a * (ad k D a)^[n - 1] b - c⁻¹ * (ad k D a)^[n - 1] b * a = 1 := by
     simp_rw [mul_assoc, (mul_sub_left_distrib c⁻¹ _ _).symm, c_eq, inv_mul_cancel_of_invertible]
   -- We show that `a` commutes with `d`.
   have deq : a * d - d * a = a := by
@@ -183,7 +180,7 @@ theorem exists_separable_mem_of_not_central' {L D : Type*} [Field L] [DivisionRi
   (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
   have hcenter : Subalgebra.center L D = ⊥ := le_bot_iff.mp IsCentral.out
-  have ntrivial : center D ≠ ⊤ :=
+  have ntrivial : Subring.center D ≠ ⊤ :=
     congr(Subalgebra.toSubring $hcenter).trans_ne (Subalgebra.toSubring_injective.ne hneq)
   set φ := Subalgebra.equivOfEq (⊥ : Subalgebra L D) (.center L D) hcenter.symm
   set equiv : L ≃+* (center D) := ((botEquiv L D).symm.trans φ).toRingEquiv
