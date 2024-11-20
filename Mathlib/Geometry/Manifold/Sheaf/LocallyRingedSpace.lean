@@ -80,21 +80,23 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     · refine ⟨⟨S.germ _ x (hxV) (SmoothMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ _ x hxV g,
         ?_, ?_⟩, S.germ_res_apply hUV.hom x hxV f⟩
       · rw [← map_mul]
-        -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
+        -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply mul_inv_cancel₀
         exact hVf y
       · rw [← map_mul]
-        -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
+        -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply inv_mul_cancel₀
         exact hVf y
     · intro y
-      exact ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
+      #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+        was `exact`; somehow `convert` bypasess unification issues -/
+      convert ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
         (f.smooth.comp (smooth_inclusion hUV)).smoothAt
 
 /-- The non-units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered

@@ -53,7 +53,7 @@ instance : CoeSort Grp Type* where
 @[to_additive]
 instance (X : Grp) : Group X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : Grp} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -182,7 +182,7 @@ instance : CoeSort CommGrp Type* where
 @[to_additive]
 instance commGroupInstance (X : CommGrp) : CommGroup X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommGrp} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
