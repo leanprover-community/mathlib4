@@ -16,7 +16,7 @@ A proper submodule `S : Submodule R M` is primary iff
 
 * `Submodule.isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul`:
   A `N : Submodule R M` is primary if any zero divisor on `M ⧸ N` is nilpotent.
-  See `https://mathoverflow.net/questions/3910/primary-decomposition-for-modules`
+  See https://mathoverflow.net/questions/3910/primary-decomposition-for-modules
   for a comparison of this definition (a la Atiyah-Macdonald) vs "locally nilpotent" (Matsumura).
 
 ## Implementation details

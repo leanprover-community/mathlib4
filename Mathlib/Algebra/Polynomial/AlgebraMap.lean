@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.Polynomial.Eval.Algebra
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Polynomial.Monomial
+import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -307,11 +309,11 @@ theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a * X + b)`,
   with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
 @[simps!]
-def algEquivCMulXAddC {R} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
+def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (C a * X + C b) (C ⅟ a * (X - C b))
-      (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
+    (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
-theorem algEquivCMulXAddC_symm_eq {R} [CommRing R] (a b : R) [Invertible a] :
+theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible a] :
     (algEquivCMulXAddC a b).symm =  algEquivCMulXAddC (⅟ a) (- ⅟ a * b) := by
   ext p : 1
   simp only [algEquivCMulXAddC_symm_apply, neg_mul, algEquivCMulXAddC_apply, map_neg, map_mul]
@@ -321,25 +323,26 @@ theorem algEquivCMulXAddC_symm_eq {R} [CommRing R] (a b : R) [Invertible a] :
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps!]
-def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
+def algEquivAevalXAddC {R : Type*} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
 @[simp]
-theorem algEquivAevalXAddC_eq_iff {R} [CommRing R] (t t' : R) :
+theorem algEquivAevalXAddC_eq_iff {R : Type*} [CommRing R] (t t' : R) :
     algEquivAevalXAddC t = algEquivAevalXAddC t' ↔ t = t' := by
   simp [algEquivAevalXAddC]
 
 @[simp]
-theorem algEquivAevalXAddC_symm {R} [CommRing R] (t : R) :
+theorem algEquivAevalXAddC_symm {R : Type*} [CommRing R] (t : R) :
     (algEquivAevalXAddC t).symm = algEquivAevalXAddC (-t) := by
   simp [algEquivAevalXAddC, sub_eq_add_neg]
 
 /-- The involutive automorphism of the polynomial algebra given by `p(X) ↦ p(-X)`. -/
 @[simps!]
-def algEquivAevalNegX {R} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
+def algEquivAevalNegX {R : Type*} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (-X) (-X) (by simp) (by simp)
 
-theorem comp_neg_X_comp_neg_X {R} [CommRing R] (p : R[X]) : (p.comp (-X)).comp (-X) = p := by
+theorem comp_neg_X_comp_neg_X {R : Type*} [CommRing R] (p : R[X]) :
+    (p.comp (-X)).comp (-X) = p := by
   rw [comp_assoc]
   simp only [neg_comp, X_comp, neg_neg, comp_X]
 
