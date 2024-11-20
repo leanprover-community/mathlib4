@@ -159,7 +159,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, Sum.forall_sum,
     Set.MapsTo, Set.mem_def, injOnAlt, funext_iff, Set.SurjOn, Set.image, setOf,
     Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
-  simp (config := { singlePass := true}) only [← Sum.elim_comp_inl_inr]
+  simp +singlePass only [← Sum.elim_comp_inl_inr]
   simp [Set.mem_def, Function.comp_def]
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
