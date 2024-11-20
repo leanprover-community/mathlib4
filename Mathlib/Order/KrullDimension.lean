@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
-import Mathlib.Order.RelSeries
-import Mathlib.Order.Minimal
+import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.ENat.Lattice
-import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Order.Minimal
+import Mathlib.Order.RelSeries
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -668,6 +668,18 @@ section calculations
 
 variable {α : Type*} [Preorder α]
 
+/-
+These two lemmas could possibly be used to simplify the subsequent calculations,
+especially once the `Set.encard` api is richer.
+
+(Commented out to avoid importing modules purely for `proof_wanted`.)
+proof_wanted height_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
+  height a = (Set.Iio a).encard
+
+proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
+  coheight a = (Set.Ioi a).encard
+-/
+
 @[simp] lemma height_nat (n : ℕ) : height n = n := by
   induction n using Nat.strongRecOn with | ind n ih =>
   apply le_antisymm
@@ -675,31 +687,42 @@ variable {α : Type*} [Preorder α]
     simp +contextual only [ih, Nat.cast_lt, implies_true]
   · exact length_le_height_last (p := LTSeries.range n)
 
-@[simp] lemma coheight_nat (n : ℕ) : coheight n = ⊤ := by
+@[simp] lemma coheight_of_noMaxOrder [NoMaxOrder α] (a : α) : coheight a = ⊤ := by
+  obtain ⟨f, hstrictmono⟩ := Nat.exists_strictMono ↑(Set.Ioi a)
   apply coheight_eq_top_iff.mpr
   intro m
-  use (LTSeries.range m).map (· + n) (StrictMono.add_const (fun _ _ x ↦ x) n)
-  simp
+  use {length := m, toFun := fun i => if i = 0 then a else f i, step := ?step }
+  case h => simp [RelSeries.head]
+  case step =>
+    intro ⟨i, hi⟩
+    by_cases hzero : i = 0
+    · subst i
+      exact (f 1).prop
+    · suffices f i < f (i + 1) by simp [Fin.ext_iff, hzero, this]
+      apply hstrictmono
+      omega
 
-@[simp] lemma krullDim_nat : krullDim ℕ = ⊤ := by
-  simp only [krullDim_eq_iSup_height, height_nat]
-  rw [← WithBot.coe_iSup (by bddDefault)]
-  simp [WithBot.coe_eq_top, ENat.iSup_natCast]
+@[simp] lemma height_of_noMinOrder [NoMinOrder α] (a : α) : height a = ⊤ :=
+  -- Implementation note: Here it's a bit easier to define the coheight variant first
+  coheight_of_noMaxOrder (α := αᵒᵈ) a
 
-@[simp] lemma height_int (a : ℤ) : height a = ⊤ := by
-  apply height_eq_top_iff.mpr
-  intro n
-  use (LTSeries.range n).map (a - (n : ℤ) + ·)
-    (StrictMono.const_add Int.natCast_strictMono (a - (n : ℤ)))
-  simp
+@[simp] lemma krullDim_of_noMaxOrder [Nonempty α] [NoMaxOrder α] : krullDim α = ⊤ := by
+  simp [krullDim_eq_iSup_coheight, coheight_of_noMaxOrder]
 
-@[simp] lemma coheight_int (a : ℤ) : coheight a = ⊤ := by
-  apply coheight_eq_top_iff.mpr
-  intro n
-  use (LTSeries.range n).map (fun i => a + (i : ℤ)) (StrictMono.const_add Int.natCast_strictMono a)
-  simp
+@[simp] lemma krullDim_of_noMinOrder [Nonempty α] [NoMinOrder α] : krullDim α = ⊤ := by
+  simp [krullDim_eq_iSup_height, height_of_noMinOrder]
 
-@[simp] lemma height_coe_WithBot (x : α) : height (x : WithBot α) = height x + 1 := by
+lemma coheight_nat (n : ℕ) : coheight n = ⊤ := coheight_of_noMaxOrder ..
+
+lemma krullDim_nat : krullDim ℕ = ⊤ := krullDim_of_noMaxOrder ..
+
+lemma height_int (n : ℤ) : height n = ⊤ := height_of_noMinOrder ..
+
+lemma coheight_int (n : ℤ) : coheight n = ⊤ := coheight_of_noMaxOrder ..
+
+lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
+
+@[simp] lemma height_coe_withBot (x : α) : height (x : WithBot α) = height x + 1 := by
   apply le_antisymm
   · apply height_le
     intro p hlast
@@ -726,10 +749,10 @@ variable {α : Type*} [Preorder α]
     let p' := (p.map _ WithBot.coe_strictMono).cons ⊥ (by simp)
     apply le_iSup₂_of_le p' (by simp [p', hlast]) (by simp [p'])
 
-@[simp] lemma coheight_coe_WithTop (x : α) : coheight (x : WithTop α) = coheight x + 1 :=
-  height_coe_WithBot (α := αᵒᵈ) x
+@[simp] lemma coheight_coe_withTop (x : α) : coheight (x : WithTop α) = coheight x + 1 :=
+  height_coe_withBot (α := αᵒᵈ) x
 
-@[simp] lemma height_coe_WithTop (x : α) : height (x : WithTop α) = height x := by
+@[simp] lemma height_coe_withTop (x : α) : height (x : WithTop α) = height x := by
   apply le_antisymm
   · apply height_le
     intro p hlast
@@ -754,42 +777,38 @@ variable {α : Type*} [Preorder α]
     let p' := p.map _ WithTop.coe_strictMono
     apply le_iSup₂_of_le p' (by simp [p', hlast]) (by simp [p'])
 
-@[simp] lemma coheight_coe_WithBot (x : α) : coheight (x : WithBot α) = coheight x :=
-  height_coe_WithTop (α := αᵒᵈ) x
+@[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x :=
+  height_coe_withTop (α := αᵒᵈ) x
 
 @[simp] lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
   norm_cast
+  simp_rw [WithTop.lt_top_iff_ne_top]
   rw [ENat.iSup_add, iSup_subtype']
   symm
-  let e : α ≃ {y : WithTop α // y < ⊤} :=
-    { toFun := fun x => ⟨x, WithTop.coe_lt_top x⟩
-      invFun := fun ⟨x,h⟩ => WithTop.untop x (ne_top_of_lt h)
-      left_inv := fun _ => by simp,
-      right_inv := fun _ => by simp }
-  apply Equiv.iSup_congr e
-  simp [e]
+  apply Equiv.withTopSubtypeNe.symm.iSup_congr
+  simp
 
-@[simp] lemma krullDim_WithBot [Nonempty α] : krullDim (WithBot α) = krullDim α + 1 := by
+@[simp] lemma krullDim_withBot [Nonempty α] : krullDim (WithBot α) = krullDim α + 1 := by
   conv_lhs => rw [← krullDim_orderDual]
   conv_rhs => rw [← krullDim_orderDual]
   exact krullDim_WithTop (α := αᵒᵈ)
 
 @[simp]
-lemma krullDim_ENat : krullDim ℕ∞ = ⊤ := by
-  show (krullDim (WithTop ℕ) = ↑⊤)
+lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
+  show (krullDim (WithTop ℕ) = ⊤)
   simp only [krullDim_WithTop, krullDim_nat]
   rfl
 
 @[simp]
-lemma height_ENat (n : ℕ∞) : height n = n := by
+lemma height_enat (n : ℕ∞) : height n = n := by
   cases n with
-  | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_ENat, WithBot.coe_top]
-  | coe n => exact (height_coe_WithTop _).trans (height_nat _)
+  | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_enat, WithBot.coe_top]
+  | coe n => exact (height_coe_withTop _).trans (height_nat _)
 
 @[simp]
-lemma coheight_coe_ENat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
-  apply (coheight_coe_WithTop _).trans
+lemma coheight_coe_enat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
+  apply (coheight_coe_withTop _).trans
   simp only [Nat.cast_id, coheight_nat, top_add]
 
 end calculations
