@@ -374,6 +374,14 @@ noncomputable abbrev awayMapₐ (f : A →ₐ[R] B) (a : A) :
     Localization.Away a →ₐ[R] Localization.Away (f a) :=
   IsLocalization.Away.mapₐ _ _ f a
 
+lemma awayLift_mk (f : R →+* A) (r : R) (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
+    Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
+      (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
+  rw [Localization.mk_eq_mk']
+  erw [IsLocalization.lift_mk']
+  rw [Units.mul_inv_eq_iff_eq_mul]
+  simp [IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
+
 end Localization
 
 end CommSemiring

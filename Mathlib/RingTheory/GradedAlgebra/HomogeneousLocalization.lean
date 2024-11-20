@@ -635,15 +635,6 @@ end
 
 section mapAway
 
-lemma Localization.awayLift_mk {R A} [CommRing R] [CommRing A]
-    (f : R →+* A) (r : R) (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
-    Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
-      (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
-  rw [Localization.mk_eq_mk']
-  erw [IsLocalization.lift_mk']
-  rw [Units.mul_inv_eq_iff_eq_mul]
-  simp [IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
-
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 variable {d e : ι} {f : A} (hf : f ∈ 𝒜 d) {g : A} (hg : g ∈ 𝒜 e)
 variable {x : A} (hx : x = f * g)
