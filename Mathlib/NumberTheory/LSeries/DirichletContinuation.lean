@@ -344,7 +344,7 @@ lemma LFunctionTrivChar₁_apply_one_ne_zero : LFunctionTrivChar₁ n 1 ≠ 0 :=
   exact_mod_cast (Nat.prime_of_mem_primeFactors hp).ne_one
 
 /-- `s ↦ (s - 1) * L χ s` is an entire function when `χ` is a trivial Dirichlet character. -/
-lemma LFunctionTrivChar₁_differentiable : Differentiable ℂ (LFunctionTrivChar₁ n) := by
+lemma differentiable_LFunctionTrivChar₁ : Differentiable ℂ (LFunctionTrivChar₁ n) := by
   rw [← differentiableOn_univ,
     ← differentiableOn_compl_singleton_and_continuousAt_iff (c := 1) Filter.univ_mem]
   refine ⟨DifferentiableOn.congr (f := fun s ↦ (s - 1) * LFunctionTrivChar n s)
@@ -371,7 +371,7 @@ lemma continuousOn_neg_logDeriv_LFunctionTrivChar₁ :
     ContinuousOn (fun s ↦ -deriv (LFunctionTrivChar₁ n) s / LFunctionTrivChar₁ n s)
       {s | s = 1 ∨ LFunctionTrivChar n s ≠ 0} := by
   simp_rw [neg_div]
-  have h := LFunctionTrivChar₁_differentiable n
+  have h := differentiable_LFunctionTrivChar₁ n
   refine ((h.contDiff.continuous_deriv le_rfl).continuousOn.div
     h.continuous.continuousOn fun w hw ↦ ?_).neg
   rcases eq_or_ne w 1 with rfl | hw'
