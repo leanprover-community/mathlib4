@@ -270,7 +270,7 @@ jobs:
         with:
           linters: gcc
           run:
-            lake test
+            lake --iofail test
 
       - name: check for unused imports
         id: shake
