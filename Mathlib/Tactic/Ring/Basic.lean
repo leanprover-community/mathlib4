@@ -513,7 +513,7 @@ partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result
   match va with
   | .atom _ => do
     let a' : Q($α) := q($a)
-    let (i, b') ← addAtomQ a'
+    let (i, ⟨b', _⟩) ← addAtomQ a'
     pure ⟨b', ExBase.atom i, (q(Eq.refl $b') : Expr)⟩
   | .sum va => do
     let ⟨_, vc, p⟩ ← va.evalNatCast
@@ -952,7 +952,7 @@ Evaluates an atom, an expression where `ring` can find no additional structure.
 def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   let r ← (← read).evalAtom e
   have e' : Q($α) := r.expr
-  let (i, a') ← addAtomQ e'
+  let (i, ⟨a', _⟩) ← addAtomQ e'
   let ve' := (ExBase.atom i (e := a')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
   pure ⟨_, ve', match r.proof? with
   | none => (q(atom_pf $e) : Expr)
@@ -978,7 +978,7 @@ variable (dα : Q(DivisionRing $α))
 /-- Applies `⁻¹` to a polynomial to get an atom. -/
 def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
   let a' : Q($α) := q($a⁻¹)
-  let (i, b') ← addAtomQ a'
+  let (i, ⟨b', _⟩) ← addAtomQ a'
   pure ⟨b', ExBase.atom i, (q(Eq.refl $b') : Expr)⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.

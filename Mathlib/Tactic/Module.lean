@@ -464,7 +464,7 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [], q(NF.zero_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
-    let (k, x') ← AtomM.addAtomQ x
+    let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x'), k)],
       (q(NF.atom_eq_eval $x'):)⟩
 
