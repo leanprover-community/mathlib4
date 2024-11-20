@@ -247,8 +247,6 @@ end Localization
 
 namespace Polynomial
 
-open Polynomial
-
 section CommRing
 
 -- Porting note: move to better place

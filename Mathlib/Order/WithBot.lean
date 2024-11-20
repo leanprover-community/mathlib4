@@ -158,6 +158,13 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   · simpa using h rfl
   · simp
 
+/-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
+@[simps] def _root_.Equiv.withBotSubtypeNe : {y : WithBot α // y ≠ ⊥} ≃ α where
+  toFun := fun ⟨x,h⟩ => WithBot.unbot x h
+  invFun x := ⟨x, WithBot.coe_ne_bot⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+
 section LE
 
 variable [LE α]
@@ -728,6 +735,13 @@ theorem untop_eq_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
 theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
     a = b.untop h ↔ a = b :=
   WithBot.eq_unbot_iff (α := αᵒᵈ) h
+
+/-- The equivalence between the non-top elements of `WithTop α` and `α`. -/
+@[simps] def _root_.Equiv.withTopSubtypeNe : {y : WithTop α // y ≠ ⊤} ≃ α where
+  toFun := fun ⟨x,h⟩ => WithTop.untop x h
+  invFun x := ⟨x, WithTop.coe_ne_top⟩
+  left_inv _ := by simp
+  right_inv _:= by simp
 
 section LE
 

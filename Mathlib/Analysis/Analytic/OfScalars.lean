@@ -250,7 +250,7 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
     cases hc' <;> aesop
   · filter_upwards [hc.eventually_ge_atTop (2*r⁻¹), eventually_ne_atTop 0] with n hc hn
     simp only [ofScalars_norm, norm_mul, norm_norm, norm_pow, NNReal.norm_eq]
-    rw [mul_comm ‖c n‖, ← mul_assoc, ← div_le_div_iff, mul_div_assoc]
+    rw [mul_comm ‖c n‖, ← mul_assoc, ← div_le_div_iff₀, mul_div_assoc]
     · convert hc
       rw [pow_succ, div_mul_cancel_left₀, NNReal.coe_inv]
       aesop
