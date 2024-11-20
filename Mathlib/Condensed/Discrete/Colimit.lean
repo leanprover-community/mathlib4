@@ -202,7 +202,7 @@ noncomputable instance (X : Profinite) [Finite X] :
   let X' := (Countable.toSmall.{0} X).equiv_small.choose
   let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
   have : Finite X' := .of_equiv X e
-  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
+  preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
 def isoFinYonedaComponents (X : Profinite.{u}) [Finite X] :
@@ -473,7 +473,7 @@ noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X
   let X' := (Countable.toSmall.{0} X).equiv_small.choose
   let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
   have : Fintype X' := Fintype.ofEquiv X e
-  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
+  preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
 def isoFinYonedaComponents (X : LightProfinite.{u}) [Finite X] :

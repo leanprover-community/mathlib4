@@ -18,7 +18,7 @@ the uniform distance.
 
 -/
 
-assert_not_exists CStarAlgebra.star
+assert_not_exists CStarRing
 
 noncomputable section
 
