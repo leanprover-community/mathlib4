@@ -27,11 +27,6 @@ We prove several versions of Abel's summation formula.
 
 -/
 
-/-!
-# Docstring
-
--/
-
 noncomputable section
 
 open Finset intervalIntegral MeasureTheory IntervalIntegrable

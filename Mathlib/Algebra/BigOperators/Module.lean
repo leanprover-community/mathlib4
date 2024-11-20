@@ -41,16 +41,16 @@ theorem sum_Ico_by_parts (hmn : m < n) :
   simp_rw [this, sum_neg_distrib, sum_range_succ, smul_add]
   abel
 
-theorem sum_Ioc_by_parts (hn : 1 ≤ n) (hmn : m < n) :
+theorem sum_Ioc_by_parts (hmn : m < n) :
     ∑ i ∈ Ioc m n, f i • g i =
       f n • G (n + 1) - f (m + 1) • G (m + 1)
         - ∑ i ∈ Ioc m (n - 1), (f (i + 1) - f i) • G (i + 1) := by
   convert sum_Ico_by_parts (m := m + 1) (n := n + 1) f g (Nat.succ_lt_succ hmn) using 2
   · rw [Nat.Ico_succ_succ]
-  · simp only [← Nat.Ico_succ_succ, Nat.succ_eq_add_one, hn, Nat.sub_add_cancel,
+  · simp only [← Nat.Ico_succ_succ, Nat.succ_eq_add_one, Nat.sub_add_cancel (Nat.one_le_of_lt hmn),
       add_tsub_cancel_right]
 
-  variable (n)
+variable (n)
 
 /-- **Summation by parts** for ranges -/
 theorem sum_range_by_parts :
