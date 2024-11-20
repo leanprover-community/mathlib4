@@ -135,9 +135,9 @@ instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
 @[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
   (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
 
-@[simp] theorem of_nsmul [SMulZeroClass R V] (n : ℕ) (x : HahnSeries Γ V) :
+@[simp] theorem of_nsmul (n : ℕ) (x : HahnSeries Γ V) :
   (of R) (n • x) = n • (of R) x := rfl
-@[simp] theorem of_symm_nsmul [SMulZeroClass R V] (n : ℕ) (x : HahnModule Γ R V) :
+@[simp] theorem of_symm_nsmul (n : ℕ) (x : HahnModule Γ R V) :
   (of R).symm (n • x) = n • (of R).symm x := rfl
 
 variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']

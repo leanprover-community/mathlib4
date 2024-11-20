@@ -11,7 +11,10 @@ We produce an algebra homomorphism from a power series ring `R[[X]]` to itself b
 into a positive order element.
 
 ## Main Definitions
-  * `PowerSeries.eval`
+  * `PowerSeries.eval` is a linear map from `R[[X]]` to itself given by sending `X` to `X * f(X)`,
+    where `f(X)` is a power series.
+  * `PowerSeries.aeval` is an `R`-algebra map from `R[[X]]` to itself given by sending `X` to
+  `X * f(X)`, where `f(X)` is a power series.
 
 ## Main results
 
@@ -25,27 +28,72 @@ suppress_compilation
 
 variable {Γ R A : Type*}
 
-open Finset (antidiagonal mem_antidiagonal)
+open Finset
 
 namespace PowerSeries
 
-/-- Send a pair `(f, g)` of power series to `g(X * f(X))`. -/
-def eval [Semiring R] (f g : PowerSeries R) : PowerSeries R :=
-  mk (fun n => ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1))
+/-- Given a power series `f(X)`, a linear map taking `g(X)` to `g(X * f(X))`. -/
+def eval [Semiring R] (f : PowerSeries R) : PowerSeries R →ₗ[R] PowerSeries R where
+  toFun g := mk (fun n => ∑ i ∈ antidiagonal n, (coeff R i.1 g) * coeff R i.2 (f ^ i.1))
+  map_add' x y := by
+    ext n
+    simp [add_mul, sum_add_distrib, fun n g => coeff_mk n fun n ↦
+      ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1)]
+  map_smul' r x := by
+    ext n
+    simp [mul_sum, mul_assoc, fun n g => coeff_mk n fun n ↦
+      ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1)]
 
-@[simp]
 lemma eval_coeff [Semiring R] (f g : PowerSeries R) (n : ℕ) :
     (coeff R n) (eval f g) = ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1) :=
   coeff_mk n fun n ↦ ∑ i ∈ antidiagonal n, (coeff R i.1 g) • coeff R i.2 (f ^ i.1)
 
 @[simp]
-lemma eval_add [Semiring R] (f g h : PowerSeries R) : eval f (g + h) = eval f g + eval f h := by
+lemma eval_mul [CommSemiring R] (f g h : PowerSeries R) : eval f (g * h) = eval f g * eval f h := by
   ext n
-  simp [add_mul, Finset.sum_add_distrib]
+  simp only [eval_coeff, coeff_mul, smul_eq_mul]
+  simp_rw [sum_mul_sum, sum_mul, sum_sigma']
+  rw [sum_nbij' (ι := ((_ : ℕ × ℕ) × (_ : ℕ × ℕ) × ℕ × ℕ))
+    (κ := ((_ : ℕ × ℕ) × (_ : ℕ × ℕ) × ℕ × ℕ))
+    (t := (antidiagonal n).sigma fun a ↦ (antidiagonal a.1).sigma fun b ↦ antidiagonal a.2)
+    (g := fun ⟨⟨_i, _j⟩, ⟨⟨k, l⟩, ⟨m, n⟩⟩⟩ =>
+      (coeff R k) g * (coeff R m) (f ^ k) * ((coeff R l) h * (coeff R n) (f ^ l)))
+    (fun ⟨⟨i, j⟩, ⟨k, l⟩, ⟨m, n⟩⟩ ↦ ⟨(k + m, l + n), (k, m), (l, n)⟩)
+    (fun ⟨⟨i, j⟩, ⟨k, l⟩, ⟨m, n⟩⟩ ↦ ⟨(k + m, l + n), (k, m), (l, n)⟩)]
+  · simp_rw [sum_sigma]
+    refine sum_congr rfl (fun i _ => ?_)
+    refine sum_congr rfl (fun j hj => ?_)
+    rw [show f ^ i.1 = f ^ j.1 * f ^ j.2 by simp [← (List.Nat.mem_antidiagonal.mp) hj, pow_add],
+      coeff_mul, mul_sum]
+    exact sum_congr rfl (fun _ _ => (by ring))
+  · intro i hi
+    simp_all only [mem_sigma, mem_antidiagonal, and_self, and_true, add_assoc]
+    rw [add_left_comm i.2.2.1, hi.2.2, ← add_assoc, hi.2.1, hi.1]
+  · intro i hi
+    simp_all only [mem_sigma, mem_antidiagonal, add_assoc, and_self, and_true]
+    rw [add_left_comm i.2.2.1, hi.2.2, ← add_assoc, hi.2.1, hi.1]
+  all_goals
+  intro i hi
+  simp_all
 
 @[simp]
-lemma eval_smul [Semiring R] (f g : PowerSeries R) (r : R) : eval f (r • g) = r • eval f g := by
+lemma eval_one [Semiring R] (f : PowerSeries R) : eval f 1 = 1 := by
   ext n
-  simp [Finset.mul_sum, mul_assoc]
+  by_cases h : n = 0; · simp [h, eval_coeff]
+  · simp only [eval_coeff, coeff_one, smul_eq_mul, ite_mul, one_mul, zero_mul, h, ↓reduceIte]
+    refine sum_eq_zero (fun i hi => ?_)
+    simp_all only [mem_antidiagonal, pow_zero, coeff_one, ite_eq_right_iff]
+    omega
+
+/-- Given a power series `f(X)`, an algebra map taking `g(X)` to `g(X * f(X))`. -/
+def aeval [CommSemiring R] (f : PowerSeries R) : PowerSeries R →ₐ[R] PowerSeries R where
+  toFun x := eval f x
+  map_one' := eval_one f
+  map_mul' x y := by simp
+  map_zero' := by simp
+  map_add' := by simp
+  commutes' r := by
+    ext n
+    simp [Algebra.algebraMap_eq_smul_one]
 
 end PowerSeries

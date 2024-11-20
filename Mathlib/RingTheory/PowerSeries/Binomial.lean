@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Eval
 import Mathlib.RingTheory.Binomial
 
 /-!
@@ -39,7 +40,7 @@ namespace PowerSeries
 
 variable [CommRing R] [BinomialRing R]
 
-/-- The power series for `(1 + x) ^ r`. -/
+/-- The power series for `(1 + X) ^ r`. -/
 def BinomialSeries (r : R) : PowerSeries R :=
   mk fun n => Ring.choose r n
 
@@ -52,5 +53,11 @@ lemma binomial_coeff (r : R) (n : ℕ) : (coeff R n) (BinomialSeries r) = Ring.c
 lemma binomial_add (r s : R) : BinomialSeries (r + s) = BinomialSeries r * BinomialSeries s := by
   ext n
   simp [coeff_mul, Ring.add_choose_eq n (Commute.all r s)]
+
+/-- The power series given by `(1 + X * f X) ^ r`. -/
+def BinomialEval (f : PowerSeries R) (r : R) : PowerSeries R :=
+  eval f (BinomialSeries r)
+
+
 
 end PowerSeries
