@@ -69,7 +69,7 @@ you should parametrize over
 `(F : Type*) [FunLike F M N] [AddHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
 structure AddQuantaleHom (α β : Type*)
   [AddSemigroup α] [CompleteLattice α] [AddSemigroup β] [CompleteLattice β]
-  extends AddHom α β, CompleteLatticeHom α β
+  extends AddHom α β, sSupHom α β
 
 /-- Infix notation for `AddQuantaleHom`. -/
 infixr:25 " →ₙ+q " => AddQuantaleHom
@@ -82,7 +82,7 @@ you should parametrize over
 `(F : Type*) [FunLike F M N] [AddMonoidHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
 structure ZeroAddQuantaleHom (α β : Type*)
   [AddMonoid α] [CompleteLattice α] [AddMonoid β] [CompleteLattice β]
-  extends α →+ β, CompleteLatticeHom α β
+  extends α →+ β, sSupHom α β
 
 /-- Infix notation for `ZeroAddQuantaleHom`. -/
 infixr:25 " →+q " => ZeroAddQuantaleHom
@@ -101,7 +101,7 @@ you should parametrize over
 `(F : Type*) [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
 structure QuantaleHom (α β : Type*)
   [Semigroup α] [CompleteLattice α] [Semigroup β] [CompleteLattice β]
-  extends α →ₙ* β, CompleteLatticeHom α β
+  extends α →ₙ* β, sSupHom α β
 
 /-- Infix notation for `AddQuantaleHom`. -/
 infixr:25 " →ₙ*q " => QuantaleHom
@@ -114,7 +114,7 @@ you should parametrize over
 `(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
 structure OneQuantaleHom (α β : Type*)
   [Monoid α] [CompleteLattice α] [Monoid β] [CompleteLattice β]
-  extends α →* β, CompleteLatticeHom α β
+  extends α →* β, sSupHom α β
 
 /-- Infix notation for `ZeroAddQuantaleHom`. -/
 infixr:25 " →*q " => OneQuantaleHom
