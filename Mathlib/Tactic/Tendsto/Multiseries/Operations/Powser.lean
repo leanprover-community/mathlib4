@@ -282,7 +282,7 @@ theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basi
 
 theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)}
-    (h_wo : ms.WellOrdered) (h_neg : ms.HasNegativeLeading) :
+    (h_wo : ms.WellOrdered) (h_neg : ms.leadingExp < 0) :
     (apply s ms).WellOrdered := by
   by_cases h_ms_ne_nil : ms = .nil
   · rw [h_ms_ne_nil]
@@ -321,8 +321,7 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
       constructor
       · exact h_tl
       · exact mul_WellOrdered hX_wo h_wo
-  · simp [HasNegativeLeading] at h_neg
-    let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
+  · let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
       ∃ X s, a = Seq.corec (apply_aux ms) (X, s) ∧ X ≠ .nil
     apply Seq.Sorted.coind (r := (fun x1 x2 ↦ x1 > x2)) motive
     · simp only [motive]
@@ -369,12 +368,11 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
 
 theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd : ℝ → ℝ}
     {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
-    (h_neg : ms.HasNegativeLeading) {F : ℝ → ℝ}
+    (h_basis : WellOrderedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
+    (h_neg : ms.leadingExp < 0) {F : ℝ → ℝ}
     (h_approx : ms.Approximates F) : (apply s ms).Approximates (s.toFun ∘ F) := by
   have hF_tendsto_zero : Tendsto F atTop (nhds 0) := by
-    apply HasNegativeLeading_tendsto_zero h_neg h_approx
-  simp [HasNegativeLeading] at h_neg
+    apply neg_leadingExp_tendsto_zero h_neg h_approx
   let motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop := fun F' ms' =>
     ∃ (s : LazySeries), (analytic s) ∧
       ∃ X Y fX fY, F' =ᶠ[atTop] fX + fY * s.toFun ∘ F ∧ ms' = X + ((s.apply ms).mul Y) ∧
@@ -448,8 +446,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
           constructor
           · exact h_ms_eq
           · constructor
-            · apply mul_Approximates (MS.WellOrderedBasis_tail h_basis)
-              · apply const_Approximates_const (MS.WellOrderedBasis_tail h_basis)
+            · apply mul_Approximates (WellOrderedBasis_tail h_basis)
+              · apply const_Approximates_const (WellOrderedBasis_tail h_basis)
               · exact hY_coef
             · constructor
               · apply majorated_of_EventuallyEq (f := fY * toFun (Seq.cons s_hd s_tl) ∘ F)
@@ -479,7 +477,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
                 constructor
                 · have := mulMonomial_Approximates h_basis (m_coef := const basis_tl s_hd)
                     (m_exp := 0) hY_tl
-                    (const_Approximates_const (MS.WellOrderedBasis_tail h_basis))
+                    (const_Approximates_const (WellOrderedBasis_tail h_basis))
                   simpa using this
                 constructor
                 · apply mul_WellOrdered h_wo hY_wo
@@ -624,8 +622,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
             constructor
             · exact h_ms_eq
             constructor
-            · apply mul_Approximates (MS.WellOrderedBasis_tail h_basis)
-              · apply const_Approximates_const (MS.WellOrderedBasis_tail h_basis)
+            · apply mul_Approximates (WellOrderedBasis_tail h_basis)
+              · apply const_Approximates_const (WellOrderedBasis_tail h_basis)
               · exact hY_coef
             constructor
             · apply majorated_of_EventuallyEq hf_eq
@@ -665,7 +663,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
                   rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
                 apply mulMonomial_Approximates h_basis
                 · exact hY_tl
-                · exact const_Approximates_const (MS.WellOrderedBasis_tail h_basis)
+                · exact const_Approximates_const (WellOrderedBasis_tail h_basis)
             constructor
             · apply mul_WellOrdered
               · exact h_wo
@@ -682,8 +680,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
             constructor
             · apply add_Approximates
               · exact hX_coef
-              · apply mul_Approximates (MS.WellOrderedBasis_tail h_basis)
-                · apply const_Approximates_const (MS.WellOrderedBasis_tail h_basis)
+              · apply mul_Approximates (WellOrderedBasis_tail h_basis)
+                · apply const_Approximates_const (WellOrderedBasis_tail h_basis)
                 · exact hY_coef
             constructor
             · apply majorated_of_EventuallyEq hf_eq
@@ -725,7 +723,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : analytic s) {basis_hd 
                   rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
                 apply mulMonomial_Approximates h_basis
                 · exact hY_tl
-                · apply const_Approximates_const (MS.WellOrderedBasis_tail h_basis)
+                · apply const_Approximates_const (WellOrderedBasis_tail h_basis)
             constructor
             · apply mul_WellOrdered
               · exact h_wo

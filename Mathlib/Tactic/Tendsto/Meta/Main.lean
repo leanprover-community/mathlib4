@@ -4,21 +4,21 @@ import Mathlib.Tactic.Tendsto.Meta.LeadingTerm
 
 set_option linter.style.longLine false
 
-open Filter Asymptotics TendstoTactic Stream' Seq ElimDestruct
+open Filter Asymptotics TendstoTactic Stream'.Seq ElimDestruct
 
 open Lean Elab Meta Tactic Qq
 
 namespace TendstoTactic
 
-def basis_wo : MS.WellOrderedBasis [fun (x : ℝ) ↦ x] := by
-  simp [MS.WellOrderedBasis]
+def basis_wo : WellOrderedBasis [fun (x : ℝ) ↦ x] := by
+  simp [WellOrderedBasis]
   exact fun ⦃U⦄ a ↦ a
 
 partial def createMS (body : Expr) : TacticM MS := do
   let basis : Q(List (ℝ → ℝ)) := q([fun (x : ℝ) ↦ x])
-  let basis_wo : Q(MS.WellOrderedBasis $basis) := q(basis_wo)
+  let basis_wo : Q(WellOrderedBasis $basis) := q(basis_wo)
   let zero_aux : Q(0 < List.length $basis) := q(by decide)
-  match body.nat? with
+  match body.nat? with -- TODO: other numerals
   | .some n =>
     return MS.const basis body basis_wo
   | none =>
@@ -54,89 +54,63 @@ partial def createMS (body : Expr) : TacticM MS := do
     return MS.div ms1 ms2 h_trimmed ⟨⟩
   | _ => throwError f!"Unsupported body in createMS: {body}"
 
+
 def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(Tendsto $f atTop $limit)) := do
   match f with
   | .lam _ _ b _ =>
     let ms ← createMS b
-    let ⟨ms_trimmed, h_trimmed⟩ ← trimMS ms
+    let ⟨ms_trimmed, h_trimmed⟩ ← trimPartialMS ms
 
     let hf_eq ← mkFreshExprMVarQ q($ms.F = $f)
     hf_eq.mvarId!.applyRfl
 
-    let limit ← mkFreshExprMVarQ q(Filter ℝ)
-    let goal ← mkFreshExprMVarQ q(Tendsto $ms.F atTop $limit)
-    let targetType := Q(Tendsto $f atTop $limit)
-    let res : targetType := q(Eq.subst (motive := fun x ↦ Tendsto x atTop $limit) $hf_eq $goal)
+    let ~q(List.cons $basis_hd $basis_tl) := ms_trimmed.basis | throwError "Unexpected basis in computeTendsto"
+    -- I don't how to avoid Expr here.
+    let h_tendsto : Expr ← match ms_trimmed.val with
+    | ~q(PreMS.nil) =>
+      pure (q(PreMS.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
+    | ~q(PreMS.cons $hd $tl) =>
+      let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms_trimmed.val
+      let ~q(⟨$coef, $exps⟩) := leading | throwError "Unexpected leading in computeTendsto"
+      let h_tendsto ← match ← getFirstIs exps with
+      | .pos h_exps =>
+        match ← compareReal coef with
+        | .neg h_coef =>
+          pure (q(PreMS.tendsto_bot_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
+        | .pos h_coef =>
+          pure (q(PreMS.tendsto_top_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef) : Expr)
+        | .zero _ => throwError "Unexpected zero coef with FirstIsPos"
+      | .neg h_exps =>
+        pure (q(PreMS.tendsto_zero_of_FirstIsNeg $ms_trimmed.h_wo $ms_trimmed.h_approx $h_leading_eq $h_exps) : Expr)
+      | .zero h_exps =>
+        pure (q(PreMS.tendsto_const_of_AllZero $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed.get! $ms_trimmed.h_basis $h_leading_eq $h_exps) : Expr)
+    | _ => throwError "Unexpected result of trimMS"
 
-    match ms_trimmed.basis with
-    | ~q(List.cons $basis_hd $basis_tl) =>
-      match ms_trimmed.val with
-      | ~q(PreMS.nil) =>
-        limit.mvarId!.assign q(nhds (0 : ℝ))
-        let h_tendsto := q(PreMS.nil_tendsto_zero $ms_trimmed.h_approx)
-        goal.mvarId!.assign h_tendsto
-      | ~q(PreMS.cons $hd $tl) =>
-        let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms_trimmed.val
-        let h_tendsto ← match leading with
-        | ~q(⟨$coef, $exps⟩) =>
-          let coef_comp ← compareReal coef
-          match coef_comp with
-          | .zero h_coef =>
-            limit.mvarId!.assign q(nhds (0 : ℝ))
-            return q(PreMS.tendsto_zero_of_zero_coef $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed $ms_trimmed.h_basis $h_leading_eq $h_coef)
-          | .neg h_coef =>
-            match ← getFirstIs exps with
-            | .pos h_exps =>
-              return q(PreMS.tendsto_bot_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef)
-            | .neg h_exps =>
-              return q(PreMS.tendsto_zero_of_FirstIsNeg $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed $ms_trimmed.h_basis $h_leading_eq $h_exps)
-            | .zero h_exps =>
-              return q(PreMS.tendsto_const_of_AllZero $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed $ms_trimmed.h_basis $h_leading_eq $h_exps)
-          | .pos h_coef =>
-            match ← getFirstIs exps with
-            | .pos h_exps =>
-              return q(PreMS.tendsto_top_of_FirstIsPos $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed $ms_trimmed.h_basis $h_leading_eq $h_exps $h_coef)
-            | .neg h_exps =>
-              return q(PreMS.tendsto_zero_of_FirstIsNeg $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed $ms_trimmed.h_basis $h_leading_eq $h_exps)
-            | .zero h_exps =>
-              return q(PreMS.tendsto_const_of_AllZero $ms_trimmed.h_wo $ms_trimmed.h_approx $h_trimmed $ms_trimmed.h_basis $h_leading_eq $h_exps)
-        | _ => throwError "Unexpected result of getLeadingTermWithProof"
-        goal.mvarId!.assign h_tendsto
-      | _ => throwError "Unexpected result of trimMS"
-    | _ => throwError "Unexpected basis in computeTendsto"
+    let ⟨0, t, h_tendsto⟩ ← inferTypeQ h_tendsto | throwError "Unexpected h_tendsto's universe level"
+    let ~q(@Tendsto ℝ ℝ $g atTop $limit) := t | throwError "Unexpected h_tendsto's type"
+    haveI' : $g =Q $ms.F := ⟨⟩
 
-    -- TODO: is this necessary?
-    let goal' ← instantiateMVarsQ goal
-    let ⟨0, t, _⟩ ← inferTypeQ goal' | throwError "Unexpected goal's universe level"
-    match t with
-    | ~q(Tendsto (α := ℝ) (β := ℝ) $f atTop $limit_res) =>
-      limit.mvarId!.assign limit_res
-    | _ => pure ()
-
-    return ⟨← instantiateMVarsQ limit, ← instantiateMVars res⟩
+    let res := q(Eq.subst (motive := fun x ↦ Tendsto x atTop $limit) $hf_eq $h_tendsto)
+    return ⟨limit, res⟩
   | _ => throwError "Function should be lambda"
 
 elab "compute_asymptotics" : tactic =>
   Lean.Elab.Tactic.withMainContext do
     let target : Q(Prop) ← getMainTarget
-    match target with
-    | ~q(@Filter.Tendsto ℝ ℝ $f atTop $targetLimit) =>
-      let ⟨1, fType, f⟩ ← inferTypeQ f | throwError "Unexpected universe level of function in compute_asymptotics"
-      match fType with
-      | ~q(ℝ → ℝ) =>
-        let ⟨limit, h_tendsto⟩ ← computeTendsto f
-        let result : Q(Prop) ← inferType h_tendsto
-        if !(← isDefEq target result) then
-          match targetLimit, limit with
-          | ~q(nhds $a), ~q(nhds $b) =>
-            let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
-            (← getMainGoal).assign q(Eq.subst (motive := fun x ↦ Filter.Tendsto $f atTop (nhds (X := ℝ) x)) $h_eq $h_tendsto)
-            setGoals (← evalTacticAt (← `(tactic| try norm_num1)) h_eq.mvarId!)
-          | _ =>
-            throwError m!"I've proved that {← ppExpr (← inferType h_tendsto)}. Is this what you expect?"
-        else
-          (← getMainGoal).assign h_tendsto
-      | _ => throwError "Only real functions are supported"
-    | _ => throwError "The goal must me in the form Tendsto (fun x ↦ ...) atTop ..."
+    let ~q(@Filter.Tendsto ℝ ℝ $f atTop $targetLimit) := target | throwError "The goal must me in the form Tendsto (fun x ↦ ...) atTop ..."
+    let ⟨1, fType, f⟩ ← inferTypeQ f | throwError "Unexpected universe level of function in compute_asymptotics"
+    let ~q(ℝ → ℝ) := fType | throwError "Only real functions are supported"
+    let ⟨limit, h_tendsto⟩ ← computeTendsto f
+    let result : Q(Prop) ← inferType h_tendsto
+    if !(← isDefEq target result) then
+      match targetLimit, limit with
+      | ~q(nhds $a), ~q(nhds $b) =>
+        let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
+        (← getMainGoal).assign q(Eq.subst (motive := fun x ↦ Filter.Tendsto $f atTop (nhds (X := ℝ) x)) $h_eq $h_tendsto)
+        setGoals (← evalTacticAt (← `(tactic| try norm_num1)) h_eq.mvarId!)
+      | _ =>
+        throwError m!"I've proved that {← ppExpr (← inferType h_tendsto)}. Is this what you expect?"
+    else
+      (← getMainGoal).assign h_tendsto
 
 end TendstoTactic

@@ -15,7 +15,7 @@ namespace TendstoTactic
 
 namespace PreMS
 
-open Stream' Seq
+open Stream'
 
 def mulConst {basis : Basis} (ms : PreMS basis) (c : ℝ) : PreMS basis :=
   match basis with
@@ -52,17 +52,17 @@ theorem zero_WellOrdered {basis : Basis} : (0 : PreMS basis).WellOrdered := by
   | cons => exact WellOrdered.nil
 
 -- TODO : move it
-theorem const_Approximates_const {c : ℝ} {basis : Basis} (h_wo : MS.WellOrderedBasis basis) :
+theorem const_Approximates_const {c : ℝ} {basis : Basis} (h_wo : WellOrderedBasis basis) :
     (const basis c).Approximates (fun _ ↦ c) := by
   cases basis with
   | nil => simp [Approximates, const]
   | cons basis_hd basis_tl =>
     simp [const]
     have ih : (const basis_tl c).Approximates (fun _ ↦ c) := by
-      apply const_Approximates_const (MS.WellOrderedBasis_tail h_wo)
+      apply const_Approximates_const (WellOrderedBasis_tail h_wo)
     apply Approximates.cons _ ih
     · apply const_majorated
-      apply MS.basis_tendsto_top h_wo
+      apply basis_tendsto_top h_wo
       simp
     · apply Approximates.nil
       simp
@@ -77,7 +77,7 @@ theorem zero_Approximates_zero {basis : Basis} :
     simp [zero]
     exact Approximates.nil (by rfl)
 
-theorem one_Approximates_one {basis : Basis} (h_wo : MS.WellOrderedBasis basis) :
+theorem one_Approximates_one {basis : Basis} (h_wo : WellOrderedBasis basis) :
     (one basis).Approximates (fun _ ↦ 1) :=
   const_Approximates_const h_wo
 
@@ -107,7 +107,7 @@ theorem monomial_WellOrdered {basis : Basis} {n : ℕ} : (monomial basis n).Well
       · exact WellOrdered.nil
 
 theorem monomial_Approximates {basis : Basis} {n : ℕ} (h : n < basis.length)
-    (h_wo : MS.WellOrderedBasis basis) : (monomial basis n).Approximates basis[n] := by
+    (h_wo : WellOrderedBasis basis) : (monomial basis n).Approximates basis[n] := by
   cases basis with
   | nil =>
     simp at h
@@ -116,10 +116,10 @@ theorem monomial_Approximates {basis : Basis} {n : ℕ} (h : n < basis.length)
     | zero =>
       simp [monomial]
       apply Approximates.cons (fun _ ↦ 1)
-      · exact one_Approximates_one (MS.WellOrderedBasis_tail h_wo)
+      · exact one_Approximates_one (WellOrderedBasis_tail h_wo)
       · nth_rw 1 [show basis_hd = fun x ↦ (basis_hd x)^(1 : ℝ) by ext x; simp]
         apply PreMS.majorated_self
-        apply MS.basis_tendsto_top h_wo
+        apply basis_tendsto_top h_wo
         simp
       · simp
         apply Approximates.nil
@@ -129,8 +129,8 @@ theorem monomial_Approximates {basis : Basis} {n : ℕ} (h : n < basis.length)
       apply Approximates.cons
       · apply monomial_Approximates
         · simpa using h
-        · exact MS.WellOrderedBasis_tail h_wo
-      · apply MS.basis_tail_majorated_head h_wo
+        · exact WellOrderedBasis_tail h_wo
+      · apply basis_tail_majorated_head h_wo
         apply List.getElem_mem
       · simp
         apply Approximates.nil
@@ -282,15 +282,15 @@ theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
 
 end PreMS
 
--- def MS.monomial (basis : Basis) (n : ℕ) (h : n < basis.length)
---     (h_basis : MS.WellOrderedBasis basis) : MS where
+-- def monomial (basis : Basis) (n : ℕ) (h : n < basis.length)
+--     (h_basis : WellOrderedBasis basis) : MS where
 --   basis := basis
 --   val := PreMS.monomial basis n
 --   F := basis[n]
 --   h_wo := PreMS.monomial_WellOrdered
 --   h_approx := PreMS.monomial_Approximates h h_basis
 
--- def MS.neg (x : MS) : MS where
+-- def neg (x : MS) : MS where
 --   basis := x.basis
 --   val := x.val.neg
 --   F := -x.F

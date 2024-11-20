@@ -20,7 +20,7 @@ namespace TendstoTactic
 
 namespace PreMS
 
-open LazySeries Stream' Seq
+open LazySeries Stream'.Seq
 
 def powSeries (x : ℝ) : LazySeries := sorry
 

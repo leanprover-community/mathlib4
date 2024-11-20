@@ -117,43 +117,39 @@ def simpWith (pf : Expr) : SimpM Simp.Step := do
   return .visit {expr := rhs, proof? := pf}
 
 simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
-  match e.getAppFnArgs with
-  | (``Stream'.Seq.destruct, #[_, target]) =>
-    let ⟨1, targetType, target⟩ := ← inferTypeQ target | return .continue
-    match targetType with
-    | ~q(PreMS.LazySeries) =>
-      match target with
-      | ~q(PreMS.invSeries') =>
-        simpWith q(invSeries'_destruct)
-      | _ => return .continue
-    | ~q(PreMS $basis) =>
-      match basis with
-      | ~q(List.cons $basis_hd $basis_tl) =>
-        match target with
-        | ~q(PreMS.nil) =>
-          return .done {
-            expr := q(@Option.none (Seq1 (ℝ × PreMS $basis_tl))),
-            proof? := q(@Stream'.Seq.destruct_nil (ℝ × (PreMS $basis_tl)))
-          }
-        | ~q(PreMS.cons $hd $tl) =>
-          return .done {
-            expr := q(Option.some ($hd, $tl)),
-            proof? := q(Stream'.Seq.destruct_cons $hd $tl)
-          }
-        | ~q(PreMS.const _ $c) => simpWith q(@const_destruct $basis_hd $basis_tl $c)
-        | ~q(PreMS.monomial _ $n) =>
-          match (← getNatValue? n).get! with
-          | 0 => simpWith q(@monomial_zero_destruct $basis_hd $basis_tl)
-          | m + 1 => simpWith q(@monomial_succ_destruct $basis_hd $basis_tl $m)
-        | ~q(PreMS.neg $arg) => simpWith q(neg_destruct $arg)
-        | ~q(PreMS.add $arg1 $arg2) => simpWith q(add_destruct $arg1 $arg2)
-        | ~q(PreMS.mul $arg1 $arg2) => simpWith q(mul_destruct $arg1 $arg2)
-        | ~q(PreMS.mulMonomial $b $m_coef $m_exp) =>
-          simpWith q(mulMonomial_destruct $b $m_coef $m_exp)
-        | ~q(PreMS.LazySeries.apply $s $ms) => simpWith q(apply_destruct $s $ms)
-        | ~q(PreMS.inv' $arg) => simpWith q(inv'_destruct $arg)
-        | _ => return .continue
-      | _ => return .continue
+  let (``Stream'.Seq.destruct, #[_, target]) := e.getAppFnArgs | return .continue
+  let ⟨1, targetType, target⟩ := ← inferTypeQ target | return .continue
+  match targetType with
+  | ~q(PreMS.LazySeries) =>
+    match target with
+    | ~q(PreMS.invSeries') =>
+      simpWith q(invSeries'_destruct)
+    | _ => return .continue
+  | ~q(PreMS $basis) =>
+    let ~q(List.cons $basis_hd $basis_tl) := basis | return .continue
+    match target with
+    | ~q(PreMS.nil) =>
+      return .done {
+        expr := q(@Option.none (Seq1 (ℝ × PreMS $basis_tl))),
+        proof? := q(@Stream'.Seq.destruct_nil (ℝ × (PreMS $basis_tl)))
+      }
+    | ~q(PreMS.cons $hd $tl) =>
+      return .done {
+        expr := q(Option.some ($hd, $tl)),
+        proof? := q(Stream'.Seq.destruct_cons $hd $tl)
+      }
+    | ~q(PreMS.const _ $c) => simpWith q(@const_destruct $basis_hd $basis_tl $c)
+    | ~q(PreMS.monomial _ $n) =>
+      match (← getNatValue? n).get! with
+      | 0 => simpWith q(@monomial_zero_destruct $basis_hd $basis_tl)
+      | m + 1 => simpWith q(@monomial_succ_destruct $basis_hd $basis_tl $m)
+    | ~q(PreMS.neg $arg) => simpWith q(neg_destruct $arg)
+    | ~q(PreMS.add $arg1 $arg2) => simpWith q(add_destruct $arg1 $arg2)
+    | ~q(PreMS.mul $arg1 $arg2) => simpWith q(mul_destruct $arg1 $arg2)
+    | ~q(PreMS.mulMonomial $b $m_coef $m_exp) =>
+      simpWith q(mulMonomial_destruct $b $m_coef $m_exp)
+    | ~q(PreMS.LazySeries.apply $s $ms) => simpWith q(apply_destruct $s $ms)
+    | ~q(PreMS.inv' $arg) => simpWith q(inv'_destruct $arg)
     | _ => return .continue
   | _ => return .continue
 

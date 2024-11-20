@@ -108,7 +108,7 @@ theorem inv'_WellOrdered {basis : Basis} {ms : PreMS basis}
           · apply neg_WellOrdered h_tl
           · apply inv'_WellOrdered
             exact h_coef
-        · simp [HasNegativeLeading]
+        · simp
           generalize leadingExp tl = t at *
           cases t with
           | bot => simp [Ne.bot_lt']
@@ -117,7 +117,7 @@ theorem inv'_WellOrdered {basis : Basis} {ms : PreMS basis}
         exact h_coef
 
 theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
-    (h_basis : MS.WellOrderedBasis basis) (h_wo : ms.WellOrdered)
+    (h_basis : WellOrderedBasis basis) (h_wo : ms.WellOrdered)
     (h_trimmed : ms.Trimmed) (h_approx : ms.Approximates F) : ms.inv'.Approximates (F⁻¹) := by
   cases basis with
   | nil =>
@@ -141,9 +141,9 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       obtain ⟨C, h_coef, _, h_tl⟩ := Approximates_cons h_approx
       have hC_ne_zero : ∀ᶠ x in atTop, C x ≠ 0 :=
         eventually_ne_zero_of_not_FlatZero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed
-          (MS.WellOrderedBasis_tail h_basis)
+          (WellOrderedBasis_tail h_basis)
       have h_basis_hd_pos : ∀ᶠ x in atTop, 0 < basis_hd x :=
-        MS.basis_head_eventually_pos h_basis
+        basis_head_eventually_pos h_basis
       simp [inv']
       apply Approximates_of_EventuallyEq (F := fun x ↦ C⁻¹ x * (basis_hd x)^(-exp) *
         (C x * (basis_hd x)^(exp) * F⁻¹ x))
@@ -156,13 +156,13 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
         simp [← Real.rpow_add h_basis_hd_pos]
       apply mulMonomial_Approximates h_basis
       swap
-      · exact inv'_Approximates (MS.WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
+      · exact inv'_Approximates (WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
       have : ((neg tl).mulMonomial coef.inv' (-exp)).Approximates (fun x ↦ C⁻¹ x *
           (basis_hd x)^(-exp) * -(F x - basis_hd x ^ exp * C x))
           (basis := basis_hd :: basis_tl) := by
         apply mulMonomial_Approximates h_basis
         · exact neg_Approximates h_tl
-        · exact inv'_Approximates (MS.WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
+        · exact inv'_Approximates (WellOrderedBasis_tail h_basis) h_coef_wo h_coef_trimmed h_coef
       apply Approximates_of_EventuallyEq
         (F' := (fun x ↦ 1 - C⁻¹ x * basis_hd x ^ (-exp) * F x)) at this
       swap
@@ -218,7 +218,7 @@ theorem inv'_Approximates {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
       · apply mulMonomial_WellOrdered
         · exact neg_WellOrdered h_tl_wo
         · exact inv'_WellOrdered h_coef_wo
-      · simp [HasNegativeLeading]
+      · simp
         generalize leadingExp tl = t at h_comp
         cases t with
         | bot => simp [Ne.bot_lt']
@@ -232,7 +232,7 @@ theorem div_WellOrdered {basis : Basis} {x y : PreMS basis}
   exact inv'_WellOrdered hy_wo
 
 theorem div_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
-    (h_basis : MS.WellOrderedBasis basis)
+    (h_basis : WellOrderedBasis basis)
     (hY_wo : Y.WellOrdered)
     (hY_trimmed : Y.Trimmed)
     (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY)
@@ -243,7 +243,7 @@ theorem div_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
 
 end PreMS
 
--- noncomputable def MS.inv (x : MS) (h_basis : MS.WellOrderedBasis x.basis) (h_trimmed : x.Trimmed) :
+-- noncomputable def inv (x : MS) (h_basis : WellOrderedBasis x.basis) (h_trimmed : x.Trimmed) :
 --     MS where
 --   basis := x.basis
 --   val := x.val.inv'

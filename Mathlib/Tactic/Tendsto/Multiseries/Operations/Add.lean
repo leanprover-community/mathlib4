@@ -708,7 +708,7 @@ theorem sub_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
 
 end PreMS
 
--- noncomputable def MS.add (x y : MS) (h_basis : y.basis = x.basis) : MS where
+-- noncomputable def add (x y : MS) (h_basis : y.basis = x.basis) : MS where
 --   basis := x.basis
 --   val := x.val.add (h_basis ▸ y.val)
 --   F := x.F + y.F

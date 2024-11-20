@@ -2082,7 +2082,7 @@ mutual
   theorem mulMonomial_Approximates {basis_hd : _} {basis_tl : _} {B M : ℝ → ℝ}
         {b : PreMS (basis_hd :: basis_tl)}
         {m_coef : PreMS basis_tl} {m_exp : ℝ}
-        (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl))
+        (h_basis : WellOrderedBasis (basis_hd :: basis_tl))
         (hb_approx : b.Approximates B)
         (hm_approx : m_coef.Approximates M) :
       (mulMonomial b m_coef m_exp).Approximates (fun x ↦ (M x) * (basis_hd x)^m_exp * (B x)) := by
@@ -2113,7 +2113,7 @@ mutual
         · simp only [mulMonomial_cons]
           congr <;> exact Eq.refl _
         constructor
-        · apply mul_Approximates (MS.WellOrderedBasis_tail h_basis) hm_approx h_coef_approx
+        · apply mul_Approximates (WellOrderedBasis_tail h_basis) hm_approx h_coef_approx
         constructor
         · apply majorated_of_EventuallyEq hf_eq
           rw [show m_exp + b_exp = 0 + m_exp + b_exp by simp]
@@ -2121,11 +2121,11 @@ mutual
           · apply mul_majorated
             · exact Approximates_coef_isLittleO_head hm_approx h_basis
             · apply majorated_self
-              apply MS.basis_tendsto_top h_basis
+              apply basis_tendsto_top h_basis
               simp
-            · exact MS.basis_head_eventually_pos h_basis
+            · exact basis_head_eventually_pos h_basis
           · exact h_maj
-          · exact MS.basis_head_eventually_pos h_basis
+          · exact basis_head_eventually_pos h_basis
         simp only [motive]
         use ?_, ?_, ?_
         constructor
@@ -2137,7 +2137,7 @@ mutual
           · exact h_tl_approx
           · exact hm_approx
         · simp only [EventuallyEq] at hf_eq ⊢
-          apply Eventually.mono <| hf_eq.and (MS.basis_head_eventually_pos h_basis)
+          apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
           intro x ⟨hf_eq, h_pos⟩
           simp [Real.rpow_add h_pos, hf_eq]
           ring_nf
@@ -2146,7 +2146,7 @@ mutual
       {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {exp : ℝ}
       {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
       {fB fM : Fin k → (ℝ → ℝ)}
-      (h_basis : MS.WellOrderedBasis (basis_hd :: basis_tl))
+      (h_basis : WellOrderedBasis (basis_hd :: basis_tl))
       (hB_approx : ∀ j, (BM j).1.Approximates (fB j))
       (hM_approx : ∀ j, (BM j).2.1.Approximates (fM j))
       (h_cons : (longAdd ((fun x ↦ x.1.mulMonomial x.2.1 x.2.2) ∘ BM)) = Seq.cons (exp, coef) tl) :
@@ -2196,14 +2196,14 @@ mutual
           rw [h2] at h1
           simp [Seq.cons_eq_cons] at h1
           rw [← h1.left]
-          apply mul_Approximates (MS.WellOrderedBasis_tail h_basis)
+          apply mul_Approximates (WellOrderedBasis_tail h_basis)
           · apply hM_approx
           · exact h3.left
         · simp
           exact zero_Approximates_zero
 
   theorem mul_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → ℝ}
-      (h_basis : MS.WellOrderedBasis basis)
+      (h_basis : WellOrderedBasis basis)
       (hX_approx : X.Approximates fX) (hY_approx : Y.Approximates fY) :
       (X.mul Y).Approximates (fX * fY) := by
     cases basis with
@@ -2293,12 +2293,12 @@ mutual
             subst h_exp h_coef h_tl
             use XC * YC
             constructor
-            · apply mul_Approximates (MS.WellOrderedBasis_tail h_basis) hX_coef_approx
+            · apply mul_Approximates (WellOrderedBasis_tail h_basis) hX_coef_approx
                 hY_coef_approx
             constructor
             · apply majorated_of_EventuallyEq hf_eq
               apply mul_majorated hX_maj hY_maj
-              apply MS.basis_head_eventually_pos h_basis
+              apply basis_head_eventually_pos h_basis
             simp only [motive]
             use 1, fun _ ↦ (Y_tl, X_coef, X_exp),
               fun _ ↦ (fun x ↦ fY x - basis_hd x ^ Y_exp * YC x), fun _ ↦ XC,
@@ -2309,7 +2309,7 @@ mutual
             · simp [longAdd_one]
             constructor
             · simp only [EventuallyEq] at hf_eq ⊢
-              apply Eventually.mono <| hf_eq.and (MS.basis_head_eventually_pos h_basis)
+              apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
               intro x ⟨hf_eq, h_pos⟩
               rw [Real.rpow_add h_pos, hf_eq]
               simp
@@ -2372,7 +2372,7 @@ mutual
                   simp [longAdd_mulMonomial_fC, longAdd_mulMonomial_tail_fB,
                     longAdd_mulMonomial_tail_BM]
                   simp only [EventuallyEq] at hf_eq ⊢
-                  apply Eventually.mono <| hf_eq.and (MS.basis_head_eventually_pos h_basis)
+                  apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
                   intro x ⟨hf_eq, h_pos⟩
                   rw [hf_eq]
                   rw [Finset.mul_sum, ← Finset.sum_sub_distrib]
@@ -2430,7 +2430,7 @@ mutual
                     · exact h_left_maj
                     · rw [← h_right_eq.1.1]
                       apply mul_majorated hX_maj hY_maj
-                      apply MS.basis_head_eventually_pos h_basis
+                      apply basis_head_eventually_pos h_basis
                   simp only [motive]
                   use (l + 1), ?_, longAdd_mulMonomial_tail_fB BM left_exp hB_approx,
                     fM, Seq.cons (X_exp, X_coef) X_tl, Seq.cons (Y_exp, Y_coef) Y_tl, fX, fY
@@ -2444,7 +2444,7 @@ mutual
                     simp [longAdd_mulMonomial_fC, longAdd_mulMonomial_tail_fB,
                       longAdd_mulMonomial_tail_BM]
                     simp only [EventuallyEq] at hf_eq ⊢
-                    apply Eventually.mono <| hf_eq.and (MS.basis_head_eventually_pos h_basis)
+                    apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
                     intro x ⟨hf_eq, h_pos⟩
                     rw [hf_eq]
                     move_add [← fX x * fY x]
@@ -2488,7 +2488,7 @@ mutual
                   · congr 2 <;> exact Eq.refl _
                   constructor
                   · rw [← h_right_eq.1.2]
-                    exact mul_Approximates (MS.WellOrderedBasis_tail h_basis)
+                    exact mul_Approximates (WellOrderedBasis_tail h_basis)
                       hX_coef_approx hY_coef_approx
                   constructor
                   · apply majorated_of_EventuallyEq hf_eq
@@ -2497,7 +2497,7 @@ mutual
                     · exact h_left_maj
                     · rw [← h_right_eq.1.1]
                       apply mul_majorated hX_maj hY_maj
-                      apply MS.basis_head_eventually_pos h_basis
+                      apply basis_head_eventually_pos h_basis
                   rw [← h_left_eq, ← h_right_eq.2, ← add_assoc]
                   simp only [motive]
                   use (l + 2),
@@ -2520,7 +2520,7 @@ mutual
                     simp
                   constructor
                   · simp only [EventuallyEq] at hf_eq ⊢
-                    apply Eventually.mono <| hf_eq.and (MS.basis_head_eventually_pos h_basis)
+                    apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
                     intro x ⟨hf_eq, h_pos⟩
                     rw [hf_eq]
                     conv =>
@@ -2570,7 +2570,7 @@ mutual
                   · apply add_Approximates
                     · exact h_left_coef_approx
                     · rw [← h_right_eq.1.2]
-                      apply mul_Approximates (MS.WellOrderedBasis_tail h_basis) hX_coef_approx
+                      apply mul_Approximates (WellOrderedBasis_tail h_basis) hX_coef_approx
                         hY_coef_approx
                   constructor
                   · apply majorated_of_EventuallyEq hf_eq
@@ -2579,7 +2579,7 @@ mutual
                     · exact h_left_maj
                     · rw [← h_right_eq.1.1]
                       apply mul_majorated hX_maj hY_maj
-                      apply MS.basis_head_eventually_pos h_basis
+                      apply basis_head_eventually_pos h_basis
                   rw [← h_left_tl_eq', ← h_right_eq.2, ← add_assoc]
                   simp only [motive]
                   use l + 2,
@@ -2629,7 +2629,7 @@ mutual
                     simp [longAdd_mulMonomial_fC, longAdd_mulMonomial_tail_fB,
                       longAdd_mulMonomial_tail_BM]
                     simp only [EventuallyEq] at hf_eq ⊢
-                    apply Eventually.mono <| hf_eq.and (MS.basis_head_eventually_pos h_basis)
+                    apply Eventually.mono <| hf_eq.and (basis_head_eventually_pos h_basis)
                     intro x ⟨hf_eq, h_pos⟩
                     rw [hf_eq]
                     conv =>
@@ -2703,8 +2703,8 @@ end
 
 end PreMS
 
--- noncomputable def MS.mul (x y : MS) (h_basis_eq : y.basis = x.basis)
---     (h_basis_wo : MS.WellOrderedBasis x.basis) : MS where
+-- noncomputable def mul (x y : MS) (h_basis_eq : y.basis = x.basis)
+--     (h_basis_wo : WellOrderedBasis x.basis) : MS where
 --   basis := x.basis
 --   val := x.val.mul (h_basis_eq ▸ y.val)
 --   F := x.F * y.F

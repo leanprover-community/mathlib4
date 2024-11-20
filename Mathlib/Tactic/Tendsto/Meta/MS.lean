@@ -10,11 +10,11 @@ structure MS where
   F : Q(ℝ → ℝ)
   h_wo : Q(PreMS.WellOrdered $val)
   h_approx : Q(PreMS.Approximates $val $F)
-  h_basis : Q(MS.WellOrderedBasis $basis)
+  h_basis : Q(WellOrderedBasis $basis)
 
 namespace MS
 
-def const (basis : Q(Basis)) (c : Q(ℝ)) (h_basis : Q(MS.WellOrderedBasis $basis))  : MS where
+def const (basis : Q(Basis)) (c : Q(ℝ)) (h_basis : Q(WellOrderedBasis $basis))  : MS where
   basis := basis
   val := q(PreMS.const $basis $c)
   F := q(fun _ ↦ $c)
@@ -23,7 +23,7 @@ def const (basis : Q(Basis)) (c : Q(ℝ)) (h_basis : Q(MS.WellOrderedBasis $basi
   h_basis := h_basis
 
 def monomial (basis : Q(Basis)) (n : ℕ) (h : Q($n < List.length $basis))
-    (h_basis : Q(MS.WellOrderedBasis $basis)) : MS where
+    (h_basis : Q(WellOrderedBasis $basis)) : MS where
   basis := basis
   val := q(PreMS.monomial $basis $n)
   F := q(List.get $basis ⟨$n, $h⟩)
