@@ -200,6 +200,10 @@ protected theorem IsBot.isMin (h : IsBot a) : IsMin a := fun b _ => h b
 
 protected theorem IsTop.isMax (h : IsTop a) : IsMax a := fun b _ => h b
 
+theorem IsTop.isMax_iff {α} [PartialOrder α] {i j : α} (h : IsTop i) : IsMax j ↔ j = i := by
+  simp_rw [le_antisymm_iff, h j, true_and]
+  exact ⟨(· (h j)), Function.swap (fun _ ↦ h · |>.trans ·)⟩
+
 @[simp]
 theorem isBot_toDual_iff : IsBot (toDual a) ↔ IsTop a :=
   Iff.rfl
