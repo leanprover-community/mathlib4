@@ -66,9 +66,9 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction' k with k ih
-  · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [natLERec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
-  · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
       Embedding.comp_apply, ih]
 
@@ -160,7 +160,7 @@ def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ �
 
 attribute [local instance] DirectLimit.setoid
 
--- Porting note (#10754): Added local instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added local instance
 attribute [local instance] DirectLimit.sigmaStructure
 
 
@@ -441,7 +441,7 @@ end DirectLimit
 section Substructure
 
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
-variable {M N : Type*} [L.Structure M] [L.Structure N] (S : ι →o L.Substructure M)
+variable {M : Type*} [L.Structure M] (S : ι →o L.Substructure M)
 
 instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where
   map_self _ _ := rfl

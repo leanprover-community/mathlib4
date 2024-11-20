@@ -49,7 +49,7 @@ open Matrix
 def toMatrix [DecidableEq n] [Zero α] [One α] (f : m ≃. n) : Matrix m n α :=
   of fun i j => if j ∈ f i then (1 : α) else 0
 
--- TODO: set as an equation lemma for `toMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `toMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
     toMatrix f i j = if j ∈ f i then (1 : α) else 0 :=
