@@ -197,8 +197,7 @@ instance : CreatesColimitsOfShape (Discrete ι) Scheme.forgetToLocallyRingedSpac
   intro K
   exact createsColimitOfIsoDiagram _ (Discrete.natIsoFunctor (F := K)).symm
 
-noncomputable
-instance : PreservesColimitsOfShape (Discrete ι) Scheme.forgetToTop :=
+instance : PreservesColimitsOfShape (Discrete ι) Scheme.forgetToTop.{u} :=
   inferInstanceAs (PreservesColimitsOfShape (Discrete ι) (Scheme.forgetToLocallyRingedSpace ⋙
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
 
@@ -208,12 +207,15 @@ instance : HasCoproducts.{u} Scheme.{u} :=
 instance : HasCoproducts.{0} Scheme.{u} := has_smallest_coproducts_of_hasCoproducts
 
 noncomputable
-instance {ι : Type} : PreservesColimitsOfShape (Discrete ι) Scheme.forgetToTop :=
-  preservesColimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift : Discrete (ULift.{u} ι) ≌ _) _
+instance {ι : Type} : PreservesColimitsOfShape (Discrete ι) Scheme.forgetToTop.{u} :=
+  preservesColimitsOfShape_of_equiv
+    (Discrete.equivalence Equiv.ulift : Discrete (ULift.{u} ι) ≌ _) _
 
 noncomputable
-instance {ι : Type} : PreservesColimitsOfShape (Discrete ι) Scheme.forgetToLocallyRingedSpace :=
-  preservesColimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift : Discrete (ULift.{u} ι) ≌ _) _
+instance {ι : Type} :
+    PreservesColimitsOfShape (Discrete ι) Scheme.forgetToLocallyRingedSpace.{u} :=
+  preservesColimitsOfShape_of_equiv
+    (Discrete.equivalence Equiv.ulift : Discrete (ULift.{u} ι) ≌ _) _
 
 /-- (Implementation Detail) Coproduct of schemes is isomorphic to the disjoint union. -/
 noncomputable
@@ -461,16 +463,16 @@ instance (R S : CommRingCatᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S) :=
 noncomputable
 instance : PreservesColimitsOfShape (Discrete WalkingPair) Scheme.Spec :=
   ⟨fun {_} ↦
-    have (X Y : CommRingCatᵒᵖ) := PreservesColimitPair.ofIsoCoprodComparison Scheme.Spec X Y
-    preservesColimitOfIsoDiagram _ (diagramIsoPair _).symm⟩
+    have (X Y : CommRingCatᵒᵖ) := PreservesColimitPair.of_iso_coprod_comparison Scheme.Spec X Y
+    preservesColimit_of_iso_diagram _ (diagramIsoPair _).symm⟩
 
 noncomputable
 instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) Scheme.Spec := by
   have : IsEmpty (Scheme.Spec.obj (⊥_ CommRingCatᵒᵖ)) :=
     @Function.isEmpty _ _ spec_punit_isEmpty (Scheme.Spec.mapIso
       (initialIsoIsInitial (initialOpOfTerminal CommRingCat.punitIsTerminal))).hom.base
-  have := preservesInitialOfIso Scheme.Spec (asIso (initial.to _))
-  exact preservesColimitsOfShapePemptyOfPreservesInitial _
+  have := preservesInitial_of_iso Scheme.Spec (asIso (initial.to _))
+  exact preservesColimitsOfShape_pempty_of_preservesInitial _
 
 noncomputable
 instance {J} [Fintype J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec :=
@@ -479,7 +481,7 @@ instance {J} [Fintype J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec :=
 noncomputable
 instance {J : Type*} [Finite J] : PreservesColimitsOfShape (Discrete J) Scheme.Spec :=
   letI := (nonempty_fintype J).some
-  preservesColimitsOfShapeOfEquiv (Discrete.equivalence (Fintype.equivFin _).symm) _
+  preservesColimitsOfShape_of_equiv (Discrete.equivalence (Fintype.equivFin _).symm) _
 
 /-- The canonical map `∐ Spec Rᵢ ⟶ Spec (Π Rᵢ)`.
 This is an isomorphism when the product is finite. -/

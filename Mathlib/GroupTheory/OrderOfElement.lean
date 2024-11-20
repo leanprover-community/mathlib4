@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Order.Group.Action
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
 
@@ -571,6 +572,10 @@ theorem orderOf_dvd_iff_zpow_eq_one : (orderOf x : ℤ) ∣ i ↔ x ^ i = 1 := b
 
 @[to_additive (attr := simp)]
 theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_orderOf_iff]
+
+@[to_additive]
+theorem orderOf_dvd_sub_iff_zpow_eq_zpow {a b : ℤ} : (orderOf x : ℤ) ∣ a - b ↔ x ^ a = x ^ b := by
+  rw [orderOf_dvd_iff_zpow_eq_one, zpow_sub, mul_inv_eq_one]
 
 namespace Subgroup
 variable {H : Subgroup G}
