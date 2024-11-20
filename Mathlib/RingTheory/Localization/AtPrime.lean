@@ -263,14 +263,9 @@ def toLocalizationIsMaximal : R →+*
 
 theorem toLocalizationIsMaximal_injective :
     Function.Injective (RingHom.toLocalizationIsMaximal R) := fun r r' eq ↦ by
+  rw [← one_mul r, ← one_mul r']
   by_contra ne
-  rw [← one_mul r, ← one_mul r'] at ne
-  let equalizer : Ideal R :=
-  { carrier := {s : R | s * r = s * r'}
-    add_mem' := fun h h' ↦ by simpa [right_distrib] using congr($h + $h')
-    zero_mem' := by simp_rw [Set.mem_setOf, zero_mul]
-    smul_mem' := fun _ _ h ↦ by simpa [mul_assoc] using congr(_ * $h) }
-  have ⟨I, mI, hI⟩ := equalizer.exists_le_maximal (equalizer.ne_top_iff_one.mpr ne)
+  have ⟨I, mI, hI⟩ := (Module.eqIdeal R r r').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
   have ⟨s, hs⟩ := (IsLocalization.eq_iff_exists I.primeCompl _).mp (congr_fun eq ⟨I, mI⟩)
   exact s.2 (hI hs)
 
