@@ -343,14 +343,10 @@ run_cmd do
 def MonoidEnd : Type := Unit
 
 run_cmd do
-  let env ← getEnv
-  let nm := `Test.MonoidEnd
-  logInfo m!"{dontTranslateAttr.find? env nm}"
   let stx ← `(Semigroup MonoidEnd)
   liftTermElabM do
     let e ← Term.elabTerm stx none
-    logInfo m!"{e} test: {additiveTest (← getEnv) e}"
-
+    guard <| additiveTest (← getEnv) e == some `Test.MonoidEnd
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
