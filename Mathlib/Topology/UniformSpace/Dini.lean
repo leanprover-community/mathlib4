@@ -43,11 +43,6 @@ lemma tendstoLocallyUniformly_of_forall_tendsto
     TendstoLocallyUniformly F f atTop := by
   refine (atTop : Filter ι).eq_or_neBot.elim (fun h ↦ ?eq_bot) (fun _ ↦ ?_)
   case eq_bot => simp [h, tendstoLocallyUniformly_iff_forall_tendsto]
-  refine subsingleton_or_nontrivial G |>.elim (fun _ ↦ ?subsingleton) (fun _ ↦ ?_)
-  case subsingleton =>
-    rw [funext fun x => Subsingleton.elim (F x) f, TendstoLocallyUniformly]
-    -- missing `tendstoLocallyUniformly_const`
-    exact fun _ h x ↦ ⟨Set.univ, univ_mem, .of_forall fun _ _ _ ↦ mem_uniformity_of_eq h rfl⟩
   have F_le_f (x : α) (n : ι) : F n x ≤ f x := by
     refine _root_.ge_of_tendsto (h_tendsto x) ?_
     filter_upwards [Ici_mem_atTop n] with m hnm
