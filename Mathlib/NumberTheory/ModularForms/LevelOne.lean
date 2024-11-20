@@ -24,7 +24,7 @@ lemma SlashInvariantForm.exists_norm_le {k : ℤ} (hk : k ≤ 0) {F : Type*} [Fu
     using le_mul_of_one_le_left (norm_nonneg _) <|
       one_le_zpow_of_nonpos₀ (norm_pos_iff.2 (denom_ne_zero _ _)) hdenom hk⟩
 
-/-- If a constant funciton is modular of weight `k`, then either `k = 0`, or the constant is `0`. -/
+/-- If a constant function is modular of weight `k`, then either `k = 0`, or the constant is `0`. -/
 lemma SlashInvariantForm.wt_eq_zero_of_eq_const
     {F : Type*} [FunLike F ℍ ℂ] (k : ℤ) [SlashInvariantFormClass F ⊤ k]
     {f : F} {c : ℂ} (hf : ∀ τ, f τ = c) : k = 0 ∨ c = 0 := by
