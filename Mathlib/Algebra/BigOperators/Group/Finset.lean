@@ -5,7 +5,9 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Piecewise
+import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Fintype.Pi
 
 /-!
 # Big operators
@@ -417,6 +419,12 @@ theorem prod_filter_mul_prod_filter_not
     (∏ x ∈ s with p x, f x) * ∏ x ∈ s with ¬p x, f x = ∏ x ∈ s, f x := by
   have := Classical.decEq α
   rw [← prod_union (disjoint_filter_filter_neg s s p), filter_union_filter_neg_eq]
+
+@[to_additive]
+lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [DecidablePred p]
+    [∀ x, Decidable (¬p x)] (f : α → β) :
+    (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
+  rw [mul_comm, prod_filter_mul_prod_filter_not]
 
 section ToList
 
