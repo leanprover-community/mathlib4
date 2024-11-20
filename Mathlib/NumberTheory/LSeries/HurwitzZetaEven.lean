@@ -519,7 +519,7 @@ lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     rw [mellin_div_const, completedCosZeta]
     congr 1
     refine ((hurwitzEvenFEPair a).symm.hasMellin (?_ : 1 / 2 < (s / 2).re)).2.symm
-    rwa [div_ofNat_re, div_lt_div_right two_pos]]
+    rwa [div_ofNat_re, div_lt_div_iff_of_pos_right two_pos]]
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
   · apply (((summable_one_div_int_add_rpow 0 s.re).mpr hs).div_const 2).of_norm_bounded
     intro i
@@ -560,7 +560,7 @@ lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
         ↑(if (a : UnitAddCircle) = 0 then 1 else 0 : ℝ)) / 2) (s / 2) by
     simp_rw [mellin_div_const, apply_ite ofReal, ofReal_one, ofReal_zero]
     refine congr_arg (· / 2) ((hurwitzEvenFEPair a).hasMellin (?_ : 1 / 2 < (s / 2).re)).2.symm
-    rwa [div_ofNat_re, div_lt_div_right two_pos]]
+    rwa [div_ofNat_re, div_lt_div_iff_of_pos_right two_pos]]
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
   · simp_rw [← mul_one_div ‖_‖]
     apply Summable.mul_left

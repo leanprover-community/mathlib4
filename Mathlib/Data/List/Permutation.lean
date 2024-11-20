@@ -500,14 +500,14 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
         simp [hm', ← hn', hn]
       rcases lt_trichotomy n m with (ht | ht | ht)
       · suffices x ∈ bs by exact h x (hb.subset this) rfl
-        rw [← hx', getElem_insertIdx_of_lt ht (by simp [length_insertIdx]; split <;> omega)]
-        exact get_mem _ _ _
+        rw [← hx', getElem_insertIdx_of_lt ht]
+        exact getElem_mem _
       · simp only [ht] at hm' hn'
         rw [← hm'] at hn'
         exact H (insertIdx_injective _ _ hn')
       · suffices x ∈ as by exact h x (ha.subset this) rfl
-        rw [← hx, getElem_insertIdx_of_lt ht (by simp [length_insertIdx]; split <;> omega)]
-        exact get_mem _ _ _
+        rw [← hx, getElem_insertIdx_of_lt ht]
+        exact getElem_mem _
 
 lemma permutations_take_two (x y : α) (s : List α) :
     (x :: y :: s).permutations.take 2 = [x :: y :: s, y :: x :: s] := by

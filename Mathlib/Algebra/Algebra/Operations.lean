@@ -285,12 +285,14 @@ theorem mul_eq_map₂ : M * N = map₂ (LinearMap.mul R A) M N :=
   le_antisymm (mul_le.mpr fun _m hm _n ↦ apply_mem_map₂ _ hm)
     (map₂_le.mpr fun _m hm _n ↦ mul_mem_mul hm)
 
-variable (R)
+variable (R M N)
 
 theorem span_mul_span : span R S * span R T = span R (S * T) := by
   rw [mul_eq_map₂]; apply map₂_span_span
 
-variable {R} (M N P Q)
+lemma mul_def : M * N = span R (M * N : Set A) := by simp [← span_mul_span]
+
+variable {R} (P Q)
 
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
@@ -352,6 +354,24 @@ theorem comap_op_mul (M N : Submodule R Aᵐᵒᵖ) :
       comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) N *
         comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
   simp_rw [comap_equiv_eq_map_symm, map_unop_mul]
+
+section
+variable {α : Type*} [Monoid α] [DistribMulAction α A] [SMulCommClass α R A]
+
+instance [IsScalarTower α A A] : IsScalarTower α (Submodule R A) (Submodule R A) where
+  smul_assoc a S T := by
+    rw [← S.span_eq, ← T.span_eq, smul_span, smul_eq_mul, smul_eq_mul, span_mul_span, span_mul_span,
+      smul_span, smul_mul_assoc]
+
+instance [SMulCommClass α A A] : SMulCommClass α (Submodule R A) (Submodule R A) where
+  smul_comm a S T := by
+    rw [← S.span_eq, ← T.span_eq, smul_span, smul_eq_mul, smul_eq_mul, span_mul_span, span_mul_span,
+      smul_span, mul_smul_comm]
+
+instance [SMulCommClass A α A] : SMulCommClass (Submodule R A) α (Submodule R A) :=
+  have := SMulCommClass.symm A α A; .symm ..
+
+end
 
 section
 
@@ -635,7 +655,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 
 variable {R A}
 
-theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
+theorem setSemiring_smul_def (s : SetSemiring A) (P : Submodule R A) :
     s • P = span R (SetSemiring.down (α := A) s) * P :=
   rfl
 
@@ -647,7 +667,7 @@ theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
 theorem singleton_smul (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
   conv_lhs => rw [← span_eq M]
-  rw [smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
+  rw [setSemiring_smul_def, SetSemiring.down_up, span_mul_span, singleton_mul]
   exact (map (LinearMap.mulLeft R a) M).span_eq
 
 section Quotient
