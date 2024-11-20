@@ -42,16 +42,17 @@ jobs:
             sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *d.*=delegated=p' | head -1)"
 
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
+          printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
 
-          printf $'mOrD=%s\n' "${m_or_d}" > "${GITHUB_OUTPUT}"
+          printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
           if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
              [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ]
           then
             printf $'bot=true\n'
-            printf $'bot=true\n' > "${GITHUB_OUTPUT}"
+            printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
           else
             printf $'bot=false\n'
-            printf $'bot=false\n' > "${GITHUB_OUTPUT}"
+            printf $'bot=false\n' >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Check whether user is a mathlib admin
