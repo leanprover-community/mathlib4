@@ -166,6 +166,10 @@ jobs:
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
+      - name: print the sizes of the oleans
+        run: |
+          du .lake/build/lib/Mathlib || echo "This code should be unreachable"
+
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
         # but not if any earlier step failed or was cancelled.
