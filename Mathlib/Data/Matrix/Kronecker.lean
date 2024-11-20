@@ -43,8 +43,6 @@ These require `open Kronecker`:
 
 
 namespace Matrix
-
-open Matrix
 open scoped RightActions
 
 variable {R α α' β β' γ γ' : Type*}
