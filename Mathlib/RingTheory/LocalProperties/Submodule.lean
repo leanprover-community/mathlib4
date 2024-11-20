@@ -148,8 +148,8 @@ variable
 
 /-- A variant of `eq_of_localization_span` that accepts `IsLocalizedModule`.-/
 theorem eq_of_localization_span' (x y : M) (h : ∀ r : s, f r x = f r y) : x = y := by
-  suffices equalizer R x y = ⊤ by simpa [equalizer] using (eq_top_iff_one _).mp this
-  by_contra! ne
+  suffices Module.eqIdeal R x y = ⊤ by simpa [Module.eqIdeal] using (eq_top_iff_one _).mp this
+  by_contra ne
   have ⟨r, hrs, disj⟩ := exists_disjoint_powers_of_span_eq_top s span_eq _ ne
   let r : s := ⟨r, hrs⟩
   have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalizedModule.eq_iff_exists (.powers r.1) _).mp (h r)
