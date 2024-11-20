@@ -62,11 +62,15 @@ package mathlib where
 ## Mathlib libraries
 -/
 
+target nolints_style (pkg) : System.FilePath :=
+  inputTextFile <| pkg.dir / "scripts" / "nolints-style.txt"
+
 @[default_target]
 lean_lib Mathlib where
   leanOptions := mathlibLeanOptions
   -- Mathlib also enforces these linter options, which are not active by default.
   moreServerOptions := mathlibOnlyLinters
+  extraDepTargets := #[`nolints_style]
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
