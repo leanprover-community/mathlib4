@@ -78,11 +78,13 @@ theorem ContDiff.inner (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) :
     ContDiff ℝ n fun x => ⟪f x, g x⟫ :=
   contDiff_inner.comp (hf.prod hg)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to handle a unification issue. -/
 theorem HasFDerivWithinAt.inner (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') s
-      x :=
-  isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
+      x := by
+  exact isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
     |>.hasFDerivAt (f x, g x) |>.comp_hasFDerivWithinAt x (hf.prod hg)
 
 theorem HasStrictFDerivAt.inner (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
@@ -90,9 +92,11 @@ theorem HasStrictFDerivAt.inner (hf : HasStrictFDerivAt f f' x) (hg : HasStrictF
   isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
     |>.hasStrictFDerivAt (f x, g x) |>.comp x (hf.prod hg)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to handle a unification issue. -/
 theorem HasFDerivAt.inner (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
-    HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x :=
-  isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
+    HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x := by
+  exact isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
     |>.hasFDerivAt (f x, g x) |>.comp x (hf.prod hg)
 
 theorem HasDerivWithinAt.inner {f g : ℝ → E} {f' g' : E} {s : Set ℝ} {x : ℝ}
@@ -334,6 +338,7 @@ theorem PartialHomeomorph.contDiffOn_univUnitBall_symm :
   have h : (0 : ℝ) < (1 : ℝ) - ‖(y : E)‖ ^ 2 := by
     rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy
   refine ContDiffAt.inv ?_ (Real.sqrt_ne_zero'.mpr h)
+  change ContDiffAt ℝ n ((fun y ↦ √(y)) ∘ fun y ↦ (1 - ‖y‖ ^ 2)) y
   refine (contDiffAt_sqrt h.ne').comp y ?_
   exact contDiffAt_const.sub (contDiff_norm_sq ℝ).contDiffAt
 

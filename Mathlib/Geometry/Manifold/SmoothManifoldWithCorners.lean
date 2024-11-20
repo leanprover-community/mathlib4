@@ -125,6 +125,8 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `Tang
 real and complex manifolds).
 -/
 
+open Topology
+
 noncomputable section
 
 universe u v w u' v' w'
@@ -147,7 +149,7 @@ defined, the latter ensures that for `C^2` maps the second derivatives are symme
 on the boundary, as these are limit points of interior points where symmetry holds. If further
 conditions turn out to be useful, they can be added here.
 -/
-@[ext] -- Porting note(#5171): was nolint has_nonempty_instance
+@[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
@@ -750,8 +752,8 @@ theorem PartialHomeomorph.singleton_smoothManifoldWithCorners
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
 
-theorem IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+theorem Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 E H : Type*}
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H}
     (h : IsOpenEmbedding f) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=
@@ -1535,7 +1537,7 @@ variable (M) in
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
--- Porting note(#5171): was nolint has_nonempty_instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was nolint has_nonempty_instance
 abbrev TangentBundle :=
   Bundle.TotalSpace E (TangentSpace I : M → Type _)
 

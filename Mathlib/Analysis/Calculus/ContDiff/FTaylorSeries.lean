@@ -99,7 +99,7 @@ In this file, we denote `⊤ : ℕ∞` with `∞`.
 noncomputable section
 
 open scoped Classical
-open NNReal Topology Filter
+open ENat NNReal Topology Filter
 
 local notation "∞" => (⊤ : ℕ∞)
 
@@ -111,12 +111,11 @@ attribute [local instance 1001]
 
 open Set Fin Filter Function
 
-universe u uE uF uG uX
+universe u uE uF
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] {X : Type uX} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-  {s s₁ t u : Set E} {f f₁ : E → F} {g : F → G} {x x₀ : E} {c : F} {m n N : WithTop ℕ∞}
+  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {s t u : Set E} {f f₁ : E → F} {x : E} {m n N : WithTop ℕ∞}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Functions with a Taylor series on a domain -/
@@ -172,17 +171,11 @@ theorem hasFTaylorSeriesUpToOn_zero_iff :
   rw [continuousOn_congr this, LinearIsometryEquiv.comp_continuousOn_iff]
   exact H.1
 
-lemma nat_le_of_infty_le (hN : ∞ ≤ N) (n : ℕ) : n ≤ N :=
-  le_trans (by exact_mod_cast le_top) hN
-
-lemma nat_lt_of_infty_le (hN : ∞ ≤ N) (n : ℕ) : n < N :=
-  lt_of_lt_of_le (by exact_mod_cast lt_add_one n) (nat_le_of_infty_le hN (n + 1))
-
 theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     HasFTaylorSeriesUpToOn N f p s ↔ ∀ n : ℕ, HasFTaylorSeriesUpToOn (n + k : ℕ) f p s := by
   constructor
   · intro H n
-    apply H.of_le (nat_le_of_infty_le hN _)
+    apply H.of_le (natCast_le_of_coe_top_le_withTop hN _)
   · intro H
     constructor
     · exact (H 0).zero_eq
@@ -202,7 +195,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff' (hN : ∞ ≤ N) :
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧
         ∀ m : ℕ, ∀ x ∈ s, HasFDerivWithinAt (fun y => p y m) (p x m.succ).curryLeft s x := by
   -- Everything except for the continuity is trivial:
-  refine ⟨fun h => ⟨h.1, fun m => h.2 m (nat_lt_of_infty_le hN _)⟩, fun h =>
+  refine ⟨fun h => ⟨h.1, fun m => h.2 m (natCast_lt_of_coe_top_le_withTop hN _)⟩, fun h =>
     ⟨h.1, fun m _ => h.2 m, fun m _ x hx =>
       -- The continuity follows from the existence of a derivative:
       (h.2 m x hx).continuousWithinAt⟩⟩
@@ -254,21 +247,21 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         (∀ x ∈ s, HasFDerivWithinAt (fun y => p y n) (p x n.succ).curryLeft s x) ∧
           ContinuousOn (fun x => p x (n + 1)) s := by
   constructor
-  · exact fun h ↦ ⟨h.of_le (by exact_mod_cast Nat.le_succ n),
-      h.fderivWithin _ (by exact_mod_cast lt_add_one n), h.cont (n + 1) le_rfl⟩
+  · exact fun h ↦ ⟨h.of_le (mod_cast Nat.le_succ n),
+      h.fderivWithin _ (mod_cast lt_add_one n), h.cont (n + 1) le_rfl⟩
   · intro h
     constructor
     · exact h.1.zero_eq
     · intro m hm
       by_cases h' : m < n
-      · exact h.1.fderivWithin m (by exact_mod_cast h')
-      · have : m = n := Nat.eq_of_lt_succ_of_not_lt (by exact_mod_cast hm) h'
+      · exact h.1.fderivWithin m (mod_cast h')
+      · have : m = n := Nat.eq_of_lt_succ_of_not_lt (mod_cast hm) h'
         rw [this]
         exact h.2.1
     · intro m hm
       by_cases h' : m ≤ n
-      · apply h.1.cont m (by exact_mod_cast h')
-      · have : m = n + 1 := le_antisymm (by exact_mod_cast hm) (not_le.1 h')
+      · apply h.1.cont m (mod_cast h')
+      · have : m = n + 1 := le_antisymm (mod_cast hm) (not_le.1 h')
         rw [this]
         exact h.2.2
 
@@ -326,7 +319,7 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
           rw [Nat.cast_lt] at hm ⊢
           exact Nat.lt_of_succ_lt_succ hm
         have :
-          HasFDerivWithinAt (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
+          HasFDerivWithinAt (𝕜 := 𝕜) (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
             ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
         rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
         convert this
@@ -361,7 +354,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_right (hN : ∞ ≤ N) :
       fun n ↦ (hasFTaylorSeriesUpToOn_succ_nat_iff_right.1 (h n)).2.2⟩
   · apply (hasFTaylorSeriesUpToOn_top_iff_add hN 1).2 (fun n ↦ ?_)
     rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right]
-    exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (nat_le_of_infty_le hN n)⟩
+    exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (natCast_le_of_coe_top_le_withTop hN n)⟩
 
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
 for `p 1`, which is a derivative of `f`. Version for `n : WithTop ℕ∞`. -/
@@ -585,7 +578,7 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
   induction' m with m IH generalizing x
   · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp]; rfl
-  · have A : (m : ℕ∞) < n := lt_of_lt_of_le (by exact_mod_cast lt_add_one m) hmn
+  · have A : (m : ℕ∞) < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
         (ContinuousMultilinearMap.curryLeft (p x (Nat.succ m))) s x :=
@@ -648,6 +641,9 @@ theorem HasFTaylorSeriesUpTo.of_le (h : HasFTaylorSeriesUpTo n f p) (hmn : m ≤
     HasFTaylorSeriesUpTo m f p := by
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h ⊢; exact h.of_le hmn
 
+@[deprecated (since := "2024-11-07")]
+alias HasFTaylorSeriesUpTo.ofLe := HasFTaylorSeriesUpTo.of_le
+
 theorem HasFTaylorSeriesUpTo.continuous (h : HasFTaylorSeriesUpTo n f p) : Continuous f := by
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
   rw [continuous_iff_continuousOn_univ]
@@ -692,6 +688,8 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
   simp only [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
 
+@[deprecated (since := "2024-11-07")]
+alias hasFTaylorSeriesUpTo_succ_iff_right := hasFTaylorSeriesUpTo_succ_nat_iff_right
 
 /-! ### Iterated derivative -/
 

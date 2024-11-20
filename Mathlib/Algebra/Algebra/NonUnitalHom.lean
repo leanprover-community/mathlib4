@@ -448,11 +448,6 @@ instance NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
 theorem toNonUnitalAlgHom_eq_coe (f : A →ₐ[R] B) : f.toNonUnitalAlgHom = f :=
   rfl
 
--- Note (#6057) : tagging simpNF because linter complains
-@[simp, norm_cast, nolint simpNF]
-theorem coe_to_nonUnitalAlgHom (f : A →ₐ[R] B) : ⇑(f.toNonUnitalAlgHom) = ⇑f :=
-  rfl
-
 end AlgHom
 
 section RestrictScalars

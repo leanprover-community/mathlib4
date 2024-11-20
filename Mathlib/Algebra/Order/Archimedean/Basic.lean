@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
@@ -92,7 +93,7 @@ theorem existsUnique_zpow_near_of_one_lt {a : α} (ha : 1 < a) (g : α) :
   obtain ⟨k, hk⟩ := MulArchimedean.arch g ha
   have h_bdd : ∀ n ∈ s, n ≤ (k : ℤ) := by
     intro n hn
-    apply (zpow_le_zpow_iff ha).mp
+    apply (zpow_le_zpow_iff_right ha).mp
     rw [← zpow_natCast] at hk
     exact le_trans hn hk
   obtain ⟨m, hm, hm'⟩ := Int.exists_greatest_of_bdd ⟨k, h_bdd⟩ h_ne
@@ -100,7 +101,7 @@ theorem existsUnique_zpow_near_of_one_lt {a : α} (ha : 1 < a) (g : α) :
     contrapose! hm'
     exact ⟨m + 1, hm', lt_add_one _⟩
   refine ⟨m, ⟨hm, hm''⟩, fun n hn => (hm' n hn.1).antisymm <| Int.le_of_lt_add_one ?_⟩
-  rw [← zpow_lt_zpow_iff ha]
+  rw [← zpow_lt_zpow_iff_right ha]
   exact lt_of_le_of_lt hm hn.2
 
 @[to_additive]

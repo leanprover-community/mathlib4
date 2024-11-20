@@ -172,7 +172,7 @@ theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContD
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `g ∘ f` admits a Taylor
 series whose `k`-th term is given by `g ∘ (p k)`. -/
-theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp (g : F →L[𝕜] G)
+theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : WithTop ℕ∞} (g : F →L[𝕜] G)
     (hf : HasFTaylorSeriesUpToOn n f p s) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s where
   zero_eq x hx := congr_arg g (hf.zero_eq x hx)
@@ -472,7 +472,8 @@ theorem ContinuousLinearEquiv.contDiff_comp_iff (e : G ≃L[𝕜] E) :
 
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
 product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor series. -/
-theorem HasFTaylorSeriesUpToOn.prod (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
+theorem HasFTaylorSeriesUpToOn.prod {n : WithTop ℕ∞}
+    (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
     HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
   set L := fun m => ContinuousMultilinearMap.prodL 𝕜 (fun _ : Fin m => E) F G
@@ -871,7 +872,7 @@ section SpecificBilinearMaps
 
 theorem ContDiff.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} (hg : ContDiff 𝕜 n g)
     (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => (g x).comp (f x) :=
-  isBoundedBilinearMap_comp.contDiff.comp₂ hg hf
+  isBoundedBilinearMap_comp.contDiff.comp₂ (g := fun p => p.1.comp p.2) hg hf
 
 theorem ContDiffOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} {s : Set X}
     (hg : ContDiffOn 𝕜 n g s) (hf : ContDiffOn 𝕜 n f s) :
@@ -909,7 +910,7 @@ theorem ContDiffWithinAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
 -- to speed up elaboration. In Lean 4 this isn't necessary anymore.
 theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x).smulRight (g x) :=
-  isBoundedBilinearMap_smulRight.contDiff.comp₂ hf hg
+  isBoundedBilinearMap_smulRight.contDiff.comp₂ (g := fun p => p.1.smulRight p.2) hf hg
 
 theorem ContDiffOn.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x).smulRight (g x)) s :=
@@ -1187,7 +1188,7 @@ variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i,
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
   {Φ : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
 
-theorem hasFTaylorSeriesUpToOn_pi :
+theorem hasFTaylorSeriesUpToOn_pi {n : WithTop ℕ∞} :
     HasFTaylorSeriesUpToOn n (fun x i => φ i x)
         (fun x m => ContinuousMultilinearMap.pi fun i => p' i x m) s ↔
       ∀ i, HasFTaylorSeriesUpToOn n (φ i) (p' i) s := by
@@ -1205,7 +1206,7 @@ theorem hasFTaylorSeriesUpToOn_pi :
     exact (L m).continuous.comp_continuousOn <| continuousOn_pi.2 fun i => (h i).cont m hm
 
 @[simp]
-theorem hasFTaylorSeriesUpToOn_pi' :
+theorem hasFTaylorSeriesUpToOn_pi' {n : WithTop ℕ∞} :
     HasFTaylorSeriesUpToOn n Φ P' s ↔
       ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
         (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
@@ -1271,7 +1272,7 @@ end Pi
 
 section Add
 
-theorem HasFTaylorSeriesUpToOn.add {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
+theorem HasFTaylorSeriesUpToOn.add {n : WithTop ℕ∞} {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
     (hg : HasFTaylorSeriesUpToOn n g q s) : HasFTaylorSeriesUpToOn n (f + g) (p + q) s := by
   exact HasFTaylorSeriesUpToOn.continuousLinearMap_comp
     (ContinuousLinearMap.fst 𝕜 F F + .snd 𝕜 F F) (hf.prod hg)
@@ -1363,7 +1364,7 @@ theorem ContDiffOn.neg {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s) :
 
 variable {i : ℕ}
 
--- Porting note (#11215): TODO: define `Neg` instance on `ContinuousLinearEquiv`,
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: define `Neg` instance on `ContinuousLinearEquiv`,
 -- prove it from `ContinuousLinearEquiv.iteratedFDerivWithin_comp_left`
 theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (-f) s x = -iteratedFDerivWithin 𝕜 i f s x := by
@@ -1579,7 +1580,7 @@ end SMul
 
 /-! ### Constant scalar multiplication
 
-Porting note (#11215): TODO: generalize results in this section.
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize results in this section.
 
 1. It should be possible to assume `[Monoid R] [DistribMulAction R F] [SMulCommClass 𝕜 R F]`.
 2. If `c` is a unit (or `R` is a group), then one can drop `ContDiff*` assumptions in some
@@ -2030,7 +2031,8 @@ variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}
 
-theorem HasFTaylorSeriesUpToOn.restrictScalars (h : HasFTaylorSeriesUpToOn n f p' s) :
+theorem HasFTaylorSeriesUpToOn.restrictScalars {n : WithTop ℕ∞}
+    (h : HasFTaylorSeriesUpToOn n f p' s) :
     HasFTaylorSeriesUpToOn n f (fun x => (p' x).restrictScalars 𝕜) s where
   zero_eq x hx := h.zero_eq x hx
   fderivWithin m hm x hx := by
@@ -2064,4 +2066,4 @@ theorem ContDiff.restrict_scalars (h : ContDiff 𝕜' n f) : ContDiff 𝕜 n f :
 
 end RestrictScalars
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 2200

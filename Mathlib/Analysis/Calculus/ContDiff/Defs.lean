@@ -410,7 +410,8 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
     · apply Filter.inter_mem _ hu
       apply nhdsWithin_le_of_mem hu
       exact nhdsWithin_mono _ (subset_insert x u) hv
-    · rw [hasFTaylorSeriesUpToOn_succ_iff_right]
+    · rw [show ((n.succ : ℕ) : WithTop ℕ∞) = n + 1 from rfl,
+        hasFTaylorSeriesUpToOn_succ_iff_right]
       refine ⟨fun y _ => rfl, fun y hy => ?_, ?_⟩
       · change
           HasFDerivWithinAt (fun z => (continuousMultilinearCurryFin0 𝕜 E F).symm (f z))
@@ -764,7 +765,7 @@ theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiff
   exact_mod_cast lt_add_one m
 
 theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
-    (h : ContDiffWithinAt 𝕜 n f s x) (hmn : (m : ℕ∞) < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :
+    (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :
     DifferentiableWithinAt 𝕜 (iteratedFDerivWithin 𝕜 m f s) s x := by
   have : (m + 1 : WithTop ℕ∞) ≠ ∞ := Ne.symm (ne_of_beq_false rfl)
   rcases h.contDiffOn' (ENat.add_one_natCast_le_withTop_of_lt hmn) (by simp [this])
@@ -1113,8 +1114,8 @@ theorem contDiff_iff_ftaylorSeries {n : ℕ∞} :
 
 theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
     ContDiff 𝕜 n f ↔
-      (∀ m : ℕ, (m : ℕ∞) ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
-        ∀ m : ℕ, (m : ℕ∞) < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
+      (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
+        ∀ m : ℕ, m < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
   simp [contDiffOn_univ.symm, continuous_iff_continuousOn_univ, differentiableOn_univ.symm,
     iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
 
@@ -1126,12 +1127,12 @@ theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
   simp
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is continuous for `m ≤ n`. -/
-theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : (m : ℕ∞) ≤ n) (hf : ContDiff 𝕜 n f) :
+theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : m ≤ n) (hf : ContDiff 𝕜 n f) :
     Continuous fun x => iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.1 (hf.of_le hm)).1 m le_rfl
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
-theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : (m : ℕ∞) < n) (hf : ContDiff 𝕜 n f) :
+theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : ContDiff 𝕜 n f) :
     Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x :=
   (contDiff_iff_continuous_differentiable.mp
     (hf.of_le (ENat.add_one_natCast_le_withTop_of_lt hm))).2 m (mod_cast lt_add_one m)

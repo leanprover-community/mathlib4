@@ -426,7 +426,7 @@ theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos |x| ↔ Infini
   cases le_total 0 x <;> simp [*, abs_of_nonneg, abs_of_nonpos, infinite_neg]
 
 -- Porting note: swapped LHS with RHS;
--- Porting note (#11215): TODO: make it a `simp` lemma
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp` lemma
 @[simp] theorem infinitePos_abs_iff_infinite {x : ℝ*} : InfinitePos |x| ↔ Infinite x :=
   infinitePos_abs_iff_infinite_abs.trans infinite_abs_iff
 
@@ -738,7 +738,7 @@ theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * 
 end Hyperreal
 
 /-
-Porting note (#11215): TODO: restore `positivity` plugin
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore `positivity` plugin
 
 namespace Tactic
 

@@ -19,7 +19,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 -/
 
 variable {R : Type*} [CommSemiring R] (S : Submonoid R)
-  (A : Type*) [CommRing A] [Algebra R A] [IsLocalization S A]
+  (A : Type*) [CommSemiring A] [Algebra R A] [IsLocalization S A]
   {M : Type*} [AddCommMonoid M] [Module R M]
   {M' : Type*} [AddCommMonoid M'] [Module R M'] [Module A M'] [IsScalarTower R A M']
   (f : M →ₗ[R] M')
@@ -48,6 +48,41 @@ theorem isLocalizedModule_iff_isBaseChange : IsLocalizedModule S f ↔ IsBaseCha
   rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.restrictScalars_apply, LinearEquiv.trans_apply, IsBaseChange.equiv_symm_apply,
     IsBaseChange.equiv_tmul, one_smul]
+
+namespace IsLocalization
+
+include S
+open TensorProduct Algebra.TensorProduct
+
+variable (M₁ M₂) [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R M₁] [Module R M₂]
+  [Module A M₁] [Module A M₂] [IsScalarTower R A M₁] [IsScalarTower R A M₂]
+
+theorem tensorProduct_compatibleSMul : CompatibleSMul R A M₁ M₂ where
+  smul_tmul a _ _ := by
+    obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective S a
+    rw [← (map_units A s).smul_left_cancel]
+    simp_rw [algebraMap_smul, smul_tmul', ← smul_assoc, smul_tmul, ← smul_assoc, smul_mk'_self,
+      algebraMap_smul, smul_tmul]
+
+noncomputable example : M₁ ⊗[A] M₂ ≃ₗ[A] M₁ ⊗[R] M₂ :=
+  have := tensorProduct_compatibleSMul S A M₁ M₂
+  equivOfCompatibleSMul R M₁ M₂ A
+
+noncomputable example : A ⊗[R] M₁ ≃ₗ[A] M₁ :=
+  have := tensorProduct_compatibleSMul S A A M₁
+  (equivOfCompatibleSMul R A M₁ A).symm ≪≫ₗ TensorProduct.lid _ _
+
+/-- If A is a localization of a commutative ring R, the tensor product of A with A over R is
+canonically isomorphic as A-algebras to A itself. -/
+noncomputable def tensorSelfAlgEquiv : A ⊗[R] A ≃ₐ[A] A :=
+  have := tensorProduct_compatibleSMul S A A A
+  lmulEquiv R A
+
+set_option linter.docPrime false in
+theorem bijective_linearMap_mul' : Function.Bijective (LinearMap.mul' R A) :=
+  (tensorSelfAlgEquiv S A).bijective
+
+end IsLocalization
 
 variable (T B : Type*) [CommSemiring T] [CommSemiring B]
   [Algebra R T] [Algebra T B] [Algebra R B] [Algebra A B] [IsScalarTower R T B]

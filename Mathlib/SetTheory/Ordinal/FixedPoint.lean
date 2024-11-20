@@ -65,7 +65,7 @@ theorem le_nfpFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) (a)
   foldr_le_nfpFamily f a []
 
 theorem lt_nfpFamily [Small.{u} ι] {a b} : a < nfpFamily f b ↔ ∃ l, a < List.foldr f b l :=
-  Ordinal.lt_iSup
+  Ordinal.lt_iSup_iff
 
 theorem nfpFamily_le_iff [Small.{u} ι] {a b} : nfpFamily f a ≤ b ↔ ∀ l, List.foldr f a l ≤ b :=
   Ordinal.iSup_le_iff
@@ -257,7 +257,7 @@ theorem le_nfpBFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) (a) :
 @[deprecated (since := "2024-10-14")]
 theorem lt_nfpBFamily {a b} :
     a < nfpBFamily.{u, v} o f b ↔ ∃ l, a < List.foldr (familyOfBFamily o f) b l :=
-  Ordinal.lt_iSup
+  Ordinal.lt_iSup_iff
 
 @[deprecated (since := "2024-10-14")]
 theorem nfpBFamily_le_iff {o : Ordinal} {f : ∀ b < o, Ordinal → Ordinal} {a b} :
@@ -448,7 +448,7 @@ theorem le_nfp (f a) : a ≤ nfp f a :=
 
 theorem lt_nfp {a b} : a < nfp f b ↔ ∃ n, a < f^[n] b := by
   rw [← iSup_iterate_eq_nfp]
-  exact Ordinal.lt_iSup
+  exact Ordinal.lt_iSup_iff
 
 theorem nfp_le_iff {a b} : nfp f a ≤ b ↔ ∀ n, f^[n] a ≤ b := by
   rw [← iSup_iterate_eq_nfp]

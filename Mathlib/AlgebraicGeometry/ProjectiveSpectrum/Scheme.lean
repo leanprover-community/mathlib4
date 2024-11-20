@@ -633,15 +633,15 @@ def toSpec (f) : (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
   ΓSpec.locallyRingedSpaceAdjunction.homEquiv (Proj| pbo f) (op (CommRingCat.of <| A⁰_ f))
     (awayToΓ 𝒜 f).op
 
-open HomogeneousLocalization LocalRing
+open HomogeneousLocalization IsLocalRing
 
 lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
       (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
   show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x)
-        (LocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
+        (IsLocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
   rw [awayToΓ_ΓToStalk, CommRingCat.comp_eq_ring_hom_comp, PrimeSpectrum.comap_comp]
-  exact congr(PrimeSpectrum.comap _ $(@LocalRing.comap_closedPoint
+  exact congr(PrimeSpectrum.comap _ $(@IsLocalRing.comap_closedPoint
     (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _ _
     ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalHom_of_isIso _)))
 

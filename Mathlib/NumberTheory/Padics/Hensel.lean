@@ -267,7 +267,7 @@ private theorem newton_seq_succ_dist (n : ℕ) :
       newton_seq_norm_eq hnorm _
     _ = ‖F.eval (newton_seq n)‖ / ‖F.derivative.eval a‖ := by rw [newton_seq_deriv_norm]
     _ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n / ‖F.derivative.eval a‖ :=
-      ((div_le_div_right (deriv_norm_pos hnorm)).2 (newton_seq_norm_le hnorm _))
+      ((div_le_div_iff_of_pos_right (deriv_norm_pos hnorm)).2 (newton_seq_norm_le hnorm _))
     _ = ‖F.derivative.eval a‖ * T ^ 2 ^ n := div_sq_cancel _ _
 
 private theorem newton_seq_dist_aux (n : ℕ) :
@@ -365,7 +365,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
       (mul_le_mul_of_nonneg_left (pow_le_pow_of_le_one (norm_nonneg _)
         (le_of_lt (T_lt_one hnorm)) this) (norm_nonneg _))
     _ < ‖F.derivative.eval a‖ * T ^ 1 :=
-      (mul_lt_mul_of_pos_left (pow_lt_pow_right_of_lt_one (T_pos hnorm hnsol)
+      (mul_lt_mul_of_pos_left (pow_lt_pow_right_of_lt_one₀ (T_pos hnorm hnsol)
         (T_lt_one hnorm) (by norm_num)) (deriv_norm_pos hnorm))
     _ = ‖F.eval a‖ / ‖F.derivative.eval a‖ := by
       rw [T_gen, sq, pow_one, norm_div, ← mul_div_assoc, PadicInt.padic_norm_e_of_padicInt,

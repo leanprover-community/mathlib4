@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van de Velde
 -/
 import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
 /-!
 # Galois fields
@@ -84,11 +82,11 @@ instance : CharP (GaloisField p n) p :=
 instance : FiniteDimensional (ZMod p) (GaloisField p n) := by
   dsimp only [GaloisField]; infer_instance
 
-instance : Fintype (GaloisField p n) := by
-  dsimp only [GaloisField]
-  exact FiniteDimensional.fintypeOfFintype (ZMod p) (GaloisField p n)
+instance : Finite (GaloisField p n) :=
+  Module.finite_of_finite (ZMod p)
 
 theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
+  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
@@ -137,9 +135,11 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     intro x y _ _ hx hy
     rw [hx, hy]
 
-theorem card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n := by
+theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
-  rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b, ZMod.card, finrank p h]
+  haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
+  rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
+    ZMod.card, finrank p h]
 
 theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
   have hp : 1 < p := h_prime.out.one_lt
@@ -157,14 +157,47 @@ def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
   let inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
   (@IsSplittingField.algEquiv _ (ZMod p) _ _ _ (X ^ p ^ 1 - X : (ZMod p)[X]) inst).symm
 
+section Fintype
+
 variable {K : Type*} [Field K] [Fintype K] [Algebra (ZMod p) K]
 
-theorem splits_X_pow_card_sub_X : Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
+theorem _root_.FiniteField.splits_X_pow_card_sub_X :
+    Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
-theorem isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
+@[deprecated (since := "2024-11-12")]
+alias splits_X_pow_card_sub_X := FiniteField.splits_X_pow_card_sub_X
+
+theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) :=
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
+
+@[deprecated (since := "2024-11-12")]
+alias isSplittingField_of_card_eq := FiniteField.isSplittingField_of_card_eq
+
+/-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/
+def algEquivGaloisFieldOfFintype (h : Fintype.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
+  haveI := FiniteField.isSplittingField_of_card_eq _ _ h
+  IsSplittingField.algEquiv _ _
+
+end Fintype
+
+section Finite
+
+variable {K : Type*} [Field K] [Algebra (ZMod p) K]
+
+theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
+    Splits (algebraMap (ZMod p) K) (X ^ Nat.card K - X) := by
+  haveI : Fintype K := Fintype.ofFinite K
+  rw [Nat.card_eq_fintype_card]
+  exact (FiniteField.isSplittingField_sub K (ZMod p)).splits
+
+theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^ n) :
+    IsSplittingField (ZMod p) K (X ^ p ^ n - X) := by
+  haveI : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.1.pos n)).2
+  haveI : Fintype K := Fintype.ofFinite K
+  rw [← h, Nat.card_eq_fintype_card]
+  exact FiniteField.isSplittingField_sub K (ZMod p)
 
 instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by
@@ -178,9 +211,11 @@ instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Alge
       hn.symm ▸ dvd_pow_self p n.ne_zero))
 
 /-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/
-def algEquivGaloisField (h : Fintype.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
-  haveI := isSplittingField_of_card_eq _ _ h
+def algEquivGaloisField (h : Nat.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
+  haveI := FiniteField.isSplittingField_of_nat_card_eq _ _ h
   IsSplittingField.algEquiv _ _
+
+end Finite
 
 end GaloisField
 
@@ -197,8 +232,8 @@ def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Al
   choose n a hK using FiniteField.card K p
   choose n' a' hK' using FiniteField.card K' p
   rw [hK, hK'] at hKK'
-  have hGalK := GaloisField.algEquivGaloisField p n hK
-  have hK'Gal := (GaloisField.algEquivGaloisField p n' hK').symm
+  have hGalK := GaloisField.algEquivGaloisFieldOfFintype p n hK
+  have hK'Gal := (GaloisField.algEquivGaloisFieldOfFintype p n' hK').symm
   rw [Nat.pow_right_injective h_prime.out.one_lt hKK'] at *
   exact AlgEquiv.trans hGalK hK'Gal
 

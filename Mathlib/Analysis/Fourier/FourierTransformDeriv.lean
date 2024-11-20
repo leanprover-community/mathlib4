@@ -414,8 +414,8 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     gcongr with i hi
     · rw [← Nat.cast_pow, Nat.cast_le]
       calc n.descFactorial i ≤ n ^ i := Nat.descFactorial_le_pow _ _
-      _ ≤ (n + 1) ^ i := pow_le_pow_left (by omega) (by omega) i
-      _ ≤ (n + 1) ^ k := pow_right_mono₀ (by omega) (Finset.mem_range_succ_iff.mp hi)
+      _ ≤ (n + 1) ^ i := by gcongr; omega
+      _ ≤ (n + 1) ^ k := by gcongr; exacts [le_add_self, Finset.mem_range_succ_iff.mp hi]
     · exact hv _ (by omega) _ (by omega)
   _ = (2 * n + 2) ^ k * (‖L‖^n * C) := by
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
@@ -458,7 +458,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : WithTop ℕ∞}
       integrable_fourierPowSMulRight L (hf n hn.le) h'f
     have I₂ : Integrable (fun v ↦ ‖v‖ * ‖fourierPowSMulRight L f v n‖) μ := by
       apply ((hf (n+1) (ENat.add_one_natCast_le_withTop_of_lt hn)).const_mul
-        ((2 * π * ‖L‖) ^ n)).mono'
+          ((2 * π * ‖L‖) ^ n)).mono'
         (continuous_norm.aestronglyMeasurable.mul (h'f.fourierPowSMulRight L n).norm)
       filter_upwards with v
       simp only [Pi.mul_apply, norm_mul, norm_norm]
@@ -499,7 +499,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral' {N : ℕ∞}
     (h'f : AEStronglyMeasurable f μ) :
     HasFTaylorSeriesUpTo N (fourierIntegral 𝐞 μ L.toLinearMap₂ f)
       (fun w n ↦ fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) w) :=
-  hasFTaylorSeriesUpTo_fourierIntegral _ (fun n hn ↦ hf n (by exact_mod_cast hn)) h'f
+  hasFTaylorSeriesUpTo_fourierIntegral _ (fun n hn ↦ hf n (mod_cast hn)) h'f
 
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the Fourier transform of `f` is `C^N`. -/
 theorem contDiff_fourierIntegral {N : ℕ∞}
@@ -521,7 +521,7 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) := by
   ext w : 1
   exact ((hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f).eq_iteratedFDeriv
-    (by exact_mod_cast hn) w).symm
+    (mod_cast hn) w).symm
 
 end SecondCountableTopology
 
