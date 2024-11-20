@@ -119,6 +119,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeRight
       (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
 
+@[stacks 01MC]
 instance : Scheme.IsSeparated (Proj 𝒜) :=
   (HasAffineProperty.iff_of_isAffine (P := @IsSeparated)).mp (isSeparated 𝒜)
 
