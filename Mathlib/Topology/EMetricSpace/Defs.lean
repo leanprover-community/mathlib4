@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Topology.UniformSpace.OfFun
+import Mathlib.Topology.Bases
 
 /-!
 # Extended metric spaces

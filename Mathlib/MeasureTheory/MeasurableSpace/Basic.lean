@@ -8,7 +8,6 @@ import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Set.UnionLift
 import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Tactic.FinCases

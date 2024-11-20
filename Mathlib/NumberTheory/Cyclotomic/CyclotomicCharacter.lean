@@ -119,7 +119,7 @@ theorem toFun_spec'' (g : L ≃+* L) {n : ℕ} [NeZero n] {t : L} (ht : IsPrimit
 /-- If g(t)=t^c for all roots of unity, then c=χ(g). -/
 theorem toFun_unique (g : L ≃+* L) (c : ZMod (Fintype.card (rootsOfUnity n L)))
     (hc : ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ c.val : Lˣ)) : c = χ₀ n g := by
-  apply IsCyclic.ext rfl (fun ζ ↦ ?_)
+  apply IsCyclic.ext Nat.card_eq_fintype_card (fun ζ ↦ ?_)
   specialize hc ζ
   suffices ((ζ ^ c.val : Lˣ) : L) = (ζ ^ (χ₀ n g).val : Lˣ) by exact_mod_cast this
   rw [← toFun_spec g ζ, hc]

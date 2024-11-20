@@ -330,7 +330,7 @@ instance (priority := 100) OpensMeasurableSpace.separatesPoints [T0Space α] :
   rw [separatesPoints_iff]
   intro x y hxy
   apply Inseparable.eq
-  rw [inseparable_iff_forall_open]
+  rw [inseparable_iff_forall_isOpen]
   exact fun s hs => hxy _ hs.measurableSet
 
 theorem borel_eq_top_of_countable {α : Type*} [TopologicalSpace α] [T0Space α] [Countable α] :
