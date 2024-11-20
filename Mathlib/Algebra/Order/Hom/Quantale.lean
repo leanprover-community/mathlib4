@@ -6,204 +6,100 @@ Authors: Pieter Cuijpers
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Quantale
-import Mathlib.Data.FunLike.Basic
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Quantale homomorphism classes
 
-This file defines the bundled structures for (unital) quantale homomorphisms and unital quantale
-homomorphism. Namely, we define `QuantaleHom` (resp., `AddQuantaleHom`) to be bundled
-homomorphisms between multiplicative (resp.,additive) quantales and `OneQuantaleHom`
-(resp. `ZeroAddQuantaleHom`) to be bundled homomorphisms between multiplicative (resp. additive)
-unital quantales.
+This file defines morphisms between (additive) quantales
 
-We also define coercion to a function, and usual operations: composition, identity homomorphism,
-pointwise multiplication and pointwise inversion.
+## Types of morphisms
 
-We finally include the theorem that every ordered (additive) monoid iso is a (additive) unital
-quantale iso.
-
-## Typeclasses
-
-* `QuantaleHom`, resp. `AddQuantaleHom`: (Additive) Quantale homomorphisms are semigroup
-homomorphisms as well as complete lattice homomorphisms
-* `OneQuantaleHom`, resp. `ZeroAddQuantaleHom`: (Additive) unital quantale homomorphisms are
-monoid homomorphisms as well as complete lattice homomorphisms
-
-In the file Mathlib.Algebra.Order.Hom.Monoid it is mentioned that there used to be classes:
-`OrderAddMonoidHomClass` etc., but that in #10544 we migrated from these typeclasses to
-assumptions like `[FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N]`,
-making some definitions and lemmas irrelevant. This suggests that for quantales we also only
-need to define `AddQuantaleHom` but do not need `AddQuantaleHomClass`.
+* `AddQuantaleHom`: Additive quantale homomorphisms
+* `QuantaleHom`: Quantale homomorphisms
+* `ZeroAddQuantaleHom`: Additive unital quantale homomorphisms (i.e. on an additive monoid)
+* `OneQuantaleHom`: Unital quantale homomorphisms (i.e. on a monoid)
 
 ## Notation
 
-We only introduce notations for the homomorhpisms on unital quantales, since the notation
-`→*` in Mathlib already refers to monoids homomorphisms, rather than semigroup homomorphisms.
-Also, the assumption that a quantale is unital is more common than the assumption that it is not.
-
+* `→ₙ+q`: Bundled additive (non-unital) quantale homs.
+* `→ₙ*q`: Bundled (non-unital) quantale homs.
 * `→+q`: Bundled additive unital quantale homs.
-* `→*q`: Bundled multiplicative unital quantale homs.
+* `→*q`: Bundled unital quantale homs.
 
-## TODO
+## Implementation notes
 
-The part where we define the usual operations: composition, identity homomorphism, pointwise
-multiplication and pointwise inversion, still needs to be added
+The implementation follows largely the style of `Mathlib.Algebra.Order.Hom.Monoid`.
 
+There's a coercion from bundled homs to fun, and the canonical notation is to use the bundled hom
+as a function via this coercion.
+
+In the file `Mathlib.Algebra.Order.Hom.Monoid` it is mentioned that there used to be classes:
+`OrderAddMonoidHomClass` etc., but that in #10544 there was a migration from these typeclasses to
+assumptions like `[FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N]`.
+We follow that approach here as well, and only define `AddQuantaleHom` without needing
+`AddQuantaleHomClass`.
+
+## Tags
+
+quantale, ordered semigroup, complete lattice
 -/
 
-/- Additive Quantale Homomorphisms-/
+open Function
 
-namespace AddQuantale
+variable {F α β γ δ : Type*}
 
-/-- `AddQuantaleHom` is the type of functions `M → N` that preserve the `AddQuantale` structure.
+section AddQuantale
 
-When possible, instead of parametrizing results over `(f : AddQuantaleHom M N)`, you should
-parametrize over
-`(F : Type*) [FunLike F M N] [AddHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`.
--/
-structure AddQuantaleHom (M N : Type*)
-  [AddSemigroup M] [AddSemigroup N] [AddQuantale M] [AddQuantale N]
-  extends AddHom M N, CompleteLatticeHom M N
+/-- `α →ₙ+q β` is the type of monotone functions `α → β` that preserve the `AddQuantale`
+structure.
 
-attribute [nolint docBlame] AddQuantaleHom.toAddHom
-attribute [nolint docBlame] AddQuantaleHom.toCompleteLatticeHom
+When possible, instead of parametrizing results over `(f : α →ₙ+q β)`,
+you should parametrize over
+`(F : Type*) [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
+structure AddQuantaleHom (α β : Type*)
+  [AddSemigroup α] [CompleteLattice α] [AddSemigroup β] [CompleteLattice β]
+  extends AddHom α β, CompleteLatticeHom α β
+
+/-- Infix notation for `AddQuantaleHom`. -/
+infixr:25 " →ₙ+q " => AddQuantaleHom
+
+/-- `α ≃+q β` is the type of monotone isomorphisms `α ≃ β` that preserve the `AddQuantale`
+structure.
+
+When possible, instead of parametrizing results over `(f : α ≃+q β)`,
+you should parametrize over
+`(F : Type*) [FunLike F M N] [AddEquivClass F M N] [OrderIsoClass F M N] (f : F)`. -/
+structure AddQuantaleIso (α β : Type*)
+  [AddSemigroup α] [CompleteLattice α] [AddSemigroup β] [CompleteLattice β]
+  extends α ≃+ β, α ≃o β where
+
+/-- Infix notation for `AddQuantaleIso`. -/
+infixr:25 " ≃+q " => AddQuantaleIso
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 
 end AddQuantale
 
-/- Quantale Homomorphisms-/
+/-
+## Doubt!
 
-namespace Quantale
+In `Mathlib.Algebra.Order.Hom.Monoid` the definition of `OrderAddMonoidHom` seems to
+not depend on the `[AddZeroClass α]` and `[AddZeroClass β]` assumption at all. If those
+would be left out, a better name would be `OrderAddSemigroupHom` and the resulting
+`OrderAddSemigroupIso` would be the appropriate isomorphism for `Quantales` as well,
+i.e. we would not have to worry about isomorphisms at all in this file.
 
-/-- `QuantaleHom` is the type of functions `M → N` that preserve the `Quantale` structure.
+An `OrderAddSemigroupHom` is not a `AddQuantaleHom` because the `Sup` is not preserved,
+but for isomorhpisms this is the case.
 
-When possible, instead of parametrizing results over `(f : QuantaleHom M N)`, you should
-parametrize over
-`(F : Type*) [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`.
+My worry, only, is that `OrderAddSemigroupHom` applied to `Monoids` does not preserve
+the unit/zero element. So it could be that there is something missing in the definitions
+in `Mathlib.Algebra.Order.Hom.Monoid`.
+
+## Other notes:
+
+Why is there notation `→ₙ*` defined for non-unital Mul homomorphisms, but
+no notation `→ₙ+` for non-unital Add homomorphisms?
+
 -/
-@[to_additive]
-structure QuantaleHom (M N : Type*)
-  [Semigroup M] [Semigroup N] [Quantale M] [Quantale N]
-  extends MulHom M N, CompleteLatticeHom M N
-
-attribute [nolint docBlame] QuantaleHom.toMulHom
-attribute [nolint docBlame] QuantaleHom.toCompleteLatticeHom
-
-variable {M N : Type*} {F : Type*}
-variable [Semigroup M] [Semigroup N] [Quantale M] [Quantale N] [FunLike F M N]
-
-@[to_additive]
-instance QuantaleHom.instFunLike : FunLike (QuantaleHom M N) M N where
-  coe f := f.toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr
-    apply DFunLike.coe_injective'
-    exact h
-
-/-- Turn a `Funlike F` satisfying `[MulHomClass F M N] [CompleteLatticeHomClass F M N]` into
-a `QuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`. -/
-@[to_additive (attr := coe)
-"Turn a `Funlike F` satisfying `[AddHomClass F M N] [CompleteLatticeHomClass F M N]` into
-an `AddQuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`."]
-def instQuantaleHom
-  [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] (f : F) : QuantaleHom M N :=
-  { (f : MulHom M N), (f : CompleteLatticeHom M N) with }
-
-@[to_additive]
-instance
-  [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] :
-  CoeTC F (QuantaleHom M N) := ⟨instQuantaleHom⟩
-
-@[to_additive (attr := simp)]
-theorem QuantaleHom.coe_coe
- [MulHomClass F M N] [CompleteLatticeHomClass F M N] (f : F) :
- ((f : QuantaleHom M N) : M → N) = f := rfl
-
-end Quantale
-
-/- Additive Unital Quantale Homomorphisms-/
-
-namespace AddQuantale
-
-/-- `M →+q N` is the type of functions `M → N` that preserve the `AddQuantale` structure
-over a monoid rather than a semigroup.
-
-When possible, instead of parametrizing results over `(f : M →+q N)`,
-you should parametrize over
-`(F : Type*) [FunLike F M N] [AddMonoidHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`.
--/
-structure ZeroAddQuantaleHom (M N : Type*)
-  [AddMonoid M] [AddMonoid N] [AddQuantale M] [AddQuantale N]
-  extends AddMonoidHom M N, AddQuantaleHom M N
-
-attribute [nolint docBlame] ZeroAddQuantaleHom.toAddMonoidHom
-attribute [nolint docBlame] ZeroAddQuantaleHom.toAddQuantaleHom
-
-/-- `M →+q N` denotes the type of additive unital quantale homomorphisms from `M` to `N`. -/
-infixr:25 " →+q " => ZeroAddQuantaleHom
-
-end AddQuantale
-
-/- Unital Quantale Homomorphisms-/
-
-namespace Quantale
-
-/-- `M →*q N` is the type of functions `M → N` that preserve the `Quantale` structure over a
-monoid rather than a semigroup.
-
-When possible, instead of parametrizing results over `(f : M →*q N)`,
-you should parametrize over
-`(F : Type*) [FunLike F M N] [MonoidHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`.
--/
-@[to_additive]
-structure OneQuantaleHom (M N : Type*)
-  [Monoid M] [Monoid N] [Quantale M] [Quantale N]
-  extends MonoidHom M N, QuantaleHom M N
-
-attribute [nolint docBlame] OneQuantaleHom.toMonoidHom
-attribute [nolint docBlame] OneQuantaleHom.toQuantaleHom
-
-/-- `M →*q N` denotes the type of additive quantale homomorphisms from `M` to `N`. -/
-infixr:25 " →*q " => OneQuantaleHom
-
-variable {M N : Type*} {F : Type*}
-variable [Monoid M] [Monoid N] [Quantale M] [Quantale N] [FunLike F M N]
-
-@[to_additive]
-instance OneQuantaleHom.instFunLike : FunLike (M →*q N) M N where
-  coe f := f.toFun
-  coe_injective' f g h := by
-    cases f
-    cases g
-    congr
-    apply DFunLike.coe_injective'
-    exact h
-
-/-- Turn a `Funlike F` satisfying `MonoidHomClass` and `CompleteLatticeHomClass`
-into a `OneQuantaleHom`. This is declared as the default coercion from `F` to `M →*q N`. -/
-@[to_additive (attr := coe)
-"Turn a `Funlike F` satisfying `AddMonoidHomClass` and `CompleteLatticeHomClass` into a
-`ZeroAddQuantaleHom`. This is declared as the default coercion from `F` to `M →+q N`."]
-def instOneQuantaleHom
-  [FunLike F M N] [MonoidHomClass F M N] [CompleteLatticeHomClass F M N] (f : F) : M →*q N :=
-  { (f : MonoidHom M N), (f : CompleteLatticeHom M N) with }
-
-@[to_additive]
-instance [FunLike F M N] [MonoidHomClass F M N] [CompleteLatticeHomClass F M N] :
-  CoeTC F (M →*q N) := ⟨instOneQuantaleHom⟩
-
-@[to_additive (attr := simp)]
-theorem OneQuantaleHom.coe_coe
-  [MonoidHomClass F M N] [CompleteLatticeHomClass F M N] (f : F) :
-  ((f : M →*q N) : M → N) = f := rfl
-
-/- Isomorphisms -/
-
-example (f : M ≃*o N) : M →*q N := instOneQuantaleHom f
-
-end Quantale
