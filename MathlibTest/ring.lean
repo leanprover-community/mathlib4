@@ -85,25 +85,19 @@ example (x : ℝ) (hx : x ≠ 0) :
   ring
 
 abbrev myId (a : ℤ) : ℤ := a
+irreducible_def myIdOpaque : ℤ → ℤ := myId
 
 /-
 Test that when `ring_nf` normalizes multiple expressions which contain a particular atom, it uses a
 form for that atom which is consistent between expressions.
-
-Note: This test is useless unless done at `=ₛ` (the level of syntactic equality); doing this test at
-`=` (the level of reducible equality) would not catch the erroneous old behaviour (normalizing one
-expression to `myId x * 2` and the other to `x * 2`).  But to get syntactic equality, we need to
-make the typeclass arguments agree, which requires some handholding in typeclass inference ... which
-is the reason for all the locally deleted instances here.
 -/
-attribute [-instance] instOfNat instNatCastInt Int.instSemiring Int.instOrderedCommRing
-  Int.instOrderedRing Int.instLinearOrderedCommRing Int.instMul NonUnitalNonAssocRing.toMul
-  NonUnitalNonAssocCommSemiring.toNonUnitalNonAssocSemiring
-  NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring in
 example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
   have : R (myId x + x) (x + myId x) := by
     ring_nf
-    guard_target =ₛ R (myId x * 2) (myId x * 2)
+    -- `guard_target` is using reducible defeq, so we need to make sure it cannot unfold any `myId`s
+    -- in the goal state.
+    rw [← myIdOpaque_def]
+    guard_target = R (myIdOpaque x * 2) (myIdOpaque x * 2)
     exact test_sorry
   trivial
 
