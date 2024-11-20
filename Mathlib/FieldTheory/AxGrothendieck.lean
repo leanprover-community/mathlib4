@@ -147,8 +147,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
         let f : (ι → K) → (ι → K) := fun v i => eval v (p.1 i)
         let S : Set (ι → K) := fun x => φ.Realize (Sum.elim v x)
         S.MapsTo f S → S.InjOn f → S.SurjOn f S := by
-  letI := Classical.decEq K
-  letI := Classical.decEq ι
+  classical
   have injOnAlt : ∀ {S : Set (ι → K)} (f : (ι → K) → (ι → K)),
       S.InjOn f ↔ ∀ x y, x ∈ S → y ∈ S → f x = f y → x = y := by
     simp [Set.InjOn]; tauto
