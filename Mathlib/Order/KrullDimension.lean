@@ -19,7 +19,7 @@ In case that `α` is empty, then its Krull dimension is defined to be negative i
 length of all series `a₀ < a₁ < ... < aₙ` is unbounded, then its Krull dimension is defined to be
 positive infinity.
 
-For `a : α`, its height (in `ℕ∞`) is defined to be `sup {n | a₀ < a₁ < ... < aₙ ≤ a}` while its
+For `a : α`, its height (in `ℕ∞`) is defined to be `sup {n | a₀ < a₁ < ... < aₙ ≤ a}`, while its
 coheight is defined to be `sup {n | a ≤ a₀ < a₁ < ... < aₙ}` .
 
 ## Main results
@@ -27,19 +27,24 @@ coheight is defined to be `sup {n | a ≤ a₀ < a₁ < ... < aₙ}` .
 * The Krull dimension is the same as that of the dual order (`krullDim_orderDual`).
 
 * The Krull dimension is the supremum of the heights of the elements (`krullDim_eq_iSup_height`),
-  or their coheights (`krullDim_eq_iSup_coheight`), or the sum of height and coheight.
-  (`krullDim_eq_iSup_height_add_coheight`)
+  or their coheights (`krullDim_eq_iSup_coheight`), or their sums of height and coheight
+  (`krullDim_eq_iSup_height_add_coheight_of_nonempty`)
 
 * The height in the dual order equals the coheight, and vice versa.
 
-* The height is monotone, and strictly monotone if finite.
+* The height is monotone (`height_mono`), and strictly monotone if finite (`height_strictMono`).
 
-* The height is the supremum of the successor of the height of all elements of lower height.
+* The coheight is antitone (`coheight_anti`), and strictly antitone if finite
+  (`coheight_strictAnti`).
 
-* The elements of height zero are the minimal elements, and the elements of height `n` are minimal
-  among those of height `≥ n`.
+* The height is the supremum of the successor of the height of all smaller elements
+  (`height_eq_iSup_lt_height`).
 
-* Concrete calculations for the height and Krull dimension in ℕ, ℤ, `WithTop`, `WithBot` and ℕ∞.
+* The elements of height zero are the minimal elements (`height_eq_zero`), and the elements of
+  height `n` are minimal among those of height `≥ n` (`height_eq_coe_iff_minimal_le_height`).
+
+* Concrete calculations for the height, coheight and Krull dimension in `ℕ`, `ℤ`, `WithTop`,
+  `WithBot` and `ℕ∞`.
 
 ## Design notes
 
@@ -251,6 +256,9 @@ lemma height_mono : Monotone (α := α) height :=
 lemma coheight_anti : Antitone (α := α) coheight :=
   (height_mono (α := αᵒᵈ)).dual_left
 
+@[gcongr] protected lemma _root_.GCongr.coheight_le_coheight (a b : α) (hba : b ≤ a) :
+    coheight a ≤ coheight b := coheight_anti hba
+
 private lemma height_add_const (a : α) (n : ℕ∞) :
     height a + n = ⨆ (p : LTSeries α) (_ : p.last = a), p.length + n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
@@ -263,6 +271,11 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
   intro p hlast
   have := length_le_height_last (p := p.snoc y (by simp [*]))
   simpa using this
+
+/- For elements of finite height, `coheight` is strictly antitone. -/
+@[gcongr] lemma coheight_strictAnti {x y : α} (hyx : y < x) (hfin : coheight x < ⊤) :
+    coheight x < coheight y :=
+  height_strictMono (α := αᵒᵈ) hyx hfin
 
 lemma height_le_height_apply_of_strictMono (f : α → β) (hf : StrictMono f) (x : α) :
     height x ≤ height (f x) := by
