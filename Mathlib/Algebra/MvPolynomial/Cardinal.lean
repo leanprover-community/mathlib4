@@ -20,8 +20,6 @@ universe u v
 
 open Cardinal
 
-open Cardinal
-
 namespace MvPolynomial
 
 section TwoUniverses
