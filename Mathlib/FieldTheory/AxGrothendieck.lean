@@ -18,9 +18,9 @@ then any injective polynomial map `K^n → K^n` is also surjective.
 
 ## Main results
 
-* `ax_grothendieck_zeroLocus`: If `K` is algebraically closed and `S : Set (ι → K)`
-is the `zeroLocus` of some ideal of `MvPolynomial ι K`, then any injective polynomial map `S → S` is
-also surjective on `S`.
+* `ax_grothendieck_zeroLocus`: If `K` is algebraically closed, `ι` is a finite type, and
+`S : Set (ι → K)` is the `zeroLocus` of some ideal of `MvPolynomial ι K`, then any injective
+polynomial map `S → S` is also surjective on `S`.
 * `ax_grothendieck_univ`: Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
 algberaically closed field.
 * `ax_grothendieck_of_definable`: Any injective polynomial map `S → S` is also surjective on `S` if
@@ -196,8 +196,8 @@ variable {K ι : Type*} [Field K] [IsAlgClosed K] [Finite ι]
 
 /-- A slight generalization of the **Ax-Grothendieck** theorem
 
-If `K` is an algebraically closed field, and `S` is a definable subset of `ι → K`, then any
-injective polynomial map `S → S`  is also surjective on `S`. -/
+If `K` is an algebraically closed field, `ι` is a finite type, and `S` is a definable subset of
+`ι → K`, then any injective polynomial map `S → S`  is also surjective on `S`. -/
 theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
     (S : Set (ι → K)) (hS : c.Definable Language.ring S)
     (ps : ι → MvPolynomial ι K) :
