@@ -14,6 +14,8 @@ assert_not_exists Multiset
 -- TODO
 -- assert_not_exists DenselyOrdered
 
+namespace GroupWithZero
+
 variable {α : Type*} [GroupWithZero α] {a b : α}
 
 @[simp] lemma isConj_iff₀ : IsConj a b ↔ ∃ c : α, c ≠ 0 ∧ c * a * c⁻¹ = b := by
@@ -24,3 +26,5 @@ variable {α : Type*} [GroupWithZero α] {a b : α}
 lemma conj_pow₀ {s : ℕ} {a d : α} (ha : a ≠ 0) : (a⁻¹ * d * a) ^ s = a⁻¹ * d ^ s * a :=
   let u : αˣ := ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩
   Units.conj_pow' u d s
+
+end GroupWithZero

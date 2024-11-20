@@ -103,9 +103,6 @@ variable (D) in
   `x` of `D \ k` that is separable over `k`. -/
 theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
-  have ad_iterate_succ (x y : D) (n : ℕ) :
-    ad k D x ((ad k D x)^[n] y) = (ad k D x)^[n + 1] y := by
-    simp only [ad_apply, Function.iterate_succ_apply']
   obtain ⟨p, hp⟩ := ExpChar.exists D
   by_contra! insep
   replace insep : ∀ x : D, IsSeparable k x → x ∈ k :=
@@ -143,7 +140,7 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     rw [← mulLeft_apply (R := k), ← mulRight_apply (R := k)]
     suffices ad k D a c = 0 from by
       rw [← this]; rfl
-    rw [ad_iterate_succ a b n, hb.2]
+    rw [← Function.iterate_succ_apply' (ad k D a) n b, hb.2]
   -- We now make some computation to obtain the final equation.
   set d := c⁻¹ * a * (ad k D a)^[n - 1] b with hd_def
   have hc': c⁻¹ * a = a * c⁻¹ := by
@@ -152,7 +149,7 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
       inv_mul_cancel₀ hb.1, one_mul] at hc
     exact hc
   have c_eq : a * (ad k D a)^[n - 1] b - (ad k D a)^[n - 1] b * a = c := by
-    rw [hc_def, ← Nat.sub_add_cancel hn, ← ad_iterate_succ]; rfl
+    rw [hc_def, ← Nat.sub_add_cancel hn, Function.iterate_succ_apply' (ad k D a) _ b]; rfl
   have eq1 : c⁻¹ * a * (ad k D a)^[n - 1] b - c⁻¹ * (ad k D a)^[n - 1] b * a = 1 := by
     simp_rw [mul_assoc, (mul_sub_left_distrib c⁻¹ _ _).symm, c_eq, inv_mul_cancel_of_invertible]
   -- We show that `a` commutes with `d`.
@@ -166,7 +163,7 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
   obtain ⟨r, hr⟩ := exists_pow_mem_center_of_inseparable p d insep
   apply_fun (· ^ (p ^ r)) at deq
   rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
-    conj_pow₀ ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
+    GroupWithZero.conj_pow₀ ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
     self_eq_add_left] at deq
   exact one_ne_zero deq
 
