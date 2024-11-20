@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Archimedean.Hom
+import Mathlib.Algebra.Field.MinimalAxioms
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -336,3 +337,90 @@ instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
       ⟨f, ringHom_monotone (fun r hr => ⟨√r, sq_sqrt hr⟩) f⟩ default)
 
 end Real
+
+noncomputable abbrev LinearOrder.ofMinimalAxioms (K : Type*) [LE K] (le_refl : ∀ (a : K), a ≤ a)
+    (le_trans : ∀ (a b c : K), a ≤ b → b ≤ c → a ≤ c) (le_total : ∀ (a b : K), a ≤ b ∨ b ≤ a)
+        (le_antisymm : ∀ (a b : K), a ≤ b → b ≤ a → a = b) : LinearOrder K where
+  __ := inferInstanceAs (LE K)
+  le_refl := le_refl
+  le_trans := le_trans
+  le_antisymm := le_antisymm
+  le_total := le_total
+  decidableLE := Classical.decRel _
+
+
+noncomputable abbrev LinearOrderedField.ofMinimalAxioms (K : Type*) [Add K] [Mul K] [Neg K] [Inv K]
+    [Zero K] [One K] [LE K] (add_assoc : ∀ (a b c : K), a + b + c = a + (b + c))
+    (zero_add : ∀ (a : K), 0 + a = a) (neg_add_cancel : ∀ (a : K), -a + a = 0)
+    (mul_assoc : ∀ (a b c : K), a * b * c = a * (b * c)) (mul_comm : ∀ (a b : K), a * b = b * a)
+    (one_mul : ∀ (a : K), 1 * a = a) (mul_inv_cancel : ∀ (a : K), a ≠ 0 → a * a⁻¹ = 1)
+    (inv_zero : (0 : K)⁻¹ = 0) (left_distrib : ∀ (a b c : K), a * (b + c) = a * b + a * c)
+    (not_one_le_zero : ¬(1 : K) ≤ 0) (le_refl : ∀ (a : K), a ≤ a)
+    (le_trans : ∀ (a b c : K), a ≤ b → b ≤ c → a ≤ c) (le_total : ∀ (a b : K), a ≤ b ∨ b ≤ a)
+    (le_antisymm : ∀ (a b : K), a ≤ b → b ≤ a → a = b)
+    (add_le_add_left : ∀ (a b : K), a ≤ b → ∀ (c : K), c + a ≤ c + b)
+    (mul_nonneg : ∀ (a b : K), 0 ≤ a → 0 ≤ b → 0 ≤ a * b) : LinearOrderedField K where
+  __ := Field.ofMinimalAxioms K add_assoc zero_add neg_add_cancel mul_assoc mul_comm one_mul
+    mul_inv_cancel inv_zero left_distrib ⟨0, 1, fun h ↦ (h ▸ not_one_le_zero) (le_refl 1)⟩
+  __ := LinearOrder.ofMinimalAxioms K le_refl le_trans le_total le_antisymm
+  add_le_add_left := add_le_add_left
+  zero_le_one := (le_total 0 1).resolve_right not_one_le_zero
+  mul_pos a b h1 h2 := lt_of_le_of_ne (mul_nonneg a b h1.le h2.le) (by simp [h1.ne', h2.ne'])
+
+open scoped Classical in
+noncomputable abbrev ConditionallyCompleteLinearOrderedField.ofMinimalAxioms (K : Type*) [Add K]
+    [Mul K] [Neg K] [Inv K] [Zero K] [One K] [LE K]
+    (add_assoc : ∀ (a b c : K), a + b + c = a + (b + c)) (zero_add : ∀ (a : K), 0 + a = a)
+    (neg_add_cancel : ∀ (a : K), -a + a = 0) (mul_assoc : ∀ (a b c : K), a * b * c = a * (b * c))
+    (mul_comm : ∀ (a b : K), a * b = b * a) (one_mul : ∀ (a : K), 1 * a = a)
+    (mul_inv_cancel : ∀ (a : K), a ≠ 0 → a * a⁻¹ = 1) (inv_zero : (0 : K)⁻¹ = 0)
+    (left_distrib : ∀ (a b c : K), a * (b + c) = a * b + a * c) (not_one_le_zero : ¬(1 : K) ≤ 0)
+    (le_refl : ∀ (a : K), a ≤ a) (le_trans : ∀ (a b c : K), a ≤ b → b ≤ c → a ≤ c)
+    (le_total : ∀ (a b : K), a ≤ b ∨ b ≤ a) (le_antisymm : ∀ (a b : K), a ≤ b → b ≤ a → a = b)
+    (add_le_add_left : ∀ (a b : K), a ≤ b → ∀ (c : K), c + a ≤ c + b)
+    (mul_nonneg : ∀ (a b : K), 0 ≤ a → 0 ≤ b → 0 ≤ a * b)
+    (conditionally_complete : ∀ (s : K → Prop), (∃ (b : K), ∀ x, s x → x ≤ b) →
+      ∃ (c : K), ∀ (b : K), c ≤ b ↔ ∀ x, s x → x ≤ b) :
+    ConditionallyCompleteLinearOrderedField K where
+  __ := LinearOrderedField.ofMinimalAxioms K add_assoc zero_add neg_add_cancel mul_assoc mul_comm
+    one_mul mul_inv_cancel inv_zero left_distrib not_one_le_zero le_refl le_trans le_total
+    le_antisymm add_le_add_left mul_nonneg
+  __ := (LinearOrder.ofMinimalAxioms K le_refl le_trans le_total le_antisymm).toLattice
+  sSup s := if h : ∃ (b : K), ∀ x, x ∈ s → x ≤ b then (conditionally_complete (· ∈ s) h).choose
+    else (conditionally_complete (· ∈ ∅) ⟨0, fun x hx ↦ (Set.not_mem_empty _ hx).elim⟩).choose
+  sInf s := if h : ∃ (b : K), ∀ x, -x ∈ s → x ≤ b then -(conditionally_complete (- · ∈ s) h).choose
+    else -(conditionally_complete (· ∈ ∅) ⟨0, fun x hx ↦ (Set.not_mem_empty _ hx).elim⟩).choose
+  le_csSup s a bd ha := by
+    dsimp
+    split_ifs with h
+    · generalize_proofs hp
+      exact (hp.choose_spec hp.choose).mp le_rfl a ha
+    · exact (h bd).elim
+  csSup_le s a bd ha := by
+    dsimp
+    split_ifs with h
+    · generalize_proofs hp
+      exact (hp.choose_spec a).mpr ha
+    · exact (h ⟨a, fun x h ↦ ha h⟩).elim
+  csInf_le s a bd ha := by
+    dsimp
+    split_ifs with h
+    · generalize_proofs hp
+      exact neg_le.mp ((hp.choose_spec hp.choose).mp le_rfl (-a) (by simpa))
+    · exact (h bd.neg).elim
+  le_csInf s a bd ha := by
+    dsimp
+    split_ifs with h
+    · generalize_proofs hp
+      exact le_neg.mp <| (hp.choose_spec (-a)).mpr fun x hx ↦ le_neg.mp (ha hx)
+    · exact (h ⟨-a, fun x h ↦ le_neg.mp <| ha h⟩).elim
+  csSup_of_not_bddAbove s bd := by
+    simp only [Set.mem_empty_iff_false, IsEmpty.forall_iff, implies_true, iff_true, exists_const,
+      ↓reduceDIte, dite_eq_right_iff, forall_exists_index]
+    intro x hx
+    exact (bd ⟨x, hx⟩).elim
+  csInf_of_not_bddBelow s bd := by
+    simp only [Set.mem_empty_iff_false, IsEmpty.forall_iff, implies_true, iff_true, exists_const,
+      ↓reduceDIte, dite_eq_right_iff, neg_inj, forall_exists_index]
+    intro x hx
+    exact (bd ⟨-x, fun v hv ↦ neg_le.mp <| hx (-v) <| (neg_neg v).symm ▸ hv⟩).elim
