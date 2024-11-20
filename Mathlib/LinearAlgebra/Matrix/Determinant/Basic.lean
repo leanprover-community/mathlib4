@@ -42,8 +42,6 @@ open Equiv Equiv.Perm Finset Function
 
 namespace Matrix
 
-open Matrix
-
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 variable {R : Type v} [CommRing R]
 
