@@ -183,6 +183,10 @@ jobs:
             lake build --no-build
           fi
 
+      - name: print the sizes of the oleans
+        run: |
+          du .lake/build/lib/Mathlib
+
       - name: build archive
         id: archive
         run: |
