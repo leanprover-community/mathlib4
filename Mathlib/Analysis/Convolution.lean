@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
+import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Group.Prod
@@ -90,9 +90,8 @@ The following notations are localized in the locale `Convolution`:
 -/
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open ContinuousLinearMap Metric Bornology
-
-open scoped Pointwise Topology NNReal Filter
+open Bornology ContinuousLinearMap Metric Topology
+open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 
@@ -572,7 +571,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rw [this]
     refine hg.comp (continuous_fst.fst.prod_mk (continuous_fst.snd.sub
       continuous_snd)).continuousOn ?_
-    simp (config := {contextual := true}) [s', MapsTo]
+    simp +contextual [s', MapsTo]
   have B : ContinuousOn (fun a ↦ ∫ x, L (f x) (g' a x) ∂μ) s' := by
     apply continuousOn_integral_bilinear_of_locally_integrable_of_compact_support L k'_comp A _
       (hf.integrableOn_isCompact k'_comp)
@@ -580,7 +579,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     apply hgs p _ hp
     contrapose! hy
     exact ⟨y - x, by simpa using hy, x, hx, by simp⟩
-  apply ContinuousWithinAt.mono_of_mem (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
+  apply ContinuousWithinAt.mono_of_mem_nhdsWithin (B (q₀, x₀) ⟨hq₀, mem_of_mem_nhds ht⟩)
   exact mem_nhdsWithin_prod_iff.2 ⟨s, self_mem_nhdsWithin, t, nhdsWithin_le_nhds ht, Subset.rfl⟩
 
 /-- The convolution `f * g` is continuous if `f` is locally integrable and `g` is continuous and
@@ -1188,7 +1187,8 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     have A : ∀ q₀ : P × G, q₀.1 ∈ s →
         HasFDerivAt (fun q : P × G => (f ⋆[L, μ] g q.1) q.2) (f' q₀.1 q₀.2) q₀ :=
       hasFDerivAt_convolution_right_with_param L hs hk hgs hf hg.one_of_succ
-    rw [contDiffOn_succ_iff_fderiv_of_isOpen (hs.prod (@isOpen_univ G _))] at hg ⊢
+    rw [show ((n + 1 : ℕ) : ℕ∞) = n + 1 from rfl,
+      contDiffOn_succ_iff_fderiv_of_isOpen (hs.prod (@isOpen_univ G _))] at hg ⊢
     constructor
     · rintro ⟨p, x⟩ ⟨hp, -⟩
       exact (A (p, x) hp).differentiableAt.differentiableWithinAt

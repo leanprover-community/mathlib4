@@ -17,10 +17,10 @@ This file proves Theorem 70 from the [100 Theorems List](https://www.cs.ru.nl/~f
 The theorem characterizes even perfect numbers.
 
 Euclid proved that if `2 ^ (k + 1) - 1` is prime (these primes are known as Mersenne primes),
-  then `2 ^ k * 2 ^ (k + 1) - 1` is perfect.
+  then `2 ^ k * (2 ^ (k + 1) - 1)` is perfect.
 
 Euler proved the converse, that if `n` is even and perfect, then there exists `k` such that
-  `n = 2 ^ k * 2 ^ (k + 1) - 1` and `2 ^ (k + 1) - 1` is prime.
+  `n = 2 ^ k * (2 ^ (k + 1) - 1)` and `2 ^ (k + 1) - 1` is prime.
 
 ## References
 https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
@@ -103,7 +103,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
       | .succ k =>
         apply ne_of_lt _ jcon2
         rw [mersenne, ← Nat.pred_eq_sub_one, Nat.lt_pred_iff, ← pow_one (Nat.succ 1)]
-        apply pow_lt_pow_right (Nat.lt_succ_self 1) (Nat.succ_lt_succ (Nat.succ_pos k))
+        apply pow_lt_pow_right₀ (Nat.lt_succ_self 1) (Nat.succ_lt_succ k.succ_pos)
     contrapose! hm
     simp [hm]
 

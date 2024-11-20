@@ -345,7 +345,6 @@ end StrictOrderedCommRing
 section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 @[simp]
 theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ x ∈ s := by
@@ -582,7 +581,6 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
           (r₂ / (r₁ + r₂)) • (p₂ -ᵥ p₁) := by
         rw [← neg_vsub_eq_vsub_rev p₂ y]
         linear_combination (norm := match_scalars <;> field_simp) congr((r₁ + r₂)⁻¹ • $h)
-        ring
       rw [lineMap_apply, ← vsub_vadd x p₁, ← vsub_vadd y p₂, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
         ← vadd_assoc, vadd_eq_add, this]
       exact s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁

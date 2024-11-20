@@ -7,8 +7,8 @@ import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.GDelta
 import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Separation properties of topological spaces.
@@ -22,18 +22,13 @@ import Mathlib.Topology.Separation.Basic
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
 
-### TODO
-
-* Use `hasSeparatingCovers_iff_separatedNhds` to prove that perfectly normal spaces
-  are completely normal.
-
 -/
 
 open Function Set Filter Topology TopologicalSpace
 
-universe u v
+universe u
 
-variable {X : Type*} {Y : Type*} [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
 section Separation
 

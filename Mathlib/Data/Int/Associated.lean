@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Units
 /-!
 # Associated elements and the integers
 

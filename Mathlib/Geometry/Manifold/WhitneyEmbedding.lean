@@ -31,7 +31,7 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
   [FiniteDimensional ℝ E] {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type uM} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
-open Function Filter Module Set
+open Function Filter Module Set Topology
 open scoped Manifold
 
 noncomputable section

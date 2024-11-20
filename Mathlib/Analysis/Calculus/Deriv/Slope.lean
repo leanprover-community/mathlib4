@@ -145,6 +145,11 @@ theorem isSeparable_range_deriv [SeparableSpace 𝕜] (f : 𝕜 → F) :
   rw [← derivWithin_univ]
   exact isSeparable_range_derivWithin _ _
 
+lemma HasDerivAt.continuousAt_div [DecidableEq 𝕜] {f : 𝕜 → 𝕜} {c a : 𝕜} (hf : HasDerivAt f a c) :
+    ContinuousAt (Function.update (fun x ↦ (f x - f c) / (x - c)) c a) c := by
+  rw [← slope_fun_def_field]
+  exact continuousAt_update_same.mpr <| hasDerivAt_iff_tendsto_slope.mp hf
+
 end NormedField
 
 /-! ### Upper estimates on liminf and limsup -/

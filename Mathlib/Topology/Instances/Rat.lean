@@ -13,8 +13,7 @@ import Mathlib.Topology.Instances.Real
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
 
-
-open Metric Set Filter
+open Filter Metric Set Topology
 
 namespace Rat
 
@@ -42,8 +41,11 @@ theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding_coe_real := isDenseEmbedding_coe_real
 
-theorem embedding_coe_real : Embedding ((↑) : ℚ → ℝ) :=
-  isDenseEmbedding_coe_real.to_embedding
+theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
+  isDenseEmbedding_coe_real.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe_real := isEmbedding_coe_real
 
 theorem continuous_coe_real : Continuous ((↑) : ℚ → ℝ) :=
   uniformContinuous_coe_real.continuous

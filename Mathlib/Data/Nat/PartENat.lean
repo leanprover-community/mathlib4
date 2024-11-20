@@ -139,7 +139,7 @@ instance : Top PartENat :=
 instance : Bot PartENat :=
   ⟨0⟩
 
-instance : Sup PartENat :=
+instance : Max PartENat :=
   ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h => x.get h.1 ⊔ y.get h.2⟩⟩
 
 theorem le_def (x y : PartENat) :
@@ -602,7 +602,7 @@ def ofENat : ℕ∞ → PartENat :=
   | Option.none => none
   | Option.some n => some n
 
--- Porting note (#10754): new instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 
 -- Porting note: new. This could probably be moved to tests or removed.
@@ -731,8 +731,6 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
 
 instance : WellFoundedLT PartENat :=
   ⟨lt_wf⟩
-
-instance isWellOrder : IsWellOrder PartENat (· < ·) := {}
 
 instance wellFoundedRelation : WellFoundedRelation PartENat :=
   ⟨(· < ·), lt_wf⟩
