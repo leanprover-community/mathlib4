@@ -15,14 +15,8 @@ In this file, we show that several conditions on submodules can be checked on st
 
 open scoped nonZeroDivisors
 
--- TODO: move this?
-private def equalizer (R) {M} [Semiring R] [AddCommMonoid M] [Module R M] (m m' : M) : Ideal R where
-  carrier := {r : R | r • m = r • m'}
-  add_mem' h h' := by simpa [add_smul] using congr($h + $h')
-  zero_mem' := by simp_rw [Set.mem_setOf, zero_smul]
-  smul_mem' _ _ h := by simpa [mul_smul] using congr(_ • $h)
-
-variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M M₁ : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  [AddCommMonoid M₁] [Module R M₁]
 
 section maximal
 
@@ -38,6 +32,11 @@ variable
   [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
+  (M₁ₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
+  [∀ (P : Ideal R) [P.IsMaximal], AddCommMonoid (M₁ₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Module R (M₁ₚ P)]
+  (f₁ : ∀ (P : Ideal R) [P.IsMaximal], M₁ →ₗ[R] M₁ₚ P)
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f₁ P)]
 
 theorem Submodule.mem_of_localization_maximal (m : M) (N : Submodule R M)
     (h : ∀ (P : Ideal R) [P.IsMaximal], f P m ∈ N.localized₀ P.primeCompl (f P)) :
@@ -82,9 +81,9 @@ theorem Submodule.eq_top_of_localization₀_maximal (N : Submodule R M)
 theorem Module.eq_of_localization_maximal (m m' : M)
     (h : ∀ (P : Ideal R) [P.IsMaximal], f P m = f P m') :
     m = m' := by
-  by_contra! ne
-  rw [← one_smul R m, ← one_smul R m'] at ne
-  have ⟨P, mP, le⟩ := (equalizer R m m').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
+  rw [← one_smul R m, ← one_smul R m']
+  by_contra ne
+  have ⟨P, mP, le⟩ := (eqIdeal R m m').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
   have ⟨s, hs⟩ := (IsLocalizedModule.eq_iff_exists P.primeCompl _).mp (h P)
   exact s.2 (le hs)
 
@@ -92,6 +91,14 @@ theorem Module.eq_zero_of_localization_maximal (m : M)
     (h : ∀ (P : Ideal R) [P.IsMaximal], f P m = 0) :
     m = 0 :=
   eq_of_localization_maximal _ f _ _ fun P _ ↦ by rw [h, map_zero]
+
+theorem LinearMap.eq_of_localization_maximal (g g' : M →ₗ[R] M₁)
+    (h : ∀ (P : Ideal R) [P.IsMaximal],
+      IsLocalizedModule.map P.primeCompl (f P) (f₁ P) g =
+      IsLocalizedModule.map P.primeCompl (f P) (f₁ P) g') :
+    g = g' :=
+  ext fun x ↦ Module.eq_of_localization_maximal _ f₁ _ _ fun P _ ↦ by
+    simpa only [IsLocalizedModule.map_apply] using DFunLike.congr_fun (h P) (f P x)
 
 include f in
 theorem Module.subsingleton_of_localization_maximal
