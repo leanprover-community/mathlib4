@@ -188,7 +188,7 @@ This should be the inverse of `fun ctx ↦ outputMessage ctx .exceptionsFile` -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (· == ' ')
   match parts with
-    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: _errorMessage =>
+    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
