@@ -8,6 +8,7 @@ import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Finset.Max
 
 /-!
 # Linear locally finite orders

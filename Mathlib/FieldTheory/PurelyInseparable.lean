@@ -53,10 +53,8 @@ of fields.
   characteristic `q` is purely inseparable if and only if for every element `x` of `E`, the minimal
   polynomial of `x` over `F` is of form `(X - x) ^ (q ^ n)` for some natural number `n`.
 
-- `isPurelyInseparable_iff_finSepDegree_eq_one`: an algebraic extension is purely inseparable
+- `isPurelyInseparable_iff_finSepDegree_eq_one`: an extension is purely inseparable
   if and only if it has finite separable degree (`Field.finSepDegree`) one.
-
-  **TODO:** remove the algebraic assumption.
 
 - `IsPurelyInseparable.normal`: a purely inseparable extension is normal.
 
@@ -79,6 +77,11 @@ of fields.
 - `IsPurelyInseparable.injective_comp_algebraMap`: if `E / F` is purely inseparable, then for any
   reduced ring `L`, the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective.
   In particular, a purely inseparable field extension is an epimorphism in the category of fields.
+
+- `IsPurelyInseparable.of_injective_comp_algebraMap`: if `L` is an algebraically closed field
+  containing `E`, such that the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is
+  injective, then `E / F` is purely inseparable. As a corollary, epimorphisms in the category of
+  fields must be purely inseparable extensions.
 
 - `IntermediateField.isPurelyInseparable_adjoin_iff_pow_mem`: if `F` is of exponential
   characteristic `q`, then `F(S) / F` is a purely inseparable extension if and only if for any
@@ -114,12 +117,6 @@ of fields.
 separable degree, degree, separable closure, purely inseparable
 
 ## TODO
-
-- `IsPurelyInseparable.of_injective_comp_algebraMap`: if `L` is an algebraically closed field
-  containing `E`, such that the map `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is
-  injective, then `E / F` is purely inseparable. As a corollary, epimorphisms in the category of
-  fields must be purely inseparable extensions. Need to use the fact that `Emb F E` is infinite
-  (or just not a singleton) when `E / F` is (purely) transcendental.
 
 - Restate some intermediate result in terms of linearly disjointness.
 
@@ -183,7 +180,7 @@ theorem AlgEquiv.isPurelyInseparable_iff (e : K ≃ₐ[F] E) :
 
 /-- If `E / F` is an algebraic extension, `F` is separably closed,
 then `E / F` is purely inseparable. -/
-theorem Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed
+instance Algebra.IsAlgebraic.isPurelyInseparable_of_isSepClosed
     {F : Type u} {E : Type v} [Field F] [Ring E] [IsDomain E] [Algebra F E]
     [Algebra.IsAlgebraic F E]
     [IsSepClosed F] : IsPurelyInseparable F E :=
@@ -246,6 +243,7 @@ variable (q : ℕ) [ExpChar F q] (x : E)
 /-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
 if and only if for every element `x` of `E`, there exists a natural number `n` such that
 `x ^ (q ^ n)` is contained in `F`. -/
+@[stacks 09HE]
 theorem isPurelyInseparable_iff_pow_mem :
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   rw [isPurelyInseparable_iff]
@@ -276,6 +274,7 @@ section perfectClosure
 exists a natural number `n` such that `x ^ (ringExpChar F) ^ n` is contained in `F`, where
 `ringExpChar F` is the exponential characteristic of `F`. It is also the maximal purely inseparable
 subextension of `E / F` (`le_perfectClosure_iff`). -/
+@[stacks 09HH]
 def perfectClosure : IntermediateField F E where
   carrier := {x : E | ∃ n : ℕ, x ^ (ringExpChar F) ^ n ∈ (algebraMap F E).range}
   add_mem' := by
@@ -445,6 +444,7 @@ theorem IsPurelyInseparable.tower_top [Algebra E K] [IsScalarTower F E K]
 
 /-- If `E / F` and `K / E` are both purely inseparable extensions, then `K / F` is also
 purely inseparable. -/
+@[stacks 02JJ "See also 00GM"]
 theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
     [h1 : IsPurelyInseparable F E] [h2 : IsPurelyInseparable E K] : IsPurelyInseparable F K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
@@ -508,25 +508,30 @@ theorem IsPurelyInseparable.minpoly_eq_X_sub_C_pow (q : ℕ) [ExpChar F q] [IsPu
 
 variable (E)
 
--- TODO: remove `halg` assumption
 variable {F E} in
-/-- If an algebraic extension has finite separable degree one, then it is purely inseparable. -/
-theorem isPurelyInseparable_of_finSepDegree_eq_one [Algebra.IsAlgebraic F E]
+/-- If an extension has finite separable degree one, then it is purely inseparable. -/
+theorem isPurelyInseparable_of_finSepDegree_eq_one
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
-  rw [isPurelyInseparable_iff]
-  refine fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, fun hsep ↦ ?_⟩
-  have : Algebra.IsAlgebraic F⟮x⟯ E := Algebra.IsAlgebraic.tower_top (K := F) F⟮x⟯
-  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E
-  rw [hdeg, mul_eq_one, (finSepDegree_adjoin_simple_eq_finrank_iff F E x
-      (Algebra.IsAlgebraic.isAlgebraic x)).2 hsep,
-    IntermediateField.finrank_eq_one_iff] at this
-  simpa only [this.1] using mem_adjoin_simple_self F x
+  by_cases H : Algebra.IsAlgebraic F E
+  · rw [isPurelyInseparable_iff]
+    refine fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, fun hsep ↦ ?_⟩
+    have : Algebra.IsAlgebraic F⟮x⟯ E := Algebra.IsAlgebraic.tower_top (K := F) F⟮x⟯
+    have := finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E
+    rw [hdeg, mul_eq_one, (finSepDegree_adjoin_simple_eq_finrank_iff F E x
+        (Algebra.IsAlgebraic.isAlgebraic x)).2 hsep,
+      IntermediateField.finrank_eq_one_iff] at this
+    simpa only [this.1] using mem_adjoin_simple_self F x
+  · rw [← Algebra.transcendental_iff_not_isAlgebraic] at H
+    simp [finSepDegree_eq_zero_of_transcendental F E] at hdeg
+
+namespace IsPurelyInseparable
+
+variable [IsPurelyInseparable F E] (R L : Type*) [CommSemiring R] [Algebra R F] [Algebra R E]
 
 /-- If `E / F` is purely inseparable, then for any reduced ring `L`, the map `(E →+* L) → (F →+* L)`
 induced by `algebraMap F E` is injective. In particular, a purely inseparable field extension
 is an epimorphism in the category of fields. -/
-theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
-    (L : Type w) [CommRing L] [IsReduced L] :
+theorem injective_comp_algebraMap [CommRing L] [IsReduced L] :
     Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E) := fun f g heq ↦ by
   ext x
   let q := ringExpChar F
@@ -536,6 +541,30 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
   nontriviality L
   haveI := expChar_of_injective_ringHom (f.comp (algebraMap F E)).injective q
   exact iterateFrobenius_inj L q n heq
+
+theorem injective_restrictDomain [CommRing L] [IsReduced L] [Algebra R L] [IsScalarTower R F E] :
+    Function.Injective (AlgHom.restrictDomain (A := R) F (C := E) (D := L)) := fun _ _ eq ↦
+  AlgHom.coe_ringHom_injective <| injective_comp_algebraMap F E L <| congr_arg AlgHom.toRingHom eq
+
+instance [Field L] [PerfectField L] [Algebra F L] : Nonempty (E →ₐ[F] L) :=
+  nonempty_algHom_of_splits fun x ↦ ⟨IsPurelyInseparable.isIntegral' _ _,
+    have ⟨q, _⟩ := ExpChar.exists F
+    PerfectField.splits_of_natSepDegree_eq_one (algebraMap F L)
+      ((minpoly.natSepDegree_eq_one_iff_eq_X_pow_sub_C q).mpr <|
+        IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x)⟩
+
+theorem bijective_comp_algebraMap [Field L] [PerfectField L] :
+    Function.Bijective fun f : E →+* L ↦ f.comp (algebraMap F E) :=
+  ⟨injective_comp_algebraMap F E L, fun g ↦ let _ := g.toAlgebra
+    ⟨_, (Classical.arbitrary <| E →ₐ[F] L).comp_algebraMap⟩⟩
+
+theorem bijective_restrictDomain [Field L] [PerfectField L] [Algebra R L] [IsScalarTower R F E] :
+    Function.Bijective (AlgHom.restrictDomain (A := R) F (C := E) (D := L)) :=
+  ⟨injective_restrictDomain F E R L, fun g ↦ let _ := g.toAlgebra
+    let f := Classical.arbitrary (E →ₐ[F] L)
+    ⟨f.restrictScalars R, AlgHom.coe_ringHom_injective f.comp_algebraMap⟩⟩
+
+end IsPurelyInseparable
 
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/
@@ -570,10 +599,8 @@ theorem IsPurelyInseparable.insepDegree_eq [IsPurelyInseparable F E] :
 theorem IsPurelyInseparable.finInsepDegree_eq [IsPurelyInseparable F E] :
     finInsepDegree F E = finrank F E := congr(Cardinal.toNat $(insepDegree_eq F E))
 
--- TODO: remove `halg` assumption
-/-- An algebraic extension is purely inseparable if and only if it has finite separable
-degree one. -/
-theorem isPurelyInseparable_iff_finSepDegree_eq_one [Algebra.IsAlgebraic F E] :
+/-- An extension is purely inseparable if and only if it has finite separable degree one. -/
+theorem isPurelyInseparable_iff_finSepDegree_eq_one :
     IsPurelyInseparable F E ↔ finSepDegree F E = 1 :=
   ⟨fun _ ↦ IsPurelyInseparable.finSepDegree_eq_one F E,
     fun h ↦ isPurelyInseparable_of_finSepDegree_eq_one h⟩
@@ -602,7 +629,8 @@ instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E where
 
 /-- If `E / F` is algebraic, then `E` is purely inseparable over the
 separable closure of `F` in `E`. -/
-theorem separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
+@[stacks 030K "$E/E_{sep}$ is purely inseparable."]
+instance separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
     IsPurelyInseparable (separableClosure F E) E := isPurelyInseparable_iff.2 fun x ↦ by
   set L := separableClosure F E
   refine ⟨(IsAlgebraic.tower_top L (Algebra.IsAlgebraic.isAlgebraic (R := F) x)).isIntegral,
@@ -611,6 +639,12 @@ theorem separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
   haveI : Algebra.IsSeparable F (restrictScalars F L⟮x⟯) := Algebra.IsSeparable.trans F L L⟮x⟯
   have hx : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
   exact ⟨⟨x, mem_separableClosure_iff.2 <| isSeparable_of_mem_isSeparable F E hx⟩, rfl⟩
+
+open Cardinal in
+theorem Field.Emb.cardinal_separableClosure [Algebra.IsAlgebraic F E] :
+    #(Field.Emb F <| separableClosure F E) = #(Field.Emb F E) := by
+  rw [← (embProdEmbOfIsAlgebraic F (separableClosure F E) E).cardinal_eq,
+    mk_prod, mk_eq_one (Emb _ E), lift_one, mul_one, lift_id]
 
 /-- An intermediate field of `E / F` contains the separable closure of `F` in `E`
 if `E` is purely inseparable over it. -/
@@ -646,15 +680,18 @@ theorem eq_separableClosure_iff [Algebra.IsAlgebraic F E] (L : IntermediateField
   ⟨by rintro rfl; exact ⟨isSeparable F E, isPurelyInseparable F E⟩,
    fun ⟨_, _⟩ ↦ eq_separableClosure F E L⟩
 
--- TODO: prove it
-set_option linter.unusedVariables false in
 /-- If `L` is an algebraically closed field containing `E`, such that the map
 `(E →+* L) → (F →+* L)` induced by `algebraMap F E` is injective, then `E / F` is
 purely inseparable. As a corollary, epimorphisms in the category of fields must be
 purely inseparable extensions. -/
-proof_wanted IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
-    (hn : Nonempty (E →+* L)) (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
-    IsPurelyInseparable F E
+theorem IsPurelyInseparable.of_injective_comp_algebraMap (L : Type w) [Field L] [IsAlgClosed L]
+    [Nonempty (E →+* L)] (h : Function.Injective fun f : E →+* L ↦ f.comp (algebraMap F E)) :
+    IsPurelyInseparable F E := by
+  rw [isPurelyInseparable_iff_finSepDegree_eq_one, finSepDegree, Nat.card_eq_one_iff_unique]
+  letI := (Classical.arbitrary (E →+* L)).toAlgebra
+  let j : AlgebraicClosure E →ₐ[E] L := IsAlgClosed.lift
+  exact ⟨⟨fun f g ↦ DFunLike.ext' <| j.injective.comp_left (congr_arg (⇑) <|
+    @h (j.toRingHom.comp f) (j.toRingHom.comp g) (by ext; simp))⟩, inferInstance⟩
 
 end IsPurelyInseparable
 
@@ -799,7 +836,7 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparabl
 /-- If `E / F` is a field extension of exponential characteristic `q`, if `{ u_i }` is a
 family of separable elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }`
 is also `F`-linearly independent for any natural number `n`. -/
-theorem LinearIndependent.map_pow_expChar_pow_of_isIntegral'
+theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable'
     (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   let E' := adjoin F (Set.range v)
@@ -824,7 +861,7 @@ end
 purely inseparable. -/
 theorem isSepClosed_iff_isPurelyInseparable_algebraicClosure [IsAlgClosure F E] :
     IsSepClosed F ↔ IsPurelyInseparable F E :=
-  ⟨fun _ ↦ IsAlgClosure.isAlgebraic.isPurelyInseparable_of_isSepClosed, fun H ↦ by
+  ⟨fun _ ↦ inferInstance, fun H ↦ by
     haveI := IsAlgClosure.isAlgClosed F (K := E)
     rwa [← separableClosure.eq_bot_iff, IsSepClosed.separableClosure_eq_bot_iff] at H⟩
 
@@ -834,7 +871,6 @@ then `E` is also separably closed. -/
 theorem Algebra.IsAlgebraic.isSepClosed [Algebra.IsAlgebraic F E]
     [IsSepClosed F] : IsSepClosed E :=
   have : Algebra.IsAlgebraic F (AlgebraicClosure E) := Algebra.IsAlgebraic.trans (L := E)
-  have : IsPurelyInseparable F (AlgebraicClosure E) := isPurelyInseparable_of_isSepClosed
   (isSepClosed_iff_isPurelyInseparable_algebraicClosure E _).mpr
     (IsPurelyInseparable.tower_top F E <| AlgebraicClosure E)
 
@@ -867,6 +903,7 @@ namespace Field
 as a natural number. This means that the cardinality of `Field.Emb F E` and the degree of
 `(separableClosure F E) / F` are both finite or infinite, and when they are finite, they
 coincide. -/
+@[stacks 09HJ "`sepDegree` is defined as the right hand side of 09HJ"]
 theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
     finSepDegree F E = Cardinal.toNat (sepDegree F E) := by
   have : Algebra.IsAlgebraic (separableClosure F E) E := Algebra.IsAlgebraic.tower_top (K := F) _
@@ -953,7 +990,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
     contrapose!
     refine fun hs ↦ (injective_iff_map_eq_zero _).mp (algebraMap F E).injective _ ?_
     rw [hlF, Finsupp.not_mem_support_iff.1 hs, zero_pow this]
-  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isIntegral' q n hsep) lF₀ <| by
+  replace h := linearIndependent_iff.1 (h.map_pow_expChar_pow_of_isSeparable' q n hsep) lF₀ <| by
     replace hl := congr($hl ^ q ^ n)
     rw [linearCombination_apply, Finsupp.sum, sum_pow_char_pow, zero_pow this] at hl
     rw [← hl, linearCombination_apply, onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
@@ -1020,6 +1057,7 @@ theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic [Algebra.IsAlgebraic F 
   rwa [sepDegree_eq_of_isPurelyInseparable (separableClosure F E) E K] at h
 
 /-- The same-universe version of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`. -/
+@[stacks 09HK "Part 1"]
 theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F K]
     [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic F E] :
     sepDegree F E * sepDegree E K = sepDegree F K := by
