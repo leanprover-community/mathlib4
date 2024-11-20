@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.FieldTheory.ChevalleyWarning
-import Mathlib.RingTheory.UniqueFactorizationDomain
 
 /-!
 # The Erdős–Ginzburg–Ziv theorem

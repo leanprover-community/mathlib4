@@ -26,8 +26,6 @@ noncomputable section
 
 namespace Polynomial
 
-open Polynomial
-
 variable {R : Type*} [Semiring R] (r : R) (f : R[X])
 
 /-- The Taylor expansion of a polynomial `f` at `r`. -/
