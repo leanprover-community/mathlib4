@@ -92,13 +92,6 @@ def affineHomeomorph (a b : 𝕜) (h : a ≠ 0) : 𝕜 ≃ₜ 𝕜 where
     exact mul_div_cancel_left₀ x h
   right_inv y := by simp [mul_div_cancel₀ _ h]
 
-lemma affineHomeomorph_trans (a b c d : 𝕜) (h1 : a ≠ 0) (h2 : c ≠ 0) :
-    (affineHomeomorph a b h1).trans (affineHomeomorph c d h2) =
-    affineHomeomorph (c * a) (c * b + d) (mul_ne_zero h2 h1)  := by
-  ext
-  simp_rw [Homeomorph.trans_apply, affineHomeomorph_apply]
-  ring
-
 theorem affineHomeomorph_image_Icc {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜]
     [TopologicalRing 𝕜] (a b c d : 𝕜) (h : 0 < a) :
     affineHomeomorph a b h.ne.symm '' Set.Icc c d = Set.Icc (a * c + b) (a * d + b) := by
