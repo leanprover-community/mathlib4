@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.SmallObject.Iteration.UniqueHom
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.SuccPred.Limit
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Classes of morphisms that are stable under transfinite composition
