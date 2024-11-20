@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Algebraic facts about the topology of uniform convergence

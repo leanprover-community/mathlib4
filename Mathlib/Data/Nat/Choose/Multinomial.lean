@@ -210,9 +210,9 @@ variable [Semiring R]
 -- TODO: Can we prove one of the following two from the other one?
 /-- The **multinomial theorem**. -/
 lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
-    (hc : (s : Set α).Pairwise fun i j ↦ Commute (f i) (f j)) (n : ℕ) :
+    (hc : (s : Set α).Pairwise (Commute on f)) (n : ℕ) :
     (∑ i in s, f i) ^ n = ∑ k in piAntidiag s n, multinomial s k *
-      s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun i j h ↦ h.pow_pow ..) := by
+      s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
   classical
   induction' s using Finset.cons_induction with a s has ih generalizing n
   · cases n <;> simp
@@ -250,7 +250,7 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
 
 /-- The **multinomial theorem**. -/
 theorem sum_pow_of_commute (x : α → R) (s : Finset α)
-    (hc : (s : Set α).Pairwise fun i j => Commute (x i) (x j)) :
+    (hc : (s : Set α).Pairwise (Commute on x)) :
     ∀ n,
       s.sum x ^ n =
         ∑ k : s.sym n,

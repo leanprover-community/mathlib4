@@ -3,8 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.RingTheory.IntegralDomain
+import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Primitive Element Theorem
@@ -36,7 +37,7 @@ exists_adjoin_simple_eq_top
 
 noncomputable section
 
-open FiniteDimensional Polynomial IntermediateField
+open Module Polynomial IntermediateField
 
 namespace Field
 
@@ -48,6 +49,7 @@ variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 
 
 /-- **Primitive element theorem** assuming E is finite. -/
+@[stacks 09HY "second part"]
 theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α⟯ = ⊤ := by
   obtain ⟨α, hα⟩ := @IsCyclic.exists_generator Eˣ _ _
   use α
@@ -63,7 +65,7 @@ theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α�
 /-- Primitive element theorem for finite dimensional extension of a finite field. -/
 theorem exists_primitive_element_of_finite_bot [Finite F] [FiniteDimensional F E] :
     ∃ α : E, F⟮α⟯ = ⊤ :=
-  haveI : Finite E := finite_of_finite F E
+  haveI : Finite E := Module.finite_of_finite F
   exists_primitive_element_of_finite_top F E
 
 end PrimitiveElementFinite
@@ -206,6 +208,7 @@ variable [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
 /-- **Primitive element theorem**: a finite separable field extension `E` of `F` has a
   primitive element, i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`. -/
+@[stacks 030N "The moreover part"]
 theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
   rcases isEmpty_or_nonempty (Fintype F) with (F_inf | ⟨⟨F_finite⟩⟩)
   · let P : IntermediateField F E → Prop := fun K => ∃ α : E, F⟮α⟯ = K
@@ -335,6 +338,7 @@ theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebrai
 /-- **Steinitz theorem**: an algebraic extension `E` of `F` has a
   primitive element (i.e. there is an `α ∈ E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`)
   if and only if there exist only finitely many intermediate fields between `E` and `F`. -/
+@[stacks 030N "Equivalence of (1) & (2)"]
 theorem exists_primitive_element_iff_finite_intermediateField :
     (Algebra.IsAlgebraic F E ∧ ∃ α : E, F⟮α⟯ = ⊤) ↔ Finite (IntermediateField F E) :=
   ⟨fun ⟨_, h⟩ ↦ finite_intermediateField_of_exists_primitive_element F E h,
@@ -349,25 +353,23 @@ variable (F E : Type*) [Field F] [Field E] [Algebra F E]
     [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
 @[simp]
-theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
-    Fintype.card (E →ₐ[F] K) = finrank F E := by
-  convert (AlgHom.card_of_powerBasis (L := K) (Field.powerBasisOfFiniteOfSeparable F E)
-    (Algebra.IsSeparable.isSeparable _ _) (IsAlgClosed.splits_codomain _)).trans
-      (PowerBasis.finrank _).symm
-
-@[simp]
 theorem AlgHom.card_of_splits (L : Type*) [Field L] [Algebra F L]
     (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
     Fintype.card (E →ₐ[F] L) = finrank F E := by
-  rw [← Fintype.ofEquiv_card <| Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits
-    (AlgebraicClosure L) _ hL]
-  convert AlgHom.card F E (AlgebraicClosure L)
+  convert (AlgHom.card_of_powerBasis (L := L) (Field.powerBasisOfFiniteOfSeparable F E)
+    (Algebra.IsSeparable.isSeparable _ _) <| hL _).trans
+      (PowerBasis.finrank _).symm
+
+@[simp]
+theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
+    Fintype.card (E →ₐ[F] K) = finrank F E :=
+  AlgHom.card_of_splits _ _ _ (fun _ ↦ IsAlgClosed.splits_codomain _)
 
 section iff
 
 namespace Field
 
-open FiniteDimensional IntermediateField Polynomial Algebra Set
+open Module IntermediateField Polynomial Algebra Set
 
 variable (F : Type*) {E : Type*} [Field F] [Field E] [Algebra F E] [FiniteDimensional F E]
 

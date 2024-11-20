@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Adjunction.Limits
@@ -115,7 +115,7 @@ end ihom
 open CategoryTheory.Limits
 
 instance : PreservesColimits (tensorLeft A) :=
-  (ihom.adjunction A).leftAdjointPreservesColimits
+  (ihom.adjunction A).leftAdjoint_preservesColimits
 
 variable {A}
 
@@ -130,12 +130,12 @@ def curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X) :=
 def uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X) :=
   ((ihom.adjunction A).homEquiv _ _).symm
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
     ((ihom.adjunction A).homEquiv _ _).symm f = uncurry f :=
@@ -196,6 +196,10 @@ theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   rw [curry_eq, (ihom A).map_id (A ⊗ _)]
   apply comp_id
 
+/-- The internal hom out of the unit is naturally isomorphic to the identity functor.-/
+def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
+  conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
+    (leftUnitorNatIso C)
 section Pre
 
 variable {A B}
@@ -245,15 +249,16 @@ section OfEquiv
 
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
-variable (F : MonoidalFunctor C D) {G : D ⥤ C} (adj : F.toFunctor ⊣ G)
-  [F.IsEquivalence] [MonoidalClosed D]
+variable (F : C ⥤ D) {G : D ⥤ C} (adj : F ⊣ G)
+  [F.Monoidal] [F.IsEquivalence] [MonoidalClosed D]
+
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
 noncomputable def ofEquiv : MonoidalClosed C where
   closed X :=
-    { rightAdj := F.toFunctor ⋙ ihom (F.obj X) ⋙ G
+    { rightAdj := F ⋙ ihom (F.obj X) ⋙ G
       adj := (adj.comp ((ihom.adjunction (F.obj X)).comp
           adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft
-            (Iso.compInverseIso (H := adj.toEquivalence) (MonoidalFunctor.commTensorLeft F X)) }
+            (Iso.compInverseIso (H := adj.toEquivalence) (Functor.Monoidal.commTensorLeft F X)) }
 
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
 monoidal closed instance back along the equivalence. For `X, Y, Z : C`, this lemma describes the
@@ -266,8 +271,8 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
       adj.homEquiv Y ((ihom (F.obj X)).obj (F.obj Z))
         (MonoidalClosed.curry (adj.toEquivalence.symm.toAdjunction.homEquiv (F.obj X ⊗ F.obj Y) Z
         ((Iso.compInverseIso (H := adj.toEquivalence)
-          (MonoidalFunctor.commTensorLeft F X)).hom.app Y ≫ f))) := by
-  -- This whole proof used to be `rfl` before #16317.
+          (Functor.Monoidal.commTensorLeft F X)).hom.app Y ≫ f))) := by
+  -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change ((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
   dsimp only [Adjunction.ofNatIsoLeft]
@@ -285,11 +290,11 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
     letI := ofEquiv F adj
     ∀ (f : Y ⟶ (ihom X).obj Z), MonoidalClosed.uncurry f =
       ((Iso.compInverseIso (H := adj.toEquivalence)
-          (MonoidalFunctor.commTensorLeft F X)).inv.app Y) ≫
+          (Functor.Monoidal.commTensorLeft F X)).inv.app Y) ≫
             (adj.toEquivalence.symm.toAdjunction.homEquiv _ _).symm
               (MonoidalClosed.uncurry ((adj.homEquiv _ _).symm f)) := by
   intro f
-  -- This whole proof used to be `rfl` before #16317.
+  -- This whole proof used to be `rfl` before https://github.com/leanprover-community/mathlib4/pull/16317.
   change (((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
   dsimp only [Adjunction.ofNatIsoLeft]
@@ -299,6 +304,89 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
   rfl
 
 end OfEquiv
+
+-- A closed monoidal category C is always enriched over itself.
+-- This section contains the necessary definitions and equalities to endow C with
+-- the structure of a C-category, while the instance itself is defined in `Closed/Enrichment`.
+-- In particular, we only assume the necessary instances of `Closed x`, rather than assuming
+-- C comes with an instance of `MonoidalClosed`
+section Enriched
+
+/-- The C-identity morphism
+  `𝟙_ C ⟶ hom(x, x)`
+used to equip `C` with the structure of a `C`-category -/
+def id (x : C) [Closed x] : 𝟙_ C ⟶ (ihom x).obj x := curry (ρ_ x).hom
+
+/-- The *uncurried* composition morphism
+  `x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z`.
+The `C`-composition morphism will be defined as the adjoint transpose of this map. -/
+def compTranspose (x y z : C) [Closed x] [Closed y] : x ⊗ (ihom x).obj y ⊗ (ihom y).obj z ⟶ z :=
+  (α_ x ((ihom x).obj y) ((ihom y).obj z)).inv ≫
+    (ihom.ev x).app y ▷ ((ihom y).obj z) ≫ (ihom.ev y).app z
+
+/-- The `C`-composition morphism
+  `hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
+used to equip `C` with the structure of a `C`-category -/
+def comp (x y z : C) [Closed x] [Closed y] : (ihom x).obj y ⊗ (ihom y).obj z ⟶ (ihom x).obj z :=
+  curry (compTranspose x y z)
+
+/-- Unfold the definition of `id`.
+This exists to streamline the proofs of `MonoidalClosed.id_comp` and `MonoidalClosed.comp_id` -/
+lemma id_eq (x : C) [Closed x] : id x = curry (ρ_ x).hom := rfl
+
+/-- Unfold the definition of `compTranspose`.
+This exists to streamline the proof of `MonoidalClosed.assoc` -/
+lemma compTranspose_eq (x y z : C) [Closed x] [Closed y] :
+    compTranspose x y z = (α_ _ _ _).inv ≫ (ihom.ev x).app y ▷ _ ≫ (ihom.ev y).app z :=
+  rfl
+
+/-- Unfold the definition of `comp`.
+This exists to streamline the proof of `MonoidalClosed.assoc` -/
+lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTranspose x y z) := rfl
+
+/-!
+The proofs of associativity and unitality use the following outline:
+  1. Take adjoint transpose on each side of the equality (uncurry_injective)
+  2. Do whatever rewrites/simps are necessary to apply uncurry_curry
+  3. Conclude with simp
+-/
+
+/-- Left unitality of the enriched structure -/
+@[reassoc (attr := simp)]
+lemma id_comp (x y : C) [Closed x] :
+    (λ_ ((ihom x).obj y)).inv ≫ id x ▷ _ ≫ comp x x y = 𝟙 _:= by
+  apply uncurry_injective
+  rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, id_eq, compTranspose_eq,
+      associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ← uncurry_eq,
+      uncurry_curry, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc,
+      uncurry_id_eq_ev _ _]
+
+/-- Right unitality of the enriched structure -/
+@[reassoc (attr := simp)]
+lemma comp_id (x y : C) [Closed x] [Closed y] :
+    (ρ_ ((ihom x).obj y)).inv ≫ _ ◁ id y ≫ comp x y y = 𝟙 _ := by
+  apply uncurry_injective
+  rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, compTranspose_eq,
+    associator_inv_naturality_right_assoc, ← rightUnitor_tensor_inv_assoc,
+    whisker_exchange_assoc, ← rightUnitor_inv_naturality_assoc, ← uncurry_id_eq_ev y y]
+  simp only [Functor.id_obj]
+  rw [← uncurry_natural_left]
+  simp [id_eq, uncurry_id_eq_ev]
+
+/-- Associativity of the enriched structure -/
+@[reassoc]
+lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
+    (α_ _ _ _).inv ≫ comp w x y ▷ _ ≫ comp w y z = _ ◁ comp x y z ≫ comp w x z := by
+  apply uncurry_injective
+  simp only [uncurry_natural_left, comp_eq]
+  rw [uncurry_curry, uncurry_curry]; simp only [compTranspose_eq, Category.assoc]
+  rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]; dsimp
+  rw [← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+    ← uncurry_eq, uncurry_curry]
+  simp only [comp_whiskerRight, tensorLeft_obj, Category.assoc, pentagon_inv_assoc,
+    whiskerRight_tensor, Iso.hom_inv_id_assoc]
+
+end Enriched
 
 end MonoidalClosed
 attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq

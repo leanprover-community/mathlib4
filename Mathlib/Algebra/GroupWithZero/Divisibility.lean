@@ -139,9 +139,6 @@ theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   rw [mul_assoc, eq_comm, mul_right_eq_self₀, mul_eq_one] at hcd
   obtain ⟨rfl, -⟩ | rfl := hcd <;> simp
 
--- Porting note: `attribute [protected]` is currently unsupported
--- attribute [protected] Nat.dvd_antisymm --This lemma is in core, so we protect it here
-
 theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=
   flip dvd_antisymm
 

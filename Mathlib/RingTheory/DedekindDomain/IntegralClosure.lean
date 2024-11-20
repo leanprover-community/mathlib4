@@ -36,7 +36,7 @@ dedekind domain, dedekind ring
 -/
 
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
+variable (A K : Type*) [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
@@ -95,7 +95,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [Algebra.IsSeparable K L] {ι 
   rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
   simp only [LinearMap.coe_restrictScalars, linearMap_apply, LinearMap.BilinForm.flip_apply,
     traceForm_apply]
-  refine IsIntegrallyClosed.isIntegral_iff.mp ?_
+  refine Submodule.mem_one.mpr <| IsIntegrallyClosed.isIntegral_iff.mp ?_
   exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 
 theorem integralClosure_le_span_dualBasis [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι]
@@ -198,13 +198,13 @@ theorem IsIntegralClosure.module_free [NoZeroSMulDivisors A L] [IsPrincipalIdeal
 and `L` has no zero smul divisors by `A`, the `A`-rank of the integral closure `C` of `A` in `L`
 is equal to the `K`-rank of `L`. -/
 theorem IsIntegralClosure.rank [IsPrincipalIdealRing A] [NoZeroSMulDivisors A L] :
-    FiniteDimensional.finrank A C = FiniteDimensional.finrank K L := by
+    Module.finrank A C = Module.finrank K L := by
   haveI : Module.Free A C := IsIntegralClosure.module_free A K L C
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L C
   haveI : IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L :=
     IsIntegralClosure.isLocalization A K L C
   let b := Basis.localizationLocalization K A⁰ L (Module.Free.chooseBasis A C)
-  rw [FiniteDimensional.finrank_eq_card_chooseBasisIndex, FiniteDimensional.finrank_eq_card_basis b]
+  rw [Module.finrank_eq_card_chooseBasisIndex, Module.finrank_eq_card_basis b]
 
 variable {A K}
 

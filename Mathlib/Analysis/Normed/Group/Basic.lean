@@ -6,7 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Analysis.Normed.Group.Seminorm
-import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Sequences
 
@@ -285,7 +284,7 @@ existing `UniformSpace` instance on `E`)."]
 abbrev GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : SeminormedGroup E where
   dist x y := f (x / y)
   norm := f
-  dist_eq x y := rfl
+  dist_eq _ _ := rfl
   dist_self x := by simp only [div_self', map_one_eq_zero]
   dist_triangle := le_map_div_add_map_div f
   dist_comm := map_div_rev f
@@ -338,7 +337,7 @@ abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommG
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
-  {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
+  {a a₁ a₂ b b₁ b₂ c : E} {r r₁ r₂ : ℝ}
 
 @[to_additive]
 theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ :=
@@ -387,13 +386,14 @@ theorem dist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
 theorem norm_mul_le' (a b : E) : ‖a * b‖ ≤ ‖a‖ + ‖b‖ := by
   simpa [dist_eq_norm_div] using dist_triangle a 1 b⁻¹
 
-@[to_additive]
-theorem norm_mul_le_of_le (h₁ : ‖a₁‖ ≤ r₁) (h₂ : ‖a₂‖ ≤ r₂) : ‖a₁ * a₂‖ ≤ r₁ + r₂ :=
+/-- **Triangle inequality** for the norm. -/
+@[to_additive norm_add_le_of_le "**Triangle inequality** for the norm."]
+theorem norm_mul_le_of_le' (h₁ : ‖a₁‖ ≤ r₁) (h₂ : ‖a₂‖ ≤ r₂) : ‖a₁ * a₂‖ ≤ r₁ + r₂ :=
   (norm_mul_le' a₁ a₂).trans <| add_le_add h₁ h₂
 
-@[to_additive norm_add₃_le]
-theorem norm_mul₃_le (a b c : E) : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ :=
-  norm_mul_le_of_le (norm_mul_le' _ _) le_rfl
+/-- **Triangle inequality** for the norm. -/
+@[to_additive norm_add₃_le "**Triangle inequality** for the norm."]
+lemma norm_mul₃_le' : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ := norm_mul_le_of_le' (norm_mul_le' _ _) le_rfl
 
 @[to_additive]
 lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
@@ -501,6 +501,38 @@ theorem norm_le_mul_norm_add (u v : E) : ‖u‖ ≤ ‖u * v‖ + ‖v‖ :=
     ‖u‖ = ‖u * v / v‖ := by rw [mul_div_cancel_right]
     _ ≤ ‖u * v‖ + ‖v‖ := norm_div_le _ _
 
+/-- An analogue of `norm_le_mul_norm_add` for the multiplication from the left. -/
+@[to_additive "An analogue of `norm_le_add_norm_add` for the addition from the left."]
+theorem norm_le_mul_norm_add' (u v : E) : ‖v‖ ≤ ‖u * v‖ + ‖u‖ :=
+  calc
+    ‖v‖ = ‖u⁻¹ * (u * v)‖ := by rw [← mul_assoc, inv_mul_cancel, one_mul]
+    _ ≤ ‖u⁻¹‖ + ‖u * v‖ := norm_mul_le' u⁻¹ (u * v)
+    _ = ‖u * v‖ + ‖u‖ := by rw [norm_inv', add_comm]
+
+@[to_additive]
+lemma norm_mul_eq_norm_right {x : E} (y : E) (h : ‖x‖ = 0) : ‖x * y‖ = ‖y‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_mul_le' x y
+  · simpa [h] using norm_le_mul_norm_add' x y
+
+@[to_additive]
+lemma norm_mul_eq_norm_left (x : E) {y : E} (h : ‖y‖ = 0) : ‖x * y‖ = ‖x‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_mul_le' x y
+  · simpa [h] using norm_le_mul_norm_add x y
+
+@[to_additive]
+lemma norm_div_eq_norm_right {x : E} (y : E) (h : ‖x‖ = 0) : ‖x / y‖ = ‖y‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_div_le x y
+  · simpa [h, norm_div_rev x y] using norm_sub_norm_le' y x
+
+@[to_additive]
+lemma norm_div_eq_norm_left (x : E) {y : E} (h : ‖y‖ = 0) : ‖x / y‖ = ‖x‖ := by
+  apply le_antisymm ?_ ?_
+  · simpa [h] using norm_div_le x y
+  · simpa [h] using norm_sub_norm_le' x y
+
 @[to_additive ball_eq]
 theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x / y‖ < ε } :=
   Set.ext fun a => by simp [dist_eq_norm_div]
@@ -515,14 +547,14 @@ theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by rw [mem_b
 @[to_additive mem_ball_iff_norm']
 theorem mem_ball_iff_norm''' : b ∈ ball a r ↔ ‖a / b‖ < r := by rw [mem_ball', dist_eq_norm_div]
 
-@[to_additive] -- Porting note (#10618): `simp` can prove it
+@[to_additive]
 theorem mem_ball_one_iff : a ∈ ball (1 : E) r ↔ ‖a‖ < r := by rw [mem_ball, dist_one_right]
 
 @[to_additive mem_closedBall_iff_norm]
 theorem mem_closedBall_iff_norm'' : b ∈ closedBall a r ↔ ‖b / a‖ ≤ r := by
   rw [mem_closedBall, dist_eq_norm_div]
 
-@[to_additive] -- Porting note (#10618): `simp` can prove it
+@[to_additive]
 theorem mem_closedBall_one_iff : a ∈ closedBall (1 : E) r ↔ ‖a‖ ≤ r := by
   rw [mem_closedBall, dist_one_right]
 
@@ -635,6 +667,13 @@ theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
 
 alias nndist_eq_nnnorm := nndist_eq_nnnorm_sub
 
+@[to_additive (attr := simp)]
+theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
+
+@[to_additive (attr := simp)]
+theorem edist_one_right (a : E) : edist a 1 = ‖a‖₊ := by
+  rw [edist_nndist, nndist_one_right]
+
 @[to_additive (attr := simp) nnnorm_zero]
 theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 :=
   NNReal.eq norm_one'
@@ -652,6 +691,13 @@ theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
 @[to_additive (attr := simp) nnnorm_neg]
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
+
+@[to_additive (attr := simp)]
+theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
+
+@[to_additive (attr := simp)]
+theorem edist_one_left (a : E) : edist 1 a = ‖a‖₊ := by
+  rw [edist_nndist, nndist_one_left]
 
 open scoped symmDiff in
 @[to_additive]
@@ -682,6 +728,27 @@ alias nnnorm_le_insert := nnnorm_le_nnnorm_add_nnnorm_sub
 @[to_additive]
 theorem nnnorm_le_mul_nnnorm_add (a b : E) : ‖a‖₊ ≤ ‖a * b‖₊ + ‖b‖₊ :=
   norm_le_mul_norm_add _ _
+
+/-- An analogue of `nnnorm_le_mul_nnnorm_add` for the multiplication from the left. -/
+@[to_additive "An analogue of `nnnorm_le_add_nnnorm_add` for the addition from the left."]
+theorem nnnorm_le_mul_nnnorm_add' (a b : E) : ‖b‖₊ ≤ ‖a * b‖₊ + ‖a‖₊ :=
+  norm_le_mul_norm_add' _ _
+
+@[to_additive]
+lemma nnnorm_mul_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x * y‖₊ = ‖y‖₊ :=
+  NNReal.eq <| norm_mul_eq_norm_right _ <| congr_arg NNReal.toReal h
+
+@[to_additive]
+lemma nnnorm_mul_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x * y‖₊ = ‖x‖₊ :=
+  NNReal.eq <| norm_mul_eq_norm_left _ <| congr_arg NNReal.toReal h
+
+@[to_additive]
+lemma nnnorm_div_eq_nnnorm_right {x : E} (y : E) (h : ‖x‖₊ = 0) : ‖x / y‖₊ = ‖y‖₊ :=
+  NNReal.eq <| norm_div_eq_norm_right _ <| congr_arg NNReal.toReal h
+
+@[to_additive]
+lemma nnnorm_div_eq_nnnorm_left (x : E) {y : E} (h : ‖y‖₊ = 0) : ‖x / y‖₊ = ‖x‖₊ :=
+  NNReal.eq <| norm_div_eq_norm_left _ <| congr_arg NNReal.toReal h
 
 @[to_additive ofReal_norm_eq_coe_nnnorm]
 theorem ofReal_norm_eq_coe_nnnorm' (a : E) : ENNReal.ofReal ‖a‖ = ‖a‖₊ :=
@@ -758,7 +825,8 @@ theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) 
 theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
   simpa using tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (1 : E)) _ _)
 
-@[to_additive]
+/-- See `tendsto_norm_one` for a version with pointed neighborhoods. -/
+@[to_additive "See `tendsto_norm_zero` for a version with pointed neighborhoods."]
 theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := by
   simpa using tendsto_norm_div_self (1 : E)
 
@@ -769,6 +837,16 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 @[to_additive (attr := continuity) continuous_nnnorm]
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
+
+set_option linter.docPrime false in
+@[to_additive Inseparable.norm_eq_norm]
+theorem Inseparable.norm_eq_norm' {u v : E} (h : Inseparable u v) : ‖u‖ = ‖v‖ :=
+  h.map continuous_norm' |>.eq
+
+set_option linter.docPrime false in
+@[to_additive Inseparable.nnnorm_eq_nnnorm]
+theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
+  h.map continuous_nnnorm' |>.eq
 
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
@@ -1025,7 +1103,7 @@ theorem norm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖ ≤ n * ‖a‖ := 
   induction n with
   | zero => simp
   | succ n ih =>
-    simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le ih le_rfl
+    simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le' ih le_rfl
 
 @[to_additive nnnorm_nsmul_le]
 theorem nnnorm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
@@ -1047,20 +1125,19 @@ theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ bal
   rw [nsmul_eq_mul]
   nlinarith
 
-@[to_additive] -- Porting note (#10618): `simp` can prove this
+@[to_additive]
 theorem mul_mem_closedBall_mul_iff {c : E} : a * c ∈ closedBall (b * c) r ↔ a ∈ closedBall b r := by
   simp only [mem_closedBall, dist_eq_norm_div, mul_div_mul_right_eq_div]
 
-@[to_additive] -- Porting note (#10618): `simp` can prove this
+@[to_additive]
 theorem mul_mem_ball_mul_iff {c : E} : a * c ∈ ball (b * c) r ↔ a ∈ ball b r := by
   simp only [mem_ball, dist_eq_norm_div, mul_div_mul_right_eq_div]
 
 @[to_additive]
 theorem smul_closedBall'' : a • closedBall b r = closedBall (a • b) r := by
   ext
-  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, _root_.div_eq_inv_mul, ←
+  simp [mem_closedBall, Set.mem_smul_set, dist_eq_norm_div, div_eq_inv_mul, ←
     eq_inv_mul_iff_mul_eq, mul_assoc]
-  -- Porting note: `ENNReal.div_eq_inv_mul` should be `protected`?
 
 @[to_additive]
 theorem smul_ball'' : a • ball b r = ball (a • b) r := by
@@ -1129,7 +1206,7 @@ theorem nnnorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖�
 @[to_additive]
 theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
-  (norm_prod_le_of_le s h).trans_eq NNReal.coe_sum.symm
+  (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
 
 namespace Real
 
@@ -1247,6 +1324,14 @@ alias ⟨eq_of_norm_div_eq_zero, _⟩ := norm_div_eq_zero_iff
 
 attribute [to_additive] eq_of_norm_div_eq_zero
 
+@[to_additive]
+theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
+  simpa [eq_comm] using (norm_nonneg' a).eq_or_lt
+
+@[to_additive]
+theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
+  eq_one_or_norm_pos a
+
 @[to_additive (attr := simp) nnnorm_eq_zero]
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero'']
@@ -1257,6 +1342,11 @@ theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
 
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
+
+/-- See `tendsto_norm_one` for a version with full neighborhoods. -/
+@[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
+lemma tendsto_norm_one' : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
+  tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff''.2 hx
 
 @[to_additive]
 theorem tendsto_norm_div_self_punctured_nhds (a : E) :
@@ -1389,3 +1479,5 @@ instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLi
   NormedCommGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 end SubgroupClass
+
+lemma tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop := tendsto_abs_atTop_atTop

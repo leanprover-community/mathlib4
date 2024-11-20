@@ -3,8 +3,8 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Order.SuccPred.Archimedean
+import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 
 /-!
 # Successor and predecessor on type tags

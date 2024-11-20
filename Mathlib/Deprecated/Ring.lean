@@ -27,7 +27,7 @@ IsSemiringHom, IsRingHom
 -/
 
 
-universe u v w
+universe u v
 
 variable {α : Type u}
 
@@ -45,7 +45,7 @@ structure IsSemiringHom {α : Type u} {β : Type v} [Semiring α] [Semiring β] 
 namespace IsSemiringHom
 
 variable {β : Type v} [Semiring α] [Semiring β]
-variable {f : α → β} (hf : IsSemiringHom f) {x y : α}
+variable {f : α → β}
 
 /-- The identity map is a semiring homomorphism. -/
 theorem id : IsSemiringHom (@id α) := by constructor <;> intros <;> rfl
@@ -85,7 +85,7 @@ variable {β : Type v} [Ring α] [Ring β]
 theorem of_semiring {f : α → β} (H : IsSemiringHom f) : IsRingHom f :=
   { H with }
 
-variable {f : α → β} (hf : IsRingHom f) {x y : α}
+variable {f : α → β} {x y : α}
 
 /-- Ring homomorphisms map zero to zero. -/
 theorem map_zero (hf : IsRingHom f) : f 0 = 0 :=
@@ -122,7 +122,7 @@ theorem to_isAddGroupHom (hf : IsRingHom f) : IsAddGroupHom f :=
 
 end IsRingHom
 
-variable {β : Type v} {γ : Type w} {rα : Semiring α} {rβ : Semiring β}
+variable {β : Type v} {rα : Semiring α} {rβ : Semiring β}
 
 namespace RingHom
 

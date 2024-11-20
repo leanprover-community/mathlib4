@@ -149,7 +149,7 @@ namespace CommShift
 
 variable (C) in
 instance id : CommShift (𝟭 C) A where
-  iso := fun a => rightUnitor _ ≪≫ (leftUnitor _).symm
+  iso := fun _ => rightUnitor _ ≪≫ (leftUnitor _).symm
 
 instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
   iso a := (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (F.commShiftIso a) _ ≪≫
@@ -246,7 +246,7 @@ variable {C D E J : Type*} [Category C] [Category D] [Category E] [Category J]
 /-- If `τ : F₁ ⟶ F₂` is a natural transformation between two functors
 which commute with a shift by an additive monoid `A`, this typeclass
 asserts a compatibility of `τ` with these shifts. -/
-class CommShift : Prop :=
+class CommShift : Prop where
   comm' (a : A) : (F₁.commShiftIso a).hom ≫ whiskerRight τ _ =
     whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom
 

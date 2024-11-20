@@ -97,10 +97,9 @@ instance (priority := 100) LocallyConvexSpace.toLocallyConnectedSpace [Module �
     (fun x => @LocallyConvexSpace.convex_basis ℝ _ _ _ _ _ _ x) fun _ _ hs => hs.2.isPreconnected
 
 instance (priority := 100) LocallyConvexSpace.toLocPathConnectedSpace [Module ℝ E]
-    [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocPathConnectedSpace E := by
-  refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun h ↦ ?_, fun ⟨t, ht⟩ ↦ mem_of_superset ht.1.1 ht.2⟩⟩⟩
-  let ⟨t, ht⟩ := (@convex_basis ℝ _ _ _ _ _ _ x).mem_iff.mp h
-  exact ⟨t, ⟨ht.1.1, ht.1.2.isPathConnected ⟨x, mem_of_mem_nhds ht.1.1⟩⟩, ht.2⟩
+    [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocPathConnectedSpace E :=
+  .of_bases (fun x ↦ @convex_basis ℝ _ _ _ _ _ _ x)
+    fun _ _ hs ↦ hs.2.isPathConnected <| nonempty_of_mem <| mem_of_mem_nhds hs.1
 
 /-- Convex subsets of locally convex spaces are locally path-connected. -/
 theorem Convex.locPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]

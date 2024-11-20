@@ -40,7 +40,7 @@ open Matrix
 
 open Finset Matrix SimpleGraph
 
-variable {V α β : Type*}
+variable {V α : Type*}
 
 namespace Matrix
 
@@ -143,7 +143,7 @@ def adjMatrix [Zero α] [One α] : Matrix V V α :=
 
 variable {α}
 
--- TODO: set as an equation lemma for `adjMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `adjMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
     G.adjMatrix α v w = if G.Adj v w then 1 else 0 :=
@@ -231,7 +231,6 @@ theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
 
 variable {G}
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
     (G.adjMatrix α *ᵥ Function.const _ a) v = G.degree v * a := by simp
 
