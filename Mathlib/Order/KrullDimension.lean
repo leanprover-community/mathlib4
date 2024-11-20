@@ -6,7 +6,6 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Set.Card
 import Mathlib.Order.Minimal
 import Mathlib.Order.RelSeries
 
@@ -661,12 +660,14 @@ variable {α : Type*} [Preorder α]
 /-
 These two lemmas could possibly be used to simplify the subsequent calculations,
 especially once the `Set.encard` api is richer.
--/
+
+(Commented out to avoid importing modules purely for `proof_wanted`.)
 proof_wanted height_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
   height a = (Set.Iio a).encard
 
 proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
   coheight a = (Set.Ioi a).encard
+-/
 
 @[simp] lemma height_nat (n : ℕ) : height n = n := by
   induction n using Nat.strongRecOn with | ind n ih =>
