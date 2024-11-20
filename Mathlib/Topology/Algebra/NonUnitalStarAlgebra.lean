@@ -141,9 +141,9 @@ instance {A : Type*} [UniformSpace A] [CompleteSpace A] [NonUnitalSemiring A] [S
   isClosed_closure.completeSpace_coe
 
 /-- The coercion from an elemental algebra to the full algebra is a `IsClosedEmbedding`. -/
-theorem isClosedEmbedding_coe (x : A) : IsClosedEmbedding ((↑) : elemental R x → A) where
+theorem isClosedEmbedding_coe (x : A) : Topology.IsClosedEmbedding ((↑) : elemental R x → A) where
   eq_induced := rfl
-  inj := Subtype.coe_injective
+  injective := Subtype.coe_injective
   isClosed_range := by simpa using isClosed R x
 
 end elemental
