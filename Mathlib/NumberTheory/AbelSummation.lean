@@ -103,9 +103,8 @@ theorem sum_mul_eq_sub_sub_integral_mul (c : ℕ → ℂ) {f : ℝ → ℂ} {a b
       exact Set.Ioc_subset_Icc_self.trans <| Set.Icc_subset_Icc_right (by linarith)
     · rw [Set.uIcc_of_le (by linarith)]
       exact Set.Icc_subset_Icc_left (by linarith)
-  -- `erw` is necessary here because of the `•` in the statement of `sum_Ioc_by_parts`
-  erw [sum_Ioc_by_parts (fun k ↦ f k) _ (by linarith) hb]
-  simp_rw [range_eq_Ico, Nat.Ico_succ_right, smul_eq_mul]
+  simp_rw [← smul_eq_mul, sum_Ioc_by_parts (fun k ↦ f k) _ (by linarith) hb, range_eq_Ico,
+    Nat.Ico_succ_right, smul_eq_mul]
   rw [show ∑ k ∈ Ioc ⌊a⌋₊ (⌊b⌋₊ - 1), (f ↑(k + 1) - f ↑k) * ∑ n ∈ Icc 0 k, c n =
     ∑ k ∈ Ioc ⌊a⌋₊ (⌊b⌋₊ - 1), ∫ (t : ℝ) in ↑k..↑(k + 1), deriv f t * ∑ n ∈ Icc 0 ⌊t⌋₊, c n by
       refine sum_congr rfl fun k _ ↦ (h_integ _ _ _ (by simp [Set.Ioc_subset_Icc_self]) ?_).symm
