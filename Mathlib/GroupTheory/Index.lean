@@ -558,18 +558,12 @@ theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.finiteIndex (index_dvd_of_le h)⟩
 
 @[to_additive (attr := gcongr)]
-lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index := by
-  rcases eq_or_ne H.index 0 with h0 | h0
-  · rw [index_eq_zero_iff_infinite] at h0
-    exfalso
-    exact not_finite (G ⧸ H)
-  exact Nat.le_of_dvd (Nat.zero_lt_of_ne_zero h0) (index_dvd_of_le h)
+lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=
+  Nat.le_of_dvd (Nat.zero_lt_of_ne_zero FiniteIndex.finiteIndex) (index_dvd_of_le h)
 
 @[to_additive (attr := gcongr)]
-lemma index_strictAnti (h : H < K) [H.FiniteIndex] : K.index < H.index := by
-  rcases eq_or_ne K.index 0 with h0 | h0
-  · rw [h0, index_eq_card]
-    exact Finite.card_pos
+lemma index_strictAnti (h : H < K) [hf : H.FiniteIndex] : K.index < H.index := by
+  have h0 : K.index ≠ 0 := fun H ↦ hf.1 <| by simpa [H] using (index_dvd_of_le h.le)
   apply lt_of_le_of_ne (index_antitone h.le)
   rw [← mul_one K.index, ← relindex_mul_index h.le, mul_comm, Ne, eq_comm]
   simp [h0, h.not_le]
