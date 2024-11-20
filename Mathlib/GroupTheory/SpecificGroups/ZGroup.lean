@@ -48,4 +48,15 @@ theorem of_injective [hG' : IsZGroup G'] (hf : Function.Injective f) : IsZGroup 
 
 instance [IsZGroup G] (H : Subgroup G) : IsZGroup H := of_injective H.subtype_injective
 
+theorem of_surjective [Finite G] [hG : IsZGroup G] (hf : Function.Surjective f) : IsZGroup G' := by
+  rw [isZGroup_iff] at hG ⊢
+  intro p hp P
+  have := Fact.mk hp
+  obtain ⟨Q, rfl⟩ := Sylow.mapSurjective_surjective hf p P
+  specialize hG p hp Q
+  exact isCyclic_of_surjective _ (f.subgroupMap_surjective Q)
+
+instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H) :=
+  of_surjective (QuotientGroup.mk'_surjective H)
+
 end IsZGroup

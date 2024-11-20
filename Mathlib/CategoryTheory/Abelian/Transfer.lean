@@ -59,7 +59,7 @@ theorem hasKernels [PreservesFiniteLimits G] (i : F ⋙ G ≅ 𝟭 C) : HasKerne
 /-- No point making this an instance, as it requires `i` and `adj`. -/
 theorem hasCokernels (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) : HasCokernels C :=
   { has_colimit := fun f => by
-      have : PreservesColimits G := adj.leftAdjointPreservesColimits
+      have : PreservesColimits G := adj.leftAdjoint_preservesColimits
       have := NatIso.naturality_1 i f
       simp? at this says
         simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map] at this
@@ -74,7 +74,7 @@ def cokernelIso (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y)
     G.obj (cokernel (F.map f)) ≅ cokernel f := by
   -- We have to write an explicit `PreservesColimits` type here,
   -- as `leftAdjointPreservesColimits` has universe variables.
-  have : PreservesColimits G := adj.leftAdjointPreservesColimits
+  have : PreservesColimits G := adj.leftAdjoint_preservesColimits
   calc
     G.obj (cokernel (F.map f)) ≅ cokernel (G.map (F.map f)) :=
       (asIso (cokernelComparison _ G)).symm
@@ -87,7 +87,7 @@ variable [Limits.HasKernels C] [PreservesFiniteLimits G]
 /-- Auxiliary construction for `coimageIsoImage` -/
 def coimageIsoImageAux (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
     kernel (G.map (cokernel.π (F.map f))) ≅ kernel (cokernel.π f) := by
-  have : PreservesColimits G := adj.leftAdjointPreservesColimits
+  have : PreservesColimits G := adj.leftAdjoint_preservesColimits
   calc
     kernel (G.map (cokernel.π (F.map f))) ≅
         kernel (cokernel.π (G.map (F.map f)) ≫ cokernelComparison (F.map f) G) :=
@@ -113,7 +113,7 @@ We still need to check that this agrees with the canonical morphism.
 -/
 def coimageIsoImage (i : F ⋙ G ≅ 𝟭 C) (adj : G ⊣ F) {X Y : C} (f : X ⟶ Y) :
     Abelian.coimage f ≅ Abelian.image f := by
-  have : PreservesLimits F := adj.rightAdjointPreservesLimits
+  have : PreservesLimits F := adj.rightAdjoint_preservesLimits
   calc
     Abelian.coimage f ≅ cokernel (kernel.ι f) := Iso.refl _
     _ ≅ G.obj (cokernel (F.map (kernel.ι f))) := (cokernelIso _ _ i adj _).symm
