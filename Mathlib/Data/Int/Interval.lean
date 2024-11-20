@@ -129,6 +129,18 @@ theorem card_Ioc_of_le (h : a ≤ b) : (#(Ioc a b) : ℤ) = b - a := by
 theorem card_Ioo_of_lt (h : a < b) : (#(Ioo a b) : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 
+theorem Icc_of_eq_sub_1 (h : a = b - 1) : Icc a b = {a, b} := by
+  refine le_antisymm (fun t ht ↦ ?_) (fun t ht ↦ ?_)
+  · rw [h, mem_Icc] at ht
+    by_cases hta : t = b - 1
+    · rw [hta, ← h]; exact mem_insert_self ..
+    · suffices b = t from this ▸ mem_insert.2 (Or.inr (mem_singleton.2 rfl))
+      exact le_antisymm (sub_add_cancel b 1 ▸ (ne_eq t (b - 1) ▸ hta).symm.lt_of_le ht.1) ht.2
+  · have hab : a ≤ b := h ▸ sub_le_self b one_pos.le
+    rcases mem_insert.1 ht with rfl | hb
+    · exact mem_Icc.2 ⟨le_refl t, hab⟩
+    · rw [mem_singleton.1 hb]; exact mem_Icc.2 ⟨hab, le_refl b⟩
+
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
   rw [← card_Icc, Fintype.card_ofFinset]
