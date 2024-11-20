@@ -228,3 +228,15 @@ theorem toFun_eq_coe (f : α →ₙ*q β) : f.toFun = (f : α → β) :=
   rfl
 
 end OneQuantaleHom
+
+namespace OrderMonoidIso
+
+variable [Semigroup α] [Semigroup β] [CompleteLattice α] [CompleteLattice β]
+  [FunLike F α β] {f g : α →ₙ*q β}
+
+instance (f : α ≃*o β) : α →ₙ*q β where
+  toFun := f.toFun
+  map_mul' := f.map_mul'
+  map_sSup' := sorry
+
+end OrderMonoidIso
