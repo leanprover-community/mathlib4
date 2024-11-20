@@ -284,7 +284,11 @@ open Limits
 
 variable (C J) [Preorder J]
 
-class HasIterationOfShape where
+/-- A category `C` has iterations of shape `J` when certain shapes
+of colimits exists. When `J` is well ordered, this assumption is used in
+order to show that the category `Iteration ε j` is nonempty for any `j : J`,
+see the file `CategoryTheory.SmallObject.Nonempty`. -/
+class HasIterationOfShape : Prop where
   hasColimitsOfShape_of_isSuccLimit (j : J) (hj : Order.IsSuccLimit j) :
     HasColimitsOfShape (Set.Iio j) C := by infer_instance
   hasColimitsOfShape : HasColimitsOfShape J C := by infer_instance
