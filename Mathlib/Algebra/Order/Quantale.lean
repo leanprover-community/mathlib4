@@ -34,8 +34,8 @@ integral, and involutive quantales easier to add on later.
   `(sSup s) * y = ⨆ x ∈ s, x * y`;
 
 * `Quantale` and `AddQuantale` : Structures serving as a typeclass alias, so one can write
-  `variable? [Quantale α]` for `[Semigroup α] [CompleteLattice α] [IsQuantale α]` and similar
-  for the additive variant.
+  `variable? [Quantale α]` instead of `variable [Semigroup α] [CompleteLattice α] [IsQuantale α]`,
+  and similarly for the additive variant.
 
 * `leftMulResiduation`, `rightMulResiduation`, `leftAddResiduation`, `rightAddResiduation` :
   Defining the left- and right- residuations of the semigroup (see notation below).
