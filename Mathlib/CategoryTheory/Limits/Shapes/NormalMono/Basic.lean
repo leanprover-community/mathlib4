@@ -59,16 +59,11 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
     have reassoc' {W : D} (h : hf.Z ⟶ W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hf.w]
     simp [reassoc']
-  isLimit :=
-    @ReflectsLimit.reflects C _ D _ _ _ _ F _ _ <|
-      IsLimit.ofConeEquiv (Cones.postcomposeEquivalence (@compNatIso C _ _ _ _ _ D _ _ F _)) <|
-        IsLimit.ofIsoLimit
-          (IsLimit.ofIsoLimit
-            (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
-              simp only [Functor.map_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
-            hf.isLimit)
-            (ofιCongr (Category.comp_id _).symm))
-        <| by apply Iso.symm; apply isoOfι  -- Porting note: very fiddly unification here
+  isLimit := isLimitOfReflects F <|
+    IsLimit.ofConeEquiv (Cones.postcomposeEquivalence (compNatIso F)) <|
+      (IsLimit.ofIsoLimit (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
+        simp only [Functor.map_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
+        hf.isLimit)) (Fork.ext (Iso.refl _) (by simp [compNatIso, Fork.ι]))
 
 end
 
@@ -160,14 +155,11 @@ def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMor
   W := F.objPreimage hf.W
   g := F.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
   w := F.map_injective <| by simp [hf.w]
-  isColimit :=
-    ReflectsColimit.reflects <|
-      IsColimit.ofCoconeEquiv (Cocones.precomposeEquivalence (compNatIso F).symm) <|
-        IsColimit.ofIsoColimit
-          (IsColimit.ofIsoColimit
-            (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
-            (ofπCongr (Category.id_comp _).symm))
-          <| by apply Iso.symm; apply isoOfπ
+  isColimit := isColimitOfReflects F <|
+    IsColimit.ofCoconeEquiv (Cocones.precomposeEquivalence (compNatIso F).symm) <|
+      (IsColimit.ofIsoColimit
+        (IsCokernel.ofIsoComp _ _ (F.objObjPreimageIso hf.W).symm (by simp) hf.isColimit)
+          (Cofork.ext (Iso.refl _) (by simp [compNatIso, Cofork.π])))
 
 end
 
