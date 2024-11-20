@@ -2467,6 +2467,13 @@ theorem strictMono_of_succ_lt_omega0 {α : Type*} [Preorder α] (f : Iio ω → 
   ext
   simp [relIso_nat_omega0_coe_symm_apply]
 
+theorem monotone_of_succ_le_omega0 {α : Type*} [Preorder α] (f : Iio ω → α)
+    (hf : ∀ i, f i ≤ f ⟨succ i, isLimit_omega0.succ_lt i.2⟩) : Monotone f := by
+  have mono := monotone_nat_of_le_succ fun n ↦ hf ⟨n, nat_lt_omega0 n⟩
+  convert mono.comp relIso_nat_omega0.symm.monotone
+  ext
+  simp [relIso_nat_omega0_coe_symm_apply]
+
 end Ordinal
 
 namespace Cardinal
