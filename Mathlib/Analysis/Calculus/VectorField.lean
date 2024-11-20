@@ -298,45 +298,20 @@ lemma leibniz_identity_lieBracketWithin_of_isSymmSndFDerivWithinAt
       lieBracketWithin 𝕜 (lieBracketWithin 𝕜 U V s) W s x
       + lieBracketWithin 𝕜 V (lieBracketWithin 𝕜 U W s) s x := by
   simp only [lieBracketWithin_eq, map_sub]
-  rw [fderivWithin_sub (hs x hx)]; rotate_left
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hW.fderivWithin_right_apply (hV.of_le one_le_two) hs le_rfl hx
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hV.fderivWithin_right_apply (hW.of_le one_le_two) hs le_rfl hx
-  rw [fderivWithin_sub (hs x hx)]; rotate_left
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hV.fderivWithin_right_apply (hU.of_le one_le_two) hs le_rfl hx
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hU.fderivWithin_right_apply (hV.of_le one_le_two) hs le_rfl hx
-  rw [fderivWithin_sub (hs x hx)]; rotate_left
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hW.fderivWithin_right_apply (hU.of_le one_le_two) hs le_rfl hx
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hU.fderivWithin_right_apply (hW.of_le one_le_two) hs le_rfl hx
-  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hW.fderivWithin_right hs le_rfl hx
-  · exact ContDiffWithinAt.differentiableWithinAt hV one_le_two
-  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hV.fderivWithin_right hs le_rfl hx
-  · exact ContDiffWithinAt.differentiableWithinAt hW one_le_two
-  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hV.fderivWithin_right hs le_rfl hx
-  · exact ContDiffWithinAt.differentiableWithinAt hU one_le_two
-  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hU.fderivWithin_right hs le_rfl hx
-  · exact ContDiffWithinAt.differentiableWithinAt hV one_le_two
-  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hW.fderivWithin_right hs le_rfl hx
-  · exact ContDiffWithinAt.differentiableWithinAt hU one_le_two
-  rw [fderivWithin_clm_apply (hs x hx)]; rotate_left
-  · apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
-    exact hU.fderivWithin_right hs le_rfl hx
-  · exact ContDiffWithinAt.differentiableWithinAt hW one_le_two
+  have aux₁ {U V : E → E} (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x) :
+      DifferentiableWithinAt 𝕜 (fun x ↦ (fderivWithin 𝕜 V s x) (U x)) s x :=
+    have := hV.fderivWithin_right_apply (hU.of_le one_le_two) hs le_rfl hx
+    this.differentiableWithinAt le_rfl
+  have aux₂ {U V : E → E} (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x) :
+      fderivWithin 𝕜 (fun y ↦ (fderivWithin 𝕜 U s y) (V y)) s x =
+        (fderivWithin 𝕜 U s x).comp (fderivWithin 𝕜 V s x) +
+        (fderivWithin 𝕜 (fderivWithin 𝕜 U s) s x).flip (V x) := by
+    refine fderivWithin_clm_apply (hs x hx) ?_ (hV.differentiableWithinAt one_le_two)
+    exact (hU.fderivWithin_right hs le_rfl hx).differentiableWithinAt le_rfl
+  rw [fderivWithin_sub (hs x hx) (aux₁ hV hW) (aux₁ hW hV)]
+  rw [fderivWithin_sub (hs x hx) (aux₁ hU hV) (aux₁ hV hU)]
+  rw [fderivWithin_sub (hs x hx) (aux₁ hU hW) (aux₁ hW hU)]
+  rw [aux₂ hW hV, aux₂ hV hW, aux₂ hV hU, aux₂ hU hV, aux₂ hW hU, aux₂ hU hW]
   simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.add_apply,
     ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.flip_apply, h'V.eq,
     h'U.eq, h'W.eq]
