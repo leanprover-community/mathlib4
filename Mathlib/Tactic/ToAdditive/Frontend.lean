@@ -236,13 +236,55 @@ that the new name differs from the original one.
 
 open Lean Meta Elab Command Std
 
-/-- The `to_additive_ignore_args` attribute. -/
+/--
+An attribute that tells `@[to_additive]` that certain arguments of this definition are not
+involved when using `@[to_additive]`.
+This helps the heuristic of `@[to_additive]` by also transforming definitions if `ℕ` or another
+fixed type occurs as one of these arguments.
+-/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
-/-- The `to_additive_relevant_arg` attribute. -/
+/--
+An attribute that is automatically added to declarations tagged with `@[to_additive]`, if needed.
+
+This attribute tells which argument is the type where this declaration uses the multiplicative
+structure. If there are multiple argument, we typically tag the first one.
+If this argument contains a fixed type, this declaration will note be additivized.
+See the Heuristics section of `to_additive.attr` for more details.
+
+If a declaration is not tagged, it is presumed that the first argument is relevant.
+`@[to_additive]` uses the function `to_additive.first_multiplicative_arg` to automatically tag
+declarations. It is ok to update it manually if the automatic tagging made an error.
+
+Implementation note: we only allow exactly 1 relevant argument, even though some declarations
+(like `prod.group`) have multiple arguments with a multiplicative structure on it.
+The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
+we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
+anyway.
+
+Warning: interactions between this and the `(reorder := ...)` argument are not well-tested.
+-/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
-/-- The `to_additive_reorder` attribute. -/
+/--
+An attribute that stores all the declarations that needs their arguments reordered when
+applying `@[to_additive]`. It is applied automatically by the `(reorder := ...)` syntax of
+`to_additive`, and should not usually be added manually.
+-/
 syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
-/-- The `to_additive_change_numeral` attribute. -/
+/--
+An attribute that stores all the declarations that deal with numeric literals on variable types.
+
+Numeral literals occur in expressions without type information, so in order to decide whether `1`
+needs to be changed to `0`, the context around the numeral is relevant.
+Most numerals will be in an `OfNat.ofNat` application, though tactics can add numeral literals
+inside arbitrary functions. By default we assume that we do not change numerals, unless it is
+in a function application with the `to_additive_change_numeral` attribute.
+
+`@[to_additive_change_numeral n₁ ...]` should be added to all functions that take one or more
+numerals as argument that should be changed if `additiveTest` succeeds on the first argument,
+i.e. when the numeral is only translated if the first argument is a variable
+(or consists of variables).
+The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1).
+-/
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
@@ -336,12 +378,7 @@ register_option linter.toAdditiveExisting : Bool := {
     the additive declaration already exists" }
 
 
-/--
-An attribute that tells `@[to_additive]` that certain arguments of this definition are not
-involved when using `@[to_additive]`.
-This helps the heuristic of `@[to_additive]` by also transforming definitions if `ℕ` or another
-fixed type occurs as one of these arguments.
--/
+@[inherit_doc to_additive_ignore_args]
 initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name  := `to_additive_ignore_args
@@ -353,11 +390,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-/--
-An attribute that stores all the declarations that needs their arguments reordered when
-applying `@[to_additive]`. It is applied automatically by the `(reorder := ...)` syntax of
-`to_additive`, and should not usually be added manually.
--/
+@[inherit_doc to_additive_reorder]
 initialize reorderAttr : NameMapExtension (List <| List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_reorder
@@ -375,26 +408,7 @@ initialize reorderAttr : NameMapExtension (List <| List Nat) ←
       pure <| reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
     | _, _ => throwUnsupportedSyntax }
 
-/--
-An attribute that is automatically added to declarations tagged with `@[to_additive]`, if needed.
-
-This attribute tells which argument is the type where this declaration uses the multiplicative
-structure. If there are multiple argument, we typically tag the first one.
-If this argument contains a fixed type, this declaration will note be additivized.
-See the Heuristics section of `to_additive.attr` for more details.
-
-If a declaration is not tagged, it is presumed that the first argument is relevant.
-`@[to_additive]` uses the function `to_additive.first_multiplicative_arg` to automatically tag
-declarations. It is ok to update it manually if the automatic tagging made an error.
-
-Implementation note: we only allow exactly 1 relevant argument, even though some declarations
-(like `prod.group`) have multiple arguments with a multiplicative structure on it.
-The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
-we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
-anyway.
-
-Warning: interactions between this and the `(reorder := ...)` argument are not well-tested.
--/
+@[inherit_doc to_additive_relevant_arg]
 initialize relevantArgAttr : NameMapExtension Nat ←
   registerNameMapAttribute {
     name := `to_additive_relevant_arg
@@ -404,21 +418,7 @@ initialize relevantArgAttr : NameMapExtension Nat ←
     | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
     | _, _ => throwUnsupportedSyntax }
 
-/--
-An attribute that stores all the declarations that deal with numeric literals on variable types.
-
-Numeral literals occur in expressions without type information, so in order to decide whether `1`
-needs to be changed to `0`, the context around the numeral is relevant.
-Most numerals will be in an `OfNat.ofNat` application, though tactics can add numeral literals
-inside arbitrary functions. By default we assume that we do not change numerals, unless it is
-in a function application with the `to_additive_change_numeral` attribute.
-
-`@[to_additive_change_numeral n₁ ...]` should be added to all functions that take one or more
-numerals as argument that should be changed if `additiveTest` succeeds on the first argument,
-i.e. when the numeral is only translated if the first argument is a variable
-(or consists of variables).
-The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1).
--/
+@[inherit_doc to_additive_change_numeral]
 initialize changeNumeralAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
     name := `to_additive_change_numeral
@@ -476,19 +476,19 @@ structure Config : Type where
   deriving Repr
 
 /-- Implementation function for `additiveTest`.
-  We cache previous applications of the function, using an expression cache using ptr equality
-  to avoid visiting the same subexpression many times. Note that we only need to cache the
-  expressions without taking the value of `inApp` into account, since `inApp` only matters when
-  the expression is a constant. However, for this reason we have to make sure that we never
-  cache constant expressions, so that's why the `if`s in the implementation are in this order.
+Failure means that in that subexpression there is no constant that blocks `e` from being translated.
+We cache previous applications of the function, using an expression cache using ptr equality
+to avoid visiting the same subexpression many times. Note that we only need to cache the
+expressions without taking the value of `inApp` into account, since `inApp` only matters when
+the expression is a constant. However, for this reason we have to make sure that we never
+cache constant expressions, so that's why the `if`s in the implementation are in this order.
 
-  Note that this function is still called many times by `applyReplacementFun`
-  and we're not remembering the cache between these calls. -/
-unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
-  (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
+Note that this function is still called many times by `applyReplacementFun`
+and we're not remembering the cache between these calls. -/
+unsafe def additiveTestUnsafe (env : Environment) (e : Expr) : Option Name :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) Name := do
     if e.isConst then
-      if inApp || (findTranslation? e.constName).isSome then
+      if inApp || (findTranslation? env e.constName).isSome then
         failure
       else
         return e.constName
@@ -501,7 +501,7 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
           -- make sure that we don't treat `(fun x => α) (n + 1)` as a type that depends on `Nat`
           guard !x.isConstantApplication
           if let some n := e.getAppFn.constName? then
-            if let some l := ignore n then
+            if let some l := ignoreArgsAttr.find? env n then
               if e.getAppNumArgs + 1 ∈ l then
                 failure
           visit a
@@ -513,18 +513,15 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
     | _                  => failure
   Id.run <| (visit e).run' mkPtrSet
 
-/--
-`additiveTest e` tests whether the expression `e` contains a constant
+/-- `additiveTest e` tests whether the expression `e` contains a constant
 `nm` that is not applied to any arguments, and such that `translations.find?[nm] = none`.
 This is used in `@[to_additive]` for deciding which subexpressions to transform: we only transform
-constants if `additiveTest` applied to their first argument returns `true`.
+constants if `additiveTest` applied to their relevant argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
-We ignore all arguments specified by the `ignore` `NameMap`.
--/
-def additiveTest (findTranslation? : Name → Option Name)
-    (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
-  unsafe additiveTestUnsafe findTranslation? ignore e
+We ignore all arguments specified by the `ignore` `NameMap`. -/
+def additiveTest (env : Environment) (e : Expr) : Option Name :=
+  unsafe additiveTestUnsafe env e
 
 /-- Swap the first two elements of a list -/
 def _root_.List.swapFirstTwo {α : Type _} : List α → List α
@@ -549,24 +546,18 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (e : Expr) : MetaM Expr := do
-  let env ← getEnv
+def applyReplacementFun (e : Expr) : MetaM Expr :=
+  return aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+where /-- Implementation of `applyReplacementFun`. -/
+  aux (env : Environment) (trace : Bool) : Expr → Expr :=
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (reorderAttr.find? env nm |>.getD [])
   let relevantArg : Name → ℕ := fun nm ↦ (relevantArgAttr.find? env nm).getD 0
-  return aux
-      (findTranslation? <| ← getEnv) reorderFn (ignoreArgsAttr.find? env)
-      (changeNumeralAttr.find? env) relevantArg (← getBoolOption `trace.to_additive_detail) e
-where /-- Implementation of `applyReplacementFun`. -/
-  aux (findTranslation? : Name → Option Name)
-    (reorderFn : Name → List (List ℕ)) (ignore : Name → Option (List ℕ))
-    (changeNumeral? : Name → Option (List Nat)) (relevantArg : Name → ℕ) (trace : Bool) :
-    Expr → Expr :=
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
     | .const n₀ ls₀ => do
-      let n₁ := n₀.mapPrefix findTranslation?
+      let n₁ := n₀.mapPrefix <| findTranslation? env
       let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
       if trace then
         if n₀ != n₁ then
@@ -589,7 +580,8 @@ where /-- Implementation of `applyReplacementFun`. -/
           let relevantArgId := relevantArg nm
           let gfAdditive :=
             if relevantArgId < gAllArgs.size && gf.isConst then
-              if let some fxd := additiveTest findTranslation? ignore gAllArgs[relevantArgId]! then
+              if let some fxd :=
+                additiveTest env gAllArgs[relevantArgId]! then
                 Id.run <| do
                   if trace then
                     dbg_trace s!"The application of {nm} contains the fixed type \
@@ -602,14 +594,14 @@ where /-- Implementation of `applyReplacementFun`. -/
           /- Test if arguments should be reordered. -/
           let reorder := reorderFn nm
           if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
-            (additiveTest findTranslation? ignore gAllArgs[relevantArgId]!).isNone then
+            (additiveTest env gAllArgs[relevantArgId]!).isNone then
             gAllArgs := gAllArgs.permute! reorder
             if trace then
               dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
           let firstArg := gAllArgs[0]!
-          if let some changedArgNrs := changeNumeral? nm then
-            if additiveTest findTranslation? ignore firstArg |>.isNone then
+          if let some changedArgNrs := changeNumeralAttr.find? env nm then
+            if additiveTest env firstArg |>.isNone then
               if trace then
                 dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
                   However, we will still recurse into all the non-numeral arguments."
@@ -626,7 +618,7 @@ where /-- Implementation of `applyReplacementFun`. -/
           pure (← r gf, ← gAllArgs.mapM r)
       return some <| mkAppN gfAdditive gAllArgsAdditive
     | .proj n₀ idx e => do
-      let n₁ := n₀.mapPrefix findTranslation?
+      let n₁ := n₀.mapPrefix <| findTranslation? env
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
