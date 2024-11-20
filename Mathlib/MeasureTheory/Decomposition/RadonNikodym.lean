@@ -298,6 +298,11 @@ lemma inv_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
 
 section integral
 
+lemma integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
+    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
+  integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
+    (Measure.lintegral_rnDeriv_lt_top _ _).ne
+
 lemma setLIntegral_rnDeriv_le (s : Set α) :
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν ≤ μ s :=
   (withDensity_apply_le _ _).trans (Measure.le_iff'.1 (withDensity_rnDeriv_le μ ν) s)
