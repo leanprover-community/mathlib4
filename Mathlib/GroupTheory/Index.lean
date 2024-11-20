@@ -392,23 +392,6 @@ noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) 
 lemma index_eq_zero_iff_infinite : H.index = 0 ↔ Infinite (G ⧸ H) := by
   simp [index_eq_card, Nat.card_eq_zero]
 
-@[to_additive (attr := gcongr)]
-lemma index_antitone (h : H ≤ K) [h₁ : Finite (G ⧸ H)] : K.index ≤ H.index := by
-  rcases eq_or_ne H.index 0 with h0 | h0
-  · rw [index_eq_zero_iff_infinite] at h0
-    exfalso
-    exact not_finite (G ⧸ H)
-  exact Nat.le_of_dvd (Nat.zero_lt_of_ne_zero h0) (index_dvd_of_le h)
-
-@[to_additive (attr := gcongr)]
-lemma index_strictAnti (h : H < K) [h₁ : Finite (G ⧸ H)] : K.index < H.index := by
-  rcases eq_or_ne K.index 0 with h0 | h0
-  · rw [h0, index_eq_card]
-    exact Finite.card_pos
-  apply lt_of_le_of_ne (index_antitone h.le)
-  rw [← mul_one K.index, ← relindex_mul_index h.le, mul_comm, Ne, eq_comm]
-  simp [h0, h.not_le]
-
 @[to_additive one_lt_index_of_ne_top]
 theorem one_lt_index_of_ne_top [Finite (G ⧸ H)] (hH : H ≠ ⊤) : 1 < H.index :=
   Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨index_ne_zero_of_finite, mt index_eq_one.mp hH⟩
@@ -573,6 +556,23 @@ variable {H K}
 @[to_additive]
 theorem finiteIndex_of_le [FiniteIndex H] (h : H ≤ K) : FiniteIndex K :=
   ⟨ne_zero_of_dvd_ne_zero FiniteIndex.finiteIndex (index_dvd_of_le h)⟩
+
+@[to_additive (attr := gcongr)]
+lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index := by
+  rcases eq_or_ne H.index 0 with h0 | h0
+  · rw [index_eq_zero_iff_infinite] at h0
+    exfalso
+    exact not_finite (G ⧸ H)
+  exact Nat.le_of_dvd (Nat.zero_lt_of_ne_zero h0) (index_dvd_of_le h)
+
+@[to_additive (attr := gcongr)]
+lemma index_strictAnti (h : H < K) [H.FiniteIndex] : K.index < H.index := by
+  rcases eq_or_ne K.index 0 with h0 | h0
+  · rw [h0, index_eq_card]
+    exact Finite.card_pos
+  apply lt_of_le_of_ne (index_antitone h.le)
+  rw [← mul_one K.index, ← relindex_mul_index h.le, mul_comm, Ne, eq_comm]
+  simp [h0, h.not_le]
 
 variable (H K)
 
