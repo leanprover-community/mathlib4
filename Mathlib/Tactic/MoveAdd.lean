@@ -195,7 +195,8 @@ def reorderUsing (toReorder : List α) (instructions : List (α × Bool)) : List
   let uToReorder := (uniquify toReorder).toArray
   let reorder := uToReorder.qsort fun x y =>
     match uInstructions.find? (Prod.fst · == x), uInstructions.find? (Prod.fst · == y) with
-      | none, none => (uToReorder.getIdx? x).get! ≤ (uToReorder.getIdx? y).get!
+      | none, none =>
+        ((uToReorder.indexOf? x).map Fin.val).get! ≤ ((uToReorder.indexOf? y).map Fin.val).get!
       | _, _ => weight uInstructions x ≤ weight uInstructions y
   (reorder.map Prod.fst).toList
 
