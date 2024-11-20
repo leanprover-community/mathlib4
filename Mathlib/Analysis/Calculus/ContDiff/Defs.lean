@@ -410,8 +410,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
     · apply Filter.inter_mem _ hu
       apply nhdsWithin_le_of_mem hu
       exact nhdsWithin_mono _ (subset_insert x u) hv
-    · rw [show ((n.succ : ℕ) : WithTop ℕ∞) = n + 1 from rfl,
-        hasFTaylorSeriesUpToOn_succ_iff_right]
+    · rw [hasFTaylorSeriesUpToOn_succ_iff_right]
       refine ⟨fun y _ => rfl, fun y hy => ?_, ?_⟩
       · change
           HasFDerivWithinAt (fun z => (continuousMultilinearCurryFin0 𝕜 E F).symm (f z))
