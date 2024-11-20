@@ -512,9 +512,8 @@ mutual
 partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result (ExBase sα) q($a)) :=
   match va with
   | .atom _ => do
-    let a' : Q($α) := q($a)
-    let (i, ⟨b', _⟩) ← addAtomQ a'
-    pure ⟨b', ExBase.atom i, (q(Eq.refl $b') : Expr)⟩
+    let (i, ⟨b', _⟩) ← addAtomQ q($a)
+    pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
   | .sum va => do
     let ⟨_, vc, p⟩ ← va.evalNatCast
     pure ⟨_, .sum vc, p⟩
@@ -977,9 +976,8 @@ variable (dα : Q(DivisionRing $α))
 
 /-- Applies `⁻¹` to a polynomial to get an atom. -/
 def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
-  let a' : Q($α) := q($a⁻¹)
-  let (i, ⟨b', _⟩) ← addAtomQ a'
-  pure ⟨b', ExBase.atom i, (q(Eq.refl $b') : Expr)⟩
+  let (i, ⟨b', _⟩) ← addAtomQ q($a⁻¹)
+  pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 
