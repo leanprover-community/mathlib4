@@ -233,7 +233,7 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       · exact mem_cons_of_mem _ (hl _ _)
 
 theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
-    next l (l.get i) (get_mem _ _ _) =
+    next l (l.get i) (getElem_mem _) =
       l.get ⟨(i + 1) % l.length, Nat.mod_lt _ (i.1.zero_le.trans_lt i.2)⟩ :=
   match l, h, i with
   | [], _, i => by simpa using i.2
@@ -254,7 +254,7 @@ theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
     · subst hi'
       rw [next_getLast_cons]
       · simp [hi', get]
-      · rw [get_cons_succ]; exact get_mem _ _ _
+      · rw [get_cons_succ]; exact getElem_mem _
       · exact hx'
       · simp [getLast_eq_getElem]
       · exact hn.of_cons
@@ -271,12 +271,12 @@ theorem next_get (l : List α) (h : Nodup l) (i : Fin l.length) :
         intro h
         have := nodup_iff_injective_get.1 hn h
         simp at this; simp [this] at hi'
-      · rw [get_cons_succ]; exact get_mem _ _ _
+      · rw [get_cons_succ]; exact getElem_mem _
 
 -- Unused variable linter incorrectly reports that `h` is unused here.
 set_option linter.unusedVariables false in
 theorem prev_get (l : List α) (h : Nodup l) (i : Fin l.length) :
-    prev l (l.get i) (get_mem _ _ _) =
+    prev l (l.get i) (getElem_mem _) =
       l.get ⟨(i + (l.length - 1)) % l.length, Nat.mod_lt _ i.pos⟩ :=
   match l with
   | [] => by simpa using i.2
