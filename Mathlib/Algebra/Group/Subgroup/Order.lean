@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Ruben Van de Velde
 -/
 import Mathlib.Order.Atoms
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
@@ -34,10 +34,15 @@ instance : IsModularLattice (Subgroup C) :=
 
 end ModularLattice
 
-section Coatom
 namespace Subgroup
 
 variable {G : Type*} [Group G] (H : Subgroup G)
+
+@[to_additive (attr := simp)]
+theorem zpowers_mabs [LinearOrder G] (g : G) : zpowers |g|ₘ = zpowers g :=
+  eq_of_forall_ge_iff fun _ ↦ by simp
+
+section Coatom
 
 /-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
@@ -65,8 +70,9 @@ lemma isCoatom_comap_of_surjective
     rw [comap_map_eq_self ((M.ker_le_comap φ).trans hK.le), comap_top] at hM
     exact hM hK
 
-end Subgroup
 end Coatom
+
+end Subgroup
 
 namespace SubgroupClass
 variable {G S : Type*} [SetLike S G]
