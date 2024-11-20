@@ -253,7 +253,8 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     exact (Group.mulLeft_bijective f).prod_comp fun g => x.mapRangeAlgAut g
   have y0 : y ≠ 0 := by
     dsimp only [y]; rw [prod_ne_zero_iff]; intro f _hf
-    rwa [AddEquivClass.map_ne_zero_iff]
+    rwa [map_ne_zero_iff]
+    apply EquivLike.injective
   have hfy : f y = 0 := by
     suffices
       f (x.mapRangeAlgAut 1 * ∏ f ∈ univ.erase 1, x.mapRangeAlgAut f) = 0 by

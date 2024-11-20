@@ -71,7 +71,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   let k : ℤ := ∏ j, (p j).leadingCoeff
   have k0 : k ≠ 0 := prod_ne_zero_iff.mpr fun j _hj => leadingCoeff_ne_zero.mpr (p0' j)
 
-  obtain ⟨c, hc'⟩ := exp_polynomial_approx P P0
+  obtain ⟨c, hc'⟩ := LindemannWeierstrass.exp_polynomial_approx P P0
   let N := max (eval 0 P).natAbs (max k.natAbs w.natAbs)
 
   let W := sup' univ univ_nonempty fun j => ‖w' j‖
@@ -200,7 +200,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
         Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr k0)
           (((le_max_left _ _).trans (le_max_right _ _)).trans_lt hqN)
           (Nat.Prime.dvd_of_dvd_pow prime_q h),
-        fun h => hn (Int.dvd_iff_emod_eq_zero.mp (Int.natCast_dvd.mpr h))⟩,
+        fun h => hn (Int.natCast_dvd.mpr h)⟩,
       Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr w0)
         (((le_max_right _ _).trans (le_max_right _ _)).trans_lt hqN)⟩
 
