@@ -212,7 +212,6 @@ theorem ax_grothendieck_of_definable [CompatibleRing K] {c : Set K}
   rw [Set.definable_iff_exists_formula_sum] at hS
   rcases hS with ⟨φ, hφ⟩
   rw [hφ]
-  have : Finite c := Finite.of_fintype c
   have := ACF_models_genericPolyMapSurjOnOfInjOn_of_prime_or_zero
     (CharP.char_is_prime_or_zero K p) φ (fun i => (ps i).support)
   rw [← (ACF_isComplete (CharP.char_is_prime_or_zero K p)).realize_sentence_iff _ K,
