@@ -159,7 +159,7 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x
     dsimp at eq1 eq2
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [← eq1, ← eq2]
     rfl
 

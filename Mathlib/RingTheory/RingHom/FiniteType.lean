@@ -71,7 +71,7 @@ theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHo
 theorem localization_away_map_finiteType (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.FiniteType) :
     (IsLocalization.Away.map R' S' f r).FiniteType :=
-  finiteType_localizationPreserves.away r hf
+  finiteType_localizationPreserves.away _ r _ _ hf
 
 variable {S'}
 
@@ -216,9 +216,13 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
     · rw [ht]; trivial
 
 theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
-  ⟨finiteType_localizationPreserves, finiteType_ofLocalizationSpanTarget,
-    finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
-      finiteType_holdsForLocalizationAway⟩
+  ⟨finiteType_localizationPreserves.away,
+    finiteType_ofLocalizationSpanTarget,
+    finiteType_ofLocalizationSpanTarget.ofLocalizationSpan
+      (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+        finiteType_holdsForLocalizationAway).left,
+    (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      finiteType_holdsForLocalizationAway).right⟩
 
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
   RingHom.finiteType_is_local.respectsIso

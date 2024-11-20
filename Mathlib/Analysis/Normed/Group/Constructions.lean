@@ -242,7 +242,7 @@ variable [SeminormedGroup E] [SeminormedGroup F]
 
 /-- Product of seminormed groups, using the sup norm. -/
 @[to_additive "Product of seminormed groups, using the sup norm."]
-noncomputable instance Prod.seminormedGroup : SeminormedGroup (E × F) where
+instance Prod.seminormedGroup : SeminormedGroup (E × F) where
   dist_eq x y := by
     simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
 
@@ -255,21 +255,20 @@ namespace Prod
 
 /-- Product of seminormed groups, using the sup norm. -/
 @[to_additive "Product of seminormed groups, using the sup norm."]
-noncomputable instance seminormedCommGroup [SeminormedCommGroup E] [SeminormedCommGroup F] :
+instance seminormedCommGroup [SeminormedCommGroup E] [SeminormedCommGroup F] :
     SeminormedCommGroup (E × F) :=
   { Prod.seminormedGroup with
     mul_comm := mul_comm }
 
 /-- Product of normed groups, using the sup norm. -/
 @[to_additive "Product of normed groups, using the sup norm."]
-noncomputable instance normedGroup [NormedGroup E] [NormedGroup F] : NormedGroup (E × F) :=
+instance normedGroup [NormedGroup E] [NormedGroup F] : NormedGroup (E × F) :=
   { Prod.seminormedGroup with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- Product of normed groups, using the sup norm. -/
 @[to_additive "Product of normed groups, using the sup norm."]
-noncomputable instance normedCommGroup [NormedCommGroup E] [NormedCommGroup F] :
-  NormedCommGroup (E × F) :=
+instance normedCommGroup [NormedCommGroup E] [NormedCommGroup F] : NormedCommGroup (E × F) :=
   { Prod.seminormedGroup with
     mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
