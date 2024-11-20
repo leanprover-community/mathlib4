@@ -35,7 +35,7 @@ open Set Metric Filter Topology Uniformity
 
 open Convex Pointwise
 
-theorem tendsto_smul_sub_smul_zero_iff_tendsto_sub {ι 𝕜 E : Type*} [NormedField 𝕜]
+theorem tendsto_smul_sub_smul_zero_iff_tendsto_sub (𝕜 : Type*) {ι E : Type*} [NormedField 𝕜]
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {𝓕 : Filter ι} {a b : ι → 𝕜}
     {x y : ι → E} (hab : Tendsto (a - b) 𝓕 (𝓝 0)) (hau : 𝓕.IsBoundedUnder (· ≤ ·) (‖a ·‖))
     (had : ∃ m > 0, ∀ᶠ x in 𝓕, m ≤ ‖a x‖) (hy : 𝓕.IsBoundedUnder (· ≤ ·) (‖y ·‖)) :
@@ -54,6 +54,20 @@ theorem tendsto_smul_sub_smul_zero_iff_tendsto_sub {ι 𝕜 E : Type*} [NormedFi
       (ne_zero_of_norm_ne_zero (m_pos.trans_le hi).ne'), one_smul]
   rw [eq, ← scale]
   exact ⟨fun H ↦ by simpa using H.sub lim, fun H ↦ by simpa using H.add lim⟩
+
+theorem tendsto_smul_inv_norm_uniformity_iff_of_norm {ι E : Type*}
+    [SeminormedAddCommGroup E] [NormedSpace ℝ E] {𝓕 : Filter ι} {x y : ι → E}
+    {l : ℝ} (l_pos : 0 < l) (normx : Tendsto (‖x ·‖) 𝓕 (𝓝 l)) (normy : Tendsto (‖y ·‖) 𝓕 (𝓝 l)) :
+    Tendsto ((‖x ·‖⁻¹) • x - (‖y ·‖⁻¹) • y) 𝓕 (𝓝 0) ↔ Tendsto (x - y) 𝓕 (𝓝 0) := by
+  apply tendsto_smul_sub_smul_zero_iff_tendsto_sub ℝ
+  · simpa using (normx.inv₀ l_pos.ne').sub (normy.inv₀ l_pos.ne')
+  · exact normx.inv₀ l_pos.ne' |>.norm.isBoundedUnder_le
+  · rcases exists_gt l with ⟨M, hM⟩
+    use M⁻¹, inv_pos.mpr (l_pos.trans hM)
+    filter_upwards [eventually_le_of_tendsto_lt hM normx, eventually_gt_of_tendsto_gt l_pos normx]
+    exact fun i hiM hi0 ↦ (Real.norm_of_nonneg (inv_nonneg.mpr (norm_nonneg (x i)))).symm ▸
+      inv_anti₀ hi0 hiM
+  · exact normy.isBoundedUnder_le
 
 --theorem dist_div_norm_self_div_norm_self_le {E : Type*} [SeminormedAddCommGroup E]
 --    [NormedSpace ℝ E] {x y : E} (hx : ‖x‖ ≠ 0) (hy : ‖y‖ ≠ 0) :
@@ -154,21 +168,16 @@ theorem tendsto_uniformity_of_norm_add_of_sphere {ι : Type*}
 theorem exists_forall_closedBall_norm_add_le_add_sub [UniformConvexSpace E]
     {a ε : ℝ} (ε_pos : 0 < ε) :
     ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ a → ∀ ⦃y⦄, ‖y‖ ≤ a → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ (a + a) - δ := by
-  set φ : E × E → ℝ × ℝ × ℝ := fun xy ↦ ⟨‖xy.1‖, ‖xy.2‖, ‖xy.1 + xy.2‖⟩
-  set 𝓕 := comap φ (𝓟 (Iic a) ×ˢ 𝓟 (Iic a) ×ˢ (𝓝 (a+a)))
-  have norm_fst : ∀ᶠ xy in 𝓕, ‖xy.1‖ ≤ a := (tendsto_fst.eventually <| mem_principal_self _).comap φ
-  have norm_snd : ∀ᶠ xy in 𝓕, ‖xy.2‖ ≤ a :=
-    (tendsto_snd.eventually <| tendsto_fst.eventually <| mem_principal_self _).comap φ
-  have norm_add : Tendsto (fun xy ↦ ‖xy.1 + xy.2‖) 𝓕 (𝓝 (a+a)) :=
-    tendsto_snd.comp <| tendsto_snd.comp tendsto_comap
-  have := tendsto_uniformity_of_norm_add_of_closedBall norm_fst norm_snd norm_add
-    |>.eventually (dist_mem_uniformity ε_pos)
-  simp_rw [𝓕, comap_prod, comap_principal, inf_comm (𝓟 _),
-    eventually_inf_principal, nhds_basis_ball.comap _ |>.eventually_iff, Prod.forall,
-    Real.ball_eq_Ioo, dist_eq_norm] at this
+  set 𝓕 : Filter (E × E) :=
+    comap (fun xy ↦ ‖xy.1 + xy.2‖) (𝓝 (a+a)) ⊓ 𝓟 {xy | ‖xy.1‖ ≤ a ∧ ‖xy.2‖ ≤ a}
+  have := tendsto_uniformity_of_norm_add_of_closedBall (E := E) (𝓕 := 𝓕)
+    (mem_inf_of_right fun _ ↦ And.left) (mem_inf_of_right fun _ ↦ And.right)
+    (tendsto_inf_left tendsto_comap) |>.eventually (dist_mem_uniformity ε_pos)
+  simp_rw [𝓕, eventually_inf_principal, nhds_basis_ball.comap _ |>.eventually_iff,
+    Prod.forall, Real.ball_eq_Ioo, dist_eq_norm] at this
   rcases this with ⟨δ, δ_pos, hδ⟩
   exact ⟨δ, δ_pos, fun _ hxa _ hyb ↦ le_imp_le_of_lt_imp_lt fun hxy ↦ hδ _ _
-    ⟨hxy, lt_add_of_le_of_pos (norm_add_le_of_le hxa hyb) δ_pos⟩ hyb hxa⟩
+    ⟨hxy, lt_add_of_le_of_pos (norm_add_le_of_le hxa hyb) δ_pos⟩ ⟨hxa, hyb⟩⟩
 
 theorem uniformConvexSpace_iff_tendsto_uniformity_of_norm_add_of_unit_sphere
     [NormedSpace ℝ E] :
@@ -182,39 +191,30 @@ theorem uniformConvexSpace_iff_tendsto_uniformity_of_norm_add_of_unit_sphere
       fun a' ha' 𝓕 norm_fst norm_snd norm_add ↦ ?_⟩
   simp_rw [Metric.uniformity_eq_comap_nhds_zero, ← tendsto_iff_comap, dist_eq_norm_sub,
     ← tendsto_zero_iff_norm_tendsto_zero]
-  refine tendsto_smul_sub_smul_zero_iff_tendsto_sub (x := Prod.fst) (y := Prod.snd)
-    (a := fun (xy : E × E) ↦ ‖xy.1‖⁻¹) (b := fun (xy : E × E) ↦ ‖xy.2‖⁻¹) ?_ ?_ ?_ ?_ |>.mp ?_
-  · sorry
-  · sorry
-  · sorry
-  · sorry
-  · set Φ : E → E := fun x ↦ ‖x‖⁻¹ • x
-    specialize H (map (Prod.map (fun x ↦ ‖x‖⁻¹ • x) (fun x ↦ ‖x‖⁻¹ • x)) 𝓕) ?_ ?_ ?_
-    · rw [eventually_map]
-      filter_upwards [eventually_gt_of_tendsto_gt ha' norm_fst,
-        eventually_gt_of_tendsto_gt ha' norm_snd]
-      sorry
-    · sorry
-    · sorry
-    simpa only [uniformity_eq_comap_nhds_zero_swapped, map_le_iff_le_comap, comap_comap,
-      ← tendsto_iff_comap] using H
-    --refine H _ _ _ _ _
-  --have ρ_tendsto : Tendsto ρ 𝓕 (𝓝 (a⁻¹ * a')) :=
-  --  .const_mul a⁻¹ (max_self a' ▸ .max norm_fst norm_snd)
-  --
-  --set Φ : E × E → E × E := fun xy ↦ (‖xy.1‖ • xy.1, ‖xy.2‖ • xy.2) with Φ_def
-  --have Φ_tendsto : map Φ 𝓕 ≤ 𝓤 E := H _ sorry sorry sorry
-  --have : 𝓕 ⊓ 𝓤 E = 𝓕 ⊓ comap Φ (𝓤 E) := by
-  --  refine le_antisymm (le_inf inf_le_left <| inf_le_of_left_le <|
-  --    map_le_iff_le_comap.mp Φ_tendsto) (le_inf inf_le_left ?_)
-  --  simp_rw [Metric.uniformity_eq_comap_nhds_zero, dist_eq_norm, comap_comap, Φ_def,
-  --    Function.comp_def, ← tendsto_iff_comap]
-  --  have key : ∀ p : E × E, ‖‖p.1‖ • p.1 ‖
-  --  refine tendsto_inf_right tendsto_comap |>.congr_dist ?_
-  --  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ _ _
-  --  --have : Tendsto (fun )
-  --  --refine (mul_zero ‖a‖ ▸ (tendsto_inf_left tendsto_comap).const_mul ‖a‖).congr_dist ?_
-  --rwa [← inf_eq_left, this, inf_eq_left, ← map_le_iff_le_comap]
+  refine tendsto_smul_inv_norm_uniformity_iff_of_norm ha' norm_fst norm_snd |>.mp ?_
+  have fact1 : ∀ᶠ xy in 𝓕, ‖‖xy.1‖⁻¹ • xy.1‖ = 1 ∧ ‖‖xy.2‖⁻¹ • xy.2‖ = 1 := by
+    filter_upwards [eventually_gt_of_tendsto_gt ha' norm_fst,
+      eventually_gt_of_tendsto_gt ha' norm_snd] with ⟨x, y⟩ hx hy
+    simp [norm_smul, hx.ne', hy.ne']
+  have fact2 : Tendsto (fun xy ↦ ‖‖xy.1‖⁻¹ • xy.1 + ‖xy.2‖⁻¹ • xy.2‖) 𝓕 (𝓝 2) := by
+    rw [← one_add_one_eq_two, ← inv_mul_cancel₀ ha'.ne', ← mul_add]
+    refine norm_add.const_mul a'⁻¹ |>.congr_dist ?_
+    have : ∀ p : E × E, dist (a'⁻¹ * ‖p.1 + p.2‖) ‖‖p.1‖⁻¹ • p.1 + ‖p.2‖⁻¹ • p.2‖ ≤
+        ‖a'⁻¹ - ‖p.1‖⁻¹‖ * ‖p.1‖ + ‖a'⁻¹ - ‖p.2‖⁻¹‖ * ‖p.2‖ := fun p ↦ by
+      rw [← norm_smul_of_nonneg (inv_pos.mpr ha').le]
+      refine dist_norm_norm_le _ _ |>.trans ?_
+      rw [smul_add, add_sub_add_comm, ← sub_smul, ← sub_smul]
+      exact norm_add_le_of_le (by rw [norm_smul]) (by rw [norm_smul])
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_
+      (fun _ ↦ dist_nonneg) this
+    simpa using (tendsto_const_nhds (x := a'⁻¹) |>.sub <| norm_fst.inv₀ ha'.ne').norm.mul norm_fst
+      |>.add <| (tendsto_const_nhds (x := a'⁻¹) |>.sub <| norm_snd.inv₀ ha'.ne').norm.mul norm_snd
+  specialize H (map (Prod.map (fun x ↦ ‖x‖⁻¹ • x) (fun x ↦ ‖x‖⁻¹ • x)) 𝓕)
+    (eventually_map.mpr <| fact1.mono fun _ ↦ And.left)
+    (eventually_map.mpr <| fact1.mono fun _ ↦ And.right)
+    (tendsto_map'_iff.mpr fact2)
+  simpa only [uniformity_eq_comap_nhds_zero_swapped, map_le_iff_le_comap, comap_comap,
+    ← tendsto_iff_comap] using H
 
 theorem uniformConvexSpace_iff_comap_sphere_le_uniformity :
     UniformConvexSpace E ↔ comap (fun (xy : E × E) ↦ ‖xy.1 + xy.2‖) (𝓝 2 : Filter ℝ) ⊓
