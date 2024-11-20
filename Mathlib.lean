@@ -3692,6 +3692,7 @@ import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Types
 import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.NumberTheory.ADEInequality
+import Mathlib.NumberTheory.AbelSummation
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.Basic
 import Mathlib.NumberTheory.Bernoulli
