@@ -3,7 +3,6 @@ Copyright (c) 2022 Siddhartha Prasad, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.IsIdem
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Pi
@@ -59,7 +58,6 @@ variable {α β ι : Type*} {π : ι → Type*}
 /-- An idempotent semiring is a semiring with the additional property that addition is idempotent.
 -/
 class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
-  protected le a b := a + b = b
   protected sup := (· + ·)
   protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
     intros
@@ -133,8 +131,7 @@ theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
 --               So, this theorem should be scoped.
 scoped[Computability] attribute [simp] add_eq_sup
 
-/-- An idempotent semiring has idempotent addition -/
-instance : IsIdemAddSemigroup α where add_idem := by simp
+theorem add_idem (a : α) : a + a = a := by simp
 
 theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
   | 0, h => (h rfl).elim
