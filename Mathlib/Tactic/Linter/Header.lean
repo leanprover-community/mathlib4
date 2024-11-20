@@ -291,7 +291,7 @@ def duplicateImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mainModule ← getMainModule
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
-  -- It is however active in the test file `MathlibTest.Header` for the linter itself.
+  -- However, it is active in the test file `MathlibTest.Header` for the linter itself.
   unless (← isInMathlib mainModule) || mainModule == `MathlibTest.Header do return
   unless Linter.getLinterValue linter.style.header (← getOptions) do
     return
