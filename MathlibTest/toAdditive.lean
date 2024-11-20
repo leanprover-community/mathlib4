@@ -339,6 +339,33 @@ run_cmd do
   unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
   unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
 
+@[to_additive, to_additive_dont_translate]
+def MonoidEnd : Type := Unit
+
+run_cmd do
+  let env ← getEnv
+  let nm := `Test.MonoidEnd
+  logInfo m!"{dontTranslateAttr.find? env nm}"
+  let stx ← `(Semigroup MonoidEnd)
+  liftTermElabM do
+    let e ← Term.elabTerm stx none
+    logInfo m!"{e} test: {additiveTest (← getEnv) e}"
+
+
+
+@[to_additive instSemiGroupAddMonoidEnd]
+instance : Semigroup MonoidEnd where
+  mul _ _ := ()
+  mul_assoc _ _ _ := rfl
+
+@[to_additive]
+lemma monoidEnd_lemma (x y z : MonoidEnd) : x * (y * z) = (x * y) * z := mul_assoc .. |>.symm
+
+/-- info: Test.addMonoidEnd_lemma (x y z : AddMonoidEnd) : x * (y * z) = x * y * z -/
+#guard_msgs in
+#check addMonoidEnd_lemma
+
+
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
 -/

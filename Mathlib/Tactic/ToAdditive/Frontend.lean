@@ -117,6 +117,7 @@ There are some exceptions to this heuristic:
 
 * Identifiers that have the `@[to_additive]` attribute are ignored.
   For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
+  You can turn this behavior off by *also* addding the `@[to_additive_dont_translate]` attribute.
 * If an identifier `d` has attribute `@[to_additive_relevant_arg n]` then the argument
   in position `n` is checked for a fixed type, instead of checking the first argument.
   `@[to_additive]` will automatically add the attribute `@[to_additive_relevant_arg n]` to a
@@ -286,6 +287,9 @@ i.e. when the numeral is only translated if the first argument is a variable
 The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1).
 -/
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
+/-- The `to_additive_dont_translate` attribute, used to specify types that should be translated by
+  `to_additive`, but its operations should remain multiplicative. -/
+syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
 /-- A `reorder := ...` option for `to_additive`. -/
@@ -418,6 +422,16 @@ initialize relevantArgAttr : NameMapExtension Nat ←
     | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
     | _, _ => throwUnsupportedSyntax }
 
+@[inherit_doc to_additive_dont_translate]
+initialize dontTranslateAttr : NameMapExtension Unit ←
+  registerNameMapAttribute {
+    name := `to_additive_dont_translate
+    descr := "Auxiliary attribute for `to_additive` stating \
+      that the operations on this type should not be translated."
+    add := fun
+    | _, `(attr| to_additive_dont_translate) => return
+    | _, _ => throwUnsupportedSyntax }
+
 @[inherit_doc to_additive_change_numeral]
 initialize changeNumeralAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
@@ -488,7 +502,8 @@ and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (env : Environment) (e : Expr) : Option Name :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) Name := do
     if e.isConst then
-      if inApp || (findTranslation? env e.constName).isSome then
+      if (dontTranslateAttr.find? env e.constName).isNone &&
+        (inApp || (findTranslation? env e.constName).isSome) then
         failure
       else
         return e.constName
