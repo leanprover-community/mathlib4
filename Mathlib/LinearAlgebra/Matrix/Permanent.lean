@@ -3,9 +3,8 @@ Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Matrix.Diagonal
+import Mathlib.Data.Matrix.RowCol
 /-!
 # Permanent of a matrix
 
@@ -82,5 +81,46 @@ theorem permanent_permute_cols (σ : Perm n) (M : Matrix n n R) :
 theorem permanent_permute_rows (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix id σ).permanent = M.permanent := by
   rw [← permanent_transpose, transpose_submatrix, permanent_permute_cols, permanent_transpose]
+
+@[simp]
+theorem permanent_smul (M : Matrix n n R) (c : R) :
+    permanent (c • M) = c ^ Fintype.card n * permanent M := by
+  simp only [permanent, smul_apply, smul_eq_mul, Finset.mul_sum]
+  congr
+  ext
+  rw [mul_comm]
+  conv in ∏ _ , c * _ => simp [mul_comm c];
+  exact prod_mul_pow_card.symm
+
+@[simp]
+theorem permanent_upodateRow_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :
+    permanent (updateRow M j <| c • u) = c * permanent (updateRow M j u) := by
+  repeat rw [permanent]
+  rw [Finset.mul_sum]
+  congr
+  ext p
+  have h : p⁻¹ j ∈ univ := mem_univ _
+  repeat rw [← mul_prod_erase (Finset.univ ) _ h]
+  simp only [← mul_assoc, Perm.apply_inv_self, updateRow_self]
+  congr 1
+  apply Finset.prod_congr rfl
+  intro i hi
+  have : p i ≠ j := by aesop
+  simp [this]
+
+@[simp]
+theorem permanent_upodateColumn_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :
+    permanent (updateColumn M j <| c • u) = c * permanent (updateColumn M j u) := by
+  repeat rw [permanent]
+  rw [Finset.mul_sum]
+  congr
+  ext p
+  have h : j ∈ univ := mem_univ _
+  repeat rw [← mul_prod_erase (Finset.univ ) _ h]
+  simp only [← mul_assoc, updateColumn_self]
+  congr 1
+  apply Finset.prod_congr rfl
+  intro i hi
+  simp [ne_of_mem_erase hi]
 
 end Matrix
