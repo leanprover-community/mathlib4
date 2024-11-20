@@ -2454,6 +2454,7 @@ def relIso_nat_omega0 : ℕ ≃o Iio ω where
   right_inv n := Subtype.eq (Classical.choose_spec (lt_omega0.1 n.2)).symm
   map_rel_iff' := by simp
 
+@[simp]
 theorem relIso_nat_omega0_coe_symm_apply (o : Iio ω) : relIso_nat_omega0.symm o = o.1 := by
   obtain ⟨o, h⟩ := o
   rcases lt_omega0.mp h with ⟨n, hn⟩
@@ -2465,14 +2466,14 @@ theorem strictMono_of_succ_lt_omega0 {α : Type*} [Preorder α] (f : Iio ω → 
   have mono := strictMono_nat_of_lt_succ fun n ↦ hf ⟨n, nat_lt_omega0 n⟩
   convert mono.comp relIso_nat_omega0.symm.strictMono
   ext
-  simp [relIso_nat_omega0_coe_symm_apply]
+  simp
 
 theorem monotone_of_succ_le_omega0 {α : Type*} [Preorder α] (f : Iio ω → α)
     (hf : ∀ i, f i ≤ f ⟨succ i, isLimit_omega0.succ_lt i.2⟩) : Monotone f := by
   have mono := monotone_nat_of_le_succ fun n ↦ hf ⟨n, nat_lt_omega0 n⟩
   convert mono.comp relIso_nat_omega0.symm.monotone
   ext
-  simp [relIso_nat_omega0_coe_symm_apply]
+  simp
 
 end Ordinal
 
