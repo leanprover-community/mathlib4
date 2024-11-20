@@ -86,7 +86,7 @@ theorem IntervalIntegrable.def' (h : IntervalIntegrable f μ a b) : IntegrableOn
   intervalIntegrable_iff.mp h
 
 theorem IntervalIntegrable.congr {g : ℝ → E} (hf : IntervalIntegrable f μ a b)
-    (h : f =ᵐ[μ.restrict (Set.uIoc a b)] g) :
+    (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable g μ a b := by
   rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
 

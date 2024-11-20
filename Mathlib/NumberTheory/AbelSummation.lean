@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Integral.FundThmCalculus
 /-!
 # Abel's summation formula
 
-We prove several version of Abel's summation formula.
+We prove several versions of Abel's summation formula.
 
 ## Results
 
