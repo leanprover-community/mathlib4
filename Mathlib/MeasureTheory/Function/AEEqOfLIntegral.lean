@@ -169,6 +169,7 @@ alias ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite :=
   ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
 
 -- todo: duplicate. Move the other one from SimpleFuncDenseLp to SimpleFunc?
+set_option linter.docPrime false in
 theorem SimpleFunc.measure_support_lt_top' {β : Type*} [Zero β] (f : SimpleFunc α β)
     (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) :
     μ (Function.support f) < ∞ := by
