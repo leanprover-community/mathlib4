@@ -217,7 +217,7 @@ theorem prev_ne_cons_cons (y z : α) (h : x ∈ y :: z :: l) (hy : x ≠ y) (hz 
   · rw [prev, dif_neg hy, if_neg hz]
 
 theorem next_mem (h : x ∈ l) : l.next x h ∈ l :=
-  nextOr_mem (get_mem _ _ _)
+  nextOr_mem (getElem_mem _)
 
 theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
   cases' l with hd tl
