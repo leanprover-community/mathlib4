@@ -50,7 +50,7 @@ namespace JacobsonNoether
 
 variable {D : Type*} [DivisionRing D] [Algebra.IsAlgebraic (Subring.center D) D]
 
-local notation3 "k" => (Subring.center D)
+local notation3 "k" => Subring.center D
 
 open Polynomial LinearMap LieAlgebra
 
@@ -119,7 +119,7 @@ theorem exists_separable_mem_of_not_central (H : k ≠ (⊤ : Subring D)) :
     use ha.choose
     show a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
-  -- We find a maximum natural number `n` such that `(δ a) ^ n b ≠ 0`.
+  -- We find a maximum natural number `n` such that `(a * x - x * a) ^ n b ≠ 0`.
   obtain ⟨n, hn, hb⟩ : ∃ n, 0 < n ∧ (ad k D a)^[n] b ≠ 0 ∧ (ad k D a)^[n + 1] b = 0 := by
     obtain ⟨m, -, hm2⟩ := exist_pow_eq_zero_of_le p ha insep
     have h_exist : ∃ n, 0 < n ∧ (ad k D a)^[n + 1] b = 0 := ⟨p ^ m,
