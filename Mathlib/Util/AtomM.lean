@@ -65,7 +65,9 @@ atom (which will be defeq at the specified transparency, but not necessarily syn
 If the atomic expression has *not* already been encountered, store it in the list of atoms, and
 return the new index (and the stored form of the atom, which will be itself).
 
-In a normalizing tactic, the expression returned by `addAtom` should be considered the normal form.
+In a normalizing tactic, the expression returned by `addAtomQ` should be considered the normal form.
+
+This is a strongly-typed version of `AtomM.addAtom` for code using `Qq`.
 -/
 def AtomM.addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
     AtomM (Nat × {e' : Q($α) // $e =Q $e'}) := do
