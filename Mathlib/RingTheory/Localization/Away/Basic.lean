@@ -361,6 +361,14 @@ noncomputable abbrev awayLift (f : R →+* P) (r : R) (hr : IsUnit (f r)) :
     Localization.Away r →+* P :=
   IsLocalization.Away.lift r hr
 
+lemma awayLift_mk (f : R →+* A) (r : R) (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
+    Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
+      (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
+  rw [Localization.mk_eq_mk']
+  erw [IsLocalization.lift_mk']
+  rw [Units.mul_inv_eq_iff_eq_mul]
+  simp [IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
+
 /-- Given a map `f : R →+* S` and an element `r : R`, we may construct a map `Rᵣ →+* Sᵣ`. -/
 noncomputable abbrev awayMap (f : R →+* P) (r : R) :
     Localization.Away r →+* Localization.Away (f r) :=
@@ -373,14 +381,6 @@ variable {B : Type*} [CommRing B] [Algebra R B]
 noncomputable abbrev awayMapₐ (f : A →ₐ[R] B) (a : A) :
     Localization.Away a →ₐ[R] Localization.Away (f a) :=
   IsLocalization.Away.mapₐ _ _ f a
-
-lemma awayLift_mk (f : R →+* A) (r : R) (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
-    Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
-      (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
-  rw [Localization.mk_eq_mk']
-  erw [IsLocalization.lift_mk']
-  rw [Units.mul_inv_eq_iff_eq_mul]
-  simp [IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
 
 end Localization
 
