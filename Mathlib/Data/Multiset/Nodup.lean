@@ -95,7 +95,7 @@ theorem Pairwise.forall (H : Symmetric r) (hs : Pairwise r s) :
   hl₁.symm ▸ hl₂.forall H
 
 theorem nodup_add {s t : Multiset α} : Nodup (s + t) ↔ Nodup s ∧ Nodup t ∧ Disjoint s t :=
-  Quotient.inductionOn₂ s t fun _ _ => nodup_append
+  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append]
 
 theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s t :=
   (nodup_add.1 d).2.2

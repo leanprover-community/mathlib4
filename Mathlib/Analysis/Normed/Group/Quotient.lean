@@ -265,7 +265,7 @@ theorem normedMk.apply (S : AddSubgroup M) (m : M) : normedMk S m = QuotientAddG
 
 /-- `S.normedMk` is surjective. -/
 theorem surjective_normedMk (S : AddSubgroup M) : Function.Surjective (normedMk S) :=
-  surjective_quot_mk _
+  Quot.mk_surjective
 
 /-- The kernel of `S.normedMk` is `S`. -/
 theorem ker_normedMk (S : AddSubgroup M) : S.normedMk.ker = S :=
@@ -366,7 +366,7 @@ theorem norm_lift_le {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     ‖lift S f hf‖ ≤ ‖f‖ :=
   opNorm_le_bound _ (norm_nonneg f) (norm_lift_apply_le f hf)
 
--- Porting note (#11215): TODO: deprecate?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: deprecate?
 theorem lift_norm_le {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) {c : ℝ≥0} (fb : ‖f‖ ≤ c) :
     ‖lift S f hf‖ ≤ c :=

@@ -5,6 +5,7 @@ Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Data.FunLike.Fintype
+import Mathlib.Logic.Embedding.Set
 
 /-!
 # Maps between graphs
@@ -334,7 +335,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
 @[simps]
 def mapEdgeSet : G.edgeSet ↪ G'.edgeSet where
   toFun := Hom.mapEdgeSet f
-  inj' := Hom.mapEdgeSet.injective f f.injective
+  inj' := Hom.mapEdgeSet.injective f.toRelHom f.injective
 
 /-- A graph embedding induces an embedding of neighbor sets. -/
 @[simps]
@@ -470,6 +471,18 @@ theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.ed
 
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
+
+@[simp]
+theorem symm_toHom_comp_toHom : f.symm.toHom.comp f.toHom = Hom.id := by
+  ext v
+  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+    RelIso.symm_apply_apply, RelHom.id_apply]
+
+@[simp]
+theorem toHom_comp_symm_toHom : f.toHom.comp f.symm.toHom = Hom.id := by
+  ext v
+  simp only [RelHom.comp_apply, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding,
+    RelIso.apply_symm_apply, RelHom.id_apply]
 
 /-- An isomorphism of graphs induces an equivalence of edge sets. -/
 @[simps]

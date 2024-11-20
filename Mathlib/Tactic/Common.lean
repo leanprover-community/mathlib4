@@ -14,6 +14,7 @@ import ImportGraph.Imports
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Where
 import Batteries.Tactic.Basic
+import Batteries.Tactic.HelpCmd
 
 -- Import syntax for leansearch
 import LeanSearchClient
@@ -44,7 +45,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Tactic.DeprecateMe
+import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI
@@ -58,7 +59,6 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
-import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam
@@ -87,10 +87,6 @@ import Mathlib.Tactic.Set
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simps.Basic
--- SlimCheck has unnecessarily complicated imports, and could be streamlined.
--- `Gen` / `Testable` / `Sampleable` instances for types should be out in the library,
--- rather than the theory for those types being imported into `SlimCheck`.
--- import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Subsingleton

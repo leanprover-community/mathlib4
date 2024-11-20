@@ -280,7 +280,7 @@ theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).N
 theorem prehaar_mono {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty)
     {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂.1) :
     prehaar (K₀ : Set G) U K₁ ≤ prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_le_div_right]
+  simp only [prehaar]; rw [div_le_div_iff_of_pos_right]
   · exact mod_cast index_mono K₂.2 h hU
   · exact mod_cast index_pos K₀ hU
 
@@ -293,7 +293,7 @@ theorem prehaar_self {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).
 theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Compacts G)
     (hU : (interior U).Nonempty) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) ≤ prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_add_div_same, div_le_div_right]
+  simp only [prehaar]; rw [div_add_div_same, div_le_div_iff_of_pos_right]
   · exact mod_cast index_union_le K₁ K₂ hU
   · exact mod_cast index_pos K₀ hU
 

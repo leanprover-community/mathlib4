@@ -127,6 +127,7 @@ def Poly.toSyntax : Poly → Unhygienic Syntax.Term
   | .pow p q => do `($(← p.toSyntax) ^ $(← q.toSyntax))
   | .neg p => do `(-$(← p.toSyntax))
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
 partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do

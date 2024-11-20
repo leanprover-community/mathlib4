@@ -375,9 +375,11 @@ lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u 
   exact le_antisymm (iUnion_subset fun _ ↦ le_rfl) <|
     iUnion_subset fun hx ↦ subset_iUnion₂_of_subset (huv₁ hx) hx le_rfl
 
+variable [TopologicalSpace β] {f : α → β}
+
 /-- The preimage of a connected component is preconnected if the function has connected fibers
 and a subset is closed iff the preimage is. -/
-theorem preimage_connectedComponent_connected [TopologicalSpace β] {f : α → β}
+theorem preimage_connectedComponent_connected
     (connected_fibers : ∀ t : β, IsConnected (f ⁻¹' {t}))
     (hcl : ∀ T : Set β, IsClosed T ↔ IsClosed (f ⁻¹' T)) (t : β) :
     IsConnected (f ⁻¹' connectedComponent t) := by
@@ -453,8 +455,8 @@ theorem preimage_connectedComponent_connected [TopologicalSpace β] {f : α → 
       from (this.trans T₂_v.1).trans inter_subset_right
     exact preimage_mono h
 
-theorem IsQuotientMap.preimage_connectedComponent [TopologicalSpace β] {f : α → β}
-    (hf : IsQuotientMap f) (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
+theorem Topology.IsQuotientMap.preimage_connectedComponent (hf : IsQuotientMap f)
+    (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f ⁻¹' connectedComponent (f a) = connectedComponent a :=
   ((preimage_connectedComponent_connected h_fibers (fun _ => hf.isClosed_preimage.symm)
       _).subset_connectedComponent mem_connectedComponent).antisymm
@@ -463,7 +465,7 @@ theorem IsQuotientMap.preimage_connectedComponent [TopologicalSpace β] {f : α 
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap.preimage_connectedComponent := IsQuotientMap.preimage_connectedComponent
 
-lemma IsQuotientMap.image_connectedComponent [TopologicalSpace β] {f : α → β} (hf : IsQuotientMap f)
+lemma Topology.IsQuotientMap.image_connectedComponent {f : α → β} (hf : IsQuotientMap f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f '' connectedComponent a = connectedComponent (f a) := by
   rw [← hf.preimage_connectedComponent h_fibers, image_preimage_eq _ hf.surjective]
@@ -509,7 +511,7 @@ instance : TopologicalSpace (ConnectedComponents α) :=
   inferInstanceAs (TopologicalSpace (Quotient _))
 
 theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=
-  surjective_quot_mk _
+  Quot.mk_surjective
 
 theorem isQuotientMap_coe : IsQuotientMap (mk : α → ConnectedComponents α) :=
   isQuotientMap_quot_mk

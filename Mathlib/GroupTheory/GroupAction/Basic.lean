@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
@@ -78,6 +81,12 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     calc
       x • a = z := Subtype.mk.inj (hz₁ ⟨x • a, mem_orbit _ _⟩)
       _ = a := (Subtype.mk.inj (hz₁ ⟨a, mem_orbit_self _⟩)).symm
+
+@[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
+instance (m : M) [DecidableEq β] :
+    DecidablePred fun b : β => b ∈ MulAction.fixedBy β m := fun b ↦ by
+  simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def]
+  infer_instance
 
 end FixedPoints
 
