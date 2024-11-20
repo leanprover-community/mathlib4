@@ -105,6 +105,11 @@ theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
   rfl
 
 @[simp]
+lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
+    UpperHalfPlane.coe ⟨z, hz⟩ = z := by
+  rfl
+
+@[simp]
 theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
   rfl
 
@@ -168,6 +173,16 @@ theorem normSq_ne_zero (z : ℍ) : Complex.normSq (z : ℂ) ≠ 0 :=
 
 theorem im_inv_neg_coe_pos (z : ℍ) : 0 < (-z : ℂ)⁻¹.im := by
   simpa using div_pos z.property (normSq_pos z)
+
+lemma ne_nat (z : ℍ) : ∀ n : ℕ, z.1 ≠ n := by
+  intro n
+  have h1 := z.2
+  aesop
+
+lemma ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
+  intro n
+  have h1 := z.2
+  aesop
 
 -- Porting note: removed `@[simp]` because it broke `field_simp` calls below.
 /-- Numerator of the formula for a fractional linear transformation -/
@@ -253,49 +268,8 @@ instance : MulAction GL(2, ℝ)⁺ ℍ where
     simp [num, denom]
   mul_smul := mul_smul'
 
-section ModularScalarTowers
-
 instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.toGLPos.comp <| map (algebraMap R ℝ)
-
-namespace ModularGroup
-
-variable (Γ : Subgroup (SpecialLinearGroup (Fin 2) ℤ))
-
-/-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`. -/
-@[coe]
-def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
-
-instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
-  ⟨coe'⟩
-
-@[simp]
-theorem coe'_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
-    (Units.val <| Subtype.val <| coe' g) i j = (Subtype.val g i j : ℂ) :=
-  rfl
-
-@[simp]
-theorem det_coe' {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe' g) = 1 := by
-  simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
-
-lemma coe_one : UpperHalfPlane.ModularGroup.coe' 1 = 1 := by
-  simp only [coe', _root_.map_one]
-
-instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
-  ⟨fun s g => s * g⟩
-
-theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
-  rfl
-
-instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
-  smul_assoc s g z := by
-    simp only [SLOnGLPos_smul_apply]
-    apply mul_smul'
-
-end ModularGroup
-
-end ModularScalarTowers
 
 -- Porting note: in the statement, we used to have coercions `↑· : ℝ`
 -- rather than `algebraMap R ℝ ·`.
@@ -307,23 +281,23 @@ theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : S
         (g • z).property :=
   rfl
 
-@[simp]
-theorem coe_smul (g : GL(2, ℝ)⁺) (z : ℍ) : ↑(g • z) = num g z / denom g z :=
-  rfl
+variable (g : GL(2, ℝ)⁺) (z : ℍ)
 
 @[simp]
-theorem re_smul (g : GL(2, ℝ)⁺) (z : ℍ) : (g • z).re = (num g z / denom g z).re :=
+theorem coe_smul : ↑(g • z) = num g z / denom g z :=
   rfl
 
-theorem im_smul (g : GL(2, ℝ)⁺) (z : ℍ) : (g • z).im = (num g z / denom g z).im :=
+@[simp]
+theorem re_smul : (g • z).re = (num g z / denom g z).re :=
   rfl
 
-theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (g • z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) :=
+theorem im_smul : (g • z).im = (num g z / denom g z).im :=
+  rfl
+
+theorem im_smul_eq_div_normSq : (g • z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) :=
   smulAux'_im g z
 
-theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
-    (g 1 0 * z.im) ^ 2 ≤ Complex.normSq (denom g z) := by
+theorem c_mul_im_sq_le_normSq_denom : (g 1 0 * z.im) ^ 2 ≤ Complex.normSq (denom g z) := by
   set c := g 1 0
   set d := g 1 1
   calc
@@ -331,40 +305,15 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
     _ = Complex.normSq (denom g z) := by dsimp [c, d, denom, Complex.normSq]; ring
 
 @[simp]
-theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
+theorem neg_smul : -g • z = g • z := by
   ext1
   change _ / _ = _ / _
   field_simp [denom_ne_zero]
   simp only [num, denom, Complex.ofReal_neg, neg_mul, GLPos.coe_neg_GL, Units.val_neg, neg_apply]
   ring_nf
 
-section SLModularAction
-
-namespace ModularGroup
-
-variable (g : SL(2, ℤ)) (z : ℍ) (Γ : Subgroup SL(2, ℤ))
-
-@[simp]
-theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
-  rfl
-
-@[simp high]
-theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
-  simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul, coe']
-
-nonrec theorem im_smul_eq_div_normSq :
-    (g • z).im = z.im / Complex.normSq (denom g z) := by
-  convert im_smul_eq_div_normSq g z
-  simp only [GeneralLinearGroup.val_det_apply, coe_GLPos_coe_GL_coe_matrix,
-    Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul, coe']
-
-theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
-    denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
-  simp [denom, coe']
-
-end ModularGroup
-
-end SLModularAction
+lemma denom_one : denom 1 z = 1 := by
+  simp [denom]
 
 section PosRealAction
 
@@ -460,3 +409,75 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
   linear_combination (-(z * (c : ℂ) ^ 2) - c * d) * h
 
 end UpperHalfPlane
+
+namespace ModularGroup -- results specific to `SL(2, ℤ)`
+
+section ModularScalarTowers
+
+/-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`. -/
+@[coe]
+def coe (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
+
+@[deprecated (since := "2024-11-19")] noncomputable alias coe' := coe
+
+instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
+  ⟨coe⟩
+
+@[simp]
+theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
+    (Units.val <| Subtype.val <| coe g) i j = (Subtype.val g i j : ℂ) :=
+  rfl
+
+@[deprecated (since := "2024-11-19")] alias coe'_apply_complex := coe_apply_complex
+
+@[simp]
+theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 := by
+  simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe]
+
+@[deprecated (since := "2024-11-19")] alias det_coe' := det_coe
+
+lemma coe_one : coe 1 = 1 := by
+  simp only [coe, _root_.map_one]
+
+instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
+  ⟨fun s g => s * g⟩
+
+theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
+    (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
+  rfl
+
+instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
+  smul_assoc s g z := by
+    simp only [SLOnGLPos_smul_apply]
+    apply mul_smul'
+
+end ModularScalarTowers
+
+section SLModularAction
+
+variable (g : SL(2, ℤ)) (z : ℍ)
+
+@[simp]
+theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
+  rfl
+
+@[simp high]
+theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
+  simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul, coe]
+
+theorem im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z) := by
+  simpa only [coe, coe_GLPos_coe_GL_coe_matrix, (g : SL(2, ℝ)).prop, one_mul] using
+    z.im_smul_eq_div_normSq g
+
+theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
+    denom g z = g 1 0 * z + g 1 1 := by
+  simp [denom, coe]
+
+@[simp]
+lemma denom_S (z : ℍ) : denom S z = z := by
+  simp only [S, denom_apply, of_apply, cons_val', cons_val_zero, empty_val', cons_val_fin_one,
+    cons_val_one, head_fin_const, Int.cast_one, one_mul, head_cons, Int.cast_zero, add_zero]
+
+end SLModularAction
+
+end ModularGroup

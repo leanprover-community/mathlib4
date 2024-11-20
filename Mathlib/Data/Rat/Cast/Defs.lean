@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Order.Nat
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Casts for Rational Numbers

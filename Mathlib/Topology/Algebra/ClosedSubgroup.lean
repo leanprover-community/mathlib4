@@ -69,7 +69,7 @@ instance : Coe (ClosedSubgroup G) (Subgroup G) where
   coe := toSubgroup
 
 @[to_additive]
-instance instInfClosedSubgroup : Inf (ClosedSubgroup G) :=
+instance instInfClosedSubgroup : Min (ClosedSubgroup G) :=
   ⟨fun U V ↦ ⟨U ⊓ V, U.isClosed'.inter V.isClosed'⟩⟩
 
 @[to_additive]

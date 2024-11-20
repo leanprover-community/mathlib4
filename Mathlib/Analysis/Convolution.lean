@@ -90,9 +90,8 @@ The following notations are localized in the locale `Convolution`:
 -/
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
-open ContinuousLinearMap Metric Bornology
-
-open scoped Pointwise Topology NNReal Filter
+open Bornology ContinuousLinearMap Metric Topology
+open scoped Pointwise NNReal Filter
 
 universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 
