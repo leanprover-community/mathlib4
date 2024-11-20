@@ -47,6 +47,7 @@ local macro:max (priority := high) "[" n:term "]₂" : term =>
 
 namespace StructuredArrow
 
+/-
 /-- The object of `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op` corresponding to the
 map [0] ⟶ [n] with image `i`. -/
 private
@@ -176,7 +177,7 @@ def fact.map.arr {n}
   · apply Quiver.Hom.unop_inj
     ext z; revert z
     intro |0 | 1 => rfl
-
+-/
 end StructuredArrow
 
 open StructuredArrow
@@ -190,10 +191,10 @@ noncomputable def ran.lift {X : SSet.{u}} [StrictSegal X] {n}
     (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
       (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt) : X _[n] :=
   StrictSegal.spineToSimplex {
-    vertex := fun i ↦ s.π.app (pt i) x
-    arrow := fun i ↦ s.π.app (ar i) x
-    arrow_src := fun _ ↦ ranCone_ar_src s x
-    arrow_tgt := fun _ ↦ ranCone_ar_tgt s x
+    vertex := fun i ↦ s.π.app (.mk (Y := op [0]₂) (.op (SimplexCategory.const _ _ i))) x
+    arrow := fun i ↦ s.π.app (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x
+    arrow_src := fun _ ↦ sorry--ranCone_ar_src s x
+    arrow_tgt := fun _ ↦ sorry--ranCone_ar_tgt s x
   }
 
 /-- This theorem is used to prove the factorization property of `ran.lift`.-/
@@ -305,13 +306,17 @@ variable (X : SSet.{u}) [StrictSegal X]
 
 /-- A strict Segal simplicial set is 2-coskeletal. -/
 noncomputable def IsPointwiseRightKanExtensionAt (n : ℕ) :
-    (rightExtensionInclusion X 2).IsPointwiseRightKanExtensionAt ⟨[n]⟩ := by
-  show IsLimit _
-  unfold rightExtensionInclusion
-  simp only [RightExtension.mk, RightExtension.coneAt, Truncated.inclusion,
-    CostructuredArrow.mk_left, const_obj_obj, op_obj, fullSubcategoryInclusion.obj,
-    comp_obj, StructuredArrow.proj_obj, whiskeringLeft_obj_obj, CostructuredArrow.mk_right,
-    CostructuredArrow.mk_hom_eq_self, NatTrans.id_app, comp_id]
+    (rightExtensionInclusion X 2).IsPointwiseRightKanExtensionAt ⟨[n]⟩ where
+  lift s x := ran.lift (X := X) s x
+  fac := sorry
+  uniq := sorry
+  #exit
+  --show IsLimit _
+  --unfold rightExtensionInclusion
+  --simp only [RightExtension.mk, RightExtension.coneAt, Truncated.inclusion,
+  --  CostructuredArrow.mk_left, const_obj_obj, op_obj, fullSubcategoryInclusion.obj,
+  --  comp_obj, StructuredArrow.proj_obj, whiskeringLeft_obj_obj, CostructuredArrow.mk_right,
+  --  CostructuredArrow.mk_hom_eq_self, NatTrans.id_app, comp_id]
   exact {
     lift := fun s x => ran.lift s x
     fac := by
