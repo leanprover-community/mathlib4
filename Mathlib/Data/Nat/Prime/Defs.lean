@@ -129,7 +129,7 @@ theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Co
   exact (h m mlt hm).symm.eq_one_of_dvd mdvd
 
 /--
-This instance is set up to work in the kernel (`by decide`)for small values.
+This instance is set up to work in the kernel (`by decide`) for small values.
 
 Below (`decidablePrime'`) we will define a faster variant to be used by the compiler
 (e.g. in `#eval` or `by native_decide`).
