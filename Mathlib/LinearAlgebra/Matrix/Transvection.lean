@@ -63,8 +63,6 @@ universe u₁ u₂
 
 namespace Matrix
 
-open Matrix
-
 variable (n p : Type*) (R : Type u₂) {𝕜 : Type*} [Field 𝕜]
 variable [DecidableEq n] [DecidableEq p]
 variable [CommRing R]

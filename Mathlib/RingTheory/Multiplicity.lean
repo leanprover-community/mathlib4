@@ -5,8 +5,9 @@ Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.ENat.Basic
+import Mathlib.Tactic.Linarith
 
 /-!
 # Multiplicity of a divisor
