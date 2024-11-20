@@ -179,7 +179,7 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
     simp only [add_zero, Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
     have coe_lt_succ : (k : WithTop ℕ) < k.succ := Nat.cast_lt.2 k.lt_succ_self
     have hdiff : DifferentiableOn ℝ (iteratedDerivWithin k f s) s' :=
-      (hf.differentiableOn_iteratedDerivWithin (by exact_mod_cast coe_lt_succ) hs_unique).mono h
+      (hf.differentiableOn_iteratedDerivWithin (mod_cast coe_lt_succ) hs_unique).mono h
     specialize hk hf.of_succ ((hdiff y hy).mono_of_mem_nhdsWithin hs')
     convert hk.add (hasDerivWithinAt_taylor_coeff_within hs'_unique
       (nhdsWithin_mono _ h self_mem_nhdsWithin) hf') using 1
@@ -305,7 +305,7 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     simp [hx]
   -- The nth iterated derivative is differentiable
   have hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Icc a b) :=
-    hf.differentiableOn_iteratedDerivWithin (by exact_mod_cast n.lt_succ_self)
+    hf.differentiableOn_iteratedDerivWithin (mod_cast n.lt_succ_self)
       (uniqueDiffOn_Icc h)
   -- We can uniformly bound the derivative of the Taylor polynomial
   have h' : ∀ y ∈ Ico a x,
