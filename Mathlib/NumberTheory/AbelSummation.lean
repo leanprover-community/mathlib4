@@ -156,7 +156,7 @@ theorem sum_mul_eq_sub_integral_mul (c : ℕ → ℂ) {f : ℝ → ℂ} {b : ℝ
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when the first coefficient of the sequence
 `c` is equal to `0`. -/
-theorem sum_mul_eq_sub_integral_mul' (c : ℕ → ℂ) (hc : c 0 = 0) {f : ℝ → ℂ} {b : ℝ}
+theorem sum_mul_eq_sub_integral_mul' (c : ℕ → ℂ) (hc : c 0 = 0) {f : ℝ → ℂ} (b : ℝ)
     (hf_diff : ∀ t ∈ Set.Icc 1 b, DifferentiableAt ℝ f t)
     (hf_int : IntervalIntegrable (deriv f) volume 1 b) :
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
