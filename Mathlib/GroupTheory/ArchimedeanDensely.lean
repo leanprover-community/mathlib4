@@ -49,33 +49,19 @@ noncomputable def LinearOrderedCommGroup.zpowersEquivZPowers {G G' : Type*}
     [LinearOrderedCommGroup G] [LinearOrderedCommGroup G'] (x : G) (y : G') (hxy : x = 1 ↔ y = 1) :
     zpowers x ≃*o zpowers y :=
   if hx : x = 1 then by
-    have : Subsingleton (zpowers x) := by simp [hx]
-    refine ⟨⟨⟨fun _ ↦ ⟨1, by simp [hxy.mp hx]⟩, fun _ ↦ ⟨1, by simp [hx]⟩, ?_, ?_⟩, ?_⟩, ?_⟩
+    refine ⟨⟨⟨fun _ ↦ ⟨1, one_mem _⟩, fun _ ↦ ⟨1, one_mem _⟩, ?_, ?_⟩, ?_⟩, ?_⟩
     · intro ⟨a, ha⟩
-      simpa [hx, closure_singleton_one, eq_comm] using ha
+      simpa [hx, eq_comm] using ha
     · intro ⟨a, ha⟩
-      simpa [hxy.mp hx, closure_singleton_one, eq_comm] using ha
+      simpa [hxy.mp hx, eq_comm] using ha
     · intros
       simp
     · intro ⟨a, ha⟩ ⟨b, hb⟩
-      simp only [hx, closure_singleton_one, mem_bot] at ha hb
+      simp only [hx, zpowers_one_eq_bot, mem_bot] at ha hb
       simp [ha, hb]
   else by
-    set x' := max x x⁻¹ with hx'
-    have xpos : 1 < x' := by
-      simp [hx', eq_comm, hx]
-    set y' := max y y⁻¹ with hy'
-    have ypos : 1 < y' := by
-      simp [hy', eq_comm, ← hxy, hx]
-    have hxc : closure {x} = closure {x'} := by
-      rcases max_cases x x⁻¹ with H|H <;>
-      simp [hx', H.left]
-    have hyc : closure {y} = closure {y'} := by
-      rcases max_cases y y⁻¹ with H|H <;>
-      simp [hy', H.left]
     refine ⟨⟨⟨
-      fun a ↦ ⟨y' ^ ((mem_closure_singleton).mp
-        (by simpa [hxc] using a.prop)).choose, ?_⟩,
+      fun a ↦ ⟨|y|ₘ ^ ((SetLike.ext_iff.mp (zpowers_mabs x) a).2 a.prop).choose, ?_⟩,
       fun a ↦ ⟨x' ^ ((mem_closure_singleton).mp
         (by simpa [hyc] using a.prop)).choose, ?_⟩,
         ?_, ?_⟩, ?_⟩, ?_⟩
@@ -104,42 +90,31 @@ noncomputable def LinearOrderedCommGroup.zpowersEquivZPowers {G G' : Type*}
       simp [zpow_le_zpow_iff_right ypos, ← zpow_le_zpow_iff_right xpos, A.choose_spec,
         B.choose_spec]
 
-variable {G : Type*} [LinearOrderedCommGroup G] [MulArchimedean G]
+variable {G : Type*} [LinearOrderedCommGroup G]
 
 @[to_additive]
 lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
-    IsLeast {y : G | y ∈ closure ({a} : Set G) ∧ 1 < y} b ↔ b = |a|ₘ ∧ 1 < b := by
+    IsLeast {y : G | y ∈ zpowers a ∧ 1 < y} b ↔ b = |a|ₘ ∧ 1 < b := by
+  wlog ha : 1 ≤ a generalizing a
+  · simpa using this (one_le_mabs a)
+  rw [mabs_of_one_le ha]
   constructor <;> intro h
-  · have := Subgroup.cyclic_of_min h
-    have ha : a ∈ closure ({b} : Set G) := by
-      simp [← this]
-    rw [mem_closure_singleton] at ha
-    obtain ⟨n, rfl⟩ := ha
-    have := h.left
-    simp only [mem_closure_singleton, mem_setOf_eq, ← mul_zsmul] at this
-    obtain ⟨m, hm⟩ := this.left
-    have key : m * n = 1 := by
-      rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
-    rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
-    rw [eq_comm]
-    rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
-    simp [this.right.le, this.right, mabs]
-  · wlog ha : 1 ≤ a generalizing a
-    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_le ha) using 4
-      · simp
-      · rwa [mabs_inv]
-    rw [mabs, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h
-    rcases h with ⟨rfl, h⟩
-    refine ⟨?_, ?_⟩
-    · simp [h]
-    · intro x
-      simp only [mem_closure_singleton, mem_setOf_eq, and_imp, forall_exists_index]
-      rintro k rfl hk
-      rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff_right h, ← zero_add 1,
-          ← Int.lt_iff_add_one_le]
-      contrapose! hk
-      rw [← Left.one_le_inv_iff, ← zpow_neg]
-      exact one_le_zpow ha (by simp [hk])
+  · refine ⟨le_antisymm (h.2 ⟨mem_zpowers _, ha.lt_of_ne ?_⟩) ?_, h.1.2⟩
+    · rintro rfl
+      obtain rfl : b = 1 := by simpa using h.1.1
+      exact h.1.2.false
+    · rcases h.1.1 with ⟨m, rfl⟩
+      suffices 0 < m by simpa using zpow_le_zpow_right ha this
+      by_contra! hm
+      apply h.1.2.not_le
+      simpa using zpow_le_zpow_right ha hm
+  · rcases h with ⟨rfl, hlt⟩
+    refine ⟨⟨mem_zpowers _, hlt⟩, ?_⟩
+    rintro _ ⟨⟨m, rfl⟩, hm⟩
+    rw [← zpow_zero b, zpow_lt_zpow_iff_right hlt] at hm
+    simpa using zpow_le_zpow_right ha hm
+
+variable [MulArchimedean G]
 
 /-- If an element of a linearly ordered archimedean additive group is the least positive element,
 then the whole group is isomorphic (and order-isomorphic) to the integers. -/
