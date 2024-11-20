@@ -91,11 +91,6 @@ theorem locallyConvexSpace_iff_exists_convex_subset_zero :
   (locallyConvexSpace_iff_zero 𝕜 E).trans hasBasis_self
 
 -- see Note [lower instance priority]
-instance (priority := 100) LocallyConvexSpace.toLocallyConnectedSpace [Module ℝ E]
-    [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocallyConnectedSpace E :=
-  locallyConnectedSpace_of_connected_bases _ _
-    (fun x => @LocallyConvexSpace.convex_basis ℝ _ _ _ _ _ _ x) fun _ _ hs => hs.2.isPreconnected
-
 instance (priority := 100) LocallyConvexSpace.toLocPathConnectedSpace [Module ℝ E]
     [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocPathConnectedSpace E :=
   .of_bases (fun x ↦ @convex_basis ℝ _ _ _ _ _ _ x)
