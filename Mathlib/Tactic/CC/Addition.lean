@@ -390,7 +390,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
       guard (kindsIt[0]! matches .eq)
       let some p ← getEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
       lemmaArgs := lemmaArgs.push p
-    kindsIt := kindsIt.eraseIdx 0
+    kindsIt := kindsIt.eraseIdx! 0
   let mut r := mkAppN specLemma.proof lemmaArgs
   if specLemma.heqResult && !heqProofs then
     r ← mkAppM ``eq_of_heq #[r]
