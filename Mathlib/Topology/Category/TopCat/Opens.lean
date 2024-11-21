@@ -297,7 +297,7 @@ instance IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap
 
 lemma Topology.IsOpenEmbedding.functor_obj_injective {X Y : TopCat} {f : X ⟶ Y}
     (hf : IsOpenEmbedding f) : Function.Injective hf.isOpenMap.functor.obj :=
-  fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.inj (congr_arg (↑· : Opens Y → Set Y) e))
+  fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.injective (congr_arg (↑· : Opens Y → Set Y) e))
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.functor_obj_injective := IsOpenEmbedding.functor_obj_injective
@@ -361,7 +361,7 @@ theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
 
 theorem map_functor_eq' {X U : TopCat} (f : U ⟶ X) (hf : IsOpenEmbedding f) (V) :
     ((Opens.map f).obj <| hf.isOpenMap.functor.obj V) = V :=
-  Opens.ext <| Set.preimage_image_eq _ hf.inj
+  Opens.ext <| Set.preimage_image_eq _ hf.injective
 
 @[simp]
 theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
