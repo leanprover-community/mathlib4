@@ -198,6 +198,44 @@ def toOneHypercover {X : C} (data : F.OneHypercoverDenseData J₀ J X) :
   mem₀ := data.mem₀
   mem₁ := data.mem₁
 
+variable {X : C} (data : F.OneHypercoverDenseData J₀ J X) {X₀ : C₀} (f : F.obj X₀ ⟶ X)
+
+structure SieveStruct {Y₀ : C₀} (g : Y₀ ⟶ X₀) where
+  i₀ : data.I₀
+  q : Y₀ ⟶ data.X i₀
+  fac : F.map q ≫ data.f i₀ = F.map g ≫ f := by simp
+
+attribute [reassoc (attr := simp)] SieveStruct.fac
+
+@[simps]
+def sieve : Sieve X₀ where
+  arrows Y₀ g := Nonempty (SieveStruct data f g)
+  downward_closed := by
+    rintro Y₀ Z₀ g ⟨h⟩ p
+    exact ⟨{ i₀ := h.i₀, q := p ≫ h.q}⟩
+
+lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
+  rw [← functorPushforward_mem_iff J₀ J F]
+  let S := Sieve.pullback f data.toOneHypercover.sieve₀
+  let R : ⦃W : C⦄ → ⦃p : W ⟶ F.obj X₀⦄ → S.arrows p → Sieve W := fun W p hp ↦
+    { arrows := fun W' q ↦ ∃ (Y₀ : C₀) (b : W' ⟶ F.obj Y₀) (r : F.obj Y₀ ⟶ W)
+          (g : Y₀ ⟶ X₀) (c : Y₀ ⟶ data.X (Sieve.ofArrows.i hp)),
+          b ≫ r = q ∧ r ≫ p = F.map g ∧ r ≫ Sieve.ofArrows.h hp = F.map c
+      downward_closed := by
+        rintro W' W'' q ⟨Y₀, b, r, g, c, fac₁, fac₂, fac₃⟩ a
+        exact ⟨Y₀, a ≫ b, r, g, c, by rw [assoc, fac₁], fac₂, fac₃⟩ }
+  refine J.superset_covering ?_
+    (J.bind_covering (J.pullback_stable f (data.toOneHypercover.mem₀)) (R := R) ?_)
+  · rintro W' _ ⟨W, q, p, hp, ⟨Y₀, b, r, g, c, fac₁, fac₂, fac₃⟩, rfl⟩
+    have := Sieve.ofArrows.fac hp
+    dsimp at this
+    exact ⟨Y₀, g, b,
+      ⟨⟨Sieve.ofArrows.i hp, c, by rw [← reassoc_of% fac₃, ← this, reassoc_of% fac₂]⟩⟩,
+      by rw [← reassoc_of% fac₁, fac₂]⟩
+  · have := IsDenseSubsite.isCoverDense J₀ J F
+    -- use a covering of `W` by objects in C₀
+    sorry
+
 end
 
 section
@@ -222,30 +260,9 @@ structure PresheafSieveStruct {Y₀ : C₀} (g : Y₀ ⟶ X₀) where
 
 attribute [reassoc (attr := simp)] PresheafSieveStruct.fac
 
-@[simps]
-def presheafSieve : Sieve X₀ where
-  arrows Y₀ g := Nonempty (PresheafSieveStruct data f g)
-  downward_closed := by
-    rintro Y₀ Z₀ g ⟨h⟩ p
-    exact ⟨{ i₀ := h.i₀, q := p ≫ h.q}⟩
-
-lemma presheafSieve_mem : presheafSieve data f ∈ J₀ X₀ := by
-  rw [← functorPushforward_mem_iff J₀ J F]
-  let S := Sieve.pullback f (data X).toPreOneHypercover.sieve₀
-  let R : ⦃Y : C⦄ → ⦃g : Y ⟶ F.obj X₀⦄ → S.arrows g → Sieve Y := fun Y g hg ↦
-    { arrows := sorry
-      downward_closed := sorry }
-  refine J.superset_covering ?_
-    (J.bind_covering (J.pullback_stable f (data X).mem₀) (R := R) sorry)
-  intro Z g hg
-  dsimp
-  obtain ⟨Y, a, b, hb, ha, rfl⟩ := hg
-  obtain ⟨_, c, _, ⟨i⟩, fac⟩ := hb
-  sorry
-
 noncomputable def restriction {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) :
     presheafObj data G₀ X ⟶ G₀.val.obj (op X₀) :=
-  G₀.2.amalgamate ⟨_, presheafSieve_mem data f⟩ (fun ⟨Y₀, g, hg⟩ ↦
+  G₀.2.amalgamate ⟨_, (data X).sieve_mem f⟩ (fun ⟨Y₀, g, hg⟩ ↦
     Multiequalizer.ι _ _ ≫ G₀.val.map hg.some.q.op) sorry
 
 noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
