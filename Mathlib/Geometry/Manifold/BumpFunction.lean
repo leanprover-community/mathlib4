@@ -305,7 +305,7 @@ protected theorem continuous : Continuous f :=
 
 /-- If `f : SmoothBumpFunction I c` is a smooth bump function and `g : M → G` is a function smooth
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
-theorem contMDiffAt_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
+theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
     (hg : ContMDiffOn I 𝓘(ℝ, G) ⊤ g (chartAt H c).source) :
     ContMDiff I 𝓘(ℝ, G) ⊤ fun x => f x • g x := by
   refine contMDiff_of_tsupport fun x hx => ?_
@@ -318,6 +318,6 @@ theorem contMDiffAt_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M �
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
   exact f.contMDiffAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)
 
-@[deprecated (since := "2024-11-20")] alias smoothAt_smul := contMDiffAt_smul
+@[deprecated (since := "2024-11-20")] alias smooth_smul := contMDiff_smul
 
 end SmoothBumpFunction
