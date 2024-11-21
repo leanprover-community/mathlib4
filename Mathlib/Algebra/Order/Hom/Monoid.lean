@@ -513,8 +513,8 @@ namespace OrderMonoidIso
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α] [MulOneClass β]
-  [MulOneClass γ] [MulOneClass δ] {f g : α ≃*o β}
+variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [Mul α] [Mul β]
+  [Mul γ] [Mul δ] {f g : α ≃*o β}
 
 @[to_additive]
 instance : EquivLike (α ≃*o β) α β where

@@ -234,9 +234,11 @@ namespace OrderMonoidIso
 variable [Semigroup α] [Semigroup β] [CompleteLattice α] [CompleteLattice β]
   [FunLike F α β] {f g : α →ₙ*q β}
 
+/-- An OrderMonoidIso is a QuantaleHom -/
 instance (f : α ≃*o β) : α →ₙ*q β where
   toFun := f.toFun
   map_mul' := f.map_mul'
-  map_sSup' := sorry
+  map_sSup' := by simp only [toMulEquiv_eq_coe, MulEquiv.toEquiv_eq_coe,
+    Equiv.toFun_as_coe, EquivLike.coe_coe, coe_mulEquiv, map_sSup, implies_true]
 
 end OrderMonoidIso
