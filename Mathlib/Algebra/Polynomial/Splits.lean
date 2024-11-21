@@ -33,8 +33,6 @@ variable {R : Type*} {F : Type u} {K : Type v} {L : Type w}
 
 namespace Polynomial
 
-open Polynomial
-
 section Splits
 
 section CommRing
