@@ -11,18 +11,18 @@ import Mathlib.Order.Filter.AtTopBot.Monoid
 # Convergence to ±infinity in ordered commutative groups
 -/
 
-variable {α β : Type*}
+variable {α G : Type*}
 open Set
 
 namespace Filter
 
-section OrderedGroup
+section OrderedCommGroup
 
-variable [OrderedAddCommGroup β] (l : Filter α) {f g : α → β}
+variable [OrderedCommGroup G] (l : Filter α) {f g : α → G}
 
-theorem tendsto_atTop_add_left_of_le' (C : β) (hf : ∀ᶠ x in l, C ≤ f x) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x + g x) l atTop :=
-  @tendsto_atTop_of_add_bdd_above_left' _ _ _ l (fun x => -f x) (fun x => f x + g x) (-C) (by simpa)
+theorem tendsto_atTop_mul_left_of_le' (C : G) (hf : ∀ᶠ x in l, C ≤ f x) (hg : Tendsto g l atTop) :
+    Tendsto (fun x => f x * g x) l atTop :=
+  @tendsto_atTop_of_mul_bdd_above_left' _ _ _ l (fun x => -f x) (fun x => f x + g x) (-C) (by simpa)
     (by simpa)
 
 theorem tendsto_atBot_add_left_of_ge' (C : β) (hf : ∀ᶠ x in l, f x ≤ C) (hg : Tendsto g l atBot) :
