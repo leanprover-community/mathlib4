@@ -186,6 +186,7 @@ theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot
     {a : α} {f : ι → α} (hlt : ∀ i, f i < a) (hlim : Tendsto f F (𝓝 a)) :
     ⋃ i : ι, Iic (f i) = Iio a := by
   have obs : a ∉ range f := by
+    rw [mem_range]
     rintro ⟨i, rfl⟩
     exact (hlt i).false
   rw [← biUnion_range, (IsLUB.range_of_tendsto (le_of_lt <| hlt ·) hlim).biUnion_Iic_eq_Iio obs]
