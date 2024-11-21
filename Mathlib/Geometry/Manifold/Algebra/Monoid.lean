@@ -45,7 +45,7 @@ class SmoothAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topol
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type*)
     [Add G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothManifoldWithCorners I G :
     Prop where
-  smooth_add : Smooth (I.prod I) I fun p : G × G => p.1 + p.2
+  smooth_add : ContMDiff (I.prod I) I ⊤ fun p : G × G => p.1 + p.2
 
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a smooth (Lie) monoid or a smooth semigroup.
@@ -56,7 +56,7 @@ class SmoothMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topol
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type*)
     [Mul G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothManifoldWithCorners I G :
     Prop where
-  smooth_mul : Smooth (I.prod I) I fun p : G × G => p.1 * p.2
+  smooth_mul : ContMDiff (I.prod I) I ⊤ fun p : G × G => p.1 * p.2
 
 section SmoothMul
 
@@ -71,8 +71,10 @@ section
 variable (I)
 
 @[to_additive]
-theorem smooth_mul : Smooth (I.prod I) I fun p : G × G => p.1 * p.2 :=
+theorem contMDiff_mul : ContMDiff (I.prod I) I ⊤ fun p : G × G => p.1 * p.2 :=
   SmoothMul.smooth_mul
+
+@[deprecated (since := "2024-11-20")] alias smooth_mul := contMDiff_mul
 
 include I in
 /-- If the multiplication is smooth, then it is continuous. This is not an instance for technical
@@ -80,7 +82,7 @@ reasons, see note [Design choices about smooth algebraic structures]. -/
 @[to_additive "If the addition is smooth, then it is continuous. This is not an instance for
 technical reasons, see note [Design choices about smooth algebraic structures]."]
 theorem continuousMul_of_smooth : ContinuousMul G :=
-  ⟨(smooth_mul I).continuous⟩
+  ⟨(contMDiff_mul I).continuous⟩
 
 end
 
@@ -91,7 +93,7 @@ variable {f g : M → G} {s : Set M} {x : M} {n : ℕ∞}
 @[to_additive]
 theorem ContMDiffWithinAt.mul (hf : ContMDiffWithinAt I' I n f s x)
     (hg : ContMDiffWithinAt I' I n g s x) : ContMDiffWithinAt I' I n (f * g) s x :=
-  ((smooth_mul I).smoothAt.of_le le_top).comp_contMDiffWithinAt x (hf.prod_mk hg)
+  ((contMDiff_mul I).contMDiffAt.of_le le_top).comp_contMDiffWithinAt x (hf.prod_mk hg)
 
 @[to_additive]
 nonrec theorem ContMDiffAt.mul (hf : ContMDiffAt I' I n f x) (hg : ContMDiffAt I' I n g x) :
@@ -106,52 +108,46 @@ theorem ContMDiffOn.mul (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g
 theorem ContMDiff.mul (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
     ContMDiff I' I n (f * g) := fun x => (hf x).mul (hg x)
 
-@[to_additive]
-nonrec theorem SmoothWithinAt.mul (hf : SmoothWithinAt I' I f s x)
-    (hg : SmoothWithinAt I' I g s x) : SmoothWithinAt I' I (f * g) s x :=
-  hf.mul hg
+@[deprecated (since := "2024-11-21")] alias SmoothWithinAt.mul := ContMDiffWithinAt.mul
+
+@[deprecated (since := "2024-11-21")] alias SmoothAt.mul := ContMDiffAt.mul
+
+@[deprecated (since := "2024-11-21")] alias SmoothOn.mul := ContMDiffOn.mul
+
+@[deprecated (since := "2024-11-21")] alias Smooth.mul := ContMDiff.mul
 
 @[to_additive]
-nonrec theorem SmoothAt.mul (hf : SmoothAt I' I f x) (hg : SmoothAt I' I g x) :
-    SmoothAt I' I (f * g) x :=
-  hf.mul hg
+theorem contMDiff_mul_left {a : G} : ContMDiff I I n (a * ·) :=
+  contMDiff_const.mul contMDiff_id
+
+@[deprecated (since := "2024-11-21")] alias smooth_mul_left := contMDiff_mul_left
+@[deprecated (since := "2024-11-21")] alias smooth_add_left := contMDiff_add_left
 
 @[to_additive]
-nonrec theorem SmoothOn.mul (hf : SmoothOn I' I f s) (hg : SmoothOn I' I g s) :
-    SmoothOn I' I (f * g) s :=
-  hf.mul hg
-
-@[to_additive]
-nonrec theorem Smooth.mul (hf : Smooth I' I f) (hg : Smooth I' I g) : Smooth I' I (f * g) :=
-  hf.mul hg
-
-@[to_additive]
-theorem smooth_mul_left {a : G} : Smooth I I fun b : G => a * b :=
-  smooth_const.mul smooth_id
-
-@[to_additive]
-theorem smooth_mul_right {a : G} : Smooth I I fun b : G => b * a :=
-  smooth_id.mul smooth_const
-
-theorem contMDiff_mul_left {a : G} : ContMDiff I I n (a * ·) := smooth_mul_left.contMDiff
-
 theorem contMDiffAt_mul_left {a b : G} : ContMDiffAt I I n (a * ·) b :=
   contMDiff_mul_left.contMDiffAt
 
+@[to_additive]
 theorem mdifferentiable_mul_left {a : G} : MDifferentiable I I (a * ·) :=
   contMDiff_mul_left.mdifferentiable le_rfl
 
+@[to_additive]
 theorem mdifferentiableAt_mul_left {a b : G} : MDifferentiableAt I I (a * ·) b :=
   contMDiffAt_mul_left.mdifferentiableAt le_rfl
 
-theorem contMDiff_mul_right {a : G} : ContMDiff I I n (· * a) := smooth_mul_right.contMDiff
+@[to_additive]
+theorem contMDiff_mul_right {a : G} : ContMDiff I I n (· * a) :=
+  contMDiff_id.mul contMDiff_const
 
+@[to_additive]
 theorem contMDiffAt_mul_right {a b : G} : ContMDiffAt I I n (· * a) b :=
   contMDiff_mul_right.contMDiffAt
 
+@[to_additive]
 theorem mdifferentiable_mul_right {a : G} : MDifferentiable I I (· * a) :=
   contMDiff_mul_right.mdifferentiable le_rfl
 
+@[to_additive]
 theorem mdifferentiableAt_mul_right {a b : G} : MDifferentiableAt I I (· * a) b :=
   contMDiffAt_mul_right.mdifferentiableAt le_rfl
 
