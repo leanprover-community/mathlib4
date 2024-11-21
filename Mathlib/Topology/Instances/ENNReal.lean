@@ -1433,21 +1433,6 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   rw [key]
   rfl
 
-/-- If `filter.limsup u at_top ≤ x`, then for all `ε > 0`, eventually we have `u a < x + ε`.  -/
-theorem eventually_lt_add_pos_of_limsup_le {α : Type _} [Preorder α] {x : ℝ} {u : α → ℝ}
-    (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x) {ε : ℝ} (hε : 0 < ε) :
-    ∀ᶠ a : α in atTop, u a < x + ε :=
-  eventually_lt_of_limsup_lt (lt_of_le_of_lt hu (lt_add_of_pos_right x hε)) hu_bdd
-
-/-- If `filter.limsup u at_top ≤ x`, then for all `ε > 0`, there exists a positive natural
-  number `n` such that `u n < x + ε`.  -/
-theorem exists_lt_of_limsup_le {x : ℝ} {u : ℕ → ℝ} (hu_bdd : IsBoundedUnder LE.le atTop u)
-    (hu : Filter.limsup u atTop ≤ x) {ε : ℝ} (hε : 0 < ε) : ∃ n : PNat, u n < x + ε := by
-  have h : ∀ᶠ a : ℕ in atTop, u a < x + ε := eventually_lt_add_pos_of_limsup_le hu_bdd hu hε
-  simp only [eventually_atTop, ge_iff_le] at h
-  obtain ⟨n, hn⟩ := h
-  exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
-
 end LimsupLiminf
 
 end ENNReal -- namespace
