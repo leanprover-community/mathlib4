@@ -33,7 +33,7 @@ open Finset intervalIntegral MeasureTheory IntervalIntegrable
 
 /-- Abel's summation formula. -/
 theorem sum_mul_eq_sub_sub_integral_mul {𝕜 : Type*} [RCLike 𝕜] (c : ℕ → 𝕜) {f : ℝ → 𝕜} {a b : ℝ}
-  (ha : 0 ≤ a) (hab : a ≤ b)
+    (ha : 0 ≤ a) (hab : a ≤ b)
     (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
     (hf_int : IntervalIntegrable (deriv f) volume a b) :
     ∑ k ∈ Ioc ⌊a⌋₊ ⌊b⌋₊, f k * c k =
