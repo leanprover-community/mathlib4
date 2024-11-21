@@ -324,3 +324,14 @@ theorem mk_sub_mk [Sub α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
 end LinearOrder
 
 end Nonneg
+
+/-- If `u v : α → β` are nonnegative and bounded above, then `u * v` is bounded above. -/
+theorem bddAbove_range_mul {α β : Type*} {u v : α → β} [Preorder β] [Zero β] [Mul β] [PosMulMono β]
+    [MulPosMono β] (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
+    (hv : BddAbove (Set.range v)) (hv0 : 0 ≤ v) : BddAbove (Set.range (u * v)) := by
+  obtain ⟨bu, hbu⟩ := hu
+  obtain ⟨bv, hbv⟩ := hv
+  use bu * bv
+  simp only [mem_upperBounds, Set.mem_range, Pi.mul_apply, forall_exists_index,
+    forall_apply_eq_imp_iff] at hbu hbv ⊢
+  exact fun n ↦ mul_le_mul (hbu n) (hbv n) (hv0 n) (le_trans (hu0 n) (hbu n))

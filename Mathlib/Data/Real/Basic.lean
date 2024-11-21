@@ -590,16 +590,6 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
       exact (pow_le_pow_left zero_le_one (by simpa using ha'.le) b).trans' (by simp)
     · exact hb ha'
 
-/-- If `u v : ℕ → ℝ` are nonnegative and bounded above, then `u * v` is bounded above. -/
-theorem bddAbove_range_mul {u v : ℕ → ℝ} (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
-    (hv : BddAbove (Set.range v)) (hv0 : 0 ≤ v) : BddAbove (Set.range (u * v)) := by
-  obtain ⟨bu, hbu⟩ := hu
-  obtain ⟨bv, hbv⟩ := hv
-  use bu * bv
-  simp only [mem_upperBounds, Set.mem_range, Pi.mul_apply, forall_exists_index,
-    forall_apply_eq_imp_iff] at hbu hbv ⊢
-  exact fun n ↦ mul_le_mul (hbu n) (hbv n) (hv0 n) (le_trans (hu0 n) (hbu n))
-
 end Real
 
 /-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
