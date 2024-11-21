@@ -782,8 +782,7 @@ lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE α] [MulPosStrictMono α] [PosM
   apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
   conv_rhs => rw [← pow_two]
   convert four_mul_le_sq_add a b using 1
-  rw [mul_assoc, mul_comm t, mul_assoc, ← pow_two, ht, ← mul_assoc, two_mul, two_add_two_eq_four,
-    mul_assoc]
+  rw [mul_mul_mul_comm, two_mul, two_add_two_eq_four, ← pow_two, ht, mul_assoc]
 
 end LinearOrderedCommSemiring
 
