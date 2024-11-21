@@ -1504,7 +1504,7 @@ theorem abs_sub_round_div_natCast_eq {m n : ℕ} :
 
 @[bound]
 theorem sub_half_lt_round (x : α) : x - 1 / 2 < round x := by
-  rw [round_eq x, show x - 1 / 2 = x + 1 / 2 - 1 by nlinarith]
+  rw [round_eq x, show x - 1 / 2 = x + 1 / 2 - 1 by linarith]
   exact Int.sub_one_lt_floor (x + 1 / 2)
 
 @[bound]
