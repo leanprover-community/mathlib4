@@ -56,7 +56,7 @@ inductive StyleError where
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
-  /-- A line contains trailing whitespace -/
+  /-- A line contains trailing whitespace. -/
   | trailingWhitespace
 deriving BEq
 
@@ -201,12 +201,10 @@ section
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
 def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
-  let mut lineNumber := 1
-  for line in lines do
+  for (line, idx) in lines.zipWithIndex do
     -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
     if line.containsSubstr "daptation note" then
-      errors := errors.push (StyleError.adaptationNote, lineNumber)
-    lineNumber := lineNumber + 1
+      errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 
 
