@@ -154,7 +154,7 @@ lemma IsPrimePow.factorization_minFac_ne_zero {n : ℕ} (hn : IsPrimePow n) :
 
 /-- The canonical equivalence between pairs `(p, k)` with `p` a prime and `k : ℕ`
 and the set of prime powers given by `(p, k) ↦ p^(k+1)`. -/
-def Nat.Primes.prod_nat_equiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} where
+def Nat.Primes.prodNatEquiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} where
   toFun pk :=
     ⟨pk.1 ^ (pk.2 + 1), ⟨pk.1, pk.2 + 1, prime_iff.mp pk.1.prop, pk.2.add_one_pos, rfl⟩⟩
   invFun n :=
@@ -170,16 +170,16 @@ def Nat.Primes.prod_nat_equiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} 
 
 @[simp]
 lemma Nat.Primes.prod_nat_equiv_apply (p : Nat.Primes) (k : ℕ) :
-    prod_nat_equiv (p, k) = ⟨p ^ (k + 1), p, k + 1, prime_iff.mp p.prop, k.add_one_pos, rfl⟩ := by
+    prodNatEquiv (p, k) = ⟨p ^ (k + 1), p, k + 1, prime_iff.mp p.prop, k.add_one_pos, rfl⟩ := by
   rfl
 
 @[simp]
 lemma Nat.Primes.coe_prod_nat_equiv_apply (p : Nat.Primes) (k : ℕ) :
-    (prod_nat_equiv (p, k) : ℕ) = p ^ (k + 1) :=
+    (prodNatEquiv (p, k) : ℕ) = p ^ (k + 1) :=
   rfl
 
 @[simp]
 lemma Nat.Primes.prod_nat_equiv_symm_apply {n : ℕ} (hn : IsPrimePow n) :
-    prod_nat_equiv.symm ⟨n, hn⟩ =
+    prodNatEquiv.symm ⟨n, hn⟩ =
       (⟨n.minFac, minFac_prime hn.ne_one⟩, n.factorization n.minFac - 1) :=
   rfl
