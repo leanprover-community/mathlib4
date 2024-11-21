@@ -455,21 +455,4 @@ lemma sum_sqrt_mul_sqrt_le (s : Finset ι) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 
     ∑ i ∈ s, √(f i) * √(g i) ≤ √(∑ i ∈ s, f i) * √(∑ i ∈ s, g i) := by
   simpa [*] using sum_mul_le_sqrt_mul_sqrt _ (fun x ↦ √(f x)) (fun x ↦ √(g x))
 
-/-- **Sedrakyan's lemma**, also known by other names such as Titu's lemma or Engel's form. This is a
-specialization of the Cauchy-Schwarz inequality with the sequences `f n / √(g n)` and `√(g n)`. -/
-theorem sq_sum_div_le_sum_sq_div {s : Finset ι} (f : ι → ℝ) {g : ι → ℝ} (hg : ∀ i ∈ s, 0 < g i) :
-    (∑ n ∈ s, f n) ^ 2 / ∑ n ∈ s, g n ≤ ∑ n ∈ s, (f n) ^ 2 / g n := by
-  obtain rfl | hs := s.eq_empty_or_nonempty
-  · simp
-  have := Finset.sum_pos hg hs
-  apply le_of_le_of_eq (b := ((∑ n ∈ s, f n ^ 2 / g n) * ∑ n ∈ s, g n) / ∑ n ∈ s, g n)
-  · gcongr
-    convert sum_mul_sq_le_sq_mul_sq s (fun n ↦ f n / √(g n)) (fun n ↦ √(g n))
-      with n hn n hn n hn <;> specialize hg n hn
-    · field_simp
-    · field_simp
-    · rw [sq_sqrt]
-      exact hg.le
-  · field_simp
-
 end Real
