@@ -551,7 +551,7 @@ instance (priority := 100) isCyclic : IsCyclic α := by
 theorem prime_card [Finite α] : (Nat.card α).Prime := by
   have h0 : 0 < Nat.card α := Nat.card_pos
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
-  rw [Nat.prime_def_lt'']
+  rw [Nat.prime_def]
   refine ⟨Finite.one_lt_card_iff_nontrivial.2 inferInstance, fun n hn => ?_⟩
   refine (IsSimpleOrder.eq_bot_or_eq_top (Subgroup.zpowers (g ^ n))).symm.imp ?_ ?_
   · intro h

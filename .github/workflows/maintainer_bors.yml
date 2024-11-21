@@ -19,13 +19,8 @@ jobs:
     # both set simultaneously: depending on the event that triggers the PR, usually only one is set
     env:
       AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
-      PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
       COMMENT_EVENT: ${{ github.event.comment.body }}
       COMMENT_REVIEW: ${{ github.event.review.body }}
-      PR_TITLE_ISSUE: ${{ github.event.issue.title }}
-      PR_TITLE_PR: ${{ github.event.pull_request.title }}
-      PR_URL: ${{ github.event.issue.html_url }}${{ github.event.pull_request.html_url }}
-      EVENT_NAME: ${{ github.event_name }}
     name: Add ready-to-merge or delegated label
     runs-on: ubuntu-latest
     steps:
@@ -42,16 +37,19 @@ jobs:
             sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *d.*=delegated=p' | head -1)"
 
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
+          printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
+          printf $'PR_NUMBER: \'%s\'\n' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
+          printf $'%s' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}" | hexdump -cC
 
-          printf $'mOrD=%s\n' "${m_or_d}" > "${GITHUB_OUTPUT}"
+          printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
           if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
              [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ]
           then
             printf $'bot=true\n'
-            printf $'bot=true\n' > "${GITHUB_OUTPUT}"
+            printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
           else
             printf $'bot=false\n'
-            printf $'bot=false\n' > "${GITHUB_OUTPUT}"
+            printf $'bot=false\n' >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Check whether user is a mathlib admin
@@ -60,9 +58,6 @@ jobs:
         uses: actions-cool/check-user-permission@v2
         with:
           require: 'admin'
-          # review(_comment) use
-          # require: 'write'
-          # token: ${{ secrets.TRIAGE_TOKEN }}
 
       - name: Add ready-to-merge or delegated label
         id: add_label
@@ -71,13 +66,12 @@ jobs:
             steps.merge_or_delegate.outputs.bot == 'true' ) }}
         uses: octokit/request-action@v2.x
         with:
-          # check is this ok? was /repos/:repository/issues/:issue_number/labels
-          route: POST /repos/:repository/issues/${PR_NUMBER}/labels
+          route: POST /repos/:repository/issues/:issue_number/labels
           repository: ${{ github.repository }}
-          issue_number: ${PR_NUMBER}
+          issue_number: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
           labels: '["${{ steps.merge_or_delegate.outputs.mOrD }}"]'
         env:
-          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }} # comment uses ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
 
       - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
@@ -88,6 +82,6 @@ jobs:
         # (and send an annoying email) if the labels don't exist
         run: |
           curl --request DELETE \
-            --url "https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/labels/awaiting-author" \
+            --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/awaiting-author" \
             --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
             # comment uses ${{ secrets.GITHUB_TOKEN }}
