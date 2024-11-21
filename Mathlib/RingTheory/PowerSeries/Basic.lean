@@ -865,7 +865,7 @@ lemma coe_sub (p q : S[X]) :
   coeToPowerSeries.ringHom.map_sub p q
 
 theorem coe_one_sub :
-    (1 - (X : S[X])).toPowerSeries = 1 - (PowerSeries.X : PowerSeries S) := by
+    (1 - X : S[X]).toPowerSeries = 1 - (PowerSeries.X : PowerSeries S) := by
   simp
 
 end CommRing
