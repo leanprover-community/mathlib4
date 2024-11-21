@@ -112,7 +112,7 @@ theorem ContMDiffWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set 
     ContMDiffWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
       (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
   ContDiff.comp_contMDiffWithinAt (g := (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip)
-    (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip.contDiff hf
+    (ContinuousLinearMap.contDiff _) hf
 
 nonrec theorem ContMDiffAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {x : M}
     (hf : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f x) :
@@ -136,7 +136,7 @@ theorem ContMDiffWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set
     ContMDiffWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) n
       (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
   ContDiff.comp_contMDiffWithinAt (F' := (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
-    (g := ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃) (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).contDiff hf
+    (g := ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃) (ContinuousLinearMap.contDiff _) hf
 
 nonrec theorem ContMDiffAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {x : M}
     (hf : ContMDiffAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f x) :

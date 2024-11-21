@@ -22,9 +22,9 @@ quotients and localizations.
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
-open LocalRing FiniteDimensional Submodule
+open IsLocalRing FiniteDimensional Submodule
 
-section LocalRing
+section IsLocalRing
 
 local notation "p" => maximalIdeal R
 local notation "pS" => Ideal.map (algebraMap R S) p
@@ -33,7 +33,7 @@ variable [Module.Free R S] [Module.Finite R S]
 
 attribute [local instance] Ideal.Quotient.field
 
-lemma Algebra.trace_quotient_mk [LocalRing R] (x : S) :
+lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
     Algebra.trace (R ⧸ p) (S ⧸ pS) (Ideal.Quotient.mk pS x) =
       Ideal.Quotient.mk p (Algebra.trace R S x) := by
   classical
@@ -47,13 +47,13 @@ lemma Algebra.trace_quotient_mk [LocalRing R] (x : S) :
     AddMonoidHom.mapMatrix_apply, AddMonoidHom.coe_coe, Matrix.map_apply, ← map_mul,
     basisQuotient_repr]
 
-end LocalRing
+end IsLocalRing
 
 section IsDedekindDomain
 
 variable (p : Ideal R) [p.IsMaximal]
 variable {Rₚ Sₚ : Type*} [CommRing Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
-variable [LocalRing Rₚ] [Algebra S Sₚ] [Algebra R Sₚ] [Algebra Rₚ Sₚ]
+variable [IsLocalRing Rₚ] [Algebra S Sₚ] [Algebra R Sₚ] [Algebra Rₚ Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
 variable [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ]
 

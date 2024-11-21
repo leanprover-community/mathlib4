@@ -143,7 +143,7 @@ theorem Inseparable.const_smul {x y : α} (h : Inseparable x y) (c : M) :
   h.map (continuous_const_smul c)
 
 @[to_additive]
-theorem IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [TopologicalSpace β]
+theorem Topology.IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [TopologicalSpace β]
     {g : β → α} (hg : IsInducing g) (f : N → M) (hf : ∀ {c : N} {x : β}, g (c • x) = f c • g x) :
     ContinuousConstSMul N β where
   continuous_const_smul c := by
@@ -412,7 +412,7 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 
 end IsUnit
 
--- Porting note (#11215): TODO: use `Set.Nonempty`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `Set.Nonempty`
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.

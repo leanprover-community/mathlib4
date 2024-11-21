@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Order.Irreducible
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Lasker ring
@@ -47,7 +47,7 @@ lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
   induction s using Finset.strongInductionOn
   rename_i _ s IH
   by_cases H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
-  · exact ⟨s, le_rfl, hs, H⟩
+  · exact ⟨s, Finset.Subset.rfl, hs, H⟩
   push_neg at H
   obtain ⟨J, hJ, hJ'⟩ := H
   refine (IH (s.erase J) (Finset.erase_ssubset hJ) ?_).imp

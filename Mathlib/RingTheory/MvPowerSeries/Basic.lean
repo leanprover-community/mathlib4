@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.Tactic.Linarith
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Formal (multivariate) power series
@@ -134,6 +135,9 @@ def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
 def coeff (n : σ →₀ ℕ) : MvPowerSeries σ R →ₗ[R] R :=
   LinearMap.proj n
 
+theorem coeff_apply (f : MvPowerSeries σ R) (d : σ →₀ ℕ) : coeff R d f = f d :=
+  rfl
+
 variable {R}
 
 /-- Two multivariate formal power series are equal if all their coefficients are equal. -/
@@ -153,9 +157,9 @@ theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
 
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [coeff, monomial_def, LinearMap.proj_apply (i := m)]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [LinearMap.single_apply, Pi.single_apply]
 
 @[simp]
@@ -180,6 +184,14 @@ theorem coeff_comp_monomial (n : σ →₀ ℕ) : (coeff R n).comp (monomial R n
 @[simp]
 theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 :=
   rfl
+
+theorem eq_zero_iff_forall_coeff_zero {f : MvPowerSeries σ R} :
+    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) :=
+  MvPowerSeries.ext_iff
+
+theorem ne_zero_iff_exists_coeff_ne_zero (f : MvPowerSeries σ R) :
+    f ≠ 0 ↔ (∃ d : σ →₀ ℕ, coeff R d f ≠ 0) := by
+  simp only [MvPowerSeries.ext_iff, ne_eq, coeff_zero, not_forall]
 
 variable (m n : σ →₀ ℕ) (φ ψ : MvPowerSeries σ R)
 

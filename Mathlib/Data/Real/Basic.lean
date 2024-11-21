@@ -54,7 +54,7 @@ namespace Real
 
 open CauSeq CauSeq.Completion
 
-variable {x y : ℝ}
+variable {x : ℝ}
 
 theorem ext_cauchy_iff : ∀ {x y : Real}, x = y ↔ x.cauchy = y.cauchy
   | ⟨a⟩, ⟨b⟩ => by rw [ofCauchy.injEq]
@@ -584,11 +584,14 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
   induction b generalizing a with
   | zero => simp
   | succ b hb =>
-    rw [Nat.cast_add_one, mul_add, mul_one, add_right_comm, pow_succ, mul_add, mul_one, add_comm]
-    gcongr
-    · rw [le_mul_iff_one_le_left ha']
-      exact (pow_le_pow_left zero_le_one (by simpa using ha'.le) b).trans' (by simp)
-    · exact hb ha'
+    calc
+      a * ↑(b + 1) + 1 = (0 + 1) ^ b * a + (a * b + 1) := by
+        simp [mul_add, add_assoc, add_left_comm]
+      _ ≤ (a + 1) ^ b * a + (a + 1) ^ b := by
+        gcongr
+        · norm_num
+        · exact hb ha'
+      _ = (a + 1) ^ (b + 1) := by simp [pow_succ, mul_add]
 
 end Real
 
