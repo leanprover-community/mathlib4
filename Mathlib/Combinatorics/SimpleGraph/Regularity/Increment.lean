@@ -170,7 +170,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ #P.parts)
           norm_cast
           rw [tsub_mul]
           refine le_tsub_of_add_le_left ?_
-          nlinarith
+          linear_combination #P.parts * hP₇
         · norm_num
     _ = (#P.parts.offDiag * ε * (ε ^ 4 / 3) - #P.parts.offDiag * (ε ^ 5 / 25)) := by ring
     _ ≤ (#(nonUniforms P G ε) * (ε ^ 4 / 3) - #P.parts.offDiag * (ε ^ 5 / 25)) := by gcongr

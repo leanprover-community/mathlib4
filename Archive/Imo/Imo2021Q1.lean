@@ -6,6 +6,7 @@ Authors: Mantas Bakšys
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 2021 Q1
@@ -56,8 +57,7 @@ lemma exists_numbers_in_interval {n : ℕ} (hn : 100 ≤ n) :
   rw [← Nat.sub_add_cancel hn'] at h₁ h₂ h₃
   set l := (n + 1).sqrt - 1
   refine ⟨l, ?_, ?_⟩
-  · calc n + 4 * l ≤ (l ^ 2 + 4 * l + 2) + 4 * l := by linarith only [h₂]
-      _ ≤ 2 * l ^ 2 := by nlinarith only [h₃]
+  · linear_combination h₂ + (l + 1) * h₃
   · linarith only [h₁]
 
 lemma exists_triplet_summing_to_squares {n : ℕ} (hn : 100 ≤ n) :
