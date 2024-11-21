@@ -8,6 +8,7 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Finsupp.PWO
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.RingTheory.MvPolynomial.Ideal
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 
@@ -123,17 +124,16 @@ theorem leadingMonomial_le_iff_forall_le {p : MvPolynomial σ K} {a : α} :
 
 variable (size)
 def monomialIdeal (S : Set (MvPolynomial σ K)) : Ideal (MvPolynomial σ K) :=
-  Ideal.span ((fun p => monomial (leadingMonomial size p) 1) '' S)
+  Ideal.span ((fun p => monomial (leadingMonomial size p) 1) '' (S \ {0}))
 
 variable {size}
-
 theorem mem_monomialIdeal_iff {p : MvPolynomial σ K} {S : Set (MvPolynomial σ K)} :
-    p ∈ monomialIdeal size S ↔ ∀ m ∈ p.support, ∃ q ∈ S,
+    p ∈ monomialIdeal size S ↔ ∀ m ∈ p.support, ∃ q ∈ S, q ≠ 0 ∧
       size.leadingMonomial q ≤ m := by
   refine Iff.trans ?_ (Iff.trans (mem_ideal_span_monomial_image (x := p) (s :=
-    size.leadingMonomial '' S)) ?_)
+    size.leadingMonomial '' (S \ {0}))) ?_)
   · rw [Set.image_image, monomialIdeal]
-  · simp only [Set.exists_mem_image]
+  · simp only [Set.exists_mem_image, Set.mem_diff, Set.mem_singleton_iff, and_assoc]
 
 theorem leadingMonomial_add_le {p q : MvPolynomial σ K} :
     size (size.leadingMonomial (p + q)) ≤
@@ -148,6 +148,13 @@ theorem leadingMonomial_add_le {p q : MvPolynomial σ K} :
 theorem leadingMonomial_neg {p : MvPolynomial σ K} :
     size.leadingMonomial (-p) = size.leadingMonomial p := by
   simp [leadingMonomial]
+
+theorem leadingMonomial_monomial [DecidableEq K] (m : σ →₀ ℕ) (a : K) :
+    size.leadingMonomial (monomial m a) = if a = 0 then 0 else m := by
+  simp [leadingMonomial, support_monomial]
+  split_ifs
+  · simp
+  · simp
 
 theorem size_leadingMon_sub_lt {p q : MvPolynomial σ K}
     (hp0 : 0 < size.leadingMonomial p)
@@ -178,80 +185,43 @@ structure IsGroebnerSet (G : Set (MvPolynomial σ K)) : Prop where
 
 variable {size} {G : Set (MvPolynomial σ K)}
 
+def IsReduced (G : Set (MvPolynomial σ K)) (p : MvPolynomial σ K) : Prop :=
+  ∀ g ∈ G, ¬ size.leadingMonomial g ≤ size.leadingMonomial p
+
 theorem isGroebnerSet_iff_monomialIdeal_eq :
     IsGroebnerSet size G ↔ size.monomialIdeal (Ideal.span G) = size.monomialIdeal G := by
   refine ⟨fun h => h.monomialIdeal_eq, fun h => ⟨h⟩⟩
 
 theorem isGroebnerSet_iff_leadingMonomial_le :
-    IsGroebnerSet size G ↔ ∀ f ∈ Ideal.span G, ∃ g ∈ G,
+    IsGroebnerSet size G ↔ ∀ f ∈ Ideal.span G, f ≠ 0 → ∃ g ∈ G, g ≠ 0 ∧
       size.leadingMonomial g ≤ size.leadingMonomial f := by
   simp only [Ideal.ext_iff, isGroebnerSet_iff_monomialIdeal_eq, mem_monomialIdeal_iff]
   refine ⟨?_, ?_⟩
-  · intro h f hfI
+  · intro h f hfI hf0
     classical
-    exact (h (monomial (size.leadingMonomial f) 1)).1 (fun m hm => ⟨f, hfI, (by
+    exact (h (monomial (size.leadingMonomial f) 1)).1 (fun m hm => ⟨f, hfI, hf0, (by
       simp only [one_ne_zero, ↓reduceIte, Finset.mem_singleton, support_monomial] at hm
       rw [hm])⟩) (size.leadingMonomial f) (by simp)
   · intro h f
     refine ⟨?_, ?_⟩
     · intro h1 m hmf
-      rcases h1 m hmf with ⟨g, hg, hgm⟩
-      rcases h g hg with ⟨g', hg', hgg'⟩
-      exact ⟨g', hg', le_trans hgg' hgm⟩
+      rcases h1 m hmf with ⟨g, hg, hg0, hgm⟩
+      rcases h g hg hg0 with ⟨g', hg', hg0', hgg'⟩
+      exact ⟨g', hg', hg0', le_trans hgg' hgm⟩
     · intro h1 m hmf
       rcases h1 m hmf with ⟨g, hg, hgm⟩
       exact ⟨g, Ideal.subset_span hg, hgm⟩
 
--- variable (size) (G)
--- structure LeadReduction (p : MvPolynomial σ K) : Type _ where
---   ( toList : List (MvPolynomial σ K) )
---   ( chain : toList.Chain (fun p q => ∃ g ∈ G, ∃ r : K,
---       size.leadingCoeff p = r * size.leadingCoeff g ∧
---       size.leadingMonomial g ≤ size.leadingMonomial p ∧
---       q = p - monomial (size.leadingMonomial p - size.leadingMonomial g) r * g) p )
 
--- variable {size} {G}
--- def LeadReduction.result {p : MvPolynomial σ K} (l : LeadReduction size G p) : MvPolynomial σ K :=
---   (p::l.toList).getLast (List.cons_ne_nil _ _)
+theorem isGroebnerSet_iff_isReduced_eq_zero :
+    IsGroebnerSet size G ↔ ∀ f ∈ Ideal.span G, size.IsReduced G f → f = 0 := by
+  simp only [isGroebnerSet_iff_leadingMonomial_le, IsReduced]
+  refine forall_congr' fun f => forall_congr' fun hf => ?_
+  by_cases hf0 : f = 0
+  · subst hf0
+    simp only [leadingMonomial_zero, nonpos_iff_eq_zero, implies_true, iff_true]
 
--- theorem LeadReduction.sub_result_mem_span {p : MvPolynomial σ K} (l : LeadReduction size G p) :
---     p - l.result ∈ Ideal.span G := by
---   rcases l with ⟨l, hl⟩
---   simp only [LeadReduction.result]
---   induction l generalizing p with
---   | nil => simp [LeadReduction.result]
---   | cons q l ih =>
---     rw [List.chain_cons] at hl
---     rw [← Ideal.add_mem_iff_left _ ((Ideal.neg_mem_iff _).2 (ih hl.2))]
---     simp only [ne_eq, reduceCtorEq, not_false_eq_true, List.getLast_cons]
---     rcases hl.1 with ⟨g, hg, r, hrs, hgm, rfl⟩
---     ring_nf
---     exact Ideal.mul_mem_left _ _ (Ideal.subset_span hg)
-
--- @[simp]
--- theorem LeadReduction.result_mem_span_iff {p : MvPolynomial σ K} {l : LeadReduction size G p} :
---     l.result ∈ Ideal.span G ↔ p ∈ Ideal.span G := by
---   rw [← Ideal.add_mem_iff_left _ (sub_result_mem_span l)]
---   simp
-
--- def LeadReduction.IsComplete {p : MvPolynomial σ K} {l : LeadReduction size G p} : Prop :=
---   ∀ g ∈ G, ¬ size.leadingMonomial l.result ≤ size.leadingMonomial g
-
--- theorem LeadReduction.chain_size_lt {p q : MvPolynomial σ K} (l : LeadReduction size G p) :
---     l.toList.Chain (fun q r => r ≠ 0 → size (size.leadingMonomial r) <
---       size (size.leadingMonomial q)) p := by
---   have := l.chain
---   rw [← List.map_id l.toList] at this
---   refine List.chain_of_chain_map id ?_ this
---   rintro q r ⟨g, hg, r, hr, hgm, rfl⟩ h
---   refine size_leadingMon_sub_lt ?_ ?_ ?_
-
-
--- theorem IsGrobnerSet.exists_complete_leadReduction_of_finite_vars
---     (hvars : Set.Finite (⋃ g ∈ G, (g.vars : Set σ))) {p : MvPolynomial σ K} :
---     ∃ l : LeadReduction size G p, l.IsComplete := by
---   rw [isGroebnerSet_iff_leadingMonomial_le] at hG
---   rcases hG p hp with ⟨g, hg, hpg⟩
+  · simp [hf0]
 
 theorem exists_critical_pair_of_mem_of_forall_le {p : MvPolynomial σ K}
     (hG : p ∈ Ideal.span G) (hp : ∀ g ∈ G, ¬ size.leadingMonomial g ≤ size.leadingMonomial p) :
