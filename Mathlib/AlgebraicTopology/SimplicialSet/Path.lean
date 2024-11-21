@@ -93,17 +93,55 @@ lemma mapPath_interval {X Y : SSet.{u}} {n : ℕ} (σ : X ⟶ Y) (f : X.Path n)
 def idSpine (n : ℕ) : Path Δ[n] n := spine Δ[n] n (standardSimplex.idSimplex n)
 
 /-- Any inner horn, `Λ[n, i]`, contains the spine of the unique non-degenerate
-`n`-simplex in `Δ[n]`. -/
-def spineHorn (n : ℕ) (i : Fin (n + 3))
+`n`-simplex in `Δ[n]`.-/
+/- def spineHorn {n : ℕ} (i : Fin (n + 3)) -/
+/-     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) : -/
+/-     Path Λ[n + 2, i] (n + 2) := by -/
+/-   let sp := idSpine (n + 2) -/
+/-   refine { -/
+/-     vertex := fun j ↦ ⟨sp.vertex j, (horn.const n i j (Opposite.op [0])).property⟩ -/
+/-     arrow := fun j ↦ ⟨sp.arrow j, ?_⟩ -/
+/-     arrow_src := ?_ -/
+/-     arrow_tgt := ?_ } -/
+/-   · let edge := horn.primitiveEdge h₀ hₙ j -/
+/-     have ha : sp.arrow j = edge.val := by -/
+/-       dsimp only [sp, edge, idSpine, standardSimplex.idSimplex, spine_arrow] -/
+/-       dsimp only [mkOfSucc, horn.primitiveEdge, horn.edge, standardSimplex.edge, -/
+/-         standardSimplex.map_apply] -/
+/-       aesop -/
+/-     rw [ha] -/
+/-     exact edge.property -/
+/-   · simp only [horn, SimplicialObject.δ, Subtype.mk.injEq] -/
+/-     exact sp.arrow_src -/
+/-   · simp only [horn, SimplicialObject.δ, Subtype.mk.injEq] -/
+/-     exact sp.arrow_tgt -/
+
+/- A path in Λ[n, i] is a path in Δ[n], together with proofs that every
+vertex and arrow are contained in Λ[n, i]. -/
+def hornPath {n : ℕ} {m : ℕ} (i : Fin (n + 3)) (f : Path Δ[n + 2] m)
+    (hv : ∀ (j : Fin (m + 1)), Set.range (asOrderHom (f.vertex j)) ∪ {i} ≠ Set.univ)
+    (ha : ∀ (j : Fin m), Set.range (asOrderHom (f.arrow j)) ∪ {i} ≠ Set.univ) :
+    Path Λ[n + 2, i] m where
+  vertex j := ⟨f.vertex j, hv j⟩
+  arrow j := ⟨f.arrow j, ha j⟩
+  arrow_src j := by
+    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
+    rw [← f.arrow_src]
+    rfl
+  arrow_tgt j := by
+    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
+    rw [← f.arrow_tgt]
+    rfl
+
+/-- Any inner horn, `Λ[n, i]`, contains the spine of the unique non-degenerate
+`n`-simplex in `Δ[n]`.-/
+def spineHorn {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
-    Path Λ[n + 2, i] (n + 2) := by
-  let sp := idSpine (n + 2)
-  refine {
-    vertex := fun j ↦ ⟨sp.vertex j, (horn.const n i j (Opposite.op [0])).property⟩
-    arrow := fun j ↦ ⟨sp.arrow j, ?_⟩
-    arrow_src := ?_
-    arrow_tgt := ?_ }
-  · let edge := horn.primitiveEdge h₀ hₙ j
+    Path Λ[n + 2, i] (n + 2) :=
+  hornPath i (idSpine (n + 2)) (fun j ↦ (horn.const n i j _).property) <| by
+    intro j
+    let sp := idSpine (n + 2)
+    let edge := horn.primitiveEdge h₀ hₙ j
     have ha : sp.arrow j = edge.val := by
       dsimp only [sp, edge, idSpine, standardSimplex.idSimplex, spine_arrow]
       dsimp only [mkOfSucc, horn.primitiveEdge, horn.edge, standardSimplex.edge,
@@ -111,9 +149,15 @@ def spineHorn (n : ℕ) (i : Fin (n + 3))
       aesop
     rw [ha]
     exact edge.property
-  · simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
-    exact sp.arrow_src
-  · simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
-    exact sp.arrow_tgt
+
+/- @[ext] -/
+lemma Path.ext₁ {n : ℕ} {f g : Path X (n + 1)}
+    (h : ∀ (m : Fin (n + 1)), f.arrow m = g.arrow m) :
+    f = g := by
+  ext i
+  · rcases Fin.eq_castSucc_or_eq_last i with ⟨j, hj⟩ | hl
+    · erw [hj, ← f.arrow_src j, ← g.arrow_src j, h]
+    · erw [hl, ← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
+  · exact h i
 
 end SSet

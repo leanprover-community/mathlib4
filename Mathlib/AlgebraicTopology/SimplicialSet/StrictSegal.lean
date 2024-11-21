@@ -166,7 +166,7 @@ open Opposite in
 instance : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
-  exists spineToSimplex ∘ mapPath σ₀ <| spineHorn n i h₀ hₙ
+  exists spineToSimplex ∘ mapPath σ₀ <| spineHorn i h₀ hₙ
   intro j hj
   apply spineInjective
   ext k
@@ -195,7 +195,7 @@ instance : Quasicategory X := by
       apply congr_arg
       simp [spineHorn, idSpine, horn, standardSimplex.idSimplex_objEquiv]
       simp [Hom.mk, standardSimplex.objEquiv, Equiv.ulift]
-      simp [standardSimplex, uliftFunctor]
+      simp [hornPath, standardSimplex, uliftFunctor]
       rw [mkOfSucc_δ_lt hlt]
       rfl
     · rw [spine_δ_gt_arrow _ _ _ hgt]
@@ -205,17 +205,44 @@ instance : Quasicategory X := by
       apply congr_arg
       simp [spineHorn, idSpine, horn, standardSimplex.idSimplex_objEquiv]
       simp [Hom.mk, standardSimplex.objEquiv, Equiv.ulift]
-      simp [standardSimplex, uliftFunctor]
+      simp [hornPath, standardSimplex, uliftFunctor]
       rw [mkOfSucc_δ_gt hgt]
       rfl
     · rw [spine_δ_eq_arrow _ _ _ heq]
-      rw [← spineToSimplex_edge]
-      simp
-      rw [← types_comp_apply (σ₀.app _) (X.map _)]
-      rw [← σ₀.naturality]
-      simp [horn, standardSimplex.objEquiv, standardSimplex, uliftFunctor]
-      conv => rhs; congr; rfl; left; rw [mkOfSucc_δ_eq heq];
-      sorry
+      simp [spineToDiagonal, diagonal]
+      have hn0 : 0 < n := by
+        apply Nat.pos_of_ne_zero
+        intro h1
+        have hk : k = 0 := by omega
+        subst h1
+        simp_all
+        omega
+      have hh : Path.interval (mapPath σ₀ (spineHorn i h₀ hₙ)) (↑k) 2 (by omega) =
+          X.spine 2 (σ₀.app _ (horn.primitiveTrianglePos hn0 i h₀ hₙ k (by omega))) := by
+        apply Path.ext₁
+        intro m
+        simp [spine_arrow]
+        rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
+        simp [Path.interval, mapPath]
+        apply congr_arg
+        simp [horn.primitiveTrianglePos, spineHorn, hornPath, horn,
+          idSpine, standardSimplex, uliftFunctor]
+        fin_cases m <;> ext x; fin_cases x <;> rfl
+      rw [hh]
+      simp [spineToSimplex_spine]
+      rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
+      rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
+      simp only [types_comp_apply]
+      apply congr_arg
+      simp [horn, horn.primitiveTrianglePos, diag, standardSimplex, uliftFunctor]
+      ext z
+      fin_cases z
+      · simp [standardSimplex.objEquiv, Hom.toOrderHom]
+        rw [mkOfSucc_δ_eq heq]
+        rfl
+      · simp [standardSimplex.objEquiv, Hom.toOrderHom]
+        rw [mkOfSucc_δ_eq heq]
+        rfl
 
 end StrictSegal
 

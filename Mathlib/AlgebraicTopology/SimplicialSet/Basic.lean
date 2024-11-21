@@ -294,6 +294,36 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     intro j
     fin_cases j <;> simp [Fin.ext_iff, hk0]
 
+/-- A temporary hack, hopefully. -/
+def primitiveTrianglePos {n : ℕ} (hₙ : 0 < n) (i : Fin (n+3))
+    (hᵢ₀ : 0 < i) (hᵢₙ : i < Fin.last (n+2))
+    (k : ℕ) (hₖ : k < n+1) : Λ[n+2, i] _[2] := by
+  refine ⟨standardSimplex.triangle
+    (n := n+2) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ ?_ ?_, ?_⟩
+  · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
+  · simp only [Fin.mk_le_mk, add_le_add_iff_left, one_le_two]
+  simp only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,
+    OrderHom.const_coe_coe, Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def,
+    Set.mem_univ, Set.mem_insert_iff, Set.mem_range, Function.const_apply, exists_const,
+    forall_true_left, not_forall, not_or, unop_op, not_exists,
+    standardSimplex.triangle, OrderHom.coe_mk, @eq_comm _ _ i,
+    standardSimplex.objMk, standardSimplex.objEquiv, Equiv.ulift]
+  dsimp
+  by_cases hk0 : k = 0
+  · subst hk0
+    use Fin.last (n+2)
+    simp only [hᵢₙ.ne, not_false_eq_true, Fin.zero_eta, zero_add, true_and]
+    intro j
+    fin_cases j
+    · simp [Fin.ext_iff]
+    · simp [Fin.ext_iff]
+    · simp [Fin.ext_iff]
+      exact Nat.ne_of_gt hₙ
+  · use 0
+    simp only [hᵢ₀.ne', not_false_eq_true, true_and]
+    intro j
+    fin_cases j <;> simp [Fin.ext_iff, hk0]
+
 /-- The `j`th subface of the `i`-th horn. -/
 @[simps]
 def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] :=
