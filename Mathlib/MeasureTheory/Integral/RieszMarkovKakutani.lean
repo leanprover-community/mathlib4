@@ -100,8 +100,6 @@ theorem rieszContentAux_sup_le (K1 K2 : Compacts X) :
   apply (rieszContentAux_le Λ f_test_function_union).trans (le_of_lt _)
   rw [map_add]
   --use that `Λfi` are lower bounds for `λ(Ki) + ε/2`
-  apply lt_of_lt_of_le (_root_.add_lt_add f_test_function_K1.right f_test_function_K2.right)
-    (le_of_eq _)
-  rw [add_assoc, add_comm (ε / 2), add_assoc, add_halves ε, add_assoc]
+  linear_combination f_test_function_K1.right + f_test_function_K2.right + add_halves ε
 
 end RieszSubadditive

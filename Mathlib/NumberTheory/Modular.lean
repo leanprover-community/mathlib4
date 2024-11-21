@@ -405,8 +405,7 @@ theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg 
   rw [re_T_zpow_smul] at h₂
   calc
     |(n : ℝ)| ≤ |z.re| + |z.re + (n : ℝ)| := abs_add' (n : ℝ) z.re
-    _ < 1 / 2 + 1 / 2 := add_lt_add h₁ h₂
-    _ = 1 := add_halves 1
+    _ < 1 := by linear_combination h₁ + h₂
 
 /-- First Fundamental Domain Lemma: Any `z : ℍ` can be moved to `𝒟` by an element of
 `SL(2,ℤ)` -/
