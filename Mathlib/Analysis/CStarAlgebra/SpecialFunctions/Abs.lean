@@ -93,8 +93,16 @@ lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
     simp only [RCLike.star_def, Complex.mul_im, Complex.conj_re, Complex.conj_im, neg_mul]
     rw [mul_comm, add_neg_cancel]--I can't believe this isn't in the library already!
   rw [sqrt_eq_cfcₙ_real_sqrt (star_mul_self_nonneg a)]
-  --somehow have to get this to revert back to the real case.
-  sorry
+  have L (z : ℂ) : Complex.im z = 0 ↔ z = Complex.re z := by
+    constructor
+    · intro h
+      exact Eq.symm (Complex.ext rfl (id (Eq.symm h)))
+    · intro h
+      exact
+        (AddSemiconjBy.eq_zero_iff (z.re : ℂ).im
+            (congrFun (congrArg HAdd.hAdd (congrArg Complex.im (id (Eq.symm h)))) (z.re : ℂ).im)).mp
+          rfl
+  have LL (z : ℂ) := (L <| star z * z).mp <| K z
 
 lemma abs_of_nonneg {a : A} (ha : 0 ≤ a) : abs a = a := by
   rw [abs, ha.star_eq, sqrt_mul_self a ha]
