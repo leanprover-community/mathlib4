@@ -330,7 +330,7 @@ theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
       rwa [coe_mk_mk, Function.comp_apply, if_neg h] at hxt
   · rintro x (⟨⟨t, ht0, ht1⟩, hxt⟩ | ⟨⟨t, ht0, ht1⟩, hxt⟩)
     · use ⟨t / 2, ⟨by linarith, by linarith⟩⟩
-      have : t / 2 ≤ 1 / 2 := (div_le_div_right (zero_lt_two : (0 : ℝ) < 2)).mpr ht1
+      have : t / 2 ≤ 1 / 2 := (div_le_div_iff_of_pos_right (zero_lt_two : (0 : ℝ) < 2)).mpr ht1
       rw [coe_mk_mk, Function.comp_apply, if_pos this, Subtype.coe_mk]
       ring_nf
       rwa [γ₁.extend_extends]

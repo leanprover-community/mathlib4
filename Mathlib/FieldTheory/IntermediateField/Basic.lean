@@ -39,8 +39,6 @@ intermediate field, field extension
 
 open Polynomial
 
-open Polynomial
-
 variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
 
 /-- `S : IntermediateField K L` is a subset of `L` such that there is a field

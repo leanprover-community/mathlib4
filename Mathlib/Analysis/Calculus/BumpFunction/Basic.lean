@@ -149,7 +149,7 @@ theorem support_eq : Function.support f = Metric.ball c f.rOut := by
   simp only [toFun, support_comp_eq_preimage, ContDiffBumpBase.support _ _ f.one_lt_rOut_div_rIn]
   ext x
   simp only [mem_ball_iff_norm, sub_zero, norm_smul, mem_preimage, Real.norm_eq_abs, abs_inv,
-    abs_of_pos f.rIn_pos, ← div_eq_inv_mul, div_lt_div_right f.rIn_pos]
+    abs_of_pos f.rIn_pos, ← div_eq_inv_mul, div_lt_div_iff_of_pos_right f.rIn_pos]
 
 theorem tsupport_eq : tsupport f = closedBall c f.rOut := by
   simp_rw [tsupport, f.support_eq, closure_ball _ f.rOut_pos.ne']

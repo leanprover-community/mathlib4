@@ -113,6 +113,8 @@ lemma Odd.add_odd : Odd a → Odd b → Even (a + b) := by
 
 @[simp] lemma Even.add_one (h : Even a) : Odd (a + 1) := h.add_odd odd_one
 @[simp] lemma Even.one_add (h : Even a) : Odd (1 + a) := h.odd_add odd_one
+@[simp] lemma Odd.add_one (h : Odd a) : Even (a + 1) := h.add_odd odd_one
+@[simp] lemma Odd.one_add (h : Odd a) : Even (1 + a) := odd_one.add_odd h
 
 lemma odd_two_mul_add_one (a : α) : Odd (2 * a + 1) := ⟨_, rfl⟩
 

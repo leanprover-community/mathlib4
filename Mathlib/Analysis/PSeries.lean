@@ -386,12 +386,9 @@ theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
   simp only [sub_eq_add_neg, add_assoc, Nat.cast_add, Nat.cast_one, le_add_neg_iff_add_le,
     add_le_iff_nonpos_right, neg_add_le_iff_le_add, add_zero]
   have A : 0 < (n : α) := by simpa using hk.bot_lt.trans_le hn
-  have B : 0 < (n : α) + 1 := by linarith
   field_simp
-  rw [div_le_div_iff _ A, ← sub_nonneg]
-  · ring_nf
-    rw [add_comm]
-    exact B.le
+  rw [div_le_div_iff₀ _ A]
+  · linarith
   · -- Porting note: was `nlinarith`
     positivity
 

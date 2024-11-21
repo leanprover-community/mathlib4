@@ -512,8 +512,6 @@ variable [MeasurableSpace α] [TopologicalSpace β]
 
 open Filter
 
-open Filter
-
 @[aesop safe 20 (rule_sets := [Measurable])]
 protected theorem sup [Max β] [ContinuousSup β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊔ g) :=
