@@ -29,10 +29,10 @@ variable (I I') in
 def ContMDiffMap :=
   { f : M → M' // ContMDiff I I' n f }
 
-variable (I I') in
-/-- Bundled smooth maps. -/
-abbrev SmoothMap :=
-  ContMDiffMap I I' M M' ⊤
+--variable (I I') in
+/- Bundled smooth maps. -/
+--abbrev SmoothMap :=
+--  ContMDiffMap I I' M M' ⊤
 
 @[inherit_doc]
 scoped[Manifold] notation "C^" n "⟮" I ", " M "; " I' ", " M' "⟯" => ContMDiffMap I I' M M' n

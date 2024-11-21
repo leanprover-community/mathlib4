@@ -75,6 +75,7 @@ theorem contMDiff_mul : ContMDiff (I.prod I) I ⊤ fun p : G × G => p.1 * p.2 :
   SmoothMul.smooth_mul
 
 @[deprecated (since := "2024-11-20")] alias smooth_mul := contMDiff_mul
+@[deprecated (since := "2024-11-20")] alias smooth_add := contMDiff_add
 
 include I in
 /-- If the multiplication is smooth, then it is continuous. This is not an instance for technical
@@ -109,12 +110,14 @@ theorem ContMDiff.mul (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
     ContMDiff I' I n (f * g) := fun x => (hf x).mul (hg x)
 
 @[deprecated (since := "2024-11-21")] alias SmoothWithinAt.mul := ContMDiffWithinAt.mul
-
 @[deprecated (since := "2024-11-21")] alias SmoothAt.mul := ContMDiffAt.mul
-
 @[deprecated (since := "2024-11-21")] alias SmoothOn.mul := ContMDiffOn.mul
-
 @[deprecated (since := "2024-11-21")] alias Smooth.mul := ContMDiff.mul
+
+@[deprecated (since := "2024-11-21")] alias SmoothWithinAt.add := ContMDiffWithinAt.add
+@[deprecated (since := "2024-11-21")] alias SmoothAt.add := ContMDiffAt.add
+@[deprecated (since := "2024-11-21")] alias SmoothOn.add := ContMDiffOn.add
+@[deprecated (since := "2024-11-21")] alias Smooth.add := ContMDiff.add
 
 @[to_additive]
 theorem contMDiff_mul_left {a : G} : ContMDiff I I n (a * ·) :=
@@ -159,13 +162,13 @@ variable (I) (g h : G)
 Lemmas involving `smoothLeftMul` with the notation `𝑳` usually use `L` instead of `𝑳` in the
 names. -/
 def smoothLeftMul : C^∞⟮I, G; I, G⟯ :=
-  ⟨leftMul g, smooth_mul_left⟩
+  ⟨leftMul g, contMDiff_mul_left⟩
 
 /-- Right multiplication by `g`. It is meant to mimic the usual notation in Lie groups.
 Lemmas involving `smoothRightMul` with the notation `𝑹` usually use `R` instead of `𝑹` in the
 names. -/
 def smoothRightMul : C^∞⟮I, G; I, G⟯ :=
-  ⟨rightMul g, smooth_mul_right⟩
+  ⟨rightMul g, contMDiff_mul_right⟩
 
 -- Left multiplication. The abbreviation is `MIL`.
 scoped[LieGroup] notation "𝑳" => smoothLeftMul
@@ -218,8 +221,8 @@ instance SmoothMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*
     [ChartedSpace H' G'] [Mul G'] [SmoothMul I' G'] : SmoothMul (I.prod I') (G × G') :=
   { SmoothManifoldWithCorners.prod G G' with
     smooth_mul :=
-      ((smooth_fst.comp smooth_fst).smooth.mul (smooth_fst.comp smooth_snd)).prod_mk
-        ((smooth_snd.comp smooth_fst).smooth.mul (smooth_snd.comp smooth_snd)) }
+      ((contMDiff_fst.comp contMDiff_fst).mul (contMDiff_fst.comp contMDiff_snd)).prod_mk
+        ((contMDiff_snd.comp contMDiff_fst).mul (contMDiff_snd.comp contMDiff_snd)) }
 
 end SmoothMul
 
@@ -232,16 +235,19 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
   {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G'] [SmoothMul I' G']
 
 @[to_additive]
-theorem smooth_pow : ∀ n : ℕ, Smooth I I fun a : G => a ^ n
-  | 0 => by simp only [pow_zero]; exact smooth_const
-  | k + 1 => by simpa [pow_succ] using (smooth_pow _).mul smooth_id
+theorem contMDiff_pow : ∀ n : ℕ, ContMDiff I I ⊤ fun a : G => a ^ n
+  | 0 => by simp only [pow_zero]; exact contMDiff_const
+  | k + 1 => by simpa [pow_succ] using (contMDiff_pow _).mul contMDiff_id
+
+@[deprecated (since := "2024-11-21")] alias smooth_pow := contMDiff_pow
+@[deprecated (since := "2024-11-21")] alias smooth_nsmul := contMDiff_nsmul
 
 /-- Morphism of additive smooth monoids. -/
 structure SmoothAddMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H')
     (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [AddMonoid G] [SmoothAdd I G]
     (G' : Type*) [TopologicalSpace G'] [ChartedSpace H' G'] [AddMonoid G']
     [SmoothAdd I' G'] extends G →+ G' where
-  smooth_toFun : Smooth I I' toFun
+  smooth_toFun : ContMDiff I I' ⊤ toFun
 
 /-- Morphism of smooth monoids. -/
 @[to_additive]
@@ -249,11 +255,11 @@ structure SmoothMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCo
     (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [SmoothMul I G] (G' : Type*)
     [TopologicalSpace G'] [ChartedSpace H' G'] [Monoid G'] [SmoothMul I' G'] extends
     G →* G' where
-  smooth_toFun : Smooth I I' toFun
+  smooth_toFun : ContMDiff I I' ⊤ toFun
 
 @[to_additive]
 instance : One (SmoothMonoidMorphism I I' G G') :=
-  ⟨{  smooth_toFun := smooth_const
+  ⟨{  smooth_toFun := contMDiff_const
       toMonoidHom := 1 }⟩
 
 @[to_additive]
@@ -385,61 +391,43 @@ theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
   simp only [← finprod_subtype_eq_finprod_cond]
   exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
 
-@[to_additive]
-theorem smoothAt_finprod
-    (lf : LocallyFinite fun i ↦ mulSupport <| f i) (h : ∀ i, SmoothAt I' I (f i) x₀) :
-    SmoothAt I' I (fun x ↦ ∏ᶠ i, f i x) x₀ :=
-  contMDiffWithinAt_finprod lf h
+@[deprecated (since := "2024-11-21")] alias smoothAt_finprod := contMDiffAt_finprod
+@[deprecated (since := "2024-11-21")] alias smoothAt_finsum := contMDiffAt_finsum
 
-@[to_additive]
-theorem smoothWithinAt_finset_prod' (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
-    SmoothWithinAt I' I (∏ i ∈ t, f i) s x :=
-  contMDiffWithinAt_finset_prod' h
+@[deprecated (since := "2024-11-21")]
+alias smoothWithinAt_finset_prod' := contMDiffWithinAt_finset_prod'
+@[deprecated (since := "2024-11-21")]
+alias smoothWithinAt_finset_sum' := contMDiffWithinAt_finset_sum'
 
-@[to_additive]
-theorem smoothWithinAt_finset_prod (h : ∀ i ∈ t, SmoothWithinAt I' I (f i) s x) :
-    SmoothWithinAt I' I (fun x => ∏ i ∈ t, f i x) s x :=
-  contMDiffWithinAt_finset_prod h
 
-@[to_additive]
-theorem smoothAt_finset_prod' (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
-    SmoothAt I' I (∏ i ∈ t, f i) x :=
-  contMDiffAt_finset_prod' h
+@[deprecated (since := "2024-11-21")]
+alias smoothWithinAt_finset_prod := contMDiffWithinAt_finset_prod
+@[deprecated (since := "2024-11-21")]
+alias smoothWithinAt_finset_sum := contMDiffWithinAt_finset_sum
 
-@[to_additive]
-theorem smoothAt_finset_prod (h : ∀ i ∈ t, SmoothAt I' I (f i) x) :
-    SmoothAt I' I (fun x => ∏ i ∈ t, f i x) x :=
-  contMDiffAt_finset_prod h
+@[deprecated (since := "2024-11-21")] alias smoothAt_finset_prod' := contMDiffAt_finset_prod'
+@[deprecated (since := "2024-11-21")] alias smoothAt_finset_sum' := contMDiffAt_finset_sum'
 
-@[to_additive]
-theorem smoothOn_finset_prod' (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
-    SmoothOn I' I (∏ i ∈ t, f i) s :=
-  contMDiffOn_finset_prod' h
+@[deprecated (since := "2024-11-21")] alias smoothAt_finset_prod := contMDiffAt_finset_prod
+@[deprecated (since := "2024-11-21")] alias smoothAt_finset_sum := contMDiffAt_finset_sum
 
-@[to_additive]
-theorem smoothOn_finset_prod (h : ∀ i ∈ t, SmoothOn I' I (f i) s) :
-    SmoothOn I' I (fun x => ∏ i ∈ t, f i x) s :=
-  contMDiffOn_finset_prod h
+@[deprecated (since := "2024-11-21")] alias smoothOn_finset_prod' := contMDiffOn_finset_prod'
+@[deprecated (since := "2024-11-21")] alias smoothOn_finset_sum' := contMDiffOn_finset_sum'
 
-@[to_additive]
-theorem smooth_finset_prod' (h : ∀ i ∈ t, Smooth I' I (f i)) : Smooth I' I (∏ i ∈ t, f i) :=
-  contMDiff_finset_prod' h
+@[deprecated (since := "2024-11-21")] alias smoothOn_finset_prod := contMDiffOn_finset_prod
+@[deprecated (since := "2024-11-21")] alias smoothOn_finset_sum := contMDiffOn_finset_sum
 
-@[to_additive]
-theorem smooth_finset_prod (h : ∀ i ∈ t, Smooth I' I (f i)) :
-    Smooth I' I fun x => ∏ i ∈ t, f i x :=
-  contMDiff_finset_prod h
+@[deprecated (since := "2024-11-21")] alias smooth_finset_prod' := contMDiffOn_finset_prod'
+@[deprecated (since := "2024-11-21")] alias smooth_finset_sum' := contMDiffOn_finset_sum'
 
-@[to_additive]
-theorem smooth_finprod (h : ∀ i, Smooth I' I (f i))
-    (hfin : LocallyFinite fun i => mulSupport (f i)) : Smooth I' I fun x => ∏ᶠ i, f i x :=
-  contMDiff_finprod h hfin
+@[deprecated (since := "2024-11-21")] alias smooth_finset_prod := contMDiff_finset_prod
+@[deprecated (since := "2024-11-21")] alias smooth_finset_sum := contMDiff_finset_sum
 
-@[to_additive]
-theorem smooth_finprod_cond (hc : ∀ i, p i → Smooth I' I (f i))
-    (hf : LocallyFinite fun i => mulSupport (f i)) :
-    Smooth I' I fun x => ∏ᶠ (i) (_ : p i), f i x :=
-  contMDiff_finprod_cond hc hf
+@[deprecated (since := "2024-11-21")] alias smooth_finprod := contMDiff_finprod
+@[deprecated (since := "2024-11-21")] alias smooth_finsum := contMDiff_finsum
+
+@[deprecated (since := "2024-11-21")] alias smooth_finprod_cond := contMDiff_finprod_cond
+@[deprecated (since := "2024-11-21")] alias smooth_finsum_cond := contMDiff_finsum_cond
 
 end CommMonoid
 
@@ -484,23 +472,9 @@ theorem ContMDiffOn.div_const (hf : ContMDiffOn I' I n f s) :
 theorem ContMDiff.div_const (hf : ContMDiff I' I n f) :
     ContMDiff I' I n (fun x ↦ f x / c) := fun x => (hf x).div_const c
 
-@[to_additive]
-nonrec theorem SmoothWithinAt.div_const (hf : SmoothWithinAt I' I f s x) :
-  SmoothWithinAt I' I (fun x ↦ f x / c) s x :=
-  hf.div_const c
-
-@[to_additive]
-nonrec theorem SmoothAt.div_const (hf : SmoothAt I' I f x) :
-    SmoothAt I' I (fun x ↦ f x / c) x :=
-  hf.div_const c
-
-@[to_additive]
-nonrec theorem SmoothOn.div_const (hf : SmoothOn I' I f s) :
-    SmoothOn I' I (fun x ↦ f x / c) s :=
-  hf.div_const c
-
-@[to_additive]
-nonrec theorem Smooth.div_const (hf : Smooth I' I f) : Smooth I' I (fun x ↦ f x / c) :=
-  hf.div_const c
+@[deprecated (since := "2024-11-21")] alias SmoothWithinAt.div_const := ContMDiffWithinAt.div_const
+@[deprecated (since := "2024-11-21")] alias SmoothAt.div_const := ContMDiffAt.div_const
+@[deprecated (since := "2024-11-21")] alias SmoothOn.div_const := ContMDiffOn.div_const
+@[deprecated (since := "2024-11-21")] alias Smooth.div_const := ContMDiff.div_const
 
 end DivConst
