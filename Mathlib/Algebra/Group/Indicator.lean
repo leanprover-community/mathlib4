@@ -174,7 +174,7 @@ theorem mulIndicator_mulIndicator (s t : Set α) (f : α → M) :
     mulIndicator s (mulIndicator t f) = mulIndicator (s ∩ t) f :=
   funext fun x => by
     simp only [mulIndicator]
-    split_ifs <;> simp_all (config := { contextual := true })
+    split_ifs <;> simp_all +contextual
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_inter_mulSupport (s : Set α) (f : α → M) :

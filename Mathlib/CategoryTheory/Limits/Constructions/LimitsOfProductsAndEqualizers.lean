@@ -156,7 +156,8 @@ variable (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
   [PreservesLimitsOfShape (Discrete.{w} (Σp : J × J, p.1 ⟶ p.2)) G]
 
 /-- If a functor preserves equalizers and the appropriate products, it preserves limits. -/
-noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimitsOfShape J G where
+lemma preservesLimit_of_preservesEqualizers_and_product :
+    PreservesLimitsOfShape J G where
   preservesLimit {K} := by
     let P := ∏ᶜ K.obj
     let Q := ∏ᶜ fun f : Σp : J × J, p.fst ⟶ p.snd => K.obj f.1.2
@@ -164,8 +165,7 @@ noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimit
     let t : P ⟶ Q := Pi.lift fun f => limit.π (Discrete.functor K.obj) ⟨f.1.2⟩
     let I := equalizer s t
     let i : I ⟶ P := equalizer.ι s t
-    apply
-      preservesLimitOfPreservesLimitCone
+    apply preservesLimit_of_preserves_limit_cone
         (buildIsLimit s t (by simp [s]) (by simp [t]) (limit.isLimit _) (limit.isLimit _)
           (limit.isLimit _))
     apply IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
@@ -202,24 +202,24 @@ with type Fintype J does not have forward dependencies, type class resolution ca
 use this kind of local instance because it will not be able to infer a value for this
 parameter." Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
 /-- If G preserves equalizers and finite products, it preserves finite limits. -/
-noncomputable def preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts [HasEqualizers C]
+lemma preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts [HasEqualizers C]
     [HasFiniteProducts C] (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
     [PreservesFiniteProducts G] : PreservesFiniteLimits G where
   preservesFiniteLimits := by
     intro J sJ fJ
     haveI : Fintype J := inferInstance
     haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
-    apply @preservesLimitOfPreservesEqualizersAndProduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
+    apply @preservesLimit_of_preservesEqualizers_and_product _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
     · apply hasLimitsOfShape_discrete _ _
     · apply hasLimitsOfShape_discrete _
     · apply PreservesFiniteProducts.preserves _
     · apply PreservesFiniteProducts.preserves _
 
 /-- If G preserves equalizers and products, it preserves all limits. -/
-noncomputable def preservesLimitsOfPreservesEqualizersAndProducts [HasEqualizers C]
+lemma preservesLimits_of_preservesEqualizers_and_products [HasEqualizers C]
     [HasProducts.{w} C] (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
     [∀ J, PreservesLimitsOfShape (Discrete.{w} J) G] : PreservesLimitsOfSize.{w, w} G where
-  preservesLimitsOfShape := preservesLimitOfPreservesEqualizersAndProduct G
+  preservesLimitsOfShape := preservesLimit_of_preservesEqualizers_and_product G
 
 theorem hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbacks C] :
     HasFiniteLimits C :=
@@ -230,18 +230,18 @@ theorem hasFiniteLimits_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbac
       (hasBinaryProducts_of_hasTerminal_and_pullbacks C) inferInstance)
 
 /-- If G preserves terminal objects and pullbacks, it preserves all finite limits. -/
-noncomputable def preservesFiniteLimitsOfPreservesTerminalAndPullbacks [HasTerminal C]
+lemma preservesFiniteLimits_of_preservesTerminal_and_pullbacks [HasTerminal C]
     [HasPullbacks C] (G : C ⥤ D) [PreservesLimitsOfShape (Discrete.{0} PEmpty) G]
     [PreservesLimitsOfShape WalkingCospan G] : PreservesFiniteLimits G := by
   haveI : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
   haveI : PreservesLimitsOfShape (Discrete WalkingPair) G :=
-    preservesBinaryProductsOfPreservesTerminalAndPullbacks G
+    preservesBinaryProducts_of_preservesTerminal_and_pullbacks G
   haveI : PreservesLimitsOfShape WalkingParallelPair G :=
-      preservesEqualizersOfPreservesPullbacksAndBinaryProducts G
+      preservesEqualizers_of_preservesPullbacks_and_binaryProducts G
   apply
-    @preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts _ _ _ _ _ _ G _ ?_
+    @preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts _ _ _ _ _ _ G _ ?_
   apply PreservesFiniteProducts.mk
-  apply preservesFiniteProductsOfPreservesBinaryAndTerminal G
+  apply preservesFiniteProducts_of_preserves_binary_and_terminal G
 
 /-!
 We now dualize the above constructions, resorting to copy-paste.
@@ -372,7 +372,7 @@ variable (G : C ⥤ D) [PreservesColimitsOfShape WalkingParallelPair G]
   [PreservesColimitsOfShape (Discrete.{w} (Σp : J × J, p.1 ⟶ p.2)) G]
 
 /-- If a functor preserves coequalizers and the appropriate coproducts, it preserves colimits. -/
-noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
+lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     PreservesColimitsOfShape J G where
   preservesColimit {K} := by
     let P := ∐ K.obj
@@ -381,8 +381,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
     let t : Q ⟶ P := Sigma.desc fun f => colimit.ι (Discrete.functor K.obj) ⟨f.1.1⟩
     let I := coequalizer s t
     let i : P ⟶ I := coequalizer.π s t
-    apply
-      preservesColimitOfPreservesColimitCocone
+    apply preservesColimit_of_preserves_colimit_cocone
         (buildIsColimit s t (by simp [s]) (by simp [t]) (colimit.isColimit _) (colimit.isColimit _)
           (colimit.isColimit _))
     apply IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
@@ -422,7 +421,7 @@ with type Fintype J does not have forward dependencies, type class resolution ca
 this kind of local instance because it will not be able to infer a value for this parameter."
 Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
 /-- If G preserves coequalizers and finite coproducts, it preserves finite colimits. -/
-noncomputable def preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts
+lemma preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts
     [HasCoequalizers C] [HasFiniteCoproducts C] (G : C ⥤ D)
     [PreservesColimitsOfShape WalkingParallelPair G]
     [PreservesFiniteCoproducts G] : PreservesFiniteColimits G where
@@ -430,17 +429,17 @@ noncomputable def preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoprodu
     intro J sJ fJ
     haveI : Fintype J := inferInstance
     haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
-    apply @preservesColimitOfPreservesCoequalizersAndCoproduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
+    apply @preservesColimit_of_preservesCoequalizers_and_coproduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
     · apply hasColimitsOfShape_discrete _ _
     · apply hasColimitsOfShape_discrete _
     · apply PreservesFiniteCoproducts.preserves _
     · apply PreservesFiniteCoproducts.preserves _
 
 /-- If G preserves coequalizers and coproducts, it preserves all colimits. -/
-noncomputable def preservesColimitsOfPreservesCoequalizersAndCoproducts [HasCoequalizers C]
+lemma preservesColimits_of_preservesCoequalizers_and_coproducts [HasCoequalizers C]
     [HasCoproducts.{w} C] (G : C ⥤ D) [PreservesColimitsOfShape WalkingParallelPair G]
-    [∀ J, PreservesColimitsOfShape (Discrete.{w} J) G] : PreservesColimitsOfSize.{w} G where
-  preservesColimitsOfShape := preservesColimitOfPreservesCoequalizersAndCoproduct G
+    [∀ J, PreservesColimitsOfShape (Discrete.{w} J) G] : PreservesColimitsOfSize.{w, w} G where
+  preservesColimitsOfShape := preservesColimit_of_preservesCoequalizers_and_coproduct G
 
 theorem hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts C] :
     HasFiniteColimits C :=
@@ -451,16 +450,16 @@ theorem hasFiniteColimits_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts
       (hasBinaryCoproducts_of_hasInitial_and_pushouts C) inferInstance)
 
 /-- If G preserves initial objects and pushouts, it preserves all finite colimits. -/
-noncomputable def preservesFiniteColimitsOfPreservesInitialAndPushouts [HasInitial C]
+lemma preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
     [HasPushouts C] (G : C ⥤ D) [PreservesColimitsOfShape (Discrete.{0} PEmpty) G]
     [PreservesColimitsOfShape WalkingSpan G] : PreservesFiniteColimits G := by
   haveI : HasFiniteColimits C := hasFiniteColimits_of_hasInitial_and_pushouts
   haveI : PreservesColimitsOfShape (Discrete WalkingPair) G :=
-    preservesBinaryCoproductsOfPreservesInitialAndPushouts G
+    preservesBinaryCoproducts_of_preservesInitial_and_pushouts G
   haveI : PreservesColimitsOfShape (WalkingParallelPair) G :=
-      (preservesCoequalizersOfPreservesPushoutsAndBinaryCoproducts G)
+      (preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts G)
   refine
-    @preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoproducts _ _ _ _ _ _ G _ ?_
+    @preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts _ _ _ _ _ _ G _ ?_
   apply PreservesFiniteCoproducts.mk
   apply preservesFiniteCoproductsOfPreservesBinaryAndInitial G
 

@@ -474,6 +474,7 @@ end LiftHom
 
 variable (K)
 
+@[stacks 09FK]
 instance instField [IsDomain K] : Field (RatFunc K) where
   inv_zero := by frac_tac
   div := (· / ·)

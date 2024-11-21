@@ -1418,11 +1418,11 @@ theorem Ioo_inter_Ioc_of_right_lt (h : b₂ < b₁) : Ioo a₁ b₁ ∩ Ioc a₂
 
 @[simp]
 theorem Ico_diff_Iio : Ico a b \ Iio c = Ico (max a c) b := by
-  rw [diff_eq, compl_Iio, Ico_inter_Ici, sup_eq_max]
+  rw [diff_eq, compl_Iio, Ico_inter_Ici]
 
 @[simp]
 theorem Ioc_diff_Ioi : Ioc a b \ Ioi c = Ioc a (min b c) :=
-  ext <| by simp (config := { contextual := true }) [iff_def]
+  ext <| by simp +contextual [iff_def]
 
 @[simp]
 theorem Ioc_inter_Ioi : Ioc a b ∩ Ioi c = Ioc (a ⊔ c) b := by
@@ -1431,11 +1431,11 @@ theorem Ioc_inter_Ioi : Ioc a b ∩ Ioi c = Ioc (a ⊔ c) b := by
 
 @[simp]
 theorem Ico_inter_Iio : Ico a b ∩ Iio c = Ico a (min b c) :=
-  ext <| by simp (config := { contextual := true }) [iff_def]
+  ext <| by simp +contextual [iff_def]
 
 @[simp]
 theorem Ioc_diff_Iic : Ioc a b \ Iic c = Ioc (max a c) b := by
-  rw [diff_eq, compl_Iic, Ioc_inter_Ioi, sup_eq_max]
+  rw [diff_eq, compl_Iic, Ioc_inter_Ioi]
 
 @[simp]
 theorem Ioc_union_Ioc_right : Ioc a b ∪ Ioc a c = Ioc a (max b c) := by

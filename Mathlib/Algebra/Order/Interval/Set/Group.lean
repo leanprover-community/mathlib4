@@ -164,7 +164,7 @@ theorem pairwise_disjoint_Ioc_mul_zpow :
     rwa [mul_lt_mul_iff_left, ← mul_one (b ^ m), zpow_add_one, mul_lt_mul_iff_left] at this
   have i1 := hx.1.1.trans_le hx.2.2
   have i2 := hx.2.1.trans_le hx.1.2
-  rw [mul_lt_mul_iff_left, zpow_lt_zpow_iff hb, Int.lt_add_one_iff] at i1 i2
+  rw [mul_lt_mul_iff_left, zpow_lt_zpow_iff_right hb, Int.lt_add_one_iff] at i1 i2
   exact le_antisymm i1 i2
 
 @[to_additive]
@@ -179,7 +179,7 @@ theorem pairwise_disjoint_Ico_mul_zpow :
     rwa [mul_lt_mul_iff_left, ← mul_one (b ^ m), zpow_add_one, mul_lt_mul_iff_left] at this
   have i1 := hx.1.1.trans_lt hx.2.2
   have i2 := hx.2.1.trans_lt hx.1.2
-  rw [mul_lt_mul_iff_left, zpow_lt_zpow_iff hb, Int.lt_add_one_iff] at i1 i2
+  rw [mul_lt_mul_iff_left, zpow_lt_zpow_iff_right hb, Int.lt_add_one_iff] at i1 i2
   exact le_antisymm i1 i2
 
 @[to_additive]
