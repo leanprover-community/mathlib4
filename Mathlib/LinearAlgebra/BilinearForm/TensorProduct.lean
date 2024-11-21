@@ -3,9 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.LinearAlgebra.BilinearForm.Hom
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.BilinearForm.Hom
+import Mathlib.RingTheory.Finiteness.TensorProduct
 
 /-!
 # The bilinear form on a tensor product
@@ -21,10 +22,9 @@ import Mathlib.LinearAlgebra.BilinearForm.Hom
 
 suppress_compilation
 
-universe u v w uι uR uA uM₁ uM₂ uN₁ uN₂
+universe u v w uR uA uM₁ uM₂ uN₁ uN₂
 
-variable {ι : Type uι} {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁}
-  {N₂ : Type uN₂}
+variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁} {N₂ : Type uN₂}
 
 open TensorProduct
 
@@ -96,7 +96,7 @@ def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm
 variable (R A) in
 
 -- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
--- `R = A` of `B₁ m₁ m₁' * B₂ m₂ m₂'`, as it did before the generalization in #6306.
+-- `R = A` of `B₁ m₁ m₁' * B₂ m₂ m₂'`, as it did before the generalization in https://github.com/leanprover-community/mathlib4/pull/6306.
 @[simp]
 theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :

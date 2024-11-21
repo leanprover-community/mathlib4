@@ -66,7 +66,7 @@ structure YoungDiagram where
 namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ) where
-  -- Porting note (#11215): TODO: figure out how to do this correctly
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out how to do this correctly
   coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
@@ -98,8 +98,8 @@ theorem cells_subset_iff {μ ν : YoungDiagram} : μ.cells ⊆ ν.cells ↔ μ �
 theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ < ν :=
   Iff.rfl
 
-instance : Sup YoungDiagram where
-  sup μ ν :=
+instance : Max YoungDiagram where
+  max μ ν :=
     { cells := μ.cells ∪ ν.cells
       isLowerSet := by
         rw [Finset.coe_union]
@@ -117,8 +117,8 @@ theorem coe_sup (μ ν : YoungDiagram) : ↑(μ ⊔ ν) = (μ ∪ ν : Set (ℕ 
 theorem mem_sup {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊔ ν ↔ x ∈ μ ∨ x ∈ ν :=
   Finset.mem_union
 
-instance : Inf YoungDiagram where
-  inf μ ν :=
+instance : Min YoungDiagram where
+  min μ ν :=
     { cells := μ.cells ∩ ν.cells
       isLowerSet := by
         rw [Finset.coe_inter]

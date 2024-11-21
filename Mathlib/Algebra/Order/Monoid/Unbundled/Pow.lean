@@ -132,7 +132,7 @@ theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → St
   | Nat.succ <| Nat.succ n, _ => by
     simpa only [pow_succ] using (hf.pow_const n.succ_ne_zero).mul' hf
 
-/-- See also `pow_left_strictMonoOn`. -/
+/-- See also `pow_left_strictMonoOn₀`. -/
 @[to_additive nsmul_right_strictMono]  -- Porting note: nolint to_additive_doc
 theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : M → M) := strictMono_id.pow_const hn
 
@@ -162,6 +162,10 @@ theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monot
 
 @[to_additive nsmul_right_mono]
 theorem pow_left_mono (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow_const _
+
+@[to_additive (attr := gcongr)]
+lemma pow_le_pow {a b : M} (hab : a ≤ b) (ht : 1 ≤ b) {m n : ℕ} (hmn : m ≤ n) : a ^ m ≤ b ^ n :=
+  (pow_le_pow_left' hab _).trans (pow_le_pow_right' ht hmn)
 
 end CovariantLESwap
 

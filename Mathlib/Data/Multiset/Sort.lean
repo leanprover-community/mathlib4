@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Sort
-import Mathlib.Data.Multiset.Basic
+import Mathlib.Data.Multiset.Range
 
 /-!
 # Construct a sorted list from a multiset.
@@ -70,6 +70,10 @@ theorem sort_cons (a : α) (s : Multiset α) :
     (∀ b ∈ s, r a b) → sort r (a ::ₘ s) = a :: sort r s := by
   refine Quot.inductionOn s fun l => ?_
   simpa [mergeSort_eq_insertionSort] using insertionSort_cons r (a := a) (l := l)
+
+@[simp]
+theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
+  List.mergeSort_eq_self (sorted_le_range n)
 
 end sort
 

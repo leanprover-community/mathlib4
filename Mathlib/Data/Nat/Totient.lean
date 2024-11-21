@@ -67,6 +67,9 @@ theorem totient_eq_zero : ∀ {n : ℕ}, φ n = 0 ↔ n = 0
 
 @[simp] theorem totient_pos {n : ℕ} : 0 < φ n ↔ 0 < n := by simp [pos_iff_ne_zero]
 
+instance neZero_totient {n : ℕ} [NeZero n] : NeZero n.totient :=
+  ⟨(totient_pos.mpr <| NeZero.pos n).ne'⟩
+
 theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
     #{x ∈ Ico n (n + a) | a.Coprime x} = totient a := by
   rw [totient, filter_Ico_card_eq_of_periodic, count_eq_card_filter_range]

@@ -147,11 +147,11 @@ protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
 
 protected theorem «exists» {α : Sort _} {f : Sym2 α → Prop} :
     (∃ x : Sym2 α, f x) ↔ ∃ x y, f s(x, y) :=
-  (surjective_quot_mk _).exists.trans Prod.exists
+  Quot.mk_surjective.exists.trans Prod.exists
 
 protected theorem «forall» {α : Sort _} {f : Sym2 α → Prop} :
     (∀ x : Sym2 α, f x) ↔ ∀ x y, f s(x, y) :=
-  (surjective_quot_mk _).forall.trans Prod.forall
+  Quot.mk_surjective.forall.trans Prod.forall
 
 theorem eq_swap {a b : α} : s(a, b) = s(b, a) := Quot.sound (Rel.swap _ _)
 
@@ -254,7 +254,7 @@ theorem map.injective {f : α → β} (hinj : Injective f) : Injective (map f) :
   refine Sym2.inductionOn₂ z z' (fun x y x' y' => ?_)
   simp [hinj.eq_iff]
 
-/-- `mk a` as an embedding. This is the symmetric version of `Function.Embedding.sectl`. -/
+/-- `mk a` as an embedding. This is the symmetric version of `Function.Embedding.sectL`. -/
 @[simps]
 def mkEmbedding (a : α) : α ↪ Sym2 α where
   toFun b := s(a, b)
@@ -384,6 +384,85 @@ theorem map_congr {f g : α → β} {s : Sym2 α} (h : ∀ x ∈ s, f x = g x) :
 @[simp]
 theorem map_id' : (map fun x : α => x) = id :=
   map_id
+
+/--
+Partial map. If `f : ∀ a, p a → β` is a partial function defined on `a : α` satisfying `p`,
+then `pmap f s h` is essentially the same as `map f s` but is defined only when all members of `s`
+satisfy `p`, using the proof to apply `f`.
+-/
+def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α) : (∀ a ∈ s, P a) → Sym2 β :=
+  let g (p : α × α) (H : ∀ a ∈ Sym2.mk p, P a) : Sym2 β :=
+    s(f p.1 (H p.1 <| mem_mk_left _ _), f p.2 (H p.2 <| mem_mk_right _ _))
+  Quot.recOn s g fun p q hpq => funext fun Hq => by
+    rw [rel_iff'] at hpq
+    have Hp : ∀ a ∈ Sym2.mk p, P a := fun a hmem =>
+      Hq a (Sym2.mk_eq_mk_iff.2 hpq ▸ hmem : a ∈ Sym2.mk q)
+    have h : ∀ {s₂ e H}, Eq.ndrec (motive := fun s => (∀ a ∈ s, P a) → Sym2 β) (g p) (b := s₂) e H =
+      g p Hp := by
+      rintro s₂ rfl _
+      rfl
+    refine h.trans (Quot.sound ?_)
+    rw [rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+    apply hpq.imp <;> rintro rfl <;> simp
+
+theorem forall_mem_pair {P : α → Prop} {a b : α} : (∀ x ∈ s(a, b), P x) ↔ P a ∧ P b := by
+  simp only [mem_iff, forall_eq_or_imp, forall_eq]
+
+lemma pair_eq_pmap {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : P a) (h' : P b) :
+    s(f a h, f b h') = pmap f s(a, b) (forall_mem_pair.mpr ⟨h, h'⟩) := rfl
+
+lemma pmap_pair {P : α → Prop} (f : ∀ a, P a → β) (a b : α) (h : ∀ x ∈ s(a, b), P x) :
+    pmap f s(a, b) h = s(f a (h a (mem_mk_left a b)), f b (h b (mem_mk_right a b))) := rfl
+
+@[simp]
+lemma mem_pmap_iff {P : α → Prop} (f : ∀ a, P a → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) (b : β) :
+    b ∈ z.pmap f h ↔ ∃ (a : α) (ha : a ∈ z), b = f a (h a ha) := by
+  induction' z with x y
+  rw [pmap_pair f x y h]
+  aesop
+
+lemma pmap_eq_map {P : α → Prop} (f : α → β) (z : Sym2 α) (h : ∀ a ∈ z, P a) :
+    z.pmap (fun a _ => f a) h = z.map f := by
+  induction' z with x y
+  rfl
+
+lemma map_pmap {Q : β → Prop} (f : α → β) (g : ∀ b, Q b → γ) (z : Sym2 α) (h : ∀ b ∈ z.map f, Q b):
+    (z.map f).pmap g h =
+    z.pmap (fun a ha => g (f a) (h (f a) (mem_map.mpr ⟨a, ha, rfl⟩))) (fun _ ha => ha) := by
+  induction' z with x y
+  rfl
+
+lemma pmap_map {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : β → γ)
+    (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
+    (z.pmap f h).map g = z.pmap (fun a ha => g (f a (h a ha))) (fun _ ha ↦ ha) := by
+  induction' z with x y
+  rfl
+
+lemma pmap_pmap {P : α → Prop} {Q : β → Prop} (f : ∀ a, P a → β) (g : ∀ b, Q b → γ)
+    (z : Sym2 α) (h : ∀ a ∈ z, P a) (h' : ∀ b ∈ z.pmap f h, Q b) :
+    (z.pmap f h).pmap g h' = z.pmap (fun a ha => g (f a (h a ha))
+    (h' _ ((mem_pmap_iff f z h _).mpr ⟨a, ha, rfl⟩))) (fun _ ha ↦ ha) := by
+  induction' z with x y
+  rfl
+
+@[simp]
+lemma pmap_subtype_map_subtypeVal {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) :
+    (s.pmap Subtype.mk h).map Subtype.val = s := by
+  induction' s with x y
+  rfl
+
+/--
+"Attach" a proof `P a` that holds for all the elements of `s` to produce a new Sym2 object
+with the same elements but in the type `{x // P x}`.
+-/
+def attachWith {P : α → Prop} (s : Sym2 α) (h : ∀ a ∈ s, P a) : Sym2 {a // P a} :=
+  pmap Subtype.mk s h
+
+@[simp]
+lemma attachWith_map_subtypeVal {s : Sym2 α} {P : α → Prop} (h : ∀ a ∈ s, P a) :
+    (s.attachWith h).map Subtype.val = s := by
+  induction' s with x y
+  rfl
 
 /-! ### Diagonal -/
 
