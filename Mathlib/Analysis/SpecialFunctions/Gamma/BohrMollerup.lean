@@ -102,6 +102,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     have B : x ^ (a * s + b * t - 1) = x ^ (a * (s - 1)) * x ^ (b * (t - 1)) := by
       rw [← rpow_add hx, hab']; congr 1; ring
     rw [A, B]
+    unfold f
     ring
   · rw [one_div_one_div, one_div_one_div]
     congr 2 <;> exact setIntegral_congr_fun measurableSet_Ioi fun x hx => fpow (by assumption) _ hx

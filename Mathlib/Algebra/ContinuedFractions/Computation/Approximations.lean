@@ -429,6 +429,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
       have tmp := sub_convs_eq stream_nth_eq
       simp only [stream_nth_fr_ne_zero, conts_eq.symm, pred_conts_eq.symm, if_false] at tmp
       rw [tmp]
+      unfold den'
       ring
     rwa [this]
   -- derive some tedious inequalities that we need to rewrite our goal

@@ -106,7 +106,7 @@ private lemma recursion' (n : ℕ) :
   have (x) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
     cases n with
     | zero => simp [u₂']
-    | succ n => ring!
+    | succ n => simp only [u₂', f, Nat.add_one_sub_one]; ring
   simp_rw [this, sub_mul, mul_assoc _ _ (v₂ _)]
   have : Continuous v₂ := by fun_prop
   rw [mul_mul_mul_comm, integral_sub, mul_sub, add_sub_assoc]

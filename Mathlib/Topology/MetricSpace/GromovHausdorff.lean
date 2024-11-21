@@ -751,7 +751,7 @@ instance : SecondCountableTopology GHSpace := by
   calc
     dist p q = ghDist p.Rep q.Rep := dist_ghDist p q
     _ ≤ ε + ε / 2 + ε := main
-    _ = δ := by ring
+    _ = δ := by unfold ε; ring
 
 /-- Compactness criterion: a closed set of compact metric spaces is compact if the spaces have
 a uniformly bounded diameter, and for all `ε` the number of balls of radius `ε` required

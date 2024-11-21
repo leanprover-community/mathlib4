@@ -167,7 +167,7 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : Differen
     _ ≤ δ * ‖z - x‖ + δ * ‖y - x‖ :=
       add_le_add (hR _ (ball_subset_ball hr.2.le hz)) (hR _ (ball_subset_ball hr.2.le hy))
     _ ≤ δ * r + δ * r := by rw [mem_ball_iff_norm] at hz hy; gcongr
-    _ = (ε / 2) * r := by ring
+    _ = (ε / 2) * r := by unfold δ; ring
     _ < ε * r := by gcongr; exacts [hr.1, half_lt_self hε]
 
 theorem norm_sub_le_of_mem_A {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0 < ε) (hr : 0 < r) {x : E}
