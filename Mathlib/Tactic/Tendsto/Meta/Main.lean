@@ -1,10 +1,11 @@
 import Mathlib.Tactic.Tendsto.Multiseries.Main
+import Mathlib.Tactic.Tendsto.Lemmas
 import Mathlib.Tactic.Tendsto.Meta.Trimming
 import Mathlib.Tactic.Tendsto.Meta.LeadingTerm
 
 set_option linter.style.longLine false
 
-open Filter Asymptotics TendstoTactic Stream'.Seq ElimDestruct
+open Filter Topology Asymptotics TendstoTactic Stream'.Seq ElimDestruct
 
 open Lean Elab Meta Tactic Qq
 
@@ -54,7 +55,6 @@ partial def createMS (body : Expr) : TacticM MS := do
     return MS.div ms1 ms2 h_trimmed ⟨⟩
   | _ => throwError f!"Unsupported body in createMS: {body}"
 
-
 def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(Tendsto $f atTop $limit)) := do
   match f with
   | .lam _ _ b _ =>
@@ -94,23 +94,44 @@ def computeTendsto (f : Q(ℝ → ℝ)) : TacticM ((limit : Q(Filter ℝ)) × Q(
     return ⟨limit, res⟩
   | _ => throwError "Function should be lambda"
 
+def convertFilter (f : Q(ℝ → ℝ)) (limit : Q(Filter ℝ)) : MetaM (Option Name × List (Q(ℝ → ℝ))) := do
+  match limit with
+  | ~q(atTop) =>
+    return (.none, [f])
+  | ~q(atBot) =>
+    return (.some ``tendsto_bot_of_tendsto_top, [q(fun x ↦ $f (-x))])
+  | ~q(𝓝[>] $c) =>
+    return (.some ``tendsto_nhds_right_of_tendsto_top, [q(fun x ↦ $f ($c + x⁻¹))])
+  | ~q(𝓝[<] $c) =>
+    return (.some ``tendsto_nhds_left_of_tendsto_top, [q(fun x ↦ $f ($c - x⁻¹))])
+  | ~q(𝓝[≠] $c) =>
+    return (.some ``tendsto_nhds_punctured_of_tendsto_top, [q(fun x ↦ $f ($c - x⁻¹)), q(fun x ↦ $f ($c + x⁻¹))])
+  | _ => throwError f!"Unexpected source filter: {← ppExpr limit}"
+
 elab "compute_asymptotics" : tactic =>
   Lean.Elab.Tactic.withMainContext do
     let target : Q(Prop) ← getMainTarget
-    let ~q(@Filter.Tendsto ℝ ℝ $f atTop $targetLimit) := target | throwError "The goal must me in the form Tendsto (fun x ↦ ...) atTop ..."
-    let ⟨1, fType, f⟩ ← inferTypeQ f | throwError "Unexpected universe level of function in compute_asymptotics"
-    let ~q(ℝ → ℝ) := fType | throwError "Only real functions are supported"
-    let ⟨limit, h_tendsto⟩ ← computeTendsto f
-    let result : Q(Prop) ← inferType h_tendsto
-    if !(← isDefEq target result) then
-      match targetLimit, limit with
-      | ~q(nhds $a), ~q(nhds $b) =>
-        let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
-        (← getMainGoal).assign q(Eq.subst (motive := fun x ↦ Filter.Tendsto $f atTop (nhds (X := ℝ) x)) $h_eq $h_tendsto)
-        setGoals (← evalTacticAt (← `(tactic| try norm_num1)) h_eq.mvarId!)
-      | _ =>
-        throwError m!"I've proved that {← ppExpr (← inferType h_tendsto)}. Is this what you expect?"
-    else
-      (← getMainGoal).assign h_tendsto
+    let ~q(@Filter.Tendsto ℝ ℝ $f $filter $targetLimit) := target | throwError "The goal must me in the form Tendsto (fun x ↦ ...) atTop ..."
+    let (convertLemma?, convertedFs) ← convertFilter f filter
+    let proofs : List (Expr) ← convertedFs.mapM fun f => do
+      dbg_trace f!"f : {← ppExpr f}"
+      let ⟨1, fType, f⟩ ← inferTypeQ f | throwError "Unexpected universe level of function in compute_asymptotics"
+      let ~q(ℝ → ℝ) := fType | throwError "Only real functions are supported"
+      let ⟨limit, h_tendsto⟩ ← computeTendsto f
+      if !(← isDefEq limit targetLimit) then
+        match targetLimit, limit with
+        | ~q(nhds $a), ~q(nhds $b) =>
+          let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
+          let extraGoals ← evalTacticAt (← `(tactic| try norm_num1)) h_eq.mvarId!
+          appendGoals extraGoals
+          pure q(Eq.subst (motive := fun x ↦ Filter.Tendsto $f atTop (nhds (X := ℝ) x)) $h_eq $h_tendsto)
+        | _ =>
+          throwError m!"I've proved that {← ppExpr (← inferType h_tendsto)}. Is this what you expect?"
+      else
+        pure h_tendsto
+    match convertLemma? with
+    | .none => (← getMainGoal).assign proofs[0]!
+    | .some convertLemma =>
+      (← getMainGoal).assign <| ← mkAppM convertLemma (f :: proofs).toArray
 
 end TendstoTactic

@@ -5,8 +5,8 @@ section ElimDestruct
 open Stream'.Seq TendstoTactic ElimDestruct
 
 def basis : List (ℝ → ℝ) := [fun (x : ℝ) ↦ x]
-theorem basis_wo : MS.WellOrderedBasis basis := by
-  simp [MS.WellOrderedBasis, basis]
+theorem basis_wo : WellOrderedBasis basis := by
+  simp [WellOrderedBasis, basis]
   exact fun ⦃U⦄ a => a
 
 theorem zero_aux : 0 < basis.length := by simp [basis]
@@ -127,7 +127,7 @@ example : (if (1 : ℝ) < (3/2 : ℝ) then 1 else 0) = 1 := by
 
 end ElimDestruct
 
-open Filter
+open Filter Topology
 
 example :
   let f := fun (y : ℝ) ↦ y;
@@ -237,9 +237,6 @@ example :
   simp only
   compute_asymptotics
 
-example : (1 : ℝ)⁻¹ * (1 : ℝ) = (1 : ℝ) := by
-  norm_num1
-
 example :
   let f := fun (x : ℝ) ↦ (4 * x)/(3 + 2 * x);
   Tendsto f atTop (nhds 2) := by
@@ -267,5 +264,29 @@ example :
 example :
   let f : ℝ → ℝ := fun (x : ℝ) ↦ (( - 6  *  x  *  x  *  x)  +  ((2  *  x  *  x)  +  ((1)  *  ((4  *  x)  -  ( - 2  *  x)))))  *  ((( - 6  *  x)  -  ( - 2))  /  ((8  *  x)  *  ( - 9  *  x  *  x  *  x)));
   Tendsto f atTop (nhds (-1/2)) := by
+  simp only
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ x/(1 + x);
+  Tendsto f atTop (nhds 1) := by
+  simp only
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ 1/x;
+  Tendsto f (𝓝[>] 0) atTop := by
+  simp only
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ 1/x;
+  Tendsto f (𝓝[<] 0) atBot := by
+  simp only
+  compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ 1/(x * x);
+  Tendsto f (𝓝[≠] 0) atTop := by
   simp only
   compute_asymptotics
