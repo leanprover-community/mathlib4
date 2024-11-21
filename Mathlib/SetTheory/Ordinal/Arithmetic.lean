@@ -7,6 +7,7 @@ import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.SetTheory.Cardinal.UnivLE
+import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Ordinal arithmetic
