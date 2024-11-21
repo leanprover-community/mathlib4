@@ -98,7 +98,7 @@ theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
 
 /-- Every Schwartz function is smooth. -/
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
-  f.smooth'.of_le (by exact_mod_cast le_top)
+  f.smooth'.of_le (mod_cast le_top)
 
 /-- Every Schwartz function is continuous. -/
 @[continuity]
@@ -745,7 +745,7 @@ protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
   use {(k, n)}, ‖m‖, norm_nonneg _
   intro f x
   refine le_trans
-    (mul_le_mul_of_nonneg_left (norm_iteratedFDeriv_clm_apply_const f.2 (by exact_mod_cast le_top))
+    (mul_le_mul_of_nonneg_left (norm_iteratedFDeriv_clm_apply_const f.2 (mod_cast le_top))
       (by positivity)) ?_
   move_mul [‖m‖]
   gcongr ?_ * ‖m‖
@@ -781,7 +781,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
   have hxk : 0 ≤ ‖x‖ ^ k := by positivity
   have hnorm_mul :=
     ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear B f.smooth' hg.1 x (n := n)
-    (by exact_mod_cast le_top)
+    (mod_cast le_top)
   refine le_trans (mul_le_mul_of_nonneg_left hnorm_mul hxk) ?_
   move_mul [← ‖B‖]
   simp_rw [mul_assoc ‖B‖]
@@ -863,7 +863,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     · exact le_trans (by simp [hC]) (le_self_pow₀ (by simp [hC]) hN₁')
     · refine le_self_pow₀ (one_le_pow₀ ?_) hN₁'
       simp only [le_add_iff_nonneg_right, norm_nonneg]
-  have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 (by exact_mod_cast le_top) x hbound hgrowth'
+  have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 (mod_cast le_top) x hbound hgrowth'
   have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
     pow_le_pow_left₀ (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
   refine le_trans (mul_le_mul hxk this (by positivity) (by positivity)) ?_
@@ -1017,7 +1017,7 @@ theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E
     simp only [iteratedPDeriv_succ_left, iteratedFDeriv_succ_apply_left]
     rw [← fderiv_continuousMultilinear_apply_const_apply]
     · simp [← ih]
-    · exact f.smooth'.differentiable_iteratedFDeriv (by exact_mod_cast ENat.coe_lt_top n) x
+    · exact f.smooth'.differentiable_iteratedFDeriv (mod_cast ENat.coe_lt_top n) x
 
 
 end Derivatives
@@ -1053,7 +1053,7 @@ lemma integrable_pow_mul_iteratedFDeriv
     (f : 𝓢(D, V))
     (k n : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖) μ :=
   integrable_of_le_of_pow_mul_le (norm_iteratedFDeriv_le_seminorm ℝ _ _) (le_seminorm ℝ _ _ _)
-    ((f.smooth ⊤).continuous_iteratedFDeriv (by exact_mod_cast le_top)).aestronglyMeasurable
+    ((f.smooth ⊤).continuous_iteratedFDeriv (mod_cast le_top)).aestronglyMeasurable
 
 variable (μ) in
 lemma integrable_pow_mul (f : 𝓢(D, V))
