@@ -46,7 +46,7 @@ abbrev Game :=
 
 namespace Game
 
--- Porting note (#11445): added this definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): added this definition
 /-- Negation of games. -/
 instance : Neg Game where
   neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2

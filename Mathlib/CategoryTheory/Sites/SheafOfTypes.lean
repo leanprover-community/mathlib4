@@ -227,7 +227,7 @@ instance : Category (SheafOfTypes J) where
   comp_id _ := Hom.ext <| comp_id _
   assoc _ _ _ := Hom.ext <| assoc _ _ _
 
--- Porting note (#11041): we need to restate the `ext` lemma in terms of the categorical morphism.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): we need to restate the `ext` lemma in terms of the categorical morphism.
 -- not just the underlying structure.
 -- It would be nice if this boilerplate weren't necessary.
 @[ext]

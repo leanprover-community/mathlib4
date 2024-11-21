@@ -37,11 +37,11 @@ def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   -- See https://github.com/leanprover-community/mathlib4/issues/5020
   Π₀ i, β i
 
--- Porting note (#10754): Added inhabited instance manually
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added inhabited instance manually
 instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
   inferInstanceAs (Inhabited (Π₀ i, β i))
 
--- Porting note (#10754): Added addCommMonoid instance manually
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added addCommMonoid instance manually
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
@@ -211,7 +211,7 @@ theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
 
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
-  -- Porting note (#11041): `ext` applies addHom_ext' here, which isn't what we want.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
   simp [toAddMonoid, of]
 
