@@ -156,9 +156,9 @@ lemma IsPrimePow.factorization_minFac_ne_zero {n : ℕ} (hn : IsPrimePow n) :
 and the set of prime powers given by `(p, k) ↦ p^(k+1)`. -/
 def Nat.Primes.prod_nat_equiv : Nat.Primes × ℕ ≃ {n : ℕ | IsPrimePow n} where
   toFun pk :=
-    ⟨pk.1 ^ (pk.2 + 1), ⟨pk.1, pk.2 + 1, Nat.prime_iff.mp pk.1.prop, pk.2.add_one_pos, rfl⟩⟩
+    ⟨pk.1 ^ (pk.2 + 1), ⟨pk.1, pk.2 + 1, prime_iff.mp pk.1.prop, pk.2.add_one_pos, rfl⟩⟩
   invFun n :=
-    (⟨n.val.minFac, Nat.minFac_prime n.prop.ne_one⟩, (n.val.factorization n.val.minFac) - 1)
+    (⟨n.val.minFac, minFac_prime n.prop.ne_one⟩, (n.val.factorization n.val.minFac) - 1)
   left_inv := fun (p, k) ↦ by
     simp only [p.prop.pow_minFac k.add_one_ne_zero, Subtype.coe_eta, factorization_pow, p.prop,
       Prime.factorization, Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.single_add,
@@ -167,3 +167,19 @@ def Nat.Primes.prod_nat_equiv : Nat.Primes × ℕ ≃ {n : ℕ | IsPrimePow n} w
     ext1
     dsimp only
     rw [sub_one_add_one n.prop.factorization_minFac_ne_zero, n.prop.minFac_pow_factorization_eq]
+
+@[simp]
+lemma Nat.Primes.prod_nat_equiv_apply (p : Nat.Primes) (k : ℕ) :
+    prod_nat_equiv (p, k) = ⟨p ^ (k + 1), p, k + 1, prime_iff.mp p.prop, k.add_one_pos, rfl⟩ :=
+  rfl
+
+@[simp]
+lemma Nat.Primes.coe_prod_nat_equiv_apply (p : Nat.Primes) (k : ℕ) :
+    (prod_nat_equiv (p, k) : ℕ) = p ^ (k + 1) :=
+  rfl
+
+@[simp]
+lemma Nat.Primes.prod_nat_equiv_symm_apply {n : ℕ} (hn : IsPrimePow n) :
+    prod_nat_equiv.symm ⟨n, hn⟩ =
+      (⟨n.minFac, minFac_prime hn.ne_one⟩, n.factorization n.minFac - 1) :=
+  rfl
