@@ -4094,6 +4094,7 @@ import Mathlib.Probability.Kernel.Integral
 import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.Invariance
 import Mathlib.Probability.Kernel.MeasurableIntegral
+import Mathlib.Probability.Kernel.MeasurableLIntegral
 import Mathlib.Probability.Kernel.MeasureCompProd
 import Mathlib.Probability.Kernel.RadonNikodym
 import Mathlib.Probability.Kernel.WithDensity
