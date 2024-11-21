@@ -1048,6 +1048,10 @@ noncomputable def sectL (κ : Kernel (α × β) γ) (b : β) : Kernel α γ :=
 instance (κ : Kernel (α × β) γ) (b : β) [IsMarkovKernel κ] : IsMarkovKernel (sectL κ b) := by
   rw [sectL]; infer_instance
 
+instance (κ : Kernel (α × β) γ) (b : β) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (sectL κ b) := by
+  rw [sectL]; infer_instance
+
 instance (κ : Kernel (α × β) γ) (b : β) [IsFiniteKernel κ] : IsFiniteKernel (sectL κ b) := by
   rw [sectL]; infer_instance
 
@@ -1086,6 +1090,10 @@ noncomputable def sectR (κ : Kernel (α × β) γ) (a : α) : Kernel β γ :=
 @[simp] lemma sectR_zero (a : α) : sectR (0 : Kernel (α × β) γ) a = 0 := by simp [sectR]
 
 instance (κ : Kernel (α × β) γ) (a : α) [IsMarkovKernel κ] : IsMarkovKernel (sectR κ a) := by
+  rw [sectR]; infer_instance
+
+instance (κ : Kernel (α × β) γ) (a : α) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (sectR κ a) := by
   rw [sectR]; infer_instance
 
 instance (κ : Kernel (α × β) γ) (a : α) [IsFiniteKernel κ] : IsFiniteKernel (sectR κ a) := by
