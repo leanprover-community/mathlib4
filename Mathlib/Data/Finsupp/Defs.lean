@@ -586,13 +586,13 @@ theorem zero_update : update 0 a b = single a b := by
     rfl
 
 theorem support_update [DecidableEq α] [DecidableEq M] :
-    support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by
+    (f.update a b).support = if b = 0 then f.support.erase a else insert a f.support := by
   classical
   dsimp only [update]
   congr!
 
 @[simp]
-theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.support.erase a := by
+theorem support_update_zero [DecidableEq α] : (f.update a 0).support = f.support.erase a := by
   classical
   simp only [update, ite_true, mem_support_iff, ne_eq, not_not]
   congr!
@@ -600,13 +600,13 @@ theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.suppor
 variable {b}
 
 theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
-    support (f.update a b) = insert a f.support := by
+    (f.update a b).support = insert a f.support := by
   classical
   simp only [update, h, ite_false, mem_support_iff, ne_eq]
   congr!
 
 theorem support_update_subset [DecidableEq α] :
-    support (f.update a b) ⊆ insert a f.support := by
+    (f.update a b).support ⊆ insert a f.support := by
   classical
   rw [support_update]
   split_ifs
@@ -1045,14 +1045,14 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
   (zipWith_single_single _ _ _ _ _).symm
 
 theorem support_single_add {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
-    support (single a b + f) = cons a f.support ha := by
+    (single a b + f).support = cons a f.support ha := by
   classical
   have H := support_single_ne_zero a hb
   rw [support_add_eq, H, cons_eq_insert, insert_eq]
   rwa [H, disjoint_singleton_left]
 
 theorem support_add_single {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
-    support (f + single a b) = cons a f.support ha := by
+    (f + single a b).support = cons a f.support ha := by
   classical
   have H := support_single_ne_zero a hb
   rw [support_add_eq, H, union_comm, cons_eq_insert, insert_eq]
@@ -1390,15 +1390,15 @@ theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} 
     exact Pi.single_add_single_eq_single_add_single hu hv
 
 @[simp]
-theorem support_neg [AddGroup G] (f : α →₀ G) : support (-f) = support f :=
+theorem support_neg [AddGroup G] (f : α →₀ G) : (-f).support = f.support :=
   Finset.Subset.antisymm support_mapRange
     (calc
-      support f = support (- -f) := congr_arg support (neg_neg _).symm
-      _ ⊆ support (-f) := support_mapRange
+      f.support = (- -f).support := congr_arg Finsupp'.support (neg_neg _).symm
+      _ ⊆ (-f).support := support_mapRange
       )
 
 theorem support_sub [DecidableEq α] [AddGroup G] {f g : α →₀ G} :
-    support (f - g) ⊆ support f ∪ support g := by
+    (f - g).support ⊆ f.support ∪ g.support := by
   rw [sub_eq_add_neg, ← support_neg g]
   exact support_add
 
