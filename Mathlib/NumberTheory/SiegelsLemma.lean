@@ -38,8 +38,7 @@ open Matrix Finset
 
 namespace Int.Matrix
 
-variable {α β : Type*} [Fintype α] [Fintype β]
-  (A : Matrix α β ℤ) (v : β → ℤ) (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α)
+variable {α β : Type*} [Fintype α] [Fintype β] (A : Matrix α β ℤ)
 
 -- Some definitions and relative properties
 
@@ -58,19 +57,17 @@ local notation3 "S" => Finset.Icc N P
 
 section preparation
 
-variable [DecidableEq α] [DecidableEq β]
-
 /- In order to apply Pigeonhole we need:
 # Step 1: ∀ v ∈  T, A *ᵥ v ∈  S
 and
-# Step 2: S.card < T.card
+# Step 2: #S < #T
 Pigeonhole will give different x and y in T with A.mulVec x = A.mulVec y in S
 Their difference is the solution we are looking for
 -/
 
 -- # Step 1: ∀ v ∈ T, A *ᵥ v ∈  S
 
-private lemma image_T_subset_S (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
+private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
   rw [mem_Icc] at hv ⊢
   have mulVec_def : A.mulVec v =
       fun i ↦ Finset.sum univ fun j : β ↦ A i j * v j := rfl
@@ -93,12 +90,12 @@ private lemma image_T_subset_S (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
 
 -- # Preparation for Step 2
 
-private lemma card_T_eq : (T).card = (B + 1) ^ n := by
+private lemma card_T_eq [DecidableEq β] : #T = (B + 1) ^ n := by
   rw [Pi.card_Icc 0 B']
   simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_ofNat_add_one, prod_const, card_univ,
     add_pos_iff, zero_lt_one, or_true]
 
--- This lemma is necessary to be able to apply the formula (Icc a b).card = b + 1 - a
+-- This lemma is necessary to be able to apply the formula #(Icc a b) = b + 1 - a
 private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
   calc N i
   _ ≤ 0 := by
@@ -111,7 +108,7 @@ private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
     intro j _
     exact mul_nonneg (Nat.cast_nonneg B) (posPart_nonneg (A i j))
 
-private lemma card_S_eq : (Finset.Icc N P).card = ∏ i : α, (P i - N i + 1) := by
+private lemma card_S_eq [DecidableEq α] : #(Finset.Icc N P) = ∏ i : α, (P i - N i + 1) := by
   rw [Pi.card_Icc N P, Nat.cast_prod]
   congr
   ext i
@@ -130,11 +127,13 @@ lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
   norm_cast at h
   exact Int.abs_lt_one_iff.1 h
 
--- # Step 2: S.card < T.card
+-- # Step 2: #S < #T
 
 open Real Nat
 
-private lemma card_S_lt_card_T : (S).card < (T).card := by
+private lemma card_S_lt_card_T [DecidableEq α] [DecidableEq β]
+    (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α) :
+    #S < #T := by
   zify -- This is necessary to use card_S_eq
   rw [card_T_eq A, card_S_eq]
   rify -- This is necessary because ‖A‖ is a real number
@@ -173,7 +172,8 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
 
 end preparation
 
-theorem exists_ne_zero_int_vec_norm_le : ∃ t : β → ℤ, t ≠ 0 ∧
+theorem exists_ne_zero_int_vec_norm_le
+    (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α) : ∃ t : β → ℤ, t ≠ 0 ∧
     A *ᵥ t = 0 ∧ ‖t‖ ≤ (n * max 1 ‖A‖) ^ ((m : ℝ) / (n - m)) := by
   classical
   -- Pigeonhole
@@ -205,7 +205,9 @@ theorem exists_ne_zero_int_vec_norm_le : ∃ t : β → ℤ, t ≠ 0 ∧
     exact hyT.1 i
 
 
-theorem exists_ne_zero_int_vec_norm_le' (hA : A ≠ 0) : ∃ t : β → ℤ, t ≠ 0 ∧
+theorem exists_ne_zero_int_vec_norm_le'
+    (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α) (hA : A ≠ 0) :
+    ∃ t : β → ℤ, t ≠ 0 ∧
     A *ᵥ t = 0 ∧ ‖t‖ ≤ (n * ‖A‖) ^ ((m : ℝ) / (n - m)) := by
   have := exists_ne_zero_int_vec_norm_le A hn hm
   rwa [max_eq_right] at this

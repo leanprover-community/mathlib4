@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Elementwise
 
 # Compactly generated topological spaces
 
-This file defines the category of compactly generated topological spaces. These are spaces `X` such
+This file defines the category of compactly generated topological spaces. These are spaces `X` such
 that a map `f : X → Y` is continuous whenever the composition `S → X → Y` is continuous for all
 compact Hausdorff spaces `S` mapping continuously to `X`.
 
@@ -26,7 +26,8 @@ universe u w
 
 open CategoryTheory Topology TopologicalSpace
 
-/-- The type of `u`-compactly generated `w`-small topological spaces. -/
+/-- `CompactlyGenerated.{u, w}` is the type of `u`-compactly generated `w`-small topological spaces.
+This should always be used with explicit universe parameters. -/
 structure CompactlyGenerated where
   /-- The underlying topological space of an object of `CompactlyGenerated`. -/
   toTop : TopCat.{w}

@@ -39,7 +39,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
   rw [← hS1, ← Fintype.card_coe, ← Finset.card_univ, ← Finset.prod_const]
   let f : (∀ g : S, zpowers (g : G)) →* G := noncommPiCoprod fun s t _ x y _ _ => mul_comm x _
   have hf : Function.Surjective f := by
-    rw [← MonoidHom.range_top_iff_surjective, eq_top_iff, ← hS2, closure_le]
+    rw [← MonoidHom.range_eq_top, eq_top_iff, ← hS2, closure_le]
     exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
   replace hf := card_dvd_of_surjective f hf
   rw [Nat.card_pi] at hf
@@ -99,7 +99,7 @@ theorem closure_mul_image_eq (hR : R ∈ rightTransversals (H : Set G)) (hR1 : (
   suffices (⟨r, hr⟩ : R) = (⟨1, hR1⟩ : R) by
     simpa only [show r = 1 from Subtype.ext_iff.mp this, mul_one]
   apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.mp hR r).unique
-  · rw [Subtype.coe_mk, mul_inv_self]
+  · rw [Subtype.coe_mk, mul_inv_cancel]
     exact H.one_mem
   · rw [Subtype.coe_mk, inv_one, mul_one]
     exact (H.mul_mem_cancel_left (hU hg)).mp hh

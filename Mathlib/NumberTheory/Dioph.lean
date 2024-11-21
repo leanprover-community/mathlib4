@@ -67,7 +67,7 @@ Note that this duplicates `MvPolynomial`.
 
 section Polynomials
 
-variable {α β γ : Type*}
+variable {α β : Type*}
 
 /-- A predicate asserting that a function is a multivariate integer polynomial.
   (We are being a bit lazy here by allowing many representations for multiplication,
@@ -175,7 +175,7 @@ instance : AddCommGroup (Poly α) where
   zero_add _ := by ext; simp_rw [add_apply, zero_apply, zero_add]
   add_comm _ _ := by ext; simp_rw [add_apply, add_comm]
   add_assoc _ _ _ := by ext; simp_rw [add_apply, ← add_assoc]
-  add_left_neg _ := by ext; simp_rw [add_apply, neg_apply, add_left_neg, zero_apply]
+  neg_add_cancel _ := by ext; simp_rw [add_apply, neg_apply, neg_add_cancel, zero_apply]
 
 instance : AddGroupWithOne (Poly α) :=
   { (inferInstance : AddCommGroup (Poly α)) with
@@ -432,21 +432,22 @@ end
 
 section
 
-variable {α β : Type} {n : ℕ}
+variable {α : Type} {n : ℕ}
 
 open Vector3
 
 open scoped Vector3
 
 -- Porting note: Fails because declaration is in an imported module
--- attribute [local reducible] Vector3
+set_option allowUnsafeReducibility true in
+attribute [local reducible] Vector3
 
 theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Vector3 ℕ n → ℕ}
     (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v::v) ∈ S} :=
   Dioph.ext (diophFn_comp1 (reindex_dioph _ (none::some) d) df) (fun v => by
     dsimp
     -- Porting note: `congr` use to be enough here
-    refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+    suffices ((f v ::ₒ v) ∘ none :: some) = f v :: v by rw [this]; rfl
     ext x; cases x <;> rfl)
 
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
@@ -470,7 +471,7 @@ theorem diophFn_compn :
     ext (reindex_dioph _ (id ⊗ Fin2.elim0) d) fun v => by
       dsimp
       -- Porting note: `congr` use to be enough here
-      refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+      suffices v ∘ (id ⊗ elim0) = v ⊗ fun i ↦ f i v by rw [this]
       ext x; obtain _ | _ | _ := x; rfl
   | succ n, S, d, f =>
     f.consElim fun f fl => by
@@ -482,14 +483,15 @@ theorem diophFn_compn :
               fun v => by
                 dsimp
                 -- Porting note: `congr` use to be enough here
-                refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+                suffices (f (v ∘ inl) ::ₒ v) ∘ (some ∘ inl ⊗ none :: some ∘ inr) =
+                    v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr by rw [this]
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
             @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
           ext this fun v => by
             dsimp
             -- Porting note: `congr` use to be enough here
-            refine iff_of_eq (congrFun (congrArg Membership.mem ?_) S)
+            suffices (v ⊗ f v :: fun i ↦ fl i v) = v ⊗ fun i ↦ (f :: fl) i v by rw [this]
             ext x; obtain _ | _ | _ := x <;> rfl
 
 theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α → ℕ) → ℕ) n)
@@ -521,7 +523,9 @@ theorem const_dioph (n : ℕ) : DiophFn (const (α → ℕ) n) :=
 
 scoped prefix:100 "D." => Dioph.const_dioph
 
+section
 variable {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g)
+include df dg
 
 theorem dioph_comp2 {S : ℕ → ℕ → Prop} (d : Dioph fun v : Vector3 ℕ 2 => S (v &0) (v &1)) :
     Dioph fun v => S (f v) (g v) := dioph_comp d [f, g] ⟨df, dg⟩
@@ -592,7 +596,7 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
         (vectorAll_iff_forall _).1 fun z x y =>
           show ((y = 0 ∨ z < y) ∧ ∃ c, z + y * c = x) ↔ x % y = z from
             ⟨fun ⟨h, c, hc⟩ => by
-              rw [← hc]; simp; cases' h with x0 hl
+              rw [← hc]; simp only [add_mul_mod_self_left]; cases' h with x0 hl
               · rw [x0, mod_zero]
               exact mod_eq_of_lt hl, fun e => by
                 rw [← e]
@@ -626,6 +630,8 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
                 Iff.trans ⟨fun o => o.resolve_left fun ⟨h1, _⟩ => Nat.ne_of_gt ypos h1, Or.inr⟩
                   (le_antisymm_iff.trans <| and_congr (Nat.le_div_iff_mul_le ypos) <|
                     Iff.trans ⟨lt_succ_of_le, le_of_lt_succ⟩ (div_lt_iff_lt_mul ypos)).symm
+
+end
 
 scoped infixl:80 " D/ " => Dioph.div_dioph
 
@@ -666,7 +672,8 @@ theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h
     Dioph.ext this fun _ => ⟨fun ⟨_, h, xe, _⟩ => ⟨h, xe⟩, fun ⟨h, xe⟩ => ⟨_, h, xe, rfl⟩⟩
 
 /-- A version of **Matiyasevic's theorem** -/
-theorem pow_dioph : DiophFn fun v => f v ^ g v := by
+theorem pow_dioph {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g) :
+    DiophFn fun v => f v ^ g v := by
   have proof :=
     let D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
     (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Data.Set.Basic
@@ -21,13 +20,13 @@ They could be moved to more natural homes.
 
 open Function
 
-variable {F α β γ : Type*}
+variable {α β : Type*}
 
 namespace RingHom
 
 section
 
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β) {x y : α}
+variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β)
 
 /-- `f : α →+* β` has a trivial codomain iff its range is `{0}`. -/
 theorem codomain_trivial_iff_range_eq_singleton_zero : (0 : β) = 1 ↔ Set.range f = {0} :=
@@ -41,9 +40,6 @@ end
 section Semiring
 
 variable [Semiring α] [Semiring β]
-
-theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
-  IsUnit.map f
 
 protected theorem map_dvd (f : α →+* β) {a b : α} : a ∣ b → f a ∣ f b :=
   map_dvd f

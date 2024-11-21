@@ -89,6 +89,7 @@ namespace Monotone
 
 variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Monotone f) {x y : α}
+include hf
 
 theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
     leftLim f x = sSup (f '' Iio x) :=
@@ -148,8 +149,7 @@ theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
   letI : TopologicalSpace α := Preorder.topology α
   haveI : OrderTopology α := ⟨rfl⟩
   rcases eq_or_ne (𝓝[<] y) ⊥ with (h' | h')
-  · simp [leftLim, h']
-    exact rightLim_le hf h
+  · simpa [leftLim, h'] using rightLim_le hf h
   obtain ⟨a, ⟨xa, ay⟩⟩ : (Ioo x y).Nonempty :=
     forall_mem_nonempty_iff_neBot.2 (neBot_iff.2 h') (Ioo x y)
       (Ioo_mem_nhdsWithin_Iio ⟨h, le_refl _⟩)
@@ -253,6 +253,7 @@ namespace Antitone
 
 variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Antitone f) {x y : α}
+include hf
 
 theorem le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=
   hf.dual_right.leftLim_le h

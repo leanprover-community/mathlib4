@@ -232,7 +232,7 @@ variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
   ⟨fun ⟨a, b, h⟩ => ⟨x • a, b, by rwa [smul_mul_assoc, ← mul_smul_comm]⟩, fun ⟨a, b, h⟩ =>
-    ⟨x⁻¹ • a, b, by rwa [smul_mul_smul, inv_mul_self, one_smul]⟩⟩
+    ⟨x⁻¹ • a, b, by rwa [smul_mul_smul_comm, inv_mul_cancel, one_smul]⟩⟩
 
 theorem isCoprime_group_smul_right : IsCoprime y (x • z) ↔ IsCoprime y z :=
   isCoprime_comm.trans <| (isCoprime_group_smul_left x z y).trans isCoprime_comm
@@ -360,7 +360,7 @@ end CommRing
 theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
-  obtain ⟨ha, hb⟩ := (add_eq_zero_iff' (sq_nonneg _) (sq_nonneg _)).mp h'
+  obtain ⟨ha, hb⟩ := (add_eq_zero_iff_of_nonneg (sq_nonneg _) (sq_nonneg _)).mp h'
   obtain rfl := pow_eq_zero ha
   obtain rfl := pow_eq_zero hb
   exact not_isCoprime_zero_zero h

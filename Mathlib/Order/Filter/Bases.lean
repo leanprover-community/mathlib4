@@ -5,8 +5,7 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Ker
+import Mathlib.Order.Filter.Basic
 
 /-!
 # Filter bases
@@ -72,7 +71,7 @@ We use the latter one because, e.g., `𝓝 x` in an `EMetricSpace` or in a `Metr
 of this form. The other two can be emulated using `s = id` or `p = fun _ ↦ True`.
 
 With this approach sometimes one needs to `simp` the statement provided by the `Filter.HasBasis`
-machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help with the case
+machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can help with the case
 `p = fun _ ↦ True`.
 -/
 
@@ -100,7 +99,7 @@ instance FilterBasis.nonempty_sets (B : FilterBasis α) : Nonempty B.sets :=
 /-- If `B` is a filter basis on `α`, and `U` a subset of `α` then we can write `U ∈ B` as
 on paper. -/
 instance {α : Type*} : Membership (Set α) (FilterBasis α) :=
-  ⟨fun U B => U ∈ B.sets⟩
+  ⟨fun B U => U ∈ B.sets⟩
 
 @[simp] theorem FilterBasis.mem_sets {s : Set α} {B : FilterBasis α} : s ∈ B.sets ↔ s ∈ B := Iff.rfl
 
@@ -117,7 +116,7 @@ def Filter.asBasis (f : Filter α) : FilterBasis α :=
   ⟨f.sets, ⟨univ, univ_mem⟩, fun {x y} hx hy => ⟨x ∩ y, inter_mem hx hy, subset_rfl⟩⟩
 
 -- Porting note: was `protected` in Lean 3 but `protected` didn't work; removed
-/-- `is_basis p s` means the image of `s` bounded by `p` is a filter basis. -/
+/-- `IsBasis p s` means the image of `s` bounded by `p` is a filter basis. -/
 structure Filter.IsBasis (p : ι → Prop) (s : ι → Set α) : Prop where
   /-- There exists at least one `i` that satisfies `p`. -/
   nonempty : ∃ i, p i
@@ -543,7 +542,7 @@ theorem hasBasis_iSup {ι : Sort*} {ι' : ι → Type*} {l : ι → Filter α} {
 theorem HasBasis.sup_principal (hl : l.HasBasis p s) (t : Set α) :
     (l ⊔ 𝓟 t).HasBasis p fun i => s i ∪ t :=
   ⟨fun u => by
-    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, exists_prop, and_true_iff,
+    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, exists_prop, and_true,
       Unique.exists_iff]⟩
 
 theorem HasBasis.sup_pure (hl : l.HasBasis p s) (x : α) :
@@ -632,10 +631,6 @@ alias ⟨_, _root_.Disjoint.filter_principal⟩ := disjoint_principal_principal
 theorem disjoint_pure_pure {x y : α} : Disjoint (pure x : Filter α) (pure y) ↔ x ≠ y := by
   simp only [← principal_singleton, disjoint_principal_principal, disjoint_singleton]
 
-@[simp]
-theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : (diagonal α)ᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
-  simp only [mem_prod_iff, Filter.disjoint_iff, prod_subset_compl_diagonal_iff_disjoint]
-
 -- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem HasBasis.disjoint_iff_left (h : l.HasBasis p s) :
     Disjoint l l' ↔ ∃ i, p i ∧ (s i)ᶜ ∈ l' := by
@@ -668,10 +663,10 @@ theorem HasBasis.eq_iInf (h : l.HasBasis (fun _ => True) s) : l = ⨅ i, 𝓟 (s
 theorem hasBasis_iInf_principal {s : ι → Set α} (h : Directed (· ≥ ·) s) [Nonempty ι] :
     (⨅ i, 𝓟 (s i)).HasBasis (fun _ => True) s :=
   ⟨fun t => by
-    simpa only [true_and] using mem_iInf_of_directed (h.mono_comp monotone_principal.dual) t⟩
+    simpa only [true_and] using mem_iInf_of_directed (h.mono_comp _ monotone_principal.dual) t⟩
 
 /-- If `s : ι → Set α` is an indexed family of sets, then finite intersections of `s i` form a basis
-of `⨅ i, 𝓟 (s i)`.  -/
+of `⨅ i, 𝓟 (s i)`. -/
 theorem hasBasis_iInf_principal_finite {ι : Type*} (s : ι → Set α) :
     (⨅ i, 𝓟 (s i)).HasBasis (fun t : Set ι => t.Finite) fun t => ⋂ i ∈ t, s i := by
   refine ⟨fun U => (mem_iInf_finite _).trans ?_⟩
@@ -683,7 +678,7 @@ theorem hasBasis_biInf_principal {s : β → Set α} {S : Set β} (h : DirectedO
   ⟨fun t => by
     refine mem_biInf_of_directed ?_ ne
     rw [directedOn_iff_directed, ← directed_comp] at h ⊢
-    refine h.mono_comp ?_
+    refine h.mono_comp _ ?_
     exact fun _ _ => principal_mono.2⟩
 
 theorem hasBasis_biInf_principal' {ι : Type*} {p : ι → Prop} {s : ι → Set α}
@@ -722,7 +717,7 @@ protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p
   h.biInf_mem hf
 
 protected theorem HasBasis.ker (h : HasBasis l p s) : l.ker = ⋂ (i) (_ : p i), s i :=
-  l.ker_def.trans <| h.biInter_mem monotone_id
+  sInter_eq_biInter.trans <| h.biInter_mem monotone_id
 
 variable {ι'' : Type*} [Preorder ι''] (l) (s'' : ι'' → Set α)
 

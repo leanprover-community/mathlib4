@@ -142,11 +142,9 @@ lemma differentiable_expZeta_of_ne_zero {a : UnitAddCircle} (ha : a ≠ 0) :
 
 /-- Reformulation of `hasSum_expZeta_of_one_lt_re` using `LSeriesHasSum`. -/
 lemma LSeriesHasSum_exp (a : ℝ) {s : ℂ} (hs : 1 < re s) :
-    LSeriesHasSum (cexp <| 2 * π * I * a * ·) s (expZeta a s) := by
-  refine (hasSum_expZeta_of_one_lt_re a hs).congr_fun (fun n ↦ ?_)
-  rcases eq_or_ne n 0 with rfl | hn
-  · rw [LSeries.term_zero, Nat.cast_zero, zero_cpow (ne_zero_of_one_lt_re hs), div_zero]
-  · apply LSeries.term_of_ne_zero hn
+    LSeriesHasSum (cexp <| 2 * π * I * a * ·) s (expZeta a s) :=
+  (hasSum_expZeta_of_one_lt_re a hs).congr_fun
+    (LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs) _)
 
 /-!
 ## The functional equation

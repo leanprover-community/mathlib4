@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Probability.Density
-import Mathlib.Probability.Notation
-import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Uniform
+import Mathlib.Probability.Notation
 
 /-!
 
@@ -76,7 +76,7 @@ namespace BuffonsNeedle
 
 variable
   /- Probability theory variables. -/
-  {Ω : Type*} [MeasureSpace Ω] [IsProbabilityMeasure (ℙ : Measure Ω)]
+  {Ω : Type*} [MeasureSpace Ω]
 
   /- Buffon's needle variables. -/
 
@@ -124,8 +124,9 @@ noncomputable def N : Ω → ℝ := needleCrossesIndicator l ∘ B
 /--
   The possible x-positions and angle relative to the y-axis of a needle.
 -/
-abbrev needleSpace: Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
+abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
+include hd in
 lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
   simp_rw [MeasureTheory.Measure.volume_eq_prod, MeasureTheory.Measure.prod_prod, Real.volume_Icc,
     ENNReal.ofReal_mul hd.le]
@@ -157,6 +158,7 @@ lemma stronglyMeasurable_needleCrossesIndicator :
   · simp_rw [needleCrossesIndicator, Set.indicator_of_not_mem hp] at hxp
     apply Or.inl hxp.symm
 
+include hd in
 lemma integrable_needleCrossesIndicator :
     MeasureTheory.Integrable (needleCrossesIndicator l)
       (Measure.prod
@@ -185,6 +187,7 @@ lemma integrable_needleCrossesIndicator :
       neg_div, sub_neg_eq_add, add_halves, sub_zero, ← ENNReal.ofReal_mul hd.le,
       ENNReal.ofReal_lt_top]
 
+include hd hB hBₘ in
 /--
   This is a common step in both the short and the long case to simplify the expectation of the
   needle crossing a line to a double integral.
@@ -198,7 +201,7 @@ lemma integrable_needleCrossesIndicator :
 lemma buffon_integral :
     𝔼[N l B] = (d * π) ⁻¹ *
       ∫ (θ : ℝ) in Set.Icc 0 π,
-      ∫ (x : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
+      ∫ (_ : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
   simp_rw [N, Function.comp_apply]
   rw [
     ← MeasureTheory.integral_map hBₘ.aemeasurable
@@ -230,6 +233,7 @@ lemma buffon_integral :
     · rw [if_neg h, if_neg (this.not.mp h)]
   simp_rw [indicator_eq, MeasureTheory.setIntegral_indicator measurableSet_Icc, Pi.one_apply]
 
+include hl in
 /--
   From `buffon_integral`, in both the short and the long case, we have
   ```lean
@@ -243,10 +247,11 @@ lemma buffon_integral :
 lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
     Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2) =
     Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2) := by
-  rw [Set.Icc_inter_Icc, inf_eq_min, sup_eq_max, max_div_div_right zero_le_two,
+  rw [Set.Icc_inter_Icc, max_div_div_right zero_le_two,
     min_div_div_right zero_le_two, neg_mul, max_neg_neg, mul_comm,
     min_eq_right (mul_le_of_le_of_le_one_of_nonneg h θ.sin_le_one hl.le)]
 
+include hd hBₘ hB hl in
 /--
   Buffon's Needle, the short case (`l ≤ d`). The probability of the needle crossing a line
   equals `(2 * l) / (d * π)`.
@@ -285,10 +290,11 @@ lemma integral_min_eq_two_mul :
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := π / 2) (c := π)]
   conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
   · simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
-      intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)), add_left_neg,
+      intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)), neg_add_cancel,
       (by ring : -(π / 2) + π = π / 2), two_mul]
   all_goals exact intervalIntegrable_min_const_sin_mul d l _ _
 
+include hd hl in
 /--
   The first of two adjacent integrals in the long case. In the range `(0)..(d / l).arcsin`, we
   have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in (0)..(d / l).arcsin, θ.sin * l`.
@@ -298,14 +304,15 @@ lemma integral_zero_to_arcsin_min :
   have : Set.EqOn (fun θ => min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
     intro θ ⟨hθ₁, hθ₂⟩
     have : 0 ≤ (d / l).arcsin := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
-    simp only [sup_eq_max, inf_eq_min, min_eq_left this, max_eq_right this] at hθ₁ hθ₂
+    simp only [min_eq_left this, max_eq_right this] at hθ₁ hθ₂
     have hθ_mem : θ ∈ Set.Ioc (-(π / 2)) (π / 2) := by
       exact ⟨lt_of_lt_of_le (neg_lt_zero.mpr (div_pos Real.pi_pos two_pos)) hθ₁,
         le_trans hθ₂ (d / l).arcsin_mem_Icc.right⟩
-    simp_rw [min_eq_right ((le_div_iff hl).mp ((Real.le_arcsin_iff_sin_le' hθ_mem).mp hθ₂))]
+    simp_rw [min_eq_right ((le_div_iff₀ hl).mp ((Real.le_arcsin_iff_sin_le' hθ_mem).mp hθ₂))]
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_mul_const, integral_sin,
     Real.cos_zero, Real.cos_arcsin]
 
+include hl in
 /--
   The second of two adjacent integrals in the long case. In the range `(d / l).arcsin..(π / 2)`, we
   have that `d ≤ θ.sin * l`, and thus the integral is `∫ θ in (d / l).arcsin..(π / 2), d`.
@@ -317,13 +324,14 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
     wlog hθ_ne_pi_div_two : θ ≠ π / 2
     · simp only [ne_eq, not_not] at hθ_ne_pi_div_two
       simp only [hθ_ne_pi_div_two, Real.sin_pi_div_two, one_mul, min_eq_left h]
-    simp only [sup_eq_max, inf_eq_min, min_eq_left (d / l).arcsin_le_pi_div_two,
+    simp only [min_eq_left (d / l).arcsin_le_pi_div_two,
       max_eq_right (d / l).arcsin_le_pi_div_two] at hθ₁ hθ₂
     have hθ_mem : θ ∈ Set.Ico (-(π / 2)) (π / 2) := by
       exact ⟨le_trans (Real.arcsin_mem_Icc (d / l)).left hθ₁, lt_of_le_of_ne hθ₂ hθ_ne_pi_div_two⟩
-    simp_rw [min_eq_left ((div_le_iff hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁))]
+    simp_rw [min_eq_left ((div_le_iff₀ hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁))]
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 
+include hd hBₘ hB hl in
 /--
   Buffon's Needle, the long case (`d ≤ l`).
 -/
@@ -332,7 +340,7 @@ theorem buffon_long (h : d ≤ l) :
   simp only [
     buffon_integral d l hd B hBₘ hB, MeasureTheory.integral_const, smul_eq_mul, mul_one,
     MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, Set.Icc_inter_Icc, Real.volume_Icc,
-    sup_eq_max, inf_eq_min, min_div_div_right zero_le_two d, max_div_div_right zero_le_two (-d),
+    min_div_div_right zero_le_two d, max_div_div_right zero_le_two (-d),
     div_sub_div_same, neg_mul, max_neg_neg, sub_neg_eq_add, ← mul_two,
     mul_div_cancel_right₀ (min d (Real.sin _ * l)) two_ne_zero
   ]

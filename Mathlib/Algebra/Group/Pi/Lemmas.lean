@@ -26,8 +26,7 @@ variable {I : Type u}
 -- The indexing type
 variable {f : I → Type v}
 
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i j : I)
+variable (i : I)
 
 @[to_additive (attr := simp)]
 theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α → β) = {1} :=
@@ -37,6 +36,15 @@ theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α
 theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : β) ∈ s)] :
     (1 : α → β) ⁻¹' s = if (1 : β) ∈ s then Set.univ else ∅ :=
   Set.preimage_const 1 s
+
+namespace Pi
+
+variable {α β : Type*} [Preorder α] [Preorder β]
+
+@[to_additive] lemma one_mono [One β] : Monotone (1 : α → β) := monotone_const
+@[to_additive] lemma one_anti [One β] : Antitone (1 : α → β) := antitone_const
+
+end Pi
 
 namespace MulHom
 
@@ -59,9 +67,9 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
 
 @[to_additive]
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
-    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun x y h =>
+    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
-  hg i ((Function.funext_iff.mp h : _) i)
+  hg i ((funext_iff.mp h : _) i)
 
 /-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
 `Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
@@ -239,6 +247,15 @@ theorem Pi.mulSingle_div [∀ i, Group <| f i] (i : I) (x y : f i) :
     mulSingle i (x / y) = mulSingle i x / mulSingle i y :=
   (MonoidHom.mulSingle f i).map_div x y
 
+@[to_additive]
+theorem Pi.mulSingle_pow [∀ i, Monoid (f i)] (i : I) (x : f i) (n : ℕ) :
+    mulSingle i (x ^ n) = mulSingle i x ^ n :=
+  (MonoidHom.mulSingle f i).map_pow x n
+
+@[to_additive]
+theorem Pi.mulSingle_zpow [∀ i, Group (f i)] (i : I) (x : f i) (n : ℤ) :
+    mulSingle i (x ^ n) = mulSingle i x ^ n :=
+  (MonoidHom.mulSingle f i).map_zpow x n
 
 /-- The injection into a pi group at different indices commutes.
 
@@ -319,7 +336,7 @@ theorem SemiconjBy.pi {x y z : ∀ i, f i} (h : ∀ i, SemiconjBy (x i) (y i) (z
 
 @[to_additive]
 theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
-    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := Function.funext_iff
+    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := funext_iff
 
 @[to_additive]
 theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h

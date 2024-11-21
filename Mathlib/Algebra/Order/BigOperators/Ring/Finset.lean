@@ -82,6 +82,21 @@ lemma prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f
 end PosMulStrictMono
 end CommMonoidWithZero
 
+section OrderedSemiring
+
+variable [OrderedSemiring R] {f : ι → R} {s : Finset ι}
+
+lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
+    ∑ i ∈ s, f i ^ 2 ≤ (∑ i ∈ s, f i) ^ 2 := by
+  simp only [sq, sum_mul_sum]
+  refine sum_le_sum fun i hi ↦ ?_
+  rw [← mul_sum]
+  gcongr
+  · exact hf i hi
+  · exact single_le_sum hf hi
+
+end OrderedSemiring
+
 section OrderedCommSemiring
 variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
 
@@ -96,7 +111,7 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
   · rw [right_distrib]
     refine add_le_add ?_ ?_ <;>
     · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_ <;> simp (config := { contextual := true }) [*]
+      · refine prod_le_prod ?_ ?_ <;> simp +contextual [*]
       · try apply_assumption
         try assumption
   · apply prod_nonneg
@@ -125,6 +140,19 @@ lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → R) :
     _ ≤ ∑ i ∈ s, ((f i * ∑ j ∈ s, g j ^ 2) ^ 2 + (g i * ∑ j ∈ s, f j * g j) ^ 2) :=
         sum_le_sum fun i _ ↦ two_mul_le_add_sq (f i * ∑ j ∈ s, g j ^ 2) (g i * ∑ j ∈ s, f j * g j)
     _ = _ := by simp_rw [sum_add_distrib, mul_pow, ← sum_mul]; ring
+
+theorem sum_mul_self_eq_zero_iff (s : Finset ι) (f : ι → R) :
+    ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s his ih =>
+    simp only [Finset.sum_cons, Finset.mem_cons, forall_eq_or_imp]
+    refine ⟨fun hc => ?_, fun h => by simpa [h.1] using ih.mpr h.2⟩
+    have hi : f i * f i ≤ 0 := by
+      rw [← hc, le_add_iff_nonneg_right]
+      exact Finset.sum_nonneg fun i _ ↦ mul_self_nonneg (f i)
+    have h : f i * f i = 0 := (eq_of_le_of_le (mul_self_nonneg (f i)) hi).symm
+    exact ⟨zero_eq_mul_self.mp h.symm, ih.mp (by rw [← hc, h, zero_add])⟩
 
 end LinearOrderedCommSemiring
 
@@ -189,6 +217,7 @@ open Qq Lean Meta Finset
 
 private alias ⟨_, prod_ne_zero⟩ := prod_ne_zero_iff
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∏ i ∈ s, f i` is nonnegative if `f` is, and
 positive if each `f i` is.
 

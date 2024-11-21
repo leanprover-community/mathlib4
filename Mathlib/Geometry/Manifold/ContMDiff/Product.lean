@@ -20,39 +20,27 @@ open Set Function Filter ChartedSpace SmoothManifoldWithCorners
 open scoped Topology Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  -- declare a smooth manifold `M` over the pair `(E, H)`.
+  -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
-  -- declare a smooth manifold `M'` over the pair `(E', H')`.
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  -- declare a charted space `M'` over the pair `(E', H')`.
   {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
-  (I' : ModelWithCorners 𝕜 E' H') {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
-  -- declare a manifold `M''` over the pair `(E'', H'')`.
-  {E'' : Type*}
-  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
-  {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
-  -- declare a smooth manifold `N` over the pair `(F, G)`.
+  {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  -- declare a charted space `N` over the pair `(F, G)`.
   {F : Type*}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  [SmoothManifoldWithCorners J N]
-  -- declare a smooth manifold `N'` over the pair `(F', G')`.
+  -- declare a charted space `N'` over the pair `(F', G')`.
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  [SmoothManifoldWithCorners J' N']
-  -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
+  -- declare a few vector spaces
+  {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   -- declare functions, sets, points and smoothness indices
-  {e : PartialHomeomorph M H}
-  {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
-variable {I I'}
+  {f : M → M'} {s : Set M} {x : M} {n : ℕ∞}
 
 section ProdMk
 
@@ -143,7 +131,7 @@ theorem contMDiffWithinAt_fst {s : Set (M × N)} {p : M × N} :
   rw [contMDiffWithinAt_iff']
   refine ⟨continuousWithinAt_fst, contDiffWithinAt_fst.congr (fun y hy => ?_) ?_⟩
   · exact (extChartAt I p.1).right_inv ⟨hy.1.1.1, hy.1.2.1⟩
-  · exact (extChartAt I p.1).right_inv <| (extChartAt I p.1).map_source (mem_extChartAt_source _ _)
+  · exact (extChartAt I p.1).right_inv <| (extChartAt I p.1).map_source (mem_extChartAt_source _)
 
 theorem ContMDiffWithinAt.fst {f : N → M × M'} {s : Set N} {x : N}
     (hf : ContMDiffWithinAt J (I.prod I') n f s x) :
@@ -199,7 +187,7 @@ theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
   rw [contMDiffWithinAt_iff']
   refine ⟨continuousWithinAt_snd, contDiffWithinAt_snd.congr (fun y hy => ?_) ?_⟩
   · exact (extChartAt J p.2).right_inv ⟨hy.1.1.2, hy.1.2.2⟩
-  · exact (extChartAt J p.2).right_inv <| (extChartAt J p.2).map_source (mem_extChartAt_source _ _)
+  · exact (extChartAt J p.2).right_inv <| (extChartAt J p.2).map_source (mem_extChartAt_source _)
 
 theorem ContMDiffWithinAt.snd {f : N → M × M'} {s : Set N} {x : N}
     (hf : ContMDiffWithinAt J (I.prod I') n f s x) :
@@ -244,20 +232,52 @@ theorem Smooth.snd {f : N → M × M'} (hf : Smooth J (I.prod I') f) : Smooth J 
 
 end Projections
 
-theorem contMDiffWithinAt_prod_iff (f : M → M' × N') {s : Set M} {x : M} :
+theorem contMDiffWithinAt_prod_iff (f : M → M' × N') :
     ContMDiffWithinAt I (I'.prod J') n f s x ↔
       ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
 
-theorem contMDiffAt_prod_iff (f : M → M' × N') {x : M} :
+theorem contMDiffWithinAt_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂) n f s x ↔
+      ContMDiffWithinAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s x ∧
+      ContMDiffWithinAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s x := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiffWithinAt_prod_iff f
+
+theorem contMDiffAt_prod_iff (f : M → M' × N') :
     ContMDiffAt I (I'.prod J') n f x ↔
       ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x := by
   simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
+
+theorem contMDiffAt_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffAt I 𝓘(𝕜, F₁ × F₂) n f x ↔
+      ContMDiffAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) x ∧ ContMDiffAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) x := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiffAt_prod_iff f
+
+theorem contMDiffOn_prod_iff (f : M → M' × N') :
+    ContMDiffOn I (I'.prod J') n f s ↔
+      ContMDiffOn I I' n (Prod.fst ∘ f) s ∧ ContMDiffOn I J' n (Prod.snd ∘ f) s :=
+  ⟨fun h ↦ ⟨fun x hx ↦ ((contMDiffWithinAt_prod_iff f).1 (h x hx)).1,
+      fun x hx ↦ ((contMDiffWithinAt_prod_iff f).1 (h x hx)).2⟩ ,
+    fun h x hx ↦ (contMDiffWithinAt_prod_iff f).2 ⟨h.1 x hx, h.2 x hx⟩⟩
+
+theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffOn I 𝓘(𝕜, F₁ × F₂) n f s ↔
+      ContMDiffOn I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s ∧ ContMDiffOn I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiffOn_prod_iff f
 
 theorem contMDiff_prod_iff (f : M → M' × N') :
     ContMDiff I (I'.prod J') n f ↔
       ContMDiff I I' n (Prod.fst ∘ f) ∧ ContMDiff I J' n (Prod.snd ∘ f) :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prod_mk h.2⟩
+
+theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔
+      ContMDiff I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) ∧ ContMDiff I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiff_prod_iff f
 
 theorem smoothAt_prod_iff (f : M → M' × N') {x : M} :
     SmoothAt I (I'.prod J') f x ↔ SmoothAt I I' (Prod.fst ∘ f) x ∧ SmoothAt I J' (Prod.snd ∘ f) x :=
@@ -345,7 +365,7 @@ theorem contMDiffWithinAt_pi_space :
     ContMDiffWithinAt I 𝓘(𝕜, ∀ i, Fi i) n φ s x ↔
       ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Fi i) n (fun x => φ x i) s x := by
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
-    writtenInExtChartAt, extChartAt_model_space_eq_id, (· ∘ ·), PartialEquiv.refl_coe, id]
+    writtenInExtChartAt, extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
 theorem contMDiffOn_pi_space :
     ContMDiffOn I 𝓘(𝕜, ∀ i, Fi i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Fi i) n (fun x => φ x i) s :=

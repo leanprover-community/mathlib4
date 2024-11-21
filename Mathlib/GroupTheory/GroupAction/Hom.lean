@@ -2,7 +2,6 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
-
 -/
 
 import Mathlib.Algebra.Module.Defs
@@ -59,8 +58,8 @@ variable (Z : Type*) [SMul P Z]
 
 /-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
-a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`.  -/
--- Porting note(#5171): this linter isn't ported yet.
+a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`. -/
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where
   /-- The underlying function. -/
@@ -155,10 +154,6 @@ protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m 
 theorem ext {f g : X →ₑ[φ] Y} :
     (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
-
-protected theorem ext_iff  {f g : X →ₑ[φ] Y} :
-    f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 protected theorem congr_fun {f g : X →ₑ[φ] Y} (h : f = g) (x : X) :
     f x = g x :=
@@ -361,12 +356,9 @@ abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
     [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
     DistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
-/- porting note: Removed a @[nolint dangerousInstance] for
-DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
-
 namespace DistribMulActionHom
 
-/- Porting note (#11215): TODO decide whether the next two instances should be removed
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
 -- instance coe : Coe (A →+[M] B) (A →+ B) :=
 --   ⟨toAddMonoidHom⟩
@@ -427,9 +419,6 @@ theorem coe_fn_coe' (f : A →ₑ+[φ] B) : ⇑(f : A →ₑ[φ] B) = f :=
 @[ext]
 theorem ext {f g : A →ₑ+[φ] B} : (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
-
-theorem ext_iff {f g : A →ₑ+[φ] B} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 protected theorem congr_fun {f g : A →ₑ+[φ] B} (h : f = g) (x : A) : f x = g x :=
   DFunLike.congr_fun h _
@@ -532,13 +521,10 @@ def inverse (f : A →+[M] B₁) (g : B₁ → A) (h₁ : Function.LeftInverse g
 section Semiring
 
 variable (R : Type*) [Semiring R] [MulSemiringAction M R]
-variable (R' : Type*) [Ring R'] [MulSemiringAction M R']
 variable (S : Type*) [Semiring S] [MulSemiringAction N S]
-variable (S' : Type*) [Ring S'] [MulSemiringAction N S']
 variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 
-variable {R S M' N'}
-variable [AddMonoid M'] [DistribMulAction R M']
+variable {R S N'}
 variable [AddMonoid N'] [DistribMulAction S N']
 
 variable {σ : R →* S}
@@ -547,8 +533,6 @@ theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   ext x
   rw [← mul_one x, ← smul_eq_mul R, f.map_smulₑ, g.map_smulₑ, h]
 
-theorem ext_ring_iff {f g : R →ₑ+[σ] N'} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h => h ▸ rfl, ext_ring⟩
 
 end Semiring
 
@@ -565,7 +549,7 @@ variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 -- variable [AddMonoid N'] [DistribMulAction S N']
 
 /-- Equivariant ring homomorphisms. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure MulSemiringActionHom extends R →ₑ+[φ] S, R →+* S
 
@@ -614,12 +598,9 @@ abbrev MulSemiringActionHomClass
     [DistribMulAction M R] [DistribMulAction M S] [FunLike F R S] :=
   MulSemiringActionSemiHomClass F (MonoidHom.id M) R S
 
-/- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass
- not dangerous due to outParam -/
-
 namespace MulSemiringActionHom
 
-/- Porting note (#11215): TODO decide whether the next two instances should be removed
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
 -- @[coe]
 -- instance coe : Coe (R →+*[M] S) (R →+* S) :=
@@ -675,9 +656,6 @@ theorem coe_fn_coe' (f : R →ₑ+*[φ] S) : ⇑(f : R →ₑ+[φ] S) = f :=
 @[ext]
 theorem ext {f g : R →ₑ+*[φ] S} : (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
-
-theorem ext_iff {f g : R →ₑ+*[φ] S} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
 
 protected theorem map_zero (f : R →ₑ+*[φ] S) : f 0 = 0 :=
   map_zero f

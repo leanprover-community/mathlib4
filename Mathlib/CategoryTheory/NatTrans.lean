@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
+Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.Tactic.CategoryTheory.Reassoc
 
@@ -72,7 +72,7 @@ open CategoryTheory.Functor
 
 section
 
-variable {F G H I : C ⥤ D}
+variable {F G H : C ⥤ D}
 
 /-- `vcomp α β` is the vertical compositions of natural transformations. -/
 def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where

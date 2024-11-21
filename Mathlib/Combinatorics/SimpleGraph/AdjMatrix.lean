@@ -40,7 +40,7 @@ open Matrix
 
 open Finset Matrix SimpleGraph
 
-variable {V α β : Type*}
+variable {V α : Type*}
 
 namespace Matrix
 
@@ -143,7 +143,7 @@ def adjMatrix [Zero α] [One α] : Matrix V V α :=
 
 variable {α}
 
--- TODO: set as an equation lemma for `adjMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `adjMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem adjMatrix_apply (v w : V) [Zero α] [One α] :
     G.adjMatrix α v w = if G.Adj v w then 1 else 0 :=
@@ -172,7 +172,19 @@ theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
   simp only [IsAdjMatrix.toGraph_adj, adjMatrix_apply, ite_eq_left_iff, zero_ne_one]
   apply Classical.not_not
 
-variable {α} [Fintype V]
+variable {α}
+
+/-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
+theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
+    [NonAssocSemiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
+  ext i j
+  unfold Matrix.compl
+  rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
+  by_cases h : G.Adj i j
+  · aesop
+  · split_ifs <;> simp_all
+
+variable [Fintype V]
 
 @[simp]
 theorem adjMatrix_dotProduct [NonAssocSemiring α] (v : V) (vec : V → α) :
@@ -219,7 +231,6 @@ theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
 
 variable {G}
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
     (G.adjMatrix α *ᵥ Function.const _ a) v = G.degree v * a := by simp
 
@@ -245,16 +256,6 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
       cases hp
       simp at hxy
-
-/-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
-theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
-    [NonAssocSemiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
-  ext i j
-  unfold Matrix.compl
-  rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
-  by_cases h : G.Adj i j
-  · aesop
-  · split_ifs <;> simp_all
 
 theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (x y : V → α) :
     x ⬝ᵥ (G.adjMatrix α).mulVec y = ∑ i : V, ∑ j : V, if G.Adj i j then x i * y j else 0 := by

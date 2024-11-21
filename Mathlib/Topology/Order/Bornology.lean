@@ -29,8 +29,8 @@ and below. -/
 def orderBornology : Bornology α := .ofBounded
   {s | BddBelow s ∧ BddAbove s}
   (by simp)
-  (fun s hs t hst ↦ ⟨hs.1.mono hst, hs.2.mono hst⟩)
-  (fun s hs t ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩)
+  (fun _ hs _ hst ↦ ⟨hs.1.mono hst, hs.2.mono hst⟩)
+  (fun _ hs _ ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩)
   (by simp)
 
 @[simp] lemma orderBornology_isBounded : orderBornology.IsBounded s ↔ BddBelow s ∧ BddAbove s := by
@@ -71,10 +71,10 @@ protected lemma BddAbove.isBounded (hs₀ : BddAbove s) (hs₁ : BddBelow s) : I
   isBounded_iff_bddBelow_bddAbove.2 ⟨hs₁, hs₀⟩
 
 lemma BddBelow.isBounded_inter (hs : BddBelow s) (ht : BddAbove t) : IsBounded (s ∩ t) :=
-  (hs.mono inter_subset_left).isBounded $ ht.mono inter_subset_right
+  (hs.mono inter_subset_left).isBounded <| ht.mono inter_subset_right
 
 lemma BddAbove.isBounded_inter (hs : BddAbove s) (ht : BddBelow t) : IsBounded (s ∩ t) :=
-  (hs.mono inter_subset_left).isBounded $ ht.mono inter_subset_right
+  (hs.mono inter_subset_left).isBounded <| ht.mono inter_subset_right
 
 instance OrderDual.instIsOrderBornology : IsOrderBornology αᵒᵈ where
   isBounded_iff_bddBelow_bddAbove s := by

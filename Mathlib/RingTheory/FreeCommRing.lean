@@ -80,6 +80,20 @@ theorem of_injective : Function.Injective (of : α → FreeCommRing α) :=
   FreeAbelianGroup.of_injective.comp fun _ _ =>
     (Multiset.coe_eq_coe.trans List.singleton_perm_singleton).mp
 
+@[simp]
+theorem of_ne_zero (x : α) : of x ≠ 0 := FreeAbelianGroup.of_ne_zero _
+
+@[simp]
+theorem zero_ne_of (x : α) : 0 ≠ of x := FreeAbelianGroup.zero_ne_of _
+
+@[simp]
+theorem of_ne_one (x : α) : of x ≠ 1 :=
+  FreeAbelianGroup.of_injective.ne <| Multiset.singleton_ne_zero _
+
+@[simp]
+theorem one_ne_of (x : α) : 1 ≠ of x :=
+  FreeAbelianGroup.of_injective.ne <| Multiset.zero_ne_singleton _
+
 -- Porting note: added to ease a proof in `Algebra.DirectLimit`
 lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
     @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
@@ -94,11 +108,11 @@ protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing 
     C z :=
   have hn : ∀ x, C x → C (-x) := fun x ih => neg_one_mul x ▸ hm _ _ hn1 ih
   have h1 : C 1 := neg_neg (1 : FreeCommRing α) ▸ hn _ hn1
-  FreeAbelianGroup.induction_on z (add_left_neg (1 : FreeCommRing α) ▸ ha _ _ hn1 h1)
+  FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeCommRing α) ▸ ha _ _ hn1 h1)
     (fun m => Multiset.induction_on m h1 fun a m ih => by
       convert hm (of a) _ (hb a) ih
       apply of_cons)
-    (fun m ih => hn _ ih) ha
+    (fun _ ih => hn _ ih) ha
 
 section lift
 

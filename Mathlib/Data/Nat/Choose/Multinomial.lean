@@ -73,9 +73,9 @@ lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
 @[simp]
 theorem multinomial_insert_one [DecidableEq α] (h : a ∉ s) (h₁ : f a = 1) :
     multinomial (insert a s) f = (s.sum f).succ * multinomial s f := by
-  simp only [multinomial, one_mul, factorial]
+  simp only [multinomial]
   rw [Finset.sum_insert h, Finset.prod_insert h, h₁, add_comm, ← succ_eq_add_one, factorial_succ]
-  simp only [factorial_one, one_mul, Function.comp_apply, factorial, mul_one, ← one_eq_succ_zero]
+  simp only [factorial, succ_eq_add_one, zero_add, mul_one, one_mul]
   rw [Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum _ _)]
 
 theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
@@ -210,9 +210,9 @@ variable [Semiring R]
 -- TODO: Can we prove one of the following two from the other one?
 /-- The **multinomial theorem**. -/
 lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
-    (hc : (s : Set α).Pairwise fun i j ↦ Commute (f i) (f j)) (n : ℕ) :
+    (hc : (s : Set α).Pairwise (Commute on f)) (n : ℕ) :
     (∑ i in s, f i) ^ n = ∑ k in piAntidiag s n, multinomial s k *
-      s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun i j h ↦ h.pow_pow ..) := by
+      s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
   classical
   induction' s using Finset.cons_induction with a s has ih generalizing n
   · cases n <;> simp
@@ -250,7 +250,7 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
 
 /-- The **multinomial theorem**. -/
 theorem sum_pow_of_commute (x : α → R) (s : Finset α)
-    (hc : (s : Set α).Pairwise fun i j => Commute (x i) (x j)) :
+    (hc : (s : Set α).Pairwise (Commute on x)) :
     ∀ n,
       s.sum x ^ n =
         ∑ k : s.sym n,

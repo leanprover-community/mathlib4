@@ -14,12 +14,10 @@ import Mathlib.Tactic.Nontriviality
 
 assert_not_exists DenselyOrdered
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
 
 namespace Ring
-
-open scoped Classical
 
 theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
     inverse (a * b) = inverse b * inverse a := by
@@ -85,7 +83,7 @@ theorem div_left (hac : Commute a c) (hbc : Commute b c) : Commute (a / b) c := 
 end Commute
 
 section GroupWithZero
-variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
+variable [GroupWithZero G₀]
 
 theorem pow_inv_comm₀ (a : G₀) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left₀.pow_pow m n

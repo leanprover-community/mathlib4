@@ -118,10 +118,9 @@ namespace Triangulated
 namespace Localization
 
 variable (W : MorphismProperty C) [L.IsLocalization W]
-  [W.IsCompatibleWithTriangulation] [W.HasLeftCalculusOfFractions]
-  [Preadditive D] [HasZeroObject D]
-  [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
+  [W.HasLeftCalculusOfFractions]
 
+include W in
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
       Triangle.mk f g h ∈ L.essImageDistTriang := by
@@ -137,6 +136,10 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
   simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
     Functor.mapArrow_obj_left, Functor.map_id, comp_id]
 
+section
+variable [W.IsCompatibleWithTriangulation]
+
+include W in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
     (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (fac : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
@@ -178,6 +181,8 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     simp only [Functor.map_comp, reassoc_of% hγ,
       MorphismProperty.LeftFraction.map_comp_map_s_assoc]
 
+variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
+
 /-- The pretriangulated structure on the localized category. -/
 def pretriangulated : Pretriangulated D where
   distinguishedTriangles := L.essImageDistTriang
@@ -193,10 +198,17 @@ instance isTriangulated_functor :
   letI : Pretriangulated D := pretriangulated L W
   ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
 
+end
+
+variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+
+include W in
 lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
     IsTriangulated D := by
   have := essSurj_mapComposableArrows L W 2
   exact isTriangulated_of_essSurj_mapComposableArrows_two L
+
+variable [W.IsCompatibleWithTriangulation]
 
 instance (n : ℤ) : (shiftFunctor (W.Localization) n).Additive := by
   rw [Localization.functor_additive_iff W.Q W]

@@ -24,9 +24,10 @@ namespace Commute
 variable [NonUnitalNonAssocSemiring R]
 
 lemma list_sum_right (a : R) (l : List R) (h : ∀ b ∈ l, Commute a b) : Commute a l.sum := by
-  induction' l with x xs ih
-  · exact Commute.zero_right _
-  · rw [List.sum_cons]
+  induction l with
+  | nil => exact Commute.zero_right _
+  | cons x xs ih =>
+    rw [List.sum_cons]
     exact (h _ <| mem_cons_self _ _).add_right (ih fun j hj ↦ h _ <| mem_cons_of_mem _ hj)
 
 lemma list_sum_left (b : R) (l : List R) (h : ∀ a ∈ l, Commute a b) : Commute l.sum b :=
@@ -55,7 +56,7 @@ lemma prod_eq_zero : ∀ {l : List M₀}, (0 : M₀) ∈ l → l.prod = 0
   -- |  absurd h (not_mem_nil _)
   | a :: l, h => by
     rw [prod_cons]
-    cases' mem_cons.1 h with ha hl
+    rcases mem_cons.1 h with ha | hl
     exacts [mul_eq_zero_of_left ha.symm _, mul_eq_zero_of_right _ (prod_eq_zero hl)]
 
 variable [Nontrivial M₀] [NoZeroDivisors M₀]
@@ -82,9 +83,10 @@ lemma sum_map_mul_right : (l.map fun b ↦ f b * r).sum = (l.map f).sum * r :=
 end NonUnitalNonAssocSemiring
 
 lemma dvd_sum [NonUnitalSemiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum := by
-  induction' l with x l ih
-  · exact dvd_zero _
-  · rw [List.sum_cons]
+  induction l with
+  | nil => exact dvd_zero _
+  | cons x l ih =>
+    rw [List.sum_cons]
     exact dvd_add (h _ (mem_cons_self _ _)) (ih fun x hx ↦ h x (mem_cons_of_mem _ hx))
 
 @[simp] lemma sum_zipWith_distrib_left [Semiring R] (f : ι → κ → R) (a : R) :

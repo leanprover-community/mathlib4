@@ -5,7 +5,8 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.SetLike.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
@@ -101,13 +102,13 @@ instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
--- Porting note (#11215): TODO lower priority not actually there
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
--- Porting note (#11215): TODO lower priority not actually there
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
@@ -153,7 +154,7 @@ end OfTower
 
 end SetLike
 
-/-- A SubMulAction is a set which is closed under scalar multiplication.  -/
+/-- A SubMulAction is a set which is closed under scalar multiplication. -/
 structure SubMulAction (R : Type u) (M : Type v) [SMul R M] : Type v where
   /-- The underlying set of a `SubMulAction`. -/
   carrier : Set M
@@ -243,7 +244,7 @@ variable [Monoid R] [MulAction R M] {A : Type*} [SetLike A M]
 variable [hA : SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `MulAction` over `SMulMemClass`.
-/-- A `SubMulAction` of a `MulAction` is a `MulAction`.  -/
+/-- A `SubMulAction` of a `MulAction` is a `MulAction`. -/
 instance (priority := 75) toMulAction : MulAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
@@ -16,9 +16,7 @@ the underlying types are just the limits in the category of types.
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v w u t
 
@@ -110,11 +108,11 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     ext j
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
       forget_map_eq_coe]
-    erw [map_one]
+    rw [map_one]
     rfl
   · intro x y
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app]
-    erw [← map_mul (MulEquiv.symm Shrink.mulEquiv)]
+    rw [← equivShrink_mul]
     apply congrArg
     ext j
     simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
@@ -126,7 +124,7 @@ def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
     simp only [map_zero, Pi.zero_apply]
   · intro x y
     simp only [Functor.mapCone_π_app]
-    erw [← map_add (AddEquiv.symm Shrink.addEquiv)]
+    rw [← equivShrink_add]
     apply congrArg
     ext j
     simp only [forget_map_eq_coe, map_add]
@@ -157,41 +155,41 @@ instance hasLimits : HasLimits (AlgebraCat.{w} R) :=
 
 /-- The forgetful functor from R-algebras to rings preserves all limits.
 -/
-instance forget₂RingPreservesLimitsOfSize [UnivLE.{v, w}] :
+instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v} (forget₂ (AlgebraCat.{w} R) RingCat.{w}) where
   preservesLimitsOfShape :=
     { preservesLimit := fun {K} ↦
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit K)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
           (RingCat.limitConeIsLimit.{v, w}
             (_ ⋙ forget₂ (AlgebraCat.{w} R) RingCat.{w})) }
 
-instance forget₂RingPreservesLimits : PreservesLimits (forget₂ (AlgebraCat R) RingCat.{w}) :=
-  AlgebraCat.forget₂RingPreservesLimitsOfSize.{w, w}
+instance forget₂Ring_preservesLimits : PreservesLimits (forget₂ (AlgebraCat R) RingCat.{w}) :=
+  AlgebraCat.forget₂Ring_preservesLimitsOfSize.{w, w}
 
 /-- The forgetful functor from R-algebras to R-modules preserves all limits.
 -/
-instance forget₂ModulePreservesLimitsOfSize [UnivLE.{v, w}] : PreservesLimitsOfSize.{t, v}
+instance forget₂Module_preservesLimitsOfSize [UnivLE.{v, w}] : PreservesLimitsOfSize.{t, v}
     (forget₂ (AlgebraCat.{w} R) (ModuleCat.{w} R)) where
   preservesLimitsOfShape :=
     { preservesLimit := fun {K} ↦
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit K)
+        preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
           (ModuleCat.HasLimits.limitConeIsLimit
             (K ⋙ forget₂ (AlgebraCat.{w} R) (ModuleCat.{w} R))) }
 
-instance forget₂ModulePreservesLimits :
+instance forget₂Module_preservesLimits :
     PreservesLimits (forget₂ (AlgebraCat R) (ModuleCat.{w} R)) :=
-  AlgebraCat.forget₂ModulePreservesLimitsOfSize.{w, w}
+  AlgebraCat.forget₂Module_preservesLimitsOfSize.{w, w}
 
 /-- The forgetful functor from R-algebras to types preserves all limits.
 -/
-instance forgetPreservesLimitsOfSize [UnivLE.{v, w}] :
+instance forget_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v} (forget (AlgebraCat.{w} R)) where
   preservesLimitsOfShape :=
     { preservesLimit := fun {K} ↦
-       preservesLimitOfPreservesLimitCone (limitConeIsLimit K)
+       preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
           (Types.Small.limitConeIsLimit.{v} (K ⋙ forget _)) }
 
-instance forgetPreservesLimits : PreservesLimits (forget (AlgebraCat.{w} R)) :=
-  AlgebraCat.forgetPreservesLimitsOfSize.{w, w}
+instance forget_preservesLimits : PreservesLimits (forget (AlgebraCat.{w} R)) :=
+  AlgebraCat.forget_preservesLimitsOfSize.{w, w}
 
 end AlgebraCat

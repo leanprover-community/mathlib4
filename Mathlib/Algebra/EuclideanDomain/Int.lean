@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Nat
 
 /-!
 # Instances for Euclidean domains

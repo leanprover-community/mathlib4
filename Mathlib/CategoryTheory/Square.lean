@@ -26,7 +26,7 @@ We define the flip functor, and two equivalences with
 the category `Arrow (Arrow C)`, depending on whether
 we consider a commutative square as a horizontal
 morphism between two vertical maps (`arrowArrowEquivalence`)
-or a vertical morphism betwen two horizontal
+or a vertical morphism between two horizontal
 maps (`arrowArrowEquivalence'`).
 
 -/
@@ -115,7 +115,7 @@ instance category : Category (Square C) where
 lemma hom_ext {sq₁ sq₂ : Square C} {f g : sq₁ ⟶ sq₂}
     (h₁ : f.τ₁ = g.τ₁) (h₂ : f.τ₂ = g.τ₂)
     (h₃ : f.τ₃ = g.τ₃) (h₄ : f.τ₄ = g.τ₄) : f = g :=
-  Hom.ext _ _ h₁ h₂ h₃ h₄
+  Hom.ext h₁ h₂ h₃ h₄
 
 /-- Constructor for isomorphisms in `Square c` -/
 def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq₁.X₂ ≅ sq₂.X₂)
@@ -326,6 +326,8 @@ def map (sq : Square C) (F : C ⥤ D) : Square D where
 
 end Square
 
+variable {C}
+
 namespace Functor
 
 /-- The functor `Square C ⥤ Square D` induced by a functor `C ⥤ D`. -/
@@ -343,5 +345,22 @@ def mapSquare (F : C ⥤ D) : Square C ⥤ Square D where
       comm₃₄ := by simpa only [Functor.map_comp] using F.congr_map φ.comm₃₄ }
 
 end Functor
+
+/-- The natural transformation `F.mapSquare ⟶ G.mapSquare` induces
+by a natural transformation `F ⟶ G`. -/
+@[simps]
+def NatTrans.mapSquare {F G : C ⥤ D} (τ : F ⟶ G) :
+    F.mapSquare ⟶ G.mapSquare where
+  app sq :=
+    { τ₁ := τ.app _
+      τ₂ := τ.app _
+      τ₃ := τ.app _
+      τ₄ := τ.app _ }
+
+/-- The functor `(C ⥤ D) ⥤ Square C ⥤ Square D`. -/
+@[simps]
+def Square.mapFunctor : (C ⥤ D) ⥤ Square C ⥤ Square D where
+  obj F := F.mapSquare
+  map τ := NatTrans.mapSquare τ
 
 end CategoryTheory

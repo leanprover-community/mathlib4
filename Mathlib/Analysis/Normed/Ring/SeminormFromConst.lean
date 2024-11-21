@@ -44,8 +44,7 @@ open scoped Topology
 
 section Ring
 
-variable {R : Type _} [CommRing R] (c : R) (f : RingSeminorm R) (hf1 : f 1 ≤ 1) (hc : f c ≠ 0)
-  (hpm : IsPowMul f)
+variable {R : Type _} [CommRing R] (c : R) (f : RingSeminorm R)
 
 /-- For a ring seminorm `f` on `R` and `c ∈ R`, the sequence given by `(f (x * c^n))/((f c)^n)`. -/
 def seminormFromConst_seq (x : R) : ℕ → ℝ := fun n ↦ f (x * c ^ n) / f c ^ n
@@ -73,11 +72,15 @@ theorem seminormFromConst_seq_zero (hf : f 0 = 0) : seminormFromConst_seq c f 0 
   rw [zero_mul, hf, zero_div, Pi.zero_apply]
 
 variable {c}
+variable (hf1 : f 1 ≤ 1) (hc : f c ≠ 0) (hpm : IsPowMul f)
+include hpm hc
 
 /-- If `1 ≤ n`, then `seminormFromConst_seq c f 1 n = 1`. -/
 theorem seminormFromConst_seq_one (n : ℕ) (hn : 1 ≤ n) : seminormFromConst_seq c f 1 n = 1 := by
   simp only [seminormFromConst_seq]
   rw [one_mul, hpm _ hn, div_self (pow_ne_zero n hc)]
+
+include hf1
 
 /-- `seminormFromConst_seq c f x` is antitone. -/
 theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq c f x) := by
@@ -86,17 +89,17 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
   nth_rw 1 [← Nat.add_sub_of_le hmn]
   rw [pow_add, ← mul_assoc]
   have hc_pos : 0 < f c := lt_of_le_of_ne (apply_nonneg f _) hc.symm
-  apply le_trans ((div_le_div_right (pow_pos hc_pos _)).mpr (map_mul_le_mul f _ _))
+  apply le_trans ((div_le_div_iff_of_pos_right (pow_pos hc_pos _)).mpr (map_mul_le_mul f _ _))
   by_cases heq : m = n
   · have hnm : n - m = 0 := by rw [heq, Nat.sub_self n]
-    rw [hnm, heq, div_le_div_right (pow_pos hc_pos _), pow_zero]
+    rw [hnm, heq, div_le_div_iff_of_pos_right (pow_pos hc_pos _), pow_zero]
     conv_rhs => rw [← mul_one (f (x * c ^ n))]
     exact mul_le_mul_of_nonneg_left hf1 (apply_nonneg f _)
   · have h1 : 1 ≤ n - m := by
       rw [Nat.one_le_iff_ne_zero, ne_eq, Nat.sub_eq_zero_iff_le, not_le]
       exact lt_of_le_of_ne hmn heq
     rw [hpm c h1, mul_div_assoc, div_eq_mul_inv, pow_sub₀ _ hc hmn, mul_assoc, mul_comm (f c ^ m)⁻¹,
-      ← mul_assoc (f c ^ n), mul_inv_cancel (pow_ne_zero n hc), one_mul, div_eq_mul_inv]
+      ← mul_assoc (f c ^ n), mul_inv_cancel₀ (pow_ne_zero n hc), one_mul, div_eq_mul_inv]
 
 /-- The real-valued function sending `x ∈ R` to the limit of `(f (x * c^n))/((f c)^n)`. -/
 def seminormFromConst' (x : R) : ℝ :=
@@ -129,7 +132,7 @@ def seminormFromConst : RingSeminorm R where
     have h_add : f ((x + y) * c ^ n) ≤ f (x * c ^ n) + f (y * c ^ n) := by
       simp only [add_mul, map_add_le_add f _ _]
     simp only [seminormFromConst_seq, div_add_div_same]
-    exact (div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f _) hc.symm) _)).mpr h_add
+    gcongr
   neg' x := by
     apply tendsto_nhds_unique_of_eventuallyEq (seminormFromConst_isLimit hf1 hc hpm (-x))
       (seminormFromConst_isLimit hf1 hc hpm x)
@@ -147,7 +150,7 @@ def seminormFromConst : RingSeminorm R where
       (seminormFromConst_isLimit hf1 hc hpm y)) (fun n ↦ ?_)
     simp only [seminormFromConst_seq]
     rw [div_mul_div_comm, ← pow_add, two_mul,
-      div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f _) hc.symm) _), pow_add,
+      div_le_div_iff_of_pos_right (pow_pos (lt_of_le_of_ne (apply_nonneg f _) hc.symm) _), pow_add,
       ← mul_assoc, mul_comm (x * y), ← mul_assoc, mul_assoc, mul_comm (c ^ n)]
     exact map_mul_le_mul f (x * c ^ n) (y * c ^ n)
 
@@ -168,8 +171,8 @@ theorem seminormFromConst_isNonarchimedean (hna : IsNonarchimedean f) :
   have hmax : f ((x + y) * c ^ n) ≤ max (f (x * c ^ n)) (f (y * c ^ n)) := by
     simp only [add_mul, hna _ _]
   rw [le_max_iff] at hmax ⊢
-  rcases hmax with hmax | hmax <;> [left; right] <;>
-  exact (div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f c) hc.symm) _)).mpr hmax
+  unfold seminormFromConst_seq
+  apply hmax.imp <;> intro <;> gcongr
 
 /-- The function `seminormFromConst' hf1 hc hpm` is power-multiplicative. -/
 theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' hf1 hc hpm) := fun x m hm ↦ by
@@ -190,9 +193,8 @@ theorem seminormFromConst_le_seminorm (x : R) : seminormFromConst' hf1 hc hpm x 
   simp only [eventually_atTop, ge_iff_le]
   use 1
   intro n hn
-  apply le_trans ((div_le_div_right (pow_pos (lt_of_le_of_ne (apply_nonneg f c) hc.symm) _)).mpr
-    (map_mul_le_mul _ _ _))
-  rw [hpm c hn, mul_div_assoc, div_self (pow_ne_zero n hc), mul_one]
+  rw [seminormFromConst_seq, div_le_iff₀ (by positivity), ← hpm c hn]
+  exact map_mul_le_mul ..
 
 /-- If `x : R` is multiplicative for `f`, then `seminormFromConst' hf1 hc hpm x = f x`. -/
 theorem seminormFromConst_apply_of_isMul {x : R} (hx : ∀ y : R, f (x * y) = f x * f y) :
@@ -252,7 +254,7 @@ theorem seminormFromConst_const_mul (x : R) :
     simp only [seminormFromConst_seq_def]
     ext n
     ring_nf
-    rw [mul_assoc _ (f c), mul_inv_cancel hc, mul_one]
+    rw [mul_assoc _ (f c), mul_inv_cancel₀ hc, mul_one]
   simpa [hterm] using tendsto_const_nhds.mul hlim
 
 end Ring

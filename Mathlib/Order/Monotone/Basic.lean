@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
@@ -66,7 +67,6 @@ open Function OrderDual
 universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {π : ι → Type*}
-  {r : α → α → Prop}
 
 section MonotoneDef
 
@@ -302,6 +302,24 @@ alias ⟨_, StrictMonoOn.dual⟩ := strictMonoOn_dual_iff
 alias ⟨_, StrictAntiOn.dual⟩ := strictAntiOn_dual_iff
 
 end OrderDual
+
+section WellFounded
+
+variable [Preorder α] [Preorder β] {f : α → β}
+
+theorem StrictMono.wellFoundedLT [WellFoundedLT β] (hf : StrictMono f) : WellFoundedLT α :=
+  Subrelation.isWellFounded (InvImage (· < ·) f) @hf
+
+theorem StrictAnti.wellFoundedLT [WellFoundedGT β] (hf : StrictAnti f) : WellFoundedLT α :=
+  StrictMono.wellFoundedLT (β := βᵒᵈ) hf
+
+theorem StrictMono.wellFoundedGT [WellFoundedGT β] (hf : StrictMono f) : WellFoundedGT α :=
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (β := βᵒᵈ) (fun _ _ h ↦ hf h)
+
+theorem StrictAnti.wellFoundedGT [WellFoundedLT β] (hf : StrictAnti f) : WellFoundedGT α :=
+  StrictMono.wellFoundedLT (α := αᵒᵈ) (fun _ _ h ↦ hf h)
+
+end WellFounded
 
 /-! ### Monotonicity in function spaces -/
 
@@ -541,9 +559,10 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
 
 lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
   rw [Nat.add_comm m, Nat.add_comm m]
-  induction' m with m ih
-  · rw [Nat.add_zero, Nat.add_zero]
-  · rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
+  induction m with
+  | zero => rw [Nat.add_zero, Nat.add_zero]
+  | succ m ih =>
+    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
     exact ih.trans_lt (hf (n + m).lt_succ_self)
 
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
@@ -876,8 +895,9 @@ variable [Preorder α]
 theorem Nat.rel_of_forall_rel_succ_of_le_of_lt (r : β → β → Prop) [IsTrans β r] {f : ℕ → β} {a : ℕ}
     (h : ∀ n, a ≤ n → r (f n) (f (n + 1))) ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b < c) :
     r (f b) (f c) := by
-  induction' hbc with k b_lt_k r_b_k
-  exacts [h _ hab, _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)]
+  induction hbc with
+  | refl => exact h _ hab
+  | step b_lt_k r_b_k => exact _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)
 
 theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r]
     {f : ℕ → β} {a : ℕ} (h : ∀ n, a ≤ n → r (f n) (f (n + 1)))
@@ -937,11 +957,9 @@ theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a < b) : r (f a) (f b) := by
   rcases lt.dest hab with ⟨n, rfl⟩
   clear hab
-  induction' n with n ihn
-  · rw [Int.ofNat_one]
-    apply h
-  · rw [Int.ofNat_succ, ← Int.add_assoc]
-    exact _root_.trans ihn (h _)
+  induction n with
+  | zero => rw [Int.ofNat_one]; apply h
+  | succ n ihn => rw [Int.ofNat_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
 
 theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a ≤ b) : r (f a) (f b) :=
@@ -1014,9 +1032,6 @@ theorem Antitone.ne_of_lt_of_lt_int {f : ℤ → α} (hf : Antitone f) (n : ℤ)
   rintro rfl
   exact (hf.reflect_lt h2).not_le (Int.le_of_lt_add_one <| hf.reflect_lt h1)
 
-theorem StrictMono.id_le {φ : ℕ → ℕ} (h : StrictMono φ) : ∀ n, n ≤ φ n := fun n ↦
-  Nat.recOn n (Nat.zero_le _) fun n hn ↦ Nat.succ_le_of_lt (hn.trans_lt <| h <| Nat.lt_succ_self n)
-
 end Preorder
 
 theorem Subtype.mono_coe [Preorder α] (t : Set α) : Monotone ((↑) : Subtype t → α) :=
@@ -1028,7 +1043,7 @@ theorem Subtype.strictMono_coe [Preorder α] (t : Set α) :
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {f : α → γ} {g : β → δ} {a b : α}
+variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {f : α → γ} {g : β → δ}
 
 theorem monotone_fst : Monotone (@Prod.fst α β) := fun _ _ ↦ And.left
 
@@ -1077,7 +1092,7 @@ theorem const_strictMono [Nonempty β] : StrictMono (const β : α → β → α
 end Function
 
 section apply
-variable {ι α : Type*} {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
+variable {β : ι → Type*} [∀ i, Preorder (β i)] [Preorder α] {f : α → ∀ i, β i}
 
 lemma monotone_iff_apply₂ : Monotone f ↔ ∀ i, Monotone (f · i) := by
   simp [Monotone, Pi.le_def, @forall_swap ι]

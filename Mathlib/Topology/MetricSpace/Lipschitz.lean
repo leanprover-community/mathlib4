@@ -320,7 +320,7 @@ variable [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
 theorem continuousAt_of_locally_lipschitz {x : α} {r : ℝ} (hr : 0 < r) (K : ℝ)
     (h : ∀ y, dist y x < r → dist (f y) (f x) ≤ K * dist y x) : ContinuousAt f x := by
   -- We use `h` to squeeze `dist (f y) (f x)` between `0` and `K * dist y x`
-  refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero' (eventually_of_forall fun _ => dist_nonneg)
+  refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero' (Eventually.of_forall fun _ => dist_nonneg)
     (mem_of_superset (ball_mem_nhds _ hr) h) ?_)
   -- Then show that `K * dist y x` tends to zero as `y → x`
   refine (continuous_const.mul (continuous_id.dist continuous_const)).tendsto' _ _ ?_

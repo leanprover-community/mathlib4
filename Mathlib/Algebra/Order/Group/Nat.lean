@@ -39,15 +39,15 @@ instance instLinearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid
 
 instance instOrderedSub : OrderedSub ℕ := by
   refine ⟨fun m n k ↦ ?_⟩
-  induction' n with n ih generalizing k
-  · simp
-  · simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
+  induction n generalizing k with
+  | zero => simp
+  | succ n ih => simp only [sub_succ, pred_le_iff, ih, succ_add, add_succ]
 
 /-! ### Miscellaneous lemmas -/
 
 variable {α : Type*} {n : ℕ} {f : α → ℕ}
 
-/-- See also `pow_left_strictMonoOn`. -/
+/-- See also `pow_left_strictMonoOn₀`. -/
 protected lemma pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : ℕ → ℕ) :=
   fun _ _ h ↦ Nat.pow_lt_pow_left h hn
 

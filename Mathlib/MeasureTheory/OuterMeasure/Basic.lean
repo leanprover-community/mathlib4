@@ -80,6 +80,9 @@ theorem measure_iUnion_fintype_le [Fintype ι] (μ : F) (s : ι → Set α) :
 theorem measure_union_le (s t : Set α) : μ (s ∪ t) ≤ μ s + μ t := by
   simpa [union_eq_iUnion] using measure_iUnion_fintype_le μ (cond · s t)
 
+lemma measure_univ_le_add_compl (s : Set α) : μ univ ≤ μ s + μ sᶜ :=
+  s.union_compl_self ▸ measure_union_le s sᶜ
+
 theorem measure_le_inter_add_diff (μ : F) (s t : Set α) : μ s ≤ μ (s ∩ t) + μ (s \ t) := by
   simpa using measure_union_le (s ∩ t) (s \ t)
 
@@ -190,11 +193,6 @@ theorem iUnion_null_iff {ι : Sort*} [Countable ι] (m : OuterMeasure α) {s : �
 
 @[deprecated measure_iUnion_null (since := "2024-05-14")]
 alias ⟨_, iUnion_null⟩ := iUnion_null_iff
-
-@[deprecated (since := "2024-01-14")]
-theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
-    m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
-  measure_iUnion_null_iff
 
 @[deprecated measure_biUnion_finset_le (since := "2024-05-14")]
 protected theorem iUnion_finset (m : OuterMeasure α) (s : β → Set α) (t : Finset β) :
