@@ -430,37 +430,6 @@ variable {N β : Type*} [Group N] [MulAction N β]
 
 open scoped BigOperators Pointwise
 
-/- lemma Set.nontrivial_iff_not_ncard_le_one {α : Type*} [Finite α] (B : Set α) :
-    Set.Nontrivial B ↔ ¬(Set.ncard B ≤ 1) := by
-  rw [not_le, Set.one_lt_ncard_iff]
-  constructor
-  all_goals {
-    rintro ⟨a, ha, b, hb, hab⟩
-    exact ⟨a, b, ha, hb, hab⟩ }
-lemma Set.nontrivial_iff_not_encard_le_one {α : Type*} (B : Set α) :
-    Set.Nontrivial B ↔ ¬(Set.encard B ≤ 1) := by
-  rw [not_le, Set.one_lt_encard_iff]
-  constructor
-  all_goals {
-    rintro ⟨a, ha, b, hb, hab⟩
-    exact ⟨a, b, ha, hb, hab⟩ }
-lemma Set.subsingleton_iff_ncard_le_one {α : Type*} [Finite α] (B : Set α) :
-  Set.Subsingleton B ↔ Set.ncard B ≤ 1 := by
-  rw [← Set.not_nontrivial_iff, not_iff_comm, ← Set.nontrivial_iff_not_ncard_le_one]
-lemma Set.subsingleton_iff_encard_le_one {α : Type*} (B : Set α) :
-  Set.Subsingleton B ↔ Set.encard B ≤ 1 := by
-  rw [← Set.not_nontrivial_iff, not_iff_comm, ← Set.nontrivial_iff_not_encard_le_one]
-example (n m : ℕ) (h : n + m = n) : m = 0 := by
-  exact Nat.add_left_cancel h
- -/
-
-lemma Set.eq_univ_iff_ncard {α : Type*} [Finite α] (B : Set α) :
-    B = univ ↔ Set.ncard B = Nat.card α := by
-  rw [← Set.compl_empty_iff, ← Set.ncard_eq_zero, ← Set.ncard_add_ncard_compl B]
-  constructor
-  · exact fun H ↦ by rw [H, add_zero]
-  · exact fun H ↦ Nat.add_left_cancel H.symm
-
 /-- A pretransitive action on a set of prime order is preprimitive -/
 theorem IsPreprimitive.of_prime [hGX : IsPretransitive M α] (hp : Nat.Prime (Nat.card α)) :
     IsPreprimitive M α := by
@@ -559,7 +528,7 @@ theorem IsPreprimitive.of_card_lt
       simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
     -- We will prove that B is large, which will contradict the assumption that it is not ⊤
       apply hB_ne_top
-      apply hB.eq_univ_card_lt
+      apply hB.eq_univ_of_card_lt
     -- It remains to show that Nat.card β < Set.ncard B * 2
       apply lt_of_lt_of_le hf'
       rw [mul_comm, mul_le_mul_right Nat.succ_pos']
