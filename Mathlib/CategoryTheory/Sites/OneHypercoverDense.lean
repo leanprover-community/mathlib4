@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.Sites.DenseSubsite
+
+/-!
+# Equivalence of category of sheaves with a dense subsite that is 1-hypercover dense
+
+-/
 
 universe w v₀ v v' u₀ u u'
 
@@ -13,14 +23,16 @@ namespace Sieve
 variable {I : Type*} {X : C} {Y : I → C} {f : ∀ i, Y i ⟶ X} {W : C} {g : W ⟶ X}
   (hg : ofArrows Y f g)
 
-def ofArrows.exists : ∃ (i : I) (h : W ⟶ Y i), g = h ≫ f i := by
+include hg in
+lemma ofArrows.exists : ∃ (i : I) (h : W ⟶ Y i), g = h ≫ f i := by
   obtain ⟨_, h, _, H, rfl⟩ := hg
   cases' H with i
   exact ⟨i, h, rfl⟩
 
 noncomputable def ofArrows.i : I := (ofArrows.exists hg).choose
 noncomputable def ofArrows.h : W ⟶ Y (i hg) := (ofArrows.exists hg).choose_spec.choose
-noncomputable def ofArrows.fac : g = h hg ≫ f (i hg) :=
+@[reassoc]
+lemma ofArrows.fac : g = h hg ≫ f (i hg) :=
   (ofArrows.exists hg).choose_spec.choose_spec
 
 end Sieve
@@ -110,6 +122,8 @@ class IsOneHypercoverDense : Prop where
   nonempty_oneHypercoverDenseData (X : C) :
     Nonempty (OneHypercoverDenseData.{w} F J₀ J X)
 
+section
+
 variable [IsOneHypercoverDense.{w} F J₀ J]
 
 noncomputable def oneHypercoverDenseData (X : C) : F.OneHypercoverDenseData J₀ J X :=
@@ -126,11 +140,16 @@ lemma isDenseSubsite_of_isOneHypercoverDense [F.IsLocallyFull J] [F.IsLocallyFai
     exact ⟨{ fac := rfl}⟩⟩
   functorPushforward_mem_iff := h
 
+end
+
 variable [IsDenseSubsite J₀ J F]
 
 namespace OneHypercoverDenseData
 
 variable {F J₀ J}
+
+section
+
 variable {X : C} (data : F.OneHypercoverDenseData J₀ J X)
 
 lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) (p₂ : W ⟶ F.obj (data.X i₂))
@@ -179,71 +198,96 @@ def toOneHypercover {X : C} (data : F.OneHypercoverDenseData J₀ J X) :
   mem₀ := data.mem₀
   mem₁ := data.mem₁
 
-end OneHypercoverDenseData
-
-namespace EssSurjOfIsOneHypercoverDense
-
-variable {J₀}
-variable (G₀ : Sheaf J₀ A)
-  [HasLimitsOfSize.{w, w} A]
-
-noncomputable def presheafObj (X : C) : A :=
-  multiequalizer ((F.oneHypercoverDenseData J₀ J X).multicospanIndex G₀.val)
+end
 
 section
 
+variable (data : ∀ X, F.OneHypercoverDenseData J₀ J X)
+  [HasLimitsOfSize.{w, w} A]
+
+namespace EssSurj
+
+variable (G₀ : Sheaf J₀ A)
+
+noncomputable def presheafObj (X : C) : A :=
+  multiequalizer ((data X).multicospanIndex G₀.val)
+
 variable {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X)
 
-variable (J₀)
-
 structure PresheafSieveStruct {Y₀ : C₀} (g : Y₀ ⟶ X₀) where
-  i₀ : (F.oneHypercoverDenseData J₀ J X).I₀
-  q : Y₀ ⟶ (F.oneHypercoverDenseData J₀ J X).X i₀
-  fac : F.map q ≫ (F.oneHypercoverDenseData J₀ J X).f i₀ =
+  i₀ : (data X).I₀
+  q : Y₀ ⟶ (data X).X i₀
+  fac : F.map q ≫ (data X).f i₀ =
     F.map g ≫ f := by simp
 
 attribute [reassoc (attr := simp)] PresheafSieveStruct.fac
 
-def presheafSieve : Sieve X₀ :=
-  ⟨fun Y₀ g ↦ Nonempty (PresheafSieveStruct F J₀ J f g), by
+@[simps]
+def presheafSieve : Sieve X₀ where
+  arrows Y₀ g := Nonempty (PresheafSieveStruct data f g)
+  downward_closed := by
     rintro Y₀ Z₀ g ⟨h⟩ p
-    exact ⟨{ i₀ := h.i₀, q := p ≫ h.q}⟩⟩
+    exact ⟨{ i₀ := h.i₀, q := p ≫ h.q}⟩
 
-lemma presheafSieve_mem : presheafSieve F J₀ J f ∈ J₀ X₀ := sorry
---⟨_, F.cover_lift J₀ J (J.pullback_stable f (F.oneHypercoverDenseData J₀ J X).mem₀)⟩
-
-variable {J₀}
+lemma presheafSieve_mem : presheafSieve data f ∈ J₀ X₀ := by
+  rw [← functorPushforward_mem_iff J₀ J F]
+  let S := Sieve.pullback f (data X).toPreOneHypercover.sieve₀
+  let R : ⦃Y : C⦄ → ⦃g : Y ⟶ F.obj X₀⦄ → S.arrows g → Sieve Y := fun Y g hg ↦
+    { arrows := sorry
+      downward_closed := sorry }
+  refine J.superset_covering ?_
+    (J.bind_covering (J.pullback_stable f (data X).mem₀) (R := R) sorry)
+  intro Z g hg
+  dsimp
+  obtain ⟨Y, a, b, hb, ha, rfl⟩ := hg
+  obtain ⟨_, c, _, ⟨i⟩, fac⟩ := hb
+  sorry
 
 noncomputable def restriction {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) :
-    presheafObj F J G₀ X ⟶ G₀.val.obj (op X₀) :=
-  G₀.2.amalgamate ⟨_, presheafSieve_mem F J₀ J f⟩
-    (fun ⟨Y₀, g, hg⟩ ↦ Multiequalizer.ι _ _ ≫ G₀.val.map hg.some.q.op) (by
-      sorry)
+    presheafObj data G₀ X ⟶ G₀.val.obj (op X₀) :=
+  G₀.2.amalgamate ⟨_, presheafSieve_mem data f⟩ (fun ⟨Y₀, g, hg⟩ ↦
+    Multiequalizer.ι _ _ ≫ G₀.val.map hg.some.q.op) sorry
 
-end
-
-section
-
-variable {X Y : C} (f : X ⟶ Y)
-
-noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) : presheafObj F J G₀ Y ⟶ presheafObj F J G₀ X :=
-  Multiequalizer.lift _ _
-    (fun i₀ ↦ restriction _ _ _ ((F.oneHypercoverDenseData J₀ J X).f i₀ ≫ f))
+noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
+    presheafObj data G₀ Y ⟶ presheafObj data G₀ X :=
+  Multiequalizer.lift _ _ (fun i₀ ↦ restriction data G₀ ((data X).f i₀ ≫ f))
     sorry
 
-end
-
 noncomputable def presheaf : Cᵒᵖ ⥤ A where
-  obj X := presheafObj F J G₀ X.unop
-  map f := presheafMap F J G₀ f.unop
+  obj X := presheafObj data G₀ X.unop
+  map f := presheafMap data G₀ f.unop
   map_id := sorry
   map_comp := sorry
 
-lemma isSheaf : Presheaf.IsSheaf J (presheaf F J G₀) := sorry
+lemma isSheaf : Presheaf.IsSheaf J (presheaf data G₀) := sorry
 
-noncomputable def extension : Sheaf J A := ⟨presheaf F J G₀, isSheaf F J G₀⟩
+noncomputable def sheaf : Sheaf J A := ⟨presheaf data G₀, isSheaf data G₀⟩
 
-end EssSurjOfIsOneHypercoverDense
+def sheafIso : (sheafPushforwardContinuous F A J₀ J).obj (sheaf data G₀) ≅ G₀ := sorry
+
+end EssSurj
+
+include data in
+lemma essSurj : EssSurj (sheafPushforwardContinuous F A J₀ J) where
+  mem_essImage G₀ := ⟨_, ⟨EssSurj.sheafIso data G₀⟩⟩
+
+include data in
+lemma isEquivalence : IsEquivalence (sheafPushforwardContinuous F A J₀ J) where
+  essSurj := essSurj data
+
+end
+
+end OneHypercoverDenseData
+
+variable (data : ∀ X, F.OneHypercoverDenseData J₀ J X) [HasLimitsOfSize.{w, w} A]
+
+variable [IsOneHypercoverDense.{w} F J₀ J]
+
+lemma isEquivalence_of_IsOneHypercoverDense :
+    IsEquivalence (sheafPushforwardContinuous F A J₀ J) :=
+  OneHypercoverDenseData.isEquivalence.{w} (oneHypercoverDenseData F J₀ J)
+
+-- TODO: deduce `Has(Weak)Sheafify` for `J` from `J₀`
 
 end Functor
 
