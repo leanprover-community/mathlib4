@@ -1,4 +1,4 @@
-AbelRuffini.not_solvable_by_rad'
+ AbelRuffini.not_solvable_by_rad'
 abs_add'
 abs_le_of_sq_le_sq'
 abs_lt_of_sq_lt_sq'
