@@ -103,7 +103,10 @@ lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
             (congrFun (congrArg HAdd.hAdd (congrArg Complex.im (id (Eq.symm h)))) (z.re : ℂ).im)).mp
           rfl
   have LL (z : ℂ) := (L <| star z * z).mp <| K z
-
+  have LLL (x : ℝ) : Complex.ofReal (x ^ 2) = (Complex.ofReal x) ^ 2 := Complex.ofReal_pow x 2
+  --this is fun...it's easy to find the right proofs using the automation...
+  --using this last lemma, the entire proof can probably be simplified using some real
+  --squareroot lemma...
 lemma abs_of_nonneg {a : A} (ha : 0 ≤ a) : abs a = a := by
   rw [abs, ha.star_eq, sqrt_mul_self a ha]
 
