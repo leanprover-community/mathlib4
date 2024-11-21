@@ -851,6 +851,25 @@ def coeToPowerSeries.ringHom : R[X] →+* PowerSeries R where
 theorem coeToPowerSeries.ringHom_apply : coeToPowerSeries.ringHom φ = φ :=
   rfl
 
+section CommRing
+
+variable {S : Type*} [CommRing S]
+
+@[simp, norm_cast]
+lemma coe_neg (p : S[X]) : (- p : S[X]).toPowerSeries = - (p : PowerSeries S) :=
+  coeToPowerSeries.ringHom.map_neg p
+
+@[simp, norm_cast]
+lemma coe_sub (p q : S[X]) :
+    (p - q : S[X]).toPowerSeries = (p : PowerSeries S) - (q : PowerSeries S) :=
+  coeToPowerSeries.ringHom.map_sub p q
+
+theorem coe_one_sub :
+    (1 - (X : S[X])).toPowerSeries = 1 - (PowerSeries.X : PowerSeries S) := by
+  simp
+
+end CommRing
+
 @[simp, norm_cast]
 theorem coe_pow (n : ℕ) : ((φ ^ n : R[X]) : PowerSeries R) = (φ : PowerSeries R) ^ n :=
   coeToPowerSeries.ringHom.map_pow _ _
