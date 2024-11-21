@@ -28,7 +28,8 @@ namespace Matrix
 
 variable {m n R : Type*} [CommRing R]
 
-/-- Is the matrix `A` totally unimodular? -/
+/-- `A.IsTotallyUnimodular` means that every square submatrix of `A` (not necessarily contiguous)
+has determinant `0` or `1` or `-1`. -/
 def IsTotallyUnimodular (A : Matrix m n R) : Prop :=
   ∀ k : ℕ, ∀ f : Fin k → m, ∀ g : Fin k → n, f.Injective → g.Injective →
     (A.submatrix f g).det = 0 ∨
