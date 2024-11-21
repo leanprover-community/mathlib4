@@ -21,6 +21,10 @@ section to the maps `F.obj (op (Order.succ j)) → F.obj (op j)` when `j` is not
 and, when `j` is limit, a section to the canonical map from `F.obj (op j)`
 to the type of compatible families of elements in `F.obj (op i)` for `i < j`.
 
+In other words, from `val₀ : F.obj (op ⊥)`, a term `d : F.WellOrderInductionData`
+allows the construction, by transfinite induction, of a section of `F`
+which restricts to `val₀`.
+
 -/
 
 universe v u
