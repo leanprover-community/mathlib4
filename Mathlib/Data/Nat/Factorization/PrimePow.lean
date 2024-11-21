@@ -145,3 +145,23 @@ theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
   simp only [ha, hb, Finset.mem_union, Finset.mem_filter, Nat.mul_eq_zero, and_true, Ne,
     and_congr_left_iff, not_false_iff, Nat.mem_divisors, or_self_iff]
   apply hab.isPrimePow_dvd_mul
+
+/-- The canonical equivalence between pairs `(p, k)` with `p` a prime and `k : ℕ`
+and the set of prime powers given by `(p, k) ↦ p^(k+1)`. -/
+def Nat.Primes.prod_nat_equiv : Nat.Primes × ℕ ≃ {n : ℕ | IsPrimePow n} where
+  toFun pk :=
+    ⟨pk.1 ^ (pk.2 + 1), ⟨pk.1, pk.2 + 1, Nat.prime_iff.mp pk.1.prop, pk.2.add_one_pos, rfl⟩⟩
+  invFun n :=
+    (⟨n.val.minFac, Nat.minFac_prime n.prop.ne_one⟩, (n.val.factorization n.val.minFac) - 1)
+  left_inv := fun (p, k) ↦ by
+    simp only [p.prop.pow_minFac k.add_one_ne_zero, Subtype.coe_eta, factorization_pow, p.prop,
+      Prime.factorization, Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.single_add,
+      Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same, add_tsub_cancel_right]
+  right_inv n := by
+    ext1
+    dsimp only
+    rw [sub_one_add_one, n.prop.minFac_pow_factorization_eq]
+    -- side goal from `sub_one_add_one`
+    refine mt (Nat.factorization_eq_zero_iff _ _).mp ?_
+    push_neg
+    exact ⟨n.val.minFac_prime n.prop.ne_one, n.val.minFac_dvd, n.prop.ne_zero⟩
