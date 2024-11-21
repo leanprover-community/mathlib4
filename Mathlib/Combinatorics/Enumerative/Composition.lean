@@ -720,10 +720,7 @@ considering the restriction of the subset to `{1, ..., n-1}` and shifting to the
 def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)) where
   toFun c :=
     { i : Fin (n - 1) |
-        (⟨1 + (i : ℕ), by
-              apply (add_lt_add_left i.is_lt 1).trans_le
-              rw [Nat.succ_eq_add_one, add_comm]
-              exact add_le_add (Nat.sub_le n 1) (le_refl 1)⟩ :
+        (⟨1 + (i : ℕ), by omega⟩ :
             Fin n.succ) ∈
           c.boundaries }.toFinset
   invFun s :=
@@ -747,29 +744,19 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       simp? [Fin.ext_iff] at i_ne_zero i_ne_last says
         simp only [Nat.succ_eq_add_one, Fin.ext_iff, Fin.val_zero, Fin.val_last]
           at i_ne_zero i_ne_last
-      have A : (1 + (i - 1) : ℕ) = (i : ℕ) := by
-        rw [add_comm]
-        exact Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr i_ne_zero)
       refine ⟨⟨i - 1, ?_⟩, ?_, ?_⟩
-      · have : (i : ℕ) < n + 1 := i.2
-        simp? [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this says
-          simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
-        exact Nat.pred_lt_pred i_ne_zero this
+      · omega
       · convert i_mem
         simp only
-        rwa [add_comm]
+        omega
       · simp only
-        symm
-        rwa [add_comm]
+        omega
   right_inv := by
     intro s
     ext i
     have : 1 + (i : ℕ) ≠ n := by
-      apply ne_of_lt
-      convert add_lt_add_left i.is_lt 1
-      rw [add_comm]
-      apply (Nat.succ_pred_eq_of_pos _).symm
-      exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
+      have := i.2
+      omega
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
       add_left_inj, false_or, true_and, reduceCtorEq]
