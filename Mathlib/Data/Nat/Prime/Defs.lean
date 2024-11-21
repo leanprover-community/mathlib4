@@ -33,7 +33,7 @@ variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
   at least 2 whose only divisors are `p` and `1`.
-  The theorem `Nat.prime_def` vitnesses this description of a prime number. -/
+  The theorem `Nat.prime_def` witnesses this description of a prime number. -/
 @[pp_nodot]
 def Prime (p : ℕ) :=
   Irreducible p
