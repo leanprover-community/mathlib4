@@ -32,7 +32,8 @@ noncomputable section
 open Finset intervalIntegral MeasureTheory IntervalIntegrable
 
 /-- Abel's summation formula. -/
-theorem sum_mul_eq_sub_sub_integral_mul (c : ℕ → ℂ) {f : ℝ → ℂ} {a b : ℝ} (ha : 0 ≤ a) (hab : a ≤ b)
+theorem sum_mul_eq_sub_sub_integral_mul {𝕜 : Type*} [RCLike 𝕜] (c : ℕ → 𝕜) {f : ℝ → 𝕜} {a b : ℝ}
+  (ha : 0 ≤ a) (hab : a ≤ b)
     (hf_diff : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ f t)
     (hf_int : IntervalIntegrable (deriv f) volume a b) :
     ∑ k ∈ Ioc ⌊a⌋₊ ⌊b⌋₊, f k * c k =
@@ -98,8 +99,8 @@ theorem sum_mul_eq_sub_sub_integral_mul (c : ℕ → ℂ) {f : ℝ → ℂ} {a b
       exact Set.Ioc_subset_Icc_self.trans <| Set.Icc_subset_Icc_right (by linarith)
     · rw [Set.uIcc_of_le (by linarith)]
       exact Set.Icc_subset_Icc_left (by linarith)
-  simp_rw [← smul_eq_mul, sum_Ioc_by_parts (fun k ↦ f k) _ (by linarith) hb, range_eq_Ico,
-    Nat.Ico_succ_right, smul_eq_mul]
+  simp_rw [← smul_eq_mul, sum_Ioc_by_parts (fun k ↦ f k) _ hb, range_eq_Ico, Nat.Ico_succ_right,
+    smul_eq_mul]
   rw [show ∑ k ∈ Ioc ⌊a⌋₊ (⌊b⌋₊ - 1), (f ↑(k + 1) - f ↑k) * ∑ n ∈ Icc 0 k, c n =
     ∑ k ∈ Ioc ⌊a⌋₊ (⌊b⌋₊ - 1), ∫ (t : ℝ) in ↑k..↑(k + 1), deriv f t * ∑ n ∈ Icc 0 ⌊t⌋₊, c n by
       refine sum_congr rfl fun k _ ↦ (h_integ _ _ _ (by simp [Set.Ioc_subset_Icc_self]) ?_).symm
@@ -138,8 +139,8 @@ theorem sum_mul_eq_sub_sub_integral_mul (c : ℕ → ℂ) {f : ℝ → ℂ} {a b
     exact h_Icck hk
 
 /-- Specialized version of `sum_mul_eq_sub_sub_integral_mul` for the case `a = 0`.-/
-theorem sum_mul_eq_sub_integral_mul (c : ℕ → ℂ) {f : ℝ → ℂ} {b : ℝ} (hb : 0 ≤ b)
-    (hf_diff : ∀ t ∈ Set.Icc 0 b, DifferentiableAt ℝ f t)
+theorem sum_mul_eq_sub_integral_mul {𝕜 : Type*} [RCLike 𝕜] (c : ℕ → 𝕜) {f : ℝ → 𝕜} {b : ℝ}
+    (hb : 0 ≤ b) (hf_diff : ∀ t ∈ Set.Icc 0 b, DifferentiableAt ℝ f t)
     (hf_int : IntervalIntegrable (deriv f) volume 0 b) :
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 0 b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
@@ -150,8 +151,8 @@ theorem sum_mul_eq_sub_integral_mul (c : ℕ → ℂ) {f : ℝ → ℂ} {b : ℝ
 
 /-- Specialized version of `sum_mul_eq_sub_integral_mul` when the first coefficient of the sequence
 `c` is equal to `0`. -/
-theorem sum_mul_eq_sub_integral_mul' (c : ℕ → ℂ) (hc : c 0 = 0) {f : ℝ → ℂ} (b : ℝ)
-    (hf_diff : ∀ t ∈ Set.Icc 1 b, DifferentiableAt ℝ f t)
+theorem sum_mul_eq_sub_integral_mul' {𝕜 : Type*} [RCLike 𝕜] (c : ℕ → 𝕜) (hc : c 0 = 0)
+    {f : ℝ → 𝕜} (b : ℝ) (hf_diff : ∀ t ∈ Set.Icc 1 b, DifferentiableAt ℝ f t)
     (hf_int : IntervalIntegrable (deriv f) volume 1 b) :
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 1 b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
@@ -159,10 +160,10 @@ theorem sum_mul_eq_sub_integral_mul' (c : ℕ → ℂ) (hc : c 0 = 0) {f : ℝ �
   · have : 1 ≤ ⌊b⌋₊ := (Nat.one_le_floor_iff _).mpr hb
     nth_rewrite 1 [Finset.Icc_eq_cons_Ioc (by linarith), sum_cons, ← Nat.Icc_succ_left,
       Finset.Icc_eq_cons_Ioc (by linarith), sum_cons]
-    rw [Nat.succ_eq_add_one, zero_add, ← Nat.floor_one (α := ℝ), sum_mul_eq_sub_sub_integral_mul c
-      zero_le_one hb hf_diff hf_int, Nat.floor_one, Nat.cast_one, Finset.Icc_eq_cons_Ioc
-      zero_le_one, sum_cons, show 1 = 0 + 1 by rfl, Nat.Ioc_succ_singleton, zero_add, sum_singleton,
-      hc, mul_zero, zero_add]
+    rw [Nat.succ_eq_add_one, zero_add, ← Nat.floor_one (α := ℝ),
+      sum_mul_eq_sub_sub_integral_mul c zero_le_one hb hf_diff hf_int, Nat.floor_one, Nat.cast_one,
+      Finset.Icc_eq_cons_Ioc zero_le_one, sum_cons, show 1 = 0 + 1 by rfl, Nat.Ioc_succ_singleton,
+      zero_add, sum_singleton, hc, mul_zero, zero_add]
     ring
   · simp_rw [Nat.floor_eq_zero.mpr hb, Icc_self, sum_singleton, Nat.cast_zero, hc, mul_zero,
     Set.Ioc_eq_empty_of_le hb.le, Measure.restrict_empty, integral_zero_measure, sub_self]
