@@ -212,7 +212,7 @@ theorem _root_.ZFSet.isOrdinal_iff_isTrichotomous :
     obtain hyw | rfl | hwy := trichotomous_of (Subrel (· ∈ ·) _) y w
     · exact hyw
     · cases asymm hyz hzw
-    · cases mem_wf.asymmetric₃ hyz hzw hwy
+    · cases mem_wf.asymmetric₃ _ _ _ hyz hzw hwy
 
 protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder x.toSet (Subrel (· ∈ ·) _) where
   wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
