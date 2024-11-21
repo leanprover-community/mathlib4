@@ -225,6 +225,10 @@ section Basic
 
 variable [Zero M]
 
+theorem mem_support_toFun (f : α →₀ M) :
+    ∀ a, a ∈ f.support ↔ f.toFun a ≠ 0 :=
+  Finsupp'.mem_support_toFun f
+
 instance instFunLike : FunLike (α →₀ M) α M :=
   Finsupp'.instFunLike
 
@@ -241,6 +245,8 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
 
 instance instZero : Zero (α →₀ M) :=
   ⟨Finsupp'.zero⟩
+
+@[simp] lemma _root_.Finsupp'.zero_eq_zero : (Finsupp'.zero : α →₀ M) = 0 := rfl
 
 @[simp, norm_cast] lemma coe_zero : ⇑(0 : α →₀ M) = 0 := rfl
 

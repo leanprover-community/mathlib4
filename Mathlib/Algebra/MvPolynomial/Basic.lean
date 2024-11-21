@@ -469,9 +469,9 @@ section Support
 
 /-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient. -/
 def support (p : MvPolynomial σ R) : Finset (σ →₀ ℕ) :=
-  Finsupp.support p
+  Finsupp'.support p
 
-theorem finsupp_support_eq_support (p : MvPolynomial σ R) : Finsupp.support p = p.support :=
+theorem finsupp_support_eq_support (p : MvPolynomial σ R) : Finsupp'.support p = p.support :=
   rfl
 
 theorem support_monomial [h : Decidable (a = 0)] :

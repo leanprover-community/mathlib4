@@ -206,7 +206,7 @@ theorem vars_monomial_single (i : σ) {e : ℕ} {r : R} (he : e ≠ 0) (hr : r �
   rw [vars_monomial hr, Finsupp.support_single_ne_zero _ he]
 
 theorem vars_eq_support_biUnion_support [DecidableEq σ] :
-    p.vars = p.support.biUnion Finsupp.support := by
+    p.vars = p.support.biUnion Finsupp'.support := by
   ext i
   rw [mem_vars, Finset.mem_biUnion]
 
@@ -239,7 +239,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
     intro
     contradiction
   repeat'
-    obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp.support d) := by
+    obtain ⟨i, hi⟩ : Finset.Nonempty (Finsupp'.support d) := by
       rw [constantCoeff_eq, coeff, ← Finsupp.not_mem_support_iff] at h0
       rw [Finset.nonempty_iff_ne_empty, Ne, Finsupp.support_eq_empty]
       rintro rfl

@@ -250,7 +250,7 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
   rw [Finsupp.support_single_ne_zero _ one_ne_zero]
   simp only [one_ne_zero, mem_singleton, Finsupp.mem_support_iff]
   rintro a h rfl
-  have := congr_arg Finsupp.support h
+  have := congr_arg Finsupp'.support h
   rw [Finsupp.support_sum_eq_biUnion, Finsupp.support_sum_eq_biUnion] at this
   · have hsingle : ∀ s : Finset σ, ∀ x : σ, x ∈ s → (Finsupp.single x 1).support = {x} := by
       intros _ x _
