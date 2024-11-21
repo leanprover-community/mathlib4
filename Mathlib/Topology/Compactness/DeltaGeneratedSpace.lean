@@ -10,7 +10,9 @@ import Mathlib.Analysis.Convex.Normed
 # Delta-generated topological spaces
 
 This file defines delta-generated spaces, as topological spaces whose topology is coinduced by all
-maps from euclidean spaces into them.
+maps from euclidean spaces into them. This is the strongest topological property that is holds for
+all CW-complexes and is closed under quotients and disjoit unions; every delta-generated space is
+locally path-connected, sequential and in particular compactly generated.
 
 See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 
@@ -130,9 +132,9 @@ instance [DeltaGeneratedSpace X] : LocPathConnectedSpace X := by
   rw [eq_deltaGenerated (X := X), deltaGenerated_eq_coinduced]
   exact LocPathConnectedSpace.coinduced _
 
-/-- Delta-generated spaces are compactly generated. -/
-instance [DeltaGeneratedSpace X] : CompactlyGeneratedSpace X :=
-  compactlyGeneratedSpace_of_coinduced (continuous_sigma_iff.2 fun i ↦ by continuity)
-    ((eq_deltaGenerated (X := X)).trans deltaGenerated_eq_coinduced)
+/-- Delta-generated spaces are sequential. -/
+instance [DeltaGeneratedSpace X] : SequentialSpace X := by
+  rw [eq_deltaGenerated (X := X)]
+  exact SequentialSpace.iSup fun p ↦ SequentialSpace.coinduced p.2
 
 end DeltaGeneratedSpace
