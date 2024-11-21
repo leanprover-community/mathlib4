@@ -49,7 +49,7 @@ variable [DecidableEq α]
 the set of elements of `l`. -/
 @[simps]
 def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
-  toFun i := ⟨get l i, get_mem l i i.2⟩
+  toFun i := ⟨get l i, get_mem _ _⟩
   invFun x := ⟨indexOf (↑x) l, indexOf_lt_length.2 x.2⟩
   left_inv i := by simp only [List.get_indexOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
   right_inv x := by simp
