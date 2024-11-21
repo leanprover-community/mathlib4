@@ -230,13 +230,10 @@ def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut fixedLines := lines
   for (line, idx) in lines.zipWithIndex do
     let pos := line.find (· == ';')
+    -- Future: also lint for a semicolon *not* followed by a space or ⟩.
     if pos != line.endPos && line.get (line.prev pos) == ' ' then
-      let indent := line.length - line.trimLeft.length
-      let replaced := (line.trimLeft.replace " ;" "; ").replace "  " " "
       errors := errors.push (StyleError.semicolon, idx + 1)
-      -- Concatenate "indent" spaces... better ways to do so welcome!
-      let space := "".intercalate (List.replicate indent " ")
-      fixedLines := fixedLines.set! idx s!"{space}{replaced}"
+      fixedLines := fixedLines.set! idx (line.replace " ;" ";")
    return (errors, if errors.size > 0 then some fixedLines else none)
 
 
