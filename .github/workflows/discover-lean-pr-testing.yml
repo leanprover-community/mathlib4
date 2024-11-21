@@ -29,14 +29,14 @@ jobs:
       run: |
         # `lean-toolchain` contains a string of the form "leanprover/lean4:nightly-2024-11-20"
         # We grab the part after the ":"
-        NEW=$(cat lean-toolchain | cut -f2 -d:)
+        NEW=$(cut -f2 -d: lean-toolchain)
 
         # Find the commit hash of the previous change to `lean-toolchain`
         PREV_COMMIT=$(git log -2 --format=format:%H -- lean-toolchain | tail -1)
 
         # Get the contents of `lean-toolchain` from the previous commit
         # The "./" in front of the path is important for `git show`
-        OLD=$(git show $PREV_COMMIT:./lean-toolchain | cut -f2 -d:)
+        OLD=$(git show "$PREV_COMMIT":./lean-toolchain | cut -f2 -d:)
 
         echo "new=$NEW" >> "$GITHUB_OUTPUT"
         echo "old=$OLD" >> "$GITHUB_OUTPUT"
