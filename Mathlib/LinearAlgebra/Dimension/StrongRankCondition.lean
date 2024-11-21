@@ -3,6 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
@@ -289,7 +290,7 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank 
   apply le_antisymm
   · trans
     swap
-    · apply le_ciSup (Cardinal.bddAbove_range.{v, v} _)
+    · apply le_ciSup (Cardinal.bddAbove_range _)
       exact
         ⟨Set.range v, by
           convert v.reindexRange.linearIndependent

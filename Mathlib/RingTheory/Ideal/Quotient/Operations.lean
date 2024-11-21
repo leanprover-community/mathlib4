@@ -375,7 +375,7 @@ theorem Quotient.mk_algebraMap (I : Ideal A) (x : R₁) :
 
 /-- The canonical morphism `A →ₐ[R₁] I.quotient` is surjective. -/
 theorem Quotient.mkₐ_surjective (I : Ideal A) : Function.Surjective (Quotient.mkₐ R₁ I) :=
-  surjective_quot_mk _
+  Quot.mk_surjective
 
 /-- The kernel of `A →ₐ[R₁] I.quotient` is `I`. -/
 @[simp]
@@ -529,7 +529,7 @@ theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : 
   rw [quotientMap_mk, Quotient.eq_zero_iff_mem] at ha
   exact Quotient.eq_zero_iff_mem.mpr (h ha)
 
-/-- If we take `J = I.comap f` then `QuotientMap` is injective automatically. -/
+/-- If we take `J = I.comap f` then `quotientMap` is injective automatically. -/
 theorem quotientMap_injective {I : Ideal S} {f : R →+* S} :
     Function.Injective (quotientMap I f le_rfl) :=
   quotientMap_injective' le_rfl
@@ -668,8 +668,8 @@ def quotQuotMk : R →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=
 /-- The kernel of `quotQuotMk` -/
 theorem ker_quotQuotMk : RingHom.ker (quotQuotMk I J) = I ⊔ J := by
   rw [RingHom.ker_eq_comap_bot, quotQuotMk, ← comap_comap, ← RingHom.ker, mk_ker,
-    comap_map_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← RingHom.ker, mk_ker,
-    sup_comm]
+    comap_map_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective, ← RingHom.ker,
+    mk_ker, sup_comm]
 
 /-- The ring homomorphism `R/(I ⊔ J) → (R/I)/J' `induced by `quotQuotMk` -/
 def liftSupQuotQuotMk (I J : Ideal R) : R ⧸ I ⊔ J →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=

@@ -243,7 +243,7 @@ theorem index_map (f : G →* G') :
 @[to_additive]
 theorem index_map_dvd {f : G →* G'} (hf : Function.Surjective f) :
     (H.map f).index ∣ H.index := by
-  rw [index_map, f.range_top_of_surjective hf, index_top, mul_one]
+  rw [index_map, f.range_eq_top_of_surjective hf, index_top, mul_one]
   exact index_dvd_of_le le_sup_left
 
 @[to_additive]
@@ -256,6 +256,16 @@ theorem dvd_index_map {f : G →* G'} (hf : f.ker ≤ H) :
 theorem index_map_eq {f : G →* G'} (hf1 : Function.Surjective f)
     (hf2 : f.ker ≤ H) : (H.map f).index = H.index :=
   Nat.dvd_antisymm (H.index_map_dvd hf1) (H.dvd_index_map hf2)
+
+@[to_additive]
+theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
+    (H.map f).index = H.index * f.range.index := by
+  rw [H.index_map, f.ker_eq_bot_iff.mpr hf, sup_bot_eq]
+
+@[to_additive]
+theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
+    (K.map H.subtype).index = K.index * H.index := by
+  rw [K.index_map_of_injective H.subtype_injective, H.subtype_range]
 
 @[to_additive]
 theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
@@ -579,11 +589,13 @@ namespace MulAction
 
 variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 
+@[to_additive]
 theorem index_stabilizer :
     (stabilizer G x).index = (orbit G x).ncard :=
   (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
     (Set.Nat.card_coe_set_eq (orbit G x))
 
+@[to_additive]
 theorem index_stabilizer_of_transitive [IsPretransitive G X] :
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]

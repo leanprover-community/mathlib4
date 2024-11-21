@@ -545,7 +545,7 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   have : ‖y‖ ≠ 0 := by simpa using hy
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    -- TODO(#15486): used to be `field_simp`; replaced by `simp only ...` to speed up
+    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`; replaced by `simp only ...` to speed up
     -- Reinstate `field_simp` once it is faster.
     simp (disch := field_simp_discharge) only [mul_zero, I_im, mul_one, sub_self, add_zero,
       mul_div_assoc', mul_div_cancel_left₀]
@@ -794,7 +794,7 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
   have hc : IsConnected s := isConnected_univ.image _ (continuous_const.prod_mk
     ((continuous_id.smul continuous_const).add continuous_const)).continuousOn
   have hf : ContinuousOn (fun z : V × V => o.oangle z.1 z.2) s := by
-    refine ContinuousAt.continuousOn fun z hz => o.continuousAt_oangle ?_ ?_
+    refine continuousOn_of_forall_continuousAt fun z hz => o.continuousAt_oangle ?_ ?_
     all_goals
       simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz

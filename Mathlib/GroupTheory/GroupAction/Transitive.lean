@@ -38,7 +38,10 @@ open MulAction
 
 variable {G}
 
-/-- An action of a group is pretransitive iff any element can be moved from a fixed given one -/
+/-- An action of a group is pretransitive iff any element can be moved from a fixed given one. -/
+@[to_additive
+  "An additive action of an additive group is pretransitive
+  iff any element can be moved from a fixed given one."]
 theorem mk_base_iff (a : X) :
     IsPretransitive G X ↔ ∀ x : X, ∃ g : G, g • a = x := by
   constructor
@@ -51,6 +54,8 @@ theorem mk_base_iff (a : X) :
     exact ⟨h * g⁻¹, by rw [← hx, smul_smul, inv_mul_cancel_right, hy]⟩
 
 /-- An action of a group is pretransitive iff the orbit of every given element is full -/
+@[to_additive
+  "An action of a group is pretransitive iff the orbit of every given element is full"]
 theorem iff_orbit_eq_top (a : X) :
     IsPretransitive G X ↔ orbit G a = ⊤ := by
   rw [IsPretransitive.mk_base_iff a, Set.ext_iff]
@@ -62,6 +67,7 @@ variable {M : Type _} [Monoid M] {α : Type _} [MulAction M α]
 
 variable {N β : Type _} [Monoid N] [MulAction N β]
 
+@[to_additive]
 theorem of_surjective_map {φ : M → N} {f : α →ₑ[φ] β}
     (hf : Function.Surjective f) (h : IsPretransitive M α) :
     IsPretransitive N β := by
@@ -72,6 +78,7 @@ theorem of_surjective_map {φ : M → N} {f : α →ₑ[φ] β}
   obtain ⟨g, rfl⟩ := h.exists_smul_eq x' y'
   exact ⟨φ g, by simp only [map_smulₛₗ]⟩
 
+@[to_additive]
 theorem iff_of_bijective_map {φ : M → N} {f : α →ₑ[φ] β}
     (hφ : Function.Surjective φ) (hf : Function.Bijective f) :
     IsPretransitive M α ↔ IsPretransitive N β := by

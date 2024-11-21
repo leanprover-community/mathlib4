@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Ineq
 
 /-!
 # Lemmas for `linarith`.
@@ -50,6 +51,13 @@ theorem mul_nonpos {α} [OrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) 
 @[nolint unusedArguments]
 theorem mul_eq {α} [OrderedSemiring α] {a b : α} (ha : a = 0) (_ : 0 < b) : b * a = 0 := by
   simp [*]
+
+open Mathlib in
+/-- Finds the name of a multiplicative lemma corresponding to an inequality strength. -/
+def _root_.Mathlib.Ineq.toConstMulName : Ineq → Lean.Name
+  | .lt => ``mul_neg
+  | .le => ``mul_nonpos
+  | .eq => ``mul_eq
 
 lemma eq_of_not_lt_of_not_gt {α} [LinearOrder α] (a b : α) (h1 : ¬ a < b) (h2 : ¬ b < a) : a = b :=
   le_antisymm (le_of_not_gt h2) (le_of_not_gt h1)

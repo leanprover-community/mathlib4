@@ -304,7 +304,7 @@ def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
   iseqv :=
     ⟨mem_orbit_self, fun {a b} => by simp [orbit_eq_iff.symm, eq_comm], fun {a b} => by
-      simp (config := { contextual := true }) [orbit_eq_iff.symm, eq_comm]⟩
+      simp +contextual [orbit_eq_iff.symm, eq_comm]⟩
 
 variable {G α}
 

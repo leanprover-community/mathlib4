@@ -39,10 +39,10 @@ variable (X : LocallyRingedSpace.{u}) {U : Opens X}
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
 def residueField (x : X) : CommRingCat :=
-  CommRingCat.of <| LocalRing.ResidueField (X.presheaf.stalk x)
+  CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
 
 instance (x : X) : Field (X.residueField x) :=
-  inferInstanceAs <| Field (LocalRing.ResidueField (X.presheaf.stalk x))
+  inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
 /--
 If `U` is an open of `X` containing `x`, we have a canonical ring map from the sections
@@ -52,7 +52,7 @@ If we interpret sections over `U` as functions of `X` defined on `U`, then this 
 corresponds to evaluation at `x`.
 -/
 def evaluation (x : U) : X.presheaf.obj (op U) ⟶ X.residueField x :=
-  X.presheaf.germ U x.1 x.2 ≫ LocalRing.residue _
+  X.presheaf.germ U x.1 x.2 ≫ IsLocalRing.residue _
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
 def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
@@ -62,7 +62,7 @@ def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
 lemma evaluation_eq_zero_iff_not_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f = 0 ↔ x.val ∉ X.toRingedSpace.basicOpen f := by
   rw [X.toRingedSpace.mem_basicOpen f x.1 x.2, ← not_iff_not, not_not]
-  exact (LocalRing.residue_ne_zero_iff_isUnit _)
+  exact (IsLocalRing.residue_ne_zero_iff_isUnit _)
 
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f ≠ 0 ↔ x.val ∈ X.toRingedSpace.basicOpen f := by
@@ -88,10 +88,10 @@ variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
 def residueFieldMap (x : X) : Y.residueField (f.base x) ⟶ X.residueField x :=
-  LocalRing.ResidueField.map (f.stalkMap x)
+  IsLocalRing.ResidueField.map (f.stalkMap x)
 
 lemma residue_comp_residueFieldMap_eq_stalkMap_comp_residue (x : X) :
-    LocalRing.residue _ ≫ residueFieldMap f x = f.stalkMap x ≫ LocalRing.residue _ := by
+    IsLocalRing.residue _ ≫ residueFieldMap f x = f.stalkMap x ≫ IsLocalRing.residue _ := by
   simp [residueFieldMap]
   rfl
 
@@ -99,14 +99,14 @@ lemma residue_comp_residueFieldMap_eq_stalkMap_comp_residue (x : X) :
 lemma residueFieldMap_id (x : X) :
     residueFieldMap (𝟙 X) x = 𝟙 (X.residueField x) := by
   simp only [id_toShHom', SheafedSpace.id_base, TopCat.coe_id, id_eq, residueFieldMap, stalkMap_id]
-  apply LocalRing.ResidueField.map_id
+  apply IsLocalRing.ResidueField.map_id
 
 @[simp]
 lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.base x) ≫ residueFieldMap f x := by
   simp only [comp_toShHom, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap]
   simp_rw [stalkMap_comp]
-  apply LocalRing.ResidueField.map_comp
+  apply IsLocalRing.ResidueField.map_comp
 
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.base).obj V) :
@@ -117,7 +117,7 @@ lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.base).obj V) :
   rw [Category.assoc]
   ext a
   simp only [comp_apply]
-  erw [LocalRing.ResidueField.map_residue, PresheafedSpace.stalkMap_germ_apply]
+  erw [IsLocalRing.ResidueField.map_residue, PresheafedSpace.stalkMap_germ_apply]
   rfl
 
 lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.base).obj V)

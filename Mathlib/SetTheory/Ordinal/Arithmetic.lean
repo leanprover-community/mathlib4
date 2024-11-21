@@ -573,6 +573,20 @@ theorem sub_sub (a b c : Ordinal) : a - b - c = a - (b + c) :=
 theorem add_sub_add_cancel (a b c : Ordinal) : a + b - (a + c) = b - c := by
   rw [← sub_sub, add_sub_cancel]
 
+theorem le_sub_of_add_le {a b c : Ordinal} (h : b + c ≤ a) : c ≤ a - b := by
+  rw [← add_le_add_iff_left b]
+  exact h.trans (le_add_sub a b)
+
+theorem sub_lt_of_lt_add {a b c : Ordinal} (h : a < b + c) (hc : 0 < c) : a - b < c := by
+  obtain hab | hba := lt_or_le a b
+  · rwa [Ordinal.sub_eq_zero_iff_le.2 hab.le]
+  · rwa [sub_lt_of_le hba]
+
+theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a ≤ b + d := by
+  use fun h ↦ ⟨_, sub_lt_of_lt_add h hc.bot_lt, le_add_sub a b⟩
+  rintro ⟨d, hd, ha⟩
+  exact ha.trans_lt (add_lt_add_left hd b)
+
 theorem isLimit_sub {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
   ⟨ne_of_gt <| lt_sub.2 <| by rwa [add_zero], fun c h => by
     rw [lt_sub, add_succ]; exact l.2 _ (lt_sub.1 h)⟩
@@ -759,7 +773,7 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
           exact mul_le_of_limit_aux h H⟩
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
-  -- Porting note(#12129): additional beta reduction needed
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   ⟨fun b => by
       beta_reduce
       rw [mul_succ]
@@ -855,7 +869,7 @@ theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
   | H₂ _ _ => rw [succ_le_iff, lt_div c0]
   | H₃ _ h₁ h₂ =>
     revert h₁ h₂
-    simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, forall_true_iff]
+    simp +contextual only [mul_le_of_limit, limit_le, forall_true_iff]
 
 theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
   lt_iff_lt_of_le_iff_le <| le_div b0
@@ -1094,13 +1108,11 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
     bfamilyOfFamily f (typein _ i) (typein_lt_type _ i) = f i :=
   bfamilyOfFamily'_typein _ f i
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily' r ho f (enum r ⟨i, by rwa [ho]⟩) = f i hi := by
   simp only [familyOfBFamily', typein_enum]
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily o f (enum (α := o.toType) (· < ·) ⟨i, hi.trans_eq (type_toType _).symm⟩)
     = f i hi :=
@@ -1183,7 +1195,7 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
   ⟨(iSup (succ ∘ card ∘ f)).ord, by
     rintro a ⟨i, rfl⟩
     exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
-      (le_ciSup (Cardinal.bddAbove_range.{_, v} _) _)))⟩
+      (le_ciSup (Cardinal.bddAbove_range _) _)))⟩
 
 theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
   obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
@@ -1236,9 +1248,11 @@ theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i �
   Ordinal.iSup_le
 
 /-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
-protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
+protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     a < iSup f ↔ ∃ i, a < f i :=
   lt_ciSup_iff' (bddAbove_of_small _)
+
+@[deprecated (since := "2024-11-12")] alias lt_iSup := lt_iSup_iff
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
@@ -1487,7 +1501,6 @@ theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrde
     (f : ∀ a < o, Ordinal.{max u v}) : sup.{_, v} (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
   sup_eq_sup r _ ho _ f
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     sSup (brange o f) = bsup.{_, v} o f := by
   congr
@@ -1589,6 +1602,9 @@ theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o'
 theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f = brange o' g) : bsup.{u, max v w} o f = bsup.{v, max u w} o' g :=
   (bsup_le_of_brange_subset.{u, v, w} h.le).antisymm (bsup_le_of_brange_subset.{v, u, w} h.ge)
+
+theorem iSup_eq_bsup {o} {f : ∀ a < o, Ordinal} : ⨆ a : Iio o, f a.1 a.2 = bsup o f := by
+  simp_rw [Iio, bsup, sup, iSup, range_familyOfBFamily, brange, range, Subtype.exists, mem_setOf]
 
 end bsup
 

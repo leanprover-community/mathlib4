@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Eval.Algebra
 import Mathlib.Tactic.Abel
 
 /-!
