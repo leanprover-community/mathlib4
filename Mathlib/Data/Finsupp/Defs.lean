@@ -99,7 +99,7 @@ structure Finsupp' (α : Type*) (M : Type*) (z : M) where
   mem_support_toFun : ∀ a, a ∈ support ↔ toFun a ≠ z
 
 @[inherit_doc]
-notation:25 α:25 " →ₛ["z"] " M:25 => Finsupp' α M z
+notation:25 α " →ₛ["z:25"] " M:0 => Finsupp' α M z
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
