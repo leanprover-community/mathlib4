@@ -123,7 +123,7 @@ theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w �
   induction' p with _ x y z h p' ih
   · simp
   · have : w = y ∨ w ∈ p'.support ↔ w ∈ p'.support :=
-      ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
+      ⟨by rintro (rfl | h) <;> simp [*], by simp +contextual⟩
     simp [ih, or_assoc, this]
 
 lemma start_mem_verts_toSubgraph (p : G.Walk u v) : u ∈ p.toSubgraph.verts := by

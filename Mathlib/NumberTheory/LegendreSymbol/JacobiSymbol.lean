@@ -161,11 +161,9 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
   List.prod_eq_zero_iff.trans
     (by
       rw [List.mem_pmap, Int.gcd_eq_natAbs, Ne, Prime.not_coprime_iff_dvd]
-      -- Porting note: Initially, `and_assoc'` and `and_comm'` were used on line 164 but they have
-      -- been deprecated so we replace them with `and_assoc` and `and_comm`
       simp_rw [legendreSym.eq_zero_iff _ _, intCast_zmod_eq_zero_iff_dvd,
         mem_primeFactorsList (NeZero.ne b), ← Int.natCast_dvd, Int.natCast_dvd_natCast, exists_prop,
-        and_assoc, and_comm])
+        and_assoc, _root_.and_comm])
 
 /-- The symbol `J(a | b)` is nonzero when `a` and `b` are coprime. -/
 protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0 := by
@@ -214,7 +212,7 @@ theorem sq_one' {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a ^ 2 | b) = 1 := by r
 /-- The symbol `J(a | b)` depends only on `a` mod `b`. -/
 theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
   congr_arg List.prod <|
-    List.pmap_congr _
+    List.pmap_congr_left _
       (by
         -- Porting note: Lean does not synthesize the instance [Fact (Nat.Prime p)] automatically
         -- (it is needed for `legendreSym.mod` on line 227). Thus, we name the hypothesis
@@ -309,7 +307,7 @@ theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
   conv_rhs => rw [← prod_primeFactorsList hb.pos.ne', cast_list_prod, map_list_prod χ]
   rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _
     fun _ => prime_of_mem_primeFactorsList]
-  congr 1; apply List.pmap_congr
+  congr 1; apply List.pmap_congr_left
   exact fun p h pp _ => hp p pp (hb.ne_two_of_dvd_nat <| dvd_of_mem_primeFactorsList h)
 
 /-- If `b` is odd, then `J(-1 | b)` is given by `χ₄ b`. -/
@@ -554,7 +552,7 @@ private theorem fastJacobiSymAux.eq_jacobiSym {a b : ℕ} {flip : Bool} {ha0 : a
 private def fastJacobiSym (a : ℤ) (b : ℕ) : ℤ :=
   if hb0 : b = 0 then
     1
-  else if hb2 : b % 2 = 0 then
+  else if _ : b % 2 = 0 then
     if a % 2 = 0 then
       0
     else

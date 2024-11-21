@@ -76,12 +76,12 @@ instance instModule [CommSemiring 𝕜] [AddCommMonoid E] [m : Module 𝕜 E] [A
 instance instAddCommGroup [CommSemiring 𝕜] [a : AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) := a
 
-instance (priority := 100) instModule' [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup E]
-    [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [m : Module 𝕝 E] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
+instance (priority := 100) instModule' [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommMonoid E]
+    [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F] [m : Module 𝕝 E] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
     Module 𝕝 (WeakBilin B) := m
 
-instance instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup E] [Module 𝕜 E]
-    [AddCommGroup F] [Module 𝕜 F] [SMul 𝕝 𝕜] [Module 𝕝 E] [s : IsScalarTower 𝕝 𝕜 E]
+instance instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommMonoid E] [Module 𝕜 E]
+    [AddCommMonoid F] [Module 𝕜 F] [SMul 𝕝 𝕜] [Module 𝕝 E] [s : IsScalarTower 𝕝 𝕜 E]
     (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : IsScalarTower 𝕝 𝕜 (WeakBilin B) := s
 
 section Semiring
@@ -106,14 +106,17 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakBili
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 
 /-- The coercion `(fun x y => B x y) : E → (F → 𝕜)` is an embedding. -/
-theorem embedding {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (hB : Function.Injective B) :
-    Embedding fun (x : WeakBilin B) y => B x y :=
-  Function.Injective.embedding_induced <| LinearMap.coe_injective.comp hB
+theorem isEmbedding {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (hB : Function.Injective B) :
+    IsEmbedding fun (x : WeakBilin B) y => B x y :=
+  Function.Injective.isEmbedding_induced <| LinearMap.coe_injective.comp hB
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B} {x : WeakBilin B}
     (hB : Function.Injective B) :
     Tendsto f l (𝓝 x) ↔ ∀ y, Tendsto (fun i => B (f i) y) l (𝓝 (B x y)) := by
-  rw [← tendsto_pi_nhds, Embedding.tendsto_nhds_iff (embedding hB)]
+  rw [← tendsto_pi_nhds, (isEmbedding hB).tendsto_nhds_iff]
   rfl
 
 /-- Addition in `WeakBilin B` is continuous. -/

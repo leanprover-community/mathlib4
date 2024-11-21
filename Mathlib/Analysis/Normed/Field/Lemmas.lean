@@ -148,7 +148,7 @@ instance Pi.normedCommutativeRing {π : ι → Type*} [Fintype ι] [∀ i, Norme
 end NormedCommRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing α] :
+instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSeminormedRing α] :
     ContinuousMul α :=
   ⟨continuous_iff_continuousAt.2 fun x =>
       tendsto_iff_norm_sub_tendsto_zero.2 <| by
@@ -157,8 +157,7 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
           intro e
           calc
             ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1 * (e.2 - x.2) + (e.1 - x.1) * x.2‖ := by
-              rw [_root_.mul_sub, _root_.sub_mul, sub_add_sub_cancel]
-            -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be protected
+              rw [mul_sub, sub_mul, sub_add_sub_cancel]
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
@@ -174,8 +173,36 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
-instance (priority := 100) semi_normed_top_ring [NonUnitalSeminormedRing α] :
+instance (priority := 100) NonUnitalSeminormedRing.toTopologicalRing [NonUnitalSeminormedRing α] :
     TopologicalRing α where
+
+namespace SeparationQuotient
+
+instance [NonUnitalSeminormedRing α] : NonUnitalNormedRing (SeparationQuotient α) where
+  __ : NonUnitalRing (SeparationQuotient α) := inferInstance
+  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  norm_mul := Quotient.ind₂ norm_mul_le
+
+instance [NonUnitalSeminormedCommRing α] : NonUnitalNormedCommRing (SeparationQuotient α) where
+  __ : NonUnitalCommRing (SeparationQuotient α) := inferInstance
+  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  norm_mul := Quotient.ind₂ norm_mul_le
+
+instance [SeminormedRing α] : NormedRing (SeparationQuotient α) where
+  __ : Ring (SeparationQuotient α) := inferInstance
+  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  norm_mul := Quotient.ind₂ norm_mul_le
+
+instance [SeminormedCommRing α] : NormedCommRing (SeparationQuotient α) where
+  __ : CommRing (SeparationQuotient α) := inferInstance
+  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  norm_mul := Quotient.ind₂ norm_mul_le
+
+instance [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+    NormOneClass (SeparationQuotient α) where
+  norm_one := norm_one (α := α)
+
+end SeparationQuotient
 
 section NormedDivisionRing
 
@@ -269,9 +296,8 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
     have e0 : e ≠ 0 := norm_pos_iff.1 (ε0.trans he)
     calc
       ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
-        rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, _root_.mul_sub, _root_.sub_mul,
+        rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, mul_sub, sub_mul,
           mul_assoc _ e, inv_mul_cancel₀ r0, mul_inv_cancel₀ e0, one_mul, mul_one]
-      -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
@@ -291,6 +317,19 @@ example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1
 
 @[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
     (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
+
+lemma NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop :
+    Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
+  (tendsto_inv_zero_atTop.comp tendsto_norm_zero').congr fun x ↦ (norm_inv x).symm
+
+lemma NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop {m : ℤ} (hm : m < 0) :
+    Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
+  obtain ⟨m, rfl⟩ := neg_surjective m
+  rw [neg_lt_zero] at hm
+  lift m to ℕ using hm.le
+  rw [Int.natCast_pos] at hm
+  simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
+  exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
 
 end NormedDivisionRing
 
@@ -333,6 +372,22 @@ theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
 
 end Densely
 
+section NontriviallyNormedField
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℤ} {x : 𝕜}
+
+@[simp]
+protected lemma continuousAt_zpow : ContinuousAt (fun x ↦ x ^ n) x ↔ x ≠ 0 ∨ 0 ≤ n := by
+  refine ⟨?_, continuousAt_zpow₀ _ _⟩
+  contrapose!
+  rintro ⟨rfl, hm⟩ hc
+  exact not_tendsto_atTop_of_tendsto_nhds (hc.tendsto.mono_left nhdsWithin_le_nhds).norm
+    (tendsto_norm_zpow_nhdsWithin_0_atTop hm)
+
+@[simp]
+protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
+  simpa using NormedField.continuousAt_zpow (n := -1) (x := x)
+
+end NontriviallyNormedField
 end NormedField
 
 namespace NNReal

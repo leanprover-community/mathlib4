@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn, Scott Morrison
+Authors: David Wärn, Kim Morrison
 -/
 import Mathlib.Data.Opposite
 
@@ -137,8 +137,17 @@ def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 /-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 
+/-- The bijection `(X ⟶ Y) ≃ (op Y ⟶ op X)`. -/
+@[simps]
+def Hom.opEquiv {V} [Quiver V] {X Y : V} :
+    (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
+  toFun := Opposite.op
+  invFun := Opposite.unop
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 /-- A type synonym for a quiver with no arrows. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def Empty (V : Type u) : Type u := V
 
