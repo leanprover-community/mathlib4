@@ -290,7 +290,7 @@ theorem C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
   | h_add _ _ hp hq =>
     rw [smul_add, mul_add, hp, hq]
   | h_C_mul_T n s =>
-    rw [← mul_assoc, ← smul_mul_assoc, mul_right_inj_of_invertible, ← map_mul, ← single_eq_C,
+    rw [← mul_assoc, ← smul_mul_assoc, mul_left_inj_of_invertible, ← map_mul, ← single_eq_C,
       Finsupp.smul_single', single_eq_C]
 
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of

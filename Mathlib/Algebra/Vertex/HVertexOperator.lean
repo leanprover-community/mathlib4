@@ -104,32 +104,20 @@ theorem zero_coeff : (0 : HVertexOperator Γ R V W).coeff = 0 :=
   rfl
 
 @[simp]
-theorem add_coeff_apply (A B : HVertexOperator Γ R V W) (n : Γ) :
-    (A + B).coeff n = A.coeff n + B.coeff n := by
-  ext v
-  simp [coeff_apply, LinearMap.add_apply, of_symm_add, HahnSeries.add_coeff', Pi.add_apply]
-
-@[simp]
 theorem add_coeff (A B : HVertexOperator Γ R V W) : (A + B).coeff = A.coeff + B.coeff := by
-  ext1 n
-  exact add_coeff_apply A B n
-
-@[simp]
-theorem smul_coeff_apply (A : HVertexOperator Γ R V W) (r : R) (n : Γ) :
-    (r • A).coeff n = r • (A.coeff) n := by
-  ext v
-  simp only [coeff_apply, LinearMap.smul_apply, of_symm_smul, HahnSeries.smul_coeff]
+  ext
+  simp
 
 @[simp]
 theorem smul_coeff (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
-  ext1 n
-  exact smul_coeff_apply A r n
+  ext
+  simp
 
 @[simp]
 theorem nsmul_coeff (A : HVertexOperator Γ R V W) {n : ℕ} : (n • A).coeff = n • (A.coeff) := by
   induction n with
   | zero => ext; simp
-  | succ n ih => ext; simp [add_nsmul, add_coeff, ih]
+  | succ n ih => ext; simp [ih]
 
 end Coeff
 
@@ -315,7 +303,7 @@ theorem subLeft_order [Nontrivial R] : (subLeft R).val.order = toLex (0,1) := by
 theorem subLeft_smul_coeff (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
     ((subLeft R).val • A).coeff (toLex (k, l)) =
       A.coeff (toLex (k - 1, l)) - A.coeff (toLex (k, l - 1)) := by
-  rw [subLeft_eq, add_smul, add_coeff_apply]
+  rw [subLeft_eq, add_smul, add_coeff, Pi.add_apply]
   ext v
   simp only [LinearMap.add_apply, coeff_apply, LinearMap.smul_apply, LinearMap.sub_apply, smul_eq]
   nth_rw 1 [← toLex_vAdd_of_sub k l 1 0]
@@ -350,7 +338,7 @@ theorem subRight_smul_eq (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) :
 theorem subRight_smul_coeff (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
     ((subRight R) • A).coeff (toLex (k, l)) =
       A.coeff (toLex (k, l - 1)) - A.coeff (toLex (k - 1, l)) := by
-  rw [subRight_smul_eq, subRight_eq, add_smul, add_coeff_apply]
+  rw [subRight_smul_eq, subRight_eq, add_smul, add_coeff, Pi.add_apply]
   ext v
   simp only [LinearMap.add_apply, coeff_apply, LinearMap.sub_apply, smul_eq]
   nth_rw 1 [← toLex_vAdd_of_sub k l 1 0]

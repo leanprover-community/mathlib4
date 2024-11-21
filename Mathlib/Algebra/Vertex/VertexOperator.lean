@@ -9,19 +9,23 @@ import Mathlib.RingTheory.LaurentSeries
 /-!
 # Vertex operators
 In this file we introduce vertex operators as linear maps to Laurent series.
+
 ## Definitions
 * VertexOperator : An `R`-linear map from an `R`-module `V` to `LaurentSeries V`.
 * HasseDerivative : A divided-power derivative.
 * Locality : A weak form of commutativity.
 * Residue products : A family of products on `VertexOperator R V` parametrized by integers.
+
 ## Main results
 * Composition rule for Hasse derivatives.
 * Comparison between Hasse derivatives and iterated derivatives.
 * locality at order `≤ n` implies locality at order `≤ n + 1`.
 * Boundedness lemmas for defining residue products
+
 ## To do:
 * residue products with identity give Hasse derivatives.
 * Dong's lemma : pairwise locality implies locality with residue products.
+
 ## References
 * G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
 * A. Matsuo, K. Nagatomo `On axioms for a vertex algebra and locality of quantum fields`
@@ -47,13 +51,12 @@ open HVertexOperator
 theorem ext (A B : VertexOperator R V) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
 
-/-- We write `ncoef` instead of `coefficient of a vertex operator under normalized indexing`.
-Alternative suggestions welcome. -/
+/-- The coefficient of a vertex operator under normalized indexing. -/
 def ncoef {R} [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V := HVertexOperator.coeff A (-n - 1)
 
-/-- The normal convention for the normalized coefficient of a vertex operator is either `Aₙ` or
-`A(n)`. -/
+/-- In the literature, the `n`th normalized coefficient of a vertex operator `A` is written as
+either `Aₙ` or `A(n)`. -/
 scoped[VertexOperator] notation A "[[" n "]]" => ncoef A n
 
 @[simp]
@@ -63,12 +66,11 @@ theorem coeff_eq_ncoef (A : VertexOperator R V)
 
 @[simp]
 theorem ncoef_add (A B : VertexOperator R V) (n : ℤ) : ncoef (A + B) n = ncoef A n + ncoef B n := by
-  rw [show n = -(-n - 1) - 1 by omega, ← coeff_eq_ncoef, ← coeff_eq_ncoef, ← coeff_eq_ncoef,
-    add_coeff_apply]
+  rw [ncoef, ncoef, ncoef, add_coeff, Pi.add_apply]
 
 @[simp]
 theorem ncoef_smul (A : VertexOperator R V) (r : R) (n : ℤ) : ncoef (r • A) n = r • ncoef A n := by
-  rw [show n = -(-n - 1) - 1 by omega, ← coeff_eq_ncoef, ← coeff_eq_ncoef, smul_coeff_apply]
+  rw [ncoef, ncoef, smul_coeff, Pi.smul_apply]
 
 theorem ncoef_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order (A x)) : ncoef A n x = 0 := by
@@ -80,21 +82,27 @@ theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
   rw [coeff_eq_ncoef, ncoef_eq_zero_of_lt_order A (-n - 1) x]
   omega
 
-theorem ncoef_ofForallLTEqZero (f : ℤ → V) (n : ℤ) (h : ∀ (m : ℤ), n < m → f m = 0) : ∀ (m : ℤ),
-    m < (-n - 1) → f (-m - 1) = 0 := by
-  intro m' hm'
-  have h' : n < (-m' - 1) := by omega
-  apply h (-m' - 1) h'
-
 /-- Given an endomorphism-valued formal power series satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/
-@[simps!]
 noncomputable def of_coeff (f : ℤ → Module.End R V)
     (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) : VertexOperator R V :=
   HVertexOperator.of_coeff f
     (fun x => HahnSeries.suppBddBelow_supp_PWO (fun n => (f n) x)
       (HahnSeries.forallLTEqZero_supp_BddBelow (fun n => (f n) x)
         (Exists.choose (hf x)) (Exists.choose_spec (hf x))))
+
+@[simp]
+theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
+    (hf : ∀ (x : V), ∃ n, ∀ m < n, (f m) x = 0) (x : V) (n : ℤ) :
+    ((HahnModule.of R).symm ((of_coeff f hf) x)).coeff n = (f n) x := by
+  rfl
+
+@[simp]
+theorem ncoef_of_coeff (f : ℤ → Module.End R V)
+    (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
+    (of_coeff f hf) [[n]] = f (-n - 1) := by
+  ext v
+  rw [ncoef, coeff_apply, of_coeff_apply_coeff]
 
 noncomputable instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) :=
   {
