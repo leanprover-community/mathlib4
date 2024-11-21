@@ -3,21 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-
 import Mathlib.Algebra.BigOperators.Finprod
-<<<<<<< HEAD
-import Mathlib.GroupTheory.GroupAction.Blocks
-import Mathlib.GroupTheory.GroupAction.Transitive
-import Mathlib.GroupTheory.MaximalSubgroups
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Setoid.Partition
-=======
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
 import Mathlib.GroupTheory.MaximalSubgroups
->>>>>>> ACL/IwPrimitiveFinite
 
 /-!
 # Primitive actions
@@ -118,13 +109,7 @@ theorem IsTrivialBlock.smul {B : Set α} (hB : IsTrivialBlock B) (g : M) :
     exact (Function.Injective.subsingleton_image_iff (MulAction.injective g)).mpr h
   | inr h =>
     right
-<<<<<<< HEAD
-    rw [h, ← Set.image_smul]
-    apply Set.image_univ_of_surjective
-    exact MulAction.surjective g
-=======
     rw [h, ← Set.image_smul, Set.image_univ_of_surjective (MulAction.surjective g)]
->>>>>>> ACL/IwPrimitiveFinite
 
 @[to_additive]
 theorem IsTrivialBlock.smul_iff {B : Set α} (g : M) :
@@ -199,16 +184,11 @@ variable [Group G] [MulAction G X]
 
 open scoped BigOperators Pointwise
 
-<<<<<<< HEAD
-/-- If the action is pretransitive, then preprimitivity follows from
-the trivial blocks condition for blocks containing a given point -/
-=======
 /-- If the action is pretransitive, then the trivial blocks condition implies preprimitivity
 (based condition) -/
 @[to_additive
 "If the action is pretransitive, then the trivial blocks condition implies preprimitivity
 (based condition)"]
->>>>>>> ACL/IwPrimitiveFinite
 theorem mk_mem_of_pretransitive [htGX : IsPretransitive G X] (a : X)
     (H : ∀ (B : Set X) (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X := by
@@ -220,21 +200,13 @@ theorem mk_mem_of_pretransitive [htGX : IsPretransitive G X] (a : X)
     obtain ⟨b, hb⟩ := h
     obtain ⟨g, hg⟩ := exists_smul_eq G b a
     rw [← IsTrivialBlock.smul_iff g]
-<<<<<<< HEAD
-    refine H (g • B) ⟨b, hb, hg⟩ (hB.translate g)
-
-/-- The trivial blocks condition for blocks containing a nonfixed point implies preprimitivity -/
-=======
-    apply H (g • B) _ (hB.translate g)
-    rw [← hg]
-    use b
+    exact H (g • B) ⟨b, hb, hg⟩ (hB.translate g)
 
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) (based condition) -/
 @[to_additive
   "If the action is not trivial, then the trivial blocks condition implies preprimitivity
   (pretransitivity is automatic) (based condition)"]
->>>>>>> ACL/IwPrimitiveFinite
 theorem mk_mem {a : X} (ha : a ∉ fixedPoints G X)
     (H : ∀ (B : Set X) (_ : a ∈ B) (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X := by
@@ -301,13 +273,8 @@ theorem IsPreprimitive.iff_of_bijective
     apply IsPreprimitive.mk
     · intro B hB
       rw [← Set.preimage_image_eq B hf.injective]
-<<<<<<< HEAD
-      apply IsTrivialBlock.preimage hf.injective
-      exact hN.has_trivial_blocks (hB.image f hφ hf.injective)
-=======
       exact IsTrivialBlock.preimage hf.injective
         (hN.has_trivial_blocks (hB.image f hφ hf.injective))
->>>>>>> ACL/IwPrimitiveFinite
 
 end EquivariantMap
 
@@ -320,11 +287,7 @@ open scoped BigOperators Pointwise
 @[to_additive]
 instance Block.boundedOrderOfMem (a : X) :
     BoundedOrder { B : Set X // a ∈ B ∧ IsBlock G B } where
-<<<<<<< HEAD
-  top := ⟨⊤, Set.mem_univ _, IsBlock.univ⟩
-=======
   top := ⟨⊤, Set.mem_univ a, IsBlock.univ⟩
->>>>>>> ACL/IwPrimitiveFinite
   le_top := by
     rintro ⟨B, ha, hB⟩
     simp only [Set.top_eq_univ, Subtype.mk_le_mk, Set.le_eq_subset, Set.subset_univ]
@@ -526,11 +489,7 @@ theorem _root_.Setoid.IsPartition.ncard_eq_finsum
   simp only [finsum_eq_sum_of_fintype, Nat.card_eq_fintype_card, ← Set.Nat.card_coe_set_eq]
   rw [← Fintype.card_sigma]
   apply symm
-<<<<<<< HEAD
   refine Fintype.card_congr (Equiv.ofBijective (fun ⟨⟨t, ht⟩, ⟨x, hx⟩⟩ ↦ ⟨x, hx.1⟩) ?_)
-=======
-  refine Fintype.card_congr (Equiv.ofBijective (fun ⟨⟨t, ht⟩, ⟨x, hx⟩⟩ ↦ ⟨x, hx.1⟩) ?_ )
->>>>>>> ACL/IwPrimitiveFinite
   constructor
   · rintro ⟨⟨t, ht⟩, ⟨x, hx⟩⟩ ⟨⟨t', ht'⟩, ⟨y, hy⟩⟩ h
     simp only [Subtype.mk.injEq] at h
@@ -582,30 +541,6 @@ theorem IsPreprimitive.of_card_lt
       conv_rhs => rw [Set.ncard_coe]
       apply le_of_eq
       rw [← Set.ncard_eq_toFinset_card]
-<<<<<<< HEAD
-    -- we prove (Set.range f ∩ g • B).ncard ≤ 1
-    · rintro ⟨t, ⟨g, rfl⟩⟩
-      simp only [Set.Finite.mem_toFinset, Set.mem_univ, forall_true_left]
-      suffices Set.Subsingleton (Set.range f ∩ g • B) by
-        rw [Set.ncard_le_one_iff]
-        exact fun {a b} a_1 a_2 ↦ this a_1 a_2
-      -- It suffices to prove that the preimage is subsingleton
-      rw [← Set.image_preimage_eq_range_inter]
-      apply Set.Subsingleton.image
-      -- Since the action of M on α is primitive, it suffices to prove that
-      -- the preimage is a block which is not ⊤
-      apply Or.resolve_right (hM.has_trivial_blocks ((hB.translate g).preimage f))
-      intro h
-      simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
-      -- We will prove that B is large, which will contradict the assumption that it is not ⊤
-      apply hB_ne_top
-      apply hB.eq_univ_card_lt
-      -- It remains to show that Nat.card β < Set.ncard B * 2
-      apply lt_of_lt_of_le hf'
-      rw [mul_comm, mul_le_mul_right Nat.succ_pos']
-      apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
-  · simp only [Set.Finite.coe_toFinset, Set.subset_univ]
-=======
     · rintro ⟨x, ⟨g, hg⟩⟩ _
       simp only [← hg]
       suffices Set.Subsingleton (Set.range f ∩ g • B) by
@@ -627,7 +562,6 @@ theorem IsPreprimitive.of_card_lt
       rw [mul_comm, mul_le_mul_right Nat.succ_pos']
       apply le_trans (Set.ncard_le_ncard h) (Set.ncard_image_le B.toFinite)
   simp only [Set.Finite.coe_toFinset, Set.subset_univ]
->>>>>>> ACL/IwPrimitiveFinite
 
 /-- Theorem of Rudio (Wielandt, 1964, Th. 8.1) -/
 theorem IsPreprimitive.rudio (hpGX : IsPreprimitive M α)
