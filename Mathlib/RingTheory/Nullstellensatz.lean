@@ -28,8 +28,6 @@ noncomputable section
 
 namespace MvPolynomial
 
-open MvPolynomial
-
 variable {k : Type*} [Field k]
 variable {σ : Type*}
 
