@@ -50,7 +50,7 @@ def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
   map_id X := by
     funext f
     letI : Category (objects.obj (F.obj X)) := (inferInstance : Category (F.obj X))
-    simp [Functor.congr_hom (F.map_id X) f]
+    simp +zetaDelta [Functor.congr_hom (F.map_id X) f]
   map_comp {_ _ Z} f g := by
     funext h
     letI : Category (objects.obj (F.obj Z)) := (inferInstance : Category (F.obj Z))

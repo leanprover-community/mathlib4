@@ -806,7 +806,7 @@ def subtypeVal {P : β → Prop}
     SupBotHom {x : β // P x} β :=
   letI := Subtype.orderBot Pbot
   letI := Subtype.semilatticeSup Psup
-  .mk (SupHom.subtypeVal Psup) (by simp [Subtype.coe_bot Pbot])
+  .mk (SupHom.subtypeVal Psup) (by simp +zetaDelta [Subtype.coe_bot Pbot])
 
 @[simp]
 lemma subtypeVal_apply {P : β → Prop}
@@ -957,7 +957,7 @@ def subtypeVal {P : β → Prop}
     InfTopHom {x : β // P x} β :=
   letI := Subtype.orderTop Ptop
   letI := Subtype.semilatticeInf Pinf
-  .mk (InfHom.subtypeVal Pinf) (by simp [Subtype.coe_top Ptop])
+  .mk (InfHom.subtypeVal Pinf) (by simp +zetaDelta [Subtype.coe_top Ptop])
 
 @[simp]
 lemma subtypeVal_apply {P : β → Prop}
@@ -1287,7 +1287,8 @@ def subtypeVal {P : β → Prop} (Pbot : P ⊥) (Ptop : P ⊤)
     BoundedLatticeHom {x : β // P x} β :=
   letI := Subtype.lattice Psup Pinf
   letI := Subtype.boundedOrder Pbot Ptop
-  .mk (.subtypeVal Psup Pinf) (by simp [Subtype.coe_top Ptop]) (by simp [Subtype.coe_bot Pbot])
+  .mk (.subtypeVal Psup Pinf) (by simp +zetaDelta [Subtype.coe_top Ptop])
+    (by simp +zetaDelta [Subtype.coe_bot Pbot])
 
 @[simp]
 lemma subtypeVal_apply {P : β → Prop}

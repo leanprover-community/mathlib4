@@ -235,7 +235,7 @@ lemma iInf_iSup_eq' (f : ∀ a, κ a → α) :
   refine le_antisymm ?_ le_iInf_iSup
   calc
     _ = ⨅ a : range (range <| f ·), ⨆ b : a.1, b.1 := by
-      simp_rw [iInf_subtype, iInf_range, iSup_subtype, iSup_range]
+      simp_rw +zetaDelta [iInf_subtype, iInf_range, iSup_subtype, iSup_range]
     _ = _ := minAx.iInf_iSup_eq _
     _ ≤ _ := iSup_le fun g => by
       refine le_trans ?_ <| le_iSup _ fun a => Classical.choose (g ⟨_, a, rfl⟩).2
@@ -269,9 +269,10 @@ abbrev toCompleteDistribLattice : CompleteDistribLattice.MinimalAxioms α where
       _ = ⨅ i : ULift.{u} Bool, ⨆ j : match i with | .up true => PUnit.{u + 1} | .up false => s,
           match i with
           | .up true => a
-          | .up false => j := by simp [le_antisymm_iff, sSup_eq_iSup', iSup_unique, iInf_bool_eq]
+          | .up false => j := by
+            simp +zetaDelta [le_antisymm_iff, sSup_eq_iSup', iSup_unique, iInf_bool_eq]
       _ ≤ _ := by
-        simp only [minAx.iInf_iSup_eq, iInf_ulift, iInf_bool_eq, iSup_le_iff]
+        simp +zetaDelta only [minAx.iInf_iSup_eq, iInf_ulift, iInf_bool_eq, iSup_le_iff]
         exact fun x ↦ le_biSup _ (x (.up false)).2
   iInf_sup_le_sup_sInf a s := by
     let _ := minAx.toCompleteLattice
@@ -280,9 +281,9 @@ abbrev toCompleteDistribLattice : CompleteDistribLattice.MinimalAxioms α where
           match i with
           | .up true => a
           | .up false => j := by
-        simp only [minAx.iSup_iInf_eq, iSup_ulift, iSup_bool_eq, le_iInf_iff]
-        exact fun x ↦ biInf_le _ (x (.up false)).2
-      _ = _ := by simp [le_antisymm_iff, sInf_eq_iInf', iInf_unique, iSup_bool_eq]
+            simp +zetaDelta only [minAx.iSup_iInf_eq, iSup_ulift, iSup_bool_eq, le_iInf_iff]
+            exact fun x ↦ biInf_le _ (x (.up false)).2
+      _ = _ := by simp +zetaDelta [le_antisymm_iff, sInf_eq_iInf', iInf_unique, iSup_bool_eq]
 
 /-- The `CompletelyDistribLattice.MinimalAxioms` element corresponding to a frame. -/
 def of [CompletelyDistribLattice α] : MinimalAxioms α := { ‹CompletelyDistribLattice α› with }

@@ -223,7 +223,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
-      simpa only [Functor.map_preimage] using this _ _ (G.preimage f)
+      simpa +zetaDelta only [Functor.map_preimage] using this _ _ (G.preimage f)
     intros X₁ X₂ p
     induction' p with X₂ X₃ p g hp
     · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
