@@ -30,6 +30,8 @@ number `n` such that `x ≤ n • y`.
 * `ℕ`, `ℤ`, and `ℚ` are archimedean.
 -/
 
+assert_not_exists Finset
+
 open Int Set
 
 variable {α : Type*}
