@@ -15,6 +15,7 @@ Here we decompose a function `f : α → β₁ ⊕ β₂` into a function and tw
 
 variable {α β₁ β₂ : Type*}
 
+/-- Given `f : α → β₁ ⊕ β₂` decompose `α` into two preïmages. -/
 @[simp]
 def Function.decomposeSum (f : α → β₁ ⊕ β₂) :
     α ≃ { x₁ : α × β₁ // f x₁.fst = Sum.inl x₁.snd } ⊕ { x₂ : α × β₂ // f x₂.fst = Sum.inr x₂.snd }
