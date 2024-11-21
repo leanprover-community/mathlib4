@@ -87,25 +87,24 @@ Note that this functor does not preserve the two most obvious disconnected limit
 `(X × -)` does not preserve products or terminal object, eg `(X ⨯ A) ⨯ (X ⨯ B)` is not isomorphic to
 `X ⨯ (A ⨯ B)` and `X ⨯ 1` is not isomorphic to `1`.
 -/
-noncomputable def prodPreservesConnectedLimits [IsConnected J] (X : C) :
+lemma prod_preservesConnectedLimits [IsConnected J] (X : C) :
     PreservesLimitsOfShape J (prod.functor.obj X) where
   preservesLimit {K} :=
-    {
-      preserves := fun {c} l =>
-        { lift := fun s =>
+    { preserves := fun {c} l => ⟨{
+          lift := fun s =>
             prod.lift (s.π.app (Classical.arbitrary _) ≫ Limits.prod.fst) (l.lift (forgetCone s))
           fac := fun s j => by
-            apply prod.hom_ext
+            apply Limits.prod.hom_ext
             · erw [assoc, limMap_π, comp_id, limit.lift_π]
               exact (nat_trans_from_is_connected (s.π ≫ γ₁ X) j (Classical.arbitrary _)).symm
             · simp [← l.fac (forgetCone s) j]
           uniq := fun s m L => by
-            apply prod.hom_ext
+            apply Limits.prod.hom_ext
             · erw [limit.lift_π, ← L (Classical.arbitrary J), assoc, limMap_π, comp_id]
               rfl
             · rw [limit.lift_π]
               apply l.uniq (forgetCone s)
               intro j
-              simp [← L j] } }
+              simp [← L j] }⟩ }
 
 end CategoryTheory

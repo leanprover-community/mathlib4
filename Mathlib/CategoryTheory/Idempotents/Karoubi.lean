@@ -31,7 +31,7 @@ variable (C : Type*) [Category C]
 
 namespace Idempotents
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- In a preadditive category `C`, when an object `X` decomposes as `X ≅ P ⨿ Q`, one may
 consider `P` as a direct factor of `X` and up to unique isomorphism, it is determined by the
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,
@@ -101,7 +101,6 @@ theorem hom_ext_iff {P Q : Karoubi C} {f g : P ⟶ Q} : f = g ↔ f.f = g.f := b
     rw [h]
   · apply Hom.ext
 
--- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {P Q : Karoubi C} (f g : P ⟶ Q) (h : f.f = g.f) : f = g := by
   simpa [hom_ext_iff] using h

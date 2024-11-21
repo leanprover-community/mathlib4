@@ -3,11 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`
@@ -132,7 +132,7 @@ theorem decomposeAux_single (m : M) (r : R) :
   refine (DirectSum.of_smul R _ _ _).symm.trans ?_
   apply DirectSum.of_eq_of_gradedMonoid_eq
   refine Sigma.subtype_ext rfl ?_
-  refine (Finsupp.smul_single' _ _ _).trans ?_
+  refine (smul_single' _ _ _).trans ?_
   rw [mul_one]
   rfl
 

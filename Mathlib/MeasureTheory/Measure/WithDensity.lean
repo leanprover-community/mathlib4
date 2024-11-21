@@ -170,7 +170,7 @@ theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0�
 theorem withDensity_indicator {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     μ.withDensity (s.indicator f) = (μ.restrict s).withDensity f := by
   ext1 t ht
-  rw [withDensity_apply _ ht, lintegral_indicator _ hs, restrict_comm hs, ←
+  rw [withDensity_apply _ ht, lintegral_indicator hs, restrict_comm hs, ←
     withDensity_apply _ ht]
 
 theorem withDensity_indicator_one {s : Set α} (hs : MeasurableSet s) :

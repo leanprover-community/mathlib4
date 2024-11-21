@@ -8,7 +8,7 @@ import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Topology.Sheaves.Functors
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.
@@ -33,7 +33,7 @@ The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaS
 -/
 
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 noncomputable section
 
@@ -171,8 +171,8 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
 @[simps! toSheafedSpace presheaf]
 def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace :=
   { Spec.sheafedSpaceObj R with
-    localRing := fun x =>
-      RingEquiv.localRing (A := Localization.AtPrime x.asIdeal)
+    isLocalRing := fun x =>
+      RingEquiv.isLocalRing (A := Localization.AtPrime x.asIdeal)
         (Iso.commRingCatIsoToRingEquiv <| stalkIso R x).symm }
 
 lemma Spec.locallyRingedSpaceObj_sheaf (R : CommRingCat.{u}) :
@@ -218,7 +218,7 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644 and #8386
+        -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644 and https://github.com/leanprover-community/mathlib4/pull/8386
         rw [stalkIso_hom, stalkIso_inv]
         erw [comp_apply, comp_apply, localizationToStalk_of, stalkMap_toStalk_apply f p x,
             stalkToFiberRingHom_toStalk]
@@ -226,11 +226,11 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
 -/
-@[simps]
+@[simps toShHom]
 def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Spec.locallyRingedSpaceObj S ⟶ Spec.locallyRingedSpaceObj R :=
   LocallyRingedSpace.Hom.mk (Spec.sheafedSpaceMap f) fun p =>
-    IsLocalRingHom.mk fun a ha => by
+    IsLocalHom.mk fun a ha => by
       -- Here, we are showing that the map on prime spectra induced by `f` is really a morphism of
       -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring
       -- homomorphism.
@@ -238,11 +238,9 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       #adaptation_note /-- nightly-2024-04-01
       It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
       erw [← localRingHom_comp_stalkIso_apply] at ha
-      -- TODO: this instance was found automatically before #6045
-      haveI : IsLocalRingHom (stalkIso (↑S) p).inv := isLocalRingHom_of_isIso _
       replace ha := (isUnit_map_iff (stalkIso S p).inv _).mp ha
       -- Porting note: `f` had to be made explicit
-      replace ha := IsLocalRingHom.map_nonunit
+      replace ha := IsLocalHom.map_nonunit
         (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
       convert RingHom.isUnit_map (stalkIso R (PrimeSpectrum.comap f p)).inv ha
       erw [← comp_apply, show stalkToFiberRingHom R _ = (stalkIso _ _).hom from rfl,
@@ -251,14 +249,14 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
 @[simp]
 theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat.{u}) :
     Spec.locallyRingedSpaceMap (𝟙 R) = 𝟙 (Spec.locallyRingedSpaceObj R) :=
-  LocallyRingedSpace.Hom.ext <| by
-    rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_id]; rfl
+  LocallyRingedSpace.Hom.ext' <| by
+    rw [Spec.locallyRingedSpaceMap_toShHom, Spec.sheafedSpaceMap_id]; rfl
 
 theorem Spec.locallyRingedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.locallyRingedSpaceMap (f ≫ g) =
       Spec.locallyRingedSpaceMap g ≫ Spec.locallyRingedSpaceMap f :=
-  LocallyRingedSpace.Hom.ext <| by
-    rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_comp]; rfl
+  LocallyRingedSpace.Hom.ext' <| by
+    rw [Spec.locallyRingedSpaceMap_toShHom, Spec.sheafedSpaceMap_comp]; rfl
 
 /-- Spec, as a contravariant functor from commutative rings to locally ringed spaces.
 -/
@@ -278,7 +276,7 @@ open AlgebraicGeometry.LocallyRingedSpace
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   StructureSheaf.toOpen R ⊤
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_apply_coe
 
 instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) := by
@@ -287,7 +285,7 @@ instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) := by
 @[reassoc]
 theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
-  -- Porting note: `ext` failed to pick up one of the three lemmas
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` failed to pick up one of the three lemmas
   refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm
   apply Localization.localRingHom_to_map
 

@@ -237,7 +237,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   have h₃ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
   rw [h₁, h₂, h₃]
   match_scalars
-  -- TODO(#15486): used to be `field_simp`, but was really slow
+  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
   -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
   simp (disch := field_simp_discharge) only [add_div', add_sub_sub_cancel, div_div,
     div_div_eq_mul_div, div_eq_iff, div_mul_eq_mul_div, inv_eq_one_div,
@@ -389,7 +389,7 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
       -- Porting note: need to help with implicit variables again
       have H₂ := (contDiff_stereoInvFunAux (v := v.val)|>.comp
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
-      convert H₁.comp' (H₂.contDiffOn : ContDiffOn ℝ ⊤ _ Set.univ) using 1
+      convert H₁.comp_inter (H₂.contDiffOn : ContDiffOn ℝ ⊤ _ Set.univ) using 1
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
       simp only [PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
         PartialEquiv.trans_source, PartialEquiv.symm_source, stereographic'_target,
@@ -439,7 +439,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
         OrthonormalBasis.fromOrthogonalSpanSingleton
         n (ne_zero_of_mem_unit_sphere (-v))).repr
   have h : ContDiffOn ℝ ⊤ _ Set.univ := U.contDiff.contDiffOn
-  have H₁ := (h.comp' contDiffOn_stereoToFun).contMDiffOn
+  have H₁ := (h.comp_inter contDiffOn_stereoToFun).contMDiffOn
   have H₂ : ContMDiffOn _ _ _ _ Set.univ := hf.contMDiffOn
   convert (H₁.of_le le_top).comp' H₂ using 1
   ext x
@@ -462,7 +462,7 @@ theorem contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 private lemma stereographic'_neg {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
   stereographic' n (-v) v = 0 := by
     dsimp [stereographic']
-    simp only [AddEquivClass.map_eq_zero_iff]
+    simp only [EmbeddingLike.map_eq_zero_iff]
     apply stereographic_neg_apply
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
@@ -477,8 +477,6 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     TangentSpace (𝓡 n) v →L[ℝ] E) = (ℝ ∙ (v : E))ᗮ := by
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
   dsimp [chartAt]
-  -- rw [LinearIsometryEquiv.toHomeomorph_symm]
-  -- rw [← LinearIsometryEquiv.coe_toHomeomorph]
   simp only [chartAt, stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
     LinearIsometryEquiv.map_zero, mfld_simps]
@@ -530,7 +528,7 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
   have := congr_arg DFunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
   refine Eq.subst this.symm ?_
   rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
-  simpa using Subtype.coe_injective
+  simpa [- Subtype.val_injective] using Subtype.val_injective
 
 end SmoothManifold
 

@@ -59,7 +59,6 @@ theorem convexJoin_singleton_left (t : Set E) (x : E) :
 theorem convexJoin_singleton_right (s : Set E) (y : E) :
     convexJoin 𝕜 s {y} = ⋃ x ∈ s, segment 𝕜 x y := by simp [convexJoin]
 
--- Porting note (#10618): simp can prove it
 theorem convexJoin_singletons (x : E) : convexJoin 𝕜 {x} {y} = segment 𝕜 x y := by simp
 
 @[simp]
@@ -105,7 +104,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t u : Set E} {x y : E}
+variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) := by

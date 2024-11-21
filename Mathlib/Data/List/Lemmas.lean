@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.InsertIdx
 
 /-! # Some lemmas about lists involving sets
 
@@ -32,8 +32,8 @@ theorem tail_reverse_eq_reverse_dropLast (l : List α) :
 
 @[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
 
-theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
-    Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by
+theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
+    Set.InjOn (fun k => insertIdx k x l) { n | n ≤ l.length } := by
   induction' l with hd tl IH
   · intro n hn m hm _
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
@@ -44,11 +44,14 @@ theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     · rfl
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
-    · simp only [true_and, eq_self_iff_true, insertNth_succ_cons] at h
+    · simp only [true_and, eq_self_iff_true, insertIdx_succ_cons] at h
       rw [Nat.succ_inj']
       refine IH hx.right ?_ ?_ (by injection h)
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
+
+@[deprecated (since := "2024-10-21")]
+alias injOn_insertNth_index_of_not_mem := injOn_insertIdx_index_of_not_mem
 
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by

@@ -214,7 +214,7 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = const
 
 @[simp]
 theorem monomial_zero_eq_C : ⇑(monomial R 0) = C R := by
-  -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
   rw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C]
   rfl
 
@@ -327,13 +327,11 @@ theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
 theorem constantCoeff_comp_C : (constantCoeff R).comp (C R) = RingHom.id R :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_zero : constantCoeff R 0 = 0 :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_one : constantCoeff R 1 = 1 :=
   rfl
 
@@ -760,17 +758,19 @@ namespace Polynomial
 
 open Finsupp Polynomial
 
-variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : R[X])
+variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series. -/
 @[coe]
-def ToPowerSeries : R[X] → (PowerSeries R) := fun φ =>
+def toPowerSeries : R[X] → (PowerSeries R) := fun φ =>
   PowerSeries.mk fun n => coeff φ n
+
+@[deprecated (since := "2024-10-27")] alias ToPowerSeries := toPowerSeries
 
 /-- The natural inclusion from polynomials into formal power series. -/
 instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
-  ⟨ToPowerSeries⟩
+  ⟨toPowerSeries⟩
 
 theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk (coeff φ) :=
   rfl

@@ -47,7 +47,7 @@ theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * 
 theorem commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
-    ← Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
+    ← Nat.card_pi, Commute, SemiconjBy, funext_iff]
   congr 2
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
@@ -111,7 +111,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
     H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
   · apply Finite.card_le_of_surjective
     show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
-    exact ConjClasses.map_surjective Quotient.surjective_Quotient_mk''
+    exact ConjClasses.map_surjective Quotient.mk''_surjective
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'
   · exact Nat.cast_pos.mpr Finite.card_pos
 

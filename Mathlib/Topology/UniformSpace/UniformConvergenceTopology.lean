@@ -133,8 +133,8 @@ uniform convergence
 
 noncomputable section
 
-open scoped Topology Uniformity
-open Set Filter
+open Filter Set Topology
+open scoped Uniformity
 
 section TypeAlias
 
@@ -197,7 +197,7 @@ open UniformConvergence
 namespace UniformFun
 
 variable (α β : Type*) {γ ι : Type*}
-variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
+variable {p : Filter ι}
 
 /-- Basis sets for the uniformity of uniform convergence: `gen α β V` is the set of pairs `(f, g)`
 of functions `α →ᵤ β` such that `∀ x, (f x, g x) ∈ V`. -/
@@ -382,9 +382,9 @@ More precisely, if `f : γ → β` is a uniform embedding,
 then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is a uniform embedding. -/
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) :
- IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
+    IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toIsUniformInducing := UniformFun.postcomp_isUniformInducing hf.isUniformInducing
-  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
 alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
@@ -555,7 +555,7 @@ end UniformFun
 namespace UniformOnFun
 
 variable {α β : Type*} {γ ι : Type*}
-variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
+variable {s : Set α} {p : Filter ι}
 
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
@@ -890,7 +890,7 @@ More precisely, if `f : γ → β` is a uniform embedding, then
 protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toIsUniformInducing := UniformOnFun.postcomp_isUniformInducing hf.isUniformInducing
-  inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+  injective _ _ H := funext fun _ ↦ hf.injective (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
 alias postcomp_uniformEmbedding := UniformOnFun.postcomp_isUniformEmbedding

@@ -49,6 +49,7 @@ noncomputable section
 open Affine
 
 open Set
+open scoped Pointwise
 
 section
 
@@ -509,6 +510,12 @@ theorem direction_affineSpan (s : Set P) : (affineSpan k s).direction = vectorSp
 /-- A point in a set is in its affine span. -/
 theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s :=
   mem_spanPoints k p s hp
+
+@[simp]
+lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpan k s := by
+  ext
+  simp [mem_add, spanPoints]
+  aesop
 
 end affineSpan
 
@@ -1283,6 +1290,17 @@ lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
 lemma affineSpan_subset_span {s : Set V} :
     (affineSpan k s : Set V) ⊆  Submodule.span k s :=
   affineSpan_le_toAffineSubspace_span
+
+-- TODO: We want this to be simp, but `affineSpan` gets simped away to `spanPoints`!
+-- Let's delete `spanPoints`
+lemma affineSpan_insert_zero (s : Set V) :
+    (affineSpan k (insert 0 s) : Set V) = Submodule.span k s := by
+  rw [← Submodule.span_insert_zero]
+  refine affineSpan_subset_span.antisymm ?_
+  rw [← vectorSpan_add_self, vectorSpan_def]
+  refine Subset.trans ?_ <| subset_add_left _ <| mem_insert ..
+  gcongr
+  exact subset_sub_left <| mem_insert ..
 
 end AffineSpace'
 

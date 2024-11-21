@@ -19,8 +19,8 @@ is the theorem `char_orthonormal`
 
 ## Implementation notes
 
-Irreducible representations are implemented categorically, using the `Simple` class defined in
-`Mathlib.CategoryTheory.Simple`
+Irreducible representations are implemented categorically, using the `CategoryTheory.Simple` class
+defined in `Mathlib.CategoryTheory.Simple`
 
 ## TODO
 * Once we have the monoidal closed structure on `FdRep k G` and a better API for the rigid

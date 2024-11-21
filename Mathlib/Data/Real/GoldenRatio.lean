@@ -201,7 +201,7 @@ theorem Real.coe_fib_eq' :
 
 /-- Binet's formula as a dependent equality. -/
 theorem Real.coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
-  rw [← Function.funext_iff, Real.coe_fib_eq']
+  rw [← funext_iff, Real.coe_fib_eq']
 
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents --/
 theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by

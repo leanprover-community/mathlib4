@@ -22,13 +22,9 @@ modular form.
 
 open Complex UpperHalfPlane
 
-open scoped Topology Manifold UpperHalfPlane
+open scoped Topology Manifold MatrixGroups
 
 noncomputable section
-
-local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
-
-local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 section ModularForm
 
@@ -134,7 +130,7 @@ namespace ModularForm
 
 open SlashInvariantForm
 
-variable {F : Type*} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
+variable {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
 instance add : Add (ModularForm Γ k) :=
   ⟨fun f g =>
@@ -152,7 +148,7 @@ theorem add_apply (f g : ModularForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
 
 instance instZero : Zero (ModularForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
-      holo' := fun _ => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
+      holo' := fun _ => mdifferentiableAt_const
       bdd_at_infty' := fun A => by simpa using zero_form_isBoundedAtImInfty } ⟩
 
 @[simp]
@@ -231,10 +227,7 @@ def mul {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1) (g :
   toSlashInvariantForm := f.1.mul g.1
   holo' := f.holo'.mul g.holo'
   bdd_at_infty' A := by
-    -- Porting note: was `by simpa using ...`
-    -- `mul_slash_SL2` is no longer a `simp` and `simpa only [mul_slash_SL2] using ...` failed
-    rw [SlashInvariantForm.coe_mul, mul_slash_SL2]
-    exact (f.bdd_at_infty' A).mul (g.bdd_at_infty' A)
+    simpa only [coe_mul, mul_slash_SL2] using (f.bdd_at_infty' A).mul (g.bdd_at_infty' A)
 
 @[simp]
 theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1)
@@ -245,7 +238,7 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
 @[simps! (config := .asFn) toFun toSlashInvariantForm]
 def const (x : ℂ) : ModularForm Γ 0 where
   toSlashInvariantForm := .const x
-  holo' _ := mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
+  holo' _ := mdifferentiableAt_const
   bdd_at_infty' A := by
     simpa only [SlashInvariantForm.const_toFun,
       ModularForm.is_invariant_const] using atImInfty.const_boundedAtFilter x
@@ -301,7 +294,7 @@ theorem add_apply (f g : CuspForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
 
 instance instZero : Zero (CuspForm Γ k) :=
   ⟨ { toSlashInvariantForm := 0
-      holo' := fun _ => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
+      holo' := fun _ => mdifferentiableAt_const
       zero_at_infty' := by simpa using Filter.zero_zeroAtFilter _ } ⟩
 
 @[simp]

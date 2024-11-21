@@ -116,6 +116,10 @@ theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
 theorem disjoint_iff : Disjoint a b ↔ a ⊓ b = ⊥ :=
   disjoint_iff_inf_le.trans le_bot_iff
 
+theorem disjoint_of_le_iff_left_eq_bot (h : a ≤ b) :
+    Disjoint a b ↔ a = ⊥ := by
+  simp only [disjoint_iff, inf_eq_left.mpr h]
+
 theorem Disjoint.le_bot : Disjoint a b → a ⊓ b ≤ ⊥ :=
   disjoint_iff_inf_le.mp
 
@@ -586,6 +590,10 @@ class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
   /-- In a `ComplementedLattice`, every element admits a complement. -/
   exists_isCompl : ∀ a : α, ∃ b : α, IsCompl a b
 
+lemma complementedLattice_iff (α) [Lattice α] [BoundedOrder α] :
+    ComplementedLattice α ↔ ∀ a : α, ∃ b : α, IsCompl a b :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
 export ComplementedLattice (exists_isCompl)
 
 instance Subsingleton.instComplementedLattice
@@ -652,10 +660,10 @@ end Lattice
 
 variable [DistribLattice α] [BoundedOrder α] {a b : Complementeds α}
 
-instance : Sup (Complementeds α) :=
+instance : Max (Complementeds α) :=
   ⟨fun a b => ⟨a ⊔ b, a.2.sup b.2⟩⟩
 
-instance : Inf (Complementeds α) :=
+instance : Min (Complementeds α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 @[simp, norm_cast]

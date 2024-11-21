@@ -34,7 +34,7 @@ and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
 
 open Filter
 
-open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
+open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
 namespace MeasureTheory
 

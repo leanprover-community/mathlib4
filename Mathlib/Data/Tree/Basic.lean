@@ -97,15 +97,13 @@ def right : Tree α → Tree α
 /-- A node with `Unit` data -/
 scoped infixr:65 " △ " => Tree.node ()
 
--- Porting note: workaround for leanprover/lean4#2049
+-- Porting note: workaround for https://github.com/leanprover/lean4/issues/2049
 compile_inductive% Tree
 
 @[elab_as_elim]
 def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
-    -- Porting note: Old proof was `t.recOn base fun u => u.recOn ind` but
-    -- structure eta makes it unnecessary (https://github.com/leanprover/lean4/issues/777).
-    t.recOn base fun _u => ind
+  t.recOn base fun _u ↦ ind
 
 theorem left_node_right_eq_self : ∀ {x : Tree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial

@@ -260,7 +260,6 @@ theorem rightAngleRotation_symm :
   rw [rightAngleRotation]
   exact LinearIsometryEquiv.toLinearIsometry_injective rfl
 
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem inner_rightAngleRotation_self (x : E) : ⟪J x, x⟫ = 0 := by simp
 
 theorem inner_rightAngleRotation_swap (x y : E) : ⟪x, J y⟫ = -⟪J x, y⟫ := by simp
@@ -279,7 +278,6 @@ theorem areaForm_rightAngleRotation_left (x y : E) : ω (J x) y = -⟪x, y⟫ :=
 theorem areaForm_rightAngleRotation_right (x y : E) : ω x (J y) = ⟪x, y⟫ := by
   rw [← o.inner_rightAngleRotation_left, o.inner_comp_rightAngleRotation]
 
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem areaForm_comp_rightAngleRotation (x y : E) : ω (J x) (J y) = ω x y := by simp
 
 @[simp]
@@ -489,7 +487,7 @@ theorem normSq_kahler (x y : E) : Complex.normSq (o.kahler x y) = ‖x‖ ^ 2 * 
   simpa [kahler_apply_apply, Complex.normSq, sq] using o.inner_sq_add_areaForm_sq x y
 
 theorem abs_kahler (x y : E) : Complex.abs (o.kahler x y) = ‖x‖ * ‖y‖ := by
-  rw [← sq_eq_sq, Complex.sq_abs]
+  rw [← sq_eq_sq₀, Complex.sq_abs]
   · linear_combination o.normSq_kahler x y
   · positivity
   · positivity

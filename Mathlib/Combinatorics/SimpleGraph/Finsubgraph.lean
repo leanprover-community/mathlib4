@@ -55,10 +55,10 @@ instance : OrderBot G.Finsubgraph where
   bot := ⟨⊥, finite_empty⟩
   bot_le _ := bot_le (α := G.Subgraph)
 
-instance : Sup G.Finsubgraph :=
+instance : Max G.Finsubgraph :=
   ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.2.union G₂.2⟩⟩
 
-instance : Inf G.Finsubgraph :=
+instance : Min G.Finsubgraph :=
   ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset inter_subset_left⟩⟩
 
 instance instSDiff : SDiff G.Finsubgraph where

@@ -95,6 +95,9 @@ theorem balanced_iUnion₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced �
     Balanced 𝕜 (⋃ (i) (j), f i j) :=
   balanced_iUnion fun _ => balanced_iUnion <| h _
 
+theorem Balanced.sInter {S : Set (Set E)} (h : ∀ s ∈ S, Balanced 𝕜 s) : Balanced 𝕜 (⋂₀ S) :=
+  fun _ _ => (smul_set_sInter_subset ..).trans (fun _ _ => by aesop)
+
 theorem balanced_iInter {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : Balanced 𝕜 (⋂ i, f i) :=
   fun _a ha => (smul_set_iInter_subset _ _).trans <| iInter_mono fun _ => h _ _ ha
 

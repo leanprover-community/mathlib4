@@ -3,6 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Fintype.Pi
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Pi
@@ -157,10 +159,9 @@ theorem map_piMap_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
   classical
   rw [← univ_pi_piecewise_univ, piMap_image_univ_pi]
   refine univ_pi_mem_pi (fun i ↦ ?_) ?_
-  · if hi : i ∈ I then
-      simpa [hi] using image_mem_map (hs i hi)
-    else
-      simp [hi]
+  · by_cases hi : i ∈ I
+    · simpa [hi] using image_mem_map (hs i hi)
+    · simp [hi]
   · filter_upwards [hf, hI.compl_mem_cofinite] with i hsurj (hiI : i ∉ I)
     simp [hiI, hsurj.range_eq]
 

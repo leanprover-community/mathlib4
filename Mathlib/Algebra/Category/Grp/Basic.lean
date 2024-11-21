@@ -53,7 +53,7 @@ instance : CoeSort Grp Type* where
 @[to_additive]
 instance (X : Grp) : Group X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : Grp} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -112,7 +112,6 @@ instance hasForgetToMonCat : HasForget₂ Grp MonCat :=
 @[to_additive]
 instance : Coe Grp.{u} MonCat.{u} where coe := (forget₂ Grp MonCat).obj
 
--- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance (G H : Grp) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
@@ -183,7 +182,7 @@ instance : CoeSort CommGrp Type* where
 @[to_additive]
 instance commGroupInstance (X : CommGrp) : CommGroup X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommGrp} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -257,7 +256,6 @@ instance hasForgetToCommMonCat : HasForget₂ CommGrp CommMonCat :=
 @[to_additive]
 instance : Coe CommGrp.{u} CommMonCat.{u} where coe := (forget₂ CommGrp CommMonCat).obj
 
--- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance (G H : CommGrp) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 

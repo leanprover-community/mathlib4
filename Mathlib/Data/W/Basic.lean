@@ -103,7 +103,7 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
     · cases' m with m
       · simp_all
       · refine congr_arg Nat.succ (ih ?_)
-        simp_all [Function.funext_iff]⟩
+        simp_all [funext_iff]⟩
 
 variable [∀ a : α, Fintype (β a)]
 

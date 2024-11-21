@@ -8,7 +8,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Util.AssertExists
@@ -56,7 +56,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
     (m.prod : M) = (m.map (↑)).prod :=
   (SubmonoidClass.subtype S : _ →* M).map_multiset_prod m
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast, simp)]
 theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
@@ -97,16 +97,16 @@ namespace Submonoid
 
 variable (s : Submonoid M)
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)]
 theorem coe_list_prod (l : List s) : (l.prod : M) = (l.map (↑)).prod :=
   map_list_prod s.subtype l
 
-@[to_additive (attr := norm_cast)] -- Porting note (#10618): removed `simp`, `simp` can prove it
+@[to_additive (attr := norm_cast)]
 theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) :
     (m.prod : M) = (m.map (↑)).prod :=
   S.subtype.map_multiset_prod m
 
-@[to_additive (attr := norm_cast, simp)]
+@[to_additive (attr := norm_cast)]
 theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s
@@ -356,9 +356,9 @@ theorem closure_induction_left {s : Set M} {p : (m : M) → m ∈ closure s → 
     p x h := by
   simp_rw [closure_eq_mrange] at h
   obtain ⟨l, rfl⟩ := h
-  induction l with
-  | h0 => exact one
-  | ih x y ih =>
+  induction l using FreeMonoid.inductionOn' with
+  | one => exact one
+  | mul_of x y ih =>
     simp only [map_mul, FreeMonoid.lift_eval_of]
     refine mul_left _ x.prop (FreeMonoid.lift Subtype.val y) _ (ih ?_)
     simp only [closure_eq_mrange, mem_mrange, exists_apply_eq_apply]
@@ -407,8 +407,8 @@ theorem mem_powers_iff (x z : M) : x ∈ powers z ↔ ∃ n : ℕ, z ^ n = x :=
 noncomputable instance decidableMemPowers : DecidablePred (· ∈ Submonoid.powers a) :=
   Classical.decPred _
 
--- Porting note (#11215): TODO the following instance should follow from a more general principle
--- See also mathlib4#2417
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO the following instance should follow from a more general principle
+-- See also https://github.com/leanprover-community/mathlib4/issues/2417
 noncomputable instance fintypePowers [Fintype M] : Fintype (powers a) :=
   inferInstanceAs <| Fintype {y // y ∈ powers a}
 
@@ -493,20 +493,6 @@ theorem map_powers {N : Type*} {F : Type*} [Monoid N] [FunLike F M N] [MonoidHom
     (f : F) (m : M) :
     (powers m).map f = powers (f m) := by
   simp only [powers_eq_closure, map_mclosure f, Set.image_singleton]
-
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
-@[to_additive
-      "If all the elements of a set `s` commute, then `closure s` forms an additive
-      commutative monoid."]
-def closureCommMonoidOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
-    CommMonoid (closure s) :=
-  { (closure s).toMonoid with
-    mul_comm := fun x y => by
-      ext
-      simp only [Submonoid.coe_mul]
-      exact closure_induction₂ (fun _ _ h₁ h₂ ↦ hcomm _ h₁ _ h₂) (fun _ _ ↦ Commute.one_left _)
-        (fun _ _ ↦ Commute.one_right _) (fun _ _ _ _ _ _ ↦ Commute.mul_left)
-        (fun _ _ _ _ _ _ ↦ Commute.mul_right) x.prop y.prop }
 
 end Submonoid
 

@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.VectorMeasure
+import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.Analysis.Complex.Basic
 
 /-!
@@ -34,7 +34,7 @@ noncomputable section
 
 open scoped MeasureTheory ENNReal NNReal
 
-variable {α β : Type*} {m : MeasurableSpace α}
+variable {α : Type*} {m : MeasurableSpace α}
 
 namespace MeasureTheory
 

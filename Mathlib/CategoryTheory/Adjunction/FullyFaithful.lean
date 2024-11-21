@@ -40,9 +40,13 @@ open Category
 
 open Opposite
 
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
+
+attribute [local simp] homEquiv_unit homEquiv_counit
 
 /-- If the left adjoint is faithful, then each component of the unit is an monomorphism. -/
 instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where

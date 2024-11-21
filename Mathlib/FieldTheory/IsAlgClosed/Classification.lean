@@ -36,7 +36,7 @@ namespace Algebra.IsAlgebraic
 variable (R L : Type u) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
 variable [NoZeroSMulDivisors R L] [Algebra.IsAlgebraic R L]
 
-theorem cardinal_mk_le_sigma_polynomial :
+theorem cardinalMk_le_sigma_polynomial :
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
   @mk_le_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun x : L =>
@@ -56,12 +56,16 @@ theorem cardinal_mk_le_sigma_polynomial :
       refine (Subtype.heq_iff_coe_eq ?_).1 h.2
       simp only [h.1, forall_true_iff]
 
+@[deprecated (since := "2024-11-10")]
+alias cardinal_mk_le_sigma_polynomial := cardinalMk_le_sigma_polynomial
+
 /-- The cardinality of an algebraic extension is at most the maximum of the cardinality
-of the base ring or `ℵ₀` -/
-theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
+of the base ring or `ℵ₀`. -/
+@[stacks 09GK]
+theorem cardinalMk_le_max : #L ≤ max #R ℵ₀ :=
   calc
     #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
-      cardinal_mk_le_sigma_polynomial R L
+      cardinalMk_le_sigma_polynomial R L
     _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
       rw [← mk_sigma]; rfl
     _ ≤ Cardinal.sum.{u, u} fun _ : R[X] => ℵ₀ :=
@@ -69,8 +73,10 @@ theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
     _ = #(R[X]) * ℵ₀ := sum_const' _ _
     _ ≤ max (max #(R[X]) ℵ₀) ℵ₀ := mul_le_max _ _
     _ ≤ max (max (max #R ℵ₀) ℵ₀) ℵ₀ :=
-      (max_le_max (max_le_max Polynomial.cardinal_mk_le_max le_rfl) le_rfl)
+      (max_le_max (max_le_max Polynomial.cardinalMk_le_max le_rfl) le_rfl)
     _ = max #R ℵ₀ := by simp only [max_assoc, max_comm ℵ₀, max_left_comm ℵ₀, max_self]
+
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_max := cardinalMk_le_max
 
 end Algebra.IsAlgebraic
 
@@ -119,19 +125,17 @@ end Classification
 
 section Cardinal
 
-variable {R L K : Type u} [CommRing R]
-variable [Field K] [Algebra R K] [IsAlgClosed K]
+variable {R K : Type u} [CommRing R] [Field K] [Algebra R K] [IsAlgClosed K]
 variable {ι : Type u} (v : ι → K)
-variable (hv : IsTranscendenceBasis R v)
 
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     #K ≤ max (max #R #ι) ℵ₀ :=
   calc
     #K ≤ max #(Algebra.adjoin R (Set.range v)) ℵ₀ :=
       letI := isAlgClosure_of_transcendence_basis v hv
-      Algebra.IsAlgebraic.cardinal_mk_le_max _ _
+      Algebra.IsAlgebraic.cardinalMk_le_max _ _
     _ = max #(MvPolynomial ι R) ℵ₀ := by rw [Cardinal.eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩]
-    _ ≤ max (max (max #R #ι) ℵ₀) ℵ₀ := max_le_max MvPolynomial.cardinal_mk_le_max le_rfl
+    _ ≤ max (max (max #R #ι) ℵ₀) ℵ₀ := max_le_max MvPolynomial.cardinalMk_le_max le_rfl
     _ = _ := by simp [max_assoc]
 
 /-- If `K` is an uncountable algebraically closed field, then its

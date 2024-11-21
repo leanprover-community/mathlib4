@@ -82,7 +82,7 @@ for the inverse of `e`).
 
 open Set Matroid
 
-variable {α : Type*} {I B X : Set α}
+variable {α : Type*}
 
 section IndepMatroid
 

@@ -3,10 +3,11 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
+import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Fintype.Order
-import Mathlib.Algebra.DirectLimit
-import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.FinitelyGenerated
+import Mathlib.ModelTheory.Quotients
+import Mathlib.Order.DirectedInverseSystem
 
 /-!
 # Direct Limits of First-Order Structures
@@ -44,13 +45,13 @@ namespace DirectedSystem
 /-- A copy of `DirectedSystem.map_self` specialized to `L`-embeddings, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
-  DirectedSystem.map_self (fun i j h => f i j h) i x h
+  DirectedSystem.map_self (f := (f · · ·)) x
 
 /-- A copy of `DirectedSystem.map_map` specialized to `L`-embeddings, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
-  DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
+  DirectedSystem.map_map (f := (f · · ·)) hij hjk x
 
 variable {G' : ℕ → Type w} [∀ i, L.Structure (G' i)] (f' : ∀ n : ℕ, G' n ↪[L] G' (n + 1))
 
@@ -65,15 +66,15 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction' k with k ih
-  · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [natLERec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
-  · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
       Embedding.comp_apply, ih]
 
 instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
-  ⟨fun _ _ _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
-   fun hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
+  ⟨fun _ _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
+   fun _ _ _ hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
 
 end DirectedSystem
 
@@ -159,7 +160,7 @@ def DirectLimit [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ �
 
 attribute [local instance] DirectLimit.setoid
 
--- Porting note (#10754): Added local instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added local instance
 attribute [local instance] DirectLimit.sigmaStructure
 
 
@@ -262,7 +263,7 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → Di
   ext a
   rw [Quotient.eq_mk_iff_out, unify]
   generalize_proofs r
-  change _ ≈ .mk f i (f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd)
+  change _ ≈ Structure.Sigma.mk f i (f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd)
   have : (.mk f i (f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd) : Σˣ f).fst ≤ i :=
     le_rfl
   rw [equiv_iff G f (i := i) (hi _) this]
@@ -348,7 +349,7 @@ def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i 
     rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.lift_mk, Quotient.lift_mk] at xy
     obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.out.1 y.out.1
     rw [← Hg x.out.1 i hx, ← Hg y.out.1 i hy] at xy
-    rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.eq, equiv_iff G f hx hy]
+    rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.eq_iff_equiv, equiv_iff G f hx hy]
     exact (g i).injective xy
   map_fun' F x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
@@ -440,11 +441,11 @@ end DirectLimit
 section Substructure
 
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)]
-variable {M N : Type*} [L.Structure M] [L.Structure N] (S : ι →o L.Substructure M)
+variable {M : Type*} [L.Structure M] (S : ι →o L.Substructure M)
 
 instance : DirectedSystem (fun i ↦ S i) (fun _ _ h ↦ Substructure.inclusion (S.monotone h)) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 namespace DirectLimit
 

@@ -112,7 +112,7 @@ def conesEquivSieveCompatibleFamily :
   left_inv _ := rfl
   right_inv _ := rfl
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
   CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_symm_apply_app
 
@@ -332,7 +332,6 @@ instance instCategorySheaf : Category (Sheaf J A) where
 instance (X : Sheaf J A) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
 
--- Porting note: added because `Sheaf.Hom.ext` was not triggered automatically
 @[ext]
 lemma hom_ext {X Y : Sheaf J A} (x y : X ⟶ Y) (h : x.val = y.val) : x = y :=
   Sheaf.Hom.ext h
@@ -671,7 +670,7 @@ theorem isSheaf_iff_isSheaf' : IsSheaf J P' ↔ IsSheaf' J P' := by
     rw [Equalizer.Presieve.sheaf_condition]
     refine ⟨?_⟩
     refine isSheafForIsSheafFor' _ _ _ _ ?_
-    letI := preservesSmallestLimitsOfPreservesLimits (coyoneda.obj (op U))
+    letI := preservesSmallestLimits_of_preservesLimits (coyoneda.obj (op U))
     apply isLimitOfPreserves
     apply Classical.choice (h _ S.arrows _)
     simpa
@@ -693,7 +692,7 @@ theorem isSheaf_comp_of_isSheaf (s : A ⥤ B) [PreservesLimitsOfSize.{v₁, max 
 theorem isSheaf_iff_isSheaf_comp (s : A ⥤ B) [HasLimitsOfSize.{v₁, max v₁ u₁} A]
     [PreservesLimitsOfSize.{v₁, max v₁ u₁} s] [s.ReflectsIsomorphisms] :
     IsSheaf J P ↔ IsSheaf J (P ⋙ s) := by
-  letI : ReflectsLimitsOfSize s := reflectsLimitsOfReflectsIsomorphisms
+  letI : ReflectsLimitsOfSize s := reflectsLimits_of_reflectsIsomorphisms
   exact ⟨isSheaf_comp_of_isSheaf J P s, isSheaf_of_isSheaf_comp J P s⟩
 
 /--
@@ -708,7 +707,7 @@ hold.
 theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
     [s.ReflectsIsomorphisms] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
   have : HasLimitsOfSize.{v₁, max v₁ u₁} A' := hasLimitsOfSizeShrink.{_, _, u₁, 0} A'
-  have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSizeShrink.{_, 0, _, u₁} s
+  have : PreservesLimitsOfSize.{v₁, max v₁ u₁} s := preservesLimitsOfSize_shrink.{_, 0, _, u₁} s
   apply isSheaf_iff_isSheaf_comp
 
 end Concrete

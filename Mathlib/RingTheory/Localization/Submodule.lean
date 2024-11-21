@@ -5,14 +5,14 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Submodules in localizations of commutative rings
 
 ## Implementation notes
 
-See `RingTheory/Localization/Basic.lean` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -21,7 +21,7 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
+variable [Algebra R S]
 
 namespace IsLocalization
 
@@ -67,14 +67,10 @@ theorem coeSubmodule_span (s : Set R) :
   rw [IsLocalization.coeSubmodule, Ideal.span, Submodule.map_span]
   rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem coeSubmodule_span_singleton (x : R) :
     coeSubmodule S (Ideal.span {x}) = Submodule.span R {(algebraMap R S) x} := by
   rw [coeSubmodule_span, Set.image_singleton]
 
-variable {g : R →+* P}
-variable {T : Submonoid P} (hy : M ≤ T.comap g) {Q : Type*} [CommRing Q]
-variable [Algebra P Q] [IsLocalization T Q]
 variable [IsLocalization M S]
 
 include M in
@@ -87,7 +83,7 @@ variable {S M}
 @[mono]
 theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
     coeSubmodule S I ≤ coeSubmodule S J ↔ I ≤ J :=
-  -- Note: #8386 had to specify the value of `f` here:
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f` here:
   Submodule.map_le_map_iff_of_injective (f := Algebra.linearMap R S) (IsLocalization.injective _ h)
     _ _
 
@@ -159,11 +155,11 @@ namespace IsFractionRing
 
 open IsLocalization
 
-variable {A K : Type*} [CommRing A]
+variable {K : Type*}
 
 section CommRing
 
-variable [CommRing K] [Algebra R K] [IsFractionRing R K] [Algebra A K] [IsFractionRing A K]
+variable [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 @[simp, mono]
 theorem coeSubmodule_le_coeSubmodule {I J : Ideal R} :
