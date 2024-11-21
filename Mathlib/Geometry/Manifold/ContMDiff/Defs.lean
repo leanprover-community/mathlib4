@@ -155,11 +155,7 @@ read in the preferred chart at this point. -/
 def ContMDiffWithinAt (n : ℕ∞) (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (ContDiffWithinAtProp I I' n) f s x
 
---variable (I I') in
-/- Abbreviation for `ContMDiffWithinAt I I' ⊤ f s x`. See also documentation for `Smooth`.
--/
---abbrev SmoothWithinAt (f : M → M') (s : Set M) (x : M) :=
---  ContMDiffWithinAt I I' ⊤ f s x
+@[deprecated (since := "024-11-21")] alias SmoothWithinAt := ContMDiffWithinAt
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable at a point in a manifold if
@@ -175,10 +171,7 @@ theorem contMDiffAt_iff {n : ℕ∞} {f : M → M'} {x : M} :
           (extChartAt I x x) :=
   liftPropAt_iff.trans <| by rw [ContDiffWithinAtProp, preimage_univ, univ_inter]; rfl
 
---variable (I I') in
-/- Abbreviation for `ContMDiffAt I I' ⊤ f x`. See also documentation for `Smooth`. -/
---abbrev SmoothAt (f : M → M') (x : M) :=
---  ContMDiffAt I I' ⊤ f x
+@[deprecated (since := "024-11-21")] alias SmoothAt := ContMDiffAt
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a set of a manifold if it is continuous
@@ -187,10 +180,7 @@ around these points. -/
 def ContMDiffOn (n : ℕ∞) (f : M → M') (s : Set M) :=
   ∀ x ∈ s, ContMDiffWithinAt I I' n f s x
 
---variable (I I') in
-/- Abbreviation for `ContMDiffOn I I' ⊤ f s`. See also documentation for `Smooth`. -/
---abbrev SmoothOn (f : M → M') (s : Set M) :=
---  ContMDiffOn I I' ⊤ f s
+@[deprecated (since := "024-11-21")] alias SmoothOn := ContMDiffOn
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a manifold if it is continuous
@@ -199,16 +189,8 @@ around these points. -/
 def ContMDiff (n : ℕ∞) (f : M → M') :=
   ∀ x, ContMDiffAt I I' n f x
 
-variable (I I') in
-/- Abbreviation for `ContMDiff I I' ⊤ f`.
-Short note to work with these abbreviations: a lemma of the form `ContMDiffFoo.bar` will
-apply fine to an assumption `SmoothFoo` using dot notation or normal notation.
-If the consequence `bar` of the lemma involves `ContDiff`, it is still better to restate
-the lemma replacing `ContDiff` with `Smooth` both in the assumption and in the conclusion,
-to make it possible to use `Smooth` consistently.
-This also applies to `SmoothAt`, `SmoothOn` and `SmoothWithinAt`. -/
---abbrev Smooth (f : M → M') :=
---  ContMDiff I I' ⊤ f
+@[deprecated (since := "024-11-21")] alias Smooth := ContMDiff
+
 
 /-! ### Deducing smoothness from higher smoothness -/
 

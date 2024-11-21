@@ -39,9 +39,7 @@ structure ContMDiffSection where
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 
-/- Bundled smooth sections of a vector bundle. -/
---abbrev SmoothSection :=
---  ContMDiffSection I F ⊤ V
+@[deprecated (since := "024-11-21")] alias SmoothSection := ContMDiffSection
 
 @[inherit_doc] scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
