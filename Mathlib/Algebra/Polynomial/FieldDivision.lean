@@ -170,7 +170,7 @@ theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative
 
 /-- A sufficient condition for the set of roots of a nonzero polynomial `f` to be a subset of the
 set of roots of `g` is that `f` divides `f.derivative * g`. Over an algebraically closed field of
-characteristic zero, this is also a necessary condiction.
+characteristic zero, this is also a necessary condition.
 See `isRoot_of_isRoot_iff_dvd_derivative_mul` -/
 theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : f ≠ 0)
     (hfd : f ∣ f.derivative * g) {a : R} (haf : f.IsRoot a) : g.IsRoot a := by
