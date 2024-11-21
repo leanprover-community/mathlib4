@@ -142,19 +142,30 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   guard_hyp w : 0 = y + z
   assumption
 
+section
 abbrev myId (a : ℤ) : ℤ := a
-irreducible_def myIdOpaque : ℤ → ℤ := myId
 
 /-
 Test that when `abel_nf` normalizes multiple expressions which contain a particular atom, it uses a
-form for that atom which is consistent between expression.
+form for that atom which is consistent between expressions.
+
+We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
+about differing instance paths.
 -/
+/--
+info: α : Type ?u.68666
+a b : α
+x : ℤ
+R : ℤ → ℤ → Prop
+hR : Reflexive R
+h : R (2 • myId x) (2 • myId x)
+⊢ True
+-/
+#guard_msgs (info) in
 example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
-  have : R (myId x + x) (x + myId x) := by
-    abel_nf
-    -- `guard_target` is using reducible defeq, so we need to make sure it cannot unfold any `myId`s
-    -- in the goal state.
-    rw [← myIdOpaque_def]
-    guard_target = R ((2:ℤ) • myIdOpaque x) ((2:ℤ) • myIdOpaque x)
-    apply hR
+  have h : R (myId x + x) (x + myId x) := hR ..
+  abel_nf at h
+  trace_state
   trivial
+
+end

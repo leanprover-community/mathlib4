@@ -84,23 +84,6 @@ example (x : ℝ) (hx : x ≠ 0) :
   field_simp
   ring
 
-abbrev myId (a : ℤ) : ℤ := a
-irreducible_def myIdOpaque : ℤ → ℤ := myId
-
-/-
-Test that when `ring_nf` normalizes multiple expressions which contain a particular atom, it uses a
-form for that atom which is consistent between expressions.
--/
-example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
-  have : R (myId x + x) (x + myId x) := by
-    ring_nf
-    -- `guard_target` is using reducible defeq, so we need to make sure it cannot unfold any `myId`s
-    -- in the goal state.
-    rw [← myIdOpaque_def]
-    guard_target = R (myIdOpaque x * 2) (myIdOpaque x * 2)
-    exact test_sorry
-  trivial
-
 -- As reported at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20failing.20to.20fully.20normalize
 example (x : ℤ) (h : x - x + x = 0) : x = 0 := by
@@ -195,3 +178,28 @@ example {n : ℝ} (_hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1
   ring_nf
   trace_state
   exact test_sorry
+
+section
+abbrev myId (a : ℤ) : ℤ := a
+
+/-
+Test that when `ring_nf` normalizes multiple expressions which contain a particular atom, it uses a
+form for that atom which is consistent between expressions.
+
+We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
+about differing instance paths.
+-/
+/--
+info: x : ℤ
+R : ℤ → ℤ → Prop
+h : R (myId x * 2) (myId x * 2)
+⊢ True
+-/
+#guard_msgs (info) in
+example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
+  have h : R (myId x + x) (x + myId x) := test_sorry
+  ring_nf at h
+  trace_state
+  trivial
+
+end
