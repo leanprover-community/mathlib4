@@ -340,7 +340,7 @@ lemma postComp_eq {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
 @[simps!]
 def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
-  NatIso.ofComponents (fun X ↦ eqToIso rfl)
+  NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 /-- A natural transformation `F ⟶ G` induces a natural transformation on
 `Over X` up to `Under.map`. -/
@@ -659,7 +659,7 @@ lemma postComp_eq {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
 @[simps!]
 def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
-  NatIso.ofComponents (fun X ↦ eqToIso rfl)
+  NatIso.ofComponents (fun X ↦ Iso.refl _)
 
 /-- A natural transformation `F ⟶ G` induces a natural transformation on
 `Under X` up to `Under.map`. -/
@@ -927,8 +927,8 @@ def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) where
 def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
   functor := Over.opToOpUnder X
   inverse := Under.opToOverOp X
-  unitIso := eqToIso rfl
-  counitIso := eqToIso rfl
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 /-- The canonical functor by reversing structure arrows. -/
 def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ where
@@ -944,8 +944,8 @@ def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) where
 def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
   functor := Under.opToOpOver X
   inverse := Over.opToUnderOp X
-  unitIso := eqToIso rfl
-  counitIso := eqToIso rfl
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 end Opposite
 
