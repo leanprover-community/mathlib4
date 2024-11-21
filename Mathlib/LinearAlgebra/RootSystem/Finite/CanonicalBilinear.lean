@@ -90,6 +90,10 @@ lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
     ∑ (i : ι), P.coroot' i x * P.coroot' i y := by
   simp [RootForm]
 
+lemma Polarization_apply_apply (x y : M) :
+    P.toPerfectPairing y (P.Polarization x) = P.RootForm x y := by
+  simp [RootForm]
+
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
   simp [LinearMap.IsSymm, mul_comm, rootForm_apply_apply]

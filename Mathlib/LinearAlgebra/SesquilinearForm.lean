@@ -798,4 +798,64 @@ end CommRing
 
 end Nondegenerate
 
+namespace BilinForm
+
+lemma inner_inner_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (x y : M) :
+    B ((B x y) • x - (B x x) • y) ((B x y) • x - (B x x) • y) =
+      (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
+  simp only [LinearMap.map_sub, LinearMap.map_smul, LinearMap.sub_apply, LinearMap.smul_apply,
+    smul_eq_mul, mul_sub, mul_assoc]
+  rw [mul_comm (B x y) (B x x), mul_left_comm (B x y) (B x x)]
+  abel
+
+lemma zero_le_inner_self_mul [LinearOrderedCommRing R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (hs : ∀ x, 0 ≤ B x x) (x y : M) :
+    0 ≤ (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
+  rw [← inner_inner_smul_sub_eq B x y]
+  exact hs ((B x) y • x - (B x) x • y)
+
+/-- The **Cauchy-Schwarz inequality** for positive semidefinite forms. -/
+lemma inner_mul_inner_le  [LinearOrderedCommRing R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (hs : ∀ x, 0 ≤ B x x) {x : M} (hx : 0 < B x x) (y : M) :
+    (B x y) * (B y x) ≤ (B x x) * (B y y) :=
+  sub_nonneg.mp <| nonneg_of_mul_nonneg_right (zero_le_inner_self_mul B (fun z => hs z) x y) hx
+
+/-- The **Cauchy-Schwarz inequality** for positive definite forms. -/
+lemma inner_mul_inner_le_of_pos [LinearOrderedCommRing R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (hp : ∀ x, x ≠ 0 → 0 < B x x) (x y : M) :
+    (B x y) * (B y x) ≤ (B x x) * (B y y) := by
+  by_cases hx : x = 0; · simp [hx]
+  refine inner_mul_inner_le B (fun z => ?_) (hp x hx) y
+  by_cases hz : z = 0; · simp [hz]
+  exact le_of_lt <| hp z hz
+
+/-- The equality case of **Cauchy-Schwarz**. -/
+lemma not_LinearIndependent_of_inner_mul_eq [LinearOrderedCommRing R] [Nontrivial R]
+    [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M) (hp : ∀ x, x ≠ 0 → 0 < B x x)
+    (x y : M) (he : (B x y) * (B y x) = (B x x) * (B y y)) :
+    ¬ LinearIndependent R ![x, y] := by
+  have hz : (B x y) • x - (B x x) • y = 0 := by
+    by_contra hc
+    exact (ne_of_lt (hp ((B x) y • x - (B x) x • y) hc)).symm <|
+      (inner_inner_smul_sub_eq B x y).symm ▸ (mul_eq_zero_of_right ((B x) x)
+      (sub_eq_zero_of_eq he.symm))
+  by_contra hL
+  by_cases hx : x = 0
+  · simpa [hx] using LinearIndependent.ne_zero 0 hL
+  · have h := sub_eq_zero.mpr (sub_eq_zero.mp hz).symm
+    rw [sub_eq_add_neg, ← neg_smul, add_comm] at h
+    exact (Ne.symm (ne_of_lt (hp x hx))) (LinearIndependent.eq_zero_of_pair hL h).2
+
+/-- Strict **Cauchy-Schwarz** in the linearly independent case. -/
+lemma inner_mul_lt_inner_self [LinearOrderedCommRing R] [Nontrivial R] [AddCommGroup M] [Module R M]
+    (B : LinearMap.BilinForm R M) (hp : ∀ x, x ≠ 0 → 0 < B x x) {x y : M}
+    (hxy : LinearIndependent R ![x, y]) :
+    (B x y) * (B y x) < (B x x) * (B y y) := by
+  refine lt_of_le_of_ne (inner_mul_inner_le_of_pos B hp x y) ?_
+  by_contra h
+  apply (not_LinearIndependent_of_inner_mul_eq B hp x y h) hxy
+
+end BilinForm
+
 end LinearMap
