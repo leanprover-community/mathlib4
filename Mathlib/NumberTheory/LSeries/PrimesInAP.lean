@@ -37,7 +37,7 @@ variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [UniformGroup α] [
 open Nat.Primes in
 @[to_additive tsum_eq_tsum_primes_of_support_subset_prime_powers]
 lemma tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
-     (hfm : Multipliable f) (hf : Function.mulSupport f ⊆ {n | IsPrimePow n}) :
+    (hfm : Multipliable f) (hf : Function.mulSupport f ⊆ {n | IsPrimePow n}) :
     ∏' n : ℕ, f n = ∏' (p : Nat.Primes) (k : ℕ), f (p ^ (k + 1)) := by
   have hfm' : Multipliable fun pk : Nat.Primes × ℕ ↦ f (pk.fst ^ (pk.snd + 1)) :=
     prodNatEquiv.symm.multipliable_iff.mp <| by
