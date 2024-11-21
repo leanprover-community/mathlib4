@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.Field.ULift
+import Mathlib.Algebra.FreeAlgebra.Cardinality
 import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Rat.Encodable
@@ -31,7 +32,7 @@ local notation "‖" x "‖" => Fintype.card x
 
 open scoped Cardinal nonZeroDivisors
 
-universe u
+universe u v
 
 /-- A finite field has prime power cardinality. -/
 theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ := by
@@ -71,3 +72,25 @@ theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #�
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',
       (Cardinal.nat_lt_aleph0 _).not_le, false_or] using Fintype.nonempty_field_iff
   · simpa only [← Cardinal.infinite_iff, h, true_or, iff_true] using Infinite.nonempty_field
+
+namespace IntermediateField
+
+variable (F : Type u) [Field F]
+
+theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set E) :
+    Cardinal.lift.{u} #(adjoin F s) ≤ Cardinal.lift.{v} #F ⊔ Cardinal.lift.{u} #s ⊔ ℵ₀ := by
+  refine (Algebra.lift_cardinalMk_adjoin_le F s).trans_eq' (Cardinal.lift_inj.2 ?_)
+  let A := Algebra.adjoin F s
+  let K := FractionRing A
+  have hg : Function.Injective A.val := Subtype.val_injective
+  let f : K →ₐ[F] E := IsFractionRing.liftAlgHom hg
+  have hf : f.fieldRange = adjoin F s :=
+    IsFractionRing.liftAlgHom_fieldRange_eq_of_range_eq hg A.range_val
+  rw [← hf, show #f.fieldRange = #K from (AlgEquiv.ofInjectiveField f).toEquiv.symm.cardinal_eq,
+    FractionRing.cardinalMk]
+
+theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
+    #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by
+  simpa using lift_cardinalMk_adjoin_le F s
+
+end IntermediateField
