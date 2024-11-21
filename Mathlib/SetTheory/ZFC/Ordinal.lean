@@ -134,13 +134,13 @@ protected theorem mem (hx : x.IsOrdinal) (hy : y ∈ x) : y.IsOrdinal := by
   exact isOrdinal_iff_isTrans.2 ⟨fun _ hz _ ha ↦ hx.mem_trans' ha hz hy, f.isTrans⟩
 
 /-- An ordinal is a transitive set of transitive sets. -/
-theorem _root_.ZFSet.isOrdinal_iff_isTransitive :
+theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isTransitive :
     x.IsOrdinal ↔ x.IsTransitive ∧ ∀ y ∈ x, y.IsTransitive where
   mp h := ⟨h.isTransitive, fun _ hy ↦ (h.mem hy).isTransitive⟩
   mpr := fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun hyz hzw hwx ↦ (h₂ _ hwx).mem_trans hyz hzw⟩
 
 /-- An ordinal is a transitive set of ordinals. -/
-theorem _root_.ZFSet.isOrdinal_iff_isOrdinal :
+theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isOrdinal :
     x.IsOrdinal ↔ x.IsTransitive ∧ ∀ y ∈ x, y.IsOrdinal where
   mp h := ⟨h.isTransitive, fun _ ↦ h.mem⟩
   mpr := fun ⟨h₁, h₂⟩ ↦ isOrdinal_iff_isTransitive.2 ⟨h₁, fun y hy ↦ (h₂ y hy).isTransitive⟩
