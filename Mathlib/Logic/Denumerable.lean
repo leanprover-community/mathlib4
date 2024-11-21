@@ -242,7 +242,7 @@ theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = 
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
         (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
-      simp [List.mem_filter, Subtype.ext_iff_val, ht]
+      simp +zetaDelta [List.mem_filter, Subtype.ext_iff_val, ht]
     have wf : ∀ m : s, List.maximum t = m → ↑m < x := fun m hmax => by
       simpa using hmt.mp (List.maximum_mem hmax)
     cases' hmax : List.maximum t with m

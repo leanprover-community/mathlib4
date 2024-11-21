@@ -92,9 +92,9 @@ lemma isConnected :
   refine Zigzag.trans ?_ (Zigzag.trans this ?_)
   · exact Zigzag.of_hom (eqToHom (by aesop))
   · apply Zigzag.of_inv
-    refine CostructuredArrow.homMk (StructuredArrow.homMk ρ.X₁.hom (by simp)) ?_
+    refine CostructuredArrow.homMk (StructuredArrow.homMk ρ.X₁.hom (by simp +zetaDelta)) ?_
     ext
-    dsimp
+    dsimp +zetaDelta
     rw [← cancel_epi (isoOfHom L W₂ ρ.w.left ρ.hw.1).hom, isoOfHom_hom,
       isoOfHom_hom_inv_id_assoc, ← L.map_comp_assoc, Arrow.w_mk_right, Arrow.mk_hom,
       L.map_comp, assoc, isoOfHom_hom_inv_id_assoc, fac]
