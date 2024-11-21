@@ -129,7 +129,8 @@ theorem card_Ioc_of_le (h : a ≤ b) : (#(Ioc a b) : ℤ) = b - a := by
 theorem card_Ioo_of_lt (h : a < b) : (#(Ioo a b) : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 
-theorem Icc_of_eq_sub_one (h : a = b - 1) : Icc a b = {a, b} := by
+theorem Icc_eq_pair (h : a + 1 = b) : Icc a b = {a, b} := by
+  rw [← eq_sub_iff_add_eq] at h
   refine le_antisymm (fun t ht ↦ ?_) (fun t ht ↦ ?_)
   · rw [h, mem_Icc] at ht
     by_cases hta : t = b - 1
