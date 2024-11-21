@@ -142,6 +142,9 @@ theorem mdifferentiableAt_mul_left {a b : G} : MDifferentiableAt I I (a * ·) b 
 theorem contMDiff_mul_right {a : G} : ContMDiff I I n (· * a) :=
   contMDiff_id.mul contMDiff_const
 
+@[deprecated (since := "2024-11-21")] alias smooth_mul_right := contMDiff_mul_right
+@[deprecated (since := "2024-11-21")] alias smooth_add_right := contMDiff_add_right
+
 @[to_additive]
 theorem contMDiffAt_mul_right {a b : G} : ContMDiffAt I I n (· * a) b :=
   contMDiff_mul_right.contMDiffAt
