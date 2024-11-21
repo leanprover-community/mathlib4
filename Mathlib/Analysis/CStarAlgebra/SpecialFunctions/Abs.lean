@@ -81,10 +81,18 @@ lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
 theorem IsSelfAdjoint.mul_self_nonneg {a : A} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
+lemma abs_sq_eq_cfcₙ_norm_sq_complex (a : A) (ha : IsStarNormal a) :
+    abs a ^ (2 : NNReal) = cfcₙ (fun z : ℂ ↦ (‖z‖ ^ 2 : ℂ)) a := by
+  sorry
+
+
+#exit
+
+/- The result above may be easier to begin with. -/
 open ComplexConjugate in
 lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
     abs a = cfcₙ (fun z : ℂ ↦ (‖z‖ : ℂ)) a := by
-  rw [abs]
+  simp only [abs, Real.norm_eq_abs, ← Real.sqrt_sq_eq_abs, sq, Complex.conj_mul', Complex.ofReal_pow _ 2]
   --abs a becomes √(star a * a).
   --We need that ‖z‖ = √(star z * z), where star z is the complex conjugate of z.
   --Somehow the square root should be real, but our theorem above might handle this.
@@ -107,10 +115,11 @@ lemma abs_eq_cfcₙ_norm_complex (a : A) [ha : IsStarNormal a] :
   --this is fun...it's easy to find the right proofs using the automation...
   --using this last lemma, the entire proof can probably be simplified using some real
   --squareroot lemma...
-lemma abs_of_nonneg {a : A} (ha : 0 ≤ a) : abs a = a := by
-  rw [abs, ha.star_eq, sqrt_mul_self a ha]
 
 #exit
+
+lemma abs_of_nonneg {a : A} (ha : 0 ≤ a) : abs a = a := by
+  rw [abs, ha.star_eq, sqrt_mul_self a ha]
 
 --The following results seem to amount to translating over to functions.
 
