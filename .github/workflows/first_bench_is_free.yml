@@ -2,19 +2,24 @@ name: Auto-bench
 
 on:
   pull_request:
-    types: [opened]  # This triggers the action when the PR is opened.
+    #types: [opened]  # This triggers the action when the PR is opened.
 
 jobs:
   automatic_first_bench:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Produce bench message
+        id: bench_message
+        run: |
+          message=$'!bench\n\nThis is an automated bench-marking that runs when a PR is opened. No need to repeat.\n'
+          printf '%s' "${message}" | hexdump -cC
+          printf 'message<<EOF\n%s\nEOF' "${message}" >> "${GITHUB_OUTPUT}"
+
       - name: Add comment to PR
         uses: GrantBirki/comment@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            !bench
-
-            This is an automated bench-marking that runs when a PR is opened. No need to repeat.
+          body: ${{ steps.bench_message.outputs.message }}
