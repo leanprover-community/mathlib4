@@ -48,6 +48,8 @@ theorem wellFounded (size : MonomialOrder σ α) [Finite σ] :
     (s := Set.univ) (r' := (· ≤ ·)) (fun _ _ _ _ h => size.monotone' h)).wellFoundedOn
   simpa [and_iff_right_of_imp le_of_lt]
 
+theorem injective : Function.Injective size := size.toEmbedding.injective
+
 @[simp]
 theorem add_le_add_right_iff {m n p : σ →₀ ℕ} :
     size (m + p) ≤ size (n + p) ↔ size m ≤ size n :=
@@ -60,6 +62,10 @@ theorem add_le_add_left_iff {m n p : σ →₀ ℕ} :
 
 @[simp]
 theorem map_zero : size 0 = ⊥ := size.toFun_zero
+
+@[simp]
+theorem map_eq_bot_iff {p : σ →₀ ℕ} : size p = ⊥ ↔ p = 0 := by
+  rw [← map_zero, size.injective.eq_iff]
 
 noncomputable def leadingMonomial (f : MvPolynomial σ K) : σ →₀ ℕ :=
   (f.support.toList.argmax size).getD 0
@@ -143,7 +149,8 @@ theorem leadingMonomial_neg {p : MvPolynomial σ K} :
     size.leadingMonomial (-p) = size.leadingMonomial p := by
   simp [leadingMonomial]
 
-theorem size_leadingMon_sub_lt {p q : MvPolynomial σ K} (hp0 : p ≠ 0)
+theorem size_leadingMon_sub_lt {p q : MvPolynomial σ K}
+    (hp0 : 0 < size.leadingMonomial p)
     (hm : size.leadingMonomial p = size.leadingMonomial q)
     (hc : size.leadingCoeff p = size.leadingCoeff q) :
     size (size.leadingMonomial (p - q)) < size (size.leadingMonomial p) := by
@@ -151,21 +158,16 @@ theorem size_leadingMon_sub_lt {p q : MvPolynomial σ K} (hp0 : p ≠ 0)
   · rw [sub_eq_add_neg]
     exact le_trans leadingMonomial_add_le (by simp_all)
   · intro h
+    have hp0 : p ≠ 0 := by rintro rfl; simp_all
     by_cases hpq : p = q
-    · subst p
-      simp only [sub_self, leadingMonomial_zero, map_zero] at h
-      erw [← size.map_zero, size.injective.eq_iff, eq_comm,
-        leading] at h
-    erw [size.injective.eq_iff] at h
+    · subst q; simp_all [@eq_comm _ ⊥]
+    rw [size.injective.eq_iff] at h
     simp only [MonomialOrder.leadingCoeff] at hc
     have hpq : (p - q).coeff (size.leadingMonomial p) = 0 := by
       rw [coeff_sub, hc, hm, sub_self]
     have hp : (p - q).coeff (size.leadingMonomial p) ≠ 0 := by
       rw [← h, ← mem_support_iff]
-      exact leadingMonomial_mem_support (by
-        rw [← sub_eq_zero, mem_support_iff] at hp0
-        exact hp0)
-    rw [← h] at hp
+      exact leadingMonomial_mem_support (by rwa [Ne, sub_eq_zero])
     exact hp hpq
 
 variable (size)
@@ -200,59 +202,60 @@ theorem isGroebnerSet_iff_leadingMonomial_le :
       rcases h1 m hmf with ⟨g, hg, hgm⟩
       exact ⟨g, Ideal.subset_span hg, hgm⟩
 
-variable (size) (G)
-structure LeadReduction (p : MvPolynomial σ K) : Type _ where
-  ( toList : List (MvPolynomial σ K) )
-  ( chain : toList.Chain (fun p q => ∃ g ∈ G, ∃ r : K,
-      size.leadingCoeff p = r * size.leadingCoeff g ∧
-      size.leadingMonomial g ≤ size.leadingMonomial p ∧
-      q = p - monomial (size.leadingMonomial p - size.leadingMonomial g) r * g) p )
+-- variable (size) (G)
+-- structure LeadReduction (p : MvPolynomial σ K) : Type _ where
+--   ( toList : List (MvPolynomial σ K) )
+--   ( chain : toList.Chain (fun p q => ∃ g ∈ G, ∃ r : K,
+--       size.leadingCoeff p = r * size.leadingCoeff g ∧
+--       size.leadingMonomial g ≤ size.leadingMonomial p ∧
+--       q = p - monomial (size.leadingMonomial p - size.leadingMonomial g) r * g) p )
 
-variable {size} {G}
-def LeadReduction.result {p : MvPolynomial σ K} (l : LeadReduction size G p) : MvPolynomial σ K :=
-  (p::l.toList).getLast (List.cons_ne_nil _ _)
+-- variable {size} {G}
+-- def LeadReduction.result {p : MvPolynomial σ K} (l : LeadReduction size G p) : MvPolynomial σ K :=
+--   (p::l.toList).getLast (List.cons_ne_nil _ _)
 
-theorem LeadReduction.sub_result_mem_span {p : MvPolynomial σ K} (l : LeadReduction size G p) :
-    p - l.result ∈ Ideal.span G := by
-  rcases l with ⟨l, hl⟩
-  simp only [LeadReduction.result]
-  induction l generalizing p with
-  | nil => simp [LeadReduction.result]
-  | cons q l ih =>
-    rw [List.chain_cons] at hl
-    rw [← Ideal.add_mem_iff_left _ ((Ideal.neg_mem_iff _).2 (ih hl.2))]
-    simp only [ne_eq, reduceCtorEq, not_false_eq_true, List.getLast_cons]
-    rcases hl.1 with ⟨g, hg, r, hrs, hgm, rfl⟩
-    ring_nf
-    exact Ideal.mul_mem_left _ _ (Ideal.subset_span hg)
+-- theorem LeadReduction.sub_result_mem_span {p : MvPolynomial σ K} (l : LeadReduction size G p) :
+--     p - l.result ∈ Ideal.span G := by
+--   rcases l with ⟨l, hl⟩
+--   simp only [LeadReduction.result]
+--   induction l generalizing p with
+--   | nil => simp [LeadReduction.result]
+--   | cons q l ih =>
+--     rw [List.chain_cons] at hl
+--     rw [← Ideal.add_mem_iff_left _ ((Ideal.neg_mem_iff _).2 (ih hl.2))]
+--     simp only [ne_eq, reduceCtorEq, not_false_eq_true, List.getLast_cons]
+--     rcases hl.1 with ⟨g, hg, r, hrs, hgm, rfl⟩
+--     ring_nf
+--     exact Ideal.mul_mem_left _ _ (Ideal.subset_span hg)
 
-@[simp]
-theorem LeadReduction.result_mem_span_iff {p : MvPolynomial σ K} {l : LeadReduction size G p} :
-    l.result ∈ Ideal.span G ↔ p ∈ Ideal.span G := by
-  rw [← Ideal.add_mem_iff_left _ (sub_result_mem_span l)]
-  simp
+-- @[simp]
+-- theorem LeadReduction.result_mem_span_iff {p : MvPolynomial σ K} {l : LeadReduction size G p} :
+--     l.result ∈ Ideal.span G ↔ p ∈ Ideal.span G := by
+--   rw [← Ideal.add_mem_iff_left _ (sub_result_mem_span l)]
+--   simp
 
-def LeadReduction.IsComplete {p : MvPolynomial σ K} {l : LeadReduction size G p} : Prop :=
-  ∀ g ∈ G, ¬ size.leadingMonomial l.result ≤ size.leadingMonomial g
+-- def LeadReduction.IsComplete {p : MvPolynomial σ K} {l : LeadReduction size G p} : Prop :=
+--   ∀ g ∈ G, ¬ size.leadingMonomial l.result ≤ size.leadingMonomial g
 
-theorem LeadReduction.size_lt_of_mem {p q : MvPolynomial σ K} (l : LeadReduction size G p)
-    (hq : q ∈ l.toList) : size (size.leadingMonomial q) < size (size.leadingMonomial p) := by
-  rcases l with ⟨l, hl⟩
-  induction l with
-  | nil => simp at hq
-  | cons r l ih =>
-    rw [List.chain_cons] at hl
-    rcases List.mem_cons.1 hq with rfl | hq
-    · rcases hl.1 with ⟨g, hg, s, hs, hgm, rfl⟩
+-- theorem LeadReduction.chain_size_lt {p q : MvPolynomial σ K} (l : LeadReduction size G p) :
+--     l.toList.Chain (fun q r => r ≠ 0 → size (size.leadingMonomial r) <
+--       size (size.leadingMonomial q)) p := by
+--   have := l.chain
+--   rw [← List.map_id l.toList] at this
+--   refine List.chain_of_chain_map id ?_ this
+--   rintro q r ⟨g, hg, r, hr, hgm, rfl⟩ h
+--   refine size_leadingMon_sub_lt ?_ ?_ ?_
 
 
-theorem IsGrobnerSet.exists_leadReduction_eq_zero_of_finite_vars
-    (hvars : Set.Finite (⋃ g ∈ G, (g.vars : Set σ)))
-    (hG : IsGroebnerSet size G)
-    {p : MvPolynomial σ K} (hp : p ∈ Ideal.span G) :
-    ∃ l : LeadReduction size G p, l.result = 0 := by
-  rw [isGroebnerSet_iff_leadingMonomial_le] at hG
-  rcases hG p hp with ⟨g, hg, hpg⟩
+-- theorem IsGrobnerSet.exists_complete_leadReduction_of_finite_vars
+--     (hvars : Set.Finite (⋃ g ∈ G, (g.vars : Set σ))) {p : MvPolynomial σ K} :
+--     ∃ l : LeadReduction size G p, l.IsComplete := by
+--   rw [isGroebnerSet_iff_leadingMonomial_le] at hG
+--   rcases hG p hp with ⟨g, hg, hpg⟩
+
+theorem exists_critical_pair_of_mem_of_forall_le {p : MvPolynomial σ K}
+    (hG : p ∈ Ideal.span G) (hp : ∀ g ∈ G, ¬ size.leadingMonomial g ≤ size.leadingMonomial p) :
+    ∃ g₁ g₂ ∈ G, ¬ IsGroebnerSet _
 
 
 theorem isGroebnerSet_iff_exists_leadReduction_eq_zero :
