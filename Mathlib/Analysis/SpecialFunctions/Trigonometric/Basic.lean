@@ -201,8 +201,6 @@ end NNReal
 
 namespace Real
 
-open Real
-
 @[simp]
 theorem sin_pi : sin π = 0 := by
   rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), two_mul, add_div, sin_add, cos_pi_div_two]; simp
