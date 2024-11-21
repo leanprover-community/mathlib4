@@ -169,17 +169,17 @@ def Nat.Primes.prodNatEquiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} wh
     rw [sub_one_add_one n.prop.factorization_minFac_ne_zero, n.prop.minFac_pow_factorization_eq]
 
 @[simp]
-lemma Nat.Primes.prod_nat_equiv_apply (p : Nat.Primes) (k : ℕ) :
+lemma Nat.Primes.prodNatEquiv_apply (p : Nat.Primes) (k : ℕ) :
     prodNatEquiv (p, k) = ⟨p ^ (k + 1), p, k + 1, prime_iff.mp p.prop, k.add_one_pos, rfl⟩ := by
   rfl
 
 @[simp]
-lemma Nat.Primes.coe_prod_nat_equiv_apply (p : Nat.Primes) (k : ℕ) :
+lemma Nat.Primes.coe_prodNatEquiv_apply (p : Nat.Primes) (k : ℕ) :
     (prodNatEquiv (p, k) : ℕ) = p ^ (k + 1) :=
   rfl
 
 @[simp]
-lemma Nat.Primes.prod_nat_equiv_symm_apply {n : ℕ} (hn : IsPrimePow n) :
+lemma Nat.Primes.prodNatEquiv_symm_apply {n : ℕ} (hn : IsPrimePow n) :
     prodNatEquiv.symm ⟨n, hn⟩ =
       (⟨n.minFac, minFac_prime hn.ne_one⟩, n.factorization n.minFac - 1) :=
   rfl
