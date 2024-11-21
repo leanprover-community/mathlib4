@@ -143,7 +143,8 @@ theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isTransitive :
 theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isOrdinal :
     x.IsOrdinal ↔ x.IsTransitive ∧ ∀ y ∈ x, y.IsOrdinal where
   mp h := ⟨h.isTransitive, fun _ ↦ h.mem⟩
-  mpr := fun ⟨h₁, h₂⟩ ↦ isOrdinal_iff_isTransitive.2 ⟨h₁, fun y hy ↦ (h₂ y hy).isTransitive⟩
+  mpr := fun ⟨h₁, h₂⟩ ↦ isOrdinal_iff_forall_mem_isTransitive.2
+    ⟨h₁, fun y hy ↦ (h₂ y hy).isTransitive⟩
 
 theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔ x = y ∨ x ∈ y := by
   constructor
