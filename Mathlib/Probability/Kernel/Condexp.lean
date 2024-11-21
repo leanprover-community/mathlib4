@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.CondDistrib
+import Mathlib.Probability.ConditionalProbability
 
 /-!
 # Kernel associated with a conditional expectation
@@ -212,5 +213,61 @@ theorem condexp_ae_eq_integral_condexpKernel [NormedAddCommGroup F] {f : Ω → 
     [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
     μ[f|m] =ᵐ[μ] fun ω => ∫ y, f y ∂condexpKernel μ m ω :=
   ((condexp_ae_eq_integral_condexpKernel' hf_int).symm.trans (by rw [inf_of_le_left hm])).symm
+
+section Cond
+
+/-! ### Relation between conditional expectation, conditional kernel and the conditional measure. -/
+
+open MeasurableSpace
+
+variable {s t : Set Ω} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+
+omit [StandardBorelSpace Ω]
+
+lemma condexp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf : Integrable f μ) :
+    μ[f | generateFrom {s}] =ᵐ[μ.restrict s] fun _ ↦ ∫ x, f x ∂μ[|s] := by
+  by_cases hμs : μ s = 0
+  · rw [Measure.restrict_eq_zero.2 hμs]
+    rfl
+  refine ae_eq_trans (condexp_restrict_ae_eq_restrict
+    (generateFrom_singleton_le hs)
+    (measurableSet_generateFrom rfl) hf).symm ?_
+  · refine (ae_eq_condexp_of_forall_setIntegral_eq
+      (generateFrom_singleton_le hs) hf.restrict ?_ ?_
+      stronglyMeasurable_const.aeStronglyMeasurable').symm
+    · rintro t - -
+      rw [integrableOn_const]
+      exact Or.inr <| measure_lt_top (μ.restrict s) t
+    · rintro t ht -
+      obtain (h | h | h | h) := measurableSet_generateFrom_singleton_iff.1 ht
+      · simp [h]
+      · simp only [h, cond, integral_smul_measure, ENNReal.toReal_inv, integral_const,
+          MeasurableSet.univ, Measure.restrict_apply, univ_inter, Measure.restrict_apply_self]
+        rw [smul_inv_smul₀, Measure.restrict_restrict hs, inter_self]
+        exact ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩
+      · simp only [h, integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
+          ((Measure.restrict_apply_eq_zero hs.compl).2 <| compl_inter_self s ▸ measure_empty),
+          ENNReal.zero_toReal, zero_smul, setIntegral_zero_measure]
+      · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv,
+          integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
+          smul_inv_smul₀ <| ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩]
+
+lemma condexp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    μ⟦t | generateFrom {s}⟧ =ᵐ[μ.restrict s] fun _ ↦ (μ[t|s]).toReal := by
+  rw [← integral_indicator_one ht]
+  exact condexp_generateFrom_singleton hs <| Integrable.indicator (integrable_const 1) ht
+
+lemma condexpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : MeasurableSet s)
+    (ht : MeasurableSet t) :
+    ∀ᵐ ω ∂μ.restrict s,
+      condexpKernel μ (generateFrom {s}) ω t = μ[t|s] := by
+  have : (fun ω ↦ (condexpKernel μ (generateFrom {s}) ω t).toReal) =ᵐ[μ.restrict s]
+      μ⟦t | generateFrom {s}⟧ :=
+    ae_restrict_le hs <| condexpKernel_ae_eq_condexp
+      (generateFrom_singleton_le hs) ht
+  filter_upwards [condexp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
+  rwa [hω₁, ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
+
+end Cond
 
 end ProbabilityTheory

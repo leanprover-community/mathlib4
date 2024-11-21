@@ -101,7 +101,7 @@ theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
   classical
     have : (∏ x ∈ (@univ Kˣ _).erase (-1), x) = 1 :=
       prod_involution (fun x _ => x⁻¹) (by simp)
-        (fun a => by simp (config := { contextual := true }) [Units.inv_eq_self_iff])
+        (fun a => by simp +contextual [Units.inv_eq_self_iff])
         (fun a => by simp [@inv_eq_iff_eq_inv _ _ a]) (by simp)
     rw [← insert_erase (mem_univ (-1 : Kˣ)), prod_insert (not_mem_erase _ _), this, mul_one]
 
@@ -229,6 +229,8 @@ end
 
 variable (K) [Field K] [Fintype K]
 
+/-- The cardinality `q` is a power of the characteristic of `K`. -/
+@[stacks 09HY "first part"]
 theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : ℕ) := by
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime K p⟩
   letI : Module (ZMod p) K := { (ZMod.castHom dvd_rfl K : ZMod p →+* _).toModule with }

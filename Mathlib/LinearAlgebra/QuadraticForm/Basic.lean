@@ -886,12 +886,12 @@ theorem toQuadraticMap_associated : (associatedHom S Q).toQuadraticMap = Q :=
 -- note: usually `rightInverse` lemmas are named the other way around, but this is consistent
 -- with historical naming in this file.
 theorem associated_rightInverse :
-    Function.RightInverse (associatedHom S) (BilinMap.toQuadraticMap : _ → QuadraticMap R M R) :=
+    Function.RightInverse (associatedHom S) (BilinMap.toQuadraticMap : _ → QuadraticMap R M N) :=
   fun Q => toQuadraticMap_associated S Q
 
 /-- `associated'` is the `ℤ`-linear map that sends a quadratic form on a module `M` over `R` to its
 associated symmetric bilinear form. -/
-abbrev associated' : QuadraticMap R M R →ₗ[ℤ] BilinMap R M R :=
+abbrev associated' : QuadraticMap R M N →ₗ[ℤ] BilinMap R M N :=
   associatedHom ℤ
 
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
@@ -901,14 +901,17 @@ instance canLift :
 
 /-- There exists a non-null vector with respect to any quadratic form `Q` whose associated
 bilinear form is non-zero, i.e. there exists `x` such that `Q x ≠ 0`. -/
-theorem exists_quadraticForm_ne_zero {Q : QuadraticForm R M}
+theorem exists_quadraticMap_ne_zero {Q : QuadraticMap R M N}
     -- Porting note: added implicit argument
-    (hB₁ : associated' (R := R) Q ≠ 0) :
+    (hB₁ : associated' (R := R) (N := N) Q ≠ 0) :
     ∃ x, Q x ≠ 0 := by
   rw [← not_forall]
   intro h
   apply hB₁
   rw [(QuadraticMap.ext h : Q = 0), LinearMap.map_zero]
+
+@[deprecated (since := "2024-10-05")] alias exists_quadraticForm_ne_zero :=
+  exists_quadraticMap_ne_zero
 
 end AssociatedHom
 
@@ -1036,7 +1039,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 theorem separatingLeft_of_anisotropic [Invertible (2 : R)] (Q : QuadraticMap R M R)
     (hB : Q.Anisotropic) :
     -- Porting note: added implicit argument
-    (QuadraticMap.associated' (R := R) Q).SeparatingLeft := fun x hx ↦ hB _ <| by
+    (QuadraticMap.associated' (R := R) (N := R) Q).SeparatingLeft := fun x hx ↦ hB _ <| by
   rw [← hx x]
   exact (associated_eq_self_apply _ _ x).symm
 
@@ -1193,7 +1196,7 @@ on a module `M` over a ring `R` with invertible `2`, i.e. there exists some
 theorem exists_bilinForm_self_ne_zero [htwo : Invertible (2 : R)] {B : BilinForm R M}
     (hB₁ : B ≠ 0) (hB₂ : B.IsSymm) : ∃ x, ¬B.IsOrtho x x := by
   lift B to QuadraticForm R M using hB₂ with Q
-  obtain ⟨x, hx⟩ := QuadraticMap.exists_quadraticForm_ne_zero hB₁
+  obtain ⟨x, hx⟩ := QuadraticMap.exists_quadraticMap_ne_zero hB₁
   exact ⟨x, fun h => hx (Q.associated_eq_self_apply ℕ x ▸ h)⟩
 
 open Module

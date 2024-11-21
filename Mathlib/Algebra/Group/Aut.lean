@@ -141,6 +141,16 @@ theorem conj_symm_apply [Group G] (g h : G) : (conj g).symm h = g⁻¹ * h * g :
 theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
   rfl
 
+/-- Isomorphic groups have isomorphic automorphism groups. -/
+@[simps]
+def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
+    MulAut G ≃* MulAut H where
+  toFun f := ϕ.symm.trans (f.trans ϕ)
+  invFun f := ϕ.trans (f.trans ϕ.symm)
+  left_inv _ := by simp [DFunLike.ext_iff]
+  right_inv _ := by simp [DFunLike.ext_iff]
+  map_mul' := by simp [DFunLike.ext_iff]
+
 end MulAut
 
 namespace AddAut
@@ -150,7 +160,7 @@ variable (A) [Add A]
 /-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance group : Group (AddAut A) where
+instance instGroup : Group (AddAut A) where
   mul g h := AddEquiv.trans h g
   one := AddEquiv.refl _
   inv := AddEquiv.symm
@@ -254,5 +264,15 @@ theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).symm h = -g + h + g :=
 @[simp]
 theorem conj_inv_apply [AddGroup G] (g h : G) : (Additive.toMul (conj g))⁻¹ h = -g + h + g :=
   rfl
+
+/-- Isomorphic additive groups have isomorphic automorphism groups. -/
+@[simps]
+def congr [AddGroup G] {H : Type*} [AddGroup H] (ϕ : G ≃+ H) :
+    AddAut G ≃* AddAut H where
+  toFun f := ϕ.symm.trans (f.trans ϕ)
+  invFun f := ϕ.trans (f.trans ϕ.symm)
+  left_inv _ := by simp [DFunLike.ext_iff]
+  right_inv _ := by simp [DFunLike.ext_iff]
+  map_mul' := by simp [DFunLike.ext_iff]
 
 end AddAut

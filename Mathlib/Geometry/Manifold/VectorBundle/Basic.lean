@@ -193,6 +193,12 @@ theorem contMDiffAt_totalSpace (f : M → TotalSpace F E) (x₀ : M) :
         ContMDiffAt IM 𝓘(𝕜, F) n (fun x => (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
   simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_totalSpace f
 
+/-- Characterization of C^n sections within a set at a point of a smooth vector bundle. -/
+theorem contMDiffWithinAt_section (s : ∀ x, E x) (a : Set B) (x₀ : B) :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F x (s x)) a x₀ ↔
+      ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
+  simp_rw [contMDiffWithinAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffWithinAt_id
+
 /-- Characterization of C^n sections of a smooth vector bundle. -/
 theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F x (s x)) x₀ ↔
@@ -410,7 +416,7 @@ theorem Trivialization.contMDiffOn_symm_trans :
   have Hmaps : MapsTo Prod.fst (e.target ∩ e'.target) (e.baseSet ∩ e'.baseSet) := fun x hx ↦
     ⟨e.mem_target.1 hx.1, e'.mem_target.1 hx.2⟩
   rw [mapsTo_inter] at Hmaps
-  -- TODO: drop `congr` #5473
+  -- TODO: drop `congr` https://github.com/leanprover-community/mathlib4/issues/5473
   refine (contMDiffOn_fst.prod_mk
     (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr ?_
   rintro ⟨b, x⟩ hb

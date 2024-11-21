@@ -318,12 +318,12 @@ theorem cthickening_mem_nhdsSet (E : Set α) {δ : ℝ} (hδ : 0 < δ) : cthicke
 @[simp]
 theorem thickening_union (δ : ℝ) (s t : Set α) :
     thickening δ (s ∪ t) = thickening δ s ∪ thickening δ t := by
-  simp_rw [thickening, infEdist_union, inf_eq_min, min_lt_iff, setOf_or]
+  simp_rw [thickening, infEdist_union, min_lt_iff, setOf_or]
 
 @[simp]
 theorem cthickening_union (δ : ℝ) (s t : Set α) :
     cthickening δ (s ∪ t) = cthickening δ s ∪ cthickening δ t := by
-  simp_rw [cthickening, infEdist_union, inf_eq_min, min_le_iff, setOf_or]
+  simp_rw [cthickening, infEdist_union, min_le_iff, setOf_or]
 
 @[simp]
 theorem thickening_iUnion (δ : ℝ) (f : ι → Set α) :

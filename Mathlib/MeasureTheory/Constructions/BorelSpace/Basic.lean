@@ -35,9 +35,8 @@ import Mathlib.Topology.Instances.Rat
 
 noncomputable section
 
-open Set Filter MeasureTheory
-
-open scoped Topology NNReal ENNReal MeasureTheory
+open Filter MeasureTheory Set Topology
+open scoped NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -616,20 +615,20 @@ instance Prod.borelSpace [SecondCountableTopologyEither α β] :
 source space is also a Borel space. -/
 lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [TopologicalSpace α]
     [MeasurableSpace β] [TopologicalSpace β] [hβ : BorelSpace β] {e : α → β}
-    (h'e : MeasurableEmbedding e) (h''e : Inducing e) :
+    (h'e : MeasurableEmbedding e) (h''e : IsInducing e) :
     BorelSpace α := by
   constructor
   have : MeasurableSpace.comap e (borel β) = ‹_› := by simpa [hβ.measurable_eq] using h'e.comap_eq
-  rw [← this, ← borel_comap, h''e.induced]
+  rw [← this, ← borel_comap, h''e.eq_induced]
 
 instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
-  MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.inducing
+  MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.isInducing
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
 
-protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
+protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ (Homeomorph.ofIsEmbedding f h₁).toMeasurableEquiv) from
@@ -638,14 +637,14 @@ protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbe
 @[deprecated (since := "2024-10-26")]
 alias Embedding.measurableEmbedding := IsEmbedding.measurableEmbedding
 
-protected theorem IsClosedEmbedding.measurableEmbedding {f : α → β}
+protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=
   h.isEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.measurableEmbedding := IsClosedEmbedding.measurableEmbedding
 
-protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
+protected theorem Topology.IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=
   h.isEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 

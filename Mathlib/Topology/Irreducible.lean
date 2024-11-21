@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Minimal
+import Mathlib.Order.Zorn
 /-!
 # Irreducibility in topological spaces
 
@@ -27,7 +28,7 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 
 -/
 
-open Set
+open Set Topology
 
 variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
@@ -302,7 +303,7 @@ theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
   obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
     ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩
       ⟨f y, hy, Set.mem_image_of_mem f hy'⟩
-  cases hf.inj h₄
+  cases hf.injective h₄
   exact ⟨y, h₁, h₂, h₃⟩
 
 end Preirreducible

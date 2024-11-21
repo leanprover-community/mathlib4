@@ -303,13 +303,13 @@ variable (S : ι →o M ≃ₚ[L] N)
 
 instance : DirectedSystem (fun i ↦ (S i).dom)
     (fun _ _ h ↦ Substructure.inclusion (dom_le_dom (S.monotone h))) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 instance : DirectedSystem (fun i ↦ (S i).cod)
     (fun _ _ h ↦ Substructure.inclusion (cod_le_cod (S.monotone h))) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 /-- The limit of a directed system of PartialEquivs. -/
 noncomputable def partialEquivLimit : M ≃ₚ[L] N where
@@ -347,7 +347,7 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
 
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    #adaptation_note /-- After lean4#5020, these two `simp` calls cannot be combined. -/
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/5020, these two `simp` calls cannot be combined. -/
     simp only [partialEquivLimit_comp_inclusion]
     simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
       subtype_comp_inclusion]⟩

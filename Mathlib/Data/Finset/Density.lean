@@ -74,7 +74,7 @@ lemma dens_eq_card_div_card (s : Finset α) : dens s = s.card / Fintype.card α 
   simp_rw [dens, card_disjUnion, Nat.cast_add, add_div]
 
 @[simp] lemma dens_eq_zero : dens s = 0 ↔ s = ∅ := by
-  simp (config := { contextual := true }) [dens, Fintype.card_eq_zero_iff, eq_empty_of_isEmpty]
+  simp +contextual [dens, Fintype.card_eq_zero_iff, eq_empty_of_isEmpty]
 
 lemma dens_ne_zero : dens s ≠ 0 ↔ s.Nonempty := dens_eq_zero.not.trans nonempty_iff_ne_empty.symm
 

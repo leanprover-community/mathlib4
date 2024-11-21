@@ -28,9 +28,9 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 - `IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
 multiplied by the number of its translates is the cardinal of the ambient type
 
-- `IsBlock.is_univ_of_large_block` : a too large block is equal to `Set.univ`
+- `IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
 
-- `IsBlock.is_subsingleton` : a too small block is a subsingleton
+- `IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
 
 - `IsBlock.of_subset` : the intersections of the translates of a finite subset
 that contain a given point is a block
@@ -53,7 +53,7 @@ variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 theorem orbit.eq_or_disjoint (a b : X) :
     orbit G a = orbit G b ∨ Disjoint (orbit G a) (orbit G b) := by
   apply (em (Disjoint (orbit G a) (orbit G b))).symm.imp _ id
-  simp (config := { contextual := true })
+  simp +contextual
     only [Set.not_disjoint_iff, ← orbit_eq_iff, forall_exists_index, and_imp, eq_comm, implies_true]
 
 @[to_additive]
@@ -123,8 +123,11 @@ lemma isBlock_iff_smul_eq_smul_or_disjoint :
     IsBlock G B ↔ ∀ g₁ g₂ : G, g₁ • B = g₂ • B ∨ Disjoint (g₁ • B) (g₂ • B) :=
   forall₂_congr fun _ _ ↦ or_iff_not_imp_left.symm
 
+@[to_additive]
 alias ⟨IsBlock.smul_eq_smul_of_nonempty, _⟩ := isBlock_iff_smul_eq_smul_of_nonempty
+@[to_additive]
 alias ⟨IsBlock.pairwiseDisjoint_range_smul, _⟩ := isBlock_iff_pairwiseDisjoint_range_smul
+@[to_additive]
 alias ⟨IsBlock.smul_eq_smul_or_disjoint, _⟩ := isBlock_iff_smul_eq_smul_or_disjoint
 
 /-- A fixed block is a block. -/
@@ -244,6 +247,7 @@ protected lemma IsBlock.orbit (a : X) : IsBlock G (orbit G a) := (IsFixedBlock.o
 lemma isBlock_top : IsBlock (⊤ : Subgroup G) B ↔ IsBlock G B :=
   Subgroup.topEquiv.toEquiv.forall_congr fun _ ↦ Subgroup.topEquiv.toEquiv.forall_congr_left
 
+@[to_additive]
 lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
     {φ : H → G} (j : Y →ₑ[φ] X) (hB : IsBlock G B) :
     IsBlock H (j ⁻¹' B) := by
@@ -251,6 +255,7 @@ lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
   rw [← Group.preimage_smul_setₛₗ, ← Group.preimage_smul_setₛₗ] at hg ⊢
   exact (hB <| ne_of_apply_ne _ hg).preimage _
 
+@[to_additive]
 theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
     {φ : G →* H} (j : X →ₑ[φ] Y)
     (hφ : Function.Surjective φ) (hj : Function.Injective j)
@@ -259,10 +264,12 @@ theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
   simp only [IsBlock, hφ.forall, ← image_smul_setₛₗ]
   exact fun g₁ g₂ hg ↦ disjoint_image_of_injective hj <| hB <| ne_of_apply_ne _ hg
 
+@[to_additive]
 theorem IsBlock.subtype_val_preimage {C : SubMulAction G X} (hB : IsBlock G B) :
     IsBlock G (Subtype.val ⁻¹' B : Set C) :=
   hB.preimage C.inclusion
 
+@[to_additive]
 theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
     IsBlock G (Subtype.val '' B : Set X) ↔ IsBlock G B := by
   refine forall₂_congr fun g₁ g₂ ↦ ?_
@@ -270,7 +277,7 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
     Set.image_eq_image C.inclusion_injective, disjoint_image_iff C.inclusion_injective]
 
 theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
-    IsBlock (Subgroup.map (MulEquiv.toMonoidHom (MulAut.conj g)) H) (g • B) := by
+    IsBlock (H.map (MulEquiv.toMonoidHom (MulAut.conj g))) (g • B) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
   intro h'
   obtain ⟨h, hH, hh⟩ := Subgroup.mem_map.mp (SetLike.coe_mem h')
@@ -284,20 +291,54 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
     rw [← this]; rfl
   rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
+theorem _root_.AddAction.IsBlock.of_addsubgroup_of_conjugate
+    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
+    {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
+    AddAction.IsBlock (H.map (AddEquiv.toAddMonoidHom (AddAut.conj g))) (g +ᵥ B) := by
+  rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
+  intro h'
+  obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
+  simp only [AddEquiv.coe_toAddMonoidHom, AddAut.conj_apply] at hh
+  suffices h' +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
+    simp only [this]
+    apply (hB.vadd_eq_or_disjoint ⟨h, hH⟩).imp
+    · intro hB'; congr
+    · exact Set.disjoint_image_of_injective (AddAction.injective g)
+  suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
+    exact this
+  rw [← hh, vadd_vadd, vadd_vadd]
+  erw [AddAut.conj_apply]
+  simp
+
 /-- A translate of a block is a block -/
 theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
   rw [← isBlock_top] at hB ⊢
-  rw [← Subgroup.map_comap_eq_self_of_surjective (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
+  rw [← Subgroup.map_comap_eq_self_of_surjective
+          (G := G) (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
   apply IsBlock.of_subgroup_of_conjugate
   rwa [Subgroup.comap_top]
+
+/-- A translate of a block is a block -/
+theorem _root_.AddAction.IsBlock.translate
+    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] (B : Set X)
+    (g : G) (hB : AddAction.IsBlock G B) :
+    AddAction.IsBlock G (g +ᵥ B) := by
+  rw [← AddAction.isBlock_top] at hB ⊢
+  rw [← AddSubgroup.map_comap_eq_self_of_surjective (G := G) ?_ ⊤]
+  · apply AddAction.IsBlock.of_addsubgroup_of_conjugate
+    rwa [AddSubgroup.comap_top]
+  · exact (AddAut.conj g).surjective
 
 variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
   for the action of `G` -/
+@[to_additive "For `VAdd G X`, a block system of `X` is a partition of `X` into blocks
+ for the additive action of `G`"]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
 /-- Translates of a block form a block system. -/
+@[to_additive]
 theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     (hB : IsBlock G B) (hBe : B.Nonempty) :
     IsBlockSystem G (Set.range fun g : G => g • B) := by
@@ -318,6 +359,7 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
 
 section Normal
 
+@[to_additive]
 lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) :
     g • orbit N a = orbit N (g • a) := by
   simp only [orbit, Set.image_smul, Set.smul_set_range]
@@ -334,6 +376,7 @@ lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) 
     simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
 
 /-- An orbit of a normal subgroup is a block -/
+@[to_additive]
 theorem IsBlock.orbit_of_normal {N : Subgroup G} [N.Normal] (a : X) :
     IsBlock G (orbit N a) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -342,6 +385,7 @@ theorem IsBlock.orbit_of_normal {N : Subgroup G} [N.Normal] (a : X) :
   apply orbit.eq_or_disjoint
 
 /-- The orbits of a normal subgroup form a block system -/
+@[to_additive]
 theorem IsBlockSystem.of_normal {N : Subgroup G} [N.Normal] :
     IsBlockSystem G (Set.range fun a : X => orbit N a) := by
   constructor
@@ -350,7 +394,7 @@ theorem IsBlockSystem.of_normal {N : Subgroup G} [N.Normal] :
     exact .orbit_of_normal a
 
 section Group
-variable {S H : Type*} [Group H] [SetLike S H] [SubgroupClass S H] {s : S} {a b : G}
+variable {S H : Type*} [Group H] [SetLike S H] [SubgroupClass S H] {s : S} {a : G}
 
 /-!
 Annoyingly, it seems like the following two lemmas cannot be unified.
@@ -402,6 +446,7 @@ section Stabilizer
   (Wielandt, th. 7.5) -/
 
 /-- The orbit of `a` under a subgroup containing the stabilizer of `a` is a block -/
+@[to_additive]
 theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
   rw [isBlock_iff_smul_eq_of_nonempty]
@@ -413,11 +458,13 @@ theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
   simpa only [mem_stabilizer_iff, InvMemClass.coe_inv, mul_smul, inv_smul_eq_iff]
 
 /-- If `B` is a block containing `a`, then the stabilizer of `B` contains the stabilizer of `a` -/
+@[to_additive]
 theorem IsBlock.stabilizer_le (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
     stabilizer G a ≤ stabilizer G B :=
   fun g hg ↦ hB.smul_eq_of_nonempty ⟨a, by rwa [← hg, smul_mem_smul_set_iff], ha⟩
 
 /-- A block containing `a` is the orbit of `a` under its stabilizer -/
+@[to_additive]
 theorem IsBlock.orbit_stabilizer_eq [IsPretransitive G X] (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
     MulAction.orbit (stabilizer G B) a = B := by
   ext x
@@ -432,6 +479,7 @@ theorem IsBlock.orbit_stabilizer_eq [IsPretransitive G X] (hB : IsBlock G B) {a 
 
 /-- A subgroup containing the stabilizer of `a`
   is the stabilizer of the orbit of `a` under that subgroup -/
+@[to_additive]
 theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H) :
     stabilizer G (orbit H a) = H := by
   ext g
@@ -448,6 +496,9 @@ variable (G)
 
 /-- Order equivalence between blocks in `X` containing a point `a`
  and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)-/
+@[to_additive
+  "Order equivalence between blocks in `X` containing a point `a`
+ and subgroups of `G` containing the stabilizer of `a` (Wielandt, th. 7.5)"]
 def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
     { B : Set X // a ∈ B ∧ IsBlock G B } ≃o Set.Ici (stabilizer G a) where
   toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩
@@ -478,6 +529,7 @@ namespace IsBlock
 
 variable [IsPretransitive G X] {B : Set X}
 
+@[to_additive]
 theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
     B.ncard = (stabilizer G x).relindex (stabilizer G B) := by
   have key : (stabilizer G x).subgroupOf (stabilizer G B) = stabilizer (stabilizer G B) x := by
@@ -486,6 +538,9 @@ theorem ncard_block_eq_relindex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
 
 /-- The cardinality of the ambient space is the product of the cardinality of a block
   by the cardinality of the set of translates of that block -/
+@[to_additive
+  "The cardinality of the ambient space is the product of the cardinality of a block
+  by the cardinality of the set of translates of that block"]
 theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B * Set.ncard (orbit G B) = Nat.card X := by
   obtain ⟨x, hx⟩ := hB_ne
@@ -493,12 +548,14 @@ theorem ncard_block_mul_ncard_orbit_eq (hB : IsBlock G B) (hB_ne : B.Nonempty) :
       Subgroup.relindex_mul_index (hB.stabilizer_le hx), index_stabilizer_of_transitive]
 
 /-- The cardinality of a block divides the cardinality of the ambient type -/
+@[to_additive "The cardinality of a block divides the cardinality of the ambient type"]
 theorem ncard_dvd_card (hB : IsBlock G B) (hB_ne : B.Nonempty) :
     Set.ncard B ∣ Nat.card X :=
   Dvd.intro _ (hB.ncard_block_mul_ncard_orbit_eq hB_ne)
 
 /-- A too large block is equal to `univ` -/
-theorem eq_univ_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
+@[to_additive "A too large block is equal to `univ`"]
+theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < Set.ncard B * 2) :
     B = Set.univ := by
   rcases Set.eq_empty_or_nonempty B with rfl | hB_ne
   · simp only [Set.ncard_empty, zero_mul, not_lt_zero'] at hB'
@@ -510,7 +567,10 @@ theorem eq_univ_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X < S
   · rw [mul_one, ← Set.ncard_univ] at key
     rw [Set.eq_of_subset_of_ncard_le (Set.subset_univ B) key.ge]
 
+@[deprecated (since := "2024-10-29")] alias eq_univ_card_lt := eq_univ_of_card_lt
+
 /-- If a block has too many translates, then it is a (sub)singleton  -/
+@[to_additive "If a block has too many translates, then it is a (sub)singleton"]
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     (hB' : Nat.card X < 2 * Set.ncard (orbit G B)) :
     B.Subsingleton := by
@@ -531,10 +591,12 @@ theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
    For G = ℤ acting on itself, a = 0 and B = ℕ, the translates `k • B` of the statement
    are just `k + ℕ`, for `k ≤ 0`, and the corresponding intersection is `ℕ`, which is not a block.
    (Remark by Thomas Browning) -/
--- Note : add {B} because otherwise Lean includes `hB : IsBlock G B`
 /-- The intersection of the translates of a *finite* subset which contain a given point
-is a block (Wielandt, th. 7.3 )-/
-theorem of_subset {B : Set X} (a : X) (hfB : B.Finite) :
+is a block (Wielandt, th. 7.3)-/
+@[to_additive
+  "The intersection of the translates of a *finite* subset which contain a given point
+  is a block (Wielandt, th. 7.3)"]
+theorem of_subset (a : X) (hfB : B.Finite) :
     IsBlock G (⋂ (k : G) (_ : a ∈ k • B), k • B) := by
   let B' := ⋂ (k : G) (_ : a ∈ k • B), k • B
   cases' Set.eq_empty_or_nonempty B with hfB_e hfB_ne

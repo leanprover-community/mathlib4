@@ -46,12 +46,14 @@ def mkHomeomorph : M ≃ₜ Mᵈᵐᵃ where
 @[to_additive (attr := simp)]
 theorem coe_mkHomeomorph_symm : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ).symm = mk.symm := rfl
 
-@[to_additive] theorem inducing_mk : Inducing (@mk M) := mkHomeomorph.inducing
+@[to_additive] theorem isInducing_mk : IsInducing (@mk M) := mkHomeomorph.isInducing
 @[to_additive] theorem isEmbedding_mk : IsEmbedding (@mk M) := mkHomeomorph.isEmbedding
 @[to_additive] theorem isOpenEmbedding_mk : IsOpenEmbedding (@mk M) := mkHomeomorph.isOpenEmbedding
 @[to_additive] theorem isClosedEmbedding_mk : IsClosedEmbedding (@mk M) :=
   mkHomeomorph.isClosedEmbedding
 @[to_additive] theorem isQuotientMap_mk : IsQuotientMap (@mk M) := mkHomeomorph.isQuotientMap
+
+@[deprecated (since := "2024-10-28")] alias inducing_mk := isInducing_mk
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_mk := isEmbedding_mk
@@ -65,9 +67,11 @@ alias closedEmbedding_mk := isClosedEmbedding_mk
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_mk := isOpenEmbedding_mk
 
-@[to_additive] theorem inducing_mk_symm : Inducing (@mk M).symm := mkHomeomorph.symm.inducing
+@[to_additive] theorem isInducing_mk_symm : IsInducing (@mk M).symm := mkHomeomorph.symm.isInducing
 @[to_additive] theorem isEmbedding_mk_symm : IsEmbedding (@mk M).symm :=
   mkHomeomorph.symm.isEmbedding
+
+@[deprecated (since := "2024-10-28")] alias inducing_mk_symm := isInducing_mk_symm
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_mk_symm := isEmbedding_mk_symm
@@ -107,7 +111,7 @@ instance instNormalSpace [NormalSpace M] : NormalSpace Mᵈᵐᵃ := mkHomeomorp
 
 @[to_additive]
 instance instCompletelyNormalSpace [CompletelyNormalSpace M] : CompletelyNormalSpace Mᵈᵐᵃ :=
-  mkHomeomorph.symm.isEmbedding.completelyNormalSpace
+  isEmbedding_mk_symm.completelyNormalSpace
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵈᵐᵃ :=
@@ -119,11 +123,11 @@ instance instSeparableSpace [SeparableSpace M] : SeparableSpace Mᵈᵐᵃ :=
 
 @[to_additive]
 instance instFirstCountableTopology [FirstCountableTopology M] : FirstCountableTopology Mᵈᵐᵃ :=
-  inducing_mk_symm.firstCountableTopology
+  isInducing_mk_symm.firstCountableTopology
 
 @[to_additive]
 instance instSecondCountableTopology [SecondCountableTopology M] : SecondCountableTopology Mᵈᵐᵃ :=
-  inducing_mk_symm.secondCountableTopology
+  isInducing_mk_symm.secondCountableTopology
 
 @[to_additive]
 instance instCompactSpace [CompactSpace M] : CompactSpace Mᵈᵐᵃ :=

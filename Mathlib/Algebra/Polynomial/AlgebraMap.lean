@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.Polynomial.Eval.Algebra
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Polynomial.Monomial
+import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -564,9 +566,19 @@ lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (
   simp [C_eq_algebraMap]
 
 lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
-  AddEquivClass.map_eq_zero_iff (algEquivAevalXAddC t)
+  EmbeddingLike.map_eq_zero_iff (f := algEquivAevalXAddC t)
 
 lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
+
+lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
+    p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
+  convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
+  rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
+  simp [comp_assoc]
+
+lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
+    p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
+  simpa using dvd_comp_X_sub_C_iff p q (-a)
 
 variable [IsDomain R]
 

@@ -69,9 +69,6 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
 
 /-! ### Pairwise filtering -/
 
-alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
-
--- Porting note: commented out
--- attribute [protected] List.Pairwise.pwFilter
+protected alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self
 
 end List

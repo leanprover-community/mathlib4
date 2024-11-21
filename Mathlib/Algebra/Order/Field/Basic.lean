@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Lemmas about linear ordered (semi)fields
@@ -410,7 +411,7 @@ theorem one_div_pow_le_one_div_pow_of_le (a1 : 1 ≤ a) {m n : ℕ} (mn : m ≤ 
 
 theorem one_div_pow_lt_one_div_pow_of_lt (a1 : 1 < a) {m n : ℕ} (mn : m < n) :
     1 / a ^ n < 1 / a ^ m := by
-  refine (one_div_lt_one_div ?_ ?_).2 (pow_lt_pow_right a1 mn) <;>
+  refine (one_div_lt_one_div ?_ ?_).2 (pow_lt_pow_right₀ a1 mn) <;>
     exact pow_pos (zero_lt_one.trans a1) _
 
 theorem one_div_pow_anti (a1 : 1 ≤ a) : Antitone fun n : ℕ => 1 / a ^ n := fun _ _ =>
@@ -746,6 +747,47 @@ theorem le_of_forall_sub_le (h : ∀ ε > 0, b - ε ≤ a) : b ≤ a := by
   contrapose! h
   simpa only [@and_comm ((0 : α) < _), lt_sub_iff_add_lt, gt_iff_lt] using
     exists_add_lt_and_pos_of_lt h
+
+private lemma exists_lt_mul_left_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
+    ∃ a' ∈ Set.Ico 0 a, c < a' * b := by
+  rcases eq_or_lt_of_le ha with rfl | ha
+  · rw [zero_mul] at h; exact (not_le_of_lt h hc).rec
+  rcases lt_trichotomy b 0 with hb | rfl | hb
+  · exact (not_le_of_lt (h.trans (mul_neg_of_pos_of_neg ha hb)) hc).rec
+  · rw [mul_zero] at h; exact (not_le_of_lt h hc).rec
+  · obtain ⟨a', ha', a_a'⟩ := exists_between ((div_lt_iff₀ hb).2 h)
+    exact ⟨a', ⟨(div_nonneg hc hb.le).trans ha'.le, a_a'⟩, (div_lt_iff₀ hb).1 ha'⟩
+
+private lemma exists_lt_mul_right_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
+    ∃ b' ∈ Set.Ico 0 b, c < a * b' := by
+  have hb : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
+  simp_rw [mul_comm a] at h ⊢
+  exact exists_lt_mul_left_of_nonneg hb.le hc h
+
+private lemma exists_mul_left_lt₀ {a b c : α} (hc : a * b < c) : ∃ a' > a, a' * b < c := by
+  rcases le_or_lt b 0 with hb | hb
+  · obtain ⟨a', ha'⟩ := exists_gt a
+    exact ⟨a', ha', hc.trans_le' (antitone_mul_right hb ha'.le)⟩
+  · obtain ⟨a', ha', hc'⟩ := exists_between ((lt_div_iff₀ hb).2 hc)
+    exact ⟨a', ha', (lt_div_iff₀ hb).1 hc'⟩
+
+private lemma exists_mul_right_lt₀ {a b c : α} (hc : a * b < c) : ∃ b' > b, a * b' < c := by
+  simp_rw [mul_comm a] at hc ⊢; exact exists_mul_left_lt₀ hc
+
+lemma le_mul_of_forall_lt₀ {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
+  refine le_of_forall_le_of_dense fun d hd ↦ ?_
+  obtain ⟨a', ha', hd⟩ := exists_mul_left_lt₀ hd
+  obtain ⟨b', hb', hd⟩ := exists_mul_right_lt₀ hd
+  exact (h a' ha' b' hb').trans hd.le
+
+lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
+    (h : ∀ a' ≥ 0, a' < a → ∀ b' ≥ 0, b' < b → a' * b' ≤ c) : a * b ≤ c := by
+  refine le_of_forall_ge_of_dense fun d d_ab ↦ ?_
+  rcases lt_or_le d 0 with hd | hd
+  · exact hd.le.trans hc
+  obtain ⟨a', ha', d_ab⟩ := exists_lt_mul_left_of_nonneg ha hd d_ab
+  obtain ⟨b', hb', d_ab⟩ := exists_lt_mul_right_of_nonneg ha'.1 hd d_ab
+  exact d_ab.le.trans (h a' ha'.1 ha'.2 b' hb'.1 hb'.2)
 
 theorem mul_self_inj_of_nonneg (a0 : 0 ≤ a) (b0 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   mul_self_eq_mul_self_iff.trans <|

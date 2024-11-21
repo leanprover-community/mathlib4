@@ -85,12 +85,13 @@ instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
   TopologicalSpace.induced (embedProduct M) inferInstance
 
 @[to_additive]
-theorem inducing_embedProduct : Inducing (embedProduct M) :=
-  ⟨rfl⟩
+theorem isInducing_embedProduct : IsInducing (embedProduct M) := ⟨rfl⟩
+
+@[deprecated (since := "2024-10-28")] alias inducing_embedProduct := isInducing_embedProduct
 
 @[to_additive]
 theorem isEmbedding_embedProduct : IsEmbedding (embedProduct M) :=
-  ⟨inducing_embedProduct, embedProduct_injective M⟩
+  ⟨isInducing_embedProduct, embedProduct_injective M⟩
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_embedProduct := isEmbedding_embedProduct
@@ -105,7 +106,7 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
 @[to_additive] lemma topology_eq_inf :
     instTopologicalSpaceUnits =
       .induced (val : Mˣ → M) ‹_› ⊓ .induced (fun u ↦ ↑u⁻¹ : Mˣ → M) ‹_› := by
-  simp only [inducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
+  simp only [isInducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.
@@ -144,8 +145,8 @@ theorem continuous_val : Continuous ((↑) : Mˣ → M) :=
 @[to_additive]
 protected theorem continuous_iff {f : X → Mˣ} :
     Continuous f ↔ Continuous (val ∘ f) ∧ Continuous (fun x => ↑(f x)⁻¹ : X → M) := by
-  simp only [inducing_embedProduct.continuous_iff, embedProduct_apply, Function.comp_def,
-    continuous_prod_mk, opHomeomorph.symm.inducing.continuous_iff, opHomeomorph_symm_apply,
+  simp only [isInducing_embedProduct.continuous_iff, embedProduct_apply, Function.comp_def,
+    continuous_prod_mk, opHomeomorph.symm.isInducing.continuous_iff, opHomeomorph_symm_apply,
     unop_op]
 
 @[to_additive]
