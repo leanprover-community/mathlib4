@@ -308,6 +308,11 @@ we provide this statement separately so you don't have to solve the specializati
 theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
   lift_mk_eq.{u, v, 0}
 
+theorem mk_congr_lift {α : Type u} {β : Type v} (e : α ≃ β) : lift.{v} #α = lift.{u} #β :=
+  lift_mk_eq'.2 ⟨e⟩
+
+alias _root_.Equiv.lift_cardinal_eq := mk_congr_lift
+
 -- Porting note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
@@ -2068,12 +2073,12 @@ theorem le_mk_iff_exists_subset {c : Cardinal} {α : Type u} {s : Set α} :
   apply exists_congr; intro t; rw [mk_image_eq]; apply Subtype.val_injective
 
 @[simp]
-theorem mk_range_inl : #(range (@Sum.inl α β)) = #α :=
-  (Equiv.Set.rangeInl α β).cardinal_eq
+theorem mk_range_inl {α : Type u} {β : Type v} : #(range (@Sum.inl α β)) = lift.{v} #α := by
+  rw [← lift_id'.{u, v} #_, (Equiv.Set.rangeInl α β).lift_cardinal_eq, lift_umax.{u, v}]
 
 @[simp]
-theorem mk_range_inr : #(range (@Sum.inr α β)) = #β :=
-  (Equiv.Set.rangeInr α β).cardinal_eq
+theorem mk_range_inr {α : Type u} {β : Type v} : #(range (@Sum.inr α β)) = lift.{u} #β := by
+  rw [← lift_id'.{v, u} #_, (Equiv.Set.rangeInr α β).lift_cardinal_eq, lift_umax.{v, u}]
 
 theorem two_le_iff : (2 : Cardinal) ≤ #α ↔ ∃ x y : α, x ≠ y := by
   rw [← Nat.cast_two, nat_succ, succ_le_iff, Nat.cast_one, one_lt_iff_nontrivial, nontrivial_iff]
