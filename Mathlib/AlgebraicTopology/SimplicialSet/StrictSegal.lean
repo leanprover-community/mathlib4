@@ -195,7 +195,7 @@ instance : Quasicategory X := by
       apply congr_arg
       simp [spineHorn, idSpine, horn, standardSimplex.idSimplex_objEquiv]
       simp [Hom.mk, standardSimplex.objEquiv, Equiv.ulift]
-      simp [hornPath, standardSimplex, uliftFunctor]
+      simp [standardSimplex, uliftFunctor]
       rw [mkOfSucc_δ_lt hlt]
       rfl
     · rw [spine_δ_gt_arrow _ _ _ hgt]
@@ -205,7 +205,7 @@ instance : Quasicategory X := by
       apply congr_arg
       simp [spineHorn, idSpine, horn, standardSimplex.idSimplex_objEquiv]
       simp [Hom.mk, standardSimplex.objEquiv, Equiv.ulift]
-      simp [hornPath, standardSimplex, uliftFunctor]
+      simp [standardSimplex, uliftFunctor]
       rw [mkOfSucc_δ_gt hgt]
       rfl
     · rw [spine_δ_eq_arrow _ _ _ heq]
@@ -215,7 +215,7 @@ instance : Quasicategory X := by
         intro h1
         have hk : k = 0 := by omega
         subst h1
-        simp_all
+        simp_all only [Nat.reduceAdd, Fin.succ_zero_eq_one, Fin.castSucc_one, ne_eq]
         omega
       have hh : Path.interval (mapPath σ₀ (spineHorn i h₀ hₙ)) (↑k) 2 (by omega) =
           X.spine 2 (σ₀.app _ (horn.primitiveTrianglePos hn0 i h₀ hₙ k (by omega))) := by
@@ -225,9 +225,14 @@ instance : Quasicategory X := by
         rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
         simp [Path.interval, mapPath]
         apply congr_arg
-        simp [horn.primitiveTrianglePos, spineHorn, hornPath, horn,
-          idSpine, standardSimplex, uliftFunctor]
-        fin_cases m <;> ext x; fin_cases x <;> rfl
+        simp [horn.primitiveTrianglePos, spineHorn, horn, idSpine,
+          standardSimplex, uliftFunctor]
+        /- TODO -/
+        fin_cases m
+        · ext x
+          fin_cases x <;> rfl
+        · ext x
+          fin_cases x <;> rfl
       rw [hh]
       simp [spineToSimplex_spine]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
