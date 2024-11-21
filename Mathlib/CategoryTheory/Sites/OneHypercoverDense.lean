@@ -214,27 +214,47 @@ def sieve : Sieve X₀ where
     rintro Y₀ Z₀ g ⟨h⟩ p
     exact ⟨{ i₀ := h.i₀, q := p ≫ h.q}⟩
 
+lemma _root_.CategoryTheory.Functor.functorPushforward_imageSieve_inter_mem
+    {C D : Type*} [Category C] [Category D] (G : C ⥤ D) (K : GrothendieckTopology D)
+    [G.IsLocallyFull K] {U V₁ V₂} (f₁ : G.obj U ⟶ G.obj V₁) (f₂ : G.obj U ⟶ G.obj V₂) :
+    (G.imageSieve f₁ ⊓ G.imageSieve f₂).functorPushforward G ∈ K _ := by
+  refine K.superset_covering ?_
+    (K.bind_covering (G.functorPushforward_imageSieve_mem K f₁)
+      (R := fun W p hp ↦ by
+        exact ((G.imageSieve (G.map hp.choose_spec.choose ≫ f₂)).functorPushforward G).pullback
+          hp.choose_spec.choose_spec.choose)
+      (fun W p hp ↦ by
+        apply K.pullback_stable
+        apply G.functorPushforward_imageSieve_mem))
+  rintro W _ ⟨T, a, b, hb, ⟨P, c, d, ⟨x, w⟩, fac⟩, rfl⟩
+  refine ⟨P, c ≫ hb.choose_spec.choose, d,
+    ⟨⟨c ≫ hb.choose_spec.choose_spec.choose_spec.1.choose, ?_⟩,
+    ⟨x, by rw [G.map_comp_assoc, w]⟩⟩, ?_⟩
+  · rw [G.map_comp, G.map_comp_assoc, hb.choose_spec.choose_spec.choose_spec.1.choose_spec]
+  · rw [G.map_comp, ← reassoc_of% fac]
+    conv_lhs => rw [hb.choose_spec.choose_spec.choose_spec.2]
+
 lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  have := IsDenseSubsite.isLocallyFull J₀ J F
   rw [← functorPushforward_mem_iff J₀ J F]
-  let S := Sieve.pullback f data.toOneHypercover.sieve₀
-  let R : ⦃W : C⦄ → ⦃p : W ⟶ F.obj X₀⦄ → S.arrows p → Sieve W := fun W p hp ↦
-    { arrows := fun W' q ↦ ∃ (Y₀ : C₀) (b : W' ⟶ F.obj Y₀) (r : F.obj Y₀ ⟶ W)
-          (g : Y₀ ⟶ X₀) (c : Y₀ ⟶ data.X (Sieve.ofArrows.i hp)),
-          b ≫ r = q ∧ r ≫ p = F.map g ∧ r ≫ Sieve.ofArrows.h hp = F.map c
-      downward_closed := by
-        rintro W' W'' q ⟨Y₀, b, r, g, c, fac₁, fac₂, fac₃⟩ a
-        exact ⟨Y₀, a ≫ b, r, g, c, by rw [assoc, fac₁], fac₂, fac₃⟩ }
+  let R : ⦃W : C⦄ → ⦃p : W ⟶ F.obj X₀⦄ →
+    (Sieve.pullback f data.toOneHypercover.sieve₀).arrows p → Sieve W := fun W p hp ↦
+      Sieve.bind (Sieve.coverByImage F W).arrows (fun U π hπ ↦
+        Sieve.pullback hπ.some.lift
+          (Sieve.functorPushforward F (F.imageSieve (hπ.some.map ≫ p) ⊓
+            F.imageSieve (hπ.some.map ≫ Sieve.ofArrows.h hp))))
   refine J.superset_covering ?_
-    (J.bind_covering (J.pullback_stable f (data.toOneHypercover.mem₀)) (R := R) ?_)
-  · rintro W' _ ⟨W, q, p, hp, ⟨Y₀, b, r, g, c, fac₁, fac₂, fac₃⟩, rfl⟩
-    have := Sieve.ofArrows.fac hp
-    dsimp at this
-    exact ⟨Y₀, g, b,
-      ⟨⟨Sieve.ofArrows.i hp, c, by rw [← reassoc_of% fac₃, ← this, reassoc_of% fac₂]⟩⟩,
-      by rw [← reassoc_of% fac₁, fac₂]⟩
-  · have := IsDenseSubsite.isCoverDense J₀ J F
-    -- use a covering of `W` by objects in C₀
-    sorry
+    (J.bind_covering (J.pullback_stable f (data.toOneHypercover.mem₀)) (R := R)
+    (fun W p hp ↦ J.bind_covering (F.is_cover_of_isCoverDense J W) ?_))
+  · rintro W' _ ⟨W, _, p, hp, ⟨Y₀, a, b, hb, ⟨U, c, d, ⟨⟨x₁, w₁⟩, ⟨x₂, w₂⟩⟩, fac⟩, rfl⟩, rfl⟩
+    refine ⟨U, x₁, d, ⟨⟨Sieve.ofArrows.i hp, x₂, ?_⟩⟩, ?_⟩
+    · simp only [reassoc_of% w₁, Sieve.ofArrows.fac hp, reassoc_of% w₂]
+      dsimp
+    · rw [assoc, w₁, ← reassoc_of% fac, Presieve.CoverByImageStructure.fac_assoc]
+  · intro U π hπ
+    apply J.pullback_stable
+    apply Functor.functorPushforward_imageSieve_inter_mem
 
 end
 
