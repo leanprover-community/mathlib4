@@ -210,6 +210,13 @@ theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 :=
 private def minFacProp (n k : ℕ) :=
   2 ≤ k ∧ k ∣ n ∧ ∀ m, 2 ≤ m → m ∣ n → k ≤ m
 
+#adaptation_note
+/--
+The `+zetaDelta` configurations below are needed after
+https://github.com/leanprover/lean4/pull/6123
+but only because the pattern match introduces a `let`.
+Hopefully we'll get this fixed before merging?
+-/
 theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     ∀ k i, k = 2 * i + 3 → (∀ m, 2 ≤ m → m ∣ n → k ≤ m) → minFacProp n (minFacAux n k)
   | k => fun i e a => by
@@ -218,12 +225,13 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · have pp : Prime n :=
         prime_def_le_sqrt.2
           ⟨n2, fun m m2 l d => not_lt_of_ge l <| lt_of_lt_of_le (sqrt_lt.2 h) (a m m2 d)⟩
-      simpa [h] using ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
+      simpa +zetaDelta only [h] using
+        ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
     have k2 : 2 ≤ k := by
       subst e
       apply Nat.le_add_left
-    simp only [h, ↓reduceIte]
-    by_cases dk : k ∣ n <;> simp only [dk, ↓reduceIte]
+    simp +zetaDelta only [h, ↓reduceIte]
+    by_cases dk : k ∣ n <;> simp +zetaDelta only [dk, ↓reduceIte]
     · exact ⟨k2, dk, a⟩
     · refine
         have := minFac_lemma n k h
