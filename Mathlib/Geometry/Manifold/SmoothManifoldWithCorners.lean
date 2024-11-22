@@ -260,12 +260,16 @@ theorem target_eq : I.target = range (I : H → E) := by
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) :=
   I.target_eq ▸ I.uniqueDiffOn'
 
+@[deprecated (since := "2024-09-30")]
+protected alias unique_diff := ModelWithCorners.uniqueDiffOn
+
 theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
   rw [← I.target_eq]
   exact I.target_subset_closure_interior
 
-@[deprecated (since := "2024-09-30")]
-protected alias unique_diff := ModelWithCorners.uniqueDiffOn
+
+
+
 
 @[simp, mfld_simps]
 protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?_; simp
@@ -1192,7 +1196,7 @@ theorem extChartAt_target_mem_nhdsWithin_of_mem {x : M} {y : E} (hy : y ∈ (ext
   apply extChartAt_target_mem_nhdsWithin'
   exact (extChartAt I x).map_target hy
 
-theorem extChartAt_target_union_comp_range_mem_nhds_of_mem {y : E} {x : M}
+theorem extChartAt_target_union_compl_range_mem_nhds_of_mem {y : E} {x : M}
     (hy : y ∈ (extChartAt I x).target) : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 y := by
   rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
   exact Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin_of_mem hy) self_mem_nhdsWithin
@@ -1273,7 +1277,7 @@ lemma extChartAt_target_subset_closure_interior {x : M} :
   rw [mem_closure_iff_nhds]
   intro t ht
   have A : t ∩ ((extChartAt I x).target ∪ (range I)ᶜ) ∈ 𝓝 y :=
-    inter_mem ht (extChartAt_target_union_comp_range_mem_nhds_of_mem hy)
+    inter_mem ht (extChartAt_target_union_compl_range_mem_nhds_of_mem hy)
   have B : y ∈ closure (interior (range I)) := by
     apply I.range_subset_closure_interior (extChartAt_target_subset_range x hy)
   obtain ⟨z, ⟨tz, h'z⟩, hz⟩ :
