@@ -95,7 +95,7 @@ This is the same as `X →ₑ[@id M] Y`. -/
 notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
 
 /-- `φ`-equivariant functions `X → Y`,
-where `φ : M → N`, where `M` and `N` act additively on `X` and `Y` respectively 
+where `φ : M → N`, where `M` and `N` act additively on `X` and `Y` respectively
 
 We use the same notation as for multiplicative actions, as conflicts are unlikely. -/
 notation:25 (name := «AddActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => AddActionHom φ X Y
