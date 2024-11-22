@@ -771,21 +771,21 @@ theorem image_affine_Icc' {a : α} (h : 0 < a) (b c d : α) :
   rw [image_mul_left_Icc' h, image_add_const_Icc]
 
 @[simp]
-theorem image_affine_Ico' {a : α} (h : 0 < a) (b c d : α) :
+theorem image_affine_Ico {a : α} (h : 0 < a) (b c d : α) :
     (a * · + b) '' Ico c d = Ico (a * c + b) (a * d + b) := by
   suffices (· + b) '' ((a * ·) '' Ico c d) = Ico (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Ico h, image_add_const_Ico]
 
 @[simp]
-theorem image_affine_Ioc' {a : α} (h : 0 < a) (b c d : α) :
+theorem image_affine_Ioc {a : α} (h : 0 < a) (b c d : α) :
     (a * · + b) '' Ioc c d = Ioc (a * c + b) (a * d + b) := by
   suffices (· + b) '' ((a * ·) '' Ioc c d) = Ioc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Ioc h, image_add_const_Ioc]
 
 @[simp]
-theorem image_affine_Ioo' {a : α} (h : 0 < a) (b c d : α) :
+theorem image_affine_Ioo {a : α} (h : 0 < a) (b c d : α) :
     (a * · + b) '' Ioo c d = Ioo (a * c + b) (a * d + b) := by
   suffices (· + b) '' ((a * ·) '' Ioo c d) = Ioo (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
