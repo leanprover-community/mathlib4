@@ -68,8 +68,7 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
         apply_rules [add_le_add_left, le_abs_self]
       _ ≤ 2 * (e / 2) + |embeddingOfSubset x b n - embeddingOfSubset x a n| := by
         rw [C]
-        apply_rules [add_le_add, mul_le_mul_of_nonneg_left, hn.le, le_refl]
-        norm_num
+        gcongr
       _ ≤ 2 * (e / 2) + dist (embeddingOfSubset x b) (embeddingOfSubset x a) := by
         have : |embeddingOfSubset x b n - embeddingOfSubset x a n| ≤
             dist (embeddingOfSubset x b) (embeddingOfSubset x a) := by

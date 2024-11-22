@@ -24,6 +24,23 @@ jobs:
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
 
+    - name: Determine old and new lean-toolchain
+      id: determine-toolchains
+      run: |
+        # `lean-toolchain` contains a string of the form "leanprover/lean4:nightly-2024-11-20"
+        # We grab the part after the ":"
+        NEW=$(cut -f2 -d: lean-toolchain)
+
+        # Find the commit hash of the previous change to `lean-toolchain`
+        PREV_COMMIT=$(git log -2 --format=format:%H -- lean-toolchain | tail -1)
+
+        # Get the contents of `lean-toolchain` from the previous commit
+        # The "./" in front of the path is important for `git show`
+        OLD=$(git show "$PREV_COMMIT":./lean-toolchain | cut -f2 -d:)
+
+        echo "new=$NEW" >> "$GITHUB_OUTPUT"
+        echo "old=$OLD" >> "$GITHUB_OUTPUT"
+
     - name: Clone lean4 repository and get PRs
       id: get-prs
       run: |
@@ -38,14 +55,15 @@ jobs:
         # Navigate to the cloned repository
         cd lean4-nightly || exit 1
 
-        # Shallow fetch of the last two tags
-        LAST_TWO_TAGS=$(git ls-remote --tags | grep nightly | tail -2 | cut -f2)
-        OLD=$(echo "$LAST_TWO_TAGS" | head -1)
-        NEW=$(echo "$LAST_TWO_TAGS" | tail -1)
+        # Use the OLD and NEW toolchains determined in the previous step
+        OLD="${{ steps.determine-toolchains.outputs.old }}"
+        NEW="${{ steps.determine-toolchains.outputs.new }}"
+
+        # Fetch the $OLD tag
         git fetch --depth=1 origin tag "$OLD" --no-tags
-        # Fetch the latest 100 commits prior to the $NEW tag.
-        # This should cover the terrain between $OLD and $NEW while still being a speedy download.
-        git fetch --depth=100 origin tag "$NEW" --no-tags
+        # Fetch the $NEW tag.
+        # This will only fetch commits newer than previously fetched commits (ie $OLD)
+        git fetch origin tag "$NEW" --no-tags
 
         PRS=$(git log --oneline "$OLD..$NEW" | sed 's/.*(#\([0-9]\+\))$/\1/')
         

@@ -13,7 +13,7 @@ import Mathlib.Order.GaloisConnection
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Floor and ceil
@@ -53,6 +53,8 @@ many lemmas.
 
 rounding, floor, ceil
 -/
+
+assert_not_exists Finset
 
 open Set
 
