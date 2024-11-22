@@ -58,14 +58,17 @@ for message in messages:
         #pr_data = pr_response.json()
         labels = [LABEL]
 
+        print('Removing peace_sign')
         client.remove_reaction({
             "message_id": message['id'],
             "emoji_name": "peace_sign"
         })
+        print('Removing bors')
         client.remove_reaction({
             "message_id": message['id'],
             "emoji_name": "bors"
         })
+        print('Removing merge')
         client.remove_reaction({
             "message_id": message['id'],
             "emoji_name": "merge"
@@ -73,11 +76,14 @@ for message in messages:
 
 
         if 'delegated' in labels:
+            print('adding delegated')
+
             client.add_reaction({
                 "message_id": message['id'],
                 "emoji_name": "peace_sign"
             })
         elif 'ready-to-merge' in labels:
+            print('adding ready-to-merge')
             if has_peace_sign:
                 client.remove_reaction({
                     "message_id": message['id'],
@@ -88,6 +94,7 @@ for message in messages:
                 "emoji_name": "bors"
             })
         elif LABEL.startswith("[Merged by Bors]"):
+            print('adding [Merged by Bors]')
             if has_peace_sign:
                 client.remove_reaction({
                     "message_id": message['id'],
