@@ -310,7 +310,7 @@
   decls  :
     - sum_range_pow
     - sum_Ico_pow
-  author : mathlib (Moritz Firsching, Fabian Kruse, Ashvni Narayanan)
+  author : Moritz Firsching, Fabian Kruse, Ashvni Narayanan
 78:
   title  : The Cauchy-Schwarz Inequality
   decls  :
@@ -320,7 +320,7 @@
 79:
   title  : The Intermediate Value Theorem
   decl   : intermediate_value_Icc
-  author : mathlib (Rob Lewis and Chris Hughes)
+  author : Rob Lewis and Chris Hughes
 80:
   title  : The Fundamental Theorem of Arithmetic
   decls  :
@@ -329,7 +329,7 @@
     - EuclideanDomain.to_principal_ideal_domain
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
-  author : mathlib (Chris Hughes)
+  author : Chris Hughes
   note   : "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
 81:
   title  : Divergence of the Prime Reciprocal Series
@@ -374,7 +374,7 @@
   title  : Stirling’s Formula
   decls  :
     - Stirling.tendsto_stirlingSeq_sqrt_pi
-  author : mathlib (Moritz Firsching, Fabian Kruse, Nikolas Kuhn, Heather Macbeth)
+  author : Moritz Firsching, Fabian Kruse, Nikolas Kuhn, Heather Macbeth
 91:
   title  : The Triangle Inequality
   decl   : norm_add_le
