@@ -19,11 +19,11 @@ the noncommutative division algebra `D` with center `k`.
 
 ## Main Results
 
-- `exists_separable_of_not_isCentral` : (Jacobson-Noether theorem) For a
+- `exists_separable_and_not_isCentral` : (Jacobson-Noether theorem) For a
   non-commutative algebraic division algebra `D` (with base ring
   being its center `k`), then there exist an element `x` of
   `D \ k` that is separable over its center.
-- `exists_separable_of_not_isCentral'` : (Jacobson-Noether theorem) For a
+- `exists_separable_and_not_isCentral'` : (Jacobson-Noether theorem) For a
   non-commutative algebraic division algebra `D` (with base ring
   being a field `L`), if the center of `D` over `L` is `L`,
   then there exist an element `x` of `D \ L` that is separable over `L`.
@@ -35,7 +35,7 @@ the noncommutative division algebra `D` with center `k`.
 
 ## Implementation Notes
 
-Mathematically, `exists_separable_of_not_isCentral` and `exists_separable_of_not_isCentral'`
+Mathematically, `exists_separable_and_not_isCentral` and `exists_separable_and_not_isCentral'`
 are equivalent.
 
 The difference however, is that the former takes `D` as the only variable
@@ -101,7 +101,7 @@ variable (D) in
 /-- Jacobson-Noether theorem: For a non-commutative division algebra
   `D` that is algebraic over its center `k`, there exists an element
   `x` of `D \ k` that is separable over `k`. -/
-theorem exists_separable_of_not_isCentral (H : k ≠ (⊤ : Subring D)) :
+theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
   obtain ⟨p, hp⟩ := ExpChar.exists D
   by_contra! insep
@@ -172,7 +172,7 @@ open Subring Algebra in
   that is algebraic over a field `L`, if the center of
   `D` coincides with `L`, then there exist an element `x` of `D \ L`
   that is separable over `L`. -/
-theorem exists_separable_of_not_isCentral' {L D : Type*} [Field L] [DivisionRing D]
+theorem exists_separable_and_not_isCentral' {L D : Type*} [Field L] [DivisionRing D]
     [Algebra L D] [Algebra.IsAlgebraic L D] [Algebra.IsCentral L D]
   (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
@@ -189,7 +189,7 @@ theorem exists_separable_of_not_isCentral' {L D : Type*} [Field L] [DivisionRing
     congr
     exact (equiv.apply_symm_apply x).symm
   have _ : Algebra.IsAlgebraic (center D) D := .tower_top (K := L) _
-  obtain ⟨x, hxd, hx⟩ := exists_separable_of_not_isCentral D ntrivial
+  obtain ⟨x, hxd, hx⟩ := exists_separable_and_not_isCentral D ntrivial
   exact ⟨x, ⟨by rwa [← Subalgebra.center_toSubring L, hcenter] at hxd, IsSeparable.tower_top _ hx⟩⟩
 
 end JacobsonNoether
