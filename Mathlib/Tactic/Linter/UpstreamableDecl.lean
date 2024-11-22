@@ -22,7 +22,7 @@ open Mathlib.Command.MinImports
 
 /-- Does the declaration with this name depend on definitions in the current file?
 
-Here, "definition" means everything that is not a theorem, and so includes `theorem`,
+Here, "definition" means everything that is not a theorem, and so includes `def`,
 `structure`, `inductive`, etc.
 -/
 def Lean.Environment.localDefinitionDependencies (env : Environment) (stx id : Syntax) :
