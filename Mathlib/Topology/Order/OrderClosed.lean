@@ -150,6 +150,10 @@ theorem disjoint_nhds_atBot_iff : Disjoint (𝓝 a) atBot ↔ ¬IsBot a := by
     refine disjoint_of_disjoint_of_mem disjoint_compl_left ?_ (Iic_mem_atBot b)
     exact isClosed_Iic.isOpen_compl.mem_nhds hb
 
+theorem IsLUB.range_of_tendsto {F : Filter β} [F.NeBot] (hle : ∀ i, f i ≤ a)
+    (hlim : Tendsto f F (𝓝 a)) : IsLUB (range f) a :=
+  ⟨forall_mem_range.mpr hle, fun _c hc ↦ le_of_tendsto' hlim fun i ↦ hc <| mem_range_self i⟩
+
 end Preorder
 
 section NoBotOrder
@@ -169,6 +173,23 @@ theorem not_tendsto_atBot_of_tendsto_nhds (hf : Tendsto f l (𝓝 a)) : ¬Tendst
   hf.not_tendsto (disjoint_nhds_atBot a)
 
 end NoBotOrder
+
+theorem iSup_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [Filter.NeBot F]
+    [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIicTopology α]
+    {a : α} {f : ι → α} (hle : ∀ i, f i ≤ a) (hlim : Filter.Tendsto f F (𝓝 a)) :
+    ⨆ i, f i = a :=
+  have := F.nonempty_of_neBot
+  (IsLUB.range_of_tendsto hle hlim).ciSup_eq
+
+theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
+    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [ClosedIicTopology α]
+    {a : α} {f : ι → α} (hlt : ∀ i, f i < a) (hlim : Tendsto f F (𝓝 a)) :
+    ⋃ i : ι, Iic (f i) = Iio a := by
+  have obs : a ∉ range f := by
+    rw [mem_range]
+    rintro ⟨i, rfl⟩
+    exact (hlt i).false
+  rw [← biUnion_range, (IsLUB.range_of_tendsto (le_of_lt <| hlt ·) hlim).biUnion_Iic_eq_Iio obs]
 
 section LinearOrder
 
@@ -382,6 +403,10 @@ protected alias ⟨_, BddBelow.closure⟩ := bddBelow_closure
 theorem disjoint_nhds_atTop_iff : Disjoint (𝓝 a) atTop ↔ ¬IsTop a :=
   disjoint_nhds_atBot_iff (α := αᵒᵈ)
 
+theorem IsGLB.range_of_tendsto {F : Filter β} [F.NeBot] (hle : ∀ i, a ≤ f i)
+    (hlim : Tendsto f F (𝓝 a)) : IsGLB (range f) a :=
+  IsLUB.range_of_tendsto (α := αᵒᵈ) hle hlim
+
 end Preorder
 
 section NoTopOrder
@@ -401,6 +426,18 @@ theorem not_tendsto_atTop_of_tendsto_nhds (hf : Tendsto f l (𝓝 a)) : ¬Tendst
   hf.not_tendsto (disjoint_nhds_atTop a)
 
 end NoTopOrder
+
+theorem iInf_eq_of_forall_le_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
+    [ConditionallyCompleteLattice α] [TopologicalSpace α] [ClosedIciTopology α]
+    {a : α} {f : ι → α} (hle : ∀ i, a ≤ f i) (hlim : Tendsto f F (𝓝 a)) :
+    ⨅ i, f i = a :=
+  iSup_eq_of_forall_le_of_tendsto (α := αᵒᵈ) hle hlim
+
+theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type*} {F : Filter ι} [F.NeBot]
+    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [ClosedIciTopology α]
+    {a : α} {f : ι → α} (hlt : ∀ i, a < f i) (hlim : Tendsto f F (𝓝 a)) :
+    ⋃ i : ι, Ici (f i) = Ioi a :=
+  iUnion_Iic_eq_Iio_of_lt_of_tendsto (α := αᵒᵈ) hlt hlim
 
 section LinearOrder
 

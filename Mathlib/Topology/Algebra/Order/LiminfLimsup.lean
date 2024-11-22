@@ -411,43 +411,6 @@ theorem Monotone.map_liminf_of_continuousAt {f : R → S} (f_incr : Monotone f) 
 
 end Monotone
 
-section InfiAndSupr
-
-open Topology
-
-open Filter Set
-
-variable [CompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
-
-theorem iInf_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (x_le : ∀ i, x ≤ as i) {F : Filter ι}
-    [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : ⨅ i, as i = x := by
-  refine iInf_eq_of_forall_ge_of_forall_gt_exists_lt (fun i ↦ x_le i) ?_
-  apply fun w x_lt_w ↦ ‹Filter.NeBot F›.nonempty_of_mem (as_lim.eventually_lt_const x_lt_w)
-
-theorem iSup_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (le_x : ∀ i, as i ≤ x) {F : Filter ι}
-    [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : ⨆ i, as i = x :=
-  iInf_eq_of_forall_le_of_tendsto (R := Rᵒᵈ) le_x as_lim
-
-theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto (x : R) {as : ι → R} (x_lt : ∀ i, x < as i)
-    {F : Filter ι} [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) :
-    ⋃ i : ι, Ici (as i) = Ioi x := by
-  have obs : x ∉ range as := by
-    intro maybe_x_is
-    rcases mem_range.mp maybe_x_is with ⟨i, hi⟩
-    simpa only [hi, lt_self_iff_false] using x_lt i
-  -- Porting note: `rw at *` was too destructive. Let's only rewrite `obs` and the goal.
-  have := iInf_eq_of_forall_le_of_tendsto (fun i ↦ (x_lt i).le) as_lim
-  rw [← this] at obs
-  rw [← this]
-  exact iUnion_Ici_eq_Ioi_iInf obs
-
-theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto (x : R) {as : ι → R} (lt_x : ∀ i, as i < x)
-    {F : Filter ι} [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) :
-    ⋃ i : ι, Iic (as i) = Iio x :=
-  iUnion_Ici_eq_Ioi_of_lt_of_tendsto (R := Rᵒᵈ) x lt_x as_lim
-
-end InfiAndSupr
-
 section Indicator
 
 theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :

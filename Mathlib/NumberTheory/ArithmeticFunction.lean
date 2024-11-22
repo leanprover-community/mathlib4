@@ -299,7 +299,7 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
   intro y ymem ynmem
   have y1ne : y.fst ≠ 1 := by
     intro con
-    simp only [Con, mem_divisorsAntidiagonal, one_mul, Ne] at ymem
+    simp only [mem_divisorsAntidiagonal, one_mul, Ne] at ymem
     simp only [mem_singleton, Prod.ext_iff] at ynmem
     -- Porting note: `tauto` worked from here.
     cases y
@@ -331,7 +331,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
       have y2ne : y.snd ≠ 1 := by
         intro con
         cases y; subst con -- Porting note: added
-        simp only [Con, mem_divisorsAntidiagonal, mul_one, Ne] at ymem
+        simp only [mem_divisorsAntidiagonal, mul_one, Ne] at ymem
         simp only [mem_singleton, Prod.ext_iff] at ynmem
         tauto
       simp [y2ne]

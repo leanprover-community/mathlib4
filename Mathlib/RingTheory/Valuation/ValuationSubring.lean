@@ -480,7 +480,8 @@ section nonunits
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
   -- Porting note: added `Set.mem_setOf.mp`
-  mul_mem' ha hb := (mul_lt_mul₀ (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)).trans_eq <| mul_one _
+  mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
+    zero_le' zero_le').trans_eq <| mul_one _
 
 theorem mem_nonunits_iff {x : K} : x ∈ A.nonunits ↔ A.valuation x < 1 :=
   Iff.rfl
