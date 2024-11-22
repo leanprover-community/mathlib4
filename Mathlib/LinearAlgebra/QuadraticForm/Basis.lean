@@ -92,7 +92,7 @@ noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] 
   map_smul' := smul_toBilin S bm
 
 theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
-    Q x = (∑ i ∈ (bm.repr x).support, ((bm.repr x) i) •((bm.repr x) i) • Q (bm i)) +
+    Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
     ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) (bm.repr x).support.offDiag,
       ((bm.repr x) p.1) • ((bm.repr x) p.2) • (polar Q) (bm p.1) (bm p.2) := by
   conv_lhs => rw [← bm.linearCombination_repr x, Finsupp.linearCombination_apply, Finsupp.sum]
