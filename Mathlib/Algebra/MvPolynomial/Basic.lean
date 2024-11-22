@@ -1138,6 +1138,10 @@ theorem map_monomial (s : σ →₀ ℕ) (a : R) : map f (monomial s a) = monomi
 theorem map_C : ∀ a : R, map f (C a : MvPolynomial σ R) = C (f a) :=
   map_monomial _ _
 
+@[simp] theorem map_ofNat (n : Nat) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : MvPolynomial σ R).map f = OfNat.ofNat n := by
+  rw [_root_.map_ofNat]
+
 @[simp]
 theorem map_X : ∀ n : σ, map f (X n : MvPolynomial σ R) = X n :=
   eval₂_X _ _
@@ -1353,6 +1357,10 @@ theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
 theorem aeval_C (r : R) : aeval f (C r) = algebraMap R S₁ r :=
   eval₂_C _ _ _
 
+@[simp] theorem aeval_ofNat (n : Nat) [n.AtLeastTwo] :
+    aeval f (no_index (OfNat.ofNat n) : MvPolynomial σ R) = n := by
+  rw [_root_.map_ofNat (aeval f)]; rfl
+
 theorem aeval_unique (φ : MvPolynomial σ R →ₐ[R] S₁) : φ = aeval (φ ∘ X) := by
   ext i
   simp
@@ -1483,6 +1491,11 @@ theorem aevalTower_X (i : σ) : aevalTower g y (X i) = y i :=
 @[simp]
 theorem aevalTower_C (x : R) : aevalTower g y (C x) = g x :=
   eval₂_C _ _ _
+
+@[simp]
+theorem aevalTower_ofNat (n : Nat) [n.AtLeastTwo] :
+    aevalTower g y (no_index (OfNat.ofNat n) : MvPolynomial σ R) = n := by
+  rw [_root_.map_ofNat (aevalTower g y)]; rfl
 
 @[simp]
 theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C = g :=
