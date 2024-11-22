@@ -367,7 +367,6 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.GroupWithZero.«6123»
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
