@@ -74,7 +74,7 @@ add more properties if they are useful and satisfied in the examples of inner pr
 and finite dimensional vector spaces, notably derivative norm control in terms of `R - 1`.
 
 TODO: do we ever need `f x = 1 ↔ ‖x‖ ≤ 1`? -/
--- Porting note(#5171): linter not yet ported; was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported; was @[nolint has_nonempty_instance]
 structure ContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
   /-- The function underlying this family of bump functions -/
   toFun : ℝ → E → ℝ
@@ -149,7 +149,7 @@ theorem support_eq : Function.support f = Metric.ball c f.rOut := by
   simp only [toFun, support_comp_eq_preimage, ContDiffBumpBase.support _ _ f.one_lt_rOut_div_rIn]
   ext x
   simp only [mem_ball_iff_norm, sub_zero, norm_smul, mem_preimage, Real.norm_eq_abs, abs_inv,
-    abs_of_pos f.rIn_pos, ← div_eq_inv_mul, div_lt_div_right f.rIn_pos]
+    abs_of_pos f.rIn_pos, ← div_eq_inv_mul, div_lt_div_iff_of_pos_right f.rIn_pos]
 
 theorem tsupport_eq : tsupport f = closedBall c f.rOut := by
   simp_rw [tsupport, f.support_eq, closure_ball _ f.rOut_pos.ne']

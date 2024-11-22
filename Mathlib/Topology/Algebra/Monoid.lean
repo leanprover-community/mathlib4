@@ -20,7 +20,7 @@ the definitions.
 
 universe u v
 
-open Set Filter TopologicalSpace
+open Set Filter TopologicalSpace Topology
 open scoped Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
@@ -304,10 +304,43 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
         isClosed_eq (continuous_apply _)
           (by continuity)
 
--- Porting note: split variables command over two lines, can't change explicitness at the same time
--- as declaring new variables.
-variable {M₁ M₂}
-variable [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
+section Semigroup
+
+variable {M₁ M₂} [Mul M₁] [Mul M₂] [ContinuousMul M₂]
+  {F : Type*} [FunLike F M₁ M₂] [MulHomClass F M₁ M₂] {l : Filter α}
+
+/-- Construct a bundled semigroup homomorphism `M₁ →ₙ* M₂` from a function `f` and a proof that it
+belongs to the closure of the range of the coercion from `M₁ →ₙ* M₂` (or another type of bundled
+homomorphisms that has a `MulHomClass` instance) to `M₁ → M₂`. -/
+@[to_additive (attr := simps (config := .asFn))
+  "Construct a bundled additive semigroup homomorphism `M₁ →ₙ+ M₂` from a function `f`
+and a proof that it belongs to the closure of the range of the coercion from `M₁ →ₙ+ M₂` (or another
+type of bundled homomorphisms that has an `AddHomClass` instance) to `M₁ → M₂`."]
+def mulHomOfMemClosureRangeCoe (f : M₁ → M₂)
+    (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →ₙ* M₂ where
+  toFun := f
+  map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
+
+/-- Construct a bundled semigroup homomorphism from a pointwise limit of semigroup homomorphisms. -/
+@[to_additive (attr := simps! (config := .asFn))
+  "Construct a bundled additive semigroup homomorphism from a pointwise limit of additive
+semigroup homomorphisms"]
+def mulHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
+    (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →ₙ* M₂ :=
+  mulHomOfMemClosureRangeCoe f <|
+    mem_closure_of_tendsto h <| Eventually.of_forall fun _ => mem_range_self _
+
+variable (M₁ M₂)
+
+@[to_additive]
+theorem MulHom.isClosed_range_coe : IsClosed (Set.range ((↑) : (M₁ →ₙ* M₂) → M₁ → M₂)) :=
+  isClosed_of_closure_subset fun f hf => ⟨mulHomOfMemClosureRangeCoe f hf, rfl⟩
+
+end Semigroup
+
+section Monoid
+
+variable {M₁ M₂} [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
   {F : Type*} [FunLike F M₁ M₂] [MonoidHomClass F M₁ M₂] {l : Filter α}
 
 /-- Construct a bundled monoid homomorphism `M₁ →* M₂` from a function `f` and a proof that it
@@ -338,10 +371,12 @@ variable (M₁ M₂)
 theorem MonoidHom.isClosed_range_coe : IsClosed (Set.range ((↑) : (M₁ →* M₂) → M₁ → M₂)) :=
   isClosed_of_closure_subset fun f hf => ⟨monoidHomOfMemClosureRangeCoe f hf, rfl⟩
 
+end Monoid
+
 end PointwiseLimits
 
 @[to_additive]
-theorem IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
+theorem Topology.IsInducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N]
     [MulHomClass F M N] [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F)
     (hf : IsInducing f) : ContinuousMul M :=
   ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
@@ -393,6 +428,65 @@ end MulOneClass
 
 section ContinuousMul
 
+section Semigroup
+
+variable [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
+
+@[to_additive]
+theorem Subsemigroup.top_closure_mul_self_subset (s : Subsemigroup M) :
+    _root_.closure (s : Set M) * _root_.closure s ⊆ _root_.closure s :=
+  image2_subset_iff.2 fun _ hx _ hy =>
+    map_mem_closure₂ continuous_mul hx hy fun _ ha _ hb => s.mul_mem ha hb
+
+/-- The (topological-space) closure of a subsemigroup of a space `M` with `ContinuousMul` is
+itself a subsemigroup. -/
+@[to_additive "The (topological-space) closure of an additive submonoid of a space `M` with
+`ContinuousAdd` is itself an additive submonoid."]
+def Subsemigroup.topologicalClosure (s : Subsemigroup M) : Subsemigroup M where
+  carrier := _root_.closure (s : Set M)
+  mul_mem' ha hb := s.top_closure_mul_self_subset ⟨_, ha, _, hb, rfl⟩
+
+@[to_additive]
+theorem Subsemigroup.coe_topologicalClosure (s : Subsemigroup M) :
+    (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
+
+@[to_additive]
+theorem Subsemigroup.le_topologicalClosure (s : Subsemigroup M) : s ≤ s.topologicalClosure :=
+  _root_.subset_closure
+
+@[to_additive]
+theorem Subsemigroup.isClosed_topologicalClosure (s : Subsemigroup M) :
+    IsClosed (s.topologicalClosure : Set M) := isClosed_closure
+
+@[to_additive]
+theorem Subsemigroup.topologicalClosure_minimal (s : Subsemigroup M) {t : Subsemigroup M}
+    (h : s ≤ t) (ht : IsClosed (t : Set M)) : s.topologicalClosure ≤ t := closure_minimal h ht
+
+/-- If a subsemigroup of a topological semigroup is commutative, then so is its topological
+closure.
+
+See note [reducible non-instances] -/
+@[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its
+topological closure.
+
+See note [reducible non-instances]"]
+abbrev Subsemigroup.commSemigroupTopologicalClosure [T2Space M] (s : Subsemigroup M)
+    (hs : ∀ x y : s, x * y = y * x) : CommSemigroup s.topologicalClosure :=
+  { MulMemClass.toSemigroup s.topologicalClosure with
+    mul_comm :=
+      have : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x := fun x hx y hy =>
+        congr_arg Subtype.val (hs ⟨x, hx⟩ ⟨y, hy⟩)
+      fun ⟨x, hx⟩ ⟨y, hy⟩ =>
+      Subtype.ext <|
+        eqOn_closure₂ this continuous_mul (continuous_snd.mul continuous_fst) x hx y hy }
+
+@[to_additive]
+theorem IsCompact.mul {s t : Set M} (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s * t) := by
+  rw [← image_mul_prod]
+  exact (hs.prod ht).image continuous_mul
+
+end Semigroup
+
 variable [TopologicalSpace M] [Monoid M] [ContinuousMul M]
 
 @[to_additive]
@@ -434,16 +528,12 @@ theorem Submonoid.topologicalClosure_minimal (s : Submonoid M) {t : Submonoid M}
 
 /-- If a submonoid of a topological monoid is commutative, then so is its topological closure. -/
 @[to_additive "If a submonoid of an additive topological monoid is commutative, then so is its
-topological closure."]
-def Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
+topological closure.
+
+See note [reducible non-instances]."]
+abbrev Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
     (hs : ∀ x y : s, x * y = y * x) : CommMonoid s.topologicalClosure :=
-  { s.topologicalClosure.toMonoid with
-    mul_comm :=
-      have : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x := fun x hx y hy =>
-        congr_arg Subtype.val (hs ⟨x, hx⟩ ⟨y, hy⟩)
-      fun ⟨x, hx⟩ ⟨y, hy⟩ =>
-      Subtype.ext <|
-        eqOn_closure₂ this continuous_mul (continuous_snd.mul continuous_fst) x hx y hy }
+  { s.topologicalClosure.toMonoid, s.toSubsemigroup.commSemigroupTopologicalClosure hs with }
 
 @[to_additive exists_nhds_zero_quarter]
 theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
@@ -453,11 +543,6 @@ theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
   use V, V1
   intro v w s t v_in w_in s_in t_in
   simpa only [mul_assoc] using h _ (h' v v_in w w_in) _ (h' s s_in t t_in)
-
-@[to_additive]
-theorem IsCompact.mul {s t : Set M} (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s * t) := by
-  rw [← image_mul_prod]
-  exact (hs.prod ht).image continuous_mul
 
 @[to_additive]
 theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :

@@ -22,6 +22,8 @@ submonoid of the ambient group.
   submonoid.
 -/
 
+assert_not_exists Finset
+
 @[to_additive]
 instance SubmonoidClass.instMulArchimedean {M S : Type*} [SetLike S M] [OrderedCommMonoid M]
     [SubmonoidClass S M] [MulArchimedean M] (H : S) : MulArchimedean H := by

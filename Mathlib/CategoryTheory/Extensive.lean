@@ -45,8 +45,7 @@ Show that the following are finitary extensive:
 
 -/
 
-
-open CategoryTheory.Limits
+open CategoryTheory.Limits Topology
 
 namespace CategoryTheory
 
@@ -147,18 +146,18 @@ variable [PreservesPullbacksOfInclusions F] {X Y Z : C} (f : Z ⟶ X ⨿ Y)
 noncomputable
 instance preservesPullbackInl' :
     PreservesLimit (cospan f coprod.inl) F :=
-  preservesPullbackSymmetry _ _ _
+  preservesPullback_symmetry _ _ _
 
 noncomputable
 instance preservesPullbackInr' :
     PreservesLimit (cospan f coprod.inr) F := by
-  apply preservesLimitOfIsoDiagram (K₁ := cospan (f ≫ (coprod.braiding X Y).hom) coprod.inl)
+  apply preservesLimit_of_iso_diagram (K₁ := cospan (f ≫ (coprod.braiding X Y).hom) coprod.inl)
   apply cospanExt (Iso.refl _) (Iso.refl _) (coprod.braiding X Y).symm <;> simp
 
 noncomputable
 instance preservesPullbackInr :
     PreservesLimit (cospan coprod.inr f) F :=
-  preservesPullbackSymmetry _ _ _
+  preservesPullback_symmetry _ _ _
 
 end PreservesPullbacksOfInclusions
 
@@ -355,7 +354,7 @@ theorem finitaryExtensive_of_reflective
     [∀ X Y (f : X ⟶ Gl.obj Y), PreservesLimit (cospan (Gr.map f) (adj.unit.app Y)) Gl]
     [PreservesPullbacksOfInclusions Gl] :
     FinitaryExtensive D := by
-  have : PreservesColimitsOfSize Gl := adj.leftAdjointPreservesColimits
+  have : PreservesColimitsOfSize Gl := adj.leftAdjoint_preservesColimits
   constructor
   intros X Y c hc
   apply (IsVanKampenColimit.precompose_isIso_iff
@@ -377,20 +376,18 @@ instance finitaryExtensive_functor [HasPullbacks C] [FinitaryExtensive C] :
     FinitaryExtensive (D ⥤ C) :=
   haveI : HasFiniteCoproducts (D ⥤ C) := ⟨fun _ => Limits.functorCategoryHasColimitsOfShape⟩
   ⟨fun c hc => isVanKampenColimit_of_evaluation _ c fun _ =>
-    FinitaryExtensive.vanKampen _ <| PreservesColimit.preserves hc⟩
+    FinitaryExtensive.vanKampen _ <| isColimitOfPreserves _ hc⟩
 
-noncomputable
 instance {C} [Category C] {D} [Category D] (F : C ⥤ D)
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso f] : PreservesLimit (cospan f g) F :=
   have := hasPullback_of_left_iso f g
-  preservesLimitOfPreservesLimitCone (IsPullback.of_hasPullback f g).isLimit
+  preservesLimit_of_preserves_limit_cone (IsPullback.of_hasPullback f g).isLimit
     ((isLimitMapConePullbackConeEquiv _ pullback.condition).symm
       (IsPullback.of_vert_isIso ⟨by simp only [← F.map_comp, pullback.condition]⟩).isLimit)
 
-noncomputable
 instance {C} [Category C] {D} [Category D] (F : C ⥤ D)
     {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [IsIso g] : PreservesLimit (cospan f g) F :=
-  preservesPullbackSymmetry _ _ _
+  preservesPullback_symmetry _ _ _
 
 theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExtensive D]
     [HasFiniteCoproducts C] [HasPullbacksOfInclusions C]
@@ -410,9 +407,9 @@ theorem finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [F
     [HasFiniteCoproducts C] [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
     [PreservesColimitsOfShape (Discrete WalkingPair) F] [F.ReflectsIsomorphisms] :
     FinitaryExtensive C := by
-  haveI : ReflectsLimitsOfShape WalkingCospan F := reflectsLimitsOfShapeOfReflectsIsomorphisms
+  haveI : ReflectsLimitsOfShape WalkingCospan F := reflectsLimitsOfShape_of_reflectsIsomorphisms
   haveI : ReflectsColimitsOfShape (Discrete WalkingPair) F :=
-    reflectsColimitsOfShapeOfReflectsIsomorphisms
+    reflectsColimitsOfShape_of_reflectsIsomorphisms
   exact finitaryExtensive_of_preserves_and_reflects F
 
 end Functor

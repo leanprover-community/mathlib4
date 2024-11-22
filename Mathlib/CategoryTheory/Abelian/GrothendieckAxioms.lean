@@ -17,8 +17,8 @@ basic facts about them.
 
 ## Definitions
 
-- `AB4` -- an abelian category satisfies `AB4` provided that coproducts are exact.
-- `AB5` -- an abelian category satisfies `AB5` provided that filtered colimits are exact.
+- `AB4` -- a category satisfies `AB4` provided that coproducts are exact.
+- `AB5` -- a category satisfies `AB5` provided that filtered colimits are exact.
 - The duals of the above definitions, called `AB4Star` and `AB5Star`.
 
 ## Theorems
@@ -33,10 +33,13 @@ comments of the linked Stacks page.
 Exactness as the preservation of short exact sequences is introduced in
 `CategoryTheory.Abelian.Exact`.
 
+We do not require `Abelian` in the definition of `AB4` and `AB5` because these classes represent
+individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, and similarly for
+`AB5`.
+
 ## Projects
 
 - Add additional axioms, especially define Grothendieck categories.
-- Prove that `AB5` implies `AB4`.
 
 ## References
 * [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
@@ -104,24 +107,24 @@ open CoproductsFromFiniteFiltered
 variable {α : Type w}
 variable [HasZeroMorphisms C] [HasFiniteBiproducts C] [HasFiniteLimits C]
 
-instance preservesFiniteLimitsLiftToFinset : PreservesFiniteLimits (liftToFinset C α) :=
-  preservesFiniteLimitsOfEvaluation _ fun I =>
+instance preservesFiniteLimits_liftToFinset : PreservesFiniteLimits (liftToFinset C α) :=
+  preservesFiniteLimits_of_evaluation _ fun I =>
     letI : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
-      preservesFiniteLimitsOfNatIso HasBiproductsOfShape.colimIsoLim.symm
+      preservesFiniteLimits_of_natIso HasBiproductsOfShape.colimIsoLim.symm
     letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor fun x ↦ ↑x)) :=
-      ⟨fun J _ _ => whiskeringLeftPreservesLimitsOfShape J _⟩
+      ⟨fun J _ _ => whiskeringLeft_preservesLimitsOfShape J _⟩
     letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor (·.val)) ⋙ colim) :=
-      compPreservesFiniteLimits _ _
-    preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso  I).symm
+      comp_preservesFiniteLimits _ _
+    preservesFiniteLimits_of_natIso (liftToFinsetEvaluationIso  I).symm
 
 /-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
-def AB4.ofAB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C where
+lemma AB4.of_AB5 [HasFilteredColimits C] [AB5 C] : AB4 C where
   preservesFiniteLimits J :=
     letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
-      compPreservesFiniteLimits _ _
-    preservesFiniteLimitsOfNatIso (liftToFinsetColimIso)
+      comp_preservesFiniteLimits _ _
+    preservesFiniteLimits_of_natIso (liftToFinsetColimIso)
 
 end
 

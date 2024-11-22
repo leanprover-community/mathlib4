@@ -201,6 +201,9 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
     sqrt a = b ↔ b * b = a :=
   ⟨(mul_self_eq ·), (sqrt_unique ·)⟩
 
+lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
+  rw [sqrt_eq_iff a _, mul_zero, eq_comm]
+
 end sqrt
 
 end NonUnital
