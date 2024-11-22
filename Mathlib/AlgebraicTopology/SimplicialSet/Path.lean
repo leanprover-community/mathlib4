@@ -73,4 +73,16 @@ lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[
   · simp only [spine_arrow, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
       mkOfSucc_subinterval_eq]
 
+/-- Two paths of the same nonzero length are equal if all of their arrows are equal. -/
+@[ext]
+lemma Path.ext' {n : ℕ} {f g : Path X (n + 1)}
+    (h : ∀ i : Fin (n + 1), f.arrow i = g.arrow i) :
+    f = g := by
+  ext j
+  · rcases Fin.eq_castSucc_or_eq_last j with ⟨k, hk⟩ | hl
+    · rw [hk, ← f.arrow_src k, ← g.arrow_src k, h]
+    · simp only [hl, ← Fin.succ_last]
+      rw [← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
+  · exact h j
+
 end SSet
