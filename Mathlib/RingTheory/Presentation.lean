@@ -249,7 +249,7 @@ private lemma span_range_relation_eq_ker_baseChange :
         erw [aeval_X]
         rw [Generators.baseChange_val]
     rw [H] at H'
-    replace H' : e.symm x ∈ Ideal.map TensorProduct.includeRight P.ker := H'
+    replace H' : e.symm x ∈ Ideal.map (TensorProduct.includeRight (R := R) (A := T)) P.ker := H'
     erw [← P.span_range_relation_eq_ker, ← Ideal.mem_comap, Ideal.comap_symm,
       Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'
     convert H'

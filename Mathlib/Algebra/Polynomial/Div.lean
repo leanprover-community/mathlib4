@@ -593,7 +593,7 @@ theorem X_sub_C_dvd_sub_C_eval : X - C a ∣ p - C (p.eval a) := by
   rw [dvd_iff_isRoot, IsRoot, eval_sub, eval_C, sub_self]
 
 theorem mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero {b : R[X]} {P : R[X][X]} :
-    P ∈ Ideal.span {C (X - C a), X - C b} ↔ (P.eval b).eval a = 0 := by
+    P ∈ Ideal.span (α := R[X][X]) {C (X - C a), X - C b} ↔ (P.eval b).eval a = 0 := by
   rw [Ideal.mem_span_pair]
   constructor <;> intro h
   · rcases h with ⟨_, _, rfl⟩

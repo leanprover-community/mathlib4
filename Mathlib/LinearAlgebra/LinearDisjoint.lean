@@ -164,8 +164,8 @@ theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N := 
 
 /-- Linearly disjoint is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :
-    M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
-      (equivOpposite.symm (MulOpposite.op M)) := by
+    M.LinearDisjoint N ↔ (equivOpposite (R := R).symm (MulOpposite.op N)).LinearDisjoint
+      (equivOpposite (R := R).symm (MulOpposite.op M)) := by
   simp only [linearDisjoint_iff, mulMap_op, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
 

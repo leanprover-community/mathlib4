@@ -175,19 +175,11 @@ end DistribSMul
 
 /-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
 @[ext]
-class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
-  /-- Multiplying `0` by a scalar gives `0` -/
-  smul_zero : ∀ a : M, a • (0 : A) = 0
-  /-- Scalar multiplication distributes across addition -/
-  smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A, DistribSMul M A
 
 section
 
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
-
--- See note [lower instance priority]
-instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
-  { ‹DistribMulAction M A› with }
 
 -- Porting note: this probably is no longer relevant.
 /-! Since Lean 3 does not have definitional eta for structures, we have to make sure

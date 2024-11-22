@@ -64,11 +64,11 @@ namespace Ideal.Filtration
 theorem pow_smul_le (i j : ℕ) : I ^ i • F.N j ≤ F.N (i + j) := by
   induction' i with _ ih
   · simp
-  · rw [pow_succ', mul_smul, add_assoc, add_comm 1, ← add_assoc]
+  · rw [pow_succ', mul_smul I _ (F.N j), add_assoc, add_comm 1, ← add_assoc]
     exact (smul_mono_right _ ih).trans (F.smul_le _)
 
 theorem pow_smul_le_pow_smul (i j k : ℕ) : I ^ (i + k) • F.N j ≤ I ^ k • F.N (i + j) := by
-  rw [add_comm, pow_add, mul_smul]
+  rw [add_comm, pow_add, mul_smul (I ^ k) _ (F.N j)]
   exact smul_mono_right _ (F.pow_smul_le i j)
 
 protected theorem antitone : Antitone F.N :=
@@ -176,15 +176,16 @@ def Stable : Prop :=
 @[simps]
 def _root_.Ideal.stableFiltration (I : Ideal R) (N : Submodule R M) : I.Filtration M where
   N i := I ^ i • N
-  mono i := by dsimp only; rw [add_comm, pow_add, mul_smul]; exact Submodule.smul_le_right
-  smul_le i := by dsimp only; rw [add_comm, pow_add, mul_smul, pow_one]
+  mono i := by
+    dsimp only; rw [add_comm, pow_add, mul_smul (I ^ 1) _ N]; exact Submodule.smul_le_right
+  smul_le i := by dsimp only; rw [add_comm, pow_add, mul_smul (I ^ 1) _ N, pow_one]
 
 theorem _root_.Ideal.stableFiltration_stable (I : Ideal R) (N : Submodule R M) :
     (I.stableFiltration N).Stable := by
   use 0
   intro n _
   dsimp
-  rw [add_comm, pow_add, mul_smul, pow_one]
+  rw [add_comm, pow_add, mul_smul (I ^ 1) _ N, pow_one]
 
 variable {F F'}
 
@@ -194,7 +195,7 @@ theorem Stable.exists_pow_smul_eq (h : F.Stable) : ∃ n₀, ∀ k, F.N (n₀ + 
   intro k
   induction' k with _ ih
   · simp
-  · rw [← add_assoc, ← hn, ih, add_comm, pow_add, mul_smul, pow_one]
+  · rw [← add_assoc, ← hn, ih, add_comm, pow_add, mul_smul (I ^ 1) _ (F.N n₀), pow_one]
     omega
 
 theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
@@ -208,7 +209,7 @@ theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
 theorem stable_iff_exists_pow_smul_eq_of_ge :
     F.Stable ↔ ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
   refine ⟨Stable.exists_pow_smul_eq_of_ge, fun h => ⟨h.choose, fun n hn => ?_⟩⟩
-  rw [h.choose_spec n hn, h.choose_spec (n + 1) (by omega), smul_smul, ← pow_succ',
+  rw [h.choose_spec n hn, h.choose_spec (n + 1) (by omega), smul_smul I, ← pow_succ',
     tsub_add_eq_add_tsub hn]
 
 theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
