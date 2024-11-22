@@ -213,13 +213,19 @@ theorem Ici_mem_nhds (h : a < b) : Ici a ∈ 𝓝 b :=
 
 theorem eventually_ge_nhds (hab : b < a) : ∀ᶠ x in 𝓝 a, b ≤ x := Ici_mem_nhds hab
 
-theorem eventually_gt_of_tendsto_gt {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
+theorem Filter.Tendsto.eventually_const_lt {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
     (h : Filter.Tendsto f l (𝓝 v)) : ∀ᶠ a in l, u < f a :=
   h.eventually <| eventually_gt_nhds hv
 
-theorem eventually_ge_of_tendsto_gt {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
+@[deprecated (since := "2024-11-17")]
+alias eventually_gt_of_tendsto_gt := Filter.Tendsto.eventually_const_lt
+
+theorem Filter.Tendsto.eventually_const_le {l : Filter γ} {f : γ → α} {u v : α} (hv : u < v)
     (h : Tendsto f l (𝓝 v)) : ∀ᶠ a in l, u ≤ f a :=
   h.eventually <| eventually_ge_nhds hv
+
+@[deprecated (since := "2024-11-17")]
+alias eventually_ge_of_tendsto_gt := Filter.Tendsto.eventually_const_le
 
 protected theorem Dense.exists_gt [NoMaxOrder α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ y ∈ s, x < y :=
@@ -451,13 +457,19 @@ theorem Iic_mem_nhds (h : a < b) : Iic b ∈ 𝓝 a :=
 
 theorem eventually_le_nhds (hab : a < b) : ∀ᶠ x in 𝓝 a, x ≤ b := Iic_mem_nhds hab
 
-theorem eventually_lt_of_tendsto_lt {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
+theorem Filter.Tendsto.eventually_lt_const {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
     (h : Filter.Tendsto f l (𝓝 v)) : ∀ᶠ a in l, f a < u :=
   h.eventually <| eventually_lt_nhds hv
 
-theorem eventually_le_of_tendsto_lt {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
+@[deprecated (since := "2024-11-17")]
+alias eventually_lt_of_tendsto_lt := Filter.Tendsto.eventually_lt_const
+
+theorem Filter.Tendsto.eventually_le_const {l : Filter γ} {f : γ → α} {u v : α} (hv : v < u)
     (h : Tendsto f l (𝓝 v)) : ∀ᶠ a in l, f a ≤ u :=
   h.eventually <| eventually_le_nhds hv
+
+@[deprecated (since := "2024-11-17")]
+alias eventually_le_of_tendsto_lt := Filter.Tendsto.eventually_le_const
 
 protected theorem Dense.exists_lt [NoMinOrder α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ y ∈ s, y < x :=
