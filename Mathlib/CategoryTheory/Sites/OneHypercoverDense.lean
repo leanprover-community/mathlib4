@@ -270,20 +270,58 @@ variable (G₀ : Sheaf J₀ A)
 noncomputable def presheafObj (X : C) : A :=
   multiequalizer ((data X).multicospanIndex G₀.val)
 
-variable {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X)
+noncomputable def presheafObjπ (X : C) (i : (data X).I₀) :
+    presheafObj data G₀ X ⟶ G₀.val.obj (op ((data X).X i)) :=
+  Multiequalizer.ι ((data X).multicospanIndex G₀.val) i
 
-structure PresheafSieveStruct {Y₀ : C₀} (g : Y₀ ⟶ X₀) where
-  i₀ : (data X).I₀
-  q : Y₀ ⟶ (data X).X i₀
-  fac : F.map q ≫ (data X).f i₀ =
-    F.map g ≫ f := by simp
+omit [IsDenseSubsite J₀ J F] in
+@[reassoc]
+lemma presheafObj_condition (X : C) (i i' : (data X).I₀) (j : (data X).I₁ i i') :
+    presheafObjπ data G₀ X i ≫ G₀.val.map ((data X).p₁ j).op =
+    presheafObjπ data G₀ X i' ≫ G₀.val.map ((data X).p₂ j).op :=
+  Multiequalizer.condition ((data X).multicospanIndex G₀.val) ⟨⟨i, i'⟩, j⟩
 
-attribute [reassoc (attr := simp)] PresheafSieveStruct.fac
+namespace restriction
+
+noncomputable def res {X : C} {X₀ Y₀ : C₀} {f : F.obj X₀ ⟶ X} {g : Y₀ ⟶ X₀}
+    (h : SieveStruct (data X) f g) :
+    presheafObj data G₀ X ⟶ G₀.val.obj (op Y₀) :=
+    presheafObjπ data G₀ X h.i₀ ≫ G₀.val.map h.q.op
+
+noncomputable def res_eq_res {X : C} {X₀ Y₀ : C₀} {f : F.obj X₀ ⟶ X} {g : Y₀ ⟶ X₀}
+    (h h' : SieveStruct (data X) f g) :
+    res data G₀ h = res data G₀ h' := by
+  sorry
+
+end restriction
 
 noncomputable def restriction {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) :
     presheafObj data G₀ X ⟶ G₀.val.obj (op X₀) :=
-  G₀.2.amalgamate ⟨_, (data X).sieve_mem f⟩ (fun ⟨Y₀, g, hg⟩ ↦
-    Multiequalizer.ι _ _ ≫ G₀.val.map hg.some.q.op) sorry
+  G₀.2.amalgamate ⟨_, (data X).sieve_mem f⟩
+    (fun ⟨Y₀, g, hg⟩ ↦ restriction.res data G₀ hg.some) (by
+      rintro ⟨Z₁, g₁, ⟨h₁⟩⟩ ⟨Z₂, g₂, ⟨h₂⟩⟩ ⟨T₀, p₁, p₂, w⟩
+      dsimp at g₁ g₂ p₁ p₂ w ⊢
+      rw [restriction.res_eq_res data G₀ _ h₁, restriction.res_eq_res data G₀ _ h₂]
+      refine Presheaf.IsSheaf.hom_ext G₀.cond
+        ⟨_, (data X).mem₁₀ h₁.i₀ h₂.i₀ (p₁ ≫ h₁.q) (p₂ ≫ h₂.q) (by
+          rw [map_comp, map_comp, assoc, assoc, SieveStruct.fac, SieveStruct.fac,
+            ← map_comp_assoc, ← map_comp_assoc, w])⟩ _ _ ?_
+      rintro ⟨U₀, a, j, b, fac₁, fac₂⟩
+      dsimp [restriction.res]
+      rw [assoc, assoc, assoc, assoc, ← Functor.map_comp, ← Functor.map_comp,
+        ← Functor.map_comp, ← Functor.map_comp, ← op_comp_assoc, ← op_comp, fac₁,
+        ← op_comp_assoc, ← op_comp, fac₂, op_comp, op_comp, Functor.map_comp,
+        Functor.map_comp, ]
+      apply presheafObj_condition_assoc)
+
+lemma restriction_map {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
+    (g : Y₀ ⟶ X₀) {i : (data X).I₀} (p : Y₀ ⟶ (data X).X i)
+    (fac : F.map p ≫ (data X).f i = F.map g ≫ f) :
+    restriction data G₀ f ≫ G₀.val.map g.op =
+      presheafObjπ data G₀ X i ≫ G₀.val.map p.op := by
+  have hg : (data X).sieve f g := ⟨⟨i, p, fac⟩⟩
+  exact (G₀.2.amalgamate_map _ _ _ ⟨_, _, hg⟩).trans
+    (restriction.res_eq_res data G₀ hg.some ⟨i, p, fac⟩)
 
 noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
     presheafObj data G₀ Y ⟶ presheafObj data G₀ X :=
