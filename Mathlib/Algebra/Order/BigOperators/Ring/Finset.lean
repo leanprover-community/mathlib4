@@ -3,10 +3,13 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Ring
 
 /-!
@@ -202,6 +205,35 @@ theorem sq_sum_div_le_sum_sq_div [LinearOrderedSemifield R] [ExistsAddOfLE R] (s
     (sum_sq_le_sum_mul_sum_of_sq_eq_mul _ H hg' fun i hi ↦ ?_)
   rw [div_mul_cancel₀]
   exact (hg i hi).ne'
+
+/-- **Nesbitt's inequality**. -/
+theorem sum_div_sum_le_three_div_two [LinearOrderedSemifield R] [ExistsAddOfLE R] [NeZero (2 : R)]
+    {a b c : R} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :
+    3 / 2 ≤ a / (b + c) + b / (c + a) + c / (a + b) := by
+  have ha' : 0 < b + c := add_pos hb hc
+  have hb' : 0 < c + a := add_pos hc ha
+  have hc' : 0 < a + b := add_pos ha hb
+  have h : 0 < a + b + c := add_pos hc' hc
+  apply le_of_add_le_add_right (a := 3) ((div_le_div_iff_of_pos_right h).1 _)
+  calc
+    _ = 3 ^ 2 / ((a + b) + (b + c) + (c + a)) := by
+        ring_nf
+        rw [← add_mul, ← add_mul, mul_comm, ← div_div]
+        congr
+        have h := two_ne_zero' R
+        rw [← mul_right_inj' h, mul_add, mul_div_cancel₀ _ h, mul_div_cancel₀ _ h]
+        norm_num
+    _ ≤ (a + b)⁻¹ + (b + c)⁻¹ + (c + a)⁻¹ := by
+        have (i) : i ∈ univ → 0 < ![a + b, b + c, c + a] i := by
+          fin_cases i <;> simpa
+        simpa [Fin.sum_univ_three] using sq_sum_div_le_sum_sq_div univ (fun _ ↦ 1) this
+    _ = ((a + (b + c)) / (b + c) + (b + (c + a)) / (c + a) + (c + (a + b)) / (a + b))
+      / (a + b + c) := by
+        ring_nf
+        simp_rw [← div_add_div_same _ _ (a + b + c), div_div_cancel_left' h.ne', ← add_rotate]
+    _ = _ := by
+        rw [div_add_same ha'.ne', div_add_same hb'.ne', div_add_same hc'.ne']
+        ring_nf
 
 end Finset
 
