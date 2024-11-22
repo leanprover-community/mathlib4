@@ -222,9 +222,6 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
   intro i
   rw [Equiv.permCongr_apply, Equiv.symm_apply_apply, submatrix_apply]
 
-lemma abs_unit_coe {R : Type*} [LinearOrderedRing R] (a : ℤˣ) : |((a : ℤ) : R)| = 1 := by
-  cases Int.units_eq_one_or a <;> simp_all
-
 /-- Permuting rows and columns with two equivalences does not change the absolute value of the
 determinant. -/
 @[simp]
