@@ -36,7 +36,7 @@ response = client.get_messages({
 print(f"response: '{response}'")
 
 messages = response['messages']
-pr_pattern = re.compile(r'https://github\.com/leanprover-community/mathlib4/pull/' +  + re.escape(pr_number))
+pr_pattern = re.compile(r'https://github\.com/leanprover-community/mathlib4/pull/' + re.escape(pr_number))
 #pr_pattern = re.compile(r'https://github\.com/leanprover-community/mathlib4/pull/(\d+)')
 #pr_pattern = re.compile(r'https://github.com/leanprover-community/mathlib4/pull/19367')
 print(f"pr_pattern: '{pr_pattern}'")
