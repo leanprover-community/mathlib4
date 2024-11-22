@@ -50,6 +50,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
+assert_not_exists Matrix
 
 open Set Pointwise
 

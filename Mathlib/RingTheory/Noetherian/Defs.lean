@@ -46,6 +46,10 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
+assert_not_exists Finsupp.linearCombination
+assert_not_exists Matrix
+assert_not_exists Pi.basis
+
 open Set Pointwise
 
 /-- `IsNoetherian R M` is the proposition that `M` is a Noetherian `R`-module,
