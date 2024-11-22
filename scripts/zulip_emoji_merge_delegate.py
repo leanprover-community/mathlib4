@@ -65,16 +65,18 @@ for message in messages:
         })
         print(f"result: '{result}'")
         print('Removing bors')
-        client.remove_reaction({
+        result = client.remove_reaction({
             "message_id": message['id'],
             "emoji_name": "bors"
         })
+        print(f"result: '{result}'")
+
         print('Removing merge')
-        client.remove_reaction({
+        result = client.remove_reaction({
             "message_id": message['id'],
             "emoji_name": "merge"
         })
-
+        print(f"result: '{result}'")
 
         if 'delegated' in labels:
             print('adding delegated')
