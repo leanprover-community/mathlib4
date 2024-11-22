@@ -31,6 +31,8 @@ jobs:
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
         ZULIP_SITE: https://leanprover.zulipchat.com
       run: |
+          printf $'Scanning commits:\n%s\n\nContinuing\n' "$(git log --oneline -n 10)"
           while read -r pr_number; do
+            printf $'Running the python script with pr "%s"\n' "${pr_number}"
             python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "${pr_number}"
           done < <(git log --oneline -n 10 | awk -F# '{ gsub(/)$/, ""); print $NF}')
