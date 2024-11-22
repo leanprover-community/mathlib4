@@ -18,7 +18,7 @@ assert_not_exists MonoidWithZero
 
 open Function (Injective Surjective)
 
-variable {M N G H α β γ δ : Type*}
+variable {M α β γ : Type*}
 
 section
 

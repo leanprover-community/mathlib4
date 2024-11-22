@@ -286,7 +286,8 @@ theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g 
 theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
   rw [← isBlock_top] at hB ⊢
-  rw [← Subgroup.map_comap_eq_self_of_surjective (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
+  rw [← Subgroup.map_comap_eq_self_of_surjective
+          (G := G) (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
   apply IsBlock.of_subgroup_of_conjugate
   rwa [Subgroup.comap_top]
 
