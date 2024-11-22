@@ -136,6 +136,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ z)
     ⇑(⟨s, f, h⟩ : α →ₛ[z] M) = f :=
   rfl
 
+/-- The "zero" finitely supported function. -/
 def zero : α →ₛ[z] M :=
   ⟨∅, fun _ => z,
     fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩
@@ -260,7 +261,6 @@ theorem support_zero : (0 : α →₀ M).support = ∅ :=
 instance instInhabited : Inhabited (α →₀ M) :=
   ⟨0⟩
 
-@[simp]
 theorem mem_support_iff {f : α →₀ M} : ∀ {a : α}, a ∈ f.support ↔ f a ≠ 0 :=
   FinsuppWith.mem_support_iff
 
@@ -277,7 +277,6 @@ theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [�
 theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=
   FinsuppWith.ext_iff'
 
-@[simp]
 theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
   FinsuppWith.support_eq_empty
 
