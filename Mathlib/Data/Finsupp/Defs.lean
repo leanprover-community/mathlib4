@@ -226,6 +226,7 @@ section Basic
 
 variable [Zero M]
 
+/-- A specialisation of `FinsuppWith.mk` with a better type ascription. -/
 @[reducible]
 def mk (support : Finset α) (toFun : α → M)
     (mem_support_toFun : ∀ x, x ∈ support ↔ toFun x ≠ 0) : α →₀ M :=
