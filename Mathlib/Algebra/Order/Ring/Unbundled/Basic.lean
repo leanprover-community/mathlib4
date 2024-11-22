@@ -777,8 +777,8 @@ alias four_mul_le_pow_two_add := four_mul_le_sq_add
 /-- Binary and division-free **arithmetic mean-geometric mean inequality**
 (aka AM-GM inequality) for linearly ordered commutative semirings. -/
 lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE α] [MulPosStrictMono α] [PosMulStrictMono α]
-    [AddLeftReflectLE α] [AddLeftMono α] {a b t : α}
-    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : t ^ 2 = a * b) : 2 * t ≤ a + b := by
+    [AddLeftReflectLE α] [AddLeftMono α] {a b r : α}
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b := by
   apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
   conv_rhs => rw [← pow_two]
   convert four_mul_le_sq_add a b using 1
