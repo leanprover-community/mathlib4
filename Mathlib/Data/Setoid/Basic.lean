@@ -101,6 +101,8 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
 theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
+set_option linter.deprecated false in
+@[deprecated ker_apply_mk_out (since := "2024-10-19")]
 theorem ker_apply_mk_out' {f : α → β} (a : α) :
     f (Quotient.mk _ a : Quotient <| Setoid.ker f).out' = f a :=
   @Quotient.mk_out' _ (Setoid.ker f) a
@@ -146,7 +148,7 @@ equivalence relations. -/
 @[simps]
 noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, Setoid (α i)) :
     (∀ i, Quotient (r i)) ≃ Quotient (@piSetoid _ _ r) where
-  toFun := fun x ↦ Quotient.mk'' fun i ↦ (x i).out'
+  toFun := fun x ↦ Quotient.mk'' fun i ↦ (x i).out
   invFun := fun q ↦ Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
     ext i
     simpa using hxy i
