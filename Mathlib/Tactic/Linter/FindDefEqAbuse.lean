@@ -79,6 +79,8 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
       bad := some forbidden
       break
 
+  modify (fun x ↦ {x with messages := .empty})
+
   if let some v := bad then
     logWarningAt declId m!"'{declId}' relies on the definition of '{v}'"
     if let some var := env.find? declId.getId then
