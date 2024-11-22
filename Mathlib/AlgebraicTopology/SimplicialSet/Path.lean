@@ -80,8 +80,9 @@ lemma Path.ext' {n : ℕ} {f g : Path X (n + 1)}
     f = g := by
   ext j
   · rcases Fin.eq_castSucc_or_eq_last j with ⟨k, hk⟩ | hl
-    · erw [hk, ← f.arrow_src k, ← g.arrow_src k, h]
-    · erw [hl, ← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
+    · rw [hk, ← f.arrow_src k, ← g.arrow_src k, h]
+    · simp only [hl, ← Fin.succ_last]
+      rw [← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
   · exact h j
 
 end SSet
