@@ -226,7 +226,7 @@ theorem discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical :
     letI s := {I : Ideal R | I.IsMaximal}
     DiscreteTopology (PrimeSpectrum R) ↔ Finite s ∧ sInf s ≤ nilradical R :=
   discreteTopology_iff_finite_and_isPrime_imp_isMaximal.trans <| by
-    rw [(equivSetOfIsPrime R).finite_iff, ← Set.coe_setOf, Set.finite_coe_iff, Set.finite_coe_iff]
+    rw [(equivSubtype R).finite_iff, ← Set.coe_setOf, Set.finite_coe_iff, Set.finite_coe_iff]
     refine ⟨fun h ↦ ⟨h.1.subset fun _ h ↦ h.isPrime, nilradical_eq_sInf R ▸ sInf_le_sInf h.2⟩,
       fun ⟨fin, le⟩ ↦ ?_⟩
     have hpm (I : Ideal R) (hI : I.IsPrime): I.IsMaximal := by
