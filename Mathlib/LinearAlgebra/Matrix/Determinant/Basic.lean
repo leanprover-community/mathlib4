@@ -222,6 +222,9 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
   intro i
   rw [Equiv.permCongr_apply, Equiv.symm_apply_apply, submatrix_apply]
 
+lemma abs_unit_coe {R : Type*} [LinearOrderedRing R] (a : ℤˣ) : |((a : ℤ) : R)| = 1 := by
+  cases Int.units_eq_one_or a <;> simp_all
+
 /-- Permuting rows and columns with two equivalences does not change the absolute value of the
 determinant. -/
 @[simp]
@@ -231,8 +234,7 @@ theorem abs_det_submatrix_equiv_equiv {R : Type*} [LinearOrderedCommRing R]
   have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp
   rw [hee]
   show |((A.submatrix id (e₁.symm.trans e₂)).submatrix e₁ e₁).det| = |A.det|
-  rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute']
-  cases' Int.units_eq_one_or (sign (e₁.symm.trans e₂)) with he he <;> rw [he] <;> simp
+  rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute', abs_mul, abs_unit_coe, one_mul]
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 
