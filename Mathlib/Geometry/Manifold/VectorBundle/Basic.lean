@@ -632,7 +632,7 @@ theorem contMDiffOn_smoothCoordChange (he : e ∈ a.pretrivializationAtlas)
   (Classical.choose_spec (ha.exists_smoothCoordChange e he e' he')).1
 
 @[deprecated (since := "2024-11-21")]
-alias smooth_smoothCoordChange := contMDiffOn_smoothCoordChange
+alias smoothOn_smoothCoordChange := contMDiffOn_smoothCoordChange
 
 theorem smoothCoordChange_apply (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :

@@ -234,6 +234,7 @@ theorem contMDiffOn_inv₀ : ContMDiffOn I I ⊤ (Inv.inv : G → G) {0}ᶜ := f
   (contMDiffAt_inv₀ I hx).contMDiffWithinAt
 
 @[deprecated (since := "2024-11-21")] alias smoothOn_inv₀ := contMDiffOn_inv₀
+@[deprecated (since := "2024-11-21")] alias SmoothOn_inv₀ := contMDiffOn_inv₀
 
 variable {I} {s : Set M} {a : M}
 
