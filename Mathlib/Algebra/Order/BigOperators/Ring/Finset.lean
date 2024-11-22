@@ -157,7 +157,7 @@ lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → R) :
 
 end LinearOrderedCommSemiring
 
-/-- **Sedrakyan's lemma**, also known by other names such as Titu's lemma or Engel's form.
+/-- **Sedrakyan's lemma**, aka **Titu's lemma** or **Engel's form**.
 
 This is a specialization of the Cauchy-Schwarz inequality with the sequences `f n / √(g n)` and
 `√(g n)`, though here it is proven without relying on square roots. -/
