@@ -1,6 +1,17 @@
 name: Zulip Emoji Merge Delegate
 
+# triggers the action when
 on:
+  # the PR receives a comment
+  issue_comment:
+    types: [created]
+  # the PR receives a review
+  pull_request_review:
+    # whether or not it is accompanied by a comment
+    types: [submitted]
+  # the PR receives a review comment
+  pull_request_review_comment:
+    types: [created]
   push:
   #schedule:
   #  - cron: '0 * * * *'  # Runs every hour
@@ -33,4 +44,4 @@ jobs:
         ZULIP_SITE: https://leanprover.zulipchat.com
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "ready-to-merge" "${{ github.event.issue.number }}" #"$GITHUB_TOKEN"
+        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "ready-to-merge" "${{ github.event.issue.number }}${{ github.event.pull_request.number }}" #"$GITHUB_TOKEN"
