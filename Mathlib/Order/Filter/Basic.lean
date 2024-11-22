@@ -3,7 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Filter.Defs
 
 /-!
@@ -59,6 +65,7 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 -/
 
 assert_not_exists OrderedSemiring
+assert_not_exists Fintype
 
 open Function Set Order
 open scoped symmDiff
