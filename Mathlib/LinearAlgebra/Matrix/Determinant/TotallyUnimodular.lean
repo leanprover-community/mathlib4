@@ -93,9 +93,9 @@ lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃
 -- TODO: move
 lemma neg_one_pow_mem_signType_range (n : ℕ) {a : R} (ha : a ∈ Set.range SignType.cast) :
     (-1 : R) ^ n * a ∈ Set.range SignType.cast := by
-  simp only [SignType.range_eq, SignType.zero_eq_zero, SignType.coe_zero, SignType.neg_eq_neg_one,
-    SignType.coe_one, SignType.pos_eq_one, Set.mem_insert_iff, Set.mem_singleton_iff] at ha ⊢
-  obtain (ha | ha | ha) := ha <;> obtain (hn | hn) := Nat.even_or_odd n <;> simp [ha, hn]
+  let S := MonoidHom.mrange (SignType.castHom (α := R)).toMonoidHom
+  refine mul_mem (s := S) (pow_mem ?_ _) ha
+  exact ⟨-1, by rfl⟩
 
 /--
 If `A` is totally unimodular and each row of B is all zeros except for at most a single 1,
