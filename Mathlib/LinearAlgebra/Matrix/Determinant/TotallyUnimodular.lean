@@ -150,6 +150,8 @@ lemma fromRows_one_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
   fromRows_isTotallyUnimodular_iff_rows <| fun i ↦ Or.inr
     ⟨i, funext fun j ↦ by simp [one_apply, Function.update_apply, eq_comm]⟩
 
+alias ⟨_, IsTotallyUnimodular.fromRows_one⟩ := fromRows_one_isTotallyUnimodular_iff
+
 lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) {m' : Type*} :
     (fromRows A (row m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   classical
