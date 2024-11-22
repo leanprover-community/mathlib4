@@ -3,86 +3,47 @@ Copyright (c) 2024 Alex Brodbelt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Brodbelt
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Algebra.GeomSum
-import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Tactic.Linarith
-import Mathlib.Data.Matrix.Basic
-
-
 
 /-!
 # IMO 1982 Q3
 
-Consider infinite sequences $\{x_n \}$ of positive reals such that $x_0 = 0$ and
-$x_0 \geq x_1 \geq x_2 \geq ...$
+Consider infinite sequences $\{x_n\}$ of positive reals such that $x_0 = 0$ and
+$x_0 \ge x_1 \ge x_2 \ge \ldots$
 
 a) Prove that for every such sequence there is an $n \geq 1$ such that:
 
-$\frac{x_0^2}{x_1} + \ldots + \frac{x_{n-1}^2}{x_n} \geq 3.999$
+$$\frac{x_0^2}{x_1} + \ldots + \frac{x_{n-1}^2}{x_n} \ge 3.999$$
 
-b) Find such a sequence such that for all n:
+b) Find such a sequence such that for all $n$:
 
-$\frac{x_0^2}{x_1} + \ldots + \frac{x_{n-1}^2}{x_n} < 4$
+$$\frac{x_0^2}{x_1} + \ldots + \frac{x_{n-1}^2}{x_n} < 4$$
 
-The solution is based on the one at the
+The solution is based on Solution 1 from the
 [Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1982_IMO_Problems/Problem_3)
-website.
+website. For part a, we use Sedrakyan's lemma to show the sum is bounded below by
+$\frac{4n}{n + 1}$, which can be made arbitrarily close to $4$ by taking large $n$. For part b, we
+show the sequence $x_n = 2^{-n}$ satisfies the desired inequality.
 -/
 
-open Real BigOperators Finset RealInnerProductSpace Matrix
+open Real BigOperators Finset
 
 namespace Imo1982Q3
 
-lemma sum_Fin_eq_sum_Ico {x : ℕ → ℝ} {N : ℕ} : ∑ n : Fin N, x n = ∑ n ∈ Ico 0 N, x n := by
-  rw [Fin.sum_univ_eq_sum_range, Nat.Ico_zero_eq_range]
-
-/-
-Specialization of Cauchy-Schwarz inequality with the sequences x n / √(y n) and √(y n)
--/
-theorem Sedrakyan's_lemma {ι : Type*} {s : Finset ι} {x y : ι → ℝ}
-    (hN : 0 < Finset.card s) (xi_pos : ∀ i ∈ s, 0 < x i) (yi_pos : ∀ i ∈ s, 0 < y i) :
-    (∑ n ∈ s, x n) ^ 2 / (∑ n ∈ s, y n) ≤ ∑ n ∈ s, (x n) ^ 2 / y n := by
-  have : 0 < ∑ n ∈ s, y n := Finset.sum_pos yi_pos <| card_pos.mp hN
-  apply le_of_le_of_eq (b := ((∑ n ∈ s, x n ^ 2 / y n) * ∑ n ∈ s, y n) / ∑ n ∈ s, y n)
-  · gcongr
-    convert sum_mul_sq_le_sq_mul_sq s (fun n ↦ x n / √ (y n)) (fun n ↦ √ (y n)) with n hn n hn n hn
-    all_goals specialize xi_pos n hn
-    all_goals specialize yi_pos n hn
-    · field_simp
-    · field_simp
-    · rw [sq_sqrt]
-      positivity
-  · field_simp
-
-lemma ineq₁ {x : ℕ → ℝ} {N : ℕ} (hN : 1 < N) (hx : ∀ i , x (i + 1) ≤ x i) :
-    x N ≤ (∑ n : Fin (N - 1), x (n + 1)) / (N - 1) := by
-  have h : ∀ m n : ℕ, n ≤ m → x m ≤ x n := by
-    intro m n mlen
-    induction' m, mlen using Nat.le_induction with k _nlek xk_le_xn
-    · exact le_refl (x n)
-    · calc
-      x (k + 1) ≤ x k := hx k
-      _         ≤ x n := xk_le_xn
-  rw [le_div_iff₀ (by aesop)]
-  calc
-  x N * (↑N - 1) = ((N - 1) : ℕ) * x N := by
-    rw [mul_comm, Nat.cast_sub, Nat.cast_one]; linarith
-  _ = ↑(range (N - 1)).card * x N := by rw [card_range]
-  _ = ∑ _ ∈ range (N - 1), x N := by
-    simp only [univ_eq_attach, sum_const, card_attach, Nat.card_Ioc, nsmul_eq_mul]
-  _ ≤ ∑ n ∈ range (N - 1), x (n + 1) := by
-    apply Finset.sum_le_sum
-    intro i hi
-    rw [mem_range, Nat.lt_sub_iff_add_lt (a := i) (b := 1) (c := N)] at hi
-    apply h
-    apply le_of_lt hi
-  _ = ∑ n : Fin (N - 1), x (↑n + 1) := by rw [sum_range]
+/-- `x (n + 1)` is at most the average of `x 1`, `x 2`, ..., `x n`. -/
+lemma ineq₁ {x : ℕ → ℝ} {n : ℕ} (hn : n ≠ 0) (hx : Antitone x) :
+    x (n + 1) ≤ (∑ k ∈ range n, x (k + 1)) / n := by
+  rw [le_div_iff₀ (mod_cast hn.bot_lt), mul_comm, ← nsmul_eq_mul]
+  conv_lhs => rw [← card_range n, ← sum_const]
+  refine sum_le_sum fun k hk ↦ hx (add_le_add_right ?_ 1)
+  rw [mem_range] at hk
+  simpa using hk.le
 
 lemma ineq₂ {x : ℕ → ℝ} {N : ℕ}
-    (hN : 1 < N) (hx : ∀ i , x (i + 1) ≤ x i) (x_pos : ∀ i, x i > (0 : ℝ)) :
+    (hN : 1 < N) (hx : Antitone x) (x_pos : ∀ i, x i > (0 : ℝ)) :
   (N - 1) / N * (1 / ∑ n : Fin (N - 1), x (n + 1)) ≤ 1 / (∑ n : Fin N, x (n + 1)) := by
   have ne_zero : N - 1 ≠ 0 := by
     intro h
@@ -148,7 +109,7 @@ lemma ineq₂ {x : ℕ → ℝ} {N : ℕ}
     simp only [sub_add_cancel]
   _ = ∑ i ∈ range (N - 1), x (i + 1) * ↑N / (↑N - 1) := by
     apply Finset.sum_congr (by rfl); intro n _hn; rw [mul_comm]
-
+#exit
 
 lemma ineq₃ {x : ℕ → ℝ} {N : ℕ } (hN : 1 < N) (x_pos : ∀ i, x i > (0 : ℝ)) :
     2 * (∑ n : Fin N, x (n + 1)) ≤ 1 + (∑ n : Fin N, x (n + 1))^2 := by
