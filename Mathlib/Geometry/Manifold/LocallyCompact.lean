@@ -11,8 +11,6 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 -/
 
-open scoped Manifold Topology
-
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
