@@ -85,9 +85,7 @@ lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManif
     (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
       ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) := by
   refine ⟨fun ⟨γ, h1, h2⟩ _ ↦ ⟨γ, h1, h2.isIntegralCurveOn _⟩, fun h ↦ ?_⟩
-  let γ (a) := Classical.choose (h a)
-  have hγx (a) := (Classical.choose_spec (h a)).1
-  have hγ (a) := (Classical.choose_spec (h a)).2
+  choose γ hγx hγ using h
   exact ⟨fun t ↦ γ (|t| + 1) t, hγx (|0| + 1),
     isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo hv γ hγx hγ⟩
 
