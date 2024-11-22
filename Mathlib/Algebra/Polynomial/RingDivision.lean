@@ -6,7 +6,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Comm
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.RingTheory.Coprime.Basic
-import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Theory of univariate polynomials
