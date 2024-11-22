@@ -30,15 +30,13 @@ In this file, we take the second approach using the monoidal composition `⊗≫
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.MonoidalCategory
-
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 noncomputable section
 
 namespace CategoryTheory
+
+open MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
@@ -49,7 +47,7 @@ Thinking of `C` as a 2-category with a single `0`-morphism, these are the same a
 transformations (in the pseudo- sense) of the identity 2-functor on `C`, which send the unique
 `0`-morphism to `X`.
 -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 structure HalfBraiding (X : C) where
   β : ∀ U, X ⊗ U ≅ U ⊗ X
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
@@ -68,7 +66,7 @@ variable (C)
 /-- The Drinfeld center of a monoidal category `C` has as objects pairs `⟨X, b⟩`, where `X : C`
 and `b` is a half-braiding on `X`.
 -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 def Center :=
   Σ X : C, HalfBraiding X
 
@@ -77,7 +75,7 @@ namespace Center
 variable {C}
 
 /-- A morphism in the Drinfeld center of `C`. -/
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 @[ext] -- @[nolint has_nonempty_instance]
 structure Hom (X Y : Center C) where
   f : X.1 ⟶ Y.1
@@ -278,7 +276,7 @@ theorem associator_hom_f (X Y Z : Center C) : Hom.f (α_ X Y Z).hom = (α_ X.1 Y
 
 @[simp]
 theorem associator_inv_f (X Y Z : Center C) : Hom.f (α_ X Y Z).inv = (α_ X.1 Y.1 Z.1).inv := by
-  apply Iso.inv_ext' -- Porting note (#11041): Originally `ext`
+  apply Iso.inv_ext' -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
   rw [← associator_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
 @[simp]
@@ -287,7 +285,7 @@ theorem leftUnitor_hom_f (X : Center C) : Hom.f (λ_ X).hom = (λ_ X.1).hom :=
 
 @[simp]
 theorem leftUnitor_inv_f (X : Center C) : Hom.f (λ_ X).inv = (λ_ X.1).inv := by
-  apply Iso.inv_ext' -- Porting note (#11041): Originally `ext`
+  apply Iso.inv_ext' -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
   rw [← leftUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
 @[simp]
@@ -296,7 +294,7 @@ theorem rightUnitor_hom_f (X : Center C) : Hom.f (ρ_ X).hom = (ρ_ X.1).hom :=
 
 @[simp]
 theorem rightUnitor_inv_f (X : Center C) : Hom.f (ρ_ X).inv = (ρ_ X.1).inv := by
-  apply Iso.inv_ext' -- Porting note (#11041): Originally `ext`
+  apply Iso.inv_ext' -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
   rw [← rightUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
 end
@@ -307,11 +305,22 @@ variable (C)
 
 /-- The forgetful monoidal functor from the Drinfeld center to the original category. -/
 @[simps]
-def forget : MonoidalFunctor (Center C) C where
+def forget : Center C ⥤ C where
   obj X := X.1
   map f := f.f
-  ε := 𝟙 (𝟙_ C)
-  μ X Y := 𝟙 (X.1 ⊗ Y.1)
+
+instance : (forget C).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun _ _ ↦ Iso.refl _}
+
+@[simp] lemma forget_ε : ε (forget C) = 𝟙 _ := rfl
+@[simp] lemma forget_η : η (forget C) = 𝟙 _ := rfl
+
+variable {C}
+
+@[simp] lemma forget_μ (X Y : Center C) : μ (forget C) X Y = 𝟙 _ := rfl
+@[simp] lemma forget_δ (X Y : Center C) : δ (forget C) X Y = 𝟙 _ := rfl
 
 instance : (forget C).ReflectsIsomorphisms where
   reflects f i := by dsimp at i; change IsIso (isoMk f).hom; infer_instance
@@ -349,13 +358,28 @@ variable (C)
 /-- The functor lifting a braided category to its center, using the braiding as the half-braiding.
 -/
 @[simps]
-def ofBraided : MonoidalFunctor C (Center C) where
+def ofBraided : C ⥤ Center C where
   obj := ofBraidedObj
   map f :=
     { f
       comm := fun U => braiding_naturality_left f U }
-  ε := { f := 𝟙 _ }
-  μ X Y := { f := 𝟙 _ }
+
+instance : (ofBraided C).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso :=
+        { hom := { f := 𝟙 _ }
+          inv := { f := 𝟙 _ } }
+      μIso := fun _ _ ↦
+        { hom := { f := 𝟙 _ }
+          inv := { f := 𝟙 _ } } }
+
+@[simp] lemma ofBraided_ε_f : (ε (ofBraided C)).f = 𝟙 _ := rfl
+@[simp] lemma ofBraided_η_f : (η (ofBraided C)).f = 𝟙 _ := rfl
+
+variable {C}
+
+@[simp] lemma ofBraided_μ_f (X Y : C) : (μ (ofBraided C) X Y).f = 𝟙 _ := rfl
+@[simp] lemma ofBraided_δ_f (X Y : C) : (δ (ofBraided C) X Y).f = 𝟙 _ := rfl
 
 end
 

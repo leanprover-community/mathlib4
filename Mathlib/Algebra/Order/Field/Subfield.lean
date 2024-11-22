@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Algebra.Order.Field.InjSurj
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Field.Subfield.Defs
 
 /-!
 # Ordered instances on subfields
@@ -18,7 +18,7 @@ variable {K S : Type*} [SetLike S K]
 /-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
 instance (priority := 75) toLinearOrderedField [LinearOrderedField K]
     [SubfieldClass S K] (s : S) : LinearOrderedField s :=
-  Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl)
+  Subtype.coe_injective.linearOrderedField Subtype.val rfl rfl (fun _ _ => rfl)
     (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl)
@@ -31,7 +31,7 @@ variable {K : Type*}
 
 /-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
 instance toLinearOrderedField [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
-  Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.linearOrderedField Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ => rfl) (by intros; rfl) (fun _ _ => rfl) fun _ _ => rfl

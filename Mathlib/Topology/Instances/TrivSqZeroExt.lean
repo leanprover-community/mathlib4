@@ -24,7 +24,8 @@ one value.
 
 -/
 
-open scoped Topology
+open Topology
+
 variable {α S R M : Type*}
 
 local notation "tsze" => TrivSqZeroExt

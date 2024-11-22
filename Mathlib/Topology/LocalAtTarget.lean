@@ -17,10 +17,7 @@ We show that the following properties of continuous maps are local at the target
 
 -/
 
-
-open TopologicalSpace Set Filter
-
-open Topology Filter
+open Filter Set TopologicalSpace Topology
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 variable {ι : Type*} {U : ι → Opens β}
@@ -35,7 +32,7 @@ theorem Set.restrictPreimage_isInducing (s : Set β) (h : IsInducing f) :
 @[deprecated (since := "2024-10-28")]
 alias Set.restrictPreimage_inducing := Set.restrictPreimage_isInducing
 
-alias IsInducing.restrictPreimage := Set.restrictPreimage_isInducing
+alias Topology.IsInducing.restrictPreimage := Set.restrictPreimage_isInducing
 
 @[deprecated (since := "2024-10-28")] alias Inducing.restrictPreimage := IsInducing.restrictPreimage
 
@@ -46,7 +43,7 @@ theorem Set.restrictPreimage_isEmbedding (s : Set β) (h : IsEmbedding f) :
 @[deprecated (since := "2024-10-26")]
 alias Set.restrictPreimage_embedding := Set.restrictPreimage_isEmbedding
 
-alias IsEmbedding.restrictPreimage := Set.restrictPreimage_isEmbedding
+alias Topology.IsEmbedding.restrictPreimage := Set.restrictPreimage_isEmbedding
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.restrictPreimage := IsEmbedding.restrictPreimage
@@ -59,7 +56,7 @@ theorem Set.restrictPreimage_isOpenEmbedding (s : Set β) (h : IsOpenEmbedding f
 @[deprecated (since := "2024-10-18")]
 alias Set.restrictPreimage_openEmbedding := Set.restrictPreimage_isOpenEmbedding
 
-alias IsOpenEmbedding.restrictPreimage := Set.restrictPreimage_isOpenEmbedding
+alias Topology.IsOpenEmbedding.restrictPreimage := Set.restrictPreimage_isOpenEmbedding
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.restrictPreimage := IsOpenEmbedding.restrictPreimage
@@ -72,7 +69,7 @@ theorem Set.restrictPreimage_isClosedEmbedding (s : Set β) (h : IsClosedEmbeddi
 @[deprecated (since := "2024-10-20")]
 alias Set.restrictPreimage_closedEmbedding := Set.restrictPreimage_isClosedEmbedding
 
-alias IsClosedEmbedding.restrictPreimage := Set.restrictPreimage_isClosedEmbedding
+alias Topology.IsClosedEmbedding.restrictPreimage := Set.restrictPreimage_isClosedEmbedding
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.restrictPreimage := IsClosedEmbedding.restrictPreimage

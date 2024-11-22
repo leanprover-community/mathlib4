@@ -387,7 +387,7 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
       (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
       (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1)) := by
     ext; simp [isReal_or_isComplex]
-  rw [this, sup_union, univ.sup_image, univ.sup_image, sup_eq_max,
+  rw [this, sup_union, univ.sup_image, univ.sup_image,
     Prod.nnnorm_def', Pi.nnnorm_def, Pi.nnnorm_def]
   congr
   · ext w

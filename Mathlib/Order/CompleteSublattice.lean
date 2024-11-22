@@ -3,6 +3,7 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Data.Set.Functor
 import Mathlib.Order.Sublattice
 import Mathlib.Order.Hom.CompleteLattice
 
@@ -90,8 +91,8 @@ theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
 
 -- Redeclaring to get proper keys for these instances
-instance : Sup {x // x ∈ L} := Sublattice.instSupCoe
-instance : Inf {x // x ∈ L} := Sublattice.instInfCoe
+instance : Max {x // x ∈ L} := Sublattice.instSupCoe
+instance : Min {x // x ∈ L} := Sublattice.instInfCoe
 
 instance instCompleteLattice : CompleteLattice L :=
   Subtype.coe_injective.completeLattice _

@@ -3,7 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Irreducible and prime elements in an order
@@ -278,10 +278,10 @@ theorem infPrime_iff_not_isMax : InfPrime a ↔ ¬IsMax a :=
 
 @[simp]
 theorem supIrred_iff_not_isMin : SupIrred a ↔ ¬IsMin a :=
-  and_iff_left fun _ _ => by simpa only [sup_eq_max, max_eq_iff] using Or.imp And.left And.left
+  and_iff_left fun _ _ => by simpa only [max_eq_iff] using Or.imp And.left And.left
 
 @[simp]
 theorem infIrred_iff_not_isMax : InfIrred a ↔ ¬IsMax a :=
-  and_iff_left fun _ _ => by simpa only [inf_eq_min, min_eq_iff] using Or.imp And.left And.left
+  and_iff_left fun _ _ => by simpa only [min_eq_iff] using Or.imp And.left And.left
 
 end LinearOrder
