@@ -320,7 +320,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
 
 /-- If a function is analytic within a set with unique differentials, then so is its derivative.
 Note that this theorem does not require completeness of the space. -/
-theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
+protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
     AnalyticOn 𝕜 (fderivWithin 𝕜 f s) s := by
   intro x hx
   rcases h x hx with ⟨p, r, hr⟩
@@ -334,7 +334,7 @@ theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn �
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this
 set. Note that this theorem does not require completeness of the space. -/
-theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
+protected theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
     (hu : UniqueDiffOn 𝕜 s) (n : ℕ) :
     AnalyticOn 𝕜 (iteratedFDerivWithin 𝕜 n f s) s := by
   induction n with
@@ -347,7 +347,7 @@ theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
     apply AnalyticOnNhd.comp_analyticOn _ (IH.fderivWithin hu) (mapsTo_univ _ _)
     apply LinearIsometryEquiv.analyticOnNhd
 
-lemma AnalyticOn.hasFTaylorSeriesUpToOn {n : WithTop ℕ∞}
+protected lemma AnalyticOn.hasFTaylorSeriesUpToOn {n : WithTop ℕ∞}
     (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
@@ -707,7 +707,6 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
 
 end FormalMultilinearSeries
 
-
 namespace HasFPowerSeriesOnBall
 
 open FormalMultilinearSeries ENNReal Nat
@@ -754,6 +753,9 @@ theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0
 
 end HasFPowerSeriesOnBall
 
+/-!
+### Derivative of a linear map into multilinear maps
+-/
 
 namespace ContinuousLinearMap
 
