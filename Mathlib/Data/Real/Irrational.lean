@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury K
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Real.Sqrt
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Tactic.IntervalCases
 
