@@ -3,8 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Decomposition.SignedLebesgue
-import Mathlib.MeasureTheory.VectorMeasure.WithDensity
+import Mathlib.MeasureTheory.Decomposition.Lebesgue
 
 /-!
 # Radon-Nikodym theorem
@@ -43,7 +42,7 @@ Radon-Nikodym theorem
 
 noncomputable section
 
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped MeasureTheory NNReal ENNReal
 
 variable {α β : Type*} {m : MeasurableSpace α}
 
@@ -328,77 +327,6 @@ lemma lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∫⁻ x, μ.rnDeriv ν x ∂ν = μ Set.univ := by
   rw [← setLIntegral_univ, setLIntegral_rnDeriv' hμν MeasurableSet.univ]
 
-lemma integrableOn_toReal_rnDeriv {s : Set α} (hμs : μ s ≠ ∞) :
-    IntegrableOn (fun x ↦ (μ.rnDeriv ν x).toReal) s ν := by
-  refine integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable ?_
-  exact ((setLIntegral_rnDeriv_le _).trans_lt hμs.lt_top).ne
-
-lemma setIntegral_toReal_rnDeriv_eq_withDensity' [SigmaFinite μ]
-    {s : Set α} (hs : MeasurableSet s) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
-  rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
-  · rw [ENNReal.toReal_eq_toReal_iff, ← withDensity_apply _ hs]
-    simp
-  · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv_eq_withDensity' := setIntegral_toReal_rnDeriv_eq_withDensity'
-
-lemma setIntegral_toReal_rnDeriv_eq_withDensity [SigmaFinite μ] [SFinite ν] (s : Set α) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
-  rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
-  · rw [ENNReal.toReal_eq_toReal_iff, ← withDensity_apply' _ s]
-    simp
-  · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv_eq_withDensity := setIntegral_toReal_rnDeriv_eq_withDensity
-
-lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s ≠ ∞) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν ≤ (μ s).toReal := by
-  set t := toMeasurable μ s with ht
-  have ht_m : MeasurableSet t := measurableSet_toMeasurable μ s
-  have hμt : μ t ≠ ∞ := by rwa [ht, measure_toMeasurable s]
-  calc ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν
-    ≤ ∫ x in t, (μ.rnDeriv ν x).toReal ∂ν := by
-        refine setIntegral_mono_set ?_ ?_ (HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _))
-        · exact integrableOn_toReal_rnDeriv hμt
-        · exact ae_of_all _ (by simp)
-  _ = (withDensity ν (rnDeriv μ ν) t).toReal := setIntegral_toReal_rnDeriv_eq_withDensity' ht_m
-  _ ≤ (μ t).toReal := by
-        gcongr
-        · exact hμt
-        · apply withDensity_rnDeriv_le
-  _ = (μ s).toReal := by rw [measure_toMeasurable s]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv_le := setIntegral_toReal_rnDeriv_le
-
-lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
-    (hμν : μ ≪ ν) {s : Set α} (hs : MeasurableSet s) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
-  rw [setIntegral_toReal_rnDeriv_eq_withDensity' hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv' := setIntegral_toReal_rnDeriv'
-
-lemma setIntegral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
-  rw [setIntegral_toReal_rnDeriv_eq_withDensity s, Measure.withDensity_rnDeriv_eq _ _ hμν]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_toReal_rnDeriv := setIntegral_toReal_rnDeriv
-
-lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
-    ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by
-  rw [← setIntegral_univ, setIntegral_toReal_rnDeriv hμν Set.univ]
-
-lemma integral_toReal_rnDeriv' [IsFiniteMeasure μ] [SigmaFinite ν] :
-    ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal - (μ.singularPart ν Set.univ).toReal := by
-  rw [← ENNReal.toReal_sub_of_le (μ.singularPart_le ν Set.univ) (measure_ne_top _ _),
-    ← Measure.sub_apply .univ (Measure.singularPart_le μ ν), Measure.measure_sub_singularPart,
-    ← Measure.setIntegral_toReal_rnDeriv_eq_withDensity, setIntegral_univ]
-
 end integral
 
 lemma rnDeriv_mul_rnDeriv {κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
@@ -495,36 +423,6 @@ end MeasurableEmbedding
 
 end Measure
 
-namespace SignedMeasure
-
-open Measure VectorMeasure
-
-theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [SigmaFinite μ]
-    (h : s ≪ᵥ μ.toENNRealVectorMeasure) : μ.withDensityᵥ (s.rnDeriv μ) = s := by
-  rw [absolutelyContinuous_ennreal_iff, (_ : μ.toENNRealVectorMeasure.ennrealToMeasure = μ),
-    totalVariation_absolutelyContinuous_iff] at h
-  · ext1 i hi
-    rw [withDensityᵥ_apply (integrable_rnDeriv _ _) hi, rnDeriv_def, integral_sub,
-      setIntegral_toReal_rnDeriv h.1 i, setIntegral_toReal_rnDeriv h.2 i]
-    · conv_rhs => rw [← s.toSignedMeasure_toJordanDecomposition]
-      erw [VectorMeasure.sub_apply]
-      rw [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi]
-    all_goals
-      rw [← integrableOn_univ]
-      refine IntegrableOn.restrict ?_ MeasurableSet.univ
-      refine ⟨?_, hasFiniteIntegral_toReal_of_lintegral_ne_top ?_⟩
-      · apply Measurable.aestronglyMeasurable (by fun_prop)
-      · rw [setLIntegral_univ]
-        exact (lintegral_rnDeriv_lt_top _ _).ne
-  · exact equivMeasure.right_inv μ
-
-/-- The Radon-Nikodym theorem for signed measures. -/
-theorem absolutelyContinuous_iff_withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α)
-    [SigmaFinite μ] : s ≪ᵥ μ.toENNRealVectorMeasure ↔ μ.withDensityᵥ (s.rnDeriv μ) = s :=
-  ⟨withDensityᵥ_rnDeriv_eq s μ, fun h => h ▸ withDensityᵥ_absolutelyContinuous _ _⟩
-
-end SignedMeasure
-
 section IntegralRNDerivMul
 
 open Measure
@@ -546,33 +444,6 @@ lemma setLIntegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_rnDeriv_mul := setLIntegral_rnDeriv_mul
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HaveLebesgueDecomposition μ ν]
-  [SigmaFinite μ] {f : α → E}
-
-theorem integrable_rnDeriv_smul_iff (hμν : μ ≪ ν) :
-    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal • f x) ν ↔ Integrable f μ := by
-  nth_rw 2 [← withDensity_rnDeriv_eq μ ν hμν]
-  rw [← integrable_withDensity_iff_integrable_smul' (E := E)
-    (measurable_rnDeriv μ ν) (rnDeriv_lt_top μ ν)]
-
-theorem withDensityᵥ_rnDeriv_smul (hμν : μ ≪ ν) (hf : Integrable f μ) :
-    ν.withDensityᵥ (fun x ↦ (rnDeriv μ ν x).toReal • f x) = μ.withDensityᵥ f := by
-  rw [withDensityᵥ_smul_eq_withDensityᵥ_withDensity' (measurable_rnDeriv μ ν).aemeasurable
-    (rnDeriv_lt_top μ ν) ((integrable_rnDeriv_smul_iff hμν).mpr hf), withDensity_rnDeriv_eq μ ν hμν]
-
-theorem integral_rnDeriv_smul (hμν : μ ≪ ν) :
-    ∫ x, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x, f x ∂μ := by
-  by_cases hf : Integrable f μ
-  · rw [← setIntegral_univ, ← withDensityᵥ_apply ((integrable_rnDeriv_smul_iff hμν).mpr hf) .univ,
-      ← setIntegral_univ, ← withDensityᵥ_apply hf .univ, withDensityᵥ_rnDeriv_smul hμν hf]
-  · rw [integral_undef hf, integral_undef]
-    contrapose! hf
-    exact (integrable_rnDeriv_smul_iff hμν).mp hf
-
-lemma setIntegral_rnDeriv_smul (hμν : μ ≪ ν) {s : Set α} (hs : MeasurableSet s) :
-    ∫ x in s, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x in s, f x ∂μ := by
-  simp_rw [← integral_indicator hs, Set.indicator_smul, integral_rnDeriv_smul hμν]
 
 end IntegralRNDerivMul
 
