@@ -19,11 +19,11 @@ the noncommutative division algebra `D` with center `k`.
 
 ## Main Results
 
-- `exists_separable_mem_of_not_central` : (Jacobson-Noether theorem) For a
+- `exists_separable_of_not_isCentral` : (Jacobson-Noether theorem) For a
   non-commutative algebraic division algebra `D` (with base ring
   being its center `k`), then there exist an element `x` of
   `D \ k` that is separable over its center.
-- `exists_separable_mem_of_not_central'` : (Jacobson-Noether theorem) For a
+- `exists_separable_of_not_isCentral'` : (Jacobson-Noether theorem) For a
   non-commutative algebraic division algebra `D` (with base ring
   being a field `L`), if the center of `D` over `L` is `L`,
   then there exist an element `x` of `D \ L` that is separable over `L`.
@@ -35,7 +35,7 @@ the noncommutative division algebra `D` with center `k`.
 
 ## Implementation Notes
 
-Mathematically, `exists_separable_mem_of_not_central` and `exists_separable_mem_of_not_central'`
+Mathematically, `exists_separable_of_not_isCentral` and `exists_separable_of_not_isCentral'`
 are equivalent.
 
 The difference however, is that the former takes `D` as the only variable
