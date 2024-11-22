@@ -191,6 +191,8 @@ lemma Even.sub_odd (ha : Even a) (hb : Odd b) : Odd (a - b) := by
 lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
   rw [sub_eq_add_neg]; exact ha.add_odd hb.neg
 
+lemma odd_add_self_sub_one : (Odd (a + a - 1)) := (even_add_self a).sub_odd odd_one
+
 end Ring
 
 namespace Nat
