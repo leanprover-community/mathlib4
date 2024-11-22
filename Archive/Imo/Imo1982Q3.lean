@@ -84,7 +84,7 @@ theorem imo1982Q3_b : ∃ x : ℕ → ℝ, Antitone x ∧ x 0 = 1 ∧ (∀ k, 0 
     ∧ ∀ n, ∑ k ∈ range n, x k ^ 2 / x (k + 1) < 4 := by
   refine ⟨fun k ↦ 2⁻¹ ^ k, ?_, ?_, ?_, fun n ↦ ?_⟩
   · apply (pow_right_strictAnti₀ _ _).antitone <;> norm_num
-  · simp
+  · exact pow_zero _
   · simp
   · have {k : ℕ} : (2 : ℝ)⁻¹ ^ (k * 2) * ((2 : ℝ)⁻¹ ^ k)⁻¹ = (2 : ℝ)⁻¹ ^ k := by
       rw [← pow_sub₀] <;> simp [mul_two]
