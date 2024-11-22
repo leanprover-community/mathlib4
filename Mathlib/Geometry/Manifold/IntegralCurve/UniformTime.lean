@@ -157,7 +157,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     rw [not_bddAbove_iff] at hbdd
     rw [exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo hv]
     intro a
-    obtain ⟨⟨γ, hγ1, hγ2⟩, hlt⟩ := Classical.choose_spec (hbdd a)
+    obtain ⟨y, ⟨γ, hγ1, hγ2⟩, hlt⟩ := hbdd a
     exact ⟨γ, hγ1, hγ2.mono <| Ioo_subset_Ioo (neg_le_neg hlt.le) hlt.le⟩
   intro hbdd
   set asup := sSup s with hasup
