@@ -155,7 +155,8 @@ theorem mk_coe (f : α →ₙ*q β) (h) : QuantaleHom.mk (f : α →ₙ* β) h =
   ext
   rfl
 
-@[to_additive "Reinterpret a quantale homomorphism as an order homomorphism."]
+/-- Reinterpret a quantale homomorphism as a supsemilattice homomorphism-/
+@[to_additive "Reinterpret an additive quantale homomorphism as a supsemilattice homomorphism."]
 def toSupBotHom (f : α →ₙ*q β) : SupBotHom α β where
   toFun := f
   map_sup':= sSupHomClass.toSupBotHomClass.map_sup f
@@ -165,7 +166,8 @@ def toSupBotHom (f : α →ₙ*q β) : SupBotHom α β where
 theorem coe_SupBotHom (f : α →ₙ*q β) : ((f : SupBotHom α β) : α → β) = f :=
   rfl
 
-@[to_additive "Reinterpret a quantale homomorphism as an order homomorphism."]
+/- Reinterpret a quantale homomorphism as an order homomorphism. -/
+@[to_additive "Reinterpret an additive quantale homomorphism as an order homomorphism."]
 def toOrderHom (f : α →ₙ*q β) : α →o β where
   toFun := f
   monotone' := by
