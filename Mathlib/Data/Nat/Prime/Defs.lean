@@ -6,7 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Algebra.Ring.Nat
-import Mathlib.Order.Lattice
+import Mathlib.Order.Basic
 
 /-!
 # Prime numbers
