@@ -29,9 +29,13 @@ contains `commutator G`
 If the action of `G` on `α` is quasiprimitive and faithful,
 and `G` is nontrivial and perfect, then `G` is simple.
 
+## TODO
+
+Additivize. The issue is that it requires to additivize `commutator` 
+(which, moreover, lives in the root namespace)
 -/
 
-section Iwasawa
+namespace MulAction
 
 open scoped BigOperators Pointwise
 
@@ -64,10 +68,12 @@ Ou encore : (?)
 -/
 variable {M α}
 
+namespace IwasawaStructure
+
 /-- The Iwasawa criterion : If a quasiprimitive action of a group G on X
   has an Iwasawa structure, then any normal subgroup that acts nontrivially
   contains the group of commutators. -/
-theorem IwasawaStructure.commutator_le
+theorem commutator_le
     (is_qprim : IsQuasipreprimitive M α) (IwaS : IwasawaStructure M α)
     {N : Subgroup M} (nN : N.Normal) (hNX : MulAction.fixedPoints N α ≠ ⊤) :
     commutator M ≤ N := by
@@ -86,7 +92,7 @@ theorem IwasawaStructure.commutator_le
   exact (N ⊔ IwaS.T a).mul_mem ((N ⊔ IwaS.T a).mul_mem hg' hk') ((N ⊔ IwaS.T a).inv_mem hg')
 
 /-- The Iwasawa criterion for simplicity -/
-theorem IwasawaStructure.isSimpleGroup
+theorem isSimpleGroup
     (is_nontrivial : Nontrivial M) (is_perfect : commutator M = ⊤)
     (is_qprim : IsQuasipreprimitive M α) (is_faithful : FaithfulSMul M α)
     (IwaS : IwasawaStructure M α) : IsSimpleGroup M := by
@@ -101,4 +107,4 @@ theorem IwasawaStructure.isSimpleGroup
     exact Set.eq_univ_iff_forall.mp h x ⟨n, hn⟩
    | inr h => exact Or.inr (top_le_iff.mp (le_trans (ge_of_eq is_perfect) h))
 
-end Iwasawa
+end MulAction.IwasawaStructure
