@@ -62,7 +62,7 @@ lemma eqOn_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
       (neg_lt_self_iff.mp <| lt_trans ht.1 ht.2) (not_lt.mp hlt) ht |>.symm
 
 /-- For a family of integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that
-  each `γ a` is defined on `Ioo (-a) a`, the function `γ_ext := fun t ↦ γ (|t| + 1) t` is global
+  each `γ a` is defined on `Ioo (-a) a`, the function `γ_ext := fun t ↦ γ (|t| + 1) t` is a global
   integral curve. -/
 lemma isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
