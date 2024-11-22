@@ -12,7 +12,8 @@ ZULIP_API_KEY = sys.argv[1]
 ZULIP_EMAIL = sys.argv[2]
 ZULIP_SITE = sys.argv[3]
 LABEL = sys.argv[4]
-#GITHUB_TOKEN = sys.argv[5]
+pr_number = sys.argv[5]
+#GITHUB_TOKEN = sys.argv[4]
 
 print(f"LABEL: '{LABEL}'")
 
@@ -42,7 +43,7 @@ for message in messages:
     match = pr_pattern.search(content)
     if match:
         print(f"matched: '{message}'")
-        pr_number = match.group(1)
+        #pr_number = match.group(1)
         # Check for emoji reactions
         reactions = message['reactions']
         has_peace_sign = any(reaction['emoji_name'] == 'peace_sign' for reaction in reactions)
