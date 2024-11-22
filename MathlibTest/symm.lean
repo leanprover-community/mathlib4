@@ -23,15 +23,6 @@ example (a b c : Nat) (ab : a = b) (bc : b = c) : c = a := by
   symm_saturate
   apply Eq.trans <;> assumption
 
-def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Function.LeftInverse g f)
-    (h₂ : Function.RightInverse g f) : N →ₙ* M where
-  toFun := g
-  map_mul' x y :=
-    calc
-      g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
-      _ = g (f (g x * g y)) := by rw [f.map_mul]
-      _ = g x * g y := h₁ _
-
 structure MulEquiv (M N : Type u) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
 
 /--
