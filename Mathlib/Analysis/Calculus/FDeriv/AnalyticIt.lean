@@ -7,7 +7,16 @@ import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
-# Blank docstring to be filled in
+# Iterated Frechet derivatives of analytic functions
+
+We prove that the iterated derivatives of continuously polynomial functions are also
+continuously polynomial in `CPolynomialOn.iteratedFDeriv`.
+
+We deduce that multilinear maps are `C^∞` in `ContinuousMultilinearMap.contDiff`.
+
+Finally, we prove that, in dimension `1` and characteristic zero, an analytic function is the sum
+of the power series given by its iterated derivatives divided by `n!`, in
+`HasFPowerSeriesOnBall.hasSum_iteratedFDeriv`.
 
 -/
 
@@ -41,17 +50,19 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
     simp
 
 /-- A polynomial function is infinitely differentiable. -/
-theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : WithTop ℕ∞} :
-    ContDiffOn 𝕜 n f s := by
+theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
+    ContDiffOn 𝕜 n f s :=
   let t := { x | CPolynomialAt 𝕜 f x }
   suffices ContDiffOn 𝕜 n f t from this.mono h
-  suffices AnalyticOnNhd 𝕜 f t by
-    have t_open : IsOpen t := isOpen_cPolynomialAt 𝕜 f
-    exact AnalyticOnNhd.contDiffOn this t_open.uniqueDiffOn
   have H : CPolynomialOn 𝕜 f t := fun _x hx ↦ hx
-  exact H.analyticOnNhd
+  have t_open : IsOpen t := isOpen_cPolynomialAt 𝕜 f
+  contDiffOn_of_continuousOn_differentiableOn
+    (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
+      fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
+    (fun m _ ↦ (H.iteratedFDeriv m).analyticOnNhd.differentiableOn.congr
+      fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
-theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : WithTop ℕ∞} :
+theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞} :
     ContDiffAt 𝕜 n f x :=
   let ⟨_, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
   hf.contDiffOn.contDiffAt hs
@@ -61,7 +72,7 @@ end fderiv
 namespace ContinuousMultilinearMap
 
 variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-  [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F) {n : WithTop ℕ∞} {x : Π i, E i}
+  [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F) {n : ℕ∞} {x : Π i, E i}
 
 open FormalMultilinearSeries
 
