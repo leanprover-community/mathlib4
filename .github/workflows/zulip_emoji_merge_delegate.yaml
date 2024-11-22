@@ -13,7 +13,7 @@ jobs:
     - name: Checkout mathlib repository
       uses: actions/checkout@v4
       with:
-        fetch: 10 # this number matches the number of lines of the `git log` in the final step
+        fetch-depth: 10 # this number matches the number of lines of the `git log` in the final step
 
     - name: Set up Python
       uses: actions/setup-python@v5
