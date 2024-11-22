@@ -5,6 +5,7 @@ Authors: Peter Nelson
 -/
 import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Grade
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Kőnig's infinity lemma
