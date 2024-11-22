@@ -221,18 +221,19 @@ lemma _root_.CategoryTheory.Functor.functorPushforward_imageSieve_inter_mem
   refine K.superset_covering ?_
     (K.bind_covering (G.functorPushforward_imageSieve_mem K f₁)
       (R := fun W p hp ↦ by
-        exact ((G.imageSieve (G.map hp.choose_spec.choose ≫ f₂)).functorPushforward G).pullback
-          hp.choose_spec.choose_spec.choose)
+        letI str := Presieve.getFunctorPushforwardStructure hp
+        exact ((G.imageSieve (G.map str.premap ≫ f₂)).functorPushforward G).pullback
+          str.lift)
       (fun W p hp ↦ by
         apply K.pullback_stable
         apply G.functorPushforward_imageSieve_mem))
   rintro W _ ⟨T, a, b, hb, ⟨P, c, d, ⟨x, w⟩, fac⟩, rfl⟩
-  refine ⟨P, c ≫ hb.choose_spec.choose, d,
-    ⟨⟨c ≫ hb.choose_spec.choose_spec.choose_spec.1.choose, ?_⟩,
-    ⟨x, by rw [G.map_comp_assoc, w]⟩⟩, ?_⟩
-  · rw [G.map_comp, G.map_comp_assoc, hb.choose_spec.choose_spec.choose_spec.1.choose_spec]
+  let str := Presieve.getFunctorPushforwardStructure hb
+  refine ⟨P, c ≫ str.premap, d, ⟨⟨c ≫ str.cover.choose, ?_⟩, ⟨x, ?_⟩⟩, ?_⟩
+  · rw [G.map_comp, G.map_comp_assoc, str.cover.choose_spec]
+  · rw [G.map_comp_assoc, w]
   · rw [G.map_comp, ← reassoc_of% fac]
-    conv_lhs => rw [hb.choose_spec.choose_spec.choose_spec.2]
+    conv_lhs => rw [str.fac]
 
 lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
   have := IsDenseSubsite.isCoverDense J₀ J F
@@ -260,6 +261,18 @@ end
 
 section
 
+variable (data : ∀ X, F.OneHypercoverDenseData J₀ J X) (G : Cᵒᵖ ⥤ A)
+
+lemma isSheaf_iff :
+    Presheaf.IsSheaf J G ↔
+      Presheaf.IsSheaf J₀ (F.op ⋙ G) ∧
+        ∀ (X : C), Nonempty (IsLimit ((data X).toOneHypercover.multifork G)) := by
+  sorry
+
+end
+
+section
+
 variable (data : ∀ X, F.OneHypercoverDenseData J₀ J X)
   [HasLimitsOfSize.{w, w} A]
 
@@ -275,11 +288,33 @@ noncomputable def presheafObjπ (X : C) (i : (data X).I₀) :
   Multiequalizer.ι ((data X).multicospanIndex G₀.val) i
 
 omit [IsDenseSubsite J₀ J F] in
+variable {data G₀} in
+@[ext]
+lemma presheafObj_hom_ext {X : C} {Z : A} {f g : Z ⟶ presheafObj data G₀ X}
+    (h : ∀ (i : (data X).I₀), f ≫ presheafObjπ data G₀ X i = g ≫ presheafObjπ data G₀ X i) :
+    f = g :=
+  Multiequalizer.hom_ext _ _ _ h
+
+omit [IsDenseSubsite J₀ J F] in
 @[reassoc]
 lemma presheafObj_condition (X : C) (i i' : (data X).I₀) (j : (data X).I₁ i i') :
     presheafObjπ data G₀ X i ≫ G₀.val.map ((data X).p₁ j).op =
     presheafObjπ data G₀ X i' ≫ G₀.val.map ((data X).p₂ j).op :=
   Multiequalizer.condition ((data X).multicospanIndex G₀.val) ⟨⟨i, i'⟩, j⟩
+
+noncomputable def presheafObjMultifork (X : C) :
+    Multifork ((data X).multicospanIndex G₀.val) :=
+  Multifork.ofι _ (presheafObj data G₀ X) (presheafObjπ data G₀ X)
+    (fun _ ↦ presheafObj_condition _ _ _ _ _ _)
+
+def _root_.CategoryTheory.Limits.Multifork.isoMk {C : Type*} [Category C]
+    {I : MulticospanIndex C} {c₁ c₂ : Multifork I} (e : c₁.pt ≅ c₂.pt)
+    (h : ∀ (i : I.L), c₁.ι i = e.hom ≫ c₂.ι i := by aesop_cat) : c₁ ≅ c₂ :=
+  Cones.ext e (by rintro (_ | _) <;> simp [h])
+
+noncomputable def presheafObjIsLimit (X : C) :
+    IsLimit (presheafObjMultifork data G₀ X) :=
+  IsLimit.ofIsoLimit (limit.isLimit _) (Multifork.isoMk (Iso.refl _))
 
 namespace restriction
 
@@ -289,9 +324,15 @@ noncomputable def res {X : C} {X₀ Y₀ : C₀} {f : F.obj X₀ ⟶ X} {g : Y�
     presheafObjπ data G₀ X h.i₀ ≫ G₀.val.map h.q.op
 
 noncomputable def res_eq_res {X : C} {X₀ Y₀ : C₀} {f : F.obj X₀ ⟶ X} {g : Y₀ ⟶ X₀}
-    (h h' : SieveStruct (data X) f g) :
-    res data G₀ h = res data G₀ h' := by
-  sorry
+    (h₁ h₂ : SieveStruct (data X) f g) :
+    res data G₀ h₁ = res data G₀ h₂ :=
+  Presheaf.IsSheaf.hom_ext G₀.cond
+    ⟨_, (data X).mem₁₀ h₁.i₀ h₂.i₀ h₁.q h₂.q (by rw [h₁.fac, h₂.fac])⟩ _ _ (by
+      rintro ⟨Z₀, a, ⟨j, b, fac₁, fac₂⟩⟩
+      dsimp [res]
+      rw [assoc, assoc, ← Functor.map_comp, ← Functor.map_comp, ← op_comp, ← op_comp,
+        fac₁, fac₂, op_comp, op_comp, Functor.map_comp, Functor.map_comp]
+      apply presheafObj_condition_assoc)
 
 end restriction
 
@@ -325,20 +366,90 @@ lemma restriction_map {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
 
 noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
     presheafObj data G₀ Y ⟶ presheafObj data G₀ X :=
-  Multiequalizer.lift _ _ (fun i₀ ↦ restriction data G₀ ((data X).f i₀ ≫ f))
-    sorry
+  Multiequalizer.lift _ _ (fun i₀ ↦ restriction data G₀ ((data X).f i₀ ≫ f)) (by
+    have : Full F := sorry -- use `IsLocallyFull`...
+    rintro ⟨⟨i₁, i₂⟩, j⟩
+    dsimp at j ⊢
+    obtain ⟨a, h₁, h₂⟩ : ∃ a, a = F.map ((data X).p₁ j) ≫ (data X).f i₁ ≫ f ∧
+        a = F.map ((data X).p₂ j) ≫ (data X).f i₂ ≫ f := ⟨_, rfl, (data X).w_assoc j _⟩
+    refine Presheaf.IsSheaf.hom_ext G₀.cond
+      ⟨_, cover_lift F J₀ _ (J.pullback_stable a (data Y).mem₀)⟩ _ _ ?_
+    rintro ⟨W₀, b, ⟨_, c, _, h, w⟩⟩
+    cases' h with i
+    dsimp at i c w ⊢
+    rw [assoc, assoc, ← Functor.map_comp, ← Functor.map_comp, ← op_comp, ← op_comp]
+    rw [restriction_map data G₀ _ _ (F.preimage c),
+      restriction_map data G₀ _ _ (F.preimage c)]
+    · rw [map_preimage, map_comp, assoc, w, h₂]
+    · rw [map_preimage, map_comp, assoc, w, h₁])
 
+@[reassoc (attr := simp)]
+lemma presheafMap_π {X Y : C} (f : X ⟶ Y) (i : (data X).I₀) :
+    presheafMap data G₀ f ≫ presheafObjπ data G₀ X i =
+      restriction data G₀ ((data X).f i ≫ f) :=
+  Multiequalizer.lift_ι _ _ _ _ _
+
+lemma presheafMap_id (X : C) :
+    presheafMap data G₀ (𝟙 X) = 𝟙 _ := by
+  ext i
+  rw [presheafMap_π, comp_id, id_comp]
+  simpa only [op_id, map_id, comp_id] using
+    restriction_map data G₀ ((data X).f i) (𝟙 _) (𝟙 _) (by simp)
+
+lemma presheafMap_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    presheafMap data G₀ (f ≫ g) = presheafMap data G₀ g ≫ presheafMap data G₀ f := by
+  sorry
+
+@[simps]
 noncomputable def presheaf : Cᵒᵖ ⥤ A where
   obj X := presheafObj data G₀ X.unop
   map f := presheafMap data G₀ f.unop
-  map_id := sorry
-  map_comp := sorry
+  map_id X := presheafMap_id data G₀ X.unop
+  map_comp f g := presheafMap_comp data G₀ g.unop f.unop
 
-lemma isSheaf : Presheaf.IsSheaf J (presheaf data G₀) := sorry
+namespace presheafObjObjIso
+
+variable (X₀ : C₀)
+
+noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.obj (op X₀) :=
+  G₀.2.amalgamate ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ (fun ⟨Y₀, a, ha⟩ ↦ by
+    have : Full F := sorry
+    exact presheafObjπ data G₀ _ (Sieve.ofArrows.i ha) ≫
+      G₀.val.map (F.preimage (Sieve.ofArrows.h ha)).op) sorry
+
+noncomputable def inv : G₀.val.obj (op X₀) ⟶ (presheaf data G₀).obj (op (F.obj X₀)) :=
+  Multiequalizer.lift _ _ (fun i ↦ G₀.val.map (by
+    have : Full F := sorry
+    exact (F.preimage ((data (F.obj X₀)).f i)).op)) sorry
+
+end presheafObjObjIso
+
+noncomputable def presheafObjObjIso (X₀ : C₀) :
+    (presheaf data G₀).obj (op (F.obj X₀)) ≅ G₀.val.obj (op X₀) where
+  hom := presheafObjObjIso.hom data G₀ X₀
+  inv := presheafObjObjIso.inv data G₀ X₀
+  hom_inv_id := sorry
+  inv_hom_id := sorry
+
+noncomputable def compPresheafIso : F.op ⋙ presheaf data G₀ ≅ G₀.val :=
+  NatIso.ofComponents (fun X₀ ↦ presheafObjObjIso data G₀ X₀.unop) sorry
+
+lemma isSheaf : Presheaf.IsSheaf J (presheaf data G₀) := by
+  rw [isSheaf_iff data]
+  constructor
+  · exact (Presheaf.isSheaf_of_iso_iff (compPresheafIso data G₀)).2 G₀.cond
+  · intro X
+    let e : ((data X).toPreOneHypercover.multicospanIndex (presheaf data G₀)).multicospan ≅
+      ((data X).multicospanIndex G₀.val).multicospan :=
+      NatIso.ofComponents (by rintro (_ | _) <;> apply presheafObjObjIso) sorry
+    refine ⟨(IsLimit.postcomposeHomEquiv e _).1
+      (IsLimit.ofIsoLimit (presheafObjIsLimit data G₀ X)
+        (Multifork.isoMk (Iso.refl _) sorry))⟩
 
 noncomputable def sheaf : Sheaf J A := ⟨presheaf data G₀, isSheaf data G₀⟩
 
-def sheafIso : (sheafPushforwardContinuous F A J₀ J).obj (sheaf data G₀) ≅ G₀ := sorry
+noncomputable def sheafIso : (sheafPushforwardContinuous F A J₀ J).obj (sheaf data G₀) ≅ G₀ :=
+  (fullyFaithfulSheafToPresheaf J₀ A).preimageIso (compPresheafIso data G₀)
 
 end EssSurj
 
