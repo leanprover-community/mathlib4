@@ -267,6 +267,8 @@ lemma isSheaf_iff :
     Presheaf.IsSheaf J G ↔
       Presheaf.IsSheaf J₀ (F.op ⋙ G) ∧
         ∀ (X : C), Nonempty (IsLimit ((data X).toOneHypercover.multifork G)) := by
+  refine ⟨fun hG ↦ ⟨op_comp_isSheaf F J₀ J ⟨_, hG⟩,
+    fun X ↦ ⟨(data X).toOneHypercover.isLimitMultifork ⟨G, hG⟩⟩⟩, fun ⟨hG₀, hG⟩ ↦ ?_⟩
   sorry
 
 end
@@ -302,7 +304,7 @@ lemma presheafObj_condition (X : C) (i i' : (data X).I₀) (j : (data X).I₁ i 
     presheafObjπ data G₀ X i' ≫ G₀.val.map ((data X).p₂ j).op :=
   Multiequalizer.condition ((data X).multicospanIndex G₀.val) ⟨⟨i, i'⟩, j⟩
 
-noncomputable def presheafObjMultifork (X : C) :
+noncomputable abbrev presheafObjMultifork (X : C) :
     Multifork ((data X).multicospanIndex G₀.val) :=
   Multifork.ofι _ (presheafObj data G₀ X) (presheafObjπ data G₀ X)
     (fun _ ↦ presheafObj_condition _ _ _ _ _ _)
@@ -431,20 +433,52 @@ noncomputable def presheafObjObjIso (X₀ : C₀) :
   hom_inv_id := sorry
   inv_hom_id := sorry
 
+@[reassoc (attr := simp)]
+lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
+    presheafMap data G₀ ((data X).f i) ≫ (presheafObjObjIso data G₀ ((data X).X i)).hom =
+      presheafObjπ data G₀ X i := sorry
+
+@[reassoc]
+lemma presheafObjObjIso_hom_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
+    presheafMap data G₀ (F.map f) ≫ (presheafObjObjIso data G₀ X₀).hom =
+      (presheafObjObjIso data G₀ Y₀).hom ≫ G₀.val.map f.op := by
+  sorry
+
 noncomputable def compPresheafIso : F.op ⋙ presheaf data G₀ ≅ G₀.val :=
-  NatIso.ofComponents (fun X₀ ↦ presheafObjObjIso data G₀ X₀.unop) sorry
+  NatIso.ofComponents (fun X₀ ↦ presheafObjObjIso data G₀ X₀.unop)
+    (fun f ↦ presheafObjObjIso_hom_naturality data G₀ f.unop)
+
+@[simps!]
+def _root_.CategoryTheory.Limits.multicospanIsoMk {L R : Type*} {fst snd : L → R}
+    {C : Type*} [Category C] {G₁ G₂ : WalkingMulticospan fst snd ⥤ C}
+    (e : ∀ (i : L), G₁.obj (.right i) ≅ G₂.obj (.right i))
+    (e' : ∀ (j : R), G₁.obj (.left j) ≅ G₂.obj (.left j))
+    (h₁ : ∀ (i : L), G₁.map (WalkingMulticospan.Hom.fst i) ≫ (e i).hom =
+      (e' (fst i)).hom ≫ G₂.map (WalkingMulticospan.Hom.fst i))
+    (h₂ : ∀ (i : L), G₁.map (WalkingMulticospan.Hom.snd i) ≫ (e i).hom =
+      (e' (snd i)).hom ≫ G₂.map (WalkingMulticospan.Hom.snd i)) :
+    G₁ ≅ G₂ :=
+  NatIso.ofComponents (fun x ↦ match x with
+    | .left j => e' j
+    | .right i => e i) (by
+        rintro _ _ (_ | _ | _)
+        · simp
+        · exact h₁ _
+        · exact h₂ _)
 
 lemma isSheaf : Presheaf.IsSheaf J (presheaf data G₀) := by
   rw [isSheaf_iff data]
   constructor
   · exact (Presheaf.isSheaf_of_iso_iff (compPresheafIso data G₀)).2 G₀.cond
   · intro X
-    let e : ((data X).toPreOneHypercover.multicospanIndex (presheaf data G₀)).multicospan ≅
-      ((data X).multicospanIndex G₀.val).multicospan :=
-      NatIso.ofComponents (by rintro (_ | _) <;> apply presheafObjObjIso) sorry
-    refine ⟨(IsLimit.postcomposeHomEquiv e _).1
+    refine ⟨(IsLimit.postcomposeHomEquiv
+      (Limits.multicospanIsoMk (fun _ ↦ presheafObjObjIso _ _ _)
+          (fun _ ↦ presheafObjObjIso _ _ _) (fun j ↦ ?_) (fun j ↦ ?_)) _).1
       (IsLimit.ofIsoLimit (presheafObjIsLimit data G₀ X)
-        (Multifork.isoMk (Iso.refl _) sorry))⟩
+        (Multifork.isoMk (Iso.refl _) (fun i ↦ ?_)))⟩
+    · apply presheafObjObjIso_hom_naturality
+    · apply presheafObjObjIso_hom_naturality
+    · simp [Multifork.ι, PreOneHypercover.multifork]
 
 noncomputable def sheaf : Sheaf J A := ⟨presheaf data G₀, isSheaf data G₀⟩
 
