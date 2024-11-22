@@ -77,7 +77,7 @@ protected lemma «exists» {p : Additive α → Prop} : (∃ a, p a) ↔ ∃ a, 
 /-- Recursion principle for `Additive`, supported by `cases` and `induction`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : Additive α → Sort*} (ofMul : ∀ a, motive (ofMul a)) : ∀ a, motive a :=
-  fun a => ofMul (toMul a)
+  fun a => ofMul (a.toMul)
 
 end Additive
 
@@ -107,7 +107,7 @@ protected lemma «exists» {p : Multiplicative α → Prop} : (∃ a, p a) ↔ �
 /-- Recursion principle for `Multiplicative`, supported by `cases` and `induction`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def rec {motive : Multiplicative α → Sort*} (ofAdd : ∀ a, motive (ofAdd a)) : ∀ a, motive a :=
-  fun a => ofAdd (toAdd a)
+  fun a => ofAdd (a.toAdd)
 
 end Multiplicative
 
@@ -115,29 +115,29 @@ open Additive (ofMul toMul)
 open Multiplicative (ofAdd toAdd)
 
 @[simp]
-theorem toAdd_ofAdd (x : α) : toAdd (ofAdd x) = x :=
+theorem toAdd_ofAdd (x : α) : (x.ofAdd).toAdd = x :=
   rfl
 
 @[simp]
-theorem ofAdd_toAdd (x : Multiplicative α) : ofAdd (toAdd x) = x :=
+theorem ofAdd_toAdd (x : Multiplicative α) : (x.toAdd).ofAdd = x :=
   rfl
 
 @[simp]
-theorem toMul_ofMul (x : α) : toMul (ofMul x) = x :=
+theorem toMul_ofMul (x : α) : (x.ofMul).toMul = x :=
   rfl
 
 @[simp]
-theorem ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
+theorem ofMul_toMul (x : Additive α) : (x.toMul).ofMul = x :=
   rfl
 
 instance [Subsingleton α] : Subsingleton (Additive α) := toMul.injective.subsingleton
 instance [Subsingleton α] : Subsingleton (Multiplicative α) := toAdd.injective.subsingleton
 
 instance [Inhabited α] : Inhabited (Additive α) :=
-  ⟨ofMul default⟩
+  ⟨default.ofMul⟩
 
 instance [Inhabited α] : Inhabited (Multiplicative α) :=
-  ⟨ofAdd default⟩
+  ⟨default.ofAdd⟩
 
 instance [Unique α] : Unique (Additive α) := toMul.unique
 instance [Unique α] : Unique (Multiplicative α) := toAdd.unique
@@ -153,22 +153,22 @@ instance Multiplicative.instNontrivial [Nontrivial α] : Nontrivial (Multiplicat
   ofAdd.injective.nontrivial
 
 instance Additive.add [Mul α] : Add (Additive α) where
-  add x y := ofMul (toMul x * toMul y)
+  add x y := (x.toMul * y.toMul).ofMul
 
 instance Multiplicative.mul [Add α] : Mul (Multiplicative α) where
-  mul x y := ofAdd (toAdd x + toAdd y)
+  mul x y := (x.toAdd + y.toAdd).ofAdd
 
 @[simp]
-theorem ofAdd_add [Add α] (x y : α) : ofAdd (x + y) = ofAdd x * ofAdd y := rfl
+theorem ofAdd_add [Add α] (x y : α) : (x + y).ofAdd = x.ofAdd * y.ofAdd := rfl
 
 @[simp]
-theorem toAdd_mul [Add α] (x y : Multiplicative α) : toAdd (x * y) = toAdd x + toAdd y := rfl
+theorem toAdd_mul [Add α] (x y : Multiplicative α) : (x * y).toAdd = x.toAdd + y.toAdd := rfl
 
 @[simp]
-theorem ofMul_mul [Mul α] (x y : α) : ofMul (x * y) = ofMul x + ofMul y := rfl
+theorem ofMul_mul [Mul α] (x y : α) : (x * y).ofMul = x.ofMul + y.ofMul := rfl
 
 @[simp]
-theorem toMul_add [Mul α] (x y : Additive α) : toMul (x + y) = toMul x * toMul y := rfl
+theorem toMul_add [Mul α] (x y : Additive α) : (x + y).toMul = x.toMul * y.toMul := rfl
 
 instance Additive.addSemigroup [Semigroup α] : AddSemigroup (Additive α) :=
   { Additive.add with add_assoc := @mul_assoc α _ }
@@ -228,7 +228,7 @@ theorem ofMul_one [One α] : @Additive.ofMul α 1 = 0 := rfl
 theorem ofMul_eq_zero {A : Type*} [One A] {x : A} : Additive.ofMul x = 0 ↔ x = 1 := Iff.rfl
 
 @[simp]
-theorem toMul_zero [One α] : toMul (0 : Additive α) = 1 := rfl
+theorem toMul_zero [One α] : (0 : Additive α).toMul = 1 := rfl
 
 @[simp]
 lemma toMul_eq_one {α : Type*} [One α] {x : Additive α} :
@@ -247,7 +247,7 @@ theorem ofAdd_eq_one {A : Type*} [Zero A] {x : A} : Multiplicative.ofAdd x = 1 �
   Iff.rfl
 
 @[simp]
-theorem toAdd_one [Zero α] : toAdd (1 : Multiplicative α) = 0 :=
+theorem toAdd_one [Zero α] : (1 : Multiplicative α).toAdd = 0 :=
   rfl
 
 @[simp]
@@ -280,19 +280,19 @@ instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :
     npow_succ := @AddMonoid.nsmul_succ α h }
 
 @[simp]
-theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
+theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : (a ^ n).ofMul = n • a.ofMul :=
   rfl
 
 @[simp]
-theorem toMul_nsmul [Monoid α] (n : ℕ) (a : Additive α) : toMul (n • a) = toMul a ^ n :=
+theorem toMul_nsmul [Monoid α] (n : ℕ) (a : Additive α) : (n • a).toMul = a.toMul ^ n :=
   rfl
 
 @[simp]
-theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd a ^ n :=
+theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : (n • a).ofAdd = a.ofAdd ^ n :=
   rfl
 
 @[simp]
-theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : toAdd (a ^ n) = n • toAdd a :=
+theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : (a ^ n).toAdd = n • a.toAdd :=
   rfl
 
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
