@@ -32,6 +32,11 @@ abstract two related kinds of ideas:
   a tactic that takes a list of proofs `hᵢ : sᵢ ∈ f`,
   and replaces a goal `s ∈ f` with `∀ x, x ∈ s₁ → ... → x ∈ sₙ → x ∈ s`;
 * `Filter.NeBot f` : a utility class stating that `f` is a non-trivial filter.
+* `Filter.IsBounded r f`: the filter `f` is eventually bounded w.r.t. the relation `r`,
+  i.e. eventually, it is bounded by some uniform bound.
+  `r` will be usually instantiated with `(· ≤ ·)` or `(· ≥ ·)`.
+* `Filter.IsCobounded r f` states that the filter `f` does not tend to infinity w.r.t. `r`.
+  This is also called frequently bounded. Will be usually instantiated with `(· ≤ ·)` or `(· ≥ ·)`.
 
 ## Notations
 
@@ -350,9 +355,9 @@ This is essentially a push-forward along a function mapping each set to a set. -
 protected def lift' (f : Filter α) (h : Set α → Set β) :=
   f.lift (𝓟 ∘ h)
 
-/-- `f.IsBounded (≺)`: the filter `f` is eventually bounded w.r.t. the relation `≺`, i.e.
-eventually, it is bounded by some uniform bound.
-`r` will be usually instantiated with `≤` or `≥`. -/
+/-- `f.IsBounded r`: the filter `f` is eventually bounded w.r.t. the relation `r`,
+i.e. eventually, it is bounded by some uniform bound.
+`r` will be usually instantiated with `(· ≤ ·)` or `(· ≥ ·)`. -/
 def IsBounded (r : α → α → Prop) (f : Filter α) :=
   ∃ b, ∀ᶠ x in f, r x b
 
