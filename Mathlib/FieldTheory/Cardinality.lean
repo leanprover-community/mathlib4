@@ -31,7 +31,7 @@ local notation "‖" x "‖" => Fintype.card x
 
 open scoped Cardinal nonZeroDivisors
 
-universe u v
+universe u
 
 /-- A finite field has prime power cardinality. -/
 theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ := by
@@ -71,23 +71,3 @@ theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #�
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',
       (Cardinal.nat_lt_aleph0 _).not_le, false_or] using Fintype.nonempty_field_iff
   · simpa only [← Cardinal.infinite_iff, h, true_or, iff_true] using Infinite.nonempty_field
-
-namespace IntermediateField
-
-variable (F : Type u) [Field F]
-
-open Cardinal in
-theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set E) :
-    Cardinal.lift.{u} #(adjoin F s) ≤ Cardinal.lift.{v} #F ⊔ Cardinal.lift.{u} #s ⊔ ℵ₀ := by
-  rw [show ↥(adjoin F s) = (adjoin F s).toSubfield from rfl, adjoin_toSubfield]
-  apply (Cardinal.lift_le.mpr (Subfield.cardinalMk_closure_le_max _)).trans
-  rw [lift_max, sup_le_iff, lift_aleph0]
-  refine ⟨(Cardinal.lift_le.mpr ((mk_union_le _ _).trans <| add_le_max _ _)).trans ?_, le_sup_right⟩
-  simp_rw [lift_max, lift_aleph0, sup_assoc]
-  exact sup_le_sup_right mk_range_le_lift _
-
-theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
-    #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by
-  simpa using lift_cardinalMk_adjoin_le F s
-
-end IntermediateField
