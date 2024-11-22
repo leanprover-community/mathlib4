@@ -18,7 +18,6 @@ assert_not_exists MvPolynomial
 
 universe u v w
 
-open scoped Classical
 open Polynomial
 
 section Pi

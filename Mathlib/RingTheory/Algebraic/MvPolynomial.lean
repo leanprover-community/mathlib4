@@ -17,7 +17,6 @@ a tower of algebraic field extensions is algebraic.
 
 universe u v w
 
-open scoped Classical
 open Polynomial
 
 namespace MvPolynomial
@@ -34,6 +33,7 @@ private theorem rename_polynomial_aeval_X
 theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i ∉ s)
     {f : R[X]} (hf : Transcendental R f) :
     Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
+  classical
   rw [transcendental_iff_injective] at hf ⊢
   let g := MvPolynomial.mapAlgHom (R := R) (σ := s) (Polynomial.aeval (R := R) f)
   replace hf : Function.Injective g := MvPolynomial.map_injective _ hf

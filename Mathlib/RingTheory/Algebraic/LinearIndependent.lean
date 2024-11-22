@@ -15,7 +15,6 @@ import Mathlib.RingTheory.Algebraic.Defs
   then `{(x - a)⁻¹ | a : F}` is linearly independent over `F`.
 -/
 
-open scoped Classical
 open Polynomial
 
 section
@@ -25,6 +24,7 @@ then `{(x - a)⁻¹ | a : F}` is linearly independent over `F`. -/
 theorem Transcendental.linearIndependent_sub_inv
     {F E : Type*} [Field F] [Field E] [Algebra F E] {x : E} (H : Transcendental F x) :
     LinearIndependent F fun a ↦ (x - algebraMap F E a)⁻¹ := by
+  classical
   rw [transcendental_iff] at H
   refine linearIndependent_iff'.2 fun s m hm i hi ↦ ?_
   have hnz (a : F) : x - algebraMap F E a ≠ 0 := fun h ↦

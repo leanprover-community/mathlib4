@@ -17,7 +17,6 @@ a tower of algebraic field extensions is algebraic.
 
 universe u v w
 
-open scoped Classical
 open Polynomial
 
 section
