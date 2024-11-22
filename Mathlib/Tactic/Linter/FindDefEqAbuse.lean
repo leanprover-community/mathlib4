@@ -32,7 +32,7 @@ register_option linter.findDefEqAbuse : Bool := {
 `findDefEqAbuseRef` is the `IO.Ref` containing the name of the declaration used by
 `linter.findDefEqAbuse` to flag (ab)uses of definitional equality.
 -/
-initialize findDefEqAbuseRef : IO.Ref Name ← IO.mkRef `ENat
+initialize findDefEqAbuseRef : IO.Ref NameSet ← IO.mkRef (NameSet.insert ∅ `ENat)
 
 /-- `find_defeq_abuse id` replaces the current value of the `findDefEqAbuseRef` with `id`.
 
@@ -40,7 +40,7 @@ The variant `find_defeq_abuse ! id` also reports if the declaration `id` is alre
 the environment or not.
 -/
 elab "find_defeq_abuse" tk:("!")? ppSpace id:ident : command => do
-  findDefEqAbuseRef.set id.getId
+  findDefEqAbuseRef.set (NameSet.insert ∅ id.getId)
   match tk.isSome, ((← getEnv).find? id.getId).isSome with
     | true, false => logWarningAt id m!"There is no declaration named '{id}' in the environment"
     | true, true => logInfoAt id m!"The environment contains declaration '{id}'"
@@ -57,42 +57,35 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   unless stx.isOfKind ``declaration do
     return
-  let id := mkIdent nm
   let env ← getEnv
-  if (env.find? nm).isNone then return
+  if nm.isEmpty then return
+  if nm.all (env.find? · |>.isNone) then return
   let declIds := ← getNamesFrom <| stx.getPos?.getD default
-  let names := declIds.map (·.getId)
-  -- ignore the declarations that do not contain `nm` in their *type*
-  let names := ← names.filterM fun n => do
-    if let some cinfo := env.find? n then
-      return cinfo.type.containsConst (· == nm)
-    else return false
-  if names.isEmpty then return
-  -- creating the syntax `attribute [local irreducible] nm`
-  let irred := mkIdent `irreducible
-  let preMkIrred ← `(command| attribute [$(⟨irred⟩)] $id)
-  let mkIrred : Syntax := preMkIrred.raw.replaceM (m := Id) fun s =>
-    if s.getId == `irreducible then
-      some <| .node default `Lean.Parser.Term.attrInstance #[
-        .node default `Lean.Parser.Term.attrKind (#[mkNullNode #[
-          .node default ``Lean.Parser.Term.local #[mkAtom "local"]]]),
-        .node default `Lean.Parser.Attr.simple #[s, mkNullNode]]
-    else none
-  let s ← get
   -- we re-elaborate the declaration in a new namespace, opening the old one
-  withScope (fun s => {s with
+  let data ← withScope (fun s => {s with
       currNamespace := s.currNamespace ++ `another
+      opts := diagnostics.set s.opts true
       openDecls := .simple s.currNamespace [] :: s.openDecls
     }) do
-    elabCommand <| mkNullNode #[mkIrred, stx]
-  -- if the new elaboration produced errors, the linter assumes that the error was a defeq (ab)use
-  -- this may not always be correct!
-  if (← get).messages.hasErrors then
-    set s
-    let declId := match stx.find? (·.isOfKind ``declId) with
-      | none => declIds.back?.getD default
-      |some d => d
-    logWarningAt declId m!"'{declId}' relies on the definition of '{nm}'"
+    elabCommand stx
+    return Kernel.getDiagnostics (← getEnv)
+
+  let declId := match stx.find? (·.isOfKind ``declId) with
+    | none => declIds.back?.getD default
+    | some d => d
+
+  let mut bad : Option Name := none
+  for forbidden in nm do
+    if data.unfoldCounter.contains forbidden then
+      bad := some forbidden
+      break
+
+  if let some v := bad then
+    logWarningAt declId m!"'{declId}' relies on the definition of '{v}'"
+    if let some var := env.find? declId.getId then
+      let type ← liftTermElabM (Meta.inferType (var.type))
+      if type != .sort .zero then
+        findDefEqAbuseRef.modify (NameSet.insert · declId.getId)
 
 initialize addLinter findDefEqAbuseLinter
 
