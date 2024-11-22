@@ -64,7 +64,7 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- we re-elaborate the declaration in a new namespace, opening the old one
   let data ← withScope (fun s => {s with
       currNamespace := s.currNamespace ++ `another
-      opts := diagnostics.set s.opts true
+      opts := diagnostics.threshold.set (diagnostics.set s.opts true) 1000000000
       openDecls := .simple s.currNamespace [] :: s.openDecls
     }) do
     elabCommand stx
