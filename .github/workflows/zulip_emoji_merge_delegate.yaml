@@ -12,7 +12,7 @@ on:
   # the PR receives a review comment
   pull_request_review_comment:
     types: [created]
-  push:
+  #push:
   #schedule:
   #  - cron: '0 * * * *'  # Runs every hour
 

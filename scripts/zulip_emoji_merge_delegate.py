@@ -58,6 +58,20 @@ for message in messages:
         #pr_data = pr_response.json()
         labels = [LABEL]
 
+        client.remove_reaction({
+            "message_id": message['id'],
+            "emoji_name": "peace_sign"
+        })
+        client.remove_reaction({
+            "message_id": message['id'],
+            "emoji_name": "bors"
+        })
+        client.remove_reaction({
+            "message_id": message['id'],
+            "emoji_name": "merge"
+        })
+
+
         if 'delegated' in labels:
             client.add_reaction({
                 "message_id": message['id'],
