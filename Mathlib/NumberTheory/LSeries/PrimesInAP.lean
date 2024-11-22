@@ -88,6 +88,9 @@ noncomputable abbrev residueClass : ℕ → ℝ :=
 lemma residueClass_nonneg (n : ℕ) : 0 ≤ residueClass a n :=
   Set.indicator_apply_nonneg fun _ ↦ vonMangoldt_nonneg
 
+lemma residueClass_le (n : ℕ) : residueClass a n ≤ vonMangoldt n :=
+  Set.indicator_apply_le' (fun _ ↦ le_rfl) (fun _ ↦ vonMangoldt_nonneg)
+
 lemma residueClass_apply_zero : residueClass a 0 = 0 := by
   simp only [Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_zero, map_zero, ofReal_zero,
     implies_true]
