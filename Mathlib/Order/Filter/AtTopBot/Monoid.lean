@@ -107,44 +107,33 @@ theorem Tendsto.atTop_of_mul_const (C : M) (hf : Tendsto (f · * C) l atTop) : T
 theorem Tendsto.atBot_of_mul_const (C : M) (hf : Tendsto (f · * C) l atBot) : Tendsto f l atBot :=
   hf.atTop_of_mul_const (M := Mᵒᵈ)
 
-@[to_additive]
-theorem Tendsto.atTop_of_eventuallyLE_const_mul (C : M) (hC : f ≤ᶠ[l] fun _ ↦ C)
-    (h : Tendsto (fun x => f x * g x) l atTop) : Tendsto g l atTop :=
-  .atTop_of_const_mul C <| tendsto_atTop_mono' l (hC.mono fun x hx => mul_le_mul_right' hx (g x)) h
+/-- If `f` is eventually bounded from above along `l` and `f * g` tends to `+∞`,
+then `g` tends to `+∞`. -/
+@[to_additive "If `f` is eventually bounded from above along `l` and `f + g` tends to `+∞`,
+then `g` tends to `+∞`."]
+theorem Tendsto.atTop_of_isBoundedUnder_mul (hf : IsBoundedUnder (· ≤ ·) l f)
+    (hfg : Tendsto (fun x => f x * g x) l atTop) : Tendsto g l atTop := by
+  obtain ⟨C, hC⟩ := hf
+  refine .atTop_of_const_mul C <| tendsto_atTop_mono' l ?_ hfg
+  exact (eventually_map.mp hC).mono fun _ ↦ (mul_le_mul_right' · _)
 
 @[to_additive]
-theorem Tendsto.atBot_of_const_eventuallyLE_mul (C : M) (hC : (fun _ ↦ C) ≤ᶠ[l] f)
+theorem Tendsto.atBot_of_isBoundedUnder_mul (hf : IsBoundedUnder (· ≥ ·) l f)
     (h : Tendsto (fun x => f x * g x) l atBot) : Tendsto g l atBot :=
-  h.atTop_of_eventuallyLE_const_mul (M := Mᵒᵈ) C hC
+  h.atTop_of_isBoundedUnder_mul (M := Mᵒᵈ) hf
 
 @[to_additive]
-theorem Tendsto.atTop_of_le_const_mul (C) (hC : ∀ x, f x ≤ C) :
-    Tendsto (fun x => f x * g x) l atTop → Tendsto g l atTop :=
-  .atTop_of_eventuallyLE_const_mul C (.of_forall hC)
+theorem Tendsto.atTop_of_mul_isBoundedUnder (hg : IsBoundedUnder (· ≤ ·) l g)
+    (h : Tendsto (fun x => f x * g x) l atTop) : Tendsto f l atTop := by
+  obtain ⟨C, hC⟩ := hg
+  refine .atTop_of_mul_const C <| tendsto_atTop_mono' l ?_ h
+  exact (eventually_map.mp hC).mono fun _ ↦ (mul_le_mul_left' · _)
 
 @[to_additive]
-theorem Tendsto.atBot_of_const_le_mul (C) (hC : ∀ x, C ≤ f x) :
-    Tendsto (fun x => f x * g x) l atBot → Tendsto g l atBot :=
-  .atTop_of_le_const_mul (M := Mᵒᵈ) C hC
+theorem Tendsto.atBot_of_mul_isBoundedUnder (hg : IsBoundedUnder (· ≥ ·) l g)
+    (h : Tendsto (fun x => f x * g x) l atBot) : Tendsto f l atBot :=
+  h.atTop_of_mul_isBoundedUnder (M := Mᵒᵈ) hg
 
-theorem Tendsto.atTop_of_mul_eventuallyLE_const (C) (hC : g ≤ᶠ[l] fun _ ↦ C)
-    (h : Tendsto (fun x => f x * g x) l atTop) : Tendsto f l atTop :=
-  .atTop_of_mul_const C (tendsto_atTop_mono' l (hC.mono fun x hx => mul_le_mul_left' hx (f x)) h)
-
-theorem tendsto_atBot_of_add_bdd_below_right' (C) (hC : ∀ᶠ x in l, C ≤ g x)
-    (h : Tendsto (fun x => f x + g x) l atBot) : Tendsto f l atBot :=
-  tendsto_atBot_of_add_const_right C
-    (tendsto_atBot_mono' l (hC.mono fun x hx => add_le_add_left hx (f x)) h)
-
-theorem tendsto_atTop_of_add_bdd_above_right (C) (hC : ∀ x, g x ≤ C) :
-    Tendsto (fun x => f x + g x) l atTop → Tendsto f l atTop :=
-  tendsto_atTop_of_add_bdd_above_right' C (univ_mem' hC)
-
--- Porting note: the "order dual" trick timeouts
-theorem tendsto_atBot_of_add_bdd_below_right (C) (hC : ∀ x, C ≤ g x) :
-    Tendsto (fun x => f x + g x) l atBot → Tendsto f l atBot :=
-  tendsto_atBot_of_add_bdd_below_right' C (univ_mem' hC)
-
-end OrderedCancelAddCommMonoid
+end OrderedCancelCommMonoid
 
 end Filter
