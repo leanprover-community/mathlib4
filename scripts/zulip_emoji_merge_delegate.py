@@ -26,7 +26,7 @@ client = zulip.Client(
 # Fetch the last 200 messages
 response = client.get_messages({
     "anchor": "newest",
-    "num_before": 200,
+    "num_before": 5,
     "num_after": 0,
     "narrow": [{"operator": "channel", "operand": "PR reviews"}],
 })
@@ -34,7 +34,8 @@ response = client.get_messages({
 print(f"response: '{response}'")
 
 messages = response['messages']
-pr_pattern = re.compile(r'https://github\.com/leanprover-community/mathlib4/pull/(\d+)')
+#pr_pattern = re.compile(r'https://github\.com/leanprover-community/mathlib4/pull/(\d+)')
+pr_pattern = re.compile(r'https://github.com/leanprover-community/mathlib4/pull/19367')
 
 for message in messages:
     content = message['content']
