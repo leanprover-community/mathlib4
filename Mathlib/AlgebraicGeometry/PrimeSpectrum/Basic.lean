@@ -217,7 +217,7 @@ all primes are maximal. -/
 theorem discreteTopology_iff_finite_and_isPrime_imp_isMaximal : DiscreteTopology (PrimeSpectrum R) ↔
     Finite (PrimeSpectrum R) ∧ ∀ I : Ideal R, I.IsPrime → I.IsMaximal :=
   ⟨fun _ ↦ ⟨finite_of_compact_of_discrete, fun I hI ↦ (isClosed_singleton_iff_isMaximal ⟨I, hI⟩).mp
-    <| discreteTopology_iff_forall_isClosed.mp ‹_› _⟩, fun ⟨_, h⟩ ↦ .of_finite_singleton_isClosed
+    <| discreteTopology_iff_forall_isClosed.mp ‹_› _⟩, fun ⟨_, h⟩ ↦ .of_finite_of_isClosed_singleton
     fun p ↦ (isClosed_singleton_iff_isMaximal p).mpr <| h _ p.2⟩
 
 /-- The prime spectrum of a semiring has discrete Zariski topology iff there are only
@@ -1038,7 +1038,7 @@ lemma PrimeSpectrum.isClopen_iff_zeroLocus {s : Set (PrimeSpectrum R)} :
 
 /-- Clopen subsets in the prime spectrum of a commutative ring are in 1-1 correspondence
 with idempotent elements in the ring. -/
-@[stacks 00EE]
+@[stacks 00EE, simps!]
 def PrimeSpectrum.isIdempotentElemEquivIsClopen :
     {e : R | IsIdempotentElem e} ≃ {s : Set (PrimeSpectrum R) | IsClopen s} :=
   .ofBijective (fun e ↦ ⟨basicOpen e.1, isClopen_iff.mpr ⟨_, e.2, rfl⟩⟩)
@@ -1051,32 +1051,39 @@ lemma PrimeSpectrum.basicOpen_isIdempotentElemEquivIsClopen_symm (s) :
     basicOpen (isIdempotentElemEquivIsClopen (R := R).symm s).1 = s.1 :=
   congr_arg (·.1) (isIdempotentElemEquivIsClopen.apply_symm_apply s)
 
-open PrimeSpectrum in
+variable [DiscreteTopology (PrimeSpectrum R)]
+open PrimeSpectrum
+
+variable (R) in
+lemma RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
+    Function.Surjective (RingHom.toLocalizationIsMaximal R) := fun x ↦ by
+  let idem I := isIdempotentElemEquivIsClopen (R := R).symm ⟨{I}, isClopen_discrete _⟩
+  let ideal I := Ideal.span {1 - (idem I).1}
+  let toSpec (I : {I : Ideal R | I.IsMaximal}) : PrimeSpectrum R := ⟨I.1, I.2.isPrime⟩
+  have loc I : IsLocalization.AtPrime (R ⧸ ideal I) I.1 := by
+    rw [← isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton]
+    exacts [IsLocalization.Away.quotient_of_isIdempotentElem (idem I).2,
+      (basicOpen_isIdempotentElemEquivIsClopen_symm ⟨{I}, isClopen_discrete _⟩)]
+  let equiv I := IsLocalization.algEquiv I.1.primeCompl (Localization.AtPrime I.1) (R ⧸ ideal I)
+  have := (discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical.mp ‹_›).1
+  have ⟨r, hr⟩ := Ideal.pi_quotient_surjective ?_ fun I ↦ equiv (toSpec I) (x I)
+  · refine ⟨r, funext fun I ↦ (equiv <| toSpec I).injective ?_⟩
+    rw [← hr]; exact (equiv _).commutes r
+  refine fun I J ne ↦ Ideal.isCoprime_iff_exists.mpr ?_
+  have := ((idem <| toSpec I).2.mul (idem <| toSpec J).2).eq_zero_of_isNilpotent <| by
+    simp_rw [← basicOpen_eq_bot_iff, basicOpen_mul, SetLike.ext'_iff, idem,
+      TopologicalSpace.Opens.coe_inf, basicOpen_isIdempotentElemEquivIsClopen_symm]
+    exact Set.singleton_inter_eq_empty.mpr fun h ↦ ne (Subtype.ext <| congr_arg (·.1) h)
+  simp_rw [ideal, Ideal.mem_span_singleton', exists_exists_eq_and]
+  exact ⟨1, idem (toSpec I), by simpa [mul_sub]⟩
+
 /-- If the prime spectrum of a commutative ring R has discrete Zariski topology, then R is
 canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
 @[stacks 00JA
 "See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
-def RingHom.toLocalizationIsMaximalEquiv [DiscreteTopology (PrimeSpectrum R)] : R ≃+*
-    Π I : {I : Ideal R | I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
-  .ofBijective _ ⟨RingHom.toLocalizationIsMaximal_injective R, fun x ↦ by
-    let idem I := isIdempotentElemEquivIsClopen (R := R).symm ⟨{I}, isClopen_discrete _⟩
-    let ideal I := Ideal.span {1 - (idem I).1}
-    let toSpec (I : {I : Ideal R | I.IsMaximal}) : PrimeSpectrum R := ⟨I.1, I.2.isPrime⟩
-    have loc I : IsLocalization.AtPrime (R ⧸ ideal I) I.1 := by
-      rw [← isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton]
-      exacts [IsLocalization.Away.quotient_of_isIdempotentElem (idem I).2,
-       (basicOpen_isIdempotentElemEquivIsClopen_symm ⟨{I}, isClopen_discrete _⟩)]
-    let equiv I := IsLocalization.algEquiv I.1.primeCompl (Localization.AtPrime I.1) (R ⧸ ideal I)
-    have := (discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical.mp ‹_›).1
-    have ⟨r, hr⟩ := Ideal.pi_quotient_surjective ?_ fun I ↦ equiv (toSpec I) (x I)
-    · refine ⟨r, funext fun I ↦ (equiv <| toSpec I).injective ?_⟩
-      rw [← hr]; exact (equiv _).commutes r
-    refine fun I J ne ↦ Ideal.isCoprime_iff_exists.mpr ?_
-    have := ((idem <| toSpec I).2.mul (idem <| toSpec J).2).eq_zero_of_isNilpotent <| by
-      simp_rw [← basicOpen_eq_bot_iff, basicOpen_mul, SetLike.ext'_iff, idem,
-        TopologicalSpace.Opens.coe_inf, basicOpen_isIdempotentElemEquivIsClopen_symm]
-      exact Set.singleton_inter_eq_empty.mpr fun h ↦ ne (Subtype.ext <| congr_arg (·.1) h)
-    simp_rw [ideal, Ideal.mem_span_singleton', exists_exists_eq_and]
-    exact ⟨1, idem (toSpec I), by simpa [mul_sub]⟩⟩
+def RingHom.toLocalizationIsMaximalEquiv : R ≃+*
+    Π I : {I : Ideal R // I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
+  .ofBijective _ ⟨RingHom.toLocalizationIsMaximal_injective R,
+    RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology R⟩
 
 end Idempotent
