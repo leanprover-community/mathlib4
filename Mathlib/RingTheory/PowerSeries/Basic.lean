@@ -883,15 +883,15 @@ end CommSemiring
 
 section CommRing
 
-variable {S : Type*} [CommRing S]
+variable {R : Type*} [CommRing R]
 
 @[simp, norm_cast]
-lemma coe_neg (p : S[X]) : (- p : S[X]).toPowerSeries = - (p : PowerSeries S) :=
+lemma coe_neg (p : R[X]) : (- p : R[X]).toPowerSeries = - (p : PowerSeries R) :=
   coeToPowerSeries.ringHom.map_neg p
 
 @[simp, norm_cast]
-lemma coe_sub (p q : S[X]) :
-    (p - q : S[X]).toPowerSeries = (p : PowerSeries S) - (q : PowerSeries S) :=
+lemma coe_sub (p q : R[X]) :
+    (p - q : R[X]).toPowerSeries = (p : PowerSeries R) - (q : PowerSeries R) :=
   coeToPowerSeries.ringHom.map_sub p q
 
 end CommRing
