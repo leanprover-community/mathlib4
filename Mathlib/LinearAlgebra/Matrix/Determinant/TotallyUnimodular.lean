@@ -83,11 +83,9 @@ lemma IsTotallyUnimodular.reindex {A : Matrix m n R} (eX : m ≃ m') (eY : n ≃
   hA.submatrix _ _
 
 lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃ n') :
-    IsTotallyUnimodular (A.reindex em en) ↔ A.IsTotallyUnimodular := by
-  rw [isTotallyUnimodular_iff, isTotallyUnimodular_iff]
-  constructor <;> intro hA k f g
-  · simpa [submatrix] using hA k (em ∘ f) (en ∘ g)
-  · simpa [submatrix] using hA k (em.symm ∘ f) (en.symm ∘ g)
+    IsTotallyUnimodular (A.reindex em en) ↔ A.IsTotallyUnimodular :=
+  ⟨fun hA => by simpa [Equiv.symm_apply_eq] using hA.reindex em.symm en.symm,
+   fun hA => hA.reindex _ _⟩
 
 -- TODO: move
 lemma neg_one_pow_mem_signType_range (n : ℕ) {a : R} (ha : a ∈ Set.range SignType.cast) :
