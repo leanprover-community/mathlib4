@@ -87,21 +87,23 @@ structure MulActionHom where
 /- Porting note: local notation given a name, conflict with Algebra.Hom.GroupAction
  see https://github.com/leanprover/lean4/issues/2000 -/
 /-- `φ`-equivariant functions `X → Y`,
-where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively -/
+where `φ : M → N`, where `M` and `N` act on `X` and `Y` respectively.-/
 notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => MulActionHom φ X Y
 
-/-- `M`-equivariant functions `X → Y` with respect to the action of `M`
-
-This is the same as `X →ₑ[@id M] Y` -/
+/-- `M`-equivariant functions `X → Y` with respect to the action of `M`.
+This is the same as `X →ₑ[@id M] Y`. -/
 notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
 
 /-- `φ`-equivariant functions `X → Y`,
-where `φ : M → N`, where `M` and `N` act additively on `X` and `Y` respectively -/
+where `φ : M → N`, where `M` and `N` act additively on `X` and `Y` respectively 
+
+We use the same notation as for multiplicative actions, as conflicts are unlikely. -/
 notation:25 (name := «AddActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => AddActionHom φ X Y
 
-/-- `M`-equivariant functions `X → Y` with respect to the additive action of `M`
+/-- `M`-equivariant functions `X → Y` with respect to the additive action of `M`.
+This is the same as `X →ₑ[@id M] Y`.
 
-This is the same as `X →ₑ[@id M] Y` -/
+We use the same notation as for multiplicative actions, as conflicts are unlikely. -/
 notation:25 (name := «AddActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => AddActionHom (@id M) X Y
 
 /-- `AddActionSemiHomClass F φ X Y` states that
