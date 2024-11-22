@@ -1138,7 +1138,7 @@ theorem map_monomial (s : σ →₀ ℕ) (a : R) : map f (monomial s a) = monomi
 theorem map_C : ∀ a : R, map f (C a : MvPolynomial σ R) = C (f a) :=
   map_monomial _ _
 
-@[simp] theorem map_ofNat (n : Nat) [n.AtLeastTwo] :
+@[simp] protected theorem map_ofNat (n : Nat) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : MvPolynomial σ R).map f = OfNat.ofNat n := by
   rw [_root_.map_ofNat]
 
