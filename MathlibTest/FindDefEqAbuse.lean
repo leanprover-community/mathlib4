@@ -1,5 +1,8 @@
 import Mathlib.Tactic.Linter.FindDefEqAbuse
 
+set_option diagnostics true
+set_option diagnostics.threshold 100000000
+
 find_defeq_abuse X.Y
 namespace X
 

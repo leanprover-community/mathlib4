@@ -62,13 +62,12 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if nm.all (env.find? · |>.isNone) then return
   let declIds := ← getNamesFrom <| stx.getPos?.getD default
   -- we re-elaborate the declaration in a new namespace, opening the old one
-  let data ← withScope (fun s => {s with
-      currNamespace := s.currNamespace ++ `another
-      opts := diagnostics.threshold.set (diagnostics.set s.opts true) 1000000000
-      openDecls := .simple s.currNamespace [] :: s.openDecls
-    }) do
-    elabCommand stx
-    return Kernel.getDiagnostics (← getEnv)
+  -- let data ← withScope (fun s => {s with
+  --     currNamespace := s.currNamespace ++ `another
+  --     opts := diagnostics.threshold.set (diagnostics.set s.opts true) 1000000000
+  --     openDecls := .simple s.currNamespace [] :: s.openDecls
+  --   }) do
+  let data := Kernel.getDiagnostics (← getEnv)
 
   let declId := match stx.find? (·.isOfKind ``declId) with
     | none => declIds.back?.getD default
@@ -82,10 +81,10 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
   if let some v := bad then
     logWarningAt declId m!"'{declId}' relies on the definition of '{v}'"
-    -- if let some var := env.find? declId.getId then
-    --   let type ← liftTermElabM (Meta.inferType var.type)
-    --   if type != .sort .zero then
-    --     findDefEqAbuseRef.modify (NameSet.insert · declId.getId)
+    if let some var := env.find? declId.getId then
+      let type ← liftTermElabM (Meta.inferType var.type)
+      if type != .sort .zero then
+        findDefEqAbuseRef.modify (NameSet.insert · declId.getId)
 
 initialize addLinter findDefEqAbuseLinter
 
