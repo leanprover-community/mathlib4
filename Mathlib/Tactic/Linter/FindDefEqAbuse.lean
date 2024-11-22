@@ -82,10 +82,10 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
   if let some v := bad then
     logWarningAt declId m!"'{declId}' relies on the definition of '{v}'"
-    if let some var := env.find? declId.getId then
-      let type ← liftTermElabM (Meta.inferType (var.type))
-      if type != .sort .zero then
-        findDefEqAbuseRef.modify (NameSet.insert · declId.getId)
+    -- if let some var := env.find? declId.getId then
+    --   let type ← liftTermElabM (Meta.inferType var.type)
+    --   if type != .sort .zero then
+    --     findDefEqAbuseRef.modify (NameSet.insert · declId.getId)
 
 initialize addLinter findDefEqAbuseLinter
 
