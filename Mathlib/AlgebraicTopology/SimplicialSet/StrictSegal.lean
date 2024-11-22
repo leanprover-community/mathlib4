@@ -192,17 +192,26 @@ instance : Quasicategory X := by
         have hi : i = 1 := by fin_cases i <;> (try contradiction); rfl
         subst hi hk
         exact hs rfl
+      /- We construct the triangle in the standard simplex as a 2-simplex in
+      the horn. While the triangle is not contained in the inner horn Λ[2, 1],
+      we can inhabit Λ[n + 2, i] by induction on n. -/
+      let triangle : Λ[n + 2, i] _[2] := by
+        cases n with
+        | zero => contradiction
+        | succ _ => exact horn.primitiveTriangle i h₀ hₙ k (by omega)
       /- The interval spanning from `k` to `k + 2` is equivalently the spine
       of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
       have hi : Path.interval (mapPath σ₀ (spineHorn i h₀ hₙ)) k 2 (by omega) =
-          X.spine 2 (σ₀.app _ (horn.primitiveTrianglePos hn0 i h₀ hₙ k (by omega))) := by
+          X.spine 2 (σ₀.app _ triangle) := by
         ext m
-        simp only [spine_arrow, Path.interval, mapPath]
+        simp [spine_arrow, Path.interval, mapPath]
         rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
         apply congr_arg
         simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
           whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj]
-        fin_cases m <;> (ext x; fin_cases x <;> rfl)
+        cases n with
+        | zero => contradiction
+        | succ _ => fin_cases m <;> (ext x; fin_cases x <;> rfl)
       rw [← spine_arrow, spine_δ_arrow_eq _ heq, hi]
       simp only [spineToDiagonal, diagonal, spineToSimplex_spine]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
@@ -211,11 +220,14 @@ instance : Quasicategory X := by
         whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj,
         whiskering_obj_obj_map, yoneda_obj_map, horn.face_coe]
       ext z
-      fin_cases z <;>
-        simp only [standardSimplex.objEquiv, uliftFunctor_map, yoneda_obj_map,
-          Quiver.Hom.unop_op, Equiv.ulift_symm_down];
-        rw [mkOfSucc_δ_eq heq];
-        rfl
+      cases n with
+      | zero => contradiction
+      | succ _ =>
+        fin_cases z <;>
+        · simp only [standardSimplex.objEquiv, uliftFunctor_map, yoneda_obj_map,
+            Quiver.Hom.unop_op, Equiv.ulift_symm_down]
+          rw [mkOfSucc_δ_eq heq]
+          rfl
 
 end StrictSegal
 
