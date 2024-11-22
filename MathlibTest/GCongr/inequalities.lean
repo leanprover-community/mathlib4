@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
@@ -100,7 +100,7 @@ example {a b : ℚ} (h₁ : a < b) (c : ℝ) : (a + c : ℝ) < b + c := by gcong
 example {k m n : ℤ} (H : m ^ 2 ≤ n ^ 2) : k + m ^ 2 ≤ k + n ^ 2 := by gcongr
 
 -- test of behaviour when no lemmas are applicable
-example (n k : ℕ) (H : n ^ k + 1 ≤ k ^ n + 1) : n ^ k ≤ k ^ n := by
+example (n k : ℕ) (H : n % k + 1 ≤ k % n + 1) : n % k ≤ k % n := by
   success_if_fail_with_msg
     "gcongr did not make progress"
     (gcongr)

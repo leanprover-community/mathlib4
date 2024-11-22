@@ -13,8 +13,6 @@ variable {α β : Type} [Semiring α] [Ring β]
 
 namespace Matrix
 
-open Matrix
-
 /-! Test that the dimensions are inferred correctly, even for empty matrices -/
 section dimensions
 

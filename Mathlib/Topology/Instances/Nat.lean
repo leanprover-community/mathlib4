@@ -14,7 +14,7 @@ The structure of a metric space on `ℕ` is introduced in this file, induced fro
 
 noncomputable section
 
-open Metric Set Filter
+open Filter Metric Set Topology
 
 namespace Nat
 
