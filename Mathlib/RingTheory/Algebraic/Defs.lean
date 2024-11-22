@@ -13,7 +13,7 @@ An R-algebra is algebraic over R if and only if all its elements are algebraic o
 
 ## Main definitions
 
-* `IsAlgebraic`: algebraic elements of an algebra. 
+* `IsAlgebraic`: algebraic elements of an algebra.
 * `Transcendental`: transcendental elements of an algebra are those that are not algebraic.
 * `Subalgebra.IsAlgebraic`: a subalgebra is algebraic if all its elements are algebraic.
 * `Algebra.IsAlgebraic`: an algebra is algebraic if all its elements are algebraic.
