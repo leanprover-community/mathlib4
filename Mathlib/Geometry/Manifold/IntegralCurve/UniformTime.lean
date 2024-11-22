@@ -93,7 +93,7 @@ lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManif
   `piecewise (Ioo a b) γ γ'` is equal to `γ` and `γ'` in their respective domains.
   `Set.piecewise_eqOn` shows the equality for `γ` by definition, while this lemma shows the equality
   for `γ'` by the uniqueness of integral curves. -/
-lemma piecewise_eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
+lemma eqOn_piecewise_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {a b a' b' : ℝ} (hγ : IsIntegralCurveOn γ v (Ioo a b))
     (hγ' : IsIntegralCurveOn γ' v (Ioo a' b'))
@@ -138,7 +138,7 @@ lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
     apply (hγ' t <| ht hmem).congr_of_eventuallyEq
     rw [Filter.eventuallyEq_iff_exists_mem]
     exact ⟨Ioo a' b', isOpen_Ioo.mem_nhds <| ht hmem,
-      piecewise_eqOn_of_isIntegralCurveOn_Ioo hv hγ hγ' ht₀ h⟩
+      eqOn_piecewise_of_isIntegralCurveOn_Ioo hv hγ hγ' ht₀ h⟩
 
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
   least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral
