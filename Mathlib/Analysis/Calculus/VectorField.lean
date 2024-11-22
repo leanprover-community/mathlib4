@@ -358,8 +358,9 @@ as `(f^* V) (x) = Df(x)^{-1} (V (f x))`. If `Df(x)` is not invertible, we use th
 def pullback (f : E → F) (V : F → F) (x : E) : E := (fderiv 𝕜 f x).inverse (V (f x))
 
 variable (𝕜) in
-/-- The pullback of a vector field under a function, defined
-as `(f^* V) (x) = Df(x)^{-1} (V (f x))`. If `Df(x)` is not invertible, we use the junk value `0`.
+/-- The pullback within a set of a vector field under a function, defined
+as `(f^* V) (x) = Df(x)^{-1} (V (f x))` where `Df(x)` is the derivative of `f` within `s`.
+If `Df(x)` is not invertible, we use the junk value `0`.
 -/
 def pullbackWithin (f : E → F) (V : F → F) (s : Set E) (x : E) : E :=
   (fderivWithin 𝕜 f s x).inverse (V (f x))
@@ -408,8 +409,6 @@ lemma fderivWithin_pullbackWithin {f : E → F} {V : F → F} {x : E}
 open Set
 
 variable [CompleteSpace E]
-
-/- TODO: move me -/
 
 /-- If a `C^2` map has an invertible derivative within a set at a point, then nearby derivatives
 can be written as continuous linear equivs, which depend in a `C^1` way on the point, as well as
@@ -461,6 +460,23 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
     ext; simp
   rw [B (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v), I]
   simp only [ContinuousLinearMap.comp_neg, neg_inj, eN.fderivWithin_eq e'N]
+
+lemma DifferentiableWithinAt.pullbackWithin {f : E → F} {V : F → F} {s : Set E} {t : Set F} {x : E}
+    (hV : DifferentiableWithinAt 𝕜 V t (f x))
+    (hf : ContDiffWithinAt 𝕜 2 f s x) (hf' : (fderivWithin 𝕜 f s x).IsInvertible)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
+    DifferentiableWithinAt 𝕜 (pullbackWithin 𝕜 f V s) s x := by
+  rcases exists_continuousLinearEquiv_fderivWithin_symm_eq hf hf' hs hx
+    with ⟨M, -, M_symm_smooth, hM, -⟩
+  simp only [pullbackWithin_eq]
+  have : DifferentiableWithinAt 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (V (f y))) s x := by
+    apply DifferentiableWithinAt.clm_apply
+    · exact M_symm_smooth.differentiableWithinAt le_rfl
+    · exact hV.comp _ (hf.differentiableWithinAt one_le_two) hst
+  apply this.congr_of_eventuallyEq
+  · filter_upwards [hM] with y hy using by simp [← hy]
+  · have hMx : M x = fderivWithin 𝕜 f s x := by apply mem_of_mem_nhdsWithin hx hM
+    simp [← hMx]
 
 /-- If a `C^2` map has an invertible derivative at a point, then nearby derivatives can be written
 as continuous linear equivs, which depend in a `C^1` way on the point, as well as their inverse, and
@@ -516,7 +532,7 @@ completeness but requiring that `f` is a local diffeo. Variant where unique diff
 the invariance property are only required in a smaller set `u`. -/
 lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
     {f : E → F} {V W : F → F} {x : E} {t : Set F} {u : Set E}
-    (hf : IsSymmSndFDerivWithinAt 𝕜 f s x)  (h'f : ContDiffWithinAt 𝕜 2 f s x)
+    (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
     (hV : DifferentiableWithinAt 𝕜 V t (f x)) (hW : DifferentiableWithinAt 𝕜 W t (f x))
     (hu : UniqueDiffOn 𝕜 u) (hx : x ∈ u) (hst : MapsTo f u t) (hus : u =ᶠ[𝓝 x] s) :
     pullbackWithin 𝕜 f (lieBracketWithin 𝕜 V W t) s x
@@ -551,22 +567,5 @@ lemma pullback_lieBracket_of_isSymmSndFDerivAt {f : E → F} {V W : F → F} {x 
     ← differentiableWithinAt_univ] at hf h'f hV hW ⊢
   exact pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt hf h'f hV hW uniqueDiffOn_univ
     (mem_univ _) (mapsTo_univ _ _)
-
-lemma DifferentiableWithinAt.pullbackWithin {f : E → F} {V : F → F} {s : Set E} {t : Set F} {x : E}
-    (hV : DifferentiableWithinAt 𝕜 V t (f x))
-    (hf : ContDiffWithinAt 𝕜 2 f s x) (hf' : (fderivWithin 𝕜 f s x).IsInvertible)
-    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
-    DifferentiableWithinAt 𝕜 (pullbackWithin 𝕜 f V s) s x := by
-  rcases exists_continuousLinearEquiv_fderivWithin_symm_eq hf hf' hs hx
-    with ⟨M, -, M_symm_smooth, hM, -⟩
-  simp only [pullbackWithin_eq]
-  have : DifferentiableWithinAt 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (V (f y))) s x := by
-    apply DifferentiableWithinAt.clm_apply
-    · exact M_symm_smooth.differentiableWithinAt le_rfl
-    · exact hV.comp _ (hf.differentiableWithinAt one_le_two) hst
-  apply this.congr_of_eventuallyEq
-  · filter_upwards [hM] with y hy using by simp [← hy]
-  · have hMx : M x = fderivWithin 𝕜 f s x := by apply mem_of_mem_nhdsWithin hx hM
-    simp [← hMx]
 
 end VectorField
