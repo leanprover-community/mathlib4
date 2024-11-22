@@ -103,12 +103,12 @@ lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B
     (fromRows A B).IsTotallyUnimodular := by
   intro k f g hf hg
   induction k with
-  | zero => exact ⟨1, by simp⟩
+  | zero => use 1; simp
   | succ k ih =>
     by_cases hfr : ∃ i : Fin (k + 1), (f i).isRight
     · simp only [Sum.isRight_iff] at hfr
       obtain ⟨i, j, hfi⟩ := hfr
-      have hAB := det_succ_row ((A.fromRows B).submatrix f g) i
+      have hAB := det_succ_row ((fromRows A B).submatrix f g) i
       simp only [submatrix_apply, hfi, fromRows_apply_inr] at hAB
       obtain (hj | ⟨j', hj'⟩) := hB j
       · use 0
@@ -116,21 +116,24 @@ lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B
       · simp only [hj', Function.update_apply] at hAB
         by_cases hj'' : ∃ x, g x = j'
         · obtain ⟨x, rfl⟩ := hj''
-          simp only [Nat.succ_eq_add_one, hg.eq_iff, Pi.zero_apply, mul_ite, mul_one, mul_zero,
-            submatrix_submatrix, ite_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ] at hAB
-          rw [hAB]
+          have hAB' :
+            ((fromRows A B).submatrix f g).det =
+            (-1) ^ (i.val + x.val) *
+              ((fromRows A B).submatrix (f ∘ i.succAbove) (g ∘ x.succAbove)).det := by
+            simpa [hg.eq_iff] using hAB
+          rw [hAB']
           apply neg_one_pow_mem_signType_range
           exact ih _ _
             (hf.comp Fin.succAbove_right_injective)
             (hg.comp Fin.succAbove_right_injective)
-        · simp only [not_exists] at hj''
+        · rw [not_exists] at hj''
           use 0
           simpa [hj''] using hAB.symm
     · simp only [not_exists, Bool.not_eq_true, Sum.isRight_eq_false, Sum.isLeft_iff] at hfr
       choose f' hf' using hfr
       rw [isTotallyUnimodular_iff] at hA
-      simp only [funext hf']
-      exact hA (k + 1) f' g
+      rw [funext hf']
+      apply hA
 
 /--
 If `A` is totally unimodular and each row of B is all zeros except for at most a single 1,
