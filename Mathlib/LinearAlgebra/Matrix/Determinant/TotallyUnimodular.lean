@@ -91,8 +91,7 @@ lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃
 lemma neg_one_pow_mem_signType_range (n : ℕ) {a : R} (ha : a ∈ Set.range SignType.cast) :
     (-1 : R) ^ n * a ∈ Set.range SignType.cast := by
   let S := MonoidHom.mrange (SignType.castHom (α := R)).toMonoidHom
-  refine mul_mem (s := S) (pow_mem ?_ _) ha
-  exact ⟨-1, by rfl⟩
+  exact mul_mem (s := S) (pow_mem (by use -1; rfl) n) ha
 
 /--
 If `A` is totally unimodular and each row of B is all zeros except for at most a single 1,
