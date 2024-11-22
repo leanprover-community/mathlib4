@@ -568,7 +568,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
       exact (Hp.mono ho).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl (hs.inter o_open) ⟨hy, yo⟩
     exact ((Hp.mono ho).cont m le_rfl).congr fun y hy => (A y hy).symm
 
-theorem contDiffOn_of_continuousOn_differentiableOn
+theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
     (Hcont : ∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s)
     (Hdiff : ∀ m : ℕ, m < n →
       DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s) :
@@ -581,11 +581,11 @@ theorem contDiffOn_of_continuousOn_differentiableOn
     simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro k hk y hy
-    convert (Hdiff k (lt_of_lt_of_le (mod_cast hk) hm) y hy).hasFDerivWithinAt
+    convert (Hdiff k (lt_of_lt_of_le (mod_cast hk) (mod_cast hm)) y hy).hasFDerivWithinAt
   · intro k hk
-    exact Hcont k (le_trans (mod_cast hk) hm)
+    exact Hcont k (le_trans (mod_cast hk) (mod_cast hm))
 
-theorem contDiffOn_of_differentiableOn
+theorem contDiffOn_of_differentiableOn {n : ℕ∞}
     (h : ∀ m : ℕ, m ≤ n → DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s) :
     ContDiffOn 𝕜 n f s :=
   contDiffOn_of_continuousOn_differentiableOn (fun m hm => (h m hm).continuousOn) fun m hm =>
@@ -618,12 +618,12 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
   rw [differentiableWithinAt_congr_set' _ A] at C
   exact C.congr_of_eventuallyEq (B.filter_mono inf_le_left) B.self_of_nhds
 
-theorem contDiffOn_iff_continuousOn_differentiableOn (hs : UniqueDiffOn 𝕜 s) :
+theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔
       (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
         ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s :=
-  ⟨fun h => ⟨fun _m hm => h.continuousOn_iteratedFDerivWithin hm hs, fun _m hm =>
-      h.differentiableOn_iteratedFDerivWithin hm hs⟩,
+  ⟨fun h => ⟨fun _m hm => h.continuousOn_iteratedFDerivWithin (mod_cast hm) hs, fun _m hm =>
+      h.differentiableOn_iteratedFDerivWithin (mod_cast hm) hs⟩,
     fun h => contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
 
 theorem contDiffOn_succ_of_fderivWithin {n : ℕ} (hf : DifferentiableOn 𝕜 f s)
@@ -903,7 +903,7 @@ theorem contDiff_iff_ftaylorSeries :
     exact fun h => ContDiffOn.ftaylorSeriesWithin h uniqueDiffOn_univ
   · intro h; exact ⟨ftaylorSeries 𝕜 f, h⟩
 
-theorem contDiff_iff_continuous_differentiable :
+theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
     ContDiff 𝕜 n f ↔
       (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
         ∀ m : ℕ, m < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
@@ -913,14 +913,15 @@ theorem contDiff_iff_continuous_differentiable :
 /-- If `f` is `C^n` then its `m`-times iterated derivative is continuous for `m ≤ n`. -/
 theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : m ≤ n) (hf : ContDiff 𝕜 n f) :
     Continuous fun x => iteratedFDeriv 𝕜 m f x :=
-  (contDiff_iff_continuous_differentiable.mp hf).1 m hm
+  (contDiff_iff_continuous_differentiable.mp (hf.of_le hm)).1 m le_rfl
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
 theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : ContDiff 𝕜 n f) :
     Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x :=
-  (contDiff_iff_continuous_differentiable.mp hf).2 m hm
+  (contDiff_iff_continuous_differentiable.mp
+    (hf.of_le (ENat.add_one_natCast_le_withTop_of_lt hm))).2 m (mod_cast lt_add_one m)
 
-theorem contDiff_of_differentiable_iteratedFDeriv
+theorem contDiff_of_differentiable_iteratedFDeriv {n : ℕ∞}
     (h : ∀ m : ℕ, m ≤ n → Differentiable 𝕜 (iteratedFDeriv 𝕜 m f)) : ContDiff 𝕜 n f :=
   contDiff_iff_continuous_differentiable.2
     ⟨fun m hm => (h m hm).continuous, fun m hm => h m (le_of_lt hm)⟩

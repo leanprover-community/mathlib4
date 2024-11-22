@@ -131,7 +131,7 @@ theorem contDiffOn_of_differentiableOn_deriv {n : ℕ∞}
 
 /-- On a set with unique derivatives, a `C^n` function has derivatives up to `n` which are
 continuous. -/
-theorem ContDiffOn.continuousOn_iteratedDerivWithin {n : ℕ∞} {m : ℕ} (h : ContDiffOn 𝕜 n f s)
+theorem ContDiffOn.continuousOn_iteratedDerivWithin {n : WithTopℕ∞} {m : ℕ} (h : ContDiffOn 𝕜 n f s)
     (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedDerivWithin m f s) s := by
   simpa only [iteratedDerivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_continuousOn_iff] using
     h.continuousOn_iteratedFDerivWithin hmn hs
