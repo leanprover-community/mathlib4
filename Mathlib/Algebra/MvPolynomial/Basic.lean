@@ -920,6 +920,10 @@ theorem eval₂_C (a) : (C a).eval₂ f g = f a := by
 theorem eval₂_one : (1 : MvPolynomial σ R).eval₂ f g = 1 :=
   (eval₂_C _ _ _).trans f.map_one
 
+@[simp] theorem eval₂_ofNat (n : Nat) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : MvPolynomial σ R).eval₂ f g = n :=
+  (eval₂_C _ _ _).trans (map_natCast f n)
+
 @[simp]
 theorem eval₂_X (n) : (X n).eval₂ f g = g n := by
   simp [eval₂_monomial, f.map_one, X, prod_single_index, pow_one]
@@ -1069,6 +1073,10 @@ theorem eval_C : ∀ a, eval f (C a) = a :=
 @[simp]
 theorem eval_X : ∀ n, eval f (X n) = f n :=
   eval₂_X _ _
+
+@[simp] theorem eval_ofNat (n : Nat) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : MvPolynomial σ R).eval f = n := by
+  rw [map_ofNat]; rfl
 
 @[simp]
 theorem smul_eval (x) (p : MvPolynomial σ R) (s) : eval x (s • p) = s * eval x p := by
