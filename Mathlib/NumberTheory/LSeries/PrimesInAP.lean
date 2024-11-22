@@ -85,6 +85,9 @@ variable {q : ℕ} (a : ZMod q)
 noncomputable abbrev residue_class : ℕ → ℝ :=
   {n : ℕ | (n : ZMod q) = a}.indicator (vonMangoldt ·)
 
+lemma residue_class_nonneg : 0 ≤ residue_class a :=
+  fun _ ↦ Set.indicator_apply_nonneg fun _ ↦ vonMangoldt_nonneg
+
 lemma residue_class_apply_zero : residue_class a 0 = 0 := by
   simp only [Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_zero, map_zero, ofReal_zero,
     implies_true]
