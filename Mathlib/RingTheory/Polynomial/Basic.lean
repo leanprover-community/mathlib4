@@ -8,6 +8,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Polynomial.Div
 import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
@@ -814,6 +815,26 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
 
 theorem exists_C_coeff_not_mem : f ∉ I → ∃ i : ℕ, C (coeff f i) ∉ I :=
   Not.imp_symm fun cf => span_le_of_C_coeff_mem (not_exists_not.mp cf) mem_span_C_coeff
+
+namespace Polynomial
+
+variable {R : Type*} [CommRing R] {a : R}
+
+theorem mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero {b : R[X]} {P : R[X][X]} :
+    P ∈ Ideal.span {C (X - C a), X - C b} ↔ (P.eval b).eval a = 0 := by
+  rw [Ideal.mem_span_pair]
+  constructor <;> intro h
+  · rcases h with ⟨_, _, rfl⟩
+    simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, add_zero, mul_zero, sub_self]
+  · rcases dvd_iff_isRoot.mpr h with ⟨p, hp⟩
+    rcases @X_sub_C_dvd_sub_C_eval _ b _ P with ⟨q, hq⟩
+    exact ⟨C p, q, by rw [mul_comm, mul_comm q, eq_add_of_sub_eq' hq, hp, C_mul]⟩
+
+theorem ker_evalRingHom (x : R) : RingHom.ker (evalRingHom x) = Ideal.span {X - C x} := by
+  ext y
+  simp [Ideal.mem_span_singleton, dvd_iff_isRoot, RingHom.mem_ker]
+
+end Polynomial
 
 end Ideal
 

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -13,6 +13,8 @@ import Mathlib.Algebra.Polynomial.Div
 We prove basic results about univariate polynomials.
 
 -/
+
+assert_not_exists Ideal.map
 
 noncomputable section
 
