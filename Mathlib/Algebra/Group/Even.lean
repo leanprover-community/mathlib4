@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Squares and even elements
