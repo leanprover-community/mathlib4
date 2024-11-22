@@ -85,7 +85,7 @@ instance : Inhabited GHSpace :=
   ⟨Quot.mk _ ⟨⟨{0}, isCompact_singleton⟩, singleton_nonempty _⟩⟩
 
 /-- A metric space representative of any abstract point in `GHSpace` -/
--- Porting note(#5171): linter not yet ported; removed @[nolint has_nonempty_instance]; why?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported; removed @[nolint has_nonempty_instance]; why?
 def GHSpace.Rep (p : GHSpace) : Type :=
   (Quotient.out p : NonemptyCompacts ℓ_infty_ℝ)
 
@@ -255,7 +255,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
       rcases exists_mem_of_nonempty X with ⟨xX, _⟩
       have : ∃ y ∈ range Ψ, dist (Φ xX) y < diam (univ : Set X) + 1 + diam (univ : Set Y) := by
         rw [Ψrange]
-        have : Φ xX ∈ ↑p := Φrange.subst (mem_range_self _)
+        have : Φ xX ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
         exact
           exists_dist_lt_of_hausdorffDist_lt this bound
             (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty
@@ -282,7 +282,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     let F : (X ⊕ Y) × (X ⊕ Y) → ℝ := fun p => dist (f p.1) (f p.2)
     -- check that the induced "distance" is a candidate
     have Fgood : F ∈ candidates X Y := by
-      simp only [F, candidates, forall_const, and_true_iff, add_comm, eq_self_iff_true,
+      simp only [F, candidates, forall_const, add_comm, eq_self_iff_true,
         dist_eq_zero, and_self_iff, Set.mem_setOf_eq]
       repeat' constructor
       · exact fun x y =>
@@ -315,7 +315,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     refine le_trans this (le_of_forall_le_of_dense fun r hr => ?_)
     have I1 : ∀ x : X, (⨅ y, Fb (inl x, inr y)) ≤ r := by
       intro x
-      have : f (inl x) ∈ ↑p := Φrange.subst (mem_range_self _)
+      have : f (inl x) ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt this hr
           (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with
@@ -331,7 +331,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
 
     have I2 : ∀ y : Y, (⨅ x, Fb (inl x, inr y)) ≤ r := by
       intro y
-      have : f (inr y) ∈ ↑q := Ψrange.subst (mem_range_self _)
+      have : f (inr y) ∈ (q : Set _) := Ψrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt' this hr
           (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with
@@ -398,7 +398,7 @@ instance : MetricSpace GHSpace where
       · exact ⟨0, by rintro b ⟨⟨u, v⟩, -, rfl⟩; exact hausdorffDist_nonneg⟩
       · simp only [mem_image, mem_prod, mem_setOf_eq, Prod.exists]
         exists y, y
-        simpa only [and_self_iff, hausdorffDist_self_zero, eq_self_iff_true, and_true_iff]
+        simpa only [and_self_iff, hausdorffDist_self_zero, eq_self_iff_true, and_true]
     · apply le_csInf
       · exact Set.Nonempty.image _ <| Set.Nonempty.prod ⟨y, hy⟩ ⟨y, hy⟩
       · rintro b ⟨⟨u, v⟩, -, rfl⟩; exact hausdorffDist_nonneg
@@ -414,9 +414,9 @@ instance : MetricSpace GHSpace where
       funext
       simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
       congr
-      -- The next line had `singlePass := true` before #9928,
+      -- The next line had `singlePass := true` before https://github.com/leanprover-community/mathlib4/pull/9928,
       -- then was changed to be `simp only [hausdorffDist_comm]`,
-      -- then `singlePass := true` was readded in #8386 because of timeouts.
+      -- then `singlePass := true` was readded in https://github.com/leanprover-community/mathlib4/pull/8386 because of timeouts.
       -- TODO: figure out what causes the slowdown and make it a `simp only` again?
       simp (config := { singlePass := true }) only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
@@ -789,7 +789,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       exact fun hp' => (hp hp').elim
     · rcases hcov _ (Set.not_not_mem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
       rcases Cardinal.lt_aleph0.1 (lt_of_le_of_lt scard (Cardinal.nat_lt_aleph0 _)) with ⟨N, hN⟩
-      rw [hN, Cardinal.natCast_le] at scard
+      rw [hN, Nat.cast_le] at scard
       have : #s = #(Fin N) := by rw [hN, Cardinal.mk_fin]
       cases' Quotient.exact this with E
       use s, N, scard, E
@@ -940,7 +940,7 @@ limit of the `Y n`, and finally let `Z` be the completion of `Z0`.
 The images `X2 n` of `X n` in `Z` are at Hausdorff distance `< 1/2^n` by construction, hence they
 form a Cauchy sequence for the Hausdorff distance. By completeness (of `Z`, and therefore of its
 set of nonempty compact subsets), they converge to a limit `L`. This is the nonempty
-compact metric space we are looking for.  -/
+compact metric space we are looking for. -/
 variable (X : ℕ → Type) [∀ n, MetricSpace (X n)] [∀ n, CompactSpace (X n)] [∀ n, Nonempty (X n)]
 
 /-- Auxiliary structure used to glue metric spaces below, recording an isometric embedding

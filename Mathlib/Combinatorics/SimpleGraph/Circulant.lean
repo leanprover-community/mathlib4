@@ -3,8 +3,8 @@ Copyright (c) 2024 Iván Renison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Bhavik Mehta
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Data.Set.Pointwise.Basic
 
 /-!
 # Definition of circulant graphs
@@ -72,11 +72,11 @@ theorem cycleGraph_zero_eq_top : cycleGraph 0 = ⊤ := Subsingleton.elim _ _
 theorem cycleGraph_one_eq_top : cycleGraph 1 = ⊤ := Subsingleton.elim _ _
 
 theorem cycleGraph_two_eq_top : cycleGraph 2 = ⊤ := by
-  simp only [SimpleGraph.ext_iff, Function.funext_iff]
+  simp only [SimpleGraph.ext_iff, funext_iff]
   decide
 
 theorem cycleGraph_three_eq_top : cycleGraph 3 = ⊤ := by
-  simp only [SimpleGraph.ext_iff, Function.funext_iff]
+  simp only [SimpleGraph.ext_iff, funext_iff]
   decide
 
 theorem cycleGraph_one_adj {u v : Fin 1} : ¬(cycleGraph 1).Adj u v := by

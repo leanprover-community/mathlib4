@@ -56,7 +56,7 @@ noncomputable abbrev M.mk : (Σ j, F.obj j) → M.{v, u} F :=
 theorem M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
     M.mk.{v, u} F x = M.mk F y :=
-  Quot.EqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget MonCat) x y h)
+  Quot.eqvGen_sound (Types.FilteredColimit.eqvGen_quot_rel_of_rel (F ⋙ forget MonCat) x y h)
 
 variable [IsFiltered J]
 
@@ -99,7 +99,7 @@ noncomputable def colimitMulAux (x y : Σ j, F.obj j) : M.{v, u} F :=
 theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
     (hxx' : Types.FilteredColimit.Rel (F ⋙ forget MonCat) x x') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x' y := by
-  cases' x with j₁ x; cases' y with j₂ y; cases' x' with j₃ x'
+  obtain ⟨j₁, x⟩ := x; obtain ⟨j₂, y⟩ := y; obtain ⟨j₃, x'⟩ := x'
   obtain ⟨l, f, g, hfg⟩ := hxx'
   simp? at hfg says simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
@@ -122,7 +122,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
 theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
     (hyy' : Types.FilteredColimit.Rel (F ⋙ forget MonCat) y y') :
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x y' := by
-  cases' y with j₁ y; cases' x with j₂ x; cases' y' with j₃ y'
+  obtain ⟨j₁, y⟩ := y; obtain ⟨j₂, x⟩ := x; obtain ⟨j₃, y'⟩ := y'
   obtain ⟨l, f, g, hfg⟩ := hyy'
   simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
@@ -164,7 +164,7 @@ using a custom object `k` and morphisms `f : x.1 ⟶ k` and `g : y.1 ⟶ k`.
       `x` and `y`, using a custom object `k` and morphisms `f : x.1 ⟶ k` and `g : y.1 ⟶ k`."]
 theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k) :
     M.mk.{v, u} F x * M.mk F y = M.mk F ⟨k, F.map f x.2 * F.map g y.2⟩ := by
-  cases' x with j₁ x; cases' y with j₂ y
+  obtain ⟨j₁, x⟩ := x; obtain ⟨j₂, y⟩ := y
   obtain ⟨s, α, β, h₁, h₂⟩ := IsFiltered.bowtie (IsFiltered.leftToMax j₁ j₂) f
     (IsFiltered.rightToMax j₁ j₂) g
   refine M.mk_eq F _ _ ?_
@@ -183,7 +183,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
     one_mul := fun x => by
       refine Quot.inductionOn x ?_
       intro x
-      cases' x with j x
+      obtain ⟨j, x⟩ := x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         one_mul, F.map_id]
       -- Porting note: `id_apply` does not work here, but the two sides are def-eq
@@ -191,7 +191,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
     mul_one := fun x => by
       refine Quot.inductionOn x ?_
       intro x
-      cases' x with j x
+      obtain ⟨j, x⟩ := x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
         mul_one, F.map_id]
       -- Porting note: `id_apply` does not work here, but the two sides are def-eq
@@ -204,9 +204,9 @@ noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
       refine Quot.induction_on₃ x y z ?_
       clear x y z
       intro x y z
-      cases' x with j₁ x
-      cases' y with j₂ y
-      cases' z with j₃ z
+      obtain ⟨j₁, x⟩ := x
+      obtain ⟨j₂, y⟩ := y
+      obtain ⟨j₃, z⟩ := z
       change M.mk F _ * M.mk F _ * M.mk F _ = M.mk F _ * M.mk F _
       dsimp
       rw [colimit_mul_mk_eq F ⟨j₁, x⟩ ⟨j₂, y⟩ (IsFiltered.max j₁ (IsFiltered.max j₂ j₃))
@@ -272,12 +272,12 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
     refine Quot.induction_on₂ x y ?_
     clear x y
     intro x y
-    cases' x with i x
-    cases' y with j y
+    obtain ⟨i, x⟩ := x
+    obtain ⟨j, y⟩ := y
     rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j)]
     dsimp [Types.TypeMax.colimitCoconeIsColimit]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidHom.map_mul]
     -- Porting note: `rw` can't see through coercion is actually forgetful functor,
     -- so can't rewrite `t.w_apply`
@@ -296,10 +296,10 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
         fun j => funext fun x => DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget MonCat.{u}) :=
   ⟨fun J hJ1 _ => letI hJ1' : Category J := hJ1
-    ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
+    ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat.{u}))⟩⟩
 end
 
@@ -369,16 +369,16 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
           DFunLike.congr_fun (i := CommMonCat.instFunLike _ _) (h j) x
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]
-noncomputable instance forget₂MonPreservesFilteredColimits :
+noncomputable instance forget₂Mon_preservesFilteredColimits :
   PreservesFilteredColimits (forget₂ CommMonCat MonCat.{u}) :=
 ⟨fun J hJ1 _ => letI hJ3 : Category J := hJ1
-  ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
+  ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
     (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommMonCat MonCat.{u}))⟩⟩
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget CommMonCat.{u}) :=
-  Limits.compPreservesFilteredColimits (forget₂ CommMonCat MonCat) (forget MonCat)
+  Limits.comp_preservesFilteredColimits (forget₂ CommMonCat MonCat) (forget MonCat)
 
 end
 

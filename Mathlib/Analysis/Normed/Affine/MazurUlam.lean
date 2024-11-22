@@ -53,7 +53,7 @@ theorem midpoint_fixed {x y : PE} :
     calc
       dist (e z) z ≤ dist (e z) x + dist x z := dist_triangle (e z) x z
       _ = dist (e x) (e z) + dist x z := by rw [hx, dist_comm]
-      _ = dist x z + dist x z := by erw [e.dist_eq x z]
+      _ = dist x z + dist x z := by rw [e.dist_eq x z]
   -- On the other hand, consider the map `f : (E ≃ᵢ E) → (E ≃ᵢ E)`
   -- sending each `e` to `R ∘ e⁻¹ ∘ R ∘ e`, where `R` is the point reflection in the
   -- midpoint `z` of `[x, y]`.
@@ -74,7 +74,7 @@ theorem midpoint_fixed {x y : PE} :
   have : c ≤ c / 2 := by
     apply ciSup_le
     rintro ⟨e, he⟩
-    simp only [Subtype.coe_mk, le_div_iff' (zero_lt_two' ℝ), ← hf_dist]
+    simp only [Subtype.coe_mk, le_div_iff₀' (zero_lt_two' ℝ), ← hf_dist]
     exact le_ciSup h_bdd ⟨f e, hf_maps_to he⟩
   replace : c ≤ 0 := by linarith
   refine fun e hx hy => dist_le_zero.1 (le_trans ?_ this)

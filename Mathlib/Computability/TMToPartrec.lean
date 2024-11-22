@@ -248,7 +248,7 @@ theorem exists_code.comp {m n} {f : Vector ℕ n →. ℕ} {g : Fin n → Vector
   · obtain ⟨cf, hf⟩ := hf
     exact
       ⟨cf.comp cg, fun v => by
-        simp [hg, hf, map_bind, seq_bind_eq, Function.comp]
+        simp [hg, hf, map_bind, seq_bind_eq, Function.comp_def]
         rfl⟩
   clear hf f; induction' n with n IH
   · exact ⟨nil, fun v => by simp [Vector.mOfFn, Bind.bind]; rfl⟩
@@ -340,8 +340,8 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       have := PFun.mem_fix_iff.1 h2
       simp only [hf, Part.bind_some] at this
       split_ifs at this with h
-      · simp only [List.headI_nil, List.headI_cons, exists_false, or_false_iff, Part.mem_some_iff,
-          List.tail_cons, false_and_iff, Sum.inl.injEq] at this
+      · simp only [List.headI_nil, List.headI_cons, exists_false, or_false, Part.mem_some_iff,
+          List.tail_cons, false_and, Sum.inl.injEq, reduceCtorEq] at this
         subst this
         exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
       · refine IH (n.succ::v.val) (by simp_all) _ rfl fun m h' => ?_
@@ -511,10 +511,14 @@ def Cont.then : Cont → Cont → Cont
   | Cont.fix f k => fun k' => Cont.fix f (k.then k')
 
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
-  induction' k with _ _ _ _ _ _ _ _ _ k_ih _ _ k_ih generalizing v <;>
-    simp only [Cont.eval, Cont.then, bind_assoc, pure_bind, *]
-  · simp only [← k_ih]
-  · split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
+  induction k generalizing v with
+  | halt => simp only [Cont.eval, Cont.then, pure_bind]
+  | cons₁ => simp only [Cont.eval, bind_assoc, *]
+  | cons₂ => simp only [Cont.eval, *]
+  | comp _ _ k_ih => simp only [Cont.eval, bind_assoc, ← k_ih]
+  | fix _ _ k_ih =>
+    simp only [Cont.eval, *]
+    split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
 `k` to the continuation of a `Cfg.ret` state, and to run `k` on `v` if we are in the `Cfg.halt v`
@@ -879,7 +883,7 @@ instance Λ'.instInhabited : Inhabited Λ' :=
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> first
     | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
-    | exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)
+    | exact decidable_of_iff' _ (by simp [funext_iff]; rfl)
 
 /-- The type of TM2 statements used by this machine. -/
 def Stmt' :=
@@ -898,6 +902,7 @@ def natEnd : Γ' → Bool
   | Γ'.consₗ => true
   | Γ'.cons => true
   | _ => false
+attribute [nolint simpNF] natEnd.eq_3
 
 /-- Pop a value from the stack and place the result in local store. -/
 @[simp]
@@ -992,30 +997,34 @@ def tr : Λ' → Stmt'
         cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)
   | Λ'.ret Cont'.halt => (load fun _ => none) <| halt
 
-/- Porting note: The equation lemma of `tr` simplifies to `match` structures. To prevent this,
-we replace equation lemmas of `tr`. -/
-
+@[simp]
 theorem tr_move (p k₁ k₂ q) : tr (Λ'.move p k₁ k₂ q) =
     pop' k₁ (branch (fun s => s.elim true p) (goto fun _ => q)
       (push' k₂ <| goto fun _ => Λ'.move p k₁ k₂ q)) := rfl
 
+@[simp]
 theorem tr_push (k f q) : tr (Λ'.push k f q) = branch (fun s => (f s).isSome)
     ((push k fun s => (f s).iget) <| goto fun _ => q) (goto fun _ => q) := rfl
 
+@[simp]
 theorem tr_read (q) : tr (Λ'.read q) = goto q := rfl
 
+@[simp]
 theorem tr_clear (p k q) : tr (Λ'.clear p k q) = pop' k (branch
     (fun s => s.elim true p) (goto fun _ => q) (goto fun _ => Λ'.clear p k q)) := rfl
 
+@[simp]
 theorem tr_copy (q) : tr (Λ'.copy q) = pop' rev (branch Option.isSome
     (push' main <| push' stack <| goto fun _ => Λ'.copy q) (goto fun _ => q)) := rfl
 
+@[simp]
 theorem tr_succ (q) : tr (Λ'.succ q) = pop' main (branch (fun s => s = some Γ'.bit1)
     ((push rev fun _ => Γ'.bit0) <| goto fun _ => Λ'.succ q) <|
       branch (fun s => s = some Γ'.cons)
         ((push main fun _ => Γ'.cons) <| (push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)
         ((push main fun _ => Γ'.bit1) <| goto fun _ => unrev q)) := rfl
 
+@[simp]
 theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s => s = some Γ'.bit0)
     ((push rev fun _ => Γ'.bit1) <| goto fun _ => Λ'.pred q₁ q₂) <|
     branch (fun s => natEnd s.iget) (goto fun _ => q₁)
@@ -1023,25 +1032,25 @@ theorem tr_pred (q₁ q₂) : tr (Λ'.pred q₁ q₂) = pop' main (branch (fun s
         branch (fun s => natEnd s.iget) (goto fun _ => unrev q₂)
           ((push rev fun _ => Γ'.bit0) <| goto fun _ => unrev q₂))) := rfl
 
+@[simp]
 theorem tr_ret_cons₁ (fs k) : tr (Λ'.ret (Cont'.cons₁ fs k)) = goto fun _ =>
     move₂ (fun _ => false) main aux <|
       move₂ (fun s => s = Γ'.consₗ) stack main <|
         move₂ (fun _ => false) aux stack <| trNormal fs (Cont'.cons₂ k) := rfl
 
+@[simp]
 theorem tr_ret_cons₂ (k) : tr (Λ'.ret (Cont'.cons₂ k)) =
     goto fun _ => head stack <| Λ'.ret k := rfl
 
+@[simp]
 theorem tr_ret_comp (f k) : tr (Λ'.ret (Cont'.comp f k)) = goto fun _ => trNormal f k := rfl
 
+@[simp]
 theorem tr_ret_fix (f k) : tr (Λ'.ret (Cont'.fix f k)) = pop' main (goto fun s =>
     cond (natEnd s.iget) (Λ'.ret k) <| Λ'.clear natEnd main <| trNormal f (Cont'.fix f k)) := rfl
 
+@[simp]
 theorem tr_ret_halt : tr (Λ'.ret Cont'.halt) = (load fun _ => none) halt := rfl
-
-attribute
-  [eqns tr_move tr_push tr_read tr_clear tr_copy tr_succ tr_pred tr_ret_cons₁
-    tr_ret_cons₂ tr_ret_comp tr_ret_fix tr_ret_halt] tr
-attribute [simp] tr
 
 /-- Translating a `Cont` continuation to a `Cont'` continuation simply entails dropping all the
 data. This data is instead encoded in `trContStack` in the configuration. -/
@@ -1233,7 +1242,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
       rfl
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
     revert e; cases p a <;> intro e <;>
-      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
+      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
     simp only [e]
     rfl
   · refine TransGen.head rfl ?_
@@ -1288,7 +1297,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
       rfl
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
     revert e; cases p a <;> intro e <;>
-      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
+      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
     rcases e with ⟨e₁, e₂⟩
     rw [e₁, e₂]
   · refine TransGen.head rfl ?_
@@ -1405,7 +1414,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
         Reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (trPosNum a ++ [Γ'.cons]) l₁ c d⟩
           ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp? [List.reverseAux] at e says simp only [List.reverseAux] at e
+    simp? [List.reverseAux] at e says simp only [List.reverseAux, List.reverseAux_eq] at e
     refine h.trans ?_
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
@@ -1597,10 +1606,13 @@ def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.ret _) => {Q}
 
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
-  induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
-    simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
-      or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and_iff]
-  repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
+  induction q with
+  | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
+  all_goals
+    simp +contextual only [trStmts₁, Finset.mem_insert, Finset.mem_union,
+      or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]
+    repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
   · simp
     intro s h x h'
     simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, Finset.mem_insert]
@@ -1730,7 +1742,7 @@ theorem contSupp_comp (f k) : contSupp (Cont'.comp f k) = codeSupp f k :=
   rfl
 
 theorem contSupp_fix (f k) : contSupp (Cont'.fix f k) = codeSupp f (Cont'.fix f k) := by
-  simp (config := { contextual := true }) [codeSupp, codeSupp', contSupp, Finset.union_assoc,
+  simp +contextual [codeSupp, codeSupp', contSupp, Finset.union_assoc,
     Finset.subset_iff]
 
 @[simp]
@@ -1791,7 +1803,9 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
   have W := fun {q} => trStmts₁_self q
-  induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
+  induction q with
+  | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
     simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
   any_goals
     cases' Finset.insert_subset_iff.1 HS₁ with h₁ h₂
@@ -1906,3 +1920,5 @@ end
 end PartrecToTM2
 
 end Turing
+
+set_option linter.style.longFile 2100

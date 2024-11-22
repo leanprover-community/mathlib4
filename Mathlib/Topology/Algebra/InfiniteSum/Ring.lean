@@ -50,9 +50,9 @@ theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' 
 
 theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) := by
   classical
-  exact if hf : Summable f then
-    (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
-  else (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
+  by_cases hf : Summable f
+  · exact (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
+  · exact (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
 
 theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑' i, f i) a :=
   (Commute.tsum_right _ fun i ↦ (h i).symm).symm
@@ -106,6 +106,22 @@ theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a := by
 
 theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
+
+theorem HasSum.const_div (h :  HasSum (fun x ↦ 1 / f x) a) (b : α) :
+    HasSum (fun i ↦ b / f i) (b * a) := by
+  have := h.mul_left b
+  simpa only [div_eq_mul_inv, one_mul] using this
+
+theorem Summable.const_div (h : Summable (fun x ↦ 1 / f x)) (b : α) :
+    Summable fun i ↦ b / f i :=
+  (h.hasSum.const_div b).summable
+
+theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
+    HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) ↔ HasSum (1/ f) a₁ := by
+  simpa only [div_eq_mul_inv, one_mul] using hasSum_mul_left_iff h
+
+theorem summable_const_div_iff (h : a ≠ 0) : (Summable fun i ↦ a / f i) ↔ Summable (1 / f) := by
+  simpa only [div_eq_mul_inv, one_mul] using summable_mul_left_iff h
 
 end DivisionSemiring
 

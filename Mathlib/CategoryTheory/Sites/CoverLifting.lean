@@ -68,7 +68,7 @@ variable {L : GrothendieckTopology E}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called cocontinuous (SGA 4 III 2.1)
 if for all covering sieves `R` in `D`, `R.pullback G` is a covering sieve in `C`.
 -/
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 class Functor.IsCocontinuous : Prop where
   cover_lift : ∀ {U : C} {S : Sieve (G.obj U)} (_ : S ∈ K (G.obj U)), S.functorPullback G ∈ J U
 
@@ -133,9 +133,8 @@ lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow
     liftAux hF α s f ≫ F.map g.op = s.ι i ≫ R.map h.op ≫ α.app _ :=
   (Multifork.IsLimit.fac
     (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩) _ _
-      ⟨W, g, by simpa only [GrothendieckTopology.Cover.sieve,
-          Sieve.functorPullback_apply, functorPullback_mem, Sieve.pullback_apply, ← w]
-          using S.1.downward_closed i.hf h⟩).trans (by
+      ⟨W, g, by simpa only [Sieve.functorPullback_apply, functorPullback_mem,
+        Sieve.pullback_apply, ← w] using S.1.downward_closed i.hf h⟩).trans (by
         dsimp
         simp only [← Category.assoc]
         congr 1

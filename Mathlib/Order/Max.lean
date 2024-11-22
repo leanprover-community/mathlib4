@@ -158,7 +158,7 @@ theorem NoMaxOrder.not_acc [LT α] [NoMaxOrder α] (a : α) : ¬Acc (· > ·) a 
 
 section LE
 
-variable [LE α] {a b : α}
+variable [LE α] {a : α}
 
 /-- `a : α` is a bottom element of `α` if it is less than or equal to any other element of `α`.
 This predicate is roughly an unbundled version of `OrderBot`, except that a preorder may have
@@ -199,6 +199,14 @@ theorem not_isTop [NoTopOrder α] (a : α) : ¬IsTop a := fun h =>
 protected theorem IsBot.isMin (h : IsBot a) : IsMin a := fun b _ => h b
 
 protected theorem IsTop.isMax (h : IsTop a) : IsMax a := fun b _ => h b
+
+theorem IsTop.isMax_iff {α} [PartialOrder α] {i j : α} (h : IsTop i) : IsMax j ↔ j = i := by
+  simp_rw [le_antisymm_iff, h j, true_and]
+  exact ⟨(· (h j)), Function.swap (fun _ ↦ h · |>.trans ·)⟩
+
+theorem IsBot.isMin_iff {α} [PartialOrder α] {i j : α} (h : IsBot i) : IsMin j ↔ j = i := by
+  simp_rw [le_antisymm_iff, h j, and_true]
+  exact ⟨fun a ↦ a (h j), fun a h' ↦ fun _ ↦ Preorder.le_trans j i h' a (h h')⟩
 
 @[simp]
 theorem isBot_toDual_iff : IsBot (toDual a) ↔ IsTop a :=
@@ -332,11 +340,31 @@ protected theorem IsMax.eq_of_le (ha : IsMax a) (h : a ≤ b) : a = b :=
 protected theorem IsMax.eq_of_ge (ha : IsMax a) (h : a ≤ b) : b = a :=
   h.antisymm' <| ha h
 
+protected theorem IsBot.lt_of_ne (ha : IsBot a) (h : a ≠ b) : a < b :=
+  (ha b).lt_of_ne h
+
+protected theorem IsTop.lt_of_ne (ha : IsTop a) (h : b ≠ a) : b < a :=
+  (ha b).lt_of_ne h
+
+protected theorem IsBot.not_isMax [Nontrivial α] (ha : IsBot a) : ¬ IsMax a := by
+  intro ha'
+  obtain ⟨b, hb⟩ := exists_ne a
+  exact hb <| ha'.eq_of_ge (ha.lt_of_ne hb.symm).le
+
+protected theorem IsTop.not_isMin [Nontrivial α] (ha : IsTop a) : ¬ IsMin a :=
+  ha.toDual.not_isMax
+
+protected theorem IsBot.not_isTop [Nontrivial α] (ha : IsBot a) : ¬ IsTop a :=
+  mt IsTop.isMax ha.not_isMax
+
+protected theorem IsTop.not_isBot [Nontrivial α] (ha : IsTop a) : ¬ IsBot a :=
+  ha.toDual.not_isTop
+
 end PartialOrder
 
 section Prod
 
-variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
+variable [Preorder α] [Preorder β] {a : α} {b : β} {x : α × β}
 
 theorem IsBot.prod_mk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
 

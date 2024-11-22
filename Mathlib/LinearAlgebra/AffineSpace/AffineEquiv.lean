@@ -40,7 +40,7 @@ such that both forward and inverse maps are affine.
 
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
@@ -88,9 +88,6 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' _ _ h _ := toAffineMap_injective (DFunLike.coe_injective h)
-
-instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
-  DFunLike.hasCoeToFun
 
 instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
@@ -323,7 +320,7 @@ instance group : Group (P₁ ≃ᵃ[k] P₁) where
   one := refl k P₁
   mul e e' := e'.trans e
   inv := symm
-  mul_assoc e₁ e₂ e₃ := trans_assoc _ _ _
+  mul_assoc _ _ _ := trans_assoc _ _ _
   one_mul := trans_refl
   mul_one := refl_trans
   inv_mul_cancel := self_trans_symm

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Category.Grp.Preadditive
@@ -63,13 +63,9 @@ theorem binaryProductLimitCone_cone_π_app_right (G H : AddCommGrp.{u}) :
 /-- We verify that the biproduct in `AddCommGrp` is isomorphic to
 the cartesian product of the underlying types:
 -/
-@[simps! hom_apply]
 noncomputable def biprodIsoProd (G H : AddCommGrp.{u}) :
     (G ⊞ H : AddCommGrp) ≅ AddCommGrp.of (G × H) :=
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit G H) (binaryProductLimitCone G H).isLimit
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] AddCommGrp.biprodIsoProd_hom_apply
 
 @[simp, elementwise]
 theorem biprodIsoProd_inv_comp_fst (G H : AddCommGrp.{u}) :
@@ -112,7 +108,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       π := Discrete.natTrans fun j => Pi.evalAddMonoidHom (fun j => f j) j.as }
   isLimit :=
     { lift := lift.{_, u} f
-      fac := fun s j => rfl
+      fac := fun _ _ => rfl
       uniq := fun s m w => by
         ext x
         funext j
@@ -127,13 +123,9 @@ variable {J : Type} [Finite J]
 /-- We verify that the biproduct we've just defined is isomorphic to the `AddCommGrp` structure
 on the dependent function type.
 -/
-@[simps! hom_apply]
 noncomputable def biproductIsoPi (f : J → AddCommGrp.{u}) :
     (⨁ f : AddCommGrp) ≅ AddCommGrp.of (∀ j, f j) :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] AddCommGrp.biproductIsoPi_hom_apply
 
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π (f : J → AddCommGrp.{u}) (j : J) :

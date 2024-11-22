@@ -164,4 +164,4 @@ open Lean Lean.PrettyPrinter.Delaborator
   guard <| f.isAppOfArity ``Membership.mem 5
   let stx₁ ← SubExpr.withAppArg <| SubExpr.withNaryArg 3 delab
   let stx₂ ← SubExpr.withAppArg <| SubExpr.withNaryArg 4 delab
-  return ← `($stx₁ ∉ $stx₂)
+  return ← `($stx₂ ∉ $stx₁)

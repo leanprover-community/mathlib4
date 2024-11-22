@@ -46,8 +46,8 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
   have := I.locallyCompactSpace
   have := ChartedSpace.locallyCompactSpace H M
   have := I.secondCountableTopology
-  have := ChartedSpace.secondCountable_of_sigma_compact H M
-  have := ManifoldWithCorners.metrizableSpace I M
+  have := ChartedSpace.secondCountable_of_sigmaCompact H M
+  have := Manifold.metrizableSpace I M
   let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
   -- it suffices to show that the integral of the function vanishes on any compact set `s`
   apply ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero' hf (fun s hs ↦ Eq.symm ?_)
@@ -112,6 +112,8 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
     simpa [g_supp] using vK n
   simpa [this] using L
 
+-- An instance with keys containing `Opens`
+instance (U : Opens M) : BorelSpace U := inferInstanceAs (BorelSpace (U : Set M))
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
   manifold has zero integral when multiplied by any smooth function compactly supported
@@ -150,7 +152,7 @@ theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOp
   haveI := ChartedSpace.locallyCompactSpace H M
   haveI := hU.locallyCompactSpace
   haveI := I.secondCountableTopology
-  haveI := ChartedSpace.secondCountable_of_sigma_compact H M
+  haveI := ChartedSpace.secondCountable_of_sigmaCompact H M
   hU.ae_eq_zero_of_integral_smooth_smul_eq_zero' _
     (isSigmaCompact_iff_sigmaCompactSpace.mpr inferInstance) hf h
 

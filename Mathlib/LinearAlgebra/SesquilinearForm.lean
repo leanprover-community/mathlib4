@@ -458,9 +458,40 @@ theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B' f g) :
 
 end AddCommGroup
 
+section OrthogonalMap
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+  (B : LinearMap.BilinForm R M) (f : Module.End R M)
+
+/-- A linear transformation `f` is orthogonal with respect to a bilinear form `B` if `B` is
+bi-invariant with respect to `f`. -/
+def IsOrthogonal : Prop :=
+  ∀ x y, B (f x) (f y) = B x y
+
+variable {B f}
+
+@[simp]
+lemma _root_.LinearEquiv.isAdjointPair_symm_iff {f : M ≃ₗ[R] M} :
+    LinearMap.IsAdjointPair B B f f.symm ↔ B.IsOrthogonal f :=
+  ⟨fun hf x y ↦ by simpa using hf x (f y), fun hf x y ↦ by simpa using hf x (f.symm y)⟩
+
+lemma isOrthogonal_of_forall_apply_same
+    (h : IsLeftRegular (2 : R)) (hB : B.IsSymm) (hf : ∀ x, B (f x) (f x) = B x x) :
+    B.IsOrthogonal f := by
+  intro x y
+  suffices 2 * B (f x) (f y) = 2 * B x y from h this
+  have := hf (x + y)
+  simp only [map_add, add_apply, hf x, hf y, show B y x = B x y from hB.eq y x] at this
+  rw [show B (f y) (f x) = B (f x) (f y) from hB.eq (f y) (f x)] at this
+  simp only [add_assoc, add_right_inj] at this
+  simp only [← add_assoc, add_left_inj] at this
+  simpa only [← two_mul] using this
+
+end OrthogonalMap
+
 end AdjointPair
 
-/-! ### Self-adjoint pairs-/
+/-! ### Self-adjoint pairs -/
 
 
 section SelfadjointPair
@@ -704,7 +735,7 @@ theorem IsOrthoᵢ.not_isOrtho_basis_self_of_separatingLeft [Nontrivial R]
   intro ho
   refine v.ne_zero i (hB (v i) fun m ↦ ?_)
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
-  rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum]
+  rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum]
   apply Finset.sum_eq_zero
   rintro j -
   rw [map_smulₛₗ]
@@ -733,7 +764,8 @@ theorem IsOrthoᵢ.separatingLeft_of_not_isOrtho_basis_self [NoZeroSMulDivisors 
   ext i
   rw [Finsupp.zero_apply]
   specialize hB (v i)
-  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, map_sum₂, map_smulₛₗ₂] at hB
+  simp_rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂,
+           map_smulₛₗ₂] at hB
   rw [Finset.sum_eq_single i] at hB
   · exact (smul_eq_zero.mp hB).elim _root_.id (h i).elim
   · intro j _hj hij

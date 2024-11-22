@@ -5,7 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-!
 # Infinite sums and products in topological groups
@@ -125,6 +126,30 @@ theorem hasProd_ite_div_hasProd [DecidableEq β] (hf : HasProd f a) (b : β) :
     rw [Function.update_apply]
   · rw [div_mul_eq_mul_div, one_mul]
 
+/-- A more general version of `Multipliable.congr`, allowing the functions to
+disagree on a finite set. -/
+@[to_additive "A more general version of `Summable.congr`, allowing the functions to
+disagree on a finite set."]
+theorem Multipliable.congr_cofinite (hf : Multipliable f) (hfg : f =ᶠ[cofinite] g) :
+    Multipliable g :=
+  hfg.multipliable_compl_iff.mp <| (hfg.multipliable_compl_iff.mpr hf).congr (by simp)
+
+/-- A more general version of `multipliable_congr`, allowing the functions to
+disagree on a finite set. -/
+@[to_additive "A more general version of `summable_congr`, allowing the functions to
+disagree on a finite set."]
+theorem multipliable_congr_cofinite (hfg : f =ᶠ[cofinite] g) :
+    Multipliable f ↔ Multipliable g :=
+  ⟨fun h ↦ h.congr_cofinite hfg, fun h ↦ h.congr_cofinite (hfg.mono fun _ h' ↦ h'.symm)⟩
+
+@[to_additive]
+theorem Multipliable.congr_atTop {f₁ g₁ : ℕ → α} (hf : Multipliable f₁) (hfg : f₁ =ᶠ[atTop] g₁) :
+    Multipliable g₁ := hf.congr_cofinite (Nat.cofinite_eq_atTop ▸ hfg)
+
+@[to_additive]
+theorem multipliable_congr_atTop {f₁ g₁ : ℕ → α} (hfg : f₁ =ᶠ[atTop] g₁) :
+    Multipliable f₁ ↔ Multipliable g₁ := multipliable_congr_cofinite (Nat.cofinite_eq_atTop ▸ hfg)
+
 section tprod
 
 variable [T2Space α]
@@ -180,7 +205,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
       ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b ∈ t, f b) ∈ e := by
   classical
   simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
-    uniformity_eq_comap_nhds_one α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
+    uniformity_eq_comap_nhds_one α, tendsto_comap_iff, Function.comp_def, atTop_neBot, true_and]
   rw [tendsto_atTop']
   constructor
   · intro h e he
@@ -241,9 +266,9 @@ theorem Multipliable.multipliable_of_eq_one_or_self (hf : Multipliable f)
   exact multipliable_iff_vanishing.2 fun e he ↦
     let ⟨s, hs⟩ := multipliable_iff_vanishing.1 hf e he
     ⟨s, fun t ht ↦
-      have eq : ∏ b ∈ t.filter fun b ↦ g b = f b, f b = ∏ b ∈ t, g b :=
+      have eq : ∏ b ∈ t with g b = f b, f b = ∏ b ∈ t, g b :=
         calc
-          ∏ b ∈ t.filter fun b ↦ g b = f b, f b = ∏ b ∈ t.filter fun b ↦ g b = f b, g b :=
+          ∏ b ∈ t with g b = f b, f b = ∏ b ∈ t with g b = f b, g b :=
             Finset.prod_congr rfl fun b hb ↦ (Finset.mem_filter.1 hb).2.symm
           _ = ∏ b ∈ t, g b := by
            {refine Finset.prod_subset (Finset.filter_subset _ _) ?_

@@ -33,7 +33,7 @@ namespace EuclideanGeometry
 
 variable {V : Type*} (P : Type*)
 
-open FiniteDimensional
+open Module
 
 /-- A `Sphere P` bundles a `center` and `radius`. This definition does not require the radius to
 be positive; that should be given as a hypothesis to lemmas that require it. -/
@@ -57,7 +57,7 @@ instance : Coe (Sphere P) (Set P) :=
   ⟨fun s => Metric.sphere s.center s.radius⟩
 
 instance : Membership P (Sphere P) :=
-  ⟨fun p s => p ∈ (s : Set P)⟩
+  ⟨fun s p => p ∈ (s : Set P)⟩
 
 theorem Sphere.mk_center (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).center = c :=
   rfl
@@ -157,7 +157,7 @@ theorem Cospherical.subset {ps₁ ps₂ : Set P} (hs : ps₁ ⊆ ps₂) (hc : Co
 /-- The empty set is cospherical. -/
 theorem cospherical_empty [Nonempty P] : Cospherical (∅ : Set P) :=
   let ⟨p⟩ := ‹Nonempty P›
-  ⟨p, 0, fun p => False.elim⟩
+  ⟨p, 0, fun _ => False.elim⟩
 
 /-- A single point is cospherical. -/
 theorem cospherical_singleton (p : P) : Cospherical ({p} : Set P) := by

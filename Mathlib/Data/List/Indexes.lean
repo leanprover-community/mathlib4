@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Zip
+import Mathlib.Data.List.Basic
 
 /-!
 # Lemmas about List.*Idx functions.
@@ -24,11 +24,6 @@ variable {α : Type u} {β : Type v}
 
 section MapIdx
 
-@[simp]
-theorem mapIdx_nil {α β} (f : ℕ → α → β) : mapIdx f [] = [] :=
-  rfl
-
-
 theorem list_reverse_induction (p : List α → Prop) (base : p [])
     (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) := by
   let q := fun l ↦ p (reverse l)
@@ -41,43 +36,16 @@ theorem list_reverse_induction (p : List α → Prop) (base : p [])
   · apply pq; simp only [reverse_nil, base]
   · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
 
-theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr : Array β),
-    mapIdx.go f (l₁ ++ l₂) arr = mapIdx.go f l₂ (List.toArray (mapIdx.go f l₁ arr)) := by
-  intros f l₁ l₂ arr
-  generalize e : (l₁ ++ l₂).length = len
-  revert l₁ l₂ arr
-  induction' len with len ih <;> intros l₁ l₂ arr h
-  · have l₁_nil : l₁ = [] := by
-      cases l₁
-      · rfl
-      · contradiction
-    have l₂_nil : l₂ = [] := by
-      cases l₂
-      · rfl
-      · rw [List.length_append] at h; contradiction
-    rw [l₁_nil, l₂_nil]; simp only [mapIdx.go, Array.toList_eq, Array.toArray_data]
-  · cases' l₁ with head tail <;> simp only [mapIdx.go]
-    · simp only [nil_append, Array.toList_eq, Array.toArray_data]
-    · simp only [List.append_eq]
-      rw [ih]
-      · simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
-        simp only [length_append, h]
-
-theorem mapIdxGo_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array β),
-    length (mapIdx.go f l arr) = length l + arr.size := by
-  intro f l
-  induction' l with head tail ih
-  · intro; simp only [mapIdx.go, Array.toList_eq, length_nil, Nat.zero_add]
-  · intro; simp only [mapIdx.go]; rw [ih]; simp only [Array.size_push, length_cons]
-    simp only [Nat.add_succ, Fin.add_zero, Nat.add_comm]
+@[deprecated (since := "2024-10-15")] alias mapIdxGo_append := mapIdx_go_append
+@[deprecated (since := "2024-10-15")] alias mapIdxGo_length := mapIdx_go_length
 
 theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
   intros f l e
   unfold mapIdx
-  rw [mapIdxGo_append f l [e]]
-  simp only [mapIdx.go, Array.size_toArray, mapIdxGo_length, length_nil, Nat.add_zero,
-    Array.toList_eq, Array.push_data, Array.data_toArray]
+  rw [mapIdx_go_append]
+  simp only [mapIdx.go, Array.size_toArray, mapIdx_go_length, length_nil, Nat.add_zero,
+    Array.push_toList, Array.toList_toArray]
 
 @[local simp]
 theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → β),
@@ -103,65 +71,10 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
         simp only [comp, Nat.add_assoc, Nat.add_comm, Nat.add_succ]
       simp only [length_cons, Nat.succ.injEq] at e; exact e
 
-theorem length_mapIdx_go (f : ℕ → α → β) : ∀ (l : List α) (arr : Array β),
-    (mapIdx.go f l arr).length = l.length + arr.size
-  | [], _ => by simp [mapIdx.go]
-  | a :: l, _ => by
-    simp only [mapIdx.go, length_cons]
-    rw [length_mapIdx_go]
-    simp
-    omega
-
-@[simp] theorem length_mapIdx (l : List α) (f : ℕ → α → β) : (l.mapIdx f).length = l.length := by
-  simp [mapIdx, length_mapIdx_go]
-
-theorem getElem?_mapIdx_go (f : ℕ → α → β) : ∀ (l : List α) (arr : Array β) (i : ℕ),
-    (mapIdx.go f l arr)[i]? =
-      if h : i < arr.size then some arr[i] else Option.map (f i) l[i - arr.size]?
-  | [], arr, i => by
-    simp [mapIdx.go, getElem?_eq, Array.getElem_eq_data_getElem]
-  | a :: l, arr, i => by
-    rw [mapIdx.go, getElem?_mapIdx_go]
-    simp only [Array.size_push]
-    split <;> split
-    · simp only [Option.some.injEq]
-      rw [Array.getElem_eq_data_getElem]
-      simp only [Array.push_data]
-      rw [getElem_append_left, Array.getElem_eq_data_getElem]
-    · have : i = arr.size := by omega
-      simp_all
-    · omega
-    · have : i - arr.size = i - (arr.size + 1) + 1 := by omega
-      simp_all
-
-@[simp] theorem getElem?_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) :
-    (l.mapIdx f)[i]? = Option.map (f i) l[i]? := by
-  simp [mapIdx, getElem?_mapIdx_go]
-
-theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
-    l.mapIdx f = l.enum.map (Function.uncurry f) := by
-  ext1 i
-  simp only [getElem?_mapIdx, Option.map, getElem?_map, getElem?_enum]
-  split <;> simp
-
-@[simp]
-theorem mapIdx_cons (l : List α) (f : ℕ → α → β) (a : α) :
-    mapIdx f (a :: l) = f 0 a :: mapIdx (fun i ↦ f (i + 1)) l := by
-  simp [mapIdx_eq_enum_map, enum_eq_zip_range, map_uncurry_zip_eq_zipWith,
-    range_succ_eq_map, zipWith_map_left]
-
-theorem mapIdx_append (K L : List α) (f : ℕ → α → β) :
-    (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a ↦ f (i + K.length) a := by
-  induction' K with a J IH generalizing f
-  · rfl
-  · simp [IH fun i ↦ f (i + 1), Nat.add_assoc]
-
-@[simp]
-theorem mapIdx_eq_nil {f : ℕ → α → β} {l : List α} : List.mapIdx f l = [] ↔ l = [] := by
-  rw [List.mapIdx_eq_enum_map, List.map_eq_nil, List.enum_eq_nil]
+@[deprecated (since := "2024-10-15")] alias mapIdx_eq_nil := mapIdx_eq_nil_iff
 
 theorem get_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
-    (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :
+    (h' : i < (l.mapIdx f).length := h.trans_le length_mapIdx.ge) :
     (l.mapIdx f).get ⟨i, h'⟩ = f i (l.get ⟨i, h⟩) := by
   simp [mapIdx_eq_enum_map, enum_eq_zip_range]
 
@@ -282,73 +195,6 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
     map_filter_eq_foldr, findIdxs, uncurry, foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply,
     Bool.cond_decide]
 
-section FindIdx -- TODO: upstream to Batteries
-
-theorem findIdx_eq_length {p : α → Bool} {xs : List α} :
-    xs.findIdx p = xs.length ↔ ∀ x ∈ xs, ¬p x := by
-  induction xs with
-  | nil => simp_all
-  | cons x xs ih =>
-    rw [findIdx_cons, length_cons]
-    constructor <;> intro h
-    · have : ¬p x := by contrapose h; simp_all
-      simp_all
-    · simp_rw [h x (mem_cons_self x xs), cond_false, Nat.succ.injEq, ih]
-      exact fun y hy ↦ h y <| mem_cons.mpr (Or.inr hy)
-
-theorem findIdx_le_length (p : α → Bool) {xs : List α} : xs.findIdx p ≤ xs.length := by
-  by_cases e : ∃ x ∈ xs, p x
-  · exact (findIdx_lt_length_of_exists e).le
-  · push_neg at e; exact (findIdx_eq_length.mpr e).le
-
-theorem findIdx_lt_length {p : α → Bool} {xs : List α} :
-    xs.findIdx p < xs.length ↔ ∃ x ∈ xs, p x := by
-  rw [← not_iff_not, not_lt]
-  have := @le_antisymm_iff _ _ (xs.findIdx p) xs.length
-  simp only [findIdx_le_length, true_and] at this
-  rw [← this, findIdx_eq_length, not_exists]
-  simp only [Bool.not_eq_true, not_and]
-
-/-- `p` does not hold for elements with indices less than `xs.findIdx p`. -/
-theorem not_of_lt_findIdx {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.findIdx p) :
-    ¬p (xs.get ⟨i, h.trans_le (findIdx_le_length p)⟩) := by
-  revert i
-  induction xs with
-  | nil => intro i h; rw [findIdx_nil] at h; omega
-  | cons x xs ih =>
-    intro i h
-    have ho := h
-    rw [findIdx_cons] at h
-    have npx : ¬p x := by by_contra y; rw [y, cond_true] at h; omega
-    simp_rw [npx, cond_false] at h
-    cases' i.eq_zero_or_pos with e e
-    · simpa only [e, Fin.zero_eta, get_cons_zero]
-    · have ipm := Nat.succ_pred_eq_of_pos e
-      have ilt := ho.trans_le (findIdx_le_length p)
-      rw [(Fin.mk_eq_mk (h' := ipm ▸ ilt)).mpr ipm.symm, get_cons_succ]
-      rw [← ipm, Nat.succ_lt_succ_iff] at h
-      exact ih h
-
-theorem le_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
-    (h2 : ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩)) : i ≤ xs.findIdx p := by
-  by_contra! f
-  exact absurd (@findIdx_get _ p xs (f.trans h)) (h2 (xs.findIdx p) f)
-
-theorem lt_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
-    (h2 : ∀ j (hji : j ≤ i), ¬p (xs.get ⟨j, hji.trans_lt h⟩)) : i < xs.findIdx p := by
-  by_contra! f
-  exact absurd (@findIdx_get _ p xs (f.trans_lt h)) (h2 (xs.findIdx p) f)
-
-theorem findIdx_eq {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length) :
-    xs.findIdx p = i ↔ p (xs.get ⟨i, h⟩) ∧ ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩) := by
-  refine ⟨fun f ↦ ⟨f ▸ (@findIdx_get _ p xs (f ▸ h)), fun _ hji ↦ not_of_lt_findIdx (f ▸ hji)⟩,
-    fun ⟨h1, h2⟩ ↦ ?_⟩
-  apply Nat.le_antisymm _ (le_findIdx_of_not h h2)
-  contrapose! h1
-  exact not_of_lt_findIdx h1
-
-end FindIdx
-
 section FoldlIdx
 
 -- Porting note: Changed argument order of `foldlIdxSpec` to align better with `foldlIdx`.
@@ -423,12 +269,12 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec
       congr
       conv => { lhs; intro x; rw [ih _ _ h]; }
       funext x
-      simp only [Array.toList_eq, Array.push_data, append_assoc, singleton_append, Array.size_push,
+      simp only [Array.push_toList, append_assoc, singleton_append, Array.size_push,
         map_eq_pure_bind]
 
 theorem mapIdxM_eq_mmap_enum [LawfulMonad m] {β} (f : ℕ → α → m β) (as : List α) :
     as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
-  simp only [mapIdxM, mapIdxMGo_eq_mapIdxMAuxSpec, Array.toList_eq, Array.data_toArray,
+  simp only [mapIdxM, mapIdxMGo_eq_mapIdxMAuxSpec, Array.toList_toArray,
     nil_append, mapIdxMAuxSpec, Array.size_toArray, length_nil, id_map', enum]
 
 end MapIdxM

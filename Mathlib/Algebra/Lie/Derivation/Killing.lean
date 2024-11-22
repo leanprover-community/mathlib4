@@ -86,8 +86,10 @@ instance instIsKilling_range_ad : LieAlgebra.IsKilling R 𝕀 :=
 
 /-- The restriction of the Killing form of a finite-dimensional Killing Lie algebra to the range of
 the adjoint action is nondegenerate. -/
-lemma killingForm_restrict_range_ad_nondegenerate : ((killingForm R 𝔻).restrict 𝕀).Nondegenerate :=
-  killingForm_restrict_range_ad R L ▸ LieAlgebra.IsKilling.killingForm_nondegenerate R _
+lemma killingForm_restrict_range_ad_nondegenerate :
+    ((killingForm R 𝔻).restrict 𝕀).Nondegenerate := by
+  convert LieAlgebra.IsKilling.killingForm_nondegenerate R 𝕀
+  exact killingForm_restrict_range_ad R L
 
 /-- The range of the adjoint action on a finite-dimensional Killing Lie algebra is full. -/
 @[simp]

@@ -22,7 +22,7 @@ we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
     (h : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → P a → P (p ^ n * a)) : ∀ a : ℕ, P a := fun a =>
-  Nat.strongRecOn a fun n =>
+  Nat.strongRecOn' a fun n =>
     match n with
     | 0 => fun _ => h0
     | 1 => fun _ => h1
@@ -30,7 +30,7 @@ def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
       letI p := (k + 2).minFac
       haveI hp : Prime p := minFac_prime (succ_succ_ne_one k)
       letI t := (k + 2).factorization p
-      haveI hpt : p ^ t ∣ k + 2 := ord_proj_dvd _ _
+      haveI hpt : p ^ t ∣ k + 2 := ordProj_dvd _ _
       haveI htp : 0 < t := hp.factorization_pos_of_dvd (k + 1).succ_ne_zero (k + 2).minFac_dvd
       convert h ((k + 2) / p ^ t) p t hp _ htp (hk _ (Nat.div_lt_of_lt_mul _)) using 1
       · rw [Nat.mul_div_cancel' hpt]

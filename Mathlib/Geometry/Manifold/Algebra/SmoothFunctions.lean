@@ -112,7 +112,7 @@ def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpa
 
 variable (I') {N}
 
--- Porting note (#11215): TODO: generalize to any smooth map instead of `Set.inclusion`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to any smooth map instead of `Set.inclusion`
 /-- For a Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group homomorphism from
 `C^∞⟮I, V; I', G⟯` to `C^∞⟮I, U; I', G⟯`. -/
 @[to_additive "For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group
@@ -159,7 +159,7 @@ end GroupStructure
 section RingStructure
 
 /-!
-### Ring stucture
+### Ring structure
 
 In this section we show that smooth functions valued in a smooth ring `R` inherit a ring structure
 under pointwise multiplication.
@@ -223,7 +223,7 @@ end RingStructure
 section ModuleStructure
 
 /-!
-### Semimodule stucture
+### Semimodule structure
 
 In this section we show that smooth functions valued in a vector space `M` over a normed
 field `𝕜` inherit a vector space structure.

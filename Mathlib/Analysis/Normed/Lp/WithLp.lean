@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.ENNReal.Basic
-import Mathlib.RingTheory.Finiteness
+import Mathlib.RingTheory.Finiteness.Defs
 
 /-! # The `WithLp` type synonym
 
@@ -46,7 +46,7 @@ instance, on `Prod` and finite `Pi` types). -/
 @[nolint unusedArguments]
 def WithLp (_p : ℝ≥0∞) (V : Type uV) : Type uV := V
 
-variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK')  (V : Type uV)
+variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK') (V : Type uV)
 
 namespace WithLp
 

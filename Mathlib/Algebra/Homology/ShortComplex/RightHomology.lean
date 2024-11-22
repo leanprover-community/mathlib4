@@ -1004,7 +1004,7 @@ variable (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁) [Epi φ.τ₁] [IsIso
 /-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
 and `φ.τ₃` is mono, then a right homology data for `S₁` induces a right homology data for `S₂` with
 the same `Q` and `H` fields. This is obtained by dualising `LeftHomologyData.ofEpiOfIsIsoOfMono'`.
-The inverse construction is `ofEpiOfIsIsoOfMono'`.  -/
+The inverse construction is `ofEpiOfIsIsoOfMono'`. -/
 noncomputable def ofEpiOfIsIsoOfMono : RightHomologyData S₂ := by
   haveI : Epi (opMap φ).τ₁ := by dsimp; infer_instance
   haveI : IsIso (opMap φ).τ₂ := by dsimp; infer_instance
@@ -1032,7 +1032,7 @@ variable (φ : S₁ ⟶ S₂) (h : RightHomologyData S₂) [Epi φ.τ₁] [IsIso
 /-- If `φ : S₁ ⟶ S₂` is a morphism of short complexes such that `φ.τ₁` is epi, `φ.τ₂` is an iso
 and `φ.τ₃` is mono, then a right homology data for `S₂` induces a right homology data for `S₁` with
 the same `Q` and `H` fields. This is obtained by dualising `LeftHomologyData.ofEpiOfIsIsoOfMono`.
-The inverse construction is `ofEpiOfIsIsoOfMono`.  -/
+The inverse construction is `ofEpiOfIsIsoOfMono`. -/
 noncomputable def ofEpiOfIsIsoOfMono' : RightHomologyData S₁ := by
   haveI : Epi (opMap φ).τ₁ := by dsimp; infer_instance
   haveI : IsIso (opMap φ).τ₂ := by dsimp; infer_instance
