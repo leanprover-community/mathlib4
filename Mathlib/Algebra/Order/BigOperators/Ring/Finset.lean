@@ -98,7 +98,6 @@ lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
   · exact hf i hi
   · exact single_le_sum hf hi
 
-
 end OrderedSemiring
 
 section OrderedCommSemiring
