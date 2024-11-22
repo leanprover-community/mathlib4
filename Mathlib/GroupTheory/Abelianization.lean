@@ -377,11 +377,11 @@ theorem Subgroup.Normal.commutator_le_of_self_sup_commutative_eq_top
   -- It is enough to prove that φ is surjective
   apply Function.Surjective.comm (φ := φ) _ hH.is_comm
   simp only [MulHom.coe_coe]
-  rw [← MonoidHom.range_top_iff_surjective]
+  rw [← MonoidHom.range_eq_top]
   -- We have to prove that `MonoidHom.range φ = ⊤`
   simp only [φ, MonoidHom.range_eq_map, ← Subgroup.map_map]
   have : Subgroup.map (QuotientGroup.mk' N) ⊤ = ⊤ := by
-    rw [← MonoidHom.range_eq_map, MonoidHom.range_top_iff_surjective]
+    rw [← MonoidHom.range_eq_map, MonoidHom.range_eq_top]
     exact QuotientGroup.mk'_surjective N
   rw [← this, Subgroup.map_eq_map_iff]
   simp only [QuotientGroup.ker_mk', sup_comm, ← hHN]
