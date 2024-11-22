@@ -59,10 +59,11 @@ for message in messages:
         labels = [LABEL]
 
         print('Removing peace_sign')
-        client.remove_reaction({
+        result = client.remove_reaction({
             "message_id": message['id'],
             "emoji_name": "peace_sign"
         })
+        print(result)
         print('Removing bors')
         client.remove_reaction({
             "message_id": message['id'],
