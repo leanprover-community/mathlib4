@@ -1409,12 +1409,12 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [Inhabited M] [LocallyCompactSpace M] :
     LocallyCompactSpace E := by
   have x : M := Inhabited.default
-  obtain ⟨s, hs1, hs2, hs3⟩ :=
+  obtain ⟨s, hmem, hss, hcom⟩ :=
     LocallyCompactSpace.local_compact_nhds x (extChartAt I x).source (extChartAt_source_mem_nhds x)
   have : IsCompact <| (extChartAt I x) '' s :=
-    hs3.image_of_continuousOn <| ContinuousOn.mono (continuousOn_extChartAt x) hs2
+    hcom.image_of_continuousOn <| ContinuousOn.mono (continuousOn_extChartAt x) hss
   apply this.locallyCompactSpace_of_mem_nhds_of_addGroup (x := extChartAt I x x)
-  exact extChartAt_image_nhd_mem_nhds_of_boundaryless hs1
+  exact extChartAt_image_nhd_mem_nhds_of_boundaryless hmem
 
 /-- Riesz's theorem applied to manifolds: A locally compact manifolds must be modelled on a
   finite-dimensional space. This is the converse to
