@@ -139,7 +139,7 @@ lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul (s : Finset ι) {t f g : ι → R}
       _ = ∑ i ∈ s, 2 * t i * (∑ j ∈ s, g j) * (∑ j ∈ s, t j) := by
           simp_rw [mul_assoc, ← mul_sum, ← sum_mul]; ring
       _ ≤ ∑ i ∈ s, (f i * (∑ j ∈ s, g j) ^ 2 + g i * (∑ j ∈ s, t j) ^ 2) := by
-          refine sum_le_sum fun i hi ↦ ?_
+          gcongr with i hi
           have ht : (t i * (∑ j ∈ s, g j) * (∑ j ∈ s, t j)) ^ 2 =
               (f i * (∑ j ∈ s, g j) ^ 2) * (g i * (∑ j ∈ s, t j) ^ 2) := by
             conv_rhs => rw [mul_mul_mul_comm, ← ht i hi]
