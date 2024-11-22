@@ -13,7 +13,7 @@ import Mathlib.Data.NNReal.Basic
 Consider infinite sequences $\{x_n\}$ of positive reals such that $x_0 = 0$ and
 $x_0 \ge x_1 \ge x_2 \ge \ldots$
 
-a) Prove that for every such sequence there is an $n \geq 1$ such that:
+a) Prove that for every such sequence there is an $n \ge 1$ such that:
 
 $$\frac{x_0^2}{x_1} + \ldots + \frac{x_{n-1}^2}{x_n} \ge 3.999$$
 
