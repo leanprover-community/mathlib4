@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Even
+import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Nat
-import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # Cast of natural numbers (additional theorems)
