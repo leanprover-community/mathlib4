@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 
-import Mathlib.Analysic.Calculus.ContDiff.Defs
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Analytic functions are `C^∞`.
