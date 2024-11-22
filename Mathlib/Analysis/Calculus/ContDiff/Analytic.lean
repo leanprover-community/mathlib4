@@ -3,25 +3,22 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-
 import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
 # Analytic functions are `C^∞`.
 -/
 
-open Filter Asymptotics
-
-open scoped ENNReal
-
-universe u v
+open Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {f : E → F} {s : Set E} {x : E} {n : ℕ∞}
 
 /-- An analytic function is infinitely differentiable. -/
-protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) {n : ℕ∞} :
+protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
     ContDiffOn 𝕜 n f s :=
   let t := { x | AnalyticAt 𝕜 f x }
   suffices ContDiffOn 𝕜 n f t from this.mono h
@@ -34,7 +31,7 @@ protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 
       fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
 /-- An analytic function on the whole space is infinitely differentiable there. -/
-theorem AnalyticOnNhd.contDiff [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f univ) {n : ℕ∞} :
+theorem AnalyticOnNhd.contDiff [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f univ) :
     ContDiff 𝕜 n f := by
   rw [← contDiffOn_univ]
   exact h.contDiffOn
