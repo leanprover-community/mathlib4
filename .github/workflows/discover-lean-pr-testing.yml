@@ -67,7 +67,7 @@ jobs:
         
         # Output the PRs
         echo "$PRS"
-        echo "prs<<EOF\n$PRS\nEOF" >> "$GITHUB_OUTPUT"
+        printf "prs<<EOF\n$PRS\nEOF" >> "$GITHUB_OUTPUT"
 
     - name: Use merged PRs information
       id: find-branches
