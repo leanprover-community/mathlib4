@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Tactic.Ring
 
 /-!
 # The characteristic predicate of tensor product
