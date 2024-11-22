@@ -54,7 +54,7 @@ lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
   · intro _ _ _ _ _
     apply hA
 
-lemma Matrix.isTotallyUnimodular_iff_fintype.{w} (A : Matrix m n R) : A.IsTotallyUnimodular ↔
+lemma isTotallyUnimodular_iff_fintype.{w} (A : Matrix m n R) : A.IsTotallyUnimodular ↔
     ∀ (ι : Type w) [Fintype ι] [DecidableEq ι], ∀ f : ι → m, ∀ g : ι → n,
       (A.submatrix f g).det ∈ Set.range SignType.cast := by
   rw [isTotallyUnimodular_iff]
