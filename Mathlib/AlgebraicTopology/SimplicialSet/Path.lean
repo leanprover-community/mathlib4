@@ -98,25 +98,23 @@ def idSpine (n : ℕ) : Path Δ[n] n := spine Δ[n] n (standardSimplex.idSimplex
 @[simps]
 def spineHorn {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
-    Path Λ[n + 2, i] (n + 2) := by
-  let sp := idSpine (n + 2)
-  refine {
-    vertex := fun j ↦ ⟨sp.vertex j, (horn.const n i j (Opposite.op [0])).property⟩
-    arrow := fun j ↦ ⟨sp.arrow j, ?_⟩
-    arrow_src := ?_
-    arrow_tgt := ?_ }
-  · let edge := horn.primitiveEdge h₀ hₙ j
-    have ha : sp.arrow j = edge.val := by
-      dsimp only [sp, edge, idSpine, standardSimplex.idSimplex, spine_arrow]
-      dsimp only [mkOfSucc, horn.primitiveEdge, horn.edge, standardSimplex.edge,
+    Path Λ[n + 2, i] (n + 2) where
+  vertex j := ⟨idSpine _ |>.vertex j, (horn.const n i j _).property⟩
+  arrow j := ⟨idSpine _ |>.arrow j, by
+    let edge := horn.primitiveEdge h₀ hₙ j
+    have ha : (idSpine _).arrow j = edge.val := by
+      dsimp only [edge, idSpine, standardSimplex.idSimplex, spine_arrow,
+        mkOfSucc, horn.primitiveEdge, horn.edge, standardSimplex.edge,
         standardSimplex.map_apply]
       aesop
     rw [ha]
-    exact edge.property
-  · simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
-    exact sp.arrow_src
-  · simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
-    exact sp.arrow_tgt
+    exact edge.property⟩
+  arrow_src := by
+    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
+    exact idSpine _ |>.arrow_src
+  arrow_tgt := by
+    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
+    exact idSpine _ |>.arrow_tgt
 
 /-- Two paths of the same nonzero length are equal if all of their arrows are equal. -/
 @[ext]

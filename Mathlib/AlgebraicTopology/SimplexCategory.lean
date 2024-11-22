@@ -570,17 +570,9 @@ lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : i.succ.castSucc < j) :
     mkOfSucc i ≫ δ j = mkOfSucc i.castSucc := by
   ext x
-  simp [δ]
   fin_cases x
-  · simp
-    rw [Fin.succAbove_of_castSucc_lt]
-    · rfl
-    · refine Nat.lt_trans ?_ h
-      simp
-  · simp
-    rw [Fin.succAbove_of_castSucc_lt]
-    · rfl
-    · exact h
+  · simp [δ, Fin.succAbove_of_castSucc_lt _ _ (Nat.lt_trans _ h)]
+  · simp [δ, Fin.succAbove_of_castSucc_lt _ _ h]
 
 /-- If `j < i + 1`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
 picks out arrow `i + 1`. -/
@@ -588,16 +580,13 @@ lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : j < i.succ.castSucc) :
     mkOfSucc i ≫ δ j = mkOfSucc i.succ := by
   ext x
-  simp [δ]
-  fin_cases x
-  · simp
-    rw [Fin.succAbove_of_le_castSucc]
-    · rfl
-    · exact Nat.le_of_lt_succ h
-  · simp
-    rw [Fin.succAbove_of_le_castSucc]
-    · rfl
-    · exact Nat.le_of_lt h
+  simp only [δ, len_mk, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
+    OrderEmbedding.toOrderHom_coe, Function.comp_apply, Fin.succAboveOrderEmb_apply]
+  fin_cases x <;> rw [Fin.succAbove_of_le_castSucc]
+  · rfl
+  · exact Nat.le_of_lt_succ h
+  · rfl
+  · exact Nat.le_of_lt h
 
 /-- If `j = i + 1`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
 picks out the composite of arrows `i` and `i + 1`. -/
@@ -605,18 +594,19 @@ lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : j = i.succ.castSucc) :
     mkOfSucc i ≫ δ j = intervalEdge i 2 (by omega) := by
   ext x
-  simp [δ]
   fin_cases x
-  · simp
-    rw [Fin.succAbove_of_castSucc_lt]
-    · simp
-      simp [Hom.toOrderHom, intervalEdge, mkOfLe, Hom.mk]
-    · rw [h]
-      simp
-  · simp
-    rw [h]
+  · subst h
+    simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+      Fin.zero_eta, OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
+      mkOfSucc_homToOrderHom_zero, Fin.succAboveOrderEmb_apply,
+      Fin.castSucc_succAbove_castSucc, Fin.succAbove_succ_self ]
+    rfl
+  · simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, Fin.mk_one,
+      OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
+      mkOfSucc_homToOrderHom_one, Fin.succAboveOrderEmb_apply]
+    subst h
     rw [Fin.succAbove_castSucc_self]
-    simp [Hom.toOrderHom, intervalEdge, mkOfLe, Hom.mk, mkHom, ]
+    rfl
 
 theorem eq_of_one_to_two (f : ([1] : SimplexCategory) ⟶ [2]) :
     f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨
