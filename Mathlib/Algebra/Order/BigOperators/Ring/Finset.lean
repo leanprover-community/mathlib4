@@ -123,8 +123,8 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
 
 end OrderedCommSemiring
 
-theorem sum_mul_self_eq_zero_iff [LinearOrderedRing R] (s : Finset ι) (f : ι → R) :
-    ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
+theorem sum_mul_self_eq_zero_iff [LinearOrderedSemiring R] [ExistsAddOfLE R] (s : Finset ι)
+    (f : ι → R) : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
   rw [sum_eq_zero_iff_of_nonneg fun _ _ ↦ mul_self_nonneg _]
   simp
 
