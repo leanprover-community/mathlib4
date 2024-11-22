@@ -36,15 +36,15 @@ namespace Order
 open Additive Multiplicative
 
 @[simp] lemma succ_ofMul [Preorder X] [SuccOrder X] (x : X) : succ (ofMul x) = ofMul (succ x) := rfl
-@[simp] lemma succ_toMul [Preorder X] [SuccOrder X] (x : X) : succ (toMul x) = toMul (succ x) := rfl
+@[simp] lemma succ_toMul [Preorder X] [SuccOrder X] (x : X) : succ x.toMul = (succ x).toMul := rfl
 
 @[simp] lemma succ_ofAdd [Preorder X] [SuccOrder X] (x : X) : succ (ofAdd x) = ofAdd (succ x) := rfl
-@[simp] lemma succ_toAdd [Preorder X] [SuccOrder X] (x : X) : succ (toAdd x) = toAdd (succ x) := rfl
+@[simp] lemma succ_toAdd [Preorder X] [SuccOrder X] (x : X) : succ x.toAdd = (succ x).toAdd := rfl
 
 @[simp] lemma pred_ofMul [Preorder X] [PredOrder X] (x : X) : pred (ofMul x) = ofMul (pred x) := rfl
-@[simp] lemma pred_toMul [Preorder X] [PredOrder X] (x : X) : pred (toMul x) = toMul (pred x) := rfl
+@[simp] lemma pred_toMul [Preorder X] [PredOrder X] (x : X) : pred x.toMul = (pred x).toMul := rfl
 
 @[simp] lemma pred_ofAdd [Preorder X] [PredOrder X] (x : X) : pred (ofAdd x) = ofAdd (pred x) := rfl
-@[simp] lemma pred_toAdd [Preorder X] [PredOrder X] (x : X) : pred (toAdd x) = toAdd (pred x) := rfl
+@[simp] lemma pred_toAdd [Preorder X] [PredOrder X] (x : X) : pred x.toAdd = (pred x).toAdd := rfl
 
 end Order
