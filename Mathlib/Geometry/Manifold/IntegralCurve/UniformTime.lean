@@ -59,7 +59,7 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux [Boundaryles
   intros t' ht'
   by_cases hlt : |t'| + 1 < a
   · exact eqOn_of_isIntegralCurveOn_Ioo hv γ hγx hγ
-      (by positivity) (le_of_lt hlt) (abs_lt.mp <| lt_add_one _)
+      (by positivity) hlt.le (abs_lt.mp <| lt_add_one _)
   · exact eqOn_of_isIntegralCurveOn_Ioo hv γ hγx hγ
       (neg_lt_self_iff.mp <| lt_trans ht'.1 ht'.2) (not_lt.mp hlt) ht' |>.symm
 
@@ -134,11 +134,10 @@ lemma isIntegralCurveOn_piecewise [BoundarylessManifold I M]
     intros t' ht'
     rw [piecewise, if_pos ht']
   · rw [mem_union, or_iff_not_imp_left] at ht
-    have hmem' := ht hmem
     rw [piecewise, if_neg hmem]
-    apply (hγ' t hmem').congr_of_eventuallyEq
+    apply (hγ' t <| ht hmem).congr_of_eventuallyEq
     rw [Filter.eventuallyEq_iff_exists_mem]
-    exact ⟨Ioo a' b', isOpen_Ioo.mem_nhds hmem',
+    exact ⟨Ioo a' b', isOpen_Ioo.mem_nhds <| ht hmem,
       piecewise_eqOn_of_isIntegralCurveOn_Ioo hv hγ hγ' ht₀ h⟩
 
 /-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
@@ -157,7 +156,7 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     rw [exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo hv]
     intro a
     obtain ⟨⟨γ, hγ1, hγ2⟩, hlt⟩ := Classical.choose_spec (hbdd a)
-    exact ⟨γ, hγ1, hγ2.mono <| Ioo_subset_Ioo (neg_le_neg <| le_of_lt hlt) (le_of_lt hlt)⟩
+    exact ⟨γ, hγ1, hγ2.mono <| Ioo_subset_Ioo (neg_le_neg hlt.le) hlt.le⟩
   intro hbdd
   set asup := sSup s with hasup
   -- we will obtain two integral curves, one centred at some `t₀ > 0` with
