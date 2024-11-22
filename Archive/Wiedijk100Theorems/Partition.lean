@@ -201,7 +201,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     apply Nat.Partition.ext
     simp only [true_and, mem_univ, mem_filter] at hp₁ hp₂
     ext i
-    simp only [φ, ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, Finsupp.mk.injEq] at h
+    simp only [φ, ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, FinsuppWith.mk.injEq] at h
     by_cases hi : i = 0
     · rw [hi]
       rw [Multiset.count_eq_zero_of_not_mem]
