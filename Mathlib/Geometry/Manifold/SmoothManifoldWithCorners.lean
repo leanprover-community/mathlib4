@@ -1400,6 +1400,7 @@ theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
 
 section LocallyCompact
 
+/-- A locally compact manifold must be modelled on a locally compact space. -/
 lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 E H) [I.Boundaryless]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [Inhabited M] [LocallyCompactSpace M] :
     LocallyCompactSpace E := by
@@ -1411,9 +1412,9 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   apply this.locallyCompactSpace_of_mem_nhds_of_addGroup (x := extChartAt I x x)
   exact extChartAt_image_nhd_mem_nhds_of_boundaryless hs1
 
-/-- Riesz's theorem applied to manifolds: Locally compact manifolds must be modelled on
-  finite-dimensional spaces. This is the converse to
-  `Manifold.locallyCompact_of_finiteDimensional` -/
+/-- Riesz's theorem applied to manifolds: A locally compact manifolds must be modelled on a
+  finite-dimensional space. This is the converse to
+  `Manifold.locallyCompact_of_finiteDimensional`. -/
 theorem FiniteDimensional.of_locallyCompact_manifold [CompleteSpace 𝕜]
     (I : ModelWithCorners 𝕜 E H) [I.Boundaryless]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [Inhabited M] [LocallyCompactSpace M] :
