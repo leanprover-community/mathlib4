@@ -527,14 +527,51 @@ noncomputable def sheafifyHomEquivOfIsOneHypercoverDense {P : Cᵒᵖ ⥤ A} {Q 
   ((F.sheafPushforwardContinuous A J₀ J).asEquivalence.symm.toAdjunction.homEquiv _ _).trans
     (((sheafificationAdjunction J₀ A).homEquiv _ _).trans IsCoverDense.restrictHomEquivHom)
 
+lemma sheafifyHomEquivOfIsOneHypercoverDense_naturality_left
+    {P₁ P₂ : Cᵒᵖ ⥤ A} (f : P₁ ⟶ P₂) {Q : Sheaf J A}
+    (g : (F.sheafifyOfIsOneHypercoverDense J₀ J A).obj P₂ ⟶ Q)  :
+      sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J
+        ((F.sheafifyOfIsOneHypercoverDense J₀ J A).map f ≫ g) =
+        f ≫ sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J g := by
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  have := IsDenseSubsite.isLocallyFull J₀ J F
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  let adj₁ := (F.sheafPushforwardContinuous A J₀ J).asEquivalence.symm.toAdjunction
+  let adj₂ := sheafificationAdjunction J₀ A
+  change IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _
+    ((F.sheafifyOfIsOneHypercoverDense J₀ J A).map f ≫ g))) =
+      f ≫ IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _ g))
+  erw [← IsCoverDense.restrictHomEquivHom_naturality_left]
+  erw [adj₁.homEquiv_naturality_left, adj₂.homEquiv_naturality_left]
+  rfl
+
+lemma sheafifyHomEquivOfIsOneHypercoverDense_naturality_right
+    {P : Cᵒᵖ ⥤ A} {Q₁ Q₂ : Sheaf J A}
+    (f : (F.sheafifyOfIsOneHypercoverDense J₀ J A).obj P ⟶ Q₁) (g : Q₁ ⟶ Q₂) :
+      sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J (f ≫ g) =
+        sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J f ≫ g.val := by
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  have := IsDenseSubsite.isLocallyFull J₀ J F
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  let adj₁ := (F.sheafPushforwardContinuous A J₀ J).asEquivalence.symm.toAdjunction
+  let adj₂ := sheafificationAdjunction J₀ A
+  change IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _ (f ≫ g))) =
+    IsCoverDense.restrictHomEquivHom (adj₂.homEquiv _ _ (adj₁.homEquiv _ _ f)) ≫ g.val
+  rw [adj₁.homEquiv_naturality_right, adj₂.homEquiv_naturality_right]
+  apply IsCoverDense.restrictHomEquivHom_naturality_right
+
 variable (A)
 
 noncomputable def sheafifyAdjunctionOfIsOneHypercoverDense :
     sheafifyOfIsOneHypercoverDense.{w} F J₀ J A ⊣ sheafToPresheaf J A :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun P Q ↦ sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J
-      homEquiv_naturality_left_symm := sorry
-      homEquiv_naturality_right := sorry }
+      homEquiv_naturality_left_symm := fun {P₁ P₂ Q} f g ↦
+        (F.sheafifyHomEquivOfIsOneHypercoverDense J₀ J).injective (by
+          simp only [sheafToPresheaf_obj, Equiv.apply_symm_apply,
+            sheafifyHomEquivOfIsOneHypercoverDense_naturality_left _ _ _ f])
+      homEquiv_naturality_right :=
+        sheafifyHomEquivOfIsOneHypercoverDense_naturality_right F J₀ J }
 
 include F J₀ in
 lemma hasWeakSheafify_of_isOneHypercoverDense :
