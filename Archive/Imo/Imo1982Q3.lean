@@ -51,11 +51,10 @@ lemma ineq₂ : (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / ((∑ k ∈ range n, x 
     ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1) := by
   apply le_trans _ (sq_sum_div_le_sum_sq_div _ x (fun k _ ↦ hp (k + 1)))
   gcongr
-  · apply sum_pos fun k _ ↦ hp _
-    simp
+  · exact sum_pos (fun k _ ↦ hp _) nonempty_range_succ
   · exact add_nonneg (sum_nonneg fun k _ ↦ (hp _).le) zero_le_one
   · rw [sum_range_succ', h0]
-  · apply ineq₁ hn (hx.comp_monotone (fun x y ↦ Nat.succ_le_succ))
+  · exact ineq₁ hn (hx.comp_monotone @Nat.succ_le_succ)
 
 /-- We move `1 + 1 / n` out of the fraction. -/
 lemma ineq₃ : (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / (∑ k ∈ range n, x (k + 1)) * n / (n + 1)
@@ -69,8 +68,7 @@ lemma ineq₄ : 4 * n / (n + 1) ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1)
   gcongr
   rw [le_div_iff₀]
   · simpa using four_mul_le_sq_add (∑ k ∈ range n, x (k + 1)) 1
-  · apply sum_pos fun k _ ↦ hp _
-    simpa
+  · exact sum_pos (fun k _ ↦ hp _) (nonempty_range_iff.2 hn)
 
 end Imo1982Q3
 
