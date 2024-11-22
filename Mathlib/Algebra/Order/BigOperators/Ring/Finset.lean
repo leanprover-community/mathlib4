@@ -163,7 +163,7 @@ This is a specialization of the Cauchy-Schwarz inequality with the sequences `f 
 `√(g n)`, though here it is proven without relying on square roots. -/
 theorem sq_sum_div_le_sum_sq_div [LinearOrderedSemifield R] [ExistsAddOfLE R] (s : Finset ι)
     (f : ι → R) {g : ι → R} (hg : ∀ i ∈ s, 0 < g i) :
-    (∑ i ∈ s, f i) ^ 2 / ∑ i ∈ s, g i ≤ ∑ i ∈ s, (f i) ^ 2 / g i := by
+    (∑ i ∈ s, f i) ^ 2 / ∑ i ∈ s, g i ≤ ∑ i ∈ s, f i ^ 2 / g i := by
   have hg' : ∀ i ∈ s, 0 ≤ g i := fun i hi ↦ (hg i hi).le
   have H : ∀ i ∈ s, 0 ≤ f i ^ 2 / g i := fun i hi ↦ div_nonneg (sq_nonneg _) (hg' i hi)
   refine div_le_of_le_mul₀ (sum_nonneg hg') (sum_nonneg H)
