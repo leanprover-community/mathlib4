@@ -205,6 +205,7 @@ theorem Filter.Tendsto.eventually_const_le {l : Filter γ} {f : γ → α} {u v 
 
 @[deprecated (since := "2024-11-17")]
 alias eventually_ge_of_tendsto_gt := Filter.Tendsto.eventually_const_le
+
 protected theorem Dense.exists_gt [NoMaxOrder α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ y ∈ s, x < y :=
   hs.exists_mem_open isOpen_Ioi (exists_gt x)
