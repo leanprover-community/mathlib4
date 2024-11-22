@@ -3,19 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.List.FinRange
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Data.Set.Image
-import Mathlib.Order.WellFounded
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.ULift
-import Mathlib.Order.Filter.Defs
-import Mathlib.Order.Filter.Basic
 import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Order.Filter.Basic
 
 /-!
 # Results filters related to finiteness.

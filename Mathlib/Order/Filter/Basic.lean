@@ -107,6 +107,16 @@ theorem congr_sets (h : { x | x ∈ s ↔ x ∈ t } ∈ f) : s ∈ f ↔ t ∈ f
 
 lemma copy_eq {S} (hmem : ∀ s, s ∈ S ↔ s ∈ f) : f.copy S hmem = f := Filter.ext hmem
 
+/-- Weaker version of `Filter.biInter_mem` that assumes `Subsingleton β` rather than `Finite β`. -/
+theorem biInter_mem' {β : Type v} {s : β → Set α} {is : Set β} (hf : is.Subsingleton) :
+    (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f := by
+  apply Subsingleton.induction_on hf <;> simp
+
+/-- Weaker version of `Filter.iInter_mem` that assumes `Subsingleton β` rather than `Finite β`. -/
+theorem iInter_mem' {β : Sort v} {s : β → Set α} [Subsingleton β] :
+    (⋂ i, s i) ∈ f ↔ ∀ i, s i ∈ f := by
+  rw [← sInter_range, sInter_eq_biInter, biInter_mem' (subsingleton_range s), forall_mem_range]
+
 theorem exists_mem_subset_iff : (∃ t ∈ f, t ⊆ s) ↔ s ∈ f :=
   ⟨fun ⟨_, ht, ts⟩ => mem_of_superset ht ts, fun hs => ⟨s, hs, Subset.rfl⟩⟩
 
