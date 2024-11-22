@@ -15,6 +15,9 @@ In this file, we define instances of algebraic structures over smooth functions.
 noncomputable section
 
 open scoped Manifold
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
 
 open TopologicalSpace
 
