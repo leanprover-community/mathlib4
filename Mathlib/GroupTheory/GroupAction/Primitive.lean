@@ -427,38 +427,8 @@ variable {N β : Type*} [Group N] [MulAction N β]
 
 open scoped BigOperators Pointwise
 
-/- lemma Set.nontrivial_iff_not_ncard_le_one {α : Type*} [Finite α] (B : Set α) :
-    Set.Nontrivial B ↔ ¬(Set.ncard B ≤ 1) := by
-  rw [not_le, Set.one_lt_ncard_iff]
-  constructor
-  all_goals {
-    rintro ⟨a, ha, b, hb, hab⟩
-    exact ⟨a, b, ha, hb, hab⟩ }
-lemma Set.nontrivial_iff_not_encard_le_one {α : Type*} (B : Set α) :
-    Set.Nontrivial B ↔ ¬(Set.encard B ≤ 1) := by
-  rw [not_le, Set.one_lt_encard_iff]
-  constructor
-  all_goals {
-    rintro ⟨a, ha, b, hb, hab⟩
-    exact ⟨a, b, ha, hb, hab⟩ }
-lemma Set.subsingleton_iff_ncard_le_one {α : Type*} [Finite α] (B : Set α) :
-  Set.Subsingleton B ↔ Set.ncard B ≤ 1 := by
-  rw [← Set.not_nontrivial_iff, not_iff_comm, ← Set.nontrivial_iff_not_ncard_le_one]
-lemma Set.subsingleton_iff_encard_le_one {α : Type*} (B : Set α) :
-  Set.Subsingleton B ↔ Set.encard B ≤ 1 := by
-  rw [← Set.not_nontrivial_iff, not_iff_comm, ← Set.nontrivial_iff_not_encard_le_one]
-example (n m : ℕ) (h : n + m = n) : m = 0 := by
-  exact Nat.add_left_cancel h
- -/
-
-lemma Set.eq_univ_iff_ncard {α : Type*} [Finite α] (B : Set α) :
-    B = univ ↔ Set.ncard B = Nat.card α := by
-  rw [← Set.compl_empty_iff, ← Set.ncard_eq_zero, ← Set.ncard_add_ncard_compl B]
-  constructor
-  · exact fun H ↦ by rw [H, add_zero]
-  · exact fun H ↦ Nat.add_left_cancel H.symm
-
 /-- A pretransitive action on a set of prime order is preprimitive -/
+@[to_additive "A pretransitive action on a set of prime order is preprimitive"]
 theorem IsPreprimitive.of_prime [hGX : IsPretransitive M α] (hp : Nat.Prime (Nat.card α)) :
     IsPreprimitive M α := by
   classical
@@ -478,40 +448,8 @@ theorem IsPreprimitive.of_prime [hGX : IsPretransitive M α] (hp : Nat.Prime (Na
 
 variable {φ : M → N} {f : α →ₑ[φ] β}
 
-/-- Given a partition of the ambient finite type,
-the cardinal of a set is the sum of the cardinalities of its trace on the parts of the partition -/
-theorem _root_.Setoid.IsPartition.ncard_eq_finsum
-    {α : Type _} [Finite α] (s : Set α)
-    {P : Set (Set α)} (hP : Setoid.IsPartition P) :
-    s.ncard = finsum fun t : P => (s ∩ t).ncard := by
-  classical
-  have := Fintype.ofFinite α
-  simp only [finsum_eq_sum_of_fintype, Nat.card_eq_fintype_card, ← Set.Nat.card_coe_set_eq]
-  rw [← Fintype.card_sigma]
-  apply symm
-  refine Fintype.card_congr (Equiv.ofBijective (fun ⟨⟨t, ht⟩, ⟨x, hx⟩⟩ ↦ ⟨x, hx.1⟩) ?_)
-  constructor
-  · rintro ⟨⟨t, ht⟩, ⟨x, hx⟩⟩ ⟨⟨t', ht'⟩, ⟨y, hy⟩⟩ h
-    simp only [Subtype.mk.injEq] at h
-    simp only [Set.mem_inter_iff] at hx hy
-    simp only [Sigma.mk.inj_iff, Subtype.mk.injEq]
-    suffices h' : t = t' by
-      constructor
-      exact h'
-      subst h h'
-      rfl
-    apply not_imp_comm.mp (hP.pairwiseDisjoint ht ht')
-    unfold Disjoint
-    simp only [Set.le_eq_subset, Set.bot_eq_empty, not_forall, id_eq, exists_prop, exists_and_left]
-    rw [← h] at hy
-    use {x}
-    simp only [Set.singleton_subset_iff, Set.mem_empty_iff_false, not_false_eq_true, and_true]
-    exact ⟨hx.2, hy.2⟩
-  · rintro ⟨x, hx⟩
-    obtain ⟨t, ⟨ht, hx'⟩, _⟩ := hP.2 x
-    use ⟨⟨t, ht⟩, ⟨x, ⟨hx, hx'⟩⟩⟩
-
 /-- The target of an equivariant map of large image is preprimitive if the source is -/
+@[to_additive "The target of an equivariant map of large image is preprimitive if the source is"]
 theorem IsPreprimitive.of_card_lt
     [Finite β] [htβ : IsPretransitive N β] (hM : IsPreprimitive M α)
     (hf' : Nat.card β < 2 * (Set.range f).ncard) :
@@ -556,7 +494,7 @@ theorem IsPreprimitive.of_card_lt
       simp only [Set.top_eq_univ, Set.preimage_eq_univ_iff] at h
     -- We will prove that B is large, which will contradict the assumption that it is not ⊤
       apply hB_ne_top
-      apply hB.eq_univ_card_lt
+      apply hB.eq_univ_of_card_lt
     -- It remains to show that Nat.card β < Set.ncard B * 2
       apply lt_of_lt_of_le hf'
       rw [mul_comm, mul_le_mul_right Nat.succ_pos']
@@ -564,9 +502,10 @@ theorem IsPreprimitive.of_card_lt
   simp only [Set.Finite.coe_toFinset, Set.subset_univ]
 
 /-- Theorem of Rudio (Wielandt, 1964, Th. 8.1) -/
+@[to_additive "Theorem of Rudio (Wielandt, 1964, Th. 8.1)"]
 theorem IsPreprimitive.rudio (hpGX : IsPreprimitive M α)
     {A : Set α} (hfA : A.Finite) (hA : A.Nonempty) (hA' : A ≠ ⊤)
-    (a b : α) (h : a ≠ b) :
+    {a b : α} (h : a ≠ b) :
     ∃ g : M, a ∈ g • A ∧ b ∉ g • A := by
   let B := ⋂ (g : M) (_ : a ∈ g • A), g • A
   suffices b ∉ B by
