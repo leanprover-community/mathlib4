@@ -97,7 +97,7 @@ section Prio
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
--- Porting note(#5171): unsupported @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): unsupported @[nolint has_nonempty_instance]
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A,
   R →+* A where
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
@@ -237,7 +237,8 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
   congr
 
 -- see Note [lower instance priority]
-instance (priority := 200) toModule : Module R A where
+instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A] :
+    Module R A where
   one_smul _ := by simp [smul_def']
   mul_smul := by simp [smul_def', mul_assoc]
   smul_add := by simp [smul_def', mul_add]

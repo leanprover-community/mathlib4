@@ -148,6 +148,11 @@ theorem LinearMap.image_convexHull (f : E →ₗ[𝕜] F) (s : Set E) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=
   f.isLinear.image_convexHull s
 
+theorem convexHull_add_subset {s t : Set E} :
+    convexHull 𝕜 (s + t) ⊆ convexHull 𝕜 s + convexHull 𝕜 t :=
+  convexHull_min (add_subset_add (subset_convexHull _ _) (subset_convexHull _ _))
+    (Convex.add (convex_convexHull 𝕜 s) (convex_convexHull 𝕜 t))
+
 end AddCommMonoid
 
 end OrderedSemiring

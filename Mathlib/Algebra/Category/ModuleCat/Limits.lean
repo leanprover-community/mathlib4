@@ -115,11 +115,11 @@ def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
     (fun s => rfl)
   · intro x y
     simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_add]
-    erw [← map_add (AddEquiv.symm Shrink.addEquiv)]
+    rw [← equivShrink_add]
     rfl
   · intro r x
     simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_smul]
-    erw [← map_smul (LinearEquiv.symm <| Shrink.linearEquiv _ _)]
+    rw [← equivShrink_smul]
     rfl
 
 end HasLimits
@@ -149,7 +149,7 @@ instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
-def forget₂AddCommGroupPreservesLimitsAux :
+def forget₂AddCommGroup_preservesLimitsAux :
     IsLimit ((forget₂ (ModuleCat R) AddCommGrp).mapCone (limitCone F)) :=
   letI : Small.{w} (Functor.sections ((F ⋙ forget₂ _ AddCommGrp) ⋙ forget _)) :=
     inferInstanceAs <| Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R)))
@@ -157,48 +157,48 @@ def forget₂AddCommGroupPreservesLimitsAux :
     (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGrp.{w})
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits. -/
-instance forget₂AddCommGroupPreservesLimit :
+instance forget₂AddCommGroup_preservesLimit :
     PreservesLimit F (forget₂ (ModuleCat R) AddCommGrp) :=
-  preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
-    (forget₂AddCommGroupPreservesLimitsAux F)
+  preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
+    (forget₂AddCommGroup_preservesLimitsAux F)
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
-instance forget₂AddCommGroupPreservesLimitsOfSize [UnivLE.{v, w}] :
+instance forget₂AddCommGroup_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v}
       (forget₂ (ModuleCat.{w} R) AddCommGrp.{w}) where
   preservesLimitsOfShape := { preservesLimit := inferInstance }
 
-instance forget₂AddCommGroupPreservesLimits :
+instance forget₂AddCommGroup_preservesLimits :
     PreservesLimits (forget₂ (ModuleCat R) AddCommGrp.{w}) :=
-  ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize.{w, w}
+  ModuleCat.forget₂AddCommGroup_preservesLimitsOfSize.{w, w}
 
 /-- The forgetful functor from R-modules to types preserves all limits.
 -/
-instance forgetPreservesLimitsOfSize [UnivLE.{v, w}] :
+instance forget_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v} (forget (ModuleCat.{w} R)) where
   preservesLimitsOfShape :=
-    { preservesLimit := fun {K} ↦ preservesLimitOfPreservesLimitCone (limitConeIsLimit K)
+    { preservesLimit := fun {K} ↦ preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
         (Types.Small.limitConeIsLimit.{v} (_ ⋙ forget _)) }
 
-instance forgetPreservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
-  ModuleCat.forgetPreservesLimitsOfSize.{w, w}
+instance forget_preservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
+  ModuleCat.forget_preservesLimitsOfSize.{w, w}
 
 end
 
-instance forget₂AddCommGroupReflectsLimit :
+instance forget₂AddCommGroup_reflectsLimit :
     ReflectsLimit F (forget₂ (ModuleCat.{w} R) AddCommGrp) where
-  reflects {c} hc := by
+  reflects {c} hc := ⟨by
     have : HasLimit (F ⋙ forget₂ (ModuleCat R) AddCommGrp) := ⟨_, hc⟩
     have : Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R))) := by
       simpa only [AddCommGrp.hasLimit_iff_small_sections] using this
-    have := reflectsLimitOfReflectsIsomorphisms F (forget₂ (ModuleCat R) AddCommGrp)
-    exact isLimitOfReflects _ hc
+    have := reflectsLimit_of_reflectsIsomorphisms F (forget₂ (ModuleCat R) AddCommGrp)
+    exact isLimitOfReflects _ hc⟩
 
-instance forget₂AddCommGroupReflectsLimitOfShape :
+instance forget₂AddCommGroup_reflectsLimitOfShape :
     ReflectsLimitsOfShape J (forget₂ (ModuleCat.{w} R) AddCommGrp) where
 
-instance forget₂AddCommGroupReflectsLimitOfSize :
+instance forget₂AddCommGroup_reflectsLimitOfSize :
     ReflectsLimitsOfSize.{t, v} (forget₂ (ModuleCat.{w} R) AddCommGrp) where
 
 section DirectLimit

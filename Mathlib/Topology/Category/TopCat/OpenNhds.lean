@@ -26,7 +26,7 @@ Besides `OpenNhds`, the main constructions here are:
 -/
 
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory TopologicalSpace Opposite Topology
 
 universe u
 
@@ -86,8 +86,11 @@ def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
 theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
   rfl
 
-theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion' :=
-  U.1.openEmbedding
+theorem isOpenEmbedding {x : X} (U : OpenNhds x) : IsOpenEmbedding U.1.inclusion' :=
+  U.1.isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding := isOpenEmbedding
 
 /-- The preimage functor from neighborhoods of `f x` to neighborhoods of `x`. -/
 def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
@@ -145,7 +148,30 @@ def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`. -/
 def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x where
-  unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-  counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
+  unit := { app := fun _ => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
+  counit := { app := fun _ => homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
 
 end IsOpenMap
+
+namespace Topology.IsInducing
+
+open TopologicalSpace
+
+variable {f}
+
+/-- An inducing map `f : X ⟶ Y` induces a functor `open_nhds x ⥤ open_nhds (f x)`. -/
+@[simps]
+def functorNhds (h : IsInducing f) (x : X) :
+    OpenNhds x ⥤ OpenNhds (f x) where
+  obj U := ⟨h.functor.obj U.1, (h.mem_functorObj_iff U.1).mpr U.2⟩
+  map := h.functor.map
+
+/--
+An inducing map `f : X ⟶ Y` induces an adjunction between `open_nhds x` and `open_nhds (f x)`.
+-/
+def adjunctionNhds (h : IsInducing f) (x : X) :
+    OpenNhds.map f x ⊣ h.functorNhds x where
+  unit := { app := fun U => homOfLE (h.adjunction.unit.app U.1).le }
+  counit := { app := fun U => homOfLE (h.adjunction.counit.app U.1).le }
+
+end Topology.IsInducing

@@ -72,7 +72,6 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
-instance : CoeFun (Chain α) fun _ => ℕ → α := ⟨DFunLike.coe⟩
 
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
@@ -462,11 +461,11 @@ open OmegaCompletePartialOrder OmegaCompletePartialOrder.Chain
 instance [∀ a, OmegaCompletePartialOrder (β a)] :
     OmegaCompletePartialOrder (∀ a, β a) where
   ωSup c a := ωSup (c.map (Pi.evalOrderHom a))
-  ωSup_le c f hf a :=
+  ωSup_le _ _ hf a :=
     ωSup_le _ _ <| by
       rintro i
       apply hf
-  le_ωSup c i x := le_ωSup_of_le _ <| le_rfl
+  le_ωSup _ _ _ := le_ωSup_of_le _ <| le_rfl
 
 namespace OmegaCompletePartialOrder
 
@@ -480,7 +479,7 @@ lemma ωScottContinuous.apply₂ (hf : ωScottContinuous f) (a : α) : ωScottCo
 
 lemma ωScottContinuous.of_apply₂ (hf : ∀ a, ωScottContinuous (f · a)) : ωScottContinuous f :=
   ωScottContinuous.of_monotone_map_ωSup
-    ⟨fun x y h a ↦ (hf a).monotone h, fun c ↦ by ext a; apply (hf a).map_ωSup c⟩
+    ⟨fun _ _ h a ↦ (hf a).monotone h, fun c ↦ by ext a; apply (hf a).map_ωSup c⟩
 
 lemma ωScottContinuous_iff_apply₂ : ωScottContinuous f ↔ ∀ a, ωScottContinuous (f · a) :=
   ⟨ωScottContinuous.apply₂, ωScottContinuous.of_apply₂⟩
@@ -495,7 +494,7 @@ theorem flip₁_continuous' (f : ∀ x : α, γ → β x) (a : α) (hf : Continu
 @[deprecated ωScottContinuous.of_apply₂ (since := "2024-05-29")]
 theorem flip₂_continuous' (f : γ → ∀ x, β x) (hf : ∀ x, Continuous' fun g => f g x) :
     Continuous' f :=
-  Continuous.of_bundled _ (fun x y h a => (hf a).to_monotone h)
+  Continuous.of_bundled _ (fun _ _ h a => (hf a).to_monotone h)
     (by intro c; ext a; apply (hf a).to_bundled _ c)
 
 end OmegaCompletePartialOrder
@@ -553,7 +552,7 @@ lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuo
     ωScottContinuous (⨆ i, f i) := by
   refine ωScottContinuous.of_monotone_map_ωSup
     ⟨Monotone.iSup fun i ↦ (hf i).monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
-  simp (config := { contextual := true }) [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
+  simp +contextual [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
 
 lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
     ωScottContinuous (sSup s) := by
@@ -936,7 +935,7 @@ theorem ωSup_apply_ωSup (c₀ : Chain (α →𝒄 β)) (c₁ : Chain α) :
 @[simps]
 def flip {α : Type*} (f : α → β →𝒄 γ) : β →𝒄 α → γ where
   toFun x y := f y x
-  monotone' x y h a := (f a).monotone h
+  monotone' _ _ h a := (f a).monotone h
   map_ωSup' _ := by ext x; change f _ _ = _; rw [(f _).continuous]; rfl
 
 /-- `Part.bind` as a continuous function. -/

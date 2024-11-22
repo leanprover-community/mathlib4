@@ -113,6 +113,46 @@ def Functor.FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
         simp only [map_comp, map_preimage]
         apply f.naturality }
 
+theorem whiskeringLeft_obj_id : (whiskeringLeft C C E).obj (𝟭 _) = 𝟭 _ :=
+  rfl
+
+/-- The isomorphism between left-whiskering on the identity functor and the identity of the functor
+between the resulting functor categories. -/
+def whiskeringLeftObjIdIso : (whiskeringLeft C C E).obj (𝟭 _) ≅ 𝟭 _ :=
+  Iso.refl _
+
+theorem whiskeringLeft_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringLeft C D' E).obj (F ⋙ G) =
+    (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
+  rfl
+
+/-- The isomorphism between left-whiskering on the composition of functors and the composition
+of two left-whiskering applications. -/
+def whiskeringLeftObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringLeft C D' E).obj (F ⋙ G) ≅
+    (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
+  Iso.refl _
+
+theorem whiskeringRight_obj_id : (whiskeringRight E C C).obj (𝟭 _) = 𝟭 _ :=
+  rfl
+
+/-- The isomorphism between right-whiskering on the identity functor and the identity of the functor
+between the resulting functor categories. -/
+def wiskeringRightObjIdIso : (whiskeringRight E C C).obj (𝟭 _) ≅ 𝟭 _ :=
+  Iso.refl _
+
+theorem whiskeringRight_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G =
+    (whiskeringRight E C D').obj (F ⋙ G) :=
+  rfl
+
+/-- The isomorphism between right-whiskering on the composition of functors and the composition
+of two right-whiskering applications. -/
+def whiskeringRightObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G ≅
+    (whiskeringRight E C D').obj (F ⋙ G) :=
+  Iso.refl _
+
 instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
     ((whiskeringRight C D E).obj F).Full :=
   ((Functor.FullyFaithful.ofFullyFaithful F).whiskeringRight C).full
