@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # Cast of natural numbers (additional theorems)
