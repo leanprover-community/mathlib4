@@ -77,17 +77,15 @@ namespace IntermediateField
 
 variable (F : Type u) [Field F]
 
+open Cardinal in
 theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set E) :
     Cardinal.lift.{u} #(adjoin F s) ≤ Cardinal.lift.{v} #F ⊔ Cardinal.lift.{u} #s ⊔ ℵ₀ := by
-  refine (Algebra.lift_cardinalMk_adjoin_le F s).trans_eq' (Cardinal.lift_inj.2 ?_)
-  let A := Algebra.adjoin F s
-  let K := FractionRing A
-  have hg : Function.Injective A.val := Subtype.val_injective
-  let f : K →ₐ[F] E := IsFractionRing.liftAlgHom hg
-  have hf : f.fieldRange = adjoin F s :=
-    IsFractionRing.liftAlgHom_fieldRange_eq_of_range_eq hg A.range_val
-  rw [← hf, show #f.fieldRange = #K from (AlgEquiv.ofInjectiveField f).toEquiv.symm.cardinal_eq,
-    FractionRing.cardinalMk]
+  rw [show ↥(adjoin F s) = (adjoin F s).toSubfield from rfl, adjoin_toSubfield]
+  apply (Cardinal.lift_le.mpr (Subfield.cardinalMk_closure_le_max _)).trans
+  rw [lift_max, sup_le_iff, lift_aleph0]
+  refine ⟨(Cardinal.lift_le.mpr ((mk_union_le _ _).trans <| add_le_max _ _)).trans ?_, le_sup_right⟩
+  simp_rw [lift_max, lift_aleph0, sup_assoc]
+  exact sup_le_sup_right mk_range_le_lift _
 
 theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
     #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by
