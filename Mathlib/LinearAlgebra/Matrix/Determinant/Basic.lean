@@ -212,7 +212,7 @@ theorem det_permute' (σ : Perm n) (M : Matrix n n R) :
 /-- Permuting rows and columns with the same equivalence does not change the determinant. -/
 @[simp]
 theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
-    (A.submatrix e e).det = A.det := by
+    det (A.submatrix e e) = det A := by
   rw [det_apply', det_apply']
   apply Fintype.sum_equiv (Equiv.permCongr e)
   intro σ
