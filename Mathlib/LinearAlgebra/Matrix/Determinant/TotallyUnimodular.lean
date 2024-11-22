@@ -61,8 +61,7 @@ lemma isTotallyUnimodular_iff_fintype.{w} (A : Matrix m n R) : A.IsTotallyUnimod
   constructor
   · intro hA ι _ _ f g
     specialize hA (Fintype.card ι) (f ∘ (Fintype.equivFin ι).symm) (g ∘ (Fintype.equivFin ι).symm)
-    rw [←submatrix_submatrix, det_submatrix_equiv_self] at hA
-    exact hA
+    rwa [←submatrix_submatrix, det_submatrix_equiv_self] at hA
   · intro hA k f g
     specialize hA (ULift (Fin k)) (f ∘ Equiv.ulift) (g ∘ Equiv.ulift)
     rwa [←submatrix_submatrix, det_submatrix_equiv_self] at hA
