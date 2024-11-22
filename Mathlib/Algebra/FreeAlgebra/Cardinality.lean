@@ -8,6 +8,9 @@ import Mathlib.SetTheory.Cardinal.Free
 
 /-!
 # Cardinality of free algebras
+
+This file contains some results about the cardinality of `FreeAlgebra`,
+parallel to that of `MvPolynomial`.
 -/
 
 universe u v
@@ -32,11 +35,11 @@ theorem cardinalMk_eq_max_lift [Nonempty X] [Nontrivial R] :
 theorem cardinalMk_eq_lift [IsEmpty X] : #(FreeAlgebra R X) = Cardinal.lift.{v} #R := by
   have := lift_mk_eq'.2 ⟨show (FreeMonoid X →₀ R) ≃ R from Equiv.finsuppUnique⟩
   rw [lift_id'.{u, v}, lift_umax] at this
-  rwa [FreeAlgebra.equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra]
+  rwa [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra]
 
 @[nontriviality]
 theorem cardinalMk_eq_one [Subsingleton R] : #(FreeAlgebra R X) = 1 := by
-  rw [FreeAlgebra.equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra, mk_eq_one]
+  rw [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra, mk_eq_one]
 
 theorem cardinalMk_le_max_lift :
     #(FreeAlgebra R X) ≤ Cardinal.lift.{v} #R ⊔ Cardinal.lift.{u} #X ⊔ ℵ₀ := by

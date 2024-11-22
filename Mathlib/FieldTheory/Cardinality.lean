@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.Field.ULift
-import Mathlib.Algebra.FreeAlgebra.Cardinality
 import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Rat.Encodable
