@@ -81,7 +81,7 @@ syntax (name := explainCmdStx) "#explain" str : command
 
 open Command in
 @[command_elab explainCmdStx]
-def elabExlpainCommand : CommandElab := fun stx =>
+def elabExplainCommand : CommandElab := fun stx =>
   match stx with
   | `(command|#explain%$tk $s:str) => do
     Command.liftCoreM <| displayMarkdown s.getString tk
