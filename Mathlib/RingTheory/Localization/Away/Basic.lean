@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Localizations away from an element
@@ -360,6 +360,15 @@ variable {M}
 noncomputable abbrev awayLift (f : R →+* P) (r : R) (hr : IsUnit (f r)) :
     Localization.Away r →+* P :=
   IsLocalization.Away.lift r hr
+
+lemma awayLift_mk {A : Type*} [CommRing A] (f : R →+* A) (r : R)
+    (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
+    Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
+      (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
+  rw [Localization.mk_eq_mk']
+  erw [IsLocalization.lift_mk']
+  rw [Units.mul_inv_eq_iff_eq_mul]
+  simp [IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
 
 /-- Given a map `f : R →+* S` and an element `r : R`, we may construct a map `Rᵣ →+* Sᵣ`. -/
 noncomputable abbrev awayMap (f : R →+* P) (r : R) :

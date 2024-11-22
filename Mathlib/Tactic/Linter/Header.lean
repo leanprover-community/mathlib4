@@ -268,7 +268,7 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElab
       if modName.getRoot == `Lake then
       Linter.logLint linter.style.header i
         "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
-        (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
+        (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and \
         make sure to benchmark it. If this is fine, feel free to silence this linter."
       else if (`Mathlib.Deprecated).isPrefixOf modName &&
           !(`Mathlib.Deprecated).isPrefixOf mainModule then
@@ -290,7 +290,10 @@ def duplicateImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mainModule ← getMainModule
-  unless Linter.getLinterValue linter.style.header (← getOptions) || (← isInMathlib mainModule) do
+  -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
+  -- However, it is active in the test file `MathlibTest.Header` for the linter itself.
+  unless (← isInMathlib mainModule) || mainModule == `MathlibTest.Header do return
+  unless Linter.getLinterValue linter.style.header (← getOptions) do
     return
   if (← get).messages.hasErrors then
     return

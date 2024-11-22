@@ -190,7 +190,7 @@ theorem totallyBounded_iff' {s : Set α} :
 
 section Compact
 
--- Porting note (#11215): TODO: generalize to metrizable spaces
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
 countable set. -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
@@ -252,7 +252,7 @@ alias EMetric.uniformEmbedding_iff' := EMetric.isUniformEmbedding_iff'
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
 -- Porting note: made `reducible`;
--- Porting note (#11215): TODO: make it an instance?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it an instance?
 abbrev EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with
