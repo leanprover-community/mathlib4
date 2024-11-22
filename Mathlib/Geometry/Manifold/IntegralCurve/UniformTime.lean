@@ -46,38 +46,36 @@ lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     exact ⟨neg_lt_zero.mpr hpos, by positivity⟩
   · apply Ioo_subset_Ioo <;> linarith
 
-/-- Suppose for every `a : ℝ`, there exists an integral curve `γ a` on `Ioo (-a) a`, all with the
-  same starting point `γ 0 = x`. Then, the global curve `γ_ext := fun t ↦ γ (|t| + 1) t` agrees with
-  each `γ a` on `Ioo (-a) a`. This will help us show that `γ_ext` is a global integral curve. -/
-lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux [BoundarylessManifold I M]
+/-- For a family of integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that
+  each `γ a` is defined on `Ioo (-a) a`, the global curve `γ_ext := fun t ↦ γ (|t| + 1) t` agrees
+  with each `γ a` on `Ioo (-a) a`. This will help us show that `γ_ext` is a global integral
+  curve. -/
+lemma eqOn_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
-    (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) {a : ℝ} :
-    EqOn (fun t' ↦ Classical.choose (h (|t'| + 1)) t') (Classical.choose (h a)) (Ioo (-a) a) := by
-  let γ := fun a' ↦ Classical.choose (h a')
-  have hγx := fun a' ↦ (Classical.choose_spec (h a')).1
-  have hγ := fun a' ↦ (Classical.choose_spec (h a')).2
-  intros t' ht'
-  by_cases hlt : |t'| + 1 < a
+    (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
+    {a : ℝ} : EqOn (fun t ↦ γ (|t| + 1) t) (γ a) (Ioo (-a) a) := by
+  intros t ht
+  by_cases hlt : |t| + 1 < a
   · exact eqOn_of_isIntegralCurveOn_Ioo hv γ hγx hγ
       (by positivity) hlt.le (abs_lt.mp <| lt_add_one _)
   · exact eqOn_of_isIntegralCurveOn_Ioo hv γ hγx hγ
-      (neg_lt_self_iff.mp <| lt_trans ht'.1 ht'.2) (not_lt.mp hlt) ht' |>.symm
+      (neg_lt_self_iff.mp <| lt_trans ht.1 ht.2) (not_lt.mp hlt) ht |>.symm
 
-/-- If for every `a : ℝ`, there exists an integral curve defined on `Ioo (-a) a`, all with the
-  same starting point `x`, then there exists a global integral curve starting at `x`. -/
-lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
+/-- For a family of integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that
+  each `γ a` is defined on `Ioo (-a) a`, the function `γ_ext := fun t ↦ γ (|t| + 1) t` is global
+  integral curve. -/
+lemma isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
-    (h : ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a)) :
-    ∃ γ, γ 0 = x ∧ IsIntegralCurve γ v := by
-  refine ⟨fun t' ↦ Classical.choose (h (|t'| + 1)) t', (Classical.choose_spec (h (|0| + 1))).1, ?_⟩
+    (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a, IsIntegralCurveOn (γ a) v (Ioo (-a) a)) :
+    IsIntegralCurve (fun t ↦ γ (|t| + 1) t) v := by
   intro t
-  apply HasMFDerivAt.congr_of_eventuallyEq (f := Classical.choose (h (|t| + 1)))
-  · apply (Classical.choose_spec (h (|t| + 1))).2 t
+  apply HasMFDerivAt.congr_of_eventuallyEq (f := γ (|t| + 1))
+  · apply hγ (|t| + 1) t
     rw [mem_Ioo, ← abs_lt]
     exact lt_add_one _
   · rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_,
-      exists_integralCurve_of_exists_isIntegralCurveOn_Ioo_eqOn_aux hv h⟩
+      eqOn_abs_add_one_of_isIntegralCurveOn_Ioo hv γ hγx hγ⟩
     have : |t| < |t| + 1 := lt_add_of_pos_right |t| zero_lt_one
     rw [abs_lt] at this
     exact Ioo_mem_nhds this.1 this.2
@@ -85,9 +83,13 @@ lemma exists_integralCurve_of_exists_isIntegralCurveOn_Ioo [BoundarylessManifold
 lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
     (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
-      ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) :=
-  ⟨fun ⟨γ, h1, h2⟩ _ ↦ ⟨γ, h1, h2.isIntegralCurveOn _⟩,
-   exists_integralCurve_of_exists_isIntegralCurveOn_Ioo hv⟩
+      ∀ a, ∃ γ, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-a) a) := by
+  refine ⟨fun ⟨γ, h1, h2⟩ _ ↦ ⟨γ, h1, h2.isIntegralCurveOn _⟩, fun h ↦ ?_⟩
+  let γ (a) := Classical.choose (h a)
+  have hγx (a) := (Classical.choose_spec (h a)).1
+  have hγ (a) := (Classical.choose_spec (h a)).2
+  exact ⟨fun t ↦ γ (|t| + 1) t, hγx (|0| + 1),
+    isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo hv γ hγx hγ⟩
 
 /-- Let `γ` and `γ'` be integral curves defined on `Ioo a b` and `Ioo a' b'`, respectively. Then,
   `piecewise (Ioo a b) γ γ'` is equal to `γ` and `γ'` in their respective domains.
