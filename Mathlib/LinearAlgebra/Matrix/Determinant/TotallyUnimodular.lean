@@ -56,10 +56,9 @@ lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
 
 lemma IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimodular) (i : m) (j : n) :
     A i j ∈ Set.range SignType.cast := by
-  let f : Fin 1 → m := (fun _ => i)
-  let g : Fin 1 → n := (fun _ => j)
-  convert hA 1 f g (Function.injective_of_subsingleton f) (Function.injective_of_subsingleton g)
-  exact (det_fin_one (A.submatrix f g)).symm
+  rw [isTotallyUnimodular_iff] at hA
+  convert hA 1 (fun _ => i) (fun _ => j)
+  simp
 
 lemma IsTotallyUnimodular.submatrix {A : Matrix m n R} (f : m' → m) (g : n' → n)
     (hA : A.IsTotallyUnimodular) :
