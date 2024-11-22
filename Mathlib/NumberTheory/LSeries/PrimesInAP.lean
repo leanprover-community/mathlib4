@@ -82,18 +82,18 @@ open scoped LSeries.notation
 variable {q : ℕ} (a : ZMod q)
 
 /-- The von Mangoldt function restricted to the residue class `a` mod `q`. -/
-noncomputable abbrev residue_class : ℕ → ℝ :=
+noncomputable abbrev residueClass : ℕ → ℝ :=
   {n : ℕ | (n : ZMod q) = a}.indicator (vonMangoldt ·)
 
-lemma residue_class_nonneg : 0 ≤ residue_class a :=
+lemma residueClass_nonneg : 0 ≤ residueClass a :=
   fun _ ↦ Set.indicator_apply_nonneg fun _ ↦ vonMangoldt_nonneg
 
-lemma residue_class_apply_zero : residue_class a 0 = 0 := by
+lemma residueClass_apply_zero : residueClass a 0 = 0 := by
   simp only [Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_zero, map_zero, ofReal_zero,
     implies_true]
 
-lemma abscissaOfAbsConv_residue_class_le_one :
-    abscissaOfAbsConv ↗(vonMangoldt.residue_class a) ≤ 1 := by
+lemma abscissaOfAbsConv_residueClass_le_one :
+    abscissaOfAbsConv ↗(residueClass a) ≤ 1 := by
   refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable fun y hy ↦ ?_
   unfold LSeriesSummable
   have := LSeriesSummable_vonMangoldt <| show 1 < (y : ℂ).re by simp only [ofReal_re, hy]
@@ -107,30 +107,30 @@ lemma abscissaOfAbsConv_residue_class_le_one :
 
 variable [NeZero q] {a}
 
-/-- We can express `ArithmeticFunction.vonMangoldt.residue_class` as a linear combination
+/-- We can express `ArithmeticFunction.vonMangoldt.residueClass` as a linear combination
 of twists of the von Mangoldt function with Dirichlet charaters. -/
-lemma residue_class_apply (ha : IsUnit a) (n : ℕ) :
-    residue_class a n =
+lemma residueClass_apply (ha : IsUnit a) (n : ℕ) :
+    residueClass a n =
       (q.totient : ℂ)⁻¹ * ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ * χ n * vonMangoldt n := by
   rw [eq_inv_mul_iff_mul_eq₀ <| mod_cast (Nat.totient_pos.mpr q.pos_of_neZero).ne']
-  simp +contextual only [residue_class, Set.indicator_apply, Set.mem_setOf_eq, apply_ite,
+  simp +contextual only [residueClass, Set.indicator_apply, Set.mem_setOf_eq, apply_ite,
     ofReal_zero, mul_zero, ← Finset.sum_mul, sum_char_inv_mul_char_eq ℂ ha n, eq_comm (a := a),
     ite_mul, zero_mul, ↓reduceIte, ite_self]
 
-/-- We can express `ArithmeticFunction.vonMangoldt.residue_class` as a linear combination
+/-- We can express `ArithmeticFunction.vonMangoldt.residueClass` as a linear combination
 of twists of the von Mangoldt function with Dirichlet charaters. -/
-lemma residue_class_eq (ha : IsUnit a) :
-    ↗(residue_class a) = (q.totient : ℂ)⁻¹ •
+lemma residueClass_eq (ha : IsUnit a) :
+    ↗(residueClass a) = (q.totient : ℂ)⁻¹ •
       ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ • (fun n : ℕ ↦ χ n * vonMangoldt n) := by
   ext1 n
   simpa only [Pi.smul_apply, Finset.sum_apply, smul_eq_mul, ← mul_assoc]
-    using residue_class_apply ha n
+    using residueClass_apply ha n
 
 /-- The L-series of the von Mangoldt function restricted to the prime residue class `a` mod `q`
 is a linear combination of logarithmic derivatives of L-functions of the Dirichlet characters
 mod `q` (on `re s > 1`). -/
-lemma LSeries_residue_class_eq (ha : IsUnit a) {s : ℂ} (hs : 1 < s.re) :
-    LSeries ↗(residue_class a) s =
+lemma LSeries_residueClass_eq (ha : IsUnit a) {s : ℂ} (hs : 1 < s.re) :
+    LSeries ↗(residueClass a) s =
       -(q.totient : ℂ)⁻¹ * ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ *
         (deriv (LFunction χ) s / LFunction χ s) := by
   simp only [deriv_LFunction_eq_deriv_LSeries _ hs, LFunction_eq_LSeries _ hs, neg_mul, ← mul_neg,
@@ -139,7 +139,7 @@ lemma LSeries_residue_class_eq (ha : IsUnit a) {s : ℂ} (hs : 1 < s.re) :
   simp_rw [← LSeries_smul,
     ← LSeries_sum <| fun χ _ ↦ (LSeriesSummable_twist_vonMangoldt χ hs).smul _]
   refine LSeries_congr s fun {n} _ ↦ ?_
-  simp only [Pi.smul_apply, residue_class_apply ha, smul_eq_mul, ← mul_assoc,
+  simp only [Pi.smul_apply, residueClass_apply ha, smul_eq_mul, ← mul_assoc,
     mul_inv_cancel_of_invertible, one_mul, Finset.sum_apply, Pi.mul_apply]
 
 end ArithmeticFunction.vonMangoldt
