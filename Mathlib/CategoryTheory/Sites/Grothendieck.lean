@@ -53,7 +53,7 @@ universe v₁ u₁ v u
 
 namespace CategoryTheory
 
-open CategoryTheory Category
+open Category
 
 variable (C : Type u) [Category.{v} C]
 

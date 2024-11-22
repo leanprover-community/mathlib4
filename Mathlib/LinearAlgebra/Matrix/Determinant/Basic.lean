@@ -42,8 +42,6 @@ open Equiv Equiv.Perm Finset Function
 
 namespace Matrix
 
-open Matrix
-
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 variable {R : Type v} [CommRing R]
 
@@ -223,6 +221,17 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
   apply Fintype.prod_equiv e
   intro i
   rw [Equiv.permCongr_apply, Equiv.symm_apply_apply, submatrix_apply]
+
+/-- Permuting rows and columns with two equivalences does not change the absolute value of the
+determinant. -/
+@[simp]
+theorem abs_det_submatrix_equiv_equiv {R : Type*} [LinearOrderedCommRing R]
+    (e₁ e₂ : n ≃ m) (A : Matrix m m R) :
+    |(A.submatrix e₁ e₂).det| = |A.det| := by
+  have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp
+  rw [hee]
+  show |((A.submatrix id (e₁.symm.trans e₂)).submatrix e₁ e₁).det| = |A.det|
+  rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute', abs_mul, abs_unit_intCast, one_mul]
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 
