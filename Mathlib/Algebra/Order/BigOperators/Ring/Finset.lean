@@ -124,7 +124,11 @@ end OrderedCommSemiring
 section LinearOrderedCommSemiring
 variable [LinearOrderedCommSemiring R] [ExistsAddOfLE R]
 
-/-- **Cauchy-Schwarz inequality** for finsets. -/
+/-- **Cauchy-Schwarz inequality** for finsets.
+
+This is written in terms of sequences `f`, `g`, and `t`, where `t` is a stand-in for
+`√(f i * g i)`. See `sum_mul_sq_le_sq_mul_sq` for the more usual form in terms of squared
+sequences. -/
 lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul (s : Finset ι) {t f g : ι → R}
     (hf : ∀ i ∈ s, 0 ≤ f i) (hg : ∀ i ∈ s, 0 ≤ g i) (ht : ∀ i ∈ s, t i ^ 2 = f i * g i) :
     (∑ i ∈ s, t i) ^ 2 ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
