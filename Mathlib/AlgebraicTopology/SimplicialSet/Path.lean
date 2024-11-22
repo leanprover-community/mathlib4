@@ -73,16 +73,16 @@ lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[
   · simp only [spine_arrow, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
       mkOfSucc_subinterval_eq]
 
-/-- Two paths of the same length can be identified if all of their arrows can
-be identified. -/
+/-- Two paths of the same nonzero length can be identified if all of their
+arrows can be identified. -/
 @[ext]
 lemma Path.ext₁ {n : ℕ} {f g : Path X (n + 1)}
-    (h : ∀ (m : Fin (n + 1)), f.arrow m = g.arrow m) :
+    (h : ∀ i : Fin (n + 1), f.arrow i = g.arrow i) :
     f = g := by
-  ext i
-  · rcases Fin.eq_castSucc_or_eq_last i with ⟨j, hj⟩ | hl
-    · erw [hj, ← f.arrow_src j, ← g.arrow_src j, h]
+  ext j
+  · rcases Fin.eq_castSucc_or_eq_last j with ⟨k, hk⟩ | hl
+    · erw [hk, ← f.arrow_src k, ← g.arrow_src k, h]
     · erw [hl, ← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
-  · exact h i
+  · exact h j
 
 end SSet
