@@ -44,10 +44,12 @@ lemma ineq₁ : ∑ k ∈ range (n + 1), x k ≤ (∑ k ∈ range n, x k) * (1 +
   refine sum_le_sum fun k hk ↦ hx (le_of_lt ?_)
   simpa using hk
 
+variable (h0 : x 0 = 1) (hp : ∀ k, 0 < x k)
+include h0 hp
+
 /-- We combine Sedrakyan and the previous inequality. -/
-lemma ineq₂ (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
-    (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / ((∑ k ∈ range n, x (k + 1)) * (1 + 1 / n))
-      ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1) := by
+lemma ineq₂ : (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / ((∑ k ∈ range n, x (k + 1)) * (1 + 1 / n))
+    ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1) := by
   apply le_trans _ (sq_sum_div_le_sum_sq_div _ x (fun k _ ↦ hp (k + 1)))
   gcongr
   · apply sum_pos fun k _ ↦ hp _
@@ -57,15 +59,13 @@ lemma ineq₂ (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
   · apply ineq₁ hn (hx.comp_monotone (fun x y ↦ Nat.succ_le_succ))
 
 /-- We move `1 + 1 / n` out of the fraction. -/
-lemma ineq₃ (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
-    (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / (∑ k ∈ range n, x (k + 1)) * n / (n + 1)
-      ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1) := by
+lemma ineq₃ : (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / (∑ k ∈ range n, x (k + 1)) * n / (n + 1)
+    ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1) := by
   convert ineq₂ hn hx h0 hp using 1
   field_simp
 
 /-- Finally, AM-GM gives us the main lower bound for the RHS. -/
-lemma ineq₄ (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
-    4 * n / (n + 1) ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1) := by
+lemma ineq₄ : 4 * n / (n + 1) ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1) := by
   apply le_trans _ (ineq₃ hn hx h0 hp)
   gcongr
   rw [le_div_iff₀]
@@ -75,13 +75,11 @@ lemma ineq₄ (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
 
 end Imo1982Q3
 
-open Imo1982Q3
-
 /-- Part a of the problem is solved by `n = 4000`. -/
 theorem imo1982Q3_a (hx : Antitone x) (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     ∃ n : ℕ, 3.999 ≤ ∑ k ∈ range n, (x k) ^ 2 / x (k + 1) := by
   use 4000
-  convert ineq₄ (Nat.succ_ne_zero 3998) hx h0 hp
+  convert Imo1982Q3.ineq₄ (Nat.succ_ne_zero 3998) hx h0 hp
   norm_num
 
 /-- Part b of the problem is solved by `x k = (1 / 2) ^ k`. -/
