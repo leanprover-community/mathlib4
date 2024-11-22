@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Alex Brodbelt. All rights reserved.
+Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Brodbelt
+Authors: Violeta Hernández Palacios, Alex Brodbelt
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.NNReal.Basic
