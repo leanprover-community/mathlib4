@@ -1,19 +1,19 @@
 name: Zulip Emoji Merge Delegate
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # Runs every hour
+  push:
+    branches:
+      - master
 
 jobs:
-  zulip-emoji-merge-delegate:
+  zulip-emoji-merged:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout mathlib repository
       uses: actions/checkout@v4
       with:
-        sparse-checkout: |
-          scripts
+        fetch: 10 # this number matches the number of lines of the `git log` in the final step
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -30,6 +30,7 @@ jobs:
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
         ZULIP_SITE: https://leanprover.zulipchat.com
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$GITHUB_TOKEN"
+          while read -r pr_number; do
+            python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "${pr_number}"
+          done < <(git log --oneline -n 10 | awk -F# '{ gsub(/)$/, ""); print $NF}')
