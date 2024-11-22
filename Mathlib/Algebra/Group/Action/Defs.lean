@@ -60,20 +60,26 @@ instance (priority := 910) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(
 @[to_additive (attr := simp)]
 lemma smul_eq_mul (α : Type*) [Mul α] {a a' : α} : a • a' = a * a' := rfl
 
+/-- -/
+class AddSemigroupAction (G P : Type*) [AddSemigroup G] extends VAdd G P where
+  add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
+
+/-- -/
+@[to_additive (attr := ext)]
+class SemigroupAction (α β : Type*) [Semigroup α] extends SMul α β where
+  /-- Associativity of `•` and `*` -/
+  mul_smul (x y : α) (b : β) : (x * y) • b = x • y • b
+
 /-- Type class for additive monoid actions. -/
-class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends VAdd G P where
+class AddAction (G : Type*) (P : Type*) [AddMonoid G] extends AddSemigroupAction G P where
   /-- Zero is a neutral element for `+ᵥ` -/
   protected zero_vadd : ∀ p : P, (0 : G) +ᵥ p = p
-  /-- Associativity of `+` and `+ᵥ` -/
-  add_vadd : ∀ (g₁ g₂ : G) (p : P), g₁ + g₂ +ᵥ p = g₁ +ᵥ (g₂ +ᵥ p)
 
 /-- Typeclass for multiplicative actions by monoids. This generalizes group actions. -/
 @[to_additive (attr := ext)]
-class MulAction (α : Type*) (β : Type*) [Monoid α] extends SMul α β where
+class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
-  /-- Associativity of `•` and `*` -/
-  mul_smul : ∀ (x y : α) (b : β), (x * y) • b = x • y • b
 
 /-! ### Scalar tower and commuting actions -/
 
@@ -88,8 +94,8 @@ class SMulCommClass (M N α : Type*) [SMul M α] [SMul N α] : Prop where
   /-- `•` is left commutative -/
   smul_comm : ∀ (m : M) (n : N) (a : α), m • n • a = n • m • a
 
-export MulAction (mul_smul)
-export AddAction (add_vadd)
+export SemigroupAction (mul_smul)
+export AddSemigroupAction (add_vadd)
 export SMulCommClass (smul_comm)
 export VAddCommClass (vadd_comm)
 
