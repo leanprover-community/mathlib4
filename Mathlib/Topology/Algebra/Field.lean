@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
@@ -50,7 +50,7 @@ def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
       dsimp only at hx ⊢
       rcases eq_or_ne x 0 with (rfl | h)
       · rwa [inv_zero]
-      · -- Porting note (#11215): TODO: Lean fails to find InvMemClass instance
+      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean fails to find InvMemClass instance
         rw [← @inv_coe_set α (Subfield α) _ _ SubfieldClass.toInvMemClass K, ← Set.image_inv]
         exact mem_closure_image (continuousAt_inv₀ h) hx }
 

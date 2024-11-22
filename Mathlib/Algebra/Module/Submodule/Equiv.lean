@@ -182,7 +182,8 @@ lemma ofInjective_symm_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair 
 /-- A bijective linear map is a linear equivalence. -/
 noncomputable def ofBijective [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] (hf : Bijective f) :
     M ≃ₛₗ[σ₁₂] M₂ :=
-  (ofInjective f hf.injective).trans (ofTop _ <| LinearMap.range_eq_top.2 hf.surjective)
+  (ofInjective f hf.injective).trans <| ofTop _ <|
+    LinearMap.range_eq_top.2 hf.surjective
 
 @[simp]
 theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {hf} (x : M) :
@@ -251,7 +252,31 @@ namespace LinearMap
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
   [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
-  (f : M₁ →ₗ[R] M₂ →ₗ[R] M) (i : M₃ →ₗ[R] M) (hi : Injective i)
+
+section
+
+variable (f : M₁ →ₗ[R] M₂) (i : M₃ →ₗ[R] M₂) (hi : Injective i)
+  (hf : ∀ x, f x ∈ LinearMap.range i)
+
+/-- The restriction of a linear map on the target to a submodule of the target given by
+an inclusion. -/
+noncomputable def codRestrictOfInjective : M₁ →ₗ[R] M₃ :=
+  (LinearEquiv.ofInjective i hi).symm ∘ₗ f.codRestrict (LinearMap.range i) hf
+
+@[simp]
+lemma codRestrictOfInjective_comp_apply (x : M₁) :
+    i (LinearMap.codRestrictOfInjective f i hi hf x) = f x := by
+  simp [LinearMap.codRestrictOfInjective]
+
+@[simp]
+lemma codRestrictOfInjective_comp :
+    i ∘ₗ LinearMap.codRestrictOfInjective f i hi hf = f := by
+  ext
+  simp
+
+end
+
+variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M) (i : M₃ →ₗ[R] M) (hi : Injective i)
   (hf : ∀ x y, f x y ∈ LinearMap.range i)
 
 /-- The restriction of a bilinear map to a submodule in which it takes values. -/
