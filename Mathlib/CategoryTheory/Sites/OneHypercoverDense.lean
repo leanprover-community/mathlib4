@@ -487,27 +487,72 @@ noncomputable def sheafIso : (sheafPushforwardContinuous F A J₀ J).obj (sheaf 
 
 end EssSurj
 
+variable (A)
+
 include data in
 lemma essSurj : EssSurj (sheafPushforwardContinuous F A J₀ J) where
   mem_essImage G₀ := ⟨_, ⟨EssSurj.sheafIso data G₀⟩⟩
 
 include data in
 lemma isEquivalence : IsEquivalence (sheafPushforwardContinuous F A J₀ J) where
-  essSurj := essSurj data
+  essSurj := essSurj A data
 
 end
 
 end OneHypercoverDenseData
 
-variable (data : ∀ X, F.OneHypercoverDenseData J₀ J X) [HasLimitsOfSize.{w, w} A]
+variable (A) [HasLimitsOfSize.{w, w} A] [IsOneHypercoverDense.{w} F J₀ J]
 
-variable [IsOneHypercoverDense.{w} F J₀ J]
-
-lemma isEquivalence_of_IsOneHypercoverDense :
+lemma isEquivalence_of_isOneHypercoverDense :
     IsEquivalence (sheafPushforwardContinuous F A J₀ J) :=
-  OneHypercoverDenseData.isEquivalence.{w} (oneHypercoverDenseData F J₀ J)
+  OneHypercoverDenseData.isEquivalence.{w} A (oneHypercoverDenseData F J₀ J)
 
--- TODO: deduce `Has(Weak)Sheafify` for `J` from `J₀`
+section
+
+variable [HasWeakSheafify J₀ A]
+
+noncomputable def sheafifyOfIsOneHypercoverDense :
+    (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  (whiskeringLeft _ _ _).obj F.op ⋙ presheafToSheaf J₀ A ⋙
+    inv (F.sheafPushforwardContinuous A J₀ J)
+
+variable {A}
+
+noncomputable def sheafifyHomEquivOfIsOneHypercoverDense {P : Cᵒᵖ ⥤ A} {Q : Sheaf J A} :
+    ((sheafifyOfIsOneHypercoverDense.{w} F J₀ J A).obj P ⟶ Q) ≃ (P ⟶ Q.val) :=
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  have := IsDenseSubsite.isLocallyFull J₀ J F
+  have := IsDenseSubsite.isCoverDense J₀ J F
+  ((F.sheafPushforwardContinuous A J₀ J).asEquivalence.symm.toAdjunction.homEquiv _ _).trans
+    (((sheafificationAdjunction J₀ A).homEquiv _ _).trans IsCoverDense.restrictHomEquivHom)
+
+variable (A)
+
+noncomputable def sheafifyAdjunctionOfIsOneHypercoverDense :
+    sheafifyOfIsOneHypercoverDense.{w} F J₀ J A ⊣ sheafToPresheaf J A :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := fun P Q ↦ sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J
+      homEquiv_naturality_left_symm := sorry
+      homEquiv_naturality_right := sorry }
+
+include F J₀ in
+lemma hasWeakSheafify_of_isOneHypercoverDense :
+    HasWeakSheafify J A := ⟨_, ⟨sheafifyAdjunctionOfIsOneHypercoverDense.{w} F J₀ J A⟩⟩
+
+end
+
+include F in
+lemma hasSheafify_of_isOneHypercoverDense [HasSheafify J₀ A] [HasFiniteLimits A] :
+    HasSheafify J A := by
+  have := isEquivalence_of_isOneHypercoverDense.{w} F J₀ J A
+  have : PreservesFiniteLimits ((whiskeringLeft _ _ A).obj F.op) := ⟨fun _ _ _ ↦ inferInstance⟩
+  have : PreservesFiniteLimits (presheafToSheaf J₀ A ⋙
+    (F.sheafPushforwardContinuous A J₀ J).inv) := by
+    apply comp_preservesFiniteLimits
+  have : PreservesFiniteLimits (F.sheafifyOfIsOneHypercoverDense J₀ J A) := by
+    apply comp_preservesFiniteLimits
+  exact HasSheafify.mk' _ _ (sheafifyAdjunctionOfIsOneHypercoverDense.{w} F J₀ J A)
 
 end Functor
 
