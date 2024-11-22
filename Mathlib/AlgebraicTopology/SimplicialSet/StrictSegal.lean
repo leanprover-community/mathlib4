@@ -94,9 +94,9 @@ lemma spineToSimplex_mapPath {X Y : SSet.{u}} [StrictSegal X] [StrictSegal Y]
     spineToSimplex (mapPath σ f) = σ.app _ (spineToSimplex f) := by
   apply spineInjective
   ext k
-  · dsimp only [spineEquiv, Equiv.coe_fn_mk, mapPath, spine_arrow]
-    rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
-    simp only [types_comp_apply, spineToSimplex_arrow]
+  dsimp only [spineEquiv, Equiv.coe_fn_mk, mapPath, spine_arrow]
+  rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
+  simp only [types_comp_apply, spineToSimplex_arrow]
 
 /-- If we take the path along the spine of a face of a `spineToSimplex`, the
 common vertices will agree with those of the original path. In particular, the

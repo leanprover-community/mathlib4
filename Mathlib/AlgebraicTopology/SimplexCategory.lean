@@ -599,7 +599,7 @@ lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
       Fin.zero_eta, OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
       mkOfSucc_homToOrderHom_zero, Fin.succAboveOrderEmb_apply,
-      Fin.castSucc_succAbove_castSucc, Fin.succAbove_succ_self ]
+      Fin.castSucc_succAbove_castSucc, Fin.succAbove_succ_self]
     rfl
   · simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, Fin.mk_one,
       OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
