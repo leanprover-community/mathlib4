@@ -213,12 +213,12 @@ then `M` and `N` are linearly disjoint. -/
 theorem of_basis_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
     (H : Function.Injective (Finsupp.linearCombination R fun i : κ × ι ↦ (m i.1 * n i.2 : S))) :
     M.LinearDisjoint N := by
-  let i0 := (finsuppTensorFinsupp' R κ ι).symm
+  let i0 := (finsuppTensorFinsuppWith R κ ι).symm
   let i1 := TensorProduct.congr m.repr n.repr
   let i := mulMap M N ∘ₗ (i0.trans i1.symm).toLinearMap
   have : i = Finsupp.linearCombination R fun i : κ × ι ↦ (m i.1 * n i.2 : S) := by
     ext x
-    simp [i, i0, i1, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
+    simp [i, i0, i1, finsuppTensorFinsuppWith_symm_single_eq_single_one_tmul]
   simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
@@ -353,7 +353,7 @@ theorem linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
   rw [LinearIndependent] at hm hn ⊢
-  let i0 := (finsuppTensorFinsupp' R κ ι).symm
+  let i0 := (finsuppTensorFinsuppWith R κ ι).symm
   let i1 := LinearMap.rTensor (ι →₀ R) (Finsupp.linearCombination R m)
   let i2 := LinearMap.lTensor M (Finsupp.linearCombination R n)
   let i := mulMap M N ∘ₗ i2 ∘ₗ i1 ∘ₗ i0.toLinearMap
@@ -362,7 +362,7 @@ theorem linearIndependent_mul_of_flat_left (H : M.LinearDisjoint N) [Module.Flat
   have h : Function.Injective i := H.injective.comp h2 |>.comp h1 |>.comp i0.injective
   have : i = Finsupp.linearCombination R fun i ↦ (m i.1).1 * (n i.2).1 := by
     ext x
-    simp [i, i0, i1, i2, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
+    simp [i, i0, i1, i2, finsuppTensorFinsuppWith_symm_single_eq_single_one_tmul]
   rwa [this] at h
 
 variable {M N} in
@@ -374,7 +374,7 @@ theorem linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Fla
     {κ ι : Type*} {m : κ → M} {n : ι → N} (hm : LinearIndependent R m)
     (hn : LinearIndependent R n) : LinearIndependent R fun (i : κ × ι) ↦ (m i.1).1 * (n i.2).1 := by
   rw [LinearIndependent] at hm hn ⊢
-  let i0 := (finsuppTensorFinsupp' R κ ι).symm
+  let i0 := (finsuppTensorFinsuppWith R κ ι).symm
   let i1 := LinearMap.lTensor (κ →₀ R) (Finsupp.linearCombination R n)
   let i2 := LinearMap.rTensor N (Finsupp.linearCombination R m)
   let i := mulMap M N ∘ₗ i2 ∘ₗ i1 ∘ₗ i0.toLinearMap
@@ -383,7 +383,7 @@ theorem linearIndependent_mul_of_flat_right (H : M.LinearDisjoint N) [Module.Fla
   have h : Function.Injective i := H.injective.comp h2 |>.comp h1 |>.comp i0.injective
   have : i = Finsupp.linearCombination R fun i ↦ (m i.1).1 * (n i.2).1 := by
     ext x
-    simp [i, i0, i1, i2, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
+    simp [i, i0, i1, i2, finsuppTensorFinsuppWith_symm_single_eq_single_one_tmul]
   rwa [this] at h
 
 variable {M N} in

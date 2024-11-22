@@ -173,7 +173,7 @@ theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
   dsimp [diagonalSucc]
-  erw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
+  erw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsuppWith,
     LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
   erw [lcongr_single]
   rw [TensorProduct.lid_symm_apply, actionDiagonalSucc_hom_apply, finsuppTensorFinsupp_symm_single]
@@ -189,7 +189,7 @@ theorem diagonalSucc_inv_single_single (g : G) (f : Gⁿ) (a b : k) :
     ModuleCat.MonoidalCategory.hom_apply, linearizationTrivialIso_inv_hom_apply,
     linearization_μ_hom, Action.id_hom ((linearization k G).obj _), actionDiagonalSucc_inv_apply,
     ModuleCat.id_apply, LinearEquiv.coe_toLinearMap,
-    finsuppTensorFinsupp'_single_tmul_single k (Action.leftRegular G).V,
+    finsuppTensorFinsuppWith_single_tmul_single k (Action.leftRegular G).V,
     linearization_map_hom_single (actionDiagonalSucc G n).inv (g, f) (a * b)] -/
   change mapDomain (actionDiagonalSucc G n).inv.hom
     (lcongr (Equiv.refl (G × (Fin n → G))) (TensorProduct.lid k k)

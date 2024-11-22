@@ -183,12 +183,12 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 @[simp]
 theorem linearization_μ_hom (X Y : Action (Type u) (MonCat.of G)) :
-    (μ (linearization k G) X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).toLinearMap :=
+    (μ (linearization k G) X Y).hom = (finsuppTensorFinsuppWith k X.V Y.V).toLinearMap :=
   rfl
 
 @[simp]
 theorem linearization_δ_hom (X Y : Action (Type u) (MonCat.of G)) :
-    (δ (linearization k G) X Y).hom = (finsuppTensorFinsupp' k X.V Y.V).symm.toLinearMap :=
+    (δ (linearization k G) X Y).hom = (finsuppTensorFinsuppWith k X.V Y.V).symm.toLinearMap :=
   rfl
 
 @[simp]

@@ -134,20 +134,20 @@ for two types `X` and `Y`.
 monoidal structure on the functor `free R`.) -/
 def μIso (X Y : Type u) :
     (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=
-  (finsuppTensorFinsupp' R _ _).toModuleIso
+  (finsuppTensorFinsuppWith R _ _).toModuleIso
 
 @[simp]
 lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
     (μIso R X Y).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
   dsimp [μIso, freeMk]
-  erw [finsuppTensorFinsupp'_single_tmul_single]
+  erw [finsuppTensorFinsuppWith_single_tmul_single]
   rw [mul_one]
 
 @[simp]
 lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
     (μIso R X Y).inv (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
   dsimp [μIso, freeMk]
-  erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
+  erw [finsuppTensorFinsuppWith_symm_single_eq_single_one_tmul]
 
 end FreeMonoidal
 

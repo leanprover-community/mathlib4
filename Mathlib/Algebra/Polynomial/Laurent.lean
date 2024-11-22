@@ -369,14 +369,14 @@ theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Pro
 
 section Support
 
-theorem support_C_mul_T (a : R) (n : ℤ) : Finsupp'.support (C a * T n) ⊆ {n} := by
+theorem support_C_mul_T (a : R) (n : ℤ) : FinsuppWith.support (C a * T n) ⊆ {n} := by
   -- Porting note: was
   -- simpa only [← single_eq_C_mul_T] using support_single_subset
   rw [← single_eq_C_mul_T]
   exact support_single_subset
 
 theorem support_C_mul_T_of_ne_zero {a : R} (a0 : a ≠ 0) (n : ℤ) :
-    Finsupp'.support (C a * T n) = {n} := by
+    FinsuppWith.support (C a * T n) = {n} := by
   rw [← single_eq_C_mul_T]
   exact support_single_ne_zero _ a0
 
@@ -431,7 +431,7 @@ section ExactDegrees
 theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n := by
   rw [degree]
   -- Porting note: was `convert Finset.max_singleton`
-  have : Finsupp'.support (C a * T n) = {n} := by
+  have : FinsuppWith.support (C a * T n) = {n} := by
     refine support_eq_singleton.mpr ?_
     rw [← single_eq_C_mul_T]
     simp only [single_eq_same, a0, Ne, not_false_iff, eq_self_iff_true, and_self_iff]

@@ -328,7 +328,7 @@ theorem mem_iSup_iff_exists_dfinsupp (p : ι → Submodule R N) (x : N) :
 /-- A variant of `Submodule.mem_iSup_iff_exists_dfinsupp` with the RHS fully unfolded.
 
 See also `Submodule.mem_iSup_iff_exists_finsupp`. -/
-theorem mem_iSup_iff_exists_dfinsupp' (p : ι → Submodule R N) [∀ (i) (x : p i), Decidable (x ≠ 0)]
+theorem mem_iSup_iff_exists_dFinsuppWith (p : ι → Submodule R N) [∀ (i) (x : p i), Decidable (x ≠ 0)]
     (x : N) : x ∈ iSup p ↔ ∃ f : Π₀ i, p i, (f.sum fun _ xi => ↑xi) = x := by
   rw [mem_iSup_iff_exists_dfinsupp]
   simp_rw [DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply,
@@ -346,7 +346,7 @@ end DecidableEq
 lemma mem_iSup_iff_exists_finsupp (p : ι → Submodule R N) (x : N) :
     x ∈ iSup p ↔ ∃ (f : ι →₀ N), (∀ i, f i ∈ p i) ∧ (f.sum fun _i xi ↦ xi) = x := by
   classical
-  rw [mem_iSup_iff_exists_dfinsupp']
+  rw [mem_iSup_iff_exists_dFinsuppWith]
   refine ⟨fun ⟨f, hf⟩ ↦ ⟨⟨f.support, fun i ↦ (f i : N), by simp⟩, by simp, hf⟩, ?_⟩
   rintro ⟨f, hf, rfl⟩
   refine ⟨DFinsupp.mk f.support fun i ↦ ⟨f i, hf i⟩, Finset.sum_congr ?_ fun i hi ↦ ?_⟩
@@ -356,7 +356,7 @@ lemma mem_iSup_iff_exists_finsupp (p : ι → Submodule R N) (x : N) :
 theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N) (a : N) :
     (a ∈ ⨆ i ∈ s, p i) ↔ ∃ μ : ∀ i, p i, (∑ i ∈ s, (μ i : N)) = a := by
   classical
-    rw [Submodule.mem_iSup_iff_exists_dfinsupp']
+    rw [Submodule.mem_iSup_iff_exists_dFinsuppWith]
     constructor <;> rintro ⟨μ, hμ⟩
     · use fun i => ⟨μ i, (iSup_const_le : _ ≤ p i) (coe_mem <| μ i)⟩
       rw [← hμ]

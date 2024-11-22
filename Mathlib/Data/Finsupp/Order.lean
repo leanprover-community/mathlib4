@@ -79,9 +79,9 @@ instance preorder : Preorder (ι →₀ α) :=
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
 
-lemma coe_mono : Monotone (Finsupp'.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+lemma coe_mono : Monotone (FinsuppWith.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
 
-lemma coe_strictMono : Monotone (Finsupp'.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+lemma coe_strictMono : Monotone (FinsuppWith.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
 
 @[simp] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
   classical exact Pi.single_le_single
