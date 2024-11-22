@@ -223,6 +223,8 @@ theorem coe_QuantaleHom (f : α ≃*o β) : ((f : α →ₙ*q β) : α → β) =
 theorem toQuantaleHom_injective : Injective (toQuantaleHom : _ → α →ₙ*q β) := fun f g h =>
   ext <| by convert DFunLike.ext_iff.1 h using 0
 
+/- Todo: basically proving that QuantaleHoms form a category (composition and identity) -/
+
 end QuantaleHom
 
 end OrderMonoidIso
