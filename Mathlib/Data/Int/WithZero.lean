@@ -26,6 +26,8 @@ the morphism `WithZeroMultInt.toNNReal`.
 WithZero, multiplicative, nnreal
 -/
 
+assert_not_exists Finset
+
 noncomputable section
 
 open scoped NNReal

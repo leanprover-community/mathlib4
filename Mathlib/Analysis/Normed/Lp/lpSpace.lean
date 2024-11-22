@@ -183,7 +183,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
     have hf' := hfq.summable hq
     refine .of_norm_bounded_eventually _ hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } ?_ _ ?_)
     · have H : { x : α | 1 ≤ ‖f x‖ ^ q.toReal }.Finite := by
-        simpa using eventually_lt_of_tendsto_lt (by norm_num) hf'.tendsto_cofinite_zero
+        simpa using hf'.tendsto_cofinite_zero.eventually_lt_const (by norm_num)
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
     · show ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
       intro i hi

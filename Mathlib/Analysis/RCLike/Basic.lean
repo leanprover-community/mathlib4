@@ -469,7 +469,7 @@ theorem div_im (z w : K) : im (z / w) = im z * re w / normSq w - re z * im w / n
 
 @[rclike_simps] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): was `simp`
 theorem conj_inv (x : K) : conj x⁻¹ = (conj x)⁻¹ :=
-  star_inv' _
+  star_inv₀ _
 
 lemma conj_div (x y : K) : conj (x / y) = conj x / conj y := map_div' conj conj_inv _ _
 
