@@ -761,17 +761,16 @@ variable [NormedAddCommGroup G] [NormedSpace ℝ G]
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
 def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemperateGrowth) :
-    𝓢(D, E) →L[ℝ] 𝓢(D, G) :=
+    𝓢(D, E) →L[ℝ] 𝓢(D, G) := by
   -- Todo (after port): generalize to `B : E →L[𝕜] F →L[𝕜] G` and `𝕜`-linear
-  mkCLM
-  (fun f x => B (f x) (g x))
-  (fun _ _ _ => by
-    simp only [map_add, add_left_inj, Pi.add_apply, eq_self_iff_true,
-      ContinuousLinearMap.add_apply])
-  (fun _ _ _ => by
-    simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-      RingHom.id_apply])
-  (fun f => (B.isBoundedBilinearMap.contDiff.restrict_scalars ℝ).comp (f.smooth'.prod hg.1)) <| by
+  refine mkCLM (fun f x => B (f x) (g x))
+    (fun _ _ _ => by
+      simp only [map_add, add_left_inj, Pi.add_apply, eq_self_iff_true,
+        ContinuousLinearMap.add_apply])
+    (fun _ _ _ => by
+      simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+        RingHom.id_apply])
+    (fun f => (B.isBoundedBilinearMap.contDiff.restrict_scalars ℝ).comp (f.smooth'.prod hg.1)) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
   use
@@ -821,10 +820,10 @@ variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
-    (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) :=
-  mkCLM (fun f x => f (g x))
+    (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) := by
+  refine mkCLM (fun f x => f (g x))
     (fun _ _ _ => by simp only [add_left_inj, Pi.add_apply, eq_self_iff_true]) (fun _ _ _ => rfl)
-    (fun f => f.smooth'.comp hg.1) <| by
+    (fun f => f.smooth'.comp hg.1) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
   rcases hg_upper with ⟨kg, Cg, hg_upper'⟩
@@ -1067,25 +1066,22 @@ lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
 
 variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
-def integralCLM : 𝓢(D, V) →L[𝕜] V :=
-  mkCLMtoNormedSpace (∫ x, · x ∂μ)
-    (fun f g ↦ by
-      exact integral_add f.integrable g.integrable)
-    (integral_smul · ·)
-    (by
-      rcases hμ.exists_integrable with ⟨n, h⟩
-      let m := (n, 0)
-      use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ
-      refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
-      have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
-          (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
-        intro x
-        rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff₀' (by positivity), rpow_natCast]
-        simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
-      apply (integral_mono (by simpa using f.integrable_pow_mul μ 0) _ h').trans
-      · rw [integral_mul_right, ← mul_assoc, mul_comm (2 ^ n)]
-        rfl
-      apply h.mul_const)
+def integralCLM : 𝓢(D, V) →L[𝕜] V := by
+  refine mkCLMtoNormedSpace (∫ x, · x ∂μ)
+    (fun f g ↦ integral_add f.integrable g.integrable) (integral_smul · ·) ?_
+  rcases hμ.exists_integrable with ⟨n, h⟩
+  let m := (n, 0)
+  use Finset.Iic m, 2 ^ n * ∫ x : D, (1 + ‖x‖) ^ (- (n : ℝ)) ∂μ
+  refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
+  have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
+      (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
+    intro x
+    rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff₀' (by positivity), rpow_natCast]
+    simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
+  apply (integral_mono (by simpa using f.integrable_pow_mul μ 0) _ h').trans
+  · rw [integral_mul_right, ← mul_assoc, mul_comm (2 ^ n)]
+    rfl
+  apply h.mul_const
 
 variable (𝕜) in
 @[simp]

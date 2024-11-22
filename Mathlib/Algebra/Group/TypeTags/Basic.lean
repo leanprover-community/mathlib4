@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Data.Finite.Defs
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Data.FunLike.Basic
+import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Set
+import Mathlib.Util.AssertExists
 import Mathlib.Logic.Nontrivial.Basic
 
 /-!
@@ -32,6 +36,8 @@ This file is similar to `Order.Synonym`.
 
 assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
+assert_not_exists MonoidHom
+assert_not_exists Finite
 
 universe u v
 
@@ -135,16 +141,6 @@ instance [Inhabited α] : Inhabited (Multiplicative α) :=
 
 instance [Unique α] : Unique (Additive α) := toMul.unique
 instance [Unique α] : Unique (Multiplicative α) := toAdd.unique
-
-instance [Finite α] : Finite (Additive α) :=
-  Finite.of_equiv α (by rfl)
-
-instance [Finite α] : Finite (Multiplicative α) :=
-  Finite.of_equiv α (by rfl)
-
-instance [h : Infinite α] : Infinite (Additive α) := h
-
-instance [h : Infinite α] : Infinite (Multiplicative α) := h
 
 instance [h : DecidableEq α] : DecidableEq (Multiplicative α) := h
 
@@ -430,110 +426,6 @@ instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
 
 instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
-
-/-- Reinterpret `α →+ β` as `Multiplicative α →* Multiplicative β`. -/
-@[simps]
-def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
-    (α →+ β) ≃ (Multiplicative α →* Multiplicative β) where
-  toFun f := {
-    toFun := fun a => ofAdd (f (toAdd a))
-    map_mul' := f.map_add
-    map_one' := f.map_zero
-  }
-  invFun f := {
-    toFun := fun a => toAdd (f (ofAdd a))
-    map_add' := f.map_mul
-    map_zero' := f.map_one
-  }
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-@[simp, norm_cast]
-lemma AddMonoidHom.coe_toMultiplicative [AddZeroClass α] [AddZeroClass β] (f : α →+ β) :
-    ⇑(toMultiplicative f) = ofAdd ∘ f ∘ toAdd := rfl
-
-/-- Reinterpret `α →* β` as `Additive α →+ Additive β`. -/
-@[simps]
-def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
-    (α →* β) ≃ (Additive α →+ Additive β) where
-  toFun f := {
-    toFun := fun a => ofMul (f (toMul a))
-    map_add' := f.map_mul
-    map_zero' := f.map_one
-  }
-  invFun f := {
-    toFun := fun a => toMul (f (ofMul a))
-    map_mul' := f.map_add
-    map_one' := f.map_zero
-  }
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-@[simp, norm_cast]
-lemma MonoidHom.coe_toMultiplicative [MulOneClass α] [MulOneClass β] (f : α →* β) :
-    ⇑(toAdditive f) = ofMul ∘ f ∘ toMul := rfl
-
-/-- Reinterpret `Additive α →+ β` as `α →* Multiplicative β`. -/
-@[simps]
-def AddMonoidHom.toMultiplicative' [MulOneClass α] [AddZeroClass β] :
-    (Additive α →+ β) ≃ (α →* Multiplicative β) where
-  toFun f := {
-    toFun := fun a => ofAdd (f (ofMul a))
-    map_mul' := f.map_add
-    map_one' := f.map_zero
-  }
-  invFun f := {
-    toFun := fun a => toAdd (f (toMul a))
-    map_add' := f.map_mul
-    map_zero' := f.map_one
-  }
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-@[simp, norm_cast]
-lemma AddMonoidHom.coe_toMultiplicative' [MulOneClass α] [AddZeroClass β] (f : Additive α →+ β) :
-    ⇑(toMultiplicative' f) = ofAdd ∘ f ∘ ofMul := rfl
-
-/-- Reinterpret `α →* Multiplicative β` as `Additive α →+ β`. -/
-@[simps!]
-def MonoidHom.toAdditive' [MulOneClass α] [AddZeroClass β] :
-    (α →* Multiplicative β) ≃ (Additive α →+ β) :=
-  AddMonoidHom.toMultiplicative'.symm
-
-@[simp, norm_cast]
-lemma MonoidHom.coe_toAdditive' [MulOneClass α] [AddZeroClass β] (f : α →* Multiplicative β) :
-    ⇑(toAdditive' f) = toAdd ∘ f ∘ toMul := rfl
-
-/-- Reinterpret `α →+ Additive β` as `Multiplicative α →* β`. -/
-@[simps]
-def AddMonoidHom.toMultiplicative'' [AddZeroClass α] [MulOneClass β] :
-    (α →+ Additive β) ≃ (Multiplicative α →* β) where
-  toFun f := {
-    toFun := fun a => toMul (f (toAdd a))
-    map_mul' := f.map_add
-    map_one' := f.map_zero
-  }
-  invFun f := {
-    toFun := fun a => ofMul (f (ofAdd a))
-    map_add' := f.map_mul
-    map_zero' := f.map_one
-  }
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-@[simp, norm_cast]
-lemma AddMonoidHom.coe_toMultiplicative'' [AddZeroClass α] [MulOneClass β] (f : α →+ Additive β) :
-    ⇑(toMultiplicative'' f) = toMul ∘ f ∘ toAdd := rfl
-
-/-- Reinterpret `Multiplicative α →* β` as `α →+ Additive β`. -/
-@[simps!]
-def MonoidHom.toAdditive'' [AddZeroClass α] [MulOneClass β] :
-    (Multiplicative α →* β) ≃ (α →+ Additive β) :=
-  AddMonoidHom.toMultiplicative''.symm
-
-@[simp, norm_cast]
-lemma MonoidHom.coe_toAdditive'' [AddZeroClass α] [MulOneClass β] (f : Multiplicative α →* β) :
-    ⇑(toAdditive'' f) = ofMul ∘ f ∘ ofAdd := rfl
 
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.

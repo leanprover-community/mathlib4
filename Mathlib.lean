@@ -164,6 +164,7 @@ import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.IntermediateField
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.Algebra.CharP.LinearMaps
 import Mathlib.Algebra.CharP.LocalRing
 import Mathlib.Algebra.CharP.MixedCharZero
 import Mathlib.Algebra.CharP.Pi
@@ -298,6 +299,9 @@ import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
 import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 import Mathlib.Algebra.Group.Subgroup.Order
@@ -318,7 +322,9 @@ import Mathlib.Algebra.Group.Subsemigroup.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Group.Translate
-import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Group.UniqueProds.Basic
 import Mathlib.Algebra.Group.UniqueProds.VectorSpace
@@ -966,6 +972,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Module
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.TensorProduct
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
+import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
@@ -1097,6 +1104,7 @@ import Mathlib.Analysis.Calculus.Conformal.InnerProduct
 import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
@@ -1126,7 +1134,6 @@ import Mathlib.Analysis.Calculus.Deriv.ZPow
 import Mathlib.Analysis.Calculus.DiffContOnCl
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.FDeriv.AnalyticIt
 import Mathlib.Analysis.Calculus.FDeriv.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
@@ -1173,6 +1180,7 @@ import Mathlib.Analysis.Calculus.SmoothSeries
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.Calculus.Taylor
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+import Mathlib.Analysis.Calculus.VectorField
 import Mathlib.Analysis.Complex.AbelLimit
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.Complex.Angle
@@ -2940,6 +2948,7 @@ import Mathlib.FieldTheory.IsAlgClosed.Classification
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.FieldTheory.IsPerfectClosure
 import Mathlib.FieldTheory.IsSepClosed
+import Mathlib.FieldTheory.JacobsonNoether
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.KummerExtension
 import Mathlib.FieldTheory.Laurent
@@ -3390,6 +3399,7 @@ import Mathlib.LinearAlgebra.Reflection
 import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.RootSystem.Defs
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 import Mathlib.LinearAlgebra.RootSystem.Hom
 import Mathlib.LinearAlgebra.RootSystem.OfBilinear
 import Mathlib.LinearAlgebra.RootSystem.RootPairingCat
@@ -3765,6 +3775,7 @@ import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 import Mathlib.NumberTheory.LSeries.Nonvanishing
 import Mathlib.NumberTheory.LSeries.Positivity
+import Mathlib.NumberTheory.LSeries.PrimesInAP
 import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.LSeries.ZMod
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
@@ -4192,6 +4203,7 @@ import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Discriminant
+import Mathlib.RingTheory.DividedPowers.Basic
 import Mathlib.RingTheory.DualNumber
 import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EssentialFiniteness

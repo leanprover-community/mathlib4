@@ -591,10 +591,10 @@ open Real Filter
 theorem tendsto_one_plus_div_rpow_exp (t : ℝ) :
     Tendsto (fun x : ℝ => (1 + t / x) ^ x) atTop (𝓝 (exp t)) := by
   apply ((Real.continuous_exp.tendsto _).comp (tendsto_mul_log_one_plus_div_atTop t)).congr' _
-  have h₁ : (1 : ℝ) / 2 < 1 := by linarith
+  have h₁ : (1 : ℝ) / 2 < 1 := by norm_num
   have h₂ : Tendsto (fun x : ℝ => 1 + t / x) atTop (𝓝 1) := by
     simpa using (tendsto_inv_atTop_zero.const_mul t).const_add 1
-  refine (eventually_ge_of_tendsto_gt h₁ h₂).mono fun x hx => ?_
+  refine (h₂.eventually_const_le h₁).mono fun x hx => ?_
   have hx' : 0 < 1 + t / x := by linarith
   simp [mul_comm x, exp_mul, exp_log hx']
 

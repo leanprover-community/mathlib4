@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
+import Mathlib.Data.Finite.Defs
 
 /-!
 # Finite types

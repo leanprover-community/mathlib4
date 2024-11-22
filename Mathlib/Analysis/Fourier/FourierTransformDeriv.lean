@@ -9,7 +9,7 @@ import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
-import Mathlib.Analysis.Calculus.FDeriv.AnalyticIt
+import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
 
 /-!
 # Derivatives of the Fourier transform
