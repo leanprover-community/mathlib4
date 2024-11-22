@@ -54,8 +54,7 @@ lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
   · intro _ _ _ _ _
     apply hA
 
-lemma IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimodular)
-    (i : m) (j : n) :
+lemma IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimodular) (i : m) (j : n) :
     A i j ∈ Set.range SignType.cast := by
   let f : Fin 1 → m := (fun _ => i)
   let g : Fin 1 → n := (fun _ => j)
@@ -84,23 +83,19 @@ lemma IsTotallyUnimodular.reindex {A : Matrix m n R} (eX : m ≃ m') (eY : n ≃
     IsTotallyUnimodular (A.reindex eX eY) :=
   hA.submatrix _ _
 
-lemma reindex_isTotallyUnimodular (A : Matrix m n R) (eX : m ≃ m') (eY : n ≃ n') :
-    IsTotallyUnimodular (A.reindex eX eY) ↔ A.IsTotallyUnimodular := by
+lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃ n') :
+    IsTotallyUnimodular (A.reindex em en) ↔ A.IsTotallyUnimodular := by
   rw [isTotallyUnimodular_iff, isTotallyUnimodular_iff]
   constructor <;> intro hA k f g
-  · simpa [submatrix] using hA k (eX ∘ f) (eY ∘ g)
-  · simpa [submatrix] using hA k (eX.symm ∘ f) (eY.symm ∘ g)
+  · simpa [submatrix] using hA k (em ∘ f) (en ∘ g)
+  · simpa [submatrix] using hA k (em.symm ∘ f) (en.symm ∘ g)
 
 -- TODO: move
-lemma neg_one_pow_mem_signType_range {R : Type*} [CommRing R] (n : ℕ) {a}
-    (ha : a ∈ Set.range SignType.cast) :
+lemma neg_one_pow_mem_signType_range (n : ℕ) {a : R} (ha : a ∈ Set.range SignType.cast) :
     (-1 : R) ^ n * a ∈ Set.range SignType.cast := by
   simp only [SignType.range_eq, SignType.zero_eq_zero, SignType.coe_zero, SignType.neg_eq_neg_one,
-    SignType.coe_neg, SignType.coe_one, SignType.pos_eq_one, Set.mem_insert_iff,
-    Set.mem_singleton_iff] at ha ⊢
-  obtain (ha | ha | ha) := ha <;>
-  obtain (hn | hn) := Nat.even_or_odd n <;>
-  simp [ha, hn]
+    SignType.coe_one, SignType.pos_eq_one, Set.mem_insert_iff, Set.mem_singleton_iff] at ha ⊢
+  obtain (ha | ha | ha) := ha <;> obtain (hn | hn) := Nat.even_or_odd n <;> simp [ha, hn]
 
 /--
 If `A` is totally unimodular and each row of B is all zeros except for at most a single 1,
@@ -114,32 +109,32 @@ lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B
   induction k with
   | zero => exact ⟨1, by simp⟩
   | succ k ih =>
-      by_cases h : ∃ i : Fin (k + 1), (f i).isRight
-      · simp only [Sum.isRight_iff] at h
-        obtain ⟨i, j, h⟩ := h
-        have h' := det_succ_row ((A.fromRows B).submatrix f g) i
-        simp only [submatrix_apply, h, fromRows_apply_inr] at h'
-        obtain (hj | ⟨j', hj'⟩) := hB j
-        · use 0
-          simpa [hj] using h'.symm
-        · simp only [hj', Function.update_apply] at h'
-          by_cases hj'' : ∃ x, g x = j'
-          · obtain ⟨x, rfl⟩ := hj''
-            simp only [Nat.succ_eq_add_one, hg.eq_iff, Pi.zero_apply, mul_ite, mul_one, mul_zero,
-              submatrix_submatrix, ite_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ,
-              ↓reduceIte] at h'
-            rw [h']
-            refine neg_one_pow_mem_signType_range _ ?_
-            exact ih _ _ (hf.comp Fin.succAbove_right_injective)
-              (hg.comp Fin.succAbove_right_injective)
-          · simp only [not_exists] at hj''
-            use 0
-            simpa [hj''] using h'.symm
-      · simp only [not_exists, Bool.not_eq_true, Sum.isRight_eq_false, Sum.isLeft_iff] at h
-        choose f' hf' using h
-        rw [isTotallyUnimodular_iff] at hA
-        simp only [funext hf']
-        exact hA (k + 1) f' g
+    by_cases hfr : ∃ i : Fin (k + 1), (f i).isRight
+    · simp only [Sum.isRight_iff] at hfr
+      obtain ⟨i, j, hfi⟩ := hfr
+      have hAB := det_succ_row ((A.fromRows B).submatrix f g) i
+      simp only [submatrix_apply, hfi, fromRows_apply_inr] at hAB
+      obtain (hj | ⟨j', hj'⟩) := hB j
+      · use 0
+        simpa [hj] using hAB.symm
+      · simp only [hj', Function.update_apply] at hAB
+        by_cases hj'' : ∃ x, g x = j'
+        · obtain ⟨x, rfl⟩ := hj''
+          simp only [Nat.succ_eq_add_one, hg.eq_iff, Pi.zero_apply, mul_ite, mul_one, mul_zero,
+            submatrix_submatrix, ite_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ] at hAB
+          rw [hAB]
+          apply neg_one_pow_mem_signType_range
+          exact ih _ _
+            (hf.comp Fin.succAbove_right_injective)
+            (hg.comp Fin.succAbove_right_injective)
+        · simp only [not_exists] at hj''
+          use 0
+          simpa [hj''] using hAB.symm
+    · simp only [not_exists, Bool.not_eq_true, Sum.isRight_eq_false, Sum.isLeft_iff] at hfr
+      choose f' hf' using hfr
+      rw [isTotallyUnimodular_iff] at hA
+      simp only [funext hf']
+      exact hA (k + 1) f' g
 
 /--
 If `A` is totally unimodular and each row of B is all zeros except for at most a single 1,
@@ -154,8 +149,6 @@ lemma fromRows_one_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     (fromRows A (1 : Matrix n n R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
   fromRows_isTotallyUnimodular_iff_rows <| fun i ↦ Or.inr
     ⟨i, funext fun j ↦ by simp [one_apply, Function.update_apply, eq_comm]⟩
-
-alias ⟨_, IsTotallyUnimodular.fromRows_one⟩ := fromRows_one_isTotallyUnimodular_iff
 
 lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) {m' : Type*} :
     (fromRows A (row m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
