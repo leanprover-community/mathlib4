@@ -33,4 +33,4 @@ jobs:
         ZULIP_SITE: https://leanprover.zulipchat.com
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "delegated" #"$GITHUB_TOKEN"
+        python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "delegated" "${{ github.event.issue.number }}" #"$GITHUB_TOKEN"

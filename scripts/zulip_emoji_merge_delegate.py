@@ -16,6 +16,7 @@ pr_number = sys.argv[5]
 #GITHUB_TOKEN = sys.argv[4]
 
 print(f"LABEL: '{LABEL}'")
+print(f"pr_number: '{pr_number}'")
 
 # Initialize Zulip client
 client = zulip.Client(
@@ -35,8 +36,10 @@ response = client.get_messages({
 print(f"response: '{response}'")
 
 messages = response['messages']
+pr_pattern = re.compile(r'https://github\.com/leanprover-community/mathlib4/pull/' +  + re.escape(pr_number))
 #pr_pattern = re.compile(r'https://github\.com/leanprover-community/mathlib4/pull/(\d+)')
-pr_pattern = re.compile(r'https://github.com/leanprover-community/mathlib4/pull/19367')
+#pr_pattern = re.compile(r'https://github.com/leanprover-community/mathlib4/pull/19367')
+print(f"pr_pattern: '{pr_pattern}'")
 
 for message in messages:
     content = message['content']
