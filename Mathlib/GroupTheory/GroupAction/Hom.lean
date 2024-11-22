@@ -59,7 +59,7 @@ variable (Z : Type*) [SMul P Z]
 /-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
 a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where
   /-- The underlying function. -/
@@ -358,7 +358,7 @@ abbrev DistribMulActionHomClass (F : Type*) (M : outParam Type*)
 
 namespace DistribMulActionHom
 
-/- Porting note (#11215): TODO decide whether the next two instances should be removed
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
 -- instance coe : Coe (A →+[M] B) (A →+ B) :=
 --   ⟨toAddMonoidHom⟩
@@ -549,7 +549,7 @@ variable (T : Type*) [Semiring T] [MulSemiringAction P T]
 -- variable [AddMonoid N'] [DistribMulAction S N']
 
 /-- Equivariant ring homomorphisms. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure MulSemiringActionHom extends R →ₑ+[φ] S, R →+* S
 
@@ -600,7 +600,7 @@ abbrev MulSemiringActionHomClass
 
 namespace MulSemiringActionHom
 
-/- Porting note (#11215): TODO decide whether the next two instances should be removed
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO decide whether the next two instances should be removed
 Coercion is already handled by all the HomClass constructions I believe -/
 -- @[coe]
 -- instance coe : Coe (R →+*[M] S) (R →+* S) :=

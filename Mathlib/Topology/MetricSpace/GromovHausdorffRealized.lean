@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # The Gromov-Hausdorff distance is realized
@@ -435,17 +435,17 @@ def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
   dist_self _ := candidates_refl (optimalGHDist_mem_candidatesB X Y)
   dist_comm _ _ := candidates_symm (optimalGHDist_mem_candidatesB X Y)
   dist_triangle _ _ _ := candidates_triangle (optimalGHDist_mem_candidatesB X Y)
-  -- Porting note (#10888): added proof for `edist_dist`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `edist_dist`
   edist_dist x y := by
     simp only
     congr
-    simp only [max, left_eq_sup]
+    simp only [left_eq_sup]
     exact candidates_nonneg (optimalGHDist_mem_candidatesB X Y)
 
 attribute [local instance] premetricOptimalGHDist
 
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 def OptimalGHCoupling : Type _ :=
   @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
 
