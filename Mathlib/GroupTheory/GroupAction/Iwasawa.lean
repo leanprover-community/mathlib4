@@ -31,7 +31,7 @@ and `G` is nontrivial and perfect, then `G` is simple.
 
 ## TODO
 
-Additivize. The issue is that it requires to additivize `commutator` 
+Additivize. The issue is that it requires to additivize `commutator`
 (which, moreover, lives in the root namespace)
 -/
 
