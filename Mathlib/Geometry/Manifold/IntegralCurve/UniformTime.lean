@@ -80,6 +80,9 @@ lemma isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold
     rw [abs_lt] at this
     exact Ioo_mem_nhds this.1 this.2
 
+/-- The existence of a global integral curve is equivalent to the existence of a family of local
+  integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that each `γ a` is
+  defined on `Ioo (-a) a`. -/
 lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
     (∃ γ, γ 0 = x ∧ IsIntegralCurve γ v) ↔
