@@ -1412,7 +1412,8 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   exact extChartAt_image_nhd_mem_nhds_of_boundaryless hs1
 
 /-- Riesz's theorem applied to manifolds: Locally compact manifolds must be modelled on
-  finite-dimensional spaces. -/
+  finite-dimensional spaces. This is the converse to
+  `Manifold.locallyCompact_of_finiteDimensional` -/
 theorem FiniteDimensional.of_locallyCompact_manifold [CompleteSpace 𝕜]
     (I : ModelWithCorners 𝕜 E H) [I.Boundaryless]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [Inhabited M] [LocallyCompactSpace M] :
