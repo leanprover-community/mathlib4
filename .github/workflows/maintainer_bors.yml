@@ -84,7 +84,6 @@ jobs:
           curl --request DELETE \
             --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/awaiting-author" \
             --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
-            # comment uses ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
