@@ -1758,8 +1758,8 @@ theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s =
     (hl : #sᶜ = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
     (curryFinFinset R M₂ M' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
+  -- Porting note: `rw` fails
   refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans ?_
-  -- `rw` fails
   rw [LinearEquiv.symm_apply_apply]
 
 @[simp]

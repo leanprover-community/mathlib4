@@ -109,7 +109,6 @@ theorem mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=
 theorem mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
   Iff.rfl
 
--- @[simp] -- Porting note: not in simpNF
 theorem coe_nonempty (s : NonemptyInterval α) : (s : Set α).Nonempty :=
   nonempty_Icc.2 s.fst_le_snd
 

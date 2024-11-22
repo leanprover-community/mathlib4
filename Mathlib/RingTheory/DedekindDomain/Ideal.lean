@@ -129,7 +129,6 @@ open Submodule Submodule.IsPrincipal
 theorem spanSingleton_inv (x : K) : (spanSingleton R₁⁰ x)⁻¹ = spanSingleton _ x⁻¹ :=
   one_div_spanSingleton x
 
--- @[simp] -- Porting note: not in simpNF form
 theorem spanSingleton_div_spanSingleton (x y : K) :
     spanSingleton R₁⁰ x / spanSingleton R₁⁰ y = spanSingleton R₁⁰ (x / y) := by
   rw [div_spanSingleton, mul_comm, spanSingleton_mul_spanSingleton, div_eq_mul_inv]
