@@ -63,7 +63,7 @@ for message in messages:
             "message_id": message['id'],
             "emoji_name": "peace_sign"
         })
-        print(result)
+        print(f"result: '{result}'")
         print('Removing bors')
         client.remove_reaction({
             "message_id": message['id'],
