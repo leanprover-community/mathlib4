@@ -84,10 +84,11 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some v := bad then
     let mut propogate := false
     if let some var := env.find? declId.getId then
-      let type ← liftTermElabM (Meta.inferType var.type)
-      if type != .sort .zero then
+      if (← liftTermElabM <| Meta.isProp var.type) then
         propogate := true
         findDefEqAbuseRef.modify (NameSet.insert · declId.getId)
+    else
+      logWarningAt declId m!"Couldn't find {declId} in environment"
     logWarningAt declId m!"'{declId}' relies on the definition of '{v}' (propogating: {propogate})"
 
 initialize addLinter findDefEqAbuseLinter
