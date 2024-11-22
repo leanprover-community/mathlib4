@@ -562,7 +562,7 @@ lemma index_antitone (h : H ≤ K) [H.FiniteIndex] : K.index ≤ H.index :=
   Nat.le_of_dvd (Nat.zero_lt_of_ne_zero FiniteIndex.finiteIndex) (index_dvd_of_le h)
 
 @[to_additive (attr := gcongr)]
-lemma index_strictAnti (h : H < K) [hf : H.FiniteIndex] : K.index < H.index := by
+lemma index_strictAnti (h : H < K) [H.FiniteIndex] : K.index < H.index := by
   have h0 : K.index ≠ 0 := (finiteIndex_of_le h.le).finiteIndex
   apply lt_of_le_of_ne (index_antitone h.le)
   rw [← relindex_mul_index h.le, Ne, eq_comm, mul_eq_right₀ h0, relindex_eq_one]
