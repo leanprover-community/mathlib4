@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Alex Brodbelt
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.NNReal.Basic
 import Mathlib.Algebra.GeomSum
-import Mathlib.Tactic.Linarith
+import Mathlib.Data.NNReal.Basic
 
 /-!
 # IMO 1982 Q3
