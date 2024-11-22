@@ -1413,8 +1413,8 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
     LocallyCompactSpace.local_compact_nhds x (extChartAt I x).source (extChartAt_source_mem_nhds x)
   have : IsCompact <| (extChartAt I x) '' s :=
     hcom.image_of_continuousOn <| ContinuousOn.mono (continuousOn_extChartAt x) hss
-  apply this.locallyCompactSpace_of_mem_nhds_of_addGroup (x := extChartAt I x x)
-  exact extChartAt_image_nhd_mem_nhds_of_boundaryless hmem
+  exact this.locallyCompactSpace_of_mem_nhds_of_addGroup <|
+    extChartAt_image_nhd_mem_nhds_of_boundaryless hmem
 
 /-- Riesz's theorem applied to manifolds: A locally compact manifolds must be modelled on a
   finite-dimensional space. This is the converse to
