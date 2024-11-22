@@ -88,7 +88,7 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
 /-- For any `σ: X ⟶ Y` between `StrictSegal` simplicial sets, `spineToSimplex`
-commutes with `mapPath σ f`. -/
+commutes with `mapPath σ`. -/
 lemma spineToSimplex_mapPath {X Y : SSet.{u}} [StrictSegal X] [StrictSegal Y]
     {n : ℕ} (σ : X ⟶ Y) (f : Path X (n + 1)) :
     spineToSimplex (mapPath σ f) = σ.app _ (spineToSimplex f) := by
@@ -153,6 +153,7 @@ lemma spine_δ_arrow_eq (f : Path X (n + 1)) {i : Fin (n + 2)} {j : Fin n}
   rw [← FunctorToTypes.map_comp_apply, ← op_comp]
   rw [mkOfSucc_δ_eq h, spineToSimplex_edge]
 
+/-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
 instance : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
@@ -261,6 +262,8 @@ noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (
     · intro i hi
       apply ComposableArrows.mkOfObjOfMapSucc_map_succ
 
+/-- By virtue of satisfying the `StrictSegal` condition, the nerve of a
+category is a `Quasicategory`. -/
 instance : Quasicategory (nerve C) := inferInstance
 
 end Nerve

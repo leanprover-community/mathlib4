@@ -105,8 +105,8 @@ lemma mapPath_interval {X Y : SSet.{u}} {n : ℕ} (σ : X ⟶ Y) (f : X.Path n)
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`.-/
 def idSpine (n : ℕ) : Path Δ[n] n := spine Δ[n] n (standardSimplex.idSimplex n)
 
-/-- Any inner horn, `Λ[n, i]`, contains the spine of the unique non-degenerate
-`n`-simplex in `Δ[n]`.-/
+/-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
+in `Δ[n]`.-/
 @[simps]
 def spineHorn {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
