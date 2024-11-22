@@ -278,14 +278,14 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
     HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed (μ : Measure Ω)
   have room₁ : (μ : Measure Ω) F < (μ : Measure Ω) F + ε / 2 :=
     ENNReal.lt_add_right (measure_lt_top (μ : Measure Ω) F).ne ε_pos'
-  obtain ⟨M, hM⟩ := eventually_atTop.mp <| eventually_lt_of_tendsto_lt room₁ key₁
+  obtain ⟨M, hM⟩ := eventually_atTop.mp <| key₁.eventually_lt_const room₁
   have key₂ := FiniteMeasure.tendsto_iff_forall_lintegral_tendsto.mp μs_lim (fs M)
   have room₂ :
     (lintegral (μ : Measure Ω) fun a ↦ fs M a) <
       (lintegral (μ : Measure Ω) fun a ↦ fs M a) + ε / 2 :=
     ENNReal.lt_add_right (ne_of_lt ((fs M).lintegral_lt_top_of_nnreal _)) ε_pos'
-  have ev_near := Eventually.mono (eventually_lt_of_tendsto_lt room₂ key₂) fun n ↦ le_of_lt
-  have ev_near' := Eventually.mono ev_near
+  have ev_near := key₂.eventually_le_const room₂
+  have ev_near' := ev_near.mono
     (fun n ↦ le_trans (HasOuterApproxClosed.measure_le_lintegral F_closed (μs n) M))
   apply (Filter.limsup_le_limsup ev_near').trans
   rw [limsup_const]
