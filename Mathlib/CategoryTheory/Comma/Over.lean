@@ -332,7 +332,7 @@ def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
   map f := Over.homMk (F.map f.left)
     (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
 
-lemma postComp_eq {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+lemma post_comp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
@@ -651,7 +651,7 @@ def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   map f := Under.homMk (F.map f.right)
     (by simp only [Functor.id_obj, Functor.const_obj_obj, mk_right, mk_hom, ← F.map_comp, w])
 
-lemma postComp_eq {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+lemma post_comp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
@@ -914,16 +914,19 @@ open Opposite
 variable (X : T)
 
 /-- The canonical functor by reversing structure arrows. -/
+@[simps]
 def Over.opToOpUnder : Over (op X) ⥤ (Under X)ᵒᵖ where
   obj Y := ⟨Under.mk Y.hom.unop⟩
   map {Z Y} f := ⟨Under.homMk (f.left.unop) (by dsimp; rw [← unop_comp, Over.w])⟩
 
 /-- The canonical functor by reversing structure arrows. -/
+@[simps]
 def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) where
   obj Y := Over.mk (Y.unop.hom.op)
   map {Z Y} f := Over.homMk f.unop.right.op <| by dsimp; rw [← Under.w f.unop, op_comp]
 
 /-- `Over.opToOpUnder` is an equivalence of categories. -/
+@[simps]
 def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
   functor := Over.opToOpUnder X
   inverse := Under.opToOverOp X
@@ -931,16 +934,19 @@ def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
   counitIso := Iso.refl _
 
 /-- The canonical functor by reversing structure arrows. -/
+@[simps]
 def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ where
   obj Y := ⟨Over.mk Y.hom.unop⟩
   map {Z Y} f := ⟨Over.homMk (f.right.unop) (by dsimp; rw [← unop_comp, Under.w])⟩
 
 /-- The canonical functor by reversing structure arrows. -/
+@[simps]
 def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) where
   obj Y := Under.mk (Y.unop.hom.op)
   map {Z Y} f := Under.homMk f.unop.left.op <| by dsimp; rw [← Over.w f.unop, op_comp]
 
 /-- `Under.opToOpOver` is an equivalence of categories. -/
+@[simps]
 def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
   functor := Under.opToOpOver X
   inverse := Over.opToUnderOp X
