@@ -153,7 +153,7 @@ lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul (s : Finset ι) {t f g : ι → R}
 lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → R) :
     (∑ i ∈ s, f i * g i) ^ 2 ≤ (∑ i ∈ s, f i ^ 2) * ∑ i ∈ s, g i ^ 2 :=
   sum_sq_le_sum_mul_sum_of_sq_eq_mul s
-    (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ mul_pow _ _ _)
+    (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ sq_nonneg _) (fun _ _ ↦ mul_pow ..)
 
 end LinearOrderedCommSemiring
 
