@@ -149,7 +149,7 @@ theorem rank_finsupp (ι : Type w) :
   rw [← bs.mk_eq_rank'', ← (Finsupp.basis fun _ : ι => bs).mk_eq_rank'', Cardinal.mk_sigma,
     Cardinal.sum_const]
 
-theorem rank_FinsuppWith (ι : Type v) : Module.rank R (ι →₀ M) = #ι * Module.rank R M := by
+theorem rank_finsupp' (ι : Type v) : Module.rank R (ι →₀ M) = #ι * Module.rank R M := by
   simp [rank_finsupp]
 
 /-- The rank of `(ι →₀ R)` is `(#ι).lift`. -/

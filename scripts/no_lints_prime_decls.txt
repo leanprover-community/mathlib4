@@ -4049,7 +4049,7 @@ Quotient.out_eq'
 Quotient.sound'
 Quotient.surjective_liftOn'
 range_pow_padicValNat_subset_divisors'
-rank_FinsuppWith
+rank_finsupp'
 rank_fun'
 rank_lt_rank_dual'
 Rat.add_def''
