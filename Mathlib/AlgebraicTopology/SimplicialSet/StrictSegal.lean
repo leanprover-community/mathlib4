@@ -87,82 +87,72 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
-/-- For any `σ: X ⟶ Y` between `StrictSegal` simplicial sets, `mapPath σ`
-commutes with `spineToSimplex`. -/
+/-- For any `σ: X ⟶ Y` between `StrictSegal` simplicial sets, `spineToSimplex`
+commutes with `mapPath σ f`. -/
 lemma spineToSimplex_mapPath {X Y : SSet.{u}} [StrictSegal X] [StrictSegal Y]
     {n : ℕ} (σ : X ⟶ Y) (f : Path X (n + 1)) :
     spineToSimplex (mapPath σ f) = σ.app _ (spineToSimplex f) := by
   apply spineInjective
-  dsimp only [spineEquiv, Equiv.coe_fn_mk]
   ext k
-  · dsimp only [mapPath, spine_vertex, spineToSimplex_vertex]
-    rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
-    simp only [types_comp_apply, spineToSimplex_vertex]
-  · dsimp only [mapPath, spine_arrow, spineToSimplex_arrow]
+  · dsimp only [spineEquiv, Equiv.coe_fn_mk, mapPath, spine_arrow]
     rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
     simp only [types_comp_apply, spineToSimplex_arrow]
 
 /-- If we take the path along the spine of a face of a `spineToSimplex`, the
 common vertices will agree with those of the original path. In particular, the
-vertices `j < i` are identified with the same vertices in the original path. -/
-lemma spine_δ_lt_vertex (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
+vertices `j < i` can be identified with the same vertices in the original path. -/
+lemma spine_δ_vertex_lt (f : Path X (n + 1)) {i : Fin (n + 2)} {j : Fin (n + 1)}
     (h : j.castSucc < i) :
-    (X.spine n (X.δ i (spineToSimplex f))).vertex j = f.vertex j := by
-  simp [SimplicialObject.δ]
-  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  simp [Hom.toOrderHom, SimplexCategory.δ, Hom.mk]
-  rw [Fin.succAbove_of_castSucc_lt]
-  exact h
+    (X.spine n (X.δ i (spineToSimplex f))).vertex j = f.vertex j.castSucc := by
+  simp only [SimplicialObject.δ, spine_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
+    OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
+  rw [Fin.succAbove_of_castSucc_lt i j h]
 
-/-- If we take the path along the spine of a face of a `spineToSimplex`, the
-common vertices will agree with those of the original path. In particular, a
-vertex `j ≥ i` is identified with vertex `j + 1` in the original path. -/
-lemma spine_δ_ge_vertex (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin (n + 1))
+/-- If we take the path along the spine of a face of a `spineToSimplex`, a
+vertex `j ≥ i` can be identified with vertex `j + 1` in the original path. -/
+lemma spine_δ_vertex_ge (f : Path X (n + 1)) {i : Fin (n + 2)} {j : Fin (n + 1)}
     (h : i ≤ j.castSucc) :
     (X.spine n (X.δ i (spineToSimplex f))).vertex j = f.vertex j.succ := by
-  simp [SimplicialObject.δ]
-  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  simp [Hom.toOrderHom, SimplexCategory.δ, Hom.mk]
-  rw [Fin.succAbove_of_le_castSucc]
-  exact h
+  simp only [SimplicialObject.δ, spine_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
+    OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
+  rw [Fin.succAbove_of_le_castSucc i j h]
 
 /-- If we take the path along the spine of a face of a `spineToSimplex`, the
 common arrows will agree with those of the original path. In particular, the
-arrows `j` with `j + 1 < i` are identified with the same arrows in the original
-path. -/
-lemma spine_δ_lt_arrow (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin n)
+arrows `j` with `j + 1 < i` can be identified with the same arrows in the
+original path. -/
+lemma spine_δ_arrow_lt (f : Path X (n + 1)) {i : Fin (n + 2)} {j : Fin n}
     (h : j.succ.castSucc < i) :
-    (X.spine n (X.δ i (spineToSimplex f))).arrow j = f.arrow j := by
-  simp [SimplicialObject.δ]
-  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  rw [mkOfSucc_δ_lt h]
-  rw [spineToSimplex_arrow]
+    (X.spine n (X.δ i (spineToSimplex f))).arrow j = f.arrow j.castSucc := by
+  simp only [SimplicialObject.δ, spine_arrow]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [mkOfSucc_δ_lt h, spineToSimplex_arrow]
 
-/-- If we take the path along the spine of a face of a `spineToSimplex`, the
-common arrows will agree with those of the original path. In particular, an
-arrow `j` with `j + 1 > i` is identified with arrow `j + 1` in the original
+/-- If we take the path along the spine of a face of a `spineToSimplex`, an
+arrow `j` with `j + 1 > i` can be identified with arrow `j + 1` in the original
 path. -/
-lemma spine_δ_gt_arrow (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin n)
+lemma spine_δ_arrow_gt (f : Path X (n + 1)) {i : Fin (n + 2)} {j : Fin n}
     (h : i < j.succ.castSucc) :
     (X.spine n (X.δ i (spineToSimplex f))).arrow j = f.arrow j.succ := by
-  simp [SimplicialObject.δ]
-  simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  rw [mkOfSucc_δ_gt h]
-  rw [spineToSimplex_arrow]
+  simp only [SimplicialObject.δ, spine_arrow]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [mkOfSucc_δ_gt h, spineToSimplex_arrow]
 
 /-- If we take the path along the spine of a face of a `spineToSimplex`, the
 arrows not contained in the original path can be recovered as the diagonal edge
 of the `spineToSimplex` that "composes" arrows `j` and `j + 1`. -/
-lemma spine_δ_eq_arrow (f : Path X (n + 1)) (i : Fin (n + 2)) (j : Fin n)
+lemma spine_δ_arrow_eq (f : Path X (n + 1)) {i : Fin (n + 2)} {j : Fin n}
     (h : i = j.succ.castSucc) :
     (X.spine n (X.δ i (spineToSimplex f))).arrow j =
       spineToDiagonal (Path.interval f j 2 (by omega)) := by
   simp only [SimplicialObject.δ, spine_arrow]
-  simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-  rw [mkOfSucc_δ_eq h]
-  rw [spineToSimplex_edge]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [mkOfSucc_δ_eq h, spineToSimplex_edge]
 
-open Opposite in
 instance : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
@@ -170,83 +160,61 @@ instance : Quasicategory X := by
   intro j hj
   apply spineInjective
   ext k
-  · simp only [spineEquiv, Function.comp_apply, Equiv.coe_fn_mk]
-    have hkj : k.castSucc < j ∨ j ≤ k.castSucc := Nat.lt_or_ge k j
-    rcases hkj with hlt | hge
-    · rw [spine_δ_lt_vertex _ _ _ hlt]
-      simp only [mapPath, spine_vertex, Fin.coe_eq_castSucc]
-      rw [← types_comp_apply (σ₀.app _) (X.map _)]
-      rw [← σ₀.naturality]
-      rw [← Fin.succAbove_of_castSucc_lt j k hlt]
-      rfl
-    · rw [spine_δ_ge_vertex _ _ _ hge]
-      simp only [mapPath, spine_vertex, Fin.coe_eq_castSucc]
-      rw [← types_comp_apply (σ₀.app _) (X.map _)]
-      rw [← σ₀.naturality]
-      rw [← Fin.succAbove_of_le_castSucc j k hge]
-      rfl
-  · simp only [spineEquiv, Function.comp_apply, Equiv.coe_fn_mk]
-    have hkj : k.succ.castSucc < j ∨ j < k.succ.castSucc ∨ j = k.succ.castSucc := by omega
+  · simp only [spineEquiv, spine_arrow, Function.comp_apply, Equiv.coe_fn_mk]
+    rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
+    let ksucc := k.succ.castSucc
+    have hkj : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
     rcases hkj with hlt | hgt | heq
-    · rw [spine_δ_lt_arrow _ _ _ hlt]
+    · rw [← spine_arrow, spine_δ_arrow_lt _ hlt]
       simp only [mapPath, spine_arrow, Fin.coe_eq_castSucc]
-      rw [← types_comp_apply (σ₀.app _) (X.map _)]
-      rw [← σ₀.naturality]
       apply congr_arg
-      simp [spineHorn, idSpine, horn, standardSimplex.idSimplex_objEquiv]
-      simp [Hom.mk, standardSimplex.objEquiv, Equiv.ulift]
-      simp [standardSimplex, uliftFunctor]
+      simp only [horn, spineHorn, standardSimplex, uliftFunctor, Functor.comp_obj,
+        yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
+        standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
+        Quiver.Hom.unop_op, horn.face_coe, Subtype.mk.injEq]
       rw [mkOfSucc_δ_lt hlt]
       rfl
-    · rw [spine_δ_gt_arrow _ _ _ hgt]
+    · rw [← spine_arrow, spine_δ_arrow_gt _ hgt]
       simp only [mapPath, spine_arrow, Fin.coe_eq_castSucc]
-      rw [← types_comp_apply (σ₀.app _) (X.map _)]
-      rw [← σ₀.naturality]
       apply congr_arg
-      simp [spineHorn, idSpine, horn, standardSimplex.idSimplex_objEquiv]
-      simp [Hom.mk, standardSimplex.objEquiv, Equiv.ulift]
-      simp [standardSimplex, uliftFunctor]
+      simp only [horn, spineHorn, standardSimplex, uliftFunctor, Functor.comp_obj,
+        yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
+        standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
+        Quiver.Hom.unop_op, horn.face_coe, Subtype.mk.injEq]
       rw [mkOfSucc_δ_gt hgt]
       rfl
-    · rw [spine_δ_eq_arrow _ _ _ heq]
-      simp [spineToDiagonal, diagonal]
+    · /- The only inner horn of Δ[2] does not contain the diagonal edge. -/
       have hn0 : 0 < n := by
         apply Nat.pos_of_ne_zero
-        intro h1
+        intro h1; subst h1
         have hk : k = 0 := by omega
-        subst h1
-        simp_all only [Nat.reduceAdd, Fin.succ_zero_eq_one, Fin.castSucc_one, ne_eq]
-        omega
-      have hh : Path.interval (mapPath σ₀ (spineHorn i h₀ hₙ)) (↑k) 2 (by omega) =
+        have hs : ksucc ≠ i := by omega
+        have hi : i = 1 := by fin_cases i <;> (try contradiction); rfl
+        subst hi hk
+        exact hs rfl
+      /- The interval spanning from `k` to `k + 2` is equivalently the spine
+      of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
+      have hi : Path.interval (mapPath σ₀ (spineHorn i h₀ hₙ)) k 2 (by omega) =
           X.spine 2 (σ₀.app _ (horn.primitiveTrianglePos hn0 i h₀ hₙ k (by omega))) := by
-        apply Path.ext₁
-        intro m
-        simp [spine_arrow]
+        ext m
+        simp only [spine_arrow, Path.interval, mapPath]
         rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
-        simp [Path.interval, mapPath]
         apply congr_arg
-        simp [horn.primitiveTrianglePos, spineHorn, horn, idSpine,
-          standardSimplex, uliftFunctor]
-        /- TODO -/
-        fin_cases m
-        · ext x
-          fin_cases x <;> rfl
-        · ext x
-          fin_cases x <;> rfl
-      rw [hh]
-      simp [spineToSimplex_spine]
-      rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
-      rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
-      simp only [types_comp_apply]
+        simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+          whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj]
+        fin_cases m <;> (ext x; fin_cases x <;> rfl)
+      rw [← spine_arrow, spine_δ_arrow_eq _ heq, hi]
+      simp only [spineToDiagonal, diagonal, spineToSimplex_spine]
+      rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
       apply congr_arg
-      simp [horn, horn.primitiveTrianglePos, diag, standardSimplex, uliftFunctor]
+      simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
+        whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj,
+        whiskering_obj_obj_map, yoneda_obj_map, horn.face_coe]
       ext z
-      fin_cases z
-      · simp [standardSimplex.objEquiv, Hom.toOrderHom]
-        rw [mkOfSucc_δ_eq heq]
-        rfl
-      · simp [standardSimplex.objEquiv, Hom.toOrderHom]
-        rw [mkOfSucc_δ_eq heq]
+      fin_cases z <;>
+        simp only [standardSimplex.objEquiv, uliftFunctor_map, yoneda_obj_map,
+          Quiver.Hom.unop_op, Equiv.ulift_symm_down];
+        rw [mkOfSucc_δ_eq heq];
         rfl
 
 end StrictSegal

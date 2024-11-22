@@ -110,7 +110,7 @@ def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
 def idSimplex (n : ℕ) : Δ[n] _[n] := yonedaEquiv Δ[n] [n] (𝟙 Δ[n])
 
 lemma idSimplex_objEquiv (n : ℕ) :
-    idSimplex n = (objEquiv [n] (op [n])).symm (Hom.mk OrderHom.id) := rfl
+    idSimplex n = (objEquiv _ _).symm (Hom.mk OrderHom.id) := rfl
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
@@ -295,6 +295,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     fin_cases j <;> simp [Fin.ext_iff, hk0]
 
 /-- A temporary hack, hopefully. -/
+@[simps]
 def primitiveTrianglePos {n : ℕ} (hₙ : 0 < n) (i : Fin (n+3))
     (hᵢ₀ : 0 < i) (hᵢₙ : i < Fin.last (n+2))
     (k : ℕ) (hₖ : k < n+1) : Λ[n+2, i] _[2] := by

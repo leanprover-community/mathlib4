@@ -74,6 +74,7 @@ lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[
       mkOfSucc_subinterval_eq]
 
 /-- Maps of simplicial sets induce maps of paths in a simplicial set.-/
+@[simps]
 def mapPath {X Y : SSet.{u}} {n : ℕ} (σ : X ⟶ Y) (f : X.Path n) : Y.Path n where
   vertex i := σ.app (Opposite.op [0]) (f.vertex i)
   arrow i := σ.app (Opposite.op [1]) (f.arrow i)
@@ -94,6 +95,7 @@ def idSpine (n : ℕ) : Path Δ[n] n := spine Δ[n] n (standardSimplex.idSimplex
 
 /-- Any inner horn, `Λ[n, i]`, contains the spine of the unique non-degenerate
 `n`-simplex in `Δ[n]`.-/
+@[simps]
 def spineHorn {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path Λ[n + 2, i] (n + 2) := by
@@ -116,14 +118,16 @@ def spineHorn {n : ℕ} (i : Fin (n + 3))
   · simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
     exact sp.arrow_tgt
 
-/- @[ext] -/
-lemma Path.ext₁ {n : ℕ} {f g : Path X (n + 1)}
-    (h : ∀ (m : Fin (n + 1)), f.arrow m = g.arrow m) :
+/-- Two paths of the same nonzero length are equal if all of their arrows are equal. -/
+@[ext]
+lemma Path.ext' {n : ℕ} {f g : Path X (n + 1)}
+    (h : ∀ i : Fin (n + 1), f.arrow i = g.arrow i) :
     f = g := by
-  ext i
-  · rcases Fin.eq_castSucc_or_eq_last i with ⟨j, hj⟩ | hl
-    · erw [hj, ← f.arrow_src j, ← g.arrow_src j, h]
-    · erw [hl, ← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
-  · exact h i
+  ext j
+  · rcases Fin.eq_castSucc_or_eq_last j with ⟨k, hk⟩ | hl
+    · rw [hk, ← f.arrow_src k, ← g.arrow_src k, h]
+    · simp only [hl, ← Fin.succ_last]
+      rw [← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
+  · exact h j
 
 end SSet
