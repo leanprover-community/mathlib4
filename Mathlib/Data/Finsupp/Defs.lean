@@ -226,6 +226,11 @@ section Basic
 
 variable [Zero M]
 
+@[reducible]
+def mk (support : Finset α) (toFun : α → M)
+    (mem_support_toFun : ∀ x, x ∈ support ↔ toFun x ≠ 0) : α →₀ M :=
+  FinsuppWith.mk support toFun mem_support_toFun
+
 theorem mem_support_toFun (f : α →₀ M) :
     ∀ a, a ∈ f.support ↔ f.toFun a ≠ 0 :=
   FinsuppWith.mem_support_toFun f
@@ -301,7 +306,7 @@ theorem support_subset_iff {s : Set α} {f : α →₀ M} :
 @[simps]
 def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M) where
   toFun := (⇑)
-  invFun f := FinsuppWith.mk (Function.support f).toFinite.toFinset f
+  invFun f := mk (Function.support f).toFinite.toFinset f
     fun _a => Set.Finite.mem_toFinset _
   left_inv _f := ext fun _x => rfl
   right_inv _f := rfl
