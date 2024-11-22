@@ -37,7 +37,7 @@ This will render the provided text in the infoview.
 
 # Implementation
 
-This code uses `MarkdownDisplay` from `ProofWidgets2`, and thus supports
+This code uses `MarkdownDisplay` from `ProofWidgets`, and thus supports
 markdown and latex via mathjax.
 
 -/
