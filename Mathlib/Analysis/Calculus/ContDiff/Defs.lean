@@ -839,6 +839,12 @@ theorem ContDiff.contDiffAt (h : ContDiff 𝕜 n f) : ContDiffAt 𝕜 n f x :=
 theorem ContDiff.contDiffWithinAt (h : ContDiff 𝕜 n f) : ContDiffWithinAt 𝕜 n f s x :=
   h.contDiffAt.contDiffWithinAt
 
+/-- The following lemma will be removed when the definition of `C^ω` will be corrected. For now,
+it is only there as a convenient shortcut. -/
+theorem contDiff_infty_iff_contDiff_omega :
+    ContDiff 𝕜 ∞ f ↔ ContDiff 𝕜 ω f := by
+  simp [ContDiff, hasFTaylorSeriesUpTo_top_iff]
+
 theorem contDiff_top : ContDiff 𝕜 ∞ f ↔ ∀ n : ℕ, ContDiff 𝕜 n f := by
   simp [contDiffOn_univ.symm, contDiffOn_top]
 
