@@ -80,8 +80,7 @@ to learn about it as well!
 **Data files with linter exceptions**
 - `nolints.json` contains exceptions for all `env_linter`s in mathlib.
   For permanent and deliberate exceptions, add a `@[nolint lintername]` in the .lean file instead.
-- `no_lints_prime_decls.txt`
-  contains temporary exceptions for the `docPrime` linter
+- `nolints_prime_decls.txt` contains temporary exceptions for the `docPrime` linter
 
 Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
