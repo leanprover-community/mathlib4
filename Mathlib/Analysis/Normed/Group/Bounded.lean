@@ -21,10 +21,11 @@ normed group
 open Filter Metric Bornology
 open scoped Pointwise Topology
 
-variable {α E F G : Type*}
+variable {α ι E F G : Type*}
 
 section SeminormedGroup
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
+  {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
 
 @[to_additive (attr := simp) comap_norm_atTop]
 lemma comap_norm_atTop' : comap norm atTop = cobounded E := by

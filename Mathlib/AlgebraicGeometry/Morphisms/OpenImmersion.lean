@@ -26,7 +26,7 @@ universe u
 
 namespace AlgebraicGeometry
 
-variable {X Y : Scheme.{u}}
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
     IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := by

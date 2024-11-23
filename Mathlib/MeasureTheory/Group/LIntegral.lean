@@ -20,7 +20,7 @@ open Measure TopologicalSpace
 
 open scoped ENNReal
 
-variable {G : Type*} [MeasurableSpace G] {μ : Measure G}
+variable {G : Type*} [MeasurableSpace G] {μ : Measure G} {g : G}
 
 section MeasurableMul
 

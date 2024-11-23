@@ -41,7 +41,7 @@ open scoped Pointwise Topology NNReal
 
 noncomputable section
 
-variable {𝕜 E : Type*}
+variable {𝕜 E F : Type*}
 
 section AddCommGroup
 

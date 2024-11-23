@@ -25,14 +25,14 @@ We prove the following facts:
   is bounded.
 -/
 
-variable {E P : Type*}
+variable {ι : Type*} {E P : Type*}
 
 open AffineBasis Module Metric Set
 open scoped Convex Pointwise Topology
 
 section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
-variable {s : Set E}
+variable {s t : Set E}
 
 /-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`
 and `convexOn_univ_norm`. -/

@@ -54,7 +54,8 @@ namespace LinearIsometry
 
 open LinearMap
 
-variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁]
+variable {R : Type*} [Semiring R]
+variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁] [Module R E₁]
 variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
   [FiniteDimensional R₁ F]
 
@@ -109,7 +110,9 @@ end AffineIsometry
 section CompleteField
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type w} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace 𝕜]
+  [NormedSpace 𝕜 E] {F : Type w} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {F' : Type x}
+  [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [TopologicalAddGroup F']
+  [ContinuousSMul 𝕜 F'] [CompleteSpace 𝕜]
 
 section Affine
 

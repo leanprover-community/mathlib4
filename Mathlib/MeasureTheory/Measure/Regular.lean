@@ -446,7 +446,7 @@ protected theorem FiniteSpanningSetsIn.outerRegular
 
 namespace InnerRegularWRT
 
-variable {p : Set α → Prop}
+variable {p q : Set α → Prop} {U s : Set α} {ε r : ℝ≥0∞}
 
 /-- If the restrictions of a measure to a monotone sequence of sets covering the space are
 inner regular for some property `p` and all measurable sets, then the measure itself is
@@ -637,7 +637,7 @@ end InnerRegularWRT
 
 namespace InnerRegular
 
-variable [TopologicalSpace α]
+variable {U : Set α} {ε : ℝ≥0∞} [TopologicalSpace α]
 
 /-- The measure of a measurable set is the supremum of the measures of compact sets it contains. -/
 theorem _root_.MeasurableSet.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : MeasurableSet U)

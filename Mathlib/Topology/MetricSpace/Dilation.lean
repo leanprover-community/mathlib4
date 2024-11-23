@@ -74,7 +74,7 @@ end Defs
 
 namespace Dilation
 
-variable {α : Type*} {β : Type*} {γ : Type*} {F : Type*}
+variable {α : Type*} {β : Type*} {γ : Type*} {F : Type*} {G : Type*}
 
 section Setup
 
@@ -229,8 +229,8 @@ end Setup
 section PseudoEmetricDilation
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable [FunLike F α β] [DilationClass F α β]
-variable (f : F)
+variable [FunLike F α β] [DilationClass F α β] [FunLike G β γ] [DilationClass G β γ]
+variable (f : F) (g : G) {x y z : α} {s : Set α}
 
 /-- Every isometry is a dilation of ratio `1`. -/
 @[simps]
