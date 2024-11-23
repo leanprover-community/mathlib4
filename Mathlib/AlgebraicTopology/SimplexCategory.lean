@@ -589,7 +589,7 @@ lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
   · exact Nat.le_of_lt h
 
 /-- If `j = i + 1`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
-picks out the composite of arrows `i` and `i + 1`. -/
+sends `0` and `1` to `i` and `i + 2`, respectively. -/
 lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : j = i.succ.castSucc) :
     mkOfSucc i ≫ δ j = intervalEdge i 2 (by omega) := by

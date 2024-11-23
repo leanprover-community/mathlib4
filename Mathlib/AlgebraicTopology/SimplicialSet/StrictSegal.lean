@@ -88,13 +88,13 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
 /-- For any `σ: X ⟶ Y` between `StrictSegal` simplicial sets, `spineToSimplex`
-commutes with `mapPath σ`. -/
-lemma spineToSimplex_mapPath {X Y : SSet.{u}} [StrictSegal X] [StrictSegal Y]
-    {n : ℕ} (σ : X ⟶ Y) (f : Path X (n + 1)) :
-    spineToSimplex (mapPath σ f) = σ.app _ (spineToSimplex f) := by
+commutes with `Path.map`. -/
+lemma spineToSimplex_map {X Y : SSet.{u}} [StrictSegal X] [StrictSegal Y]
+    {n : ℕ} (f : Path X (n + 1)) (σ : X ⟶ Y) :
+    spineToSimplex (f.map σ) = σ.app _ (spineToSimplex f) := by
   apply spineInjective
   ext k
-  dsimp only [spineEquiv, Equiv.coe_fn_mk, mapPath, spine_arrow]
+  dsimp only [spineEquiv, Equiv.coe_fn_mk, Path.map, spine_arrow]
   rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
   simp only [types_comp_apply, spineToSimplex_arrow]
 
@@ -157,7 +157,7 @@ lemma spine_δ_arrow_eq (f : Path X (n + 1)) {i : Fin (n + 2)} {j : Fin n}
 instance : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
-  exists spineToSimplex ∘ mapPath σ₀ <| spineHorn i h₀ hₙ
+  exists spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
   intro j hj
   apply spineInjective
   ext k
@@ -167,24 +167,24 @@ instance : Quasicategory X := by
     have hkj : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
     rcases hkj with hlt | hgt | heq
     · rw [← spine_arrow, spine_δ_arrow_lt _ hlt]
-      simp only [mapPath, spine_arrow, Fin.coe_eq_castSucc]
+      simp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
       apply congr_arg
-      simp only [horn, spineHorn, standardSimplex, uliftFunctor, Functor.comp_obj,
+      simp only [horn, horn.spineId, standardSimplex, uliftFunctor, Functor.comp_obj,
         yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
         standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
         Quiver.Hom.unop_op, horn.face_coe, Subtype.mk.injEq]
       rw [mkOfSucc_δ_lt hlt]
       rfl
     · rw [← spine_arrow, spine_δ_arrow_gt _ hgt]
-      simp only [mapPath, spine_arrow, Fin.coe_eq_castSucc]
+      simp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
       apply congr_arg
-      simp only [horn, spineHorn, standardSimplex, uliftFunctor, Functor.comp_obj,
+      simp only [horn, horn.spineId, standardSimplex, uliftFunctor, Functor.comp_obj,
         yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
         standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
         Quiver.Hom.unop_op, horn.face_coe, Subtype.mk.injEq]
       rw [mkOfSucc_δ_gt hgt]
       rfl
-    · /- The only inner horn of Δ[2] does not contain the diagonal edge. -/
+    · /- The only inner horn of `Δ[2]` does not contain the diagonal edge. -/
       have hn0 : 0 < n := by
         apply Nat.pos_of_ne_zero
         intro h1; subst h1
@@ -194,18 +194,18 @@ instance : Quasicategory X := by
         subst hi hk
         exact hs rfl
       /- We construct the triangle in the standard simplex as a 2-simplex in
-      the horn. While the triangle is not contained in the inner horn Λ[2, 1],
-      we can inhabit Λ[n + 2, i] by induction on n. -/
+      the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
+      we can inhabit `Λ[n + 2, i]` by induction on `n`. -/
       let triangle : Λ[n + 2, i] _[2] := by
         cases n with
         | zero => contradiction
         | succ _ => exact horn.primitiveTriangle i h₀ hₙ k (by omega)
       /- The interval spanning from `k` to `k + 2` is equivalently the spine
       of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
-      have hi : Path.interval (mapPath σ₀ (spineHorn i h₀ hₙ)) k 2 (by omega) =
+      have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
           X.spine 2 (σ₀.app _ triangle) := by
         ext m
-        simp [spine_arrow, Path.interval, mapPath]
+        simp [spine_arrow, Path.interval, Path.map]
         rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
         apply congr_arg
         simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
