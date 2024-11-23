@@ -1003,8 +1003,10 @@ section Idempotent
 
 variable {R} [CommRing R]
 
+namespace PrimeSpectrum
+
 @[stacks 00EC]
-lemma PrimeSpectrum.basicOpen_eq_zeroLocus_of_isIdempotentElem
+lemma basicOpen_eq_zeroLocus_of_isIdempotentElem
     (e : R) (he : IsIdempotentElem e) :
     basicOpen e = zeroLocus {1 - e} := by
   ext p
@@ -1017,12 +1019,12 @@ lemma PrimeSpectrum.basicOpen_eq_zeroLocus_of_isIdempotentElem
     exact add_mem h₁ h₂
 
 @[stacks 00EC]
-lemma PrimeSpectrum.zeroLocus_eq_basicOpen_of_isIdempotentElem
+lemma zeroLocus_eq_basicOpen_of_isIdempotentElem
     (e : R) (he : IsIdempotentElem e) :
     zeroLocus {e} = basicOpen (1 - e) := by
   rw [basicOpen_eq_zeroLocus_of_isIdempotentElem _ he.one_sub, sub_sub_cancel]
 
-lemma PrimeSpectrum.isClopen_iff {s : Set (PrimeSpectrum R)} :
+lemma isClopen_iff {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e : R, IsIdempotentElem e ∧ s = basicOpen e := by
   refine ⟨exists_idempotent_basicOpen_eq_of_isClopen, ?_⟩
   rintro ⟨e, he, rfl⟩
@@ -1030,7 +1032,7 @@ lemma PrimeSpectrum.isClopen_iff {s : Set (PrimeSpectrum R)} :
   rw [PrimeSpectrum.basicOpen_eq_zeroLocus_of_isIdempotentElem e he]
   exact isClosed_zeroLocus _
 
-lemma PrimeSpectrum.isClopen_iff_zeroLocus {s : Set (PrimeSpectrum R)} :
+lemma isClopen_iff_zeroLocus {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e : R, IsIdempotentElem e ∧ s = zeroLocus {e} :=
   isClopen_iff.trans <| ⟨fun ⟨e, he, h⟩ ↦ ⟨1 - e, he.one_sub,
     h.trans (basicOpen_eq_zeroLocus_of_isIdempotentElem e he)⟩,
@@ -1038,8 +1040,8 @@ lemma PrimeSpectrum.isClopen_iff_zeroLocus {s : Set (PrimeSpectrum R)} :
 
 /-- Clopen subsets in the prime spectrum of a commutative ring are in 1-1 correspondence
 with idempotent elements in the ring. -/
-@[stacks 00EE, simps!]
-def PrimeSpectrum.isIdempotentElemEquivIsClopen :
+@[stacks 00EE]
+def isIdempotentElemEquivIsClopen :
     {e : R | IsIdempotentElem e} ≃ {s : Set (PrimeSpectrum R) | IsClopen s} :=
   .ofBijective (fun e ↦ ⟨basicOpen e.1, isClopen_iff.mpr ⟨_, e.2, rfl⟩⟩)
     ⟨fun x y eq ↦ Subtype.ext (basicOpen_injOn_isIdempotentElem x.2 y.2 <|
@@ -1047,9 +1049,14 @@ def PrimeSpectrum.isIdempotentElemEquivIsClopen :
         have ⟨e, he, h⟩ := exists_idempotent_basicOpen_eq_of_isClopen s.2
         ⟨⟨e, he⟩, Subtype.ext h.symm⟩⟩
 
-lemma PrimeSpectrum.basicOpen_isIdempotentElemEquivIsClopen_symm (s) :
+lemma basicOpen_isIdempotentElemEquivIsClopen_symm (s) :
     basicOpen (isIdempotentElemEquivIsClopen (R := R).symm s).1 = s.1 :=
   congr_arg (·.1) (isIdempotentElemEquivIsClopen.apply_symm_apply s)
+
+lemma coe_isIdempotentElemEquivIsClopen_apply (e) :
+    (isIdempotentElemEquivIsClopen e).1 = (basicOpen (e.1 : R)).1 := rfl
+
+end PrimeSpectrum
 
 variable [DiscreteTopology (PrimeSpectrum R)]
 open PrimeSpectrum
