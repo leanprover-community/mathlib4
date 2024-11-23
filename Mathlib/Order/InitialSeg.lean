@@ -124,7 +124,7 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
 @[deprecated exists_eq_iff_rel (since := "2024-09-21")]
 alias init_iff := exists_eq_iff_rel
 
-/-- An relation isomorphism is an initial segment embedding. -/
+/-- A relation isomorphism is an initial segment embedding. -/
 @[simps!]
 def _root_.RelIso.toInitialSeg (f : r ≃r s) : r ≼i s :=
   ⟨f, by simp⟩
@@ -132,7 +132,7 @@ def _root_.RelIso.toInitialSeg (f : r ≃r s) : r ≼i s :=
 @[deprecated (since := "2024-10-22")]
 alias ofIso := RelIso.toInitialSeg
 
-/-- The identity function shows that `≼i` is reflexive. -/
+/-- The identity function shows that `≼i` is reflexive -/
 @[refl]
 protected def refl (r : α → α → Prop) : r ≼i r :=
   (RelIso.refl r).toInitialSeg
@@ -140,7 +140,7 @@ protected def refl (r : α → α → Prop) : r ≼i r :=
 instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
   ⟨InitialSeg.refl r⟩
 
-/-- Composition of functions shows that `≼i` is transitive. -/
+/-- Composition of functions shows that `≼i` is transitive -/
 @[trans]
 protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
   ⟨f.1.trans g.1, fun a c h => by
@@ -248,10 +248,10 @@ end InitialSeg
 /-! ### Principal segments -/
 
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an initial
-segment embedding whose range is `Set.Iio x` for some element `x`. If `β` is a well-order, this is
+segment embedding whose range is `Set.Iio x` for some element `x`. If `β` is a well order, this is
 equivalent to the embedding not being surjective. -/
 structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
-  /-- The supremum of the principal segment. -/
+  /-- The supremum of the principal segment -/
   top : β
   /-- The range of the order embedding is the set of elements `b` such that `s b top` -/
   mem_range_iff_rel' : ∀ b, b ∈ Set.range toRelEmbedding ↔ s b top
@@ -356,8 +356,8 @@ theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : Fals
 instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
   ⟨fun f => f.irrefl⟩
 
-/-- Composition of a principal segment with an initial segment embedding, as a principal segment
-embedding. -/
+/-- Composition of a principal segment embedding with an initial segment embedding, as a principal
+segment embedding. -/
 def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
     simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
@@ -422,7 +422,8 @@ set_option linter.deprecated false in
 theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
   rfl
 
-/-- Composition of a principal segment with an order isomorphism, as a principal segment -/
+/-- Composition of a principal segment embedding with a relation isomorphism, as a principal segment
+embedding -/
 def transRelIso (f : r ≺i s) (g : s ≃r t) : r ≺i t :=
   transInitial f g.toInitialSeg
 
@@ -535,7 +536,8 @@ noncomputable def principalSumRelIso [IsWellOrder β s] (f : r ≼i s) : (r ≺i
 @[deprecated principalSumRelIso (since := "2024-10-20")]
 alias ltOrEq := principalSumRelIso
 
-/-- Composition of an initial segment taking values in a well order and a principal segment. -/
+/-- Composition of an initial segment embedding and a principal segment embedding as a principal
+segment embedding. -/
 noncomputable def transPrincipal [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
     r ≺i t :=
   match f.principalSumRelIso with
