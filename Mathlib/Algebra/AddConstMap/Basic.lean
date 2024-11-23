@@ -433,7 +433,7 @@ variable {G : Type*} [AddMonoid G] {a : G}
 as a monoid homomorphism from `Multiplicative G` to `G →+c[a, a] G`. -/
 @[simps! (config := .asFn)]
 def addLeftHom : Multiplicative G →* (G →+c[a, a] G) where
-  toFun c := Multiplicative.toAdd c +ᵥ .id
+  toFun c := c.toAdd +ᵥ .id
   map_one' := by ext; apply zero_add
   map_mul' _ _ := by ext; apply add_assoc
 
