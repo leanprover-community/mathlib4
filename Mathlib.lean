@@ -281,7 +281,10 @@ import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Group.MinimalAxioms
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Even
+import Mathlib.Algebra.Group.Nat.TypeTags
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.PNatPowAssoc
