@@ -190,7 +190,7 @@ omit hU in
 Given a continuous map `f : X → Y` between topological spaces.
 Suppose we have an open cover `V i` of the range of `f`, and an open cover `U i` of `X` that is
 coarser than the pullback of `V` under `f`.
-To check that `f` is an embedding it suffies to check that `U i → Y` is an embedding for all `i`.
+To check that `f` is an embedding it suffices to check that `U i → Y` is an embedding for all `i`.
 -/
 theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     {X Y} [TopologicalSpace X] [TopologicalSpace Y]
