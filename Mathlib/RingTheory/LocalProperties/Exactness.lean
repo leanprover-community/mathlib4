@@ -62,7 +62,6 @@ variable (Lₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   (h : ∀ (P : Ideal R) [P.IsMaximal], L →ₗ[R] Lₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (h P)]
 
-include Rₚ
 theorem exact_of_isLocalized_maximal (F : M →ₗ[R] N) (G : N →ₗ[R] L)
     (H : ∀ (J : Ideal R) [J.IsMaximal],
       Function.Exact (map J.primeCompl (f J) (g J) F) (map J.primeCompl (g J) (h J) G)) :
@@ -161,7 +160,6 @@ variable {L : Type*} [AddCommMonoid L] [Module R L]
   [∀ r : s, IsLocalizedModule (.powers r.1) (h r)]
   (F : M →ₗ[R] N) (G : N →ₗ[R] L)
 
-include Rₚ
 lemma exact_of_isLocalized_span (H : ∀ r : s, Function.Exact
     (map (.powers r.1) (f r) (g r) F) (map (.powers r.1) (g r) (h r) G)) :
     Function.Exact F G := by
