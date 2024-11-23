@@ -266,7 +266,7 @@ theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 
 
 @[to_additive] alias ⟨_, smul_mem_nhds_smul⟩ := smul_mem_nhds_smul_iff
 
-@[to_additive (attr := deprecated (since := "2024-08-06"))]
+@[to_additive (attr := deprecated "Deprecated without replacement." (since := "2024-08-06"))]
 alias smul_mem_nhds := smul_mem_nhds_smul
 
 @[to_additive (attr := simp)]

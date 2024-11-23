@@ -341,7 +341,7 @@ variable [TopologicalSpace α] [Preorder α] [ClosedIciTopology α] {f : β → 
 theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
   ClosedIciTopology.isClosed_Ici a
 
-@[deprecated (since := "2024-02-15")]
+@[deprecated "Deprecated without replacement." (since := "2024-02-15")]
 lemma ClosedIciTopology.isClosed_ge' (a : α) : IsClosed {x | a ≤ x} := isClosed_Ici a
 export ClosedIciTopology (isClosed_ge')
 

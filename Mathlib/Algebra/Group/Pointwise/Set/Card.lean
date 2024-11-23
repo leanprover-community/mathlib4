@@ -32,7 +32,11 @@ lemma natCard_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
   refine Cardinal.toNat_le_toNat Cardinal.mk_mul_le ?_
   aesop (add simp [Cardinal.mul_lt_aleph0_iff, finite_mul])
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_mul_le := natCard_mul_le
+@[to_additive] alias card_mul_le := natCard_mul_le
+
+attribute [deprecated natCard_mul_le (since := "2024-09-30")] card_mul_le
+attribute [deprecated natCard_add_le (since := "2024-09-30")] card_add_le
+
 
 end Mul
 
@@ -47,7 +51,10 @@ lemma _root_.Cardinal.mk_inv (s : Set G) : #↥(s⁻¹) = #s := by
 lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by
   rw [← image_inv, Nat.card_image_of_injective inv_injective]
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_inv := natCard_inv
+@[to_additive] alias card_inv := natCard_inv
+
+attribute [deprecated natCard_inv (since := "2024-09-30")] card_inv
+attribute [deprecated natCard_neg (since := "2024-09-30")] card_neg
 
 end InvolutiveInv
 
@@ -67,7 +74,10 @@ variable [Group G] {s t : Set G}
 lemma natCard_div_le : Nat.card (s / t) ≤ Nat.card s * Nat.card t := by
   rw [div_eq_mul_inv, ← natCard_inv t]; exact natCard_mul_le
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_div_le := natCard_div_le
+@[to_additive] alias card_div_le := natCard_div_le
+
+attribute [deprecated natCard_div_le (since := "2024-09-30")] card_div_le
+attribute [deprecated natCard_sub_le (since := "2024-09-30")] card_sub_le
 
 variable [MulAction G α]
 
@@ -79,8 +89,11 @@ lemma _root_.Cardinal.mk_smul_set (a : G) (s : Set α) : #↥(a • s) = #s :=
 lemma natCard_smul_set (a : G) (s : Set α) : Nat.card ↥(a • s) = Nat.card s :=
   Nat.card_image_of_injective (MulAction.injective a) _
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))]
+@[to_additive]
 alias card_smul_set := Cardinal.mk_smul_set
+
+attribute [deprecated Cardinal.mk_smul_set (since := "2024-09-30")] card_smul_set
+attribute [deprecated Cardinal.mk_vadd_set (since := "2024-09-30")] card_vadd_set
 
 end Group
 end Set

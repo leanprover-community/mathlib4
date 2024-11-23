@@ -33,7 +33,7 @@ termination_by o
 
 variable {s : Set Ordinal.{u}}
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "Deprecated without replacement."  (since := "2024-09-20")]
 theorem enumOrd_def (o : Ordinal.{u}) :
     enumOrd s o = sInf (s ∩ { b | ∀ c, c < o → enumOrd s c < b }) := by
   rw [enumOrd]
