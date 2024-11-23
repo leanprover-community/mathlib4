@@ -29,7 +29,7 @@ variable {R : Type u} {S : Type v} {a b c d : R} {n m : ℕ}
 
 section Semiring
 
-variable [Semiring R] {p q r : R[X]}
+variable [Semiring R] [Semiring S] {p q r : R[X]}
 
 theorem supDegree_eq_degree (p : R[X]) : p.toFinsupp.supDegree WithBot.some = p.degree :=
   max_eq_sup_coe
@@ -65,11 +65,14 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero (pn : p.natDegree ≤ n) (p1 : p.coe
     p.natDegree = n :=
   pn.antisymm (le_natDegree_of_ne_zero p1)
 
-theorem natDegree_lt_natDegree {p q : R[X]} (hp : p ≠ 0) (hpq : p.degree < q.degree) :
+theorem natDegree_lt_natDegree {q : S[X]} (hp : p ≠ 0) (hpq : p.degree < q.degree) :
     p.natDegree < q.natDegree := by
   by_cases hq : q = 0
   · exact (not_lt_bot <| hq ▸ hpq).elim
   rwa [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt] at hpq
+
+lemma natDegree_eq_natDegree {q : S[X]} (hpq : p.degree = q.degree) :
+    p.natDegree = q.natDegree := by simp [natDegree, hpq]
 
 theorem coeff_eq_zero_of_degree_lt (h : degree p < n) : coeff p n = 0 :=
   Classical.not_not.1 (mt le_degree_of_ne_zero (not_le_of_gt h))
