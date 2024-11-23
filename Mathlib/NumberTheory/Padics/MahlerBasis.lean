@@ -181,7 +181,7 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     exact one_le_padicValNat_of_dvd this <| hp.out.dvd_choose_pow (by omega) (by omega)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
     refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_succ (fun i _ ↦ ?_)
-    calc
+    calc ‖((-1 : ℤ) ^ (n - i) * n.choose i) • (f (i + ↑(p ^ t)) - f i)‖
     _ ≤ ‖f (i + ↑(p ^ t)) - f i‖ := by
       rw [← Int.cast_smul_eq_zsmul ℚ_[p], norm_smul]
       apply mul_le_of_le_one_left (norm_nonneg _)
