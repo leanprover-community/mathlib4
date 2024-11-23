@@ -475,7 +475,7 @@ when it is injective. The inverse is given by the logarithms. -/
 @[simps]
 def powLogEquiv [DecidableEq M] {n : M} (h : Function.Injective fun m : ℕ => n ^ m) :
     Multiplicative ℕ ≃* powers n where
-  toFun m := pow n (Multiplicative.toAdd m)
+  toFun m := pow n m.toAdd
   invFun m := Multiplicative.ofAdd (log m)
   left_inv := log_pow_eq_self h
   right_inv := pow_log_eq_self

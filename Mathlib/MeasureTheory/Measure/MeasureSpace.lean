@@ -748,6 +748,11 @@ theorem coe_zero {_m : MeasurableSpace α} : ⇑(0 : Measure α) = 0 :=
   ext s hs
   simp [hs]
 
+@[simp] lemma _root_.MeasureTheory.OuterMeasure.toMeasure_eq_zero {ms : MeasurableSpace α}
+    {μ : OuterMeasure α} (h : ms ≤ μ.caratheodory) : μ.toMeasure h = 0 ↔ μ = 0 where
+  mp hμ := by ext s; exact le_bot_iff.1 <| (le_toMeasure_apply _ _ _).trans_eq congr($hμ s)
+  mpr := by rintro rfl; simp
+
 @[nontriviality]
 lemma apply_eq_zero_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} (μ : Measure α) (s : Set α) :
     μ s = 0 := by
@@ -1274,10 +1279,11 @@ theorem sum_apply₀ (f : ι → Measure α) {s : Set α} (hs : NullMeasurableSe
 /-! For the next theorem, the countability assumption is necessary. For a counterexample, consider
 an uncountable space, with a distinguished point `x₀`, and the sigma-algebra made of countable sets
 not containing `x₀`, and their complements. All points but `x₀` are measurable.
-Consider the sum of the Dirac masses at points different from `x₀`, and `s = x₀`. For any Dirac mass
-`δ_x`, we have `δ_x (x₀) = 0`, so `∑' x, δ_x (x₀) = 0`. On the other hand, the measure `sum δ_x`
-gives mass one to each point different from `x₀`, so it gives infinite mass to any measurable set
-containing `x₀` (as such a set is uncountable), and by outer regularity one get `sum δ_x {x₀} = ∞`.
+Consider the sum of the Dirac masses at points different from `x₀`, and `s = {x₀}`. For any Dirac
+mass `δ_x`, we have `δ_x (x₀) = 0`, so `∑' x, δ_x (x₀) = 0`. On the other hand, the measure
+`sum δ_x` gives mass one to each point different from `x₀`, so it gives infinite mass to any
+measurable set containing `x₀` (as such a set is uncountable), and by outer regularity one gets
+`sum δ_x {x₀} = ∞`.
 -/
 theorem sum_apply_of_countable [Countable ι] (f : ι → Measure α) (s : Set α) :
     sum f s = ∑' i, f i s := by

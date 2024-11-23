@@ -1724,7 +1724,6 @@ lemma div_lt_div₀ (hac : a < c) (hdb : d ≤ b) (hc : 0 ≤ c) (hd : 0 < d) : 
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_lt_mul hac ((inv_le_inv₀ (hd.trans_le hdb) hd).2 hdb) (inv_pos.2 <| hd.trans_le hdb) hc
 
-/-- See -/
 lemma div_lt_div₀' (hac : a ≤ c) (hdb : d < b) (hc : 0 < c) (hd : 0 < d) : a / b < c / d := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_lt_mul' hac ((inv_lt_inv₀ (hd.trans hdb) hd).2 hdb)
