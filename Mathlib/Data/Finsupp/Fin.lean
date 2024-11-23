@@ -37,8 +37,8 @@ def init (s : Fin (n + 1) →₀ M) : Fin n →₀ M :=
   Finsupp.equivFunOnFinite.symm (Fin.init s)
 
 /-- `removeNth` for maps `Fin n →₀ M`. See `Fin.removeNth` for more details. -/
-def removeNth (i : Fin (n + 1)) (s : Fin (n + 1) →₀ M) : Fin n →₀ M :=
-  Finsupp.equivFunOnFinite.symm (Fin.removeNth i s : Fin n → M)
+def removeNth (p : Fin (n + 1)) (s : Fin (n + 1) →₀ M) : Fin n →₀ M :=
+  Finsupp.equivFunOnFinite.symm (Fin.removeNth p s : Fin n → M)
 
 /-- `cons` for maps `Fin n →₀ M`. See `Fin.cons` for more details. -/
 def cons (y : M) (s : Fin n →₀ M) : Fin (n + 1) →₀ M :=
@@ -49,15 +49,15 @@ def snoc (s : Fin n →₀ M) (y : M) : Fin (n + 1) →₀ M :=
   Finsupp.equivFunOnFinite.symm (Fin.snoc s y : Fin (n + 1) → M)
 
 /-- `insertNth` for maps `Fin n →₀ M`. See `Fin.insertNth` for more details. -/
-def insertNth (i : Fin (n + 1)) (y : M) (s : Fin n →₀ M) : Fin (n + 1) →₀ M :=
-  Finsupp.equivFunOnFinite.symm (Fin.insertNth i y s : Fin (n + 1) → M)
+def insertNth (p : Fin (n + 1)) (y : M) (s : Fin n →₀ M) : Fin (n + 1) →₀ M :=
+  Finsupp.equivFunOnFinite.symm (Fin.insertNth p y s : Fin (n + 1) → M)
 
 section Remove
 
-variable (i : Fin (n + 1)) (s : Fin (n + 1) →₀ M) (j : Fin n) (y : M)
+variable (p : Fin (n + 1)) (s : Fin (n + 1) →₀ M) (y : M) (i : Fin n)
 
 @[simp]
-theorem removeNth_apply : removeNth i s j = s (i.succAbove j) := rfl
+theorem removeNth_apply : removeNth p s i = s (p.succAbove i) := rfl
 
 @[simp]
 theorem removeNth_zero : removeNth 0 s = tail s := rfl
@@ -69,12 +69,12 @@ theorem removeNth_last : removeNth (Fin.last n) s = init s := by
 
 /-- Updating the `i`-th entry does not affect removing the `i`-th entry. -/
 @[simp]
-theorem removeNth_update : removeNth i (update s i y) = removeNth i s := by
+theorem removeNth_update : removeNth p (update s p y) = removeNth p s := by
   simp only [removeNth, update, coe_mk, EmbeddingLike.apply_eq_iff_eq]
-  convert Fin.removeNth_update i y (⇑s)
+  convert Fin.removeNth_update p y (⇑s)
 
 @[simp]
-theorem tail_apply : tail s j = s j.succ := rfl
+theorem tail_apply : tail s i = s i.succ := rfl
 
 @[simp]
 theorem tail_update_zero : tail (update s 0 y) = tail s := by
@@ -82,7 +82,7 @@ theorem tail_update_zero : tail (update s 0 y) = tail s := by
   convert Fin.tail_update_zero (⇑s) y
 
 @[simp]
-theorem tail_update_succ (i : Fin n) : tail (update s i.succ y) = update (tail s) i y := by
+theorem tail_update_succ : tail (update s i.succ y) = update (tail s) i y := by
   ext a
   have : ⇑(equivFunOnFinite.symm (Fin.tail ⇑s)) = Fin.tail ⇑s := rfl
   simp only [tail, update, this, coe_mk, equivFunOnFinite_symm_apply_toFun]
@@ -91,7 +91,7 @@ theorem tail_update_succ (i : Fin n) : tail (update s i.succ y) = update (tail s
   convert this
 
 @[simp]
-theorem init_apply : init s j = s (j.castSucc) := rfl
+theorem init_apply : init s i = s i.castSucc := rfl
 
 @[simp]
 theorem init_update_last : init (update s (Fin.last n) y) = init s := by
@@ -99,7 +99,7 @@ theorem init_update_last : init (update s (Fin.last n) y) = init s := by
   convert Fin.init_update_last (⇑s) y
 
 @[simp]
-theorem init_update_castSucc (i : Fin n) : init (update s i.castSucc y) = update (init s) i y := by
+theorem init_update_castSucc : init (update s i.castSucc y) = update (init s) i y := by
   ext a
   have : ⇑(equivFunOnFinite.symm (Fin.init ⇑s)) = Fin.init ⇑s := rfl
   simp only [init, update, this, coe_mk, equivFunOnFinite_symm_apply_toFun]
@@ -119,7 +119,7 @@ end Remove
 
 section Add
 
-variable (i : Fin n) (j : Fin (n + 1)) (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M)
+variable (p : Fin (n + 1)) (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M) (i : Fin n)
 
 @[simp]
 theorem cons_zero : cons y s 0 = y := rfl
@@ -140,10 +140,10 @@ theorem insertNth_zero : insertNth 0 y s = cons y s := by simp [insertNth, cons]
 theorem insertNth_last : insertNth (Fin.last n) y s = snoc s y := by simp [insertNth, snoc]
 
 @[simp]
-theorem insertNth_apply_same : insertNth j y s j = y := by simp [insertNth]
+theorem insertNth_apply_same : insertNth p y s p = y := by simp [insertNth]
 
 @[simp]
-theorem insertNth_apply_succAbove : insertNth j y s (j.succAbove i) = s i := by simp [insertNth]
+theorem insertNth_apply_succAbove : insertNth p y s (p.succAbove i) = s i := by simp [insertNth]
 
 @[simp]
 theorem tail_cons : tail (cons y s) = s :=
@@ -167,17 +167,17 @@ theorem snoc_init_self : snoc (init t) (t (Fin.last n)) = t := by
   simp only [snoc, init, this, Fin.snoc_init_self, equivFunOnFinite_symm_coe]
 
 @[simp]
-theorem insertNth_removeNth (y : M) : insertNth j y (removeNth j t) = update t j y := by
-  have : ⇑(equivFunOnFinite.symm (j.removeNth ⇑t)) = j.removeNth ⇑t := rfl
+theorem insertNth_removeNth : insertNth p y (removeNth p t) = update t p y := by
+  have : ⇑(equivFunOnFinite.symm (p.removeNth ⇑t)) = p.removeNth ⇑t := rfl
   simp only [insertNth, removeNth, this, Fin.insertNth_removeNth, update]
-  have : Function.update (⇑t) j y = ⇑(update t j y) := by
+  have : Function.update (⇑t) p y = ⇑(update t p y) := by
     simp only [update, coe_mk]
     convert rfl
   rw [this]
   simp only [equivFunOnFinite_symm_coe, update]
 
-theorem insertNth_self_removeNth : insertNth j (t j) (removeNth j t) = t := by
-  have : ⇑(equivFunOnFinite.symm (j.removeNth ⇑t)) = j.removeNth ⇑t := rfl
+theorem insertNth_self_removeNth : insertNth p (t p) (removeNth p t) = t := by
+  have : ⇑(equivFunOnFinite.symm (p.removeNth ⇑t)) = p.removeNth ⇑t := rfl
   simp only [insertNth, removeNth, this, Fin.insertNth_removeNth, Function.update_eq_self,
     equivFunOnFinite_symm_coe]
 
@@ -196,7 +196,7 @@ theorem snoc_zero_zero : snoc (0 : Fin n →₀ M) 0 = 0 := by
     Pi.zero_apply, cast_eq, dite_eq_ite, ite_self]
 
 @[simp]
-theorem insertNth_zero_zero : insertNth j 0 (0 : Fin n →₀ M) = 0 := by
+theorem insertNth_zero_zero : insertNth p 0 (0 : Fin n →₀ M) = 0 := by
   ext a
   simp only [insertNth, coe_zero, equivFunOnFinite_symm_apply_toFun, Fin.insertNth,
     Fin.succAboveCases, eq_rec_constant, Pi.zero_apply, dite_eq_ite, ite_self]
@@ -210,7 +210,7 @@ theorem cons_ne_zero_of_left (h : y ≠ 0) : cons y s ≠ 0 := by
 theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
   contrapose! h with c
   ext a
-  simp only [← cons_succ a y s, c, coe_zero, Pi.zero_apply]
+  simp only [← cons_succ y s a, c, coe_zero, Pi.zero_apply]
 
 theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine ⟨fun h => ?_, fun h => h.casesOn cons_ne_zero_of_left cons_ne_zero_of_right⟩
@@ -220,7 +220,7 @@ theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
 theorem snoc_ne_zero_of_left (h : s ≠ 0) : snoc s y ≠ 0 := by
   contrapose! h with c
   ext a
-  simp only [← snoc_castSucc a y s, c, coe_zero, Pi.zero_apply]
+  simp only [← snoc_castSucc y s a, c, coe_zero, Pi.zero_apply]
 
 theorem snoc_ne_zero_of_right (h : y ≠ 0) : snoc s y ≠ 0 := by
   contrapose! h with c
@@ -231,18 +231,18 @@ theorem snoc_ne_zero_iff : snoc s y ≠ 0 ↔ s ≠ 0 ∨ y ≠ 0 := by
   refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.snoc_zero_zero]
 
-theorem insertNth_ne_zero_of_left (h : y ≠ 0) : insertNth j y s ≠ 0 := by
+theorem insertNth_ne_zero_of_left (h : y ≠ 0) : insertNth p y s ≠ 0 := by
   contrapose! h with c
-  rw [← insertNth_apply_same j y s, c, Finsupp.coe_zero, Pi.zero_apply]
+  rw [← insertNth_apply_same p y s, c, Finsupp.coe_zero, Pi.zero_apply]
 
-theorem insertNth_ne_zero_of_right (h : s ≠ 0) : insertNth j y s ≠ 0 := by
+theorem insertNth_ne_zero_of_right (h : s ≠ 0) : insertNth p y s ≠ 0 := by
   contrapose! h with c
   ext a
-  simp only [← insertNth_apply_succAbove a j y s, c, coe_zero, Pi.zero_apply]
+  simp only [← insertNth_apply_succAbove p y s a, c, coe_zero, Pi.zero_apply]
 
-theorem insertNth_ne_zero_iff : insertNth j y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
+theorem insertNth_ne_zero_iff : insertNth p y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine ⟨fun h => ?_,
-    fun h => h.casesOn (insertNth_ne_zero_of_left j) (insertNth_ne_zero_of_right j)⟩
+    fun h => h.casesOn (insertNth_ne_zero_of_left p) (insertNth_ne_zero_of_right p)⟩
   refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.insertNth_zero_zero]
 
@@ -262,10 +262,10 @@ theorem snoc_support :
   simpa [Finsupp.mem_support_iff] using hi
 
 theorem insertNth_support :
-    (insertNth j y s).support ⊆ insert j (s.support.map (Fin.succAboveEmb j)) := by
+    (insertNth p y s).support ⊆ insert p (s.support.map (Fin.succAboveEmb p)) := by
   intro i hi
-  suffices i = j ∨ ∃ a, ¬s a = 0 ∧ j.succAbove a = i by simpa
-  apply (Fin.eq_self_or_eq_succAbove i j).imp id (Exists.imp _)
+  suffices i = p ∨ ∃ a, ¬s a = 0 ∧ p.succAbove a = i by simpa
+  apply (Fin.eq_self_or_eq_succAbove i p).imp id (Exists.imp _)
   rintro i rfl
   simpa [Finsupp.mem_support_iff] using hi
 

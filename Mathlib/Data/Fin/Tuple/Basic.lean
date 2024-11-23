@@ -792,8 +792,8 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
 /-- Analogue of `Fin.eq_zero_or_eq_succ` for `succAbove`. -/
-theorem eq_self_or_eq_succAbove (i j : Fin (n + 1)) : i = j ∨ (∃ k, i = j.succAbove k) :=
-  succAboveCases j (.inl rfl) (fun k => .inr ⟨k, rfl⟩) i
+theorem eq_self_or_eq_succAbove (p i : Fin (n + 1)) : i = p ∨ (∃ j, i = p.succAbove j) :=
+  succAboveCases p (.inl rfl) (fun j => .inr ⟨j, rfl⟩) i
 
 /-- Remove the `p`-th entry of a tuple. -/
 def removeNth (p : Fin (n + 1)) (f : ∀ i, α i) : ∀ i, α (p.succAbove i) := fun i ↦ f (p.succAbove i)
