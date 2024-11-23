@@ -63,7 +63,7 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let data := Kernel.getDiagnostics (← getEnv)
 
   let declIds := ← getNamesFrom <| stx.getPos?.getD default
-  let declId := declIds.back!
+  let some declId := declIds.back? | return
 
   let mut bad : Option Name := none
   for forbidden in nm do
