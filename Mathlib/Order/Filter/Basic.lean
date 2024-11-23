@@ -1281,8 +1281,8 @@ theorem eventually_inf_principal {f : Filter α} {p : α → Prop} {s : Set α} 
 
 theorem eventually_iff_all_subsets {f : Filter α} {p : α → Prop} :
     (∀ᶠ x in f, p x) ↔ ∀ (s : Set α), ∀ᶠ x in f, x ∈ s → p x where
-    mp h _ := by filter_upwards [h] with _ pa _ using pa
-    mpr h := by filter_upwards [h univ] with _ pa using pa (by simp)
+  mp h _ := by filter_upwards [h] with _ pa _ using pa
+  mpr h := by filter_upwards [h univ] with _ pa using pa (by simp)
 
 /-! ### Frequently -/
 
