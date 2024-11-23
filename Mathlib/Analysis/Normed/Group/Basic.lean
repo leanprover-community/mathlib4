@@ -45,7 +45,7 @@ normed group
 -/
 
 
-variable {𝓕 𝕜 α ι κ E F G : Type*}
+variable {𝓕 α ι κ E F G : Type*}
 
 open Filter Function Metric Bornology
 
@@ -338,7 +338,7 @@ abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommG
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
-  {a a₁ a₂ b b₁ b₂ c : E} {r r₁ r₂ : ℝ}
+  {a a₁ a₂ b c : E} {r r₁ r₂ : ℝ}
 
 @[to_additive]
 theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ :=
@@ -972,7 +972,7 @@ end Induced
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a a₁ a₂ b b₁ b₂ : E} {r r₁ r₂ : ℝ}
+variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
@@ -1238,7 +1238,7 @@ end SeminormedCommGroup
 
 section NormedGroup
 
-variable [NormedGroup E] [NormedGroup F] {a b : E}
+variable [NormedGroup E] {a b : E}
 
 @[to_additive (attr := simp) norm_eq_zero]
 theorem norm_eq_zero'' : ‖a‖ = 0 ↔ a = 1 :=
