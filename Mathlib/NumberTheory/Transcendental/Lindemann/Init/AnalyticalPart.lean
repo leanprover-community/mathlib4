@@ -103,10 +103,11 @@ theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
 
 open Polynomial
 
+/-- Equation (68), page 285 of [Jacobson, *Basic Algebra I, 4.12*][jacobson1974] -/
 theorem exp_polynomial_approx (p : ℤ[X]) (hp : p.eval 0 ≠ 0) :
     ∃ c,
       ∀ q > (eval 0 p).natAbs, q.Prime →
-        ∃ (n : ℤ) (_ : ¬ ↑q ∣ n) (gp : ℤ[X]) (_ : gp.natDegree ≤ q * p.natDegree - 1),
+        ∃ n : ℤ, ¬ ↑q ∣ n ∧ ∃ gp : ℤ[X], gp.natDegree ≤ q * p.natDegree - 1 ∧
           ∀ {r : ℂ}, r ∈ p.aroots ℂ →
             Complex.abs (n • exp r - q • aeval r gp : ℂ) ≤ c ^ q / (q - 1)! := by
   let p' q := (X ^ (q - 1) * p ^ q).map (algebraMap ℤ ℂ)
@@ -118,22 +119,23 @@ theorem exp_polynomial_approx (p : ℤ[X]) (hp : p.eval 0 ≠ 0) :
     have : Bornology.IsBounded
         ((fun x : ℝ ↦ max (x * abs s) 1 * Complex.abs (aeval (x * s) p)) '' Set.Ioc 0 1) := by
       have h :
-        (fun x : ℝ ↦ max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) '' Set.Ioc 0 1 ⊆
-          (fun x : ℝ ↦ max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) '' Set.Icc 0 1 :=
+        (fun x : ℝ ↦ max (x * abs s) 1 * Complex.abs (aeval (x * s) p)) '' Set.Ioc 0 1 ⊆
+          (fun x : ℝ ↦ max (x * abs s) 1 * Complex.abs (aeval (x * s) p)) '' Set.Icc 0 1 :=
         Set.image_subset _ Set.Ioc_subset_Icc_self
       refine (IsCompact.image isCompact_Icc ?_).isBounded.subset h
       fun_prop
-    cases' this.exists_norm_le with c h
+    obtain ⟨c, h⟩ := this.exists_norm_le
+    simp_rw [Real.norm_eq_abs] at h
     use c; intro q x hx
-    specialize h (max (x * abs s) 1 * Complex.abs (aeval (↑x * s) p)) (Set.mem_image_of_mem _ hx)
-    refine le_trans ?_ (pow_le_pow_left₀ (norm_nonneg _) h _)
-    simp_rw [norm_mul, Real.norm_eq_abs, Complex.abs_abs, mul_pow, abs_of_pos hx.1]
+    specialize h (max (x * abs s) 1 * Complex.abs (aeval (x * s) p)) (Set.mem_image_of_mem _ hx)
+    refine le_trans ?_ (pow_le_pow_left₀ (abs_nonneg _) h _)
+    simp_rw [abs_mul, Complex.abs_abs, mul_pow, abs_of_pos hx.1]
     refine mul_le_mul_of_nonneg_right ?_ (pow_nonneg (Complex.abs.nonneg _) _)
-    rw [max_def]; split_ifs with hx1
-    · rw [abs_one, one_pow, ← mul_pow]
+    rw [← mul_pow, _root_.abs_of_nonneg (by positivity), max_def]
+    split_ifs with hx1
+    · rw [one_pow]
       exact pow_le_one₀ (mul_nonneg hx.1.le (Complex.abs.nonneg _)) hx1
     · push_neg at hx1
-      rw [abs_mul, Complex.abs_abs, ← mul_pow, abs_of_pos hx.1]
       exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
   choose c' c'0 Pp'_le using fun r ↦ P_le p' r (this r)
   let c :=
@@ -143,7 +145,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (hp : p.eval 0 ≠ 0) :
     have aux : c' x ∈ (Multiset.map c' (p.aroots ℂ)).toFinset := by
       simpa only [Multiset.mem_toFinset] using Multiset.mem_map_of_mem _ hx
     have h : ((p.aroots ℂ).map c').toFinset.Nonempty := ⟨c' x, aux⟩
-    simpa only [h, ↓reduceDIte, ge_iff_le] using Finset.le_max' _ _ aux
+    simpa only [h, ↓reduceDIte] using Finset.le_max' _ _ aux
   use c
   intro q q_gt prime_q
   have q0 : 0 < q := Nat.Prime.pos prime_q
@@ -153,13 +155,10 @@ theorem exp_polynomial_approx (p : ℤ[X]) (hp : p.eval 0 ≠ 0) :
       eq_intCast, coe_aeval_eq_eval] at h'
   specialize h' 0 (by rw [Int.cast_zero, sub_zero])
   use p.eval 0 ^ q + q • aeval (0 : ℤ) gp'
-  rw [exists_prop]
   constructor
   · rw [nsmul_eq_mul, dvd_add_left (dvd_mul_right _ _)]
-    intro h
-    replace h := Int.Prime.dvd_pow' prime_q h; rw [Int.natCast_dvd] at h
-    replace h := Nat.le_of_dvd (Int.natAbs_pos.mpr hp) h
-    revert h; rwa [imp_false, not_le]
+    contrapose! q_gt with h
+    exact Nat.le_of_dvd (Int.natAbs_pos.mpr hp) (Int.natCast_dvd.mp (Int.Prime.dvd_pow' prime_q h))
   obtain ⟨gp, gp'_le, h⟩ := aeval_sumIDeriv ℂ (X ^ (q - 1) * p ^ q) q
   refine ⟨gp, ?_, ?_⟩
   · refine gp'_le.trans ((tsub_le_tsub_right natDegree_mul_le q).trans ?_)

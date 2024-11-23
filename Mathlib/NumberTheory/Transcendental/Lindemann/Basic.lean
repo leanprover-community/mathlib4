@@ -252,3 +252,14 @@ theorem transcendental_pi : Transcendental ℤ Real.pi := by
   · intro i j; fin_cases i, j <;> simp [Real.pi_ne_zero]
   · intro i; fin_cases i <;> exact isIntegral_one
   · simp
+
+theorem transcendental_log {u : ℂ} (hu0 : Complex.log u ≠ 0) (hu : IsAlgebraic ℤ u) :
+    Transcendental ℤ (Complex.log u) := by
+  intro h
+  have := transcendental_exp hu0 h
+  rw [Complex.exp_log] at this
+  · apply this
+    simpa using hu.algebraMap (A := ℂ)
+  · simp only [ne_eq, ofReal_eq_zero]
+    rintro rfl
+    simp at hu0
