@@ -265,8 +265,8 @@ theorem insertNth_support :
     (insertNth p y s).support ⊆ insert p (s.support.map (Fin.succAboveEmb p)) := by
   intro i hi
   suffices i = p ∨ ∃ a, ¬s a = 0 ∧ p.succAbove a = i by simpa
-  apply (Fin.eq_self_or_eq_succAbove i p).imp id (Exists.imp _)
-  rintro i rfl
+  apply (Fin.eq_self_or_eq_succAbove p i).imp id (Exists.imp _)
+  rintro j rfl
   simpa [Finsupp.mem_support_iff] using hi
 
 end Add
