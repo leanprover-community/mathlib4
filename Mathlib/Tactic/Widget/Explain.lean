@@ -17,13 +17,15 @@ Example tactic usage:
 ```
 example : True := by
   explain "This is the first step."
-  explain "This is the last step." exact trivial
+  explain "This is the last step." in
+    exact trivial
 ```
 Placing the cursor on each line results will render the explanation in the infoview.
 
 Example term usage:
 ```
-example : Nat := explain% "This is zero" 0
+example : Nat := explain "This is zero" in
+  0
 ```
 Placing the cursor on the term will render the explanation in the infoview.
 
@@ -54,7 +56,9 @@ def displayMarkdown (md : String) (stx : Syntax) : CoreM Unit := do
     (return json% { html: $(← Server.RpcEncodable.rpcEncode html) })
     stx
 
-syntax (name := explainTacStx) "explain" str (ppIndent("in" tactic))? : tactic
+syntax (name := explainTacStx) "explain" str ("in" ppIndent(tactic))? : tactic
+syntax (name := explainTermStx) "explain" str "in" ppIndent(term) : term
+syntax (name := explainCmdStx) "#explain" str : command
 
 open Tactic in
 /-- A tactic that adds an explanation widget in markdown form. -/
@@ -68,19 +72,15 @@ def elabExplainTac : Tactic := fun stx =>
     evalTactic t
   | _ => throwUnsupportedSyntax
 
-syntax (name := explainTermStx) "explain%" str ppIndent("in" term) : term
-
 open Term in
 /-- A term elaborator that adds an explanation widget in markdown form. -/
 @[term_elab explainTermStx]
 def elabExplainTerm : TermElab := fun stx type? =>
   match stx with
-  | `(explain%%$tk $s:str in $t:term) => do
+  | `(explain%$tk $s:str in $t:term) => do
     displayMarkdown s.getString tk
     elabTerm t type?
   | _ => throwUnsupportedSyntax
-
-syntax (name := explainCmdStx) "#explain" str : command
 
 open Command in
 /-- A command that displays an explanation widget in markdown form. -/
