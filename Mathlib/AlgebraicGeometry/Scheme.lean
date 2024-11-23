@@ -338,8 +338,10 @@ theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
   rw [IsIso.eq_comp_inv, ← Scheme.comp_app, Scheme.congr_app (IsIso.hom_inv_id f),
     Scheme.id_app, Category.id_comp]
 
-theorem inv_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).appTop = inv (f.appTop) := by simp
+
+@[deprecated (since := "2024-11-23")] alias inv_app_top := inv_appTop
 
 end Scheme
 

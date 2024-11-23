@@ -97,7 +97,7 @@ lemma affineAnd_isStableUnderBaseChange (hQi : RingHom.RespectsIso Q)
   haveI : (affineAnd Q).toProperty.RespectsIso := affineAnd_respectsIso hQi
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g ⟨hY, hg⟩
-  exact ⟨inferInstance, hQb.pullback_fst_app_top _ hQi f _ hg⟩
+  exact ⟨inferInstance, hQb.pullback_fst_appTop _ hQi f _ hg⟩
 
 lemma targetAffineLocally_affineAnd_iff (hQi : RingHom.RespectsIso Q)
     {X Y : Scheme.{u}} (f : X ⟶ Y) :

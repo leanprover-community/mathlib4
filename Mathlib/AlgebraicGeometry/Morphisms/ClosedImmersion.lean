@@ -290,7 +290,7 @@ instance IsClosedImmersion.isStableUnderBaseChange :
   haveI := HasAffineProperty.isLocal_affineProperty @IsClosedImmersion
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g ⟨ha, hsurj⟩
-  exact ⟨inferInstance, RingHom.surjective_isStableUnderBaseChange.pullback_fst_app_top _
+  exact ⟨inferInstance, RingHom.surjective_isStableUnderBaseChange.pullback_fst_appTop _
     RingHom.surjective_respectsIso f _ hsurj⟩
 
 /-- Closed immersions are locally of finite type. -/

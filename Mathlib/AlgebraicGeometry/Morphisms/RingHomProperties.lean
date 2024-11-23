@@ -66,7 +66,7 @@ namespace RingHom
 
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
 
-theorem IsStableUnderBaseChange.pullback_fst_app_top
+theorem IsStableUnderBaseChange.pullback_fst_appTop
     (hP : IsStableUnderBaseChange P) (hP' : RespectsIso P)
     {X Y S : Scheme} [IsAffine X] [IsAffine Y] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S)
     (H : P g.appTop) : P (pullback.fst f g).appTop := by
@@ -82,6 +82,10 @@ theorem IsStableUnderBaseChange.pullback_fst_app_top
     Functor.op_map, Quiver.Hom.unop_op, AffineScheme.forgetToScheme_map, Scheme.Γ_map] at this
   rw [← this, hP'.cancel_right_isIso, ← pushoutIsoUnopPullback_inl_hom, hP'.cancel_right_isIso]
   exact hP.pushout_inl _ hP' _ _ H
+
+@[deprecated (since := "2024-11-23")]
+alias IsStableUnderBaseChange.pullback_fst_app_top :=
+IsStableUnderBaseChange.pullback_fst_appTop
 
 end RingHom
 
@@ -268,9 +272,11 @@ theorem appLE (H : P f) (U : Y.affineOpens) (V : X.affineOpens) (e) : Q (f.appLE
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le] at H
   exact H _ _ _
 
-theorem app_top (H : P f) [IsAffine X] [IsAffine Y] : Q f.appTop := by
+theorem appTop (H : P f) [IsAffine X] [IsAffine Y] : Q f.appTop := by
   rw [Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE]
   exact appLE P f H ⟨_, isAffineOpen_top _⟩ ⟨_, isAffineOpen_top _⟩ _
+
+@[deprecated (since := "2024-11-23")] alias app_top := appTop
 
 include Q in
 theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
@@ -320,7 +326,7 @@ theorem of_source_openCover [IsAffine Y]
 
 theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
     P f ↔ ∀ i, Q ((𝒰.map i ≫ f).appTop) :=
-  ⟨fun H i ↦ app_top P _ (comp_of_isOpenImmersion P (𝒰.map i) f H), of_source_openCover 𝒰⟩
+  ⟨fun H i ↦ appTop P _ (comp_of_isOpenImmersion P (𝒰.map i) f H), of_source_openCover 𝒰⟩
 
 theorem iff_of_isAffine [IsAffine X] [IsAffine Y] :
     P f ↔ Q (f.appTop) := by
@@ -504,7 +510,7 @@ lemma isStableUnderBaseChange (hP : RingHom.IsStableUnderBaseChange Q) :
       limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
     apply this _ (comp_of_isOpenImmersion _ _ _ H) inferInstance
   rw [iff_of_isAffine (P := P)] at H ⊢
-  exact hP.pullback_fst_app_top _ (isLocal_ringHomProperty P).respectsIso _ _ H
+  exact hP.pullback_fst_appTop _ (isLocal_ringHomProperty P).respectsIso _ _ H
 
 include Q in
 private lemma respects_isOpenImmersion_aux
