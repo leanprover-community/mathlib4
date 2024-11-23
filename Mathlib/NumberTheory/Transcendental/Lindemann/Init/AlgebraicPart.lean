@@ -278,7 +278,7 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
   exact ⟨y', y0, hfy⟩
 
 theorem linearIndependent_exp_aux2_1 {F K S : Type*}
-    [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K]
+    [Field F] [Field K] [Algebra F K] [FiniteDimensional F K]
     [NoZeroDivisors F[K]] [Semiring S] [Algebra F S]
     (f : F[K] →ₐ[F] S)
     (x : F[K]) (x0 : x ≠ 0) (hfx : f x = 0) :
@@ -366,7 +366,7 @@ theorem linearIndependent_exp_aux_rat {K S : Type*}
 
 theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
     [CommRing R] [Nontrivial R] [Field F] [Algebra R F] [IsFractionRing R F]
-    [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K] [CharZero F]
+    [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K]
     [Semiring S] [Algebra R S] [Algebra F S] [IsScalarTower R F S]
     (f : ConjRootClass F K → S)
     (w : F) (w0 : w ≠ 0) (w' : ConjRootClass F K →₀ F) (hw' : w' 0 = 0)
