@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Filter.Defs
 
 /-!
@@ -250,6 +250,8 @@ section CompleteLattice
 
 /- Complete lattice structure on `Filter α`. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
+  inf a b := min a b
+  sup a b := max a b
   le_sup_left _ _ _ h := h.1
   le_sup_right _ _ _ h := h.2
   sup_le _ _ _ h₁ h₂ _ h := ⟨h₁ h, h₂ h⟩
@@ -893,6 +895,11 @@ theorem eventually_inf_principal {f : Filter α} {p : α → Prop} {s : Set α} 
     (∀ᶠ x in f ⊓ 𝓟 s, p x) ↔ ∀ᶠ x in f, x ∈ s → p x :=
   mem_inf_principal
 
+theorem eventually_iff_all_subsets {f : Filter α} {p : α → Prop} :
+    (∀ᶠ x in f, p x) ↔ ∀ (s : Set α), ∀ᶠ x in f, x ∈ s → p x where
+  mp h _ := by filter_upwards [h] with _ pa _ using pa
+  mpr h := by filter_upwards [h univ] with _ pa using pa (by simp)
+
 /-! ### Frequently -/
 
 theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ᶠ x in f, p x) :
@@ -908,6 +915,10 @@ theorem Frequently.of_forall {f : Filter α} [NeBot f] {p : α → Prop} (h : �
 theorem Frequently.mp {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ᶠ x in f, p x → q x) : ∃ᶠ x in f, q x :=
   mt (fun hq => hq.mp <| hpq.mono fun _ => mt) h
+
+lemma frequently_congr {p q : α → Prop} {f : Filter α} (h : ∀ᶠ x in f, p x ↔ q x) :
+    (∃ᶠ x in f, p x) ↔ ∃ᶠ x in f, q x :=
+  ⟨fun h' ↦ h'.mp (h.mono fun _ ↦ Iff.mp), fun h' ↦ h'.mp (h.mono fun _ ↦ Iff.mpr)⟩
 
 theorem Frequently.filter_mono {p : α → Prop} {f g : Filter α} (h : ∃ᶠ x in f, p x) (hle : f ≤ g) :
     ∃ᶠ x in g, p x :=
@@ -1160,11 +1171,11 @@ theorem EventuallyEq.smul {𝕜} [SMul 𝕜 β] {l : Filter α} {f f' : α → �
     (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') : (fun x => f x • g x) =ᶠ[l] fun x => f' x • g' x :=
   hf.comp₂ (· • ·) hg
 
-theorem EventuallyEq.sup [Sup β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
+theorem EventuallyEq.sup [Max β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
     (hg : g =ᶠ[l] g') : (fun x => f x ⊔ g x) =ᶠ[l] fun x => f' x ⊔ g' x :=
   hf.comp₂ (· ⊔ ·) hg
 
-theorem EventuallyEq.inf [Inf β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
+theorem EventuallyEq.inf [Min β] {l : Filter α} {f f' g g' : α → β} (hf : f =ᶠ[l] f')
     (hg : g =ᶠ[l] g') : (fun x => f x ⊓ g x) =ᶠ[l] fun x => f' x ⊓ g' x :=
   hf.comp₂ (· ⊓ ·) hg
 
@@ -1218,6 +1229,10 @@ theorem eventuallyEq_iff_sub [AddGroup β] {f g : α → β} {l : Filter α} :
     f =ᶠ[l] g ↔ f - g =ᶠ[l] 0 :=
   ⟨fun h => h.sub_eq, fun h => by simpa using h.add (EventuallyEq.refl l g)⟩
 
+theorem eventuallyEq_iff_all_subsets {f g : α → β} {l : Filter α} :
+    f =ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x = g x :=
+  eventually_iff_all_subsets
+
 section LE
 
 variable [LE β] {l : Filter α}
@@ -1229,6 +1244,10 @@ theorem EventuallyLE.congr {f f' g g' : α → β} (H : f ≤ᶠ[l] g) (hf : f =
 theorem eventuallyLE_congr {f f' g g' : α → β} (hf : f =ᶠ[l] f') (hg : g =ᶠ[l] g') :
     f ≤ᶠ[l] g ↔ f' ≤ᶠ[l] g' :=
   ⟨fun H => H.congr hf hg, fun H => H.congr hf.symm hg.symm⟩
+
+theorem eventuallyLE_iff_all_subsets {f g : α → β} {l : Filter α} :
+    f ≤ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x ≤ g x :=
+  eventually_iff_all_subsets
 
 end LE
 

@@ -3,7 +3,8 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import ImportGraph
+import ImportGraph.CurrentModule
+import ImportGraph.Imports
 import Mathlib.Data.String.Defs
 import Mathlib.Util.FormatTable
 import Cli
@@ -122,9 +123,8 @@ open System in
 def countLOC (modules : List Name) : IO (NameMap Float) := do
   let mut r := {}
   for m in modules do
-    let fp := FilePath.mk ((← findOLean m).toString.replace ".lake/build/lib/" "")
-      |>.withExtension "lean"
-    if ← fp.pathExists then
+    if let .some fp ← Lean.SearchPath.findModuleWithExt [s!".{FilePath.pathSeparator}"] "lean" m
+    then
       let src ← IO.FS.readFile fp
       r := r.insert m (src.toList.count '\n').toFloat
   return r

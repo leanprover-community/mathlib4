@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.Topology.Instances.RealVectorSpace
 
+
 /-!
 # Torsors of normed space actions.
 
