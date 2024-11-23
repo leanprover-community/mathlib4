@@ -13,7 +13,7 @@ jobs:
     - name: Checkout mathlib repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 10 # this number matches the number of lines of the `git log` in the final step
+        fetch-depth: 0 # donwload the full repository
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -31,7 +31,11 @@ jobs:
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
         ZULIP_SITE: https://leanprover.zulipchat.com
       run: |
-          printf $'Scanning commits:\n%s\n\nContinuing\n' "$(git log --oneline -n 10)"
+          # scan the commits of the past 10 minutes, assuming that the timezone of the current machine
+          # is the same that performed the commit
+          git log --since="10 minutes ago" --pretty=oneline
+
+          printf $'Scanning commits:\n%s\n\nContinuing\n' "$(git log --since="10 minutes ago" --pretty=oneline)"
           while read -r pr_number; do
             printf $'Running the python script with pr "%s"\n' "${pr_number}"
             python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "${pr_number}"
