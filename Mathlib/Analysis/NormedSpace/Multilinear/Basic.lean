@@ -127,16 +127,15 @@ both directions. Along the way, we prove useful bounds on the difference `‖f m
 
 namespace MultilinearMap
 
-variable (f : MultilinearMap 𝕜 E G)
-
-/-- If `f` is a continuous multilinear map in finitely many variables on `E` and `m` is an element
-of `∀ i, E i` such that one of the `m i` has norm `0`, then `f m` has norm `0`.
+/-- If `f` is a continuous multilinear map on `E`
+and `m` is an element of `∀ i, E i` such that one of the `m i` has norm `0`,
+then `f m` has norm `0`.
 
 Note that we cannot drop the continuity assumption because `f (m : Unit → E) = f (m ())`,
 where the domain has zero norm and the codomain has a nonzero norm
 does not satisfy this condition. -/
-lemma norm_map_coord_zero (hf : Continuous f) {m : ∀ i, E i} {i : ι} (hi : ‖m i‖ = 0) :
-    ‖f m‖ = 0 := by
+lemma norm_map_coord_zero (f : MultilinearMap 𝕜 E G) (hf : Continuous f)
+    {m : ∀ i, E i} {i : ι} (hi : ‖m i‖ = 0) : ‖f m‖ = 0 := by
   classical
   rw [← inseparable_zero_iff_norm] at hi ⊢
   have : Inseparable (update m i 0) m := inseparable_pi.2 <|
@@ -145,7 +144,17 @@ lemma norm_map_coord_zero (hf : Continuous f) {m : ∀ i, E i} {i : ι} (hi : �
 
 variable [Fintype ι]
 
-theorem bound_of_shell_of_norm_map_coord_zero (hf₀ : ∀ {m i}, ‖m i‖ = 0 → ‖f m‖ = 0)
+/-- If a multilinear map in finitely many variables on seminormed spaces
+sends vectors with a component of norm zero to vectors of norm zero
+and satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i`
+for some positive numbers `ε i` and elements `c i : 𝕜`, `1 < ‖c i‖`,
+then it satisfies this inequality for all `m`.
+
+The first assumption is automatically satisfied on normed spaces, see `bound_of_shell` below.
+For seminormed spaces, it follows from continuity of `f`, see next lemma,
+see `bound_of_shell_of_continuous` below. -/
+theorem bound_of_shell_of_norm_map_coord_zero (f : MultilinearMap 𝕜 E G)
+    (hf₀ : ∀ {m i}, ‖m i‖ = 0 → ‖f m‖ = 0)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
@@ -160,7 +169,7 @@ theorem bound_of_shell_of_norm_map_coord_zero (hf₀ : ∀ {m i}, ‖m i‖ = 0 
 /-- If a continuous multilinear map in finitely many variables on normed spaces satisfies
 the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i` for some positive
 numbers `ε i` and elements `c i : 𝕜`, `1 < ‖c i‖`, then it satisfies this inequality for all `m`. -/
-theorem bound_of_shell_of_continuous (hfc : Continuous f)
+theorem bound_of_shell_of_continuous (f : MultilinearMap 𝕜 E G) (hfc : Continuous f)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
@@ -169,7 +178,7 @@ theorem bound_of_shell_of_continuous (hfc : Continuous f)
 /-- If a multilinear map in finitely many variables on normed spaces is continuous, then it
 satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, for some `C` which can be chosen to be
 positive. -/
-theorem exists_bound_of_continuous (hf : Continuous f) :
+theorem exists_bound_of_continuous (f : MultilinearMap 𝕜 E G) (hf : Continuous f) :
     ∃ C : ℝ, 0 < C ∧ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
   cases isEmpty_or_nonempty ι
   · refine ⟨‖f 0‖ + 1, add_pos_of_nonneg_of_pos (norm_nonneg _) zero_lt_one, fun m => ?_⟩
@@ -186,13 +195,15 @@ theorem exists_bound_of_continuous (hf : Continuous f) :
   rw [← div_le_iff₀' this, one_div, ← inv_pow, inv_div, Fintype.card, ← prod_const]
   exact prod_le_prod (fun _ _ => div_nonneg ε0.le (norm_nonneg _)) fun i _ => hcm i
 
-/-- If `f` satisfies a boundedness property around `0`, one can deduce a bound on `f m₁ - f m₂`
-using the multilinearity. Here, we give a precise but hard to use version. See
-`norm_image_sub_le_of_bound` for a less precise but more usable version. The bound reads
+/-- If a multilinear map `f` satisfies a boundedness property around `0`,
+one can deduce a bound on `f m₁ - f m₂` using the multilinearity.
+Here, we give a precise but hard to use version.
+See `norm_image_sub_le_of_bound` for a less precise but more usable version.
+The bound reads
 `‖f m - f m'‖ ≤
   C * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
 where the other terms in the sum are the same products where `1` is replaced by any `i`. -/
-theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
+theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap 𝕜 E G) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ C * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
   have A :
@@ -234,8 +245,8 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
 using the multilinearity. Here, we give a usable but not very precise version. See
 `norm_image_sub_le_of_bound'` for a more precise but less usable version. The bound is
 `‖f m - f m'‖ ≤ C * card ι * ‖m - m'‖ * (max ‖m‖ ‖m'‖) ^ (card ι - 1)`. -/
-theorem norm_image_sub_le_of_bound {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖)
-    (m₁ m₂ : ∀ i, E i) :
+theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
+    {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ C * Fintype.card ι * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) * ‖m₁ - m₂‖ := by
   classical
   have A :
@@ -268,7 +279,8 @@ theorem norm_image_sub_le_of_bound {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m�
 
 /-- If a multilinear map satisfies an inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, then it is
 continuous. -/
-theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : Continuous f := by
+theorem continuous_of_bound (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
+    Continuous f := by
   let D := max C 1
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
   replace H (m) : ‖f m‖ ≤ D * ∏ i, ‖m i‖ :=
@@ -287,17 +299,19 @@ theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m 
 
 /-- Constructing a continuous multilinear map from a multilinear map satisfying a boundedness
 condition. -/
-def mkContinuous (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ContinuousMultilinearMap 𝕜 E G :=
+def mkContinuous (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
+    ContinuousMultilinearMap 𝕜 E G :=
   { f with cont := f.continuous_of_bound C H }
 
 @[simp]
-theorem coe_mkContinuous (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ⇑(f.mkContinuous C H) = f :=
+theorem coe_mkContinuous (f : MultilinearMap 𝕜 E G) (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
+    ⇑(f.mkContinuous C H) = f :=
   rfl
 
 /-- Given a multilinear map in `n` variables, if one restricts it to `k` variables putting `z` on
 the other coordinates, then the resulting restricted function satisfies an inequality
 `‖f.restr v‖ ≤ C * ‖z‖^(n-k) * Π ‖v i‖` if the original function satisfies `‖f v‖ ≤ C * Π ‖v i‖`. -/
-theorem restr_norm_le {k n : ℕ} (f : (MultilinearMap 𝕜 (fun _ : Fin n => G) G' : _))
+theorem restr_norm_le {k n : ℕ} (f : MultilinearMap 𝕜 (fun _ : Fin n => G) G')
     (s : Finset (Fin n)) (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (v : Fin k → G) : ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
   rw [mul_right_comm, mul_assoc]
@@ -316,7 +330,6 @@ We define the norm `‖f‖` of a continuous multilinear map `f` in finitely man
 smallest number such that `‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖` for all `m`. We show that this
 defines a normed space structure on `ContinuousMultilinearMap 𝕜 E G`.
 -/
-
 
 namespace ContinuousMultilinearMap
 
@@ -1178,12 +1191,11 @@ continuous-multilinear in `f₁, ..., fₙ`. -/
 noncomputable def compContinuousLinearMapContinuousMultilinear :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
       ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
-  @MultilinearMap.mkContinuous 𝕜 ι (fun i ↦ E i →L[𝕜] E₁ i)
-    ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) _
-    (fun _ ↦ ContinuousLinearMap.toSeminormedAddCommGroup)
-    (fun _ ↦ ContinuousLinearMap.toNormedSpace) _ _
-    (compContinuousLinearMapMultilinear 𝕜 E E₁ G) _ 1
-    fun f ↦ by simpa using norm_compContinuousLinearMapL_le G f
+  MultilinearMap.mkContinuous (𝕜 := 𝕜) (E := fun i ↦ E i →L[𝕜] E₁ i)
+    (G := (ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G)
+    (compContinuousLinearMapMultilinear 𝕜 E E₁ G) 1 fun f ↦ by
+      rw [one_mul]
+      apply norm_compContinuousLinearMapL_le
 
 variable {𝕜 E E₁}
 
