@@ -35,6 +35,8 @@ lemma natCard_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
 
 @[to_additive] alias card_mul_le := natCard_mul_le
 
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
 attribute [deprecated natCard_mul_le (since := "2024-09-30")] card_mul_le
 attribute [deprecated natCard_add_le (since := "2024-09-30")] card_add_le
 
@@ -54,6 +56,8 @@ lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by
 
 @[to_additive] alias card_inv := natCard_inv
 
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
 attribute [deprecated natCard_inv (since := "2024-09-30")] card_inv
 attribute [deprecated natCard_neg (since := "2024-09-30")] card_neg
 
@@ -83,6 +87,8 @@ lemma natCard_div_le : Nat.card (s / t) ≤ Nat.card s * Nat.card t := by
 
 @[to_additive] alias card_div_le := natCard_div_le
 
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
 attribute [deprecated natCard_div_le (since := "2024-09-30")] card_div_le
 attribute [deprecated natCard_sub_le (since := "2024-09-30")] card_sub_le
 

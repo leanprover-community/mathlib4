@@ -96,7 +96,6 @@ alias isOfFinOrder_one := IsOfFinOrder.one
 attribute [deprecated IsOfFinOrder.one (since := "2024-10-11")] isOfFinOrder_one
 attribute [deprecated IsOfFinAddOrder.zero (since := "2024-10-11")] isOfFinAddOrder_zero
 
-
 @[to_additive]
 lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
   simp_rw [isOfFinOrder_iff_pow_eq_one]
