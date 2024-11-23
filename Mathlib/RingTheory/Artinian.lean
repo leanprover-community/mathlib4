@@ -10,6 +10,7 @@ import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.Tactic.RSuffices
+import Mathlib.RingTheory.PrimeSpectrum
 
 /-!
 # Artinian rings and modules
@@ -502,6 +503,11 @@ lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
   obtain ⟨q, hq1, hq2⟩ := p.2.inf_le'.mp <| inf_eq_right.mp <|
     inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
   rwa [← Subtype.ext <| (@isMaximal_of_isPrime _ _ _ _ q.2).eq_of_le p.2.1 hq2]
+
+instance {R} [CommRing R] [IsArtinianRing R] : Finite (PrimeSpectrum R) :=
+  @Finite.of_injective _ (setOf Ideal.IsPrime)
+    (Set.finite_coe_iff.mpr (IsArtinianRing.primeSpectrum_finite R))
+    (fun x ↦ ⟨x.1, x.2⟩) fun _ _ e ↦ PrimeSpectrum.ext congr($e)
 
 variable (R)
 /--
