@@ -18,20 +18,20 @@ and `a : ZMod q` is invertible, then there are infinitely many prime numbers `p`
 The main steps of the proof are as follows.
 1. Define `ArithmeticFunction.vonMangoldt.residueClass a` for `a : ZMod q`, which is
    a function `ℕ → ℝ` taking the value zero when `(n : ℤMod q) ≠ a` and `Λ n` else
-   (where `Λ` is the vn Mangoldt function `ArithmeticFunction.vonMangoldt`; we have
+   (where `Λ` is the von Mangoldt function `ArithmeticFunction.vonMangoldt`; we have
    `Λ (p^k) = log p` for prime powers and `Λ n = 0` otherwise.)
 2. Show that this function can be written as a linear combination of functions
-   of the form `χ * Λ` with Dirichlet characters `χ` mod `q`.
+   of the form `χ * Λ` (pointwise product) with Dirichlet characters `χ` mod `q`.
    See `ArithmeticFunction.vonMangoldt.residueClass_eq`.
 3. This implies that the L-series of `ArithmeticFunction.vonMangoldt.residueClass a`
-   agrees (on `re s > 1`) with the corresponding linear combinations of negative logarithmic
+   agrees (on `re s > 1`) with the corresponding linear combination of negative logarithmic
    derivatives of Dirichlet L-functions.
    See `ArithmeticFunction.vonMangoldt.LSeries_residueClass_eq`.
 4. Define an auxiliary function `ArithmeticFunction.vonMangoldt.auxFun a` that is
    this linear combination of negative logarithmic derivatives of L-functions minus
    `(q.totient)⁻¹/(s-1)`, which cancels the pole at `s = 1`.
-5. Show that the auxiliary function is continuous on `re s ≥ 1`:
-   `ArithmeticFunction.vonMangoldt.continuousOn_auxFun`.
+5. Show that the auxiliary function is continuous on `re s ≥ 1`,
+   See `ArithmeticFunction.vonMangoldt.continuousOn_auxFun`.
 6. Show that the sum of `Λ n / n` over any residue class, but *excluding* the primes, converges.
    See `ArithmeticFunction.vonMangoldt.summable_residueClass_non_primes_div`.
 7. Combining these ingredients, we can deduce that the sum of `Λ n / n` over
