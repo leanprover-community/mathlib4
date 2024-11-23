@@ -76,7 +76,8 @@ namespace UnifTight
 
 theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∀ᶠ s in μ.cofinite.smallSets, ∀ i, eLpNorm (s.indicator (f i)) p μ ≤ ε := by
-  by_cases hε_top : ε = ∞; subst hε_top; simp
+  by_cases hε_top : ε = ∞
+  · subst hε_top; simp
   rcases hf (pos_iff_ne_zero.2 (toNNReal_ne_zero.mpr ⟨hε,hε_top⟩)) with ⟨s, hμs, hfs⟩
   refine (eventually_smallSets' ?_).2 ⟨sᶜ, ?_, fun i ↦ (coe_toNNReal hε_top) ▸ hfs i⟩
   · intro s t hst ht i
@@ -286,14 +287,14 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   have hgEcε := calc
     eLpNorm (Eᶜ.indicator g) p μ
       ≤ eLpNorm (Efᶜ.indicator (Egᶜ.indicator g)) p μ := by
-        unfold_let E; rw [compl_union, ← indicator_indicator]
+        unfold E; rw [compl_union, ← indicator_indicator]
     _ ≤ eLpNorm (Egᶜ.indicator g) p μ := eLpNorm_indicator_le _
     _ ≤ ε / 3 := hgε.le
   have hmfnEc : AEStronglyMeasurable _ μ := ((hf n).indicator hmE.compl).aestronglyMeasurable
   have hfnEcε : eLpNorm (Eᶜ.indicator (f n)) p μ ≤ ε / 3 := calc
     eLpNorm (Eᶜ.indicator (f n)) p μ
       ≤ eLpNorm (Egᶜ.indicator (Efᶜ.indicator (f n))) p μ := by
-        unfold_let E; rw [compl_union, inter_comm, ← indicator_indicator]
+        unfold E; rw [compl_union, inter_comm, ← indicator_indicator]
     _ ≤ eLpNorm (Efᶜ.indicator (f n)) p μ := eLpNorm_indicator_le _
     _ ≤ ε / 3 := hfε n
   have hmfngEc : AEStronglyMeasurable _ μ :=

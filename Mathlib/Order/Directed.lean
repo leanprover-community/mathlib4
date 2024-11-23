@@ -58,11 +58,7 @@ alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
   simp_rw [Directed, DirectedOn, Set.forall_mem_range, Set.exists_range_iff]
 
--- Porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
-alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
-
--- Porting note: `attribute [protected]` doesn't work
--- attribute [protected] Directed.directedOn_range
+protected alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
@@ -167,7 +163,7 @@ instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirecte
 /-- A monotone function on an upwards-directed type is directed. -/
 theorem directed_of_isDirected_le [LE α] [IsDirected α (· ≤ ·)] {f : α → β} {r : β → β → Prop}
     (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
-  directed_id.mono_comp H
+  directed_id.mono_comp _ H
 
 theorem Monotone.directed_le [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β} :
     Monotone f → Directed (· ≤ ·) f :=

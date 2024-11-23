@@ -103,7 +103,7 @@ theorem fg_of_fg_toSubmodule {S : Subalgebra R A} : S.toSubmodule.FG → S.FG :=
   fun ⟨t, ht⟩ ↦ ⟨t, le_antisymm
     (Algebra.adjoin_le fun x hx ↦ show x ∈ Subalgebra.toSubmodule S from ht ▸ subset_span hx) <|
     show Subalgebra.toSubmodule S ≤ Subalgebra.toSubmodule (Algebra.adjoin R ↑t) from fun x hx ↦
-      span_le.mpr (fun x hx ↦ Algebra.subset_adjoin hx)
+      span_le.mpr (fun _ hx ↦ Algebra.subset_adjoin hx)
         (show x ∈ span R ↑t by
           rw [ht]
           exact hx)⟩
