@@ -174,7 +174,8 @@ theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (Quoti
 instance : Coe α (α ⧸ s) :=
   ⟨mk⟩
 
-@[to_additive (attr := deprecated (since := "2024-08-04"))] alias induction_on' := induction_on
+@[to_additive (attr := deprecated (since := "2024-08-04"))]
+alias induction_on' := induction_on
 
 @[to_additive (attr := simp)]
 theorem quotient_liftOn_mk {β} (f : α → β) (h) (x : α) : Quotient.liftOn' (x : α ⧸ s) f h = f x :=
@@ -198,7 +199,8 @@ protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
     _ ↔ leftRel s a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
 
-@[to_additive (attr := deprecated (since := "2024-08-04"))] alias eq' := QuotientGroup.eq
+@[to_additive (attr := deprecated "Deprecated without replacement." (since := "2024-08-04"))]
+alias eq' := QuotientGroup.eq
 
 @[to_additive]
 theorem out_eq' (a : α ⧸ s) : mk a.out = a :=
@@ -213,7 +215,8 @@ variable (s)
 theorem mk_out_eq_mul (g : α) : ∃ h : s, (mk g : α ⧸ s).out = g * h :=
   ⟨⟨g⁻¹ * (mk g).out, QuotientGroup.eq.mp (mk g).out_eq'.symm⟩, by rw [mul_inv_cancel_left]⟩
 
-@[to_additive (attr := deprecated (since := "2024-10-19")) QuotientAddGroup.mk_out'_eq_mul]
+@[to_additive (attr := deprecated "Deprecated without replacement." (since := "2024-10-19"))
+  QuotientAddGroup.mk_out'_eq_mul]
 alias mk_out'_eq_mul := mk_out_eq_mul
 
 variable {s} {a b : α}

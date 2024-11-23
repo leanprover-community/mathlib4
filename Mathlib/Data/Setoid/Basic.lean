@@ -36,12 +36,12 @@ attribute [trans] Setoid.trans
 variable {α : Type*} {β : Type*}
 
 /-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/
-@[deprecated (since := "2024-08-29")]
+@[deprecated "Deprecated without replacement."  (since := "2024-08-29")]
 def Setoid.Rel (r : Setoid α) : α → α → Prop :=
   @Setoid.r _ r
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-09")]
+@[deprecated "Deprecated without replacement."  (since := "2024-10-09")]
 instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r.Rel :=
   h
 
