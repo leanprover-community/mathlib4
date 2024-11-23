@@ -731,7 +731,7 @@ theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x �
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 
 set_option linter.deprecated false in
-@[deprecated "Deprecated without replacement." (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem ite_continuous' {p : Prop} [hp : Decidable p] (f g : α → β) (hf : Continuous' f)
     (hg : Continuous' g) : Continuous' fun x => if p then f x else g x := by
   split_ifs <;> simp [*]

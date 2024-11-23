@@ -147,7 +147,7 @@ protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
 /-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
-@[deprecated "Deprecated without replacement." (since := "2024-10-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
 theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
   rfl
 

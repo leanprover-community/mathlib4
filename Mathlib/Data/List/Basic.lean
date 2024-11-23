@@ -34,7 +34,7 @@ universe u v w
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
 
 /-- `≤` implies not `>` for lists. -/
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 
 -- Porting note: Delete this attribute
@@ -496,7 +496,7 @@ theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   cases l <;> [cases h; rfl]
 
-@[deprecated (since := "2024-08-22")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-22")]
 theorem get_cons {l : List α} {a : α} {n} (hl) :
     (a :: l).get ⟨n, hl⟩ = if hn : n = 0 then a else
       l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
@@ -627,7 +627,7 @@ lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l�
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
 
-@[deprecated (since := "2024-04-07")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-07")]
 theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
 
 @[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
@@ -2257,7 +2257,7 @@ theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs
   simp; omega
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-07-25")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-25")]
 theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     SizeOf.sizeOf (List.dropSlice i j xs) < SizeOf.sizeOf xs := by
   induction xs generalizing i j hj with

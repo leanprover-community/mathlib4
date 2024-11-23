@@ -24,7 +24,7 @@ namespace LazyList
 open Function
 
 /-- Isomorphism between strict and lazy lists. -/
-@[deprecated "Deprecated without replacement."  (since := "2024-07-22")]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22")]
 def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
   toFun := LazyList.ofList
   invFun := LazyList.toList
@@ -39,12 +39,12 @@ def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
     · simp [toList, ofList]
     · simpa [ofList, toList]
 
-@[deprecated "Deprecated without replacement."  (since := "2024-07-22")]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22")]
 instance : Traversable LazyList where
   map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
-@[deprecated "Deprecated without replacement."  (since := "2024-07-22")]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22")]
 instance : LawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
   · induction xs using LazyList.rec with
@@ -71,7 +71,7 @@ instance : LawfulTraversable LazyList := by
         Function.comp_def, Thunk.pure, ofList]
     | mk _ ih => apply ih
 
-@[deprecated "Deprecated without replacement."  (since := "2024-07-22"), simp]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22"), simp]
 theorem bind_singleton {α} (x : LazyList α) : x.bind singleton = x := by
   induction x using LazyList.rec (motive_2 := fun xs => xs.get.bind singleton = xs.get) with
   | nil => simp [LazyList.bind]
@@ -81,7 +81,7 @@ theorem bind_singleton {α} (x : LazyList α) : x.bind singleton = x := by
     simp [ih]
   | mk f ih => simp_all
 
-@[deprecated "Deprecated without replacement."  (since := "2024-07-22")]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22")]
 instance : LawfulMonad LazyList := LawfulMonad.mk'
   (id_map := by
     intro α xs
