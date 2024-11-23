@@ -88,7 +88,7 @@ theorem coe_to_continuous_fun (f : α →ᵇ β) : (f.toContinuousMap : α → �
   because it is a composition of multiple projections. -/
 def Simps.apply (h : α →ᵇ β) : α → β := h
 
-initialize_simps_projections BoundedContinuousFunction (toContinuousMap_toFun → apply)
+initialize_simps_projections BoundedContinuousFunction (toFun → apply)
 
 protected theorem bounded (f : α →ᵇ β) : ∃ C, ∀ x y : α, dist (f x) (f y) ≤ C :=
   f.map_bounded'
