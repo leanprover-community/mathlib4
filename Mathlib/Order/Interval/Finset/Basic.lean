@@ -608,6 +608,12 @@ theorem card_Iio_eq_card_Iic_sub_one (a : α) : #(Iio a) = #(Iic a) - 1 := by
 
 end OrderBot
 
+@[simp]
+theorem Icc_bot_top [LocallyFiniteOrder α] [BoundedOrder α] [Fintype α] :
+    Icc (⊥ : α) ⊤ = univ := by
+  ext a
+  simp only [mem_Icc, bot_le, le_top, and_self, mem_univ]
+
 end BoundedPartialOrder
 
 section SemilatticeSup
