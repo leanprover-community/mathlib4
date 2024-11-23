@@ -719,6 +719,13 @@ theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs
     (hn : 1 ≤ n) : ContinuousOn (fun x => fderiv 𝕜 f x) s :=
   ((contDiffOn_succ_iff_fderiv_of_isOpen hs).1 (h.of_le hn)).2.continuousOn
 
+/-- The following lemma will be removed when the definition of `C^ω` will be corrected. For now,
+it is only there as a convenient shortcut. -/
+theorem contDiffOn_infty_iff_contDiffOn_omega :
+    ContDiffOn 𝕜 ∞ f s ↔ ContDiffOn 𝕜 ω f s := by
+  have A (m : ℕ) : m ≤ ∞ := mod_cast le_top
+  simp [ContDiffOn, ContDiffWithinAt, hasFTaylorSeriesUpTo_top_iff, A]
+
 /-! ### Smooth functions at a point -/
 
 variable (𝕜)

@@ -270,8 +270,10 @@ lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
     exact (h.iteratedFDeriv m x hx).differentiableAt
 
 /-- An analytic function is infinitely differentiable. -/
-protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) {n : ℕ∞} :
-    ContDiffOn 𝕜 n f s :=
+protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s)
+    {n : WithTop ℕ∞} : ContDiffOn 𝕜 n f s := by
+  suffices ContDiffOn 𝕜 ⊤ f s from this.of_le le_top
+  rw [← contDiffOn_infty_iff_contDiffOn_omega]
   let t := { x | AnalyticAt 𝕜 f x }
   suffices ContDiffOn 𝕜 n f t from this.mono h
   have H : AnalyticOnNhd 𝕜 f t := fun _x hx ↦ hx
@@ -283,7 +285,7 @@ protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 
       fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
 /-- An analytic function on the whole space is infinitely differentiable there. -/
-theorem AnalyticOnNhd.contDiff [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f univ) {n : ℕ∞} :
+theorem AnalyticOnNhd.contDiff [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f univ) {n : WithTop ℕ∞} :
     ContDiff 𝕜 n f := by
   rw [← contDiffOn_univ]
   exact h.contDiffOn
