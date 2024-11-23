@@ -33,20 +33,23 @@ end setup
 section basic
 
 /-- A toy class to test `addMorphismPropertyInstances` -/
-class Foo.Bar (n : ℕ) {X Y : PUnit} (f : X ⟶ Y) : Prop where
+class Foo.Bar (n : ℕ) {X Y : PUnit.{v + 1}} (f : X ⟶ Y) : Prop where
+  baz : Nonempty (Type u)
 
-instance : IsStableUnderComposition (@Foo.Bar n) := ⟨fun _ _ _ _ ↦ ⟨⟩⟩
-instance : ContainsIdentities (@Foo.Bar n) := ⟨fun _ ↦ ⟨⟩⟩
+instance : IsStableUnderComposition (@Foo.Bar n) := ⟨fun _ _ _ _ ↦ ⟨inferInstance⟩⟩
+instance : ContainsIdentities (@Foo.Bar n) := ⟨fun _ ↦ ⟨inferInstance⟩⟩
 
 /- This should add the lemma `comp_mem`. -/
 addMorphismPropertyInstances @Foo.Bar n
 
 assert_exists Foo.Bar.comp_mem
 
-example {X Y : PUnit.{v+1}} (f g : X ⟶ Y) [Foo.Bar 1 f] [Foo.Bar 1 g] : Foo.Bar 1 (f ≫ g) :=
+example {X Y : PUnit.{v+1}} (f g : X ⟶ Y) [Foo.Bar.{u} 1 f] [Foo.Bar.{u} 1 g] :
+    Foo.Bar.{u} 1 (f ≫ g) :=
   inferInstance
 
-instance : RespectsIso (@Foo.Bar n) := @RespectsIso.mk _ _ _ (fun _ _ _ ↦ ⟨⟩) (fun _ _ _ ↦ ⟨⟩)
+instance : RespectsIso (@Foo.Bar n) :=
+  @RespectsIso.mk _ _ _ (fun _ _ _ ↦ ⟨inferInstance⟩) (fun _ _ _ ↦ ⟨inferInstance⟩)
 
 /- This should add the lemma `of_isIso`. -/
 addMorphismPropertyInstances @Foo.Bar.{u} n
@@ -83,7 +86,7 @@ addMorphismPropertyInstances? @Bar2
 error: Failed to add any instances:
 
 Failed to add instance for comp_mem:
-(kernel) constant has already been declared 'Foo.Bar2.comp_mem'
+'Foo.Bar2.comp_mem' has already been declared
 
 Failed to add instance for of_isIso:
 Failed to synthesize ContainsIdentities @Bar2.

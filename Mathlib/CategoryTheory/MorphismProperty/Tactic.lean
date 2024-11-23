@@ -129,6 +129,9 @@ def addMorphismPropertyInstancesAux (classTerm : TSyntax `term) (verbose : Bool 
   if let .const morphismPropertyClass _lvl := classExpr.getAppFn then
     for (lemmaName, config) in lemmas do
       try
+        -- First we check if the lemma already exists.
+        let name := .str morphismPropertyClass lemmaName.toString
+        checkNotAlreadyDeclared name
         -- We attempt to feed `classExpr` into `lemmaName` and fill in all typeclass arguments
         -- of `lemmaName` about `classExpr`.
         let classExpr ← Term.elabTerm classTerm none
@@ -150,7 +153,6 @@ def addMorphismPropertyInstancesAux (classTerm : TSyntax `term) (verbose : Bool 
         let proofTerm ← instantiateMVars (← Term.levelMVarToParam
           (← mkLambdaFVars (usedOnly := true) fvars proofTerm))
         let statement ← instantiateMVars (← mkForallFVars (usedOnly := true) fvars statement)
-        let name := .str morphismPropertyClass lemmaName.toString
         let decl : TheoremVal :=
         { name := name
           levelParams := (collectLevelParams {} proofTerm).params.toList
