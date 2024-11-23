@@ -166,7 +166,7 @@ def toSupBotHom (f : α →ₙ*q β) : SupBotHom α β where
 theorem coe_SupBotHom (f : α →ₙ*q β) : ((f : SupBotHom α β) : α → β) = f :=
   rfl
 
-/- Reinterpret a quantale homomorphism as an order homomorphism. -/
+/-- Reinterpret a quantale homomorphism as an order homomorphism. -/
 @[to_additive "Reinterpret an additive quantale homomorphism as an order homomorphism."]
 def toOrderHom (f : α →ₙ*q β) : α →o β where
   toFun := f
