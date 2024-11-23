@@ -25,6 +25,10 @@ variable {α : Type*} {β : Type*}
 
 namespace Fin
 
+theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) :
+    (∑ s : Finset (Fin n), a ^ s.card * b ^ (n - s.card)) = (a + b) ^ n := by
+  simpa using Fintype.sum_pow_mul_eq_add_pow (Fin n) a b
+
 @[to_additive]
 theorem prod_Ioi_zero {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M} :
     ∏ i ∈ Ioi 0, v i = ∏ j : Fin n, v j.succ := by
@@ -49,10 +53,6 @@ theorem prod_trunc {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M
     (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castLE (Nat.le.intro rfl) i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
   rfl
-
-theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) :
-    (∑ s : Finset (Fin n), a ^ s.card * b ^ (n - s.card)) = (a + b) ^ n := by
-  simpa using Fintype.sum_pow_mul_eq_add_pow (Fin n) a b
 
 section PartialProd
 

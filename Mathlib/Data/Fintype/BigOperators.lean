@@ -320,8 +320,7 @@ theorem prod_univ_two (f : Fin 2 → M) : ∏ i, f i = f 0 * f 1 := by
   simp [prod_univ_succ]
 
 @[to_additive]
-theorem prod_univ_two' (f : α → M) (a b : α) :
-    ∏ i, f (![a, b] i) = f a * f b :=
+theorem prod_univ_two' (f : α → M) (a b : α) : ∏ i, f (![a, b] i) = f a * f b :=
   prod_univ_two _
 
 @[to_additive]
