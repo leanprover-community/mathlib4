@@ -368,6 +368,11 @@ lemma restriction_map {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
   exact (G₀.2.amalgamate_map _ _ _ ⟨_, _, hg⟩).trans
     (restriction.res_eq_res data G₀ hg.some ⟨i, p, fac⟩)
 
+@[reassoc]
+lemma restriction_map_map {X₀ X₀' : C₀} (f : X₀ ⟶ X₀') {Y₀ : C₀} (g : Y₀ ⟶ X₀) :
+    restriction data G₀ (F.map f) ≫ G₀.val.map g.op =
+      restriction data G₀ (F.map (g ≫ f)) := sorry
+
 noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
     presheafObj data G₀ Y ⟶ presheafObj data G₀ X :=
   Multiequalizer.lift _ _ (fun i₀ ↦ restriction data G₀ ((data X).f i₀ ≫ f)) (by
@@ -445,8 +450,8 @@ variable (X₀ : C₀)
 
 noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.obj (op X₀) :=
   G₀.2.amalgamate ⟨_, GrothendieckTopology.bind_covering
-    (hS := cover_lift F J₀ _ (data (F.obj X₀)).mem₀)
-    (hR := fun Y₀ b hb ↦ IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hb))⟩
+      (hS := cover_lift F J₀ _ (data (F.obj X₀)).mem₀)
+      (hR := fun Y₀ b hb ↦ IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hb))⟩
     (fun ⟨W₀, a, ha⟩ ↦
       presheafObjπ data G₀ _ (Sieve.ofArrows.i (Presieve.bindStruct ha).hf) ≫
         G₀.val.map (Presieve.bindStruct ha).hg.choose.op) (by
@@ -454,15 +459,19 @@ noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.
       dsimp at p₁ p₂ fac ⊢
       trans restriction data G₀ (F.map (p₁ ≫ a))
       · rw [assoc, ← Functor.map_comp, ← op_comp,
-          ← restriction_map data G₀ (F.map a) p₁]
-        · sorry
-        · simp only [map_comp, assoc,
-            ← (Presieve.bindStruct ha).fac,
-            Sieve.ofArrows.fac (Presieve.bindStruct ha).hf,
-            (Presieve.bindStruct ha).hg.choose_spec]
-          dsimp
-      · sorry
-      )
+          ← restriction_map data G₀ (F.map a) p₁, restriction_map_map]
+        simp only [map_comp, assoc,
+          ← (Presieve.bindStruct ha).fac,
+          Sieve.ofArrows.fac (Presieve.bindStruct ha).hf,
+          (Presieve.bindStruct ha).hg.choose_spec]
+        dsimp
+      · rw [assoc, fac, ← Functor.map_comp, ← op_comp,
+          ← restriction_map data G₀ (F.map b) p₂, restriction_map_map]
+        simp only [map_comp, assoc,
+          ← (Presieve.bindStruct hb).fac,
+          Sieve.ofArrows.fac (Presieve.bindStruct hb).hf,
+          (Presieve.bindStruct hb).hg.choose_spec]
+        dsimp)
 
 noncomputable def inv : G₀.val.obj (op X₀) ⟶ (presheaf data G₀).obj (op (F.obj X₀)) :=
   Multiequalizer.lift _ _ (fun i ↦ G₀.val.map (by
