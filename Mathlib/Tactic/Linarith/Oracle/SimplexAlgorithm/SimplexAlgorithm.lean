@@ -60,7 +60,7 @@ nonnegative.
 def checkSuccess : SimplexAlgorithmM matType Bool := do
   let lastIdx := (← get).free.size - 1
   return (← get).mat[(0, lastIdx)]! > 0 &&
-    (← Nat.allM (← get).basic.size (fun i => do return (← get).mat[(i, lastIdx)]! >= 0))
+    (← (← get).basic.size.allM (fun i _ => do return (← get).mat[(i, lastIdx)]! ≥ 0))
 
 /--
 Chooses an entering variable: among the variables with a positive coefficient in the objective
