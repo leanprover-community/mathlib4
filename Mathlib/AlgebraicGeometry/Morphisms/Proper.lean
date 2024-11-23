@@ -50,7 +50,7 @@ instance : MorphismProperty.IsMultiplicative @IsProper := by
   rw [isProper_eq]
   infer_instance
 
-instance (priority := 900) [IsClosedImmersion f] : IsProper f where
+instance (priority := 900) [IsFinite f] : IsProper f where
 
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsProper := by
   rw [isProper_eq]
