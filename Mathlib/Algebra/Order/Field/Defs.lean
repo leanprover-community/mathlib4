@@ -25,7 +25,7 @@ assert_not_exists MonoidHom
 
 variable {α : Type*}
 
-/-- A linear ordered semifield is a field with a linear order respecting the operations. -/
+/-- A linear ordered semifield is a semifield with a linear order respecting the operations. -/
 class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
 
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
