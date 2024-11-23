@@ -426,7 +426,7 @@ variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜' E]
 
 theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
   rw [mem_Lp_iff_eLpNorm_lt_top, eLpNorm_congr_ae (AEEqFun.coeFn_smul _ _)]
-  refine (eLpNorm_const_smul_le _ _).trans_lt ?_
+  refine eLpNorm_const_smul_le.trans_lt ?_
   rw [ENNReal.smul_def, smul_eq_mul, ENNReal.mul_lt_top_iff]
   exact Or.inl ⟨ENNReal.coe_lt_top, f.prop⟩
 
@@ -464,7 +464,7 @@ instance instBoundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp E p μ) :=
     suffices (‖r • f‖₊ : ℝ≥0∞) ≤ ‖r‖₊ * ‖f‖₊ from mod_cast this
     rw [nnnorm_def, nnnorm_def, ENNReal.coe_toNNReal (Lp.eLpNorm_ne_top _),
       eLpNorm_congr_ae (coeFn_smul _ _), ENNReal.coe_toNNReal (Lp.eLpNorm_ne_top _)]
-    exact eLpNorm_const_smul_le r f
+    exact eLpNorm_const_smul_le
 
 end BoundedSMul
 
