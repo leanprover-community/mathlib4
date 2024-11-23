@@ -278,7 +278,7 @@ def gcongrForwardDischarger (goal : MVarId) : MetaM Unit := Elab.Term.TermElabM.
   let mut hs := #[]
   -- collect the nontrivial hypotheses
   for h in ← getLCtx do
-    if !h.isImplementationDetail then
+    if !h.isImplementationDetail && (← isProp h.type) then
       hs := hs.push (.fvar h.fvarId)
   -- run `Lean.MVarId.gcongrForward` on each one
   goal.gcongrForward hs
