@@ -5,7 +5,9 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.RingTheory.RingHom.Integral
+import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
 
@@ -57,7 +59,82 @@ instance : IsStableUnderBaseChange @IsIntegralHom :=
 instance : ContainsIdentities @IsIntegralHom :=
   ⟨fun X ↦ ⟨fun _ _ ↦ by simpa using RingHom.isIntegral_of_surjective _ (Equiv.refl _).surjective⟩⟩
 
+lemma iff_of_Spec {R S : CommRingCat} {φ : R ⟶ S} :
+    IsIntegralHom (Spec.map φ) ↔ φ.IsIntegral := by
+  have := RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.isIntegral_respectsIso
+  rw [HasAffineProperty.iff_of_isAffine (P := @IsIntegralHom), and_iff_right]
+  exacts [MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
+    (arrowIsoΓSpecOfIsAffine φ).symm, inferInstance]
+
 instance : IsMultiplicative @IsIntegralHom where
+
+instance (priority := 100) {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIntegralHom f] :
+    UniversallyClosed f := by
+  revert X Y f ‹IsIntegralHom f›
+  rw [universallyClosed_eq, ← IsStableUnderBaseChange.universally_eq (P := @IsIntegralHom)]
+  apply universally_mono
+  intro X Y f
+  wlog hY : ∃ R, Y = Spec R
+  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
+      IsLocalAtTarget.iff_of_openCover (P := topologically _) Y.affineCover]
+    exact fun a i ↦ this _ ⟨_, rfl⟩ (a i)
+  obtain ⟨R, rfl⟩ := hY
+  wlog hX : ∃ S, X = Spec S
+  · intro H
+    have inst : IsAffine X := isAffine_of_isAffineHom f
+    rw [← cancel_left_of_respectsIso (P := topologically _) X.isoSpec.inv]
+    rw [← cancel_left_of_respectsIso (P := @IsIntegralHom) X.isoSpec.inv] at H
+    exact this _ _ ⟨_, rfl⟩ H
+  obtain ⟨S, rfl⟩ := hX
+  obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
+  rw [iff_of_Spec]
+  exact PrimeSpectrum.isClosedMap_comap_of_isIntegral _
+
+open Polynomial in
+instance {R S} [CommRing R] [CommRing S] [Algebra R S] :
+    letI := (mapRingHom (algebraMap R S)).toAlgebra
+    haveI : IsScalarTower R R[X] S[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+    Algebra.IsPushout R S R[X] S[X] := by
+  letI := (mapRingHom (algebraMap R S)).toAlgebra
+  haveI : IsScalarTower R R[X] S[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+  constructor
+  let e : S[X] ≃ₐ[S] TensorProduct R S R[X] := { __ := polyEquivTensor R S, commutes' := by simp }
+  convert (TensorProduct.isBaseChange R R[X] S).comp (.ofEquiv e.symm.toLinearEquiv) using 1
+  ext : 2
+  refine Eq.trans ?_ (polyEquivTensor_symm_apply_tmul R S _ _).symm
+  simp [RingHom.algebraMap_toAlgebra]
+
+lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
+    IsIntegralHom f ↔ UniversallyClosed f ∧ IsAffineHom f := by
+  refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
+  clear * -
+  wlog hY : ∃ R, Y = Spec R
+  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover]
+    rw [IsLocalAtTarget.iff_of_openCover (P := @UniversallyClosed) Y.affineCover] at H₁
+    rw [IsLocalAtTarget.iff_of_openCover (P := @IsAffineHom) Y.affineCover] at H₂
+    exact fun _ ↦ this inferInstance inferInstance ⟨_, rfl⟩
+  obtain ⟨R, rfl⟩ := hY
+  wlog hX : ∃ S, X = Spec S
+  · have inst : IsAffine X := isAffine_of_isAffineHom f
+    rw [← cancel_left_of_respectsIso (P := @IsIntegralHom) X.isoSpec.inv]
+    exact this _ inferInstance inferInstance ⟨_, rfl⟩
+  obtain ⟨S, rfl⟩ := hX
+  obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
+  rw [iff_of_Spec]
+  apply PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom
+  letI := φ.toAlgebra
+  letI := (Polynomial.mapRingHom φ).toAlgebra
+  haveI : IsScalarTower R (Polynomial R) (Polynomial S) :=
+    .of_algebraMap_eq' (Polynomial.mapRingHom_comp_C _).symm
+  refine H₁.out (Spec.map (CommRingCat.ofHom Polynomial.C))
+    (Spec.map (CommRingCat.ofHom Polynomial.C)) (Spec.map _)
+    (isPullback_Spec_map_isPushout _ _ _ _
+    (CommRingCat.isPushout_of_isPushout R S (Polynomial R) (Polynomial S))).flip
+
+lemma eq_universallyClosed_and_isAffineHom :
+    @IsIntegralHom = (@UniversallyClosed ⊓ @IsAffineHom : MorphismProperty Scheme) := by
+  ext
+  exact iff_universallyClosed_and_isAffineHom
 
 end IsIntegralHom
 
