@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Init
-import ProofWidgets
+import ProofWidgets.Component.HtmlDisplay
 
 /-!
 
@@ -56,8 +56,13 @@ def displayMarkdown (md : String) (stx : Syntax) : CoreM Unit := do
     (return json% { html: $(← Server.RpcEncodable.rpcEncode html) })
     stx
 
+/-- Syntax for the `explain` tactic elaborator. -/
 syntax (name := explainTacStx) "explain" str ("in" ppIndent(tactic))? : tactic
+
+/-- Syntax for the `explain` term elaborator. -/
 syntax (name := explainTermStx) "explain" str "in" ppIndent(term) : term
+
+/-- Syntax for the `#explain` command. -/
 syntax (name := explainCmdStx) "#explain" str : command
 
 open Tactic in
