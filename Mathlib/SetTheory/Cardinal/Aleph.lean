@@ -616,6 +616,7 @@ alias aleph'_omega := aleph'_omega0
 def aleph'Equiv : Ordinal ≃ Cardinal :=
   ⟨aleph', alephIdx, alephIdx_aleph', aleph'_alephIdx⟩
 
+@[deprecated aleph_eq_preAleph (since := "2024-10-22")]
 theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
 

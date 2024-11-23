@@ -725,6 +725,22 @@ theorem image_mul_left_Ioo {a : α} (h : 0 < a) (b c : α) :
     (a * ·) '' Ioo b c = Ioo (a * b) (a * c) := by
   convert image_mul_right_Ioo b c h using 1 <;> simp only [mul_comm _ a]
 
+theorem image_mul_right_Ico (a b : α) {c : α} (h : 0 < c) :
+    (fun x => x * c) '' Ico a b = Ico (a * c) (b * c) :=
+  ((Units.mk0 c h.ne').mulRight.image_eq_preimage _).trans (by simp [h, division_def])
+
+theorem image_mul_left_Ico {a : α} (h : 0 < a) (b c : α) :
+    (a * ·) '' Ico b c = Ico (a * b) (a * c) := by
+  convert image_mul_right_Ico b c h using 1 <;> simp only [mul_comm _ a]
+
+theorem image_mul_right_Ioc (a b : α) {c : α} (h : 0 < c) :
+    (fun x => x * c) '' Ioc a b = Ioc (a * c) (b * c) :=
+  ((Units.mk0 c h.ne').mulRight.image_eq_preimage _).trans (by simp [h, division_def])
+
+theorem image_mul_left_Ioc {a : α} (h : 0 < a) (b c : α) :
+    (a * ·) '' Ioc b c = Ioc (a * b) (a * c) := by
+  convert image_mul_right_Ioc b c h using 1 <;> simp only [mul_comm _ a]
+
 /-- The (pre)image under `inv` of `Ioo 0 a` is `Ioi a⁻¹`. -/
 theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
@@ -753,6 +769,27 @@ theorem image_affine_Icc' {a : α} (h : 0 < a) (b c d : α) :
   suffices (· + b) '' ((a * ·) '' Icc c d) = Icc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Icc' h, image_add_const_Icc]
+
+@[simp]
+theorem image_affine_Ico {a : α} (h : 0 < a) (b c d : α) :
+    (a * · + b) '' Ico c d = Ico (a * c + b) (a * d + b) := by
+  suffices (· + b) '' ((a * ·) '' Ico c d) = Ico (a * c + b) (a * d + b) by
+    rwa [Set.image_image] at this
+  rw [image_mul_left_Ico h, image_add_const_Ico]
+
+@[simp]
+theorem image_affine_Ioc {a : α} (h : 0 < a) (b c d : α) :
+    (a * · + b) '' Ioc c d = Ioc (a * c + b) (a * d + b) := by
+  suffices (· + b) '' ((a * ·) '' Ioc c d) = Ioc (a * c + b) (a * d + b) by
+    rwa [Set.image_image] at this
+  rw [image_mul_left_Ioc h, image_add_const_Ioc]
+
+@[simp]
+theorem image_affine_Ioo {a : α} (h : 0 < a) (b c d : α) :
+    (a * · + b) '' Ioo c d = Ioo (a * c + b) (a * d + b) := by
+  suffices (· + b) '' ((a * ·) '' Ioo c d) = Ioo (a * c + b) (a * d + b) by
+    rwa [Set.image_image] at this
+  rw [image_mul_left_Ioo h, image_add_const_Ioo]
 
 end LinearOrderedField
 
