@@ -41,6 +41,10 @@ abbrev CanonicallyOver := CanonicallyOverClass X S
 `f.IsOver S` is the typeclass asserting `f` commutes with the structure morphisms. -/
 abbrev Hom.IsOver (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S] := HomIsOver f S
 
+@[simp]
+lemma Hom.isOver_iff [X.Over S] [Y.Over S] {f : X ⟶ Y} : f.IsOver S ↔ f ≫ Y ↘ S = X ↘ S :=
+  ⟨fun H ↦ H.1, fun h ↦ ⟨h⟩⟩
+
 /-! Also note the existence of `CategoryTheory.IsOverTower X Y S`. -/
 
 end AlgebraicGeometry.Scheme
