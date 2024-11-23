@@ -83,8 +83,8 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
 
   if let some v := bad then
     let mut propogate := false
-    for var in ← resolveGlobalConst declId do
-      if let some ci := env.find? var then
+    for var in ← resolveGlobalName declId.getId do
+      if let some ci := env.find? var.1 then
         if !(← liftTermElabM <| Meta.isProp ci.type) then
           propogate := true
           findDefEqAbuseRef.modify (NameSet.insert · declId.getId)
