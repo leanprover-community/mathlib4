@@ -458,6 +458,8 @@ namespace presheafObjObjIso
 
 variable (X₀ : C₀)
 
+
+
 noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.obj (op X₀) :=
   G₀.2.amalgamate ⟨_, GrothendieckTopology.bind_covering
       (hS := cover_lift F J₀ _ (data (F.obj X₀)).mem₀)
@@ -482,6 +484,18 @@ noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.
           Sieve.ofArrows.fac (Presieve.bindStruct hb).hf,
           (Presieve.bindStruct hb).hg.choose_spec]
         dsimp)
+
+-- make a better lemma
+lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀)
+    (ha : (Presieve.functorPullback F (data (F.obj X₀)).toPreOneHypercover.sieve₀.arrows).bind
+      (fun _ _ h ↦ (F.imageSieve (Sieve.ofArrows.h h)).arrows) a) :
+    hom data G₀ X₀ ≫ G₀.val.map a.op =
+      presheafObjπ data G₀ _ (Sieve.ofArrows.i (Presieve.bindStruct ha).hf) ≫
+        G₀.val.map (Presieve.bindStruct ha).hg.choose.op :=
+  G₀.2.amalgamate_map ⟨_, GrothendieckTopology.bind_covering
+      (hS := cover_lift F J₀ _ (data (F.obj X₀)).mem₀)
+      (hR := fun _ _ hb ↦ IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hb))⟩ _ _
+      ⟨W₀, a, ha⟩
 
 noncomputable def inv : G₀.val.obj (op X₀) ⟶ (presheaf data G₀).obj (op (F.obj X₀)) :=
   Multiequalizer.lift _ _ (fun i ↦ G₀.val.map (by
