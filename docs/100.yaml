@@ -182,6 +182,8 @@
   title  : The Central Limit Theorem
 48:
   title  : Dirichlet’s Theorem
+  decl   : Nat.setOf_prime_and_eq_mod_infinite
+  author : Michael Stoll
 49:
   title  : The Cayley-Hamilton Theorem
   decl   : Matrix.aeval_self_charpoly
