@@ -1078,7 +1078,6 @@ theorem eval_C : ∀ a, eval f (C a) = a :=
 theorem eval_X : ∀ n, eval f (X n) = f n :=
   eval₂_X _ _
 
--- TODO: just make `map_ofNat` simp?
 -- See note [no_index around OfNat.ofNat]
 @[simp] theorem eval_ofNat (n : Nat) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : MvPolynomial σ R).eval f = OfNat.ofNat n :=
@@ -1144,7 +1143,6 @@ theorem map_monomial (s : σ →₀ ℕ) (a : R) : map f (monomial s a) = monomi
 theorem map_C : ∀ a : R, map f (C a : MvPolynomial σ R) = C (f a) :=
   map_monomial _ _
 
--- TODO: just make `map_ofNat` simp?
 -- See note [no_index around OfNat.ofNat]
 @[simp] protected theorem map_ofNat (n : Nat) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : MvPolynomial σ R).map f = OfNat.ofNat n :=
