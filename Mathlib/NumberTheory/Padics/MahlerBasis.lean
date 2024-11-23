@@ -29,6 +29,10 @@ continuous maps `ℤ_[p] → ℚ_[p]`, with the basis coefficients of `f` given 
 * [R. Bojanić, *A simple proof of Mahler's theorem on approximation of continuous functions of a
   p-adic variable by polynomials*][bojanic74]
 * [P. Colmez, *Fonctions d'une variable p-adique*][colmez2010]
+
+## Tags
+
+Bojanic
 -/
 
 open Finset fwdDiff IsUltrametricDist NNReal Filter Topology
@@ -120,11 +124,11 @@ lemma IsUltrametricDist.norm_fwdDiff_iter_apply_le [TopologicalSpace M] [Compact
   refine norm_sum_le_of_forall_le_of_nonneg (norm_nonneg f) fun i _ ↦ ?_
   exact (norm_zsmul_le _ _).trans (f.norm_coe_le_norm _)
 
-/-- First step in Bojanic's proof of Mahler's theorem (equation (10) of [bojanic74]): rewrite
+/-- First step in Bojanić's proof of Mahler's theorem (equation (10) of [bojanic74]): rewrite
 `Δ^[n + R] f 0` in a shape that makes it easy to bound `p`-adically. -/
 private lemma bojanic_mahler_step1 [AddCommMonoidWithOne M] [AddCommGroup G] (f : M → G)
     (n : ℕ) {R : ℕ} (hR : 1 ≤ R) :
-    Δ_[1]^[n + R] f 0 = -(∑ j ∈ range (R - 1), R.choose (j + 1) • Δ_[1]^[n + (j + 1)] f 0) +
+    Δ_[1]^[n + R] f 0 = -∑ j ∈ range (R - 1), R.choose (j + 1) • Δ_[1]^[n + (j + 1)] f 0 +
       ∑ k ∈ range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • (f (k + R) - f k) := by
   have aux : Δ_[1]^[n + R] f 0 = R.choose (R - 1 + 1) • Δ_[1]^[n + R] f 0 := by
     rw [Nat.sub_add_cancel hR, Nat.choose_self, one_smul]
@@ -148,11 +152,11 @@ variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace ℚ_[p] E] [IsUltrametricDist E]
 
 /--
-Second step in Bojanic's proof of Mahler's theorem (equation (11) of [bojanic74]): show that values
+Second step in Bojanić's proof of Mahler's theorem (equation (11) of [bojanic74]): show that values
 `Δ_[1]^[n + p ^ t] f 0` for large enough `n` are bounded by the max of `(‖f‖ / p ^ s)` and `1 / p`
 times a sup over values for smaller `n`.
 
-We use `nnnorms` on the RHS since `Finset.sup` requires an order with a bottom element.
+We use `nnnorm`s on the RHS since `Finset.sup` requires an order with a bottom element.
 -/
 private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     (hst : ∀ x y : ℤ_[p], ‖x - y‖ ≤ p ^ (-t : ℤ) → ‖f x - f y‖ ≤ ‖f‖ / p ^ s) (n : ℕ) :
@@ -203,8 +207,7 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
       refine Finset.sup_le fun j _ ↦ ?_
       rw [pow_succ, ← div_div, div_le_div_iff_of_pos_right (mod_cast hp.out.pos), add_right_comm]
       exact_mod_cast IH (n + (j + 1)) (by omega)
-    · exact div_le_div_of_nonneg_left (norm_nonneg _)
-        (mod_cast pow_pos hp.out.pos _) (mod_cast pow_le_pow_right₀ hp.out.one_le hk)
+    · gcongr
 
 /-- Key lemma for Mahler's theorem: for `f` a continuous function on `ℤ_[p]`, the sequence
 `n ↦ Δ^[n] f 0` tends to 0. See `PadicInt.fwdDiff_iter_le_of_forall_le` for an explicit
@@ -220,8 +223,7 @@ lemma fwdDiff_tendsto_zero (f : C(ℤ_[p], E)) : Tendsto (Δ_[1]^[·] f 0) atTop
   obtain ⟨t, ht⟩ : ∃ t : ℕ, ∀ x y, ‖x - y‖ ≤ p ^ (-t : ℤ) → ‖f x - f y‖ ≤ ‖f‖ / p ^ s := by
     rcases eq_or_ne f 0 with rfl | hf
     · -- silly case : f = 0
-      simp only [zpow_neg, zpow_natCast, ContinuousMap.zero_apply, sub_self, norm_zero, zero_div,
-        le_refl, implies_true, exists_const]
+      simp
     have : 0 < ‖f‖ / p ^ s := div_pos (norm_pos_iff.mpr hf) (mod_cast pow_pos hp.out.pos _)
     obtain ⟨δ, hδpos, hδf⟩ := f.uniform_continuity _ this
     obtain ⟨t, ht⟩ := PadicInt.exists_pow_neg_lt p hδpos
