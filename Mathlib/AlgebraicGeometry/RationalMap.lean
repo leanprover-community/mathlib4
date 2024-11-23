@@ -286,7 +286,7 @@ lemma equiv_iff_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
       (g.restrict _ (f.2.inter_of_isOpen_left g.2 f.domain.2) inf_le_right).hom :=
   equiv_iff_of_isSeparated_of_le (S := S) _ _ _
 
-/-- Two partial map from reduced schemes to separated schemes with the same domain are equivalent
+/-- Two partial maps from reduced schemes to separated schemes with the same domain are equivalent
 if and only if they are equal. -/
 lemma equiv_iff_of_domain_eq_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
     [IsSeparated (Y ↘ S)] {f g : X.PartialMap Y} (hfg : f.domain = g.domain)
@@ -297,8 +297,8 @@ lemma equiv_iff_of_domain_eq_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
   obtain rfl : Uf = Ug := hfg
   simp
 
-/-- Two partial maps from reduced schemes to separated schemes are equivalent if and only if
-they are equal on the intersection of the domains. -/
+/-- A partial map from a reduced scheme to a separated scheme is equivalent to a morphism
+if and only if it is equal to the restriction of the morphism. -/
 lemma equiv_toPartialMap_iff_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
     [IsSeparated (Y ↘ S)] {f : X.PartialMap Y} {g : X ⟶ Y}
     [f.IsOver S] [g.IsOver S] : f.equiv g.toPartialMap ↔
