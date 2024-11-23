@@ -209,7 +209,7 @@ theorem sq_sum_div_le_sum_sq_div [LinearOrderedSemifield R] [ExistsAddOfLE R] (s
   exact (hg i hi).ne'
 
 /-- Weighted **AM-HM** inequality": The weighted harmonic mean is less than or equal to the
-arithmetic mean -/
+arithmetic mean. -/
 theorem inv_sum_div_le_sum_mul [LinearOrderedSemifield R] [ExistsAddOfLE R] (s : Finset ι)
     {w f : ι → R} (hw : ∑ i ∈ s, w i = 1) (hw' : ∀ i ∈ s, 0 < w i) (hf : ∀ i ∈ s, 0 < f i) :
     (∑ i ∈ s, w i / f i)⁻¹ ≤ ∑ i ∈ s, w i * f i := by
@@ -219,7 +219,7 @@ theorem inv_sum_div_le_sum_mul [LinearOrderedSemifield R] [ExistsAddOfLE R] (s :
     refine sum_congr rfl fun i hi ↦ ?_
     rw [div_div_cancel' (hw' i hi).ne']
 
-/-- **AM-HM** inequality: The harmonic mean is less than or equal to the arithmetic mean -/
+/-- **AM-HM** inequality: The harmonic mean is less than or equal to the arithmetic mean. -/
 theorem div_sum_inv_le_sum_div [LinearOrderedSemifield R] [ExistsAddOfLE R] (s : Finset ι)
     {f : ι → R} (hf : ∀ i ∈ s, 0 < f i) : #s / ∑ i ∈ s, (f i)⁻¹ ≤ (∑ i ∈ s, f i) / #s := by
   obtain hs | hs := eq_zero_or_pos #s
@@ -230,7 +230,7 @@ theorem div_sum_inv_le_sum_div [LinearOrderedSemifield R] [ExistsAddOfLE R] (s :
     · simp_rw [div_eq_mul_inv, ← mul_sum, inv_mul_eq_div, inv_div, div_eq_mul_inv]
     · rw [← mul_sum, inv_mul_eq_div]
 
-/-- **AM-HM** inequality: The harmonic mean is less than or equal to the arithmetic mean -/
+/-- **AM-HM** inequality: The harmonic mean is less than or equal to the arithmetic mean. -/
 theorem sq_le_sum_mul_sum_inv [LinearOrderedSemifield R] [ExistsAddOfLE R] (s : Finset ι)
     {f : ι → R} (hf : ∀ i ∈ s, 0 < f i) : #s ^ 2 ≤ (∑ i ∈ s, f i) * (∑ i ∈ s, (f i)⁻¹) := by
   have hf' : ∀ i ∈ s, 0 < (f i)⁻¹ := fun i hi ↦ inv_pos.2 (hf i hi)
