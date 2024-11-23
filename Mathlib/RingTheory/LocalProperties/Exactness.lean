@@ -61,7 +61,7 @@ theorem bijective_of_isLocalized_maximal
   surjective_of_isLocalized_maximal Mₚ f Nₚ g F fun J _ ↦ (H J).2⟩
 
 theorem exact_of_isLocalized_maximal (H : ∀ (J : Ideal R) [J.IsMaximal],
-      Function.Exact (map J.primeCompl (f J) (g J) F) (map J.primeCompl (g J) (h J) G)) :
+    Function.Exact (map J.primeCompl (f J) (g J) F) (map J.primeCompl (g J) (h J) G)) :
     Function.Exact F G := by
   simp only [LinearMap.exact_iff] at H ⊢
   apply eq_of_localization₀_maximal Nₚ g
