@@ -57,7 +57,7 @@ instance : T3Space ℍ := Subtype.t3Space
 instance : T4Space ℍ := inferInstance
 
 instance : ContractibleSpace ℍ :=
-  (convex_halfspace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
+  (convex_halfSpace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩
 
 instance : LocPathConnectedSpace ℍ := isOpenEmbedding_coe.locPathConnectedSpace
 
@@ -121,12 +121,15 @@ theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
 
 end strips
 
-/-- A continuous section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
+section ofComplex
+
+/-- A section `ℂ → ℍ` of the natural inclusion map, bundled as a `PartialHomeomorph`. -/
 def ofComplex : PartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
 scoped notation "↑ₕ" f => f ∘ ofComplex
 
+@[simp]
 lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
   IsOpenEmbedding.toPartialHomeomorph_left_inv ..
 
@@ -138,6 +141,10 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
     simp only [invFunOn, dite_eq_right_iff, mem_univ, true_and]
     rintro ⟨a, rfl⟩
     exact (a.prop.not_le (by simpa using hw)).elim
+
+lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
+    ofComplex z = ⟨z, hz⟩ := by
+  simpa only [coe_mk_subtype] using ofComplex_apply ⟨z, hz⟩
 
 lemma ofComplex_apply_of_im_nonpos {w : ℂ} (hw : w.im ≤ 0) :
     ofComplex w = Classical.choice inferInstance := by
@@ -156,5 +163,12 @@ lemma comp_ofComplex_of_im_pos (f : ℍ → ℂ) (z : ℂ) (hz : 0 < z.im) : (�
 lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0)  :
     (↑ₕ f) z = (↑ₕ f) z' := by
   simp [ofComplex_apply_of_im_nonpos, hz, hz']
+
+lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
+    UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
+  filter_upwards [(Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds hz] with x hx
+  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq, coe_mk_subtype]
+
+end ofComplex
 
 end UpperHalfPlane

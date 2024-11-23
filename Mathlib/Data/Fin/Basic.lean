@@ -1465,9 +1465,6 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
-instance uniqueFinOne : Unique (Fin 1) where
-  uniq _ := Subsingleton.elim _ _
-
 @[deprecated val_eq_zero (since := "2024-09-18")]
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
@@ -1517,9 +1514,8 @@ theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
   rfl
 
 -- See note [no_index around OfNat.ofNat]
-@[simp]
 theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
-    ((no_index OfNat.ofNat n : Fin m) : ℕ) = OfNat.ofNat n % m :=
+    ((no_index (OfNat.ofNat n) : Fin m) : ℕ) = OfNat.ofNat n % m :=
   rfl
 
 section Mul

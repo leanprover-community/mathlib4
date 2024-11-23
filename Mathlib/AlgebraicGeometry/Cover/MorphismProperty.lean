@@ -73,6 +73,9 @@ theorem Cover.iUnion_range {X : Scheme.{u}} (𝒰 : X.Cover P) :
   rw [Set.mem_iUnion]
   exact ⟨𝒰.f x, 𝒰.covers x⟩
 
+lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y = x :=
+  ⟨_, 𝒰.covers x⟩
+
 /-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
 cover `X`, this an associated `P`-cover of `X`. -/
 @[simps]
@@ -123,7 +126,7 @@ def coverOfIsIso [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : 
   map _ := f
   f _ := PUnit.unit
   covers x := by
-    rw [Set.range_iff_surjective.mpr]
+    rw [Set.range_eq_univ.mpr]
     all_goals try trivial
     rw [← TopCat.epi_iff_surjective]
     infer_instance
@@ -139,7 +142,7 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover P)
   { J, obj, map
     f := fun x ↦ e₁.symm (𝒰.f x)
     covers := fun x ↦ by
-      rw [h, Scheme.comp_base, TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
+      rw [h, Scheme.comp_base, TopCat.coe_comp, Set.range_comp, Set.range_eq_univ.mpr,
         Set.image_univ, e₁.rightInverse_symm]
       · exact 𝒰.covers x
       · rw [← TopCat.epi_iff_surjective]; infer_instance

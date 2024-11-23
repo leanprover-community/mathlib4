@@ -843,6 +843,37 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
     (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
 
+/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
+@[to_additive (attr := simps)
+  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
+def OneHom.inverse [One M] [One N]
+    (f : OneHom M N) (g : N → M)
+    (h₁ : Function.LeftInverse g f) :
+  OneHom N M :=
+  { toFun := g,
+    map_one' := by rw [← f.map_one, h₁] }
+
+/-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
+@[to_additive (attr := simps)
+  "Makes an additive inverse from a bijection which preserves addition."]
+def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
+    (h₁ : Function.LeftInverse g f)
+    (h₂ : Function.RightInverse g f) : N →ₙ* M where
+  toFun := g
+  map_mul' x y :=
+    calc
+      g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
+      _ = g (f (g x * g y)) := by rw [f.map_mul]
+      _ = g x * g y := h₁ _
+
+/-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
+@[to_additive (attr := simps)
+  "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
+def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
+  { (f : OneHom A B).inverse g h₁,
+    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g }
+
 section End
 
 namespace Monoid

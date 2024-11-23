@@ -75,7 +75,7 @@ theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
   simp [finRange, getElem_range, getElem_pmap]
 
--- Porting note (#10756): new theorem
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp
@@ -149,6 +149,7 @@ lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
 set_option linter.deprecated false in
 /-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
 See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
+@[deprecated "Use `List.mem_mem_ranges_iff_lt_sum`." (since := "2024-11-18")]
 lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
   rw [← mem_range, ← ranges_flatten', mem_flatten]
