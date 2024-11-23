@@ -40,28 +40,27 @@ variable
   [∀ (P : Ideal R) [P.IsMaximal], Module R (Lₚ P)]
   (h : ∀ (P : Ideal R) [P.IsMaximal], L →ₗ[R] Lₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (h P)]
-  (k : M →ₗ[R] N)
+  (F : M →ₗ[R] N) (G : N →ₗ[R] L)
 
 theorem injective_of_isLocalized_maximal
-    (H : ∀ (P : Ideal R) [P.IsMaximal], Function.Injective (map P.primeCompl (f P) (g P) k)) :
-    Function.Injective k :=
+    (H : ∀ (P : Ideal R) [P.IsMaximal], Function.Injective (map P.primeCompl (f P) (g P) F)) :
+    Function.Injective F :=
   fun x y eq ↦ Module.eq_of_localization_maximal _ f _ _ fun P _ ↦ H P <| by simp [eq]
 
 theorem surjective_of_isLocalized_maximal
-    (H : ∀ (P : Ideal R) [P.IsMaximal], Function.Surjective (map P.primeCompl (f P) (g P) k)) :
-    Function.Surjective k :=
+    (H : ∀ (P : Ideal R) [P.IsMaximal], Function.Surjective (map P.primeCompl (f P) (g P) F)) :
+    Function.Surjective F :=
   range_eq_top.mp <| eq_top_of_localization₀_maximal Nₚ g _ <|
-    fun P _ ↦ (range_localizedMap_eq_localized₀_range _ (f P) (g P) k).symm.trans <|
+    fun P _ ↦ (range_localizedMap_eq_localized₀_range _ (f P) (g P) F).symm.trans <|
     range_eq_top.mpr <| H P
 
 theorem bijective_of_isLocalized_maximal
-    (H : ∀ (P : Ideal R) [P.IsMaximal], Function.Bijective (map P.primeCompl (f P) (g P) k)) :
-    Function.Bijective k :=
-  ⟨injective_of_isLocalized_maximal Mₚ f Nₚ g k fun J _ ↦ (H J).1,
-  surjective_of_isLocalized_maximal Mₚ f Nₚ g k fun J _ ↦ (H J).2⟩
+    (H : ∀ (P : Ideal R) [P.IsMaximal], Function.Bijective (map P.primeCompl (f P) (g P) F)) :
+    Function.Bijective F :=
+  ⟨injective_of_isLocalized_maximal Mₚ f Nₚ g F fun J _ ↦ (H J).1,
+  surjective_of_isLocalized_maximal Mₚ f Nₚ g F fun J _ ↦ (H J).2⟩
 
-theorem exact_of_isLocalized_maximal (F : M →ₗ[R] N) (G : N →ₗ[R] L)
-    (H : ∀ (J : Ideal R) [J.IsMaximal],
+theorem exact_of_isLocalized_maximal (H : ∀ (J : Ideal R) [J.IsMaximal],
       Function.Exact (map J.primeCompl (f J) (g J) F) (map J.primeCompl (g J) (h J) G)) :
     Function.Exact F G := by
   simp only [LinearMap.exact_iff] at H ⊢
@@ -79,7 +78,7 @@ end isLocalized_maximal
 section localized_maximal
 
 variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L] (f : M →ₗ[R] N)
+  [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L] (f : M →ₗ[R] N) (g : N →ₗ[R] L)
 
 theorem injective_of_localized_maximal
     (h : ∀ (J : Ideal R) [J.IsMaximal], Function.Injective (map J.primeCompl f)) :
@@ -97,7 +96,7 @@ theorem bijective_of_localized_maximal
   ⟨injective_of_localized_maximal _ fun J _ ↦ (h J).1,
   surjective_of_localized_maximal _ fun J _ ↦ (h J).2⟩
 
-theorem exact_of_localized_maximal (g : N →ₗ[R] L)
+theorem exact_of_localized_maximal
     (h : ∀ (J : Ideal R) [J.IsMaximal], Function.Exact (map J.primeCompl f) (map J.primeCompl g)) :
     Function.Exact f g :=
   exact_of_isLocalized_maximal _ (fun _ _ ↦ mkLinearMap _ _) _ (fun _ _ ↦ mkLinearMap _ _)
@@ -129,7 +128,7 @@ variable
   [∀ r : s, Module R (Lₚ r)]
   (h : ∀ r : s, L →ₗ[R] Lₚ r)
   [∀ r : s, IsLocalizedModule (.powers r.1) (h r)]
-  (F : M →ₗ[R] N)
+  (F : M →ₗ[R] N) (G : N →ₗ[R] L)
 
 theorem injective_of_isLocalized_span
     (H : ∀ r : s, Function.Injective (map (.powers r.1) (f r) (g r) F)) :
@@ -148,7 +147,7 @@ theorem bijective_of_isLocalized_span
   ⟨injective_of_isLocalized_span _ spn Mₚ f Nₚ g F fun r ↦ (H r).1,
   surjective_of_isLocalized_span _ spn Mₚ f Nₚ g F fun r ↦ (H r).2⟩
 
-lemma exact_of_isLocalized_span (G : N →ₗ[R] L) (H : ∀ r : s, Function.Exact
+lemma exact_of_isLocalized_span (H : ∀ r : s, Function.Exact
     (map (.powers r.1) (f r) (g r) F) (map (.powers r.1) (g r) (h r) G)) :
     Function.Exact F G := by
   simp only [LinearMap.exact_iff] at H ⊢
@@ -167,26 +166,26 @@ section localized_span
 
 variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L]
-  (s : Set R) (spn : span s = ⊤)
+  (s : Set R) (spn : span s = ⊤) (f : M →ₗ[R] N) (g : N →ₗ[R] L)
 include spn
 
-theorem injective_of_localized_span (f : M →ₗ[R] N)
+theorem injective_of_localized_span
     (h : ∀ r : s, Function.Injective (map (.powers r.1) f)) :
     Function.Injective f :=
   injective_of_isLocalized_span s spn _ (fun _ ↦ mkLinearMap _ _) _ (fun _ ↦ mkLinearMap _ _) f h
 
-theorem surjective_of_localized_span (f : M →ₗ[R] N)
+theorem surjective_of_localized_span
     (h : ∀ r : s, Function.Surjective (map (.powers r.1) f)) :
     Function.Surjective f :=
   surjective_of_isLocalized_span s spn _ (fun _ ↦ mkLinearMap _ _) _ (fun _ ↦ mkLinearMap _ _) f h
 
-theorem bijective_of_localized_span (f : M →ₗ[R] N)
+theorem bijective_of_localized_span
     (h : ∀ r : s, Function.Bijective (map (.powers r.1) f)) :
     Function.Bijective f :=
   ⟨injective_of_localized_span _ spn _ fun r ↦ (h r).1,
   surjective_of_localized_span _ spn _ fun r ↦ (h r).2⟩
 
-lemma exact_of_localized_span (f : M →ₗ[R] N) (g : N →ₗ[R] L)
+lemma exact_of_localized_span
     (h : ∀ r : s, Function.Exact (map (.powers r.1) f) (map (.powers r.1) g)) :
     Function.Exact f g :=
   exact_of_isLocalized_span s spn _ (fun _ ↦ mkLinearMap _ _) _ (fun _ ↦ mkLinearMap _ _)
