@@ -79,7 +79,7 @@ lemma supClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeSup (α i
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, SupClosed (t i)) : SupClosed (s.pi t) :=
   fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
 
-lemma SupClosed.insert_upper_bound {s : Set α} {a : α} (hs : SupClosed s) (ha : a ∈ upperBounds s) :
+lemma SupClosed.insert_upperBounds {s : Set α} {a : α} (hs : SupClosed s) (ha : a ∈ upperBounds s) :
     SupClosed (insert a s) := by
   rw [SupClosed]
   aesop
