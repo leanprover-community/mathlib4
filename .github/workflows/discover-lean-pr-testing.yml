@@ -74,9 +74,12 @@ jobs:
       run: |
         # Use the PRs from the previous step
         PRS="${{ steps.get-prs.outputs.prs }}"
+        echo "$PRS"
+        echo "===================="
         echo "$PRS" | tr ' ' '\n' > prs.txt
         MATCHING_BRANCHES=$(git branch -r | grep -f prs.txt)
         echo "$MATCHING_BRANCHES"
+        echo "===================="
 
         # Initialize an empty variable to store branches with relevant diffs
         RELEVANT_BRANCHES=""
@@ -89,7 +92,7 @@ jobs:
             # Check if the diff contains files other than the specified ones
             if echo "$DIFF_FILES" | grep -v -e 'lake-manifest.json' -e 'lakefile.lean' -e 'lean-toolchain'; then
                 # If it does, add the branch to RELEVANT_BRANCHES
-                RELEVANT_BRANCHES="$RELEVANT_BRANCHES $BRANCH"
+                RELEVANT_BRANCHES="$RELEVANT_BRANCHES\n- $BRANCH"
             fi
         done
 
@@ -101,13 +104,13 @@ jobs:
       id: check-branches
       run: |
         if [ -z "${{ steps.find-branches.outputs.branches }}" ]; then
-          echo "no_branches=true" >> "$GITHUB_ENV"
+          echo "branches_exist=false" >> "$GITHUB_ENV"
         else
-          echo "no_branches=false" >> "$GITHUB_ENV"
+          echo "branches_exist=true" >> "$GITHUB_ENV"
         fi
 
     - name: Send message on Zulip
-      if: env.no_branches == 'false'
+      if: env.branches_exist == 'true'
       uses: zulip/github-actions-zulip/send-message@v1
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
