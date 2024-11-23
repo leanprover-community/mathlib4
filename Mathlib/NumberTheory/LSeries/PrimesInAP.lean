@@ -91,6 +91,7 @@ lemma residueClass_nonneg (n : ℕ) : 0 ≤ residueClass a n :=
 lemma residueClass_le (n : ℕ) : residueClass a n ≤ vonMangoldt n :=
   Set.indicator_apply_le' (fun _ ↦ le_rfl) (fun _ ↦ vonMangoldt_nonneg)
 
+@[simp]
 lemma residueClass_apply_zero : residueClass a 0 = 0 := by
   simp only [Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_zero, map_zero, ofReal_zero,
     implies_true]
@@ -129,9 +130,9 @@ lemma residueClass_eq (ha : IsUnit a) :
   simpa only [Pi.smul_apply, Finset.sum_apply, smul_eq_mul, ← mul_assoc]
     using residueClass_apply ha n
 
-/-- The L-series of the von Mangoldt function restricted to the prime residue class `a` mod `q`
-is a linear combination of logarithmic derivatives of L-functions of the Dirichlet characters
-mod `q` (on `re s > 1`). -/
+/-- The L-series of the von Mangoldt function restricted to the residue class `a` mod `q`
+with `a` invertible in `ZMod q` is a linear combination of logarithmic derivatives of
+L-functions of the Dirichlet characters mod `q` (on `re s > 1`). -/
 lemma LSeries_residueClass_eq (ha : IsUnit a) {s : ℂ} (hs : 1 < s.re) :
     LSeries ↗(residueClass a) s =
       -(q.totient : ℂ)⁻¹ * ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ *
