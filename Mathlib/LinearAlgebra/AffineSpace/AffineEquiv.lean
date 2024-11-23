@@ -422,7 +422,7 @@ theorem constVAdd_symm (v : V₁) : (constVAdd k P₁ v).symm = constVAdd k P₁
 /-- A more bundled version of `AffineEquiv.constVAdd`. -/
 @[simps]
 def constVAddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁ where
-  toFun v := constVAdd k P₁ (Multiplicative.toAdd v)
+  toFun v := constVAdd k P₁ v.toAdd
   map_one' := constVAdd_zero _ _
   map_mul' := constVAdd_add _ P₁
 
