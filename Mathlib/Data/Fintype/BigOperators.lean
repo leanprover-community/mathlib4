@@ -247,7 +247,7 @@ theorem Fintype.prod_prod_type_right' (f : α₁ → α₂ → M) :
     ∏ x : α₁ × α₂, f x.1 x.2 = ∏ y, ∏ x, f x y :=
   Finset.prod_product_right' ..
 
-/-! ### Sums over `Fin n` -/
+/-! ### Sums and products over `Fin n` -/
 
 @[to_additive]
 theorem Finset.prod_range {n : ℕ} (f : ℕ → M) : ∏ i ∈ Finset.range n, f i = ∏ i : Fin n, f i :=
