@@ -87,7 +87,7 @@ theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
   unfold diagonal
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp, diag_subinterval_eq]
 
-/-- For any `σ: X ⟶ Y` between `StrictSegal` simplicial sets, `spineToSimplex`
+/-- For any `σ : X ⟶ Y` between `StrictSegal` simplicial sets, `spineToSimplex`
 commutes with `Path.map`. -/
 lemma spineToSimplex_map {X Y : SSet.{u}} [StrictSegal X] [StrictSegal Y]
     {n : ℕ} (f : Path X (n + 1)) (σ : X ⟶ Y) :
@@ -209,7 +209,9 @@ instance : Quasicategory X := by
         rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
         apply congr_arg
         simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
-          whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj]
+          whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, ne_eq,
+          whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map, len_mk,
+          Nat.reduceAdd, Quiver.Hom.unop_op]
         cases n with
         | zero => contradiction
         | succ _ => fin_cases m <;> (ext x; fin_cases x <;> rfl)
@@ -219,7 +221,8 @@ instance : Quasicategory X := by
       apply congr_arg
       simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
         whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj,
-        whiskering_obj_obj_map, yoneda_obj_map, horn.face_coe]
+        uliftFunctor_map, whiskering_obj_obj_map, yoneda_obj_map, horn.face_coe,
+        len_mk, Nat.reduceAdd, Quiver.Hom.unop_op, Subtype.mk.injEq, ULift.up_inj]
       ext z
       cases n with
       | zero => contradiction
