@@ -60,18 +60,10 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let env ← getEnv
   if nm.isEmpty then return
   if nm.all (env.find? · |>.isNone) then return
-  let declIds := ← getNamesFrom <| stx.getPos?.getD default
-  -- we re-elaborate the declaration in a new namespace, opening the old one
-  -- let data ← withScope (fun s => {s with
-  --     currNamespace := s.currNamespace ++ `another
-  --     opts := diagnostics.threshold.set (diagnostics.set s.opts true) 1000000000
-  --     openDecls := .simple s.currNamespace [] :: s.openDecls
-  --   }) do
   let data := Kernel.getDiagnostics (← getEnv)
 
-  let declId := match stx.find? (·.isOfKind ``declId) with
-    | none => declIds.back?.getD default
-    | some d => d
+  let declIds := ← getNamesFrom <| stx.getPos?.getD default
+  let declId := declIds.back!
 
   let mut bad : Option Name := none
   for forbidden in nm do
@@ -79,18 +71,20 @@ def findDefEqAbuseLinter : Linter where run := withSetOptionIn fun stx ↦ do
       bad := some forbidden
       break
 
-  modify (fun x ↦ {x with messages := .empty})
-
-  if let some v := bad then
-    let mut propogate := false
-    for var in ← resolveGlobalName declId.getId do
-      if let some ci := env.find? var.1 then
-        if !(← liftTermElabM <| Meta.isProp ci.type) then
-          propogate := true
-          findDefEqAbuseRef.modify (NameSet.insert · declId.getId)
-      else
-        logWarningAt declId m!"Couldn't find name {var} in environment"
-    logWarningAt declId m!"'{declId}' relies on the definition of '{v}' (propogating: {propogate})"
+  let some v := bad | return
+  let mut propogate := false
+  let resolutions ← resolveGlobalConst declId
+  if resolutions.isEmpty then
+    logWarningAt declId m!"Couldn't find resolve name {declId}"
+  for var in resolutions do
+    if let some ci := env.find? var then
+      -- logInfo m!"Constant info type {ci.type}"
+      if !(← liftTermElabM <| Meta.isProp ci.type) then
+        propogate := true
+        findDefEqAbuseRef.modify (NameSet.insert · declId.getId)
+    else
+      logWarningAt declId m!"Couldn't find name {var} in environment"
+  logWarningAt declId m!"'{declId}' relies on the definition of '{v}' (propogating: {propogate})"
 
 initialize addLinter findDefEqAbuseLinter
 

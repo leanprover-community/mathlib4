@@ -11,17 +11,19 @@ def Y := Option Nat
 
 --attribute [irreducible] Y
 
-/-- warning: 'f' relies on the definition of 'X.Y' (propogating: false) -/
+/-- warning: 'X.f' relies on the definition of 'X.Y' (propogating: true) -/
 #guard_msgs in
 def f : Y := some 0
 
-/-- warning: 'g' relies on the definition of 'X.Y' (propogating: false) -/
+/-- warning: 'X.g' relies on the definition of 'X.Y' (propogating: true) -/
 #guard_msgs in
 def g : Y := some 0
 
+/-- warning: 'X.f_eq_g' relies on the definition of 'X.g' (propogating: false) -/
+#guard_msgs in
 theorem f_eq_g : f = g := rfl
 
-/-- warning: 'd' relies on the definition of 'X.Y' (propogating: false) -/
+/-- warning: 'X.d' relies on the definition of 'X.Y' (propogating: false) -/
 #guard_msgs in
 theorem d : f = g := by
   unfold f g
@@ -56,5 +58,13 @@ instance : NatCast ENat where
 /-- warning: 'test' relies on the definition of 'instNatCastENat' (propogating: false) -/
 #guard_msgs in
 theorem test (k : Nat) : (k : ENat) < ((k + 1 : Nat) : ENat) := WithTop.coe_lt_coe.2 (Nat.lt_succ_self _)
+
+axiom emultiplicity {α : Type} : α → ENat
+
+axiom WithTop.untop {α : Type} : WithTop α → α → α
+
+/-- warning: 'multiplicity' relies on the definition of 'ENat' (propogating: true) -/
+#guard_msgs in
+noncomputable def multiplicity {α : Type} (a : α) : Nat := (emultiplicity a).untop 1
 
 end Z
