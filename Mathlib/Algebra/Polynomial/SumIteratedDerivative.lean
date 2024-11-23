@@ -158,6 +158,10 @@ theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q �
   simp_rw [hp', nsmul_eq_mul, map_mul, map_natCast, ← mul_assoc, ← Nat.cast_mul,
     Nat.add_descFactorial_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
+theorem aeval_sumIDeriv_eq_eval (p : R[X]) (r : A):
+    aeval r (sumIDeriv p) = eval r (sumIDeriv (map (algebraMap R A) p)) := by
+  rw [aeval_def, eval, sumIDeriv_map, eval₂_map, RingHom.id_comp]
+
 theorem aeval_sumIDeriv (p : R[X]) (q : ℕ) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
       ∀ (r : A), (X - C r) ^ q ∣ p.map (algebraMap R A) →
@@ -242,5 +246,13 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     exact hx.1.2.not_le hx.2.1
 
 end CommSemiring
+
+theorem eval_sumIDeriv_of_pos
+    [CommRing R] [Nontrivial R] [NoZeroDivisors R] (p : R[X]) {q : ℕ} (hq : 0 < q) :
+    ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
+      ∀ (r : R) {p' : R[X]},
+        p = ((X : R[X]) - C r) ^ (q - 1) * p' →
+        eval r (sumIDeriv p) = (q - 1)! • p'.eval r + q ! • eval r gp := by
+  simpa using aeval_sumIDeriv_of_pos R p hq Function.injective_id
 
 end Polynomial
