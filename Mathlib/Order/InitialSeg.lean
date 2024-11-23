@@ -124,7 +124,7 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
 @[deprecated exists_eq_iff_rel (since := "2024-09-21")]
 alias init_iff := exists_eq_iff_rel
 
-/-- A relation isomorphism is an initial segment embedding. -/
+/-- A relation isomorphism is an initial segment embedding -/
 @[simps!]
 def _root_.RelIso.toInitialSeg (f : r ≃r s) : r ≼i s :=
   ⟨f, by simp⟩
