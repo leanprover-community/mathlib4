@@ -309,7 +309,7 @@ lemma nth_add_one {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
     nth_rw 2 [← hs (by simp [h0])]
     have h1 : {i | p (i + 1) ∧ ∀ k < n + 1, nth p k < i + 1}.Nonempty := by
       have hp1 : 1 ≤ nth p (n + 1) := by omega
-      have hf : ∀ hf : (setOf p).Finite, n + 1 < hf.toFinset.card := by
+      have hf : ∀ hf : (setOf p).Finite, n + 1 < #hf.toFinset := by
         simpa [nth_eq_zero] using h
       refine ⟨nth p (n + 1) - 1, ?_, ?_⟩
       · simp only [hp1, Nat.sub_add_cancel]
