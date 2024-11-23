@@ -13,8 +13,8 @@ In this file we show that localizations are flat, and flatness is a local proper
 
 ## Main result
 * `IsLocalization.flat`: a localization of a commutative ring is flat over it.
-* `flat_iff_localization` : Let `R_p` a localization of `CommRing R` and `M` be a module over `R_p`.
-  Then `M` is flat over `R` if and only if `M` is flat over `R_p`.
+* `flat_iff_localization` : Let `Rₚ` a localization of `CommRing R` and `M` be a module over `R_p`.
+  Then `M` is flat over `R` if and only if `M` is flat over `Rₚ`.
 * `Flat_of_isLocalized_maximal` : Let `M` be a module over `CommRing R`. If the localization
   of `M` at each maximal ideal `P` is flat over `Rₚ`, then `M` is flat over `R`.
 * `Flat_of_isLocalized_span` : Let `M` be a module over `CommRing R` and `S` be a set that
