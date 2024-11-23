@@ -1404,7 +1404,9 @@ theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
 
 section LocallyCompact
 
-/-- A locally compact manifold must be modelled on a locally compact space. -/
+/-- A locally compact manifold must be modelled on a locally compact space.
+
+  TODO: generalise to manifolds with boundary. -/
 lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 E H) [I.Boundaryless]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [Inhabited M] [LocallyCompactSpace M] :
     LocallyCompactSpace E := by
