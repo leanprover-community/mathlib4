@@ -54,7 +54,7 @@ def displayMarkdown (md : String) (stx : Syntax) : CoreM Unit := do
     (return json% { html: $(← Server.RpcEncodable.rpcEncode html) })
     stx
 
-syntax (name := explainTacStx) "explain" str (tactic)? : tactic
+syntax (name := explainTacStx) "explain" str (ppIndent("in" tactic))? : tactic
 
 open Tactic in
 /-- A tactic that adds an explanation widget in markdown form. -/
@@ -63,19 +63,19 @@ def elabExplainTac : Tactic := fun stx =>
   match stx with
   | `(tactic|explain%$tk $s:str) => do
     displayMarkdown s.getString tk
-  | `(tactic|explain%$tk $s:str $t:tactic) => do
+  | `(tactic|explain%$tk $s:str in $t:tactic) => do
     displayMarkdown s.getString tk
     evalTactic t
   | _ => throwUnsupportedSyntax
 
-syntax (name := explainTermStx) "explain%" str term : term
+syntax (name := explainTermStx) "explain%" str ppIndent("in" term) : term
 
 open Term in
 /-- A term elaborator that adds an explanation widget in markdown form. -/
 @[term_elab explainTermStx]
 def elabExplainTerm : TermElab := fun stx type? =>
   match stx with
-  | `(explain%%$tk $s:str $t:term) => do
+  | `(explain%%$tk $s:str in $t:term) => do
     displayMarkdown s.getString tk
     elabTerm t type?
   | _ => throwUnsupportedSyntax
