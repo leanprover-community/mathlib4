@@ -181,11 +181,14 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     exact one_le_padicValNat_of_dvd this <| hp.out.dvd_choose_pow (by omega) (by omega)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
     refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_succ (fun i _ ↦ ?_)
-    rw [← Int.cast_smul_eq_zsmul ℚ_[p], norm_smul]
-    refine le_trans ?_ (hst (i + ↑(p ^ t)) i ?_)
-    · apply mul_le_of_le_one_left (norm_nonneg _)
+    calc
+    _ ≤ ‖f (i + ↑(p ^ t)) - f i‖ := by
+      rw [← Int.cast_smul_eq_zsmul ℚ_[p], norm_smul]
+      apply mul_le_of_le_one_left (norm_nonneg _)
       simpa only [← coe_intCast] using norm_le_one _
-    · rw [Nat.cast_pow, add_sub_cancel_left, norm_pow, norm_p, inv_pow, zpow_neg, zpow_natCast]
+    _ ≤ ‖f‖ / p ^ s := by
+      apply hst
+      rw [Nat.cast_pow, add_sub_cancel_left, norm_pow, norm_p, inv_pow, zpow_neg, zpow_natCast]
 
 /--
 Explicit bound for the decay rate of the Mahler coefficients of a continuous function on `ℤ_[p]`.
