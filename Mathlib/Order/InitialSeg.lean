@@ -357,7 +357,7 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
   ⟨fun f => f.irrefl⟩
 
 /-- Composition of a principal segment embedding with an initial segment embedding, as a principal
-segment embedding. -/
+segment embedding -/
 def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
     simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
@@ -383,7 +383,7 @@ set_option linter.deprecated false in
 theorem lt_le_top (f : r ≺i s) (g : s ≼i t) : (f.ltLe g).top = g f.top :=
   rfl
 
-/-- Composition of two principal segment embeddings as a principal segment embedding. -/
+/-- Composition of two principal segment embeddings as a principal segment embedding -/
 @[trans]
 protected def trans [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : r ≺i t :=
   transInitial f g
@@ -397,7 +397,7 @@ theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top
   rfl
 
 /-- Composition of an order isomorphism with a principal segment embedding, as a principal
-segment embedding. -/
+segment embedding -/
 def relIsoTrans (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c => by simp [g.mem_range_iff_rel]⟩
 
@@ -537,7 +537,7 @@ noncomputable def principalSumRelIso [IsWellOrder β s] (f : r ≼i s) : (r ≺i
 alias ltOrEq := principalSumRelIso
 
 /-- Composition of an initial segment embedding and a principal segment embedding as a principal
-segment embedding. -/
+segment embedding -/
 noncomputable def transPrincipal [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
     r ≺i t :=
   match f.principalSumRelIso with
