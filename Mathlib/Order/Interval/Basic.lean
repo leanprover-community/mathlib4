@@ -153,7 +153,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (a : NonemptyInterval α) :
 
 @[simp]
 theorem dual_map (f : α →o β) (a : NonemptyInterval α) :
-    dual (a.map f) = a.dual.map (OrderHom.dual f) :=
+    dual (a.map f) = a.dual.map f.dual :=
   rfl
 
 /-- Binary pushforward of nonempty intervals. -/
@@ -360,7 +360,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).
   Option.map_map _ _ _
 
 @[simp]
-theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map (OrderHom.dual f) := by
+theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map f.dual := by
   cases s
   · rfl
   · exact WithBot.map_comm rfl _

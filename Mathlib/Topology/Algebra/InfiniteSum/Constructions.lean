@@ -192,6 +192,11 @@ theorem Multipliable.prod_factor {f : β × γ → α} (h : Multipliable f) (b :
     Multipliable fun c ↦ f (b, c) :=
   h.comp_injective fun _ _ h ↦ (Prod.ext_iff.1 h).2
 
+@[to_additive Summable.prod]
+lemma Multipliable.prod {f : β × γ → α} (h : Multipliable f) :
+    Multipliable fun b ↦ ∏' c, f (b, c) :=
+  ((Equiv.sigmaEquivProd β γ).multipliable_iff.mpr h).sigma
+
 @[to_additive]
 lemma HasProd.tprod_fiberwise [T2Space α] {f : β → α} {a : α} (hf : HasProd f a) (g : β → γ) :
     HasProd (fun c : γ ↦ ∏' b : g ⁻¹' {c}, f b) a :=

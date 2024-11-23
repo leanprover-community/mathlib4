@@ -307,7 +307,7 @@ variable [Measure.Regular μ]
 @[to_additive]
 theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : IsOpen U)
     (hne : U.Nonempty) : 0 < μ U :=
-  let ⟨_K, hK, hμK⟩ := Regular.exists_compact_not_null.mpr hμ
+  let ⟨_K, hK, hμK⟩ := Regular.exists_isCompact_not_null.mpr hμ
   measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero G hK hμK hU hne
 
 @[to_additive]
