@@ -3,6 +3,7 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.SetTheory.Cardinal.Finite
 
@@ -49,6 +50,12 @@ lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by
 
 @[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_inv := natCard_inv
 
+@[to_additive (attr := simp)]
+lemma encard_inv (s : Set G) : s⁻¹.encard = s.encard := by simp [encard, PartENat.card]
+
+@[to_additive (attr := simp)]
+lemma ncard_inv (s : Set G) : s⁻¹.ncard = s.ncard := by simp [ncard]
+
 end InvolutiveInv
 
 section DivInvMonoid
@@ -81,6 +88,13 @@ lemma natCard_smul_set (a : G) (s : Set α) : Nat.card ↥(a • s) = Nat.card s
 
 @[to_additive (attr := deprecated (since := "2024-09-30"))]
 alias card_smul_set := Cardinal.mk_smul_set
+
+@[to_additive (attr := simp)]
+lemma encard_smul_set (a : G) (s : Set α) : (a • s).encard = s.encard := by
+  simp [encard, PartENat.card]
+
+@[to_additive (attr := simp)]
+lemma ncard_smul_set (a : G) (s : Set α) : (a • s).ncard = s.ncard := by simp [ncard]
 
 end Group
 end Set
