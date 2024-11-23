@@ -78,7 +78,6 @@ theorem IsThreeCycle.mem_alternatingGroup {f : Perm α} (h : IsThreeCycle f) :
     f ∈ alternatingGroup α :=
   Perm.mem_alternatingGroup.mpr h.sign
 
-set_option linter.deprecated false in
 theorem finRotate_bit1_mem_alternatingGroup {n : ℕ} :
     finRotate (2 * n + 1) ∈ alternatingGroup (Fin (2 * n + 1)) := by
   rw [mem_alternatingGroup, sign_finRotate, pow_mul, pow_two, Int.units_mul_self, one_pow]
