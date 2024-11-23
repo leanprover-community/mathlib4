@@ -33,7 +33,7 @@ variable [Module R N] [AddCommGroup N'] [Module R N'] (S : Submonoid R)
 theorem Module.free_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ]
     (S) (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M] :
-      Module.Free Rₛ Mₛ :=
+    Module.Free Rₛ Mₛ :=
     Free.of_equiv (IsLocalizedModule.isBaseChange S Rₛ f).equiv
 
 universe uR' uM' in
@@ -46,7 +46,7 @@ theorem Module.lift_rank_of_isLocalizedModule_of_free
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (S : Submonoid R)
     (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M]
     [Nontrivial Rₛ] :
-      Cardinal.lift.{uM} (Module.rank Rₛ Mₛ) = Cardinal.lift.{uM'} (Module.rank R M) := by
+    Cardinal.lift.{uM} (Module.rank Rₛ Mₛ) = Cardinal.lift.{uM'} (Module.rank R M) := by
   apply Cardinal.lift_injective.{max uM' uR'}
   have := (algebraMap R Rₛ).domain_nontrivial
   have := (IsLocalizedModule.isBaseChange S Rₛ f).equiv.lift_rank_eq.symm
@@ -60,7 +60,7 @@ theorem Module.finrank_of_isLocalizedModule_of_free
     [CommRing Rₛ] [Algebra R Rₛ] [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (S : Submonoid R)
     (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ] [IsLocalizedModule S f] [Module.Free R M]
     [Nontrivial Rₛ] :
-      Module.finrank Rₛ Mₛ = Module.finrank R M := by
+    Module.finrank Rₛ Mₛ = Module.finrank R M := by
   simpa using congr(Cardinal.toNat $(Module.lift_rank_of_isLocalizedModule_of_free Rₛ S f))
 
 theorem Module.projective_of_isLocalizedModule {Rₛ Mₛ} [AddCommGroup Mₛ] [Module R Mₛ]
