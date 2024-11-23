@@ -146,7 +146,7 @@ variable
   (f : ∀ r : s, M →ₗ[R] Mₚ r)
   [∀ r : s, IsLocalizedModule (.powers r.1) (f r)]
 
-theorem eq_of_isLocalized_span (x y : M) (h : ∀ r : s, f r x = f r y) : x = y := by
+theorem Module.eq_of_isLocalized_span (x y : M) (h : ∀ r : s, f r x = f r y) : x = y := by
   suffices Module.eqIdeal R x y = ⊤ by simpa [Module.eqIdeal] using (eq_top_iff_one _).mp this
   by_contra ne
   have ⟨r, hrs, disj⟩ := exists_disjoint_powers_of_span_eq_top s span_eq _ ne
@@ -154,7 +154,7 @@ theorem eq_of_isLocalized_span (x y : M) (h : ∀ r : s, f r x = f r y) : x = y 
   have ⟨⟨_, n, rfl⟩, eq⟩ := (IsLocalizedModule.eq_iff_exists (.powers r.1) _).mp (h r)
   exact Set.disjoint_left.mp disj eq ⟨n, rfl⟩
 
-theorem eq_zero_of_isLocalized_span (x : M) (h : ∀ r : s, f r x = 0) : x = 0 :=
+theorem Module.eq_zero_of_isLocalized_span (x : M) (h : ∀ r : s, f r x = 0) : x = 0 :=
   eq_of_isLocalized_span s span_eq _ f x 0 <| by simpa only [map_zero] using h
 
 theorem Submodule.mem_of_isLocalized_span {m : M} {N : Submodule R M}
