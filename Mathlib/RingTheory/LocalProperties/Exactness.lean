@@ -161,7 +161,7 @@ variable {L : Type*} [AddCommMonoid L] [Module R L]
   (F : M →ₗ[R] N) (G : N →ₗ[R] L)
 
 lemma exact_of_isLocalized_span (H : ∀ r : s, Function.Exact
-      (map (.powers r.1) (f r) (g r) F) (map (.powers r.1) (g r) (h r) G)) :
+    (map (.powers r.1) (f r) (g r) F) (map (.powers r.1) (g r) (h r) G)) :
     Function.Exact F G := by
   simp only [LinearMap.exact_iff] at H ⊢
   apply Submodule.eq_of_isLocalized₀_span s spn Nₚ g
