@@ -1291,7 +1291,7 @@ theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
   exact Finset.prod_congr n.support_factorization fun _ h =>
     sigma_zero_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
 
-@[deprecated "Deprecated without replacement." (since := "2024-06-09")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-09")]
 theorem card_divisors (n : ℕ) (hn : n ≠ 0) :
     #n.divisors = n.primeFactors.prod (n.factorization · + 1) := Nat.card_divisors hn
 
