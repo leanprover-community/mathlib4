@@ -2197,9 +2197,9 @@ elements each from a different subspace in the family is linearly independent. I
 pairwise intersections of elements of the family are 0. -/
 theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
-    CompleteLattice.Independent V := by
+    iSupIndep V := by
   classical
-  apply CompleteLattice.independent_of_dfinsupp_lsum_injective
+  apply iSupIndep_of_dfinsupp_lsum_injective
   refine LinearMap.ker_eq_bot.mp ?_
   rw [Submodule.eq_bot_iff]
   intro v hv
