@@ -773,7 +773,7 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
           exact mul_le_of_limit_aux h H⟩
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
-  -- Porting note(#12129): additional beta reduction needed
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   ⟨fun b => by
       beta_reduce
       rw [mul_succ]
@@ -2302,10 +2302,6 @@ theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
 alias nat_lt_omega := nat_lt_omega0
 
 theorem omega0_pos : 0 < ω :=
-  nat_lt_omega0 0
-
-@[deprecated (since := "2024-09-30")]
-theorem omega_pos : 0 < ω :=
   nat_lt_omega0 0
 
 theorem omega0_ne_zero : ω ≠ 0 :=

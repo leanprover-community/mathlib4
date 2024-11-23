@@ -50,7 +50,9 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove that
+-- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+-- simp cannot prove this
+@[simp, nolint simpNF]
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 
 @[simp]
@@ -269,7 +271,7 @@ instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
   Subalgebra.algebra (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    -- porting note (#10754): added instance
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
     IsScalarTower A (A.ofPrime P) K :=
   IsScalarTower.subalgebra' A K K
@@ -478,7 +480,8 @@ section nonunits
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
   -- Porting note: added `Set.mem_setOf.mp`
-  mul_mem' ha hb := (mul_lt_mul₀ (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)).trans_eq <| mul_one _
+  mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
+    zero_le' zero_le').trans_eq <| mul_one _
 
 theorem mem_nonunits_iff {x : K} : x ∈ A.nonunits ↔ A.valuation x < 1 :=
   Iff.rfl
