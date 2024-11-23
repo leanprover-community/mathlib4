@@ -369,21 +369,23 @@ lemma restriction_map {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
 noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
     presheafObj data G₀ Y ⟶ presheafObj data G₀ X :=
   Multiequalizer.lift _ _ (fun i₀ ↦ restriction data G₀ ((data X).f i₀ ≫ f)) (by
-    have : Full F := sorry -- use `IsLocallyFull`...
     rintro ⟨⟨i₁, i₂⟩, j⟩
-    dsimp at j ⊢
     obtain ⟨a, h₁, h₂⟩ : ∃ a, a = F.map ((data X).p₁ j) ≫ (data X).f i₁ ≫ f ∧
         a = F.map ((data X).p₂ j) ≫ (data X).f i₂ ≫ f := ⟨_, rfl, (data X).w_assoc j _⟩
     refine Presheaf.IsSheaf.hom_ext G₀.cond
-      ⟨_, cover_lift F J₀ _ (J.pullback_stable a (data Y).mem₀)⟩ _ _ ?_
-    rintro ⟨W₀, b, ⟨_, c, _, h, w⟩⟩
-    cases' h with i
-    dsimp at i c w ⊢
-    rw [assoc, assoc, ← Functor.map_comp, ← Functor.map_comp, ← op_comp, ← op_comp]
-    rw [restriction_map data G₀ _ _ (F.preimage c),
-      restriction_map data G₀ _ _ (F.preimage c)]
-    · rw [map_preimage, map_comp, assoc, w, h₂]
-    · rw [map_preimage, map_comp, assoc, w, h₁])
+      ⟨_, GrothendieckTopology.bind_covering
+      (hS := cover_lift F J₀ _ (J.pullback_stable a (data Y).mem₀))
+      (hR := fun W₀ b hb ↦ IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hb))⟩ _ _ ?_
+    rintro ⟨W₀, _, ⟨Z₀, c, d, hd, ⟨e, he⟩, rfl⟩⟩
+    dsimp at hd ⊢
+    rw [assoc, assoc, ← Functor.map_comp, ← Functor.map_comp, ← op_comp, ← op_comp, ← op_comp,
+      restriction_map data G₀ _ _ e, restriction_map data G₀ _ _ e]
+    · rw [assoc, Functor.map_comp_assoc, Functor.map_comp_assoc, reassoc_of% he, ← h₂]
+      simp only [Sieve.ofArrows.fac hd]
+      rfl
+    · rw [assoc, Functor.map_comp_assoc, Functor.map_comp_assoc, reassoc_of% he, ← h₁]
+      simp only [Sieve.ofArrows.fac hd]
+      rfl)
 
 @[reassoc (attr := simp)]
 lemma presheafMap_π {X Y : C} (f : X ⟶ Y) (i : (data X).I₀) :
