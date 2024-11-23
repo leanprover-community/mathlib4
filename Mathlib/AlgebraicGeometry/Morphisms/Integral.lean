@@ -131,7 +131,7 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
     (isPullback_Spec_map_isPushout _ _ _ _
     (CommRingCat.isPushout_of_isPushout R S (Polynomial R) (Polynomial S))).flip
 
-lemma eq_universallyClosed_and_isAffineHom :
+lemma eq_universallyClosed_inf_isAffineHom :
     @IsIntegralHom = (@UniversallyClosed ⊓ @IsAffineHom : MorphismProperty Scheme) := by
   ext
   exact iff_universallyClosed_and_isAffineHom
