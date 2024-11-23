@@ -98,7 +98,7 @@ jobs:
 
         # Output the relevant branches
         echo "'$RELEVANT_BRANCHES'"
-        echo "branches=$RELEVANT_BRANCHES" >> "$GITHUB_OUTPUT"
+        printf "branches<<EOF\n%s\nEOF" "$RELEVANT_BRANCHES" >> "$GITHUB_OUTPUT"
 
     - name: Check if there are relevant branches
       id: check-branches
