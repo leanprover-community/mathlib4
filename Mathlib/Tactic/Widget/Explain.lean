@@ -46,6 +46,7 @@ namespace Mathlib.Tactic
 
 open Lean Elab ProofWidgets ProofWidgets.Jsx
 
+/-- Displays the markdown source in `md` in a widget when the cursor is placed at `stx`. -/
 def displayMarkdown (md : String) (stx : Syntax) : CoreM Unit := do
   let html : Html := <MarkdownDisplay contents={md}/>
   Widget.savePanelWidgetInfo
@@ -56,6 +57,7 @@ def displayMarkdown (md : String) (stx : Syntax) : CoreM Unit := do
 syntax (name := explainTacStx) "explain" str (tactic)? : tactic
 
 open Tactic in
+/-- A tactic that adds an explanation widget in markdown form. -/
 @[tactic explainTacStx]
 def elabExplainTac : Tactic := fun stx =>
   match stx with
@@ -69,6 +71,7 @@ def elabExplainTac : Tactic := fun stx =>
 syntax (name := explainTermStx) "explain%" str term : term
 
 open Term in
+/-- A term elaborator that adds an explanation widget in markdown form. -/
 @[term_elab explainTermStx]
 def elabExplainTerm : TermElab := fun stx type? =>
   match stx with
@@ -80,9 +83,12 @@ def elabExplainTerm : TermElab := fun stx type? =>
 syntax (name := explainCmdStx) "#explain" str : command
 
 open Command in
+/-- A command that displays an explanation widget in markdown form. -/
 @[command_elab explainCmdStx]
 def elabExplainCommand : CommandElab := fun stx =>
   match stx with
   | `(command|#explain%$tk $s:str) => do
     Command.liftCoreM <| displayMarkdown s.getString tk
   | _ => throwUnsupportedSyntax
+
+end Mathlib.Tactic
