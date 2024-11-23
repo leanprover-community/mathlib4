@@ -30,6 +30,8 @@ number `n` such that `x ≤ n • y`.
 * `ℕ`, `ℤ`, and `ℚ` are archimedean.
 -/
 
+assert_not_exists Finset
+
 open Int Set
 
 variable {α : Type*}
@@ -62,11 +64,11 @@ instance OrderDual.instMulArchimedean [OrderedCommGroup α] [MulArchimedean α] 
 
 instance Additive.instArchimedean [OrderedCommGroup α] [MulArchimedean α] :
     Archimedean (Additive α) :=
-  ⟨fun x _ hy ↦ MulArchimedean.arch (toMul x) hy⟩
+  ⟨fun x _ hy ↦ MulArchimedean.arch x.toMul hy⟩
 
 instance Multiplicative.instMulArchimedean [OrderedAddCommGroup α] [Archimedean α] :
     MulArchimedean (Multiplicative α) :=
-  ⟨fun x _ hy ↦ Archimedean.arch (toAdd x) hy⟩
+  ⟨fun x _ hy ↦ Archimedean.arch x.toAdd hy⟩
 
 variable {M : Type*}
 
