@@ -332,7 +332,7 @@ def mapSpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
 def reindex {n m : Type v} (i : m → n) (S : Scheme.{max u v}) : 𝔸(n; S) ⟶ 𝔸(m; S) :=
   homOfVector (𝔸(n; S) ↘ S) (coord S ∘ i)
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma reindex_over {n m : Type v} (i : m → n) (S : Scheme.{max u v}) :
     reindex i S ≫ 𝔸(m; S) ↘ S = 𝔸(n; S) ↘ S :=
   pullback.lift_fst _ _ _
