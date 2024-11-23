@@ -74,7 +74,7 @@ theorem removeNth_update : removeNth i (update s i y) = removeNth i s := by
   convert Fin.removeNth_update i y (⇑s)
 
 @[simp]
-theorem tail_apply : tail s j = s (j.succ) := rfl
+theorem tail_apply : tail s j = s j.succ := rfl
 
 @[simp]
 theorem tail_update_zero : tail (update s 0 y) = tail s := by
