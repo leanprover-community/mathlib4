@@ -71,7 +71,7 @@ macro_rules
 | `(tactic| rify $[[$simpArgs,*]]? $[at $location]?) =>
   let args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic|
-    simp (config := {decide := false}) only [zify_simps, qify_simps, rify_simps, push_cast, $args,*]
+    simp -decide only [zify_simps, qify_simps, rify_simps, push_cast, $args,*]
       $[at $location]?)
 
 @[rify_simps] lemma ratCast_eq (a b : ℚ) : a = b ↔ (a : ℝ) = (b : ℝ) := by simp

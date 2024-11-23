@@ -51,11 +51,11 @@ class AddTorsor (G : outParam Type*) (P : Type*) [AddGroup G] extends AddAction 
   /-- Torsor addition and subtraction with the same element cancels out. -/
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 
- -- Porting note(#12096): removed `nolint instance_priority`; lint not ported yet
+ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed `nolint instance_priority`; lint not ported yet
 attribute [instance 100] AddTorsor.nonempty
 
 /-- An `AddGroup G` is a torsor for itself. -/
--- Porting note(#12096): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): linter not ported yet
 --@[nolint instance_priority]
 instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G where
   vsub := Sub.sub
@@ -358,7 +358,7 @@ theorem constVAdd_add (v₁ v₂ : G) : constVAdd P (v₁ + v₂) = constVAdd P 
 
 /-- `Equiv.constVAdd` as a homomorphism from `Multiplicative G` to `Equiv.perm P` -/
 def constVAddHom : Multiplicative G →* Equiv.Perm P where
-  toFun v := constVAdd P (Multiplicative.toAdd v)
+  toFun v := constVAdd P (v.toAdd)
   map_one' := constVAdd_zero G P
   map_mul' := constVAdd_add P
 

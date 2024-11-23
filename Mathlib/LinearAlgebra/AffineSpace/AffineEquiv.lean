@@ -40,7 +40,7 @@ such that both forward and inverse maps are affine.
 
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
@@ -422,7 +422,7 @@ theorem constVAdd_symm (v : V₁) : (constVAdd k P₁ v).symm = constVAdd k P₁
 /-- A more bundled version of `AffineEquiv.constVAdd`. -/
 @[simps]
 def constVAddHom : Multiplicative V₁ →* P₁ ≃ᵃ[k] P₁ where
-  toFun v := constVAdd k P₁ (Multiplicative.toAdd v)
+  toFun v := constVAdd k P₁ v.toAdd
   map_one' := constVAdd_zero _ _
   map_mul' := constVAdd_add _ P₁
 

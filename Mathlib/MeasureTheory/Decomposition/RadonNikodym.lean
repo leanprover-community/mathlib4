@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.SignedLebesgue
-import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
+import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 
 /-!
 # Radon-Nikodym theorem
@@ -547,23 +547,21 @@ lemma setLIntegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_rnDeriv_mul := setLIntegral_rnDeriv_mul
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HaveLebesgueDecomposition μ ν]
+  [SigmaFinite μ] {f : α → E}
 
-theorem integrable_rnDeriv_smul_iff [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
-    [SigmaFinite μ] {f : α → E} :
+theorem integrable_rnDeriv_smul_iff (hμν : μ ≪ ν) :
     Integrable (fun x ↦ (μ.rnDeriv ν x).toReal • f x) ν ↔ Integrable f μ := by
   nth_rw 2 [← withDensity_rnDeriv_eq μ ν hμν]
   rw [← integrable_withDensity_iff_integrable_smul' (E := E)
     (measurable_rnDeriv μ ν) (rnDeriv_lt_top μ ν)]
 
-theorem withDensityᵥ_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
-    [SigmaFinite μ] {f : α → E} (hf : Integrable f μ) :
+theorem withDensityᵥ_rnDeriv_smul (hμν : μ ≪ ν) (hf : Integrable f μ) :
     ν.withDensityᵥ (fun x ↦ (rnDeriv μ ν x).toReal • f x) = μ.withDensityᵥ f := by
   rw [withDensityᵥ_smul_eq_withDensityᵥ_withDensity' (measurable_rnDeriv μ ν).aemeasurable
     (rnDeriv_lt_top μ ν) ((integrable_rnDeriv_smul_iff hμν).mpr hf), withDensity_rnDeriv_eq μ ν hμν]
 
-theorem integral_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
-    [SigmaFinite μ] {f : α → E} :
+theorem integral_rnDeriv_smul (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x, f x ∂μ := by
   by_cases hf : Integrable f μ
   · rw [← setIntegral_univ, ← withDensityᵥ_apply ((integrable_rnDeriv_smul_iff hμν).mpr hf) .univ,
@@ -572,8 +570,7 @@ theorem integral_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ 
     contrapose! hf
     exact (integrable_rnDeriv_smul_iff hμν).mp hf
 
-lemma setIntegral_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
-    [SigmaFinite μ] {f : α → E} {s : Set α} (hs : MeasurableSet s) :
+lemma setIntegral_rnDeriv_smul (hμν : μ ≪ ν) {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x in s, f x ∂μ := by
   simp_rw [← integral_indicator hs, Set.indicator_smul, integral_rnDeriv_smul hμν]
 

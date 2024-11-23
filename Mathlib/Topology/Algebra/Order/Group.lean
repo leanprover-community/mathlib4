@@ -95,7 +95,7 @@ theorem denseRange_zsmul_iff_surjective {a : G} :
     DenseRange (· • a : ℤ → G) ↔ Surjective (· • a : ℤ → G) := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.denseRange⟩
   wlog ha₀ : 0 < a generalizing a
-  · simp only [← range_iff_surjective, DenseRange] at *
+  · simp only [← range_eq_univ, DenseRange] at *
     rcases (not_lt.1 ha₀).eq_or_lt with rfl | hlt
     · simpa only [smul_zero, range_const, dense_iff_closure_eq, closure_singleton] using h
     · have H : range (· • -a : ℤ → G) = range (· • a : ℤ → G) := by
@@ -109,7 +109,7 @@ theorem denseRange_zsmul_iff_surjective {a : G} :
   rcases eq_or_ne b ((m - 1) • a) with rfl | hne; · simp
   suffices (Ioo (m • a) ((m + 1) • a)).Nonempty by
     rcases h.exists_mem_open isOpen_Ioo this with ⟨l, hl⟩
-    have : m < l ∧ l < m + 1 := by simpa [zsmul_lt_zsmul_iff ha₀] using hl
+    have : m < l ∧ l < m + 1 := by simpa [zsmul_lt_zsmul_iff_left ha₀] using hl
     omega
   rcases hne.lt_or_lt with hlt | hlt
   · refine ⟨b + a + a, hm', ?_⟩

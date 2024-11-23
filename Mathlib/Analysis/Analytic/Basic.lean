@@ -214,7 +214,7 @@ theorem lt_radius_of_isBigO (h₀ : r ≠ 0) {a : ℝ} (ha : a ∈ Ioo (-1 : ℝ
   rw [← pos_iff_ne_zero, ← NNReal.coe_pos] at h₀
   lift a to ℝ≥0 using ha.1.le
   have : (r : ℝ) < r / a := by
-    simpa only [div_one] using (div_lt_div_left h₀ zero_lt_one ha.1).2 ha.2
+    simpa only [div_one] using (div_lt_div_iff_of_pos_left h₀ zero_lt_one ha.1).2 ha.2
   norm_cast at this
   rw [← ENNReal.coe_lt_coe] at this
   refine this.trans_le (p.le_radius_of_bound C fun n => ?_)
@@ -1037,8 +1037,8 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
         ((hf.hasSum_sub ⟨ys.1, hy.1⟩).sub (hf.hasSum_sub ⟨ys.2, hy.2⟩)) using 1
       rw [Finset.sum_range_succ, Finset.sum_range_one, hf.coeff_zero, hf.coeff_zero, sub_self,
         zero_add, ← Subsingleton.pi_single_eq (0 : Fin 1) (y.1 - x), Pi.single,
-        ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_sub, ← Pi.single,
-        Subsingleton.pi_single_eq, sub_sub_sub_cancel_right]
+        ← Subsingleton.pi_single_eq (0 : Fin 1) (y.2 - x), Pi.single, ← (p 1).map_update_sub,
+        ← Pi.single, Subsingleton.pi_single_eq, sub_sub_sub_cancel_right]
     rw [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, ENNReal.coe_lt_coe] at hy'
     set B : ℕ → ℝ := fun n => C * (a / r') ^ 2 * (‖y - (x, x)‖ * ‖y.1 - y.2‖) * ((n + 2) * a ^ n)
     have hAB : ∀ n, ‖A (n + 2)‖ ≤ B n := fun n =>

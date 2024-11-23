@@ -16,8 +16,6 @@ This file contains lemmas about the effect of pointwise operations on sets with 
 open Function Set
 open scoped Pointwise
 
-variable {α : Type*}
-
 namespace LinearOrderedField
 
 variable {K : Type*} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
