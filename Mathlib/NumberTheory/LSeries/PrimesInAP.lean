@@ -458,7 +458,6 @@ theorem setOf_prime_and_eq_mod_infinite (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
   by_contra H
   rw [Set.not_infinite] at H
-  have := support_residueClass_prime_div a ▸ H
   exact not_summable_residueClass_prime_div ha <|
     summable_of_finite_support <| support_residueClass_prime_div a ▸ H
 
