@@ -269,6 +269,8 @@ lemma isSheaf_iff :
         ∀ (X : C), Nonempty (IsLimit ((data X).toOneHypercover.multifork G)) := by
   refine ⟨fun hG ↦ ⟨op_comp_isSheaf F J₀ J ⟨_, hG⟩,
     fun X ↦ ⟨(data X).toOneHypercover.isLimitMultifork ⟨G, hG⟩⟩⟩, fun ⟨hG₀, hG⟩ ↦ ?_⟩
+  rw [Presheaf.isSheaf_iff_multifork]
+  intro X K
   sorry
 
 end
@@ -393,6 +395,30 @@ lemma presheafMap_π {X Y : C} (f : X ⟶ Y) (i : (data X).I₀) :
       restriction data G₀ ((data X).f i ≫ f) :=
   Multiequalizer.lift_ι _ _ _ _ _
 
+@[reassoc (attr := simp)]
+lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g : X ⟶ Y) :
+    presheafMap data G₀ g ≫ restriction data G₀ f = restriction data G₀ (f ≫ g) := by
+  refine Presheaf.IsSheaf.hom_ext G₀.cond ⟨_, GrothendieckTopology.bind_covering
+    (hS := cover_lift F J₀ J (J.pullback_stable f (data X).mem₀))
+    (hR := fun Y₀ a ha ↦ GrothendieckTopology.bind_covering
+        (hS := cover_lift F J₀ J (J.pullback_stable
+        (Sieve.ofArrows.h ha ≫ (data X).f (Sieve.ofArrows.i ha) ≫ g) (data Y).mem₀))
+        (hR := fun Z₀ b hb ↦
+          J₀.intersection_covering (J₀.pullback_stable b
+            (IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h ha)))
+            (IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hb))))⟩ _ _ ?_
+  rintro ⟨U₀, _, ⟨Y₀, _, a, ha, ⟨Z₀, c, b, hb, ⟨⟨p₂, w₂⟩, ⟨p₁, w₁⟩⟩, rfl⟩, rfl⟩⟩
+  have fac₁ := Sieve.ofArrows.fac ha
+  have fac₂ := Sieve.ofArrows.fac hb
+  dsimp at fac₁ fac₂
+  simp only [assoc]
+  rw [restriction_map (p := p₂), presheafMap_π_assoc, restriction_map (p := p₁),
+    restriction_map (p := p₁)]
+  · rw [w₁, assoc, map_comp_assoc, map_comp_assoc, reassoc_of% fac₁,
+      ← fac₂]
+  · rw [reassoc_of% w₁, reassoc_of% w₂, map_comp_assoc, ← fac₂]
+  · rw [reassoc_of% w₂, map_comp_assoc, map_comp_assoc, map_comp_assoc, ← fac₁]
+
 lemma presheafMap_id (X : C) :
     presheafMap data G₀ (𝟙 X) = 𝟙 _ := by
   ext i
@@ -402,7 +428,9 @@ lemma presheafMap_id (X : C) :
 
 lemma presheafMap_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     presheafMap data G₀ (f ≫ g) = presheafMap data G₀ g ≫ presheafMap data G₀ f := by
-  sorry
+  ext i
+  dsimp
+  rw [assoc, presheafMap_π, presheafMap_π, presheafMap_restriction, assoc]
 
 @[simps]
 noncomputable def presheaf : Cᵒᵖ ⥤ A where
