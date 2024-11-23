@@ -42,8 +42,7 @@ namespace Polynomial
 
 section greatestFactorOneSubNotDvd
 
-variable {R : Type*} [CommRing R] [Nontrivial R] [NoZeroDivisors R]
-variable (p : R[X]) (hp : p ≠ 0) (d : ℕ)
+variable {R : Type*} [CommRing R] (p : R[X]) (hp : p ≠ 0) (d : ℕ)
 
 /--
 Given a polynomial `p`, the factor `f` of `p` such that the product of `f` and
