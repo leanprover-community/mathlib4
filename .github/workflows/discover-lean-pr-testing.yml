@@ -94,7 +94,7 @@ jobs:
             # Check if the diff contains files other than the specified ones
             if echo "$DIFF_FILES" | grep -v -e 'lake-manifest.json' -e 'lakefile.lean' -e 'lean-toolchain'; then
                 # If it does, add the branch to RELEVANT_BRANCHES
-                RELEVANT_BRANCHES="$RELEVANT_BRANCHES\n- $BRANCH"
+                RELEVANT_BRANCHES="$RELEVANT_BRANCHES"$'\n- '"$BRANCH"
             fi
         done
 
