@@ -115,7 +115,7 @@ theorem preHilbert_eq_choose_sub_add (d k n : ℕ) (hkn : k ≤ n):
 
 /--
 Given `p : ℤ[X]` and `d : ℕ`, the Hilbert polynomial of `p` and `d`.
-Look at `Polynomial.coeff_mul_invOneSubPow_eq_hilbert_eval`, which says
+See also `Polynomial.coeff_mul_invOneSubPow_eq_hilbert_eval`, which says
 that `PowerSeries.coeff ℤ n (p * (@invOneSubPow ℤ _ d))` is equal to
 `(Polynomial.hilbert p d).eval (n : ℚ)` for any large enough `n : ℕ`.
 -/
