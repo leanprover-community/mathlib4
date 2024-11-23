@@ -1363,7 +1363,6 @@ theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
 theorem aeval_C (r : R) : aeval f (C r) = algebraMap R S₁ r :=
   eval₂_C _ _ _
 
--- TODO: just make `map_ofNat` simp?
 -- See note [no_index around OfNat.ofNat]
 @[simp] theorem aeval_ofNat (n : Nat) [n.AtLeastTwo] :
     aeval f (no_index (OfNat.ofNat n) : MvPolynomial σ R) = OfNat.ofNat n :=
@@ -1500,7 +1499,6 @@ theorem aevalTower_X (i : σ) : aevalTower g y (X i) = y i :=
 theorem aevalTower_C (x : R) : aevalTower g y (C x) = g x :=
   eval₂_C _ _ _
 
--- TODO: just make `map_ofNat` simp?
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem aevalTower_ofNat (n : Nat) [n.AtLeastTwo] :
