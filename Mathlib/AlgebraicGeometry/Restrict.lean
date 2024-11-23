@@ -52,8 +52,10 @@ def ι : ↑U ⟶ X := X.ofRestrict _
 
 instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
 
-@[simps] instance : U.toScheme.Over X := ⟨U.ι⟩
 @[simps! over] instance : U.toScheme.CanonicallyOver X where
+  hom := U.ι
+
+instance (U : X.Opens) : U.ι.IsOver X where
 
 lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
 
@@ -201,6 +203,8 @@ def Scheme.homOfLE (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : (U : Scheme.
 lemma Scheme.homOfLE_ι (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) :
     X.homOfLE e ≫ V.ι = U.ι :=
   IsOpenImmersion.lift_fac _ _ _
+
+instance {U V : X.Opens} (h : U ≤ V) : (X.homOfLE h).IsOver X where
 
 @[simp]
 lemma Scheme.homOfLE_rfl (X : Scheme.{u}) (U : X.Opens) : X.homOfLE (refl U) = 𝟙 _ := by
@@ -443,6 +447,21 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
       (IsPullback.of_hasPullback f (Y.ofRestrict U.isOpenEmbedding)).flip
   -- Porting note: changed `rw` to `erw`
   erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
+
+lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
+    IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by
+  refine (isPullback_morphismRestrict (X.homOfLE hV) (W.ι ⁻¹ᵁ U)).of_iso (V.ι.isoImage _ ≪≫
+    X.isoOfEq ?_) (W.ι.isoImage _ ≪≫ X.isoOfEq ?_) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_ ?_
+  · rw [← TopologicalSpace.Opens.map_comp_obj, ← Scheme.comp_base, Scheme.homOfLE_ι]
+    exact V.functor_map_eq_inf U
+  · exact (W.functor_map_eq_inf U).trans (by simpa)
+  all_goals { simp [← cancel_mono (Scheme.Opens.ι _)] }
+
+lemma isPullback_opens_inf {X : Scheme} (U V : X.Opens) :
+    IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) U.ι V.ι :=
+  (isPullback_morphismRestrict V.ι U).of_iso (V.ι.isoImage _ ≪≫ X.isoOfEq
+    (V.functor_map_eq_inf U)) (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp [← cancel_mono U.ι])
+    (by simp [← cancel_mono V.ι]) (by simp) (by simp)
 
 @[simp]
 lemma morphismRestrict_id {X : Scheme.{u}} (U : X.Opens) : 𝟙 X ∣_ U = 𝟙 _ := by
