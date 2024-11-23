@@ -501,7 +501,7 @@ theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin 
     degreeOf j (Polynomial.coeff (finSuccEquiv R n p) i) ≤ degreeOf j.succ p := by
   rw [degreeOf_eq_sup, degreeOf_eq_sup, Finset.sup_le_iff]
   intro m hm
-  rw [← Finsupp.cons_succ j i m]
+  rw [← Finsupp.cons_succ i m j]
   exact Finset.le_sup
     (f := fun (g : Fin (Nat.succ n) →₀ ℕ) => g (Fin.succ j))
     (support_coeff_finSuccEquiv.1 hm)
