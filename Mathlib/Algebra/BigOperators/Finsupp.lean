@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Indicator
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Big operators for finsupps
