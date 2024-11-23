@@ -84,7 +84,7 @@ lemma SupClosed.insert_upperBounds {s : Set α} {a : α} (hs : SupClosed s) (ha 
   rw [SupClosed]
   aesop
 
-lemma SupClosed.insert_lower_bound {s : Set α} {a : α} (h : SupClosed s) (ha : a ∈ lowerBounds s) :
+lemma SupClosed.insert_lowerBounds {s : Set α} {a : α} (h : SupClosed s) (ha : a ∈ lowerBounds s) :
     SupClosed (insert a s) := by
   rw [SupClosed]
   have ha' : ∀ b ∈ s, a ≤ b := fun _ a ↦ ha a
@@ -155,13 +155,13 @@ lemma infClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeInf (α i
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, InfClosed (t i)) : InfClosed (s.pi t) :=
   fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
 
-lemma InfClosed.insert_upper_bound {s : Set α} {a : α} (hs : InfClosed s) (ha : a ∈ upperBounds s) :
+lemma InfClosed.insert_upperBounds {s : Set α} {a : α} (hs : InfClosed s) (ha : a ∈ upperBounds s) :
     InfClosed (insert a s) := by
   rw [InfClosed]
   have ha' : ∀ b ∈ s, b ≤ a := fun _ a ↦ ha a
   aesop
 
-lemma InfClosed.insert_lower_bound {s : Set α} {a : α} (h : InfClosed s) (ha : a ∈ lowerBounds s) :
+lemma InfClosed.insert_lowerBounds {s : Set α} {a : α} (h : InfClosed s) (ha : a ∈ lowerBounds s) :
     InfClosed (insert a s) := by
   rw [InfClosed]
   aesop
