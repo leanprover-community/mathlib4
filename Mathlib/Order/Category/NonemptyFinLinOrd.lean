@@ -3,14 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Set.Finite
-import Mathlib.Order.Category.FinPartOrd
-import Mathlib.Order.Category.LinOrd
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.Category.FinPartOrd
+import Mathlib.Order.Category.LinOrd
 
 /-!
 # Nonempty finite linear orders

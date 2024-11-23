@@ -73,26 +73,26 @@ instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive w
 /-- A faithful additive monoidal functor to a monoidal preadditive category
 ensures that the domain is monoidal preadditive. -/
 theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
-    (F : MonoidalFunctor D C) [F.Faithful] [F.Additive] :
+    (F : D ⥤ C) [F.Monoidal] [F.Faithful] [F.Additive] :
     MonoidalPreadditive D :=
   { whiskerLeft_zero := by
       intros
-      apply F.toFunctor.map_injective
-      simp [F.map_whiskerLeft]
+      apply F.map_injective
+      simp [Functor.Monoidal.map_whiskerLeft]
     zero_whiskerRight := by
       intros
-      apply F.toFunctor.map_injective
-      simp [F.map_whiskerRight]
+      apply F.map_injective
+      simp [Functor.Monoidal.map_whiskerRight]
     whiskerLeft_add := by
       intros
-      apply F.toFunctor.map_injective
-      simp only [F.map_whiskerLeft, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.whiskerLeft_add]
+      apply F.map_injective
+      simp only [Functor.Monoidal.map_whiskerLeft, Functor.map_add, Preadditive.comp_add,
+        Preadditive.add_comp, MonoidalPreadditive.whiskerLeft_add]
     add_whiskerRight := by
       intros
-      apply F.toFunctor.map_injective
-      simp only [F.map_whiskerRight, Functor.map_add, Preadditive.comp_add, Preadditive.add_comp,
-        MonoidalPreadditive.add_whiskerRight] }
+      apply F.map_injective
+      simp only [Functor.Monoidal.map_whiskerRight, Functor.map_add, Preadditive.comp_add,
+        Preadditive.add_comp, MonoidalPreadditive.add_whiskerRight] }
 
 theorem whiskerLeft_sum (P : C) {Q R : C} {J : Type*} (s : Finset J) (g : J → (Q ⟶ R)) :
     P ◁ ∑ j ∈ s, g j = ∑ j ∈ s, P ◁ g j :=
@@ -116,20 +116,20 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
 instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
   preserves {J} :=
     { preserves := fun {f} =>
-        { preserves := fun {b} i => isBilimitOfTotal _ (by
+        { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← id_tensorHom]
             simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← tensor_id,
-              IsBilimit.total i]) } }
+              IsBilimit.total i])⟩ } }
 
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
   preserves {J} :=
     { preserves := fun {f} =>
-        { preserves := fun {b} i => isBilimitOfTotal _ (by
+        { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← tensorHom_id]
             simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← tensor_id,
-               IsBilimit.total i]) } }
+               IsBilimit.total i])⟩ } }
 
 variable [HasFiniteBiproducts C]
 
