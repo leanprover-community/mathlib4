@@ -3,13 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
@@ -44,9 +43,8 @@ section Mul
 
 variable [Mul α] {s t u : Set α} {a : α}
 
-@[to_additive]
-theorem op_smul_set_subset_mul : a ∈ t → op a • s ⊆ s * t :=
-  image_subset_image2_left
+@[to_additive] lemma smul_set_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image2_right
+@[to_additive] lemma op_smul_set_subset_mul : a ∈ t → op a • s ⊆ s * t := image_subset_image2_left
 
 @[to_additive]
 theorem image_op_smul : (op '' s) • t = t * s := by
@@ -64,6 +62,13 @@ theorem mul_subset_iff_left : s * t ⊆ u ↔ ∀ a ∈ s, a • t ⊆ u :=
 @[to_additive]
 theorem mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u :=
   image2_subset_iff_right
+
+@[to_additive] lemma pair_mul (a b : α) (s : Set α) : {a, b} * s = a • s ∪ b • s := by
+  rw [insert_eq, union_mul, singleton_mul, singleton_mul]; rfl
+
+open scoped RightActions
+@[to_additive] lemma mul_pair (s : Set α) (a b : α) : s * {a, b} = s <• a ∪ s <• b := by
+  rw [insert_eq, mul_union, mul_singleton, mul_singleton]; rfl
 
 end Mul
 
@@ -291,7 +296,7 @@ end IsLeftCancelMul
 
 section Group
 
-variable [Group α] [MulAction α β] {s t A B : Set β} {a : α} {x : β}
+variable [Group α] [MulAction α β] {s t A B : Set β} {a b : α} {x : β}
 
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_set_iff : a • x ∈ a • s ↔ x ∈ s :=
@@ -304,6 +309,10 @@ theorem mem_smul_set_iff_inv_smul_mem : x ∈ a • A ↔ a⁻¹ • x ∈ A :=
 @[to_additive]
 theorem mem_inv_smul_set_iff : x ∈ a⁻¹ • A ↔ a • x ∈ A := by
   simp only [← image_smul, mem_image, inv_smul_eq_iff, exists_eq_right]
+
+@[to_additive (attr := simp)]
+lemma mem_smul_set_inv {s : Set α} : a ∈ b • s⁻¹ ↔ b ∈ a • s := by
+  simp [mem_smul_set_iff_inv_smul_mem]
 
 @[to_additive]
 theorem preimage_smul (a : α) (t : Set β) : (fun x ↦ a • x) ⁻¹' t = a⁻¹ • t :=
@@ -418,7 +427,26 @@ lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s)
 @[to_additive (attr := deprecated (since := "2024-10-18"))]
 alias smul_set_disjoint_iff := disjoint_smul_set
 
+@[to_additive exists_inter_subset_two_nsmul_inter_two_nsmul]
+lemma exists_smul_inter_smul_subset_smul_sq_inter_sq {s t : Set α} (hs : s⁻¹ = s) (ht : t⁻¹ = t)
+    (a b : α) : ∃ z : α, a • s ∩ b • t ⊆ z • (s ^ 2 ∩ t ^ 2) := by
+  obtain hAB | ⟨z, hzA, hzB⟩ := (a • s ∩ b • t).eq_empty_or_nonempty
+  · exact ⟨1, by simp [hAB]⟩
+  refine ⟨z, ?_⟩
+  calc
+    a • s ∩ b • t ⊆ (z • s⁻¹) * s ∩ ((z • t⁻¹) * t) := by
+      gcongr <;> apply smul_set_subset_mul <;> simpa
+    _ = z • (s ^ 2 ∩ t ^ 2) := by simp_rw [Set.smul_set_inter, sq, smul_mul_assoc, hs, ht]
+
 end Group
+
+section Monoid
+variable [Monoid α] [MulAction α β] {s : Set β} {a : α} {b : β}
+
+@[simp] lemma mem_invOf_smul_set [Invertible a] : b ∈ ⅟a • s ↔ a • b ∈ s :=
+  mem_inv_smul_set_iff (a := unitOfInvertible a)
+
+end Monoid
 
 section Group
 variable [Group α] [CommGroup β] [FunLike F α β] [MonoidHomClass F α β]
