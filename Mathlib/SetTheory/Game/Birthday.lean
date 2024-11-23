@@ -104,6 +104,12 @@ theorem birthday_one : birthday 1 = 1 := by rw [birthday_def]; simp
 theorem birthday_star : birthday star = 1 := by rw [birthday_def]; simp
 
 @[simp]
+theorem birthday_up : birthday up = 2 := by rw [birthday_def]; simp
+
+@[simp]
+theorem birthday_down : birthday down = 2 := by rw [birthday_def]; simp
+
+@[simp]
 theorem birthday_neg : ∀ x : PGame, (-x).birthday = x.birthday
   | ⟨xl, xr, xL, xR⟩ => by
     rw [birthday_def, birthday_def, max_comm]
