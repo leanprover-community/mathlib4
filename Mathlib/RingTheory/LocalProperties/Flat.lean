@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: SiHan Su
 -/
 import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.LocalProperties.LinearMap
+import Mathlib.RingTheory.LocalProperties.Exactness
 /-!
 # Flat is a local property
 
