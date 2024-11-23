@@ -207,7 +207,8 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
       refine Finset.sup_le fun j _ ↦ ?_
       rw [pow_succ, ← div_div, div_le_div_iff_of_pos_right (mod_cast hp.out.pos), add_right_comm]
       exact_mod_cast IH (n + (j + 1)) (by omega)
-    · gcongr
+    · exact div_le_div_of_nonneg_left (norm_nonneg _)
+        (mod_cast pow_pos hp.out.pos _) (mod_cast pow_le_pow_right₀ hp.out.one_le hk)
 
 /-- Key lemma for Mahler's theorem: for `f` a continuous function on `ℤ_[p]`, the sequence
 `n ↦ Δ^[n] f 0` tends to 0. See `PadicInt.fwdDiff_iter_le_of_forall_le` for an explicit
@@ -217,7 +218,7 @@ lemma fwdDiff_tendsto_zero (f : C(ℤ_[p], E)) : Tendsto (Δ_[1]^[·] f 0) atTop
   refine NormedAddCommGroup.tendsto_nhds_zero.mpr (fun ε hε ↦ ?_)
   have : Tendsto (fun s ↦ ‖f‖ / p ^ s) _ _ := tendsto_const_nhds.div_atTop
     (tendsto_pow_atTop_atTop_of_one_lt (mod_cast hp.out.one_lt))
-  obtain ⟨s, hs⟩ := (eventually_lt_of_tendsto_lt hε this).exists
+  obtain ⟨s, hs⟩ := (this.eventually_lt_const hε).exists
   refine .mp ?_ (.of_forall fun x hx ↦ lt_of_le_of_lt hx hs)
   -- use uniform continuity to find `t`
   obtain ⟨t, ht⟩ : ∃ t : ℕ, ∀ x y, ‖x - y‖ ≤ p ^ (-t : ℤ) → ‖f x - f y‖ ≤ ‖f‖ / p ^ s := by
