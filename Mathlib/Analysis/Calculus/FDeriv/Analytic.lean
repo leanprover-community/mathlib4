@@ -63,7 +63,7 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 
 open Filter Asymptotics Set
 
-open scoped ENNReal Topology
+open scoped ENNReal Topology ContDiff
 
 universe u v
 
@@ -261,7 +261,7 @@ by the sequence of its derivatives. Note that, if the function were just analyti
 one would have to use instead the sequence of derivatives inside the set, as in
 `AnalyticOn.hasFTaylorSeriesUpToOn`. -/
 lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
-    (n : ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
+    (n : WithTop ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
   · apply HasFDerivAt.hasFDerivWithinAt
@@ -272,13 +272,13 @@ lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
 /-- An analytic function is infinitely differentiable. -/
 protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s)
     {n : WithTop ℕ∞} : ContDiffOn 𝕜 n f s := by
-  suffices ContDiffOn 𝕜 ⊤ f s from this.of_le le_top
+  suffices ContDiffOn 𝕜 ω f s from this.of_le le_top
   rw [← contDiffOn_infty_iff_contDiffOn_omega]
   let t := { x | AnalyticAt 𝕜 f x }
-  suffices ContDiffOn 𝕜 n f t from this.mono h
+  suffices ContDiffOn 𝕜 ∞ f t from this.mono h
   have H : AnalyticOnNhd 𝕜 f t := fun _x hx ↦ hx
   have t_open : IsOpen t := isOpen_analyticAt 𝕜 f
-  contDiffOn_of_continuousOn_differentiableOn
+  exact contDiffOn_of_continuousOn_differentiableOn
     (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
       fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
     (fun m _ ↦ (H.iteratedFDeriv m).differentiableOn.congr
@@ -290,7 +290,7 @@ theorem AnalyticOnNhd.contDiff [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f univ)
   rw [← contDiffOn_univ]
   exact h.contDiffOn
 
-theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
+theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : WithTop ℕ∞} :
     ContDiffAt 𝕜 n f x := by
   obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOnNhd
   exact hf.contDiffOn.contDiffAt hs
@@ -308,7 +308,7 @@ protected lemma AnalyticOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E
 alias AnalyticWithinOn.contDiffOn := AnalyticOn.contDiffOn
 
 lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
-    (n : ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
+    (n : WithTop ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
     ∃ u ∈ 𝓝[insert x s] x, ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
     HasFTaylorSeriesUpToOn n f p u ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) u := by
   rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩
