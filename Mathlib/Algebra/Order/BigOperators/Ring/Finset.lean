@@ -95,7 +95,6 @@ lemma sum_sq_le_sq_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
   · exact hf i hi
   · exact single_le_sum hf hi
 
-
 end OrderedSemiring
 
 section OrderedCommSemiring
@@ -141,6 +140,19 @@ lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → R) :
     _ ≤ ∑ i ∈ s, ((f i * ∑ j ∈ s, g j ^ 2) ^ 2 + (g i * ∑ j ∈ s, f j * g j) ^ 2) :=
         sum_le_sum fun i _ ↦ two_mul_le_add_sq (f i * ∑ j ∈ s, g j ^ 2) (g i * ∑ j ∈ s, f j * g j)
     _ = _ := by simp_rw [sum_add_distrib, mul_pow, ← sum_mul]; ring
+
+theorem sum_mul_self_eq_zero_iff (s : Finset ι) (f : ι → R) :
+    ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s his ih =>
+    simp only [Finset.sum_cons, Finset.mem_cons, forall_eq_or_imp]
+    refine ⟨fun hc => ?_, fun h => by simpa [h.1] using ih.mpr h.2⟩
+    have hi : f i * f i ≤ 0 := by
+      rw [← hc, le_add_iff_nonneg_right]
+      exact Finset.sum_nonneg fun i _ ↦ mul_self_nonneg (f i)
+    have h : f i * f i = 0 := (eq_of_le_of_le (mul_self_nonneg (f i)) hi).symm
+    exact ⟨zero_eq_mul_self.mp h.symm, ih.mp (by rw [← hc, h, zero_add])⟩
 
 end LinearOrderedCommSemiring
 

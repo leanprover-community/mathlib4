@@ -175,8 +175,8 @@ noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [Co
 instance : HasCountableLimits LightProfinite where
   out _ := { has_limit := fun F ↦ ⟨limitCone F, limitConeIsLimit F⟩ }
 
-noncomputable instance : PreservesLimitsOfShape ℕᵒᵖ (forget LightProfinite.{u}) :=
-  have : PreservesLimitsOfSize.{0, 0} (forget Profinite.{u}) := preservesLimitsOfSizeShrink _
+instance : PreservesLimitsOfShape ℕᵒᵖ (forget LightProfinite.{u}) :=
+  have : PreservesLimitsOfSize.{0, 0} (forget Profinite.{u}) := preservesLimitsOfSize_shrink _
   inferInstanceAs (PreservesLimitsOfShape ℕᵒᵖ (lightToProfinite ⋙ forget Profinite))
 
 variable {X Y : LightProfinite.{u}} (f : X ⟶ Y)
