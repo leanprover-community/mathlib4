@@ -1261,7 +1261,8 @@ lemma iIndepFun.cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
       · simp only [hi, ↓reduceIte, g, ENNReal.inv_mul_cancel (hy i hi) (measure_ne_top _ _)]
     _ = _ := by simp
 
--- TODO: We can't state `iIndepFun.cond` because we don't have a version of `ProbabilityTheory.cond`
+-- TODO: We can't state `Kernel.iIndepFun.cond` (the `Kernel` analogue of
+-- `ProbabilityTheory.iIndepFun.cond`) because we don't have a version of `ProbabilityTheory.cond`
 -- for kernels
 
 end ProbabilityTheory.Kernel
