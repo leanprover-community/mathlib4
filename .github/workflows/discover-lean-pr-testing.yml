@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - nightly-testing
-    paths:
-      - lean-toolchain
 
 jobs:
   discover-lean-pr-testing:
@@ -69,7 +67,7 @@ jobs:
         
         # Output the PRs
         echo "$PRS"
-        echo "prs=$PRS" >> "$GITHUB_OUTPUT"
+        printf "prs<<EOF\n%s\nEOF" "$PRS" >> "$GITHUB_OUTPUT"
 
     - name: Use merged PRs information
       id: find-branches
