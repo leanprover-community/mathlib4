@@ -69,8 +69,8 @@ theorem X11 : ‹Nat› = n₂ := by included_variables; sorry
 /--
 info: Dictionary
 
-✅️ n₂ ↔ n₂._@.test.UnusedVariableCommand._hyg.290
-❌️ n₁ ↔ n₁._@.test.UnusedVariableCommand._hyg.275
+✅️ n₂ ↔ n₂._@.MathlibTest.UnusedVariableCommand._hyg.290
+❌️ n₁ ↔ n₁._@.MathlibTest.UnusedVariableCommand._hyg.275
 
 ✅️: used
 ❌️: unused
@@ -115,9 +115,9 @@ variable (n : Nat)
 /--
 info: Dictionary
 
-✅️ n₂ ↔ n₂._@.test.UnusedVariableCommand._hyg.290
-❌️ n ↔ n._@.test.UnusedVariableCommand._hyg.568
-❌️ n₁ ↔ n₁._@.test.UnusedVariableCommand._hyg.275
+✅️ n₂ ↔ n₂._@.MathlibTest.UnusedVariableCommand._hyg.290
+❌️ n ↔ n._@.MathlibTest.UnusedVariableCommand._hyg.568
+❌️ n₁ ↔ n₁._@.MathlibTest.UnusedVariableCommand._hyg.275
 
 ✅️: used
 ❌️: unused
@@ -137,9 +137,9 @@ theorem X : True := .intro
 /--
 info: Dictionary
 
-✅️ n₂ ↔ n₂._@.test.UnusedVariableCommand._hyg.290
-❌️ n ↔ n._@.test.UnusedVariableCommand._hyg.568
-❌️ n₁ ↔ n₁._@.test.UnusedVariableCommand._hyg.275
+✅️ n₂ ↔ n₂._@.MathlibTest.UnusedVariableCommand._hyg.290
+❌️ n ↔ n._@.MathlibTest.UnusedVariableCommand._hyg.568
+❌️ n₁ ↔ n₁._@.MathlibTest.UnusedVariableCommand._hyg.275
 
 ✅️: used
 ❌️: unused
@@ -153,10 +153,10 @@ set_option linter.unusedVariableCommand false
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: 'n₁' is unused
+warning: 'n₁' is unused some ((880, 884))
 note: this linter can be disabled with `set_option linter.unusedVariableCommand false`
 ---
-warning: 'n' is unused
+warning: 'n' is unused some ((2534, 2535))
 note: this linter can be disabled with `set_option linter.unusedVariableCommand false`
 -/
 #guard_msgs in set_option linter.unusedVariableCommand true in #exit
