@@ -484,10 +484,10 @@ alias ΓSpec.adjunction_unit_map_basicOpen := Scheme.toSpecΓ_preimage_basicOpen
 
 /-- Spec preserves limits. -/
 instance : Limits.PreservesLimits Spec.toLocallyRingedSpace :=
-  ΓSpec.locallyRingedSpaceAdjunction.rightAdjointPreservesLimits
+  ΓSpec.locallyRingedSpaceAdjunction.rightAdjoint_preservesLimits
 
 instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
-  ΓSpec.adjunction.rightAdjointPreservesLimits
+  ΓSpec.adjunction.rightAdjoint_preservesLimits
 
 /-- The functor `Spec.toLocallyRingedSpace : CommRingCatᵒᵖ ⥤ LocallyRingedSpace`
 is fully faithful.-/

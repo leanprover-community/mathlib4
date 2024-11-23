@@ -869,7 +869,7 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
   suffices ∀ᶠ f in ℱ, f ∈ {y : K⸨X⸩ | Valued.v (y - limit hℱ) < ↑γ} by
     apply this.mono fun _ hf ↦ hU₁ hf
-  set D := -(Multiplicative.toAdd (WithZero.unzero γ.ne_zero) - 1) with hD₀
+  set D := -((WithZero.unzero γ.ne_zero).toAdd - 1) with hD₀
   have hD : ((Multiplicative.ofAdd (-D) : Multiplicative ℤ) : ℤₘ₀) < γ := by
     rw [← WithZero.coe_unzero γ.ne_zero, WithZero.coe_lt_coe, hD₀, neg_neg, ofAdd_sub,
       ofAdd_toAdd, div_lt_comm, div_self', ← ofAdd_zero, Multiplicative.ofAdd_lt]
@@ -911,7 +911,8 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤₘ₀ˣ) :
     rw [← valuation_of_algebraMap (K := K⸨X⸩) (PowerSeries.idealX K) (F - F.trunc (d + 1))]
     apply lt_of_le_of_lt this
     rw [← mul_one (η : ℤₘ₀), mul_assoc, one_mul]
-    apply mul_lt_mul_of_lt_of_le₀ (le_refl _) η.ne_zero
+    gcongr
+    · exact zero_lt_iff.2 η.ne_zero
     rw [← WithZero.coe_one, coe_lt_coe, ofAdd_neg, Right.inv_lt_one_iff, ← ofAdd_zero,
       Multiplicative.ofAdd_lt]
     exact Int.zero_lt_one
@@ -932,7 +933,7 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤₘ₀ˣ) :
     · erw [hs, ← F_mul, PowerSeries.coe_pow, PowerSeries.coe_X, RatFunc.coe_mul, zpow_neg,
         zpow_ofNat, inv_eq_one_div (RatFunc.X ^ s), RatFunc.coe_div, RatFunc.coe_pow, RatFunc.coe_X,
         RatFunc.coe_one, ← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀, ← PowerSeries.coe_X,
-        valuation_X_pow, ← hs, ← RatFunc.coe_coe, ← coe_sub, ← coe_algebraMap,
+        valuation_X_pow, ← hs, ← RatFunc.coe_coe, ← PowerSeries.coe_sub, ← coe_algebraMap,
         valuation_of_algebraMap, ← Units.val_mk0
         (a := ((Multiplicative.ofAdd f.order : Multiplicative ℤ) : ℤₘ₀)), ← hη]
       apply inv_mul_lt_of_lt_mul₀
@@ -942,8 +943,8 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤₘ₀ˣ) :
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (not_lt.mp ord_nonpos))
     obtain ⟨P, hP⟩ := exists_Polynomial_intValuation_lt (PowerSeries.X ^ s * F) γ
     use P
-    erw [← X_order_mul_powerSeriesPart (neg_inj.1 hs).symm, ← RatFunc.coe_coe, ← coe_sub,
-      ← coe_algebraMap, valuation_of_algebraMap]
+    erw [← X_order_mul_powerSeriesPart (neg_inj.1 hs).symm, ← RatFunc.coe_coe,
+      ← PowerSeries.coe_sub, ← coe_algebraMap, valuation_of_algebraMap]
     exact hP
 
 theorem coe_range_dense : DenseRange ((↑) : RatFunc K → K⸨X⸩) := by
@@ -980,7 +981,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
     refine ⟨⟨d, by rfl⟩, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
     apply hd
     simp only [sub_zero, Set.mem_setOf_eq]
-    erw [← coe_sub, ← valuation_eq_LaurentSeries_valuation]
+    erw [← RatFunc.coe_sub, ← valuation_eq_LaurentSeries_valuation]
     assumption
   · rintro ⟨_, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
@@ -992,7 +993,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
       erw [Set.mem_setOf_eq, sub_zero, valuation_eq_LaurentSeries_valuation,
-        coe_sub]
+        RatFunc.coe_sub]
       assumption
 
 theorem continuous_coe : Continuous ((↑) : RatFunc K → K⸨X⸩) :=
