@@ -371,7 +371,17 @@ lemma restriction_map {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
 @[reassoc]
 lemma restriction_map_map {X₀ X₀' : C₀} (f : X₀ ⟶ X₀') {Y₀ : C₀} (g : Y₀ ⟶ X₀) :
     restriction data G₀ (F.map f) ≫ G₀.val.map g.op =
-      restriction data G₀ (F.map (g ≫ f)) := sorry
+      restriction data G₀ (F.map (g ≫ f)) := by
+  have W₀ : C₀ := sorry
+  have a : W₀ ⟶ Y₀ := sorry
+  have : Mono (G₀.val.map a.op) := sorry
+  rw [← cancel_mono (G₀.val.map a.op), assoc]
+  rw [← Functor.map_comp, ← op_comp]
+  have i' : (data (F.obj X₀')).I₀ := sorry
+  have p' : W₀ ⟶ (data (F.obj X₀')).X i' := sorry
+  have w : F.map p' ≫ (data (F.obj X₀')).f i' = F.map (a ≫ g ≫ f) := sorry
+  rw [restriction_map (p := p') (fac := by simpa using w),
+    restriction_map (p := p') (fac := by simpa using w)]
 
 noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
     presheafObj data G₀ Y ⟶ presheafObj data G₀ X :=
