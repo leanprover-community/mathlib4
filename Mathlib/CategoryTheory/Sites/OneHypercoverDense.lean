@@ -444,10 +444,25 @@ namespace presheafObjObjIso
 variable (X₀ : C₀)
 
 noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.obj (op X₀) :=
-  G₀.2.amalgamate ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ (fun ⟨Y₀, a, ha⟩ ↦ by
-    have : Full F := sorry
-    exact presheafObjπ data G₀ _ (Sieve.ofArrows.i ha) ≫
-      G₀.val.map (F.preimage (Sieve.ofArrows.h ha)).op) sorry
+  G₀.2.amalgamate ⟨_, GrothendieckTopology.bind_covering
+    (hS := cover_lift F J₀ _ (data (F.obj X₀)).mem₀)
+    (hR := fun Y₀ b hb ↦ IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hb))⟩
+    (fun ⟨W₀, a, ha⟩ ↦
+      presheafObjπ data G₀ _ (Sieve.ofArrows.i (Presieve.bindStruct ha).hf) ≫
+        G₀.val.map (Presieve.bindStruct ha).hg.choose.op) (by
+      rintro ⟨W₀, a, ha⟩ ⟨T₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
+      dsimp at p₁ p₂ fac ⊢
+      trans restriction data G₀ (F.map (p₁ ≫ a))
+      · rw [assoc, ← Functor.map_comp, ← op_comp,
+          ← restriction_map data G₀ (F.map a) p₁]
+        · sorry
+        · simp only [map_comp, assoc,
+            ← (Presieve.bindStruct ha).fac,
+            Sieve.ofArrows.fac (Presieve.bindStruct ha).hf,
+            (Presieve.bindStruct ha).hg.choose_spec]
+          dsimp
+      · sorry
+      )
 
 noncomputable def inv : G₀.val.obj (op X₀) ⟶ (presheaf data G₀).obj (op (F.obj X₀)) :=
   Multiequalizer.lift _ _ (fun i ↦ G₀.val.map (by
