@@ -365,12 +365,50 @@ lemma liftAux_fac {i : (data X).I₀} {W₀ : C₀} (a : W₀ ⟶ (data X).X i)
   hG₀.amalgamate_map _ _ _ ⟨W₀, a, ha⟩
 
 noncomputable def lift : s.pt ⟶ G.obj (op X) :=
-  Multifork.IsLimit.lift (hG X) (fun i ↦ liftAux hG₀ s i) sorry
+  Multifork.IsLimit.lift (hG X) (fun i ↦ liftAux hG₀ s i) (by
+    rintro ⟨⟨i₁, i₂⟩, j⟩
+    dsimp at i₁ i₂ j ⊢
+    refine Presheaf.IsSheaf.hom_ext
+      hG₀ ⟨_, cover_lift F J₀ _
+        (J.pullback_stable (F.map ((data X).p₁ j) ≫ (data X).f i₁) S.2)⟩ _ _ ?_
+    rintro ⟨W₀, a, ha : S _⟩
+    dsimp
+    simp only [assoc, ← Functor.map_comp, ← op_comp]
+    have ha₁ : S (F.map (a ≫ (data X).p₁ j) ≫ (data X).f i₁) := by simpa using ha
+    have ha₂ : S (F.map (a ≫ (data X).p₂ j) ≫ (data X).f i₂) := by
+      rw [Functor.map_comp_assoc, ← (data X).w j]
+      exact ha
+    rw [liftAux_fac _ _ _ ha₁, liftAux_fac _ _ _ ha₂]
+    congr 2
+    rw [map_comp_assoc, map_comp_assoc, (data X).w j])
+
+@[reassoc]
+lemma lift_map (i : (data X).I₀) :
+    lift hG₀ hG s ≫ G.map ((data X).f i).op = liftAux hG₀ s i :=
+  Multifork.IsLimit.fac _ _ _ _
 
 @[reassoc]
 lemma fac (a : S.Arrow) :
     lift hG₀ hG s ≫ G.map a.f.op = s.ι a :=
-  sorry
+  Multifork.IsLimit.hom_ext (hG _) (fun i ↦
+    Presheaf.IsSheaf.hom_ext hG₀
+      ⟨_, cover_lift F J₀ _
+        (J.pullback_stable ((data a.Y).f i ≫ a.f) (data X).mem₀)⟩ _ _ (by
+      rintro ⟨X₀, b, ⟨_, c, _, h, fac₁⟩⟩
+      cases' h with j
+      refine Presheaf.IsSheaf.hom_ext hG₀
+        ⟨_, IsDenseSubsite.imageSieve_mem J₀ J F c⟩ _ _ ?_
+      rintro ⟨Y₀, d, e, fac₂⟩
+      dsimp at i j c fac₁ ⊢
+      have he : S (F.map e ≫ (data X).f j) := by
+        rw [fac₂, assoc, fac₁]
+        simpa only [assoc] using S.1.downward_closed a.hf (F.map d ≫ F.map b ≫ (data a.Y).f i)
+      simp only [assoc, ← Functor.map_comp, ← op_comp, ← fac₁]
+      conv_lhs => simp only [op_comp, Functor.map_comp, assoc, lift_map_assoc]
+      rw [← Functor.map_comp, ← op_comp, ← fac₂, liftAux_fac _ _ _ he]
+      simpa using s.condition ⟨{ hf := he }, a,
+        ⟨_, 𝟙 _, F.map d ≫ F.map b ≫ (data a.Y).f i, by
+          simp only [fac₁, fac₂, assoc, id_comp]⟩⟩))
 
 variable {s}
 
@@ -381,7 +419,7 @@ lemma hom_ext {f₁ f₂ : s.pt ⟶ G.obj (op X)}
     refine Presheaf.IsSheaf.hom_ext hG₀
       ⟨_, cover_lift F J₀ _ (J.pullback_stable ((data X).f i) S.2)⟩ _ _ ?_
     rintro ⟨X₀, a, ha⟩
-    dsimp [PreOneHypercover.multifork, Multifork.ι]
+    dsimp
     simp only [assoc, ← Functor.map_comp, ← op_comp]
     exact h ⟨_, _, ha⟩)
 
