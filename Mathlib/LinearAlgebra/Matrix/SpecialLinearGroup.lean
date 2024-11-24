@@ -215,7 +215,7 @@ theorem toLin'_injective :
 def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
   (GeneralLinearGroup.generalLinearEquiv _ _).symm.toMonoidHom.comp toLin'
 
--- Porting note (#11036): broken dot notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation
 theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
   rfl
 

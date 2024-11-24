@@ -158,7 +158,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       rw [Scheme.preimage_basicOpen]
       exact (isAffineOpen_top X).basicOpen _
     · intro X Y _ f S hS hS'
-      apply_fun Ideal.map (f.app ⊤) at hS
+      apply_fun Ideal.map (f.appTop) at hS
       rw [Ideal.map_span, Ideal.map_top] at hS
       apply isAffine_of_isAffineOpen_basicOpen _ hS
       have : ∀ i : S, IsAffineOpen (f⁻¹ᵁ Y.basicOpen i.1) := hS'

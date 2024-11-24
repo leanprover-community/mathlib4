@@ -161,9 +161,7 @@ instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M) where
 theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
   rfl
 
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 
@@ -227,6 +225,8 @@ theorem smul_sup' (a : α) (S T : Submodule R M) : a • (S ⊔ T) = a • S ⊔
 
 theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
   map_span _ _
+
+lemma smul_def (a : α) (S : Submodule R M) : a • S = span R (a • S : Set M) := by simp [← smul_span]
 
 theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
   Eq.symm (span_image _).symm
