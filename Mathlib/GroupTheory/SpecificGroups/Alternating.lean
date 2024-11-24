@@ -51,7 +51,7 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
--- Porting note (#10754): manually added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): manually added instance
 instance alternatingGroup.instFintype : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
@@ -137,7 +137,7 @@ open alternatingGroup
 @[simp]
 theorem closure_three_cycles_eq_alternating :
     closure { σ : Perm α | IsThreeCycle σ } = alternatingGroup α :=
-  closure_eq_of_le _ (fun σ hσ => mem_alternatingGroup.2 hσ.sign) fun σ hσ => by
+  closure_eq_of_le _ (fun _ hσ => mem_alternatingGroup.2 hσ.sign) fun σ hσ => by
     suffices hind :
       ∀ (n : ℕ) (l : List (Perm α)) (_ : ∀ g, g ∈ l → IsSwap g) (_ : l.length = 2 * n),
         l.prod ∈ closure { σ : Perm α | IsThreeCycle σ } by

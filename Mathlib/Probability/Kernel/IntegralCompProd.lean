@@ -234,7 +234,7 @@ theorem integral_compProd :
     rotate_left
     · exact (Kernel.measurable_kernel_prod_mk_left' hs _).aemeasurable
     · exact ae_kernel_lt_top a h2s.ne
-    rw [Kernel.compProd_apply _ _ _ hs]
+    rw [Kernel.compProd_apply hs]
     rfl
   · intro f g _ i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, Kernel.integral_integral_add' i_f i_g, hf, hg]

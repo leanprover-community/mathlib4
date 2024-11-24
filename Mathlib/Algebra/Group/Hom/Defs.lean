@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
+Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Pi.Basic
@@ -143,8 +143,9 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
-class AddMonoidHomClass (F M N : Type*) [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
-  extends AddHomClass F M N, ZeroHomClass F M N : Prop
+class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
+    [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
+    extends AddHomClass F M N, ZeroHomClass F M N : Prop
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
@@ -452,7 +453,7 @@ theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow f a n]
 
 @[to_additive (attr := simp)]
-lemma map_comp_pow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) (n : ℕ) :
+lemma map_comp_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) (n : ℕ) :
     f ∘ (g ^ n) = f ∘ g ^ n := by ext; simp
 
 @[to_additive]
@@ -842,6 +843,37 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
     (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
 
+/-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
+@[to_additive (attr := simps)
+  "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"]
+def OneHom.inverse [One M] [One N]
+    (f : OneHom M N) (g : N → M)
+    (h₁ : Function.LeftInverse g f) :
+  OneHom N M :=
+  { toFun := g,
+    map_one' := by rw [← f.map_one, h₁] }
+
+/-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
+@[to_additive (attr := simps)
+  "Makes an additive inverse from a bijection which preserves addition."]
+def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
+    (h₁ : Function.LeftInverse g f)
+    (h₂ : Function.RightInverse g f) : N →ₙ* M where
+  toFun := g
+  map_mul' x y :=
+    calc
+      g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
+      _ = g (f (g x * g y)) := by rw [f.map_mul]
+      _ = g x * g y := h₁ _
+
+/-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
+@[to_additive (attr := simps)
+  "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
+def MonoidHom.inverse {A B : Type*} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
+  { (f : OneHom A B).inverse g h₁,
+    (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g }
+
 section End
 
 namespace Monoid
@@ -866,7 +898,7 @@ instance : Monoid (Monoid.End M) where
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
+  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 instance : Inhabited (Monoid.End M) := ⟨1⟩
 
@@ -907,7 +939,7 @@ instance monoid : Monoid (AddMonoid.End A) where
   mul_one := AddMonoidHom.comp_id
   one_mul := AddMonoidHom.id_comp
   npow n f := (npowRec n f).copy (Nat.iterate f n) <| by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
+  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : AddMonoid.End A) (n : ℕ) : (↑(f ^ n) : A → A) = f^[n] := rfl
 
@@ -957,8 +989,6 @@ instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := ⟨1⟩
 instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
 
 namespace MonoidHom
-
-variable [Group G] [CommGroup H]
 
 @[to_additive (attr := simp)]
 theorem one_comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N) :

@@ -80,8 +80,8 @@ lemma binEntropy_two_inv_add (p : ℝ) : binEntropy (2⁻¹ + p) = binEntropy (2
 lemma binEntropy_pos (hp₀ : 0 < p) (hp₁ : p < 1) : 0 < binEntropy p := by
   unfold binEntropy
   have : 0 < 1 - p := sub_pos.2 hp₁
-  have : 0 < log p⁻¹ := log_pos <| one_lt_inv hp₀ hp₁
-  have : 0 < log (1 - p)⁻¹ := log_pos <| one_lt_inv ‹_› (sub_lt_self _ hp₀)
+  have : 0 < log p⁻¹ := log_pos <| (one_lt_inv₀ hp₀).2 hp₁
+  have : 0 < log (1 - p)⁻¹ := log_pos <| (one_lt_inv₀ ‹_›).2 (sub_lt_self _ hp₀)
   positivity
 
 lemma binEntropy_nonneg (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) : 0 ≤ binEntropy p := by
@@ -397,7 +397,7 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
   · exact qaryEntropy_continuous.continuousOn
   · intro p hp
     have : 2 ≤ (q : ℝ) := Nat.ofNat_le_cast.mpr qLe2
-    have qinv_lt_1 : (q : ℝ)⁻¹ < 1 := inv_lt_one (by linarith)
+    have qinv_lt_1 : (q : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ (by linarith)
     have zero_lt_1_sub_p : 0 < 1 - p := by simp_all only [sub_pos, hp.2, interior_Icc, mem_Ioo]
     simp only [one_div, interior_Icc, mem_Ioo] at hp
     rw [deriv_qaryEntropy (by linarith)]

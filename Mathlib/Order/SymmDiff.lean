@@ -55,12 +55,12 @@ open Function OrderDual
 variable {ι α β : Type*} {π : ι → Type*}
 
 /-- The symmetric difference operator on a type with `⊔` and `\` is `(A \ B) ⊔ (B \ A)`. -/
-def symmDiff [Sup α] [SDiff α] (a b : α) : α :=
+def symmDiff [Max α] [SDiff α] (a b : α) : α :=
   a \ b ⊔ b \ a
 
 /-- The Heyting bi-implication is `(b ⇨ a) ⊓ (a ⇨ b)`. This generalizes equivalence of
 propositions. -/
-def bihimp [Inf α] [HImp α] (a b : α) : α :=
+def bihimp [Min α] [HImp α] (a b : α) : α :=
   (b ⇨ a) ⊓ (a ⇨ b)
 
 /-- Notation for symmDiff -/
@@ -71,10 +71,10 @@ scoped[symmDiff] infixl:100 " ⇔ " => bihimp
 
 open scoped symmDiff
 
-theorem symmDiff_def [Sup α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
+theorem symmDiff_def [Max α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a :=
   rfl
 
-theorem bihimp_def [Inf α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
+theorem bihimp_def [Min α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
   rfl
 
 theorem symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
@@ -82,14 +82,14 @@ theorem symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
 
 @[simp]
 theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=
-  (iff_iff_implies_and_implies _ _).symm.trans Iff.comm
+  iff_iff_implies_and_implies.symm.trans Iff.comm
 
 @[simp]
 theorem Bool.symmDiff_eq_xor : ∀ p q : Bool, p ∆ q = xor p q := by decide
 
 section GeneralizedCoheytingAlgebra
 
-variable [GeneralizedCoheytingAlgebra α] (a b c d : α)
+variable [GeneralizedCoheytingAlgebra α] (a b c : α)
 
 @[simp]
 theorem toDual_symmDiff : toDual (a ∆ b) = toDual a ⇔ toDual b :=
@@ -192,7 +192,7 @@ end GeneralizedCoheytingAlgebra
 
 section GeneralizedHeytingAlgebra
 
-variable [GeneralizedHeytingAlgebra α] (a b c d : α)
+variable [GeneralizedHeytingAlgebra α] (a b c : α)
 
 @[simp]
 theorem toDual_bihimp : toDual (a ⇔ b) = toDual a ∆ toDual b :=

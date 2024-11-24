@@ -155,19 +155,16 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
   (h.pow_left m).pow_right n
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n
@@ -181,7 +178,7 @@ end Monoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid G] {a b c d : G}
+variable [DivisionMonoid G] {a b : G}
 
 @[to_additive]
 protected theorem mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
