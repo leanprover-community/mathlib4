@@ -352,8 +352,8 @@ theorem norm_le_mul_norm_of_ae_le_mul {c : ℝ} {f : Lp E p μ} {g : Lp F p μ}
 
 theorem norm_le_norm_of_ae_le {f : Lp E p μ} {g : Lp F p μ} (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖g x‖) :
     ‖f‖ ≤ ‖g‖ := by
-  rw [norm_def, norm_def, ENNReal.toReal_le_toReal (eLpNorm_ne_top _) (eLpNorm_ne_top _)]
-  exact eLpNorm_mono_ae h
+  rw [norm_def, norm_def]
+  exact ENNReal.toReal_mono (eLpNorm_ne_top _) (eLpNorm_mono_ae h)
 
 theorem mem_Lp_of_nnnorm_ae_le_mul {c : ℝ≥0} {f : α →ₘ[μ] E} {g : Lp F p μ}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : f ∈ Lp E p μ :=
