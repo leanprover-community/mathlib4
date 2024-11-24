@@ -180,7 +180,6 @@ lemma levyProkhorovDist_comm (μ ν : Measure Ω) :
 lemma levyProkhorovDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure Ω)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure κ] :
     levyProkhorovDist μ κ ≤ levyProkhorovDist μ ν + levyProkhorovDist ν κ := by
-  have dμκ_finite := (levyProkhorovEDist_lt_top μ κ).ne
   have dμν_finite := (levyProkhorovEDist_lt_top μ ν).ne
   have dνκ_finite := (levyProkhorovEDist_lt_top ν κ).ne
   convert ENNReal.toReal_mono ?_ <| levyProkhorovEDist_triangle μ ν κ

@@ -1422,11 +1422,6 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
   rw [this]
   have h_eLpNorm_ne_top : eLpNorm (⇑g - ⇑f) 1 μ ≠ ∞ := by
     rw [← eLpNorm_congr_ae (Lp.coeFn_sub _ _)]; exact Lp.eLpNorm_ne_top _
-  have h_eLpNorm_ne_top' : eLpNorm (⇑g - ⇑f) 1 μ' ≠ ∞ := by
-    refine ((eLpNorm_mono_measure _ hμ'_le).trans_lt ?_).ne
-    rw [eLpNorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
-    refine ENNReal.mul_lt_top ?_ h_eLpNorm_ne_top.lt_top
-    simp [hc'.lt_top, hc'0]
   calc
     (eLpNorm (⇑g - ⇑f) 1 μ').toReal ≤ (c' * eLpNorm (⇑g - ⇑f) 1 μ).toReal := by
       refine toReal_mono (ENNReal.mul_ne_top hc' h_eLpNorm_ne_top) ?_

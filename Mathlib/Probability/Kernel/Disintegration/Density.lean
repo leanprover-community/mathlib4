@@ -337,8 +337,6 @@ lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
     meas_countablePartitionSet_le_of_fst_le hκν n a x s
   by_cases h0 : ν a (countablePartitionSet n x) = 0
   · simp [le_antisymm (h_le.trans h0.le) zero_le', h0]
-  have h0' : ν' a (countablePartitionSet n x) ≠ 0 :=
-    fun h ↦ h0 (le_antisymm ((hνν' _ _).trans h.le) zero_le')
   gcongr
   · simp only [ne_eq, ENNReal.div_eq_top, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
