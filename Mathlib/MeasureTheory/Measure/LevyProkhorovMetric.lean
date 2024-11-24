@@ -183,11 +183,8 @@ lemma levyProkhorovDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure �
   have dμκ_finite := (levyProkhorovEDist_lt_top μ κ).ne
   have dμν_finite := (levyProkhorovEDist_lt_top μ ν).ne
   have dνκ_finite := (levyProkhorovEDist_lt_top ν κ).ne
-  convert (ENNReal.toReal_le_toReal (a := levyProkhorovEDist μ κ)
-    (b := levyProkhorovEDist μ ν + levyProkhorovEDist ν κ)
-    _ _).mpr <| levyProkhorovEDist_triangle μ ν κ
+  convert ENNReal.toReal_mono ?_ <| levyProkhorovEDist_triangle μ ν κ
   · simp only [levyProkhorovDist, ENNReal.toReal_add dμν_finite dνκ_finite]
-  · exact dμκ_finite
   · exact ENNReal.add_ne_top.mpr ⟨dμν_finite, dνκ_finite⟩
 
 /-- A type synonym, to be used for `Measure α`, `FiniteMeasure α`, or `ProbabilityMeasure α`,
@@ -366,9 +363,8 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
   have key : (fun (t : ℝ) ↦ ENNReal.toReal (μ {a | t ≤ f a}))
               ≤ (fun (t : ℝ) ↦ ENNReal.toReal (ν (thickening ε {a | t ≤ f a})) + ε) := by
     intro t
-    convert (ENNReal.toReal_le_toReal (measure_ne_top _ _) ?_).mpr
-            <| left_measure_le_of_levyProkhorovEDist_lt hμν (B := {a | t ≤ f a})
-                (f.continuous.measurable measurableSet_Ici)
+    convert ENNReal.toReal_mono ?_ <| left_measure_le_of_levyProkhorovEDist_lt hμν
+      (B := {a | t ≤ f a}) (f.continuous.measurable measurableSet_Ici)
     · rw [ENNReal.toReal_add (measure_ne_top ν _) ofReal_ne_top, ENNReal.toReal_ofReal ε_pos.le]
     · exact ENNReal.add_ne_top.mpr ⟨measure_ne_top ν _, ofReal_ne_top⟩
   have intble₁ : IntegrableOn (fun t ↦ ENNReal.toReal (μ {a | t ≤ f a})) (Ioc 0 ‖f‖) := by
@@ -377,8 +373,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
       exact fun _ _ hst ↦ measure_mono (fun _ h ↦ hst.trans h)
     · apply Eventually.of_forall <| fun t ↦ ?_
       simp only [Real.norm_eq_abs, abs_toReal]
-      exact (ENNReal.toReal_le_toReal (measure_ne_top _ _) (measure_ne_top _ _)).mpr
-            <| measure_mono (subset_univ _)
+      exact ENNReal.toReal_mono (measure_ne_top _ _) <| measure_mono (subset_univ _)
   have intble₂ : IntegrableOn
                   (fun t ↦ ENNReal.toReal (ν (thickening ε {a | t ≤ f a}))) (Ioc 0 ‖f‖) := by
     apply Measure.integrableOn_of_bounded (M := ENNReal.toReal (ν univ)) measure_Ioc_lt_top.ne
@@ -386,8 +381,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
       exact fun _ _ hst ↦ measure_mono <| thickening_subset_of_subset ε (fun _ h ↦ hst.trans h)
     · apply Eventually.of_forall <| fun t ↦ ?_
       simp only [Real.norm_eq_abs, abs_toReal]
-      exact (ENNReal.toReal_le_toReal (measure_ne_top _ _) (measure_ne_top _ _)).mpr
-            <| measure_mono (subset_univ _)
+      exact ENNReal.toReal_mono (measure_ne_top _ _) <| measure_mono (subset_univ _)
   apply le_trans (setIntegral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
   · rw [integral_add]
     · apply add_le_add_left
@@ -415,7 +409,7 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
   · apply Eventually.of_forall (fun i ↦ ?_)
     apply Eventually.of_forall (fun t ↦ ?_)
     simp only [Real.norm_eq_abs, NNReal.abs_eq, Pi.one_apply]
-    exact (ENNReal.toReal_le_toReal (measure_ne_top _ _) one_ne_top).mpr prob_le_one
+    exact ENNReal.toReal_mono one_ne_top prob_le_one
   · have aux : IsFiniteMeasure (volume.restrict A) := ⟨by simp [lt_top_iff_ne_top, A_finmeas]⟩
     apply integrable_const
   · apply Eventually.of_forall (fun t ↦ ?_)

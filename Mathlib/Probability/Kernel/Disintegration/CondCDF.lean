@@ -208,10 +208,8 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
       (Kernel.const Unit ρ) (Kernel.const Unit ρ.fst) where
   measurable := measurable_preCDF'.comp measurable_snd
   mono' a r r' hrr' := by
-    filter_upwards [monotone_preCDF ρ, preCDF_le_one ρ] with a h1 h2
-    have h_ne_top : ∀ r, preCDF ρ r a ≠ ∞ := fun r ↦ ((h2 r).trans_lt ENNReal.one_lt_top).ne
-    rw [ENNReal.toReal_le_toReal (h_ne_top _) (h_ne_top _)]
-    exact h1 hrr'
+    filter_upwards [monotone_preCDF ρ, preCDF_le_one ρ] with a h₁ h₂
+    exact ENNReal.toReal_mono ((h₂ _).trans_lt ENNReal.one_lt_top).ne (h₁ hrr')
   nonneg' _ q := by simp
   le_one' a q := by
     simp only [Kernel.const_apply, forall_const]
