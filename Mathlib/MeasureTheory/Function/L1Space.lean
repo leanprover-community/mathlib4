@@ -690,12 +690,10 @@ lemma integrable_add_iff_of_nonpos {f g : α → ℝ} (h_meas : AEStronglyMeasur
   exact integrable_add_iff_of_nonneg h_meas.neg (hf.mono (fun _ ↦ neg_nonneg_of_nonpos))
     (hg.mono (fun _ ↦ neg_nonneg_of_nonpos))
 
-@[simp]
 lemma integrable_add_const_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
     Integrable (fun x ↦ f x + c) μ ↔ Integrable f μ :=
   integrable_add_iff_integrable_left (integrable_const _)
 
-@[simp]
 lemma integrable_const_add_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
     Integrable (fun x ↦ c + f x) μ ↔ Integrable f μ :=
   integrable_add_iff_integrable_right (integrable_const _)
