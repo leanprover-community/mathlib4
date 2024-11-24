@@ -381,7 +381,7 @@ instance : NormedCommGroup (SeparationQuotient E) where
 
 @[to_additive]
 theorem mk_eq_one_iff {p : E} : mk p = 1 ↔ ‖p‖ = 0 := by
-  rw [← norm_mk', norm_eq_zero'']
+  rw [← norm_mk', norm_eq_zero']
 
 set_option linter.docPrime false in
 @[to_additive (attr := simp) nnnorm_mk]

@@ -922,20 +922,6 @@ theorem SeminormedCommGroup.mem_closure_iff :
     a ∈ closure s ↔ ∀ ε, 0 < ε → ∃ b ∈ s, ‖a / b‖ < ε := by
   simp [Metric.mem_closure_iff, dist_eq_norm_div]
 
-@[to_additive norm_le_zero_iff']
-theorem norm_le_zero_iff''' [T0Space E] {a : E} : ‖a‖ ≤ 0 ↔ a = 1 := by
-  letI : NormedGroup E :=
-    { ‹SeminormedGroup E› with toMetricSpace := MetricSpace.ofT0PseudoMetricSpace E }
-  rw [← dist_one_right, dist_le_zero]
-
-@[to_additive norm_eq_zero']
-theorem norm_eq_zero''' [T0Space E] {a : E} : ‖a‖ = 0 ↔ a = 1 :=
-  (norm_nonneg' a).le_iff_eq.symm.trans norm_le_zero_iff'''
-
-@[to_additive norm_pos_iff']
-theorem norm_pos_iff''' [T0Space E] {a : E} : 0 < ‖a‖ ↔ a ≠ 1 := by
-  rw [← not_le, norm_le_zero_iff''']
-
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
@@ -1292,24 +1278,26 @@ section NormedGroup
 
 variable [NormedGroup E] [NormedGroup F] {a b : E}
 
-@[to_additive (attr := simp) norm_eq_zero]
-theorem norm_eq_zero'' : ‖a‖ = 0 ↔ a = 1 :=
-  norm_eq_zero'''
-
-@[to_additive norm_ne_zero_iff]
-theorem norm_ne_zero_iff' : ‖a‖ ≠ 0 ↔ a ≠ 1 :=
-  norm_eq_zero''.not
+@[to_additive (attr := simp) norm_le_zero_iff]
+lemma norm_le_zero_iff' : ‖a‖ ≤ 0 ↔ a = 1 := by rw [← dist_one_right, dist_le_zero]
 
 @[to_additive (attr := simp) norm_pos_iff]
-theorem norm_pos_iff'' : 0 < ‖a‖ ↔ a ≠ 1 :=
-  norm_pos_iff'''
+lemma norm_pos_iff' : 0 < ‖a‖ ↔ a ≠ 1 := by rw [← not_le, norm_le_zero_iff']
 
-@[to_additive (attr := simp) norm_le_zero_iff]
-theorem norm_le_zero_iff'' : ‖a‖ ≤ 0 ↔ a = 1 :=
-  norm_le_zero_iff'''
+@[to_additive (attr := simp) norm_eq_zero]
+lemma norm_eq_zero' : ‖a‖ = 0 ↔ a = 1 := (norm_nonneg' a).le_iff_eq.symm.trans norm_le_zero_iff'
+
+@[to_additive norm_ne_zero_iff]
+lemma norm_ne_zero_iff' : ‖a‖ ≠ 0 ↔ a ≠ 1 := norm_eq_zero'.not
+
+@[deprecated (since := "2024-11-24")] alias norm_le_zero_iff'' := norm_le_zero_iff'
+@[deprecated (since := "2024-11-24")] alias norm_le_zero_iff''' := norm_le_zero_iff'
+@[deprecated (since := "2024-11-24")] alias norm_pos_iff'' := norm_pos_iff'
+@[deprecated (since := "2024-11-24")] alias norm_eq_zero'' := norm_eq_zero'
+@[deprecated (since := "2024-11-24")] alias norm_eq_zero''' := norm_eq_zero'
 
 @[to_additive]
-theorem norm_div_eq_zero_iff : ‖a / b‖ = 0 ↔ a = b := by rw [norm_eq_zero'', div_eq_one]
+theorem norm_div_eq_zero_iff : ‖a / b‖ = 0 ↔ a = b := by rw [norm_eq_zero', div_eq_one]
 
 @[to_additive]
 theorem norm_div_pos_iff : 0 < ‖a / b‖ ↔ a ≠ b := by
@@ -1318,7 +1306,7 @@ theorem norm_div_pos_iff : 0 < ‖a / b‖ ↔ a ≠ b := by
 
 @[to_additive eq_of_norm_sub_le_zero]
 theorem eq_of_norm_div_le_zero (h : ‖a / b‖ ≤ 0) : a = b := by
-  rwa [← div_eq_one, ← norm_le_zero_iff'']
+  rwa [← div_eq_one, ← norm_le_zero_iff']
 
 alias ⟨eq_of_norm_div_eq_zero, _⟩ := norm_div_eq_zero_iff
 
@@ -1334,7 +1322,7 @@ theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
 
 @[to_additive (attr := simp) nnnorm_eq_zero]
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
-  rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero'']
+  rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
 
 @[to_additive nnnorm_ne_zero_iff]
 theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
@@ -1346,24 +1334,24 @@ lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_n
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
 @[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
 lemma tendsto_norm_one' : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
-  tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff''.2 hx
+  tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff'.2 hx
 
 @[to_additive]
 theorem tendsto_norm_div_self_punctured_nhds (a : E) :
     Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
   (tendsto_norm_div_self a).inf <|
-    tendsto_principal_principal.2 fun _x hx => norm_pos_iff''.2 <| div_ne_one.2 hx
+    tendsto_principal_principal.2 fun _x hx => norm_pos_iff'.2 <| div_ne_one.2 hx
 
 @[to_additive]
 theorem tendsto_norm_nhdsWithin_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
-  tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _x => norm_pos_iff''.2
+  tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _x => norm_pos_iff'.2
 
 variable (E)
 
 /-- The norm of a normed group as a group norm. -/
 @[to_additive "The norm of a normed group as an additive group norm."]
 def normGroupNorm : GroupNorm E :=
-  { normGroupSeminorm _ with eq_one_of_map_eq_zero' := fun _ => norm_eq_zero''.1 }
+  { normGroupSeminorm _ with eq_one_of_map_eq_zero' := fun _ => norm_eq_zero'.1 }
 
 @[simp]
 theorem coe_normGroupNorm : ⇑(normGroupNorm E) = norm :=
