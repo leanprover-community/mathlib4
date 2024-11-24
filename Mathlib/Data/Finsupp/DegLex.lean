@@ -31,7 +31,7 @@ theorem degree_add {α : Type*} (a b : α →₀ ℕ) : (a + b).degree = a.degre
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
 @[simp]
-theorem degree_single (a m : ℕ) : (Finsupp.single a m).degree = m := by 
+theorem degree_single {α : Type*} (a : α) (m : ℕ) : (Finsupp.single a m).degree = m := by 
   simp only [degree]
   rw [Finset.sum_eq_single a]
   · simp only [single_eq_same]
@@ -54,6 +54,7 @@ section degLex
 def DegLex (α : Type*) := α
 
 variable {α : Type*}
+
 /-- `toDegLex` is the identity function to the `DegLex` of a type.  -/
 @[match_pattern] def toDegLex : α ≃ DegLex α := Equiv.refl _
 
@@ -161,6 +162,35 @@ theorem DegLex.le_iff {x y : DegLex (α →₀ ℕ)} :
     · simp [k]
     · simp only [h, k, false_or]
 
+theorem DegLex.single_lt_iff {a b : α} :
+    toDegLex (Finsupp.single b 1) < toDegLex (Finsupp.single a 1) ↔ a < b := by 
+  simp only [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, true_and, false_or]
+  suffices H : ∀ {a b : α} (_ :  a < b),  toLex (single b 1) < toLex (single a 1) by
+    cases lt_or_le a b with 
+    | inl h => simp [h, H h]
+    | inr h => 
+      rw [← not_iff_not]
+      simp only [not_lt, not_lt.mpr h, not_false_eq_true, iff_true]
+      by_cases h' : b = a
+      · rw [h']
+      · exact le_of_lt (H (lt_of_le_of_ne h h'))
+  intro a b h
+  simp only [LT.lt, Finsupp.lex_def]
+  simp only [ofLex_toLex, Nat.lt_eq]
+  use a
+  constructor
+  · intro d hd
+    simp only [Finsupp.single_eq_of_ne (ne_of_lt hd).symm, 
+      Finsupp.single_eq_of_ne (ne_of_gt (lt_trans hd h))]
+  · simp only [single_eq_same, single_eq_of_ne (ne_of_lt h).symm, zero_lt_one]
+
+theorem DegLex.single_le_iff {a b : α} :
+    toDegLex (Finsupp.single b 1) ≤ toDegLex (Finsupp.single a 1) ↔ a ≤ b := by 
+  simp only [le_iff_lt_or_eq]
+  apply or_congr single_lt_iff
+  rw [toDegLex_inj, single_left_inj one_ne_zero]
+  exact eq_comm
+
 noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
   toAddCommMonoid := ofDegLex.addCommMonoid
   toPartialOrder := DegLex.partialOrder
@@ -210,22 +240,19 @@ instance DegLex.wellFoundedLT [WellFoundedGT α] :
   ⟨DegLex.wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
 
 /-- for the deg-lexicographic ordering, X 1 < X 0 -/
-example : toDegLex (Finsupp.single 1 1) < toDegLex (Finsupp.single 0 1) := by 
-  simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
-  simp only [degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
-  use 0
-  simp
-
+example : toDegLex (single 1 1) < toDegLex (single 0 1) := by 
+  rw [DegLex.single_lt_iff]
+  exact Nat.one_pos
 
 /-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
-example : toDegLex (Finsupp.single 0 2) > toDegLex (Finsupp.single 0 1 + Finsupp.single 1 1) := by 
+example : toDegLex (single 0 2) > toDegLex (single 0 1 + single 1 1) := by 
   simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
   simp only [degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
   use 0
   simp
 
 /-- for the deg-lexicographic ordering, X 0 < X 1 ^ 2 -/
-example : toDegLex (Finsupp.single 0 1) < toDegLex (Finsupp.single 1 2) := by 
+example : toDegLex (single 0 1) < toDegLex (single 1 2) := by 
   simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
   simp [degree_single]
 
@@ -258,6 +285,14 @@ theorem MonomialOrder.degLex_le_iff [WellFoundedGT σ] {a b : σ →₀ ℕ} :
 theorem MonomialOrder.degLex_lt_iff [WellFoundedGT σ] {a b : σ →₀ ℕ} :
     a ≺[degLex] b ↔ toDegLex a < toDegLex b :=
   Iff.rfl
+
+theorem MonomialOrder.degLex_single_le_iff [WellFoundedGT σ] {a b : σ} :
+    single a 1 ≼[degLex] single b 1 ↔ b ≤ a := by
+  rw [MonomialOrder.degLex_le_iff, DegLex.single_le_iff]
+
+theorem MonomialOrder.degLex_single_lt_iff [WellFoundedGT σ] {a b : σ} :
+    single a 1 ≺[degLex] single b 1 ↔ b < a := by
+  rw [MonomialOrder.degLex_lt_iff, DegLex.single_lt_iff]
 
 end degLex
 
@@ -326,7 +361,7 @@ theorem degRevLex_def {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b :
       Prod.Lex s (fun x y ↦ Finsupp.Lex (swap r) s y x) (a.degree, a) (b.degree, b) :=
   Iff.rfl
 
-theorem degRevLex_def' {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α →₀ ℕ} :
+theorem degRevLex_iff {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α →₀ ℕ} :
     Finsupp.DegRevLex r s a b ↔
       s a.degree b.degree ∨ (a.degree = b.degree ∧ Finsupp.Lex (swap r) s b a) := by
   rw [degRevLex_def, Prod.lex_def]
