@@ -274,14 +274,9 @@ This is used as the default main-goal discharger,
 consisting of running `Lean.MVarId.gcongrForward` (trying a term together with limited
 forward-reasoning on that term) on each nontrivial hypothesis.
 -/
-def gcongrForwardDischarger (goal : MVarId) : MetaM Unit := Elab.Term.TermElabM.run' do
-  let mut hs := #[]
-  -- collect the nontrivial hypotheses
-  for h in ← getLCtx do
-    if !h.isImplementationDetail && (← isProp h.type) then
-      hs := hs.push (.fvar h.fvarId)
-  -- run `Lean.MVarId.gcongrForward` on each one
-  goal.gcongrForward hs
+def gcongrForwardDischarger (goal : MVarId) : StateRefT (Array Expr) MetaM Unit := do
+  -- run `Lean.MVarId.gcongrForward` on each of the stored hypotheses
+  goal.gcongrForward (← get)
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant @[gcongr] lemmas, try to apply them, recursively run the tactic itself on
@@ -290,8 +285,9 @@ is a user-provided template, first check that the template asks us to descend th
 match. -/
 partial def _root_.Lean.MVarId.gcongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
-    (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
+    (mainGoalDischarger : MVarId → StateRefT (Array Expr) MetaM Unit := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
+    StateRefT (Array Expr)
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
   match template with
@@ -359,7 +355,7 @@ partial def _root_.Lean.MVarId.gcongr
   let varyingArgs := tplArgs.map (·.2)
   if varyingArgs.all not then
     throwError "try rfl"
-  let s ← saveState
+  let s ← Meta.saveState
   let mut ex? := none
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal and whether the boolean-array of varying/nonvarying arguments of such
@@ -374,7 +370,7 @@ partial def _root_.Lean.MVarId.gcongr
       -- If the `apply` fails, go on to try to apply the next matching lemma.
       -- If all the matching lemmas fail to `apply`, we will report (somewhat arbitrarily) the
       -- error message on the first failure, so stash that.
-      ex? := ex? <|> (some (← saveState, e))
+      ex? := ex? <|> (some (← Meta.saveState, e))
       s.restore
     | .ok gs =>
       let some e ← getExprMVarAssignment? g | panic! "unassigned?"
@@ -392,8 +388,12 @@ partial def _root_.Lean.MVarId.gcongr
         -- unification ...
         let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
         -- Introduce all variables and hypotheses in this subgoal.
-        let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names
-        -- B. If there is a template, look up the part of the template corresponding to the `j`-th
+        let (names2, vs, mvarId) ← mvarId.introsWithBinderIdents names
+        mvarId.withContext do
+          for h in vs do
+            if (← isProp (← h.getType)) then
+              modifyGet (fun hs ↦ ((), hs.push (.fvar h)))
+          -- B. If there is a template, look up the part of the template corresponding to the `j`-th
         -- input to the head function
         let tpl ← tplArgs[j]!.1.mapM fun e => do
           let (_vs, _, e) ← lambdaMetaTelescope e
@@ -407,7 +407,7 @@ partial def _root_.Lean.MVarId.gcongr
       -- by the `apply`.
       for g in gs do
         if !(← g.isAssigned) && !subgoals.contains g then
-          let s ← saveState
+          let s ← Meta.saveState
           try
             let (_, g') ← g.intros
             sideGoalDischarger g'
@@ -478,8 +478,13 @@ elab "gcongr" template:(colGt term)?
     Term.elabTerm e (← inferType lhs)
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
+  -- Collect all hypotheses available at the start
+  let mut hs : Array Expr := #[]
+  for h in ← getLCtx do
+    if !h.isImplementationDetail && (← isProp h.type) then
+      hs := hs.push (.fvar h.fvarId)
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, _, unsolvedGoalStates) ← g.gcongr template names
+  let ((progress, _, unsolvedGoalStates), _) ← (g.gcongr template names).run hs
   if progress then
     replaceMainGoal unsolvedGoalStates.toList
   else
@@ -523,7 +528,7 @@ elab_rules : tactic
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.gcongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let (_, _, unsolvedGoalStates) ← g.gcongr none [] (mainGoalDischarger := assum)
+    let ((_, _, unsolvedGoalStates), _) ← (g.gcongr none [] (mainGoalDischarger := assum)).run #[]
     match unsolvedGoalStates.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()
