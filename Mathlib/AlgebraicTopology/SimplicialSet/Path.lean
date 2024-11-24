@@ -103,7 +103,8 @@ lemma map_interval {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y)
     (f.map σ).interval j l hjl = (f.interval j l hjl).map σ := rfl
 
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`.-/
-def standardSimplex.spineId (n : ℕ) : Path Δ[n] n := spine Δ[n] n (standardSimplex.id n)
+def standardSimplex.spineId (n : ℕ) : Path Δ[n] n :=
+  spine Δ[n] n (standardSimplex.id n)
 
 /-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
 in `Δ[n]`.-/
