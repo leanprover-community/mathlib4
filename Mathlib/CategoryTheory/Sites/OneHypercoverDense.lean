@@ -385,6 +385,28 @@ lemma presheafObj_condition (X : C) (i i' : (data X).I₀) (j : (data X).I₁ i 
     presheafObjπ data G₀ X i' ≫ G₀.val.map ((data X).p₂ j).op :=
   Multiequalizer.condition ((data X).multicospanIndex G₀.val) ⟨⟨i, i'⟩, j⟩
 
+lemma presheafObj_condition'
+    (X : C) (i₁ i₂ : (data X).I₀) {Y₀ : C₀}
+    (p₁ : F.obj Y₀ ⟶ F.obj ((data X).X i₁)) (p₂ : F.obj Y₀ ⟶ F.obj ((data X).X i₂))
+    (fac : p₁ ≫ (data X).f i₁ = p₂ ≫ (data X).f i₂) :
+    presheafObjπ data G₀ X i₁ ≫ IsDenseSubsite.mapPreimage F J₀ J G₀ p₁ =
+      presheafObjπ data G₀ X i₂ ≫ IsDenseSubsite.mapPreimage F J₀ J G₀ p₂ := by
+  refine Presheaf.IsSheaf.hom_ext G₀.cond ⟨_,
+    J₀.intersection_covering (IsDenseSubsite.imageSieve_mem J₀ J F p₁)
+      (IsDenseSubsite.imageSieve_mem J₀ J F p₂)⟩ _ _ ?_
+  rintro ⟨W₀, a, ⟨b₁, h₁⟩, ⟨b₂, h₂⟩⟩
+  refine Presheaf.IsSheaf.hom_ext G₀.cond
+    ⟨_, (data X).mem₁₀ i₁ i₂ b₁ b₂ (by simp only [h₁, h₂, assoc, fac])⟩ _ _ ?_
+  rintro ⟨U₀, c, ⟨j, t, fac₁, fac₂⟩⟩
+  dsimp
+  simp only [assoc, ← Functor.map_comp, ← op_comp]
+  rw [IsDenseSubsite.mapPreimage_map_of_fac F J₀ J G₀ p₁ (c ≫ a) (c ≫ b₁)
+      (by rw [map_comp_assoc, ← h₁, map_comp]),
+    IsDenseSubsite.mapPreimage_map_of_fac F J₀ J G₀ p₂ (c ≫ a) (c ≫ b₂)
+      (by rw [map_comp_assoc, ← h₂, map_comp]), fac₁, fac₂,
+    op_comp, op_comp, map_comp, map_comp]
+  apply presheafObj_condition_assoc
+
 noncomputable abbrev presheafObjMultifork (X : C) :
     Multifork ((data X).multicospanIndex G₀.val) :=
   Multifork.ofι _ (presheafObj data G₀ X) (presheafObjπ data G₀ X)
@@ -404,7 +426,7 @@ namespace restriction
 noncomputable def res {X : C} {X₀ Y₀ : C₀} {f : F.obj X₀ ⟶ X} {g : Y₀ ⟶ X₀}
     (h : SieveStruct (data X) f g) :
     presheafObj data G₀ X ⟶ G₀.val.obj (op Y₀) :=
-    presheafObjπ data G₀ X h.i₀ ≫ G₀.val.map h.q.op
+  presheafObjπ data G₀ X h.i₀ ≫ G₀.val.map h.q.op
 
 noncomputable def res_eq_res {X : C} {X₀ Y₀ : C₀} {f : F.obj X₀ ⟶ X} {g : Y₀ ⟶ X₀}
     (h₁ h₂ : SieveStruct (data X) f g) :
@@ -439,29 +461,47 @@ noncomputable def restriction {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) :
       apply presheafObj_condition_assoc)
 
 lemma restriction_map {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
+    (g : Y₀ ⟶ X₀) {i : (data X).I₀} (p : F.obj Y₀ ⟶ F.obj ((data X).X i))
+    (fac : p ≫ (data X).f i = F.map g ≫ f) :
+    restriction data G₀ f ≫ G₀.val.map g.op =
+      presheafObjπ data G₀ X i ≫ IsDenseSubsite.mapPreimage F J₀ J G₀ p :=
+  Presheaf.IsSheaf.hom_ext G₀.cond
+    ⟨_, IsDenseSubsite.imageSieve_mem J₀ J F p⟩ _ _ (fun ⟨W₀, a, ⟨b, hb⟩⟩ ↦ by
+      dsimp
+      rw [assoc, ← Functor.map_comp, ← op_comp]
+      have hb' : F.map b ≫ (data X).f i = F.map (a ≫ g) ≫ f := by
+        rw [hb, assoc, fac, map_comp_assoc]
+      have hg : (data X).sieve f (a ≫ g) := ⟨⟨i, b, hb'⟩⟩
+      refine (G₀.2.amalgamate_map _ _ _ ⟨_, _, hg⟩).trans ?_
+      rw [assoc, IsDenseSubsite.mapPreimage_map_of_fac F J₀ J G₀ p a b hb.symm]
+      exact restriction.res_eq_res data G₀ hg.some ⟨i, b, hb'⟩)
+
+lemma restriction_eq_of_fac {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X)
+    {i : (data X).I₀} (p : F.obj X₀ ⟶ F.obj ((data X).X i))
+    (fac : p ≫ (data X).f i = f) :
+    restriction data G₀ f  =
+      presheafObjπ data G₀ X i ≫ IsDenseSubsite.mapPreimage F J₀ J G₀ p := by
+  simpa using restriction_map data G₀ f (𝟙 _) p (by simpa using fac)
+
+lemma restriction_map' {X : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) {Y₀ : C₀}
     (g : Y₀ ⟶ X₀) {i : (data X).I₀} (p : Y₀ ⟶ (data X).X i)
     (fac : F.map p ≫ (data X).f i = F.map g ≫ f) :
     restriction data G₀ f ≫ G₀.val.map g.op =
-                               -- use mapPreimage
       presheafObjπ data G₀ X i ≫ G₀.val.map p.op := by
-  have hg : (data X).sieve f g := ⟨⟨i, p, fac⟩⟩
-  exact (G₀.2.amalgamate_map _ _ _ ⟨_, _, hg⟩).trans
-    (restriction.res_eq_res data G₀ hg.some ⟨i, p, fac⟩)
+  rw [restriction_map data G₀ f g (F.map p) fac,
+    IsDenseSubsite.mapPreimage_map]
 
 @[reassoc]
 lemma restriction_map_map {X₀ X₀' : C₀} (f : X₀ ⟶ X₀') {Y₀ : C₀} (g : Y₀ ⟶ X₀) :
     restriction data G₀ (F.map f) ≫ G₀.val.map g.op =
-      restriction data G₀ (F.map (g ≫ f)) := by
-  have W₀ : C₀ := sorry
-  have a : W₀ ⟶ Y₀ := sorry
-  have : Mono (G₀.val.map a.op) := sorry
-  rw [← cancel_mono (G₀.val.map a.op), assoc]
-  rw [← Functor.map_comp, ← op_comp]
-  have i' : (data (F.obj X₀')).I₀ := sorry
-  have p' : W₀ ⟶ (data (F.obj X₀')).X i' := sorry
-  have w : F.map p' ≫ (data (F.obj X₀')).f i' = F.map (a ≫ g ≫ f) := sorry
-  rw [restriction_map (p := p') (fac := by simpa using w),
-    restriction_map (p := p') (fac := by simpa using w)]
+      restriction data G₀ (F.map (g ≫ f)) :=
+  Presheaf.IsSheaf.hom_ext G₀.cond
+    ⟨_, J₀.pullback_stable (g ≫ f) (cover_lift F J₀ _ (data (F.obj X₀')).mem₀)⟩ _ _ (by
+      rintro ⟨W₀, a, ⟨_, p, _, ⟨i⟩, fac⟩⟩
+      dsimp at i p fac ⊢
+      rw [assoc, ← Functor.map_comp, ← op_comp,
+        restriction_map (p := p) (fac := by simpa using fac),
+        restriction_map (p := p) (fac := by simpa using fac)])
 
 noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
     presheafObj data G₀ Y ⟶ presheafObj data G₀ X :=
@@ -470,20 +510,14 @@ noncomputable def presheafMap {X Y : C} (f : X ⟶ Y) :
     obtain ⟨a, h₁, h₂⟩ : ∃ a, a = F.map ((data X).p₁ j) ≫ (data X).f i₁ ≫ f ∧
         a = F.map ((data X).p₂ j) ≫ (data X).f i₂ ≫ f := ⟨_, rfl, (data X).w_assoc j _⟩
     refine Presheaf.IsSheaf.hom_ext G₀.cond
-      ⟨_, GrothendieckTopology.bind_covering
-      (hS := cover_lift F J₀ _ (J.pullback_stable a (data Y).mem₀))
-      -- use mapPreimage instead
-      (hR := fun W₀ b hb ↦ IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hb))⟩ _ _ ?_
-    rintro ⟨W₀, _, ⟨Z₀, c, d, hd, ⟨e, he⟩, rfl⟩⟩
-    dsimp at hd ⊢
-    rw [assoc, assoc, ← Functor.map_comp, ← Functor.map_comp, ← op_comp, ← op_comp, ← op_comp,
-      restriction_map data G₀ _ _ e, restriction_map data G₀ _ _ e]
-    · rw [assoc, Functor.map_comp_assoc, Functor.map_comp_assoc, reassoc_of% he, ← h₂]
-      simp only [Sieve.ofArrows.fac hd]
-      rfl
-    · rw [assoc, Functor.map_comp_assoc, Functor.map_comp_assoc, reassoc_of% he, ← h₁]
-      simp only [Sieve.ofArrows.fac hd]
-      rfl)
+      ⟨_, cover_lift F J₀ _ (J.pullback_stable a (data Y).mem₀)⟩ _ _ ?_
+    rintro ⟨W₀, b, ⟨_, p, _, h, fac⟩⟩
+    cases' h with i
+    dsimp at fac ⊢
+    simp only [assoc, ← map_comp, ← op_comp]
+    rw [restriction_map (p := p), restriction_map (p := p)]
+    · rw [fac, h₂, map_comp_assoc]
+    · rw [fac, h₁, map_comp_assoc])
 
 @[reassoc (attr := simp)]
 lemma presheafMap_π {X Y : C} (f : X ⟶ Y) (i : (data X).I₀) :
@@ -495,33 +529,37 @@ lemma presheafMap_π {X Y : C} (f : X ⟶ Y) (i : (data X).I₀) :
 lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g : X ⟶ Y) :
     presheafMap data G₀ g ≫ restriction data G₀ f = restriction data G₀ (f ≫ g) := by
   refine Presheaf.IsSheaf.hom_ext G₀.cond ⟨_, GrothendieckTopology.bind_covering
-    (hS := cover_lift F J₀ J (J.pullback_stable f (data X).mem₀))
-    (hR := fun Y₀ a ha ↦ GrothendieckTopology.bind_covering
-        (hS := cover_lift F J₀ J (J.pullback_stable
-        (Sieve.ofArrows.h ha ≫ (data X).f (Sieve.ofArrows.i ha) ≫ g) (data Y).mem₀))
-        (hR := fun Z₀ b hb ↦
-          J₀.intersection_covering (J₀.pullback_stable b
-            -- use mapPreimage instead
-            (IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h ha)))
-            (IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hb))))⟩ _ _ ?_
-  rintro ⟨U₀, _, ⟨Y₀, _, a, ha, ⟨Z₀, c, b, hb, ⟨⟨p₂, w₂⟩, ⟨p₁, w₁⟩⟩, rfl⟩, rfl⟩⟩
-  have fac₁ := Sieve.ofArrows.fac ha
-  have fac₂ := Sieve.ofArrows.fac hb
-  dsimp at fac₁ fac₂
-  simp only [assoc]
-  rw [restriction_map (p := p₂), presheafMap_π_assoc, restriction_map (p := p₁),
-    restriction_map (p := p₁)]
-  · rw [w₁, assoc, map_comp_assoc, map_comp_assoc, reassoc_of% fac₁,
-      ← fac₂]
-  · rw [reassoc_of% w₁, reassoc_of% w₂, map_comp_assoc, ← fac₂]
-  · rw [reassoc_of% w₂, map_comp_assoc, map_comp_assoc, map_comp_assoc, ← fac₁]
+    (hS := cover_lift F J₀ J (J.pullback_stable f (data X).mem₀)) (hR := fun Y₀ a ha ↦
+      cover_lift F J₀ J (J.pullback_stable
+        (Sieve.ofArrows.h ha ≫ (data X).f (Sieve.ofArrows.i ha) ≫ g) (data Y).mem₀))⟩ _ _ ?_
+  rintro ⟨U₀, _, Y₀, c, d, hd, hc, rfl⟩
+  have hc' := Sieve.ofArrows.fac hc
+  have hd' := Sieve.ofArrows.fac hd
+  dsimp at hc hd hc' hd' ⊢
+  rw [assoc, ← op_comp, restriction_map (i := Sieve.ofArrows.i hd)
+    (p := F.map c ≫ Sieve.ofArrows.h hd),
+    restriction_map (i := Sieve.ofArrows.i hc) (p := Sieve.ofArrows.h hc),
+    presheafMap_π_assoc]; rotate_left
+  · simp only [map_comp_assoc, hc', reassoc_of% hd']
+  · simp only [assoc, map_comp_assoc, hd']
+  dsimp
+  have := J₀.intersection_covering (IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hc))
+    (J₀.pullback_stable c (IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hd)))
+  refine Presheaf.IsSheaf.hom_ext G₀.cond ⟨_, this⟩ _ _ ?_
+  rintro ⟨V₀, a, ⟨x₁, fac₁⟩, ⟨x₂, fac₂⟩⟩
+  dsimp
+  rw [assoc, assoc,
+    IsDenseSubsite.mapPreimage_map_of_fac F J₀ J G₀ _ _ x₂ (by simpa using fac₂.symm),
+    IsDenseSubsite.mapPreimage_map_of_fac F J₀ J G₀ _ _ x₁ fac₁.symm]
+  apply restriction_map'
+  simp only [fac₁, assoc, fac₂, assoc, map_comp_assoc, hc']
 
 lemma presheafMap_id (X : C) :
     presheafMap data G₀ (𝟙 X) = 𝟙 _ := by
   ext i
   rw [presheafMap_π, comp_id, id_comp]
   simpa only [op_id, map_id, comp_id] using
-    restriction_map data G₀ ((data X).f i) (𝟙 _) (𝟙 _) (by simp)
+    restriction_map' data G₀ ((data X).f i) (𝟙 _) (𝟙 _) (by simp)
 
 lemma presheafMap_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     presheafMap data G₀ (f ≫ g) = presheafMap data G₀ g ≫ presheafMap data G₀ f := by
@@ -540,45 +578,30 @@ namespace presheafObjObjIso
 
 variable (X₀ : C₀)
 
--- use mapPreimage instead
-def sieveHom : Sieve X₀ :=
-  (Sieve.bind (Sieve.functorPullback F
-    (data (F.obj X₀)).toPreOneHypercover.sieve₀).arrows (fun _ _ hb ↦
-    F.imageSieve (Sieve.ofArrows.h hb)))
-
-lemma sieveHom_mem : sieveHom data X₀ ∈ J₀ X₀ :=
-  GrothendieckTopology.bind_covering
-      (hS := cover_lift F J₀ _ (data (F.obj X₀)).mem₀)
-      (hR := fun _ _ hb ↦ IsDenseSubsite.imageSieve_mem J₀ J F (Sieve.ofArrows.h hb))
-
 noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.obj (op X₀) :=
-  G₀.2.amalgamate ⟨_, sieveHom_mem data X₀⟩
-    (fun ⟨W₀, a, ha⟩ ↦
-      presheafObjπ data G₀ _ (Sieve.ofArrows.i (Presieve.bindStruct ha).hf) ≫
-        G₀.val.map (Presieve.bindStruct ha).hg.choose.op) (by
-      rintro ⟨W₀, a, ha⟩ ⟨T₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
-      dsimp at p₁ p₂ fac ⊢
-      trans restriction data G₀ (F.map (p₁ ≫ a))
-      · rw [assoc, ← Functor.map_comp, ← op_comp,
-          ← restriction_map data G₀ (F.map a) p₁, restriction_map_map]
-        simp only [map_comp, assoc,
-          ← (Presieve.bindStruct ha).fac,
-          Sieve.ofArrows.fac (Presieve.bindStruct ha).hf,
-          (Presieve.bindStruct ha).hg.choose_spec]
-        dsimp
-      · rw [assoc, fac, ← Functor.map_comp, ← op_comp,
-          ← restriction_map data G₀ (F.map b) p₂, restriction_map_map]
-        simp only [map_comp, assoc,
-          ← (Presieve.bindStruct hb).fac,
-          Sieve.ofArrows.fac (Presieve.bindStruct hb).hf,
-          (Presieve.bindStruct hb).hg.choose_spec]
-        dsimp)
+  G₀.2.amalgamate ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ (fun ⟨W₀, a, ha⟩ ↦
+    presheafObjπ data G₀ _ (Sieve.ofArrows.i ha) ≫
+      IsDenseSubsite.mapPreimage F J₀ J G₀ (Sieve.ofArrows.h ha)) (by
+        rintro ⟨W₀, a, ha⟩ ⟨T₀, b, hb⟩ ⟨U₀, p₁, p₂, fac⟩
+        have ha' := Sieve.ofArrows.fac ha
+        have hb' := Sieve.ofArrows.fac hb
+        dsimp at ha hb ha' hb' p₁ p₂ fac ⊢
+        rw [assoc, assoc, IsDenseSubsite.mapPreimage_comp_map,
+          IsDenseSubsite.mapPreimage_comp_map,
+          ← restriction_eq_of_fac data G₀ (F.map (p₁ ≫ a))
+            (F.map p₁ ≫ Sieve.ofArrows.h ha) (by rw [assoc, ← ha', map_comp]),
+          restriction_eq_of_fac data G₀ (F.map (p₁ ≫ a))
+            (F.map p₂ ≫ Sieve.ofArrows.h hb) (by rw [assoc, ← hb', fac, map_comp])])
 
-lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) (ha : sieveHom data X₀ a) :
+lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
+    (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
+    (fac : p ≫ (data (F.obj X₀)).f i = F.map a) :
     hom data G₀ X₀ ≫ G₀.val.map a.op =
-      presheafObjπ data G₀ _ (Sieve.ofArrows.i (Presieve.bindStruct ha).hf) ≫
-        G₀.val.map (Presieve.bindStruct ha).hg.choose.op :=
-  G₀.2.amalgamate_map _ _ _ ⟨W₀, a, ha⟩
+      presheafObjπ data G₀ _ i ≫ IsDenseSubsite.mapPreimage F J₀ J G₀ p := by
+  have ha : Sieve.functorPullback F (data (F.obj X₀)).toPreOneHypercover.sieve₀ a :=
+    ⟨_, p, _, ⟨i⟩, fac⟩
+  exact (G₀.2.amalgamate_map _ _ _ ⟨W₀, a, ha⟩).trans
+    (presheafObj_condition' _ _ _ _ _ _ _ ((Sieve.ofArrows.fac ha).symm.trans fac.symm))
 
 noncomputable def inv : G₀.val.obj (op X₀) ⟶ (presheaf data G₀).obj (op (F.obj X₀)) :=
   Multiequalizer.lift _ _
@@ -587,6 +610,12 @@ noncomputable def inv : G₀.val.obj (op X₀) ⟶ (presheaf data G₀).obj (op 
       dsimp
       rw [IsDenseSubsite.mapPreimage_comp_map, IsDenseSubsite.mapPreimage_comp_map,
         (data (F.obj X₀)).w j])
+
+@[reassoc]
+lemma inv_π (i : (data (F.obj X₀)).I₀) :
+    inv data G₀ X₀ ≫ presheafObjπ data G₀ (F.obj X₀) i =
+      IsDenseSubsite.mapPreimage F J₀ J G₀ ((data (F.obj X₀)).f i) :=
+  Multiequalizer.lift_ι _ _ _ _ _
 
 end presheafObjObjIso
 
