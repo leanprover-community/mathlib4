@@ -86,112 +86,52 @@ private lemma isDershowitzMannaLT_of_oneStep : OneStep M N → IsDershowitzManna
 private lemma isDershowitzMannaLT_singleton_insert (h : OneStep N (a ::ₘ M)) :
     ∃ M', N = a ::ₘ M' ∧ OneStep M' M ∨ N = M + M' ∧ ∀ x ∈ M', x < a := by
   classical
-  rcases h with ⟨X, Y, a0, rfl, h0, h2⟩
-  by_cases hyp : a = a0
-  · exists Y; right; apply And.intro
-    · rw [add_left_inj]
-      rw [add_comm, singleton_add] at h0
-      simp_all
-    · simp_all
-  exists (Y + (M - {a0}))
-  left
-  constructor
-  · have : X = (M - {a0} + {a}) := by
-      rw [add_comm, singleton_add] at *
-      ext b
-      simp only [ext, count_cons] at h0
-      by_cases h : b = a
-      · have := h0 b
-        simp_all
-      have := h0 b
-      aesop
-    subst this
-    rw [add_comm]
-    nth_rewrite 2 [add_comm]
-    rw [singleton_add, add_cons]
-  · refine ⟨M - {a0}, Y, a0, ?_, ?_, h2⟩
-    · change Y + (M - {a0}) = (M - {a0}) + Y
-      rw [add_comm]
-    · change M = M - {a0} + {a0}
-      have this0 : M = X + {a0} - {a} := by
-        rw [← h0, sub_singleton, erase_cons_head]
-      have a0M : a0 ∈ M := by
-        rw [this0, sub_singleton, mem_erase_of_ne]
-        rw [mem_add, mem_singleton]
-        · apply Or.inr
-          rfl
-        · exact fun h ↦ hyp (Eq.symm h)
-      rw [add_comm]
-      simp_all
+  obtain ⟨X, Y, b, rfl, h0, h2⟩ := h
+  obtain rfl | hab := eq_or_ne a b
+  · refine ⟨Y, .inr ⟨?_, h2⟩⟩
+    simpa [add_comm _ {a}, singleton_add, eq_comm] using h0
+  refine ⟨Y + (M - {b}), .inl ⟨?_, M - {b}, Y, b, add_comm .., ?_, h2⟩⟩
+  · rw [← singleton_add, add_comm] at h0
+    rw [tsub_eq_tsub_of_add_eq_add h0, add_comm Y, ← singleton_add, ← add_assoc,
+      add_tsub_cancel_of_le]
+    have : a ∈ X + {b} := by simp [← h0]
+    simpa [hab] using this
+  · rw [tsub_add_cancel_of_le]
+    have : b ∈ a ::ₘ M := by simp [h0]
+    simpa [hab.symm] using this
 
-private lemma acc_cons (a : α) (M0 : Multiset α)
-    (_ : ∀ b M , LT.lt b a → Acc OneStep M → Acc OneStep (b ::ₘ M))
-    (_ : Acc OneStep M0)
-    (_ : ∀ M, OneStep M M0 → Acc OneStep (a ::ₘ M)) :
-    Acc OneStep (a ::ₘ M0) := by
-  constructor
-  intros N N_lt
-  rcases (isDershowitzMannaLT_singleton_insert N_lt) with ⟨x, H, h0⟩
-  case h.intro.inr h =>
-    rcases h with ⟨H, h0⟩
-    rw [H]
-    clear H
-    induction x using Multiset.induction with
-    | empty =>
-      simpa
-    | cons h =>
-      simp_all
-  case h.intro.inl.intro =>
-    simp_all
-
-private lemma acc_cons_of_acc (a : α)
-    (H : ∀ b, ∀ M, b < a → Acc OneStep M → Acc OneStep (b ::ₘ M)) :
-    ∀ M, Acc OneStep M → Acc OneStep (a ::ₘ M) := by
-  intros M h0
-  induction h0 with
-  | intro x wfH wfh2 =>
-    apply acc_cons
-    · assumption
-    · constructor; assumption
-    · assumption
-
-private lemma acc_cons_of_acc_of_lt (ha : Acc LT.lt a) :
-    ∀ M, Acc OneStep M → Acc OneStep (a ::ₘ M) := by
-  induction ha with
-  | intro x _ ih => exact acc_cons_of_acc _ (by simp_all)
+private lemma acc_oneStep_cons_of_acc_lt (ha : Acc LT.lt a) :
+    ∀ {M}, Acc OneStep M → Acc OneStep (a ::ₘ M) := by
+  induction' ha with a _ ha
+  rintro M hM
+  induction' hM with M hM ihM
+  refine .intro _ fun N hNM ↦ ?_
+  obtain ⟨N, ⟨rfl, hNM'⟩ | ⟨rfl, hN⟩⟩ := isDershowitzMannaLT_singleton_insert hNM
+  · exact ihM _ hNM'
+  clear hNM
+  induction N using Multiset.induction with
+  | empty =>
+    simpa using .intro _ hM
+  | @cons b N ihN =>
+    simp only [mem_cons, forall_eq_or_imp, add_cons] at hN ⊢
+    obtain ⟨hba, hN⟩ := hN
+    exact ha _ hba <| ihN hN
 
 /-- If all elements of a multiset `M` are accessible with `<`, then the multiset `M` is
 accessible given the `OneStep` relation. -/
-private lemma acc_of_acc_lt (wf_el : ∀ x ∈ M, Acc LT.lt x) : Acc OneStep M := by
+private lemma acc_oneStep_of_acc_lt (hM : ∀ x ∈ M, Acc LT.lt x) : Acc OneStep M := by
   induction M using Multiset.induction_on with
   | empty =>
     constructor
-    intro y y_lt
-    absurd y_lt
-    rintro ⟨X, Y, a, _, nonsense, _⟩
-    have contra : a ∈ (0 : Multiset α):= by
-      simp_all
-    contradiction
-  | cons _ _ ih =>
-    apply acc_cons_of_acc_of_lt
-    · apply wf_el
-      simp_all
-    · apply ih
-      intros
-      apply wf_el
-      simp_all
+    simp [OneStep, eq_comm (b := _ + _)]
+  | cons a M ih =>
+    exact acc_oneStep_cons_of_acc_lt (hM _ <| mem_cons_self ..) <| ih fun x hx ↦
+      hM _ <| mem_cons_of_mem hx
 
 /-- Over a well-founded order, `OneStep` is well-founded. -/
-private lemma isDershowitzMannaLT_singleton_wf (wf_lt : WellFoundedLT α) :
-    WellFounded (OneStep : Multiset α → Multiset α → Prop) := by
-  constructor
-  intros a
-  apply acc_of_acc_lt
-  intros x _
-  apply wf_lt.induction x
-  intros y h
-  apply Acc.intro y
-  assumption
+private lemma isDershowitzMannaLT_singleton_wf [WellFoundedLT α] :
+    WellFounded (OneStep : Multiset α → Multiset α → Prop) :=
+  ⟨fun _M ↦ acc_oneStep_of_acc_lt fun a _ ↦ WellFoundedLT.apply a⟩
 
 private lemma transGen_oneStep_of_isDershowitzMannaLT :
     IsDershowitzMannaLT M N → TransGen OneStep M N := by
@@ -212,18 +152,15 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
       simp only [mem_singleton, exists_eq_left] at Y_lt_Z
       exact Y_lt_Z
     case inr hyp' hyp =>
-      have : ∃ a, a ∈ Z := by
+      obtain ⟨z, z_in_Z⟩ : ∃ a, a ∈ Z := by
         rw [← Z.card_pos_iff_exists_mem]
-        cases Z_empty : card Z
-        tauto
-        simp
-      rcases this with ⟨z,z_in_Z⟩
+        omega
       let newZ := Z.erase z
       have newZ_nonEmpty : newZ ≠ 0 := by
         simp [newZ, ← sub_singleton, tsub_eq_zero_iff_le]
         aesop
       have newZ_sub_Z : newZ < Z := by simp (config := {zetaDelta := true}); exact z_in_Z
-      let f : α → Multiset α := fun z => Y.filter (fun y => y < z)
+      let f (z : α) : Multiset α := Y.filter (· < z)
       let N' := X + newZ + f z
       apply @transitive_transGen _ _ _ N'
       -- step from `N'` to `M`
@@ -241,33 +178,17 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
         · unfold N'
           rw [add_assoc, add_assoc, add_comm newZ (f z)]
         · intro y y_in
-          let Y_lt_Z := Y_lt_Z y
-          have y_in_Y : y ∈ Y := by aesop
-          let Y_lt_Z := Y_lt_Z y_in_Y
-          rcases Y_lt_Z with ⟨t, t_in_Z, y_lt_t⟩
-          use t
-          constructor
-          · by_cases t_in_newZ : t ∈ newZ
-            · exact t_in_newZ
-            · exfalso
-              have : t = z := by
-                have : Z = newZ + {z} := by
-                  rw [add_comm, singleton_add]
-                  simp [cons_erase z_in_Z]
-                rw [this, mem_add] at t_in_Z
-                have : t ∈ ( {z} : Multiset α) := Or.resolve_left t_in_Z t_in_newZ
-                rwa [← mem_singleton]
-              aesop
-          · exact y_lt_t
+          obtain ⟨t, t_in_Z, y_lt_t⟩ := Y_lt_Z y (by aesop)
+          refine ⟨t, (mem_erase_of_ne ?_).2 t_in_Z, y_lt_t⟩
+          rintro rfl
+          simp [f, y_lt_t] at y_in
       -- single step `N` to `N'`
-      · refine .single ⟨X + newZ, f z, z, ?_, ?_, ?_ ⟩
-        · rfl
-        · have newZ_z_Z: newZ + {z} = Z := by
-            rw [add_comm, singleton_add]
-            apply cons_erase z_in_Z
-          have : X + newZ + {z} = X + (newZ + {z}) := by apply add_assoc
-          rw [this, newZ_z_Z]
-        · unfold f; intro z z_in; simp at z_in; exact z_in.2
+      · refine .single ⟨X + newZ, f z, z, rfl, ?_, by simp [f]⟩
+        have newZ_z_Z : newZ + {z} = Z := by
+          rw [add_comm, singleton_add]
+          apply cons_erase z_in_Z
+        have : X + newZ + {z} = X + (newZ + {z}) := by apply add_assoc
+        rw [this, newZ_z_Z]
 
 private lemma isDershowitzMannaLT_of_transGen_oneStep (hMN : TransGen OneStep M N) :
     IsDershowitzMannaLT M N :=
@@ -284,7 +205,7 @@ private lemma transGen_oneStep_eq_isDershowitzMannaLT :
 theorem wellFounded_isDershowitzMannaLT [WellFoundedLT α] :
     WellFounded (IsDershowitzMannaLT : Multiset α → Multiset α → Prop) := by
   rw [← transGen_oneStep_eq_isDershowitzMannaLT]
-  exact (isDershowitzMannaLT_singleton_wf ‹_›).transGen
+  exact isDershowitzMannaLT_singleton_wf.transGen
 
 instance instWellFoundedisDershowitzMannaLT [WellFoundedLT α] : WellFoundedRelation (Multiset α) :=
     ⟨IsDershowitzMannaLT, wellFounded_isDershowitzMannaLT⟩
