@@ -628,6 +628,9 @@ noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.
           restriction_eq_of_fac data G₀ (F.map (p₁ ≫ a))
             (F.map p₂ ≫ Sieve.ofArrows.h hb) (by rw [assoc, ← hb', fac, map_comp])])
 
+variable {X₀}
+
+@[reassoc]
 lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
     (fac : p ≫ (data (F.obj X₀)).f i = F.map a) :
@@ -639,6 +642,22 @@ lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     (presheafObj_mapPreimage_condition _ _ _ _ _ _ _
       ((Sieve.ofArrows.fac ha).symm.trans fac.symm))
 
+@[reassoc]
+lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (F.obj X₀)).I₀}
+    (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
+    (fac : p ≫ (data (F.obj X₀)).f i = a) :
+    hom data G₀ X₀ ≫ IsDenseSubsite.mapPreimage F J G₀ a =
+      presheafObjπ data G₀ _ i ≫ IsDenseSubsite.mapPreimage F J G₀ p := by
+  refine Presheaf.IsSheaf.hom_ext G₀.cond
+      ⟨_, IsDenseSubsite.imageSieve_mem J₀ J F a⟩ _ _ ?_
+  rintro ⟨T₀, b, ⟨c, hc⟩⟩
+  dsimp
+  simp only [assoc, IsDenseSubsite.mapPreimage_comp_map, ← hc,
+    IsDenseSubsite.mapPreimage_map]
+  exact hom_map data G₀ c _ (by simp only [assoc, fac, hc])
+
+variable (X₀)
+
 noncomputable def inv : G₀.val.obj (op X₀) ⟶ (presheaf data G₀).obj (op (F.obj X₀)) :=
   Multiequalizer.lift _ _
     (fun i ↦ IsDenseSubsite.mapPreimage F J G₀ ((data (F.obj X₀)).f i)) (by
@@ -647,7 +666,7 @@ noncomputable def inv : G₀.val.obj (op X₀) ⟶ (presheaf data G₀).obj (op 
       rw [IsDenseSubsite.mapPreimage_comp_map, IsDenseSubsite.mapPreimage_comp_map,
         (data (F.obj X₀)).w j])
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma inv_π (i : (data (F.obj X₀)).I₀) :
     inv data G₀ X₀ ≫ presheafObjπ data G₀ (F.obj X₀) i =
       IsDenseSubsite.mapPreimage F J G₀ ((data (F.obj X₀)).f i) :=
@@ -659,13 +678,32 @@ noncomputable def presheafObjObjIso (X₀ : C₀) :
     (presheaf data G₀).obj (op (F.obj X₀)) ≅ G₀.val.obj (op X₀) where
   hom := presheafObjObjIso.hom data G₀ X₀
   inv := presheafObjObjIso.inv data G₀ X₀
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+  hom_inv_id := presheafObj_hom_ext (fun i ↦ by
+    rw [assoc, presheafObjObjIso.inv_π, id_comp,
+      presheafObjObjIso.hom_mapPreimage data G₀ _ (𝟙 _) (fac := by simp),
+      IsDenseSubsite.mapPreimage_id, comp_id])
+  inv_hom_id := by
+    refine Presheaf.IsSheaf.hom_ext G₀.cond
+      ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ _ _ ?_
+    rintro ⟨Y₀, a, X, b, c, ⟨i⟩, fac⟩
+    dsimp at i b fac ⊢
+    rw [assoc, presheafObjObjIso.hom_map data G₀ _ b fac,
+      presheafObjObjIso.inv_π_assoc, id_comp,
+      ← IsDenseSubsite.mapPreimage_comp, fac,
+      IsDenseSubsite.mapPreimage_map]
 
 @[reassoc (attr := simp)]
 lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
     presheafMap data G₀ ((data X).f i) ≫ (presheafObjObjIso data G₀ ((data X).X i)).hom =
-      presheafObjπ data G₀ X i := sorry
+      presheafObjπ data G₀ X i := by
+  rw [← cancel_mono (presheafObjObjIso data G₀ ((data X).X i)).inv, assoc, Iso.hom_inv_id,
+    comp_id]
+  apply presheafObj_hom_ext
+  intro j
+  rw [assoc, presheafMap_π]
+  erw [presheafObjObjIso.inv_π]
+  apply restriction_eq_of_fac
+  simp
 
 @[reassoc]
 lemma presheafObjObjIso_hom_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
