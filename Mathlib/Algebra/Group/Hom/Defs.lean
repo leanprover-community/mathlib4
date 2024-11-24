@@ -30,6 +30,7 @@ building blocks for other homomorphisms:
 
 * `→+`: Bundled `AddMonoid` homs. Also use for `AddGroup` homs.
 * `→*`: Bundled `Monoid` homs. Also use for `Group` homs.
+* `→ₙ+`: Bundled `AddSemigroup` homs.
 * `→ₙ*`: Bundled `Semigroup` homs.
 
 ## Implementation notes
