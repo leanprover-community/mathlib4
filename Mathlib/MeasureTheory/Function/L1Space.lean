@@ -237,12 +237,11 @@ theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf
 
 lemma hasFiniteIntegral_toReal_iff {f : α → ℝ≥0∞} (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ hasFiniteIntegral_toReal_of_lintegral_ne_top h⟩
   have h_eq x : (‖(f x).toReal‖₊ : ℝ≥0∞)
       = ENNReal.ofNNReal ⟨(f x).toReal, ENNReal.toReal_nonneg⟩ := by
     rw [Real.nnnorm_of_nonneg]
-  simp_rw [HasFiniteIntegral, h_eq] at h
-  convert h.ne using 1
+  simp_rw [HasFiniteIntegral, h_eq, lt_top_iff_ne_top]
+  convert Iff.rfl using 2
   refine lintegral_congr_ae ?_
   filter_upwards [hf_ne_top] with x hfx
   lift f x to ℝ≥0 using hfx with fx h
