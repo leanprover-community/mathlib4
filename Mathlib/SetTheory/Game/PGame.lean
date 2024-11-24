@@ -1890,6 +1890,8 @@ def dicotic (x : PGame) : Prop :=
     ((LeftMoves (x.moveRight r) ≠ PEmpty) ∧
     (RightMoves (x.moveRight r)) ≠ PEmpty))
 
+/-! ### Special pre-games -/
+
 /-- The pre-game `star`, which is fuzzy with zero. -/
 def star : PGame.{u} :=
   ⟨PUnit, PUnit, fun _ => 0, fun _ => 0⟩
