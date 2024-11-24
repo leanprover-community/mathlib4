@@ -1,0 +1,91 @@
+/-
+Copyright (c) 2024 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne, Lorenzo Luccioli
+-/
+import Mathlib.Probability.Kernel.Composition
+
+/-!
+
+# Parallel composition of kernels
+
+## Main definitions
+
+* `parallelComp (κ : Kernel α β) (η : Kernel (α × β) γ) : Kernel α (β × γ)`: parallel composition
+  of two s-finite kernels. We define a notation `κ ∥ₖ η = parallelComp κ η`.
+  `∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ b, ∫⁻ d, g (b, d) ∂η ac.2 ∂κ ac.1`
+
+## Main statements
+
+* `parallelComp_comp_copy`: `(κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η`
+
+## Notations
+
+* `κ ∥ₖ η = ProbabilityTheory.Kernel.parallelComp κ η`
+
+-/
+
+open MeasureTheory
+
+open scoped ENNReal
+
+namespace ProbabilityTheory.Kernel
+
+variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+  {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
+
+section ParallelComp
+
+/-- Parallel product of two kernels. -/
+noncomputable
+def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ) :=
+  (prodMkRight γ κ) ×ₖ (prodMkLeft α η)
+
+@[inherit_doc]
+scoped[ProbabilityTheory] infixl:100 " ∥ₖ " => ProbabilityTheory.Kernel.parallelComp
+
+lemma parallelComp_apply (κ : Kernel α β) [IsSFiniteKernel κ]
+    (η : Kernel γ δ) [IsSFiniteKernel η] (x : α × γ) :
+    (κ ∥ₖ η) x = (κ x.1).prod (η x.2) := by
+  rw [parallelComp, prod_apply, prodMkRight_apply, prodMkLeft_apply]
+
+theorem lintegral_parallelComp (κ : Kernel α β) [IsSFiniteKernel κ]
+    (η : Kernel γ δ) [IsSFiniteKernel η]
+    (ac : α × γ) {g : β × δ → ℝ≥0∞} (hg : Measurable g) :
+    ∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ b, ∫⁻ d, g (b, d) ∂η ac.2 ∂κ ac.1 := by
+  rw [parallelComp, lintegral_prod _ _ _ hg]
+  simp
+
+instance (κ : Kernel α β) (η : Kernel γ δ) : IsSFiniteKernel (κ ∥ₖ η) := by
+  rw [parallelComp]; infer_instance
+
+instance (κ : Kernel α β) [IsFiniteKernel κ] (η : Kernel γ δ) [IsFiniteKernel η] :
+    IsFiniteKernel (κ ∥ₖ η) := by
+  rw [parallelComp]; infer_instance
+
+instance (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel γ δ) [IsMarkovKernel η] :
+    IsMarkovKernel (κ ∥ₖ η) := by
+  rw [parallelComp]; infer_instance
+
+lemma parallelComp_comp_copy (κ : Kernel α β) [IsSFiniteKernel κ]
+    (η : Kernel α γ) [IsSFiniteKernel η] :
+    (κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η := by
+  ext a s hs
+  simp_rw [prod_apply, comp_apply, copy_apply, Measure.bind_apply hs (Kernel.measurable _)]
+  rw [lintegral_dirac']
+  swap; · exact Kernel.measurable_coe _ hs
+  rw [parallelComp_apply]
+
+lemma swap_parallelComp {κ : Kernel α β} [IsSFiniteKernel κ]
+    {η : Kernel γ δ} [IsSFiniteKernel η] :
+    (swap β δ) ∘ₖ (κ ∥ₖ η) = (η ∥ₖ κ) ∘ₖ (swap α γ) := by
+  rw [parallelComp, swap_prod, parallelComp]
+  ext ac s hs
+  rw [comp_apply, swap_apply, Measure.bind_apply hs (Kernel.measurable _),
+    lintegral_dirac' _ (Kernel.measurable_coe _ hs), prod_apply, prod_apply, prodMkLeft_apply,
+    prodMkLeft_apply, prodMkRight_apply, prodMkRight_apply]
+  rfl
+
+end ParallelComp
+
+end ProbabilityTheory.Kernel
