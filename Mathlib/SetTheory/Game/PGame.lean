@@ -1877,8 +1877,18 @@ theorem insertRight_insertLeft {x x' x'' : PGame} :
   cases x; cases x'; cases x''
   dsimp [insertLeft, insertRight]
 
-/-! ### Special pre-games -/
+/-! ### Dicotic pre-games -/
 
+/-- A game is dicotic if both players can move from every nonempty subposition of G. -/
+def dicotic (x : PGame) : Prop :=
+  (∀ (l : LeftMoves x),
+    (x.moveLeft l = 0) ∨
+    ((LeftMoves (x.moveLeft l) ≠ PEmpty) ∧
+    (RightMoves (x.moveLeft l)) ≠ PEmpty)) ∧
+  (∀ (r : RightMoves x),
+    (x.moveRight r = 0) ∨
+    ((LeftMoves (x.moveRight r) ≠ PEmpty) ∧
+    (RightMoves (x.moveRight r)) ≠ PEmpty))
 
 /-- The pre-game `star`, which is fuzzy with zero. -/
 def star : PGame.{u} :=
@@ -1921,6 +1931,10 @@ theorem star_fuzzy_zero : star ‖ 0 :=
 
 @[simp]
 theorem neg_star : -star = star := by simp [star]
+
+theorem star_dicotic : dicotic star := by
+  unfold dicotic
+  simp
 
 @[simp]
 protected theorem zero_lt_one : (0 : PGame) < 1 :=
