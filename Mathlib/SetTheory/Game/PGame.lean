@@ -1953,7 +1953,7 @@ theorem up_positive : 0 < up := by
 
 theorem up_star_fuzzy : star ‖ up := by
   unfold Fuzzy
-  simp [← PGame.not_le]
+  simp only [← PGame.not_le]
   simp [le_iff_forall_lf]
 
 /-- The pre-game `down` -/
@@ -1983,6 +1983,10 @@ theorem down_negative : down < 0 := by
 
 @[simp]
 theorem neg_down_up : up = -down := by simp [up, down]
+
+theorem down_star_fuzzy : star ‖ down := by
+  rw [← neg_fuzzy_neg_iff, ← neg_down_up, neg_star]
+  exact up_star_fuzzy
 
 instance : ZeroLEOneClass PGame :=
   ⟨PGame.zero_lt_one.le⟩
