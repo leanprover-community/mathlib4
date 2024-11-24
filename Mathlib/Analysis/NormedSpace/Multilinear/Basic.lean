@@ -657,6 +657,7 @@ section
 variable (𝕜 E E' G G')
 
 /-- `ContinuousMultilinearMap.prod` as a `LinearIsometryEquiv`. -/
+@[simps]
 def prodL :
     ContinuousMultilinearMap 𝕜 E G × ContinuousMultilinearMap 𝕜 E G' ≃ₗᵢ[𝕜]
       ContinuousMultilinearMap 𝕜 E (G × G') where
@@ -671,11 +672,11 @@ def prodL :
   norm_map' f := opNorm_prod f.1 f.2
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearIsometryEquiv`. -/
+@[simps! apply symm_apply]
 def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
     [∀ i', NormedSpace 𝕜 (E' i')] :
-    @LinearIsometryEquiv 𝕜 𝕜 _ _ (RingHom.id 𝕜) _ _ _ (∀ i', ContinuousMultilinearMap 𝕜 E (E' i'))
-      (ContinuousMultilinearMap 𝕜 E (∀ i, E' i)) _ _ (@Pi.module ι' _ 𝕜 _ _ fun _ => inferInstance)
-      _ where
+    (∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) ≃ₗᵢ[𝕜]
+      ContinuousMultilinearMap 𝕜 E (∀ i, E' i) where
   toLinearEquiv := piLinearEquiv
   norm_map' := opNorm_pi
 
