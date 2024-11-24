@@ -189,10 +189,9 @@ instance : Quasicategory X := by
         apply Nat.pos_of_ne_zero
         intro h1; subst h1
         have hk : k = 0 := by omega
-        have hs : ksucc ≠ i := by omega
         have hi : i = 1 := by fin_cases i <;> (try contradiction); rfl
         subst hi hk
-        exact hs rfl
+        exact hj heq
       /- We construct the triangle in the standard simplex as a 2-simplex in
       the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
       we can inhabit `Λ[n + 2, i]` by induction on `n`. -/
