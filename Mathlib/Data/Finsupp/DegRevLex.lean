@@ -141,7 +141,7 @@ instance DegRevLex.partialOrder : PartialOrder (DegRevLex (α →₀ ℕ)) :=
       toLex ((ofDegRevLex f).degree, toDual (toLex (equivCongrLeft toDual (ofDegRevLex f)))))
     (fun f g ↦ by
       simp only [EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq, and_imp]
-      exact fun _ a ↦ a) 
+      exact fun _ a ↦ a)
 /- {
   lt := LT.lt
   le := fun x y ↦ x = y ∨ x < y
@@ -218,8 +218,8 @@ theorem DegRevLex.lt_iff' {x y : DegRevLex (α →₀ ℕ)} :
     intro ha
     apply forall₂_congr
     intro i hi
-    exact eq_comm  
-   
+    exact eq_comm
+
 theorem DegRevLex.single_lt_iff {a b : α} :
     toDegRevLex (single a 1) < toDegRevLex (single b 1) ↔ b < a := by
   simp [DegRevLex.lt_iff, ofDegRevLex_toDegRevLex, degree_single, Finsupp.Lex.single_lt_iff]
