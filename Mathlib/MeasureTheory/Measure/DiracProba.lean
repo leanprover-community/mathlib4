@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 * `diracProba`: The Dirac delta mass at a point as a probability measure.
 
 ## Main results
-* `embedding_diracProba`: If `X` is a completely regular T0 space with its Borel sigma algebra,
+* `isEmbedding_diracProba`: If `X` is a completely regular T0 space with its Borel sigma algebra,
   then the mapping that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
   `X ↪ ProbabilityMeasure X`.
 
@@ -36,7 +36,7 @@ lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [Compl
   set g' := BoundedContinuousFunction.mkOfBound
       ⟨fun x ↦ Real.toNNReal (g x), continuous_real_toNNReal.comp g_cont.subtype_val⟩ 1 g_bdd
   set f := 1 - g'
-  refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K]⟩
+  refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K, tsub_self]⟩
 
 namespace MeasureTheory
 
@@ -180,9 +180,12 @@ noncomputable def diracProbaHomeomorph [T0Space X] [CompletelyRegularSpace X] :
 /-- If `X` is a completely regular T0 space with its Borel sigma algebra, then the mapping
 that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
 `X → ProbabilityMeasure X`. -/
-theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
-    Embedding (fun (x : X) ↦ diracProba x) :=
-  embedding_subtype_val.comp diracProbaHomeomorph.embedding
+theorem isEmbedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
+    IsEmbedding (fun (x : X) ↦ diracProba x) :=
+  IsEmbedding.subtypeVal.comp diracProbaHomeomorph.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_diracProba := isEmbedding_diracProba
 
 end embed_to_probabilityMeasure
 

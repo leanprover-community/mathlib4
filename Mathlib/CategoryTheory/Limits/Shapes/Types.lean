@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Products
@@ -216,7 +216,7 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
 def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
   obj X :=
     { obj := fun Y => X × Y
-      map := fun { Y₁ Y₂} f => (binaryProductLimit X Y₂).lift
+      map := fun { _ Y₂} f => (binaryProductLimit X Y₂).lift
         (BinaryFan.mk _root_.Prod.fst (_root_.Prod.snd ≫ f)) }
   map {X₁ X₂} f :=
     { app := fun Y =>
@@ -346,7 +346,7 @@ def productLimitCone {J : Type v} (F : J → TypeMax.{v, u}) :
       π := Discrete.natTrans (fun ⟨j⟩ f => f j) }
   isLimit :=
     { lift := fun s x j => s.π.app ⟨j⟩ x
-      uniq := fun s m w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x : _) }
+      uniq := fun _ _ w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x : _) }
 
 /-- The categorical product in `TypeMax.{v, u}` is the type theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ᶜ F ≅ ∀ j, F j :=
@@ -524,8 +524,8 @@ def coequalizerColimit : Limits.ColimitCocone (parallelPair f g) where
         (fun a b (h : CoequalizerRel f g a b) => by
           cases h
           apply congr_fun s.condition))
-      (fun s => rfl)
-      (fun s m hm => funext (fun x => Quot.inductionOn x (congr_fun hm)))
+      (fun _ => rfl)
+      (fun _ _ hm => funext (fun x => Quot.inductionOn x (congr_fun hm)))
 
 /-- If `π : Y ⟶ Z` is an equalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
 then `π ⁻¹' (π '' U) = U`.
@@ -588,7 +588,7 @@ instance : HasPushouts.{u} (Type u) :=
 variable {X Y Z : Type u} {X' Y' Z' : Type v}
 variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
 -/
@@ -613,7 +613,7 @@ def pullbackLimitCone (f : X ⟶ Z) (g : Y ⟶ Z) : Limits.LimitCone (cospan f g
   cone := pullbackCone f g
   isLimit :=
     PullbackCone.isLimitAux _ (fun s x => ⟨⟨s.fst x, s.snd x⟩, congr_fun s.condition x⟩)
-      (by aesop) (by aesop) fun s m w =>
+      (by aesop) (by aesop) fun _ _ w =>
       funext fun x =>
         Subtype.ext <|
           Prod.ext (congr_fun (w WalkingCospan.left) x) (congr_fun (w WalkingCospan.right) x)

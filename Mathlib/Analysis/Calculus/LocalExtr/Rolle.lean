@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anatole Dedecker
 -/
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
-import Mathlib.Topology.Algebra.Order.Rolle
+import Mathlib.Topology.Order.Rolle
 
 /-!
 # Rolle's Theorem

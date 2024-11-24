@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Scott Morrison
+Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Group.Action.Basic
@@ -471,7 +471,7 @@ theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N �
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
     (s.mapDomain f).support ⊆ s.support.image f :=
   Finset.Subset.trans support_sum <|
-    Finset.Subset.trans (Finset.biUnion_mono fun a _ => support_single_subset) <| by
+    Finset.Subset.trans (Finset.biUnion_mono fun _ _ => support_single_subset) <| by
       rw [Finset.biUnion_singleton]
 
 theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x.support : Set α) ⊆ S)
@@ -622,7 +622,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
 theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
-  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false_iff, mem_preimage]
+  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
   intro h a ha
   cases' hf.2.2 ha with b hb
   exact h b (hb.2.symm ▸ ha)
@@ -773,7 +773,7 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    beta_reduce -- Porting note(#12129): additional beta reduction needed to activate `split_ifs`
+    beta_reduce -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
         tauto
@@ -799,7 +799,7 @@ theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := if_pos h
 theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
 
 @[simp]
-theorem support_filter : (f.filter p).support = f.support.filter p := rfl
+theorem support_filter : (f.filter p).support = {x ∈ f.support | p x} := rfl
 
 theorem filter_zero : (0 : α →₀ M).filter p = 0 := by
   classical rw [← support_eq_empty, support_filter, support_zero, Finset.filter_empty]
@@ -1132,7 +1132,7 @@ def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) :
     (Sum.elim f g) fun ab h => by
     cases' ab with a b <;>
     letI := Classical.decEq α <;> letI := Classical.decEq β <;>
-    -- porting note (#10754): had to add these `DecidableEq` instances
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add these `DecidableEq` instances
     simp only [Sum.elim_inl, Sum.elim_inr] at h <;>
     simpa
 
@@ -1434,9 +1434,7 @@ instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Ty
       Finsupp.ext fun i => (smul_eq_zero.mp (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
 
 section DistribMulActionSemiHom
-
-variable [Semiring R]
-variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulAction R N]
+variable [Monoid R] [AddMonoid M] [AddMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
 /-- `Finsupp.single` as a `DistribMulActionSemiHom`.
 
@@ -1635,7 +1633,7 @@ def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne, ← support_eq_empty, ← Ne, ←
     Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
-  -- porting note (#10754): had to add the `Classical.decEq` instance manually
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add the `Classical.decEq` instance manually
   simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
 
@@ -1653,7 +1651,7 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
 theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by
   simp only [Finset.ext_iff, splitSupport, split, comapDomain, @mem_image _ _ (Classical.decEq _),
     mem_preimage, Sigma.forall, mem_sigma]
-  -- porting note (#10754): had to add the `Classical.decEq` instance manually
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add the `Classical.decEq` instance manually
   tauto
 
 theorem sigma_sum [AddCommMonoid N] (f : (Σi : ι, αs i) → M → N) :
@@ -1669,7 +1667,7 @@ This is the `Finsupp` version of `Equiv.Pi_curry`. -/
 noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
   toFun := split
   invFun f :=
-    onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
+    onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun _ hg =>
       Finset.mem_sigma.mpr ⟨Finset.mem_univ _, mem_support_iff.mpr hg⟩
   left_inv f := by
     ext

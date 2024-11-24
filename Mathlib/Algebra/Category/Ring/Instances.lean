@@ -11,6 +11,7 @@ import Mathlib.RingTheory.LocalRing.RingHom.Basic
 # Ring-theoretic results in terms of categorical languages
 -/
 
+universe u
 
 open CategoryTheory
 
@@ -36,16 +37,53 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
 
-instance CommRingCat.isLocalRingHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
-    [IsLocalRingHom g] [IsLocalRingHom f] : IsLocalRingHom (f ≫ g) :=
-  _root_.isLocalRingHom_comp _ _
+/-
+These three instances solve the issue where the `FunLike` instances provided by
+`CommRingCat.instFunLike'`, `CommRingCat.instFunLike''`, and `CommRingCat.instFunLike'''`
+are not syntactically equal to `CommRingCat.instFunLike` when applied to
+objects of the form `CommRingCat.of R`.
+To prevent infinite loops, the priority of these three instances must be set lower
+than that of other instances.
+-/
+instance (priority := 50) {R : Type*} [CommRing R] {S : CommRingCat} (f : CommRingCat.of R ⟶ S)
+    [IsLocalHom (R := CommRingCat.of R) f] : IsLocalHom f :=
+  inferInstance
 
-theorem isLocalRingHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalRingHom f.hom :=
+instance (priority := 50) {R : CommRingCat} {S : Type*} [CommRing S] (f : R ⟶ CommRingCat.of S)
+    [IsLocalHom (S := CommRingCat.of S) f] : IsLocalHom f :=
+  inferInstance
+
+instance (priority := 50) {R S : Type u} [CommRing R] [CommRing S]
+    (f : CommRingCat.of R ⟶ CommRingCat.of S)
+    [IsLocalHom (R := CommRingCat.of R) (S := CommRingCat.of S) f] : IsLocalHom f :=
+  inferInstance
+
+-- This instance handles the coercion of a morphism into a real `RingHom`.
+instance {R S : CommRingCat} (f : R ⟶ S) [IsLocalHom f] :
+    IsLocalHom (F := R →+* S) f :=
+  inferInstance
+
+@[instance]
+theorem CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
+    [IsLocalHom g] [IsLocalHom f] : IsLocalHom (f ≫ g) :=
+  RingHom.isLocalHom_comp _ _
+
+@[deprecated (since := "2024-10-10")]
+alias CommRingCat.isLocalRingHom_comp := CommRingCat.isLocalHom_comp
+
+theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom :=
   { map_nonunit := fun a ha => by
       convert f.inv.isUnit_map ha
       exact (RingHom.congr_fun f.hom_inv_id _).symm }
 
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_of_iso := isLocalHom_of_iso
+
 -- see Note [lower instance priority]
-instance (priority := 100) isLocalRingHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
-    IsLocalRingHom f :=
-  isLocalRingHom_of_iso (asIso f)
+@[instance 100]
+theorem isLocalHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
+    IsLocalHom f :=
+  isLocalHom_of_iso (asIso f)
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_of_isIso := isLocalHom_of_isIso

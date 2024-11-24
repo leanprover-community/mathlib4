@@ -55,11 +55,11 @@ instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
 
 variable (σ a a')
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem C_sub : (C (a - a') : MvPolynomial σ R) = C a - C a' :=
   RingHom.map_sub _ _ _
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem C_neg : (C (-a) : MvPolynomial σ R) = -C a :=
   RingHom.map_neg _ _
 
@@ -83,12 +83,25 @@ variable {σ} (p)
 
 section Degrees
 
+@[simp]
 theorem degrees_neg (p : MvPolynomial σ R) : (-p).degrees = p.degrees := by
   rw [degrees, support_neg]; rfl
 
 theorem degrees_sub [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p - q).degrees ≤ p.degrees ⊔ q.degrees := by
   simpa only [sub_eq_add_neg] using le_trans (degrees_add p (-q)) (by rw [degrees_neg])
+
+end Degrees
+
+section Degrees
+
+@[simp]
+theorem degreeOf_neg (i : σ) (p : MvPolynomial σ R) : degreeOf i (-p) = degreeOf i p := by
+  rw [degreeOf, degreeOf, degrees_neg]
+
+theorem degreeOf_sub_le (i : σ) (p q : MvPolynomial σ R) :
+    degreeOf i (p - q) ≤ max (degreeOf i p) (degreeOf i q) := by
+  simpa only [sub_eq_add_neg, degreeOf_neg] using degreeOf_add_le i p (-q)
 
 end Degrees
 
@@ -151,7 +164,7 @@ functions out of the type `σ`, -/
 def homEquiv : (MvPolynomial σ ℤ →+* S) ≃ (σ → S) where
   toFun f := f ∘ X
   invFun f := eval₂Hom (Int.castRingHom S) f
-  left_inv f := RingHom.ext <| eval₂Hom_X _ _
+  left_inv _ := RingHom.ext <| eval₂Hom_X _ _
   right_inv f := funext fun x => by simp only [coe_eval₂Hom, Function.comp_apply, eval₂_X]
 
 end Eval

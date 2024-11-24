@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot, Eric Wieser, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!

@@ -40,7 +40,7 @@ noncomputable section
 
 open Set Filter MeasureTheory Finset Function TopologicalSpace Topology
 
-variable {ι : Type*} {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
+variable {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
 
 namespace MeasureTheory
 
@@ -66,6 +66,17 @@ protected theorem id (μ : Measure α) : Conservative id μ :=
   { toQuasiMeasurePreserving := QuasiMeasurePreserving.id μ
     exists_mem_iterate_mem' := fun _ _ h0 => by
       simpa [exists_ne] using nonempty_of_measure_ne_zero h0 }
+
+theorem of_absolutelyContinuous {ν : Measure α} (h : Conservative f μ) (hν : ν ≪ μ)
+    (h' : QuasiMeasurePreserving f ν ν) : Conservative f ν :=
+  ⟨h', fun _ hsm h0 ↦ h.exists_mem_iterate_mem' hsm (mt (@hν _) h0)⟩
+
+/-- Restriction of a conservative system to an invariant set is a conservative system,
+formulated in terms of the restriction of the measure. -/
+theorem measureRestrict (h : Conservative f μ) (hs : MapsTo f s s) :
+    Conservative f (μ.restrict s) :=
+  .of_absolutelyContinuous h (absolutelyContinuous_of_le restrict_le_self) <|
+    h.toQuasiMeasurePreserving.restrict hs
 
 /-- If `f` is a conservative self-map and `s` is a null measurable set of nonzero measure,
 then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/

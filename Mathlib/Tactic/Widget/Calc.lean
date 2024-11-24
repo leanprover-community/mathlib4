@@ -17,7 +17,7 @@ new calc steps with holes specified by selected sub-expressions in the goal.
 -/
 
 section code_action
-open Std CodeAction
+open Batteries.CodeAction
 open Lean Server RequestM
 
 /-- Code action to create a `calc` tactic from the current goal. -/
@@ -128,19 +128,17 @@ open Meta
 
 /-- Elaborator for the `calc` tactic mode variant with widgets. -/
 elab_rules : tactic
-| `(tactic|calc%$calcstx $stx) => do
-  let steps : TSyntax ``calcSteps := ⟨stx⟩
+| `(tactic|calc%$calcstx $steps) => do
   let some calcRange := (← getFileMap).rangeOfStx? calcstx | unreachable!
   let indent := calcRange.start.character
   let mut isFirst := true
-  for step in ← Lean.Elab.Term.getCalcSteps steps do
-    let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
-    let `(calcStep| $(_) := $proofTerm) := step | unreachable!
+  for step in ← Lean.Elab.Term.mkCalcStepViews steps do
+    let some replaceRange := (← getFileMap).rangeOfStx? step.ref | unreachable!
     let json := json% {"replaceRange": $(replaceRange),
                         "isFirst": $(isFirst),
                         "indent": $(indent)}
-    Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) proofTerm
+    Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) step.proof
     isFirst := false
-  evalCalc (← `(tactic|calc%$calcstx $stx))
+  evalCalc (← `(tactic|calc%$calcstx $steps))
 
 end Lean.Elab.Tactic

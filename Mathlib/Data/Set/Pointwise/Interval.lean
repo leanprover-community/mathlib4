@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Pointwise.Set
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Interval.Set.Monoid
@@ -37,8 +37,7 @@ the unprimed names have been reserved for
 
 section ContravariantLE
 
-variable [Mul α] [Preorder α]
-variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
+variable [Mul α] [Preorder α] [MulLeftMono α] [MulRightMono α]
 
 @[to_additive Icc_add_Icc_subset]
 theorem Icc_mul_Icc_subset' (a b c d : α) : Icc a b * Icc c d ⊆ Icc (a * c) (b * d) := by
@@ -59,54 +58,57 @@ end ContravariantLE
 
 section ContravariantLT
 
-variable [Mul α] [PartialOrder α]
-variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
+variable [Mul α] [PartialOrder α] [MulLeftStrictMono α] [MulRightStrictMono α]
 
 @[to_additive Icc_add_Ico_subset]
 theorem Icc_mul_Ico_subset' (a b c d : α) : Icc a b * Ico c d ⊆ Ico (a * c) (b * d) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive Ico_add_Icc_subset]
 theorem Ico_mul_Icc_subset' (a b c d : α) : Ico a b * Icc c d ⊆ Ico (a * c) (b * d) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
 @[to_additive Ioc_add_Ico_subset]
 theorem Ioc_mul_Ico_subset' (a b c d : α) : Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_lt_of_le hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive Ico_add_Ioc_subset]
 theorem Ico_mul_Ioc_subset' (a b c d : α) : Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, ⟨hya, hyb⟩, z, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_le_of_lt hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
 @[to_additive Iic_add_Iio_subset]
 theorem Iic_mul_Iio_subset' (a b : α) : Iic a * Iio b ⊆ Iio (a * b) := by
-  haveI := covariantClass_le_of_lt
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
 
 @[to_additive Iio_add_Iic_subset]
 theorem Iio_mul_Iic_subset' (a b : α) : Iio a * Iic b ⊆ Iio (a * b) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive Ioi_add_Ici_subset]
 theorem Ioi_mul_Ici_subset' (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) := by
-  haveI := covariantClass_le_of_lt
+  have := mulLeftMono_of_mulLeftStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive Ici_add_Ioi_subset]
 theorem Ici_mul_Ioi_subset' (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
-  haveI := covariantClass_le_of_lt
+  have := mulRightMono_of_mulRightStrictMono α
   rintro x ⟨y, hya, z, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
 
@@ -304,10 +306,10 @@ theorem preimage_const_sub_Ioo : (fun x => a - x) ⁻¹' Ioo b c = Ioo (a - c) (
 -/
 
 
--- @[simp] -- Porting note (#10618): simp can prove this modulo `add_comm`
+-- simp can prove this modulo `add_comm`
 theorem image_const_add_Iic : (fun x => a + x) '' Iic b = Iic (a + b) := by simp [add_comm]
 
--- @[simp] -- Porting note (#10618): simp can prove this modulo `add_comm`
+-- simp can prove this modulo `add_comm`
 theorem image_const_add_Iio : (fun x => a + x) '' Iio b = Iio (a + b) := by simp [add_comm]
 
 /-!
@@ -315,10 +317,8 @@ theorem image_const_add_Iio : (fun x => a + x) '' Iio b = Iio (a + b) := by simp
 -/
 
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_Iic : (fun x => x + a) '' Iic b = Iic (b + a) := by simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_Iio : (fun x => x + a) '' Iio b = Iio (b + a) := by simp
 
 /-!
@@ -459,10 +459,9 @@ theorem preimage_const_sub_uIcc : (fun x => a - x) ⁻¹' [[b, c]] = [[a - b, a 
   simp_rw [← Icc_min_max, preimage_const_sub_Icc]
   simp only [sub_eq_add_neg, min_add_add_left, max_add_add_left, min_neg_neg, max_neg_neg]
 
--- @[simp] -- Porting note (#10618): simp can prove this module `add_comm`
+-- simp can prove this modulo `add_comm`
 theorem image_const_add_uIcc : (fun x => a + x) '' [[b, c]] = [[a + b, a + c]] := by simp [add_comm]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_uIcc : (fun x => x + a) '' [[b, c]] = [[b + a, c + a]] := by simp
 
 @[simp]
@@ -509,12 +508,12 @@ variable [LinearOrderedField α] {a : α}
 @[simp]
 theorem preimage_mul_const_Iio (a : α) {c : α} (h : 0 < c) :
     (fun x => x * c) ⁻¹' Iio a = Iio (a / c) :=
-  ext fun _x => (lt_div_iff h).symm
+  ext fun _x => (lt_div_iff₀ h).symm
 
 @[simp]
 theorem preimage_mul_const_Ioi (a : α) {c : α} (h : 0 < c) :
     (fun x => x * c) ⁻¹' Ioi a = Ioi (a / c) :=
-  ext fun _x => (div_lt_iff h).symm
+  ext fun _x => (div_lt_iff₀ h).symm
 
 @[simp]
 theorem preimage_mul_const_Iic (a : α) {c : α} (h : 0 < c) :
@@ -582,11 +581,11 @@ theorem preimage_mul_const_Icc_of_neg (a b : α) {c : α} (h : c < 0) :
 
 @[simp]
 theorem preimage_const_mul_Iio (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Iio a = Iio (a / c) :=
-  ext fun _x => (lt_div_iff' h).symm
+  ext fun _x => (lt_div_iff₀' h).symm
 
 @[simp]
 theorem preimage_const_mul_Ioi (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Ioi a = Ioi (a / c) :=
-  ext fun _x => (div_lt_iff' h).symm
+  ext fun _x => (div_lt_iff₀' h).symm
 
 @[simp]
 theorem preimage_const_mul_Iic (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Iic a = Iic (a / c) :=
@@ -670,6 +669,18 @@ theorem preimage_div_const_uIcc (ha : a ≠ 0) (b c : α) :
     (fun x => x / a) ⁻¹' [[b, c]] = [[b * a, c * a]] := by
   simp only [div_eq_mul_inv, preimage_mul_const_uIcc (inv_ne_zero ha), inv_inv]
 
+lemma preimage_const_mul_Ioi_or_Iio (hb : a ≠ 0) {U V : Set α}
+    (hU : U ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a}) (hV : V = HMul.hMul a ⁻¹' U) :
+    V ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a} := by
+  obtain ⟨aU, (haU | haU)⟩ := hU <;>
+  simp only [hV, haU, mem_setOf_eq] <;>
+  use a⁻¹ * aU <;>
+  rcases lt_or_gt_of_ne hb with (hb | hb)
+  · right; rw [Set.preimage_const_mul_Ioi_of_neg _ hb, div_eq_inv_mul]
+  · left; rw [Set.preimage_const_mul_Ioi _ hb, div_eq_inv_mul]
+  · left; rw [Set.preimage_const_mul_Iio_of_neg _ hb, div_eq_inv_mul]
+  · right; rw [Set.preimage_const_mul_Iio _ hb, div_eq_inv_mul]
+
 @[simp]
 theorem image_mul_const_uIcc (a b c : α) : (· * a) '' [[b, c]] = [[b * a, c * a]] :=
   if ha : a = 0 then by simp [ha]
@@ -714,13 +725,29 @@ theorem image_mul_left_Ioo {a : α} (h : 0 < a) (b c : α) :
     (a * ·) '' Ioo b c = Ioo (a * b) (a * c) := by
   convert image_mul_right_Ioo b c h using 1 <;> simp only [mul_comm _ a]
 
+theorem image_mul_right_Ico (a b : α) {c : α} (h : 0 < c) :
+    (fun x => x * c) '' Ico a b = Ico (a * c) (b * c) :=
+  ((Units.mk0 c h.ne').mulRight.image_eq_preimage _).trans (by simp [h, division_def])
+
+theorem image_mul_left_Ico {a : α} (h : 0 < a) (b c : α) :
+    (a * ·) '' Ico b c = Ico (a * b) (a * c) := by
+  convert image_mul_right_Ico b c h using 1 <;> simp only [mul_comm _ a]
+
+theorem image_mul_right_Ioc (a b : α) {c : α} (h : 0 < c) :
+    (fun x => x * c) '' Ioc a b = Ioc (a * c) (b * c) :=
+  ((Units.mk0 c h.ne').mulRight.image_eq_preimage _).trans (by simp [h, division_def])
+
+theorem image_mul_left_Ioc {a : α} (h : 0 < a) (b c : α) :
+    (a * ·) '' Ioc b c = Ioc (a * b) (a * c) := by
+  convert image_mul_right_Ioc b c h using 1 <;> simp only [mul_comm _ a]
+
 /-- The (pre)image under `inv` of `Ioo 0 a` is `Ioi a⁻¹`. -/
 theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
   exact
-    ⟨fun h => inv_inv x ▸ (inv_lt_inv ha h.1).2 h.2, fun h =>
+    ⟨fun h => inv_inv x ▸ (inv_lt_inv₀ ha h.1).2 h.2, fun h =>
       ⟨inv_pos.2 <| (inv_pos.2 ha).trans h,
-        inv_inv a ▸ (inv_lt_inv ((inv_pos.2 ha).trans h)
+        inv_inv a ▸ (inv_lt_inv₀ ((inv_pos.2 ha).trans h)
           (inv_pos.2 ha)).2 h⟩⟩
 
 theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
@@ -742,6 +769,27 @@ theorem image_affine_Icc' {a : α} (h : 0 < a) (b c d : α) :
   suffices (· + b) '' ((a * ·) '' Icc c d) = Icc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Icc' h, image_add_const_Icc]
+
+@[simp]
+theorem image_affine_Ico {a : α} (h : 0 < a) (b c d : α) :
+    (a * · + b) '' Ico c d = Ico (a * c + b) (a * d + b) := by
+  suffices (· + b) '' ((a * ·) '' Ico c d) = Ico (a * c + b) (a * d + b) by
+    rwa [Set.image_image] at this
+  rw [image_mul_left_Ico h, image_add_const_Ico]
+
+@[simp]
+theorem image_affine_Ioc {a : α} (h : 0 < a) (b c d : α) :
+    (a * · + b) '' Ioc c d = Ioc (a * c + b) (a * d + b) := by
+  suffices (· + b) '' ((a * ·) '' Ioc c d) = Ioc (a * c + b) (a * d + b) by
+    rwa [Set.image_image] at this
+  rw [image_mul_left_Ioc h, image_add_const_Ioc]
+
+@[simp]
+theorem image_affine_Ioo {a : α} (h : 0 < a) (b c d : α) :
+    (a * · + b) '' Ioo c d = Ioo (a * c + b) (a * d + b) := by
+  suffices (· + b) '' ((a * ·) '' Ioo c d) = Ioo (a * c + b) (a * d + b) by
+    rwa [Set.image_image] at this
+  rw [image_mul_left_Ioo h, image_add_const_Ioo]
 
 end LinearOrderedField
 
