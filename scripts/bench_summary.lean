@@ -199,11 +199,10 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : String := "")
   IO.FS.writeFile (tempFile ++ ".src") bench
 
   -- Extract all instruction changes whose magnitude is larger than `threshold`.
-  let thr := 10 ^ 9
-  let threshold := s!"{thr}"
+  let threshold := 10 ^ 9
   let jq1 : IO.Process.SpawnArgs :=
     { cmd := "jq"
-      args := #["-r", "--arg", "thr", threshold,
+      args := #["-r", "--arg", "thr", s!"{threshold}",
         ".differences | .[] | ($thr|tonumber) as $th |
         select(.dimension.metric == \"instructions\" and ((.diff >= $th) or (.diff <= -$th)))",
         (tempFile ++ ".src")] }
@@ -226,7 +225,8 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : String := "")
   if secondFilter == "" then
     let _ ← IO.Process.run
       { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body",
-        s!"No benchmark entry differed by at least {formatDiff thr} instructions." ++ job_msg] }
+        s!"No benchmark entry differed by at least {formatDiff threshold} instructions." ++
+          job_msg] }
   else
   IO.FS.writeFile tempFile secondFilter
   let jq3 : IO.Process.SpawnArgs :=
