@@ -190,6 +190,48 @@ theorem geom_mean_eq_arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i := by
   rw [geom_mean_weighted_of_constant, arith_mean_weighted_of_constant] <;> assumption
 
+
+
+/- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
+weighted version of the AM-GM inequality for real-valued nonnegative functions. Note that the w i
+here need to be positive.-/
+theorem geom_mean_arith_mean_weighted_eq_iff (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, z j = ∑ i ∈ s, w i * z i := by
+  by_cases A : ∃ i ∈ s, z i = 0 ∧ w i ≠ 0
+  · rcases A with ⟨i, his, hzi, hwi⟩
+    rw [prod_eq_zero his]
+    · constructor
+      · intro h; rw [← h]; intro j hj
+        apply eq_zero_of_ne_zero_of_mul_left_eq_zero (ne_of_lt (hw j hj)).symm
+        apply (sum_eq_zero_iff_of_nonneg ?_).mp h.symm j hj
+        exact fun i hi => (mul_nonneg_iff_of_pos_left (hw i hi)).mpr (hz i hi)
+      · intro h
+        convert h i his
+        exact hzi.symm
+    · rw [hzi]
+      exact zero_rpow hwi
+  · simp only [not_exists, not_and] at A
+    have hz' := fun i h => lt_of_le_of_ne (hz i h) (fun a => (A i h a.symm) (ne_of_gt (hw i h)))
+    have := strictConvexOn_exp.map_sum_eq_iff hw hw' fun i _ => Set.mem_univ <| log (z i)
+    simp only [exp_sum, smul_eq_mul, mul_comm (w _) (log _)] at this
+    convert this using 1
+    · apply Eq.congr <;> [apply prod_congr rfl; apply sum_congr rfl]
+      <;> intro i hi <;> simp [exp_mul, exp_log (hz' i hi)]
+    · constructor <;> intro h j hj
+      · rw [← arith_mean_weighted_of_constant s w _ (log (z j)) hw' fun i _ => congrFun rfl]
+        apply sum_congr rfl
+        intro x hx
+        simp only [mul_comm, h j hj, h x hx]
+      · rw [← arith_mean_weighted_of_constant s w _ (z j) hw' fun i _ => congrFun rfl]
+        apply sum_congr rfl
+        intro x hx
+        simp only [log_injOn_pos (hz' j hj) (hz' x hx), h j hj, h x hx]
+
+
+
+
+
 end Real
 
 namespace NNReal
