@@ -112,7 +112,7 @@ lemma deltaGenerated_mono {X : Type*} {t₁ t₂ : TopologicalSpace X} (h : t₁
 namespace DeltaGeneratedSpace
 
 /-- Type synonym to be equipped with the delta-generated topology. -/
-def of (X : Type*) [TopologicalSpace X] := X
+def of (X : Type*) := X
 
 instance : TopologicalSpace (of X) := deltaGenerated X
 
