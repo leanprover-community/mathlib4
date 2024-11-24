@@ -45,7 +45,7 @@ theorem deriv_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) :
 
 theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
     s * ∫ x in (0)..1, exp (-(x • s)) * p.eval (x • s) =
-      -(exp (-s) * p.sumIDeriv.eval s) - -p.sumIDeriv.eval 0 := by
+      -(exp (-s) * p.sumIDeriv.eval s) + p.sumIDeriv.eval 0 := by
   rw [← intervalIntegral.integral_const_mul,
     intervalIntegral.integral_deriv_eq_sub' (a := 0) (b := 1)
       (fun x : ℝ ↦ -(exp (-(x • s)) * p.sumIDeriv.eval (x • s)))
@@ -54,7 +54,8 @@ theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
   intro x _
   apply (Differentiable.mul _ _).neg.differentiableAt
   · have : Differentiable ℂ fun c ↦ exp (-(c * s)) := by fun_prop
-    exact ((this.restrictScalars ℝ).comp ofRealCLM.differentiable : )
+    simpa only [Function.comp_def, real_smul, ← ofRealCLM_apply] using
+      (this.restrictScalars ℝ).comp ofRealCLM.differentiable
   · have : Differentiable ℂ fun x ↦ eval x (sumIDeriv p) := by fun_prop
     apply (this.restrictScalars ℝ).comp <| by fun_prop
 
@@ -66,24 +67,30 @@ theorem P_le_aux (p : ℕ → ℂ[X]) (s : ℂ)
     ∃ c ≥ 0, ∀ q : ℕ,
       Complex.abs (P (p q) s) ≤
         Real.exp s.re * (Real.exp (Complex.abs s) * c ^ q * (Complex.abs s)) := by
-  simp_rw [P]; cases' h with c hc; replace hc := fun q x hx ↦ (hc q x hx).trans (le_abs_self _)
-  simp_rw [_root_.abs_pow] at hc; use |c|, abs_nonneg _; intro q
+  simp_rw [P]
+  obtain ⟨c, hc⟩ := h
+  refine ⟨|c|, abs_nonneg _, fun q => ?_⟩
   have h := integral_exp_mul_eval (p q) s
-  rw [← mul_right_inj' (exp_ne_zero s), neg_sub_neg, mul_sub, ← mul_assoc _ (exp _), ← exp_add,
-    add_neg_cancel, exp_zero, one_mul] at h
-  replace h := congr_arg Complex.abs h
-  simp_rw [map_mul, abs_exp] at h
-  rw [← h, mul_le_mul_left (Real.exp_pos _), mul_comm]
-  apply mul_le_mul_of_nonneg_right _ (Complex.abs.nonneg _)
-  rw [intervalIntegral.integral_of_le zero_le_one, ← Complex.norm_eq_abs, ← mul_one (_ * _)]
+  rw [← sub_eq_neg_add, ← mul_right_inj' (exp_ne_zero s), mul_sub, exp_neg,
+    mul_inv_cancel_left₀ (exp_ne_zero s)] at h
+  rw [← h]
   clear h
+  rw [mul_comm s, map_mul, map_mul, abs_exp]
+  gcongr
+  rw [intervalIntegral.integral_of_le zero_le_one, ← norm_eq_abs, ← mul_one (_ * _)]
   convert MeasureTheory.norm_setIntegral_le_of_norm_le_const' _ _ _
   · rw [Real.volume_Ioc, sub_zero, ENNReal.toReal_ofReal zero_le_one]
   · rw [Real.volume_Ioc, sub_zero]; exact ENNReal.ofReal_lt_top
   · exact measurableSet_Ioc
-  intro x hx; rw [norm_mul]; refine mul_le_mul ?_ (hc q x hx) (norm_nonneg _) (Real.exp_pos _).le
-  rw [norm_eq_abs, abs_exp, Real.exp_le_exp]; apply (re_le_abs _).trans;
-  rw [← norm_eq_abs, norm_neg, norm_smul, norm_eq_abs, Real.norm_of_nonneg hx.1.le]
+  intro x hx
+  specialize hc q x hx
+  replace hc := hc.trans (le_abs_self _)
+  rw [_root_.abs_pow] at hc
+  simp only [Set.mem_Ioc] at hx
+  rw [norm_eq_abs, map_mul, abs_exp]
+  gcongr
+  apply (re_le_abs _).trans
+  rw [Complex.abs.map_neg, real_smul, Complex.abs.map_mul, abs_ofReal, _root_.abs_of_nonneg hx.1.le]
   exact mul_le_of_le_one_left (Complex.abs.nonneg _) hx.2
 
 theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
