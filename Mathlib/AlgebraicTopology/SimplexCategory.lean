@@ -564,8 +564,8 @@ lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
   fin_cases x
   aesop
 
-/-- If `j > i + 1`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
-picks out arrow `i`. -/
+/-- If `i + 1 < j`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
+sends `0` and `1` to `i` and `i + 1`, respectively. -/
 lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : i.succ.castSucc < j) :
     mkOfSucc i ≫ δ j = mkOfSucc i.castSucc := by
@@ -574,8 +574,8 @@ lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
   · simp [δ, Fin.succAbove_of_castSucc_lt _ _ (Nat.lt_trans _ h)]
   · simp [δ, Fin.succAbove_of_castSucc_lt _ _ h]
 
-/-- If `j < i + 1`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
-picks out arrow `i + 1`. -/
+/-- If `i + 1 > j`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
+sends `0` and `1` to `i + 1` and `i + 2`, respectively. -/
 lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : j < i.succ.castSucc) :
     mkOfSucc i ≫ δ j = mkOfSucc i.succ := by
@@ -588,7 +588,7 @@ lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
   · rfl
   · exact Nat.le_of_lt h
 
-/-- If `j = i + 1`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
+/-- If `i + 1 = j`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
 sends `0` and `1` to `i` and `i + 2`, respectively. -/
 lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
     (h : j = i.succ.castSucc) :
