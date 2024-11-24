@@ -145,11 +145,11 @@ theorem DegLex.single_antitone : Antitone (fun (a : α) ↦ toDegLex (single a 1
   DegLex.single_strictAnti.antitone
 
 theorem DegLex.single_lt_iff {a b : α} :
-    toDegLex (Finsupp.single b 1) < toDegLex (Finsupp.single a 1) ↔ a < b := 
+    toDegLex (Finsupp.single b 1) < toDegLex (Finsupp.single a 1) ↔ a < b :=
   DegLex.single_strictAnti.lt_iff_lt
 
 theorem DegLex.single_le_iff {a b : α} :
-    toDegLex (Finsupp.single b 1) ≤ toDegLex (Finsupp.single a 1) ↔ a ≤ b := 
+    toDegLex (Finsupp.single b 1) ≤ toDegLex (Finsupp.single a 1) ↔ a ≤ b :=
   DegLex.single_strictAnti.le_iff_le
 
 noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
@@ -202,12 +202,12 @@ instance DegLex.wellFoundedLT [WellFoundedGT α] :
 
 /-- for the deg-lexicographic ordering, X 1 < X 0 -/
 <<<<<<< HEAD
-example : toDegLex (single 1 1) < toDegLex (single 0 1) := by 
+example : toDegLex (single 1 1) < toDegLex (single 0 1) := by
   rw [DegLex.single_lt_iff]
   exact Nat.one_pos
 
 /-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
-example : toDegLex (single 0 2) > toDegLex (single 0 1 + single 1 1) := by 
+example : toDegLex (single 0 2) > toDegLex (single 0 1 + single 1 1) := by
 =======
 example : toDegLex (Finsupp.single 1 1) < toDegLex (Finsupp.single 0 1) := by
   simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
@@ -226,7 +226,7 @@ example : toDegLex (Finsupp.single 0 2) > toDegLex (Finsupp.single 0 1 + Finsupp
 
 /-- for the deg-lexicographic ordering, X 0 < X 1 ^ 2 -/
 <<<<<<< HEAD
-example : toDegLex (single 0 1) < toDegLex (single 1 2) := by 
+example : toDegLex (single 0 1) < toDegLex (single 1 2) := by
 =======
 example : toDegLex (Finsupp.single 0 1) < toDegLex (Finsupp.single 1 2) := by
 >>>>>>> 2848a8991d5a76f67d14acfc2de43e0952c71b9c

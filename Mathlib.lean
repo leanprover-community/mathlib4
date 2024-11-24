@@ -2438,6 +2438,7 @@ import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.BigOperators
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.DegLex
+import Mathlib.Data.Finsupp.DegRevLex
 import Mathlib.Data.Finsupp.Encodable
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Fintype
