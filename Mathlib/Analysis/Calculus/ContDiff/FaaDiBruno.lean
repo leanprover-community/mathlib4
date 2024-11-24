@@ -792,7 +792,7 @@ noncomputable def compAlongOrderedFinpartitionL :
   refine MultilinearMap.mkContinuousLinear c.compAlongOrderedFinpartitionₗ 1 (fun f p ↦ ?_)
   simp only [one_mul]
   change ‖c.compAlongOrderedFinpartition f p‖ ≤ _
-  apply ContinuousMultilinearMap.opNorm_le_bound _ (by positivity) (fun v ↦ ?_)
+  apply ContinuousMultilinearMap.opNorm_le_bound (by positivity) (fun v ↦ ?_)
   simp only [compAlongOrderFinpartition_apply]
   apply (f.le_opNorm _).trans
   rw [mul_assoc, ← c.prod_sigma_eq_prod, ← Finset.prod_mul_distrib]
