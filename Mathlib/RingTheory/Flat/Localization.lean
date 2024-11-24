@@ -13,11 +13,11 @@ In this file we show that localizations are flat, and flatness is a local proper
 
 ## Main result
 * `IsLocalization.flat`: a localization of a commutative ring is flat over it.
-* `flat_iff_localization` : Let `Rₚ` a localization of `CommRing R` and `M` be a module over `Rₚ`.
-  Then `M` is flat over `R` if and only if `M` is flat over `Rₚ`.
-* `Flat_of_isLocalized_maximal` : Let `M` be a module over `CommRing R`. If the localization
+* `Module.flat_iff_localization` : Let `Rₚ` a localization of `CommRing R` and `M` be a module
+  over `Rₚ`. Then `M` is flat over `R` if and only if `M` is flat over `Rₚ`.
+* `Module.flat_of_isLocalized_maximal` : Let `M` be a module over `CommRing R`. If the localization
   of `M` at each maximal ideal `P` is flat over `Rₚ`, then `M` is flat over `R`.
-* `Flat_of_isLocalized_span` : Let `M` be a module over `CommRing R` and `S` be a set that
+* `Module.flat_of_isLocalized_span` : Let `M` be a module over `CommRing R` and `S` be a set that
   spans `R`. If the localization of `M` at each `s : S` is flat over `Localization.Away s`,
   then `M` is flat over `R`.
 -/
@@ -40,23 +40,13 @@ theorem IsLocalization.flat : Module.Flat R S :=
 
 instance Localization.flat : Module.Flat R (Localization p) := IsLocalization.flat _ p
 
+namespace Module
+
 include p in
-theorem flat_iff_localization : Module.Flat S M ↔ Module.Flat R M := by
-  letI := isLocalizedModule_id p M S
-  letI := IsLocalization.flat S p
-  exact ⟨fun h ↦ Module.Flat.trans R S M,
-    fun h ↦ Module.Flat.of_isLocalizedModule S p LinearMap.id⟩
-
-variable (S : Submonoid R) (N P Q : Type*) [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-  [Module R N] [Module R P] [Module R Q]
-
-variable {M N P Q} in
-lemma IsLocalizedModule.linearMap_ext (f : M →ₗ[R] N) [IsLocalizedModule S f]
-    (f' : P →ₗ[R] Q) [IsLocalizedModule S f'] ⦃g g' : N →ₗ[R] Q⦄
-    (h : g ∘ₗ f = g' ∘ₗ f) : g = g' := ext fun x ↦ by
-  have ⟨⟨m, s⟩, (eq : s.1 • x = f m)⟩ := surj S f x
-  apply ((Module.End_isUnit_iff _).mp (map_units f' s)).1
-  simpa only [Module.algebraMap_end_apply, ← g.map_smul, ← g'.map_smul, eq] using congr($h m)
+theorem flat_iff_localization : Flat S M ↔ Flat R M :=
+  have := isLocalizedModule_id p M S
+  have := IsLocalization.flat S p
+  ⟨fun _ ↦ .trans R S M, fun _ ↦ .of_isLocalizedModule S p .id⟩
 
 private lemma aux (I : Ideal R) (s : Submonoid R) :
     have hM := isBaseChange s (Localization s) (mkLinearMap s M)
@@ -78,34 +68,36 @@ variable (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
-theorem Flat_of_localized_maximal
-    (h : ∀ (J : Ideal R) [J.IsMaximal], Module.Flat R (LocalizedModule J.primeCompl M)) :
-    Module.Flat R M :=
-  (Module.flat_iff _ _).mpr fun I fg ↦ injective_of_localized_maximal _ fun J hJ ↦ by
+theorem flat_of_localized_maximal
+    (h : ∀ (J : Ideal R) [J.IsMaximal], Flat R (LocalizedModule J.primeCompl M)) :
+    Flat R M :=
+  (flat_iff _ _).mpr fun I fg ↦ injective_of_localized_maximal _ fun J hJ ↦ by
     rw [← LinearMap.coe_restrictScalars R, aux]
-    simpa using (Module.flat_iff _ _).mp (h J) fg
+    simpa using (flat_iff _ _).mp (h J) fg
 
 include f in
-theorem Flat_of_isLocalized_maixmal (H : ∀ (P : Ideal R) [P.IsMaximal], Module.Flat R (Mₚ P)) :
-    Module.Flat R M := Flat_of_localized_maximal M
-  fun P _ ↦ Module.Flat.of_linearEquiv R (Mₚ P) (LocalizedModule _ M) (f := H P) (iso _ (f P))
+theorem flat_of_isLocalized_maixmal (H : ∀ (P : Ideal R) [P.IsMaximal], Flat R (Mₚ P)) :
+    Module.Flat R M :=
+  flat_of_localized_maximal M fun P _ ↦ .of_linearEquiv _ _ _ (iso _ (f P))
 
-variable (s : Set R) (spn : Ideal.span (s : Set R) = ⊤)
-   (Mₛ : ∀ _ : s, Type*)
+variable (s : Set R) (spn : Ideal.span s = ⊤)
+  (Mₛ : ∀ _ : s, Type*)
   [∀ r : s, AddCommGroup (Mₛ r)]
   [∀ r : s, Module R (Mₛ r)]
   (g : ∀ r : s, M →ₗ[R] Mₛ r)
   [∀ r : s, IsLocalizedModule (.powers r.1) (g r)]
 include spn
 
-theorem Flat_of_localized_span
-    (h : ∀ r : s, Module.Flat R (LocalizedModule (Submonoid.powers r.1) M)) :
-    Module.Flat R M :=
+theorem flat_of_localized_span
+    (h : ∀ r : s, Flat R (LocalizedModule (.powers r.1) M)) :
+    Flat R M :=
   (Module.flat_iff _ _).mpr fun I fg ↦ injective_of_localized_span s spn _ fun r ↦ by
     rw [← LinearMap.coe_restrictScalars R, aux]
     simpa using (Module.flat_iff _ _).mp (h r) fg
 
 include g in
-theorem Flat_of_isLocalized_span (H : ∀ r : s, Module.Flat R (Mₛ r)) :
-    Module.Flat R M := Flat_of_localized_span M s spn
-  fun r ↦ Module.Flat.of_linearEquiv R (Mₛ r) (LocalizedModule _ M) (f := H r) (iso _ (g r))
+theorem flat_of_isLocalized_span (H : ∀ r : s, Module.Flat R (Mₛ r)) :
+    Module.Flat R M :=
+  flat_of_localized_span M s spn fun r ↦ .of_linearEquiv _ _ _ (iso _ (g r))
+
+end Module
