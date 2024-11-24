@@ -4031,6 +4031,7 @@ import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
 import Mathlib.Order.Nat
 import Mathlib.Order.Notation
+import Mathlib.Order.Nucleus
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Order.OrdContinuous
 import Mathlib.Order.OrderIsoNat
