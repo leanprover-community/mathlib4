@@ -306,6 +306,11 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
   ext; simp only [equivMapDomain_apply, coe_zero, Pi.zero_apply]
 
+@[simp]
+theorem equivMapDomain_add [AddCommMonoid N] (f : α ≃ β) (x y : α →₀ N) :
+    equivMapDomain f (x + y) = equivMapDomain f x + equivMapDomain f y := by
+  exact ext (congrFun rfl)
+
 @[to_additive (attr := simp)]
 theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g : β → M → N) :
     prod (equivMapDomain f l) g = prod l (fun a m => g (f a) m) := by
