@@ -404,23 +404,36 @@ open Category Opposite
 
 variable (C)
 
+-- leav for now
 lemma shiftEquiv'_unit (a a' : A) (h : a + a' = 0) :
-    (shiftEquiv' C a a' h).unit = (shiftFunctorCompIsoId C a a' h).inv := sorry
+    (shiftEquiv' C a a' h).unit = (shiftFunctorCompIsoId C a a' h).inv := by
+  ext _
+  change (shiftEquiv' C a a' h).unitIso.hom.app _ = _
+  rw [shiftEquiv'_unitIso]
+  rfl
 
 lemma shiftEquiv'_counit (a a' : A) (h : a + a' = 0) :
     (shiftEquiv' C a a' h).counit = (shiftFunctorCompIsoId C a' a
-    (by simp only [eq_neg_of_add_eq_zero_left h, add_right_neg])).hom := sorry
-
+    (by simp only [eq_neg_of_add_eq_zero_left h, add_right_neg])).hom := by
+  ext _
+  change (shiftEquiv' C a a' h).counitIso.hom.app _ = _
+  rw [shiftEquiv'_counitIso]
 
 lemma shiftEquiv'_symm_unit (a a' : A) (h : a + a' = 0) :
     (shiftEquiv' C a a' h).symm.unit = (shiftFunctorCompIsoId C a' a
-    (by simp only [eq_neg_of_add_eq_zero_right h, add_left_neg])).inv := sorry
+    (by simp only [eq_neg_of_add_eq_zero_right h, add_left_neg])).inv := by
+  ext _
+  change (shiftEquiv' C a a' h).counitIso.inv.app _ = _
+  rw [shiftEquiv'_counitIso]
 
 lemma shiftEquiv'_symm_counit (a a' : A) (h : a + a' = 0) :
-    (shiftEquiv' C a a' h).symm.counit = (shiftFunctorCompIsoId C a a' h).hom := sorry
+    (shiftEquiv' C a a' h).symm.counit = (shiftFunctorCompIsoId C a a' h).hom := by
+  ext _
+  change (shiftEquiv' C a a' h).unitIso.inv.app _ = _
+  rw [shiftEquiv'_unitIso]
+  rfl
 
-
-
+-- leave for now
 lemma shiftEquiv_homEquiv_zero'_app (a : A) (ha : a = 0) (X Y : C) (u : X⟦-a⟧ ⟶ Y) :
     (shiftEquiv C a).symm.toAdjunction.homEquiv X Y u =
     (shiftFunctorZero' C (-a) (by simp [ha])).inv.app X ≫ u ≫
@@ -464,6 +477,7 @@ lemma shiftEquiv_homEquiv_zero'_symm_app (a : A) (ha : a = 0) (X Y : C) (u : X �
   rw [shiftEquiv_homEquiv_zero' C a ha]
   simp
 
+-- ok for now
 lemma shiftEquiv'_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb : b + b' = 0)
     (hc : c + c' = 0) (h : a + b = c) (X Y : C) (u : (X⟦b'⟧)⟦a'⟧ ⟶ Y) :
     ((shiftEquiv' C b b' hb).symm.toAdjunction.homEquiv X ((shiftFunctor C a).obj Y))
@@ -503,6 +517,7 @@ lemma shiftEquiv'_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb :
   rw [shiftFunctorAdd'_zero_add]
   simp
 
+-- ok for now
 lemma shiftEquiv_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb : b + b' = 0)
     (hc : c + c' = 0) (h : a + b = c) (X Y : C) (u : X ⟶ Y⟦c⟧) :
         ((shiftEquiv' C a a' ha).symm.toAdjunction.homEquiv (X⟦b'⟧) Y).symm
@@ -511,8 +526,8 @@ lemma shiftEquiv_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb : 
         ((shiftFunctorAdd' C b' a' c' (by rw [eq_neg_of_add_eq_zero_right hc,
         eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h,
         neg_add_rev])).inv.app X ≫
-        ((shiftEquiv' C c c' hc).symm.toAdjunction.homEquiv X Y).symm u) := by sorry
-/-  have := shiftEquiv'_add_symm_homEquiv C a a' b b' c c' ha hb hc h X Y
+        ((shiftEquiv' C c c' hc).symm.toAdjunction.homEquiv X Y).symm u) := by
+  have := shiftEquiv'_add_symm_homEquiv C a a' b b' c c' ha hb hc h X Y
     ((shiftFunctorAdd' C b' a' c' (by rw [eq_neg_of_add_eq_zero_right hc,
         eq_neg_of_add_eq_zero_right ha, eq_neg_of_add_eq_zero_right hb, ← h,
         neg_add_rev])).inv.app X ≫
@@ -522,7 +537,8 @@ lemma shiftEquiv_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb : 
   apply_fun (fun x ↦ ((shiftEquiv' C b b' hb).symm.toAdjunction.homEquiv X
         ((shiftFunctor C a).obj Y)).symm x) at this
   erw [Equiv.apply_symm_apply] at this
-  rw [this]
+  sorry
+/-  erw [this]
   congr 1
   conv_rhs => rw [← assoc, Iso.hom_inv_id_app]; erw [id_comp]
               rw [Equiv.apply_symm_apply]-/
@@ -537,20 +553,54 @@ universe u' v'
 variable {C : Type u} {D : Type u'} [Category.{v,u} C] [Category.{v',u'} D] (F : C ⥤ D) (A : Type*)
   [AddMonoid A] [HasShift C A] [HasShift D A]
 
+/-
 theorem zero' (a : A) (ha : a = 0) : ∀ [self : F.CommShift A],
-    CommShift.iso a = CommShift.isoZero' F a ha := sorry
+    CommShift.iso a = CommShift.isoZero' F a ha := by
+  intro _
+  ext _
+  simp only [comp_obj, isoZero'_hom_app, shiftFunctorZero', Iso.trans_hom, eqToIso.hom,
+    NatTrans.comp_app, id_obj, eqToHom_app, map_comp, Iso.trans_inv, eqToIso.inv, Category.assoc]
+-/
 
 def op (commF : CommShift F A) :
     CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A where
   iso a := (NatIso.op (commF.iso a)).symm
-  zero := sorry
-  add := sorry
+  zero := by
+    simp only
+    rw [commF.zero]
+    ext _
+    simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app, isoZero_inv_app,
+      op_comp, isoZero_hom_app, op_map]
+    erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
+    simp
+  add a b := by
+    simp only
+    rw [commF.add]
+    ext _
+    simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app, isoAdd_inv_app,
+      op_comp, Category.assoc, isoAdd_hom_app, op_map]
+    erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
+    rfl
 
 noncomputable def removeOp (commFop : CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A) :
     CommShift F A where
   iso a := NatIso.removeOp (commFop.iso a).symm
-  zero := sorry
-  add := sorry
+  zero := by
+    simp only
+    rw [commFop.zero]
+    ext _
+    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+      isoZero_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, isoZero_hom_app]
+    erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
+    simp
+  add a b := by
+    simp only
+    rw [commFop.add]
+    ext _
+    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+      isoAdd_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, Category.assoc, isoAdd_hom_app]
+    erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
+    rfl
 
 end CommShift
 end Functor
@@ -570,80 +620,48 @@ def Functor_iso_to_iso_op : (F ≅ F') ≃ (F'.op ≅ F.op) :=
   Equiv.mk NatIso.op NatIso.removeOp (fun _ ↦ by aesop) (fun _ ↦ by aesop)
 
 lemma natIsoEquiv_compat_op : (Functor_iso_to_iso_op G G').trans
-    ((Adjunction.natIsoEquiv adj.opAdjointOpOfAdjoint
-    adj'.opAdjointOpOfAdjoint).symm.trans
-    (Functor_iso_to_iso_op F' F).symm) =
-    (Adjunction.natIsoEquiv adj adj')
-     := by sorry
-
-/-
-lemma natIsoEquiv_compat_op :
-    (Functor_iso_to_iso_op F' F).trans (Adjunction.natIsoEquiv adj.opAdjointOpOfAdjoint
-    adj'.opAdjointOpOfAdjoint) = (Adjunction.natIsoEquiv adj adj').symm.trans
-    (Functor_iso_to_iso_op G G') := by
-  ext u X
-  simp only [Functor.op_obj, Functor_iso_to_iso_op, Equiv.trans_apply, Equiv.coe_fn_mk,
-    natIsoEquiv_apply_hom, NatIso.op_hom, natTransEquiv_apply_app, Functor.comp_obj,
-    NatTrans.comp_app, Functor.id_obj, opAdjointOpOfAdjoint_unit_app, whiskerLeft_app,
-    NatTrans.op_app, Functor.op_map, unop_comp, Quiver.Hom.unop_op, Functor.map_comp, op_comp,
-    opAdjointOpOfAdjoint_counit_app, Category.assoc, natIsoEquiv_symm_apply_hom,
-    natTransEquiv_symm_apply_app]
-  rw [opEquiv_apply, opEquiv_apply];  erw [Functor.map_id, Functor.map_id]
-  rw [opEquiv_symm_apply, opEquiv_symm_apply]
+    ((Adjunction.natIsoEquiv adj.opAdjointOpOfAdjoint adj'.opAdjointOpOfAdjoint).symm.trans
+    (Functor_iso_to_iso_op F' F).symm) = (Adjunction.natIsoEquiv adj adj') := by
+  ext _
+  simp only [Functor_iso_to_iso_op, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk,
+    NatIso.removeOp_hom, natIsoEquiv_symm_apply_hom, NatIso.op_hom, NatTrans.removeOp_app,
+    Functor.op_obj, natTransEquiv_symm_apply_app, Functor.comp_obj, opAdjointOpOfAdjoint_unit_app,
+    NatTrans.op_app, opAdjointOpOfAdjoint_counit_app, Functor.op_map, unop_comp, Quiver.Hom.unop_op,
+    Functor.map_comp, op_comp, Category.assoc, natIsoEquiv_apply_hom, natTransEquiv_apply_app,
+    NatTrans.comp_app, Functor.id_obj, whiskerLeft_app]
+  rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply]
   simp
--/
 
 variable (A : Type*) [AddGroup A] [HasShift C A] [HasShift D A]
 
 lemma shiftEquiv'_symm_toAdjunction_op (a b : A) (h : a + b = 0) :
     (shiftEquiv' C a b h).symm.toAdjunction.opAdjointOpOfAdjoint =
     (shiftEquiv' (OppositeShift C A) b a
-    (by rw [eq_neg_of_add_eq_zero_left h]; simp)).symm.toAdjunction := by sorry
+    (by rw [eq_neg_of_add_eq_zero_left h]; simp)).symm.toAdjunction := by
+  ext _
+  · simp only [Functor.id_obj, Equivalence.symm_inverse, shiftEquiv'_functor,
+    Equivalence.symm_functor, shiftEquiv'_inverse, Functor.comp_obj, Functor.op_obj,
+    opAdjointOpOfAdjoint_unit_app, Equivalence.toAdjunction_counit, id_eq, eq_mpr_eq_cast,
+    Equivalence.toAdjunction_unit]
+    rw [opEquiv_apply, opEquiv_symm_apply, shiftEquiv'_symm_unit, shiftEquiv'_symm_counit]
+    simp only [unop_id, Functor.map_id, shiftFunctorCompIsoId, Iso.trans_hom, Iso.symm_hom,
+      NatTrans.comp_app, Functor.comp_obj, Functor.id_obj, Category.id_comp, op_comp, op_unop,
+      Iso.trans_inv, Iso.symm_inv, Functor.op_obj]
+    rw [oppositeShiftFunctorAdd'_hom_app, oppositeShiftFunctorZero_inv_app]
+  · simp only [Equivalence.symm_functor, shiftEquiv'_inverse, Equivalence.symm_inverse,
+    shiftEquiv'_functor, Functor.comp_obj, Functor.op_obj, Functor.id_obj,
+    opAdjointOpOfAdjoint_counit_app, Equivalence.toAdjunction_unit, id_eq, eq_mpr_eq_cast,
+    Equivalence.toAdjunction_counit]
+    rw [opEquiv_apply, opEquiv_symm_apply, shiftEquiv'_symm_unit, shiftEquiv'_symm_counit]
+    simp only [shiftFunctorCompIsoId, Iso.trans_inv, Iso.symm_inv, NatTrans.comp_app,
+      Functor.id_obj, Functor.comp_obj, unop_id, Functor.map_id, Category.comp_id, op_comp, op_unop,
+      Iso.trans_hom, Iso.symm_hom, Functor.op_obj]
+    rw [oppositeShiftFunctorAdd'_inv_app, oppositeShiftFunctorZero_hom_app]
 
 lemma shiftEquiv_symm_toAdjunction_op (a : A) :
     (shiftEquiv C a).symm.toAdjunction.opAdjointOpOfAdjoint =
     (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.toAdjunction := by
-  have h : (shiftEquiv' C a (-a) (by simp)).symm.counit =
-      (shiftFunctorCompIsoId C a (-a) (by simp)).hom := by
-    change (shiftEquiv' C a (-a) (by simp)).symm.counitIso.hom = _
-    rw [Equivalence.symm_counitIso]
-    simp
-  have h' : (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.unit =
-      (shiftFunctorCompIsoId (OppositeShift C A) a (-a) (by simp)).inv := by
-    change (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.unitIso.hom = _
-    rw [Equivalence.symm_unitIso]
-    simp
-  have h'' : (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.counit =
-      (shiftFunctorCompIsoId (OppositeShift C A) (-a) a (by simp)).hom := by
-    change (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.counitIso.hom = _
-    rw [Equivalence.symm_counitIso]
-    simp
-  have h''' : (shiftEquiv' C a (-a) (by simp)).symm.unit =
-      (shiftFunctorCompIsoId C (-a) a (by simp)).inv := by
-    change (shiftEquiv' C a (-a) (by simp)).symm.unitIso.hom = _
-    rw [Equivalence.symm_unitIso]
-    simp
-  ext X
-  · simp only [Functor.id_obj, Equivalence.symm_inverse, shiftEquiv'_functor,
-    Equivalence.symm_functor, shiftEquiv'_inverse, Functor.comp_obj, Functor.op_obj,
-    opAdjointOpOfAdjoint_unit_app, Equivalence.toAdjunction_counit, Equivalence.toAdjunction_unit]
-    rw [opEquiv_apply, opEquiv_symm_apply]
-    simp only [unop_id, Functor.map_id, shiftEquiv, Category.id_comp]
-    rw [h, h']
-    simp only [shiftFunctorCompIsoId, Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app,
-      Functor.comp_obj, Functor.id_obj, op_comp, op_unop, Iso.trans_inv, Iso.symm_inv,
-      Functor.op_obj]
-    rw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorAdd'_hom_app]
-  · simp only [Equivalence.symm_functor, shiftEquiv'_inverse, Equivalence.symm_inverse,
-    shiftEquiv'_functor, Functor.comp_obj, Functor.op_obj, Functor.id_obj,
-    opAdjointOpOfAdjoint_counit_app, Equivalence.toAdjunction_unit, Equivalence.toAdjunction_counit]
-    rw [opEquiv_apply, opEquiv_symm_apply]
-    simp only [shiftEquiv, unop_id, Functor.map_id, Category.comp_id]
-    rw [h'', h''']
-    simp only [shiftFunctorCompIsoId, Iso.trans_inv, Iso.symm_inv, NatTrans.comp_app,
-      Functor.id_obj, Functor.comp_obj, op_comp, op_unop, Iso.trans_hom, Iso.symm_hom,
-      Functor.op_obj]
-    rw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorAdd'_inv_app]
+  rw [shiftEquiv'_symm_toAdjunction_op]
 
 lemma comp_op : (Adjunction.comp adj adj₁).opAdjointOpOfAdjoint =
     Adjunction.comp adj₁.opAdjointOpOfAdjoint adj.opAdjointOpOfAdjoint := by
@@ -657,12 +675,14 @@ lemma comp_op : (Adjunction.comp adj adj₁).opAdjointOpOfAdjoint =
     rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply, opEquiv_symm_apply]
     simp
 
+/-
 lemma truc (a : A) :
     (Adjunction.comp adj (shiftEquiv D a).symm.toAdjunction).opAdjointOpOfAdjoint =
     Adjunction.comp (shiftEquiv' (OppositeShift D A) (-a) a (by simp)).symm.toAdjunction
     adj.opAdjointOpOfAdjoint := by
   rw [← shiftEquiv_symm_toAdjunction_op]
   rw [comp_op]
+-/
 
 end Adjunction
 
