@@ -7,10 +7,10 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.DegLex
 
-/-! Homogeneous reverse lexicographic monomial ordering 
+/-! Homogeneous reverse lexicographic monomial ordering
 
 * `MonomialOrder.degRevLex`: the homogeneous reverse lexicographic ordering.
-It first compares degrees, and on monomials of the same degree, 
+It first compares degrees, and on monomials of the same degree,
 it `a > b` if the first distinct entry at which `a` differs from that of `b` is greater.
 
 For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
@@ -28,7 +28,7 @@ and `MonomialOrder.degRevLex_lt_iff` rewrite the ordering as comparisons in the 
 
 section degRevLex
 
-/-- A type synonym to equip a type with its lexicographic order sorted 
+/-- A type synonym to equip a type with its lexicographic order sorted
   by reverse lexicographic degrees. -/
 def DegRevLex (α : Type*) := α
 
@@ -100,7 +100,7 @@ theorem degRevLex_iff {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b :
   ⟨fun f g ↦ Finsupp.DegRevLex (· < ·) (· < ·) (ofDegRevLex f) (ofDegRevLex g)⟩
 
 theorem DegRevLex.lt_def [LT α] {a b : DegRevLex (α →₀ ℕ)} :
-    a < b ↔ 
+    a < b ↔
       toLex ((ofDegRevLex a).degree, toLex (equivCongrLeft toDual (ofDegRevLex b))) <
         toLex ((ofDegRevLex b).degree, toLex (equivCongrLeft toDual (ofDegRevLex a))) := by
   change Finsupp.DegRevLex _ _ (ofDegRevLex a) (ofDegRevLex b) ↔ _
@@ -109,8 +109,8 @@ theorem DegRevLex.lt_def [LT α] {a b : DegRevLex (α →₀ ℕ)} :
 
 theorem DegRevLex.lt_iff [LT α] {a b : DegRevLex (α →₀ ℕ)} :
     a < b ↔ (ofDegRevLex a).degree < (ofDegRevLex b).degree ∨
-      (((ofDegRevLex a).degree = (ofDegRevLex b).degree) ∧ 
-        toLex (equivCongrLeft toDual (ofDegRevLex b)) < 
+      (((ofDegRevLex a).degree = (ofDegRevLex b).degree) ∧
+        toLex (equivCongrLeft toDual (ofDegRevLex b)) <
           toLex (equivCongrLeft OrderDual.toDual (ofDegRevLex a))) := by
   simp only [lt_def, equivCongrLeft_apply, Prod.Lex.lt_iff]
 -/
@@ -131,26 +131,26 @@ variable [LinearOrder α]
         · right; refine ⟨Eq.trans hab.1 hbc.1, lt_trans hbc.2 hab.2⟩ }
 -/
 
-/- This is a good and short definition, but it doesn't work with the earlier LT.lt, 
+/- This is a good and short definition, but it doesn't work with the earlier LT.lt,
   which is thus commented out -/
 /-- The partial order on `Finsupp`s obtained by the homogeneous reverse lexicographic ordering.
 See `Finsupp.DegRevLex.linearOrder` for a proof that this partial order is in fact linear. -/
-instance DegRevLex.partialOrder : PartialOrder (DegRevLex (α →₀ ℕ)) := 
+instance DegRevLex.partialOrder : PartialOrder (DegRevLex (α →₀ ℕ)) :=
    PartialOrder.lift
-    (fun (f : DegRevLex (α →₀ ℕ)) ↦ 
+    (fun (f : DegRevLex (α →₀ ℕ)) ↦
       toLex ((ofDegRevLex f).degree, toDual (toLex (equivCongrLeft toDual (ofDegRevLex f)))))
-    (fun f g ↦ by 
+    (fun f g ↦ by
       simp only [EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq, and_imp]
-      exact fun _ a ↦ a)  
+      exact fun _ a ↦ a) 
 /- {
   lt := LT.lt
   le := fun x y ↦ x = y ∨ x < y
   le_refl := fun _ ↦ Or.inl rfl
   le_trans := fun a b c hab hbc ↦ by
-    simp only [LE.le] at hab 
+    simp only [LE.le] at hab
     cases hab with
     | inl h => rw [h]; exact hbc
-    | inr h => 
+    | inr h =>
       simp only [LE.le] at hbc ⊢
       right
       cases hbc with
@@ -164,37 +164,37 @@ instance DegRevLex.partialOrder : PartialOrder (DegRevLex (α →₀ ℕ)) :=
       · intro q
         apply DegRevLex.isStrictOrder.irrefl x
         cases q with
-        | inl q => 
+        | inl q =>
           rwa [q] at h
-        | inr q => 
+        | inr q =>
           exact DegRevLex.isStrictOrder.trans _ _ _ h q
     · rintro ⟨h, q⟩
       cases h with
-      | inl h => 
+      | inl h =>
         exfalso; apply q; rw [h, LE.le]; left; exact rfl
       | inr h => exact h
-  le_antisymm := fun x y h q ↦ by 
+  le_antisymm := fun x y h q ↦ by
     cases h with
     | inl h => exact h
-    | inr h => 
-      cases q with 
-      | inl q => exact q.symm 
-      | inr q => 
+    | inr h =>
+      cases q with
+      | inl q => exact q.symm
+      | inr q =>
         exfalso
         exact DegRevLex.isStrictOrder.irrefl x (DegRevLex.isStrictOrder.trans _ _ _ h q) } -/
 
 theorem DegRevLex.le_iff {x y : DegRevLex (α →₀ ℕ)} :
     x ≤ y ↔ (ofDegRevLex x).degree < (ofDegRevLex y).degree ∨
-      (ofDegRevLex x).degree = (ofDegRevLex y).degree ∧ 
-        toLex (equivCongrLeft toDual (ofDegRevLex y)) ≤ 
+      (ofDegRevLex x).degree = (ofDegRevLex y).degree ∧
+        toLex (equivCongrLeft toDual (ofDegRevLex y)) ≤
           toLex (equivCongrLeft toDual (ofDegRevLex x)) := by
   conv_lhs => rw [LE.le, Preorder.toLE, PartialOrder.toPreorder, partialOrder]
   simp only [equivCongrLeft_apply, Prod.Lex.le_iff, toDual_le_toDual]
 
  theorem DegRevLex.lt_iff {x y : DegRevLex (α →₀ ℕ)} :
     x < y ↔ (ofDegRevLex x).degree < (ofDegRevLex y).degree ∨
-      (ofDegRevLex x).degree = (ofDegRevLex y).degree ∧ 
-        toLex (equivCongrLeft toDual (ofDegRevLex y)) < 
+      (ofDegRevLex x).degree = (ofDegRevLex y).degree ∧
+        toLex (equivCongrLeft toDual (ofDegRevLex y)) <
           toLex (equivCongrLeft toDual (ofDegRevLex x)) := by
   conv_lhs => rw [LT.lt, Preorder.toLT, PartialOrder.toPreorder, partialOrder]
   simp only [equivCongrLeft_apply, Prod.Lex.lt_iff, toDual_lt_toDual]
@@ -202,11 +202,11 @@ theorem DegRevLex.le_iff {x y : DegRevLex (α →₀ ℕ)} :
 /-- Explicit expansion -/
 theorem DegRevLex.lt_iff' {x y : DegRevLex (α →₀ ℕ)} :
     x < y ↔ (ofDegRevLex x).degree < (ofDegRevLex y).degree ∨
-      (ofDegRevLex x).degree = (ofDegRevLex y).degree ∧ 
-        ∃ j, (∀ i > j, ofDegRevLex x i = ofDegRevLex y i) ∧ 
-          ofDegRevLex y j < ofDegRevLex x j := by 
+      (ofDegRevLex x).degree = (ofDegRevLex y).degree ∧
+        ∃ j, (∀ i > j, ofDegRevLex x i = ofDegRevLex y i) ∧
+          ofDegRevLex y j < ofDegRevLex x j := by
   rw [DegRevLex.lt_iff]
-  apply or_congr 
+  apply or_congr
   · exact gt_iff_lt
   · simp only [and_congr_right_iff]
     intro h
@@ -218,10 +218,10 @@ theorem DegRevLex.lt_iff' {x y : DegRevLex (α →₀ ℕ)} :
     intro ha
     apply forall₂_congr
     intro i hi
-    exact eq_comm   
-    
+    exact eq_comm  
+   
 theorem DegRevLex.single_lt_iff {a b : α} :
-    toDegRevLex (single a 1) < toDegRevLex (single b 1) ↔ b < a := by 
+    toDegRevLex (single a 1) < toDegRevLex (single b 1) ↔ b < a := by
   simp [DegRevLex.lt_iff, ofDegRevLex_toDegRevLex, degree_single, Finsupp.Lex.single_lt_iff]
 
 theorem DegRevLex.single_strictAnti : StrictAnti (fun (a : α) ↦ toDegRevLex (single a 1)) := by
@@ -232,7 +232,7 @@ theorem DegRevLex.single_antitone : Antitone (fun (a : α) ↦ toDegRevLex (sing
   DegRevLex.single_strictAnti.antitone
 
  theorem DegRevLex.single_le_iff {a b : α} :
-    toDegRevLex (single a 1) ≤ toDegRevLex (single b 1) ↔ b ≤ a := 
+    toDegRevLex (single a 1) ≤ toDegRevLex (single b 1) ↔ b ≤ a :=
   DegRevLex.single_strictAnti.le_iff_le
 
 noncomputable instance : OrderedCancelAddCommMonoid (DegRevLex (α →₀ ℕ)) where
@@ -248,10 +248,10 @@ noncomputable instance : OrderedCancelAddCommMonoid (DegRevLex (α →₀ ℕ)) 
 
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
 instance DegRevLex.linearOrder : LinearOrder (DegRevLex (α →₀ ℕ)) :=
-  LinearOrder.lift' (fun (f : DegRevLex (α →₀ ℕ)) ↦ 
+  LinearOrder.lift' (fun (f : DegRevLex (α →₀ ℕ)) ↦
     toLex ((ofDegRevLex f).degree, toDual (toLex (equivCongrLeft toDual (ofDegRevLex f)))))
-    (fun f g ↦ by 
-      simp only [equivCongrLeft_apply, EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq, and_imp, 
+    (fun f g ↦ by
+      simp only [equivCongrLeft_apply, EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq, and_imp,
         Finsupp.ext_iff]
       intro _ h
       rw [← ofDegRevLex_inj]
@@ -287,7 +287,7 @@ instance DegRevLex.orderBot : OrderBot (DegRevLex (α →₀ ℕ)) where
     · simp only [h, equivCongrLeft_apply, equivMapDomain_zero, toLex_zero, true_or]
 
 theorem DegRevLex.wellFounded
-    {r : α → α → Prop} [IsTrichotomous α r] [Finite α] 
+    {r : α → α → Prop} [IsTrichotomous α r] [Finite α]
     {s : ℕ → ℕ → Prop} (hs : WellFounded s) (hs0 : ∀ ⦃n⦄, ¬ s n 0) :
     WellFounded (Finsupp.DegRevLex r s) := by
   sorry
@@ -298,28 +298,28 @@ instance DegRevLex.wellFoundedLT [Finite α] :
   sorry
 
 /-- for the reverse deg-lexicographic ordering, X 0 < X 1 ^ 2 -/
-example : toDegRevLex (Finsupp.single 0 1) < toDegRevLex (Finsupp.single 1 2) := by 
+example : toDegRevLex (Finsupp.single 0 1) < toDegRevLex (Finsupp.single 1 2) := by
   simp only [gt_iff_lt, DegRevLex.lt_iff, ofDegRevLex_toDegRevLex, degree_add]
   simp [degree_single]
 
 /- Here we deviate from algebraic geometry by getting the opposite ordering on indeterminates -/
 
 /-- for the reverse deg-lexicographic ordering, X 0 > X 1 -/
-example : toDegRevLex (single 0 1) > toDegRevLex (single 1 1) := by 
+example : toDegRevLex (single 0 1) > toDegRevLex (single 1 1) := by
   simp only [DegRevLex.single_lt_iff, zero_lt_one]
 
 /- The following two examples show the difference between `DegLex` and `DegRevLex` -/
 
 /-- for the deg-lexicographic ordering, X 1 ^ 2 < X 0 * X 2 -/
-example : toDegLex (Finsupp.single 1 2) < toDegLex (Finsupp.single 0 1 + Finsupp.single 2 1) := by 
+example : toDegLex (Finsupp.single 1 2) < toDegLex (Finsupp.single 0 1 + Finsupp.single 2 1) := by
   simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
   simp only [degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
   use 0
   simp
 
 /-- for the reverse deg-lexicographic ordering, X 1 ^ 2 > X 0 * X 2 -/
-example : 
-    toDegRevLex (Finsupp.single 1 2) > toDegRevLex (Finsupp.single 0 1 + Finsupp.single 2 1) := by 
+example :
+    toDegRevLex (Finsupp.single 1 2) > toDegRevLex (Finsupp.single 0 1 + Finsupp.single 2 1) := by
   simp only [DegRevLex.lt_iff']
   simp
   use 2
