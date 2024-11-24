@@ -91,4 +91,30 @@ noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] 
   map_add' := add_toBilin bm
   map_smul' := smul_toBilin S bm
 
+open Finsupp in
+theorem map_finsupp_sum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
+    Q (f.sum g) = (f.sum fun i r => Q (g i r)) +
+    ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) f.support.offDiag,
+      (polar Q) (g p.1 (f p.1)) (g p.2 (f p.2)) := by
+  rw [sum, QuadraticMap.map_sum]
+  exact congrArg (HAdd.hAdd _) (Finset.sum_sym2_filter_not_isDiag f.support _)
+
+open Finsupp in
+theorem map_finsupp_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
+    Q (linearCombination R g l) = (l.sum fun i r => (r * r) • Q (g i)) +
+    ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) l.support.offDiag,
+      (l p.1) • (l p.2) • (polar Q) (g p.1) (g p.2) := by
+  simp_rw [linearCombination_apply, map_finsupp_sum, polar_smul_left, polar_smul_right, map_smul]
+
+theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
+    Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
+    ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) (bm.repr x).support.offDiag,
+      ((bm.repr x) p.1) • ((bm.repr x) p.2) • (polar Q) (bm p.1) (bm p.2) := by
+  rw [← map_finsupp_linearCombination, Basis.linearCombination_repr]
+
+lemma polar_toQuadraticMap (B : BilinMap R M N) (x y : M) :
+    polar B.toQuadraticMap x y = B x y + B y x := by
+  simp only [polar, BilinMap.toQuadraticMap_apply, map_add, LinearMap.add_apply]
+  abel
+
 end QuadraticMap
