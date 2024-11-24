@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis
@@ -17,6 +18,8 @@ a basis.
 open LinearMap (BilinMap)
 
 namespace QuadraticMap
+
+section toBilin
 
 variable {ι R M N} [LinearOrder ι]
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
@@ -116,5 +119,89 @@ lemma polar_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     polar B.toQuadraticMap x y = B x y + B y x := by
   simp only [polar, BilinMap.toQuadraticMap_apply, map_add, LinearMap.add_apply]
   abel
+
+lemma below_diag (Q : QuadraticMap R M N) (bm : Basis ι R M) (i j : ι) (h : j < i) :
+  (Q.toBilin bm) (bm i) (bm j) = 0 := by
+  simp [QuadraticMap.toBilin]
+  have p1 : ¬ (i = j) := by exact ne_of_gt h
+  have p2: ¬ (i < j) := by exact not_lt_of_gt h
+  simp_all only [not_lt, ↓reduceIte, ite_eq_right_iff, isEmpty_Prop, IsEmpty.forall_iff]
+
+lemma above_diag (Q : QuadraticMap R M N) (bm : Basis ι R M) (i j : ι) (h : i < j) :
+  (Q.toBilin bm) (bm i) (bm j) = (polar Q) (bm i) (bm j) := by
+  simp [QuadraticMap.toBilin]
+  have p1 : ¬ (i = j) := by exact ne_of_lt h
+  simp_all only [↓reduceIte]
+
+lemma on_diag (Q : QuadraticMap R M N) (bm : Basis ι R M) (i : ι) :
+    2 • (Q.toBilin bm) (bm i) (bm i) = (polar Q) (bm i) (bm i) := by
+  simp [QuadraticMap.toBilin]
+
+end toBilin
+
+/-
+c.f `LinearAlgebra/QuadraticForm/TensorProduct`
+-/
+
+open TensorProduct
+
+section TensorProduct
+
+universe uR uA uM₁ uM₂ uN₁ uN₂
+
+variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁} {N₂ : Type uN₂}
+
+variable [CommRing R] [CommRing A]
+variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGroup N₂]
+variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
+variable [SMulCommClass R A M₁] [IsScalarTower R A M₁]
+variable [SMulCommClass R A N₁] [IsScalarTower R A N₁]
+variable [Module R M₂] [Module R N₂]
+
+variable (R A) in
+/-- The tensor product of two quadratic maps injects into quadratic maps on tensor products.
+
+Note this is heterobasic; the quadratic map on the left can take values in a module over a larger
+ring than the one on the right. -/
+-- `noncomputable` is a performance workaround for mathlib4#7103
+noncomputable def tensorDistribFree {ι₁ : Type*} [LinearOrder ι₁] (bm₁ : Basis ι₁ A M₁)
+    {ι₂ : Type*} [LinearOrder ι₂] (bm₂ : Basis ι₂ R M₂) :
+    QuadraticMap A M₁ N₁ ⊗[R] QuadraticMap R M₂ N₂ →ₗ[A] QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
+  -- while `letI`s would produce a better term than `let`, they would make this already-slow
+  -- definition even slower.
+  let toQ := BilinMap.toQuadraticMapLinearMap A A (M₁ ⊗[R] M₂)
+  let tmulB := BilinMap.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
+  let toB := AlgebraTensorModule.map
+      (QuadraticMap.toBilinHom _ bm₁ : QuadraticMap A M₁ N₁ →ₗ[A] BilinMap A M₁ N₁)
+      (QuadraticMap.toBilinHom _ bm₂ : QuadraticMap R M₂ N₂ →ₗ[R] BilinMap R M₂ N₂)
+  toQ ∘ₗ tmulB ∘ₗ toB
+
+
+variable {ι₁ : Type*} [LinearOrder ι₁] (bm₁ : Basis ι₁ A M₁) (Q₁ : QuadraticMap A M₁ N₁)
+variable {ι₂ : Type*} [LinearOrder ι₂] (bm₂ : Basis ι₂ R M₂) (Q₂ : QuadraticMap R M₂ N₂)
+
+@[simp]
+theorem tensorDistriFree_tmul (m₁ : M₁) (m₂ : M₂) :
+    tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₁ m₁ ⊗ₜ Q₂ m₂ := by
+  apply (BilinMap.tensorDistrib_tmul _ _ _ _ _ _).trans
+  apply congr_arg₂ _
+  · rw [← LinearMap.BilinMap.toQuadraticMap_apply, toBilinHom_apply, toQuadraticMap_toBilin]
+  · rw [← LinearMap.BilinMap.toQuadraticMap_apply, toBilinHom_apply, toQuadraticMap_toBilin]
+
+lemma tensorDistribFree_apply
+    {ι₁ : Type*} [LinearOrder ι₁] (bm₁ : Basis ι₁ A M₁)
+    {ι₂ : Type*} [LinearOrder ι₂] (bm₂ : Basis ι₂ R M₂) :
+  tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂) =
+    ((Q₁.toBilin bm₁).tmul (Q₂.toBilin bm₂)).toQuadraticMap := rfl
+
+lemma tensorDistriFree_polar
+    (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ < j₁) (h₂ : i₂ < j₂) :
+    polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
+    (polar Q₁) (bm₁ i₁) (bm₁ j₁) ⊗ₜ (polar Q₂) (bm₂ i₂) (bm₂ j₂) := by
+  rw [tensorDistribFree_apply, polar_toQuadraticMap, BilinMap.tensorDistrib_tmul,
+    BilinMap.tensorDistrib_tmul, below_diag Q₁ bm₁ j₁ i₁ h₁, zero_tmul, add_zero,
+    above_diag Q₁ bm₁ i₁ j₁ h₁, above_diag Q₂ bm₂ i₂ j₂ h₂]
+
+end TensorProduct
 
 end QuadraticMap
