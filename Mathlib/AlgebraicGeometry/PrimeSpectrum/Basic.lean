@@ -1038,23 +1038,67 @@ lemma isClopen_iff_zeroLocus {s : Set (PrimeSpectrum R)} :
     h.trans (basicOpen_eq_zeroLocus_of_isIdempotentElem e he)⟩,
     fun ⟨e, he, h⟩ ↦ ⟨1 - e, he.one_sub, h.trans (zeroLocus_eq_basicOpen_of_isIdempotentElem e he)⟩⟩
 
+open TopologicalSpace (Clopens Opens)
+
 /-- Clopen subsets in the prime spectrum of a commutative ring are in 1-1 correspondence
 with idempotent elements in the ring. -/
 @[stacks 00EE]
-def isIdempotentElemEquivIsClopen :
-    {e : R | IsIdempotentElem e} ≃ {s : Set (PrimeSpectrum R) | IsClopen s} :=
+def isIdempotentElemEquivClopens :
+    {e : R | IsIdempotentElem e} ≃ Clopens (PrimeSpectrum R) :=
   .ofBijective (fun e ↦ ⟨basicOpen e.1, isClopen_iff.mpr ⟨_, e.2, rfl⟩⟩)
     ⟨fun x y eq ↦ Subtype.ext (basicOpen_injOn_isIdempotentElem x.2 y.2 <|
       SetLike.ext' (congr_arg (·.1) eq)), fun s ↦
         have ⟨e, he, h⟩ := exists_idempotent_basicOpen_eq_of_isClopen s.2
-        ⟨⟨e, he⟩, Subtype.ext h.symm⟩⟩
+        ⟨⟨e, he⟩, Clopens.ext h.symm⟩⟩
 
-lemma basicOpen_isIdempotentElemEquivIsClopen_symm (s) :
-    basicOpen (isIdempotentElemEquivIsClopen (R := R).symm s).1 = s.1 :=
-  congr_arg (·.1) (isIdempotentElemEquivIsClopen.apply_symm_apply s)
+lemma basicOpen_isIdempotentElemEquivClopens_symm (s) :
+    basicOpen (isIdempotentElemEquivClopens (R := R).symm s).1 = s.toOpens :=
+  Opens.ext <| congr_arg (·.1) (isIdempotentElemEquivClopens.apply_symm_apply s)
 
-lemma coe_isIdempotentElemEquivIsClopen_apply (e) :
-    (isIdempotentElemEquivIsClopen e).1 = (basicOpen (e.1 : R)).1 := rfl
+lemma coe_isIdempotentElemEquivClopens_apply (e) :
+    (isIdempotentElemEquivClopens e : Set (PrimeSpectrum R)) = basicOpen (e.1 : R) := rfl
+
+lemma isIdempotentElemEquivClopens_apply_toOpens (e) :
+    (isIdempotentElemEquivClopens e).toOpens = basicOpen (e.1 : R) := rfl
+
+lemma isIdempotentElemEquivClopens_mul (e₁ e₂ : {e : R | IsIdempotentElem e}) :
+    isIdempotentElemEquivClopens ⟨_, e₁.2.mul e₂.2⟩ =
+      isIdempotentElemEquivClopens e₁ ⊓ isIdempotentElemEquivClopens e₂ :=
+  Clopens.ext <| by simp_rw [coe_isIdempotentElemEquivClopens_apply, basicOpen_mul]; rfl
+
+lemma isIdempotentElemEquivClopens_one_sub (e : {e : R | IsIdempotentElem e}) :
+    isIdempotentElemEquivClopens ⟨_, e.2.one_sub⟩ = (isIdempotentElemEquivClopens e)ᶜ :=
+  SetLike.ext' <| by
+    simp_rw [Clopens.coe_compl, coe_isIdempotentElemEquivClopens_apply]
+    rw [basicOpen_eq_zeroLocus_compl, basicOpen_eq_zeroLocus_of_isIdempotentElem _ e.2]
+
+lemma isIdempotentElemEquivClopens_symm_inf (s₁ s₂) :
+    letI e := isIdempotentElemEquivClopens (R := R).symm
+    e (s₁ ⊓ s₂) = ⟨_, (e s₁).2.mul (e s₂).2⟩ :=
+  isIdempotentElemEquivClopens.symm_apply_eq.mpr <| by
+    simp_rw [isIdempotentElemEquivClopens_mul, Equiv.apply_symm_apply]
+
+lemma isIdempotentElemEquivClopens_symm_compl (s : Clopens (PrimeSpectrum R)) :
+    isIdempotentElemEquivClopens.symm sᶜ = ⟨_, (isIdempotentElemEquivClopens.symm s).2.one_sub⟩ :=
+  isIdempotentElemEquivClopens.symm_apply_eq.mpr <| by
+    rw [isIdempotentElemEquivClopens_one_sub, Equiv.apply_symm_apply]
+
+lemma isIdempotentElemEquivClopens_symm_top :
+    isIdempotentElemEquivClopens.symm ⊤ = ⟨(1 : R), .one⟩ :=
+  isIdempotentElemEquivClopens.symm_apply_eq.mpr <| Clopens.ext <| by
+    rw [coe_isIdempotentElemEquivClopens_apply, basicOpen_one]; rfl
+
+lemma isIdempotentElemEquivClopens_symm_bot :
+    isIdempotentElemEquivClopens.symm ⊥ = ⟨(0 : R), .zero⟩ :=
+  isIdempotentElemEquivClopens.symm_apply_eq.mpr <| Clopens.ext <| by
+    rw [coe_isIdempotentElemEquivClopens_apply, basicOpen_zero]; rfl
+
+lemma isIdempotentElemEquivClopens_symm_sup (s₁ s₂ : Clopens (PrimeSpectrum R)) :
+    letI e := isIdempotentElemEquivClopens (R := R).symm
+    e (s₁ ⊔ s₂) = ⟨_, (e s₁).2.add_sub_mul (e s₂).2⟩ := Subtype.ext <| by
+  rw [← compl_compl (_ ⊔ _), compl_sup, isIdempotentElemEquivClopens_symm_compl]
+  simp_rw [isIdempotentElemEquivClopens_symm_inf, isIdempotentElemEquivClopens_symm_compl]
+  ring
 
 end PrimeSpectrum
 
@@ -1064,13 +1108,13 @@ open PrimeSpectrum
 variable (R) in
 lemma RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
     Function.Surjective (RingHom.toLocalizationIsMaximal R) := fun x ↦ by
-  let idem I := isIdempotentElemEquivIsClopen (R := R).symm ⟨{I}, isClopen_discrete _⟩
+  let idem I := isIdempotentElemEquivClopens (R := R).symm ⟨{I}, isClopen_discrete _⟩
   let ideal I := Ideal.span {1 - (idem I).1}
   let toSpec (I : {I : Ideal R | I.IsMaximal}) : PrimeSpectrum R := ⟨I.1, I.2.isPrime⟩
   have loc I : IsLocalization.AtPrime (R ⧸ ideal I) I.1 := by
     rw [← isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton]
     exacts [IsLocalization.Away.quotient_of_isIdempotentElem (idem I).2,
-      (basicOpen_isIdempotentElemEquivIsClopen_symm ⟨{I}, isClopen_discrete _⟩)]
+      congr_arg (·.1) (basicOpen_isIdempotentElemEquivClopens_symm ⟨{I}, isClopen_discrete _⟩)]
   let equiv I := IsLocalization.algEquiv I.1.primeCompl (Localization.AtPrime I.1) (R ⧸ ideal I)
   have := (discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical.mp ‹_›).1
   have ⟨r, hr⟩ := Ideal.pi_quotient_surjective ?_ fun I ↦ equiv (toSpec I) (x I)
@@ -1079,7 +1123,7 @@ lemma RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
   refine fun I J ne ↦ Ideal.isCoprime_iff_exists.mpr ?_
   have := ((idem <| toSpec I).2.mul (idem <| toSpec J).2).eq_zero_of_isNilpotent <| by
     simp_rw [← basicOpen_eq_bot_iff, basicOpen_mul, SetLike.ext'_iff, idem,
-      TopologicalSpace.Opens.coe_inf, basicOpen_isIdempotentElemEquivIsClopen_symm]
+      TopologicalSpace.Opens.coe_inf, basicOpen_isIdempotentElemEquivClopens_symm]
     exact Set.singleton_inter_eq_empty.mpr fun h ↦ ne (Subtype.ext <| congr_arg (·.1) h)
   simp_rw [ideal, Ideal.mem_span_singleton', exists_exists_eq_and]
   exact ⟨1, idem (toSpec I), by simpa [mul_sub]⟩
