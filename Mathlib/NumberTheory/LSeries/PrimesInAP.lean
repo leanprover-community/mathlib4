@@ -32,6 +32,12 @@ The main steps of the proof are as follows.
    `(q.totient)⁻¹/(s-1)`, which cancels the pole at `s = 1`.
 5. Show that the auxiliary function is continuous on `re s ≥ 1`,
    See `ArithmeticFunction.vonMangoldt.continuousOn_auxFun`.
+   This relies heavily on the non-vanihsing of Dirichlet L-functions on the *closed*
+   half-plane `re s ≥ 1` (`DirichletCharacter.LFunction_ne_zero_of_one_le_re`), which
+   in turn can only be stated since we know that the L-series of a Dirichlet character
+   extends to an entire function (unless the character is trivial; then there is a
+   simple pole at `s = 1`); see `DirichletCharacter.LFunction_eq_LSeries`
+   (contributed by David Loeffler).
 6. Show that the sum of `Λ n / n` over any residue class, but *excluding* the primes, converges.
    See `ArithmeticFunction.vonMangoldt.summable_residueClass_non_primes_div`.
 7. Combining these ingredients, we can deduce that the sum of `Λ n / n` over
