@@ -547,19 +547,21 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
     simp
 
 /-- A polynomial function is infinitely differentiable. -/
-theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
-    ContDiffOn 𝕜 n f s :=
+theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : WithTop ℕ∞} :
+    ContDiffOn 𝕜 n f s := by
+  suffices ContDiffOn 𝕜 ω f s from this.of_le le_top
   let t := { x | CPolynomialAt 𝕜 f x }
-  suffices ContDiffOn 𝕜 n f t from this.mono h
+  suffices ContDiffOn 𝕜 ω f t from this.mono h
+  rw [← contDiffOn_infty_iff_contDiffOn_omega]
   have H : CPolynomialOn 𝕜 f t := fun _x hx ↦ hx
   have t_open : IsOpen t := isOpen_cPolynomialAt 𝕜 f
-  contDiffOn_of_continuousOn_differentiableOn
+  exact contDiffOn_of_continuousOn_differentiableOn
     (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
       fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
     (fun m _ ↦ (H.iteratedFDeriv m).analyticOnNhd.differentiableOn.congr
       fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
-theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞} :
+theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : WithTop ℕ∞} :
     ContDiffAt 𝕜 n f x :=
   let ⟨_, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
   hf.contDiffOn.contDiffAt hs
@@ -597,7 +599,7 @@ theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     simp_rw [FormalMultilinearSeries.changeOriginSeriesTerm,
       toFormalMultilinearSeries, dif_neg h.symm, LinearIsometryEquiv.map_zero]
 
-variable {n : ℕ∞} (x : ∀ i, E i)
+variable {n : WithTop ℕ∞} (x : ∀ i, E i)
 
 open Finset in
 theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
