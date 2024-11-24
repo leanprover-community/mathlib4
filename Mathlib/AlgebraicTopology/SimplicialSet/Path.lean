@@ -92,10 +92,10 @@ def Path.map {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y) : Y.Path n
   arrow i := σ.app (Opposite.op [1]) (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
-    exact (congr (σ.naturality (δ 1).op) (by rfl)).symm
+    exact (congr (σ.naturality (δ 1).op) rfl).symm
   arrow_tgt i := by
     simp only [← f.arrow_tgt i]
-    exact (congr (σ.naturality (δ 0).op) (by rfl)).symm
+    exact (congr (σ.naturality (δ 0).op) rfl).symm
 
 /-- `Path.map` respects subintervals of paths.-/
 lemma map_interval {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y)
