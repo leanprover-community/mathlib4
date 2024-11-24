@@ -210,6 +210,40 @@ theorem sq_sum_div_le_sum_sq_div [LinearOrderedSemifield R] [ExistsAddOfLE R] (s
   rw [div_mul_cancel₀]
   exact (hg i hi).ne'
 
+/-- Weighted **AM-HM inequality**: The weighted harmonic mean is less than or equal to the
+arithmetic mean. -/
+theorem inv_sum_div_le_sum_mul [LinearOrderedSemifield R] [ExistsAddOfLE R] (s : Finset ι)
+    {w f : ι → R} (hw : ∑ i ∈ s, w i = 1) (hw' : ∀ i ∈ s, 0 < w i) (hf : ∀ i ∈ s, 0 < f i) :
+    (∑ i ∈ s, w i / f i)⁻¹ ≤ ∑ i ∈ s, w i * f i := by
+  convert sq_sum_div_le_sum_sq_div s w fun i hi ↦ div_pos (hw' i hi) (hf i hi) using 1
+  · rw [hw, one_pow, one_div]
+  · simp_rw [pow_two, mul_div_assoc]
+    refine sum_congr rfl fun i hi ↦ ?_
+    rw [div_div_cancel' (hw' i hi).ne']
+
+/-- **AM-HM inequality**: The harmonic mean is less than or equal to the arithmetic mean. -/
+theorem div_sum_inv_le_sum_div [LinearOrderedSemifield R] [ExistsAddOfLE R] (s : Finset ι)
+    {f : ι → R} (hf : ∀ i ∈ s, 0 < f i) : #s / ∑ i ∈ s, (f i)⁻¹ ≤ (∑ i ∈ s, f i) / #s := by
+  obtain hs | hs := eq_zero_or_pos #s
+  · simp [hs]
+  · have hs : 0 < (#s : R) := mod_cast hs
+    have hw : ∑ _ ∈ s, (#s : R)⁻¹ = 1 := by rw [sum_const, nsmul_eq_mul, mul_inv_cancel₀ hs.ne']
+    convert inv_sum_div_le_sum_mul s hw (fun _ _ ↦ inv_pos.2 hs) hf using 1
+    · simp_rw [div_eq_mul_inv, ← mul_sum, inv_mul_eq_div, inv_div, div_eq_mul_inv]
+    · rw [← mul_sum, inv_mul_eq_div]
+
+/-- **AM-HM inequality**: The harmonic mean is less than or equal to the arithmetic mean. -/
+theorem sq_le_sum_mul_sum_inv [LinearOrderedSemifield R] [ExistsAddOfLE R] (s : Finset ι)
+    {f : ι → R} (hf : ∀ i ∈ s, 0 < f i) : #s ^ 2 ≤ (∑ i ∈ s, f i) * (∑ i ∈ s, (f i)⁻¹) := by
+  have hf' : ∀ i ∈ s, 0 < (f i)⁻¹ := fun i hi ↦ inv_pos.2 (hf i hi)
+  obtain hs | hs := eq_zero_or_pos (#s)
+  · rw [hs, Nat.cast_zero, zero_pow two_ne_zero]
+    apply mul_nonneg <;> apply sum_nonneg fun i hi ↦ ?_
+    · exact (hf i hi).le
+    · exact (hf' i hi).le
+  · rw [pow_two, ← div_le_div_iff₀ (sum_pos hf' (card_pos.1 hs)) (mod_cast hs)]
+    exact div_sum_inv_le_sum_div s hf
+
 /-- **Nesbitt's inequality**. -/
 theorem three_div_two_le_sum_div_add [LinearOrderedSemifield R] [ExistsAddOfLE R] {a b c : R}
     (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : 3 / 2 ≤ a / (b + c) + b / (c + a) + c / (a + b) := by
