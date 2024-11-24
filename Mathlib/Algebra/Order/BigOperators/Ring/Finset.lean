@@ -250,27 +250,21 @@ theorem three_div_two_le_sum_div_add [LinearOrderedSemifield R] [ExistsAddOfLE R
   have ha' := add_pos hb hc
   have hb' := add_pos hc ha
   have hc' := add_pos ha hb
-  have h := add_pos ha' ha
-  apply le_of_add_le_add_right (a := 3) ((div_le_div_iff_of_pos_right h).1 _)
+  have H (i) : i ∈ univ → 0 < ![b + c, c + a, a + b] i := by fin_cases i <;> simpa
+  apply le_of_add_le_add_right (a := 3) ((mul_le_mul_iff_of_pos_left two_pos).1 _)
+  convert sq_le_sum_mul_sum_inv univ H using 1
+  · rw [mul_add, mul_div_cancel₀ _ (two_ne_zero' R)]
+    have : (3 : R) + 2 * 3 = 3 ^ 2 := by norm_num
+    simpa
   calc
-    _ = 3 ^ 2 / ((b + c) + (c + a) + (a + b)) := by
-        ring_nf
-        rw [← add_mul, ← add_mul, mul_comm, ← div_div]
-        congr
-        have h := two_ne_zero' R
-        rw [← mul_right_inj' h, mul_add, mul_div_cancel₀ _ h, mul_div_cancel₀ _ h]
-        norm_num
-    _ ≤ (b + c)⁻¹ + (c + a)⁻¹ + (a + b)⁻¹ := by
-        have (i) : i ∈ univ → 0 < ![b + c, c + a, a + b] i := by
-          fin_cases i <;> simpa
-        simpa [Fin.sum_univ_three] using sq_sum_div_le_sum_sq_div univ (fun _ ↦ 1) this
-    _ = ((a + (b + c)) / (b + c) + (b + (c + a)) / (c + a) + (c + (a + b)) / (a + b))
-      / (a + b + c) := by
-        ring_nf
-        simp_rw [← div_add_div_same _ _ (b + c + a), div_div_cancel_left' h.ne']
+    _ = 2 * ((a + b) / (a + b) + (b + c) / (b + c) + (c + a) / (c + a)) +
+          2 * (a / (b + c) + b / (c + a) + c / (a + b)) := by
+        repeat rw [div_self]
+        · ring
+        all_goals apply ne_of_gt; positivity
     _ = _ := by
-        rw [div_add_same ha'.ne', div_add_same hb'.ne', div_add_same hc'.ne']
-        ring_nf
+        simp [mul_add, Fin.sum_univ_three, div_eq_mul_inv]
+        ring
 
 end Finset
 
