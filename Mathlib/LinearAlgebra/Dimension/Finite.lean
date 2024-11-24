@@ -261,6 +261,9 @@ theorem iSupIndep.subtype_ne_bot_le_rank [Nontrivial R]
   have : LinearIndependent R v := (hV.comp Subtype.coe_injective).linearIndependent _ hvV hv
   exact this.cardinal_lift_le_rank
 
+@[deprecated (since := "2024-11-24")]
+alias CompleteLattice.Independent.subtype_ne_bot_le_rank := iSupIndep.subtype_ne_bot_le_rank
+
 variable [Module.Finite R M] [StrongRankCondition R]
 
 theorem iSupIndep.subtype_ne_bot_le_finrank_aux

@@ -322,6 +322,9 @@ theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) : iSup A = ⊤ := by
 theorem IsInternal.submodule_iSupIndep (h : IsInternal A) : iSupIndep A :=
   iSupIndep_of_dfinsupp_lsum_injective _ h.injective
 
+@[deprecated (since := "2024-11-24")]
+alias IsInternal.submodule_independent := IsInternal.submodule_iSupIndep
+
 /-- Given an internal direct sum decomposition of a module `M`, and a basis for each of the
 components of the direct sum, the disjoint union of these bases is a basis for `M`. -/
 noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type*}
@@ -395,12 +398,20 @@ theorem isInternal_submodule_of_iSupIndep_of_iSup_eq_top {A : ι → Submodule R
     (LinearMap.range_eq_top (f := DFinsupp.lsum _ _)).1 <|
       (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
 
+@[deprecated (since := "2024-11-24")]
+alias isInternal_submodule_of_independent_of_iSup_eq_top :=
+  isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+
 /-- `iff` version of `DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top`,
 `DirectSum.IsInternal.iSupIndep`, and `DirectSum.IsInternal.submodule_iSup_eq_top`. -/
 theorem isInternal_submodule_iff_iSupIndep_and_iSup_eq_top (A : ι → Submodule R M) :
     IsInternal A ↔ iSupIndep A ∧ iSup A = ⊤ :=
   ⟨fun i ↦ ⟨i.submodule_iSupIndep, i.submodule_iSup_eq_top⟩,
     And.rec isInternal_submodule_of_iSupIndep_of_iSup_eq_top⟩
+
+@[deprecated (since := "2024-11-24")]
+alias isInternal_submodule_iff_independent_and_iSup_eq_top :=
+  isInternal_submodule_iff_iSupIndep_and_iSup_eq_top
 
 /-- If a collection of submodules has just two indices, `i` and `j`, then
 `DirectSum.IsInternal` is equivalent to `isCompl`. -/
@@ -430,6 +441,9 @@ lemma isInternal_biSup_submodule_of_iSupIndep {A : ι → Submodule R M} (s : Se
   change m ∈ ((A i).comap p.subtype).map p.subtype ↔ _
   rw [Submodule.map_comap_subtype, inf_of_le_right (hp i i.property)]
 
+@[deprecated (since := "2024-11-24")]
+alias isInternal_biSup_submodule_of_independent := isInternal_biSup_submodule_of_iSupIndep
+
 /-! Now copy the lemmas for subgroup and submonoids. -/
 
 
@@ -437,9 +451,15 @@ theorem IsInternal.addSubmonoid_iSupIndep {M : Type*} [AddCommMonoid M] {A : ι 
     (h : IsInternal A) : iSupIndep A :=
   iSupIndep_of_dfinsupp_sumAddHom_injective _ h.injective
 
+@[deprecated (since := "2024-11-24")]
+alias IsInternal.addSubmonoid_independent := IsInternal.addSubmonoid_iSupIndep
+
 theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddCommGroup G] {A : ι → AddSubgroup G}
     (h : IsInternal A) : iSupIndep A :=
   iSupIndep_of_dfinsupp_sumAddHom_injective' _ h.injective
+
+@[deprecated (since := "2024-11-24")]
+alias IsInternal.addSubgroup_independent := IsInternal.addSubgroup_iSupIndep
 
 end Ring
 

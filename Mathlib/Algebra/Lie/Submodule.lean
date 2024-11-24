@@ -518,6 +518,9 @@ theorem iSupIndep_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L 
     iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := by
   simp [iSupIndep_def, disjoint_iff_coe_toSubmodule]
 
+@[deprecated (since := "2024-11-24")]
+alias independent_iff_coe_toSubmodule := iSupIndep_iff_coe_toSubmodule
+
 theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
