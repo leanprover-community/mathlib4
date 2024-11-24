@@ -3,10 +3,11 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Tree.Basic
 import Mathlib.Tactic.FieldSimp
