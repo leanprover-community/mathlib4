@@ -162,34 +162,21 @@ theorem DegLex.le_iff {x y : DegLex (α →₀ ℕ)} :
     · simp [k]
     · simp only [h, k, false_or]
 
+theorem DegLex.single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
+  intro _ _ h
+  simp only [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, Lex.single_lt_iff, h,
+    and_self, or_true]
+
+theorem DegLex.single_antitone : Antitone (fun (a : α) ↦ toDegLex (single a 1)) :=
+  DegLex.single_strictAnti.antitone
+
 theorem DegLex.single_lt_iff {a b : α} :
-    toDegLex (Finsupp.single b 1) < toDegLex (Finsupp.single a 1) ↔ a < b := by 
-  simp only [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, true_and, false_or]
-  suffices H : ∀ {a b : α} (_ :  a < b),  toLex (single b 1) < toLex (single a 1) by
-    cases lt_or_le a b with 
-    | inl h => simp [h, H h]
-    | inr h => 
-      rw [← not_iff_not]
-      simp only [not_lt, not_lt.mpr h, not_false_eq_true, iff_true]
-      by_cases h' : b = a
-      · rw [h']
-      · exact le_of_lt (H (lt_of_le_of_ne h h'))
-  intro a b h
-  simp only [LT.lt, Finsupp.lex_def]
-  simp only [ofLex_toLex, Nat.lt_eq]
-  use a
-  constructor
-  · intro d hd
-    simp only [Finsupp.single_eq_of_ne (ne_of_lt hd).symm, 
-      Finsupp.single_eq_of_ne (ne_of_gt (lt_trans hd h))]
-  · simp only [single_eq_same, single_eq_of_ne (ne_of_lt h).symm, zero_lt_one]
+    toDegLex (Finsupp.single b 1) < toDegLex (Finsupp.single a 1) ↔ a < b := 
+  DegLex.single_strictAnti.lt_iff_lt
 
 theorem DegLex.single_le_iff {a b : α} :
-    toDegLex (Finsupp.single b 1) ≤ toDegLex (Finsupp.single a 1) ↔ a ≤ b := by 
-  simp only [le_iff_lt_or_eq]
-  apply or_congr single_lt_iff
-  rw [toDegLex_inj, single_left_inj one_ne_zero]
-  exact eq_comm
+    toDegLex (Finsupp.single b 1) ≤ toDegLex (Finsupp.single a 1) ↔ a ≤ b := 
+  DegLex.single_strictAnti.le_iff_le
 
 noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
   toAddCommMonoid := ofDegLex.addCommMonoid
@@ -458,16 +445,23 @@ theorem DegRevLex.le_iff {x y : DegRevLex (α →₀ ℕ)} :
       (ofDegRevLex x).degree = (ofDegRevLex y).degree ∧ 
         toLex (equivCongrLeft toDual (ofDegRevLex y)) ≤ 
           toLex (equivCongrLeft toDual (ofDegRevLex x)) := by
-  sorry
+  conv_lhs => rw [LE.le, Preorder.toLE, PartialOrder.toPreorder, partialOrder]
+  simp only [equivCongrLeft_apply, Prod.Lex.le_iff, toDual_le_toDual]
 
  theorem DegRevLex.lt_iff {x y : DegRevLex (α →₀ ℕ)} :
     x < y ↔ (ofDegRevLex x).degree < (ofDegRevLex y).degree ∨
       (ofDegRevLex x).degree = (ofDegRevLex y).degree ∧ 
         toLex (equivCongrLeft toDual (ofDegRevLex y)) < 
           toLex (equivCongrLeft toDual (ofDegRevLex x)) := by
-  sorry
+  conv_lhs => rw [LT.lt, Preorder.toLT, PartialOrder.toPreorder, partialOrder]
+  simp only [equivCongrLeft_apply, Prod.Lex.lt_iff, toDual_lt_toDual]
 
-     
+ theorem DegRevLex.lt_single_iff {a b : α} :
+    toDegRevLex (single a 1) < toDegRevLex (single b 1) ↔ b < a := by 
+  rw [DegRevLex.lt_iff]
+  simp only [ofDegRevLex_toDegRevLex, degree_single, lt_self_iff_false, equivCongrLeft_apply,
+    equivMapDomain_single, true_and, false_or]
+
 noncomputable instance : OrderedCancelAddCommMonoid (DegRevLex (α →₀ ℕ)) where
   toAddCommMonoid := ofDegRevLex.addCommMonoid
   toPartialOrder := DegRevLex.partialOrder
@@ -482,8 +476,14 @@ noncomputable instance : OrderedCancelAddCommMonoid (DegRevLex (α →₀ ℕ)) 
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
 instance DegRevLex.linearOrder : LinearOrder (DegRevLex (α →₀ ℕ)) :=
   LinearOrder.lift' (fun (f : DegRevLex (α →₀ ℕ)) ↦ 
-    toLex ((ofDegRevLex f).degree, toDual (toLex (equivCongrLeft toDual (ofDegRevLex f))))
-    (fun f g ↦ by simp)
+    toLex ((ofDegRevLex f).degree, toDual (toLex (equivCongrLeft toDual (ofDegRevLex f)))))
+    (fun f g ↦ by 
+      simp only [equivCongrLeft_apply, EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq, and_imp, 
+        Finsupp.ext_iff]
+      intro _ h
+      rw [← ofDegRevLex_inj]
+      ext a
+      simpa only [equivMapDomain_apply, toDual_symm_eq, ofDual_toDual] using h (toDual a))
 
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
 noncomputable instance :
@@ -509,19 +509,22 @@ instance DegRevLex.orderBot : OrderBot (DegRevLex (α →₀ ℕ)) where
     simp only [DegRevLex.le_iff, ofDegRevLex_toDegRevLex, toLex_zero, degree_zero]
     rcases eq_zero_or_pos (ofDegRevLex x).degree with (h | h)
     · simp only [degree_eq_zero_iff] at h
-      simp only [h, degree_zero, lt_self_iff_false, true_and, false_or]
-      sorry
-
-    · simp [h]
+      simp only [h, degree_zero, lt_self_iff_false, equivCongrLeft_apply, equivMapDomain_zero,
+        toLex_zero, le_refl, and_self, or_true]
+    · simp only [h, equivCongrLeft_apply, equivMapDomain_zero, toLex_zero, true_or]
 
 theorem DegRevLex.wellFounded
     {r : α → α → Prop} [IsTrichotomous α r] (hr : WellFounded (Function.swap r))
     {s : ℕ → ℕ → Prop} (hs : WellFounded s) (hs0 : ∀ ⦃n⦄, ¬ s n 0) :
     WellFounded (Finsupp.DegRevLex r s) := by
+  suffices Set.univ.WellFoundedOn (Prod.Lex s (swap (Finsupp.Lex (swap r) s))) by
+    unfold Finsupp.DegRevLex
+    rw [← Set.wellFoundedOn_range]
+    exact Set.WellFoundedOn.mono this (le_refl _) (fun _ _ ↦ trivial)
+  rw [Set.wellFoundedOn_univ] 
+  apply WellFounded.prod_lex hs
   have wft := WellFounded.prod_lex hs (Finsupp.Lex.wellFounded' hs0 hs hr)
-  rw [← Set.wellFoundedOn_univ] at wft
-  unfold Finsupp.DegRevLex
-  rw [← Set.wellFoundedOn_range]
+  apply Set.WellFoundedOn.mono wft
   sorry
 
 instance DegRevLex.wellFoundedLT [WellFoundedGT α] :
