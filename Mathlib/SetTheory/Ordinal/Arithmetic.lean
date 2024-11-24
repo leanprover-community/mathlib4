@@ -1252,7 +1252,8 @@ protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [S
     a < iSup f ↔ ∃ i, a < f i :=
   lt_ciSup_iff' (bddAbove_of_small _)
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-12")] alias lt_iSup := lt_iSup_iff
+@[deprecated "No deprecation message was provided." (since := "2024-11-12")]
+alias lt_iSup := lt_iSup_iff
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
