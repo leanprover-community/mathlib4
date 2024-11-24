@@ -47,9 +47,9 @@ and `MonomialOrder.lex_lt_iff` rewrite the ordering as comparisons in the type `
 * [Cox, Little and O'Shea, *Ideals, varieties, and algorithms*][coxlittleoshea1997]
 * [Becker and Weispfenning, *Gröbner bases*][Becker-Weispfenning1993]
 
-## Note 
+## Note
 
-In algebraic geometry, when the finitely many variables are indexed by integers, 
+In algebraic geometry, when the finitely many variables are indexed by integers,
 it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvPolynomial.X 1 > … `
 
 -/
@@ -126,15 +126,15 @@ theorem Finsupp.lex_le_iff {α N : Type*} [LinearOrder α] [LinearOrder N] [Zero
     rw [le_iff_eq_or_lt, Finsupp.lex_lt_iff]
 
 /-- for the lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
-example : toLex (Finsupp.single 0 2) > toLex (Finsupp.single 0 1 + Finsupp.single 1 1) := by 
-  use 0; simp 
+example : toLex (Finsupp.single 0 2) > toLex (Finsupp.single 0 1 + Finsupp.single 1 1) := by
+  use 0; simp
 
 /-- for the lexicographic ordering, X 1 < X 0 -/
-example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 1) := by 
-  use 0; simp 
+example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 1) := by
+  use 0; simp
 
 /-- for the lexicographic ordering, X 1 < X 0 ^ 2 -/
-example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 2) := by 
+example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 2) := by
   use 0; simp
 
 /- -- #check Finsupp.toLex_monotone
