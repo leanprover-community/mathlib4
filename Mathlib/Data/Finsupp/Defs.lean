@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Kim Morrison
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # Type of functions with finite support
