@@ -69,22 +69,16 @@ once. Then the image of `f` is the graph of some monoid homomorphism `f' : H →
 lemma exists_mrange_eq_mgraph {f : G →* H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
     ∃ f' : H →* I, mrange f = f'.mgraph := by
+  obtain ⟨f', hf'⟩ := exists_range_eq_graphOn_univ hf₁ hf
+  simp only [Set.ext_iff, Set.mem_range, mem_graphOn, mem_univ, true_and, Prod.forall] at hf'
   use
-  { toFun := fun h ↦ (f (hf₁ h).choose).snd
-    map_one' := by simpa using hf (hf₁ 1).choose 1 (by simpa using (hf₁ 1).choose_spec)
-    map_mul' := fun h₁ h₂ ↦ by
-      have := calc (f (hf₁ (h₁ * h₂)).choose).fst
-        _ = h₁ * h₂ := (hf₁ (h₁ * h₂)).choose_spec
-        _ = (f (hf₁ h₁).choose).fst * (f (hf₁ h₂).choose).fst := by
-          congr 1; exacts [(hf₁ h₁).choose_spec.symm, (hf₁ h₂).choose_spec.symm]
-        _ = (f ((hf₁ h₁).choose * (hf₁ h₂).choose)).fst := by simp
-      simpa using hf _ _ this }
-  ext x
-  simp only [Set.mem_range, Function.comp_apply, coe_mk, OneHom.coe_mk, mem_graphOn, mem_univ,
-    true_and]
-  refine ⟨?_, fun hi ↦ ⟨(hf₁ x.1).choose, Prod.ext (hf₁ x.1).choose_spec hi⟩⟩
-  rintro ⟨g, rfl⟩
-  exact hf _ _ (hf₁ (f g).1).choose_spec
+  { toFun := f'
+    map_one' := (hf' _ _).1 ⟨1, map_one _⟩
+    map_mul' := by
+      simp_rw [hf₁.forall]
+      rintro g₁ g₂
+      exact (hf' _ _).1 ⟨g₁ * g₂, by simp [Prod.ext_iff, (hf' (f _).1 _).1 ⟨_, rfl⟩]⟩ }
+  simpa [SetLike.ext_iff] using hf'
 
 /-- **Line test** for monoid isomorphisms.
 

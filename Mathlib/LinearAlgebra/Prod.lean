@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Group.Graph
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.Order.PartialSups
-import Mathlib.Algebra.Group.Graph
 
 /-! ### Products of modules
 
