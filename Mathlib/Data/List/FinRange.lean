@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Range
 import Batteries.Data.List.Perm
+import Mathlib.Data.List.Nodup
 
 /-!
 # Lists of elements of `Fin n`

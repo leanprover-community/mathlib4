@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Lex
 
 /-! # sublists
 
