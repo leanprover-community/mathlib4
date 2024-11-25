@@ -477,27 +477,30 @@ theorem ContMDiff.mdifferentiableAt (hf : ContMDiff I I' n f) (hn : 1 ≤ n) :
     MDifferentiableAt I I' f x :=
   hf.contMDiffAt.mdifferentiableAt hn
 
+theorem ContMDiff.mdifferentiableWithinAt (hf : ContMDiff I I' n f) (hn : 1 ≤ n) :
+    MDifferentiableWithinAt I I' f s x :=
+  (hf.contMDiffAt.mdifferentiableAt hn).mdifferentiableWithinAt
+
 theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ n) :
     MDifferentiableOn I I' f s := fun x hx => (hf x hx).mdifferentiableWithinAt hn
 
-nonrec theorem SmoothWithinAt.mdifferentiableWithinAt (hf : SmoothWithinAt I I' f s x) :
-    MDifferentiableWithinAt I I' f s x :=
-  hf.mdifferentiableWithinAt le_top
+@[deprecated (since := "2024-11-20")]
+alias SmoothWithinAt.mdifferentiableWithinAt := ContMDiffWithinAt.mdifferentiableWithinAt
 
 theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
   fun x => (hf x).mdifferentiableAt hn
 
-nonrec theorem SmoothAt.mdifferentiableAt (hf : SmoothAt I I' f x) : MDifferentiableAt I I' f x :=
-  hf.mdifferentiableAt le_top
+@[deprecated (since := "2024-11-20")]
+alias SmoothAt.mdifferentiableAt := ContMDiffAt.mdifferentiableAt
 
-nonrec theorem SmoothOn.mdifferentiableOn (hf : SmoothOn I I' f s) : MDifferentiableOn I I' f s :=
-  hf.mdifferentiableOn le_top
+@[deprecated (since := "2024-11-20")]
+alias SmoothOn.mdifferentiableOn := ContMDiffOn.mdifferentiableOn
 
-theorem Smooth.mdifferentiable (hf : Smooth I I' f) : MDifferentiable I I' f :=
-  ContMDiff.mdifferentiable hf le_top
+@[deprecated (since := "2024-11-20")]
+alias Smooth.mdifferentiable := ContMDiff.mdifferentiable
 
-theorem Smooth.mdifferentiableAt (hf : Smooth I I' f) : MDifferentiableAt I I' f x :=
-  hf.mdifferentiable x
+@[deprecated (since := "2024-11-20")]
+alias Smooth.mdifferentiableAt := ContMDiff.mdifferentiableAt
 
 theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : ContinuousOn f s :=
   fun x hx => (h x hx).continuousWithinAt
@@ -505,8 +508,8 @@ theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : Contin
 theorem MDifferentiable.continuous (h : MDifferentiable I I' f) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (h x).continuousAt
 
-theorem Smooth.mdifferentiableWithinAt (hf : Smooth I I' f) : MDifferentiableWithinAt I I' f s x :=
-  hf.mdifferentiableAt.mdifferentiableWithinAt
+@[deprecated (since := "2024-11-20")]
+alias Smooth.mdifferentiableWithinAt := ContMDiff.mdifferentiableWithinAt
 
 /-! ### Deriving continuity from differentiability on manifolds -/
 
