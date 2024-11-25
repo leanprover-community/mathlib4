@@ -11,7 +11,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 
 In `AlgebraicTopology.SimplicialSet.StrictSegal`, we define the `StrictSegal`
 condition on a simplicial set `X` as the unique existence of an equivalence
-between the simplices of `X` and their spine.
+between the simplices of `X` and their spines.
 
 In this file, we prove that any simplicial set satisfying the `StrictSegal`
 condition is a quasicategory.
