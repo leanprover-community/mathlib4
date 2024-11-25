@@ -213,8 +213,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
       val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec, dotProduct, Fin.sum_univ_two,
       cons_val_one, head_cons, mB, f₁]
-  · -- FIXME: I have horribly broken this proof, and need to using `g.det_coe` a second time. :-(
-    convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
+  · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
     simp only [Fin.zero_eta, id_eq, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
       mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
