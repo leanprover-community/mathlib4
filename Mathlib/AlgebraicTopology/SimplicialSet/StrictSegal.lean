@@ -185,8 +185,4 @@ noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (
     · intro i hi
       apply ComposableArrows.mkOfObjOfMapSucc_map_succ
 
-/-- By virtue of satisfying the `StrictSegal` condition, the nerve of a
-category is a `Quasicategory`. -/
-instance : Quasicategory (nerve C) := inferInstance
-
 end Nerve
