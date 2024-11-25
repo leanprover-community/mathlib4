@@ -41,11 +41,6 @@ We follow that approach here as well, and only define `AddQuantaleHom` without n
 
 quantale, ordered semigroup, complete lattice
 
-## Todo
-
-Why is there notation `→ₙ*` defined for non-unital Mul homomorphisms, but
-no notation `→ₙ+` for non-unital Add homomorphisms? Create a PR for this?
-
 -/
 
 open Function
@@ -62,7 +57,7 @@ you should parametrize over
 `(F : Type*) [FunLike F M N] [AddHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
 structure AddQuantaleHom (α β : Type*)
   [AddSemigroup α] [CompleteLattice α] [AddSemigroup β] [CompleteLattice β]
-  extends AddHom α β, sSupHom α β
+  extends α →ₙ+ β, sSupHom α β
 
 /-- Infix notation for `AddQuantaleHom`. -/
 infixr:25 " →ₙ+q " => AddQuantaleHom
