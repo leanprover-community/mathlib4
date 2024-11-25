@@ -134,7 +134,7 @@ theorem normalize_eq_zero {x : α} : normalize x = 0 ↔ x = 0 :=
 theorem normalize_eq_one {x : α} : normalize x = 1 ↔ IsUnit x :=
   ⟨fun hx => isUnit_iff_exists_inv.2 ⟨_, hx⟩, fun ⟨u, hu⟩ => hu ▸ normalize_coe_units u⟩
 
--- Porting note (#11083): quite slow. Improve performance?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): quite slow. Improve performance?
 @[simp]
 theorem normUnit_mul_normUnit (a : α) : normUnit (a * normUnit a) = 1 := by
   nontriviality α using Subsingleton.elim a 0
@@ -658,7 +658,7 @@ section LCM
 theorem lcm_dvd_iff [GCDMonoid α] {a b c : α} : lcm a b ∣ c ↔ a ∣ c ∧ b ∣ c := by
   by_cases h : a = 0 ∨ b = 0
   · rcases h with (rfl | rfl) <;>
-      simp (config := { contextual := true }) only [iff_def, lcm_zero_left, lcm_zero_right,
+      simp +contextual only [iff_def, lcm_zero_left, lcm_zero_right,
         zero_dvd_iff, dvd_zero, eq_self_iff_true, and_true, imp_true_iff]
   · obtain ⟨h1, h2⟩ := not_or.1 h
     have h : gcd a b ≠ 0 := fun H => h1 ((gcd_eq_zero_iff _ _).1 H).1
@@ -948,14 +948,14 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
     lcm := fun a b =>
       if a = 0 then 0 else Classical.choose ((gcd_dvd_left a b).trans (Dvd.intro b rfl))
     gcd_mul_lcm := fun a b => by
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with a0
       · rw [mul_zero, a0, zero_mul]
       · rw [← Classical.choose_spec ((gcd_dvd_left a b).trans (Dvd.intro b rfl))]
     lcm_zero_left := fun _ => if_pos rfl
     lcm_zero_right := fun a => by
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with a0
       · rfl
@@ -1007,7 +1007,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         rw [← normalize_gcd] at this
         rwa [normalize.map_mul, normalize_gcd, mul_right_inj' h1] at h2
     gcd_mul_lcm := fun a b => by
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with a0
       · rw [mul_zero, a0, zero_mul]
@@ -1016,7 +1016,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
         exact normalize_associated (a * b)
     lcm_zero_left := fun _ => if_pos rfl
     lcm_zero_right := fun a => by
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with a0
       · rfl
@@ -1039,7 +1039,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
   { lcm
     gcd := fun a b => if a = 0 then b else if b = 0 then a else Classical.choose (exists_gcd a b)
     gcd_mul_lcm := fun a b => by
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with h h_1
       · rw [h, eq_zero_of_zero_dvd (dvd_lcm_left _ _), mul_zero, zero_mul]
@@ -1048,7 +1048,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
     lcm_zero_left := fun _ => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
     lcm_zero_right := fun _ => eq_zero_of_zero_dvd (dvd_lcm_right _ _)
     gcd_dvd_left := fun a b => by
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with h h_1
       · rw [h]
@@ -1065,7 +1065,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
         mul_dvd_mul_iff_right h]
       apply dvd_lcm_right
     gcd_dvd_right := fun a b => by
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with h h_1
       · exact dvd_rfl
@@ -1082,7 +1082,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
         mul_dvd_mul_iff_right h_1]
       apply dvd_lcm_left
     dvd_gcd := fun {a b c} ac ab => by
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with h h_1
       · exact ab
@@ -1247,7 +1247,7 @@ instance (priority := 100) : NormalizedGCDMonoid G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
   normUnit_zero := dif_pos rfl
   normUnit_mul := fun {x y} x0 y0 => Units.eq_iff.1 (by
-    -- Porting note(#12129): additional beta reduction needed
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     -- Porting note: `simp` reaches maximum heartbeat
     -- by Units.eq_iff.mp (by simp only [x0, y0, mul_comm])
     beta_reduce
@@ -1258,25 +1258,25 @@ instance (priority := 100) : NormalizedGCDMonoid G₀ where
       · exact absurd ‹y = 0› y0
     · rw [Units.mk0_mul, mul_inv_rev, mul_comm] )
   normUnit_coe_units u := by
-    -- Porting note(#12129): additional beta reduction needed
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     rw [dif_neg (Units.ne_zero _), Units.mk0_val]
   gcd a b := if a = 0 ∧ b = 0 then 0 else 1
   lcm a b := if a = 0 ∨ b = 0 then 0 else 1
   gcd_dvd_left a b := by
-    -- Porting note(#12129): additional beta reduction needed
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     split_ifs with h
     · rw [h.1]
     · exact one_dvd _
   gcd_dvd_right a b := by
-    -- Porting note(#12129): additional beta reduction needed
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     split_ifs with h
     · rw [h.2]
     · exact one_dvd _
   dvd_gcd := fun {a b c} hac hab => by
-    -- Porting note(#12129): additional beta reduction needed
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     split_ifs with h
     · apply dvd_zero
@@ -1293,7 +1293,7 @@ instance (priority := 100) : NormalizedGCDMonoid G₀ where
     · by_cases hb : b = 0
       · simp only [hb, and_true, or_true, ite_true, mul_zero]
         exact Associated.refl _
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       · beta_reduce
         rw [if_neg (not_and_of_not_left _ ha), one_mul, if_neg (not_or_intro ha hb)]
         exact (associated_one_iff_isUnit.mpr ((IsUnit.mk0 _ ha).mul (IsUnit.mk0 _ hb))).symm

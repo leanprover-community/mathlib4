@@ -70,8 +70,9 @@ def area (r : Rectangle) : Nat := r.width * r.height
 The number of points in `r`, weighted by the function `w`.
 -/
 def weightedArea (r : Rectangle) (w : Nat × Nat → Nat) : Nat :=
-  Nat.sum <|
-    (List.range' r.left r.width).bind fun x => (List.range' r.bottom r.height).map fun y => w (x, y)
+  List.sum <|
+    (List.range' r.left r.width).flatMap
+      fun x => (List.range' r.bottom r.height).map fun y => w (x, y)
 
 end Rectangle
 

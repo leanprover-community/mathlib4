@@ -3,7 +3,7 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.RootsOfUnity.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
@@ -146,6 +146,10 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
     Nat.cast_injective.eq_iff] at hq
   exact hm' ((mul_eq_right₀ (mul_ne_zero_iff.mp hn).2).mp hq)
 
+/--Let `p` be a prime number. Let `K` be a field.
+Let `t ∈ K` be an element which does not have a `p`th root in `K`.
+Then the polynomial `x ^ p - t` is irreducible over `K`.-/
+@[stacks 09HF "We proved the result without the condition that `K` is char p in 09HF."]
 theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ p - C a) := by
   -- First of all, We may find an irreducible factor `g` of `X ^ p - C a`.
@@ -246,7 +250,7 @@ We first develop the theory for a specific `K[n√a] := AdjoinRoot (X ^ n - C a)
 The main result is the description of the galois group: `autAdjoinRootXPowSubCEquiv`.
 -/
 
-variable {n : ℕ} (hζ : (primitiveRoots n K).Nonempty) (hn : 0 < n)
+variable {n : ℕ} (hζ : (primitiveRoots n K).Nonempty)
 variable (a : K) (H : Irreducible (X ^ n - C a))
 
 set_option quotPrecheck false in
@@ -280,14 +284,15 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
   exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
 
+variable (n)
+
 /-- The natural embedding of the roots of unity of `K` into `Gal(K[ⁿ√a]/K)`, by sending
 `η ↦ (ⁿ√a ↦ η • ⁿ√a)`. Also see `autAdjoinRootXPowSubC` for the `AlgEquiv` version. -/
 noncomputable
 def autAdjoinRootXPowSubCHom :
-    rootsOfUnity ⟨n, hn⟩ K →* (K[n√a] →ₐ[K] K[n√a]) where
+    rootsOfUnity n K →* (K[n√a] →ₐ[K] K[n√a]) where
   toFun := fun η ↦ liftHom (X ^ n - C a) (((η : Kˣ) : K) • (root _) : K[n√a]) <| by
     have := (mem_rootsOfUnity' _ _).mp η.prop
-    dsimp at this
     rw [map_sub, map_pow, aeval_C, aeval_X, Algebra.smul_def, mul_pow, root_X_pow_sub_C_pow,
       AdjoinRoot.algebraMap_eq, ← map_pow, this, map_one, one_mul, sub_self]
   map_one' := algHom_ext <| by simp
@@ -298,11 +303,13 @@ def autAdjoinRootXPowSubCHom :
 See `autAdjoinRootXPowSubCEquiv`. -/
 noncomputable
 def autAdjoinRootXPowSubC :
-    rootsOfUnity ⟨n, hn⟩ K →* (K[n√a] ≃ₐ[K] K[n√a]) :=
-  (AlgEquiv.algHomUnitsEquiv _ _).toMonoidHom.comp (autAdjoinRootXPowSubCHom hn a).toHomUnits
+    rootsOfUnity n K →* (K[n√a] ≃ₐ[K] K[n√a]) :=
+  (AlgEquiv.algHomUnitsEquiv _ _).toMonoidHom.comp (autAdjoinRootXPowSubCHom n a).toHomUnits
+
+variable {n}
 
 lemma autAdjoinRootXPowSubC_root (η) :
-    autAdjoinRootXPowSubC hn a η (root _) = ((η : Kˣ) : K) • root _ := by
+    autAdjoinRootXPowSubC n a η (root _) = ((η : Kˣ) : K) • root _ := by
   dsimp [autAdjoinRootXPowSubC, autAdjoinRootXPowSubCHom, AlgEquiv.algHomUnitsEquiv]
   apply liftHom_root
 
@@ -311,34 +318,33 @@ variable {a}
 /-- The inverse function of `autAdjoinRootXPowSubC` if `K` has all roots of unity.
 See `autAdjoinRootXPowSubCEquiv`. -/
 noncomputable
-def AdjoinRootXPowSubCEquivToRootsOfUnity (σ : K[n√a] ≃ₐ[K] K[n√a]) :
-    rootsOfUnity ⟨n, hn⟩ K :=
+def AdjoinRootXPowSubCEquivToRootsOfUnity [NeZero n] (σ : K[n√a] ≃ₐ[K] K[n√a]) :
+    rootsOfUnity n K :=
   letI := Fact.mk H
   letI : IsDomain K[n√a] := inferInstance
   letI := Classical.decEq K
-  (rootsOfUnityEquivOfPrimitiveRoots (n := ⟨n, hn⟩) (algebraMap K K[n√a]).injective hζ).symm
+  (rootsOfUnityEquivOfPrimitiveRoots (n := n) (algebraMap K K[n√a]).injective hζ).symm
     (rootsOfUnity.mkOfPowEq (if a = 0 then 1 else σ (root _) / root _) (by
     -- The if is needed in case `n = 1` and `a = 0` and `K[n√a] = K`.
     split
     · exact one_pow _
     rw [div_pow, ← map_pow]
-    simp only [PNat.mk_coe, root_X_pow_sub_C_pow, ← AdjoinRoot.algebraMap_eq, AlgEquiv.commutes]
+    simp only [root_X_pow_sub_C_pow, ← AdjoinRoot.algebraMap_eq, AlgEquiv.commutes]
     rw [div_self]
     rwa [Ne, map_eq_zero_iff _ (algebraMap K _).injective]))
 
 /-- The equivalence between the roots of unity of `K` and `Gal(K[ⁿ√a]/K)`. -/
 noncomputable
-def autAdjoinRootXPowSubCEquiv :
-    rootsOfUnity ⟨n, hn⟩ K ≃* (K[n√a] ≃ₐ[K] K[n√a]) where
-  __ := autAdjoinRootXPowSubC hn a
-  invFun := AdjoinRootXPowSubCEquivToRootsOfUnity hζ hn H
+def autAdjoinRootXPowSubCEquiv [NeZero n] :
+    rootsOfUnity n K ≃* (K[n√a] ≃ₐ[K] K[n√a]) where
+  __ := autAdjoinRootXPowSubC n a
+  invFun := AdjoinRootXPowSubCEquivToRootsOfUnity hζ H
   left_inv := by
     intro η
     have := Fact.mk H
     have : IsDomain K[n√a] := inferInstance
     letI : Algebra K K[n√a] := inferInstance
-    apply (rootsOfUnityEquivOfPrimitiveRoots
-      (n := ⟨n, hn⟩) (algebraMap K K[n√a]).injective hζ).injective
+    apply (rootsOfUnityEquivOfPrimitiveRoots (algebraMap K K[n√a]).injective hζ).injective
     ext
     simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
       autAdjoinRootXPowSubC_root, Algebra.smul_def, ne_eq, MulEquiv.apply_symm_apply,
@@ -347,36 +353,34 @@ def autAdjoinRootXPowSubCEquiv :
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       have : (η : Kˣ) = 1 := (pow_one _).symm.trans η.prop
-      simp only [PNat.mk_one, this, Units.val_one, map_one]
-    · exact mul_div_cancel_right₀ _ (root_X_pow_sub_C_ne_zero' hn h)
+      simp only [this, Units.val_one, map_one]
+    · exact mul_div_cancel_right₀ _ (root_X_pow_sub_C_ne_zero' (NeZero.pos n) h)
   right_inv := by
     intro e
     have := Fact.mk H
     letI : Algebra K K[n√a] := inferInstance
     apply AlgEquiv.coe_algHom_injective
     apply AdjoinRoot.algHom_ext
-    simp only [AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      AlgHom.coe_coe, autAdjoinRootXPowSubC_root, Algebra.smul_def, PNat.mk_coe,
-      AdjoinRootXPowSubCEquivToRootsOfUnity]
+    simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
+      MonoidHom.toOneHom_coe, AlgHom.coe_coe, autAdjoinRootXPowSubC_root, Algebra.smul_def]
     rw [rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.val_mkOfPowEq_coe]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       rw [(pow_one _).symm.trans (root_X_pow_sub_C_pow 1 a), one_mul,
         ← AdjoinRoot.algebraMap_eq, AlgEquiv.commutes]
-    · refine div_mul_cancel₀ _ (root_X_pow_sub_C_ne_zero' hn h)
+    · refine div_mul_cancel₀ _ (root_X_pow_sub_C_ne_zero' (NeZero.pos n) h)
 
-lemma autAdjoinRootXPowSubCEquiv_root (η) :
-    autAdjoinRootXPowSubCEquiv hζ hn H η (root _) = ((η : Kˣ) : K) • root _ :=
-  autAdjoinRootXPowSubC_root hn a η
+lemma autAdjoinRootXPowSubCEquiv_root [NeZero n] (η) :
+    autAdjoinRootXPowSubCEquiv hζ H η (root _) = ((η : Kˣ) : K) • root _ :=
+  autAdjoinRootXPowSubC_root a η
 
-lemma autAdjoinRootXPowSubCEquiv_symm_smul (σ) :
-    ((autAdjoinRootXPowSubCEquiv hζ hn H).symm σ : Kˣ) • (root _ : K[n√a]) = σ (root _) := by
+lemma autAdjoinRootXPowSubCEquiv_symm_smul [NeZero n] (σ) :
+    ((autAdjoinRootXPowSubCEquiv hζ H).symm σ : Kˣ) • (root _ : K[n√a]) = σ (root _) := by
   have := Fact.mk H
   simp only [autAdjoinRootXPowSubCEquiv, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
     MulEquiv.symm_mk, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, AdjoinRootXPowSubCEquivToRootsOfUnity,
-    AdjoinRoot.algebraMap_eq, Units.smul_def, Algebra.smul_def,
-    rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.mkOfPowEq, PNat.mk_coe,
-    Units.val_ofPowEqOne, ite_mul, one_mul, ne_eq]
+    AdjoinRoot.algebraMap_eq, rootsOfUnity.mkOfPowEq, Units.smul_def, Algebra.smul_def,
+    rootsOfUnityEquivOfPrimitiveRoots_symm_apply, Units.val_ofPowEqOne, ite_mul, one_mul]
   simp_rw [← root_X_pow_sub_C_eq_zero_iff H]
   split_ifs with h
   · rw [h, map_zero]
@@ -422,7 +426,7 @@ def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducib
     haveI := Fact.mk H
     letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
     refine ⟨(AlgHom.toRingHom _).injective, ?_⟩
-    rw [← Algebra.range_top_iff_surjective, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
+    rw [← AlgHom.range_eq_top, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
       eq_comm, adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
     exact IsSplittingField.splits _ _
 
@@ -438,9 +442,9 @@ lemma adjoinRootXPowSubCEquiv_symm_eq_root :
 include hζ H hα in
 lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     Algebra.adjoin K {α} = ⊤ := by
-  apply Subalgebra.map_injective (f := (adjoinRootXPowSubCEquiv hζ H hα).symm)
+  apply Subalgebra.map_injective (B := K[n√a]) (f := (adjoinRootXPowSubCEquiv hζ H hα).symm)
     (adjoinRootXPowSubCEquiv hζ H hα).symm.injective
-  rw [Algebra.map_top, (Algebra.range_top_iff_surjective _).mpr
+  rw [Algebra.map_top, (AlgHom.range_eq_top _).mpr
     (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,
     Set.image_singleton, AlgHom.coe_coe, adjoinRootXPowSubCEquiv_symm_eq_root, adjoinRoot_eq_top]
 
@@ -459,8 +463,8 @@ abbrev rootOfSplitsXPowSubC (hn : 0 < n) (a : K)
   (rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
       (by simpa [degree_X_pow_sub_C hn] using Nat.pos_iff_ne_zero.mp hn))
 
-lemma rootOfSplitsXPowSubC_pow :
-    (rootOfSplitsXPowSubC hn a L) ^ n = algebraMap K L a := by
+lemma rootOfSplitsXPowSubC_pow [NeZero n] :
+    (rootOfSplitsXPowSubC (NeZero.pos n) a L) ^ n = algebraMap K L a := by
   have := map_rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
   simp only [eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at this
   exact this _
@@ -471,15 +475,15 @@ variable {a}
 roots of unity in `K` if `K` contains all of them.
 Note that this does not depend on a choice of `ⁿ√a`. -/
 noncomputable
-def autEquivRootsOfUnity :
-    (L ≃ₐ[K] L) ≃* (rootsOfUnity ⟨n, hn⟩ K) :=
-  (AlgEquiv.autCongr (adjoinRootXPowSubCEquiv hζ H (rootOfSplitsXPowSubC_pow hn a L)).symm).trans
-    (autAdjoinRootXPowSubCEquiv hζ hn H).symm
+def autEquivRootsOfUnity [NeZero n] :
+    (L ≃ₐ[K] L) ≃* (rootsOfUnity n K) :=
+  (AlgEquiv.autCongr (adjoinRootXPowSubCEquiv hζ H (rootOfSplitsXPowSubC_pow a L)).symm).trans
+    (autAdjoinRootXPowSubCEquiv hζ H).symm
 
-lemma autEquivRootsOfUnity_apply_rootOfSplit (σ : L ≃ₐ[K] L) :
-    σ (rootOfSplitsXPowSubC hn a L) =
-      autEquivRootsOfUnity hζ hn H L σ • (rootOfSplitsXPowSubC hn a L) := by
-  obtain ⟨η, rfl⟩ := (autEquivRootsOfUnity hζ hn H L).symm.surjective σ
+lemma autEquivRootsOfUnity_apply_rootOfSplit [NeZero n] (σ : L ≃ₐ[K] L) :
+    σ (rootOfSplitsXPowSubC (NeZero.pos n) a L) =
+      autEquivRootsOfUnity hζ H L σ • (rootOfSplitsXPowSubC (NeZero.pos n) a L) := by
+  obtain ⟨η, rfl⟩ := (autEquivRootsOfUnity hζ H L).symm.surjective σ
   rw [MulEquiv.apply_symm_apply, autEquivRootsOfUnity]
   simp only [MulEquiv.symm_trans_apply, AlgEquiv.autCongr_symm, AlgEquiv.symm_symm,
     MulEquiv.symm_symm, AlgEquiv.autCongr_apply, AlgEquiv.trans_apply,
@@ -488,43 +492,44 @@ lemma autEquivRootsOfUnity_apply_rootOfSplit (σ : L ≃ₐ[K] L) :
   rfl
 
 include hα in
-lemma autEquivRootsOfUnity_smul (σ : L ≃ₐ[K] L) :
-    autEquivRootsOfUnity hζ hn H L σ • α = σ α := by
+lemma autEquivRootsOfUnity_smul [NeZero n] (σ : L ≃ₐ[K] L) :
+    autEquivRootsOfUnity hζ H L σ • α = σ α := by
   have ⟨ζ, hζ'⟩ := hζ
+  have hn := NeZero.pos n
   rw [mem_primitiveRoots hn] at hζ'
   rw [← mem_nthRoots hn, (hζ'.map_of_injective (algebraMap K L).injective).nthRoots_eq
-    (rootOfSplitsXPowSubC_pow hn a L)] at hα
+    (rootOfSplitsXPowSubC_pow a L)] at hα
   simp only [Finset.range_val, Multiset.mem_map, Multiset.mem_range] at hα
   obtain ⟨i, _, rfl⟩ := hα
   simp only [map_mul, ← map_pow, ← Algebra.smul_def, map_smul,
-    autEquivRootsOfUnity_apply_rootOfSplit hζ hn H L]
+    autEquivRootsOfUnity_apply_rootOfSplit hζ H L]
   exact smul_comm _ _ _
 
 /-- Suppose `L/K` is the splitting field of `Xⁿ - a`, and `ζ` is a `n`-th primitive root of unity
 in `K`, then `Gal(L/K)` is isomorphic to `ZMod n`. -/
 noncomputable
-def autEquivZmod {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
+def autEquivZmod [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
     (L ≃ₐ[K] L) ≃* Multiplicative (ZMod n) :=
   haveI hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
-  (autEquivRootsOfUnity ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ hn H L).trans
-    ((MulEquiv.subgroupCongr (IsPrimitiveRoot.zpowers_eq (k := ⟨n, hn⟩)
+  (autEquivRootsOfUnity ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ H L).trans
+    ((MulEquiv.subgroupCongr (IsPrimitiveRoot.zpowers_eq
       (hζ.isUnit_unit' hn)).symm).trans (AddEquiv.toMultiplicative'
         (hζ.isUnit_unit' hn).zmodEquivZPowers.symm))
 
 include hα in
-lemma autEquivZmod_symm_apply_intCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℤ) :
+lemma autEquivZmod_symm_apply_intCast [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℤ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
-  rw [← autEquivRootsOfUnity_smul ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ hn H L hα]
+  rw [← autEquivRootsOfUnity_smul ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ H L hα]
   simp [MulEquiv.subgroupCongr_symm_apply, Subgroup.smul_def, Units.smul_def, autEquivZmod]
 
 include hα in
-lemma autEquivZmod_symm_apply_natCast {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℕ) :
+lemma autEquivZmod_symm_apply_natCast [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℕ) :
     (autEquivZmod H L hζ).symm (Multiplicative.ofAdd (m : ZMod n)) α = ζ ^ m • α := by
   simpa only [Int.cast_natCast, zpow_natCast] using autEquivZmod_symm_apply_intCast H L hα hζ m
 
 include hζ H in
-lemma isCyclic_of_isSplittingField_X_pow_sub_C : IsCyclic (L ≃ₐ[K] L) :=
+lemma isCyclic_of_isSplittingField_X_pow_sub_C [NeZero n] : IsCyclic (L ≃ₐ[K] L) :=
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   isCyclic_of_surjective _
     (autEquivZmod H _ <| (mem_primitiveRoots hn).mp hζ.choose_spec).symm.surjective
@@ -641,6 +646,7 @@ lemma isCyclic_tfae (K L) [Field K] [Field L] [Algebra K L] [FiniteDimensional K
       ∃ a : K, Irreducible (X ^ (finrank K L) - C a) ∧
         IsSplittingField K L (X ^ (finrank K L) - C a),
       ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤] := by
+  have : NeZero (Module.finrank K L) := NeZero.of_pos finrank_pos
   tfae_have 1 → 3
   | ⟨inst₁, inst₂⟩ => exists_root_adjoin_eq_top_of_isCyclic K L hK
   tfae_have 3 → 2

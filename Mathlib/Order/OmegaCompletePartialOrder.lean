@@ -552,7 +552,7 @@ lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuo
     ωScottContinuous (⨆ i, f i) := by
   refine ωScottContinuous.of_monotone_map_ωSup
     ⟨Monotone.iSup fun i ↦ (hf i).monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
-  simp (config := { contextual := true }) [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
+  simp +contextual [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
 
 lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
     ωScottContinuous (sSup s) := by
@@ -802,10 +802,10 @@ theorem seq_continuous' {β γ : Type v} (f : α → Part (β → γ)) (g : α �
   intro
   apply map_continuous' _ _ hg
 
+set_option linter.deprecated true
+
 theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.map F) :=
   F.ωScottContinuous.map_ωSup _
-
-set_option linter.deprecated true
 
 /-- Construct a continuous function from a bare function, a continuous function, and a proof that
 they are equal. -/

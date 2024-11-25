@@ -95,7 +95,7 @@ indexed by the same type. -/
 theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s) (u : ι → Set X)
     (uo : ∀ i, IsOpen (u i)) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
-  -- Porting note (#10888): added proof of uc
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof of uc
   have uc : (iUnion fun i => Option.elim' sᶜ u i) = univ := by
     apply Subset.antisymm (subset_univ _)
     · simp_rw [← compl_union_self s, Option.elim', iUnion_option]
@@ -107,7 +107,7 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
   · simp only [iUnion_option, ← compl_subset_iff_union] at vc
     exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
 
-theorem IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y}
+theorem Topology.IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y}
     (he : IsClosedEmbedding e) : ParacompactSpace X where
   locallyFinite_refinement α s ho hu := by
     choose U hUo hU using fun a ↦ he.isOpen_iff.1 (ho a)
