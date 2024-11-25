@@ -178,7 +178,7 @@ protected def mul {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
       rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul A, smul_smul_smul_comm,
         mul_smul, mul_smul])
 
-instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
+instance (priority := 950) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Monoid (LocalizedModule S A) where
   __ := inferInstanceAs (One (LocalizedModule S A))
   mul := LocalizedModule.mul
@@ -204,7 +204,7 @@ theorem mk_mul_mk' {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ 
 theorem mk_mul_mk {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s₂ : S} :
     mk a₁ s₁ * mk a₂ s₂ = mk (a₁ * a₂) (s₁ * s₂) := by rw [mk_mul_mk', mul_comm s₁ s₂]
 
-instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
+instance (priority := 950) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) where
   __ := inferInstanceAs (AddCommMonoid (LocalizedModule S A))
   __ := inferInstanceAs (Monoid (LocalizedModule S A))
@@ -230,19 +230,19 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     rintro ⟨a, s⟩
     exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩
 
-instance {A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
+instance (priority := 950) {A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
     CommSemiring (LocalizedModule S A) where
   __ := inferInstanceAs (Semiring (LocalizedModule S A))
   mul_comm := by with_unfolding_all
     rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
     exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩
 
-instance {A : Type*} [Ring A] [Algebra R A] {S : Submonoid R} :
+instance (priority := 950) {A : Type*} [Ring A] [Algebra R A] {S : Submonoid R} :
     Ring (LocalizedModule S A) where
   __ := inferInstanceAs (AddCommGroup (LocalizedModule S A))
   __ := inferInstanceAs (Semiring (LocalizedModule S A))
 
-instance {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid R} :
+instance (priority := 950) {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid R} :
     CommRing (LocalizedModule S A) where
   __ := inferInstanceAs (Ring (LocalizedModule S A))
   __ := inferInstanceAs (CommSemiring (LocalizedModule S A))
@@ -291,8 +291,9 @@ theorem mul_smul' {A : Type*} [Semiring A] [Algebra R A]
   induction p₁, p₂ using induction_on₂ with | _ a₁ s₁ a₂ s₂ => _
   rw [smul'_mk, mk_mul_mk, mk_mul_mk, smul'_mk, mul_smul_comm]
 
-instance {R₀ A : Type*} [CommSemiring R₀] [Algebra R₀ R] [Semiring A] [Algebra R A]
-    [Algebra R₀ A] [IsScalarTower R₀ R A] : Algebra R₀ (LocalizedModule S A) where
+instance (priority := 950) {R₀ A : Type*} [CommSemiring R₀]
+    [Algebra R₀ R] [Semiring A] [Algebra R A] [Algebra R₀ A] [IsScalarTower R₀ R A] :
+    Algebra R₀ (LocalizedModule S A) where
   __ := inferInstanceAs (Module R₀ (LocalizedModule S A))
   __ := (((OreLocalization.mkLinearMap S A).restrictScalars R₀).comp
     (Algebra.linearMap R₀ A)).toAddMonoidHom
@@ -313,11 +314,8 @@ example {R₀ : Type*} [CommSemiring R₀] [Algebra R₀ R] :
     (LocalizedModule.instAlgebraOfIsScalarTower : Algebra R₀ (LocalizedModule S R)) =
       OreLocalization.instAlgebra := rfl
 
-instance {A : Type*} [AddCommMonoid A] [Module R A] :
-    Module (Localization S) (LocalizedModule S A) := inferInstance
-
 unseal OreLocalization.one OreLocalization.zero OreLocalization.add in
-instance {A : Type*} [Semiring A] [Algebra R A] :
+instance (priority := 950) {A : Type*} [Semiring A] [Algebra R A] :
     Algebra (Localization S) (LocalizedModule S A) where
   __ := inferInstanceAs (Module (Localization S) (LocalizedModule S A))
   toFun := Quotient.map (fun p ↦ (algebraMap R A p.1, p.2)) <| by
@@ -333,6 +331,7 @@ instance {A : Type*} [Semiring A] [Algebra R A] :
     induction' y with y
     show algebraMap R A (x.1 * y.1) /ₒ _ = _ /ₒ _
     rw [map_mul]
+    rfl
   map_zero' := show _ /ₒ 1 = _ /ₒ 1 by rw [map_zero]
   map_add' x y := by
     induction' x with x
