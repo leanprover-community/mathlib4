@@ -237,6 +237,7 @@ theorem mateEquiv_hcomp
     }
   simp only [comp_obj, Functor.comp_map, map_comp, assoc]
 
+
 end mateEquivHComp
 
 section mateEquivSquareComp

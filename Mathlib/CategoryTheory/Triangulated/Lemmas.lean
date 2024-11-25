@@ -915,19 +915,21 @@ variable {C : Type u} [CategoryTheory.Category.{v, u} C] [CategoryTheory.HasShif
 
 @[simp]
 theorem smul_iso_hom {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ≅ T₂) (n : ℤˣ) :
-    (n • f).hom = n.1 • f.hom := sorry
+    (n • f).hom = n.1 • f.hom := by rw [Preadditive.smul_iso_hom]; rfl
 
+/-
 @[simp]
 theorem smul_hom₁ {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ⟶ T₂) (n : ℤ) :
-    (n • f).hom₁ = n • f.hom₁ := sorry
+    (n • f).hom₁ = n • f.hom₁ := by simp only [instSMulHomTriangle_smul_hom₁]
 
 @[simp]
 theorem smul_hom₂ {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ⟶ T₂) (n : ℤ) :
-    (n • f).hom₂ = n • f.hom₂ := sorry
+    (n • f).hom₂ = n • f.hom₂ := by simp only [instSMulHomTriangle_smul_hom₂]
 
 @[simp]
 theorem smul_hom₃ {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ⟶ T₂) (n : ℤ) :
-    (n • f).hom₃ = n • f.hom₃ := sorry
+    (n • f).hom₃ = n • f.hom₃ := by simp only [instSMulHomTriangle_smul_hom₃]
+-/
 
 end Pretriangulated.TriangleMorphism
 
