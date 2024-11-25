@@ -17,32 +17,23 @@ namespace Nat
 variable {ι R : Type*}
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring R] [FloorSemiring R] {s : Finset ι}
+variable [LinearOrderedSemiring R] {s : Finset ι}
 
 set_option linter.docPrime false in
 @[simp, norm_cast]
 lemma cast_finsetSup' (f : ι → ℕ) (hs) : ((s.sup' hs f : ℕ) : R) = s.sup' hs fun i ↦ (f i : R) := by
-  apply le_antisymm
-  · rw [← le_floor_iff, sup'_le_iff]
-    · intros i hi
-      apply le_floor
-      exact le_sup' (fun i ↦ (f i : R)) hi
-    · exact le_sup'_of_le (fun i ↦ (f i : R)) hs.choose_spec (Nat.cast_nonneg _)
-  apply sup'_le
-  exact fun i hi ↦ Nat.mono_cast (le_sup' _ hi)
+  induction hs using Finset.Nonempty.cons_induction <;> simp [*]
 
 set_option linter.docPrime false in
 @[simp, norm_cast]
-lemma cast_finsetInf' (f : ι → ℕ) (hs) : (↑(s.inf' hs f) : R) = s.inf' hs fun i ↦ (f i : R) :=
-  eq_of_forall_le_iff fun c ↦ by simp only [le_inf'_iff, ← Nat.ceil_le]
+lemma cast_finsetInf' (f : ι → ℕ) (hs) : (↑(s.inf' hs f) : R) = s.inf' hs fun i ↦ (f i : R) := by
+  induction hs using Finset.Nonempty.cons_induction <;> simp [*]
 
 end LinearOrderedSemiring
 
 @[simp, norm_cast]
 lemma cast_finsetSup [CanonicallyLinearOrderedSemifield R] [FloorSemiring R]
     (s : Finset ι) (f : ι → ℕ) : (↑(s.sup f) : R) = s.sup fun i ↦ (f i : R) := by
-  obtain rfl | hs := s.eq_empty_or_nonempty
-  · simp
-  · rw [← sup'_eq_sup hs, ← sup'_eq_sup hs, Nat.cast_finsetSup']
+  comp_sup_eq_sup_comp _ (by simp) (by simp)
 
 end Nat
