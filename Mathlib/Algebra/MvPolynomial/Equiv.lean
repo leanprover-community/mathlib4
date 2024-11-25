@@ -413,7 +413,7 @@ theorem coeff_eval_eq_eval_coeff (s' : Fin n → R) (f : Polynomial (MvPolynomia
   simp only [Polynomial.coeff_map]
 
 theorem support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {m : Fin n →₀ ℕ} :
-    m ∈ (Polynomial.coeff (finSuccEquiv R n f) i).support ↔ Finsupp.cons i m ∈ f.support := by
+    m ∈ ((finSuccEquiv R n f).coeff i).support ↔ m.cons i ∈ f.support := by
   apply Iff.intro
   · intro h
     simpa [← finSuccEquiv_coeff_coeff] using h
