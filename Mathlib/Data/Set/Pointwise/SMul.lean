@@ -44,7 +44,9 @@ section Mul
 variable [Mul α] {s t u : Set α} {a : α}
 
 @[to_additive] lemma smul_set_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image2_right
-@[to_additive] lemma op_smul_set_subset_mul : a ∈ t → op a • s ⊆ s * t := image_subset_image2_left
+
+open scoped RightActions in
+@[to_additive] lemma op_smul_set_subset_mul : a ∈ t → s <• a ⊆ s * t := image_subset_image2_left
 
 @[to_additive]
 theorem image_op_smul : (op '' s) • t = t * s := by
@@ -427,16 +429,24 @@ lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s)
 @[to_additive (attr := deprecated (since := "2024-10-18"))]
 alias smul_set_disjoint_iff := disjoint_smul_set
 
-@[to_additive exists_inter_subset_two_nsmul_inter_two_nsmul]
-lemma exists_smul_inter_smul_subset_smul_sq_inter_sq {s t : Set α} (hs : s⁻¹ = s) (ht : t⁻¹ = t)
-    (a b : α) : ∃ z : α, a • s ∩ b • t ⊆ z • (s ^ 2 ∩ t ^ 2) := by
+/-- Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
+`(s⁻¹ * s) ∩ (t⁻¹ * t)`.
+
+This is useful to show that the intersection of approximate subgroups is an approximate subgroup. -/
+@[to_additive
+"Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
+`(-s + s) ∩ (-t + t)`.
+
+This is useful to show that the intersection of approximate subgroups is an approximate subgroup."]
+lemma exists_smul_inter_smul_subset_smul_inv_mul_inter_inv_mul (s t : Set α) (a b : α) :
+    ∃ z : α, a • s ∩ b • t ⊆ z • ((s⁻¹ * s) ∩ (t⁻¹ * t)) := by
   obtain hAB | ⟨z, hzA, hzB⟩ := (a • s ∩ b • t).eq_empty_or_nonempty
   · exact ⟨1, by simp [hAB]⟩
   refine ⟨z, ?_⟩
   calc
     a • s ∩ b • t ⊆ (z • s⁻¹) * s ∩ ((z • t⁻¹) * t) := by
       gcongr <;> apply smul_set_subset_mul <;> simpa
-    _ = z • (s ^ 2 ∩ t ^ 2) := by simp_rw [Set.smul_set_inter, sq, smul_mul_assoc, hs, ht]
+    _ = z • ((s⁻¹ * s) ∩ (t⁻¹ * t)) := by simp_rw [Set.smul_set_inter, smul_mul_assoc]
 
 end Group
 
