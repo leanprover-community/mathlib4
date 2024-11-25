@@ -124,8 +124,6 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
 
 /-! ### Smooth functions within a set around a point -/
 
-variable (𝕜)
-
 variable (𝕜) in
 /-- A function is continuously differentiable up to order `n` within a set `s` at a point `x` if
 it admits continuous derivatives up to order `n` in a neighborhood of `x` in `s ∪ {x}`.
@@ -137,9 +135,6 @@ is not complete, but it is equivalent when the space is complete.
 
 For instance, a real function which is `C^m` on `(-1/m, 1/m)` for each natural `m`, but not
 better, is `C^∞` at `0` within `univ`.
-
-We take the exponent `n` in `WithTop ℕ∞` to allow for an extension to analytic functions in the
-future, but currently the notion is the same for `n = ∞` and `n = ω`.
 -/
 def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Prop :=
   match n with
@@ -892,13 +887,6 @@ theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs
     (hn : 1 ≤ n) : ContinuousOn (fun x => fderiv 𝕜 f x) s :=
   ((contDiffOn_succ_iff_fderiv_of_isOpen hs).1
     (h.of_le (show 0 + (1 : WithTop ℕ∞) ≤ n from hn))).2.2.continuousOn
-
-/-- The following lemma will be removed when the definition of `C^ω` will be corrected. For now,
-it is only there as a convenient shortcut. -/
-theorem contDiffOn_infty_iff_contDiffOn_omega :
-    ContDiffOn 𝕜 ∞ f s ↔ ContDiffOn 𝕜 ω f s := by
-  have A (m : ℕ) : m ≤ ∞ := mod_cast le_top
-  simp [ContDiffOn, ContDiffWithinAt, hasFTaylorSeriesUpTo_top_iff, A]
 
 /-! ### Smooth functions at a point -/
 
