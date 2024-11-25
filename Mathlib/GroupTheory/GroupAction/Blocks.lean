@@ -554,7 +554,7 @@ theorem of_subset (a : X) (hfB : B.Finite) :
       smul_smul, ← mul_inv_rev] at hg hx ⊢
     exact fun _ ↦ hx _ ∘ hg _
   have hag' (g : G) (hg : a ∈ g • B') : B' = g • B' := by
-    rw [eq_comm, ← mem_stabilizer_iff, mem_stabilizer_iff_subset_smul_set hfB']
+    rw [eq_comm, ← mem_stabilizer_iff, mem_stabilizer_set_iff_subset_smul_set hfB']
     exact hag g hg
   rw [isBlock_iff_smul_eq_of_nonempty]
   rintro g ⟨b : X, hb' : b ∈ g • B', hb : b ∈ B'⟩
