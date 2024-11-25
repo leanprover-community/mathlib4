@@ -23,7 +23,7 @@ import Mathlib.Tactic.Simps.Basic
 /-!
 # The `@[to_additive]` attribute.
 
-Declaration of the `to_additive` attribute.
+Implementation of the `to_additive` attribute.
 See the docstring of `ToAdditive.to_additive` for more information
 -/
 
