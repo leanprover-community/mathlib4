@@ -233,7 +233,7 @@ section
 variable {M}
 variable [LieAlgebra.IsNilpotent R L]
 variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
-variable (α : L → R) (β : Weight R L M)
+variable (α : L → R) (β : GenWeight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/
 noncomputable
@@ -314,12 +314,12 @@ lemma genWeightSpace_neg_zsmul_add_ne_bot {n : ℕ} (hn : n ≤ chainBotCoeff α
 
 /-- The last weight in an `α`-chain through `β`. -/
 noncomputable
-def chainTop (α : L → R) (β : Weight R L M) : Weight R L M :=
+def chainTop (α : L → R) (β : GenWeight R L M) : GenWeight R L M :=
   ⟨chainTopCoeff α β • α + β, genWeightSpace_nsmul_add_ne_bot_of_le α β le_rfl⟩
 
 /-- The first weight in an `α`-chain through `β`. -/
 noncomputable
-def chainBot (α : L → R) (β : Weight R L M) : Weight R L M :=
+def chainBot (α : L → R) (β : GenWeight R L M) : GenWeight R L M :=
   ⟨(- chainBotCoeff α β : ℤ) • α + β, genWeightSpace_neg_zsmul_add_ne_bot α β le_rfl⟩
 
 lemma coe_chainTop' : (chainTop α β : L → R) = chainTopCoeff α β • α + β := rfl
@@ -355,7 +355,7 @@ lemma chainTop_isNonZero' (hα' : genWeightSpace M α ≠ ⊥) :
 
 end
 
-lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
+lemma chainTop_isNonZero (α β : GenWeight R L M) (hα : α.IsNonZero) :
     (chainTop α β).IsNonZero :=
   chainTop_isNonZero' α β hα α.2
 
