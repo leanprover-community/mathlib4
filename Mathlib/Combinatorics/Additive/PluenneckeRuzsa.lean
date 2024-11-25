@@ -10,7 +10,6 @@ import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Positivity.Finset
 import Mathlib.Tactic.Ring
 
 /-!

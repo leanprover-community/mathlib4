@@ -1300,7 +1300,7 @@ end
 
 @[simp]
 theorem of_apply [AddZeroClass G] (a : Multiplicative G) :
-    of k G a = single (Multiplicative.toAdd a) 1 :=
+    of k G a = single a.toAdd 1 :=
   rfl
 
 @[simp]
@@ -1324,7 +1324,7 @@ Note the order of the elements of the product are reversed compared to the argum
 -/
 @[simps]
 def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
-  toFun a := single (Multiplicative.toAdd a.2) a.1
+  toFun a := single a.2.toAdd a.1
   map_one' := rfl
   map_mul' _a _b := single_mul_single.symm
 

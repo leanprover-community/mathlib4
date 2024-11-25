@@ -113,7 +113,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     rw [contMDiffWithinAt_iff] at hf' hg'
     simp_rw [Function.comp_def, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
       ModelWithCorners.range_prod] at hf' ⊢
-    apply ContDiffWithinAt.fderivWithin _ _ _ hmn
+    apply ContDiffWithinAt.fderivWithin _ _ _ (show (m : WithTop ℕ∞) + 1 ≤ n from mod_cast hmn )
     · simp [hx₀, t']
     · apply inter_subset_left.trans
       rw [preimage_subset_iff]
@@ -343,10 +343,7 @@ theorem ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n
   convert hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ
   rw [tangentMapWithin_univ]
 
-/-- If a function is smooth, then its bundled derivative is smooth. -/
-theorem Smooth.tangentMap (hf : Smooth I I' f) :
-    Smooth I.tangent I'.tangent (tangentMap I I' f) :=
-  ContMDiff.contMDiff_tangentMap hf le_rfl
+@[deprecated (since := "2024-11-21")] alias Smooth.tangentMap := ContMDiff.contMDiff_tangentMap
 
 end tangentMap
 
@@ -376,9 +373,9 @@ theorem tangentMap_tangentBundle_pure [Is : SmoothManifoldWithCorners I M] (p : 
     · apply (PartialHomeomorph.open_target _).preimage I.continuous_invFun
     · simp only [mfld_simps]
   have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
-    haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type _)) :=
-      Bundle.smooth_zeroSection 𝕜 (TangentSpace I : M → Type _)
-    this.mdifferentiableAt
+    haveI : ContMDiff I (I.prod 𝓘(𝕜, E)) ⊤ (zeroSection E (TangentSpace I : M → Type _)) :=
+      Bundle.contMDiff_zeroSection 𝕜 (TangentSpace I : M → Type _)
+    this.mdifferentiableAt le_top
   have B : fderivWithin 𝕜 (fun x' : E ↦ (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v
       = (v, 0) := by
     rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prod]
@@ -407,6 +404,9 @@ namespace ContMDiffMap
 -- (However as a consequence we import `Mathlib/Geometry/Manifold/ContMDiffMap.lean` here now.)
 -- They could be moved to another file (perhaps a new file) if desired.
 open scoped Manifold
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
 
 protected theorem mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : 1 ≤ n) : MDifferentiable I I' f :=
   f.contMDiff.mdifferentiable hn

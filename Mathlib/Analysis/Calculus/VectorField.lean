@@ -150,7 +150,7 @@ lemma lieBracket_swap : lieBracket 𝕜 V W x = - lieBracket 𝕜 W V x := by
   ext x; simp [lieBracket]
 
 lemma _root_.ContDiffWithinAt.lieBracketWithin_vectorField
-    {m n : ℕ∞} (hV : ContDiffWithinAt 𝕜 n V s x)
+    {m n : WithTop ℕ∞} (hV : ContDiffWithinAt 𝕜 n V s x)
     (hW : ContDiffWithinAt 𝕜 n W s x) (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 m (lieBracketWithin 𝕜 V W s) s x := by
   apply ContDiffWithinAt.sub
@@ -159,19 +159,19 @@ lemma _root_.ContDiffWithinAt.lieBracketWithin_vectorField
   · exact ContDiffWithinAt.clm_apply (hV.fderivWithin_right hs hmn hx)
       (hW.of_le (le_trans le_self_add hmn))
 
-lemma _root_.ContDiffAt.lieBracket_vectorField {m n : ℕ∞} (hV : ContDiffAt 𝕜 n V x)
+lemma _root_.ContDiffAt.lieBracket_vectorField {m n : WithTop ℕ∞} (hV : ContDiffAt 𝕜 n V x)
     (hW : ContDiffAt 𝕜 n W x) (hmn : m + 1 ≤ n) :
     ContDiffAt 𝕜 m (lieBracket 𝕜 V W) x := by
   rw [← contDiffWithinAt_univ] at hV hW ⊢
   simp_rw [← lieBracketWithin_univ]
   exact hV.lieBracketWithin_vectorField hW uniqueDiffOn_univ hmn (mem_univ _)
 
-lemma _root_.ContDiffOn.lieBracketWithin_vectorField {m n : ℕ∞} (hV : ContDiffOn 𝕜 n V s)
+lemma _root_.ContDiffOn.lieBracketWithin_vectorField {m n : WithTop ℕ∞} (hV : ContDiffOn 𝕜 n V s)
     (hW : ContDiffOn 𝕜 n W s) (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (lieBracketWithin 𝕜 V W s) s :=
   fun x hx ↦ (hV x hx).lieBracketWithin_vectorField (hW x hx) hs hmn hx
 
-lemma _root_.ContDiff.lieBracket_vectorField {m n : ℕ∞} (hV : ContDiff 𝕜 n V)
+lemma _root_.ContDiff.lieBracket_vectorField {m n : WithTop ℕ∞} (hV : ContDiff 𝕜 n V)
     (hW : ContDiff 𝕜 n W) (hmn : m + 1 ≤ n) :
     ContDiff 𝕜 m (lieBracket 𝕜 V W) :=
   contDiff_iff_contDiffAt.2 (fun _ ↦ hV.contDiffAt.lieBracket_vectorField hW.contDiffAt hmn)
