@@ -245,25 +245,23 @@ structure Hypotheses where
   /-- FIXME junk docstring -/
   (equalities : Array Expr)
   /-- FIXME junk docstring -/
-  (originalRelations : Array Expr)
-  /-- FIXME junk docstring -/
-  (deducedRelations : Array Expr)
+  (relations : Array Expr)
 
 /-- FIXME junk docstring -/
 def addHypothesis (h : Expr) : StateRefT Hypotheses MetaM Unit := withReducibleAndInstances do
+  if !(← isProof h) then return
   let eq? : Bool := h.eq?.isSome
   let tacs := (forwardExt.getState (← getEnv)).2
-  let hs ← get
-  let mut ded : Array Expr := hs.deducedRelations
+  let ⟨eqs, rels⟩ ← get
+  let mut rels' : Array Expr := if eq? then rels else rels.push h
   for tac in tacs do
     try
-      ded := ded.push (← tac.2.eval h)
+      rels' := rels'.push (← tac.2.eval h)
     catch _ => pure ()
-  let hs' : Hypotheses :=
-    { equalities := if eq? then hs.equalities.push h else hs.equalities
-      originalRelations := if eq? then hs.originalRelations else hs.originalRelations.push h
-      deducedRelations := ded }
-  set hs'
+  let hs : Hypotheses :=
+    { equalities := if eq? then eqs.push h else eqs
+      relations := rels' }
+  set hs
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
@@ -274,12 +272,11 @@ def _root_.Lean.MVarId.gcongrForward (g : MVarId) : StateRefT Hypotheses MetaM U
     let s ← Meta.saveState
     withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
     -- Iterate over a list of terms
-    for array in #[hs.equalities, hs.originalRelations, hs.deducedRelations] do
-      for h in array do
-        try
-          g.assignIfDefeq h
-          return
-        catch _ => s.restore
+    for h in hs.relations do
+      try
+        g.assignIfDefeq h
+        return
+      catch _ => s.restore
     for h in hs.equalities do
       try
       -- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive.
@@ -403,8 +400,7 @@ partial def _root_.Lean.MVarId.gcongr
         if includeCreatedHyps then
           mvarId.withContext do
             for h in vs do
-              if (← isProp (← h.getType)) then
-                addHypothesis (.fvar h)
+              addHypothesis (.fvar h)
         -- B. If there is a template, look up the part of the template corresponding to the `j`-th
         -- input to the head function
         let tpl ← tplArgs[j]!.1.mapM fun e => do
@@ -493,11 +489,11 @@ elab "gcongr" template:(colGt term)?
   let m : StateRefT Hypotheses MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := do
     -- Collect all hypotheses available at the start
     for h in ← getLCtx do
-      if !h.isImplementationDetail && (← isProp h.type) then
+      if !h.isImplementationDetail then
         addHypothesis (.fvar h.fvarId)
     g.gcongr template names
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, _, unsolvedGoalStates) ← m.run' ⟨#[], #[], #[]⟩
+  let (progress, _, unsolvedGoalStates) ← m.run' ⟨#[], #[]⟩
   if progress then
     replaceMainGoal unsolvedGoalStates.toList
   else
@@ -544,7 +540,7 @@ elab_rules : tactic
         addHypothesis h
       g.gcongr none [] (includeCreatedHyps := false)
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let (_, _, unsolvedGoalStates) ← m.run' ⟨#[], #[], #[]⟩
+    let (_, _, unsolvedGoalStates) ← m.run' ⟨#[], #[]⟩
     match unsolvedGoalStates.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()
