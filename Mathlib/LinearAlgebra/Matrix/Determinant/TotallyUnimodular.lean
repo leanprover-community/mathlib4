@@ -40,12 +40,12 @@ lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
       (A.submatrix f g).det ∈ Set.range SignType.cast := by
   constructor <;> intro hA
   · intro k f g
-    by_cases h : f.Injective ∧ g.Injective
-    · exact hA k f g h.1 h.2
-    · refine ⟨0, ?_⟩
+    by_cases hfg : f.Injective ∧ g.Injective
+    · exact hA k f g hfg.1 hfg.2
+    · use 0
       rw [SignType.coe_zero, eq_comm]
-      simp_rw [not_and_or, Function.not_injective_iff] at h
-      obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hgij, hij⟩ := h
+      simp_rw [not_and_or, Function.not_injective_iff] at hfg
+      obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hgij, hij⟩ := hfg
       · rw [← det_transpose, transpose_submatrix]
         apply det_zero_of_column_eq hij.symm
         simp [hfij]
@@ -69,8 +69,7 @@ lemma isTotallyUnimodular_iff_fintype.{w} (A : Matrix m n R) : A.IsTotallyUnimod
 lemma IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimodular) (i : m) (j : n) :
     A i j ∈ Set.range SignType.cast := by
   rw [isTotallyUnimodular_iff] at hA
-  convert hA 1 (fun _ => i) (fun _ => j)
-  simp
+  simpa using hA 1 (fun _ => i) (fun _ => j)
 
 lemma IsTotallyUnimodular.submatrix {A : Matrix m n R} (f : m' → m) (g : n' → n)
     (hA : A.IsTotallyUnimodular) :
@@ -104,10 +103,8 @@ lemma neg_one_pow_mem_signType_range (n : ℕ) {a : R} (ha : a ∈ Set.range Sig
     (-1 : R) ^ n * a ∈ Set.range SignType.cast :=
   mul_mem (s := MonoidHom.mrange SignType.castHom.toMonoidHom) (pow_mem (by use -1; rfl) n) ha
 
-/--
-If `A` is totally unimodular and each row of B is all zeros except for at most a single 1,
-then `fromRows A B` is totally unimodular.
--/
+/-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1`,
+then `fromRows A B` is totally unimodular. -/
 lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}
     (hB : ∀ i : m', B i = 0 ∨ ∃ j, B i = Function.update (0 : n → R) j 1)
     (hA : A.IsTotallyUnimodular) :
@@ -146,7 +143,7 @@ lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B
       rw [funext hf']
       apply hA
 
-/-- If `A` is totally unimodular and each row of B is all zeros except for at most a single `1`,
+/-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1`,
 then `fromRows A B` is totally unimodular. -/
 lemma fromRows_isTotallyUnimodular_iff_rows [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}
     (hB : ∀ i : m', B i = 0 ∨ ∃ j, B i = Function.update (0 : n → R) j 1) :
