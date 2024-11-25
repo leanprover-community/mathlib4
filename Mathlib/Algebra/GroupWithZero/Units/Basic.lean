@@ -451,7 +451,9 @@ lemma div_eq_div_iff_div_eq_div' (hb : b ≠ 0) (hc : c ≠ 0) : a / b = c / d �
   conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel₀ _ hc]
   rw [mul_comm _ c, div_mul_eq_mul_div, mul_div_assoc]
 
-lemma div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
+@[simp] lemma div_div_cancel₀ (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
+
+@[deprecated (since := "2024-11-25")] alias div_div_cancel' := div_div_cancel₀
 
 lemma div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ := ha.isUnit.div_div_cancel_left
 
