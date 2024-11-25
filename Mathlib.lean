@@ -4364,10 +4364,7 @@ import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.MvPolynomial
 import Mathlib.RingTheory.MvPolynomial.Basic
-<<<<<<< HEAD
-=======
 import Mathlib.RingTheory.MvPolynomial.FreeCommRing
->>>>>>> ACL/Groebner-da
 import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.Ideal
