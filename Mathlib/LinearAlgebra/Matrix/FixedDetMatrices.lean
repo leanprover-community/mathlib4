@@ -100,9 +100,9 @@ def reduce : Δ m → Δ m := fun A ↦
     reduce (reduce_step A)
   termination_by b => Int.natAbs (b.1 1 0)
   decreasing_by
-      next a h =>
-      zify
-      exact reduce_aux h
+    next a h =>
+    zify
+    exact reduce_aux h
 
 lemma reduce_of_pos {A : Δ m} (hc : |(A.1 1 0)| = 0) (ha : 0 < A.1 0 0) :
     reduce A = (T ^ (-(A.1 0 1/A.1 1 1))) • A := by
