@@ -30,7 +30,7 @@ The main steps of the proof are as follows.
 4. Define an auxiliary function `ArithmeticFunction.vonMangoldt.auxFun a` that is
    this linear combination of negative logarithmic derivatives of L-functions minus
    `(q.totient)⁻¹/(s-1)`, which cancels the pole at `s = 1`.
-   See `ArithmeticFuncion.vonMangolgt.eqOn_auxFun` for the statement that the auxiliary function
+   See `ArithmeticFunction.vonMangoldt.eqOn_auxFun` for the statement that the auxiliary function
    agrees with the L-series of `ArithmeticFunction.vonMangoldt.residueClass` up to the
    term `(q.totient)⁻¹/(s-1)`.
 5. Show that the auxiliary function is continuous on `re s ≥ 1`,
