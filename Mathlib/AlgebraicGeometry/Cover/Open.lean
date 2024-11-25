@@ -49,7 +49,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   f x := x
   covers := by
     intro x
-    erw [TopCat.coe_comp] -- now `erw` after #13170
+    erw [TopCat.coe_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
     rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
