@@ -79,10 +79,8 @@ lemma Hom.hom_mk {X Y : P.Comma L R Q W}
     (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
   Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
 
-@[simp]
 lemma Hom.hom_left {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.left = f.left := rfl
 
-@[simp]
 lemma Hom.hom_right {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.right = f.right := rfl
 
 /-- See Note [custom simps projection] -/
@@ -252,43 +250,19 @@ def lift {C : Type*} [Category C] (F : C ⥤ Comma L R)
 
 variable (R) in
 /-- A natural transformation `L₁ ⟶ L₂` induces a functor `P.Comma L₂ R Q W ⥤ P.Comma L₁ R Q W`. -/
-@[simps! obj_left obj_right]
+@[simps!]
 def mapLeft (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.left ≫ X.hom)) :
     P.Comma L₂ R Q W ⥤ P.Comma L₁ R Q W :=
   lift (forget _ _ _ _ _ ⋙ CategoryTheory.Comma.mapLeft R l) hl
     (fun f ↦ f.prop_hom_left) (fun f ↦ f.prop_hom_right)
 
-@[simp]
-lemma mapLeft_map_left (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.left ≫ X.hom))
-    {X Y : P.Comma L₂ R Q W} (f : X ⟶ Y) :
-    ((mapLeft R l hl).map f).left = f.left :=
-  rfl
-
-@[simp]
-lemma mapLeft_map_right (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.left ≫ X.hom))
-    {X Y : P.Comma L₂ R Q W} (f : X ⟶ Y) :
-    ((mapLeft R l hl).map f).right = f.right :=
-  rfl
-
 variable (L) in
 /-- A natural transformation `R₁ ⟶ R₂` induces a functor `P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W`. -/
-@[simps! obj_left obj_right]
+@[simps!]
 def mapRight (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right)) :
     P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W :=
   lift (forget _ _ _ _ _ ⋙ CategoryTheory.Comma.mapRight L r) hr
     (fun f ↦ f.prop_hom_left) (fun f ↦ f.prop_hom_right)
-
-@[simp]
-lemma mapRight_map_left (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right))
-    {X Y : P.Comma L R₁ Q W} (f : X ⟶ Y) :
-    ((mapRight L r hr).map f).left = f.left :=
-  rfl
-
-@[simp]
-lemma mapRight_map_right (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right))
-    {X Y : P.Comma L R₁ Q W} (f : X ⟶ Y) :
-    ((mapRight L r hr).map f).right = f.right :=
-  rfl
 
 end Functoriality
 

@@ -34,12 +34,9 @@ variable {f}
 
 /-- If `P` is stable under composition and `f : X ⟶ Y` satisfies `P`,
 this is the functor `P.Over Q X ⥤ P.Over Q Y` given by composing with `f`. -/
-@[simps! obj_left obj_hom]
+@[simps! obj_left obj_hom map_left]
 def Over.map : P.Over Q X ⥤ P.Over Q Y :=
   Comma.mapRight _ (Discrete.natTrans fun _ ↦ f) <| fun X ↦ P.comp_mem _ _ X.prop hPf
-
-@[simp] lemma Over.map_map_left {A B : P.Over Q X} (g : A ⟶ B) :
-    ((Over.map Q hPf).map g).left = g.left := rfl
 
 lemma Over.map_comp {X Y Z : T} {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     map Q (P.comp_mem f g hf hg) = map Q hf ⋙ map Q hg := by
@@ -63,7 +60,7 @@ variable [HasPullbacks T] [P.IsStableUnderBaseChange] [Q.IsStableUnderBaseChange
 
 /-- If `P` and `Q` are stable under base change and pullbacks exist in `T`,
 this is the functor `P.Over Q Y ⥤ P.Over Q X` given by base change along `f`. -/
-@[simps! obj_left obj_hom]
+@[simps! obj_left obj_hom map_left]
 noncomputable def Over.pullback : P.Over Q Y ⥤ P.Over Q X where
   obj A :=
     { __ := (CategoryTheory.Over.pullback f).obj A.toComma
@@ -72,12 +69,6 @@ noncomputable def Over.pullback : P.Over Q Y ⥤ P.Over Q X where
     { __ := (CategoryTheory.Over.pullback f).map g.toCommaMorphism
       prop_hom_left := Q.baseChange_map f g.toCommaMorphism g.prop_hom_left
       prop_hom_right := trivial }
-
-@[simp]
-lemma Over.pullback_map_left {A B : P.Over Q Y} (g : A ⟶ B) :
-    ((Over.pullback P Q f).map g).left = pullback.lift
-      (pullback.fst A.hom f ≫ g.left) (pullback.snd A.hom f) (by simp [pullback.condition]) :=
-  rfl
 
 variable {P} {Q}
 
