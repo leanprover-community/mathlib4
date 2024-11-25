@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.OfFn
 
 /-!
 # Ranges of naturals as lists
@@ -43,68 +42,10 @@ theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 
--- Verify that `finRange` is semireducible.
-example : finRange 3 = [0, 1, 2] := rfl
-
-theorem finRange_eq_pmap_range (n : ℕ) : finRange n = (range n).pmap Fin.mk (by simp) := by
-  apply List.ext_getElem <;> simp [finRange]
-
-@[simp]
-theorem finRange_zero : finRange 0 = [] := by
-  simp [finRange]
-
-@[simp]
-theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n := by
-  rw [finRange_eq_pmap_range]
-  exact mem_pmap.2
-    ⟨a.1, mem_range.2 a.2, by
-      cases a
-      rfl⟩
-
-theorem nodup_finRange (n : ℕ) : (finRange n).Nodup := by
-  rw [finRange_eq_pmap_range]
-  exact (Pairwise.pmap (nodup_range n) _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
-
-@[simp]
-theorem length_finRange (n : ℕ) : (finRange n).length = n := by
-  simp [finRange]
-
-@[simp]
-theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
-  rw [← length_eq_zero, length_finRange]
-
-theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) := by
-  rw [finRange_eq_pmap_range]
-  exact (List.pairwise_lt_range n).pmap (by simp) (by simp)
-
-theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) := by
-  rw [finRange_eq_pmap_range]
-  exact (List.pairwise_le_range n).pmap (by simp) (by simp)
-
-@[simp]
-theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
-    (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
-  simp [finRange, getElem_range, getElem_pmap]
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
-theorem get_finRange {n : ℕ} {i : ℕ} (h) :
-    (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
-  simp
-
 @[deprecated (since := "2024-08-19")] alias nthLe_range' := get_range'
 @[deprecated (since := "2024-08-19")] alias nthLe_range'_1 := getElem_range'_1
 @[deprecated (since := "2024-08-19")] alias nthLe_range := get_range
-@[deprecated (since := "2024-08-19")] alias nthLe_finRange := get_finRange
 
-@[simp]
-theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
-  List.ext_get (by simp) (by simp)
-
-@[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
-  have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
-  have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
-  have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
-  simpa using (Nodup.get_inj_iff (nodup_finRange k)).mp (Eq.trans h₁ h₂.symm)
 
 section Ranges
 
