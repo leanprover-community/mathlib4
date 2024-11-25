@@ -38,7 +38,7 @@ lemma natCard_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
 end Mul
 
 section InvolutiveInv
-variable [InvolutiveInv G] {s t : Set G}
+variable [InvolutiveInv G]
 
 @[to_additive (attr := simp)]
 lemma _root_.Cardinal.mk_inv (s : Set G) : #↥(s⁻¹) = #s := by
