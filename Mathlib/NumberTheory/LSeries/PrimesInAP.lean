@@ -33,9 +33,9 @@ The main steps of the proof are as follows.
    See `ArithmeticFunction.vonMangoldt.eqOn_LfunctionResidueClassAux` for the statement
    that the auxiliary function agrees with the L-series of
    `ArithmeticFunction.vonMangoldt.residueClass` up to the term `(q.totient)⁻¹/(s-1)`.
-5. Show that the auxiliary function is continuous on `re s ≥ 1`,
-   See `ArithmeticFunction.vonMangoldt.continuousOn_LfunctionResidueClassAux`.
-   This relies heavily on the non-vanihsing of Dirichlet L-functions on the *closed*
+5. Show that the auxiliary function is continuous on `re s ≥ 1`;
+   see `ArithmeticFunction.vonMangoldt.continuousOn_LfunctionResidueClassAux`.
+   This relies heavily on the non-vanishing of Dirichlet L-functions on the *closed*
    half-plane `re s ≥ 1` (`DirichletCharacter.LFunction_ne_zero_of_one_le_re`), which
    in turn can only be stated since we know that the L-series of a Dirichlet character
    extends to an entire function (unless the character is trivial; then there is a
@@ -257,7 +257,7 @@ lemma summable_residueClass_non_primes_div :
 variable [NeZero q] {a}
 
 /-- We can express `ArithmeticFunction.vonMangoldt.residueClass` as a linear combination
-of twists of the von Mangoldt function with Dirichlet charaters. -/
+of twists of the von Mangoldt function by Dirichlet charaters. -/
 lemma residueClass_apply (ha : IsUnit a) (n : ℕ) :
     residueClass a n =
       (q.totient : ℂ)⁻¹ * ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ * χ n * vonMangoldt n := by
@@ -267,7 +267,7 @@ lemma residueClass_apply (ha : IsUnit a) (n : ℕ) :
     ite_mul, zero_mul, ↓reduceIte, ite_self]
 
 /-- We can express `ArithmeticFunction.vonMangoldt.residueClass` as a linear combination
-of twists of the von Mangoldt function with Dirichlet charaters. -/
+of twists of the von Mangoldt function by Dirichlet charaters. -/
 lemma residueClass_eq (ha : IsUnit a) :
     ↗(residueClass a) = (q.totient : ℂ)⁻¹ •
       ∑ χ : DirichletCharacter ℂ q, χ a⁻¹ • (fun n : ℕ ↦ χ n * vonMangoldt n) := by
@@ -327,7 +327,7 @@ lemma continuousOn_LfunctionResidueClassAux' :
     · exact hs χ
 
 /-- The L-series of the von Mangoldt function restricted to the prime residue class `a` mod `q`
-is continuous on `re s ≥ 1` except for a single pole at `s = 1` with residue `(q.totient)⁻¹`.
+is continuous on `re s ≥ 1` except for a simple pole at `s = 1` with residue `(q.totient)⁻¹`.
 The statement as given here in terms of `ArithmeticFunction.vonMangoldt.LfunctionResidueClassAux`
 is equivalent. -/
 lemma continuousOn_LfunctionResidueClassAux :
