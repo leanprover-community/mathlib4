@@ -271,6 +271,7 @@ import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.Fin.Tuple
 import Mathlib.Algebra.Group.FiniteSupport
 import Mathlib.Algebra.Group.ForwardDiff
+import Mathlib.Algebra.Group.Graph
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
