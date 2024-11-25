@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
-# `Finset.sup` in a ring
+# `Finset.sup` of `Nat.cast`
 -/
 
 open Finset
