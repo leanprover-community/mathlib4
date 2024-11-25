@@ -1002,11 +1002,6 @@ lemma div_eq_iff_eq_of_dvd_dvd (hn : n ≠ 0) (ha : a ∣ n) (hb : b ∣ n) : n 
     exact Nat.eq_mul_of_div_eq_right ha h
   · rw [h]
 
-lemma le_mul_div_add (hb : b ≠ 0) : a ≤ b * (a / b) + b - 1 := by
-  refine Nat.le_sub_of_add_le ?_
-  rw [succ_le_iff, ← Nat.mul_add_one, Nat.mul_comm, ← div_lt_iff_lt_mul (Nat.pos_iff_ne_zero.2 hb),
-    Nat.lt_add_one_iff]
-
 protected lemma div_eq_zero_iff (hb : 0 < b) : a / b = 0 ↔ a < b where
   mp h := by rw [← mod_add_div a b, h, Nat.mul_zero, Nat.add_zero]; exact mod_lt _ hb
   mpr h := by rw [← Nat.mul_right_inj (Nat.ne_of_gt hb), ← Nat.add_left_cancel_iff, mod_add_div,
