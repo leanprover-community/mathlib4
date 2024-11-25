@@ -48,11 +48,11 @@ variable [InvolutiveInv G]
 
 @[to_additive (attr := simp)]
 lemma _root_.Cardinal.mk_inv (s : Set G) : #↥(s⁻¹) = #s := by
-  rw [← image_inv, Cardinal.mk_image_eq_of_injOn _ _ inv_injective.injOn]
+  rw [← image_inv_eq_inv, Cardinal.mk_image_eq_of_injOn _ _ inv_injective.injOn]
 
 @[to_additive (attr := simp)]
 lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by
-  rw [← image_inv, Nat.card_image_of_injective inv_injective]
+  rw [← image_inv_eq_inv, Nat.card_image_of_injective inv_injective]
 
 @[to_additive] alias card_inv := natCard_inv
 
