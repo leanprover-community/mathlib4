@@ -19,8 +19,11 @@ In this file we introduce the Mahler basis function `mahler k`, for `k : ℕ`, w
 continuous map `ℤ_[p] → ℚ_[p]` agreeing with `n ↦ n.choose k` for `n ∈ ℕ`.
 
 Using this, we prove Mahler's theorem, showing that for any any continuous function `f` on `ℤ_[p]`
-(valued in a `p`-adic normed space), the Mahler series `x ↦ ∑' k, mahler k x • Δ^[n] f 0`
-converges (uniformly) to `f x`. For this, we follow the argument of Bojanić [bojanic74].
+(valued in a `p`-adic normed space `E`), the Mahler series `x ↦ ∑' k, mahler k x • Δ^[n] f 0`
+converges (uniformly) to `f`, and this construction defines a Banach-space isomorphism between
+`C(ℤ_[p], E)` and the space of sequences `ℕ → E` tending to 0.
+
+For this, we follow the argument of Bojanić [bojanic74].
 
 ## References
 
