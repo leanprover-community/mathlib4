@@ -38,7 +38,7 @@ open Finsupp
 
 theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
     (P : MvPolynomial (Fin n) R) (S : Fin n → Set R)
-    (Hdeg : ∀ i, P.weightedTotalDegree (Finsupp.single i 1) < (S i).ncard)
+    (Hdeg : ∀ i, P.degreeOf i < (S i).ncard)
     (Heval : ∀ (x : Fin n → R), (∀ i, x i ∈ S i) → eval x P = 0) :
     P = 0 := by
   induction n generalizing R with
