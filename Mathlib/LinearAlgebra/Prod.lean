@@ -834,17 +834,17 @@ set_option linter.deprecated false
 /-- An auxiliary construction for `tunnel`.
 The composition of `f`, followed by the isomorphism back to `K`,
 followed by the inclusion of this submodule back into `M`. -/
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 def tunnelAux (f : M × N →ₗ[R] M) (Kφ : ΣK : Submodule R M, K ≃ₗ[R] M) : M × N →ₗ[R] M :=
   (Kφ.1.subtype.comp Kφ.2.symm.toLinearMap).comp f
 
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 theorem tunnelAux_injective (f : M × N →ₗ[R] M) (i : Injective f)
     (Kφ : ΣK : Submodule R M, K ≃ₗ[R] M) : Injective (tunnelAux f Kφ) :=
   (Subtype.val_injective.comp Kφ.2.symm.injective).comp i
 
 /-- Auxiliary definition for `tunnel`. -/
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 def tunnel' (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → ΣK : Submodule R M, K ≃ₗ[R] M
   | 0 => ⟨⊤, LinearEquiv.ofTop ⊤ rfl⟩
   | n + 1 =>
@@ -855,7 +855,7 @@ def tunnel' (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → ΣK : Submodule
 /-- Give an injective map `f : M × N →ₗ[R] M` we can find a nested sequence of submodules
 all isomorphic to `M`.
 -/
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 def tunnel (f : M × N →ₗ[R] M) (i : Injective f) : ℕ →o (Submodule R M)ᵒᵈ :=
   -- Note: the hint `(α := _)` had to be added in https://github.com/leanprover-community/mathlib4/pull/8386
   ⟨fun n => OrderDual.toDual (α := Submodule R M) (tunnel' f i n).1,
@@ -867,24 +867,24 @@ def tunnel (f : M × N →ₗ[R] M) (i : Injective f) : ℕ →o (Submodule R M)
 /-- Give an injective map `f : M × N →ₗ[R] M` we can find a sequence of submodules
 all isomorphic to `N`.
 -/
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 def tailing (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) : Submodule R M :=
   (Submodule.snd R M N).map (tunnelAux f (tunnel' f i n))
 
 /-- Each `tailing f i n` is a copy of `N`. -/
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 def tailingLinearEquiv (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) : tailing f i n ≃ₗ[R] N :=
   ((Submodule.snd R M N).equivMapOfInjective _ (tunnelAux_injective f i (tunnel' f i n))).symm.trans
     (Submodule.sndEquiv R M N)
 
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 theorem tailing_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
     tailing f i n ≤ OrderDual.ofDual (α := Submodule R M) (tunnel f i n) := by
   dsimp [tailing, tunnelAux]
   rw [Submodule.map_comp, Submodule.map_comp]
   apply Submodule.map_subtype_le
 
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
     Disjoint (tailing f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
   rw [disjoint_iff]
@@ -893,7 +893,7 @@ theorem tailing_disjoint_tunnel_succ (f : M × N →ₗ[R] M) (i : Injective f) 
     Submodule.comap_map_eq_of_injective (tunnelAux_injective _ i _), inf_comm,
     Submodule.fst_inf_snd, Submodule.map_bot]
 
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 theorem tailing_sup_tunnel_succ_le_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
     tailing f i n ⊔ (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) ≤
       (OrderDual.ofDual (α := Submodule R M) <| tunnel f i n) := by
@@ -902,19 +902,19 @@ theorem tailing_sup_tunnel_succ_le_tunnel (f : M × N →ₗ[R] M) (i : Injectiv
   apply Submodule.map_subtype_le
 
 /-- The supremum of all the copies of `N` found inside the tunnel. -/
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 def tailings (f : M × N →ₗ[R] M) (i : Injective f) : ℕ → Submodule R M :=
   partialSups (tailing f i)
 
-@[simp, deprecated (since := "2024-06-05")]
+@[simp, deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 theorem tailings_zero (f : M × N →ₗ[R] M) (i : Injective f) : tailings f i 0 = tailing f i 0 := by
   simp [tailings]
 
-@[simp, deprecated (since := "2024-06-05")]
+@[simp, deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 theorem tailings_succ (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
     tailings f i (n + 1) = tailings f i n ⊔ tailing f i (n + 1) := by simp [tailings]
 
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 theorem tailings_disjoint_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
     Disjoint (tailings f i n) (OrderDual.ofDual (α := Submodule R M) <| tunnel f i (n + 1)) := by
   induction' n with n ih
@@ -926,7 +926,7 @@ theorem tailings_disjoint_tunnel (f : M × N →ₗ[R] M) (i : Injective f) (n :
     · apply Disjoint.mono_right _ ih
       apply tailing_sup_tunnel_succ_le_tunnel
 
-@[deprecated (since := "2024-06-05")]
+@[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 theorem tailings_disjoint_tailing (f : M × N →ₗ[R] M) (i : Injective f) (n : ℕ) :
     Disjoint (tailings f i n) (tailing f i (n + 1)) :=
   Disjoint.mono_right (tailing_le_tunnel f i _) (tailings_disjoint_tunnel f i _)
