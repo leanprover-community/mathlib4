@@ -194,7 +194,7 @@ instance : Quasicategory X := by
         exact hj heq
       /- We construct the triangle in the standard simplex as a 2-simplex in
       the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
-      we can inhabit `Λ[n + 2, i]` by induction on `n`. -/
+      we can inhabit `Λ[n + 2, i] _[2]` by induction on `n`. -/
       let triangle : Λ[n + 2, i] _[2] := by
         cases n with
         | zero => contradiction
