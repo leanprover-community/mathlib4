@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.ENat.Defs
 import Mathlib.Logic.Equiv.Nat
 
 /-!
