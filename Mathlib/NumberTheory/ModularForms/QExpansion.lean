@@ -38,6 +38,21 @@ theorem Function.Periodic.im_invQParam_pos_of_abs_lt_one
     (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) Real.two_pi_pos)
     ((Real.log_neg_iff (Complex.abs.pos hq_ne)).mpr hq)
 
+open Real in
+lemma qParam_image_bound (ξ : ℍ) (hξ : 1 / 2 ≤ ξ.im) : ‖𝕢 1 ξ‖ ≤ rexp (-(π * √3 * (1 / 2))) := by
+  simp only [Periodic.qParam, ofReal_one, div_one, Complex.norm_eq_abs, Complex.abs_exp]
+  apply Real.exp_le_exp_of_le
+  simp  [mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, mul_zero, sub_zero,
+    Complex.I_re, mul_im, zero_mul, add_zero, Complex.I_im, mul_one, sub_self, coe_re,
+    coe_im, zero_sub, neg_le]
+  ring_nf
+  simp_rw [mul_assoc]
+  apply mul_le_mul_of_nonneg_left _ pi_nonneg
+  have : 1 ≤ ξ.im * 2 := by
+    rwa [div_le_iff₀ zero_lt_two] at hξ
+  apply le_trans _ this
+  have : √3 ≤ 2 := sqrt_le_iff.mpr (by norm_cast)
+  linarith
 namespace SlashInvariantFormClass
 
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
