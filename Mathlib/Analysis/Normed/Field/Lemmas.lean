@@ -6,7 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl
 
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Rat
