@@ -286,7 +286,6 @@ theorem lCoeff_mul_of_isRegular_left {f g : MvPolynomial σ R}
     (hf : IsRegular (m.lCoeff f)) (hg : g ≠ 0) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
   simp only [lCoeff, degree_mul_of_isRegular_left hf hg, coeff_mul_of_degree_add]
-/-- Multiplicativity of leading coefficients -/
 
 /-- Multiplicativity of leading coefficients -/
 theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
@@ -342,7 +341,7 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
   · simp [hd]
   · rw [coeff_C, if_neg (Ne.symm hd)]
     apply coeff_eq_zero_of_lt (m := m)
-    rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, AddEquivClass.map_eq_zero_iff]
+    rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, EmbeddingLike.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩
 
 end Semiring
