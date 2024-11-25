@@ -468,6 +468,7 @@ namespace Nat
 open ArithmeticFunction vonMangoldt
 
 variable {q : ℕ} [NeZero q] {a : ZMod q}
+
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infintely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
