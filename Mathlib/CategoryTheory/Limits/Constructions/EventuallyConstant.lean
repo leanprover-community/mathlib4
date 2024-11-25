@@ -94,9 +94,7 @@ lemma coneπApp_eq (j j' : J) (α : j' ⟶ i₀) (β : j' ⟶ j) :
 
 @[simp]
 lemma coneπApp_eq_id : h.coneπApp i₀ = 𝟙 _ := by
-  rw [h.coneπApp_eq i₀ i₀ (𝟙 _) (𝟙 _), map_id, comp_id,
-    ← cancel_mono (h.isoMap (𝟙 i₀) ⟨𝟙 _⟩).hom, Iso.inv_hom_id,
-    isoMap_hom, map_id, comp_id]
+  rw [h.coneπApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_inv_hom_id]
 
 /-- Given `h : F.IsEventuallyConstantTo i₀`, this is the (limit) cone for `F` whose
 point is `F.obj i₀`. -/
@@ -190,9 +188,7 @@ lemma coconeιApp_eq (j j' : J) (α : j ⟶ j') (β : i₀ ⟶ j') :
 
 @[simp]
 lemma coconeιApp_eq_id : h.coconeιApp i₀ = 𝟙 _ := by
-  rw [h.coconeιApp_eq i₀ i₀ (𝟙 _) (𝟙 _), map_id, id_comp,
-    ← cancel_mono (h.isoMap (𝟙 i₀) ⟨𝟙 _⟩).hom, Iso.inv_hom_id,
-    isoMap_hom, map_id, comp_id]
+  rw [h.coconeιApp_eq i₀ i₀ (𝟙 _) (𝟙 _), h.isoMap_hom_inv_id]
 
 /-- Given `h : F.IsEventuallyConstantFrom i₀`, this is the (limit) cocone for `F` whose
 point is `F.obj i₀`. -/
