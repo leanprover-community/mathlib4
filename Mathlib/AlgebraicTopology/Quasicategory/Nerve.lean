@@ -8,10 +8,10 @@ import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 /-!
 # The nerve of a category is a quasicategory
 
-In `AlgebraicTopology.Quasicategory.StrictSegal`, it is shown that any
+In `AlgebraicTopology.Quasicategory.StrictSegal`, we show that any
 `StrictSegal` simplicial set is a quasicategory.
-In `AlgebraicTopology.SimplicialSet.StrictSegal`, it is shown that the nerve
-of a category satisfies the `StrictSegal` condition.
+In `AlgebraicTopology.SimplicialSet.StrictSegal`, we show that the nerve of a
+category satisfies the `StrictSegal` condition.
 
 In this file, we show that the nerve of a category is a quasicategory as a
 direct consequence of the above-mentioned proofs.
