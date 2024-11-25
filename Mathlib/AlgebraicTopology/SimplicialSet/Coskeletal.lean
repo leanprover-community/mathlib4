@@ -145,7 +145,22 @@ lemma fac_aux₂ {n : ℕ}
       change X.map α₁.hom (lift s x) = s.π.app α₁ x
       have : X.map α.hom (lift s x) = s.π.app α x := by
         apply StrictSegal.spineInjective
-        ext
+        apply Path.ext'
+        intro t
+        dsimp only [spineEquiv]
+        rw [Equiv.coe_fn_mk, spine_arrow, spine_arrow,
+            ← FunctorToTypes.map_comp_apply]
+        match t with
+        | 0 =>
+            have : α.hom ≫ (mkOfSucc 0).op = α₂.hom :=
+              Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
+            rw [this, h₂, ← congr_fun (s.w β₂) x]
+            rfl
+        | 1 =>
+            have : α.hom ≫ (mkOfSucc 1).op = α₀.hom :=
+              Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
+            rw [this, h₀, ← congr_fun (s.w β₀) x]
+            rfl
       rw [← StructuredArrow.w β₁, FunctorToTypes.map_comp_apply, this, ← s.w β₁]
       dsimp
 
