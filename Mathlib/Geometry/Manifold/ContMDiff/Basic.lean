@@ -156,7 +156,7 @@ section id
 
 theorem contMDiff_id : ContMDiff I I n (id : M → M) :=
   ContMDiff.of_le
-    ((contDiffWithinAt_localInvariantProp ∞).liftProp_id contDiffWithinAtProp_id) le_top
+    ((contDiffWithinAt_localInvariantProp ⊤).liftProp_id contDiffWithinAtProp_id) le_top
 
 @[deprecated (since := "2024-11-20")] alias smooth_id := contMDiff_id
 
