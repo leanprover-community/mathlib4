@@ -237,7 +237,7 @@ theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : T
   rfl
 
 -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp cannot prove this
+-- simp can't match the LHS.
 @[simp, nolint simpNF]
 theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
