@@ -3,13 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Data.Finsupp.Lex
+import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.List.TFAE
-import Mathlib.Data.Finsupp.Lex
 import Mathlib.Logic.Equiv.TransferInstance
-import Mathlib.Data.Finsupp.MonomialOrder
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 
 /-! # Division algorithm with respect to monomial orders
