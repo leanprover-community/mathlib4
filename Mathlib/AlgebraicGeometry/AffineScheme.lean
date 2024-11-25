@@ -785,8 +785,7 @@ theorem self_le_basicOpen_union_iff (s : Set Γ(X, U)) :
 
 end IsAffineOpen
 
-set_option maxHeartbeats 400000 in
--- count_heartbeats in
+seal OreLocalization.smul in
 open _root_.PrimeSpectrum in
 /-- The restriction of `Spec.map f` to a basic open `D(r)` is isomorphic to `Spec.map` of the
 localization of `f` away from `r`. -/
