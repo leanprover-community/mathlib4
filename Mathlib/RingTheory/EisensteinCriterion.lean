@@ -22,8 +22,6 @@ variable {R : Type*} [CommRing R]
 
 namespace Polynomial
 
-open Polynomial
-
 namespace EisensteinCriterionAux
 
 -- Section for auxiliary lemmas used in the proof of `irreducible_of_eisenstein_criterion`

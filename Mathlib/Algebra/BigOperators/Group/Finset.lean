@@ -5,7 +5,9 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Finset.Piecewise
+import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Fintype.Pi
 
 /-!
 # Big operators
@@ -418,6 +420,12 @@ theorem prod_filter_mul_prod_filter_not
   have := Classical.decEq α
   rw [← prod_union (disjoint_filter_filter_neg s s p), filter_union_filter_neg_eq]
 
+@[to_additive]
+lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [DecidablePred p]
+    [∀ x, Decidable (¬p x)] (f : α → β) :
+    (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
+  rw [mul_comm, prod_filter_mul_prod_filter_not]
+
 section ToList
 
 @[to_additive (attr := simp)]
@@ -811,10 +819,10 @@ theorem prod_comm' {s : Finset γ} {t : γ → Finset α} {t' : Finset α} {s' :
     (h : ∀ x y, x ∈ s ∧ y ∈ t x ↔ x ∈ s' y ∧ y ∈ t') {f : γ → α → β} :
     (∏ x ∈ s, ∏ y ∈ t x, f x y) = ∏ y ∈ t', ∏ x ∈ s' y, f x y := by
   classical
-    have : ∀ z : γ × α, (z ∈ s.biUnion fun x => (t x).map <| Function.Embedding.sectr x _) ↔
+    have : ∀ z : γ × α, (z ∈ s.biUnion fun x => (t x).map <| Function.Embedding.sectR x _) ↔
       z.1 ∈ s ∧ z.2 ∈ t z.1 := by
       rintro ⟨x, y⟩
-      simp only [mem_biUnion, mem_map, Function.Embedding.sectr_apply, Prod.mk.injEq,
+      simp only [mem_biUnion, mem_map, Function.Embedding.sectR_apply, Prod.mk.injEq,
         exists_eq_right, ← and_assoc]
     exact
       (prod_finset_product' _ _ _ this).symm.trans
@@ -926,9 +934,8 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
           h₀ c hc ⟨ne_of_mem_of_not_mem hc h₁, ne_of_mem_of_not_mem hc h₂⟩)
         prod_const_one
 
--- Porting note: simpNF linter complains that LHS doesn't simplify, but it does
 /-- A product over `s.subtype p` equals one over `{x ∈ s | p x}`. -/
-@[to_additive (attr := simp, nolint simpNF)
+@[to_additive (attr := simp)
 "A sum over `s.subtype p` equals one over `{x ∈ s | p x}`."]
 theorem prod_subtype_eq_prod_filter (f : α → β) {p : α → Prop} [DecidablePred p] :
     ∏ x ∈ s.subtype p, f x = ∏ x ∈ s with p x, f x := by
@@ -2190,7 +2197,7 @@ variable [Monoid α]
 theorem ofMul_list_prod (s : List α) : ofMul s.prod = (s.map ofMul).sum := by simp [ofMul]; rfl
 
 @[simp]
-theorem toMul_list_sum (s : List (Additive α)) : toMul s.sum = (s.map toMul).prod := by
+theorem toMul_list_sum (s : List (Additive α)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
 
 end Monoid
@@ -2203,7 +2210,7 @@ variable [AddMonoid α]
 theorem ofAdd_list_prod (s : List α) : ofAdd s.sum = (s.map ofAdd).prod := by simp [ofAdd]; rfl
 
 @[simp]
-theorem toAdd_list_sum (s : List (Multiplicative α)) : toAdd s.prod = (s.map toAdd).sum := by
+theorem toAdd_list_sum (s : List (Multiplicative α)) : s.prod.toAdd = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
 
 end AddMonoid
@@ -2217,7 +2224,7 @@ theorem ofMul_multiset_prod (s : Multiset α) : ofMul s.prod = (s.map ofMul).sum
   simp [ofMul]; rfl
 
 @[simp]
-theorem toMul_multiset_sum (s : Multiset (Additive α)) : toMul s.sum = (s.map toMul).prod := by
+theorem toMul_multiset_sum (s : Multiset (Additive α)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
 
 @[simp]
@@ -2226,7 +2233,7 @@ theorem ofMul_prod (s : Finset ι) (f : ι → α) : ofMul (∏ i ∈ s, f i) = 
 
 @[simp]
 theorem toMul_sum (s : Finset ι) (f : ι → Additive α) :
-    toMul (∑ i ∈ s, f i) = ∏ i ∈ s, toMul (f i) :=
+    (∑ i ∈ s, f i).toMul = ∏ i ∈ s, (f i).toMul :=
   rfl
 
 end CommMonoid
@@ -2241,7 +2248,7 @@ theorem ofAdd_multiset_prod (s : Multiset α) : ofAdd s.sum = (s.map ofAdd).prod
 
 @[simp]
 theorem toAdd_multiset_sum (s : Multiset (Multiplicative α)) :
-    toAdd s.prod = (s.map toAdd).sum := by
+    s.prod.toAdd = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
 
 @[simp]
@@ -2250,7 +2257,7 @@ theorem ofAdd_sum (s : Finset ι) (f : ι → α) : ofAdd (∑ i ∈ s, f i) = �
 
 @[simp]
 theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
-    toAdd (∏ i ∈ s, f i) = ∑ i ∈ s, toAdd (f i) :=
+    (∏ i ∈ s, f i).toAdd = ∑ i ∈ s, (f i).toAdd :=
   rfl
 
 end AddCommMonoid

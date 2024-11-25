@@ -43,6 +43,8 @@ spans can be proved directly.
 - [scholze2019condensed], Theorem 5.4.
 -/
 
+open CategoryTheory ContinuousMap Limits Opposite Profinite Submodule Topology
+
 universe u
 
 namespace Profinite
@@ -50,8 +52,6 @@ namespace Profinite
 namespace NobelingProof
 
 variable {I : Type u} (C : Set (I → Bool))
-
-open Profinite ContinuousMap CategoryTheory Limits Opposite Submodule
 
 section Projections
 /-!

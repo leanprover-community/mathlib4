@@ -59,7 +59,7 @@ open Function
 namespace Nat
 variable {a b c d m n k : ℕ} {p : ℕ → Prop}
 
--- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (#13092).
+-- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (https://github.com/leanprover-community/mathlib4/pull/13092).
 instance instLinearOrder : LinearOrder ℕ where
   le := Nat.le
   le_refl := @Nat.le_refl
@@ -71,6 +71,13 @@ instance instLinearOrder : LinearOrder ℕ where
   decidableLT := inferInstance
   decidableLE := inferInstance
   decidableEq := inferInstance
+
+-- Shortcut instances
+instance : Preorder ℕ := inferInstance
+instance : PartialOrder ℕ := inferInstance
+instance : Min ℕ := inferInstance
+instance : Max ℕ := inferInstance
+instance : Ord ℕ := inferInstance
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
@@ -1161,7 +1168,6 @@ lemma mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [Nat.mul_com
 lemma mul_add_mod_of_lt (h : c < b) : (a * b + c) % b = c := by
   rw [Nat.mul_add_mod', Nat.mod_eq_of_lt h]
 
-set_option linter.deprecated false in
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
   omega

@@ -67,7 +67,6 @@ theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
   mt isUnit_zero_iff.1 zero_ne_one
 
@@ -179,11 +178,9 @@ theorem val_mk0 {a : G₀} (h : a ≠ 0) : (mk0 a h : G₀) = a :=
 theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
   Units.ext rfl
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
   mul_inv_cancel₀ u.ne_zero
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
   inv_mul_cancel₀ u.ne_zero
 
@@ -425,9 +422,9 @@ instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
 
-set_option linter.deprecated false in
 @[deprecated div_mul_cancel_left₀ (since := "2024-03-22")]
-lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := ha.isUnit.div_mul_right _
+lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := by
+  simp [div_mul_cancel_left₀ ha]
 
 lemma mul_div_cancel_left_of_imp (h : a = 0 → b = 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_of_imp h]
