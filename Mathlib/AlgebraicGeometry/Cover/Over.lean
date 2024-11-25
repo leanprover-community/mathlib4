@@ -59,7 +59,7 @@ variable {X W : Scheme.{u}} (𝒰 : X.Cover P) (f : W ⟶ X) [W.Over S] [X.Over 
 
 /-- The pullback of a cover of `S`-schemes along a morphism of `S`-schemes. This is not
 definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullbackCover`, as here we take
-the pullback in `Over S`, whose underlying schemes is only isomorphic but not equal to the
+the pullback in `Over S`, whose underlying scheme is only isomorphic but not equal to the
 pullback in `Scheme`. -/
 @[simps]
 def Cover.pullbackCoverOver : W.Cover P where
