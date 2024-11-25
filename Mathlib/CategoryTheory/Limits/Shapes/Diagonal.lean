@@ -358,6 +358,21 @@ theorem diagonal_pullback_fst {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
           (diagonalObjPullbackFstIso f g).inv := by
   ext <;> dsimp <;> simp
 
+/-- Informally, this is a special case of `pullback_map_diagonal_isPullback` for `T = X`. -/
+lemma pullback_lift_diagonal_isPullback (g : Y ⟶ X) (f : X ⟶ S) :
+    IsPullback g (pullback.lift (𝟙 Y) g (by simp)) (diagonal f)
+      (pullback.map (g ≫ f) f f f g (𝟙 X) (𝟙 S) (by simp) (by simp)) := by
+  let i : pullback (g ≫ f) f ≅ pullback (g ≫ f) (𝟙 X ≫ f) := congrHom rfl (by simp)
+  let e : pullback (diagonal f) (map (g ≫ f) f f f g (𝟙 X) (𝟙 S) (by simp) (by simp)) ≅
+      pullback (diagonal f) (map (g ≫ f) (𝟙 X ≫ f) f f g (𝟙 X) (𝟙 S) (by simp) (by simp)) :=
+    (asIso (map _ _ _ _ (𝟙 _) i.inv (𝟙 _) (by simp) (by ext <;> simp [i]))).symm
+  apply IsPullback.of_iso_pullback _
+      (e ≪≫ pullbackDiagonalMapIdIso (T := X) (S := S) g (𝟙 X) f ≪≫ asIso (pullback.fst _ _)).symm
+  · simp [e]
+  · ext <;> simp [e, i]
+  · constructor
+    ext <;> simp [condition]
+
 end
 
 /-- Given the following diagram with `S ⟶ S'` a monomorphism,

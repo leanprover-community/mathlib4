@@ -55,8 +55,6 @@ variable (X : SSet.{u}) [StrictSegal X]
 
 namespace isPointwiseRightKanExtensionAt
 
-open Truncated
-
 abbrev strArrowMk₂ {i : ℕ} {n : ℕ} (φ : [i] ⟶ [n]) (hi : i ≤ 2) :
     StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op :=
   StructuredArrow.mk (Y := op ⟨[i], hi⟩) (by exact φ.op)
@@ -148,18 +146,6 @@ lemma fac_aux₂ {n : ℕ}
       have : X.map α.hom (lift s x) = s.π.app α x := by
         apply StrictSegal.spineInjective
         ext
-        · dsimp only [spineEquiv]
-          rw [Equiv.coe_fn_mk, spine_arrow, spine_arrow,
-            ← FunctorToTypes.map_comp_apply,
-            show α.hom ≫ (mkOfSucc 0).op = α₂.hom from Quiver.Hom.unop_inj (by
-            ext x; fin_cases x <;> rfl), h₂, ← congr_fun (s.w β₂) x]
-          rfl
-        · dsimp only [spineEquiv]
-          rw [Equiv.coe_fn_mk, spine_arrow, spine_arrow,
-            ← FunctorToTypes.map_comp_apply,
-            show α.hom ≫ (mkOfSucc 1).op = α₀.hom from Quiver.Hom.unop_inj (by
-            ext x; fin_cases x <;> rfl), h₀, ← congr_fun (s.w β₀) x]
-          rfl
       rw [← StructuredArrow.w β₁, FunctorToTypes.map_comp_apply, this, ← s.w β₁]
       dsimp
 
@@ -174,6 +160,8 @@ lemma fac_aux₃ {n : ℕ}
   exact fac_aux₂ _ _ _ _ _ _ (by omega)
 
 end isPointwiseRightKanExtensionAt
+
+open Truncated
 
 open isPointwiseRightKanExtensionAt in
 /-- A strict Segal simplicial set is 2-coskeletal. -/

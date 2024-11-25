@@ -393,7 +393,7 @@ theorem ker_toZModPow (n : ℕ) :
     rw [zmod_congr_of_sub_mem_span n x _ 0 _ h, cast_zero]
     apply appr_spec
 
--- @[simp] -- Porting note: not in simpNF
+-- This is not a simp lemma; simp can't match the LHS.
 theorem zmod_cast_comp_toZModPow (m n : ℕ) (h : m ≤ n) :
     (ZMod.castHom (pow_dvd_pow p h) (ZMod (p ^ m))).comp (@toZModPow p _ n) = @toZModPow p _ m := by
   apply ZMod.ringHom_eq_of_ker_eq
@@ -489,7 +489,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   intro j hj
   refine lt_of_le_of_lt ?_ hk
   -- Need to do beta reduction first, as `norm_cast` doesn't.
-  -- Added to adapt to leanprover/lean4#2734.
+  -- Added to adapt to https://github.com/leanprover/lean4/pull/2734.
   beta_reduce
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]

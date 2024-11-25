@@ -267,7 +267,7 @@ private theorem newton_seq_succ_dist (n : ℕ) :
       newton_seq_norm_eq hnorm _
     _ = ‖F.eval (newton_seq n)‖ / ‖F.derivative.eval a‖ := by rw [newton_seq_deriv_norm]
     _ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n / ‖F.derivative.eval a‖ :=
-      ((div_le_div_right (deriv_norm_pos hnorm)).2 (newton_seq_norm_le hnorm _))
+      ((div_le_div_iff_of_pos_right (deriv_norm_pos hnorm)).2 (newton_seq_norm_le hnorm _))
     _ = ‖F.derivative.eval a‖ * T ^ 2 ^ n := div_sq_cancel _ _
 
 private theorem newton_seq_dist_aux (n : ℕ) :

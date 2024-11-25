@@ -669,7 +669,7 @@ lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuo
     IsLocallyFiniteMeasure (μ.withDensity fun x ↦ f x) := by
   refine ⟨fun x ↦ ?_⟩
   rcases (μ.finiteAt_nhds x).exists_mem_basis ((nhds_basis_opens' x).restrict_subset
-    (eventually_le_of_tendsto_lt (lt_add_one _) (hf.tendsto x))) with ⟨U, ⟨⟨hUx, hUo⟩, hUf⟩, hμU⟩
+    ((hf.tendsto x).eventually_le_const (lt_add_one _))) with ⟨U, ⟨⟨hUx, hUo⟩, hUf⟩, hμU⟩
   refine ⟨U, hUx, ?_⟩
   rw [withDensity_apply _ hUo.measurableSet]
   exact setLIntegral_lt_top_of_bddAbove hμU.ne ⟨f x + 1, forall_mem_image.2 hUf⟩

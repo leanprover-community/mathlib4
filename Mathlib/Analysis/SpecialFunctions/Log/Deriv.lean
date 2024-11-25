@@ -24,7 +24,7 @@ logarithm, derivative
 
 open Filter Finset Set
 
-open scoped Topology
+open scoped Topology ContDiff
 
 namespace Real
 
@@ -66,12 +66,13 @@ theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
 theorem deriv_log' : deriv log = Inv.inv :=
   funext deriv_log
 
-theorem contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
-  suffices ContDiffOn ℝ ⊤ log {0}ᶜ from this.of_le le_top
+theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
+  suffices ContDiffOn ℝ ω log {0}ᶜ from this.of_le le_top
+  rw [← contDiffOn_infty_iff_contDiffOn_omega]
   refine (contDiffOn_top_iff_deriv_of_isOpen isOpen_compl_singleton).2 ?_
   simp [differentiableOn_log, contDiffOn_inv]
 
-theorem contDiffAt_log {n : ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
+theorem contDiffAt_log {n : WithTop ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
   ⟨fun h => continuousAt_log_iff.1 h.continuousAt, fun hx =>
     (contDiffOn_log x hx).contDiffAt <| IsOpen.mem_nhds isOpen_compl_singleton hx⟩
 
@@ -198,7 +199,7 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
 expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 
-Porting note (#11215): TODO: use one of generic theorems about Taylor's series
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use one of generic theorems about Taylor's series
 to prove this estimate.
 -/
 theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
