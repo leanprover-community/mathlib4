@@ -48,6 +48,7 @@ free group, Newman's diamond lemma, Church-Rosser theorem
 -/
 
 open Relation
+open scoped List
 
 universe u v w
 
@@ -906,6 +907,9 @@ def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
     List.casesOn ih [hd1] fun hd2 tl2 =>
       if hd1.1 = hd2.1 ∧ hd1.2 = not hd2.2 then tl2 else hd1 :: hd2 :: tl2
 
+@[to_additive (attr := simp)] lemma reduce_nil : reduce ([] : List (α × Bool)) = [] := rfl
+@[to_additive] lemma reduce_singleton (s : α × Bool) : reduce [s] = [s] := rfl
+
 @[to_additive (attr := simp)]
 theorem reduce.cons (x) :
     reduce (x :: L) =
@@ -1099,10 +1103,18 @@ theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (redu
   have : Red (invRev (invRev w)) (invRev (reduce (invRev w))) := reduce.red.invRev
   rwa [invRev_invRev] at this
 
-@[to_additive]
-theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
+@[to_additive (attr := simp)]
+theorem toWord_inv (x : FreeGroup α) : x⁻¹.toWord = invRev x.toWord := by
   rcases x with ⟨L⟩
   rw [quot_mk_eq_mk, inv_mk, toWord_mk, toWord_mk, reduce_invRev]
+
+@[to_additive]
+lemma toWord_mul_sublist (x y : FreeGroup α) : (x * y).toWord <+ x.toWord ++ y.toWord := by
+  refine Red.sublist ?_
+  have : x * y = FreeGroup.mk (x.toWord ++ y.toWord) := by
+    rw [← FreeGroup.mul_mk, FreeGroup.mk_toWord, FreeGroup.mk_toWord]
+  rw [this]
+  exact FreeGroup.reduce.red
 
 /-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
 @[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]
