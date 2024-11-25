@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
 
@@ -642,7 +642,7 @@ set of generators equals `⊤`. -/
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
   rw [← lift.range_eq_closure, lift_of_eq_id]
-  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
+  exact MonoidHom.range_eq_top.2 Function.surjective_id
 
 end lift
 
@@ -808,8 +808,7 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
     revert x
-    change (FreeGroup Unit →* FreeGroup ℤ)
-    apply map fun _ => (1 : ℤ))
+    exact ↑(map fun _ => (1 : ℤ)))
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩

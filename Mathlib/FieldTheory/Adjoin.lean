@@ -7,8 +7,11 @@ import Mathlib.Algebra.Algebra.Subalgebra.Directed
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Adjoining Elements to Fields
@@ -38,6 +41,7 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 
 -- Porting note: not adding `neg_mem'` causes an error.
 /-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`. -/
+@[stacks 09FZ "first part"]
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
     algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
@@ -332,7 +336,7 @@ theorem _root_.AlgHom.map_fieldRange {L : Type*} [Field L] [Algebra F L]
 
 theorem _root_.AlgHom.fieldRange_eq_top {f : E →ₐ[F] K} :
     f.fieldRange = ⊤ ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans Set.range_iff_surjective
+  SetLike.ext'_iff.trans Set.range_eq_univ
 
 @[simp]
 theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :
@@ -714,8 +718,6 @@ theorem sup_toSubalgebra_of_left [FiniteDimensional K E1] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_left E1 E2
 
-@[deprecated (since := "2024-01-19")] alias sup_toSubalgebra := sup_toSubalgebra_of_left
-
 theorem sup_toSubalgebra_of_right [FiniteDimensional K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_right E1 E2
@@ -728,6 +730,31 @@ instance finiteDimensional_sup [FiniteDimensional K E1] [FiniteDimensional K E2]
       g.toLinearMap.finiteDimensional_range
     rwa [this] at h
   rw [Algebra.TensorProduct.productMap_range, E1.range_val, E2.range_val, sup_toSubalgebra_of_left]
+
+/-- If `E1` and `E2` are intermediate fields, and at least one them are algebraic, then the rank of
+the compositum of `E1` and `E2` is less than or equal to the product of that of `E1` and `E2`.
+Note that this result is also true without algebraic assumption,
+but the proof becomes very complicated. -/
+theorem rank_sup_le_of_isAlgebraic
+    (halg : Algebra.IsAlgebraic K E1 ∨ Algebra.IsAlgebraic K E2) :
+    Module.rank K ↥(E1 ⊔ E2) ≤ Module.rank K E1 * Module.rank K E2 := by
+  have := E1.toSubalgebra.rank_sup_le_of_free E2.toSubalgebra
+  rwa [← sup_toSubalgebra_of_isAlgebraic E1 E2 halg] at this
+
+/-- If `E1` and `E2` are intermediate fields, then the `Module.finrank` of
+the compositum of `E1` and `E2` is less than or equal to the product of that of `E1` and `E2`. -/
+theorem finrank_sup_le :
+    finrank K ↥(E1 ⊔ E2) ≤ finrank K E1 * finrank K E2 := by
+  by_cases h : FiniteDimensional K E1
+  · have := E1.toSubalgebra.finrank_sup_le_of_free E2.toSubalgebra
+    change _ ≤ finrank K E1 * finrank K E2 at this
+    rwa [← sup_toSubalgebra_of_left] at this
+  rw [FiniteDimensional, ← rank_lt_aleph0_iff, not_lt] at h
+  have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|
+    show Subalgebra.toSubmodule E1.toSubalgebra ≤ Subalgebra.toSubmodule (E1 ⊔ E2).toSubalgebra by
+      simp
+  rw [show finrank K E1 = 0 from Cardinal.toNat_apply_of_aleph0_le h,
+    show finrank K ↥(E1 ⊔ E2) = 0 from Cardinal.toNat_apply_of_aleph0_le (h.trans this), zero_mul]
 
 variable {ι : Type*} {t : ι → IntermediateField K L}
 
@@ -1063,6 +1090,7 @@ theorem aeval_gen_minpoly (α : E) : aeval (AdjoinSimple.gen F α) (minpoly F α
 
 -- Porting note: original proof used `Exists.cases_on`.
 /-- algebra isomorphism between `AdjoinRoot` and `F⟮α⟯` -/
+@[stacks 09G1 "Algebraic case"]
 noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
     AdjoinRoot (minpoly F α) ≃ₐ[F] F⟮α⟯ :=
   AlgEquiv.ofBijective
@@ -1079,11 +1107,11 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
         refine Subfield.closure_le.mpr (Set.union_subset (fun x hx => ?_) ?_)
         · obtain ⟨y, hy⟩ := hx
           refine ⟨y, ?_⟩
-          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
           exact hy
         · refine Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), ?_⟩
-          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
           erw [RingHom.comp_apply, AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
           rfl)
 
@@ -1117,7 +1145,7 @@ noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K
   dim := (minpoly K x).natDegree
   basis := powerBasisAux hx
   basis_eq_pow i := by
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [powerBasisAux, Basis.map_apply, PowerBasis.basis_eq_pow, AlgEquiv.toLinearEquiv_apply,
       map_pow, AdjoinRoot.powerBasis_gen, adjoinRootEquivAdjoin_apply_root]
 
@@ -1127,6 +1155,9 @@ theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimension
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
+/-- If `x` is an algebraic element of field `K`, then its minimal polynomial has degree
+`[K(x) : K]`. -/
+@[stacks 09GN]
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
     Module.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
   rw [PowerBasis.finrank (adjoin.powerBasis hx : _)]
@@ -1276,7 +1307,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
     have := Fact.mk hf
     intro e
     apply not_irreducible_C ((g.map (algebraMap _ _)).coeff 0 - AdjoinSimple.gen K (root f))
-    -- Needed to specialize `map_sub` to avoid a timeout #8386
+    -- Needed to specialize `map_sub` to avoid a timeout https://github.com/leanprover-community/mathlib4/pull/8386
     rw [RingHom.map_sub, coeff_map, ← map_C, ← eq_C_of_natDegree_eq_zero e]
     apply hg (AdjoinRoot f)
     rw [AdjoinRoot.minpoly_root hf.ne_zero, hfm, inv_one, map_one, mul_one]
@@ -1321,6 +1352,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 /-- An intermediate field `S` is finitely generated if there exists `t : Finset E` such that
 `IntermediateField.adjoin F t = S`. -/
+@[stacks 09FZ "second part"]
 def FG (S : IntermediateField F E) : Prop :=
   ∃ t : Finset E, adjoin F ↑t = S
 
@@ -1601,4 +1633,75 @@ end IntermediateField
 
 end ExtendScalars
 
-set_option linter.style.longFile 1700
+namespace IsFractionRing
+
+variable {F A K L : Type*} [Field F] [CommRing A] [Algebra F A]
+  [Field K] [Algebra F K] [Algebra A K] [IsFractionRing A K] [Field L] [Algebra F L]
+  {g : A →ₐ[F] L} {f : K →ₐ[F] L}
+
+/-- If `F` is a field, `A` is an `F`-algebra with fraction field `K`, `L` is a field,
+`g : A →ₐ[F] L` lifts to `f : K →ₐ[F] L`,
+then the image of `f` is the field generated by the image of `g`.
+Note: this does not require `IsScalarTower F A K`. -/
+theorem algHom_fieldRange_eq_of_comp_eq (h : RingHom.comp f (algebraMap A K) = (g : A →+* L)) :
+    f.fieldRange = IntermediateField.adjoin F g.range := by
+  apply IntermediateField.toSubfield_injective
+  simp_rw [AlgHom.fieldRange_toSubfield, IntermediateField.adjoin_toSubfield]
+  convert ringHom_fieldRange_eq_of_comp_eq h using 2
+  exact Set.union_eq_self_of_subset_left fun _ ⟨x, hx⟩ ↦ ⟨algebraMap F A x, by simp [← hx]⟩
+
+/-- If `F` is a field, `A` is an `F`-algebra with fraction field `K`, `L` is a field,
+`g : A →ₐ[F] L` lifts to `f : K →ₐ[F] L`,
+`s` is a set such that the image of `g` is the subalgebra generated by `s`,
+then the image of `f` is the intermediate field generated by `s`.
+Note: this does not require `IsScalarTower F A K`. -/
+theorem algHom_fieldRange_eq_of_comp_eq_of_range_eq
+    (h : RingHom.comp f (algebraMap A K) = (g : A →+* L))
+    {s : Set L} (hs : g.range = Algebra.adjoin F s) :
+    f.fieldRange = IntermediateField.adjoin F s := by
+  apply IntermediateField.toSubfield_injective
+  simp_rw [AlgHom.fieldRange_toSubfield, IntermediateField.adjoin_toSubfield]
+  refine ringHom_fieldRange_eq_of_comp_eq_of_range_eq h ?_
+  rw [← Algebra.adjoin_eq_ring_closure, ← hs]; rfl
+
+variable [IsScalarTower F A K]
+
+/-- The image of `IsFractionRing.liftAlgHom` is the intermediate field generated by the image
+of the algebra hom. -/
+theorem liftAlgHom_fieldRange (hg : Function.Injective g) :
+    (liftAlgHom hg : K →ₐ[F] L).fieldRange = IntermediateField.adjoin F g.range :=
+  algHom_fieldRange_eq_of_comp_eq (by ext; simp)
+
+/-- The image of `IsFractionRing.liftAlgHom` is the intermediate field generated by `s`,
+if the image of the algebra hom is the subalgebra generated by `s`. -/
+theorem liftAlgHom_fieldRange_eq_of_range_eq (hg : Function.Injective g)
+    {s : Set L} (hs : g.range = Algebra.adjoin F s) :
+    (liftAlgHom hg : K →ₐ[F] L).fieldRange = IntermediateField.adjoin F s :=
+  algHom_fieldRange_eq_of_comp_eq_of_range_eq (by ext; simp) hs
+
+end IsFractionRing
+
+namespace IntermediateField
+
+universe u v
+
+open Cardinal
+
+variable (F : Type u) [Field F]
+
+theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set E) :
+    Cardinal.lift.{u} #(adjoin F s) ≤ Cardinal.lift.{v} #F ⊔ Cardinal.lift.{u} #s ⊔ ℵ₀ := by
+  rw [show ↥(adjoin F s) = (adjoin F s).toSubfield from rfl, adjoin_toSubfield]
+  apply (Cardinal.lift_le.mpr (Subfield.cardinalMk_closure_le_max _)).trans
+  rw [lift_max, sup_le_iff, lift_aleph0]
+  refine ⟨(Cardinal.lift_le.mpr ((mk_union_le _ _).trans <| add_le_max _ _)).trans ?_, le_sup_right⟩
+  simp_rw [lift_max, lift_aleph0, sup_assoc]
+  exact sup_le_sup_right mk_range_le_lift _
+
+theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
+    #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by
+  simpa using lift_cardinalMk_adjoin_le F s
+
+end IntermediateField
+
+set_option linter.style.longFile 1800

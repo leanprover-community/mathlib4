@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
 import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Localizations away from an element
@@ -296,53 +297,42 @@ end AtUnits
 
 section Prod
 
+lemma away_of_isIdempotentElem_of_mul {R S} [CommSemiring R] [CommSemiring S] [Algebra R S]
+    {e : R} (he : IsIdempotentElem e)
+    (H : ∀ x y, algebraMap R S x = algebraMap R S y ↔ e * x = e * y)
+    (H' : Function.Surjective (algebraMap R S)) :
+    IsLocalization.Away e S where
+  map_units' r := by
+    obtain ⟨r, n, rfl⟩ := r
+    simp [show algebraMap R S e = 1 by rw [← (algebraMap R S).map_one, H, mul_one, he]]
+  surj' z := by
+    obtain ⟨z, rfl⟩ := H' z
+    exact ⟨⟨z, 1⟩, by simp⟩
+  exists_of_eq {x y} h := ⟨⟨e, Submonoid.mem_powers e⟩, (H x y).mp h⟩
+
 lemma away_of_isIdempotentElem {R S} [CommRing R] [CommRing S] [Algebra R S]
     {e : R} (he : IsIdempotentElem e)
     (H : RingHom.ker (algebraMap R S) = Ideal.span {1 - e})
     (H' : Function.Surjective (algebraMap R S)) :
-    IsLocalization.Away e S where
-  map_units' r := by
-    have : algebraMap R S e = 1 := by
-      rw [← (algebraMap R S).map_one, eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker,
-        H, Ideal.mem_span_singleton]
-    obtain ⟨r, n, rfl⟩ := r
-    simp [this]
-  surj' z := by
-    obtain ⟨z, rfl⟩ := H' z
-    exact ⟨⟨z, 1⟩, by simp⟩
-  exists_of_eq {x y} h := by
-    rw [← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, H, Ideal.mem_span_singleton] at h
-    obtain ⟨k, hk⟩ := h
-    refine ⟨⟨e, Submonoid.mem_powers e⟩, ?_⟩
-    rw [← sub_eq_zero, ← mul_sub, hk, ← mul_assoc, mul_sub, mul_one, he.eq, sub_self, zero_mul]
+    IsLocalization.Away e S :=
+  away_of_isIdempotentElem_of_mul he (fun x y ↦ by
+    rw [← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, H, ← he.ker_toSpanSingleton_eq_span,
+      LinearMap.mem_ker, LinearMap.toSpanSingleton_apply, sub_smul, sub_eq_zero]
+    simp_rw [mul_comm e, smul_eq_mul]) H'
 
-instance away_fst {R S} [CommRing R] [CommRing S] :
+instance away_fst {R S} [CommSemiring R] [CommSemiring S] :
     letI := (RingHom.fst R S).toAlgebra
-    IsLocalization.Away (R := R × S) (1, 0) R := by
+    IsLocalization.Away (R := R × S) (1, 0) R :=
   letI := (RingHom.fst R S).toAlgebra
-  apply away_of_isIdempotentElem
-  · ext <;> simp
-  · ext x
-    simp only [RingHom.algebraMap_toAlgebra, RingHom.mem_ker, RingHom.coe_fst,
-      Ideal.mem_span_singleton, Prod.one_eq_mk, Prod.mk_sub_mk, sub_self, sub_zero]
-    constructor
-    · intro e; use x; ext <;> simp [e]
-    · rintro ⟨⟨i, j⟩, rfl⟩; simp
-  · exact Prod.fst_surjective
+  away_of_isIdempotentElem_of_mul (by ext <;> simp)
+    (fun ⟨xR, xS⟩ ⟨yR, yS⟩ ↦ show xR = yR ↔ _ by simp) Prod.fst_surjective
 
-instance away_snd {R S} [CommRing R] [CommRing S] :
+instance away_snd {R S} [CommSemiring R] [CommSemiring S] :
     letI := (RingHom.snd R S).toAlgebra
-    IsLocalization.Away (R := R × S) (0, 1) S := by
+    IsLocalization.Away (R := R × S) (0, 1) S :=
   letI := (RingHom.snd R S).toAlgebra
-  apply away_of_isIdempotentElem
-  · ext <;> simp
-  · ext x
-    simp only [RingHom.algebraMap_toAlgebra, RingHom.mem_ker, RingHom.coe_snd,
-      Ideal.mem_span_singleton, Prod.one_eq_mk, Prod.mk_sub_mk, sub_self, sub_zero]
-    constructor
-    · intro e; use x; ext <;> simp [e]
-    · rintro ⟨⟨i, j⟩, rfl⟩; simp
-  · exact Prod.snd_surjective
+  away_of_isIdempotentElem_of_mul (by ext <;> simp)
+    (fun ⟨xR, xS⟩ ⟨yR, yS⟩ ↦ show xS = yS ↔ _ by simp) Prod.snd_surjective
 
 end Prod
 
@@ -359,6 +349,15 @@ variable {M}
 noncomputable abbrev awayLift (f : R →+* P) (r : R) (hr : IsUnit (f r)) :
     Localization.Away r →+* P :=
   IsLocalization.Away.lift r hr
+
+lemma awayLift_mk {A : Type*} [CommRing A] (f : R →+* A) (r : R)
+    (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
+    Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
+      (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
+  rw [Localization.mk_eq_mk']
+  erw [IsLocalization.lift_mk']
+  rw [Units.mul_inv_eq_iff_eq_mul]
+  simp [IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
 
 /-- Given a map `f : R →+* S` and an element `r : R`, we may construct a map `Rᵣ →+* Sᵣ`. -/
 noncomputable abbrev awayMap (f : R →+* P) (r : R) :

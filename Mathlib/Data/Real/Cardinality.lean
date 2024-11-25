@@ -3,9 +3,9 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Rat.Denumerable
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Data.Rat.Cardinal
 import Mathlib.SetTheory.Cardinal.Continuum
 
 /-!
