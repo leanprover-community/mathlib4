@@ -110,7 +110,7 @@ variable (hX : Q (X ↘ S)) (hW : Q (W ↘ S)) (hQ : ∀ j, Q (𝒰.obj j ↘ S)
 
 /-- The pullback of a cover of `S`-schemes with `Q` along a morphism of `S`-schemes. This is not
 definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullbackCover`, as here we take
-the pullback in `Q.Over ⊤ S`, whose underlying schemes is only isomorphic but not equal to the
+the pullback in `Q.Over ⊤ S`, whose underlying scheme is only isomorphic but not equal to the
 pullback in `Scheme`. -/
 @[simps (config := .lemmasOnly)]
 def Cover.pullbackCoverOverProp : W.Cover P where
