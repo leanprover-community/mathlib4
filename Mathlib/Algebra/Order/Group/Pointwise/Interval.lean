@@ -164,6 +164,15 @@ lemma inv_Ioc (a b : α) : (Ioc a b)⁻¹ = Ico b⁻¹ a⁻¹ := by
 @[to_additive (attr := simp)]
 lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Ioi_inter_Iio, inter_comm]
 
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ici := neg_Ici
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Iic := neg_Iic
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ioi := neg_Ioi
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Iio := neg_Iio
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Icc := neg_Icc
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ico := neg_Ico
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ioc := neg_Ioc
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ioo := neg_Ioo
+
 end OrderedCommGroup
 
 section OrderedAddCommGroup
@@ -243,40 +252,6 @@ theorem preimage_add_const_Ioc : (fun x => x + a) ⁻¹' Ioc b c = Ioc (b - a) (
 @[simp]
 theorem preimage_add_const_Ioo : (fun x => x + a) ⁻¹' Ioo b c = Ioo (b - a) (c - a) := by
   simp [← Ioi_inter_Iio]
-
-/-!
-### Preimages under `x ↦ -x`
--/
-
-@[deprecated neg_Ici (since := "2024-11-23")]
-theorem preimage_neg_Ici : -Ici a = Iic (-a) :=
-  ext fun _x => le_neg
-
-@[deprecated neg_Iic (since := "2024-11-23")]
-theorem preimage_neg_Iic : -Iic a = Ici (-a) :=
-  ext fun _x => neg_le
-
-@[deprecated neg_Ioi (since := "2024-11-23")]
-theorem preimage_neg_Ioi : -Ioi a = Iio (-a) :=
-  ext fun _x => lt_neg
-
-@[deprecated neg_Iio (since := "2024-11-23")]
-theorem preimage_neg_Iio : -Iio a = Ioi (-a) :=
-  ext fun _x => neg_lt
-
-@[deprecated neg_Icc (since := "2024-11-23")]
-theorem preimage_neg_Icc : -Icc a b = Icc (-b) (-a) := by simp [← Ici_inter_Iic, inter_comm]
-
-@[deprecated neg_Ico (since := "2024-11-23")]
-theorem preimage_neg_Ico : -Ico a b = Ioc (-b) (-a) := by
-  simp [← Ici_inter_Iio, ← Ioi_inter_Iic, inter_comm]
-
-@[deprecated neg_Ioc (since := "2024-11-23")]
-theorem preimage_neg_Ioc : -Ioc a b = Ico (-b) (-a) := by
-  simp [← Ioi_inter_Iic, ← Ici_inter_Iio, inter_comm]
-
-@[deprecated neg_Ioo (since := "2024-11-23")]
-theorem preimage_neg_Ioo : -Ioo a b = Ioo (-b) (-a) := by simp [← Ioi_inter_Iio, inter_comm]
 
 /-!
 ### Preimages under `x ↦ x - a`
