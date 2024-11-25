@@ -201,35 +201,19 @@ instance DegLex.wellFoundedLT [WellFoundedGT α] :
   ⟨DegLex.wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
 
 /-- for the deg-lexicographic ordering, X 1 < X 0 -/
-<<<<<<< HEAD
 example : toDegLex (single 1 1) < toDegLex (single 0 1) := by
   rw [DegLex.single_lt_iff]
   exact Nat.one_pos
 
 /-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
 example : toDegLex (single 0 2) > toDegLex (single 0 1 + single 1 1) := by
-=======
-example : toDegLex (Finsupp.single 1 1) < toDegLex (Finsupp.single 0 1) := by
-  simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
-  simp only [degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
-  use 0
-  simp
-
-
-/-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
-example : toDegLex (Finsupp.single 0 2) > toDegLex (Finsupp.single 0 1 + Finsupp.single 1 1) := by
->>>>>>> 2848a8991d5a76f67d14acfc2de43e0952c71b9c
   simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
   simp only [degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
   use 0
   simp
 
 /-- for the deg-lexicographic ordering, X 0 < X 1 ^ 2 -/
-<<<<<<< HEAD
 example : toDegLex (single 0 1) < toDegLex (single 1 2) := by
-=======
-example : toDegLex (Finsupp.single 0 1) < toDegLex (Finsupp.single 1 2) := by
->>>>>>> 2848a8991d5a76f67d14acfc2de43e0952c71b9c
   simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
   simp [degree_single]
 
