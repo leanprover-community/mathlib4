@@ -155,11 +155,6 @@ lemma fromRows_one_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
   fromRows_isTotallyUnimodular_iff_rows <| fun i ↦ Or.inr
     ⟨i, funext fun j ↦ by simp [one_apply, Function.update_apply, eq_comm]⟩
 
-lemma fromColumns_one_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R) :
-    (fromColumns A (1 : Matrix m m R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
-  rw [←transpose_isTotallyUnimodular_iff, transpose_fromColumns, transpose_one,
-    fromRows_one_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
-
 lemma one_fromRows_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     (fromRows (1 : Matrix n n R) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   have hA :
@@ -169,7 +164,20 @@ lemma one_fromRows_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
   rw [hA, reindex_isTotallyUnimodular]
   exact fromRows_one_isTotallyUnimodular_iff A
 
+lemma fromColumns_one_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R) :
+    (fromColumns A (1 : Matrix m m R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  rw [←transpose_isTotallyUnimodular_iff, transpose_fromColumns, transpose_one,
+    fromRows_one_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
+
+lemma one_fromColumns_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R) :
+    (fromColumns (1 : Matrix m m R) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  rw [←transpose_isTotallyUnimodular_iff, transpose_fromColumns, transpose_one,
+    one_fromRows_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
+
 alias ⟨_, IsTotallyUnimodular.fromRows_one⟩ := fromRows_one_isTotallyUnimodular_iff
+alias ⟨_, IsTotallyUnimodular.one_fromRows⟩ := one_fromRows_isTotallyUnimodular_iff
+alias ⟨_, IsTotallyUnimodular.fromColumns_one⟩ := fromColumns_one_isTotallyUnimodular_iff
+alias ⟨_, IsTotallyUnimodular.one_fromColumns⟩ := one_fromColumns_isTotallyUnimodular_iff
 
 lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) :
     (fromRows A (row m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
