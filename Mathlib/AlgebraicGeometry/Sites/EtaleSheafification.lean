@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.AlgebraicGeometry.Sites.Etale
 import Mathlib.CategoryTheory.Sites.OneHypercoverDense
 
@@ -317,19 +318,22 @@ instance fromVerySmallEtaleSiteFunctor_isOneHypercoverDense :
     have := X.prop
     exact ⟨fromVerySmallEtaleSiteFunctor_isOneHypercoverDense.oneHypercoverDenseData X.hom⟩
 
-
 instance : Functor.IsDenseSubsite (verySmallEtaleTopology S) (smallEtaleTopology S)
     (fromVerySmallEtaleSiteFunctor S) :=
   Functor.isDenseSubsite_of_isOneHypercoverDense _ _ _ (by rfl)
 
 example : HasSheafify (smallEtaleTopology S) (Type (u + 1)) := inferInstance
-
-example : HasSheafify (verySmallEtaleTopology S) (Type u) := inferInstance
+example : HasSheafify (smallEtaleTopology S) (Ab.{u + 1}) := inferInstance
 
 -- the main result
-instance : HasSheafify (smallEtaleTopology S) (Type u) :=
+instance (A : Type*) [Category A] [HasLimitsOfSize.{u, u} A] [HasFiniteLimits A]
+    [HasSheafify (verySmallEtaleTopology S) A] :
+    HasSheafify (smallEtaleTopology S) A :=
   Functor.hasSheafify_of_isOneHypercoverDense.{u}
     (fromVerySmallEtaleSiteFunctor S)
-      (verySmallEtaleTopology S) (smallEtaleTopology S) (Type u)
+      (verySmallEtaleTopology S) (smallEtaleTopology S) A
+
+example : HasSheafify (smallEtaleTopology S) (Type u) := inferInstance
+example : HasSheafify (smallEtaleTopology S) (Ab.{u}) := inferInstance
 
 end AlgebraicGeometry.Scheme
