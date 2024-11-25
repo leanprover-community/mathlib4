@@ -29,7 +29,7 @@ response = client.get_messages({
     "operand": f"https://github\.com/leanprover-community/mathlib4/pull/{PR_NUMBER}",
 })
 
-print(f"{response}")
+print(f"response: '{response}'")
 
 messages = response['messages']
 
