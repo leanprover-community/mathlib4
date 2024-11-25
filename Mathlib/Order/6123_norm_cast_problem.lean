@@ -48,6 +48,10 @@ variable [LT α]
 instance (priority := 10) lt : LT (WithBot α) :=
   ⟨fun o₁ o₂ : WithBot α => ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b⟩
 
+@[simp, norm_cast]
+theorem coe_lt_coe : (a : WithBot α) < b ↔ a < b := by
+  simp [LT.lt]
+
 end LT
 
 instance preorder [Preorder α] : Preorder (WithBot α) where
