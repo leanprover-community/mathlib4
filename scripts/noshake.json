@@ -372,13 +372,8 @@
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
-<<<<<<< HEAD
-  "Mathlib.Data.Ordering.Dickson": ["Mathlib.Data.Finsupp.WellFounded"],
-  "Mathlib.Data.Option.NAry": ["Batteries.Tactic.Init"],
-=======
   "Mathlib.Data.Option.NAry":
   ["Batteries.Tactic.Init", "Mathlib.Logic.Function.Defs"],
->>>>>>> ACL/Groebner-da
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
@@ -391,12 +386,8 @@
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
-<<<<<<< HEAD
-  "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
-=======
   "Mathlib.Data.Finset.Insert": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Data.ENat.Lattice": ["Mathlib.Algebra.Group.Action.Defs"],
->>>>>>> ACL/Groebner-da
   "Mathlib.Data.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Bool.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
