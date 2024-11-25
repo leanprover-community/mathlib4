@@ -361,7 +361,6 @@ lemma monoidEnd_lemma (x y z : MonoidEnd) : x * (y * z) = (x * y) * z := mul_ass
 #guard_msgs in
 #check addMonoidEnd_lemma
 
-
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
 -/
