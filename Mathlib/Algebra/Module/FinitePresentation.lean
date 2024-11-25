@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 
