@@ -89,6 +89,10 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
 instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
   ⟨fun s => Quotient (leftRel s)⟩
 
+@[to_additive]
+instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
+  @Quotient.decidableEq _ _ (leftRelDecidable _)
+
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
 @[to_additive "The equivalence relation corresponding to the partition of a group by right cosets

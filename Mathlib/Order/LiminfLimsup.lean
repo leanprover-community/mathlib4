@@ -829,15 +829,13 @@ theorem HasBasis.limsup_eq_sInf_univ_of_empty {f : ι → α} {v : Filter ι}
     limsup f v = sInf univ :=
   HasBasis.liminf_eq_sSup_univ_of_empty (α := αᵒᵈ) hv i hi h'i
 
--- Porting note: simp_nf linter incorrectly says: lhs does not simplify when using simp on itself.
-@[simp, nolint simpNF]
+@[simp]
 theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
     liminf (fun i => f (i + k)) atTop = liminf f atTop := by
   change liminf (f ∘ (· + k)) atTop = liminf f atTop
   rw [liminf, liminf, ← map_map, map_add_atTop_eq_nat]
 
--- Porting note: simp_nf linter incorrectly says: lhs does not simplify when using simp on itself.
-@[simp, nolint simpNF]
+@[simp]
 theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
   @liminf_nat_add αᵒᵈ _ f k
 

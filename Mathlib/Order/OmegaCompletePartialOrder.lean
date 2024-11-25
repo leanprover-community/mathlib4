@@ -802,10 +802,10 @@ theorem seq_continuous' {β γ : Type v} (f : α → Part (β → γ)) (g : α �
   intro
   apply map_continuous' _ _ hg
 
+set_option linter.deprecated true
+
 theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.map F) :=
   F.ωScottContinuous.map_ωSup _
-
-set_option linter.deprecated true
 
 /-- Construct a continuous function from a bare function, a continuous function, and a proof that
 they are equal. -/
