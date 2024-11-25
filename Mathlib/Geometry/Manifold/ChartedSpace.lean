@@ -694,15 +694,14 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
     exact hsconn.isPreconnected.image _ ((e x).continuousOn_symm.mono hssubset)
 
-/-- If a topological space admits an atlas with locally path-connected charts, then the space itself
-  is locally connected. -/
+/-- If a topological space `M` admits an atlas with locally path-connected charts,
+  then `M` itself is locally path-connected. -/
 theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
   let e := chartAt H x
   let t := s ∩ e.source
   have ht : t ∈ nhds x := Filter.inter_mem hs (chart_source_mem_nhds _ _)
-  have hts : t ⊆ s := inter_subset_left
-  use e.symm '' pathComponentIn (e x) (e '' t); refine ⟨⟨?_, ?_⟩, subset_trans ?_ hts⟩
+  refine ⟨e.symm '' pathComponentIn (e x) (e '' t), ⟨?_, ?_⟩, (?_ : _ ⊆ t).trans inter_subset_left⟩
   · nth_rewrite 1 [← e.left_inv (mem_chart_source _ _)]
     apply e.symm.image_mem_nhds (by simp [e])
     exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht

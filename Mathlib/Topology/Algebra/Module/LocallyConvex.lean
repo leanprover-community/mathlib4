@@ -93,7 +93,7 @@ theorem locallyConvexSpace_iff_exists_convex_subset_zero :
 -- see Note [lower instance priority]
 instance (priority := 100) LocallyConvexSpace.toLocPathConnectedSpace [Module ℝ E]
     [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] : LocPathConnectedSpace E :=
-  .of_bases (fun x ↦ @convex_basis ℝ _ _ _ _ _ _ x)
+  .of_bases (fun x ↦ convex_basis (𝕜 := ℝ) x)
     fun _ _ hs ↦ hs.2.isPathConnected <| nonempty_of_mem <| mem_of_mem_nhds hs.1
 
 /-- Convex subsets of locally convex spaces are locally path-connected. -/
@@ -101,7 +101,7 @@ theorem Convex.locPathConnectedSpace [Module ℝ E] [ContinuousSMul ℝ E] [Loca
     {S : Set E} (hS : Convex ℝ S) : LocPathConnectedSpace S := by
   refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨t, ht⟩ ↦ mem_of_superset ht.1.1 ht.2⟩⟩⟩
   let ⟨t, ht⟩ := (mem_nhds_subtype S x s).mp hs
-  let ⟨t', ht'⟩ := (@LocallyConvexSpace.convex_basis ℝ _ _ _ _ _ _ x.1).mem_iff.mp ht.1
+  let ⟨t', ht'⟩ := (LocallyConvexSpace.convex_basis (𝕜 := ℝ) x.1).mem_iff.mp ht.1
   refine ⟨(↑) ⁻¹' t', ⟨?_, ?_⟩, (preimage_mono ht'.2).trans ht.2⟩
   · exact continuousAt_subtype_val.preimage_mem_nhds ht'.1.1
   · refine Subtype.preimage_coe_self_inter _ _ ▸ IsPathConnected.preimage_coe ?_ inter_subset_left
