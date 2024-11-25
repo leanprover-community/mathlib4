@@ -30,6 +30,9 @@ The main steps of the proof are as follows.
 4. Define an auxiliary function `ArithmeticFunction.vonMangoldt.auxFun a` that is
    this linear combination of negative logarithmic derivatives of L-functions minus
    `(q.totient)⁻¹/(s-1)`, which cancels the pole at `s = 1`.
+   See `ArithmeticFuncion.vonMangolgt.eqOn_auxFun` for the statement that the auxiliary function
+   agrees with the L-series of `ArithmeticFunction.vonMangoldt.residueClass` up to the
+   term `(q.totient)⁻¹/(s-1)`.
 5. Show that the auxiliary function is continuous on `re s ≥ 1`,
    See `ArithmeticFunction.vonMangoldt.continuousOn_auxFun`.
    This relies heavily on the non-vanihsing of Dirichlet L-functions on the *closed*
@@ -294,7 +297,7 @@ open Classical in
 /-- The auxiliary function used, e.g., with the Wiener-Ikehara Theorem to prove
 Dirichlet's Theorem. On `re s > 1`, it agrees with the L-series of the von Mangoldt
 function restricted to the residue class `a : ZMod q` minus the principal part
-`(q.totient)⁻¹/(s-1)` of the pole at `s = 1`; see `DirichletsThm.auxFun_prop`. -/
+`(q.totient)⁻¹/(s-1)` of the pole at `s = 1`; see `ArithmeticFunction.vonMangoldt.eqOn_auxFun`. -/
 noncomputable
 abbrev auxFun (s : ℂ) : ℂ :=
   (q.totient : ℂ)⁻¹ * (-deriv (LFunctionTrivChar₁ q) s / LFunctionTrivChar₁ q s -
@@ -323,7 +326,7 @@ lemma continuousOn_auxFun' :
 
 /-- The L-series of the von Mangoldt function restricted to the prime residue class `a` mod `q`
 is continuous on `re s ≥ 1` except for a single pole at `s = 1` with residue `(q.totient)⁻¹`.
-The statement as given here in terms auf `DirichletsThm.auxFun` is equivalent. -/
+The statement as given here in terms of `ArithmeticFunction.vonMangoldt.auxFun` is equivalent. -/
 lemma continuousOn_auxFun : ContinuousOn (auxFun a) {s | 1 ≤ s.re} := by
   refine (continuousOn_auxFun' a).mono fun s hs ↦ ?_
   rcases eq_or_ne s 1 with rfl | hs₁
