@@ -122,10 +122,10 @@ instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) 
 
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
-  Action.instPreservesLimitsForget.{u} _ _
+  Action.preservesLimits_forget.{u} _ _
 
 noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
-  Action.instPreservesColimitsForget.{u} _ _
+  Action.preservesColimits_forget.{u} _ _
 
 /- Porting note: linter complains `simp` unfolds some types in the LHS, so
 have removed `@[simp]`. -/
@@ -254,7 +254,7 @@ variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
 
 @[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : Additive G) :
-    (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • Additive.toMul a) := rfl
+    (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • a.toMul) := rfl
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `Sˣ`. -/

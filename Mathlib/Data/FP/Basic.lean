@@ -146,7 +146,6 @@ unsafe def nextUpPos (e m) (v : ValidFinite e m) : Float :=
     Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
   else if h : e = emax then Float.inf false else Float.finite false e.succ (Nat.div2 m') lcProof
 
-set_option linter.deprecated false in
 -- Porting note: remove this line when you dropped 'lcProof'
 set_option linter.unusedVariables false in
 @[nolint docBlame]

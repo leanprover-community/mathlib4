@@ -5,7 +5,9 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Action
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
 
@@ -86,8 +88,13 @@ theorem not_isOfFinOrder_of_injective_pow {x : G} (h : Injective fun n : ℕ => 
 theorem IsOfFinOrder.one : IsOfFinOrder (1 : G) :=
   isOfFinOrder_iff_pow_eq_one.mpr ⟨1, Nat.one_pos, one_pow 1⟩
 
-@[to_additive (attr := deprecated (since := "2024-10-11"))]
+@[to_additive]
 alias isOfFinOrder_one := IsOfFinOrder.one
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated IsOfFinOrder.one (since := "2024-10-11")] isOfFinOrder_one
+attribute [deprecated IsOfFinAddOrder.zero (since := "2024-10-11")] isOfFinAddOrder_zero
 
 @[to_additive]
 lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
@@ -571,6 +578,10 @@ theorem orderOf_dvd_iff_zpow_eq_one : (orderOf x : ℤ) ∣ i ↔ x ^ i = 1 := b
 
 @[to_additive (attr := simp)]
 theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_orderOf_iff]
+
+@[to_additive]
+theorem orderOf_dvd_sub_iff_zpow_eq_zpow {a b : ℤ} : (orderOf x : ℤ) ∣ a - b ↔ x ^ a = x ^ b := by
+  rw [orderOf_dvd_iff_zpow_eq_one, zpow_sub, mul_inv_eq_one]
 
 namespace Subgroup
 variable {H : Subgroup G}

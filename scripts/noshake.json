@@ -323,8 +323,7 @@
   ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
   "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
   ["Mathlib.Tactic.Algebraize"],
-  "Mathlib.RingTheory.Finiteness.Defs":
-  ["Mathlib.Tactic.Algebraize"],
+  "Mathlib.RingTheory.Finiteness.Defs": ["Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.RepresentationTheory.FdRep":
@@ -341,6 +340,7 @@
   "Mathlib.Order.BoundedOrder": ["Mathlib.Tactic.Finiteness.Attr"],
   "Mathlib.Order.Basic":
   ["Batteries.Tactic.Classical", "Mathlib.Tactic.GCongr.Core"],
+  "Mathlib.NumberTheory.Harmonic.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.NumberTheory.Cyclotomic.Basic": ["Mathlib.Init.Core"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
@@ -364,8 +364,8 @@
    "Mathlib.Util.Superscript"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
+  "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
   "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
-  "Mathlib.Data.ENat.Lattice": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
@@ -385,14 +385,19 @@
   ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
+  "Mathlib.Data.Int.ConditionallyCompleteOrder":
+  ["Mathlib.Order.ConditionallyCompleteLattice.Basic"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finset.Insert": ["Mathlib.Data.Finset.Attr"],
+  "Mathlib.Data.ENat.Lattice": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Data.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Bool.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Monad.Cont":
   ["Batteries.Lean.Except", "Batteries.Tactic.Congr"],
   "Mathlib.Control.Basic": ["Mathlib.Logic.Function.Defs"],
+  "Mathlib.Combinatorics.SimpleGraph.Density":
+  ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
@@ -426,6 +431,7 @@
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
+  "Mathlib.Algebra.Order.Quantale": ["Mathlib.Tactic.Variable"],
   "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Data.Setoid.Basic"],
   "Mathlib.Algebra.MonoidAlgebra.Basic":
   ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
