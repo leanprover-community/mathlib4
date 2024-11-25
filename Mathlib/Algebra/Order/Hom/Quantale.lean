@@ -146,9 +146,7 @@ theorem coe_mk (f : α →ₙ* β) (h) : (QuantaleHom.mk f h : α → β) = f :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_coe (f : α →ₙ*q β) (h) : QuantaleHom.mk (f : α →ₙ* β) h = f := by
-  ext
-  rfl
+theorem mk_coe (f : α →ₙ*q β) (h) : QuantaleHom.mk (f : α →ₙ* β) h = f := rfl
 
 /-- Reinterpret a quantale homomorphism as a supsemilattice homomorphism-/
 @[to_additive "Reinterpret an additive quantale homomorphism as a supsemilattice homomorphism."]
