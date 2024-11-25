@@ -46,7 +46,7 @@ in terms of extended charts in `contMDiffOn_iff` and `contMDiff_iff`.
 
 open Set Function Filter ChartedSpace SmoothManifoldWithCorners
 
-open scoped Topology Manifold
+open scoped Topology Manifold ContDiff
 
 /-! ### Definition of smooth functions between manifolds -/
 
@@ -110,7 +110,8 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     rw [this] at h
     have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-    convert (h.comp_inter _ (this.of_le le_top)).mono_of_mem_nhdsWithin _ using 1
+    convert (h.comp_inter _ (this.of_le (mod_cast le_top))).mono_of_mem_nhdsWithin _
+      using 1
     · ext y; simp only [mfld_simps]
     refine mem_nhdsWithin.mpr
       ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
@@ -127,7 +128,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ range I' := by
       simp only [hx, mfld_simps]
     have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
-    convert (this.of_le le_top).comp _ h _
+    convert (this.of_le (mod_cast le_top)).comp _ h _
     · ext y; simp only [mfld_simps]
     · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1
 
@@ -197,7 +198,7 @@ def ContMDiff (n : ℕ∞) (f : M → M') :=
 theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
     ContMDiffWithinAt I I' m f s x := by
   simp only [ContMDiffWithinAt, LiftPropWithinAt] at hf ⊢
-  exact ⟨hf.1, hf.2.of_le le⟩
+  exact ⟨hf.1, hf.2.of_le (mod_cast le)⟩
 
 theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
   ContMDiffWithinAt.of_le hf le

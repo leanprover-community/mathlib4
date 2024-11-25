@@ -206,11 +206,11 @@ theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-@[deprecated (since := "2024-09-13")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
 
-@[deprecated (since := "2024-09-13")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
   fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
 
@@ -276,7 +276,7 @@ lemma lt_iff_le_not_le : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_n
 
 lemma lt_of_le_not_le (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_le.2 ⟨hab, hba⟩
 
-@[deprecated (since := "2024-07-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
 theorem le_not_le_of_lt : ∀ {a b : α}, a < b → a ≤ b ∧ ¬b ≤ a
   | _a, _b, hab => lt_iff_le_not_le.mp hab
 
@@ -502,7 +502,7 @@ namespace Nat
 
 /-! Deprecated properties of inequality on `Nat` -/
 
-@[deprecated (since := "2024-08-23")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-23")]
 protected def ltGeByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
   Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
 
