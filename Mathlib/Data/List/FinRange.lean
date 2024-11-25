@@ -23,8 +23,7 @@ variable {α : Type u}
 
 @[simp]
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
-  simp_rw [finRange, map_pmap, pmap_eq_map]
-  exact List.map_id _
+  apply List.ext_getElem <;> simp
 
 theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ := by
   apply map_injective_iff.mpr Fin.val_injective
@@ -45,7 +44,7 @@ theorem ofFn_eq_pmap {n} {f : Fin n → α} :
   exact ext_getElem (by simp) fun i hi1 hi2 => by simp [List.getElem_ofFn f i hi1]
 
 theorem ofFn_id (n) : ofFn id = finRange n :=
-  ofFn_eq_pmap
+  rfl
 
 theorem ofFn_eq_map {n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
   rw [← ofFn_id, map_ofFn, Function.comp_id]
