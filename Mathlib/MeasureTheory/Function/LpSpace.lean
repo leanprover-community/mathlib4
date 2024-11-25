@@ -673,8 +673,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
       convert (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
       simp [hp₀''.ne']
     have hε' : 0 < ε := hε.bot_lt
-    obtain ⟨δ, hδ, hδε'⟩ :=
-      NNReal.nhds_zero_basis.eventually_iff.mp (eventually_le_of_tendsto_lt hε' this)
+    obtain ⟨δ, hδ, hδε'⟩ := NNReal.nhds_zero_basis.eventually_iff.mp (this.eventually_le_const hε')
     obtain ⟨η, hη, hηδ⟩ := exists_between hδ
     refine ⟨η, hη, ?_⟩
     rw [← ENNReal.coe_rpow_of_nonneg _ hp₀', ← ENNReal.coe_mul]
@@ -1193,7 +1192,7 @@ def compLpₗ (L : E →L[𝕜] F) : Lp E p μ →ₗ[𝕜] Lp F p μ where
     ext1
     filter_upwards [Lp.coeFn_smul c f, coeFn_compLp L (c • f), Lp.coeFn_smul c (L.compLp f),
       coeFn_compLp L f] with _ ha1 ha2 ha3 ha4
-    simp only [ha1, ha2, ha3, ha4, map_smul, Pi.smul_apply]
+    simp only [ha1, ha2, ha3, ha4, _root_.map_smul, Pi.smul_apply]
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
 `Lp E p μ`. See also the similar

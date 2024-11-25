@@ -180,9 +180,6 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 
--- `simpNF` times out, but only in CI where all of `Mathlib` is imported
-attribute [nolint simpNF] lcRow0Extend_apply lcRow0Extend_symm_apply
-
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
@@ -458,11 +455,8 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
       specialize this hc
       linarith
   intro hc
-  replace hc : 0 < c ^ 4 := by
-    change 0 < c ^ (2 * 2); rw [pow_mul]; apply sq_pos_of_pos (sq_pos_of_ne_zero hc)
-  have h₁ := mul_lt_mul_of_pos_right
-      (mul_lt_mul'' (three_lt_four_mul_im_sq_of_mem_fdo hg) (three_lt_four_mul_im_sq_of_mem_fdo hz)
-      (by norm_num) (by norm_num)) hc
+  have h₁ : 3 * 3 * c ^ 4 < 4 * (g • z).im ^ 2 * (4 * z.im ^ 2) * c ^ 4 := by
+    gcongr <;> apply three_lt_four_mul_im_sq_of_mem_fdo <;> assumption
   have h₂ : (c * z.im) ^ 4 / normSq (denom (↑g) z) ^ 2 ≤ 1 :=
     div_le_one_of_le₀
       (pow_four_le_pow_two_of_pow_two_le (z.c_mul_im_sq_le_normSq_denom g))
