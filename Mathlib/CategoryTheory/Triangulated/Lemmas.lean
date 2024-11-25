@@ -95,8 +95,9 @@ lemma Hom_of_almost_NatTrans_aux_indep_bound [HasLimit F] [HasLimit F']
   set f₂ : limit (Inclusion_Iic a₂ ⋙ F) ⟶ limit (Inclusion_Iic a₂ ⋙ F') :=
     limMap {app := fun b ↦ α b.1, naturality := nat}
   set f₁ : limit (Inclusion_Iic a₁ ⋙ F) ⟶ limit (Inclusion_Iic a₁ ⋙ F') :=
-    limMap {app := fun b ↦ α b.1, naturality := fun b c u ↦ nat ⟨b.1, le_trans (Set.mem_Iic.mp b.2) h⟩
-                 ⟨c.1, le_trans (Set.mem_Iic.mp c.2) h⟩ u}
+    limMap {app := fun b ↦ α b.1, naturality :=
+    fun b c u ↦ nat ⟨b.1, le_trans (Set.mem_Iic.mp b.2) h⟩
+                ⟨c.1, le_trans (Set.mem_Iic.mp c.2) h⟩ u}
   change e₁.inv ≫ f₁ ≫ e'₁.hom = e₂.inv ≫ f₂ ≫ e'₂.hom
   set I : Set.Iic a₁ ⥤ Set.Iic a₂ := Monotone.functor
     (f := fun b ↦ ⟨b.1, le_trans (Set.mem_Iic.mp b.2) h⟩) (fun _ _ h ↦ h)
@@ -231,6 +232,7 @@ lemma comp_almost_natTrans (α : (n : ℤ) → (F.obj n ⟶ F'.obj n))
     nat₂.choose_spec ⟨b.1, Set.mem_Iic.mpr (le_trans b.2 (min_le_right _ _))⟩
     ⟨c.1, Set.mem_Iic.mpr (le_trans c.2 (min_le_right _ _))⟩ u, assoc]
 
+/-- Here be doc string.-/
 lemma Hom_of_almost_NatTrans_comp' [HasLimit F] [HasLimit F'] [HasLimit F'']
     (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) (β : (n : ℤ) → (F'.obj n ⟶ F''.obj n))
     (nat₁ : ∃ a₁, ∀ (b c : Set.Iic a₁) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u)
@@ -241,9 +243,10 @@ lemma Hom_of_almost_NatTrans_comp' [HasLimit F] [HasLimit F'] [HasLimit F'']
   simp only [Hom_of_almost_NatTrans]
   set a := min (min nat₁.choose nat₂.choose) (comp_almost_natTrans F F' F'' α β nat₁ nat₂).choose
   have := Initial_inclusion_Iic a
-  rw [← Hom_of_almost_NatTrans_aux_indep_bound F F'' (fun n ↦ α n ≫ β n) (a₁ := a) (min_le_right _ _),
-    ← Hom_of_almost_NatTrans_aux_indep_bound F F' α (a₁ := a) (le_trans (min_le_left _ _)
-    (min_le_left _ _)), ← Hom_of_almost_NatTrans_aux_indep_bound F' F'' β (a₁ := a)
+  rw [← Hom_of_almost_NatTrans_aux_indep_bound F F'' (fun n ↦ α n ≫ β n) (a₁ := a)
+    (min_le_right _ _), ← Hom_of_almost_NatTrans_aux_indep_bound F F' α (a₁ := a)
+    (le_trans (min_le_left _ _) (min_le_left _ _)),
+    ← Hom_of_almost_NatTrans_aux_indep_bound F' F'' β (a₁ := a)
     (le_trans (min_le_left _ _) (min_le_right _ _))]
   simp only [Hom_of_almost_NatTrans_aux, assoc, Iso.hom_inv_id_assoc, Iso.cancel_iso_inv_left]
   rw [← cancel_mono (Functor.Initial.limitIso (Inclusion_Iic a) F'').inv]
@@ -317,7 +320,7 @@ lemma shiftFunctorAdd_symm_eqToIso (i j i' j' : A) (hi : i = i') (hj : j = j') :
   ext X
   simp only [Functor.comp_obj, Iso.symm_hom, Iso.trans_hom, eqToIso.hom, NatTrans.comp_app,
     eqToHom_app]
-  have := (shiftMonoidalFunctor C A).μ_natural_left (X := {as := i})
+  have := Functor.LaxMonoidal.μ_natural_left (shiftMonoidalFunctor C A) (X := {as := i})
     (Y := {as := i'}) (eqToHom (by rw [hi])) {as := j}
   apply_fun (fun T ↦ T.app X) at this
   simp only [endofunctorMonoidalCategory_tensorObj_obj, MonoidalCategory.eqToHom_whiskerRight,
@@ -330,7 +333,7 @@ lemma shiftFunctorAdd_symm_eqToIso (i j i' j' : A) (hi : i = i') (hj : j = j') :
   rw [← cancel_mono f] at this
   simp only [eqToHom_map, eqToHom_app, assoc, eqToHom_trans, eqToHom_refl, comp_id, f] at this
   rw [← this]
-  have := (shiftMonoidalFunctor C A).μ_natural_right (X := {as := j})
+  have := Functor.LaxMonoidal.μ_natural_right (shiftMonoidalFunctor C A) (X := {as := j})
     (Y := {as := j'}) {as := i'} (eqToHom (by rw [hj]))
   apply_fun (fun T ↦ T.app X) at this
   simp only [endofunctorMonoidalCategory_tensorObj_obj, MonoidalCategory.eqToHom_whiskerRight,
@@ -377,6 +380,7 @@ lemma shiftFunctorAdd'_eqToIso (i j k i' j' k' : A) (h : i + j = k) (h' : i' + j
 
 variable (C)
 
+/-- Here be other doc string.-/
 lemma shiftFunctorAdd'_add_zero' (a b : A) (hb : b = 0) (h : a + b = a) :
     shiftFunctorAdd' C a b a h = (Functor.rightUnitor _).symm ≪≫
     isoWhiskerLeft (shiftFunctor C a) (shiftFunctorZero' C b hb).symm := by
@@ -384,6 +388,7 @@ lemma shiftFunctorAdd'_add_zero' (a b : A) (hb : b = 0) (h : a + b = a) :
     shiftFunctorAdd'_add_zero]
   aesop
 
+/-- Fake doc string again.-/
 lemma shiftFunctorAdd'_zero_add' (a b : A) (ha : a = 0) (h : a + b = b) :
     shiftFunctorAdd' C a b b h = (Functor.leftUnitor _).symm ≪≫
     isoWhiskerRight (shiftFunctorZero' C a ha).symm (shiftFunctor C b) := by
@@ -414,14 +419,14 @@ lemma shiftEquiv'_unit (a a' : A) (h : a + a' = 0) :
 
 lemma shiftEquiv'_counit (a a' : A) (h : a + a' = 0) :
     (shiftEquiv' C a a' h).counit = (shiftFunctorCompIsoId C a' a
-    (by simp only [eq_neg_of_add_eq_zero_left h, add_right_neg])).hom := by
+    (by simp only [eq_neg_of_add_eq_zero_left h, add_neg_cancel])).hom := by
   ext _
   change (shiftEquiv' C a a' h).counitIso.hom.app _ = _
   rw [shiftEquiv'_counitIso]
 
 lemma shiftEquiv'_symm_unit (a a' : A) (h : a + a' = 0) :
     (shiftEquiv' C a a' h).symm.unit = (shiftFunctorCompIsoId C a' a
-    (by simp only [eq_neg_of_add_eq_zero_right h, add_left_neg])).inv := by
+    (by simp [eq_neg_of_add_eq_zero_left h])).inv := by
   ext _
   change (shiftEquiv' C a a' h).counitIso.inv.app _ = _
   rw [shiftEquiv'_counitIso]
@@ -455,6 +460,7 @@ lemma shiftEquiv_homEquiv_zero'_app (a : A) (ha : a = 0) (X Y : C) (u : X⟦-a�
   rw [this, assoc, ← (shiftFunctorZero' C a ha).inv.naturality u]
   simp
 
+/-- Doc string doc string.-/
 lemma shiftEquiv_homEquiv_zero' (a : A) (ha : a = 0) (X Y : C) :
     (shiftEquiv C a).symm.toAdjunction.homEquiv X Y =
     ((yoneda.obj Y).mapIso ((shiftFunctorZero' C (-a) (by simp [ha])).symm.app X).op ≪≫
@@ -490,7 +496,7 @@ lemma shiftEquiv'_add_symm_homEquiv (a a' b b' c c' : A) (ha : a + a' = 0) (hb :
         neg_add_rev])).hom.app X ≫ u) := by
   have he : ∀ (a a' : A) (ha : a + a' = 0) (X : C), (shiftEquiv' C a a' ha).symm.unit.app X =
       (shiftFunctorZero C A).inv.app X ≫ (shiftFunctorAdd' C a' a 0
-      (by rw [eq_neg_of_add_eq_zero_left ha, add_right_neg])).hom.app X := by
+      (by rw [eq_neg_of_add_eq_zero_left ha, add_neg_cancel])).hom.app X := by
     intro a a' ha X
     change (shiftEquiv' C a a' ha).symm.unitIso.hom.app X = _
     rw [Equivalence.symm_unitIso]
@@ -582,8 +588,8 @@ def op (commF : CommShift F A) :
     erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
     rfl
 
-noncomputable def removeOp (commFop : CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A) :
-    CommShift F A where
+noncomputable def removeOp (commFop : CommShift (C := OppositeShift C A)
+    (D := OppositeShift D A) F.op A) : CommShift F A where
   iso a := NatIso.removeOp (commFop.iso a).symm
   zero := by
     simp only
@@ -620,15 +626,14 @@ def Functor_iso_to_iso_op : (F ≅ F') ≃ (F'.op ≅ F.op) :=
   Equiv.mk NatIso.op NatIso.removeOp (fun _ ↦ by aesop) (fun _ ↦ by aesop)
 
 lemma natIsoEquiv_compat_op : (Functor_iso_to_iso_op G G').trans
-    ((Adjunction.natIsoEquiv adj.opAdjointOpOfAdjoint adj'.opAdjointOpOfAdjoint).symm.trans
-    (Functor_iso_to_iso_op F' F).symm) = (Adjunction.natIsoEquiv adj adj') := by
+    ((conjugateIsoEquiv adj.opAdjointOpOfAdjoint adj'.opAdjointOpOfAdjoint).trans
+    (Functor_iso_to_iso_op F' F).symm) = (conjugateIsoEquiv adj adj').symm := by
   ext _
   simp only [Functor_iso_to_iso_op, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk,
-    NatIso.removeOp_hom, natIsoEquiv_symm_apply_hom, NatIso.op_hom, NatTrans.removeOp_app,
-    Functor.op_obj, natTransEquiv_symm_apply_app, Functor.comp_obj, opAdjointOpOfAdjoint_unit_app,
-    NatTrans.op_app, opAdjointOpOfAdjoint_counit_app, Functor.op_map, unop_comp, Quiver.Hom.unop_op,
-    Functor.map_comp, op_comp, Category.assoc, natIsoEquiv_apply_hom, natTransEquiv_apply_app,
-    NatTrans.comp_app, Functor.id_obj, whiskerLeft_app]
+    NatIso.removeOp_hom, conjugateIsoEquiv_apply_hom, NatIso.op_hom, NatTrans.removeOp_app,
+    Functor.op_obj, conjugateEquiv_apply_app, opAdjointOpOfAdjoint_unit_app, NatTrans.op_app,
+    Functor.op_map, Quiver.Hom.unop_op, opAdjointOpOfAdjoint_counit_app, unop_comp, Category.assoc,
+    conjugateIsoEquiv_symm_apply_hom, conjugateEquiv_symm_apply_app]
   rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply]
   simp
 
@@ -716,6 +721,7 @@ abbrev IsTriangleMorphism (T T' : Triangle C) (u : T.obj₁ ⟶ T'.obj₁) (v : 
   (T.mor₁ ≫ v = u ≫ T'.mor₁) ∧ (T.mor₂ ≫ w = v ≫ T'.mor₂) ∧
   (T.mor₃ ≫ (shiftFunctor C 1).map u = w ≫ T'.mor₃)
 
+/-- Doc string, why the "'"?-/
 lemma NineGrid' {T_X T_Y : Triangle C} (dT_X : T_X ∈ distinguishedTriangles)
     (dT_Y : T_Y ∈ distinguishedTriangles) (u₁ : T_X.obj₁ ⟶ T_Y.obj₁) (u₂ : T_X.obj₂ ⟶ T_Y.obj₂)
     (comm : T_X.mor₁ ≫ u₂ = u₁ ≫ T_Y.mor₁) {Z₂ : C} (v₂ : T_Y.obj₂ ⟶ Z₂) (w₂ : Z₂ ⟶ T_X.obj₂⟦1⟧)
@@ -741,14 +747,14 @@ lemma NineGrid' {T_X T_Y : Triangle C} (dT_X : T_X ∈ distinguishedTriangles)
     oct₂.mem ((rotate_distinguished_triangle _).mp oct₁.mem) dT_Z
   existsi Z₁, Z₃, (oct₂.m₁ ≫ oct₁.m₃), g, h, v₁, w₁, oct₁.m₁ ≫ oct₂.m₃, oct₃.m₁, oct₃.m₃
   constructor
-  . exact dT_Z
+  · exact dT_Z
   · constructor
     · exact dT₁
     · constructor
       · have := inv_rot_of_distTriang _ oct₃.mem
         refine isomorphic_distinguished _ this _ (Triangle.isoMk _ _ ?_ ?_ ?_ ?_ ?_ ?_)
         · have := (shiftFunctorCompIsoId C 1 (-1)
-              (by simp only [Int.reduceNeg, add_right_neg])).app T_X.obj₃
+              (by simp only [Int.reduceNeg, add_neg_cancel])).app T_X.obj₃
           simp only [Int.reduceNeg, Functor.comp_obj, Functor.id_obj] at this
           exact this.symm
         · exact Iso.refl _
@@ -757,10 +763,8 @@ lemma NineGrid' {T_X T_Y : Triangle C} (dT_X : T_X ∈ distinguishedTriangles)
           Triangle.invRotate_obj₂, Iso.refl_hom, comp_id, Triangle.invRotate_obj₁, Int.reduceNeg,
           Triangle.mk_obj₃, Iso.symm_hom, Iso.app_inv, Triangle.invRotate_mor₁,
           Preadditive.neg_comp, Functor.map_neg, Functor.map_comp, assoc, neg_neg]
-          rw [← cancel_epi ((shiftFunctorCompIsoId C 1 (-1) (by simp only [Int.reduceNeg,
-            add_right_neg])).hom.app T_X.obj₃)]
-          rw [← cancel_mono ((shiftFunctorCompIsoId C 1 (-1) (by simp only [Int.reduceNeg,
-            add_right_neg])).inv.app T_Y.obj₃)]
+          rw [← cancel_epi ((shiftFunctorCompIsoId C 1 (-1) (by simp)).hom.app T_X.obj₃)]
+          rw [← cancel_mono ((shiftFunctorCompIsoId C 1 (-1) (by simp)).inv.app T_Y.obj₃)]
           rw [assoc]; conv_lhs => erw [← shift_shift_neg']
           simp only [Int.reduceNeg, Functor.comp_obj, Functor.id_obj, Iso.hom_inv_id_app_assoc,
             assoc, Iso.hom_inv_id_app, comp_id]
@@ -854,9 +858,11 @@ noncomputable instance : (Triangle.π₁ (C := C)).CommShift ℤ where
       id_comp]
     rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
 
+omit [HasZeroObject C] [Pretriangulated C] in
 lemma Triangle_π₁_commShiftIso (a : ℤ) (T : Triangle C) :
     ((Triangle.π₁ (C := C)).commShiftIso a).app T = Iso.refl _ := rfl
 
+omit [HasZeroObject C] [Pretriangulated C] in
 lemma Triangle_π₁_commShiftIso_hom (a : ℤ) (T : Triangle C) :
     ((Triangle.π₁ (C := C)).commShiftIso a).hom.app T = 𝟙 _ := rfl
 
@@ -877,9 +883,11 @@ noncomputable instance : (Triangle.π₂ (C := C)).CommShift ℤ where
       id_comp]
     rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
 
+omit [HasZeroObject C] [Pretriangulated C] in
 lemma Triangle_π₂_commShiftIso (a : ℤ) (T : Triangle C) :
     ((Triangle.π₂ (C := C)).commShiftIso a).app T = Iso.refl _ := rfl
 
+omit [HasZeroObject C] [Pretriangulated C] in
 lemma Triangle_π₂_commShiftIso_hom (a : ℤ) (T : Triangle C) :
     ((Triangle.π₂ (C := C)).commShiftIso a).hom.app T = 𝟙 _ := rfl
 
@@ -900,9 +908,11 @@ noncomputable instance : (Triangle.π₃ (C := C)).CommShift ℤ where
       id_comp]
     rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app]
 
+omit [HasZeroObject C] [Pretriangulated C] in
 lemma Triangle_π₃_commShiftIso (a : ℤ) (T : Triangle C) :
     ((Triangle.π₃ (C := C)).commShiftIso a).app T = Iso.refl _ := rfl
 
+omit [HasZeroObject C] [Pretriangulated C] in
 lemma Triangle_π₃_commShiftIso_hom (a : ℤ) (T : Triangle C) :
     ((Triangle.π₃ (C := C)).commShiftIso a).hom.app T = 𝟙 _ := rfl
 

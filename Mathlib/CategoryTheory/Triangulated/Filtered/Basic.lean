@@ -38,9 +38,15 @@ variable [HasShift C (ℤ × ℤ)]
 
 instance Shift₁ : HasShift C ℤ where
   shift := (Discrete.addMonoidalFunctor (AddMonoidHom.inl ℤ ℤ)).comp HasShift.shift
+  shiftMonoidal := by
+    have := HasShift.shiftMonoidal (C := C) (A := ℤ × ℤ)
+    infer_instance
 
 def Shift₂ : HasShift C ℤ where
   shift := (Discrete.addMonoidalFunctor (AddMonoidHom.inr ℤ ℤ)).comp HasShift.shift
+  shiftMonoidal := by
+    have := HasShift.shiftMonoidal (C := C) (A := ℤ × ℤ)
+    infer_instance
 
 instance AdditiveShift₁ [∀ (p : ℤ × ℤ), Functor.Additive (shiftFunctor C p)] :
     ∀ (n : ℤ), Functor.Additive (shiftFunctor C n) := by
@@ -62,16 +68,14 @@ lemma shiftFunctorComm_eq_shift₂FunctorComm (n m : ℤ) :
     shiftFunctorComm C ((0 : ℤ), n) ((0 : ℤ), m) = @shiftFunctorComm C _ _ _ Shift₂ n m := sorry
 -/
 
+omit [HasZeroObject C] [Preadditive C]
 lemma shift₁FunctorZero_eq_shiftFunctorZero :
     shiftFunctorZero C ℤ = shiftFunctorZero C (ℤ × ℤ) := by
   rw [shiftFunctorZero, shiftFunctorZero, Iso.symm_eq_iff]
   apply Iso.ext
-  rw [MonoidalFunctor.εIso_hom, MonoidalFunctor.εIso_hom]
-  erw [LaxMonoidalFunctor.comp_ε]
-  simp only [Functor.comp_obj, Discrete.addMonoidalFunctor_toLaxMonoidalFunctor_ε,
-    AddMonoidHom.inl_apply, Discrete.addMonoidal_tensorUnit_as, eqToHom_refl,
-    Discrete.functor_map_id, comp_id]
-  rfl
+  rw [Functor.Monoidal.εIso_hom, Functor.Monoidal.εIso_hom]
+  erw [Functor.LaxMonoidal.comp_ε]
+  simp; rfl
 
 lemma shift₁FunctorAdd_eq_shiftFunctorAdd (a b : ℤ) :
     shiftFunctorAdd C a b = shiftFunctorAdd C (a, (0 : ℤ)) (b, (0 : ℤ)) := by sorry
@@ -230,8 +234,8 @@ lemma α_vs_second_shift_aux2 (n : ℕ) : ∀ (X : C),
     apply Functor.Faithful.map_injective (F := @shiftFunctor C _ _ _ Shift₂ 1)
     simp only [Functor.id_obj, Functor.comp_obj, Functor.map_comp]
     rw [← cancel_epi ((@shiftFunctorAdd' C _ _ _ Shift₂ (-(n + 1)) 1 (-n) (by linarith)).hom.app X)]
-
-    erw [← (@shiftFunctorAdd' C _ _ _ Shift₂ (-(n + 1)) 1 (-n) (by linarith)).hom.naturality (α.app X)]
+    erw [← (@shiftFunctorAdd' C _ _ _ Shift₂ (-(n + 1)) 1 (-n)
+      (by linarith)).hom.naturality (α.app X)]
     have heq : ((@shiftFunctorComm C _ _ _ Shift₂ (-(n + 1)) 1).hom.app X)⟪1⟫' =
         ((@shiftFunctorAdd' C _ _ _ Shift₂ (-(n + 1)) 1 (-n) (by linarith)).inv.app X)⟪1⟫' ≫
         (@shiftFunctorComm C _ _ _ Shift₂ (-n) 1).hom.app X ≫
@@ -274,7 +278,7 @@ lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
   obtain ⟨X, Y, hX, hY, f, g, h, mem⟩ := exists_triangle_one_zero (A⟪-n₀⟫)
   let T := (@Functor.mapTriangle _ _ _ _ _ _ (@shiftFunctor C _ _ _ Shift₂ n₀)
     (Shift₂CommShift₁ n₀)).obj (Triangle.mk f g h)
-  let e := (@shiftEquiv' C _ _ _ Shift₂ (-n₀) n₀ (by rw [add_left_neg])).unitIso.symm.app A
+  let e := (@shiftEquiv' C _ _ _ Shift₂ (-n₀) n₀ (by rw [neg_add_cancel])).unitIso.symm.app A
   have hT' : Triangle.mk (T.mor₁ ≫ e.hom) (e.inv ≫ T.mor₂) T.mor₃ ∈ distTriang C := by
     refine isomorphic_distinguished _ (@Functor.IsTriangulated.map_distinguished _ _ _ _ _ _
       (@shiftFunctor C _ _ _ Shift₂ n₀) (Shift₂CommShift₁ n₀) _ _ _ _ _ _ _ _
@@ -308,8 +312,8 @@ lemma LE_monotone : Monotone (fun n ↦ (hP.LE n).P) := by
     rfl
   have H_one : H 1 := fun n X hX =>
     (LE_closedUnderIsomorphisms (n + 1)).of_iso ((@shiftEquiv' C _ _ _ Shift₂
-    (-n) n (by rw [add_left_neg])).unitIso.symm.app X) (LE_shift 1 n (n + 1) rfl _
-    (LE_zero_le _ (LE_shift n (-n) 0 (by rw [add_left_neg]) X hX)))
+    (-n) n (by rw [neg_add_cancel])).unitIso.symm.app X) (LE_shift 1 n (n + 1) rfl _
+    (LE_zero_le _ (LE_shift n (-n) 0 (by rw [neg_add_cancel]) X hX)))
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
     intro a b c h ha hb n
     rw [← h, Nat.cast_add, ← add_assoc]
@@ -331,7 +335,7 @@ lemma GE_antitone : Antitone (fun n ↦ (hP.GE n).P) := by
     rfl
   have H_one : H 1 := fun n X hX =>
     (GE_closedUnderIsomorphisms n).of_iso ((@shiftEquiv' C _ _ _ Shift₂
-    (-n) n (by rw [add_left_neg])).unitIso.symm.app X) (GE_shift 0 n n (by rw [add_zero]) _
+    (-n) n (by rw [neg_add_cancel])).unitIso.symm.app X) (GE_shift 0 n n (by rw [add_zero]) _
     (GE_one_le _ (GE_shift (n + 1) (-n) 1 (by rw [neg_add_cancel_left]) X hX)))
   have H_add : ∀ (a b c : ℕ) (_ : a + b = c) (_ : H a) (_ : H b), H c := by
     intro a b c h ha hb n
@@ -437,7 +441,7 @@ lemma isGE_shift_iff (X : C) (n a n' : ℤ) (hn' : a + n = n') :
 
 lemma zero {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ < n₁)
     [IsGE X n₁] [IsLE Y n₀] : f = 0 := by
-  have := isLE_shift Y n₀ (-n₀) 0 (by simp only [add_left_neg])
+  have := isLE_shift Y n₀ (-n₀) 0 (by simp only [neg_add_cancel])
   have := isGE_shift X n₁ (-n₀) (n₁-n₀) (by linarith)
   have := isGE_of_GE (X⟪-n₀⟫) 1 (n₁-n₀) (by linarith)
   apply (@shiftFunctor C _ _ _ Shift₂ (-n₀)).map_injective
@@ -525,8 +529,10 @@ instance : ClosedUnderIsomorphisms (tCore (C := C)).P where
     · exact isLE_of_iso e 0
     · exact isGE_of_iso e 0
 
+/-- Doc string, why the "'"?-/
 abbrev Core' := (tCore (C := C)).category
 
+/-- Doc string, why the "'"?-/
 abbrev ιCore' : Core' (C := C) ⥤ C := fullSubcategoryInclusion _
 
 instance : Functor.Additive (ιCore' (C := C)) := sorry
@@ -547,9 +553,10 @@ lemma ιCore_obj_mem_core (X : Core') : core (C := C) (ιCore'.obj X) := X.2
 def ιHeartDegree (n : ℤ) : t.Heart' ⥤ C :=
   t.ιHeart' ⋙ shiftFunctor C (-n)
 
-noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ shiftFunctor C n ≅ t.ιHeart' :=
+noncomputable def ιHeartDegreeCompShiftIso (n : ℤ) : t.ιHeartDegree n ⋙ shiftFunctor C n ≅
+    t.ιHeart' :=
   Functor.associator _ _ _ ≪≫
-    isoWhiskerLeft _ (shiftFunctorCompIsoId C (-n) n (add_left_neg n)) ≪≫
+    isoWhiskerLeft _ (shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)) ≪≫
     Functor.rightUnitor _
 -/
 

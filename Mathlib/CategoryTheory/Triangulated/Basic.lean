@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
@@ -465,7 +464,7 @@ instance instAddCommGroupTriangleHom : AddCommGroup (T₁ ⟶ T₂) where
   add_assoc f g h := by ext <;> apply add_assoc
   add_zero f := by ext <;> apply add_zero
   add_comm f g := by ext <;> apply add_comm
-  add_left_neg f := by ext <;> apply add_left_neg
+  neg_add_cancel f := by ext <;> apply neg_add_cancel
   sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
   nsmul n f := n • f
   nsmul_zero f := by aesop_cat
