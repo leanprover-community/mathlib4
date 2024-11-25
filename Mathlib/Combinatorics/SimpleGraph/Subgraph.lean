@@ -118,7 +118,7 @@ protected theorem Adj.snd_mem {H : G.Subgraph} {u v : V} (h : H.Adj u v) : v ∈
 protected theorem Adj.ne {H : G.Subgraph} {u v : V} (h : H.Adj u v) : u ≠ v :=
   h.adj_sub.ne
 
-theorem adj_iff_of_sym2_eq {H : G.Subgraph} {u v w x : V} (h2 : s(u, v) = s(w, x)) :
+theorem adj_congr_of_sym2 {H : G.Subgraph} {u v w x : V} (h2 : s(u, v) = s(w, x)) :
     H.Adj u v ↔ H.Adj w x := by
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h2
   cases' h2 with hl hr
@@ -171,7 +171,7 @@ lemma spanningCoe_le (G' : G.Subgraph) : G'.spanningCoe ≤ G := fun _ _ ↦ G'.
 theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G₂.Adj := by
   simp [Subgraph.spanningCoe]
 
-lemma mem_of_spanningCoe_adj {v w : V} {s : Set V} (G : SimpleGraph s)
+lemma mem_of_adj_spanningCoe {v w : V} {s : Set V} (G : SimpleGraph s)
     (hadj : G.spanningCoe.Adj v w) : v ∈ s := by aesop
 
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
