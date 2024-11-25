@@ -11,7 +11,6 @@ import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
-import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
 
 /-!
 # The Mahler basis of continuous functions
@@ -19,13 +18,9 @@ import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
 In this file we introduce the Mahler basis function `mahler k`, for `k : ℕ`, which is the unique
 continuous map `ℤ_[p] → ℚ_[p]` agreeing with `n ↦ n.choose k` for `n ∈ ℕ`.
 
-We also show that for any continuous function `f` on `ℤ_[p]` (valued in a `p`-adic normed space),
-the iterated forward differences `Δ^[n] f 0` tend to 0. For this, we follow the argument of
-Bojanić [bojanic74].
-
-In future PR's, we will show that the Mahler functions give a Banach basis for the space of
-continuous maps `ℤ_[p] → ℚ_[p]`, with the basis coefficients of `f` given by the forward differences
-`Δ^[n] f 0`.
+Using this, we prove Mahler's theorem, showing that for any any continuous function `f` on `ℤ_[p]`
+(valued in a `p`-adic normed space), the Mahler series `x ↦ ∑' k, mahler k x • Δ^[n] f 0`
+converges (uniformly) to `f x`. For this, we follow the argument of Bojanić [bojanic74].
 
 ## References
 
@@ -38,9 +33,9 @@ continuous maps `ℤ_[p] → ℚ_[p]`, with the basis coefficients of `f` given 
 Bojanic
 -/
 
-open Finset fwdDiff IsUltrametricDist NNReal Filter Topology
+open Finset IsUltrametricDist NNReal Filter
 
-open scoped ZeroAtInfty
+open scoped fwdDiff ZeroAtInfty Topology
 
 variable {p : ℕ} [hp : Fact p.Prime]
 
@@ -301,11 +296,11 @@ lemma fwdDiff_mahlerSeries {a : ℕ → E} (ha : Tendsto a atTop (𝓝 0)) (n : 
     refine Finset.sum_congr rfl fun j hj ↦ ?_
     rw [nsmul_one, nsmul_one,
       mahlerSeries_apply_nat ha (Nat.lt_succ.mp <| Finset.mem_range.mp hj), Nat.cast_id]
-  -- bring Δ_[1]  inside sum
+  -- bring `Δ_[1]` inside sum
   _ = ∑ j ∈ range (n + 1), Δ_[1] ^[n] (fun k ↦ k.choose j • (a j)) 0 := by
     simp only [fwdDiff_iter_eq_sum_shift, smul_sum]
     rw [sum_comm]
-  -- bring Δ_[1]  inside scalar-mult
+  -- bring `Δ_[1]` inside scalar-mult
   _ = ∑ j ∈ range (n + 1), (Δ_[1] ^[n] (fun k ↦ k.choose j : ℕ → ℤ) 0) • (a j) := by
     simp only [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc, Nat.cast_id,
       natCast_zsmul]
