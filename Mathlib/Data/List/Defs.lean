@@ -488,6 +488,13 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
+/- #adaptation_note: this attribute should be removed after Mathlib moves to v4.15.0-rc1. -/
+set_option allowUnsafeReducibility true in
+attribute [semireducible] Fin.foldr.loop
+
+/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
+def finRange (n : Nat) : List (Fin n) := ofFn id
+
 section Deprecated
 
 @[deprecated List.mem_cons (since := "2024-08-10")]

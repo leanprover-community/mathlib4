@@ -43,8 +43,8 @@ theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 
-/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
-def finRange (n : Nat) : List (Fin n) := ofFn id
+-- Verify that `finRange` is semireducible.
+example : finRange 3 = [0, 1, 2] := rfl
 
 theorem finRange_eq_pmap_range (n : ℕ) : finRange n = (range n).pmap Fin.mk (by simp) := by
   apply List.ext_getElem <;> simp [finRange]
