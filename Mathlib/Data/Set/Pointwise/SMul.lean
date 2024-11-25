@@ -415,8 +415,13 @@ lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t
 lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s) t := by
   simpa using disjoint_smul_set (a := a) (s := a⁻¹ • s)
 
-@[to_additive (attr := deprecated (since := "2024-10-18"))]
-alias smul_set_disjoint_iff := disjoint_smul_set
+@[to_additive] alias smul_set_disjoint_iff := disjoint_smul_set
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated disjoint_smul_set (since := "2024-10-18")] smul_set_disjoint_iff
+attribute [deprecated disjoint_vadd_set (since := "2024-10-18")] vadd_set_disjoint_iff
+
 
 end Group
 
