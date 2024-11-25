@@ -33,8 +33,8 @@ variable {α : Type*}
 def ExchangeProperty (Sys : Finset α → Prop) : Prop :=
   ⦃s₁ : Finset α⦄ → Sys s₁ →
   ⦃s₂ : Finset α⦄ → Sys s₂ →
-  s₂.card < s₁.card →
-    ∃ x ∈ s₁, ∃ h : x ∉ s₂, Sys (cons x s₂ h)
+  #s₂ < #s₁ →
+  ∃ x ∈ s₁, ∃ h : x ∉ s₂, Sys (cons x s₂ h)
 
 namespace ExchangeProperty
 
@@ -46,8 +46,8 @@ variable {s₁ : Finset α} {s₂ : Finset α}
 -- TODO: Find a better name.
 theorem exists_superset_of_card_le
     (hS : ExchangeProperty Sys) (hs₁ : Sys s₁) (hs₂ : Sys s₂)
-    {n : ℕ} (hn₁ : n ≤ s₁.card) (hn₂ : s₂.card ≤ n) :
-    ∃ s, Sys s ∧ s₂ ⊆ s ∧ (∀ e ∈ s, e ∈ s₁ ∨ e ∈ s₂) ∧ s.card = n := by
+    {n : ℕ} (hn₁ : n ≤ #s₁) (hn₂ : #s₂ ≤ n) :
+    ∃ s, Sys s ∧ s₂ ⊆ s ∧ (∀ e ∈ s, e ∈ s₁ ∨ e ∈ s₂) ∧ #s = n := by
     induction n, hn₂ using le_induction with
     | base => use s₂; simp [hs₂]; intro _ h; exact .inr h
     | succ _ h ih =>
@@ -60,7 +60,7 @@ theorem exists_feasible_superset_add_element_feasible
     (hS : ExchangeProperty Sys) (hs₁ : Sys s₁) (hs₂ : Sys s₂) (hs : s₂ ⊆ s₁)
     {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
     ∃ s, Sys s ∧ s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, Sys (cons a s h) := by
-  induction' hn : s₁.card - s₂.card generalizing s₂
+  induction' hn : #s₁ - #s₂ generalizing s₂
   case zero =>
     exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn) ▸ ha₂) ha₁)
   case succ _ ih =>

@@ -18,12 +18,12 @@ exchange and accessible properties.
 /-- Greedoid is a nonempty (finite) set system satisfying both accessible and exchange property. -/
 structure Greedoid (α : Type*) where
   /-- The ground set which every element lies on. -/
-  groundSet : Finset α
+  ground : Finset α
   /-- The feasible set of the greedoid. -/
   Feasible : Finset α → Prop
   feasible_empty : Feasible ∅
   exchange_property : Greedoid.ExchangeProperty Feasible
-  subset_ground : ∀ s, Feasible s → s ⊆ groundSet
+  subset_ground : ∀ s, Feasible s → s ⊆ ground
 
 section Greedoid
 
@@ -45,17 +45,17 @@ variable {α : Type*}
 open Nat List Finset
 
 theorem eq_of_veq : ∀ {G₁ G₂ : Greedoid α},
-    G₁.groundSet = G₂.groundSet → G₁.Feasible = G₂.Feasible → G₁ = G₂
+    G₁.ground = G₂.ground → G₁.Feasible = G₂.Feasible → G₁ = G₂
   | ⟨_, _, _, _, _⟩, ⟨_, _, _, _, _⟩, h₁, h₂ => by cases h₁; cases h₂; rfl
 
 @[simp]
 theorem feasible_injective :
-    Function.Injective (fun G : Greedoid α => (G.groundSet, G.Feasible)) :=
+    Function.Injective (fun G : Greedoid α => (G.ground, G.Feasible)) :=
   fun _ _ => by simp; exact eq_of_veq
 
 @[simp]
 theorem feasible_inj {G₁ G₂ : Greedoid α} :
-    G₁.groundSet = G₂.groundSet ∧ G₁.Feasible = G₂.Feasible ↔ G₁ = G₂ :=
+    G₁.ground = G₂.ground ∧ G₁.Feasible = G₂.Feasible ↔ G₁ = G₂ :=
   ⟨fun h => by apply eq_of_veq <;> simp [h], fun h => by simp [h]⟩
 
 variable {G : Greedoid α}

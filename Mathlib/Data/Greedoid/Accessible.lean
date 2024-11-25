@@ -27,14 +27,14 @@ variable {α : Type*}
 
 /-- The accessible property of greedoid. -/
 def AccessibleProperty (Sys : Finset α → Prop) : Prop :=
-  ⦃s : Finset α⦄ → Sys s → s.Nonempty → ∃ t, t ⊆ s ∧ t.card + 1 = s.card ∧ Sys t
+  ⦃s : Finset α⦄ → Sys s → s.Nonempty → ∃ t, t ⊆ s ∧ #t + 1 = #s ∧ Sys t
 
 /-- A set system is accessible if there is some element `x` in `s` which `s \ {x}` is also in the
     set system, for each nonempty set `s` of the set system.
     This automatically implies that nonempty accessible set systems contain an empty set. -/
 class Accessible (Sys : Finset α → Prop) : Prop where
   accessible :
-    ⦃s : Finset α⦄ → Sys s → s.Nonempty → ∃ t, t ⊆ s ∧ t.card + 1 = s.card ∧ Sys t
+    ⦃s : Finset α⦄ → Sys s → s.Nonempty → ∃ t, t ⊆ s ∧ #t + 1 = #s ∧ Sys t
 
 namespace Accessible
 
@@ -43,7 +43,7 @@ variable {Sys : Finset α → Prop} [Accessible Sys]
 theorem nonempty_contains_empty
     {s : Finset α} (hs : Sys s) :
     Sys ∅ := by
-  induction' h : s.card generalizing s
+  induction' h : #s generalizing s
   case zero => exact card_eq_zero.mp h ▸ hs
   case succ _ ih =>
     rcases accessible hs (by rw [← card_ne_zero]; omega) with ⟨_, _, _, h⟩
@@ -64,10 +64,10 @@ theorem induction_on_accessible
     (insert :
       ∀ ⦃s₁ : Finset α⦄, (hs₁ : Sys s₁) →
       ∀ ⦃s₂ : Finset α⦄, (hs₂ : Sys s₂) →
-      s₂ ⊆ s₁ → s₂.card + 1 = s₁.card → p hs₂ → p hs₁)
+      s₂ ⊆ s₁ → #s₂ + 1 = #s₁ → p hs₂ → p hs₁)
     {s : Finset α} (hs : Sys s):
     p hs := by
-  induction' hn : s.card generalizing s
+  induction' hn : #s generalizing s
   case zero => exact card_eq_zero.mp hn ▸ empty
   case succ n ih =>
     rcases accessible hs (one_le_card.mp (by omega)) with ⟨t, ht₁, ht₂, ht₃⟩
@@ -84,7 +84,7 @@ theorem construction_on_accessible
   | insert hs hs₂ h₁ h₂ h₃ =>
     rename_i s₁ s₂; clear hs₂; rcases h₃ with ⟨l₀, hl₀₁, hl₀₂, hl₀₃⟩
     have h₃ : ∃! a, a ∈ s₁ ∧ a ∉ l₀ := by
-      have h₃ : (s₁ \ s₂).card = 1 := by rw [card_sdiff h₁]; omega
+      have h₃ : #(s₁ \ s₂) = 1 := by rw [card_sdiff h₁]; omega
       rcases card_eq_one.mp h₃ with ⟨a, ha⟩; rw [eq_singleton_iff_unique_mem] at ha
       rcases ha with ⟨h₄, h₅⟩; simp at h₄ h₅
       rw [← @mem_val _ _ s₂, ← hl₀₂, Multiset.mem_coe] at h₄
