@@ -563,8 +563,8 @@ theorem ContMDiff.continuous (hf : ContMDiff I I' n f) : Continuous f :=
 
 theorem contMDiffWithinAt_top :
     ContMDiffWithinAt I I' ⊤ f s x ↔ ∀ n : ℕ, ContMDiffWithinAt I I' n f s x :=
-  ⟨fun h n => ⟨h.1, contDiffWithinAt_top.1 h.2 n⟩, fun H =>
-    ⟨(H 0).1, contDiffWithinAt_top.2 fun n => (H n).2⟩⟩
+  ⟨fun h n => ⟨h.1, contDiffWithinAt_infty.1 h.2 n⟩, fun H =>
+    ⟨(H 0).1, contDiffWithinAt_infty.2 fun n => (H n).2⟩⟩
 
 theorem contMDiffAt_top : ContMDiffAt I I' ⊤ f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_top
