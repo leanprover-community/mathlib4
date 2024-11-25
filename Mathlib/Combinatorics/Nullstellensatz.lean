@@ -8,7 +8,8 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Data.Set.Card
 import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Data.Finsupp.Lex
+import Mathlib.Data.Finsupp.MonomialOrder.DegLex
+import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 /-! # Alon's Combinatorial Nullstellensatz -/
 
@@ -21,16 +22,15 @@ theorem _root_.Polynomial.eq_zero_of_eval_zero [IsDomain R] (P : Polynomial R) (
     P = 0 := by
   classical
   by_contra hP
-  rw [← not_le] at Hdeg; apply Hdeg
+  apply not_le.mpr Hdeg
   apply le_trans _ (Polynomial.card_roots' P)
   apply le_trans _ (Multiset.toFinset_card_le _)
   simp only [← Set.ncard_coe_Finset]
-  apply Set.ncard_le_ncard
+  apply Set.ncard_le_ncard _ P.roots.toFinset.finite_toSet
   intro s hs
   simp only [Finset.mem_coe, Multiset.mem_toFinset, Polynomial.mem_roots', ne_eq,
     Polynomial.IsRoot.def]
   refine ⟨hP, Heval s hs⟩
-  exact Finset.finite_toSet P.roots.toFinset
 
 namespace MvPolynomial
 
@@ -69,17 +69,11 @@ theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
         ext m
         simp only [coeff_zero, finSuccEquiv_coeff_coeff]
         by_contra hm
-        rw [← not_le] at hd
-        apply hd
+        apply not_le.mpr hd
+        rw [MvPolynomial.degreeOf_eq_sup]
         rw [← ne_eq, ← MvPolynomial.mem_support_iff] at hm
-        apply le_trans _ (le_weightedTotalDegree _ hm)
-        rw [Finsupp.weight_apply]
-        apply le_of_eq
-        rw [Finsupp.sum_eq_single 0]
-        · simp
-        · intro z _ hz
-          rw [Finsupp.single_apply, if_neg (Ne.symm hz), smul_zero]
-        · simp
+        convert Finset.le_sup hm
+        simp only [cons_zero]
       · intro y hy
         rw [← eval_eq_eval_mv_eval']
         apply Heval
@@ -94,21 +88,11 @@ theorem eq_zero_of_eval_zero_at_prod_nat {n : ℕ} [IsDomain R]
     apply hrec _ (fun i ↦ S (i.succ))
     · intro i
       apply lt_of_le_of_lt _ (Hdeg i.succ)
-      rw [weightedTotalDegree]
-      simp only [Finset.sup_le_iff, mem_support_iff, ne_eq]
+      simp only [degreeOf_eq_sup, Finset.sup_le_iff, mem_support_iff, ne_eq]
       intro e he
       simp only [Q, finSuccEquiv_coeff_coeff, ← ne_eq, ← MvPolynomial.mem_support_iff] at he
-      apply le_trans _ (le_weightedTotalDegree _ he)
-      apply le_of_eq
-      rw [Finsupp.weight_apply, Finsupp.sum_eq_single i, Finsupp.single_apply, if_pos rfl]
-      · rw [Finsupp.weight_apply, Finsupp.sum_eq_single i.succ, Finsupp.single_apply, if_pos rfl]
-        · simp only [smul_eq_mul, mul_one, Nat.succ_eq_add_one, Finsupp.cons_succ]
-        · intro j _ hj
-          rw [Finsupp.single_apply, if_neg (Ne.symm hj), smul_zero]
-        · simp
-      · intro c _ hc
-        rw [Finsupp.single_apply, if_neg (Ne.symm hc), smul_zero]
-      · simp
+      convert Finset.le_sup he
+      simp only [cons_succ]
     · intro x hx
       specialize Heval' x hx
       rw [Polynomial.ext_iff] at Heval'
@@ -123,7 +107,7 @@ theorem weightedTotalDegree_rename_of_injective {σ τ : Type*} [DecidableEq τ]
 
 theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
     (P : MvPolynomial σ R) (S : σ → Set R)
-    (Hdeg : ∀ i, P.weightedTotalDegree (Finsupp.single i 1) < (S i).ncard)
+    (Hdeg : ∀ i, P.degreeOf i < (S i).ncard)
     (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x P = 0) :
     P = 0 := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin σ
@@ -135,12 +119,9 @@ theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
   · intro i
     classical
     convert Hdeg (e.symm i)
-    rw [weightedTotalDegree_rename_of_injective e.injective]
-    congr
-    ext s
-    simp only [Function.comp_apply]
-    nth_rewrite 1 [← e.apply_symm_apply i, Finsupp.single_apply_left e.injective]
-    rfl
+    have : i = e (e.symm i) := by 
+      exact (Equiv.symm_apply_eq e).mp rfl
+    conv_lhs => rw [← e.apply_symm_apply i, degreeOf_rename_of_injective e.injective]
   · intro x hx
     simp only [MvPolynomial.eval_rename]
     apply Heval
@@ -163,13 +144,13 @@ lemma _root_.MonomialOrder.lCoeff_binomial {ι : Type*} (m : MonomialOrder ι) (
     m.lCoeff (X i - C r) = 1 := by
   classical
   by_cases H : Nontrivial R
-  simp only [lCoeff, m.degree_binomial i r]
-  simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
-  rw [if_neg]
-  intro h
-  apply zero_ne_one (α := ℕ)
-  simp only [Finsupp.ext_iff, coe_zero, Pi.zero_apply] at h
-  rw [h i, single_eq_same]
+  · simp only [lCoeff, m.degree_binomial i r]
+    simp only [coeff_sub, coeff_single_X, true_and, if_true, coeff_C, sub_eq_self]
+    rw [if_neg]
+    intro h
+    apply zero_ne_one (α := ℕ)
+    simp only [Finsupp.ext_iff, coe_zero, Pi.zero_apply] at h
+    rw [h i, single_eq_same]
   · by_contra H'
     exact H (nontrivial_of_ne _ _ H')
 
@@ -184,8 +165,8 @@ theorem _root_.MonomialOrder.prod_degree [Nontrivial R]
     rw [← bot_eq_zero, bot_lt_iff_ne_bot, bot_eq_zero, ← map_zero m.toSyn]
     simp
   rw [MonomialOrder.degree_prod_of_regular]
-  rw [Finset.sum_congr rfl H]
-  simp only [Finset.sum_const, smul_single, smul_eq_mul, mul_one]
+  · rw [Finset.sum_congr rfl H]
+    simp only [Finset.sum_const, smul_single, smul_eq_mul, mul_one]
   · intro r hr
     convert isRegular_one
     simp only [lCoeff, H r hr]
@@ -230,32 +211,20 @@ private lemma prod_support_le {ι : Type*} (i : ι) (s : Finset R) (m : ι →�
   rw [hP, support_rename_of_injective (Function.injective_of_subsingleton _)] at hm
   simp only [Finset.mem_image, mem_support_iff, ne_eq] at hm
   obtain ⟨e, he, hm⟩ := hm
-  have hm' : m = single i (e ()) := by
-    rw [← hm]
+  haveI : Nontrivial R := nontrivial_of_ne _ _ he
+  refine ⟨e (), ?_, ?_⟩
+  · suffices e ≼[lex] single () s.card by
+      simpa [lex_unit_le_iff] using this
+    rw [← Alon.degP]
+    apply MonomialOrder.le_degree
+    rw [mem_support_iff]
+    convert he
+  · rw [← hm]
     ext j
     by_cases hj : j = i
     · rw [hj, mapDomain_apply (Function.injective_of_subsingleton _), single_eq_same]
     · rw [mapDomain_notin_range, single_eq_of_ne (Ne.symm hj)]
       simp [Set.range_const, Set.mem_singleton_iff, hj]
-  refine ⟨e (), ?_, hm'⟩
-  by_cases hR : Nontrivial R
-  letI : LinearOrder Unit := WellOrderingRel.isWellOrder.linearOrder
-  letI : WellFoundedGT Unit := Finite.to_wellFoundedGT
-  have : single () (e ()) ≼[lex] single () s.card := by
-    rw [← Alon.degP]
-    apply MonomialOrder.le_degree
-    rw [mem_support_iff]
-    convert he
-    ext
-    rw [single_eq_same]
-  change toLex (single () (e ())) ≤ toLex _ at this
-  simp [Finsupp.lex_le_iff] at this
-  rcases this with (h | h)
-  · exact le_of_eq h
-  · exact le_of_lt h.2
-  -- ¬(Nontrivial R)
-  · exfalso
-    exact hR (nontrivial_of_ne _ _ he)
 
 variable [Fintype σ]
 
@@ -273,10 +242,9 @@ theorem Alon1 [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     exact ⟨fun i ↦ degLex_totalDegree_monotone (hh i), hf⟩
   apply eq_zero_of_eval_zero_at_prod r (fun i ↦ S i)
   · intro i
-    simp only [weightedTotalDegree, Set.ncard_coe_Finset]
-    rw [Finset.sup_lt_iff (by simp [Sne i])]
+    rw [degreeOf_eq_sup, Set.ncard_coe_Finset, Finset.sup_lt_iff (by simp [Sne i])]
     intro c hc
-    rw [← not_le, weight_single_one_apply]
+    rw [← not_le]
     intro h'
     apply hr c hc i
     intro j
@@ -320,7 +288,7 @@ theorem Alon2 [IsDomain R]
   · simp [hi]
   have : g.totalDegree ≤ f.totalDegree := by
     simp only [hg, mul_comm, hh i]
-  -- simplify this by proving `degree_mul_eq` (at least in a domain)
+  -- one could simplify this by proving `totalDegree_mul_eq` (at least in a domain)
   rw [hg, ← degLex_degree_degree,
     degree_mul_of_isRegular_right hi (by simp only [Alon.lCoeffP, isRegular_one]),
     Alon.degP, degree_add, degLex_degree_degree, degree_apply_single, ht'] at this
@@ -341,6 +309,5 @@ theorem Alon2 [IsDomain R]
   apply not_le.mpr (htS i)
   apply le_trans hq'
   simp only [← hpq, hq, coe_add, Pi.add_apply, single_eq_same, le_add_iff_nonneg_left, zero_le]
-
 
 end MvPolynomial
