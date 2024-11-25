@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.Weight
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.List.TFAE
-import Mathlib.Logic.Equiv.TransferInstance
 
 /-! # Monomial orders
 
