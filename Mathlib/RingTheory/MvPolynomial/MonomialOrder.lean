@@ -300,7 +300,7 @@ theorem coeff_mul_of_add_of_degree_le {f g : MvPolynomial σ R} {a b : σ →₀
 
 /-- Multiplicativity of leading coefficients -/
 theorem coeff_mul_of_degree_add {f g : MvPolynomial σ R} :
-    (f * g).coeff (m.degree f + m.degree g) = m.lCoeff f * m.lCoeff g := 
+    (f * g).coeff (m.degree f + m.degree g) = m.lCoeff f * m.lCoeff g :=
   coeff_mul_of_add_of_degree_le (le_of_eq rfl) (le_of_eq rfl)
 
 /-- Multiplicativity of leading coefficients -/
