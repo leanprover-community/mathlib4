@@ -370,7 +370,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
   have I₂ m : ‖iteratedFDeriv ℝ m (T ∘ (ContinuousLinearMap.pi (fun (_ : Fin n) ↦ L))) v‖ ≤
       (n.descFactorial m * 1 * (‖L‖ * ‖v‖) ^ (n - m)) * ‖L‖ ^ m := by
     rw [ContinuousLinearMap.iteratedFDeriv_comp_right _ (ContinuousMultilinearMap.contDiff _)
-      _ le_top]
+      _ (mod_cast le_top)]
     apply (norm_compContinuousLinearMap_le _ _).trans
     simp only [Finset.prod_const, Finset.card_fin]
     gcongr
