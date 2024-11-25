@@ -10,21 +10,22 @@ import Mathlib.Analysis.Calculus.FDeriv.Analytic
 # Analytic functions are `C^∞`.
 -/
 
-open Set
+open Set ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {f : E → F} {s : Set E} {x : E} {n : ℕ∞}
+  {f : E → F} {s : Set E} {x : E} {n : WithTop ℕ∞}
 
 /-- An analytic function is infinitely differentiable. -/
 protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
-    ContDiffOn 𝕜 n f s :=
+    ContDiffOn 𝕜 n f s := by
   let t := { x | AnalyticAt 𝕜 f x }
-  suffices ContDiffOn 𝕜 n f t from this.mono h
+  suffices ContDiffOn 𝕜 ω f t from (this.of_le le_top).mono h
+  rw [← contDiffOn_infty_iff_contDiffOn_omega]
   have H : AnalyticOnNhd 𝕜 f t := fun _x hx ↦ hx
   have t_open : IsOpen t := isOpen_analyticAt 𝕜 f
-  contDiffOn_of_continuousOn_differentiableOn
+  exact contDiffOn_of_continuousOn_differentiableOn
     (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
       fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
     (fun m _ ↦ (H.iteratedFDeriv m).differentiableOn.congr
