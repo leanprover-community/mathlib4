@@ -218,7 +218,7 @@ theorem Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
   nonempty_inv.2 h
 
 @[to_additive (attr := simp)]
-theorem image_inv_eq_inv : Inv.inv '' s = s⁻¹ :=
+theorem image_inv_eq_inv : (·⁻¹) '' s = s⁻¹ :=
   congr_fun (image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _
 
 @[to_additive (attr := simp)]

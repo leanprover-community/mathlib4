@@ -198,9 +198,7 @@ scoped[Pointwise] attribute [instance] Finset.inv Finset.neg
 theorem inv_def : s⁻¹ = s.image fun x => x⁻¹ :=
   rfl
 
-@[to_additive]
-theorem image_inv_eq_inv (s : Finset α) : (s.image fun x => x⁻¹) = s⁻¹ :=
-  rfl
+@[to_additive] lemma image_inv_eq_inv (s : Finset α) : s.image (·⁻¹) = s⁻¹ := rfl
 
 @[to_additive]
 theorem mem_inv {x : α} : x ∈ s⁻¹ ↔ ∃ y ∈ s, y⁻¹ = x :=
