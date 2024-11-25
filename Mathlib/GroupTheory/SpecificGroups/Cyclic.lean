@@ -327,9 +327,16 @@ lemma isCyclic_iff_exists_ofOrder_eq_natCard [Finite α] :
   refine isCyclic_of_orderOf_eq_card g ?_
   simp [hg]
 
-@[to_additive (attr := deprecated (since := "2024-04-20"))]
+@[to_additive]
 protected alias IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
   isCyclic_iff_exists_ofOrder_eq_natCard
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated isCyclic_iff_exists_ofOrder_eq_natCard (since := "2024-04-20")]
+IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype
+attribute [deprecated isAddCyclic_iff_exists_ofOrder_eq_natCard (since := "2024-04-20")]
+IsAddCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype
 
 section
 

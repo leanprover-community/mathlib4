@@ -100,7 +100,7 @@ alias set_lintegral_deterministic := setLIntegral_deterministic
 
 end Deterministic
 
-section KernelId
+section Id
 
 /-- The identity kernel, that maps `x : α` to the Dirac measure at `x`. -/
 protected noncomputable
@@ -111,7 +111,7 @@ instance : IsMarkovKernel (Kernel.id : Kernel α α) := by rw [Kernel.id]; infer
 lemma id_apply (a : α) : Kernel.id a = Measure.dirac a := by
   rw [Kernel.id, deterministic_apply, id_def]
 
-end KernelId
+end Id
 
 section Copy
 
@@ -149,10 +149,11 @@ def swap (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Kernel (α 
 
 instance : IsMarkovKernel (swap α β) := by rw [swap]; infer_instance
 
+/-- See `swap_apply` for a fully applied version of this lemma. -/
 lemma swap_apply (ab : α × β) : swap α β ab = Measure.dirac ab.swap := by
   rw [swap, deterministic_apply]
 
-set_option linter.docPrime false in
+/-- See `swap_apply` for a partially applied version of this lemma. -/
 lemma swap_apply' (ab : α × β) {s : Set (β × α)} (hs : MeasurableSet s) :
     swap α β ab s = s.indicator 1 ab.swap := by
   rw [swap_apply, Measure.dirac_apply' _ hs]
