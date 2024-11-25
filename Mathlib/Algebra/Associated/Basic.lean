@@ -8,7 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.BoundedOrder.Lattice
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Prime.Lemmas
 

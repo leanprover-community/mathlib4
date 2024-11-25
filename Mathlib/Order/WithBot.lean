@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.BoundedOrder.Lattice
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.NAry
 import Mathlib.Tactic.Contrapose
