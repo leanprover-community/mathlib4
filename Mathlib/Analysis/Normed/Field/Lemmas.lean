@@ -60,7 +60,7 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
               Finset.univ.sup ((fun i => ‖x i‖₊) * fun i => ‖y i‖₊) :=
             Finset.sup_mono_fun fun _ _ => norm_mul_le _ _
           _ ≤ (Finset.univ.sup fun i => ‖x i‖₊) * Finset.univ.sup fun i => ‖y i‖₊ :=
-            Finset.sup_mul_le_mul_sup_of_nonneg _ (fun _ _ => zero_le _) fun _ _ => zero_le _
+            Finset.sup_mul_le_mul_sup_of_nonneg (fun _ _ => zero_le _) fun _ _ => zero_le _
            }
 
 end NonUnitalSeminormedRing
