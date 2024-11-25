@@ -13,8 +13,6 @@ import Mathlib.Topology.UniformSpace.Pi
 
 /-! # Product topology on multivariate power series
 
-## Main results
-
 Let `R` be with `Semiring R` and `TopologicalSpace R`
 In this file we define the topology on `MvPowerSeries σ R`
 that corresponds to the simple convergence on its coefficients.
@@ -28,6 +26,8 @@ When the type of coefficients has the discrete topology,
 it corresponds to the topology defined by [bourbaki1981], chapter 4, §4, n°2.
 
 It is *not* the adic topology in general.
+
+## Main results
 
 - `MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent`,
 `MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero`: if the constant coefficient
@@ -63,7 +63,7 @@ section Topology
 variable [TopologicalSpace R]
 
 variable (R) in
-/-- The pointwise topology on MvPowerSeries -/
+/-- The pointwise topology on `MvPowerSeries` -/
 scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
   Pi.topologicalSpace
 
@@ -82,7 +82,7 @@ theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) : Continuous (MvPowerS
   continuous_pi_iff.mp continuous_id d
 
 variable (R) in
-/-- constant_coeff is continuous -/
+/-- `MvPolynomial.constantCoeff` is continuous -/
 theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff σ R) :=
   continuous_coeff R 0
 
