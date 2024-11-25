@@ -44,15 +44,7 @@ set_option quotPrecheck false
 local macro:max (priority := high) "[" n:term "]₂" : term =>
   `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
 
-
 open StructuredArrow
-
-lemma spine_map_vertex (X : SSet.{u})
-    {n : ℕ} (x : X _[n]) {m : ℕ} (φ : [m] ⟶ [n]) (i : Fin (m + 1)) :
-    (spine X m (X.map φ.op x)).vertex i = (spine X n x).vertex (φ.toOrderHom i) := by
-  dsimp [spine]
-  rw [← FunctorToTypes.map_comp_apply]
-  rfl
 
 namespace StrictSegal
 variable (X : SSet.{u}) [StrictSegal X]
@@ -109,8 +101,22 @@ lemma fac_aux₂ {n : ℕ}
   | zero =>
       rintro i j hij hj hik
       obtain rfl : i = j := by omega
-      simp
-      sorry
+      rw [mkOfLe_rfl_const]
+      let α : (strArrowMk₂ ([0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩) (by omega)) ⟶
+        (strArrowMk₂ ([1].const [0] 0 ≫ [0].const [n] ⟨i, Nat.lt_add_one_of_le hj⟩) (by omega)) :=
+            StructuredArrow.homMk (([1].const [0] 0).op) (by simp; rfl)
+      have nat := congr_fun (s.π.naturality α) x
+      dsimp only [Fin.val_zero, Nat.add_zero, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int,
+        Int.reduceAdd, Fin.eta, comp_obj, StructuredArrow.proj_obj, op_obj, const_obj_obj,
+        const_obj_map, types_comp_apply, types_id_apply, Functor.comp_map, StructuredArrow.proj_map,
+        op_map] at nat
+      rw [nat]
+      rw [op_comp, Functor.map_comp]
+      simp only [types_comp_apply]
+      refine congrArg (X.map ([1].const [0] 0).op) ?_
+      unfold strArrowMk₂
+      rw [lift, StrictSegal.spineToSimplex_vertex]
+      congr
   | succ k hk =>
       intro i j hij hj hik
       let α := strArrowMk₂ (mkOfLeComp (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩
@@ -198,64 +204,11 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     · exact congr_fun (hm (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x
     · exact congr_fun (hm (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x
 
-  #exit
-  --show IsLimit _
-  --unfold rightExtensionInclusion
-  --simp only [RightExtension.mk, RightExtension.coneAt, Truncated.inclusion,
-  --  CostructuredArrow.mk_left, const_obj_obj, op_obj, fullSubcategoryInclusion.obj,
-  --  comp_obj, StructuredArrow.proj_obj, whiskeringLeft_obj_obj, CostructuredArrow.mk_right,
-  --  CostructuredArrow.mk_hom_eq_self, NatTrans.id_app, comp_id]
-  exact {
-    lift := fun s x => ran.lift s x
-    fac := by
-      intro s j
-      ext x
-      apply StrictSegal.spineInjective (X := X) (n := (unop j.right).1.len)
-      unfold spineEquiv
-      dsimp
-      ext i
-      · simp only [spine_vertex, id_eq, types_comp_apply, ran.lift]
-        simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-        have ceq : (j.hom ≫ ([0].const [(unop j.right).obj.len] i).op) =
-          (const [0] [n] (strArr.homEv j i)).op := rfl
-        rw [ceq, StrictSegal.spineToSimplex_vertex]
-        have eq := congr_fun (s.π.naturality (fact.obj.arr j i)) x
-        unfold pt fact.obj.arr strArr.homEv at eq
-        dsimp at eq
-        simp only [len_mk, mk_len]
-        rw [← eq]
-        rfl
-      · simp only [spine_arrow, id_eq, types_comp_apply]
-        have nat := congr_fun (s.π.naturality (fact.map.arr j i)) x
-        dsimp [fact.map.arr] at nat
-        rw [← nat]
-        simp only [← FunctorToTypes.map_comp_apply]
-        rw [← Quiver.Hom.op_unop j.hom]
-        simp only [← op_comp]
-        rw [show mkOfSucc i ≫ j.hom.unop = mkOfLe _ _ (strArr.homEv.map j i).le by
-          simp [strArr.homEv, strArr.homEvSucc, mkOfSucc, mkOfLe]
-          exact Hom.ext_one_left ..]
-        exact ran.lift.map s x (strArr.homEv j i.castSucc) (strArr.homEvSucc j i)
-          (strArr.homEv.map j i)
-    uniq := by
-      intro s lift' fact'
-      ext x
-      apply StrictSegal.spineInjective
-      unfold spineEquiv
-      dsimp
-      rw [StrictSegal.spine_spineToSimplex]
-      ext i
-      · exact congr_fun (fact' (StructuredArrow.mk (Y := op [0]₂) ([0].const [n] i).op)) x
-      · exact congr_fun (fact' (ar i)) x
-  }
-
-
-
 /-- Since `rightExtensionInclusion₂IsPointwiseRightKanExtensionAt X n` proves that the appropriate
 cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension.-/
 noncomputable def isPointwiseRightKanExtension :
     RightExtension.IsPointwiseRightKanExtension (rightExtensionInclusion X 2) :=
-  fun Δ => IsPointwiseRightKanExtensionAt X Δ.unop.len
+  fun Δ => isPointwiseRightKanExtensionAt X Δ.unop.len
 
 /-- Since `rightExtensionInclusion X 2` is a pointwise right Kan extension,
 `rightExtensionInclusion X 2` is universal as a costructured arrow.-/
