@@ -31,7 +31,7 @@ instance : DecidablePred (IsSquare : ℕ → Prop) :=
   fun m ↦ decidable_of_iff' (Nat.sqrt m * Nat.sqrt m = m) <| by
     simp_rw [← Nat.exists_mul_self m, IsSquare, eq_comm]
 
-lemma not_even_iff : ¬ Even n ↔ n % 2 = 1 := by rw [even_iff, mod_two_ne_zero]
+lemma not_even_iff : ¬ Even n ↔ n % 2 = 1 := by rw [even_iff, mod_two_not_eq_zero]
 
 @[simp] lemma two_dvd_ne_zero : ¬2 ∣ n ↔ n % 2 = 1 :=
   (even_iff_exists_two_nsmul _).symm.not.trans not_even_iff

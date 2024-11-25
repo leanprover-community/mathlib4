@@ -111,7 +111,7 @@ notation3 "∏' "(...)", "r:67:(scoped f => tprod f) => r
 @[inherit_doc tsum]
 notation3 "∑' "(...)", "r:67:(scoped f => tsum f) => r
 
-variable {f g : β → α} {a b : α} {s : Finset β}
+variable {f : β → α} {a : α} {s : Finset β}
 
 @[to_additive]
 theorem HasProd.multipliable (h : HasProd f a) : Multipliable f :=

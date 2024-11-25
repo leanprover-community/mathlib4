@@ -55,7 +55,7 @@ open Set Encodable Function Equiv Filter MeasureTheory
 
 universe uι
 
-variable {α β γ δ δ' : Type*} {ι : Sort uι} {s t u : Set α}
+variable {α β γ δ δ' : Type*} {ι : Sort uι} {s : Set α}
 
 namespace MeasurableSpace
 
@@ -225,7 +225,7 @@ variable {f g : α → β}
 
 section TypeclassMeasurableSpace
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable [MeasurableSpace α] [MeasurableSpace β]
 
 @[nontriviality, measurability]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
