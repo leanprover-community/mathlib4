@@ -97,11 +97,11 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
 instance : HasColimit F := ⟨_, isColimitColimitCocone F⟩
 
 noncomputable instance : PreservesColimit F (forget₂ _ AddCommGrp) :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F) (colimit.isColimit _)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 noncomputable instance reflectsColimit :
     ReflectsColimit F (forget₂ (ModuleCat.{w'} R) AddCommGrp) :=
-  reflectsColimitOfReflectsIsomorphisms _ _
+  reflectsColimit_of_reflectsIsomorphisms _ _
 
 end HasColimit
 
