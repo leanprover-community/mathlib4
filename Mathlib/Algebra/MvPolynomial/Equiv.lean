@@ -440,7 +440,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   · rw [← support_coeff_finSuccEquiv]
     exact hσ1
 
-theorem support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} :
+theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
   ext i
   rw [Polynomial.mem_support_iff, Finset.mem_image, Finsupp.ne_iff]
@@ -457,11 +457,10 @@ theorem support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} :
 
 theorem mem_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {x} :
     x ∈ (finSuccEquiv R n f).support ↔ x ∈ (fun m : Fin (n + 1) →₀ _ ↦ m 0) '' f.support := by
-  simpa using congr(x ∈ $support_finSuccEquiv)
+  simpa using congr(x ∈ $(support_finSuccEquiv f))
 
 theorem image_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} :
-    Finset.image (Finsupp.cons i) (Polynomial.coeff (finSuccEquiv R n f) i).support =
-      f.support.filter fun m => m 0 = i := by
+    ((finSuccEquiv R n f).coeff i).support.image (Finsupp.cons i) = {m ∈ f.support | m 0 = i} := by
   ext m
   rw [Finset.mem_filter, Finset.mem_image, mem_support_iff]
   conv_lhs =>
