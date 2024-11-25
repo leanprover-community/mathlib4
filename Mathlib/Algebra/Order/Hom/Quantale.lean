@@ -57,7 +57,7 @@ you should parametrize over
 `(F : Type*) [FunLike F M N] [AddHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
 structure AddQuantaleHom (α β : Type*)
   [AddSemigroup α] [CompleteLattice α] [AddSemigroup β] [CompleteLattice β]
-  extends α →ₙ+ β, sSupHom α β
+  extends AddHom α β, sSupHom α β
 
 /-- Infix notation for `AddQuantaleHom`. -/
 infixr:25 " →ₙ+q " => AddQuantaleHom
@@ -138,12 +138,10 @@ theorem ext (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
 @[to_additive]
-theorem toFun_eq_coe (f : α →ₙ*q β) : f.toFun = (f : α → β) :=
-  rfl
+theorem toFun_eq_coe (f : α →ₙ*q β) : f.toFun = (f : α → β) := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_mk (f : α →ₙ* β) (h) : (QuantaleHom.mk f h : α → β) = f :=
-  rfl
+theorem coe_mk (f : α →ₙ* β) (h) : (QuantaleHom.mk f h : α → β) = f := rfl
 
 @[to_additive (attr := simp)]
 theorem mk_coe (f : α →ₙ*q β) (h) : QuantaleHom.mk (f : α →ₙ* β) h = f := rfl
