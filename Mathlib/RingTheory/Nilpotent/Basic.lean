@@ -97,6 +97,8 @@ lemma IsIdempotentElem.eq_zero_of_isNilpotent [MonoidWithZero R] {e : R}
   · rw [pow_zero] at hn; rw [← one_mul e, hn, zero_mul]
   · rw [← hn, idem.pow_succ_eq]
 
+alias IsNilpotent.eq_zero_of_isIdempotentElem := IsIdempotentElem.eq_zero_of_isNilpotent
+
 instance [Zero R] [Pow R ℕ] [Zero S] [Pow S ℕ] [IsReduced R] [IsReduced S] : IsReduced (R × S) where
   eq_zero _ := fun ⟨n, hn⟩ ↦ have hn := Prod.ext_iff.1 hn
     Prod.ext (IsReduced.eq_zero _ ⟨n, hn.1⟩) (IsReduced.eq_zero _ ⟨n, hn.2⟩)
