@@ -36,7 +36,6 @@ Since the universe the ring lives in can be inferred, we put that last. -/
 abbrev AlgebraCatMax.{v₁, v₂, u₁} (R : Type u₁) [CommRing R] := AlgebraCat.{max v₁ v₂} R
 
 attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra
-
 initialize_simps_projections AlgebraCat (-isRing, -isAlgebra)
 
 namespace AlgebraCat
@@ -238,3 +237,27 @@ instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsI
     {R} [CommRing R] {G : Type u} [Ring G] [Algebra R G] {H : AlgebraCat.{u} R} (f : G →ₐ[R] H) :
     AlgHom.comp (𝟙 H) f = f :=
   Category.comp_id (AlgebraCat.ofHom f)
+
+def isComm {R : Type u} [CommRing R] (A : AlgebraCat R) : Prop := ∀ x y : A, x * y = y * x
+
+variable (R : Type u) [CommRing R]
+
+def CommAlgebraCat := FullSubcategory (fun (A : AlgebraCat R) => isComm A)
+
+namespace CommAlgebraCat
+
+instance : CoeSort (CommAlgebraCat R) (Type v) where coe A := A.obj.carrier
+
+instance : Category (CommAlgebraCat R) := by unfold
+
+/-- The object in the category of comm-R-algebras associated to a type equipped with the appropriate
+typeclasses. -/
+def of (X : Type u) [CommRing X] [CommAlgebra R X] : CommAlgebraCat R :=
+  ⟨⟨X⟩, mul_comm⟩
+
+@[simp]
+theorem coe_of (X : Type u) [CommRing X] [CommAlgebra R X] : (of R X : Type u) = X :=
+  rfl
+
+
+end CommAlgebraCat

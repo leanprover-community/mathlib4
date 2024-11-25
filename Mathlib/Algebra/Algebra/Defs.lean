@@ -103,6 +103,8 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
   smul_def' : ∀ r x, r • x = toRingHom r * x
 
+class CommAlgebra (R : Type u) (A : Type v) [CommSemiring R] [CommSemiring A] extends Algebra R A
+
 end Prio
 
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
