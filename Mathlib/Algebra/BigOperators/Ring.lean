@@ -186,7 +186,6 @@ theorem prod_add_one {f : ι → α} (s : Finset ι) :
     ∏ i ∈ s, (f i + 1) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
   simp only [prod_add, prod_const_one, mul_one]
 
-
 end DecidableEq
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
