@@ -7,7 +7,6 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.List.TFAE
-import Mathlib.Data.Finsupp.Lex
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Data.Finsupp.MonomialOrder
 
@@ -168,7 +167,7 @@ theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
   intro d
   apply imp_congr (rfl.to_iff)
   rw [map_zero, ← m.bot_eq_zero, ← eq_bot_iff, m.bot_eq_zero]
-  simp only [AddEquivClass.map_eq_zero_iff]
+  simp only [EmbeddingLike.map_eq_zero_iff]
   exact Finsupp.ext_iff
 
 @[simp]
@@ -240,7 +239,8 @@ theorem degree_mul_le {f g : MvPolynomial σ R} :
     simp only [map_add]
     exact add_le_add_right hd _
 
-theorem lCoeff_mul' {f g : MvPolynomial σ R} :
+/-- Multiplicativity of leading coefficients -/
+theorem lCoeff_mul_degree_add {f g : MvPolynomial σ R} :
     (f * g).coeff (m.degree f + m.degree g) = m.lCoeff f * m.lCoeff g := by
   classical
   rw [coeff_mul]
@@ -269,6 +269,7 @@ theorem lCoeff_mul' {f g : MvPolynomial σ R} :
         exact lt_of_add_lt_add_right h'
   · simp
 
+/-- Multiplicativity of leading coefficients -/
 theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
     (hf : IsRegular (m.lCoeff f)) (hg : g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g := by
@@ -280,29 +281,36 @@ theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
     lCoeff_eq_zero_iff]
   exact hg
 
+/-- Multiplicativity of leading coefficients -/
 theorem lCoeff_mul_of_isRegular_left {f g : MvPolynomial σ R}
     (hf : IsRegular (m.lCoeff f)) (hg : g ≠ 0) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
   simp only [lCoeff, degree_mul_of_isRegular_left hf hg, lCoeff_mul']
+/-- Multiplicativity of leading coefficients -/
 
+/-- Multiplicativity of leading coefficients -/
 theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.lCoeff g)) :
     m.degree (f * g) = m.degree f + m.degree g := by
   rw [mul_comm, m.degree_mul_of_isRegular_left hg hf, add_comm]
 
+/-- Multiplicativity of leading coefficients -/
 theorem lCoeff_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.lCoeff g)) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
   simp only [lCoeff, degree_mul_of_isRegular_right hf hg, lCoeff_mul']
 
+/-- Degree of product -/
 theorem degree_mul [IsDomain R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g :=
   degree_mul_of_isRegular_left (isRegular_of_ne_zero (lCoeff_ne_zero_iff.mpr hf)) hg
 
-theorem degree_mul' [IsDomain R] {f g : MvPolynomial σ R} (hfg : f * g ≠ 0) :
+/-- Degree of of product -/
+theorem degree_mul_of_nonzero_mul [IsDomain R] {f g : MvPolynomial σ R} (hfg : f * g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g :=
   degree_mul (left_ne_zero_of_mul hfg) (right_ne_zero_of_mul hfg)
 
+/-- Multiplicativity of leading coefficients -/
 theorem lCoeff_mul [IsDomain R] {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
