@@ -29,12 +29,16 @@ open CategoryTheory Simplicial SimplexCategory Opposite Category Functor Limits
 
 namespace SSet
 
+namespace Truncated
+
 /-- The identity natural transformation exhibits a simplicial set as a right extension of its
 restriction along `(Truncated.inclusion (n := n)).op`.-/
 @[simps!]
 def rightExtensionInclusion (X : SSet.{u}) (n : ℕ) :
     RightExtension (Truncated.inclusion (n := n)).op
       (Functor.op Truncated.inclusion ⋙ X) := RightExtension.mk _ (𝟙 _)
+
+end Truncated
 
 section
 
@@ -50,6 +54,8 @@ namespace StrictSegal
 variable (X : SSet.{u}) [StrictSegal X]
 
 namespace isPointwiseRightKanExtensionAt
+
+open Truncated
 
 abbrev strArrowMk₂ {i : ℕ} {n : ℕ} (φ : [i] ⟶ [n]) (hi : i ≤ 2) :
     StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op :=
