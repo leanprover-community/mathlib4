@@ -7,7 +7,6 @@ import Lean
 import Mathlib.Order.Defs
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
-import Batteries.Lean.Except
 import Batteries.Tactic.Exact
 
 /-!
@@ -241,11 +240,16 @@ open Elab Tactic
 @[gcongr_forward] def symmExact : ForwardExt where
   eval := Lean.Expr.applySymm
 
+/-- FIXME junk docstring -/
 structure Hypotheses where
+  /-- FIXME junk docstring -/
   (equalities : Array Expr)
+  /-- FIXME junk docstring -/
   (originalRelations : Array Expr)
+  /-- FIXME junk docstring -/
   (deducedRelations : Array Expr)
 
+/-- FIXME junk docstring -/
 def addHypothesis (h : Expr) : StateRefT Hypotheses MetaM Unit := withReducibleAndInstances do
   let eq? : Bool := h.eq?.isSome
   let tacs := (forwardExt.getState (← getEnv)).2
