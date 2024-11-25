@@ -55,6 +55,8 @@ variable (X : SSet.{u}) [StrictSegal X]
 
 namespace isPointwiseRightKanExtensionAt
 
+/-- A morphism in `SimplexCategory` with domain `[0]`, `[1]`, or `[2]` defines an object in the
+comma category `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op`.-/
 abbrev strArrowMk₂ {i : ℕ} {n : ℕ} (φ : [i] ⟶ [n]) (hi : i ≤ 2) :
     StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op :=
   StructuredArrow.mk (Y := op ⟨[i], hi⟩) (by exact φ.op)
