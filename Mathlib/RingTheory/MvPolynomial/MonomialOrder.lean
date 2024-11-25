@@ -7,7 +7,6 @@ import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.List.TFAE
-import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-! # Degree and leading coefficient of polynomials with respect to a monomial order
