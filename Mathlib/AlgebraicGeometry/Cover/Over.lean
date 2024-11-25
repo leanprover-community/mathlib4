@@ -3,9 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Comma
+import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
@@ -69,14 +67,9 @@ def Cover.pullbackCoverOver : W.Cover P where
   obj x := (pullback (f.asOver S) ((𝒰.map x).asOver S)).left
   map x := (pullback.fst (f.asOver S) ((𝒰.map x).asOver S)).left
   f x := 𝒰.f (f.base x)
-  covers x := by
-    obtain ⟨y, hy⟩ := 𝒰.covers (f.base x)
-    obtain ⟨o, ho⟩ := IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
-      (𝒰.map_prop _) x y hy.symm
-    use (PreservesPullback.iso (Over.forget S) (f.asOver S) ((𝒰.map _).asOver S)).inv.base o
-    simp only [Over.forget_obj, Over.forget_map, OverClass.asOverHom_left]
-    simp_rw [← Scheme.comp_base_apply, ← Over.forget_map, PreservesPullback.iso_inv_fst]
-    simpa
+  covers x := (mem_range_iff_of_surjective ((𝒰.pullbackCover f).map (𝒰.f (f.base x))) _
+    ((PreservesPullback.iso (Over.forget S) (f.asOver S) ((𝒰.map _).asOver S)).inv)
+    (PreservesPullback.iso_inv_fst _ _ _) x).mp ((𝒰.pullbackCover f).covers x)
   map_prop j := by
     dsimp only
     rw [← Over.forget_map, ← PreservesPullback.iso_hom_fst, P.cancel_left_of_respectsIso]
@@ -96,14 +89,9 @@ def Cover.pullbackCoverOver' : W.Cover P where
   obj x := (pullback ((𝒰.map x).asOver S) (f.asOver S)).left
   map x := (pullback.snd ((𝒰.map x).asOver S) (f.asOver S)).left
   f x := 𝒰.f (f.base x)
-  covers x := by
-    obtain ⟨y, hy⟩ := 𝒰.covers (f.base x)
-    obtain ⟨o, ho⟩ := IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
-      (𝒰.map_prop _) y x hy
-    use (PreservesPullback.iso (Over.forget S) ((𝒰.map _).asOver S) (f.asOver S)).inv.base o
-    simp only [Over.forget_obj, Over.forget_map, OverClass.asOverHom_left]
-    simp_rw [← Scheme.comp_base_apply, ← Over.forget_map, PreservesPullback.iso_inv_snd]
-    simpa
+  covers x := (mem_range_iff_of_surjective ((𝒰.pullbackCover' f).map (𝒰.f (f.base x))) _
+    ((PreservesPullback.iso (Over.forget S) ((𝒰.map _).asOver S) (f.asOver S)).inv)
+    (PreservesPullback.iso_inv_snd _ _ _) x).mp ((𝒰.pullbackCover' f).covers x)
   map_prop j := by
     dsimp only
     rw [← Over.forget_map, ← PreservesPullback.iso_hom_snd, P.cancel_left_of_respectsIso]
@@ -120,8 +108,10 @@ variable {Q : MorphismProperty Scheme.{u}} [Q.HasOfPostcompProperty Q]
 
 variable (hX : Q (X ↘ S)) (hW : Q (W ↘ S)) (hQ : ∀ j, Q (𝒰.obj j ↘ S))
 
-/-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOverProp` with the arguments in the
-fiber products flipped. -/
+/-- The pullback of a cover of `S`-schemes with `Q` along a morphism of `S`-schemes. This is not
+definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullbackCover`, as here we take
+the pullback in `Q.Over ⊤ S`, whose underlying schemes is only isomorphic but not equal to the
+pullback in `Scheme`. -/
 @[simps (config := .lemmasOnly)]
 def Cover.pullbackCoverOverProp : W.Cover P where
   J := 𝒰.J
@@ -129,18 +119,10 @@ def Cover.pullbackCoverOverProp : W.Cover P where
     ((𝒰.map x).asOverProp (hX := hQ x) (hY := hX) S)).left
   map x := (pullback.fst (f.asOverProp S) ((𝒰.map x).asOverProp S)).left
   f x := 𝒰.f (f.base x)
-  covers x := by
-    obtain ⟨y, hy⟩ := 𝒰.covers (f.base x)
-    obtain ⟨o, ho⟩ := IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
-      (𝒰.map_prop _) x y hy.symm
-    use (PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
-      (f.asOverProp S) ((𝒰.map _).asOverProp S)).inv.base o
-    simp only [Functor.comp_obj, MorphismProperty.Comma.forget_obj, Over.forget_obj,
-      MorphismProperty.Comma.forget_map, MorphismProperty.Comma.Hom.hom_mk,
-      Over.forget_map, OverClass.asOverHom_left]
-    rw [← Scheme.comp_base_apply, ← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom]
-    rw [← MorphismProperty.Comma.forget_map, ← Functor.comp_map, PreservesPullback.iso_inv_fst]
-    simpa
+  covers x := (mem_range_iff_of_surjective ((𝒰.pullbackCover f).map (𝒰.f (f.base x))) _
+    ((PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
+      (f.asOverProp S) ((𝒰.map _).asOverProp S)).inv)
+    (PreservesPullback.iso_inv_fst _ _ _) x).mp ((𝒰.pullbackCover f).covers x)
   map_prop j := by
     dsimp only
     rw [← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom,
@@ -165,18 +147,10 @@ def Cover.pullbackCoverOverProp' : W.Cover P where
     (f.asOverProp (hX := hW) (hY := hX) S)).left
   map x := (pullback.snd ((𝒰.map x).asOverProp S) (f.asOverProp S)).left
   f x := 𝒰.f (f.base x)
-  covers x := by
-    obtain ⟨y, hy⟩ := 𝒰.covers (f.base x)
-    obtain ⟨o, ho⟩ := IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
-      (𝒰.map_prop _) y x hy
-    use (PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
-      ((𝒰.map _).asOverProp S) (f.asOverProp S)).inv.base o
-    simp only [Functor.comp_obj, MorphismProperty.Comma.forget_obj, Over.forget_obj,
-      MorphismProperty.Comma.forget_map, MorphismProperty.Comma.Hom.hom_mk,
-      Over.forget_map, OverClass.asOverHom_left]
-    rw [← Scheme.comp_base_apply, ← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom]
-    rw [← MorphismProperty.Comma.forget_map, ← Functor.comp_map, PreservesPullback.iso_inv_snd]
-    simpa
+  covers x := (mem_range_iff_of_surjective ((𝒰.pullbackCover' f).map (𝒰.f (f.base x))) _
+    ((PreservesPullback.iso (MorphismProperty.Over.forget Q _ _ ⋙ Over.forget S)
+      ((𝒰.map _).asOverProp S) (f.asOverProp S)).inv)
+    (PreservesPullback.iso_inv_snd _ _ _) x).mp ((𝒰.pullbackCover' f).covers x)
   map_prop j := by
     dsimp only
     rw [← Over.forget_map, MorphismProperty.Comma.toCommaMorphism_eq_hom,

@@ -110,28 +110,18 @@ instance [OverClass X S]
 
 variable (X) in
 /-- Bundle `X` with an `OverClass X S` instance into `Over S`. -/
+@[simps! hom left]
 def OverClass.asOver [OverClass X S] : Over S := Over.mk (X ↘ S)
 
-@[simp]
-lemma OverClass.asOver_hom [OverClass X S] :
-    (OverClass.asOver X S).hom = X ↘ S :=
-  rfl
-
 /-- Bundle a morphism `f : X ⟶ Y` with `HomIsOver f S` into a morphism in `Over S`. -/
+@[simps! left]
 def OverClass.asOverHom [OverClass X S] [OverClass Y S] (f : X ⟶ Y) [HomIsOver f S] :
     OverClass.asOver X S ⟶ OverClass.asOver Y S :=
   Over.homMk f (comp_over f S)
 
-@[simp]
-lemma OverClass.asOverHom_left [OverClass X S] [OverClass Y S] (f : X ⟶ Y) [HomIsOver f S] :
-    (OverClass.asOverHom S f).left = f :=
-  rfl
-
+@[simps]
 instance OverClass.fromOver {S : C} (X : Over S) : OverClass X.left S where
   hom := X.hom
-
-@[simp]
-lemma OverClass.fromOver_hom {S : C} (X : Over S) : X.left ↘ S = X.hom := rfl
 
 instance {S : C} {X Y : Over S} (f : X ⟶ Y) : HomIsOver f.left S where
   comp_over := Over.w f
