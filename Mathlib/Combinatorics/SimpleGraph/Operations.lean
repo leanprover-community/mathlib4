@@ -175,7 +175,7 @@ theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬
   have := hvw.adj_sub
   simp only [Subgraph.spanningCoe_adj, SimpleGraph.sup_adj, SimpleGraph.edge_adj] at *
   by_cases hs : s(v, w) = s(s, t)
-  · exact (h ((Subgraph.adj_iff_of_sym2_eq hs).mp hvw)).elim
+  · exact (h ((Subgraph.adj_congr_of_sym2 hs).mp hvw)).elim
   · aesop
 
 variable [Fintype V] [DecidableRel G.Adj]
