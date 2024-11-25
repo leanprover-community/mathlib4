@@ -67,18 +67,19 @@ variable (R) in
 scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
   Pi.topologicalSpace
 
-/-- MvPowerSeries on a T0Space form a T0Space -/
+/-- `MvPowerSeries` on a `T0Space` form a `T0Space` -/
 @[scoped instance]
 theorem instT0Space [T0Space R] : T0Space (MvPowerSeries σ R) := Pi.instT0Space
 
-/-- MvPowerSeries on a T2Space form a T2Space -/
+/-- `MvPowerSeries` on a `T2Space` form a `T2Space` -/
 @[scoped instance]
 theorem instT2Space [T2Space R] : T2Space (MvPowerSeries σ R) := Pi.t2Space
 
 variable (R) in
 /-- `MvPowerSeries.coeff` is continuous. -/
 @[fun_prop]
-theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) : Continuous (MvPowerSeries.coeff R d) :=
+theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) : 
+    Continuous (MvPowerSeries.coeff R d) :=
   continuous_pi_iff.mp continuous_id d
 
 variable (R) in
@@ -96,7 +97,7 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
 
 variable (σ R)
 
-/-- The semiring topology on MvPowerSeries of a topological semiring -/
+/-- The semiring topology on `MvPowerSeries` of a topological semiring -/
 @[scoped instance]
 theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
     TopologicalSemiring (MvPowerSeries σ R) where
@@ -106,7 +107,7 @@ theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
       continuous_finset_sum _ fun i _ => continuous_mul.comp
         ((continuous_coeff R i.fst).fst'.prod_mk (continuous_coeff R i.snd).snd')
 
-/-- The ring topology on MvPowerSeries of a topological ring -/
+/-- The ring topology on `MvPowerSeries` of a topological ring -/
 @[scoped instance]
 theorem instTopologicalRing (R : Type*) [TopologicalSpace R] [Ring R] [TopologicalRing R] :
     TopologicalRing (MvPowerSeries σ R) :=
@@ -180,7 +181,7 @@ theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommRing R] [DiscreteTopolog
 
 variable [Semiring R]
 
-/-- A power series is the sum (in the sense of summable families) of its monomials -/
+/-- A multivariate power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial R d (coeff R d f)) f := by
   rw [Pi.hasSum]
@@ -189,7 +190,7 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
   · exact (coeff_monomial_same d _).symm
   · exact fun d' h ↦ coeff_monomial_ne (Ne.symm h) _
 
-/-- If the coefficient space is T2, then the power series is `tsum` of its monomials -/
+/-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
     f = tsum fun d : σ →₀ ℕ => monomial R d (coeff R d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
@@ -200,17 +201,17 @@ section Uniformity
 
 variable [UniformSpace R]
 
-/-- The componentwise uniformity on MvPowerSeries -/
+/-- The componentwise uniformity on `MvPowerSeries` -/
 scoped instance : UniformSpace (MvPowerSeries σ R) :=
   Pi.uniformSpace fun _ : σ →₀ ℕ => R
 
 variable (R) in
-/-- Coefficients are uniformly continuous -/
+/-- Coefficients of a multivariate power series are uniformly continuous -/
 theorem uniformContinuous_coeff [Semiring R] (d : σ →₀ ℕ) :
     UniformContinuous fun f : MvPowerSeries σ R => coeff R d f :=
   uniformContinuous_pi.mp uniformContinuous_id d
 
-/-- Completeness of the uniform structure on MvPowerSeries -/
+/-- Completeness of the uniform structure on `MvPowerSeries` -/
 @[scoped instance]
 theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (MvPowerSeries σ R) := Pi.complete _
