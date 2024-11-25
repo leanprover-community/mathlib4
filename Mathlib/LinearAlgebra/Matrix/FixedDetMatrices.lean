@@ -134,28 +134,16 @@ private lemma A_a_ne_zero {A : Δ m} (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 0 0
 /--An auxiliary result bounding the size of the entries of the representatives in `reps`. -/
 lemma reps_entries_le_m' (hm : m ≠ 0) {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
     A.1 i j ∈ Finset.Icc (-|m|) |m|:= by
+  suffices |A.1 i j| ≤ |m| from Finset.mem_Icc.mpr <| abs_le.mp this
   have h1 : 0 < |A.1 1 1| := abs_pos.mpr (A_d_ne_zero (abs_eq_zero.mpr h.left) hm)
   have h2 : 0 < |A.1 0 0| := abs_pos.mpr (A_a_ne_zero h.left hm)
   fin_cases i <;> fin_cases j
-  · simp only [← A_c_eq_zero h.1, Fin.zero_eta, Finset.mem_Icc, abs_mul]
-    constructor
-    · rw [neg_le]
-      exact (neg_le_abs (A.1 0 0)).trans ((le_mul_iff_one_le_right h2).mpr h1)
-    · exact (le_abs_self (A.1 0 0)).trans ((le_mul_iff_one_le_right h2).mpr h1)
-  · simp only [Fin.zero_eta, Fin.mk_one, Finset.mem_Icc]
-    constructor
-    · have := abs_pos.mpr hm
-      have := h.2.2.1
-      omega
-    · simp_rw [← A_c_eq_zero h.1, abs_mul]
-      exact (le_abs_self (A.1 0 1)).trans <| h.2.2.2.le.trans (le_mul_of_one_le_left h1.le h2)
-  · simp only [Fin.mk_one, Fin.zero_eta, h.1, Finset.mem_Icc, Left.neg_nonpos_iff, abs_nonneg,
-      and_self]
-  · simp only [Fin.mk_one, ← A_c_eq_zero h.1, abs_mul, Finset.mem_Icc]
-    constructor
-    · rw [neg_le]
-      exact (neg_le_abs (A.1 1 1)).trans ((le_mul_iff_one_le_left h1).mpr h2)
-    · exact (le_abs_self (A.1 1 1)).trans ((le_mul_iff_one_le_left h1).mpr h2)
+  · simpa only [Fin.zero_eta, ← A_c_eq_zero h.1, abs_mul]
+    using (le_mul_iff_one_le_right h2).mpr h1
+  · simpa only [Fin.zero_eta, Fin.mk_one, ← A_c_eq_zero h.1, abs_mul]
+    using h.2.2.2.le.trans (le_mul_of_one_le_left h1.le h2)
+  · simp only [Fin.mk_one, Fin.isValue, Fin.zero_eta, h.1, abs_zero, abs_nonneg]
+  · simpa only [Fin.mk_one, ← A_c_eq_zero h.1, abs_mul] using (le_mul_iff_one_le_left h1).mpr h2
 
 lemma reps_zero_empty : (reps 0) = ∅ := by
   rw [reps]
