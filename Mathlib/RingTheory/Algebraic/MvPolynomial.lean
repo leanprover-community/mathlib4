@@ -7,12 +7,10 @@ import Mathlib.Algebra.MvPolynomial.Supported
 import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
-# Algebraic elements and algebraic extensions
+# Transcendental elements in `MvPolynomial`
 
-An element of an R-algebra is algebraic over R if it is the root of a nonzero polynomial.
-An R-algebra is algebraic over R if and only if all its elements are algebraic over R.
-The main result in this file proves transitivity of algebraicity:
-a tower of algebraic field extensions is algebraic.
+This file lists some results on some elements in `MvPolynomial σ R` being transcendental
+over the base ring `R` and subrings `MvPolynomial.supported` of `MvPolynomial σ R`.
 -/
 
 universe u v w
