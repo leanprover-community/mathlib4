@@ -157,18 +157,12 @@ noncomputable instance reps_fintype (k : ℤ) : Fintype (reps k) := by
   · rw [hk, reps_zero_empty]
     exact Set.fintypeEmpty
   · let H := Finset.Icc (-|k|) |k|
-    let H4 := H × H × H × H
-    apply Fintype.ofInjective (β := H4) (f := fun (M : reps k) =>
-      ⟨⟨M.1.1 0 0, reps_entries_le_m' hk M.2 0 0⟩,
-        ⟨M.1.1 0 1, reps_entries_le_m' hk M.2 0 1⟩,
-          ⟨M.1.1 1 0, reps_entries_le_m' hk M.2 1 0⟩,
-            ⟨M.1.1 1 1, reps_entries_le_m' hk M.2 1 1⟩⟩)
+    let H4 := Fin 2 → Fin 2 → H
+    apply Fintype.ofInjective (β := H4)
+      (f := fun (M : reps k) ↦ fun i j ↦ ⟨M.1.1 i j, reps_entries_le_m' hk M.2 i j⟩)
     intro M N h
     ext i j
-    rw [Prod.ext_iff] at h
-    simp only [Subtype.mk.injEq, Prod.mk.injEq] at h
-    obtain ⟨_, _, _, _⟩ := h
-    fin_cases i <;> fin_cases j <;> assumption
+    simpa only [Subtype.mk.injEq] using congrFun₂ h i j
 
 lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) : ∀ A : Δ m, reduce A ∈ reps m := by
   apply reduce_rec
