@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Order.Filter.Tendsto
 
