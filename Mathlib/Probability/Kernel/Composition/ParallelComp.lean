@@ -11,7 +11,7 @@ import Mathlib.Probability.Kernel.Composition
 
 ## Main definitions
 
-* `parallelComp (κ : Kernel α β) (η : Kernel (α × β) γ) : Kernel α (β × γ)`: parallel composition
+* `parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ)`: parallel composition
   of two s-finite kernels. We define a notation `κ ∥ₖ η = parallelComp κ η`.
   `∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ b, ∫⁻ d, g (b, d) ∂η ac.2 ∂κ ac.1`
 
