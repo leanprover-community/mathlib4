@@ -98,8 +98,8 @@ lemma spineToSimplex_map {X Y : SSet.{u}} [StrictSegal X] [StrictSegal Y]
   rw [← types_comp_apply (σ.app _) (Y.map _), ← σ.naturality]
   simp only [types_comp_apply, spineToSimplex_arrow]
 
-/-- If we take the path along the spine of face `j` of a `spineToSimplex`, the
-common vertices will agree with those of the original path `f`. In particular,
+/-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
+the common vertices will agree with those of the original path `f`. In particular,
 a vertex `i` with `i < j` can be identified with the same vertex in `f`. -/
 lemma spine_δ_vertex_lt (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)}
     (h : i.castSucc < j) :
@@ -110,8 +110,8 @@ lemma spine_δ_vertex_lt (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_castSucc_lt j i h]
 
-/-- If we take the path along the spine of face `j` of a `spineToSimplex`, a
-vertex `i` with `i ≥ j` can be identified with vertex `i + 1` in the original
+/-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
+a vertex `i` with `i ≥ j` can be identified with vertex `i + 1` in the original
 path. -/
 lemma spine_δ_vertex_ge (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)}
     (h : j ≤ i.castSucc) :
@@ -122,9 +122,9 @@ lemma spine_δ_vertex_ge (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_le_castSucc j i h]
 
-/-- If we take the path along the spine of face `j` of a `spineToSimplex`, the
-common arrows will agree with those of the original path `f`. In particular, an
-arrow `i` with `i + 1 < j` can be identified with the same arrow in `f`. -/
+/-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
+the common arrows will agree with those of the original path `f`. In particular,
+an arrow `i` with `i + 1 < j` can be identified with the same arrow in `f`. -/
 lemma spine_δ_arrow_lt (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
     (h : i.succ.castSucc < j) :
     (X.spine n (X.δ j (spineToSimplex f))).arrow i = f.arrow i.castSucc := by
@@ -132,9 +132,9 @@ lemma spine_δ_arrow_lt (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
   rw [← FunctorToTypes.map_comp_apply, ← op_comp]
   rw [mkOfSucc_δ_lt h, spineToSimplex_arrow]
 
-/-- If we take the path along the spine of face `j` of a `spineToSimplex`, an
-arrow `i` with `i + 1 > j` can be identified with arrow `i + 1` in the original
-path. -/
+/-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
+an arrow `i` with `i + 1 > j` can be identified with arrow `i + 1` in the
+original path. -/
 lemma spine_δ_arrow_gt (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
     (h : j < i.succ.castSucc) :
     (X.spine n (X.δ j (spineToSimplex f))).arrow i = f.arrow i.succ := by
