@@ -109,6 +109,108 @@ lemma abscissaOfAbsConv_residueClass_le_one :
   · simp +contextual only [term, Set.mem_setOf_eq, hn, not_false_eq_true, Set.indicator_of_not_mem,
       ofReal_zero, zero_div, ite_self]
 
+/-- The set we are interested in (prime numbers in the residue class `a`) is the same as the support
+of `ArithmeticFunction.vonMangoldt.residueClass` restricted to primes (and divided by `n`;
+this is how this result is used later). -/
+lemma support_residueClass_prime_div :
+    Function.support (fun n : ℕ ↦ (if n.Prime then residueClass a n else 0) / n) =
+      {p : ℕ | p.Prime ∧ (p : ZMod q) = a} := by
+  simp only [Function.support, ne_eq, div_eq_zero_iff, ite_eq_right_iff,
+    Set.indicator_apply_eq_zero, Set.mem_setOf_eq, Nat.cast_eq_zero, not_or, Classical.not_imp]
+  ext1 p
+  simp only [Set.mem_setOf_eq]
+  exact ⟨fun H ↦ ⟨H.1.1, H.1.2.1⟩,
+    fun H ↦ ⟨⟨H.1, H.2, vonMangoldt_ne_zero_iff.mpr H.1.isPrimePow⟩, H.1.ne_zero⟩⟩
+
+private noncomputable def F₀ (n : ℕ) : ℝ := (if n.Prime then 0 else vonMangoldt n) / n
+
+private noncomputable def F' (pk : Nat.Primes × ℕ) : ℝ := F₀ (pk.1 ^ (pk.2 + 1))
+
+private noncomputable def F'' : Nat.Primes × ℕ → ℝ := F' ∘ (Prod.map _root_.id (· + 1))
+
+private lemma F''_le (p : Nat.Primes) (k : ℕ) : F'' (p, k) ≤ 2 * (p : ℝ)⁻¹ ^ (k + 3 / 2 : ℝ) :=
+  calc _
+    _ = Real.log p * (p : ℝ)⁻¹ ^ (k + 2) := by
+      simp only [F'', Function.comp_apply, F', F₀, Prod.map_apply, id_eq, le_add_iff_nonneg_left,
+        zero_le, Nat.Prime.not_prime_pow, ↓reduceIte, vonMangoldt_apply_prime p.prop,
+        vonMangoldt_apply_pow (Nat.zero_ne_add_one _).symm, Nat.cast_pow, div_eq_mul_inv,
+        inv_pow (p : ℝ) (k + 2)]
+    _ ≤ (p: ℝ) ^ (1 / 2 : ℝ) / (1 / 2) * (p : ℝ)⁻¹ ^ (k + 2) :=
+        mul_le_mul_of_nonneg_right (Real.log_le_rpow_div p.val.cast_nonneg one_half_pos)
+          (pow_nonneg (inv_nonneg_of_nonneg (Nat.cast_nonneg ↑p)) (k + 2))
+    _ = 2 * (p : ℝ)⁻¹ ^ (-1 / 2 : ℝ) * (p : ℝ)⁻¹ ^ (k + 2) := by
+      simp only [← div_mul, div_one, mul_comm, neg_div, Real.inv_rpow p.val.cast_nonneg,
+        ← Real.rpow_neg p.val.cast_nonneg, neg_neg]
+    _ = _ := by
+      rw [mul_assoc, ← Real.rpow_natCast,
+        ← Real.rpow_add <| by have := p.prop.pos; positivity, Nat.cast_add, Nat.cast_two,
+        add_comm, add_assoc]
+      norm_num
+
+open Nat.Primes
+
+private lemma summable_F'' : Summable F'' := by
+  have hp₀ (p : Nat.Primes) : 0 < (p : ℝ)⁻¹ := inv_pos_of_pos (Nat.cast_pos.mpr p.prop.pos)
+  have hp₁ (p : Nat.Primes) : (p : ℝ)⁻¹ < 1 :=
+    (inv_lt_one₀ <| mod_cast p.prop.pos).mpr <| Nat.one_lt_cast.mpr <| p.prop.one_lt
+  suffices Summable fun (pk : Nat.Primes × ℕ) ↦ (pk.1 : ℝ)⁻¹ ^ (pk.2 + 3 / 2 : ℝ) by
+    refine (Summable.mul_left 2 this).of_nonneg_of_le (fun pk ↦ ?_) (fun pk ↦ F''_le pk.1 pk.2)
+    simp only [F'', Function.comp_apply, F', F₀, Prod.map_fst, id_eq, Prod.map_snd, Nat.cast_pow]
+    have := vonMangoldt_nonneg (n := (pk.1 : ℕ) ^ (pk.2 + 2))
+    positivity
+  conv => enter [1, pk]; rw [Real.rpow_add <| hp₀ pk.1, Real.rpow_natCast]
+  refine (summable_prod_of_nonneg (fun _ ↦ by positivity)).mpr ⟨(fun p ↦ ?_), ?_⟩
+  · dsimp only -- otherwise the `exact` below times out
+    exact Summable.mul_right _ <| summable_geometric_of_lt_one (hp₀ p).le (hp₁ p)
+  · dsimp only
+    conv => enter [1, p]; rw [tsum_mul_right, tsum_geometric_of_lt_one (hp₀ p).le (hp₁ p)]
+    refine (summable_rpow.mpr (by norm_num : -(3 / 2 : ℝ) < -1)).mul_left 2
+      |>.of_nonneg_of_le (fun p ↦ ?_) (fun p ↦ ?_)
+    · have := sub_pos.mpr (hp₁ p)
+      positivity
+    · rw [Real.inv_rpow p.val.cast_nonneg, Real.rpow_neg p.val.cast_nonneg]
+      gcongr
+      rw [inv_le_comm₀ (sub_pos.mpr (hp₁ p)) zero_lt_two, le_sub_comm,
+        show (1 : ℝ) - 2⁻¹ = 2⁻¹ by norm_num, inv_le_inv₀ (mod_cast p.prop.pos) zero_lt_two]
+      exact Nat.ofNat_le_cast.mpr p.prop.two_le
+
+/-- The function `n ↦ Λ n / n`, restriced to non-primes in a residue class, is summable.
+This is used to convert results on `ArithmeticFunction.vonMangoldt.residueClass` to results
+on primes in an arithmetic progression. -/
+lemma summable_residueClass_non_primes_div :
+    Summable fun n : ℕ ↦ (if n.Prime then 0 else residueClass a n) / n := by
+  have h₀ (n : ℕ) : 0 ≤ (if n.Prime then 0 else residueClass a n) / n := by
+    have := residueClass_nonneg a n
+    positivity
+  have hleF₀ (n : ℕ) : (if n.Prime then 0 else residueClass a n) / n ≤ F₀ n := by
+    refine div_le_div_of_nonneg_right ?_ n.cast_nonneg
+    split_ifs; exacts [le_rfl, residueClass_le a n]
+  refine Summable.of_nonneg_of_le h₀ hleF₀ ?_
+  have hF₀ (p : Nat.Primes) : F₀ p.val = 0 := by
+    simp only [p.prop, ↓reduceIte, zero_div, F₀]
+  refine (summable_subtype_iff_indicator (s := {n | IsPrimePow n}).mp ?_).congr
+      fun n ↦ Set.indicator_apply_eq_self.mpr fun (hn : ¬ IsPrimePow n) ↦ ?_
+  swap
+  · simp +contextual only [div_eq_zero_iff, ite_eq_left_iff, vonMangoldt_eq_zero_iff, hn,
+      not_false_eq_true, implies_true, Nat.cast_eq_zero, true_or, F₀]
+  have hFF' :
+      F₀ ∘ Subtype.val (p := fun n ↦ n ∈ {n | IsPrimePow n}) = F' ∘ ⇑prodNatEquiv.symm := by
+    refine (Equiv.eq_comp_symm prodNatEquiv (F₀ ∘ Subtype.val) F').mpr ?_
+    ext1 n
+    simp only [Function.comp_apply, F']
+    congr
+  rw [hFF']
+  refine (Nat.Primes.prodNatEquiv.symm.summable_iff (f := F')).mpr ?_
+  have hF'₀ (p : Nat.Primes) : F' (p, 0) = 0 := by simp only [zero_add, pow_one, hF₀, F']
+  have hF'₁ : F'' = F' ∘ (Prod.map _root_.id (· + 1)) := by
+    ext1
+    simp only [Function.comp_apply, Prod.map_fst, id_eq, Prod.map_snd, F'', F']
+  refine (Function.Injective.summable_iff ?_ fun u hu ↦ ?_).mp <| hF'₁ ▸ summable_F''
+  · exact Function.Injective.prodMap (fun ⦃a₁ a₂⦄ a ↦ a) <| add_left_injective 1
+  · simp only [Set.range_prod_map, Set.range_id, Set.mem_prod, Set.mem_univ, Set.mem_range,
+      Nat.exists_add_one_eq, true_and, not_lt, nonpos_iff_eq_zero] at hu
+    rw [← hF'₀ u.1, ← hu]
+
 variable [NeZero q] {a}
 
 /-- We can express `ArithmeticFunction.vonMangoldt.residueClass` as a linear combination
