@@ -214,6 +214,20 @@ def degree {N : Type*} [AddCommMonoid N] (d : σ →₀ N) := ∑ i ∈ d.suppor
 alias _root_.MvPolynomial.degree := degree
 
 @[simp]
+theorem degree_add (a b : σ →₀ ℕ) : (a + b).degree = a.degree + b.degree :=
+  sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
+
+@[simp]
+theorem degree_single (a : σ) (m : ℕ) : (Finsupp.single a m).degree = m := by
+  rw [degree, Finset.sum_eq_single a]
+  · simp only [single_eq_same]
+  · intro b _ hba
+    exact single_eq_of_ne hba.symm
+  · intro ha
+    simp only [mem_support_iff, single_eq_same, ne_eq, Decidable.not_not] at ha
+    rw [single_eq_same, ha]
+
+@[simp]
 theorem degree_zero {N : Type*} [AddCommMonoid N] : degree (0 : σ →₀ N) = 0 := by
   simp only [degree]
   apply Finset.sum_eq_zero
