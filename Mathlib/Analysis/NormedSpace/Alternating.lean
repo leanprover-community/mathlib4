@@ -21,7 +21,9 @@ open Finset Metric
 
 We use the following type variables in this file:
 
-TODO
+* `𝕜` : a nontrivially normed field;
+* `ι`: a finite index type with decidable equality;
+* `E`, `F`, `G`: (semi)normed vector spaces over `𝕜`.
 -/
 
 /-- Applying a continuous alternating map to a vector is continuous in both coordinates. -/
@@ -150,14 +152,20 @@ variable [Fintype ι] {f : E [⋀^ι]→L[𝕜] F} {m : ι → E}
 theorem bound (f : E [⋀^ι]→L[𝕜] F) : ∃ (C : ℝ), 0 < C ∧ (∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :=
   f.toContinuousMultilinearMap.bound
 
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[𝕜] F) :=
-  SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
+/-- Continuous alternating maps form a seminormed additive commutative group.
+We override projection to `PseudoMetricSpace` to ensure that instances commute
+in `with_reducible_and_instances`. -/
+instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[𝕜] F) where
+  toPseudoMetricSpace := .induced toContinuousMultilinearMap inferInstance
+  __ := SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
+  norm f := ‖f.toContinuousMultilinearMap‖
 
 @[simp] lemma norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ = ‖f‖ := rfl
 
 /-- The inclusion of `E [⋀^ι]→L[𝕜] F` into `ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F`
 as a linear isometry. -/
-@[simps!] def toContinuousMultilinearMapLinearIsometry :
+@[simps!]
+def toContinuousMultilinearMapLinearIsometry :
     E [⋀^ι]→L[𝕜] F →ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F where
   toLinearMap := toContinuousMultilinearMapLinear
   norm_map' _ := rfl
@@ -174,16 +182,33 @@ lemma bounds_bddBelow {f : E [⋀^ι]→L[𝕜] F} :
     BddBelow {c | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} :=
   ContinuousMultilinearMap.bounds_bddBelow
 
+nonrec theorem isLeast_opNorm (f : E [⋀^ι]→L[𝕜] F) :
+    IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} ‖f‖ :=
+  f.isLeast_opNorm
+
 /-- The fundamental property of the operator norm of a continuous alternating map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`. -/
 theorem le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.1.le_opNorm m
 
-theorem le_of_opNorm_le {C : ℝ} (h : ‖f‖ ≤ C) (m : ι → E) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
-  f.1.le_of_opNorm_le m h
+nonrec theorem le_mul_prod_of_le_opNorm_of_le {f : E [⋀^ι]→L[𝕜] F}
+    {m : ι → E} {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
+    ‖f m‖ ≤ C * ∏ i, b i :=
+  f.le_mul_prod_of_le_opNorm_of_le hC hm
 
-theorem le_opNorm_of_le (f : E [⋀^ι]→L[𝕜] F) {C : ι → ℝ} (h : ∀ i, ‖m i‖ ≤ C i) :
-    ‖f m‖ ≤ ‖f‖ * ∏ i, C i :=
-  f.1.le_opNorm_mul_prod_of_le h
+theorem le_opNorm_mul_prod_of_le (f : E [⋀^ι]→L[𝕜] F) {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) :
+    ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
+  f.1.le_opNorm_mul_prod_of_le hm
+
+nonrec theorem le_opNorm_mul_pow_card_of_le (f : E [⋀^ι]→L[𝕜] F) {m b} (hm : ‖m‖ ≤ b) :
+    ‖f m‖ ≤ ‖f‖ * b ^ Fintype.card ι :=
+  f.le_opNorm_mul_pow_card_of_le hm
+
+nonrec theorem le_opNorm_mul_pow_of_le {n} (f : E [⋀^Fin n]→L[𝕜] F) {m b} (hm : ‖m‖ ≤ b) :
+    ‖f m‖ ≤ ‖f‖ * b ^ n :=
+  f.le_opNorm_mul_pow_of_le hm
+
+theorem le_of_opNorm_le {C : ℝ} (h : ‖f‖ ≤ C) (m : ι → E) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
+  f.1.le_of_opNorm_le h m
 
 lemma ratio_le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ / ∏ i, ‖m i‖ ≤ ‖f‖ :=
   f.1.ratio_le_opNorm m
@@ -195,6 +220,15 @@ lemma unit_le_opNorm (f : E [⋀^ι]→L[𝕜] F) (h : ‖m‖ ≤ 1) : ‖f m�
 lemma opNorm_le_bound (f : E [⋀^ι]→L[𝕜] F) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ m, ‖f m‖ ≤ M * ∏ i, ‖m i‖) : ‖f‖ ≤ M :=
   f.1.opNorm_le_bound hMp hM
+
+theorem opNorm_le_iff {f : E [⋀^ι]→L[𝕜] F} {C : ℝ} (hC : 0 ≤ C) :
+    ‖f‖ ≤ C ↔ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
+  f.1.opNorm_le_iff hC
+
+/-- The fundamental property of the operator norm of a continuous alternating map:
+`‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
+theorem le_opNNNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
+  f.1.le_opNNNorm m
 
 section
 
@@ -213,16 +247,6 @@ def toContinuousMultilinearMapL :
   ⟨toContinuousMultilinearMapLinear, continuous_induced_dom⟩
 
 variable {𝕜'}
-
-theorem le_opNorm_mul_prod_of_le {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) : ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
-  f.1.le_opNorm_mul_prod_of_le hm
-
-theorem le_opNorm_mul_pow_card_of_le {b : ℝ} (hm : ‖m‖ ≤ b) : ‖f m‖ ≤ ‖f‖ * b ^ Fintype.card ι :=
-  f.1.le_opNorm_mul_pow_card_of_le hm
-
-theorem le_opNorm_mul_pow_of_le (f : E [⋀^Fin n]→L[𝕜] F) (m : Fin n → E) {b : ℝ} (hm : ‖m‖ ≤ b) :
-    ‖f m‖ ≤ ‖f‖ * b ^ n :=
-  f.1.le_opNorm_mul_pow_of_le hm
 
 /-- The fundamental property of the operator norm of a continuous alternating map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
@@ -326,6 +350,8 @@ lemma norm_image_sub_le (m₁ m₂ : ι → E) :
 
 end ContinuousAlternatingMap
 
+variable [Fintype ι]
+
 /-- If a continuous alternating map is constructed from a alternating map via the constructor
 `mkContinuous`, then its norm is bounded by the bound given to the constructor if it is
 nonnegative. -/
@@ -338,38 +364,41 @@ lemma AlternatingMap.mkContinuous_norm_le (f : E [⋀^ι]→ₗ[𝕜] F) {C : �
 nonnegative. -/
 lemma AlternatingMap.mkContinuous_norm_le' (f : E [⋀^ι]→ₗ[𝕜] F) {C : ℝ}
     (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : ‖f.mkContinuous C H‖ ≤ max C 0 :=
-  ContinuousMultilinearMap.opNorm_le_bound _ (le_max_right _ _) fun m ↦ (H m).trans <| by
+  ContinuousMultilinearMap.opNorm_le_bound (le_max_right _ _) fun m ↦ (H m).trans <| by
     gcongr
     apply le_max_left
 
+variable {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+
 namespace ContinuousLinearMap
 
-lemma norm_compContinuousAlternatingMap_le (g : F →L[𝕜] G') (f : E [⋀^ι]→L[𝕜] F) :
+lemma norm_compContinuousAlternatingMap_le (g : F →L[𝕜] G) (f : E [⋀^ι]→L[𝕜] F) :
     ‖g.compContinuousAlternatingMap f‖ ≤ ‖g‖ * ‖f‖ :=
   g.norm_compContinuousMultilinearMap_le f.1
 
-variable (𝕜 E F G')
+variable (𝕜 E F G)
 
-/-- `continuous_linear_map.comp_ContinuousAlternatingMap` as a bundled continuous bilinear map. -/
-def compContinuousAlternatingMapL : (F →L[𝕜] G') →L[𝕜] E [⋀^ι]→L[𝕜] F →L[𝕜] (E [⋀^ι]→L[𝕜] G') :=
-  LinearMap.mkContinuous₂ (compContinuousAlternatingMapₗ 𝕜 E F G') 1 fun f g ↦ by
+/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous bilinear map. -/
+@[simps! apply_apply]
+def compContinuousAlternatingMapL : (F →L[𝕜] G) →L[𝕜] E [⋀^ι]→L[𝕜] F →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
+  LinearMap.mkContinuous₂ (compContinuousAlternatingMapₗ 𝕜 E F G) 1 fun f g ↦ by
     simpa using f.norm_compContinuousAlternatingMap_le g
 
-variable {𝕜 F G'}
+variable {𝕜 F G}
 
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv. -/
-nonrec def _root_.ContinuousLinearEquiv.compContinuousAlternatingMapL (g : F ≃L[𝕜] G') :
-    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G') :=
+nonrec def _root_.ContinuousLinearEquiv.compContinuousAlternatingMapL (g : F ≃L[𝕜] G) :
+    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
   { g.compContinuousAlternatingMap,
-      compContinuousAlternatingMapL 𝕜 E F G' g.toContinuousLinearMap with
-    invFun := compContinuousAlternatingMapL 𝕜 E G' F g.symm.toContinuousLinearMap
+      compContinuousAlternatingMapL 𝕜 E F G g.toContinuousLinearMap with
+    invFun := compContinuousAlternatingMapL 𝕜 E G F g.symm.toContinuousLinearMap
     continuous_toFun :=
-      (compContinuousAlternatingMapL 𝕜 E F G' g.toContinuousLinearMap).continuous
+      (compContinuousAlternatingMapL 𝕜 E F G g.toContinuousLinearMap).continuous
     continuous_invFun :=
-      (compContinuousAlternatingMapL 𝕜 E G' F g.symm.toContinuousLinearMap).continuous }
+      (compContinuousAlternatingMapL 𝕜 E G F g.symm.toContinuousLinearMap).continuous }
 
 @[simp]
-lemma _root_.ContinuousLinearEquiv.compContinuousAlternatingMapL_symm (g : F ≃L[𝕜] G') :
+lemma _root_.ContinuousLinearEquiv.compContinuousAlternatingMapL_symm (g : F ≃L[𝕜] G) :
     (g.compContinuousAlternatingMapL (ι := ι) E).symm = g.symm.compContinuousAlternatingMapL E :=
   rfl
 
@@ -377,19 +406,19 @@ variable {E}
 
 @[simp]
 lemma _root_.continuous_linear_equiv.comp_ContinuousAlternatingMapL_apply
-    (g : F ≃L[𝕜] G') (f : E [⋀^ι]→L[𝕜] F) :
-    g.compContinuousAlternatingMapL E f = (g : F →L[𝕜] G').compContinuousAlternatingMap f :=
+    (g : F ≃L[𝕜] G) (f : E [⋀^ι]→L[𝕜] F) :
+    g.compContinuousAlternatingMapL E f = (g : F →L[𝕜] G).compContinuousAlternatingMap f :=
   rfl
 
-/-- Flip arguments in `f : F →L[𝕜] E [⋀^ι]→L[𝕜] G'` to get `⋀^ι⟮𝕜; E; F →L[𝕜] G'⟯` -/
-def flipAlternating (f : F →L[𝕜] (E [⋀^ι]→L[𝕜] G')) : E [⋀^ι]→L[𝕜] (F →L[𝕜] G') where
+/-- Flip arguments in `f : F →L[𝕜] E [⋀^ι]→L[𝕜] G` to get `⋀^ι⟮𝕜; E; F →L[𝕜] G⟯` -/
+def flipAlternating (f : F →L[𝕜] (E [⋀^ι]→L[𝕜] G)) : E [⋀^ι]→L[𝕜] (F →L[𝕜] G) where
   toContinuousMultilinearMap :=
     ((ContinuousAlternatingMap.toContinuousMultilinearMapL 𝕜).comp f).flipMultilinear
   map_eq_zero_of_eq' v i j hv hne := by ext x; simp [(f x).map_eq_zero_of_eq v hv hne]
 
 end ContinuousLinearMap
 
-lemma LinearIsometry.norm_compContinuousAlternatingMap (g : F →ₗᵢ[𝕜] G') (f : E [⋀^ι]→L[𝕜] F) :
+lemma LinearIsometry.norm_compContinuousAlternatingMap (g : F →ₗᵢ[𝕜] G) (f : E [⋀^ι]→L[𝕜] F) :
     ‖g.toContinuousLinearMap.compContinuousAlternatingMap f‖ = ‖f‖ :=
   g.norm_compContinuousMultilinearMap f.1
 
@@ -397,36 +426,34 @@ open ContinuousAlternatingMap
 
 section
 
-lemma ContinuousAlternatingMap.norm_compContinuousLinearMap_le (f : E' [⋀^ι]→L[𝕜] F)
-    (g : E →L[𝕜] E') : ‖f.compContinuousLinearMap g‖ ≤ ‖f‖ * (‖g‖ ^ Fintype.card ι) :=
+lemma ContinuousAlternatingMap.norm_compContinuousLinearMap_le (f : F [⋀^ι]→L[𝕜] G)
+    (g : E →L[𝕜] F) : ‖f.compContinuousLinearMap g‖ ≤ ‖f‖ * (‖g‖ ^ Fintype.card ι) :=
   (f.1.norm_compContinuousLinearMap_le _).trans_eq <| by simp
 
-def ContinuousAlternatingMap.compContinuousLinearMapL (f : E →L[𝕜] E') :
-    (E' [⋀^ι]→L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] F) :=
+def ContinuousAlternatingMap.compContinuousLinearMapL (f : E →L[𝕜] F) :
+    (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
   LinearMap.mkContinuous
     (ContinuousAlternatingMap.compContinuousLinearMapₗ f) (‖f‖ ^ Fintype.card ι) fun g ↦
       (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
 
-def ContinuousAlternatingMap.compContinuousLinearEquivL (f : E ≃L[𝕜] E') :
-    E [⋀^ι]→L[𝕜] F ≃L[𝕜] (E' [⋀^ι]→L[𝕜] F) :=
+def ContinuousAlternatingMap.compContinuousLinearEquivL (f : E ≃L[𝕜] F) :
+    E [⋀^ι]→L[𝕜] G ≃L[𝕜] (F [⋀^ι]→L[𝕜] G) :=
   { f.continuousAlternatingMapComp,
-      ContinuousAlternatingMap.compContinuousLinearMapL (f.symm : E' →L[𝕜] E) with
+      ContinuousAlternatingMap.compContinuousLinearMapL (f.symm : F →L[𝕜] E) with
     continuous_invFun :=
-      (ContinuousAlternatingMap.compContinuousLinearMapL (f : E →L[𝕜] E')).cont
+      (ContinuousAlternatingMap.compContinuousLinearMapL (f : E →L[𝕜] F)).cont
     continuous_toFun :=
-      (ContinuousAlternatingMap.compContinuousLinearMapL (f.symm : E' →L[𝕜] E)).cont }
+      (ContinuousAlternatingMap.compContinuousLinearMapL (f.symm : F →L[𝕜] E)).cont }
 
-def ContinuousLinearEquiv.continuousAlternatingMapCongrL (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] G') :
-    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E' [⋀^ι]→L[𝕜] G') :=
+variable
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+
+@[simps! apply]
+def ContinuousLinearEquiv.continuousAlternatingMapCongrL (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] F') :
+    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E' [⋀^ι]→L[𝕜] F') :=
   (ContinuousAlternatingMap.compContinuousLinearEquivL e).trans <|
     e'.compContinuousAlternatingMapL E'
-
-@[simp]
-lemma ContinuousLinearEquiv.continuousAlternatingMapCongrL_apply (e : E ≃L[𝕜] E')
-    (e' : F ≃L[𝕜] G') (f : E [⋀^ι]→L[𝕜] F) :
-    e.continuousAlternatingMapCongrL e' f =
-      e'.compContinuousAlternatingMap (f.compContinuousLinearMap ↑e.symm) :=
-  rfl
 
 end
 
@@ -434,16 +461,16 @@ open ContinuousAlternatingMap
 
 namespace AlternatingMap
 
-/-- Given a map `f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G'` and an estimate
+/-- Given a map `f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G` and an estimate
 `H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖`, construct a continuous linear
-map from `F` to `E [⋀^ι]→L[𝕜] G'`.
+map from `F` to `E [⋀^ι]→L[𝕜] G`.
 
-In order to lift, e.g., a map `f : (E [⋀^ι]→ₗ[𝕜] F) →ₗ[𝕜] E' [⋀^ι]→ₗ[𝕜] G'`
-to a map `(E [⋀^ι]→L[𝕜] F) →L[𝕜] E' [⋀^ι]→L[𝕜] G'`,
+In order to lift, e.g., a map `f : (E [⋀^ι]→ₗ[𝕜] F) →ₗ[𝕜] E' [⋀^ι]→ₗ[𝕜] G`
+to a map `(E [⋀^ι]→L[𝕜] F) →L[𝕜] E' [⋀^ι]→L[𝕜] G`,
 one can apply this construction to `f.comp ContinuousAlternatingMap.toAlternatingMapLinear`
-which is a linear map from `E [⋀^ι]→L[𝕜] F` to `E' [⋀^ι]→ₗ[𝕜] G'`. -/
-def mkContinuousLinear (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G') (C : ℝ)
-    (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : F →L[𝕜] E [⋀^ι]→L[𝕜] G' :=
+which is a linear map from `E [⋀^ι]→L[𝕜] F` to `E' [⋀^ι]→ₗ[𝕜] G`. -/
+def mkContinuousLinear (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G) (C : ℝ)
+    (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : F →L[𝕜] E [⋀^ι]→L[𝕜] G :=
   LinearMap.mkContinuous
     { toFun := fun x => (f x).mkContinuous (C * ‖x‖) <| H x
       map_add' := fun x y => by
@@ -459,20 +486,22 @@ def mkContinuousLinear (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G') (C : ℝ)
       exact (mkContinuous_norm_le' _ _).trans_eq <| by
         rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
 
-theorem mkContinuousLinear_norm_le_max (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G') (C : ℝ)
+theorem mkContinuousLinear_norm_le_max (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G) (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ max C 0 :=
   LinearMap.mkContinuous_norm_le _ (le_max_right _ _) _
 
-theorem mkContinuousLinear_norm_le (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G') {C : ℝ} (hC : 0 ≤ C)
+theorem mkContinuousLinear_norm_le (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G) {C : ℝ} (hC : 0 ≤ C)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ C :=
   (mkContinuousLinear_norm_le_max f C H).trans_eq (max_eq_left hC)
 
-/-- Given a map `f : E [⋀^ι]→ₗ[𝕜] (E' [⋀^ι']→ₗ[𝕜] F)` and an estimate
-`H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `AlternatingMap`s in the type to
-`ContinuousAlternatingMap`s. -/
-def mkContinuousAlternating (f : E [⋀^ι]→ₗ[𝕜] (E' [⋀^ι']→ₗ[𝕜] F)) (C : ℝ)
-    (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
-    E [⋀^ι]→L[𝕜] (E' [⋀^ι']→L[𝕜] F)  :=
+variable {ι' : Type*} [Fintype ι']
+
+/-- Given a map `f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G)` and an estimate
+`H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `AlternatingMap`s in the type
+to `ContinuousAlternatingMap`s. -/
+def mkContinuousAlternating (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G))
+    (C : ℝ) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
+    E [⋀^ι]→L[𝕜] (F [⋀^ι']→L[𝕜] G)  :=
   mkContinuous
     { toFun := fun m => mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
       map_update_add' := fun m i x y => by
@@ -493,31 +522,22 @@ def mkContinuousAlternating (f : E [⋀^ι]→ₗ[𝕜] (E' [⋀^ι']→ₗ[𝕜
       exact prod_nonneg fun _ _ => norm_nonneg _
 
 @[simp]
-theorem mkContinuousAlternating_apply (f : E [⋀^ι]→ₗ[𝕜] (E' [⋀^ι']→ₗ[𝕜] F)) {C : ℝ}
+theorem mkContinuousAlternating_apply (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G)) {C : ℝ}
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) (m : ι → E) :
     ⇑(mkContinuousAlternating f C H m) = f m :=
   rfl
 
-theorem mkContinuousAlternating_norm_le_max (f : E [⋀^ι]→ₗ[𝕜]  (E' [⋀^ι']→ₗ[𝕜] F)) (C : ℝ)
+theorem mkContinuousAlternating_norm_le_max (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G)) {C : ℝ}
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ‖mkContinuousAlternating f C H‖ ≤ max C 0 := by
   dsimp only [mkContinuousAlternating]
   exact mkContinuous_norm_le _ (le_max_right _ _) _
 
-theorem mkContinuousAlternating_norm_le (f : E [⋀^ι]→ₗ[𝕜] (E' [⋀^ι']→ₗ[𝕜] F)) {C : ℝ}
+theorem mkContinuousAlternating_norm_le (f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G)) {C : ℝ}
     (hC : 0 ≤ C) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ‖mkContinuousAlternating f C H‖ ≤ C :=
-  (mkContinuousAlternating_norm_le_max f C H).trans_eq (max_eq_left hC)
+  (mkContinuousAlternating_norm_le_max f H).trans_eq (max_eq_left hC)
 
 end AlternatingMap
 
-section Smul
-
-variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
-
-instance ContinuousAlternatingMap.continuousConstSMul :
-    ContinuousConstSMul R (E [⋀^ι]→L[𝕜] F) :=
-  ⟨fun c =>
-    (ContinuousLinearMap.compContinuousAlternatingMapL 𝕜 E F F (c • ContinuousLinearMap.id 𝕜 F)).2⟩
-
-end Smul
+end Seminorm

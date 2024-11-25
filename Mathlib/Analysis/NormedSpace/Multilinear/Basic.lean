@@ -389,8 +389,6 @@ theorem le_opNorm (f : ContinuousMultilinearMap 𝕜 E G) (m : ∀ i, E i) :
 
 @[deprecated (since := "2024-02-02")] alias le_op_norm := le_opNorm
 
-variable {f m}
-
 theorem le_mul_prod_of_le_opNorm_of_le {f : ContinuousMultilinearMap 𝕜 E G}
     {m : ∀ i, E i} {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ C * ∏ i, b i :=
@@ -398,8 +396,6 @@ theorem le_mul_prod_of_le_opNorm_of_le {f : ContinuousMultilinearMap 𝕜 E G}
 
 @[deprecated (since := "2024-02-02")]
 alias le_mul_prod_of_le_op_norm_of_le := le_mul_prod_of_le_opNorm_of_le
-
-variable (f)
 
 theorem le_opNorm_mul_prod_of_le (f : ContinuousMultilinearMap 𝕜 E G)
     {m : ∀ i, E i} {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) : ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
@@ -421,15 +417,11 @@ theorem le_opNorm_mul_pow_of_le {n : ℕ} {Ei : Fin n → Type*} [∀ i, Seminor
 
 @[deprecated (since := "2024-02-02")] alias le_op_norm_mul_pow_of_le := le_opNorm_mul_pow_of_le
 
-variable {f} (m)
-
 theorem le_of_opNorm_le {f : ContinuousMultilinearMap 𝕜 E G} {C : ℝ} (h : ‖f‖ ≤ C) (m : ∀ i, E i) :
     ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   le_mul_prod_of_le_opNorm_of_le h fun _ ↦ le_rfl
 
 @[deprecated (since := "2024-02-02")] alias le_of_op_norm_le := le_of_opNorm_le
-
-variable (f)
 
 theorem ratio_le_opNorm (f : ContinuousMultilinearMap 𝕜 E G) (m : ∀ i, E i) :
     (‖f m‖ / ∏ i, ‖m i‖) ≤ ‖f‖ :=
@@ -438,7 +430,8 @@ theorem ratio_le_opNorm (f : ContinuousMultilinearMap 𝕜 E G) (m : ∀ i, E i)
 @[deprecated (since := "2024-02-02")] alias ratio_le_op_norm := ratio_le_opNorm
 
 /-- The image of the unit ball under a continuous multilinear map is bounded. -/
-theorem unit_le_opNorm (f : ContinuousMultilinearMap 𝕜 E G) (h : ‖m‖ ≤ 1) : ‖f m‖ ≤ ‖f‖ :=
+theorem unit_le_opNorm (f : ContinuousMultilinearMap 𝕜 E G) {m : ∀ i, E i} (h : ‖m‖ ≤ 1) :
+    ‖f m‖ ≤ ‖f‖ :=
   (le_opNorm_mul_pow_card_of_le f h).trans <| by simp
 
 @[deprecated (since := "2024-02-02")] alias unit_le_op_norm := unit_le_opNorm
@@ -552,20 +545,21 @@ theorem opNorm_neg (f : ContinuousMultilinearMap 𝕜 E G) : ‖-f‖ = ‖f‖ 
 
 /-- The fundamental property of the operator norm of a continuous multilinear map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
-theorem le_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
+theorem le_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) (m : ∀ i, E i) :
+    ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
   NNReal.coe_le_coe.1 <| by
     push_cast
     exact f.le_opNorm m
 
 @[deprecated (since := "2024-02-02")] alias le_op_nnnorm := le_opNNNorm
 
-theorem le_of_opNNNorm_le (f : ContinuousMultilinearMap 𝕜 E G) {C : ℝ≥0} (h : ‖f‖₊ ≤ C) :
-    ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ :=
+theorem le_of_opNNNorm_le (f : ContinuousMultilinearMap 𝕜 E G)
+    {C : ℝ≥0} (h : ‖f‖₊ ≤ C) (m : ∀ i, E i) : ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ :=
   (f.le_opNNNorm m).trans <| mul_le_mul' h le_rfl
 
 @[deprecated (since := "2024-02-02")] alias le_of_op_nnnorm_le := le_of_opNNNorm_le
 
-theorem opNNNorm_le_iff (f : ContinuousMultilinearMap 𝕜 E G) {C : ℝ≥0} :
+theorem opNNNorm_le_iff {f : ContinuousMultilinearMap 𝕜 E G} {C : ℝ≥0} :
     ‖f‖₊ ≤ C ↔ ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ := by
   simp only [← NNReal.coe_le_coe]; simp [opNorm_le_iff C.coe_nonneg, NNReal.coe_prod]
 
@@ -834,7 +828,7 @@ end
 theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
   refine le_antisymm ?_ ?_
-  · refine (opNNNorm_le_iff _ |>.2 fun m => (nnnorm_smul_le _ _).trans ?_)
+  · refine opNNNorm_le_iff.2 fun m => (nnnorm_smul_le _ _).trans ?_
     rw [mul_right_comm]
     gcongr
     exact le_opNNNorm _ _
@@ -1341,10 +1335,8 @@ variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : 
   [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
-variable (f : ContinuousMultilinearMap 𝕜 E G)
-
 /-- A continuous linear map is zero iff its norm vanishes. -/
-theorem opNorm_zero_iff : ‖f‖ = 0 ↔ f = 0 := by
+theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 ↔ f = 0 := by
   simp [← (opNorm_nonneg f).le_iff_eq, opNorm_le_iff le_rfl, ContinuousMultilinearMap.ext_iff]
 
 @[deprecated (since := "2024-02-02")] alias op_norm_zero_iff := opNorm_zero_iff
@@ -1362,11 +1354,12 @@ instance normedAddCommGroup' :
 
 variable (𝕜 G)
 
-theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
-    ‖ofSubsingleton 𝕜 G G i (.id _ _)‖ = 1 := by simp
+theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G]
+    (f : ContinuousMultilinearMap 𝕜 E G) (i : ι) : ‖ofSubsingleton 𝕜 G G i (.id _ _)‖ = 1 := by
+  simp
 
-theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
-    ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=
+theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G]
+    (f : ContinuousMultilinearMap 𝕜 E G) (i : ι) : ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=
   NNReal.eq <| norm_ofSubsingleton_id _ _ _
 
 end ContinuousMultilinearMap
@@ -1384,12 +1377,11 @@ variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} [Finty
 
 namespace MultilinearMap
 
-variable (f : MultilinearMap 𝕜 E G)
-
 /-- If a multilinear map in finitely many variables on normed spaces satisfies the inequality
 `‖f m‖ ≤ C * ∏ i, ‖m i‖` on a shell `ε i / ‖c i‖ < ‖m i‖ < ε i` for some positive numbers `ε i`
 and elements `c i : 𝕜`, `1 < ‖c i‖`, then it satisfies this inequality for all `m`. -/
-theorem bound_of_shell {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
+theorem bound_of_shell (f : MultilinearMap 𝕜 E G) {ε : ι → ℝ} {C : ℝ} {c : ι → 𝕜}
+    (hε : ∀ i, 0 < ε i) (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   bound_of_shell_of_norm_map_coord_zero f
