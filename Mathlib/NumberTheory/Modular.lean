@@ -215,16 +215,12 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       cons_val_one, head_cons, mB, f₁]
   · -- FIXME: I have horribly broken this proof, and need to using `g.det_coe` a second time. :-(
     convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
-    simp only [Fin.isValue, Fin.zero_eta, id_eq, Fin.mk_one, Function.comp_apply,
-      lcRow0Extend_apply, cons_val_zero, LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv,
-      GeneralLinearGroup.coe_toLinear, val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec,
-      dotProduct, of_apply, cons_val', empty_val', cons_val_fin_one, cons_val_one, head_fin_const,
-      map_apply, Fin.sum_univ_two, neg_mul, head_cons, SpecialLinearGroup.det_coe, Int.cast_one, f₁]
-    have := g.det_coe
-    rw [Matrix.det_fin_two] at this
-    replace this := congr_arg (fun n : ℤ => (-n : ℝ)) this
-    simp at this
-    convert this using 1
+    simp only [Fin.zero_eta, id_eq, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
+      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
+      mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
+    simp only [Fin.isValue, Fin.mk_one, val_planeConformalMatrix, neg_neg, of_apply, cons_val',
+      empty_val', cons_val_fin_one, cons_val_one, head_fin_const, map_apply, Fin.sum_univ_two,
+      cons_val_zero, neg_mul, head_cons, Int.cast_sub, Int.cast_mul, neg_sub]
     ring
   · rfl
 
