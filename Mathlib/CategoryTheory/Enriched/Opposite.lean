@@ -11,14 +11,14 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 # The opposite category of an enriched category
 
 When a monoidal category `V` is braided, we may define the opposite `V`-category of a
-`V`-cagtegory. The symmetry map is required to define the composition morphism.
+`V`-category. The symmetry map is required to define the composition morphism.
 
 This file constructs the opposite `V`-category as an instance on the type `Cᵒᵖ` and constructs an
 equivalence between the underlying category `ForgetEnrichment V (Cᵒᵖ)` and the opposite category
 `(ForgetEnrichment V C)ᵒᵖ`.
 
 We use `Cᵒᵖ` for the underlying type as this allows us to construct an instance of
-`EnrichedOrdinaryCategory V Cᵒᵖ` in the case that `C` comes with an instance of
+`EnrichedOrdinaryCategory V (Cᵒᵖ)` in the case that `C` comes with an instance of
 `EnrichedOrdinaryCategory V C`.
 
 -/
@@ -35,8 +35,9 @@ section
 
 variable (C : Type u) [EnrichedCategory V C]
 
-/-- The enriched category structure on `eOpposite V C`. -/
-instance EnrichedCategory.opposite : EnrichedCategory V Cᵒᵖ where
+/-- For a `V`-category `C`, construct the opposite `V`-category structure on the type `Cᵒᵖ`
+using the braiding in `V`. -/
+instance EnrichedCategory.Opposite : EnrichedCategory V Cᵒᵖ where
   Hom y x := EnrichedCategory.Hom x.unop y.unop
   id x := EnrichedCategory.id x.unop
   comp z y x := (β_ _ _).hom ≫ EnrichedCategory.comp (x.unop) (y.unop) (z.unop)
@@ -72,7 +73,6 @@ lemma tensorHom_eComp_op_eq {C : Type u} [EnrichedCategory V C] {x y z : Cᵒᵖ
   rw [eComp_op_eq]
   exact braiding_naturality_assoc (C := V) f g _
 
-
 -- In this section, we establish an equivalence between
 --  • the underlying category of the `V`-category `Cᵒᵖ`; and
 --  • the opposite category of the underlying category of `C`.
@@ -85,8 +85,7 @@ variable (C : Type u) [EnrichedCategory V C]
 
 /-- The functor going from the underlying category of `Cᵒᵖ` to the opposite of the underlying
 category of `C`. -/
-def ForgetEnrichment.opposite.toOp :
-    ForgetEnrichment V Cᵒᵖ ⥤ (ForgetEnrichment V C)ᵒᵖ where
+def ForgetEnrichment.Opposite.toOp : ForgetEnrichment V Cᵒᵖ ⥤ (ForgetEnrichment V C)ᵒᵖ where
   obj x := x
   map {x y} f := f.op
   map_comp {x y z} f g := by
@@ -97,8 +96,7 @@ def ForgetEnrichment.opposite.toOp :
 
 /-- The functor going from the opposite of the underlying category of `C` to the underlying
 category of `Cᵒᵖ`. -/
-def ForgetEnrichment.opposite.fromOp :
-    (ForgetEnrichment V C)ᵒᵖ ⥤ ForgetEnrichment V Cᵒᵖ where
+def ForgetEnrichment.Opposite.fromOp : (ForgetEnrichment V C)ᵒᵖ ⥤ ForgetEnrichment V Cᵒᵖ where
   obj x := x
   map {x y} f := f.unop
   map_comp {x y z} f g := by
@@ -107,7 +105,7 @@ def ForgetEnrichment.opposite.fromOp :
     rw [this, forgetEnrichment_comp, Category.assoc, unitors_inv_equal,
       ← leftUnitor_inv_braiding_assoc]
     have : (β_ _ _).hom ≫ (homTo V g.unop ⊗ homTo V f.unop) ≫
-        eComp V («to» V (Opposite.unop z)) («to» V (Opposite.unop y)) («to» V (Opposite.unop x)) =
+        eComp V («to» V z.unop) («to» V y.unop) («to» V x.unop) =
         ((homTo V f.unop) ⊗ (homTo V g.unop)) ≫ eComp V x y z :=
       by exact (tensorHom_eComp_op_eq V _ _).symm
     rw [this, ← Category.assoc]
@@ -116,7 +114,7 @@ def ForgetEnrichment.opposite.fromOp :
 /-- The identity functor on `ForgetEnrichment V (Cᵒᵖ)` is naturally isomorphic to the composite
 functor from `ForgetEnrichment V (Cᵒᵖ)` to `(ForgetEnrichment V C)ᵒᵖ` and
 back to `ForgetEnrichment V (Cᵒᵖ)`. -/
-def ForgetEnrichment.opposite.toFromNatIso :
+def ForgetEnrichment.Opposite.toFromNatIso :
     𝟭 (ForgetEnrichment V Cᵒᵖ) ≅ toOp V C ⋙ fromOp V C where
   hom := {app := 𝟙}
   inv := {
@@ -130,7 +128,7 @@ def ForgetEnrichment.opposite.toFromNatIso :
 
 /-- The composite functor from `(ForgetEnrichment V C)ᵒᵖ` to `ForgetEnrichment V (Cᵒᵖ)` and
 back to `(ForgetEnrichment V C)ᵒᵖ` is naturally isomorphic to the identity functor. -/
-def ForgetEnrichment.opposite.fromToNatIso :
+def ForgetEnrichment.Opposite.fromToNatIso :
     fromOp V C ⋙ toOp V C ≅ 𝟭 (ForgetEnrichment V C)ᵒᵖ where
   hom := {
     app := 𝟙
@@ -144,11 +142,11 @@ def ForgetEnrichment.opposite.fromToNatIso :
 
 /-- The equivalence between the underlying category of `Cᵒᵖ` and the opposite of the underlying
 category of `C`. -/
-def ForgetEnrichment.opposite.equiv : ForgetEnrichment V Cᵒᵖ ≌ (ForgetEnrichment V C)ᵒᵖ :=
+def ForgetEnrichment.Opposite.equiv : ForgetEnrichment V Cᵒᵖ ≌ (ForgetEnrichment V C)ᵒᵖ :=
   Equivalence.mk (toOp V C) (fromOp V C) (toFromNatIso V C) (fromToNatIso V C)
 
 /-- If `D` is an enriched ordinary category then `Dᵒᵖ` is an enriched ordinary category. -/
-instance EnrichedOrdinaryCategory.opposite {D : Type u} [Category.{v} D]
+instance EnrichedOrdinaryCategory.Opposite {D : Type u} [Category.{v} D]
     [EnrichedOrdinaryCategory V D] : EnrichedOrdinaryCategory V Dᵒᵖ where
   toEnrichedCategory := inferInstanceAs (EnrichedCategory V Dᵒᵖ)
   homEquiv := Quiver.Hom.opEquiv.symm.trans homEquiv
