@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Data.Finsupp.Defs
 
 /-!
