@@ -125,7 +125,7 @@ variable [ChartedSpace H M'] [IsM' : SmoothManifoldWithCorners I M']
 
 theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M M'}
     (hf : LiftPropOn (contDiffGroupoid ⊤ I).IsLocalStructomorphWithinAt f f.source) :
-    SmoothOn I I f f.source := by
+    ContMDiffOn I I ⊤ f f.source := by
   -- It suffices to show smoothness near each `x`
   apply contMDiffOn_of_locally_contMDiffOn
   intro x hx
@@ -171,7 +171,7 @@ is a local structomorphism for `I`, if and only if it is manifold-smooth on the 
 in both directions. -/
 theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') :
     LiftPropOn (contDiffGroupoid ⊤ I).IsLocalStructomorphWithinAt f f.source ↔
-      SmoothOn I I f f.source ∧ SmoothOn I I f.symm f.target := by
+      ContMDiffOn I I ⊤ f f.source ∧ ContMDiffOn I I ⊤ f.symm f.target := by
   constructor
   · intro h
     refine ⟨isLocalStructomorphOn_contDiffGroupoid_iff_aux h,
