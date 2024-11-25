@@ -193,9 +193,9 @@ def zmodRepr : ℕ :=
 theorem zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
   Classical.choose_spec (exists_unique_mem_range x).exists
 
-theorem zmodRepr_unique (y : ℕ) (hy : y < p ∧ x - y ∈ maximalIdeal ℤ_[p]) : y = zmodRepr x :=
-  have := (Classical.choose_spec (exists_unique_mem_range x)).right
-  (this y hy).trans (this (zmodRepr x) (zmodRepr_spec x)).symm
+theorem zmodRepr_unique (y : ℕ) (hy₁ : y < p) (hy₂ : x - y ∈ maximalIdeal ℤ_[p]) : y = zmodRepr x :=
+  have h := (Classical.choose_spec (exists_unique_mem_range x)).right
+  (h y ⟨hy₁, hy₂⟩).trans (h (zmodRepr x) (zmodRepr_spec x)).symm
 
 theorem zmodRepr_lt_p : zmodRepr x < p :=
   (zmodRepr_spec _).1
