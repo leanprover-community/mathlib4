@@ -79,13 +79,13 @@ jobs:
       run: |
         # Use the PRs from the previous step
         PRS="${{ steps.get-prs.outputs.prs }}"
-        echo "=== $PRS ========================"
+        echo "=== PRS ========================="
         echo "$PRS"
         echo "$PRS" | tr ' ' '\n' > prs.txt
         echo "=== prs.txt ====================="
         cat prs.txt
         MATCHING_BRANCHES=$(git branch -r | grep -f prs.txt)
-        echo "=== $MATCHING_BRANCHES =========="
+        echo "=== MATCHING_BRANCHES ==========="
         echo "$MATCHING_BRANCHES"
 
         # Initialize an empty variable to store branches with relevant diffs
@@ -104,7 +104,7 @@ jobs:
         done
 
         # Output the relevant branches
-        echo "=== $RELEVANT_BRANCHES =========="
+        echo "=== RELEVANT_BRANCHES ==========="
         echo "'$RELEVANT_BRANCHES'"
         printf "branches<<EOF\n%s\nEOF" "$RELEVANT_BRANCHES" >> "$GITHUB_OUTPUT"
 
