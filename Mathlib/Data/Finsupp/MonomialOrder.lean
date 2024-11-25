@@ -22,7 +22,7 @@ additive commutative monoid.
 The entry `MonomialOrder.wf` asserts that `MonomialOrder.syn` is well founded.
 
 The terminology comes from commutative algebra and algebraic geometry, especially Gröbner bases,
-where `c : σ →₀ ℕ` are exponents of monomial.
+where `c : σ →₀ ℕ` are exponents of monomials.
 
 Given a monomial order `m : MonomialOrder σ`, we provide the notation
 `c ≼[m] d` and `c ≺[m] d` to compare `c d : σ →₀ ℕ` with respect to `m`.
@@ -142,9 +142,9 @@ variable {σ : Type*} [LinearOrder σ]
 noncomputable def MonomialOrder.lex [WellFoundedGT σ] :
     MonomialOrder σ where
   syn := Lex (σ →₀ ℕ)
-  toSyn := {
-    toEquiv := toLex
-    map_add' := toLex_add } -- AddEquiv.refl _ -- (AddEquiv.refl (Lex (σ →₀ ℕ))).symm
+  toSyn :=
+  { toEquiv := toLex
+    map_add' := toLex_add }
   toSyn_monotone := Finsupp.toLex_monotone
 
 theorem MonomialOrder.lex_le_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
