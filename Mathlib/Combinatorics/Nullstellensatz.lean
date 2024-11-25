@@ -119,8 +119,6 @@ theorem eq_zero_of_eval_zero_at_prod {σ : Type*} [Finite σ] [IsDomain R]
   · intro i
     classical
     convert Hdeg (e.symm i)
-    have : i = e (e.symm i) := by 
-      exact (Equiv.symm_apply_eq e).mp rfl
     conv_lhs => rw [← e.apply_symm_apply i, degreeOf_rename_of_injective e.injective]
   · intro x hx
     simp only [MvPolynomial.eval_rename]
