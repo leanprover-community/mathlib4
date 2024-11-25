@@ -313,17 +313,20 @@ universe w
 variable {R M P : Type*} {N : Type w} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N]
   [Module R N] [AddCommGroup P] [Module R P] [IsNoetherian R M]
 
-lemma Submodule.finite_ne_bot_of_independent {ι : Type*} {N : ι → Submodule R M}
-    (h : CompleteLattice.Independent N) :
+lemma Submodule.finite_ne_bot_of_iSupIndep {ι : Type*} {N : ι → Submodule R M}
+    (h : iSupIndep N) :
     Set.Finite {i | N i ≠ ⊥} :=
-  CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent h
+  WellFoundedGT.finite_ne_bot_of_iSupIndep h
+
+@[deprecated (since := "2024-11-24")]
+alias Submodule.finite_ne_bot_of_independent := Submodule.finite_ne_bot_of_iSupIndep
 
 /-- A linearly-independent family of vectors in a module over a non-trivial ring must be finite if
 the module is Noetherian. -/
 theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι → M}
     (hv : LinearIndependent R v) : Finite ι := by
-  refine CompleteLattice.WellFoundedGT.finite_of_independent
-    hv.independent_span_singleton
+  refine WellFoundedGT.finite_of_iSupIndep
+    hv.iSupIndep_span_singleton
     fun i contra => ?_
   apply hv.ne_zero i
   have : v i ∈ R ∙ v i := Submodule.mem_span_singleton_self (v i)
