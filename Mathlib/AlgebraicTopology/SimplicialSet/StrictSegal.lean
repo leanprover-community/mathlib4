@@ -157,17 +157,16 @@ lemma spine_δ_arrow_eq (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
 instance : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
-  exists spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
+  use spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
   intro j hj
   apply spineInjective
   ext k
-  · simp only [spineEquiv, spine_arrow, Function.comp_apply, Equiv.coe_fn_mk]
+  · dsimp only [spineEquiv, spine_arrow, Function.comp_apply, Equiv.coe_fn_mk]
     rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
     let ksucc := k.succ.castSucc
-    have hkj : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
-    rcases hkj with hlt | hgt | heq
+    obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
     · rw [← spine_arrow, spine_δ_arrow_lt _ hlt]
-      simp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
+      dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
       apply congr_arg
       simp only [horn, horn.spineId, standardSimplex, uliftFunctor, Functor.comp_obj,
         yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
@@ -176,7 +175,7 @@ instance : Quasicategory X := by
       rw [mkOfSucc_δ_lt hlt]
       rfl
     · rw [← spine_arrow, spine_δ_arrow_gt _ hgt]
-      simp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
+      dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
       apply congr_arg
       simp only [horn, horn.spineId, standardSimplex, uliftFunctor, Functor.comp_obj,
         yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
@@ -185,13 +184,10 @@ instance : Quasicategory X := by
       rw [mkOfSucc_δ_gt hgt]
       rfl
     · /- The only inner horn of `Δ[2]` does not contain the diagonal edge. -/
-      have hn0 : 0 < n := by
-        apply Nat.pos_of_ne_zero
-        intro h1; subst h1
-        have hk : k = 0 := by omega
-        have hi : i = 1 := by fin_cases i <;> (try contradiction); rfl
-        subst hi hk
-        exact hj heq
+      have hn0 : n ≠ 0 := by
+        rintro rfl
+        obtain rfl : k = 0 := by omega
+        fin_cases i <;> contradiction
       /- We construct the triangle in the standard simplex as a 2-simplex in
       the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
       we can inhabit `Λ[n + 2, i] _[2]` by induction on `n`. -/
@@ -204,7 +200,7 @@ instance : Quasicategory X := by
       have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
           X.spine 2 (σ₀.app _ triangle) := by
         ext m
-        simp [spine_arrow, Path.interval, Path.map]
+        dsimp [spine_arrow, Path.interval, Path.map]
         rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
         apply congr_arg
         simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
@@ -213,7 +209,7 @@ instance : Quasicategory X := by
           Nat.reduceAdd, Quiver.Hom.unop_op]
         cases n with
         | zero => contradiction
-        | succ _ => fin_cases m <;> (ext x; fin_cases x <;> rfl)
+        | succ _ => ext x; fin_cases x <;> fin_cases m <;> rfl
       rw [← spine_arrow, spine_δ_arrow_eq _ heq, hi]
       simp only [spineToDiagonal, diagonal, spineToSimplex_spine]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
