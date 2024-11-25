@@ -5,6 +5,7 @@ Authors: Chris Hughes, Morenikeji Neri
 -/
 import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
