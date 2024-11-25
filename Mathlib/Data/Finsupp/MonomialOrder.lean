@@ -162,7 +162,7 @@ theorem MonomialOrder.lex_unit_lt_iff {c d : Unit →₀ ℕ} :
   · simp [h]
   · rw [← not_iff_not, not_lt]
     simp [le_of_lt h]
- 
+
 theorem MonomialOrder.lex_unit_le_iff {c d : Unit →₀ ℕ} :
     c ≼[lex] d ↔ c () ≤ d () := by
   simp [MonomialOrder.lex_le_iff, Finsupp.lex_le_iff, le_iff_eq_or_lt]
