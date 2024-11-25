@@ -785,6 +785,8 @@ theorem self_le_basicOpen_union_iff (s : Set Γ(X, U)) :
 
 end IsAffineOpen
 
+set_option maxHeartbeats 400000 in
+-- count_heartbeats in
 open _root_.PrimeSpectrum in
 /-- The restriction of `Spec.map f` to a basic open `D(r)` is isomorphic to `Spec.map` of the
 localization of `f` away from `r`. -/
@@ -800,9 +802,7 @@ def SpecMapRestrictBasicOpenIso {R S : CommRingCat} (f : R ⟶ S) (r : R) :
   · exact (Spec (.of S)).isoOfEq (comap_basicOpen _ _) ≪≫
       (IsAffineOpen.Spec_basicOpen (f r)).isoSpec ≪≫ Scheme.Spec.mapIso e₂.toCommRingCatIso.op
   · exact (IsAffineOpen.Spec_basicOpen r).isoSpec ≪≫ Scheme.Spec.mapIso e₁.toCommRingCatIso.op
-  · have := AlgebraicGeometry.IsOpenImmersion.of_isLocalization
-      (S := (Localization.Away r)) r
-    rw [← cancel_mono (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))))]
+  · rw [← cancel_mono (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))))]
     simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, Scheme.isoOfEq_rfl, Iso.refl_trans,
       Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, Iso.symm_hom, RingEquiv.toCommRingCatIso_inv,
       Scheme.Spec_map, Quiver.Hom.unop_op, Arrow.mk_hom, Category.assoc,
