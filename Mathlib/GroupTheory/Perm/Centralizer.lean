@@ -831,28 +831,22 @@ theorem nat_card_centralizer :
     Nat.card (Subgroup.centralizer {g}) =
       (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod *
         (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) := by
-  classical
   rw [card_eq_card_quotient_mul_card_subgroup (OnCycleFactors.toPermHom g).ker,
     Nat.card_congr (QuotientGroup.quotientKerEquivRange (toPermHom g)).toEquiv,
     nat_card_range_toPermHom, mul_comm]
-  apply congr_arg₂ _ _ rfl
   rw [← θHom_range_card, ← Nat.card_eq_fintype_card]
   simp only [← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]
   rw [θHom_range_eq, coe_map, Set.ncard_image_of_injective _ (subtype_injective _)]
 
 theorem card_isConj_mul_eq (g : Equiv.Perm α) :
     Nat.card {h : Equiv.Perm α | IsConj g h} *
-      (Fintype.card α - g.cycleType.sum)! *
+      ((Fintype.card α - g.cycleType.sum)! *
       g.cycleType.prod *
-      (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) =
+      (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!)) =
     (Fintype.card α)! := by
   classical
-  rw [Nat.card_eq_fintype_card]
-  simp only [mul_assoc]
-  rw [mul_comm]
-  simp only [← mul_assoc]
-  rw [← nat_card_centralizer g, mul_comm,
-    Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
+  rw [Nat.card_eq_fintype_card, ← nat_card_centralizer g]
+  rw [Subgroup.nat_card_centralizer_nat_card_stabilizer, Nat.card_eq_fintype_card]
   convert MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct (Perm α)) g
   · ext h
     simp only [Set.mem_setOf_eq, ConjAct.mem_orbit_conjAct, isConj_comm]
@@ -866,7 +860,7 @@ theorem card_isConj_eq (g : Equiv.Perm α) :
           g.cycleType.prod *
           (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!)) := by
   rw [← card_isConj_mul_eq g, Nat.div_eq_of_eq_mul_left _]
-  · simp only [← mul_assoc]
+  · rfl
   -- This is the cardinal of the centralizer
   · rw [← nat_card_centralizer g]
     apply Nat.card_pos
@@ -888,15 +882,10 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
   split_ifs with hm
   · -- nonempty case
     classical
-    obtain ⟨g, hg⟩ := (exists_with_cycleType_iff α).mpr hm
-    suffices (Finset.univ.filter fun h : Equiv.Perm α => h.cycleType = m) =
-        Finset.univ.filter fun h : Equiv.Perm α => IsConj g h by
-      rw [this, ← Fintype.card_coe, ← card_isConj_mul_eq g]
-      simp only [isConj_iff, mul_assoc, Finset.univ_filter_exists, Finset.mem_image,
-        Finset.mem_univ, true_and, Set.coe_setOf, card_eq_fintype_card, hg]
-    simp_rw [isConj_iff_cycleType_eq, hg]
-    apply Finset.filter_congr
-    simp [eq_comm]
+    obtain ⟨g, rfl⟩ := (exists_with_cycleType_iff α).mpr hm
+    convert card_isConj_mul_eq g
+    simp_rw [Set.coe_setOf, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
+      Finset.mem_univ, true_and, ← isConj_iff_cycleType_eq, isConj_comm (g := g)]
   · -- empty case
     convert MulZeroClass.zero_mul _
     exact (card_of_cycleType_eq_zero_iff α).mpr hm
