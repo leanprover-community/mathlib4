@@ -250,18 +250,18 @@ structure Hypotheses where
 /-- FIXME junk docstring -/
 def addHypothesis (h : Expr) : StateRefT Hypotheses MetaM Unit := withReducibleAndInstances do
   if !(← isProof h) then return
-  let eq? : Bool := h.eq?.isSome
-  let tacs := (forwardExt.getState (← getEnv)).2
   let ⟨eqs, rels⟩ ← get
-  let mut rels' : Array Expr := if eq? then rels else rels.push h
-  for tac in tacs do
-    try
-      rels' := rels'.push (← tac.2.eval h)
-    catch _ => pure ()
-  let hs : Hypotheses :=
-    { equalities := if eq? then eqs.push h else eqs
-      relations := rels' }
-  set hs
+  if h.eq?.isSome then
+    let hs : Hypotheses := { equalities := eqs.push h, relations := rels }
+    set hs
+  else
+    let tacs := (forwardExt.getState (← getEnv)).2
+    let mut rels' : Array Expr := rels.push h
+    for tac in tacs do
+      try rels' := rels'.push (← tac.2.eval h)
+      catch _ => pure ()
+    let hs : Hypotheses := { equalities := eqs, relations := rels' }
+    set hs
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
