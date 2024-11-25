@@ -387,7 +387,7 @@ def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordina
 alias typein.principalSeg := typein
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-09")]
+@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
 theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
     (typein.principalSeg r : α → Ordinal) = typein r :=
   rfl
@@ -513,7 +513,7 @@ noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
-@[deprecated (since := "2024-08-26")]
+@[deprecated "No deprecation message was provided."  (since := "2024-08-26")]
 alias enumIsoOut := enumIsoToType
 
 instance small_Iio (o : Ordinal.{u}) : Small.{u} (Iio o) :=
@@ -925,7 +925,7 @@ theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_succ := natCast_succ
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
@@ -1213,7 +1213,7 @@ alias card_typein_out_lt := card_typein_toType_lt
 theorem mk_Iio_ord_toType {c : Cardinal} (i : c.ord.toType) : #(Iio i) < c :=
   card_typein_toType_lt c i
 
-@[deprecated (since := "2024-08-26")]
+@[deprecated "No deprecation message was provided."  (since := "2024-08-26")]
 alias mk_Iio_ord_out_α := mk_Iio_ord_toType
 
 theorem ord_injective : Injective ord := by
