@@ -98,7 +98,7 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   * every time a `bors d`, `bors merge` or `bors r+` comment is added to a PR and
   * on every push to `master`.
   It looks through all zulip posts containing a reference to the relevant PR
-  (either delegated, sent to bors or merge) and it will post an emoji reaction
+  (delegated, or sent to bors, or merged) and it will post an emoji reaction
   `:peace_sign:`, or `:bors:`, or `:merge:` respectively to the message.
 - `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
   the `linter.minImports` output, summarizing the data in a table.  See the module docs of
