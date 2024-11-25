@@ -88,9 +88,9 @@ lemma transpose_isTotallyUnimodular_iff (A : Matrix m n R) :
     Aᵀ.IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   constructor <;> apply IsTotallyUnimodular.transpose
 
-lemma IsTotallyUnimodular.reindex {A : Matrix m n R} (eX : m ≃ m') (eY : n ≃ n')
+lemma IsTotallyUnimodular.reindex {A : Matrix m n R} (em : m ≃ m') (en : n ≃ n')
     (hA : A.IsTotallyUnimodular) :
-    IsTotallyUnimodular (A.reindex eX eY) :=
+    IsTotallyUnimodular (A.reindex em en) :=
   hA.submatrix _ _
 
 lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃ n') :
@@ -159,6 +159,15 @@ lemma fromColumns_one_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R)
     (fromColumns A (1 : Matrix m m R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [←transpose_isTotallyUnimodular_iff, transpose_fromColumns, transpose_one,
     fromRows_one_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
+
+lemma one_fromRows_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
+    (fromRows (1 : Matrix n n R) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  have hA :
+    fromRows (1 : Matrix n n R) A =
+      (fromRows A (1 : Matrix n n R)).reindex (Equiv.sumComm m n) (Equiv.refl n) := by
+    aesop
+  rw [hA, reindex_isTotallyUnimodular]
+  exact fromRows_one_isTotallyUnimodular_iff A
 
 alias ⟨_, IsTotallyUnimodular.fromRows_one⟩ := fromRows_one_isTotallyUnimodular_iff
 
