@@ -63,7 +63,7 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 
 open Filter Asymptotics Set
 
-open scoped ENNReal Topology ContDiff
+open scoped ENNReal Topology
 
 universe u v
 
