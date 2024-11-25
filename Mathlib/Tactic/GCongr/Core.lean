@@ -247,9 +247,10 @@ structure Hypotheses where
   (originalRelations : Array Expr)
   (deducedRelations : Array Expr)
 
-def Hypotheses.add (hs : Hypotheses) (h : Expr) : MetaM Hypotheses := withReducibleAndInstances do
+def addHypothesis (h : Expr) : StateRefT Hypotheses MetaM Unit := withReducibleAndInstances do
   let eq? : Bool := h.eq?.isSome
   let tacs := (forwardExt.getState (← getEnv)).2
+  let hs ← get
   let mut ded : Array Expr := hs.deducedRelations
   for tac in tacs do
     try
@@ -259,7 +260,7 @@ def Hypotheses.add (hs : Hypotheses) (h : Expr) : MetaM Hypotheses := withReduci
     { equalities := if eq? then hs.equalities.push h else hs.equalities
       originalRelations := if eq? then hs.originalRelations else hs.originalRelations.push h
       deducedRelations := ded }
-  return hs'
+  set hs'
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
@@ -400,8 +401,7 @@ partial def _root_.Lean.MVarId.gcongr
           mvarId.withContext do
             for h in vs do
               if (← isProp (← h.getType)) then
-                let hs ← get
-                set (← hs.add (.fvar h))
+                addHypothesis (.fvar h)
         -- B. If there is a template, look up the part of the template corresponding to the `j`-th
         -- input to the head function
         let tpl ← tplArgs[j]!.1.mapM fun e => do
@@ -487,13 +487,14 @@ elab "gcongr" template:(colGt term)?
     Term.elabTerm e (← inferType lhs)
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
-  -- Collect all hypotheses available at the start
-  let mut hs : Hypotheses := ⟨#[], #[], #[]⟩
-  for h in ← getLCtx do
-    if !h.isImplementationDetail && (← isProp h.type) then
-      hs ← hs.add (.fvar h.fvarId)
+  let m : StateRefT Hypotheses MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := do
+    -- Collect all hypotheses available at the start
+    for h in ← getLCtx do
+      if !h.isImplementationDetail && (← isProp h.type) then
+        addHypothesis (.fvar h.fvarId)
+    g.gcongr template names
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let ((progress, _, unsolvedGoalStates), _) ← (g.gcongr template names).run hs
+  let (progress, _, unsolvedGoalStates) ← m.run' ⟨#[], #[], #[]⟩
   if progress then
     replaceMainGoal unsolvedGoalStates.toList
   else
@@ -535,11 +536,12 @@ elab_rules : tactic
     -- The core tactic `Lean.MVarId.gcongr` will be run with main-goal discharger being the tactic
     -- consisting of running `Lean.MVarId.gcongrForward` (trying a term together with limited
     -- forward-reasoning on that term) on each of the listed terms.
-    let mut hs : Hypotheses := ⟨#[], #[], #[]⟩
-    for h in hyps do
-      hs ← hs.add h
+    let m : StateRefT Hypotheses MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := do
+      for h in hyps do
+        addHypothesis h
+      g.gcongr none [] (includeCreatedHyps := false)
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let ((_, _, unsolvedGoalStates), _) ← (g.gcongr none [] (includeCreatedHyps := false)).run hs
+    let (_, _, unsolvedGoalStates) ← m.run' ⟨#[], #[], #[]⟩
     match unsolvedGoalStates.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()
