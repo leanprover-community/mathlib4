@@ -157,9 +157,6 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
       HomologicalComplex.comp_f, AlternatingFaceMapComplex.map_f, PInfty_f_naturality_assoc,
       NatTrans.naturality, Splitting.IndexSet.id_fst, unop_op, len_mk]
 
--- Porting note (#10694): added to speed up elaboration
-attribute [irreducible] natTrans
-
 end Γ₂N₁
 
 -- Porting note: removed @[simps] attribute because it was creating timeouts
@@ -177,9 +174,6 @@ lemma Γ₂N₂ToKaroubiIso_inv_app (X : SimplicialObject C) :
     Γ₂N₂ToKaroubiIso.inv.app X = Γ₂.map (toKaroubiCompN₂IsoN₁.inv.app X) := by
   simp [Γ₂N₂ToKaroubiIso]
 
--- Porting note (#10694): added to speed up elaboration
-attribute [irreducible] Γ₂N₂ToKaroubiIso
-
 namespace Γ₂N₂
 
 /-- The natural transformation `N₂ ⋙ Γ₂ ⟶ 𝟭 (SimplicialObject C)`. -/
@@ -193,9 +187,6 @@ theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
         (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans).app P.X ≫ P.decompId_p := by
   dsimp only [natTrans]
   simp only [whiskeringLeft_obj_preimage_app, Functor.id_map, assoc]
-
--- Porting note (#10694): added to speed up elaboration
-attribute [irreducible] natTrans
 
 end Γ₂N₂
 

@@ -7,7 +7,9 @@ import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Data.Set.Operations
+import Mathlib.Order.Basic
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -322,7 +324,7 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
     IsLeast { n : ℕ | 0 < n ∧ ∃ x y : ℤ, ↑n = a * x + b * y } (a.gcd b) := by
   simp_rw [← gcd_dvd_iff]
   constructor
-  · simpa [and_true_iff, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
+  · simpa [and_true, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
   · simp only [lowerBounds, and_imp, Set.mem_setOf_eq]
     exact fun n hn_pos hn => Nat.le_of_dvd hn_pos hn
 

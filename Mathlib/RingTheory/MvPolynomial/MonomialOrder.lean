@@ -3,13 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.Data.Finsupp.Lex
+import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.Data.List.TFAE
-import Mathlib.Data.Finsupp.Lex
 import Mathlib.Logic.Equiv.TransferInstance
-import Mathlib.Data.Finsupp.MonomialOrder
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-! # Degree and leading coefficient of polynomials with respect to a monomial order
 
@@ -189,7 +188,7 @@ theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
   intro d
   apply imp_congr (rfl.to_iff)
   rw [map_zero, ← m.bot_eq_zero, ← eq_bot_iff, m.bot_eq_zero]
-  simp only [AddEquivClass.map_eq_zero_iff]
+  simp only [EmbeddingLike.map_eq_zero_iff]
   exact Finsupp.ext_iff
 
 @[simp]
@@ -206,7 +205,7 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
   · simp [hd]
   · rw [coeff_C, if_neg (Ne.symm hd)]
     apply coeff_eq_zero_of_lt (m := m)
-    rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, AddEquivClass.map_eq_zero_iff]
+    rw [hf, map_zero, lt_iff_le_and_ne, ne_eq, eq_comm, EmbeddingLike.map_eq_zero_iff]
     exact ⟨bot_le, hd⟩
 
 theorem degree_add_le {f g : MvPolynomial σ R} :
@@ -273,7 +272,8 @@ theorem degree_mul_le {f g : MvPolynomial σ R} :
     simp only [map_add]
     exact add_le_add_right hd _
 
-theorem lCoeff_mulAux {f g : MvPolynomial σ R} {a b : σ →₀ ℕ}
+/-- Multiplicativity of leading coefficients -/
+theorem coeff_mul_of_add_of_degree_le {f g : MvPolynomial σ R} {a b : σ →₀ ℕ}
     (ha : m.degree f ≼[m] a) (hb : m.degree g ≼[m] b) :
     (f * g).coeff (a + b) = f.coeff a * g.coeff b := by
   classical
@@ -298,48 +298,56 @@ theorem lCoeff_mulAux {f g : MvPolynomial σ R} {a b : σ →₀ ℕ}
       exact le_trans hf' hb
   · simp
 
-theorem lCoeff_mul' {f g : MvPolynomial σ R} :
-    (f * g).coeff (m.degree f + m.degree g) = m.lCoeff f * m.lCoeff g :=
-  lCoeff_mulAux (le_of_eq rfl) (le_of_eq rfl)
+/-- Multiplicativity of leading coefficients -/
+theorem coeff_mul_of_degree_add {f g : MvPolynomial σ R} :
+    (f * g).coeff (m.degree f + m.degree g) = m.lCoeff f * m.lCoeff g := 
+  coeff_mul_of_add_of_degree_le (le_of_eq rfl) (le_of_eq rfl)
 
+/-- Multiplicativity of leading coefficients -/
 theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
     (hf : IsRegular (m.lCoeff f)) (hg : g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g := by
   apply m.toSyn.injective
   apply le_antisymm degree_mul_le
   apply le_degree
-  rw [mem_support_iff, lCoeff_mul']
+  rw [mem_support_iff, coeff_mul_of_degree_add]
   simp only [ne_eq, hf, IsRegular.left, IsLeftRegular.mul_left_eq_zero_iff,
     lCoeff_eq_zero_iff]
   exact hg
 
+/-- Multiplicativity of leading coefficients -/
 theorem lCoeff_mul_of_isRegular_left {f g : MvPolynomial σ R}
     (hf : IsRegular (m.lCoeff f)) (hg : g ≠ 0) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
-  simp only [lCoeff, degree_mul_of_isRegular_left hf hg, lCoeff_mul']
+  simp only [lCoeff, degree_mul_of_isRegular_left hf hg, coeff_mul_of_degree_add]
 
+/-- Multiplicativity of leading coefficients -/
 theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.lCoeff g)) :
     m.degree (f * g) = m.degree f + m.degree g := by
   rw [mul_comm, m.degree_mul_of_isRegular_left hg hf, add_comm]
 
+/-- Multiplicativity of leading coefficients -/
 theorem lCoeff_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.lCoeff g)) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
-  simp only [lCoeff, degree_mul_of_isRegular_right hf hg, lCoeff_mul']
+  simp only [lCoeff, degree_mul_of_isRegular_right hf hg, coeff_mul_of_degree_add]
 
+/-- Degree of product -/
 theorem degree_mul [IsDomain R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g :=
   degree_mul_of_isRegular_left (isRegular_of_ne_zero (lCoeff_ne_zero_iff.mpr hf)) hg
 
-theorem degree_mul' [IsDomain R] {f g : MvPolynomial σ R} (hfg : f * g ≠ 0) :
+/-- Degree of of product -/
+theorem degree_mul_of_nonzero_mul [IsDomain R] {f g : MvPolynomial σ R} (hfg : f * g ≠ 0) :
     m.degree (f * g) = m.degree f + m.degree g :=
   degree_mul (left_ne_zero_of_mul hfg) (right_ne_zero_of_mul hfg)
 
+/-- Multiplicativity of leading coefficients -/
 theorem lCoeff_mul [IsDomain R] {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
-  rw [lCoeff, degree_mul hf hg, ← lCoeff_mul']
+  rw [lCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
 
 theorem degree_smul_le {r : R} {f : MvPolynomial σ R} :
     m.degree (r • f) ≼[m] m.degree f := by
@@ -355,7 +363,7 @@ theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
   apply le_antisymm degree_smul_le
   apply le_degree
   simp only [mem_support_iff, smul_eq_C_mul]
-  rw [← zero_add (degree m f), ← degree_C r, lCoeff_mul']
+  rw [← zero_add (degree m f), ← degree_C r, coeff_mul_of_degree_add]
   simp [lCoeff, hr.left.mul_left_eq_zero_iff, hf]
 
 theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι} :
@@ -370,14 +378,14 @@ theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset �
     apply le_trans degree_mul_le
     simp only [map_add, add_le_add_iff_left, hrec]
 
-theorem lCoeff_prod' {ι : Type*} (P : ι → MvPolynomial σ R) (s : Finset ι) :
+theorem coeff_prod_of_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s : Finset ι) :
     coeff (s.sum fun i ↦ m.degree (P i)) (s.prod P) = s.prod fun i ↦ m.lCoeff (P i) := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
   | @insert a s has hrec =>
     simp only [Finset.prod_insert has, Finset.sum_insert has]
-    rw [lCoeff_mulAux (le_of_eq rfl) degree_prod_le]
+    rw [coeff_mul_of_add_of_degree_le (le_of_eq rfl) degree_prod_le]
     exact congr_arg₂ _ rfl hrec
 
 -- TODO : it suffices that all leading coefficients but one are regular
@@ -385,12 +393,10 @@ theorem degree_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.lCoeff (P i))) :
     m.degree (s.prod P) = s.sum (fun i ↦ m.degree (P i)) := by
   by_cases hR : Nontrivial R
-  apply m.toSyn.injective
-  apply le_antisymm
-  · apply degree_prod_le
-  · apply m.le_degree
-    rw [mem_support_iff, m.lCoeff_prod']
-    exact (IsRegular.prod H).ne_zero
+  · apply m.toSyn.injective
+    · refine le_antisymm degree_prod_le (m.le_degree ?_)
+      rw [mem_support_iff, m.coeff_prod_of_sum_degree]
+      exact (IsRegular.prod H).ne_zero
   · -- case : Trivial R
     simp [degree_of_not_nontrivial hR]
 
@@ -407,7 +413,7 @@ theorem degree_prod [IsDomain R] {ι : Type*} {P : ι → MvPolynomial σ R} {s 
 theorem lCoeff_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.lCoeff (P i))) :
     m.lCoeff (s.prod P) = s.prod (fun i ↦ m.lCoeff (P i)) := by
-  simp only [lCoeff, degree_prod_of_regular H, lCoeff_prod']
+  simp only [lCoeff, degree_prod_of_regular H, coeff_prod_of_sum_degree]
 
 end Semiring
 
@@ -452,34 +458,3 @@ theorem lCoeff_is_unit_iff {f : MvPolynomial σ R} :
 end Field
 
 end MonomialOrder
-
-namespace MvPolynomial
-
-open MonomialOrder Finsupp
-
-open scoped MonomialOrder
-
-variable {σ : Type*} [LinearOrder σ] {R : Type*} [CommSemiring R]
-
-theorem degLex_degree_degree [WellFoundedGT σ] {f : MvPolynomial σ R} :
-    (degLex.degree f).degree = f.totalDegree := by
-  by_cases hf : f = 0
-  · simp [hf]
-  apply le_antisymm
-  · apply MvPolynomial.le_totalDegree
-    rw [MvPolynomial.mem_support_iff]
-    change degLex.lCoeff f ≠ 0
-    rw [lCoeff_ne_zero_iff]
-    exact hf
-  · unfold MvPolynomial.totalDegree
-    apply Finset.sup_le
-    intro b hb
-    exact DegLex.monotone_degree (degLex.le_degree hb)
-
-theorem degLex_totalDegree_monotone [WellFoundedGT σ] {f g : MvPolynomial σ R}
-    (h : degLex.degree f ≼[degLex] degLex.degree g) :
-    f.totalDegree ≤ g.totalDegree := by
-  simp only [← MvPolynomial.degLex_degree_degree]
-  exact DegLex.monotone_degree h
-
-end MvPolynomial

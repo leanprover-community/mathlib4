@@ -14,7 +14,7 @@ See note [foundational algebra order theory].
 
 ## TODO
 
-Move the `LinearOrder ℕ` instance here (#13092).
+Move the `LinearOrder ℕ` instance here (https://github.com/leanprover-community/mathlib4/pull/13092).
 -/
 
 namespace Nat
@@ -22,6 +22,9 @@ namespace Nat
 instance instOrderBot : OrderBot ℕ where
   bot := 0
   bot_le := zero_le
+
+instance instNoMaxOrder : NoMaxOrder ℕ where
+  exists_gt n := ⟨n + 1, n.lt_succ_self⟩
 
 /-! ### Miscellaneous lemmas -/
 

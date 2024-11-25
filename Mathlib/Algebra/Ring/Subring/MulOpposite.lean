@@ -19,25 +19,23 @@ namespace Subring
 variable {ι : Sort*} {R : Type*} [Ring R]
 
 /-- Pull a subring back to an opposite subring along `MulOpposite.unop` -/
-@[simps toSubsemiring]
+@[simps! coe toSubsemiring]
 protected def op (S : Subring R) : Subring Rᵐᵒᵖ where
   toSubsemiring := S.toSubsemiring.op
   neg_mem' {x} hx := neg_mem (show x.unop ∈ S from hx)
 
-@[simp, norm_cast]
-theorem op_coe (S : Subring R) : S.op = MulOpposite.unop ⁻¹' (S : Set R) := rfl
+attribute [norm_cast] coe_op
 
 @[simp]
 theorem mem_op {x : Rᵐᵒᵖ} {S : Subring R} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
 /-- Pull an opposite subring back to a subring along `MulOpposite.op` -/
-@[simps toSubsemiring]
+@[simps! coe toSubsemiring]
 protected def unop (S : Subring Rᵐᵒᵖ) : Subring R where
   toSubsemiring := S.toSubsemiring.unop
   neg_mem' {x} hx := neg_mem (show MulOpposite.op x ∈ S from hx)
 
-@[simp, norm_cast]
-theorem unop_coe (S : Subring Rᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Rᵐᵒᵖ) := rfl
+attribute [norm_cast] coe_unop
 
 @[simp]
 theorem mem_unop {x : R} {S : Subring Rᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
@@ -135,13 +133,13 @@ theorem unop_iInf (S : ι → Subring Rᵐᵒᵖ) : (iInf S).unop = ⨅ i, (S i)
   opEquiv.symm.map_iInf _
 
 theorem op_closure (s : Set R) : (closure s).op = closure (MulOpposite.unop ⁻¹' s) := by
-  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, unop_coe]
+  simp_rw [closure, op_sInf, Set.preimage_setOf_eq, coe_unop]
   congr with a
   exact MulOpposite.unop_surjective.forall
 
 theorem unop_closure (s : Set Rᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
   rw [← op_inj, op_unop, op_closure]
-  rfl
+  simp_rw [Set.preimage_preimage, MulOpposite.op_unop, Set.preimage_id']
 
 /-- Bijection between a subring `S` and its opposite. -/
 @[simps!]

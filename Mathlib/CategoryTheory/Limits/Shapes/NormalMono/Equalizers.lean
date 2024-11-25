@@ -55,7 +55,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
         PullbackCone.IsLimit.mk _
           (fun s =>
             kernel.lift (prod.lift f g) (PullbackCone.snd s ≫ b) <|
-              prod.hom_ext
+              Limits.prod.hom_ext
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.fst =
                       PullbackCone.snd s ≫ b ≫ f := by simp only [prod.lift_fst, Category.assoc]
@@ -125,7 +125,7 @@ def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g
         Fork.IsLimit.mk _
           (fun s =>
             pullback.lift (Fork.ι s) (Fork.ι s) <|
-              prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
+              Limits.prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
                 (by simp only [prod.comp_lift, Fork.condition s]))
           (fun s => by simp) fun s m h =>
           pullback.hom_ext (by simpa only [pullback.lift_fst] using h)
