@@ -507,6 +507,7 @@ variable (K : Type*) [Field K]
 namespace PowerSeries
 
 /-- The prime ideal `(X)` of `K⟦X⟧`, when `K` is a field, as a term of the `HeightOneSpectrum`. -/
+@[simps]
 def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   asIdeal := Ideal.span {X}
   isPrime := PowerSeries.span_X_isPrime
@@ -576,9 +577,10 @@ instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' (PowerSeries.idealX K).valuat
 
 theorem valuation_X_pow (s : ℕ) :
     Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
-  erw [map_pow, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul,
-    WithZero.coe_zpow, ofAdd_neg, WithZero.coe_inv, zpow_natCast, valuation_of_algebraMap,
-    intValuation_toFun, intValuation_X, ofAdd_neg, WithZero.coe_inv, inv_pow]
+  rw [map_pow, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul,
+    WithZero.coe_zpow, ofAdd_neg, WithZero.coe_inv, zpow_natCast, ← LaurentSeries.coe_algebraMap,
+    adicValued_apply, valuation_of_algebraMap, intValuation_toFun, intValuation_X, ofAdd_neg,
+    WithZero.coe_inv, inv_pow]
 
 theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : K⸨X⸩) =
@@ -600,10 +602,9 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     n < d → coeff K n f = 0 := by
   intro hnd
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
-  erw [← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow,
+  rwa [← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow, ← idealX_asIdeal,
     ← (intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d), ← intValuation_apply,
-    ← valuation_of_algebraMap (R := K⟦X⟧) (K := K⸨X⸩)]
-  exact H
+    ← valuation_of_algebraMap (R := K⟦X⟧) (K := K⸨X⸩), ← adicValued_apply, coe_algebraMap]
 
 /- The valuation of a power series is the order of the first non-zero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
@@ -611,8 +612,8 @@ theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
       ∀ n : ℕ, n < d → coeff K n f = 0 := by
   have : PowerSeries.X ^ d ∣ f ↔ ∀ n : ℕ, n < d → (PowerSeries.coeff K n) f = 0 :=
     ⟨PowerSeries.X_pow_dvd_iff.mp, PowerSeries.X_pow_dvd_iff.mpr⟩
-  erw [← this, valuation_of_algebraMap (PowerSeries.idealX K) f, ←
-    span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
+  rw [← this, ← coe_algebraMap, adicValued_apply, valuation_of_algebraMap (PowerSeries.idealX K) f,
+    ← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
   apply intValuation_le_pow_iff_dvd
 
 /- The coefficients of a Laurent series vanish in degree strictly less than its valuation. -/
@@ -973,9 +974,8 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
     simp only [Valued.mem_nhds, sub_zero]
     refine ⟨⟨d, by rfl⟩, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
     apply hd
-    simp only [sub_zero, Set.mem_setOf_eq]
-    erw [← RatFunc.coe_sub, ← valuation_eq_LaurentSeries_valuation]
-    assumption
+    simpa only [sub_zero, adicValued_apply, ← RatFunc.coe_sub, Set.mem_setOf,
+      ← valuation_eq_LaurentSeries_valuation]
   · rintro ⟨_, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
     let X := {f : K⸨X⸩ | Valued.v f < ↑d}
@@ -985,9 +985,8 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
         use d
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      erw [Set.mem_setOf_eq, sub_zero, valuation_eq_LaurentSeries_valuation,
-        RatFunc.coe_sub]
-      assumption
+      simpa only [sub_zero, WithZero.valued_def, valuation_eq_LaurentSeries_valuation,
+        Set.mem_setOf_eq, RatFunc.coe_sub]
 
 theorem continuous_coe : Continuous ((↑) : RatFunc K → K⸨X⸩) :=
   (isUniformInducing_iff'.1 (inducing_coe)).1.continuous
@@ -1036,7 +1035,7 @@ lemma comparePkg_eq_extension (x : UniformSpace.Completion (RatFunc K)) :
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: this will be the *inverse* of the fundamental one.-/
 abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
-  {comparePkg K with
+  { comparePkg K with
     map_mul' := by
       intro x y
       rw [comparePkg_eq_extension, (extensionAsRingHom K (continuous_coe)).map_mul']
@@ -1069,8 +1068,7 @@ theorem valuation_LaurentSeries_equal_extension :
     (LaurentSeriesPkg K).isDenseInducing.extend Valued.v = (Valued.v : K⸨X⸩ → ℤₘ₀) := by
   apply IsDenseInducing.extend_unique
   · intro x
-    erw [valuation_eq_LaurentSeries_valuation K x]
-    rfl
+    simp only [LaurentSeries_coe, adicValued_apply, valuation_eq_LaurentSeries_valuation K x]
   · exact Valued.continuous_valuation (K := K⸨X⸩)
 
 theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
