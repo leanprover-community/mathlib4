@@ -5,10 +5,10 @@ Authors: Patrick Massot, Kim Morrison
 -/
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Order.LocalExtr
-import Mathlib.Data.Set.Pointwise.Interval
 
 /-!
 # Topological fields
