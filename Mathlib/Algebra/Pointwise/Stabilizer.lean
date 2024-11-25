@@ -201,26 +201,6 @@ end Finset
 variable {s : Set α}
 
 @[to_additive]
-lemma mem_stabilizer_iff_subset_smul_set (hs : s.Finite) : a ∈ stabilizer G s ↔ s ⊆ a • s := by
-  classical
-  lift s to Finset α using hs
-  norm_cast
-  exact mem_stabilizer_finset_iff_subset_smul_finset
-
-@[to_additive]
-lemma mem_stabilizer_iff_smul_set_subset (hs : s.Finite) : a ∈ stabilizer G s ↔ a • s ⊆ s := by
-  classical
-  lift s to Finset α using hs
-  norm_cast
-  exact mem_stabilizer_finset_iff_smul_finset_subset
-
-@[deprecated (since := "2024-11-25")]
-alias mem_stabilizer_of_finite_iff_smul_le := mem_stabilizer_iff_subset_smul_set
-
-@[deprecated (since := "2024-11-25")]
-alias mem_stabilizer_of_finite_iff_le_smul := mem_stabilizer_iff_smul_set_subset
-
-@[to_additive]
 lemma mem_stabilizer_set_iff_subset_smul_set {s : Set α} (hs : s.Finite) :
     a ∈ stabilizer G s ↔ s ⊆ a • s := by
   lift s to Finset α using hs
@@ -235,6 +215,12 @@ lemma mem_stabilizer_set_iff_smul_set_subset {s : Set α} (hs : s.Finite) :
   classical
   rw [stabilizer_coe_finset, mem_stabilizer_finset_iff_smul_finset_subset, ← Finset.coe_smul_finset,
     Finset.coe_subset]
+
+@[deprecated (since := "2024-11-25")]
+alias mem_stabilizer_of_finite_iff_smul_le := mem_stabilizer_set_iff_subset_smul_set
+
+@[deprecated (since := "2024-11-25")]
+alias mem_stabilizer_of_finite_iff_le_smul := mem_stabilizer_set_iff_smul_set_subset
 
 @[to_additive]
 lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :
