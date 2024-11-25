@@ -1344,7 +1344,7 @@ theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 �
 /-- Continuous multilinear maps themselves form a normed group with respect to
     the operator norm. -/
 instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
-  NormedAddCommGroup.ofSeparation (fun f ↦ (opNorm_zero_iff f).mp)
+  NormedAddCommGroup.ofSeparation fun _ ↦ opNorm_zero_iff.mp
 
 /-- An alias of `ContinuousMultilinearMap.normedAddCommGroup` with non-dependent types to help
 typeclass search. -/
@@ -1354,13 +1354,13 @@ instance normedAddCommGroup' :
 
 variable (𝕜 G)
 
-theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G]
-    (f : ContinuousMultilinearMap 𝕜 E G) (i : ι) : ‖ofSubsingleton 𝕜 G G i (.id _ _)‖ = 1 := by
+theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
+    ‖ofSubsingleton 𝕜 G G i (.id _ _)‖ = 1 := by
   simp
 
-theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G]
-    (f : ContinuousMultilinearMap 𝕜 E G) (i : ι) : ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=
-  NNReal.eq <| norm_ofSubsingleton_id _ _ _
+theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
+    ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=
+  NNReal.eq <| norm_ofSubsingleton_id ..
 
 end ContinuousMultilinearMap
 
