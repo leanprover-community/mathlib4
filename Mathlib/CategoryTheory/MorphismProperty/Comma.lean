@@ -236,6 +236,7 @@ variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
 
 /-- Lift a functor `F : C ⥤ Comma L R` to the subcategory `P.Comma L R Q W` under
 suitable assumptions on `F`. -/
+@[simps obj_toComma map_hom]
 def lift {C : Type*} [Category C] (F : C ⥤ Comma L R)
     (hP : ∀ X, P (F.obj X).hom)
     (hQ : ∀ {X Y} (f : X ⟶ Y), Q (F.map f).left)
@@ -251,19 +252,11 @@ def lift {C : Type*} [Category C] (F : C ⥤ Comma L R)
 
 variable (R) in
 /-- A natural transformation `L₁ ⟶ L₂` induces a functor `P.Comma L₂ R Q W ⥤ P.Comma L₁ R Q W`. -/
-@[simps obj_left obj_right]
+@[simps! obj_left obj_right]
 def mapLeft (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.left ≫ X.hom)) :
-    P.Comma L₂ R Q W ⥤ P.Comma L₁ R Q W where
-  obj X :=
-    { left := X.left
-      right := X.right
-      hom := l.app X.left ≫ X.hom
-      prop := hl X }
-  map {X Y} f :=
-    { left := f.left
-      right := f.right
-      prop_hom_left := f.prop_hom_left
-      prop_hom_right := f.prop_hom_right }
+    P.Comma L₂ R Q W ⥤ P.Comma L₁ R Q W :=
+  lift (forget _ _ _ _ _ ⋙ CategoryTheory.Comma.mapLeft R l) hl
+    (fun f ↦ f.prop_hom_left) (fun f ↦ f.prop_hom_right)
 
 @[simp]
 lemma mapLeft_map_left (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P (l.app X.left ≫ X.hom))
@@ -279,19 +272,11 @@ lemma mapLeft_map_right (l : L₁ ⟶ L₂) (hl : ∀ X : P.Comma L₂ R Q W, P 
 
 variable (L) in
 /-- A natural transformation `R₁ ⟶ R₂` induces a functor `P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W`. -/
-@[simps obj_left obj_right]
+@[simps! obj_left obj_right]
 def mapRight (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right)) :
-    P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W where
-  obj X :=
-    { left := X.left
-      right := X.right
-      hom := X.hom ≫ r.app X.right
-      prop := hr X }
-  map {X Y} f :=
-    { left := f.left
-      right := f.right
-      prop_hom_left := f.prop_hom_left
-      prop_hom_right := f.prop_hom_right }
+    P.Comma L R₁ Q W ⥤ P.Comma L R₂ Q W :=
+  lift (forget _ _ _ _ _ ⋙ CategoryTheory.Comma.mapRight L r) hr
+    (fun f ↦ f.prop_hom_left) (fun f ↦ f.prop_hom_right)
 
 @[simp]
 lemma mapRight_map_left (r : R₁ ⟶ R₂) (hr : ∀ X : P.Comma L R₁ Q W, P (X.hom ≫ r.app X.right))

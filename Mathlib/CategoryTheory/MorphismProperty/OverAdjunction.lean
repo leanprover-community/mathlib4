@@ -34,29 +34,26 @@ variable {f}
 
 /-- If `P` is stable under composition and `f : X ⟶ Y` satisfies `P`,
 this is the functor `P.Over Q X ⥤ P.Over Q Y` given by composing with `f`. -/
+@[simps! obj_left obj_hom]
 def Over.map : P.Over Q X ⥤ P.Over Q Y :=
   Comma.mapRight _ (Discrete.natTrans fun _ ↦ f) <| fun X ↦ P.comp_mem _ _ X.prop hPf
-
-@[simp] lemma Over.map_obj_left (A : P.Over Q X) : ((Over.map Q hPf).obj A).left = A.left := rfl
-
-@[simp] lemma Over.map_obj_hom (A : P.Over Q X) : ((Over.map Q hPf).obj A).hom = A.hom ≫ f := rfl
 
 @[simp] lemma Over.map_map_left {A B : P.Over Q X} (g : A ⟶ B) :
     ((Over.map Q hPf).map g).left = g.left := rfl
 
-lemma Over.mapComp_eq {X Y Z : T} {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
+lemma Over.map_comp {X Y Z : T} {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
     map Q (P.comp_mem f g hf hg) = map Q hf ⋙ map Q hg := by
   fapply Functor.ext
-  · simp [map, Comma.mapRight, CategoryTheory.Comma.mapRight]
+  · simp [map, Comma.mapRight, CategoryTheory.Comma.mapRight, Comma.lift]
   · intro U V k
     ext
     simp
 
 /-- `Over.map` commutes with composition. -/
-@[simps!]
-def Over.mapComp {X Y Z : T} {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) :
+@[simps! hom_app_left inv_app_left]
+def Over.mapComp {X Y Z : T} {f : X ⟶ Y} (hf : P f) {g : Y ⟶ Z} (hg : P g) [Q.RespectsIso] :
     map Q (P.comp_mem f g hf hg) ≅ map Q hf ⋙ map Q hg :=
-  eqToIso (Over.mapComp_eq Q hf hg)
+  NatIso.ofComponents (fun X ↦ Over.isoMk (Iso.refl _))
 
 end Map
 
@@ -84,7 +81,7 @@ lemma Over.pullback_map_left {A B : P.Over Q Y} (g : A ⟶ B) :
 
 variable {P} {Q}
 
-/-- `Over.pullback` commutes with  composition. -/
+/-- `Over.pullback` commutes with composition. -/
 @[simps! hom_app_left inv_app_left]
 noncomputable def Over.pullbackComp [Q.RespectsIso] {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     Over.pullback P Q (f ≫ g) ≅ Over.pullback P Q g ⋙ Over.pullback P Q f :=
@@ -104,7 +101,7 @@ noncomputable def Over.pullbackCongr {X Y : T} {f g : X ⟶ Y} (h : f = g) :
   NatIso.ofComponents (fun X ↦ eqToIso (by rw [h]))
 
 @[reassoc (attr := simp)]
-lemma Over.pullbackCongr_left_fst {X Y : T} {f g : X ⟶ Y} (h : f = g) (A : P.Over Q Y) :
+lemma Over.pullbackCongr_hom_app_left_fst {X Y : T} {f g : X ⟶ Y} (h : f = g) (A : P.Over Q Y) :
     ((Over.pullbackCongr h).hom.app A).left ≫ pullback.fst A.hom g =
       pullback.fst A.hom f := by
   subst h
