@@ -240,7 +240,7 @@ theorem degree_mul_le {f g : MvPolynomial σ R} :
     exact add_le_add_right hd _
 
 /-- Multiplicativity of leading coefficients -/
-theorem lCoeff_mul_degree_add {f g : MvPolynomial σ R} :
+theorem coeff_mul_of_degree_add {f g : MvPolynomial σ R} :
     (f * g).coeff (m.degree f + m.degree g) = m.lCoeff f * m.lCoeff g := by
   classical
   rw [coeff_mul]
@@ -276,7 +276,7 @@ theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
   apply m.toSyn.injective
   apply le_antisymm degree_mul_le
   apply le_degree
-  rw [mem_support_iff, lCoeff_mul']
+  rw [mem_support_iff, coeff_mul_of_degree_add]
   simp only [ne_eq, hf, IsRegular.left, IsLeftRegular.mul_left_eq_zero_iff,
     lCoeff_eq_zero_iff]
   exact hg
@@ -285,7 +285,7 @@ theorem degree_mul_of_isRegular_left {f g : MvPolynomial σ R}
 theorem lCoeff_mul_of_isRegular_left {f g : MvPolynomial σ R}
     (hf : IsRegular (m.lCoeff f)) (hg : g ≠ 0) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
-  simp only [lCoeff, degree_mul_of_isRegular_left hf hg, lCoeff_mul']
+  simp only [lCoeff, degree_mul_of_isRegular_left hf hg, coeff_mul_of_degree_add]
 /-- Multiplicativity of leading coefficients -/
 
 /-- Multiplicativity of leading coefficients -/
@@ -298,7 +298,7 @@ theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
 theorem lCoeff_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.lCoeff g)) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
-  simp only [lCoeff, degree_mul_of_isRegular_right hf hg, lCoeff_mul']
+  simp only [lCoeff, degree_mul_of_isRegular_right hf hg, coeff_mul_of_degree_add]
 
 /-- Degree of product -/
 theorem degree_mul [IsDomain R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
@@ -314,7 +314,7 @@ theorem degree_mul_of_nonzero_mul [IsDomain R] {f g : MvPolynomial σ R} (hfg : 
 theorem lCoeff_mul [IsDomain R] {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : g ≠ 0) :
     m.lCoeff (f * g) = m.lCoeff f * m.lCoeff g := by
-  rw [lCoeff, degree_mul hf hg, ← lCoeff_mul']
+  rw [lCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
 
 theorem degree_smul_le {r : R} {f : MvPolynomial σ R} :
     m.degree (r • f) ≼[m] m.degree f := by
@@ -330,7 +330,7 @@ theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
   apply le_antisymm degree_smul_le
   apply le_degree
   simp only [mem_support_iff, smul_eq_C_mul]
-  rw [← zero_add (degree m f), ← degree_C r, lCoeff_mul']
+  rw [← zero_add (degree m f), ← degree_C r, coeff_mul_of_degree_add]
   simp [lCoeff, hr.left.mul_left_eq_zero_iff, hf]
 
 theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :

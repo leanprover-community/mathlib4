@@ -104,7 +104,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.lCoeff b))
   have H' : coeff (m.degree f) (m.reduce hb f) = 0 := by
     simp only [reduce, coeff_sub, sub_eq_zero]
     nth_rewrite 2 [H]
-    rw [lCoeff_mul' (m := m), lCoeff_monomial]
+    rw [coeff_mul_of_degree_add (m := m), lCoeff_monomial]
     rw [mul_comm, ← mul_assoc]
     simp only [IsUnit.mul_val_inv, one_mul]
     rfl
