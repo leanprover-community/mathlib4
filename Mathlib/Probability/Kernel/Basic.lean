@@ -15,6 +15,13 @@ kernels.
 
 * `ProbabilityTheory.Kernel.deterministic (f : α → β) (hf : Measurable f)`:
   kernel `a ↦ Measure.dirac (f a)`.
+* `ProbabilityTheory.Kernel.id`: the identity kernel, deterministic kernel for
+  the identity function.
+* `ProbabilityTheory.Kernel.copy α`: the deterministic kernel that maps `x : α` to
+  the Dirac measure at `(x, x) : α × α`.
+* `ProbabilityTheory.Kernel.discard α`: the Markov kernel to the type `Unit`.
+* `ProbabilityTheory.Kernel.swap α β`: the deterministic kernel that maps `(x, y)` to
+  the Dirac measure at `(y, x)`.
 * `ProbabilityTheory.Kernel.const α (μβ : measure β)`: constant kernel `a ↦ μβ`.
 * `ProbabilityTheory.Kernel.restrict κ (hs : MeasurableSet s)`: kernel for which the image of
   `a : α` is `(κ a).restrict s`.
@@ -95,7 +102,7 @@ end Deterministic
 
 section KernelId
 
-/-- The identity kernel. -/
+/-- The identity kernel, that maps `x : α` to the Dirac measure at `x`. -/
 protected noncomputable
 def id : Kernel α α := Kernel.deterministic id measurable_id
 
