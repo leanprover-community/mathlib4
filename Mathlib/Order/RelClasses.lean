@@ -17,8 +17,6 @@ extend `LE` and/or `LT` while these classes take a relation as an explicit argum
 
 -/
 
-set_option linter.deprecated false
-
 universe u v
 
 variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop}

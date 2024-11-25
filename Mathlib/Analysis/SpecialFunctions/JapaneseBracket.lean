@@ -72,15 +72,14 @@ variable {E}
 theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ) < r) :
     (∫⁻ x : ℝ in Ioc 0 1, ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n)) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt n.cast_nonneg hnr
-  have h_int : ∀ x : ℝ, x ∈ Ioc (0 : ℝ) 1 →
-      ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ ENNReal.ofReal (x ^ (-(r⁻¹ * n))) := fun x hx ↦ by
-    apply ENNReal.ofReal_le_ofReal
-    rw [← neg_mul, rpow_mul hx.1.le, rpow_natCast]
-    refine pow_le_pow_left ?_ (by simp only [sub_le_self_iff, zero_le_one]) n
-    rw [le_sub_iff_add_le', add_zero]
-    refine Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 ?_
-    rw [Right.neg_nonpos_iff, inv_nonneg]
-    exact hr.le
+  have h_int x (hx : x ∈ Ioc (0 : ℝ) 1) := by
+    calc
+      ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ .ofReal ((x ^ (-r⁻¹) - 0) ^ n) := by
+        gcongr
+        · rw [sub_nonneg]
+          exact Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 (by simpa using hr.le)
+        · norm_num
+      _ = .ofReal (x ^ (-(r⁻¹ * n))) := by simp [rpow_mul hx.1.le, ← neg_mul]
   refine lt_of_le_of_lt (setLIntegral_mono' measurableSet_Ioc h_int) ?_
   refine IntegrableOn.setLIntegral_lt_top ?_
   rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
