@@ -950,11 +950,11 @@ protected def monoid : Monoid (Finset α) :=
 
 scoped[Pointwise] attribute [instance] Finset.monoid Finset.addMonoid
 
--- `Finset.pow_left_mono` doesn't exist since it would syntactically be a special case of
+-- `Finset.pow_left_monotone` doesn't exist since it would syntactically be a special case of
 -- `pow_left_mono`
 
 @[to_additive]
-protected lemma pow_right_mono (hs : 1 ∈ s) : Monotone (s ^ ·) :=
+protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
   pow_right_monotone <| one_subset.2 hs
 
 @[to_additive (attr := gcongr)]
@@ -962,7 +962,7 @@ lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono _ h
 
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
-  Finset.pow_right_mono hs hmn
+  Finset.pow_right_monotone hs hmn
 
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ t ^ n :=
@@ -974,12 +974,11 @@ lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ 
 alias nsmul_subset_nsmul_of_zero_mem := nsmul_subset_nsmul_right
 
 @[to_additive]
-lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : 1 < n) :
+lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0) :
     s ^ n ⊆ t ^ (n - 1) * s := pow_le_pow_mul_of_sq_le_mul hst hn
 
 @[to_additive (attr := simp) nsmul_empty]
-theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
+lemma empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := match n with | n + 1 => by simp [pow_succ]
 
 @[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
 
@@ -1486,6 +1485,22 @@ theorem mul_subset_iff_right : s * t ⊆ u ↔ ∀ b ∈ t, op b • s ⊆ u :=
   image₂_subset_iff_right
 
 end Mul
+
+section Monoid
+variable [DecidableEq α] [DecidableEq β] [Monoid α] [Monoid β] [FunLike F α β]
+
+@[to_additive]
+lemma image_pow_of_ne_zero [MulHomClass F α β] :
+    ∀ {n}, n ≠ 0 → ∀ (f : F) (s : Finset α), (s ^ n).image f = s.image f ^ n
+  | 1, _ => by simp
+  | n + 2, _ => by simp [image_mul, pow_succ _ n.succ, image_pow_of_ne_zero]
+
+@[to_additive]
+lemma image_pow [MonoidHomClass F α β] (f : F) (s : Finset α) : ∀ n, (s ^ n).image f = s.image f ^ n
+  | 0 => by simp [singleton_one]
+  | n + 1 => image_pow_of_ne_zero n.succ_ne_zero ..
+
+end Monoid
 
 section Semigroup
 

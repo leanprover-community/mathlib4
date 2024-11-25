@@ -1079,18 +1079,19 @@ protected noncomputable def monoid : Monoid (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 
--- `Set.pow_left_mono` doesn't exist since it would syntactically be a special case of
+-- `Set.pow_left_monotone` doesn't exist since it would syntactically be a special case of
 -- `pow_left_mono`
 
 @[to_additive]
-protected lemma pow_right_mono (hs : 1 ∈ s) : Monotone (s ^ ·) :=
+protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
   pow_right_monotone <| one_subset.2 hs
 
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono _ hst
 
 @[to_additive (attr := gcongr)]
-lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n := Set.pow_right_mono hs hmn
+lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
+  Set.pow_right_monotone hs hmn
 
 @[to_additive (attr := gcongr)]
 lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ t ^ n :=
@@ -1102,13 +1103,11 @@ lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ 
 alias nsmul_subset_nsmul_of_zero_mem := nsmul_subset_nsmul_right
 
 @[to_additive]
-lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : 1 < n) :
+lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0) :
     s ^ n ⊆ t ^ (n - 1) * s := pow_le_pow_mul_of_sq_le_mul hst hn
 
 @[to_additive (attr := simp) nsmul_empty]
-theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
-  match n with
-  | n + 1 => rw [pow_succ', empty_mul]
+lemma empty_pow (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := match n with | n + 1 => by simp [pow_succ]
 
 @[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
 
@@ -1382,12 +1381,18 @@ lemma preimage_mul (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : 
 end Mul
 
 section Monoid
-variable [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β]
+variable [Monoid α] [Monoid β] [FunLike F α β]
 
 @[to_additive]
-lemma image_pow (f : F) (s : Set α) : ∀ n, f '' (s ^ n) = (f '' s) ^ n
+lemma image_pow_of_ne_zero [MulHomClass F α β] :
+    ∀ {n}, n ≠ 0 → ∀ (f : F) (s : Set α), f '' (s ^ n) = (f '' s) ^ n
+  | 1, _ => by simp
+  | n + 2, _ => by simp [image_mul, pow_succ _ n.succ, image_pow_of_ne_zero]
+
+@[to_additive]
+lemma image_pow [MonoidHomClass F α β] (f : F) (s : Set α) : ∀ n, f '' (s ^ n) = (f '' s) ^ n
   | 0 => by simp [singleton_one]
-  | n + 1 => by simp [image_mul, pow_succ, image_pow]
+  | n + 1 => image_pow_of_ne_zero n.succ_ne_zero ..
 
 end Monoid
 
@@ -1420,11 +1425,10 @@ lemma preimage_div (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : 
 
 end Group
 
-variable {ι : Type*} {α : ι → Type*} [∀ i, InvolutiveInv (α i)]
+variable {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
 
 @[to_additive (attr := simp)]
-lemma inv_pi (s : Set ι) (t : ∀ i, Set (α i)) : (s.pi t)⁻¹ = s.pi fun i ↦ (t i)⁻¹ := by
-  simp_rw [← image_inv]; exact piMap_image_pi (fun _ _ ↦ inv_surjective) _
+lemma inv_pi (s : Set ι) (t : ∀ i, Set (α i)) : (s.pi t)⁻¹ = s.pi fun i ↦ (t i)⁻¹ := by ext x; simp
 
 end Set
 
