@@ -36,7 +36,7 @@ def IsEventuallyConstantTo (j : J) : Prop :=
 
 /-- A functor `F : J ⥤ C` is eventually constant from `i : J` if
 for any map `f : i ⟶ j`, the induced morphism `F.map f` is an isomorphism.
-If `J` is filtered, this implies `F` has a colimit (TODO). -/
+If `J` is filtered, this implies `F` has a colimit. -/
 def IsEventuallyConstantFrom (i : J) : Prop :=
   ∀ ⦃j : J⦄ (f : i ⟶ j), IsIso (F.map f)
 
