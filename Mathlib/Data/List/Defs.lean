@@ -493,7 +493,9 @@ set_option allowUnsafeReducibility true in
 attribute [semireducible] Fin.foldr.loop
 
 /-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
-def finRange (n : Nat) : List (Fin n) := ofFn id
+-- Note that we use `ofFn (fun x => x)` instead of `ofFn id` to avoid leaving `id` in the terms
+-- for e.g. `Fintype (Fin n)`.
+def finRange (n : Nat) : List (Fin n) := ofFn (fun x => x)
 
 -- Verify that `finRange` is semireducible.
 example : finRange 3 = [0, 1, 2] := rfl

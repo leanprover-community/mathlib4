@@ -574,9 +574,8 @@ lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.Forces
   have h2 : ((2 : Fin (N + 2)) : ℕ) = 2 := Nat.mod_eq_of_lt (by omega : 2 < N + 2)
   refine ⟨m, fun i ↦ ?_⟩
   fin_cases i
-  · simp only [Strategy.play_zero, Path.firstMonster_eq_of_findFstEq_mem h1, Option.isSome_some,
-      id_eq]
-  · simp only [Strategy.play_one, id_eq]
+  · simp only [Strategy.play_zero, Path.firstMonster_eq_of_findFstEq_mem h1, Option.isSome_some]
+  · simp only [Strategy.play_one]
     suffices ((s ![some m1]).firstMonster m).isSome = true by
       rwa [Path.firstMonster_eq_of_findFstEq_mem h1]
     simp_rw [m]
