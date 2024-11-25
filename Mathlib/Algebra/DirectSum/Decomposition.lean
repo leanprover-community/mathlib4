@@ -267,6 +267,15 @@ theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[
     linearMap_ext _ fun i => by
       simp_rw [LinearMap.comp_assoc, decomposeLinearEquiv_symm_comp_lof ℳ i, h]
 
+lemma decompose_unique  (rep₁ rep₂ : ⨁ i, ℳ i) [(i : ι) → (x : ↥(ℳ i)) → Decidable (x ≠ 0)]
+    (h₁ : (∑ i ∈ rep₂.support, rep₂ i : M) = (∑ i ∈ rep₁.support, rep₁ i)) :
+    rep₁ = rep₂ := by
+  apply_fun (decompose ℳ).symm
+  rw [← sum_support_decompose ℳ (r := (decompose ℳ).symm rep₁),
+    ← sum_support_decompose ℳ (r := (decompose ℳ).symm rep₂)]
+  simp only [Equiv.apply_symm_apply]
+  exact h₁.symm
+
 end Module
 
 end DirectSum
