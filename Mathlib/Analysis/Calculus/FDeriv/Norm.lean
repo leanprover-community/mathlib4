@@ -79,7 +79,8 @@ theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t �
   obtain rfl | ht := eq_or_ne t 0
   · by_cases hE : Nontrivial E
     · rw [zero_smul] at h
-      exact (mt (ContDiffAt.differentiableAt · hn)) (not_differentiableAt_norm_zero E) h |>.elim
+      exact (mt (ContDiffAt.differentiableAt · (mod_cast hn)))
+        (not_differentiableAt_norm_zero E) h |>.elim
     · rw [not_nontrivial_iff_subsingleton] at hE
       rw [eq_const_of_subsingleton (‖·‖) 0]
       exact contDiffAt_const

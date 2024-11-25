@@ -24,15 +24,15 @@ section
 
 open Additive Multiplicative
 
-instance Additive.vadd [SMul α β] : VAdd (Additive α) β where vadd a := (toMul a • ·)
+instance Additive.vadd [SMul α β] : VAdd (Additive α) β where vadd a := (a.toMul • ·)
 
-instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β where smul a := (toAdd a +ᵥ ·)
+instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β where smul a := (a.toAdd +ᵥ ·)
 
-@[simp] lemma toMul_smul [SMul α β] (a) (b : β) : (toMul a : α) • b = a +ᵥ b := rfl
+@[simp] lemma toMul_smul [SMul α β] (a:Additive α) (b : β) : (a.toMul : α) • b = a +ᵥ b := rfl
 
 @[simp] lemma ofMul_vadd [SMul α β] (a : α) (b : β) : ofMul a +ᵥ b = a • b := rfl
 
-@[simp] lemma toAdd_vadd [VAdd α β] (a) (b : β) : (toAdd a : α) +ᵥ b = a • b := rfl
+@[simp] lemma toAdd_vadd [VAdd α β] (a:Multiplicative α) (b : β) : (a.toAdd : α) +ᵥ b = a • b := rfl
 
 @[simp] lemma ofAdd_smul [VAdd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b := rfl
 

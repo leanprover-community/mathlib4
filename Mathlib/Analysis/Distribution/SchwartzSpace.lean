@@ -1171,7 +1171,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
     intro x hx
     rw [div_lt_iff₀ hε] at hx
     have hxpos : 0 < ‖x‖ := by
-      rw [norm_pos_iff']
+      rw [norm_pos_iff]
       intro hxzero
       simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
       exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) f)

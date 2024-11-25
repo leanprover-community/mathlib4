@@ -364,6 +364,7 @@
    "Mathlib.Util.Superscript"],
   "Mathlib.Deprecated.NatLemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.Deprecated.MinMax": ["Mathlib.Order.MinMax"],
+  "Mathlib.Deprecated.LazyList": ["Mathlib.Lean.Thunk"],
   "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Set.Image":
@@ -384,6 +385,8 @@
   ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],
+  "Mathlib.Data.Int.ConditionallyCompleteOrder":
+  ["Mathlib.Order.ConditionallyCompleteLattice.Basic"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finset.Insert": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Data.ENat.Lattice": ["Mathlib.Algebra.Group.Action.Defs"],

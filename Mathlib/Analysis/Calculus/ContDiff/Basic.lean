@@ -49,9 +49,8 @@ open scoped Topology
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s s₁ t u : Set E} {f f₁ : E → F}
-  {g : F → G} {x x₀ : E} {c : F} {b : E × F → G} {m n : WithTop ℕ∞}
-  {p : E → FormalMultilinearSeries 𝕜 E F}
+  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
+  {g : F → G} {x x₀ : E} {b : E × F → G} {m n : WithTop ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
 
@@ -931,8 +930,8 @@ section ClmApplyConst
 
 /-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDerivWithin`. -/
 theorem iteratedFDerivWithin_clm_apply_const_apply
-    {s : Set E} (hs : UniqueDiffOn 𝕜 s) {c : E → F →L[𝕜] G} (hc : ContDiffOn 𝕜 n c s)
-    {i : ℕ} (hi : i ≤ n) {x : E} (hx : x ∈ s) {u : F} {m : Fin i → E} :
+    {s : Set E} (hs : UniqueDiffOn 𝕜 s) {c : E → F →L[𝕜] G}
+    (hc : ContDiffOn 𝕜 n c s) {i : ℕ} (hi : i ≤ n) {x : E} (hx : x ∈ s) {u : F} {m : Fin i → E} :
     (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s x) m = (iteratedFDerivWithin 𝕜 i c s x) m u := by
   induction i generalizing x with
   | zero => simp
@@ -1099,11 +1098,11 @@ theorem ContDiffWithinAt.fderivWithin_right_apply
     contDiffWithinAt_id hk hs hmn hx₀s (by rw [preimage_id'])
 
 -- TODO: can we make a version of `ContDiffWithinAt.fderivWithin` for iterated derivatives?
-theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ}
-    (hf : ContDiffWithinAt 𝕜 n f s x₀) (hs : UniqueDiffOn 𝕜 s) (hmn : m + i ≤ n) (hx₀s : x₀ ∈ s) :
+theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
+    (hs : UniqueDiffOn 𝕜 s) (hmn : m + i ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
   induction' i with i hi generalizing m
-  · simp at hmn
+  · simp only [CharP.cast_eq_zero, add_zero] at hmn
     exact (hf.of_le hmn).continuousLinearMap_comp
       ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
   · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
@@ -1723,14 +1722,14 @@ theorem ContDiffWithinAt.inv {f : E → 𝕜'} {n} (hf : ContDiffWithinAt 𝕜 n
     ContDiffWithinAt 𝕜 n (fun x => (f x)⁻¹) s x :=
   (contDiffAt_inv 𝕜 hx).comp_contDiffWithinAt x hf
 
-theorem ContDiffOn.inv {f : E → 𝕜'} {n} (hf : ContDiffOn 𝕜 n f s) (h : ∀ x ∈ s, f x ≠ 0) :
+theorem ContDiffOn.inv {f : E → 𝕜'} (hf : ContDiffOn 𝕜 n f s) (h : ∀ x ∈ s, f x ≠ 0) :
     ContDiffOn 𝕜 n (fun x => (f x)⁻¹) s := fun x hx => (hf.contDiffWithinAt hx).inv (h x hx)
 
-nonrec theorem ContDiffAt.inv {f : E → 𝕜'} {n} (hf : ContDiffAt 𝕜 n f x) (hx : f x ≠ 0) :
+nonrec theorem ContDiffAt.inv {f : E → 𝕜'} (hf : ContDiffAt 𝕜 n f x) (hx : f x ≠ 0) :
     ContDiffAt 𝕜 n (fun x => (f x)⁻¹) x :=
   hf.inv hx
 
-theorem ContDiff.inv {f : E → 𝕜'} {n} (hf : ContDiff 𝕜 n f) (h : ∀ x, f x ≠ 0) :
+theorem ContDiff.inv {f : E → 𝕜'} (hf : ContDiff 𝕜 n f) (h : ∀ x, f x ≠ 0) :
     ContDiff 𝕜 n fun x => (f x)⁻¹ := by
   rw [contDiff_iff_contDiffAt]; exact fun x => hf.contDiffAt.inv (h x)
 

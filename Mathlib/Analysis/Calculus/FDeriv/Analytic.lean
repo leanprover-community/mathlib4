@@ -63,7 +63,7 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 
 open Filter Asymptotics Set
 
-open scoped ENNReal Topology
+open scoped ENNReal Topology ContDiff
 
 universe u v
 
@@ -542,7 +542,7 @@ theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     simp_rw [FormalMultilinearSeries.changeOriginSeriesTerm,
       toFormalMultilinearSeries, dif_neg h.symm, LinearIsometryEquiv.map_zero]
 
-variable {n : ℕ∞} (x : ∀ i, E i)
+variable {n : WithTop ℕ∞} (x : ∀ i, E i)
 
 open Finset in
 theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :

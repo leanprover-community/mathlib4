@@ -257,11 +257,11 @@ theorem contDiff_of_differentiable_iteratedDeriv {n : ℕ∞}
   contDiff_iff_iteratedDeriv.2 ⟨fun m hm => (h m hm).continuous, fun m hm => h m (le_of_lt hm)⟩
 
 theorem ContDiff.continuous_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 n f)
-    (hmn : (m : ℕ∞) ≤ n) : Continuous (iteratedDeriv m f) :=
+    (hmn : m ≤ n) : Continuous (iteratedDeriv m f) :=
   (contDiff_iff_iteratedDeriv.1 (h.of_le hmn)).1 m le_rfl
 
 theorem ContDiff.differentiable_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 n f)
-    (hmn : (m : ℕ∞) < n) : Differentiable 𝕜 (iteratedDeriv m f) :=
+    (hmn : m < n) : Differentiable 𝕜 (iteratedDeriv m f) :=
   (contDiff_iff_iteratedDeriv.1 (h.of_le (ENat.add_one_natCast_le_withTop_of_lt hmn))).2 m
     (mod_cast (lt_add_one m))
 

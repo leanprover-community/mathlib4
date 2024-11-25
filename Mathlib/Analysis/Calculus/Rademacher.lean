@@ -223,8 +223,7 @@ theorem ae_lineDeriv_sum_eq
     obtain ⟨D, g_lip⟩ : ∃ D, LipschitzWith D g :=
       ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth (mod_cast le_top)
     simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]
-    simp_rw [(g_smooth.differentiable (mod_cast le_top))
-      |>.differentiableAt.lineDeriv_eq_fderiv]
+    simp_rw [(g_smooth.differentiable (mod_cast le_top)).differentiableAt.lineDeriv_eq_fderiv]
     simp only [map_neg, _root_.map_sum, _root_.map_smul, smul_eq_mul, neg_mul]
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
@@ -234,8 +233,8 @@ theorem ae_lineDeriv_sum_eq
   let L : (E →L[ℝ] ℝ) → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
-  · exact ((g_smooth.continuous_fderiv (mod_cast le_top)).clm_apply
-      continuous_const).mul hf.continuous
+  · exact ((g_smooth.continuous_fderiv (mod_cast le_top)).clm_apply continuous_const).mul
+      hf.continuous
   · exact ((g_comp.fderiv ℝ).comp_left rfl).mul_right
 
 /-!

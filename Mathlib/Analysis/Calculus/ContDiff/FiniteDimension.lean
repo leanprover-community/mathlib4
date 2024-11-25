@@ -34,8 +34,7 @@ variable [CompleteSpace 𝕜]
 
 
 /-- A family of continuous linear maps is `C^n` on `s` if all its applications are. -/
-theorem contDiffOn_clm_apply
-    {f : D → E →L[𝕜] F} {s : Set D} [FiniteDimensional 𝕜 E] :
+theorem contDiffOn_clm_apply {f : D → E →L[𝕜] F} {s : Set D} [FiniteDimensional 𝕜 E] :
     ContDiffOn 𝕜 n f s ↔ ∀ y, ContDiffOn 𝕜 n (fun x => f x y) s := by
   refine ⟨fun h y => h.clm_apply contDiffOn_const, fun h => ?_⟩
   let d := finrank 𝕜 E

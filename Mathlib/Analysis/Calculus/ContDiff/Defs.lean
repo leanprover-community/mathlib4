@@ -108,9 +108,9 @@ attribute [local instance 1001]
 open Set Fin Filter Function
 
 /-- Smoothness exponent for analytic functions. -/
-scoped [ContDiff] notation3 "ω" => (⊤ : WithTop (ℕ∞))
+scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
 /-- Smoothness exponent for infinitely differentiable functions. -/
-scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop (ℕ∞))
+scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
 
 open ContDiff
 
@@ -119,8 +119,12 @@ universe u uE uF uG uX
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G] {X : Type uX} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-  {s s₁ t u : Set E} {f f₁ : E → F} {g : F → G} {x x₀ : E} {c : F}
-  {p : E → FormalMultilinearSeries 𝕜 E F} {m n : WithTop (ℕ∞)}
+  {s s₁ t u : Set E} {f f₁ : E → F} {g : F → G} {x x₀ : E} {c : F} {m n : WithTop ℕ∞}
+  {p : E → FormalMultilinearSeries 𝕜 E F}
+
+/-! ### Smooth functions within a set around a point -/
+
+variable (𝕜)
 
 variable (𝕜) in
 /-- A function is continuously differentiable up to order `n` within a set `s` at a point `x` if
@@ -133,6 +137,9 @@ is not complete, but it is equivalent when the space is complete.
 
 For instance, a real function which is `C^m` on `(-1/m, 1/m)` for each natural `m`, but not
 better, is `C^∞` at `0` within `univ`.
+
+We take the exponent `n` in `WithTop ℕ∞` to allow for an extension to analytic functions in the
+future, but currently the notion is the same for `n = ∞` and `n = ω`.
 -/
 def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Prop :=
   match n with
@@ -481,7 +488,7 @@ admits continuous derivatives up to order `n` on a neighborhood of `x` in `s`.
 For `n = ∞`, we only require that this holds up to any finite order (where the neighborhood may
 depend on the finite order we consider).
 -/
-def ContDiffOn (n : WithTop (ℕ∞)) (f : E → F) (s : Set E) : Prop :=
+def ContDiffOn (n : WithTop ℕ∞) (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, ContDiffWithinAt 𝕜 n f s x
 
 theorem HasFTaylorSeriesUpToOn.contDiffOn {n : ℕ∞} {f' : E → FormalMultilinearSeries 𝕜 E F}
@@ -718,12 +725,12 @@ theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
     simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro k hk y hy
-    convert (Hdiff k (lt_of_lt_of_le (mod_cast hk) hm) y hy).hasFDerivWithinAt
+    convert (Hdiff k (lt_of_lt_of_le (mod_cast hk) (mod_cast hm)) y hy).hasFDerivWithinAt
   · intro k hk
-    exact Hcont k (le_trans (mod_cast hk) hm)
+    exact Hcont k (le_trans (mod_cast hk) (mod_cast hm))
 
 theorem contDiffOn_of_differentiableOn {n : ℕ∞}
-    (h : ∀ m : ℕ, (m : ℕ∞) ≤ n → DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s) :
+    (h : ∀ m : ℕ, m ≤ n → DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s) :
     ContDiffOn 𝕜 n f s :=
   contDiffOn_of_continuousOn_differentiableOn (fun m hm => (h m hm).continuousOn) fun m hm =>
     h m (le_of_lt hm)
@@ -785,8 +792,8 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedFDerivWithin {m : ℕ}
 
 theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔
-      (∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
-        ∀ m : ℕ, (m : ℕ∞) < n → DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s :=
+      (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
+        ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s :=
   ⟨fun h => ⟨fun _m hm => h.continuousOn_iteratedFDerivWithin (mod_cast hm) hs,
       fun _m hm => h.differentiableOn_iteratedFDerivWithin (mod_cast hm) hs⟩,
     fun h => contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
@@ -885,6 +892,13 @@ theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs
     (hn : 1 ≤ n) : ContinuousOn (fun x => fderiv 𝕜 f x) s :=
   ((contDiffOn_succ_iff_fderiv_of_isOpen hs).1
     (h.of_le (show 0 + (1 : WithTop ℕ∞) ≤ n from hn))).2.2.continuousOn
+
+/-- The following lemma will be removed when the definition of `C^ω` will be corrected. For now,
+it is only there as a convenient shortcut. -/
+theorem contDiffOn_infty_iff_contDiffOn_omega :
+    ContDiffOn 𝕜 ∞ f s ↔ ContDiffOn 𝕜 ω f s := by
+  have A (m : ℕ) : m ≤ ∞ := mod_cast le_top
+  simp [ContDiffOn, ContDiffWithinAt, hasFTaylorSeriesUpTo_top_iff, A]
 
 /-! ### Smooth functions at a point -/
 
@@ -1128,7 +1142,7 @@ theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
 /-- If `f` is `C^n` then its `m`-times iterated derivative is continuous for `m ≤ n`. -/
 theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : m ≤ n) (hf : ContDiff 𝕜 n f) :
     Continuous fun x => iteratedFDeriv 𝕜 m f x :=
-  (contDiff_iff_continuous_differentiable.1 (hf.of_le hm)).1 m le_rfl
+  (contDiff_iff_continuous_differentiable.mp (hf.of_le hm)).1 m le_rfl
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is differentiable for `m < n`. -/
 theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : ContDiff 𝕜 n f) :
@@ -1137,7 +1151,7 @@ theorem ContDiff.differentiable_iteratedFDeriv {m : ℕ} (hm : m < n) (hf : Cont
     (hf.of_le (ENat.add_one_natCast_le_withTop_of_lt hm))).2 m (mod_cast lt_add_one m)
 
 theorem contDiff_of_differentiable_iteratedFDeriv {n : ℕ∞}
-    (h : ∀ m : ℕ, (m : ℕ∞) ≤ n → Differentiable 𝕜 (iteratedFDeriv 𝕜 m f)) : ContDiff 𝕜 n f :=
+    (h : ∀ m : ℕ, m ≤ n → Differentiable 𝕜 (iteratedFDeriv 𝕜 m f)) : ContDiff 𝕜 n f :=
   contDiff_iff_continuous_differentiable.2
     ⟨fun m hm => (h m hm).continuous, fun m hm => h m (le_of_lt hm)⟩
 
