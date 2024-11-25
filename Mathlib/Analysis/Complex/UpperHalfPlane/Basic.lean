@@ -243,9 +243,9 @@ theorem denom_cocycle (x y : GL(2, ℝ)⁺) (z : ℍ) :
     denom (x * y) z = denom x (smulAux y z) * denom y z := by
   change _ = (_ * (_ / _) + _) * _
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, denom, num, Subgroup.coe_mul,
-    GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
-    Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
+  simp only [denom, Subgroup.coe_mul, Fin.isValue, Units.val_mul, mul_apply, Fin.sum_univ_succ,
+    Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one,
+    Complex.ofReal_add, Complex.ofReal_mul, num]
   ring
 
 theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux x (smulAux y z) := by
@@ -254,9 +254,9 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
   change _ / _ = (_ * (_ / _) + _) / _
   rw [denom_cocycle]
   field_simp [denom_ne_zero]
-  simp only [Matrix.mul_apply, dotProduct, Fin.sum_univ_succ, num, denom, Subgroup.coe_mul,
-    GeneralLinearGroup.coe_mul, Fintype.univ_ofSubsingleton, Fin.mk_zero, Finset.sum_singleton,
-    Fin.succ_zero_eq_one, Complex.ofReal_add, Complex.ofReal_mul]
+  simp only [num, Subgroup.coe_mul, Fin.isValue, Units.val_mul, mul_apply, Fin.sum_univ_succ,
+    Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, Fin.succ_zero_eq_one,
+    Complex.ofReal_add, Complex.ofReal_mul, denom]
   ring
 
 /-- The action of `GLPos 2 ℝ` on the upper half-plane by fractional linear transformations. -/
