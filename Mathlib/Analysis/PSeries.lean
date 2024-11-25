@@ -389,8 +389,7 @@ theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
   field_simp
   rw [div_le_div_iff₀ _ A]
   · linarith
-  · -- Porting note: was `nlinarith`
-    positivity
+  · positivity
 
 theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i ∈ Ioo k n, (i ^ 2 : α)⁻¹) ≤ 2 / (k + 1) :=
   calc
