@@ -109,7 +109,7 @@ section
 variable (C : Type u) [Category.{v} C]
 
 /-- A category `C` has the `w`-IPC property if the natural morphism
-`colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)` is an isomorpism for any
+`colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)` is an isomorphism for any
 family of functors `F i : I i ⥤ C` with `I i` `w`-small and filtered for all `i`. -/
 class IsIPC [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w} C] : Prop where
   /-- `colimitPointwiseProductToProductColimit F` is always an isomorphism. -/
