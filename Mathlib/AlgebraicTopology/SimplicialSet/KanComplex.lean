@@ -10,7 +10,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 # Kan complexes
 
 In this file we give the definition of Kan complexes.
-In `Mathlib/AlgebraicTopology/Quasicategory.lean`
+In `Mathlib/AlgebraicTopology/SimplicialSet/Quasicategory/Defs.lean`
 we show that every Kan complex is a quasicategory.
 
 ## TODO
