@@ -58,6 +58,7 @@ section localizationProps
 variable {R : Type u} [CommRing R] (S : Finset R) (hS : Ideal.span (α := R) S = ⊤)
   (hN : ∀ s : S, IsNoetherianRing (Away (M := R) s))
 
+include hS hN in
 /-- Let `R` be a ring, and `f i` a finite collection of elements of `R` generating the unit ideal.
 If the localization of `R` at each `f i` is noetherian, so is `R`.
 
@@ -95,7 +96,7 @@ variable {X : Scheme}
 /-- If a scheme `X` has a cover by affine opens whose sections are Noetherian rings,
 then `X` is locally Noetherian. -/
 theorem isLocallyNoetherian_of_affine_cover {ι} {S : ι → X.affineOpens}
-    (hS : (⨆ i, S i : Opens X) = ⊤)
+    (hS : (⨆ i, S i : X.Opens) = ⊤)
     (hS' : ∀ i, IsNoetherianRing Γ(X, S i)) : IsLocallyNoetherian X := by
   refine ⟨fun U => ?_⟩
   induction U using of_affine_open_cover S hS with
@@ -116,7 +117,7 @@ are noetherian rings.
 
 See [Har77], Proposition II.3.2. -/
 theorem isLocallyNoetherian_iff_of_iSup_eq_top {ι} {S : ι → X.affineOpens}
-    (hS : (⨆ i, S i : Opens X) = ⊤) :
+    (hS : (⨆ i, S i : X.Opens) = ⊤) :
     IsLocallyNoetherian X ↔ ∀ i, IsNoetherianRing Γ(X, S i) :=
   ⟨fun _ i => IsLocallyNoetherian.component_noetherian (S i),
    isLocallyNoetherian_of_affine_cover hS⟩
@@ -171,7 +172,7 @@ theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
   · rw [isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰.affineRefinement.openCover)]
     intro h i
     exact @isNoetherianRing_of_ringEquiv _ _ _ _
-      (IsOpenImmersion.ΓIsoTop (Scheme.OpenCover.map _ i.2)).symm.commRingCatIsoToRingEquiv
+      (IsOpenImmersion.ΓIsoTop (Scheme.Cover.map _ i.2)).symm.commRingCatIsoToRingEquiv
       (IsLocallyNoetherian.component_noetherian ⟨_, isAffineOpen_opensRange _⟩)
 
 /-- If `R` is a noetherian ring, `Spec R` is a noetherian topological space. -/
@@ -183,11 +184,11 @@ lemma noetherianSpace_of_isAffine [IsAffine X] [IsNoetherianRing Γ(X, ⊤)] :
     NoetherianSpace X :=
   (noetherianSpace_iff_of_homeomorph X.isoSpec.inv.homeomorph).mp inferInstance
 
-lemma noetherianSpace_of_isAffineOpen (U : Opens X) (hU : IsAffineOpen U)
+lemma noetherianSpace_of_isAffineOpen (U : X.Opens) (hU : IsAffineOpen U)
     [IsNoetherianRing Γ(X, U)] :
     NoetherianSpace U := by
-  have : IsNoetherianRing Γ(X ∣_ᵤ U, ⊤) := isNoetherianRing_of_ringEquiv _
-    (X.restrictFunctorΓ.app (op U)).symm.commRingCatIsoToRingEquiv
+  have : IsNoetherianRing Γ(U, ⊤) := isNoetherianRing_of_ringEquiv _
+    (Scheme.restrictFunctorΓ.app (op U)).symm.commRingCatIsoToRingEquiv
   exact @noetherianSpace_of_isAffine _ hU _
 
 /-- Any open immersion `Z ⟶ X` with `X` locally Noetherian is quasi-compact.
@@ -198,7 +199,7 @@ instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
   apply (quasiCompact_iff_forall_affine f).mpr
   intro U hU
   rw [Opens.map_coe, ← Set.preimage_inter_range]
-  apply f.openEmbedding.toInducing.isCompact_preimage'
+  apply f.isOpenEmbedding.isInducing.isCompact_preimage'
   · apply (noetherianSpace_set_iff _).mp
     · convert noetherianSpace_of_isAffineOpen U hU
       apply IsLocallyNoetherian.component_noetherian ⟨U, hU⟩
@@ -212,7 +213,7 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
     QuasiSeparatedSpace X := by
   apply (quasiSeparatedSpace_iff_affine X).mpr
   intro U V
-  have hInd := U.2.fromSpec.openEmbedding.toInducing
+  have hInd := U.2.fromSpec.isOpenEmbedding.isInducing
   apply (hInd.isCompact_preimage_iff ?_).mp
   · rw [← Set.preimage_inter_range, IsAffineOpen.range_fromSpec, Set.inter_comm]
     apply hInd.isCompact_preimage'
@@ -232,7 +233,7 @@ class IsNoetherian (X : Scheme) extends IsLocallyNoetherian X, CompactSpace X : 
 /-- A scheme is Noetherian if and only if it is covered by finitely many affine opens whose
 sections are noetherian rings. -/
 theorem isNoetherian_iff_of_finite_iSup_eq_top {ι} [Finite ι] {S : ι → X.affineOpens}
-    (hS : (⨆ i, S i : Opens X) = ⊤) :
+    (hS : (⨆ i, S i : X.Opens) = ⊤) :
     IsNoetherian X ↔ ∀ i, IsNoetherianRing Γ(X, S i) := by
   constructor
   · intro h i
@@ -249,7 +250,7 @@ theorem isNoetherian_iff_of_finite_iSup_eq_top {ι} [Finite ι] {S : ι → X.af
       convert CompactSpace.isCompact_univ
       have : NoetherianSpace (S i) := by
         apply noetherianSpace_of_isAffineOpen (S i).1 (S i).2
-      apply NoetherianSpace.compactSpace
+      apply NoetherianSpace.compactSpace (S i)
 
 /-- A version of `isNoetherian_iff_of_finite_iSup_eq_top` using `Scheme.OpenCover`. -/
 theorem isNoetherian_iff_of_finite_affine_openCover {𝒰 : Scheme.OpenCover.{v, u} X}
@@ -273,7 +274,7 @@ instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
   apply TopologicalSpace.noetherian_univ_iff.mp
   let 𝒰 := X.affineCover.finiteSubcover
   rw [← 𝒰.iUnion_range]
-  suffices ∀ i : 𝒰.J, NoetherianSpace (Set.range <| (𝒰.map i).val.base) by
+  suffices ∀ i : 𝒰.J, NoetherianSpace (Set.range <| (𝒰.map i).base) by
     apply NoetherianSpace.iUnion
   intro i
   have : IsAffine (𝒰.obj i) := by

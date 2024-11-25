@@ -33,12 +33,11 @@ instance {x y : FundamentalGroupoid PUnit} : Subsingleton (x ⟶ y) := by
   apply Quotient.instSubsingletonQuotient
 
 /-- Equivalence of groupoids between fundamental groupoid of punit and punit -/
-def punitEquivDiscretePUnit : FundamentalGroupoid PUnit.{u + 1} ≌ Discrete PUnit.{v + 1} :=
-  CategoryTheory.Equivalence.mk
-    (Functor.star _)
-    ((CategoryTheory.Functor.const _).obj ⟨PUnit.unit⟩)
-    -- Porting note: was `by decide`
-    (NatIso.ofComponents fun _ => eqToIso (by simp))
-    (Functor.punitExt _ _)
+@[simps]
+def punitEquivDiscretePUnit : FundamentalGroupoid PUnit.{u + 1} ≌ Discrete PUnit.{v + 1} where
+  functor := Functor.star _
+  inverse := (CategoryTheory.Functor.const _).obj ⟨PUnit.unit⟩
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+  counitIso := Iso.refl _
 
 end FundamentalGroupoid

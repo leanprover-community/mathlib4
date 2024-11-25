@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Polynomial.Mirror
-import Mathlib.Analysis.Complex.Polynomial
+import Mathlib.Algebra.Ring.Regular
+import Mathlib.Data.Int.Order.Units
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Unit Trinomials
@@ -22,6 +24,7 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
 
 -/
 
+assert_not_exists TopologicalSpace
 
 namespace Polynomial
 
@@ -127,7 +130,7 @@ theorem not_isUnit (hp : p.IsUnitTrinomial) : ¬IsUnit p := by
       ((trinomial_natDegree hkm hmn w.ne_zero).symm.trans
         (natDegree_eq_of_degree_eq_some (degree_eq_zero_of_isUnit h)))
 
-theorem card_support_eq_three (hp : p.IsUnitTrinomial) : p.support.card = 3 := by
+theorem card_support_eq_three (hp : p.IsUnitTrinomial) : #p.support = 3 := by
   obtain ⟨k, m, n, hkm, hmn, u, v, w, rfl⟩ := hp
   exact card_support_trinomial hkm hmn u.ne_zero v.ne_zero w.ne_zero
 
@@ -154,7 +157,7 @@ theorem trailingCoeff_isUnit (hp : p.IsUnitTrinomial) : IsUnit p.trailingCoeff :
 end IsUnitTrinomial
 
 theorem isUnitTrinomial_iff :
-    p.IsUnitTrinomial ↔ p.support.card = 3 ∧ ∀ k ∈ p.support, IsUnit (p.coeff k) := by
+    p.IsUnitTrinomial ↔ #p.support = 3 ∧ ∀ k ∈ p.support, IsUnit (p.coeff k) := by
   refine ⟨fun hp => ⟨hp.card_support_eq_three, fun k => hp.coeff_isUnit⟩, fun hp => ?_⟩
   obtain ⟨k, m, n, hkm, hmn, x, y, z, hx, hy, hz, rfl⟩ := card_support_eq_three.mp hp.1
   rw [support_trinomial hkm hmn hx hy hz] at hp
@@ -177,7 +180,7 @@ theorem isUnitTrinomial_iff' :
   refine ⟨?_, fun hp => ?_⟩
   · rintro ⟨k, m, n, hkm, hmn, u, v, w, rfl⟩
     rw [sum_def, trinomial_support hkm hmn u.ne_zero v.ne_zero w.ne_zero,
-      sum_insert (mt mem_insert.mp (not_or_of_not hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
+      sum_insert (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
       sum_insert (mt mem_singleton.mp hmn.ne), sum_singleton, trinomial_leading_coeff' hkm hmn,
       trinomial_middle_coeff hkm hmn, trinomial_trailing_coeff' hkm hmn]
     simp_rw [← Units.val_pow_eq_pow_val, Int.units_sq, Units.val_one]
@@ -320,30 +323,6 @@ theorem irreducible_of_isCoprime (hp : p.IsUnitTrinomial) (h : IsCoprime p p.mir
     Irreducible p :=
   irreducible_of_coprime hp fun _ => h.isUnit_of_dvd'
 
-/-- A unit trinomial is irreducible if it has no complex roots in common with its mirror -/
-theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
-    (h : ∀ z : ℂ, ¬(aeval z p = 0 ∧ aeval z (mirror p) = 0)) : Irreducible p := by
-  refine hp.irreducible_of_coprime fun q hq hq' => ?_
-  suffices ¬0 < q.natDegree by
-    rcases hq with ⟨p, rfl⟩
-    replace hp := hp.leadingCoeff_isUnit
-    rw [leadingCoeff_mul] at hp
-    replace hp := isUnit_of_mul_isUnit_left hp
-    rw [not_lt, Nat.le_zero] at this
-    rwa [eq_C_of_natDegree_eq_zero this, isUnit_C, ← this]
-  intro hq''
-  rw [natDegree_pos_iff_degree_pos] at hq''
-  rw [← degree_map_eq_of_injective (algebraMap ℤ ℂ).injective_int] at hq''
-  cases' Complex.exists_root hq'' with z hz
-  rw [IsRoot, eval_map, ← aeval_def] at hz
-  refine h z ⟨?_, ?_⟩
-  · cases' hq with g' hg'
-    rw [hg', aeval_mul, hz, zero_mul]
-  · cases' hq' with g' hg'
-    rw [hg', aeval_mul, hz, zero_mul]
-
--- TODO: Develop more theory (e.g., it suffices to check that `aeval z p ≠ 0` for `z = 0`
--- and `z` a root of unity)
 end IsUnitTrinomial
 
 end Polynomial

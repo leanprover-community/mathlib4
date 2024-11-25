@@ -104,7 +104,7 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) :=
-    fun z hz =>
+    fun _ hz =>
       have zero : D1 0 = D2 0 := by simp only [map_zero]
       have smul : ∀ (r : R), ∀ {x : L}, D1 x = D2 x → D1 (r • x) = D2 (r • x) :=
         fun _ _ hx => by simp only [map_smul, hx]
@@ -119,6 +119,30 @@ are equal on the whole Lie algebra. -/
 theorem ext_of_lieSpan_eq_top (s : Set L) (hs : LieSubalgebra.lieSpan R L s = ⊤)
     (h : Set.EqOn D1 D2 s) : D1 = D2 :=
   ext fun _ => eqOn_lieSpan h <| hs.symm ▸ trivial
+
+section
+
+open Finset Nat
+
+/-- The general Leibniz rule for Lie derivatives. -/
+theorem iterate_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
+    D^[n] ⁅a, b⁆ = ∑ ij in antidiagonal n, choose n ij.1 • ⁅D^[ij.1] a, D^[ij.2] b⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [sum_antidiagonal_choose_succ_nsmul (M := L) (fun i j => ⁅D^[i] a, D^[j] b⁆) n]
+    simp only [Function.iterate_succ_apply', ih, map_sum, map_nsmul, apply_lie_eq_add, smul_add,
+      sum_add_distrib, add_right_inj]
+    refine sum_congr rfl fun ⟨i, j⟩ hij ↦ ?_
+    rw [n.choose_symm_of_eq_add (mem_antidiagonal.1 hij).symm]
+
+/-- Alternate version of the general Leibniz rule for Lie derivatives. -/
+theorem iterate_apply_lie' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
+    D^[n] ⁅a, b⁆ = ∑ i in range (n + 1), n.choose i • ⁅D^[i] a, D^[n - i] b⁆ := by
+  rw [iterate_apply_lie D n a b]
+  exact sum_antidiagonal_eq_sum_range_succ (fun i j ↦ n.choose i • ⁅D^[i] a, D^[j] b⁆) n
+
+end
 
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
@@ -267,7 +291,7 @@ instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
       LinearMap.sub_apply, LinearMap.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
     abel)
 
-variable (D : LieDerivation R L L) {D1 D2 : LieDerivation R L L}
+variable {D1 D2 : LieDerivation R L L}
 
 @[simp]
 lemma commutator_coe_linear_map : ↑⁅D1, D2⁆ = ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ :=

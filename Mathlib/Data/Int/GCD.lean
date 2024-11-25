@@ -3,11 +3,13 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupWithZero.Semiconj
+import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Order.Bounds.Basic
+import Mathlib.Data.Set.Operations
+import Mathlib.Order.Basic
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -221,7 +223,7 @@ theorem gcd_eq_zero_iff {i j : ℤ} : gcd i j = 0 ↔ i = 0 ∧ j = 0 := by
   rw [gcd, Nat.gcd_eq_zero_iff, natAbs_eq_zero, natAbs_eq_zero]
 
 theorem gcd_pos_iff {i j : ℤ} : 0 < gcd i j ↔ i ≠ 0 ∨ j ≠ 0 :=
-  pos_iff_ne_zero.trans <| gcd_eq_zero_iff.not.trans not_and_or
+  Nat.pos_iff_ne_zero.trans <| gcd_eq_zero_iff.not.trans not_and_or
 
 theorem gcd_div {i j k : ℤ} (H1 : k ∣ i) (H2 : k ∣ j) :
     gcd (i / k) (j / k) = gcd i j / natAbs k := by
@@ -322,7 +324,7 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
     IsLeast { n : ℕ | 0 < n ∧ ∃ x y : ℤ, ↑n = a * x + b * y } (a.gcd b) := by
   simp_rw [← gcd_dvd_iff]
   constructor
-  · simpa [and_true_iff, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
+  · simpa [and_true, dvd_refl, Set.mem_setOf_eq] using gcd_pos_of_ne_zero_left b ha
   · simp only [lowerBounds, and_imp, Set.mem_setOf_eq]
     exact fun n hn_pos hn => Nat.le_of_dvd hn_pos hn
 

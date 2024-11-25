@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury Kudriashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudriashov, Yaël Dillies
+Authors: Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Order.Closure
@@ -147,6 +147,11 @@ theorem IsLinearMap.image_convexHull {f : E → F} (hf : IsLinearMap 𝕜 f) (s 
 theorem LinearMap.image_convexHull (f : E →ₗ[𝕜] F) (s : Set E) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=
   f.isLinear.image_convexHull s
+
+theorem convexHull_add_subset {s t : Set E} :
+    convexHull 𝕜 (s + t) ⊆ convexHull 𝕜 s + convexHull 𝕜 t :=
+  convexHull_min (add_subset_add (subset_convexHull _ _) (subset_convexHull _ _))
+    (Convex.add (convex_convexHull 𝕜 s) (convex_convexHull 𝕜 t))
 
 end AddCommMonoid
 

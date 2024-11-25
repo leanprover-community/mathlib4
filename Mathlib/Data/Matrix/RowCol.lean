@@ -3,7 +3,7 @@ Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.ConjTranspose
 
 /-!
 # Row and column matrices
@@ -34,7 +34,7 @@ To get a column matrix with exactly one column, `Matrix.col (Fin 1) u` is the ca
 def col (ι : Type*) (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 
--- TODO: set as an equation lemma for `col`, see mathlib4#3024
+-- TODO: set as an equation lemma for `col`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem col_apply {ι : Type*} (w : m → α) (i) (j : ι) : col ι w i j = w i :=
   rfl
@@ -49,20 +49,21 @@ def row (ι : Type*) (v : n → α) : Matrix ι n α :=
 
 variable {ι : Type*}
 
--- TODO: set as an equation lemma for `row`, see mathlib4#3024
+-- TODO: set as an equation lemma for `row`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem row_apply (v : n → α) (i : ι) (j) : row ι v i j = v j :=
   rfl
 
-theorem col_injective [Inhabited ι] : Function.Injective (col ι : (m → α) → Matrix m ι α) :=
-  fun _x _y h => funext fun i => congr_fun₂ h i default
+theorem col_injective [Nonempty ι] : Function.Injective (col ι : (m → α) → Matrix m ι α) := by
+  inhabit ι
+  exact fun _x _y h => funext fun i => congr_fun₂ h i default
 
-@[simp] theorem col_inj [Inhabited ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
+@[simp] theorem col_inj [Nonempty ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
   col_injective.eq_iff
 
 @[simp] theorem col_zero [Zero α] : col ι (0 : m → α) = 0 := rfl
 
-@[simp] theorem col_eq_zero [Zero α] [Inhabited ι] (v : m → α) : col ι v = 0 ↔ v = 0 := col_inj
+@[simp] theorem col_eq_zero [Zero α] [Nonempty ι] (v : m → α) : col ι v = 0 ↔ v = 0 := col_inj
 
 @[simp]
 theorem col_add [Add α] (v w : m → α) : col ι (v + w) = col ι v + col ι w := by
@@ -74,15 +75,16 @@ theorem col_smul [SMul R α] (x : R) (v : m → α) : col ι (x • v) = x • c
   ext
   rfl
 
-theorem row_injective [Inhabited ι] : Function.Injective (row ι : (n → α) → Matrix ι n α) :=
-  fun _x _y h => funext fun j => congr_fun₂ h default j
+theorem row_injective [Nonempty ι] : Function.Injective (row ι : (n → α) → Matrix ι n α) := by
+  inhabit ι
+  exact fun _x _y h => funext fun j => congr_fun₂ h default j
 
-@[simp] theorem row_inj [Inhabited ι] {v w : n → α} : row ι v = row ι w ↔ v = w :=
+@[simp] theorem row_inj [Nonempty ι] {v w : n → α} : row ι v = row ι w ↔ v = w :=
   row_injective.eq_iff
 
 @[simp] theorem row_zero [Zero α] : row ι (0 : n → α) = 0 := rfl
 
-@[simp] theorem row_eq_zero [Zero α] [Inhabited ι] (v : n → α) : row ι v = 0 ↔ v = 0 := row_inj
+@[simp] theorem row_eq_zero [Zero α] [Nonempty ι] (v : n → α) : row ι v = 0 ↔ v = 0 := row_inj
 
 @[simp]
 theorem row_add [Add α] (v w : m → α) : row ι (v + w) = row ι v + row ι w := by
@@ -132,6 +134,16 @@ theorem col_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α
 theorem row_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
     Matrix.row ι (M *ᵥ v) = (M * Matrix.col ι v)ᵀ := by
   ext
+  rfl
+
+theorem row_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α]  (v w : m → α) :
+    Matrix.row ι v *ᵥ w = Function.const _ (v ⬝ᵥ w) := rfl
+
+theorem mulVec_col_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
+    v ᵥ* Matrix.col ι w = Function.const _ (v ⬝ᵥ w) := rfl
+
+theorem row_mul_col [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
+    row ι v * col ι w = of fun _ _ => v ⬝ᵥ w :=
   rfl
 
 @[simp]

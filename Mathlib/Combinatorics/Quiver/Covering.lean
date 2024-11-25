@@ -135,10 +135,10 @@ theorem Prefunctor.symmetrifyStar (u : U) :
     φ.symmetrify.star u =
       (Quiver.symmetrifyStar _).symm ∘ Sum.map (φ.star u) (φ.costar u) ∘
         Quiver.symmetrifyStar u := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- porting note (#10745): was `simp [Quiver.symmetrifyStar]`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [Quiver.symmetrifyStar]`
     simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
@@ -147,10 +147,10 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     φ.symmetrify.costar u =
       (Quiver.symmetrifyCostar _).symm ∘
         Sum.map (φ.costar u) (φ.star u) ∘ Quiver.symmetrifyCostar u := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- porting note (#10745): was `simp [Quiver.symmetrifyCostar]`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [Quiver.symmetrifyCostar]`
     simp only [Quiver.symmetrifyCostar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
@@ -250,7 +250,7 @@ end Prefunctor.IsCovering
 
 section HasInvolutiveReverse
 
-variable [HasInvolutiveReverse U] [HasInvolutiveReverse V] [Prefunctor.MapReverse φ]
+variable [HasInvolutiveReverse U] [HasInvolutiveReverse V]
 
 /-- In a quiver with involutive inverses, the star and costar at every vertex are equivalent.
 This map is induced by `Quiver.reverse`. -/
@@ -271,13 +271,15 @@ theorem Quiver.starEquivCostar_symm_apply {u v : U} (e : u ⟶ v) :
     (Quiver.starEquivCostar v).symm (Quiver.Costar.mk e) = Quiver.Star.mk (reverse e) :=
   rfl
 
+variable [Prefunctor.MapReverse φ]
+
 theorem Prefunctor.costar_conj_star (u : U) :
     φ.costar u = Quiver.starEquivCostar (φ.obj u) ∘ φ.star u ∘ (Quiver.starEquivCostar u).symm := by
   ext ⟨v, f⟩ <;> simp
 
 theorem Prefunctor.bijective_costar_iff_bijective_star (u : U) :
     Bijective (φ.costar u) ↔ Bijective (φ.star u) := by
-  rw [Prefunctor.costar_conj_star, EquivLike.comp_bijective, EquivLike.bijective_comp]
+  rw [Prefunctor.costar_conj_star φ, EquivLike.comp_bijective, EquivLike.bijective_comp]
 
 theorem Prefunctor.isCovering_of_bijective_star (h : ∀ u, Bijective (φ.star u)) : φ.IsCovering :=
   ⟨h, fun u => (φ.bijective_costar_iff_bijective_star u).2 (h u)⟩

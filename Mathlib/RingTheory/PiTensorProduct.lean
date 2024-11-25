@@ -177,8 +177,8 @@ lemma algebraMap_apply (r : R') (i : ι) [DecidableEq ι] :
   change r • tprod R 1 = _
   have : Pi.mulSingle i (algebraMap R' (A i) r) = update (fun i ↦ 1) i (r • 1) := by
     rw [Algebra.algebraMap_eq_smul_one]; rfl
-  rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_smul, update_eq_self, smul_one_smul,
-    Pi.one_def]
+  rw [this, ← smul_one_smul R r (1 : A i), MultilinearMap.map_update_smul, update_eq_self,
+    smul_one_smul, Pi.one_def]
 
 /--
 The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
@@ -187,9 +187,9 @@ The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
   toFun a := tprod R (MonoidHom.mulSingle _ i a)
   map_one' := by simp only [_root_.map_one]; rfl
-  map_mul' a a' := by simp
+  map_mul' a a' := by simp [_root_.map_mul]
   map_zero' := MultilinearMap.map_update_zero _ _ _
-  map_add' _ _ := MultilinearMap.map_add _ _ _ _ _
+  map_add' _ _ := MultilinearMap.map_update_add _ _ _ _ _
   commutes' r := show tprodCoeff R _ _ = r • tprodCoeff R _ _ by
     rw [Algebra.algebraMap_eq_smul_one]
     erw [smul_tprodCoeff]
@@ -208,7 +208,7 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
 @[simp] lemma tprod_noncommProd {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) (hx) :
     tprod R (s.noncommProd x hx) = s.noncommProd (fun k => tprod R (x k))
       (hx.imp fun _ _ => Commute.tprod) :=
-  Finset.noncommProd_map s x _ (tprodMonoidHom R)
+  Finset.map_noncommProd s x _ (tprodMonoidHom R)
 
 /-- To show two algebra morphisms from finite tensor products are equal, it suffices to show that
 they agree on elements of the form $1 ⊗ ⋯ ⊗ a ⊗ 1 ⊗ ⋯$. -/

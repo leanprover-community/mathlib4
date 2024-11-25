@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tim Baumann, Stephen Morgan, Scott Morrison
+Authors: Tim Baumann, Stephen Morgan, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Category.Basic
 
@@ -121,9 +121,6 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
     (f : P → (X ⟶ Y)) (g : ¬P → (X ⟶ Y)) :
     F.map (if h : P then f h else g h) = if h : P then F.map (f h) else F.map (g h) := by
   aesop_cat
-
--- Porting note: `to_prefunctor_obj` and `to_prefunctor_map` are now tautologies,
--- so have not been ported.
 
 @[simp]
 theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :

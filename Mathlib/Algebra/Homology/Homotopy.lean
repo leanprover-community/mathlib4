@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
@@ -15,8 +15,6 @@ We define chain homotopies, and prove that homotopic chain maps induce the same 
 
 
 universe v u
-
-open scoped Classical
 
 noncomputable section
 
@@ -103,7 +101,7 @@ theorem dNext_nat (C D : ChainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D
   dsimp [dNext]
   cases i
   · simp only [shape, ChainComplex.next_nat_zero, ComplexShape.down_Rel, Nat.one_ne_zero,
-      not_false_iff, zero_comp]
+      not_false_iff, zero_comp, reduceCtorEq]
   · congr <;> simp
 
 theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶ D.X j) :
@@ -111,10 +109,10 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
   dsimp [prevD]
   cases i
   · simp only [shape, CochainComplex.prev_nat_zero, ComplexShape.up_Rel, Nat.one_ne_zero,
-      not_false_iff, comp_zero]
+      not_false_iff, comp_zero, reduceCtorEq]
   · congr <;> simp
 
--- Porting note(#5171): removed @[has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[has_nonempty_instance]
 /-- A homotopy `h` between chain maps `f` and `g` consists of components `h i j : C.X i ⟶ D.X j`
 which are zero unless `c.Rel j i`, satisfying the homotopy condition.
 -/
@@ -133,11 +131,11 @@ namespace Homotopy
 def equivSubZero : Homotopy f g ≃ Homotopy (f - g) 0 where
   toFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun i j w => h.zero _ _ w
+      zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simp [h.comm] }
   invFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun i j w => h.zero _ _ w
+      zero := fun _ _ w => h.zero _ _ w
       comm := fun i => by simpa [sub_eq_iff_eq_add] using h.comm i }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
@@ -159,7 +157,7 @@ def symm {f g : C ⟶ D} (h : Homotopy f g) : Homotopy g f where
   hom := -h.hom
   zero i j w := by rw [Pi.neg_apply, Pi.neg_apply, h.zero i j w, neg_zero]
   comm i := by
-    rw [AddMonoidHom.map_neg, AddMonoidHom.map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_self,
+    rw [AddMonoidHom.map_neg, AddMonoidHom.map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_cancel,
       zero_add]
 
 /-- homotopy is a transitive relation. -/
@@ -250,6 +248,7 @@ def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
     rw [dNext_eq hom hij, prevD_eq hom hij, Preadditive.comp_add, Preadditive.add_comp, eq1, eq2,
       add_zero, zero_add, assoc]
 
+open Classical in
 /-- Variant of `nullHomotopicMap` where the input consists only of the
 relevant maps `C_i ⟶ D_j` such that `c.Rel j i`. -/
 def nullHomotopicMap' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : C ⟶ D :=
@@ -329,6 +328,7 @@ def nullHomotopy (hom : ∀ i j, C.X i ⟶ D.X j) (zero : ∀ i j, ¬c.Rel j i �
       rw [HomologicalComplex.zero_f_apply, add_zero]
       rfl }
 
+open Classical in
 /-- Homotopy to zero for maps constructed with `nullHomotopicMap'` -/
 @[simps!]
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by
@@ -491,7 +491,7 @@ def mkInductiveAux₂ :
       one comm_one succ n
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
 
--- Porting note(#11647): during the port we marked these lemmas
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas
 -- with `@[eqns]` to emulate the old Lean 3 behaviour.
 
 @[simp] theorem mkInductiveAux₂_zero :
@@ -620,7 +620,7 @@ def mkCoinductiveAux₂ :
     let I := mkCoinductiveAux₁ e zero one comm_one succ n
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
 
--- Porting note (#11647): during the port we marked these lemmas with `@[eqns]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas with `@[eqns]`
 -- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem mkCoinductiveAux₂_zero :

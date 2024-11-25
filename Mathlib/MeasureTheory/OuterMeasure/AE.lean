@@ -85,7 +85,7 @@ theorem measure_zero_iff_ae_nmem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ, a �
   compl_mem_ae_iff.symm
 
 theorem ae_of_all {p : α → Prop} (μ : F) : (∀ a, p a) → ∀ᵐ a ∂μ, p a :=
-  eventually_of_forall
+  Eventually.of_forall
 
 instance instCountableInterFilter : CountableInterFilter (ae μ) := by
   unfold ae; infer_instance
@@ -106,14 +106,24 @@ theorem ae_ball_iff {ι : Type*} {S : Set ι} (hS : S.Countable) {p : α → ∀
     (∀ᵐ x ∂μ, ∀ i (hi : i ∈ S), p x i hi) ↔ ∀ i (hi : i ∈ S), ∀ᵐ x ∂μ, p x i hi :=
   eventually_countable_ball hS
 
-theorem ae_eq_refl (f : α → β) : f =ᵐ[μ] f :=
-  EventuallyEq.rfl
+lemma ae_eq_refl (f : α → β) : f =ᵐ[μ] f := EventuallyEq.rfl
+lemma ae_eq_rfl {f : α → β} : f =ᵐ[μ] f := EventuallyEq.rfl
+lemma ae_eq_comm {f g : α → β} : f =ᵐ[μ] g ↔ g =ᵐ[μ] f := eventuallyEq_comm
 
 theorem ae_eq_symm {f g : α → β} (h : f =ᵐ[μ] g) : g =ᵐ[μ] f :=
   h.symm
 
 theorem ae_eq_trans {f g h : α → β} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ] h) : f =ᵐ[μ] h :=
   h₁.trans h₂
+
+@[simp] lemma ae_eq_top  : ae μ = ⊤ ↔ ∀ a, μ {a} ≠ 0 := by
+  simp only [Filter.ext_iff, mem_ae_iff, mem_top, ne_eq]
+  refine ⟨fun h a ha ↦ by simpa [ha] using (h {a}ᶜ).1, fun h s ↦ ⟨fun hs ↦ ?_, ?_⟩⟩
+  · rw [← compl_empty_iff, ← not_nonempty_iff_eq_empty]
+    rintro ⟨a, ha⟩
+    exact h _ <| measure_mono_null (singleton_subset_iff.2 ha) hs
+  · rintro rfl
+    simp
 
 theorem ae_le_of_ae_lt {β : Type*} [Preorder β] {f g : α → β} (h : ∀ᵐ x ∂μ, f x < g x) :
     f ≤ᵐ[μ] g :=

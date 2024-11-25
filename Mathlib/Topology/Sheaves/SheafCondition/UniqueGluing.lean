@@ -17,12 +17,12 @@ functor `C ⥤ Type` preserves limits and reflects isomorphisms. The usual categ
 structures, such as `MonCat`, `AddCommGrp`, `RingCat`, `CommRingCat` etc. are all examples of
 this kind of category.
 
-A presheaf `F : presheaf C X` satisfies the sheaf condition if and only if, for every
+A presheaf `F : Presheaf C X` satisfies the sheaf condition if and only if, for every
 compatible family of sections `sf : Π i : ι, F.obj (op (U i))`, there exists a unique gluing
-`s : F.obj (op (supr U))`.
+`s : F.obj (op (iSup U))`.
 
 Here, the family `sf` is called compatible, if for all `i j : ι`, the restrictions of `sf i`
-and `sf j` to `U i ⊓ U j` agree. A section `s : F.obj (op (supr U))` is a gluing for the
+and `sf j` to `U i ⊓ U j` agree. A section `s : F.obj (op (iSup U))` is a gluing for the
 family `sf`, if `s` restricts to `sf i` on `U i` for all `i : ι`
 
 We show that the sheaf condition in terms of unique gluings is equivalent to the definition
@@ -65,9 +65,9 @@ def IsGluing (sf : ∀ i : ι, F.obj (op (U i))) (s : F.obj (op (iSup U))) : Pro
   ∀ i : ι, F.map (Opens.leSupr U i).op s = sf i
 
 /--
-The sheaf condition in terms of unique gluings. A presheaf `F : presheaf C X` satisfies this sheaf
+The sheaf condition in terms of unique gluings. A presheaf `F : Presheaf C X` satisfies this sheaf
 condition if and only if, for every compatible family of sections `sf : Π i : ι, F.obj (op (U i))`,
-there exists a unique gluing `s : F.obj (op (supr U))`.
+there exists a unique gluing `s : F.obj (op (iSup U))`.
 
 We prove this to be equivalent to the usual one below in
 `TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluing`
@@ -138,7 +138,7 @@ section
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable [HasLimits C] [(forget C).ReflectsIsomorphisms] [PreservesLimits (forget C)]
-variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
+variable {X : TopCat.{v}} (F : Presheaf C X)
 
 /-- For presheaves valued in a concrete category, whose forgetful functor reflects isomorphisms and
 preserves limits, the sheaf condition in terms of unique gluings is equivalent to the usual one.
@@ -238,35 +238,6 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
       any_goals exact h₂
 
 end
-
-theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCat.{u})
-    {U V W UW VW : Opens X} (e : W ≤ U ⊔ V) (x) (y : F.1.obj (op W))
-    (h₁ : UW = U ⊓ W) (h₂ : VW = V ⊓ W) :
-    F.1.map (homOfLE e).op ((F.objSupIsoProdEqLocus U V).inv x) = y ↔
-    F.1.map (homOfLE (h₁ ▸ inf_le_left : UW ≤ U)).op x.1.1 =
-      F.1.map (homOfLE <| h₁ ▸ inf_le_right).op y ∧
-    F.1.map (homOfLE (h₂ ▸ inf_le_left : VW ≤ V)).op x.1.2 =
-      F.1.map (homOfLE <| h₂ ▸ inf_le_right).op y := by
-  subst h₁ h₂
-  constructor
-  · rintro rfl
-    rw [← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-    -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` #8386
-    repeat rw [← comp_apply]
-    simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp, and_self]
-  · rintro ⟨e₁, e₂⟩
-    refine F.eq_of_locally_eq₂
-      (homOfLE (inf_le_right : U ⊓ W ≤ W)) (homOfLE (inf_le_right : V ⊓ W ≤ W)) ?_ _ _ ?_ ?_
-    · rw [← inf_sup_right]
-      exact le_inf e le_rfl
-    · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
-      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` #8386
-      repeat rw [← comp_apply]
-      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
-    · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
-      -- `simp` doesn't see through the type equality of objects in `CommRingCat`, so use `rw` #8386
-      repeat rw [← comp_apply]
-      simp only [← Functor.map_comp, ← op_comp, Category.assoc, homOfLE_comp]
 
 end Sheaf
 

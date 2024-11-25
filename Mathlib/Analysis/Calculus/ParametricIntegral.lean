@@ -140,7 +140,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
         gcongr; exact (F' a).le_opNorm _
       _ ≤ b a + ‖F' a‖ := ?_
     simp only [← div_eq_inv_mul]
-    apply_rules [add_le_add, div_le_of_nonneg_of_le_mul] <;> first | rfl | positivity
+    apply_rules [add_le_add, div_le_of_le_mul₀] <;> first | rfl | positivity
   · exact b_int.add hF'_int.norm
   · apply h_diff.mono
     intro a ha
@@ -273,8 +273,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F' : α → E} (ε_pos : 0 
       hF'_int
   refine ⟨hF'_int, ?_⟩
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE]
-    exact hasDerivAt_const x₀ 0
+  · simpa [integral, hE] using hasDerivAt_const x₀ 0
   simp_rw [hasDerivAt_iff_hasFDerivAt] at h_diff ⊢
   simpa only [(· ∘ ·), ContinuousLinearMap.integral_comp_comm _ hF'_int] using key
 

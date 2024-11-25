@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 
 /-!
@@ -188,7 +188,7 @@ theorem IsUniversalColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone 
     [PreservesLimitsOfShape WalkingCospan G] [ReflectsColimitsOfShape J G]
     (hc : IsUniversalColimit (G.mapCocone c)) : IsUniversalColimit c :=
   fun F' c' α f h hα H ↦
-    ⟨ReflectsColimit.reflects (hc (G.mapCocone c') (whiskerRight α G) (G.map f)
+    ⟨isColimitOfReflects _ (hc (G.mapCocone c') (whiskerRight α G) (G.map f)
     (by ext j; simpa using G.congr_map (NatTrans.congr_app h j))
     (hα.whiskerRight G) (fun j ↦ (H j).map G)).some⟩
 
@@ -282,7 +282,7 @@ theorem isVanKampenColimit_of_evaluation [HasPullbacks D] [HasColimitsOfShape J 
   · rintro ⟨hc'⟩ j
     refine ⟨⟨(NatTrans.congr_app e j).symm⟩, ⟨evaluationJointlyReflectsLimits _ ?_⟩⟩
     refine fun x => (isLimitMapConePullbackConeEquiv _ _).symm ?_
-    exact ((this x).mp ⟨PreservesColimit.preserves hc'⟩ _).isLimit
+    exact ((this x).mp ⟨isColimitOfPreserves _ hc'⟩ _).isLimit
   · exact fun H => ⟨evaluationJointlyReflectsColimits _ fun x =>
       ((this x).mpr fun j => (H j).map ((evaluation C D).obj x)).some⟩
 
@@ -297,8 +297,8 @@ theorem IsUniversalColimit.map_reflective
     [∀ X (f : X ⟶ Gl.obj c.pt), HasPullback (Gr.map f) (adj.unit.app c.pt)]
     [∀ X (f : X ⟶ Gl.obj c.pt), PreservesLimit (cospan (Gr.map f) (adj.unit.app c.pt)) Gl] :
     IsUniversalColimit (Gl.mapCocone c) := by
-  have := adj.rightAdjointPreservesLimits
-  have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
+  have := adj.rightAdjoint_preservesLimits
+  have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjoint_preservesColimits
   intros F' c' α f h hα hc'
   have : HasPullback (Gl.map (Gr.map f)) (Gl.map (adj.unit.app c.pt)) :=
     ⟨⟨_, isLimitPullbackConeMapOfIsLimit _ pullback.condition
@@ -361,7 +361,8 @@ theorem IsUniversalColimit.map_reflective
       · rw [Gl.map_comp, hα'', Category.assoc, hc'']
         dsimp [β]
         rw [Category.comp_id, Category.assoc]
-  have : cf.hom ≫ (PreservesPullback.iso _ _ _).hom ≫ pullback.fst _ _ ≫ adj.counit.app _ = 𝟙 _ := by
+  have :
+      cf.hom ≫ (PreservesPullback.iso _ _ _).hom ≫ pullback.fst _ _ ≫ adj.counit.app _ = 𝟙 _ := by
     simp only [IsIso.inv_hom_id, Iso.inv_hom_id_assoc, Category.assoc, pullback.lift_fst_assoc]
   have : IsIso cf := by
     apply @Cocones.cocone_iso_of_hom_iso (i := ?_)
@@ -400,8 +401,8 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     [∀ X (f : X ⟶ Gl.obj c.pt), PreservesLimit (cospan (Gr.map f) (adj.unit.app c.pt)) Gl]
     [∀ X i (f : X ⟶ c.pt), PreservesLimit (cospan f (c.ι.app i)) Gl] :
     IsVanKampenColimit (Gl.mapCocone c) := by
-  have := adj.rightAdjointPreservesLimits
-  have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjointPreservesColimits
+  have := adj.rightAdjoint_preservesLimits
+  have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjoint_preservesColimits
   intro F' c' α f h hα
   refine ⟨?_, H.isUniversal.map_reflective adj c' α f h hα⟩
   intro ⟨hc'⟩ j
@@ -700,7 +701,7 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
     rotate_left
     · ext ⟨j⟩
       dsimp
-      erw [colimit.ι_desc] -- Why?
+      rw [colimit.ι_desc]
       rfl
     simpa [Functor.const_obj_obj, Discrete.functor_obj, extendCofan_pt, extendCofan_ι_app,
       Fin.cases_succ, BinaryCofan.mk_pt, colimit.cocone_x, Cofan.mk_pt, Cofan.mk_ι_app,
@@ -746,7 +747,7 @@ theorem isPullback_initial_to_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {
   subst this
   have : ∀ i, Subsingleton (⊥_ C ⟶ (Discrete.functor f).obj i) := inferInstance
   convert isPullback_of_cofan_isVanKampen hc i.as j.as
-  exact (if_neg (mt (Discrete.ext _ _) hi.symm)).symm
+  exact (if_neg (mt Discrete.ext hi.symm)).symm
 
 theorem mono_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {F : Discrete ι ⥤ C}
     {c : Cocone F} (hc : IsVanKampenColimit c) (i : Discrete ι) : Mono (c.ι.app i) := by

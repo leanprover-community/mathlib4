@@ -30,7 +30,7 @@ For more pointers, see [Learning Lean](https://leanprover-community.github.io/le
 ## Documentation
 
 Besides the installation guides above and [Lean's general
-documentation](https://leanprover.github.io/documentation/), the documentation
+documentation](https://docs.lean-lang.org/lean4/doc/), the documentation
 of mathlib consists of:
 
 - [The mathlib4 docs](https://leanprover-community.github.io/mathlib4_docs/index.html): documentation [generated
@@ -150,6 +150,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Kim Morrison (@semorrison): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry
+* Damiano Testa (@adomani): algebra, algebraic geometry, number theory, tactics
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
 * Eric Wieser (@eric-wieser): algebra, infrastructure
 

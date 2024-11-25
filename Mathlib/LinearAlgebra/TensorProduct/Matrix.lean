@@ -40,6 +40,7 @@ theorem TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
   ext ⟨i, j⟩ ⟨i', j'⟩
   simp_rw [Matrix.kroneckerMap_apply, toMatrix_apply, Basis.tensorProduct_apply,
     TensorProduct.map_tmul, Basis.tensorProduct_repr_tmul_apply]
+  exact mul_comm _ _
 
 /-- The matrix built from `Matrix.kronecker` corresponds to the linear map built from
 `TensorProduct.map`. -/
@@ -54,10 +55,10 @@ theorem TensorProduct.toMatrix_comm :
     toMatrix (bM.tensorProduct bN) (bN.tensorProduct bM) (TensorProduct.comm R M N) =
       (1 : Matrix (ι × κ) (ι × κ) R).submatrix Prod.swap _root_.id := by
   ext ⟨i, j⟩ ⟨i', j'⟩
-  simp_rw [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul,
-    Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply, Basis.repr_self,
-    Finsupp.single_apply, @eq_comm _ j', @eq_comm _ i', mul_ite, mul_one, mul_zero,
-    Matrix.one_apply, Prod.swap_prod_mk, _root_.id, Prod.ext_iff, ite_and]
+  simp only [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, comm_tmul,
+    Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, @eq_comm _ i',
+    @eq_comm _ j', smul_eq_mul, mul_ite, mul_one, mul_zero, ← ite_and, and_comm, submatrix_apply,
+    Matrix.one_apply, Prod.swap_prod_mk, id_eq, Prod.mk.injEq]
 
 /-- `TensorProduct.assoc` corresponds to a permutation of the identity matrix. -/
 theorem TensorProduct.toMatrix_assoc :
@@ -65,9 +66,7 @@ theorem TensorProduct.toMatrix_assoc :
         (TensorProduct.assoc R M N P) =
       (1 : Matrix (ι × κ × τ) (ι × κ × τ) R).submatrix _root_.id (Equiv.prodAssoc _ _ _) := by
   ext ⟨i, j, k⟩ ⟨⟨i', j'⟩, k'⟩
-  simp_rw [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe,
-    TensorProduct.assoc_tmul, Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply,
-    Basis.repr_self, Finsupp.single_apply, @eq_comm _ i', @eq_comm _ j', @eq_comm _ k',
-    mul_ite, mul_one, mul_zero, Matrix.one_apply, _root_.id, Equiv.prodAssoc_apply, Prod.ext_iff,
-    ite_and]
-  split_ifs <;> simp
+  simp only [toMatrix_apply, Basis.tensorProduct_apply, LinearEquiv.coe_coe, assoc_tmul,
+    Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, @eq_comm _ k',
+    @eq_comm _ j', smul_eq_mul, mul_ite, mul_one, mul_zero, ← ite_and, @eq_comm _ i',
+    submatrix_apply, Matrix.one_apply, id_eq, Equiv.prodAssoc_apply, Prod.mk.injEq]

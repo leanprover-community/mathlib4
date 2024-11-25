@@ -40,13 +40,6 @@ def mulRight [Distrib R] (r : R) : AddHom R R where
 
 end AddHom
 
-section AddHomClass
-
-variable {α β F : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
-  [FunLike F α β] [AddHomClass F α β]
-
-end AddHomClass
-
 namespace AddMonoidHom
 
 /-- Left multiplication by an element of a (semi)ring is an `AddMonoidHom` -/
@@ -97,7 +90,7 @@ variable {α : Type*} [Group α] [HasDistribNeg α]
 
 @[simp]
 theorem inv_neg' (a : α) : (-a)⁻¹ = -a⁻¹ := by
-  rw [eq_comm, eq_inv_iff_mul_eq_one, neg_mul, mul_neg, neg_neg, mul_left_inv]
+  rw [eq_comm, eq_inv_iff_mul_eq_one, neg_mul, mul_neg, neg_neg, inv_mul_cancel]
 
 end Group
 
@@ -105,7 +98,7 @@ end HasDistribNeg
 
 section NonUnitalCommRing
 
-variable {α : Type*} [NonUnitalCommRing α] {a b c : α}
+variable {α : Type*} [NonUnitalCommRing α]
 
 attribute [local simp] add_assoc add_comm add_left_comm mul_comm
 

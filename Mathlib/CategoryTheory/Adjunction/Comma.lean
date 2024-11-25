@@ -3,8 +3,9 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.PUnit
 
 /-!
@@ -125,6 +126,8 @@ section
 
 variable {F : C ⥤ D}
 
+attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
+
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
@@ -132,9 +135,7 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
   desc B := StructuredArrow.homMk ((h.homEquiv _ _).symm B.pt.hom)
   uniq s m _ := by
     apply StructuredArrow.ext
-    dsimp
-    rw [← Adjunction.homEquiv_counit, Equiv.eq_symm_apply]
-    apply StructuredArrow.w m
+    simp [← StructuredArrow.w m]
 
 /-- Given a right adjoint to `F`, we can construct a terminal object in each costructured arrow
 category on `F`. -/
@@ -143,9 +144,7 @@ def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
   lift B := CostructuredArrow.homMk (h.homEquiv _ _ B.pt.hom)
   uniq s m _ := by
     apply CostructuredArrow.ext
-    dsimp
-    rw [← Adjunction.homEquiv_unit, h.eq_homEquiv_apply, Adjunction.homEquiv_counit]
-    exact CostructuredArrow.w m
+    simp [← CostructuredArrow.w m]
 
 end
 

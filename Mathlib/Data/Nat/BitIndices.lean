@@ -3,12 +3,12 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.List.Sort
-import Mathlib.Data.Nat.Bitwise
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.List.Sort
+import Mathlib.Data.Nat.Bitwise
 
 /-!
 # Bit Indices
@@ -35,17 +35,17 @@ elements of `s` in increasing order. -/
 def bitIndices (n : ℕ) : List ℕ :=
   @binaryRec (fun _ ↦ List ℕ) [] (fun b _ s ↦ b.casesOn (s.map (· + 1)) (0 :: s.map (· + 1))) n
 
-@[simp] theorem bitIndices_zero : bitIndices 0 = [] := by rfl
+@[simp] theorem bitIndices_zero : bitIndices 0 = [] := by simp [bitIndices]
 
-@[simp] theorem bitIndices_one : bitIndices 1 = [0] := by rfl
+@[simp] theorem bitIndices_one : bitIndices 1 = [0] := by simp [bitIndices]
 
 theorem bitIndices_bit_true (n : ℕ) :
     bitIndices (bit true n) = 0 :: ((bitIndices n).map (· + 1)) :=
-  binaryRec_eq rfl _ _
+  binaryRec_eq _ _ (.inl rfl)
 
 theorem bitIndices_bit_false (n : ℕ) :
     bitIndices (bit false n) = (bitIndices n).map (· + 1) :=
-  binaryRec_eq rfl _ _
+  binaryRec_eq _ _ (.inl rfl)
 
 @[simp] theorem bitIndices_two_mul_add_one (n : ℕ) :
     bitIndices (2 * n + 1) = 0 :: (bitIndices n).map (· + 1) := by
@@ -74,7 +74,7 @@ theorem bitIndices_bit_false (n : ℕ) :
 
 @[simp] theorem twoPowSum_bitIndices (n : ℕ) : (n.bitIndices.map (fun i ↦ 2 ^ i)).sum = n := by
   induction' n using binaryRec with b n hs
-  · rfl
+  · simp
   have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x+1) = fun i ↦ 2 * 2 ^ i := by
     ext i; simp [pow_add, mul_comm]
   cases b
@@ -86,7 +86,7 @@ See `Finset.equivBitIndices` for this bijection. -/
 theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
     (L.map (fun i ↦ 2^i)).sum.bitIndices = L := by
   cases' L with a L
-  · rfl
+  · simp
   obtain ⟨haL, hL⟩ := sorted_cons.1 hL
   simp_rw [Nat.lt_iff_add_one_le] at haL
   have h' : ∃ (L₀ : List ℕ), L₀.Sorted (· < ·) ∧ L = L₀.map (· + a + 1) := by

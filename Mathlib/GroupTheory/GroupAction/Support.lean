@@ -3,7 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Support of an element under an action action
@@ -43,7 +44,7 @@ theorem Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fu
 end SMul
 
 variable [Group H] [SMul G α] [SMul G β] [MulAction H α] [SMul H β] [SMulCommClass G H β]
-  [SMulCommClass G H α] {s t : Set α} {b : β}
+  [SMulCommClass G H α] {s : Set α} {b : β}
 
 -- TODO: This should work without `SMulCommClass`
 @[to_additive]

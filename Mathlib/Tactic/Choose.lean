@@ -220,3 +220,5 @@ elab_rules : tactic
 syntax "choose!" (ppSpace colGt binderIdent)+ (" using " term)? : tactic
 macro_rules
   | `(tactic| choose! $[$ids]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)
+
+end Mathlib.Tactic.Choose
