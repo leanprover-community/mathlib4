@@ -14,12 +14,15 @@ When a monoidal category `V` is braided, we may define the opposite `V`-category
 `V`-category. The symmetry map is required to define the composition morphism.
 
 This file constructs the opposite `V`-category as an instance on the type `Cᵒᵖ` and constructs an
-equivalence between the underlying category `ForgetEnrichment V (Cᵒᵖ)` and the opposite category
-`(ForgetEnrichment V C)ᵒᵖ`.
+equivalence between
+ • `ForgetEnrichment V (Cᵒᵖ)`, the underlying category of the `V`-category `Cᵒᵖ`; and
+ • `(ForgetEnrichment V C)ᵒᵖ`, the opposite category of the underlying category of `C`.
+We also show that if `C` is an enriched ordinary category (i.e. a category enriched in `V`
+equipped with an identification `(X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))`) then `Cᵒᵖ` is again
+an enriched ordinary category.
 
-We use `Cᵒᵖ` for the underlying type as this allows us to construct an instance of
-`EnrichedOrdinaryCategory V (Cᵒᵖ)` in the case that `C` comes with an instance of
-`EnrichedOrdinaryCategory V C`.
+We use `Cᵒᵖ` for the underlying type as this allows us to construct the instance of
+`EnrichedOrdinaryCategory V (Cᵒᵖ)` which extends the opposite `V`-category structure.
 
 -/
 
@@ -73,12 +76,7 @@ lemma tensorHom_eComp_op_eq {C : Type u} [EnrichedCategory V C] {x y z : Cᵒᵖ
   rw [eComp_op_eq]
   exact braiding_naturality_assoc (C := V) f g _
 
--- In this section, we establish an equivalence between
---  • the underlying category of the `V`-category `Cᵒᵖ`; and
---  • the opposite category of the underlying category of `C`.
--- We also show that if `C` is an enriched ordinary category (i.e. a category enriched in `V`
--- equipped with an identification `(X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))`) then `Cᵒᵖ` is again
--- an enriched ordinary category.
+-- This section establishes the equivalence on underlying categories
 section
 
 variable (C : Type u) [EnrichedCategory V C]
