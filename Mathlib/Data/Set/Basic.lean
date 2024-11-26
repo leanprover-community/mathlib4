@@ -2168,4 +2168,18 @@ end Disjoint
 @[simp] theorem Prop.compl_singleton (p : Prop) : ({p}ᶜ : Set Prop) = {¬p} :=
   ext fun q ↦ by simpa [@Iff.comm q] using not_iff
 
+namespace Equiv
+
+/-- Given a predicate `p : Set α → Prop`, produces an equivalence between
+  `{S : Set (Set α) // ∀ s ∈ S, p s}` and `Set {s : Set α // p s}`. -/
+protected def setSubtypeCongr {α : Type*} (p : Set α → Prop) :
+    Equiv {S : Set (Set α) // ∀ s ∈ S, p s} (Set {s : Set α // p s}) where
+  toFun S s := S.val s
+  invFun S := ⟨fun s ↦ ∃ h : p s, S ⟨s, h⟩, fun _ h ↦ h.1⟩
+  left_inv S := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨S.property _ h, h⟩⟩
+  right_inv S := by ext s; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property, h⟩⟩
+
+
+end Equiv
+
 set_option linter.style.longFile 2300
