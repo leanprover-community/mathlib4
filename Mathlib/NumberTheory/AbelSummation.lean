@@ -27,20 +27,6 @@ We prove several versions of Abel's summation formula.
 
 -/
 
-section
-
-theorem MeasureTheory.IntegrableOn.const_mul {α 𝕜 : Type*} [MeasurableSpace α] [NormedRing 𝕜]
-    {f : α → 𝕜} {s : Set α} (μ : MeasureTheory.Measure α := by volume_tac)
-    (h : MeasureTheory.IntegrableOn f s μ) (c : 𝕜) :
-    MeasureTheory.IntegrableOn (fun x ↦ c * f x) s μ := Integrable.const_mul h c
-
-theorem MeasureTheory.IntegrableOn.mul_const {α 𝕜 : Type*} [MeasurableSpace α] [NormedRing 𝕜]
-    {f : α → 𝕜} {s : Set α} (μ : MeasureTheory.Measure α := by volume_tac)
-    (h : MeasureTheory.IntegrableOn f s μ) (c : 𝕜) :
-    MeasureTheory.IntegrableOn (fun x ↦ f x * c) s μ := Integrable.mul_const h c
-
-end
-
 noncomputable section
 
 open Finset intervalIntegral MeasureTheory IntervalIntegrable
