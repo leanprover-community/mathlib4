@@ -109,35 +109,6 @@ def ForgetEnrichment.Opposite.fromOp : (ForgetEnrichment V C)ᵒᵖ ⥤ ForgetEn
     rw [this, ← Category.assoc]
     congr 1
 
-/-- The identity functor on `ForgetEnrichment V (Cᵒᵖ)` is naturally isomorphic to the composite
-functor from `ForgetEnrichment V (Cᵒᵖ)` to `(ForgetEnrichment V C)ᵒᵖ` and
-back to `ForgetEnrichment V (Cᵒᵖ)`. -/
-def ForgetEnrichment.Opposite.toFromNatIso :
-    𝟭 (ForgetEnrichment V Cᵒᵖ) ≅ toOp V C ⋙ fromOp V C where
-  hom := {app := 𝟙}
-  inv := {
-    app := 𝟙
-    naturality := fun ⦃X Y⦄ f => by
-      dsimp
-      have :  𝟙 ((fromOp V C).obj ((toOp V C).obj Y)) = 𝟙 Y := rfl
-      rw [← this, Category.comp_id, Category.id_comp f]
-      congr 1
-  }
-
-/-- The composite functor from `(ForgetEnrichment V C)ᵒᵖ` to `ForgetEnrichment V (Cᵒᵖ)` and
-back to `(ForgetEnrichment V C)ᵒᵖ` is naturally isomorphic to the identity functor. -/
-def ForgetEnrichment.Opposite.fromToNatIso :
-    fromOp V C ⋙ toOp V C ≅ 𝟭 (ForgetEnrichment V C)ᵒᵖ where
-  hom := {
-    app := 𝟙
-    naturality := fun ⦃X Y⦄ f => by
-      dsimp
-      have :  𝟙 ((toOp V C).obj ((fromOp V C).obj Y)) = 𝟙 Y := rfl
-      rw [← this, Category.comp_id, Category.id_comp f]
-      congr 1
-  }
-  inv := {app := 𝟙}
-
 /-- The equivalence between the underlying category of `Cᵒᵖ` and the opposite of the underlying
 category of `C`. -/
 @[simps]
