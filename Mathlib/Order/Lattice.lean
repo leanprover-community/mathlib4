@@ -49,7 +49,7 @@ semilattice, lattice
 
 -/
 
-/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
+/-- Given a term `a ⊂ b`, build a term `a ⊆ b`. -/
 @[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
   eval h := Lean.Meta.mkAppM ``subset_of_ssubset #[h]
 

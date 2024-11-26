@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
 import Lean
+import Batteries.Lean.Except
 import Batteries.Tactic.Exact
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
@@ -232,22 +233,24 @@ def gcongrDischarger (goal : MVarId) : MetaM Unit := Elab.Term.TermElabM.run' do
 
 open Elab Tactic
 
-/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
+/-- Given a term `a < b`, build a term `a ≤ b`. -/
 @[gcongr_forward] def exactLeOfLt : ForwardExt where
   eval h := mkAppM ``le_of_lt #[h]
 
-/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
+/-- Given a term `a ∼ b` with `∼` symmetric, build a term `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where
   eval := Lean.Expr.applySymm
 
-/-- FIXME junk docstring -/
+/-- Data structure storing two arrays of expressions, one assumed to comprise proofs of equalities,
+and one assumed to comprise proofs of (non-equality) relations. -/
 structure Hypotheses where
-  /-- FIXME junk docstring -/
+  /-- Array of expressions, assumed to be proofs of equalities. -/
   (equalities : Array Expr)
-  /-- FIXME junk docstring -/
+  /-- Array of expressions, assumed to be proofs of relations. -/
   (relations : Array Expr)
 
-/-- FIXME junk docstring -/
+/-- Add a hypothesis to the "state", the stored list of hypotheses.  Also perform all the forward
+reasoning on that hypothesis made available by the `gcongr_forward` mini-tactics. -/
 def addHypothesis (h : Expr) : StateRefT Hypotheses MetaM Unit := withReducibleAndInstances do
   if !(← isProof h) then return
   let ⟨eqs, rels⟩ ← get
@@ -257,9 +260,13 @@ def addHypothesis (h : Expr) : StateRefT Hypotheses MetaM Unit := withReducibleA
   else
     let tacs := (forwardExt.getState (← getEnv)).2
     let mut rels' : Array Expr := rels.push h
-    for tac in tacs do
-      try rels' := rels'.push (← tac.2.eval h)
-      catch _ => pure ()
+    for (n, tac) in tacs do
+        try
+          let h' ←
+            withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") <|
+              tac.eval h
+          rels' := rels'.push h'
+        catch _ => pure ()
     let hs : Hypotheses := { equalities := eqs, relations := rels' }
     set hs
 
