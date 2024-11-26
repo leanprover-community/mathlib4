@@ -488,11 +488,6 @@ instance (priority := 900) (a b : α) : Decidable (a = b) := LinearOrder.decidab
 lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 
--- TODO(Leo): decide whether we should keep this instance or not
-instance isStrictTotalOrder_of_linearOrder : IsStrictTotalOrder α (· < ·) where
-  irrefl := lt_irrefl
-  trichotomous := lt_trichotomy
-
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
 def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
   if h : x < y then h₁ h
