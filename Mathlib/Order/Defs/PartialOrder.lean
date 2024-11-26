@@ -34,7 +34,7 @@ class Preorder (α : Type*) extends LE α, LT α where
 variable [Preorder α] {a b c : α}
 
 /-- The relation `≤` on a preorder is reflexive. -/
-@[refl] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
+@[refl, simp] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
 
 /-- A version of `le_refl` where the argument is implicit -/
 lemma le_rfl : a ≤ a := le_refl a
