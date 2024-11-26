@@ -77,10 +77,12 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
           simp [heq_self_iff_true]
         (h₁.trans (ca pa)).trans h₂
 
+#check Quot.lift
+#check Quot.sound
 /-- Map a function `f : α → β` such that `ra x y` implies `rb (f x) (f y)`
 to a map `Quot ra → Quot rb`. -/
-protected def map (f : α → β) (h : (ra ⇒ rb) f f) : Quot ra → Quot rb :=
-  (Quot.lift fun x ↦ ⟦f x⟧) fun x y (h₁ : ra x y) ↦ Quot.sound <| h h₁
+protected def map (f : α → β) (h : (∀ a b : α, ra a b → rb (f a) (f b))) : Quot ra → Quot rb :=
+  Quot.lift (fun x => Quot.mk rb (f x)) <| fun x y hra ↦ Quot.sound <|  h x y hra
 
 /-- If `ra` is a subrelation of `ra'`, then we have a natural map `Quot ra → Quot ra'`. -/
 protected def mapRight {ra' : α → α → Prop} (h : ∀ a₁ a₂, ra a₁ a₂ → ra' a₁ a₂) :
@@ -782,13 +784,3 @@ lemma Equivalence.quot_mk_eq_iff {α : Type*} {r : α → α → Prop} (h : Equi
     | symm _ _ _ H => exact h.symm H
     | trans _ _ _ _ _ h₁₂ h₂₃ => exact h.trans h₁₂ h₂₃
   · exact Quot.sound
-
-lemma congr_liftFun {α β : Type} {R : α → α → Prop} {S : β → β → Prop} {f : α → β}
-    (h : ∀ x y, R x y → S (f x) (f y)) : ((R · ·) ⇒ (S · ·)) f f := h
-
-lemma congr_liftFun₂ {α β γ : Type} {R : α → α → Prop} {S : β → β → Prop}
-  {T : γ → γ → Prop} {f : α → β → γ}
-  (h : ∀ (x₁ x₂ : α) (y₁ y₂ : β), R x₁ x₂ → S y₁ y₂ → T (f x₁ y₁)  (f x₂ y₂)) :
-    ((R · ·) ⇒ (S · ·) ⇒ (T · ·)) f f := by
-  intro x₁ x₂ hx y₁ y₂ hy
-  exact h x₁ x₂ y₁ y₂ hx hy
