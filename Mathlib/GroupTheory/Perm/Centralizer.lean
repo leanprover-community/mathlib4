@@ -643,6 +643,8 @@ lemma mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [F
     rw [Finset.sup_eq_union, Finset.not_mem_union]
     exact ⟨hs a (s.mem_insert_self a), ih (fun a ha ↦ hs a (Finset.mem_insert_of_mem ha))⟩
 
+#find_home! Equiv.Perm.OnCycleFactors.mem_support_of_mem_noncommProd_support
+
 theorem θHom_apply (x : α) : θHom g (u,v) x =
     if hx : g.cycleOf x ∈ g.cycleFactorsFinset
     then (v ⟨g.cycleOf x, hx⟩ : Perm α) x
@@ -687,43 +689,6 @@ theorem θHom_apply_of_cycleOf_eq {x : α} {c : g.cycleFactorsFinset}
 theorem θHom_apply_of_cycleOf_not_mem {x : α} (hx : g.cycleOf x ∉ g.cycleFactorsFinset) :
     θHom g (u,v) x = ofSubtype u x := by
   rw [θHom_apply, dif_neg hx]
-
-lemma disjoint_of_disjoint_support (H K : Subgroup (Perm α))
-    (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.support b.support) : _root_.Disjoint H K := by
-  rw [disjoint_iff_inf_le]
-  intro x ⟨hx1, hx2⟩
-  specialize h x hx1 x hx2
-  rwa [disjoint_self, Finset.bot_eq_empty, support_eq_empty_iff] at h
-
-lemma support_closure_subset_union (S : Set (Perm α)) :
-    ∀ a ∈ closure S, (a.support : Set α) ⊆ ⋃ b ∈ S, b.support := by
-  apply closure_induction
-  · exact fun x hx ↦ Set.subset_iUnion₂_of_subset x hx subset_rfl
-  · simp only [support_one, Finset.coe_empty, Set.empty_subset]
-  · intro a b ha hb hc hd
-    refine (Finset.coe_subset.mpr (support_mul_le a b)).trans ?_
-    rw [Finset.sup_eq_union, Finset.coe_union, Set.union_subset_iff]
-    exact ⟨hc, hd⟩
-  · simp only [support_inv, imp_self, implies_true]
-
-lemma disjoint_support_closure_of_disjoint_support (S T : Set (Perm α))
-    (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
-    ∀ a ∈ closure S, ∀ b ∈ closure T, _root_.Disjoint a.support b.support := by
-  intro a ha b hb
-  have key1 := support_closure_subset_union S a ha
-  have key2 := support_closure_subset_union T b hb
-  have key := Set.disjoint_of_subset key1 key2
-  simp_rw [Set.disjoint_iUnion_left, Set.disjoint_iUnion_right, Finset.disjoint_coe] at key
-  exact key h
-
-lemma disjoint_closure_of_disjoint_support (S T : Set (Perm α))
-    (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
-    _root_.Disjoint (closure S) (closure T) := by
-  apply disjoint_of_disjoint_support
-  apply disjoint_support_closure_of_disjoint_support
-  exact h
-
-#find_home! Equiv.Perm.OnCycleFactors.support_closure_subset_union
 
 theorem θHom_injective (g : Perm α) : Function.Injective (θHom g) := by
   rw [θHom, MonoidHom.noncommCoprod_injective]

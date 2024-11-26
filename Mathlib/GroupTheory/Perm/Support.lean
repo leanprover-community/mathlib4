@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-!
 # support of a permutation
