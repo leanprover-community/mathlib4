@@ -69,11 +69,8 @@ open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
+variable {α F F' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
-  -- F for a Lp submodule
-  [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F]
   -- F' for integrals on a Lp submodule
   [NormedAddCommGroup F']
   [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
@@ -112,7 +109,7 @@ theorem condexp_of_sigmaFinite (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)]
         else aestronglyMeasurable'_condexpL1.mk (condexpL1 hm μ f)
       else 0 := by
   rw [condexp, dif_pos hm]
-  simp only [hμm, Ne, true_and_iff]
+  simp only [hμm, Ne, true_and]
   by_cases hf : Integrable f μ
   · rw [dif_pos hf, if_pos hf]
   · rw [dif_neg hf, if_neg hf]
@@ -141,7 +138,7 @@ theorem condexp_ae_eq_condexpL1 (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)
 
 theorem condexp_ae_eq_condexpL1CLM (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     μ[f|m] =ᵐ[μ] condexpL1CLM F' hm μ (hf.toL1 f) := by
-  refine (condexp_ae_eq_condexpL1 hm f).trans (eventually_of_forall fun x => ?_)
+  refine (condexp_ae_eq_condexpL1 hm f).trans (Eventually.of_forall fun x => ?_)
   rw [condexpL1_eq hf]
 
 theorem condexp_undef (hf : ¬Integrable f μ) : μ[f|m] = 0 := by
@@ -211,7 +208,7 @@ theorem integral_condexp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
   by_cases hf : Integrable f μ
   · suffices ∫ x in Set.univ, (μ[f|m]) x ∂μ = ∫ x in Set.univ, f x ∂μ by
-      simp_rw [integral_univ] at this; exact this
+      simp_rw [setIntegral_univ] at this; exact this
     exact setIntegral_condexp hm hf (@MeasurableSet.univ _ m)
   simp only [condexp_undef hf, Pi.zero_apply, integral_zero, integral_undef hf]
 
@@ -251,7 +248,7 @@ theorem condexp_bot' [hμ : NeZero μ] (f : α → F') :
   rw [h_eq]
   have h_integral : ∫ x, (μ[f|⊥]) x ∂μ = ∫ x, f x ∂μ := integral_condexp bot_le
   simp_rw [h_eq, integral_const] at h_integral
-  rw [← h_integral, ← smul_assoc, smul_eq_mul, inv_mul_cancel, one_smul]
+  rw [← h_integral, ← smul_assoc, smul_eq_mul, inv_mul_cancel₀, one_smul]
   rw [Ne, ENNReal.toReal_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, measure_ne_top μ Set.univ⟩
 
@@ -259,7 +256,7 @@ theorem condexp_bot_ae_eq (f : α → F') :
     μ[f|⊥] =ᵐ[μ] fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · rw [ae_zero]; exact eventually_bot
-  · exact eventually_of_forall <| congr_fun (condexp_bot' f)
+  · exact Eventually.of_forall <| congr_fun (condexp_bot' f)
 
 theorem condexp_bot [IsProbabilityMeasure μ] (f : α → F') : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condexp_bot' f).trans ?_; rw [measure_univ, ENNReal.one_toReal, inv_one, one_smul]
@@ -388,6 +385,6 @@ theorem tendsto_condexp_unique (fs gs : ℕ → α → F') (f g : α → F')
   have hcond_gs : Tendsto (fun n => condexpL1 hm μ (gs n)) atTop (𝓝 (condexpL1 hm μ g)) :=
     tendsto_condexpL1_of_dominated_convergence hm _ (fun n => (hgs_int n).1) h_int_bound_gs
       hgs_bound hgs
-  exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (eventually_of_forall hn_eq)
+  exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (Eventually.of_forall hn_eq)
 
 end MeasureTheory

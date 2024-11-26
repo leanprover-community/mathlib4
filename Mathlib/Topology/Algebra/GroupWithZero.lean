@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Homeomorph
 
@@ -128,9 +129,12 @@ end Inv₀
 
 /-- If `G₀` is a group with zero with topology such that `x ↦ x⁻¹` is continuous at all nonzero
 points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
-theorem Units.embedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
-    Embedding (val : G₀ˣ → G₀) :=
+theorem Units.isEmbedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
+    IsEmbedding (val : G₀ˣ → G₀) :=
   embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono fun _ ↦ IsUnit.ne_zero
+
+@[deprecated (since := "2024-10-26")]
+alias Units.embedding_val₀ := Units.isEmbedding_val₀
 
 section NhdsInv
 
@@ -142,7 +146,7 @@ lemma nhds_inv₀ (hx : x ≠ 0) : 𝓝 x⁻¹ = (𝓝 x)⁻¹ := by
 
 lemma tendsto_inv_iff₀ {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
     Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 x⁻¹) ↔ Tendsto f l (𝓝 x) := by
-  simp only [nhds_inv₀ hx, ← Filter.comap_inv, tendsto_comap_iff, (· ∘ ·), inv_inv]
+  simp only [nhds_inv₀ hx, ← Filter.comap_inv, tendsto_comap_iff, Function.comp_def, inv_inv]
 
 end NhdsInv
 
@@ -300,7 +304,7 @@ theorem HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (
     have hx' := inv_ne_zero hx
     rw [ContinuousAt, ← map_mul_left_nhds_one₀ hx, ← nhds_translation_mul_inv₀ hx',
       tendsto_map'_iff, tendsto_comap_iff]
-    simpa only [(· ∘ ·), mul_inv_rev, mul_inv_cancel_right₀ hx']
+    simpa only [Function.comp_def, mul_inv_rev, mul_inv_cancel_right₀ hx']
 
 end map_comap
 

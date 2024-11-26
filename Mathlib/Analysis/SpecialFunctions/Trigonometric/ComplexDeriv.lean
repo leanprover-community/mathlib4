@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 
 /-!
 # Complex trigonometric functions
@@ -61,7 +62,7 @@ theorem deriv_tan (x : ℂ) : deriv tan x = 1 / cos x ^ 2 :=
   else (hasDerivAt_tan h).deriv
 
 @[simp]
-theorem contDiffAt_tan {x : ℂ} {n : ℕ∞} : ContDiffAt ℂ n tan x ↔ cos x ≠ 0 :=
+theorem contDiffAt_tan {x : ℂ} {n : WithTop ℕ∞} : ContDiffAt ℂ n tan x ↔ cos x ≠ 0 :=
   ⟨fun h => continuousAt_tan.1 h.continuousAt, contDiff_sin.contDiffAt.div contDiff_cos.contDiffAt⟩
 
 end Complex

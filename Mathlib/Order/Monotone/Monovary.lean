@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 import Mathlib.Order.Lattice
 
 /-!
@@ -31,7 +31,7 @@ variable {ι ι' α β γ : Type*}
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] {f : ι → α} {f' : α → γ} {g : ι → β} {g' : β → γ}
+variable [Preorder α] [Preorder β] [Preorder γ] {f : ι → α} {f' : α → γ} {g : ι → β}
   {s t : Set ι}
 
 /-- `f` monovaries with `g` if `g i < g j` implies `f i ≤ f j`. -/
@@ -249,7 +249,7 @@ end PartialOrder
 variable [LinearOrder ι]
 
 /- Porting note: Due to a bug in `alias`, many of the below lemmas have dot notation removed in the
-proof-/
+proof -/
 
 protected theorem Monotone.monovary (hf : Monotone f) (hg : Monotone g) : Monovary f g :=
   fun _ _ hij => hf (hg.reflect_lt hij).le
@@ -282,7 +282,7 @@ end Preorder
 
 section LinearOrder
 
-variable [Preorder α] [LinearOrder β] [Preorder γ] {f : ι → α} {f' : α → γ} {g : ι → β} {g' : β → γ}
+variable [Preorder α] [LinearOrder β] [Preorder γ] {f : ι → α} {g : ι → β} {g' : β → γ}
   {s : Set ι}
 
 theorem MonovaryOn.comp_monotoneOn_right (h : MonovaryOn f g s) (hg : MonotoneOn g' (g '' s)) :

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inverse
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
@@ -23,6 +23,7 @@ noncomputable section
 namespace HasStrictDerivAt
 
 variable (f' a : 𝕜) (hf : HasStrictDerivAt f f' a) (hf' : f' ≠ 0)
+include hf hf'
 
 /-- A function that is inverse to `f` near `a`. -/
 abbrev localInverse : 𝕜 → 𝕜 :=

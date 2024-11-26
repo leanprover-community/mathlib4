@@ -22,7 +22,7 @@ we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
     (h : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → P a → P (p ^ n * a)) : ∀ a : ℕ, P a := fun a =>
-  Nat.strongRecOn a fun n =>
+  Nat.strongRecOn' a fun n =>
     match n with
     | 0 => fun _ => h0
     | 1 => fun _ => h1
@@ -30,7 +30,7 @@ def recOnPrimePow {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1)
       letI p := (k + 2).minFac
       haveI hp : Prime p := minFac_prime (succ_succ_ne_one k)
       letI t := (k + 2).factorization p
-      haveI hpt : p ^ t ∣ k + 2 := ord_proj_dvd _ _
+      haveI hpt : p ^ t ∣ k + 2 := ordProj_dvd _ _
       haveI htp : 0 < t := hp.factorization_pos_of_dvd (k + 1).succ_ne_zero (k + 2).minFac_dvd
       convert h ((k + 2) / p ^ t) p t hp _ htp (hk _ (Nat.div_lt_of_lt_mul _)) using 1
       · rw [Nat.mul_div_cancel' hpt]
@@ -74,8 +74,25 @@ def recOnMul {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p → 
     | n + 1 => h _ _ (hp'' p n hp') (hp p hp')
   recOnPrimeCoprime h0 hp'' fun a b _ _ _ => h a b
 
-/-! ## Lemmas on multiplicative functions -/
+lemma _root_.induction_on_primes {P : ℕ → Prop} (h₀ : P 0) (h₁ : P 1)
+    (h : ∀ p a : ℕ, p.Prime → P a → P (p * a)) : ∀ n, P n := by
+  refine recOnPrimePow h₀ h₁ ?_
+  rintro a p n hp - - ha
+  induction' n with n ih
+  · simpa using ha
+  · rw [pow_succ', mul_assoc]
+    exact h _ _ hp ih
 
+lemma prime_composite_induction {P : ℕ → Prop} (zero : P 0) (one : P 1)
+    (prime : ∀ p : ℕ, p.Prime → P p) (composite : ∀ a, 2 ≤ a → P a → ∀ b, 2 ≤ b → P b → P (a * b))
+    (n : ℕ) : P n := by
+  refine induction_on_primes zero one ?_ _
+  rintro p (_ | _ | a) hp ha
+  · simpa
+  · simpa using prime _ hp
+  · exact composite _ hp.two_le (prime _ hp) _ a.one_lt_succ_succ ha
+
+/-! ## Lemmas on multiplicative functions -/
 
 /-- For any multiplicative function `f` with `f 1 = 1` and any `n ≠ 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/

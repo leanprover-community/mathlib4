@@ -183,7 +183,7 @@ end LocallyFinite
 
 @[simp]
 theorem Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) ↔ LocallyFinite f :=
-  ⟨fun h => by simpa only [(· ∘ ·), e.apply_symm_apply] using h.comp_injective e.symm.injective,
+  ⟨fun h => by simpa only [comp_def, e.apply_symm_apply] using h.comp_injective e.symm.injective,
     fun h => h.comp_injective e.injective⟩
 
 theorem locallyFinite_sum {f : ι ⊕ ι' → Set X} :
@@ -197,7 +197,7 @@ theorem LocallyFinite.sum_elim {g : ι' → Set X} (hf : LocallyFinite f) (hg : 
 
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by
-  rw [← (Equiv.optionEquivSumPUnit.{_, 0} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]
+  rw [← (Equiv.optionEquivSumPUnit.{0, _} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]
   simp only [locallyFinite_of_finite, and_true]
   rfl
 

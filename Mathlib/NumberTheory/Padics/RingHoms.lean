@@ -40,7 +40,7 @@ which removes some boilerplate code.
 noncomputable section
 
 open scoped Classical
-open Nat LocalRing Padic
+open Nat IsLocalRing Padic
 
 namespace PadicInt
 
@@ -256,7 +256,7 @@ theorem toZMod_spec : x - (ZMod.cast (toZMod x) : ℤ_[p]) ∈ maximalIdeal ℤ_
   dsimp [toZMod, toZModHom]
   rcases Nat.exists_eq_add_of_lt hp_prime.1.pos with ⟨p', rfl⟩
   change ↑((_ : ZMod (0 + p' + 1)).val) = (_ : ℤ_[0 + p' + 1])
-  simp only [ZMod.val_natCast, add_zero, add_def, Nat.cast_inj, zero_add]
+  rw [Nat.cast_inj]
   apply mod_eq_of_lt
   simpa only [zero_add] using zmodRepr_lt_p x
 
@@ -289,7 +289,7 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction' n with n ih generalizing x
   · simp only [appr, zero_eq, _root_.pow_zero, zero_lt_one]
   simp only [appr, map_natCast, ZMod.natCast_self, RingHom.map_pow, Int.natAbs, RingHom.map_mul]
-  have hp : p ^ n < p ^ (n + 1) := by apply pow_lt_pow_right hp_prime.1.one_lt (lt_add_one n)
+  have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.1.one_lt n.lt_add_one
   split_ifs with h
   · apply lt_trans (ih _) hp
   · calc
@@ -393,7 +393,7 @@ theorem ker_toZModPow (n : ℕ) :
     rw [zmod_congr_of_sub_mem_span n x _ 0 _ h, cast_zero]
     apply appr_spec
 
--- @[simp] -- Porting note: not in simpNF
+-- This is not a simp lemma; simp can't match the LHS.
 theorem zmod_cast_comp_toZModPow (m n : ℕ) (h : m ≤ n) :
     (ZMod.castHom (pow_dvd_pow p h) (ZMod (p ^ m))).comp (@toZModPow p _ n) = @toZModPow p _ m := by
   apply ZMod.ringHom_eq_of_ker_eq
@@ -451,8 +451,8 @@ section lift
 
 open CauSeq PadicSeq
 
-variable {R : Type*} [NonAssocSemiring R] (f : ∀ k : ℕ, R →+* ZMod (p ^ k))
-  (f_compat : ∀ (k1 k2) (hk : k1 ≤ k2), (ZMod.castHom (pow_dvd_pow p hk) _).comp (f k2) = f k1)
+variable {R : Type*} [NonAssocSemiring R] {p : Nat} (f : ∀ k : ℕ, R →+* ZMod (p ^ k))
+
 
 /-- Given a family of ring homs `f : Π n : ℕ, R →+* ZMod (p ^ n)`,
 `nthHom f r` is an integer-valued sequence
@@ -467,6 +467,12 @@ theorem nthHom_zero : nthHom f 0 = 0 := by
   rfl
 
 variable {f}
+variable [hp_prime : Fact p.Prime]
+
+section
+variable
+  (f_compat : ∀ (k1 k2) (hk : k1 ≤ k2), (ZMod.castHom (pow_dvd_pow p hk) _).comp (f k2) = f k1)
+include f_compat
 
 theorem pow_dvd_nthHom_sub (r : R) (i j : ℕ) (h : i ≤ j) :
     (p : ℤ) ^ i ∣ nthHom f r j - nthHom f r i := by
@@ -483,7 +489,7 @@ theorem isCauSeq_nthHom (r : R) : IsCauSeq (padicNorm p) fun n => nthHom f r n :
   intro j hj
   refine lt_of_le_of_lt ?_ hk
   -- Need to do beta reduction first, as `norm_cast` doesn't.
-  -- Added to adapt to leanprover/lean4#2734.
+  -- Added to adapt to https://github.com/leanprover/lean4/pull/2734.
   beta_reduce
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
@@ -583,7 +589,7 @@ theorem lift_sub_val_mem_span (r : R) (n : ℕ) :
     lift f_compat r - (f n r).val ∈ (Ideal.span {(p : ℤ_[p]) ^ n}) := by
   obtain ⟨k, hk⟩ :=
     limNthHom_spec f_compat r _
-      (show (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) from Nat.zpow_pos_of_pos hp_prime.1.pos _)
+      (show (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) from zpow_pos (mod_cast hp_prime.1.pos) _)
   have := le_of_lt (hk (max n k) (le_max_right _ _))
   rw [norm_le_pow_iff_mem_span_pow] at this
   dsimp [lift]
@@ -617,10 +623,12 @@ theorem lift_unique (g : R →+* ℤ_[p]) (hg : ∀ n, (toZModPow n).comp g = f 
   rw [dist_eq_norm, norm_le_pow_iff_mem_span_pow, ← ker_toZModPow, RingHom.mem_ker,
     RingHom.map_sub, ← RingHom.comp_apply, ← RingHom.comp_apply, lift_spec, hg, sub_self]
 
+end
+
 @[simp]
-theorem lift_self (z : ℤ_[p]) : @lift p _ ℤ_[p] _ toZModPow zmod_cast_comp_toZModPow z = z := by
+theorem lift_self (z : ℤ_[p]) : lift zmod_cast_comp_toZModPow z = z := by
   show _ = RingHom.id _ z
-  rw [@lift_unique p _ ℤ_[p] _ _ zmod_cast_comp_toZModPow (RingHom.id ℤ_[p])]
+  rw [lift_unique zmod_cast_comp_toZModPow (RingHom.id ℤ_[p])]
   intro; rw [RingHom.comp_id]
 
 end lift

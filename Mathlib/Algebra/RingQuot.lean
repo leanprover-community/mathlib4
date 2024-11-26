@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Hom
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Quotients of non-commutative rings
@@ -75,42 +77,42 @@ theorem Rel.smul {r : A → A → Prop} (k : S) ⦃a b : A⦄ (h : Rel r a b) : 
 
 /-- `EqvGen (RingQuot.Rel r)` is a ring congruence. -/
 def ringCon (r : R → R → Prop) : RingCon R where
-  r := EqvGen (Rel r)
-  iseqv := EqvGen.is_equivalence _
+  r := Relation.EqvGen (Rel r)
+  iseqv := Relation.EqvGen.is_equivalence _
   add' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
-      refine (EqvGen.rel _ _ hab.add_left).trans _ _ _ ?_
+      refine (Relation.EqvGen.rel _ _ hab.add_left).trans _ _ _ ?_
       induction hcd with
-      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.add_right
-      | refl => exact EqvGen.refl _
+      | rel _ _ hcd => exact Relation.EqvGen.rel _ _ hcd.add_right
+      | refl => exact Relation.EqvGen.refl _
       | symm _ _ _ h => exact h.symm _ _
       | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
     | refl => induction hcd with
-      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.add_right
-      | refl => exact EqvGen.refl _
+      | rel _ _ hcd => exact Relation.EqvGen.rel _ _ hcd.add_right
+      | refl => exact Relation.EqvGen.refl _
       | symm _ _ _ h => exact h.symm _ _
       | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
     | symm x y _ hxy => exact (hxy hcd.symm).symm
-    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| EqvGen.refl _)
+    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| Relation.EqvGen.refl _)
   mul' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
-      refine (EqvGen.rel _ _ hab.mul_left).trans _ _ _ ?_
+      refine (Relation.EqvGen.rel _ _ hab.mul_left).trans _ _ _ ?_
       induction hcd with
-      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.mul_right
-      | refl => exact EqvGen.refl _
+      | rel _ _ hcd => exact Relation.EqvGen.rel _ _ hcd.mul_right
+      | refl => exact Relation.EqvGen.refl _
       | symm _ _ _ h => exact h.symm _ _
       | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
     | refl => induction hcd with
-      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.mul_right
-      | refl => exact EqvGen.refl _
+      | rel _ _ hcd => exact Relation.EqvGen.rel _ _ hcd.mul_right
+      | refl => exact Relation.EqvGen.refl _
       | symm _ _ _ h => exact h.symm _ _
       | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
     | symm x y _ hxy => exact (hxy hcd.symm).symm
-    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| EqvGen.refl _)
+    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| Relation.EqvGen.refl _)
 
-theorem eqvGen_rel_eq (r : R → R → Prop) : EqvGen (Rel r) = RingConGen.Rel r := by
+theorem eqvGen_rel_eq (r : R → R → Prop) : Relation.EqvGen (Rel r) = RingConGen.Rel r := by
   ext x₁ x₂
   constructor
   · intro h
@@ -125,7 +127,7 @@ theorem eqvGen_rel_eq (r : R → R → Prop) : EqvGen (Rel r) = RingConGen.Rel r
     | trans => exact RingConGen.Rel.trans ‹_› ‹_›
   · intro h
     induction h with
-    | of => exact EqvGen.rel _ _ (Rel.of ‹_›)
+    | of => exact Relation.EqvGen.rel _ _ (Rel.of ‹_›)
     | refl => exact (RingQuot.ringCon r).refl _
     | symm => exact (RingQuot.ringCon r).symm ‹_›
     | trans => exact (RingQuot.ringCon r).trans ‹_› ‹_›
@@ -337,7 +339,7 @@ private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : Ri
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
     neg := Neg.neg
-    add_left_neg := by
+    neg_add_cancel := by
       rintro ⟨⟨⟩⟩
       simp [neg_quot, add_quot, ← zero_quot]
     sub := Sub.sub
@@ -440,7 +442,7 @@ factors uniquely through a morphism `RingQuot r →+* T`.
 irreducible_def lift {r : R → R → Prop} :
   { f : R →+* T // ∀ ⦃x y⦄, r x y → f x = f y } ≃ (RingQuot r →+* T) :=
   { toFun := fun f ↦ preLift f.prop
-    invFun := fun F ↦ ⟨F.comp (mkRingHom r), fun x y h ↦ congr_arg F (mkRingHom_rel h)⟩
+    invFun := fun F ↦ ⟨F.comp (mkRingHom r), fun _ _ h ↦ congr_arg F (mkRingHom_rel h)⟩
     left_inv := fun f ↦ by
       ext
       simp only [preLift_def, mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk,
@@ -464,7 +466,7 @@ theorem lift_unique (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r
   simp [h]
 
 theorem eq_lift_comp_mkRingHom {r : R → R → Prop} (f : RingQuot r →+* T) :
-    f = lift ⟨f.comp (mkRingHom r), fun x y h ↦ congr_arg f (mkRingHom_rel h)⟩ := by
+    f = lift ⟨f.comp (mkRingHom r), fun _ _ h ↦ congr_arg f (mkRingHom_rel h)⟩ := by
   conv_lhs => rw [← lift.apply_symm_apply f]
   rw [lift_def]
   rfl
@@ -495,15 +497,15 @@ theorem ringQuotToIdealQuotient_apply (r : B → B → Prop) (x : B) :
 def idealQuotientToRingQuot (r : B → B → Prop) : B ⧸ Ideal.ofRel r →+* RingQuot r :=
   Ideal.Quotient.lift (Ideal.ofRel r) (mkRingHom r)
     (by
-      refine fun x h ↦ Submodule.span_induction h ?_ ?_ ?_ ?_
+      refine fun x h ↦ Submodule.span_induction ?_ ?_ ?_ ?_ h
       · rintro y ⟨a, b, h, su⟩
         symm at su
         rw [← sub_eq_iff_eq_add] at su
         rw [← su, RingHom.map_sub, mkRingHom_rel h, sub_self]
       · simp
-      · intro a b ha hb
+      · intro a b _ _ ha hb
         simp [ha, hb]
-      · intro a x hx
+      · intro a x _ hx
         simp [hx])
 
 @[simp]
@@ -619,7 +621,7 @@ theorem liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ �
   simp [h]
 
 theorem eq_liftAlgHom_comp_mkAlgHom {s : A → A → Prop} (f : RingQuot s →ₐ[S] B) :
-    f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun x y h ↦ congr_arg f (mkAlgHom_rel S h)⟩ := by
+    f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg f (mkAlgHom_rel S h)⟩ := by
   conv_lhs => rw [← (liftAlgHom S).apply_symm_apply f]
   rw [liftAlgHom]
   rfl

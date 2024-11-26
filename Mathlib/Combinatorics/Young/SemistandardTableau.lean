@@ -68,10 +68,6 @@ instance instFunLike {μ : YoungDiagram} : FunLike (SemistandardYoungTableau μ)
     cases T'
     congr
 
-/-- Helper instance for when there's too many metavariables to apply `CoeFun.coe` directly. -/
-instance {μ : YoungDiagram} : CoeFun (SemistandardYoungTableau μ) fun _ ↦ ℕ → ℕ → ℕ :=
-  inferInstance
-
 @[simp]
 theorem to_fun_eq_coe {μ : YoungDiagram} {T : SemistandardYoungTableau μ} :
     T.entry = (T : ℕ → ℕ → ℕ) :=

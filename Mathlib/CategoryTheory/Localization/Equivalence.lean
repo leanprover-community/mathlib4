@@ -51,6 +51,7 @@ lemma equivalence_counitIso_app (X : C₂) :
   dsimp [Lifting.iso]
   rw [comp_id]
 
+include L₁ W₁ L₂ W₂ G F F' α β in
 /-- Basic constructor of an equivalence between localized categories -/
 lemma isEquivalence : G'.IsEquivalence :=
   (equivalence L₁ W₁ L₂ W₂ G G' F F' α β).isEquivalence_functor

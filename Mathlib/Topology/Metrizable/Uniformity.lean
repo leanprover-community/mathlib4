@@ -61,7 +61,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
   dist_comm x y :=
     NNReal.coe_inj.2 <| by
       refine reverse_surjective.iInf_congr _ fun l ↦ ?_
-      rw [← sum_reverse, zipWith_distrib_reverse, reverse_append, reverse_reverse,
+      rw [← sum_reverse, reverse_zipWith, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
         zipWith_comm_of_comm _ dist_comm]
       simp only [length, length_append]
@@ -79,7 +79,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
           append_assoc, append_assoc]
         rw [length_cons, length_append, length_singleton]
   -- Porting note: `edist_dist` is no longer inferred
-  edist_dist x y := rfl
+  edist_dist _ _ := rfl
 
 theorem dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) (x y : X) :
@@ -134,7 +134,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       intro m hm
       rw [← not_lt, Nat.lt_iff_add_one_le, ← hL_len]
       intro hLm
-      rw [mem_setOf_eq, take_all_of_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
+      rw [mem_setOf_eq, take_of_length_le hLm, two_mul, add_le_iff_nonpos_left, nonpos_iff_eq_zero,
           sum_eq_zero_iff, ← forall_iff_forall_mem, forall_zipWith,
           ← chain_append_singleton_iff_forall₂]
           at hm <;>
@@ -154,12 +154,12 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
-      rw [zipWith_distrib_take, take, take_succ, getElem?_append hMl, getElem?_eq_getElem hMl,
+      rw [take_zipWith, take, take_succ, getElem?_append_left hMl, getElem?_eq_getElem hMl,
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)
-    · simp only [getElem_append_right' le_rfl, sub_self, getElem_singleton, dist_self, zero_le]
-    rw [getElem_append _ hMl]
+    · simp only [getElem_append_right le_rfl, sub_self, getElem_singleton, dist_self, zero_le]
+    rw [getElem_append_left hMl]
     have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine (ihn _ hlen_lt _ y _ hlen).trans ?_
@@ -169,11 +169,10 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [← sum_take_add_sum_drop L (M + 1), two_mul, add_le_add_iff_left, ← add_le_add_iff_right,
       sum_take_add_sum_drop, ← two_mul] at hMs'
     convert hMs'
-    rwa [zipWith_distrib_drop, drop, drop_append_of_le_length]
+    rwa [drop_zipWith, drop, drop_append_of_le_length]
 
 end PseudoMetricSpace
 
--- Porting note (#11083): this is slower than in Lean3 for some reason...
 /-- If `X` is a uniform space with countably generated uniformity filter, there exists a
 `PseudoMetricSpace` structure compatible with the `UniformSpace` structure. Use
 `UniformSpace.pseudoMetricSpace` or `UniformSpace.metricSpace` instead. -/
@@ -206,7 +205,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     split_ifs with h
     · rw [← not_forall] at h
       simp [h, pow_eq_zero_iff']
-    · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff_iff] using h
+    · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff] using h
   have hd_symm : ∀ x y, d x y = d y x := by
     intro x y
     simp only [d, @SymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
@@ -217,7 +216,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     intro x y n
     dsimp only [d]
     split_ifs with h
-    · rw [(pow_right_strictAnti hr.1 hr.2).le_iff_le, Nat.find_le_iff]
+    · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_le, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
     · push_neg at h
       simp only [h, not_true, (pow_pos hr.1 _).not_le]
@@ -225,7 +224,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n
     · refine (dif_pos H).trans_le ?_
-      rw [← NNReal.div_le_iff' two_ne_zero, ← mul_one_div (_ ^ _), ← pow_succ]
+      rw [← div_le_iff₀' zero_lt_two, ← mul_one_div (_ ^ _), ← pow_succ]
       simp only [le_max_iff, hle_d, ← not_and_or]
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
       refine Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) ?_)
@@ -240,9 +239,9 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   · refine fun n _ => ⟨n + 1, trivial, fun x hx => ?_⟩
     rw [mem_setOf_eq] at hx
     contrapose! hx
-    refine le_trans ?_ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
+    refine le_trans ?_ ((div_le_iff₀' zero_lt_two).2 (hd_le x.1 x.2))
     rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ,
-      mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel₀ _ (two_ne_zero' ℝ≥0), hle_d]
+      mul_one_div, div_le_iff₀ zero_lt_two, div_mul_cancel₀ _ two_ne_zero, hle_d]
 
 /-- A `PseudoMetricSpace` instance compatible with a given `UniformSpace` structure. -/
 protected noncomputable def UniformSpace.pseudoMetricSpace (X : Type*) [UniformSpace X]
@@ -282,3 +281,10 @@ lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (�
     exact EMetric.ball_subset_closedBall
   obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
   exact ⟨t, htc, hts⟩
+
+open TopologicalSpace in
+instance (priority := 100) DiscreteTopology.metrizableSpace
+    {α} [TopologicalSpace α] [DiscreteTopology α] :
+    MetrizableSpace α := by
+  obtain rfl := DiscreteTopology.eq_bot (α := α)
+  exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _

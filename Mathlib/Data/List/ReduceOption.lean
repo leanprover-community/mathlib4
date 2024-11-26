@@ -34,8 +34,7 @@ theorem reduceOption_map {l : List (Option α)} {f : α → β} :
   induction' l with hd tl hl
   · simp only [reduceOption_nil, map_nil]
   · cases hd <;>
-      simpa [true_and_iff, Option.map_some', map, eq_self_iff_true,
-        reduceOption_cons_of_some] using hl
+      simpa [Option.map_some', map, eq_self_iff_true, reduceOption_cons_of_some] using hl
 
 theorem reduceOption_append (l l' : List (Option α)) :
     (l ++ l').reduceOption = l.reduceOption ++ l'.reduceOption :=
@@ -63,7 +62,7 @@ theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
   rw [Nat.lt_iff_le_and_ne, and_iff_right (reduceOption_length_le l), Ne,
     reduceOption_length_eq_iff]
-  induction l <;> simp [*]
+  induction l <;> simp
   rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
 
 theorem reduceOption_singleton (x : Option α) : [x].reduceOption = x.toList := by cases x <;> rfl

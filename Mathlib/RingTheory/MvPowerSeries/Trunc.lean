@@ -91,7 +91,7 @@ theorem trunc_c (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R 
   MvPolynomial.ext _ _ fun m => by
     classical
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
-    split_ifs with H <;> first |rfl|try simp_all
+    split_ifs with H <;> first |rfl|try simp_all only [ne_eq, not_true_eq_false]
     exfalso; apply H; subst m; exact Ne.bot_lt hnn
 
 end Trunc

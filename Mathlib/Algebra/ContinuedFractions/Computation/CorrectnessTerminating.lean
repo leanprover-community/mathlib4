@@ -96,16 +96,16 @@ theorem compExactValue_correctness_of_stream_eq_some :
     ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v n = some ifp_n →
       v = compExactValue ((of v).contsAux n) ((of v).contsAux <| n + 1) ifp_n.fr := by
   let g := of v
-  induction' n with n IH
-  · intro ifp_zero stream_zero_eq
-    -- Nat.zero
-    have : IntFractPair.of v = ifp_zero := by
+  induction n with
+  | zero =>
+    intro ifp_zero stream_zero_eq
+    obtain rfl : IntFractPair.of v = ifp_zero := by
       have : IntFractPair.stream v 0 = some (IntFractPair.of v) := rfl
-      simpa only [Nat.zero_eq, this, Option.some.injEq] using stream_zero_eq
-    cases this
-    cases' Decidable.em (Int.fract v = 0) with fract_eq_zero fract_ne_zero
-    -- Int.fract v = 0; we must then have `v = ⌊v⌋`
-    · suffices v = ⌊v⌋ by
+      simpa only [this, Option.some.injEq] using stream_zero_eq
+    cases eq_or_ne (Int.fract v) 0 with
+    | inl fract_eq_zero =>
+      -- Int.fract v = 0; we must then have `v = ⌊v⌋`
+      suffices v = ⌊v⌋ by
         -- Porting note: was `simpa [contsAux, fract_eq_zero, compExactValue]`
         field_simp [nextConts, nextNum, nextDen, compExactValue]
         have : (IntFractPair.of v).fr = Int.fract v := rfl
@@ -113,13 +113,14 @@ theorem compExactValue_correctness_of_stream_eq_some :
       calc
         v = Int.fract v + ⌊v⌋ := by rw [Int.fract_add_floor]
         _ = ⌊v⌋ := by simp [fract_eq_zero]
-    -- Int.fract v ≠ 0; the claim then easily follows by unfolding a single computation step
-    · field_simp [contsAux, nextConts, nextNum, nextDen, of_h_eq_floor, compExactValue]
+    | inr fract_ne_zero =>
+      -- Int.fract v ≠ 0; the claim then easily follows by unfolding a single computation step
+      field_simp [contsAux, nextConts, nextNum, nextDen, of_h_eq_floor, compExactValue]
       -- Porting note: this and the if_neg rewrite are needed
       have : (IntFractPair.of v).fr = Int.fract v := rfl
       rw [this, if_neg fract_ne_zero, Int.floor_add_fract]
-  · intro ifp_succ_n succ_nth_stream_eq
-    -- Nat.succ
+  | succ n IH =>
+    intro ifp_succ_n succ_nth_stream_eq
     obtain ⟨ifp_n, nth_stream_eq, nth_fract_ne_zero, -⟩ :
       ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
         ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
@@ -128,9 +129,10 @@ theorem compExactValue_correctness_of_stream_eq_some :
     let conts := g.contsAux (n + 2)
     set pconts := g.contsAux (n + 1) with pconts_eq
     set ppconts := g.contsAux n with ppconts_eq
-    cases' Decidable.em (ifp_succ_n.fr = 0) with ifp_succ_n_fr_eq_zero ifp_succ_n_fr_ne_zero
-    -- ifp_succ_n.fr = 0
-    · suffices v = conts.a / conts.b by simpa [compExactValue, ifp_succ_n_fr_eq_zero]
+    cases eq_or_ne ifp_succ_n.fr 0 with
+    | inl ifp_succ_n_fr_eq_zero =>
+      -- ifp_succ_n.fr = 0
+      suffices v = conts.a / conts.b by simpa [compExactValue, ifp_succ_n_fr_eq_zero]
       -- use the IH and the fact that ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋ to prove this case
       obtain ⟨ifp_n', nth_stream_eq', ifp_n_fract_inv_eq_floor⟩ :
           ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋ :=
@@ -143,8 +145,9 @@ theorem compExactValue_correctness_of_stream_eq_some :
       suffices v = compExactValue ppconts pconts ifp_n.fr by
         simpa [conts, contsAux, s_nth_eq, compExactValue, nth_fract_ne_zero] using this
       exact IH nth_stream_eq
-    -- ifp_succ_n.fr ≠ 0
-    · -- use the IH to show that the following equality suffices
+    | inr ifp_succ_n_fr_ne_zero =>
+      -- ifp_succ_n.fr ≠ 0
+      -- use the IH to show that the following equality suffices
       suffices
         compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts ifp_succ_n.fr by
         have : v = compExactValue ppconts pconts ifp_n.fr := IH nth_stream_eq
@@ -212,14 +215,14 @@ theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.
   | succ n IH =>
     let g := of v
     change v = g.convs n
-    have :
+    obtain ⟨nth_stream_eq_none⟩ | ⟨ifp_n, nth_stream_eq, nth_stream_fr_eq_zero⟩ :
       IntFractPair.stream v n = none ∨ ∃ ifp, IntFractPair.stream v n = some ifp ∧ ifp.fr = 0 :=
       IntFractPair.succ_nth_stream_eq_none_iff.1 nth_stream_eq_none
-    rcases this with (⟨nth_stream_eq_none⟩ | ⟨ifp_n, nth_stream_eq, nth_stream_fr_eq_zero⟩)
-    · cases' n with n'
-      · contradiction
-      -- IntFractPair.stream v 0 ≠ none
-      · have : g.TerminatedAt n' :=
+    · cases n with
+      | zero => contradiction
+      | succ n' =>
+        -- IntFractPair.stream v 0 ≠ none
+        have : g.TerminatedAt n' :=
           of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none.2
             nth_stream_eq_none
         have : g.convs (n' + 1) = g.convs n' :=

@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
+import Mathlib.Data.Finsupp.Lex
 import Mathlib.Algebra.MvPolynomial.Degrees
 
 /-!
@@ -117,9 +118,10 @@ theorem vars_one : (1 : MvPolynomial σ R).vars = ∅ :=
 
 theorem vars_pow (φ : MvPolynomial σ R) (n : ℕ) : (φ ^ n).vars ⊆ φ.vars := by
   classical
-  induction' n with n ih
-  · simp
-  · rw [pow_succ']
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ']
     apply Finset.Subset.trans (vars_mul _ _)
     exact Finset.union_subset (Finset.Subset.refl _) ih
 
@@ -138,7 +140,7 @@ theorem vars_prod {ι : Type*} [DecidableEq σ] {s : Finset ι} (f : ι → MvPo
 
 section IsDomain
 
-variable {A : Type*} [CommRing A] [IsDomain A]
+variable {A : Type*} [CommRing A] [NoZeroDivisors A]
 
 theorem vars_C_mul (a : A) (ha : a ≠ 0) (φ : MvPolynomial σ A) :
     (C a * φ : MvPolynomial σ A).vars = φ.vars := by
@@ -147,7 +149,7 @@ theorem vars_C_mul (a : A) (ha : a ≠ 0) (φ : MvPolynomial σ A) :
   apply exists_congr
   intro d
   apply and_congr _ Iff.rfl
-  rw [coeff_C_mul, mul_ne_zero_iff, eq_true ha, true_and_iff]
+  rw [coeff_C_mul, mul_ne_zero_iff, eq_true ha, true_and]
 
 end IsDomain
 
@@ -271,7 +273,7 @@ theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p
 
 /-- If `f₁` and `f₂` are ring homs out of the polynomial ring and `p₁` and `p₂` are polynomials,
   then `f₁ p₁ = f₂ p₂` if `p₁ = p₂` and `f₁` and `f₂` are equal on `R` and on the variables
-  of `p₁`.  -/
+  of `p₁`. -/
 theorem hom_congr_vars {f₁ f₂ : MvPolynomial σ R →+* S} {p₁ p₂ : MvPolynomial σ R}
     (hC : f₁.comp C = f₂.comp C) (hv : ∀ i, i ∈ p₁.vars → i ∈ p₂.vars → f₁ (X i) = f₂ (X i))
     (hp : p₁ = p₂) : f₁ p₁ = f₂ p₂ :=
@@ -305,7 +307,35 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
   classical
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
 
+lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : q.vars.toSet ⊆ s)
+    [∀ i, Decidable (i ∈ s)] :
+    MvPolynomial.aeval (fun i ↦ if i ∈ s then .X i else 0) q = q := by
+  rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
+  refine Finset.sum_congr rfl fun u hu ↦ ?_
+  rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
+  congr 1
+  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((MvPolynomial.mem_vars _).mpr ⟨u, hu, hi⟩)])
+
 end EvalVars
+
+section Lex
+
+variable [LinearOrder σ]
+
+lemma leadingCoeff_toLex : p.leadingCoeff toLex = p.coeff (ofLex <| p.supDegree toLex) := by
+  rw [leadingCoeff]
+  apply congr_arg p.coeff
+  apply toLex.injective
+  rw [Function.rightInverse_invFun toLex.surjective, toLex_ofLex]
+
+lemma supDegree_toLex_C (r : R) : supDegree toLex (C (σ := σ) r) = 0 := by
+  classical
+    exact (supDegree_single _ r).trans (ite_eq_iff'.mpr ⟨fun _ => rfl, fun _ => rfl⟩)
+
+lemma leadingCoeff_toLex_C (r : R) : leadingCoeff toLex (C (σ := σ) r) = r :=
+  leadingCoeff_single toLex.injective _ r
+
+end Lex
 
 end CommSemiring
 
