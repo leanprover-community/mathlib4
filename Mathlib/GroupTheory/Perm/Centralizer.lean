@@ -11,6 +11,7 @@ import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
+import Mathlib.GroupTheory.Perm.Finite
 
 /-! # Centralizer of a permutation and cardinality of conjugacy classes
   # in the symmetric groups
@@ -643,8 +644,6 @@ lemma mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [F
     rw [Finset.sup_eq_union, Finset.not_mem_union]
     exact ⟨hs a (s.mem_insert_self a), ih (fun a ha ↦ hs a (Finset.mem_insert_of_mem ha))⟩
 
-#find_home! Equiv.Perm.OnCycleFactors.mem_support_of_mem_noncommProd_support
-
 theorem θHom_apply (x : α) : θHom g (u,v) x =
     if hx : g.cycleOf x ∈ g.cycleFactorsFinset
     then (v ⟨g.cycleOf x, hx⟩ : Perm α) x
@@ -692,7 +691,7 @@ theorem θHom_apply_of_cycleOf_not_mem {x : α} (hx : g.cycleOf x ∉ g.cycleFac
 
 theorem θHom_injective (g : Perm α) : Function.Injective (θHom g) := by
   rw [θHom, MonoidHom.noncommCoprod_injective]
-  refine ⟨ofSubtype_injective _, ?_, ?_⟩
+  refine ⟨ofSubtype_injective, ?_, ?_⟩
   · apply injective_noncommPiCoprod_of_independent
     intro a
     simp only [zpowers_eq_closure, ← closure_iUnion]
