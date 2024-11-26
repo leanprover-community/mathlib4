@@ -16,20 +16,20 @@ a basis.
 
 open LinearMap (BilinMap)
 
-namespace QuadraticMap
-
 section
 
 variable {ι R}
 
 /-- All the products of pairs of elements in `f`. -/
-noncomputable def _root_.Finsupp.sym2Mul [CommMonoidWithZero R] (f : ι →₀ R) : Sym2 ι →₀ R :=
+noncomputable def Finsupp.sym2Mul [CommMonoidWithZero R] (f : ι →₀ R) : Sym2 ι →₀ R :=
   .onFinset
     f.support.sym2
     (Sym2.lift ⟨fun i j => f i * f j, fun _ _ => mul_comm _ _⟩)
     (Sym2.ind <| by aesop)
 
 end
+
+namespace QuadraticMap
 
 section
 
