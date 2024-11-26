@@ -84,4 +84,35 @@ jobs:
           curl --request DELETE \
             --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/awaiting-author" \
             --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
-            # comment uses ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.merge_or_delegate.outputs.bot == 'true' ) }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.merge_or_delegate.outputs.bot == 'true' ) }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install zulip
+
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/zulip_emoji_merge_delegate.py
+
+      - name: Run Zulip Emoji Merge Delegate Script
+        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.merge_or_delegate.outputs.bot == 'true' ) }}
+        env:
+          ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+          ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
+          ZULIP_SITE: https://leanprover.zulipchat.com
+        run: |
+          python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"

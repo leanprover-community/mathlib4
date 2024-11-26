@@ -74,7 +74,6 @@ variable {f} in
 lemma iff_of_isAffine [IsAffine X] [IsAffine Y] :
     SurjectiveOnStalks f ↔ RingHom.SurjectiveOnStalks (f.app ⊤) := by
   rw [← Spec_iff, MorphismProperty.arrow_mk_iso_iff @SurjectiveOnStalks (arrowIsoSpecΓOfIsAffine f)]
-  rfl
 
 theorem of_comp [SurjectiveOnStalks (f ≫ g)] : SurjectiveOnStalks f := by
   refine ⟨fun x ↦ ?_⟩
