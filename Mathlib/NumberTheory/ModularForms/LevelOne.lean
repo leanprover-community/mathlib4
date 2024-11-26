@@ -63,9 +63,9 @@ lemma neg_wt_modform_zero (k : ℤ) (hk : k ≤ 0) {F : Type*} [FunLike F ℍ �
         obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f t
         use 𝕢 1 ξ
         simp only [Metric.mem_closedBall, dist_zero_right]
-        refine ⟨qParam_image_bound ξ hξ, ?_⟩
-        rw [← eq_cuspFunction 1 f ξ, ← eq_cuspFunction 1 f t] at hξ₂
-        simp at hξ₂
+        refine ⟨qParam_im_ge_half ξ hξ, ?_⟩
+        simp only [← eq_cuspFunction 1 f t, Nat.cast_one, Complex.norm_eq_abs, ←
+          eq_cuspFunction 1 f ξ] at hξ₂
         convert hξ₂
         rw [← (Function.Periodic.qParam_right_inv one_ne_zero hz')]
         congr
@@ -75,8 +75,7 @@ lemma neg_wt_modform_zero (k : ℤ) (hk : k ≤ 0) {F : Type*} [FunLike F ℍ �
       simpa only [Metric.mem_ball, dist_zero_right, Complex.norm_eq_abs, neg_mul, mul_zero, div_one,
         Real.exp_zero] using (Function.Periodic.abs_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
     simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, const_apply] using heq hQ
-  have HF := SlashInvariantForm.wt_eq_zero_of_eq_const k (c := cuspFunction 1 f 0) H
-  rcases HF with HF | HF
+  rcases (SlashInvariantForm.wt_eq_zero_of_eq_const k (c := cuspFunction 1 f 0) H) with HF | HF
   · right
     refine ⟨HF, (cuspFunction 1 (f) 0), by ext z; exact H z⟩
   · left
@@ -88,15 +87,13 @@ lemma ModularForm_neg_weight_eq_zero (k : ℤ) (hk : k < 0) {F : Type*} [FunLike
     [ModularFormClass F Γ(1) k] (f : F) : ⇑f = 0 := by
   rcases neg_wt_modform_zero k hk.le f with h | ⟨rfl, _, _⟩
   · exact h
-  · aesop
+  · omega
 
 lemma ModularForm_weight_zero_constant {F : Type*} [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) 0] (f : F) : ∃ c : ℂ, ⇑f = fun _ => c := by
   rcases neg_wt_modform_zero 0 (by rfl) f with h1 | h2
-  · refine ⟨0, ?_⟩
-    simp only [h1]
-    rfl
-  · aesop
+  · refine ⟨0, h1⟩
+  · exact h2.2
 
 lemma weight_zero_rank_eq_one : Module.rank ℂ (ModularForm Γ(1) 0) = 1 := by
   let f := ModularForm.const 1 (Γ := Γ(1))
@@ -113,8 +110,7 @@ lemma weight_zero_rank_eq_one : Module.rank ℂ (ModularForm Γ(1) 0) = 1 := by
   ext z
   simp only [zero_apply, ne_eq, SlashInvariantForm.toFun_eq_coe, toSlashInvariantForm_coe,
    smul_eq_mul] at *
-  have : f z = 1 := rfl
-  simp only [ModularForm.smul_apply, this, smul_eq_mul, mul_one]
+  simp only [ModularForm.smul_apply, show  f z = 1 by rfl, smul_eq_mul, mul_one]
   exact (congrFun hc' z).symm
 
 lemma neg_weight_rank_zero (k : ℤ) (hk : k < 0) : Module.rank ℂ (ModularForm Γ(1) k) = 0 := by
