@@ -134,7 +134,7 @@ instance : RepresentablyCoflat (Ind.yoneda (C := C)) := by
   exact ((isIndObject_iff _).1 (Ind.isIndObject_inclusion_obj X)).1
 
 noncomputable instance : PreservesFiniteColimits (Ind.yoneda (C := C)) :=
-  preservesFiniteColimitsOfCoflat _
+  preservesFiniteColimits_of_coflat _
 
 instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
     HasColimitsOfShape (Discrete α) (Ind C) := by
