@@ -361,8 +361,8 @@ theorem Proj.stalkIso'_symm_mk (x) (f) :
 /-- `Proj` of a graded ring as a `LocallyRingedSpace`-/
 def Proj.toLocallyRingedSpace : LocallyRingedSpace :=
   { Proj.toSheafedSpace 𝒜 with
-    localRing := fun x =>
-      @RingEquiv.localRing _ _ _ (show LocalRing (at x) from inferInstance) _
+    isLocalRing := fun x =>
+      @RingEquiv.isLocalRing _ _ _ (show IsLocalRing (at x) from inferInstance) _
         (Proj.stalkIso' 𝒜 x).symm }
 
 end

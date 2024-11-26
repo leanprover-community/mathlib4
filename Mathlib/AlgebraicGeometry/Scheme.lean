@@ -402,7 +402,7 @@ def empty : Scheme where
   carrier := TopCat.of PEmpty
   presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
-  localRing x := PEmpty.elim x
+  isLocalRing x := PEmpty.elim x
   local_affine x := PEmpty.elim x
 
 instance : EmptyCollection Scheme :=
@@ -723,15 +723,15 @@ end Scheme
 
 end Stalks
 
-section LocalRing
+section IsLocalRing
 
-open LocalRing
+open IsLocalRing
 
 @[simp]
-lemma Spec_closedPoint {R S : CommRingCat} [LocalRing R] [LocalRing S]
+lemma Spec_closedPoint {R S : CommRingCat} [IsLocalRing R] [IsLocalRing S]
     {f : R ⟶ S} [IsLocalHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
-  LocalRing.comap_closedPoint f
+  IsLocalRing.comap_closedPoint f
 
-end LocalRing
+end IsLocalRing
 
 end AlgebraicGeometry

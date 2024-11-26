@@ -225,7 +225,7 @@ lemma spread_out_unique_of_isGermInjective' {x : X} [X.IsGermInjectiveAt x]
     (e : X.fromSpecStalk x ≫ f = X.fromSpecStalk x ≫ g) :
     ∃ (U : X.Opens), x ∈ U ∧ U.ι ≫ f = U.ι ≫ g := by
   fapply spread_out_unique_of_isGermInjective
-  · simpa using congr(($e).base (LocalRing.closedPoint _))
+  · simpa using congr(($e).base (IsLocalRing.closedPoint _))
   · apply Spec.map_injective
     rw [← cancel_mono (Y.fromSpecStalk _)]
     simpa [Scheme.Spec_map_stalkSpecializes_fromSpecStalk]

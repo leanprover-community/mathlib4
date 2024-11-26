@@ -212,7 +212,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
   obtain ⟨pid, p', ⟨hp'0, hp'p⟩, hpu⟩ :=
     (DiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
       (IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain R hp0 _)
-  have : LocalRing.maximalIdeal (Localization.AtPrime p) ≠ ⊥ := by
+  have : IsLocalRing.maximalIdeal (Localization.AtPrime p) ≠ ⊥ := by
     rw [Submodule.ne_bot_iff] at hp0 ⊢
     obtain ⟨x, x_mem, x_ne⟩ := hp0
     exact
@@ -224,11 +224,11 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     dvd_iff_normalizedFactors_le_normalizedFactors hP0, dvd_iff_le,
     IsScalarTower.algebraMap_eq R (Localization.AtPrime p) Sₚ, ← Ideal.map_map,
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
-    hpu (LocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
+    hpu (IsLocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
   · have : Algebra.IsIntegral (Localization.AtPrime p) Sₚ := ⟨isIntegral_localization⟩
     exact mt (Ideal.eq_bot_of_comap_eq_bot ) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
-  · exact (LocalRing.maximalIdeal.isMaximal _).isPrime
+  · exact (IsLocalRing.maximalIdeal.isMaximal _).isPrime
   · rw [Ne, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
     · assumption
     rw [IsScalarTower.algebraMap_eq R S Sₚ]

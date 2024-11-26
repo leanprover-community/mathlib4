@@ -46,7 +46,7 @@ p-adic, p adic, padic, p-adic integer
 -/
 
 
-open Padic Metric LocalRing
+open Padic Metric IsLocalRing
 
 noncomputable section
 
@@ -523,8 +523,8 @@ section Dvr
 /-! ### Discrete valuation ring -/
 
 
-instance : LocalRing ℤ_[p] :=
-  LocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
+instance : IsLocalRing ℤ_[p] :=
+  IsLocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
 theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
   have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
@@ -533,7 +533,7 @@ theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
   apply le_antisymm
   · intro x hx
-    simp only [LocalRing.mem_maximalIdeal, mem_nonunits] at hx
+    simp only [IsLocalRing.mem_maximalIdeal, mem_nonunits] at hx
     rwa [Ideal.mem_span_singleton, ← norm_lt_one_iff_dvd]
   · rw [Ideal.span_le, Set.singleton_subset_iff]
     exact p_nonnunit

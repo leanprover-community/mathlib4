@@ -211,9 +211,9 @@ lemma mapCotangent_toCotangent
 
 end Ideal
 
-namespace LocalRing
+namespace IsLocalRing
 
-variable (R : Type*) [CommRing R] [LocalRing R]
+variable (R : Type*) [CommRing R] [IsLocalRing R]
 
 /-- The `A ⧸ I`-vector space `I ⧸ I ^ 2`. -/
 abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
@@ -231,7 +231,8 @@ variable {R}
 lemma subsingleton_cotangentSpace_iff [IsNoetherianRing R] :
     Subsingleton (CotangentSpace R) ↔ IsField R := by
   refine (maximalIdeal R).cotangent_subsingleton_iff.trans ?_
-  rw [LocalRing.isField_iff_maximalIdeal_eq, Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing]
+  rw [IsLocalRing.isField_iff_maximalIdeal_eq,
+    Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing]
   simp [(maximalIdeal.isMaximal R).ne_top]
 
 lemma CotangentSpace.map_eq_top_iff [IsNoetherianRing R] {M : Submodule R (maximalIdeal R)} :
@@ -240,7 +241,7 @@ lemma CotangentSpace.map_eq_top_iff [IsNoetherianRing R] {M : Submodule R (maxim
   refine (Submodule.map_le_map_iff_of_injective (Submodule.injective_subtype _) _ _).mp ?_
   rw [Submodule.map_top, Submodule.range_subtype]
   apply Submodule.le_of_le_smul_of_le_jacobson_bot (IsNoetherian.noetherian _)
-    (LocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge
+    (IsLocalRing.jacobson_eq_maximalIdeal _ bot_ne_top).ge
   rw [smul_eq_mul, ← pow_two, ← Ideal.map_toCotangent_ker, ← Submodule.map_sup,
     ← Submodule.comap_map_eq, H, Submodule.comap_top, Submodule.map_top, Submodule.range_subtype]
 
@@ -272,4 +273,25 @@ theorem finrank_cotangentSpace_le_one_iff [IsNoetherianRing R] :
     Submodule.map_top, range_subtype, eq_comm (a := maximalIdeal R)]
   exact ⟨fun ⟨x, h⟩ ↦ ⟨_, h⟩, fun ⟨x, h⟩ ↦ ⟨⟨x, h ▸ subset_span (Set.mem_singleton x)⟩, h⟩⟩
 
-end LocalRing
+end IsLocalRing
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.CotangentSpace := IsLocalRing.CotangentSpace
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.subsingleton_cotangentSpace_iff := IsLocalRing.subsingleton_cotangentSpace_iff
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.map_eq_top_iff := IsLocalRing.CotangentSpace.map_eq_top_iff
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.span_image_eq_top_iff := IsLocalRing.CotangentSpace.span_image_eq_top_iff
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.finrank_cotangentSpace_eq_zero_iff := IsLocalRing.finrank_cotangentSpace_eq_zero_iff
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.finrank_cotangentSpace_eq_zero := IsLocalRing.finrank_cotangentSpace_eq_zero
+
+@[deprecated (since := "2024-11-11")]
+alias LocalRing.finrank_cotangentSpace_le_one_iff := IsLocalRing.finrank_cotangentSpace_le_one_iff

@@ -68,13 +68,13 @@ with
 noncomputable def coproduct : LocallyRingedSpace where
   toSheafedSpace := colimit (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
     (F ⋙ forgetToSheafedSpace)
-  localRing x := by
+  isLocalRing x := by
     obtain ⟨i, y, ⟨⟩⟩ := SheafedSpace.colimit_exists_rep (F ⋙ forgetToSheafedSpace) x
-    haveI : LocalRing (((F ⋙ forgetToSheafedSpace).obj i).presheaf.stalk y) :=
-      (F.obj i).localRing _
+    haveI : IsLocalRing (((F ⋙ forgetToSheafedSpace).obj i).presheaf.stalk y) :=
+      (F.obj i).isLocalRing _
     exact
       (asIso ((colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
-          (F ⋙ forgetToSheafedSpace) i : _).stalkMap y)).symm.commRingCatIsoToRingEquiv.localRing
+          (F ⋙ forgetToSheafedSpace) i : _).stalkMap y)).symm.commRingCatIsoToRingEquiv.isLocalRing
 
 /-- The explicit coproduct cofan for `F : discrete ι ⥤ LocallyRingedSpace`. -/
 noncomputable def coproductCofan : Cocone F where
@@ -254,10 +254,10 @@ end HasCoequalizer
 ringed space. -/
 noncomputable def coequalizer : LocallyRingedSpace where
   toSheafedSpace := Limits.coequalizer f.toShHom g.toShHom
-  localRing x := by
+  isLocalRing x := by
     obtain ⟨y, rfl⟩ :=
       (TopCat.epi_iff_surjective (coequalizer.π f.toShHom g.toShHom).base).mp inferInstance x
-    exact ((coequalizer.π f.toShHom g.toShHom : _).stalkMap y).domain_localRing
+    exact ((coequalizer.π f.toShHom g.toShHom : _).stalkMap y).domain_isLocalRing
 
 /-- The explicit coequalizer cofork of locally ringed spaces. -/
 noncomputable def coequalizerCofork : Cofork f g :=
