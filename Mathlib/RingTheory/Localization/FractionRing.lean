@@ -227,7 +227,7 @@ theorem lift_unique (hg : Function.Injective g) {f : K →+* L}
   IsLocalization.lift_unique _ hf1
 
 /-- Another version of unique to give two lift maps should be equal -/
-theorem lift_unique' {f1 f2 : K →+* L}
+theorem ringHom_ext {f1 f2 : K →+* L}
     (hf : ∀ x : A, f1 (algebraMap A K x) = f2 (algebraMap A K x)) : f1 = f2 := by
   ext z
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) z
