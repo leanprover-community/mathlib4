@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Fintype.Sort
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.Logic.Equiv.Fintype
@@ -284,7 +285,6 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
 
 end
 
--- Porting note: Included `DFunLike.coe` to avoid strange CoeFun instance for Equiv
 /-- Given a multilinear map `f` on `n` variables (parameterized by `Fin n`) and a subset `s` of `k`
 of these variables, one gets a new multilinear map on `Fin k` by varying these variables, and fixing
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a
@@ -292,7 +292,7 @@ proof that the cardinality of `s` is `k`. The implicit identification between `F
 we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Finset (Fin n))
     (hk : #s = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂ where
-  toFun v := f fun j => if h : j ∈ s then v ((DFunLike.coe (s.orderIsoOfFin hk).symm) ⟨j, h⟩) else z
+  toFun v := f fun j => if h : j ∈ s then v ((s.orderIsoOfFin hk).symm ⟨j, h⟩) else z
   /- Porting note: The proofs of the following two lemmas used to only use `erw` followed by `simp`,
   but it seems `erw` no longer unfolds or unifies well enough to work without more help. -/
   map_update_add' v i x y := by
@@ -1718,7 +1718,6 @@ theorem curryFinFinset_symm_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = 
         m <| finSumEquivOfFinset hk hl (Sum.inr i) :=
   rfl
 
--- @[simp] -- Porting note: simpNF linter, lhs simplifies, added aux version below
 theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
     (hl : #sᶜ = l)
     (f : MultilinearMap R (fun _ : Fin k => M') (MultilinearMap R (fun _ : Fin l => M') M₂))
@@ -1734,40 +1733,19 @@ theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin
     exact Finset.mem_compl.1 (Finset.orderEmbOfFin_mem _ _ _)
 
 @[simp]
-theorem curryFinFinset_symm_apply_piecewise_const_aux {k l n : ℕ} {s : Finset (Fin n)}
-    (hk : #s = k) (hl : #sᶜ = l)
-    (f : MultilinearMap R (fun _ : Fin k => M') (MultilinearMap R (fun _ : Fin l => M') M₂))
-    (x y : M') :
-      ((⇑f fun _ => x) (fun i => (Finset.piecewise s (fun _ => x) (fun _ => y)
-          ((sᶜ.orderEmbOfFin hl) i))) = f (fun _ => x) fun _ => y) := by
-  have := curryFinFinset_symm_apply_piecewise_const hk hl f x y
-  simp only [curryFinFinset_symm_apply, finSumEquivOfFinset_inl, Finset.orderEmbOfFin_mem,
-  Finset.piecewise_eq_of_mem, finSumEquivOfFinset_inr] at this
-  exact this
-
-@[simp]
 theorem curryFinFinset_symm_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
     (hl : #sᶜ = l)
     (f : MultilinearMap R (fun _ : Fin k => M') (MultilinearMap R (fun _ : Fin l => M') M₂))
     (x : M') : ((curryFinFinset R M₂ M' hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=
   rfl
 
--- @[simp] -- Porting note: simpNF, lhs simplifies, added aux version below
 theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
     (hl : #sᶜ = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
     (curryFinFinset R M₂ M' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
+  -- Porting note: `rw` fails
   refine (curryFinFinset_symm_apply_piecewise_const hk hl _ _ _).symm.trans ?_
-  -- `rw` fails
   rw [LinearEquiv.symm_apply_apply]
-
-@[simp]
-theorem curryFinFinset_apply_const_aux {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
-    (hl : #sᶜ = l) (f : MultilinearMap R (fun _ : Fin n => M') M₂) (x y : M') :
-    (f fun i => Sum.elim (fun _ => x) (fun _ => y) ((⇑ (Equiv.symm (finSumEquivOfFinset hk hl))) i))
-      = f (s.piecewise (fun _ => x) fun _ => y) := by
-  rw [← curryFinFinset_apply]
-  apply curryFinFinset_apply_const
 
 end MultilinearMap
 

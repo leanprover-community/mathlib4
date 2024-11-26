@@ -146,7 +146,7 @@ def transportSheafificationAdjunction : transportAndSheafify J K e A ⊣ sheafTo
     (transportIsoSheafToPresheaf _ _ _ _)
 
 noncomputable instance : PreservesFiniteLimits <| transportAndSheafify J K e A where
-  preservesFiniteLimits _ := compPreservesLimitsOfShape _ _
+  preservesFiniteLimits _ := comp_preservesLimitsOfShape _ _
 
 include K e in
 /-- Transport `HasSheafify` along an equivalence of sites. -/

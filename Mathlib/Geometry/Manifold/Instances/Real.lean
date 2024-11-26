@@ -42,7 +42,7 @@ noncomputable section
 
 open Set Function
 
-open scoped Manifold
+open scoped Manifold ContDiff
 
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
@@ -92,32 +92,42 @@ theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
 
 open ENNReal in
 @[simp]
-theorem interior_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
-  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  simpa [interior_Ici] using f.interior_preimage (Function.surjective_eval _) (Ici a)
+  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change interior (f ⁻¹' Ici a) = f ⁻¹' Ioi a
+  rw [f.interior_preimage, interior_Ici]
+  apply Function.surjective_eval
+@[deprecated (since := "2024-11-12")] alias interior_halfspace := interior_halfSpace
 
 open ENNReal in
 @[simp]
-theorem closure_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
-  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  simpa [closure_Ici] using f.closure_preimage (Function.surjective_eval _) (Ici a)
+  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
+  rw [f.closure_preimage, closure_Ici]
+  apply Function.surjective_eval
+@[deprecated (since := "2024-11-12")] alias closure_halfspace := closure_halfSpace
 
 open ENNReal in
 @[simp]
-theorem closure_open_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
-  let f : PiLp p (fun _ : Fin n ↦ ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
-  simpa [closure_Ioi] using f.closure_preimage (Function.surjective_eval _) (Ioi a)
+  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  change closure (f ⁻¹' Ioi a) = f ⁻¹' Ici a
+  rw [f.closure_preimage, closure_Ioi]
+  apply Function.surjective_eval
+@[deprecated (since := "2024-11-12")] alias closure_open_halfspace := closure_open_halfSpace
 
 open ENNReal in
 @[simp]
-theorem frontier_halfspace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
+theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
-  rw [frontier, closure_halfspace, interior_halfspace]
+  rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
   simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
+@[deprecated (since := "2024-11-12")] alias frontier_halfspace := frontier_halfSpace
 
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
@@ -202,7 +212,7 @@ lemma interior_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     _ = interior ({ y | 0 ≤ y 0}) := by
       congr!
       apply range_euclideanHalfSpace
-    _ = { y | 0 < y 0 } := interior_halfspace _ _ _
+    _ = { y | 0 < y 0 } := interior_halfSpace _ _ _
 
 lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     frontier (range (𝓡∂ n)) = { y | 0 = y 0 } := by
@@ -210,7 +220,7 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     _ = frontier ({ y | 0 ≤ y 0 }) := by
       congr!
       apply range_euclideanHalfSpace
-    _ = { y | 0 = y 0 } := frontier_halfspace 2 _ _
+    _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
@@ -310,7 +320,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
 -/
-instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
+instance IccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
     ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
   atlas := {IccLeftChart x y, IccRightChart x y}
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
@@ -325,7 +335,7 @@ instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
 
 /-- The manifold structure on `[x, y]` is smooth.
 -/
-instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
+instance Icc_smoothManifoldWithCorners (x y : ℝ) [Fact (x < y)] :
     SmoothManifoldWithCorners (𝓡∂ 1) (Icc x y) := by
   have M : ContDiff ℝ ∞ (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
       from fun z i => -z i + (y - x)) :=
@@ -363,8 +373,8 @@ instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
-/-! Register the manifold structure on `Icc 0 1`, and also its zero and one. -/
-
+/-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
+`IccChartedSpace` and `Icc_smoothManifoldWithCorners`. -/
 
 section
 

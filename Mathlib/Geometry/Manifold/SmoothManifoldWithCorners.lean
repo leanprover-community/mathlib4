@@ -133,10 +133,7 @@ universe u v w u' v' w'
 
 open Set Filter Function
 
-open scoped Manifold Filter Topology
-
-/-- The extended natural number `∞` -/
-scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
+open scoped Manifold Filter Topology ContDiff
 
 /-! ### Models with corners. -/
 
@@ -152,7 +149,7 @@ defined, the latter ensures that for `C^2` maps the second derivatives are symme
 on the boundary, as these are limit points of interior points where symmetry holds. If further
 conditions turn out to be useful, they can be added here.
 -/
-@[ext] -- Porting note(#5171): was nolint has_nonempty_instance
+@[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
@@ -529,9 +526,9 @@ section contDiffGroupoid
 /-! ### Smooth functions on models with corners -/
 
 
-variable {m n : ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M]
+variable {m n : WithTop ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
 
 variable (n I) in
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of `C^n` transformations of `H`
@@ -623,8 +620,8 @@ variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [Topologi
 
 /-- The product of two smooth partial homeomorphisms is smooth. -/
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-    {e : PartialHomeomorph H H} {e' : PartialHomeomorph H' H'} (he : e ∈ contDiffGroupoid ⊤ I)
-    (he' : e' ∈ contDiffGroupoid ⊤ I') : e.prod e' ∈ contDiffGroupoid ⊤ (I.prod I') := by
+    {e : PartialHomeomorph H H} {e' : PartialHomeomorph H' H'} (he : e ∈ contDiffGroupoid ∞ I)
+    (he' : e' ∈ contDiffGroupoid ∞ I') : e.prod e' ∈ contDiffGroupoid ∞ (I.prod I') := by
   cases' he with he he_symm
   cases' he' with he' he'_symm
   simp only at he he_symm he' he'_symm
@@ -672,7 +669,7 @@ theorem smoothManifoldWithCorners_of_contDiffOn {𝕜 : Type*} [NontriviallyNorm
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
     (h : ∀ e e' : PartialHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
-      ContDiffOn 𝕜 ⊤ (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
+      ContDiffOn 𝕜 ∞ (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
     SmoothManifoldWithCorners I M where
   compatible := by
     haveI : HasGroupoid M (contDiffGroupoid ∞ I) := hasGroupoid_of_pregroupoid _ (h _ _)
@@ -741,8 +738,8 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
   compatible := by
     rintro f g ⟨f1, hf1, f2, hf2, rfl⟩ ⟨g1, hg1, g2, hg2, rfl⟩
     rw [PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
-    have h1 := (contDiffGroupoid ⊤ I).compatible hf1 hg1
-    have h2 := (contDiffGroupoid ⊤ I').compatible hf2 hg2
+    have h1 := (contDiffGroupoid ∞ I).compatible hf1 hg1
+    have h2 := (contDiffGroupoid ∞ I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
 
 end SmoothManifoldWithCorners
@@ -1065,13 +1062,13 @@ open SmoothManifoldWithCorners
 
 theorem contDiffOn_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) :
-    ContDiffOn 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) ((f'.extend I).symm ≫ f.extend I).source := by
+    ContDiffOn 𝕜 ∞ (f.extend I ∘ (f'.extend I).symm) ((f'.extend I).symm ≫ f.extend I).source := by
   rw [extend_coord_change_source, I.image_eq]
   exact (StructureGroupoid.compatible_of_mem_maximalAtlas hf' hf).1
 
 theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
-    ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) x := by
+    ContDiffWithinAt 𝕜 ∞ (f.extend I ∘ (f'.extend I).symm) (range I) x := by
   apply (contDiffOn_extend_coord_change hf hf' x hx).mono_of_mem_nhdsWithin
   rw [extend_coord_change_source] at hx ⊢
   obtain ⟨z, hz, rfl⟩ := hx
@@ -1079,7 +1076,7 @@ theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maxi
 
 theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
-    ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
+    ContDiffWithinAt 𝕜 ∞ (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
   refine contDiffWithinAt_extend_coord_change hf hf' ?_
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf', hxf⟩
@@ -1408,15 +1405,14 @@ theorem ext_coord_change_source (x x' : M) :
 open SmoothManifoldWithCorners
 
 theorem contDiffOn_ext_coord_change [SmoothManifoldWithCorners I M] (x x' : M) :
-    ContDiffOn 𝕜 ⊤ (extChartAt I x ∘ (extChartAt I x').symm)
+    ContDiffOn 𝕜 ∞ (extChartAt I x ∘ (extChartAt I x').symm)
       ((extChartAt I x').symm ≫ extChartAt I x).source :=
   contDiffOn_extend_coord_change (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x')
 
 theorem contDiffWithinAt_ext_coord_change [SmoothManifoldWithCorners I M] (x x' : M) {y : E}
     (hy : y ∈ ((extChartAt I x').symm ≫ extChartAt I x).source) :
-    ContDiffWithinAt 𝕜 ⊤ (extChartAt I x ∘ (extChartAt I x').symm) (range I) y :=
-  contDiffWithinAt_extend_coord_change (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x')
-    hy
+    ContDiffWithinAt 𝕜 ∞ (extChartAt I x ∘ (extChartAt I x').symm) (range I) y :=
+  contDiffWithinAt_extend_coord_change (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x') hy
 
 variable (I I') in
 /-- Conjugating a function to write it in the preferred charts around `x`.
@@ -1541,7 +1537,7 @@ variable (M) in
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
--- Porting note(#5171): was nolint has_nonempty_instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was nolint has_nonempty_instance
 abbrev TangentBundle :=
   Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
