@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Localization.Away.Lemmas
+import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
