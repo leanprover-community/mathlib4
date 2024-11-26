@@ -231,6 +231,9 @@ theorem prod_toEnumFinset {β : Type*} [CommMonoid β] (m : Multiset α) (f : α
   · intro x
     rfl
 
+/--
+If `s = t` then there's an equivalence between the appropriate types.
+-/
 @[simps]
 def cast {s t : Multiset α} (h : s = t) : s ≃ t where
   toFun x := ⟨x.1, x.2.cast (by simp [h])⟩
@@ -242,7 +245,10 @@ instance : IsEmpty (0 : Multiset α) := Fintype.card_eq_zero_iff.mp (by simp)
 
 instance : IsEmpty (∅ : Multiset α) := Fintype.card_eq_zero_iff.mp (by simp)
 
-def consEquiv {v : α} : (v ::ₘ m) ≃ Option m where
+/--
+`v ::ₘ m` is equivalent to `Option m` by mapping one `v` to `none` and everything else to `m`.
+-/
+def consEquiv {v : α} : v ::ₘ m ≃ Option m where
   toFun x := if h : x.1 = v ∧ x.2.val = m.count v then none else some ⟨x.1, ⟨x.2, by
     by_cases hv : x.1 = v
     · simp only [hv, true_and] at h ⊢
@@ -277,6 +283,9 @@ lemma consEquiv_symm_none {v : α} :
 lemma coe_consEquiv_of_ne {v : α} (x : v ::ₘ m) (hx : ↑x ≠ v) :
     ↑(consEquiv x) = some x.1 := by simp [consEquiv, hx]
 
+/--
+There is some equivalence between `m` and `m.map f` which respects `f`.
+-/
 def mapEquiv_aux (m : Multiset α) (f : α → β) :
     Squash { v : m ≃ m.map f // ∀ a : m, v a = f a} :=
   Quotient.recOnSubsingleton m fun l ↦ .mk <|
@@ -288,6 +297,9 @@ def mapEquiv_aux (m : Multiset α) (f : α → β) :
             Equiv.coe_fn_symm_mk, cast_symm_apply_fst]
         split <;> simp_all⟩
 
+/--
+One of the possible equivalences from `Multiset.mapEquiv_aux`, selected using choice.
+-/
 noncomputable def mapEquiv (s : Multiset α) (f : α → β) : s ≃ s.map f :=
   (Multiset.mapEquiv_aux s f).out.1
 
