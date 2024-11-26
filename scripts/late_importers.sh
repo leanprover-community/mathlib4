@@ -46,6 +46,10 @@ significantDifference=${3:-0}
 
 jobID="${4:-N/A}"
 
+# A comma-separated list of file paths that the short report ignores.
+# The individual entries are actually matched as regular expressions.
+exceptions="${5:-}"
+
 >&2 printf $'Building \'%s\'\n' "${root}"
 >&2 printf $'Report only the top \'%s\' exceptions\n' "${lineLimit}"
 >&2 printf $'Consider a file an exception if the last import increase exceeds \'%s\' imports\n\n' "${significantDifference}"
