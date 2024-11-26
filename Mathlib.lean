@@ -152,6 +152,7 @@ import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.LinearAlgebra
+import Mathlib.Algebra.Category.Ring.Under.Basic
 import Mathlib.Algebra.Category.Semigrp.Basic
 import Mathlib.Algebra.Central.Basic
 import Mathlib.Algebra.Central.Defs
