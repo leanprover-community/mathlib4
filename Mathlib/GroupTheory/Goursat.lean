@@ -122,8 +122,8 @@ isomorphism `G ⧸ G' ≃ H ⧸ H'`.
 
 `G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively."]
 lemma goursat :
-    ∃ (G' : Subgroup G) (H' : Subgroup H) (M : Subgroup G') (N : Subgroup H') (hM : M.Normal)
-      (hN : N.Normal) (e : G' ⧸ M ≃* H' ⧸ N),
+    ∃ (G' : Subgroup G) (H' : Subgroup H) (M : Subgroup G') (N : Subgroup H') (_ : M.Normal)
+      (_ : N.Normal) (e : G' ⧸ M ≃* H' ⧸ N),
       I = (e.toMonoidHom.graph.comap <| (QuotientGroup.mk' M).prodMap (QuotientGroup.mk' N)).map
         (G'.subtype.prodMap H'.subtype) := by
   let G' := I.map (MonoidHom.fst ..)
@@ -147,7 +147,34 @@ lemma goursat :
   refine ⟨I.map (MonoidHom.fst ..), I.map (MonoidHom.snd ..),
     I'.goursatFst, I'.goursatSnd, inferInstance, inferInstance, e, ?_⟩
   rw [← he]
-  simp only [MonoidHom.range_comp, Subgroup.range_subtype, I', Subgroup.comap_map_eq]
-  sorry
+  simp only [MonoidHom.range_comp, Subgroup.range_subtype, I']
+  rw [comap_map_eq_self]
+  · ext ⟨g, h⟩
+    constructor
+    · intro hgh
+      simpa only [mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists, Prod.exists,
+        MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply, MonoidHom.coe_snd,
+        exists_eq_right, exists_and_right, exists_eq_right_right, MonoidHom.coe_fst]
+        using ⟨⟨h, hgh⟩, ⟨g, hgh⟩, g, h, hgh, ⟨rfl, rfl⟩⟩
+    · simp only [mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists, Prod.exists,
+        MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply, MonoidHom.coe_snd,
+        exists_eq_right, exists_and_right, exists_eq_right_right, MonoidHom.coe_fst,
+        forall_exists_index, and_imp]
+      rintro h₁ hgh₁ g₁ hg₁h g₂ h₂ hg₂h₂ hP hQ
+      simp only [Subtype.ext_iff] at hP hQ
+      rwa [← hP, ← hQ]
+  · rintro ⟨⟨g, _⟩, ⟨h, _⟩⟩ hgh
+    simp only [MonoidHom.prodMap, MonoidHom.mem_ker, MonoidHom.prod_apply, MonoidHom.coe_comp,
+      QuotientGroup.coe_mk', MonoidHom.coe_fst, comp_apply, MonoidHom.coe_snd, Prod.mk_eq_one,
+      QuotientGroup.eq_one_iff, mem_goursatFst, MonoidHom.mem_range, Prod.mk.injEq, Subtype.exists,
+      Prod.exists, mem_goursatSnd] at hgh
+    rcases hgh with ⟨⟨g₁, h₁, hg₁h₁, hPQ₁⟩, ⟨g₂, h₂, hg₂h₂, hPQ₂⟩⟩
+    simp only [Subtype.ext_iff] at hPQ₁ hPQ₂
+    rcases hPQ₁ with ⟨rfl, rfl⟩
+    rcases hPQ₂ with ⟨rfl, rfl⟩
+    simp only [MonoidHom.mem_range, MonoidHom.prod_apply, Prod.mk.injEq, Subtype.exists,
+      Prod.exists]
+    refine ⟨g₁, h₂, ?_, rfl, rfl⟩
+    simpa only [OneMemClass.coe_one, Prod.mk_mul_mk, mul_one, one_mul] using mul_mem hg₁h₁ hg₂h₂
 
 end Subgroup
