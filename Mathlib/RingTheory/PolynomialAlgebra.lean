@@ -7,6 +7,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.RingTheory.MatrixAlgebra
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
@@ -285,3 +286,16 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
   intro hk
   rw [← matPolyEquiv_coeff_apply, hk]
   rfl
+
+instance {R S} [CommRing R] [CommRing S] [Algebra R S] :
+    letI := (mapRingHom (algebraMap R S)).toAlgebra
+    haveI : IsScalarTower R R[X] S[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+    Algebra.IsPushout R S R[X] S[X] := by
+  letI := (mapRingHom (algebraMap R S)).toAlgebra
+  haveI : IsScalarTower R R[X] S[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+  constructor
+  let e : S[X] ≃ₐ[S] TensorProduct R S R[X] := { __ := polyEquivTensor R S, commutes' := by simp }
+  convert (TensorProduct.isBaseChange R R[X] S).comp (.ofEquiv e.symm.toLinearEquiv) using 1
+  ext : 2
+  refine Eq.trans ?_ (polyEquivTensor_symm_apply_tmul R S _ _).symm
+  simp [RingHom.algebraMap_toAlgebra]

@@ -6,7 +6,9 @@ Authors: Andrew Yang
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -101,6 +103,39 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
     rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
+
+lemma isPushout_of_isPushout (R S A B) [CommRing R] [CommRing S]
+    [CommRing A] [CommRing B] [Algebra R S] [Algebra S B] [Algebra R A] [Algebra A B] [Algebra R B]
+    [IsScalarTower R A B] [IsScalarTower R S B] [Algebra.IsPushout R S A B] :
+    IsPushout (ofHom (algebraMap R S)) (ofHom (algebraMap R A))
+      (ofHom (algebraMap S B)) (ofHom (algebraMap A B)) := by
+  refine ⟨⟨?_⟩, ⟨Limits.PushoutCocone.IsColimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+  · exact (IsScalarTower.algebraMap_eq R S B).symm.trans (IsScalarTower.algebraMap_eq R A B)
+  · intro s
+    letI := (s.inl.comp (algebraMap R S)).toAlgebra
+    refine (Algebra.pushoutDesc (R := R) (S := S) (R' := A) B ⟨s.inl, ?_⟩ ⟨s.inr, ?_⟩ ?_).toRingHom
+    · simp [RingHom.algebraMap_toAlgebra]
+    · simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun s.condition.symm
+    · exact fun _ _ ↦ Commute.all _ _
+  · intro s
+    letI := (s.inl.comp (algebraMap R S)).toAlgebra
+    ext x
+    refine Algebra.pushoutDesc_left (H := ?_) ..
+    exact fun _ _ ↦ Commute.all _ _
+  · intro s
+    letI := (s.inl.comp (algebraMap R S)).toAlgebra
+    ext x
+    refine Algebra.pushoutDesc_right (H := ?_) ..
+    exact fun _ _ ↦ Commute.all _ _
+  · intro s m e₁ e₂
+    letI := (s.inl.comp (algebraMap R S)).toAlgebra
+    let m' : B →ₐ[R] s.pt := ⟨m, fun r ↦
+      by simpa [ofHom, ← IsScalarTower.algebraMap_apply] using congr($e₁ (algebraMap R S r))⟩
+    show m'.toRingHom = _
+    congr 1
+    apply Algebra.IsPushout.algHom_ext (S := S) (R' := A)
+    · ext x; simpa using congr($e₂ x)
+    · ext x; simpa using congr($e₁ x)
 
 end Pushout
 
