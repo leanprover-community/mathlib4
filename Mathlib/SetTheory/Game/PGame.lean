@@ -1977,7 +1977,7 @@ theorem down_negative : down < 0 := by
   simp [le_zero_lf, star_lf_zero]
 
 @[simp]
-theorem neg_down_up : up = -down := by simp [up, down]
+theorem neg_down : -down = up := by simp [up, down]
 
 theorem star_fuzzy_down : star ‖ down := by
   rw [← neg_fuzzy_neg_iff, ← neg_down_up, neg_star]
