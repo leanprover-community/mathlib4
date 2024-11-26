@@ -21,9 +21,6 @@ We also show that if `C` is an enriched ordinary category (i.e. a category enric
 equipped with an identification `(X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))`) then `Cᵒᵖ` is again
 an enriched ordinary category.
 
-We use `Cᵒᵖ` for the underlying type as this allows us to construct the instance of
-`EnrichedOrdinaryCategory V (Cᵒᵖ)` which extends the opposite `V`-category structure.
-
 -/
 
 universe v₁ u₁ v u
