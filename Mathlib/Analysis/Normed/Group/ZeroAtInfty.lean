@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 
-import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
+import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!
 # ZeroAtInftyContinuousMapClass in normed additive groups

@@ -88,7 +88,7 @@ lemma pi {J : Type w} {C : J → Type u} {D : J → Type u'}
 
 end IsInvertedBy
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
 def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
   FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
@@ -104,8 +104,6 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
 instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) :=
   FullSubcategory.category _
 
--- Porting note (#5229): add another `@[ext]` lemma
--- since `ext` can't see through the definition to use `NatTrans.ext`.
 @[ext]
 lemma FunctorsInverting.hom_ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}
     {α β : F₁ ⟶ F₂} (h : α.app = β.app) : α = β :=

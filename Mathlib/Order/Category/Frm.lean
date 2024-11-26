@@ -68,7 +68,7 @@ instance : ConcreteCategory Frm := by
 instance hasForgetToLat : HasForget₂ Frm Lat where
   forget₂ :=
     { obj := fun X => ⟨X, _⟩
-      map := fun {X Y} => FrameHom.toLatticeHom }
+      map := fun {_ _} => FrameHom.toLatticeHom }
 
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/
 @[simps]
@@ -89,7 +89,7 @@ end Frm
 def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
   obj X := Frm.of (Opens (unop X : TopCat))
   map f := Opens.comap <| Quiver.Hom.unop f
-  map_id X := Opens.comap_id
+  map_id _ := Opens.comap_id
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful :=

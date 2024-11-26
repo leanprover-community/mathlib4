@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Data.Matrix.Basis
@@ -251,7 +251,7 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
   · intro p q hp hq
     simp [hp, hq]
   · intro i' j' x
-    erw [matPolyEquiv_coeff_apply_aux_2]
+    rw [matPolyEquiv_coeff_apply_aux_2]
     dsimp [stdBasisMatrix]
     split_ifs <;> rename_i h
     · rcases h with ⟨rfl, rfl⟩

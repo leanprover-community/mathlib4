@@ -57,7 +57,7 @@ protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : Out
       le_antisymm
         ((iInf_le_of_le fun _ => ∅) <| iInf_le_of_le (empty_subset _) <| by simp [m_empty])
         (zero_le _)
-    mono := fun {s₁ s₂} hs => iInf_mono fun f => iInf_mono' fun hb => ⟨hs.trans hb, le_rfl⟩
+    mono := fun {_ _} hs => iInf_mono fun _ => iInf_mono' fun hb => ⟨hs.trans hb, le_rfl⟩
     iUnion_nat := fun s _ =>
       ENNReal.le_of_forall_pos_le_add <| by
         intro ε hε (hb : (∑' i, μ (s i)) < ∞)
@@ -232,7 +232,7 @@ theorem smul_ofFunction {c : ℝ≥0∞} (hc : c ≠ ∞) : c • OuterMeasure.o
   haveI : Nonempty { t : ℕ → Set α // s ⊆ ⋃ i, t i } := ⟨⟨fun _ => s, subset_iUnion (fun _ => s) 0⟩⟩
   simp only [smul_apply, ofFunction_apply, ENNReal.tsum_mul_left, Pi.smul_apply, smul_eq_mul,
   iInf_subtype']
-  rw [ENNReal.iInf_mul_left fun h => (hc h).elim]
+  rw [ENNReal.mul_iInf fun h => (hc h).elim]
 
 end OfFunction
 

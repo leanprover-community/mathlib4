@@ -41,7 +41,7 @@ We provide basic definitions and results to support `α`-chain techniques in thi
 
 -/
 
-open FiniteDimensional Function Set
+open Module Function Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -160,7 +160,7 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
     {x : H} (hx : x ∈ corootSpace α) :
     LinearMap.trace R _ (toEnd R H (genWeightSpaceChain M α χ p q) x) = 0 := by
   rw [LieAlgebra.mem_corootSpace'] at hx
-  induction hx using Submodule.span_induction'
+  induction hx using Submodule.span_induction
   · next u hu =>
     obtain ⟨y, hy, z, hz, hyz⟩ := hu
     let f : Module.End R (genWeightSpaceChain M α χ p q) :=
@@ -204,19 +204,24 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     exact finrank_pos
   refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
   let N : ℤ → Submodule R M := fun k ↦ genWeightSpace M (k • α + χ)
-  have h₁ : CompleteLattice.Independent fun (i : Finset.Ioo p q) ↦ N i := by
-    rw [← LieSubmodule.independent_iff_coe_toSubmodule]
-    refine (independent_genWeightSpace R H M).comp fun i j hij ↦ ?_
+  have h₁ : iSupIndep fun (i : Finset.Ioo p q) ↦ N i := by
+    rw [← LieSubmodule.iSupIndep_iff_coe_toSubmodule]
+    refine (iSupIndep_genWeightSpace R H M).comp fun i j hij ↦ ?_
     exact SetCoe.ext <| smul_left_injective ℤ hα <| by rwa [add_left_inj] at hij
   have h₂ : ∀ i, MapsTo (toEnd R H M x) ↑(N i) ↑(N i) := fun _ _ ↦ LieSubmodule.lie_mem _
   have h₃ : genWeightSpaceChain M α χ p q = ⨆ i ∈ Finset.Ioo p q, N i := by
     simp_rw [genWeightSpaceChain_def', LieSubmodule.iSup_coe_toSubmodule]
   rw [← trace_toEnd_genWeightSpaceChain_eq_zero M α χ p q hp hq hx,
-    ← LieSubmodule.toEnd_restrict_eq_toEnd,
-    LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
+    ← LieSubmodule.toEnd_restrict_eq_toEnd]
+  -- The lines below illustrate the cost of treating `LieSubmodule` as both a
+  -- `Submodule` and a `LieSubmodule` simultaneously.
+  erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
+  simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
   dsimp [N]
-  simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd,
-    trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
+  convert_to _ =
+    ∑ k ∈ Finset.Ioo p q, (LinearMap.trace R { x // x ∈ (genWeightSpace M (k • α + χ)) })
+      ((toEnd R { x // x ∈ H } { x // x ∈ genWeightSpace M (k • α + χ) }) x)
+  simp_rw [trace_toEnd_genWeightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
     Finset.sum_add_distrib, ← Finset.sum_smul, natCast_zsmul]
 
 end IsCartanSubalgebra
