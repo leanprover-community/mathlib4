@@ -34,7 +34,7 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
  * `WeierstrassCurve.Δ`: the discriminant of a Weierstrass curve.
  * `WeierstrassCurve.map`: the Weierstrass curve mapped over a ring homomorphism.
  * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
- * `WeierstrassCurve.IsElliptic`: typeclass asserts that a Weierstrass curve is an elliptic curve.
+ * `WeierstrassCurve.IsElliptic`: typeclass asserting that a Weierstrass curve is an elliptic curve.
  * `WeierstrassCurve.j`: the j-invariant of an elliptic curve.
  * `WeierstrassCurve.ofJ0`: an elliptic curve whose j-invariant is 0.
  * `WeierstrassCurve.ofJ1728`: an elliptic curve whose j-invariant is 1728.
@@ -581,8 +581,8 @@ def ofJ : WeierstrassCurve F :=
   if j = 0 then if (3 : F) = 0 then ofJ1728 F else ofJ0 F
   else if j = 1728 then ofJ1728 F else ofJNe0Or1728 j
 
-lemma ofJ_0_of_three_ne_zero [h3 : NeZero (3 : F)] : ofJ 0 = ofJ0 F := by
-  rw [ofJ, if_pos rfl, if_neg h3.out]
+lemma ofJ_0_of_three_ne_zero (h3 : (3 : F) ≠ 0) : ofJ 0 = ofJ0 F := by
+  rw [ofJ, if_pos rfl, if_neg h3]
 
 lemma ofJ_0_of_three_eq_zero (h3 : (3 : F) = 0) : ofJ 0 = ofJ1728 F := by
   rw [ofJ, if_pos rfl, if_pos h3]
@@ -591,16 +591,16 @@ lemma ofJ_0_of_two_eq_zero (h2 : (2 : F) = 0) : ofJ 0 = ofJ0 F := by
   rw [ofJ, if_pos rfl, if_neg ((show (3 : F) = 1 by linear_combination h2) ▸ one_ne_zero)]
 
 lemma ofJ_1728_of_three_eq_zero (h3 : (3 : F) = 0) : ofJ 1728 = ofJ1728 F := by
-  rw [ofJ, if_pos (show (1728 : F) = 0 by linear_combination 576 * h3), if_pos h3]
+  rw [ofJ, if_pos (by linear_combination 576 * h3), if_pos h3]
 
-lemma ofJ_1728_of_two_ne_zero [h2 : NeZero (2 : F)] : ofJ 1728 = ofJ1728 F := by
+lemma ofJ_1728_of_two_ne_zero (h2 : (2 : F) ≠ 0) : ofJ 1728 = ofJ1728 F := by
   by_cases h3 : (3 : F) = 0
-  · rw [ofJ, if_pos (show (1728 : F) = 0 by linear_combination 576 * h3), if_pos h3]
-  · rw [ofJ, if_neg ((show 2 ^ 6 * 3 ^ 3 = (1728 : F) by norm_num1) ▸ mul_ne_zero
-      (pow_ne_zero 6 h2.out) (pow_ne_zero 3 h3)), if_pos rfl]
+  · exact ofJ_1728_of_three_eq_zero h3
+  · rw [ofJ, show (1728 : F) = 2 ^ 6 * 3 ^ 3 by norm_num1,
+      if_neg (mul_ne_zero (pow_ne_zero 6 h2) (pow_ne_zero 3 h3)), if_pos rfl]
 
 lemma ofJ_1728_of_two_eq_zero (h2 : (2 : F) = 0) : ofJ 1728 = ofJ0 F := by
-  rw [ofJ, if_pos (show (1728 : F) = 0 by linear_combination 864 * h2),
+  rw [ofJ, if_pos (by linear_combination 864 * h2),
     if_neg ((show (3 : F) = 1 by linear_combination h2) ▸ one_ne_zero)]
 
 lemma ofJ_ne_0_ne_1728 (h0 : j ≠ 0) (h1728 : j ≠ 1728) : ofJ j = ofJNe0Or1728 j := by
@@ -609,40 +609,36 @@ lemma ofJ_ne_0_ne_1728 (h0 : j ≠ 0) (h1728 : j ≠ 1728) : ofJ j = ofJNe0Or172
 instance : (ofJ j).IsElliptic := by
   by_cases h0 : j = 0
   · by_cases h3 : (3 : F) = 0
-    · haveI := Fact.mk (isUnit_of_mul_eq_one (2 : F) 2 (by linear_combination h3))
+    · have := Fact.mk (isUnit_of_mul_eq_one (2 : F) 2 (by linear_combination h3))
       rw [h0, ofJ_0_of_three_eq_zero h3]
       infer_instance
-    · haveI := NeZero.mk h3
-      haveI := Fact.mk (Ne.isUnit h3)
-      rw [h0, ofJ_0_of_three_ne_zero]
+    · have := Fact.mk (Ne.isUnit h3)
+      rw [h0, ofJ_0_of_three_ne_zero h3]
       infer_instance
   · by_cases h1728 : j = 1728
     · have h2 : (2 : F) ≠ 0 := fun h ↦ h0 (by linear_combination h1728 + 864 * h)
-      haveI := NeZero.mk h2
-      haveI := Fact.mk h2.isUnit
-      rw [h1728, ofJ_1728_of_two_ne_zero]
+      have := Fact.mk h2.isUnit
+      rw [h1728, ofJ_1728_of_two_ne_zero h2]
       infer_instance
-    · haveI := Fact.mk (Ne.isUnit h0)
-      haveI := Fact.mk (sub_ne_zero.2 h1728).isUnit
+    · have := Fact.mk (Ne.isUnit h0)
+      have := Fact.mk (sub_ne_zero.2 h1728).isUnit
       rw [ofJ_ne_0_ne_1728 j h0 h1728]
       infer_instance
 
 lemma ofJ_j : (ofJ j).j = j := by
   by_cases h0 : j = 0
   · by_cases h3 : (3 : F) = 0
-    · haveI := Fact.mk (isUnit_of_mul_eq_one (2 : F) 2 (by linear_combination h3))
+    · have := Fact.mk (isUnit_of_mul_eq_one (2 : F) 2 (by linear_combination h3))
       simp_rw [h0, ofJ_0_of_three_eq_zero h3, ofJ1728_j]
       linear_combination 576 * h3
-    · haveI := NeZero.mk h3
-      haveI := Fact.mk (Ne.isUnit h3)
-      simp_rw [h0, ofJ_0_of_three_ne_zero, ofJ0_j]
+    · have := Fact.mk (Ne.isUnit h3)
+      simp_rw [h0, ofJ_0_of_three_ne_zero h3, ofJ0_j]
   · by_cases h1728 : j = 1728
     · have h2 : (2 : F) ≠ 0 := fun h ↦ h0 (by linear_combination h1728 + 864 * h)
-      haveI := NeZero.mk h2
-      haveI := Fact.mk h2.isUnit
-      simp_rw [h1728, ofJ_1728_of_two_ne_zero, ofJ1728_j]
-    · haveI := Fact.mk (Ne.isUnit h0)
-      haveI := Fact.mk (sub_ne_zero.2 h1728).isUnit
+      have := Fact.mk h2.isUnit
+      simp_rw [h1728, ofJ_1728_of_two_ne_zero h2, ofJ1728_j]
+    · have := Fact.mk (Ne.isUnit h0)
+      have := Fact.mk (sub_ne_zero.2 h1728).isUnit
       simp_rw [ofJ_ne_0_ne_1728 j h0 h1728, ofJNe0Or1728_j]
 
 instance : Inhabited { W : WeierstrassCurve F // W.IsElliptic } := ⟨⟨ofJ 37, inferInstance⟩⟩
