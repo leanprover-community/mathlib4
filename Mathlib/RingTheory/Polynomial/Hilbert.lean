@@ -6,7 +6,6 @@ Authors: Fangming Li, Jujian Zhang
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
