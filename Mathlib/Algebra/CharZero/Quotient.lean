@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 

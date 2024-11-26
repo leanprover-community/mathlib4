@@ -52,7 +52,7 @@ instance instSemiring (X : SemiRingCat) : Semiring X := X.str
 instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
   ConcreteCategory.instFunLike
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10754): added instance
 instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
@@ -191,7 +191,7 @@ instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10754): added instance
 instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
@@ -319,7 +319,7 @@ instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10754): added instance
 instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
@@ -455,7 +455,7 @@ instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10754): added instance
 instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 

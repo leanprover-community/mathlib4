@@ -638,7 +638,7 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
   show (integralCLM' (E := E) 𝕜) (c • f) = c • (integralCLM' (E := E) 𝕜) f
-  exact map_smul (integralCLM' (E := E) 𝕜) c f
+  exact _root_.map_smul (integralCLM' (E := E) 𝕜) c f
 
 local notation "Integral" => @integralCLM α E _ _ μ _ _
 
