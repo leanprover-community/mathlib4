@@ -233,6 +233,9 @@ theorem lift_unique' {f1 f2 : K →+* L}
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) z
   rw [map_div₀, map_div₀, hf, hf]
 
+theorem injective_comp_algebraMap
+    : Function.Injective fun (f : K →+* L) => f.comp (algebraMap A K) :=
+  fun _ _ h => lift_unique' (fun x => RingHom.congr_fun h x)
 
 section liftAlgHom
 
