@@ -196,10 +196,9 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
 /-- `toGL` is the map from the special linear group to the general linear group. -/
 def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R where
-  toFun A :=  ⟨↑A, ↑A⁻¹,
-    congr_arg Subtype.val (mul_inv_cancel A), congr_arg Subtype.val (inv_mul_cancel A)⟩
-  map_one' := Units.ext <| rfl
-  map_mul' _ _ := Units.ext <| rfl
+  toFun A := ⟨↑A, ↑A⁻¹, congr_arg (·.1) (mul_inv_cancel A), congr_arg (·.1) (inv_mul_cancel A)⟩
+  map_one' := Units.ext rfl
+  map_mul' _ _ := Units.ext rfl
 
 @[deprecated (since := "2024-11-26")] alias coeToGL := toGL
 
