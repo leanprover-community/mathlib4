@@ -14,7 +14,7 @@ the morphism `WithZeroMultInt.toNNReal`.
 ## Main Definitions
 
 * `WithZeroMultInt.toNNReal` : The `MonoidWithZeroHom` from `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
-  `x ↦ e^(Multiplicative.toAdd (WithZero.unzero hx)` when `x ≠ 0`, for a nonzero `e : ℝ≥0`.
+  `x ↦ e^((WithZero.unzero hx).toAdd)` when `x ≠ 0`, for a nonzero `e : ℝ≥0`.
 
 ## Main Results
 
@@ -37,9 +37,9 @@ open Multiplicative WithZero
 namespace WithZeroMulInt
 
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
-  `x ↦ e^(Multiplicative.toAdd (WithZero.unzero hx)` when `x ≠ 0` as a `MonoidWithZeroHom`. -/
+  `x ↦ e^(WithZero.unzero hx).toAdd` when `x ≠ 0` as a `MonoidWithZeroHom`. -/
 def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤₘ₀ →*₀ ℝ≥0 where
-  toFun := fun x ↦ if hx : x = 0 then 0 else e ^ Multiplicative.toAdd (WithZero.unzero hx)
+  toFun := fun x ↦ if hx : x = 0 then 0 else e ^ (WithZero.unzero hx).toAdd
   map_zero' := rfl
   map_one' := by
     simp only [dif_neg one_ne_zero]
@@ -63,7 +63,7 @@ theorem toNNReal_pos_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤₘ₀} (hx : x 
   split_ifs; rfl
 
 theorem toNNReal_neg_apply {e : ℝ≥0} (he : e ≠ 0) {x : ℤₘ₀} (hx : x ≠ 0) :
-    toNNReal he x = e ^ Multiplicative.toAdd (WithZero.unzero hx) := by
+    toNNReal he x = e ^ (WithZero.unzero hx).toAdd := by
   simp only [toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs
   · tauto

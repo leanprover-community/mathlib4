@@ -4,75 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Data.Nat.Sqrt
 
 /-!
-# The natural numbers form a monoid
-
-This file contains the additive and multiplicative monoid instances on the natural numbers.
-
-See note [foundational algebra order theory].
+# `IsSquare` and `Even` for natural numbers
 -/
 
 assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
 
-open Multiplicative
-
 namespace Nat
-
-/-! ### Instances -/
-
-instance instAddCancelCommMonoid : AddCancelCommMonoid ℕ where
-  add := Nat.add
-  add_assoc := Nat.add_assoc
-  zero := Nat.zero
-  zero_add := Nat.zero_add
-  add_zero := Nat.add_zero
-  add_comm := Nat.add_comm
-  nsmul m n := m * n
-  nsmul_zero := Nat.zero_mul
-  nsmul_succ := succ_mul
-  add_left_cancel _ _ _ := Nat.add_left_cancel
-
-instance instCommMonoid : CommMonoid ℕ where
-  mul := Nat.mul
-  mul_assoc := Nat.mul_assoc
-  one := Nat.succ Nat.zero
-  one_mul := Nat.one_mul
-  mul_one := Nat.mul_one
-  mul_comm := Nat.mul_comm
-  npow m n := n ^ m
-  npow_zero := Nat.pow_zero
-  npow_succ _ _ := rfl
-
-/-!
-### Extra instances to short-circuit type class resolution
-
-These also prevent non-computable instances being used to construct these instances non-computably.
--/
-
-instance instAddCommMonoid    : AddCommMonoid ℕ    := by infer_instance
-instance instAddMonoid        : AddMonoid ℕ        := by infer_instance
-instance instMonoid           : Monoid ℕ           := by infer_instance
-instance instCommSemigroup    : CommSemigroup ℕ    := by infer_instance
-instance instSemigroup        : Semigroup ℕ        := by infer_instance
-instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
-instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
-
-/-! ### Miscellaneous lemmas -/
-
--- We set the simp priority slightly lower than default; later more general lemmas will replace it.
-@[simp 900] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl
-
-section Multiplicative
-
-lemma toAdd_pow (a : Multiplicative ℕ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
-
-@[simp] lemma ofAdd_mul (a b : ℕ) : ofAdd (a * b) = ofAdd a ^ b := (toAdd_pow _ _).symm
-
-end Multiplicative
 
 /-! #### Parity -/
 
@@ -157,24 +99,5 @@ example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
 
 -- Porting note: the `simp` lemmas about `bit*` no longer apply.
 example : ¬Even 25394535 := by decide
-
-/-! #### Units -/
-
-lemma units_eq_one (u : ℕˣ) : u = 1 := Units.ext <| Nat.eq_one_of_dvd_one ⟨u.inv, u.val_inv.symm⟩
-
-lemma addUnits_eq_zero (u : AddUnits ℕ) : u = 0 :=
-  AddUnits.ext <| (Nat.eq_zero_of_add_eq_zero u.val_neg).1
-
-@[simp] protected lemma isUnit_iff {n : ℕ} : IsUnit n ↔ n = 1 where
-  mp := by rintro ⟨u, rfl⟩; obtain rfl := Nat.units_eq_one u; rfl
-  mpr h := h.symm ▸ ⟨1, rfl⟩
-
-instance unique_units : Unique ℕˣ where
-  default := 1
-  uniq := Nat.units_eq_one
-
-instance unique_addUnits : Unique (AddUnits ℕ) where
-  default := 0
-  uniq := Nat.addUnits_eq_zero
 
 end Nat

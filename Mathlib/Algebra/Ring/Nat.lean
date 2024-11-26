@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Algebra.Ring.Defs
 
 /-!
@@ -14,8 +14,6 @@ This file contains the commutative semiring instance on the natural numbers.
 
 See note [foundational algebra order theory].
 -/
-
-open Multiplicative
 
 namespace Nat
 

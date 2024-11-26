@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
