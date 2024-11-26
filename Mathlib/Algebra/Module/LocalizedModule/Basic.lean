@@ -173,6 +173,10 @@ theorem mul_smul'_of_isLocalization {A : Type*} [Semiring A] [Algebra R A]
 
 variable (T)
 
+/--
+If `T` is the localization of `R` at `S`, then `M[S⁻¹]` has a natural `T`-algebra structure.
+This is not an instance as this causes a diamond with the usual action of `R[S⁻¹]` on `M[S⁻¹]`.
+-/
 attribute [local instance] moduleOfIsLocalization in
 @[reducible] noncomputable
 def algebraOfIsLocalization {A : Type*} [Semiring A] [Algebra R A] :
