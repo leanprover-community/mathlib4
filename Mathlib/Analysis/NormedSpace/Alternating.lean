@@ -9,6 +9,12 @@ import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 /-!
 # Operator norm on the space of continuous alternating maps
 
+In this file we show that continuous alternating maps
+from a seminormed space to a (semi)normed space form a (semi)normed space.
+We also prove basic facts about this norm
+and define bundled versions of some operations on continuous alternating maps.
+
+Most proofs just invoke the corresponding fact about continuous multilinear maps.
 -/
 
 noncomputable section
