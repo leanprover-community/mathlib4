@@ -167,34 +167,29 @@ noncomputable instance reps_fintype (k : ℤ) : Fintype (reps k) := by
 lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) : ∀ A : Δ m, reduce A ∈ reps m := by
   apply reduce_rec
   · intro A h
+    have hd := A_d_ne_zero h hm
     by_cases h1 : 0 < A.1 0 0
-    · simp only [reps, reduce_of_pos h h1, zpow_neg, Set.mem_setOf_eq, smul_coe,
-        coe_inv, coe_T_zpow, adjugate_fin_two_of, neg_zero, cons_mul, Nat.succ_eq_add_one,
-        Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, of_apply, cons_val', vecMul,
-        cons_dotProduct, vecHead, one_mul, vecTail, Function.comp_apply, Fin.succ_zero_eq_one,
-        neg_mul, dotProduct_empty, add_zero, zero_mul, zero_add, empty_val', cons_val_fin_one,
-        cons_val_one, cons_val_zero, lt_add_neg_iff_add_lt, le_add_neg_iff_add_le]
-      refine ⟨abs_eq_zero.mp h, ?_, ?_, ?_⟩
-      · simp only [abs_eq_zero.mp h, mul_zero, h1]
-      · exact Int.ediv_mul_le _ <| A_d_ne_zero h hm
-      · rw [mul_comm, ← Int.sub_eq_add_neg, ← Int.emod_def]
-        apply le_trans _ (Int.emod_lt (A.1 0 1) (A_d_ne_zero h hm))
-        rw [abs_eq_self.mpr (Int.emod_nonneg (A.1 0 1) (A_d_ne_zero h hm))]
-    · simp only [reps, reduce_of_not_pos h h1, Int.ediv_neg, neg_neg, smul_def, ←
-        mul_assoc, S_mul_S_eq, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
-        Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty,
-        Set.mem_setOf_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
-        vecTail, Function.comp_apply, Fin.succ_zero_eq_one, dotProduct_empty, add_zero, neg_add_rev,
-        zero_mul, zero_add, empty_val', cons_val_fin_one, cons_val_one, neg_eq_zero, cons_val_zero,
-        lt_add_neg_iff_add_lt, le_add_neg_iff_add_le, abs_neg]
-      refine ⟨abs_eq_zero.mp h, ?_, ?_, ?_⟩
-      · simp only [abs_eq_zero.mp h, mul_zero, neg_zero, Int.lt_iff_le_and_ne, ne_eq]
-        refine ⟨not_lt.mp h1, A_a_ne_zero (abs_eq_zero.mp h) hm⟩
-      · rw [le_neg]
-        exact Int.ediv_mul_le _ <| A_d_ne_zero h hm
-      · rw [mul_comm, add_comm, ← Int.sub_eq_add_neg, ← Int.emod_def]
-        apply le_trans _ (Int.emod_lt (-A.1 0 1) (A_d_ne_zero h hm))
-        rw [abs_eq_self.mpr (Int.emod_nonneg (-A.1 0 1) (A_d_ne_zero h hm))]
+    focus simp only [reduce_of_pos h h1]
+    swap
+    focus simp only [reduce_of_not_pos h h1]
+    swap
+    all_goals
+      simp only [reps, zpow_neg, Set.mem_setOf_eq, coe_inv, coe_T_zpow, adjugate_fin_two_of,
+        neg_zero, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply,
+        of_apply, cons_val', vecMul, cons_dotProduct, vecHead, one_mul, vecTail, dotProduct_empty,
+        Function.comp_apply, Fin.succ_zero_eq_one, neg_mul, add_zero, zero_mul, zero_add, mul_zero,
+        empty_val', cons_val_fin_one, cons_val_one, cons_val_zero, le_add_neg_iff_add_le, lt_neg,
+        Int.ediv_neg, neg_neg, smul_def, ← mul_assoc, S_mul_S_eq, mul_neg, neg_of, neg_cons,
+        neg_empty, Pi.neg_apply, neg_add_rev, abs_neg, ← le_neg, abs_eq_zero.mp h, true_and]
+    · refine ⟨h1, Int.ediv_mul_le _ hd, ?_⟩
+      rw [mul_comm, ← Int.sub_eq_add_neg, ← Int.emod_def, abs_eq_self.mpr <| Int.emod_nonneg _ hd]
+      exact Int.emod_lt _ hd
+    · refine ⟨?_, Int.ediv_mul_le _ hd, ?_⟩
+      · simp only [Int.lt_iff_le_and_ne]
+        exact ⟨not_lt.mp h1, A_a_ne_zero (abs_eq_zero.mp h) hm⟩
+      · rw [mul_comm, add_comm, ← Int.sub_eq_add_neg, ← Int.emod_def,
+         abs_eq_self.mpr <| Int.emod_nonneg _ hd]
+        exact Int.emod_lt _ hd
   · exact fun A h1 h2 ↦ reduce_of_reduce_step h1 ▸ h2
 
 lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
