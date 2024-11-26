@@ -50,9 +50,6 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
--- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp cannot prove this
-@[simp, nolint simpNF]
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 
 @[simp]
@@ -668,9 +665,9 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
   Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
--- @[simp] -- Porting note: not in simpNF
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
-    A.unitsModPrincipalUnitsEquivResidueFieldUnits.toMonoidHom.comp (QuotientGroup.mk' _) =
+    (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp
+        (QuotientGroup.mk' (A.principalUnitGroup.subgroupOf A.unitGroup)) =
       A.unitGroupToResidueFieldUnits := rfl
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk_apply
@@ -793,7 +790,6 @@ namespace Valuation
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
 
--- @[simp] -- Porting note: not in simpNF
 theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
   IsEquiv.eq_one_iff_eq_one (Valuation.isEquiv_valuation_valuationSubring _).symm
 

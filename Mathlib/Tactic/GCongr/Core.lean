@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
 import Lean
-import Mathlib.Order.Defs
+import Batteries.Lean.Except
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
-import Batteries.Tactic.Exact
+import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # The `gcongr` ("generalized congruence") tactic

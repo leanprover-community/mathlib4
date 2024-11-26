@@ -5,6 +5,7 @@ Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev
 -/
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Data.Matrix.ColumnRowPartitioned
+import Mathlib.Data.Sign
 
 /-!
 # Totally unimodular matrices
@@ -29,24 +30,20 @@ namespace Matrix
 variable {m n R : Type*} [CommRing R]
 
 /-- `A.IsTotallyUnimodular` means that every square submatrix of `A` (not necessarily contiguous)
-has determinant `0` or `1` or `-1`. -/
+has determinant `0` or `1` or `-1`; that is, the determinant is in the range of `SignType.cast`. -/
 def IsTotallyUnimodular (A : Matrix m n R) : Prop :=
   ∀ k : ℕ, ∀ f : Fin k → m, ∀ g : Fin k → n, f.Injective → g.Injective →
-    (A.submatrix f g).det = 0 ∨
-    (A.submatrix f g).det = 1 ∨
-    (A.submatrix f g).det = -1
+    (A.submatrix f g).det ∈ Set.range SignType.cast
 
 lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
     ∀ k : ℕ, ∀ f : Fin k → m, ∀ g : Fin k → n,
-      (A.submatrix f g).det = 0 ∨
-      (A.submatrix f g).det = 1 ∨
-      (A.submatrix f g).det = -1 := by
+      (A.submatrix f g).det ∈ Set.range SignType.cast := by
   constructor <;> intro hA
   · intro k f g
-    if h : f.Injective ∧ g.Injective then
-      exact hA k f g h.1 h.2
-    else
-      left
+    by_cases h : f.Injective ∧ g.Injective
+    · exact hA k f g h.1 h.2
+    · refine ⟨0, ?_⟩
+      rw [SignType.coe_zero, eq_comm]
       simp_rw [not_and_or, Function.not_injective_iff] at h
       obtain ⟨i, j, hfij, hij⟩ | ⟨i, j, hgij, hij⟩ := h
       · rw [← det_transpose, transpose_submatrix]
@@ -57,12 +54,24 @@ lemma isTotallyUnimodular_iff (A : Matrix m n R) : A.IsTotallyUnimodular ↔
   · intro _ _ _ _ _
     apply hA
 
+lemma isTotallyUnimodular_iff_fintype.{w} (A : Matrix m n R) : A.IsTotallyUnimodular ↔
+    ∀ (ι : Type w) [Fintype ι] [DecidableEq ι], ∀ f : ι → m, ∀ g : ι → n,
+      (A.submatrix f g).det ∈ Set.range SignType.cast := by
+  rw [isTotallyUnimodular_iff]
+  constructor
+  · intro hA ι _ _ f g
+    specialize hA (Fintype.card ι) (f ∘ (Fintype.equivFin ι).symm) (g ∘ (Fintype.equivFin ι).symm)
+    rwa [←submatrix_submatrix, det_submatrix_equiv_self] at hA
+  · intro hA k f g
+    specialize hA (ULift (Fin k)) (f ∘ Equiv.ulift) (g ∘ Equiv.ulift)
+    rwa [←submatrix_submatrix, det_submatrix_equiv_self] at hA
+
 lemma IsTotallyUnimodular.apply {A : Matrix m n R} (hA : A.IsTotallyUnimodular)
     (i : m) (j : n) :
-    A i j = 0 ∨ A i j = 1 ∨ A i j = -1 := by
+    A i j ∈ Set.range SignType.cast := by
   let f : Fin 1 → m := (fun _ => i)
   let g : Fin 1 → n := (fun _ => j)
-  convert hA 1 f g (Function.injective_of_subsingleton f) (Function.injective_of_subsingleton g) <;>
+  convert hA 1 f g (Function.injective_of_subsingleton f) (Function.injective_of_subsingleton g)
   exact (det_fin_one (A.submatrix f g)).symm
 
 lemma IsTotallyUnimodular.submatrix {A : Matrix m n R} (hA : A.IsTotallyUnimodular) {k : ℕ}
@@ -96,7 +105,8 @@ lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) {m' : Type*} :
   · exact hA k (Sum.inl ∘ f) g
   · if zerow : ∃ i, ∃ x', f i = Sum.inr x' then
       obtain ⟨i, _, _⟩ := zerow
-      left
+      use 0
+      rw [eq_comm]
       apply det_eq_zero_of_row_eq_zero i
       intro
       simp_all
