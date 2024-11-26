@@ -81,10 +81,10 @@ dimension, the transition function between two trivializations is not automatica
 map from the base `B` to the endomorphisms `F →L[R] F` of the fiber (considered with the
 operator-norm topology), and so the definition needs to be modified by restricting consideration to
 a family of trivializations (constituting the data) which are all mutually-compatible in this sense.
-The PRs #13052 and #13175 implemented this change.
+The PRs https://github.com/leanprover-community/mathlib4/pull/13052 and https://github.com/leanprover-community/mathlib4/pull/13175 implemented this change.
 
 There is still the choice about whether to hold this data at the level of fiber bundles or of vector
-bundles. As of PR #17505, the data is all held in `FiberBundle`, with `VectorBundle` a
+bundles. As of PR https://github.com/leanprover-community/mathlib4/pull/17505, the data is all held in `FiberBundle`, with `VectorBundle` a
 (propositional) mixin stating fiberwise-linearity.
 
 This allows bundles to carry instances of typeclasses in which the scalar field, `R`, does not
@@ -392,7 +392,7 @@ Trivialization changes from `i` to `j` are given by continuous maps `coordChange
 `baseSet i ∩ baseSet j` to the set of homeomorphisms of `F`, but we express them as maps
 `B → F → F` and require continuity on `(baseSet i ∩ baseSet j) × F` to avoid the topology on the
 space of continuous maps on `F`. -/
--- Porting note(#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure FiberBundleCore (ι : Type*) (B : Type*) [TopologicalSpace B] (F : Type*)
     [TopologicalSpace F] where
   baseSet : ι → Set B
@@ -411,7 +411,7 @@ namespace FiberBundleCore
 variable [TopologicalSpace B] [TopologicalSpace F] (Z : FiberBundleCore ι B F)
 
 /-- The index set of a fiber bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- Porting note(#5171): was has_nonempty_instance
+@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was has_nonempty_instance
 def Index (_Z : FiberBundleCore ι B F) := ι
 
 /-- The base space of a fiber bundle core, as a convenience function for dot notation -/
@@ -420,7 +420,7 @@ def Base (_Z : FiberBundleCore ι B F) := B
 
 /-- The fiber of a fiber bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- Porting note(#5171): was has_nonempty_instance
+@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was has_nonempty_instance
 def Fiber (_ : FiberBundleCore ι B F) (_x : B) := F
 
 instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
@@ -721,7 +721,7 @@ variable (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
 equivalences but there is not yet a topology on the total space. The total space is hence given a
 topology in such a way that there is a fiber bundle structure for which the partial equivalences
 are also partial homeomorphisms and hence local trivializations. -/
--- Porting note (#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure FiberPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivializationAt : B → Pretrivialization F (π F E)

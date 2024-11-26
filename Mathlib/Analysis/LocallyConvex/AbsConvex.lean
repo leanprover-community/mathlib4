@@ -281,17 +281,12 @@ lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
   apply segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
-  refine ⟨(1 + r)/2, (1 - r)/2, ?_, ?_⟩
-  · rw [← zero_div 2]
-    exact (div_le_div_right zero_lt_two).mpr (neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr))
-  · constructor
-    · rw [← zero_div 2]
-      exact (div_le_div_right zero_lt_two).mpr (sub_nonneg_of_le (le_of_max_le_left hr))
-    · constructor
-      · ring_nf
-      · rw [smul_neg, ← sub_eq_add_neg, ← sub_smul]
-        apply congrFun (congrArg HSMul.hSMul _) y
-        ring_nf
+  have : 0 ≤ 1 + r := neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr)
+  have : 0 ≤ 1 - r := sub_nonneg.2 (le_of_abs_le hr)
+  refine ⟨(1 + r)/2, (1 - r)/2, by positivity, by positivity, by ring, ?_⟩
+  rw [smul_neg, ← sub_eq_add_neg, ← sub_smul]
+  apply congrFun (congrArg HSMul.hSMul _) y
+  ring_nf
 
 @[simp]
 theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :

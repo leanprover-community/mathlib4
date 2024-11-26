@@ -35,7 +35,7 @@ namespace Trivial
 
 variable (B : Type*) (F : Type*)
 
--- Porting note (#10754): Added name for this instance.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added name for this instance.
 -- TODO: use `TotalSpace.toProd`
 instance topologicalSpace [t₁ : TopologicalSpace B]
     [t₂ : TopologicalSpace F] : TopologicalSpace (TotalSpace F (Trivial B F)) :=

@@ -512,8 +512,6 @@ variable [MeasurableSpace α] [TopologicalSpace β]
 
 open Filter
 
-open Filter
-
 @[aesop safe 20 (rule_sets := [Measurable])]
 protected theorem sup [Max β] [ContinuousSup β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊔ g) :=
@@ -699,7 +697,7 @@ theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [T
     have : Measurable (G ∘ f) := Measurable.subtype_mk H.measurable
     exact hG.measurableEmbedding.measurable_comp_iff.1 this
   · have : IsSeparable (g ⁻¹' range (g ∘ f)) := hg.isSeparable_preimage H.isSeparable_range
-    rwa [range_comp, hg.inj.preimage_image] at this
+    rwa [range_comp, hg.injective.preimage_image] at this
 
 /-- A sequential limit of strongly measurable functions is strongly measurable. -/
 theorem _root_.stronglyMeasurable_of_tendsto {ι : Type*} {m : MeasurableSpace α}
