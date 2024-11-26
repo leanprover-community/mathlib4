@@ -133,6 +133,12 @@ theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsi
 def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
   IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩)
 
+/-- `ULift.{u} ℤ` is initial in `CommRingCat`. -/
+def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
+  IsInitial.ofUnique (h := fun R ↦ ⟨⟨(Int.castRingHom R).comp ULift.ringEquiv.toRingHom⟩,
+    fun _ ↦ RingHom.precomp_injective_of_surjective (ULift.ringEquiv (α := ℤ)).symm.toRingHom
+      ULift.ringEquiv.symm.surjective (RingHom.ext_int _ _)⟩)
+
 end Terminal
 
 section Product
