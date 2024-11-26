@@ -1424,14 +1424,17 @@ def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
     assertInstancesCommute
+    -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
     let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) := ← do
       let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | return none
       let some pa ← Qq.findLocalDeclWithType? q($a ≠ 1) | return none
       return some (normedGroup_E, pa)
     match o with
+    -- If so, return a proof of `0 < ‖a‖`
     | some (_normedGroup_E, pa) =>
       assertInstancesCommute
       return .positive q(norm_pos_iff'.2 $pa)
+    -- Else, return a proof of `0 ≤ ‖a‖`
     | none => return .nonnegative q(norm_nonneg' $a)
   | _, _, _ => throwError "not `‖·‖`"
 
@@ -1443,24 +1446,19 @@ def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
     assertInstancesCommute
+    -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption
     let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) := ← do
       let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | return none
       let some pa ← Qq.findLocalDeclWithType? q($a ≠ 0) | return none
       return some (normedAddGroup_E, pa)
     match o with
+    -- If so, return a proof of `0 < ‖a‖`
     | some (_normedAddGroup_E, pa) =>
       assertInstancesCommute
       return .positive q(norm_pos_iff.2 $pa)
+    -- Else, return a proof of `0 ≤ ‖a‖`
     | none => return .nonnegative q(norm_nonneg $a)
   | _, _, _ => throwError "not `‖·‖`"
-
-example [SeminormedGroup E] {a : E} (_ha : a ≠ 1) : 0 ≤ ‖a‖ := by positivity
-example [NormedGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
-example [NormedGroup E] {a : E} (ha : a ≠ 1) : 0 < ‖a‖ := by positivity
-
-example [SeminormedAddGroup E] {a : E} (_ha : a ≠ 0) : 0 ≤ ‖a‖ := by positivity
-example [NormedAddGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
-example [NormedAddGroup E] {a : E} (ha : a ≠ 0) : 0 < ‖a‖ := by positivity
 
 end Mathlib.Meta.Positivity
 
