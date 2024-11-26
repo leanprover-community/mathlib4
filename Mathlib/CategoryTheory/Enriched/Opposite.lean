@@ -107,9 +107,8 @@ def forgetEnrichmentOppositeEquivalence.inverse :
     rw [this, forgetEnrichment_comp, Category.assoc, unitors_inv_equal,
       ← leftUnitor_inv_braiding_assoc]
     have : (β_ _ _).hom ≫ (homTo V g.unop ⊗ homTo V f.unop) ≫
-        eComp V («to» V z.unop) («to» V y.unop) («to» V x.unop) =
-        ((homTo V f.unop) ⊗ (homTo V g.unop)) ≫ eComp V x y z :=
-      by exact (tensorHom_eComp_op_eq V _ _).symm
+      eComp V («to» V z.unop) («to» V y.unop) («to» V x.unop) =
+      ((homTo V f.unop) ⊗ (homTo V g.unop)) ≫ eComp V x y z := (tensorHom_eComp_op_eq V _ _).symm
     rw [this, ← Category.assoc]
     congr 1
 
