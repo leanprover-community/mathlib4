@@ -64,7 +64,7 @@ theorem IsCoskeletal.isRightKanExtension :
     IsRightKanExtension X (𝟙 (Truncated.inclusion (n := n).op ⋙ X)) :=
   IsCoskeletal.nonempty_isRightKanExtension.some
 
-/-- If `X` is `n`-cosketal, then `rightExtensionInclusion X n` is a terminal object in the category
+/-- If `X` is `n`-coskeletal, then `rightExtensionInclusion X n` is a terminal object in the category
 `RightExtension (Truncated.inclusion (n := n)).op (Truncated.inclusion.op ⋙ X)`. -/
 noncomputable def IsCoskeletal.isUniversalOfIsRightKanExtension :
     (rightExtensionInclusion X n).IsUniversal := by
