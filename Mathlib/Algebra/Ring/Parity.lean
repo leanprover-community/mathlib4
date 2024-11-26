@@ -3,6 +3,7 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Set.Operations
@@ -113,6 +114,8 @@ lemma Odd.add_odd : Odd a → Odd b → Even (a + b) := by
 
 @[simp] lemma Even.add_one (h : Even a) : Odd (a + 1) := h.add_odd odd_one
 @[simp] lemma Even.one_add (h : Even a) : Odd (1 + a) := h.odd_add odd_one
+@[simp] lemma Odd.add_one (h : Odd a) : Even (a + 1) := h.add_odd odd_one
+@[simp] lemma Odd.one_add (h : Odd a) : Even (1 + a) := odd_one.add_odd h
 
 lemma odd_two_mul_add_one (a : α) : Odd (2 * a + 1) := ⟨_, rfl⟩
 

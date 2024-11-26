@@ -98,33 +98,21 @@ theorem count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.F
     _ ↔ ¬s.Infinite := not_congr count_apply_eq_top
     _ ↔ s.Finite := Classical.not_not
 
-theorem empty_of_count_eq_zero' (s_mble : MeasurableSet s) (hsc : count s = 0) : s = ∅ := by
-  have hs : s.Finite := by
-    rw [← count_apply_lt_top' s_mble, hsc]
-    exact WithTop.top_pos
-  simpa [count_apply_finite' hs s_mble] using hsc
-
-theorem empty_of_count_eq_zero [MeasurableSingletonClass α] (hsc : count s = 0) : s = ∅ := by
-  have hs : s.Finite := by
-    rw [← count_apply_lt_top, hsc]
-    exact WithTop.top_pos
-  simpa [count_apply_finite _ hs] using hsc
-
 @[simp]
-theorem count_eq_zero_iff' (s_mble : MeasurableSet s) : count s = 0 ↔ s = ∅ :=
-  ⟨empty_of_count_eq_zero' s_mble, fun h => h.symm ▸ count_empty⟩
+theorem count_eq_zero_iff : count s = 0 ↔ s = ∅ where
+  mp h := eq_empty_of_forall_not_mem fun x hx ↦ by
+    simpa [hx] using ((ENNReal.le_tsum x).trans <| le_sum_apply _ _).trans_eq h
+  mpr := by rintro rfl; exact count_empty
 
-@[simp]
-theorem count_eq_zero_iff [MeasurableSingletonClass α] : count s = 0 ↔ s = ∅ :=
-  ⟨empty_of_count_eq_zero, fun h => h.symm ▸ count_empty⟩
+lemma count_ne_zero_iff : count s ≠ 0 ↔ s.Nonempty :=
+  count_eq_zero_iff.not.trans nonempty_iff_ne_empty.symm
 
-theorem count_ne_zero' (hs' : s.Nonempty) (s_mble : MeasurableSet s) : count s ≠ 0 := by
-  rw [Ne, count_eq_zero_iff' s_mble]
-  exact hs'.ne_empty
+alias ⟨_, count_ne_zero⟩ := count_ne_zero_iff
 
-theorem count_ne_zero [MeasurableSingletonClass α] (hs' : s.Nonempty) : count s ≠ 0 := by
-  rw [Ne, count_eq_zero_iff]
-  exact hs'.ne_empty
+@[deprecated (since := "2024-11-20")] alias ⟨empty_of_count_eq_zero, _⟩ := count_eq_zero_iff
+@[deprecated (since := "2024-11-20")] alias empty_of_count_eq_zero' := empty_of_count_eq_zero
+@[deprecated (since := "2024-11-20")] alias count_eq_zero_iff' := count_eq_zero_iff
+@[deprecated (since := "2024-11-20")] alias count_ne_zero' := count_ne_zero
 
 @[simp]
 theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({a} : Set α) = 1 := by
