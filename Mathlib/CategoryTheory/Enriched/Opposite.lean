@@ -141,8 +141,7 @@ def ForgetEnrichment.Opposite.fromToNatIso :
 /-- The equivalence between the underlying category of `Cᵒᵖ` and the opposite of the underlying
 category of `C`. -/
 @[simps]
-def forgetEnrichmentOppositeEquivalence :
-    ForgetEnrichment V Cᵒᵖ ≌ (ForgetEnrichment V C)ᵒᵖ where
+def forgetEnrichmentOppositeEquivalence : ForgetEnrichment V Cᵒᵖ ≌ (ForgetEnrichment V C)ᵒᵖ where
   functor := ForgetEnrichment.Opposite.toOp V C
   inverse := ForgetEnrichment.Opposite.fromOp V C
   unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
