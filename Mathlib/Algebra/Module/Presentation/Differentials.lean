@@ -33,75 +33,6 @@ from the file `Mathlib.RingTheory.Kaehler.CotangentComplex`.
 
 universe w' t w u v
 
-namespace Function.Exact
-
-section
-
-variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-  [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
-  (f : M₁ →+ M₂) (g : M₂ →+ M₃) (f' : N₁ →+ N₂) (g' : N₂ →+ N₃)
-  (τ₁ : M₁ →+ N₁) (τ₂ : M₂ →+ N₂) (τ₃ : M₃ →+ N₃)
-  (comm₁₂ : f'.comp τ₁ = τ₂.comp f)
-  (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
-  (h₁ : Function.Surjective τ₁)
-  (h₂ : Function.Bijective τ₂)
-  (h₃ : Function.Injective τ₃)
-
-include comm₁₂ comm₂₃ h₁ h₂ h₃ in
-lemma exact_iff_of_surjective_of_bijective_of_injective :
-    Exact f g ↔ Exact f' g' := by
-  replace comm₁₂ := DFunLike.congr_fun comm₁₂
-  replace comm₂₃ := DFunLike.congr_fun comm₂₃
-  dsimp at comm₁₂ comm₂₃
-  constructor
-  · intro h y₂
-    obtain ⟨x₂, rfl⟩ := h₂.2 y₂
-    constructor
-    · intro hx₂
-      obtain ⟨x₁, rfl⟩ := (h x₂).1 (h₃ (by simpa only [map_zero, comm₂₃] using hx₂))
-      exact ⟨τ₁ x₁, by simp only [comm₁₂]⟩
-    · rintro ⟨y₁, hy₁⟩
-      obtain ⟨x₁, rfl⟩ := h₁ y₁
-      rw [comm₂₃, (h x₂).2 _, map_zero]
-      exact ⟨x₁, h₂.1 (by simpa only [comm₁₂] using hy₁)⟩
-  · intro h x₂
-    constructor
-    · intro hx₂
-      obtain ⟨y₁, hy₁⟩ := (h (τ₂ x₂)).1 (by simp only [comm₂₃, hx₂, map_zero])
-      obtain ⟨x₁, rfl⟩ := h₁ y₁
-      exact ⟨x₁, h₂.1 (by simpa only [comm₁₂] using hy₁)⟩
-    · rintro ⟨x₁, rfl⟩
-      apply h₃
-      simp only [← comm₁₂, ← comm₂₃, h.apply_apply_eq_zero (τ₁ x₁), map_zero]
-
-end
-
-section
-
-variable {R : Type*} [Semiring R]
-  {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-  [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
-  [Module R M₁] [Module R M₂] [Module R M₃]
-  [Module R N₁] [Module R N₂] [Module R N₃]
-  (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃) (f' : N₁ →ₗ[R] N₂) (g' : N₂ →ₗ[R] N₃)
-  (τ₁ : M₁ →ₗ[R] N₁) (τ₂ : M₂ →ₗ[R] N₂) (τ₃ : M₃ →ₗ[R] N₃)
-  (comm₁₂ : f'.comp τ₁ = τ₂.comp f)
-  (comm₂₃ : g'.comp τ₂ = τ₃.comp g)
-  (h₁ : Function.Surjective τ₁)
-  (h₂ : Function.Bijective τ₂)
-  (h₃ : Function.Injective τ₃)
-
-include comm₁₂ comm₂₃ h₁ h₂ h₃ in
-lemma linearMap_exact_iff_of_surjective_of_bijective_of_injective :
-    Exact f g ↔ Exact f' g' :=
-  exact_iff_of_surjective_of_bijective_of_injective f.toAddMonoidHom g.toAddMonoidHom
-    f'.toAddMonoidHom g'.toAddMonoidHom τ₁.toAddMonoidHom τ₂.toAddMonoidHom τ₃.toAddMonoidHom
-    (by ext; apply DFunLike.congr_fun comm₁₂) (by ext; apply DFunLike.congr_fun comm₂₃) h₁ h₂ h₃
-
-end
-
-end Function.Exact
-
 namespace Algebra.Presentation
 
 open KaehlerDifferential
@@ -216,7 +147,7 @@ lemma differentialsSolution_isPresentation :
     exact Extension.toKaehler_surjective.comp pres.cotangentSpaceBasis.repr.symm.surjective
   · rw [← Module.Relations.range_map]
     exact Function.Exact.linearMap_ker_eq
-      ((Function.Exact.linearMap_exact_iff_of_surjective_of_bijective_of_injective
+      ((LinearMap.exact_iff_of_surjective_of_bijective_of_injective
       _ _ _ _ (hom₁ pres)
       pres.cotangentSpaceBasis.repr.symm.toLinearMap .id
       (comm₁₂ pres) (by simpa using comm₂₃ pres) (surjective_hom₁ pres)
