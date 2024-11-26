@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Lean.Elab.Tactic
 
 /-!
@@ -671,3 +672,32 @@ def SetLike.homogeneousSubmonoid [AddMonoid ι] [Monoid R] (A : ι → S) [SetLi
   mul_mem' a b := SetLike.homogeneous_mul a b
 
 end HomogeneousElements
+
+section CommMonoid
+
+namespace SetLike
+
+variable {ι R S : Type*} [SetLike S R] [CommMonoid R] [AddCommMonoid ι]
+variable (A : ι → S) [SetLike.GradedMonoid A]
+
+variable {κ : Type*} (i : κ → ι) (g : κ → R) {F : Finset κ}
+
+theorem prod_mem_graded (hF : ∀ k ∈ F, g k ∈ A (i k)) : ∏ k ∈ F, g k ∈ A (∑ k ∈ F, i k) := by
+  classical
+  induction F using Finset.induction_on
+  · simp [GradedOne.one_mem]
+  · case insert j F' hF2 h3 =>
+    rw [Finset.prod_insert hF2, Finset.sum_insert hF2]
+    apply SetLike.mul_mem_graded (hF j <| Finset.mem_insert_self j F')
+    apply h3
+    intro k hk
+    apply hF k
+    exact Finset.mem_insert_of_mem hk
+
+theorem prod_pow_mem_graded (n : κ → ℕ) (hF : ∀ k ∈ F, g k ∈ A (i k)) :
+    ∏ k ∈ F, g k ^ n k ∈ A (∑ k ∈ F, n k • i k) :=
+  prod_mem_graded A _ _ fun k hk ↦ pow_mem_graded _ (hF k hk)
+
+end SetLike
+
+end CommMonoid
