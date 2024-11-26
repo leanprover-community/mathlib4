@@ -438,12 +438,23 @@ protected lemma div_le_div_right (h : a ≤ b) : a / c ≤ b / c :=
 lemma lt_of_div_lt_div (h : a / c < b / c) : a < b :=
   Nat.lt_of_not_le fun hab ↦ Nat.not_le_of_lt h <| Nat.div_le_div_right hab
 
-protected lemma div_pos (hba : b ≤ a) (hb : 0 < b) : 0 < a / b :=
-  Nat.pos_of_ne_zero fun h ↦ Nat.lt_irrefl a <|
-    calc
-      a = a % b := by simpa [h] using (mod_add_div a b).symm
-      _ < b := mod_lt a hb
-      _ ≤ a := hba
+@[simp] protected lemma div_eq_zero_iff : a / b = 0 ↔ b = 0 ∨ a < b where
+  mp h := by
+    rw [← mod_add_div a b, h, Nat.mul_zero, Nat.add_zero, or_iff_not_imp_left]
+    exact mod_lt _ ∘ Nat.pos_iff_ne_zero.2
+  mpr := by
+    obtain rfl | hb := eq_or_ne b 0
+    · simp
+    simp only [hb, false_or]
+    rw [← Nat.mul_right_inj hb, ← Nat.add_left_cancel_iff, mod_add_div]
+    simp +contextual [mod_eq_of_lt]
+
+protected lemma div_ne_zero_iff : a / b ≠ 0 ↔ b ≠ 0 ∧ b ≤ a := by simp
+
+@[simp] protected lemma div_pos_iff : 0 < a / b ↔ 0 < b ∧ b ≤ a := by
+  simp [Nat.pos_iff_ne_zero]
+
+protected lemma div_pos (hba : b ≤ a) (hb : 0 < b) : 0 < a / b := Nat.div_pos_iff.2 ⟨hb, hba⟩
 
 lemma lt_mul_of_div_lt (h : a / c < b) (hc : 0 < c) : a < b * c :=
   Nat.lt_of_not_ge <| Nat.not_le_of_gt h ∘ (Nat.le_div_iff_mul_le hc).2
@@ -1002,17 +1013,6 @@ lemma div_eq_iff_eq_of_dvd_dvd (hn : n ≠ 0) (ha : a ∣ n) (hb : b ∣ n) : n 
     exact Nat.eq_mul_of_div_eq_right ha h
   · rw [h]
 
-protected lemma div_eq_zero_iff (hb : 0 < b) : a / b = 0 ↔ a < b where
-  mp h := by rw [← mod_add_div a b, h, Nat.mul_zero, Nat.add_zero]; exact mod_lt _ hb
-  mpr h := by rw [← Nat.mul_right_inj (Nat.ne_of_gt hb), ← Nat.add_left_cancel_iff, mod_add_div,
-      mod_eq_of_lt h, Nat.mul_zero, Nat.add_zero]
-
-protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
-  rw [ne_eq, Nat.div_eq_zero_iff (Nat.pos_of_ne_zero hb), not_lt]
-
-protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
-  rw [Nat.pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
-
 lemma le_iff_ne_zero_of_dvd (ha : a ≠ 0) (hab : a ∣ b) : a ≤ b ↔ b ≠ 0 where
   mp := by rw [← Nat.pos_iff_ne_zero] at ha ⊢; exact Nat.lt_of_lt_of_le ha
   mpr hb := Nat.le_of_dvd (Nat.pos_iff_ne_zero.2 hb) hab
@@ -1275,7 +1275,7 @@ lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
 /-- If a small natural number is divisible by a larger natural number,
 the small number is zero. -/
 lemma eq_zero_of_dvd_of_lt (w : a ∣ b) (h : b < a) : b = 0 :=
-  Nat.eq_zero_of_dvd_of_div_eq_zero w ((Nat.div_eq_zero_iff (lt_of_le_of_lt (zero_le b) h)).mpr h)
+  Nat.eq_zero_of_dvd_of_div_eq_zero w (by simp [h])
 
 lemma le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
