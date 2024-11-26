@@ -21,8 +21,7 @@ open CategoryTheory Limits Category
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
-  [HasZeroObject C]
+  {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
 
@@ -66,6 +65,7 @@ variable (cocone : CokernelCofork (hcone.lift (KernelFork.ofι (K.d i j) (K.d_co
   (hcocone : IsColimit cocone)
 
 include hi hi' hcone in
+/-- Auxiliary lemma for `lift_d_comp_eq_zero_iff`. -/
 lemma lift_d_comp_eq_zero_iff' ⦃W : C⦄ (f' : K.X i ⟶ cone.pt)
     (hf' : f' ≫ cone.ι = K.d i j)
     (f'' : (K.extend e).X i' ⟶ cone.pt)
