@@ -8,9 +8,9 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Order.BoundedOrder
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Prime.Lemmas
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Associated elements.
@@ -24,7 +24,7 @@ and prove basic properties of this quotient.
 assert_not_exists OrderedCommMonoid
 assert_not_exists Multiset
 
-variable {M N : Type*}
+variable {M : Type*}
 
 /-- Two elements of a `Monoid` are `Associated` if one of them is another one
 multiplied by a unit on the right. -/

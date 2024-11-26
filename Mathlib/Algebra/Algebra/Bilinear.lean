@@ -32,6 +32,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
   LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
+-- TODO: upgrade to A-linear map if A is a semiring.
 noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 
@@ -224,22 +225,19 @@ section Ring
 
 variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
 
+@[deprecated mul_right_injective₀ (since := "2024-11-18")]
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulLeft R x) := by
-  letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
-  letI := NoZeroDivisors.to_isDomain A
-  exact mul_right_injective₀ hx
+    Function.Injective (mulLeft R x) :=
+  mul_right_injective₀ hx
 
+@[deprecated mul_left_injective₀ (since := "2024-11-18")]
 theorem mulRight_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
-    Function.Injective (mulRight R x) := by
-  letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
-  letI := NoZeroDivisors.to_isDomain A
-  exact mul_left_injective₀ hx
+    Function.Injective (mulRight R x) :=
+  mul_left_injective₀ hx
 
-theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injective (mul R A x) := by
-  letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩
-  letI := NoZeroDivisors.to_isDomain A
-  exact mul_right_injective₀ hx
+@[deprecated mul_right_injective₀ (since := "2024-11-18")]
+theorem mul_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) : Function.Injective (mul R A x) :=
+   mul_right_injective₀ hx
 
 end Ring
 

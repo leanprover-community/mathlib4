@@ -146,7 +146,7 @@ def transportSheafificationAdjunction : transportAndSheafify J K e A ⊣ sheafTo
     (transportIsoSheafToPresheaf _ _ _ _)
 
 noncomputable instance : PreservesFiniteLimits <| transportAndSheafify J K e A where
-  preservesFiniteLimits _ := compPreservesLimitsOfShape _ _
+  preservesFiniteLimits _ := comp_preservesLimitsOfShape _ _
 
 include K e in
 /-- Transport `HasSheafify` along an equivalence of sites. -/
@@ -166,9 +166,6 @@ theorem hasSheafCompose : J.HasSheafCompose F where
     replace hP' : Presheaf.IsSheaf J (e.functor.op ⋙ e.inverse.op ⋙ P ⋙ F) :=
       e.functor.op_comp_isSheaf _ _ ⟨_, hP'⟩
     exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
-
-variable [ConcreteCategory.{w} A]
-variable {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
 
 end Equivalence
 

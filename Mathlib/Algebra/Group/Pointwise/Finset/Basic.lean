@@ -5,10 +5,11 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 import Mathlib.Data.Finset.Density
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Set.Pointwise.Finite
-import Mathlib.Data.Set.Pointwise.ListOfFn
 import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
@@ -197,9 +198,7 @@ scoped[Pointwise] attribute [instance] Finset.inv Finset.neg
 theorem inv_def : s⁻¹ = s.image fun x => x⁻¹ :=
   rfl
 
-@[to_additive]
-theorem image_inv : (s.image fun x => x⁻¹) = s⁻¹ :=
-  rfl
+@[to_additive] lemma image_inv_eq_inv (s : Finset α) : s.image (·⁻¹) = s⁻¹ := rfl
 
 @[to_additive]
 theorem mem_inv {x : α} : x ∈ s⁻¹ ↔ ∃ y ∈ s, y⁻¹ = x :=
@@ -278,7 +277,7 @@ variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
 lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_eq_inv]
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv
+theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv_eq_inv
 
 @[to_additive (attr := simp)]
 theorem card_inv (s : Finset α) : s⁻¹.card = s.card := card_image_of_injective _ inv_injective
@@ -321,7 +320,10 @@ lemma coe_smul (s : Finset α) (t : Finset β) : ↑(s • t) = (s : Set α) •
 
 @[to_additive] lemma smul_mem_smul : a ∈ s → b ∈ t → a • b ∈ s • t := mem_image₂_of_mem
 
-@[to_additive] lemma smul_card_le : (s • t).card ≤ s.card • t.card := card_image₂_le ..
+@[to_additive] lemma card_smul_le : #(s • t) ≤ #s * #t := card_image₂_le ..
+
+@[deprecated (since := "2024-11-19")] alias smul_card_le := card_smul_le
+@[deprecated (since := "2024-11-19")] alias vadd_card_le := card_vadd_le
 
 @[to_additive (attr := simp)]
 lemma empty_smul (t : Finset β) : (∅ : Finset α) • t = ∅ := image₂_empty_left
@@ -982,8 +984,6 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  -- Also compiles without the option, but much slower.
-  set_option tactic.skipAssignedInstances false in
   simp [← mem_coe, coe_pow, Set.mem_pow]
 
 @[to_additive (attr := simp) nsmul_empty]
@@ -1021,6 +1021,17 @@ theorem univ_pow [Fintype α] (hn : n ≠ 0) : (univ : Finset α) ^ n = univ :=
 @[to_additive]
 protected theorem _root_.IsUnit.finset : IsUnit a → IsUnit ({a} : Finset α) :=
   IsUnit.map (singletonMonoidHom : α →* Finset α)
+
+@[to_additive]
+lemma image_op_pow (s : Finset α) : ∀ n : ℕ, (s ^ n).image op = s.image op ^ n
+  | 0 => by simp [singleton_one]
+  | n + 1 => by rw [pow_succ, pow_succ', image_op_mul, image_op_pow]
+
+@[to_additive]
+lemma map_op_pow (s : Finset α) :
+    ∀ n : ℕ, (s ^ n).map opEquiv.toEmbedding = s.map opEquiv.toEmbedding ^ n
+  | 0 => by simp [singleton_one]
+  | n + 1 => by rw [pow_succ, pow_succ', map_op_mul, map_op_pow]
 
 end Monoid
 
@@ -1162,6 +1173,9 @@ theorem image_mul_left' :
 @[to_additive]
 theorem image_mul_right' :
     image (· * b⁻¹) t = preimage t (· * b) (mul_left_injective _).injOn := by simp
+
+@[to_additive]
+lemma image_inv (f : F) (s : Finset α) : s⁻¹.image f = (s.image f)⁻¹ := image_comm (map_inv _)
 
 theorem image_div : (s / t).image (f : α → β) = s.image f / t.image f :=
   image_image₂_distrib <| map_div f
@@ -1783,4 +1797,4 @@ instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)]
   fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 2000

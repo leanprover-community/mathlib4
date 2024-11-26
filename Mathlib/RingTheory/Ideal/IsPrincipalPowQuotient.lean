@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Quotients of powers of principal ideals

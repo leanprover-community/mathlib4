@@ -447,8 +447,6 @@ theorem zero_comp (g : β →co γ) : (0 : C_c(γ, δ)).comp g = 0 :=
 
 end
 
-variable [T2Space γ]
-
 /-- Composition as an additive monoid homomorphism. -/
 def compAddMonoidHom [AddMonoid δ] [ContinuousAdd δ] (g : β →co γ) : C_c(γ, δ) →+ C_c(β, δ) where
   toFun f := f.comp g

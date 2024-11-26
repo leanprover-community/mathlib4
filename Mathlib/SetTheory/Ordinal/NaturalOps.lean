@@ -53,10 +53,12 @@ def NatOrdinal : Type _ :=
   -- Porting note: used to derive LinearOrder & SuccOrder but need to manually define
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 
-instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
-instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := {Ordinal.instSuccOrder with}
-instance NatOrdinal.orderBot : OrderBot NatOrdinal := {Ordinal.orderBot with}
-instance NatOrdinal.noMaxOrder : NoMaxOrder NatOrdinal := {Ordinal.noMaxOrder with}
+instance NatOrdinal.instLinearOrder : LinearOrder NatOrdinal := Ordinal.instLinearOrder
+instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := Ordinal.instSuccOrder
+instance NatOrdinal.instOrderBot : OrderBot NatOrdinal := Ordinal.instOrderBot
+instance NatOrdinal.instNoMaxOrder : NoMaxOrder NatOrdinal := Ordinal.instNoMaxOrder
+instance NatOrdinal.instZeroLEOneClass : ZeroLEOneClass NatOrdinal := Ordinal.instZeroLEOneClass
+instance NatOrdinal.instNeZeroOne : NeZero (1 : NatOrdinal) := Ordinal.instNeZeroOne
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -86,9 +88,6 @@ theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=
 
 instance : WellFoundedLT NatOrdinal :=
   Ordinal.wellFoundedLT
-
-instance : IsWellOrder NatOrdinal (· < ·) :=
-  { }
 
 instance : ConditionallyCompleteLinearOrderBot NatOrdinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
@@ -319,19 +318,19 @@ open Ordinal NaturalOps
 instance : Add NatOrdinal := ⟨nadd⟩
 instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
 
-instance addLeftStrictMono : AddLeftStrictMono NatOrdinal.{u} :=
+instance : AddLeftStrictMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
 
-instance addLeftMono : AddLeftMono NatOrdinal.{u} :=
+instance : AddLeftMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 
-instance addLeftReflectLE : AddLeftReflectLE NatOrdinal.{u} :=
+instance : AddLeftReflectLE NatOrdinal.{u} :=
   ⟨fun a b c h => by
     by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩
 
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
-  { NatOrdinal.linearOrder with
+instance : OrderedCancelAddCommMonoid NatOrdinal :=
+  { NatOrdinal.instLinearOrder with
     add := (· + ·)
     add_assoc := nadd_assoc
     add_le_add_left := fun _ _ => add_le_add_left
@@ -342,7 +341,7 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
     add_comm := nadd_comm
     nsmul := nsmulRec }
 
-instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
+instance : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
 @[deprecated Order.succ_eq_add_one (since := "2024-09-04")]
@@ -677,8 +676,8 @@ instance : Mul NatOrdinal :=
 -- Porting note: had to add universe annotations to ensure that the
 -- two sources lived in the same universe.
 instance : OrderedCommSemiring NatOrdinal.{u} :=
-  { NatOrdinal.orderedCancelAddCommMonoid.{u},
-    NatOrdinal.linearOrder.{u} with
+  { NatOrdinal.instOrderedCancelAddCommMonoid.{u},
+    NatOrdinal.instLinearOrder.{u} with
     mul := (· * ·)
     left_distrib := nmul_nadd
     right_distrib := nadd_nmul
