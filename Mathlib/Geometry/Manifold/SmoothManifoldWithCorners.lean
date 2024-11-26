@@ -1427,39 +1427,6 @@ theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
 extChartAt_target_union_comp_range_mem_nhds_of_mem :=
 extChartAt_target_union_compl_range_mem_nhds_of_mem
 
-section LocallyCompact
-
-/-- A locally compact manifold must be modelled on a locally compact space. -/
-lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 E H)
-    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [h : Nonempty M] [LocallyCompactSpace M] :
-    LocallyCompactSpace E := by
-  rcases h with ⟨x⟩
-  obtain ⟨y, hy⟩ := interior_extChartAt_target_nonempty I x
-  have h'y : y ∈ (extChartAt I x).target := interior_subset hy
-  obtain ⟨s, hmem, hss, hcom⟩ :=
-    LocallyCompactSpace.local_compact_nhds ((extChartAt I x).symm y) (extChartAt I x).source
-      ((isOpen_extChartAt_source x).mem_nhds ((extChartAt I x).map_target h'y))
-  have : IsCompact <| (extChartAt I x) '' s :=
-    hcom.image_of_continuousOn <| (continuousOn_extChartAt x).mono hss
-  apply this.locallyCompactSpace_of_mem_nhds_of_addGroup (x := y)
-  rw [← (extChartAt I x).right_inv h'y]
-  apply extChartAt_image_nhd_mem_nhds_of_mem_interior_range
-    (PartialEquiv.map_target (extChartAt I x) h'y) _ hmem
-  simp only [(extChartAt I x).right_inv h'y]
-  have : (extChartAt I x).target ⊆ range I := extChartAt_target_subset_range x
-  exact interior_mono (extChartAt_target_subset_range x) hy
-
-/-- Riesz's theorem applied to manifolds: A locally compact manifolds must be modelled on a
-  finite-dimensional space. This is the converse to
-  `Manifold.locallyCompact_of_finiteDimensional`. -/
-theorem FiniteDimensional.of_locallyCompact_manifold [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H)
-    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [Inhabited M] [LocallyCompactSpace M] :
-    FiniteDimensional 𝕜 E := by
-  have := LocallyCompactSpace.of_locallyCompact_manifold I M
-  exact FiniteDimensional.of_locallyCompactSpace 𝕜
-
-end LocallyCompact
-
 /-! We use the name `ext_coord_change` for `(extChartAt I x').symm ≫ extChartAt I x`. -/
 
 theorem ext_coord_change_source (x x' : M) :
@@ -1548,6 +1515,7 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
 end ExtendedCharts
 
 section Topology
+
 -- Let `M` be a topological manifold over the field 𝕜.
 variable
   {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -1562,6 +1530,37 @@ lemma Manifold.locallyCompact_of_finiteDimensional
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   have : LocallyCompactSpace H := I.locallyCompactSpace
   exact ChartedSpace.locallyCompactSpace H M
+
+variable (M)
+
+/-- A locally compact manifold must be modelled on a locally compact space. -/
+lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 E H)
+    [h : Nonempty M] [LocallyCompactSpace M] :
+    LocallyCompactSpace E := by
+  rcases h with ⟨x⟩
+  obtain ⟨y, hy⟩ := interior_extChartAt_target_nonempty I x
+  have h'y : y ∈ (extChartAt I x).target := interior_subset hy
+  obtain ⟨s, hmem, hss, hcom⟩ :=
+    LocallyCompactSpace.local_compact_nhds ((extChartAt I x).symm y) (extChartAt I x).source
+      ((isOpen_extChartAt_source x).mem_nhds ((extChartAt I x).map_target h'y))
+  have : IsCompact <| (extChartAt I x) '' s :=
+    hcom.image_of_continuousOn <| (continuousOn_extChartAt x).mono hss
+  apply this.locallyCompactSpace_of_mem_nhds_of_addGroup (x := y)
+  rw [← (extChartAt I x).right_inv h'y]
+  apply extChartAt_image_nhd_mem_nhds_of_mem_interior_range
+    (PartialEquiv.map_target (extChartAt I x) h'y) _ hmem
+  simp only [(extChartAt I x).right_inv h'y]
+  have : (extChartAt I x).target ⊆ range I := extChartAt_target_subset_range x
+  exact interior_mono (extChartAt_target_subset_range x) hy
+
+/-- Riesz's theorem applied to manifolds: a locally compact manifolds must be modelled on a
+  finite-dimensional space. This is the converse to
+  `Manifold.locallyCompact_of_finiteDimensional`. -/
+theorem FiniteDimensional.of_locallyCompact_manifold
+    [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Inhabited M] [LocallyCompactSpace M] :
+    FiniteDimensional 𝕜 E := by
+  have := LocallyCompactSpace.of_locallyCompact_manifold M I
+  exact FiniteDimensional.of_locallyCompactSpace 𝕜
 
 end Topology
 
