@@ -185,6 +185,14 @@ theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianR
     IsNoetherianRing C :=
   isNoetherianRing_iff.mpr <| isNoetherian_of_tower A (IsIntegralClosure.isNoetherian A K L C)
 
+/-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
+integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
+finite over `A`. -/
+theorem IsIntegralClosure.finite [IsIntegrallyClosed A] [IsNoetherianRing A] :
+    Module.Finite A C := by
+  haveI := IsIntegralClosure.isNoetherian A K L C
+  exact Module.IsNoetherian.finite A C
+
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is
 a free `A`-module. -/

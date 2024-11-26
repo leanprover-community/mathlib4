@@ -141,10 +141,10 @@ end One
 section Inv
 
 /-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `Pointwise`. It is
-equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv`. -/
+equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv_eq_inv`. -/
 @[to_additive
       "The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `Pointwise`.
-      It is equal to `{-x | x ∈ s}`, see `Set.image_neg`."]
+      It is equal to `{-x | x ∈ s}`, see `Set.image_neg_eq_neg`."]
 protected def inv [Inv α] : Inv (Set α) :=
   ⟨preimage Inv.inv⟩
 
@@ -218,12 +218,12 @@ theorem Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
   nonempty_inv.2 h
 
 @[to_additive (attr := simp)]
-theorem image_inv : Inv.inv '' s = s⁻¹ :=
+theorem image_inv_eq_inv : (·⁻¹) '' s = s⁻¹ :=
   congr_fun (image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _
 
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
-  rw [← image_inv, image_eq_empty]
+  rw [← image_inv_eq_inv, image_eq_empty]
 
 @[to_additive (attr := simp)]
 noncomputable instance involutiveInv : InvolutiveInv (Set α) where
@@ -238,7 +238,8 @@ theorem inv_subset_inv : s⁻¹ ⊆ t⁻¹ ↔ s ⊆ t :=
 theorem inv_subset : s⁻¹ ⊆ t ↔ s ⊆ t⁻¹ := by rw [← inv_subset_inv, inv_inv]
 
 @[to_additive (attr := simp)]
-theorem inv_singleton (a : α) : ({a} : Set α)⁻¹ = {a⁻¹} := by rw [← image_inv, image_singleton]
+theorem inv_singleton (a : α) : ({a} : Set α)⁻¹ = {a⁻¹} := by
+  rw [← image_inv_eq_inv, image_singleton]
 
 @[to_additive (attr := simp)]
 theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s⁻¹ := by
@@ -246,14 +247,14 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
 
 @[to_additive]
 theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
-  rw [← image_inv]
+  rw [← image_inv_eq_inv]
   exact (range_comp ..).symm
 
 open MulOpposite
 
 @[to_additive]
 theorem image_op_inv : op '' s⁻¹ = (op '' s)⁻¹ := by
-  simp_rw [← image_inv, Function.Semiconj.set_image op_inv s]
+  simp_rw [← image_inv_eq_inv, Function.Semiconj.set_image op_inv s]
 
 end InvolutiveInv
 
@@ -1171,13 +1172,13 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
     mul_inv_rev := fun s t => by
-      simp_rw [← image_inv]
+      simp_rw [← image_inv_eq_inv]
       exact image_image2_antidistrib mul_inv_rev
     inv_eq_of_mul := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := Set.mul_eq_one_iff.1 h
       rw [inv_singleton, inv_eq_of_mul_eq_one_right hab]
     div_eq_mul_inv := fun s t => by
-      rw [← image_id (s / t), ← image_inv]
+      rw [← image_id (s / t), ← image_inv_eq_inv]
       exact image_image2_distrib_right div_eq_mul_inv }
 
 scoped[Pointwise] attribute [instance] Set.divisionMonoid Set.subtractionMonoid
@@ -1296,6 +1297,11 @@ theorem mul_univ (hs : s.Nonempty) : s * (univ : Set α) = univ :=
 theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
   let ⟨a, ha⟩ := ht
   eq_univ_of_forall fun b => ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right ..⟩
+
+@[to_additive]
+lemma image_inv [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F) (s : Set α) :
+    f '' s⁻¹ = (f '' s)⁻¹ := by
+  rw [← image_inv_eq_inv, ← image_inv_eq_inv]; exact image_comm (map_inv _)
 
 end Group
 

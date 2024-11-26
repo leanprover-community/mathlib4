@@ -11,6 +11,7 @@ import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 
