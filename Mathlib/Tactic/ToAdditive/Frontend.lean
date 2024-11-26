@@ -964,6 +964,7 @@ def nameDict : String → List String
   | "powers"      => ["multiples"]
   | "multipliable"=> ["summable"]
   | "gpfree"      => ["apfree"]
+  | "quantale"    => ["add", "Quantale"]
   | x             => [x]
 
 /--

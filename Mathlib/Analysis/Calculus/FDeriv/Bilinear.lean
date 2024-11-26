@@ -40,7 +40,7 @@ open NormedField
 @[fun_prop]
 theorem IsBoundedBilinearMap.hasStrictFDerivAt (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     HasStrictFDerivAt b (h.deriv p) p := by
-  simp only [HasStrictFDerivAt]
+  simp only [hasStrictFDerivAt_iff_isLittleO]
   simp only [← map_add_left_nhds_zero (p, p), isLittleO_map]
   set T := (E × F) × E × F
   calc
