@@ -284,7 +284,7 @@ theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d �
     d ∣ n ↔ (n / d).factorization = n.factorization - d.factorization := by
   refine ⟨factorization_div, ?_⟩
   rcases eq_or_lt_of_le hdn with (rfl | hd_lt_n); · simp
-  have h1 : n / d ≠ 0 := fun H => Nat.lt_asymm hd_lt_n ((Nat.div_eq_zero_iff hd.bot_lt).mp H)
+  have h1 : n / d ≠ 0 := by simp [*]
   intro h
   rw [dvd_iff_le_div_mul n d]
   by_contra h2
