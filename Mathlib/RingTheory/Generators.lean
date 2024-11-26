@@ -373,6 +373,20 @@ def toExtendScalars (P : Generators R T) : Hom P (P.extendScalars S) where
   val := X
   aeval_val i := by simp
 
+lemma toComp_toAlgHom (Q : Generators S T) (P : Generators R S) :
+    (Q.toComp P).toAlgHom = rename Sum.inr := rfl
+
+lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T) (P : Generators R S) (v₁ v₂ a) :
+    (Q.ofComp P).toAlgHom (monomial (Finsupp.sumElim v₁ v₂) a) =
+      monomial v₁ (aeval P.val (monomial v₂ a)) := by
+  erw [Hom.toAlgHom_monomial]
+  rw [monomial_eq]
+  simp only [MvPolynomial.algebraMap_apply, ofComp_val, aeval_monomial]
+  rw [Finsupp.prod_sumElim]
+  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, ← map_pow, ← map_finsupp_prod,
+    C_mul, algebra.smul_def, MvPolynomial.algebraMap_apply, mul_assoc]
+  nth_rw 2 [mul_comm]
+
 end Hom
 
 section Cotangent

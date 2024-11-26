@@ -103,44 +103,6 @@ lemma Cotangent.surjective_map_ofComp :
   obtain ⟨x, hx', rfl⟩ := this
   exact ⟨.mk ⟨x, hx'⟩, map_mk _ _⟩
 
-lemma toComp_toAlgHom :
-    (Q.toComp P).toAlgHom = rename Sum.inr := rfl
-
-lemma ofComp_toAlgHom_monomial_sumElim (v₁ v₂ a) :
-    (Q.ofComp P).toAlgHom (monomial (Finsupp.sumElim v₁ v₂) a) =
-      monomial v₁ (aeval P.val (monomial v₂ a)) := by
-  classical
-  let e : ((Q.comp P).vars →₀ ℕ) ≃+ (Q.vars →₀ ℕ) × (P.vars →₀ ℕ) :=
-    Finsupp.sumFinsuppAddEquivProdFinsupp
-  show ((Q.ofComp P).toAlgHom (monomial (e.symm (v₁, v₂)) a)) = _
-  induction v₁ using Finsupp.induction with
-  | h0 =>
-    induction v₂ using Finsupp.induction
-    · simp only [comp_vars, ← Prod.zero_eq_mk, map_zero, ofComp_val, Finsupp.prod_zero_index,
-        mul_one, ← algebraMap_eq_smul_one, monomial_zero', algHom_C]
-      exact Hom.toAlgHom_C _ _
-    · have (i j) : e.symm (0, Finsupp.single i j) = Finsupp.single (Sum.inr i) j := by
-        ext (i | j) <;>
-          simp only [comp_vars, Finsupp.sumFinsuppAddEquivProdFinsupp_symm_apply, ne_eq,
-            Finsupp.coe_sumElim, Finsupp.coe_zero, Sum.elim_inl, Pi.zero_apply, Sum.inr.injEq,
-            not_false_eq_true, Finsupp.single_eq_of_ne, e, Sum.elim_inr, Finsupp.single_apply,
-            reduceCtorEq, ↓reduceIte]
-      simp only [← Prod.zero_mk_add_zero_mk, map_add, monomial_single_add, _root_.map_mul, map_pow,
-        Hom.toAlgHom_X, ofComp_val, Sum.elim_inr, Function.comp_apply, monomial_zero', map_aeval,
-        coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, aeval_X, *]
-  | ha k n v _ _ IH =>
-    have (i j) : e.symm (Finsupp.single i j, 0) = Finsupp.single (Sum.inl i) j := by
-        ext (i | j) <;>
-          simp only [comp_vars, Finsupp.sumFinsuppAddEquivProdFinsupp_symm_apply, ne_eq,
-            Finsupp.coe_sumElim, Finsupp.coe_zero, Sum.elim_inl, Pi.zero_apply, Sum.inl.injEq,
-            not_false_eq_true, Finsupp.single_eq_of_ne, e, Sum.elim_inr, Finsupp.single_apply,
-            reduceCtorEq, ↓reduceIte]
-    have : e.symm (Finsupp.single k n + v, v₂) =
-        Finsupp.single (by exact Sum.inl k) n + e.symm (v, v₂) := by
-      rw [← this, ← map_add, Prod.mk_add_mk, zero_add]
-    simp only [monomial_single_add, _root_.map_mul, map_pow, Hom.toAlgHom_X, ofComp_val,
-      Sum.elim_inl, this, IH]
-
 lemma map_toComp_ker :
     P.ker.map (Q.toComp P).toAlgHom.toRingHom = RingHom.ker (Q.ofComp P).toAlgHom := by
   letI : DecidableEq (Q.vars →₀ ℕ) := Classical.decEq _
