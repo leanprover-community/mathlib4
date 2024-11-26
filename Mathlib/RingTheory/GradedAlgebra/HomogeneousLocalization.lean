@@ -749,11 +749,13 @@ section isLocalization
 variable {𝒜 : ℕ → Submodule R A} [GradedAlgebra 𝒜]
 variable {e d : ℕ} {f : A} (hf : f ∈ 𝒜 d) {g : A} (hg : g ∈ 𝒜 e)
 
+/-- The element `t := g ^ d / f ^ e` such that `A_{(fg)} = A_{(f)}[1/t]`. -/
 abbrev Away.isLocalizationElem : Away 𝒜 f :=
   Away.mk 𝒜 hf e (g ^ d) (by convert SetLike.pow_mem_graded d hg using 2; exact mul_comm _ _)
 
 variable {x : A} (hx : x = f * g)
 
+/-- Let `t := g ^ d / f ^ e`, then `A_{(fg)} = A_{(f)}[1/t]`. -/
 theorem Away.isLocalization_mul (hd : d ≠ 0) :
     letI := (awayMap 𝒜 hg hx).toAlgebra
     IsLocalization.Away (isLocalizationElem hf hg) (Away 𝒜 x) := by
