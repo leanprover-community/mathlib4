@@ -49,10 +49,6 @@ semilattice, lattice
 
 -/
 
-/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
-@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
-  eval h goal := do goal.assignIfDefeq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
-
 universe u v w
 
 variable {α : Type u} {β : Type v}
@@ -94,12 +90,6 @@ def SemilatticeSup.mk' {α : Type*} [Max α] (sup_comm : ∀ a b : α, a ⊔ b =
   le_sup_left a b := by dsimp; rw [← sup_assoc, sup_idem]
   le_sup_right a b := by dsimp; rw [sup_comm, sup_assoc, sup_idem]
   sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
-
-instance OrderDual.instSup (α : Type*) [Min α] : Max αᵒᵈ :=
-  ⟨((· ⊓ ·) : α → α → α)⟩
-
-instance OrderDual.instInf (α : Type*) [Max α] : Min αᵒᵈ :=
-  ⟨((· ⊔ ·) : α → α → α)⟩
 
 section SemilatticeSup
 
