@@ -173,21 +173,17 @@ theorem mul_smul'_of_isLocalization {A : Type*} [Semiring A] [Algebra R A]
 
 variable (T)
 
+attribute [local instance] moduleOfIsLocalization in
 /--
 If `T` is the localization of `R` at `S`, then `M[S⁻¹]` has a natural `T`-algebra structure.
 This is not an instance as this causes a diamond with the usual action of `R[S⁻¹]` on `M[S⁻¹]`.
 -/
-attribute [local instance] moduleOfIsLocalization in
 @[reducible] noncomputable
 def algebraOfIsLocalization {A : Type*} [Semiring A] [Algebra R A] :
     Algebra T (LocalizedModule S A) :=
   Algebra.ofModule smul'_mul_of_isLocalization mul_smul'_of_isLocalization
 
 attribute [local instance] algebraOfIsLocalization in
-/--
-If `T` is the localization of `R` at `S`, then `A[S⁻¹]` has a natural `T`-algebra structure.
-This is not an instance as this causes a diamond with the usual action of `R[S⁻¹]` on `M[S⁻¹]`.
--/
 theorem algebraMap_mk' {A : Type*} [Semiring A] [Algebra R A] (a : R) (s : S) :
     algebraMap _ _ (IsLocalization.mk' T a s) = mk (algebraMap R A a) s := by
   rw [Algebra.algebraMap_eq_smul_one, OreLocalization.one_def]
