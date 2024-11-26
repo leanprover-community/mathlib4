@@ -41,7 +41,7 @@ open scoped Pointwise Topology NNReal
 
 noncomputable section
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E : Type*}
 
 section AddCommGroup
 
@@ -201,7 +201,7 @@ theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Ab
     exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
 theorem Balanced.starConvex (hs : Balanced ℝ s) : StarConvex ℝ 0 s :=
-  starConvex_zero_iff.2 fun x hx a ha₀ ha₁ =>
+  starConvex_zero_iff.2 fun _ hx a ha₀ ha₁ =>
     hs _ (by rwa [Real.norm_of_nonneg ha₀]) (smul_mem_smul_set hx)
 
 theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ a • s) :

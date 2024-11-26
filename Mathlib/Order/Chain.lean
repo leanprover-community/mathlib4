@@ -279,8 +279,6 @@ instance : SetLike (Flag α) α where
 theorem ext : (s : Set α) = t → s = t :=
   SetLike.ext'
 
--- Porting note (#10618): `simp` can now prove this
--- @[simp]
 theorem mem_coe_iff : a ∈ (s : Set α) ↔ a ∈ s :=
   Iff.rfl
 

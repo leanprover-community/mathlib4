@@ -3,7 +3,6 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Batteries.Data.List.Count
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Tactic.Positivity
 
@@ -406,8 +405,8 @@ section Order
 
 instance : Preorder DyckWord where
   le := Relation.ReflTransGen (fun p q ↦ p = q.insidePart ∨ p = q.outsidePart)
-  le_refl p := Relation.ReflTransGen.refl
-  le_trans p q r := Relation.ReflTransGen.trans
+  le_refl _ := Relation.ReflTransGen.refl
+  le_trans _ _ _ := Relation.ReflTransGen.trans
 
 lemma le_add_self (p q : DyckWord) : q ≤ p + q := by
   by_cases h : p = 0

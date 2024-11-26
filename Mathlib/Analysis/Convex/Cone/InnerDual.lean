@@ -32,8 +32,6 @@ open Set LinearMap
 open scoped Classical
 open Pointwise
 
-variable {𝕜 E F G : Type*}
-
 /-! ### The dual cone -/
 
 

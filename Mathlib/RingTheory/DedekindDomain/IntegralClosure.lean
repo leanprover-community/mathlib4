@@ -36,7 +36,7 @@ dedekind domain, dedekind ring
 -/
 
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
+variable (A K : Type*) [CommRing A] [Field K]
 
 open scoped nonZeroDivisors Polynomial
 
@@ -95,7 +95,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [Algebra.IsSeparable K L] {ι 
   rintro _ ⟨i, rfl⟩ _ ⟨y, rfl⟩
   simp only [LinearMap.coe_restrictScalars, linearMap_apply, LinearMap.BilinForm.flip_apply,
     traceForm_apply]
-  refine IsIntegrallyClosed.isIntegral_iff.mp ?_
+  refine Submodule.mem_one.mpr <| IsIntegrallyClosed.isIntegral_iff.mp ?_
   exact isIntegral_trace ((IsIntegralClosure.isIntegral A L y).algebraMap.mul (hb_int i))
 
 theorem integralClosure_le_span_dualBasis [Algebra.IsSeparable K L] {ι : Type*} [Fintype ι]
@@ -184,6 +184,14 @@ Noetherian. -/
 theorem IsIntegralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianRing A] :
     IsNoetherianRing C :=
   isNoetherianRing_iff.mpr <| isNoetherian_of_tower A (IsIntegralClosure.isNoetherian A K L C)
+
+/-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
+integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
+finite over `A`. -/
+theorem IsIntegralClosure.finite [IsIntegrallyClosed A] [IsNoetherianRing A] :
+    Module.Finite A C := by
+  haveI := IsIntegralClosure.isNoetherian A K L C
+  exact Module.IsNoetherian.finite A C
 
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is

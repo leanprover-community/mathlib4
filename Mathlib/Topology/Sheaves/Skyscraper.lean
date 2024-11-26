@@ -143,7 +143,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
     IsColimit (skyscraperPresheafCoconeOfSpecializes p₀ A h) where
   desc c := eqToHom (if_pos trivial).symm ≫ c.ι.app (op ⊤)
   fac c U := by
-    dsimp -- Porting note (#11227):added a `dsimp`
+    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):added a `dsimp`
     rw [← c.w (homOfLE <| (le_top : unop U ≤ _)).op]
     change _ ≫ _ ≫ dite _ _ _ ≫ _ = _
     rw [dif_pos]
@@ -151,7 +151,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfSpecializes {y : X} (h : p�
         eqToHom_refl, Category.id_comp, unop_op, op_unop]
     · exact h.mem_open U.unop.1.2 U.unop.2
   uniq c f h := by
-    dsimp -- Porting note (#11227):added a `dsimp`
+    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):added a `dsimp`
     rw [← h, skyscraperPresheafCoconeOfSpecializes_ι_app, eqToHom_trans_assoc, eqToHom_refl,
       Category.id_comp]
 
@@ -195,7 +195,7 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h :
       refine ((if_neg ?_).symm.ndrec terminalIsTerminal).hom_ext _ _
       exact fun h => h1.choose_spec h.1
     uniq := fun c f H => by
-      dsimp -- Porting note (#11227):added a `dsimp`
+      dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):added a `dsimp`
       rw [← Category.id_comp f, ← H, ← Category.assoc]
       congr 1; apply terminalIsTerminal.hom_ext }
 
@@ -308,7 +308,7 @@ theorem fromStalk_to_skyscraper {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p�
 @[simps]
 protected def unit :
     𝟭 (Presheaf C X) ⟶ Presheaf.stalkFunctor C p₀ ⋙ skyscraperPresheafFunctor p₀ where
-  app 𝓕 := toSkyscraperPresheaf _ <| 𝟙 _
+  app _ := toSkyscraperPresheaf _ <| 𝟙 _
   naturality 𝓕 𝓖 f := by
     ext U; dsimp
     split_ifs with h
@@ -373,7 +373,7 @@ instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint  :=
 -/
 def stalkSkyscraperSheafAdjunction [HasColimits C] :
     Sheaf.forget C X ⋙ Presheaf.stalkFunctor _ p₀ ⊣ skyscraperSheafFunctor p₀ where
-  -- Porting note (#11041): `ext1` is changed to `Sheaf.Hom.ext`,
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is changed to `Sheaf.Hom.ext`,
   unit :=
     { app := fun 𝓕 => ⟨(StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).app 𝓕.1⟩
       naturality := fun 𝓐 𝓑 f => Sheaf.Hom.ext <| by
@@ -381,7 +381,7 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit p₀
   left_triangle_components X :=
     ((skyscraperPresheafStalkAdjunction p₀).left_triangle_components X.val)
-  right_triangle_components Y :=
+  right_triangle_components _ :=
     Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
 
 instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint  :=

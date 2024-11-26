@@ -98,6 +98,30 @@ lemma IsPointwiseLeftKanExtensionAt.isIso_hom_app
     IsIso (E.hom.app X) := by
   simpa using h.isIso_ι_app_of_isTerminal _ CostructuredArrow.mkIdTerminal
 
+namespace IsPointwiseLeftKanExtensionAt
+
+variable {E} {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y)
+  [HasColimit (CostructuredArrow.proj L Y ⋙ F)]
+
+/-- A pointwise left Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
+`colimit (CostructuredArrow.proj L Y ⋙ F)`. -/
+noncomputable def isoColimit :
+    E.right.obj Y ≅ colimit (CostructuredArrow.proj L Y ⋙ F) :=
+  h.coconePointUniqueUpToIso (colimit.isColimit _)
+
+@[reassoc (attr := simp)]
+lemma ι_isoColimit_inv (g : CostructuredArrow L Y) :
+    colimit.ι _ g ≫ h.isoColimit.inv = E.hom.app g.left ≫ E.right.map g.hom :=
+  IsColimit.comp_coconePointUniqueUpToIso_inv _ _ _
+
+@[reassoc (attr := simp)]
+lemma ι_isoColimit_hom (g : CostructuredArrow L Y) :
+    E.hom.app g.left ≫ E.right.map g.hom ≫ h.isoColimit.hom =
+      colimit.ι (CostructuredArrow.proj L Y ⋙ F) g := by
+  simpa using h.comp_coconePointUniqueUpToIso_hom (colimit.isColimit _) g
+
+end IsPointwiseLeftKanExtensionAt
+
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension when
 it is a pointwise left Kan extension at any object. -/
 abbrev IsPointwiseLeftKanExtension := ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y
@@ -210,6 +234,30 @@ lemma IsPointwiseRightKanExtensionAt.isIso_hom_app
     {X : C} (h : E.IsPointwiseRightKanExtensionAt (L.obj X)) [L.Full] [L.Faithful] :
     IsIso (E.hom.app X) := by
   simpa using h.isIso_π_app_of_isInitial _ StructuredArrow.mkIdInitial
+
+namespace IsPointwiseRightKanExtensionAt
+
+variable {E} {Y : D} (h : E.IsPointwiseRightKanExtensionAt Y)
+  [HasLimit (StructuredArrow.proj Y L ⋙ F)]
+
+/-- A pointwise right Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
+`limit (StructuredArrow.proj Y L ⋙ F)`. -/
+noncomputable def isoLimit :
+    E.left.obj Y ≅ limit (StructuredArrow.proj Y L ⋙ F) :=
+  h.conePointUniqueUpToIso (limit.isLimit _)
+
+@[reassoc (attr := simp)]
+lemma isoLimit_hom_π (g : StructuredArrow Y L) :
+    h.isoLimit.hom ≫ limit.π _ g = E.left.map g.hom ≫ E.hom.app g.right :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
+
+@[reassoc (attr := simp)]
+lemma isoLimit_inv_π (g : StructuredArrow Y L) :
+    h.isoLimit.inv ≫ E.left.map g.hom ≫ E.hom.app g.right =
+      limit.π (StructuredArrow.proj Y L ⋙ F) g := by
+  simpa using h.conePointUniqueUpToIso_inv_comp (limit.isLimit _) g
+
+end IsPointwiseRightKanExtensionAt
 
 /-- A right extension `E : RightExtension L F` is a pointwise right Kan extension when
 it is a pointwise right Kan extension at any object. -/

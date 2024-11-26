@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
 def SimplicialObject :=
@@ -72,7 +72,7 @@ instance [HasColimits C] : HasColimits (SimplicialObject C) :=
 
 variable {C}
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
     (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
@@ -87,6 +87,9 @@ def δ {n} (i : Fin (n + 2)) : X _[n + 1] ⟶ X _[n] :=
 /-- Degeneracy maps for a simplicial object. -/
 def σ {n} (i : Fin (n + 1)) : X _[n] ⟶ X _[n + 1] :=
   X.map (SimplexCategory.σ i).op
+
+/-- The diagonal of a simplex is the long edge of the simplex.-/
+def diagonal {n : ℕ} : X _[n] ⟶ X _[1] := X.map ((SimplexCategory.diag n).op)
 
 /-- Isomorphisms from identities in ℕ. -/
 def eqToIso {n m : ℕ} (h : n = m) : X _[n] ≅ X _[m] :=
@@ -203,7 +206,7 @@ variable (C)
 def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Truncated simplicial objects. -/
 def Truncated (n : ℕ) :=
   (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
@@ -347,7 +350,7 @@ variable (C)
 abbrev const : C ⥤ SimplicialObject C :=
   CategoryTheory.Functor.const _
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The category of augmented simplicial objects, defined as a comma category. -/
 def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
@@ -361,7 +364,7 @@ variable {C}
 
 namespace Augmented
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=
@@ -446,7 +449,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
   left := X
   right := X₀
   hom :=
-    { app := fun i => X.map (SimplexCategory.const _ _ 0).op ≫ f
+    { app := fun _ => X.map (SimplexCategory.const _ _ 0).op ≫ f
       naturality := by
         intro i j g
         dsimp
@@ -459,7 +462,7 @@ theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X�
 
 end SimplicialObject
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Cosimplicial objects. -/
 def CosimplicialObject :=
   SimplexCategory ⥤ C
@@ -495,7 +498,7 @@ instance [HasColimits C] : HasColimits (CosimplicialObject C) :=
 
 variable {C}
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : CosimplicialObject C} (f g : X ⟶ Y)
     (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
@@ -628,7 +631,7 @@ variable (C)
 def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Truncated cosimplicial objects. -/
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
@@ -682,7 +685,7 @@ variable (C)
 abbrev const : C ⥤ CosimplicialObject C :=
   CategoryTheory.Functor.const _
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Augmented cosimplicial objects. -/
 def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))
@@ -696,7 +699,7 @@ variable {C}
 
 namespace Augmented
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : Augmented C} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
     f = g :=
@@ -775,7 +778,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0])
   left := X₀
   right := X
   hom :=
-    { app := fun i => f ≫ X.map (SimplexCategory.const _ _ 0)
+    { app := fun _ => f ≫ X.map (SimplexCategory.const _ _ 0)
       naturality := by
         intro i j g
         dsimp

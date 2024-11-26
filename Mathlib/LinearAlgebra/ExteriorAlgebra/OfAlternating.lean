@@ -141,7 +141,7 @@ def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorA
   map_add' := map_add _
   map_smul' := map_smul _
   invFun F i := F.compAlternatingMap (ιMulti R i)
-  left_inv f := funext fun i => liftAlternating_comp_ιMulti _
+  left_inv _ := funext fun _ => liftAlternating_comp_ιMulti _
   right_inv F :=
     (liftAlternating_comp _ _).trans <| by rw [liftAlternating_ιMulti, LinearMap.comp_id]
 

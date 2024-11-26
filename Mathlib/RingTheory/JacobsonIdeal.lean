@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 -/
 import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.Polynomial.Quotient
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
@@ -275,6 +275,9 @@ theorem radical_le_jacobson : radical I ≤ jacobson I :=
 theorem isRadical_of_eq_jacobson (h : jacobson I = I) : I.IsRadical :=
   radical_le_jacobson.trans h.le
 
+lemma isRadical_jacobson (I : Ideal R) : I.jacobson.IsRadical :=
+  isRadical_of_eq_jacobson jacobson_idem
+
 theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ : Ideal R)) :
     IsUnit r := by
   cases' exists_mul_sub_mem_of_sub_one_mem_jacobson r h with s hs
@@ -412,10 +415,11 @@ theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R
 end IsLocal
 
 theorem isPrimary_of_isMaximal_radical [CommRing R] {I : Ideal R} (hi : IsMaximal (radical I)) :
-    IsPrimary I :=
+    I.IsPrimary :=
   have : radical I = jacobson I :=
-    le_antisymm (le_sInf fun M ⟨him, hm⟩ => hm.isPrime.radical_le_iff.2 him)
+    le_antisymm (le_sInf fun _ ⟨him, hm⟩ => hm.isPrime.radical_le_iff.2 him)
       (sInf_le ⟨le_radical, hi⟩)
+  isPrimary_iff.mpr
   ⟨ne_top_of_lt <| lt_of_le_of_lt le_radical (lt_top_iff_ne_top.2 hi.1.1), fun {x y} hxy =>
     ((isLocal_of_isMaximal_radical hi).mem_jacobson_or_exists_inv y).symm.imp
       (fun ⟨z, hz⟩ => by
@@ -435,5 +439,9 @@ def jacobson (I : TwoSidedIdeal R) : TwoSidedIdeal R :=
 
 lemma asIdeal_jacobson (I : TwoSidedIdeal R) : asIdeal I.jacobson = (asIdeal I).jacobson := by
   ext; simp [jacobson]
+
+theorem mem_jacobson_iff {x : R} {I : TwoSidedIdeal R} :
+    x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x + z - 1 ∈ I := by
+  simp [jacobson, Ideal.mem_jacobson_iff]
 
 end TwoSidedIdeal

@@ -230,7 +230,7 @@ lemma mapBifunctorRightUnitor_inv_apply (j : J) :
       e.inv.app (X j) ≫ (F.obj (X j)).map (singleObjApplyIso (0 : I) Y).inv ≫
         ιMapBifunctorMapObj F p X ((single₀ I).obj Y) j 0 j (hp j) := rfl
 
-variable {Y Y'}
+variable {Y}
 
 @[reassoc]
 lemma mapBifunctorRightUnitor_inv_naturality :

@@ -63,7 +63,7 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 
 open Filter Asymptotics Set
 
-open scoped ENNReal Topology
+open scoped ENNReal Topology ContDiff
 
 universe u v
 
@@ -89,7 +89,8 @@ theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWith
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x := by
-  simpa only [Set.insert_eq_of_mem, Set.mem_univ, Set.univ_prod_univ, nhdsWithin_univ]
+  simpa only [hasStrictFDerivAt_iff_isLittleO, Set.insert_eq_of_mem, Set.mem_univ,
+      Set.univ_prod_univ, nhdsWithin_univ]
     using (h.hasFPowerSeriesWithinAt (s := Set.univ)).hasStrictFDerivWithinAt
 
 theorem HasFPowerSeriesWithinAt.hasFDerivWithinAt (h : HasFPowerSeriesWithinAt f p s x) :
@@ -145,7 +146,7 @@ theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
   have Z := (h.analyticWithinAt_of_mem hy).differentiableWithinAt
   rcases eq_or_ne y x with rfl | hy
   · exact Z.mono inter_subset_left
-  · apply (Z.mono (subset_insert _ _)).mono_of_mem
+  · apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
     suffices s ∈ 𝓝[insert x s] y from nhdsWithin_mono _ inter_subset_left this
     rw [nhdsWithin_insert_of_ne hy]
     exact self_mem_nhdsWithin
@@ -169,7 +170,7 @@ theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
   · convert (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
     simp
   · have Z := (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
-    apply (Z.mono (subset_insert _ _)).mono_of_mem
+    apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
     rw [nhdsWithin_insert_of_ne]
     · exact self_mem_nhdsWithin
     · simpa using h''y
@@ -260,7 +261,7 @@ by the sequence of its derivatives. Note that, if the function were just analyti
 one would have to use instead the sequence of derivatives inside the set, as in
 `AnalyticOn.hasFTaylorSeriesUpToOn`. -/
 lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
-    (n : ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
+    (n : WithTop ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
   · apply HasFDerivAt.hasFDerivWithinAt
@@ -269,25 +270,27 @@ lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
     exact (h.iteratedFDeriv m x hx).differentiableAt
 
 /-- An analytic function is infinitely differentiable. -/
-protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) {n : ℕ∞} :
-    ContDiffOn 𝕜 n f s :=
+protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s)
+    {n : WithTop ℕ∞} : ContDiffOn 𝕜 n f s := by
+  suffices ContDiffOn 𝕜 ω f s from this.of_le le_top
+  rw [← contDiffOn_infty_iff_contDiffOn_omega]
   let t := { x | AnalyticAt 𝕜 f x }
-  suffices ContDiffOn 𝕜 n f t from this.mono h
+  suffices ContDiffOn 𝕜 ∞ f t from this.mono h
   have H : AnalyticOnNhd 𝕜 f t := fun _x hx ↦ hx
   have t_open : IsOpen t := isOpen_analyticAt 𝕜 f
-  contDiffOn_of_continuousOn_differentiableOn
+  exact contDiffOn_of_continuousOn_differentiableOn
     (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
       fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
     (fun m _ ↦ (H.iteratedFDeriv m).differentiableOn.congr
       fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
 /-- An analytic function on the whole space is infinitely differentiable there. -/
-theorem AnalyticOnNhd.contDiff [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f univ) {n : ℕ∞} :
+theorem AnalyticOnNhd.contDiff [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f univ) {n : WithTop ℕ∞} :
     ContDiff 𝕜 n f := by
   rw [← contDiffOn_univ]
   exact h.contDiffOn
 
-theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
+theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : WithTop ℕ∞} :
     ContDiffAt 𝕜 n f x := by
   obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOnNhd
   exact hf.contDiffOn.contDiffAt hs
@@ -305,7 +308,7 @@ protected lemma AnalyticOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E
 alias AnalyticWithinOn.contDiffOn := AnalyticOn.contDiffOn
 
 lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
-    (n : ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
+    (n : WithTop ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
     ∃ u ∈ 𝓝[insert x s] x, ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
     HasFTaylorSeriesUpToOn n f p u ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) u := by
   rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩
@@ -333,7 +336,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   let F' := UniformSpace.Completion F
   let a : F →L[𝕜] F' := UniformSpace.Completion.toComplL
   let b : (E →L[𝕜] F) →ₗᵢ[𝕜] (E →L[𝕜] F') := UniformSpace.Completion.toComplₗᵢ.postcomp
-  rw [← b.embedding.hasSum_iff]
+  rw [← b.isEmbedding.hasSum_iff]
   have : HasFPowerSeriesWithinOnBall (a ∘ f) (a.compFormalMultilinearSeries p) s x r :=
     a.comp_hasFPowerSeriesWithinOnBall h
   have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_eq_coe_nnnorm] using hy)
@@ -381,7 +384,7 @@ protected theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
     apply AnalyticOnNhd.comp_analyticOn _ (IH.fderivWithin hu) (mapsTo_univ _ _)
     apply LinearIsometryEquiv.analyticOnNhd
 
-lemma AnalyticOn.hasFTaylorSeriesUpToOn {n : ℕ∞}
+lemma AnalyticOn.hasFTaylorSeriesUpToOn {n : WithTop ℕ∞}
     (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
@@ -544,19 +547,21 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
     simp
 
 /-- A polynomial function is infinitely differentiable. -/
-theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞} :
-    ContDiffOn 𝕜 n f s :=
+theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : WithTop ℕ∞} :
+    ContDiffOn 𝕜 n f s := by
+  suffices ContDiffOn 𝕜 ω f s from this.of_le le_top
   let t := { x | CPolynomialAt 𝕜 f x }
-  suffices ContDiffOn 𝕜 n f t from this.mono h
+  suffices ContDiffOn 𝕜 ω f t from this.mono h
+  rw [← contDiffOn_infty_iff_contDiffOn_omega]
   have H : CPolynomialOn 𝕜 f t := fun _x hx ↦ hx
   have t_open : IsOpen t := isOpen_cPolynomialAt 𝕜 f
-  contDiffOn_of_continuousOn_differentiableOn
+  exact contDiffOn_of_continuousOn_differentiableOn
     (fun m _ ↦ (H.iteratedFDeriv m).continuousOn.congr
       fun  _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
     (fun m _ ↦ (H.iteratedFDeriv m).analyticOnNhd.differentiableOn.congr
       fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
-theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞} :
+theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : WithTop ℕ∞} :
     ContDiffAt 𝕜 n f x :=
   let ⟨_, hs, hf⟩ := h.exists_mem_nhds_cPolynomialOn
   hf.contDiffOn.contDiffAt hs
@@ -594,7 +599,7 @@ theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     simp_rw [FormalMultilinearSeries.changeOriginSeriesTerm,
       toFormalMultilinearSeries, dif_neg h.symm, LinearIsometryEquiv.map_zero]
 
-variable {n : ℕ∞} (x : ∀ i, E i)
+variable {n : WithTop ℕ∞} (x : ∀ i, E i)
 
 open Finset in
 theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
@@ -619,7 +624,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
       rw [card_compl, Fintype.card_fin, Finset.card_singleton, Nat.add_sub_cancel_left]⟩)
   · use fun _ _ ↦ (singleton_injective <| compl_injective <| Subtype.ext_iff.mp ·)
     intro ⟨s, hs⟩
-    have h : sᶜ.card = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
+    have h : #sᶜ = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
     obtain ⟨a, ha⟩ := card_eq_one.mp h
     exact ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
   rw [Function.comp_apply, Subtype.coe_mk, compl_singleton, piecewise_erase_univ,
