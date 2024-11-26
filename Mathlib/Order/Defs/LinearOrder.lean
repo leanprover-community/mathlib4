@@ -12,7 +12,6 @@ import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 import Mathlib.Order.Defs.PartialOrder
-import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Orders
