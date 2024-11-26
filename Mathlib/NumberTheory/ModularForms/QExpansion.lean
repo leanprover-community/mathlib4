@@ -44,7 +44,7 @@ lemma qParam_im_ge_half (ξ : ℍ) (hξ : 1 / 2 ≤ ξ.im) : ‖𝕢 1 ξ‖ ≤
   apply Real.exp_le_exp_of_le
   simp only [mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, mul_zero, sub_zero, Complex.I_re,
     mul_im, zero_mul, add_zero, Complex.I_im, mul_one, sub_self, coe_re, coe_im,
-    show 2 * π * ξ.im = π * 2 * ξ.im by ring, zero_sub, one_div, neg_le, neg_neg]
+    show 2 * π * ξ.im = π * 2 * ξ.im by ring, zero_sub, neg_le, neg_neg]
   have : √3 ≤ 2 := sqrt_le_iff.mpr (by norm_cast)
   have : 1 ≤ ξ.im * 2 := by
     rwa [div_le_iff₀ zero_lt_two] at hξ
