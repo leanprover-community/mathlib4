@@ -360,7 +360,7 @@ theorem Convex.closure_subset_image_homothety_interior_of_one_lt {s : Set E} (hs
   refine
     ⟨homothety x t⁻¹ y, hs.openSegment_interior_closure_subset_interior hx hy ?_,
       (AffineEquiv.homothetyUnitsMulHom x (Units.mk0 t hne)).apply_symm_apply y⟩
-  rw [openSegment_eq_image_lineMap, ← inv_one, ← inv_Ioi₀ (zero_lt_one' ℝ), ← image_inv,
+  rw [openSegment_eq_image_lineMap, ← inv_one, ← inv_Ioi₀ (zero_lt_one' ℝ), ← image_inv_eq_inv,
     image_image, homothety_eq_lineMap]
   exact mem_image_of_mem _ ht
 
