@@ -26,7 +26,9 @@ open CategoryTheory
 
 /-- The type of delta-generated topological spaces. -/
 structure DeltaGenerated where
+  /-- The underlying topological space. -/
   toTop : TopCat.{u}
+  /-- The underlying topological space is delta-generated. -/
   deltaGenerated : DeltaGeneratedSpace toTop := by infer_instance
 
 namespace DeltaGenerated
