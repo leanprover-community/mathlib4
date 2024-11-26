@@ -90,7 +90,7 @@ instance Truncated.isRightKanExtensionCosk : IsRightKanExtension
 
 /-- The map `coskRightExtension.hom X` is a natural transformation between two right Kan extensions
 of the diagram `Truncated.inclusion.op ⋙ X` and thus is an isomorphism. -/
-instance IsCoskeletal.coskRightExtension.isIsoHom : IsIso (rightExtensionCosk.hom X n) :=
+instance IsCoskeletal.coskRightExtension.isIso_hom : IsIso (rightExtensionCosk.hom X n) :=
   isIso_of_isTerminal (IsCoskeletal.isUniversalOfIsRightKanExtension X n)
     (((Truncated.cosk n).obj
       ((Truncated.inclusion n).op ⋙ X)).isUniversalOfIsRightKanExtension
