@@ -265,8 +265,8 @@ theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
   Subgraph.ext hV hadj
 
 /-- The union of two subgraphs. -/
-instance : Sup G.Subgraph where
-  sup G₁ G₂ :=
+instance : Max G.Subgraph where
+  max G₁ G₂ :=
     { verts := G₁.verts ∪ G₂.verts
       Adj := G₁.Adj ⊔ G₂.Adj
       adj_sub := fun hab => Or.elim hab (fun h => G₁.adj_sub h) fun h => G₂.adj_sub h
@@ -274,8 +274,8 @@ instance : Sup G.Subgraph where
       symm := fun _ _ => Or.imp G₁.adj_symm G₂.adj_symm }
 
 /-- The intersection of two subgraphs. -/
-instance : Inf G.Subgraph where
-  inf G₁ G₂ :=
+instance : Min G.Subgraph where
+  min G₁ G₂ :=
     { verts := G₁.verts ∩ G₂.verts
       Adj := G₁.Adj ⊓ G₂.Adj
       adj_sub := fun hab => G₁.adj_sub hab.1

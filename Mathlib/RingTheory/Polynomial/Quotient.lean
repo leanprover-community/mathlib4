@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 -/
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Polynomial.Basic
 

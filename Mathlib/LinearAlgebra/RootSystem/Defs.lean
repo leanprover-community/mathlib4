@@ -374,6 +374,12 @@ lemma isReduced_iff : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
     · exact Or.inl (congrArg P.root h')
     · exact Or.inr (h i j h' hLin)
 
+/-- The linear span of roots. -/
+abbrev rootSpan := span R (range P.root)
+
+/-- The linear span of coroots. -/
+abbrev corootSpan := span R (range P.coroot)
+
 /-- The `Weyl group` of a root pairing is the group of automorphisms of the weight space generated
 by reflections in roots. -/
 def weylGroup : Subgroup (M ≃ₗ[R] M) :=

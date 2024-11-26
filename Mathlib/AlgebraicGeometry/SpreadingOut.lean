@@ -49,8 +49,7 @@ open CategoryTheory
 
 namespace AlgebraicGeometry
 
-variable {X Y S : Scheme.{u}} (f : X ⟶ Y) (sX : X ⟶ S) (sY : Y ⟶ S) (e : f ≫ sY = sX)
-variable {R A : CommRingCat.{u}}
+variable {X Y S : Scheme.{u}} (f : X ⟶ Y) (sX : X ⟶ S) (sY : Y ⟶ S) {R A : CommRingCat.{u}}
 
 /-- The germ map at `x` is injective if there exists some affine `U ∋ x`
   such that the map `Γ(X, U) ⟶ X_x` is injective -/
@@ -103,7 +102,7 @@ lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f]:
   obtain ⟨V, hV⟩ := (IsOpenImmersion.affineOpensEquiv f).surjective ⟨⟨U, hU⟩, hU'⟩
   obtain rfl : f ''ᵁ V = U := Subtype.eq_iff.mp (Subtype.eq_iff.mp hV)
   obtain ⟨y, hy, e : f.base y = f.base x⟩ := hxU
-  obtain rfl := f.isOpenEmbedding.inj e
+  obtain rfl := f.isOpenEmbedding.injective e
   refine ⟨V, hy, V.2, ?_⟩
   replace H := ((MorphismProperty.injective CommRingCat).cancel_right_of_respectsIso _
     (f.stalkMap y)).mpr H
@@ -225,7 +224,7 @@ lemma spread_out_unique_of_isGermInjective' {x : X} [X.IsGermInjectiveAt x]
     (e : X.fromSpecStalk x ≫ f = X.fromSpecStalk x ≫ g) :
     ∃ (U : X.Opens), x ∈ U ∧ U.ι ≫ f = U.ι ≫ g := by
   fapply spread_out_unique_of_isGermInjective
-  · simpa using congr(($e).base (LocalRing.closedPoint _))
+  · simpa using congr(($e).base (IsLocalRing.closedPoint _))
   · apply Spec.map_injective
     rw [← cancel_mono (Y.fromSpecStalk _)]
     simpa [Scheme.Spec_map_stalkSpecializes_fromSpecStalk]
