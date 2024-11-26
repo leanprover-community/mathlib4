@@ -86,7 +86,7 @@ instance Truncated.isRightKanExtensionCosk : IsRightKanExtension
     ((coskAdj n).counit.app ((inclusion n).op ⋙ X)) := by
   unfold Truncated.cosk coskAdj
   rw [ranAdjunction_counit]
-  exact Functor.instIsRightKanExtensionObjRanAppRanCounit _ _
+  infer_instance
 
 /-- The map `coskRightExtension.hom X` is a natural transformation between two right Kan extensions
 of the diagram `Truncated.inclusion.op ⋙ X` and thus is an isomorphism. -/
