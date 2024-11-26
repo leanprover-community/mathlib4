@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury
 -/
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!

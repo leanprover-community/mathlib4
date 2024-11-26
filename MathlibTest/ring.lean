@@ -178,3 +178,28 @@ example {n : ℝ} (_hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1
   ring_nf
   trace_state
   exact test_sorry
+
+section
+abbrev myId (a : ℤ) : ℤ := a
+
+/-
+Test that when `ring_nf` normalizes multiple expressions which contain a particular atom, it uses a
+form for that atom which is consistent between expressions.
+
+We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
+about differing instance paths.
+-/
+/--
+info: x : ℤ
+R : ℤ → ℤ → Prop
+h : R (myId x * 2) (myId x * 2)
+⊢ True
+-/
+#guard_msgs (info) in
+example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
+  have h : R (myId x + x) (x + myId x) := test_sorry
+  ring_nf at h
+  trace_state
+  trivial
+
+end

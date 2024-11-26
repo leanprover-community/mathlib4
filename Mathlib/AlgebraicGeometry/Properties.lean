@@ -19,7 +19,7 @@ We provide some basic properties of schemes
 -/
 
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 universe u
 
@@ -76,7 +76,7 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImm
   constructor
   intro U
   have : U = f ⁻¹ᵁ f ''ᵁ U := by
-    ext1; exact (Set.preimage_image_eq _ H.base_open.inj).symm
+    ext1; exact (Set.preimage_image_eq _ H.base_open.injective).symm
   rw [this]
   exact isReduced_of_injective (inv <| f.app (f ''ᵁ U))
     (asIso <| f.app (f ''ᵁ U) : Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
@@ -203,7 +203,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   replace H : ¬IsPreirreducible (⊤ : Set X) := fun h =>
     H { toPreirreducibleSpace := ⟨h⟩
         toNonempty := inferInstance }
-  simp_rw [isPreirreducible_iff_closed_union_closed, not_forall, not_or] at H
+  simp_rw [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at H
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
   erw [not_forall] at h₂ h₃
   simp_rw [not_forall] at h₂ h₃
@@ -252,7 +252,7 @@ theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenIm
     [IsIntegral Y] [Nonempty X] : IsIntegral X := by
   constructor; · infer_instance
   intro U hU
-  have : U = f ⁻¹ᵁ f ''ᵁ U := by ext1; exact (Set.preimage_image_eq _ H.base_open.inj).symm
+  have : U = f ⁻¹ᵁ f ''ᵁ U := by ext1; exact (Set.preimage_image_eq _ H.base_open.injective).symm
   rw [this]
   have : IsDomain Γ(Y, f ''ᵁ U) := by
     apply (config := { allowSynthFailures := true }) IsIntegral.component_integral

@@ -6,6 +6,7 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Data.Fintype.Order
+import Mathlib.Data.Set.Functor
 
 /-!
 # Matchings
@@ -133,6 +134,34 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
+lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s t)
+    (f : s ≃ t) (hadj : ∀ v : s, G.Adj v (f v)) :
+    ∃ M : Subgraph G, M.verts = s ∪ t ∧ M.IsMatching := by
+  use {
+    verts := s ∪ t
+    Adj := fun v w ↦ (∃ h : v ∈ s, f ⟨v, h⟩ = w) ∨ (∃ h : w ∈ s, f ⟨w, h⟩ = v)
+    adj_sub := by
+      intro v w h
+      obtain (⟨hv, rfl⟩ | ⟨hw, rfl⟩) := h
+      · exact hadj ⟨v, _⟩
+      · exact (hadj ⟨w, _⟩).symm
+    edge_vert := by aesop }
+
+  simp only [Subgraph.IsMatching, Set.mem_union, true_and]
+  intro v hv
+  cases' hv with hl hr
+  · use f ⟨v, hl⟩
+    simp only [hl, exists_const, true_or, exists_true_left, true_and]
+    rintro y (rfl | ⟨hys, rfl⟩)
+    · rfl
+    · exact (h.ne_of_mem hl (f ⟨y, hys⟩).coe_prop rfl).elim
+  · use f.symm ⟨v, hr⟩
+    simp only [Subtype.coe_eta, Equiv.apply_symm_apply, Subtype.coe_prop, exists_const, or_true,
+      true_and]
+    rintro y (⟨hy, rfl⟩ | ⟨hy, rfl⟩)
+    · exact (h.ne_of_mem hy hr rfl).elim
+    · simp
+
 protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g G')
     (hf : Injective f) (hM : M.IsMatching) : (M.map f).IsMatching := by
   rintro _ ⟨v, hv, rfl⟩
@@ -203,6 +232,11 @@ lemma IsPerfectMatching.induce_connectedComponent_isMatching (h : M.IsPerfectMat
     (c : ConnectedComponent G) : (M.induce c.supp).IsMatching := by
   simpa [h.2.verts_eq_univ] using h.1.induce_connectedComponent c
 
+@[simp]
+lemma IsPerfectMatching.toSubgraph_spanningCoe_iff (h : M.spanningCoe ≤ G') :
+    (G'.toSubgraph M.spanningCoe h).IsPerfectMatching ↔ M.IsPerfectMatching := by
+  simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
+
 end Subgraph
 
 namespace ConnectedComponent
@@ -214,7 +248,7 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
     Even (Fintype.card c.supp) := by
   #adaptation_note
   /--
-  After lean4#5020, some instances that use the chain of coercions
+  After https://github.com/leanprover/lean4/pull/5020, some instances that use the chain of coercions
   `[SetLike X], X → Set α → Sort _` are
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
   using the double coercion but the proper fix seems to avoid the double coercion.

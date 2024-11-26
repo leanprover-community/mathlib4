@@ -590,7 +590,7 @@ theorem integral_hasStrictFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volu
       (continuous_fst.fst.tendsto ((a, b), (a, b)))
       (continuous_snd.snd.tendsto ((a, b), (a, b)))
       (continuous_fst.snd.tendsto ((a, b), (a, b)))
-  refine (this.congr_left ?_).trans_isBigO ?_
+  refine .of_isLittleO <| (this.congr_left ?_).trans_isBigO ?_
   · intro x; simp [sub_smul]
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
 
@@ -614,8 +614,9 @@ If `f : ℝ → E` is integrable on `a..b` and `f x` has a finite limit `c` almo
 theorem integral_hasStrictDerivAt_of_tendsto_ae_right (hf : IntervalIntegrable f volume a b)
     (hmeas : StronglyMeasurableAtFilter f (𝓝 b)) (hb : Tendsto f (𝓝 b ⊓ ae volume) (𝓝 c)) :
     HasStrictDerivAt (fun u => ∫ x in a..u, f x) c b :=
-  integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hf hmeas hb continuousAt_snd
-    continuousAt_fst
+  .of_isLittleO <|
+    integral_sub_integral_sub_linear_isLittleO_of_tendsto_ae_right hf hmeas hb continuousAt_snd
+      continuousAt_fst
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in the right endpoint.
 

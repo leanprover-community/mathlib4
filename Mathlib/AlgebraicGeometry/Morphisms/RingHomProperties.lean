@@ -39,9 +39,9 @@ For `HasRingHomProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
 - `AlgebraicGeometry.HasRingHomProperty.iff_appLE`:
     `P f` if and only if `Q (f.appLE U V _)` for all affine `U : Opens Y` and `V : Opens X`.
 - `AlgebraicGeometry.HasRingHomProperty.iff_of_source_openCover`:
-    If `Y` is affine, `P f ↔ ∀ i, Q ((𝒰.map i ≫ f).app ⊤)` for an affine open cover `𝒰` of `X`.
+    If `Y` is affine, `P f ↔ ∀ i, Q ((𝒰.map i ≫ f).appTop)` for an affine open cover `𝒰` of `X`.
 - `AlgebraicGeometry.HasRingHomProperty.iff_of_isAffine`:
-    If `X` and `Y` are affine, then `P f ↔ Q (f.app ⊤)`.
+    If `X` and `Y` are affine, then `P f ↔ Q (f.appTop)`.
 - `AlgebraicGeometry.HasRingHomProperty.Spec_iff`:
     `P (Spec.map φ) ↔ Q φ`
 - `AlgebraicGeometry.HasRingHomProperty.iff_of_iSup_eq_top`:
@@ -56,7 +56,7 @@ We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 universe u
 
@@ -66,14 +66,14 @@ namespace RingHom
 
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)
 
-theorem IsStableUnderBaseChange.pullback_fst_app_top
+theorem IsStableUnderBaseChange.pullback_fst_appTop
     (hP : IsStableUnderBaseChange P) (hP' : RespectsIso P)
     {X Y S : Scheme} [IsAffine X] [IsAffine Y] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S)
-    (H : P (g.app ⊤)) : P ((pullback.fst f g).app ⊤) := by
-  -- Porting note (#11224): change `rw` to `erw`
+    (H : P g.appTop) : P (pullback.fst f g).appTop := by
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
   erw [← PreservesPullback.iso_inv_fst AffineScheme.forgetToScheme (AffineScheme.ofHom f)
       (AffineScheme.ofHom g)]
-  rw [Scheme.comp_app, hP'.cancel_right_isIso, AffineScheme.forgetToScheme_map]
+  rw [Scheme.comp_appTop, hP'.cancel_right_isIso, AffineScheme.forgetToScheme_map]
   have := congr_arg Quiver.Hom.unop
       (PreservesPullback.iso_hom_fst AffineScheme.Γ.rightOp (AffineScheme.ofHom f)
         (AffineScheme.ofHom g))
@@ -82,6 +82,10 @@ theorem IsStableUnderBaseChange.pullback_fst_app_top
     Functor.op_map, Quiver.Hom.unop_op, AffineScheme.forgetToScheme_map, Scheme.Γ_map] at this
   rw [← this, hP'.cancel_right_isIso, ← pushoutIsoUnopPullback_inl_hom, hP'.cancel_right_isIso]
   exact hP.pushout_inl _ hP' _ _ H
+
+@[deprecated (since := "2024-11-23")]
+alias IsStableUnderBaseChange.pullback_fst_app_top :=
+IsStableUnderBaseChange.pullback_fst_appTop
 
 end RingHom
 
@@ -268,9 +272,11 @@ theorem appLE (H : P f) (U : Y.affineOpens) (V : X.affineOpens) (e) : Q (f.appLE
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le] at H
   exact H _ _ _
 
-theorem app_top (H : P f) [IsAffine X] [IsAffine Y] : Q (f.app ⊤) := by
-  rw [Scheme.Hom.app_eq_appLE]
+theorem appTop (H : P f) [IsAffine X] [IsAffine Y] : Q f.appTop := by
+  rw [Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE]
   exact appLE P f H ⟨_, isAffineOpen_top _⟩ ⟨_, isAffineOpen_top _⟩ _
+
+@[deprecated (since := "2024-11-23")] alias app_top := appTop
 
 include Q in
 theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
@@ -291,7 +297,7 @@ lemma iff_appLE : P f ↔ ∀ (U : Y.affineOpens) (V : X.affineOpens) (e), Q (f.
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le]
 
 theorem of_source_openCover [IsAffine Y]
-    (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, Q ((𝒰.map i ≫ f).app ⊤)) :
+    (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, Q ((𝒰.map i ≫ f).appTop)) :
     P f := by
   rw [HasAffineProperty.iff_of_isAffine (P := P)]
   intro U
@@ -313,17 +319,17 @@ theorem of_source_openCover [IsAffine Y]
     specialize H i
     rw [← (isLocal_ringHomProperty P).respectsIso.cancel_right_isIso _
       ((IsOpenImmersion.isoOfRangeEq (𝒰.map i) (S i).1.ι
-      Subtype.range_coe.symm).inv.app _), ← Scheme.comp_app,
-      IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, Scheme.comp_app,
-      Scheme.Opens.ι_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map] at H
+      Subtype.range_coe.symm).inv.app _), ← Scheme.comp_appTop,
+      IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, Scheme.comp_appTop,
+      Scheme.Opens.ι_appTop, Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map] at H
     exact (f.appLE_congr _ rfl (by simp) Q).mp H
 
 theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
-    P f ↔ ∀ i, Q ((𝒰.map i ≫ f).app ⊤) :=
-  ⟨fun H i ↦ app_top P _ (comp_of_isOpenImmersion P (𝒰.map i) f H), of_source_openCover 𝒰⟩
+    P f ↔ ∀ i, Q ((𝒰.map i ≫ f).appTop) :=
+  ⟨fun H i ↦ appTop P _ (comp_of_isOpenImmersion P (𝒰.map i) f H), of_source_openCover 𝒰⟩
 
 theorem iff_of_isAffine [IsAffine X] [IsAffine Y] :
-    P f ↔ Q (f.app ⊤) := by
+    P f ↔ Q (f.appTop) := by
   rw [iff_of_source_openCover (P := P) (Scheme.coverOfIsIso.{u} (𝟙 _))]
   simp
 
@@ -359,7 +365,7 @@ lemma containsIdentities (hP : RingHom.ContainsIdentities Q) : P.ContainsIdentit
     rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
     have : IsAffine (𝟙 X ⁻¹ᵁ U.1) := U.2
-    rw [morphismRestrict_id, iff_of_isAffine (P := P), Scheme.id_app]
+    rw [morphismRestrict_id, iff_of_isAffine (P := P), Scheme.id_appTop]
     apply hP
 
 variable (P) in
@@ -504,7 +510,7 @@ lemma isStableUnderBaseChange (hP : RingHom.IsStableUnderBaseChange Q) :
       limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
     apply this _ (comp_of_isOpenImmersion _ _ _ H) inferInstance
   rw [iff_of_isAffine (P := P)] at H ⊢
-  exact hP.pullback_fst_app_top _ (isLocal_ringHomProperty P).respectsIso _ _ H
+  exact hP.pullback_fst_appTop _ (isLocal_ringHomProperty P).respectsIso _ _ H
 
 include Q in
 private lemma respects_isOpenImmersion_aux

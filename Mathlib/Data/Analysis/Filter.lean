@@ -20,7 +20,7 @@ This file provides infrastructure to compute with filters.
 
 open Set Filter
 
--- Porting note (#11215): TODO write doc strings
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO write doc strings
 /-- A `CFilter α σ` is a realization of a filter (base) on `α`,
   represented by a type `σ` together with operations for the top element and
   the binary `inf` operation. -/
@@ -86,7 +86,7 @@ theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFil
 
 end CFilter
 
--- Porting note (#11215): TODO write doc strings
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO write doc strings
 /-- A realizer for filter `f` is a cfilter which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type*

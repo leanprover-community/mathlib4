@@ -5,12 +5,12 @@ Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.Tactic.Linarith
-import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Dyadic numbers

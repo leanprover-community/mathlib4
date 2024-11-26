@@ -298,8 +298,8 @@ lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     exact continuous_im.isOpen_preimage _ isOpen_Ioi
   have hVmem : (z, τ) ∈ V := ⟨hz, hτ'⟩
   have hVp : IsPreconnected V := by
-    refine (Convex.isPreconnected ?_).prod (convex_halfspace_im_gt T).isPreconnected
-    simpa only [abs_lt] using (convex_halfspace_im_gt _).inter (convex_halfspace_im_lt _)
+    refine (Convex.isPreconnected ?_).prod (convex_halfSpace_im_gt T).isPreconnected
+    simpa only [abs_lt] using (convex_halfSpace_im_gt _).inter (convex_halfSpace_im_lt _)
   let f : ℤ → ℂ × ℂ → ℂ := fun n p ↦ jacobiTheta₂_term n p.1 p.2
   let f' : ℤ → ℂ × ℂ → ℂ × ℂ →L[ℂ] ℂ := fun n p ↦ jacobiTheta₂_term_fderiv n p.1 p.2
   have hf (n : ℤ) : ∀ p ∈ V, HasFDerivAt (f n) (f' n p) p :=

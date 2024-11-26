@@ -36,7 +36,7 @@ section Preserves
 /-- `PreservesFilteredColimitsOfSize.{w', w} F` means that `F` sends all colimit cocones over any
 filtered diagram `J ⥤ C` to colimit cocones, where `J : Type w` with `[Category.{w'} J]`. -/
 @[nolint checkUnivs, pp_with_univ]
-class PreservesFilteredColimitsOfSize (F : C ⥤ D) where
+class PreservesFilteredColimitsOfSize (F : C ⥤ D) : Prop where
   preserves_filtered_colimits :
     ∀ (J : Type w) [Category.{w'} J] [IsFiltered J], PreservesColimitsOfShape J F
 
@@ -45,7 +45,7 @@ A functor is said to preserve filtered colimits, if it preserves all colimits of
 `J` is a filtered category which is small relative to the universe in which morphisms of the source
 live.
 -/
-abbrev PreservesFilteredColimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) :=
+abbrev PreservesFilteredColimits (F : C ⥤ D) : Prop :=
   PreservesFilteredColimitsOfSize.{v, v} F
 
 attribute [instance 100] PreservesFilteredColimitsOfSize.preserves_filtered_colimits
@@ -54,35 +54,35 @@ instance (priority := 100) PreservesColimits.preservesFilteredColimits (F : C �
     [PreservesColimitsOfSize.{w, w'} F] : PreservesFilteredColimitsOfSize.{w, w'} F where
   preserves_filtered_colimits _ := inferInstance
 
-instance compPreservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E)
+instance comp_preservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFilteredColimitsOfSize.{w, w'} F] [PreservesFilteredColimitsOfSize.{w, w'} G] :
       PreservesFilteredColimitsOfSize.{w, w'} (F ⋙ G) where
   preserves_filtered_colimits _ := inferInstance
 
 /-- A functor preserving larger filtered colimits also preserves smaller filtered colimits. -/
-noncomputable def preservesFilteredColimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}]
+lemma preservesFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [PreservesFilteredColimitsOfSize.{w', w₂'} F] :
       PreservesFilteredColimitsOfSize.{w, w₂} F where
   preserves_filtered_colimits J _ _ := by
     let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
     haveI := IsFiltered.of_equivalence e.symm
-    exact preservesColimitsOfShapeOfEquiv e F
+    exact preservesColimitsOfShape_of_equiv e F
 
 /--
-`PreservesFilteredColimitsOfSizeShrink.{w, w'} F` tries to obtain
+`PreservesFilteredColimitsOfSize_shrink.{w, w'} F` tries to obtain
 `PreservesFilteredColimitsOfSize.{w, w'} F` from some other `PreservesFilteredColimitsOfSize F`.
 -/
-noncomputable def preservesFilteredColimitsOfSizeShrink (F : C ⥤ D)
+lemma preservesFilteredColimitsOfSize_shrink (F : C ⥤ D)
     [PreservesFilteredColimitsOfSize.{max w w₂, max w' w₂'} F] :
       PreservesFilteredColimitsOfSize.{w, w'} F :=
-  preservesFilteredColimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
+  preservesFilteredColimitsOfSize_of_univLE.{max w w₂, max w' w₂'} F
 
 /--
 Preserving filtered colimits at any universe implies preserving filtered colimits at universe `0`.
 -/
-noncomputable def preservesSmallestFilteredColimitsOfPreservesFilteredColimits (F : C ⥤ D)
+lemma preservesSmallestFilteredColimits_of_preservesFilteredColimits (F : C ⥤ D)
     [PreservesFilteredColimitsOfSize.{w', w} F] : PreservesFilteredColimitsOfSize.{0, 0} F :=
-  preservesFilteredColimitsOfSizeShrink F
+  preservesFilteredColimitsOfSize_shrink F
 
 end Preserves
 
@@ -92,7 +92,7 @@ section Reflects
 /-- `ReflectsFilteredColimitsOfSize.{w', w} F` means that whenever the image of a filtered cocone
 under `F` is a colimit cocone, the original cocone was already a colimit. -/
 @[nolint checkUnivs, pp_with_univ]
-class ReflectsFilteredColimitsOfSize (F : C ⥤ D) where
+class ReflectsFilteredColimitsOfSize (F : C ⥤ D) : Prop where
   reflects_filtered_colimits :
     ∀ (J : Type w) [Category.{w'} J] [IsFiltered J], ReflectsColimitsOfShape J F
 
@@ -101,7 +101,7 @@ A functor is said to reflect filtered colimits, if it reflects all colimits of s
 `J` is a filtered category which is small relative to the universe in which morphisms of the source
 live.
 -/
-abbrev ReflectsFilteredColimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) :=
+abbrev ReflectsFilteredColimits (F : C ⥤ D) : Prop :=
   ReflectsFilteredColimitsOfSize.{v, v} F
 
 attribute [instance 100] ReflectsFilteredColimitsOfSize.reflects_filtered_colimits
@@ -110,35 +110,35 @@ instance (priority := 100) ReflectsColimits.reflectsFilteredColimits (F : C ⥤ 
     [ReflectsColimitsOfSize.{w, w'} F] : ReflectsFilteredColimitsOfSize.{w, w'} F where
   reflects_filtered_colimits _ := inferInstance
 
-instance compReflectsFilteredColimits (F : C ⥤ D) (G : D ⥤ E)
+instance comp_reflectsFilteredColimits (F : C ⥤ D) (G : D ⥤ E)
     [ReflectsFilteredColimitsOfSize.{w, w'} F] [ReflectsFilteredColimitsOfSize.{w, w'} G] :
       ReflectsFilteredColimitsOfSize.{w, w'} (F ⋙ G) where
   reflects_filtered_colimits _ := inferInstance
 
 /-- A functor reflecting larger filtered colimits also reflects smaller filtered colimits. -/
-noncomputable def reflectsFilteredColimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}]
+lemma reflectsFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [ReflectsFilteredColimitsOfSize.{w', w₂'} F] :
       ReflectsFilteredColimitsOfSize.{w, w₂} F where
   reflects_filtered_colimits J _ _ := by
     let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
     haveI := IsFiltered.of_equivalence e.symm
-    exact reflectsColimitsOfShapeOfEquiv e F
+    exact reflectsColimitsOfShape_of_equiv e F
 
 /--
-`ReflectsFilteredColimitsOfSizeShrink.{w, w'} F` tries to obtain
+`ReflectsFilteredColimitsOfSize_shrink.{w, w'} F` tries to obtain
 `ReflectsFilteredColimitsOfSize.{w, w'} F` from some other `ReflectsFilteredColimitsOfSize F`.
 -/
-noncomputable def reflectsFilteredColimitsOfSizeShrink (F : C ⥤ D)
+lemma reflectsFilteredColimitsOfSize_shrink (F : C ⥤ D)
     [ReflectsFilteredColimitsOfSize.{max w w₂, max w' w₂'} F] :
       ReflectsFilteredColimitsOfSize.{w, w'} F :=
-  reflectsFilteredColimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
+  reflectsFilteredColimitsOfSize_of_univLE.{max w w₂, max w' w₂'} F
 
 /--
 Reflecting filtered colimits at any universe implies reflecting filtered colimits at universe `0`.
 -/
-noncomputable def reflectsSmallestFilteredColimitsOfReflectsFilteredColimits (F : C ⥤ D)
+lemma reflectsSmallestFilteredColimits_of_reflectsFilteredColimits (F : C ⥤ D)
     [ReflectsFilteredColimitsOfSize.{w', w} F] : ReflectsFilteredColimitsOfSize.{0, 0} F :=
-  reflectsFilteredColimitsOfSizeShrink F
+  reflectsFilteredColimitsOfSize_shrink F
 
 end Reflects
 
@@ -152,7 +152,7 @@ section Preserves
 /-- `PreservesCofilteredLimitsOfSize.{w', w} F` means that `F` sends all limit cones over any
 cofiltered diagram `J ⥤ C` to limit cones, where `J : Type w` with `[Category.{w'} J]`. -/
 @[nolint checkUnivs, pp_with_univ]
-class PreservesCofilteredLimitsOfSize (F : C ⥤ D) where
+class PreservesCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
   preserves_cofiltered_limits :
     ∀ (J : Type w) [Category.{w'} J] [IsCofiltered J], PreservesLimitsOfShape J F
 
@@ -161,7 +161,7 @@ A functor is said to preserve cofiltered limits, if it preserves all limits of s
 `J` is a cofiltered category which is small relative to the universe in which morphisms of the
 source live.
 -/
-abbrev PreservesCofilteredLimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) :=
+abbrev PreservesCofilteredLimits (F : C ⥤ D) : Prop :=
   PreservesCofilteredLimitsOfSize.{v, v} F
 
 attribute [instance 100] PreservesCofilteredLimitsOfSize.preserves_cofiltered_limits
@@ -170,35 +170,35 @@ instance (priority := 100) PreservesLimits.preservesCofilteredLimits (F : C ⥤ 
     [PreservesLimitsOfSize.{w, w'} F] : PreservesCofilteredLimitsOfSize.{w, w'} F where
   preserves_cofiltered_limits _ := inferInstance
 
-instance compPreservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E)
+instance comp_preservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E)
     [PreservesCofilteredLimitsOfSize.{w, w'} F] [PreservesCofilteredLimitsOfSize.{w, w'} G] :
       PreservesCofilteredLimitsOfSize.{w, w'} (F ⋙ G) where
   preserves_cofiltered_limits _ := inferInstance
 
 /-- A functor preserving larger cofiltered limits also preserves smaller cofiltered limits. -/
-noncomputable def preservesCofilteredLimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}]
+lemma preservesCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [PreservesCofilteredLimitsOfSize.{w', w₂'} F] :
       PreservesCofilteredLimitsOfSize.{w, w₂} F where
   preserves_cofiltered_limits J _ _ := by
     let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
     haveI := IsCofiltered.of_equivalence e.symm
-    exact preservesLimitsOfShapeOfEquiv e F
+    exact preservesLimitsOfShape_of_equiv e F
 
 /--
 `PreservesCofilteredLimitsOfSizeShrink.{w, w'} F` tries to obtain
 `PreservesCofilteredLimitsOfSize.{w, w'} F` from some other `PreservesCofilteredLimitsOfSize F`.
 -/
-noncomputable def preservesCofilteredLimitsOfSizeShrink (F : C ⥤ D)
+lemma preservesCofilteredLimitsOfSize_shrink (F : C ⥤ D)
     [PreservesCofilteredLimitsOfSize.{max w w₂, max w' w₂'} F] :
       PreservesCofilteredLimitsOfSize.{w, w'} F :=
-  preservesCofilteredLimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
+  preservesCofilteredLimitsOfSize_of_univLE.{max w w₂, max w' w₂'} F
 
 /--
 Preserving cofiltered limits at any universe implies preserving cofiltered limits at universe `0`.
 -/
-noncomputable def preservesSmallestCofilteredLimitsOfPreservesCofilteredLimits (F : C ⥤ D)
+lemma preservesSmallestCofilteredLimits_of_preservesCofilteredLimits (F : C ⥤ D)
     [PreservesCofilteredLimitsOfSize.{w', w} F] : PreservesCofilteredLimitsOfSize.{0, 0} F :=
-  preservesCofilteredLimitsOfSizeShrink F
+  preservesCofilteredLimitsOfSize_shrink F
 
 end Preserves
 
@@ -208,7 +208,7 @@ section Reflects
 /-- `ReflectsCofilteredLimitsOfSize.{w', w} F` means that whenever the image of a cofiltered cone
 under `F` is a limit cone, the original cone was already a limit. -/
 @[nolint checkUnivs, pp_with_univ]
-class ReflectsCofilteredLimitsOfSize (F : C ⥤ D) where
+class ReflectsCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
   reflects_cofiltered_limits :
     ∀ (J : Type w) [Category.{w'} J] [IsCofiltered J], ReflectsLimitsOfShape J F
 
@@ -217,7 +217,7 @@ A functor is said to reflect cofiltered limits, if it reflects all limits of sha
 `J` is a cofiltered category which is small relative to the universe in which morphisms of the
 source live.
 -/
-abbrev ReflectsCofilteredLimits (F : C ⥤ D) : Type max u₁ u₂ (v + 1) :=
+abbrev ReflectsCofilteredLimits (F : C ⥤ D) : Prop :=
   ReflectsCofilteredLimitsOfSize.{v, v} F
 
 attribute [instance 100] ReflectsCofilteredLimitsOfSize.reflects_cofiltered_limits
@@ -226,35 +226,35 @@ instance (priority := 100) ReflectsLimits.reflectsCofilteredLimits (F : C ⥤ D)
     [ReflectsLimitsOfSize.{w, w'} F] : ReflectsCofilteredLimitsOfSize.{w, w'} F where
   reflects_cofiltered_limits _ := inferInstance
 
-instance compReflectsCofilteredLimits (F : C ⥤ D) (G : D ⥤ E)
+instance comp_reflectsCofilteredLimits (F : C ⥤ D) (G : D ⥤ E)
     [ReflectsCofilteredLimitsOfSize.{w, w'} F] [ReflectsCofilteredLimitsOfSize.{w, w'} G] :
       ReflectsCofilteredLimitsOfSize.{w, w'} (F ⋙ G) where
   reflects_cofiltered_limits _ := inferInstance
 
 /-- A functor reflecting larger cofiltered limits also reflects smaller cofiltered limits. -/
-noncomputable def reflectsCofilteredLimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}]
+lemma reflectsCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [ReflectsCofilteredLimitsOfSize.{w', w₂'} F] :
       ReflectsCofilteredLimitsOfSize.{w, w₂} F where
   reflects_cofiltered_limits J _ _ := by
     let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
     haveI := IsCofiltered.of_equivalence e.symm
-    exact reflectsLimitsOfShapeOfEquiv e F
+    exact reflectsLimitsOfShape_of_equiv e F
 
 /--
-`ReflectsCofilteredLimitsOfSizeShrink.{w, w'} F` tries to obtain
+`ReflectsCofilteredLimitsOfSize_shrink.{w, w'} F` tries to obtain
 `ReflectsCofilteredLimitsOfSize.{w, w'} F` from some other `ReflectsCofilteredLimitsOfSize F`.
 -/
-noncomputable def reflectsCofilteredLimitsOfSizeShrink (F : C ⥤ D)
+lemma reflectsCofilteredLimitsOfSize_shrink (F : C ⥤ D)
     [ReflectsCofilteredLimitsOfSize.{max w w₂, max w' w₂'} F] :
       ReflectsCofilteredLimitsOfSize.{w, w'} F :=
-  reflectsCofilteredLimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
+  reflectsCofilteredLimitsOfSize_of_univLE.{max w w₂, max w' w₂'} F
 
 /--
 Reflecting cofiltered limits at any universe implies reflecting cofiltered limits at universe `0`.
 -/
-noncomputable def reflectsSmallestCofilteredLimitsOfReflectsCofilteredLimits (F : C ⥤ D)
+lemma reflectsSmallestCofilteredLimits_of_reflectsCofilteredLimits (F : C ⥤ D)
     [ReflectsCofilteredLimitsOfSize.{w', w} F] : ReflectsCofilteredLimitsOfSize.{0, 0} F :=
-  reflectsCofilteredLimitsOfSizeShrink F
+  reflectsCofilteredLimitsOfSize_shrink F
 
 end Reflects
 
