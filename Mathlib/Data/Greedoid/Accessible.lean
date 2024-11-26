@@ -8,13 +8,14 @@ import Mathlib.Data.Finset.Card
 import Init.Data.Nat.Basic
 
 /-!
+# Accessible
+
 This file contains the definition of `AccessibleProperty` and `Accessible` typeclass,
 along with some main properties of accessible set systems.
 
-# Accessible
 A set system `S` is accessible if there is some `x ∈ s` which `s \ {x} ∈ S` for each `s ∈ S`.
 This is equivalent to saying that `S` is accessible if there is some `t ⊆ s` which `t ∈ S` and
-`t.card + 1 = s.card`, for each `s ∈ S`.
+`#t + 1 = #s`, for each `s ∈ S`.
 This file uses the latter definition to remove a `DecidableEq` condition which is required
 when using the former definition.
 -/

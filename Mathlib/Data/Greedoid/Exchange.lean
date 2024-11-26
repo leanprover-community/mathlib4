@@ -8,13 +8,15 @@ import Mathlib.Data.Finset.Card
 import Init.Data.Nat.Basic
 
 /-!
+# Exchange property
+
 This file contains the definition of `ExchangeProperty`,
 along with some main properties of set systems with the exchange property.
 Not to be confused with 'Exchange System'. [Brylawski & Dieter, 1986]
 
-# Exchange property
 A set system `S` satisfies the exchange property if there is some `x ∈ s \ t` for `s, t ∈ S`
-which `t.card < s.card`, that `t ∪ {x} ∈ S`.
+which `#t < #s`, that `t ∪ {x} ∈ S`.
+This definition is modified in implementation to remove the need of decidability.
 -/
 
 namespace Greedoid

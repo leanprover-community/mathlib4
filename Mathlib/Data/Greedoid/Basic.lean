@@ -7,10 +7,11 @@ import Mathlib.Data.Greedoid.Accessible
 import Mathlib.Data.Greedoid.Exchange
 
 /-!
+# Greedoid
+
 This file contains the definition of `ExchangeProperty` and `AccessibleProperty`, along with the
 main subject `Greedoid α`.
 
-# Greedoid
 Greedoid is a set system, i.e., a family of sets, over a finite ground set, which satisfies both
 exchange and accessible properties.
 -/
