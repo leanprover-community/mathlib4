@@ -18,7 +18,39 @@ open LinearMap (BilinMap)
 
 namespace QuadraticMap
 
-variable {ι R M N} [LinearOrder ι]
+section
+
+variable {ι R}
+
+/-- All the products of pairs of elements in `f`. -/
+noncomputable def _root_.Finsupp.sym2Mul [CommMonoidWithZero R] (f : ι →₀ R) : Sym2 ι →₀ R :=
+  .onFinset
+    f.support.sym2
+    (Sym2.lift ⟨fun i j => f i * f j, fun _ _ => mul_comm _ _⟩)
+    (Sym2.ind <| by aesop)
+
+end
+
+section
+
+variable {ι R M N}
+
+variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [DecidableEq ι]
+
+open Finsupp in
+theorem map_finsupp_sum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
+    Q (f.sum g) = (f.sum fun i r => Q (g i r)) +
+    ∑ p ∈ f.support.sym2 with ¬ p.IsDiag,
+      Sym2.lift
+        ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩ p := by
+  rw [sum, QuadraticMap.map_sum]
+  exact congrArg (HAdd.hAdd _) rfl
+
+
+end
+
+
+variable {ι R M N}  [LinearOrder ι]
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 /-- Given an ordered basis, produce a bilinear form associated with the quadratic form.
@@ -91,20 +123,15 @@ noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] 
   map_add' := add_toBilin bm
   map_smul' := smul_toBilin S bm
 
-open Finsupp in
-theorem map_finsupp_sum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R → M) :
-    Q (f.sum g) = (f.sum fun i r => Q (g i r)) +
-    ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) f.support.offDiag,
-      (polar Q) (g p.1 (f p.1)) (g p.2 (f p.2)) := by
-  rw [sum, QuadraticMap.map_sum]
-  exact congrArg (HAdd.hAdd _) (Finset.sum_sym2_filter_not_isDiag f.support _)
 
 open Finsupp in
 theorem map_finsupp_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
     Q (linearCombination R g l) = (l.sum fun i r => (r * r) • Q (g i)) +
     ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) l.support.offDiag,
       (l p.1) • (l p.2) • (polar Q) (g p.1) (g p.2) := by
-  simp_rw [linearCombination_apply, map_finsupp_sum, polar_smul_left, polar_smul_right, map_smul]
+  simp_rw [linearCombination_apply, map_finsupp_sum, Finset.sum_sym2_filter_not_isDiag,
+    polar_smul_left, polar_smul_right, map_smul]
+  rfl
 
 theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
     Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
