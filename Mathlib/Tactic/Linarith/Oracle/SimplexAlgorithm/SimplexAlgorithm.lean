@@ -48,8 +48,8 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
     let newBasic := s.basic.set! exitIdx s.free[enterIdx]!
     let newFree := s.free.set! enterIdx s.basic[exitIdx]!
 
-    have hb : newBasic.size = s.basic.size := by apply Array.size_setD
-    have hf : newFree.size = s.free.size := by apply Array.size_setD
+    have hb : newBasic.size = s.basic.size := by apply Array.size_setIfInBounds
+    have hf : newFree.size = s.free.size := by apply Array.size_setIfInBounds
 
     return (⟨newBasic, newFree, hb ▸ hf ▸ mat⟩ : Tableau matType)
 
