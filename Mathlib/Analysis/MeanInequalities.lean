@@ -190,11 +190,8 @@ theorem geom_mean_eq_arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i := by
   rw [geom_mean_weighted_of_constant, arith_mean_weighted_of_constant] <;> assumption
 
-
-
 /- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
-weighted version of the AM-GM inequality for real-valued nonnegative functions. Note that the w i
-here need to be positive.-/
+weighted version of the AM-GM inequality for real-valued nonnegative functions. -/
 theorem geom_mean_arith_mean_weighted_eq_iff (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, z j = ∑ i ∈ s, w i * z i := by
@@ -228,9 +225,30 @@ theorem geom_mean_arith_mean_weighted_eq_iff (w z : ι → ℝ) (hw : ∀ i ∈ 
         intro x hx
         simp only [log_injOn_pos (hz' j hj) (hz' x hx), h j hj, h x hx]
 
+theorem geom_mean_arith_mean_weighted_eq_iff' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → z j = ∑ i ∈ s, w i * z i := by
+  have h (i) (_ : i ∈ s) : w i * z i ≠ 0 → w i ≠ 0 := by aesop
+  have h' (i) (_ : i ∈ s) : z i ^ w i ≠ 1 → w i ≠ 0 := by aesop
+  rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_arith_mean_weighted_eq_iff]
+  · simp
+  · simp (config := { contextual := true }) [(hw _ _).gt_iff_ne]
+  · rwa [sum_filter_ne_zero]
+  · simp_all only [ne_eq, mul_eq_zero, not_or, not_false_eq_true, and_imp, implies_true, mem_filter]
 
-
-
+theorem geom_mean_arith_mean_weighted_eq_iff'' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
+    (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, 0 < w j → z j = ∑ i ∈ s, w i * z i := by
+  have h (i) (a : i ∈ s) : w i * z i ≠ 0 → 0 < w i := fun _ => lt_of_le_of_ne' (hw i a) (by aesop)
+  have h' (i) (a : i ∈ s) : z i ^ w i ≠ 1 → 0 < w i := fun _ => lt_of_le_of_ne' (hw i a) (by aesop)
+  rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_arith_mean_weighted_eq_iff]
+  · simp
+  · simp (config := { contextual := true }) [(hw _ _).gt_iff_ne]
+  · have : filter (fun x => 0 < w x) s = filter (fun x => w x ≠ 0) s := by
+      apply filter_congr
+      exact fun x hx => ⟨fun a => (ne_of_lt a).symm, fun a => lt_of_le_of_ne (hw x hx) a.symm⟩
+    rwa [this, sum_filter_ne_zero]
+  · simp_all only [ne_eq, mul_eq_zero, not_or, not_false_eq_true, and_imp, implies_true, mem_filter]
 
 end Real
 
