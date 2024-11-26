@@ -1399,7 +1399,8 @@ theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
   exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range
 
 @[deprecated (since := "2024-11-26")] alias
-extChartAt_target_union_comp_range_mem_nhds_of_mem := extChartAt_target_union_compl_range_mem_nhds_of_mem
+extChartAt_target_union_comp_range_mem_nhds_of_mem := 
+extChartAt_target_union_compl_range_mem_nhds_of_mem
 
 section LocallyCompact
 
