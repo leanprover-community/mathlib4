@@ -270,9 +270,10 @@ def addHypothesis (h : Expr) : StateRefT Hypotheses MetaM Unit := withReducibleA
     let hs : Hypotheses := { equalities := eqs, relations := rels' }
     set hs
 
-/-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
-either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
-these hypotheses. -/
+/-- Attempt to resolve an (implicitly) relational goal by one of the stored "relation" proofs (the
+relation hypotheses, plus what has been deduced from the `gcongr_forward` reasoning on them), or by
+one of the stored "equality" proofs (if the goal is a reflexive relation with LHS and RHS matching
+that equality). -/
 def _root_.Lean.MVarId.gcongrForward (g : MVarId) : StateRefT Hypotheses MetaM Unit :=
   withReducible do
     let hs ← get
@@ -286,7 +287,7 @@ def _root_.Lean.MVarId.gcongrForward (g : MVarId) : StateRefT Hypotheses MetaM U
       catch _ => s.restore
     for h in hs.equalities do
       try
-      -- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive.
+        -- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive.
         let m ← mkFreshExprMVar none
         g.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
         g.applyRfl
