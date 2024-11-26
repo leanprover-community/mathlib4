@@ -161,6 +161,13 @@ theorem map_map_left : ((map f).map g).left = g.left :=
   rfl
 end
 
+/-- If `f` is an isomorphism, `map f` is an equivalence of categories. -/
+def mapIso {Y : T} (f : X ≅ Y) : Over X ≌ Over Y :=
+  Comma.mapRightIso _ <| Discrete.natIso fun _ ↦ f
+
+@[simp] lemma mapIso_functor {Y : T} (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
+@[simp] lemma mapIso_inverse {Y : T} (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+
 section coherences
 /-!
 This section proves various equalities between functors that
@@ -186,6 +193,7 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
     simp
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
+@[simps!]
 def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 --  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
@@ -215,8 +223,15 @@ theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     simp
 
 /-- The natural isomorphism arising from `mapComp_eq`. -/
+@[simps!]
 def mapComp {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) ≅ (map f) ⋙ (map g) := eqToIso (mapComp_eq f g)
+
+/-- If `f = g`, then `map f` is naturally isomorphic to `map g`. -/
+@[simps!]
+def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
+    map f ≅ map g :=
+  NatIso.ofComponents (fun A ↦ eqToIso (by rw [h]))
 
 variable (T) in
 /-- The functor defined by the over categories.-/
@@ -316,6 +331,57 @@ def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
   obj Y := mk <| F.map Y.hom
   map f := Over.homMk (F.map f.left)
     (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
+
+lemma post_comp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+    post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
+  rfl
+
+/-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
+@[simps!]
+def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+    post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
+  NatIso.ofComponents (fun X ↦ Iso.refl _)
+
+/-- A natural transformation `F ⟶ G` induces a natural transformation on
+`Over X` up to `Under.map`. -/
+@[simps]
+def postMap {F G : T ⥤ D} (e : F ⟶ G) : post F ⋙ map (e.app X) ⟶ post G where
+  app Y := Over.homMk (e.app Y.left)
+
+/-- If `F` and `G` are naturally isomorphic, then `Over.post F` and `Over.post G` are also naturally
+isomorphic up to `Over.map` -/
+@[simps!]
+def postCongr {F G : T ⥤ D} (e : F ≅ G) : post F ⋙ map (e.hom.app X) ≅ post G :=
+  NatIso.ofComponents (fun A ↦ Over.isoMk (e.app A.left))
+
+variable (X) (F : T ⥤ D)
+
+instance [F.Faithful] : (Over.post (X := X) F).Faithful where
+  map_injective {A B} f g h := by
+    ext
+    exact F.map_injective (congrArg CommaMorphism.left h)
+
+instance [F.Faithful] [F.Full] : (Over.post (X := X) F).Full where
+  map_surjective {A B} f := by
+    obtain ⟨a, ha⟩ := F.map_surjective f.left
+    have w : a ≫ B.hom = A.hom := F.map_injective <| by simpa [ha] using Over.w _
+    exact ⟨Over.homMk a, by ext; simpa⟩
+
+instance [F.Full] [F.EssSurj] : (Over.post (X := X) F).EssSurj where
+  mem_essImage B := by
+    obtain ⟨A', ⟨e⟩⟩ := Functor.EssSurj.mem_essImage (F := F) B.left
+    obtain ⟨f, hf⟩ := F.map_surjective (e.hom ≫ B.hom)
+    exact ⟨Over.mk f, ⟨Over.isoMk e⟩⟩
+
+instance [F.IsEquivalence] : (Over.post (X := X) F).IsEquivalence where
+
+/-- An equivalence of categories induces an equivalence on over categories. -/
+@[simps]
+def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
+  functor := Over.post F.functor
+  inverse := Over.post (X := F.functor.obj X) F.inverse ⋙ Over.map (F.unitIso.inv.app X)
+  unitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.unitIso.app A.left))
+  counitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.counitIso.app A.left))
 
 end Over
 
@@ -457,6 +523,13 @@ theorem map_map_right : ((map f).map g).right = g.right :=
   rfl
 end
 
+/-- If `f` is an isomorphism, `map f` is an equivalence of categories. -/
+def mapIso {Y : T} (f : X ≅ Y) : Under Y ≌ Under X :=
+  Comma.mapLeftIso _ <| Discrete.natIso fun _ ↦ f.symm
+
+@[simp] lemma mapIso_functor {Y : T} (f : X ≅ Y) : (mapIso f).functor = map f.hom := rfl
+@[simp] lemma mapIso_inverse {Y : T} (f : X ≅ Y) : (mapIso f).inverse = map f.inv := rfl
+
 section coherences
 /-!
 This section proves various equalities between functors that
@@ -476,6 +549,7 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
     simp
 
 /-- Mapping by the identity morphism is just the identity functor. -/
+@[simps!]
 def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
@@ -504,8 +578,15 @@ theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     simp
 
 /-- The natural isomorphism arising from `mapComp_eq`. -/
+@[simps!]
 def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f :=
   eqToIso (mapComp_eq f g)
+
+/-- If `f = g`, then `map f` is naturally isomorphic to `map g`. -/
+@[simps!]
+def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
+    map f ≅ map g :=
+  NatIso.ofComponents (fun A ↦ eqToIso (by rw [h]))
 
 variable (T) in
 /-- The functor defined by the under categories.-/
@@ -569,6 +650,58 @@ def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
   map f := Under.homMk (F.map f.right)
     (by simp only [Functor.id_obj, Functor.const_obj_obj, mk_right, mk_hom, ← F.map_comp, w])
+
+lemma post_comp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+    post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
+  rfl
+
+/-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
+@[simps!]
+def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+    post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
+  NatIso.ofComponents (fun X ↦ Iso.refl _)
+
+/-- A natural transformation `F ⟶ G` induces a natural transformation on
+`Under X` up to `Under.map`. -/
+@[simps]
+def postMap {F G : T ⥤ D} (e : F ⟶ G) : post (X := X) F ⟶ post G ⋙ map (e.app X) where
+  app Y := Under.homMk (e.app Y.right)
+
+/-- If `F` and `G` are naturally isomorphic, then `Under.post F` and `Under.post G` are also
+naturally isomorphic up to `Under.map` -/
+@[simps!]
+def postCongr {F G : T ⥤ D} (e : F ≅ G) : post F ≅ post G ⋙ map (e.hom.app X) :=
+  NatIso.ofComponents (fun A ↦ Under.isoMk (e.app A.right))
+
+variable (X) (F : T ⥤ D)
+
+instance [F.Faithful] : (Under.post (X := X) F).Faithful where
+  map_injective {A B} f g h := by
+    ext
+    exact F.map_injective (congrArg CommaMorphism.right h)
+
+instance [F.Faithful] [F.Full] : (Under.post (X := X) F).Full where
+  map_surjective {A B} f := by
+    obtain ⟨a, ha⟩ := F.map_surjective f.right
+    dsimp at a
+    have w : A.hom ≫ a = B.hom := F.map_injective <| by simpa [ha] using Under.w f
+    exact ⟨Under.homMk a, by ext; simpa⟩
+
+instance [F.Full] [F.EssSurj] : (Under.post (X := X) F).EssSurj where
+  mem_essImage B := by
+    obtain ⟨B', ⟨e⟩⟩ := Functor.EssSurj.mem_essImage (F := F) B.right
+    obtain ⟨f, hf⟩ := F.map_surjective (B.hom ≫ e.inv)
+    exact ⟨Under.mk f, ⟨Under.isoMk e⟩⟩
+
+instance [F.IsEquivalence] : (Under.post (X := X) F).IsEquivalence where
+
+/-- An equivalence of categories induces an equivalence on under categories. -/
+@[simps]
+def postEquiv (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) where
+  functor := post F.functor
+  inverse := post (X := F.functor.obj X) F.inverse ⋙ Under.map (F.unitIso.hom.app X)
+  unitIso := NatIso.ofComponents (fun A ↦ Under.isoMk (F.unitIso.app A.right))
+  counitIso := NatIso.ofComponents (fun A ↦ Under.isoMk (F.counitIso.app A.right))
 
 end Under
 
@@ -773,5 +906,53 @@ def ofDiagEquivalence' (X : T × T) :
     CostructuredArrow.mapNatIso (Over.forget X.2).rightUnitor
 
 end CostructuredArrow
+
+section Opposite
+
+open Opposite
+
+variable (X : T)
+
+/-- The canonical functor by reversing structure arrows. -/
+@[simps]
+def Over.opToOpUnder : Over (op X) ⥤ (Under X)ᵒᵖ where
+  obj Y := ⟨Under.mk Y.hom.unop⟩
+  map {Z Y} f := ⟨Under.homMk (f.left.unop) (by dsimp; rw [← unop_comp, Over.w])⟩
+
+/-- The canonical functor by reversing structure arrows. -/
+@[simps]
+def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) where
+  obj Y := Over.mk (Y.unop.hom.op)
+  map {Z Y} f := Over.homMk f.unop.right.op <| by dsimp; rw [← Under.w f.unop, op_comp]
+
+/-- `Over.opToOpUnder` is an equivalence of categories. -/
+@[simps]
+def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
+  functor := Over.opToOpUnder X
+  inverse := Under.opToOverOp X
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+/-- The canonical functor by reversing structure arrows. -/
+@[simps]
+def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ where
+  obj Y := ⟨Over.mk Y.hom.unop⟩
+  map {Z Y} f := ⟨Over.homMk (f.right.unop) (by dsimp; rw [← unop_comp, Under.w])⟩
+
+/-- The canonical functor by reversing structure arrows. -/
+@[simps]
+def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) where
+  obj Y := Under.mk (Y.unop.hom.op)
+  map {Z Y} f := Under.homMk f.unop.left.op <| by dsimp; rw [← Over.w f.unop, op_comp]
+
+/-- `Under.opToOpOver` is an equivalence of categories. -/
+@[simps]
+def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
+  functor := Under.opToOpOver X
+  inverse := Over.opToUnderOp X
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+end Opposite
 
 end CategoryTheory
