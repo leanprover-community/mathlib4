@@ -521,11 +521,11 @@ variable [Monoid α] [AddGroup β] [DistribMulAction α β] (a : α) (s : Set α
 
 @[simp]
 theorem smul_set_neg : a • -t = -(a • t) := by
-  simp_rw [← image_smul, ← image_neg, image_image, smul_neg]
+  simp_rw [← image_smul, ← image_neg_eq_neg, image_image, smul_neg]
 
 @[simp]
 protected theorem smul_neg : s • -t = -(s • t) := by
-  simp_rw [← image_neg]
+  simp_rw [← image_neg_eq_neg]
   exact image_image2_right_comm smul_neg
 
 end Monoid
@@ -546,11 +546,11 @@ variable [Ring α] [AddCommGroup β] [Module α β] (a : α) (s : Set α) (t : S
 
 @[simp]
 theorem neg_smul_set : -a • t = -(a • t) := by
-  simp_rw [← image_smul, ← image_neg, image_image, neg_smul]
+  simp_rw [← image_smul, ← image_neg_eq_neg, image_image, neg_smul]
 
 @[simp]
 protected theorem neg_smul : -s • t = -(s • t) := by
-  simp_rw [← image_neg]
+  simp_rw [← image_neg_eq_neg]
   exact image2_image_left_comm neg_smul
 
 end Ring
