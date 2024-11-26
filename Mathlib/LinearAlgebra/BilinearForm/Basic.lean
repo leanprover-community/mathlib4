@@ -58,7 +58,7 @@ namespace LinearMap
 
 namespace BilinForm
 
-@[deprecated (since := "2024-04-14")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
 theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 
@@ -101,7 +101,7 @@ theorem ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
 
 theorem congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
 
-@[deprecated (since := "2024-04-14")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl
 
@@ -111,7 +111,7 @@ theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
 
 variable (B D B₁ D₁)
 
-@[deprecated (since := "2024-04-14")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
 theorem coe_add : ⇑(B + D) = B + D :=
   rfl
 
@@ -119,7 +119,7 @@ theorem coe_add : ⇑(B + D) = B + D :=
 theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
   rfl
 
-@[deprecated (since := "2024-04-14")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
 theorem coe_neg : ⇑(-B₁) = -B₁ :=
   rfl
 
@@ -127,7 +127,7 @@ theorem coe_neg : ⇑(-B₁) = -B₁ :=
 theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
   rfl
 
-@[deprecated (since := "2024-04-14")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-14")]
 theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
   rfl
 
