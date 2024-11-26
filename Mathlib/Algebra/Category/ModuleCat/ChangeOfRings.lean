@@ -933,9 +933,10 @@ lemma extendScalars_assoc :
       (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).hom ≫ whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).hom ≫
         (Functor.associator _ _ _).inv := by
   ext M m
-  dsimp
   have := extendScalarsComp_hom_app_one_tmul (f₂₃.comp f₁₂) f₃₄ M m
-  erw [this, extendScalarsComp_hom_app_one_tmul f₁₂ (f₃₄.comp f₂₃) M m,
+  dsimp at this ⊢
+  rw [this]
+  erw [extendScalarsComp_hom_app_one_tmul f₁₂ (f₃₄.comp f₂₃) M m,
     extendScalarsComp_hom_app_one_tmul f₂₃ f₃₄, ExtendScalars.map_tmul,
     extendScalarsComp_hom_app_one_tmul f₁₂ f₂₃]
 
