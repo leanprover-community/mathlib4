@@ -62,14 +62,14 @@ lemma inverse_mfderiv_mul_left {g h : G} :
       ContinuousLinearMap.id _ _ := by
     have : (fun x ↦ g⁻¹ * x) ∘ (fun x ↦ g * x) = id := by ext x; simp
     rw [this, id_eq, mfderiv_id]
-  rw [mfderiv_comp (I' := I) _ smooth_mul_left.smoothAt.mdifferentiableAt
-    smooth_mul_left.smoothAt.mdifferentiableAt] at A
+  rw [mfderiv_comp (I' := I) _ (contMDiff_mul_left.contMDiffAt.mdifferentiableAt le_top)
+    (contMDiff_mul_left.contMDiffAt.mdifferentiableAt le_top)] at A
   have A' : mfderiv I I ((fun x ↦ g * x) ∘ (fun x ↦ g⁻¹ * x)) (g * h) =
       ContinuousLinearMap.id _ _ := by
     have : (fun x ↦ g * x) ∘ (fun x ↦ g⁻¹ * x) = id := by ext x; simp
     rw [this, id_eq, mfderiv_id]
-  rw [mfderiv_comp (I' := I) _ smooth_mul_left.smoothAt.mdifferentiableAt
-    smooth_mul_left.smoothAt.mdifferentiableAt, inv_mul_cancel_left g h] at A'
+  rw [mfderiv_comp (I' := I) _ (contMDiff_mul_left.contMDiffAt.mdifferentiableAt le_top)
+    (contMDiff_mul_left.contMDiffAt.mdifferentiableAt le_top), inv_mul_cancel_left g h] at A'
   exact ContinuousLinearMap.inverse_eq A' A
 
 lemma mpullback_invariantVectorField (g : G) (v : LieGroupAlgebra I G) :
@@ -81,8 +81,8 @@ lemma mpullback_invariantVectorField (g : G) (v : LieGroupAlgebra I G) :
   rw [D, mfderiv_comp (I' := I)]
   · congr 2
     simp
-  · exact smooth_mul_left.smoothAt.mdifferentiableAt
-  · exact smooth_mul_left.smoothAt.mdifferentiableAt
+  · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt le_top
+  · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt le_top
 
 lemma invariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
     invariantVectorField (V 1) g = mpullback I I (g ⁻¹ * ·) V g := by
@@ -96,25 +96,25 @@ theorem contMDiff_invariantVectorField (v : LieGroupAlgebra I G) {n : ℕ∞} :
       (fun (g : G) ↦ (invariantVectorField v g : TangentBundle I G)) := by
   apply ContMDiff.of_le _ le_top
   let fg : G → TangentBundle I G := fun g ↦ TotalSpace.mk' E g 0
-  have sfg : Smooth I I.tangent fg := smooth_zeroSection _ _
+  have sfg : ContMDiff I I.tangent ⊤ fg := contMDiff_zeroSection _ _
   let fv : G → TangentBundle I G := fun _ ↦ TotalSpace.mk' E 1 v
-  have sfv : Smooth I I.tangent fv := smooth_const
+  have sfv : ContMDiff I I.tangent ⊤ fv := contMDiff_const
   let F₁ : G → (TangentBundle I G × TangentBundle I G) := fun g ↦ (fg g, fv g)
-  have S₁ : Smooth I (I.tangent.prod I.tangent) F₁ := Smooth.prod_mk sfg sfv
+  have S₁ : ContMDiff I (I.tangent.prod I.tangent) ⊤ F₁ := ContMDiff.prod_mk sfg sfv
   let F₂ : (TangentBundle I G × TangentBundle I G) → TangentBundle (I.prod I) (G × G) :=
     (equivTangentBundleProd I G I G).symm
-  have S₂ : Smooth (I.tangent.prod I.tangent) (I.prod I).tangent F₂ :=
+  have S₂ : ContMDiff (I.tangent.prod I.tangent) (I.prod I).tangent ⊤ F₂ :=
     smooth_equivTangentBundleProd_symm
   let F₃ : TangentBundle (I.prod I) (G × G) → TangentBundle I G :=
     tangentMap (I.prod I) I (fun (p : G × G) ↦ p.1 * p.2)
-  have S₃ : Smooth (I.prod I).tangent I.tangent F₃ := by
+  have S₃ : ContMDiff (I.prod I).tangent I.tangent ⊤ F₃ := by
     apply ContMDiff.contMDiff_tangentMap _ (m := ⊤) le_rfl
-    exact smooth_mul I (G := G)
+    exact contMDiff_mul I (G := G)
   let S := (S₃.comp S₂).comp S₁
   convert S with g
   · simp [F₁, F₂, F₃]
   · simp only [comp_apply, tangentMap, F₃, F₂, F₁]
-    rw [mfderiv_prod_eq_add_apply (smooth_mul I (G := G)).mdifferentiableAt]
+    rw [mfderiv_prod_eq_add_apply ((contMDiff_mul I (G := G)).mdifferentiableAt le_top)]
     simp [invariantVectorField]
 
 theorem contMDiffAt_invariantVectorField (v : LieGroupAlgebra I G) {n : ℕ∞} {g : G }:
