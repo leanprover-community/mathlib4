@@ -129,7 +129,7 @@ theorem not_bddAbove_principal (op : Ordinal → Ordinal → Ordinal) :
   exact ((le_nfp _ _).trans (ha (principal_nfp_iSup op (succ a)))).not_lt (lt_succ a)
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-11")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) := by
   intro a b ha hb
@@ -147,7 +147,7 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
     exact lt_blsub₂ (@fun a _ b _ => op a b) hm (hn.trans_le h)
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-11")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-11")]
 theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
     Set.Unbounded (· < ·) { o | Principal op o } := fun o =>
   ⟨_, principal_nfp_blsub₂ op o, (le_nfp _ o).not_lt⟩

@@ -351,15 +351,8 @@ theorem compHom_algebraMap_apply (s : S) :
     letI := compHom A f
     algebraMap S A s = (algebraMap R A) (f s) := rfl
 
-theorem compHom_toRingHom_eq :
-    letI := compHom A f
-    (compHom A f).toRingHom = (algebraMap R A).comp f := rfl
-
-theorem compHom_toRingHom_apply (s : S) :
-    letI := compHom A f
-    (compHom A f).toRingHom s = (algebraMap R A) (f s) := rfl
-
 end compHom
+
 
 variable (R A)
 

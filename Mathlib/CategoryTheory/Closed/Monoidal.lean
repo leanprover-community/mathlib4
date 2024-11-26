@@ -115,7 +115,7 @@ end ihom
 open CategoryTheory.Limits
 
 instance : PreservesColimits (tensorLeft A) :=
-  (ihom.adjunction A).leftAdjointPreservesColimits
+  (ihom.adjunction A).leftAdjoint_preservesColimits
 
 variable {A}
 

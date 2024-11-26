@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -101,6 +102,16 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
     rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
+
+lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R B] :
+    IsPushout (ofHom <| algebraMap R A) (ofHom <| algebraMap R B)
+      (ofHom <| Algebra.TensorProduct.includeLeftRingHom (R := R))
+      (ofHom <| Algebra.TensorProduct.includeRight.toRingHom (R := R)) where
+  w := by
+    ext
+    simp
+  isColimit' := ⟨pushoutCoconeIsColimit R A B⟩
 
 end Pushout
 
