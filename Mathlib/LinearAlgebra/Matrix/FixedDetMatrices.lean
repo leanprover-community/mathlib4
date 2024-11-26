@@ -152,7 +152,7 @@ lemma reps_zero_empty : (reps 0) = ∅ := by
   simp only [eq_zero_of_ne_zero_of_mul_left_eq_zero h₂.ne' <| A_c_eq_zero h₁, abs_zero] at h₄
   exact ((abs_nonneg _).trans_lt h₄).false
 
-noncomputable instance reps_fintype (k : ℤ) : Fintype (reps k) := by
+noncomputable instance repsFintype (k : ℤ) : Fintype (reps k) := by
   by_cases hk : k = 0
   · rw [hk, reps_zero_empty]
     exact Set.fintypeEmpty
