@@ -109,7 +109,7 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
   refine ⟨?_, integrableOn_rpow_mul_exp_neg_mul_sq hb hs⟩
   rw [← (Measure.measurePreserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
       (Homeomorph.neg ℝ).measurableEmbedding]
-  simp only [Function.comp_def, neg_sq, neg_preimage, preimage_neg_Iio, neg_neg, neg_zero]
+  simp only [Function.comp_def, neg_sq, neg_preimage, neg_Iio, neg_neg, neg_zero]
   apply Integrable.mono' (integrableOn_rpow_mul_exp_neg_mul_sq hb hs)
   · apply Measurable.aestronglyMeasurable
     exact (measurable_id'.neg.pow measurable_const).mul

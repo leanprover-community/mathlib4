@@ -5,6 +5,7 @@ Authors: Chris Hughes, Morenikeji Neri
 -/
 import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
@@ -14,20 +15,21 @@ import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 A principal ideal ring (PIR) is a ring in which all left ideals are principal. A
 principal ideal domain (PID) is an integral domain which is a principal ideal ring.
 
+The definition of `IsPrincipalIdealRing` can be found in `Mathlib.RingTheory.Ideal.Span`.
+
 # Main definitions
 
 Note that for principal ideal domains, one should use
 `[IsDomain R] [IsPrincipalIdealRing R]`. There is no explicit definition of a PID.
-Theorems about PID's are in the `principal_ideal_ring` namespace.
+Theorems about PID's are in the `PrincipalIdealRing` namespace.
 
-- `IsPrincipalIdealRing`: a predicate on rings, saying that every left ideal is principal.
 - `IsBezout`: the predicate saying that every finitely generated left ideal is principal.
 - `generator`: a generator of a principal ideal (or more generally submodule)
 - `to_uniqueFactorizationMonoid`: a PID is a unique factorization domain
 
 # Main results
 
-- `to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
+- `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
 - `EuclideanDomain.to_principal_ideal_domain` : a Euclidean domain is a PID.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 

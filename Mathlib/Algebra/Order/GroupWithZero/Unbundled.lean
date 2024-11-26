@@ -983,6 +983,11 @@ lemma mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono M₀] (ha : a ≤ 1) (hb�
 section
 variable [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
 
+@[bound]
+protected lemma Bound.one_lt_mul : 1 ≤ a ∧ 1 < b ∨ 1 < a ∧ 1 ≤ b → 1 < a * b := by
+  rintro (⟨ha, hb⟩ | ⟨ha, hb⟩); exacts [one_lt_mul ha hb, one_lt_mul_of_lt_of_le ha hb]
+
+@[bound]
 lemma mul_le_one₀ (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
   one_mul (1 : M₀) ▸ mul_le_mul ha hb hb₀ zero_le_one
 
@@ -1357,6 +1362,8 @@ lemma inv_le_iff_one_le_mul₀' (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ a * b := b
 
 lemma one_le_inv₀ (ha : 0 < a) : 1 ≤ a⁻¹ ↔ a ≤ 1 := by simpa using one_le_inv_mul₀ ha (b := 1)
 lemma inv_le_one₀ (ha : 0 < a) : a⁻¹ ≤ 1 ↔ 1 ≤ a := by simpa using inv_mul_le_one₀ ha (b := 1)
+
+@[bound] alias ⟨_, Bound.one_le_inv₀⟩ := one_le_inv₀
 
 @[bound]
 lemma inv_le_one_of_one_le₀ (ha : 1 ≤ a) : a⁻¹ ≤ 1 := (inv_le_one₀ <| zero_lt_one.trans_le ha).2 ha
