@@ -79,7 +79,7 @@ structure QuantaleHom (α β : Type*)
   [Semigroup α] [CompleteLattice α] [Semigroup β] [CompleteLattice β]
   extends α →ₙ* β, sSupHom α β
 
-/-- Infix notation for `AddQuantaleHom`. -/
+/-- Infix notation for `QuantaleHom`. -/
 infixr:25 " →ₙ*q " => QuantaleHom
 
 variable [Semigroup α] [Semigroup β] [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
@@ -89,7 +89,7 @@ into an actual `QuantaleHom`. This is declared as the default coercion from `F` 
 @[to_additive (attr := coe)
   "Turn an element of a type `F` satisfying `AddHomClass F α β` and `sSupHomClass F α β`
 into an actual `AddQuantaleHom`. This is declared as the default coercion from `F` to `α →ₙ+q β`."]
-def toQuantaleHom [MulHomClass F α β] [sSupHomClass F α β] (f : F) :
+def QuantaleHomClass.toQuantaleHom [MulHomClass F α β] [sSupHomClass F α β] (f : F) :
     α →ₙ*q β := { (f : α →ₙ* β) with map_sSup' := sSupHomClass.map_sSup f }
 
 /-- Any type satisfying `QuantaleHomClass` can be cast into `QuantaleHom` via
@@ -97,22 +97,11 @@ def toQuantaleHom [MulHomClass F α β] [sSupHomClass F α β] (f : F) :
 @[to_additive "Any type satisfying `AddQuantaleHomClass` can be cast into `AddQuantaleHom` via
   `AddQuantaleHomClass.toAddQuantaleHom`."]
 instance [MulHomClass F α β] [sSupHomClass F α β] : CoeTC F (α →ₙ*q β) :=
-  ⟨toQuantaleHom⟩
+  ⟨QuantaleHomClass.toQuantaleHom⟩
 
 end Quantale
 
 namespace QuantaleHom
-
-/- Now, to be honest, I don't really understand which theorems below are necessary
-and which ones should already be there in some other way. While proving some,
-I got the impression I was overlooking something very basic.
-
-My main confusion at the moment, is how `HomClass`es are being used, and how
-I get automatic results about `Hom`s from the `HomClass` theorems. See for
-example the `toOrderHom` theorem below.
-
-Which ones should I have, which ones do I not need, and why??
--/
 
 variable [Semigroup α] [Semigroup β] [CompleteLattice α] [CompleteLattice β] {f g : α →ₙ*q β}
 
@@ -145,47 +134,6 @@ theorem coe_mk (f : α →ₙ* β) (h) : (QuantaleHom.mk f h : α → β) = f :=
 
 @[to_additive (attr := simp)]
 theorem mk_coe (f : α →ₙ*q β) (h) : QuantaleHom.mk (f : α →ₙ* β) h = f := rfl
-
-/-- Reinterpret a quantale homomorphism as a supsemilattice homomorphism-/
-@[to_additive "Reinterpret an additive quantale homomorphism as a supsemilattice homomorphism."]
-def toSupBotHom (f : α →ₙ*q β) : SupBotHom α β where
-  toFun := f
-  map_sup':= sSupHomClass.toSupBotHomClass.map_sup f
-  map_bot':= sSupHomClass.toSupBotHomClass.map_bot f
-
-@[to_additive (attr := simp)]
-theorem coe_SupBotHom (f : α →ₙ*q β) : ((f : SupBotHom α β) : α → β) = f :=
-  rfl
-
-/-- Reinterpret a quantale homomorphism as an order homomorphism. -/
-@[to_additive "Reinterpret an additive quantale homomorphism as an order homomorphism."]
-def toOrderHom (f : α →ₙ*q β) : α →o β where
-  toFun := f
-  monotone' := by
-    -- This should not be so elaborate, what am I overlooking? --
-    intro x y h
-    apply le_of_sup_eq
-    rw [← (f : SupBotHom α β).map_sup']
-    dsimp only [toFun_eq_coe]
-    congr
-    apply sup_of_le_right
-    exact h
-
-@[to_additive (attr := simp)]
-theorem coe_MulHom (f : α →ₙ*q β) : ((f : α →ₙ* β) : α → β) = f :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem coe_orderHom (f : α →ₙ*q β) : ((f : α →o β) : α → β) = f :=
-  rfl
-
-@[to_additive]
-theorem toMulHom_injective : Injective (toMulHom : _ → α →ₙ* β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
-
-@[to_additive]
-theorem toOrderHom_injective : Injective (toOrderHom : _ → α →o β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
 
 end QuantaleHom
 
