@@ -267,7 +267,6 @@ theorem range_subset_closure_interior : range I ⊆ closure (interior (range I))
   rw [← I.target_eq]
   exact I.target_subset_closure_interior
 
-
 @[simp, mfld_simps]
 protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?_; simp
 
