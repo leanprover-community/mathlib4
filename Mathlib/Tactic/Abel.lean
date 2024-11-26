@@ -247,11 +247,11 @@ theorem term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = term
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
 def evalAtom (e : Expr) : M (NormalExpr × Expr) := do
   let { expr := e', proof?, .. } ← (← readThe AtomM.Context).evalAtom e
-  let i ← AtomM.addAtom e'
+  let (i, a) ← AtomM.addAtom e'
   let p ← match proof? with
   | none => iapp ``term_atom #[e]
-  | some p => iapp ``term_atom_pf #[e, e', p]
-  return (← term' (← intToExpr 1, 1) (i, e') (← zero'), p)
+  | some p => iapp ``term_atom_pf #[e, a, p]
+  return (← term' (← intToExpr 1, 1) (i, a) (← zero'), p)
 
 theorem unfold_sub {α} [SubtractionMonoid α] (a b c : α) (h : a + -b = c) : a - b = c := by
   rw [sub_eq_add_neg, h]
@@ -512,7 +512,7 @@ which rewrites all group expressions into a normal form.
 * `abel_nf` works as both a tactic and a conv tactic.
   In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
 -/
-elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
+elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
   let mut cfg ← elabAbelNFConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -520,20 +520,20 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic 
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
     fun _ ↦ throwError "abel_nf made no progress"
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(location)? : tactic =>
-  `(tactic| abel_nf ! $(cfg)? $(loc)?)
+@[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| abel_nf ! $cfg:optConfig $(loc)?)
 
-@[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? (config)? : conv
+@[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
 
 /-- Elaborator for the `abel_nf` tactic. -/
 @[tactic abelNFConv] def elabAbelNFConv : Tactic := fun stx ↦ match stx with
-  | `(conv| abel_nf $[!%$tk]? $(_cfg)?) => withMainContext do
-    let mut cfg ← elabAbelNFConfig stx[2]
+  | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
+    let mut cfg ← elabAbelNFConfig cfg
     if tk.isSome then cfg := { cfg with red := .default }
     Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? : conv => `(conv| abel_nf ! $(cfg)?)
+@[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig : conv => `(conv| abel_nf ! $cfg:optConfig)
 
 /--
 Tactic for evaluating expressions in abelian groups.

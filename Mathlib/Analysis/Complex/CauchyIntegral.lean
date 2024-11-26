@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.Dslope
+import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.MeasureTheory.Integral.CircleIntegral

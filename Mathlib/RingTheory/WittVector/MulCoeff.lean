@@ -224,7 +224,7 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
     not_false_eq_true, reduceCtorEq]
   have sum_zero_pow_mul_pow_p (y : 𝕎 k) : ∑ x ∈ range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
-    rw [Finset.sum_eq_single_of_mem 0] <;> simp (config := { contextual := true })
+    rw [Finset.sum_eq_single_of_mem 0] <;> simp +contextual
   congr <;> apply sum_zero_pow_mul_pow_p
 
 variable (k)

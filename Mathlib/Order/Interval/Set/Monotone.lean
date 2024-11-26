@@ -164,57 +164,21 @@ variable {α β : Type*} [PartialOrder α] [Preorder β] {ψ : α → β}
 /-- A function `ψ` on a `SuccOrder` is strictly monotone before some `n` if for all `m` such that
 `m < n`, we have `ψ m < ψ (succ m)`. -/
 theorem strictMonoOn_Iic_of_lt_succ [SuccOrder α] [IsSuccArchimedean α] {n : α}
-    (hψ : ∀ m, m < n → ψ m < ψ (succ m)) : StrictMonoOn ψ (Set.Iic n) := by
-  intro x hx y hy hxy
-  obtain ⟨i, rfl⟩ := hxy.le.exists_succ_iterate
-  induction' i with k ih
-  · simp at hxy
-  cases' k with k
-  · exact hψ _ (lt_of_lt_of_le hxy hy)
-  rw [Set.mem_Iic] at *
-  simp only [Function.iterate_succ', Function.comp_apply] at ih hxy hy ⊢
-  by_cases hmax : IsMax (succ^[k] x)
-  · rw [succ_eq_iff_isMax.2 hmax] at hxy ⊢
-    exact ih (le_trans (le_succ _) hy) hxy
-  by_cases hmax' : IsMax (succ (succ^[k] x))
-  · rw [succ_eq_iff_isMax.2 hmax'] at hxy ⊢
-    exact ih (le_trans (le_succ _) hy) hxy
-  refine
-    lt_trans
-      (ih (le_trans (le_succ _) hy)
-        (lt_of_le_of_lt (le_succ_iterate k _) (lt_succ_iff_not_isMax.2 hmax)))
-      ?_
-  rw [← Function.comp_apply (f := succ), ← Function.iterate_succ']
-  refine hψ _ (lt_of_lt_of_le ?_ hy)
-  rwa [Function.iterate_succ', Function.comp_apply, lt_succ_iff_not_isMax]
-
-theorem strictMono_of_lt_succ [SuccOrder α] [IsSuccArchimedean α]
-    (hψ : ∀ m, ψ m < ψ (succ m)) : StrictMono ψ := fun _ _ h ↦
-  (strictMonoOn_Iic_of_lt_succ fun m _ ↦ hψ m) h.le le_rfl h
+    (hψ : ∀ m, m < n → ψ m < ψ (succ m)) : StrictMonoOn ψ (Set.Iic n) :=
+  strictMonoOn_of_lt_succ ordConnected_Iic fun _a ha' _ ha ↦
+    hψ _ <| (succ_le_iff_of_not_isMax ha').1 ha
 
 theorem strictAntiOn_Iic_of_succ_lt [SuccOrder α] [IsSuccArchimedean α] {n : α}
     (hψ : ∀ m, m < n → ψ (succ m) < ψ m) : StrictAntiOn ψ (Set.Iic n) := fun i hi j hj hij =>
   @strictMonoOn_Iic_of_lt_succ α βᵒᵈ _ _ ψ _ _ n hψ i hi j hj hij
 
-theorem strictAnti_of_succ_lt [SuccOrder α] [IsSuccArchimedean α]
-    (hψ : ∀ m, ψ (succ m) < ψ m) : StrictAnti ψ := fun _ _ h ↦
-  (strictAntiOn_Iic_of_succ_lt fun m _ ↦ hψ m) h.le le_rfl h
-
 theorem strictMonoOn_Ici_of_pred_lt [PredOrder α] [IsPredArchimedean α] {n : α}
     (hψ : ∀ m, n < m → ψ (pred m) < ψ m) : StrictMonoOn ψ (Set.Ici n) := fun i hi j hj hij =>
   @strictMonoOn_Iic_of_lt_succ αᵒᵈ βᵒᵈ _ _ ψ _ _ n hψ j hj i hi hij
 
-theorem strictMono_of_pred_lt [PredOrder α] [IsPredArchimedean α]
-    (hψ : ∀ m, ψ (pred m) < ψ m) : StrictMono ψ := fun _ _ h ↦
-  (strictMonoOn_Ici_of_pred_lt fun m _ ↦ hψ m) le_rfl h.le h
-
 theorem strictAntiOn_Ici_of_lt_pred [PredOrder α] [IsPredArchimedean α] {n : α}
     (hψ : ∀ m, n < m → ψ m < ψ (pred m)) : StrictAntiOn ψ (Set.Ici n) := fun i hi j hj hij =>
   @strictAntiOn_Iic_of_succ_lt αᵒᵈ βᵒᵈ _ _ ψ _ _ n hψ j hj i hi hij
-
-theorem strictAnti_of_lt_pred [PredOrder α] [IsPredArchimedean α]
-    (hψ : ∀ m, ψ m < ψ (pred m)) : StrictAnti ψ := fun _ _ h ↦
-  (strictAntiOn_Ici_of_lt_pred fun m _ ↦ hψ m) le_rfl h.le h
 
 end SuccOrder
 

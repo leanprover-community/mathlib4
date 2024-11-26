@@ -67,8 +67,7 @@ Because the pointwise action can easily be spelled out in such cases, we give hi
 nat and int actions.
 -/
 
-
-open Function
+open Function MulOpposite
 
 variable {F α β γ : Type*}
 
@@ -89,6 +88,8 @@ scoped[Pointwise] attribute [instance] Set.one Set.zero
 
 open Pointwise
 
+-- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
+-- scoped
 @[to_additive]
 theorem singleton_one : ({1} : Set α) = 1 :=
   rfl
@@ -130,6 +131,8 @@ noncomputable def singletonOneHom : OneHom α (Set α) where
 theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
   rfl
 
+@[to_additive] lemma image_op_one : (1 : Set α).image op = 1 := image_singleton
+
 end One
 
 /-! ### Set negation/inversion -/
@@ -138,10 +141,10 @@ end One
 section Inv
 
 /-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `Pointwise`. It is
-equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv`. -/
+equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv_eq_inv`. -/
 @[to_additive
       "The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `Pointwise`.
-      It is equal to `{-x | x ∈ s}`, see `Set.image_neg`."]
+      It is equal to `{-x | x ∈ s}`, see `Set.image_neg_eq_neg`."]
 protected def inv [Inv α] : Inv (Set α) :=
   ⟨preimage Inv.inv⟩
 
@@ -215,12 +218,12 @@ theorem Nonempty.inv (h : s.Nonempty) : s⁻¹.Nonempty :=
   nonempty_inv.2 h
 
 @[to_additive (attr := simp)]
-theorem image_inv : Inv.inv '' s = s⁻¹ :=
+theorem image_inv_eq_inv : (·⁻¹) '' s = s⁻¹ :=
   congr_fun (image_eq_preimage_of_inverse inv_involutive.leftInverse inv_involutive.rightInverse) _
 
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
-  rw [← image_inv, image_eq_empty]
+  rw [← image_inv_eq_inv, image_eq_empty]
 
 @[to_additive (attr := simp)]
 noncomputable instance involutiveInv : InvolutiveInv (Set α) where
@@ -235,7 +238,8 @@ theorem inv_subset_inv : s⁻¹ ⊆ t⁻¹ ↔ s ⊆ t :=
 theorem inv_subset : s⁻¹ ⊆ t ↔ s ⊆ t⁻¹ := by rw [← inv_subset_inv, inv_inv]
 
 @[to_additive (attr := simp)]
-theorem inv_singleton (a : α) : ({a} : Set α)⁻¹ = {a⁻¹} := by rw [← image_inv, image_singleton]
+theorem inv_singleton (a : α) : ({a} : Set α)⁻¹ = {a⁻¹} := by
+  rw [← image_inv_eq_inv, image_singleton]
 
 @[to_additive (attr := simp)]
 theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s⁻¹ := by
@@ -243,14 +247,14 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
 
 @[to_additive]
 theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
-  rw [← image_inv]
+  rw [← image_inv_eq_inv]
   exact (range_comp ..).symm
 
 open MulOpposite
 
 @[to_additive]
 theorem image_op_inv : op '' s⁻¹ = (op '' s)⁻¹ := by
-  simp_rw [← image_inv, Function.Semiconj.set_image op_inv s]
+  simp_rw [← image_inv_eq_inv, Function.Semiconj.set_image op_inv s]
 
 end InvolutiveInv
 
@@ -327,7 +331,6 @@ theorem mul_singleton : s * {b} = (· * b) '' s :=
 theorem singleton_mul : {a} * t = (a * ·) '' t :=
   image2_singleton_left
 
--- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
@@ -336,11 +339,11 @@ theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
 theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem mul_subset_mul_left : t₁ ⊆ t₂ → s * t₁ ⊆ s * t₂ :=
   image2_subset_left
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem mul_subset_mul_right : s₁ ⊆ s₂ → s₁ * t ⊆ s₂ * t :=
   image2_subset_right
 
@@ -531,7 +534,6 @@ theorem div_singleton : s / {b} = (· / b) '' s :=
 theorem singleton_div : {a} / t = (· / ·) a '' t :=
   image2_singleton_left
 
--- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton
@@ -540,11 +542,11 @@ theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
   image2_subset_left
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
   image2_subset_right
 
@@ -702,8 +704,11 @@ lemma singleton_smul_singleton : ({a} : Set α) • ({b} : Set β) = {a • b} :
 @[to_additive (attr := mono, gcongr)]
 lemma smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ := image2_subset
 
-@[to_additive] lemma smul_subset_smul_left : t₁ ⊆ t₂ → s • t₁ ⊆ s • t₂ := image2_subset_left
-@[to_additive] lemma smul_subset_smul_right : s₁ ⊆ s₂ → s₁ • t ⊆ s₂ • t := image2_subset_right
+@[to_additive (attr := gcongr)]
+lemma smul_subset_smul_left : t₁ ⊆ t₂ → s • t₁ ⊆ s • t₂ := image2_subset_left
+
+@[to_additive (attr := gcongr)]
+lemma smul_subset_smul_right : s₁ ⊆ s₂ → s₁ • t ⊆ s₂ • t := image2_subset_right
 
 @[to_additive] lemma smul_subset_iff : s • t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a • b ∈ u := image2_subset_iff
 
@@ -851,7 +856,7 @@ lemma smul_set_iInter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
 
 end SMulSet
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {a : α} {b : β}
+variable {s : Set α} {t : Set β} {a : α} {b : β}
 
 @[to_additive]
 lemma range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ → β) :
@@ -902,10 +907,10 @@ lemma singleton_vsub (t : Set β) (b : β) : {b} -ᵥ t = (b -ᵥ ·) '' t := im
 
 @[simp high] lemma singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} := image2_singleton
 
-@[mono] lemma vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ := image2_subset
+@[mono, gcongr] lemma vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ := image2_subset
 
-lemma vsub_subset_vsub_left : t₁ ⊆ t₂ → s -ᵥ t₁ ⊆ s -ᵥ t₂ := image2_subset_left
-lemma vsub_subset_vsub_right : s₁ ⊆ s₂ → s₁ -ᵥ t ⊆ s₂ -ᵥ t := image2_subset_right
+@[gcongr] lemma vsub_subset_vsub_left : t₁ ⊆ t₂ → s -ᵥ t₁ ⊆ s -ᵥ t₂ := image2_subset_left
+@[gcongr] lemma vsub_subset_vsub_right : s₁ ⊆ s₂ → s₁ -ᵥ t ⊆ s₂ -ᵥ t := image2_subset_right
 
 lemma vsub_subset_iff : s -ᵥ t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x -ᵥ y ∈ u := image2_subset_iff
 
@@ -1098,10 +1103,17 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m �
     rw [pow_succ']
     exact ih.trans (subset_mul_right _ hs)
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) nsmul_empty]
 theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
   match n with
   | n + 1 => rw [pow_succ', empty_mul]
+
+@[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
+
+@[to_additive (attr := simp) nsmul_singleton]
+lemma singleton_pow (a : α) : ∀ n, ({a} : Set α) ^ n = {a ^ n}
+  | 0 => by simp [singleton_one]
+  | n + 1 => by simp [pow_succ, singleton_pow _ n]
 
 @[to_additive]
 theorem mul_univ_of_one_mem (hs : (1 : α) ∈ s) : s * univ = univ :=
@@ -1138,7 +1150,7 @@ open Pointwise
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {s t : Set α}
+variable [DivisionMonoid α] {s t : Set α} {n : ℤ}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
@@ -1160,13 +1172,13 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
 protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
     mul_inv_rev := fun s t => by
-      simp_rw [← image_inv]
+      simp_rw [← image_inv_eq_inv]
       exact image_image2_antidistrib mul_inv_rev
     inv_eq_of_mul := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := Set.mul_eq_one_iff.1 h
       rw [inv_singleton, inv_eq_of_mul_eq_one_right hab]
     div_eq_mul_inv := fun s t => by
-      rw [← image_id (s / t), ← image_inv]
+      rw [← image_id (s / t), ← image_inv_eq_inv]
       exact image_image2_distrib_right div_eq_mul_inv }
 
 scoped[Pointwise] attribute [instance] Set.divisionMonoid Set.subtractionMonoid
@@ -1190,6 +1202,12 @@ lemma univ_div_univ : (univ / univ : Set α) = univ := by simp [div_eq_mul_inv]
 
 @[to_additive] lemma inv_subset_div_right (hs : 1 ∈ s) : t⁻¹ ⊆ s / t := by
   rw [div_eq_mul_inv]; exact subset_mul_right _ hs
+
+@[to_additive (attr := simp) zsmul_empty]
+lemma empty_zpow (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by cases n <;> aesop
+
+@[to_additive (attr := simp) zsmul_singleton]
+lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by cases n <;> simp
 
 end DivisionMonoid
 
@@ -1279,6 +1297,11 @@ theorem mul_univ (hs : s.Nonempty) : s * (univ : Set α) = univ :=
 theorem univ_mul (ht : t.Nonempty) : (univ : Set α) * t = univ :=
   let ⟨a, ha⟩ := ht
   eq_univ_of_forall fun b => ⟨b * a⁻¹, trivial, a, ha, inv_mul_cancel_right ..⟩
+
+@[to_additive]
+lemma image_inv [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F) (s : Set α) :
+    f '' s⁻¹ = (f '' s)⁻¹ := by
+  rw [← image_inv_eq_inv, ← image_inv_eq_inv]; exact image_comm (map_inv _)
 
 end Group
 

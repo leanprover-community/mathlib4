@@ -29,7 +29,6 @@ theorem eval_one_cyclotomic_prime {R : Type*} [CommRing R] {p : ℕ} [hn : Fact 
   simp only [cyclotomic_prime, eval_X, one_pow, Finset.sum_const, eval_pow, eval_finset_sum,
     Finset.card_range, smul_one_eq_cast]
 
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem eval₂_one_cyclotomic_prime {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S) {p : ℕ}
     [Fact p.Prime] : eval₂ f 1 (cyclotomic p R) = p := by simp
 
@@ -39,7 +38,6 @@ theorem eval_one_cyclotomic_prime_pow {R : Type*} [CommRing R] {p : ℕ} (k : �
   simp only [cyclotomic_prime_pow_eq_geom_sum hn.out, eval_X, one_pow, Finset.sum_const, eval_pow,
     eval_finset_sum, Finset.card_range, smul_one_eq_cast]
 
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S)
     {p : ℕ} (k : ℕ) [Fact p.Prime] : eval₂ f 1 (cyclotomic (p ^ (k + 1)) R) = p := by simp
 
@@ -104,17 +102,12 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x :
       exact hn'.ne' hi.2.2.1
     · simpa only [eval_X, eval_one, cyclotomic_two, eval_add] using h.right.le
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem cyclotomic_pos_and_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] (x : R) :
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
   rcases n with (_ | _ | _ | n)
-  · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one,
-      _root_.and_self]
+  · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
   · simp only [zero_add, cyclotomic_one, eval_sub, eval_X, eval_one, sub_pos, imp_self, sub_nonneg,
-      _root_.and_self]
+      and_self]
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]
     constructor <;> intro <;> linarith
   · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by omega)
@@ -217,7 +210,7 @@ theorem sub_one_pow_totient_le_cyclotomic_eval {q : ℝ} (hq' : 1 < q) :
     ∀ n, (q - 1) ^ totient n ≤ (cyclotomic n ℝ).eval q
   | 0 => by simp only [totient_zero, _root_.pow_zero, cyclotomic_zero, eval_one, le_refl]
   | 1 => by simp only [totient_one, pow_one, cyclotomic_one, eval_sub, eval_X, eval_one, le_refl]
-  | n + 2 => (sub_one_pow_totient_lt_cyclotomic_eval le_add_self hq').le
+  | _ + 2 => (sub_one_pow_totient_lt_cyclotomic_eval le_add_self hq').le
 
 theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ n) (hq' : 1 < q) :
     (cyclotomic n ℝ).eval q < (q + 1) ^ totient n := by
@@ -290,7 +283,7 @@ theorem cyclotomic_eval_le_add_one_pow_totient {q : ℝ} (hq' : 1 < q) :
   | 0 => by simp
   | 1 => by simp [add_assoc, add_nonneg, zero_le_one]
   | 2 => by simp
-  | n + 3 => (cyclotomic_eval_lt_add_one_pow_totient le_add_self hq').le
+  | _ + 3 => (cyclotomic_eval_lt_add_one_pow_totient le_add_self hq').le
 
 theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' : 1 < n) (hq : q ≠ 1) :
     (q - 1) ^ totient n < ((cyclotomic n ℤ).eval ↑q).natAbs := by

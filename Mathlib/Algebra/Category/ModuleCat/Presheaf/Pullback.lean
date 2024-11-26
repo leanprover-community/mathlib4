@@ -14,7 +14,7 @@ Let `F : C ⥤ D` be a functor, `R : Dᵒᵖ ⥤ RingCat` and `S : Cᵒᵖ ⥤ R
 of rings, and `φ : S ⟶ F.op ⋙ R` be a morphism of presheaves of rings,
 we introduce the pullback functor `pullback : PresheafOfModules S ⥤ PresheafOfModules R`
 as the left adjoint of `pushforward : PresheafOfModules R ⥤ PresheafOfModules S`.
-The existence of this left adjoint functor is obtained under suitable universe assumptions (TODO).
+The existence of this left adjoint functor is obtained under suitable universe assumptions.
 
 -/
 

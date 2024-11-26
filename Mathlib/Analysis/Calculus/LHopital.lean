@@ -110,11 +110,11 @@ theorem lhopital_zero_left_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDe
     comp x (hff' (-x) hx) (hasDerivAt_neg x)
   have hdng : ∀ x ∈ -Ioo a b, HasDerivAt (g ∘ Neg.neg) (g' (-x) * -1) x := fun x hx =>
     comp x (hgg' (-x) hx) (hasDerivAt_neg x)
-  rw [preimage_neg_Ioo] at hdnf
-  rw [preimage_neg_Ioo] at hdng
+  rw [neg_Ioo] at hdnf
+  rw [neg_Ioo] at hdng
   have := lhopital_zero_right_on_Ioo (neg_lt_neg hab) hdnf hdng (by
     intro x hx h
-    apply hg' _ (by rw [← preimage_neg_Ioo] at hx; exact hx)
+    apply hg' _ (by rw [← neg_Ioo] at hx; exact hx)
     rwa [mul_comm, ← neg_eq_neg_one_mul, neg_eq_zero] at h)
     (hfb.comp tendsto_neg_nhdsWithin_Ioi_neg) (hgb.comp tendsto_neg_nhdsWithin_Ioi_neg)
     (by
@@ -143,7 +143,7 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
     ⟨lt_of_le_of_lt (le_max_left a 0) (lt_one_add _),
       lt_of_le_of_lt (le_max_right a 0) (lt_one_add _)⟩⟩
   have fact1 : ∀ x : ℝ, x ∈ Ioo 0 a'⁻¹ → x ≠ 0 := fun _ hx => (ne_of_lt hx.1).symm
-  have fact2 : ∀ x ∈ Ioo 0 a'⁻¹, a < x⁻¹ := fun _ hx => lt_trans haa' ((lt_inv ha' hx.1).mpr hx.2)
+  have fact2 (x) (hx : x ∈ Ioo 0 a'⁻¹) : a < x⁻¹ := lt_trans haa' ((lt_inv_comm₀ ha' hx.1).mpr hx.2)
   have hdnf : ∀ x ∈ Ioo 0 a'⁻¹, HasDerivAt (f ∘ Inv.inv) (f' x⁻¹ * -(x ^ 2)⁻¹) x := fun x hx =>
     comp x (hff' x⁻¹ <| fact2 x hx) (hasDerivAt_inv <| fact1 x hx)
   have hdng : ∀ x ∈ Ioo 0 a'⁻¹, HasDerivAt (g ∘ Inv.inv) (g' x⁻¹ * -(x ^ 2)⁻¹) x := fun x hx =>
@@ -161,7 +161,7 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
       intro x hx
       unfold Function.comp
       simp only
-      erw [mul_div_mul_right]
+      rw [mul_div_mul_right]
       exact neg_ne_zero.mpr (inv_ne_zero <| pow_ne_zero _ <| ne_of_gt hx))
   have := this.comp tendsto_inv_atTop_zero'
   unfold Function.comp at this
@@ -176,12 +176,12 @@ theorem lhopital_zero_atBot_on_Iio (hff' : ∀ x ∈ Iio a, HasDerivAt f (f' x) 
     comp x (hff' (-x) hx) (hasDerivAt_neg x)
   have hdng : ∀ x ∈ -Iio a, HasDerivAt (g ∘ Neg.neg) (g' (-x) * -1) x := fun x hx =>
     comp x (hgg' (-x) hx) (hasDerivAt_neg x)
-  rw [preimage_neg_Iio] at hdnf
-  rw [preimage_neg_Iio] at hdng
+  rw [neg_Iio] at hdnf
+  rw [neg_Iio] at hdng
   have := lhopital_zero_atTop_on_Ioi hdnf hdng
     (by
       intro x hx h
-      apply hg' _ (by rw [← preimage_neg_Iio] at hx; exact hx)
+      apply hg' _ (by rw [← neg_Iio] at hx; exact hx)
       rwa [mul_comm, ← neg_eq_neg_one_mul, neg_eq_zero] at h)
     (hfbot.comp tendsto_neg_atTop_atBot) (hgbot.comp tendsto_neg_atTop_atBot)
     (by

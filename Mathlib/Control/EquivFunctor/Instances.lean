@@ -38,6 +38,6 @@ instance EquivFunctorFinset : EquivFunctor Finset where
       simp [h']
 
 instance EquivFunctorFintype : EquivFunctor Fintype where
-  map e s := Fintype.ofBijective e e.bijective
+  map e _ := Fintype.ofBijective e e.bijective
   map_refl' α := by ext; simp [eq_iff_true_of_subsingleton]
   map_trans' := by simp [eq_iff_true_of_subsingleton]

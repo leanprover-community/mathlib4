@@ -249,8 +249,11 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
 
   exact Set.mem_image_of_mem _ (hε this)
 
-protected theorem quotientMap (surj : Surjective f) : QuotientMap f :=
-  (f.isOpenMap surj).to_quotientMap f.continuous surj
+theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
+  (f.isOpenMap surj).isQuotientMap f.continuous surj
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 end
 
@@ -281,7 +284,8 @@ theorem frontier_preimage (hsurj : Surjective f) (s : Set F) :
 theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
     (hsurj : LinearMap.range f = ⊤) :
     ∃ fsymm : NonlinearRightInverse f, 0 < fsymm.nnnorm := by
-  choose C hC fsymm h using exists_preimage_norm_le _ (LinearMap.range_eq_top.mp hsurj)
+  choose C hC fsymm h using
+    exists_preimage_norm_le _ (LinearMap.range_eq_top.1 hsurj)
   use {
       toFun := fsymm
       nnnorm := ⟨C, hC.lt.le⟩
@@ -317,7 +321,7 @@ theorem continuous_symm (e : E ≃ₛₗ[σ] F) (h : Continuous e) : Continuous 
   intro s hs
   rw [← e.image_eq_preimage]
   rw [← e.coe_coe] at h ⊢
-  exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨↑e, h⟩ e.surjective s hs
+  exact ContinuousLinearMap.isOpenMap (σ := σ) ⟨_, h⟩ e.surjective s hs
 
 /-- Associating to a linear equivalence between Banach spaces a continuous linear equivalence when
 the direct map is continuous, thanks to the Banach open mapping theorem that ensures that the
@@ -531,7 +535,7 @@ section BijectivityCriteria
 
 namespace ContinuousLinearMap
 
-variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ'] {f : E →SL[σ] F}
+variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ']
 variable {F : Type u_4} [NormedAddCommGroup F] [NormedSpace 𝕜' F]
 variable [CompleteSpace E]
 

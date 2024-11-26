@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
 import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
+import Mathlib.Algebra.Category.Ring.Constructions
 
 /-!
 # The presheaf of differentials of a presheaf of modules
@@ -38,42 +39,6 @@ to show that the two vanishing conditions `d_app` are equivalent).
 universe v u v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory Limits
-
-
--- for Algebra.Category.Ring.Constructions and Algebra.Ring.ULift
-section
-
--- ringEquiv should be renamed
-def ULift.ringEquiv' (R : Type u) [Ring R] : ULift.{v} R ≃+* R where
-  toFun := down
-  invFun := up
-  left_inv _ := rfl
-  right_inv _ := rfl
-  map_mul' _ _ := rfl
-  map_add' _ _ := rfl
-
-def RingHom.fromUliftInt (R : Type u) [Ring R] : ULift.{u} ℤ →+* R :=
-  (Int.castRingHom R).comp (ULift.ringEquiv' ℤ).toRingHom
-
-lemma RingHom.precomp_injective_of_surjective {R S T : Type*} [NonAssocSemiring R]
-    [NonAssocSemiring S] [NonAssocSemiring T] (f : R →+* S)
-    (hf : Function.Surjective f) {g₁ g₂ : S →+* T} (h : g₁.comp f = g₂.comp f) :
-    g₁ = g₂ := by
-  ext s
-  obtain ⟨r, rfl⟩ := hf s
-  simp only [← comp_apply, h]
-
-def RingCat.isInitial : IsInitial (RingCat.of (ULift.{u} ℤ)) :=
-  IsInitial.ofUnique (h := fun R ↦ ⟨⟨RingHom.fromUliftInt R⟩, fun _ ↦
-    RingHom.precomp_injective_of_surjective (ULift.ringEquiv'.{u} ℤ).symm.toRingHom
-      (ULift.ringEquiv'.{u} ℤ).symm.surjective (RingHom.ext_int _ _)⟩)
-
-def CommRingCat.isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
-  IsInitial.ofUnique (h := fun R ↦ ⟨⟨RingHom.fromUliftInt R⟩, fun _ ↦
-    RingHom.precomp_injective_of_surjective (ULift.ringEquiv'.{u} ℤ).symm.toRingHom
-      (ULift.ringEquiv'.{u} ℤ).symm.surjective (RingHom.ext_int _ _)⟩)
-
-end
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
@@ -180,7 +145,8 @@ lemma d_int_eq_zero (X : Dᵒᵖ) (n : ℤ) : d.d (X := X) n = 0 := by
 lemma d_ulift_int_eq_zero (X : Dᵒᵖ) (f : CommRingCat.of (ULift.{u} ℤ) ⟶ R.obj X)
     (n : ULift.{u} ℤ) :
     d.d (X := X) (f n) = 0 := by
-  obtain rfl := CommRingCat.isInitial.hom_ext f (RingHom.fromUliftInt _)
+  obtain rfl := CommRingCat.isInitial.hom_ext f
+    ((Int.castRingHom _).comp ULift.ringEquiv.toRingHom)
   apply d_int_eq_zero
 
 /-- The postcomposition of a derivation by a morphism of presheaves of modules. -/
@@ -498,7 +464,8 @@ lemma homEquiv_pullbackMap_comp
       hdφ.homEquiv.symm (Derivation.pushforward fac (dφψ.postcomp α)) := by
   apply hdφ.homEquiv.injective
   dsimp only [pullbackMap, pushforwardMap, pushforward_postcomp]
-  simp [postcomp_comp]
+  simp only [homEquiv_apply, homEquiv_symm_apply, PresheafOfModules.Derivation.Universal.fac,
+    Adjunction.homEquiv_naturality_right, Equiv.apply_symm_apply, postcomp_comp]
 
 @[simp]
 lemma pullbackMap_comp_eq_zero_iff
@@ -507,7 +474,8 @@ lemma pullbackMap_comp_eq_zero_iff
       Derivation.pushforward fac (dφψ.postcomp α) = 0 := by
   rw [← EmbeddingLike.apply_eq_iff_eq ((adjunctionψ).homEquiv M P'),
     ← EmbeddingLike.apply_eq_iff_eq hdφ.homEquiv, homEquiv_pullbackMap_comp]
-  simp
+  simp only [homEquiv_symm_apply, homEquiv_apply, PresheafOfModules.Derivation.Universal.fac]
+  rfl
 
 variable {hdφ fac dφψ}
   {c : CokernelCofork (hdφ.pullbackMap fac dφψ)} (hc : IsColimit c) (hdφψ : dφψ.Universal)
@@ -579,8 +547,6 @@ lemma hasDifferentials_of_tower
         (universalUniversalDerivation φψ)⟩⟩
 
 end
-
-attribute [pp_with_univ] HasDifferentials
 
 def absoluteDerivationEquiv
     (φ : (Functor.const Cᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ F.op ⋙ R)
