@@ -1184,17 +1184,17 @@ theorem map_extChartAt_nhds_of_boundaryless [I.Boundaryless] (x : M) :
   rw [extChartAt]
   exact map_extend_nhds_of_boundaryless (chartAt H x) (mem_chart_source H x)
 
-variable {x} in
-theorem extChartAt_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless]
-    {x : M} (hx : s ∈ 𝓝 x) : extChartAt I x '' s ∈ 𝓝 (extChartAt I x x) := by
-  rw [extChartAt]
-  exact extend_image_nhd_mem_nhds_of_boundaryless _ (mem_chart_source H x) hx
-
 theorem extChartAt_image_nhd_mem_nhds_of_mem_interior_range {x y} (hx : y ∈ (extChartAt I x).source)
     (h'x : extChartAt I x y ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 y) :
     (extChartAt I x) '' s ∈ 𝓝 (extChartAt I x y) := by
   rw [extChartAt]
   exact extend_image_nhd_mem_nhds_of_mem_interior_range _ (by simpa using hx) h'x h
+
+variable {x} in
+theorem extChartAt_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless]
+    {x : M} (hx : s ∈ 𝓝 x) : extChartAt I x '' s ∈ 𝓝 (extChartAt I x x) := by
+  rw [extChartAt]
+  exact extend_image_nhd_mem_nhds_of_boundaryless _ (mem_chart_source H x) hx
 
 theorem extChartAt_target_mem_nhdsWithin' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x y :=
