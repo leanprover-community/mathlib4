@@ -827,25 +827,24 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
     (restrictScalars.{max u₂ w, u₁, u₂} f).IsRightAdjoint :=
   (extendRestrictScalarsAdj f).isRightAdjoint
 
-noncomputable instance preservesLimitRestrictScalars
+noncomputable instance preservesLimit_restrictScalars
     {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
     (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
-  ⟨fun {c} hc => by
+  ⟨fun {c} hc => ⟨by
     have hc' := isLimitOfPreserves (forget₂ _ AddCommGrp) hc
-    exact isLimitOfReflects (forget₂ _ AddCommGrp) hc'⟩
+    exact isLimitOfReflects (forget₂ _ AddCommGrp) hc'⟩⟩
 
-instance preservesColimitRestrictScalars {R S : Type*} [Ring R] [Ring S]
+instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
     (f : R →+* S) {J : Type*} [Category J] (F : J ⥤ ModuleCat.{v} S)
     [HasColimit (F ⋙ forget₂ _ AddCommGrp)] :
     PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
   have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrp) :=
     inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrp))
-  apply preservesColimitOfPreservesColimitCocone (HasColimit.isColimitColimitCocone F)
+  apply preservesColimit_of_preserves_colimit_cocone (HasColimit.isColimitColimitCocone F)
   apply isColimitOfReflects (forget₂ _ AddCommGrp)
   apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrp.{v})
   exact HasColimit.isColimitColimitCocone F
-
 
 end ModuleCat
 

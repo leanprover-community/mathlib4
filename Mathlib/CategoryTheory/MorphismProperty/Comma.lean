@@ -117,6 +117,8 @@ instance : Category (P.Comma L R Q W) where
   id X := X.id
   comp f g := f.comp g
 
+lemma toCommaMorphism_eq_hom {X Y : P.Comma L R Q W} (f : X ⟶ Y) : f.toCommaMorphism = f.hom := rfl
+
 /-- Alternative `ext` lemma for `Comma.Hom`. -/
 @[ext]
 lemma Hom.ext' {X Y : P.Comma L R Q W} {f g : X ⟶ Y} (h : f.hom = g.hom) :
@@ -220,6 +222,9 @@ protected abbrev Over : Type _ :=
 protected abbrev Over.forget : P.Over Q X ⥤ Over X :=
   Comma.forget (Functor.id T) (Functor.fromPUnit.{0} X) P Q ⊤
 
+instance : (Over.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Over.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+
 variable {P Q X}
 
 /-- Construct a morphism in `P.Over Q X` from a morphism in `Over.X`. -/
@@ -260,6 +265,9 @@ protected abbrev Under : Type _ :=
 /-- The forgetful functor from the full subcategory of `Under X` defined by `P` to `Under X`. -/
 protected abbrev Under.forget : P.Under Q X ⥤ Under X :=
   Comma.forget (Functor.fromPUnit.{0} X) (Functor.id T) P ⊤ Q
+
+instance : (Under.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Under.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
 
 variable {P Q X}
 

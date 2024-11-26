@@ -73,9 +73,11 @@ theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   simp only [Metric.mem_ball, dist_zero_right, norm_pow]
   exact fun z hz => exp_bound_sq x z hz.le
 
+@[simp]
 theorem differentiable_exp : Differentiable 𝕜 exp := fun x =>
   (hasDerivAt_exp x).differentiableAt.restrictScalars 𝕜
 
+@[simp]
 theorem differentiableAt_exp {x : ℂ} : DifferentiableAt 𝕜 exp x :=
   differentiable_exp x
 
@@ -88,7 +90,7 @@ theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 
-theorem contDiff_exp {n : ℕ∞} : ContDiff 𝕜 n exp :=
+theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp :=
   analyticOnNhd_cexp.restrictScalars.contDiff
 
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
@@ -148,7 +150,7 @@ theorem DifferentiableWithinAt.cexp (hf : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (fun x => Complex.exp (f x)) s x :=
   hf.hasFDerivWithinAt.cexp.differentiableWithinAt
 
-@[simp]
+@[simp, fun_prop]
 theorem DifferentiableAt.cexp (hc : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜 (fun x => Complex.exp (f x)) x :=
   hc.hasFDerivAt.cexp.differentiableAt
@@ -156,7 +158,7 @@ theorem DifferentiableAt.cexp (hc : DifferentiableAt 𝕜 f x) :
 theorem DifferentiableOn.cexp (hc : DifferentiableOn 𝕜 f s) :
     DifferentiableOn 𝕜 (fun x => Complex.exp (f x)) s := fun x h => (hc x h).cexp
 
-@[simp]
+@[simp, fun_prop]
 theorem Differentiable.cexp (hc : Differentiable 𝕜 f) :
     Differentiable 𝕜 fun x => Complex.exp (f x) := fun x => (hc x).cexp
 
@@ -228,11 +230,13 @@ theorem hasStrictDerivAt_exp (x : ℝ) : HasStrictDerivAt exp (exp x) x :=
 theorem hasDerivAt_exp (x : ℝ) : HasDerivAt exp (exp x) x :=
   (Complex.hasDerivAt_exp x).real_of_complex
 
-theorem contDiff_exp {n : ℕ∞} : ContDiff ℝ n exp :=
+theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff ℝ n exp :=
   Complex.contDiff_exp.real_of_complex
 
+@[simp]
 theorem differentiable_exp : Differentiable ℝ exp := fun x => (hasDerivAt_exp x).differentiableAt
 
+@[simp]
 theorem differentiableAt_exp {x : ℝ} : DifferentiableAt ℝ exp x :=
   differentiable_exp x
 
@@ -316,7 +320,7 @@ theorem DifferentiableWithinAt.exp (hf : DifferentiableWithinAt ℝ f s x) :
     DifferentiableWithinAt ℝ (fun x => Real.exp (f x)) s x :=
   hf.hasFDerivWithinAt.exp.differentiableWithinAt
 
-@[simp]
+@[simp, fun_prop]
 theorem DifferentiableAt.exp (hc : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun x => Real.exp (f x)) x :=
   hc.hasFDerivAt.exp.differentiableAt
@@ -324,7 +328,7 @@ theorem DifferentiableAt.exp (hc : DifferentiableAt ℝ f x) :
 theorem DifferentiableOn.exp (hc : DifferentiableOn ℝ f s) :
     DifferentiableOn ℝ (fun x => Real.exp (f x)) s := fun x h => (hc x h).exp
 
-@[simp]
+@[simp, fun_prop]
 theorem Differentiable.exp (hc : Differentiable ℝ f) : Differentiable ℝ fun x => Real.exp (f x) :=
   fun x => (hc x).exp
 
