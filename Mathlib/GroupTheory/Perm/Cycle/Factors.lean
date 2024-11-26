@@ -668,6 +668,12 @@ theorem eq_cycleOf_of_mem_cycleFactorsFinset_iff
   rw [mem_support, cycleOf_apply_self, ne_eq, ← cycleOf_eq_one_iff]
   exact (mem_cycleFactorsFinset_iff.mp hc).left.ne_one
 
+theorem zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff {g : Perm α}
+    {x :α} {m : ℤ} {c : g.cycleFactorsFinset} :
+    (g ^ m) x ∈ (c : Perm α).support ↔ x ∈ (c : Perm α).support := by
+  rw [← g.eq_cycleOf_of_mem_cycleFactorsFinset_iff _ c.prop, cycleOf_self_apply_zpow,
+    eq_cycleOf_of_mem_cycleFactorsFinset_iff _ _ c.prop]
+
 /-- A permutation `c` is a cycle of `g` iff `k * c * k⁻¹` is a cycle of `k * g * k⁻¹` -/
 theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
     k * c * k⁻¹ ∈ (k * g * k⁻¹).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
