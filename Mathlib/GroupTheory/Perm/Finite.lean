@@ -258,7 +258,7 @@ lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints 
 open Subgroup
 
 lemma disjoint_of_disjoint_support {H K : Subgroup (Perm α)}
-    (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.support b.support) : 
+    (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.support b.support) :
     _root_.Disjoint H K := by
   rw [disjoint_iff_inf_le]
   intro x ⟨hx1, hx2⟩

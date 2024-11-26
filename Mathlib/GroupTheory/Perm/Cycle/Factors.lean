@@ -541,7 +541,7 @@ theorem pairwise_disjoint_of_mem_zpowers :
 lemma pairwise_commute_of_mem_zpowers :
     Pairwise fun (i j : f.cycleFactorsFinset) ↦
       ∀ (x y : Perm α), x ∈ Subgroup.zpowers ↑i → y ∈ Subgroup.zpowers ↑j → Commute x y :=
-  f.pairwise_disjoint_of_mem_zpowers.mono 
+  f.pairwise_disjoint_of_mem_zpowers.mono
     (fun _ _ ↦ forall₂_imp (fun _ _ h hx hy ↦ (h hx hy).commute))
 
 lemma disjoint_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints ⇑f))

@@ -823,7 +823,7 @@ theorem nat_card_centralizer :
     Nat.card (Subgroup.centralizer {g}) =
       (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod *
         (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) := by
-  rw [← (OnCycleFactors.toPermHom g).ker.card_mul_index, index_ker, nat_card_range_toPermHom, 
+  rw [← (OnCycleFactors.toPermHom g).ker.card_mul_index, index_ker, nat_card_range_toPermHom,
     ← θHom_range_card, ← Nat.card_eq_fintype_card, θHom_range_eq, card_subtype]
 
 theorem card_isConj_mul_eq (g : Equiv.Perm α) :
