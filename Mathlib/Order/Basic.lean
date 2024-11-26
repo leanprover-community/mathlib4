@@ -98,8 +98,6 @@ theorem Ne.lt_of_le' : b ≠ a → a ≤ b → a < b :=
 
 end PartialOrder
 
-attribute [simp] le_refl
-
 attribute [ext] LE
 
 alias LE.le.trans := le_trans
