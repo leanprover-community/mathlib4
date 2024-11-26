@@ -60,12 +60,15 @@ def validateTitle (title: String) : Array String := Id.run do
     if !known_types.contains type then
       errors := errors.push s!"error: the PR type should be one of {", ".intercalate (known_types.map (s!"\"{·}\""))}"
   else if (N, M) == (2, 2) then
-    if !type.endsWith ")" then
-      errors := errors.push s!"error: the PR type should be of the form abbrev(scope)"
     let idx := type.find (· == '(')
     let idx2 := type.find (· == ')')
     if idx2 < idx then
       errors := errors.push "error: mismatched parentheses; the PR type should be of the form abbrev(scope)"
+    else if !type.endsWith ")" then
+      if type.back.isWhitespace then
+        errors := errors.push s!"error: the PR type should not end with a space"
+      else
+        errors := errors.push s!"error: the PR type should be of the form abbrev(scope)"
     let (type, scope) := (splitAtPos type idx)
     let scope := scope.dropRight 1
     if !known_types.contains type then
@@ -74,7 +77,9 @@ def validateTitle (title: String) : Array String := Id.run do
       errors := errors.push s!"error: the PR scope must not start with 'Mathlib/'"
     if scope.endsWith ".lean" then
       errors := errors.push s!"error: a PR's scope must not end with '.lean'"
-    -- Future: we could further validate the scope, that this is a valid module or directory
+    if scope.contains '.' then
+      errors := errors.push s!"error: a PR's scope should be a directory, not a module"
+    -- Future: we could check if `scope` describes a directory that actually exist.
   else
     errors := errors.push "error: the PR type should be of the form abbrev or abbrev(scope)"
   return errors
@@ -99,8 +104,7 @@ def hasContradictoryLabels (labels : Array String) : Bool := Id.run do
   else if normalised_labels.contains "bors" &&
       ["awaiting-CI", "awaiting-zulip", "WIP"].any normalised_labels.contains then
     return true
-  else if normalised_labels.contains "awaiting-zulip" &&
-      ["delegated", "awaiting-zulip"].all normalised_labels.contains then
+  else if ["delegated", "awaiting-zulip"].all normalised_labels.contains then
     return true
   else
     return false
@@ -217,18 +221,18 @@ info: Message: 'error: the PR type should be one of "feat", "chore", "perf", "re
 /--
 info: Message: 'error: the PR should have the form 'abbrev: main title', with a space'
 ---
-info: Message: 'error: the PR type should be of the form abbrev(scope)'
+info: Message: 'error: the PR type should not end with a space'
 -/
 #guard_msgs in
 #check_title "feat(test) :(confusing) bad title"
 
+/-- info: Message: 'error: the PR type should not end with a space' -/
+#guard_msgs in
+#check_title "feat(test) : bad title"
+
 /-- info: Message: 'error: the PR type should be of the form abbrev(scope)' -/
 #guard_msgs in
-#check_title "feat(test) : (confusing) bad title"
-
-/-- info: Message: 'error: the main PR title should be lowercased' -/
-#guard_msgs in
-#check_title "feat: My Bad Title"
+#check_title "feat(test) more things: bad title"
 
 /--
 info: Message: 'error: the PR title should not end with a full stop'
@@ -250,7 +254,11 @@ info: Message: 'error: the PR type should be one of "feat", "chore", "perf", "re
 #guard_msgs in
 #check_title "feat(Mathlib/Algebra): title"
 
-/-- info: Message: 'error: a PR's scope must not end with '.lean'' -/
+/--
+info: Message: 'error: a PR's scope must not end with '.lean''
+---
+info: Message: 'error: a PR's scope should be a directory, not a module'
+-/
 #guard_msgs in
 #check_title "feat(Algebra.lean): title"
 
@@ -262,6 +270,8 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 info: Message: 'error: the PR scope must not start with 'Mathlib/''
 ---
 info: Message: 'error: a PR's scope must not end with '.lean''
+---
+info: Message: 'error: a PR's scope should be a directory, not a module'
 -/
 #guard_msgs in
 #check_title "feat(Mathlib/Algebra.lean):  title."
