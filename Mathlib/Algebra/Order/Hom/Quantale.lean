@@ -18,7 +18,7 @@ This file defines morphisms between (additive) quantales
 * `AddQuantaleHom`: Additive quantale homomorphisms
 * `QuantaleHom`: Quantale homomorphisms
 
-As isomorphism, `OrderMonoidIso` - denoted `α ≃*o` works also for (additive) Quantales,
+As isomorphism, `OrderMonoidIso` - denoted `α ≃*o` - works also for (additive) Quantales,
 so we do not need to add any theory for them here.
 
 We do add theorems for identity and composition of (additive) quantale homs, as well
@@ -179,16 +179,6 @@ theorem coe_comp (f : β →ₙ*q γ) (g : α →ₙ*q β) : (f.comp g : α → 
 theorem comp_apply (f : β →ₙ*q γ) (g : α →ₙ*q β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 
-@[to_additive]
-theorem coe_comp_mulHom (f : β →ₙ*q γ) (g : α →ₙ*q β) :
-    (f.comp g : α →ₙ* γ) = (f : β →ₙ* γ).comp g :=
-  rfl
-
-@[to_additive]
-theorem coe_comp_orderHom (f : β →ₙ*q γ) (g : α →ₙ*q β) :
-    (f.comp g : α →o γ) = (f : β →o γ).comp g :=
-  rfl
-
 @[to_additive (attr := simp)]
 theorem comp_assoc (f : γ →ₙ*q δ) (g : β →ₙ*q γ) (h : α →ₙ*q β) :
     (f.comp g).comp h = f.comp (g.comp h) :=
@@ -202,45 +192,17 @@ theorem comp_id (f : α →ₙ*q β) : f.comp (QuantaleHom.id α) = f :=
 theorem id_comp (f : α →ₙ*q β) : (QuantaleHom.id β).comp f = f :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem cancel_right {g₁ g₂ : β →ₙ*q γ} {f : α →ₙ*q β} (hf : Function.Surjective f) :
-    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun _ => by congr⟩
-
-@[to_additive (attr := simp)]
-theorem cancel_left {g : β →ₙ*q γ} {f₁ f₂ : α →ₙ*q β} (hg : Function.Injective g) :
-    g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
-
 end Comp
 
 section Bot
 
-variable [IsQuantale β]
-open IsQuantale
-
 /-- `⊥` is the quantale homomorphism sending all elements to `⊥`. -/
 @[to_additive]
-instance : Bot (α →ₙ*q β) :=
-  ⟨{ (⊥ : sSupHom α β) with map_mul' := by simp; rw [bot_mul_eq_bot] }⟩
+instance [IsQuantale β] : Bot (α →ₙ*q β) :=
+  ⟨{ (⊥ : sSupHom α β) with map_mul' := by simp; rw [IsQuantale.bot_mul_eq_bot] }⟩
 
 @[to_additive (attr := simp)]
-theorem coe_bot : ⇑(⊥ : α →ₙ*q β) = ⊥ :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem bot_apply (a : α) : (⊥ : α →ₙ*q β) a = ⊥ :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem bot_comp (f : α →ₙ*q γ) : (⊥ : γ →ₙ*q β).comp f = ⊥ :=
-  rfl
-
-variable [IsQuantale γ]
-
-@[to_additive (attr := simp)]
-theorem comp_bot (f : β →ₙ*q γ) : f.comp (⊥ : α →ₙ*q β) = ⊥ :=
-  ext fun _ => map_bot f
+theorem coe_bot [IsQuantale β] : ⇑(⊥ : α →ₙ*q β) = ⊥ := rfl
 
 end Bot
 
