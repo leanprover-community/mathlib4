@@ -1946,7 +1946,7 @@ theorem up_moveLeft (x) : up.moveLeft x = 0 :=
 theorem up_moveRight (x) : up.moveRight x = star :=
   rfl
 
-theorem up_star_fuzzy : star ‖ up := by
+theorem star_fuzzy_up : star ‖ up := by
   unfold Fuzzy
   simp only [← PGame.not_le]
   simp [le_iff_forall_lf]
