@@ -112,7 +112,7 @@ section InvolutiveInv
 variable [InvolutiveInv α] {s : Set α}
 
 @[to_additive (attr := simp)] lemma finite_inv : s⁻¹.Finite ↔ s.Finite := by
-  rw [← image_inv, finite_image_iff inv_injective.injOn]
+  rw [← image_inv_eq_inv, finite_image_iff inv_injective.injOn]
 
 @[to_additive (attr := simp)] lemma infinite_inv : s⁻¹.Infinite ↔ s.Infinite := finite_inv.not
 
