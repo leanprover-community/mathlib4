@@ -11,9 +11,6 @@ import Mathlib.RingTheory.LinearDisjoint
 # Linearly disjoint fields
 
 This file contains basics about the linearly disjoint fields.
-There are two distinct but closely related definitions: linearly disjoint intermediate fields
-(`IntermediateField.LinearDisjoint`) and linearly disjoint abstract fields
-(`Field.LinearDisjoint`).
 
 ## Linear disjoint intermediate fields
 
@@ -85,30 +82,6 @@ Other main results:
 
 - `IntermediateField.LinearDisjoint.inf_eq_bot`:
   if `A` and `B` are linearly disjoint, then they are disjoint.
-
-## Linear disjoint abstract fields
-
-We adapt the definitions in <https://mathoverflow.net/questions/8324>.
-
-### Main definitions
-
-- `Field.LinearDisjoint`: for two abstract fields `E` and `K` over `F`, they are
-  linearly disjoint over `F` (`Field.LinearDisjoint F E K`), if `E ⊗[F] K` is a field.
-
-  In this case, it can be shown that at least one of `E / F` and `K / F` are algebraic, and if this
-  holds, then it is equivalent to the above `IntermediateField.LinearDisjoint`.
-
-The advantage of `Field.LinearDisjoint` is that it is preserved under algebra isomorphisms.
-This is not true for `IntermediateField.LinearDisjoint` if both of the
-extensions are not algebraic.
-
-### Main results
-
-- **TODO:** if `Field.LinearDisjoint F E K`,
-  then at least one of `E / F` and `K / F` are algebraic.
-
-- **TODO:** if at least one of `E / F` and `K / F` are algebraic,
-  then `Field.LinearDisjoint` is equivalent to `IntermediateField.LinearDisjoint`.
 
 ## Tags
 
@@ -324,15 +297,3 @@ theorem of_finrank_coprime (H : (finrank F A).Coprime (finrank F L)) : A.LinearD
 end LinearDisjoint
 
 end IntermediateField
-
-namespace Field
-
-variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
-
-variable (K : Type w) [Field K] [Algebra F K]
-
-/-- Two abstract fields `E` and `K` over `F` are called linearly disjoint, if their
-tensor product over `F` is a field. -/
-protected abbrev LinearDisjoint := IsField (E ⊗[F] K)
-
-end Field
