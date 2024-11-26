@@ -106,7 +106,7 @@ noncomputable def IsCoskeletal.coskRightExtension.homIso :
 
 /-- The isomorphism `X ≅ (cosk n).obj X` that exists when `X` is coskeletal and the
 `n`-coskeleton functor exists.-/
-noncomputable def IsCoskeletal.isoCosk : X ≅ (cosk n).obj X :=
+noncomputable def isoCoskOfIsCoskeletal : X ≅ (cosk n).obj X :=
   (CostructuredArrow.proj ((whiskeringLeft _ _ _).obj (Truncated.inclusion n).op)
     ((Truncated.inclusion n).op ⋙ X)).mapIso (IsCoskeletal.coskRightExtension.homIso X n)
 
