@@ -6,7 +6,6 @@ Authors: Leonardo de Moura
 import Batteries.Classes.Order
 import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
-import Mathlib.Data.Set.Defs
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.SplitIfs
