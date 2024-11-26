@@ -268,9 +268,6 @@ theorem range_subset_closure_interior : range I ⊆ closure (interior (range I))
   exact I.target_subset_closure_interior
 
 
-
-
-
 @[simp, mfld_simps]
 protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?_; simp
 
@@ -1401,6 +1398,9 @@ theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
         (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) : Set E) := by
   rw [← nhdsWithin_eq_iff_eventuallyEq]
   exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range
+
+@[deprecated (since := "2024-11-26")] alias
+extChartAt_target_union_comp_range_mem_nhds_of_mem := extChartAt_target_union_compl_range_mem_nhds_of_mem
 
 section LocallyCompact
 
