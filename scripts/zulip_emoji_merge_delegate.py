@@ -31,7 +31,7 @@ public_response = client.get_messages({
     "num_after": 0,
     "narrow": [
         {"operator": "channels", "operand": "public"},
-        {"operator": "search", "operand": f'{PR_NUMBER}'},
+        {"operator": "search", "operand": f'#{PR_NUMBER}'},
     ],
 })
 
@@ -43,7 +43,7 @@ reviewers_response = client.get_messages({
     "num_after": 0,
     "narrow": [
         {"operator": "channel", "operand": "mathlib reviewers"},
-        {"operator": "search", "operand": f'{PR_NUMBER}'},
+        {"operator": "search", "operand": f'#{PR_NUMBER}'},
     ],
 })
 
