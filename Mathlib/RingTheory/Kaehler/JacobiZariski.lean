@@ -382,7 +382,23 @@ lemma H1Cotangent.δAux_ofComp (x : (Q.comp P).Ring) :
       rfl
 
 open Generators in
-/-- The connecting homomorphism in the Jacobi-Zariski sequence for a given family of generators. -/
+/--
+The connecting homomorphism in the Jacobi-Zariski sequence for given presentations.
+Given representations `0 → I → R[X] → S → 0` and `0 → K → S[Y] → T → 0`,
+we may consider the induced representation `0 → J → R[X, Y] → T → 0`,
+and this map is obtained by applying snake lemma to the following diagram
+```
+    T ⊗[S] Ω[S/R]    →          Ω[T/R]        →   Ω[T/S]  → 0
+        ↑                         ↑                 ↑
+0 → T ⊗[S] (⨁ₓ S dx) → (⨁ₓ T dx) ⊕ (⨁ᵧ T dy) →  ⨁ᵧ T dy → 0
+        ↑                         ↑                 ↑
+    T ⊗[S] (I/I²)    →           J/J²         →    K/K²   → 0
+                                  ↑                 ↑
+                             H¹(L_{T/R})      → H¹(L_{T/S})
+
+```
+This is independent from the presentations chosen. See `H1Cotangent.δ_comp_equiv`.
+-/
 noncomputable
 def H1Cotangent.δ :
     Q.H1Cotangent →ₗ[T] T ⊗[S] Ω[S⁄R] :=
