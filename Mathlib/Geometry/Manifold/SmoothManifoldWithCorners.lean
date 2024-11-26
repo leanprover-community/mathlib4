@@ -1550,7 +1550,6 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   apply extChartAt_image_nhd_mem_nhds_of_mem_interior_range
     (PartialEquiv.map_target (extChartAt I x) h'y) _ hmem
   simp only [(extChartAt I x).right_inv h'y]
-  have : (extChartAt I x).target ⊆ range I := extChartAt_target_subset_range x
   exact interior_mono (extChartAt_target_subset_range x) hy
 
 /-- Riesz's theorem applied to manifolds: a locally compact manifolds must be modelled on a
