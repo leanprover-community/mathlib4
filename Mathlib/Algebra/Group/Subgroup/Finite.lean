@@ -149,6 +149,18 @@ theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
 theorem card_le_of_le {H K : Subgroup G} [Finite K] (h : H ≤ K) : Nat.card H ≤ Nat.card K :=
   Nat.card_le_card_of_injective _ (Subgroup.inclusion_injective h)
 
+@[to_additive]
+theorem card_map_of_injective {H : Type*} [Group H] {K : Subgroup G} {f : G →* H}
+    (hf : Function.Injective f) :
+    Nat.card (map f K) = Nat.card K := by
+  -- simp only [← SetLike.coe_sort_coe]
+  apply Nat.card_image_of_injective hf
+
+@[to_additive]
+theorem card_subtype (K : Subgroup G) (L : Subgroup K) :
+    Nat.card (map K.subtype L) = Nat.card L :=
+  card_map_of_injective K.subtype_injective
+
 end Subgroup
 
 namespace Subgroup

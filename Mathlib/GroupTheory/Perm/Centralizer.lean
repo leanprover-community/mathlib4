@@ -517,7 +517,7 @@ variable (g) in
 /-- The parametrization of the kernel of `toPermHom` -/
 def θHom : (Perm (Function.fixedPoints g)) ×
     ((c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) →* Perm α :=
-  MonoidHom.noncommCoprod ofSubtype (Subgroup.noncommPiCoprod g.pairwise_commute_of_mem_zpowers) 
+  MonoidHom.noncommCoprod ofSubtype (Subgroup.noncommPiCoprod g.pairwise_commute_of_mem_zpowers)
     g.commute_ofSubtype_noncommPiCoprod
 
 variable {ι : Type*} (k : ι → Perm α) (s : Finset ι)
@@ -823,10 +823,8 @@ theorem nat_card_centralizer :
     Nat.card (Subgroup.centralizer {g}) =
       (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod *
         (∏ n in g.cycleType.toFinset, (g.cycleType.count n)!) := by
-  rw [← (OnCycleFactors.toPermHom g).ker.card_mul_index, index_ker, nat_card_range_toPermHom]
-  rw [← θHom_range_card, ← Nat.card_eq_fintype_card]
-  simp only [← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]
-  rw [θHom_range_eq, coe_map, Set.ncard_image_of_injective _ (subtype_injective _)]
+  rw [← (OnCycleFactors.toPermHom g).ker.card_mul_index, index_ker, nat_card_range_toPermHom, 
+    ← θHom_range_card, ← Nat.card_eq_fintype_card, θHom_range_eq, card_subtype]
 
 theorem card_isConj_mul_eq (g : Equiv.Perm α) :
     Nat.card {h : Equiv.Perm α | IsConj g h} *
