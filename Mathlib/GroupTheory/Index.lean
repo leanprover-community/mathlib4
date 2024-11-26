@@ -43,8 +43,8 @@ open Cardinal
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 
 /-- The index of a subgroup as a natural number. Returns `0` if the index is infinite. -/
-@[to_additive "The index of a subgroup as a natural number,
-and returns 0 if the index is infinite."]
+@[to_additive "The index of an additive subgroup as a natural number.
+Returns 0 if the index is infinite."]
 noncomputable def index : ℕ :=
   Nat.card (G ⧸ H)
 
