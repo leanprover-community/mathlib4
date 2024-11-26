@@ -33,7 +33,7 @@ open Submodule MeasureTheory Module MeasureTheory Module ZSpan
 
 section General
 
-variable {E : Type*} [NormedAddCommGroup E] [ProperSpace E] [MeasurableSpace E] (L : Submodule ℤ E)
+variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] (L : Submodule ℤ E)
 
 /-- The covolume of a `ℤ`-lattice is the volume of some fundamental domain; see
 `ZLattice.covolume_eq_volume` for the proof that the volume does not depend on the choice of

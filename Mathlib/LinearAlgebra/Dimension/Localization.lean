@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.Submodule.Localization
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.OreLocalization.OreSet
@@ -54,15 +54,12 @@ lemma IsLocalizedModule.lift_rank_eq :
   cases' subsingleton_or_nontrivial R
   · have := (algebraMap R S).codomain_trivial; simp only [rank_subsingleton, lift_one]
   have := (IsLocalization.injective S hp).nontrivial
-  apply le_antisymm
-  · rw [Module.rank_def, lift_iSup (bddAbove_range.{v', v'} _)]
-    apply ciSup_le'
+  apply le_antisymm <;>
+    rw [Module.rank_def, lift_iSup (bddAbove_range _)] <;>
+    apply ciSup_le' <;>
     intro ⟨s, hs⟩
-    exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
-  · rw [Module.rank_def, lift_iSup (bddAbove_range.{v, v} _)]
-    apply ciSup_le'
-    intro ⟨s, hs⟩
-    choose sec hsec using IsLocalization.surj p (S := S)
+  · exact (IsLocalizedModule.linearIndependent_lift p f hp hs).choose_spec.cardinal_lift_le_rank
+  · choose sec hsec using IsLocalization.surj p (S := S)
     refine LinearIndependent.cardinal_lift_le_rank (ι := s) (v := fun i ↦ f i) ?_
     rw [linearIndependent_iff'] at hs ⊢
     intro t g hg i hit

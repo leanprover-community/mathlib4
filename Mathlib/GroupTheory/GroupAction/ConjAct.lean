@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Subgroup.ZPowers
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.Subgroup.Centralizer
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Conjugation action of a group on itself
@@ -103,11 +104,11 @@ theorem toConjAct_ofConjAct (x : ConjAct G) : toConjAct (ofConjAct x) = x :=
 theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_one : toConjAct (1 : G) = 1 :=
   rfl
 
@@ -119,11 +120,11 @@ theorem ofConjAct_inv (x : ConjAct G) : ofConjAct x⁻¹ = (ofConjAct x)⁻¹ :=
 theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 
@@ -183,11 +184,11 @@ section GroupWithZero
 
 variable [GroupWithZero G₀]
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_zero : ofConjAct (0 : ConjAct G₀) = 0 :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
   rfl
 
@@ -260,6 +261,16 @@ theorem stabilizer_eq_centralizer (g : G) :
     stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
   le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
     mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
+
+theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
+    Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
+      (MulAction.stabilizer (ConjAct G) g) := by
+  ext k
+-- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
+-- with the equality in the other direction
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
+  rw [eq_comm]
+  exact Iff.symm mul_inv_eq_iff_eq_mul
 
 /-- As normal subgroups are closed under conjugation, they inherit the conjugation action
   of the underlying group. -/

@@ -69,7 +69,7 @@ private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by norm_num).trans_le h) (by positivity))
 
 private theorem m_pos [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α) : 0 < m :=
-  Nat.div_pos ((Nat.mul_le_mul_left _ <| Nat.pow_le_pow_left (by norm_num) _).trans hPα) <|
+  Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; norm_num) <|
     stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos
 
 /-- Local extension for the `positivity` tactic: A few facts that are needed many times for the
@@ -119,7 +119,7 @@ theorem hundred_div_ε_pow_five_le_m [Nonempty α] (hPα : #P.parts * 16 ^ #P.pa
     (hPε : 100 ≤ (4 : ℝ) ^ #P.parts * ε ^ 5) : 100 / ε ^ 5 ≤ m :=
   (div_le_of_le_mul₀ (eps_pow_five_pos hPε).le (by positivity) hPε).trans <| by
     norm_cast
-    rwa [Nat.le_div_iff_mul_le' (stepBound_pos (P.parts_nonempty <|
+    rwa [Nat.le_div_iff_mul_le (stepBound_pos (P.parts_nonempty <|
       univ_nonempty.ne_empty).card_pos), stepBound, mul_left_comm, ← mul_pow]
 
 theorem hundred_le_m [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)

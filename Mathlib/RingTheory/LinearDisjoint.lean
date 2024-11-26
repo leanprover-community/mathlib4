@@ -3,15 +3,16 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.LinearDisjoint
-import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.LinearAlgebra.LinearDisjoint
+import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
+import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -455,7 +456,7 @@ theorem of_finrank_sup_of_free [Module.Free R A] [Module.Free R B]
   nontriviality R
   rw [← Module.finrank_tensorProduct] at H
   obtain ⟨j, hj⟩ := exists_linearIndependent_of_le_finrank H.ge
-  rw [LinearIndependent, LinearMap.ker_eq_bot] at hj
+  rw [LinearIndependent] at hj
   let j' := Finsupp.linearCombination R j ∘ₗ
     (LinearEquiv.ofFinrankEq (A ⊗[R] B) _ (by simp)).toLinearMap
   replace hj : Function.Injective j' := by simpa [j']

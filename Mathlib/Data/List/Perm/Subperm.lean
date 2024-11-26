@@ -20,7 +20,7 @@ The notation `<+~` is used for sub-permutations.
 open Nat
 
 namespace List
-variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
+variable {α : Type*} {l l₁ l₂ : List α} {a : α}
 
 open Perm
 
@@ -46,10 +46,7 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
 
 lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons_self _ _⟩
 
-alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
-
--- Porting note: commented out
---attribute [protected] subperm.cons
+protected alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 
 theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (h₁ : a ∉ l₁) (h₂ : a ∈ l₂)
     (s : l₁ <+~ l₂) : a :: l₁ <+~ l₂ := by

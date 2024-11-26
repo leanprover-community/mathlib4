@@ -109,7 +109,7 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
     suffices (fun x ↦ ‖deriv f' x‖) =ᶠ[l] (fun x ↦ ‖deriv f x‖) by exact this.isBigO
     filter_upwards [hd] with x hx
     have : deriv f' x = a (deriv f x) := by
-      rw [fderiv.comp_deriv x _ hx]
+      rw [fderiv_comp_deriv x _ hx]
       · have : fderiv ℝ a (f x) = a.toContinuousLinearMap := a.toContinuousLinearMap.fderiv
         simp only [this]
         rfl
