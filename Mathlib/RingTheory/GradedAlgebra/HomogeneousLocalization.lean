@@ -636,8 +636,7 @@ end
 section mapAway
 
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
-variable {d e : ι} {f : A} (hf : f ∈ 𝒜 d) {g : A} (hg : g ∈ 𝒜 e)
-variable {x : A} (hx : x = f * g)
+variable {e : ι} {f : A} {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g)
 
 variable (𝒜)
 
