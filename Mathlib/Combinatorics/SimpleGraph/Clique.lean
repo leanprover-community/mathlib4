@@ -653,7 +653,6 @@ end CliqueFinset
 
 /-! ### Independent Sets -/
 
-
 section IndepSet
 
 variable {s : Set α}
