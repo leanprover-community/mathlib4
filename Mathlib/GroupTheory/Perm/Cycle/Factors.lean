@@ -465,8 +465,17 @@ theorem cycleFactorsFinset_pairwise_disjoint :
     (cycleFactorsFinset f : Set (Perm α)).Pairwise Disjoint :=
   (cycleFactorsFinset_eq_finset.mp rfl).2.choose
 
+/-- Two cycles of a permutation commute. -/
 theorem cycleFactorsFinset_mem_commute : (cycleFactorsFinset f : Set (Perm α)).Pairwise Commute :=
   (cycleFactorsFinset_pairwise_disjoint _).mono' fun _ _ => Disjoint.commute
+
+/-- Two cycles of a permutation commute. -/
+theorem cycleFactorsFinset_mem_commute' {g1 g2 : Perm α}
+    (h1 : g1 ∈ f.cycleFactorsFinset) (h2 : g2 ∈ f.cycleFactorsFinset) :
+    Commute g1 g2 := by
+  rcases eq_or_ne g1 g2 with rfl | h
+  · apply Commute.refl
+  · exact Equiv.Perm.cycleFactorsFinset_mem_commute f h1 h2 h
 
 /-- The product of cycle factors is equal to the original `f : perm α`. -/
 theorem cycleFactorsFinset_noncommProd

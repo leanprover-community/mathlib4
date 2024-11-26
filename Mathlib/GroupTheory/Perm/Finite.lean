@@ -248,6 +248,13 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf
     le_antisymm (support_pow_le σ n)
       (le_trans (ge_of_eq (congr_arg support hm)) (support_pow_le (σ ^ n) m))
 
+lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints σ)) :
+    _root_.Disjoint x.ofSubtype.support σ.support := by
+  rw [Finset.disjoint_iff_ne]
+  rintro a ha b hb rfl
+  rw [mem_support] at ha hb
+  exact ha (ofSubtype_apply_of_not_mem x (mt Function.mem_fixedPoints_iff.mp hb))
+
 end Fintype
 
 end Equiv.Perm

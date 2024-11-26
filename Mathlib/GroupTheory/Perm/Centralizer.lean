@@ -688,34 +688,6 @@ theorem θHom_apply_of_cycleOf_not_mem {x : α} (hx : g.cycleOf x ∉ g.cycleFac
     θHom g (u,v) x = ofSubtype u x := by
   rw [θHom_apply, dif_neg hx]
 
-lemma _root_.MonoidHom.noncommCoprod_injective {M N P : Type*} [Group M] [Group N] [Group P]
-    (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) :
-    Function.Injective (MonoidHom.noncommCoprod f g comm) ↔
-      (Function.Injective f ∧ Function.Injective g ∧ _root_.Disjoint f.range g.range) := by
-  simp only [injective_iff_map_eq_one, disjoint_iff_inf_le,
-    MonoidHom.noncommCoprod_apply, Prod.forall, Prod.mk_eq_one]
-  refine ⟨fun h ↦ ⟨fun x ↦ ?_, fun x ↦ ?_, ?_⟩, ?_⟩
-  · simpa using h x 1
-  · simpa using h 1 x
-  · intro x ⟨⟨y, hy⟩, z, hz⟩
-    rwa [(h y z⁻¹ (by rw [map_inv, hy, hz, mul_inv_cancel])).1, map_one, eq_comm] at hy
-  · intro ⟨hf, hg, hp⟩ a b h
-    have key := hp ⟨⟨a⁻¹, by rwa [map_inv, inv_eq_iff_mul_eq_one]⟩, b, rfl⟩
-    exact ⟨hf a (by rwa [key, mul_one] at h), hg b key⟩
-
-lemma _root_.MonoidHom.noncommCoprod_range {M N P : Type*} [Group M] [Group N] [Group P]
-    (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) :
-    (MonoidHom.noncommCoprod f g comm).range = f.range ⊔ g.range := by
-  apply le_antisymm
-  · rintro - ⟨a, rfl⟩
-    exact mul_mem (mem_sup_left ⟨a.1, rfl⟩) (mem_sup_right ⟨a.2, rfl⟩)
-  · rw [sup_le_iff]
-    constructor
-    · rintro - ⟨a, rfl⟩
-      exact ⟨(a, 1), by rw [MonoidHom.noncommCoprod_apply, map_one, mul_one]⟩
-    · rintro - ⟨a, rfl⟩
-      exact ⟨(1, a), by rw [MonoidHom.noncommCoprod_apply, map_one, one_mul]⟩
-
 lemma disjoint_of_disjoint_support (H K : Subgroup (Perm α))
     (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.support b.support) : _root_.Disjoint H K := by
   rw [disjoint_iff_inf_le]
@@ -751,30 +723,7 @@ lemma disjoint_closure_of_disjoint_support (S T : Set (Perm α))
   apply disjoint_support_closure_of_disjoint_support
   exact h
 
-lemma ofSubtype_injective {α : Type*} (p : α → Prop) [DecidablePred p] :
-    Function.Injective (ofSubtype : Perm (Subtype p) → Perm α) := by
-  intro x y h
-  rw [Perm.ext_iff] at h ⊢
-  intro a
-  specialize h a
-  rwa [ofSubtype_apply_coe, ofSubtype_apply_coe, SetCoe.ext_iff] at h
-
-/-- Variant of Equiv.Perm.cycleFactorsFinset_mem_commute allowing equality. -/
-lemma _root_.Equiv.Perm.cycleFactorsFinset_mem_commute' {α : Type*} [DecidableEq α] [Fintype α]
-    (f : Perm α) {g1 g2 : Perm α}
-    (h1 : g1 ∈ f.cycleFactorsFinset) (h2 : g2 ∈ f.cycleFactorsFinset) :
-    Commute g1 g2 := by
-  rcases eq_or_ne g1 g2 with rfl | h
-  · apply Commute.refl
-  · exact Equiv.Perm.cycleFactorsFinset_mem_commute f h1 h2 h
-
-lemma ofSubtype_support_disjoint {α : Type*} [DecidableEq α] [Fintype α] {g : Perm α}
-    (x : Perm (Function.fixedPoints g)) :
-    _root_.Disjoint x.ofSubtype.support g.support := by
-  rw [Finset.disjoint_iff_ne]
-  rintro a ha b hb rfl
-  rw [mem_support] at ha hb
-  exact ha (ofSubtype_apply_of_not_mem x (mt Function.mem_fixedPoints_iff.mp hb))
+#find_home! Equiv.Perm.OnCycleFactors.support_closure_subset_union
 
 theorem θHom_injective (g : Perm α) : Function.Injective (θHom g) := by
   rw [θHom, MonoidHom.noncommCoprod_injective]
@@ -825,20 +774,6 @@ lemma θHom_range_eq : (θHom g).range = (toPermHom g).ker.map (Subgroup.subtype
       rwa [mem_support, cycleOf_apply_self, ne_eq]
     · rw [cycleOf_mem_cycleFactorsFinset_iff, not_mem_support] at hx
       rwa [ofSubtype_apply_of_mem, subtypePerm_apply]
-  rw [← MonoidHom.ker_eq_bot_iff, eq_bot_iff]
-  intro (u,v)
-  simp only [MonoidHom.mem_ker, mem_bot, Prod.mk_eq_one]
-  suffices ∀ (f : Perm α), f = 1 ↔ Disjoint f g ∧ f.support ⊆ g.support by
-    rw [this, θHom_disjoint_self_iff, and_comm (a := u = 1)]
-    rintro ⟨rfl, h⟩
-    rw [support_θHom_of_fst_eq_one] at h
-    refine ⟨rfl, h⟩
-  intro f
-  constructor
-  · intro h; simp [h]
-  · rintro ⟨h, h'⟩
-    rwa [disjoint_iff_disjoint_support, disjoint_of_le_iff_left_eq_bot h',
-      Finset.bot_eq_empty, support_eq_empty_iff] at h
 
 theorem θHom_apply_mem_support_cycle_iff_apply_mem
     (c : Perm α) (hc : c ∈ g.cycleFactorsFinset) (x) :
@@ -931,10 +866,11 @@ theorem mem_θHom_range_iff {p : Perm α} : p ∈ (θHom g).range ↔
     · rw [cycleOf_mem_cycleFactorsFinset_iff, not_mem_support] at hx
       rwa [ofSubtype_apply_of_mem, subtypePerm_apply]
 
-lemma θHom_range_eq : (θHom g).range = (toPermHom g).ker.map (Subgroup.subtype _) := by
+/- /-- Alternative proof of `θHom_range_eq` -/
+lemma θHom_range_eq' : (θHom g).range = (toPermHom g).ker.map (Subgroup.subtype _) := by
   ext p
   simp only [mem_θHom_range_iff, mem_map, coeSubtype, Subtype.exists,
-    exists_and_right, exists_eq_right]
+    exists_and_right, exists_eq_right] -/
 
 theorem θHom_range_card (g : Equiv.Perm α) :
     Fintype.card (θHom g).range = (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
