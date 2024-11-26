@@ -74,7 +74,7 @@ lemma tensorHom_eComp_op_eq {C : Type u} [EnrichedCategory V C] {x y z : Cᵒᵖ
     (f : v ⟶ EnrichedCategory.Hom z y) (g : w ⟶ EnrichedCategory.Hom y x) :
     (f ⊗ g) ≫ eComp V z y x = (β_ v w).hom ≫ (g ⊗ f) ≫ eComp V x.unop y.unop z.unop := by
   rw [eComp_op_eq]
-  exact braiding_naturality_assoc (C := V) f g _
+  exact braiding_naturality_assoc f g _
 
 -- This section establishes the equivalence on underlying categories
 section
