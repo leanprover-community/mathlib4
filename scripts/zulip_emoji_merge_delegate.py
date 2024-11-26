@@ -74,17 +74,17 @@ for message in messages:
 
         # applying appropriate emoji reaction
         print("Applying reactions, as appropriate.")
-        if 'delegated' == LABEL:
-            print('adding delegated')
-            client.add_reaction({
-                "message_id": message['id'],
-                "emoji_name": "peace_sign"
-            })
-        elif 'ready-to-merge' == LABEL:
+        if 'ready-to-merge' == LABEL:
             print('adding ready-to-merge')
             client.add_reaction({
                 "message_id": message['id'],
                 "emoji_name": "bors"
+            })
+        elif 'delegated' == LABEL:
+            print('adding delegated')
+            client.add_reaction({
+                "message_id": message['id'],
+                "emoji_name": "peace_sign"
             })
         elif LABEL.startswith("[Merged by Bors]"):
             print('adding [Merged by Bors]')
