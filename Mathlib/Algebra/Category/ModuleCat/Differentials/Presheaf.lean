@@ -43,17 +43,8 @@ open CategoryTheory Limits
 -- for Algebra.Category.Ring.Constructions and Algebra.Ring.ULift
 section
 
--- ringEquiv should be renamed
-def ULift.ringEquiv' (R : Type u) [Ring R] : ULift.{v} R ≃+* R where
-  toFun := down
-  invFun := up
-  left_inv _ := rfl
-  right_inv _ := rfl
-  map_mul' _ _ := rfl
-  map_add' _ _ := rfl
-
 def RingHom.fromUliftInt (R : Type u) [Ring R] : ULift.{u} ℤ →+* R :=
-  (Int.castRingHom R).comp (ULift.ringEquiv' ℤ).toRingHom
+  (Int.castRingHom R).comp (ULift.ringEquiv (α := ℤ)).toRingHom
 
 lemma RingHom.precomp_injective_of_surjective {R S T : Type*} [NonAssocSemiring R]
     [NonAssocSemiring S] [NonAssocSemiring T] (f : R →+* S)
@@ -65,13 +56,13 @@ lemma RingHom.precomp_injective_of_surjective {R S T : Type*} [NonAssocSemiring 
 
 def RingCat.isInitial : IsInitial (RingCat.of (ULift.{u} ℤ)) :=
   IsInitial.ofUnique (h := fun R ↦ ⟨⟨RingHom.fromUliftInt R⟩, fun _ ↦
-    RingHom.precomp_injective_of_surjective (ULift.ringEquiv'.{u} ℤ).symm.toRingHom
-      (ULift.ringEquiv'.{u} ℤ).symm.surjective (RingHom.ext_int _ _)⟩)
+    RingHom.precomp_injective_of_surjective (ULift.ringEquiv (α := ℤ)).symm.toRingHom
+      ULift.ringEquiv.symm.surjective (RingHom.ext_int _ _)⟩)
 
 def CommRingCat.isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
   IsInitial.ofUnique (h := fun R ↦ ⟨⟨RingHom.fromUliftInt R⟩, fun _ ↦
-    RingHom.precomp_injective_of_surjective (ULift.ringEquiv'.{u} ℤ).symm.toRingHom
-      (ULift.ringEquiv'.{u} ℤ).symm.surjective (RingHom.ext_int _ _)⟩)
+    RingHom.precomp_injective_of_surjective (ULift.ringEquiv (α := ℤ)).symm.toRingHom
+      ULift.ringEquiv.symm.surjective (RingHom.ext_int _ _)⟩)
 
 end
 
