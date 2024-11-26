@@ -60,7 +60,7 @@ variable [X.IsCoskeletal n]
 
 /-- If `X` is `n`-cosketal, then `𝟙 ((Truncated.inclusion n).op ⋙ X)` defines a right Kan
 extension of `(Truncated.inclusion.op ⋙ X)` along `(Truncated.inclusion n).op`. -/
-theorem IsCoskeletal.isRightKanExtension :
+instance IsCoskeletal.isRightKanExtension :
     IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)) :=
   IsCoskeletal.nonempty_isRightKanExtension.some
 
