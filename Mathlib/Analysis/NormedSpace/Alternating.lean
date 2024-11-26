@@ -173,7 +173,7 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[�
 /-- The inclusion of `E [⋀^ι]→L[𝕜] F` into `ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F`
 as a linear isometry. -/
 @[simps!]
-def toContinuousMultilinearMapLinearIsometry :
+def toContinuousMultilinearMapLI :
     E [⋀^ι]→L[𝕜] F →ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F where
   toLinearMap := toContinuousMultilinearMapLinear
   norm_map' _ := rfl
@@ -262,23 +262,9 @@ theorem opNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', Semin
     [∀ i', NormedSpace 𝕜 (F i')] (f : ∀ i', E [⋀^ι]→L[𝕜] F i') : ‖pi f‖ = ‖f‖ :=
   ContinuousMultilinearMap.opNorm_pi fun i ↦ (f i).1
 
-section
-
-variable {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜 𝕜' F]
-
-instance instNormedSpace : NormedSpace 𝕜' (E [⋀^ι]→L[𝕜] F) :=
+instance instNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
+    NormedSpace 𝕜' (E [⋀^ι]→L[𝕜] F) :=
   ⟨fun c f ↦ f.1.opNorm_smul_le c⟩
-
-variable (𝕜')
-
-/-- The inclusion of *alternating* continuous multi-linear maps into continuous multi-linear maps
-as a continuous linear map. -/
-@[simps!]
-def toContinuousMultilinearMapL :
-    E [⋀^ι]→L[𝕜] F →L[𝕜'] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F :=
-  ⟨toContinuousMultilinearMapLinear, continuous_induced_dom⟩
-
-end
 
 section
 
@@ -410,33 +396,28 @@ def compContinuousAlternatingMapL : (F →L[𝕜] G) →L[𝕜] E [⋀^ι]→L[�
   LinearMap.mkContinuous₂ (compContinuousAlternatingMapₗ 𝕜 E F G) 1 fun f g ↦ by
     simpa using f.norm_compContinuousAlternatingMap_le g
 
-variable (E) in
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv. -/
-nonrec def _root_.ContinuousLinearEquiv.compContinuousAlternatingMapL (g : F ≃L[𝕜] G) :
-    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
-  { g.compContinuousAlternatingMap,
-      compContinuousAlternatingMapL 𝕜 E F G g.toContinuousLinearMap with
-    invFun := compContinuousAlternatingMapL 𝕜 E G F g.symm.toContinuousLinearMap
-    continuous_toFun :=
-      (compContinuousAlternatingMapL 𝕜 E F G g.toContinuousLinearMap).continuous
-    continuous_invFun :=
-      (compContinuousAlternatingMapL 𝕜 E G F g.symm.toContinuousLinearMap).continuous }
+@[simps (config := {simpRhs := true}) apply]
+def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRight (g : F ≃L[𝕜] G) :
+    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) where
+  __ := g.continuousAlternatingMapCongrRightEquiv
+  __ := compContinuousAlternatingMapL 𝕜 E F G g.toContinuousLinearMap
+  continuous_toFun :=
+    (compContinuousAlternatingMapL 𝕜 E F G g.toContinuousLinearMap).continuous
+  continuous_invFun :=
+    (compContinuousAlternatingMapL 𝕜 E G F g.symm.toContinuousLinearMap).continuous
 
 @[simp]
-theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMapL_symm (g : F ≃L[𝕜] G) :
-    (g.compContinuousAlternatingMapL (ι := ι) E).symm = g.symm.compContinuousAlternatingMapL E :=
-  rfl
-
-@[simp]
-theorem _root_.continuous_linear_equiv.comp_ContinuousAlternatingMapL_apply
-    (g : F ≃L[𝕜] G) (f : E [⋀^ι]→L[𝕜] F) :
-    g.compContinuousAlternatingMapL E f = (g : F →L[𝕜] G).compContinuousAlternatingMap f :=
+theorem _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRight_symm (g : F ≃L[𝕜] G) :
+    (g.continuousAlternatingMapCongrRight (ι := ι) (E := E)).symm =
+      g.symm.continuousAlternatingMapCongrRight :=
   rfl
 
 /-- Flip arguments in `f : F →L[𝕜] E [⋀^ι]→L[𝕜] G` to get `⋀^ι⟮𝕜; E; F →L[𝕜] G⟯` -/
+@[simps! apply_apply]
 def flipAlternating (f : F →L[𝕜] (E [⋀^ι]→L[𝕜] G)) : E [⋀^ι]→L[𝕜] (F →L[𝕜] G) where
   toContinuousMultilinearMap :=
-    ((ContinuousAlternatingMap.toContinuousMultilinearMapL 𝕜).comp f).flipMultilinear
+    ((ContinuousAlternatingMap.toContinuousMultilinearMapCLM 𝕜).comp f).flipMultilinear
   map_eq_zero_of_eq' v i j hv hne := by ext x; simp [(f x).map_eq_zero_of_eq v hv hne]
 
 end ContinuousLinearMap
@@ -453,30 +434,37 @@ theorem ContinuousAlternatingMap.norm_compContinuousLinearMap_le (f : F [⋀^ι]
     (g : E →L[𝕜] F) : ‖f.compContinuousLinearMap g‖ ≤ ‖f‖ * (‖g‖ ^ Fintype.card ι) :=
   (f.1.norm_compContinuousLinearMap_le _).trans_eq <| by simp
 
-def ContinuousAlternatingMap.compContinuousLinearMapL (f : E →L[𝕜] F) :
+/-- Composition of a continuous alternating map and a continuous linear map
+as a bundled continuous linear map. -/
+def ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F) :
     (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
   LinearMap.mkContinuous
     (ContinuousAlternatingMap.compContinuousLinearMapₗ f) (‖f‖ ^ Fintype.card ι) fun g ↦
       (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
 
-def ContinuousAlternatingMap.compContinuousLinearEquivL (f : E ≃L[𝕜] F) :
-    E [⋀^ι]→L[𝕜] G ≃L[𝕜] (F [⋀^ι]→L[𝕜] G) :=
-  { f.continuousAlternatingMapComp,
-      ContinuousAlternatingMap.compContinuousLinearMapL (f.symm : F →L[𝕜] E) with
-    continuous_invFun :=
-      (ContinuousAlternatingMap.compContinuousLinearMapL (f : E →L[𝕜] F)).cont
-    continuous_toFun :=
-      (ContinuousAlternatingMap.compContinuousLinearMapL (f.symm : F →L[𝕜] E)).cont }
+/-- Given a continuous linear isomorphism between the domains,
+generate a continuous linear isomorphism between the spaces of continuous alternating maps. -/
+@[simps apply]
+def ContinuousLinearEquiv.continuousAlternatingMapCongrLeft (f : E ≃L[𝕜] F) :
+    E [⋀^ι]→L[𝕜] G ≃L[𝕜] (F [⋀^ι]→L[𝕜] G) where
+  __ := f.continuousAlternatingMapCongrLeftEquiv
+  __ := ContinuousAlternatingMap.compContinuousLinearMapCLM (f.symm : F →L[𝕜] E)
+  toFun g := g.compContinuousLinearMap (f.symm : F →L[𝕜] E)
+  continuous_invFun :=
+    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F)).cont
+  continuous_toFun :=
+    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f.symm : F →L[𝕜] E)).cont
 
 variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
 
+/-- Continuous linear equivalences between the domains and the codomains
+generate a continuous linear equivalence between the spaces of continuous alternating maps. -/
 @[simps! apply]
-def ContinuousLinearEquiv.continuousAlternatingMapCongrL (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] F') :
+def ContinuousLinearEquiv.continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] F') :
     (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E' [⋀^ι]→L[𝕜] F') :=
-  (ContinuousAlternatingMap.compContinuousLinearEquivL e).trans <|
-    e'.compContinuousAlternatingMapL E'
+  e.continuousAlternatingMapCongrLeft.trans <| e'.continuousAlternatingMapCongrRight
 
 end
 
