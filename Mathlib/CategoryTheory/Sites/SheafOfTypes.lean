@@ -198,7 +198,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
 
 end Sieve
 
-variable {C : Type u} [Category.{v} C]
+/-variable {C : Type u} [Category.{v} C]
 variable (J : GrothendieckTopology C)
 
 /-- The category of sheaves on a grothendieck topology. -/
@@ -266,6 +266,6 @@ def sheafOfTypesBotEquiv : SheafOfTypes (⊥ : GrothendieckTopology C) ≌ Cᵒ�
   counitIso := Iso.refl _
 
 instance : Inhabited (SheafOfTypes (⊥ : GrothendieckTopology C)) :=
-  ⟨sheafOfTypesBotEquiv.inverse.obj ((Functor.const _).obj PUnit)⟩
+  ⟨sheafOfTypesBotEquiv.inverse.obj ((Functor.const _).obj PUnit)⟩-/
 
 end CategoryTheory
