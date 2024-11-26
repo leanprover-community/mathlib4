@@ -80,8 +80,8 @@ open ForgetEnrichment
 
 variable (C : Type u) [EnrichedCategory V C]
 
-/-- The functor going from the underlying category of `Cᵒᵖ` to the opposite of the underlying
-category of `C`. -/
+/-- The functor going from the underlying category of the enriched category `Cᵒᵖ`
+to the opposite of the underlying category of the enriched category `C`. -/
 def forgetEnrichmentOppositeEquivalence.functor :
     ForgetEnrichment V Cᵒᵖ ⥤ (ForgetEnrichment V C)ᵒᵖ where
   obj x := x
@@ -92,8 +92,8 @@ def forgetEnrichmentOppositeEquivalence.functor :
       leftUnitor_inv_braiding_assoc, ← unitors_inv_equal, ← Category.assoc]
     congr 1
 
-/-- The functor going from the opposite of the underlying category of `C` to the underlying
-category of `Cᵒᵖ`. -/
+/-- The functor going from the opposite of the underlying category of the enriched category `C`
+to the underlying category of the enriched category `Cᵒᵖ`. -/
 def forgetEnrichmentOppositeEquivalence.inverse :
     (ForgetEnrichment V C)ᵒᵖ ⥤ ForgetEnrichment V Cᵒᵖ where
   obj x := x
