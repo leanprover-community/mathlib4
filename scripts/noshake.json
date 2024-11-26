@@ -337,6 +337,7 @@
   "Mathlib.Order.Filter.ListTraverse":
   ["Mathlib.Control.Traversable.Instances"],
   "Mathlib.Order.Defs": ["Batteries.Tactic.Trans"],
+  "Mathlib.Order.BoundedOrder.Basic": ["Mathlib.Tactic.Finiteness.Attr"],
   "Mathlib.Order.BoundedOrder": ["Mathlib.Tactic.Finiteness.Attr"],
   "Mathlib.Order.Basic":
   ["Batteries.Tactic.Classical", "Mathlib.Tactic.GCongr.Core"],
