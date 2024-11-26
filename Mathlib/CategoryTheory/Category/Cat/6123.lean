@@ -1,6 +1,124 @@
 
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
-import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Category.Basic
+
+section Mathlib.CategoryTheory.Functor.Basic
+
+namespace CategoryTheory
+
+universe v v₁ v₂ v₃ u u₁ u₂ u₃
+
+structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
+    extends Prefunctor C D : Type max v₁ v₂ u₁ u₂ where
+
+scoped [CategoryTheory] infixr:26 " ⥤ " => Functor
+
+namespace Functor
+
+section
+
+variable (C : Type u₁) [Category.{v₁} C]
+
+protected def id : C ⥤ C where
+  obj X := X
+  map f := f
+
+scoped [CategoryTheory] notation "𝟭" => Functor.id
+
+variable {C}
+
+theorem id_obj (X : C) : (𝟭 C).obj X = X := rfl
+
+theorem id_map {X Y : C} (f : X ⟶ Y) : (𝟭 C).map f = f := rfl
+
+end
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E]
+
+@[simps obj]
+def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
+  obj X := G.obj (F.obj X)
+  map f := G.map (F.map f)
+
+scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
+
+theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
+    (F ⋙ G).map f = G.map (F.map f) := rfl
+
+end Functor
+
+end CategoryTheory
+
+end Mathlib.CategoryTheory.Functor.Basic
+
+section Mathlib.CategoryTheory.NatTrans
+
+namespace CategoryTheory
+
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
+structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
+  app : ∀ X : C, F.obj X ⟶ G.obj X
+  naturality : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), F.map f ≫ app Y = app X ≫ G.map f
+
+namespace NatTrans
+
+/-- `NatTrans.id F` is the identity natural transformation on a functor `F`. -/
+protected def id (F : C ⥤ D) : NatTrans F F where
+  app X := 𝟙 (F.obj X)
+  naturality := sorry
+
+variable {F G H : C ⥤ D}
+
+def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where
+  app X := α.app X ≫ β.app X
+  naturality := sorry
+
+end NatTrans
+
+end CategoryTheory
+
+
+end Mathlib.CategoryTheory.NatTrans
+
+section Mathlib.CategoryTheory.Functor.Category
+
+namespace CategoryTheory
+
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+
+variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
+
+variable {C D}
+
+instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
+  Hom F G := NatTrans F G
+  id F := NatTrans.id F
+  comp α β := NatTrans.vcomp α β
+  comp_id := sorry
+  id_comp := sorry
+  assoc := sorry
+
+end CategoryTheory
+
+end Mathlib.CategoryTheory.Functor.Category
+
+section Mathlib.CategoryTheory.EqToHom
+
+universe v₁ u₁
+
+namespace CategoryTheory
+
+variable {C : Type u₁} [Category.{v₁} C]
+
+def eqToHom {X Y : C} (p : X = Y) : X ⟶ Y := by rw [p]; exact 𝟙 _
+
+end CategoryTheory
+
+end Mathlib.CategoryTheory.EqToHom
 
 section Mathlib.CategoryTheory.Functor.Const
 
@@ -18,7 +136,7 @@ def const : C ⥤ J ⥤ C where
   obj X :=
     { obj := fun _ => X
       map := fun _ => 𝟙 X }
-  map f := { app := fun _ => f }
+  map f := { app := fun _ => f, naturality := sorry }
 
 end CategoryTheory.Functor
 
@@ -65,8 +183,6 @@ def functor {I : Type u₁} (F : I → C) : Discrete I ⥤ C where
     dsimp
     rcases f with ⟨⟨h⟩⟩
     exact eqToHom (congrArg _ h)
-  map_id := sorry
-  map_comp := sorry
 
 end Discrete
 
@@ -96,7 +212,7 @@ namespace CategoryTheory
 
 universe w v u
 
-open Category Iso
+open Category
 
 class Bicategory (B : Type u) extends CategoryStruct.{v} B where
   homCategory : ∀ a b : B, Category.{w} (a ⟶ b) := by infer_instance
@@ -155,8 +271,6 @@ instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
 def objects : Cat.{v, u} ⥤ Type u where
   obj C := C
   map F := F.obj
-  map_id := sorry
-  map_comp := sorry
 
 instance (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Category X)
 
@@ -168,8 +282,6 @@ def typeToCat : Type u ⥤ Cat where
   map := fun {X} {Y} f => by
     dsimp
     exact Discrete.functor (Discrete.mk ∘ f)
-  map_id X := sorry
-  map_comp f g := sorry
 
 end CategoryTheory
 
@@ -226,7 +338,7 @@ namespace CategoryTheory
 
 class IsPreconnected (J : Type u₁) [Category.{v₁} J] : Prop where
   iso_constant :
-    ∀ {α : Type u₁} (F : J ⥤ Discrete α) (j : J), Nonempty (F ≅ (Functor.const J).obj (F.obj j))
+    ∀ {α : Type u₁} (F : J ⥤ Discrete α) (j : J), False
 
 class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J : Prop where
   [is_nonempty : Nonempty J]
@@ -270,8 +382,6 @@ def ConnectedComponents.functorToDiscrete   (X : Type*)
     (f : ConnectedComponents J → X) : J ⥤ Discrete X where
   obj Y :=  Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
   map g := Discrete.eqToHom sorry
-  map_id := sorry
-  map_comp := sorry
 
 def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
     (ConnectedComponents J → X) :=
@@ -304,8 +414,6 @@ private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat
 private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤ C where
   obj := Discrete.as
   map := eqToHom ∘ Discrete.eq_of_hom
-  map_id := sorry
-  map_comp := sorry
 
 /-- `typeToCat : Type ⥤ Cat` is left adjoint to `Cat.objects : Cat ⥤ Type` -/
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
@@ -323,8 +431,6 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
 def connectedComponents : Cat.{v, u} ⥤ Type u where
   obj C := ConnectedComponents C
   map F := Functor.mapConnectedComponents F
-  map_id _ := sorry
-  map_comp _ _ := sorry
 
 def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat :=
   Adjunction.mk' {
