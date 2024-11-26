@@ -144,7 +144,7 @@ def ForgetEnrichment.Opposite.equiv : ForgetEnrichment V Cᵒᵖ ≌ (ForgetEnri
   Equivalence.mk (toOp V C) (fromOp V C) (toFromNatIso V C) (fromToNatIso V C)
 
 /-- If `D` is an enriched ordinary category then `Dᵒᵖ` is an enriched ordinary category. -/
-instance EnrichedOrdinaryCategory.Opposite {D : Type u} [Category.{v} D]
+instance EnrichedOrdinaryCategory.opposite {D : Type u} [Category.{v} D]
     [EnrichedOrdinaryCategory V D] : EnrichedOrdinaryCategory V Dᵒᵖ where
   homEquiv := Quiver.Hom.opEquiv.symm.trans homEquiv
   homEquiv_id x := homEquiv_id (x.unop)
