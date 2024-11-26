@@ -2903,6 +2903,7 @@ import Mathlib.Deprecated.LazyList
 import Mathlib.Deprecated.Logic
 import Mathlib.Deprecated.MinMax
 import Mathlib.Deprecated.NatLemmas
+import Mathlib.Deprecated.Order
 import Mathlib.Deprecated.RelClasses
 import Mathlib.Deprecated.Ring
 import Mathlib.Deprecated.Subfield
