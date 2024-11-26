@@ -128,21 +128,16 @@ theorem IsGalois.of_isGalois_isFractionRing (A B K L K' L' : Type*)
     [Algebra K' L'] [Algebra A L']
     [IsScalarTower A B L'] [IsScalarTower A K' L']
     [IsGalois K L] : IsGalois K' L' := by
-  let _ := alg_KL' A K K' L'
-  let LL' := LL' B L L'
-  let KK' := KK' A K K'
-  let _ := RingHom.toAlgebra LL'.toRingHom
-  let _ := RingHom.toAlgebra KK'.toRingHom
-  let KK'L' := scalar_tower_K_K'_L' A K K' L'
-  let KLL' := scalar_tower_K_L_L' A B K L K' L'
-  simp at KK'L'
-  simp at KLL'
-  haveI : IsGalois K L' := by
-    apply IsGalois.of_algEquiv (E := L)
-    apply AlgEquiv.ofRingEquiv (f := LL'.toRingEquiv)
-    rw [@IsScalarTower.algebraMap_eq K L L' _ _ _ _ _ _ KLL']
-    exact fun _ => rfl
-  exact @IsGalois.tower_top_of_isGalois K K' L' _ _ _ _ _ _ KK'L' _
+  let KK' : K ≃ₐ[A] K' := (FractionRing.algEquiv A K).symm.trans (FractionRing.algEquiv A K')
+  let _ : Algebra K L' := Algebra.compHom L' KK'.toRingHom
+  have : IsScalarTower A K L' := by
+    apply IsScalarTower.of_algebraMap_eq
+    simp [Algebra.compHom_algebraMap_apply, IsScalarTower.algebraMap_apply A K' L']
+  let LL' : L ≃ₐ[K] L' := IsFractionRing.fieldEquivOfAlgEquiv K L L' (AlgEquiv.refl : B ≃ₐ[A] B)
+  have : IsGalois K L' := IsGalois.of_algEquiv LL'
+  let _ : Algebra K K' := RingHom.toAlgebra KK'
+  have : IsScalarTower K K' L' := IsScalarTower.of_algebraMap_eq' rfl
+  exact IsGalois.tower_top_of_isGalois K K' L'
 
 theorem IsGalois.iff_isGalois_isFractionRing (A B K L K' L' : Type*)
     [CommRing A] [CommRing B] [IsDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
