@@ -865,7 +865,7 @@ theorem map_extend_nhds_of_mem_interior_range {x : M} (hx : x ∈ f.source)
     (h'x : f.extend I x ∈ interior (range I)) :
     map (f.extend I) (𝓝 x) = 𝓝 (f.extend I x) := by
   rw [f.map_extend_nhds hx, nhdsWithin_eq_nhds]
-  exact mem_of_superset (IsOpen.mem_nhds isOpen_interior h'x) interior_subset
+  exact mem_of_superset (isOpen_interior.mem_nhds h'x) interior_subset
 
 theorem map_extend_nhds_of_boundaryless [I.Boundaryless] {x : M} (hx : x ∈ f.source) :
     map (f.extend I) (𝓝 x) = 𝓝 (f.extend I x) := by
@@ -1301,6 +1301,13 @@ lemma extChartAt_target_subset_closure_interior {x : M} :
   have h''z : z ∈ (extChartAt I x).target := by simpa [interior_subset hz] using h'z
   exact (extChartAt_target_eventuallyEq_of_mem h''z).symm.mem_interior hz
 
+variable (I) in
+theorem interior_extChartAt_target_nonempty (x : M) :
+    (interior (extChartAt I x).target).Nonempty := by
+  by_contra! H
+  have := extChartAt_target_subset_closure_interior (mem_extChartAt_target (I := I) x)
+  simp only [H, closure_empty, mem_empty_iff_false] at this
+
 lemma extChartAt_mem_closure_interior {x₀ x : M}
     (hx : x ∈ closure (interior s)) (h'x : x ∈ (extChartAt I x₀).source) :
     extChartAt I x₀ x ∈
@@ -1427,24 +1434,20 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [h : Nonempty M] [LocallyCompactSpace M] :
     LocallyCompactSpace E := by
   rcases h with ⟨x⟩
-  have : (interior (extChartAt I x).target).Nonempty := by
-    by_contra! H
-    have := extChartAt_target_subset_closure_interior (mem_extChartAt_target (I := I) x)
-    simp only [H, closure_empty, mem_empty_iff_false] at this
-  rcases this with ⟨y, hy⟩
+  obtain ⟨y, hy⟩ := interior_extChartAt_target_nonempty I x
   have h'y : y ∈ (extChartAt I x).target := interior_subset hy
   obtain ⟨s, hmem, hss, hcom⟩ :=
     LocallyCompactSpace.local_compact_nhds ((extChartAt I x).symm y) (extChartAt I x).source
-      (IsOpen.mem_nhds (isOpen_extChartAt_source x) (PartialEquiv.map_target (extChartAt I x) h'y))
+      ((isOpen_extChartAt_source x).mem_nhds ((extChartAt I x).map_target h'y))
   have : IsCompact <| (extChartAt I x) '' s :=
-    hcom.image_of_continuousOn <| ContinuousOn.mono (continuousOn_extChartAt x) hss
+    hcom.image_of_continuousOn <| (continuousOn_extChartAt x).mono hss
   apply this.locallyCompactSpace_of_mem_nhds_of_addGroup (x := y)
-  rw [← PartialEquiv.right_inv (extChartAt I x) h'y]
+  rw [← (extChartAt I x).right_inv h'y]
   apply extChartAt_image_nhd_mem_nhds_of_mem_interior_range
     (PartialEquiv.map_target (extChartAt I x) h'y) _ hmem
-  simp only [PartialEquiv.right_inv (extChartAt I x) h'y]
+  simp only [(extChartAt I x).right_inv h'y]
   have : (extChartAt I x).target ⊆ range I := extChartAt_target_subset_range x
-  exact interior_mono this hy
+  exact interior_mono (extChartAt_target_subset_range x) hy
 
 /-- Riesz's theorem applied to manifolds: A locally compact manifolds must be modelled on a
   finite-dimensional space. This is the converse to
