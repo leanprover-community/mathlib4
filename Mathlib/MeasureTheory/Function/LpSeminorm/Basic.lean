@@ -865,8 +865,6 @@ lemma eLpNorm_smul_measure_of_ne_top' (hp : p ≠ ∞) (c : ℝ≥0) (f : α →
   have : 0 ≤ p.toReal⁻¹ := by positivity
   refine (eLpNorm_smul_measure_of_ne_top hp ..).trans ?_
   simp [ENNReal.smul_def, ENNReal.coe_rpow_of_nonneg, this]
-
-
 @[deprecated (since := "2024-07-27")]
 alias snorm_smul_measure_of_ne_top := eLpNorm_smul_measure_of_ne_top
 
