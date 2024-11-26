@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.Tactic.RSuffices
 import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Artinian rings and modules
@@ -348,6 +349,7 @@ end CommRing
 
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
 convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`. -/
+@[stacks 00J5]
 abbrev IsArtinianRing (R) [Ring R] :=
   IsArtinian R R
 
@@ -419,6 +421,7 @@ open IsArtinian
 
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
+@[stacks 00J8]
 theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
   let Jac := Ideal.jacobson (⊥ : Ideal R)
   let f : ℕ →o (Ideal R)ᵒᵈ := ⟨fun n => Jac ^ n, fun _ _ h => Ideal.pow_le_pow_right h⟩
@@ -510,9 +513,7 @@ instance {R} [CommRing R] [IsArtinianRing R] : Finite (PrimeSpectrum R) :=
     (fun x ↦ ⟨x.1, x.2⟩) fun _ _ e ↦ PrimeSpectrum.ext congr($e)
 
 variable (R)
-/--
-[Stacks Lemma 00J7](https://stacks.math.columbia.edu/tag/00J7)
--/
+@[stacks 00J7]
 lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   simp_rw [← isPrime_iff_isMaximal]
   apply primeSpectrum_finite R

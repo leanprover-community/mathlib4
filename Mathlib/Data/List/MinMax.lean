@@ -6,6 +6,7 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 import Mathlib.Data.List.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Order.WithBot
+import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Minimum and maximum of lists
