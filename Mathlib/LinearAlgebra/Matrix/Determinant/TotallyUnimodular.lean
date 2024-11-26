@@ -90,11 +90,11 @@ lemma transpose_isTotallyUnimodular_iff (A : Matrix m n R) :
 
 lemma IsTotallyUnimodular.reindex {A : Matrix m n R} (em : m ≃ m') (en : n ≃ n')
     (hA : A.IsTotallyUnimodular) :
-    IsTotallyUnimodular (A.reindex em en) :=
+    (A.reindex em en).IsTotallyUnimodular :=
   hA.submatrix _ _
 
 lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃ n') :
-    IsTotallyUnimodular (A.reindex em en) ↔ A.IsTotallyUnimodular :=
+    (A.reindex em en).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
   ⟨fun hA => by simpa [Equiv.symm_apply_eq] using hA.reindex em.symm en.symm,
    fun hA => hA.reindex _ _⟩
 
@@ -182,7 +182,8 @@ alias ⟨_, IsTotallyUnimodular.one_fromColumns⟩ := one_fromColumns_isTotallyU
 lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) :
     (fromRows A (row m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   classical
-  exact fromRows_isTotallyUnimodular_iff_rows (by aesop)
+  apply fromRows_isTotallyUnimodular_iff_rows
+  aesop
 
 lemma fromColumns_col0_isTotallyUnimodular_iff (A : Matrix m n R) :
     (fromColumns A (col n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
