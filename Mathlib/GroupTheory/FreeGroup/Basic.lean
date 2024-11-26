@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
 
@@ -48,6 +48,7 @@ free group, Newman's diamond lemma, Church-Rosser theorem
 -/
 
 open Relation
+open scoped List
 
 universe u v w
 
@@ -642,7 +643,7 @@ set of generators equals `⊤`. -/
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
   rw [← lift.range_eq_closure, lift_of_eq_id]
-  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
+  exact MonoidHom.range_eq_top.2 Function.surjective_id
 
 end lift
 
@@ -808,8 +809,7 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
     revert x
-    change (FreeGroup Unit →* FreeGroup ℤ)
-    apply map fun _ => (1 : ℤ))
+    exact ↑(map fun _ => (1 : ℤ)))
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩
@@ -906,6 +906,9 @@ def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
   List.rec [] fun hd1 _tl1 ih =>
     List.casesOn ih [hd1] fun hd2 tl2 =>
       if hd1.1 = hd2.1 ∧ hd1.2 = not hd2.2 then tl2 else hd1 :: hd2 :: tl2
+
+@[to_additive (attr := simp)] lemma reduce_nil : reduce ([] : List (α × Bool)) = [] := rfl
+@[to_additive] lemma reduce_singleton (s : α × Bool) : reduce [s] = [s] := rfl
 
 @[to_additive (attr := simp)]
 theorem reduce.cons (x) :
@@ -1100,10 +1103,18 @@ theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (redu
   have : Red (invRev (invRev w)) (invRev (reduce (invRev w))) := reduce.red.invRev
   rwa [invRev_invRev] at this
 
-@[to_additive]
-theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
+@[to_additive (attr := simp)]
+theorem toWord_inv (x : FreeGroup α) : x⁻¹.toWord = invRev x.toWord := by
   rcases x with ⟨L⟩
   rw [quot_mk_eq_mk, inv_mk, toWord_mk, toWord_mk, reduce_invRev]
+
+@[to_additive]
+lemma toWord_mul_sublist (x y : FreeGroup α) : (x * y).toWord <+ x.toWord ++ y.toWord := by
+  refine Red.sublist ?_
+  have : x * y = FreeGroup.mk (x.toWord ++ y.toWord) := by
+    rw [← FreeGroup.mul_mk, FreeGroup.mk_toWord, FreeGroup.mk_toWord]
+  rw [this]
+  exact FreeGroup.reduce.red
 
 /-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
 @[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]

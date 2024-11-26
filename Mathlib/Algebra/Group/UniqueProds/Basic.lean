@@ -3,9 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Defs
 
 /-!

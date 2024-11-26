@@ -45,7 +45,7 @@ theorem mem_range_rank_of_le {o : Ordinal} (ha : Acc r a) (ho : o ≤ ha.rank) :
   · exact ⟨a, ha, rfl⟩
   · revert ho
     refine ha.recOn fun a ha IH ho ↦ ?_
-    rw [rank_eq, Ordinal.lt_iSup] at ho
+    rw [rank_eq, Ordinal.lt_iSup_iff] at ho
     obtain ⟨⟨b, hb⟩, ho⟩ := ho
     rw [Order.lt_succ_iff] at ho
     obtain rfl | ho := ho.eq_or_lt

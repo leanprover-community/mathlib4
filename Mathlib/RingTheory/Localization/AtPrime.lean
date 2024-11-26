@@ -18,7 +18,7 @@ import Mathlib.Algebra.Group.Units.Hom
 
 ## Main results
 
- * `IsLocalization.AtPrime.localRing`: a theorem (not an instance) stating a localization at the
+ * `IsLocalization.AtPrime.isLocalRing`: a theorem (not an instance) stating a localization at the
    complement of a prime ideal is a local ring
 
 ## Implementation notes
@@ -31,7 +31,7 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
+variable {R : Type*} [CommSemiring R] (S : Type*) [CommSemiring S]
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 section AtPrime
@@ -70,10 +70,10 @@ theorem AtPrime.Nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
     have htz : (t : R) = 0 := by simpa using ht.symm
     exact t.2 (htz.symm ▸ P.zero_mem : ↑t ∈ P)
 
-theorem AtPrime.localRing [IsLocalization.AtPrime S P] : LocalRing S :=
+theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   -- Porting note: since I couldn't get local instance running, I just specify it manually
   letI := AtPrime.Nontrivial S P
-  LocalRing.of_nonunits_add
+  IsLocalRing.of_nonunits_add
     (by
       intro x y hx hy hu
       cases' isUnit_iff_exists_inv.1 hu with z hxyz
@@ -96,13 +96,15 @@ theorem AtPrime.localRing [IsLocalization.AtPrime S P] : LocalRing S :=
         P.mul_mem_left _ <| P.mul_mem_right _ <|
             P.add_mem (P.mul_mem_right _ <| this hx) <| P.mul_mem_right _ <| this hy)
 
+@[deprecated (since := "2024-11-09")] alias AtPrime.localRing := AtPrime.isLocalRing
+
 end IsLocalization
 
 namespace Localization
 
 /-- The localization of `R` at the complement of a prime ideal is a local ring. -/
-instance AtPrime.localRing : LocalRing (Localization P.primeCompl) :=
-  IsLocalization.AtPrime.localRing (Localization P.primeCompl) P
+instance AtPrime.isLocalRing : IsLocalRing (Localization P.primeCompl) :=
+  IsLocalization.AtPrime.isLocalRing (Localization P.primeCompl) P
 
 end Localization
 
@@ -134,26 +136,26 @@ theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.prim
       (Ideal.map (algebraMap R S) I).eq_top_of_isUnit_mem (Ideal.mem_map_of_mem _ hx) h,
     fun h => map_units S ⟨x, h⟩⟩
 
--- Can't use typeclasses to infer the `LocalRing` instance, so use an `optParam` instead
--- (since `LocalRing` is a `Prop`, there should be no unification issues.)
-theorem to_map_mem_maximal_iff (x : R) (h : LocalRing S := localRing S I) :
-    algebraMap R S x ∈ LocalRing.maximalIdeal S ↔ x ∈ I :=
+-- Can't use typeclasses to infer the `IsLocalRing` instance, so use an `optParam` instead
+-- (since `IsLocalRing` is a `Prop`, there should be no unification issues.)
+theorem to_map_mem_maximal_iff (x : R) (h : IsLocalRing S := isLocalRing S I) :
+    algebraMap R S x ∈ IsLocalRing.maximalIdeal S ↔ x ∈ I :=
   not_iff_not.mp <| by
-    simpa only [LocalRing.mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] using
+    simpa only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] using
       isUnit_to_map_iff S I x
 
-theorem comap_maximalIdeal (h : LocalRing S := localRing S I) :
-    (LocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
+theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
+    (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
   Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
 
 theorem isUnit_mk'_iff (x : R) (y : I.primeCompl) : IsUnit (mk' S x y) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx => mk'_mem_iff.mpr ((to_map_mem_maximal_iff S I x).mpr hx) h, fun h =>
     isUnit_iff_exists_inv.mpr ⟨mk' S ↑y ⟨x, h⟩, mk'_mul_mk'_eq_one ⟨x, h⟩ y⟩⟩
 
-theorem mk'_mem_maximal_iff (x : R) (y : I.primeCompl) (h : LocalRing S := localRing S I) :
-    mk' S x y ∈ LocalRing.maximalIdeal S ↔ x ∈ I :=
+theorem mk'_mem_maximal_iff (x : R) (y : I.primeCompl) (h : IsLocalRing S := isLocalRing S I) :
+    mk' S x y ∈ IsLocalRing.maximalIdeal S ↔ x ∈ I :=
   not_iff_not.mp <| by
-    simpa only [LocalRing.mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] using
+    simpa only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] using
       isUnit_mk'_iff S I x y
 
 end AtPrime
@@ -172,16 +174,16 @@ variable {I}
 /-- The unique maximal ideal of the localization at `I.primeCompl` lies over the ideal `I`. -/
 theorem AtPrime.comap_maximalIdeal :
     Ideal.comap (algebraMap R (Localization.AtPrime I))
-        (LocalRing.maximalIdeal (Localization I.primeCompl)) =
+        (IsLocalRing.maximalIdeal (Localization I.primeCompl)) =
       I :=
   -- Porting note: need to provide full name
   IsLocalization.AtPrime.comap_maximalIdeal _ _
 
 /-- The image of `I` in the localization at `I.primeCompl` is a maximal ideal, and in particular
-it is the unique maximal ideal given by the local ring structure `AtPrime.localRing` -/
+it is the unique maximal ideal given by the local ring structure `AtPrime.isLocalRing` -/
 theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
-      LocalRing.maximalIdeal (Localization I.primeCompl) := by
+      IsLocalRing.maximalIdeal (Localization I.primeCompl) := by
   convert congr_arg (Ideal.map (algebraMap R (Localization.AtPrime I)))
   -- Porting note: `algebraMap R ...` can not be solve by unification
     (AtPrime.comap_maximalIdeal (hI := hI)).symm
@@ -248,3 +250,23 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
 
 end Localization
+
+namespace RingHom
+
+variable (R)
+
+/-- The canonical ring homomorphism from a commutative semiring to the product of its
+localizations at all maximal ideals. It is always injective. -/
+def toLocalizationIsMaximal : R →+*
+    Π I : {I : Ideal R // I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
+  Pi.ringHom fun _ ↦ algebraMap R _
+
+theorem toLocalizationIsMaximal_injective :
+    Function.Injective (RingHom.toLocalizationIsMaximal R) := fun r r' eq ↦ by
+  rw [← one_mul r, ← one_mul r']
+  by_contra ne
+  have ⟨I, mI, hI⟩ := (Module.eqIdeal R r r').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
+  have ⟨s, hs⟩ := (IsLocalization.eq_iff_exists I.primeCompl _).mp (congr_fun eq ⟨I, mI⟩)
+  exact s.2 (hI hs)
+
+end RingHom
