@@ -47,9 +47,10 @@ def validateTitle (title: String) : Array String := Id.run do
     errors := errors.push "error: the PR should have the form 'abbrev: main title', with a space"
   else if main.containsSubstr "  " then
     errors := errors.push "error: the PR title contains multiple consecutive spaces; please add just one"
-  let main := main.removeLeadingSpaces
-  if main.front.toLower != main.front then
-    errors := errors.push "error: the main PR title should be lowercased"
+  -- Titles should be lower-cased: we don't enforce this for now.
+  -- let main := main.removeLeadingSpaces
+  -- if main.front.toLower != main.front then
+  --  errors := errors.push "error: the main PR title should be lowercased"
 
   -- `type` should be of the form abbrev or abbrev(scope), where `scope` is of the form
   -- `Algebra/Basic`, without a leading `Mathlib` or a trailing `.lean`
@@ -186,19 +187,22 @@ info: Message: 'error: the PR type should be one of "feat", "chore", "perf", "re
 #guard_msgs in
 #check_title "feat: bad title."
 
-/-- info: Message: 'error: the main PR title should be lowercased' -/
+-- Enable if/when we decide to enforce lower-cased titles.
+-- /-- info: Message: 'error: the main PR title should be lowercased' -/
+-- #guard_msgs in
+-- #check_title "feat: My Bad Title"
+
+-- Acronyms are valid PR titles, in any case.
 #guard_msgs in
-#check_title "feat: My Bad Title"
+#check_title "feat: RPC acronyms are fine"
 
 /--
 info: Message: 'error: the PR title should not end with a full stop'
 ---
 info: Message: 'error: the PR title contains multiple consecutive spaces; please add just one'
----
-info: Message: 'error: the main PR title should be lowercased'
 -/
 #guard_msgs in
-#check_title "chore: Bad   Title."
+#check_title "chore: bad   Title."
 
 /--
 info: Message: 'error: the PR type should be one of "feat", "chore", "perf", "refactor", "style", "fix", "doc", "test"'
@@ -238,11 +242,9 @@ info: Message: 'error: the PR type should not end with a space'
 info: Message: 'error: the PR title should not end with a full stop'
 ---
 info: Message: 'error: the PR title contains multiple consecutive spaces; please add just one'
----
-info: Message: 'error: the main PR title should be lowercased'
 -/
 #guard_msgs in
-#check_title "chore: Bad   Title."
+#check_title "chore: bad   Title."
 
 /--
 info: Message: 'error: the PR type should be one of "feat", "chore", "perf", "refactor", "style", "fix", "doc", "test"'
