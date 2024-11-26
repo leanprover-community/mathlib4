@@ -378,6 +378,21 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
   · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
 
+theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [Fintype β]
+    {s : Finset α} {f : α → Perm β}
+    {comm : (s : Set α).Pairwise (Commute on f)} {x : β} (hx : x ∈ (s.noncommProd f comm).support) :
+    ∃ a ∈ s, x ∈ (f a).support := by
+  contrapose! hx
+  classical
+  revert hx comm s
+  apply Finset.induction
+  · simp
+  · intro a s ha ih comm hs
+    rw [Finset.noncommProd_insert_of_not_mem s a f comm ha]
+    apply mt (Finset.mem_of_subset (support_mul_le _ _))
+    rw [Finset.sup_eq_union, Finset.not_mem_union]
+    exact ⟨hs a (s.mem_insert_self a), ih (fun a ha ↦ hs a (Finset.mem_insert_of_mem ha))⟩
+
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
 

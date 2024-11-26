@@ -12,6 +12,8 @@ import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
 import Mathlib.GroupTheory.Perm.Finite
+import Mathlib.GroupTheory.Perm.Cycle.Factors
+
 
 /-! # Centralizer of a permutation and cardinality of conjugacy classes
   # in the symmetric groups
@@ -511,46 +513,12 @@ variable {u k : Perm (Function.fixedPoints g)}
   {v v' : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)}
   {x : α}
 
-lemma pairdisjoint₂ :
-    Pairwise fun (i : g.cycleFactorsFinset) (j : g.cycleFactorsFinset) ↦
-      ∀ (x y : Perm α), x ∈ zpowers ↑i → y ∈ zpowers ↑j → Disjoint x y :=
-  fun c d  hcd ↦ fun x y hx hy ↦ by
-  obtain ⟨m, hm⟩ := hx; obtain ⟨n, hn⟩ := hy
-  simp only [← hm, ← hn]
-  apply Disjoint.zpow_disjoint_zpow
-  exact g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
-    (Subtype.coe_ne_coe.mpr hcd)
-
-lemma paircommute₂ :
-    Pairwise fun (i : g.cycleFactorsFinset) (j : g.cycleFactorsFinset) ↦
-      ∀ (x y : Perm α), x ∈ zpowers ↑i → y ∈ zpowers ↑j → Commute x y :=
-  pairdisjoint₂.mono (fun _ _ ↦ forall₂_imp (fun _ _ h hx hy ↦ (h hx hy).commute))
-
-lemma disjoint₁₂ (u : Perm (Function.fixedPoints ⇑g))
-    (v : (c : { x // x ∈ g.cycleFactorsFinset }) → ↥(zpowers (c : Perm α))) :
-    Disjoint (ofSubtype u) ((noncommPiCoprod paircommute₂) v) := by
-  apply Finset.noncommProd_induction
-  · intro a _ b _ h
-    apply paircommute₂ h <;> simp only [coeSubtype, SetLike.coe_mem]
-  · intro x y
-    exact Disjoint.mul_right
-  · exact disjoint_one_right _
-  · intro c _
-    simp only [coeSubtype]
-    exact Disjoint.mono (disjoint_ofSubtype_of_memFixedPoints_self u)
-      le_rfl (support_zpowers_of_mem_cycleFactorsFinset_le (v c))
-
-lemma commute₁₂ : ∀ (m : Perm ↑(Function.fixedPoints ⇑g))
-    (n : (c : { x // x ∈ g.cycleFactorsFinset }) → ↥(zpowers (c : Perm α))),
-    Commute (ofSubtype m) ((noncommPiCoprod paircommute₂) n) :=
-  fun u v ↦ Disjoint.commute (disjoint₁₂ u v)
-
 variable (g) in
 /-- The parametrization of the kernel of `toPermHom` -/
 def θHom : (Perm (Function.fixedPoints g)) ×
-    ((c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) →*
-      Perm α :=
-  MonoidHom.noncommCoprod (ofSubtype) (Subgroup.noncommPiCoprod paircommute₂) (commute₁₂)
+    ((c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α)) →* Perm α :=
+  MonoidHom.noncommCoprod ofSubtype (Subgroup.noncommPiCoprod g.pairwise_commute_of_mem_zpowers) 
+    g.commute_ofSubtype_noncommPiCoprod
 
 variable {ι : Type*} (k : ι → Perm α) (s : Finset ι)
     (hs : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j))
@@ -559,10 +527,10 @@ theorem support_θHom :
     support (θHom g (u,v)) = u.support.map (Function.Embedding.subtype _) ∪
       Finset.univ.biUnion fun c ↦  support (v c : Perm α) := by
   simp only [θHom, MonoidHom.noncommCoprod_apply]
-  rw [Disjoint.support_mul (disjoint₁₂ u v), u.support_ofSubtype]
+  rw [Disjoint.support_mul (g.disjoint_ofSubtype_noncommPiCoprod u v), u.support_ofSubtype]
   apply congr_arg₂ _ rfl
   rw [noncommPiCoprod_apply, support_noncommProd]
-  exact fun i _ j _ h ↦ pairdisjoint₂ h _ _ (v i).prop (v j).prop
+  exact fun i _ j _ h ↦ g.pairwise_disjoint_of_mem_zpowers h _ _ (v i).prop (v j).prop
 
 theorem support_θHom_of_fst_eq_one :
     support (θHom g (u,v)) ⊆ g.support ↔ u = 1 := by
@@ -629,21 +597,6 @@ theorem θHom_disjoint_cycle_iff {c : g.cycleFactorsFinset} :
   exact Equiv.Perm.Disjoint.mono (disjoint_ofSubtype_of_memFixedPoints_self u) le_rfl
     (mem_cycleFactorsFinset_support_le c.prop)
 
-lemma mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [Fintype β]
-    {s : Finset α} {f : α → Perm β}
-    {comm : (s : Set α).Pairwise (Commute on f)} {x : β} (hx : x ∈ (s.noncommProd f comm).support) :
-    ∃ a ∈ s, x ∈ (f a).support := by
-  contrapose! hx
-  classical
-  revert hx comm s
-  apply Finset.induction
-  · simp
-  · intro a s ha ih comm hs
-    rw [Finset.noncommProd_insert_of_not_mem s a f comm ha]
-    apply mt (Finset.mem_of_subset (support_mul_le _ _))
-    rw [Finset.sup_eq_union, Finset.not_mem_union]
-    exact ⟨hs a (s.mem_insert_self a), ih (fun a ha ↦ hs a (Finset.mem_insert_of_mem ha))⟩
-
 theorem θHom_apply (x : α) : θHom g (u,v) x =
     if hx : g.cycleOf x ∈ g.cycleFactorsFinset
     then (v ⟨g.cycleOf x, hx⟩ : Perm α) x
@@ -667,7 +620,7 @@ theorem θHom_apply (x : α) : θHom g (u,v) x =
     rw [θHom, MonoidHom.noncommCoprod_apply, mul_apply, Equiv.apply_eq_iff_eq, ← not_mem_support]
     contrapose! hx
     obtain ⟨a, -, ha⟩ := mem_support_of_mem_noncommProd_support
-      (comm := fun a ha b hb h ↦ paircommute₂ h (v a) (v b) (v a).2 (v b).2) hx
+      (comm := fun a ha b hb h ↦ g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).2 (v b).2) hx
     exact support_zpowers_of_mem_cycleFactorsFinset_le (v a) ha
 
 theorem θHom_apply_of_mem_support_cycle {c} {x}
@@ -785,7 +738,6 @@ theorem θHom_apply_mem_centralizer : θHom g (u,v) ∈ Subgroup.centralizer {g}
 lemma θHom_range_le_centralizer : (θHom g).range ≤ centralizer {g} := by
   rintro _ ⟨⟨u, v⟩, rfl⟩
   exact θHom_apply_mem_centralizer
-
 
 theorem mem_θHom_range_iff {p : Perm α} : p ∈ (θHom g).range ↔
     (∃ (hp : p ∈ Subgroup.centralizer {g}),
