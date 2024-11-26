@@ -14,15 +14,16 @@ https://ncatlab.org/nlab/show/nucleus
 variable {X : Type*} [Order.Frame X]
 
 /--
-A Nucleus is a function which is
-* idempotent
-* increasing
-* and preserves infima
+The Type of Nuclei on a Frame.
 -/
 structure Nucleus (X : Type*) [Order.Frame X] where
+  /-- The function of the nucleus.-/
   toFun : X → X
+  /-- A Nucleus is idempotent.-/
   idempotent (x : X) : toFun (toFun x) = toFun x
+  /-- A Nucleus is increasing.-/
   increasing (x : X) : x ≤ toFun x
+  /-- A Nucleus preserves infima.-/
   preserves_inf (x y : X) : toFun (x ⊓ y) = toFun x ⊓ toFun y
 
 /--
