@@ -32,6 +32,11 @@ abstract two related kinds of ideas:
   a tactic that takes a list of proofs `hᵢ : sᵢ ∈ f`,
   and replaces a goal `s ∈ f` with `∀ x, x ∈ s₁ → ... → x ∈ sₙ → x ∈ s`;
 * `Filter.NeBot f` : a utility class stating that `f` is a non-trivial filter.
+* `Filter.IsBounded r f`: the filter `f` is eventually bounded w.r.t. the relation `r`,
+  i.e. eventually, it is bounded by some uniform bound.
+  `r` will be usually instantiated with `(· ≤ ·)` or `(· ≥ ·)`.
+* `Filter.IsCobounded r f` states that the filter `f` does not tend to infinity w.r.t. `r`.
+  This is also called frequently bounded. Will be usually instantiated with `(· ≤ ·)` or `(· ≥ ·)`.
 
 ## Notations
 
@@ -349,6 +354,36 @@ protected def lift (f : Filter α) (g : Set α → Filter β) :=
 This is essentially a push-forward along a function mapping each set to a set. -/
 protected def lift' (f : Filter α) (h : Set α → Set β) :=
   f.lift (𝓟 ∘ h)
+
+/-- `f.IsBounded r`: the filter `f` is eventually bounded w.r.t. the relation `r`,
+i.e. eventually, it is bounded by some uniform bound.
+`r` will be usually instantiated with `(· ≤ ·)` or `(· ≥ ·)`. -/
+def IsBounded (r : α → α → Prop) (f : Filter α) :=
+  ∃ b, ∀ᶠ x in f, r x b
+
+/-- `f.IsBoundedUnder (≺) u`: the image of the filter `f` under `u` is eventually bounded w.r.t.
+the relation `≺`, i.e. eventually, it is bounded by some uniform bound. -/
+def IsBoundedUnder (r : α → α → Prop) (f : Filter β) (u : β → α) :=
+  (map u f).IsBounded r
+
+/-- `IsCobounded (≺) f` states that the filter `f` does not tend to infinity w.r.t. `≺`. This is
+also called frequently bounded. Will be usually instantiated with `≤` or `≥`.
+
+There is a subtlety in this definition: we want `f.IsCobounded` to hold for any `f` in the case of
+complete lattices. This will be relevant to deduce theorems on complete lattices from their
+versions on conditionally complete lattices with additional assumptions. We have to be careful in
+the edge case of the trivial filter containing the empty set: the other natural definition
+  `¬ ∀ a, ∀ᶠ n in f, a ≤ n`
+would not work as well in this case.
+-/
+def IsCobounded (r : α → α → Prop) (f : Filter α) :=
+  ∃ b, ∀ a, (∀ᶠ x in f, r x a) → r b a
+
+/-- `IsCoboundedUnder (≺) f u` states that the image of the filter `f` under the map `u` does not
+tend to infinity w.r.t. `≺`. This is also called frequently bounded. Will be usually instantiated
+with `≤` or `≥`. -/
+def IsCoboundedUnder (r : α → α → Prop) (f : Filter β) (u : β → α) :=
+  (map u f).IsCobounded r
 
 end Filter
 

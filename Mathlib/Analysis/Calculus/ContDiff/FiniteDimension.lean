@@ -20,6 +20,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {D : Type uD} [NormedAddCommGroup D] [NormedSpace 𝕜 D]
   {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {n : WithTop ℕ∞} {f : D → E} {s : Set D}
 
 /-! ### Finite dimensional results -/
 
@@ -30,7 +31,7 @@ open Function Module
 variable [CompleteSpace 𝕜]
 
 /-- A family of continuous linear maps is `C^n` on `s` if all its applications are. -/
-theorem contDiffOn_clm_apply {n : ℕ∞} {f : D → E →L[𝕜] F} {s : Set D} [FiniteDimensional 𝕜 E] :
+theorem contDiffOn_clm_apply {f : D → E →L[𝕜] F} {s : Set D} [FiniteDimensional 𝕜 E] :
     ContDiffOn 𝕜 n f s ↔ ∀ y, ContDiffOn 𝕜 n (fun x => f x y) s := by
   refine ⟨fun h y => h.clm_apply contDiffOn_const, fun h => ?_⟩
   let d := finrank 𝕜 E
@@ -40,7 +41,7 @@ theorem contDiffOn_clm_apply {n : ℕ∞} {f : D → E →L[𝕜] F} {s : Set D}
   rw [← id_comp f, ← e₂.symm_comp_self]
   exact e₂.symm.contDiff.comp_contDiffOn (contDiffOn_pi.mpr fun i => h _)
 
-theorem contDiff_clm_apply_iff {n : ℕ∞} {f : D → E →L[𝕜] F} [FiniteDimensional 𝕜 E] :
+theorem contDiff_clm_apply_iff {f : D → E →L[𝕜] F} [FiniteDimensional 𝕜 E] :
     ContDiff 𝕜 n f ↔ ∀ y, ContDiff 𝕜 n fun x => f x y := by
   simp_rw [← contDiffOn_univ, contDiffOn_clm_apply]
 
@@ -48,7 +49,7 @@ theorem contDiff_clm_apply_iff {n : ℕ∞} {f : D → E →L[𝕜] F} [FiniteDi
 When you do induction on `n`, this gives a useful characterization of a function being `C^(n+1)`,
 assuming you have already computed the derivative. The advantage of this version over
 `contDiff_succ_iff_fderiv` is that both occurrences of `ContDiff` are for functions with the same
-domain and codomain (`E` and `F`). This is not the case for `contDiff_succ_iff_fderiv`, which
+domain and codomain (`D` and `E`). This is not the case for `contDiff_succ_iff_fderiv`, which
 often requires an inconvenient need to generalize `F`, which results in universe issues
 (see the discussion in the section of `ContDiff.comp`).
 
