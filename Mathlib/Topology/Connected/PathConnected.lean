@@ -1185,7 +1185,7 @@ protected theorem IsClosed.pathComponent (x : X) : IsClosed (pathComponent x) :=
 protected theorem IsClopen.pathComponent (x : X) : IsClopen (pathComponent x) :=
   ⟨.pathComponent x, .pathComponent x⟩
 
-lemma pathComponentIn_mem_nhds (hF : F ∈ nhds x) : pathComponentIn x F ∈ nhds x := by
+lemma pathComponentIn_mem_nhds (hF : F ∈ 𝓝 x) : pathComponentIn x F ∈ 𝓝 x := by
   let ⟨u, huF, hu, hxu⟩ := mem_nhds_iff.mp hF
   exact mem_nhds_iff.mpr ⟨pathComponentIn x u, pathComponentIn_mono huF,
     hu.pathComponentIn x, mem_pathComponentIn_self hxu⟩
