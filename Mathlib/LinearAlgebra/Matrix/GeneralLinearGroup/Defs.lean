@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
