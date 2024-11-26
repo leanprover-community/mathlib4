@@ -177,7 +177,7 @@ private theorem b_ne_one' : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x ≤ y := by
-  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log_iff h h₁]
+  rw [logb, logb, div_le_div_iff_of_pos_right (log_pos hb), log_le_log_iff h h₁]
 
 @[gcongr]
 theorem logb_le_logb_of_le (h : 0 < x) (hxy : x ≤ y) : logb b x ≤ logb b y :=
@@ -185,12 +185,12 @@ theorem logb_le_logb_of_le (h : 0 < x) (hxy : x ≤ y) : logb b x ≤ logb b y :
 
 @[gcongr]
 theorem logb_lt_logb (hx : 0 < x) (hxy : x < y) : logb b x < logb b y := by
-  rw [logb, logb, div_lt_div_right (log_pos hb)]
+  rw [logb, logb, div_lt_div_iff_of_pos_right (log_pos hb)]
   exact log_lt_log hx hxy
 
 @[simp]
 theorem logb_lt_logb_iff (hx : 0 < x) (hy : 0 < y) : logb b x < logb b y ↔ x < y := by
-  rw [logb, logb, div_lt_div_right (log_pos hb)]
+  rw [logb, logb, div_lt_div_iff_of_pos_right (log_pos hb)]
   exact log_lt_log_iff hx hy
 
 theorem logb_le_iff_le_rpow (hx : 0 < x) : logb b x ≤ y ↔ x ≤ b ^ y := by
