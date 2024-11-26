@@ -109,8 +109,8 @@ def forgetEnrichmentOppositeEquivalence.inverse :
     rw [this, ← Category.assoc]
     congr 1
 
-/-- The equivalence between the underlying category of `Cᵒᵖ` and the opposite of the underlying
-category of `C`. -/
+/-- The equivalence between the underlying category of the enriched category `Cᵒᵖ` and
+the opposite of the underlying category of the enriched category `C`. -/
 @[simps]
 def forgetEnrichmentOppositeEquivalence : ForgetEnrichment V Cᵒᵖ ≌ (ForgetEnrichment V C)ᵒᵖ where
   functor := forgetEnrichmentOppositeEquivalence.functor V C
