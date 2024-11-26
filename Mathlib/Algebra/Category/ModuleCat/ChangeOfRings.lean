@@ -933,12 +933,14 @@ lemma extendScalars_assoc :
       (extendScalarsComp f₁₂ (f₃₄.comp f₂₃)).hom ≫ whiskerLeft _ (extendScalarsComp f₂₃ f₃₄).hom ≫
         (Functor.associator _ _ _).inv := by
   ext M m
-  have := extendScalarsComp_hom_app_one_tmul (f₂₃.comp f₁₂) f₃₄ M m
-  dsimp at this ⊢
-  rw [this]
-  erw [extendScalarsComp_hom_app_one_tmul f₁₂ (f₃₄.comp f₂₃) M m,
-    extendScalarsComp_hom_app_one_tmul f₂₃ f₃₄, ExtendScalars.map_tmul,
-    extendScalarsComp_hom_app_one_tmul f₁₂ f₂₃]
+  have h₁ := extendScalarsComp_hom_app_one_tmul (f₂₃.comp f₁₂) f₃₄ M m
+  have h₂ := extendScalarsComp_hom_app_one_tmul f₁₂ (f₃₄.comp f₂₃) M m
+  have h₃ := extendScalarsComp_hom_app_one_tmul f₂₃ f₃₄
+  have h₄ := extendScalarsComp_hom_app_one_tmul f₁₂ f₂₃ M m
+  dsimp at h₁ h₂ h₃ h₄ ⊢
+  rw [h₁]
+  erw [h₂]
+  rw [h₃, ExtendScalars.map_tmul, h₄]
 
 /-- The associativity compatibility for the extension of scalars, in the exact form
 that is needed in the definition `CommRingCat.moduleCatExtendScalarsPseudofunctor`
