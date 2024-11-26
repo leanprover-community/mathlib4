@@ -691,6 +691,12 @@ instance (α : Type*) [LE α] : LE αᵒᵈ :=
 instance (α : Type*) [LT α] : LT αᵒᵈ :=
   ⟨fun x y : α ↦ y < x⟩
 
+instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
+  ⟨((· ⊓ ·) : α → α → α)⟩
+
+instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
+  ⟨((· ⊔ ·) : α → α → α)⟩
+
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _
   le_trans := fun _ _ _ hab hbc ↦ hbc.trans hab
