@@ -9,11 +9,18 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Coskeletal simplicial objects
+
 The identity natural transformation exhibits a simplicial object `X` as a right extension of its
 restriction along `(Truncated.inclusion (n := n)).op` recorded by `rightExtensionInclusion X n`.
 
 The simplicial object `X` is *n-coskeletal* if `(rightExtensionInclusion X n)` is a right Kan
 extension.
+
+When the ambient category admits right Kan extensions along `(Truncated.inclusion (n := n)).op`,
+then when `X` is `n`-coskeletal, the unit of `coskAdj n` defines an isomorphism:
+`isoCoskOfIsCoskeletal : X ≅ (Truncated.cosk n).obj ((truncation n).obj X)`.
+
+TODO: Prove that `X` is `n`-coskeletal whenever a certain canonical cone is a limit cone.
 -/
 
 open Opposite
