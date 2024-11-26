@@ -5,6 +5,7 @@ Authors: Pieter Cuijpers
 -/
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Quantale
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
@@ -17,7 +18,11 @@ This file defines morphisms between (additive) quantales
 * `AddQuantaleHom`: Additive quantale homomorphisms
 * `QuantaleHom`: Quantale homomorphisms
 
-As isomorphism, `OrderMonoidIso` - denoted `α ≃*o` works also for (additive) Quantales.
+As isomorphism, `OrderMonoidIso` - denoted `α ≃*o` works also for (additive) Quantales,
+so we do not need to add any theory for them here.
+
+We do add theorems for identity and composition of (additive) quantale homs, as well
+as a theorem showing that any function that maps everything to ⊥ is a quantale hom.
 
 ## Notation
 
@@ -57,7 +62,7 @@ you should parametrize over
 `(F : Type*) [FunLike F M N] [AddHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
 structure AddQuantaleHom (α β : Type*)
   [AddSemigroup α] [CompleteLattice α] [AddSemigroup β] [CompleteLattice β]
-  extends AddHom α β, sSupHom α β
+  extends α →ₙ+ β, sSupHom α β
 
 /-- Infix notation for `AddQuantaleHom`. -/
 infixr:25 " →ₙ+q " => AddQuantaleHom
@@ -89,7 +94,7 @@ into an actual `QuantaleHom`. This is declared as the default coercion from `F` 
 @[to_additive (attr := coe)
   "Turn an element of a type `F` satisfying `AddHomClass F α β` and `sSupHomClass F α β`
 into an actual `AddQuantaleHom`. This is declared as the default coercion from `F` to `α →ₙ+q β`."]
-def QuantaleHomClass.toQuantaleHom [MulHomClass F α β] [sSupHomClass F α β] (f : F) :
+def toQuantaleHom [MulHomClass F α β] [sSupHomClass F α β] (f : F) :
     α →ₙ*q β := { (f : α →ₙ* β) with map_sSup' := sSupHomClass.map_sSup f }
 
 /-- Any type satisfying `QuantaleHomClass` can be cast into `QuantaleHom` via
@@ -97,13 +102,15 @@ def QuantaleHomClass.toQuantaleHom [MulHomClass F α β] [sSupHomClass F α β] 
 @[to_additive "Any type satisfying `AddQuantaleHomClass` can be cast into `AddQuantaleHom` via
   `AddQuantaleHomClass.toAddQuantaleHom`."]
 instance [MulHomClass F α β] [sSupHomClass F α β] : CoeTC F (α →ₙ*q β) :=
-  ⟨QuantaleHomClass.toQuantaleHom⟩
+  ⟨toQuantaleHom⟩
 
 end Quantale
 
 namespace QuantaleHom
 
-variable [Semigroup α] [Semigroup β] [CompleteLattice α] [CompleteLattice β] {f g : α →ₙ*q β}
+variable [Semigroup α] [Semigroup β] [Semigroup γ] [Semigroup δ]
+  [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
+  {f g : α →ₙ*q β}
 
 @[to_additive]
 instance : FunLike (α →ₙ*q β) α β where
@@ -121,7 +128,10 @@ instance : MulHomClass (α →ₙ*q β) α β where
 instance : sSupHomClass (α →ₙ*q β) α β where
   map_sSup f := f.map_sSup'
 
--- Other lemmas should be accessed through the `FunLike` API
+@[to_additive]
+instance : OrderHomClass (α →ₙ*q β) α β where
+  map_rel f := by apply (f : OrderHom α β).monotone'
+
 @[to_additive (attr := ext)]
 theorem ext (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
@@ -135,35 +145,102 @@ theorem coe_mk (f : α →ₙ* β) (h) : (QuantaleHom.mk f h : α → β) = f :=
 @[to_additive (attr := simp)]
 theorem mk_coe (f : α →ₙ*q β) (h) : QuantaleHom.mk (f : α →ₙ* β) h = f := rfl
 
-end QuantaleHom
+section Id
 
-/- Theory connecting `QuantaleHom`'s to `OrderMonoidIso` (or technically `OrderMulIso`) -/
+variable (α)
 
-namespace OrderMonoidIso
-
-section QuantaleHom
-
-variable [Semigroup α] [Semigroup β] [CompleteLattice α] [CompleteLattice β]
-
-/-- Reinterpret an ordered mul isomorphism as a quantale homomorphism -/
-@[to_additive "Reinterpret an ordered additive mul isomomorphism as an additive
-quantale homomorphism."]
-def toQuantaleHom (f : α ≃*o β) : α →ₙ*q β where
-  toFun := f.toFun
-  map_mul' := f.map_mul'
-  map_sSup' := by simp only [toMulEquiv_eq_coe, MulEquiv.toEquiv_eq_coe,
-    Equiv.toFun_as_coe, EquivLike.coe_coe, coe_mulEquiv, map_sSup, implies_true]
+/-- The identity map as a quantale homomorphism. -/
+@[to_additive "The identity map as an additive quantale homomorphism."]
+protected def id : α →ₙ*q α where
+  toFun x := x
+  map_mul' _ _ := rfl
+  map_sSup' _ := by simp_all only [Set.image_id']
 
 @[to_additive (attr := simp)]
-theorem coe_QuantaleHom (f : α ≃*o β) : ((f : α →ₙ*q β) : α → β) = f :=
+theorem coe_id : ⇑(QuantaleHom.id α) = id := rfl
+
+@[to_additive]
+instance : Inhabited (α →ₙ*q α) := ⟨QuantaleHom.id α⟩
+
+end Id
+
+section Comp
+
+/-- Composition of `QuantaleHom`s as a `QuantaleHom`. -/
+@[to_additive "Composition of `AddQuantaleHom`s as an `AddQuantaleHom`"]
+def comp (f : β →ₙ*q γ) (g : α →ₙ*q β) : α →ₙ*q γ :=
+  {f.toMulHom.comp (g : α →ₙ* β), f.tosSupHom.comp (g : sSupHom α β) with }
+
+@[to_additive (attr := simp)]
+theorem coe_comp (f : β →ₙ*q γ) (g : α →ₙ*q β) : (f.comp g : α → γ) = f ∘ g :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem comp_apply (f : β →ₙ*q γ) (g : α →ₙ*q β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 
 @[to_additive]
-theorem toQuantaleHom_injective : Injective (toQuantaleHom : _ → α →ₙ*q β) := fun f g h =>
-  ext <| by convert DFunLike.ext_iff.1 h using 0
+theorem coe_comp_mulHom (f : β →ₙ*q γ) (g : α →ₙ*q β) :
+    (f.comp g : α →ₙ* γ) = (f : β →ₙ* γ).comp g :=
+  rfl
 
-/- Todo: basically proving that QuantaleHoms form a category (composition and identity) -/
+@[to_additive]
+theorem coe_comp_orderHom (f : β →ₙ*q γ) (g : α →ₙ*q β) :
+    (f.comp g : α →o γ) = (f : β →o γ).comp g :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem comp_assoc (f : γ →ₙ*q δ) (g : β →ₙ*q γ) (h : α →ₙ*q β) :
+    (f.comp g).comp h = f.comp (g.comp h) :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem comp_id (f : α →ₙ*q β) : f.comp (QuantaleHom.id α) = f :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem id_comp (f : α →ₙ*q β) : (QuantaleHom.id β).comp f = f :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem cancel_right {g₁ g₂ : β →ₙ*q γ} {f : α →ₙ*q β} (hf : Function.Surjective f) :
+    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun _ => by congr⟩
+
+@[to_additive (attr := simp)]
+theorem cancel_left {g : β →ₙ*q γ} {f₁ f₂ : α →ₙ*q β} (hg : Function.Injective g) :
+    g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
+  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+
+end Comp
+
+section Bot
+
+variable [IsQuantale β]
+
+/-- `⊥` is the quantale homomorphism sending all elements to `⊥`. -/
+@[to_additive]
+instance : Bot (α →ₙ*q β) :=
+  ⟨{ (⊥ : sSupHom α β) with map_mul' := by simp; rw [bot_mul_eq_bot] }⟩
+
+@[to_additive (attr := simp)]
+theorem coe_bot : ⇑(⊥ : α →ₙ*q β) = ⊥ :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem bot_apply (a : α) : (⊥ : α →ₙ*q β) a = ⊥ :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem bot_comp (f : α →ₙ*q γ) : (⊥ : γ →ₙ*q β).comp f = ⊥ :=
+  rfl
+
+variable [IsQuantale γ]
+
+@[to_additive (attr := simp)]
+theorem comp_bot (f : β →ₙ*q γ) : f.comp (⊥ : α →ₙ*q β) = ⊥ :=
+  ext fun _ => map_bot f
+
+end Bot
 
 end QuantaleHom
-
-end OrderMonoidIso

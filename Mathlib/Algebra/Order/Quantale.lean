@@ -177,3 +177,20 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
   mpr h1 := le_sSup h1
 
 end IsQuantale
+
+section Zero
+
+variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable {x y z : α}
+
+@[to_additive]
+theorem bot_mul_eq_bot : ⊥ * x = ⊥ := by
+  rw [← sSup_empty, sSup_mul_distrib]
+  simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
+
+@[to_additive]
+theorem mul_bot_eq_bot : ⊥ * x = ⊥ := by
+  rw [← sSup_empty, sSup_mul_distrib]
+  simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
+
+end Zero
