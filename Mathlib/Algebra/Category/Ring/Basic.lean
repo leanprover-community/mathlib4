@@ -83,7 +83,7 @@ lemma comp_apply {R S T : SemiRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : SemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
+/-- Typecheck a `RingHom` as a morphism in `SemiRingCat`. -/
 abbrev ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of S :=
   ⟨f⟩
 
@@ -164,11 +164,11 @@ structure RingCat where
   private mk ::
   /-- The underlying type. -/
   carrier : Type u
-  [semiring : Ring carrier]
+  [ring : Ring carrier]
 
-attribute [instance] RingCat.semiring
+attribute [instance] RingCat.ring
 
-initialize_simps_projections RingCat (-semiring)
+initialize_simps_projections RingCat (-ring)
 
 namespace RingCat
 
@@ -301,11 +301,11 @@ structure CommSemiRingCat where
   private mk ::
   /-- The underlying type. -/
   carrier : Type u
-  [semiring : CommSemiring carrier]
+  [commSemiring : CommSemiring carrier]
 
-attribute [instance] CommSemiRingCat.semiring
+attribute [instance] CommSemiRingCat.commSemiring
 
-initialize_simps_projections CommSemiRingCat (-semiring)
+initialize_simps_projections CommSemiRingCat (-commSemiring)
 
 namespace CommSemiRingCat
 
@@ -441,11 +441,11 @@ structure CommRingCat where
   private mk ::
   /-- The underlying type. -/
   carrier : Type u
-  [semiring : CommRing carrier]
+  [commRing : CommRing carrier]
 
-attribute [instance] CommRingCat.semiring
+attribute [instance] CommRingCat.commRing
 
-initialize_simps_projections CommRingCat (-semiring)
+initialize_simps_projections CommRingCat (-commRing)
 
 namespace CommRingCat
 
