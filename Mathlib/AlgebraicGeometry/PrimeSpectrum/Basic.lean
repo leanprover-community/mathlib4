@@ -576,7 +576,7 @@ lemma _root_.RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
   have := eq (e ⟨I, I.2.isPrime⟩)
   rwa [← AlgEquiv.symm_apply_eq, AlgEquiv.commutes, e.symm_apply_apply] at this
 
-/-- If the prime spectrum of a commutative ring R has discrete Zariski topology, then R is
+/-- If the prime spectrum of a commutative semiring R has discrete Zariski topology, then R is
 canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
 @[stacks 00JA
 "See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
