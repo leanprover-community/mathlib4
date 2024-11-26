@@ -538,6 +538,7 @@ def blurb (G : D ≌ C) :
     pre (G.functor ⋙ F) (G.functor ⋙ G.inverse) ≅ map (whiskerRight G.unitInv _) :=
   pre_map_iso _ G.unitIso.symm
 
+variable (F) in
 def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendieck F := by
   refine Equivalence.mk ?_ ?_ ?_ ?_
   · exact pre F G.functor
@@ -568,6 +569,27 @@ def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendie
   · simp only [preInv2, eqToHom_refl, Category.id_comp, eq_mpr_eq_cast, cast_eq, Functor.assoc,
     ← pre_comp]
     exact pre_map_iso F G.counitIso.symm |>.symm
+
+def equivCancelRight {E : Type*} [Category E] (G₁ G₂ : E ⥤ D) (F : D ≌ C) :
+    (G₁ ⋙ F.functor ≅ G₂ ⋙ F.functor) → (G₁ ≅ G₂) := by
+  intro α
+  calc
+    G₁ ⋙ 𝟭 _ ≅ G₁ ⋙ F.functor ⋙ F.inverse := isoWhiskerLeft _ F.unitIso
+    _ ≅ G₂ ⋙ F.functor ⋙ F.inverse := isoWhiskerRight α _
+    _ ≅ G₂ ⋙ 𝟭 _ := isoWhiskerLeft _ F.unitIso.symm
+
+def mapWhiskerLeftIsoConjPreMap (F : C ⥤ Cat) (G : D ≌ C) (α : F ⟶ F) :
+    map (whiskerLeft G.functor α) ≅
+      (preEquivalence F G).functor ⋙
+      map α ⋙
+      (preEquivalence F G).inverse := by
+  apply equivCancelRight _ _ (preEquivalence F G)
+  simp [Functor.assoc]
+  apply Iso.symm
+  calc
+    _ ≅ _ := isoWhiskerLeft ((preEquivalence F G).functor ⋙ map α) (preEquivalence F G).counitIso
+    _ ≅ _ := eqToIso (bla _ _)
+
 
 section FunctorFrom
 
