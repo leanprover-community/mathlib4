@@ -292,27 +292,6 @@ def sieve : Sieve X₀ where
     rintro Y₀ Z₀ g ⟨h⟩ p
     exact ⟨{ i₀ := h.i₀, q := F.map p ≫ h.q, fac := by rw [assoc, h.fac, map_comp_assoc]}⟩
 
-lemma _root_.CategoryTheory.Functor.functorPushforward_imageSieve_inter_mem
-    {C D : Type*} [Category C] [Category D] (G : C ⥤ D) (K : GrothendieckTopology D)
-    [G.IsLocallyFull K] {U V₁ V₂} (f₁ : G.obj U ⟶ G.obj V₁) (f₂ : G.obj U ⟶ G.obj V₂) :
-    (G.imageSieve f₁ ⊓ G.imageSieve f₂).functorPushforward G ∈ K _ := by
-  refine K.superset_covering ?_
-    (K.bind_covering (G.functorPushforward_imageSieve_mem K f₁)
-      (R := fun W p hp ↦ by
-        letI str := Presieve.getFunctorPushforwardStructure hp
-        exact ((G.imageSieve (G.map str.premap ≫ f₂)).functorPushforward G).pullback
-          str.lift)
-      (fun W p hp ↦ by
-        apply K.pullback_stable
-        apply G.functorPushforward_imageSieve_mem))
-  rintro W _ ⟨T, a, b, hb, ⟨P, c, d, ⟨x, w⟩, fac⟩, rfl⟩
-  let str := Presieve.getFunctorPushforwardStructure hb
-  refine ⟨P, c ≫ str.premap, d, ⟨⟨c ≫ str.cover.choose, ?_⟩, ⟨x, ?_⟩⟩, ?_⟩
-  · rw [G.map_comp, G.map_comp_assoc, str.cover.choose_spec]
-  · rw [G.map_comp_assoc, w]
-  · rw [G.map_comp, ← reassoc_of% fac]
-    conv_lhs => rw [str.fac]
-
 lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
   have := IsDenseSubsite.isCoverDense J₀ J F
   have := IsDenseSubsite.isLocallyFull J₀ J F
