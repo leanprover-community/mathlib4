@@ -156,7 +156,7 @@ end StrictSegal
 
 end SSet
 
-namespace Nerve
+namespace CategoryTheory.Nerve
 
 open SSet
 
@@ -184,4 +184,4 @@ noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (
     · intro i hi
       apply ComposableArrows.mkOfObjOfMapSucc_map_succ
 
-end Nerve
+end CategoryTheory.Nerve
