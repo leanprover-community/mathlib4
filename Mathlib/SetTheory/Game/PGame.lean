@@ -1972,7 +1972,7 @@ theorem down_moveRight (x) : down.moveRight x = 0 :=
   rfl
 
 @[simp]
-theorem down_negative : down < 0 := by
+theorem down_neg : down < 0 := by
   rw [lt_iff_le_and_lf, lf_zero]
   simp [le_zero_lf, star_lf_zero]
 
