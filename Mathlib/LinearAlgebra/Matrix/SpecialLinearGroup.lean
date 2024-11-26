@@ -211,14 +211,6 @@ theorem toLin'_injective :
     Function.Injective ↑(toLin' : SpecialLinearGroup n R →* (n → R) ≃ₗ[R] n → R) := fun _ _ h =>
   Subtype.coe_injective <| Matrix.toLin'.injective <| LinearEquiv.toLinearMap_injective.eq_iff.mpr h
 
-/-- `toGL` is the map from the special linear group to the general linear group -/
-def toGL : SpecialLinearGroup n R →* GeneralLinearGroup R (n → R) :=
-  (GeneralLinearGroup.generalLinearEquiv _ _).symm.toMonoidHom.comp toLin'
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation
-theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.toLin'.toLinearMap :=
-  rfl
-
 variable {S : Type*} [CommRing S]
 
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from

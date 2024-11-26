@@ -195,17 +195,18 @@ namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
--- Porting note: added implementation for the Coe
-/-- The map from SL(n) to GL(n) underlying the coercion, forgetting the value of the determinant.
--/
-@[coe]
-def coeToGL (A : SpecialLinearGroup n R) : GL n R :=
-  ⟨↑A, ↑A⁻¹,
-    congr_arg ((↑) : _ → Matrix n n R) (mul_inv_cancel A),
-    congr_arg ((↑) : _ → Matrix n n R) (inv_mul_cancel A)⟩
+
+/-- `toGL` is the map from the special linear group to the general linear group -/
+def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R where
+  toFun A :=  ⟨↑A, ↑A⁻¹,
+    congr_arg Subtype.val (mul_inv_cancel A), congr_arg Subtype.val (inv_mul_cancel A)⟩
+  map_one' := Units.ext <| rfl
+  map_mul' _ _ := Units.ext <| rfl
+
+@[deprecated (since := "2024-11-26")] alias coeToGL := toGL
 
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
-  ⟨coeToGL⟩
+  ⟨toGL⟩
 
 @[simp]
 theorem coeToGL_det (g : SpecialLinearGroup n R) :
