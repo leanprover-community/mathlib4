@@ -34,22 +34,18 @@ variable {R : Type _} [CommRing R] [IsDomain R] [NormalizationMonoid R]
 private lemma Ne.isUnit_C {u : k} (hu : u ≠ 0) : IsUnit (C u) :=
   Polynomial.isUnit_C.mpr hu.isUnit
 
--- Multiplying units preserve coprimality
-private lemma isCoprime_mul_units_left {a b : k[X]} {u v : k} (hu : u ≠ 0) (hv : v ≠ 0) :
-    IsCoprime (C u * a) (C v * b) ↔ IsCoprime a b :=
-  Iff.trans
-    (isCoprime_mul_unit_left_left hu.isUnit_C _ _)
-    (isCoprime_mul_unit_left_right hv.isUnit_C _ _)
-
 -- auxiliary lemma that 'rotates' coprimality
 private lemma rot_coprime
     {p q r : ℕ} {a b c : k[X]} {u v w : k}
     {hp : 0 < p} {hq : 0 < q} {hr : 0 < r}
     {hu : u ≠ 0} {hv : v ≠ 0} {hw : w ≠ 0}
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) (hab : IsCoprime a b) : IsCoprime b c := by
-  rw [← IsCoprime.pow_iff hp hq, ← isCoprime_mul_units_left hu hv] at hab
+  have hCu : IsUnit (C u) := Ne.isUnit_C hu
+  have hCv : IsUnit (C v) := Ne.isUnit_C hv
+  have hCw : IsUnit (C w) := Ne.isUnit_C hw
+  rw [← IsCoprime.pow_iff hp hq, ← isCoprime_mul_units_left hCu hCv] at hab
   rw [add_eq_zero_iff_neg_eq] at heq
-  rw [← IsCoprime.pow_iff hq hr, ← isCoprime_mul_units_left hv hw,
+  rw [← IsCoprime.pow_iff hq hr, ← isCoprime_mul_units_left hCv hCw,
     ← heq, IsCoprime.neg_right_iff]
   convert IsCoprime.add_mul_left_right hab.symm 1 using 2
   rw [mul_one]
@@ -115,12 +111,12 @@ private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
   have hap := pow_ne_zero p ha
   have hbq := pow_ne_zero q hb
   have hcr := pow_ne_zero r hc
-  have habp : IsCoprime (C u * a ^ p) (C v * b ^ q) :=
-    (isCoprime_mul_units_left hu hv).mpr hab.pow
-  have hbcp : IsCoprime (C v * b ^ q) (C w * c ^ r) :=
-    (isCoprime_mul_units_left hv hw).mpr hbc.pow
-  have hcap : IsCoprime (C w * c ^ r) (C u * a ^ p) :=
-    (isCoprime_mul_units_left hw hu).mpr hca.pow
+  have habp : IsCoprime (C u * a ^ p) (C v * b ^ q) := by
+    rw [isCoprime_mul_units_left hu.isUnit_C hv.isUnit_C]; exact hab.pow
+  have hbcp : IsCoprime (C v * b ^ q) (C w * c ^ r) := by
+    rw [isCoprime_mul_units_left hv.isUnit_C hw.isUnit_C]; exact hbc.pow
+  have hcap : IsCoprime (C w * c ^ r) (C u * a ^ p) := by
+    rw [isCoprime_mul_units_left hw.isUnit_C hu.isUnit_C]; exact hca.pow
   have habcp := hcap.symm.mul_left hbcp
 
   -- Use Mason-Stothers theorem
