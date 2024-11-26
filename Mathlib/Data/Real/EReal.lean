@@ -13,8 +13,8 @@ import Mathlib.Data.Sign
 This file defines `EReal`, the real numbers together with a top and bottom element,
 referred to as ⊤ and ⊥. It is implemented as `WithBot (WithTop ℝ)`
 
-Addition and multiplication are problematic in the presence of ±∞, but
-negation has a natural definition and satisfies the usual properties.
+Addition and multiplication are problematic in the presence of ±∞, but negation has a natural
+definition and satisfies the usual properties, in particular it is an order reversing isomorphism
 
 An ad hoc addition is defined, for which `EReal` is an `AddCommMonoid`, and even an ordered one
 (if `a ≤ a'` and `b ≤ b'` then `a + b ≤ a' + b'`).
@@ -29,6 +29,9 @@ but it is sometimes convenient to have.
 An ad hoc multiplication is defined, for which `EReal` is a `CommMonoidWithZero`. We make the
 choice that `0 * x = x * 0 = 0` for any `x` (while the other cases are defined non-ambiguously).
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1*⊥ + (-1)*⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
+Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where either `0 ≤ x < ⊤`,
+see `left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`, see `left_distrib_of_nonneg` (similarily
+for right distributivity).
 
 `EReal` is a `CompleteLinearOrder`; this is deduced by type class inference from
 the fact that `WithBot (WithTop L)` is a complete linear order if `L` is
