@@ -77,8 +77,6 @@ protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ �
           simp [heq_self_iff_true]
         (h₁.trans (ca pa)).trans h₂
 
-#check Quot.lift
-#check Quot.sound
 /-- Map a function `f : α → β` such that `ra x y` implies `rb (f x) (f y)`
 to a map `Quot ra → Quot rb`. -/
 protected def map (f : α → β) (h : (∀ a b : α, ra a b → rb (f a) (f b))) : Quot ra → Quot rb :=
