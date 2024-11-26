@@ -791,24 +791,12 @@ lemma θHom_range_eq' : (θHom g).range = (toPermHom g).ker.map (Subgroup.subtyp
 theorem θHom_range_card (g : Equiv.Perm α) :
     Fintype.card (θHom g).range = (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
   erw [Set.card_range_of_injective (θHom_injective g)]
-  rw [Fintype.card_prod]
-  rw [Fintype.card_perm]
-  rw [Fintype.card_pi]
-  apply congr_arg₂ (· * ·)
-  · -- fixed points
-    apply congr_arg
-    exact card_fixedPoints g
-  · rw [cycleType]
-    simp only [Finset.univ_eq_attach, Finset.attach_val, Function.comp_apply]
-    rw [Finset.prod_attach (s := g.cycleFactorsFinset)
-      (f := fun a ↦ Fintype.card (Subgroup.zpowers (a : Perm α)))]
-    rw [Finset.prod]
-    apply congr_arg
-    apply Multiset.map_congr rfl
-    intro x hx
-    rw [Fintype.card_zpowers, IsCycle.orderOf]
-    simp only [Finset.mem_val, mem_cycleFactorsFinset_iff] at hx
-    exact hx.left
+  rw [Fintype.card_prod, Fintype.card_perm, Fintype.card_pi, card_fixedPoints]
+  apply congr_arg
+  rw [Finset.univ_eq_attach, g.cycleFactorsFinset.prod_attach (fun i ↦ Fintype.card (zpowers i)),
+    cycleType, Finset.prod_map_val]
+  refine Finset.prod_congr rfl (fun x hx ↦ ?_)
+  rw [Fintype.card_zpowers, (mem_cycleFactorsFinset_iff.mp hx).1.orderOf, Function.comp_apply]
 
 end Kernel
 
