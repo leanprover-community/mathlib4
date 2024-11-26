@@ -3,9 +3,9 @@ Copyright (c) 2024 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
+import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.Topology.Compactness.DeltaGeneratedSpace
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # Delta-generated topological spaces
@@ -17,8 +17,6 @@ See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 Adapted from `Mathlib.Topology.Category.CompactlyGenerated`.
 
 ## TODO
-* `DeltaGenerated` has all limits and colimits.
-* `DeltaGenerated` is a coreflective subcategory of `CompactlyGenerated`.
 * `DeltaGenerated` is cartesian-closed.
 -/
 
@@ -54,22 +52,45 @@ def of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerate
 def deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
   inducedFunctor _
 
--- TODO: show that this is fully faithful
-/-- The functor taking each topological space to its delta-generification. -/
+/-- `deltaGeneratedToTop` is fully faithful. -/
+def fullyFaithfulDeltaGeneratedToTop : deltaGeneratedToTop.{u}.FullyFaithful :=
+  fullyFaithfulInducedFunctor _
+
+instance : deltaGeneratedToTop.{u}.Full := fullyFaithfulDeltaGeneratedToTop.full
+
+instance : deltaGeneratedToTop.{u}.Faithful := fullyFaithfulDeltaGeneratedToTop.faithful
+
+/-- The faithful (but not full) functor taking each topological space to its delta-generated
+  coreflection. -/
 @[simps!]
 def topToDeltaGenerated : TopCat.{u} ⥤ DeltaGenerated.{u} where
   obj X := of (DeltaGeneratedSpace.of X)
   map {_ Y} f := ⟨f,(continuous_to_deltaGenerated (Y := Y)).mpr <|
     continuous_le_dom deltaGenerated_le f.continuous⟩
 
-/-- The adjunction between the forgetful functor `DeltaGenerated ⥤ TopCat` and
-  its coreflector.
-  TODO: conclude that `DeltaGenerated` is coreflective in `TopCat`. Requires mathlib bump. -/
+instance : topToDeltaGenerated.{u}.Faithful :=
+  ⟨fun h ↦ by ext x; exact congrFun (congrArg ContinuousMap.toFun h) x⟩
+
+/-- The adjunction between the forgetful functor `DeltaGenerated ⥤ TopCat` and its coreflector. -/
 def coreflectorAdjunction : deltaGeneratedToTop ⊣ topToDeltaGenerated :=
   Adjunction.mkOfUnitCounit {
     unit := {
-      app := fun X => ⟨id,continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
+      app := fun X => ⟨id, continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
     counit := {
-      app := fun X => ⟨DeltaGeneratedSpace.counit,DeltaGeneratedSpace.continuous_counit⟩ }}
+      app := fun X => ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ }}
+
+/-- The category of delta-generated spaces is coreflective in the category of topological spaces. -/
+instance deltaGeneratedToTop.coreflective : Coreflective deltaGeneratedToTop where
+  R := topToDeltaGenerated
+  adj := coreflectorAdjunction
+
+noncomputable instance deltaGeneratedToTop.createsColimits : CreatesColimits deltaGeneratedToTop :=
+  comonadicCreatesColimits deltaGeneratedToTop
+
+instance hasLimits : Limits.HasLimits DeltaGenerated :=
+  hasLimits_of_coreflective deltaGeneratedToTop
+
+instance hasColimits : Limits.HasColimits DeltaGenerated :=
+  hasColimits_of_hasColimits_createsColimits deltaGeneratedToTop
 
 end DeltaGenerated
