@@ -861,6 +861,12 @@ theorem map_extend_nhds {x : M} (hy : x ∈ f.source) :
     map (f.extend I) (𝓝 x) = 𝓝[range I] f.extend I x := by
   rwa [extend_coe, comp_apply, ← I.map_nhds_eq, ← f.map_nhds_eq, map_map]
 
+theorem map_extend_nhds_of_mem_interior_range {x : M} (hx : x ∈ f.source)
+    (h'x : f.extend I x ∈ interior (range I)) :
+    map (f.extend I) (𝓝 x) = 𝓝 (f.extend I x) := by
+  rw [f.map_extend_nhds hx, nhdsWithin_eq_nhds]
+  exact mem_of_superset (IsOpen.mem_nhds isOpen_interior h'x) interior_subset
+
 theorem map_extend_nhds_of_boundaryless [I.Boundaryless] {x : M} (hx : x ∈ f.source) :
     map (f.extend I) (𝓝 x) = 𝓝 (f.extend I x) := by
   rw [f.map_extend_nhds hx, I.range_eq_univ, nhdsWithin_univ]
@@ -873,6 +879,12 @@ theorem extend_target_mem_nhdsWithin {y : M} (hy : y ∈ f.source) :
 theorem extend_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless] {x} (hx : x ∈ f.source)
     {s : Set M} (h : s ∈ 𝓝 x) : (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
   rw [← f.map_extend_nhds_of_boundaryless hx, Filter.mem_map]
+  filter_upwards [h] using subset_preimage_image (f.extend I) s
+
+theorem extend_image_nhd_mem_nhds_of_mem_interior_range {x} (hx : x ∈ f.source)
+    (h'x : f.extend I x ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 x) :
+    (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
+  rw [← f.map_extend_nhds_of_mem_interior_range hx h'x, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
 
 theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
@@ -1178,6 +1190,12 @@ theorem extChartAt_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless]
   rw [extChartAt]
   exact extend_image_nhd_mem_nhds_of_boundaryless _ (mem_chart_source H x) hx
 
+theorem extChartAt_image_nhd_mem_nhds_of_mem_interior_range {x y} (hx : y ∈ (extChartAt I x).source)
+    (h'x : extChartAt I x y ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 y) :
+    (extChartAt I x) '' s ∈ 𝓝 (extChartAt I x y) := by
+  rw [extChartAt]
+  exact extend_image_nhd_mem_nhds_of_mem_interior_range _ (by simpa using hx) h'x h
+
 theorem extChartAt_target_mem_nhdsWithin' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x y :=
   extend_target_mem_nhdsWithin _ <| by rwa [← extChartAt_source I]
@@ -1399,30 +1417,39 @@ theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
   exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range
 
 @[deprecated (since := "2024-11-26")] alias
-extChartAt_target_union_comp_range_mem_nhds_of_mem := 
+extChartAt_target_union_comp_range_mem_nhds_of_mem :=
 extChartAt_target_union_compl_range_mem_nhds_of_mem
 
 section LocallyCompact
 
-/-- A locally compact manifold must be modelled on a locally compact space.
-
-  TODO: generalise to manifolds with boundary. -/
-lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 E H) [I.Boundaryless]
-    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [Inhabited M] [LocallyCompactSpace M] :
+/-- A locally compact manifold must be modelled on a locally compact space. -/
+lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 E H)
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [h : Nonempty M] [LocallyCompactSpace M] :
     LocallyCompactSpace E := by
-  have x : M := Inhabited.default
+  rcases h with ⟨x⟩
+  have : (interior (extChartAt I x).target).Nonempty := by
+    by_contra! H
+    have := extChartAt_target_subset_closure_interior (mem_extChartAt_target (I := I) x)
+    simp only [H, closure_empty, mem_empty_iff_false] at this
+  rcases this with ⟨y, hy⟩
+  have h'y : y ∈ (extChartAt I x).target := interior_subset hy
   obtain ⟨s, hmem, hss, hcom⟩ :=
-    LocallyCompactSpace.local_compact_nhds x (extChartAt I x).source (extChartAt_source_mem_nhds x)
+    LocallyCompactSpace.local_compact_nhds ((extChartAt I x).symm y) (extChartAt I x).source
+      (IsOpen.mem_nhds (isOpen_extChartAt_source x) (PartialEquiv.map_target (extChartAt I x) h'y))
   have : IsCompact <| (extChartAt I x) '' s :=
     hcom.image_of_continuousOn <| ContinuousOn.mono (continuousOn_extChartAt x) hss
-  exact this.locallyCompactSpace_of_mem_nhds_of_addGroup <|
-    extChartAt_image_nhd_mem_nhds_of_boundaryless hmem
+  apply this.locallyCompactSpace_of_mem_nhds_of_addGroup (x := y)
+  rw [← PartialEquiv.right_inv (extChartAt I x) h'y]
+  apply extChartAt_image_nhd_mem_nhds_of_mem_interior_range
+    (PartialEquiv.map_target (extChartAt I x) h'y) _ hmem
+  simp only [PartialEquiv.right_inv (extChartAt I x) h'y]
+  have : (extChartAt I x).target ⊆ range I := extChartAt_target_subset_range x
+  exact interior_mono this hy
 
 /-- Riesz's theorem applied to manifolds: A locally compact manifolds must be modelled on a
   finite-dimensional space. This is the converse to
   `Manifold.locallyCompact_of_finiteDimensional`. -/
-theorem FiniteDimensional.of_locallyCompact_manifold [CompleteSpace 𝕜]
-    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless]
+theorem FiniteDimensional.of_locallyCompact_manifold [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [Inhabited M] [LocallyCompactSpace M] :
     FiniteDimensional 𝕜 E := by
   have := LocallyCompactSpace.of_locallyCompact_manifold I M
