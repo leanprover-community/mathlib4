@@ -1361,7 +1361,7 @@ theorem succ_mono : CategoryTheory.Mono (ModuleCat.asHom (πs C o)) := by
 include hC in
 theorem succ_exact :
     (ShortComplex.mk (ModuleCat.asHom (πs C o)) (ModuleCat.asHom (Linear_CC' C hsC ho))
-    (by ext; apply CC_comp_zero)).Exact := by
+    (by ext : 2; apply CC_comp_zero)).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro f
   exact CC_exact C hC hsC ho

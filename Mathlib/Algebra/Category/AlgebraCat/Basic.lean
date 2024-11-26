@@ -153,7 +153,8 @@ instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
 instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.asHom f.hom.toLinearMap }
+      map := fun f => ModuleCat.asHom f.hom.toLinearMap
+      map_id := by intros; ext; simp }
 
 @[simp]
 lemma forget₂_module_obj (X : AlgebraCat.{v} R) :

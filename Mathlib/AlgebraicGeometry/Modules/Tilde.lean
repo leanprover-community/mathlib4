@@ -158,7 +158,10 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
 noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
   val :=
     { obj := fun U ↦ ModuleCat.of _ (M.tildeInType.val.obj U)
-      map := fun {U V} i ↦
+      map := fun {U V} i ↦ asHom
+        (X := of ((Spec (CommRingCat.of R)).ringCatSheaf.val.obj U) (M.tildeInType.val.obj U))
+        (Y := (restrictScalars ((Spec (CommRingCat.of R)).ringCatSheaf.val.map i)).obj
+          (of ((Spec (CommRingCat.of R)).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
         { toFun := M.tildeInType.val.map i
           map_smul' := by intros; rfl
           map_add' := by intros; rfl } }
@@ -189,6 +192,12 @@ lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
 lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
     st = 0 := by
+  -- TODO: these instances are exactly the ones we wanted to avoid!
+  -- Probably best to change `colimit_no_zero_smul_divisor`
+  have : ∀ {c c' : ModuleCat R}, FunLike (c ⟶ c') ((forget (ModuleCat R)).obj c) ((forget (ModuleCat R)).obj c') :=
+    ConcreteCategory.instFunLike
+  have : ∀ {c c' : ModuleCat R}, LinearMapClass (c ⟶ c') R ((forget (ModuleCat R)).obj c) ((forget (ModuleCat R)).obj c') :=
+    sorry
   refine Limits.Concrete.colimit_no_zero_smul_divisor
     _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
     _ hst
@@ -200,15 +209,16 @@ If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `
 `M^~(U)`.
 -/
 def toOpen (U : Opens (PrimeSpectrum.Top R)) :
-    ModuleCat.of R M ⟶ (tildeInModuleCat M).1.obj (op U) where
-  toFun f :=
-  ⟨fun x ↦ LocalizedModule.mkLinearMap _ _ f, fun x ↦
-    ⟨U, x.2, 𝟙 _, f, 1, fun y ↦ ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
-  map_add' f g := Subtype.eq <| funext fun x ↦ LinearMap.map_add _ _ _
-  map_smul' r m := by
-    simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, LinearMapClass.map_smul,
-      RingHom.id_apply]
-    rfl
+    ModuleCat.of R M ⟶ (tildeInModuleCat M).1.obj (op U) :=
+  ModuleCat.asHom (Y := (tildeInModuleCat M).1.obj (op U))
+  { toFun := fun f =>
+    ⟨fun x ↦ LocalizedModule.mkLinearMap _ _ f, fun x ↦
+      ⟨U, x.2, 𝟙 _, f, 1, fun y ↦ ⟨(Ideal.ne_top_iff_one _).1 y.1.2.1, by simp⟩⟩⟩
+    map_add' := fun f g => Subtype.eq <| funext fun x ↦ LinearMap.map_add _ _ _
+    map_smul' := fun r m => by
+      simp only [isLocallyFraction_pred, LocalizedModule.mkLinearMap_apply, LinearMapClass.map_smul,
+        RingHom.id_apply]
+      rfl }
 
 @[simp]
 theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
@@ -252,7 +262,7 @@ to the stalk of `M^~` at `x`.
 noncomputable def localizationToStalk (x : PrimeSpectrum.Top R) :
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) ⟶
     (TopCat.Presheaf.stalk (tildeInModuleCat M) x) :=
-  LocalizedModule.lift _ (toStalk M x) <| isUnit_toStalk M x
+  ModuleCat.asHom <| LocalizedModule.lift _ (toStalk M x).hom <| isUnit_toStalk M x
 
 
 /-- The ring homomorphism that takes a section of the structure sheaf of `R` on the open set `U`,
@@ -260,10 +270,13 @@ implemented as a subtype of dependent functions to localizations at prime ideals
 the section on the point corresponding to a given prime ideal. -/
 def openToLocalization (U : Opens (PrimeSpectrum R)) (x : PrimeSpectrum R) (hx : x ∈ U) :
     (tildeInModuleCat M).obj (op U) ⟶
-    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
-  toFun s := (s.1 ⟨x, hx⟩ : _)
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
+    ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) :=
+  ModuleCat.asHom
+    (X := (tildeInModuleCat M).obj (op U))
+    (Y := ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M))
+  { toFun := fun s => (s.1 ⟨x, hx⟩ : _)
+    map_add' := fun _ _ => rfl
+    map_smul' := fun _ _ => rfl }
 
 /--
 The morphism of `R`-modules from the stalk of `M^~` at `x` to the localization of `M` at the
@@ -288,7 +301,7 @@ theorem stalkToFiberLinearMap_germ (U : Opens (PrimeSpectrum.Top R)) (x : PrimeS
     (hx : x ∈ U) (s : (tildeInModuleCat M).1.obj (op U)) :
     stalkToFiberLinearMap M x
       (TopCat.Presheaf.germ (tildeInModuleCat M) U x hx s) = (s.1 ⟨x, hx⟩ : _) :=
-  DFunLike.ext_iff.1 (germ_comp_stalkToFiberLinearMap M U x hx) s
+  DFunLike.ext_iff.1 (ModuleCat.hom_ext_iff.mp (germ_comp_stalkToFiberLinearMap M U x hx)) s
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem toOpen_germ (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) :
@@ -298,13 +311,13 @@ theorem toOpen_germ (U : Opens (PrimeSpectrum.Top R)) (x) (hx : x ∈ U) :
 @[reassoc (attr := simp)]
 theorem toStalk_comp_stalkToFiberLinearMap (x : PrimeSpectrum.Top R) :
     toStalk M x ≫ stalkToFiberLinearMap M x =
-    LocalizedModule.mkLinearMap x.asIdeal.primeCompl M := by
+    asHom (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M) := by
   rw [toStalk, Category.assoc, germ_comp_stalkToFiberLinearMap]; rfl
 
 theorem stalkToFiberLinearMap_toStalk (x : PrimeSpectrum.Top R) (m : M) :
     (stalkToFiberLinearMap M x) (toStalk M x m) =
     LocalizedModule.mk m 1 :=
-  LinearMap.ext_iff.1 (toStalk_comp_stalkToFiberLinearMap M x) _
+  LinearMap.ext_iff.1 (ModuleCat.hom_ext_iff.mp (toStalk_comp_stalkToFiberLinearMap M x)) _
 
 /--
 If `U` is an open subset of `Spec R`, `m` is an element of `M` and `r` is an element of `R`
@@ -356,6 +369,7 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
   show (M.tildeInModuleCat.germ ⊤ x ⟨⟩) ((toOpen M ⊤) f) = _
   rw [← map_smul]
   fapply TopCat.Presheaf.germ_ext (W := PrimeSpectrum.basicOpen s.1) (hxW := s.2)
+    (F := M.tildeInModuleCat)
   · exact homOfLE le_top
   · exact 𝟙 _
   refine Subtype.eq <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
@@ -376,7 +390,7 @@ noncomputable def stalkIso (x : PrimeSpectrum.Top R) :
     ModuleCat.of R (LocalizedModule x.asIdeal.primeCompl M) where
   hom := stalkToFiberLinearMap M x
   inv := localizationToStalk M x
-  hom_inv_id := TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ext _ fun s ↦ by
+  hom_inv_id := TopCat.Presheaf.stalk_hom_ext _ fun U hxU ↦ ModuleCat.hom_ext <| LinearMap.ext fun s ↦ by
     show localizationToStalk M x (stalkToFiberLinearMap M x (M.tildeInModuleCat.germ U x hxU s)) =
       M.tildeInModuleCat.germ U x hxU s
     rw [stalkToFiberLinearMap_germ]

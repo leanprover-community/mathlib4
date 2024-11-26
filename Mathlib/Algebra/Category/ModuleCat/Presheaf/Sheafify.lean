@@ -316,8 +316,7 @@ def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
 
 @[simp]
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
-    DFunLike.coe (α := M₀.obj X) (β := fun _ ↦ A.val.obj X)
-      ((toSheafify α φ).app X) x = φ.app X x := rfl
+    ((toSheafify α φ).app X).hom x = φ.app X x := rfl
 
 @[simp]
 lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) = φ := rfl
@@ -370,7 +369,7 @@ def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ ≫ τ.val) :
     sheafify α φ ⟶ sheafify α φ' where
   val := homMk τ.val (fun X r m ↦ by
     let f := (sheafifyHomEquiv' α φ (by exact A'.cond)).symm (τ₀ ≫ toSheafify α φ')
-    suffices τ.val = (toPresheaf _).map f by simpa only [this] using (f.app X).map_smul r m
+    suffices τ.val = (toPresheaf _).map f by simpa only [this] using (f.app X).hom.map_smul r m
     apply ((J.W_of_isLocallyBijective φ).homEquiv _ A'.cond).injective
     dsimp [f]
     erw [comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom]
