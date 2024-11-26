@@ -1946,6 +1946,11 @@ theorem up_moveLeft (x) : up.moveLeft x = 0 :=
 theorem up_moveRight (x) : up.moveRight x = star :=
   rfl
 
+@[simp]
+theorem up_neg : 0 < up := by
+  rw [lt_iff_le_and_lf, zero_lf]
+  simp [zero_le_lf, zero_lf_star]
+
 theorem star_fuzzy_up : star ‖ up := by
   unfold Fuzzy
   simp only [← PGame.not_le]
@@ -1979,9 +1984,12 @@ theorem down_neg : down < 0 := by
 @[simp]
 theorem neg_down : -down = up := by simp [up, down]
 
+@[simp]
+theorem neg_up : -up = down := by simp [up, down]
+
 theorem star_fuzzy_down : star ‖ down := by
-  rw [← neg_fuzzy_neg_iff, ← neg_down_up, neg_star]
-  exact up_star_fuzzy
+  rw [← neg_fuzzy_neg_iff, neg_down, neg_star]
+  exact star_fuzzy_up
 
 instance : ZeroLEOneClass PGame :=
   ⟨PGame.zero_lt_one.le⟩
