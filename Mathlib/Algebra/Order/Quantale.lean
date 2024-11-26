@@ -181,7 +181,7 @@ end IsQuantale
 section Zero
 
 variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
-variable {x y z : α}
+variable {x : α}
 
 @[to_additive]
 theorem bot_mul_eq_bot : ⊥ * x = ⊥ := by
