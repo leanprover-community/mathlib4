@@ -140,8 +140,13 @@ def ForgetEnrichment.Opposite.fromToNatIso :
 
 /-- The equivalence between the underlying category of `Cᵒᵖ` and the opposite of the underlying
 category of `C`. -/
-def ForgetEnrichment.Opposite.equiv : ForgetEnrichment V Cᵒᵖ ≌ (ForgetEnrichment V C)ᵒᵖ :=
-  Equivalence.mk (toOp V C) (fromOp V C) (toFromNatIso V C) (fromToNatIso V C)
+@[simps]
+def forgetEnrichmentOppositeEquivalence :
+    ForgetEnrichment V Cᵒᵖ ≌ (ForgetEnrichment V C)ᵒᵖ where
+  functor := ForgetEnrichment.Opposite.toOp V C
+  inverse := ForgetEnrichment.Opposite.fromOp V C
+  unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- If `D` is an enriched ordinary category then `Dᵒᵖ` is an enriched ordinary category. -/
 instance EnrichedOrdinaryCategory.opposite {D : Type u} [Category.{v} D]
