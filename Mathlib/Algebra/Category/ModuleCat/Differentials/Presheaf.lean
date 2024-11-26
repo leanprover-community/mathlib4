@@ -8,7 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 import Mathlib.Algebra.Category.Ring.Constructions
 
 /-!
-# The presheaf of differentials of a presheaf of modules
+# The presheaf of differentials
 
 In this file, we define the type `M.Derivation φ` of derivations
 with values in a presheaf of `R`-modules `M` relative to
