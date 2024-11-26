@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 -/
 
-import Mathlib.Order.TypeTags
 import Mathlib.Data.Nat.Notation
 
 /-! # Definition and notation for positive natural numbers -/
