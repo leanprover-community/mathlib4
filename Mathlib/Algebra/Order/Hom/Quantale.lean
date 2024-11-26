@@ -217,6 +217,7 @@ end Comp
 section Bot
 
 variable [IsQuantale β]
+open IsQuantale
 
 /-- `⊥` is the quantale homomorphism sending all elements to `⊥`. -/
 @[to_additive]
