@@ -75,7 +75,7 @@ variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     SimplexCategory.Truncated.inclusion.op.HasRightKanExtension F]
 
 /-- There is a map of costructured arrows from `rightExtensionInclusion X n` to the right extension
-of the `n`-truncation of `X` defined by the counit of `coskAdj n`.-/
+of the `n`-truncation of `X` defined by the counit of `coskAdj n`. -/
 noncomputable def Truncated.coskRightExtension.hom : Truncated.rightExtensionInclusion X n ⟶
     RightExtension.mk _
       ((coskAdj n).counit.app ((Truncated.inclusion (n := n)).op ⋙ X)) :=
