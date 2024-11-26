@@ -78,8 +78,9 @@ def validateTitle (title: String) : Array String := Id.run do
       errors := errors.push s!"error: the PR scope must not start with 'Mathlib/'"
     if scope.endsWith ".lean" then
       errors := errors.push s!"error: a PR's scope must not end with '.lean'"
-    if scope.contains '.' then
-      errors := errors.push s!"error: a PR's scope should be a directory, not a module"
+    -- Disabling this for now, to reduce warning fatigue. Might enable this in the future.
+    -- if scope.contains '.' then
+    --  errors := errors.push s!"error: a PR's scope should be a directory, not a module"
     -- Future: we could check if `scope` describes a directory that actually exist.
   else
     errors := errors.push "error: the PR type should be of the form abbrev or abbrev(scope)"
@@ -256,11 +257,7 @@ info: Message: 'error: the PR type should be one of "feat", "chore", "perf", "re
 #guard_msgs in
 #check_title "feat(Mathlib/Algebra): title"
 
-/--
-info: Message: 'error: a PR's scope must not end with '.lean''
----
-info: Message: 'error: a PR's scope should be a directory, not a module'
--/
+/-- info: Message: 'error: a PR's scope must not end with '.lean'' -/
 #guard_msgs in
 #check_title "feat(Algebra.lean): title"
 
@@ -272,8 +269,6 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 info: Message: 'error: the PR scope must not start with 'Mathlib/''
 ---
 info: Message: 'error: a PR's scope must not end with '.lean''
----
-info: Message: 'error: a PR's scope should be a directory, not a module'
 -/
 #guard_msgs in
 #check_title "feat(Mathlib/Algebra.lean):  title."
