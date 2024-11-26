@@ -16,7 +16,7 @@ Given a presentation of a `R`-algebra `S`, we obtain a presentation
 of the `S`-module `Ω[S⁄R]`.
 
 Assume `pres : Algebra.Presentation R S` is a presentation of `S` as a `R`-algebra.
-We then have a type `pres.vars` for the generators, a type `pres.rels` for the relation,
+We then have a type `pres.vars` for the generators, a type `pres.rels` for the relations,
 and for each `r : pres.rels` we have the relation `pres.relation r` in `pres.Ring` (which is
 a ring of polynomials over `R` with variables indexed by `pres.vars`).
 Then, `Ω[pres.Ring⁄R]` identifies to the free module on the type `pres.vars`, and
