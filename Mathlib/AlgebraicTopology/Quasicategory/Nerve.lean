@@ -9,12 +9,12 @@ import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 # The nerve of a category is a quasicategory
 
 In `AlgebraicTopology.Quasicategory.StrictSegal`, we show that any
-`StrictSegal` simplicial set is a quasicategory.
+strict Segal simplicial set is a quasicategory.
 In `AlgebraicTopology.SimplicialSet.StrictSegal`, we show that the nerve of a
-category satisfies the `StrictSegal` condition.
+category satisfies the strict Segal condition.
 
-In this file, we show that the nerve of a category is a quasicategory as a
-direct consequence of the above-mentioned proofs.
+In this file, we prove as a direct consequence that the nerve of a category is
+a quasicategory.
 -/
 
 universe v u

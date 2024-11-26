@@ -9,11 +9,11 @@ import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 /-!
 # Strict Segal simplicial sets are quasicategories
 
-In `AlgebraicTopology.SimplicialSet.StrictSegal`, we define the `StrictSegal`
-condition on a simplicial set `X` as the unique existence of an equivalence
-between the simplices of `X` and their spines.
+In `AlgebraicTopology.SimplicialSet.StrictSegal`, we define the strict Segal
+condition on a simplicial set `X`. We say that `X` is strict Segal if its
+simplices are uniquely determined by their spine.
 
-In this file, we prove that any simplicial set satisfying the `StrictSegal`
+In this file, we prove that any simplicial set satisfying the strict Segal
 condition is a quasicategory.
 -/
 
