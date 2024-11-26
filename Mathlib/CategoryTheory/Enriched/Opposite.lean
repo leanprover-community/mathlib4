@@ -37,7 +37,7 @@ variable (C : Type u) [EnrichedCategory V C]
 
 /-- For a `V`-category `C`, construct the opposite `V`-category structure on the type `Cᵒᵖ`
 using the braiding in `V`. -/
-instance EnrichedCategory.Opposite : EnrichedCategory V Cᵒᵖ where
+instance EnrichedCategory.opposite : EnrichedCategory V Cᵒᵖ where
   Hom y x := EnrichedCategory.Hom x.unop y.unop
   id x := EnrichedCategory.id x.unop
   comp z y x := (β_ _ _).hom ≫ EnrichedCategory.comp (x.unop) (y.unop) (z.unop)
