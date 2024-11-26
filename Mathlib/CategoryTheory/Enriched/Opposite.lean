@@ -79,11 +79,14 @@ lemma tensorHom_eComp_op_eq {C : Type u} [EnrichedCategory V C] {x y z : Cᵒᵖ
 -- This section establishes the equivalence on underlying categories
 section
 
+open ForgetEnrichment
+
 variable (C : Type u) [EnrichedCategory V C]
 
 /-- The functor going from the underlying category of `Cᵒᵖ` to the opposite of the underlying
 category of `C`. -/
-def ForgetEnrichment.Opposite.toOp : ForgetEnrichment V Cᵒᵖ ⥤ (ForgetEnrichment V C)ᵒᵖ where
+def forgetEnrichmentOppositeEquivalence.functor :
+    ForgetEnrichment V Cᵒᵖ ⥤ (ForgetEnrichment V C)ᵒᵖ where
   obj x := x
   map {x y} f := f.op
   map_comp {x y z} f g := by
@@ -94,7 +97,8 @@ def ForgetEnrichment.Opposite.toOp : ForgetEnrichment V Cᵒᵖ ⥤ (ForgetEnric
 
 /-- The functor going from the opposite of the underlying category of `C` to the underlying
 category of `Cᵒᵖ`. -/
-def ForgetEnrichment.Opposite.fromOp : (ForgetEnrichment V C)ᵒᵖ ⥤ ForgetEnrichment V Cᵒᵖ where
+def forgetEnrichmentOppositeEquivalence.inverse :
+    (ForgetEnrichment V C)ᵒᵖ ⥤ ForgetEnrichment V Cᵒᵖ where
   obj x := x
   map {x y} f := f.unop
   map_comp {x y z} f g := by
@@ -113,8 +117,8 @@ def ForgetEnrichment.Opposite.fromOp : (ForgetEnrichment V C)ᵒᵖ ⥤ ForgetEn
 category of `C`. -/
 @[simps]
 def forgetEnrichmentOppositeEquivalence : ForgetEnrichment V Cᵒᵖ ≌ (ForgetEnrichment V C)ᵒᵖ where
-  functor := ForgetEnrichment.Opposite.toOp V C
-  inverse := ForgetEnrichment.Opposite.fromOp V C
+  functor := forgetEnrichmentOppositeEquivalence.functor V C
+  inverse := forgetEnrichmentOppositeEquivalence.inverse V C
   unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
