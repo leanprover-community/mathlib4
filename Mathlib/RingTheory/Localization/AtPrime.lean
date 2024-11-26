@@ -249,17 +249,48 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
   localRingHom_unique _ _ _ _ fun r => by
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
 
-end Localization
+namespace AtPrime
 
-namespace RingHom
+variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
+variable {i : ι} (J : Ideal (R i)) [J.IsPrime]
+
+/-- `Localization.localRingHom` specialized to a projection homomorphism from a product ring. -/
+noncomputable abbrev piRingHom :
+    Localization.AtPrime (J.comap <| Pi.evalRingHom R i) →+* Localization.AtPrime J :=
+  localRingHom _ _ _ rfl
+
+open Function in
+theorem piRingHom_bijective : Bijective (piRingHom J) := by
+  let J' := J.comap (Pi.evalRingHom R i)
+  refine ⟨fun x₁ x₂ eq ↦ ?_, fun x ↦ ?_⟩
+  · obtain ⟨r₁, s₁, rfl⟩ := mk'_surjective J'.primeCompl x₁
+    obtain ⟨r₂, s₂, rfl⟩ := mk'_surjective J'.primeCompl x₂
+    simp_rw [localRingHom_mk'] at eq
+    rw [IsLocalization.eq] at eq ⊢
+    obtain ⟨s, hs⟩ := eq
+    refine ⟨⟨update 0 i s, by apply update_same i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
+    obtain rfl | ne := eq_or_ne j i
+    · simpa using hs
+    · simp [update_noteq ne]
+  · obtain ⟨r, s, rfl⟩ := mk'_surjective J.primeCompl x
+    exact ⟨mk' (M := J'.primeCompl) _ (update 0 i r) ⟨update 0 i s, by
+      apply update_same i s.1 0 ▸ s.2⟩, by simp [localRingHom_mk']⟩
+
+end AtPrime
+
+end Localization
 
 variable (R)
 
+/-- The product of localizations at all prime ideals of a commutative semiring. -/
+abbrev PiLocalizationIsMaximal : Type _ :=
+  Π I : {I : Ideal R | I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1
+
+namespace RingHom
+
 /-- The canonical ring homomorphism from a commutative semiring to the product of its
 localizations at all maximal ideals. It is always injective. -/
-def toLocalizationIsMaximal : R →+*
-    Π I : {I : Ideal R // I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
-  Pi.ringHom fun _ ↦ algebraMap R _
+def toLocalizationIsMaximal : R →+* PiLocalizationIsMaximal R := algebraMap R _
 
 theorem toLocalizationIsMaximal_injective :
     Function.Injective (RingHom.toLocalizationIsMaximal R) := fun r r' eq ↦ by

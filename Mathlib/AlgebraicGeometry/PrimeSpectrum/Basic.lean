@@ -237,6 +237,21 @@ theorem discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical :
       rwa [← hM.eq_of_le hI.1 hMI]
     exact ⟨fin.subset hpm, hpm⟩
 
+theorem discreteTopology_of_toPiLocalization_surjective
+    (surj : Function.Surjective (toPiLocalization R)) :
+    DiscreteTopology (PrimeSpectrum R) := by
+  rw [discreteTopology_iff_finite_and_isPrime_imp_isMaximal, and_comm]
+  by_contra h
+  obtain h | h := not_and_or.mp h
+  · push_neg at h
+    obtain ⟨I, _, hI⟩ := h
+    exact toPiLocalization_not_surjective_of_prime_not_maximal _ hI surj
+  rw [not_finite_iff_infinite] at h
+  have ⟨I, max, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite
+    (fun I : PrimeSpectrum R ↦ Localization I.asIdeal.primeCompl)
+  sorry
+
+
 section Comap
 
 variable {S' : Type*} [CommSemiring S']

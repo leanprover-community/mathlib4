@@ -5,6 +5,7 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
@@ -562,6 +563,123 @@ theorem localization_specComap_range [Algebra R S] (M : Submonoid R) [IsLocaliza
     use ⟨x.asIdeal.map (algebraMap R S), IsLocalization.isPrime_of_isPrime_disjoint M S _ x.2 h⟩
     ext1
     exact IsLocalization.comap_map_of_isPrime_disjoint M S _ x.2 h
+
+section Pi
+
+variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
+
+/-- The canonical map from a disjoint union of prime spectra of commutative semirings to
+the prime spectrum of the product semiring. -/
+/- TODO: show this is always a topological embedding (even when ι is infinite)
+and is a homeomorphism when ι is finite. -/
+@[simps] def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
+  | ⟨i, p⟩ => (Pi.evalRingHom R i).specComap p
+
+theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
+  obtain rfl | ne := eq_or_ne i j
+  · congr; ext x
+    simpa using congr_arg (Function.update (0 : ∀ i, R i) i x ∈ ·.asIdeal) eq
+  · refine (p.1.ne_top_iff_one.mp p.2.ne_top ?_).elim
+    have : Function.update (1 : ∀ i, R i) j 0 ∈ (sigmaToPi R ⟨j, q⟩).asIdeal := by simp
+    simpa [← eq, Function.update_noteq ne]
+
+variable [Infinite ι] [∀ i, Nontrivial (R i)]
+
+/-- An infinite product of nontrivial commutative semirings has a maximal ideal outside of the
+range of `sigmaToPi`, i.e. is not of the form `πᵢ⁻¹(𝔭)` for some prime `𝔭 ⊂ R i`, where
+`πᵢ : Π i, R i → R i` is the projection. For a complete description of all prime ideals,
+see https://math.stackexchange.com/a/1563190. -/
+theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
+    ∃ (I : Ideal (Π i, R i)) (_ : I.IsMaximal), ⟨I, inferInstance⟩ ∉ Set.range (sigmaToPi R) := by
+  let J : Ideal (Π i, R i) := -- `J := Π₀ i, R i` is an ideal in `Π i, R i`
+  { __ := AddMonoidHom.mrange DFinsupp.coeFnAddMonoidHom
+    smul_mem' := by
+      rintro r _ ⟨x, rfl⟩
+      refine ⟨.mk x.support fun i ↦ r i * x i, funext fun i ↦ show dite _ _ _ = _ from ?_⟩
+      simp_rw [DFinsupp.coeFnAddMonoidHom]
+      refine dite_eq_left_iff.mpr fun h ↦ ?_
+      rw [DFinsupp.not_mem_support_iff.mp h, mul_zero] }
+  have ⟨I, max, le⟩ := J.exists_le_maximal <| (Ideal.ne_top_iff_one _).mpr <| by
+    -- take a maximal ideal I containing J
+    rintro ⟨x, hx⟩
+    have ⟨i, hi⟩ := x.support.exists_not_mem
+    simpa [DFinsupp.coeFnAddMonoidHom, DFinsupp.not_mem_support_iff.mp hi] using congr_fun hx i
+  refine ⟨I, max, fun ⟨⟨i, p⟩, eq⟩ ↦ ?_⟩
+  -- then I is not in the range of `sigmaToPi`
+  have : ⇑(DFinsupp.single i 1) ∉ (sigmaToPi R ⟨i, p⟩).asIdeal := by
+    simpa using p.1.ne_top_iff_one.mp p.2.ne_top
+  rw [eq] at this
+  exact this (le ⟨.single i 1, rfl⟩)
+
+theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fun surj ↦
+  have ⟨_, _, nmem⟩ := exists_maximal_nmem_range_sigmaToPi_of_infinite R
+  (Set.range_eq_univ.mpr surj ▸ nmem) ⟨⟩
+
+end Pi
+
+section Localizations
+
+variable (R)
+
+/- theorem _root_.RingHom.finite_of_toLocalizationIsMaximal_surjective
+    (surj : Function.Surjective (toLocalizationIsMaximal R)) :
+    {I : Ideal R | I.IsMaximal}.Finite := by
+  by_contra! h
+  rw [Set.Finite, not_finite_iff_infinite] at h
+  have ⟨(I : Ideal (PiLocalizationIsMaximal R)), max, nmem⟩ :=
+    exists_maximal_nmem_range_sigmaToPi_of_infinite _
+  apply nmem -/
+
+
+
+/-- The product of localizations at all prime ideals of a commutative semiring. -/
+abbrev PiLocalization : Type _ := Π p : PrimeSpectrum R, Localization p.asIdeal.primeCompl
+
+/-- The canonical ring homomorphism from a commutative semiring to the product of its
+localizations at all prime ideals. It is always injective. -/
+def toLocalization : R →+* PiLocalization R := algebraMap R _
+
+/-- The projection from the product of localizations at primes to the product of
+localizations at maximal ideals. -/
+def piLocalizationToIsMaximal : PiLocalization R →+* PiLocalizationIsMaximal R :=
+  Pi.ringHom fun I ↦ Pi.evalRingHom _ (⟨_, I.2.isPrime⟩ : PrimeSpectrum R)
+
+theorem piLocalizationToIsMaximal_comp_toLocalization :
+    (piLocalizationToIsMaximal R).comp (toLocalization R) = toLocalizationIsMaximal R := by
+  rfl
+
+theorem toLocalization_injective : Function.Injective (toLocalization R) :=
+  fun _ _ eq ↦ toLocalizationIsMaximal_injective R <| funext fun I ↦ congr_fun eq ⟨I, I.2.isPrime⟩
+
+
+variable {R S}
+
+theorem toLocalization_not_surjective_of_prime_not_maximal (I : Ideal R) [I.IsPrime]
+    (h : ¬ I.IsMaximal) : ¬ Function.Surjective (toLocalization R) := fun surj ↦ by
+  have ⟨J, max, le⟩ := I.exists_le_maximal (Ideal.IsPrime.ne_top ‹_›)
+  classical
+  obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max.isPrime⟩ 1)
+  have hJ : algebraMap _ _ r = _ := (congr_fun hr _).trans (Function.update_same _ _ _)
+  have hI : algebraMap _ _ r = _ := congr_fun hr ⟨I, ‹_›⟩
+  rw [← IsLocalization.lift_eq (M := J.primeCompl) (S := Localization J.primeCompl), hJ, map_one,
+    Function.update_noteq] at hI
+  · exact one_ne_zero hI
+  · intro eq; have : I = J := congr_arg (·.1) eq; exact h (this ▸ max)
+  · exact fun ⟨s, hs⟩ ↦ IsLocalization.map_units (M := I.primeCompl) _ ⟨s, fun h ↦ hs (le h)⟩
+
+/-- A ring homomorphism induces a homomorphism between the products of localizations at primes. -/
+noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
+  Pi.ringHom fun I ↦ (Localization.localRingHom _ I.1 f rfl).comp (Pi.evalRingHom _ (f.specComap I))
+
+theorem mapPiLocalization_naturality :
+    (mapPiLocalization f).comp (toLocalization R) = (toLocalization S).comp f := by
+  ext r I
+  show Localization.localRingHom _ _ _ rfl (algebraMap _ _ r) = algebraMap _ _ (f r)
+  simp_rw [← IsLocalization.mk'_one (M := (I.1.comap f).primeCompl), Localization.localRingHom_mk',
+    ← IsLocalization.mk'_one (M := I.1.primeCompl), Submonoid.coe_one, map_one f]
+  rfl
+
+end Localizations
 
 end PrimeSpectrum
 
