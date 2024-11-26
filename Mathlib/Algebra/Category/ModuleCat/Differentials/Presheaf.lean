@@ -498,7 +498,8 @@ lemma homEquiv_pullbackMap_comp
       hdφ.homEquiv.symm (Derivation.pushforward fac (dφψ.postcomp α)) := by
   apply hdφ.homEquiv.injective
   dsimp only [pullbackMap, pushforwardMap, pushforward_postcomp]
-  simp [postcomp_comp]
+  simp only [homEquiv_apply, homEquiv_symm_apply, PresheafOfModules.Derivation.Universal.fac,
+    Adjunction.homEquiv_naturality_right, Equiv.apply_symm_apply, postcomp_comp]
 
 @[simp]
 lemma pullbackMap_comp_eq_zero_iff
@@ -507,7 +508,8 @@ lemma pullbackMap_comp_eq_zero_iff
       Derivation.pushforward fac (dφψ.postcomp α) = 0 := by
   rw [← EmbeddingLike.apply_eq_iff_eq ((adjunctionψ).homEquiv M P'),
     ← EmbeddingLike.apply_eq_iff_eq hdφ.homEquiv, homEquiv_pullbackMap_comp]
-  simp
+  simp only [homEquiv_symm_apply, homEquiv_apply, PresheafOfModules.Derivation.Universal.fac]
+  rfl
 
 variable {hdφ fac dφψ}
   {c : CokernelCofork (hdφ.pullbackMap fac dφψ)} (hc : IsColimit c) (hdφψ : dφψ.Universal)
@@ -579,8 +581,6 @@ lemma hasDifferentials_of_tower
         (universalUniversalDerivation φψ)⟩⟩
 
 end
-
-attribute [pp_with_univ] HasDifferentials
 
 def absoluteDerivationEquiv
     (φ : (Functor.const Cᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ F.op ⋙ R)
