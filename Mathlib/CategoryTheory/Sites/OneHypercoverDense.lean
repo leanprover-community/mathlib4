@@ -18,25 +18,6 @@ open Category Limits Opposite
 
 variable {C₀ : Type u₀} {C : Type u} [Category.{v₀} C₀] [Category.{v} C]
 
-namespace Sieve
-
-variable {I : Type*} {X : C} {Y : I → C} {f : ∀ i, Y i ⟶ X} {W : C} {g : W ⟶ X}
-  (hg : ofArrows Y f g)
-
-include hg in
-lemma ofArrows.exists : ∃ (i : I) (h : W ⟶ Y i), g = h ≫ f i := by
-  obtain ⟨_, h, _, H, rfl⟩ := hg
-  cases' H with i
-  exact ⟨i, h, rfl⟩
-
-noncomputable def ofArrows.i : I := (ofArrows.exists hg).choose
-noncomputable def ofArrows.h : W ⟶ Y (i hg) := (ofArrows.exists hg).choose_spec.choose
-@[reassoc]
-lemma ofArrows.fac : g = h hg ≫ f (i hg) :=
-  (ofArrows.exists hg).choose_spec.choose_spec
-
-end Sieve
-
 namespace Functor
 
 variable (F : C₀ ⥤ C) (J₀ : GrothendieckTopology C₀)
@@ -239,7 +220,7 @@ lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) 
     (fun Y f hf ↦ ((F.imageSieve (hf.some.map ≫ p₁) ⊓
         F.imageSieve (hf.some.map ≫ p₂)).functorPushforward F).pullback hf.some.lift)
   let T := Sieve.bind S.arrows (fun Z g hg ↦ by
-    letI str := Presieve.getFunctorPushforwardStructure (Presieve.bindStruct hg).hg
+    letI str := Presieve.getFunctorPushforwardStructure hg.bindStruct.hg
     exact Sieve.pullback str.lift
       (Sieve.functorPushforward F (data.sieve₁₀ str.cover.1.choose str.cover.2.choose)))
   have hS : S ∈ J W := by
@@ -253,12 +234,12 @@ lemma mem₁ (i₁ i₂ : data.I₀) {W : C} (p₁ : W ⟶ F.obj (data.X i₁)) 
   have hT : T ∈ J W := J.bind_covering hS (fun Z g hg ↦ by
     apply J.pullback_stable
     rw [Functor.functorPushforward_mem_iff J₀]
-    let str := Presieve.getFunctorPushforwardStructure (Presieve.bindStruct hg).hg
+    let str := Presieve.getFunctorPushforwardStructure hg.bindStruct.hg
     apply data.mem₁₀
     simp only [str.cover.1.choose_spec, str.cover.2.choose_spec, assoc, w])
   refine J.superset_covering ?_ hT
   rintro U f ⟨V, a, b, hb, h, _, rfl⟩
-  let str := Presieve.getFunctorPushforwardStructure (Presieve.bindStruct hb).hg
+  let str := Presieve.getFunctorPushforwardStructure hb.bindStruct.hg
   obtain ⟨W₀, c : _ ⟶ _, d, ⟨j, e, h₁, h₂⟩, fac⟩ := h
   dsimp
   refine ⟨j, d ≫ F.map e, ?_, ?_⟩
@@ -309,7 +290,7 @@ lemma sieve_mem : sieve data f ∈ J₀ X₀ := by
     dsimp at hp'
     refine ⟨U, x₁, d, ⟨Sieve.ofArrows.i hp,
       F.map c ≫ (Nonempty.some hb).map ≫ Sieve.ofArrows.h hp, ?_⟩, ?_⟩
-    · rw [w₁, assoc, assoc, assoc, assoc, ← hp']
+    · rw [w₁, assoc, assoc, assoc, assoc, hp']
     · rw [w₁, assoc, ← reassoc_of% fac, hb.some.fac_assoc]
   · intro U π hπ
     apply J.pullback_stable
@@ -603,7 +584,7 @@ lemma presheafMap_restriction {X Y : C} {X₀ : C₀} (f : F.obj X₀ ⟶ X) (g 
     IsDenseSubsite.mapPreimage_map_of_fac F J G₀ _ _ x₂ (by simpa using fac₂.symm),
     IsDenseSubsite.mapPreimage_map_of_fac F J G₀ _ _ x₁ fac₁.symm]
   rw [restriction_map data G₀ _ _ (F.map x₁)
-    (by rw [fac₁, fac₂, assoc, assoc, map_comp_assoc, ← hc']),
+    (by rw [fac₁, fac₂, assoc, assoc, map_comp_assoc, hc']),
     IsDenseSubsite.mapPreimage_map]
 
 lemma presheafMap_id (X : C) :
@@ -641,9 +622,9 @@ noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.
         rw [assoc, assoc, IsDenseSubsite.mapPreimage_comp_map,
           IsDenseSubsite.mapPreimage_comp_map,
           ← restriction_eq_of_fac data G₀ (F.map (p₁ ≫ a))
-            (F.map p₁ ≫ Sieve.ofArrows.h ha) (by rw [assoc, ← ha', map_comp]),
+            (F.map p₁ ≫ Sieve.ofArrows.h ha) (by rw [assoc, ha', map_comp]),
           restriction_eq_of_fac data G₀ (F.map (p₁ ≫ a))
-            (F.map p₂ ≫ Sieve.ofArrows.h hb) (by rw [assoc, ← hb', fac, map_comp])])
+            (F.map p₂ ≫ Sieve.ofArrows.h hb) (by rw [assoc, hb', fac, map_comp])])
 
 variable {X₀}
 
@@ -657,7 +638,7 @@ lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     ⟨_, p, _, ⟨i⟩, fac⟩
   exact (G₀.2.amalgamate_map _ _ _ ⟨W₀, a, ha⟩).trans
     (presheafObj_mapPreimage_condition _ _ _ _ _ _ _
-      ((Sieve.ofArrows.fac ha).symm.trans fac.symm))
+      ((Sieve.ofArrows.fac ha).trans fac.symm))
 
 @[reassoc]
 lemma hom_mapPreimage {W₀ : C₀} (a : F.obj W₀ ⟶ F.obj X₀) {i : (data (F.obj X₀)).I₀}
