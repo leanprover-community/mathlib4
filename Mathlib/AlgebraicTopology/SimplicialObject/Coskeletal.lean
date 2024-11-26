@@ -51,15 +51,15 @@ end Truncated
 open Truncated
 
 /-- A simplicial object `X` is `n`-coskeletal when it is the right Kan extension of its restriction
-along `(Truncated.inclusion n).op` via the identity natural transformation.-/
+along `(Truncated.inclusion n).op` via the identity natural transformation. -/
 class IsCoskeletal : Prop where
   nonempty_isRightKanExtension :
     Nonempty (IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)))
 
 variable [X.IsCoskeletal n]
 
-/-- If `X` is `n`-cosketal, then `rightExtensionInclusion X n` is a terminal object in the category
-`RightExtension (Truncated.inclusion n).op (Truncated.inclusion.op ⋙ X)`. -/
+/-- If `X` is `n`-cosketal, then `𝟙 ((Truncated.inclusion n).op ⋙ X)` defines a right Kan
+extension of `(Truncated.inclusion.op ⋙ X)` along `(Truncated.inclusion n).op`. -/
 theorem IsCoskeletal.isRightKanExtension :
     IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)) :=
   IsCoskeletal.nonempty_isRightKanExtension.some
@@ -76,40 +76,40 @@ variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
 
 /-- There is a map of costructured arrows from `rightExtensionInclusion X n` to the right extension
 of the `n`-truncation of `X` defined by the counit of `coskAdj n`. -/
-noncomputable def Truncated.coskRightExtension.hom : Truncated.rightExtensionInclusion X n ⟶
+noncomputable def Truncated.rightExtensionCosk.hom : Truncated.rightExtensionInclusion X n ⟶
     RightExtension.mk _
       ((coskAdj n).counit.app ((Truncated.inclusion n).op ⋙ X)) :=
   CostructuredArrow.homMk ((coskAdj n).unit.app X) ((coskAdj n).left_triangle_components X)
 
-instance Truncated.coskIsRightKanExtension : IsRightKanExtension
+instance Truncated.isRightKanExtensionCosk : IsRightKanExtension
     ((Truncated.cosk n).obj ((inclusion n).op ⋙ X))
     ((coskAdj n).counit.app ((inclusion n).op ⋙ X)) := by
-  unfold Truncated.cosk
-  unfold coskAdj
+  unfold Truncated.cosk coskAdj
   rw [ranAdjunction_counit]
   exact Functor.instIsRightKanExtensionObjRanAppRanCounit _ _
 
 /-- The map `coskRightExtension.hom X` is a natural transformation between two right Kan extensions
 of the diagram `Truncated.inclusion.op ⋙ X` and thus is an isomorphism. -/
-instance IsCoskeletal.coskRightExtension.hom_isIso : IsIso (coskRightExtension.hom X n) :=
+instance IsCoskeletal.coskRightExtension.isIsoHom : IsIso (rightExtensionCosk.hom X n) :=
   isIso_of_isTerminal (IsCoskeletal.isUniversalOfIsRightKanExtension X n)
     (((Truncated.cosk n).obj
       ((Truncated.inclusion n).op ⋙ X)).isUniversalOfIsRightKanExtension
         ((coskAdj n).counit.app ((Truncated.inclusion n).op ⋙ X)))
-      (coskRightExtension.hom X n)
+      (rightExtensionCosk.hom X n)
 
 /-- The map `coskRightExtension.hom X` is a natural transformation between two right Kan extensions
 of the diagram `Truncated.inclusion.op ⋙ X` and thus is an isomorphism. -/
 noncomputable def IsCoskeletal.coskRightExtension.homIso :
     Truncated.rightExtensionInclusion X n ≅ RightExtension.mk _
       ((coskAdj n).counit.app ((Truncated.inclusion n).op ⋙ X)) :=
-  asIso (coskRightExtension.hom X n)
+  asIso (rightExtensionCosk.hom X n)
 
-/-- The isomorphism `X ≅ (Truncated.cosk n).obj X` that exists when `X` is coskeletal and the
+/-- The isomorphism `X ≅ (cosk n).obj X` that exists when `X` is coskeletal and the
 `n`-coskeleton functor exists.-/
-noncomputable def isoCoskOfIsCoskeletal : X ≅ (Truncated.cosk n).obj ((truncation n).obj X) :=
+noncomputable def IsCoskeletal.isoCosk : X ≅ (cosk n).obj X :=
   (CostructuredArrow.proj ((whiskeringLeft _ _ _).obj (Truncated.inclusion n).op)
     ((Truncated.inclusion n).op ⋙ X)).mapIso (IsCoskeletal.coskRightExtension.homIso X n)
+
 
 end SimplicialObject
 
