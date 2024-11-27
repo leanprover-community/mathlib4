@@ -243,8 +243,6 @@ lemma CountableAB4Star.of_countableAB5Star [HasLimitsOfShape ℕᵒᵖ C] [HasEx
 
 end AB4StarOfAB5Star
 
-end AB4StarOfAB5Star
-
 /--
 Checking exactness of colimits of shape `Discrete ℕ` and `Discrete J` for finite `J` is enough for
 countable AB4.
