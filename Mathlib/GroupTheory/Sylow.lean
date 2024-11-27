@@ -806,7 +806,7 @@ noncomputable def directProductOfNormal [Finite G]
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (Fintype.bijective_iff_injective_and_card _).mpr
   constructor
-  · apply Subgroup.injective_noncommPiCoprod_of_independent
+  · apply Subgroup.injective_noncommPiCoprod_of_iSupIndep
     apply independent_of_coprime_order hcomm
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
