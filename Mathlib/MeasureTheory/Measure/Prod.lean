@@ -874,6 +874,16 @@ theorem fst_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
     (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
   fst_map_prod_mk₀ hY.aemeasurable
 
+lemma fst_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).fst = sum (fun n ↦ (μ n).fst) := by
+  ext s hs
+  rw [fst_apply hs, sum_apply, sum_apply _ hs]
+  · congr with i
+    rw [fst_apply hs]
+  · exact measurable_fst hs
+
+instance [SFinite ρ] : SFinite ρ.fst :=
+  ⟨fun n ↦ (sfiniteSeq ρ n).fst, inferInstance, by rw [← fst_sum, sum_sfiniteSeq ρ]⟩
+
 @[gcongr]
 theorem fst_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.fst ≤ μ.fst := map_mono h measurable_fst
 
@@ -920,6 +930,16 @@ theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX
 theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X) :
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
+
+lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) := by
+  ext s hs
+  rw [snd_apply hs, sum_apply, sum_apply _ hs]
+  · congr with i
+    rw [snd_apply hs]
+  · exact measurable_snd hs
+
+instance [SFinite ρ] : SFinite ρ.snd :=
+  ⟨fun n ↦ (sfiniteSeq ρ n).snd, inferInstance, by rw [← snd_sum, sum_sfiniteSeq ρ]⟩
 
 @[gcongr]
 theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd := map_mono h measurable_snd

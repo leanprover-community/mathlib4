@@ -58,6 +58,11 @@ lemma compProd_apply [SFinite μ] [IsSFiniteKernel κ] {s : Set (α × β)} (hs 
   simp_rw [compProd, Kernel.compProd_apply hs, Kernel.const_apply, Kernel.prodMkLeft_apply']
   rfl
 
+@[simp]
+lemma compProd_apply_univ [SFinite μ] [IsMarkovKernel κ] : (μ ⊗ₘ κ) .univ = μ .univ := by
+  rw [compProd_apply .univ]
+  simp
+
 lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]
     {s : Set α} {t : Set β} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     (μ ⊗ₘ κ) (s ×ˢ t) = ∫⁻ a in s, κ a t ∂μ := by
@@ -66,6 +71,19 @@ lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]
   classical
   rw [Set.indicator_apply]
   split_ifs with ha <;> simp [ha]
+
+lemma toReal_compProd_apply [SFinite μ] [IsFiniteKernel κ]
+    {s : Set (α × β)} (hs : MeasurableSet s) :
+    ((μ ⊗ₘ κ) s).toReal = ∫ x, (κ x (Prod.mk x ⁻¹' s)).toReal ∂μ := by
+  rw [compProd_apply hs, integral_eq_lintegral_of_nonneg_ae]
+  · congr with x
+    rw [ENNReal.ofReal_toReal (measure_ne_top _ _)]
+  · exact ae_of_all _ fun _ ↦ ENNReal.toReal_nonneg
+  · exact (Kernel.measurable_kernel_prod_mk_left hs).ennreal_toReal.aestronglyMeasurable
+
+lemma toReal_compProd_apply_univ [SFinite μ] [IsFiniteKernel κ] :
+    ((μ ⊗ₘ κ) .univ).toReal = ∫ x, (κ x .univ).toReal ∂μ :=
+  toReal_compProd_apply .univ
 
 lemma compProd_congr [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (h : κ =ᵐ[μ] η) : μ ⊗ₘ κ = μ ⊗ₘ η := by
@@ -91,6 +109,14 @@ lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (∀ᵐ x ∂(μ ⊗ₘ κ), p x) ↔ ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
   Kernel.ae_compProd_iff hp
 
+/-- The composition product of a measure and a constant kernel is the product between the two
+measures. -/
+@[simp]
+lemma compProd_const {ν : Measure β} [SFinite μ] [SFinite ν] :
+    μ ⊗ₘ (Kernel.const α ν) = μ.prod ν := by
+  ext s hs
+  simp_rw [compProd_apply hs, prod_apply hs, Kernel.const_apply]
+
 lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : Kernel α β) :
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
   by_cases hκ : IsSFiniteKernel κ
@@ -103,6 +129,12 @@ lemma compProd_add_right (μ : Measure α) (κ η : Kernel α β)
   by_cases hμ : SFinite μ
   · simp_rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right, Kernel.add_apply]
   · simp [compProd_of_not_sfinite _ _ hμ]
+
+@[simp]
+lemma fst_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsMarkovKernel κ] :
+    (μ ⊗ₘ κ).fst = μ := by
+  ext s
+  rw [compProd, Measure.fst, ← Kernel.fst_apply, Kernel.fst_compProd, Kernel.const_apply]
 
 section Integral
 
