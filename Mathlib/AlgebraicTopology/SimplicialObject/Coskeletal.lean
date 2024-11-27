@@ -56,20 +56,7 @@ class IsCoskeletal : Prop where
   nonempty_isRightKanExtension :
     Nonempty (IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)))
 
-variable [X.IsCoskeletal n]
-
-/-- If `X` is `n`-cosketal, then `𝟙 ((Truncated.inclusion n).op ⋙ X)` defines a right Kan
-extension of `(Truncated.inclusion.op ⋙ X)` along `(Truncated.inclusion n).op`. -/
-theorem IsCoskeletal.isRightKanExtension :
-    IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)) :=
-  IsCoskeletal.nonempty_isRightKanExtension.some
-
-/-- If `X` is `n`-coskeletal, then `Truncated.rightExtensionInclusion X n` is a terminal object in
-the category `RightExtension (Truncated.inclusion n).op (Truncated.inclusion.op ⋙ X)`. -/
-noncomputable def IsCoskeletal.isUniversalOfIsRightKanExtension :
-    (rightExtensionInclusion X n).IsUniversal := by
-  have := isRightKanExtension X n
-  apply Functor.isUniversalOfIsRightKanExtension
+section
 
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F]
@@ -87,6 +74,47 @@ instance Truncated.isRightKanExtensionCosk : IsRightKanExtension
   unfold Truncated.cosk coskAdj
   rw [ranAdjunction_counit]
   infer_instance
+
+instance Truncated.isRightKanExtensionCosk' : IsRightKanExtension
+    ((Truncated.cosk n).obj ((truncation n).obj X))
+    ((coskAdj n).counit.app ((truncation n).obj X)) := by
+  show IsRightKanExtension
+    ((Truncated.cosk n).obj ((inclusion n).op ⋙ X))
+    ((coskAdj n).counit.app ((inclusion n).op ⋙ X))
+  infer_instance
+
+instance Truncated.isRightKanExtensionCosk'' : IsRightKanExtension
+    ((Truncated.cosk n).obj ((inclusion n).op ⋙ X))
+    ((coskAdj n).counit.app ((truncation n).obj X)) := by
+  show IsRightKanExtension
+    ((Truncated.cosk n).obj ((inclusion n).op ⋙ X))
+    ((coskAdj n).counit.app ((inclusion n).op ⋙ X))
+  infer_instance
+
+instance Truncated.isRightKanExtensionCosk''' : IsRightKanExtension
+    ((truncation n ⋙ Truncated.cosk n).obj X)
+    ((coskAdj n).counit.app ((inclusion n).op ⋙ X)) := by
+  show IsRightKanExtension
+    ((Truncated.cosk n).obj ((inclusion n).op ⋙ X))
+    ((coskAdj n).counit.app ((inclusion n).op ⋙ X))
+  infer_instance
+
+section
+
+variable [X.IsCoskeletal n]
+
+/-- If `X` is `n`-cosketal, then `𝟙 ((Truncated.inclusion n).op ⋙ X)` defines a right Kan
+extension of `(Truncated.inclusion.op ⋙ X)` along `(Truncated.inclusion n).op`. -/
+instance IsCoskeletal.isRightKanExtension :
+    IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)) :=
+  IsCoskeletal.nonempty_isRightKanExtension.some
+
+/-- If `X` is `n`-coskeletal, then `Truncated.rightExtensionInclusion X n` is a terminal object in
+the category `RightExtension (Truncated.inclusion n).op (Truncated.inclusion.op ⋙ X)`. -/
+noncomputable def IsCoskeletal.isUniversalOfIsRightKanExtension :
+    (rightExtensionInclusion X n).IsUniversal := by
+  have := isRightKanExtension X n
+  apply Functor.isUniversalOfIsRightKanExtension
 
 /-- The map `Truncated.rightExtensionCosk.hom X` is a natural transformation between two right Kan
 extensions of the diagram `(Truncated.inclusion n).op ⋙ X` and thus is an isomorphism. -/
@@ -108,9 +136,40 @@ noncomputable def IsCoskeletal.rightExtensionCosk.homIso :
 /-- The canonical isomorphism `X ≅ (cosk n).obj X` defined when `X` is coskeletal and the
 `n`-coskeleton functor exists.-/
 noncomputable def isoCoskOfIsCoskeletal : X ≅ (cosk n).obj X :=
-  (CostructuredArrow.proj ((whiskeringLeft _ _ _).obj (Truncated.inclusion n).op)
-    ((Truncated.inclusion n).op ⋙ X)).mapIso (IsCoskeletal.rightExtensionCosk.homIso X n)
+  Functor.rightKanExtensionUnique _ (𝟙 _) _ ((coskAdj n).counit.app _)
 
+@[simp]
+lemma isoCoskOfIsCoskeletal_hom : (X.isoCoskOfIsCoskeletal n).hom = (coskAdj n).unit.app X := by
+  refine hom_ext_of_isRightKanExtension _
+    ((coskAdj n).counit.app ((Truncated.inclusion n).op ⋙ X))
+    (X.isoCoskOfIsCoskeletal n).hom ((coskAdj n).unit.app X) ?_
+  have : whiskerLeft (inclusion n).op
+    ((coskAdj n).unit.app X) ≫ (coskAdj n).counit.app ((inclusion n).op ⋙ X) = 𝟙 _ :=
+      (coskAdj n).left_triangle_components X
+  rw [this]
+  simp [isoCoskOfIsCoskeletal]
+  apply liftOfIsRightKanExtension_fac
+
+end
+
+theorem isRightKanExtensionCosk_iff_isIso :
+    IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)) ↔
+    IsIso ((coskAdj n).unit.app X) := by
+  refine isRightKanExtension_iff_isIso
+    ((coskAdj n).unit.app X) ((coskAdj n).counit.app ((inclusion n).op ⋙ X)) (𝟙 _) ?_
+  simp only [id_obj, comp_obj]
+  exact (coskAdj n).left_triangle_components X
+
+theorem isCoskeletal_iff_isIso : X.IsCoskeletal n ↔ IsIso ((coskAdj n).unit.app X) where
+  mp := by
+    intro hyp
+    rw [← isoCoskOfIsCoskeletal_hom]
+    exact Iso.isIso_hom (X.isoCoskOfIsCoskeletal n)
+  mpr := fun hyp => {
+    nonempty_isRightKanExtension := Nonempty.intro ((isRightKanExtensionCosk_iff_isIso X n).mpr hyp)
+  }
+
+end
 
 end SimplicialObject
 

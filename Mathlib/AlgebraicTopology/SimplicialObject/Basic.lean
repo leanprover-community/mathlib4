@@ -300,6 +300,16 @@ noncomputable def skAdj : Truncated.sk (C := C) n ⊣ truncation n :=
 noncomputable def coskAdj : truncation (C := C) n ⊣ Truncated.cosk n :=
   ranAdjunction _ _
 
+instance : ((sk n).obj X).IsLeftKanExtension ((skAdj n).unit.app _) := by
+  dsimp [sk, skAdj]
+  rw [lanAdjunction_unit]
+  infer_instance
+
+instance : ((cosk n).obj X).IsRightKanExtension ((coskAdj n).counit.app _) := by
+  dsimp [cosk, coskAdj]
+  rw [ranAdjunction_counit]
+  infer_instance
+
 namespace Truncated
 /- When the left and right Kan extensions exist and are pointwise Kan extensions,
 `skAdj n` and `coskAdj n` are respectively coreflective and reflective.-/
