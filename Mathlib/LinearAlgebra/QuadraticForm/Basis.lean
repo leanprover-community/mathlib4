@@ -16,19 +16,6 @@ a basis.
 
 open LinearMap (BilinMap)
 
-section
-
-variable {ι R}
-
-/-- All the products of pairs of elements in `f`. -/
-noncomputable def Finsupp.sym2Mul [CommMonoidWithZero R] (f : ι →₀ R) : Sym2 ι →₀ R :=
-  .onFinset
-    f.support.sym2
-    (Sym2.lift ⟨fun i j => f i * f j, fun _ _ => mul_comm _ _⟩)
-    (Sym2.ind <| by aesop)
-
-end
-
 namespace QuadraticMap
 
 section
@@ -45,7 +32,6 @@ theorem map_finsupp_sum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
         ⟨fun i j => (polar Q) (g i (f i)) (g j (f j)), fun i j => by simp only [polar_comm]⟩ p := by
   rw [sum, QuadraticMap.map_sum]
   exact congrArg (HAdd.hAdd _) rfl
-
 
 end
 
