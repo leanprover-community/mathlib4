@@ -140,7 +140,7 @@ def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Pr
   match n with
   | ω => ∃ u ∈ 𝓝[insert x s] x, ∃ p : E → FormalMultilinearSeries 𝕜 E F,
       HasFTaylorSeriesUpToOn ω f p u ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) u
-  | (n : ℕ∞) => ∀ m : ℕ, (m : ℕ∞) ≤ n → ∃ u ∈ 𝓝[insert x s] x,
+  | (n : ℕ∞) => ∀ m : ℕ, m ≤ n → ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn m f p u
 
 lemma HasFTaylorSeriesUpToOn.analyticOn
@@ -212,6 +212,8 @@ theorem contDiffWithinAt_iff_forall_nat_le {n : ℕ∞} :
 theorem contDiffWithinAt_infty :
     ContDiffWithinAt 𝕜 ∞ f s x ↔ ∀ n : ℕ, ContDiffWithinAt 𝕜 n f s x :=
   contDiffWithinAt_iff_forall_nat_le.trans <| by simp only [forall_prop_of_true, le_top]
+
+@[deprecated (since := "2024-11-25")] alias contDiffWithinAt_top := contDiffWithinAt_infty
 
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
@@ -562,6 +564,10 @@ theorem contDiffOn_iff_forall_nat_le {n : ℕ∞} :
 theorem contDiffOn_infty : ContDiffOn 𝕜 ∞ f s ↔ ∀ n : ℕ, ContDiffOn 𝕜 n f s :=
   contDiffOn_iff_forall_nat_le.trans <| by simp only [le_top, forall_prop_of_true]
 
+@[deprecated (since := "2024-11-27")] alias contDiffOn_top := contDiffOn_infty
+@[deprecated (since := "2024-11-27")]
+alias contDiffOn_infty_iff_contDiffOn_omega := contDiffOn_infty
+
 theorem contDiffOn_all_iff_nat :
     (∀ (n : ℕ∞), ContDiffOn 𝕜 n f s) ↔ ∀ n : ℕ, ContDiffOn 𝕜 n f s := by
   refine ⟨fun H n => H n, ?_⟩
@@ -708,8 +714,8 @@ theorem AnalyticOnNhd.contDiffOn (h : AnalyticOnNhd 𝕜 f s) (hs : UniqueDiffOn
     ContDiffOn 𝕜 n f s := h.analyticOn.contDiffOn hs
 
 theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
-    (Hcont : ∀ m : ℕ, (m : ℕ∞) ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s)
-    (Hdiff : ∀ m : ℕ, (m : ℕ∞) < n →
+    (Hcont : ∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s)
+    (Hdiff : ∀ m : ℕ, m < n →
       DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s) :
     ContDiffOn 𝕜 n f s := by
   intro x hx m hm
@@ -754,11 +760,11 @@ theorem contDiffOn_omega_iff_analyticOn (hs : UniqueDiffOn 𝕜 s) :
   ⟨fun h m ↦ h.analyticOn m, fun h ↦ h.contDiffOn hs⟩
 
 theorem ContDiffOn.continuousOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn 𝕜 n f s)
-    (hmn : (m : ℕ∞) ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedFDerivWithin 𝕜 m f s) s :=
+    (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedFDerivWithin 𝕜 m f s) s :=
   ((h.of_le hmn).ftaylorSeriesWithin hs).cont m le_rfl
 
 theorem ContDiffOn.differentiableOn_iteratedFDerivWithin {m : ℕ} (h : ContDiffOn 𝕜 n f s)
-    (hmn : (m : ℕ∞) < n) (hs : UniqueDiffOn 𝕜 s) :
+    (hmn : m < n) (hs : UniqueDiffOn 𝕜 s) :
     DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 m f s) s := by
   intro x hx
   have : (m + 1 : ℕ) ≤ n := ENat.add_one_natCast_le_withTop_of_lt hmn
@@ -827,7 +833,7 @@ differentiable there, and its derivative (expressed with `fderivWithin`) is `C^n
 theorem contDiffOn_succ_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1) f s ↔
       DifferentiableOn 𝕜 f s ∧ (n = ω → AnalyticOn 𝕜 f s) ∧
-      ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s := by
+      ContDiffOn 𝕜 n (fderivWithin 𝕜 f s) s := by
   refine ⟨fun H => ?_, fun h => contDiffOn_succ_of_fderivWithin h.1 h.2.1 h.2.2⟩
   refine ⟨H.differentiableOn le_add_self, ?_, fun x hx => ?_⟩
   · rintro rfl
@@ -861,30 +867,46 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn (hs : UniqueDiffOn
   refine ⟨fun x hx => (h2 x hx).differentiableWithinAt, f_an, fun x hx => ?_⟩
   exact (h1 x hx).congr_of_mem (fun y hy => (h2 y hy).fderivWithin (hs y hy)) hx
 
+theorem contDiffOn_infty_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
+    ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fderivWithin 𝕜 f s) s := by
+  rw [show ∞ = ∞ + 1 from rfl, contDiffOn_succ_iff_fderivWithin hs]
+  simp
+
+@[deprecated (since := "2024-11-27")]
+alias contDiffOn_top_iff_fderivWithin := contDiffOn_infty_iff_fderivWithin
+
 /-- A function is `C^(n + 1)` on an open domain if and only if it is
 differentiable there, and its derivative (expressed with `fderiv`) is `C^n`. -/
 theorem contDiffOn_succ_iff_fderiv_of_isOpen (hs : IsOpen s) :
     ContDiffOn 𝕜 (n + 1) f s ↔
       DifferentiableOn 𝕜 f s ∧ (n = ω → AnalyticOn 𝕜 f s) ∧
-      ContDiffOn 𝕜 n (fun y => fderiv 𝕜 f y) s := by
+      ContDiffOn 𝕜 n (fderiv 𝕜 f) s := by
   rw [contDiffOn_succ_iff_fderivWithin hs.uniqueDiffOn]
   exact Iff.rfl.and (Iff.rfl.and (contDiffOn_congr fun x hx ↦ fderivWithin_of_isOpen hs hx))
+
+theorem contDiffOn_infty_iff_fderiv_of_isOpen (hs : IsOpen s) :
+    ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fderiv 𝕜 f) s := by
+  rw [show ∞ = ∞ + 1 from rfl, contDiffOn_succ_iff_fderiv_of_isOpen hs]
+  simp
+
+@[deprecated (since := "2024-11-27")]
+alias contDiffOn_top_iff_fderiv_of_isOpen := contDiffOn_infty_iff_fderiv_of_isOpen
 
 protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
     (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (fderivWithin 𝕜 f s) s :=
   ((contDiffOn_succ_iff_fderivWithin hs).1 (hf.of_le hmn)).2.2
 
 theorem ContDiffOn.fderiv_of_isOpen (hf : ContDiffOn 𝕜 n f s) (hs : IsOpen s) (hmn : m + 1 ≤ n) :
-    ContDiffOn 𝕜 m (fun y => fderiv 𝕜 f y) s :=
+    ContDiffOn 𝕜 m (fderiv 𝕜 f) s :=
   (hf.fderivWithin hs.uniqueDiffOn hmn).congr fun _ hx => (fderivWithin_of_isOpen hs hx).symm
 
 theorem ContDiffOn.continuousOn_fderivWithin (h : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
-    (hn : 1 ≤ n) : ContinuousOn (fun x => fderivWithin 𝕜 f s x) s :=
+    (hn : 1 ≤ n) : ContinuousOn (fderivWithin 𝕜 f s) s :=
   ((contDiffOn_succ_iff_fderivWithin hs).1
     (h.of_le (show 0 + (1 : WithTop ℕ∞) ≤ n from hn))).2.2.continuousOn
 
 theorem ContDiffOn.continuousOn_fderiv_of_isOpen (h : ContDiffOn 𝕜 n f s) (hs : IsOpen s)
-    (hn : 1 ≤ n) : ContinuousOn (fun x => fderiv 𝕜 f x) s :=
+    (hn : 1 ≤ n) : ContinuousOn (fderiv 𝕜 f) s :=
   ((contDiffOn_succ_iff_fderiv_of_isOpen hs).1
     (h.of_le (show 0 + (1 : WithTop ℕ∞) ≤ n from hn))).2.2.continuousOn
 
@@ -902,6 +924,8 @@ theorem contDiffWithinAt_univ : ContDiffWithinAt 𝕜 n f univ x ↔ ContDiffAt 
 
 theorem contDiffAt_infty : ContDiffAt 𝕜 ∞ f x ↔ ∀ n : ℕ, ContDiffAt 𝕜 n f x := by
   simp [← contDiffWithinAt_univ, contDiffWithinAt_infty]
+
+@[deprecated (since := "2024-11-27")] alias contDiffAt_top := contDiffAt_infty
 
 theorem ContDiffAt.contDiffWithinAt (h : ContDiffAt 𝕜 n f x) : ContDiffWithinAt 𝕜 n f s x :=
   h.mono (subset_univ _)
@@ -937,8 +961,8 @@ theorem ContDiffAt.analyticAt (h : ContDiffAt 𝕜 ω f x) : AnalyticAt 𝕜 f x
   exact h.analyticWithinAt
 
 /-- In a complete space, a function which is analytic at a point is also `C^ω` there.
-Note that the same statement for `AnalyticOnNhd` does not require completeness, see
-`AnalyticOnNhd.contDiffOn`. -/
+Note that the same statement for `AnalyticOn` does not require completeness, see
+`AnalyticOn.contDiffOn`. -/
 theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
     ContDiffAt 𝕜 n f x := by
   rw [← contDiffWithinAt_univ]
@@ -1034,6 +1058,10 @@ theorem ContDiff.contDiffWithinAt (h : ContDiff 𝕜 n f) : ContDiffWithinAt �
 theorem contDiff_infty : ContDiff 𝕜 ∞ f ↔ ∀ n : ℕ, ContDiff 𝕜 n f := by
   simp [contDiffOn_univ.symm, contDiffOn_infty]
 
+@[deprecated (since := "2024-11-25")] alias contDiff_top := contDiff_infty
+
+@[deprecated (since := "2024-11-25")] alias contDiff_infty_iff_contDiff_omega := contDiff_infty
+
 theorem contDiff_all_iff_nat : (∀ n : ℕ∞, ContDiff 𝕜 n f) ↔ ∀ n : ℕ, ContDiff 𝕜 n f := by
   simp only [← contDiffOn_univ, contDiffOn_all_iff_nat]
 
@@ -1087,9 +1115,12 @@ theorem contDiff_one_iff_hasFDerivAt : ContDiff 𝕜 1 f ↔
     ∃ f' : E → E →L[𝕜] F, Continuous f' ∧ ∀ x, HasFDerivAt f (f' x) x := by
   convert contDiff_succ_iff_hasFDerivAt using 4; simp
 
-theorem AnalyticOnNhd.contDiff (hf : AnalyticOnNhd 𝕜 f univ) : ContDiff 𝕜 n f := by
+theorem AnalyticOn.contDiff (hf : AnalyticOn 𝕜 f univ) : ContDiff 𝕜 n f := by
   rw [← contDiffOn_univ]
   exact hf.contDiffOn (n := n) uniqueDiffOn_univ
+
+theorem AnalyticOnNhd.contDiff (hf : AnalyticOnNhd 𝕜 f univ) : ContDiff 𝕜 n f :=
+  hf.analyticOn.contDiff
 
 theorem ContDiff.analyticOnNhd (h : ContDiff 𝕜 ω f) : AnalyticOnNhd 𝕜 f s := by
   rw [← contDiffOn_univ] at h
@@ -1147,7 +1178,7 @@ theorem contDiff_of_differentiable_iteratedFDeriv {n : ℕ∞}
 and its derivative (formulated in terms of `fderiv`) is `C^n`. -/
 theorem contDiff_succ_iff_fderiv :
     ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧ (n = ω → AnalyticOnNhd 𝕜 f univ) ∧
-      ContDiff 𝕜 n fun y => fderiv 𝕜 f y := by
+      ContDiff 𝕜 n (fderiv 𝕜 f) := by
   simp only [← contDiffOn_univ, ← differentiableOn_univ, ← fderivWithin_univ,
     contDiffOn_succ_iff_fderivWithin uniqueDiffOn_univ, analyticOn_univ]
 
@@ -1155,6 +1186,13 @@ theorem contDiff_one_iff_fderiv :
     ContDiff 𝕜 1 f ↔ Differentiable 𝕜 f ∧ Continuous (fderiv 𝕜 f) := by
   rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl, contDiff_succ_iff_fderiv]
   simp
+
+theorem contDiff_infty_iff_fderiv :
+    ContDiff 𝕜 ∞ f ↔ Differentiable 𝕜 f ∧ ContDiff 𝕜 ∞ (fderiv 𝕜 f) := by
+  rw [show ∞ = ∞ + 1 from rfl, contDiff_succ_iff_fderiv]
+  simp
+
+@[deprecated (since := "2024-11-27")] alias contDiff_top_iff_fderiv := contDiff_infty_iff_fderiv
 
 theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
     Continuous (fderiv 𝕜 f) :=
