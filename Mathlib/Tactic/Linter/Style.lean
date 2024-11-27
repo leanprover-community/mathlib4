@@ -63,6 +63,7 @@ def parse_set_option : Syntax → Option Name
 def is_set_option : Syntax → Bool :=
   fun stx ↦ parse_set_option stx matches some _name
 
+/-- TODO: add a doc-string! -/
 def findErrors (stx : Syntax) : Option (Lean.Option Bool × Syntax × MessageData):= Id.run do
   if let some head := stx.find? is_set_option then
     if let some name := parse_set_option head then
@@ -121,6 +122,7 @@ register_option linter.style.missingEnd : Bool := {
 
 namespace Style.missingEnd
 
+/-- TODO: add a doc-string! -/
 def findErrors (stx : Syntax) : CommandElabM (Option (Lean.Option Bool × Syntax × MessageData)) := do
   -- Only run this linter at the end of a module.
   unless stx.isOfKind ``Lean.Parser.Command.eoi do return none
@@ -208,6 +210,7 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 
 namespace Style
 
+/-- TODO: add a doc-string! -/
 def cdotLinter.findErrors (stx : Syntax) : List (Lean.Option Bool × Syntax × MessageData) := Id.run do
   let res := unwanted_cdot stx |>.map (fun s ↦
     (linter.style.cdot, s, m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."))
@@ -266,6 +269,7 @@ def findDollarSyntax : Syntax → Array Syntax
       | _ => dargs
   |_ => #[]
 
+/-- TODO: add a doc-string! -/
 def findErrors (stx : Syntax) : Array (Lean.Option Bool × Syntax × MessageData) := Id.run do
   findDollarSyntax stx |>.map (fun s ↦ (linter.style.dollarSyntax, s, m!"Please use '<|' instead of '$' for the pipe operator."))
 
@@ -313,6 +317,7 @@ def findLambdaSyntax : Syntax → Array Syntax
       | _ =>  dargs
   |_ => #[]
 
+/-- TODO: add a doc-string! -/
 def findErrors (stx : Syntax) : Array (Lean.Option Bool × Syntax × MessageData) := Id.run do
   findLambdaSyntax stx |>.filterMap (fun s ↦ if let .atom _ "λ" := s[0] then
     some (linter.style.lambdaSyntax, s[0], m!"Please use 'fun' and not 'λ' to define anonymous \
@@ -420,6 +425,7 @@ initialize addLinter longFileLinter
 
 end Style.longFile
 
+/-- TODO: add a doc-string! -/
 def jointSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← MonadState.get).messages.hasErrors then
     return
