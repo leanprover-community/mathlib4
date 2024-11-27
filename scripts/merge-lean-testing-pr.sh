@@ -8,8 +8,8 @@ fi
 PR_NUMBER=$1
 BRANCH_NAME="lean-pr-testing-$PR_NUMBER"
 
-git fetch
 git checkout nightly-testing
+git pull
 
 if ! git merge origin/$BRANCH_NAME; then
     echo "Merge conflicts detected. Resolving conflicts in favor of current version..."
