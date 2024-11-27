@@ -119,11 +119,11 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
     simp_rw [← smul_eq_mul, sum_Ioc_by_parts (fun k ↦ f k) _ hb, range_eq_Ico, Nat.Ico_succ_right,
       smul_eq_mul]
     rw [show ∑ k ∈ Ioc ⌊a⌋₊ (⌊b⌋₊ - 1), (f ↑(k + 1) - f ↑k) * ∑ n ∈ Icc 0 k, c n =
-      ∑ k ∈ Ico (⌊a⌋₊ + 1) ⌊b⌋₊, ∫ (t : ℝ) in ↑k..↑(k + 1), deriv f t * ∑ n ∈ Icc 0 ⌊t⌋₊, c n by
-        rw [← Nat.Ico_succ_succ, Nat.succ_eq_add_one,  Nat.succ_eq_add_one, Nat.sub_add_cancel
-          (by linarith)]
-        refine sum_congr rfl fun k hk ↦ (integralmulsum c hf_diff hf_int _ _ _ ?_ ?_ ?_ ?_ ?_).symm
-        all_goals simp [ineqofmemIco' hk]]
+          ∑ k ∈ Ico (⌊a⌋₊ + 1) ⌊b⌋₊, ∫ (t : ℝ) in ↑k..↑(k + 1), deriv f t * ∑ n ∈ Icc 0 ⌊t⌋₊, c n by
+      rw [← Nat.Ico_succ_succ, Nat.succ_eq_add_one,  Nat.succ_eq_add_one, Nat.sub_add_cancel
+        (by linarith)]
+      refine sum_congr rfl fun k hk ↦ (integralmulsum c hf_diff hf_int _ _ _ ?_ ?_ ?_ ?_ ?_).symm
+      all_goals simp [ineqofmemIco' hk]]
     rw [sum_integral_adjacent_intervals_Ico (by linarith),
       Nat.cast_add, Nat.cast_one, ← integral_interval_sub_left (a := a) (c := ⌊a⌋₊ + 1),
       ← integral_add_adjacent_intervals (b := ⌊b⌋₊) (c := b), integralmulsum c hf_diff hf_int a
