@@ -2073,13 +2073,14 @@ import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.Coverage
 import Mathlib.CategoryTheory.Sites.CoversTop
-import Mathlib.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
+import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.CategoryTheory.Sites.Grothendieck
-import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.IsSheafOneHypercover
 import Mathlib.CategoryTheory.Sites.LeftExact
