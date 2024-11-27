@@ -44,7 +44,7 @@ lemma SlashInvariantForm.wt_eq_zero_of_eq_const
 
 namespace ModularFormClass
 
-theorem neg_wt_eq_const {k : ℤ} (hk : k ≤ 0) {F : Type*}  [FunLike F ℍ ℂ]
+theorem neg_wt_cuspFunction_EqOn_const {k : ℤ} (hk : k ≤ 0) {F : Type*}  [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) k] (f : F) :
     Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
   have hdiff : DifferentiableOn ℂ (cuspFunction 1 f) (Metric.ball 0 1) := by
@@ -68,30 +68,26 @@ theorem neg_wt_eq_const {k : ℤ} (hk : k ≤ 0) {F : Type*}  [FunLike F ℍ ℂ
       rw [← (qParam_right_inv one_ne_zero hz')]
       congr
 
-lemma levelOne_neg_wt_eq_zero_or_const {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
-    [ModularFormClass F Γ(1) k] (f : F) : ⇑f = 0 ∨ (k = 0 ∧ ∃ c : ℂ, ⇑f = fun _ => c) := by
-  have H : ∀ z, ⇑f z = const ℍ (cuspFunction 1 f 0) z := by
-    intro z
-    have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
-      simpa only [Metric.mem_ball, dist_zero_right, Complex.norm_eq_abs, neg_mul, mul_zero, div_one,
-        Real.exp_zero] using (abs_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
-    simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, const_apply] using (neg_wt_eq_const hk f) hQ
-  rcases (wt_eq_zero_of_eq_const k (c := cuspFunction 1 f 0) H) with HF | HF
-  · right
-    refine ⟨HF, (cuspFunction 1 (f) 0), funext fun z ↦ H z⟩
-  · left
-    rw [HF] at H
-    exact funext fun z ↦ id (H z)
+theorem levelOne_neg_wt_const {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
+    [ModularFormClass F Γ(1) k] (f : F) (z : ℍ) :
+    f z = Function.const ℍ (SlashInvariantFormClass.cuspFunction 1 f 0) z := by
+  have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
+    simpa only [Metric.mem_ball, dist_zero_right, Complex.norm_eq_abs, neg_mul, mul_zero, div_one,
+      Real.exp_zero] using (abs_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
+  simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, const_apply] using
+    (neg_wt_cuspFunction_EqOn_const hk f) hQ
 
 lemma levelOne_non_pos_weight_eq_zero {k : ℤ} (hk : k < 0) {F : Type*} [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) k] (f : F) : ⇑f = 0 := by
-  have := levelOne_neg_wt_eq_zero_or_const hk.le f
-  aesop
+  have H := (levelOne_neg_wt_const hk.le f)
+  rcases (wt_eq_zero_of_eq_const k (c := cuspFunction 1 f 0) H) with rfl | HF
+  · omega
+  · rw [HF] at H
+    exact funext fun z ↦ id (H z)
 
-lemma levelOne_weight_zero_constant {F : Type*} [FunLike F ℍ ℂ]
+lemma levelOne_weight_zero_const {F : Type*} [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) 0] (f : F) : ∃ c : ℂ, ⇑f = fun _ => c := by
-  have := levelOne_neg_wt_eq_zero_or_const (by rfl) f
-  aesop
+  refine ⟨(cuspFunction 1 (f) 0), funext fun z ↦ ((levelOne_neg_wt_const (show 0 ≤ 0 by rfl) f)) z⟩
 
 end ModularFormClass
 
@@ -103,7 +99,7 @@ lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm �
       not_false_eq_true, f]⟩
   apply rank_eq_one f hf
   intro g
-  obtain ⟨c', hc'⟩ := levelOne_weight_zero_constant g
+  obtain ⟨c', hc'⟩ := levelOne_weight_zero_const g
   use c'
   ext z
   simp only [zero_apply, ne_eq, (congrFun hc' z).symm, smul_apply, show f z = 1 by rfl, smul_eq_mul,
