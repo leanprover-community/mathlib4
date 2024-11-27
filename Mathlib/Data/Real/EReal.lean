@@ -953,21 +953,21 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 
 @[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
 
-/-- `-a ≤ b ↔ -b ≤ a` on `EReal`. -/
+/-- `-a ≤ b`iff `-b ≤ a` on `EReal`. -/
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
  rw [← neg_le_neg_iff, neg_neg]
 
 /-- If `-a ≤ b` then `-b ≤ a` on `EReal`. -/
 protected theorem neg_le_of_neg_le {a b : EReal} (h : -a ≤ b) : -b ≤ a := EReal.neg_le.mp h
 
-/-- `a ≤ -b ↔ b ≤ -a` on `EReal`. -/
+/-- `a ≤ -b` iff `b ≤ -a` on `EReal`. -/
 protected theorem le_neg {a b : EReal} : a ≤ -b ↔ b ≤ -a := by
   rw [← neg_le_neg_iff, neg_neg]
 
 /-- If `a ≤ -b` then `b ≤ -a` on `EReal`. -/
 protected theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := EReal.le_neg.mp h
 
-/-- `-a < b ↔ -b < a` on `EReal`. -/
+/-- `-a < b` iff `-b < a` on `EReal`. -/
 theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_iff, neg_neg]
 
 @[deprecated (since := "2024-11-19")] alias neg_lt_iff_neg_lt := neg_lt_comm
@@ -975,7 +975,7 @@ theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_i
 /-- If `-a < b` then `-b < a` on `EReal`. -/
 protected theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_comm.mp h
 
-/-- `a < -b ↔ b < -a` on `EReal`. -/
+/-- `a < -b` iff `b < -a` on `EReal`. -/
 theorem lt_neg_comm {a b : EReal} : a < -b ↔ b < -a := by
   rw [← neg_lt_neg_iff, neg_neg]
 
