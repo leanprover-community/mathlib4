@@ -303,6 +303,7 @@ One of the possible equivalences from `Multiset.mapEquiv_aux`, selected using ch
 noncomputable def mapEquiv (s : Multiset α) (f : α → β) : s ≃ s.map f :=
   (Multiset.mapEquiv_aux s f).out.1
 
+@[simp]
 theorem mapEquiv_apply (s : Multiset α) (f : α → β) (v : s) : s.mapEquiv f v = f v :=
   (Multiset.mapEquiv_aux s f).out.2 v
 
