@@ -52,9 +52,11 @@ open Truncated
 
 /-- A simplicial object `X` is `n`-coskeletal when it is the right Kan extension of its restriction
 along `(Truncated.inclusion n).op` via the identity natural transformation. -/
+@[mk_iff]
 class IsCoskeletal : Prop where
-  nonempty_isRightKanExtension :
-    Nonempty (IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)))
+  isRightKanExtension : IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X))
+
+attribute [instance] IsCoskeletal.isRightKanExtension
 
 section
 
