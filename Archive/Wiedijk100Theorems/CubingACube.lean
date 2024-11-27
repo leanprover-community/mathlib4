@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Order.Interval.Set.Disjoint
 
 /-!

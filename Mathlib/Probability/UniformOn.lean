@@ -42,7 +42,7 @@ open MeasureTheory MeasurableSpace
 
 namespace ProbabilityTheory
 
-variable {Ω : Type*} [MeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω] {s : Set Ω}
 
 /-- Given a set `s`, `uniformOn s` is the uniform measure on `s`, defined as the counting measure
 conditioned by `s`. One should think of `uniformOn s t` as the proportion of `s` that is contained
@@ -70,6 +70,16 @@ theorem uniformOn_empty {s : Set Ω} : uniformOn s ∅ = 0 := by simp
 @[deprecated (since := "2024-10-09")]
 alias condCount_empty := uniformOn_empty
 
+/-- See `uniformOn_eq_zero` for a version assuming `MeasurableSingletonClass Ω` instead of
+`MeasurableSet s`. -/
+@[simp] lemma uniformOn_eq_zero' (hs : MeasurableSet s) : uniformOn s = 0 ↔ s.Infinite ∨ s = ∅ := by
+  simp [uniformOn, hs]
+
+/-- See `uniformOn_eq_zero'` for a version assuming `MeasurableSet s` instead of
+`MeasurableSingletonClass Ω`. -/
+@[simp] lemma uniformOn_eq_zero [MeasurableSingletonClass Ω] :
+    uniformOn s = 0 ↔ s.Infinite ∨ s = ∅ := by simp [uniformOn]
+
 theorem finite_of_uniformOn_ne_zero {s t : Set Ω} (h : uniformOn s t ≠ 0) : s.Finite := by
   by_contra hs'
   simp [uniformOn, cond, Measure.count_apply_infinite hs'] at h
@@ -93,7 +103,7 @@ variable [MeasurableSingletonClass Ω]
 theorem uniformOn_isProbabilityMeasure {s : Set Ω} (hs : s.Finite) (hs' : s.Nonempty) :
     IsProbabilityMeasure (uniformOn s) := by
   apply cond_isProbabilityMeasure_of_finite
-  · exact fun h => hs'.ne_empty <| Measure.empty_of_count_eq_zero h
+  · rwa [Measure.count_ne_zero_iff]
   · exact (Measure.count_apply_lt_top.2 hs).ne
 
 @[deprecated (since := "2024-10-09")]
@@ -120,7 +130,7 @@ alias condCount_inter_self := uniformOn_inter_self
 
 theorem uniformOn_self (hs : s.Finite) (hs' : s.Nonempty) : uniformOn s s = 1 := by
   rw [uniformOn, cond_apply hs.measurableSet, Set.inter_self, ENNReal.inv_mul_cancel]
-  · exact fun h => hs'.ne_empty <| Measure.empty_of_count_eq_zero h
+  · rwa [Measure.count_ne_zero_iff]
   · exact (Measure.count_apply_lt_top.2 hs).ne
 
 @[deprecated (since := "2024-10-09")]
