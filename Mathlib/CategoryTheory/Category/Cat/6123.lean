@@ -1,6 +1,74 @@
+section Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
-import Mathlib.CategoryTheory.ConcreteCategory.Bundled
-import Mathlib.CategoryTheory.Category.Basic
+universe u v
+
+namespace CategoryTheory
+
+variable {c : Type u → Type v}
+
+structure Bundled (c : Type u → Type v) : Type max (u + 1) v where
+  α : Type u
+  str : c α := by infer_instance
+
+set_option checkBinderAnnotations false in
+def Bundled.of {c : Type u → Type v} (α : Type u) [str : c α] : Bundled c :=
+  ⟨α, str⟩
+
+end CategoryTheory
+
+end Mathlib.CategoryTheory.ConcreteCategory.Bundled
+
+section Mathlib.Logic.Equiv.Defs
+
+open Function
+
+universe u v
+
+variable {α : Sort u} {β : Sort v}
+
+structure Equiv (α : Sort _) (β : Sort _) where
+  protected toFun : α → β
+  protected invFun : β → α
+
+infixl:25 " ≃ " => Equiv
+
+protected def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
+
+end Mathlib.Logic.Equiv.Defs
+
+section Mathlib.Combinatorics.Quiver.Basic
+
+universe v v₁ v₂ u u₁ u₂
+
+class Quiver (V : Type u) where
+  Hom : V → V → Sort v
+
+infixr:10 " ⟶ " => Quiver.Hom
+
+structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{v₂} W] where
+  obj : V → W
+  map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
+
+end Mathlib.Combinatorics.Quiver.Basic
+
+section Mathlib.CategoryTheory.Category.Basic
+
+universe v u
+
+namespace CategoryTheory
+
+class CategoryStruct (obj : Type u) extends Quiver.{v + 1} obj : Type max u (v + 1) where
+  id : ∀ X : obj, Hom X X
+  comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z)
+
+scoped notation "𝟙" => CategoryStruct.id
+scoped infixr:80 " ≫ " => CategoryStruct.comp
+
+class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1) where
+
+end CategoryTheory
+
+end Mathlib.CategoryTheory.Category.Basic
 
 section Mathlib.CategoryTheory.Functor.Basic
 
@@ -11,7 +79,7 @@ universe v v₁ v₂ v₃ u u₁ u₂ u₃
 structure Functor (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
     extends Prefunctor C D : Type max v₁ v₂ u₁ u₂ where
 
-scoped [CategoryTheory] infixr:26 " ⥤ " => Functor
+infixr:26 " ⥤ " => Functor
 
 namespace Functor
 
@@ -23,7 +91,7 @@ protected def id : C ⥤ C where
   obj X := X
   map f := f
 
-scoped [CategoryTheory] notation "𝟭" => Functor.id
+notation "𝟭" => Functor.id
 
 variable {C}
 
@@ -36,12 +104,13 @@ end
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
 
-@[simps obj]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
 
-scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
+@[simp] theorem comp_obj (F : C ⥤ D) (G : D ⥤ E) (X : C) : (F.comp G).obj X = G.obj (F.obj X) := rfl
+
+infixr:80 " ⋙ " => Functor.comp
 
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (F ⋙ G).map f = G.map (F.map f) := rfl
@@ -98,9 +167,6 @@ instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
   Hom F G := NatTrans F G
   id F := NatTrans.id F
   comp α β := NatTrans.vcomp α β
-  comp_id := sorry
-  id_comp := sorry
-  assoc := sorry
 
 end CategoryTheory
 
@@ -131,7 +197,6 @@ namespace CategoryTheory.Functor
 variable (J : Type u₁) [Category.{v₁} J]
 variable {C : Type u₂} [Category.{v₂} C]
 
-@[simps]
 def const : C ⥤ J ⥤ C where
   obj X :=
     { obj := fun _ => X
@@ -152,7 +217,7 @@ universe v₁ v₂ v₃ u₁ u₁' u₂ u₃
 structure Discrete (α : Type u₁) where
   as : α
 
-instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
+instance discreteCategory (α : Type u₁) : Category (Discrete α) where
   Hom X Y := ULift (PLift (X.as = Y.as))
   id _ := ULift.up (PLift.up rfl)
   comp {X Y Z} g f := by
@@ -161,9 +226,6 @@ instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
     cases Z
     rcases f with ⟨⟨⟨⟩⟩⟩
     exact g
-  comp_id := sorry
-  id_comp := sorry
-  assoc := sorry
 
 namespace Discrete
 
@@ -197,7 +259,7 @@ namespace CategoryTheory
 
 universe v v' w u u'
 
-instance types : LargeCategory (Type u) where
+instance types : Category (Type u) where
   Hom a b := a → b
   id _ := id
   comp f g := g ∘ f
@@ -230,9 +292,6 @@ universe w v u
 variable (B : Type u) [Bicategory.{w, v} B]
 
 instance (priority := 100) StrictBicategory.category : Category B where
-  id_comp := sorry
-  comp_id := sorry
-  assoc := sorry
 
 end CategoryTheory
 
@@ -276,12 +335,15 @@ instance (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Categor
 
 end Cat
 
-@[simps]
 def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
   map := fun {X} {Y} f => by
     dsimp
     exact Discrete.functor (Discrete.mk ∘ f)
+
+@[simp] theorem typeToCat_obj (X : Type u) : typeToCat.obj X = Cat.of (Discrete X) := rfl
+@[simp] theorem typeToCat_map {X Y : Type u} (f : X ⟶ Y) :
+  typeToCat.map f = Discrete.functor (Discrete.mk ∘ f) := rfl
 
 end CategoryTheory
 
@@ -310,11 +372,10 @@ structure CoreHomEquivUnitCounit (F : C ⥤ D) (G : D ⥤ C) where
   homEquiv : ∀ X Y, (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y)
   unit : 𝟭 C ⟶ F ⋙ G
   counit : G ⋙ F ⟶ 𝟭 D
-  homEquiv_counit : ∀ {X Y g}, (homEquiv X Y).symm g = F.map g ≫ counit.app Y
+  homEquiv_counit : ∀ {X Y g}, (homEquiv X Y).symm.toFun g = F.map g ≫ counit.app Y
 
 variable {F : C ⥤ D} {G : D ⥤ C}
 
-@[simps]
 def mk' (adj : CoreHomEquivUnitCounit F G) : F ⊣ G where
   unit := adj.unit
   counit := adj.counit
@@ -345,11 +406,9 @@ class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J :
 
 variable {J : Type u₁} [Category.{v₁} J]
 
-def Zag (j₁ j₂ : J) : Prop :=
-  Nonempty (j₁ ⟶ j₂) ∨ Nonempty (j₂ ⟶ j₁)
+def Zag (j₁ j₂ : J) : Prop := sorry
 
-def Zigzag : J → J → Prop :=
-  Relation.ReflTransGen Zag
+def Zigzag : J → J → Prop := sorry
 
 def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
   r := Zigzag
@@ -378,21 +437,14 @@ def Functor.mapConnectedComponents {K : Type u₂} [Category.{v₂} K] (F : J �
     (x : ConnectedComponents J) : ConnectedComponents K :=
   x |> Quotient.lift (Quotient.mk (Zigzag.setoid _) ∘ F.obj) sorry
 
-def ConnectedComponents.functorToDiscrete   (X : Type*)
+def ConnectedComponents.functorToDiscrete   (X : Type _)
     (f : ConnectedComponents J → X) : J ⥤ Discrete X where
   obj Y :=  Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
   map g := Discrete.eqToHom sorry
 
-def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
+def ConnectedComponents.liftFunctor (J) [Category J] {X : Type _} (F :J ⥤ Discrete X) :
     (ConnectedComponents J → X) :=
   Quotient.lift (fun c => (F.obj c).as) sorry
-
-def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
-    (ConnectedComponents J → X) ≃ (J ⥤ Discrete X)   where
-  toFun := ConnectedComponents.functorToDiscrete _
-  invFun := ConnectedComponents.liftFunctor _
-  left_inv := sorry
-  right_inv  := sorry
 
 end CategoryTheory
 
@@ -408,8 +460,6 @@ variable (X : Type u) (C : Cat)
 private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
   toFun f x := f.obj ⟨x⟩
   invFun := Discrete.functor
-  left_inv F := sorry
-  right_inv _ := sorry
 
 private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤ C where
   obj := Discrete.as
@@ -434,7 +484,7 @@ def connectedComponents : Cat.{v, u} ⥤ Type u where
 
 def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat :=
   Adjunction.mk' {
-    homEquiv := fun C X ↦ ConnectedComponents.typeToCatHomEquiv C X
+    homEquiv := sorry
     unit :=
       { app:= fun C  ↦ ConnectedComponents.functorToDiscrete _ (𝟙 (connectedComponents.obj C))
         naturality := by
