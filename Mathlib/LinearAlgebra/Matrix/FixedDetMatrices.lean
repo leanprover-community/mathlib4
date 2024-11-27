@@ -68,15 +68,12 @@ def reduce_step (A : Δ m) : Δ m := S • (T ^ (-(A.1 0 0 / A.1 1 0))) • A
 
 private lemma reduce_aux {A : Δ m} (h : |(A.1 1 0)| ≠ 0) :
     |((reduce_step A).1 1 0)| < |(A.1 1 0)| := by
-  simp_rw [reduce_step, smul_coe, coe_T_zpow, S]
-  simpa only [Int.reduceNeg, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul,
-    Equiv.symm_apply_apply, vecMul_cons, vecHead, cons_val_zero, zero_smul, vecTail,
-    Function.comp_apply, Fin.succ_zero_eq_one, cons_val_one, cons_val_fin_one, neg_smul, one_smul,
-    empty_vecMul, add_zero, zero_add, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct,
-    zero_mul, one_mul, dotProduct_empty, mul_comm, mul_neg, ← Int.sub_eq_add_neg,
-    ← Int.emod_def (A.1 0 0) (A.1 1 0), empty_val',
-    abs_eq_self.mpr (Int.emod_nonneg (A.1 0 0) (abs_ne_zero.mp h))]
-  using Int.emod_lt (A.1 0 0) (abs_ne_zero.mp h)
+  rw [abs_ne_zero] at h
+  suffices ((reduce_step A).1 1 0) = A.1 0 0 % A.1 1 0 by
+    rw [this, abs_eq_self.mpr (Int.emod_nonneg (A.1 0 0) h)]
+    exact Int.emod_lt (A.1 0 0) h
+  simp_rw [Int.emod_def, sub_eq_add_neg, reduce_step, smul_coe, coe_T_zpow, S]
+  norm_num [vecMul, vecHead, vecTail, mul_comm]
 
 /--Reduction lemma for integral FixedDetMatrices. -/
 @[elab_as_elim]
