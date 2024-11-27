@@ -23,14 +23,14 @@ client = zulip.Client(
     site=ZULIP_SITE
 )
 
-# Fetch the messages containing the PR number from the public channels.
+# Fetch the messages containing the PR number from the public channels (exluding #rss).
 # There does not seem to be a way to search simultaneously public and private channels.
 public_response = client.get_messages({
     "anchor": "newest",
     "num_before": 5000,
     "num_after": 0,
     "narrow": [
-        {"operator": "channels", "operand": "public"},
+        {"operator": "channel", "operand": "rss", "negated": True},
         {"operator": "search", "operand": f'#{PR_NUMBER}'},
     ],
 })
