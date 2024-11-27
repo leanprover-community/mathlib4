@@ -683,7 +683,10 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
   { b ∈ sᶜ | b ∈ e }.Nonempty := by
   obtain ⟨v , w⟩ := e
   by_contra c
-  simp_all [filter_eq_empty_iff, isIndepSet_iff]
+  rw [IsIndepSet] at indA
+  rw [mem_edgeSet] at he
+  rw [not_nonempty_iff_eq_empty, filter_eq_empty_iff] at c
+  simp_rw [mem_compl, Sym2.mem_iff, not_or] at c
   by_cases vins : v ∈ s
   · have wins : w ∈ s := by by_contra wnins; exact (c wnins).right rfl
     exact (indA vins wins (Adj.ne he)) he
@@ -693,7 +696,9 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
 theorem isIndepSet_neighborSet_of_triangleFree [DecidableEq α] (h: G.CliqueFree 3) (v : α) :
     G.IsIndepSet (G.neighborSet v) := by
   by_contra nind
-  simp [SimpleGraph.IsIndepSet, Set.Pairwise] at nind
+  rw [IsIndepSet, Set.Pairwise] at nind
+  push_neg at nind
+  simp_rw [mem_neighborSet] at nind
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
@@ -789,12 +794,13 @@ noncomputable def indepNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNI
   simp [indepNum, cliqueNum]
 
 theorem IsIndepSet.card_le_indepNum
-    [Fintype α] {t : Finset α} {tc : G.IsIndepSet t} : #t ≤ G.indepNum := by
-  simp [indepNum, ← isClique_compl, ← isNClique_compl] at *
+    [Fintype α] {t : Finset α} (tc : G.IsIndepSet t) : #t ≤ G.indepNum := by
+  rw[← isClique_compl] at tc
+  simp_rw [indepNum, ← isNClique_compl]
   exact tc.card_le_cliqueNum
 
 lemma exists_isNIndepSet_indepNum [Fintype α] : ∃ s, G.IsNIndepSet G.indepNum s := by
-  simp [indepNum, ← isNClique_compl]
+  simp_rw [indepNum, ← isNClique_compl]
   exact exists_isNClique_cliqueNum
 
 /-- An independent set in a graph `G` such that there is no independent set with more vertices. -/
@@ -832,8 +838,8 @@ lemma IsMaximumIndepSet.isMaximalIndepSet
 
 theorem maximumIndepSet_card_eq_indepNum
     [Fintype α] (t : Finset α) (tmc : G.IsMaximumIndepSet t) : #t = G.indepNum := by
-  simp [← isMaximumClique_compl , indepNum, ← isNClique_compl] at *
-  --simp [isMaximumIndepSet_iff, ← isClique_compl,  ← isMaximumClique_iff] at *
+  rw [← isMaximumClique_compl] at tmc
+  simp_rw [indepNum, ← isNClique_compl]
   exact Gᶜ.maximumClique_card_eq_cliqueNum t tmc
 
 lemma maximumIndepSet_exists [Fintype α] : ∃ (s : Finset α), G.IsMaximumIndepSet s := by
