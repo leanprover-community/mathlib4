@@ -138,7 +138,7 @@ theorem Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e
 
 @[to_additive (attr := simp)]
 theorem Monoid.fg_iff_submonoid_fg (N : Submonoid M) : Monoid.FG N ↔ N.FG := by
-  conv_rhs => rw [← N.range_subtype, MonoidHom.mrange_eq_map]
+  conv_rhs => rw [← N.mrange_subtype, MonoidHom.mrange_eq_map]
   exact ⟨fun h => h.out.map N.subtype, fun h => ⟨h.map_injective N.subtype Subtype.coe_injective⟩⟩
 
 @[to_additive]
