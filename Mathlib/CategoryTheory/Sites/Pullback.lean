@@ -111,8 +111,7 @@ variable [ConcreteCategory.{v₁} A] [PreservesLimits (forget A)] [HasColimits A
 
 example : (G.sheafPushforwardContinuous A J K).IsRightAdjoint := inferInstance
 
-attribute [local instance] reflectsLimits_of_reflectsIsomorphisms
-
+attribute [local instance] reflectsLimits_of_reflectsIsomorphisms in
 instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
   apply sheafPullbackConstruction.preservesFiniteLimits
 
