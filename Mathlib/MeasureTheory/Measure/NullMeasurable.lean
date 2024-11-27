@@ -55,8 +55,8 @@ the output type.
 measurable, measure, null measurable, completion
 -/
 
-
 open Filter Set Encodable
+open scoped ENNReal
 
 variable {ι α β γ : Type*}
 
@@ -89,7 +89,7 @@ def NullMeasurableSet [MeasurableSpace α] (s : Set α)
     (μ : Measure α := by volume_tac) : Prop :=
   @MeasurableSet (NullMeasurableSpace α μ) _ s
 
-@[simp]
+@[simp, aesop unsafe (rule_sets := [Measurable])]
 theorem _root_.MeasurableSet.nullMeasurableSet (h : MeasurableSet s) : NullMeasurableSet s μ :=
   h.eventuallyMeasurableSet
 
@@ -259,6 +259,14 @@ theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
           (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
     _ = μ s' := congr_arg μ (inter_union_diff _ _)
     _ = μ s := hs'
+
+/-- If `s` and `t` are null measurable sets of equal measure
+and their intersection has finite measure,
+then `s \ t` and `t \ s` have equal measures too. -/
+theorem measure_diff_symm (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
+    (h : μ s = μ t) (hfin : μ (s ∩ t) ≠ ∞) : μ (s \ t) = μ (t \ s) := by
+  rw [← ENNReal.add_right_inj hfin, measure_inter_add_diff₀ _ ht, inter_comm,
+    measure_inter_add_diff₀ _ hs, h]
 
 theorem measure_union_add_inter₀ (s : Set α) (ht : NullMeasurableSet t μ) :
     μ (s ∪ t) + μ (s ∩ t) = μ s + μ t := by

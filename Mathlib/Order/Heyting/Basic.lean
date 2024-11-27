@@ -794,7 +794,7 @@ theorem hnot_le_iff_codisjoint_right : ￢a ≤ b ↔ Codisjoint a b := by
   rw [← top_sdiff', sdiff_le_iff, codisjoint_iff_le_sup]
 
 theorem hnot_le_iff_codisjoint_left : ￢a ≤ b ↔ Codisjoint b a :=
-  hnot_le_iff_codisjoint_right.trans Codisjoint_comm
+  hnot_le_iff_codisjoint_right.trans codisjoint_comm
 
 theorem hnot_le_comm : ￢a ≤ b ↔ ￢b ≤ a := by
   rw [hnot_le_iff_codisjoint_right, hnot_le_iff_codisjoint_left]
@@ -1084,11 +1084,11 @@ theorem top_eq : (⊤ : PUnit) = unit :=
 theorem bot_eq : (⊥ : PUnit) = unit :=
   rfl
 
-@[simp, nolint simpNF]
+@[simp]
 theorem sup_eq : a ⊔ b = unit :=
   rfl
 
-@[simp, nolint simpNF]
+@[simp]
 theorem inf_eq : a ⊓ b = unit :=
   rfl
 
@@ -1096,16 +1096,15 @@ theorem inf_eq : a ⊓ b = unit :=
 theorem compl_eq : aᶜ = unit :=
   rfl
 
-@[simp, nolint simpNF]
+@[simp]
 theorem sdiff_eq : a \ b = unit :=
   rfl
 
-@[simp, nolint simpNF]
+@[simp]
 theorem hnot_eq : ￢a = unit :=
   rfl
 
--- eligible for `dsimp`
-@[simp, nolint simpNF]
+@[simp]
 theorem himp_eq : a ⇨ b = unit :=
   rfl
 
