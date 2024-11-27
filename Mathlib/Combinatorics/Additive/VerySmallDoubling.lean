@@ -11,6 +11,10 @@ import Mathlib.GroupTheory.GroupAction.Defs
 
 This file characterises sets with no doubling (finsets `A` such that `#(A ^ 2) = #A`) as the sets
 which are either empty or translates of a subgroup.
+
+## TODO
+
+Do we need a version stated using the doubling constant (`Finset.mulConst`)?
 -/
 
 open MulOpposite MulAction
@@ -19,15 +23,21 @@ open scoped Pointwise RightActions
 namespace Finset
 variable {G : Type*} [Group G] [DecidableEq G] {A : Finset G}
 
-/-- A set with no doubling is either empty or the translate of a subgroup. -/
-@[to_additive "A set with no doubling is either empty or the translate of a subgroup."]
+/-- A set with no doubling is either empty or the translate of a subgroup.
+
+Precisely, if `A` has no doubling then there exists a subgroup `H` such `aH = Ha = A` for all
+`a ∈ A`. -/
+@[to_additive "A set with no doubling is either empty or the translate of a subgroup.
+
+Precisely, if `A` has no doubling then there exists a subgroup `H` such `a + H = H + a = A` for all
+`a ∈ A`."]
 lemma exists_subgroup_of_no_doubling (hA : #(A * A) ≤ #A) :
     ∃ H : Subgroup G, ∀ a ∈ A, a •> (H : Set G) = A ∧ (H : Set G) <• a = A := by
   have smul_A {a} (ha : a ∈ A) : a •> A = A * A :=
     eq_of_subset_of_card_le (smul_finset_subset_mul ha) (by simpa)
-  have op_smul_A {a} (ha : a ∈ A) : A <• a = A * A :=
+  have A_smul {a} (ha : a ∈ A) : A <• a = A * A :=
     eq_of_subset_of_card_le (op_smul_finset_subset_mul ha) (by simpa)
-  have smul_A_eq_op_smul_A {a} (ha : a ∈ A) : a •> A = A <• a := by rw [smul_A ha, op_smul_A ha]
+  have smul_A_eq_op_smul_A {a} (ha : a ∈ A) : a •> A = A <• a := by rw [smul_A ha, A_smul ha]
   have smul_A_eq_op_smul_A' {a} (ha : a ∈ A) : a⁻¹ •> A = A <• a⁻¹ := by
     rw [inv_smul_eq_iff, smul_comm, smul_A_eq_op_smul_A ha, op_inv, inv_smul_smul]
   let H := stabilizer G A
