@@ -39,15 +39,15 @@ prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena
 -/
 
 /-- Theorem 6.1 Claim 1 (i) part 1. -/
-lemma aks_6d1c1ip1 (p r a : ℕ) [Fact p.Prime]
-    (μ: primitiveRoots r (AlgebraicClosure (ZMod p))):
-    ((μ: (AlgebraicClosure (ZMod p)))-a)^p = μ^p-a := by
+lemma prime_is_introspective_for_linear_factors (p r a : ℕ) [Fact p.Prime]
+    (μ : primitiveRoots r (AlgebraicClosure (ZMod p))) :
+    ((μ : (AlgebraicClosure (ZMod p)))-a)^p = μ^p-a := by
   let frob := frobeniusEquiv (AlgebraicClosure (ZMod p)) p
-  have hfrob_cast: (a^p)= (a:(AlgebraicClosure (ZMod p))) := by
+  have hfrob_cast : (a^p)= (a:(AlgebraicClosure (ZMod p))) := by
    exact frobenius_natCast (AlgebraicClosure (ZMod p)) p a
-  have hfrob_a: (↑a)^p =frob.toFun (↑a) := by rfl
-  have hfrob_mu: ((↑μ ^ p)) = frob.toFun ((↑μ )) := by rfl
-  have hfrob_sub: frob.toFun (↑μ - ↑a) = frob.toFun (↑μ ) - frob.toFun ↑a :=by
+  have hfrob_a : (↑a)^p =frob.toFun (↑a) := by rfl
+  have hfrob_mu : ((↑μ ^ p)) = frob.toFun ((↑μ )) := by rfl
+  have hfrob_sub : frob.toFun (↑μ - ↑a) = frob.toFun (↑μ ) - frob.toFun ↑a := by
    exact RingEquiv.map_sub frob (↑μ) ↑a
   conv =>
     rhs
