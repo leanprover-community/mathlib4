@@ -214,7 +214,7 @@ alias openEmbedding_of_injective := isOpenEmbedding_of_injective
 /-- A surjective embedding is a homeomorphism. -/
 noncomputable def _root_.Topology.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
     (hsurj : Function.Surjective f) : X ≃ₜ Y :=
-  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.inj, hsurj⟩)
+  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.injective, hsurj⟩)
     hf.continuous (hf.isOpenEmbedding_of_surjective hsurj).isOpenMap
 
 @[deprecated (since := "2024-10-26")]
@@ -228,7 +228,7 @@ noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.B
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))
     (cont : Continuous f) : IsOpenEmbedding f :=
-  (hgf.isLocalHomeomorph.of_comp hf cont).isOpenEmbedding_of_injective hgf.inj.of_comp
+  (hgf.isLocalHomeomorph.of_comp hf cont).isOpenEmbedding_of_injective hgf.injective.of_comp
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_of_comp := isOpenEmbedding_of_comp

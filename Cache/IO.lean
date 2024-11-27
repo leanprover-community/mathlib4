@@ -92,6 +92,7 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 structure CacheM.Context where
   mathlibDepPath : FilePath
   packageDirs : PackageDirs
+  proofWidgetsBuildDir : FilePath
 
 abbrev CacheM := ReaderT CacheM.Context IO
 
@@ -141,7 +142,7 @@ private def CacheM.getContext : IO CacheM.Context := do
     ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
     ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
     ("Plausible", LAKEPACKAGESDIR / "plausible")
-  ]⟩
+  ], LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"⟩
 
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 

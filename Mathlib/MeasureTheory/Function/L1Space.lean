@@ -355,7 +355,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
     (∫⁻ a : α, ‖c • f a‖₊ ∂μ) ≤ ∫⁻ a : α, ‖c‖₊ * ‖f a‖₊ ∂μ := by
       refine lintegral_mono ?_
       intro i
-      -- After leanprover/lean4#2734, we need to do beta reduction `exact mod_cast`
+      -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction `exact mod_cast`
       beta_reduce
       exact mod_cast (nnnorm_smul_le c (f i))
     _ < ∞ := by
@@ -443,7 +443,7 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
 
 /-- This lemma is a special case of `Integrable.of_finite`. -/
 -- Eternal deprecation for discoverability, don't remove
-@[deprecated Integrable.of_finite, nolint deprecatedNoSince]
+@[deprecated Integrable.of_finite (since := "2024-10-05"), nolint deprecatedNoSince]
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
 @[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
@@ -586,7 +586,7 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
   calc
     (∫⁻ a, ‖f a + g a‖₊ ∂μ) ≤ ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ :=
       lintegral_mono fun a => by
-        -- After leanprover/lean4#2734, we need to do beta reduction before `exact mod_cast`
+        -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `exact mod_cast`
         beta_reduce
         exact mod_cast nnnorm_add_le _ _
     _ = _ := lintegral_nnnorm_add_left hf.aestronglyMeasurable _
