@@ -1950,6 +1950,14 @@ theorem contDiffOn_succ_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
     have : IsBoundedBilinearMap 𝕜 fun _ : (𝕜 →L[𝕜] 𝕜) × F => _ := isBoundedBilinearMap_smulRight
     exact (this.isBoundedLinearMap_right _).contDiff
 
+theorem contDiffOn_infty_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
+    ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (derivWithin f₂ s₂) s₂ := by
+  rw [show ∞ = ∞ + 1 by rfl, contDiffOn_succ_iff_derivWithin hs]
+  simp
+
+@[deprecated (since := "2024-11-27")]
+alias contDiffOn_top_iff_derivWithin := contDiffOn_infty_iff_derivWithin
+
 /-- A function is `C^(n + 1)` on an open domain if and only if it is
 differentiable there, and its derivative (formulated with `deriv`) is `C^n`. -/
 theorem contDiffOn_succ_iff_deriv_of_isOpen (hs : IsOpen s₂) :
@@ -1958,6 +1966,14 @@ theorem contDiffOn_succ_iff_deriv_of_isOpen (hs : IsOpen s₂) :
         ContDiffOn 𝕜 n (deriv f₂) s₂ := by
   rw [contDiffOn_succ_iff_derivWithin hs.uniqueDiffOn]
   exact Iff.rfl.and (Iff.rfl.and (contDiffOn_congr fun _ => derivWithin_of_isOpen hs))
+
+theorem contDiffOn_infty_iff_deriv_of_isOpen (hs : IsOpen s₂) :
+    ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (deriv f₂) s₂ := by
+  rw [show ∞ = ∞ + 1 by rfl, contDiffOn_succ_iff_deriv_of_isOpen hs]
+  simp
+
+@[deprecated (since := "2024-11-27")]
+alias contDiffOn_top_iff_deriv_of_isOpen := contDiffOn_infty_iff_deriv_of_isOpen
 
 protected theorem ContDiffOn.derivWithin (hf : ContDiffOn 𝕜 n f₂ s₂) (hs : UniqueDiffOn 𝕜 s₂)
     (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (derivWithin f₂ s₂) s₂ :=

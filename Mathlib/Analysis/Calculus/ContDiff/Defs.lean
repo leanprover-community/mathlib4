@@ -867,6 +867,9 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn (hs : UniqueDiffOn
   refine ⟨fun x hx => (h2 x hx).differentiableWithinAt, f_an, fun x hx => ?_⟩
   exact (h1 x hx).congr_of_mem (fun y hy => (h2 y hy).fderivWithin (hs y hy)) hx
 
+@[deprecated (since := "2024-11-27")]
+alias contDiffOn_succ_iff_hasFDerivWithin := contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn
+
 theorem contDiffOn_infty_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fderivWithin 𝕜 f s) s := by
   rw [show ∞ = ∞ + 1 from rfl, contDiffOn_succ_iff_fderivWithin hs]
