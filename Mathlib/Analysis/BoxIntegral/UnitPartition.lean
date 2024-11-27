@@ -70,34 +70,34 @@ namespace BoxIntegral.unitPartition
 
 open Bornology MeasureTheory Fintype BoxIntegral
 
-variable (n : ℕ+)
+variable (n : ℕ)
 
 /-- A `BoxIntegral`, indexed by a positive integer `n` and `ν : ι → ℤ`, with corners `ν i / n`
 and of side length `1 / n`. -/
-def box (ν : ι → ℤ) : Box ι where
+def box [NeZero n] (ν : ι → ℤ) : Box ι where
   lower := fun i ↦ ν i / n
   upper := fun i ↦ ν i / n + 1 / n
-  lower_lt_upper := fun _ ↦ by norm_num
+  lower_lt_upper := fun _ ↦ by norm_num [n.pos_of_neZero]
 
 @[simp]
-theorem box_lower (ν : ι → ℤ) :
+theorem box_lower [NeZero n] (ν : ι → ℤ) :
     (box n ν).lower = fun i ↦ (ν i / n : ℝ) := rfl
 
 @[simp]
-theorem box_upper (ν : ι → ℤ) :
+theorem box_upper [NeZero n] (ν : ι → ℤ) :
     (box n ν).upper = fun i ↦ (ν i / n + 1 / n : ℝ) := rfl
 
 variable {n} in
 @[simp]
-theorem mem_box_iff {ν : ι → ℤ} {x : ι → ℝ} :
+theorem mem_box_iff [NeZero n] {ν : ι → ℤ} {x : ι → ℝ} :
     x ∈ box n ν ↔ ∀ i, ν i / n < x i ∧ x i ≤ ν i / n + 1 / n := by
   simp_rw [Box.mem_def, box, Set.mem_Ioc]
 
 variable {n} in
-theorem mem_box_iff' {ν : ι → ℤ} {x : ι → ℝ} :
+theorem mem_box_iff' [NeZero n] {ν : ι → ℤ} {x : ι → ℝ} :
     x ∈ box n ν ↔ ∀ i, ν i < n * x i ∧ n * x i ≤ ν i + 1 := by
-  have h_npos : 0 < (n:ℝ) := Nat.cast_pos.mpr <| PNat.pos n
-  simp_rw [mem_box_iff, ← _root_.le_div_iff₀' h_npos, ← div_lt_iff₀' h_npos, add_div]
+  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
+  simp_rw [mem_box_iff, ← _root_.le_div_iff₀' h, ← div_lt_iff₀' h, add_div]
 
 /-- The tag of a `unitPartition.Box`. -/
 abbrev tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
@@ -105,25 +105,27 @@ abbrev tag (ν : ι → ℤ) : ι → ℝ := fun i ↦ (ν i + 1) / n
 @[simp]
 theorem tag_apply (ν : ι → ℤ) (i : ι) : tag n ν i = (ν i + 1) / n := rfl
 
+variable [NeZero n]
+
 theorem tag_injective : Function.Injective (fun ν : ι → ℤ ↦ tag n ν) := by
   refine fun _ _ h ↦ funext_iff.mpr fun i ↦ ?_
   have := congr_arg (fun x ↦ x i) h
-  field_simp at this
+  field_simp [Nat.cast_ne_zero.mpr (NeZero.ne n)] at this
   exact this
 
 theorem tag_mem (ν : ι → ℤ) :
     tag n ν ∈ box n ν := by
   refine mem_box_iff.mpr fun _ ↦ ?_
   rw [tag, add_div]
-  exact ⟨by norm_num, le_rfl⟩
+  exact ⟨by norm_num [n.pos_of_neZero], le_rfl⟩
 
 /-- For `x : ι → ℝ`, its index is the index of the unique `unitPartition.Box` to which
 it belongs. -/
 def index (x : ι → ℝ) (i : ι) : ℤ := ⌈n * x i⌉ - 1
 
 @[simp]
-theorem index_apply {x : ι → ℝ} (i : ι) :
-    index n x i = ⌈n * x i⌉ - 1 := rfl
+theorem index_apply (m : ℕ) {x : ι → ℝ} (i : ι) :
+    index m x i = ⌈m * x i⌉ - 1 := rfl
 
 variable {n} in
 theorem mem_box_iff_index {x : ι → ℝ} {ν : ι → ℤ} :
@@ -155,15 +157,16 @@ theorem diam_boxIcc (ν : ι → ℤ) :
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
   rw [BoxIntegral.Box.Icc_eq_pi]
   refine EMetric.diam_pi_le_of_le (fun i ↦ ?_)
-  rw [Real.ediam_Icc, box, add_sub_cancel_left, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr n.pos),
-    ENNReal.ofReal_one]
+  rw [Real.ediam_Icc, box, add_sub_cancel_left, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr
+    n.pos_of_neZero), ENNReal.ofReal_one]
 
 @[simp]
 theorem volume_box (ν : ι → ℤ) :
     volume (box n ν : Set (ι → ℝ)) = 1 / n ^ card ι := by
   simp_rw [volume_pi, BoxIntegral.Box.coe_eq_pi, Measure.pi_pi, Real.volume_Ioc, box,
-    add_sub_cancel_left, Finset.prod_const, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr n.pos),
-    ENNReal.ofReal_one, ENNReal.ofReal_natCast, Finset.card_univ, one_div, ENNReal.inv_pow]
+    add_sub_cancel_left, Finset.prod_const, ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr
+      n.pos_of_neZero), ENNReal.ofReal_one, ENNReal.ofReal_natCast, Finset.card_univ, one_div,
+      ENNReal.inv_pow]
 
 theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs₂ : volume s ≠ ⊤) :
     Set.Finite {ν : ι → ℤ | ↑(box n ν) ⊆ s} := by
@@ -253,15 +256,16 @@ theorem prepartition_isSubordinate (B : Box ι) {r : ℝ} (hr : 0 < r) (hn : 1 /
 
 private theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
     a < x ↔ a ≤ (⌈n * x⌉ - 1) / (n : ℝ) := by
-  rw [le_div_iff₀' (by positivity), le_sub_iff_add_le, show (n : ℝ) * a + 1 =
+  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
+  rw [le_div_iff₀' h, le_sub_iff_add_le, show (n : ℝ) * a + 1 =
     (n * a + 1 : ℤ) by norm_cast, Int.cast_le, Int.add_one_le_ceil_iff, Int.cast_mul,
-    Int.cast_natCast, mul_lt_mul_left (by positivity)]
+    Int.cast_natCast, mul_lt_mul_left h]
 
 private theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
     x ≤ a ↔ (⌈n * x⌉ - 1) / (n : ℝ) + 1 / n ≤ a := by
-  rw [← add_div, sub_add_cancel, div_le_iff₀' (by positivity), show (n : ℝ) * a = (n * a : ℤ)
-    by norm_cast, Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_left
-    (by positivity)]
+  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
+  rw [← add_div, sub_add_cancel, div_le_iff₀' h, show (n : ℝ) * a = (n * a : ℤ)
+    by norm_cast, Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_left h]
 
 /-- If `B : BoxIntegral.Box` has integral corners and contains the point `x`, then the index of
 `x` is admissible for `B`. -/
