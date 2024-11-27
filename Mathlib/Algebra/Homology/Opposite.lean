@@ -213,6 +213,16 @@ instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
   (inferInstance : (K.sc i).unop.HasHomology)
 
+instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
+    ((opFunctor _ _).obj (op K)).HasHomology i := by
+  dsimp
+  infer_instance
+
+instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
+    ((unopFunctor _ _).obj (op K)).HasHomology i := by
+  dsimp
+  infer_instance
+
 variable {V c}
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
@@ -226,6 +236,30 @@ then the homology of `K.unop` identifies to the opposite of the homology of `K`.
 def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.homology i ≅ unop (K.homology i) :=
   (K.unop.homologyOp i).unop
+
+section
+
+variable (K : HomologicalComplex V c) (i : ι) [K.HasHomology i]
+
+/-- The canonical isomorphism `K.op.cycles i ≅ op (K.opcycles i)`. -/
+def cyclesOpIso : K.op.cycles i ≅ op (K.opcycles i) :=
+  (K.sc i).cyclesOpIso
+
+/-- The canonical isomorphism `K.op.opcycles i ≅ op (K.cycles i)`. -/
+def opcyclesOpIso : K.op.opcycles i ≅ op (K.cycles i) :=
+  (K.sc i).opcyclesOpIso
+
+variable (j : ι)
+
+@[reassoc (attr := simp)]
+lemma opcyclesOpIso_hom_toCycles_op :
+    (K.opcyclesOpIso i).hom ≫ (K.toCycles j i).op = K.op.fromOpcycles i j := sorry
+
+@[reassoc (attr := simp)]
+lemma fromOpcycles_op_cyclesOpIso_inv :
+    (K.fromOpcycles i j).op ≫ (K.cyclesOpIso i).inv = K.op.toCycles j i := sorry
+
+end
 
 end
 
