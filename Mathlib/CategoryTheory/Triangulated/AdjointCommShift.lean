@@ -362,6 +362,32 @@ noncomputable def left_right_equiv (adj : F ⊣ G) : CommShift F A ≃ CommShift
     rw [id_comp] at this
     exact this.symm
 
+variable (A)
+
+class adjunction_compat (adj : F ⊣ G) [CommShift F A] [CommShift G A] where
+  left_right_compat : ∀ (a a' : A) (h : a + a' = 0) (X : C) (Y : D) (u : (F.obj X)⟦a'⟧ ⟶ Y),
+    ((shiftEquiv' C a a' h).symm.toAdjunction.comp adj).homEquiv _ _
+    ((CommShift.iso a').hom.app X ≫ u) =
+    (((adj.comp (shiftEquiv' D a a' h).symm.toAdjunction).homEquiv _ _) u) ≫
+    (CommShift.iso a).hom.app Y
+
+variable {A}
+
+noncomputable def left_right_equiv_compat_forward (adj : F ⊣ G) [CommShift F A] :
+    @adjunction_compat C D _ _ F G A _ _ _ adj inferInstance
+    ((left_right_equiv adj).toFun inferInstance) := by
+  apply @adjunction_compat.mk C D _ _ F G A _ _ _ adj _ ((left_right_equiv adj).toFun inferInstance)
+  intro a a' h X Y u
+  exact left_to_right_compat adj inferInstance a a' h X Y u
+
+def left_right_equiv_compat_backward (adj : F ⊣ G) [CommShift G A] :
+    @adjunction_compat C D _ _ F G A _ _ _ adj ((left_right_equiv adj).invFun inferInstance)
+    inferInstance := by
+  apply @adjunction_compat.mk C D _ _ F G A _ _ _ adj
+    ((left_right_equiv adj).invFun inferInstance) _
+  intro a a' h X Y u
+  exact right_to_left_compat adj inferInstance a a' h X Y u
+
 end CommShift
 
 end Adjunction

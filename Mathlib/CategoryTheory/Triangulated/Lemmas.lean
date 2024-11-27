@@ -680,15 +680,6 @@ lemma comp_op : (Adjunction.comp adj adj₁).opAdjointOpOfAdjoint =
     rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply, opEquiv_symm_apply]
     simp
 
-/-
-lemma truc (a : A) :
-    (Adjunction.comp adj (shiftEquiv D a).symm.toAdjunction).opAdjointOpOfAdjoint =
-    Adjunction.comp (shiftEquiv' (OppositeShift D A) (-a) a (by simp)).symm.toAdjunction
-    adj.opAdjointOpOfAdjoint := by
-  rw [← shiftEquiv_symm_toAdjunction_op]
-  rw [comp_op]
--/
-
 end Adjunction
 
 section
