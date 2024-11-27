@@ -129,11 +129,6 @@ noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] 
   map_add' := add_toBilin bm
   map_smul' := smul_toBilin S bm
 
-
-
-
-
-
 lemma toBilin_symm_eq_Polar (Q : QuadraticMap R M N) (bm : Basis ι R M) :
     (Q.toBilin bm) + (Q.toBilin bm).flip = polarBilin Q := by
   ext a b
