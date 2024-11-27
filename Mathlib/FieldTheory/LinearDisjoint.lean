@@ -24,6 +24,17 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
   (as a special case, two intermediate fields) are linearly disjoint over `F`,
   if they are linearly disjoint as subalgebras (`Subalgebra.LinearDisjoint`).
 
+### Implementation notes
+
+The `Subalgebra.LinearDisjoint` is stated for two `Subalgebra`s. The original design of
+`IntermediateField.LinearDisjoint` is also stated for two `IntermediateField`s
+(see `IntermediateField.linearDisjoint_iff'` for the original statement).
+But it's probably useful if one of them can be generalized to an abstract field
+(see <https://github.com/leanprover-community/mathlib4/pull/9651#discussion_r1464070324>).
+This leads to the current design of `IntermediateField.LinearDisjoint`
+which is for one `IntermediateField` and one abstract field.
+It is not generalized to two abstract fields as this will break the dot notation.
+
 ### Main results
 
 Equivalent characterization of linear disjointness:
@@ -61,7 +72,7 @@ Equivalent characterization of linear disjointness:
 
 Other main results:
 
-- `IntermediateField.LinearDisjoint.symm`, `IntermediateField.linearDisjoint_symm`:
+- `IntermediateField.LinearDisjoint.symm`, `IntermediateField.linearDisjoint_comm`:
   linear disjointness is symmetric.
 
 - `IntermediateField.LinearDisjoint.rank_sup_of_isAlgebraic`,

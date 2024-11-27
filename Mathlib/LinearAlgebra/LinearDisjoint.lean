@@ -64,7 +64,7 @@ The following is the second equivalent characterization of linear disjointness:
 
 ## Other main results
 
-- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_symm_of_commute`:
+- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_comm_of_commute`:
   linear disjointness is symmetric under some commutative conditions.
 
 - `Submodule.linearDisjoint_op`:

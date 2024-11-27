@@ -63,7 +63,7 @@ See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` for details.
 
 ### Other main results
 
-- `Subalgebra.LinearDisjoint.symm_of_commute`, `Subalgebra.linearDisjoint_symm_of_commute`:
+- `Subalgebra.LinearDisjoint.symm_of_commute`, `Subalgebra.linearDisjoint_comm_of_commute`:
   linear disjointness is symmetric under some commutative conditions.
 
 - `Subalgebra.LinearDisjoint.bot_left`, `Subalgebra.LinearDisjoint.bot_right`:
