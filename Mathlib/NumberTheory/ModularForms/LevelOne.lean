@@ -44,36 +44,38 @@ lemma SlashInvariantForm.wt_eq_zero_of_eq_const
 
 namespace ModularFormClass
 
-lemma levelOne_neg_wt_eq_zero_or_const {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
-    [ModularFormClass F Γ(1) k] (f : F) : ⇑f = 0 ∨ (k = 0 ∧ ∃ c : ℂ, ⇑f = fun _ => c) := by
+theorem neg_wt_eq_const {k : ℤ} (hk : k ≤ 0) {F : Type*}  [FunLike F ℍ ℂ]
+    [ModularFormClass F Γ(1) k] (f : F) :
+    Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
   have hdiff : DifferentiableOn ℂ (cuspFunction 1 f) (Metric.ball 0 1) := by
     exact fun z hz ↦ DifferentiableAt.differentiableWithinAt (differentiableAt_cuspFunction 1 f
       (mem_ball_zero_iff.mp hz))
-  have heq : Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0))
-    (Metric.ball 0 1) := by
-    apply eq_const_of_exists_le (r := exp (-(π * √3 * (1 / 2)))) hdiff (exp_nonneg _)
-    · simp only [one_div, exp_lt_one_iff, Left.neg_neg_iff, pi_pos, mul_pos_iff_of_pos_left,
-        sqrt_pos, Nat.ofNat_pos, inv_pos]
-    · intro z hz
-      rcases eq_or_ne z 0 with rfl | hz'
-      · refine ⟨0, by simpa using exp_nonneg _, by rfl⟩
-      · let t : ℍ := ⟨(invQParam 1 z), im_invQParam_pos_of_abs_lt_one Real.zero_lt_one
-          (mem_ball_zero_iff.mp hz) hz'⟩
-        obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f t
-        use 𝕢 1 ξ
-        simp only [Metric.mem_closedBall, dist_zero_right]
-        refine ⟨qParam_im_ge_half ξ hξ, ?_⟩
-        simp only [← eq_cuspFunction 1 f t, Nat.cast_one, Complex.norm_eq_abs,
-          ← eq_cuspFunction 1 f ξ] at hξ₂
-        convert hξ₂
-        rw [← (qParam_right_inv one_ne_zero hz')]
-        congr
+  apply eq_const_of_exists_le (r := exp (-(π * √3 * (1 / 2)))) hdiff (exp_nonneg _)
+  · simp only [one_div, exp_lt_one_iff, Left.neg_neg_iff, pi_pos, mul_pos_iff_of_pos_left,
+      sqrt_pos, Nat.ofNat_pos, inv_pos]
+  · intro z hz
+    rcases eq_or_ne z 0 with rfl | hz'
+    · refine ⟨0, by simpa using exp_nonneg _, by rfl⟩
+    · let t : ℍ := ⟨(invQParam 1 z), im_invQParam_pos_of_abs_lt_one Real.zero_lt_one
+        (mem_ball_zero_iff.mp hz) hz'⟩
+      obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f t
+      use 𝕢 1 ξ
+      simp only [Metric.mem_closedBall, dist_zero_right]
+      refine ⟨qParam_im_ge_half ξ hξ, ?_⟩
+      simp only [← eq_cuspFunction 1 f t, Nat.cast_one, Complex.norm_eq_abs,
+        ← eq_cuspFunction 1 f ξ] at hξ₂
+      convert hξ₂
+      rw [← (qParam_right_inv one_ne_zero hz')]
+      congr
+
+lemma levelOne_neg_wt_eq_zero_or_const {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
+    [ModularFormClass F Γ(1) k] (f : F) : ⇑f = 0 ∨ (k = 0 ∧ ∃ c : ℂ, ⇑f = fun _ => c) := by
   have H : ∀ z, ⇑f z = const ℍ (cuspFunction 1 f 0) z := by
     intro z
     have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
       simpa only [Metric.mem_ball, dist_zero_right, Complex.norm_eq_abs, neg_mul, mul_zero, div_one,
         Real.exp_zero] using (abs_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
-    simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, const_apply] using heq hQ
+    simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, const_apply] using (neg_wt_eq_const hk f) hQ
   rcases (wt_eq_zero_of_eq_const k (c := cuspFunction 1 f 0) H) with HF | HF
   · right
     refine ⟨HF, (cuspFunction 1 (f) 0), funext fun z ↦ H z⟩
@@ -107,7 +109,7 @@ lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm �
   simp only [zero_apply, ne_eq, (congrFun hc' z).symm, smul_apply, show f z = 1 by rfl, smul_eq_mul,
     mul_one] at *
 
-lemma ModularForm.levelOne_nono_pos_weight_rank_zero {k : ℤ} (hk : k < 0) :
+lemma ModularForm.levelOne_non_pos_weight_rank_zero {k : ℤ} (hk : k < 0) :
     Module.rank ℂ (ModularForm Γ(1) k) = 0 := by
   rw [rank_eq_zero_iff]
   intro f
