@@ -38,12 +38,16 @@ Theorem 3.1 or Lemma 4.1 are also a big step in the right direction.
 prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena
 -/
 
-section
+section Theorem6dot1
 
 variable {p r a n : ℕ}
+
 [Fact p.Prime]
+
 variable {K : Type*}
+
 [Field K] [CharP K p]
+
 variable {μ : primitiveRoots r K}
 
 /-- Theorem 6.1 Claim 1 (i) part 1. -/
@@ -51,4 +55,4 @@ lemma prime_is_introspective_for_linear_factors :
     ((μ : K)-a)^p = μ^p-a := by
   simp[← frobenius_def]
 
-end
+end Theorem6dot1
