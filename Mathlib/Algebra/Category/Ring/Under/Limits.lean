@@ -89,7 +89,7 @@ instance (J : Type u) [Finite J] (f : J → Under R) :
     PreservesLimit (Discrete.functor f) (tensorProd R S) :=
   let c : Fan _ := Under.piFan f
   have hc : IsLimit c := Under.piFanIsLimit f
-  preservesLimitOfPreservesLimitCone hc (piFanTensorProductIsLimit f)
+  preservesLimit_of_preserves_limit_cone hc (piFanTensorProductIsLimit f)
 
 instance (J : Type) [Finite J] :
     PreservesLimitsOfShape (Discrete J) (tensorProd R S) :=
@@ -97,7 +97,7 @@ instance (J : Type) [Finite J] :
   have : PreservesLimitsOfShape (Discrete J') (tensorProd R S) :=
     preservesLimitsOfShapeDiscrete (tensorProd R S)
   let e : Discrete J' ≌ Discrete J := Discrete.equivalence Equiv.ulift
-  preservesLimitsOfShapeOfEquiv e (R.tensorProd S)
+  preservesLimitsOfShape_of_equiv e (R.tensorProd S)
 
 instance : PreservesFiniteProducts (tensorProd R S) where
   preserves J := { }
@@ -182,14 +182,14 @@ instance [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :
   let hc : IsLimit c := Under.equalizerForkIsLimit f g
   let hc' : IsLimit ((tensorProd R S).mapCone c) :=
     tensorProdMapEqualizerForkIsLimit f g
-  preservesLimitOfPreservesLimitCone hc hc'
+  preservesLimit_of_preserves_limit_cone hc hc'
 
 instance [Module.Flat R S] : PreservesLimitsOfShape WalkingParallelPair (tensorProd R S) where
   preservesLimit {K} :=
-    preservesLimitOfIsoDiagram _ (diagramIsoParallelPair K).symm
+    preservesLimit_of_iso_diagram _ (diagramIsoParallelPair K).symm
 
 instance [Module.Flat R S] : PreservesFiniteLimits (tensorProd R S) :=
-  preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts (tensorProd R S)
+  preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts (tensorProd R S)
 
 end Equalizer
 
@@ -201,13 +201,13 @@ variable (f : R ⟶ S)
 instance : PreservesFiniteProducts (Under.pushout f) where
   preserves _ :=
     letI : Algebra R S := RingHom.toAlgebra f
-    preservesLimitsOfShapeOfNatIso (tensorProdIsoPushout R S)
+    preservesLimitsOfShape_of_natIso (tensorProdIsoPushout R S)
 
 /-- `Under.pushout f` preserves finite limits if `f` is flat. -/
 def preservesFiniteLimitsOfFlat (hf : RingHom.Flat f) :
     PreservesFiniteLimits (Under.pushout f) where
   preservesFiniteLimits _ :=
     letI : Algebra R S := RingHom.toAlgebra f
-    preservesLimitsOfShapeOfNatIso (tensorProdIsoPushout R S)
+    preservesLimitsOfShape_of_natIso (tensorProdIsoPushout R S)
 
 end CommRingCat

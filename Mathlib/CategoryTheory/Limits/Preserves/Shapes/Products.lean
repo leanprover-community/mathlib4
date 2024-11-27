@@ -162,13 +162,13 @@ end
 def preservesLimitsOfShapeDiscrete (F : C ⥤ D)
     [∀ (f : J → C), PreservesLimit (Discrete.functor f) F] :
     PreservesLimitsOfShape (Discrete J) F where
-  preservesLimit := preservesLimitOfIsoDiagram F (Discrete.natIsoFunctor).symm
+  preservesLimit := preservesLimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
 
 /-- If `F` preserves the colimit of every `Discrete.functor f`, it preserves all colimits of shape
 `Discrete J`. -/
 def preservesColimitsOfShapeDiscrete (F : C ⥤ D)
     [∀ (f : J → C), PreservesColimit (Discrete.functor f) F] :
     PreservesColimitsOfShape (Discrete J) F where
-  preservesColimit := preservesColimitOfIsoDiagram F (Discrete.natIsoFunctor).symm
+  preservesColimit := preservesColimit_of_iso_diagram F (Discrete.natIsoFunctor).symm
 
 end CategoryTheory.Limits
