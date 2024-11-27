@@ -86,22 +86,17 @@ theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq]
 
-/- Porting note: simpnf linter, added aux lemma below
-Left-hand side simplifies from
-  Finsupp.sum f fun x v => if a = x then v else 0
-to
-  if ↑f a = 0 then 0 else ↑f a
--/
--- @[simp]
 theorem sum_ite_self_eq [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (a = x) v 0) = f a := by
   classical
     convert f.sum_ite_eq a fun _ => id
     simp [ite_eq_right_iff.2 Eq.symm]
 
--- Porting note: Added this thm to replace the simp in the previous one. Need to add [DecidableEq N]
+/--
+The left hand side of `sum_ite_self_eq` simplifies; this is the variant that is useful for `simp`.
+-/
 @[simp]
-theorem sum_ite_self_eq_aux [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
+theorem if_mem_support [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (if a ∈ f.support then f a else 0) = f a := by
   simp only [mem_support_iff, ne_eq, ite_eq_left_iff, not_not]
   exact fun h ↦ h.symm
@@ -113,6 +108,7 @@ theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq']
 
+/-- A restatement of `sum_ite_self_eq` with the equality test reversed. -/
 theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (x = a) v 0) = f a := by
   classical
@@ -131,7 +127,7 @@ result of `onFinset` is the same as multiplying it over the original `Finset`. -
       result of `onFinset` is the same as summing it over the original `Finset`."]
 theorem onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : ∀ a, f a ≠ 0 → a ∈ s)
     (hg : ∀ a, g a 0 = 1) : (onFinset s f hf).prod g = ∏ a ∈ s, g a (f a) :=
-  Finset.prod_subset support_onFinset_subset <| by simp (config := { contextual := true }) [*]
+  Finset.prod_subset support_onFinset_subset <| by simp +contextual [*]
 
 /-- Taking a product over `f : α →₀ M` is the same as multiplying the value on a single element
 `y ∈ f.support` by the product over `erase y f`. -/

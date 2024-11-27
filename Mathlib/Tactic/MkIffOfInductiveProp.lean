@@ -328,10 +328,7 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
     type := thmTy
     value := ← instantiateMVars mvar
   }
-  addDeclarationRanges rel {
-    range := ← getDeclarationRange (← getRef)
-    selectionRange := ← getDeclarationRange relStx
-  }
+  addDeclarationRangesFromSyntax rel (← getRef) relStx
   addConstInfo relStx rel
 
 /--

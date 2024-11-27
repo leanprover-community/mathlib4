@@ -20,6 +20,9 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 - Stacks Project: Tag 0BMQ
 
 -/
+
+open Topology
+
 universe u₁ u₂ v₁ v₂ v w
 
 namespace CategoryTheory
@@ -81,13 +84,13 @@ lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
 
 lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   eq_induced := rfl
-  inj := autEmbedding_injective F
+  injective := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
 @[deprecated (since := "2024-10-20")]
 alias autEmbedding_closedEmbedding := autEmbedding_isClosedEmbedding
 
-instance : CompactSpace (Aut F) := IsClosedEmbedding.compactSpace (autEmbedding_isClosedEmbedding F)
+instance : CompactSpace (Aut F) := (autEmbedding_isClosedEmbedding F).compactSpace
 
 instance : T2Space (Aut F) :=
   T2Space.of_injective_continuous (autEmbedding_injective F) continuous_induced_dom

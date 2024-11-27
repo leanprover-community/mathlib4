@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.Range
+import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Lex
 
 /-! # sublists
 
@@ -112,19 +113,21 @@ theorem sublistsAux_eq_array_foldl :
     (by simp)
   simpa using this
 
-theorem sublistsAux_eq_bind :
-    sublistsAux = fun (a : α) (r : List (List α)) => r.bind fun l => [l, a :: l] :=
+theorem sublistsAux_eq_flatMap :
+    sublistsAux = fun (a : α) (r : List (List α)) => r.flatMap fun l => [l, a :: l] :=
   funext fun a => funext fun r =>
   List.reverseRecOn r
     (by simp [sublistsAux])
     (fun r l ih => by
-      rw [bind_append, ← ih, bind_singleton, sublistsAux, foldl_append]
+      rw [flatMap_append, ← ih, flatMap_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
+
+@[deprecated (since := "2024-10-16")] alias sublistsAux_eq_bind := sublistsAux_eq_flatMap
 
 @[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
   ext α l : 2
   trans l.foldr sublistsAux [[]]
-  · rw [sublistsAux_eq_bind, sublists]
+  · rw [sublistsAux_eq_flatMap, sublists]
   · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_toList]
     rw [← foldr_hom Array.toList]
     · intros _ _; congr
@@ -136,24 +139,25 @@ theorem sublists_append (l₁ l₂ : List α) :
   | nil => simp
   | cons a l₁ ih =>
     rw [foldr_cons, ih]
-    simp [List.bind, join_join, Function.comp_def]
+    simp [List.flatMap, flatten_flatten, Function.comp_def]
 
 theorem sublists_cons (a : α) (l : List α) :
     sublists (a :: l) = sublists l >>= (fun x => [x, a :: x]) :=
   show sublists ([a] ++ l) = _ by
   rw [sublists_append]
-  simp only [sublists_singleton, map_cons, bind_eq_bind, nil_append, cons_append, map_nil]
+  simp only [sublists_singleton, map_cons, bind_eq_flatMap, nil_append, cons_append, map_nil]
 
 @[simp]
 theorem sublists_concat (l : List α) (a : α) :
     sublists (l ++ [a]) = sublists l ++ map (fun x => x ++ [a]) (sublists l) := by
-  rw [sublists_append, sublists_singleton, bind_eq_bind, bind_cons, bind_cons, bind_nil,
+  rw [sublists_append, sublists_singleton, bind_eq_flatMap, flatMap_cons, flatMap_cons, flatMap_nil,
      map_id'' append_nil, append_nil]
 
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
   induction' l with hd tl ih <;> [rfl;
     simp only [reverse_cons, sublists_append, sublists'_cons, map_append, ih, sublists_singleton,
-      map_eq_map, bind_eq_bind, map_map, bind_cons, append_nil, bind_nil, Function.comp_def]]
+      map_eq_map, bind_eq_flatMap, map_map, flatMap_cons, append_nil, flatMap_nil,
+      Function.comp_def]]
 
 theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists' (reverse l)) := by
   rw [← sublists_reverse, reverse_reverse]
@@ -314,7 +318,7 @@ theorem Pairwise.sublists' {R} :
     exact Lex.rel (H₁ _ <| sl₁.subset <| mem_cons_self _ _)
 
 theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
-    Pairwise (fun l₁ l₂ => Lex R (reverse l₁) (reverse l₂)) (sublists l) := by
+    Pairwise (Lex R on reverse) (sublists l) := by
   have := (pairwise_reverse.2 H).sublists'
   rwa [sublists'_reverse, pairwise_map] at this
 
@@ -340,8 +344,8 @@ theorem sublists_map (f : α → β) : ∀ (l : List α),
     sublists (map f l) = map (map f) (sublists l)
   | [] => by simp
   | a::l => by
-    rw [map_cons, sublists_cons, bind_eq_bind, sublists_map f l, sublists_cons,
-      bind_eq_bind, map_eq_bind, map_eq_bind]
+    rw [map_cons, sublists_cons, bind_eq_flatMap, sublists_map f l, sublists_cons,
+      bind_eq_flatMap, map_eq_flatMap, map_eq_flatMap]
     induction sublists l <;> simp [*]
 
 theorem sublists'_map (f : α → β) : ∀ (l : List α),
@@ -397,19 +401,19 @@ theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip 
     · exact (IH _ _ h).cons _
 
 theorem range_bind_sublistsLen_perm (l : List α) :
-    ((List.range (l.length + 1)).bind fun n => sublistsLen n l) ~ sublists' l := by
+    ((List.range (l.length + 1)).flatMap fun n => sublistsLen n l) ~ sublists' l := by
   induction' l with h tl l_ih
   · simp [range_succ]
-  · simp_rw [range_succ_eq_map, length, bind_cons, bind_map, sublistsLen_succ_cons, sublists'_cons,
-      List.sublistsLen_zero, List.singleton_append]
-    refine ((bind_append_perm (range (tl.length + 1)) _ _).symm.cons _).trans ?_
-    simp_rw [← List.map_bind, ← cons_append]
+  · simp_rw [range_succ_eq_map, length, flatMap_cons, flatMap_map, sublistsLen_succ_cons,
+      sublists'_cons, List.sublistsLen_zero, List.singleton_append]
+    refine ((flatMap_append_perm (range (tl.length + 1)) _ _).symm.cons _).trans ?_
+    simp_rw [← List.map_flatMap, ← cons_append]
     rw [← List.singleton_append, ← List.sublistsLen_zero tl]
     refine Perm.append ?_ (l_ih.map _)
-    rw [List.range_succ, bind_append, bind_singleton,
+    rw [List.range_succ, flatMap_append, flatMap_singleton,
       sublistsLen_of_length_lt (Nat.lt_succ_self _), append_nil,
-      ← List.bind_map Nat.succ fun n => sublistsLen n tl,
-      ← bind_cons 0 _ fun n => sublistsLen n tl, ← range_succ_eq_map]
+      ← List.flatMap_map Nat.succ fun n => sublistsLen n tl,
+      ← flatMap_cons 0 _ fun n => sublistsLen n tl, ← range_succ_eq_map]
     exact l_ih
 
 end List

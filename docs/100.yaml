@@ -35,7 +35,7 @@
 9:
   title  : The Area of a Circle
   decl   : Theorems100.area_disc
-  author : James Arthur, Benjamin Davidson, and Andrew Souther
+  author : James Arthur and Benjamin Davidson and Andrew Souther
 10:
   title  : Euler’s Generalization of Fermat’s Little Theorem
   decl   : Nat.ModEq.pow_totient
@@ -51,7 +51,7 @@
 14:
   title  : Euler’s Summation of 1 + (1/2)^2 + (1/3)^2 + ….
   decl   : hasSum_zeta_two
-  author : Marc Masdeu, David Loeffler
+  author : Marc Masdeu and David Loeffler
 15:
   title  : Fundamental Theorem of Integral Calculus
   decls  :
@@ -113,7 +113,7 @@
   title  : Feuerbach’s Theorem
 30:
   title  : The Ballot Problem
-  author : Bhavik Mehta, Kexing Ying
+  author : Bhavik Mehta and Kexing Ying
   decl   : Ballot.ballot_problem
 31:
   title  : Ramsey’s Theorem
@@ -127,7 +127,7 @@
 34:
   title  : Divergence of the Harmonic Series
   decl   : Real.tendsto_sum_range_one_div_nat_succ_atTop
-  author : Anatole Dedecker, Yury Kudryashov
+  author : Anatole Dedecker and Yury Kudryashov
 35:
   title  : Taylor’s Theorem
   decls  :
@@ -157,12 +157,12 @@
 40:
   title  : Minkowski’s Fundamental Theorem
   decl   : MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-  author : Alex J. Best, Yaël Dillies
+  author : Alex J. Best and Yaël Dillies
 41:
   title  : Puiseux’s Theorem
 42:
   title  : Sum of the Reciprocals of the Triangular Numbers
-  author : Jalex Stark, Yury Kudryashov
+  author : Jalex Stark and Yury Kudryashov
   decl   : Theorems100.inverse_triangle_sum
 43:
   title  : The Isoperimetric Theorem
@@ -172,14 +172,18 @@
   author : Chris Hughes
 45:
   title  : The Partition Theorem
-  author : Bhavik Mehta, Aaron Anderson
+  author : Bhavik Mehta and Aaron Anderson
   decl   : Theorems100.partition_theorem
 46:
   title  : The Solution of the General Quartic Equation
+  decl   : Theorems100.quartic_eq_zero_iff
+  author : Thomas Zhu
 47:
   title  : The Central Limit Theorem
 48:
   title  : Dirichlet’s Theorem
+  decl   : Nat.setOf_prime_and_eq_mod_infinite
+  author : David Loeffler, Michael Stoll
 49:
   title  : The Cayley-Hamilton Theorem
   decl   : Matrix.aeval_self_charpoly
@@ -306,7 +310,7 @@
   decls  :
     - sum_range_pow
     - sum_Ico_pow
-  author : mathlib (Moritz Firsching, Fabian Kruse, Ashvni Narayanan)
+  author : Moritz Firsching and Fabian Kruse and Ashvni Narayanan
 78:
   title  : The Cauchy-Schwarz Inequality
   decls  :
@@ -316,7 +320,7 @@
 79:
   title  : The Intermediate Value Theorem
   decl   : intermediate_value_Icc
-  author : mathlib (Rob Lewis and Chris Hughes)
+  author : Rob Lewis and Chris Hughes
 80:
   title  : The Fundamental Theorem of Arithmetic
   decls  :
@@ -325,14 +329,14 @@
     - EuclideanDomain.to_principal_ideal_domain
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
-  author : mathlib (Chris Hughes)
+  author : Chris Hughes
   note   : "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
 81:
   title  : Divergence of the Prime Reciprocal Series
   decls  :
     - Theorems100.Real.tendsto_sum_one_div_prime_atTop
     - not_summable_one_div_on_primes
-  author : Manuel Candales (archive), Michael Stoll (Mathlib)
+  author : Manuel Candales (archive), Michael Stoll (mathlib)
 82:
   title  : Dissection of Cubes (J.E. Littlewood’s ‘elegant’ proof)
   decl   : Theorems100.«82».cannot_cube_a_cube
@@ -340,7 +344,7 @@
 83:
   title  : The Friendship Theorem
   decl   : Theorems100.friendship_theorem
-  author : Aaron Anderson, Jalex Stark, Kyle Miller
+  author : Aaron Anderson and Jalex Stark and Kyle Miller
 84:
   title  : Morley’s Theorem
 85:
@@ -370,7 +374,7 @@
   title  : Stirling’s Formula
   decls  :
     - Stirling.tendsto_stirlingSeq_sqrt_pi
-  author : mathlib (Moritz Firsching, Fabian Kruse, Nikolas Kuhn, Heather Macbeth)
+  author : Moritz Firsching and Fabian Kruse and Nikolas Kuhn and Heather Macbeth
 91:
   title  : The Triangle Inequality
   decl   : norm_add_le
@@ -393,9 +397,14 @@
   author : Manuel Candales
 96:
   title  : Principle of Inclusion/Exclusion
+  decls  :
+    - Finset.inclusion_exclusion_sum_biUnion
+    - Finset.inclusion_exclusion_card_biUnion
+    - Finset.inclusion_exclusion_sum_inf_compl
+    - Finset.inclusion_exclusion_card_inf_compl
   links  :
     github : https://github.com/NeilStrickland/lean_lib/blob/f88d162da2f990b87c4d34f5f46bbca2bbc5948e/src/combinatorics/matching.lean#L304
-  author : Neil Strickland
+  author : Neil Strickland (outside mathlib), Yaël Dillies (in mathlib)
 97:
   title  : Cramer’s Rule
   decl   : Matrix.mulVec_cramer
@@ -403,7 +412,7 @@
 98:
   title  : Bertrand’s Postulate
   decl   : Nat.bertrand
-  author : Bolton Bailey, Patrick Stevens
+  author : Bolton Bailey and Patrick Stevens
 99:
   title  : Buffon Needle Problem
   links  :

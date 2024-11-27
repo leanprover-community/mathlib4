@@ -3,7 +3,7 @@ Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.ConjTranspose
 
 /-!
 # Row and column matrices
@@ -34,7 +34,7 @@ To get a column matrix with exactly one column, `Matrix.col (Fin 1) u` is the ca
 def col (ι : Type*) (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 
--- TODO: set as an equation lemma for `col`, see mathlib4#3024
+-- TODO: set as an equation lemma for `col`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem col_apply {ι : Type*} (w : m → α) (i) (j : ι) : col ι w i j = w i :=
   rfl
@@ -49,7 +49,7 @@ def row (ι : Type*) (v : n → α) : Matrix ι n α :=
 
 variable {ι : Type*}
 
--- TODO: set as an equation lemma for `row`, see mathlib4#3024
+-- TODO: set as an equation lemma for `row`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem row_apply (v : n → α) (i : ι) (j) : row ι v i j = v j :=
   rfl

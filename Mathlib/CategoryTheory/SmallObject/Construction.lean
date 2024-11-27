@@ -62,7 +62,7 @@ variable {C : Type u} [Category.{v} C] {I : Type w} {A B : I → C} (f : ∀ i, 
 
 section
 
-variable {S : C} {X Y Z : C} (πX : X ⟶ S) (πY : Y ⟶ S) (φ : X ⟶ Y)
+variable {S : C} {X Y : C} (πX : X ⟶ S) (πY : Y ⟶ S) (φ : X ⟶ Y)
 
 /-- Given a family of morphisms `f i : A i ⟶ B i` and a morphism `πX : X ⟶ S`,
 this type parametrizes the commutative squares with a morphism `f i` on the left

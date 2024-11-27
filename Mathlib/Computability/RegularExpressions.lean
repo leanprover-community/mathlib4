@@ -274,7 +274,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 
 theorem star_rmatch_iff (P : RegularExpression α) :
     ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x
-          = S.join ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
+          = S.flatten ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
   fun x => by
     have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
     clear star_rmatch_iff
@@ -307,15 +307,15 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · cases' t' with b t
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
             simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
-          simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
-          refine ⟨t, U.join, hsum.2, ?_, ?_⟩
+          simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum
+          refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
             convert helem.2
             exact hsum.1
-          · have hwf : U.join.length < (List.cons a x).length := by
+          · have hwf : U.flatten.length < (List.cons a x).length := by
               rw [hsum.1, hsum.2]
-              simp only [List.length_append, List.length_join, List.length]
+              simp only [List.length_append, List.length_flatten, List.length]
               omega
             rw [IH _ hwf]
             refine ⟨U, rfl, fun t h => helem t ?_⟩
