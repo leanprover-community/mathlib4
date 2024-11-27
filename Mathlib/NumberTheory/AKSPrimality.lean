@@ -38,8 +38,8 @@ prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena
 
 /-- Theorem 6.1 Claim 1 (i) part 1. -/
 lemma aks_6d1c1ip1 (p r a: ℕ) [Fact p.Prime]
- (μ: primitiveRoots r (AlgebraicClosure (ZMod p))):
- ((μ: (AlgebraicClosure (ZMod p)))-a)^p = μ^p-a :=by
+    (μ: primitiveRoots r (AlgebraicClosure (ZMod p))):
+    ((μ: (AlgebraicClosure (ZMod p)))-a)^p = μ^p-a :=by
   let frob := by exact frobeniusEquiv (AlgebraicClosure (ZMod p)) p
   have hfrob_cast: (a^p)= (a:(AlgebraicClosure (ZMod p))) :=by
    exact frobenius_natCast (AlgebraicClosure (ZMod p)) p a
