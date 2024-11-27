@@ -39,12 +39,12 @@ lemma SlashInvariantForm.wt_eq_zero_of_eq_const
   nth_rw 1 [h2I2] at hI
   simp only [mul_zpow, coe_I, mul_eq_mul_right_iff, mul_left_eq_self₀] at hI
   refine hI.imp_left (Or.casesOn · (fun H ↦ ?_) (False.elim ∘ zpow_ne_zero k I_ne_zero))
-  rwa [← Complex.ofReal_ofNat, ← ofReal_zpow, ← ofReal_one, ofReal_inj,
+  rwa [← ofReal_ofNat, ← ofReal_zpow, ← ofReal_one, ofReal_inj,
     zpow_eq_one_iff_right₀ (by norm_num) (by norm_num)] at H
 
 namespace ModularFormClass
 
-theorem neg_wt_cuspFunction_EqOn_const {k : ℤ} (hk : k ≤ 0) {F : Type*}  [FunLike F ℍ ℂ]
+theorem neg_wt_cuspFunction_EqOn_const {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) k] (f : F) :
     Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
   have hdiff : DifferentiableOn ℂ (cuspFunction 1 f) (Metric.ball 0 1) := by
@@ -60,13 +60,12 @@ theorem neg_wt_cuspFunction_EqOn_const {k : ℤ} (hk : k ≤ 0) {F : Type*}  [Fu
         (mem_ball_zero_iff.mp hz) hz'⟩
       obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f t
       use 𝕢 1 ξ
-      simp only [Metric.mem_closedBall, dist_zero_right]
+      rw [Metric.mem_closedBall, dist_zero_right]
       refine ⟨qParam_im_ge_half ξ hξ, ?_⟩
-      simp only [← eq_cuspFunction 1 f t, Nat.cast_one, Complex.norm_eq_abs,
-        ← eq_cuspFunction 1 f ξ] at hξ₂
-      convert hξ₂
-      rw [← (qParam_right_inv one_ne_zero hz')]
-      congr
+      simp only [one_div, ← eq_cuspFunction 1 f t, Nat.cast_one, Complex.norm_eq_abs, ←
+        eq_cuspFunction 1 f ξ] at *
+      rw [← qParam_right_inv one_ne_zero hz']
+      exact hξ₂
 
 theorem levelOne_neg_wt_const {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) k] (f : F) (z : ℍ) :
