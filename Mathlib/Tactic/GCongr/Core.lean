@@ -234,11 +234,11 @@ def gcongrDischarger (goal : MVarId) : MetaM Unit := Elab.Term.TermElabM.run' do
 open Elab Tactic
 
 /-- Given a term `a < b`, build a term `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
+@[gcongr_forward] def mkLeOfLt : ForwardExt where
   eval h := mkAppM ``le_of_lt #[h]
 
 /-- Given a term `a ∼ b` with `∼` symmetric, build a term `b ∼ a`. -/
-@[gcongr_forward] def symmExact : ForwardExt where
+@[gcongr_forward] def mkSymm : ForwardExt where
   eval := Lean.Expr.applySymm
 
 /-- Data structure storing two arrays of expressions, one assumed to comprise proofs of equalities,

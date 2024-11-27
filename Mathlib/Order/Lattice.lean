@@ -50,7 +50,7 @@ semilattice, lattice
 -/
 
 /-- Given a term `a ⊂ b`, build a term `a ⊆ b`. -/
-@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
+@[gcongr_forward] def mkSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
   eval h := Lean.Meta.mkAppM ``subset_of_ssubset #[h]
 
 universe u v w
