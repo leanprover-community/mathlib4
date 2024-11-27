@@ -240,6 +240,16 @@ lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
   rw [← cancel_epi (equalizer.ι f' g').left]
   exact congr($(equalizer.condition f' g').left)
 
+variable (S) in
+/--
+Suppose `X` is a reduced `S`-scheme and `Y` is a separated `S`-scheme.
+For any `S`-morphisms `f g : X ⟶ Y`, `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
+-/
+lemma ext_of_isDominant_of_isSeparated' [X.Over S] [Y.Over S] [IsReduced X] [IsSeparated (Y ↘ S)]
+    {f g : X ⟶ Y} [f.IsOver S] [g.IsOver S] {W} (ι : W ⟶ X) [IsDominant ι]
+    (hU : ι ≫ f = ι ≫ g) : f = g :=
+  ext_of_isDominant_of_isSeparated (Y ↘ S) (by simp) ι hU
+
 namespace Scheme
 
 /-- A scheme `X` is separated if it is separated over `⊤_ Scheme`. -/

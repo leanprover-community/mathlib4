@@ -170,20 +170,16 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   have bdA2 := norm_setIntegral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_
   swap
   · apply Continuous.aestronglyMeasurable
-    exact
-      continuous_norm.comp <|
-        Continuous.sub hf1 <| Continuous.comp hf1 <| continuous_id'.add continuous_const
+    exact continuous_norm.comp <| hf1.sub <| hf1.comp <| continuous_id'.add continuous_const
   have : ‖_‖ = ∫ v : V in A, ‖f v - f (v + i w)‖ :=
     Real.norm_of_nonneg (setIntegral_nonneg mA fun x _ => norm_nonneg _)
   rw [this] at bdA2
   refine bdA2.trans_lt ?_
   rw [div_mul_eq_mul_div, div_lt_iff₀ (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
     mul_lt_mul_left hε]
-  rw [← ENNReal.toReal_le_toReal] at hB_vol
-  · refine hB_vol.trans_lt ?_
-    rw [(by rfl : (↑B : ENNReal).toReal = ↑B), two_mul]
-    exact lt_add_of_pos_left _ hB_pos
-  exacts [(hB_vol.trans_lt ENNReal.coe_lt_top).ne, ENNReal.coe_lt_top.ne]
+  refine (ENNReal.toReal_mono ENNReal.coe_ne_top hB_vol).trans_lt ?_
+  rw [ENNReal.coe_toReal, two_mul]
+  exact lt_add_of_pos_left _ hB_pos
 
 variable (f)
 
