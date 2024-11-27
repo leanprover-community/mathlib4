@@ -486,8 +486,8 @@ theorem drop_append_stream : ∀ (l : List α) (s : Stream' α), drop l.length (
   | List.cons a l, s => by
     rw [List.length_cons, drop_succ, cons_append_stream, tail_cons, drop_append_stream l s]
 
-@[simp] theorem append_stream_head_tail (s : Stream' α) : [head s] ++ₛ tail s = s := by
-  rw [cons_append_stream, nil_append_stream, Stream'.eta]
+theorem append_stream_head_tail (s : Stream' α) : [head s] ++ₛ tail s = s := by
+  simp
 
 theorem mem_append_stream_right : ∀ {a : α} (l : List α) {s : Stream' α}, a ∈ s → a ∈ l ++ₛ s
   | _, [], _, h => h
