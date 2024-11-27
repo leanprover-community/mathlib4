@@ -109,8 +109,7 @@ lemma comm₁₂_single (r : pres.rels) :
     pres.toExtension.cotangentComplex (hom₁ pres (Finsupp.single r 1)) =
       pres.cotangentSpaceBasis.repr.symm ((differentialsRelations pres).relation r) := by
   simp only [hom₁, Finsupp.linearCombination_single, one_smul, differentialsRelations,
-    Basis.repr_symm_apply]
-  erw [Extension.cotangentComplex_mk]
+    Basis.repr_symm_apply, Extension.cotangentComplex_mk]
   exact pres.cotangentSpaceBasis.repr.injective (by ext; simp)
 
 lemma comm₁₂ : pres.toExtension.cotangentComplex.comp (hom₁ pres) =
