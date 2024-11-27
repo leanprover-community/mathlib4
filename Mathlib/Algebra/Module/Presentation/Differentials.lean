@@ -115,9 +115,9 @@ lemma comm₁₂_single (r : pres.rels) :
 lemma comm₁₂ : pres.toExtension.cotangentComplex.comp (hom₁ pres) =
     pres.cotangentSpaceBasis.repr.symm.comp (differentialsRelations pres).map := by
   ext r
-  dsimp
-  rw [comm₁₂_single]
-  erw [Module.Relations.map_single]
+  have := (differentialsRelations pres).map_single
+  dsimp at this ⊢
+  rw [comm₁₂_single, this]
 
 end differentials
 
