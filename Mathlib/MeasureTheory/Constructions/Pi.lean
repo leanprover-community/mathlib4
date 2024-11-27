@@ -80,7 +80,7 @@ theorem isPiSystem_pi [∀ i, MeasurableSpace (α i)] :
 
 section Finite
 
-variable [Finite ι] [Finite ι']
+variable [Finite ι]
 
 /-- Boxes of countably spanning sets are countably spanning. -/
 theorem IsCountablySpanning.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountablySpanning (C i)) :
