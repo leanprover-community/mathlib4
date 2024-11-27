@@ -228,8 +228,8 @@ theorem mem_prepartition_iff {B I : Box ι} :
 
 variable {n} in
 theorem mem_prepartition_boxes_iff {B I : Box ι} :
-    I ∈ (prepartition n B).boxes ↔ ∃ ν ∈ admissibleIndex n B, box n ν = I := by
-  rw [Prepartition.mem_boxes, TaggedPrepartition.mem_toPrepartition, mem_prepartition_iff]
+    I ∈ (prepartition n B).boxes ↔ ∃ ν ∈ admissibleIndex n B, box n ν = I :=
+  mem_prepartition_iff
 
 theorem prepartition_tag {ν : ι → ℤ} {B : Box ι} (hν : ν ∈ admissibleIndex n B) :
     (prepartition n B).tag (box n ν) = tag n ν := by
