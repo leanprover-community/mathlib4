@@ -27,9 +27,8 @@ namespace PresheafOfModules
 section
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-variable {F : C ⥤ D} {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u}} (φ : S ⟶ F.op ⋙ R)
-
-variable [(pushforward.{v} φ).IsRightAdjoint]
+  {F : C ⥤ D} {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u}} (φ : S ⟶ F.op ⋙ R)
+  [(pushforward.{v} φ).IsRightAdjoint]
 
 /-- The pullback functor `PresheafOfModules S ⥤ PresheafOfModules R` induced by
 a morphism of presheaves of rings `S ⟶ F.op ⋙ R`, defined as the left adjoint
