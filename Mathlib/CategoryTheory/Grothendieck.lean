@@ -231,10 +231,6 @@ theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
 if possible, and we should prefer `map_comp_iso` to `map_comp_eq` whenever we can. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β := eqToIso (map_comp_eq α β)
 
--- TODO move
-def down_comp {X Y Z : AsSmall.{w} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).down = f.down ≫ g.down :=
-  rfl
-
 variable (F)
 
 /-- The inverse functor to build the equivalence `compAsSmallEquivalence`. -/
