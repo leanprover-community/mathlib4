@@ -343,22 +343,30 @@ theorem pre_id : pre F (𝟭 C) = 𝟭 _ := by
   rfl
 
 variable (F) in
-def pre_map {G H : D ⥤ C} (α : G ⟶ H) :
+def preNatTrans {G H : D ⥤ C} (α : G ⟶ H) :
     pre F G ⟶ (map (whiskerRight α F)) ⋙ (pre F H) := by
   refine ⟨fun X => ⟨α.app X.base, eqToHom rfl⟩, ?_⟩
   intros
   apply Grothendieck.ext <;> simp
 
+/-!
+This is a variant of `preNatTrans` for which the type and the implementation depend on
+transformations `α` and `β` that may not be definitionally equal, even though `α = β`.
+This can be helpful to avoid dependent type theory hell when rewriting α.
+-/
 variable (F) in
-def pre_map2 {G H : D ⥤ C} (α : G ⟶ H) {β : G ⟶ H} (h : α = β) :
+def preNatTrans' {G H : D ⥤ C} (α : G ⟶ H) {β : G ⟶ H} (h : α = β) :
     pre F G ⟶ (map (whiskerRight β F)) ⋙ (pre F H) := by
   refine ⟨fun X => ⟨α.app X.base, eqToHom (by rw [h]; rfl)⟩, ?_⟩
   cases h
   intros
   apply Grothendieck.ext <;> simp
 
-lemma pre_map_app {G H : D ⥤ C} (α : G ⟶ H) (x : Grothendieck (G ⋙ F)) :
-    (pre_map F α).app x = ⟨α.app x.base, eqToHom rfl⟩ := rfl
+lemma preNatTrans'_rfl_eq {G H : D ⥤ C} (α : G ⟶ H) :
+    preNatTrans' F α rfl = preNatTrans F α := rfl
+
+lemma preNatTrans_app {G H : D ⥤ C} (α : G ⟶ H) (x : Grothendieck (G ⋙ F)) :
+    (preNatTrans F α).app x = ⟨α.app x.base, eqToHom rfl⟩ := rfl
 
 @[simp]
 lemma base_eqToHom {x y : Grothendieck F} (h : x = y) : (eqToHom h).base = eqToHom (by congr) := by
@@ -368,16 +376,16 @@ lemma base_eqToHom {x y : Grothendieck F} (h : x = y) : (eqToHom h).base = eqToH
 lemma fiber_eqToHom {x y : Grothendieck F} (h : x = y) :
     (eqToHom h).fiber = (eqToHom (by cases h ; simp)) := by cases h ; rfl
 
-lemma pre_map2_id {G : D ⥤ C} {β : G ⟶ G} (h : 𝟙 G = β) :
-    pre_map2 F (𝟙 G) h = eqToHom (by
+lemma preNatTrans'_id {G : D ⥤ C} {β : G ⟶ G} (h : 𝟙 G = β) :
+    preNatTrans' F (𝟙 G) h = eqToHom (by
       cases h
       simp only [whiskerRight_id', map_id_eq]
       simp only [CategoryStruct.id]
       simp only [Cat.of_α]
       rw [Functor.id_comp]) := by
   cases h
-  simp only [pre_map2, Functor.comp_obj, NatTrans.id_app, pre_obj_base, map_obj_base, pre_obj_fiber,
-    map_obj_fiber, whiskerRight_app, eqToHom_refl]
+  simp only [preNatTrans', Functor.comp_obj, NatTrans.id_app, pre_obj_base, map_obj_base,
+    pre_obj_fiber, map_obj_fiber, whiskerRight_app, eqToHom_refl]
   ext X
   simp only [Functor.comp_obj, eqToHom_app]
   fapply Grothendieck.ext
@@ -387,11 +395,11 @@ lemma pre_map2_id {G : D ⥤ C} {β : G ⟶ G} (h : 𝟙 G = β) :
       map_obj_fiber, Functor.comp_obj, whiskerRight_app, NatTrans.id_app, Category.comp_id]
 
 variable (F) in
-lemma pre_map_comp {G H I : D ⥤ C} (α : G ⟶ H) (β : H ⟶ I) :
-    pre_map F (α ≫ β) = pre_map F α ≫ whiskerLeft (map (whiskerRight α F)) (pre_map F β)
+lemma preNatTrans_comp {G H I : D ⥤ C} (α : G ⟶ H) (β : H ⟶ I) :
+    preNatTrans F (α ≫ β) = preNatTrans F α ≫ whiskerLeft (map (whiskerRight α F)) (preNatTrans F β)
       ≫ eqToHom (by simp [map_comp_eq_assoc]) := by
   ext x
-  simp only [NatTrans.comp_app, eqToHom_app, whiskerLeft_app, pre_map_app]
+  simp only [NatTrans.comp_app, eqToHom_app, whiskerLeft_app, preNatTrans_app]
   fapply Grothendieck.ext
   · simp only [pre_obj_base, Functor.comp_obj, map_obj_base, pre_obj_fiber, map_obj_fiber,
     whiskerRight_app, eqToHom_refl, comp_base, base_eqToHom, Category.comp_id]
@@ -401,61 +409,72 @@ lemma pre_map_comp {G H I : D ⥤ C} (α : G ⟶ H) (β : H ⟶ I) :
     eqToHom_naturality, eqToHom_trans]
 
 variable (F) in
-lemma pre_map_comp2 {G H I : D ⥤ C} (α : G ⟶ H) (β : H ⟶ I) :
-    pre_map F (α ≫ β) ≫ eqToHom (by simp [map_comp_eq_assoc]) = pre_map F α ≫
-      whiskerLeft (map (whiskerRight α F)) (pre_map F β) := by
-  simp only [pre_map_comp, Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id]
+@[reassoc]
+lemma preNatTrans_comp2 {G H I : D ⥤ C} (α : G ⟶ H) (β : H ⟶ I) :
+    preNatTrans F (α ≫ β) ≫ eqToHom (by simp [map_comp_eq_assoc]) = preNatTrans F α ≫
+      whiskerLeft (map (whiskerRight α F)) (preNatTrans F β) := by
+  simp only [preNatTrans_comp, Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id]
 
 variable (F) in
-def pre_map_iso {G H : D ⥤ C} (α : G ≅ H) :
-    pre F G ≅ (map (whiskerRight α.hom F)) ⋙ (pre F H) := by
-  refine ⟨?_, ?_, ?_, ?_⟩
-  · exact pre_map F α.hom
-  · refine whiskerLeft (map (whiskerRight α.hom F)) (pre_map F α.inv) ≫ eqToHom ?_
-    rw [← map_comp_eq_assoc, ← whiskerRight_comp, α.hom_inv_id, whiskerRight_id', map_id_eq]
-    apply Functor.id_comp
-  · rw [← Category.assoc, ← pre_map_comp2]
-    simp only [Category.assoc, eqToHom_trans]
-    show pre_map2 F (α.hom ≫ α.inv) rfl ≫ eqToHom _ = 𝟙 (pre F G)
-    have ha : pre_map2 F (α.hom ≫ α.inv) rfl =
-        pre_map2 F (𝟙 G) (by simp only [Iso.hom_inv_id]) := by
-      simp only [Iso.hom_inv_id]
-    rw [ha]
-    rw [pre_map2_id]
-    simp only [eqToHom_trans, eqToHom_refl]
-  · ext X
-    simp only [Functor.comp_obj, NatTrans.comp_app, whiskerLeft_app, pre_map_app, eqToHom_app,
-      map_obj_base]
-    fapply Grothendieck.ext
-    · simp only [pre_obj_base, map_obj_base, pre_obj_fiber, map_obj_fiber, Functor.comp_obj,
-      whiskerRight_app, eqToHom_refl, Category.assoc, comp_base, base_eqToHom, Category.id_comp,
-      Iso.inv_hom_id_app, NatTrans.id_app, id_base]
-    · simp only [comp_fiber, fiber_eqToHom, eqToHom_trans, eqToHom_map]
-      simp only [NatTrans.id_app, id_fiber]
+def invPreNatTrans {G H : D ⥤ C} (α : G ≅ H) :
+    map (whiskerRight α.hom F) ⋙ pre F H ⟶ pre F G := by
+  refine whiskerLeft (map (whiskerRight α.hom F)) (preNatTrans F α.inv) ≫ eqToHom ?_
+  rw [← map_comp_eq_assoc, ← whiskerRight_comp, α.hom_inv_id, whiskerRight_id', map_id_eq]
+  apply Functor.id_comp
+
+@[simp]
+def preNatTrans_comp_invPreNatTrans_eq {G H : D ⥤ C} (α : G ≅ H) :
+    preNatTrans F α.hom ≫ invPreNatTrans F α = 𝟙 (pre F G) := by
+  rw [invPreNatTrans, ← preNatTrans_comp2_assoc, ← preNatTrans'_rfl_eq, eqToHom_trans]
+  -- Iso.hom_inv_id is a nice example where simp works but rw doesn't
+  simp only [Iso.hom_inv_id, preNatTrans'_id, eqToHom_trans, eqToHom_refl]
+
+@[simp]
+def invPreNatTrans_comp_preNatTrans_eq {G H : D ⥤ C} (α : G ≅ H) :
+    invPreNatTrans F α ≫ preNatTrans F α.hom = 𝟙 _ := by
+  simp only [invPreNatTrans]
+
+  ext X
+  simp only [Functor.comp_obj, NatTrans.comp_app, whiskerLeft_app, preNatTrans_app, eqToHom_app,
+    map_obj_base]
+  fapply Grothendieck.ext
+  · simp only [pre_obj_base, map_obj_base, pre_obj_fiber, map_obj_fiber, Functor.comp_obj,
+    whiskerRight_app, eqToHom_refl, Category.assoc, comp_base, base_eqToHom, Category.id_comp,
+    Iso.inv_hom_id_app, NatTrans.id_app, id_base]
+  · simp only [comp_fiber, fiber_eqToHom, eqToHom_trans, eqToHom_map]
+    simp only [NatTrans.id_app, id_fiber]
+
+-- TODO: implement calcSymm tactic?
+-- TODO: move to Bicategory
+def isoCancelRight'' {C : Type*} [Bicategory C] {c d e : C} {f : d ⟶ e} {finv : e ⟶ d}
+    {g₁ g₂ : c ⟶ d} (η : 𝟙 _ ≅ f ≫ finv) (α : g₁ ≫ f ≅ g₂ ≫ f) : g₁ ≅ g₂ := by
+  calc
+    g₁ ≅ g₁ ≫ 𝟙 _ := Bicategory.rightUnitor _ |>.symm
+    _ ≅ g₁ ≫ f ≫ finv := Bicategory.whiskerLeftIso _ η
+    _ ≅ (g₁ ≫ f) ≫ finv := Bicategory.associator _ _ _ |>.symm
+    _ ≅ (g₂ ≫ f) ≫ finv := Bicategory.whiskerRightIso α _
+    _ ≅ g₂ ≫ f ≫ finv := Bicategory.associator _ _ _
+    _ ≅ _ := Bicategory.whiskerLeftIso _ η.symm
+    _ ≅ g₂ := Bicategory.rightUnitor _
+
+-- TODO: Can we reduce this *nicely* to bicategories?
+def isoCancelRight' {E : Type*} [Category E]
+    {F : D ⥤ E} {Finv : E ⥤ D} {G₁ G₂ : C ⥤ D} (η : 𝟭 _ ≅ F ⋙ Finv)
+    (α : G₁ ⋙ F ≅ G₂ ⋙ F) : (G₁ ≅ G₂) := by
+  calc
+    G₁ ⋙ 𝟭 _ ≅ G₁ ⋙ F ⋙ Finv := isoWhiskerLeft _ η
+    _ ≅ G₂ ⋙ F ⋙ Finv := isoWhiskerRight α _
+    _ ≅ G₂ ⋙ 𝟭 _ := isoWhiskerLeft _ η.symm
+
+def isoCancelRight {E : Type*} [Category E] {G₁ G₂ : E ⥤ D} (F : D ≌ C)
+    (α : G₁ ⋙ F.functor ≅ G₂ ⋙ F.functor) : (G₁ ≅ G₂) := isoCancelRight' F.unitIso α
 
 variable (F) in
-@[simps]
-def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) where
-  obj X := ⟨G.inverse.obj X.base, (F.map (G.counitInv.app X.base)).obj X.fiber⟩
-  map {X Y} f := ⟨G.inverse.map f.base, eqToHom (by
-      have := Functor.congr_obj (F.congr_map (G.counitInv.naturality f.base).symm) X.fiber;
-      simp only [Functor.map_comp] at this
-      exact this) ≫ (F.map (G.counitInv.app _)).map f.fiber⟩
-  map_id X := by
-    simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map, Cat.comp_obj,
-      eq_mp_eq_cast, id_base, id_fiber, eqToHom_map, eqToHom_trans]
-    apply Grothendieck.ext <;> simp
-  map_comp {X Y Z} f g := by
-    simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, Functor.id_map, Cat.comp_obj,
-      eq_mp_eq_cast, comp_base, comp_fiber, Functor.map_comp, eqToHom_map, eqToHom_trans_assoc]
-    apply Grothendieck.ext
-    · simp only [Functor.comp_obj, Functor.id_obj, Functor.comp_map, Functor.id_map, Cat.comp_obj,
-        eq_mp_eq_cast, comp_base, id_eq, eq_mpr_eq_cast, cast_eq, eqToHom_trans_assoc, comp_fiber,
-        Functor.map_comp, eqToHom_map, Category.assoc, eqToHom_comp_iff, eqToHom_trans_assoc]
-      have := F.congr_map (G.counitInv.naturality g.base)
-      simp only [Functor.map_comp] at this
-      exact Functor.congr_hom_assoc this f.fiber ((F.map (G.counitInv.app Z.base)).map g.fiber)
-    · simp
+def preNatTrans_iso {G H : D ⥤ C} (α : G ≅ H) :
+    pre F G ≅ (map (whiskerRight α.hom F)) ⋙ (pre F H) :=
+  ⟨preNatTrans F α.hom, invPreNatTrans F α, by simp, by simp⟩
+
+section Transport
 
 def transport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) :
     Grothendieck F := by
@@ -479,19 +498,7 @@ noncomputable def transport.iso (x : Grothendieck F) {c : C} (t : x.base ⟶ c) 
   · apply Grothendieck.ext <;> simp [transport_hom]
   · apply Grothendieck.ext <;> simp [transport_hom]
 
-/-
-Ideas:
-- Show that ∫ F ≅ ∫ G.inverse ⋙ G.functor ⋙ F via map counit
-- Show that ∫ G.inverse ⋙ G.functor ⋙ F ⟶ ∫ G.functor ⋙ F ⟶ ∫ F is equivalent to an iso
-  - This concatenation is pre F (G.inverse ⋙ G.functor)
-  - Apply the counit: equivalent to (map ε : ∫ G.inverse ⋙ G.functor ⋙ F ⟶ ∫ F) ≫ pre F id.
-  - This is an iso because ε is an iso.
-  - Essentially, we used that pre preserves isos.
-- Show that ∫ G.functor ⋙ F ⟶ ∫ F ⟶(ε) ∫ G.inverse ⋙ G.functor ⋙ F ⟶ ∫ G.functor ⋙ F is equ. to iso
-  - Use again that the "⟶(ε)" is equivalent to pre F (G.inverse ⋙ G.functor)
-  - So this is, in total, pre F (G.functor ⋙ G.inverse ⋙ G.functor ⋙ G.inverse)
-  - Since pre preserves isos, this is an iso.
--/
+end Transport
 
 instance isEquivalence_pre_id : Functor.IsEquivalence <| pre F <| 𝟭 C := by
   simp only [pre_id]
@@ -499,9 +506,9 @@ instance isEquivalence_pre_id : Functor.IsEquivalence <| pre F <| 𝟭 C := by
 
 -- theorem isEquivalence_pre_of_iso {G H: D ⥤ C} [H.IsEquivalence] (α : G ⟶ H) [IsIso α] :
 --     Functor.IsEquivalence <| pre F G := by
---   have := pre_map_iso F <| asIso α
+--   have := preNatTrans_iso F <| asIso α
 --   simp only [asIso_hom] at this
---   --<| pre_map_iso F <| asIso α
+--   --<| preNatTrans_iso F <| asIso α
 
 -- def equivalencePreInvComp {G : D ≌ C} :
 --     Grothendieck ((G.inverse ⋙ G.functor) ⋙ F) ≌ Grothendieck F :=
@@ -509,10 +516,10 @@ instance isEquivalence_pre_id : Functor.IsEquivalence <| pre F <| 𝟭 C := by
 
 -- instance isEquivalence_pre_inv_comp {G : D ≌ C} :
 --     (pre F (G.inverse ⋙ G.functor)).IsEquivalence :=
---   Functor.isEquivalence_of_iso <| Iso.symm <| pre_map_iso F G.counitIso
+--   Functor.isEquivalence_of_iso <| Iso.symm <| preNatTrans_iso F G.counitIso
 
 variable (F) in
-def preInv2 (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) := by
+def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) := by
   -- refine ?_ ⋙ Grothendieck.pre (G.functor ⋙ F) G.inverse
   -- refine Functor.inv (pre F <| G.inverse ⋙ G.functor) ⋙ ?_
   -- exact map <| eqToHom (by apply Functor.assoc)
@@ -536,15 +543,15 @@ lemma pre_comp (G : D ⥤ C) (H : E ⥤ D) : pre F (H ⋙ G) = pre (G ⋙ F) H �
 variable (F) in
 def blurb (G : D ≌ C) :
     pre (G.functor ⋙ F) (G.functor ⋙ G.inverse) ≅ map (whiskerRight G.unitInv _) :=
-  pre_map_iso _ G.unitIso.symm
+  preNatTrans_iso _ G.unitIso.symm
 
 variable (F) in
 def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendieck F := by
   refine Equivalence.mk ?_ ?_ ?_ ?_
   · exact pre F G.functor
-  · exact preInv2 F G
-  · simp [preInv2]
-    have := pre_map_iso F G.counitIso.symm |>.symm
+  · exact preInv F G
+  · simp [preInv]
+    have := preNatTrans_iso F G.counitIso.symm |>.symm
     change map (whiskerRight G.counitInv F) ⋙ _ ≅ _ at this
     simp only [Iso.symm_hom, pre_id] at this
     apply Iso.symm
@@ -566,24 +573,16 @@ def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendie
       · apply Equivalence.counitInv_functor_comp
       · apply Functor.map_id
     · rw [map_id_eq] ; rfl
-  · simp only [preInv2, eqToHom_refl, Category.id_comp, eq_mpr_eq_cast, cast_eq, Functor.assoc,
+  · simp only [preInv, eqToHom_refl, Category.id_comp, eq_mpr_eq_cast, cast_eq, Functor.assoc,
     ← pre_comp]
-    exact pre_map_iso F G.counitIso.symm |>.symm
-
-def equivCancelRight {E : Type*} [Category E] (G₁ G₂ : E ⥤ D) (F : D ≌ C) :
-    (G₁ ⋙ F.functor ≅ G₂ ⋙ F.functor) → (G₁ ≅ G₂) := by
-  intro α
-  calc
-    G₁ ⋙ 𝟭 _ ≅ G₁ ⋙ F.functor ⋙ F.inverse := isoWhiskerLeft _ F.unitIso
-    _ ≅ G₂ ⋙ F.functor ⋙ F.inverse := isoWhiskerRight α _
-    _ ≅ G₂ ⋙ 𝟭 _ := isoWhiskerLeft _ F.unitIso.symm
+    exact preNatTrans_iso F G.counitIso.symm |>.symm
 
 def mapWhiskerLeftIsoConjPreMap (F : C ⥤ Cat) (G : D ≌ C) (α : F ⟶ F) :
     map (whiskerLeft G.functor α) ≅
       (preEquivalence F G).functor ⋙
       map α ⋙
       (preEquivalence F G).inverse := by
-  apply equivCancelRight _ _ (preEquivalence F G)
+  apply isoCancelRight (preEquivalence F G)
   simp [Functor.assoc]
   apply Iso.symm
   calc
