@@ -37,10 +37,11 @@ variable
   curves with the same starting point. -/
 lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
-    (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
+    (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
     {a a' : ℝ} (hpos : 0 < a') (hle : a' ≤ a) :
     EqOn (γ a') (γ a) (Ioo (-a') a') := by
-  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv (hγ a') ((hγ a).mono _)
+  apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
+    (hγ a' (by positivity)) ((hγ a (gt_of_ge_of_gt hle hpos)).mono _)
     (by rw [hγx a, hγx a'])
   · rw [mem_Ioo]
     exact ⟨neg_lt_zero.mpr hpos, by positivity⟩
@@ -52,7 +53,7 @@ lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
   curve. -/
 lemma eqOn_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
-    (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
+    (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsIntegralCurveOn (γ a) v (Ioo (-a) a))
     {a : ℝ} : EqOn (fun t ↦ γ (|t| + 1) t) (γ a) (Ioo (-a) a) := by
   intros t ht
   by_cases hlt : |t| + 1 < a
@@ -66,11 +67,11 @@ lemma eqOn_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
   integral curve. -/
 lemma isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
-    (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a, IsIntegralCurveOn (γ a) v (Ioo (-a) a)) :
+    (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsIntegralCurveOn (γ a) v (Ioo (-a) a)) :
     IsIntegralCurve (fun t ↦ γ (|t| + 1) t) v := by
   intro t
   apply HasMFDerivAt.congr_of_eventuallyEq (f := γ (|t| + 1))
-  · apply hγ (|t| + 1) t
+  · apply hγ (|t| + 1) (by positivity)
     rw [mem_Ioo, ← abs_lt]
     exact lt_add_one _
   · rw [Filter.eventuallyEq_iff_exists_mem]
@@ -90,7 +91,7 @@ lemma exists_isIntegralCurve_iff_exists_isIntegralCurveOn_Ioo [BoundarylessManif
   refine ⟨fun ⟨γ, h1, h2⟩ _ ↦ ⟨γ, h1, h2.isIntegralCurveOn _⟩, fun h ↦ ?_⟩
   choose γ hγx hγ using h
   exact ⟨fun t ↦ γ (|t| + 1) t, hγx (|0| + 1),
-    isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo hv γ hγx hγ⟩
+    isIntegralCurve_abs_add_one_of_isIntegralCurveOn_Ioo hv γ hγx (fun a _ ↦  hγ a)⟩
 
 /-- Let `γ` and `γ'` be integral curves defined on `Ioo a b` and `Ioo a' b'`, respectively. Then,
   `piecewise (Ioo a b) γ γ'` is equal to `γ` and `γ'` in their respective domains.
