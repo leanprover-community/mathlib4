@@ -73,7 +73,7 @@ lemma comm₂₃' : pres.toExtension.toKaehler.comp pres.cotangentSpaceBasis.rep
 
 /-- The canonical map `(pres.rels →₀ S) →ₗ[S] pres.toExtension.Cotangent`. -/
 noncomputable def hom₁ : (pres.rels →₀ S) →ₗ[S] pres.toExtension.Cotangent :=
-  Finsupp.linearCombination S (fun r ↦ Ideal.toCotangent _ ⟨pres.relation r, by simp⟩)
+  Finsupp.linearCombination S (fun r ↦ Extension.Cotangent.mk ⟨pres.relation r, by simp⟩)
 
 lemma hom₁_single (r : pres.rels) :
     hom₁ pres (Finsupp.single r 1) = Ideal.toCotangent _ ⟨pres.relation r, by simp⟩ := by
