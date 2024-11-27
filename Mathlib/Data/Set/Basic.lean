@@ -2171,14 +2171,14 @@ end Disjoint
 namespace Equiv
 
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
-  `{s : Set α // ∀ a ∈ s, p a}` and `Set {a : α // p a}`. -/
+  `Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`. -/
+@[simps]
 protected def setSubtypeCongr {α : Type*} (p : α → Prop) :
-    {s : Set α // ∀ a ∈ s, p a} ≃ (Set {a : α // p a}) where
-  toFun s a := s.val a
-  invFun s := ⟨fun a ↦ ∃ h : p a, s ⟨a, h⟩, fun _ h ↦ h.1⟩
-  left_inv s := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property _ h, h⟩⟩
-  right_inv s := by ext a; exact ⟨fun h ↦ h.2, fun h ↦ ⟨a.property, h⟩⟩
-
+    Set {a : α // p a} ≃ {s : Set α // ∀ a ∈ s, p a} where
+  toFun s := ⟨fun a ↦ ∃ h : p a, s ⟨a, h⟩, fun _ h ↦ h.1⟩
+  invFun s a := s.val a
+  left_inv s := by ext a; exact ⟨fun h ↦ h.2, fun h ↦ ⟨a.property, h⟩⟩
+  right_inv s := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property _ h, h⟩⟩
 
 end Equiv
 

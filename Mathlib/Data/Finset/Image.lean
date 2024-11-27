@@ -768,23 +768,24 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
   rfl
 
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
-  `{s : Finset α // ∀ a ∈ s, p a}` and `Finset {a : α // p a}`. -/
+  `Finset {a : α // p a}` and `{s : Finset α // ∀ a ∈ s, p a}`. -/
+@[simps]
 protected def finsetSubtypeCongr (p : α → Prop) :
-    {s : Finset α // ∀ a ∈ s, p a} ≃ (Finset {a : α // p a}) where
-  toFun s := s.val.attach.map (Subtype.impEmbedding _ _ s.property)
-  invFun s := ⟨s.map ⟨fun a ↦ a.val, Subtype.val_injective⟩, fun _ h ↦
+    Finset {a : α // p a} ≃ {s : Finset α // ∀ a ∈ s, p a} where
+  toFun s := ⟨s.map ⟨fun a ↦ a.val, Subtype.val_injective⟩, fun _ h ↦
     have ⟨v, _, h⟩ := Embedding.coeFn_mk _ _ ▸ mem_map.mp h; h ▸ v.property⟩
+  invFun s := s.val.attach.map (Subtype.impEmbedding _ _ s.property)
   left_inv s := by
-    ext a; constructor <;> intro h <;>
-    simp only [Finset.mem_map, Finset.mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk,
-      exists_and_right, exists_eq_right, Subtype.impEmbedding, Subtype.mk.injEq] at *
-    · rcases h with ⟨_, _, h₁, h₂⟩; exact h₂ ▸ h₁
-    · use s.property _ h, a
-  right_inv s := by
     ext a; constructor <;> intro h <;>
     simp only [Finset.mem_map, Finset.mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk,
       exists_and_right, exists_eq_right, Subtype.impEmbedding, Subtype.mk.injEq] at *
     · rcases h with ⟨_, ⟨_, h₁⟩, h₂⟩; exact h₂ ▸ h₁
     · use a, ⟨a.property, h⟩
+  right_inv s := by
+    ext a; constructor <;> intro h <;>
+    simp only [Finset.mem_map, Finset.mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk,
+      exists_and_right, exists_eq_right, Subtype.impEmbedding, Subtype.mk.injEq] at *
+    · rcases h with ⟨_, _, h₁, h₂⟩; exact h₂ ▸ h₁
+    · use s.property _ h, a
 
 end Equiv
