@@ -3,8 +3,6 @@ Copyright (c) 2024 metakunt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: metakunt
 -/
-import Mathlib.Algebra.CharP.ExpChar
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
@@ -56,3 +54,5 @@ lemma prime_is_introspective_for_linear_factors :
   simp[← frobenius_def]
 
 end Theorem6dot1
+
+#min_imports
