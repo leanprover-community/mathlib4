@@ -175,6 +175,12 @@ def AsSmall.down : AsSmall C ⥤ C where
   obj X := ULift.down X
   map f := f.down
 
+@[simp]
+theorem eqToHom_down {X Y : AsSmall C} (h : X = Y) :
+    (eqToHom h).down = eqToHom (congrArg ULift.down h) := by
+  subst h
+  rfl
+
 /-- The equivalence between `C` and `AsSmall C`. -/
 @[simps]
 def AsSmall.equiv : C ≌ AsSmall C where
