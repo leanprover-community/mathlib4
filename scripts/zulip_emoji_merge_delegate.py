@@ -57,6 +57,8 @@ pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/
 print(f"Searching for: '{pr_pattern}'")
 
 for message in messages:
+    if message['display_recipient'] == 'rss':
+        continue
     content = message['content']
     # Check for emoji reactions
     reactions = message['reactions']

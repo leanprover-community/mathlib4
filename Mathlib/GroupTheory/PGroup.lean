@@ -240,7 +240,7 @@ theorem to_inf_right {H K : Subgroup G} (hK : IsPGroup p K) : IsPGroup p (H ⊓ 
 
 theorem map {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K] (ϕ : G →* K) :
     IsPGroup p (H.map ϕ) := by
-  rw [← H.subtype_range, MonoidHom.map_range]
+  rw [← H.range_subtype, MonoidHom.map_range]
   exact hH.of_surjective (ϕ.restrict H).rangeRestrict (ϕ.restrict H).rangeRestrict_surjective
 
 theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K]
