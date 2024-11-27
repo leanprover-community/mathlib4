@@ -208,10 +208,15 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 
 namespace Style
 
-def cdotLinter.findErrors (stx : Syntax) : List (Lean.Option Bool × Syntax × MessageData) :=
-  -- FIXME: missing the second check
-  unwanted_cdot stx |>.map (fun s ↦
-    (linter.style.cdot, s, m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'.")) |>.toList
+def cdotLinter.findErrors (stx : Syntax) : List (Lean.Option Bool × Syntax × MessageData) := Id.run do
+  let res := unwanted_cdot stx |>.map (fun s ↦
+    (linter.style.cdot, s, m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."))
+  let mut res2 := #[]
+  for cdot in Mathlib.Linter.findCDot stx do
+    if let some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) := cdot.find? (·.isOfKind `token.«· ») then
+      if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
+        res2 := res2.push (linter.style.cdot, cdot, m!"This central dot `·` is isolated; please merge it with the next line.")
+  return res.toList ++ res2.toList
 
 @[inherit_doc linter.style.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -426,6 +431,10 @@ def jointSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
       Linter.logLint opt s msg
   if Linter.getLinterValue linter.style.dollarSyntax (← getOptions) then
     let err := Mathlib.Linter.Style.dollarSyntax.findErrors stx
+    for (opt, s, msg) in err do
+      Linter.logLint opt s msg
+  if Linter.getLinterValue linter.style.cdot (← getOptions) then
+    let err := Mathlib.Linter.Style.cdotLinter.findErrors stx
     for (opt, s, msg) in err do
       Linter.logLint opt s msg
   if Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) then
