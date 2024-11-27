@@ -54,5 +54,3 @@ lemma prime_is_introspective_for_linear_factors :
   simp[← frobenius_def]
 
 end Theorem6dot1
-
-#min_imports
