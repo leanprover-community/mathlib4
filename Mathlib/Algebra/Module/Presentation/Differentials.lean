@@ -15,7 +15,7 @@ import Mathlib.RingTheory.Presentation
 Given a presentation of a `R`-algebra `S`, we obtain a presentation
 of the `S`-module `Ω[S⁄R]`.
 
-Assume `pres : Algebra.Presentation R S` is a presentation of `S` as a `R`-algebra.
+Assume `pres : Algebra.Presentation R S` is a presentation of `S` as an `R`-algebra.
 We then have a type `pres.vars` for the generators, a type `pres.rels` for the relations,
 and for each `r : pres.rels` we have the relation `pres.relation r` in `pres.Ring` (which is
 a ring of polynomials over `R` with variables indexed by `pres.vars`).
