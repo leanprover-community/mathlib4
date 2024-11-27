@@ -87,10 +87,11 @@ private theorem integrablemulsum (ha : 0 ≤ a) (hb : ⌊a⌋₊ < ⌊b⌋₊)
     any_goals linarith
   intro _ _ n h h₁ h₂ h₃ h₄
   rw [intervalIntegrable_iff_integrableOn_Icc_of_le h]
-  exact ((hf_int.mul_const volume (∑ k ∈ Icc 0 n, c k)).mono_set
-    (Set.Icc_subset_Icc h₃ h₄)).congr <| ae_restrict_of_ae_restrict_of_subset
-      (Set.Icc_subset_Icc h₁ h₂) <| (ae_restrict_iff' measurableSet_Icc).mpr
-        (by filter_upwards [sumlocc c n] with t h ht using by rw [h ht])
+  exact (IntegrableOn.mono_set (hf_int.mul_const (∑ k ∈ Icc 0 n, c k))
+    (Set.Icc_subset_Icc h₃ h₄)).congr
+      <| ae_restrict_of_ae_restrict_of_subset
+        (Set.Icc_subset_Icc h₁ h₂) <| (ae_restrict_iff' measurableSet_Icc).mpr
+          (by filter_upwards [sumlocc c n] with t h ht using by rw [h ht])
 
 /-- Abel's summation formula. -/
 theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
@@ -111,34 +112,33 @@ theorem _root_.sum_mul_eq_sub_sub_integral_mul (ha : 0 ≤ a) (hab : a ≤ b)
     any_goals linarith
     rwa [← hb]
   -- Some more inequalities for linarith
-  have : 1 ≤ b := Nat.floor_pos.mp (by linarith)
-  have : ⌊b⌋₊ ≤ b := Nat.floor_le (by positivity)
-  have : ⌊a⌋₊ + 1 ≤ b := by rwa [← Nat.cast_add_one,  ← Nat.le_floor_iff (by positivity)]
-  have : a < ⌊b⌋₊ := by rwa [← Nat.floor_lt ha]
-  simp_rw [← smul_eq_mul, sum_Ioc_by_parts (fun k ↦ f k) _ hb, range_eq_Ico, Nat.Ico_succ_right,
-    smul_eq_mul]
-  rw [show ∑ k ∈ Ioc ⌊a⌋₊ (⌊b⌋₊ - 1), (f ↑(k + 1) - f ↑k) * ∑ n ∈ Icc 0 k, c n =
-    ∑ k ∈ Ico (⌊a⌋₊ + 1) ⌊b⌋₊, ∫ (t : ℝ) in ↑k..↑(k + 1), deriv f t * ∑ n ∈ Icc 0 ⌊t⌋₊, c n by
-      rw [← Nat.Ico_succ_succ, Nat.succ_eq_add_one,  Nat.succ_eq_add_one, Nat.sub_add_cancel
-        (by linarith)]
-      refine sum_congr rfl fun k hk ↦ (integralmulsum c hf_diff hf_int _ _ _ ?_ ?_ ?_ ?_ ?_).symm
-      all_goals simp [ineqofmemIco' hk]]
-  rw [sum_integral_adjacent_intervals_Ico (by linarith),
-    Nat.cast_add, Nat.cast_one, ← integral_interval_sub_left (a := a) (c := ⌊a⌋₊ + 1),
-    ← integral_add_adjacent_intervals (b := ⌊b⌋₊) (c := b), integralmulsum c hf_diff hf_int a
-    (⌊a⌋₊ + 1) ⌊a⌋₊, integralmulsum c hf_diff hf_int ⌊b⌋₊ b ⌊b⌋₊]
-  · ring
-  -- Now, we just need to check all the technical conditions
-  any_goals linarith
-  any_goals
-    (rw [intervalIntegrable_iff_integrableOn_Icc_of_le (by linarith)];
-      exact (integrablemulsum c ha hb hf_int).mono_set <|
-        (Set.Icc_subset_Icc_iff (by linarith)).mpr ⟨by linarith, by linarith⟩)
-  · intro k hk
-    rw [intervalIntegrable_iff_integrableOn_Icc_of_le (by simp)]
-    refine (integrablemulsum c ha hb hf_int).mono_set ?_
-    rw [Set.Icc_subset_Icc_iff (by simp)]
-    all_goals simp [ineqofmemIco hk]
+  · have : 1 ≤ b := Nat.floor_pos.mp (by linarith)
+    have : ⌊b⌋₊ ≤ b := Nat.floor_le (by positivity)
+    have : ⌊a⌋₊ + 1 ≤ b := by rwa [← Nat.cast_add_one,  ← Nat.le_floor_iff (by positivity)]
+    have : a < ⌊b⌋₊ := by rwa [← Nat.floor_lt ha]
+    simp_rw [← smul_eq_mul, sum_Ioc_by_parts (fun k ↦ f k) _ hb, range_eq_Ico, Nat.Ico_succ_right,
+      smul_eq_mul]
+    rw [show ∑ k ∈ Ioc ⌊a⌋₊ (⌊b⌋₊ - 1), (f ↑(k + 1) - f ↑k) * ∑ n ∈ Icc 0 k, c n =
+      ∑ k ∈ Ico (⌊a⌋₊ + 1) ⌊b⌋₊, ∫ (t : ℝ) in ↑k..↑(k + 1), deriv f t * ∑ n ∈ Icc 0 ⌊t⌋₊, c n by
+        rw [← Nat.Ico_succ_succ, Nat.succ_eq_add_one,  Nat.succ_eq_add_one, Nat.sub_add_cancel
+          (by linarith)]
+        refine sum_congr rfl fun k hk ↦ (integralmulsum c hf_diff hf_int _ _ _ ?_ ?_ ?_ ?_ ?_).symm
+        all_goals simp [ineqofmemIco' hk]]
+    rw [sum_integral_adjacent_intervals_Ico (by linarith),
+      Nat.cast_add, Nat.cast_one, ← integral_interval_sub_left (a := a) (c := ⌊a⌋₊ + 1),
+      ← integral_add_adjacent_intervals (b := ⌊b⌋₊) (c := b), integralmulsum c hf_diff hf_int a
+      (⌊a⌋₊ + 1) ⌊a⌋₊, integralmulsum c hf_diff hf_int ⌊b⌋₊ b ⌊b⌋₊]
+    · ring
+    -- Now, we just need to check all the technical conditions
+    any_goals linarith
+    any_goals
+      (rw [intervalIntegrable_iff_integrableOn_Icc_of_le (by linarith)];
+        exact (integrablemulsum c ha hb hf_int).mono_set <|
+          (Set.Icc_subset_Icc_iff (by linarith)).mpr ⟨by linarith, by linarith⟩)
+    · refine fun k hk ↦ (intervalIntegrable_iff_integrableOn_Icc_of_le (by simp)).mpr
+        <| (integrablemulsum c ha hb hf_int).mono_set <|
+          (Set.Icc_subset_Icc_iff (by simp)).mpr ⟨?_, ?_⟩
+      all_goals simp [ineqofmemIco hk]
 
 end abelSummationProof
 

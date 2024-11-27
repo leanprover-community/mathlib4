@@ -703,15 +703,3 @@ theorem integrableOn_Iic_iff_integrableOn_Iio :
   integrableOn_Iic_iff_integrableOn_Iio' (by rw [measure_singleton]; exact ENNReal.zero_ne_top)
 
 end PartialOrder
-
-section NormedRing
-
-theorem MeasureTheory.IntegrableOn.const_mul {𝕜 : Type*} [NormedRing 𝕜] {f : α → 𝕜} {s : Set α}
-    (μ : Measure α := by volume_tac) (h : IntegrableOn f s μ) (c : 𝕜) :
-    IntegrableOn (fun x ↦ c * f x) s μ := Integrable.const_mul h c
-
-theorem MeasureTheory.IntegrableOn.mul_const {𝕜 : Type*} [NormedRing 𝕜] {f : α → 𝕜} {s : Set α}
-    (μ : Measure α := by volume_tac) (h : IntegrableOn f s μ) (c : 𝕜) :
-    IntegrableOn (fun x ↦ f x * c) s μ := Integrable.mul_const h c
-
-end NormedRing
