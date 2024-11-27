@@ -70,8 +70,8 @@ def det : GL n R →* Rˣ where
   map_one' := Units.ext det_one
   map_mul' _ _ := Units.ext <| det_mul _ _
 
-/-- The groups `GL n R` (notation for `Matrix.GeneralLinearGroup R n`) and
-`LinearMap.GeneralLinearGroup R n` are multiplicatively equivalent -/
+/-- The groups `GL n R` (notation for `Matrix.GeneralLinearGroup n R`) and
+`LinearMap.GeneralLinearGroup R (n → R)` are multiplicatively equivalent -/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 
