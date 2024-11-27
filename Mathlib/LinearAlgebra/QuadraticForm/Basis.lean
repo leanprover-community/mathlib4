@@ -33,6 +33,26 @@ theorem map_finsupp_sum (Q : QuadraticMap R M N) (f : ι →₀ R) (g : ι → R
   rw [sum, QuadraticMap.map_sum]
   exact congrArg (HAdd.hAdd _) rfl
 
+open Finsupp in
+theorem map_finsupp_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
+    Q (linearCombination R g l) = (l.sum fun i r => (r * r) • Q (g i)) +
+    ∑ p ∈ l.support.sym2 with ¬ p.IsDiag,
+      Sym2.lift
+        ⟨fun i j => (l i) • (l j) • (polar Q) (g i) (g j), fun i j => by
+          simp only [polar_comm]
+          rw [smul_comm]⟩ p := by
+  simp_rw [linearCombination_apply, map_finsupp_sum,
+    polar_smul_left, polar_smul_right, map_smul]
+
+theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
+    Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
+    ∑ p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
+      Sym2.lift
+        ⟨fun i j => ((bm.repr x) i) • ((bm.repr x) j) • (polar Q) (bm i) (bm j), fun i j => by
+          simp only [polar_comm]
+          rw [smul_comm]⟩ p := by
+  rw [← map_finsupp_linearCombination, Basis.linearCombination_repr]
+
 end
 
 
@@ -110,20 +130,9 @@ noncomputable def toBilinHom (bm : Basis ι R M) : QuadraticMap R M N →ₗ[S] 
   map_smul' := smul_toBilin S bm
 
 
-open Finsupp in
-theorem map_finsupp_linearCombination (Q : QuadraticMap R M N) {g : ι → M} (l : ι →₀ R) :
-    Q (linearCombination R g l) = (l.sum fun i r => (r * r) • Q (g i)) +
-    ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) l.support.offDiag,
-      (l p.1) • (l p.2) • (polar Q) (g p.1) (g p.2) := by
-  simp_rw [linearCombination_apply, map_finsupp_sum, Finset.sum_sym2_filter_not_isDiag,
-    polar_smul_left, polar_smul_right, map_smul]
-  rfl
 
-theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
-    Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
-    ∑ p ∈ Finset.filter (fun p ↦ p.1 < p.2) (bm.repr x).support.offDiag,
-      ((bm.repr x) p.1) • ((bm.repr x) p.2) • (polar Q) (bm p.1) (bm p.2) := by
-  rw [← map_finsupp_linearCombination, Basis.linearCombination_repr]
+
+
 
 lemma toBilin_symm_eq_Polar (Q : QuadraticMap R M N) (bm : Basis ι R M) :
     (Q.toBilin bm) + (Q.toBilin bm).flip = polarBilin Q := by
