@@ -22,7 +22,7 @@ Mostly for the sake of tests, the command also takes an optional `at_most x` inp
 if the number of imports does not exceed `x`, then the message involves `x`, rather than the
 actual, possibly varying, number of imports.
 -/
-syntax (name := transImportsStx) "#trans_imports" (ppSpace str)? (&" at_most " (num))? : command
+syntax (name := transImportsStx) "#trans_imports" (ppSpace str)? (&" at_most " num)? : command
 
 open Lean in
 @[inherit_doc transImportsStx]
@@ -37,11 +37,10 @@ elab_rules : command
           if i.toString.startsWith str.getString then some i else none
         m!"\n\n{imps.size} starting with {str}:\n{imps.qsort (·.toString < ·.toString)}"
   match le with
-    | none =>
-      logInfoAt (← getRef) m!"{currMod}{imports.size} transitive imports{rest}"
+    | none => logInfo m!"{currMod}{imports.size} transitive imports{rest}"
     | some bd =>
       if imports.size ≤ bd.getNat then
-        logInfoAt (← getRef) m!"{currMod}at most {bd} transitive imports{rest}"
+        logInfo m!"{currMod}at most {bd} transitive imports{rest}"
       else
         logWarningAt bd
           m!"{currMod}{imports.size} transitive imports, exceeding the expected bound of {bd}{rest}"
