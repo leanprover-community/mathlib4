@@ -1215,6 +1215,10 @@ theorem extChartAt_target_union_compl_range_mem_nhds_of_mem {y : E} {x : M}
   rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
   exact Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin_of_mem hy) self_mem_nhdsWithin
 
+@[deprecated (since := "2024-11-27")] alias
+extChartAt_target_union_comp_range_mem_nhds_of_mem :=
+extChartAt_target_union_compl_range_mem_nhds_of_mem
+
 /-- If we're boundaryless, `extChartAt` has open target -/
 theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
   simp_rw [extChartAt_target, I.range_eq_univ, inter_univ]
@@ -1422,10 +1426,6 @@ theorem ContinuousWithinAt.extChartAt_symm_preimage_inter_range_eventuallyEq
         (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) : Set E) := by
   rw [← nhdsWithin_eq_iff_eventuallyEq]
   exact hc.nhdsWithin_extChartAt_symm_preimage_inter_range
-
-@[deprecated (since := "2024-11-26")] alias
-extChartAt_target_union_comp_range_mem_nhds_of_mem :=
-extChartAt_target_union_compl_range_mem_nhds_of_mem
 
 /-! We use the name `ext_coord_change` for `(extChartAt I x').symm ≫ extChartAt I x`. -/
 
