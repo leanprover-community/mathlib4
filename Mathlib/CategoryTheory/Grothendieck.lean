@@ -234,29 +234,39 @@ def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ ma
 def down_comp {X Y Z : AsSmall.{w} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).down = f.down ≫ g.down :=
   rfl
 
+variable (F)
+
 @[simps]
-def asSmallEquivalenceFunctor : Grothendieck F ⥤ Grothendieck (F ⋙ asSmall.{w, v, u}) where
+def compAsSmallEquivalenceInverse : Grothendieck F ⥤ Grothendieck (F ⋙ asSmall.{w, v, u}) where
   obj := fun X => ⟨X.base, AsSmall.up.obj X.fiber⟩
   map := fun f => ⟨f.base, AsSmall.up.map f.fiber⟩
 
 @[simps]
-def asSmallEquivalenceInverse : Grothendieck (F ⋙ asSmall.{w, v, u}) ⥤ Grothendieck F where
+def compAsSmallEquivalenceFunctor : Grothendieck (F ⋙ asSmall.{w, v, u}) ⥤ Grothendieck F where
   obj := fun X => ⟨X.base, AsSmall.down.obj X.fiber⟩
   map := fun f => ⟨f.base, AsSmall.down.map f.fiber⟩
   map_id := fun _ => by apply Grothendieck.ext <;> simp
   map_comp := fun _ _ => by apply Grothendieck.ext <;> simp [down_comp]
 
-def asSmallEquiv : Grothendieck F ≌ Grothendieck (F ⋙ asSmall.{w, v, u}) where
-  functor := asSmallEquivalenceFunctor
-  inverse := asSmallEquivalenceInverse
-  unitIso := NatIso.ofComponents (fun ⟨_, _⟩ => Iso.refl _)
-  counitIso := NatIso.ofComponents
+@[simps]
+def compAsSmallEquivalence : Grothendieck (F ⋙ asSmall.{w, v, u}) ≌ Grothendieck F where
+  functor := compAsSmallEquivalenceFunctor F
+  inverse := compAsSmallEquivalenceInverse F
+  counitIso := NatIso.ofComponents (fun ⟨_, _⟩ => Iso.refl _)
+  unitIso := NatIso.ofComponents
     fun ⟨_, ⟨_⟩⟩ => eqToIso (by {
-      simp only [asSmallEquivalenceInverse, AsSmall.down_obj, AsSmall.down_map,
-        asSmallEquivalenceFunctor, Cat.of_α, AsSmall.up_obj_down, Functor.comp_obj, id_eq,
-        Functor.id_obj, mk.injEq, asSmall_obj, heq_eq_eq, true_and]
+      simp only [Functor.id_obj, compAsSmallEquivalenceFunctor, AsSmall.down_obj, AsSmall.down_map,
+        compAsSmallEquivalenceInverse, Cat.of_α, AsSmall.up_obj_down, Functor.comp_obj, id_eq,
+        mk.injEq, asSmall_obj, heq_eq_eq, true_and]
       apply ULift.ext
       rfl })
+
+def mapWhiskerRightAsSmall (α : F ⟶ G) :
+    map (whiskerRight α asSmall.{w, v, u}) ≅
+    (compAsSmallEquivalence F).functor ⋙ map α ⋙ (compAsSmallEquivalence G).inverse :=
+  NatIso.ofComponents
+    (fun X => Iso.refl _)
+    (fun f => by { fapply Grothendieck.ext <;> simp [compAsSmallEquivalenceInverse]; sorry })
 
 end
 
