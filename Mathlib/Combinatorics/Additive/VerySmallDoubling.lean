@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
-# Sets with no doubling
+# Sets with very small doubling
 
 This file characterises sets with no doubling (finsets `A` such that `#(A ^ 2) = #A`) as the sets
 which are either empty or translates of a subgroup.
