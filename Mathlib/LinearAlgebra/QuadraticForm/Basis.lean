@@ -222,8 +222,11 @@ theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ ×ₗ ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
     Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
-    ∑ x_1 ∈ Finset.filter (fun p ↦ p.1 < p.2) (bm.repr x).support.offDiag,
-      ((bm.repr x) x_1.1) • ((bm.repr x) x_1.2) • (polar Q) (bm x_1.1) (bm x_1.2) := by
+    ∑  p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
+      Sym2.lift
+        ⟨fun i j => ((bm.repr x) i) • ((bm.repr x) j) • (polar Q) (bm i) (bm j), fun i j => by
+          simp only [polar_comm]
+          rw [smul_comm]⟩ p := by
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
   let bm : Basis (ι₁ ×ₗ ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   simp_rw [basis_expansion Q bm x]
