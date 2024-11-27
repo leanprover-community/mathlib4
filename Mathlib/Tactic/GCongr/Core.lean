@@ -226,7 +226,7 @@ This is used as the default side-goal discharger,
 it calls the `gcongr_discharger` extensible tactic.
 -/
 def gcongrDischarger (goal : MVarId) : MetaM Unit := Elab.Term.TermElabM.run' do
-  trace[Meta.gcongr] "Attempting to discharge side goal {goal}"
+  withTraceNode `Meta.gcongr (return m!"{·.emoji} Attempting to discharge side goal {goal}") do
   let [] ← Elab.Tactic.run goal <|
       Elab.Tactic.evalTactic (Unhygienic.run `(tactic| gcongr_discharger))
     | failure
@@ -253,6 +253,7 @@ structure Hypotheses where
 reasoning on that hypothesis made available by the `gcongr_forward` mini-tactics. -/
 def addHypothesis (h : Expr) : StateRefT Hypotheses MetaM Unit := withReducibleAndInstances do
   if !(← isProof h) then return
+  withTraceNode `Meta.gcongr (fun _ => return m!"recording hypothesis {h} : {← inferType h}") do
   let ⟨eqs, rels⟩ ← get
   if h.eq?.isSome then
     let hs : Hypotheses := { equalities := eqs.push h, relations := rels }
@@ -263,8 +264,7 @@ def addHypothesis (h : Expr) : StateRefT Hypotheses MetaM Unit := withReducibleA
     for (n, tac) in tacs do
         try
           let h' ←
-            withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") <|
-              tac.eval h
+            withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h}") <| tac.eval h
           rels' := rels'.push h'
         catch _ => pure ()
     let hs : Hypotheses := { equalities := eqs, relations := rels' }
@@ -278,7 +278,7 @@ def _root_.Lean.MVarId.gcongrForward (g : MVarId) : StateRefT Hypotheses MetaM U
   withReducible do
     let hs ← get
     let s ← Meta.saveState
-    withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
+    withTraceNode `Meta.gcongr (return m!"{·.emoji} gcongr_forward: ⊢ {← g.getType}") do
     -- Iterate over a list of terms
     for h in hs.relations do
       try
