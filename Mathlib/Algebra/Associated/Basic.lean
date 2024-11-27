@@ -8,9 +8,9 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Order.BoundedOrder
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Algebra.Prime.Lemmas
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Associated elements.

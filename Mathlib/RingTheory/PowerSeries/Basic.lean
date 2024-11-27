@@ -758,6 +758,7 @@ namespace Polynomial
 
 open Finsupp Polynomial
 
+section CommSemiring
 variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
@@ -876,6 +877,21 @@ def coeToPowerSeries.algHom : R[X] →ₐ[R] PowerSeries A :=
 theorem coeToPowerSeries.algHom_apply :
     coeToPowerSeries.algHom A φ = PowerSeries.map (algebraMap R A) ↑φ :=
   rfl
+
+end CommSemiring
+
+section CommRing
+variable {R : Type*} [CommRing R]
+
+@[simp, norm_cast]
+lemma coe_neg (p : R[X]) : ((- p : R[X]) : PowerSeries R) = - p :=
+  coeToPowerSeries.ringHom.map_neg p
+
+@[simp, norm_cast]
+lemma coe_sub (p q : R[X]) : ((p - q : R[X]) : PowerSeries R) = p - q :=
+  coeToPowerSeries.ringHom.map_sub p q
+
+end CommRing
 
 end Polynomial
 

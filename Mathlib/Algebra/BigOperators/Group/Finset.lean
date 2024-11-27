@@ -420,6 +420,12 @@ theorem prod_filter_mul_prod_filter_not
   have := Classical.decEq α
   rw [← prod_union (disjoint_filter_filter_neg s s p), filter_union_filter_neg_eq]
 
+@[to_additive]
+lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [DecidablePred p]
+    [∀ x, Decidable (¬p x)] (f : α → β) :
+    (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
+  rw [mul_comm, prod_filter_mul_prod_filter_not]
+
 section ToList
 
 @[to_additive (attr := simp)]
@@ -2191,7 +2197,7 @@ variable [Monoid α]
 theorem ofMul_list_prod (s : List α) : ofMul s.prod = (s.map ofMul).sum := by simp [ofMul]; rfl
 
 @[simp]
-theorem toMul_list_sum (s : List (Additive α)) : toMul s.sum = (s.map toMul).prod := by
+theorem toMul_list_sum (s : List (Additive α)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
 
 end Monoid
@@ -2204,7 +2210,7 @@ variable [AddMonoid α]
 theorem ofAdd_list_prod (s : List α) : ofAdd s.sum = (s.map ofAdd).prod := by simp [ofAdd]; rfl
 
 @[simp]
-theorem toAdd_list_sum (s : List (Multiplicative α)) : toAdd s.prod = (s.map toAdd).sum := by
+theorem toAdd_list_sum (s : List (Multiplicative α)) : s.prod.toAdd = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
 
 end AddMonoid
@@ -2218,7 +2224,7 @@ theorem ofMul_multiset_prod (s : Multiset α) : ofMul s.prod = (s.map ofMul).sum
   simp [ofMul]; rfl
 
 @[simp]
-theorem toMul_multiset_sum (s : Multiset (Additive α)) : toMul s.sum = (s.map toMul).prod := by
+theorem toMul_multiset_sum (s : Multiset (Additive α)) : s.sum.toMul = (s.map toMul).prod := by
   simp [toMul, ofMul]; rfl
 
 @[simp]
@@ -2227,7 +2233,7 @@ theorem ofMul_prod (s : Finset ι) (f : ι → α) : ofMul (∏ i ∈ s, f i) = 
 
 @[simp]
 theorem toMul_sum (s : Finset ι) (f : ι → Additive α) :
-    toMul (∑ i ∈ s, f i) = ∏ i ∈ s, toMul (f i) :=
+    (∑ i ∈ s, f i).toMul = ∏ i ∈ s, (f i).toMul :=
   rfl
 
 end CommMonoid
@@ -2242,7 +2248,7 @@ theorem ofAdd_multiset_prod (s : Multiset α) : ofAdd s.sum = (s.map ofAdd).prod
 
 @[simp]
 theorem toAdd_multiset_sum (s : Multiset (Multiplicative α)) :
-    toAdd s.prod = (s.map toAdd).sum := by
+    s.prod.toAdd = (s.map toAdd).sum := by
   simp [toAdd, ofAdd]; rfl
 
 @[simp]
@@ -2251,7 +2257,7 @@ theorem ofAdd_sum (s : Finset ι) (f : ι → α) : ofAdd (∑ i ∈ s, f i) = �
 
 @[simp]
 theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
-    toAdd (∏ i ∈ s, f i) = ∑ i ∈ s, toAdd (f i) :=
+    (∏ i ∈ s, f i).toAdd = ∑ i ∈ s, (f i).toAdd :=
   rfl
 
 end AddCommMonoid

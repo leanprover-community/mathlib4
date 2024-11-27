@@ -17,8 +17,6 @@ extend `LE` and/or `LT` while these classes take a relation as an explicit argum
 
 -/
 
-set_option linter.deprecated false
-
 universe u v
 
 variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop}
@@ -88,7 +86,7 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
-@[deprecated (since := "2024-07-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
 theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
   { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
 
@@ -214,7 +212,7 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 
 -- see Note [lower instance priority]
-@[deprecated (since := "2024-07-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
 instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
     IsStrictWeakOrder α r :=
   { isStrictWeakOrder_of_isOrderConnected with }
@@ -782,7 +780,7 @@ instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
 
-@[deprecated (since := "2024-07-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
 instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance
 
 theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=

@@ -65,7 +65,8 @@ homomorphisms.
 
 Deprecated and changed from a `class` to a `structure`.
 Use `[MonoidHomClass F A B] [ContinuousMapClass F A B]` instead. -/
-@[to_additive (attr := deprecated (since := "2024-10-08"))]
+@[to_additive (attr := deprecated "Use `[MonoidHomClass F A B] [ContinuousMapClass F A B]` instead."
+  (since := "2024-10-08"))]
 structure ContinuousMonoidHomClass (A B : outParam Type*) [Monoid A] [Monoid B]
     [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
     extends MonoidHomClass F A B, ContinuousMapClass F A B : Prop
