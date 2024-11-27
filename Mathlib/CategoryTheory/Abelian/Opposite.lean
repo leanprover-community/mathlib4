@@ -30,8 +30,8 @@ instance : Abelian Cᵒᵖ := by
   -- Porting note: priorities of `Abelian.has_kernels` and `Abelian.has_cokernels` have
   -- been set to 90 in `Abelian.Basic` in order to prevent a timeout here
   exact {
-    normalMonoOfMono := fun f => normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)
-    normalEpiOfEpi := fun f => normalEpiOfNormalMonoUnop _ (normalMonoOfMono f.unop) }
+    normalMonoOfMono := fun f => ⟨normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)⟩
+    normalEpiOfEpi := fun f => ⟨normalEpiOfNormalMonoUnop _ (normalMonoOfMono f.unop)⟩ }
 
 section
 
