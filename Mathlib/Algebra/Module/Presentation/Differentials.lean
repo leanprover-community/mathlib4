@@ -41,7 +41,7 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
   (pres : Algebra.Presentation.{t, w} R S)
 
 /-- The shape of the presentation by generators and relations of the `S`-module `Ω[S⁄R]`
-that is obtained from a presentation of `S` as a `R`-algebra. -/
+that is obtained from a presentation of `S` as an `R`-algebra. -/
 @[simps G R]
 noncomputable def differentialsRelations : Module.Relations S where
   G := pres.vars
