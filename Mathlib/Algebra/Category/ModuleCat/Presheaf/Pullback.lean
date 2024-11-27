@@ -42,7 +42,7 @@ of presheaves of modules. -/
 noncomputable def pullbackPushforwardAdjunction : pullback.{v} φ ⊣ pushforward.{v} φ :=
   Adjunction.ofIsRightAdjoint (pushforward φ)
 
-/-- Given a morphism of presheaves of rings `φ : S ⟶ F.op ⋙ R`, this is property
+/-- Given a morphism of presheaves of rings `φ : S ⟶ F.op ⋙ R`, this is the property
 that the (partial) left adjoint functor of `pushforward φ` is defined
 on a certain object `M : PresheafOfModules S`. -/
 abbrev PullbackObjIsDefined : PresheafOfModules.{v} S → Prop :=
