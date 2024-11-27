@@ -76,7 +76,7 @@ noncomputable def hom₁ : (pres.rels →₀ S) →ₗ[S] pres.toExtension.Cotan
   Finsupp.linearCombination S (fun r ↦ Extension.Cotangent.mk ⟨pres.relation r, by simp⟩)
 
 lemma hom₁_single (r : pres.rels) :
-    hom₁ pres (Finsupp.single r 1) = Ideal.toCotangent _ ⟨pres.relation r, by simp⟩ := by
+    hom₁ pres (Finsupp.single r 1) = Extension.Cotangent.mk ⟨pres.relation r, by simp⟩ := by
   simp [hom₁]
 
 lemma surjective_hom₁ : Function.Surjective (hom₁ pres) := by
