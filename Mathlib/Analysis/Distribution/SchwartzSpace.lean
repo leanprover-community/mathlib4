@@ -61,7 +61,7 @@ Schwartz space, tempered distributions
 
 noncomputable section
 
-open scoped Nat NNReal
+open scoped Nat NNReal ContDiff
 
 variable {𝕜 𝕜' D E F G V : Type*}
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -72,7 +72,7 @@ variable (E F)
   any power of `‖x‖`. -/
 structure SchwartzMap where
   toFun : E → F
-  smooth' : ContDiff ℝ ⊤ toFun
+  smooth' : ContDiff ℝ ∞ toFun
   decay' : ∀ k n : ℕ, ∃ C : ℝ, ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n toFun x‖ ≤ C
 
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
@@ -98,7 +98,7 @@ theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
 
 /-- Every Schwartz function is smooth. -/
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
-  f.smooth'.of_le le_top
+  f.smooth'.of_le (mod_cast le_top)
 
 /-- Every Schwartz function is continuous. -/
 @[continuity]
@@ -521,7 +521,7 @@ section TemperateGrowth
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
 polynomially bounded. -/
 def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
-  ContDiff ℝ ⊤ f ∧ ∀ n : ℕ, ∃ (k : ℕ) (C : ℝ), ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k
+  ContDiff ℝ ∞ f ∧ ∀ n : ℕ, ∃ (k : ℕ) (C : ℝ), ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k
 
 theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f : E → F}
     (hf_temperate : f.HasTemperateGrowth) (n : ℕ) :
@@ -680,7 +680,7 @@ variable {σ : 𝕜 →+* 𝕜'}
 Note: This is a helper definition for `mkCLM`. -/
 def mkLM (A : (D → E) → F → G) (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
-    (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ⊤ (A f))
+    (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
     (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)) (x : F),
       ‖x‖ ^ n.fst * ‖iteratedFDeriv ℝ n.snd (A f) x‖ ≤ C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
     𝓢(D, E) →ₛₗ[σ] 𝓢(F, G) where
@@ -700,7 +700,7 @@ For an example of using this definition, see `fderivCLM`. -/
 def mkCLM [RingHomIsometric σ] (A : (D → E) → F → G)
     (hadd : ∀ (f g : 𝓢(D, E)) (x), A (f + g) x = A f x + A g x)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)) (x), A (a • f) x = σ a • A f x)
-    (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ⊤ (A f))
+    (hsmooth : ∀ f : 𝓢(D, E), ContDiff ℝ ∞ (A f))
     (hbound : ∀ n : ℕ × ℕ, ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)) (x : F),
       ‖x‖ ^ n.fst * ‖iteratedFDeriv ℝ n.snd (A f) x‖ ≤ C * s.sup (schwartzSeminormFamily 𝕜 D E) f) :
     𝓢(D, E) →SL[σ] 𝓢(F, G) where
@@ -740,19 +740,16 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
 protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
   mkCLM (fun f x => f x m) (fun _ _ _ => rfl) (fun _ _ _ => rfl)
-    (fun f => ContDiff.clm_apply f.2 contDiff_const)
-    (by
-      rintro ⟨k, n⟩
-      use {(k, n)}, ‖m‖, norm_nonneg _
-      intro f x
-      refine
-        le_trans
-          (mul_le_mul_of_nonneg_left (norm_iteratedFDeriv_clm_apply_const f.2 le_top)
-            (by positivity))
-          ?_
-      move_mul [‖m‖]
-      gcongr ?_ * ‖m‖
-      simp only [Finset.sup_singleton, schwartzSeminormFamily_apply, le_seminorm])
+    (fun f => ContDiff.clm_apply f.2 contDiff_const) <| by
+  rintro ⟨k, n⟩
+  use {(k, n)}, ‖m‖, norm_nonneg _
+  intro f x
+  refine le_trans
+    (mul_le_mul_of_nonneg_left (norm_iteratedFDeriv_clm_apply_const f.2 (mod_cast le_top))
+      (by positivity)) ?_
+  move_mul [‖m‖]
+  gcongr ?_ * ‖m‖
+  simp only [Finset.sup_singleton, schwartzSeminormFamily_apply, le_seminorm]
 
 end EvalCLM
 
@@ -782,7 +779,8 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
   intro f x
   have hxk : 0 ≤ ‖x‖ ^ k := by positivity
   have hnorm_mul :=
-    ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear B f.smooth' hg.1 x (n := n) le_top
+    ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear B f.smooth' hg.1 x (n := n)
+    (mod_cast le_top)
   refine le_trans (mul_le_mul_of_nonneg_left hnorm_mul hxk) ?_
   move_mul [← ‖B‖]
   simp_rw [mul_assoc ‖B‖]
@@ -864,7 +862,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     · exact le_trans (by simp [hC]) (le_self_pow₀ (by simp [hC]) hN₁')
     · refine le_self_pow₀ (one_le_pow₀ ?_) hN₁'
       simp only [le_add_iff_nonneg_right, norm_nonneg]
-  have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 le_top x hbound hgrowth'
+  have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 (mod_cast le_top) x hbound hgrowth'
   have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
     pow_le_pow_left₀ (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
   refine le_trans (mul_le_mul hxk this (by positivity) (by positivity)) ?_
@@ -1018,7 +1016,8 @@ theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E
     simp only [iteratedPDeriv_succ_left, iteratedFDeriv_succ_apply_left]
     rw [← fderiv_continuousMultilinear_apply_const_apply]
     · simp [← ih]
-    · exact f.smooth'.differentiable_iteratedFDeriv (WithTop.coe_lt_top n) _
+    · exact f.smooth'.differentiable_iteratedFDeriv (mod_cast ENat.coe_lt_top n) x
+
 
 end Derivatives
 
@@ -1053,7 +1052,7 @@ lemma integrable_pow_mul_iteratedFDeriv
     (f : 𝓢(D, V))
     (k n : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖) μ :=
   integrable_of_le_of_pow_mul_le (norm_iteratedFDeriv_le_seminorm ℝ _ _) (le_seminorm ℝ _ _ _)
-    ((f.smooth ⊤).continuous_iteratedFDeriv le_top).aestronglyMeasurable
+    ((f.smooth ⊤).continuous_iteratedFDeriv (mod_cast le_top)).aestronglyMeasurable
 
 variable (μ) in
 lemma integrable_pow_mul (f : 𝓢(D, V))
@@ -1172,7 +1171,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
     intro x hx
     rw [div_lt_iff₀ hε] at hx
     have hxpos : 0 < ‖x‖ := by
-      rw [norm_pos_iff']
+      rw [norm_pos_iff]
       intro hxzero
       simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
       exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
