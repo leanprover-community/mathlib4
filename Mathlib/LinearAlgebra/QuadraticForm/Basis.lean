@@ -55,7 +55,6 @@ theorem basis_expansion (Q : QuadraticMap R M N) (bm : Basis ι R M) (x : M) :
 
 end
 
-
 variable {ι R M N}  [LinearOrder ι]
 variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
