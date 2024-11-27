@@ -48,7 +48,8 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
       naturality := fun _ _ _  ↦  Functor.hext (fun _ ↦ rfl)
         (by intro ⟨_⟩ ⟨_⟩ f
             obtain rfl := Discrete.eq_of_hom f
-            aesop_cat ) } }
+            aesop_cat ) }
+    homEquiv_counit := sorry } -- FIXME: broken on #6123
 
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where
@@ -62,7 +63,8 @@ def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat :=
   Adjunction.mk' {
     homEquiv := fun C X ↦ ConnectedComponents.typeToCatHomEquiv C X
     unit :=
-      { app:= fun C  ↦ ConnectedComponents.functorToDiscrete _ (𝟙 (connectedComponents.obj C)) }
+      { app:= fun C  ↦ ConnectedComponents.functorToDiscrete _ (𝟙 (connectedComponents.obj C))
+        naturality := sorry } -- FIXME: broken on #6123
     counit :=  {
         app := fun X => ConnectedComponents.liftFunctor _ (𝟙 typeToCat.obj X)
         naturality := fun _ _ _ =>
