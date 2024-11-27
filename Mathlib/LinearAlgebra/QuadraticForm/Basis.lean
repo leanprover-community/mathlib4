@@ -218,6 +218,7 @@ lemma tensorDistriFree_polar
     BilinMap.tensorDistrib_tmul, below_diag Q₁ bm₁ j₁ i₁ h₁, zero_tmul, add_zero,
     above_diag Q₁ bm₁ i₁ j₁ h₁, above_diag Q₂ bm₂ i₂ j₂ h₂]
 
+/-
 lemma tensorDistriFree_polar_self
     (i₁ : ι₁) (i₂ : ι₂) :
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ i₁ ⊗ₜ bm₂ i₂) =
@@ -226,19 +227,25 @@ lemma tensorDistriFree_polar_self
     BilinMap.tensorDistrib_tmul]
   rw [← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin]
   rw [← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin]
+-/
 
 theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-    let bm : Basis (ι₁ ×ₗ ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
-    Q x = ((bm.repr x).sum fun i r => (r * r) • Q (bm i)) +
+    let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+    Q x = ((bm.repr x).sum fun i r => (r * r) • (Q₁ (bm₁ i.1) ⊗ₜ[R] Q₂ (bm₂ i.2))) +
     ∑  p ∈ (bm.repr x).support.sym2 with ¬ p.IsDiag,
       Sym2.lift
         ⟨fun i j => ((bm.repr x) i) • ((bm.repr x) j) • (polar Q) (bm i) (bm j), fun i j => by
           simp only [polar_comm]
           rw [smul_comm]⟩ p := by
   let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
-  let bm : Basis (ι₁ ×ₗ ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
+  let bm : Basis (ι₁ × ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
   simp_rw [basis_expansion Q bm x]
+  have e2 (i : ι₁ × ι₂) : bm i = bm₁ i.1 ⊗ₜ bm₂ i.2 := by
+    rw [← Basis.tensorProduct_apply]
+  have e1 (i : ι₁ × ι₂) : Q (bm i) = Q₁ (bm₁ i.1) ⊗ₜ Q₂ (bm₂ i.2) := by
+    rw [e2, tensorDistriFree_tmul]
+  simp_rw [← e1]
 
 end TensorProduct
 
