@@ -218,6 +218,15 @@ lemma tensorDistriFree_polar
     BilinMap.tensorDistrib_tmul, below_diag Q₁ bm₁ j₁ i₁ h₁, zero_tmul, add_zero,
     above_diag Q₁ bm₁ i₁ j₁ h₁, above_diag Q₂ bm₂ i₂ j₂ h₂]
 
+lemma tensorDistriFree_polar_self
+    (i₁ : ι₁) (i₂ : ι₂) :
+    polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ i₁ ⊗ₜ bm₂ i₂) =
+    2 • Q₁ (bm₁ i₁) ⊗ₜ Q₂ (bm₂ i₂) := by
+  rw [polar_self, tensorDistribFree_apply, BilinMap.toQuadraticMap_apply,
+    BilinMap.tensorDistrib_tmul]
+  rw [← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin]
+  rw [← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin]
+
 theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
     let bm : Basis (ι₁ ×ₗ ι₂) A (M₁ ⊗[R] M₂) := (bm₁.tensorProduct bm₂)
