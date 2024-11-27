@@ -23,14 +23,14 @@ client = zulip.Client(
     site=ZULIP_SITE
 )
 
-# Fetch the messages containing the PR number from the public channels (exluding #rss).
+# Fetch the messages containing the PR number from the public channels.
 # There does not seem to be a way to search simultaneously public and private channels.
 public_response = client.get_messages({
     "anchor": "newest",
     "num_before": 5000,
     "num_after": 0,
     "narrow": [
-        {"operator": "channel", "operand": "rss", "negated": True},
+        {"operator": "channels", "operand": "public"},
         {"operator": "search", "operand": f'#{PR_NUMBER}'},
     ],
 })
@@ -57,6 +57,8 @@ pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/
 print(f"Searching for: '{pr_pattern}'")
 
 for message in messages:
+    if message['display_recipient'] == 'rss':
+        continue
     content = message['content']
     # Check for emoji reactions
     reactions = message['reactions']
