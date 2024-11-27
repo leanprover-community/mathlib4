@@ -23,15 +23,34 @@ client = zulip.Client(
     site=ZULIP_SITE
 )
 
-# Fetch the last 200 messages
-response = client.get_messages({
+# Fetch the messages containing the PR number from the public channels.
+# There does not seem to be a way to search simultaneously public and private channels.
+public_response = client.get_messages({
     "anchor": "newest",
-    "num_before": 200,
+    "num_before": 5000,
     "num_after": 0,
-    "narrow": [{"operator": "channel", "operand": "PR reviews"}],
+    "narrow": [
+        {"operator": "channels", "operand": "public"},
+        {"operator": "search", "operand": f'#{PR_NUMBER}'},
+    ],
 })
 
-messages = response['messages']
+# Fetch the messages containing the PR number from the `mathlib reviewers` channel
+# There does not seem to be a way to search simultaneously public and private channels.
+reviewers_response = client.get_messages({
+    "anchor": "newest",
+    "num_before": 5000,
+    "num_after": 0,
+    "narrow": [
+        {"operator": "channel", "operand": "mathlib reviewers"},
+        {"operator": "search", "operand": f'#{PR_NUMBER}'},
+    ],
+})
+
+print(f"public_response:{public_response}")
+print(f"reviewers_response:{reviewers_response}")
+
+messages = (public_response['messages']) + (reviewers_response['messages'])
 
 pr_pattern = re.compile(f'https://github.com/leanprover-community/mathlib4/pull/{PR_NUMBER}')
 
