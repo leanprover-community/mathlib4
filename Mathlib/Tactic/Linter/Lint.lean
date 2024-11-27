@@ -96,4 +96,4 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
 
 initialize addLinter dupNamespace
 
-end DupNamespaceLinter
+end Mathlib.Linter.DupNamespaceLinter
