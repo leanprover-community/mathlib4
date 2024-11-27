@@ -107,7 +107,7 @@ lemma reduce_of_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : 0 < A.1 0 0) :
   simp_rw [if_pos hc, if_pos ha]
 
 lemma reduce_of_not_pos {A : Δ m} (hc : (A.1 1 0) = 0) (ha : ¬ 0 < A.1 0 0) :
-    reduce A = (T ^ (-(-A.1 0 1/ -A.1 1 1))) • ( S • ( S • A)) := by
+    reduce A = (T ^ (-(-A.1 0 1 / -A.1 1 1))) • (S • (S • A)) := by
   rw [reduce]
   simp only [abs_eq_zero, zpow_neg, Int.ediv_neg, neg_neg] at *
   simp_rw [if_pos hc, if_neg ha]
