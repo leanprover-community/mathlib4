@@ -470,10 +470,60 @@ def isoCancelRight {E : Type*} [Category E] {G₁ G₂ : E ⥤ D} (F : D ≌ C)
     (α : G₁ ⋙ F.functor ≅ G₂ ⋙ F.functor) : (G₁ ≅ G₂) := isoCancelRight' F.unitIso α
 
 variable (F) in
-def preNatTrans_iso {G H : D ⥤ C} (α : G ≅ H) :
+def preNatIso {G H : D ⥤ C} (α : G ≅ H) :
     pre F G ≅ (map (whiskerRight α.hom F)) ⋙ (pre F H) :=
   ⟨preNatTrans F α.hom, invPreNatTrans F α, by simp, by simp⟩
 
+instance isEquivalence_pre_id : Functor.IsEquivalence <| pre F <| 𝟭 C := by
+  simp only [pre_id]
+  infer_instance
+
+variable (F) in
+def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) := by
+  refine map ?_ ⋙ Grothendieck.pre (G.functor ⋙ F) G.inverse
+  rw [← Functor.assoc]
+  exact eqToHom (Functor.id_comp F) ≫ (whiskerRight G.counitInv F)
+
+lemma pre_comp_map (G: D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
+    pre F G ⋙ map α = map (whiskerLeft G α) ⋙ pre H G := rfl
+
+variable (F) {E : Type*} [Category E] in
+@[simp]
+lemma pre_comp (G : D ⥤ C) (H : E ⥤ D) : pre F (H ⋙ G) = pre (G ⋙ F) H ⋙ pre F G := rfl
+
+variable (F) in
+protected def preUnitIso (G : D ≌ C) :
+    map (whiskerRight G.unitInv _) ≅ pre (G.functor ⋙ F) (G.functor ⋙ G.inverse) :=
+  preNatIso _ G.unitIso.symm |>.symm
+
+variable (F) in
+def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendieck F := by
+  refine Equivalence.mk (pre F G.functor) (preInv F G) ?_ ?_
+  · simp only [preInv, eqToHom_refl, Category.id_comp, eq_mpr_eq_cast, cast_eq]
+    erw [← Functor.assoc, pre_comp_map, Functor.assoc]
+    simp only [Functor.assoc, ← pre_comp]
+    calc
+      _ = map (𝟙 _) := map_id_eq.symm
+      _ = map _ := ?_
+      _ = map _ ⋙ map _ := map_comp_eq _ _
+      _ ≅ _ := (Grothendieck.preUnitIso F G |> isoWhiskerLeft _)
+    congr
+    ext X
+    simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, Functor.id_obj,
+      Functor.map_id, NatTrans.comp_app, NatTrans.id_app, whiskerLeft_app, whiskerRight_app,
+      Equivalence.counitInv_functor_comp]
+  · simp only [preInv, eqToHom_refl, Category.id_comp, eq_mpr_eq_cast, cast_eq, Functor.assoc,
+    ← pre_comp]
+    exact preNatIso F G.counitIso.symm |>.symm
+
+def mapWhiskerLeftIsoConjPreMap (F : C ⥤ Cat) (G : D ≌ C) (α : F ⟶ F) :
+    map (whiskerLeft G.functor α) ≅
+      (preEquivalence F G).functor ⋙ map α ⋙ (preEquivalence F G).inverse := by
+  apply Iso.symm
+  apply isoCancelRight (preEquivalence F G)
+  exact isoWhiskerLeft ((preEquivalence F G).functor ⋙ map α) (preEquivalence F G).counitIso
+
+-- TODO: currently unused, where to put?
 section Transport
 
 def transport (x : Grothendieck F) {c : C} (t : x.base ⟶ c) :
@@ -499,96 +549,6 @@ noncomputable def transport.iso (x : Grothendieck F) {c : C} (t : x.base ⟶ c) 
   · apply Grothendieck.ext <;> simp [transport_hom]
 
 end Transport
-
-instance isEquivalence_pre_id : Functor.IsEquivalence <| pre F <| 𝟭 C := by
-  simp only [pre_id]
-  infer_instance
-
--- theorem isEquivalence_pre_of_iso {G H: D ⥤ C} [H.IsEquivalence] (α : G ⟶ H) [IsIso α] :
---     Functor.IsEquivalence <| pre F G := by
---   have := preNatTrans_iso F <| asIso α
---   simp only [asIso_hom] at this
---   --<| preNatTrans_iso F <| asIso α
-
--- def equivalencePreInvComp {G : D ≌ C} :
---     Grothendieck ((G.inverse ⋙ G.functor) ⋙ F) ≌ Grothendieck F :=
---   isoWhiskerLeft
-
--- instance isEquivalence_pre_inv_comp {G : D ≌ C} :
---     (pre F (G.inverse ⋙ G.functor)).IsEquivalence :=
---   Functor.isEquivalence_of_iso <| Iso.symm <| preNatTrans_iso F G.counitIso
-
-variable (F) in
-def preInv (G : D ≌ C) : Grothendieck F ⥤ Grothendieck (G.functor ⋙ F) := by
-  -- refine ?_ ⋙ Grothendieck.pre (G.functor ⋙ F) G.inverse
-  -- refine Functor.inv (pre F <| G.inverse ⋙ G.functor) ⋙ ?_
-  -- exact map <| eqToHom (by apply Functor.assoc)
-  refine map ?_ ⋙ Grothendieck.pre (G.functor ⋙ F) G.inverse
-  rw [← Functor.assoc]
-  exact eqToHom (Functor.id_comp F) ≫ (whiskerRight G.counitInv F)
-
--- lemma bla {G H: D ⥤ C} (α : G ⟶ H) : map (whiskerRight α F) ⋙ pre F H = pre F G := by
---   fapply Functor.ext
---   · intro X
---     simp only [Functor.comp_obj]
---     simp? [map, pre]
-
-lemma bla (G: D ⥤ C) {H : C ⥤ Cat} (α : F ⟶ H) :
-    pre F G ⋙ map α = map (whiskerLeft G α) ⋙ pre H G := rfl
-
-variable (F) {E : Type*} [Category E] in
-@[simp]
-lemma pre_comp (G : D ⥤ C) (H : E ⥤ D) : pre F (H ⋙ G) = pre (G ⋙ F) H ⋙ pre F G := rfl
-
-variable (F) in
-def blurb (G : D ≌ C) :
-    pre (G.functor ⋙ F) (G.functor ⋙ G.inverse) ≅ map (whiskerRight G.unitInv _) :=
-  preNatTrans_iso _ G.unitIso.symm
-
-variable (F) in
-def preEquivalence (G : D ≌ C) : Grothendieck (G.functor ⋙ F) ≌ Grothendieck F := by
-  refine Equivalence.mk ?_ ?_ ?_ ?_
-  · exact pre F G.functor
-  · exact preInv F G
-  · simp [preInv]
-    have := preNatTrans_iso F G.counitIso.symm |>.symm
-    change map (whiskerRight G.counitInv F) ⋙ _ ≅ _ at this
-    simp only [Iso.symm_hom, pre_id] at this
-    apply Iso.symm
-    have := bla G.functor (whiskerRight G.counitInv F)
-    change pre F G.functor ⋙ map (whiskerRight G.counitInv F) = _ at this
-    rw [← Functor.assoc, this, Functor.assoc]
-    change _ ⋙ pre (G.inverse ⋙ G.functor ⋙ F) G.functor ⋙ pre (G.functor ⋙ F) G.inverse ≅ _
-    rw [← pre_comp]
-    refine blurb F G |> isoWhiskerLeft _ |>.trans ?_
-    rw [← map_comp_eq]
-    apply eqToIso
-    convert_to map (𝟙 _) = 𝟭 (Grothendieck (G.functor ⋙ F)) using 2
-    · apply NatTrans.ext
-      ext X
-      simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, whiskerLeft_app,
-        whiskerRight_app, Functor.comp_map, NatTrans.id_app]
-      rw [← Functor.map_comp]
-      convert_to F.map (𝟙 <| G.functor.obj X) = _ using 2
-      · apply Equivalence.counitInv_functor_comp
-      · apply Functor.map_id
-    · rw [map_id_eq] ; rfl
-  · simp only [preInv, eqToHom_refl, Category.id_comp, eq_mpr_eq_cast, cast_eq, Functor.assoc,
-    ← pre_comp]
-    exact preNatTrans_iso F G.counitIso.symm |>.symm
-
-def mapWhiskerLeftIsoConjPreMap (F : C ⥤ Cat) (G : D ≌ C) (α : F ⟶ F) :
-    map (whiskerLeft G.functor α) ≅
-      (preEquivalence F G).functor ⋙
-      map α ⋙
-      (preEquivalence F G).inverse := by
-  apply isoCancelRight (preEquivalence F G)
-  simp [Functor.assoc]
-  apply Iso.symm
-  calc
-    _ ≅ _ := isoWhiskerLeft ((preEquivalence F G).functor ⋙ map α) (preEquivalence F G).counitIso
-    _ ≅ _ := eqToIso (bla _ _)
-
 
 section FunctorFrom
 
