@@ -25,7 +25,7 @@ variable [DecidableEq G] {A B : Finset G}
 /-- **Ruzsa's covering lemma**. -/
 @[to_additive "**Ruzsa's covering lemma**"]
 theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
-    ∃ F ⊆ A, #F ≤ K ∧ A ⊆ F * B / B := by
+    ∃ F ⊆ A, #F ≤ K ∧ A ⊆ F * (B / B) := by
   haveI : ∀ F, Decidable ((F : Set G).PairwiseDisjoint (· • B)) := fun F ↦ Classical.dec _
   set C := {F ∈ A.powerset | F.toSet.PairwiseDisjoint (· • B)}
   obtain ⟨F, hF, hFmax⟩ := C.exists_maximal <| filter_nonempty_iff.2
@@ -38,7 +38,6 @@ theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
         rw [card_mul_iff.2 <| pairwiseDisjoint_smul_iff.1 hF, Nat.cast_mul]
       _ ≤ #(A * B) := by gcongr
       _ ≤ K * #B := hK
-  rw [mul_div_assoc]
   by_cases hau : a ∈ F
   · exact subset_mul_left _ hB.one_mem_div hau
   by_cases H : ∀ b ∈ F, Disjoint (a • B) (b • B)
@@ -62,7 +61,7 @@ variable {A B : Set G}
 @[to_additive "**Ruzsa's covering lemma** for sets. See also `Finset.ruzsa_covering_add`."]
 lemma ruzsa_covering_mul (hA : A.Finite) (hB : B.Finite) (hB₀ : B.Nonempty)
     (hK : Nat.card (A * B) ≤ K * Nat.card B) :
-    ∃ F ⊆ A, Nat.card F ≤ K ∧ A ⊆ F * B / B ∧ F.Finite := by
+    ∃ F ⊆ A, Nat.card F ≤ K ∧ A ⊆ F * (B / B) ∧ F.Finite := by
   lift A to Finset G using hA
   lift B to Finset G using hB
   classical
