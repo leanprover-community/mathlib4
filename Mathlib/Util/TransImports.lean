@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Init
-import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-! # The `#trans_imports` command
 
