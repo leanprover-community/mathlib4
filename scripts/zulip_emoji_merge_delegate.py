@@ -30,7 +30,7 @@ public_response = client.get_messages({
     "num_before": 5000,
     "num_after": 0,
     "narrow": [
-        {"operator": "channel", "operand": "rss", "negated": true},
+        {"operator": "channel", "operand": "rss", "negated": True},
         {"operator": "search", "operand": f'#{PR_NUMBER}'},
     ],
 })
