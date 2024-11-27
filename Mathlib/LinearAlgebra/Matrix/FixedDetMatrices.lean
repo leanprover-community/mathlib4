@@ -133,7 +133,7 @@ private lemma A_a_ne_zero {A : Δ m} (ha : A.1 1 0 = 0) (hm : m ≠ 0) : A.1 0 0
 lemma reps_entries_le_m' {A : Δ m} (h : A ∈ reps m) (i j : Fin 2) :
     A.1 i j ∈ Finset.Icc (-|m|) |m| := by
   suffices |A.1 i j| ≤ |m| from Finset.mem_Icc.mpr <| abs_le.mp this
-  obtain ⟨h10, h00, h01, h11⟩ := h 
+  obtain ⟨h10, h00, h01, h11⟩ := h
   have h1 : 0 < |A.1 1 1| := (abs_nonneg _).trans_lt h11
   have h2 : 0 < |A.1 0 0| := abs_pos.mpr h00.ne'
   fin_cases i <;> fin_cases j
@@ -207,7 +207,7 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
 variable {C : Δ m → Prop}
 
 private lemma prop_red_S (hS : ∀ B, C B → C (S • B)) (B) : C (S • B) ↔ C B := by
-  refine ⟨?_, hS _⟩ 
+  refine ⟨?_, hS _⟩
   intro ih
   rw [← (S_smul_four B)]
   solve_by_elim
