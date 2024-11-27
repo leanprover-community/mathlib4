@@ -320,7 +320,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
 
 /-- If a function is analytic within a set with unique differentials, then so is its derivative.
 Note that this theorem does not require completeness of the space. -/
-theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
+protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
     AnalyticOn 𝕜 (fderivWithin 𝕜 f s) s := by
   intro x hx
   rcases h x hx with ⟨p, r, hr⟩
@@ -334,7 +334,7 @@ theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn �
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this
 set. Note that this theorem does not require completeness of the space. -/
-theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
+protected theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
     (hu : UniqueDiffOn 𝕜 s) (n : ℕ) :
     AnalyticOn 𝕜 (iteratedFDerivWithin 𝕜 n f s) s := by
   induction n with
