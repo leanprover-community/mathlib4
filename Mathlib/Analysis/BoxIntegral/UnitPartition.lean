@@ -55,13 +55,16 @@ theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι
     ∃ B : BoxIntegral.Box ι, hasIntegralVertices B ∧ s ≤ B := by
   have := Fintype.ofFinite ι
   obtain ⟨R, hR₁, hR₂⟩ := IsBounded.subset_ball_lt h 0 0
-  let C : ℕ+ := ⟨⌈R⌉₊, Nat.ceil_pos.mpr hR₁⟩
-  let I : Box ι := BoxIntegral.Box.mk (fun _ ↦ - C) (fun _ ↦ C ) (fun _ ↦ by norm_num [hR₁])
-  refine ⟨I, ⟨fun _ ↦ - C, fun _ ↦ C, by aesop⟩, le_trans hR₂ ?_⟩
+  let C : ℕ := ⌈R⌉₊
+  have hC := Nat.ceil_pos.mpr hR₁
+  let I : Box ι := Box.mk (fun _ ↦ - C) (fun _ ↦ C )
+    (fun _ ↦ by simp only [neg_lt_self_iff, Nat.cast_pos, hC])
+  refine ⟨I, ⟨fun _ ↦ - C, fun _ ↦ C, fun i ↦ (Int.cast_neg_natCast C).symm, fun _ ↦ rfl⟩,
+    le_trans hR₂ ?_⟩
   suffices Metric.ball (0 : ι → ℝ) C ≤ I from
     le_trans (Metric.ball_subset_ball (Nat.le_ceil R)) this
   intro x hx
-  simp_rw [mem_ball_zero_iff, pi_norm_lt_iff (by aesop : (0:ℝ) < C), Real.norm_eq_abs, abs_lt] at hx
+  simp_rw [mem_ball_zero_iff, pi_norm_lt_iff (Nat.cast_pos.mpr hC), Real.norm_eq_abs, abs_lt] at hx
   exact fun i ↦ ⟨(hx i).1, le_of_lt (hx i).2⟩
 
 end hasIntegralCorners
@@ -110,14 +113,16 @@ variable [NeZero n]
 theorem tag_injective : Function.Injective (fun ν : ι → ℤ ↦ tag n ν) := by
   refine fun _ _ h ↦ funext_iff.mpr fun i ↦ ?_
   have := congr_arg (fun x ↦ x i) h
-  field_simp [Nat.cast_ne_zero.mpr (NeZero.ne n)] at this
+  simp_rw [tag_apply, div_left_inj' (c := (n : ℝ)) (Nat.cast_ne_zero.mpr (NeZero.ne n)),
+    add_left_inj, Int.cast_inj] at this
   exact this
 
 theorem tag_mem (ν : ι → ℤ) :
     tag n ν ∈ box n ν := by
   refine mem_box_iff.mpr fun _ ↦ ?_
   rw [tag, add_div]
-  exact ⟨by norm_num [n.pos_of_neZero], le_rfl⟩
+  have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
+  refine ⟨lt_add_of_pos_right _ (by positivity), le_rfl⟩
 
 /-- For `x : ι → ℝ`, its index is the index of the unique `unitPartition.box` to which
 it belongs. -/
@@ -140,10 +145,9 @@ theorem index_tag (ν : ι → ℤ) :
 variable {n} in
 theorem disjoint {ν ν' : ι → ℤ} :
     ν ≠ ν' ↔ Disjoint (box n ν).toSet (box n ν').toSet := by
-  rw [not_iff_not.symm, ne_eq, not_not, Set.not_disjoint_iff]
-  refine ⟨fun h ↦ ?_, fun ⟨x, hx, hx'⟩ ↦ ?_⟩
-  · exact ⟨tag n ν, tag_mem n ν, h ▸ tag_mem n ν⟩
-  · rw [← mem_box_iff_index.mp hx, ← mem_box_iff_index.mp hx']
+  rw [not_iff_comm, Set.not_disjoint_iff]
+  refine ⟨fun ⟨x, hx, hx'⟩ ↦ ?_, fun h ↦ ⟨tag n ν, tag_mem n ν, h ▸ tag_mem n ν⟩⟩
+  rw [← mem_box_iff_index.mp hx, ← mem_box_iff_index.mp hx']
 
 theorem box_injective : Function.Injective (fun ν : ι → ℤ ↦ box n ν) := by
   intro _ _ h
@@ -178,7 +182,8 @@ theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs
   · refine NullMeasurableSet.inter ?_ hs₁
     exact (box n ν).measurableSet_coe.nullMeasurableSet
   · exact ((Disjoint.inter_right _ (disjoint.mp h)).inter_left _ ).aedisjoint
-  · exact lt_top_iff_ne_top.mp <| measure_lt_top_of_subset (by aesop) hs₂
+  · exact lt_top_iff_ne_top.mp <| measure_lt_top_of_subset
+      (by simp only [Set.iUnion_subset_iff, Set.inter_subset_right, implies_true]) hs₂
   · rw [Set.mem_setOf, Set.inter_eq_self_of_subset_left hν, volume_box]
 
 /-- For `B : BoxIntegral.Box`, the set of indices of `unitPartition.Box` that are subsets of `B`.
@@ -205,10 +210,8 @@ def prepartition (B : Box ι) : TaggedPrepartition B where
     obtain ⟨_, _, rfl⟩ := Finset.mem_image.mp hI₁
     obtain ⟨_, _, rfl⟩ := Finset.mem_image.mp hI₂
     exact disjoint.mp fun x ↦ h (congrArg (box n) x)
-  tag I := by
-    by_cases hI : ∃ ν ∈ admissibleIndex n B, I = box n ν
-    · exact tag n hI.choose
-    · exact B.exists_mem.choose
+  tag I :=
+    if hI : ∃ ν ∈ admissibleIndex n B, I = box n ν then tag n hI.choose else B.exists_mem.choose
   tag_mem_Icc I := by
     by_cases hI : ∃ ν ∈ admissibleIndex n B, I = box n ν
     · simp_rw [dif_pos hI]
@@ -259,15 +262,16 @@ theorem prepartition_isSubordinate (B : Box ι) {r : ℝ} (hr : 0 < r) (hn : 1 /
 private theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
     a < x ↔ a ≤ (⌈n * x⌉ - 1) / (n : ℝ) := by
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
-  rw [le_div_iff₀' h, le_sub_iff_add_le, show (n : ℝ) * a + 1 =
-    (n * a + 1 : ℤ) by norm_cast, Int.cast_le, Int.add_one_le_ceil_iff, Int.cast_mul,
-    Int.cast_natCast, mul_lt_mul_left h]
+  rw [le_div_iff₀' h, le_sub_iff_add_le,
+    show (n : ℝ) * a + 1 = (n * a + 1 : ℤ) by norm_cast,
+    Int.cast_le, Int.add_one_le_ceil_iff, Int.cast_mul, Int.cast_natCast, mul_lt_mul_left h]
 
 private theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
     x ≤ a ↔ (⌈n * x⌉ - 1 + 1) / (n : ℝ) ≤ a := by
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
-  rw [sub_add_cancel, div_le_iff₀' h, show (n : ℝ) * a = (n * a : ℤ)
-    by norm_cast, Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_left h]
+  rw [sub_add_cancel, div_le_iff₀' h,
+    show (n : ℝ) * a = (n * a : ℤ) by norm_cast,
+    Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_left h]
 
 /-- If `B : BoxIntegral.Box` has integral vertices and contains the point `x`, then the index of
 `x` is admissible for `B`. -/
