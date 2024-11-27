@@ -22,11 +22,11 @@ open CategoryTheory Limits Sheaf GrothendieckTopology Opposite extensiveTopology
 section
 
 variable {A C J : Type*} [Category A] [Category C] [Category J] [FinitaryExtensive C]
-    [IsFiltered J] [HasColimitsOfShape J A] [ABOfShape J A]
+    [IsFiltered J] [HasColimitsOfShape J A] [HasExactColimitsOfShape J A]
     [HasSheafify (extensiveTopology C) A] [Abelian A] [HasFiniteLimits A]
 
-instance : ABOfShape J (Sheaf (extensiveTopology C) A) := by
-  apply ( config := { allowSynthFailures := true } ) ABOfShape_of_preservesMono
+instance : HasExactColimitsOfShape J (Sheaf (extensiveTopology C) A) := by
+  apply ( config := { allowSynthFailures := true } ) hasExactColimitsOfShape_of_preservesMono
   constructor
   intro X Y f hf
   rw [NatTrans.mono_iff_mono_app] at hf
