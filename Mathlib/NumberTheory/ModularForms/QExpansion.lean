@@ -40,7 +40,7 @@ theorem Function.Periodic.im_invQParam_pos_of_abs_lt_one
 
 open Real in
 lemma qParam_im_ge_half (ξ : ℍ) (hξ : 1 / 2 ≤ ξ.im) : ‖𝕢 1 ξ‖ ≤ rexp (-(π * √3 * (1 / 2))) := by
-  simp only [Periodic.qParam, ofReal_one, div_one, Complex.norm_eq_abs, Complex.abs_exp]
+  rw [Periodic.qParam, ofReal_one, div_one, Complex.norm_eq_abs, Complex.abs_exp]
   apply Real.exp_le_exp_of_le
   simp only [mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, mul_zero, sub_zero, Complex.I_re,
     mul_im, zero_mul, add_zero, Complex.I_im, mul_one, sub_self, coe_re, coe_im,

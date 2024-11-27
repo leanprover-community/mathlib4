@@ -16,7 +16,7 @@ TODO: Add finite-dimensionality of these spaces of modular forms.
 -/
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex MatrixGroups
-  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass
+  CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
 
 local notation "𝕢" => Periodic.qParam
 
@@ -42,81 +42,74 @@ lemma SlashInvariantForm.wt_eq_zero_of_eq_const
   rwa [← Complex.ofReal_ofNat, ← ofReal_zpow, ← ofReal_one, ofReal_inj,
     zpow_eq_one_iff_right₀ (by norm_num) (by norm_num)] at H
 
-lemma neg_wt_modform_zero (k : ℤ) (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
+namespace ModularFormClass
+
+lemma levelOne_neg_wt_eq_zero_or_const {k : ℤ} (hk : k ≤ 0) {F : Type*} [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) k] (f : F) : ⇑f = 0 ∨ (k = 0 ∧ ∃ c : ℂ, ⇑f = fun _ => c) := by
   have hdiff : DifferentiableOn ℂ (cuspFunction 1 f) (Metric.ball 0 1) := by
-    apply fun z hz ↦ DifferentiableAt.differentiableWithinAt (differentiableAt_cuspFunction 1 f ?_)
-    rw [@mem_ball_zero_iff] at hz
-    exact hz
-  have heq : Set.EqOn (cuspFunction 1 f) (Function.const ℂ ((cuspFunction 1 f) 0))
+    exact fun z hz ↦ DifferentiableAt.differentiableWithinAt (differentiableAt_cuspFunction 1 f
+      (mem_ball_zero_iff.mp hz))
+  have heq : Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0))
     (Metric.ball 0 1) := by
-    apply eq_const_of_exists_le (r := exp (-(π * √3 * (1 / 2)))) hdiff
-    · exact exp_nonneg _
+    apply eq_const_of_exists_le (r := exp (-(π * √3 * (1 / 2)))) hdiff (exp_nonneg _)
     · simp only [one_div, exp_lt_one_iff, Left.neg_neg_iff, pi_pos, mul_pos_iff_of_pos_left,
-      sqrt_pos, Nat.ofNat_pos, inv_pos]
+        sqrt_pos, Nat.ofNat_pos, inv_pos]
     · intro z hz
       rcases eq_or_ne z 0 with rfl | hz'
       · refine ⟨0, by simpa using exp_nonneg _, by rfl⟩
-      · let t : ℍ := ⟨(Function.Periodic.invQParam 1 z), by
-          apply  Function.Periodic.im_invQParam_pos_of_abs_lt_one Real.zero_lt_one
-            (mem_ball_zero_iff.mp hz) hz'⟩
+      · let t : ℍ := ⟨(invQParam 1 z), im_invQParam_pos_of_abs_lt_one Real.zero_lt_one
+          (mem_ball_zero_iff.mp hz) hz'⟩
         obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f t
         use 𝕢 1 ξ
         simp only [Metric.mem_closedBall, dist_zero_right]
         refine ⟨qParam_im_ge_half ξ hξ, ?_⟩
-        simp only [← eq_cuspFunction 1 f t, Nat.cast_one, Complex.norm_eq_abs, ←
-          eq_cuspFunction 1 f ξ] at hξ₂
+        simp only [← eq_cuspFunction 1 f t, Nat.cast_one, Complex.norm_eq_abs,
+          ← eq_cuspFunction 1 f ξ] at hξ₂
         convert hξ₂
-        rw [← (Function.Periodic.qParam_right_inv one_ne_zero hz')]
+        rw [← (qParam_right_inv one_ne_zero hz')]
         congr
-  have H : ∀ z, ⇑f z = Function.const ℍ ((cuspFunction 1 f) 0) z:= by
+  have H : ∀ z, ⇑f z = const ℍ (cuspFunction 1 f 0) z := by
     intro z
     have hQ : 𝕢 1 z ∈ (Metric.ball 0 1) := by
       simpa only [Metric.mem_ball, dist_zero_right, Complex.norm_eq_abs, neg_mul, mul_zero, div_one,
-        Real.exp_zero] using (Function.Periodic.abs_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
+        Real.exp_zero] using (abs_qParam_lt_iff zero_lt_one 0 z.1).mpr z.2
     simpa only [← eq_cuspFunction 1 f z, Nat.cast_one, const_apply] using heq hQ
-  rcases (SlashInvariantForm.wt_eq_zero_of_eq_const k (c := cuspFunction 1 f 0) H) with HF | HF
+  rcases (wt_eq_zero_of_eq_const k (c := cuspFunction 1 f 0) H) with HF | HF
   · right
-    refine ⟨HF, (cuspFunction 1 (f) 0), by ext z; exact H z⟩
+    refine ⟨HF, (cuspFunction 1 (f) 0), funext fun z ↦ H z⟩
   · left
     rw [HF] at H
-    ext z
-    simpa using H z
+    exact funext fun z ↦ id (H z)
 
-lemma ModularForm_neg_weight_eq_zero (k : ℤ) (hk : k < 0) {F : Type*} [FunLike F ℍ ℂ]
+lemma levelOne_non_pos_weight_eq_zero {k : ℤ} (hk : k < 0) {F : Type*} [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) k] (f : F) : ⇑f = 0 := by
-  rcases neg_wt_modform_zero k hk.le f with h | ⟨rfl, _, _⟩
-  · exact h
-  · omega
+  have := levelOne_neg_wt_eq_zero_or_const hk.le f
+  aesop
 
-lemma ModularForm_weight_zero_constant {F : Type*} [FunLike F ℍ ℂ]
+lemma levelOne_weight_zero_constant {F : Type*} [FunLike F ℍ ℂ]
     [ModularFormClass F Γ(1) 0] (f : F) : ∃ c : ℂ, ⇑f = fun _ => c := by
-  rcases neg_wt_modform_zero 0 (by rfl) f with h1 | h2
-  · refine ⟨0, h1⟩
-  · exact h2.2
+  have := levelOne_neg_wt_eq_zero_or_const (by rfl) f
+  aesop
 
-lemma weight_zero_rank_eq_one : Module.rank ℂ (ModularForm Γ(1) 0) = 1 := by
+end ModularFormClass
+
+lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm Γ(1) 0) = 1 := by
   let f := ModularForm.const 1 (Γ := Γ(1))
   have hf : f ≠ 0 := by
-    rw [@DFunLike.ne_iff]
-    use I
-    simp only [ModularForm.const_toFun, const_apply, zero_apply, ne_eq, one_ne_zero,
-      not_false_eq_true, f]
+    rw [DFunLike.ne_iff]
+    refine ⟨I, by simp only [const_toFun, const_apply, zero_apply, ne_eq, one_ne_zero,
+      not_false_eq_true, f]⟩
   apply rank_eq_one f hf
   intro g
-  rw [@DFunLike.ne_iff] at hf
-  obtain ⟨c', hc'⟩ := ModularForm_weight_zero_constant g
+  obtain ⟨c', hc'⟩ := levelOne_weight_zero_constant g
   use c'
   ext z
-  simp only [zero_apply, ne_eq, SlashInvariantForm.toFun_eq_coe, toSlashInvariantForm_coe,
-   smul_eq_mul] at *
-  simp only [ModularForm.smul_apply, show  f z = 1 by rfl, smul_eq_mul, mul_one]
-  exact (congrFun hc' z).symm
+  simp only [zero_apply, ne_eq, (congrFun hc' z).symm, smul_apply, show f z = 1 by rfl, smul_eq_mul,
+    mul_one] at *
 
-lemma neg_weight_rank_zero (k : ℤ) (hk : k < 0) : Module.rank ℂ (ModularForm Γ(1) k) = 0 := by
+lemma ModularForm.levelOne_nono_pos_weight_rank_zero {k : ℤ} (hk : k < 0) :
+    Module.rank ℂ (ModularForm Γ(1) k) = 0 := by
   rw [rank_eq_zero_iff]
   intro f
-  refine ⟨1, by simp, ?_⟩
-  exact
-    Eq.mpr (id (congrArg (fun x ↦ x = 0) (one_smul ℂ f)))
-      (ModularForm.ext_iff.mpr (congrFun (ModularForm_neg_weight_eq_zero k hk f)))
+  refine ⟨1, (zero_ne_one' ℂ).symm, Eq.mpr (id (congrArg (fun x ↦ x = 0) (one_smul ℂ f)))
+      (ModularForm.ext_iff.mpr (congrFun (levelOne_non_pos_weight_eq_zero hk f)))⟩
