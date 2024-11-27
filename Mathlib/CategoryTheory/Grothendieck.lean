@@ -6,6 +6,7 @@ Authors: Kim Morrison, Sina Hazratpour
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # The Grothendieck construction
@@ -38,11 +39,11 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of funct
 -/
 
 
-universe u
+universe u v w
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type u} [Category.{v, u} C] [Category D]
 variable (F : C ⥤ Cat)
 
 /--
@@ -229,9 +230,35 @@ theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
 if possible, and we should prefer `map_comp_iso` to `map_comp_eq` whenever we can. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β := eqToIso (map_comp_eq α β)
 
-end
 
-universe v
+def down_comp {X Y Z : AsSmall.{w} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).down = f.down ≫ g.down :=
+  rfl
+
+@[simps]
+def asSmallEquivalenceFunctor : Grothendieck F ⥤ Grothendieck (F ⋙ asSmall.{w, v, u}) where
+  obj := fun X => ⟨X.base, AsSmall.up.obj X.fiber⟩
+  map := fun f => ⟨f.base, AsSmall.up.map f.fiber⟩
+
+@[simps]
+def asSmallEquivalenceInverse : Grothendieck (F ⋙ asSmall.{w, v, u}) ⥤ Grothendieck F where
+  obj := fun X => ⟨X.base, AsSmall.down.obj X.fiber⟩
+  map := fun f => ⟨f.base, AsSmall.down.map f.fiber⟩
+  map_id := fun _ => by apply Grothendieck.ext <;> simp
+  map_comp := fun _ _ => by apply Grothendieck.ext <;> simp [down_comp]
+
+def asSmallEquiv : Grothendieck F ≌ Grothendieck (F ⋙ asSmall.{w, v, u}) where
+  functor := asSmallEquivalenceFunctor
+  inverse := asSmallEquivalenceInverse
+  unitIso := NatIso.ofComponents (fun ⟨_, _⟩ => Iso.refl _)
+  counitIso := NatIso.ofComponents
+    fun ⟨_, ⟨_⟩⟩ => eqToIso (by {
+      simp only [asSmallEquivalenceInverse, AsSmall.down_obj, AsSmall.down_map,
+        asSmallEquivalenceFunctor, Cat.of_α, AsSmall.up_obj_down, Functor.comp_obj, id_eq,
+        Functor.id_obj, mk.injEq, asSmall_obj, heq_eq_eq, true_and]
+      apply ULift.ext
+      rfl })
+
+end
 
 /-- The Grothendieck construction as a functor from the functor category `E ⥤ Cat` to the
 over category `Over E`. -/
@@ -244,8 +271,6 @@ def functor {E : Cat.{v,u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T := Cat.{v,u}) E wher
   map_comp α β := by
     simp [Grothendieck.map_comp_eq α β]
     rfl
-
-universe w
 
 variable (G : C ⥤ Type w)
 
