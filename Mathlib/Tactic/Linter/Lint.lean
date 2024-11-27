@@ -9,7 +9,8 @@ import Mathlib.Tactic.DeclarationNames
 /-!
 # Linters for Mathlib
 
-In this file we define additional linters for mathlib.
+In this file we define additional linters for mathlib,
+which concern the *behaviour* of the linted code, and not issues of code style or formatting.
 
 Perhaps these should be moved to Batteries in the future.
 -/
