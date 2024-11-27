@@ -56,24 +56,7 @@ class IsCoskeletal : Prop where
   nonempty_isRightKanExtension :
     Nonempty (IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)))
 
-<<<<<<< HEAD
 section
-=======
-variable [X.IsCoskeletal n]
-
-/-- If `X` is `n`-cosketal, then `𝟙 ((Truncated.inclusion n).op ⋙ X)` defines a right Kan
-extension of `(Truncated.inclusion.op ⋙ X)` along `(Truncated.inclusion n).op`. -/
-instance IsCoskeletal.isRightKanExtension :
-    IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)) :=
-  IsCoskeletal.nonempty_isRightKanExtension.some
-
-/-- If `X` is `n`-coskeletal, then `Truncated.rightExtensionInclusion X n` is a terminal object in
-the category `RightExtension (Truncated.inclusion n).op (Truncated.inclusion.op ⋙ X)`. -/
-noncomputable def IsCoskeletal.isUniversalOfIsRightKanExtension :
-    (rightExtensionInclusion X n).IsUniversal := by
-  have := isRightKanExtension X n
-  apply Functor.isUniversalOfIsRightKanExtension
->>>>>>> 303c5be7af3da459286f30cc2150ab0d4c3501b5
 
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F]
@@ -85,6 +68,7 @@ noncomputable def Truncated.rightExtensionCosk.hom : Truncated.rightExtensionInc
       ((coskAdj n).counit.app ((Truncated.inclusion n).op ⋙ X)) :=
   CostructuredArrow.homMk ((coskAdj n).unit.app X) ((coskAdj n).left_triangle_components X)
 
+/-- The counit of an adjunction is always a right Kan extension. -/
 instance Truncated.isRightKanExtensionCosk : IsRightKanExtension
     ((Truncated.cosk n).obj ((inclusion n).op ⋙ X))
     ((coskAdj n).counit.app ((inclusion n).op ⋙ X)) := by
@@ -92,6 +76,7 @@ instance Truncated.isRightKanExtensionCosk : IsRightKanExtension
   rw [ranAdjunction_counit]
   infer_instance
 
+/-- The counit of an adjunction is always a right Kan extension. -/
 instance Truncated.isRightKanExtensionCosk' : IsRightKanExtension
     ((Truncated.cosk n).obj ((truncation n).obj X))
     ((coskAdj n).counit.app ((truncation n).obj X)) := by
@@ -100,6 +85,7 @@ instance Truncated.isRightKanExtensionCosk' : IsRightKanExtension
     ((coskAdj n).counit.app ((inclusion n).op ⋙ X))
   infer_instance
 
+/-- The counit of an adjunction is always a right Kan extension. -/
 instance Truncated.isRightKanExtensionCosk'' : IsRightKanExtension
     ((Truncated.cosk n).obj ((inclusion n).op ⋙ X))
     ((coskAdj n).counit.app ((truncation n).obj X)) := by
@@ -108,6 +94,7 @@ instance Truncated.isRightKanExtensionCosk'' : IsRightKanExtension
     ((coskAdj n).counit.app ((inclusion n).op ⋙ X))
   infer_instance
 
+/-- The counit of an adjunction is always a right Kan extension. -/
 instance Truncated.isRightKanExtensionCosk''' : IsRightKanExtension
     ((truncation n ⋙ Truncated.cosk n).obj X)
     ((coskAdj n).counit.app ((inclusion n).op ⋙ X)) := by
