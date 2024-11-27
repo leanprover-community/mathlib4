@@ -146,7 +146,7 @@ lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B
 /-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1`,
 then `fromRows A B` is totally unimodular. -/
 lemma fromRows_isTotallyUnimodular_iff_rows [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}
-    (hB : ∀ i : m', B i = 0 ∨ ∃ j, B i = Function.update (0 : n → R) j 1) :
+    (hB : ∀ i : m', ∃ j, ∃ s : SignType, B i = Pi.single j s.cast) :
     (fromRows A B).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
   ⟨.submatrix Sum.inl id, .fromRows_one_aux hB⟩
 
