@@ -39,7 +39,7 @@ variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
 -- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC lean4#1910 leads to dot notation for CoeFun
+-- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
@@ -310,8 +310,6 @@ def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
 end Mathlib.Meta.Positivity
 
 namespace Real
-
-variable {x y : ℝ}
 
 @[simp]
 theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by

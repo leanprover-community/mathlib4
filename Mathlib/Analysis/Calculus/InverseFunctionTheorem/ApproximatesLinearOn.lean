@@ -412,7 +412,7 @@ theorem toPartialHomeomorph_target (hf : ApproximatesLinearOn f (f' : E →L[�
 def toHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : E ≃ₜ F := by
   refine (hf.toPartialHomeomorph _ _ hc isOpen_univ).toHomeomorphOfSourceEqUnivTargetEqUniv rfl ?_
-  rw [toPartialHomeomorph_target, image_univ, range_iff_surjective]
+  rw [toPartialHomeomorph_target, image_univ, range_eq_univ]
   exact hf.surjective hc
 
 end

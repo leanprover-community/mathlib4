@@ -37,13 +37,6 @@ inductive Short : PGame.{u} → Type (u + 1)
     ∀ {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} (_ : ∀ i : α, Short (L i))
       (_ : ∀ j : β, Short (R j)) [Fintype α] [Fintype β], Short ⟨α, β, L, R⟩
 
--- Porting note: Added `simpNF` exception. It's unclear what puts `eq_iff_true_of_subsingleton` into
--- the simp set. A minimal reproduction of the simpNF error needs to import transitively at least
--- `Mathlib.Logic.Unique`.
---
--- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
-attribute [nolint simpNF] Short.mk.injEq
-
 instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
   induction x with
   | mk xl xr xL xR =>
@@ -51,7 +44,6 @@ instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
     intro a b
     cases a; cases b
     congr!
-
 
 -- Porting note: We use `induction` to prove `subsingleton_short` instead of recursion.
 -- A proof using recursion generates a harder `decreasing_by` goal than in Lean 3 for some reason:
