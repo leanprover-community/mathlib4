@@ -39,11 +39,12 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of funct
 -/
 
 
-universe u v w
+universe u v u₁ v₁ w
 
 namespace CategoryTheory
 
-variable {C D : Type u} [Category.{v, u} C] [Category D]
+variable {C : Type u} [Category.{v} C]
+variable {D : Type u₁} [Category.{v₁} D]
 variable (F : C ⥤ Cat)
 
 /--
