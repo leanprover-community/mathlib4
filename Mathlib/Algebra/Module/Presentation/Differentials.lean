@@ -125,7 +125,7 @@ end differentials
 open differentials in
 /-- The `S`-module `Ω[S⁄R]` contains an obvious solution to the system of linear
 equations `pres.differentialsRelations.Solution` when `pres` is a presentation
-of `S` as a `R`-algebra. -/
+of `S` as an `R`-algebra. -/
 noncomputable def differentialsSolution :
     pres.differentialsRelations.Solution (Ω[S⁄R]) where
   var g := D _ _ (pres.val g)
