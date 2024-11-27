@@ -155,8 +155,6 @@ theorem DegLex.single_le_iff {a b : α} :
   DegLex.single_strictAnti.le_iff_le
 
 noncomputable instance : OrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
-  toAddCommMonoid := ofDegLex.addCommMonoid
-  toPartialOrder := DegLex.partialOrder
   le_of_add_le_add_left a b c h := by
     rw [DegLex.le_iff] at h ⊢
     simpa only [ofDegLex_add, degree_add, add_lt_add_iff_left, add_right_inj, toLex_add,
@@ -174,11 +172,8 @@ instance DegLex.linearOrder : LinearOrder (DegLex (α →₀ ℕ)) :=
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
 noncomputable instance :
     LinearOrderedCancelAddCommMonoid (DegLex (α →₀ ℕ)) where
-  toOrderedCancelAddCommMonoid := inferInstance
   le_total := DegLex.linearOrder.le_total
   decidableLE := DegLex.linearOrder.decidableLE
-  min_def := DegLex.linearOrder.min_def
-  max_def := DegLex.linearOrder.max_def
   compare_eq_compareOfLessAndEq := DegLex.linearOrder.compare_eq_compareOfLessAndEq
 
 theorem DegLex.monotone_degree :
@@ -209,15 +204,14 @@ example : toDegLex (single 1 1) < toDegLex (single 0 1) := by
 
 /-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
 example : toDegLex (single 0 2) > toDegLex (single 0 1 + single 1 1) := by
-  simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
-  simp only [degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
+  simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add,
+    degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
   use 0
   simp
 
 /-- for the deg-lexicographic ordering, X 0 < X 1 ^ 2 -/
 example : toDegLex (single 0 1) < toDegLex (single 1 2) := by
-  simp only [gt_iff_lt, DegLex.lt_iff, ofDegLex_toDegLex, degree_add]
-  simp [degree_single]
+  simp [DegLex.lt_iff]
 
 end Finsupp
 
@@ -233,8 +227,7 @@ noncomputable def MonomialOrder.degLex [WellFoundedGT σ] :
   syn := DegLex (σ →₀ ℕ)
   toSyn := { toEquiv := toDegLex, map_add' := toDegLex_add }
   toSyn_monotone a b h := by
-    change toDegLex a ≤ toDegLex b
-    simp only [DegLex.le_iff, ofDegLex_toDegLex]
+    simp only [AddEquiv.coe_mk, DegLex.le_iff, ofDegLex_toDegLex]
     by_cases ha : a.degree < b.degree
     · exact Or.inl ha
     · refine Or.inr ⟨le_antisymm ?_ (not_lt.mp ha), toLex_monotone h⟩
