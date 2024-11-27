@@ -3,7 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Prime.Basic
 
 /-!
@@ -38,10 +38,16 @@ end Nat
 
 namespace Int
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem prime_ofNat_iff {n : ℕ} :
+    Prime (no_index (OfNat.ofNat n : ℤ)) ↔ Nat.Prime (OfNat.ofNat n) :=
+  Nat.prime_iff_prime_int.symm
+
 theorem prime_two : Prime (2 : ℤ) :=
-  Nat.prime_iff_prime_int.mp Nat.prime_two
+  prime_ofNat_iff.mpr Nat.prime_two
 
 theorem prime_three : Prime (3 : ℤ) :=
-  Nat.prime_iff_prime_int.mp Nat.prime_three
+  prime_ofNat_iff.mpr Nat.prime_three
 
 end Int

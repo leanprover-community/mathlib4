@@ -27,7 +27,11 @@ respectively, `3 + (x + y)` and `4 + (x + y)`, which differ by an additive const
 
 The automation is provided in the `MetaM` monad; that is, these functions are not user-facing. It
 would not be hard to provide user-facing versions (see the test file), but the scope of this
-automation is rather specialized and might be confusing to users. It is also subsumed by `linarith`.
+automation is rather specialized and might be confusing to users.
+
+However, this automation serves as the discharger for the `linear_combination` tactic on inequality
+goals, so it is available to the user indirectly as the "degenerate" case of that tactic -- that is,
+by calling `linear_combination` without arguments.
 -/
 
 namespace Mathlib.Tactic.Ring
@@ -144,7 +148,9 @@ def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : 
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rz rxb | return .error tooSmall
     pure <| .ok (q(le_add_of_nonneg_left (a := $a) $pf):)
-  | _, _ => return .error notComparable
+  | _, _ =>
+    unless va.eq vb do return .error notComparable
+    pure <| .ok (q(le_refl $a):)
 
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 (additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
@@ -190,6 +196,7 @@ theorem lt_congr {α : Type*} [LT α] {a b c d : α} (h1 : a = b) (h2 : b < c) (
     a < d := by
   rwa [h1, h3]
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Prove goals of the form `A ≤ B` in an ordered commutative semiring, if the ring-normal forms of
 `A` and `B` differ by a nonnegative (additive) constant. -/
 def proveLE (g : MVarId) : MetaM Unit := do
@@ -213,6 +220,7 @@ def proveLE (g : MVarId) : MetaM Unit := do
       throwError "ring failed, ring expressions not equal up to an additive constant\n{g'.mvarId!}"
     | tooSmall => throwError "comparison failed, LHS is larger\n{g'.mvarId!}"
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Prove goals of the form `A < B` in an ordered commutative semiring, if the ring-normal forms of
 `A` and `B` differ by a positive (additive) constant. -/
 def proveLT (g : MVarId) : MetaM Unit := do

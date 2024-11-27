@@ -52,7 +52,7 @@ variable {L : GrothendieckTopology E}
 
 /-- An auxiliary structure that witnesses the fact that `f` factors through an image object of `G`.
 -/
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 structure Presieve.CoverByImageStructure (G : C ⥤ D) {V U : D} (f : V ⟶ U) where
   obj : C
   lift : V ⟶ G.obj obj
@@ -115,9 +115,10 @@ variable {K}
 variable {A : Type*} [Category A] (G : C ⥤ D)
 
 -- this is not marked with `@[ext]` because `H` can not be inferred from the type
-theorem ext [G.IsCoverDense K] (ℱ : SheafOfTypes K) (X : D) {s t : ℱ.val.obj (op X)}
+theorem ext [G.IsCoverDense K] (ℱ : Sheaf K (Type _)) (X : D) {s t : ℱ.val.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.val.map f.op s = ℱ.val.map f.op t) : s = t := by
-  apply (ℱ.cond (Sieve.coverByImage G X) (G.is_cover_of_isCoverDense K X)).isSeparatedFor.ext
+  apply ((isSheaf_iff_isSheaf_of_type _ _ ).1 ℱ.cond
+    (Sieve.coverByImage G X) (G.is_cover_of_isCoverDense K X)).isSeparatedFor.ext
   rintro Y _ ⟨Z, f₁, f₂, ⟨rfl⟩⟩
   simp [h f₂]
 
@@ -156,7 +157,7 @@ theorem sheaf_eq_amalgamation (ℱ : Sheaf K A) {X : A} {U : D} {T : Sieve U} (h
 
 namespace Types
 
-variable {ℱ : Dᵒᵖ ⥤ Type v} {ℱ' : SheafOfTypes.{v} K} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val)
+variable {ℱ : Dᵒᵖ ⥤ Type v} {ℱ' : Sheaf K (Type v)} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val)
 
 theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) (x) :
     ℱ'.1.map i.op (α.app _ x) = α.app _ (ℱ.map i.op x) := by
@@ -212,13 +213,14 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
 noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.val.obj (op X) := fun x =>
-  (ℱ'.cond _ (G.is_cover_of_isCoverDense _ X)).amalgamate (pushforwardFamily α x)
-    (pushforwardFamily_compatible α x)
+  ((isSheaf_iff_isSheaf_of_type _ _ ).1 ℱ'.cond _
+    (G.is_cover_of_isCoverDense _ X)).amalgamate (pushforwardFamily α x)
+      (pushforwardFamily_compatible α x)
 
 @[simp]
 theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
     ℱ'.val.map f (appHom α X x) = α.app (op Y) (ℱ.map f x) :=
-  ((ℱ'.cond _ (G.is_cover_of_isCoverDense _ X)).valid_glue
+  (((isSheaf_iff_isSheaf_of_type _ _ ).1 ℱ'.cond _ (G.is_cover_of_isCoverDense _ X)).valid_glue
       (pushforwardFamily_compatible α x) f.unop
           (Presieve.in_coverByImage G f.unop)).trans (pushforwardFamily_apply _ _ _)
 
@@ -232,7 +234,7 @@ theorem appHom_valid_glue {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) :
 (Implementation). The maps given in `appIso` is inverse to each other and gives a `ℱ(X) ≅ ℱ'(X)`.
 -/
 @[simps]
-noncomputable def appIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val)
+noncomputable def appIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val)
     (X : D) : ℱ.val.obj (op X) ≅ ℱ'.val.obj (op X) where
   hom := appHom i.hom X
   inv := appHom i.inv X
@@ -267,7 +269,7 @@ where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
 we may obtain a natural isomorphism between presheaves.
 -/
 @[simps!]
-noncomputable def presheafIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
+noncomputable def presheafIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
     ℱ.val ≅ ℱ'.val :=
   NatIso.ofComponents (fun X => appIso i (unop X)) @(presheafHom i.hom).naturality
 
@@ -277,7 +279,7 @@ where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
 we may obtain a natural isomorphism between sheaves.
 -/
 @[simps]
-noncomputable def sheafIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
+noncomputable def sheafIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
     ℱ ≅ ℱ' where
   hom := ⟨(presheafIso i).hom⟩
   inv := ⟨(presheafIso i).inv⟩
@@ -398,7 +400,9 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   simp only [Category.assoc]
   congr 1
   have := naturality_apply (G := G) (ℱ := ℱ ⋙ coyoneda.obj (op <| (G.op ⋙ ℱ).obj X))
-    (ℱ' := ⟨_, ℱ'.2 ((G.op ⋙ ℱ).obj X)⟩) (whiskerRight α (coyoneda.obj _)) hf.some.map (𝟙 _)
+    (ℱ' := ⟨_, Presheaf.isSheaf_comp_of_isSheaf K ℱ'.val
+      (coyoneda.obj (op ((G.op ⋙ ℱ).obj X))) ℱ'.cond⟩)
+    (whiskerRight α (coyoneda.obj _)) hf.some.map (𝟙 _)
   simpa using this
 
 variable (G)
@@ -597,7 +601,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
       · dsimp
         rintro ⟨⟨⟨⟩⟩, ⟨W₁⟩, g₁⟩ ⟨⟨⟨⟩⟩, ⟨W₂⟩, g₂⟩ ⟨⟨⟨⟨⟩⟩⟩, i, hi⟩
         dsimp at g₁ g₂ i hi
-        -- See issue #15781 for tracking performance regressions of `rintro` as here
+        -- See issue https://github.com/leanprover-community/mathlib4/pull/15781 for tracking performance regressions of `rintro` as here
         have h : g₂ = g₁ ≫ (G.map i.unop).op := by simpa only [Category.id_comp] using hi
         rcases h with ⟨rfl⟩
         have h : ∃ g' : G.obj W₁ ⟶ G.obj U, g₁ = g'.op := ⟨g₁.unop, rfl⟩

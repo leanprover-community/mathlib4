@@ -7,6 +7,7 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Lawful
 import Batteries.Tactic.Congr
+import Batteries.Lean.Except
 
 /-!
 # Continuation Monad

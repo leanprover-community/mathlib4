@@ -17,7 +17,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 `Q₁ →qᵢ Q₂` is notation for `Q₁.Isometry Q₂`.
 -/
 
-variable {ι R M M₁ M₂ M₃ M₄ N : Type*}
+variable {R M M₁ M₂ M₃ M₄ N : Type*}
 
 namespace QuadraticMap
 

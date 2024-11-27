@@ -58,16 +58,16 @@ section ToLin'
 def toLinHomAux₁ (A : BilinForm R M) (x : M) : M →ₗ[R] R := A x
 
 /-- Auxiliary definition to define `toLinHom`; see below. -/
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R] M →ₗ[R] R := A
 
 /-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
 the right. -/
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R := LinearMap.id
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom (M := M) A x = A x :=
   rfl
 
@@ -112,7 +112,7 @@ def LinearMap.toBilinAux (f : M →ₗ[R] M →ₗ[R] R) : BilinForm R M := f
 
 set_option linter.deprecated false in
 /-- Bilinear forms are linearly equivalent to maps with two arguments that are linear in both. -/
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 def LinearMap.BilinForm.toLin : BilinForm R M ≃ₗ[R] M →ₗ[R] M →ₗ[R] R :=
   { BilinForm.toLinHom with
     invFun := LinearMap.toBilinAux
@@ -121,35 +121,35 @@ def LinearMap.BilinForm.toLin : BilinForm R M ≃ₗ[R] M →ₗ[R] M →ₗ[R] 
 
 set_option linter.deprecated false in
 /-- A map with two arguments that is linear in both is linearly equivalent to bilinear form. -/
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 def LinearMap.toBilin : (M →ₗ[R] M →ₗ[R] R) ≃ₗ[R] BilinForm R M :=
   BilinForm.toLin.symm
 
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 theorem LinearMap.toBilinAux_eq (f : M →ₗ[R] M →ₗ[R] R) :
     LinearMap.toBilinAux f = f :=
   rfl
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 theorem LinearMap.toBilin_symm :
     (LinearMap.toBilin.symm : BilinForm R M ≃ₗ[R] _) = BilinForm.toLin :=
   rfl
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 theorem BilinForm.toLin_symm :
     (BilinForm.toLin.symm : _ ≃ₗ[R] BilinForm R M) = LinearMap.toBilin :=
   LinearMap.toBilin.symm_symm
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 theorem LinearMap.toBilin_apply (f : M →ₗ[R] M →ₗ[R] R) (x y : M) :
     toBilin f x y = f x y :=
   rfl
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-26")]
 theorem BilinForm.toLin_apply (x : M) : BilinForm.toLin B x = B x :=
   rfl
 
@@ -262,15 +262,8 @@ variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
 section congr
 
 /-- Apply a linear equivalence on the arguments of a bilinear form. -/
-def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' where
-  toFun B := B.comp e.symm e.symm
-  invFun B := B.comp e e
-  left_inv B := ext₂ fun x => by
-    simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, forall_const]
-  right_inv B := ext₂ fun x => by
-    simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply, forall_const]
-  map_add' _ _ := ext₂ fun _ _ => rfl
-  map_smul' _ _ := ext₂ fun _ _ => rfl
+def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' :=
+  LinearEquiv.congrRight (LinearEquiv.congrLeft _ _ e) ≪≫ₗ LinearEquiv.congrLeft _ _ e
 
 @[simp]
 theorem congr_apply (e : M ≃ₗ[R] M') (B : BilinForm R M) (x y : M') :

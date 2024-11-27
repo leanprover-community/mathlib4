@@ -3,11 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -356,7 +357,8 @@ theorem isIntegral_leadingCoeff_smul [Algebra R S] (h : aeval x p = 0) :
 
 end
 
-lemma quotient_isIntegralElem_of_monic (g : S[X]) (mon : g.Monic) (I : Ideal S[X]) (h : g ∈ I) :
+lemma Polynomial.Monic.quotient_isIntegralElem {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
+    (h : g ∈ I) :
     ((Ideal.Quotient.mk I).comp (algebraMap S S[X])).IsIntegralElem (Ideal.Quotient.mk I X) := by
   exact ⟨g, mon, by
   rw [← (Ideal.Quotient.eq_zero_iff_mem.mpr h), eval₂_eq_sum_range]
@@ -365,7 +367,7 @@ lemma quotient_isIntegralElem_of_monic (g : S[X]) (mon : g.Monic) (I : Ideal S[X
 
 /- If `I` is an ideal of the polynomial ring `S[X]` and contains a monic polynomial `f`,
 then `S[X]/I` is integral over `S`. -/
-lemma quotient_isIntegral_of_monic (g : S[X]) (mon : g.Monic) (I : Ideal S[X])
+lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
     (h : g ∈ I) :
       ((Ideal.Quotient.mkₐ S I).comp (Algebra.ofId S S[X])).IsIntegral := by
   have eq_top : Algebra.adjoin S {(Ideal.Quotient.mkₐ S I) X} = ⊤ := by
@@ -379,7 +381,7 @@ lemma quotient_isIntegral_of_monic (g : S[X]) (mon : g.Monic) (I : Ideal S[X])
           as_sum_range_C_mul_X_pow g', map_sum]
         simp only [Polynomial.C_mul', ← map_pow, map_smul]
       exact this ▸ (aeval_mem_adjoin_singleton S ((Ideal.Quotient.mk I) Polynomial.X))
-  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure (quotient_isIntegralElem_of_monic g mon I h)))
+  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure (mon.quotient_isIntegralElem h)))
     Algebra.mem_top
 
 end

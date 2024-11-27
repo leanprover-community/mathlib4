@@ -3,6 +3,7 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.Algebra.Module.ZLattice.Covolume
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.Tactic.Rify
@@ -71,6 +72,24 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     Equiv.symm_symm, latticeBasis_apply, ← commMap_canonical_eq_mixed, Complex.ofRealHom_eq_coe,
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
+
+theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
+    ZLattice.covolume (mixedEmbedding.integerLattice K) =
+      (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
+  rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
+    volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
+    ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm,
+    Int.norm_eq_abs]
+
+theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+    ZLattice.covolume (mixedEmbedding.idealLattice K I) =
+      (FractionalIdeal.absNorm (I : FractionalIdeal (𝓞 K)⁰ K)) *
+        (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
+  rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_idealLattice K I),
+    volume_fundamentalDomain_fractionalIdealLatticeBasis, volume_fundamentalDomain_latticeBasis,
+    ENNReal.toReal_mul, ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_inv, toReal_ofNat,
+    ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,
+    ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val)), mul_assoc]
 
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
@@ -334,11 +353,10 @@ theorem finite_of_discr_bdd_of_isReal :
       convert hx₁
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
-  have := one_le_convexBodyLTFactor K
-  convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
-    (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
-  simp_rw [ENNReal.coe_one, one_mul]
-
+  calc
+    minkowskiBound K 1 < B := minkowskiBound_lt_boundOfDiscBdd hK₂
+    _ = 1 * B := by rw [one_mul]
+    _ ≤ convexBodyLTFactor K * B := by gcongr; exact mod_cast one_le_convexBodyLTFactor K
 
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
@@ -383,10 +401,10 @@ theorem finite_of_discr_bdd_of_isComplex :
       convert hx₁
       · simp only [IntermediateField.lift_top]
       · simp only [IntermediateField.lift_adjoin, Set.image_singleton]
-  have := one_le_convexBodyLT'Factor K
-  convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
-    (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
-  simp_rw [ENNReal.coe_one, one_mul]
+  calc
+    minkowskiBound K 1 < B := minkowskiBound_lt_boundOfDiscBdd hK₂
+    _ = 1 * B := by rw [one_mul]
+    _ ≤ convexBodyLT'Factor K * B := by gcongr; exact mod_cast one_le_convexBodyLT'Factor K
 
 /-- **Hermite Theorem**. Let `N` be an integer. There are only finitely many number fields
 (in some fixed extension of `ℚ`) of discriminant bounded by `N`. -/
