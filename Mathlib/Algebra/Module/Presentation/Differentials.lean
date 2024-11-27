@@ -53,7 +53,7 @@ noncomputable def differentialsRelations : Module.Relations S where
 namespace differentials
 
 /-! We obtain here a few compatibilities which allow to compare the two sequences
-`(pres.rels →₀ S) → (pres.rels →₀ vars) → Ω[S⁄R]` and
+`(pres.rels →₀ S) → (pres.vars →₀ S) → Ω[S⁄R]` and
 `pres.toExtension.Cotangent →ₗ[S] pres.toExtension.CotangentSpace → Ω[S⁄R]`.
 Indeed, there is commutative diagram with a surjective map
 `hom₁ : (pres.rels →₀ S) →ₗ[S] pres.toExtension.Cotangent` on the left and
