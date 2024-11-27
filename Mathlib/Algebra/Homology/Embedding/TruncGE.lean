@@ -226,7 +226,7 @@ namespace ComplexShape.Embedding
 variable (e : Embedding c c') [e.IsTruncGE]
     (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C] [CategoryWithHomology C]
 
-/-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTrungGE`,
+/-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncGE`,
 this is the (canonical) truncation functor
 `HomologicalComplex C c' ⥤ HomologicalComplex C c`. -/
 @[simps]
@@ -235,7 +235,7 @@ noncomputable def truncGE'Functor :
   obj K := K.truncGE' e
   map φ := HomologicalComplex.truncGE'Map φ e
 
-/-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTrungGE`,
+/-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncGE`,
 this is the (canonical) truncation functor
 `HomologicalComplex C c' ⥤ HomologicalComplex C c'`. -/
 @[simps]
