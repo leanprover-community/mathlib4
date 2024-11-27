@@ -375,6 +375,14 @@ theorem norm_div_rev (a b : E) : ‖a / b‖ = ‖b / a‖ := by
 @[to_additive (attr := simp) norm_neg]
 theorem norm_inv' (a : E) : ‖a⁻¹‖ = ‖a‖ := by simpa using norm_div_rev 1 a
 
+@[to_additive (attr := simp) norm_abs_zsmul]
+theorem norm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖ = ‖a ^ n‖ := by
+  rcases le_total 0 n with hn | hn <;> simp [hn, abs_of_nonneg, abs_of_nonpos]
+
+@[to_additive (attr := simp) norm_neg_one_pow_zsmul]
+theorem norm_zpow_neg_one_pow (a : E) (n : ℕ) : ‖a ^ ((-1) ^ n : ℤ)‖ = ‖a‖ := by
+  simp [← norm_zpow_abs]
+
 open scoped symmDiff in
 @[to_additive]
 theorem dist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
