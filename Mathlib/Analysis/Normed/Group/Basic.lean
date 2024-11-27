@@ -1555,5 +1555,3 @@ instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLi
 end SubgroupClass
 
 lemma tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop := tendsto_abs_atTop_atTop
-
-set_option linter.style.longFile 1700
