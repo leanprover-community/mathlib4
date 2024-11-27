@@ -100,7 +100,7 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
-open scoped Classical TensorProduct
+open scoped TensorProduct
 
 open Module IntermediateField
 

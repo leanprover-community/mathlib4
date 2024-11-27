@@ -104,7 +104,7 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
-open scoped Classical TensorProduct
+open scoped TensorProduct
 
 noncomputable section
 
