@@ -116,4 +116,24 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
       limMap_π_assoc, Functor.flip_obj_obj, flipIsoCurrySwapUncurry_hom_app_app]
     erw [limitObjIsoLimitCompEvaluation_hom_π_assoc]
 
+instance (G : J ⥤ K ⥤ C) [HasLimit G] [IsIso (colimitLimitToLimitColimit (uncurry.obj G))] :
+    IsIso (colimitLimitToLimitColimitCone G) := by
+  have : IsIso (colimitLimitToLimitColimitCone G).hom := by
+    suffices IsIso (colimitLimitToLimitColimit (uncurry.obj G) ≫
+        lim.map (whiskerRight (currying.unitIso.app G).inv colim)) by
+      apply IsIso.comp_isIso
+    infer_instance
+  apply Cones.cone_iso_of_hom_iso
+
+instance [HasLimitsOfShape J C] [HasColimitsOfShape K C]
+    [∀ (G : J ⥤ K ⥤ C), IsIso (colimitLimitToLimitColimit (uncurry.obj G))] :
+    PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _) := by
+  refine ⟨fun {F} => ⟨fun {c} hc => ⟨IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩⟩
+  symm
+  trans colim.mapCone (limit.cone F)
+  · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
+  · exact asIso (colimitLimitToLimitColimitCone F)
+
+-- TODO: converse
+
 end CategoryTheory.Limits

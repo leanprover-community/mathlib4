@@ -329,24 +329,11 @@ instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F)
   (isIso_iff_bijective _).mpr
     ⟨colimitLimitToLimitColimit_injective F, colimitLimitToLimitColimit_surjective F⟩
 
-instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
-    IsIso (colimitLimitToLimitColimitCone F) := by
-  have : IsIso (colimitLimitToLimitColimitCone F).hom := by
-    suffices IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
-        lim.map (whiskerRight (currying.unitIso.app F).inv colim)) by
-      apply IsIso.comp_isIso
-    infer_instance
-  apply Cones.cone_iso_of_hom_iso
-
 noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
     PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{v₂}
   intro J _ _
-  refine ⟨fun {F} => ⟨fun {c} hc => ⟨IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩⟩
-  symm
-  trans colim.mapCone (limit.cone F)
-  · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
-  · exact asIso (colimitLimitToLimitColimitCone F)
+  infer_instance
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 

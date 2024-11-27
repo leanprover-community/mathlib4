@@ -210,6 +210,9 @@ instance [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) :=
 instance [HasFiniteColimits D] : HasFiniteColimits (Sheaf J D) :=
   ⟨fun _ ↦ inferInstance⟩
 
+instance [HasFilteredColimitsOfSize.{w, w'} D] : HasFilteredColimitsOfSize.{w, w'} (Sheaf J D) :=
+  ⟨fun _ ↦ inferInstance⟩
+
 instance [HasColimitsOfSize.{u₁, u₂} D] : HasColimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   ⟨inferInstance⟩
 
