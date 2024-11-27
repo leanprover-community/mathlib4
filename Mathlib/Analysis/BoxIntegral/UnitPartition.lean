@@ -9,7 +9,7 @@ import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 /-!
 # Unit Partition
 
-Fix `n` a positive integer. `BoxIntegral.unitPartition.Box` are boxes in `ι → ℝ` obtained by
+Fix `n` a positive integer. `BoxIntegral.unitPartition.box` are boxes in `ι → ℝ` obtained by
 dividing the unit box uniformly into boxes of side length `1 / n` and translating the boxes by
 the lattice `ι → ℤ` so that they cover the whole space. For fixed `n`, there are indexed by
 vectors `ν : ι → ℤ`.
