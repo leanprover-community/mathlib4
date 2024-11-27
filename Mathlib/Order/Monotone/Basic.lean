@@ -1106,8 +1106,8 @@ alias ⟨Antitone.apply₂, Antitone.of_apply₂⟩ := antitone_iff_apply₂
 
 end apply
 
-/-- A monotone function `f : ℕ → ℕ` bounded by `B`, which is constant after stabilising for the
-first time, stabilises in at most `B` steps. -/
+/-- A monotone function `f : ℕ → ℕ` bounded by `b`, which is constant after stabilising for the
+first time, stabilises in at most `b` steps. -/
 lemma Nat.stabilises_of_monotone {f : ℕ → ℕ} {b n : ℕ} (hfmono : Monotone f) (hfb : ∀ m, f m ≤ b)
     (hfstab : ∀ m, f m = f (m + 1) → f (m + 1) = f (m + 2)) (hbn : b ≤ n) : f n = f b := by
   obtain ⟨m, hmb, hm⟩ : ∃ m ≤ b, f m = f (m + 1) := by
