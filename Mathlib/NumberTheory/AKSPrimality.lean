@@ -37,7 +37,7 @@ prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena
 -/
 
 /-- Theorem 6.1 Claim 1 (i) part 1. -/
-lemma aks_6d1c1ip1 (p r a: ℕ) [Fact p.Prime]
+lemma aks_6d1c1ip1 (p r a : ℕ) [Fact p.Prime]
     (μ: primitiveRoots r (AlgebraicClosure (ZMod p))):
     ((μ: (AlgebraicClosure (ZMod p)))-a)^p = μ^p-a :=by
   let frob := by exact frobeniusEquiv (AlgebraicClosure (ZMod p)) p
