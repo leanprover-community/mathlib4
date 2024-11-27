@@ -17,8 +17,8 @@ vectors `ν : ι → ℤ`.
 Let `B` be a `BoxIntegral`. A `unitPartition.box` is admissible for `B` (more precisely its index is
 admissible) if it is contained in `B`. There are finitely many admissible `unitPartition.box` for
 `B` and thus we can form the corresponing tagged prepartition, see
-`BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.Box` coming with its
-tag situated at its "upper most" corner). If `B` satisfies `hasIntegralVertices`, that
+`BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.Box` comes with its
+tag situated at its "upper most" vertex). If `B` satisfies `hasIntegralVertices`, that
 is its vertices are in `ι → ℤ`, then the corresponding prepartition is actually a partition.
 
 ## Main definitions and results
@@ -26,7 +26,7 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
 * `BoxIntegral.hasIntegralCorners`: a `Prop` that states that the vertices of the box have
 coordinates in `ℤ`
 
-* `BoxIntegral.unitPartition.box`: a `BoxIntegral`, indexed by `ν : ι → ℤ`, with corners
+* `BoxIntegral.unitPartition.box`: a `BoxIntegral`, indexed by `ν : ι → ℤ`, with vertices
 `ν i / n` and of side length `1 / n`.
 
 * `BoxIntegral.unitPartition.admissibleIndex`: For `B : BoxIntegral.Box`, the set of indices of
@@ -45,14 +45,14 @@ section hasIntegralCorners
 
 open Bornology
 
-/-- A `BoxIntegral.Box` has integral devices if its vertices has coordinates in `ℤ`. -/
-def BoxIntegral.hasIntegralCorners (B : Box ι) : Prop :=
+/-- A `BoxIntegral.Box` has integral vertices if its vertices have coordinates in `ℤ`. -/
+def BoxIntegral.hasIntegralVertices (B : Box ι) : Prop :=
   ∃ l u : ι → ℤ, (∀ i, B.lower i = l i) ∧ (∀ i, B.upper i = u i)
 
 /-- Any bounded set is contained in a `BoxIntegral.Box` with integral corners. -/
 theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι → ℝ)}
     (h : IsBounded s) :
-    ∃ B : BoxIntegral.Box ι, hasIntegralCorners B ∧ s ≤ B := by
+    ∃ B : BoxIntegral.Box ι, hasIntegralVertices B ∧ s ≤ B := by
   have := Fintype.ofFinite ι
   obtain ⟨R, hR₁, hR₂⟩ := IsBounded.subset_ball_lt h 0 0
   let C : ℕ+ := ⟨⌈R⌉₊, Nat.ceil_pos.mpr hR₁⟩
@@ -119,7 +119,7 @@ theorem tag_mem (ν : ι → ℤ) :
   rw [tag, add_div]
   exact ⟨by norm_num [n.pos_of_neZero], le_rfl⟩
 
-/-- For `x : ι → ℝ`, its index is the index of the unique `unitPartition.Box` to which
+/-- For `x : ι → ℝ`, its index is the index of the unique `unitPartition.box` to which
 it belongs. -/
 def index (x : ι → ℝ) (i : ι) : ℤ := ⌈n * x i⌉ - 1
 
@@ -180,7 +180,7 @@ theorem setFinite_index {s : Set (ι → ℝ)} (hs₁ : NullMeasurableSet s) (hs
   · rw [Set.mem_setOf, Set.inter_eq_self_of_subset_left hν, volume_box]
 
 /-- For `B : BoxIntegral.Box`, the set of indices of `unitPartition.Box` that are subsets of `B`.
-This is a finite set. These boxes cover `B` if it has integral corners, see
+This is a finite set. These boxes cover `B` if it has integral vertices, see
 `unitPartition.prepartition_isPartition`. -/
 def admissibleIndex (B : Box ι) : Finset (ι → ℤ) := by
   refine (setFinite_index n B.measurableSet_coe.nullMeasurableSet ?_).toFinset
@@ -269,7 +269,7 @@ private theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
 
 /-- If `B : BoxIntegral.Box` has integral vertices and contains the point `x`, then the index of
 `x` is admissible for `B`. -/
-theorem mem_admissibleIndex_of_mem_box {B : Box ι} (hB : hasIntegralCorners B) {x : ι → ℝ}
+theorem mem_admissibleIndex_of_mem_box {B : Box ι} (hB : hasIntegralVertices B) {x : ι → ℝ}
     (hx : x ∈ B) : index n x ∈ admissibleIndex n B := by
   obtain ⟨l, u, hl, hu⟩ := hB
   simp_rw [mem_admissibleIndex_iff, Box.le_iff_bounds, box_lower, box_upper, Pi.le_def,
@@ -281,7 +281,7 @@ theorem mem_admissibleIndex_of_mem_box {B : Box ι} (hB : hasIntegralCorners B) 
 
 /-- If `B : BoxIntegral.Box` has integral vertices, then `prepartition n B` is a partition of
 `B`. -/
-theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralCorners B) :
+theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralVertices B) :
     (prepartition n B).IsPartition := by
   refine fun x hx ↦ ⟨box n (index n x), ?_, mem_box_iff_index.mpr rfl⟩
   rw [TaggedPrepartition.mem_toPrepartition, mem_prepartition_iff]
