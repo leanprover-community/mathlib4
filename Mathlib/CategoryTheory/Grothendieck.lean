@@ -237,11 +237,13 @@ def down_comp {X Y Z : AsSmall.{w} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).do
 
 variable (F)
 
+/-- The inverse functor to build the equivalence `compAsSmallEquivalence`. -/
 @[simps]
 def compAsSmallEquivalenceInverse : Grothendieck F ⥤ Grothendieck (F ⋙ asSmall.{w, v, u}) where
   obj := fun X => ⟨X.base, AsSmall.up.obj X.fiber⟩
   map := fun f => ⟨f.base, AsSmall.up.map f.fiber⟩
 
+/-- The functor to build the equivalence `compAsSmallEquivalence`. -/
 @[simps]
 def compAsSmallEquivalenceFunctor : Grothendieck (F ⋙ asSmall.{w, v, u}) ⥤ Grothendieck F where
   obj := fun X => ⟨X.base, AsSmall.down.obj X.fiber⟩
@@ -249,6 +251,9 @@ def compAsSmallEquivalenceFunctor : Grothendieck (F ⋙ asSmall.{w, v, u}) ⥤ G
   map_id := fun _ => by apply Grothendieck.ext <;> simp
   map_comp := fun _ _ => by apply Grothendieck.ext <;> simp [down_comp]
 
+/-- Taking the Grothendieck construction on `F ⋙ asSmall`, where `asSmall : Cat ⥤ Cat` is the
+functor which turns each category into a small category of a (potentiall) larger universe, is
+equivalent to the Grothendieck construction on `F` itself. -/
 @[simps]
 def compAsSmallEquivalence : Grothendieck (F ⋙ asSmall.{w, v, u}) ≌ Grothendieck F where
   functor := compAsSmallEquivalenceFunctor F
@@ -262,6 +267,9 @@ def compAsSmallEquivalence : Grothendieck (F ⋙ asSmall.{w, v, u}) ≌ Grothend
       apply ULift.ext
       rfl })
 
+/-- Mapping a Grothendieck construction along the whiskering of any natural transformation
+`α : F ⟶ G` with the functor `asSmall : Cat ⥤ Cat` is naturally isomorphic to conjugating
+`map α` with the equivalence between `Grothendieck (F ⋙ asSmall)` and `Grothendieck F`. -/
 def mapWhiskerRightAsSmall (α : F ⟶ G) :
     map (whiskerRight α asSmall.{w, v, u}) ≅
     (compAsSmallEquivalence F).functor ⋙ map α ⋙ (compAsSmallEquivalence G).inverse :=
