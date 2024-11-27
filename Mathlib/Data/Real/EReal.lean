@@ -870,7 +870,7 @@ theorem add_lt_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y < ⊤
 lemma add_ne_top {x y : EReal} (hx : x ≠ ⊤) (hy : y ≠ ⊤) : x + y ≠ ⊤ :=
   lt_top_iff_ne_top.mp <| add_lt_top hx hy
 
-lemma add_ne_top_iff_of_ne_bot {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
+lemma add_ne_top_iff_ne_top₂ {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ := by
   refine ⟨?_, fun h ↦ add_ne_top h.1 h.2⟩
   cases x <;> simp_all
@@ -878,7 +878,7 @@ lemma add_ne_top_iff_of_ne_bot {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
 
 lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ := by
-  cases x <;> simp [add_ne_top_iff_of_ne_bot, hy, hy']
+  cases x <;> simp [add_ne_top_iff_ne_top₂, hy, hy']
 
 /-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
 the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
