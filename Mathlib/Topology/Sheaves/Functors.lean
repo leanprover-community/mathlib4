@@ -86,9 +86,6 @@ The pullback functor.
 def pullback (f : X ⟶ Y) : Y.Sheaf A ⥤ X.Sheaf A :=
   (Opens.map f).sheafPullback _ _ _
 
---lemma pullback_eq (f : X ⟶ Y) :
---    pullback A f = forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := rfl
-
 /--
 The pullback of a sheaf is isomorphic (actually definitionally equal) to the sheafification
 of the pullback as a presheaf.
