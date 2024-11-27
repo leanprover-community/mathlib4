@@ -13,8 +13,8 @@ import Mathlib.GroupTheory.QuotientGroup.Defs
 This file proves Goursat's lemma for subgroups.
 
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
-subgroups `G' ≤ G` and `H' ≤ H` such that the image of `I` in `G ⧸ G' × H ⧸ H'` is the graph of an
-isomorphism `G ⧸ G' ≃ H ⧸ H'`.
+subgroups `G' ≤ G` and `H' ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ G' × H ⧸ H'` is
+the graph of an isomorphism `G ⧸ G' ≃ H ⧸ H'`.
 
 `G'` and `H'` can be explicitly constructed as `Subgroup.goursatFst I` and `Subgroup.goursatSnd I`
 respectively.
@@ -83,16 +83,16 @@ lemma goursatFst_prod_goursatSnd_le : I.goursatFst.prod I.goursatSnd ≤ I := by
 /-- **Goursat's lemma** for a subgroup of with surjective projections.
 
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
-subgroups `M ≤ G` and `N ≤ H` such that the image of `I` in `G ⧸ M × H ⧸ N` is the graph of an
-isomorphism `G ⧸ M ≃ H ⧸ N'`.
+subgroups `M ≤ G` and `N ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ M × H ⧸ N` is the
+graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
 
 `G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively. -/
 @[to_additive
 "**Goursat's lemma** for a subgroup of with surjective projections.
 
 If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
-subgroups `M ≤ G` and `N ≤ H` such that the image of `I` in `G ⧸ M × H ⧸ N` is the graph of an
-isomorphism `G ⧸ M ≃ H ⧸ N'`.
+subgroups `M ≤ G` and `N ≤ H` such that `G' × H' ≤ I` and the image of `I` in `G ⧸ M × H ⧸ N` is the
+graph of an isomorphism `G ⧸ M ≃ H ⧸ N'`.
 
 `G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively."]
 lemma goursat_surjective :
@@ -111,16 +111,14 @@ lemma goursat_surjective :
 /-- **Goursat's lemma** for an arbitrary subgroup.
 
 If `I` is a subgroup of `G × H`, then there exist subgroups `G' ≤ G`, `H' ≤ H` and normal subgroups
-`M ≤ G'` and `N ≤ H'` such that the image of `I` in `G' ⧸ M × H' ⧸ N` is the graph of an
-isomorphism `G ⧸ G' ≃ H ⧸ H'`. -/
+`M ≤ G'` and `N ≤ H'` such that `M × N ≤ I` and the image of `I` in `G' ⧸ M × H' ⧸ N` is the graph
+of an isomorphism `G ⧸ G' ≃ H ⧸ H'`. -/
 @[to_additive
 "**Goursat's lemma** for an arbitrary subgroup.
 
-If `I` is a subgroup of `G × H` which projects fully on both factors, then there exist normal
-subgroups `G' ≤ G` and `H' ≤ H` such that the image of `I` in `G ⧸ G' × H ⧸ H'` is the graph of an
-isomorphism `G ⧸ G' ≃ H ⧸ H'`.
-
-`G'` and `H'` can be explicitly constructed as `I.goursatFst` and `I.goursatSnd` respectively."]
+If `I` is a subgroup of `G × H`, then there exist subgroups `G' ≤ G`, `H' ≤ H` and normal subgroups
+`M ≤ G'` and `N ≤ H'` such that `M × N ≤ I` and the image of `I` in `G' ⧸ M × H' ⧸ N` is the graph
+of an isomorphism `G ⧸ G' ≃ H ⧸ H'`."]
 lemma goursat :
     ∃ (G' : Subgroup G) (H' : Subgroup H) (M : Subgroup G') (N : Subgroup H') (_ : M.Normal)
       (_ : N.Normal) (e : G' ⧸ M ≃* H' ⧸ N),
