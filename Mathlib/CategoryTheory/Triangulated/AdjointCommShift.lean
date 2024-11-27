@@ -373,6 +373,50 @@ class adjunction_compat (adj : F ⊣ G) [CommShift F A] [CommShift G A] where
 
 variable {A}
 
+lemma compat_left_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A] [adjunction_compat A adj]
+    (a : A) (X : C) :
+    (F.map (adj.unit.app X))⟦a⟧' ≫ (CommShift.iso a).inv.app (G.obj (F.obj X)) ≫
+    F.map ((CommShift.iso a).inv.app (F.obj X)) ≫ adj.counit.app ((F.obj X)⟦a⟧) = 𝟙 _ := by
+  have := adjunction_compat.left_right_compat a (-a) (by simp) (G.obj ((F.obj X)⟦a⟧)) (F.obj X)
+    (((adj.comp (shiftEquiv' D a (-a) (by simp)).symm.toAdjunction).homEquiv _ _).symm (𝟙 _))
+    (adj := adj)
+  rw [Equiv.apply_symm_apply, id_comp] at this
+  conv_rhs at this => rw [← NatIso.inv_inv_app]
+  rw [homEquiv_apply, homEquiv_symm_apply] at this
+  simp [shiftEquiv'_symm_unit, shiftEquiv'_symm_counit] at this
+  sorry
+
+lemma compat_right_triangle (adj : F ⊣ G) [CommShift F A] [CommShift G A] [adjunction_compat A adj]
+    (a : A) (Y : D) :
+    adj.unit.app ((G.obj Y)⟦a⟧) ≫ G.map ((CommShift.iso a).hom.app (G.obj Y)) ≫
+    (CommShift.iso a).hom.app (F.obj (G.obj Y)) ≫ (G.map (adj.counit.app Y))⟦a⟧' = 𝟙 _ := by
+  apply Faithful.map_injective (F := shiftFunctor C (-a))
+  simp only [id_obj, comp_obj, map_comp, map_id]
+  have := adjunction_compat.left_right_compat (-a) a (by simp) (G.obj Y) _ (𝟙 _) (adj := adj)
+  rw [homEquiv_apply, homEquiv_apply] at this
+  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, Equivalence.symm_functor,
+    shiftEquiv'_inverse, comp_unit_app, id_obj, Equivalence.toAdjunction_unit,
+    shiftEquiv'_symm_unit, comp_id, Functor.comp_map, assoc, map_shiftFunctorCompIsoId_inv_app,
+    map_id] at this
+  rw [← cancel_epi ((shiftFunctorCompIsoId C a (-a) (by simp)).hom.app (G.obj Y))] at this
+  conv_lhs at this => rw [← assoc, ← assoc, Iso.hom_inv_id_app, id_comp]
+  slice_lhs 1 2 => rw [this]
+  simp only [comp_obj, id_obj, assoc]
+  slice_lhs 5 6 => erw [Iso.inv_hom_id_app]
+  erw [id_comp]
+  slice_lhs 4 5 => rw [← map_comp]; erw [Iso.inv_hom_id_app, map_id]
+  rw [id_comp]
+  slice_lhs 1 2 => erw [← (shiftFunctorCompIsoId C a (-a) (by simp)).hom.naturality]
+  slice_lhs 2 3 => erw [Iso.hom_inv_id_app]
+  simp only [comp_obj, Functor.comp_map, id_comp]
+  rw [← map_comp, ← map_comp]
+  conv_lhs => congr; congr
+              change adj.unit.app (G.obj Y) ≫ G.map (adj.counit.app Y)
+              rw [← whiskerLeft_app G adj.unit Y, ← whiskerRight_app, ← NatTrans.comp_app]
+              rw [adj.right_triangle]
+  simp
+
+
 noncomputable def left_right_equiv_compat_forward (adj : F ⊣ G) [CommShift F A] :
     @adjunction_compat C D _ _ F G A _ _ _ adj inferInstance
     ((left_right_equiv adj).toFun inferInstance) := by
