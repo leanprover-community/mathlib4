@@ -311,8 +311,6 @@ end Mathlib.Meta.Positivity
 
 namespace Real
 
-variable {x y : ℝ}
-
 @[simp]
 theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
   simp_rw [Real.sqrt, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
