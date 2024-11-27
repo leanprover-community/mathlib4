@@ -767,8 +767,8 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
     e.finsetCongr.toEmbedding = (Finset.mapEmbedding e.toEmbedding).toEmbedding :=
   rfl
 
-/-- Given a predicate `p : Finset α → Prop`, produces an equivalence between
-  `{S : Finset (Finset α) // ∀ s ∈ S, p s}` and `Finset {s : Finset α // p s}`. -/
+/-- Given a predicate `p : α → Prop`, produces an equivalence between
+  `{s : Finset α // ∀ a ∈ s, p a}` and `Finset {a : α // p a}`. -/
 protected def finsetSubtypeCongr (p : α → Prop) :
     {s : Finset α // ∀ a ∈ s, p a} ≃ (Finset {a : α // p a}) where
   toFun s := s.val.attach.map (Subtype.impEmbedding _ _ s.property)
