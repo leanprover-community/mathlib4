@@ -47,6 +47,7 @@ lemma qParam_im_ge_half (ξ : ℍ) (hξ : 1 / 2 ≤ ξ.im) : ‖𝕢 1 ξ‖ ≤
     show 2 * π * ξ.im = π * 2 * ξ.im by ring, zero_sub, neg_le, neg_neg]
   have : √3 ≤ 2 := sqrt_le_iff.mpr (by norm_cast)
   gcongr
+
 namespace SlashInvariantFormClass
 
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
