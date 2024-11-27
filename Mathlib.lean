@@ -2183,6 +2183,7 @@ import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 import Mathlib.Combinatorics.Quiver.Covering
 import Mathlib.Combinatorics.Quiver.Path
+import Mathlib.Combinatorics.Quiver.Prefunctor
 import Mathlib.Combinatorics.Quiver.Push
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 import Mathlib.Combinatorics.Quiver.SingleObj
@@ -3193,6 +3194,7 @@ import Mathlib.GroupTheory.Torsion
 import Mathlib.GroupTheory.Transfer
 import Mathlib.InformationTheory.Hamming
 import Mathlib.Init
+import Mathlib.InitTiming.Two
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
 import Mathlib.Lean.Elab.Term
