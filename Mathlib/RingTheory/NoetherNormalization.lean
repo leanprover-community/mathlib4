@@ -21,7 +21,7 @@ from $k[X_1, X_2, ..., X_r]$ to $A$ such that $A$ is integral over $k[X_1, X_2, 
 open Polynomial MvPolynomial Ideal BigOperators Nat RingHom
 
 variable {k : Type*} [Field k] {n : ℕ} (f : MvPolynomial (Fin (n + 1)) k)
-variable (v w : (Fin (n + 1)) →₀ ℕ)
+variable (v w : Fin (n + 1) →₀ ℕ)
 
 /-Suppose $f$ is a nonzero polynomial of $n+1$ variables : $X_0,...,X_n$.
 We construct a ring homomorphism $T$ which maps $X_i$ into $X_i + X_0^{r_i}$ when $i \neq 0$,
@@ -30,7 +30,7 @@ private noncomputable abbrev up := (1 + ∑ i : Fin (n + 1), f.degreeOf i)
 
 private lemma up_spec (hv : v ∈ f.support) : ∀ i, v i < up f := by
   intro i
-  have h : degreeOf i f ≤ ∑ i : (Fin (n + 1)), degreeOf i f := by
+  have h : degreeOf i f ≤ ∑ i : Fin (n + 1), degreeOf i f := by
     rw [← finsum_eq_sum_of_fintype fun i ↦ degreeOf i f]
     exact single_le_finsum i (Set.toFinite _) (fun j ↦ Nat.zero_le (degreeOf j f))
   exact lt_one_add_iff.mpr (le_trans (monomial_le_degreeOf i hv) h)
@@ -75,8 +75,8 @@ private lemma a_j (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (i : Fin n
 intro j
 by_cases h : j < i
 · have : (((n + 1 : ℤ) * up f) ^ (n + 1 - j.succ) * ((v j.succ) - (w j.succ))) = 0 := by
-    simp only [sub_eq_zero.mpr (cast_inj.mpr (by_contra
-      (fun ne ↦ Fin.not_lt.mpr (pj j ne) h))), mul_zero]
+    simp only [sub_eq_zero.mpr <| cast_inj.mpr <| by_contra
+      <| fun ne ↦ Fin.not_lt.mpr (pj j ne) h, mul_zero]
   simp only [if_pos (Fin.ne_of_lt h), this, abs_zero, Int.succ_ofNat_pos, pow_pos,
     mul_pos_iff_of_pos_left, ← cast_pow]
   have le := one_le_pow₀ (le_add_of_nonneg_left (Int.ofNat_zero_le n)) (n := n - i.succ)
@@ -102,8 +102,7 @@ by_cases h : j < i
       · apply _root_.pow_le_pow_right₀ ?_ le
         simp only [cast_add, cast_one, le_add_iff_nonneg_right]
         exact Int.ofNat_zero_le _
-    · unfold_let
-      exact le_of_lt (abs_sub_lt_of_nonneg_of_lt (Int.ofNat_zero_le _)
+    · exact le_of_lt (abs_sub_lt_of_nonneg_of_lt (Int.ofNat_zero_le _)
         (cast_lt.mpr (vlt j.succ)) (Int.ofNat_zero_le _) (cast_lt.mpr (wlt j.succ)))
     · exact abs_nonneg _
     · exact mul_nonneg (pow_nonneg (Int.ofNat_zero_le _) _) (pow_nonneg (Int.ofNat_zero_le _) _)
@@ -128,11 +127,11 @@ private lemma r_spec (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : 
   by_cases hp : Fin.find p = none
   · rw [Fin.find_eq_none_iff] at hp
     repeat push_neg at hp
-    rw [Finset.sum_congr rfl (fun i _ ↦ by rw [hp i]), add_left_inj] at h
-    exact neq (Finsupp.ext (fun i ↦ (Fin.induction h (fun d _ ↦ (hp d)) i)))
+    rw [Finset.sum_congr rfl <| fun i _ ↦ by rw [hp i], add_left_inj] at h
+    exact neq <| Finsupp.ext <| fun i ↦ Fin.induction h (fun d _ ↦ (hp d)) i
   · obtain ⟨i, hi⟩ := Option.ne_none_iff_exists'.mp hp
     obtain ⟨pi, pj⟩ := Fin.find_eq_some_iff.mp hi
-    unfold_let at pj
+    unfold p at pj
     set a0 := ((v 0 : ℤ) - w 0)
     set a :=
       fun (j : Fin n) ↦ (((n + 1 : ℤ) * up f) ^ (n + 1 - j.succ) * ((v j.succ) - (w j.succ)))
@@ -152,11 +151,11 @@ private lemma r_spec (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : 
       rw [Finset.sum_filter]
       set bi := (n + 1 : ℤ) ^ (n - i.succ) * up f ^ (n + 1 - i.succ)
       have : |a0| < up f := by
-        unfold_let
+        unfold a0
         exact abs_sub_lt_of_nonneg_of_lt (Int.ofNat_zero_le _) (cast_lt.mpr (vlt 0))
           (Int.ofNat_zero_le _) (cast_lt.mpr (wlt 0))
       have ai : |- a i| ≥ (n + 1) * bi * 1 := by
-        unfold_let
+        unfold a bi
         simp only [abs_neg, abs_mul, mul_pow]
         have : |v i.succ - (w i.succ : ℤ)| ≥ 1 := by apply Int.one_le_abs; omega
         nth_rw 1 [Nat.sub_add_comm (Fin.is_le _), add_comm (n - i.succ), pow_add, pow_one]
@@ -171,7 +170,7 @@ private lemma r_spec (vlt : ∀ i, v i < up f) (wlt : ∀ i, w i < up f) (neq : 
         Finset.sum_le_sum (fun i _ ↦ aj i)
       rw [Fin.sum_const, nsmul_eq_mul] at this
       have : bi ≥ up f := by
-        unfold_let
+        unfold bi
         simp only [succ_eq_add_one, Fin.val_succ, reduceSubDiff, ge_iff_le]
         nth_rw 1 [← one_mul (up f : ℤ)]
         have le := one_le_pow₀ (le_add_of_nonneg_left (Int.ofNat_zero_le n)) (n := n - (i + 1))
@@ -210,18 +209,18 @@ private lemma T_spec_monomial (a : k) (ha : a ≠ 0) : ((T f) (monomial v a)).de
     natDegree_mul h2 (Finset.prod_ne_zero_iff.mpr (fun i _ ↦ h3 i)),
     natDegree_prod _  _ (fun i _ ↦ h3 i), natDegree_finSuccEquiv, degreeOf_C]
   simp only [natDegree_pow, zero_add]
-  rw [one_mul, degreeOf_monomial_eq _ _ _ ha, natDegree_X, mul_one, add_left_cancel_iff]
+  rw [one_mul, degreeOf_monomial_eq _ _ ha, natDegree_X, mul_one, add_left_cancel_iff]
   apply Finset.sum_congr rfl
   intro i _
-  rw [add_comm (Polynomial.C (X i)), natDegree_X_pow_add_C, degreeOf_monomial_eq _ _ _ ha, mul_comm]
+  rw [add_comm (Polynomial.C (X i)), natDegree_X_pow_add_C, degreeOf_monomial_eq _ _ ha, mul_comm]
 
 private lemma T_spec_degree (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
-    ((T f) ((monomial v) (coeff v f))).degreeOf 0 ≠
-    ((T f) ((monomial w) (coeff w f))).degreeOf 0 := by
+    (T f <| monomial v <| coeff v f).degreeOf 0 ≠
+    (T f <| monomial w <| coeff w f).degreeOf 0 := by
   have nv := mem_support_iff.mp hv
   have nw := mem_support_iff.mp hw
   rw [T_spec_monomial _ _ _ nv, T_spec_monomial _ _ _ nw]
-  simp only [degreeOf_monomial_eq _ _ _ nv, degreeOf_monomial_eq _ _ _ nw]
+  simp only [degreeOf_monomial_eq _ _ nv, degreeOf_monomial_eq _ _ nw]
   exact r_spec f v w (up_spec f v hv) (up_spec f w hw) neq
 
 private lemma T_spec_coeff :
@@ -250,31 +249,31 @@ private lemma T_spec_coeff :
 private lemma T_spec_leadingcoeff (fne : f ≠ 0) :
     ∃ c : (MvPolynomial (Fin n) k)ˣ, (c.val • (finSuccEquiv k n (T f f))).Monic := by
   obtain ⟨v, vin, vspec⟩ := Finset.exists_max_image f.support
-    (fun v ↦ ((T f) ((monomial v) (coeff v f))).degreeOf 0) (support_nonempty.mpr fne)
+    (fun v ↦ (T f ((monomial v) (coeff v f))).degreeOf 0) (support_nonempty.mpr fne)
   set h := fun w ↦ (MvPolynomial.monomial w) (coeff w f)
   simp only [← natDegree_finSuccEquiv] at vspec
-  replace vspec : ∀ x ∈ f.support \ {v}, ((finSuccEquiv k n) ((T f) (h x))).degree <
-      ((finSuccEquiv k n) ((T f) (h v))).degree := by
+  replace vspec : ∀ x ∈ f.support \ {v}, (finSuccEquiv k n ((T f) (h x))).degree <
+      (finSuccEquiv k n ((T f) (h v))).degree := by
     intro x hx
     obtain ⟨h1, h2⟩ := Finset.mem_sdiff.mp hx
     apply degree_lt_degree
     apply lt_of_le_of_ne (vspec x h1)
     repeat rw [natDegree_finSuccEquiv]
-    apply T_spec_degree f _ _ h1 vin (List.ne_of_not_mem_cons h2)
-  have coeff : ((finSuccEquiv k n) ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
+    apply T_spec_degree f _ _ h1 vin <| List.ne_of_not_mem_cons h2
+  have coeff : (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
       (finSuccEquiv k n ((T f) (h v))).leadingCoeff := by
     simp only [map_add, map_sum]
     rw [add_comm]
     apply leadingCoeff_add_of_degree_lt
     have := degree_sum_le (f.support \ {v}) (fun x ↦ ((finSuccEquiv k n) ((T f) (h x))))
     apply lt_of_le_of_lt this
-    set degv := ((finSuccEquiv k n) ((T f) (h v))).degree
+    set degv := (finSuccEquiv k n ((T f) (h v))).degree
     set els := ∑ x ∈ f.support \ {v}, (finSuccEquiv k n) ((T f) (h x))
     have h2 : h v ≠ 0 := by
-      unfold_let
+      unfold h
       simp only [ne_eq, monomial_eq_zero]
       exact mem_support_iff.mp vin
-    replace h2 : ((finSuccEquiv k n) ((T f) (h v))) ≠ 0 := by
+    replace h2 : (finSuccEquiv k n ((T f) (h v))) ≠ 0 := by
       by_contra eq
       repeat rw [map_eq_zero_iff _ (AlgEquiv.injective _)] at eq
       exact h2 eq
@@ -285,13 +284,13 @@ private lemma T_spec_leadingcoeff (fne : f ≠ 0) :
   rw [this]
   rw [T_spec_coeff] at coeff
   have := mem_support_iff.mp vin
-  have u : IsUnit ((finSuccEquiv k n)
+  have u : IsUnit (finSuccEquiv k n
       ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff := by
     rw [coeff]
     simp only [algebraMap_eq]
-    refine IsUnit.map MvPolynomial.C (Ne.isUnit this)
+    refine IsUnit.map MvPolynomial.C <| Ne.isUnit this
   use u.unit⁻¹
-  exact (monic_of_isUnit_leadingCoeff_inv_smul u)
+  exact monic_of_isUnit_leadingCoeff_inv_smul u
 
 /-$I$ is an ideal containing $f$.-/
 variable (I : Ideal (MvPolynomial (Fin (n + 1)) k))
@@ -306,8 +305,8 @@ private noncomputable abbrev hom1 :=
 set_option synthInstance.maxHeartbeats 40000
 private lemma hom1_int (fne : f ≠ 0) (fi : f ∈ I): (hom1 f I).IsIntegral := by
   obtain ⟨c, eq⟩ := T_spec_leadingcoeff f fne
-  apply quotient_isIntegral_of_monic _ eq (map (finSuccEquiv k n) (map (T f) I))
-  apply Submodule.smul_of_tower_mem _ c.val (mem_map_of_mem _ (mem_map_of_mem _ fi))
+  exact eq.quotient_isIntegral <| Submodule.smul_of_tower_mem _ c.val <|
+    mem_map_of_mem _ <| mem_map_of_mem _ fi
 
 /-$eqv1$ is the isomorphism from $k[X_1,...X_n][X]/\phi(T(I))$
 to $k[X_0,...,X_n]/T(I)$, induced by $\phi$.-/
@@ -315,13 +314,13 @@ private noncomputable abbrev eqv1 := quotientEquivAlg ((I.map (T f)).map
     (finSuccEquiv k n)) (I.map (T f)) (finSuccEquiv k n).symm (by
   set g := (finSuccEquiv k n)
   symm
-  have : (g.symm).toRingEquiv.toRingHom.comp g = RingHom.id _ :=
+  have : g.symm.toRingEquiv.toRingHom.comp g = RingHom.id _ :=
     RingEquiv.symm_toRingHom_comp_toRingHom g.toRingEquiv
   calc
-    _ = map ((g.symm).toAlgHom.toRingHom.comp g) (map (T f) I) := by
+    _ = map (g.symm.toAlgHom.toRingHom.comp g) (map (T f) I) := by
       rw [← Ideal.map_map]; rfl
     _ = map (RingHom.id _) (map (T f) I) := by congr
-    _ = Ideal.map ((RingHom.id _).comp (T f)) I := by rw [← Ideal.map_map]; rfl
+    _ = Ideal.map ((RingHom.id _).comp <| T f) I := by rw [← Ideal.map_map]; rfl
     _ = _ := by rw [id_comp]; rfl
   )
 
@@ -344,59 +343,59 @@ private noncomputable def hom2 :=
 /-Use induction to prove there is an injective map from $k[X_0,...X_{r-1}]$ to $k[X_0,...X_n]/I$.-/
 theorem exists_integral_inj (I : Ideal (MvPolynomial (Fin n) k))
     (hi : I ≠ ⊤) : ∃ r ≤ n, ∃ g : (MvPolynomial (Fin r) k) →ₐ[k] ((MvPolynomial (Fin n) k) ⧸ I),
-    (Function.Injective g) ∧ g.IsIntegral := by
+    Function.Injective g ∧ g.IsIntegral := by
   induction' n with d hd
-  · exact ⟨0, by rfl, (Quotient.mkₐ k I), by
+  · refine ⟨0, by rfl, Quotient.mkₐ k I, ?_⟩
     constructor
     · intro a b hab
       rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
       by_contra neq
       apply sub_ne_zero_of_ne at neq
       have eq := eq_C_of_isEmpty (a - b)
-      have ne : (coeff 0 (a - b)) ≠ 0 := fun h ↦ (h ▸ eq ▸ neq) (map_zero _)
+      have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ neq <| map_zero _
       obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp (Ne.isUnit ne)
       have one : c • (a - b) = 1 := by
         rw [MvPolynomial.smul_eq_C_mul, eq, ← RingHom.map_mul, eqr, MvPolynomial.C_1]
       exact hi ((eq_top_iff_one I).mpr (one ▸ Submodule.smul_of_tower_mem I c hab))
-    · apply isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)⟩
-  · by_cases eqi : I = 0
-    · set q := (Quotient.mkₐ k I)
-      have bij : Function.Bijective q := by
-        unfold_let
-        simp only [Quotient.mkₐ_eq_mk]
-        constructor
-        · intro a b hab
-          rw [Ideal.Quotient.eq, eqi, Submodule.zero_eq_bot, mem_bot] at hab
-          rw [← add_zero b, ← hab, add_sub_cancel]
-        · exact Quotient.mk_surjective
-      exact ⟨d + 1, by rfl, q, bij.1, q.isIntegral_of_surjective (bij.2)⟩
-    · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
-      set ϕ := kerLiftAlg (hom2 f I)
-      have ne : RingHom.ker (hom2 f I) ≠ ⊤ := by
-        by_contra eq
-        replace eq := (mem_ker (f := hom2 f I) (r := 1)).mp (eq ▸ trivial)
-        simp only [AlgEquiv.toAlgHom_eq_coe, map_one] at eq
-        exact hi (Quotient.zero_eq_one_iff.mp eq.symm)
-      obtain ⟨r, _, g, injg, intg⟩ := hd (RingHom.ker (hom2 f I)) ne
-      have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k (RingHom.ker (hom2 f I)))
-          = (hom2 f I) := AlgHom.ext fun a ↦ by
-        simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
-      have : (hom2 f I).IsIntegral := IsIntegral.trans _ _ (IsIntegral.trans _ _
-        (hom1_int f I fne fi) (isIntegral_of_surjective _ (eqv1 f I).surjective))
-        (isIntegral_of_surjective _ (eqv2 f I).surjective)
-      rw [← comp] at this
-      exact ⟨r, by linarith, ϕ.comp g,
-        (ϕ.coe_comp  g) ▸ (Function.Injective.comp (kerLiftAlg_injective _) injg),
-        IsIntegral.trans _ _ intg (RingHom.IsIntegral.tower_top _ _ this)⟩
+    · apply isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)
+  by_cases eqi : I = 0
+  · set q := Quotient.mkₐ k I
+    have bij : Function.Bijective q := by
+      unfold q
+      simp only [Quotient.mkₐ_eq_mk]
+      constructor
+      · intro a b hab
+        rw [Ideal.Quotient.eq, eqi, Submodule.zero_eq_bot, mem_bot] at hab
+        rw [← add_zero b, ← hab, add_sub_cancel]
+      · exact Quotient.mk_surjective
+    exact ⟨d + 1, by rfl, q, bij.1, q.isIntegral_of_surjective bij.2⟩
+  · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
+    set ϕ := kerLiftAlg <| hom2 f I
+    have ne : RingHom.ker (hom2 f I) ≠ ⊤ := by
+      by_contra eq
+      replace eq := (mem_ker (f := hom2 f I) (r := 1)).mp (eq ▸ trivial)
+      simp only [AlgEquiv.toAlgHom_eq_coe, map_one] at eq
+      exact hi <| Quotient.zero_eq_one_iff.mp eq.symm
+    obtain ⟨r, _, g, injg, intg⟩ := hd (RingHom.ker <| hom2 f I) ne
+    have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k (RingHom.ker (hom2 f I)))
+        = (hom2 f I) := AlgHom.ext fun a ↦ by
+      simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
+    have : (hom2 f I).IsIntegral := IsIntegral.trans _ _ (IsIntegral.trans _ _
+      (hom1_int f I fne fi) (isIntegral_of_surjective _ (eqv1 f I).surjective))
+      (isIntegral_of_surjective _ (eqv2 f I).surjective)
+    rw [← comp] at this
+    exact ⟨r, by linarith, ϕ.comp g,
+      (ϕ.coe_comp  g) ▸ (Function.Injective.comp (kerLiftAlg_injective _) injg),
+      IsIntegral.trans _ _ intg (RingHom.IsIntegral.tower_top _ _ this)⟩
 
 theorem Noether_Normalization {R : Type*} [CommRing R] [Nontrivial R] [Algebra k R]
     [fin : Algebra.FiniteType k R] : ∃ r, ∃ g : (MvPolynomial (Fin r) k) →ₐ[k] R,
-    (Function.Injective g) ∧ IsIntegral g.toRingHom := by
+    Function.Injective g ∧ IsIntegral g.toRingHom := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
   have ne : RingHom.ker f ≠ ⊤ := fun h ↦ (h ▸ (not_one_mem_ker f)) trivial
-  obtain ⟨r, _, g, injg, intg⟩ := exists_integral_inj (RingHom.ker f) (ne)
-  use r, (ϕ.toAlgHom.comp g)
+  obtain ⟨r, _, g, injg, intg⟩ := exists_integral_inj (RingHom.ker f) ne
+  use r, ϕ.toAlgHom.comp g
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EmbeddingLike.comp_injective, AlgHom.toRingHom_eq_coe]
   exact ⟨injg, IsIntegral.trans _ _ intg (isIntegral_of_surjective _ ϕ.surjective)⟩
