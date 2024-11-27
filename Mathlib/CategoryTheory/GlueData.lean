@@ -299,7 +299,7 @@ end
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
 theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
-  ⟨⟨⟨_, PreservesColimit.preserves (colimit.isColimit _)⟩⟩⟩
+  ⟨⟨⟨_, isColimitOfPreserves _ (colimit.isColimit _)⟩⟩⟩
 
 attribute [local instance] hasColimit_multispan_comp
 

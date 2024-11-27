@@ -199,11 +199,11 @@ variable [Monoid α] [AddGroup β] [DistribMulAction α β]
 
 @[simp]
 lemma smul_finset_neg (a : α) (t : Finset β) : a • -t = -(a • t) := by
-  simp only [← image_smul, ← image_neg, Function.comp_def, image_image, smul_neg]
+  simp only [← image_smul, ← image_neg_eq_neg, Function.comp_def, image_image, smul_neg]
 
 @[simp]
 protected lemma smul_neg (s : Finset α) (t : Finset β) : s • -t = -(s • t) := by
-  simp_rw [← image_neg]; exact image_image₂_right_comm smul_neg
+  simp_rw [← image_neg_eq_neg]; exact image_image₂_right_comm smul_neg
 
 end Monoid
 end Finset
