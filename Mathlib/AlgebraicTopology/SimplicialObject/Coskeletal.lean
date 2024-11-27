@@ -56,7 +56,24 @@ class IsCoskeletal : Prop where
   nonempty_isRightKanExtension :
     Nonempty (IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)))
 
+<<<<<<< HEAD
 section
+=======
+variable [X.IsCoskeletal n]
+
+/-- If `X` is `n`-cosketal, then `𝟙 ((Truncated.inclusion n).op ⋙ X)` defines a right Kan
+extension of `(Truncated.inclusion.op ⋙ X)` along `(Truncated.inclusion n).op`. -/
+instance IsCoskeletal.isRightKanExtension :
+    IsRightKanExtension X (𝟙 ((Truncated.inclusion n).op ⋙ X)) :=
+  IsCoskeletal.nonempty_isRightKanExtension.some
+
+/-- If `X` is `n`-coskeletal, then `Truncated.rightExtensionInclusion X n` is a terminal object in
+the category `RightExtension (Truncated.inclusion n).op (Truncated.inclusion.op ⋙ X)`. -/
+noncomputable def IsCoskeletal.isUniversalOfIsRightKanExtension :
+    (rightExtensionInclusion X n).IsUniversal := by
+  have := isRightKanExtension X n
+  apply Functor.isUniversalOfIsRightKanExtension
+>>>>>>> 303c5be7af3da459286f30cc2150ab0d4c3501b5
 
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     (SimplexCategory.Truncated.inclusion n).op.HasRightKanExtension F]
