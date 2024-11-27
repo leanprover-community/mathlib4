@@ -90,7 +90,7 @@ def reduce_rec {C : Δ m → Sort*} (h0 : ∀ A : Δ m, (A.1 1 0) = 0 → C A)
 /--Map from `Δ m → Δ m` which reduces a FixedDetMatrix towards a representative element in reps. -/
 def reduce : Δ m → Δ m := fun A ↦
   if (A.1 1 0) = 0 then
-    if  0 < A.1 0 0 then (T ^ (-(A.1 0 1/A.1 1 1))) • A else
+    if 0 < A.1 0 0 then (T ^ (-(A.1 0 1/A.1 1 1))) • A else
       (T ^ (-(-A.1 0 1/ -A.1 1 1))) • ( S • ( S • A)) --the -/- don't cancel with ℤ divs.
   else
     reduce (reduce_step A)
