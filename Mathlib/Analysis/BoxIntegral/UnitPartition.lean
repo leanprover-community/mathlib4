@@ -41,7 +41,7 @@ noncomputable section
 
 variable {ι : Type*}
 
-section hasIntegralCorners
+section hasIntegralVertices
 
 open Bornology
 
@@ -49,7 +49,7 @@ open Bornology
 def BoxIntegral.hasIntegralVertices (B : Box ι) : Prop :=
   ∃ l u : ι → ℤ, (∀ i, B.lower i = l i) ∧ (∀ i, B.upper i = u i)
 
-/-- Any bounded set is contained in a `BoxIntegral.Box` with integral corners. -/
+/-- Any bounded set is contained in a `BoxIntegral.Box` with integral vertices. -/
 theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι → ℝ)}
     (h : IsBounded s) :
     ∃ B : BoxIntegral.Box ι, hasIntegralVertices B ∧ s ≤ B := by
@@ -67,7 +67,7 @@ theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι
   simp_rw [mem_ball_zero_iff, pi_norm_lt_iff (Nat.cast_pos.mpr hC), Real.norm_eq_abs, abs_lt] at hx
   exact fun i ↦ ⟨(hx i).1, le_of_lt (hx i).2⟩
 
-end hasIntegralCorners
+end hasIntegralVertices
 
 namespace BoxIntegral.unitPartition
 
