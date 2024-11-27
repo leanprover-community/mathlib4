@@ -2172,12 +2172,12 @@ namespace Equiv
 
 /-- Given a predicate `p : Set α → Prop`, produces an equivalence between
   `{S : Set (Set α) // ∀ s ∈ S, p s}` and `Set {s : Set α // p s}`. -/
-protected def setSubtypeCongr {α : Type*} (p : Set α → Prop) :
-    Equiv {S : Set (Set α) // ∀ s ∈ S, p s} (Set {s : Set α // p s}) where
-  toFun S s := S.val s
-  invFun S := ⟨fun s ↦ ∃ h : p s, S ⟨s, h⟩, fun _ h ↦ h.1⟩
-  left_inv S := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨S.property _ h, h⟩⟩
-  right_inv S := by ext s; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property, h⟩⟩
+protected def setSubtypeCongr {α : Type*} (p : α → Prop) :
+    {s : Set α // ∀ a ∈ s, p a} ≃ (Set {a : α // p a}) where
+  toFun s a := s.val a
+  invFun s := ⟨fun a ↦ ∃ h : p a, s ⟨a, h⟩, fun _ h ↦ h.1⟩
+  left_inv s := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property _ h, h⟩⟩
+  right_inv s := by ext a; exact ⟨fun h ↦ h.2, fun h ↦ ⟨a.property, h⟩⟩
 
 
 end Equiv

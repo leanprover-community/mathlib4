@@ -769,23 +769,22 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
 
 /-- Given a predicate `p : Finset α → Prop`, produces an equivalence between
   `{S : Finset (Finset α) // ∀ s ∈ S, p s}` and `Finset {s : Finset α // p s}`. -/
-protected def finsetSubtypeCongr (p : Finset α → Prop) :
-    {S : Finset (Finset α) // ∀ s ∈ S, p s} ≃ (Finset {s : Finset α // p s}) where
-  toFun S := S.val.attach.map (Subtype.impEmbedding _ _ S.property)
-  invFun S := ⟨S.map ⟨fun s ↦ s.val, Subtype.val_injective⟩, fun s h ↦
-    have ⟨v, _, h⟩ := Embedding.coeFn_mk _ _ ▸ mem_map.mp h
-    h ▸ v.property⟩
-  left_inv S := by
-    ext s; constructor <;> intro h <;>
+protected def finsetSubtypeCongr (p : α → Prop) :
+    {s : Finset α // ∀ a ∈ s, p a} ≃ (Finset {a : α // p a}) where
+  toFun s := s.val.attach.map (Subtype.impEmbedding _ _ s.property)
+  invFun s := ⟨s.map ⟨fun a ↦ a.val, Subtype.val_injective⟩, fun _ h ↦
+    have ⟨v, _, h⟩ := Embedding.coeFn_mk _ _ ▸ mem_map.mp h; h ▸ v.property⟩
+  left_inv s := by
+    ext a; constructor <;> intro h <;>
     simp only [Finset.mem_map, Finset.mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk,
       exists_and_right, exists_eq_right, Subtype.impEmbedding, Subtype.mk.injEq] at *
     · rcases h with ⟨_, _, h₁, h₂⟩; exact h₂ ▸ h₁
-    · use S.property _ h, s
-  right_inv S := by
-    ext s; constructor <;> intro h <;>
+    · use s.property _ h, a
+  right_inv s := by
+    ext a; constructor <;> intro h <;>
     simp only [Finset.mem_map, Finset.mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk,
       exists_and_right, exists_eq_right, Subtype.impEmbedding, Subtype.mk.injEq] at *
     · rcases h with ⟨_, ⟨_, h₁⟩, h₂⟩; exact h₂ ▸ h₁
-    · use s, ⟨s.property, h⟩
+    · use a, ⟨a.property, h⟩
 
 end Equiv
