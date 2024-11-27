@@ -230,7 +230,7 @@ theorem map_comp_eq (α : F ⟶ G) (β : G ⟶ H) :
 if possible, and we should prefer `map_comp_iso` to `map_comp_eq` whenever we can. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β := eqToIso (map_comp_eq α β)
 
-
+-- TODO move
 def down_comp {X Y Z : AsSmall.{w} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).down = f.down ≫ g.down :=
   rfl
 
@@ -266,7 +266,23 @@ def mapWhiskerRightAsSmall (α : F ⟶ G) :
     (compAsSmallEquivalence F).functor ⋙ map α ⋙ (compAsSmallEquivalence G).inverse :=
   NatIso.ofComponents
     (fun X => Iso.refl _)
-    (fun f => by { fapply Grothendieck.ext <;> simp [compAsSmallEquivalenceInverse]; sorry })
+    (fun {X Y} f => by
+      fapply Grothendieck.ext
+      · simp [compAsSmallEquivalenceInverse]
+      · simp only [compAsSmallEquivalence_functor, compAsSmallEquivalence_inverse,
+          Functor.comp_obj, compAsSmallEquivalenceInverse_obj_base, map_obj_base,
+          compAsSmallEquivalenceFunctor_obj_base, asSmall_obj, Cat.of_α, Iso.refl_hom,
+          Functor.comp_map, comp_base, id_base, compAsSmallEquivalenceInverse_map_base,
+          map_map_base,
+          compAsSmallEquivalenceFunctor_map_base, asSmall_map, map_obj_fiber, whiskerRight_app,
+          AsSmall.down_obj, AsSmall.up_obj_down, compAsSmallEquivalenceInverse_obj_fiber,
+          compAsSmallEquivalenceFunctor_obj_fiber, comp_fiber, map_map_fiber, AsSmall.down_map,
+          down_comp, eqToHom_down, AsSmall.up_map_down, Functor.map_comp, eqToHom_map, id_fiber,
+          Category.assoc, eqToHom_trans_assoc, compAsSmallEquivalenceInverse_map_fiber,
+          compAsSmallEquivalenceFunctor_map_fiber, eqToHom_comp_iff, comp_eqToHom_iff]
+        simp only [eqToHom_trans_assoc, Category.assoc, conj_eqToHom_iff_heq']
+        rw [G.map_id]
+        simp )
 
 end
 
