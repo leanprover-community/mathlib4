@@ -297,6 +297,8 @@ end function
 section surjection
 
 open TopologicalSpace in
+-- Should be elsewhere
+-- see https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/product.20of.20pushforward.20topologies/near/484555435
 lemma isOpenMap_of_coinduced {A : Type*} [AddCommGroup A] {B : Type*} [τA : TopologicalSpace A]
     [ContinuousAdd A] [AddCommGroup B] [τB : TopologicalSpace B] (φ : A →+ B) (hφc : Continuous φ)
     (h : coinduced φ τA = τB) :
@@ -316,6 +318,7 @@ lemma isOpenMap_of_coinduced {A : Type*} [AddCommGroup A] {B : Type*} [τA : Top
     rw [AddMonoidHom.map_add, hk, add_zero]
 
 open TopologicalSpace in
+-- Should be elsewhere
 theorem coinduced_prod_eq_prod_coinduced {X Y S T : Type*} [AddCommGroup X] [AddCommGroup Y]
     [AddCommGroup S] [AddCommGroup T] (f : X →+ S) (g : Y →+ T)
     (hf : Function.Surjective f) (hg : Function.Surjective g)
@@ -340,7 +343,7 @@ variable {B : Type*} [AddCommGroup B] [Module R B]
 -- Here I need the lemma about how quotients are open so I do need groups
 -- because this relies on translates of an open being open
 /-- The pushforward of the module topology along a surjective linear map is
-again the action topology. -/
+again the module topology. -/
 theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
     TopologicalSpace.coinduced φ (moduleTopology R A) = moduleTopology R B := by
   letI : TopologicalSpace A := moduleTopology R A
