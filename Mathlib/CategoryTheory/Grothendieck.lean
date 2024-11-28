@@ -3,10 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.Category.Cat.AsSmall
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # The Grothendieck construction
@@ -39,13 +38,13 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of funct
 -/
 
 
-universe u v u₁ v₁ w
+universe w u v u₁ v₁ u₂ v₂
 
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 variable {D : Type u₁} [Category.{v₁} D]
-variable (F : C ⥤ Cat)
+variable (F : C ⥤ Cat.{v₂, u₂})
 
 /--
 The Grothendieck construction (often written as `∫ F` in mathematics) for a functor `F : C ⥤ Cat`
@@ -235,13 +234,15 @@ variable (F)
 
 /-- The inverse functor to build the equivalence `compAsSmallEquivalence`. -/
 @[simps]
-def compAsSmallEquivalenceInverse : Grothendieck F ⥤ Grothendieck (F ⋙ asSmall.{w, v, u}) where
+def compAsSmallEquivalenceInverse :
+    Grothendieck F ⥤ Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) where
   obj := fun X => ⟨X.base, AsSmall.up.obj X.fiber⟩
   map := fun f => ⟨f.base, AsSmall.up.map f.fiber⟩
 
 /-- The functor to build the equivalence `compAsSmallEquivalence`. -/
 @[simps]
-def compAsSmallEquivalenceFunctor : Grothendieck (F ⋙ asSmall.{w, v, u}) ⥤ Grothendieck F where
+def compAsSmallEquivalenceFunctor :
+    Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ⥤ Grothendieck F where
   obj := fun X => ⟨X.base, AsSmall.down.obj X.fiber⟩
   map := fun f => ⟨f.base, AsSmall.down.map f.fiber⟩
   map_id := fun _ => by apply Grothendieck.ext <;> simp
@@ -251,7 +252,7 @@ def compAsSmallEquivalenceFunctor : Grothendieck (F ⋙ asSmall.{w, v, u}) ⥤ G
 functor which turns each category into a small category of a (potentiall) larger universe, is
 equivalent to the Grothendieck construction on `F` itself. -/
 @[simps]
-def compAsSmallEquivalence : Grothendieck (F ⋙ asSmall.{w, v, u}) ≌ Grothendieck F where
+def compAsSmallEquivalence : Grothendieck (F ⋙ Cat.asSmallFunctor.{w}) ≌ Grothendieck F where
   functor := compAsSmallEquivalenceFunctor F
   inverse := compAsSmallEquivalenceInverse F
   counitIso := NatIso.ofComponents (fun ⟨_, _⟩ => Iso.refl _)
@@ -259,7 +260,7 @@ def compAsSmallEquivalence : Grothendieck (F ⋙ asSmall.{w, v, u}) ≌ Grothend
     fun ⟨_, ⟨_⟩⟩ => eqToIso (by {
       simp only [Functor.id_obj, compAsSmallEquivalenceFunctor, AsSmall.down_obj, AsSmall.down_map,
         compAsSmallEquivalenceInverse, Cat.of_α, AsSmall.up_obj_down, Functor.comp_obj, id_eq,
-        mk.injEq, asSmall_obj, heq_eq_eq, true_and]
+        mk.injEq, Cat.asSmallFunctor_obj, heq_eq_eq, true_and]
       apply ULift.ext
       rfl })
 
@@ -267,7 +268,7 @@ def compAsSmallEquivalence : Grothendieck (F ⋙ asSmall.{w, v, u}) ≌ Grothend
 `α : F ⟶ G` with the functor `asSmall : Cat ⥤ Cat` is naturally isomorphic to conjugating
 `map α` with the equivalence between `Grothendieck (F ⋙ asSmall)` and `Grothendieck F`. -/
 def mapWhiskerRightAsSmall (α : F ⟶ G) :
-    map (whiskerRight α asSmall.{w, v, u}) ≅
+    map (whiskerRight α Cat.asSmallFunctor.{w}) ≅
     (compAsSmallEquivalence F).functor ⋙ map α ⋙ (compAsSmallEquivalence G).inverse :=
   NatIso.ofComponents
     (fun X => Iso.refl _)
@@ -276,15 +277,15 @@ def mapWhiskerRightAsSmall (α : F ⟶ G) :
       · simp [compAsSmallEquivalenceInverse]
       · simp only [compAsSmallEquivalence_functor, compAsSmallEquivalence_inverse,
           Functor.comp_obj, compAsSmallEquivalenceInverse_obj_base, map_obj_base,
-          compAsSmallEquivalenceFunctor_obj_base, asSmall_obj, Cat.of_α, Iso.refl_hom,
+          compAsSmallEquivalenceFunctor_obj_base, Cat.asSmallFunctor_obj, Cat.of_α, Iso.refl_hom,
           Functor.comp_map, comp_base, id_base, compAsSmallEquivalenceInverse_map_base,
-          map_map_base,
-          compAsSmallEquivalenceFunctor_map_base, asSmall_map, map_obj_fiber, whiskerRight_app,
-          AsSmall.down_obj, AsSmall.up_obj_down, compAsSmallEquivalenceInverse_obj_fiber,
-          compAsSmallEquivalenceFunctor_obj_fiber, comp_fiber, map_map_fiber, AsSmall.down_map,
-          down_comp, eqToHom_down, AsSmall.up_map_down, Functor.map_comp, eqToHom_map, id_fiber,
-          Category.assoc, eqToHom_trans_assoc, compAsSmallEquivalenceInverse_map_fiber,
-          compAsSmallEquivalenceFunctor_map_fiber, eqToHom_comp_iff, comp_eqToHom_iff]
+          map_map_base, compAsSmallEquivalenceFunctor_map_base, Cat.asSmallFunctor_map,
+          map_obj_fiber, whiskerRight_app, AsSmall.down_obj, AsSmall.up_obj_down,
+          compAsSmallEquivalenceInverse_obj_fiber, compAsSmallEquivalenceFunctor_obj_fiber,
+          comp_fiber, map_map_fiber, AsSmall.down_map, down_comp, eqToHom_down, AsSmall.up_map_down,
+          Functor.map_comp, eqToHom_map, id_fiber, Category.assoc, eqToHom_trans_assoc,
+          compAsSmallEquivalenceInverse_map_fiber, compAsSmallEquivalenceFunctor_map_fiber,
+          eqToHom_comp_iff, comp_eqToHom_iff]
         simp only [eqToHom_trans_assoc, Category.assoc, conj_eqToHom_iff_heq']
         rw [G.map_id]
         simp )
