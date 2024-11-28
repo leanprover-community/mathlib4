@@ -152,10 +152,10 @@ lemma negPart_eq_of_eq_PosPart_sub {a c : A} (hac : a = a⁺ - c) (hc : 0 ≤ c 
   nth_rw 1 [← posPart_sub_negPart a] at hac
   simpa using hac
 
-lemma le_posPart {a : A} (ha : IsSelfAdjoint a) : a ≤ a⁺ := by
+lemma le_posPart {a : A} (ha : IsSelfAdjoint a := by cfc_tac) : a ≤ a⁺ := by
   simpa [posPart_sub_negPart a] using sub_le_self a⁺ (negPart_nonneg a)
 
-lemma neg_negPart_le {a : A} (ha : IsSelfAdjoint a) : -a⁻ ≤ a := by
+lemma neg_negPart_le {a : A} (ha : IsSelfAdjoint a := by cfc_tac) : -a⁻ ≤ a := by
   simpa only [posPart_sub_negPart a, ← sub_eq_add_neg]
     using le_add_of_nonneg_left (a := -a⁻) (posPart_nonneg a)
 
