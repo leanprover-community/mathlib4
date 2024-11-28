@@ -447,7 +447,7 @@ variable {A} {B}
 
 /-- If matrix A is left invertible, then its inverse equals its left inverse. -/
 theorem inv_eq_left_inv (h : B * A = 1) : A⁻¹ = B :=
-  letI := invertibleOfLeftInverse h
+  letI := invertibleOfLeftInverse _ _ h
   invOf_eq_nonsing_inv A ▸ invOf_eq_left_inv h
 
 /-- If matrix A is right invertible, then its inverse equals its right inverse. -/
@@ -657,13 +657,13 @@ variable [DecidableEq m]
 /-- `A.submatrix e₁ e₂` is invertible if `A` is -/
 def submatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A] :
     Invertible (A.submatrix e₁ e₂) :=
-  invertibleOfRightInverse <| by
+  invertibleOfRightInverse _ ((⅟ A).submatrix e₂ e₁) <| by
     rw [Matrix.submatrix_mul_equiv, mul_invOf_self, submatrix_one_equiv]
 
 /-- `A` is invertible if `A.submatrix e₁ e₂` is -/
 def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ m)
     [Invertible (A.submatrix e₁ e₂)] : Invertible A :=
-  invertibleOfRightInverse (B := (⅟ (A.submatrix e₁ e₂)).submatrix e₂.symm e₁.symm) <| by
+  invertibleOfRightInverse _ ((⅟ (A.submatrix e₁ e₂)).submatrix e₂.symm e₁.symm) <| by
     have : A = (A.submatrix e₁ e₂).submatrix e₁.symm e₂.symm := by simp
     -- Porting note: was
     -- conv in _ * _ =>

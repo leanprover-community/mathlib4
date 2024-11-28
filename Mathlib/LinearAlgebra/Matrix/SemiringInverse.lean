@@ -241,6 +241,8 @@ theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
     ((isAddUnit_detp_smul_mul_adjp hAB).add
       ((isAddUnit_detp_mul_detp hAB).smul _)).add_left_inj] at h
 
+variable (A B)
+
 /-- We can construct an instance of invertible A if A has a left inverse. -/
 def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
   ⟨B, h, mul_eq_one_comm.mp h⟩
@@ -248,6 +250,8 @@ def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
 /-- We can construct an instance of invertible A if A has a right inverse. -/
 def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
   ⟨B, mul_eq_one_comm.mp h, h⟩
+
+variable {A B}
 
 theorem isUnit_of_left_inverse (h : B * A = 1) : IsUnit A :=
   ⟨⟨A, B, mul_eq_one_comm.mp h, h⟩, rfl⟩
