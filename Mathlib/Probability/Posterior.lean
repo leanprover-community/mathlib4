@@ -12,7 +12,7 @@ import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 ## Main definitions
 
-* `posterior κ μ`: Bayesian inverse of a kernel `κ` for a prior measure `μ`.
+* `posterior κ μ`: posterior of a kernel `κ` for a prior measure `μ`.
 
 ## Main statements
 
@@ -38,19 +38,19 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
 
 variable [StandardBorelSpace α] [Nonempty α]
 
-/-- Bayesian inverse of the kernel `κ` with respect to the measure `μ`. -/
+/-- Posterior of the kernel `κ` with respect to the measure `μ`. -/
 noncomputable
 def posterior (κ : Kernel α β) (μ : Measure α) [IsFiniteMeasure μ] [IsFiniteKernel κ] :
     Kernel β α :=
   ((μ ⊗ₘ κ).map Prod.swap).condKernel
 
-/-- Bayesian inverse of the kernel `κ` with respect to the measure `μ`. -/
+/-- Posterior of the kernel `κ` with respect to the measure `μ`. -/
 scoped[ProbabilityTheory] notation3 κ "†" μ:100 => ProbabilityTheory.posterior κ μ
 
-/-- The Bayesian inverse is a Markov kernel. -/
+/-- The posterior is a Markov kernel. -/
 instance : IsMarkovKernel (κ†μ) := by rw [posterior]; infer_instance
 
-/-- The main property of the Bayesian inverse. -/
+/-- The main property of the posterior. -/
 lemma compProd_posterior_eq_map_swap (κ : Kernel α β) (μ : Measure α)
     [IsFiniteMeasure μ] [IsFiniteKernel κ] :
     (κ ∘ₘ μ) ⊗ₘ κ†μ = (μ ⊗ₘ κ).map Prod.swap := by
@@ -69,7 +69,7 @@ lemma swap_compProd_posterior (κ : Kernel α β) (μ : Measure α)
   rw [compProd_posterior_eq_swap_comp, Measure.comp_assoc, Kernel.swap_swap, Measure.comp_id]
 
 /--
-The main property of the Bayesian inverse, as equality of the following diagrams:
+The main property of the posterior, as equality of the following diagrams:
          -- id          -- κ
 μ -- κ -|        =  μ -|
          -- κ†μ         -- id
@@ -93,13 +93,13 @@ lemma posterior_prod_id_comp (κ : Kernel α β) (μ : Measure α)
   rw [← Kernel.swap_prod, ← Measure.comp_assoc, ← Measure.compProd_eq_comp_prod,
     compProd_posterior_eq_swap_comp, Measure.comp_assoc, Kernel.swap_swap, Measure.comp_id]
 
-/-- The Bayesian inverse is unique up to a `κ ∘ₘ μ`-null set. -/
+/-- The posterior is unique up to a `κ ∘ₘ μ`-null set. -/
 lemma ae_eq_posterior_of_compProd_eq (η : Kernel β α) [IsFiniteKernel η]
     (h : (κ ∘ₘ μ) ⊗ₘ η = (μ ⊗ₘ κ).map Prod.swap) :
     η =ᵐ[κ ∘ₘ μ] κ†μ :=
   (Kernel.ae_eq_of_compProd_eq ((compProd_posterior_eq_map_swap _ _).trans h.symm)).symm
 
-/-- The Bayesian inverse is unique up to a `κ ∘ₘ μ`-null set. -/
+/-- The posterior is unique up to a `κ ∘ₘ μ`-null set. -/
 lemma ae_eq_posterior_of_compProd_eq_swap_comp (η : Kernel β α) [IsFiniteKernel η]
     (h : ((κ ∘ₘ μ) ⊗ₘ η) = Kernel.swap α β ∘ₘ μ ⊗ₘ κ) :
     η =ᵐ[κ ∘ₘ μ] κ†μ :=
@@ -110,7 +110,7 @@ lemma posterior_comp_self [IsMarkovKernel κ] : (κ†μ) ∘ₘ κ ∘ₘ μ = 
   rw [← Measure.snd_compProd, compProd_posterior_eq_map_swap, Measure.snd_map_swap,
     Measure.fst_compProd]
 
-/-- The Bayesian inverse is involutive (up to `μ`-a.e. equality). -/
+/-- The posterior is involutive (up to `μ`-a.e. equality). -/
 lemma posterior_posterior [StandardBorelSpace β] [Nonempty β] [IsMarkovKernel κ] :
     (κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ := by
   suffices κ =ᵐ[(κ†μ) ∘ₘ κ ∘ₘ μ] (κ†μ)†(κ ∘ₘ μ) by
@@ -120,7 +120,7 @@ lemma posterior_posterior [StandardBorelSpace β] [Nonempty β] [IsMarkovKernel 
   rw [posterior_comp_self, compProd_posterior_eq_swap_comp κ μ, Measure.comp_assoc,
     Kernel.swap_swap, Measure.comp_id]
 
-/-- The Bayesian inverse of the identity kernel is the identity kernel. -/
+/-- The posterior of the identity kernel is the identity kernel. -/
 lemma posterior_id (μ : Measure α) [IsFiniteMeasure μ] : Kernel.id†μ =ᵐ[μ] Kernel.id := by
   suffices Kernel.id =ᵐ[Kernel.id ∘ₘ μ] (Kernel.id : Kernel α α)†μ by
     rw [Measure.comp_id] at this
@@ -128,7 +128,7 @@ lemma posterior_id (μ : Measure α) [IsFiniteMeasure μ] : Kernel.id†μ =ᵐ[
   refine ae_eq_posterior_of_compProd_eq_swap_comp Kernel.id ?_
   rw [Measure.comp_id, Measure.compProd_id_eq_copy_comp, Measure.comp_assoc, Kernel.swap_copy]
 
-/-- The Bayesian inverse is contravariant. -/
+/-- The posterior is contravariant. -/
 lemma posterior_comp [StandardBorelSpace β] [Nonempty β] {η : Kernel β γ} [IsFiniteKernel η] :
     (η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] (κ†μ) ∘ₖ η†(κ ∘ₘ μ) := by
   rw [Measure.comp_assoc]
