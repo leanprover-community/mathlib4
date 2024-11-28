@@ -93,7 +93,6 @@ lemma schwartz_zippel_sup_sum :
           ← filter_and]
         simp [← and_or_left, em, and_and_and_comm]
       _ ≤ (pₖ.support.sup fun s ↦ ∑ i, (s i / #(S i.succ) : ℚ≥0)) + p.degreeOf 0 / #(S 0) := ?_
-      -- _ = (pₖ.support.sup fun s ↦ ∑ i, (s i / #(S i.succ) : ℚ≥0)) + k / #(S 0) := ?_
       _ ≤ p.support.sup fun s ↦ ∑ i, (s i / #(S i) : ℚ≥0) := ?_
     · gcongr ?_ + ?_
       · -- We bound the size of the first set by induction
@@ -174,7 +173,7 @@ evaluates to zero at points drawn at random from a product of finite subsets `S 
 domain is bounded by the sum of `degᵢ p / #(S i)`. -/
 lemma schwartz_zippel_sum_degreeOf {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0)
     (S : Fin n → Finset R) :
-      #{x ∈ S ^^ n | eval x p = 0} / ∏ i, (#(S i) : ℚ≥0) ≤ ∑ i, (p.degreeOf i / #(S i) : ℚ≥0) := by
+    #{x ∈ S ^^ n | eval x p = 0} / ∏ i, (#(S i) : ℚ≥0) ≤ ∑ i, (p.degreeOf i / #(S i) : ℚ≥0) := by
   calc
     _ ≤ p.support.sup fun s ↦ ∑ i, (s i / #(S i) : ℚ≥0) := schwartz_zippel_sup_sum hp S
     _ ≤ ∑ i, (p.degreeOf i / #(S i) : ℚ≥0) := Finset.sup_le fun s hs ↦ by
