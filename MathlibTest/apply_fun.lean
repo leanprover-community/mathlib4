@@ -63,12 +63,12 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) : 
   exact H h
 
 example (x : Int) (h : x = 1) : 1 = 1 := by
-  apply_fun (fun p => p) at h
+  apply_fun (fun p ↦ p) at h
   rfl
 
 example (a b : Int) (h : a = b) : a + 1 = b + 1 := by
   -- Make sure that we infer the type of the function only after we see the hypothesis:
-  apply_fun (fun n => n + 1) at h
+  apply_fun (fun n ↦ n + 1) at h
   -- check that `h` was β-reduced
   guard_hyp h :ₛ a + 1 = b + 1
   exact h
@@ -223,7 +223,7 @@ example (f : (p : Prop) → [Decidable p] → Nat) (p q : Prop) (h : p = q)
   exact h
 
 example (a b : ℕ) (h : a = b) : True := by
-  apply_fun (fun i => i + ?_) at h
+  apply_fun (fun i ↦ i + ?_) at h
   · trivial
   · exact 37
 
@@ -241,7 +241,7 @@ example (f : α ≃ β) (x y : α) (h : f x = f y) : x = y := by
   exact h
 
 -- Check that lack of WHNF does not prevent apply_fun_from detecting the relation
-example (f : α ≃ β) (x y : α) (h : f x = f y) : (fun s => s) (x = y) := by
+example (f : α ≃ β) (x y : α) (h : f x = f y) : (fun s ↦ s) (x = y) := by
   apply_fun f
   exact h
 

@@ -14,12 +14,12 @@ example : id (1 = 1) := by
   guard_target =ₛ 1 = 1
   rfl
 
-example : (fun x => 1 + x) 1 = 2 := by
+example : (fun x ↦ 1 + x) 1 = 2 := by
   beta_reduce
   guard_target =ₛ 1 + 1 = 2
   rfl
 
-example : (fun x => 1 + x) 2 = (fun y => 2 + y) 3 := by
+example : (fun x ↦ 1 + x) 2 = (fun y ↦ 2 + y) 3 := by
   conv =>
     lhs
     beta_reduce
@@ -67,7 +67,7 @@ example (m n : Nat) : (m == n) = true := by
   exact test_sorry
 
 example {α : Type u} (f : α → α) (a : α) :
-    (fun x => (fun x => f x) x) a = f a := by
+    (fun x ↦ (fun x ↦ f x) x) a = f a := by
   eta_reduce
   guard_target =ₛ f a = f a
   rfl
@@ -95,7 +95,7 @@ example : (fun (a : Nat) => 1 + a) = (1 + ·) := by
   guard_target =ₛ (fun a ↦ 1 + a) = fun a ↦ 1 + a
   rfl
 
-example (f : Nat → Nat → Nat) : (fun x => f 1 x) 2 = 3 := by
+example (f : Nat → Nat → Nat) : (fun x ↦ f 1 x) 2 = 3 := by
   eta_expand
   guard_target =ₛ f 1 2 = 3
   exact test_sorry

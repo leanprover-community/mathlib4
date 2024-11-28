@@ -16,7 +16,7 @@ section repr
 
 /-- info: fun₀ | 1 => 3 | 2 => 3 -/
 #guard_msgs in
-#eval (Finsupp.mk {1, 2} (fun | 1 | 2 => 3 | _ => 0) (fun x => by aesop))
+#eval (Finsupp.mk {1, 2} (fun | 1 | 2 => 3 | _ => 0) (fun x ↦ by aesop))
 
 /--
 info: fun₀
@@ -34,7 +34,7 @@ info: fun₀
     | ["there are seven words but only here"] => 7
     | ["just two"] => 2
     | _ => 0)
-  (fun x => by aesop)
+  (fun x ↦ by aesop)
 
 end repr
 

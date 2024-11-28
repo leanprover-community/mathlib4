@@ -11,7 +11,7 @@ variable {I : Type _} {X' : I → Type _} [∀ i, TopologicalSpace (X' i)]
 example : Continuous (id : X → X) := by continuity
 
 example {f : X → Y} {g : Y → X} (hf : Continuous f) (hg : Continuous g) :
-  Continuous (fun x => f (g x)) := by continuity
+  Continuous (fun x ↦ f (g x)) := by continuity
 
 example {f : X → Y} {g : Y → X} (hf : Continuous f) (hg : Continuous g) :
   Continuous (f ∘ g ∘ f) := by continuity
@@ -28,7 +28,7 @@ example {g : X → X} (y : Y) : Continuous ((fun _ ↦ y) ∘ g) := by continuit
 example {f : X → Y} (x : X) : Continuous (fun (_ : X) ↦ f x) := by continuity
 
 example (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
-    (g : Y → ℝ) (hg : Continuous g) : Continuous (fun x => (max (g (f₁ x)) (g (f₂ x))) + 1) := by
+    (g : Y → ℝ) (hg : Continuous g) : Continuous (fun x ↦ (max (g (f₁ x)) (g (f₂ x))) + 1) := by
   continuity
 
 example {κ ι : Type}
@@ -51,7 +51,7 @@ example (b : Y) : Continuous (fun _ : X => b) := by continuity
 
 example (f : C(X, Y)) (g : C(Y, Z)) : Continuous (g ∘ f) := by continuity
 
-example (f : C(X, Y)) (g : C(X, Z)) : Continuous (fun x => (f x, g x)) := by continuity
+example (f : C(X, Y)) (g : C(X, Z)) : Continuous (fun x ↦ (f x, g x)) := by continuity
 
 example (f : C(X, Y)) (g : C(W, Z)) : Continuous (Prod.map f g) := by continuity
 

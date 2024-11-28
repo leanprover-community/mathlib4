@@ -41,9 +41,9 @@ set_option linter.unusedVariables false
 @[fun_prop] theorem Con_const (y : β) : Con (fun x : α => y) := silentSorry
 @[fun_prop] theorem Con_apply (x : α) : Con (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Con_applyDep (x : α) : Con (fun f : (x' : α) → E x' => f x) := silentSorry
-@[fun_prop] theorem Con_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := silentSorry
--- @[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y:= g x; f x y) := silentSorry
-@[fun_prop] theorem Con_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x => f x i)) : Con (fun x i => f x i) := silentSorry
+@[fun_prop] theorem Con_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x ↦ f (g x)) := silentSorry
+-- @[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x ↦ let y:= g x; f x y) := silentSorry
+@[fun_prop] theorem Con_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x ↦ f x i)) : Con (fun x i => f x i) := silentSorry
 
 -- Lin is missing `const` theorem
 @[fun_prop] theorem Lin_id : Lin (fun x : α => x) := silentSorry
@@ -51,7 +51,7 @@ set_option linter.unusedVariables false
 @[fun_prop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (f ∘ g) := silentSorry
-@[fun_prop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x => f x i)) : Lin (fun x i => f x i) := silentSorry
+@[fun_prop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x ↦ f x i)) : Lin (fun x i => f x i) := silentSorry
 
 
 -- this is to stress test detection of loops
@@ -70,10 +70,10 @@ theorem chabam (f : α → β) (hf : Con f) : Con f := hf
 ------------------------------------------------
 @[fun_prop]
 theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd)
-  : Con fun x => (fst x, snd x) := silentSorry
+  : Con fun x ↦ (fst x, snd x) := silentSorry
 @[fun_prop]
 theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd)
-  : Lin fun x => (fst x, snd x) := silentSorry
+  : Lin fun x ↦ (fst x, snd x) := silentSorry
 
 
 
@@ -85,10 +85,10 @@ theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd :
 
 
 -- "compositional form" of theorems
-@[fun_prop] theorem fst_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).1 := by fun_prop
-@[fun_prop] theorem snd_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).2 := by fun_prop
-@[fun_prop] theorem add_Con' [Add β] (x y : α → β) (hx : Con x) (hy : Con y) : Con (fun w => x w + y w) := by fun_prop
-@[fun_prop] theorem add_Lin' [Add β] (x y : α → β) (hx : Lin x) (hy : Lin y) : Lin (fun w => x w + y w) := by fun_prop
+@[fun_prop] theorem fst_Con' (self : α → β×γ) (hself : Con self) : Con fun x ↦ (self x).1 := by fun_prop
+@[fun_prop] theorem snd_Con' (self : α → β×γ) (hself : Con self) : Con fun x ↦ (self x).2 := by fun_prop
+@[fun_prop] theorem add_Con' [Add β] (x y : α → β) (hx : Con x) (hy : Con y) : Con (fun w ↦ x w + y w) := by fun_prop
+@[fun_prop] theorem add_Lin' [Add β] (x y : α → β) (hx : Lin x) (hy : Lin y) : Lin (fun w ↦ x w + y w) := by fun_prop
 
 
 
@@ -133,18 +133,18 @@ instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
 ---------------------------------------------------------
 
 -- this is some form of cartesian closedness with homs `α ->> β`
-@[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
+@[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x ↦ f x) (g x)) := silentSorry
 
-@[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
+@[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x ↦ f x y) := silentSorry
 
 -- analogous theorem with `α -o β` does no hold
 @[fun_prop] theorem linHom_lin (f : α -o β) : Lin f := silentSorry
-@[fun_prop] theorem linHom_lin_in_fn' (f : α → β -o γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
+@[fun_prop] theorem linHom_lin_in_fn' (f : α → β -o γ) (y : β) (hf : Lin f) : Lin (fun x ↦ f x y) := silentSorry
 
 
 def LinHom.mk' (f : α → β) (hf : Lin f := by fun_prop) : α -o β := mk f hf
 
-@[fun_prop] theorem linHom_mk' (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, Lin (f x ·)) : Lin (fun x => LinHom.mk' (f x)) := silentSorry
+@[fun_prop] theorem linHom_mk' (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, Lin (f x ·)) : Lin (fun x ↦ LinHom.mk' (f x)) := silentSorry
 
 
 section Notation
@@ -156,13 +156,13 @@ end Notation
 
 
 example [Add β] (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, Lin (f x ·)) :
-  Lin (fun x => fun y ⊸ f y (x+x)) := by fun_prop
+  Lin (fun x ↦ fun y ⊸ f y (x+x)) := by fun_prop
 
 example [Add α] (f : α → α → α → α) (hx : ∀ x y, Lin (f x y ·)) (hy : ∀ x z, Lin (f x · z)) (hz : ∀ y z, Lin (f · y z)) :
-    Lin (fun x => fun y z ⊸ f z (x+x) y) := by fun_prop
+    Lin (fun x ↦ fun y z ⊸ f z (x+x) y) := by fun_prop
 
 -- the only analogue is this theorem but that is already provable
-example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x => (f x) (g x)) := by fun_prop
+example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x ↦ (f x) (g x)) := by fun_prop
 
 
 
@@ -181,10 +181,10 @@ example : Con (fun (f : α → β → (x' : α) → E x') x y => f x y x) := by 
 
 example (x : α) [Add α] : Con (let y := x + x; fun x' : α => x' + y) := by fun_prop
 
-example (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := by fun_prop
-example (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => f x (g x)) := by fun_prop
-example (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y := g x; f x y) := by fun_prop
-example {ι : Type _} (f : α → ι → γ) (hf : ∀ i, Con (fun x => f x i)) : Con (fun x i => f x i) := by fun_prop
+example (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x ↦ f (g x)) := by fun_prop
+example (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x ↦ f x (g x)) := by fun_prop
+example (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x ↦ let y := g x; f x y) := by fun_prop
+example {ι : Type _} (f : α → ι → γ) (hf : ∀ i, Con (fun x ↦ f x i)) : Con (fun x i => f x i) := by fun_prop
 
 example : Con (fun (f : α → β → γ) x y => f x y) := by fun_prop
 example : Con (fun (f : α → β → γ) y x => f x y) := by fun_prop
@@ -194,55 +194,55 @@ example : Con (fun (f : α → α → α → α → α) y x => f x y x y) := by 
 -- so `(hf : Con f)` is not considered valid
 -- is this valid assumption?
 example (f : α → β → γ) (hf : Con f) : Con f := by fun_prop
-example (f : α → β → γ) (hf : Con f) : Con (fun x => f x) := by fun_prop
+example (f : α → β → γ) (hf : Con f) : Con (fun x ↦ f x) := by fun_prop
 example (f : α → β → γ) (hf : Con f) : Con (fun x y => f x y) := by fun_prop
-example (f : α → β → γ) (hf : Con f) (y) : Con (fun x => f x y) := by fun_prop
+example (f : α → β → γ) (hf : Con f) (y) : Con (fun x ↦ f x y) := by fun_prop
 
-example (f : α → β → γ) (hf : Con fun (x,y) => f x y) (x) : Con fun y => f x y := by fun_prop
-example (f : α → β → γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x => f x y := by fun_prop
+example (f : α → β → γ) (hf : Con fun (x,y) => f x y) (x) : Con fun y ↦ f x y := by fun_prop
+example (f : α → β → γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x ↦ f x y := by fun_prop
 example (f : α → β → γ) (hf : Con fun (x,y) => f x y)  : Con f := by fun_prop
 
-example (f : α → β → γ) (hf : Con ↿f) (x : α) : Con fun y => f x y := by fun_prop
-example (f : α → β → γ) (hf : Con ↿f) (y : β) : Con fun x => f x y := by fun_prop
+example (f : α → β → γ) (hf : Con ↿f) (x : α) : Con fun y ↦ f x y := by fun_prop
+example (f : α → β → γ) (hf : Con ↿f) (y : β) : Con fun x ↦ f x y := by fun_prop
 example (f : α → β → γ) (hf : Con ↿f) : Con f := by fun_prop
 
-example (f : α → β → γ) (hf : ∀ x, Con fun y => f x y) (x) : Con fun y => f x y := by fun_prop
-example (f : α → β → γ) (hf : ∀ x, Con fun y => f x y) (x) : Con (f x) := by fun_prop
-example (f : α → β → γ) (hf : ∀ y, Con fun x => f x y) (y) : Con fun x => f x y := by fun_prop
-example (f : α → β → γ) (hf : ∀ y, Con fun x => f x y) : Con fun x => f x := by fun_prop
+example (f : α → β → γ) (hf : ∀ x, Con fun y ↦ f x y) (x) : Con fun y ↦ f x y := by fun_prop
+example (f : α → β → γ) (hf : ∀ x, Con fun y ↦ f x y) (x) : Con (f x) := by fun_prop
+example (f : α → β → γ) (hf : ∀ y, Con fun x ↦ f x y) (y) : Con fun x ↦ f x y := by fun_prop
+example (f : α → β → γ) (hf : ∀ y, Con fun x ↦ f x y) : Con fun x ↦ f x := by fun_prop
 
-example (f : α → β → γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x => f x y := by fun_prop
+example (f : α → β → γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x ↦ f x y := by fun_prop
 example (f : α → β → γ) (hf : Con fun (x,y) => f x y) : Con f := by fun_prop
-example (f : α → α → β) (hf : Con fun (x,y) => f x y) : Con (fun x => f x x) := by fun_prop
+example (f : α → α → β) (hf : Con fun (x,y) => f x y) : Con (fun x ↦ f x x) := by fun_prop
 
-example (f : α → β → γ → δ) (hf : ∀ x, Con fun (y,z) => f x y z) (x z) : Con (fun y => f x y z)  := by fun_prop
-example (f : α → β → γ → δ) (hf : ∀ x, Con fun (y,z) => f x y z) (x y) : Con (fun z => f x y z)  := by fun_prop
+example (f : α → β → γ → δ) (hf : ∀ x, Con fun (y,z) => f x y z) (x z) : Con (fun y ↦ f x y z)  := by fun_prop
+example (f : α → β → γ → δ) (hf : ∀ x, Con fun (y,z) => f x y z) (x y) : Con (fun z ↦ f x y z)  := by fun_prop
 example (f : α → β → γ → δ) (hf : ∀ x, Con fun (y,z) => f x y z) (x) : Con (fun z y => f x y z)  := by fun_prop
 example (f : α → β → γ → δ) (hf : ∀ x, Con fun (y,z) => f x y z) (x y) : Con (f x y)  := by fun_prop
-example (f : α → β → γ → δ) (hf : ∀ x, Con fun (y,z) => f x y z) (x) : Con (fun y => f x y)  := by fun_prop
+example (f : α → β → γ → δ) (hf : ∀ x, Con fun (y,z) => f x y z) (x) : Con (fun y ↦ f x y)  := by fun_prop
 
 example (f : α → Nat → Nat → β) (hf : ∀ i j, Con (f · i j)) : Con (fun x i j => f x (i+j) j)  := by fun_prop
-example (f : α → Nat → Nat → β) (hf : ∀ i j, Con (f · i j)) (i j) : Con (fun x => f x (i+j) j)  := by fun_prop
+example (f : α → Nat → Nat → β) (hf : ∀ i j, Con (f · i j)) (i j) : Con (fun x ↦ f x (i+j) j)  := by fun_prop
 example (f : α → Nat → Nat → β) (hf : Con f) : Con (fun x i j => f x (i+j) j)  := by fun_prop
-example (f : α → Nat → Nat → β) (hf : Con f) (i j) : Con (fun x => f x (i+j) j)  := by fun_prop
+example (f : α → Nat → Nat → β) (hf : Con f) (i j) : Con (fun x ↦ f x (i+j) j)  := by fun_prop
 
 example (f : α → β → γ → δ) (hf : ∀ y, Con fun (x,z) => f x y z) : Con f := by fun_prop
 example (f : α → β → γ → δ) (hf : ∀ y, Con fun (x,z) => f x y z) : Con f := by fun_prop
 
-example (f : α → β ->> γ) (hf : Con f) (y) : Con (fun x => f x y) := by fun_prop
+example (f : α → β ->> γ) (hf : Con f) (y) : Con (fun x ↦ f x y) := by fun_prop
 example (f : α → β ->> γ) (hf : Con f) : Con (fun x y => f x y) := by fun_prop
-example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x => f x y := by fun_prop
+example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x ↦ f x y := by fun_prop
 example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) : Con fun x y => f x y := by fun_prop
-example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (x) : Con fun y => f x y := by fun_prop
-example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) (x) : Con fun y => f x y := by fun_prop
-example (f : α → α ->> (α → α)) (y : α) (hf : Con fun (x,y,z) => f x y z) : Con fun x => f y x x := by fun_prop
+example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (x) : Con fun y ↦ f x y := by fun_prop
+example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) (x) : Con fun y ↦ f x y := by fun_prop
+example (f : α → α ->> (α → α)) (y : α) (hf : Con fun (x,y,z) => f x y z) : Con fun x ↦ f y x x := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) : Con fun x y => f y x x := by fun_prop
 
-example (f : α → β ->> γ) (hf : Con ↿f) (y) : Con fun x => f x y := by fun_prop
+example (f : α → β ->> γ) (hf : Con ↿f) (y) : Con fun x ↦ f x y := by fun_prop
 example (f : α → β ->> γ) (x) : Con fun y : β => f x := by fun_prop
 example (f : α → β ->> γ) (x) : Con fun y : β => (f x : β → γ) := by fun_prop
-example (f : α → β ->> γ) (x) : Con fun y => f x y := by fun_prop
-example (f : α → α ->> (α → α)) (x) : Con fun y => f x y := by fun_prop
+example (f : α → β ->> γ) (x) : Con fun y ↦ f x y := by fun_prop
+example (f : α → α ->> (α → α)) (x) : Con fun y ↦ f x y := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con ↿f) : Con fun x y => f y x x := by fun_prop
 
 
@@ -252,13 +252,13 @@ section WithAdd
 variable [Add α]
 
 example : Con (HAdd.hAdd : α → α → α) := by fun_prop  -- under applied constant
-example : Con (fun x => (HAdd.hAdd : α → α → α) x) := by fun_prop  -- under applied constant
+example : Con (fun x ↦ (HAdd.hAdd : α → α → α) x) := by fun_prop  -- under applied constant
 
-example : Con (fun x => (HAdd.hAdd : ((ι→α) → (ι→α) → (ι→α))) x) := by fun_prop
+example : Con (fun x ↦ (HAdd.hAdd : ((ι→α) → (ι→α) → (ι→α))) x) := by fun_prop
 example : Con (fun x y => (HAdd.hAdd : ((ι→α) → (ι→α) → (ι→α))) x y) := by fun_prop
 example : Con (fun x y i => (HAdd.hAdd : ((ι→α) → (ι→α) → (ι→α))) x y i) := by fun_prop
 example (y) : Con (fun x i => (HAdd.hAdd : ((ι→α) → (ι→α) → (ι→α))) x y i) := by fun_prop
-example (y i) : Con (fun x => (HAdd.hAdd : ((ι→α) → (ι→α) → (ι→α))) x y i) := by fun_prop
+example (y i) : Con (fun x ↦ (HAdd.hAdd : ((ι→α) → (ι→α) → (ι→α))) x y i) := by fun_prop
 
 end WithAdd
 
@@ -268,36 +268,36 @@ example (f : β → γ) (x) (hf : Lin f)  : Lin (fun (g : α → β) => f (g x))
 example (f : α ->> β) : Con f := by fun_prop
 example (f : α -o β) : Con f := by fun_prop
 example (f : α → β) (hf : Lin f) : Con f := by fun_prop
-example (f : β → γ) (g : α ->> β) (hf: Con f) : Con (fun x => f (g x)) := by fun_prop
-example (f : β ->> γ) (g : α → β) (hg: Con g) : Con (fun x => f (g x)) := by fun_prop
-example (f : β -o γ) (g : α → β) (hg : Con g) : Con fun x => f (g x) := by fun_prop
+example (f : β → γ) (g : α ->> β) (hf: Con f) : Con (fun x ↦ f (g x)) := by fun_prop
+example (f : β ->> γ) (g : α → β) (hg: Con g) : Con (fun x ↦ f (g x)) := by fun_prop
+example (f : β -o γ) (g : α → β) (hg : Con g) : Con fun x ↦ f (g x) := by fun_prop
 
-example (f : α → β ->> γ) (hf : Con f) (g : α → β) (hg : Lin g)  : Con (fun x => f x (g x)) := by fun_prop
-example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Con (fun x => f x (g x)) := by fun_prop
-example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fun_prop
+example (f : α → β ->> γ) (hf : Con f) (g : α → β) (hg : Lin g)  : Con (fun x ↦ f x (g x)) := by fun_prop
+example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Con (fun x ↦ f x (g x)) := by fun_prop
+example (f : α → β ->> γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x ↦ f x (g x)) := by fun_prop
 
 -- remove arguments before applying morphism rules
-example (f : α ->> (β → γ)) (y) : Con (fun x => f x y) := by fun_prop
+example (f : α ->> (β → γ)) (y) : Con (fun x ↦ f x y) := by fun_prop
 
 
 example (g : α → β) (hg : Con g) : Con fun (fx : (β ->> γ)×α) => fx.1 (g fx.2) := by fun_prop
 
 
 -- sometimes unfold constants
-example (f : α → β) (hf : Con f) : Con (fun x => id f x) := by fun_prop
-example (f : α → β) (hf : Con f) : Con (fun x => (id id) f x) := by fun_prop
-example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x => id (id f x) x) := by fun_prop
-example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x => (id id) ((id id) f x) x) := by fun_prop
+example (f : α → β) (hf : Con f) : Con (fun x ↦ id f x) := by fun_prop
+example (f : α → β) (hf : Con f) : Con (fun x ↦ (id id) f x) := by fun_prop
+example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x ↦ id (id f x) x) := by fun_prop
+example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x ↦ (id id) ((id id) f x) x) := by fun_prop
 example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x : α×α => id (f x.1) x.2) := by fun_prop
 
 -- this used to time out
-example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fun_prop
+example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x ↦ f x (g x)) := by fun_prop
 
 
 example : Con fun (a : α ->> α) => a x := by fun_prop
 
 -- this used to crash
-example (f : α → (α ->> α)) (hf : Con f) : Con fun x => ((f x) : α → α) := by fun_prop
+example (f : α → (α ->> α)) (hf : Con f) : Con fun x ↦ ((f x) : α → α) := by fun_prop
 example : Con (fun f : (α ->> α ->> α) => (f x : α → α)) := by fun_prop
 
 
@@ -353,13 +353,13 @@ theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) :
 
 
 example : let f := fun x : α => x; Con f := by fun_prop
-example [Add α] : let f := fun x => x + y; ∀ y : α, ∀ z : α, Con fun x => x + f x + z := by fun_prop
-example [Add α] : ∀ y : α, let f := fun x => x + y; ∀ z : α, Con fun x => x + f x + z := by fun_prop
+example [Add α] : let f := fun x ↦ x + y; ∀ y : α, ∀ z : α, Con fun x ↦ x + f x + z := by fun_prop
+example [Add α] : ∀ y : α, let f := fun x ↦ x + y; ∀ z : α, Con fun x ↦ x + f x + z := by fun_prop
 -- this is still broken
--- example : ∀ y : α, ∀ z : α, let f := fun x => x + y; Con fun x => x + f x + z := by fun_prop
+-- example : ∀ y : α, ∀ z : α, let f := fun x ↦ x + y; Con fun x ↦ x + f x + z := by fun_prop
 
 example [Add β] (f g : α → β) (hf : Con f := by fun_prop) (hg : outParam (Con g)) :
-  Con (fun x => f x + g x) := by fun_prop
+  Con (fun x ↦ f x + g x) := by fun_prop
 
 opaque foo1 : α → α := id
 opaque foo2 : α → α := id
@@ -378,17 +378,17 @@ example [Add α] : Con (fun x : α => foo3 x) := by fun_prop [foo3]
 def myUncurry (f : α → β → γ) : α×β → γ := fun (x,y) => f x y
 def diag (f : α → α → α) (x : α) := f x x
 
-theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
+theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x ↦ diag f x) := by
   fun_prop [diag,myUncurry]
 namespace MultipleLambdaTheorems
 
 opaque A : Prop
 opaque B : Prop
-@[local fun_prop] theorem Con_comp' (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := silentSorry
-@[local fun_prop] theorem Con_comp'' (f : β → γ) (g : α → β) (b : B) : Con (fun x => f (g x)) := silentSorry
+@[local fun_prop] theorem Con_comp' (f : β → γ) (g : α → β) (h : A) : Con (fun x ↦ f (g x)) := silentSorry
+@[local fun_prop] theorem Con_comp'' (f : β → γ) (g : α → β) (b : B) : Con (fun x ↦ f (g x)) := silentSorry
 
-example (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := by fun_prop (disch := assumption)
-example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by fun_prop (disch := assumption)
+example (f : β → γ) (g : α → β) (h : A) : Con (fun x ↦ f (g x)) := by fun_prop (disch := assumption)
+example (f : β → γ) (g : α → β) (h : B) : Con (fun x ↦ f (g x)) := by fun_prop (disch := assumption)
 
 end MultipleLambdaTheorems
 

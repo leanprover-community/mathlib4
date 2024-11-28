@@ -40,7 +40,7 @@ unsafe nonrec instance Finset.toExpr
   have α' : Q(Type u') := Lean.ToExpr.toTypeExpr α
   letI : Q(DecidableEq $α') := HasInstance.expr (DecidableEq α)
   { toTypeExpr := q(Finset $α')
-    toExpr := fun x => show Q(Finset $α') from
+    toExpr := fun x ↦ show Q(Finset $α') from
       match show List Q($α') from x.val.unquot.reverse.map toExpr with
       | [] => q(∅)
       | x0 :: xs => List.foldl (fun s x => q(insert $x $s)) q({$x0}) xs }
