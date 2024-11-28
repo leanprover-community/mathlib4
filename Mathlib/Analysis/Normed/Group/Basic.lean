@@ -506,7 +506,6 @@ theorem norm_le_norm_add_norm_div (u v : E) : ‖v‖ ≤ ‖u‖ + ‖u / v‖ 
   exact norm_le_norm_add_norm_div' v u
 
 alias norm_le_insert' := norm_le_norm_add_norm_sub'
-
 alias norm_le_insert := norm_le_norm_add_norm_sub
 
 @[to_additive]
@@ -664,8 +663,7 @@ instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
   ⟨fun a => ⟨‖a‖, norm_nonneg' a⟩⟩
 
 @[to_additive (attr := simp, norm_cast) coe_nnnorm]
-theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ :=
-  rfl
+theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
 
 @[to_additive (attr := simp) coe_comp_nnnorm]
 theorem coe_comp_nnnorm' : (toReal : ℝ≥0 → ℝ) ∘ (nnnorm : E → ℝ≥0) = norm :=
@@ -689,8 +687,7 @@ theorem edist_one_right (a : E) : edist a 1 = ‖a‖₊ := by
   rw [edist_nndist, nndist_one_right]
 
 @[to_additive (attr := simp) nnnorm_zero]
-theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 :=
-  NNReal.eq norm_one'
+theorem nnnorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
 
 @[to_additive]
 theorem ne_one_of_nnnorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
