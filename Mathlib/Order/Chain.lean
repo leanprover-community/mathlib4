@@ -141,13 +141,13 @@ theorem IsMaxChain.bot_mem [LE α] [OrderBot α] (h : IsMaxChain (· ≤ ·) s) 
 theorem IsMaxChain.top_mem [LE α] [OrderTop α] (h : IsMaxChain (· ≤ ·) s) : ⊤ ∈ s :=
   (h.2 (h.1.insert fun _ _ _ => Or.inr le_top) <| subset_insert _ _).symm ▸ mem_insert _ _
 
-lemma IsMaxChain.image {s : β → β → Prop} (f : r ≃r s) {c : Set α} (hc : IsMaxChain r c) :
-    IsMaxChain s (f '' c) where
-  left := hc.isChain.image _ _ _ fun _ _ ↦ by exact f.map_rel_iff.2
+lemma IsMaxChain.image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc : IsMaxChain r c) :
+    IsMaxChain s (e '' c) where
+  left := hc.isChain.image _ _ _ fun _ _ ↦ by exact e.map_rel_iff.2
   right t ht hf := by
-    erw [← f.toEquiv.eq_preimage_iff_image_eq, preimage_equiv_eq_image_symm]
-    exact hc.2 (ht.image _ _ _ fun _ _ ↦ by exact f.symm.map_rel_iff.2)
-      ((f.toEquiv.subset_symm_image _ _).2 hf)
+    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, preimage_equiv_eq_image_symm]
+    exact hc.2 (ht.image _ _ _ fun _ _ ↦ by exact e.symm.map_rel_iff.2)
+      ((e.toEquiv.subset_symm_image _ _).2 hf)
 
 open Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
