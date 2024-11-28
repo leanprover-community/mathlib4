@@ -7,6 +7,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!  # Laurent polynomials
 
@@ -49,8 +50,6 @@ Any comments or suggestions for improvements is greatly appreciated!
 ##  Future work
 Lots is missing!
 -- (Riccardo) add inclusion into Laurent series.
--- (Riccardo) giving a morphism (as `R`-alg, so in the commutative case)
-  from `R[T,T⁻¹]` to `S` is the same as choosing a unit of `S`.
 -- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
 --  ```
 --  def trunc : R[T;T⁻¹] →[R] R[X] :=
@@ -497,7 +496,7 @@ theorem algebraMap_X_pow (n : ℕ) : algebraMap R[X] R[T;T⁻¹] (X ^ n) = T n :
 theorem algebraMap_eq_toLaurent (f : R[X]) : algebraMap R[X] R[T;T⁻¹] f = toLaurent f :=
   rfl
 
-instance isLocalization : IsLocalization (Submonoid.powers (X : R[X])) R[T;T⁻¹] :=
+instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
   { map_units' := fun ⟨t, ht⟩ => by
       obtain ⟨n, rfl⟩ := ht
       rw [algebraMap_eq_toLaurent, toLaurent_X_pow]
@@ -533,7 +532,7 @@ theorem mk'_one_X : IsLocalization.mk' R[T;T⁻¹] 1
   exact (pow_one X).symm
 
 /-- Given a ring homomorphism `f : R →+* S` and a unit `x` in `S`, the induced homomorphism
-`R[T;T⁻¹] →+* S` sending `T` to `x`. -/
+`R[T;T⁻¹] →+* S` sending `T` to `x` and `T⁻¹` to `x⁻¹`. -/
 def lift : R[T;T⁻¹] →+* S :=
   IsLocalization.lift (M := Submonoid.powers (X : R[X])) (g := Polynomial.eval₂RingHom f x) (by
     rintro ⟨y, n, rfl⟩
