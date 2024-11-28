@@ -213,7 +213,7 @@ end IsConj
 
 /-- The `N`-conjugacy classes of splittings -/
 @[to_additive "The `N`-conjugacy classes of splittings"]
-def ConjClasses := Quotient <| IsConj.setoid S
+def ConjClasses (S : GroupExtension N E G) := Quotient <| IsConj.setoid S
 
 end GroupExtension
 

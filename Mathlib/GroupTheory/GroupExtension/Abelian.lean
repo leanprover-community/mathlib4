@@ -181,8 +181,9 @@ variable (N G : Type) [CommGroup N] [Group G] [MulDistribMulAction G N]
 
 /-- Group extensions of `G` by `N` such that the action of `G` on `N` is a conjugation -/
 structure ofMulDistribMulAction where
+  /-- The type with a group structure associated to the extension -/
   E : Type*
-  /-- The group associated to the extension -/
+  /-- The group structure associated to the extension -/
   GroupE : Group E
   /-- The group extension -/
   extension : GroupExtension N E G
@@ -301,7 +302,9 @@ end ofMulDistribMulActionWithSection
 /-- The type with a group structure associated to an extension corresponding to a 2-cocycle -/
 @[ext]
 structure middleOfTwoCocycle (f : groupCohomology.twoCocycles (Rep.ofMulDistribMulAction G N)) where
+  /-- The term of `N` -/
   left : N
+  /-- The term of `G` -/
   right : G
 
 variable (f : groupCohomology.twoCocycles (Rep.ofMulDistribMulAction G N))

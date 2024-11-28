@@ -100,6 +100,7 @@ structure Section where
 
 /-- `Section` of an additive group extension is a right inverse to `S.rightHom`. -/
 structure Section where
+  /-- The underlying function -/
   toFun : G → E
   /-- `Section` is a right inverse to `S.rightHom` -/
   rightInverse_rightHom : Function.RightInverse toFun S.rightHom
@@ -268,6 +269,7 @@ end Section
 /-- `Section` of a group extension is a right inverse to `S.rightHom`. -/
 @[to_additive]
 structure Section where
+  /-- The underlying function -/
   toFun : G → E
   /-- `Section` is a right inverse to `S.rightHom` -/
   rightInverse_rightHom : Function.RightInverse toFun S.rightHom
