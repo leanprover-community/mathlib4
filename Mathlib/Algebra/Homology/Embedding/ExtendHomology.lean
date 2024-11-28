@@ -240,6 +240,7 @@ noncomputable def rightHomologyData (h : (K.sc' i j k).RightHomologyData) :
     exact h.wι
   hι := isLimitKernelFork K e hj' hi hi' hk hk' _ h.hp _ h.hι
 
+/-- Computation of the `g'` field of `extend.rightHomologyData`. -/
 lemma rightHomologyData_g' (h : (K.sc' i j k).RightHomologyData) (hk'' : e.f k = k') :
     (rightHomologyData K e hj' hi hi' hk hk' h).g' = h.g' ≫ (K.extendXIso e hk'').inv := by
   rw [← cancel_epi h.p, ← cancel_epi (extendXIso K e hj').hom]
