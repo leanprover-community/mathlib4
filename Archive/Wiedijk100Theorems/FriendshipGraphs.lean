@@ -110,7 +110,7 @@ include hG in
 theorem degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree G w := by
   rw [← Nat.cast_id (G.degree v), ← Nat.cast_id (G.degree w),
     ← adjMatrix_pow_three_of_not_adj ℕ hG hvw,
-    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h => hvw (G.symm h)]
+    ← adjMatrix_pow_three_of_not_adj ℕ hG fun h ↦ hvw (G.symm h)]
   conv_lhs => rw [← transpose_adjMatrix]
   simp only [pow_succ _ 2, sq, ← transpose_mul, transpose_apply]
   simp only [mul_assoc]
@@ -286,7 +286,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
   · rw [Finset.subset_iff]
     intro x
     rw [mem_neighborFinset, Finset.mem_erase]
-    exact fun h => ⟨(G.ne_of_adj h).symm, Finset.mem_univ _⟩
+    exact fun h ↦ ⟨(G.ne_of_adj h).symm, Finset.mem_univ _⟩
   convert_to 2 ≤ _
   · convert_to _ = Fintype.card V - 1
     · have hfr := card_of_regular hG hd

@@ -87,7 +87,7 @@ instance : LinearOrderedCommRing ℤ[ε] :=
     mul_pos := fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos}
 
 instance : FloorRing ℤ[ε] :=
-  FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
+  FloorRing.ofFloor _ (fun p ↦ if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
     fun p q => by
     simp_rw [← not_lt, not_iff_not]
     constructor

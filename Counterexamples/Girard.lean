@@ -37,7 +37,7 @@ theorem girard.{u} (pi : (Type u → Type u) → Type u)
     (beta : ∀ {A : Type u → Type u} (f : ∀ x, A x) (x), app (lam f) x = f x) : False :=
   let F (X) := (Set (Set X) → X) → Set (Set X)
   let U := pi F
-  let G (T : Set (Set U)) (X) : F X := fun f => {p | {x : U | f (app x X f) ∈ p} ∈ T}
+  let G (T : Set (Set U)) (X) : F X := fun f ↦ {p | {x : U | f (app x X f) ∈ p} ∈ T}
   let τ (T : Set (Set U)) : U := lam (G T)
   let σ (S : U) : Set (Set U) := app S U τ
   have στ : ∀ {s S}, s ∈ σ (τ S) ↔ {x | τ (σ x) ∈ s} ∈ S := fun {s S} =>

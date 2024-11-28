@@ -64,11 +64,11 @@ More precisely, for any `x : ℕ`, the sum of the reciprocals of the primes betw
 is less than 1/2.
 -/
 theorem sum_lt_half_of_not_tendsto
-    (h : ¬Tendsto (fun n => ∑ p ∈ range n with p.Prime, 1 / (p : ℝ))
+    (h : ¬Tendsto (fun n ↦ ∑ p ∈ range n with p.Prime, 1 / (p : ℝ))
       atTop atTop) :
     ∃ k, ∀ x, ∑ p ∈ P x k, 1 / (p : ℝ) < 1 / 2 := by
   have h0 :
-    (fun n => ∑ p ∈ range n with p.Prime, 1 / (p : ℝ)) = fun n =>
+    (fun n ↦ ∑ p ∈ range n with p.Prime, 1 / (p : ℝ)) = fun n =>
       ∑ p ∈ range n, ite (Nat.Prime p) (1 / (p : ℝ)) 0 := by
     simp only [sum_filter]
   have hf : ∀ n : ℕ, 0 ≤ ite (Nat.Prime n) (1 / (n : ℝ)) 0 := by
@@ -136,7 +136,7 @@ theorem card_le_two_pow {x k : ℕ} : #{e ∈ M x k | Squarefree (e + 1)} ≤ 2 
     obtain ⟨⟨-, hmp⟩, hms⟩ := hm
     use! (m + 1).primeFactorsList
     · rwa [Multiset.coe_nodup, ← Nat.squarefree_iff_nodup_primeFactorsList m.succ_ne_zero]
-    refine ⟨fun p => ?_, ?_⟩
+    refine ⟨fun p ↦ ?_, ?_⟩
     · suffices p ∈ (m + 1).primeFactorsList → ∃ a : ℕ, a < k ∧ a.succ = p by simpa
       simp only [Nat.mem_primeFactorsList m.succ_ne_zero]
       intro hp
@@ -190,7 +190,7 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : #(M x k) ≤ 2 ^ k * Nat.sqrt x :
     _ ≤ 2 ^ k * x.sqrt := mul_le_mul' card_le_two_pow h2
 
 theorem Real.tendsto_sum_one_div_prime_atTop :
-    Tendsto (fun n => ∑ p ∈ range n with p.Prime, 1 / (p : ℝ))
+    Tendsto (fun n ↦ ∑ p ∈ range n with p.Prime, 1 / (p : ℝ))
       atTop atTop := by
   -- Assume that the sum of the reciprocals of the primes converges.
   by_contra h

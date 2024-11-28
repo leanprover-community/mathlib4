@@ -125,7 +125,7 @@ def read (r : Register) (η : State) : Word :=
 /-- This is similar to the `a` function (3.9), but for registers only. -/
 @[simp]
 def write (r : Register) (v : Word) (η : State) : State :=
-  { η with rs := fun x => if x = r then v else η.rs x }
+  { η with rs := fun x ↦ if x = r then v else η.rs x }
 
 /-- The semantics of the target language (3.11). -/
 def step : Instruction → State → State

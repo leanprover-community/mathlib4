@@ -41,8 +41,8 @@ def fixedPointsEquiv : { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x :
     { σx : α × Perm α // σx.2 σx.1 = σx.1 } ≃ Σ x : α, { σ : Perm α // σ x = x } :=
       setProdEquivSigma _
     _ ≃ Σ x : α, { σ : Perm α // ∀ y : ({x} : Set α), σ y = Equiv.refl (↥({x} : Set α)) y } :=
-      (sigmaCongrRight fun x => Equiv.Set.ofEq <| by simp only [SetCoe.forall]; dsimp; simp)
-    _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x => by apply Equiv.Set.compl
+      (sigmaCongrRight fun x ↦ Equiv.Set.ofEq <| by simp only [SetCoe.forall]; dsimp; simp)
+    _ ≃ Σ x : α, Perm ({x}ᶜ : Set α) := sigmaCongrRight fun x ↦ by apply Equiv.Set.compl
 
 theorem card_fixed_points :
     card { σx : α × Perm α // σx.2 σx.1 = σx.1 } = card α * (card α - 1)! := by

@@ -33,7 +33,7 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
   have h_f_nonneg_of_pos : ∀ a < 0, 0 ≤ f a := fun a han =>
     suffices a * f a ≤ 0 from nonneg_of_mul_nonpos_right this han
     add_le_iff_nonpos_left.mp (h_ab_combined a (2 * f a))
-  have h_f_nonpos : ∀ x, f x ≤ 0 := fun x => by
+  have h_f_nonpos : ∀ x, f x ≤ 0 := fun x ↦ by
     by_contra h_suppose_not
     -- If we choose a small enough argument for f, then we get a contradiction.
     let s := (x * f x - f (f x)) / f x

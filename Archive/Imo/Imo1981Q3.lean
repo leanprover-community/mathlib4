@@ -184,7 +184,7 @@ Now we just have to demonstrate that 987 and 1597 are in fact the largest Fibona
 numbers in this range, and thus provide the maximum of `specifiedSet`.
 -/
 theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
-  have := fun h => @solution_greatest 1981 16 h 3524578
+  have := fun h ↦ @solution_greatest 1981 16 h 3524578
   norm_num at this
   apply this
   · decide

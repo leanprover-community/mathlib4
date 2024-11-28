@@ -85,7 +85,7 @@ theorem imo2008_q2b : Set.Infinite rationalSolutions := by
         _ = 1 := by rw [hx_t, hy_t, hz_t]; field_simp; ring
     exact ⟨h₁, h₂, h₃, h₄, h₅, h₆⟩
   have hW_inf : Set.Infinite W := by
-    let g : ℚ × ℚ × ℚ → ℚ := fun s => -s.2.2
+    let g : ℚ × ℚ × ℚ → ℚ := fun s ↦ -s.2.2
     let K := g '' W
     have hK_not_bdd : ¬BddAbove K := by
       rw [not_bddAbove_iff]

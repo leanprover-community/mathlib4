@@ -36,7 +36,7 @@ theorem eval_ite_ite' {a b c d e : IfExpr} {f : ℕ → Bool} :
 `e` to the literal booleans given by `l` -/
 def normalize' (l : AList (fun _ : ℕ => Bool)) :
     (e : IfExpr) → { e' : IfExpr //
-        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))
+        (∀ f, e'.eval f = e.eval (fun w ↦ (l.lookup w).elim (f w) id))
         ∧ e'.normalized
         ∧ ∀ (v : ℕ), v ∈ vars e' → l.lookup v = none }
   | lit b => ⟨lit b, by simp⟩
@@ -52,14 +52,14 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
     ⟨e', by simp_all⟩
   | .ite (.ite a b c) d e =>
     have ⟨t', ht₁, ht₂⟩ := normalize' l (.ite a (.ite b d e) (.ite c d e))
-    ⟨t', fun f => by rw [ht₁, eval_ite_ite'], ht₂⟩
+    ⟨t', fun f ↦ by rw [ht₁, eval_ite_ite'], ht₂⟩
   | .ite (var v) t e =>
     match h : l.lookup v with
     | none =>
       have ⟨t', ht₁, ht₂, ht₃⟩ := normalize' (l.insert v true) t
       have ⟨e', he₁, he₂, he₃⟩ := normalize' (l.insert v false) e
       ⟨if t' = e' then t' else .ite (var v) t' e', by
-        refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
+        refine ⟨fun f ↦ ?_, ?_, fun w b => ?_⟩
         · simp only [eval, apply_ite, ite_eq_iff']
           cases hfv : f v
           · simp +contextual only [cond_false, h, he₁]
@@ -118,7 +118,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
   termination_by e' => e'.normSize'
 
 example : IfNormalization :=
-  ⟨fun e => (normalize' ∅ e).1,
-   fun e => ⟨(normalize' ∅ e).2.2.1, by simp [(normalize' ∅ e).2.1]⟩⟩
+  ⟨fun e ↦ (normalize' ∅ e).1,
+   fun e ↦ ⟨(normalize' ∅ e).2.2.1, by simp [(normalize' ∅ e).2.1]⟩⟩
 
 end IfExpr

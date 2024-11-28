@@ -25,7 +25,7 @@ open Nat
 namespace Imo1960Q1
 
 def sumOfSquares (L : List ℕ) : ℕ :=
-  (L.map fun x => x * x).sum
+  (L.map fun x ↦ x * x).sum
 
 def ProblemPredicate (n : ℕ) : Prop :=
   (Nat.digits 10 n).length = 3 ∧ 11 ∣ n ∧ n / 11 = sumOfSquares (Nat.digits 10 n)

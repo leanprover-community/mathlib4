@@ -44,15 +44,15 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
   -- at `i`.
   let inc_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
-    univ.powerset.filter fun t => Finset.max t = i ∧ StrictMonoOn f ↑t
+    univ.powerset.filter fun t ↦ Finset.max t = i ∧ StrictMonoOn f ↑t
   let dec_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
-    univ.powerset.filter fun t => Finset.max t = i ∧ StrictAntiOn f ↑t
+    univ.powerset.filter fun t ↦ Finset.max t = i ∧ StrictAntiOn f ↑t
   -- The singleton sequence is in both of the above collections.
   -- (This is useful to show that the maximum length subsequence is at least 1, and that the set
   -- of subsequences is nonempty.)
-  have inc_i : ∀ i, {i} ∈ inc_sequences_ending_in i := fun i => by
+  have inc_i : ∀ i, {i} ∈ inc_sequences_ending_in i := fun i ↦ by
     simp [inc_sequences_ending_in, StrictMonoOn]
-  have dec_i : ∀ i, {i} ∈ dec_sequences_ending_in i := fun i => by
+  have dec_i : ∀ i, {i} ∈ dec_sequences_ending_in i := fun i ↦ by
     simp [dec_sequences_ending_in, StrictAntiOn]
   -- Define the pair of labels: at index `i`, the pair is the maximum length of an increasing
   -- subsequence ending at `i`, paired with the maximum length of a decreasing subsequence ending

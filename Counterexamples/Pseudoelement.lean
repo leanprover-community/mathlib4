@@ -117,7 +117,7 @@ theorem snd_mk'_x_eq_snd_mk'_y :
 -- despite the local instance ~20 lines up
 /-- `⟦x⟧ ≠ ⟦y⟧`. -/
 theorem mk'_x_ne_mk'_y : (⟦x⟧ : Quotient <| Pseudoelement.setoid _) ≠ ⟦y⟧ :=
-  fun h => x_not_pseudo_eq <| Quotient.eq'.1 h
+  fun h ↦ x_not_pseudo_eq <| Quotient.eq'.1 h
 
 /-- There are two pseudoelements `x y : ℚ ⊞ ℚ` such that `x ≠ y`, `biprod.fst x = biprod.fst y` and
  `biprod.snd x = biprod.snd y`. -/
