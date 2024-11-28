@@ -62,7 +62,7 @@ namespace Isometry
 section PseudoEmetricIsometry
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable {f : α → β} {x y z : α} {s : Set α}
+variable {f : α → β} {x : α}
 
 /-- An isometry preserves edistances. -/
 theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=

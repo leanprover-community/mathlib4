@@ -389,17 +389,20 @@ theorem le_opNorm (f : ContinuousMultilinearMap 𝕜 E G) (m : ∀ i, E i) :
 
 @[deprecated (since := "2024-02-02")] alias le_op_norm := le_opNorm
 
-theorem le_mul_prod_of_le_opNorm_of_le {f : ContinuousMultilinearMap 𝕜 E G}
+theorem le_mul_prod_of_opNorm_le_of_le {f : ContinuousMultilinearMap 𝕜 E G}
     {m : ∀ i, E i} {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ C * ∏ i, b i :=
   (f.le_opNorm m).trans <| by gcongr; exacts [f.opNorm_nonneg.trans hC, hm _]
 
 @[deprecated (since := "2024-02-02")]
-alias le_mul_prod_of_le_op_norm_of_le := le_mul_prod_of_le_opNorm_of_le
+alias le_mul_prod_of_le_op_norm_of_le := le_mul_prod_of_opNorm_le_of_le
+
+@[deprecated (since := "2024-11-27")]
+alias le_mul_prod_of_le_opNorm_of_le := le_mul_prod_of_opNorm_le_of_le
 
 theorem le_opNorm_mul_prod_of_le (f : ContinuousMultilinearMap 𝕜 E G)
     {m : ∀ i, E i} {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) : ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
-  le_mul_prod_of_le_opNorm_of_le le_rfl hm
+  le_mul_prod_of_opNorm_le_of_le le_rfl hm
 
 @[deprecated (since := "2024-02-02")] alias le_op_norm_mul_prod_of_le := le_opNorm_mul_prod_of_le
 
@@ -419,7 +422,7 @@ theorem le_opNorm_mul_pow_of_le {n : ℕ} {Ei : Fin n → Type*} [∀ i, Seminor
 
 theorem le_of_opNorm_le {f : ContinuousMultilinearMap 𝕜 E G} {C : ℝ} (h : ‖f‖ ≤ C) (m : ∀ i, E i) :
     ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
-  le_mul_prod_of_le_opNorm_of_le h fun _ ↦ le_rfl
+  le_mul_prod_of_opNorm_le_of_le h fun _ ↦ le_rfl
 
 @[deprecated (since := "2024-02-02")] alias le_of_op_norm_le := le_of_opNorm_le
 
