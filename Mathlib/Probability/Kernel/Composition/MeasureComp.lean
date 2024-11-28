@@ -104,11 +104,16 @@ lemma comp_add_right [SFinite μ] [SFinite ν] [IsSFiniteKernel κ] :
   simp_rw [← snd_compProd, compProd_add_left]
   simp
 
-@[simp]
 lemma comp_add_left [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     (κ + η) ∘ₘ μ = κ ∘ₘ μ + η ∘ₘ μ := by
   simp_rw [← snd_compProd, compProd_add_right]
   simp
+
+/-- Same as `comp_add_left` except that it uses `⇑κ + ⇑η` instead of `⇑(κ + η)` in order to have
+a simp-normal form on the left of the equality. -/
+@[simp]
+lemma comp_add_left' [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    (⇑κ + ⇑η) ∘ₘ μ = κ ∘ₘ μ + η ∘ₘ μ := by rw [← Kernel.coe_add, comp_add_left]
 
 lemma comp_smul_left (a : ℝ≥0∞) : κ ∘ₘ (a • μ) = a • (κ ∘ₘ μ) := by
   ext s hs
