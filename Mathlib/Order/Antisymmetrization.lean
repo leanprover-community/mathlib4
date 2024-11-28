@@ -33,9 +33,12 @@ section Relation
 
 variable (r : α → α → Prop)
 
-/-- The antisymmetrization relation. -/
+/-- The antisymmetrization relation `a ⋚ b` means that both `a ≤ b` and `b ≤ a`. -/
 def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
+
+/-- The antisymmetrization relation `a ⋚ b` means that both `a ≤ b` and `b ≤ a`. -/
+infix:50 " ⋚ "  => AntisymmRel (· ≤ ·)
 
 theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext fun _ => funext fun _ => propext and_comm
@@ -114,8 +117,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {a b : α}
 
-theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α → β} (hf : Monotone f) :
-    AntisymmRel (· ≤ ·) (f a) (f b) :=
+theorem AntisymmRel.image {a b : α} (h : a ⋚ b) {f : α → β} (hf : Monotone f) : f a ⋚ f b :=
   ⟨hf h.1, hf h.2⟩
 
 instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization α (· ≤ ·)) where
