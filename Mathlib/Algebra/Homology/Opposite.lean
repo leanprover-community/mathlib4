@@ -277,17 +277,28 @@ instance {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L)
   infer_instance
 
 lemma ExactAt.op {K : HomologicalComplex V c} {i : ι} (h : K.ExactAt i) :
-    K.op.ExactAt i := sorry
+    K.op.ExactAt i :=
+  ShortComplex.Exact.op h
 
 lemma ExactAt.unop {K : HomologicalComplex Vᵒᵖ c} {i : ι} (h : K.ExactAt i) :
-    K.unop.ExactAt i := sorry
+    K.unop.ExactAt i :=
+  ShortComplex.Exact.unop h
 
 lemma exactAt_op_iff (K : HomologicalComplex V c) {i : ι} :
-    K.op.ExactAt i ↔ K.ExactAt i := sorry
+    K.op.ExactAt i ↔ K.ExactAt i :=
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
+
+lemma Acyclic.op {K : HomologicalComplex V c} (h : K.Acyclic) :
+    K.op.Acyclic :=
+  fun i ↦ (h i).op
+
+lemma Acyclic.unop {K : HomologicalComplex Vᵒᵖ c} (h : K.Acyclic) :
+    K.unop.Acyclic :=
+  fun i ↦ (h i).unop
 
 lemma acyclic_op_iff (K : HomologicalComplex V c) :
-    K.op.Acyclic ↔ K.Acyclic := by
-  simp only [acyclic_iff, exactAt_op_iff]
+    K.op.Acyclic ↔ K.Acyclic :=
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
 the opposite of the homology of `K`. -/
