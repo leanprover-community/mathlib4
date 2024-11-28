@@ -60,6 +60,11 @@ variable {R M}
 theorem smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
   rfl
 
+variable {r}
+
+lemma IsAddUnit.smul (hr : IsAddUnit r) : IsAddUnit (r • x) :=
+  hr.map (AddMonoidHom.flip (smulAddHom R M) x)
+
 end AddCommMonoid
 
 section AddCommGroup

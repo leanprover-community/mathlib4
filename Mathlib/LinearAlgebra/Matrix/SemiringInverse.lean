@@ -3,10 +3,12 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Data.Matrix.Invertible
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.Trace
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.Matrix.Mul
+import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # Nonsingular inverses over semirings
@@ -14,33 +16,6 @@ import Mathlib.LinearAlgebra.Matrix.Trace
 This files proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
 
 -/
-
---[Mathlib.Algebra.Group.Units.Hom]
-lemma IsAddUnit.smul
-    {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    {r : R} (hr : IsAddUnit r) (m : M) : IsAddUnit (r • m) :=
-  hr.map (AddMonoidHom.flip (smulAddHom R M) m)
-
-@[to_additive]
-lemma IsUnit.prod_iff {α β : Type*} [CommMonoid β] {s : Finset α} {f : α → β} :
-    IsUnit (∏ a ∈ s, f a) ↔ ∀ a ∈ s, IsUnit (f a) := by
-  classical
-  refine Finset.induction_on s ?_ ?_
-  · simp
-  · intro a s ha hs
-    rw [Finset.prod_insert ha, IsUnit.mul_iff, hs]
-    simp only [Finset.mem_insert, forall_eq_or_imp]
-
-@[to_additive]
-lemma IsUnit.prod_univ_iff {α β : Type*} [Fintype α] [CommMonoid β] {f : α → β} :
-    IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by
-  simp_rw [prod_iff, Finset.mem_univ, forall_const]
-
-lemma Matrix.isAddUnit_iff {n α : Type*} [AddMonoid α] {A : Matrix n n α} :
-    IsAddUnit A ↔ ∀ i j, IsAddUnit (A i j) := by
-  simp_rw [isAddUnit_iff_exists, Classical.skolem, forall_and,
-    ← Matrix.ext_iff, add_apply, zero_apply]
-  rfl
 
 namespace Matrix
 
@@ -139,14 +114,14 @@ theorem detp_mul :
   rw [← prod_comp (swap i j)]
   simp only [hσ]
 
-theorem mul_adjp_add_detp_aux1 : (A * adjp s A) i i = detp s A := by
+theorem mul_adjp_add_detp_apply_eq : (A * adjp s A) i i = detp s A := by
   have key := sum_fiberwise_eq_sum_filter (filterp s) univ (· i) fun σ ↦ ∏ k, A k (σ k)
   simp_rw [mem_univ, filter_True] at key
   simp_rw [mul_apply, adjp_apply, mul_sum, detp, ← key]
   refine sum_congr rfl fun x hx ↦ sum_congr rfl fun σ hσ ↦ ?_
   rw [← prod_mul_prod_compl ({i} : Finset n), prod_singleton, (mem_filter.mp hσ).2]
 
-theorem mul_adjp_add_detp_aux2 (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
+theorem mul_adjp_add_detp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
   simp_rw [mul_apply, adjp_apply, mul_sum, sum_sigma']
   let f : (Σ x : n, Perm n) → (Σ x : n, Perm n) := fun ⟨x, σ⟩ ↦ ⟨σ i, σ * swap i j⟩
   let t s : Finset (Σ x : n, Perm n) := univ.sigma fun x ↦ (filterp s).filter fun σ ↦ σ j = x
@@ -177,44 +152,34 @@ theorem mul_adjp_add_detp_aux2 (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-
 theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A + detp 1 A • 1 := by
   ext i j
   rcases eq_or_ne i j with rfl | h <;> simp_rw [add_apply, smul_apply, smul_eq_mul]
-  · simp_rw [mul_adjp_add_detp_aux1, one_apply_eq, mul_one, add_comm]
-  · simp_rw [mul_adjp_add_detp_aux2 A i j h, one_apply_ne h, mul_zero]
+  · simp_rw [mul_adjp_add_detp_apply_eq, one_apply_eq, mul_one, add_comm]
+  · simp_rw [mul_adjp_add_detp_apply_ne A i j h, one_apply_ne h, mul_zero]
 
 variable {A B}
 
-#check Function.LeftInverse
-
-example {α β : Type*} (p : α → β → Prop) :
-    (∀ a, ∃ b, p a b) ↔ (∃ f : α → β, ∀ a, p a (f a)) := by
-  exact Classical.skolem
-
-theorem inv0 (hAB : A * B = 1) (i j k : n) (hij : i ≠ j) : IsAddUnit (A i k * B k j) := by
+theorem isAddUnit_mul (hAB : A * B = 1) (i j k : n) (hij : i ≠ j) : IsAddUnit (A i k * B k j) := by
   revert k
   rw [← IsAddUnit.sum_univ_iff, ← mul_apply, hAB, one_apply_ne hij]
   exact isAddUnit_zero
 
-theorem inv1 (hAB : A * B = 1) :
+theorem isAddUnit_detp_mul_detp (hAB : A * B = 1) :
     IsAddUnit (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) := by
   suffices h : ∀ {s t}, s ≠ t → IsAddUnit (detp s A * detp t B) from
     (h (by decide)).add (h (by decide))
   intro s t h
   simp_rw [detp, sum_mul_sum, IsAddUnit.sum_iff]
   intro σ hσ τ hτ
-  replace h : 1 ≠ τ * σ := by
-    contrapose! h
-    replace h := congr_arg Perm.sign h
-    rw [Perm.sign_mul, Perm.sign_one] at h
-    rw [eq_comm, Units.ext_iff] at h ⊢
-    rw [mem_filterp] at hσ hτ
-    rw [← hσ, ← hτ]
-    exact Int.eq_of_mul_eq_one h
-  simp_rw [Ne, Equiv.ext_iff, not_forall, Perm.mul_apply, Perm.one_apply] at h
+  rw [mem_filterp] at hσ hτ
+  rw [← hσ, ← hτ, ← Perm.sign_inv] at h
+  replace h := ne_of_apply_ne Perm.sign h
+  rw [Ne, eq_comm, eq_inv_iff_mul_eq_one, eq_comm] at h
+  simp_rw [Equiv.ext_iff, not_forall, Perm.mul_apply, Perm.one_apply] at h
   obtain ⟨k, hk⟩ := h
-  rw [mul_comm, ← prod_comp σ, mul_comm, ← prod_mul_distrib, ← mul_prod_erase univ _ (mem_univ _),
-    ← smul_eq_mul]
-  exact (inv0 hAB k (τ (σ k)) (σ k) hk).smul _
+  rw [mul_comm, ← prod_comp σ, mul_comm, ← prod_mul_distrib,
+    ← mul_prod_erase univ _ (mem_univ k), ← smul_eq_mul]
+  exact (isAddUnit_mul hAB k (τ (σ k)) (σ k) hk).smul _
 
-theorem inv2 (hAB : A * B = 1) :
+theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
     IsAddUnit (detp 1 A • (B * adjp (-1) B) + detp (-1) A • (B * adjp 1 B)) := by
   suffices h : ∀ {s t}, s ≠ t → IsAddUnit (detp s A • (B * adjp t B)) from
     (h (by decide)).add (h (by decide))
@@ -224,30 +189,20 @@ theorem inv2 (hAB : A * B = 1) :
   simp_rw [smul_apply, smul_eq_mul, mul_apply, detp, adjp_apply, mul_sum, sum_mul,
     IsAddUnit.sum_iff]
   intro k hk σ hσ τ hτ
-  rw [mul_comm, mul_assoc, mul_comm, ← smul_eq_mul]
-  apply IsAddUnit.smul
-  have h0 : ∀ k, k ∈ ({τ⁻¹ j} : Finset n)ᶜ ↔ τ k ∈ ({j} : Finset n)ᶜ := by
-    have key : τ⁻¹ = τ.symm := rfl
-    simp [key, eq_symm_apply]
-  rw [← prod_equiv τ h0 fun k hk ↦ rfl]
-  rw [mul_comm, ← prod_mul_prod_compl {τ⁻¹ j}, mul_assoc, mul_comm, ← smul_eq_mul]
-  apply IsAddUnit.smul
-  rw [← prod_mul_distrib]
-  replace h : σ * τ ≠ 1 := by
-    contrapose! h
-    replace h := congr_arg Perm.sign h
-    rw [Perm.sign_mul, Perm.sign_one, mul_comm] at h
-    rw [Units.ext_iff] at h ⊢
-    rw [mem_filter] at hσ
-    rw [mem_filterp] at hσ hτ
-    rw [← hσ.1, ← hτ]
-    exact Int.eq_of_mul_eq_one h
-  have key := Perm.one_lt_card_support_of_ne_one h
+  rw [mem_filter] at hσ
+  rw [mem_filterp] at hσ hτ
+  rw [← hσ.1, ← hτ, ← Perm.sign_inv] at h
+  replace h := ne_of_apply_ne Perm.sign h
+  rw [Ne, eq_comm, eq_inv_iff_mul_eq_one] at h
   obtain ⟨l, hl1, hl2⟩ := exists_ne_of_one_lt_card (Perm.one_lt_card_support_of_ne_one h) (τ⁻¹ j)
   rw [Perm.mem_support, ne_comm] at hl1
   rw [Ne, ← mem_singleton, ← mem_compl] at hl2
-  rw [← mul_prod_erase _ _ hl2, ← smul_eq_mul]
-  exact (inv0 hAB l (σ (τ l)) (τ l) hl1).smul _
+  rw [← prod_mul_prod_compl {τ⁻¹ j}, mul_mul_mul_comm, mul_comm, ← smul_eq_mul]
+  apply IsAddUnit.smul
+  have h0 : ∀ k, k ∈ ({τ⁻¹ j} : Finset n)ᶜ ↔ τ k ∈ ({j} : Finset n)ᶜ := by
+    simp [show τ⁻¹ = τ.symm from rfl, eq_symm_apply]
+  rw [← prod_equiv τ h0 fun _ _ ↦ rfl, ← prod_mul_distrib, ← mul_prod_erase _ _ hl2, ← smul_eq_mul]
+  exact (isAddUnit_mul hAB l (σ (τ l)) (τ l) hl1).smul _
 
 theorem detp_smul_add_adjp (hAB : A * B = 1) :
     detp 1 B • A + adjp (-1) B = detp (-1) B • A + adjp 1 B := by
@@ -264,7 +219,7 @@ theorem detp_smul_adjp (hAB : A * B = 1) :
   replace h := congr_arg₂ (· + ·) (congr_arg (detp 1 A • ·) h) (congr_arg (detp (-1) A • ·) h).symm
   simp only [smul_add, smul_smul] at h
   rwa [add_add_add_comm, ← add_smul, add_add_add_comm, ← add_smul, ← h0, add_smul, one_smul,
-    add_comm A, add_assoc, ((inv1 hAB).smul _).add_right_inj] at h
+    add_comm A, add_assoc, ((isAddUnit_detp_mul_detp hAB).smul _).add_right_inj] at h
 
 theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
   revert A B
@@ -283,6 +238,7 @@ theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
     add_add_add_comm, smul_smul, smul_smul, ← add_smul, ← h0,
     add_smul, one_smul, ← add_assoc _ 1, add_comm _ 1, add_assoc,
     smul_add, smul_add, add_add_add_comm, smul_smul, smul_smul, ← add_smul,
-    ((inv2 hAB).add ((inv1 hAB).smul _)).add_left_inj] at h
+    ((isAddUnit_detp_smul_mul_adjp hAB).add
+      ((isAddUnit_detp_mul_detp hAB).smul _)).add_left_inj] at h
 
 end Matrix
