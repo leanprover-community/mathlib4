@@ -60,19 +60,24 @@ lemma stabilizer_mul_self (s : Set G) : (stabilizer G s : Set G) * s = s := by
   exact smul_mem_smul_set hb
 
 @[to_additive]
+lemma stabilizer_inf_stabilizer_le_stabilizer_apply₂ {f : Set α → Set α → Set α}
+    (hf : ∀ a : G, a • f s t = f (a • s) (a • t)) :
+    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (f s t) := by aesop (add simp [SetLike.le_def])
+
+@[to_additive]
 lemma stabilizer_inf_stabilizer_le_stabilizer_union :
-    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s ∪ t) := by
-  aesop (add simp [SetLike.le_def, smul_set_union])
+    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s ∪ t) :=
+  stabilizer_inf_stabilizer_le_stabilizer_apply₂ fun _ ↦ smul_set_union
 
 @[to_additive]
 lemma stabilizer_inf_stabilizer_le_stabilizer_inter :
-    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s ∩ t) := by
-  aesop (add simp [SetLike.le_def, smul_set_inter])
+    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s ∩ t) :=
+  stabilizer_inf_stabilizer_le_stabilizer_apply₂ fun _ ↦ smul_set_inter
 
 @[to_additive]
 lemma stabilizer_inf_stabilizer_le_stabilizer_sdiff :
-    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s \ t) := by
-  aesop (add simp [SetLike.le_def, smul_set_sdiff])
+    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s \ t) :=
+  stabilizer_inf_stabilizer_le_stabilizer_apply₂ fun _ ↦ smul_set_sdiff
 
 @[to_additive]
 lemma stabilizer_union_eq_left (hdisj : Disjoint s t) (hstab : stabilizer G s ≤ stabilizer G t)
