@@ -14,7 +14,7 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 -/
 
--- TODO: assert_not_exists NonUnitalNonAssociativeSemiring
+assert_not_exists NonUnitalNonAssociativeSemiring
 assert_not_exists OrderedAddCommMonoid
 assert_not_exists TopologicalSpace
 assert_not_exists PseudoMetricSpace
