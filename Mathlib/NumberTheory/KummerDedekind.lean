@@ -238,8 +238,6 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     {J : Ideal S | J ∈ normalizedFactors (I.map (algebraMap R S))} ≃
       {d : (R ⧸ I)[X] |
         d ∈ normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))} := by
-  -- Porting note: Lean needs to be reminded about this so it does not time out
-  have : IsPrincipalIdealRing (R ⧸ I)[X] := inferInstance
   let f : S ⧸ map (algebraMap R S) I ≃+*
     (R ⧸ I)[X] ⧸ span {Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)} := by
     refine (quotAdjoinEquivQuotMap hx ?_).symm.trans
