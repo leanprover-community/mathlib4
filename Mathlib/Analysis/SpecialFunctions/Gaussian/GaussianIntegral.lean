@@ -109,7 +109,7 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
   refine ⟨?_, integrableOn_rpow_mul_exp_neg_mul_sq hb hs⟩
   rw [← (Measure.measurePreserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
       (Homeomorph.neg ℝ).measurableEmbedding]
-  simp only [Function.comp_def, neg_sq, neg_preimage, preimage_neg_Iio, neg_neg, neg_zero]
+  simp only [Function.comp_def, neg_sq, neg_preimage, neg_Iio, neg_neg, neg_zero]
   apply Integrable.mono' (integrableOn_rpow_mul_exp_neg_mul_sq hb hs)
   · apply Measurable.aestronglyMeasurable
     exact (measurable_id'.neg.pow measurable_const).mul
@@ -227,7 +227,7 @@ theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = √(π / b
     · exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
     · simpa only [not_lt, integrable_exp_neg_mul_sq_iff] using hb
   -- Assume now `b > 0`. Then both sides are non-negative and their squares agree.
-  refine (sq_eq_sq (by positivity) (by positivity)).1 ?_
+  refine (sq_eq_sq₀ (by positivity) (by positivity)).1 ?_
   rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, RCLike.algebraMap_eq_ofReal, ← integral_ofReal,
     sq_sqrt (div_pos pi_pos hb).le, ← RCLike.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
   convert integral_gaussian_sq_complex (by rwa [ofReal_re] : 0 < (b : ℂ).re) with _ x

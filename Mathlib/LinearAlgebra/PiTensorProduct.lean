@@ -404,7 +404,7 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
 
 theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
-  -- The end of this proof was very different before leanprover/lean4#2644:
+  -- The end of this proof was very different before https://github.com/leanprover/lean4/pull/2644:
   -- rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
   -- dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
   -- show _ • _ = _
@@ -799,7 +799,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   left_inv x := by
     refine x.induction_on ?_ ?_
     · intro x y
-      -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
       simp only [map_smulₛₗ _, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
         smul_eq_mul, mul_one]
       congr

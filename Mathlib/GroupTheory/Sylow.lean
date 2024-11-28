@@ -140,7 +140,7 @@ theorem coe_comapOfInjective (hϕ : Function.Injective ϕ) (h : P ≤ ϕ.range) 
 
 /-- A sylow subgroup of G is also a sylow subgroup of a subgroup of G. -/
 protected def subtype (h : P ≤ N) : Sylow p N :=
-  P.comapOfInjective N.subtype Subtype.coe_injective (by rwa [subtype_range])
+  P.comapOfInjective N.subtype Subtype.coe_injective (by rwa [range_subtype])
 
 @[simp]
 theorem coe_subtype (h : P ≤ N) : P.subtype h = subgroupOf P N :=
@@ -668,7 +668,7 @@ lemma exists_subgroup_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : 
   obtain ⟨m, hm⟩ := h.exists_card_eq
   refine exists_subgroup_card_pow_prime _ ?_
   rw [hm] at hn ⊢
-  exact pow_dvd_pow _ <| (pow_le_pow_iff_right hp.one_lt).1 hn
+  exact pow_dvd_pow _ <| (Nat.pow_le_pow_iff_right hp.one_lt).1 hn
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group and `H` a subgroup of size at
 least `p ^ n` then there is a subgroup of `H` of cardinality `p ^ n`. -/
@@ -756,9 +756,9 @@ theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P :
   have := normal_of_normalizer_normal (P.subtype (le_normalizer.trans le_normalizer))
   simp_rw [← normalizer_eq_top, coe_subtype, ← subgroupOf_normalizer_eq le_normalizer, ←
     subgroupOf_normalizer_eq le_rfl, subgroupOf_self] at this
-  rw [← subtype_range P.normalizer.normalizer, MonoidHom.range_eq_map,
+  rw [← range_subtype P.normalizer.normalizer, MonoidHom.range_eq_map,
     ← this trivial]
-  exact map_comap_eq_self (le_normalizer.trans (ge_of_eq (subtype_range _)))
+  exact map_comap_eq_self (le_normalizer.trans (ge_of_eq (range_subtype _)))
 
 theorem normal_of_all_max_subgroups_normal [Finite G]
     (hnc : ∀ H : Subgroup G, IsCoatom H → H.Normal) {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
@@ -806,7 +806,7 @@ noncomputable def directProductOfNormal [Finite G]
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (Fintype.bijective_iff_injective_and_card _).mpr
   constructor
-  · apply Subgroup.injective_noncommPiCoprod_of_independent
+  · apply Subgroup.injective_noncommPiCoprod_of_iSupIndep
     apply independent_of_coprime_order hcomm
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)

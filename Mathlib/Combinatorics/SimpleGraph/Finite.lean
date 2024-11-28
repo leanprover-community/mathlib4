@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Sym.Card
 
 /-!

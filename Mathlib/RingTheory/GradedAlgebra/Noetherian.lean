@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li
 -/
 import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # The properties of a graded Noetherian ring.
