@@ -79,7 +79,7 @@ structure.
 When possible, instead of parametrizing results over `(f : α →ₙ*q β)`,
 you should parametrize over
 `(F : Type*) [FunLike F M N] [MulHomClass F M N] [CompleteLatticeHomClass F M N] (f : F)`. -/
-@[to_additive]
+@[to_additive existing]
 structure QuantaleHom (α β : Type*)
   [Semigroup α] [CompleteLattice α] [Semigroup β] [CompleteLattice β]
   extends α →ₙ* β, sSupHom α β
@@ -197,6 +197,7 @@ end Comp
 section Bot
 
 /-- `⊥` is the quantale homomorphism sending all elements to `⊥`. -/
+
 @[to_additive]
 instance [IsQuantale β] : Bot (α →ₙ*q β) :=
   ⟨{ (⊥ : sSupHom α β) with map_mul' := by simp; rw [IsQuantale.bot_mul_eq_bot] }⟩
