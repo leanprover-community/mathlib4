@@ -250,7 +250,7 @@ lemma mutuallySingular_tfae : List.TFAE
       Disjoint μ ν,
       Disjoint (ae μ) (ae ν) ] := by
   tfae_have 1 → 2
-  | h =>  h.disjoint
+  | h => h.disjoint
   tfae_have 2 → 1
   | h => mutuallySingular_of_disjoint h
   tfae_have 1 → 3
