@@ -33,7 +33,7 @@ section Relation
 
 variable (r : α → α → Prop)
 
-/-- The antisymmetrization relation `a ⋚ b` means that both `a ≤ b` and `b ≤ a`. -/
+/-- The antisymmetrization relation `AntisymmRel r a b` means that both `r a b` and `r b a`. -/
 def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
 
