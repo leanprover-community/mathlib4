@@ -23,7 +23,7 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
 
 ## Main definitions and results
 
-* `BoxIntegral.hasIntegralCorners`: a `Prop` that states that the vertices of the box have
+* `BoxIntegral.hasIntegralVertices`: a `Prop` that states that the vertices of the box have
 coordinates in `ℤ`
 
 * `BoxIntegral.unitPartition.box`: a `BoxIntegral`, indexed by `ν : ι → ℤ`, with vertices
