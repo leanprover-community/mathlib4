@@ -143,16 +143,6 @@ alias AntisymmRel.trans_le := le_of_antisymmRel_of_le
 instance : @Trans α α α (· ⋚ ·) (· ≤ ·) (· ≤ ·) where
   trans := le_of_antisymmRel_of_le
 
-theorem AntisymmRel.le_congr (h₁ : a ⋚ b) (h₂ : c ⋚ d) : a ≤ c ↔ b ≤ d where
-  mp h := (h₁.symm.trans_le h).trans_antisymmRel h₂
-  mpr h := (h₁.trans_le h).trans_antisymmRel h₂.symm
-
-theorem AntisymmRel.le_congr_left (h : a ⋚ b) : a ≤ c ↔ b ≤ c :=
-  h.le_congr (antisymmRel_refl _ c)
-
-theorem AntisymmRel.le_congr_right (h : b ⋚ c) : a ≤ b ↔ a ≤ c :=
-  (antisymmRel_refl _ a).le_congr h
-
 @[trans]
 theorem lt_of_lt_of_antisymmRel (h₁ : a < b) (h₂ : b ⋚ c) : a < c :=
   h₁.trans_le h₂.le
@@ -170,6 +160,16 @@ alias AntisymmRel.trans_lt := lt_of_antisymmRel_of_lt
 
 instance : @Trans α α α (· ⋚ ·) (· < ·) (· < ·) where
   trans := lt_of_antisymmRel_of_lt
+
+theorem AntisymmRel.le_congr (h₁ : a ⋚ b) (h₂ : c ⋚ d) : a ≤ c ↔ b ≤ d where
+  mp h := (h₁.symm.trans_le h).trans_antisymmRel h₂
+  mpr h := (h₁.trans_le h).trans_antisymmRel h₂.symm
+
+theorem AntisymmRel.le_congr_left (h : a ⋚ b) : a ≤ c ↔ b ≤ c :=
+  h.le_congr (antisymmRel_refl _ c)
+
+theorem AntisymmRel.le_congr_right (h : b ⋚ c) : a ≤ b ↔ a ≤ c :=
+  (antisymmRel_refl _ a).le_congr h
 
 theorem AntisymmRel.lt_congr (h₁ : a ⋚ b) (h₂ : c ⋚ d) : a < c ↔ b < d where
   mp h := (h₁.symm.trans_lt h).trans_antisymmRel h₂
