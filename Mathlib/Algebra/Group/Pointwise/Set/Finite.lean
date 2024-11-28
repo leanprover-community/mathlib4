@@ -112,7 +112,7 @@ section InvolutiveInv
 variable [InvolutiveInv α] {s : Set α}
 
 @[to_additive (attr := simp)] lemma finite_inv : s⁻¹.Finite ↔ s.Finite := by
-  rw [← image_inv, finite_image_iff inv_injective.injOn]
+  rw [← image_inv_eq_inv, finite_image_iff inv_injective.injOn]
 
 @[to_additive (attr := simp)] lemma infinite_inv : s⁻¹.Infinite ↔ s.Infinite := finite_inv.not
 
@@ -181,7 +181,7 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
     exact Subtype.ext (mul_right_cancel (Subtype.ext_iff.mp hbc))
   have mono : Monotone (fun n ↦ Fintype.card (↥(S ^ n)) : ℕ → ℕ) :=
     monotone_nat_of_le_succ fun n ↦ key a _ _ fun b hb ↦ Set.mul_mem_mul hb ha
-  refine card_pow_eq_card_pow_card_univ_aux mono (fun n ↦ set_fintype_card_le_univ (S ^ n))
+  refine fun _ ↦ Nat.stabilises_of_monotone mono (fun n ↦ set_fintype_card_le_univ (S ^ n))
     fun n h ↦ le_antisymm (mono (n + 1).le_succ) (key a⁻¹ (S ^ (n + 2)) (S ^ (n + 1)) ?_)
   replace h₂ : S ^ n * {a} = S ^ (n + 1) := by
     have : Fintype (S ^ n * Set.singleton a) := by

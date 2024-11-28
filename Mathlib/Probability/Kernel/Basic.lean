@@ -149,7 +149,7 @@ def swap (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Kernel (α 
 
 instance : IsMarkovKernel (swap α β) := by rw [swap]; infer_instance
 
-/-- See `swap_apply` for a fully applied version of this lemma. -/
+/-- See `swap_apply'` for a fully applied version of this lemma. -/
 lemma swap_apply (ab : α × β) : swap α β ab = Measure.dirac ab.swap := by
   rw [swap, deterministic_apply]
 
