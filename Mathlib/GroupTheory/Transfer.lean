@@ -249,10 +249,6 @@ namespace IsCyclic
 
 open Subgroup
 
-theorem _root_.Subgroup.relindex_dvd_card {G : Type*} [Group G] (H K : Subgroup G) :
-    H.relindex K ∣ Nat.card G :=
-  (H.subgroupOf K).index_dvd_card.trans K.card_subgroup_dvd_card
-
 variable {G : Type*} [Group G] [Finite G] {P : Sylow (Nat.card G).minFac G}
 
 theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centralizer (P : Set G) := by
