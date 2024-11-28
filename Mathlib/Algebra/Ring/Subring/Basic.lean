@@ -66,6 +66,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [Ring R]
 variable [Ring S] [Ring T]
 
 namespace Subring
+variable {s t : Subring R}
 
 -- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
 -- projection `s.toSubmonoid`
@@ -74,40 +75,36 @@ namespace Subring
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id
 
-@[gcongr, mono]
+@[mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
+
+@[gcongr]
+lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
+
+@[gcongr]
+lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
 
 @[mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 
-@[gcongr, mono]
+@[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
 
 @[gcongr]
-lemma toAddSubgroup_lt_toAddSubgroup {s t : Subring R} (hst : s < t) :
-    s.toAddSubgroup < t.toAddSubgroup := hst
+lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
 
 @[gcongr]
-lemma toAddSubgroup_le_toAddSubgroup {s t : Subring R} (hst : s ≤ t) :
-    s.toAddSubgroup ≤ t.toAddSubgroup := hst
+lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
 
-@[gcongr, mono]
+@[mono]
 theorem toSubmonoid_mono : Monotone (fun s : Subring R => s.toSubmonoid) :=
   toSubmonoid_strictMono.monotone
-
-@[gcongr]
-lemma toSubmonoid_lt_toSubmonoid {s t : Subring R} (hst : s < t) : s.toSubmonoid < t.toSubmonoid :=
-  hst
-
-@[gcongr]
-lemma toSubmonoid_le_toSubmonoid {s t : Subring R} (hst : s ≤ t) : s.toSubmonoid ≤ t.toSubmonoid :=
-  hst
 
 end Subring
 
