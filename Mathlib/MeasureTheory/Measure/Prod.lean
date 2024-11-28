@@ -882,8 +882,7 @@ lemma fst_add {μ ν : Measure (α × β)} : (μ + ν).fst = μ.fst + ν.fst := 
 lemma fst_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).fst = sum (fun n ↦ (μ n).fst) := by
   ext s hs
   rw [fst_apply hs, sum_apply, sum_apply _ hs]
-  · congr with i
-    rw [fst_apply hs]
+  · simp_rw [fst_apply hs]
   · exact measurable_fst hs
 
 @[gcongr]
@@ -941,8 +940,7 @@ lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd := 
 lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) := by
   ext s hs
   rw [snd_apply hs, sum_apply, sum_apply _ hs]
-  · congr with i
-    rw [snd_apply hs]
+  · simp_rw [snd_apply hs]
   · exact measurable_snd hs
 
 @[gcongr]
