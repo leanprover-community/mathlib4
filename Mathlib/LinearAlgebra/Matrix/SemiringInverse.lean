@@ -261,15 +261,11 @@ theorem isUnit_of_right_inverse (h : A * B = 1) : IsUnit A :=
 theorem exists_right_inverse_iff_isUnit : (∃ B, A * B = 1) ↔ IsUnit A :=
   ⟨fun ⟨_, h⟩ ↦ isUnit_of_right_inverse h, fun h ↦ have := h.invertible; ⟨⅟A, mul_invOf_self' A⟩⟩
 
-section
-
 /-- A version of `mul_eq_one_comm` that works for square matrices with rectangular types. -/
 theorem mul_eq_one_comm_of_equiv {A : Matrix m n R} {B : Matrix n m R} (e : m ≃ n) :
     A * B = 1 ↔ B * A = 1 := by
   refine (reindex e e).injective.eq_iff.symm.trans ?_
   rw [reindex_apply, reindex_apply, submatrix_one_equiv, ← submatrix_mul_equiv _ _ _ (.refl _),
     mul_eq_one_comm, submatrix_mul_equiv, coe_refl, submatrix_id_id]
-
-end
 
 end Matrix
