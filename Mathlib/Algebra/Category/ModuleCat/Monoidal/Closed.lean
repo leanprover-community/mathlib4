@@ -21,14 +21,22 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
--- Not sure how to define these, presumably there's some abstract machine that does exactly this!
+@[simps]
 def asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
-    M ⟶ ((linearCoyoneda R (ModuleCat R)).obj (op N)).obj P := sorry
+    M ⟶ ((linearCoyoneda R (ModuleCat R)).obj (op N)).obj P :=
+  asHom <| homLinearEquiv.symm.toLinearMap ∘ₗ f
 
--- Not sure how to define these, presumably there's some abstract machine that does exactly this!
+@[simp] lemma asHom₂_compr₂ {M N P Q : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) (g : P →ₗ[R] Q):
+    asHom₂ (f.compr₂ g) = asHom₂ f ≫ (((linearCoyoneda _ _).obj _).map (asHom g)) := rfl
+
+@[simps!]
 def Hom.hom₂ {M N P : ModuleCat.{u} R}
     (f : ModuleCat.Hom M (((linearCoyoneda R (ModuleCat R)).obj (op N)).obj P)) :
-    M →ₗ[R] N →ₗ[R] P := sorry
+    M →ₗ[R] N →ₗ[R] P :=
+  Hom.hom (by convert (f ≫ asHom homLinearEquiv.toLinearMap))
+
+@[simp] lemma Hom.hom₂_asHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
+    (asHom₂ f).hom₂ = f := rfl
 
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
 (This is only a separate definition in order to speed up typechecking. )
@@ -42,8 +50,7 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     ext : 1
     apply TensorProduct.ext'
     intro m n
-    rw [hom_comp, LinearMap.comp_apply]
-    -- This used to be `rw` and was longer (?), but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    simp only [Hom.hom₂_asHom₂, LinearMap.comp_apply, hom_comp, MonoidalCategory.tensorLeft_obj]
     erw [MonoidalCategory.braiding_hom_apply, TensorProduct.lift.tmul]
   right_inv _ := rfl
 
@@ -55,6 +62,7 @@ instance : MonoidalClosed (ModuleCat.{u} R) where
               -- Porting note: this proof was automatic in mathlib3
               homEquiv_naturality_left_symm := by
                 intros
+                ext : 1
                 apply TensorProduct.ext'
                 intro m n
                 rfl } }
@@ -81,8 +89,10 @@ theorem monoidalClosed_uncurry
 should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments in the identity map
 `Hom(M, N) ⟶ (M ⟶ N)` and uncurry the resulting map `M ⟶ Hom(M, N) ⟶ N.` -/
 theorem ihom_ev_app (M N : ModuleCat.{u} R) :
-    (ihom.ev M).app N = ModuleCat.asHom₂ (TensorProduct.uncurry _ _ _ _ LinearMap.id.flip) := by
+    (ihom.ev M).app N = ModuleCat.asHom (TensorProduct.uncurry R M ((ihom M).obj N) N
+      (LinearMap.lcomp _ _ homLinearEquiv.toLinearMap ∘ₗ LinearMap.id.flip)) := by
   rw [← MonoidalClosed.uncurry_id_eq_ev]
+  ext : 1
   apply TensorProduct.ext'
   apply monoidalClosed_uncurry
 
@@ -94,7 +104,8 @@ theorem ihom_coev_app (M N : ModuleCat.{u} R) :
   rfl
 
 theorem monoidalClosed_pre_app {M N : ModuleCat.{u} R} (P : ModuleCat.{u} R) (f : N ⟶ M) :
-    (MonoidalClosed.pre f).app P = ModuleCat.asHom₂ (LinearMap.lcomp R _ f) :=
+    (MonoidalClosed.pre f).app P = asHom (homLinearEquiv.symm.toLinearMap ∘ₗ
+      LinearMap.lcomp _ _ f.hom ∘ₗ homLinearEquiv.toLinearMap) :=
   rfl
 
 end ModuleCat

@@ -177,6 +177,13 @@ lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv
   rw [← comp_apply]
   simp
 
+/-- `ModuleCat.Hom.hom` bundled as an `Equiv`. -/
+def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
+  toFun := Hom.hom
+  invFun := asHom
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 end
 
 instance : Inhabited (ModuleCat R) :=
@@ -392,6 +399,12 @@ instance Hom.instModule : Module S (M ⟶ N) :=
     { toFun := Hom.hom, map_zero' := hom_zero, map_add' := hom_add }
     hom_bijective.injective
     (fun _ _ => rfl)
+
+/-- `ModuleCat.Hom.hom` bundled as a linear equivalence. -/
+def homLinearEquiv : (M ⟶ N) ≃ₗ[S] (M →ₗ[R] N) :=
+  { homEquiv with
+    map_add' := fun _ _ => rfl
+    map_smul' := fun _ _ => rfl }
 
 end Module
 
