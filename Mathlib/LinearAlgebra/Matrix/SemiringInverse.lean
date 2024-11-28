@@ -17,41 +17,45 @@ This files proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutati
 
 -/
 
-namespace Matrix
-
-open Equiv Finset
+open Equiv Equiv.Perm Finset
 
 variable {n m R : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommSemiring R]
 
 variable (s : ℤˣ) (A B : Matrix n n R) (i j : n)
 
-/-- Filter by parity -/
-def filterp : Finset (Perm n) := univ.filter fun σ ↦ σ.sign = s
+namespace Equiv.Perm
+
+/-- Filter permutations by parity. -/
+def ofSign : Finset (Perm n) := univ.filter fun σ ↦ σ.sign = s
 
 @[simp]
-lemma mem_filterp {s} {σ : Perm n} : σ ∈ filterp s ↔ σ.sign = s := by
-  rw [filterp, mem_filter, and_iff_right (mem_univ σ)]
+lemma mem_ofSign {s} {σ : Perm n} : σ ∈ ofSign s ↔ σ.sign = s := by
+  rw [ofSign, mem_filter, and_iff_right (mem_univ σ)]
 
-lemma filterp_disjoint : Disjoint (filterp 1 : Finset (Perm n)) (filterp (-1)) := by
+lemma ofSign_disjoint : _root_.Disjoint (ofSign 1 : Finset (Perm n)) (ofSign (-1)) := by
   rw [Finset.disjoint_iff_ne]
   rintro σ hσ τ hτ rfl
-  rw [mem_filterp] at hσ hτ
+  rw [mem_ofSign] at hσ hτ
   have := hσ.symm.trans hτ
   contradiction
 
-lemma filterp_disjUnion :
-    (filterp 1).disjUnion (filterp (-1)) filterp_disjoint = (univ : Finset (Perm n)) := by
+lemma ofSign_disjUnion :
+    (ofSign 1).disjUnion (ofSign (-1)) ofSign_disjoint = (univ : Finset (Perm n)) := by
   ext σ
-  simp_rw [mem_disjUnion, mem_filterp, Int.units_eq_one_or, mem_univ]
+  simp_rw [mem_disjUnion, mem_ofSign, Int.units_eq_one_or, mem_univ]
+
+end Equiv.Perm
+
+namespace Matrix
 
 /-- Filter determinant by parity. -/
-def detp := ∑ σ ∈ filterp s, ∏ k, A k (σ k)
+def detp : R := ∑ σ ∈ ofSign s, ∏ k, A k (σ k)
 
 @[simp]
 lemma detp_one_one : detp 1 (1 : Matrix n n R) = 1 := by
   rw [detp, sum_eq_single_of_mem 1]
   · simp [one_apply]
-  · simp [filterp]
+  · simp [ofSign]
   · rintro σ - hσ1
     obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
     exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
@@ -62,37 +66,37 @@ lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
   intro σ hσ
   have hσ1 : σ ≠ 1 := by
     contrapose! hσ
-    simp [filterp, hσ]
+    simp [ofSign, hσ]
   obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
   exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
 
 /-- Filter adjugate matrix by parity. -/
 def adjp : Matrix n n R :=
-  fun i j ↦ ∑ σ ∈ (filterp s).filter fun σ ↦ σ j = i, ∏ k ∈ {j}ᶜ, A k (σ k)
+  of fun i j ↦ ∑ σ ∈ (ofSign s).filter fun σ ↦ σ j = i, ∏ k ∈ {j}ᶜ, A k (σ k)
 
 lemma adjp_apply (i j : n) :
-    adjp s A i j = ∑ σ ∈ (filterp s).filter fun σ ↦ σ j = i, ∏ k ∈ {j}ᶜ, A k (σ k) :=
+    adjp s A i j = ∑ σ ∈ (ofSign s).filter fun σ ↦ σ j = i, ∏ k ∈ {j}ᶜ, A k (σ k) :=
   rfl
 
 theorem detp_mul :
     detp 1 (A * B) + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) =
       detp (-1) (A * B) + (detp 1 A * detp 1 B + detp (-1) A * detp (-1) B) := by
-  have hf {s t} {σ : Perm n} (hσ : σ ∈ filterp s) :
-      filterp (t * s) = (filterp t).map (mulRightEmbedding σ) := by
+  have hf {s t} {σ : Perm n} (hσ : σ ∈ ofSign s) :
+      ofSign (t * s) = (ofSign t).map (mulRightEmbedding σ) := by
     ext τ
     simp_rw [mem_map, mulRightEmbedding_apply, ← eq_mul_inv_iff_mul_eq, exists_eq_right,
-      mem_filterp, _root_.map_mul, _root_.map_inv, mul_inv_eq_iff_eq_mul, mem_filterp.mp hσ]
+      mem_ofSign, _root_.map_mul, _root_.map_inv, mul_inv_eq_iff_eq_mul, mem_ofSign.mp hσ]
   have h {s t} : detp s A * detp t B =
-      ∑ σ ∈ filterp s, ∑ τ ∈ filterp (t * s), ∏ k, A k (σ k) * B (σ k) (τ k) := by
+      ∑ σ ∈ ofSign s, ∑ τ ∈ ofSign (t * s), ∏ k, A k (σ k) * B (σ k) (τ k) := by
     simp_rw [detp, sum_mul_sum, prod_mul_distrib]
     refine sum_congr rfl fun σ hσ ↦ ?_
     simp_rw [hf hσ, sum_map, mulRightEmbedding_apply, Perm.mul_apply]
-    exact sum_congr rfl fun τ hτ ↦ (congr_arg (_ * ·) (prod_comp σ _).symm)
+    exact sum_congr rfl fun τ hτ ↦ (congr_arg (_ * ·) (Equiv.prod_comp σ _).symm)
   let ι : Perm n ↪ (n → n) := ⟨_, coe_fn_injective⟩
   have hι {σ x} : ι σ x = σ x := rfl
-  let bij : Finset (n → n) := (disjUnion (filterp 1) (filterp (-1)) filterp_disjoint).map ι
+  let bij : Finset (n → n) := (disjUnion (ofSign 1) (ofSign (-1)) ofSign_disjoint).map ι
   replace h (s) : detp s (A * B) =
-      ∑ σ ∈ bijᶜ, ∑ τ ∈ filterp s, ∏ i : n, A i (σ i) * B (σ i) (τ i) +
+      ∑ σ ∈ bijᶜ, ∑ τ ∈ ofSign s, ∏ i : n, A i (σ i) * B (σ i) (τ i) +
         (detp 1 A * detp s B + detp (-1) A * detp (-s) B) := by
     simp_rw [h, neg_mul_neg, mul_one, detp, mul_apply, prod_univ_sum, Fintype.piFinset_univ]
     rw [sum_comm, ← sum_compl_add_sum bij, sum_map, sum_disjUnion]
@@ -102,20 +106,20 @@ theorem detp_mul :
   refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (add_comm _ _)
   replace hσ : ¬ Function.Injective σ := by
     contrapose! hσ
-    rw [not_mem_compl, mem_map, filterp_disjUnion]
+    rw [not_mem_compl, mem_map, ofSign_disjUnion]
     exact ⟨Equiv.ofBijective σ hσ.bijective_of_finite, mem_univ _, rfl⟩
   obtain ⟨i, j, hσ, hij⟩ := Function.not_injective_iff.mp hσ
   replace hσ k : σ (swap i j k) = σ k := by
     rw [swap_apply_def]
     split_ifs with h h <;> simp only [hσ, h]
-  rw [← mul_neg_one, hf (mem_filterp.mpr (Perm.sign_swap hij)), sum_map]
+  rw [← mul_neg_one, hf (mem_ofSign.mpr (sign_swap hij)), sum_map]
   simp_rw [prod_mul_distrib, mulRightEmbedding_apply, Perm.mul_apply]
   refine sum_congr rfl fun τ hτ ↦ congr_arg (_ *  ·) ?_
-  rw [← prod_comp (swap i j)]
+  rw [← Equiv.prod_comp (swap i j)]
   simp only [hσ]
 
 theorem mul_adjp_add_detp_apply_eq : (A * adjp s A) i i = detp s A := by
-  have key := sum_fiberwise_eq_sum_filter (filterp s) univ (· i) fun σ ↦ ∏ k, A k (σ k)
+  have key := sum_fiberwise_eq_sum_filter (ofSign s) univ (· i) fun σ ↦ ∏ k, A k (σ k)
   simp_rw [mem_univ, filter_True] at key
   simp_rw [mul_apply, adjp_apply, mul_sum, detp, ← key]
   refine sum_congr rfl fun x hx ↦ sum_congr rfl fun σ hσ ↦ ?_
@@ -124,22 +128,22 @@ theorem mul_adjp_add_detp_apply_eq : (A * adjp s A) i i = detp s A := by
 theorem mul_adjp_add_detp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
   simp_rw [mul_apply, adjp_apply, mul_sum, sum_sigma']
   let f : (Σ x : n, Perm n) → (Σ x : n, Perm n) := fun ⟨x, σ⟩ ↦ ⟨σ i, σ * swap i j⟩
-  let t s : Finset (Σ x : n, Perm n) := univ.sigma fun x ↦ (filterp s).filter fun σ ↦ σ j = x
+  let t s : Finset (Σ x : n, Perm n) := univ.sigma fun x ↦ (ofSign s).filter fun σ ↦ σ j = x
   have hf {s} : ∀ p ∈ t s, f (f p) = p := by
     intro ⟨x, σ⟩ hp
-    rw [mem_sigma, mem_filter, mem_filterp] at hp
+    rw [mem_sigma, mem_filter, mem_ofSign] at hp
     simp_rw [f, Perm.mul_apply, swap_apply_left, hp.2.2, mul_swap_mul_self]
   refine sum_bij' (fun p _ ↦ f p) (fun p _ ↦ f p) ?_ ?_ hf hf ?_
   · intro ⟨x, σ⟩ hp
-    rw [mem_sigma, mem_filter, mem_filterp] at hp ⊢
-    rw [Perm.mul_apply, Perm.sign_mul, hp.2.1, Perm.sign_swap h, swap_apply_right]
+    rw [mem_sigma, mem_filter, mem_ofSign] at hp ⊢
+    rw [Perm.mul_apply, sign_mul, hp.2.1, sign_swap h, swap_apply_right]
     exact ⟨mem_univ (σ i), rfl, rfl⟩
   · intro ⟨x, σ⟩ hp
-    rw [mem_sigma, mem_filter, mem_filterp] at hp ⊢
-    rw [Perm.mul_apply, Perm.sign_mul, hp.2.1, Perm.sign_swap h, swap_apply_right]
+    rw [mem_sigma, mem_filter, mem_ofSign] at hp ⊢
+    rw [Perm.mul_apply, sign_mul, hp.2.1, sign_swap h, swap_apply_right]
     exact ⟨mem_univ (σ i), rfl, rfl⟩
   · intro ⟨x, σ⟩ hp
-    rw [mem_sigma, mem_filter, mem_filterp] at hp
+    rw [mem_sigma, mem_filter, mem_ofSign] at hp
     have key : ({j}ᶜ : Finset n) = disjUnion ({i} : Finset n) ({i, j} : Finset n)ᶜ (by simp) := by
       rw [singleton_disjUnion, cons_eq_insert, compl_insert, insert_erase]
       rwa [mem_compl, mem_singleton]
@@ -169,13 +173,13 @@ theorem isAddUnit_detp_mul_detp (hAB : A * B = 1) :
   intro s t h
   simp_rw [detp, sum_mul_sum, IsAddUnit.sum_iff]
   intro σ hσ τ hτ
-  rw [mem_filterp] at hσ hτ
-  rw [← hσ, ← hτ, ← Perm.sign_inv] at h
-  replace h := ne_of_apply_ne Perm.sign h
+  rw [mem_ofSign] at hσ hτ
+  rw [← hσ, ← hτ, ← sign_inv] at h
+  replace h := ne_of_apply_ne sign h
   rw [Ne, eq_comm, eq_inv_iff_mul_eq_one, eq_comm] at h
   simp_rw [Equiv.ext_iff, not_forall, Perm.mul_apply, Perm.one_apply] at h
   obtain ⟨k, hk⟩ := h
-  rw [mul_comm, ← prod_comp σ, mul_comm, ← prod_mul_distrib,
+  rw [mul_comm, ← Equiv.prod_comp σ, mul_comm, ← prod_mul_distrib,
     ← mul_prod_erase univ _ (mem_univ k), ← smul_eq_mul]
   exact (isAddUnit_mul hAB k (τ (σ k)) (σ k) hk).smul _
 
@@ -190,12 +194,12 @@ theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
     IsAddUnit.sum_iff]
   intro k hk σ hσ τ hτ
   rw [mem_filter] at hσ
-  rw [mem_filterp] at hσ hτ
-  rw [← hσ.1, ← hτ, ← Perm.sign_inv] at h
-  replace h := ne_of_apply_ne Perm.sign h
+  rw [mem_ofSign] at hσ hτ
+  rw [← hσ.1, ← hτ, ← sign_inv] at h
+  replace h := ne_of_apply_ne sign h
   rw [Ne, eq_comm, eq_inv_iff_mul_eq_one] at h
-  obtain ⟨l, hl1, hl2⟩ := exists_ne_of_one_lt_card (Perm.one_lt_card_support_of_ne_one h) (τ⁻¹ j)
-  rw [Perm.mem_support, ne_comm] at hl1
+  obtain ⟨l, hl1, hl2⟩ := exists_ne_of_one_lt_card (one_lt_card_support_of_ne_one h) (τ⁻¹ j)
+  rw [mem_support, ne_comm] at hl1
   rw [Ne, ← mem_singleton, ← mem_compl] at hl2
   rw [← prod_mul_prod_compl {τ⁻¹ j}, mul_mul_mul_comm, mul_comm, ← smul_eq_mul]
   apply IsAddUnit.smul
