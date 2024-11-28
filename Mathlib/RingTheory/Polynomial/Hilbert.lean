@@ -96,7 +96,7 @@ theorem natDegree_pow_rootMultiplicity_sub_mul_greatestFactorOneSubNotDvd_le
 
 end greatestFactorOneSubNotDvd
 
-variable {F : Type*} [Field F] [CharZero F]
+variable (F : Type*) [Field F] [CharZero F]
 
 /--
 A polynomial which makes it easier to define the Hilbert polynomial. See also the theorem
@@ -109,13 +109,15 @@ noncomputable def preHilbert (d k : ℕ) : F[X] :=
 local notation "gFOSND" => greatestFactorOneSubNotDvd
 
 theorem preHilbert_eq_choose_sub_add (d k n : ℕ) (hkn : k ≤ n):
-    (preHilbert d k).eval (n : F) = (n - k + d).choose d := by
+    (preHilbert F d k).eval (n : F) = (n - k + d).choose d := by
   rw [preHilbert, eval_smul, eval_comp, map_natCast, eval_add, eval_sub, eval_X, eval_natCast,
     eval_one, smul_eq_mul, ← cast_sub hkn, ← cast_add_one, ← ascPochhammer_eval_cast,
     ascPochhammer_nat_eq_ascFactorial, ascFactorial_eq_factorial_mul_choose, cast_mul,
     ← mul_assoc]
   simp only [isUnit_iff_ne_zero, ne_eq, Ne.symm <| @NeZero.ne' _ _ _ <| @NeZero.charZero _ _
     ⟨factorial_ne_zero d⟩ .., not_false_eq_true, IsUnit.inv_mul_cancel, one_mul]
+
+variable {F}
 
 /--
 Given `p : F[X]` and `d : ℕ`, the Hilbert polynomial of `p` and `d`.
@@ -128,7 +130,7 @@ noncomputable def hilbert (p : F[X]) (d : ℕ) : F[X] :=
   if h : p = 0 then 0
   else if d ≤ p.rootMultiplicity 1 then 0
   else ∑ i in Finset.range ((greatestFactorOneSubNotDvd p h).natDegree + 1),
-  ((greatestFactorOneSubNotDvd p h).coeff i) • preHilbert (d - (p.rootMultiplicity 1) - 1) i
+  ((greatestFactorOneSubNotDvd p h).coeff i) • preHilbert F (d - (p.rootMultiplicity 1) - 1) i
 
 /--
 Given `p : F[X]` and `d : ℕ`. The key property of the Hilbert polynomial with respect to
@@ -160,7 +162,7 @@ theorem coeff_mul_invOneSubPow_eq_hilbert_eval (p : F[X]) (d n : ℕ) (hn : p.na
         as_sum_range_C_mul_X_pow _, eval_finset_sum]
       simp only [eval_smul, smul_eq_mul]
       rw [PowerSeries.coeff_mul, ← Finset.sum_coe_sort _ (fun _ => _ * eval _ _)]
-      simp_rw [show (_ : Finset.range _) → eval (n : F) (preHilbert (d - rootMultiplicity 1 p - 1)
+      simp_rw [show (_ : Finset.range _) → eval (n : F) (preHilbert F (d - rootMultiplicity 1 p - 1)
         _) = _ by intro x; rw [preHilbert_eq_choose_sub_add]; exact Nat.le_trans (Nat.le_of_lt_succ
         (lt_add_one_of_le (Finset.mem_range_succ_iff.1 x.2))) (le_trans
         (natDegree_greatestFactorOneSubNotDvd_le p h) (le_of_lt hn))]
