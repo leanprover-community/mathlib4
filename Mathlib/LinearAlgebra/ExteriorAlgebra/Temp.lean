@@ -7,6 +7,7 @@ Authors: Daniel Morrison
 import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Properties
+import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
 /-!
 Documentation
@@ -40,8 +41,9 @@ variable (R M N n)
 
 /-- The linear map from `n`-fold alternating maps from `M` to `N` to linear maps from
 `⋀[R]^n M` to `N`-/
-def liftAlternating : (M [⋀^Fin n]→ₗ[R] N) →ₗ[R] ⋀[R]^n M →ₗ[R] N := sorry
+--def liftAlternating : (M [⋀^Fin n]→ₗ[R] N) →ₗ[R] ⋀[R]^n M →ₗ[R] N := sorry
 
-
+def liftAlternating : (M [⋀^Fin n]→ₗ[R] N) →ₗ[R] ⋀[R]^n M →ₗ[R] N :=
+  (ExteriorAlgebra.liftAlternating ∘ₗ LinearMap.single _ _ n).domRestrict₂ (⋀[R]^n M)
 
 end exteriorPower

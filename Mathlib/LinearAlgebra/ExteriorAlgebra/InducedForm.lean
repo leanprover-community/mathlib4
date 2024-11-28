@@ -13,95 +13,61 @@ import Mathlib.LinearAlgebra.ExteriorAlgebra.Temp
 Documentation
 -/
 
-open ExteriorAlgebra BigOperators
-
-section matrix
-
-variable {m n α : Type*}
-
-theorem Matrix.of_eq (f g : m → n → α) : f = g →
-  Matrix.of (fun i j ↦ f i j) = Matrix.of (fun i j ↦ g i j) := by
-  intro h
-  rw [h]
-
-theorem Matrix.of_updateRow [DecidableEq m] (f : m → n → α) (x : α) (i' : m) :
-  Matrix.of (fun i j ↦ (Function.update f i' (fun _ ↦ x)) i j) =
-  (Matrix.of fun i j ↦ f i j).updateRow i' (fun _ ↦ x) := by
-  ext i j
-  simp only [of_apply, updateRow_apply]
-  rw [Function.update_apply, ite_apply]
-
-theorem Matrix.of_updateColumn [DecidableEq n] (f : m → n → α) (x : α) (j' : n) :
-  Matrix.of (fun i j ↦ (Function.update (f i) j' x) j) =
-  (Matrix.of fun i j ↦ f i j).updateColumn j' (fun _ ↦ x) := by
-  ext i j
-  simp only [of_apply, updateColumn_apply]
-  exact Function.update_apply (f i) j' x j
-
-variable {m' n' : Type*}
-
-theorem Matrix.of_update_right [DecidableEq n'] (f : m → n → α) (v : m' → m) (w : n' → n) (j' : n')
-  (x : n) :
-  Matrix.of (fun i j ↦ f (v i) (Function.update w j' x <| j)) =
-  (Matrix.of (fun i j ↦ f (v i) (w j))).updateColumn j' (fun i ↦ f (v i) x) := by
-  ext i j
-  simp only [of_apply, updateColumn_apply, Function.update_apply]
-  rw [apply_ite (f (v i))]
-
-theorem Matrix.det_of_updateColumn_add [CommRing α] [DecidableEq n'] [Fintype n']
-  (f : n → n → α) (v w : n' → n)
-  (j' : n') (x y : n) :
-  ((Matrix.of (fun i j ↦ f (v i) (w j))).updateColumn j' (fun i ↦ f (v i) x + f (v i) y)).det =
-  ((Matrix.of (fun i j ↦ f (v i) (w j))).updateColumn j' (fun i ↦ f (v i) x)).det +
-  ((Matrix.of (fun i j ↦ f (v i) (w j))).updateColumn j' (fun i ↦ f (v i) y)).det := by
-  rw [← Matrix.det_updateColumn_add]
-  rfl
-
-
-
-end matrix
+open Function
 
 namespace exteriorPower
 
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+  (k : ℕ)
+
+variable {R M}
 variable (B : LinearMap.BilinForm R M)
-variable {k : ℕ}
 
-section inducedForm
+theorem auxCol {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) (l : ι) :
+    (Matrix.of fun i j ↦ B (v i) (Function.update w l z j)) =
+    (Matrix.of fun i j ↦ B (v i) (w j)).updateColumn l (fun i ↦ B (v i) z) := by
+  ext i j
+  simp only [update_apply, Matrix.of_apply, Matrix.updateColumn_apply]
+  aesop
 
-theorem Matrix.bilin_det_of_updateColumn_add (v w : Fin k → M)
-  (j' : Fin k) (x y : M) :
-  ((Matrix.of (fun i j ↦ B (v i) (w j))).updateColumn j' (fun i ↦ B (v i) x + B (v i) y)).det =
-  ((Matrix.of (fun i j ↦ B (v i) (w j))).updateColumn j' (fun i ↦ B (v i) x)).det +
-  ((Matrix.of (fun i j ↦ B (v i) (w j))).updateColumn j' (fun i ↦ B (v i) y)).det := by
-  rw [← Matrix.det_updateColumn_add]
-  rfl
-
-#check Matrix.bilin_det_of_updateColumn_add B ?v ?w ?j' ?x ?y
-
-#check Matrix.det_updateColumn_add
+theorem auxRow {ι : Type*} [DecidableEq ι] (v w : ι → M) (z : M) (l : ι) :
+    (Matrix.of fun i j ↦ B (Function.update v l z i) (w j)) =
+    (Matrix.of fun i j ↦ B (v i) (w j)).updateRow l (fun j ↦ B z (w j)) := by
+  ext i j
+  simp only [update_apply, Matrix.of_apply, Matrix.updateRow_apply]
+  aesop
 
 private def BilinFormAux :
     M [⋀^Fin k]→ₗ[R] M [⋀^Fin k]→ₗ[R] R where
   toFun v :=
-    { toFun := fun w ↦ Matrix.det <| Matrix.of (fun i j ↦ B (v i) (w j))
-      map_add' := by
-        intro _ w j' x y
-        dsimp
-        simp only [Matrix.of_update_right]
-        simp only [B.add_right]
-        --rw [← Matrix.bilin_det_of_updateColumn_add B v w j' x y]
-        sorry
-      map_smul' := sorry
-      map_eq_zero_of_eq' := sorry }
-  map_add' := sorry
-  map_smul' := sorry
-  map_eq_zero_of_eq' := sorry
+    { toFun := fun w ↦ (Matrix.of fun i j ↦ B (v i) (w j)).det
+      map_add' := fun {_i} w l x y ↦ by
+        simp only [auxCol, map_add]
+        convert Matrix.det_updateColumn_add _ l _ _
+      map_smul' := fun {_i} w l t x ↦ by
+        simp only [auxCol, map_smul]
+        convert Matrix.det_updateColumn_smul _ l t _
+      map_eq_zero_of_eq' := fun w l₁ l₂ hl hl' ↦ Matrix.det_zero_of_column_eq hl' <| by simp [hl] }
+  map_add' {_i} v l x y := by
+    ext w
+    simp only [AlternatingMap.coe_mk, MultilinearMap.coe_mk, AlternatingMap.add_apply,
+      auxRow, map_add, LinearMap.add_apply]
+    convert Matrix.det_updateRow_add _ l _ _
+  map_smul' {_i} v l t x := by
+    ext w
+    simp only [AlternatingMap.coe_mk, MultilinearMap.coe_mk, AlternatingMap.smul_apply, smul_eq_mul,
+      auxRow, map_smul, LinearMap.smul_apply, smul_eq_mul]
+    convert Matrix.det_updateRow_smul _ l t _
+  map_eq_zero_of_eq' v l₁ l₂ hl hl' :=
+    AlternatingMap.ext fun w ↦ Matrix.det_zero_of_row_eq hl' <| funext fun i ↦ by simp [hl]
 
 protected def BilinForm : LinearMap.BilinForm R (⋀[R]^k M) :=
   (liftAlternating R M R k) ∘ₗ
-  (liftAlternating R M (M [⋀^Fin k]→ₗ[R] R) k (BilinFormAux B))
+    liftAlternating R M (M [⋀^Fin k]→ₗ[R] R) k (BilinFormAux k B)
 
-end inducedForm
+theorem symm_of_symm (h : ∀ v w : M, B v w = B w v) : ∀ v w : ⋀[R]^k M, exteriorPower.BilinForm k B
+  v w = exteriorPower.BilinForm k B w v := by
+
+  sorry
 
 end exteriorPower
