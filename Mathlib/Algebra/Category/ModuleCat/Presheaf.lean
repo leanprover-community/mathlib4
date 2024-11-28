@@ -386,13 +386,10 @@ noncomputable def forgetToPresheafModuleCatObj
   map f := forgetToPresheafModuleCatObjMap X hX M f
   -- TODO: the lines below were automatic: probably there's some defeq mismatch between `M.obj` and
   -- `forgetToPresheafModuleCatObjObj` in `forgetToPresheafModuleCatObjMap`...
-  map_id Y := by ext; erw [forgetToPresheafModuleCatObjMap_apply]; simp
+  map_id Y := by ext; simp only [forgetToPresheafModuleCatObjMap_apply]; simp
   map_comp f g := by
     ext
-    simp only [ModuleCat.hom_comp, LinearMap.comp_apply]
-    erw [forgetToPresheafModuleCatObjMap_apply _ _ _ f,
-      forgetToPresheafModuleCatObjMap_apply _ _ _ g,
-      forgetToPresheafModuleCatObjMap_apply]
+    simp only [ModuleCat.hom_comp, LinearMap.comp_apply, forgetToPresheafModuleCatObjMap_apply]
     simp
 
 end
