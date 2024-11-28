@@ -79,9 +79,9 @@ instance preorder : Preorder (ι →₀ α) :=
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
 
-lemma coe_mono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+lemma coe_mono : Monotone (FinsuppWith.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
 
-lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+lemma coe_strictMono : Monotone (FinsuppWith.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
 
 @[simp] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
   classical exact Pi.single_le_single
@@ -231,7 +231,7 @@ theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f 
 theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' f g <| Subset.refl _
 
-lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
+lemma support_monotone : Monotone (fun f : ι →₀ α => f.support) :=
   fun f g h a ha ↦ by rw [mem_support_iff, ← pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
 
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg

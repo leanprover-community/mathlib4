@@ -371,7 +371,7 @@ theorem support_zero : (0 : R[X]).support = ∅ :=
 @[simp]
 theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
   rcases p with ⟨⟩
-  simp [support]
+  simp [FinsuppWith.support]
 
 @[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 :=
   Finset.nonempty_iff_ne_empty.trans support_eq_empty.not

@@ -87,10 +87,10 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
     ext n
     simp_rw [Set.mem_range, Set.mem_image, Finset.mem_coe, Finset.mem_range]
     exact ⟨fun ⟨⟨i, hi⟩, hy⟩ => ⟨i, hi, hy⟩, fun ⟨i, hi, hy⟩ => ⟨⟨i, hi⟩, hy⟩⟩
-  simp only [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero, Finsupp.support,
-    exists_iff_exists_finsupp, coeff, aeval_def, eval₂RingHom', eval₂_eq_sum, Polynomial.sum,
-    mem_supported', linearCombination, Finsupp.sum, Algebra.smul_def, eval₂_zero, exists_prop,
-    LinearMap.id_coe, eval₂_one, id, not_lt, Finsupp.coe_lsum, LinearMap.coe_smulRight,
+  simp only [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero,
+    FinsuppWith.support, exists_iff_exists_finsupp, coeff, aeval_def, eval₂RingHom', eval₂_eq_sum,
+    Polynomial.sum, mem_supported', linearCombination, Finsupp.sum, Algebra.smul_def, eval₂_zero,
+    exists_prop, LinearMap.id_coe, eval₂_one, id, not_lt, Finsupp.coe_lsum, LinearMap.coe_smulRight,
     Finset.mem_range, AlgHom.coe_mks, Finset.mem_coe]
   simp_rw [@eq_comm _ y]
   exact Iff.rfl
