@@ -243,33 +243,34 @@ end norm_fwdDiff
 section mahler_coeff
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℚ_[p] E]
+  (a : E) (n : ℕ) (x : ℤ_[p])
 
 /--
 A single term of a Mahler series, given by the product of the scalar-valued continuous map
 `mahler n : ℤ_[p] → ℚ_[p]` with a constant vector in some normed `ℚ_[p]`-vector space.
 -/
-noncomputable def mahlerTerm (a : E) (n : ℕ) : C(ℤ_[p], E) := (mahler n : C(_, ℚ_[p])) • .const _ a
+noncomputable def mahlerTerm : C(ℤ_[p], E) := (mahler n : C(_, ℚ_[p])) • .const _ a
 
-lemma mahlerTerm_apply (a : E) (n : ℕ) (x : ℤ_[p]) : mahlerTerm a n x = mahler n x • a := by
+lemma mahlerTerm_apply : mahlerTerm a n x = mahler n x • a := by
   simp only [mahlerTerm, ContinuousMap.smul_apply', ContinuousMap.const_apply]
 
-lemma norm_mahlerTerm (a : E) (n : ℕ) : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
+lemma norm_mahlerTerm : ‖(mahlerTerm a n : C(ℤ_[p], E))‖ = ‖a‖ := by
   simp only [mahlerTerm, ContinuousMap.norm_smul_const, norm_mahler_eq, one_mul]
 
 /-- A series of the form considered in Mahler's theorem. -/
 noncomputable def mahlerSeries (a : ℕ → E) : C(ℤ_[p], E) := ∑' n, mahlerTerm (a n) n
 
-variable [IsUltrametricDist E] [CompleteSpace E]
+variable [IsUltrametricDist E] [CompleteSpace E] {a : ℕ → E}
 
 /-- A Mahler series whose coefficients tend to 0 is convergent. -/
-lemma hasSum_mahlerSeries {a : ℕ → E} (ha : Tendsto a atTop (𝓝 0)) :
+lemma hasSum_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) :
     HasSum (fun n ↦ mahlerTerm (a n) n) (mahlerSeries a : C(ℤ_[p], E)) := by
   refine (NonarchimedeanAddGroup.summable_of_tendsto_cofinite_zero ?_).hasSum
   rw [tendsto_zero_iff_norm_tendsto_zero] at ha ⊢
   simpa only [norm_mahlerTerm, Nat.cofinite_eq_atTop] using ha
 
 /-- Evaluation of a Mahler series is just the pointwise sum. -/
-lemma mahlerSeries_apply {a : ℕ → E} (ha : Tendsto a atTop (𝓝 0)) (x : ℤ_[p]) :
+lemma mahlerSeries_apply (ha : Tendsto a atTop (𝓝 0)) (x : ℤ_[p]) :
     mahlerSeries a x = ∑' n, mahler n x • a n := by
   simp only [mahlerSeries, ← ContinuousMap.tsum_apply (hasSum_mahlerSeries ha).summable,
     mahlerTerm_apply]
@@ -278,7 +279,7 @@ lemma mahlerSeries_apply {a : ℕ → E} (ha : Tendsto a atTop (𝓝 0)) (x : �
 The value of a Mahler series at a natural number `n` is given by the finite sum of the first `m`
 terms, for any `n ≤ m`.
 -/
-lemma mahlerSeries_apply_nat {a : ℕ → E} (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : m ≤ n) :
+lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : m ≤ n) :
     mahlerSeries a (m : ℤ_[p]) = ∑ i in range (n + 1), m.choose i • a i := by
   have h_van (i) : m.choose (i + (n + 1)) = 0 := Nat.choose_eq_zero_of_lt (by omega)
   have aux : Summable fun i ↦ m.choose (i + (n + 1)) • a (i + (n + 1)) := by
@@ -290,21 +291,21 @@ lemma mahlerSeries_apply_nat {a : ℕ → E} (ha : Tendsto a atTop (𝓝 0)) {m 
 The coefficients of a Mahler series can be recovered from the sum by taking forward differences at
 `0`.
 -/
-lemma fwdDiff_mahlerSeries {a : ℕ → E} (ha : Tendsto a atTop (𝓝 0)) (n : ℕ) :
-    Δ_[1] ^[n] (mahlerSeries a) (0 : ℤ_[p]) = a n :=
-  calc Δ_[1] ^[n] (mahlerSeries a) 0
+lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
+    Δ_[1]^[n] (mahlerSeries a) (0 : ℤ_[p]) = a n :=
+  calc Δ_[1]^[n] (mahlerSeries a) 0
   -- throw away terms after the n'th
-  _ = Δ_[1] ^[n] (fun k ↦ ∑ j ∈ range (n + 1), k.choose j • (a j)) 0 := by
+  _ = Δ_[1]^[n] (fun k ↦ ∑ j ∈ range (n + 1), k.choose j • (a j)) 0 := by
     simp only [fwdDiff_iter_eq_sum_shift, zero_add]
     refine Finset.sum_congr rfl fun j hj ↦ ?_
     rw [nsmul_one, nsmul_one,
       mahlerSeries_apply_nat ha (Nat.lt_succ.mp <| Finset.mem_range.mp hj), Nat.cast_id]
   -- bring `Δ_[1]` inside sum
-  _ = ∑ j ∈ range (n + 1), Δ_[1] ^[n] (fun k ↦ k.choose j • (a j)) 0 := by
+  _ = ∑ j ∈ range (n + 1), Δ_[1]^[n] (fun k ↦ k.choose j • (a j)) 0 := by
     simp only [fwdDiff_iter_eq_sum_shift, smul_sum]
     rw [sum_comm]
   -- bring `Δ_[1]` inside scalar-mult
-  _ = ∑ j ∈ range (n + 1), (Δ_[1] ^[n] (fun k ↦ k.choose j : ℕ → ℤ) 0) • (a j) := by
+  _ = ∑ j ∈ range (n + 1), (Δ_[1]^[n] (fun k ↦ k.choose j : ℕ → ℤ) 0) • (a j) := by
     simp only [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc, Nat.cast_id,
       natCast_zsmul]
   -- finish using `fwdDiff_iter_choose_zero`
@@ -321,12 +322,12 @@ variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
 
 /--
 **Mahler's theorem**: for any continuous function `f` from `ℤ_[p]` to a `p`-adic Banach space, the
-Mahler series with coeffients `n ↦ Δ_[1] ^[n] f 0` converges to the original function `f`.
+Mahler series with coeffients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
 -/
-lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1] ^[n] f 0) n) f := by
+lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n) f := by
   -- First show `∑' n, mahler_term f n` converges to *something*.
-  have : HasSum (fun n ↦ mahlerTerm (Δ_[1] ^[n] f 0) n)
-      (mahlerSeries (Δ_[1] ^[·] f 0) : C(ℤ_[p], E)) :=
+  have : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n)
+      (mahlerSeries (Δ_[1]^[·] f 0) : C(ℤ_[p], E)) :=
     hasSum_mahlerSeries (PadicInt.fwdDiff_tendsto_zero f)
   -- Now show that the sum of the Mahler terms must equal `f` on a dense set, so it is actually `f`.
   convert this using 1
@@ -337,11 +338,11 @@ lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1] ^
 
 variable (E) in
 /--
-The isometric equivalence from `C(ℤ_[p], E)` to the space of sequences in `E` tending to 0 given by
-Mahler's theorem, for `E` a nonarchimedean `ℚ_[p]`-Banach space.
+The isometric equivalence from `C(ℤ_[p], E)` to the space of sequences in `E` tending to `0` given
+by Mahler's theorem, for `E` a nonarchimedean `ℚ_[p]`-Banach space.
 -/
 noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℚ_[p]] C₀(ℕ, E) where
-  toFun f := ⟨⟨(Δ_[1] ^[·] f 0), continuous_of_discreteTopology⟩,
+  toFun f := ⟨⟨(Δ_[1]^[·] f 0), continuous_of_discreteTopology⟩,
     cocompact_eq_atTop (α := ℕ) ▸ fwdDiff_tendsto_zero f⟩
   invFun a := mahlerSeries a
   map_add' f g := by
@@ -366,7 +367,7 @@ noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℚ_[p]] C₀(ℕ, E) wh
       simp only [ZeroAtInftyContinuousMap.toBCF_toFun, ZeroAtInftyContinuousMap.coe_mk,
         norm_mahlerTerm, (hasSum_mahler f).tsum_eq]
 
-lemma mahlerEquiv_apply (f : C(ℤ_[p], E)) : mahlerEquiv E f = fun n ↦ Δ_[1] ^[n] f 0 := rfl
+lemma mahlerEquiv_apply (f : C(ℤ_[p], E)) : mahlerEquiv E f = fun n ↦ Δ_[1]^[n] f 0 := rfl
 
 lemma mahlerEquiv_symm_apply (a : C₀(ℕ, E)) : (mahlerEquiv E).symm a = (mahlerSeries (p := p) a) :=
   rfl
