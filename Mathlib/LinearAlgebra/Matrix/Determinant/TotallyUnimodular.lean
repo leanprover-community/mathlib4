@@ -98,11 +98,6 @@ lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃
   ⟨fun hA => by simpa [Equiv.symm_apply_eq] using hA.reindex em.symm en.symm,
    fun hA => hA.reindex _ _⟩
 
--- TODO: move
-lemma neg_one_pow_mem_signType_range (n : ℕ) {a : R} (ha : a ∈ Set.range SignType.cast) :
-    (-1 : R) ^ n * a ∈ Set.range SignType.cast :=
-  mul_mem (s := MonoidHom.mrange SignType.castHom.toMonoidHom) (pow_mem (by use -1; rfl) n) ha
-
 /-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1`,
 then `fromRows A B` is totally unimodular. -/
 lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}
