@@ -211,7 +211,7 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 namespace Style
 
 /-- TODO: add a doc-string! -/
-def cdotLinter.findErrors (stx : Syntax) : List (Syntax × MessageData) := Id.run do
+def cdotLinter.findErrors (stx : Syntax) : Array (Syntax × MessageData) := Id.run do
   let res := unwanted_cdot stx |>.map (fun s ↦
     (s, m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."))
   let mut res2 := #[]
@@ -219,7 +219,7 @@ def cdotLinter.findErrors (stx : Syntax) : List (Syntax × MessageData) := Id.ru
     if let some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) := cdot.find? (·.isOfKind `token.«· ») then
       if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
         res2 := res2.push (cdot, m!"This central dot `·` is isolated; please merge it with the next line.")
-  return res.toList ++ res2.toList
+  return res.append res2
 
 @[inherit_doc linter.style.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
