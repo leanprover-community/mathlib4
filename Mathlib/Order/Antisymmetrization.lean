@@ -40,6 +40,8 @@ def AntisymmRel (a b : α) : Prop :=
 /-- The antisymmetrization relation `a ⋚ b` means that both `a ≤ b` and `b ≤ a`. -/
 infix:50 " ⋚ "  => AntisymmRel (· ≤ ·)
 
+theorem antisymmRel_iff {r} : AntisymmRel r a b ↔ r a b ∧ r b a := Iff.rfl
+
 theorem AntisymmRel.le [LE α] (h : a ⋚ b) : a ≤ b := h.1
 theorem AntisymmRel.ge [LE α] (h : a ⋚ b) : b ≤ a := h.2
 
@@ -178,6 +180,15 @@ theorem AntisymmRel.lt_congr_left (h : a ⋚ b) : a < c ↔ b < c :=
 
 theorem AntisymmRel.lt_congr_right (h : b ⋚ c) : a < b ↔ a < c :=
   (antisymmRel_refl _ a).lt_congr h
+
+theorem AntisymmRel.antisymmRel_congr (h₁ : a ⋚ b) (h₂ : c ⋚ d) : a ⋚ c ↔ b ⋚ d := by
+  rw [antisymmRel_iff, antisymmRel_iff, h₁.le_congr h₂, h₂.le_congr h₁]
+
+theorem AntisymmRel.antisymmRel_congr_left (h : a ⋚ b) : a ⋚ c ↔ b ⋚ c :=
+  h.antisymmRel_congr (antisymmRel_refl _ c)
+
+theorem AntisymmRel.antisymmRel_congr_right (h : b ⋚ c) : a ⋚ b ↔ a ⋚ c :=
+  (antisymmRel_refl _ a).antisymmRel_congr h
 
 theorem AntisymmRel.image (h : a ⋚ b) {f : α → β} (hf : Monotone f) : f a ⋚ f b :=
   ⟨hf h.1, hf h.2⟩
