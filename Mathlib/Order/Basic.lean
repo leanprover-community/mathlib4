@@ -98,8 +98,6 @@ theorem Ne.lt_of_le' : b ≠ a → a ≤ b → a < b :=
 
 end PartialOrder
 
-attribute [simp] le_refl
-
 attribute [ext] LE
 
 alias LE.le.trans := le_trans
@@ -690,6 +688,12 @@ instance (α : Type*) [LE α] : LE αᵒᵈ :=
 
 instance (α : Type*) [LT α] : LT αᵒᵈ :=
   ⟨fun x y : α ↦ y < x⟩
+
+instance instSup (α : Type*) [Min α] : Max αᵒᵈ :=
+  ⟨((· ⊓ ·) : α → α → α)⟩
+
+instance instInf (α : Type*) [Max α] : Min αᵒᵈ :=
+  ⟨((· ⊔ ·) : α → α → α)⟩
 
 instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   le_refl := fun _ ↦ le_refl _

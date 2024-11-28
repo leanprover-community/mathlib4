@@ -206,11 +206,11 @@ theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-@[deprecated (since := "2024-09-13")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
 
-@[deprecated (since := "2024-09-13")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
   fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
 
@@ -264,7 +264,7 @@ class Preorder (α : Type*) extends LE α, LT α where
 variable [Preorder α] {a b c : α}
 
 /-- The relation `≤` on a preorder is reflexive. -/
-@[refl] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
+@[refl, simp] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
 
 /-- A version of `le_refl` where the argument is implicit -/
 lemma le_rfl : a ≤ a := le_refl a
@@ -276,7 +276,7 @@ lemma lt_iff_le_not_le : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_n
 
 lemma lt_of_le_not_le (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_le.2 ⟨hab, hba⟩
 
-@[deprecated (since := "2024-07-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
 theorem le_not_le_of_lt : ∀ {a b : α}, a < b → a ≤ b ∧ ¬b ≤ a
   | _a, _b, hab => lt_iff_le_not_le.mp hab
 
@@ -488,11 +488,6 @@ instance (priority := 900) (a b : α) : Decidable (a = b) := LinearOrder.decidab
 lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
 
--- TODO(Leo): decide whether we should keep this instance or not
-instance isStrictTotalOrder_of_linearOrder : IsStrictTotalOrder α (· < ·) where
-  irrefl := lt_irrefl
-  trichotomous := lt_trichotomy
-
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
 def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
   if h : x < y then h₁ h
@@ -502,7 +497,7 @@ namespace Nat
 
 /-! Deprecated properties of inequality on `Nat` -/
 
-@[deprecated (since := "2024-08-23")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-23")]
 protected def ltGeByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
   Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
 
