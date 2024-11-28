@@ -7,13 +7,14 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Sum of iterated derivatives
 
 This file introduces `Polynomial.sumIDeriv`, the sum of the iterated derivatives of a polynomial,
 as a linear map. This is used in particular in the proof of the Lindemann-Weierstrass theorem
-(see #6718).
+(see https://github.com/leanprover-community/mathlib4/pull/6718).
 
 ## Main results
 
