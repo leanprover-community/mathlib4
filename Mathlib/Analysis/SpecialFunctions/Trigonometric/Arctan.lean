@@ -142,8 +142,15 @@ theorem arcsin_eq_arctan {x : ℝ} (h : x ∈ Ioo (-(1 : ℝ)) 1) :
 @[simp]
 theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
 
-@[gcongr, mono]
+@[mono]
 theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
+
+@[gcongr]
+lemma arctan_lt_arctan {x y : ℝ} (hxy : x < y) : arctan x < arctan y := arctan_strictMono hxy
+
+@[gcongr]
+lemma arctan_le_arctan {x y : ℝ} (hxy : x ≤ y) : arctan x ≤ arctan y :=
+  arctan_strictMono.monotone hxy
 
 theorem arctan_injective : arctan.Injective := arctan_strictMono.injective
 
