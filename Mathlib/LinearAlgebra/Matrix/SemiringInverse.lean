@@ -15,7 +15,6 @@ This files proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutati
 
 -/
 
-
 lemma IsAddUnit.smul
     {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     {r : R} (hr : IsAddUnit r) (m : M) : IsAddUnit (r • m) := by
@@ -32,16 +31,28 @@ variable {n R : Type*} [Fintype n] [DecidableEq n] [CommSemiring R]
 variable (s : ℤˣ) (A B : Matrix n n R) (i j : n)
 
 /-- Filter by parity -/
-def filterp : Finset (Perm n) := univ.filter (fun σ ↦ σ.sign = s)
+def filterp : Finset (Perm n) := univ.filter fun σ ↦ σ.sign = s
 
-lemma mem_filterp {σ : Perm n} : σ ∈ filterp s ↔ σ.sign = s := by
+@[simp]
+lemma mem_filterp {s} {σ : Perm n} : σ ∈ filterp s ↔ σ.sign = s := by
   rw [filterp, mem_filter, and_iff_right (mem_univ σ)]
 
-def fix : Finset (Perm n) := univ.filter (fun σ ↦ σ i = j)
+lemma filterp_disjoint : Disjoint (filterp 1 : Finset (Perm n)) (filterp (-1)) := by
+  rw [Finset.disjoint_iff_ne]
+  rintro σ hσ τ hτ rfl
+  rw [mem_filterp] at hσ hτ
+  have := hσ.symm.trans hτ
+  contradiction
+
+lemma filterp_disjUnion :
+    (filterp 1).disjUnion (filterp (-1)) filterp_disjoint = (univ : Finset (Perm n)) := by
+  ext σ
+  simp_rw [mem_disjUnion, mem_filterp, Int.units_eq_one_or, mem_univ]
 
 /-- Filter determinant by parity. -/
 def detp := ∑ σ ∈ filterp s, ∏ k, A k (σ k)
 
+@[simp]
 lemma detp_one_one : detp 1 (1 : Matrix n n R) = 1 := by
   rw [detp, sum_eq_single_of_mem 1]
   · simp [one_apply]
@@ -50,6 +61,7 @@ lemma detp_one_one : detp 1 (1 : Matrix n n R) = 1 := by
     obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
     exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
 
+@[simp]
 lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
   rw [detp, sum_eq_zero]
   intro σ hσ
@@ -61,24 +73,51 @@ lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
 
 /-- Filter adjugate matrix by parity. -/
 def adjp : Matrix n n R :=
-  fun i j ↦ ∑ σ ∈ (filterp s).filter (fun σ ↦ σ j = i), ∏ k ∈ {j}ᶜ, A k (σ k)
+  fun i j ↦ ∑ σ ∈ (filterp s).filter fun σ ↦ σ j = i, ∏ k ∈ {j}ᶜ, A k (σ k)
 
 lemma adjp_apply (i j : n) :
-    adjp s A i j = ∑ σ ∈ (filterp s).filter (fun σ ↦ σ j = i), ∏ k ∈ {j}ᶜ, A k (σ k) :=
+    adjp s A i j = ∑ σ ∈ (filterp s).filter fun σ ↦ σ j = i, ∏ k ∈ {j}ᶜ, A k (σ k) :=
   rfl
 
--- actually needs an extra factor on each side...
-theorem detp_mul₀ :
-    detp s (A * B) = detp 1 A * detp s B + detp (-1) A * detp (-s) B := by
-  -- simp_rw [detp, mul_apply, Finset.prod_univ_sum, Fintype.piFinset_univ]
-  sorry
-
-theorem detp_mul' :
+theorem detp_mul :
     detp 1 (A * B) + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) =
       detp (-1) (A * B) + (detp 1 A * detp 1 B + detp (-1) A * detp (-1) B) := by
-  -- needs a proof that doesn't rely on detp_mul₀
-  simp only [detp_mul₀, neg_neg]
-  abel
+  have hf {s t} {σ : Perm n} (hσ : σ ∈ filterp s) :
+      filterp (t * s) = (filterp t).map (mulRightEmbedding σ) := by
+    ext τ
+    simp_rw [mem_map, mulRightEmbedding_apply, ← eq_mul_inv_iff_mul_eq, exists_eq_right,
+      mem_filterp, _root_.map_mul, _root_.map_inv, mul_inv_eq_iff_eq_mul, mem_filterp.mp hσ]
+  have h {s t} : detp s A * detp t B =
+      ∑ σ ∈ filterp s, ∑ τ ∈ filterp (t * s), ∏ k, A k (σ k) * B (σ k) (τ k) := by
+    simp_rw [detp, sum_mul_sum, prod_mul_distrib]
+    refine sum_congr rfl fun σ hσ ↦ ?_
+    simp_rw [hf hσ, sum_map, mulRightEmbedding_apply, Perm.mul_apply]
+    exact sum_congr rfl fun τ hτ ↦ (congr_arg (_ * ·) (prod_comp σ _).symm)
+  let ι : Perm n ↪ (n → n) := ⟨_, coe_fn_injective⟩
+  have hι {σ x} : ι σ x = σ x := rfl
+  let bij : Finset (n → n) := (disjUnion (filterp 1) (filterp (-1)) filterp_disjoint).map ι
+  replace h (s) : detp s (A * B) =
+      ∑ σ ∈ bijᶜ, ∑ τ ∈ filterp s, ∏ i : n, A i (σ i) * B (σ i) (τ i) +
+        (detp 1 A * detp s B + detp (-1) A * detp (-s) B) := by
+    simp_rw [h, neg_mul_neg, mul_one, detp, mul_apply, prod_univ_sum, Fintype.piFinset_univ]
+    rw [sum_comm, ← sum_compl_add_sum bij, sum_map, sum_disjUnion]
+    simp_rw [hι]
+  rw [h, h, neg_neg, add_assoc]
+  conv_rhs => rw [add_assoc]
+  refine congr_arg₂ (· + ·) (sum_congr rfl fun σ hσ ↦ ?_) (add_comm _ _)
+  replace hσ : ¬ Function.Injective σ := by
+    contrapose! hσ
+    rw [not_mem_compl, mem_map, filterp_disjUnion]
+    exact ⟨Equiv.ofBijective σ hσ.bijective_of_finite, mem_univ _, rfl⟩
+  obtain ⟨i, j, hσ, hij⟩ := Function.not_injective_iff.mp hσ
+  replace hσ k : σ (swap i j k) = σ k := by
+    rw [swap_apply_def]
+    split_ifs with h h <;> simp only [hσ, h]
+  rw [← mul_neg_one, hf (mem_filterp.mpr (Perm.sign_swap hij)), sum_map]
+  simp_rw [prod_mul_distrib, mulRightEmbedding_apply, Perm.mul_apply]
+  refine sum_congr rfl fun τ hτ ↦ congr_arg (_ *  ·) ?_
+  rw [← prod_comp (swap i j)]
+  simp only [hσ]
 
 theorem mul_adjp_add_detp_aux1 : (A * adjp s A) i i = detp s A := by
   have key := sum_fiberwise_eq_sum_filter (filterp s) univ (· i) fun σ ↦ ∏ k, A k (σ k)
@@ -90,12 +129,12 @@ theorem mul_adjp_add_detp_aux1 : (A * adjp s A) i i = detp s A := by
 theorem mul_adjp_add_detp_aux2 (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A) i j := by
   simp_rw [mul_apply, adjp_apply, mul_sum, sum_sigma']
   let f : (Σ x : n, Perm n) → (Σ x : n, Perm n) := fun ⟨x, σ⟩ ↦ ⟨σ i, σ * swap i j⟩
-  let t s : Finset (Σ x : n, Perm n) := univ.sigma fun x ↦ (filterp s).filter (fun σ ↦ σ j = x)
+  let t s : Finset (Σ x : n, Perm n) := univ.sigma fun x ↦ (filterp s).filter fun σ ↦ σ j = x
   have hf {s} : ∀ p ∈ t s, f (f p) = p := by
     intro ⟨x, σ⟩ hp
     rw [mem_sigma, mem_filter, mem_filterp] at hp
     simp_rw [f, Perm.mul_apply, swap_apply_left, hp.2.2, mul_swap_mul_self]
-  refine Finset.sum_bij' (fun p _ ↦ f p) (fun p _ ↦ f p) ?_ ?_ hf hf ?_
+  refine sum_bij' (fun p _ ↦ f p) (fun p _ ↦ f p) ?_ ?_ hf hf ?_
   · intro ⟨x, σ⟩ hp
     rw [mem_sigma, mem_filter, mem_filterp] at hp ⊢
     rw [Perm.mul_apply, Perm.sign_mul, hp.2.1, Perm.sign_swap h, swap_apply_right]
@@ -111,7 +150,7 @@ theorem mul_adjp_add_detp_aux2 (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-
       rwa [mem_compl, mem_singleton]
     simp_rw [key, prod_disjUnion, prod_singleton, Perm.mul_apply, swap_apply_left, ← mul_assoc]
     rw [mul_comm (A i x) (A i (σ i)), hp.2.2]
-    refine congr_arg _ (Finset.prod_congr rfl fun x hx ↦ ?_)
+    refine congr_arg _ (prod_congr rfl fun x hx ↦ ?_)
     rw [mem_compl, mem_insert, mem_singleton, not_or] at hx
     rw [swap_apply_of_ne_of_ne hx.1 hx.2]
 
@@ -123,36 +162,40 @@ theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A +
 
 variable {A B}
 
-theorem detp_smul_add_adjp (h : A * B = 1) :
+-- last step: prove invertibility!
+
+theorem inv1 (hAB : A * B = 1) :
+    IsAddUnit (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) := by
+  sorry
+
+theorem inv2 (hAB : A * B = 1) :
+    IsAddUnit (detp 1 A • (B * adjp (-1) B) + detp (-1) A • (B * adjp 1 B)) := by
+  sorry
+
+theorem detp_smul_add_adjp (hAB : A * B = 1) :
     detp 1 B • A + adjp (-1) B = detp (-1) B • A + adjp 1 B := by
   have key := congr_arg (A * ·) (mul_adjp_add_detp B)
-  simp_rw [mul_add, ← mul_assoc, h, one_mul, mul_smul, mul_one] at key
+  simp_rw [mul_add, ← mul_assoc, hAB, one_mul, mul_smul, mul_one] at key
   rwa [add_comm, eq_comm, add_comm]
 
--- might also need an extra factor on each side unless we can prove cancellation (IsAddUnit)
-theorem detp_smul_adjp (h : A * B = 1) :
+theorem detp_smul_adjp (hAB : A * B = 1) :
     A + (detp 1 A • adjp (-1) B + detp (-1) A • adjp 1 B) =
       detp 1 A • adjp 1 B + detp (-1) A • adjp (-1) B := by
-  have h0 := detp_mul' A B
-  rw [h, detp_one_one, detp_neg_one_one, zero_add] at h0
-  replace h := detp_smul_add_adjp h
+  have h0 := detp_mul A B
+  rw [hAB, detp_one_one, detp_neg_one_one, zero_add] at h0
+  have h := detp_smul_add_adjp hAB
   replace h := congr_arg₂ (· + ·) (congr_arg (detp 1 A • ·) h) (congr_arg (detp (-1) A • ·) h).symm
   simp only [smul_add, smul_smul] at h
   rwa [add_add_add_comm, ← add_smul, add_add_add_comm, ← add_smul, ← h0, add_smul, one_smul,
-    add_comm A, add_assoc, IsAddUnit.add_right_inj] at h
-  apply IsAddUnit.smul
-  -- IsAddUnit (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B)
-  -- yup, this is good: ∑ ∑ A i (sigma(i)) * B j (tau (j)) invertible unless τ = σ⁻¹
-  sorry
+    add_comm A, add_assoc, ((inv1 hAB).smul _).add_right_inj] at h
 
--- also need to prove cancelation here
 theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
   revert A B
   suffices h : ∀ A B : Matrix n n R, A * B = 1 → B * A = 1 from fun A B ↦ ⟨h A B, h B A⟩
-  intro A B h
-  have h0 := detp_mul' A B
-  rw [h, detp_one_one, detp_neg_one_one, zero_add] at h0
-  replace h := detp_smul_adjp h
+  intro A B hAB
+  have h0 := detp_mul A B
+  rw [hAB, detp_one_one, detp_neg_one_one, zero_add] at h0
+  have h := detp_smul_adjp hAB
   replace h := congr_arg (B * ·) h
   simp only [mul_add, mul_smul, add_assoc] at h
   replace h := congr_arg (· + (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) • 1) h
@@ -163,14 +206,6 @@ theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
     add_add_add_comm, smul_smul, smul_smul, ← add_smul, ← h0,
     add_smul, one_smul, ← add_assoc _ 1, add_comm _ 1, add_assoc,
     smul_add, smul_add, add_add_add_comm, smul_smul, smul_smul, ← add_smul,
-    IsAddUnit.add_left_inj] at h
-  -- IsAddUnit (detp 1 A • (B * adjp (-1) B) + detp (-1) A • (B * adjp 1 B) +
-  --  (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) • 1)
-  apply IsAddUnit.add
-  · -- IsAddUnit (detp 1 A • (B * adjp (-1) B) + detp (-1) A • (B * adjp 1 B))
-    sorry
-  · apply IsAddUnit.smul
-    -- IsAddUnit (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B)
-    sorry
+    ((inv2 hAB).add ((inv1 hAB).smul _)).add_left_inj] at h
 
 end Matrix
