@@ -11,7 +11,7 @@ on:
     types: [submitted]
   # the PR receives a review comment
   pull_request_review_comment:
-    types: [created]
+    types: [created, edited]
 
 jobs:
   fix_style:
