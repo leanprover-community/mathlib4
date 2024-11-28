@@ -144,7 +144,7 @@ class SigmaCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 /-- A topological space is σ-compact iff `univ` is σ-compact. -/
 lemma isSigmaCompact_univ_iff : IsSigmaCompact (univ : Set X) ↔ SigmaCompactSpace X :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
 
 /-- In a σ-compact space, `univ` is σ-compact. -/
 lemma isSigmaCompact_univ [h : SigmaCompactSpace X] : IsSigmaCompact (univ : Set X) :=
@@ -406,7 +406,7 @@ theorem mem_find (x : X) : x ∈ K (K.find x) := by
 
 theorem mem_iff_find_le {x : X} {n : ℕ} : x ∈ K n ↔ K.find x ≤ n := by
   classical
-  exact ⟨fun h => Nat.find_min' (K.exists_mem x) h, fun h => K.subset h <| K.mem_find x⟩
+  exact ⟨fun h ↦ Nat.find_min' (K.exists_mem x) h, fun h ↦ K.subset h <| K.mem_find x⟩
 
 /-- Prepend the empty set to a compact exhaustion `K n`. -/
 def shiftr : CompactExhaustion X where

@@ -48,7 +48,7 @@ abbrev IsTrail.edgesFinset {u v : V} {p : G.Walk u v} (h : p.IsTrail) : Finset (
 variable [DecidableEq V]
 
 theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail) (x : V) :
-    Even (p.edges.countP fun e => x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
+    Even (p.edges.countP fun e ↦ x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   induction' p with u u v w huv p ih
   · simp
   · rw [cons_isTrail_iff] at ht
@@ -94,13 +94,13 @@ theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsT
 
 theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {e : Sym2 V} :
     e ∈ p.edges ↔ e ∈ G.edgeSet :=
-  ⟨ fun h => p.edges_subset_edgeSet h
+  ⟨ fun h ↦ p.edges_subset_edgeSet h
   , fun he => by simpa [Nat.succ_le] using (h e he).ge ⟩
 
 /-- The edge set of an Eulerian graph is finite. -/
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
     Fintype G.edgeSet :=
-  Fintype.ofFinset h.isTrail.edgesFinset fun e => by
+  Fintype.ofFinset h.isTrail.edgesFinset fun e ↦ by
     simp only [Finset.mem_mk, Multiset.mem_coe, h.mem_edges_iff]
 
 theorem IsTrail.isEulerian_of_forall_mem {u v : V} {p : G.Walk u v} (h : p.IsTrail)

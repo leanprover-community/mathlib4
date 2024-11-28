@@ -231,7 +231,7 @@ def propagateInstImplicit (e : Expr) : CCM Unit := do
 /-- Treat the entry associated with `e` as a first-order function. -/
 def setFO (e : Expr) : CCM Unit :=
   modify fun ccs =>
-    { ccs with entries := ccs.entries.modify e fun d => { d with fo := true } }
+    { ccs with entries := ccs.entries.modify e fun d ↦ { d with fo := true } }
 
 /-- Update the modification time of the congruence class of `e`. -/
 partial def updateMT (e : Expr) : CCM Unit := do
@@ -1476,7 +1476,7 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
       if let some c₁ ← isConstructorApp? ra then
       if let some c₂ ← isConstructorApp? rb then
       if c₁.name != c₂.name then
-        raNeRb ← withLocalDeclD `h (← mkEq ra rb) fun h => do
+        raNeRb ← withLocalDeclD `h (← mkEq ra rb) fun h ↦ do
           mkLambdaFVars #[h] (← mkNoConfusion (.const ``False []) h)
     if let some raNeRb' := raNeRb then
     if let some aNeRb ← mkNeOfEqOfNe a ra raNeRb' then

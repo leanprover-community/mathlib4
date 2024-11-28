@@ -271,7 +271,7 @@ variable [AddZeroClass A] {p q : R[A]}
 @[simp]
 theorem supDegree_zero : (0 : R[A]).supDegree D = ⊥ := by simp [supDegree]
 
-theorem ne_zero_of_supDegree_ne_bot : p.supDegree D ≠ ⊥ → p ≠ 0 := mt (fun h => h ▸ supDegree_zero)
+theorem ne_zero_of_supDegree_ne_bot : p.supDegree D ≠ ⊥ → p ≠ 0 := mt (fun h ↦ h ▸ supDegree_zero)
 
 theorem ne_zero_of_not_supDegree_le {b : B} (h : ¬ p.supDegree D ≤ b) : p ≠ 0 :=
   ne_zero_of_supDegree_ne_bot (fun he => h <| he ▸ bot_le)
@@ -318,7 +318,7 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     have := addLeftMono_of_addLeftStrictMono B
     exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans hp).lt_of_ne <| hD.ne_iff.2 hne)
       <| (Finset.le_sup ha').trans hq).ne he
-  · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
+  · refine fun h ↦ Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
     rw [Finsupp.not_mem_support_iff.mp h, zero_mul]
 
 end SupDegree
@@ -351,7 +351,7 @@ theorem leadingCoeff_single [Nonempty A] (hD : D.Injective) (a : A) (r : R) :
 @[simp]
 theorem leadingCoeff_zero [Nonempty A] : (0 : R[A]).leadingCoeff D = 0 := rfl
 
-lemma Monic.ne_zero [Nonempty A] [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h => by
+lemma Monic.ne_zero [Nonempty A] [Nontrivial R] (hp : p.Monic D) : p ≠ 0 := fun h ↦ by
   simp_rw [Monic, h, leadingCoeff_zero, zero_ne_one] at hp
 
 @[simp]
@@ -407,7 +407,7 @@ lemma supDegree_mem_support (hD : D.Injective) (hp : p ≠ 0) :
 
 @[simp]
 lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 := by
-  refine ⟨(fun h => ?_).mtr, fun h => h ▸ leadingCoeff_zero⟩
+  refine ⟨(fun h ↦ ?_).mtr, fun h ↦ h ▸ leadingCoeff_zero⟩
   rw [leadingCoeff, ← Ne, ← Finsupp.mem_support_iff]
   exact supDegree_mem_support hD h
 
@@ -421,7 +421,7 @@ lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [CommRing R] {p
   refine fun he => (supDegree_sub_le.trans ?_).lt_of_ne ?_
   · rw [hd, sup_idem]
   · rw [← sub_eq_zero, ← leadingCoeff_eq_zero hD, leadingCoeff] at he
-    refine fun h => he ?_
+    refine fun h ↦ he ?_
     rwa [h, Finsupp.sub_apply, ← leadingCoeff, hd, ← leadingCoeff, sub_eq_zero]
 
 lemma supDegree_leadingCoeff_sum_eq

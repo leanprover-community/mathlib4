@@ -51,7 +51,7 @@ class IsGalois : Prop where
 variable {F E}
 
 theorem isGalois_iff : IsGalois F E ↔ Algebra.IsSeparable F E ∧ Normal F E :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h =>
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h =>
     { to_isSeparable := h.1
       to_normal := h.2 }⟩
 
@@ -101,8 +101,8 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Fintype.card (E ≃ₐ[F] E) = finrank F E := by
   cases' Field.exists_primitive_element F E with α hα
   let iso : F⟮α⟯ ≃ₐ[F] E :=
-    { toFun := fun e => e.val
-      invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
+    { toFun := fun e ↦ e.val
+      invFun := fun e ↦ ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
       left_inv := fun _ => by ext; rfl
       right_inv := fun _ => rfl
       map_mul' := fun _ _ => rfl

@@ -71,7 +71,7 @@ lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
 @[simp]
 lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hn : n ≠ 0) : IsNilpotent (x ^ n) ↔ IsNilpotent x :=
- ⟨fun h => of_pow h, fun h => pow_of_pos h hn⟩
+ ⟨fun h ↦ of_pow h, fun h ↦ pow_of_pos h hn⟩
 
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) :
@@ -204,7 +204,7 @@ theorem IsNilpotent.eq_zero [Zero R] [Pow R ℕ] [IsReduced R] (h : IsNilpotent 
 
 @[simp]
 theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x ↔ x = 0 :=
-  ⟨fun h => h.eq_zero, fun h => h.symm ▸ IsNilpotent.zero⟩
+  ⟨fun h ↦ h.eq_zero, fun h ↦ h.symm ▸ IsNilpotent.zero⟩
 
 theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S]

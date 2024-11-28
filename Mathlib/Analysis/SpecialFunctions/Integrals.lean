@@ -763,10 +763,10 @@ theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
 theorem integral_sin_sq_mul_cos_sq :
     ∫ x in a..b, sin x ^ 2 * cos x ^ 2 = (b - a) / 8 - (sin (4 * b) - sin (4 * a)) / 32 := by
   convert integral_sin_pow_even_mul_cos_pow_even 1 1 using 1
-  have h1 : ∀ c : ℝ, (↑1 - c) / ↑2 * ((↑1 + c) / ↑2) = (↑1 - c ^ 2) / 4 := fun c => by ring
+  have h1 : ∀ c : ℝ, (↑1 - c) / ↑2 * ((↑1 + c) / ↑2) = (↑1 - c ^ 2) / 4 := fun c ↦ by ring
   have h2 : Continuous fun x => cos (2 * x) ^ 2 := by fun_prop
   have h3 : ∀ x, cos x * sin x = sin (2 * x) / 2 := by intro; rw [sin_two_mul]; ring
-  have h4 : ∀ d : ℝ, 2 * (2 * d) = 4 * d := fun d => by ring
+  have h4 : ∀ d : ℝ, 2 * (2 * d) = 4 * d := fun d ↦ by ring
   simp [h1, h2.intervalIntegrable, integral_comp_mul_left fun x => cos x ^ 2, h3, h4]
   ring
 

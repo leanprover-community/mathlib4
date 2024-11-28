@@ -929,7 +929,7 @@ theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : 
     {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
   classical
   constructor
-  · exact fun h => ⟨_, _, (p.take_spec h).symm⟩
+  · exact fun h ↦ ⟨_, _, (p.take_spec h).symm⟩
   · rintro ⟨q, r, rfl⟩
     simp only [mem_support_append_iff, end_mem_support, start_mem_support, or_self_iff]
 

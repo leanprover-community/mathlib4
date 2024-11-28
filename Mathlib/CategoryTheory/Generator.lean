@@ -546,7 +546,7 @@ end ZeroMorphisms
 theorem isDetector_iff_reflectsIsomorphisms_coyoneda_obj (G : C) :
     IsDetector G ↔ (coyoneda.obj (op G)).ReflectsIsomorphisms := by
   refine
-    ⟨fun hG => ⟨fun f hf => hG.def _ fun h => ?_⟩, fun h =>
+    ⟨fun hG => ⟨fun f hf => hG.def _ fun h ↦ ?_⟩, fun h =>
       (isDetector_def _).2 fun X Y f hf => ?_⟩
   · rw [isIso_iff_bijective, Function.bijective_iff_existsUnique] at hf
     exact hf h
@@ -556,7 +556,7 @@ theorem isDetector_iff_reflectsIsomorphisms_coyoneda_obj (G : C) :
 
 theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
     IsCodetector G ↔ (yoneda.obj G).ReflectsIsomorphisms := by
-  refine ⟨fun hG => ⟨fun f hf => ?_⟩, fun h => (isCodetector_def _).2 fun X Y f hf => ?_⟩
+  refine ⟨fun hG => ⟨fun f hf => ?_⟩, fun h ↦ (isCodetector_def _).2 fun X Y f hf => ?_⟩
   · refine (isIso_unop_iff _).1 (hG.def _ ?_)
     rwa [isIso_iff_bijective, Function.bijective_iff_existsUnique] at hf
   · rw [← isIso_op_iff]

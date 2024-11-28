@@ -548,7 +548,7 @@ theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
 theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
     ∀ l : List ι,
       (∀ i ∈ l, Tendsto (f i) x (𝓝 (a i))) →
-        Tendsto (fun b ↦ (l.map fun c => f c b).prod) x (𝓝 (l.map a).prod)
+        Tendsto (fun b ↦ (l.map fun c ↦ f c b).prod) x (𝓝 (l.map a).prod)
   | [], _ => by simp [tendsto_const_nhds]
   | f::l, h => by
     simp only [List.map_cons, List.prod_cons]
@@ -722,7 +722,7 @@ variable [ContinuousMul M]
 @[to_additive]
 theorem tendsto_multiset_prod {f : ι → α → M} {x : Filter α} {a : ι → M} (s : Multiset ι) :
     (∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) →
-      Tendsto (fun b ↦ (s.map fun c => f c b).prod) x (𝓝 (s.map a).prod) := by
+      Tendsto (fun b ↦ (s.map fun c ↦ f c b).prod) x (𝓝 (s.map a).prod) := by
   rcases s with ⟨l⟩
   simpa using tendsto_list_prod l
 

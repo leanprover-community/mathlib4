@@ -32,7 +32,7 @@ theorem comm [IsSymm α r] {a b : α} : r a b ↔ r b a :=
 theorem antisymm' [IsAntisymm α r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
 
 theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b a ↔ a = b :=
-  ⟨fun h => antisymm h.1 h.2, by
+  ⟨fun h ↦ antisymm h.1 h.2, by
     rintro rfl
     exact ⟨refl _, refl _⟩⟩
 
@@ -161,16 +161,16 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     | _, _, Or.inl rfl => rfl
     | _, Or.inr h₁, Or.inr h₂ => (asymm h₁ h₂).elim
   lt_iff_le_not_le x y :=
-    ⟨fun h => ⟨Or.inr h, not_or_intro (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
-      fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
+    ⟨fun h ↦ ⟨Or.inr h, not_or_intro (fun e ↦ by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
+      fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e ↦ h₂ <| e ▸ Or.inl rfl⟩
 
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
 
 See note [reducible non-instances]. -/
 abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
   let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y => decidable_of_iff (¬r y x)
-    ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
-      h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
+    ⟨fun h ↦ ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
+      h.elim (fun h ↦ h ▸ irrefl_of _ _) (asymm_of r)⟩
   { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
@@ -326,10 +326,10 @@ instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedGT α] : WellFou
   h
 
 theorem wellFoundedGT_dual_iff (α : Type*) [LT α] : WellFoundedGT αᵒᵈ ↔ WellFoundedLT α :=
-  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
+  ⟨fun h ↦ ⟨h.wf⟩, fun h ↦ ⟨h.wf⟩⟩
 
 theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔ WellFoundedGT α :=
-  ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
+  ⟨fun h ↦ ⟨h.wf⟩, fun h ↦ ⟨h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
 class IsWellOrder (α : Type u) (r : α → α → Prop) extends
@@ -547,9 +547,9 @@ lemma subset_refl [IsRefl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
 
 lemma subset_rfl [IsRefl α (· ⊆ ·)] : a ⊆ a := refl _
 
-lemma subset_of_eq [IsRefl α (· ⊆ ·)] : a = b → a ⊆ b := fun h => h ▸ subset_rfl
+lemma subset_of_eq [IsRefl α (· ⊆ ·)] : a = b → a ⊆ b := fun h ↦ h ▸ subset_rfl
 
-lemma superset_of_eq [IsRefl α (· ⊆ ·)] : a = b → b ⊆ a := fun h => h ▸ subset_rfl
+lemma superset_of_eq [IsRefl α (· ⊆ ·)] : a = b → b ⊆ a := fun h ↦ h ▸ subset_rfl
 
 lemma ne_of_not_subset [IsRefl α (· ⊆ ·)] : ¬a ⊆ b → a ≠ b := mt subset_of_eq
 
@@ -577,10 +577,10 @@ alias HasSubset.Subset.antisymm := subset_antisymm
 alias HasSubset.Subset.antisymm' := superset_antisymm
 
 theorem subset_antisymm_iff [IsRefl α (· ⊆ ·)] [IsAntisymm α (· ⊆ ·)] : a = b ↔ a ⊆ b ∧ b ⊆ a :=
-  ⟨fun h => ⟨h.subset', h.superset⟩, fun h => h.1.antisymm h.2⟩
+  ⟨fun h ↦ ⟨h.subset', h.superset⟩, fun h ↦ h.1.antisymm h.2⟩
 
 theorem superset_antisymm_iff [IsRefl α (· ⊆ ·)] [IsAntisymm α (· ⊆ ·)] : a = b ↔ b ⊆ a ∧ a ⊆ b :=
-  ⟨fun h => ⟨h.superset, h.subset'⟩, fun h => h.1.antisymm' h.2⟩
+  ⟨fun h ↦ ⟨h.superset, h.subset'⟩, fun h ↦ h.1.antisymm' h.2⟩
 
 end Subset
 
@@ -647,10 +647,10 @@ alias HasSubset.Subset.not_ssubset := not_ssubset_of_subset
 alias HasSubset.Subset.ssubset_of_not_subset := ssubset_of_subset_not_subset
 
 theorem ssubset_of_subset_of_ssubset [IsTrans α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : b ⊂ c) : a ⊂ c :=
-  (h₁.trans h₂.subset).ssubset_of_not_subset fun h => h₂.not_subset <| h.trans h₁
+  (h₁.trans h₂.subset).ssubset_of_not_subset fun h ↦ h₂.not_subset <| h.trans h₁
 
 theorem ssubset_of_ssubset_of_subset [IsTrans α (· ⊆ ·)] (h₁ : a ⊂ b) (h₂ : b ⊆ c) : a ⊂ c :=
-  (h₁.subset.trans h₂).ssubset_of_not_subset fun h => h₁.not_subset <| h₂.trans h
+  (h₁.subset.trans h₂).ssubset_of_not_subset fun h ↦ h₁.not_subset <| h₂.trans h
 
 theorem ssubset_of_subset_of_ne [IsAntisymm α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : a ≠ b) : a ⊂ b :=
   h₁.ssubset_of_not_subset <| mt h₁.antisymm h₂
@@ -686,11 +686,11 @@ alias HasSubset.Subset.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
 alias HasSubset.Subset.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
 
 theorem ssubset_iff_subset_ne [IsAntisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
-  ⟨fun h => ⟨h.subset, h.ne⟩, fun h => h.1.ssubset_of_ne h.2⟩
+  ⟨fun h ↦ ⟨h.subset, h.ne⟩, fun h ↦ h.1.ssubset_of_ne h.2⟩
 
 theorem subset_iff_ssubset_or_eq [IsRefl α (· ⊆ ·)] [IsAntisymm α (· ⊆ ·)] :
     a ⊆ b ↔ a ⊂ b ∨ a = b :=
-  ⟨fun h => h.ssubset_or_eq, fun h => h.elim subset_of_ssubset subset_of_eq⟩
+  ⟨fun h ↦ h.ssubset_or_eq, fun h ↦ h.elim subset_of_ssubset subset_of_eq⟩
 
 end SubsetSsubset
 

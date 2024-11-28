@@ -118,7 +118,7 @@ theorem IntegrableOn.congr_fun_ae (h : IntegrableOn f s μ) (hst : f =ᵐ[μ.res
 
 theorem integrableOn_congr_fun_ae (hst : f =ᵐ[μ.restrict s] g) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
-  ⟨fun h => h.congr_fun_ae hst, fun h => h.congr_fun_ae hst.symm⟩
+  ⟨fun h ↦ h.congr_fun_ae hst, fun h ↦ h.congr_fun_ae hst.symm⟩
 
 theorem IntegrableOn.congr_fun (h : IntegrableOn f s μ) (hst : EqOn f g s) (hs : MeasurableSet s) :
     IntegrableOn g s μ :=
@@ -126,7 +126,7 @@ theorem IntegrableOn.congr_fun (h : IntegrableOn f s μ) (hst : EqOn f g s) (hs 
 
 theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
-  ⟨fun h => h.congr_fun hst hs, fun h => h.congr_fun hst.symm hs⟩
+  ⟨fun h ↦ h.congr_fun hst hs, fun h ↦ h.congr_fun hst.symm hs⟩
 
 theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h.restrict
 
@@ -158,7 +158,7 @@ theorem IntegrableOn.union (hs : IntegrableOn f s μ) (ht : IntegrableOn f t μ)
 
 @[simp]
 theorem integrableOn_union : IntegrableOn f (s ∪ t) μ ↔ IntegrableOn f s μ ∧ IntegrableOn f t μ :=
-  ⟨fun h => ⟨h.left_of_union, h.right_of_union⟩, fun h => h.1.union h.2⟩
+  ⟨fun h ↦ ⟨h.left_of_union, h.right_of_union⟩, fun h ↦ h.1.union h.2⟩
 
 @[simp]
 theorem integrableOn_singleton_iff {x : α} [MeasurableSingletonClass α] :
@@ -205,7 +205,7 @@ theorem integrableOn_add_measure :
     IntegrableOn f s (μ + ν) ↔ IntegrableOn f s μ ∧ IntegrableOn f s ν :=
   ⟨fun h =>
     ⟨h.mono_measure (Measure.le_add_right le_rfl), h.mono_measure (Measure.le_add_left le_rfl)⟩,
-    fun h => h.1.add_measure h.2⟩
+    fun h ↦ h.1.add_measure h.2⟩
 
 theorem _root_.MeasurableEmbedding.integrableOn_map_iff [MeasurableSpace β] {e : α → β}
     (he : MeasurableEmbedding e) {f : β → E} {μ : Measure α} {s : Set β} :
@@ -320,7 +320,7 @@ theorem IntegrableOn.integrable_of_forall_not_mem_eq_zero (hf : IntegrableOn f s
 
 theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
     IntegrableOn f s μ ↔ Integrable f μ := by
-  refine ⟨fun h => ?_, fun h => h.integrableOn⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.integrableOn⟩
   refine h.integrable_of_forall_not_mem_eq_zero fun x hx => ?_
   contrapose! hx
   exact h1s (mem_support.2 hx)
@@ -438,7 +438,7 @@ theorem integrableAtFilter_top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ
 theorem IntegrableAtFilter.sup_iff {l l' : Filter α} :
     IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
   constructor
-  · exact fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
+  · exact fun h ↦ ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
   · exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
@@ -479,7 +479,7 @@ lemma Measure.integrableOn_of_bounded (s_finite : μ s ≠ ∞) (f_mble : AEStro
 theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ := by
-  refine ⟨fun hfg => ⟨?_, ?_⟩, fun h => h.1.add h.2⟩
+  refine ⟨fun hfg => ⟨?_, ?_⟩, fun h ↦ h.1.add h.2⟩
   · rw [← indicator_add_eq_left h]; exact hfg.indicator hf.measurableSet_support
   · rw [← indicator_add_eq_right h]; exact hfg.indicator hg.measurableSet_support
 

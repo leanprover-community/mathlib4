@@ -37,10 +37,10 @@ section Pairwise
 variable {f g : ι → α} {s t : Set α} {a b : α}
 
 theorem pairwise_on_bool (hr : Symmetric r) {a b : α} :
-    Pairwise (r on fun c => cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
+    Pairwise (r on fun c ↦ cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
 
 theorem pairwise_disjoint_on_bool [PartialOrder α] [OrderBot α] {a b : α} :
-    Pairwise (Disjoint on fun c => cond c a b) ↔ Disjoint a b :=
+    Pairwise (Disjoint on fun c ↦ cond c a b) ↔ Disjoint a b :=
   pairwise_on_bool Disjoint.symm
 
 theorem Symmetric.pairwise_on [LinearOrder ι] (hr : Symmetric r) (f : ι → α) :
@@ -178,7 +178,7 @@ theorem pairwise_univ : (univ : Set α).Pairwise r ↔ Pairwise r := by
 
 @[simp]
 theorem pairwise_bot_iff : s.Pairwise (⊥ : α → α → Prop) ↔ (s : Set α).Subsingleton :=
-  ⟨fun h _a ha _b hb => h.eq ha hb id, fun h => h.pairwise _⟩
+  ⟨fun h _a ha _b hb => h.eq ha hb id, fun h ↦ h.pairwise _⟩
 
 alias ⟨Pairwise.subsingleton, _⟩ := pairwise_bot_iff
 
@@ -270,7 +270,7 @@ theorem InjOn.pairwiseDisjoint_image {g : ι' → ι} {s : Set ι'} (h : s.InjOn
 theorem PairwiseDisjoint.range (g : s → ι) (hg : ∀ i : s, f (g i) ≤ f i)
     (ht : s.PairwiseDisjoint f) : (range g).PairwiseDisjoint f := by
   rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
-  exact ((ht x.2 y.2) fun h => hxy <| congr_arg g <| Subtype.ext h).mono (hg x) (hg y)
+  exact ((ht x.2 y.2) fun h ↦ hxy <| congr_arg g <| Subtype.ext h).mono (hg x) (hg y)
 
 theorem pairwiseDisjoint_union :
     (s ∪ t).PairwiseDisjoint f ↔
@@ -314,7 +314,7 @@ theorem PairwiseDisjoint.elim' (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i �
 
 theorem PairwiseDisjoint.eq_of_le (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
     (hf : f i ≠ ⊥) (hij : f i ≤ f j) : i = j :=
-  (hs.elim' hi hj) fun h => hf <| (inf_of_le_left hij).symm.trans h
+  (hs.elim' hi hj) fun h ↦ hf <| (inf_of_le_left hij).symm.trans h
 
 end SemilatticeInfBot
 

@@ -492,7 +492,7 @@ variable [GroupWithZero G₀] [MulAction G₀ β] [ContinuousConstSMul G₀ β]
 
 theorem _root_.stronglyMeasurable_const_smul_iff {m : MeasurableSpace α} (c : G) :
     (StronglyMeasurable fun x => c • f x) ↔ StronglyMeasurable f :=
-  ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
+  ⟨fun h ↦ by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h ↦ h.const_smul c⟩
 
 nonrec theorem _root_.IsUnit.stronglyMeasurable_const_smul_iff {_ : MeasurableSpace α} {c : M}
     (hc : IsUnit c) :
@@ -614,7 +614,7 @@ theorem _root_.Measurable.stronglyMeasurable [TopologicalSpace β] [PseudoMetriz
 /-- In a space with second countable topology, strongly measurable and measurable are equivalent. -/
 theorem _root_.stronglyMeasurable_iff_measurable [TopologicalSpace β] [MetrizableSpace β]
     [BorelSpace β] [SecondCountableTopology β] : StronglyMeasurable f ↔ Measurable f :=
-  ⟨fun h => h.measurable, fun h => Measurable.stronglyMeasurable h⟩
+  ⟨fun h ↦ h.measurable, fun h ↦ Measurable.stronglyMeasurable h⟩
 
 @[measurability]
 theorem _root_.stronglyMeasurable_id [TopologicalSpace α] [PseudoMetrizableSpace α]
@@ -879,7 +879,7 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
             exact hs_m₂.compl
           ext1 y
           rw [hx, Set.mem_inter_iff, Set.mem_preimage, Set.mem_singleton_iff]
-          exact ⟨fun h => h.2, fun h => ⟨hg_seq_zero y h n, h⟩⟩
+          exact ⟨fun h ↦ h.2, fun h ↦ ⟨hg_seq_zero y h n, h⟩⟩
         · suffices g_seq_s n ⁻¹' {x} ∩ sᶜ = ∅ by
             rw [this]
             exact MeasurableSet.empty
@@ -1354,7 +1354,7 @@ theorem _root_.aestronglyMeasurable_id {α : Type*} [TopologicalSpace α] [Pseud
 /-- In a space with second countable topology, strongly measurable and measurable are equivalent. -/
 theorem _root_.aestronglyMeasurable_iff_aemeasurable [PseudoMetrizableSpace β] [BorelSpace β]
     [SecondCountableTopology β] : AEStronglyMeasurable f μ ↔ AEMeasurable f μ :=
-  ⟨fun h => h.aemeasurable, fun h => h.aestronglyMeasurable⟩
+  ⟨fun h ↦ h.aemeasurable, fun h ↦ h.aestronglyMeasurable⟩
 
 end SecondCountableAEStronglyMeasurable
 
@@ -1650,7 +1650,7 @@ variable [GroupWithZero G₀] [MulAction G₀ β] [ContinuousConstSMul G₀ β]
 
 theorem _root_.aestronglyMeasurable_const_smul_iff (c : G) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
-  ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h => h.const_smul c⟩
+  ⟨fun h ↦ by simpa only [inv_smul_smul] using h.const_smul' c⁻¹, fun h ↦ h.const_smul c⟩
 
 nonrec theorem _root_.IsUnit.aestronglyMeasurable_const_smul_iff {c : M} (hc : IsUnit c) :
     AEStronglyMeasurable (fun x => c • f x) μ ↔ AEStronglyMeasurable f μ :=
@@ -1785,7 +1785,7 @@ variable {G : Type*} [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace 
   and `Measurable` are equivalent. -/
 theorem finStronglyMeasurable_iff_measurable {_m0 : MeasurableSpace α} (μ : Measure α)
     [SigmaFinite μ] : FinStronglyMeasurable f μ ↔ Measurable f :=
-  ⟨fun h => h.measurable, fun h => (Measurable.stronglyMeasurable h).finStronglyMeasurable μ⟩
+  ⟨fun h ↦ h.measurable, fun h ↦ (Measurable.stronglyMeasurable h).finStronglyMeasurable μ⟩
 
 /-- In a space with second countable topology and a sigma-finite measure, a measurable function
 is `FinStronglyMeasurable`. -/

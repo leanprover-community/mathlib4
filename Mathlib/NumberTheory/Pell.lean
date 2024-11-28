@@ -223,10 +223,10 @@ theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) :
 
 /-- A solution is `1` or `-1` if and only if `y = 0`. -/
 theorem eq_one_or_neg_one_iff_y_eq_zero {a : Solution₁ d} : a = 1 ∨ a = -1 ↔ a.y = 0 := by
-  refine ⟨fun H => H.elim (fun h => by simp [h]) fun h => by simp [h], fun H => ?_⟩
+  refine ⟨fun H => H.elim (fun h ↦ by simp [h]) fun h ↦ by simp [h], fun H => ?_⟩
   have prop := a.prop
   rw [H, sq (0 : ℤ), mul_zero, mul_zero, sub_zero, sq_eq_one_iff] at prop
-  exact prop.imp (fun h => ext h H) fun h => ext h H
+  exact prop.imp (fun h ↦ ext h H) fun h ↦ ext h H
 
 /-- The set of solutions with `x > 0` is closed under multiplication. -/
 theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a * b).x := by
@@ -675,7 +675,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
 Pell equation `x^2 - d*y^2 = 1` if and only if it is a fundamental solution. -/
 theorem pos_generator_iff_fundamental (a : Solution₁ d) :
     (1 < a.x ∧ 0 < a.y ∧ ∀ b : Solution₁ d, ∃ n : ℤ, b = a ^ n ∨ b = -a ^ n) ↔ IsFundamental a := by
-  refine ⟨fun h => ?_, fun H => ⟨H.1, H.2.1, H.eq_zpow_or_neg_zpow⟩⟩
+  refine ⟨fun h ↦ ?_, fun H => ⟨H.1, H.2.1, H.eq_zpow_or_neg_zpow⟩⟩
   have h₀ := d_pos_of_one_lt_x h.1
   have hd := d_nonsquare_of_one_lt_x h.1
   obtain ⟨a₁, ha₁⟩ := IsFundamental.exists_of_not_isSquare h₀ hd

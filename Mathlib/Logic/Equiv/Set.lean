@@ -208,7 +208,7 @@ theorem union_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H
 
 theorem union_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
     {a : (s ∪ t : Set α)} (ha : ↑a ∈ t) : Equiv.Set.union H a = Sum.inr ⟨a, ha⟩ :=
-  dif_neg fun h => Set.disjoint_left.mp H h ha
+  dif_neg fun h ↦ Set.disjoint_left.mp H h ha
 
 @[simp]
 theorem union_symm_apply_left {α} {s t : Set α} [DecidablePred fun x => x ∈ s] (H : Disjoint s t)
@@ -442,7 +442,7 @@ protected def powerset {α} (S : Set α) :
     𝒫 S ≃ Set S where
   toFun := fun x : 𝒫 S => Subtype.val ⁻¹' (x : Set α)
   invFun := fun x : Set S => ⟨Subtype.val '' x, by rintro _ ⟨a : S, _, rfl⟩; exact a.2⟩
-  left_inv x := by ext y;exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨_, x.2 h⟩, h, rfl⟩⟩
+  left_inv x := by ext y;exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h ↦ ⟨⟨_, x.2 h⟩, h, rfl⟩⟩
   right_inv x := by ext; simp
 
 /-- If `s` is a set in `range f`,
@@ -546,7 +546,7 @@ theorem ofLeftInverse_eq_ofInjective {α β : Type*} (f : α → β) (f_inv : No
     (hf : ∀ h : Nonempty α, LeftInverse (f_inv h) f) :
     ofLeftInverse f f_inv hf =
       ofInjective f ((isEmpty_or_nonempty α).elim (fun _ _ _ _ => Subsingleton.elim _ _)
-        (fun h => (hf h).injective)) := by
+        (fun h ↦ (hf h).injective)) := by
   ext
   simp
 

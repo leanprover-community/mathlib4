@@ -77,7 +77,7 @@ theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
     · exact (hr.trans_le (norm_nonneg _)).not_le
-    · exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
+    · exact fun h ↦ hr.not_le (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr
     simp_rw [← coe_nnnorm, nnnorm_eq, NNReal.coe_le_coe, Finset.sup_le_iff, Finset.mem_univ,
       forall_true_left]
@@ -512,7 +512,7 @@ theorem volume_fundamentalDomain_stdBasis :
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
 def indexEquiv : (index K) ≃ (K →+* ℂ) := by
-  refine Equiv.ofBijective (fun c => ?_)
+  refine Equiv.ofBijective (fun c ↦ ?_)
     ((Fintype.bijective_iff_surjective_and_card _).mpr ⟨?_, ?_⟩)
   · cases c with
     | inl w => exact w.val.embedding

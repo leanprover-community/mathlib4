@@ -74,7 +74,7 @@ theorem conductor_subset_adjoin : (conductor R x : Set S) ⊆ R<x> := fun y hy =
   simpa only [mul_one] using hy 1
 
 theorem mem_conductor_iff {y : S} : y ∈ conductor R x ↔ ∀ b : S, y * b ∈ R<x> :=
-  ⟨fun h => h, fun h => h⟩
+  ⟨fun h ↦ h, fun h ↦ h⟩
 
 theorem conductor_eq_top_of_adjoin_eq_top (h : R<x> = ⊤) : conductor R x = ⊤ := by
   simp only [Ideal.eq_top_iff_one, mem_conductor_iff, h, mem_top, forall_const]
@@ -163,8 +163,8 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
           simp only [ha.right, map_add, _root_.map_mul, add_right_inj]; rfl⟩
       rw [mul_comm]
       exact Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ hq)
-    refine ⟨fun h => ?_,
-      fun h => (Set.mem_image _ _ _).mpr (Exists.intro ⟨z, hz⟩ ⟨by simp [h], rfl⟩)⟩
+    refine ⟨fun h ↦ ?_,
+      fun h ↦ (Set.mem_image _ _ _).mpr (Exists.intro ⟨z, hz⟩ ⟨by simp [h], rfl⟩)⟩
     obtain ⟨x₁, hx₁, hx₂⟩ := (Set.mem_image _ _ _).mp h
     have : x₁ = ⟨z, hz⟩ := by
       apply h_alg

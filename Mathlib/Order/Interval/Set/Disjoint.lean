@@ -139,7 +139,7 @@ theorem eq_of_Ico_disjoint {x₁ x₂ y₁ y₂ : α} (h : Disjoint (Ico x₁ x�
     (h2 : x₂ ∈ Ico y₁ y₂) : y₁ = x₂ := by
   rw [Ico_disjoint_Ico, min_eq_left (le_of_lt h2.2), le_max_iff] at h
   apply le_antisymm h2.1
-  exact h.elim (fun h => absurd hx (not_lt_of_le h)) id
+  exact h.elim (fun h ↦ absurd hx (not_lt_of_le h)) id
 
 @[simp]
 theorem iUnion_Ico_eq_Iio_self_iff {f : ι → α} {a : α} :
@@ -187,7 +187,7 @@ theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :
 theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
   refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
-  · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_not_mem) hx)
+  · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h ↦ (h ▸ a_not_mem) hx)
   · rcases a_glb.exists_between hx with ⟨y, hys, _, hyx⟩
     rw [mem_iUnion₂]
     exact ⟨y, hys, hyx.le⟩

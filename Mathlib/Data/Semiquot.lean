@@ -41,7 +41,7 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
   ⟨s, Trunc.mk ⟨a, h⟩⟩
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
-  refine ⟨congr_arg _, fun h => ?_⟩
+  refine ⟨congr_arg _, fun h ↦ ?_⟩
   cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 
@@ -143,7 +143,7 @@ instance : LawfulMonad Semiquot := LawfulMonad.mk'
   (bind_assoc := fun {α β} γ s f g =>
     ext.2 <| by
     simp only [bind_def, mem_bind]
-    exact fun c => ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩,
+    exact fun c ↦ ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩,
       fun ⟨a, as, b, bf, cg⟩ => ⟨b, ⟨a, as, bf⟩, cg⟩⟩)
   (id_map := fun {α} q => ext.2 <| by simp)
   (bind_pure_comp := fun {α β} f s => ext.2 <| by simp [eq_comm])
@@ -181,7 +181,7 @@ theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   unfold get; rw [liftOn_ofMem q _ _ a h]; exact h
 
 theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
-  ext.2 fun a ↦ by simpa using ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
+  ext.2 fun a ↦ by simpa using ⟨fun h ↦ p _ h _ (get_mem _), fun e ↦ e.symm ▸ get_mem _⟩
 
 @[simp]
 theorem pure_isPure (a : α) : IsPure (pure a)
@@ -190,7 +190,7 @@ theorem pure_isPure (a : α) : IsPure (pure a)
     rwa [← ac] at ab
 
 theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
-  ⟨fun h => ⟨_, eq_pure h⟩, fun ⟨_, e⟩ => e.symm ▸ pure_isPure _⟩
+  ⟨fun h ↦ ⟨_, eq_pure h⟩, fun ⟨_, e⟩ => e.symm ▸ pure_isPure _⟩
 
 theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
   | _, as, _, bs => h _ (st as) _ (st bs)
@@ -221,7 +221,7 @@ theorem univ_unique (I J : Inhabited α) : @univ _ I = @univ _ J :=
 
 @[simp]
 theorem isPure_univ [Inhabited α] : @IsPure α univ ↔ Subsingleton α :=
-  ⟨fun h => ⟨fun a b => h a trivial b trivial⟩, fun ⟨h⟩ a _ b _ => h a b⟩
+  ⟨fun h ↦ ⟨fun a b => h a trivial b trivial⟩, fun ⟨h⟩ a _ b _ => h a b⟩
 
 instance [Inhabited α] : OrderTop (Semiquot α) where
   top := univ

@@ -477,7 +477,7 @@ protected theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUn
 
 @[simp]
 theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit a :=
-  ⟨fun h => star_star a ▸ h.star, IsUnit.star⟩
+  ⟨fun h ↦ star_star a ▸ h.star, IsUnit.star⟩
 
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
     Ring.inverse (star a) = star (Ring.inverse a) := by
@@ -518,12 +518,12 @@ protected theorem IsRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRegular x) 
 @[simp]
 theorem isRightRegular_star_iff [Mul R] [StarMul R] {x : R} :
     IsRightRegular (star x) ↔ IsLeftRegular x :=
-  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+  ⟨fun h ↦ star_star x ▸ h.star, (·.star)⟩
 
 @[simp]
 theorem isLeftRegular_star_iff [Mul R] [StarMul R] {x : R} :
     IsLeftRegular (star x) ↔ IsRightRegular x :=
-  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+  ⟨fun h ↦ star_star x ▸ h.star, (·.star)⟩
 
 @[simp]
 theorem isRegular_star_iff [Mul R] [StarMul R] {x : R} :

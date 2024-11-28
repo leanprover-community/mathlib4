@@ -439,7 +439,7 @@ theorem collinear_iff_exists_forall_eq_smul_vadd (s : Set P) :
   · simp [collinear_empty]
   · rw [collinear_iff_of_mem hp₁]
     constructor
-    · exact fun h => ⟨p₁, h⟩
+    · exact fun h ↦ ⟨p₁, h⟩
     · rintro ⟨p, v, hv⟩
       use v
       intro p₂ hp₂

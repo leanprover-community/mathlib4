@@ -160,7 +160,7 @@ theorem WithDensityᵥEq.congr_ae {f g : α → E} (h : f =ᵐ[μ] g) :
 theorem Integrable.withDensityᵥ_eq_iff [CompleteSpace E]
     {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) :
     μ.withDensityᵥ f = μ.withDensityᵥ g ↔ f =ᵐ[μ] g :=
-  ⟨fun hfg => hf.ae_eq_of_withDensityᵥ_eq hg hfg, fun h => WithDensityᵥEq.congr_ae h⟩
+  ⟨fun hfg => hf.ae_eq_of_withDensityᵥ_eq hg hfg, fun h ↦ WithDensityᵥEq.congr_ae h⟩
 
 section SignedMeasure
 

@@ -636,7 +636,7 @@ alias ⟨_, Aesop.toFinset_nonempty_of_nonempty⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toFinset ↔ s = t :=
-  ⟨fun h => by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h => by simp [h]⟩
+  ⟨fun h ↦ by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h ↦ by simp [h]⟩
 
 @[mono]
 theorem toFinset_subset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
@@ -1015,7 +1015,7 @@ instance PSigma.fintypePropProp {α : Prop} {β : α → Prop} [Decidable α] [�
 instance pfunFintype (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, Fintype (α hp)] :
     Fintype (∀ hp : p, α hp) :=
   if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ => a, fun f => f hp, fun _ => rfl, fun _ => rfl⟩
-  else ⟨singleton fun h => (hp h).elim, fun h => mem_singleton.2
+  else ⟨singleton fun h ↦ (hp h).elim, fun h ↦ mem_singleton.2
     (funext fun x => by contradiction)⟩
 
 theorem mem_image_univ_iff_mem_range {α β : Type*} [Fintype α] [DecidableEq β] {f : α → β}

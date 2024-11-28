@@ -180,7 +180,7 @@ def gi : GaloisInsertion toRegular ((↑) : Regular α → α) where
   choice a ha := ⟨a, ha.antisymm le_compl_compl⟩
   gc _ b :=
     coe_le_coe.symm.trans <|
-      ⟨le_compl_compl.trans, fun h => (compl_anti <| compl_anti h).trans_eq b.2⟩
+      ⟨le_compl_compl.trans, fun h ↦ (compl_anti <| compl_anti h).trans_eq b.2⟩
   le_l_u _ := le_compl_compl
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 
@@ -208,7 +208,7 @@ instance : BooleanAlgebra (Regular α) :=
         (by
           dsimp
           rw [compl_sup, a.prop.eq]
-          refine eq_of_forall_le_iff fun c => le_himp_iff.trans ?_
+          refine eq_of_forall_le_iff fun c ↦ le_himp_iff.trans ?_
           rw [le_compl_iff_disjoint_right, disjoint_left_comm]
           rw [b.prop.disjoint_compl_left_iff]) }
 

@@ -125,7 +125,7 @@ theorem eqOn_mulIndicator : EqOn (mulIndicator s f) f s := fun _ hx => mulIndica
 
 @[to_additive]
 theorem mulSupport_mulIndicator_subset : mulSupport (s.mulIndicator f) ⊆ s := fun _ hx =>
-  hx.imp_symm fun h => mulIndicator_of_not_mem h f
+  hx.imp_symm fun h ↦ mulIndicator_of_not_mem h f
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_mulSupport : mulIndicator (mulSupport f) f = f :=

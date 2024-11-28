@@ -77,7 +77,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
       refine IsOpen.mem_nhds ?_ ?_
       · apply_rules [IsOpen.union, IsOpen.prod]
       · simp only [W, mem_union, mem_prod, and_self_iff]
-        exact (_root_.em _).imp_left fun h => union_subset_union VU₁ VU₂ h
+        exact (_root_.em _).imp_left fun h ↦ union_subset_union VU₁ VU₂ h
     -- So W ○ W ∈ F by definition of F
     have : W ○ W ∈ F := @mem_lift' _ _ _ (fun s => s ○ s) _ W_in
       -- Porting note: was `by simpa only using mem_lift' W_in`
@@ -90,11 +90,11 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
     -- So u ∈ V₁, v ∈ V₂, and there exists some w such that (u, w) ∈ W and (w ,v) ∈ W.
     -- Because u is in V₁ which is disjoint from U₂ and U₃, (u, w) ∈ W forces (u, w) ∈ U₁ ×ˢ U₁.
     have uw_in : (u, w) ∈ U₁ ×ˢ U₁ :=
-      (huw.resolve_right fun h => h.1 <| Or.inl u_in).resolve_right fun h =>
+      (huw.resolve_right fun h ↦ h.1 <| Or.inl u_in).resolve_right fun h =>
         hU₁₂.le_bot ⟨VU₁ u_in, h.1⟩
     -- Similarly, because v ∈ V₂, (w ,v) ∈ W forces (w, v) ∈ U₂ ×ˢ U₂.
     have wv_in : (w, v) ∈ U₂ ×ˢ U₂ :=
-      (hwv.resolve_right fun h => h.2 <| Or.inr v_in).resolve_left fun h =>
+      (hwv.resolve_right fun h ↦ h.2 <| Or.inr v_in).resolve_left fun h =>
         hU₁₂.le_bot ⟨h.2, VU₂ v_in⟩
     -- Hence w ∈ U₁ ∩ U₂ which is empty.
     -- So we have a contradiction

@@ -75,16 +75,16 @@ theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
 /-- Two equivalence relations are equal iff all their equivalence classes are equal. -/
 theorem eq_iff_classes_eq {r₁ r₂ : Setoid α} :
     r₁ = r₂ ↔ ∀ x, { y | r₁ x y } = { y | r₂ x y } :=
-  ⟨fun h _x => h ▸ rfl, fun h => ext fun x => Set.ext_iff.1 <| h x⟩
+  ⟨fun h _x => h ▸ rfl, fun h ↦ ext fun x => Set.ext_iff.1 <| h x⟩
 
 theorem rel_iff_exists_classes (r : Setoid α) {x y} : r x y ↔ ∃ c ∈ r.classes, x ∈ c ∧ y ∈ c :=
-  ⟨fun h => ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
+  ⟨fun h ↦ ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
     subst c
     exact r.trans' hx (r.symm' hy)⟩
 
 /-- Two equivalence relations are equal iff their equivalence classes are equal. -/
 theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r₂.classes :=
-  ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
+  ⟨fun h ↦ h ▸ rfl, fun h ↦ ext fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
 
 /-- The empty set is not an equivalence class. -/
 theorem empty_not_mem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
@@ -146,7 +146,7 @@ def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     relation r equals r. -/
 theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_classes = r :=
   ext fun x _y =>
-    ⟨fun h => r.symm' (h { z | r z x } (r.mem_classes x) <| r.refl' x), fun h _b hb hx =>
+    ⟨fun h ↦ r.symm' (h { z | r z x } (r.mem_classes x) <| r.refl' x), fun h _b hb hx =>
       eq_of_mem_classes (r.mem_classes x) (r.refl' x) hb hx ▸ r.symm' h⟩
 
 @[simp]
@@ -314,7 +314,7 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
     (dis : Pairwise (Disjoint on s)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s where
-  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
+  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h ↦ (dis h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
   some_mem i := (nonempty i).choose_spec
   index x := (ex x).choose
@@ -353,7 +353,7 @@ theorem disjoint : Pairwise (Disjoint on s) := fun {_i _j} h =>
   disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
 
 theorem mem_iff_index_eq {x i} : x ∈ s i ↔ hs.index x = i :=
-  ⟨fun hxi => (hs.eq_of_mem hxi (hs.mem_index x)).symm, fun h => h ▸ hs.mem_index _⟩
+  ⟨fun hxi => (hs.eq_of_mem hxi (hs.mem_index x)).symm, fun h ↦ h ▸ hs.mem_index _⟩
 
 theorem eq (i) : s i = { x | hs.index x = i } :=
   Set.ext fun _ => hs.mem_iff_index_eq

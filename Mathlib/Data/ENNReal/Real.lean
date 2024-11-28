@@ -114,7 +114,7 @@ theorem toReal_le_add (hle : a ≤ b + c) (hb : b ≠ ∞) (hc : c ≠ ∞) :
 
 @[simp]
 theorem toNNReal_le_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal ≤ b.toNNReal ↔ a ≤ b :=
-  ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_le_coe], toNNReal_mono hb⟩
+  ⟨fun h ↦ by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_le_coe], toNNReal_mono hb⟩
 
 @[gcongr]
 theorem toNNReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toNNReal < b.toNNReal := by
@@ -122,7 +122,7 @@ theorem toNNReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toNNReal < b.toNNR
 
 @[simp]
 theorem toNNReal_lt_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal < b.toNNReal ↔ a < b :=
-  ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_lt_coe], toNNReal_strict_mono hb⟩
+  ⟨fun h ↦ by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_lt_coe], toNNReal_strict_mono hb⟩
 
 theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
   @toNNReal_coe p ▸ toNNReal_strict_mono coe_ne_top h
@@ -130,13 +130,13 @@ theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
 theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim
-    (fun h => by simp only [h, ENNReal.toReal_mono hp h, max_eq_right]) fun h => by
+    (fun h ↦ by simp only [h, ENNReal.toReal_mono hp h, max_eq_right]) fun h ↦ by
     simp only [h, ENNReal.toReal_mono hr h, max_eq_left]
 
 theorem toReal_min {a b : ℝ≥0∞} (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (min a b) = min (ENNReal.toReal a) (ENNReal.toReal b) :=
-  (le_total a b).elim (fun h => by simp only [h, ENNReal.toReal_mono hp h, min_eq_left])
-    fun h => by simp only [h, ENNReal.toReal_mono hr h, min_eq_right]
+  (le_total a b).elim (fun h ↦ by simp only [h, ENNReal.toReal_mono hp h, min_eq_left])
+    fun h ↦ by simp only [h, ENNReal.toReal_mono hr h, min_eq_right]
 
 theorem toReal_sup {a b : ℝ≥0∞} : a ≠ ∞ → b ≠ ∞ → (a ⊔ b).toReal = a.toReal ⊔ b.toReal :=
   toReal_max
@@ -433,13 +433,13 @@ protected theorem trichotomy₂ {p q : ℝ≥0∞} (hpq : p ≤ q) :
 protected theorem dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal :=
   haveI : p = ⊤ ∨ 0 < p.toReal ∧ 1 ≤ p.toReal := by
     simpa using ENNReal.trichotomy₂ (Fact.out : 1 ≤ p)
-  this.imp_right fun h => h.2
+  this.imp_right fun h ↦ h.2
 
 theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal ↔ p ≠ ∞ :=
   ⟨fun h hp =>
     have : (0 : ℝ) ≠ 0 := top_toReal ▸ (hp ▸ h.ne : 0 ≠ ∞.toReal)
     this rfl,
-    fun h => zero_lt_one.trans_le (p.dichotomy.resolve_left h)⟩
+    fun h ↦ zero_lt_one.trans_le (p.dichotomy.resolve_left h)⟩
 
 @[simp] theorem toNNReal_inv (a : ℝ≥0∞) : a⁻¹.toNNReal = a.toNNReal⁻¹ := by
   induction' a with a; · simp
@@ -530,7 +530,7 @@ theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
     (iSup_le fun _ => tsub_le_tsub (le_iSup _ _) (le_refl a))
 
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
-  refine eq_of_forall_ge_iff fun c => ?_
+  refine eq_of_forall_ge_iff fun c ↦ ?_
   rw [tsub_le_iff_right, add_comm, iInf_add]
   simp [tsub_le_iff_right, sub_eq_add_neg, add_comm]
 

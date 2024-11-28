@@ -94,7 +94,7 @@ theorem mk_sub (f g : CauSeq β abv) : mk f - mk g = mk (f - g) :=
   rfl
 
 instance {γ : Type*} [SMul γ β] [IsScalarTower γ β β] : SMul γ (Cauchy abv) :=
-  ⟨fun c => (Quotient.map (c • ·)) fun _ _ hf => smul_equiv_smul _ hf⟩
+  ⟨fun c ↦ (Quotient.map (c • ·)) fun _ _ hf => smul_equiv_smul _ hf⟩
 
 @[simp]
 theorem mk_smul {γ : Type*} [SMul γ β] [IsScalarTower γ β β] (c : γ) (f : CauSeq β abv) :
@@ -210,7 +210,7 @@ theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
   have : LimZero (1 : CauSeq _ abv) := by simpa
   by apply one_ne_zero <| const_limZero.1 this
 
-theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h
+theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h ↦ cau_seq_zero_ne_one <| mk_eq.1 h
 
 protected theorem inv_mul_cancel {x : (Cauchy abv)} : x ≠ 0 → x⁻¹ * x = 1 :=
   Quotient.inductionOn x fun f hf => by
@@ -345,11 +345,11 @@ theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
       exact Setoid.symm (equiv_lim f))
 
 theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have hf := equiv_lim f
     rw [h] at hf
     exact (limZero_congr hf).mpr (const_limZero.mpr rfl),
-   fun h => by
+   fun h ↦ by
     have h₁ : f = f - const abv 0 := ext fun n => by simp [sub_apply, const_apply]
     rw [h₁] at h
     exact lim_eq_of_equiv_const h⟩

@@ -229,7 +229,7 @@ of algebraically closed fields of characteristic zero if and only if it is model
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF_zero_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Infinite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ } := by
-  refine ⟨fun h => Set.infinite_of_finite_compl
+  refine ⟨fun h ↦ Set.infinite_of_finite_compl
       (finite_ACF_prime_not_realize_of_ACF_zero_realize φ h),
     not_imp_not.1 ?_⟩
   simpa [(ACF_isComplete (Or.inr rfl)).models_not_iff,
@@ -242,8 +242,8 @@ theory of algebraically closed fields of characteristic `p` for all but finitely
 -/
 theorem ACF_zero_realize_iff_finite_ACF_prime_not_realize {φ : Language.ring.Sentence} :
     Theory.ACF 0 ⊨ᵇ φ ↔ Set.Finite { p : Nat.Primes | Theory.ACF p ⊨ᵇ φ }ᶜ :=
-  ⟨fun h => finite_ACF_prime_not_realize_of_ACF_zero_realize φ h,
-    fun h => ACF_zero_realize_iff_infinite_ACF_prime_realize.2
+  ⟨fun h ↦ finite_ACF_prime_not_realize_of_ACF_zero_realize φ h,
+    fun h ↦ ACF_zero_realize_iff_infinite_ACF_prime_realize.2
       (Set.infinite_of_finite_compl h)⟩
 
 

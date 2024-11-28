@@ -846,7 +846,7 @@ theorem mem_sUnion_of_mem {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∈ t
 
 -- is this theorem really necessary?
 theorem not_mem_of_not_mem_sUnion {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∉ ⋃₀S)
-    (ht : t ∈ S) : x ∉ t := fun h => hx ⟨t, ht, h⟩
+    (ht : t ∈ S) : x ∉ t := fun h ↦ hx ⟨t, ht, h⟩
 
 theorem sInter_subset_of_mem {S : Set (Set α)} {t : Set α} (tS : t ∈ S) : ⋂₀ S ⊆ t :=
   sInf_le tS
@@ -1584,7 +1584,7 @@ theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
     (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
   ext x
   simp only [mem_prod, mem_iInter]
-  exact ⟨fun h i => ⟨h.1, h.2 i⟩, fun h => ⟨(h hι.some).1, fun i => (h i).2⟩⟩
+  exact ⟨fun h i => ⟨h.1, h.2 i⟩, fun h ↦ ⟨(h hι.some).1, fun i => (h i).2⟩⟩
 
 end Prod
 

@@ -40,7 +40,7 @@ instance (priority := 100) toMulDivCancelClass : MulDivCancelClass R where
 
 @[simp]
 theorem mod_eq_zero {a b : R} : a % b = 0 ↔ b ∣ a :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← div_add_mod a b, h, add_zero]
     exact dvd_mul_right _ _, fun ⟨c, e⟩ => by
     rw [e, ← add_left_cancel_iff, div_add_mod, add_zero]
@@ -138,7 +138,7 @@ theorem gcd_dvd_right (a b : R) : gcd a b ∣ b :=
   (gcd_dvd a b).right
 
 protected theorem gcd_eq_zero_iff {a b : R} : gcd a b = 0 ↔ a = 0 ∧ b = 0 :=
-  ⟨fun h => by simpa [h] using gcd_dvd a b, by
+  ⟨fun h ↦ by simpa [h] using gcd_dvd a b, by
     rintro ⟨rfl, rfl⟩
     exact gcd_zero_right _⟩
 
@@ -148,9 +148,9 @@ theorem dvd_gcd {a b c : R} : c ∣ a → c ∣ b → c ∣ gcd a b :=
     exact IH ((dvd_mod_iff ca).2 cb) ca
 
 theorem gcd_eq_left {a b : R} : gcd a b = a ↔ a ∣ b :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← h]
-    apply gcd_dvd_right, fun h => by rw [gcd_val, mod_eq_zero.2 h, gcd_zero_left]⟩
+    apply gcd_dvd_right, fun h ↦ by rw [gcd_val, mod_eq_zero.2 h, gcd_zero_left]⟩
 
 @[simp]
 theorem gcd_one_left (a : R) : gcd 1 a = 1 :=

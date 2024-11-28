@@ -1025,8 +1025,8 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
   cases n
   · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
     exact
-      ⟨fun h => h.elim (by simp) Or.inl, fun h =>
-        Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
+      ⟨fun h ↦ h.elim (by simp) Or.inl, fun h =>
+        Or.inr (h.elim id fun h ↦ h.elim (by simp) id)⟩
   conv_lhs =>
     rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_zmod_eq_zero_iff_dvd]
   constructor
@@ -1176,7 +1176,7 @@ theorem valMinAbs_mul_two_eq_iff {n : ℕ} (a : ZMod n) : a.valMinAbs * 2 = n �
     rw [← a.valMinAbs_nonneg_iff, ← mul_nonneg_iff_left_nonneg_of_pos, he] at h
     exacts [h (Nat.cast_nonneg _), zero_lt_two]
   · rw [mul_comm]
-    exact fun h => (Nat.le_div_iff_mul_le zero_lt_two).2 h.le
+    exact fun h ↦ (Nat.le_div_iff_mul_le zero_lt_two).2 h.le
 
 theorem valMinAbs_mem_Ioc {n : ℕ} [NeZero n] (x : ZMod n) :
     x.valMinAbs * 2 ∈ Set.Ioc (-n : ℤ) n := by

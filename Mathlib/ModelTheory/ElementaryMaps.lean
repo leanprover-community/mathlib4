@@ -261,7 +261,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
       obtain ⟨b, hb⟩ := htv n φ.not xs a (by
           rw [BoundedFormula.realize_not, ← Unique.eq_default (f ∘ default)]
           exact ha)
-      refine ⟨b, fun h => hb (Eq.mp ?_ ((ih _).2 h))⟩
+      refine ⟨b, fun h ↦ hb (Eq.mp ?_ ((ih _).2 h))⟩
       rw [Unique.eq_default (f ∘ default), Fin.comp_snoc]
 
 /-- Bundles an embedding satisfying the Tarski-Vaught test as an elementary embedding. -/

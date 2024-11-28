@@ -157,7 +157,7 @@ instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousI
   refine ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_sub_tendsto_zero.2 <| ?_⟩
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
-  refine squeeze_zero (fun e => norm_nonneg _) this ?_
+  refine squeeze_zero (fun e ↦ norm_nonneg _) this ?_
   convert ((continuous_fst.tendsto q).sub <| tendsto_const_nhds).norm.add
     ((continuous_snd.tendsto q).sub <| tendsto_const_nhds).norm
   simp

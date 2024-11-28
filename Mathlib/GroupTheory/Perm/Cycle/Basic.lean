@@ -251,7 +251,7 @@ theorem IsCycle.inv (hf : IsCycle f) : IsCycle f⁻¹ :=
 
 @[simp]
 theorem isCycle_inv : IsCycle f⁻¹ ↔ IsCycle f :=
-  ⟨fun h => h.inv, IsCycle.inv⟩
+  ⟨fun h ↦ h.inv, IsCycle.inv⟩
 
 theorem IsCycle.conj : IsCycle f → IsCycle (g * f * g⁻¹) := by
   rintro ⟨x, hx, h⟩
@@ -278,7 +278,7 @@ theorem isCycle_iff_sameCycle (hx : f x ≠ x) : IsCycle f ↔ ∀ {y}, SameCycl
         rw [← zpow_apply_eq_self_of_apply_eq_self hy i, (f ^ i).injective.eq_iff] at hi
         rw [hi, hy],
       hf.exists_zpow_eq hx⟩,
-    fun h => ⟨x, hx, fun _ hy => h.2 hy⟩⟩
+    fun h ↦ ⟨x, hx, fun _ hy => h.2 hy⟩⟩
 
 section Finite
 
@@ -481,7 +481,7 @@ theorem IsCycle.of_zpow {n : ℤ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f 
 
 theorem nodup_of_pairwise_disjoint_cycles {l : List (Perm β)} (h1 : ∀ f ∈ l, IsCycle f)
     (h2 : l.Pairwise Disjoint) : l.Nodup :=
-  nodup_of_pairwise_disjoint (fun h => (h1 1 h).ne_one rfl) h2
+  nodup_of_pairwise_disjoint (fun h ↦ (h1 1 h).ne_one rfl) h2
 
 /-- Unlike `support_congr`, which assumes that `∀ (x ∈ g.support), f x = g x)`, here
 we have the weaker assumption that `∀ (x ∈ f.support), f x = g x`. -/
@@ -582,7 +582,7 @@ theorem IsCycle.pow_eq_one_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : �
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} {x : β}
     (hx : f x ≠ x) : f ^ n = 1 ↔ (f ^ n) x = x :=
-  ⟨fun h => DFunLike.congr_fun h x, fun h => hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
+  ⟨fun h ↦ DFunLike.congr_fun h x, fun h ↦ hf.pow_eq_one_iff.2 ⟨x, hx, h⟩⟩
 
 -- TODO: Define a `Set`-valued support to get rid of the `Finite β` assumption
 theorem IsCycle.pow_eq_one_iff'' [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
@@ -728,7 +728,7 @@ protected theorem IsCycleOn.apply_ne (hf : f.IsCycleOn s) (hs : s.Nontrivial) (h
     f a ≠ a := by
   obtain ⟨b, hb, hba⟩ := hs.exists_ne a
   obtain ⟨n, rfl⟩ := hf.2 ha hb
-  exact fun h => hba (IsFixedPt.perm_zpow h n)
+  exact fun h ↦ hba (IsFixedPt.perm_zpow h n)
 
 protected theorem IsCycle.isCycleOn (hf : f.IsCycle) : f.IsCycleOn { x | f x ≠ x } :=
   ⟨f.bijOn fun _ => f.apply_eq_iff_eq.not, fun _ ha _ => hf.sameCycle ha⟩
@@ -906,7 +906,7 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
     haveI := hs'.to_subtype
     obtain ⟨f⟩ : Nonempty (ℤ ≃ s) := inferInstance
     refine ⟨(Equiv.addRight 1).extendDomain f, ?_, fun x hx =>
-      of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
+      of_not_not fun h ↦ hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
     convert Int.addRight_one_isCycle.isCycleOn.extendDomain f
     rw [Set.image_comp, Equiv.image_eq_preimage]
     ext

@@ -425,8 +425,8 @@ def carrier.asIdeal : Ideal A where
 
 theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous 𝒜 :=
   fun i a ha j =>
-  (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
-    fun h => by
+  (em (i = j)).elim (fun h ↦ h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
+    fun h ↦ by
     simpa only [proj_apply, decompose_of_mem_ne 𝒜 (Submodule.coe_mem (decompose 𝒜 a i)) h,
       zero_pow hm.ne', map_zero] using carrier.zero_mem f_deg hm q j
 

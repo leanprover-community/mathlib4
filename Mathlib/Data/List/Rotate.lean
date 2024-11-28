@@ -252,7 +252,7 @@ theorem get_eq_get_rotate (l : List α) (n : ℕ) (k : Fin l.length) :
 theorem rotate_eq_self_iff_eq_replicate [hα : Nonempty α] :
     ∀ {l : List α}, (∀ n, l.rotate n = l) ↔ ∃ a, l = replicate l.length a
   | [] => by simp
-  | a :: l => ⟨fun h => ⟨a, ext_getElem (length_replicate _ _).symm fun n h₁ h₂ => by
+  | a :: l => ⟨fun h ↦ ⟨a, ext_getElem (length_replicate _ _).symm fun n h₁ h₂ => by
       rw [getElem_replicate, ← Option.some_inj, ← getElem?_eq_getElem, ← head?_rotate h₁, h,
         head?_cons]⟩,
     fun ⟨b, hb⟩ n => by rw [hb, rotate_replicate]⟩
@@ -262,7 +262,7 @@ theorem rotate_one_eq_self_iff_eq_replicate [Nonempty α] {l : List α} :
   ⟨fun h =>
     rotate_eq_self_iff_eq_replicate.mp fun n =>
       Nat.rec l.rotate_zero (fun n hn => by rwa [Nat.succ_eq_add_one, ← l.rotate_rotate, hn]) n,
-    fun h => rotate_eq_self_iff_eq_replicate.mpr h 1⟩
+    fun h ↦ rotate_eq_self_iff_eq_replicate.mpr h 1⟩
 
 theorem rotate_injective (n : ℕ) : Function.Injective fun l : List α => l.rotate n := by
   rintro l l' (h : l.rotate n = l'.rotate n)
@@ -402,7 +402,7 @@ theorem IsRotated.mem_iff (h : l ~r l') {a : α} : a ∈ l ↔ a ∈ l' :=
 
 @[simp]
 theorem isRotated_nil_iff : l ~r [] ↔ l = [] :=
-  ⟨fun ⟨n, hn⟩ => by simpa using hn, fun h => h ▸ by rfl⟩
+  ⟨fun ⟨n, hn⟩ => by simpa using hn, fun h ↦ h ▸ by rfl⟩
 
 @[simp]
 theorem isRotated_nil_iff' : [] ~r l ↔ [] = l := by
@@ -410,7 +410,7 @@ theorem isRotated_nil_iff' : [] ~r l ↔ [] = l := by
 
 @[simp]
 theorem isRotated_singleton_iff {x : α} : l ~r [x] ↔ l = [x] :=
-  ⟨fun ⟨n, hn⟩ => by simpa using hn, fun h => h ▸ by rfl⟩
+  ⟨fun ⟨n, hn⟩ => by simpa using hn, fun h ↦ h ▸ by rfl⟩
 
 @[simp]
 theorem isRotated_singleton_iff' {x : α} : [x] ~r l ↔ [x] = l := by
@@ -436,7 +436,7 @@ theorem isRotated_reverse_iff : l.reverse ~r l'.reverse ↔ l ~r l' := by
   simp [isRotated_reverse_comm_iff]
 
 theorem isRotated_iff_mod : l ~r l' ↔ ∃ n ≤ l.length, l.rotate n = l' := by
-  refine ⟨fun h => ?_, fun ⟨n, _, h⟩ => ⟨n, h⟩⟩
+  refine ⟨fun h ↦ ?_, fun ⟨n, _, h⟩ => ⟨n, h⟩⟩
   obtain ⟨n, rfl⟩ := h
   cases' l with hd tl
   · simp

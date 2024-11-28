@@ -219,7 +219,7 @@ theorem IsMaxFilter.filter_mono (h : IsMaxFilter f l a) (hl : l' ≤ l) : IsMaxF
   hl h
 
 theorem IsExtrFilter.filter_mono (h : IsExtrFilter f l a) (hl : l' ≤ l) : IsExtrFilter f l' a :=
-  h.elim (fun h => (h.filter_mono hl).isExtr) fun h => (h.filter_mono hl).isExtr
+  h.elim (fun h ↦ (h.filter_mono hl).isExtr) fun h ↦ (h.filter_mono hl).isExtr
 
 theorem IsMinFilter.filter_inf (h : IsMinFilter f l a) (l') : IsMinFilter f (l ⊓ l') a :=
   h.filter_mono inf_le_left
@@ -357,7 +357,7 @@ theorem IsMaxOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMaxOn 
 
 theorem IsExtrOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsExtrOn f s a)
     (hg : MapsTo g t s) (ha : g b = a) : IsExtrOn (f ∘ g) t b :=
-  hf.elim (fun h => Or.inl <| h.comp_mapsTo hg ha) fun h => Or.inr <| h.comp_mapsTo hg ha
+  hf.elim (fun h ↦ Or.inl <| h.comp_mapsTo hg ha) fun h ↦ Or.inr <| h.comp_mapsTo hg ha
 
 end Preorder
 
@@ -537,7 +537,7 @@ theorem IsMaxFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : �
 
 theorem Filter.EventuallyEq.isMaxFilter_iff {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMaxFilter f l a ↔ IsMaxFilter g l a :=
-  ⟨fun h => h.congr heq hfga, fun h => h.congr heq.symm hfga.symm⟩
+  ⟨fun h ↦ h.congr heq hfga, fun h ↦ h.congr heq.symm hfga.symm⟩
 
 theorem Filter.EventuallyLE.isMinFilter {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (hle : f ≤ᶠ[l] g) (hfga : f a = g a) (h : IsMinFilter f l a) :
@@ -550,7 +550,7 @@ theorem IsMinFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : �
 
 theorem Filter.EventuallyEq.isMinFilter_iff {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsMinFilter f l a ↔ IsMinFilter g l a :=
-  ⟨fun h => h.congr heq hfga, fun h => h.congr heq.symm hfga.symm⟩
+  ⟨fun h ↦ h.congr heq hfga, fun h ↦ h.congr heq.symm hfga.symm⟩
 
 theorem IsExtrFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : α} {l : Filter α}
     (h : IsExtrFilter f l a) (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsExtrFilter g l a := by
@@ -559,7 +559,7 @@ theorem IsExtrFilter.congr {α β : Type*} [Preorder β] {f g : α → β} {a : 
 
 theorem Filter.EventuallyEq.isExtrFilter_iff {α β : Type*} [Preorder β] {f g : α → β} {a : α}
     {l : Filter α} (heq : f =ᶠ[l] g) (hfga : f a = g a) : IsExtrFilter f l a ↔ IsExtrFilter g l a :=
-  ⟨fun h => h.congr heq hfga, fun h => h.congr heq.symm hfga.symm⟩
+  ⟨fun h ↦ h.congr heq hfga, fun h ↦ h.congr heq.symm hfga.symm⟩
 
 end Eventually
 

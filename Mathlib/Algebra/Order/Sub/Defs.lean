@@ -379,7 +379,7 @@ variable {a b c : α} [LinearOrder α] [AddCommSemigroup α] [Sub α] [OrderedSu
 
 /-- See `lt_of_tsub_lt_tsub_right_of_le` for a weaker statement in a partial order. -/
 theorem lt_of_tsub_lt_tsub_right (h : a - c < b - c) : a < b :=
-  lt_imp_lt_of_le_imp_le (fun h => tsub_le_tsub_right h c) h
+  lt_imp_lt_of_le_imp_le (fun h ↦ tsub_le_tsub_right h c) h
 
 /-- See `lt_tsub_iff_right_of_le` for a weaker statement in a partial order. -/
 theorem lt_tsub_iff_right : a < b - c ↔ a + c < b :=
@@ -398,7 +398,7 @@ variable [AddLeftMono α]
 
 /-- See `lt_of_tsub_lt_tsub_left_of_le` for a weaker statement in a partial order. -/
 theorem lt_of_tsub_lt_tsub_left (h : a - b < a - c) : c < b :=
-  lt_imp_lt_of_le_imp_le (fun h => tsub_le_tsub_left h a) h
+  lt_imp_lt_of_le_imp_le (fun h ↦ tsub_le_tsub_left h a) h
 
 end Cov
 

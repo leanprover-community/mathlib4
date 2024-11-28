@@ -76,7 +76,7 @@ def Germ (l : Filter α) (β : Type*) : Type _ :=
 def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
   r f g := ∀ᶠ a in l, f a = g a
   iseqv :=
-    ⟨fun _ => Eventually.of_forall fun _ => rfl, fun h => h.mono fun _ => Eq.symm,
+    ⟨fun _ => Eventually.of_forall fun _ => rfl, fun h ↦ h.mono fun _ => Eq.symm,
       fun h1 h2 => h1.congr (h2.mono fun _ hx => hx ▸ Iff.rfl)⟩
 
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
@@ -649,7 +649,7 @@ instance instDistribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     inductionOn₃ c f g fun c f g => by
       norm_cast
       simp [smul_add]
-  smul_zero c := inductionOn c fun c => by simp only [← coe_zero, ← coe_smul', smul_zero]
+  smul_zero c := inductionOn c fun c ↦ by simp only [← coe_zero, ← coe_smul', smul_zero]
 
 instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M) where
   add_smul c₁ c₂ f :=

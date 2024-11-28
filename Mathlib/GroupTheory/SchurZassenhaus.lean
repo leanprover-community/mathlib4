@@ -34,7 +34,7 @@ variable {G : Type*} [Group G] (H : Subgroup G) [IsCommutative H] [FiniteIndex H
 def QuotientDiff :=
   Quotient
     (Setoid.mk (fun α β => diff (MonoidHom.id H) α β = 1)
-      ⟨fun α => diff_self (MonoidHom.id H) α, fun h => by rw [← diff_inv, h, inv_one],
+      ⟨fun α => diff_self (MonoidHom.id H) α, fun h ↦ by rw [← diff_inv, h, inv_one],
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 
 instance : Inhabited H.QuotientDiff := by

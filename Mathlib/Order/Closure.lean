@@ -460,7 +460,7 @@ theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
 
 theorem mem_iff (s : Set β) (x : β) : x ∈ l s ↔ ∀ S : α, s ⊆ S → x ∈ S := by
   simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← l.le_iff_subset]
-  exact ⟨fun h S => h.trans, fun h => h _ le_rfl⟩
+  exact ⟨fun h S => h.trans, fun h ↦ h _ le_rfl⟩
 
 theorem eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
   ((l.le_iff_subset _ _).2 h₁).antisymm h₂

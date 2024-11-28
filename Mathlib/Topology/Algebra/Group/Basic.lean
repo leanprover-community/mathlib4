@@ -121,7 +121,7 @@ theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
 
 @[to_additive]
 theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
-  ⟨fun h => forall_open_iff_discrete.mpr h {1}, discreteTopology_of_isOpen_singleton_one⟩
+  ⟨fun h ↦ forall_open_iff_discrete.mpr h {1}, discreteTopology_of_isOpen_singleton_one⟩
 
 end ContinuousMulGroup
 
@@ -776,7 +776,7 @@ theorem TopologicalGroup.ext {G : Type*} [Group G] {t t' : TopologicalSpace G}
 theorem TopologicalGroup.ext_iff {G : Type*} [Group G] {t t' : TopologicalSpace G}
     (tg : @TopologicalGroup G t _) (tg' : @TopologicalGroup G t' _) :
     t = t' ↔ @nhds G t 1 = @nhds G t' 1 :=
-  ⟨fun h => h ▸ rfl, tg.ext tg'⟩
+  ⟨fun h ↦ h ▸ rfl, tg.ext tg'⟩
 
 @[to_additive]
 theorem ContinuousInv.of_nhds_one {G : Type*} [Group G] [TopologicalSpace G]
@@ -980,7 +980,7 @@ lemma isClosedMap_div_right (a : G) : IsClosedMap (· / a) := (Homeomorph.divRig
 theorem tendsto_div_nhds_one_iff {α : Type*} {l : Filter α} {x : G} {u : α → G} :
     Tendsto (u · / x) l (𝓝 1) ↔ Tendsto u l (𝓝 x) :=
   haveI A : Tendsto (fun _ : α => x) l (𝓝 x) := tendsto_const_nhds
-  ⟨fun h => by simpa using h.mul A, fun h => by simpa using h.div' A⟩
+  ⟨fun h ↦ by simpa using h.mul A, fun h ↦ by simpa using h.div' A⟩
 
 @[to_additive]
 theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
@@ -1471,7 +1471,7 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
     f = 0 ∨ LocallyCompactSpace G := by
-  refine or_iff_not_imp_left.mpr fun h => ?_
+  refine or_iff_not_imp_left.mpr fun h ↦ ?_
   simp_rw [funext_iff, Pi.zero_apply] at h
   push_neg at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h

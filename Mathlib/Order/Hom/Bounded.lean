@@ -267,12 +267,12 @@ theorem id_comp (f : TopHom α β) : (TopHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : TopHom β γ} {f : TopHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => TopHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun g => comp g f)⟩
+  ⟨fun h ↦ TopHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun g => comp g f)⟩
 
 @[simp]
 theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => TopHom.ext fun a ↦ hg <| by rw [← TopHom.comp_apply, h, TopHom.comp_apply],
+  ⟨fun h ↦ TopHom.ext fun a ↦ hg <| by rw [← TopHom.comp_apply, h, TopHom.comp_apply],
     congr_arg _⟩
 
 end Top
@@ -440,12 +440,12 @@ theorem id_comp (f : BotHom α β) : (BotHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : BotHom β γ} {f : BotHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => BotHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
+  ⟨fun h ↦ BotHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (comp · f)⟩
 
 @[simp]
 theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => BotHom.ext fun a ↦ hg <| by rw [← BotHom.comp_apply, h, BotHom.comp_apply],
+  ⟨fun h ↦ BotHom.ext fun a ↦ hg <| by rw [← BotHom.comp_apply, h, BotHom.comp_apply],
     congr_arg _⟩
 
 end Bot
@@ -632,7 +632,7 @@ theorem id_comp (f : BoundedOrderHom α β) : (BoundedOrderHom.id β).comp f = f
 @[simp]
 theorem cancel_right {g₁ g₂ : BoundedOrderHom β γ} {f : BoundedOrderHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => BoundedOrderHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
+  ⟨fun h ↦ BoundedOrderHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
    congr_arg (fun g => comp g f)⟩
 
 @[simp]

@@ -387,7 +387,7 @@ theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
       J.eq_bot_iff.mpr fun j hj =>
         let ⟨i, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
         Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
-    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
+    fun h ↦ by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
 
 instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
@@ -774,7 +774,7 @@ theorem radical_idem : radical (radical I) = radical I :=
 variable {I}
 
 theorem IsRadical.radical_le_iff (hJ : J.IsRadical) : I.radical ≤ J ↔ I ≤ J :=
-  ⟨le_trans le_radical, fun h => hJ.radical ▸ radical_mono h⟩
+  ⟨le_trans le_radical, fun h ↦ hJ.radical ▸ radical_mono h⟩
 
 theorem radical_le_radical_iff : radical I ≤ radical J ↔ I ≤ radical J :=
   (radical_isRadical J).radical_le_iff
@@ -784,7 +784,7 @@ theorem radical_eq_top : radical I = ⊤ ↔ I = ⊤ :=
     (eq_top_iff_one _).2 <|
       let ⟨n, hn⟩ := (eq_top_iff_one _).1 h
       @one_pow R _ n ▸ hn,
-    fun h => h.symm ▸ radical_top R⟩
+    fun h ↦ h.symm ▸ radical_top R⟩
 
 theorem IsPrime.isRadical (H : IsPrime I) : I.IsRadical := fun _ ⟨n, hrni⟩ =>
   H.mem_of_pow_mem n hrni
@@ -798,8 +798,8 @@ theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ r
 
 theorem disjoint_powers_iff_not_mem (y : R) (hI : I.IsRadical) :
     Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
-  refine ⟨fun h => Set.disjoint_left.1 h (Submonoid.mem_powers _),
-      fun h => disjoint_iff.mpr (eq_bot_iff.mpr ?_)⟩
+  refine ⟨fun h ↦ Set.disjoint_left.1 h (Submonoid.mem_powers _),
+      fun h ↦ disjoint_iff.mpr (eq_bot_iff.mpr ?_)⟩
   rintro x ⟨⟨n, rfl⟩, hx'⟩
   exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
 
@@ -1085,7 +1085,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
     (hp : ∀ i ∈ s, i ≠ a → i ≠ b → IsPrime (f i)) {I : Ideal R} :
     ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) ↔ ∃ i ∈ s, I ≤ f i :=
   suffices ((I : Set R) ⊆ ⋃ i ∈ (↑s : Set ι), f i) → ∃ i, i ∈ s ∧ I ≤ f i by
-    have aux := fun h => (bex_def.2 <| this h)
+    have aux := fun h ↦ (bex_def.2 <| this h)
     simp_rw [exists_prop] at aux
     refine ⟨aux, fun ⟨i, his, hi⟩ ↦ Set.Subset.trans hi ?_⟩
     apply Set.subset_biUnion_of_mem (show i ∈ (↑s : Set ι) from his)
@@ -1151,7 +1151,7 @@ theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
 theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
   isUnit_iff_dvd_one.trans
     ((@one_eq_top R _).symm ▸
-      ⟨fun h => eq_top_iff.mpr (Ideal.le_of_dvd h), fun h => ⟨⊤, by rw [mul_top, h]⟩⟩)
+      ⟨fun h ↦ eq_top_iff.mpr (Ideal.le_of_dvd h), fun h ↦ ⟨⊤, by rw [mul_top, h]⟩⟩)
 
 instance uniqueUnits : Unique (Ideal R)ˣ where
   default := 1

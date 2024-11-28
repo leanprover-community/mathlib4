@@ -88,7 +88,7 @@ theorem iff_adjoin_eq_top :
     IsCyclotomicExtension S A B ↔
       (∀ n : ℕ+, n ∈ S → ∃ r : B, IsPrimitiveRoot r n) ∧
         adjoin A {b : B | ∃ n : ℕ+, n ∈ S ∧ b ^ (n : ℕ) = 1} = ⊤ :=
-  ⟨fun h => ⟨fun _ => h.exists_prim_root, Algebra.eq_top_iff.2 h.adjoin_roots⟩, fun h =>
+  ⟨fun h ↦ ⟨fun _ => h.exists_prim_root, Algebra.eq_top_iff.2 h.adjoin_roots⟩, fun h =>
     ⟨h.1 _, Algebra.eq_top_iff.1 h.2⟩⟩
 
 /-- A reformulation of `IsCyclotomicExtension` in the case `S` is a singleton. -/
@@ -153,7 +153,7 @@ theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = 
     exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · rintro (rfl | rfl)
 -- Porting note: `R := A` was not needed.
-    · exact ⟨fun h => h.elim, fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
+    · exact ⟨fun h ↦ h.elim, fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
     · rw [iff_singleton]
       exact ⟨⟨0, IsPrimitiveRoot.of_subsingleton 0⟩,
         fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
@@ -290,7 +290,7 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
   refine fg_adjoin_of_finite ?_ fun b hb => ?_
   · simp only [mem_singleton_iff, exists_eq_left]
     have : {b : B | b ^ (n : ℕ) = 1} = (nthRoots n (1 : B)).toFinset :=
-      Set.ext fun x => ⟨fun h => by simpa using h, fun h => by simpa using h⟩
+      Set.ext fun x => ⟨fun h ↦ by simpa using h, fun h ↦ by simpa using h⟩
     rw [this]
     exact (nthRoots (↑n) 1).toFinset.finite_toSet
   · simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq] at hb

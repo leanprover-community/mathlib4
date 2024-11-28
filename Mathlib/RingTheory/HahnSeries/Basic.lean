@@ -407,7 +407,7 @@ theorem embDomain_coeff {f : Γ ↪o Γ'} {x : HahnSeries Γ R} {a : Γ} :
   by_cases ha : a ∈ x.support
   · rw [dif_pos (Set.mem_image_of_mem f ha)]
     exact congr rfl (f.injective (Classical.choose_spec (Set.mem_image_of_mem f ha)).2)
-  · rw [dif_neg, Classical.not_not.1 fun c => ha ((mem_support _ _).2 c)]
+  · rw [dif_neg, Classical.not_not.1 fun c ↦ ha ((mem_support _ _).2 c)]
     contrapose! ha
     obtain ⟨b, hb1, hb2⟩ := (Set.mem_image _ _ _).1 ha
     rwa [f.injective hb2] at hb1

@@ -144,7 +144,7 @@ def chainSup (c : Set (PartialRefinement u s p)) (hc : IsChain (· ≤ ·) c) (n
       rcases mem_iUnion.1 ((v i).subset_iUnion hxs) with ⟨j, hj⟩
       use j
       have hj' : x ∈ u j := (v i).subset _ hj
-      have : v j ≤ v i := (hc.total (hvc _ hxi) (hvc _ hj')).elim (fun h => (hmax j hj' h).ge) id
+      have : v j ≤ v i := (hc.total (hvc _ hxi) (hvc _ hj')).elim (fun h ↦ (hmax j hj' h).ge) id
       simpa only [find_apply_of_mem hc ne (hvc _ hxi) (this.1 <| hiv _ hj')]
   closure_subset hi := (find c ne _).closure_subset ((mem_find_carrier_iff _).2 hi)
   pred_of_mem {i} hi := by
@@ -170,7 +170,7 @@ theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed
     simp only [subset_def, mem_inter_iff, mem_iInter, and_imp]
     intro x hxs H
     rcases mem_iUnion.1 (v.subset_iUnion hxs) with ⟨j, hj⟩
-    exact (em (j = i)).elim (fun h => h ▸ hj) fun h => (H j h hj).elim
+    exact (em (j = i)).elim (fun h ↦ h ▸ hj) fun h ↦ (H j h hj).elim
   have C : IsClosed (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) :=
     IsClosed.inter hs (isClosed_biInter fun _ _ => isClosed_compl_iff.2 <| v.isOpen _)
   rcases normal_exists_closure_subset C (v.isOpen i) I with ⟨vi, ovi, hvi, cvi⟩

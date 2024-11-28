@@ -1582,7 +1582,7 @@ theorem tr_eval (c v) : eval (TM2.step tr) (init c v) = halt <$> Code.eval c v :
   obtain ⟨i, h₁, h₂⟩ := tr_init c v
   refine Part.ext fun x => ?_
   rw [reaches_eval h₂.to_reflTransGen]; simp only [Part.map_eq_map, Part.mem_map_iff]
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨c, hc₁, hc₂⟩ := tr_eval_rev tr_respects h₁ h
     simp [stepNormal_eval] at hc₂
     obtain ⟨v', hv, rfl⟩ := hc₂
@@ -1612,7 +1612,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
   all_goals
     simp +contextual only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]
-    repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
+    repeat exact fun h ↦ Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
   · simp
     intro s h x h'
     simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, Finset.mem_insert]
@@ -1851,9 +1851,9 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
   induction c generalizing k with
   | cons f fs IHf IHfs =>
     have H' := H; simp only [codeSupp_cons, Finset.union_subset_iff] at H'
-    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h ↦ ?_
     refine supports_union.2 ⟨IHf H'.2, ?_⟩
-    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun h ↦ ?_
     · simp only [codeSupp, Finset.union_subset_iff, contSupp] at h H ⊢
       exact ⟨h.2.2.1, h.2.2.2, H.2⟩
     refine supports_union.2 ⟨IHfs ?_, ?_⟩
@@ -1864,7 +1864,7 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
         (Finset.union_subset_right h)
   | comp f g IHf IHg =>
     have H' := H; rw [codeSupp_comp] at H'; have H' := Finset.union_subset_right H'
-    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h ↦ ?_
     refine supports_union.2 ⟨IHg H', ?_⟩
     refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun _ => ?_
     · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp] at h H ⊢
@@ -1876,7 +1876,7 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
     exact supports_union.2 ⟨IHf H'.2.1, IHg H'.2.2⟩
   | fix f IHf =>
     have H' := H; simp only [codeSupp_fix, Finset.union_subset_iff] at H'
-    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h ↦ ?_
     refine supports_union.2 ⟨IHf H'.2, ?_⟩
     refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun _ => ?_
     · simp only [codeSupp', codeSupp, Finset.union_subset_iff, contSupp, trStmts₁,
@@ -1890,7 +1890,7 @@ theorem contSupp_supports {S k} (H : contSupp k ⊆ S) : Supports (contSupp k) S
   | halt => simp [contSupp_halt, Supports]
   | cons₁ f k IH =>
     have H₁ := H; rw [contSupp_cons₁] at H₁; have H₂ := Finset.union_subset_right H₁
-    refine trStmts₁_supports' (trNormal_supports H₂) H₁ fun h => ?_
+    refine trStmts₁_supports' (trNormal_supports H₂) H₁ fun h ↦ ?_
     refine supports_union.2 ⟨codeSupp'_supports H₂, ?_⟩
     simp only [codeSupp, contSupp_cons₂, Finset.union_subset_iff] at H₂
     exact trStmts₁_supports' (head_supports H₂.2.2) (Finset.union_subset_right h) IH

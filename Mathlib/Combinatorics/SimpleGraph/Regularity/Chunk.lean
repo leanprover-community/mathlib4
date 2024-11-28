@@ -469,7 +469,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : #P.parts * 16 ^ #P.p
       have Ul : 4 / 5 * ε ≤ #(star hP G ε hU V) / _ :=
         eps_le_card_star_div hPα hPε hε₁ hU hV hUVne hUV
       have Vl : 4 / 5 * ε ≤ #(star hP G ε hV U) / _ :=
-        eps_le_card_star_div hPα hPε hε₁ hV hU hUVne.symm fun h => hUV h.symm
+        eps_le_card_star_div hPα hPε hε₁ hV hU hUVne.symm fun h ↦ hUV h.symm
       rw [show (16 : ℝ) = ↑4 ^ 2 by norm_num, pow_right_comm, sq ((4 : ℝ) ^ _), ←
         _root_.div_mul_div_comm, mul_assoc]
       have : 0 < ε := by sz_positivity

@@ -41,7 +41,7 @@ theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
 
 theorem iff_card [Fact p.Prime] [Finite G] : IsPGroup p G ↔ ∃ n : ℕ, Nat.card G = p ^ n := by
   have hG : Nat.card G ≠ 0 := Nat.card_pos.ne'
-  refine ⟨fun h => ?_, fun ⟨n, hn⟩ => of_card hn⟩
+  refine ⟨fun h ↦ ?_, fun ⟨n, hn⟩ => of_card hn⟩
   suffices ∀ q ∈ (Nat.card G).primeFactorsList, q = p by
     use (Nat.card G).primeFactorsList.length
     rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_primeFactorsList hG]
@@ -62,14 +62,14 @@ include hG
 theorem of_injective {H : Type*} [Group H] (ϕ : H →* G) (hϕ : Function.Injective ϕ) :
     IsPGroup p H := by
   simp_rw [IsPGroup, ← hϕ.eq_iff, ϕ.map_pow, ϕ.map_one]
-  exact fun h => hG (ϕ h)
+  exact fun h ↦ hG (ϕ h)
 
 theorem to_subgroup (H : Subgroup G) : IsPGroup p H :=
   hG.of_injective H.subtype Subtype.coe_injective
 
 theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surjective ϕ) :
     IsPGroup p H := by
-  refine fun h => Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => ?_) (hG g)
+  refine fun h ↦ Exists.elim (hϕ h) fun g hg => Exists.imp (fun k hk => ?_) (hG g)
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 
 theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=

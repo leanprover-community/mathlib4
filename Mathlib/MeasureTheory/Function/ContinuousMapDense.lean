@@ -110,7 +110,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
       · simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
           Set.indicator_of_mem] using gc_bd0 x
       · simp [hgs hs, hs]
-    · simp [hgv hv, show x ∉ s from fun h => hv (hsv h)]
+    · simp [hgv hv, show x ∉ s from fun h ↦ hv (hsv h)]
   have gc_support : (Function.support fun x : α => g x • c) ⊆ v := by
     refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]

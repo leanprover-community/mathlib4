@@ -279,7 +279,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
         (∀ u ∈ U, IsOpen u) → (s ⊆ ⋃₀ ↑U) → ∃ u ∈ U, s ⊆ u := by
   rw [IsConnected, isPreconnected_iff_subset_of_disjoint]
   classical
-  refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h => ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
+  refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h ↦ ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
     | @insert u U uU IH =>
@@ -412,7 +412,7 @@ theorem preimage_connectedComponent_connected
     rintro a ⟨hat, hau⟩
     constructor
     · exact mem_preimage.1 hat
-    refine (fiber_decomp (f a) (mem_preimage.1 hat)).resolve_right fun h => ?_
+    refine (fiber_decomp (f a) (mem_preimage.1 hat)).resolve_right fun h ↦ ?_
     exact uv_disj.subset_compl_right hau (h rfl)
   -- This proof is exactly the same as the above (modulo some symmetry)
   have T₂_v : f ⁻¹' T₂ = f ⁻¹' connectedComponent t ∩ v := by
@@ -424,7 +424,7 @@ theorem preimage_connectedComponent_connected
     rintro a ⟨hat, hav⟩
     constructor
     · exact mem_preimage.1 hat
-    · refine (fiber_decomp (f a) (mem_preimage.1 hat)).resolve_left fun h => ?_
+    · refine (fiber_decomp (f a) (mem_preimage.1 hat)).resolve_left fun h ↦ ?_
       exact uv_disj.subset_compl_left hav (h rfl)
   -- Now we show T₁, T₂ are closed, cover connectedComponent t and are disjoint.
   have hT₁ : IsClosed T₁ := (hcl T₁).2 (T₁_u.symm ▸ IsClosed.inter hT hu)

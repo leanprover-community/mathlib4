@@ -307,7 +307,7 @@ theorem kernelForkOfFork_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) :
 def isLimitForkOfKernelFork {c : KernelFork (f - g)} (i : IsLimit c) :
     IsLimit (forkOfKernelFork c) :=
   Fork.IsLimit.mk' _ fun s =>
-    ⟨i.lift (kernelForkOfFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
+    ⟨i.lift (kernelForkOfFork s), i.fac _ _, fun h ↦ by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
 
 @[simp]
 theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s : Fork f g) :
@@ -317,7 +317,7 @@ theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s
 /-- An equalizer of `f` and `g` is a kernel of `f - g`. -/
 def isLimitKernelForkOfFork {c : Fork f g} (i : IsLimit c) : IsLimit (kernelForkOfFork c) :=
   Fork.IsLimit.mk' _ fun s =>
-    ⟨i.lift (forkOfKernelFork s), i.fac _ _, fun h => by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
+    ⟨i.lift (forkOfKernelFork s), i.fac _ _, fun h ↦ by apply Fork.IsLimit.hom_ext i; aesop_cat⟩
 
 variable (f g)
 
@@ -362,7 +362,7 @@ theorem cokernelCoforkOfCofork_ofπ {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫
 def isColimitCoforkOfCokernelCofork {c : CokernelCofork (f - g)} (i : IsColimit c) :
     IsColimit (coforkOfCokernelCofork c) :=
   Cofork.IsColimit.mk' _ fun s =>
-    ⟨i.desc (cokernelCoforkOfCofork s), i.fac _ _, fun h => by
+    ⟨i.desc (cokernelCoforkOfCofork s), i.fac _ _, fun h ↦ by
       apply Cofork.IsColimit.hom_ext i; aesop_cat⟩
 
 @[simp]
@@ -375,7 +375,7 @@ theorem isColimitCoforkOfCokernelCofork_desc {c : CokernelCofork (f - g)} (i : I
 def isColimitCokernelCoforkOfCofork {c : Cofork f g} (i : IsColimit c) :
     IsColimit (cokernelCoforkOfCofork c) :=
   Cofork.IsColimit.mk' _ fun s =>
-    ⟨i.desc (coforkOfCokernelCofork s), i.fac _ _, fun h => by
+    ⟨i.desc (coforkOfCokernelCofork s), i.fac _ _, fun h ↦ by
       apply Cofork.IsColimit.hom_ext i; aesop_cat⟩
 
 variable (f g)

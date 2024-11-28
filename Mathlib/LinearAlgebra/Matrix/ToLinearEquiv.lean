@@ -129,7 +129,7 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
     exists_mulVec_eq_zero_iff_aux
   rw [← RingHom.map_det, IsFractionRing.to_map_eq_zero_iff] at this
   refine Iff.trans ?_ this; constructor <;> rintro ⟨v, hv, mul_eq⟩
-  · refine ⟨fun i => algebraMap _ _ (v i), mt (fun h => funext fun i => ?_) hv, ?_⟩
+  · refine ⟨fun i => algebraMap _ _ (v i), mt (fun h ↦ funext fun i => ?_) hv, ?_⟩
     · exact IsFractionRing.to_map_eq_zero_iff.mp (congr_fun h i)
     · ext i
       refine (RingHom.map_mulVec _ _ _ i).symm.trans ?_
@@ -140,7 +140,7 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
     choose f hf using ba_eq
     refine
       ⟨fun i => f _ (Finset.mem_image.mpr ⟨i, Finset.mem_univ i, rfl⟩),
-        mt (fun h => funext fun i => ?_) hv, ?_⟩
+        mt (fun h ↦ funext fun i => ?_) hv, ?_⟩
     · have := congr_arg (algebraMap A K) (congr_fun h i)
       rw [hf, Subtype.coe_mk, Pi.zero_apply, RingHom.map_zero, Algebra.smul_def, mul_eq_zero,
         IsFractionRing.to_map_eq_zero_iff] at this

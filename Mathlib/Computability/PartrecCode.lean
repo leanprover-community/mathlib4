@@ -168,7 +168,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
 
 instance instDenumerable : Denumerable Code :=
   mk'
-    ⟨encodeCode, ofNatCode, fun c => by
+    ⟨encodeCode, ofNatCode, fun c ↦ by
         induction c <;> simp [encodeCode, ofNatCode, Nat.div2_val, *],
       encode_ofNatCode⟩
 
@@ -189,12 +189,12 @@ theorem encode_lt_pair (cf cg) :
 theorem encode_lt_comp (cf cg) :
     encode cf < encode (comp cf cg) ∧ encode cg < encode (comp cf cg) := by
   have : encode (pair cf cg) < encode (comp cf cg) := by simp [encodeCode_eq, encodeCode]
-  exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
+  exact (encode_lt_pair cf cg).imp (fun h ↦ lt_trans h this) fun h ↦ lt_trans h this
 
 theorem encode_lt_prec (cf cg) :
     encode cf < encode (prec cf cg) ∧ encode cg < encode (prec cf cg) := by
   have : encode (pair cf cg) < encode (prec cf cg) := by simp [encodeCode_eq, encodeCode]
-  exact (encode_lt_pair cf cg).imp (fun h => lt_trans h this) fun h => lt_trans h this
+  exact (encode_lt_pair cf cg).imp (fun h ↦ lt_trans h this) fun h ↦ lt_trans h this
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp only [encodeCode_eq, encodeCode]
@@ -527,7 +527,7 @@ theorem smn :
 /-- A function is partial recursive if and only if there is a code implementing it. Therefore,
 `eval` is a **universal partial recursive function**. -/
 theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c = f := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · induction h with
     | zero => exact ⟨zero, rfl⟩
     | succ => exact ⟨succ, rfl⟩
@@ -619,7 +619,7 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       exact ⟨le_trans h₂ h, h₁ h₃⟩
     simp? at h ⊢ says simp only [Option.mem_def] at h ⊢
     induction' c with cf cg hf hg cf cg hf hg cf cg hf hg cf hf generalizing x n <;>
-      rw [evaln] at h ⊢ <;> refine this hl' (fun h => ?_) h
+      rw [evaln] at h ⊢ <;> refine this hl' (fun h ↦ ?_) h
     iterate 4 exact h
     · -- pair cf cg
       simp? [Seq.seq, Option.bind_eq_some] at h ⊢ says
@@ -683,7 +683,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
           exact ⟨z, by simpa [add_comm, add_left_comm] using hz, z0⟩
 
 theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := by
-  refine ⟨fun h => ?_, fun ⟨k, h⟩ => evaln_sound h⟩
+  refine ⟨fun h ↦ ?_, fun ⟨k, h⟩ => evaln_sound h⟩
   rsuffices ⟨k, h⟩ : ∃ k, x ∈ evaln (k + 1) c n
   · exact ⟨k + 1, h⟩
   induction c generalizing n x with
@@ -1016,7 +1016,7 @@ end
 
 /-- There are only countably many partial recursive partial functions `ℕ →. ℕ`. -/
 instance : Countable {f : ℕ →. ℕ // _root_.Partrec f} := by
-  apply Function.Surjective.countable (f := fun c => ⟨eval c, eval_part.comp (.const c) .id⟩)
+  apply Function.Surjective.countable (f := fun c ↦ ⟨eval c, eval_part.comp (.const c) .id⟩)
   intro ⟨f, hf⟩; simpa using exists_code.1 hf
 
 /-- There are only countably many computable functions `ℕ → ℕ`. -/

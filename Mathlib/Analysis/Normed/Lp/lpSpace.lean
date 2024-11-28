@@ -152,7 +152,7 @@ theorem neg {f : ∀ i, E i} (hf : Memℓp f p) : Memℓp (-f) p := by
 
 @[simp]
 theorem neg_iff {f : ∀ i, E i} : Memℓp (-f) p ↔ Memℓp f p :=
-  ⟨fun h => neg_neg f ▸ h.neg, Memℓp.neg⟩
+  ⟨fun h ↦ neg_neg f ▸ h.neg, Memℓp.neg⟩
 
 theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (hpq : q ≤ p) : Memℓp f p := by
   rcases ENNReal.trichotomy₂ hpq with
@@ -403,7 +403,7 @@ theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
     simpa [Real.zero_rpow hp.ne'] using Real.zero_rpow hp'
 
 theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
-  refine ⟨fun h => ?_, by rintro rfl; exact norm_zero⟩
+  refine ⟨fun h ↦ ?_, by rintro rfl; exact norm_zero⟩
   rcases p.trichotomy with (rfl | rfl | hp)
   · ext i
     have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using h
@@ -663,7 +663,7 @@ theorem _root_.Memℓp.star_mem {f : ∀ i, E i} (hf : Memℓp f p) : Memℓp (s
 
 @[simp]
 theorem _root_.Memℓp.star_iff {f : ∀ i, E i} : Memℓp (star f) p ↔ Memℓp f p :=
-  ⟨fun h => star_star f ▸ Memℓp.star_mem h, Memℓp.star_mem⟩
+  ⟨fun h ↦ star_star f ▸ Memℓp.star_mem h, Memℓp.star_mem⟩
 
 instance : Star (lp E p) where
   star f := ⟨(star f : ∀ i, E i), f.property.star_mem⟩

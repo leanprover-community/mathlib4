@@ -105,7 +105,7 @@ instance (X : Type u₁) [Nonempty X] : Injective X where
           if h : z ∈ Set.range f then g (Classical.choose h) else Nonempty.some inferInstance, by
       ext y
       classical
-      change dite (f y ∈ Set.range f) (fun h => g (Classical.choose h)) _ = _
+      change dite (f y ∈ Set.range f) (fun h ↦ g (Classical.choose h)) _ = _
       split_ifs <;> rename_i h
       · rw [mono_iff_injective] at mono
         rw [mono (Classical.choose_spec h)]
@@ -328,7 +328,7 @@ def injectivePresentationOfMapInjectivePresentation (X : C)
   F.toAdjunction.injectivePresentationOfMap _ I
 
 theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D :=
-  ⟨fun h => h.of_adjunction F.symm.toAdjunction, fun h => h.of_adjunction F.toAdjunction⟩
+  ⟨fun h ↦ h.of_adjunction F.symm.toAdjunction, fun h ↦ h.of_adjunction F.toAdjunction⟩
 
 end Equivalence
 

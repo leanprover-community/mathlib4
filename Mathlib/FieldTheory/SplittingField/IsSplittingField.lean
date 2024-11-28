@@ -71,7 +71,7 @@ instance map (f : F[X]) [IsSplittingField F L f] : IsSplittingField K L (f.map <
 
 theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     Splits (RingHom.id K) f ↔ (⊤ : Subalgebra K L) = ⊥ :=
-  ⟨fun h => by -- Porting note: replaced term-mode proof
+  ⟨fun h ↦ by -- Porting note: replaced term-mode proof
     rw [eq_bot_iff, ← adjoin_rootSet L f, rootSet, aroots, roots_map (algebraMap K L) h,
       Algebra.adjoin_le_iff]
     intro y hy
@@ -80,7 +80,7 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
     obtain ⟨x : K, -, hxy : algebraMap K L x = y⟩ := hy
     rw [← hxy]
     exact SetLike.mem_coe.2 <| Subalgebra.algebraMap_mem _ _,
-    fun h => @RingEquiv.toRingHom_refl K _ ▸ RingEquiv.self_trans_symm
+    fun h ↦ @RingEquiv.toRingHom_refl K _ ▸ RingEquiv.self_trans_symm
       (RingEquiv.ofBijective _ <| Algebra.bijective_algebraMap_iff.2 h) ▸ by
         rw [RingEquiv.toRingHom_trans]
         exact splits_comp_of_splits _ _ (splits L f)⟩

@@ -577,7 +577,7 @@ theorem contMDiff_top : ContMDiff I I' ⊤ f ↔ ∀ n : ℕ, ContMDiff I I' n f
 
 theorem contMDiffWithinAt_iff_nat :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by
-  refine ⟨fun h m hm => h.of_le hm, fun h => ?_⟩
+  refine ⟨fun h m hm => h.of_le hm, fun h ↦ ?_⟩
   cases' n with n
   · exact contMDiffWithinAt_top.2 fun n => h n le_top
   · exact h n le_rfl
@@ -744,7 +744,7 @@ theorem contMDiffAt_iff_contMDiffOn_nhds
 theorem contMDiffAt_iff_contMDiffAt_nhds
     [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] {n : ℕ} :
     ContMDiffAt I I' n f x ↔ ∀ᶠ x' in 𝓝 x, ContMDiffAt I I' n f x' := by
-  refine ⟨?_, fun h => h.self_of_nhds⟩
+  refine ⟨?_, fun h ↦ h.self_of_nhds⟩
   rw [contMDiffAt_iff_contMDiffOn_nhds]
   rintro ⟨u, hu, h⟩
   refine (eventually_mem_nhds_iff.mpr hu).mono fun x' hx' => ?_

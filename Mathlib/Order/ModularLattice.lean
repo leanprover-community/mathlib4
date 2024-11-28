@@ -146,7 +146,7 @@ instance (priority := 100) IsUpperModularLattice.to_isWeakUpperModularLattice :
   ⟨fun _ => CovBy.sup_of_inf_right⟩
 
 instance : IsLowerModularLattice (OrderDual α) :=
-  ⟨fun h => h.ofDual.sup_of_inf_left.toDual⟩
+  ⟨fun h ↦ h.ofDual.sup_of_inf_left.toDual⟩
 
 end UpperModular
 
@@ -171,7 +171,7 @@ instance (priority := 100) IsLowerModularLattice.to_isWeakLowerModularLattice :
   ⟨fun _ => CovBy.inf_of_sup_right⟩
 
 instance : IsUpperModularLattice (OrderDual α) :=
-  ⟨fun h => h.ofDual.inf_of_sup_left.toDual⟩
+  ⟨fun h ↦ h.ofDual.inf_of_sup_left.toDual⟩
 
 end LowerModular
 
@@ -261,15 +261,15 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
   map_rel_iff' {x y} := by
     simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk, le_sup_right]
     rw [← Subtype.coe_le_coe]
-    refine ⟨fun h => ?_, fun h => sup_le_sup_right h _⟩
+    refine ⟨fun h ↦ ?_, fun h ↦ sup_le_sup_right h _⟩
     rw [← sup_eq_right.2 x.prop.1, inf_sup_assoc_of_le _ x.prop.2, sup_comm, ←
       sup_eq_right.2 y.prop.1, inf_sup_assoc_of_le _ y.prop.2, sup_comm b]
     exact inf_le_inf_left _ h
 
-theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c => a ⊓ c) (Icc b (a ⊔ b)) :=
+theorem inf_strictMonoOn_Icc_sup {a b : α} : StrictMonoOn (fun c ↦ a ⊓ c) (Icc b (a ⊔ b)) :=
   StrictMono.of_restrict (infIccOrderIsoIccSup a b).symm.strictMono
 
-theorem sup_strictMonoOn_Icc_inf {a b : α} : StrictMonoOn (fun c => c ⊔ b) (Icc (a ⊓ b) a) :=
+theorem sup_strictMonoOn_Icc_inf {a b : α} : StrictMonoOn (fun c ↦ c ⊔ b) (Icc (a ⊓ b) a) :=
   StrictMono.of_restrict (infIccOrderIsoIccSup a b).strictMono
 
 /-- The diamond isomorphism between the intervals `]a ⊓ b, a[` and `}b, a ⊔ b[`. -/
@@ -328,7 +328,7 @@ end IsCompl
 
 theorem isModularLattice_iff_inf_sup_inf_assoc [Lattice α] :
     IsModularLattice α ↔ ∀ x y z : α, x ⊓ z ⊔ y ⊓ z = (x ⊓ z ⊔ y) ⊓ z :=
-  ⟨fun h => @IsModularLattice.inf_sup_inf_assoc _ _ h, fun h =>
+  ⟨fun h ↦ @IsModularLattice.inf_sup_inf_assoc _ _ h, fun h =>
     ⟨fun y z xz => by rw [← inf_eq_left.2 xz, h]⟩⟩
 
 namespace DistribLattice

@@ -289,13 +289,13 @@ instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G
           S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
             forall_congr' fun a ↦ Subtype.ext_iff
           _ ↔ R.1 ≤ S := R.2.sylow_mem_fixedPoints_iff
-          _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, ge_of_eq⟩
+          _ ↔ S.1.1 = R := ⟨fun h ↦ R.3 S.1.2 h, ge_of_eq⟩
       suffices Set.Nonempty (fixedPoints Q (orbit G P)) by
         exact Exists.elim this fun R hR => by
           rw [← Sylow.ext (H.mp hR)]
           exact R.2
       apply Q.2.nonempty_fixed_point_of_prime_not_dvd_card
-      refine fun h => hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp ?_)
+      refine fun h ↦ hp.out.not_dvd_one (Nat.modEq_zero_iff_dvd.mp ?_)
       calc
         1 = Nat.card (fixedPoints P (orbit G P)) := ?_
         _ ≡ Nat.card (orbit G P) [MOD p] := (P.2.card_modEq_card_fixedPoints (orbit G P)).symm
@@ -709,7 +709,7 @@ theorem card_coprime_index [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p
 
 theorem ne_bot_of_dvd_card [Finite G] {p : ℕ} [hp : Fact p.Prime] (P : Sylow p G)
     (hdvd : p ∣ Nat.card G) : (P : Subgroup G) ≠ ⊥ := by
-  refine fun h => hp.out.not_dvd_one ?_
+  refine fun h ↦ hp.out.not_dvd_one ?_
   have key : p ∣ Nat.card P := P.dvd_card_of_dvd_card hdvd
   rwa [h, card_bot] at key
 

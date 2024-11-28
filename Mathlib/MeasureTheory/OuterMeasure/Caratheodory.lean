@@ -62,7 +62,7 @@ theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m s₁�
 
 @[simp]
 theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s :=
-  ⟨fun h => by simpa using isCaratheodory_compl m h, isCaratheodory_compl m⟩
+  ⟨fun h ↦ by simpa using isCaratheodory_compl m h, isCaratheodory_compl m⟩
 
 theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
     IsCaratheodory m (s₁ ∪ s₂) := fun t => by

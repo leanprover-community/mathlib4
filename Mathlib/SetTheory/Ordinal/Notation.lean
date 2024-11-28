@@ -227,7 +227,7 @@ theorem NFBelow.lt {e n a b} (h : NFBelow (ONote.oadd e n a) b) : repr e < b := 
 theorem NFBelow_zero : ∀ {o}, NFBelow o 0 ↔ o = 0
   | 0 => ⟨fun _ => rfl, fun _ => NFBelow.zero⟩
   | oadd _ _ _ =>
-    ⟨fun h => (not_le_of_lt h.lt).elim (Ordinal.zero_le _), fun e => e.symm ▸ NFBelow.zero⟩
+    ⟨fun h ↦ (not_le_of_lt h.lt).elim (Ordinal.zero_le _), fun e ↦ e.symm ▸ NFBelow.zero⟩
 
 theorem NF.zero_of_zero {e n a} (h : NF (ONote.oadd e n a)) (e0 : e = 0) : a = 0 := by
   simpa [e0, NFBelow_zero] using h.snd'
@@ -322,7 +322,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       subst IHa; exact rfl
 
 theorem repr_inj {a b} [NF a] [NF b] : repr a = repr b ↔ a = b :=
-  ⟨fun e => match cmp a b, cmp_compares a b with
+  ⟨fun e ↦ match cmp a b, cmp_compares a b with
     | Ordering.lt, (h : repr a < repr b) => (ne_of_lt h e).elim
     | Ordering.gt, (h : repr a > repr b)=> (ne_of_gt h e).elim
     | Ordering.eq, h => h,
@@ -331,7 +331,7 @@ theorem repr_inj {a b} [NF a] [NF b] : repr a = repr b ↔ a = b :=
 theorem NF.of_dvd_omega0_opow {b e n a} (h : NF (ONote.oadd e n a))
     (d : ω ^ b ∣ repr (ONote.oadd e n a)) :
     b ≤ repr e ∧ ω ^ b ∣ repr a := by
-  have := mt repr_inj.1 (fun h => by injection h : ONote.oadd e n a ≠ 0)
+  have := mt repr_inj.1 (fun h ↦ by injection h : ONote.oadd e n a ≠ 0)
   have L := le_of_not_lt fun l => not_le_of_lt (h.below_of_lt l).repr_lt (le_of_dvd this d)
   simp only [repr] at d
   exact ⟨L, (dvd_add_iff <| (opow_dvd_opow _ L).mul_right _).1 d⟩
@@ -357,9 +357,9 @@ instance decidableTopBelow : DecidableRel TopBelow := by
   cases o <;> delta TopBelow <;> infer_instance
 
 theorem nfBelow_iff_topBelow {b} [NF b] : ∀ {o}, NFBelow o (repr b) ↔ NF o ∧ TopBelow b o
-  | 0 => ⟨fun h => ⟨⟨⟨_, h⟩⟩, trivial⟩, fun _ => NFBelow.zero⟩
+  | 0 => ⟨fun h ↦ ⟨⟨⟨_, h⟩⟩, trivial⟩, fun _ => NFBelow.zero⟩
   | oadd _ _ _ =>
-    ⟨fun h => ⟨⟨⟨_, h⟩⟩, (@cmp_compares _ b h.fst _).eq_lt.2 h.lt⟩, fun ⟨h₁, h₂⟩ =>
+    ⟨fun h ↦ ⟨⟨⟨_, h⟩⟩, (@cmp_compares _ b h.fst _).eq_lt.2 h.lt⟩, fun ⟨h₁, h₂⟩ =>
       h₁.below_of_lt <| (@cmp_compares _ b h₁.fst _).eq_lt.1 h₂⟩
 
 instance decidableNF : DecidablePred NF
@@ -368,8 +368,8 @@ instance decidableNF : DecidablePred NF
     have := decidableNF e
     have := decidableNF a
     apply decidable_of_iff (NF e ∧ NF a ∧ TopBelow e a)
-    rw [← and_congr_right fun h => @nfBelow_iff_topBelow _ h _]
-    exact ⟨fun ⟨h₁, h₂⟩ => NF.oadd h₁ n h₂, fun h => ⟨h.fst, h.snd'⟩⟩
+    rw [← and_congr_right fun h ↦ @nfBelow_iff_topBelow _ h _]
+    exact ⟨fun ⟨h₁, h₂⟩ => NF.oadd h₁ n h₂, fun h ↦ ⟨h.fst, h.snd'⟩⟩
 
 /-- Auxiliary definition for `add` -/
 def addAux (e : ONote) (n : ℕ+) (o : ONote) : ONote :=
@@ -429,7 +429,7 @@ theorem add_nfBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
 
 instance add_nf (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ + o₂)
   | ⟨⟨b₁, h₁⟩⟩, ⟨⟨b₂, h₂⟩⟩ =>
-    ⟨(le_total b₁ b₂).elim (fun h => ⟨b₂, add_nfBelow (h₁.mono h) h₂⟩) fun h =>
+    ⟨(le_total b₁ b₂).elim (fun h ↦ ⟨b₂, add_nfBelow (h₁.mono h) h₂⟩) fun h =>
         ⟨b₁, add_nfBelow h₁ (h₂.mono h)⟩⟩
 
 @[simp]

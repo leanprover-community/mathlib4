@@ -99,14 +99,14 @@ theorem isComplement_singleton_univ {g : G} : IsComplement ({g} : Set G) univ :=
 @[to_additive]
 theorem isComplement_singleton_left {g : G} : IsComplement {g} S ↔ S = univ := by
   refine
-    ⟨fun h => top_le_iff.mp fun x _ => ?_, fun h => (congr_arg _ h).mpr isComplement_singleton_univ⟩
+    ⟨fun h ↦ top_le_iff.mp fun x _ => ?_, fun h ↦ (congr_arg _ h).mpr isComplement_singleton_univ⟩
   obtain ⟨⟨⟨z, rfl : z = g⟩, y, _⟩, hy⟩ := h.2 (g * x)
   rwa [← mul_left_cancel hy]
 
 @[to_additive]
 theorem isComplement_singleton_right {g : G} : IsComplement S {g} ↔ S = univ := by
   refine
-    ⟨fun h => top_le_iff.mp fun x _ => ?_, fun h => h ▸ isComplement_univ_singleton⟩
+    ⟨fun h ↦ top_le_iff.mp fun x _ => ?_, fun h ↦ h ▸ isComplement_univ_singleton⟩
   obtain ⟨y, hy⟩ := h.2 (x * g)
   conv_rhs at hy => rw [← show y.2.1 = g from y.2.2]
   rw [← mul_right_cancel hy]
@@ -115,7 +115,7 @@ theorem isComplement_singleton_right {g : G} : IsComplement S {g} ↔ S = univ :
 @[to_additive]
 theorem isComplement_univ_left : IsComplement univ S ↔ ∃ g : G, S = {g} := by
   refine
-    ⟨fun h => Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩, ?_⟩
+    ⟨fun h ↦ Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩, ?_⟩
   · obtain ⟨a, _⟩ := h.2 1
     exact ⟨a.2.1, a.2.2⟩
   · have : (⟨⟨_, mem_top a⁻¹⟩, ⟨a, ha⟩⟩ : (⊤ : Set G) × S) = ⟨⟨_, mem_top b⁻¹⟩, ⟨b, hb⟩⟩ :=
@@ -127,7 +127,7 @@ theorem isComplement_univ_left : IsComplement univ S ↔ ∃ g : G, S = {g} := b
 @[to_additive]
 theorem isComplement_univ_right : IsComplement S univ ↔ ∃ g : G, S = {g} := by
   refine
-    ⟨fun h => Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩, ?_⟩
+    ⟨fun h ↦ Set.exists_eq_singleton_iff_nonempty_subsingleton.mpr ⟨?_, fun a ha b hb => ?_⟩, ?_⟩
   · obtain ⟨a, _⟩ := h.2 1
     exact ⟨a.1.1, a.1.2⟩
   · have : (⟨⟨a, ha⟩, ⟨_, mem_top a⁻¹⟩⟩ : S × (⊤ : Set G)) = ⟨⟨b, hb⟩, ⟨_, mem_top b⁻¹⟩⟩ :=
@@ -635,7 +635,7 @@ theorem isComplement'_of_card_mul_and_disjoint [Finite G]
 
 theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
     IsComplement' H K ↔ Nat.card H * Nat.card K = Nat.card G ∧ Disjoint H K :=
-  ⟨fun h => ⟨h.card_mul, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
+  ⟨fun h ↦ ⟨h.card_mul, h.disjoint⟩, fun h ↦ isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
 
 theorem isComplement'_of_coprime [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G)

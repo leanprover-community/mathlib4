@@ -554,7 +554,7 @@ protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (Module
         congr
         change f r = (f r) • (1 : S)
         rw [smul_eq_mul (a := f r) (a' := 1), mul_one] }
-  naturality X X' g := LinearMap.ext fun h => by
+  naturality X X' g := LinearMap.ext fun h ↦ by
     rw [ModuleCat.coe_comp]
     rfl
 

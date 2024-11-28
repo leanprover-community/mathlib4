@@ -78,7 +78,7 @@ enough to define/prove it for `f n` and being able to extend through diffs. -/
 def disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
     ∀ ⦃n⦄, p (f n) → p (disjointed f n)
   | 0 => id
-  | n + 1 => fun h => by
+  | n + 1 => fun h ↦ by
     suffices H : ∀ k, p (f (n + 1) \ partialSups f k) from H n
     rintro k
     induction' k with k ih

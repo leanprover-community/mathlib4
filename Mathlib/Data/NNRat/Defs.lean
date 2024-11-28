@@ -232,7 +232,7 @@ theorem abs_coe (q : ℚ≥0) : |(q : ℚ)| = q :=
 -- See note [specialised high priority simp lemma]
 @[simp high]
 theorem nonpos_iff_eq_zero (q : ℚ≥0) : q ≤ 0 ↔ q = 0 :=
-  ⟨fun h => le_antisymm h q.2, fun h => h.symm ▸ q.2⟩
+  ⟨fun h ↦ le_antisymm h q.2, fun h ↦ h.symm ▸ q.2⟩
 
 end NNRat
 

@@ -110,7 +110,7 @@ lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
   rfl
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
-theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e => e) :=
+theorem coe_fn_injective : @Function.Injective (α ≃ β) (α → β) (fun e ↦ e) :=
   DFunLike.coe_injective'
 
 protected theorem coe_inj {e₁ e₂ : α ≃ β} : (e₁ : α → β) = e₂ ↔ e₁ = e₂ :=
@@ -390,7 +390,7 @@ def equivPEmpty (α : Sort v) [IsEmpty α] : α ≃ PEmpty.{u} := equivOfIsEmpty
 
 /-- `α` is equivalent to an empty type iff `α` is empty. -/
 def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
-  ⟨fun e => Function.isEmpty e, @equivEmpty α, fun e => ext fun x => (e x).elim, fun _ => rfl⟩
+  ⟨fun e ↦ Function.isEmpty e, @equivEmpty α, fun e ↦ ext fun x => (e x).elim, fun _ => rfl⟩
 
 /-- The `Sort` of proofs of a false proposition is equivalent to `PEmpty`. -/
 def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsEmpty.prop_iff.2 h

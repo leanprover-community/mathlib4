@@ -52,7 +52,7 @@ theorem divX_C (a : R) : divX (C a) = 0 :=
   ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
 
 theorem divX_eq_zero_iff : divX p = 0 ↔ p = C (p.coeff 0) :=
-  ⟨fun h => by simpa [eq_comm, h] using divX_mul_X_add p, fun h => by rw [h, divX_C]⟩
+  ⟨fun h ↦ by simpa [eq_comm, h] using divX_mul_X_add p, fun h ↦ by rw [h, divX_C]⟩
 
 theorem divX_add : divX (p + q) = divX p + divX q :=
   ext <| by simp
@@ -161,7 +161,7 @@ See `natDegree_ne_zero_induction_on` for a similar statement involving no explic
 theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree p)
     (hC : ∀ {a}, a ≠ 0 → P (C a * X)) (hX : ∀ {p}, 0 < degree p → P p → P (p * X))
     (hadd : ∀ {p} {a}, 0 < degree p → P p → P (p + C a)) : P p :=
-  recOnHorner p (fun h => by rw [degree_zero] at h; exact absurd h (by decide))
+  recOnHorner p (fun h ↦ by rw [degree_zero] at h; exact absurd h (by decide))
     (fun p a heq0 _ ih h0 =>
       (have : 0 < degree p :=
         (lt_of_not_ge fun h =>
@@ -189,7 +189,7 @@ See `degree_pos_induction_on` for a similar statement involving more explicit mu
 theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.natDegree ≠ 0)
     (h_C_add : ∀ {a p}, M p → M (C a + p)) (h_add : ∀ {p q}, M p → M q → M (p + q))
     (h_monomial : ∀ {n : ℕ} {a : R}, a ≠ 0 → n ≠ 0 → M (monomial n a)) : M f := by
-  suffices f.natDegree = 0 ∨ M f from Or.recOn this (fun h => (f0 h).elim) id
+  suffices f.natDegree = 0 ∨ M f from Or.recOn this (fun h ↦ (f0 h).elim) id
   refine Polynomial.induction_on f ?_ ?_ ?_
   · exact fun a ↦ Or.inl (natDegree_C _)
   · rintro p q (hp | hp) (hq | hq)

@@ -199,7 +199,7 @@ theorem Kernel.continuous_integral_integral :
   rw [continuous_iff_continuousAt]; intro g
   refine
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd
-      (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_compProd) ?_
+      (Eventually.of_forall fun h ↦ (L1.integrable_coeFn h).integral_compProd) ?_
   simp_rw [←
     Kernel.lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
       (L1.integrable_coeFn g)]

@@ -214,7 +214,7 @@ theorem _root_.BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
     · apply_rules [L.le_of_opNorm₂_le_of_le, le_rfl]
       refine (le_ciSup_set hbg <| mem_preimage.mpr ?_)
       rwa [neg_sub, sub_add_cancel]
-    · have : t ∉ support fun t => L (f t) (g (x₀ - t)) := mt (fun h => h2s h) ht
+    · have : t ∉ support fun t => L (f t) (g (x₀ - t)) := mt (fun h ↦ h2s h) ht
       rw [nmem_support.mp this, norm_zero]
   refine Integrable.mono' ?_ ?_ this
   · rw [integrable_indicator_iff hs]; exact ((hf.norm.const_mul _).mul_const _).integrableOn

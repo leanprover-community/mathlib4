@@ -180,7 +180,7 @@ instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_sSup := fun f s =>
-      eq_of_forall_ge_iff fun c => by
+      eq_of_forall_ge_iff fun c ↦ by
         simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image] }
 
 -- See note [lower instance priority]
@@ -188,7 +188,7 @@ instance (priority := 100) OrderIsoClass.tosInfHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : sInfHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_sInf := fun f s =>
-      eq_of_forall_le_iff fun c => by
+      eq_of_forall_le_iff fun c ↦ by
         simp only [← map_inv_le_iff, le_sInf_iff, Set.forall_mem_image] }
 
 -- See note [lower instance priority]
@@ -310,12 +310,12 @@ theorem id_comp (f : sSupHom α β) : (sSupHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : sSupHom β γ} {f : sSupHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 
 @[simp]
 theorem cancel_left {g : sSupHom β γ} {f₁ f₂ : sSupHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end SupSet
 
@@ -431,12 +431,12 @@ theorem id_comp (f : sInfHom α β) : (sInfHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : sInfHom β γ} {f : sInfHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 
 @[simp]
 theorem cancel_left {g : sInfHom β γ} {f₁ f₂ : sInfHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end InfSet
 
@@ -558,12 +558,12 @@ theorem id_comp (f : FrameHom α β) : (FrameHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : FrameHom β γ} {f : FrameHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 
 @[simp]
 theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 instance : PartialOrder (FrameHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
@@ -664,12 +664,12 @@ theorem id_comp (f : CompleteLatticeHom α β) : (CompleteLatticeHom.id β).comp
 @[simp]
 theorem cancel_right {g₁ g₂ : CompleteLatticeHom β γ} {f : CompleteLatticeHom α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 
 @[simp]
 theorem cancel_left {g : CompleteLatticeHom β γ} {f₁ f₂ : CompleteLatticeHom α β}
     (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end CompleteLatticeHom
 
@@ -832,7 +832,7 @@ def Equiv.toOrderIsoSet (e : α ≃ β) : Set α ≃o Set β where
   left_inv s := by simp only [← image_comp, Equiv.symm_comp_self, id, image_id']
   right_inv s := by simp only [← image_comp, Equiv.self_comp_symm, id, image_id']
   map_rel_iff' :=
-    ⟨fun h => by simpa using @monotone_image _ _ e.symm _ _ h, fun h => monotone_image h⟩
+    ⟨fun h ↦ by simpa using @monotone_image _ _ e.symm _ _ h, fun h ↦ monotone_image h⟩
 
 variable [CompleteLattice α] (x : α × α)
 

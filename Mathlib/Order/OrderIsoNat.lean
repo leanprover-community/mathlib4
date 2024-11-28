@@ -59,7 +59,7 @@ theorem exists_not_acc_lt_of_not_acc {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc
 theorem acc_iff_no_decreasing_seq {x} :
     Acc r x ↔ IsEmpty { f : ((· > ·) : ℕ → ℕ → Prop) ↪r r // x ∈ Set.range f } := by
   constructor
-  · refine fun h => h.recOn fun x _ IH => ?_
+  · refine fun h ↦ h.recOn fun x _ IH => ?_
     constructor
     rintro ⟨f, k, hf⟩
     exact IsEmpty.elim' (IH (f (k + 1)) (hf ▸ f.map_rel_iff.2 (Nat.lt_succ_self _))) ⟨f, _, rfl⟩
@@ -195,7 +195,7 @@ theorem exists_increasing_or_nonincreasing_subseq (r : α → α → Prop) [IsTr
 
 theorem WellFounded.monotone_chain_condition' [Preorder α] :
     WellFounded ((· > ·) : α → α → Prop) ↔ ∀ a : ℕ →o α, ∃ n, ∀ m, n ≤ m → ¬a n < a m := by
-  refine ⟨fun h a => ?_, fun h => ?_⟩
+  refine ⟨fun h a => ?_, fun h ↦ ?_⟩
   · have hne : (Set.range a).Nonempty := ⟨a 0, by simp⟩
     obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.has_min _ hne
     exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩

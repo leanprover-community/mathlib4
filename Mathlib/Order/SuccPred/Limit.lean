@@ -148,10 +148,10 @@ theorem IsSuccLimit.succ_ne (h : IsSuccLimit a) (b : α) : succ b ≠ a :=
   h.isSuccPrelimit.succ_ne b
 
 @[simp]
-theorem not_isSuccPrelimit_succ (a : α) : ¬IsSuccPrelimit (succ a) := fun h => h.succ_ne _ rfl
+theorem not_isSuccPrelimit_succ (a : α) : ¬IsSuccPrelimit (succ a) := fun h ↦ h.succ_ne _ rfl
 
 @[simp]
-theorem not_isSuccLimit_succ (a : α) : ¬IsSuccLimit (succ a) := fun h => h.succ_ne _ rfl
+theorem not_isSuccLimit_succ (a : α) : ¬IsSuccLimit (succ a) := fun h ↦ h.succ_ne _ rfl
 
 end NoMaxOrder
 
@@ -241,7 +241,7 @@ theorem IsSuccLimit.succ_lt (hb : IsSuccLimit b) (ha : a < b) : succ a < b :=
   hb.isSuccPrelimit.succ_lt ha
 
 theorem IsSuccPrelimit.succ_lt_iff (hb : IsSuccPrelimit b) : succ a < b ↔ a < b :=
-  ⟨fun h => (le_succ a).trans_lt h, hb.succ_lt⟩
+  ⟨fun h ↦ (le_succ a).trans_lt h, hb.succ_lt⟩
 
 theorem IsSuccLimit.succ_lt_iff (hb : IsSuccLimit b) : succ a < b ↔ a < b :=
   hb.isSuccPrelimit.succ_lt_iff
@@ -449,10 +449,10 @@ theorem IsPredLimit.pred_ne (h : IsPredLimit a) (b : α) : pred b ≠ a :=
   h.isPredPrelimit.pred_ne b
 
 @[simp]
-theorem not_isPredPrelimit_pred (a : α) : ¬ IsPredPrelimit (pred a) := fun h => h.pred_ne _ rfl
+theorem not_isPredPrelimit_pred (a : α) : ¬ IsPredPrelimit (pred a) := fun h ↦ h.pred_ne _ rfl
 
 @[simp]
-theorem not_isPredLimit_pred (a : α) : ¬ IsPredLimit (pred a) := fun h => h.pred_ne _ rfl
+theorem not_isPredLimit_pred (a : α) : ¬ IsPredLimit (pred a) := fun h ↦ h.pred_ne _ rfl
 
 end NoMinOrder
 

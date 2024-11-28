@@ -259,13 +259,13 @@ theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤
 theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
   obtain hkp | hkp := hkp.symm.lt_or_lt
   · simp [choose_eq_zero_of_lt hkp]
-  refine emultiplicity_ne_zero.1 fun h => hkp.not_le <| Nat.le_of_dvd hk.bot_lt ?_
+  refine emultiplicity_ne_zero.1 fun h ↦ hkp.not_le <| Nat.le_of_dvd hk.bot_lt ?_
   have H := hp.emultiplicity_choose_prime_pow_add_emultiplicity hkp.le hk
   rw [h, zero_add, emultiplicity_eq_coe] at H
   exact H.1
 
 theorem dvd_choose_pow_iff (hp : Prime p) : p ∣ (p ^ n).choose k ↔ k ≠ 0 ∧ k ≠ p ^ n := by
-  refine ⟨fun h => ⟨?_, ?_⟩, fun h => dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ dvd_choose_pow hp h.1 h.2⟩ <;> rintro rfl <;>
     simp [hp.ne_one] at h
 
 end Prime
@@ -273,7 +273,7 @@ end Prime
 theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplicity 2 n ! < n := by
   have h2 := prime_two.prime
   refine binaryRec ?_ ?_
-  · exact fun h => False.elim <| h rfl
+  · exact fun h ↦ False.elim <| h rfl
   · intro b n ih h
     by_cases hn : n = 0
     · subst hn

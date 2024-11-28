@@ -492,7 +492,7 @@ theorem lift_unique (F : k[G] →ₐ[k] A) (f : MonoidAlgebra k G) :
 
 theorem algHom_ext_iff {φ₁ φ₂ : k[G] →ₐ[k] A} :
     (∀ x, φ₁ (Finsupp.single x 1) = φ₂ (Finsupp.single x 1)) ↔ φ₁ = φ₂ :=
-  ⟨fun h => algHom_ext h, by rintro rfl _; rfl⟩
+  ⟨fun h ↦ algHom_ext h, by rintro rfl _; rfl⟩
 
 end lift
 

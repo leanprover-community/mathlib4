@@ -171,7 +171,7 @@ theorem subset_range_nth : setOf p ⊆ Set.range (nth p) := fun x (hx : p x) =>
   ⟨n, hn⟩
 
 theorem range_nth_subset : Set.range (nth p) ⊆ insert 0 (setOf p) :=
-  (setOf p).finite_or_infinite.elim (fun h => (range_nth_of_finite h).subset) fun h =>
+  (setOf p).finite_or_infinite.elim (fun h ↦ (range_nth_of_finite h).subset) fun h =>
     (range_nth_of_infinite h).trans_subset (Set.subset_insert _ _)
 
 theorem nth_mem (n : ℕ) (h : ∀ hf : (setOf p).Finite, n < #hf.toFinset) : p (nth p n) :=
@@ -205,7 +205,7 @@ theorem isLeast_nth_of_lt_card {n : ℕ} (hf : (setOf p).Finite) (hn : n < #hf.t
 
 theorem isLeast_nth_of_infinite (hf : (setOf p).Infinite) (n : ℕ) :
     IsLeast {i | p i ∧ ∀ k < n, nth p k < i} (nth p n) :=
-  isLeast_nth fun h => absurd h hf
+  isLeast_nth fun h ↦ absurd h hf
 
 /-- An alternative recursive definition of `Nat.nth`: `Nat.nth s n` is the infimum of `x ∈ s` such
 that `Nat.nth s k < x` for all `k < n`, if this set is nonempty. We do not assume that the set is
@@ -231,7 +231,7 @@ theorem nth_zero_of_exists [DecidablePred p] (h : ∃ n, p n) : nth p 0 = Nat.fi
 
 theorem nth_eq_zero {n} :
     nth p n = 0 ↔ p 0 ∧ n = 0 ∨ ∃ hf : (setOf p).Finite, #hf.toFinset ≤ n := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · simp only [or_iff_not_imp_right, not_exists, not_le]
     exact fun hn => ⟨h ▸ nth_mem _ hn, nonpos_iff_eq_zero.1 <| h ▸ le_nth hn⟩
   · rintro (⟨h₀, rfl⟩ | ⟨hf, hle⟩)
@@ -288,7 +288,7 @@ theorem filter_range_nth_subset_insert (k : ℕ) :
     {n ∈ range (nth p (k + 1)) | p n} ⊆ insert (nth p k) {n ∈ range (nth p k) | p n} := by
   intro a ha
   simp only [mem_insert, mem_filter, mem_range] at ha ⊢
-  exact (le_nth_of_lt_nth_succ ha.1 ha.2).eq_or_lt.imp_right fun h => ⟨h, ha.2⟩
+  exact (le_nth_of_lt_nth_succ ha.1 ha.2).eq_or_lt.imp_right fun h ↦ ⟨h, ha.2⟩
 
 variable {p}
 
@@ -358,7 +358,7 @@ variable (p)
 theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i ∧ n ≤ i} := by
   refine (nth_eq_sInf _ _).trans (congr_arg sInf ?_)
   refine Set.ext fun a ↦ and_congr_right fun hpa => ?_
-  refine ⟨fun h => not_lt.1 fun ha => ?_, fun hn k hk => lt_of_lt_of_le (nth_lt_of_lt_count hk) hn⟩
+  refine ⟨fun h ↦ not_lt.1 fun ha => ?_, fun hn k hk => lt_of_lt_of_le (nth_lt_of_lt_count hk) hn⟩
   have hn : nth p (count p a) < a := h _ (count_strict_mono hpa ha)
   rwa [nth_count hpa, lt_self_iff_false] at hn
 

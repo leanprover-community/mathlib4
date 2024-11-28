@@ -194,7 +194,7 @@ theorem _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_not_mem (hf : f.Monic) 
     not_mem := hnot_mem }
 
 theorem isWeaklyEisensteinAt (hf : f.IsEisensteinAt 𝓟) : IsWeaklyEisensteinAt f 𝓟 :=
-  ⟨fun h => hf.mem h⟩
+  ⟨fun h ↦ hf.mem h⟩
 
 theorem coeff_mem (hf : f.IsEisensteinAt 𝓟) {n : ℕ} (hn : n ≠ f.natDegree) : f.coeff n ∈ 𝓟 := by
   cases' ne_iff_lt_or_gt.1 hn with h₁ h₂

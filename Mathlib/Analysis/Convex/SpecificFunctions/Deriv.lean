@@ -82,7 +82,7 @@ theorem int_prod_range_nonneg (m : ℤ) (n : ℕ) (hn : Even n) :
 
 theorem int_prod_range_pos {m : ℤ} {n : ℕ} (hn : Even n) (hm : m ∉ Ico (0 : ℤ) n) :
     0 < ∏ k ∈ Finset.range n, (m - k) := by
-  refine (int_prod_range_nonneg m n hn).lt_of_ne fun h => hm ?_
+  refine (int_prod_range_nonneg m n hn).lt_of_ne fun h ↦ hm ?_
   rw [eq_comm, Finset.prod_eq_zero_iff] at h
   obtain ⟨a, ha, h⟩ := h
   rw [sub_eq_zero.1 h]

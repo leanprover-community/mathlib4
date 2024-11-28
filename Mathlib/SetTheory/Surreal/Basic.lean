@@ -130,7 +130,7 @@ theorem lt_of_lf {x y : PGame} (h : x ⧏ y) (ox : Numeric x) (oy : Numeric y) :
 alias LF.lt := lt_of_lf
 
 theorem lf_iff_lt {x y : PGame} (ox : Numeric x) (oy : Numeric y) : x ⧏ y ↔ x < y :=
-  ⟨fun h => h.lt ox oy, lf_of_lt⟩
+  ⟨fun h ↦ h.lt ox oy, lf_of_lt⟩
 
 /-- Definition of `x ≤ y` on numeric pre-games, in terms of `<` -/
 theorem le_iff_forall_lt {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
@@ -159,11 +159,11 @@ theorem lt_def {x y : PGame} (ox : x.Numeric) (oy : y.Numeric) :
     apply_rules [Numeric.moveLeft, Numeric.moveRight]
 
 theorem not_fuzzy {x y : PGame} (ox : Numeric x) (oy : Numeric y) : ¬Fuzzy x y :=
-  fun h => not_lf.2 ((lf_of_fuzzy h).le ox oy) h.2
+  fun h ↦ not_lf.2 ((lf_of_fuzzy h).le ox oy) h.2
 
 theorem lt_or_equiv_or_gt {x y : PGame} (ox : Numeric x) (oy : Numeric y) :
     x < y ∨ (x ≈ y) ∨ y < x :=
-  ((lf_or_equiv_or_gf x y).imp fun h => h.lt ox oy) <| Or.imp_right fun h => h.lt oy ox
+  ((lf_or_equiv_or_gf x y).imp fun h ↦ h.lt ox oy) <| Or.imp_right fun h ↦ h.lt oy ox
 
 theorem numeric_of_isEmpty (x : PGame) [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves] : Numeric x :=
   Numeric.mk isEmptyElim isEmptyElim isEmptyElim
@@ -365,7 +365,7 @@ noncomputable instance : LinearOrderedAddCommGroup Surreal :=
   { Surreal.orderedAddCommGroup with
     le_total := by
       rintro ⟨⟨x, ox⟩⟩ ⟨⟨y, oy⟩⟩
-      exact or_iff_not_imp_left.2 fun h => (PGame.not_le.1 h).le oy ox
+      exact or_iff_not_imp_left.2 fun h ↦ (PGame.not_le.1 h).le oy ox
     decidableLE := Classical.decRel _ }
 
 instance : AddMonoidWithOne Surreal :=

@@ -86,7 +86,7 @@ abbrev Function.Surjective.smulZeroClassLeft {R S M : Type*} [Zero M] [SMulZeroC
     (hsmul : ∀ (c) (x : M), f c • x = c • x) :
     SMulZeroClass S M where
   smul := (· • ·)
-  smul_zero := hf.forall.mpr fun c => by rw [hsmul, smul_zero]
+  smul_zero := hf.forall.mpr fun c ↦ by rw [hsmul, smul_zero]
 
 variable (A)
 
@@ -285,7 +285,7 @@ protected abbrev Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
   { hf.mulAction f smul with
     smul_mul := fun c x y => hf <| by simp only [smul, f.map_mul, smul_mul'],
-    smul_one := fun c => hf <| by simp only [smul, f.map_one, smul_one] }
+    smul_one := fun c ↦ hf <| by simp only [smul, f.map_one, smul_one] }
 
 /-- Pushforward a multiplicative distributive multiplicative action along a surjective monoid
 homomorphism.
@@ -297,7 +297,7 @@ protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
       simp only [smul_mul', ← smul, ← f.map_mul],
-    smul_one := fun c => by rw [← f.map_one, ← smul, smul_one] }
+    smul_one := fun c ↦ by rw [← f.map_one, ← smul, smul_one] }
 
 variable (A)
 
@@ -337,7 +337,7 @@ section Group
 variable [Group α] [AddMonoid β] [DistribMulAction α β]
 
 lemma smul_eq_zero_iff_eq (a : α) {x : β} : a • x = 0 ↔ x = 0 :=
-  ⟨fun h => by rw [← inv_smul_smul a x, h, smul_zero], fun h => h.symm ▸ smul_zero _⟩
+  ⟨fun h ↦ by rw [← inv_smul_smul a x, h, smul_zero], fun h ↦ h.symm ▸ smul_zero _⟩
 
 lemma smul_ne_zero_iff_ne (a : α) {x : β} : a • x ≠ 0 ↔ x ≠ 0 :=
   not_congr <| smul_eq_zero_iff_eq a

@@ -199,7 +199,7 @@ theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a := by
 
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f := by
-  refine ⟨fun h => ⟨h.strictMono, ?_⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨h.strictMono, ?_⟩, ?_⟩
   · rw [continuous_def]
     intro s hs
     rw [isOpen_iff] at *
@@ -223,7 +223,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
   have Hs := enumOrd_strictMono hs
   refine
-    ⟨fun h => isClosed_iff_iSup.2 fun {ι} hι f hf => ?_, fun h =>
+    ⟨fun h ↦ isClosed_iff_iSup.2 fun {ι} hι f hf => ?_, fun h =>
       (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => ?_⟩⟩
   · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso s hs).symm ⟨_, hf i⟩
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by

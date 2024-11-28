@@ -112,7 +112,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
   let ρ : ℝ := (5 : ℝ) / 2
   have ρpos : 0 < ρ := by norm_num
   set A := ⋃ c ∈ s, ball (c : E) δ with hA
-  have D : Set.Pairwise (s : Set E) (Disjoint on fun c => ball (c : E) δ) := by
+  have D : Set.Pairwise (s : Set E) (Disjoint on fun c ↦ ball (c : E) δ) := by
     rintro c hc d hd hcd
     apply ball_disjoint_ball
     rw [dist_eq_norm]
@@ -230,7 +230,7 @@ theorem exists_goodδ :
     simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
       Ne, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
     intro i j hij
-    have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
+    have : i ≠ j := fun h ↦ by rw [h] at hij; exact hij rfl
     exact h'f this
   have : s.card ≤ multiplicity E := card_le_multiplicity hs h's
   rw [s_card, hN] at this
@@ -277,7 +277,7 @@ theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖
     simp only [s, forall_apply_eq_imp_iff, forall_exists_index, Finset.mem_univ, Finset.mem_image,
       Ne, exists_true_left, forall_apply_eq_imp_iff, forall_true_left, true_and]
     intro i j hij
-    have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
+    have : i ≠ j := fun h ↦ by rw [h] at hij; exact hij rfl
     exact h' this
   have : s.card ≤ multiplicity E := card_le_multiplicity_of_δ hs h's
   rwa [s_card] at this

@@ -138,7 +138,7 @@ theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Finite α] {f 
 
 theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Finite α] [Fintype β]
     [Finite γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a ↦ s (f a)) ⟶ ⨁ fun b ↦ s (g b))
-    (w : (⨁ fun b ↦ s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
+    (w : (⨁ fun b ↦ s (g b)) ⟶ ⨁ fun c ↦ s (h c)) (i : ι) :
     o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i * o.matrixDecomposition z i := by
   ext ⟨c, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property

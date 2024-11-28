@@ -55,7 +55,7 @@ theorem differentiableOn_log : DifferentiableOn ℝ log {0}ᶜ := fun _x hx =>
 
 @[simp]
 theorem differentiableAt_log_iff : DifferentiableAt ℝ log x ↔ x ≠ 0 :=
-  ⟨fun h => continuousAt_log_iff.1 h.continuousAt, differentiableAt_log⟩
+  ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, differentiableAt_log⟩
 
 theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
   if hx : x = 0 then by
@@ -73,7 +73,7 @@ theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
   simp [differentiableOn_log, contDiffOn_inv]
 
 theorem contDiffAt_log {n : WithTop ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
-  ⟨fun h => continuousAt_log_iff.1 h.continuousAt, fun hx =>
+  ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, fun hx =>
     (contDiffOn_log x hx).contDiffAt <| IsOpen.mem_nhds isOpen_compl_singleton hx⟩
 
 end Real
@@ -188,7 +188,7 @@ namespace Real
 /-- The function `x * log (1 + t / x)` tends to `t` at `+∞`. -/
 theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
     Tendsto (fun x => x * log (1 + t / x)) atTop (𝓝 t) := by
-  have h₁ : Tendsto (fun h => h⁻¹ * log (1 + t * h)) (𝓝[≠] 0) (𝓝 t) := by
+  have h₁ : Tendsto (fun h ↦ h⁻¹ * log (1 + t * h)) (𝓝[≠] 0) (𝓝 t) := by
     simpa [hasDerivAt_iff_tendsto_slope, slope_fun_def] using
       (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
   have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=

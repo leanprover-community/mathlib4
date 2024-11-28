@@ -482,7 +482,7 @@ theorem Basis.det_isEmpty [IsEmpty ι] : e.det = AlternatingMap.constOfIsEmpty R
   exact Matrix.det_isEmpty
 
 /-- `Basis.det` is not the zero map. -/
-theorem Basis.det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h => by simpa [h] using e.det_self
+theorem Basis.det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h ↦ by simpa [h] using e.det_self
 
 theorem Basis.smul_det {G} [Group G] [DistribMulAction G M] [SMulCommClass G R M]
     (g : G) (v : ι → M) :
@@ -521,11 +521,11 @@ theorem AlternatingMap.eq_smul_basis_det (f : M [⋀^ι]→ₗ[R] R) : f = f e �
 @[simp]
 theorem AlternatingMap.map_basis_eq_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e = 0 ↔ f = 0 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     cases nonempty_fintype ι
     letI := Classical.decEq ι
     simpa [h] using f.eq_smul_basis_det e,
-   fun h => h.symm ▸ AlternatingMap.zero_apply _⟩
+   fun h ↦ h.symm ▸ AlternatingMap.zero_apply _⟩
 
 theorem AlternatingMap.map_basis_ne_zero_iff {ι : Type*} [Finite ι] (e : Basis ι R M)
     (f : M [⋀^ι]→ₗ[R] R) : f e ≠ 0 ↔ f ≠ 0 :=

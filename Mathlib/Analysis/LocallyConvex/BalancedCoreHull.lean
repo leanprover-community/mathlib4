@@ -122,10 +122,10 @@ theorem balancedCore_zero_mem (hs : (0 : E) ∈ s) : (0 : E) ∈ balancedCore �
   mem_balancedCore_iff.2 ⟨0, balanced_zero, zero_subset.2 hs, Set.zero_mem_zero⟩
 
 theorem balancedCore_nonempty_iff : (balancedCore 𝕜 s).Nonempty ↔ (0 : E) ∈ s :=
-  ⟨fun h => zero_subset.1 <| (zero_smul_set h).superset.trans <|
+  ⟨fun h ↦ zero_subset.1 <| (zero_smul_set h).superset.trans <|
     (balancedCore_balanced s (0 : 𝕜) <| norm_zero.trans_le zero_le_one).trans <|
       balancedCore_subset _,
-    fun h => ⟨0, balancedCore_zero_mem h⟩⟩
+    fun h ↦ ⟨0, balancedCore_zero_mem h⟩⟩
 
 variable (𝕜)
 

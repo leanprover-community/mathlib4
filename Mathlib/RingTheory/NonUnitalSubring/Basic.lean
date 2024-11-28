@@ -387,7 +387,7 @@ theorem not_mem_of_not_mem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : 
 /-- A `NonUnitalSubring` `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
 theorem closure_le {s : Set R} {t : NonUnitalSubring R} : closure s ≤ t ↔ s ⊆ t :=
-  ⟨Set.Subset.trans subset_closure, fun h => sInf_le h⟩
+  ⟨Set.Subset.trans subset_closure, fun h ↦ sInf_le h⟩
 
 /-- `NonUnitalSubring` closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
@@ -458,7 +458,7 @@ theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → 
 
 theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Subsemigroup.closure s : Set R) :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     induction h using closure_induction with
     | mem _ hx => exact AddSubgroup.subset_closure (Subsemigroup.subset_closure hx)
     | zero => exact zero_mem _
@@ -474,7 +474,7 @@ theorem mem_closure_iff {s : Set R} {x} :
       | mul_right _ _ _ _ _ _ h₁ h₂ => simpa [mul_add] using add_mem h₁ h₂
       | inv_left _ _ _ _ h => simpa [neg_mul] using neg_mem h
       | inv_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
-  fun h => by
+  fun h ↦ by
     induction h using AddSubgroup.closure_induction with
     | mem _ hx => induction hx using Subsemigroup.closure_induction with
       | mem _ h => exact subset_closure h

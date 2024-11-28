@@ -33,7 +33,7 @@ variable (r : α → α → Prop) [DecidableRel r] {l : List α} {o : Option α}
 
 /-- Auxiliary definition for `argmax` and `argmin`. -/
 def argAux (a : Option α) (b : α) : Option α :=
-  Option.casesOn a (some b) fun c => if r b c then some b else some c
+  Option.casesOn a (some b) fun c ↦ if r b c then some b else some c
 
 @[simp]
 theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
@@ -129,12 +129,12 @@ theorem not_lt_of_mem_argmin : a ∈ l → m ∈ argmin f l → ¬f a < f m :=
 
 theorem argmax_concat (f : α → β) (a : α) (l : List α) :
     argmax f (l ++ [a]) =
-      Option.casesOn (argmax f l) (some a) fun c => if f c < f a then some a else some c := by
+      Option.casesOn (argmax f l) (some a) fun c ↦ if f c < f a then some a else some c := by
   rw [argmax, argmax]; simp [argAux]
 
 theorem argmin_concat (f : α → β) (a : α) (l : List α) :
     argmin f (l ++ [a]) =
-      Option.casesOn (argmin f l) (some a) fun c => if f a < f c then some a else some c :=
+      Option.casesOn (argmin f l) (some a) fun c ↦ if f a < f c then some a else some c :=
   @argmax_concat _ βᵒᵈ _ _ _ _ _
 
 theorem argmax_mem : ∀ {l : List α} {m : α}, m ∈ argmax f l → m ∈ l
@@ -165,7 +165,7 @@ theorem le_of_mem_argmin : a ∈ l → m ∈ argmin f l → f m ≤ f a :=
 
 theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     argmax f (a :: l) =
-      Option.casesOn (argmax f l) (some a) fun c => if f a < f c then some c else some a :=
+      Option.casesOn (argmax f l) (some a) fun c ↦ if f a < f c then some c else some a :=
   List.reverseRecOn l rfl fun hd tl ih => by
     rw [← cons_append, argmax_concat, ih, argmax_concat]
     cases' h : argmax f hd with m
@@ -179,7 +179,7 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
 
 theorem argmin_cons (f : α → β) (a : α) (l : List α) :
     argmin f (a :: l) =
-      Option.casesOn (argmin f l) (some a) fun c => if f c < f a then some c else some a :=
+      Option.casesOn (argmin f l) (some a) fun c ↦ if f c < f a then some c else some a :=
   @argmax_cons α βᵒᵈ _ _ _ _
 
 variable [DecidableEq α]

@@ -53,7 +53,7 @@ theorem powerset_nonempty (s : Finset α) : s.powerset.Nonempty :=
 
 @[simp]
 theorem powerset_mono {s t : Finset α} : powerset s ⊆ powerset t ↔ s ⊆ t :=
-  ⟨fun h => mem_powerset.1 <| h <| mem_powerset_self _, fun st _u h =>
+  ⟨fun h ↦ mem_powerset.1 <| h <| mem_powerset_self _, fun st _u h =>
     mem_powerset.2 <| Subset.trans (mem_powerset.1 h) st⟩
 
 theorem powerset_injective : Injective (powerset : Finset α → Finset (Finset α)) :=
@@ -190,7 +190,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
   ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
   refine
-    ⟨fun h => h.2, fun h => by
+    ⟨fun h ↦ h.2, fun h ↦ by
       rw [h]
       exact ⟨empty_subset s, rfl⟩⟩
 

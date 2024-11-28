@@ -809,7 +809,7 @@ theorem coe_bot : ((⊥ : NonUnitalSubalgebra R A) : Set A) = {0} := by
   simp [Set.ext_iff, NonUnitalAlgebra.mem_bot]
 
 theorem eq_top_iff {S : NonUnitalSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
-  ⟨fun h x => by rw [h]; exact mem_top, fun h => by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
+  ⟨fun h x => by rw [h]; exact mem_top, fun h ↦ by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
 @[simp]
 theorem range_id : NonUnitalAlgHom.range (NonUnitalAlgHom.id R A) = ⊤ :=

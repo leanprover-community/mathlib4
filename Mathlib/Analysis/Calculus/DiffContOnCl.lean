@@ -39,7 +39,7 @@ theorem Differentiable.diffContOnCl (h : Differentiable 𝕜 f) : DiffContOnCl �
   ⟨h.differentiableOn, h.continuous.continuousOn⟩
 
 theorem IsClosed.diffContOnCl_iff (hs : IsClosed s) : DiffContOnCl 𝕜 f s ↔ DifferentiableOn 𝕜 f s :=
-  ⟨fun h => h.differentiableOn, fun h => ⟨h, hs.closure_eq.symm ▸ h.continuousOn⟩⟩
+  ⟨fun h ↦ h.differentiableOn, fun h ↦ ⟨h, hs.closure_eq.symm ▸ h.continuousOn⟩⟩
 
 theorem diffContOnCl_univ : DiffContOnCl 𝕜 f univ ↔ Differentiable 𝕜 f :=
   isClosed_univ.diffContOnCl_iff.trans differentiableOn_univ

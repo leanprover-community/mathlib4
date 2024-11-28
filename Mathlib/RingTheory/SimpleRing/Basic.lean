@@ -59,7 +59,7 @@ lemma injective_ringHom_or_subsingleton_codomain
     {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocSemiring S]
     (f : R →+* S) : Function.Injective f ∨ Subsingleton S :=
   simple.eq_bot_or_eq_top (TwoSidedIdeal.ker f) |>.imp (TwoSidedIdeal.ker_eq_bot _ |>.1)
-    (fun h => subsingleton_iff_zero_eq_one.1 <| by
+    (fun h ↦ subsingleton_iff_zero_eq_one.1 <| by
       have mem : 1 ∈ TwoSidedIdeal.ker f := h.symm ▸ TwoSidedIdeal.mem_top _
       rwa [TwoSidedIdeal.mem_ker, map_one, eq_comm] at mem)
 
@@ -74,9 +74,9 @@ lemma iff_injective_ringHom_or_subsingleton_codomain (R : Type u) [NonAssocRing 
     ∀ {S : Type u} [NonAssocSemiring S] (f : R →+* S), Function.Injective f ∨ Subsingleton S where
   mp _ _ _ := injective_ringHom_or_subsingleton_codomain
   mpr H := of_eq_bot_or_eq_top fun I => H I.ringCon.mk' |>.imp
-    (fun h => le_antisymm
+    (fun h ↦ le_antisymm
       (fun _ hx => TwoSidedIdeal.ker_eq_bot _ |>.2 h ▸ I.ker_ringCon_mk'.symm ▸ hx) bot_le)
-    (fun h => le_antisymm le_top fun x _ => I.mem_iff _ |>.2 (Quotient.eq'.1 (h.elim x 0)))
+    (fun h ↦ le_antisymm le_top fun x _ => I.mem_iff _ |>.2 (Quotient.eq'.1 (h.elim x 0)))
 
 universe u in
 lemma iff_injective_ringHom (R : Type u) [NonAssocRing R] [Nontrivial R] :

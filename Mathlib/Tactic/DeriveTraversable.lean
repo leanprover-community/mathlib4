@@ -187,7 +187,7 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
 def mkInstanceNameForTypeExpr (type : Expr) : TermElabM Name := do
   let result ← do
     let ref ← IO.mkRef ""
-    Meta.forEachExpr type fun e => do
+    Meta.forEachExpr type fun e ↦ do
       if e.isForall then ref.modify (· ++ "ForAll")
       else if e.isProp then ref.modify (· ++ "Prop")
       else if e.isType then ref.modify (· ++ "Type")
@@ -273,7 +273,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
     s ← l₂.foldlM (fun s n => s.addDeclToUnfold n) s
     if b then
       let hs ← getPropHyps
-      s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
+      s ← hs.foldlM (fun s f => f.getDecl >>= fun d ↦ s.add (.fvar f) #[] d.toExpr) s
     return { simpTheorems := #[s] }
   let .app (.app (.const ``LawfulFunctor _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
@@ -349,7 +349,7 @@ def traverseConstructor (c n : Name) (applInst f α β : Expr) (args₀ : List E
       if y.1 then return (true, mkAppN (.fvar ad) #[g.appFn!, applInst, α, β, f, y.2])
       else traverseField n g.appFn! f α y.2)
   let gargs := args'.filterMap (fun y => if y.1 then some y.2 else none)
-  let v ← mkFunCtor c (args₀.map (fun e => (false, e)) ++ args')
+  let v ← mkFunCtor c (args₀.map (fun e ↦ (false, e)) ++ args')
   let pureInst ← mkAppOptM ``Applicative.toPure #[none, applInst]
   let constr' ← mkAppOptM ``Pure.pure #[none, pureInst, none, v]
   let r ← gargs.foldlM
@@ -466,7 +466,7 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     s ← l₂.foldlM (fun s n => s.addDeclToUnfold n) s
     if b then
       let hs ← getPropHyps
-      s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
+      s ← hs.foldlM (fun s f => f.getDecl >>= fun d ↦ s.add (.fvar f) #[] d.toExpr) s
     pure <|
     { config := { failIfUnchanged := false, unfoldPartialApp := true },
       simpTheorems := #[s] }

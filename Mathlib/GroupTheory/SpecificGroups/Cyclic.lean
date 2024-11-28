@@ -212,7 +212,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
     have hk : g ^ k = x := hk
     have hex : ∃ n : ℕ, 0 < n ∧ g ^ n ∈ H :=
       ⟨k.natAbs,
-        Nat.pos_of_ne_zero fun h => hx₂ <| by
+        Nat.pos_of_ne_zero fun h ↦ hx₂ <| by
           rw [← hk, Int.natAbs_eq_zero.mp h, zpow_zero], by
             cases' k with k k
             · rw [Int.ofNat_eq_coe, Int.natAbs_cast k, ← zpow_natCast, ← Int.ofNat_eq_coe, hk]
@@ -248,7 +248,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
   else by
     have : H = (⊥ : Subgroup α) :=
       Subgroup.ext fun x =>
-        ⟨fun h => by simp at *; tauto, fun h => by rw [Subgroup.mem_bot.1 h]; exact H.one_mem⟩
+        ⟨fun h ↦ by simp at *; tauto, fun h ↦ by rw [Subgroup.mem_bot.1 h]; exact H.one_mem⟩
     subst this; infer_instance
 
 @[to_additive]

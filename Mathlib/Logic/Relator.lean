@@ -112,7 +112,7 @@ lemma rel_iff : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·↔·) (·↔·) :=
   fun _ _ h₁ _ _ h₂ => iff_congr h₁ h₂
 
 lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)) (·=·) (·=·) :=
-  fun _ _ h₁ _ _ h₂ => ⟨fun h => hr.right h₁ <| h.symm ▸ h₂, fun h => hr.left h₁ <| h.symm ▸ h₂⟩
+  fun _ _ h₁ _ _ h₂ => ⟨fun h ↦ hr.right h₁ <| h.symm ▸ h₂, fun h ↦ hr.left h₁ <| h.symm ▸ h₂⟩
 
 open Function
 

@@ -567,11 +567,11 @@ instance (priority := 100) MulPosReflectLE.toMulPosReflectLT [MulPosReflectLE α
         simp at h⟩
 
 theorem mul_left_cancel_iff_of_pos [PosMulReflectLE α] (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  ⟨fun h => (le_of_mul_le_mul_of_pos_left h.le a0).antisymm <|
+  ⟨fun h ↦ (le_of_mul_le_mul_of_pos_left h.le a0).antisymm <|
     le_of_mul_le_mul_of_pos_left h.ge a0, congr_arg _⟩
 
 theorem mul_right_cancel_iff_of_pos [MulPosReflectLE α] (b0 : 0 < b) : a * b = c * b ↔ a = c :=
-  ⟨fun h => (le_of_mul_le_mul_of_pos_right h.le b0).antisymm <|
+  ⟨fun h ↦ (le_of_mul_le_mul_of_pos_right h.le b0).antisymm <|
     le_of_mul_le_mul_of_pos_right h.ge b0, congr_arg (· * b)⟩
 
 theorem mul_eq_mul_iff_eq_and_eq_of_pos [PosMulStrictMono α] [MulPosStrictMono α]
@@ -609,10 +609,10 @@ theorem pos_and_pos_or_neg_and_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (h
     exact mul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 theorem neg_of_mul_pos_right [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : a ≤ 0) : b < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.1.not_le ha).2
+  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h ↦ h.1.not_le ha).2
 
 theorem neg_of_mul_pos_left [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : b ≤ 0) : a < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.2.not_le ha).1
+  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h ↦ h.2.not_le ha).1
 
 theorem neg_iff_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (hab : 0 < a * b) : a < 0 ↔ b < 0 :=
   ⟨neg_of_mul_pos_right hab ∘ le_of_lt, neg_of_mul_pos_left hab ∘ le_of_lt⟩

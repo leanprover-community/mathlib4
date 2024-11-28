@@ -364,7 +364,7 @@ namespace Submodule
 
 theorem lt_of_le_of_finrank_lt_finrank {s t : Submodule R M} (le : s ≤ t)
     (lt : finrank R s < finrank R t) : s < t :=
-  lt_of_le_of_ne le fun h => ne_of_lt lt (by rw [h])
+  lt_of_le_of_ne le fun h ↦ ne_of_lt lt (by rw [h])
 
 theorem lt_top_of_finrank_lt_finrank {s : Submodule R M} (lt : finrank R s < finrank R M) :
     s < ⊤ := by

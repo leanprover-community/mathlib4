@@ -70,7 +70,7 @@ variable {μ ν : Measure α}
 `ν.withDensity (rnDeriv μ ν) = μ`. -/
 theorem absolutelyContinuous_iff_withDensity_rnDeriv_eq
     [HaveLebesgueDecomposition μ ν] : μ ≪ ν ↔ ν.withDensity (rnDeriv μ ν) = μ :=
-  ⟨withDensity_rnDeriv_eq μ ν, fun h => h ▸ withDensity_absolutelyContinuous _ _⟩
+  ⟨withDensity_rnDeriv_eq μ ν, fun h ↦ h ▸ withDensity_absolutelyContinuous _ _⟩
 
 lemma rnDeriv_pos [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < μ.rnDeriv ν x := by
@@ -521,7 +521,7 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
 /-- The Radon-Nikodym theorem for signed measures. -/
 theorem absolutelyContinuous_iff_withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α)
     [SigmaFinite μ] : s ≪ᵥ μ.toENNRealVectorMeasure ↔ μ.withDensityᵥ (s.rnDeriv μ) = s :=
-  ⟨withDensityᵥ_rnDeriv_eq s μ, fun h => h ▸ withDensityᵥ_absolutelyContinuous _ _⟩
+  ⟨withDensityᵥ_rnDeriv_eq s μ, fun h ↦ h ▸ withDensityᵥ_absolutelyContinuous _ _⟩
 
 end SignedMeasure
 

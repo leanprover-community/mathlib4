@@ -190,7 +190,7 @@ theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.pro
 @[to_additive]
 theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
-  refine ⟨fun h => ?_, prod_isUnit⟩
+  refine ⟨fun h ↦ ?_, prod_isUnit⟩
   induction L with
   | nil => exact fun m' h' => False.elim (not_mem_nil m' h')
   | cons m L ih =>

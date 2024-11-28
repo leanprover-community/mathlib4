@@ -301,13 +301,13 @@ theorem ofReal_ne_top {r : ℝ} : ENNReal.ofReal r ≠ ∞ := coe_ne_top
 
 @[simp]
 theorem ofReal_toReal_eq_iff : ENNReal.ofReal a.toReal = a ↔ a ≠ ⊤ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← h]
     exact ofReal_ne_top, ofReal_toReal⟩
 
 @[simp]
 theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤ a :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← h]
     exact toReal_nonneg, toReal_ofReal⟩
 
@@ -521,7 +521,7 @@ theorem max_zero_right : max a 0 = a :=
 
 theorem lt_iff_exists_rat_btwn :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rcases lt_iff_exists_coe.1 h with ⟨p, rfl, _⟩
     rcases exists_between h with ⟨c, pc, cb⟩
     rcases lt_iff_exists_coe.1 cb with ⟨r, rfl, _⟩

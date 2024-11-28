@@ -57,7 +57,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
   have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ s, (m : ℝ) ≤ y * d } := by
     cases' exists_int_gt U with k hk
-    refine fun d => ⟨k * d, fun z h => ?_⟩
+    refine fun d ↦ ⟨k * d, fun z h => ?_⟩
     rcases h with ⟨y, yS, hy⟩
     refine Int.cast_le.1 (hy.trans ?_)
     push_cast
@@ -181,7 +181,7 @@ theorem iSup_const_zero : ⨆ _ : ι, (0 : ℝ) = 0 := by
   · exact Real.iSup_of_isEmpty _
   · exact ciSup_const
 
-lemma sSup_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = 0 := dif_neg fun h => hs h.2
+lemma sSup_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = 0 := dif_neg fun h ↦ hs h.2
 lemma iSup_of_not_bddAbove (hf : ¬BddAbove (Set.range f)) : ⨆ i, f i = 0 := sSup_of_not_bddAbove hf
 
 theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bddAbove_univ
@@ -303,7 +303,7 @@ theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
   have ub' : ∀ x, f < const abs x → ∀ y ∈ s, y ≤ x := fun x h y yS =>
     le_of_lt <| const_lt.1 <| CauSeq.lt_trans yS h
   have ub : ∃ x, ∀ y ∈ s, y ≤ x := (exists_gt f).imp ub'
-  refine ⟨sSup s, ((lt_total _ _).resolve_left fun h => ?_).resolve_right fun h => ?_⟩
+  refine ⟨sSup s, ((lt_total _ _).resolve_left fun h ↦ ?_).resolve_right fun h ↦ ?_⟩
   · rcases h with ⟨ε, ε0, i, ih⟩
     refine (csSup_le lb (ub' _ ?_)).not_lt (sub_lt_self _ (half_pos ε0))
     refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩

@@ -78,7 +78,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
     simp only [K, mem_preimage, mem_Icc, Pi.le_def, Pi.zero_apply, Equiv.piCongrLeft'_apply,
       Pi.one_apply]
     refine
-      ⟨fun h => ⟨fun i => ?_, fun i => ?_⟩, fun h =>
+      ⟨fun h ↦ ⟨fun i => ?_, fun i => ?_⟩, fun h =>
         ⟨fun i => h.1 (e.symm i), fun i => h.2 (e.symm i)⟩⟩
     · simpa only [Equiv.symm_apply_apply] using h.1 (e i)
     · simpa only [Equiv.symm_apply_apply] using h.2 (e i)

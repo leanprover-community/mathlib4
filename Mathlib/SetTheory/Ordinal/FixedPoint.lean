@@ -110,7 +110,7 @@ theorem nfpFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (a) :
 
 theorem apply_le_nfpFamily [Small.{u} ι] [hι : Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
     (∀ i, f i b ≤ nfpFamily f a) ↔ b ≤ nfpFamily f a := by
-  refine ⟨fun h => ?_, fun h i => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h i => ?_⟩
   · obtain ⟨i⟩ := hι
     exact (H i).le_apply.trans (h i)
   · rw [← nfpFamily_fp (H i)]
@@ -172,7 +172,7 @@ theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     exact nfpFamily_fp H _
   · have : Nonempty (Set.Iio o) := ⟨0, l.pos⟩
     rw [derivFamily_limit _ l, H.map_iSup]
-    refine eq_of_forall_ge_iff fun c => ?_
+    refine eq_of_forall_ge_iff fun c ↦ ?_
     rw [Ordinal.iSup_le_iff, Ordinal.iSup_le_iff]
     refine forall_congr' fun a ↦ ?_
     rw [IH _ a.2]
@@ -282,7 +282,7 @@ theorem apply_lt_nfpBFamily (H : ∀ i hi, IsNormal (f i hi)) {a b} (hb : b < nf
 @[deprecated "No deprecation message was provided."  (since := "2024-10-14")]
 theorem apply_lt_nfpBFamily_iff (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
     (∀ i hi, f i hi b < nfpBFamily.{u, v} o f a) ↔ b < nfpBFamily.{u, v} o f a :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     haveI := toType_nonempty_iff_ne_zero.2 ho
     refine (apply_lt_nfpFamily_iff ?_).1 fun _ => h _ _
     exact fun _ => H _ _, apply_lt_nfpBFamily H⟩
@@ -310,7 +310,7 @@ theorem nfpBFamily_fp {i hi} (H : IsNormal (f i hi)) (a) :
 @[deprecated "No deprecation message was provided."  (since := "2024-10-14")]
 theorem apply_le_nfpBFamily (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a b} :
     (∀ i hi, f i hi b ≤ nfpBFamily.{u, v} o f a) ↔ b ≤ nfpBFamily.{u, v} o f a := by
-  refine ⟨fun h => ?_, fun h i hi => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h i hi => ?_⟩
   · have ho' : 0 < o := Ordinal.pos_iff_ne_zero.2 ho
     exact (H 0 ho').le_apply.trans (h 0 ho')
   · rw [← nfpBFamily_fp (H i hi)]
@@ -469,7 +469,7 @@ theorem nfp_monotone (hf : Monotone f) : Monotone (nfp f) :=
 theorem IsNormal.apply_lt_nfp {f} (H : IsNormal f) {a b} : f b < nfp f a ↔ b < nfp f a := by
   unfold nfp
   rw [← @apply_lt_nfpFamily_iff Unit (fun _ => f) _ _ (fun _ => H) a b]
-  exact ⟨fun h _ => h, fun h => h Unit.unit⟩
+  exact ⟨fun h _ => h, fun h ↦ h Unit.unit⟩
 
 theorem IsNormal.nfp_le_apply {f} (H : IsNormal f) {a b} : nfp f a ≤ f b ↔ nfp f a ≤ b :=
   le_iff_le_iff_lt_iff_lt.2 H.apply_lt_nfp
@@ -481,7 +481,7 @@ theorem IsNormal.nfp_fp {f} (H : IsNormal f) : ∀ a, f (nfp f a) = nfp f a :=
   @nfpFamily_fp Unit (fun _ => f) _ () H
 
 theorem IsNormal.apply_le_nfp {f} (H : IsNormal f) {a b} : f b ≤ nfp f a ↔ b ≤ nfp f a :=
-  ⟨H.le_apply.trans, fun h => by simpa only [H.nfp_fp] using H.le_iff.2 h⟩
+  ⟨H.le_apply.trans, fun h ↦ by simpa only [H.nfp_fp] using H.le_iff.2 h⟩
 
 theorem nfp_eq_self {f : Ordinal → Ordinal} {a} (h : f a = a) : nfp f a = a :=
   nfpFamily_eq_self fun _ => h
@@ -527,7 +527,7 @@ theorem IsNormal.deriv_fp {f} (H : IsNormal f) : ∀ o, f (deriv f o) = deriv f 
 theorem IsNormal.le_iff_deriv {f} (H : IsNormal f) {a} : f a ≤ a ↔ ∃ o, deriv f o = a := by
   unfold deriv
   rw [← le_iff_derivFamily fun _ : Unit => H]
-  exact ⟨fun h _ => h, fun h => h Unit.unit⟩
+  exact ⟨fun h _ => h, fun h ↦ h Unit.unit⟩
 
 theorem IsNormal.fp_iff_deriv {f} (H : IsNormal f) {a} : f a = a ↔ ∃ o, deriv f o = a := by
   rw [← H.le_iff_eq, H.le_iff_deriv]
@@ -584,7 +584,7 @@ theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * 
 alias nfp_add_eq_mul_omega := nfp_add_eq_mul_omega0
 
 theorem add_eq_right_iff_mul_omega0_le {a b : Ordinal} : a + b = b ↔ a * ω ≤ b := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← nfp_add_zero a, ← deriv_zero_right]
     cases' (isNormal_add_right a).fp_iff_deriv.1 h with c hc
     rw [← hc]
@@ -666,7 +666,7 @@ theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω 
   rcases eq_zero_or_pos a with ha | ha
   · rw [ha, zero_mul, zero_opow omega0_ne_zero, zero_dvd_iff]
     exact eq_comm
-  refine ⟨fun hab => ?_, fun h => ?_⟩
+  refine ⟨fun hab => ?_, fun h ↦ ?_⟩
   · rw [dvd_iff_mod_eq_zero]
     rw [← div_add_mod b (a ^ ω), mul_add, ← mul_assoc, ← opow_one_add, one_add_omega0,
       add_left_cancel] at hab

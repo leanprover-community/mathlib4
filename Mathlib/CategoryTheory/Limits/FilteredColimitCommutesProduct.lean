@@ -178,7 +178,7 @@ instance [HasProducts.{w} C] [HasFilteredColimitsOfSize.{w, w} C] [IsIPC.{w} C] 
   refine ⟨fun β I _ _ F => ?_⟩
   suffices ∀ d, IsIso ((colimitPointwiseProductToProductColimit F).app d) from
     NatIso.isIso_of_isIso_app _
-  exact fun d => colimitPointwiseProductToProductColimit_app F d ▸ inferInstance
+  exact fun d ↦ colimitPointwiseProductToProductColimit_app F d ▸ inferInstance
 
 end functorCategory
 

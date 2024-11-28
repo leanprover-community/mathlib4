@@ -111,7 +111,7 @@ theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     funext i
     apply extend_eq _ (h i)
   · cases' not_forall.1 h with i hi
-    exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
+    exact le_trans (le_iInf fun h ↦ hi.elim h) (ENNReal.le_tsum i)
 
 end Subadditive
 

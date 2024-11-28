@@ -26,7 +26,7 @@ variable [LinearOrderedSemifield α] {l : Filter β} {f : β → α} {r c : α} 
 if and only if `f` tends to infinity along the same filter. -/
 theorem tendsto_const_mul_atTop_of_pos (hr : 0 < r) :
     Tendsto (fun x => r * f x) l atTop ↔ Tendsto f l atTop :=
-  ⟨fun h => h.atTop_of_const_mul hr, fun h =>
+  ⟨fun h ↦ h.atTop_of_const_mul hr, fun h =>
     Tendsto.atTop_of_const_mul (inv_pos.2 hr) <| by simpa only [inv_mul_cancel_left₀ hr.ne'] ⟩
 
 /-- If `r` is a positive constant, `fun x ↦ f x * r` tends to infinity along a filter
@@ -87,7 +87,7 @@ theorem tendsto_const_mul_pow_atTop (hn : n ≠ 0) (hc : 0 < c) :
 
 theorem tendsto_const_mul_pow_atTop_iff :
     Tendsto (fun x => c * x ^ n) atTop atTop ↔ n ≠ 0 ∧ 0 < c := by
-  refine ⟨fun h => ⟨?_, ?_⟩, fun h => tendsto_const_mul_pow_atTop h.1 h.2⟩
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ tendsto_const_mul_pow_atTop h.1 h.2⟩
   · rintro rfl
     simp only [pow_zero, not_tendsto_const_atTop] at h
   · rcases ((h.eventually_gt_atTop 0).and (eventually_ge_atTop 0)).exists with ⟨k, hck, hk⟩

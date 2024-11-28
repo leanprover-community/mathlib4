@@ -220,11 +220,11 @@ theorem sbtw_asymm {a b c : α} (h : sbtw a b c) : ¬sbtw c b a :=
 
 alias SBtw.sbtw.not_sbtw := sbtw_asymm
 
-theorem sbtw_irrefl_left_right {a b : α} : ¬sbtw a b a := fun h => h.not_btw h.btw
+theorem sbtw_irrefl_left_right {a b : α} : ¬sbtw a b a := fun h ↦ h.not_btw h.btw
 
-theorem sbtw_irrefl_left {a b : α} : ¬sbtw a a b := fun h => sbtw_irrefl_left_right h.cyclic_left
+theorem sbtw_irrefl_left {a b : α} : ¬sbtw a a b := fun h ↦ sbtw_irrefl_left_right h.cyclic_left
 
-theorem sbtw_irrefl_right {a b : α} : ¬sbtw a b b := fun h => sbtw_irrefl_left_right h.cyclic_right
+theorem sbtw_irrefl_right {a b : α} : ¬sbtw a b b := fun h ↦ sbtw_irrefl_left_right h.cyclic_right
 
 theorem sbtw_irrefl (a : α) : ¬sbtw a a a :=
   sbtw_irrefl_left_right

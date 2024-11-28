@@ -107,7 +107,7 @@ theorem grade_strictMono : StrictMono (grade 𝕆 : α → 𝕆) :=
   GradeOrder.grade_strictMono
 
 theorem covBy_iff_lt_covBy_grade : a ⋖ b ↔ a < b ∧ grade 𝕆 a ⋖ grade 𝕆 b :=
-  ⟨fun h => ⟨h.1, h.grade _⟩,
+  ⟨fun h ↦ ⟨h.1, h.grade _⟩,
     And.imp_right fun h _ ha hb => h.2 (grade_strictMono ha) <| grade_strictMono hb⟩
 
 end GradeOrder
@@ -174,7 +174,7 @@ theorem grade_ne_grade_iff : grade 𝕆 a ≠ grade 𝕆 b ↔ a ≠ b :=
   grade_injective.ne_iff
 
 theorem grade_covBy_grade_iff : grade 𝕆 a ⋖ grade 𝕆 b ↔ a ⋖ b :=
-  (covBy_iff_lt_covBy_grade.trans <| and_iff_right_of_imp fun h => grade_lt_grade_iff.1 h.1).symm
+  (covBy_iff_lt_covBy_grade.trans <| and_iff_right_of_imp fun h ↦ grade_lt_grade_iff.1 h.1).symm
 
 end LinearOrder
 

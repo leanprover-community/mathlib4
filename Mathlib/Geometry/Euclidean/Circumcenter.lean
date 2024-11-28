@@ -499,7 +499,7 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
   classical
   have h : univ = insert circumcenterIndex (univ.map (pointIndexEmbedding n)) := by
     ext x
-    refine ⟨fun h => ?_, fun _ => mem_univ _⟩
+    refine ⟨fun h ↦ ?_, fun _ => mem_univ _⟩
     cases' x with i
     · exact mem_insert_of_mem (mem_map_of_mem _ (mem_univ i))
     · exact mem_insert_self _ _
@@ -556,7 +556,7 @@ theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simp
       (by simp [pointWeightsWithCircumcenter]) ?_
   intro i hi hn
   cases i
-  · have h : _ ≠ i := fun h => hn (h ▸ rfl)
+  · have h : _ ≠ i := fun h ↦ hn (h ▸ rfl)
     simp [pointWeightsWithCircumcenter, h]
   · rfl
 

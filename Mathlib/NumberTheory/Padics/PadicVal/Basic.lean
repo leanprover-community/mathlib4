@@ -225,7 +225,7 @@ theorem one_le_padicValNat_of_dvd {n : ℕ} [hp : Fact p.Prime] (hn : 0 < n) (di
 
 theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     p ∣ n ↔ padicValNat p n ≠ 0 :=
-  ⟨fun h => one_le_iff_ne_zero.mp (one_le_padicValNat_of_dvd hn0.bot_lt h), fun h =>
+  ⟨fun h ↦ one_le_iff_ne_zero.mp (one_le_padicValNat_of_dvd hn0.bot_lt h), fun h =>
     Classical.not_not.1 (mt padicValNat.eq_zero_of_not_dvd h)⟩
 
 end padicValNat
@@ -344,8 +344,8 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
 theorem min_le_padicValRat_add {q r : ℚ} (hqr : q + r ≠ 0) :
     min (padicValRat p q) (padicValRat p r) ≤ padicValRat p (q + r) :=
   (le_total (padicValRat p q) (padicValRat p r)).elim
-  (fun h => by rw [min_eq_left h]; exact le_padicValRat_add_of_le hqr h)
-  (fun h => by rw [min_eq_right h, add_comm]; exact le_padicValRat_add_of_le (by rwa [add_comm]) h)
+  (fun h ↦ by rw [min_eq_left h]; exact le_padicValRat_add_of_le hqr h)
+  (fun h ↦ by rw [min_eq_right h, add_comm]; exact le_padicValRat_add_of_le (by rwa [add_comm]) h)
 
 /-- Ultrametric property of a p-adic valuation. -/
 lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)

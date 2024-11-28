@@ -140,7 +140,7 @@ theorem isMittagLeffler_iff_eventualRange :
     F.IsMittagLeffler ↔ ∀ j : J, ∃ (i : _) (f : i ⟶ j), F.eventualRange j = range (F.map f) :=
   forall_congr' fun _ =>
     exists₂_congr fun _ _ =>
-      ⟨fun h => (iInter₂_subset _ _).antisymm <| subset_iInter₂ h, fun h => h ▸ iInter₂_subset⟩
+      ⟨fun h ↦ (iInter₂_subset _ _).antisymm <| subset_iInter₂ h, fun h ↦ h ▸ iInter₂_subset⟩
 
 theorem IsMittagLeffler.subset_image_eventualRange (h : F.IsMittagLeffler) (f : j ⟶ i) :
     F.eventualRange i ⊆ F.map f '' F.eventualRange j := by

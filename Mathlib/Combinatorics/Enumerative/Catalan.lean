@@ -143,7 +143,7 @@ namespace Tree
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
 abbrev pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
-  (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
+  (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h ↦ by simpa using h⟩
 
 /-- A Finset of all trees with `n` nodes. See `mem_treesOfNodesEq` -/
 def treesOfNumNodesEq : ℕ → Finset (Tree Unit)

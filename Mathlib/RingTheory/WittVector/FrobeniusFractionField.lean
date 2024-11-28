@@ -237,7 +237,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
     dsimp at H
     refine (Eq.trans ?_ H).trans ?_ <;> ring
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
-    have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
+    have hq''' : q' ≠ 0 := fun h ↦ hq' (by simp [h])
     simpa only [Ne, map_zero] using
       (IsFractionRing.injective (𝕎 k) (FractionRing (𝕎 k))).ne hq'''
   rw [zpow_sub₀ (FractionRing.p_nonzero p k)]
@@ -253,7 +253,7 @@ theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha :
   refine Localization.induction_on a ?_
   rintro ⟨r, q, hq⟩ hrq
   have hq0 : q ≠ 0 := mem_nonZeroDivisors_iff_ne_zero.1 hq
-  have hr0 : r ≠ 0 := fun h => hrq (by simp [h])
+  have hr0 : r ≠ 0 := fun h ↦ hrq (by simp [h])
   obtain ⟨m, r', hr', rfl⟩ := exists_eq_pow_p_mul r hr0
   obtain ⟨n, q', hq', rfl⟩ := exists_eq_pow_p_mul q hq0
   let b := frobeniusRotation p hr' hq'

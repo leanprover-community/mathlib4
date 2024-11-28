@@ -445,7 +445,7 @@ variable [DecidableEq ι]
 and all other points to `0`. -/
 def single (i : ι) (b : β i) : Π₀ i, β i :=
   ⟨Pi.single i b,
-    Trunc.mk ⟨{i}, fun j => (Decidable.eq_or_ne j i).imp (by simp) fun h => Pi.single_eq_of_ne h _⟩⟩
+    Trunc.mk ⟨{i}, fun j => (Decidable.eq_or_ne j i).imp (by simp) fun h ↦ Pi.single_eq_of_ne h _⟩⟩
 
 theorem single_eq_pi_single {i b} : ⇑(single i b : Π₀ i, β i) = Pi.single i b :=
   rfl
@@ -1141,7 +1141,7 @@ def extendWith [∀ i, Zero (α i)] (a : α none) (f : Π₀ i, α (some i)) : �
       ⟨none ::ₘ Multiset.map some s.1, fun i =>
         Option.rec (Or.inl <| Multiset.mem_cons_self _ _)
           (fun i =>
-            (s.prop i).imp_left fun h => Multiset.mem_cons_of_mem <| Multiset.mem_map_of_mem _ h)
+            (s.prop i).imp_left fun h ↦ Multiset.mem_cons_of_mem <| Multiset.mem_map_of_mem _ h)
           i⟩
 
 @[simp]

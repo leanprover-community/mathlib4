@@ -107,7 +107,7 @@ def equivalenceRightToLeft (X : SimplicialObject.Augmented C) (F : Arrow C)
   right := G.right
   w := by
     have := G.w
-    apply_fun fun e => e.app (Opposite.op <| SimplexCategory.mk 0) at this
+    apply_fun fun e ↦ e.app (Opposite.op <| SimplexCategory.mk 0) at this
     simpa using this
 
 /-- A helper function used in defining the Čech adjunction. -/

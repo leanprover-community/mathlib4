@@ -147,7 +147,7 @@ theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 :
     exacts [sqrt_mul_self hy, sqrt_eq_zero_of_nonpos hx.le]
 
 theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y * y :=
-  ⟨fun h => by rw [← h, mul_self_sqrt hx], fun h => by rw [h, sqrt_mul_self hy]⟩
+  ⟨fun h ↦ by rw [← h, mul_self_sqrt hx], fun h ↦ by rw [h, sqrt_mul_self hy]⟩
 
 @[deprecated sqrt_eq_iff_mul_self_eq (since := "2024-08-25")]
 theorem sqrt_eq_iff_eq_mul_self (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y * y = x := by
@@ -211,7 +211,7 @@ theorem sqrt_le_left (hy : 0 ≤ y) : √x ≤ y ↔ x ≤ y ^ 2 := by
     Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
 
 theorem sqrt_le_iff : √x ≤ y ↔ 0 ≤ y ∧ x ≤ y ^ 2 := by
-  rw [← and_iff_right_of_imp fun h => (sqrt_nonneg x).trans h, and_congr_right_iff]
+  rw [← and_iff_right_of_imp fun h ↦ (sqrt_nonneg x).trans h, and_congr_right_iff]
   exact sqrt_le_left
 
 theorem sqrt_lt (hx : 0 ≤ x) (hy : 0 ≤ y) : √x < y ↔ x < y ^ 2 := by

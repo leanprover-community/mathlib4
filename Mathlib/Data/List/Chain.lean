@@ -118,7 +118,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
       ∀ (i : ℕ) (h : i < l.length - 1),
         R (get l ⟨i, by omega⟩) (get l ⟨i+1, by omega⟩)
-  | a, [] => iff_of_true (by simp) ⟨fun h => by simp at h, fun _ h => by simp at h⟩
+  | a, [] => iff_of_true (by simp) ⟨fun h ↦ by simp at h, fun _ h => by simp at h⟩
   | a, b :: t => by
     rw [chain_cons, @chain_iff_get _ _ t]
     constructor
@@ -161,7 +161,7 @@ theorem Chain'.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l : 
 theorem Chain'.iff_mem : ∀ {l : List α}, Chain' R l ↔ Chain' (fun x y => x ∈ l ∧ y ∈ l ∧ R x y) l
   | [] => Iff.rfl
   | _ :: _ =>
-    ⟨fun h => (Chain.iff_mem.1 h).imp fun _ _ ⟨h₁, h₂, h₃⟩ => ⟨h₁, mem_cons.2 (Or.inr h₂), h₃⟩,
+    ⟨fun h ↦ (Chain.iff_mem.1 h).imp fun _ _ ⟨h₁, h₂, h₃⟩ => ⟨h₁, mem_cons.2 (Or.inr h₂), h₃⟩,
       Chain'.imp fun _ _ h => h.2.2⟩
 
 @[simp]
@@ -237,7 +237,7 @@ theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?,
   | _ :: _, hl, H => hl.cons <| H _ rfl
 
 theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
-  ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
+  ⟨fun h ↦ ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
 
 theorem chain'_append :
     ∀ {l₁ l₂ : List α},

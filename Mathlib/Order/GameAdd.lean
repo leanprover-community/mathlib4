@@ -91,7 +91,7 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
     Acc (Prod.GameAdd rα rβ) (a, b) := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
-  refine Acc.intro _ fun h => ?_
+  refine Acc.intro _ fun h ↦ ?_
   rintro (⟨ra⟩ | ⟨rb⟩)
   exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
 

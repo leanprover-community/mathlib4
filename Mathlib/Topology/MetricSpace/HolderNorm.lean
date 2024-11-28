@@ -58,7 +58,7 @@ def MemHolder (r : ℝ≥0) (f : X → Y) : Prop := ∃ C, HolderWith C r f
 lemma HolderWith.memHolder {C : ℝ≥0} (hf : HolderWith C r f) : MemHolder r f := ⟨C, hf⟩
 
 @[simp] lemma eHolderNorm_lt_top : eHolderNorm r f < ∞ ↔ MemHolder r f := by
-  refine ⟨fun h => ?_,
+  refine ⟨fun h ↦ ?_,
     fun hf => let ⟨C, hC⟩ := hf; iInf_lt_top.2 ⟨C, iInf_lt_top.2 ⟨hC, coe_lt_top⟩⟩⟩
   simp_rw [eHolderNorm, iInf_lt_top] at h
   exact let ⟨C, hC, _⟩ := h; ⟨C, hC⟩

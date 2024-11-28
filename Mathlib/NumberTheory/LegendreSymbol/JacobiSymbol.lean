@@ -174,7 +174,7 @@ protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0
 
 /-- The symbol `J(a | b)` vanishes if and only if `b ≠ 0` and `a` and `b` are not coprime. -/
 theorem eq_zero_iff {a : ℤ} {b : ℕ} : J(a | b) = 0 ↔ b ≠ 0 ∧ a.gcd b ≠ 1 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rcases eq_or_ne b 0 with hb | hb
     · rw [hb, zero_right] at h; cases h
     exact ⟨hb, mt jacobiSym.ne_zero <| Classical.not_not.2 h⟩, fun ⟨hb, h⟩ => by
@@ -393,7 +393,7 @@ theorem eq_iff_eq {m n : ℕ} (hm : Odd m) (hn : Odd n) (x y : ℤ) :
       ⟨fun h' =>
         let h := h'.symm
         ?_,
-        fun h => ?_⟩ <;>
+        fun h ↦ ?_⟩ <;>
     rw [h, ← mul_assoc, ← pow_two, sq_eq_one hm hn, one_mul]
 
 end qrSign

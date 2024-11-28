@@ -306,7 +306,7 @@ theorem comap_top (f : F) : (⊤ : Submonoid N).comap f = ⊤ :=
 
 @[to_additive (attr := simp)]
 theorem map_id (S : Submonoid M) : S.map (MonoidHom.id M) = S :=
-  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
+  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h ↦ ⟨_, h, rfl⟩⟩
 
 section GaloisCoinsertion
 
@@ -1016,7 +1016,7 @@ variable [SMul M' α] {S : Submonoid M'}
 lemma mk_smul (g : M') (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
 
 instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
-  ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
+  ⟨fun h ↦ Subtype.ext <| eq_of_smul_eq_smul h⟩
 
 end SMul
 end MulOneClass

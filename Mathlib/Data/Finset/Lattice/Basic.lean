@@ -75,7 +75,7 @@ instance : Inter (Finset α) :=
 instance : Lattice (Finset α) :=
   { Finset.partialOrder with
     sup := (· ∪ ·)
-    sup_le := fun _ _ _ hs ht _ ha => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
+    sup_le := fun _ _ _ hs ht _ ha => (mem_ndunion.1 ha).elim (fun h ↦ hs h) fun h ↦ ht h
     le_sup_left := fun _ _ _ h => mem_ndunion.2 <| Or.inl h
     le_sup_right := fun _ _ _ h => mem_ndunion.2 <| Or.inr h
     inf := (· ∩ ·)
@@ -111,7 +111,7 @@ theorem mem_union_right (s : Finset α) (h : a ∈ t) : a ∈ s ∪ t :=
   mem_union.2 <| Or.inr h
 
 theorem forall_mem_union {p : α → Prop} : (∀ a ∈ s ∪ t, p a) ↔ (∀ a ∈ s, p a) ∧ ∀ a ∈ t, p a :=
-  ⟨fun h => ⟨fun a ↦ h a ∘ mem_union_left _, fun b ↦ h b ∘ mem_union_right _⟩,
+  ⟨fun h ↦ ⟨fun a ↦ h a ∘ mem_union_left _, fun b ↦ h b ∘ mem_union_right _⟩,
    fun h _ab hab => (mem_union.mp hab).elim (h.1 _) (h.2 _)⟩
 
 theorem not_mem_union : a ∉ s ∪ t ↔ a ∉ s ∧ a ∉ t := by rw [mem_union, not_or]

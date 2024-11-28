@@ -45,7 +45,7 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
       (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
         Nat.prime_iff_prime_int.1 hp.out) (fun {i hi} => ?_) ?_
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
-    refine (cyclotomic.monic p ℤ).comp (monic_X_add_C 1) fun h => ?_
+    refine (cyclotomic.monic p ℤ).comp (monic_X_add_C 1) fun h ↦ ?_
     rw [natDegree_X_add_C] at h
     exact zero_ne_one h.symm
   · rw [cyclotomic_prime, geom_sum_X_comp_X_add_one_eq_sum, ← lcoeff_apply, map_sum]
@@ -78,7 +78,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
       (Ideal.IsPrime.ne_top <| (Ideal.span_singleton_prime (mod_cast hp.out.ne_zero)).2 <|
         Nat.prime_iff_prime_int.1 hp.out) ?_ ?_
   · rw [show (X + 1 : ℤ[X]) = X + C 1 by simp]
-    refine (cyclotomic.monic _ ℤ).comp (monic_X_add_C 1) fun h => ?_
+    refine (cyclotomic.monic _ ℤ).comp (monic_X_add_C 1) fun h ↦ ?_
     rw [natDegree_X_add_C] at h
     exact zero_ne_one h.symm
   · induction' n with n hn
@@ -303,7 +303,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         ← (hf (k + P.natDegree - 1) _).2, mul_smul_comm]
       rw [(minpoly.monic hBint).natDegree_map, add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
       · exact Nat.zero_le _
-      · refine one_le_iff_ne_zero.2 fun h => ?_
+      · refine one_le_iff_ne_zero.2 fun h ↦ ?_
         rw [h] at hk
         simp at hk
 
@@ -347,7 +347,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       rw [(minpoly.monic hBint).natDegree_map (algebraMap R L)]
       rw [add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
       · exact _root_.zero_le _
-      · refine one_le_iff_ne_zero.2 fun h => ?_
+      · refine one_le_iff_ne_zero.2 fun h ↦ ?_
         rw [h] at hk
         simp at hk
     obtain ⟨r, hr⟩ := isIntegral_iff.1 (isIntegral_norm K hintsum)

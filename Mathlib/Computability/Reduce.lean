@@ -53,7 +53,7 @@ theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Pri
     {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ q → q ≤₀ r → p ≤₀ r
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁,
-      fun a ↦ ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
+      fun a ↦ ⟨fun h ↦ by erw [← h₂, ← h₁]; assumption, fun h ↦ by rwa [h₁, h₂]⟩⟩
 
 theorem reflexive_manyOneReducible {α} [Primcodable α] : Reflexive (@ManyOneReducible α α _ _) :=
   manyOneReducible_refl
@@ -84,7 +84,7 @@ theorem OneOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Prim
     {q : β → Prop} {r : γ → Prop} : p ≤₁ q → q ≤₁ r → p ≤₁ r
   | ⟨f, c₁, i₁, h₁⟩, ⟨g, c₂, i₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁, i₂.comp i₁, fun a =>
-      ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
+      ⟨fun h ↦ by erw [← h₂, ← h₁]; assumption, fun h ↦ by rwa [h₁, h₂]⟩⟩
 
 theorem OneOneReducible.to_many_one {α β} [Primcodable α] [Primcodable β] {p : α → Prop}
     {q : β → Prop} : p ≤₁ q → p ≤₀ q
@@ -283,7 +283,7 @@ theorem manyOneReducible_toNat {p : Set α} : p ≤₀ toNat p :=
 
 @[simp]
 theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} : toNat p ≤₀ toNat q ↔ p ≤₀ q :=
-  ⟨fun h => manyOneReducible_toNat.trans (h.trans toNat_manyOneReducible), fun h =>
+  ⟨fun h ↦ manyOneReducible_toNat.trans (h.trans toNat_manyOneReducible), fun h =>
     toNat_manyOneReducible.trans (h.trans manyOneReducible_toNat)⟩
 
 @[simp]

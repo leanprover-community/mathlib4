@@ -63,7 +63,7 @@ def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = 
   toFun m :=
     { toFun := f m
       map_add' := H3 m
-      map_smul' := fun c => H4 c m }
+      map_smul' := fun c ↦ H4 c m }
   map_add' m₁ m₂ := LinearMap.ext <| H1 m₁ m₂
   map_smul' c m := LinearMap.ext <| H2 c m
 

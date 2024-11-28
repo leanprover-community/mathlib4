@@ -131,7 +131,7 @@ variable (𝒜 k)
 theorem sized_falling : (falling k 𝒜 : Set (Finset α)).Sized k := fun _ hs => (mem_falling.1 hs).2
 
 theorem slice_subset_falling : 𝒜 # k ⊆ falling k 𝒜 := fun s hs =>
-  mem_falling.2 <| (mem_slice.1 hs).imp_left fun h => ⟨s, h, Subset.refl _⟩
+  mem_falling.2 <| (mem_slice.1 hs).imp_left fun h ↦ ⟨s, h, Subset.refl _⟩
 
 theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
   subset_singleton_iff'.2 fun _ ht => card_eq_zero.1 <| sized_falling _ _ ht

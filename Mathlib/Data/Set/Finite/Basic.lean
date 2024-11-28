@@ -602,8 +602,8 @@ theorem Infinite.nontrivial {s : Set α} (hs : s.Infinite) : s.Nontrivial :=
 
 theorem finite_preimage_inl_and_inr {s : Set (α ⊕ β)} :
     (Sum.inl ⁻¹' s).Finite ∧ (Sum.inr ⁻¹' s).Finite ↔ s.Finite :=
-  ⟨fun h => image_preimage_inl_union_image_preimage_inr s ▸ (h.1.image _).union (h.2.image _),
-    fun h => ⟨h.preimage Sum.inl_injective.injOn, h.preimage Sum.inr_injective.injOn⟩⟩
+  ⟨fun h ↦ image_preimage_inl_union_image_preimage_inr s ▸ (h.1.image _).union (h.2.image _),
+    fun h ↦ ⟨h.preimage Sum.inl_injective.injOn, h.preimage Sum.inr_injective.injOn⟩⟩
 
 theorem exists_finite_iff_finset {p : Set α → Prop} :
     (∃ s : Set α, s.Finite ∧ p s) ↔ ∃ s : Finset α, p ↑s :=
@@ -633,14 +633,14 @@ instance Finite.inhabited : Inhabited { s : Set α // s.Finite } :=
 
 @[simp]
 theorem finite_union {s t : Set α} : (s ∪ t).Finite ↔ s.Finite ∧ t.Finite :=
-  ⟨fun h => ⟨h.subset subset_union_left, h.subset subset_union_right⟩, fun ⟨hs, ht⟩ =>
+  ⟨fun h ↦ ⟨h.subset subset_union_left, h.subset subset_union_right⟩, fun ⟨hs, ht⟩ =>
     hs.union ht⟩
 
 theorem finite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) : (f '' s).Finite ↔ s.Finite :=
-  ⟨fun h => h.of_finite_image hi, Finite.image _⟩
+  ⟨fun h ↦ h.of_finite_image hi, Finite.image _⟩
 
 theorem univ_finite_iff_nonempty_fintype : (univ : Set α).Finite ↔ Nonempty (Fintype α) :=
-  ⟨fun h => ⟨fintypeOfFiniteUniv h⟩, fun ⟨_i⟩ => finite_univ⟩
+  ⟨fun h ↦ ⟨fintypeOfFiniteUniv h⟩, fun ⟨_i⟩ => finite_univ⟩
 
 -- Porting note: moved `@[simp]` to `Set.toFinset_singleton` because `simp` can now simplify LHS
 theorem Finite.toFinset_singleton {a : α} (ha : ({a} : Set α).Finite := finite_singleton _) :
@@ -657,7 +657,7 @@ theorem Finite.toFinset_insert' [DecidableEq α] {a : α} {s : Set α} (hs : s.F
   Finite.toFinset_insert _
 
 theorem finite_option {s : Set (Option α)} : s.Finite ↔ { x : α | some x ∈ s }.Finite :=
-  ⟨fun h => h.preimage_embedding Embedding.some, fun h =>
+  ⟨fun h ↦ h.preimage_embedding Embedding.some, fun h =>
     ((h.image some).insert none).subset fun x =>
       x.casesOn (fun _ => Or.inl rfl) fun _ hx => Or.inr <| mem_image_of_mem _ hx⟩
 
@@ -756,7 +756,7 @@ theorem card_le_card {s t : Set α} [Fintype s] [Fintype t] (hsub : s ⊆ t) :
 
 theorem eq_of_subset_of_card_le {s t : Set α} [Fintype s] [Fintype t] (hsub : s ⊆ t)
     (hcard : Fintype.card t ≤ Fintype.card s) : s = t :=
-  (eq_or_ssubset_of_subset hsub).elim id fun h => absurd hcard <| not_le_of_lt <| card_lt_card h
+  (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_lt <| card_lt_card h
 
 theorem card_range_of_injective [Fintype α] {f : α → β} (hf : Injective f) [Fintype (range f)] :
     Fintype.card (range f) = Fintype.card α :=

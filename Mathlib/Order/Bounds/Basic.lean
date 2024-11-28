@@ -311,7 +311,7 @@ theorem BddAbove.union [IsDirected α (· ≤ ·)] {s t : Set α} :
 /-- In a directed order, the union of two sets is bounded above if and only if both sets are. -/
 theorem bddAbove_union [IsDirected α (· ≤ ·)] {s t : Set α} :
     BddAbove (s ∪ t) ↔ BddAbove s ∧ BddAbove t :=
-  ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
+  ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 
 /-- In a codirected order, the union of bounded below sets is bounded below. -/
@@ -329,7 +329,7 @@ then `a ⊔ b` is the least upper bound of `s ∪ t`. -/
 theorem IsLUB.union [SemilatticeSup γ] {a b : γ} {s t : Set γ} (hs : IsLUB s a) (ht : IsLUB t b) :
     IsLUB (s ∪ t) (a ⊔ b) :=
   ⟨fun _ h =>
-    h.casesOn (fun h => le_sup_of_le_left <| hs.left h) fun h => le_sup_of_le_right <| ht.left h,
+    h.casesOn (fun h ↦ le_sup_of_le_left <| hs.left h) fun h ↦ le_sup_of_le_right <| ht.left h,
     fun _ hc =>
     sup_le (hs.right fun _ hd => hc <| Or.inl hd) (ht.right fun _ hd => hc <| Or.inr hd)⟩
 
@@ -852,13 +852,13 @@ theorem IsLeast.unique (Ha : IsLeast s a) (Hb : IsLeast s b) : a = b :=
   le_antisymm (Ha.right Hb.left) (Hb.right Ha.left)
 
 theorem IsLeast.isLeast_iff_eq (Ha : IsLeast s a) : IsLeast s b ↔ a = b :=
-  Iff.intro Ha.unique fun h => h ▸ Ha
+  Iff.intro Ha.unique fun h ↦ h ▸ Ha
 
 theorem IsGreatest.unique (Ha : IsGreatest s a) (Hb : IsGreatest s b) : a = b :=
   le_antisymm (Hb.right Ha.left) (Ha.right Hb.left)
 
 theorem IsGreatest.isGreatest_iff_eq (Ha : IsGreatest s a) : IsGreatest s b ↔ a = b :=
-  Iff.intro Ha.unique fun h => h ▸ Ha
+  Iff.intro Ha.unique fun h ↦ h ▸ Ha
 
 theorem IsLUB.unique (Ha : IsLUB s a) (Hb : IsLUB s b) : a = b :=
   IsLeast.unique Ha Hb

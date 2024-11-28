@@ -88,7 +88,7 @@ namespace haar
   It is defined to be 0 if no finite number of translates cover `K`. -/
 @[to_additive addIndex "additive version of `MeasureTheory.Measure.haar.index`"]
 noncomputable def index (K V : Set G) : ℕ :=
-  sInf <| Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V }
+  sInf <| Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h ↦ g * h) ⁻¹' V }
 
 @[to_additive addIndex_empty]
 theorem index_empty {V : Set G} : index ∅ V = 0 := by
@@ -147,12 +147,12 @@ variable [TopologicalGroup G]
 "If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined, there is
 a finite set `t` satisfying the desired properties."]
 theorem index_defined {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
-    ∃ n : ℕ, n ∈ Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V } := by
+    ∃ n : ℕ, n ∈ Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h ↦ g * h) ⁻¹' V } := by
   rcases compact_covered_by_mul_left_translates hK hV with ⟨t, ht⟩; exact ⟨t.card, t, ht, rfl⟩
 
 @[to_additive addIndex_elim]
 theorem index_elim {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
-    ∃ t : Finset G, (K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V) ∧ Finset.card t = index K V := by
+    ∃ t : Finset G, (K ⊆ ⋃ g ∈ t, (fun h ↦ g * h) ⁻¹' V) ∧ Finset.card t = index K V := by
   have := Nat.sInf_mem (index_defined hK hV); rwa [mem_image] at this
 
 @[to_additive le_addIndex_mul]
@@ -210,7 +210,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   have :
     ∀ K : Set G,
-      (K ⊆ ⋃ g ∈ s, (fun h => g * h) ⁻¹' V) →
+      (K ⊆ ⋃ g ∈ s, (fun h ↦ g * h) ⁻¹' V) →
         index K V ≤ (s.filter fun g => ((fun h : G => g * h) ⁻¹' V ∩ K).Nonempty).card := by
     intro K hK; apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
     intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
@@ -239,7 +239,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
 
 @[to_additive add_left_addIndex_le]
 theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (interior V).Nonempty)
-    (g : G) : index ((fun h => g * h) '' K) V ≤ index K V := by
+    (g : G) : index ((fun h ↦ g * h) '' K) V ≤ index K V := by
   rcases index_elim hK hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   apply Nat.sInf_le; rw [mem_image]
   refine ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, ?_, Finset.card_map _⟩
@@ -252,7 +252,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
 
 @[to_additive is_left_invariant_addIndex]
 theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set G}
-    (hV : (interior V).Nonempty) : index ((fun h => g * h) '' K) V = index K V := by
+    (hV : (interior V).Nonempty) : index ((fun h ↦ g * h) '' K) V = index K V := by
   refine le_antisymm (mul_left_index_le hK hV g) ?_
   convert mul_left_index_le (hK.image <| continuous_mul_left g) hV g⁻¹
   rw [image_image]; symm; convert image_id' _ with h; apply inv_mul_cancel_left
@@ -658,7 +658,7 @@ defined by `K₀` iff `μ K₀ = 1`. -/
 theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SigmaFinite μ]
     [IsMulLeftInvariant μ] :
     haarMeasure K₀ = μ ↔ μ K₀ = 1 :=
-  ⟨fun h => h.symm ▸ haarMeasure_self, fun h => by rw [haarMeasure_unique μ K₀, h, one_smul]⟩
+  ⟨fun h ↦ h.symm ▸ haarMeasure_self, fun h ↦ by rw [haarMeasure_unique μ K₀, h, one_smul]⟩
 
 example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : PositiveCompacts G) :
     μ = μ K₀.1 • haarMeasure K₀ :=

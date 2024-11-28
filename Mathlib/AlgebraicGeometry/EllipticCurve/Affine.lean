@@ -379,7 +379,7 @@ lemma equation_neg_iff (x y : R) : W.Equation x (W.negY x y) ↔ W.Equation x y 
 lemma nonsingular_neg_iff (x y : R) : W.Nonsingular x (W.negY x y) ↔ W.Nonsingular x y := by
   rw [nonsingular_iff, equation_neg_iff, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
   exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
-    not_congr <| and_congr_left fun h => by rw [← h]
+    not_congr <| and_congr_left fun h ↦ by rw [← h]
 
 lemma equation_add_iff (x₁ x₂ y₁ L : R) :
     W.Equation (W.addX x₁ x₂ L) (W.negAddY x₁ x₂ y₁ L) ↔
@@ -692,11 +692,11 @@ lemma add_self_of_Y_ne' {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y
 
 @[simp]
 lemma add_of_X_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun h => (hx h).elim) :=
+    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun h ↦ (hx h).elim) :=
   add_of_imp fun h ↦ (hx h).elim
 
 lemma add_of_X_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
-    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun h => (hx h).elim) :=
+    (hx : x₁ ≠ x₂) : some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun h ↦ (hx h).elim) :=
   add_of_X_ne hx
 
 @[deprecated (since := "2024-06-03")] alias some_add_some_of_Yeq := add_of_Y_eq
@@ -789,10 +789,10 @@ lemma map_slope {F : Type u} [Field F] (W : Affine F) {K : Type v} [Field K] (f 
   by_cases hx : x₁ = x₂
   · by_cases hy : y₁ = W.negY x₂ y₂
     · rw [slope_of_Y_eq (congr_arg f hx) <| by rw [hy, map_negY], slope_of_Y_eq hx hy, map_zero]
-    · rw [slope_of_Y_ne (congr_arg f hx) <| W.map_negY f x₂ y₂ ▸ fun h => hy <| f.injective h,
+    · rw [slope_of_Y_ne (congr_arg f hx) <| W.map_negY f x₂ y₂ ▸ fun h ↦ hy <| f.injective h,
         map_negY, slope_of_Y_ne hx hy]
       map_simp
-  · rw [slope_of_X_ne fun h => hx <| f.injective h, slope_of_X_ne hx]
+  · rw [slope_of_X_ne fun h ↦ hx <| f.injective h, slope_of_X_ne hx]
     map_simp
 
 end Map

@@ -322,7 +322,7 @@ theorem isPreconnected_closed_iff {s : Set α} :
 
 theorem Topology.IsInducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α → β}
     (hf : IsInducing f) : IsPreconnected (f '' s) ↔ IsPreconnected s := by
-  refine ⟨fun h => ?_, fun h => h.image _ hf.continuous.continuousOn⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.image _ hf.continuous.continuousOn⟩
   rintro u v hu' hv' huv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩
   rcases hf.isOpen_iff.1 hu' with ⟨u, hu, rfl⟩
   rcases hf.isOpen_iff.1 hv' with ⟨v, hv, rfl⟩
@@ -433,7 +433,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
     simpa using hI
   · rw [Finset.piecewise_insert] at hI
     have := I.piecewise_mem_set_pi hfs hgs
-    refine (hsuv this).elim ihI fun h => ?_
+    refine (hsuv this).elim ihI fun h ↦ ?_
     set S := update (I.piecewise f g) i '' s i
     have hsub : S ⊆ pi univ s := by
       refine image_subset_iff.2 fun z hz => ?_
@@ -544,7 +544,7 @@ theorem connectedComponent_eq {x y : α} (h : y ∈ connectedComponent x) :
 
 theorem connectedComponent_eq_iff_mem {x y : α} :
     connectedComponent x = connectedComponent y ↔ x ∈ connectedComponent y :=
-  ⟨fun h => h ▸ mem_connectedComponent, fun h => (connectedComponent_eq h).symm⟩
+  ⟨fun h ↦ h ▸ mem_connectedComponent, fun h ↦ (connectedComponent_eq h).symm⟩
 
 theorem connectedComponentIn_eq {x y : α} {F : Set α} (h : y ∈ connectedComponentIn F x) :
     connectedComponentIn F x = connectedComponentIn F y := by
@@ -711,7 +711,7 @@ theorem Subtype.connectedSpace {s : Set α} (h : IsConnected s) : ConnectedSpace
   toNonempty := h.nonempty.to_subtype
 
 theorem isPreconnected_iff_preconnectedSpace {s : Set α} : IsPreconnected s ↔ PreconnectedSpace s :=
-  ⟨Subtype.preconnectedSpace, fun h => by
+  ⟨Subtype.preconnectedSpace, fun h ↦ by
     simpa using isPreconnected_univ.image ((↑) : s → α) continuous_subtype_val.continuousOn⟩
 
 theorem isConnected_iff_connectedSpace {s : Set α} : IsConnected s ↔ ConnectedSpace s :=

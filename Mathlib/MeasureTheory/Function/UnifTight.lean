@@ -136,7 +136,7 @@ end UnifTight
 /-- If two functions agree a.e., then one is tight iff the other is tight. -/
 theorem unifTight_congr_ae {g : ι → α → β} (hfg : ∀ n, f n =ᵐ[μ] g n) :
     UnifTight f p μ ↔ UnifTight g p μ :=
-  ⟨fun h => h.aeeq hfg, fun h => h.aeeq fun i => (hfg i).symm⟩
+  ⟨fun h ↦ h.aeeq hfg, fun h ↦ h.aeeq fun i => (hfg i).symm⟩
 
 /-- A constant sequence is tight. -/
 theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : Memℒp g p μ) :

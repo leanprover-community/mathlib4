@@ -343,7 +343,7 @@ instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).No
 @[to_additive]
 theorem normalizer_eq_top : H.normalizer = ⊤ ↔ H.Normal :=
   eq_top_iff.trans
-    ⟨fun h => ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
+    ⟨fun h ↦ ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
       ⟨fun hb => h.conj_mem b hb a, fun hb => by rwa [h.mem_comm_iff, inv_mul_cancel_left] at hb⟩⟩
 
 @[to_additive]

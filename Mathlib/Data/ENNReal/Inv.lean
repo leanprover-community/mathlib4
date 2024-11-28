@@ -380,7 +380,7 @@ theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x
 
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
-    (zero_le r).eq_or_lt.elim (fun h => h ▸ zero_le _) fun h0 => h r h0 hr
+    (zero_le r).eq_or_lt.elim (fun h ↦ h ▸ zero_le _) fun h0 => h r h0 hr
 
 theorem eq_top_of_forall_nnreal_le {x : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x) : x = ∞ :=
   top_unique <| le_of_forall_nnreal_lt fun r _ => h r
@@ -398,7 +398,7 @@ theorem mul_div_le : a * (b / a) ≤ b :=
   mul_le_of_le_div' le_rfl
 
 theorem eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) : b = c / a ↔ a * b = c :=
-  ⟨fun h => by rw [h, ENNReal.mul_div_cancel' ha ha'], fun h => by
+  ⟨fun h ↦ by rw [h, ENNReal.mul_div_cancel' ha ha'], fun h ↦ by
     rw [← h, mul_div_assoc, ENNReal.mul_div_cancel' ha ha']⟩
 
 protected theorem div_eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) (hb : b ≠ 0) (hb' : b ≠ ∞) :
@@ -408,7 +408,7 @@ protected theorem div_eq_div_iff (ha : a ≠ 0) (ha' : a ≠ ∞) (hb : b ≠ 0)
   rw [← eq_div_iff hb hb', mul_div_assoc, eq_comm]
 
 theorem div_eq_one_iff {a b : ℝ≥0∞} (hb₀ : b ≠ 0) (hb₁ : b ≠ ∞) : a / b = 1 ↔ a = b :=
-  ⟨fun h => by rw [← (eq_div_iff hb₀ hb₁).mp h.symm, mul_one], fun h =>
+  ⟨fun h ↦ by rw [← (eq_div_iff hb₀ hb₁).mp h.symm, mul_one], fun h =>
     h.symm ▸ ENNReal.div_self hb₀ hb₁⟩
 
 theorem inv_two_add_inv_two : (2 : ℝ≥0∞)⁻¹ + 2⁻¹ = 1 := by

@@ -127,7 +127,7 @@ theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
 
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
     IntegrableOn (fun x : ℝ => exp (-b * x ^ 2)) (Ioi 0) ↔ 0 < b := by
-  refine ⟨fun h => ?_, fun h => (integrable_exp_neg_mul_sq h).integrableOn⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ (integrable_exp_neg_mul_sq h).integrableOn⟩
   by_contra! hb
   have : ∫⁻ _ : ℝ in Ioi 0, 1 ≤ ∫⁻ x : ℝ in Ioi 0, ‖exp (-b * x ^ 2)‖₊ := by
     apply lintegral_mono (fun x ↦ _)
@@ -138,7 +138,7 @@ theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
 
 theorem integrable_exp_neg_mul_sq_iff {b : ℝ} :
     (Integrable fun x : ℝ => exp (-b * x ^ 2)) ↔ 0 < b :=
-  ⟨fun h => integrableOn_Ioi_exp_neg_mul_sq_iff.mp h.integrableOn, integrable_exp_neg_mul_sq⟩
+  ⟨fun h ↦ integrableOn_Ioi_exp_neg_mul_sq_iff.mp h.integrableOn, integrable_exp_neg_mul_sq⟩
 
 theorem integrable_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) :
     Integrable fun x : ℝ => x * exp (-b * x ^ 2) := by
@@ -237,10 +237,10 @@ theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
     ContinuousAt (fun c : ℂ => ∫ x : ℝ, cexp (-c * (x : ℂ) ^ 2)) b := by
   let f : ℂ → ℝ → ℂ := fun (c : ℂ) (x : ℝ) => cexp (-c * (x : ℂ) ^ 2)
   obtain ⟨d, hd, hd'⟩ := exists_between hb
-  have f_meas : ∀ c : ℂ, AEStronglyMeasurable (f c) volume := fun c => by
+  have f_meas : ∀ c : ℂ, AEStronglyMeasurable (f c) volume := fun c ↦ by
     apply Continuous.aestronglyMeasurable
     exact Complex.continuous_exp.comp (continuous_const.mul (continuous_ofReal.pow 2))
-  have f_cts : ∀ x : ℝ, ContinuousAt (fun c => f c x) b := fun x =>
+  have f_cts : ∀ x : ℝ, ContinuousAt (fun c ↦ f c x) b := fun x =>
     (Complex.continuous_exp.comp (continuous_id'.neg.mul continuous_const)).continuousAt
   have f_le_bd : ∀ᶠ c : ℂ in 𝓝 b, ∀ᵐ x : ℝ, ‖f c x‖ ≤ exp (-d * x ^ 2) := by
     refine eventually_of_mem ((continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds hd') ?_

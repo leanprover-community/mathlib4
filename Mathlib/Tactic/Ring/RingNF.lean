@@ -160,7 +160,7 @@ partial def M.run
   x nctx rctx s
 
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
-initialize ringCleanupRef.set fun e => do
+initialize ringCleanupRef.set fun e ↦ do
   M.run (← IO.mkRef {}) { recursive := false } fun nctx _ _ =>
     return (← nctx.simp { expr := e } ({} : Lean.Meta.Simp.Methods).toMethodsRef nctx.ctx
       |>.run {}).1.expr

@@ -237,7 +237,7 @@ theorem UniformGroup.ext {G : Type*} [Group G] {u v : UniformSpace G} (hu : @Uni
 theorem UniformGroup.ext_iff {G : Type*} [Group G] {u v : UniformSpace G}
     (hu : @UniformGroup G u _) (hv : @UniformGroup G v _) :
     u = v ↔ @nhds _ u.toTopologicalSpace 1 = @nhds _ v.toTopologicalSpace 1 :=
-  ⟨fun h => h ▸ rfl, hu.ext hv⟩
+  ⟨fun h ↦ h ▸ rfl, hu.ext hv⟩
 
 variable {α}
 

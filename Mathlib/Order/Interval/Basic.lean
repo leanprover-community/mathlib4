@@ -393,7 +393,7 @@ def coeHom : Interval α ↪o Set α :=
     match s, t with
     | ⊥, _ => iff_of_true bot_le bot_le
     | some s, ⊥ =>
-      iff_of_false (fun h => s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
+      iff_of_false (fun h ↦ s.coe_nonempty.ne_empty <| le_bot_iff.1 h) (WithBot.not_coe_le_bot _)
     | some _, some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.coe_le_coe.symm
 
 instance setLike : SetLike (Interval α) α where

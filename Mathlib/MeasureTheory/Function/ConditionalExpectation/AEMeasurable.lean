@@ -140,7 +140,7 @@ theorem ae_eq_trim_iff_of_aeStronglyMeasurable' {α β} [TopologicalSpace β] [M
     (hfm : AEStronglyMeasurable' m f μ) (hgm : AEStronglyMeasurable' m g μ) :
     hfm.mk f =ᵐ[μ.trim hm] hgm.mk g ↔ f =ᵐ[μ] g :=
   (ae_eq_trim_iff hm hfm.stronglyMeasurable_mk hgm.stronglyMeasurable_mk).trans
-    ⟨fun h => hfm.ae_eq_mk.trans (h.trans hgm.ae_eq_mk.symm), fun h =>
+    ⟨fun h ↦ hfm.ae_eq_mk.trans (h.trans hgm.ae_eq_mk.symm), fun h =>
       hfm.ae_eq_mk.symm.trans (h.trans hgm.ae_eq_mk)⟩
 
 theorem AEStronglyMeasurable.comp_ae_measurable' {α β γ : Type*} [TopologicalSpace β]

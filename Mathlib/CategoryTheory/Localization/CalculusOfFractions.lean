@@ -909,12 +909,12 @@ lemma LeftFractionRel.unop {W : MorphismProperty Cᵒᵖ} {X Y : Cᵒᵖ}
 lemma leftFractionRel_op_iff
     {X Y : C} (z₁ z₂ : W.RightFraction X Y) :
     LeftFractionRel z₁.op z₂.op ↔ RightFractionRel z₁ z₂ :=
-  ⟨fun h => h.unop, fun h => h.op⟩
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
 
 lemma rightFractionRel_op_iff
     {X Y : C} (z₁ z₂ : W.LeftFraction X Y) :
     RightFractionRel z₁.op z₂.op ↔ LeftFractionRel z₁ z₂ :=
-  ⟨fun h => h.unop, fun h => h.op⟩
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
 
 namespace RightFractionRel
 

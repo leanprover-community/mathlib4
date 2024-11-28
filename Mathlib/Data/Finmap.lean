@@ -601,7 +601,7 @@ theorem union_cancel {s₁ s₂ s₃ : Finmap β} (h : Disjoint s₁ s₃) (h' :
     · rwa [lookup_union_left hs₁, lookup_union_left_of_not_in (h _ hs₁)] at this
     · by_cases hs₂ : x ∈ s₂
       · rwa [lookup_union_left_of_not_in (h' _ hs₂), lookup_union_left hs₂] at this
-      · rw [lookup_eq_none.mpr hs₁, lookup_eq_none.mpr hs₂], fun h => h ▸ rfl⟩
+      · rw [lookup_eq_none.mpr hs₁, lookup_eq_none.mpr hs₂], fun h ↦ h ▸ rfl⟩
 
 end
 

@@ -271,7 +271,7 @@ theorem limsup_eq_bot : f.limsup u = ⊥ ↔ u =ᶠ[f] ⊥ :=
   ⟨fun h =>
     (EventuallyLE.trans eventually_le_limsup <| Eventually.of_forall fun _ => h.le).mono fun _ hx =>
       le_antisymm hx bot_le,
-    fun h => by
+    fun h ↦ by
     rw [limsup_congr h]
     exact limsup_const_bot⟩
 

@@ -136,7 +136,7 @@ instance instMul : Mul (PerfectClosure K p) :=
             mk K p (x.1 + y.1, (frobenius K p)^[y.1] x.2 * (frobenius K p)^[x.1] y.2))
           (mul_aux_right K p x))
       fun x1 x2 (H : R K p x1 x2) =>
-      funext fun e => Quot.inductionOn e fun y => mul_aux_left K p x1 x2 y H⟩
+      funext fun e ↦ Quot.inductionOn e fun y => mul_aux_left K p x1 x2 y H⟩
 
 @[simp]
 theorem mk_mul_mk (x y : ℕ × K) :
@@ -201,7 +201,7 @@ instance instAdd : Add (PerfectClosure K p) :=
             mk K p (x.1 + y.1, (frobenius K p)^[y.1] x.2 + (frobenius K p)^[x.1] y.2))
           (add_aux_right K p x))
       fun x1 x2 (H : R K p x1 x2) =>
-      funext fun e => Quot.inductionOn e fun y => add_aux_left K p x1 x2 y H⟩
+      funext fun e ↦ Quot.inductionOn e fun y => add_aux_left K p x1 x2 y H⟩
 
 @[simp]
 theorem mk_add_mk (x y : ℕ × K) :
@@ -433,7 +433,7 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
     (K →+* L) ≃ (PerfectClosure K p →+* L) where
   toFun f :=
     { toFun := by
-        refine fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) ?_
+        refine fun e ↦ liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) ?_
         rintro - - ⟨n, x⟩
         simp [f.map_frobenius]
       map_one' := f.map_one

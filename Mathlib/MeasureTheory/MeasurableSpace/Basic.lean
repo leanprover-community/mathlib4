@@ -100,7 +100,7 @@ theorem comap_eq_generateFrom (m : MeasurableSpace β) (f : α → β) :
 
 @[simp]
 theorem comap_id : m.comap id = m :=
-  MeasurableSpace.ext fun s => ⟨fun ⟨_, hs', h⟩ => h ▸ hs', fun h => ⟨s, h, rfl⟩⟩
+  MeasurableSpace.ext fun s => ⟨fun ⟨_, hs', h⟩ => h ▸ hs', fun h ↦ ⟨s, h, rfl⟩⟩
 
 @[simp]
 theorem comap_comp {f : β → α} {g : γ → β} : (m.comap f).comap g = m.comap (f ∘ g) :=
@@ -704,7 +704,7 @@ theorem Measurable.of_uncurry_right {f : α → β → γ} (hf : Measurable (unc
 
 theorem measurable_prod {f : α → β × γ} :
     Measurable f ↔ (Measurable fun a ↦ (f a).1) ∧ Measurable fun a ↦ (f a).2 :=
-  ⟨fun hf => ⟨measurable_fst.comp hf, measurable_snd.comp hf⟩, fun h => Measurable.prod h.1 h.2⟩
+  ⟨fun hf => ⟨measurable_fst.comp hf, measurable_snd.comp hf⟩, fun h ↦ Measurable.prod h.1 h.2⟩
 
 @[fun_prop, measurability]
 theorem measurable_swap : Measurable (Prod.swap : α × β → β × α) :=
@@ -722,7 +722,7 @@ protected theorem MeasurableSet.prod {s : Set α} {t : Set β} (hs : MeasurableS
 theorem measurableSet_prod_of_nonempty {s : Set α} {t : Set β} (h : (s ×ˢ t).Nonempty) :
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t := by
   rcases h with ⟨⟨x, y⟩, hx, hy⟩
-  refine ⟨fun hst => ?_, fun h => h.1.prod h.2⟩
+  refine ⟨fun hst => ?_, fun h ↦ h.1.prod h.2⟩
   have : MeasurableSet ((fun x => (x, y)) ⁻¹' s ×ˢ t) := measurable_prod_mk_right hst
   have : MeasurableSet (Prod.mk x ⁻¹' s ×ˢ t) := measurable_prod_mk_left hst
   simp_all
@@ -840,7 +840,7 @@ theorem Measurable.eval {a : δ} {g : α → ∀ a, π a} (hg : Measurable g) :
   (measurable_pi_apply a).comp hg
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
-theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fun c => f c a) :
+theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fun c ↦ f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
 
@@ -1089,7 +1089,7 @@ section prop
 variable [MeasurableSpace α] {p q : α → Prop}
 
 @[simp] theorem measurableSet_setOf : MeasurableSet {a | p a} ↔ Measurable p :=
-  ⟨fun h ↦ measurable_to_prop <| by simpa only [preimage_singleton_true], fun h => by
+  ⟨fun h ↦ measurable_to_prop <| by simpa only [preimage_singleton_true], fun h ↦ by
     simpa using h (measurableSet_singleton True)⟩
 
 @[simp] theorem measurable_mem : Measurable (· ∈ s) ↔ MeasurableSet s := measurableSet_setOf.symm

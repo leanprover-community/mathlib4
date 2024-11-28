@@ -128,7 +128,7 @@ def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent
 def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset : faces ⊆ K.faces)
     (down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t ∈ faces) : SimplicialComplex 𝕜 E :=
   { faces
-    not_empty_mem := fun h => K.not_empty_mem (subset h)
+    not_empty_mem := fun h ↦ K.not_empty_mem (subset h)
     indep := fun hs => K.indep (subset hs)
     down_closed := fun hs hts _ => down_closed hs hts
     inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull (subset hs) (subset ht) }
@@ -144,7 +144,7 @@ theorem mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces := Iff.rfl
 
 theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
   ext x
-  refine ⟨fun h => mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h => ?_⟩
+  refine ⟨fun h ↦ mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h ↦ ?_⟩
   obtain ⟨s, hs, hx⟩ := mem_iUnion₂.1 h
   exact K.down_closed hs (Finset.singleton_subset_iff.2 <| mem_coe.1 hx) (singleton_ne_empty _)
 
@@ -153,7 +153,7 @@ theorem vertices_subset_space : K.vertices ⊆ K.space :=
 
 theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
     x ∈ convexHull 𝕜 (s : Set E) ↔ x ∈ s := by
-  refine ⟨fun h => ?_, fun h => subset_convexHull 𝕜 _ h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ subset_convexHull 𝕜 _ h⟩
   classical
   have h := K.inter_subset_convexHull hx hs ⟨by simp, h⟩
   by_contra H
@@ -205,7 +205,7 @@ variable (𝕜 E)
 instance : Min (SimplicialComplex 𝕜 E) :=
   ⟨fun K L =>
     { faces := K.faces ∩ L.faces
-      not_empty_mem := fun h => K.not_empty_mem (Set.inter_subset_left h)
+      not_empty_mem := fun h ↦ K.not_empty_mem (Set.inter_subset_left h)
       indep := fun hs => K.indep hs.1
       down_closed := fun hs hst ht => ⟨K.down_closed hs.1 hst ht, L.down_closed hs.2 hst ht⟩
       inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull hs.1 ht.1 }⟩

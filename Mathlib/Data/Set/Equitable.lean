@@ -90,7 +90,7 @@ theorem equitableOn_iff_le_le_add_one :
     EquitableOn (s : Set α) f ↔
       ∀ a ∈ s, (∑ i ∈ s, f i) / s.card ≤ f a ∧ f a ≤ (∑ i ∈ s, f i) / s.card + 1 := by
   rw [Set.equitableOn_iff_exists_le_le_add_one]
-  refine ⟨?_, fun h => ⟨_, h⟩⟩
+  refine ⟨?_, fun h ↦ ⟨_, h⟩⟩
   rintro ⟨b, hb⟩
   by_cases h : ∀ a ∈ s, f a = b + 1
   · intro a ha

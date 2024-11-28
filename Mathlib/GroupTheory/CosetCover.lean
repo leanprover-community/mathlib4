@@ -98,7 +98,7 @@ theorem index_le_of_leftCoset_cover_const : H.index ≤ s.card := by
 @[to_additive]
 theorem pairwiseDisjoint_leftCoset_cover_const_of_index_eq (hind : H.index = s.card) :
     Set.PairwiseDisjoint s (g · • (H : Set G)) := by
-  have : Fintype (G ⧸ H) := fintypeOfIndexNeZero fun h => by
+  have : Fintype (G ⧸ H) := fintypeOfIndexNeZero fun h ↦ by
     rw [hind, Finset.card_eq_zero] at h
     rw [h, ← Finset.set_biUnion_coe, Finset.coe_empty, Set.biUnion_empty] at hcovers
     exact Set.empty_ne_univ hcovers

@@ -105,7 +105,7 @@ between `M₂` and `M₃`. -/
 @[simps]
 protected def compLeft (f : M₂ →ₗ[R] M₃) (I : Type*) : (I → M₂) →ₗ[R] I → M₃ :=
   { f.toAddMonoidHom.compLeft I with
-    toFun := fun h => f ∘ h
+    toFun := fun h ↦ f ∘ h
     map_smul' := fun c h => by
       ext x
       exact f.map_smul' c (h x) }

@@ -258,7 +258,7 @@ theorem Integrable.of_neg (hf : Integrable I l (-f) vol) : Integrable I l f vol 
 
 @[simp]
 theorem integrable_neg : Integrable I l (-f) vol ↔ Integrable I l f vol :=
-  ⟨fun h => h.of_neg, fun h => h.neg⟩
+  ⟨fun h ↦ h.of_neg, fun h ↦ h.neg⟩
 
 @[simp]
 theorem integral_neg : integral I l (-f) vol = -integral I l f vol := by
@@ -322,7 +322,7 @@ theorem integral_smul (c : ℝ) : integral I l (fun x => c • f x) vol = c • 
   rcases eq_or_ne c 0 with (rfl | hc); · simp only [zero_smul, integral_zero]
   by_cases hf : Integrable I l f vol
   · exact (hf.hasIntegral.smul c).integral_eq
-  · have : ¬Integrable I l (fun x => c • f x) vol := mt (fun h => h.of_smul hc) hf
+  · have : ¬Integrable I l (fun x => c • f x) vol := mt (fun h ↦ h.of_smul hc) hf
     rw [integral, integral, dif_neg hf, dif_neg this, smul_zero]
 
 open MeasureTheory
@@ -783,7 +783,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   rcases exists_pos_mul_lt ε0' (B I) with ⟨ε', ε'0, hεI⟩
   classical
   set δ : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) := fun c x => if x ∈ s then δ₁ c x (εs x) else (δ₂ c) x ε'
-  refine ⟨δ, fun c => l.rCond_of_bRiemann_eq_false hl, ?_⟩
+  refine ⟨δ, fun c ↦ l.rCond_of_bRiemann_eq_false hl, ?_⟩
   simp only [Set.mem_iUnion, mem_inter_iff, mem_setOf_eq]
   rintro π ⟨c, hπδ, hπp⟩
   -- Now we split the sum into two parts based on whether `π.tag J` belongs to `s` or not.

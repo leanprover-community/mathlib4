@@ -72,7 +72,7 @@ theorem IsBounded.prod (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s ×ˢ
 
 theorem isBounded_prod_of_nonempty (hne : Set.Nonempty (s ×ˢ t)) :
     IsBounded (s ×ˢ t) ↔ IsBounded s ∧ IsBounded t :=
-  ⟨fun h => ⟨h.fst_of_prod hne.snd, h.snd_of_prod hne.fst⟩, fun h => h.1.prod h.2⟩
+  ⟨fun h ↦ ⟨h.fst_of_prod hne.snd, h.snd_of_prod hne.fst⟩, fun h ↦ h.1.prod h.2⟩
 
 theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBounded s ∧ IsBounded t := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp

@@ -917,7 +917,7 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
     induction j using Opposite.rec' with | h j => ?_
     dsimp
     convert (F.obj j).sheaf.isTerminalOfEmpty using 3
-    convert image_preimage_is_empty F i j (fun h => hj (congr_arg op h.symm)) U using 6
+    convert image_preimage_is_empty F i j (fun h ↦ hj (congr_arg op h.symm)) U using 6
     exact (congr_arg PresheafedSpace.Hom.base e).symm
 
 end Prod

@@ -330,7 +330,7 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
-  refine ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
+  refine ⟨fun h ↦ ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
   obtain rfl | rfl := Sym2.mem_iff.1 hc
   · exact h.1
   · exact h.2
@@ -536,12 +536,12 @@ theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym �
   Iff.rfl
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
-  apply Set.eq_empty_of_forall_not_mem fun e => _
+  apply Set.eq_empty_of_forall_not_mem fun e ↦ _
   apply Sym2.ind
   simp [-Set.bot_eq_empty, Prop.bot_eq_false]
 
 theorem fromRel_top : fromRel (fun (_ _ : α) z => z : Symmetric ⊤) = Set.univ := by
-  apply Set.eq_univ_of_forall fun e => _
+  apply Set.eq_univ_of_forall fun e ↦ _
   apply Sym2.ind
   simp [-Set.top_eq_univ, Prop.top_eq_true]
 

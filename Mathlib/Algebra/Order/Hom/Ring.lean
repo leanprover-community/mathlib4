@@ -269,12 +269,12 @@ theorem id_comp (f : α →+*o β) : (OrderRingHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {f₁ f₂ : β →+*o γ} {g : α →+*o β} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, fun h => by rw [h]⟩
+  ⟨fun h ↦ ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, fun h ↦ by rw [h]⟩
 
 @[simp]
 theorem cancel_left {f : β →+*o γ} {g₁ g₂ : α →+*o β} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h => ext fun a ↦ hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end Preorder
 

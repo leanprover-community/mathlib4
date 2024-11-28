@@ -81,7 +81,7 @@ theorem IsTorsion.subgroup (tG : IsTorsion G) (H : Subgroup G) : IsTorsion H := 
 @[to_additive AddIsTorsion.of_surjective
       "The image of a surjective additive torsion group homomorphism is torsion."]
 theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG : IsTorsion G) :
-    IsTorsion H := fun h => by
+    IsTorsion H := fun h ↦ by
   obtain ⟨g, hg⟩ := hf h
   rw [← hg]
   exact f.isOfFinOrder (tG g)

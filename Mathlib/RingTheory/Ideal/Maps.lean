@@ -171,15 +171,15 @@ theorem comap_top : (⊤ : Ideal S).comap f = ⊤ :=
 
 @[simp]
 theorem comap_eq_top_iff {I : Ideal S} : I.comap f = ⊤ ↔ I = ⊤ :=
-  ⟨fun h => I.eq_top_iff_one.mpr (map_one f ▸ mem_comap.mp ((I.comap f).eq_top_iff_one.mp h)),
-    fun h => by rw [h, comap_top]⟩
+  ⟨fun h ↦ I.eq_top_iff_one.mpr (map_one f ▸ mem_comap.mp ((I.comap f).eq_top_iff_one.mp h)),
+    fun h ↦ by rw [h, comap_top]⟩
 
 @[simp]
 theorem map_bot : (⊥ : Ideal R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
 theorem ne_bot_of_map_ne_bot (hI : map f I ≠ ⊥) : I ≠ ⊥ :=
-  fun h => hI (Eq.mpr (congrArg (fun I ↦ map f I = ⊥) h) map_bot)
+  fun h ↦ hI (Eq.mpr (congrArg (fun I ↦ map f I = ⊥) h) map_bot)
 
 variable (f I J K L)
 
@@ -305,7 +305,7 @@ theorem mem_image_of_mem_map_of_surjective {I : Ideal R} {y} (H : y ∈ map f I)
     ⟨d * x, I.mul_mem_left _ hxi, hdc ▸ hxy ▸ map_mul f _ _⟩
 
 theorem mem_map_iff_of_surjective {I : Ideal R} {y} : y ∈ map f I ↔ ∃ x, x ∈ I ∧ f x = y :=
-  ⟨fun h => (Set.mem_image _ _ _).2 (mem_image_of_mem_map_of_surjective f hf h), fun ⟨_, hx⟩ =>
+  ⟨fun h ↦ (Set.mem_image _ _ _).2 (mem_image_of_mem_map_of_surjective f hf h), fun ⟨_, hx⟩ =>
     hx.right ▸ mem_map_of_mem f hx.left⟩
 
 theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := fun h =>
@@ -424,12 +424,12 @@ def orderEmbeddingOfSurjective (hf : Function.Surjective f) : Ideal S ↪o Ideal
 
 theorem map_eq_top_or_isMaximal_of_surjective (hf : Function.Surjective f) {I : Ideal R}
     (H : IsMaximal I) : map f I = ⊤ ∨ IsMaximal (map f I) := by
-  refine or_iff_not_imp_left.2 fun ne_top => ⟨⟨fun h => ne_top h, fun J hJ => ?_⟩⟩
+  refine or_iff_not_imp_left.2 fun ne_top => ⟨⟨fun h ↦ ne_top h, fun J hJ => ?_⟩⟩
   · refine
       (relIsoOfSurjective f hf).injective
         (Subtype.ext_iff.2 (Eq.trans (H.1.2 (comap f J) (lt_of_le_of_ne ?_ ?_)) comap_top.symm))
     · exact map_le_iff_le_comap.1 (le_of_lt hJ)
-    · exact fun h => hJ.right (le_map_of_comap_le_of_surjective f hf (le_of_eq h.symm))
+    · exact fun h ↦ hJ.right (le_map_of_comap_le_of_surjective f hf (le_of_eq h.symm))
 
 theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S} [H : IsMaximal K]:
     IsMaximal (comap f K) := by
@@ -453,7 +453,7 @@ instance comap_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass 
 
 theorem comap_le_comap_iff_of_surjective (hf : Function.Surjective f) (I J : Ideal S) :
     comap f I ≤ comap f J ↔ I ≤ J :=
-  ⟨fun h => (map_comap_of_surjective f hf I).symm.le.trans (map_le_of_le_comap h), fun h =>
+  ⟨fun h ↦ (map_comap_of_surjective f hf I).symm.le.trans (map_le_of_le_comap h), fun h =>
     le_comap_of_map_le ((map_comap_of_surjective f hf I).le.trans h)⟩
 
 end Surjective
@@ -473,7 +473,7 @@ def relIsoOfBijective (hf : Function.Bijective f) : Ideal S ≃o Ideal R where
 
 theorem comap_le_iff_le_map (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S} :
     comap f K ≤ I ↔ K ≤ map f I :=
-  ⟨fun h => le_map_of_comap_le_of_surjective f hf.right h, fun h =>
+  ⟨fun h ↦ le_map_of_comap_le_of_surjective f hf.right h, fun h =>
     (relIsoOfBijective f hf).right_inv I ▸ comap_mono h⟩
 
 lemma comap_map_of_bijective (hf : Function.Bijective f) {I : Ideal R} :
@@ -483,7 +483,7 @@ lemma comap_map_of_bijective (hf : Function.Bijective f) {I : Ideal R} :
 theorem map.isMaximal (hf : Function.Bijective f) {I : Ideal R} (H : IsMaximal I) :
     IsMaximal (map f I) := by
   refine
-    or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 ?_
+    or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h ↦ H.1.1 ?_
   calc
     I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
     _ = comap f ⊤ := by rw [h]
@@ -498,7 +498,7 @@ end Bijective
 
 theorem RingEquiv.bot_maximal_iff (e : R ≃+* S) :
     (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
-  ⟨fun h => map_bot (f := e.toRingHom) ▸ map.isMaximal e.toRingHom e.bijective h, fun h =>
+  ⟨fun h ↦ map_bot (f := e.toRingHom) ▸ map.isMaximal e.toRingHom e.bijective h, fun h =>
     map_bot (f := e.symm.toRingHom) ▸ map.isMaximal e.symm.toRingHom e.symm.bijective h⟩
 
 end Ring
@@ -812,7 +812,7 @@ lemma comap_map_of_surjective' (f : F) (hf : Function.Surjective f) (I : Ideal R
 
 theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
     (∀ J ∈ A, RingHom.ker f ≤ J) → map f (sInf A) = sInf (map f '' A) := by
-  refine fun h => le_antisymm (le_sInf ?_) ?_
+  refine fun h ↦ le_antisymm (le_sInf ?_) ?_
   · intro j hj y hy
     cases' (mem_map_iff_of_surjective f hf).1 hy with x hx
     cases' (Set.mem_image _ _ _).mp hj with J hJ
@@ -832,7 +832,7 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
 
 theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
     (hk : RingHom.ker f ≤ I) : IsPrime (map f I) := by
-  refine ⟨fun h => H.ne_top (eq_top_iff.2 ?_), fun {x y} => ?_⟩
+  refine ⟨fun h ↦ H.ne_top (eq_top_iff.2 ?_), fun {x y} => ?_⟩
   · replace h := congr_arg (comap f) h
     rw [comap_map_of_surjective _ hf, comap_top] at h
     exact h ▸ sup_le (le_of_eq rfl) hk
@@ -844,7 +844,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
       convert I.sub_mem hc (hk (hc' : c - a * b ∈ RingHom.ker f)) using 1
       abel
     exact
-      (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h
+      (H.mem_or_mem this).imp (fun h ↦ ha ▸ mem_map_of_mem f h) fun h ↦ hb ▸ mem_map_of_mem f h
 
 theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
     I.map f = ⊥ ↔ I = ⊥ := by

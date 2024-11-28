@@ -376,7 +376,7 @@ variable (F : Type*) {E : Type*} [Field F] [Field E] [Algebra F E] [FiniteDimens
 theorem primitive_element_iff_minpoly_natDegree_eq (α : E) :
     F⟮α⟯ = ⊤ ↔ (minpoly F α).natDegree = finrank F E := by
   rw [← adjoin.finrank (IsIntegral.of_finite F α), ← finrank_top F E]
-  refine ⟨fun h => ?_, fun h => eq_of_le_of_finrank_eq le_top h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ eq_of_le_of_finrank_eq le_top h⟩
   exact congr_arg (fun K : IntermediateField F E => finrank F K) h
 
 theorem primitive_element_iff_minpoly_degree_eq (α : E) :

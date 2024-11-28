@@ -83,7 +83,7 @@ theorem jacobson_eq_top_iff : jacobson I = ⊤ ↔ I = ⊤ :=
           lt_top_iff_ne_top.2 hm.ne_top) H,
     fun H => eq_top_iff.2 <| le_sInf fun _ ⟨hij, _⟩ => H ▸ hij⟩
 
-theorem jacobson_eq_bot : jacobson I = ⊥ → I = ⊥ := fun h => eq_bot_iff.mpr (h ▸ le_jacobson)
+theorem jacobson_eq_bot : jacobson I = ⊥ → I = ⊥ := fun h ↦ eq_bot_iff.mpr (h ▸ le_jacobson)
 
 theorem jacobson_eq_self_of_isMaximal [H : IsMaximal I] : I.jacobson = I :=
   le_antisymm (sInf_le ⟨le_of_eq rfl, H⟩) le_jacobson
@@ -148,13 +148,13 @@ theorem eq_jacobson_iff_sInf_maximal' :
       let ⟨M, hM⟩ := h
       ⟨M,
         ⟨fun J hJ K hK =>
-          Or.recOn (hM.1 J hJ) (fun h => h.1.2 K hK) fun h => eq_top_iff.2 (le_of_lt (h ▸ hK)),
+          Or.recOn (hM.1 J hJ) (fun h ↦ h.1.2 K hK) fun h ↦ eq_top_iff.2 (le_of_lt (h ▸ hK)),
           hM.2⟩⟩,
       fun h =>
       let ⟨M, hM⟩ := h
       ⟨M,
         ⟨fun J hJ =>
-          Or.recOn (Classical.em (J = ⊤)) (fun h => Or.inr h) fun h => Or.inl ⟨⟨h, hM.1 J hJ⟩⟩,
+          Or.recOn (Classical.em (J = ⊤)) (fun h ↦ Or.inr h) fun h ↦ Or.inl ⟨⟨h, hM.1 J hJ⟩⟩,
           hM.2⟩⟩⟩
 
 /-- An ideal `I` equals its Jacobson radical if and only if every element outside `I`
@@ -166,7 +166,7 @@ theorem eq_jacobson_iff_not_mem :
     erw [← h, mem_sInf] at hx
     push_neg at hx
     exact hx
-  · refine fun h => le_antisymm (fun x hx => ?_) le_jacobson
+  · refine fun h ↦ le_antisymm (fun x hx => ?_) le_jacobson
     contrapose hx
     erw [mem_sInf]
     push_neg
@@ -245,7 +245,7 @@ theorem jacobson_mul_mem_right {I : Ideal R}
     𝔪_mem.left (mul_mem_right iI)
   have 𝔪₀_maximal : IsMaximal 𝔪₀ := by
     refine isMaximal_iff.mpr ⟨
-      fun h => r𝔪 (by simpa [𝔪₀] using h),
+      fun h ↦ r𝔪 (by simpa [𝔪₀] using h),
       fun J b 𝔪₀J b𝔪₀ bJ => ?_⟩
     let K : Ideal R := Ideal.span {b*r} ⊔ 𝔪
     have ⟨s, y, y𝔪, sbyr⟩ :=
@@ -387,7 +387,7 @@ class IsLocal (I : Ideal R) : Prop where
   out : IsMaximal (jacobson I)
 
 theorem isLocal_iff {I : Ideal R} : IsLocal I ↔ IsMaximal (jacobson I) :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 theorem isLocal_of_isMaximal_radical {I : Ideal R} (hi : IsMaximal (radical I)) : IsLocal I :=
   ⟨have : radical I = jacobson I :=

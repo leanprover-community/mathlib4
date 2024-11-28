@@ -88,7 +88,7 @@ theorem cons_injective {a : α} {b : δ a} {s : Multiset α} (hs : a ∉ s) :
     Function.Injective (Pi.cons s a b) := fun f₁ f₂ eq =>
   funext fun a' =>
     funext fun h' =>
-      have ne : a ≠ a' := fun h => hs <| h.symm ▸ h'
+      have ne : a ≠ a' := fun h ↦ hs <| h.symm ▸ h'
       have : a' ∈ a ::ₘ s := mem_cons_of_mem h'
       calc
         f₁ a' h' = Pi.cons s a b f₁ a' this := by rw [Pi.cons_ne this ne.symm]
@@ -155,7 +155,7 @@ theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
   intro f
   induction' m using Multiset.induction_on with a m ih
-  · have : f = Pi.empty β := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
+  · have : f = Pi.empty β := funext (fun _ => funext fun h ↦ (not_mem_zero _ h).elim)
     simp only [this, pi_zero, mem_singleton, true_iff]
     intro _ h; exact (not_mem_zero _ h).elim
   simp_rw [pi_cons, mem_bind, mem_map, ih]

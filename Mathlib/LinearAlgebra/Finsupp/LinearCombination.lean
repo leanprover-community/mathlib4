@@ -394,7 +394,7 @@ theorem mem_span_range_iff_exists_fun :
   -- Porting note: `Finsupp.equivFunOnFinite.surjective.exists` should be come before `simp`.
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
-  exact exists_congr fun c => Eq.congr_left <| Finsupp.sum_fintype _ _ fun i => zero_smul _ _
+  exact exists_congr fun c ↦ Eq.congr_left <| Finsupp.sum_fintype _ _ fun i => zero_smul _ _
 
 /-- A family `v : α → V` is generating `V` iff every element `(x : V)`
 can be written as sum `∑ cᵢ • vᵢ = x`.

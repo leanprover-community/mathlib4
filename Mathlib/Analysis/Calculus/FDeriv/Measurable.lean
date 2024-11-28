@@ -264,7 +264,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       _ = 12 * ‖c‖ * (1 / 2) ^ e := by ring
   /- For definiteness, use `L0 e = L e (n e) (n e)`, to have a single sequence. We claim that this
     is a Cauchy sequence. -/
-  let L0 : ℕ → E →L[𝕜] F := fun e => L e (n e) (n e)
+  let L0 : ℕ → E →L[𝕜] F := fun e ↦ L e (n e) (n e)
   have : CauchySeq L0 := by
     rw [Metric.cauchySeq_iff']
     intro ε εpos
@@ -278,7 +278,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       _ = ε := by field_simp
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
-    cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
+    cauchySeq_tendsto_of_isComplete hK (fun e ↦ (hn e (n e) (n e) le_rfl le_rfl).1) this
   have Lf' : ∀ e p, n e ≤ p → ‖L e (n e) p - f'‖ ≤ 12 * ‖c‖ * (1 / 2) ^ e := by
     intro e p hp
     apply le_of_tendsto (tendsto_const_nhds.sub hf').norm
@@ -596,7 +596,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
 
   /- For definiteness, use `L0 e = L e (n e) (n e)`, to have a single sequence. We claim that this
     is a Cauchy sequence. -/
-  let L0 : ℕ → F := fun e => L e (n e) (n e)
+  let L0 : ℕ → F := fun e ↦ L e (n e) (n e)
   have : CauchySeq L0 := by
     rw [Metric.cauchySeq_iff']
     intro ε εpos
@@ -611,7 +611,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
 
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
-    cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
+    cauchySeq_tendsto_of_isComplete hK (fun e ↦ (hn e (n e) (n e) le_rfl le_rfl).1) this
   have Lf' : ∀ e p, n e ≤ p → ‖L e (n e) p - f'‖ ≤ 12 * (1 / 2) ^ e := by
     intro e p hp
     apply le_of_tendsto (tendsto_const_nhds.sub hf').norm

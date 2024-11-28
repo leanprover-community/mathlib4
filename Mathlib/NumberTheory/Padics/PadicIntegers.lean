@@ -394,7 +394,7 @@ theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
 theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_comm, mul_inv hz]
 
 theorem isUnit_iff {z : ℤ_[p]} : IsUnit z ↔ ‖z‖ = 1 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rcases isUnit_iff_dvd_one.1 h with ⟨w, eq⟩
     refine le_antisymm (norm_le_one _) ?_
     have := mul_le_mul_of_nonneg_left (norm_le_one w) (norm_nonneg z)
@@ -619,7 +619,7 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
         Subtype.coe_mk, Nat.cast_pow]
   exists_of_eq := by
     simp_rw [algebraMap_apply, Subtype.coe_inj]
-    exact fun h => ⟨1, by rw [h]⟩
+    exact fun h ↦ ⟨1, by rw [h]⟩
 
 end FractionRing
 

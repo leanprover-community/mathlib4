@@ -31,7 +31,7 @@ protected structure Preconnected (H : G.Subgraph) : Prop where
 instance {H : G.Subgraph} : Coe H.Preconnected H.coe.Preconnected := ⟨Preconnected.coe⟩
 
 instance {H : G.Subgraph} : CoeFun H.Preconnected (fun _ => ∀ u v : H.verts, H.coe.Reachable u v) :=
-  ⟨fun h => h.coe⟩
+  ⟨fun h ↦ h.coe⟩
 
 protected lemma preconnected_iff {H : G.Subgraph} :
     H.Preconnected ↔ H.coe.Preconnected := ⟨fun ⟨h⟩ => h, .mk⟩
@@ -45,7 +45,7 @@ protected structure Connected (H : G.Subgraph) : Prop where
 instance {H : G.Subgraph} : Coe H.Connected H.coe.Connected := ⟨Connected.coe⟩
 
 instance {H : G.Subgraph} : CoeFun H.Connected (fun _ => ∀ u v : H.verts, H.coe.Reachable u v) :=
-  ⟨fun h => h.coe⟩
+  ⟨fun h ↦ h.coe⟩
 
 protected lemma connected_iff' {H : G.Subgraph} :
     H.Connected ↔ H.coe.Connected := ⟨fun ⟨h⟩ => h, .mk⟩

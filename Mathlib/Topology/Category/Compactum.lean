@@ -332,7 +332,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   exact finiteInterClosure.basic (@hT t ht)
 
 theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=
-  fun h => le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]
+  fun h ↦ le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]
 
 -- All the hard work above boils down to this `T2Space` instance.
 instance {X : Compactum} : T2Space X := by

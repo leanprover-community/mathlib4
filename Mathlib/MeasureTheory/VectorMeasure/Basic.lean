@@ -347,7 +347,7 @@ theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFinit
 
 theorem toSignedMeasure_eq_toSignedMeasure_iff {μ ν : Measure α} [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] : μ.toSignedMeasure = ν.toSignedMeasure ↔ μ = ν := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext1 i hi
     have : μ.toSignedMeasure i = ν.toSignedMeasure i := by rw [h]
     rwa [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi,
@@ -723,7 +723,7 @@ variable (v w : VectorMeasure α M)
 theorem restrict_le_restrict_iff {i : Set α} (hi : MeasurableSet i) :
     v ≤[i] w ↔ ∀ ⦃j⦄, MeasurableSet j → j ⊆ i → v j ≤ w j :=
   ⟨fun h j hj₁ hj₂ => restrict_eq_self v hi hj₁ hj₂ ▸ restrict_eq_self w hi hj₁ hj₂ ▸ h j hj₁,
-    fun h => le_iff.1 fun _ hj =>
+    fun h ↦ le_iff.1 fun _ hj =>
       (restrict_apply v hi hj).symm ▸ (restrict_apply w hi hj).symm ▸
       h (hj.inter hi) Set.inter_subset_right⟩
 
@@ -775,7 +775,7 @@ nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) :
 
 @[simp]
 theorem neg_le_neg_iff {i : Set α} (hi : MeasurableSet i) : -w ≤[i] -v ↔ v ≤[i] w :=
-  ⟨fun h => neg_neg v ▸ neg_neg w ▸ neg_le_neg _ _ hi h, fun h => neg_le_neg _ _ hi h⟩
+  ⟨fun h ↦ neg_neg v ▸ neg_neg w ▸ neg_le_neg _ _ hi h, fun h ↦ neg_le_neg _ _ hi h⟩
 
 end
 
@@ -1057,12 +1057,12 @@ theorem neg_right {N : Type*} [AddCommGroup N] [TopologicalSpace N] [Topological
 @[simp]
 theorem neg_left_iff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [TopologicalAddGroup M]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : -v ⟂ᵥ w ↔ v ⟂ᵥ w :=
-  ⟨fun h => neg_neg v ▸ h.neg_left, neg_left⟩
+  ⟨fun h ↦ neg_neg v ▸ h.neg_left, neg_left⟩
 
 @[simp]
 theorem neg_right_iff {N : Type*} [AddCommGroup N] [TopologicalSpace N] [TopologicalAddGroup N]
     {v : VectorMeasure α M} {w : VectorMeasure α N} : v ⟂ᵥ -w ↔ v ⟂ᵥ w :=
-  ⟨fun h => neg_neg w ▸ h.neg_right, neg_right⟩
+  ⟨fun h ↦ neg_neg w ▸ h.neg_right, neg_right⟩
 
 end MutuallySingular
 

@@ -102,7 +102,7 @@ instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCo
   ⟨fun a ↦ (vadd_comm (a : M) : _)⟩
 
 instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
-  ⟨fun h => Subtype.ext <| eq_of_vadd_eq_vadd h⟩
+  ⟨fun h ↦ Subtype.ext <| eq_of_vadd_eq_vadd h⟩
 
 variable {p}
 
@@ -150,7 +150,7 @@ theorem not_mem_of_ortho {x : M} {N : Submodule R M}
 
 theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ≠ 0 :=
-  mt (fun h => show x ∈ N from h.symm ▸ N.zero_mem) (not_mem_of_ortho ortho)
+  mt (fun h ↦ show x ∈ N from h.symm ▸ N.zero_mem) (not_mem_of_ortho ortho)
 
 end IsDomain
 

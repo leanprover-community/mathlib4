@@ -36,7 +36,7 @@ def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
     { obj := fun t => ∐ fun _ : c ⟶ t => d
       map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f}
   map {_ d₂} f :=
-    { app := fun _ => Sigma.desc fun h => f ≫ Sigma.ι (fun _ => d₂) h
+    { app := fun _ => Sigma.desc fun h ↦ f ≫ Sigma.ι (fun _ => d₂) h
       naturality := by
         intros
         dsimp
@@ -50,7 +50,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
     { homEquiv := fun d F =>
         { toFun := fun f => Sigma.ι (fun _ => d) (𝟙 _) ≫ f.app c
           invFun := fun f =>
-            { app := fun _ => Sigma.desc fun h => f ≫ F.map h
+            { app := fun _ => Sigma.desc fun h ↦ f ≫ F.map h
               naturality := by
                 intros
                 dsimp

@@ -97,10 +97,10 @@ local infixl:50 " ≈ " => @Equiv _ r
 theorem esymm {a b : α} : a ≈ b → b ≈ a := fun ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩
 
 @[deprecated "No deprecation message was provided."  (since := "2024-07-30")]
-theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
+theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h ↦ h.1
 
 @[deprecated "No deprecation message was provided."  (since := "2024-07-30")]
-theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
+theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h ↦ h.2
 
 variable [IsStrictWeakOrder α r]
 

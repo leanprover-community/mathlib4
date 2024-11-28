@@ -48,9 +48,9 @@ theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
       refine ⟨c', hc', Or.inl fun x hx ↦ ?_⟩
       simp only [mem_setOf_eq, this x hx, this c' (Ioo_subset_Icc_self hc'), le_rfl]
     · refine ⟨C, ⟨lt_of_le_of_ne Cmem.1 <| mt ?_ hC, lt_of_le_of_ne Cmem.2 <| mt ?_ hC⟩, Or.inr Cge⟩
-      exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
+      exacts [fun h ↦ by rw [h], fun h ↦ by rw [h, hfI]]
   · refine ⟨c, ⟨lt_of_le_of_ne cmem.1 <| mt ?_ hc, lt_of_le_of_ne cmem.2 <| mt ?_ hc⟩, Or.inl cle⟩
-    exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
+    exacts [fun h ↦ by rw [h], fun h ↦ by rw [h, hfI]]
 
 /-- A continuous function on a closed interval with `f a = f b`
 has a local extremum at some point of the corresponding open interval. -/

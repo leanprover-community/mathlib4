@@ -150,7 +150,7 @@ theorem finallySmall_of_small_weakly_terminal_set [IsFilteredOrEmpty J] (s : Set
 
 theorem finallySmall_iff_exists_small_weakly_terminal_set [IsFilteredOrEmpty J] :
     FinallySmall.{v} J ↔ ∃ (s : Set J) (_ : Small.{v} s), ∀ i, ∃ j ∈ s, Nonempty (i ⟶ j) := by
-  refine ⟨fun _ => FinallySmall.exists_small_weakly_terminal_set _, fun h => ?_⟩
+  refine ⟨fun _ => FinallySmall.exists_small_weakly_terminal_set _, fun h ↦ ?_⟩
   rcases h with ⟨s, hs, hs'⟩
   exact finallySmall_of_small_weakly_terminal_set s hs'
 
@@ -178,7 +178,7 @@ theorem initiallySmall_of_small_weakly_initial_set [IsCofilteredOrEmpty J] (s : 
 
 theorem initiallySmall_iff_exists_small_weakly_initial_set [IsCofilteredOrEmpty J] :
     InitiallySmall.{v} J ↔ ∃ (s : Set J) (_ : Small.{v} s), ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i) := by
-  refine ⟨fun _ => InitiallySmall.exists_small_weakly_initial_set _, fun h => ?_⟩
+  refine ⟨fun _ => InitiallySmall.exists_small_weakly_initial_set _, fun h ↦ ?_⟩
   rcases h with ⟨s, hs, hs'⟩
   exact initiallySmall_of_small_weakly_initial_set s hs'
 

@@ -257,7 +257,7 @@ theorem orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
 
 @[to_additive]
 theorem orbit_eq_iff {a b : α} : orbit G a = orbit G b ↔ a ∈ orbit G b :=
-  ⟨fun h => h ▸ mem_orbit_self _, fun ⟨_, hc⟩ => hc ▸ orbit_smul _ _⟩
+  ⟨fun h ↦ h ▸ mem_orbit_self _, fun ⟨_, hc⟩ => hc ▸ orbit_smul _ _⟩
 
 @[to_additive]
 theorem mem_orbit_smul (g : G) (a : α) : a ∈ orbit G (g • a) := by

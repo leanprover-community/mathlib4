@@ -75,7 +75,7 @@ theorem supIndep_empty (f : ι → α) : (∅ : Finset ι).SupIndep f := fun _ _
 
 theorem supIndep_singleton (i : ι) (f : ι → α) : ({i} : Finset ι).SupIndep f :=
   fun s hs j hji hj => by
-    rw [eq_empty_of_ssubset_singleton ⟨hs, fun h => hj (h hji)⟩, sup_empty]
+    rw [eq_empty_of_ssubset_singleton ⟨hs, fun h ↦ hj (h hji)⟩, sup_empty]
     exact disjoint_bot_right
 
 theorem SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDisjoint f :=
@@ -84,7 +84,7 @@ theorem SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDis
 
 theorem SupIndep.le_sup_iff (hs : s.SupIndep f) (hts : t ⊆ s) (hi : i ∈ s) (hf : ∀ i, f i ≠ ⊥) :
     f i ≤ t.sup f ↔ i ∈ t := by
-  refine ⟨fun h => ?_, le_sup⟩
+  refine ⟨fun h ↦ ?_, le_sup⟩
   by_contra hit
   exact hf i (disjoint_self.1 <| (hs hts hi hit).mono_right h)
 
@@ -141,8 +141,8 @@ theorem supIndep_map {s : Finset ι'} {g : ι' ↪ ι} : (s.map g).SupIndep f �
 @[simp]
 theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     ({i, j} : Finset ι).SupIndep f ↔ Disjoint (f i) (f j) :=
-  ⟨fun h => h.pairwiseDisjoint (by simp) (by simp) hij,
-   fun h => by
+  ⟨fun h ↦ h.pairwiseDisjoint (by simp) (by simp) hij,
+   fun h ↦ by
     rw [supIndep_iff_disjoint_erase]
     intro k hk
     rw [Finset.mem_insert, Finset.mem_singleton] at hk
@@ -255,9 +255,9 @@ theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α}
 theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α} :
     (s.product t).SupIndep f ↔ (s.SupIndep fun i => t.sup fun i' => f (i, i'))
       ∧ t.SupIndep fun i' => s.sup fun i => f (i, i') := by
-  refine ⟨?_, fun h => h.1.product h.2⟩
+  refine ⟨?_, fun h ↦ h.1.product h.2⟩
   simp_rw [supIndep_iff_pairwiseDisjoint]
-  refine fun h => ⟨fun i hi j hj hij => ?_, fun i hi j hj hij => ?_⟩ <;>
+  refine fun h ↦ ⟨fun i hi j hj hij => ?_, fun i hi j hj hij => ?_⟩ <;>
       simp_rw [Finset.disjoint_sup_left, Finset.disjoint_sup_right] <;>
     intro i' hi' j' hj'
   · exact h (mk_mem_product hi hi') (mk_mem_product hj hj') (ne_of_apply_ne Prod.fst hij)
@@ -469,7 +469,7 @@ alias CompleteLattice.Independent.injective := iSupIndep.injective
 theorem iSupIndep_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :
     iSupIndep t ↔ Disjoint (t i) (t j) := by
   constructor
-  · exact fun h => h.pairwiseDisjoint hij
+  · exact fun h ↦ h.pairwiseDisjoint hij
   · rintro h k
     obtain rfl | rfl := huniv k
     · refine h.mono_right (iSup_le fun i => iSup_le fun hi => Eq.le ?_)
@@ -494,7 +494,7 @@ theorem iSupIndep_map_orderIso_iff {ι : Sort*} {α β : Type*} [CompleteLattice
   ⟨fun h =>
     have hf : f.symm ∘ f ∘ a = a := congr_arg (· ∘ a) f.left_inv.comp_eq_id
     hf ▸ h.map_orderIso f.symm,
-    fun h => h.map_orderIso f⟩
+    fun h ↦ h.map_orderIso f⟩
 
 @[deprecated (since := "2024-11-24")]
 alias CompleteLattice.independent_map_orderIso_iff := iSupIndep_map_orderIso_iff

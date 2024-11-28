@@ -134,7 +134,7 @@ def constantCoeff : R[X] →+* R where
   map_add' p q := coeff_add p q 0
 
 theorem isUnit_C {x : R} : IsUnit (C x) ↔ IsUnit x :=
-  ⟨fun h => (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩
+  ⟨fun h ↦ (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h ↦ h.map C⟩
 
 theorem coeff_mul_X_zero (p : R[X]) : coeff (p * X) 0 = 0 := by simp
 

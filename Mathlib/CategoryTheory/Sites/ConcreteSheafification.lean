@@ -281,7 +281,7 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj
   let IS : S.Arrow := I.fromMiddle
   specialize hh IS
   let IW : (W IS).Arrow := I.toMiddle
-  apply_fun fun e => e IW at hh
+  apply_fun fun e ↦ e IW at hh
   convert hh using 1
   · exact x.congr_apply I.middle_spec.symm _
   · exact y.congr_apply I.middle_spec.symm _
@@ -297,7 +297,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   obtain ⟨W, h1, h2, hh⟩ := h
   apply hsep X W
   intro I
-  apply_fun fun e => e I at hh
+  apply_fun fun e ↦ e I at hh
   exact hh
 
 /-- An auxiliary definition to be used in the proof of `exists_of_sep` below.
@@ -396,7 +396,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     apply sep P S _ _
     intro I
     apply_fun Meq.equiv _ _ at h
-    apply_fun fun e => e I at h
+    apply_fun fun e ↦ e I at h
     convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_ι] <;> rfl
   · rintro (x : (multiequalizer (S.index _) : D))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
@@ -571,8 +571,8 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
 noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun P Q =>
-        { toFun := fun e => J.toSheafify P ≫ e.val
-          invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
+        { toFun := fun e ↦ J.toSheafify P ≫ e.val
+          invFun := fun e ↦ ⟨J.sheafifyLift e Q.2⟩
           left_inv := fun _ => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
           right_inv := fun _ => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by

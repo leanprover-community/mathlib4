@@ -129,7 +129,7 @@ protected def interior (s : Set α) : Opens α :=
 theorem mem_interior {s : Set α} {x : α} : x ∈ Opens.interior s ↔ x ∈ _root_.interior s := .rfl
 
 theorem gc : GaloisConnection ((↑) : Opens α → Set α) Opens.interior := fun U _ =>
-  ⟨fun h => interior_maximal h U.isOpen, fun h => le_trans h interior_subset⟩
+  ⟨fun h ↦ interior_maximal h U.isOpen, fun h ↦ le_trans h interior_subset⟩
 
 /-- The galois coinsertion between sets and opens. -/
 def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where

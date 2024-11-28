@@ -318,7 +318,7 @@ theorem exists_continuous_zero_one_of_isClosed [NormalSpace X]
       rintro c u c_closed - u_open cu
       rcases normal_exists_closure_subset c_closed u_open cu with ⟨v, v_open, cv, hv⟩
       exact ⟨v, v_open, cv, hv, trivial⟩ }
-  exact ⟨⟨c.lim, c.continuous_lim⟩, c.lim_of_mem_C, fun x hx => c.lim_of_nmem_U _ fun h => h hx,
+  exact ⟨⟨c.lim, c.continuous_lim⟩, c.lim_of_mem_C, fun x hx => c.lim_of_nmem_U _ fun h ↦ h hx,
     c.lim_mem_Icc⟩
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
@@ -350,7 +350,7 @@ theorem exists_continuous_zero_one_of_isCompact [RegularSpace X] [LocallyCompact
       refine ⟨interior k, isOpen_interior, ck, A.trans ku,
         k_comp.of_isClosed_subset isClosed_closure A⟩ }
   exact ⟨⟨c.lim, c.continuous_lim⟩, fun x hx ↦ c.lim_of_mem_C _ (sk.trans interior_subset hx),
-    fun x hx => c.lim_of_nmem_U _ fun h => h hx, c.lim_mem_Icc⟩
+    fun x hx => c.lim_of_nmem_U _ fun h ↦ h hx, c.lim_mem_Icc⟩
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous

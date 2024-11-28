@@ -154,7 +154,7 @@ instance : MonadFunctor m (StateListT σ m) := ⟨fun f x s => f (x s)⟩
 @[always_inline]
 instance{ε} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
   throw    := StateListT.lift ∘ throwThe ε
-  tryCatch := fun x c s => tryCatchThe ε (x s) (fun e => c e s)
+  tryCatch := fun x c s => tryCatchThe ε (x s) (fun e ↦ c e s)
 }
 
 end

@@ -74,7 +74,7 @@ theorem IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' h
 variable (G)
 
 theorem isUniform_comm : IsUniform G ε s t ↔ IsUniform G ε t s :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 lemma isUniform_one : G.IsUniform (1 : 𝕜) s t := by
   intro s' hs' t' ht' hs ht

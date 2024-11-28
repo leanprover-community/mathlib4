@@ -200,7 +200,7 @@ end
 a multiequalizer of suitable maps `F.obj (op (E.X i)) ⟶ F.obj (op (E.Y j))`
 induced by `E.p₁ j` and `E.p₂ j`. -/
 noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
-  Multifork.IsLimit.mk _ (fun c => multiforkLift c) (fun c => multiforkLift_map c) (by
+  Multifork.IsLimit.mk _ (fun c ↦ multiforkLift c) (fun c ↦ multiforkLift_map c) (by
     intro c m hm
     apply F.cond.hom_ext_ofArrows _ E.mem₀
     intro i₀

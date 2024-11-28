@@ -197,7 +197,7 @@ It is useful, e.g., to verify if the proof-irrelevant part of a definition depen
 -/
 def eraseProofs (e : Expr) : MetaM Expr :=
   Meta.transform (skipConstInApp := true) e
-    (pre := fun e => do
+    (pre := fun e ↦ do
       if (← Meta.isProof e) then
         return .continue (← mkSyntheticSorry (← inferType e))
       else

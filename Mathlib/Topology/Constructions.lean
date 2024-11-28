@@ -572,7 +572,7 @@ theorem nhds_swap (x : X) (y : Y) : 𝓝 (x, y) = (𝓝 (y, x)).map Prod.swap :=
 
 theorem Filter.Tendsto.prod_mk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ → X} {my : γ → Y}
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
-    Tendsto (fun c => (mx c, my c)) f (𝓝 (x, y)) := by
+    Tendsto (fun c ↦ (mx c, my c)) f (𝓝 (x, y)) := by
   rw [nhds_prod_eq]; exact Filter.Tendsto.prod_mk hx hy
 
 theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}

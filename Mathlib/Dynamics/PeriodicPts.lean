@@ -268,7 +268,7 @@ theorem IsPeriodicPt.minimalPeriod_pos (hn : 0 < n) (hx : IsPeriodicPt f n x) :
   minimalPeriod_pos_of_mem_periodicPts <| mk_mem_periodicPts hn hx
 
 theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ periodicPts f :=
-  ⟨not_imp_not.1 fun h => by simp only [minimalPeriod, dif_neg h, lt_irrefl 0, not_false_iff],
+  ⟨not_imp_not.1 fun h ↦ by simp only [minimalPeriod, dif_neg h, lt_irrefl 0, not_false_iff],
     minimalPeriod_pos_of_mem_periodicPts⟩
 
 theorem minimalPeriod_eq_zero_iff_nmem_periodicPts : minimalPeriod f x = 0 ↔ x ∉ periodicPts f := by
@@ -317,7 +317,7 @@ theorem iterate_eq_iterate_iff_of_lt_minimalPeriod {m n : ℕ} (hm : m < minimal
     (Nat.succ_le_of_lt ((is_periodic_id _ _).minimalPeriod_pos Nat.one_pos))
 
 theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← iterate_one f]
     refine Function.IsPeriodicPt.isFixedPt ?_
     rw [← h]
@@ -344,7 +344,7 @@ theorem IsPeriodicPt.minimalPeriod_dvd (hx : IsPeriodicPt f n x) : minimalPeriod
         Nat.mod_lt _ <| hx.minimalPeriod_pos hn0
 
 theorem isPeriodicPt_iff_minimalPeriod_dvd : IsPeriodicPt f n x ↔ minimalPeriod f x ∣ n :=
-  ⟨IsPeriodicPt.minimalPeriod_dvd, fun h => (isPeriodicPt_minimalPeriod f x).trans_dvd h⟩
+  ⟨IsPeriodicPt.minimalPeriod_dvd, fun h ↦ (isPeriodicPt_minimalPeriod f x).trans_dvd h⟩
 
 open Nat
 

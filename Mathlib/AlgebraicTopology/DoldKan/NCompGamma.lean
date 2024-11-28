@@ -37,7 +37,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     (i : Δ' ⟶ [n]) [hi : Mono i] (h₁ : Δ'.len ≠ n) (h₂ : ¬Isδ₀ i) :
     PInfty.f n ≫ X.map i.op = 0 := by
   induction' Δ' using SimplexCategory.rec with m
-  obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
+  obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h ↦ by
         rw [← h] at h₁
         exact h₁ rfl)
   simp only [len_mk] at hk
@@ -54,12 +54,12 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     clear h₂ hi
     subst hk
     obtain ⟨j₁ : Fin (_ + 1), i, rfl⟩ :=
-      eq_comp_δ_of_not_surjective i fun h => by
+      eq_comp_δ_of_not_surjective i fun h ↦ by
         have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
         dsimp at h'
         omega
     obtain ⟨j₂, i, rfl⟩ :=
-      eq_comp_δ_of_not_surjective i fun h => by
+      eq_comp_δ_of_not_surjective i fun h ↦ by
         have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
         dsimp at h'
         omega

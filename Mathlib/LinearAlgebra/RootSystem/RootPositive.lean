@@ -93,7 +93,7 @@ lemma pairing_zero_iff : P.pairing i j = 0 ↔ P.pairing j i = 0 := by
 
 lemma coxeterWeight_zero_iff_isOrthogonal : P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
   rw [coxeterWeight, mul_eq_zero]
-  refine ⟨fun h => ?_, fun h => Or.inl h.1⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ Or.inl h.1⟩
   rcases h with h | h
   · exact ⟨h, (pairing_zero_iff B i j).mp h⟩
   · exact ⟨(pairing_zero_iff B j i).mp h, h⟩

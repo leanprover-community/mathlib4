@@ -73,7 +73,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
   · rintro ⟨U, G, h1, h2⟩
     obtain ⟨j, hj⟩ := IsCofiltered.inf_objs_exists G
     let g : ∀ e ∈ G, j ⟶ e := fun _ he => (hj he).some
-    let Vs : J → Set (F.obj j) := fun e => if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
+    let Vs : J → Set (F.obj j) := fun e ↦ if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
     let V : Set (F.obj j) := ⋂ (e : J) (_he : e ∈ G), Vs e
     refine ⟨j, V, ?_, ?_⟩
     · -- An intermediate claim used to apply induction along `G : Finset J` later on.

@@ -405,7 +405,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   rw [lintegral_iSup]
   rotate_left
   · exact fun n => h_some_meas_integral (F n)
-  · exact fun i j hij b => lintegral_mono fun c => h_mono hij _
+  · exact fun i j hij b => lintegral_mono fun c ↦ h_mono hij _
   congr
   ext1 n
   refine SimpleFunc.induction ?_ ?_ (F n)

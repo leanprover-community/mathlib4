@@ -198,7 +198,7 @@ variable {R : Type*} [CommSemiring R]
 
 theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
     ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by
-  have : ¬_ := fun h => hf ⟨exists_pair_ne R, mul_comm, h⟩
+  have : ¬_ := fun h ↦ hf ⟨exists_pair_ne R, mul_comm, h⟩
   simp_rw [isUnit_iff_exists_inv]
   push_neg at this ⊢
   obtain ⟨x, hx, not_unit⟩ := this
@@ -234,12 +234,12 @@ This result actually holds for all division semirings, but we lack the predicate
 theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) := by
   cases subsingleton_or_nontrivial R
   · exact
-      ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
+      ⟨fun h ↦ (not_isField_of_subsingleton _ h).elim, fun h =>
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]
   push_neg
   simp_rw [lt_top_iff_ne_top, bot_lt_iff_ne_bot, ← or_iff_not_imp_left, not_ne_iff]
-  exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
+  exact ⟨fun h ↦ ⟨h⟩, fun h ↦ h.2⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/
 theorem ne_bot_of_isMaximal_of_not_isField [Nontrivial R] {M : Ideal R} (max : M.IsMaximal)

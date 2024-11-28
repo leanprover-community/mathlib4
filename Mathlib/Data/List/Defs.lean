@@ -284,7 +284,7 @@ def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l �
       -- pattern matching on `hx` too makes this not reducible!
       let ⟨a, ha⟩ :=
         chooseX ls
-          (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e => pl <| e ▸ h₂, h₂⟩)
+          (hp.imp fun _ ⟨o, h₂⟩ => ⟨(mem_cons.mp o).resolve_left fun e ↦ pl <| e ▸ h₂, h₂⟩)
       ⟨a, mem_cons.mpr <| Or.inr ha.1, ha.2⟩
 
 /-- Given a decidable predicate `p` and a proof of existence of `a ∈ l` such that `p a`,

@@ -108,7 +108,7 @@ theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
   convert Setoid.card_classes_ker_le C
 
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
-    (hw : w ∈ C.colorClass c) : ¬G.Adj v w := fun h => C.valid h (Eq.trans hv (Eq.symm hw))
+    (hw : w ∈ C.colorClass c) : ¬G.Adj v w := fun h ↦ C.valid h (Eq.trans hv (Eq.symm hw))
 
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
   fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw

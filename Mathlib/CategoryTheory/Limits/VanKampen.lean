@@ -203,7 +203,7 @@ theorem IsVanKampenColimit.of_mapCocone (G : C ⥤ D) {F : J ⥤ C} {c : Cocone 
   refine (Iff.trans ?_ (H (G.mapCocone c') (whiskerRight α G) (G.map f)
       (by ext j; simpa using G.congr_map (NatTrans.congr_app h j))
       (hα.whiskerRight G))).trans (forall_congr' fun j => ?_)
-  · exact ⟨fun h => ⟨isColimitOfPreserves G h.some⟩, fun h => ⟨isColimitOfReflects G h.some⟩⟩
+  · exact ⟨fun h ↦ ⟨isColimitOfPreserves G h.some⟩, fun h ↦ ⟨isColimitOfReflects G h.some⟩⟩
   · exact IsPullback.map_iff G (NatTrans.congr_app h.symm j)
 
 theorem IsVanKampenColimit.mapCocone_iff (G : C ⥤ D) {F : J ⥤ C} {c : Cocone F}

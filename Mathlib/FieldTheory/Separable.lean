@@ -105,8 +105,8 @@ theorem Separable.isCoprime {f g : R[X]} (h : (f * g).Separable) : IsCoprime f g
 theorem Separable.of_pow' {f : R[X]} :
     ∀ {n : ℕ} (_h : (f ^ n).Separable), IsUnit f ∨ f.Separable ∧ n = 1 ∨ n = 0
   | 0 => fun _h => Or.inr <| Or.inr rfl
-  | 1 => fun h => Or.inr <| Or.inl ⟨pow_one f ▸ h, rfl⟩
-  | n + 2 => fun h => by
+  | 1 => fun h ↦ Or.inr <| Or.inl ⟨pow_one f ▸ h, rfl⟩
+  | n + 2 => fun h ↦ by
     rw [pow_succ, pow_succ] at h
     exact Or.inl (isCoprime_self.1 h.isCoprime.of_mul_left_right)
 
@@ -435,7 +435,7 @@ theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) 
 -- bi-implication, but it is nontrivial!
 /-- In a field `F`, `X ^ n - 1` is separable iff `↑n ≠ 0`. -/
 theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔ (n : F) ≠ 0 := by
-  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 _ h)⟩
+  refine ⟨?_, fun h ↦ separable_X_pow_sub_C_unit 1 (IsUnit.mk0 _ h)⟩
   rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
   -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
   rintro (h : IsCoprime _ _) hn'
@@ -583,7 +583,7 @@ variable {F}
 theorem Algebra.isSeparable_iff :
     Algebra.IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ IsSeparable F x :=
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
-    fun h => ⟨fun x => (h x).2⟩⟩
+    fun h ↦ ⟨fun x => (h x).2⟩⟩
 
 variable {E : Type*}
 

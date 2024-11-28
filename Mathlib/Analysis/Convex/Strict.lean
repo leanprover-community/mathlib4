@@ -304,7 +304,7 @@ theorem StrictConvex.add_smul_mem (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hxy
     (hy : y ≠ 0) {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : x + t • y ∈ interior s := by
   have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> field_simp
   rw [h]
-  exact hs hx hxy (fun h => hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
+  exact hs hx hxy (fun h ↦ hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
     (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel 1 t)
 
 theorem StrictConvex.smul_mem_of_zero_mem (hs : StrictConvex 𝕜 s) (zero_mem : (0 : E) ∈ s)

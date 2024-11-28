@@ -480,7 +480,7 @@ theorem IsCompact.finite_of_discrete [DiscreteTopology X] (hs : IsCompact s) : s
   exact t.finite_toSet.subset hst
 
 theorem isCompact_iff_finite [DiscreteTopology X] : IsCompact s ↔ s.Finite :=
-  ⟨fun h => h.finite_of_discrete, fun h => h.isCompact⟩
+  ⟨fun h ↦ h.finite_of_discrete, fun h ↦ h.isCompact⟩
 
 theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪ t) := by
   rw [union_eq_iUnion]; exact isCompact_iUnion fun b ↦ by cases b <;> assumption
@@ -726,7 +726,7 @@ instance (priority := 10) Subsingleton.compactSpace [Subsingleton X] : CompactSp
   ⟨subsingleton_univ.isCompact⟩
 
 theorem isCompact_univ_iff : IsCompact (univ : Set X) ↔ CompactSpace X :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
 
 theorem isCompact_univ [h : CompactSpace X] : IsCompact (univ : Set X) :=
   h.isCompact_univ
@@ -1093,7 +1093,7 @@ protected lemma Pi.exists_compact_superset_iff {s : Set (Π i, X i)} :
 /-- **Tychonoff's theorem** formulated in terms of filters: `Filter.cocompact` on an indexed product
 type `Π d, X d` the `Filter.coprodᵢ` of filters `Filter.cocompact` on `X d`. -/
 theorem Filter.coprodᵢ_cocompact {X : ι → Type*} [∀ d, TopologicalSpace (X d)] :
-    (Filter.coprodᵢ fun d => Filter.cocompact (X d)) = Filter.cocompact (∀ d, X d) := by
+    (Filter.coprodᵢ fun d ↦ Filter.cocompact (X d)) = Filter.cocompact (∀ d, X d) := by
   refine le_antisymm (iSup_le fun i => Filter.comap_cocompact_le (continuous_apply i)) ?_
   refine compl_surjective.forall.2 fun s H => ?_
   simp only [compl_mem_coprodᵢ, Filter.mem_cocompact, compl_subset_compl, image_subset_iff] at H ⊢

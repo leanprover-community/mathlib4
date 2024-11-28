@@ -64,7 +64,7 @@ variable {R A B}
 /-- An algebra over a Noetherian ring is finitely generated if and only if it is finitely
 presented. -/
 theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentation R A := by
-  refine ⟨fun h => ?_, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
+  refine ⟨fun h ↦ ?_, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 h
   refine ⟨n, f, hf, ?_⟩
   have hnoet : IsNoetherianRing (MvPolynomial (Fin n) R) := by infer_instance

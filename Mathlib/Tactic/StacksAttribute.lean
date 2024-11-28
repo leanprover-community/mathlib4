@@ -68,14 +68,14 @@ abbrev stacksTagKind : SyntaxNodeKind := `stacksTag
 uppercase letters. -/
 def stacksTagFn : ParserFn := fun c s =>
   let i := s.pos
-  let s := takeWhileFn (fun c => c.isAlphanum) c s
+  let s := takeWhileFn (fun c ↦ c.isAlphanum) c s
   if s.hasError then
     s
   else if s.pos == i then
     ParserState.mkError s "stacks tag"
   else
     let tag := Substring.mk c.input i s.pos |>.toString
-    if !tag.all fun c => c.isDigit || c.isUpper then
+    if !tag.all fun c ↦ c.isDigit || c.isUpper then
       ParserState.mkUnexpectedError s
         "Stacks tags must consist only of digits and uppercase letters."
     else if tag.length != 4 then
@@ -174,7 +174,7 @@ with Stacks Project tag equal to `tag`.
 private def Lean.Environment.getSortedStackProjectDeclNames (env : Environment) (tag : String) :
     Array Name :=
   let tags := env.getSortedStackProjectTags
-  tags.filterMap fun d => if d.tag == tag then some d.declName else none
+  tags.filterMap fun d ↦ if d.tag == tag then some d.declName else none
 
 namespace Mathlib.StacksTag
 

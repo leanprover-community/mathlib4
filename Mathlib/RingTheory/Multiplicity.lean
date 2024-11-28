@@ -192,7 +192,7 @@ theorem multiplicity.Finite.not_unit (h : Finite a b) : ¬IsUnit a :=
   hn ∘ IsUnit.dvd ∘ IsUnit.pow (n + 1)
 
 theorem multiplicity.Finite.mul_left {c : α} : Finite a (b * c) → Finite a b := fun ⟨n, hn⟩ =>
-  ⟨n, fun h => hn (h.trans (dvd_mul_right _ _))⟩
+  ⟨n, fun h ↦ hn (h.trans (dvd_mul_right _ _))⟩
 
 theorem pow_dvd_of_le_emultiplicity {k : ℕ} (hk : k ≤ emultiplicity a b) :
     a ^ k ∣ b := by classical
@@ -227,7 +227,7 @@ theorem multiplicity.Finite.not_pow_dvd_of_multiplicity_lt (hf : Finite a b) {m 
   norm_cast
 
 theorem multiplicity_pos_of_dvd (hdiv : a ∣ b) : 0 < multiplicity a b := by
-  refine zero_lt_iff.2 fun h => ?_
+  refine zero_lt_iff.2 fun h ↦ ?_
   simpa [hdiv] using Finite.not_pow_dvd_of_multiplicity_lt
     (by by_contra! nh; simp [nh] at h) (lt_one_iff.mpr h)
 
@@ -359,7 +359,7 @@ theorem emultiplicity_eq_emultiplicity_iff {c d : β} :
     emultiplicity a b = emultiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b ↔ c ^ n ∣ d :=
   ⟨fun h n =>
     ⟨emultiplicity_le_emultiplicity_iff.1 h.le n, emultiplicity_le_emultiplicity_iff.1 h.ge n⟩,
-    fun h => le_antisymm (emultiplicity_le_emultiplicity_iff.2 fun n => (h n).mp)
+    fun h ↦ le_antisymm (emultiplicity_le_emultiplicity_iff.2 fun n => (h n).mp)
       (emultiplicity_le_emultiplicity_iff.2 fun n => (h n).mpr)⟩
 
 theorem le_emultiplicity_map {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
@@ -415,7 +415,7 @@ theorem Nat.multiplicity_finite_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 <
               | 1 => ha1 rfl
               | b+2 => by omega
           not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (lt_pow_self ha_gt_one b),
-      fun h => by cases h <;> simp [*]⟩
+      fun h ↦ by cases h <;> simp [*]⟩
 
 alias ⟨_, Dvd.multiplicity_pos⟩ := dvd_iff_multiplicity_pos
 
@@ -637,7 +637,7 @@ theorem Prime.multiplicity_finite_mul {p a b : α} (hp : Prime p) :
 
 theorem multiplicity.Finite.mul_iff {p a b : α} (hp : Prime p) :
     Finite p (a * b) ↔ Finite p a ∧ Finite p b :=
-  ⟨fun h => ⟨h.mul_left, h.mul_right⟩, fun h =>
+  ⟨fun h ↦ ⟨h.mul_left, h.mul_right⟩, fun h =>
     hp.multiplicity_finite_mul h.1 h.2⟩
 
 theorem multiplicity.Finite.pow {p a : α} (hp : Prime p)

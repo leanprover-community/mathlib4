@@ -141,7 +141,7 @@ theorem erase_insert_of_ne {a b : α} {s : Finset α} (h : a ≠ b) :
     simp only [mem_erase, mem_insert, and_or_left, this]
 
 theorem erase_cons_of_ne {a b : α} {s : Finset α} (ha : a ∉ s) (hb : a ≠ b) :
-    erase (cons a s ha) b = cons a (erase s b) fun h => ha <| erase_subset _ _ h := by
+    erase (cons a s ha) b = cons a (erase s b) fun h ↦ ha <| erase_subset _ _ h := by
   simp only [cons_eq_insert, erase_insert_of_ne hb]
 
 @[simp] theorem insert_erase (h : a ∈ s) : insert a (erase s a) = s :=
@@ -164,7 +164,7 @@ theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s :
     _ = _ := insert_erase h
 
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a := by
-  refine ⟨fun h => ?_, fun ⟨a, ha, h⟩ => ssubset_of_subset_of_ssubset h <| erase_ssubset ha⟩
+  refine ⟨fun h ↦ ?_, fun ⟨a, ha, h⟩ => ssubset_of_subset_of_ssubset h <| erase_ssubset ha⟩
   obtain ⟨a, ht, hs⟩ := not_subset.1 h.2
   exact ⟨a, ht, subset_erase.2 ⟨h.1, hs⟩⟩
 
@@ -466,7 +466,7 @@ theorem filter_eq [DecidableEq β] (s : Finset β) (b : β) :
   split_ifs with h
   · ext
     simp only [mem_filter, mem_singleton, decide_eq_true_eq]
-    refine ⟨fun h => h.2.symm, ?_⟩
+    refine ⟨fun h ↦ h.2.symm, ?_⟩
     rintro rfl
     exact ⟨h, rfl⟩
   · ext

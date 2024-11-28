@@ -123,7 +123,7 @@ theorem IsCycle.cycleOf_eq [DecidableRel f.SameCycle]
 @[simp]
 theorem cycleOf_eq_one_iff (f : Perm α) [DecidableRel f.SameCycle] : cycleOf f x = 1 ↔ f x = x := by
   simp_rw [Perm.ext_iff, cycleOf_apply, one_apply]
-  refine ⟨fun h => (if_pos (SameCycle.refl f x)).symm.trans (h x), fun h y => ?_⟩
+  refine ⟨fun h ↦ (if_pos (SameCycle.refl f x)).symm.trans (h x), fun h y => ?_⟩
   by_cases hy : f y = y
   · rw [hy, ite_self]
   · exact if_neg (mt SameCycle.apply_eq_self_iff (by tauto))
@@ -156,7 +156,7 @@ theorem isCycle_cycleOf (f : Perm α) [DecidableRel f.SameCycle] (hx : f x ≠ x
     IsCycle (cycleOf f x) :=
   have : cycleOf f x x ≠ x := by rwa [SameCycle.rfl.cycleOf_apply]
   (isCycle_iff_sameCycle this).2 @fun y =>
-    ⟨fun h => mt h.apply_eq_self_iff.2 this, fun h =>
+    ⟨fun h ↦ mt h.apply_eq_self_iff.2 this, fun h =>
       if hxy : SameCycle f x y then
         let ⟨i, hi⟩ := hxy
         ⟨i, by rw [cycleOf_zpow_apply_self, hi]⟩
@@ -167,7 +167,7 @@ theorem isCycle_cycleOf (f : Perm α) [DecidableRel f.SameCycle] (hx : f x ≠ x
 @[simp]
 theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
     2 ≤ #(cycleOf f x).support ↔ f x ≠ x := by
-  refine ⟨fun h => ?_, fun h => by simpa using (isCycle_cycleOf _ h).two_le_card_support⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by simpa using (isCycle_cycleOf _ h).two_le_card_support⟩
   contrapose! h
   rw [← cycleOf_eq_one_iff] at h
   simp [h]
@@ -175,7 +175,7 @@ theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
 @[simp] lemma support_cycleOf_nonempty [DecidableEq α] [Fintype α] :
     (cycleOf f x).support.Nonempty ↔ f x ≠ x := by
   rw [← two_le_card_support_cycleOf_iff, ← card_pos, ← Nat.succ_le_iff]
-  exact ⟨fun h => Or.resolve_left h.eq_or_lt (card_support_ne_one _).symm, zero_lt_two.trans_le⟩
+  exact ⟨fun h ↦ Or.resolve_left h.eq_or_lt (card_support_ne_one _).symm, zero_lt_two.trans_le⟩
 
 @[deprecated support_cycleOf_nonempty (since := "2024-06-16")]
 theorem card_support_cycleOf_pos_iff [DecidableEq α] [Fintype α] :
@@ -326,7 +326,7 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
         simp [*]}⟩
   | x::l =>
     if hx : f x = x then cycleFactorsAux l f (by
-        intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (h hy))
+        intro y hy; exact List.mem_of_ne_of_mem (fun h ↦ hy (by rwa [h])) (h hy))
     else
       let ⟨m, hm⟩ :=
         cycleFactorsAux l ((cycleOf f x)⁻¹ * f) (by

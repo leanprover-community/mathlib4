@@ -55,7 +55,7 @@ def runDefEqTactic (m : Option FVarId → Expr → MetaM Expr)
     (checkDefEq : Bool := true) :
     TacticM Unit := withMainContext do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc?))
-    (atLocal := fun h => liftMetaTactic1 fun mvarId => do
+    (atLocal := fun h ↦ liftMetaTactic1 fun mvarId => do
       let ty ← h.getType
       let ty' ← m h (← instantiateMVars ty)
       if Expr.equal ty ty' then

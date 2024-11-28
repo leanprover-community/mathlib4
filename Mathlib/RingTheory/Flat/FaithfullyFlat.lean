@@ -71,7 +71,7 @@ lemma iff_flat_and_proper_ideal :
     FaithfullyFlat R M ↔
     (Flat R M ∧ ∀ (I : Ideal R), I ≠ ⊤ → I • (⊤ : Submodule R M) ≠ ⊤) := by
   rw [faithfullyFlat_iff]
-  refine ⟨fun ⟨flat, h⟩ => ⟨flat, fun I hI r => ?_⟩, fun h => ⟨h.1, fun m hm => h.2 _ hm.ne_top⟩⟩
+  refine ⟨fun ⟨flat, h⟩ => ⟨flat, fun I hI r => ?_⟩, fun h ↦ ⟨h.1, fun m hm => h.2 _ hm.ne_top⟩⟩
   obtain ⟨m, hm, le⟩ := I.exists_le_maximal hI
   exact h hm <| eq_top_iff.2 <| show ⊤ ≤ m • ⊤ from r ▸ Submodule.smul_mono le (by simp [r])
 
@@ -356,7 +356,7 @@ lemma exact_iff_rTensor_exact [fl : FaithfullyFlat R M]
     {N3 : Type max u v} [AddCommGroup N3] [Module R N3]
     (l12 : N1 →ₗ[R] N2) (l23 : N2 →ₗ[R] N3) :
     Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M) :=
-  ⟨fun e => Module.Flat.iff_rTensor_exact.1 fl.toFlat e,
+  ⟨fun e ↦ Module.Flat.iff_rTensor_exact.1 fl.toFlat e,
     fun ex => rTensor_reflects_exact R M l12 l23 ex⟩
 
 lemma iff_exact_iff_rTensor_exact :
@@ -423,8 +423,8 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
     (f : N →ₗ[R] N') :
     f = 0 ↔ LinearMap.rTensor M f = 0 :=
   zero_iff_lTensor_zero R M f |>.trans
-  ⟨fun h => by ext n m; exact (TensorProduct.comm R N' M).injective <|
-    (by simpa using congr($h (m ⊗ₜ n))), fun h => by
+  ⟨fun h ↦ by ext n m; exact (TensorProduct.comm R N' M).injective <|
+    (by simpa using congr($h (m ⊗ₜ n))), fun h ↦ by
     ext m n; exact (TensorProduct.comm R M N').injective <| (by simpa using congr($h (n ⊗ₜ m)))⟩
 
 end arbitrary_universe

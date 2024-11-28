@@ -128,12 +128,12 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
   toFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
+      exact fun h ↦ (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
-      exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
+      exact fun h ↦ (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   left_inv g :=
     Quotient.inductionOn' g fun g =>

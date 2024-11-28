@@ -222,7 +222,7 @@ theorem inv_mul_cancel_left (a : αˣ) (b : α) : (↑a⁻¹ : α) * (a * b) = b
 
 @[to_additive]
 theorem inv_mul_eq_iff_eq_mul {b c : α} : ↑a⁻¹ * b = c ↔ b = a * c :=
-  ⟨fun h => by rw [← h, mul_inv_cancel_left], fun h => by rw [h, inv_mul_cancel_left]⟩
+  ⟨fun h ↦ by rw [← h, mul_inv_cancel_left], fun h ↦ by rw [h, inv_mul_cancel_left]⟩
 
 @[to_additive]
 instance instMonoid : Monoid αˣ :=
@@ -432,7 +432,7 @@ end Monoid
 
 @[to_additive]
 theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b = 1 :=
-  ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => isUnit_of_mul_eq_one _ b hab⟩
+  ⟨fun h ↦ h.exists_right_inv, fun ⟨b, hab⟩ => isUnit_of_mul_eq_one _ b hab⟩
 
 @[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
@@ -472,8 +472,8 @@ namespace IsUnit
 
 @[to_additive (attr := simp)]
 theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUnit y :=
-  ⟨fun h => ⟨isUnit_of_mul_isUnit_left h, isUnit_of_mul_isUnit_right h⟩,
-   fun h => IsUnit.mul h.1 h.2⟩
+  ⟨fun h ↦ ⟨isUnit_of_mul_isUnit_left h, isUnit_of_mul_isUnit_right h⟩,
+   fun h ↦ IsUnit.mul h.1 h.2⟩
 
 section Monoid
 

@@ -74,7 +74,7 @@ variable (c)
 @[simp]
 theorem ofScalars_series_eq_iff [Nontrivial E] (c' : ℕ → 𝕜) :
     ofScalars E c = ofScalars E c' ↔ c = c' :=
-  ⟨fun e => ofScalars_series_injective 𝕜 E e, _root_.congrArg _⟩
+  ⟨fun e ↦ ofScalars_series_injective 𝕜 E e, _root_.congrArg _⟩
 
 theorem ofScalars_apply_zero (n : ℕ) :
     (ofScalars E c n fun _ => 0) = Pi.single (f := fun _ => E) 0 (c 0 • 1) n := by

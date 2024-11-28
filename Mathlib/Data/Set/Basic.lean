@@ -167,7 +167,7 @@ theorem SetCoe.ext {s : Set α} {a b : s} : (a : α) = b → a = b :=
   Subtype.eq
 
 theorem SetCoe.ext_iff {s : Set α} {a b : s} : (↑a : α) = ↑b ↔ a = b :=
-  Iff.intro SetCoe.ext fun h => h ▸ rfl
+  Iff.intro SetCoe.ext fun h ↦ h ▸ rfl
 
 end SetCoe
 
@@ -304,7 +304,7 @@ theorem Subset.antisymm {a b : Set α} (h₁ : a ⊆ b) (h₂ : b ⊆ a) : a = b
   Set.ext fun _ => ⟨@h₁ _, @h₂ _⟩
 
 theorem Subset.antisymm_iff {a b : Set α} : a = b ↔ a ⊆ b ∧ b ⊆ a :=
-  ⟨fun e => ⟨e.subset, e.symm.subset⟩, fun ⟨h₁, h₂⟩ => Subset.antisymm h₁ h₂⟩
+  ⟨fun e ↦ ⟨e.subset, e.symm.subset⟩, fun ⟨h₁, h₂⟩ => Subset.antisymm h₁ h₂⟩
 
 -- an alternative name
 theorem eq_of_subset_of_subset {a b : Set α} : a ⊆ b → b ⊆ a → a = b :=
@@ -333,7 +333,7 @@ protected theorem ssubset_iff_subset_ne {s t : Set α} : s ⊂ t ↔ s ⊆ t ∧
   @lt_iff_le_and_ne (Set α) _ s t
 
 theorem ssubset_iff_of_subset {s t : Set α} (h : s ⊆ t) : s ⊂ t ↔ ∃ x ∈ t, x ∉ s :=
-  ⟨exists_of_ssubset, fun ⟨_, hxt, hxs⟩ => ⟨h, fun h => hxs <| h hxt⟩⟩
+  ⟨exists_of_ssubset, fun ⟨_, hxt, hxs⟩ => ⟨h, fun h ↦ hxs <| h hxt⟩⟩
 
 protected theorem ssubset_of_ssubset_of_subset {s₁ s₂ s₃ : Set α} (hs₁s₂ : s₁ ⊂ s₂)
     (hs₂s₃ : s₂ ⊆ s₃) : s₁ ⊂ s₃ :=
@@ -901,14 +901,14 @@ theorem mem_insert_iff {x a : α} {s : Set α} : x ∈ insert a s ↔ x = a ∨ 
 
 @[simp]
 theorem insert_eq_of_mem {a : α} {s : Set α} (h : a ∈ s) : insert a s = s :=
-  ext fun _ => or_iff_right_of_imp fun e => e.symm ▸ h
+  ext fun _ => or_iff_right_of_imp fun e ↦ e.symm ▸ h
 
 theorem ne_insert_of_not_mem {s : Set α} (t : Set α) {a : α} : a ∉ s → s ≠ insert a t :=
-  mt fun e => e.symm ▸ mem_insert _ _
+  mt fun e ↦ e.symm ▸ mem_insert _ _
 
 @[simp]
 theorem insert_eq_self : insert a s = s ↔ a ∈ s :=
-  ⟨fun h => h ▸ mem_insert _ _, insert_eq_of_mem⟩
+  ⟨fun h ↦ h ▸ mem_insert _ _, insert_eq_of_mem⟩
 
 theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not
@@ -963,7 +963,7 @@ theorem insert_union_distrib (a : α) (s t : Set α) : insert a (s ∪ t) = inse
   ext fun _ => or_or_distrib_left
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert a s) ha,
+  ⟨fun h ↦ eq_of_not_mem_of_mem_insert (h ▸ mem_insert a s) ha,
     congr_arg (fun x => insert x s)⟩
 
 -- useful in proofs by induction
@@ -973,7 +973,7 @@ theorem forall_of_forall_insert {P : α → Prop} {a : α} {s : Set α} (H : ∀
 
 theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀ x, x ∈ s → P x) (ha : P a)
     (x) (h : x ∈ insert a s) : P x :=
-  h.elim (fun e => e.symm ▸ ha) (H _)
+  h.elim (fun e ↦ e.symm ▸ ha) (H _)
 
 /- Porting note: ∃ x ∈ insert a s, P x is parsed as ∃ x, x ∈ insert a s ∧ P x,
  where in Lean3 it was parsed as `∃ x, ∃ (h : x ∈ insert a s), P x` -/
@@ -1198,7 +1198,7 @@ theorem Nonempty.subset_singleton_iff (h : s.Nonempty) : s ⊆ {a} ↔ s = {a} :
 theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := by
   rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false,
     and_iff_left_iff_imp]
-  exact fun h => h ▸ (singleton_ne_empty _).symm
+  exact fun h ↦ h ▸ (singleton_ne_empty _).symm
 
 theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s = ∅ :=
   ssubset_singleton_iff.1 hs
@@ -1436,7 +1436,7 @@ theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s 
 
 /-! ### Lemmas about set difference -/
 
-theorem not_mem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
+theorem not_mem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h ↦ h.2 hx
 
 theorem mem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∈ s :=
   h.left
@@ -1734,7 +1734,7 @@ theorem powerset_inter (s t : Set α) : 𝒫(s ∩ t) = 𝒫 s ∩ 𝒫 t :=
 
 @[simp]
 theorem powerset_mono : 𝒫 s ⊆ 𝒫 t ↔ s ⊆ t :=
-  ⟨fun h => @h _ (fun _ h => h), fun h _ hu _ ha => h (hu ha)⟩
+  ⟨fun h ↦ @h _ (fun _ h => h), fun h _ hu _ ha => h (hu ha)⟩
 
 theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun _ _ => powerset_mono.2
 
@@ -1761,7 +1761,7 @@ theorem mem_dite (p : Prop) [Decidable p] (s : p → Set α) (t : ¬ p → Set �
     (x ∈ if h : p then s h else t h) ↔ (∀ h : p, x ∈ s h) ∧ ∀ h : ¬p, x ∈ t h := by
   split_ifs with hp
   · exact ⟨fun hx => ⟨fun _ => hx, fun hnp => (hnp hp).elim⟩, fun hx => hx.1 hp⟩
-  · exact ⟨fun hx => ⟨fun h => (hp h).elim, fun _ => hx⟩, fun hx => hx.2 hp⟩
+  · exact ⟨fun hx => ⟨fun h ↦ (hp h).elim, fun _ => hx⟩, fun hx => hx.2 hp⟩
 
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
     (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by
@@ -1784,7 +1784,7 @@ theorem mem_ite_univ_left (p : Prop) [Decidable p] (t : Set α) (x : α) :
 theorem mem_dite_empty_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
     (x ∈ if h : p then t h else ∅) ↔ ∃ h : p, x ∈ t h := by
   simp only [mem_dite, mem_empty_iff_false, imp_false, not_not]
-  exact ⟨fun h => ⟨h.2, h.1 h.2⟩, fun ⟨h₁, h₂⟩ => ⟨fun _ => h₂, h₁⟩⟩
+  exact ⟨fun h ↦ ⟨h.2, h.1 h.2⟩, fun ⟨h₁, h₂⟩ => ⟨fun _ => h₂, h₁⟩⟩
 
 @[simp]
 theorem mem_ite_empty_right (p : Prop) [Decidable p] (t : Set α) (x : α) :
@@ -1794,7 +1794,7 @@ theorem mem_ite_empty_right (p : Prop) [Decidable p] (t : Set α) (x : α) :
 theorem mem_dite_empty_left (p : Prop) [Decidable p] (t : ¬p → Set α) (x : α) :
     (x ∈ if h : p then ∅ else t h) ↔ ∃ h : ¬p, x ∈ t h := by
   simp only [mem_dite, mem_empty_iff_false, imp_false]
-  exact ⟨fun h => ⟨h.1, h.2 h.1⟩, fun ⟨h₁, h₂⟩ => ⟨fun h => h₁ h, fun _ => h₂⟩⟩
+  exact ⟨fun h ↦ ⟨h.1, h.2 h.1⟩, fun ⟨h₁, h₂⟩ => ⟨fun h ↦ h₁ h, fun _ => h₂⟩⟩
 
 @[simp]
 theorem mem_ite_empty_left (p : Prop) [Decidable p] (t : Set α) (x : α) :
@@ -2038,7 +2038,7 @@ theorem eq_univ_of_nonempty {s : Set α} : s.Nonempty → s = univ := fun ⟨x, 
 
 @[elab_as_elim]
 theorem set_cases {p : Set α → Prop} (h0 : p ∅) (h1 : p univ) (s) : p s :=
-  (s.eq_empty_or_nonempty.elim fun h => h.symm ▸ h0) fun h => (eq_univ_of_nonempty h).symm ▸ h1
+  (s.eq_empty_or_nonempty.elim fun h ↦ h.symm ▸ h0) fun h ↦ (eq_univ_of_nonempty h).symm ▸ h1
 
 theorem mem_iff_nonempty {α : Type*} [Subsingleton α] {s : Set α} {x : α} : x ∈ s ↔ s.Nonempty :=
   ⟨fun hx => ⟨x, hx⟩, fun ⟨y, hy⟩ => Subsingleton.elim y x ▸ hy⟩

@@ -242,7 +242,7 @@ theorem orientation_eq_or_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
 if it does not equal that given by that basis. -/
 theorem orientation_ne_iff_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
     x ≠ e.orientation ↔ x = -e.orientation :=
-  ⟨fun h => (e.orientation_eq_or_eq_neg x).resolve_left h, fun h =>
+  ⟨fun h ↦ (e.orientation_eq_or_eq_neg x).resolve_left h, fun h =>
     h.symm ▸ (Module.Ray.ne_neg_self e.orientation).symm⟩
 
 /-- Composing a basis with a linear equiv gives the same orientation if and only if the

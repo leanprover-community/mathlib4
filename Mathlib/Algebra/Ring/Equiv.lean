@@ -635,7 +635,7 @@ theorem coe_toNonUnitalRingHom (f : R ≃+* S) : ⇑(f : R →ₙ+* S) = f :=
 
 theorem coe_nonUnitalRingHom_inj_iff {R S : Type*} [NonUnitalNonAssocSemiring R]
     [NonUnitalNonAssocSemiring S] (f g : R ≃+* S) : f = g ↔ (f : R →ₙ+* S) = g :=
-  ⟨fun h => by rw [h], fun h => ext <| NonUnitalRingHom.ext_iff.mp h⟩
+  ⟨fun h ↦ by rw [h], fun h ↦ ext <| NonUnitalRingHom.ext_iff.mp h⟩
 
 @[simp]
 theorem toNonUnitalRingHom_refl :
@@ -691,7 +691,7 @@ theorem coe_toRingHom (f : R ≃+* S) : ⇑(f : R →+* S) = f :=
 
 theorem coe_ringHom_inj_iff {R S : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
     (f g : R ≃+* S) : f = g ↔ (f : R →+* S) = g :=
-  ⟨fun h => by rw [h], fun h => ext <| RingHom.ext_iff.mp h⟩
+  ⟨fun h ↦ by rw [h], fun h ↦ ext <| RingHom.ext_iff.mp h⟩
 
 /-- The two paths coercion can take to a `NonUnitalRingEquiv` are equivalent -/
 @[simp, norm_cast]

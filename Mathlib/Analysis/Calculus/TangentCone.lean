@@ -244,7 +244,7 @@ theorem UniqueDiffWithinAt.mono (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ t)
 
 theorem uniqueDiffWithinAt_congr (st : 𝓝[s] x = 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 s x ↔ UniqueDiffWithinAt 𝕜 t x :=
-  ⟨fun h => h.mono_nhds <| le_of_eq st, fun h => h.mono_nhds <| le_of_eq st.symm⟩
+  ⟨fun h ↦ h.mono_nhds <| le_of_eq st, fun h ↦ h.mono_nhds <| le_of_eq st.symm⟩
 
 theorem uniqueDiffWithinAt_inter (ht : t ∈ 𝓝 x) :
     UniqueDiffWithinAt 𝕜 (s ∩ t) x ↔ UniqueDiffWithinAt 𝕜 s x :=

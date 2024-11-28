@@ -27,7 +27,7 @@ theorem IsCoatomic.of_isChain_bounded {α : Type*} [PartialOrder α] [OrderTop �
   · obtain ⟨y, hxy, hmax⟩ := this
     refine ⟨y, ⟨hmax.prop.2.ne, fun z hyz ↦ le_top.eq_or_lt.resolve_right fun hz => ?_⟩, hxy⟩
     exact hyz.ne <| hmax.eq_of_le ⟨hxy.trans hyz.le, hz⟩ hyz.le
-  rcases h c hc ⟨y, hy⟩ fun h => (hxc h).2.ne rfl with ⟨z, hz, hcz⟩
+  rcases h c hc ⟨y, hy⟩ fun h ↦ (hxc h).2.ne rfl with ⟨z, hz, hcz⟩
   exact ⟨z, ⟨le_trans (hxc hy).1 (hcz hy), hz.lt_top⟩, hcz⟩
 
 /-- **Zorn's lemma**: A partial order is atomic if every nonempty chain `c`, `⊥ ∉ c`, has a lower

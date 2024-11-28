@@ -178,7 +178,7 @@ theorem length_empty : f.length ∅ = 0 :=
 theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   refine
     le_antisymm (iInf_le_of_le a <| iInf₂_le b Subset.rfl)
-      (le_iInf fun a' => le_iInf fun b' => le_iInf fun h => ENNReal.coe_le_coe.2 ?_)
+      (le_iInf fun a' => le_iInf fun b' => le_iInf fun h ↦ ENNReal.coe_le_coe.2 ?_)
   rcases le_or_lt b a with ab | ab
   · rw [Real.toNNReal_of_nonpos (sub_nonpos.2 (f.mono ab))]
     apply zero_le
@@ -299,7 +299,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
 
 theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
-  refine le_iInf fun a ↦ le_iInf fun b ↦ le_iInf fun h => ?_
+  refine le_iInf fun a ↦ le_iInf fun b ↦ le_iInf fun h ↦ ?_
   refine
     le_trans
       (add_le_add (f.length_mono <| inter_subset_inter_left _ h)

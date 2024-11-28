@@ -92,7 +92,7 @@ end
 
 protected theorem TopologicalSpace.ext_iff {t t' : TopologicalSpace X} :
     t = t' ↔ ∀ s, IsOpen[t] s ↔ IsOpen[t'] s :=
-  ⟨fun h _ => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
+  ⟨fun h _ => h ▸ Iff.rfl, fun h ↦ by ext; exact h _⟩
 
 theorem isOpen_fold {t : TopologicalSpace X} : t.IsOpen s = IsOpen[t] s :=
   rfl
@@ -144,7 +144,7 @@ theorem IsOpen.and : IsOpen { x | p₁ x } → IsOpen { x | p₂ x } → IsOpen 
   IsOpen.inter
 
 @[simp] theorem isOpen_compl_iff : IsOpen sᶜ ↔ IsClosed s :=
-  ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.isOpen_compl⟩
 
 theorem TopologicalSpace.ext_iff_isClosed {X} {t₁ t₂ : TopologicalSpace X} :
     t₁ = t₂ ↔ ∀ s, IsClosed[t₁] s ↔ IsClosed[t₂] s := by
@@ -238,16 +238,16 @@ theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
   interior_subset.antisymm (interior_maximal (Subset.refl s) h)
 
 theorem interior_eq_iff_isOpen : interior s = s ↔ IsOpen s :=
-  ⟨fun h => h ▸ isOpen_interior, IsOpen.interior_eq⟩
+  ⟨fun h ↦ h ▸ isOpen_interior, IsOpen.interior_eq⟩
 
 theorem subset_interior_iff_isOpen : s ⊆ interior s ↔ IsOpen s := by
   simp only [interior_eq_iff_isOpen.symm, Subset.antisymm_iff, interior_subset, true_and]
 
 theorem IsOpen.subset_interior_iff (h₁ : IsOpen s) : s ⊆ interior t ↔ s ⊆ t :=
-  ⟨fun h => Subset.trans h interior_subset, fun h₂ => interior_maximal h₂ h₁⟩
+  ⟨fun h ↦ Subset.trans h interior_subset, fun h₂ => interior_maximal h₂ h₁⟩
 
 theorem subset_interior_iff : t ⊆ interior s ↔ ∃ U, IsOpen U ∧ t ⊆ U ∧ U ⊆ s :=
-  ⟨fun h => ⟨interior s, isOpen_interior, h, interior_subset⟩, fun ⟨_U, hU, htU, hUs⟩ =>
+  ⟨fun h ↦ ⟨interior s, isOpen_interior, h, interior_subset⟩, fun ⟨_U, hU, htU, hUs⟩ =>
     htU.trans (interior_maximal hUs hU)⟩
 
 lemma interior_subset_iff : interior s ⊆ t ↔ ∀ U, IsOpen U → U ⊆ s → U ⊆ t := by
@@ -267,7 +267,7 @@ theorem interior_univ : interior (univ : Set X) = univ :=
 
 @[simp]
 theorem interior_eq_univ : interior s = univ ↔ s = univ :=
-  ⟨fun h => univ_subset_iff.mp <| h.symm.trans_le interior_subset, fun h => h.symm ▸ interior_univ⟩
+  ⟨fun h ↦ univ_subset_iff.mp <| h.symm.trans_le interior_subset, fun h ↦ h.symm ▸ interior_univ⟩
 
 @[simp]
 theorem interior_interior : interior (interior s) = interior s :=
@@ -377,7 +377,7 @@ theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
   closure_minimal (Subset.refl _) hs
 
 theorem IsClosed.closure_subset_iff (h₁ : IsClosed t) : closure s ⊆ t ↔ s ⊆ t :=
-  ⟨Subset.trans subset_closure, fun h => closure_minimal h h₁⟩
+  ⟨Subset.trans subset_closure, fun h ↦ closure_minimal h h₁⟩
 
 theorem IsClosed.mem_iff_closure_subset (hs : IsClosed s) :
     x ∈ s ↔ closure ({x} : Set X) ⊆ s :=
@@ -401,7 +401,7 @@ theorem isClosed_of_closure_subset (h : closure s ⊆ s) : IsClosed s := by
   rw [subset_closure.antisymm h]; exact isClosed_closure
 
 theorem closure_eq_iff_isClosed : closure s = s ↔ IsClosed s :=
-  ⟨fun h => h ▸ isClosed_closure, IsClosed.closure_eq⟩
+  ⟨fun h ↦ h ▸ isClosed_closure, IsClosed.closure_eq⟩
 
 theorem closure_subset_iff_isClosed : closure s ⊆ s ↔ IsClosed s :=
   ⟨isClosed_of_closure_subset, IsClosed.closure_subset⟩
@@ -412,7 +412,7 @@ theorem closure_empty : closure (∅ : Set X) = ∅ :=
 
 @[simp]
 theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
-  ⟨subset_eq_empty subset_closure, fun h => h.symm ▸ closure_empty⟩
+  ⟨subset_eq_empty subset_closure, fun h ↦ h.symm ▸ closure_empty⟩
 
 @[simp]
 theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
@@ -505,7 +505,7 @@ theorem Filter.HasBasis.lift'_closure_eq_self {l : Filter X} {p : ι → Prop} {
 
 @[simp]
 theorem Filter.lift'_closure_eq_bot {l : Filter X} : l.lift' closure = ⊥ ↔ l = ⊥ :=
-  ⟨fun h => bot_unique <| h ▸ l.le_lift'_closure, fun h =>
+  ⟨fun h ↦ bot_unique <| h ▸ l.le_lift'_closure, fun h =>
     h.symm ▸ by rw [lift'_bot (monotone_closure _), closure_empty, principal_empty]⟩
 
 theorem dense_iff_closure_eq : Dense s ↔ closure s = univ :=
@@ -724,7 +724,7 @@ theorem nhds_le_of_le {f} (h : x ∈ s) (o : IsOpen s) (sf : 𝓟 s ≤ f) : �
 
 theorem mem_nhds_iff : s ∈ 𝓝 x ↔ ∃ t ⊆ s, IsOpen t ∧ x ∈ t :=
   (nhds_basis_opens x).mem_iff.trans <| exists_congr fun _ =>
-    ⟨fun h => ⟨h.2, h.1.2, h.1.1⟩, fun h => ⟨⟨h.2.2, h.2.1⟩, h.1⟩⟩
+    ⟨fun h ↦ ⟨h.2, h.1.2, h.1.1⟩, fun h ↦ ⟨⟨h.2.2, h.2.1⟩, h.1⟩⟩
 
 /-- A predicate is true in a neighborhood of `x` iff it is true for all the points in an open set
 containing `x`. -/
@@ -792,7 +792,7 @@ theorem Filter.Eventually.eventually_nhds {p : X → Prop} (h : ∀ᶠ y in 𝓝
 @[simp]
 theorem eventually_eventually_nhds {p : X → Prop} :
     (∀ᶠ y in 𝓝 x, ∀ᶠ x in 𝓝 y, p x) ↔ ∀ᶠ x in 𝓝 x, p x :=
-  ⟨fun h => h.self_of_nhds, fun h => h.eventually_nhds⟩
+  ⟨fun h ↦ h.self_of_nhds, fun h ↦ h.eventually_nhds⟩
 
 @[simp]
 theorem frequently_frequently_nhds {p : X → Prop} :
@@ -1044,7 +1044,7 @@ theorem interior_eq_nhds : interior s = { x | 𝓝 x ≤ 𝓟 s } :=
 
 @[simp]
 theorem interior_mem_nhds : interior s ∈ 𝓝 x ↔ s ∈ 𝓝 x :=
-  ⟨fun h => mem_of_superset h interior_subset, fun h =>
+  ⟨fun h ↦ mem_of_superset h interior_subset, fun h =>
     IsOpen.mem_nhds isOpen_interior (mem_interior_iff_mem_nhds.2 h)⟩
 
 theorem interior_setOf_eq {p : X → Prop} : interior { x | p x } = { x | ∀ᶠ y in 𝓝 x, p y } :=
@@ -1350,7 +1350,7 @@ open TopologicalSpace
 -- when topologies are not those provided by instances.
 theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y} {f : X → Y} :
     Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
-  ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
+  ⟨fun hf => hf.1, fun h ↦ ⟨h⟩⟩
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 variable {f : X → Y} {s : Set X} {x : X} {y : Y}

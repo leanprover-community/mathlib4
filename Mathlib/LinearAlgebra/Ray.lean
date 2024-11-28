@@ -92,7 +92,7 @@ theorem trans (hxy : SameRay R x y) (hyz : SameRay R y z) (hy : y = 0 → x = 0 
   rcases eq_or_ne x 0 with (rfl | hx); · exact zero_left z
   rcases eq_or_ne z 0 with (rfl | hz); · exact zero_right x
   rcases eq_or_ne y 0 with (rfl | hy)
-  · exact (hy rfl).elim (fun h => (hx h).elim) fun h => (hz h).elim
+  · exact (hy rfl).elim (fun h ↦ (hx h).elim) fun h ↦ (hz h).elim
   rcases hxy.exists_pos hx hy with ⟨r₁, r₂, hr₁, hr₂, h₁⟩
   rcases hyz.exists_pos hy hz with ⟨r₃, r₄, hr₃, hr₄, h₂⟩
   refine Or.inr (Or.inr <| ⟨r₃ * r₁, r₂ * r₄, mul_pos hr₃ hr₁, mul_pos hr₂ hr₄, ?_⟩)
@@ -200,7 +200,7 @@ variable (R M)
 instance RayVector.Setoid : Setoid (RayVector R M) where
   r x y := SameRay R (x : M) y
   iseqv :=
-    ⟨fun _ => SameRay.refl _, fun h => h.symm, by
+    ⟨fun _ => SameRay.refl _, fun h ↦ h.symm, by
       intros x y z hxy hyz
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
@@ -459,7 +459,7 @@ variable [NoZeroSMulDivisors R M]
 @[simp]
 theorem sameRay_smul_right_iff {v : M} {r : R} : SameRay R v (r • v) ↔ 0 ≤ r ∨ v = 0 :=
   ⟨fun hrv => or_iff_not_imp_left.2 fun hr => eq_zero_of_sameRay_neg_smul_right (not_le.1 hr) hrv,
-    or_imp.2 ⟨SameRay.sameRay_nonneg_smul_right v, fun h => h.symm ▸ SameRay.zero_left _⟩⟩
+    or_imp.2 ⟨SameRay.sameRay_nonneg_smul_right v, fun h ↦ h.symm ▸ SameRay.zero_left _⟩⟩
 
 /-- A nonzero vector is in the same ray as a multiple of itself if and only if that multiple
 is positive. -/
@@ -511,7 +511,7 @@ theorem sameRay_or_sameRay_neg_iff_not_linearIndependent {x y : M} :
   by_cases hx : x = 0; · simpa [hx] using fun h : LinearIndependent R ![0, y] => h.ne_zero 0 rfl
   by_cases hy : y = 0; · simpa [hy] using fun h : LinearIndependent R ![x, 0] => h.ne_zero 1 rfl
   simp_rw [Fintype.not_linearIndependent_iff]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ((hx0 | hy0 | ⟨r₁, r₂, hr₁, _, h⟩) | (hx0 | hy0 | ⟨r₁, r₂, hr₁, _, h⟩))
     · exact False.elim (hx hx0)
     · exact False.elim (hy hy0)
@@ -617,7 +617,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :
     (∃ r : R, 0 < r ∧ r • x = y) ↔ SameRay R x y := by
-  refine ⟨fun h => ?_, fun h => h.exists_pos_left hx hy⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.exists_pos_left hx hy⟩
   rcases h with ⟨r, hr, rfl⟩
   exact SameRay.sameRay_pos_smul_right x hr
 
@@ -631,7 +631,7 @@ theorem exists_pos_left_iff_sameRay_and_ne_zero (hx : x ≠ 0) :
 
 theorem exists_nonneg_left_iff_sameRay (hx : x ≠ 0) :
     (∃ r : R, 0 ≤ r ∧ r • x = y) ↔ SameRay R x y := by
-  refine ⟨fun h => ?_, fun h => h.exists_nonneg_left hx⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.exists_nonneg_left hx⟩
   rcases h with ⟨r, hr, rfl⟩
   exact SameRay.sameRay_nonneg_smul_right x hr
 

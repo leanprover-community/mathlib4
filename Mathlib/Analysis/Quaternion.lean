@@ -209,8 +209,8 @@ variable {α : Type*}
 
 @[simp, norm_cast]
 theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a ↦ (f a : ℍ)) (↑r : ℍ) ↔ HasSum f r :=
-  ⟨fun h => by simpa only using h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _) continuous_re,
-    fun h => by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
+  ⟨fun h ↦ by simpa only using h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _) continuous_re,
+    fun h ↦ by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
 
 @[simp, norm_cast]
 theorem summable_coe {f : α → ℝ} : (Summable fun a ↦ (f a : ℍ)) ↔ Summable f := by

@@ -127,7 +127,7 @@ theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a 
 /-- A stochastic process that frequently visits below `a` and above `b` has infinite upcrossings. -/
 theorem upcrossings_eq_top_of_frequently_lt (hab : a < b) (h₁ : ∃ᶠ n in atTop, f n ω < a)
     (h₂ : ∃ᶠ n in atTop, b < f n ω) : upcrossings a b f ω = ∞ :=
-  by_contradiction fun h => not_frequently_of_upcrossings_lt_top hab h ⟨h₁, h₂⟩
+  by_contradiction fun h ↦ not_frequently_of_upcrossings_lt_top hab h ⟨h₁, h₂⟩
 
 /-- A realization of a stochastic process with bounded upcrossings and bounded liminfs is
 convergent.

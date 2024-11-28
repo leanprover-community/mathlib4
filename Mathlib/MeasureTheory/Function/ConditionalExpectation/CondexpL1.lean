@@ -404,7 +404,7 @@ theorem setIntegral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
   have h_mono : Monotone fun i => S i ∩ s := by
     intro i j hij x
     simp_rw [Set.mem_inter_iff]
-    exact fun h => ⟨monotone_spanningSets (μ.trim hm) hij h.1, h.2⟩
+    exact fun h ↦ ⟨monotone_spanningSets (μ.trim hm) hij h.1, h.2⟩
   have h_eq_forall :
     (fun i => ∫ x in S i ∩ s, condexpL1CLM F' hm μ f x ∂μ) = fun i => ∫ x in S i ∩ s, f x ∂μ :=
     funext fun i =>

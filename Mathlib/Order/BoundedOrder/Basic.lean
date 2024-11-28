@@ -96,11 +96,11 @@ variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α
 
 @[simp]
 theorem isMax_iff_eq_top : IsMax a ↔ a = ⊤ :=
-  ⟨fun h => h.eq_of_le le_top, fun h _ _ => h.symm ▸ le_top⟩
+  ⟨fun h ↦ h.eq_of_le le_top, fun h _ _ => h.symm ▸ le_top⟩
 
 @[simp]
 theorem isTop_iff_eq_top : IsTop a ↔ a = ⊤ :=
-  ⟨fun h => h.isMax.eq_of_le le_top, fun h _ => h.symm ▸ le_top⟩
+  ⟨fun h ↦ h.isMax.eq_of_le le_top, fun h _ => h.symm ▸ le_top⟩
 
 theorem not_isMax_iff_ne_top : ¬IsMax a ↔ a ≠ ⊤ :=
   isMax_iff_eq_top.not
@@ -257,11 +257,11 @@ variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α
 
 @[simp]
 theorem isMin_iff_eq_bot : IsMin a ↔ a = ⊥ :=
-  ⟨fun h => h.eq_of_ge bot_le, fun h _ _ => h.symm ▸ bot_le⟩
+  ⟨fun h ↦ h.eq_of_ge bot_le, fun h _ _ => h.symm ▸ bot_le⟩
 
 @[simp]
 theorem isBot_iff_eq_bot : IsBot a ↔ a = ⊥ :=
-  ⟨fun h => h.isMin.eq_of_ge bot_le, fun h _ => h.symm ▸ bot_le⟩
+  ⟨fun h ↦ h.isMin.eq_of_ge bot_le, fun h _ => h.symm ▸ bot_le⟩
 
 theorem not_isMin_iff_ne_bot : ¬IsMin a ↔ a ≠ ⊥ :=
   isMin_iff_eq_bot.not
@@ -564,7 +564,7 @@ section Nontrivial
 variable [PartialOrder α] [BoundedOrder α] [Nontrivial α]
 
 @[simp]
-theorem bot_ne_top : (⊥ : α) ≠ ⊤ := fun h => not_subsingleton _ <| subsingleton_of_bot_eq_top h
+theorem bot_ne_top : (⊥ : α) ≠ ⊤ := fun h ↦ not_subsingleton _ <| subsingleton_of_bot_eq_top h
 
 @[simp]
 theorem top_ne_bot : (⊤ : α) ≠ ⊥ :=

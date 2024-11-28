@@ -177,12 +177,12 @@ variable [TopologicalSpace β] [Field β] (l k f)
 
 theorem superpolynomialDecay_mul_const_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
     (SuperpolynomialDecay l k fun n => f n * c) ↔ SuperpolynomialDecay l k f :=
-  ⟨fun h => (h.mul_const c⁻¹).congr fun x => by simp [mul_assoc, mul_inv_cancel₀ hc0], fun h =>
+  ⟨fun h ↦ (h.mul_const c⁻¹).congr fun x => by simp [mul_assoc, mul_inv_cancel₀ hc0], fun h =>
     h.mul_const c⟩
 
 theorem superpolynomialDecay_const_mul_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
     (SuperpolynomialDecay l k fun n => c * f n) ↔ SuperpolynomialDecay l k f :=
-  ⟨fun h => (h.const_mul c⁻¹).congr fun x => by simp [← mul_assoc, inv_mul_cancel₀ hc0], fun h =>
+  ⟨fun h ↦ (h.const_mul c⁻¹).congr fun x => by simp [← mul_assoc, inv_mul_cancel₀ hc0], fun h =>
     h.const_mul c⟩
 
 variable {l k f}
@@ -252,7 +252,7 @@ theorem superpolynomialDecay_param_mul_iff (hk : Tendsto k l atTop) :
   ⟨fun h =>
     (h.inv_param_mul hk).congr'
       ((hk.eventually_ne_atTop 0).mono fun x hx => by simp [← mul_assoc, inv_mul_cancel₀ hx]),
-    fun h => h.param_mul⟩
+    fun h ↦ h.param_mul⟩
 
 theorem superpolynomialDecay_mul_param_iff (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k (f * k) ↔ SuperpolynomialDecay l k f := by
@@ -311,7 +311,7 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
 
 theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =o[l] fun a : α => k a ^ z := by
-  refine ⟨fun h z => ?_, fun h => (superpolynomialDecay_iff_isBigO f hk).2 fun z => (h z).isBigO⟩
+  refine ⟨fun h z => ?_, fun h ↦ (superpolynomialDecay_iff_isBigO f hk).2 fun z => (h z).isBigO⟩
   have hk0 : ∀ᶠ x in l, k x ≠ 0 := hk.eventually_ne_atTop 0
   have : (fun _ : α => (1 : β)) =o[l] k :=
     isLittleO_of_tendsto' (hk0.mono fun x hkx hkx' => absurd hkx' hkx)

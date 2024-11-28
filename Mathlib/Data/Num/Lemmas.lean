@@ -371,7 +371,7 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
   le_refl := by transfer
   le_trans a b c := by transfer_rw; apply le_trans
   le_antisymm a b := by transfer_rw; apply le_antisymm
-  add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
+  add_le_add_left a b h c := by revert h; transfer_rw; exact fun h ↦ add_le_add_left h c
   le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 
 instance linearOrderedSemiring : LinearOrderedSemiring Num :=
@@ -423,7 +423,7 @@ alias of_nat_cast := of_natCast
 
 @[norm_cast]
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
-  ⟨fun h => Function.LeftInverse.injective to_of_nat h, congr_arg _⟩
+  ⟨fun h ↦ Function.LeftInverse.injective to_of_nat h, congr_arg _⟩
 
 -- Porting note: The priority should be `high`er than `cast_to_nat`.
 @[simp high, norm_cast]
@@ -449,7 +449,7 @@ theorem of_to_nat : ∀ n : PosNum, ((n : ℕ) : Num) = Num.pos n :=
 
 @[norm_cast]
 theorem to_nat_inj {m n : PosNum} : (m : ℕ) = n ↔ m = n :=
-  ⟨fun h => Num.pos.inj <| by rw [← PosNum.of_to_nat, ← PosNum.of_to_nat, h], congr_arg _⟩
+  ⟨fun h ↦ Num.pos.inj <| by rw [← PosNum.of_to_nat, ← PosNum.of_to_nat, h], congr_arg _⟩
 
 theorem pred'_to_nat : ∀ n, (pred' n : ℕ) = Nat.pred n
   | 1 => rfl
@@ -600,7 +600,7 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
   revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this;exact lt_irrefl _ this]
+    simp [show m ≠ n from fun e ↦ by rw [e] at this;exact lt_irrefl _ this]
 
 @[simp, norm_cast]
 theorem cast_lt [LinearOrderedSemiring α] {m n : PosNum} : (m : α) < n ↔ m < n := by
@@ -671,7 +671,7 @@ theorem zneg_toZNum (n : Num) : -n.toZNum = n.toZNumNeg := by cases n <;> rfl
 theorem zneg_toZNumNeg (n : Num) : -n.toZNumNeg = n.toZNum := by cases n <;> rfl
 
 theorem toZNum_inj {m n : Num} : m.toZNum = n.toZNum ↔ m = n :=
-  ⟨fun h => by cases m <;> cases n <;> cases h <;> rfl, congr_arg _⟩
+  ⟨fun h ↦ by cases m <;> cases n <;> cases h <;> rfl, congr_arg _⟩
 
 
 @[simp]
@@ -739,7 +739,7 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
   revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
+    simp [show m ≠ n from fun e ↦ by rw [e] at this; exact lt_irrefl _ this]
 
 @[simp, norm_cast]
 theorem cast_lt [LinearOrderedSemiring α] {m n : Num} : (m : α) < n ↔ m < n := by
@@ -1096,7 +1096,7 @@ theorem mem_ofZNum' : ∀ {m : Num} {n : ZNum}, m ∈ ofZNum' n ↔ n = toZNum m
   | pos _, 0 => ⟨nofun, nofun⟩
   | m, ZNum.pos p =>
     Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> try cases h <;> rfl
-  | m, ZNum.neg p => ⟨nofun, fun h => by cases m <;> cases h⟩
+  | m, ZNum.neg p => ⟨nofun, fun h ↦ by cases m <;> cases h⟩
 
 theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat' n
   | 0 => rfl
@@ -1173,7 +1173,7 @@ theorem of_to_int' : ∀ n : ZNum, ZNum.ofInt' n = n
     rw [cast_neg, ofInt'_neg, ← PosNum.cast_to_nat, ← Num.ofInt'_toZNum, PosNum.of_to_nat]; rfl
 
 theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
-  ⟨fun h => Function.LeftInverse.injective of_to_int' h, congr_arg _⟩
+  ⟨fun h ↦ Function.LeftInverse.injective of_to_int' h, congr_arg _⟩
 
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
@@ -1294,7 +1294,7 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
   intro a b h c
   revert h
   transfer_rw
-  exact fun h => _root_.add_le_add_left h c
+  exact fun h ↦ _root_.add_le_add_left h c
 
 instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
   { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne with
@@ -1384,7 +1384,7 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q
     simp
   cases' e : Num.ofZNum' (Num.sub' r (Num.pos d)) with r₂
   · rw [Num.cast_bit0, two_mul]
-    refine ⟨h₁, lt_of_not_ge fun h => ?_⟩
+    refine ⟨h₁, lt_of_not_ge fun h ↦ ?_⟩
     cases' Nat.le.dest h with r₂ e'
     rw [← Num.to_of_nat r₂, add_comm] at e'
     cases e.symm.trans (this.2 e'.symm)

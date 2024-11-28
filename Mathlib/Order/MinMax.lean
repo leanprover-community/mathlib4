@@ -142,7 +142,7 @@ theorem max_eq_iff : max a b = c ↔ a = c ∧ b ≤ a ∨ b = c ∧ a ≤ b :=
 
 theorem min_lt_min_left_iff : min a c < min b c ↔ a < b ∧ a < c := by
   simp_rw [lt_min_iff, min_lt_iff, or_iff_left (lt_irrefl _)]
-  exact and_congr_left fun h => or_iff_left_of_imp h.trans
+  exact and_congr_left fun h ↦ or_iff_left_of_imp h.trans
 
 theorem min_lt_min_right_iff : min a b < min a c ↔ b < c ∧ b < a := by
   simp_rw [min_comm a, min_lt_min_left_iff]

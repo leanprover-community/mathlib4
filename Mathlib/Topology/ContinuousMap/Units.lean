@@ -88,7 +88,7 @@ instance canLift :
   prf f h := ⟨unitsOfForallIsUnit h, by ext; rfl⟩
 
 theorem isUnit_iff_forall_isUnit (f : C(X, R)) : IsUnit f ↔ ∀ x, IsUnit (f x) :=
-  Iff.intro (fun h => fun x => ⟨unitsLift.symm h.unit x, rfl⟩) fun h =>
+  Iff.intro (fun h ↦ fun x => ⟨unitsLift.symm h.unit x, rfl⟩) fun h =>
     ⟨ContinuousMap.unitsLift (unitsOfForallIsUnit h), by ext; rfl⟩
 
 end NormedRing

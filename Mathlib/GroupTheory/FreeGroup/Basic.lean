@@ -270,14 +270,14 @@ to `x⁻¹` -/
   reduces to `-x`."]
 theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b)] :=
   Iff.intro
-    (fun h => by
+    (fun h ↦ by
       have h₁ : Red ((x, not b) :: (x, b) :: L) [(x, not b)] := cons_cons h
       have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single Step.cons_not_rev
       let ⟨L', h₁, h₂⟩ := church_rosser h₁ h₂
       rw [singleton_iff] at h₁
       subst L'
       assumption)
-    fun h => (cons_cons h).tail Step.cons_not
+    fun h ↦ (cons_cons h).tail Step.cons_not
 
 @[to_additive]
 theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
@@ -508,11 +508,11 @@ theorem Red.invRev {L₁ L₂ : List (α × Bool)} (h : Red L₁ L₂) : Red (in
 @[to_additive (attr := simp)]
 theorem Red.step_invRev_iff :
     Red.Step (FreeGroup.invRev L₁) (FreeGroup.invRev L₂) ↔ Red.Step L₁ L₂ :=
-  ⟨fun h => by simpa only [invRev_invRev] using h.invRev, fun h => h.invRev⟩
+  ⟨fun h ↦ by simpa only [invRev_invRev] using h.invRev, fun h ↦ h.invRev⟩
 
 @[to_additive (attr := simp)]
 theorem red_invRev_iff : Red (invRev L₁) (invRev L₂) ↔ Red L₁ L₂ :=
-  ⟨fun h => by simpa only [invRev_invRev] using h.invRev, fun h => h.invRev⟩
+  ⟨fun h ↦ by simpa only [invRev_invRev] using h.invRev, fun h ↦ h.invRev⟩
 
 @[to_additive]
 instance : Group (FreeGroup α) where

@@ -361,7 +361,7 @@ theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPa
             subst h
             apply Classical.choose_spec h'
     else by rw [hpi, dif_neg h'] at h; contradiction,
-  fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
+  fun e ↦ e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
               (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 
 theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=

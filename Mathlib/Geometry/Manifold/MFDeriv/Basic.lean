@@ -671,7 +671,7 @@ theorem MDifferentiableWithinAt.congr_nhds (h : MDifferentiableWithinAt I I' f s
 
 theorem mdifferentiableWithinAt_congr_nhds {t : Set M} (hst : 𝓝[s] x = 𝓝[t] x) :
     MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x :=
-  ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
+  ⟨fun h ↦ h.congr_nhds hst, fun h ↦ h.congr_nhds hst.symm⟩
 
 protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDifferentiableWithinAt I I' f s x) :
     mfderivWithin I I' f s x =
@@ -729,7 +729,7 @@ lemma mfderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
 theorem hasMFDerivWithinAt_insert {y : M} :
     HasMFDerivWithinAt I I' f (insert y s) x f' ↔ HasMFDerivWithinAt I I' f s x f' := by
   have : T1Space M := I.t1Space M
-  refine ⟨fun h => h.mono <| subset_insert y s, fun hf ↦ ?_⟩
+  refine ⟨fun h ↦ h.mono <| subset_insert y s, fun hf ↦ ?_⟩
   rcases eq_or_ne x y with rfl | h
   · rw [HasMFDerivWithinAt] at hf ⊢
     refine ⟨hf.1.insert, ?_⟩

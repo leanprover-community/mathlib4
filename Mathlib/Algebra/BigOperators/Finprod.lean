@@ -391,7 +391,7 @@ theorem finprod_cond_ne (f : α → M) (a : α) [DecidableEq α] (hf : (mulSuppo
   apply finprod_cond_eq_prod_of_cond_iff
   intro x hx
   rw [Finset.mem_erase, Finite.mem_toFinset, mem_mulSupport]
-  exact ⟨fun h => And.intro h hx, fun h => h.1⟩
+  exact ⟨fun h ↦ And.intro h hx, fun h ↦ h.1⟩
 
 @[to_additive]
 theorem finprod_mem_eq_prod_of_inter_mulSupport_eq (f : α → M) {s : Set α} {t : Finset α}
@@ -410,7 +410,7 @@ theorem finprod_mem_eq_prod_of_inter_mulSupport_eq (f : α → M) {s : Set α} {
 @[to_additive]
 theorem finprod_mem_eq_prod_of_subset (f : α → M) {s : Set α} {t : Finset α}
     (h₁ : s ∩ mulSupport f ⊆ t) (h₂ : ↑t ⊆ s) : ∏ᶠ i ∈ s, f i = ∏ i ∈ t, f i :=
-  finprod_cond_eq_prod_of_cond_iff _ fun hx => ⟨fun h => h₁ ⟨h, hx⟩, fun h => h₂ h⟩
+  finprod_cond_eq_prod_of_cond_iff _ fun hx => ⟨fun h ↦ h₁ ⟨h, hx⟩, fun h ↦ h₂ h⟩
 
 @[to_additive]
 theorem finprod_mem_eq_prod (f : α → M) {s : Set α} (hf : (s ∩ mulSupport f).Finite) :
@@ -928,7 +928,7 @@ theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
     have h : ∀ x : α, f x ≠ 1 → (x ≠ a ↔ x ∈ hf.toFinset \ {a}) := by
       intro x hx
       rw [Finset.mem_sdiff, Finset.mem_singleton, Finite.mem_toFinset, mem_mulSupport]
-      exact ⟨fun h => And.intro hx h, fun h => h.2⟩
+      exact ⟨fun h ↦ And.intro hx h, fun h ↦ h.2⟩
     rw [finprod_cond_eq_prod_of_cond_iff f (fun hx => h _ hx), Finset.sdiff_singleton_eq_erase]
     by_cases ha : a ∈ mulSupport f
     · apply Finset.mul_prod_erase _ _ ((Finite.mem_toFinset _).mpr ha)

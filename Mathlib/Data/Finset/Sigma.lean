@@ -141,7 +141,7 @@ variable {α β γ : ι → Type*} [DecidableEq ι]
 /-- Lifts maps `α i → β i → Finset (γ i)` to a map `Σ i, α i → Σ i, β i → Finset (Σ i, γ i)`. -/
 def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β) :
     Finset (Sigma γ) :=
-  dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).map <| Embedding.sigmaMk _) fun _ => ∅
+  dite (a.1 = b.1) (fun h ↦ (f (h ▸ a.2) b.2).map <| Embedding.sigmaMk _) fun _ => ∅
 
 theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β)
     (x : Sigma γ) :
@@ -202,7 +202,7 @@ theorem sigmaLift_mono (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆
 variable (f a b)
 
 theorem card_sigmaLift :
-    (sigmaLift f a b).card = dite (a.1 = b.1) (fun h => (f (h ▸ a.2) b.2).card) fun _ => 0 := by
+    (sigmaLift f a b).card = dite (a.1 = b.1) (fun h ↦ (f (h ▸ a.2) b.2).card) fun _ => 0 := by
   simp_rw [sigmaLift]
   split_ifs with h <;> simp [h]
 

@@ -52,13 +52,13 @@ theorem dotProduct_eq (v w : n → R) (h : ∀ u, dotProduct v u = dotProduct w 
   classical rw [← dotProduct_single_one v x, ← dotProduct_single_one w x, h]
 
 theorem dotProduct_eq_iff {v w : n → R} : (∀ u, dotProduct v u = dotProduct w u) ↔ v = w :=
-  ⟨fun h => dotProduct_eq v w h, fun h _ => h ▸ rfl⟩
+  ⟨fun h ↦ dotProduct_eq v w h, fun h _ => h ▸ rfl⟩
 
 theorem dotProduct_eq_zero (v : n → R) (h : ∀ w, dotProduct v w = 0) : v = 0 :=
   dotProduct_eq _ _ fun u => (h u).symm ▸ (zero_dotProduct u).symm
 
 theorem dotProduct_eq_zero_iff {v : n → R} : (∀ w, dotProduct v w = 0) ↔ v = 0 :=
-  ⟨fun h => dotProduct_eq_zero v h, fun h w => h.symm ▸ zero_dotProduct w⟩
+  ⟨fun h ↦ dotProduct_eq_zero v h, fun h w => h.symm ▸ zero_dotProduct w⟩
 
 end Semiring
 
@@ -118,19 +118,19 @@ theorem dotProduct_self_star_eq_zero {v : n → R} : dotProduct v (star v) = 0 �
 
 @[simp]
 lemma conjTranspose_mul_self_eq_zero {n} {A : Matrix m n R} : Aᴴ * A = 0 ↔ A = 0 :=
-  ⟨fun h => Matrix.ext fun i j =>
+  ⟨fun h ↦ Matrix.ext fun i j =>
     (congr_fun <| dotProduct_star_self_eq_zero.1 <| Matrix.ext_iff.2 h j j) i,
-  fun h => h ▸ Matrix.mul_zero _⟩
+  fun h ↦ h ▸ Matrix.mul_zero _⟩
 
 @[simp]
 lemma self_mul_conjTranspose_eq_zero {m} {A : Matrix m n R} : A * Aᴴ = 0 ↔ A = 0 :=
-  ⟨fun h => Matrix.ext fun i j =>
+  ⟨fun h ↦ Matrix.ext fun i j =>
     (congr_fun <| dotProduct_self_star_eq_zero.1 <| Matrix.ext_iff.2 h i i) j,
-  fun h => h ▸ Matrix.zero_mul _⟩
+  fun h ↦ h ▸ Matrix.zero_mul _⟩
 
 lemma conjTranspose_mul_self_mul_eq_zero {p} (A : Matrix m n R) (B : Matrix n p R) :
     (Aᴴ * A) * B = 0 ↔ A * B = 0 := by
-  refine ⟨fun h => ?_, fun h => by simp only [Matrix.mul_assoc, h, Matrix.mul_zero]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp only [Matrix.mul_assoc, h, Matrix.mul_zero]⟩
   apply_fun (Bᴴ * ·) at h
   rwa [Matrix.mul_zero, Matrix.mul_assoc, ← Matrix.mul_assoc, ← conjTranspose_mul,
     conjTranspose_mul_self_eq_zero] at h

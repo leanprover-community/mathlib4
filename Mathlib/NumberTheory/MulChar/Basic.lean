@@ -469,7 +469,7 @@ theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' �
   obtain ⟨a, ha⟩ := hχ
   use a
   simp_rw [ringHomComp_apply, ← RingHom.map_one f]
-  exact fun h => ha (hf h)
+  exact fun h ↦ ha (hf h)
 
 /-- Composition with a ring homomorphism preserves the property of being a quadratic character. -/
 theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+* R'') :

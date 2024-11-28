@@ -39,11 +39,11 @@ theorem ne_zero [Nontrivial M₀] (u : M₀ˣ) : (u : M₀) ≠ 0 :=
 -- `Nonzero M₀`.
 @[simp]
 theorem mul_left_eq_zero (u : M₀ˣ) {a : M₀} : a * u = 0 ↔ a = 0 :=
-  ⟨fun h => by simpa using mul_eq_zero_of_left h ↑u⁻¹, fun h => mul_eq_zero_of_left h u⟩
+  ⟨fun h ↦ by simpa using mul_eq_zero_of_left h ↑u⁻¹, fun h ↦ mul_eq_zero_of_left h u⟩
 
 @[simp]
 theorem mul_right_eq_zero (u : M₀ˣ) {a : M₀} : ↑u * a = 0 ↔ a = 0 :=
-  ⟨fun h => by simpa using mul_eq_zero_of_right (↑u⁻¹) h, mul_eq_zero_of_right (u : M₀)⟩
+  ⟨fun h ↦ by simpa using mul_eq_zero_of_right (↑u⁻¹) h, mul_eq_zero_of_right (u : M₀)⟩
 
 end Units
 
@@ -146,7 +146,7 @@ theorem IsUnit.ring_inverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
 
 @[simp]
 theorem isUnit_ring_inverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     cases subsingleton_or_nontrivial M₀
     · convert h
     · contrapose h
@@ -187,7 +187,7 @@ theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
 
 @[simp]
 theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Units.mk0 b hb ↔ a = b :=
-  ⟨fun h => by injection h, fun h => Units.ext h⟩
+  ⟨fun h ↦ by injection h, fun h ↦ Units.ext h⟩
 
 /-- In a group with zero, an existential over a unit can be rewritten in terms of `Units.mk0`. -/
 theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀) (hg : g ≠ 0), p (Units.mk0 g hg) :=

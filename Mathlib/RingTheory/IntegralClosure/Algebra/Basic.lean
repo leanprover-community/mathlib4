@@ -160,7 +160,7 @@ theorem RingHom.IsIntegralElem.of_neg {x : S} (h : f.IsIntegralElem (-x)) : f.Is
 
 @[simp]
 theorem RingHom.IsIntegralElem.neg_iff {x : S} : f.IsIntegralElem (-x) ↔ f.IsIntegralElem x :=
-  ⟨fun h => h.of_neg, fun h => h.neg⟩
+  ⟨fun h ↦ h.of_neg, fun h ↦ h.neg⟩
 
 theorem IsIntegral.neg {x : B} (hx : IsIntegral R x) : IsIntegral R (-x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ (Subalgebra.neg_mem _ <| Algebra.subset_adjoin rfl)

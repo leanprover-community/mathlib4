@@ -198,7 +198,7 @@ theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
                   * (Multiset.map (fun i : G => (i.val : K) ^ k) Finset.univ.val).sum = 0 := by
     rw [sub_mul, mul_comm, ← h_multiset_map_sum, one_mul, sub_self]
   rw [mul_eq_zero] at hzero
-  refine hzero.resolve_left fun h => ha ?_
+  refine hzero.resolve_left fun h ↦ ha ?_
   ext
   rw [← sub_eq_zero]
   simp_rw [SubmonoidClass.coe_pow, Units.val_pow_eq_pow_val, OneMemClass.coe_one, Units.val_one, h]

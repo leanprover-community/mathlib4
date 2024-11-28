@@ -610,7 +610,7 @@ variable (F : C ⥤ D) (G : D ⥤ E)
 
 instance comp_reflectsLimit [ReflectsLimit K F] [ReflectsLimit (K ⋙ F) G] :
     ReflectsLimit K (F ⋙ G) :=
-  ⟨fun h => ReflectsLimit.reflects (isLimitOfReflects G h)⟩
+  ⟨fun h ↦ ReflectsLimit.reflects (isLimitOfReflects G h)⟩
 
 instance comp_reflectsLimitsOfShape [ReflectsLimitsOfShape J F] [ReflectsLimitsOfShape J G] :
     ReflectsLimitsOfShape J (F ⋙ G) where
@@ -620,7 +620,7 @@ instance comp_reflectsLimits [ReflectsLimitsOfSize.{w', w} F] [ReflectsLimitsOfS
 
 instance comp_reflectsColimit [ReflectsColimit K F] [ReflectsColimit (K ⋙ F) G] :
     ReflectsColimit K (F ⋙ G) :=
-  ⟨fun h => ReflectsColimit.reflects (isColimitOfReflects G h)⟩
+  ⟨fun h ↦ ReflectsColimit.reflects (isColimitOfReflects G h)⟩
 
 instance comp_reflectsColimitsOfShape [ReflectsColimitsOfShape J F] [ReflectsColimitsOfShape J G] :
     ReflectsColimitsOfShape J (F ⋙ G) where
@@ -656,7 +656,7 @@ lemma compReflectsColimits [ReflectsColimitsOfSize.{w', w} F] [ReflectsColimitsO
 then `F` preserves limits for `K`. -/
 lemma preservesLimit_of_reflects_of_preserves [PreservesLimit K (F ⋙ G)] [ReflectsLimit (K ⋙ F) G] :
     PreservesLimit K F :=
-  ⟨fun h => ⟨by
+  ⟨fun h ↦ ⟨by
     apply isLimitOfReflects G
     apply isLimitOfPreserves (F ⋙ G) h⟩⟩
 

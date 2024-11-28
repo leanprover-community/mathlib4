@@ -586,8 +586,8 @@ private theorem le_trans_aux {x y z : PGame}
     (h₁ : ∀ {i}, y ≤ z → z ≤ x.moveLeft i → y ≤ x.moveLeft i)
     (h₂ : ∀ {j}, z.moveRight j ≤ x → x ≤ y → z.moveRight j ≤ y) (hxy : x ≤ y) (hyz : y ≤ z) :
     x ≤ z :=
-  le_of_forall_lf (fun i => PGame.not_le.1 fun h => (h₁ hyz h).not_gf <| hxy.moveLeft_lf i)
-    fun j => PGame.not_le.1 fun h => (h₂ h hxy).not_gf <| hyz.lf_moveRight j
+  le_of_forall_lf (fun i => PGame.not_le.1 fun h ↦ (h₁ hyz h).not_gf <| hxy.moveLeft_lf i)
+    fun j => PGame.not_le.1 fun h ↦ (h₂ h hxy).not_gf <| hyz.lf_moveRight j
 
 instance : Preorder PGame :=
   { PGame.le with
@@ -965,11 +965,11 @@ theorem lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := b
 
 theorem equiv_congr_left {y₁ y₂ : PGame} : (y₁ ≈ y₂) ↔ ∀ x₁, (x₁ ≈ y₁) ↔ (x₁ ≈ y₂) :=
   ⟨fun h _ => ⟨fun h' => Equiv.trans h' h, fun h' => Equiv.trans h' (Equiv.symm h)⟩,
-   fun h => (h y₁).1 <| equiv_rfl⟩
+   fun h ↦ (h y₁).1 <| equiv_rfl⟩
 
 theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x₁ ≈ y₁) ↔ (x₂ ≈ y₁) :=
   ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
-   fun h => (h x₂).2 <| equiv_rfl⟩
+   fun h ↦ (h x₂).2 <| equiv_rfl⟩
 
 theorem Equiv.of_exists {x y : PGame}
     (hl₁ : ∀ i, ∃ j, x.moveLeft i ≈ y.moveLeft j) (hr₁ : ∀ i, ∃ j, x.moveRight i ≈ y.moveRight j)
@@ -1013,7 +1013,7 @@ instance : IsSymm _ (· ‖ ·) :=
 theorem Fuzzy.swap_iff {x y : PGame} : x ‖ y ↔ y ‖ x :=
   ⟨Fuzzy.swap, Fuzzy.swap⟩
 
-theorem fuzzy_irrefl (x : PGame) : ¬x ‖ x := fun h => lf_irrefl x h.1
+theorem fuzzy_irrefl (x : PGame) : ¬x ‖ x := fun h ↦ lf_irrefl x h.1
 
 instance : IsIrrefl _ (· ‖ ·) :=
   ⟨fuzzy_irrefl⟩
@@ -1691,7 +1691,7 @@ theorem sub_self_equiv : ∀ (x : PGame), x - x ≈ 0 :=
   add_neg_cancel_equiv
 
 private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y + z
-  | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
+  | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h ↦ by
     refine le_def.2 ⟨fun i => ?_, fun i => ?_⟩ <;> cases' i with i i
     · rw [le_def] at h
       cases' h with h_left h_right
@@ -1767,7 +1767,7 @@ theorem sub_congr_right {x y z : PGame} : (y ≈ z) → (x - y ≈ x - z) :=
   sub_congr equiv_rfl
 
 theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
-  ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
+  ⟨fun h ↦ (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
       _ ≤ y - x + x := add_le_add_right h _
@@ -1777,7 +1777,7 @@ theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
       ⟩
 
 theorem lf_iff_sub_zero_lf {x y : PGame} : x ⧏ y ↔ 0 ⧏ y - x :=
-  ⟨fun h => (zero_le_add_neg_cancel x).trans_lf (add_lf_add_right h _), fun h =>
+  ⟨fun h ↦ (zero_le_add_neg_cancel x).trans_lf (add_lf_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
       _ ⧏ y - x + x := add_lf_add_right h _
@@ -1787,7 +1787,7 @@ theorem lf_iff_sub_zero_lf {x y : PGame} : x ⧏ y ↔ 0 ⧏ y - x :=
       ⟩
 
 theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
-  ⟨fun h => lt_of_le_of_lt (zero_le_add_neg_cancel x) (add_lt_add_right h _), fun h =>
+  ⟨fun h ↦ lt_of_le_of_lt (zero_le_add_neg_cancel x) (add_lt_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
       _ < y - x + x := add_lt_add_right h _

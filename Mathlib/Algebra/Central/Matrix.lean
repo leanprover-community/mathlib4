@@ -19,7 +19,7 @@ instance matrix (ι : Type*) [Fintype ι] [DecidableEq ι] :
     Algebra.IsCentral K (Matrix ι ι D) where
   out m h := by
     refine isEmpty_or_nonempty ι |>.recOn
-      (fun h => Algebra.mem_bot.2 ⟨0, Matrix.ext fun i _ => h.elim i⟩) fun ⟨i⟩ => ?_
+      (fun h ↦ Algebra.mem_bot.2 ⟨0, Matrix.ext fun i _ => h.elim i⟩) fun ⟨i⟩ => ?_
     obtain ⟨d, rfl⟩ := mem_range_scalar_of_commute_stdBasisMatrix (M := m) (fun _ _ _ =>
       Subalgebra.mem_center_iff.mp h _)
     have mem : d ∈ Subalgebra.center K D := by

@@ -121,7 +121,7 @@ end Limits
 open CategoryTheory.Limits
 
 theorem Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
-  ⟨fun h => h.of_iso e.symm, fun h => h.of_iso e⟩
+  ⟨fun h ↦ h.of_iso e.symm, fun h ↦ h.of_iso e⟩
 
 theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
   constructor <;> intro G <;> refine ⟨⟨⟨?_⟩, ?_⟩⟩

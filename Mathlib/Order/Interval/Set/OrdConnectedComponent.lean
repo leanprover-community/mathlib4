@@ -48,7 +48,7 @@ theorem self_mem_ordConnectedComponent : x ∈ ordConnectedComponent s x ↔ x �
 
 @[simp]
 theorem nonempty_ordConnectedComponent : (ordConnectedComponent s x).Nonempty ↔ x ∈ s :=
-  ⟨fun ⟨_, hy⟩ => hy <| left_mem_uIcc, fun h => ⟨x, self_mem_ordConnectedComponent.2 h⟩⟩
+  ⟨fun ⟨_, hy⟩ => hy <| left_mem_uIcc, fun h ↦ ⟨x, self_mem_ordConnectedComponent.2 h⟩⟩
 
 @[simp]
 theorem ordConnectedComponent_eq_empty : ordConnectedComponent s x = ∅ ↔ x ∉ s := by

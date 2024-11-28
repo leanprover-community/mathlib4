@@ -151,7 +151,7 @@ theorem mulSupport_binop_subset (op : M → N → P) (op1 : op 1 1 = 1) (f : α 
 
 @[to_additive]
 theorem mulSupport_comp_subset {g : M → N} (hg : g 1 = 1) (f : α → M) :
-    mulSupport (g ∘ f) ⊆ mulSupport f := fun x => mt fun h => by simp only [(· ∘ ·), *]
+    mulSupport (g ∘ f) ⊆ mulSupport f := fun x => mt fun h ↦ by simp only [(· ∘ ·), *]
 
 @[to_additive]
 theorem mulSupport_subset_comp {g : M → N} (hg : ∀ {x}, g x = 1 → x = 1) (f : α → M) :

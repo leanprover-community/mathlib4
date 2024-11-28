@@ -78,7 +78,7 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
   exact
     ⟨by
       rintro ⟨a, H, rfl⟩
-      simpa, fun h => ⟨_, h, by simp⟩⟩
+      simpa, fun h ↦ ⟨_, h, by simp⟩⟩
 
 @[simp 1100]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
@@ -143,7 +143,7 @@ theorem _root_.Function.Commute.finset_map {f g : α ↪ α} (h : Function.Commu
 @[simp]
 theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s₁ ⊆ s₂ :=
   ⟨fun h _ xs => (mem_map' _).1 <| h <| (mem_map' f).2 xs,
-   fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
+   fun h ↦ by simp [subset_def, Multiset.map_subset_map h]⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.finsetMap_subset⟩ := map_subset_map
 
@@ -342,7 +342,7 @@ theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.imag
 
 theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
     f a ∈ s.image f ↔ a ∈ s := by
-  refine ⟨fun h => ?_, Finset.mem_image_of_mem f⟩
+  refine ⟨fun h ↦ ?_, Finset.mem_image_of_mem f⟩
   obtain ⟨y, hy, heq⟩ := mem_image.1 h
   exact hf heq ▸ hy
 
@@ -561,7 +561,7 @@ theorem biUnion_image [DecidableEq γ] {s : Finset α} {t : α → Finset β} {f
   Finset.induction_on s rfl fun a s _ ih => by simp only [biUnion_insert, image_union, ih]
 
 theorem image_biUnion_filter_eq [DecidableEq α] (s : Finset β) (g : β → α) :
-    ((s.image g).biUnion fun a ↦ s.filter fun c => g c = a) = s :=
+    ((s.image g).biUnion fun a ↦ s.filter fun c ↦ g c = a) = s :=
   biUnion_filter_eq_of_maps_to fun _ => mem_image_of_mem g
 
 theorem biUnion_singleton {f : α → β} : (s.biUnion fun a ↦ {f a}) = s.image f :=

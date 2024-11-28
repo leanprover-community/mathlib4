@@ -99,7 +99,7 @@ ensure that `dist x y = 0` only if `x = y`. -/
 abbrev MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : MetricSpace β) :
     MetricSpace γ :=
   { PseudoMetricSpace.induced f m.toPseudoMetricSpace with
-    eq_of_dist_eq_zero := fun h => hf (dist_eq_zero.1 h) }
+    eq_of_dist_eq_zero := fun h ↦ hf (dist_eq_zero.1 h) }
 
 /-- Pull back a metric space structure by a uniform embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/

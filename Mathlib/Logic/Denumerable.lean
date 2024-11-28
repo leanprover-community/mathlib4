@@ -226,7 +226,7 @@ theorem lt_succ_self (x : s) : x < succ x :=
     _ < (succ x : ℕ) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
-  ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
+  ⟨fun h ↦ le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
     lt_of_le_of_lt h (lt_succ_self _)⟩
 
 /-- Returns the `n`-th element of a set, according to the usual ordering of `ℕ`. -/
@@ -245,7 +245,7 @@ theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = 
     have wf : ∀ m : s, List.maximum t = m → ↑m < x := fun m hmax => by
       simpa using hmt.mp (List.maximum_mem hmax)
     cases' hmax : List.maximum t with m
-    · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
+    · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h ↦ List.not_mem_nil (⊥ : s) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
     cases' ofNat_surjective_aux m.2 with a ha
     refine ⟨a + 1, le_antisymm ?_ ?_⟩ <;> rw [ofNat]
@@ -292,11 +292,11 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
         insert ↑(ofNat s n) {x ∈ range (ofNat s n) | x ∈ s} := by
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
-        ⟨fun h => by
+        ⟨fun h ↦ by
           simp only [h.2, and_true]
           exact Or.symm (lt_or_eq_of_le ((@lt_succ_iff_le _ _ _ ⟨m, h.2⟩ _).1 h.1)),
          fun h =>
-          h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
+          h.elim (fun h ↦ h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
             ⟨h.1.trans (lt_succ_self _), h.2⟩⟩
     simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
     conv =>
@@ -329,7 +329,7 @@ end Denumerable
 
 /-- See also `nonempty_encodable`, `nonempty_fintype`. -/
 theorem nonempty_denumerable (α : Type*) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
-  (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
+  (nonempty_encodable α).map fun h ↦ @Denumerable.ofEncodableOfInfinite _ h _
 
 theorem nonempty_denumerable_iff {α : Type*} :
     Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=

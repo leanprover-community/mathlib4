@@ -65,7 +65,7 @@ theorem one_sub {p : R} (h : IsIdempotentElem p) : IsIdempotentElem (1 - p) := b
 
 @[simp]
 theorem one_sub_iff {p : R} : IsIdempotentElem (1 - p) ↔ IsIdempotentElem p :=
-  ⟨fun h => sub_sub_cancel 1 p ▸ h.one_sub, IsIdempotentElem.one_sub⟩
+  ⟨fun h ↦ sub_sub_cancel 1 p ▸ h.one_sub, IsIdempotentElem.one_sub⟩
 
 theorem add_sub_mul_of_commute {R} [Ring R] {p q : R} (h : Commute p q)
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
@@ -89,13 +89,13 @@ theorem pow_succ_eq {p : N} (n : ℕ) (h : IsIdempotentElem p) : p ^ (n + 1) = p
 
 @[simp]
 theorem iff_eq_one {p : G} : IsIdempotentElem p ↔ p = 1 :=
-  Iff.intro (fun h => mul_left_cancel ((mul_one p).symm ▸ h.eq : p * p = p * 1)) fun h =>
+  Iff.intro (fun h ↦ mul_left_cancel ((mul_one p).symm ▸ h.eq : p * p = p * 1)) fun h =>
     h.symm ▸ one
 
 @[simp]
 theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 := by
   refine
-    Iff.intro (fun h => or_iff_not_imp_left.mpr fun hp => ?_) fun h =>
+    Iff.intro (fun h ↦ or_iff_not_imp_left.mpr fun hp => ?_) fun h =>
       h.elim (fun hp => hp.symm ▸ zero) fun hp => hp.symm ▸ one
   exact mul_left_cancel₀ hp (h.trans (mul_one p).symm)
 

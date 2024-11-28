@@ -54,7 +54,7 @@ theorem perm_comp_perm : (Perm ∘r Perm : List α → List α → Prop) = Perm 
   funext a c; apply propext
   constructor
   · exact fun ⟨b, hab, hba⟩ => Perm.trans hab hba
-  · exact fun h => ⟨a, Perm.refl a, h⟩
+  · exact fun h ↦ ⟨a, Perm.refl a, h⟩
 
 theorem perm_comp_forall₂ {l u v} (hlu : Perm l u) (huv : Forall₂ r u v) :
     (Forall₂ r ∘r Perm) l v := by
@@ -136,7 +136,7 @@ theorem Perm.foldr_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : l₁
 end
 
 theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
-  refine ⟨fun p => ?_, fun e => e ▸ Perm.refl _⟩
+  refine ⟨fun p => ?_, fun e ↦ e ▸ Perm.refl _⟩
   cases' o₁ with a <;> cases' o₂ with b; · rfl
   · cases p.length_eq
   · cases p.length_eq

@@ -173,7 +173,7 @@ theorem mem_finsetApprox {x : R} :
   · rintro ⟨i, j, hij, rfl⟩
     refine ⟨?_, ⟨i, j⟩, Finset.mem_univ _, rfl⟩
     rw [Ne, sub_eq_zero]
-    exact fun h => hij ((distinctElems bS adm).injective h)
+    exact fun h ↦ hij ((distinctElems bS adm).injective h)
 
 section Real
 

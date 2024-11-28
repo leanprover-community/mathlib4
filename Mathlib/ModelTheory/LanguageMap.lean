@@ -245,10 +245,10 @@ theorem funMap_sumInr [(L'.sum L).Structure M] [(LHom.sumInr : L →ᴸ L'.sum L
   (LHom.sumInr : L →ᴸ L'.sum L).map_onFunction f x
 
 theorem sumInl_injective : (LHom.sumInl : L →ᴸ L.sum L').Injective :=
-  ⟨fun h => Sum.inl_injective h, fun h => Sum.inl_injective h⟩
+  ⟨fun h ↦ Sum.inl_injective h, fun h ↦ Sum.inl_injective h⟩
 
 theorem sumInr_injective : (LHom.sumInr : L' →ᴸ L.sum L').Injective :=
-  ⟨fun h => Sum.inr_injective h, fun h => Sum.inr_injective h⟩
+  ⟨fun h ↦ Sum.inr_injective h, fun h ↦ Sum.inr_injective h⟩
 
 instance (priority := 100) isExpansionOn_reduct (ϕ : L →ᴸ L') (M : Type*) [L'.Structure M] :
     @IsExpansionOn L L' ϕ M (ϕ.reduct M) _ :=

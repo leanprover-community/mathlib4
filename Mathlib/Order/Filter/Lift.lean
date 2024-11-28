@@ -143,7 +143,7 @@ theorem lift_principal {s : Set α} (hg : Monotone g) : (𝓟 s).lift g = g s :=
   (lift_le (mem_principal_self _) le_rfl).antisymm (le_lift.2 fun _t ht => hg ht)
 
 theorem monotone_lift [Preorder γ] {f : γ → Filter α} {g : γ → Set α → Filter β} (hf : Monotone f)
-    (hg : Monotone g) : Monotone fun c => (f c).lift (g c) := fun _ _ h => lift_mono (hf h) (hg h)
+    (hg : Monotone g) : Monotone fun c ↦ (f c).lift (g c) := fun _ _ h => lift_mono (hf h) (hg h)
 
 theorem lift_neBot_iff (hm : Monotone g) : (NeBot (f.lift g)) ↔ ∀ s ∈ f, NeBot (g s) := by
   simp only [neBot_iff, Ne, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
@@ -273,7 +273,7 @@ theorem principal_le_lift' {t : Set β} : 𝓟 t ≤ f.lift' h ↔ ∀ s ∈ f, 
   le_lift'
 
 theorem monotone_lift' [Preorder γ] {f : γ → Filter α} {g : γ → Set α → Set β} (hf : Monotone f)
-    (hg : Monotone g) : Monotone fun c => (f c).lift' (g c) := fun _ _ h => lift'_mono (hf h) (hg h)
+    (hg : Monotone g) : Monotone fun c ↦ (f c).lift' (g c) := fun _ _ h => lift'_mono (hf h) (hg h)
 
 theorem lift_lift'_assoc {g : Set α → Set β} {h : Set β → Filter γ} (hg : Monotone g)
     (hh : Monotone h) : (f.lift' g).lift h = f.lift fun s => h (g s) :=

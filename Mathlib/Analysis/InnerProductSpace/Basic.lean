@@ -795,7 +795,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
     · rw [inner_smul_right]
     · intro j _hj hji
       rw [inner_smul_right, ho hji.symm, mul_zero]
-    · exact fun h => False.elim (h hi)
+    · exact fun h ↦ False.elim (h hi)
   simpa [hg, hz] using h'
 
 end BasicProperties
@@ -944,7 +944,7 @@ orthonormal. -/
 theorem orthonormal_subtype_range {v : ι → E} (hv : Function.Injective v) :
     Orthonormal 𝕜 (Subtype.val : Set.range v → E) ↔ Orthonormal 𝕜 v := by
   let f : ι ≃ Set.range v := Equiv.ofInjective v hv
-  refine ⟨fun h => h.comp f f.injective, fun h => ?_⟩
+  refine ⟨fun h ↦ h.comp f f.injective, fun h ↦ ?_⟩
   rw [← Equiv.self_comp_ofInjective_symm hv]
   exact h.comp f.symm f.symm.injective
 
@@ -1748,7 +1748,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       x = 0 ∨ ∃ r : 𝕜, y = r • x,
       x = 0 ∨ y ∈ 𝕜 ∙ x] := by
   tfae_have 1 → 2 := by
-    refine fun h => or_iff_not_imp_left.2 fun hx₀ => ?_
+    refine fun h ↦ or_iff_not_imp_left.2 fun hx₀ => ?_
     have : ‖x‖ ^ 2 ≠ 0 := pow_ne_zero _ (norm_ne_zero_iff.2 hx₀)
     rw [← sq_eq_sq₀, mul_pow, ← mul_right_inj' this, eq_comm, ← sub_eq_zero, ← mul_sub] at h <;>
       try positivity
@@ -1758,7 +1758,7 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
     rwa [inner_self_ne_zero]
-  tfae_have 2 → 3 := fun h => h.imp_right fun h' => ⟨_, h'⟩
+  tfae_have 2 → 3 := fun h ↦ h.imp_right fun h' => ⟨_, h'⟩
   tfae_have 3 → 1 := by
     rintro (rfl | ⟨r, rfl⟩) <;>
     simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K, inner_self_eq_norm_mul_norm,
@@ -2099,7 +2099,7 @@ theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_fa
   rintro ⟨i, v⟩ ⟨j, w⟩ hvw
   by_cases hij : i = j
   · subst hij
-    have : v ≠ w := fun h => by
+    have : v ≠ w := fun h ↦ by
       subst h
       exact hvw rfl
     simpa only [LinearIsometry.inner_map_map] using (hv_family i).2 this

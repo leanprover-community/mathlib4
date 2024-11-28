@@ -74,7 +74,7 @@ namespace order
 
 @[simp]
 lemma forall_relations {P : ∀ (n) (_ : Language.order.Relations n), Prop} :
-    (∀ {n} (R), P n R) ↔ P 2 .le := ⟨fun h => h _, fun h n R =>
+    (∀ {n} (R), P n R) ↔ P 2 .le := ⟨fun h ↦ h _, fun h n R =>
       match n, R with
       | 2, .le => h⟩
 
@@ -244,7 +244,7 @@ theorem realize_noTopOrder_iff : M ⊨ L.noTopOrderSentence ↔ NoTopOrder M := 
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine ⟨fun h => ⟨fun a ↦ h a⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ h a⟩, ?_⟩
   intro h a
   exact exists_not_le a
 
@@ -252,7 +252,7 @@ theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := 
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine ⟨fun h => ⟨fun a ↦ h a⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ h a⟩, ?_⟩
   intro h a
   exact exists_not_ge a
 
@@ -302,7 +302,7 @@ theorem realize_denselyOrdered_iff :
   simp only [denselyOrderedSentence, Sentence.Realize, Formula.Realize,
     BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize, Term.realize_lt,
     Sum.elim_inr, BoundedFormula.realize_ex, BoundedFormula.realize_inf]
-  refine ⟨fun h => ⟨fun a b ab => h a b ab⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨fun a b ab => h a b ab⟩, ?_⟩
   intro h a b ab
   exact exists_between ab
 

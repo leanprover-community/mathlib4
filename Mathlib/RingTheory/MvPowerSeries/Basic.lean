@@ -411,7 +411,7 @@ theorem coeff_C_mul (n : σ →₀ ℕ) (φ : MvPowerSeries σ R) (a : R) :
     coeff R n (C σ R a * φ) = a * coeff R n φ := by simpa using coeff_add_monomial_mul 0 n φ a
 
 theorem coeff_zero_mul_X (φ : MvPowerSeries σ R) (s : σ) : coeff R (0 : σ →₀ ℕ) (φ * X s) = 0 := by
-  have : ¬single s 1 ≤ 0 := fun h => by simpa using h s
+  have : ¬single s 1 ≤ 0 := fun h ↦ by simpa using h s
   simp only [X, coeff_mul_monomial, if_neg this]
 
 theorem coeff_zero_X_mul (φ : MvPowerSeries σ R) (s : σ) : coeff R (0 : σ →₀ ℕ) (X s * φ) = 0 := by

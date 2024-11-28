@@ -79,7 +79,7 @@ theorem Nodup.ndinsert (a : α) : Nodup s → Nodup (ndinsert a s) :=
   Quot.inductionOn s fun _ => Nodup.insert
 
 theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ t ∧ a ∈ t :=
-  ⟨fun h => ⟨le_trans (le_ndinsert_self _ _) h, mem_of_le h (mem_ndinsert_self _ _)⟩, fun ⟨l, m⟩ =>
+  ⟨fun h ↦ ⟨le_trans (le_ndinsert_self _ _) h, mem_of_le h (mem_ndinsert_self _ _)⟩, fun ⟨l, m⟩ =>
     if h : a ∈ s then by simp [h, l]
     else by
       rw [ndinsert_of_not_mem h, ← cons_erase m, cons_le_cons_iff, ← le_cons_of_not_mem h,

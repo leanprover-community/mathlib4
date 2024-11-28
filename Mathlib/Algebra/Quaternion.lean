@@ -675,7 +675,7 @@ theorem eq_re_of_eq_coe {a : ℍ[R,c₁,c₂]} {x : R} (h : a = x) : a = a.re :=
 
 theorem eq_re_iff_mem_range_coe {a : ℍ[R,c₁,c₂]} :
     a = a.re ↔ a ∈ Set.range (coe : R → ℍ[R,c₁,c₂]) :=
-  ⟨fun h => ⟨a.re, h.symm⟩, fun ⟨_, h⟩ => eq_re_of_eq_coe h.symm⟩
+  ⟨fun h ↦ ⟨a.re, h.symm⟩, fun ⟨_, h⟩ => eq_re_of_eq_coe h.symm⟩
 
 section CharZero
 
@@ -1173,7 +1173,7 @@ variable [LinearOrderedCommRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
-  refine ⟨fun h => ?_, fun h => h.symm ▸ normSq.map_zero⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.symm ▸ normSq.map_zero⟩
   rw [normSq_def', add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg, add_eq_zero_iff_of_nonneg]
     at h
   · exact ext a 0 (pow_eq_zero h.1.1.1) (pow_eq_zero h.1.1.2) (pow_eq_zero h.1.2) (pow_eq_zero h.2)

@@ -68,7 +68,7 @@ variable {mα : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ] {f
 
 theorem measurableSet_image (hf : MeasurableEmbedding f) :
     MeasurableSet (f '' s) ↔ MeasurableSet s :=
-  ⟨fun h => by simpa only [hf.injective.preimage_image] using hf.measurable h, fun h =>
+  ⟨fun h ↦ by simpa only [hf.injective.preimage_image] using hf.measurable h, fun h =>
     hf.measurableSet_image' h⟩
 
 theorem id : MeasurableEmbedding (id : α → α) :=
@@ -313,7 +313,7 @@ lemma preimage_image (e : α ≃ᵐ β) (s : Set α) : e ⁻¹' (e '' s) = s := 
 @[simp]
 theorem measurableSet_preimage (e : α ≃ᵐ β) {s : Set β} :
     MeasurableSet (e ⁻¹' s) ↔ MeasurableSet s :=
-  ⟨fun h => by simpa only [symm_preimage_preimage] using e.symm.measurable h, fun h =>
+  ⟨fun h ↦ by simpa only [symm_preimage_preimage] using e.symm.measurable h, fun h =>
     e.measurable h⟩
 
 @[simp]
@@ -352,7 +352,7 @@ protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
     (fun hfe => by
       have : Measurable (f ∘ (e.symm.trans e).toEquiv) := hfe.comp e.symm.measurable
       rwa [coe_toEquiv, symm_trans_self] at this)
-    fun h => h.comp e.measurable
+    fun h ↦ h.comp e.measurable
 
 /-- Any two types with unique elements are measurably equivalent. -/
 def ofUniqueOfUnique (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [Unique α] [Unique β] :

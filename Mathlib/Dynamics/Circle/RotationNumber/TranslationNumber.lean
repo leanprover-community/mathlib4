@@ -199,7 +199,7 @@ def toOrderIso : CircleDeg1Liftˣ →* ℝ ≃o ℝ where
       invFun := ⇑f⁻¹
       left_inv := units_inv_apply_apply f
       right_inv := units_apply_inv_apply f
-      map_rel_iff' := ⟨fun h => by simpa using mono (↑f⁻¹) h, mono f⟩ }
+      map_rel_iff' := ⟨fun h ↦ by simpa using mono (↑f⁻¹) h, mono f⟩ }
   map_one' := rfl
   map_mul' _ _ := rfl
 
@@ -478,7 +478,7 @@ protected theorem tendsto_atTop : Tendsto f atTop atTop :=
       simpa [sub_eq_add_neg] using tendsto_atTop_add_const_right _ _ tendsto_id
 
 theorem continuous_iff_surjective : Continuous f ↔ Function.Surjective f :=
-  ⟨fun h => h.surjective f.tendsto_atTop f.tendsto_atBot, f.monotone.continuous_of_surjective⟩
+  ⟨fun h ↦ h.surjective f.tendsto_atTop f.tendsto_atBot, f.monotone.continuous_of_surjective⟩
 
 /-!
 ### Estimates on `(f^n) x`

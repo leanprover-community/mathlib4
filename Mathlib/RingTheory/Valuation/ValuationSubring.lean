@@ -134,13 +134,13 @@ theorem algebraMap_apply (a : A) : algebraMap A K a = a := rfl
 
 instance : IsFractionRing A K where
   map_units' := fun ⟨y, hy⟩ =>
-    (Units.mk0 (y : K) fun c => nonZeroDivisors.ne_zero hy <| Subtype.ext c).isUnit
+    (Units.mk0 (y : K) fun c ↦ nonZeroDivisors.ne_zero hy <| Subtype.ext c).isUnit
   surj' z := by
     by_cases h : z = 0; · use (0, 1); simp [h]
     cases' A.mem_or_inv_mem z with hh hh
     · use (⟨z, hh⟩, 1); simp
     · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel₀ h⟩
-      exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp (congr_arg Subtype.val c))
+      exact mem_nonZeroDivisors_iff_ne_zero.2 fun c ↦ h (inv_eq_zero.mp (congr_arg Subtype.val c))
   exists_of_eq {a b} h := ⟨1, by ext; simpa using h⟩
 
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
@@ -181,7 +181,7 @@ theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
   rw [← A.valuation.map_one, valuation_eq_iff]; use a; simp
 
 theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 :=
-  ⟨fun h => A.valuation_unit h.unit, fun h => by
+  ⟨fun h ↦ A.valuation_unit h.unit, fun h ↦ by
     have ha : (a : K) ≠ 0 := by
       intro c
       rw [c, A.valuation.map_zero] at h
@@ -306,7 +306,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
       · simpa [Valuation.pos_iff] using fun hr₀ ↦ hr₀ ▸ hr <| Ideal.zero_mem (R.idealOfLE S h)
       · exact zero_lt_one
   · intro hx; by_cases hr : x ∈ R; · exact R.le_ofPrime _ hr
-    have : x ≠ 0 := fun h => hr (by rw [h]; exact R.zero_mem)
+    have : x ≠ 0 := fun h ↦ hr (by rw [h]; exact R.zero_mem)
     replace hr := (R.mem_or_inv_mem x).resolve_left hr
     refine ⟨1, ⟨x⁻¹, hr⟩, ?_, ?_⟩
     · simp only [Ideal.primeCompl, Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff,
@@ -318,7 +318,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
     · field_simp
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
-    ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c => hs (h c), he⟩
+    ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c ↦ hs (h c), he⟩
 
 theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤ S) (h : R ≤ S) :
     idealOfLE A S hS ≤ idealOfLE A R hR := fun x hx =>
@@ -341,13 +341,13 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { primeSpectrumEquiv A with
     map_rel_iff' :=
-      ⟨fun h => by
+      ⟨fun h ↦ by
         dsimp at h
         have := idealOfLE_le_of_le A _ _ ?_ ?_ h
         iterate 2 erw [idealOfLE_ofPrime] at this
         · exact this
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
-      fun h => by apply ofPrime_le_of_le; exact h⟩ }
+      fun h ↦ by apply ofPrime_le_of_le; exact h⟩ }
 
 instance le_total_ideal : IsTotal {S // A ≤ S} LE.le :=
   let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
@@ -527,7 +527,7 @@ to be in `A` already.
  -/
 theorem mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :
     a ∈ A.nonunits ↔ ∃ ha, (⟨a, ha⟩ : A) ∈ IsLocalRing.maximalIdeal A :=
-  ⟨fun h => ⟨nonunits_subset h, coe_mem_nonunits_iff.mp h⟩, fun ⟨_, h⟩ =>
+  ⟨fun h ↦ ⟨nonunits_subset h, coe_mem_nonunits_iff.mp h⟩, fun ⟨_, h⟩ =>
     coe_mem_nonunits_iff.mpr h⟩
 
 /-- `A.nonunits` agrees with the maximal ideal of `A`, after taking its image in `K`. -/

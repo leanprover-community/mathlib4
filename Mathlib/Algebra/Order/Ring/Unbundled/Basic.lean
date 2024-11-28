@@ -488,11 +488,11 @@ theorem add_le_mul' [ZeroLEOneClass α] [NeZero (R := α) 1]
 
 theorem mul_nonneg_iff_right_nonneg_of_pos [PosMulStrictMono α]
     (ha : 0 < a) : 0 ≤ a * b ↔ 0 ≤ b :=
-  ⟨fun h => nonneg_of_mul_nonneg_right h ha, mul_nonneg ha.le⟩
+  ⟨fun h ↦ nonneg_of_mul_nonneg_right h ha, mul_nonneg ha.le⟩
 
 theorem mul_nonneg_iff_left_nonneg_of_pos [PosMulStrictMono α] [MulPosStrictMono α]
     (hb : 0 < b) : 0 ≤ a * b ↔ 0 ≤ a :=
-  ⟨fun h => nonneg_of_mul_nonneg_left h hb, fun h => mul_nonneg h hb.le⟩
+  ⟨fun h ↦ nonneg_of_mul_nonneg_left h hb, fun h ↦ mul_nonneg h hb.le⟩
 
 theorem nonpos_of_mul_nonneg_left [PosMulStrictMono α]
     (h : 0 ≤ a * b) (hb : b < 0) : a ≤ 0 :=

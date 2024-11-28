@@ -161,7 +161,7 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
               rw [mul_sub, sub_mul, sub_add_sub_cancel]
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
-        refine squeeze_zero (fun e => norm_nonneg _) this ?_
+        refine squeeze_zero (fun e ↦ norm_nonneg _) this ?_
         convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add

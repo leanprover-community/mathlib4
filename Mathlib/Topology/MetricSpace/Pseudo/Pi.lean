@@ -81,7 +81,7 @@ lemma dist_pi_le_iff' [Nonempty β] {f g : ∀ b, π b} {r : ℝ} :
     dist f g ≤ r ↔ ∀ b, dist (f b) (g b) ≤ r := by
   by_cases hr : 0 ≤ r
   · exact dist_pi_le_iff hr
-  · exact iff_of_false (fun h => hr <| dist_nonneg.trans h) fun h =>
+  · exact iff_of_false (fun h ↦ hr <| dist_nonneg.trans h) fun h =>
       hr <| dist_nonneg.trans <| h <| Classical.arbitrary _
 
 lemma dist_pi_const_le (a b : α) : (dist (fun _ : β => a) fun _ => b) ≤ dist a b :=
@@ -152,7 +152,7 @@ lemma sphere_pi (x : ∀ b, π b) {r : ℝ} (h : 0 < r ∨ Nonempty β) :
 lemma Fin.nndist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
     [∀ i, PseudoMetricSpace (α i)] (i : Fin (n + 1)) (x y : α i) (f g : ∀ j, α (i.succAbove j)) :
     nndist (i.insertNth x f) (i.insertNth y g) = max (nndist x y) (nndist f g) :=
-  eq_of_forall_ge_iff fun c => by simp [nndist_pi_le_iff, i.forall_iff_succAbove]
+  eq_of_forall_ge_iff fun c ↦ by simp [nndist_pi_le_iff, i.forall_iff_succAbove]
 
 @[simp]
 lemma Fin.dist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}

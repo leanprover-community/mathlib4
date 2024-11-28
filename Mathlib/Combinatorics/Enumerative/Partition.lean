@@ -157,7 +157,7 @@ theorem count_ofSums_of_ne_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) {i
 
 theorem count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) :
     (ofSums n l hl).parts.count 0 = 0 :=
-  count_filter_of_neg fun h => h rfl
+  count_filter_of_neg fun h ↦ h rfl
 
 /-- Show there are finitely many partitions by considering the surjection from compositions to
 partitions.
@@ -167,11 +167,11 @@ instance (n : ℕ) : Fintype (Partition n) :=
 
 /-- The finset of those partitions in which every part is odd. -/
 def odds (n : ℕ) : Finset (Partition n) :=
-  Finset.univ.filter fun c => ∀ i ∈ c.parts, ¬Even i
+  Finset.univ.filter fun c ↦ ∀ i ∈ c.parts, ¬Even i
 
 /-- The finset of those partitions in which each part is used at most once. -/
 def distincts (n : ℕ) : Finset (Partition n) :=
-  Finset.univ.filter fun c => c.parts.Nodup
+  Finset.univ.filter fun c ↦ c.parts.Nodup
 
 /-- The finset of those partitions in which every part is odd and used at most once. -/
 def oddDistincts (n : ℕ) : Finset (Partition n) :=

@@ -391,7 +391,7 @@ theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' 
 
 theorem ball_eq_empty_iff : ball x ε = ∅ ↔ ε = 0 :=
   eq_empty_iff_forall_not_mem.trans
-    ⟨fun h => le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_ball_self ε0)), fun ε0 _ h =>
+    ⟨fun h ↦ le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_ball_self ε0)), fun ε0 _ h =>
       not_lt_of_le (le_of_eq ε0) (pos_of_mem_ball h)⟩
 
 theorem ordConnected_setOf_closedBall_subset (x : α) (s : Set α) :
@@ -406,7 +406,7 @@ def edistLtTopSetoid : Setoid α where
   r x y := edist x y < ⊤
   iseqv :=
     ⟨fun x => by rw [edist_self]; exact ENNReal.coe_lt_top,
-      fun h => by rwa [edist_comm], fun hxy hyz =>
+      fun h ↦ by rwa [edist_comm], fun hxy hyz =>
         lt_of_le_of_lt (edist_triangle _ _ _) (ENNReal.add_lt_top.2 ⟨hxy, hyz⟩)⟩
 
 @[simp]
@@ -577,7 +577,7 @@ export EMetricSpace (eq_of_edist_eq_zero)
 /-- Characterize the equality of points by the vanishing of their extended distance -/
 @[simp]
 theorem edist_eq_zero {x y : γ} : edist x y = 0 ↔ x = y :=
-  ⟨eq_of_edist_eq_zero, fun h => h ▸ edist_self _⟩
+  ⟨eq_of_edist_eq_zero, fun h ↦ h ▸ edist_self _⟩
 
 @[simp]
 theorem zero_eq_edist {x y : γ} : 0 = edist x y ↔ x = y := eq_comm.trans edist_eq_zero
@@ -614,7 +614,7 @@ See Note [reducible non-instances]. -/
 abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with
-    eq_of_edist_eq_zero := fun h => hf (edist_eq_zero.1 h) }
+    eq_of_edist_eq_zero := fun h ↦ hf (edist_eq_zero.1 h) }
 
 /-- EMetric space instance on subsets of emetric spaces -/
 instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtype p) :=

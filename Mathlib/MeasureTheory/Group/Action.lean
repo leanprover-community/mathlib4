@@ -226,7 +226,7 @@ theorem smulInvariantMeasure_tfae :
         ∀ (c : G) (s), μ (c • s) = μ s,
         ∀ c : G, Measure.map (c • ·) μ = μ,
         ∀ c : G, MeasurePreserving (c • ·) μ μ] := by
-  tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 1 ↔ 2 := ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
   tfae_have 1 → 6 := fun h c => (measurePreserving_smul c μ).map_eq
   tfae_have 6 → 7 := fun H c => ⟨measurable_const_smul c, H c⟩
   tfae_have 7 → 4 := fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
@@ -313,7 +313,7 @@ theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : Is
 @[to_additive]
 theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     0 < μ U ↔ U.Nonempty :=
-  ⟨fun h => nonempty_of_measure_ne_zero h.ne',
+  ⟨fun h ↦ nonempty_of_measure_ne_zero h.ne',
     measure_isOpen_pos_of_smulInvariant_of_ne_zero G hμ hU⟩
 
 @[to_additive]

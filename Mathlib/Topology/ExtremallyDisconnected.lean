@@ -162,7 +162,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
-      ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
+      ?_ (fun c ↦ ?_) (fun c ↦ IsClosed.isCompact ?_) (fun c ↦ ?_)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
       have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| π ⁻¹' {a}
       exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (· ⊇ ·) this
@@ -194,7 +194,7 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
       zorn_subset _ (compl_ne_univ.mpr nonempty) is_open.isClosed_compl
     rcases nonempty_compl.mpr ne_univ with ⟨x, hx⟩
     -- prove $x \in N \cap (A \setminus \rho(E \setminus G))$
-    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_subset ρ (by simp) h
+    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h ↦ hx <| image_subset ρ (by simp) h
     rcases ρ_surj x with ⟨y, rfl⟩
     have hy : y ∈ G ∩ ρ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
     exact ⟨ρ y, mem_inter (mem_preimage.mp <| mem_of_mem_inter_right hy) hx'⟩

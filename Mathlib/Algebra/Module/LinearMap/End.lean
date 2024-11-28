@@ -312,7 +312,7 @@ def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M where
   map_smul' b y := by dsimp; rw [map_smul, smul_assoc]
 
 @[simp]
-theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ → M) = fun c => f c • x :=
+theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ → M) = fun c ↦ f c • x :=
   rfl
 
 theorem smulRight_apply (f : M₁ →ₗ[R] S) (x : M) (c : M₁) : smulRight f x c = f c • x :=

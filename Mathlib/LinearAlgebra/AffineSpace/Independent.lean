@@ -175,7 +175,7 @@ theorem linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Se
   have h : (fun p => (p -ᵥ p₁ : V)) '' (({p₁} ∪ (fun v => v +ᵥ p₁) '' s) \ {p₁}) = s := by
     simp_rw [Set.union_diff_left, Set.image_diff (vsub_left_injective p₁), Set.image_image,
       Set.image_singleton, vsub_self, vadd_vsub, Set.image_id']
-    exact Set.diff_singleton_eq_self fun h => hs 0 h rfl
+    exact Set.diff_singleton_eq_self fun h ↦ hs 0 h rfl
   rw [h]
 
 /-- A family is affinely independent if and only if any affine
@@ -438,7 +438,7 @@ protected theorem AffineIndependent.mem_affineSpan_iff [Nontrivial k] {p : ι �
       AffineIndependent.exists_mem_inter_of_exists_mem_inter_affineSpan ha hs
         (mem_affineSpan k (Set.mem_image_of_mem _ (Set.mem_singleton _)))
     rwa [← Set.nonempty_def, Set.inter_singleton_nonempty] at h
-  · exact fun h => mem_affineSpan k (Set.mem_image_of_mem p h)
+  · exact fun h ↦ mem_affineSpan k (Set.mem_image_of_mem p h)
 
 /-- If a family is affinely independent, a point in the family is not
 in the affine span of the other points, if the underlying ring is
@@ -507,7 +507,7 @@ theorem weightedVSub_mem_vectorSpan_pair {p : ι → P} (h : AffineIndependent k
         vectorSpan k ({s.affineCombination k p w₁, s.affineCombination k p w₂} : Set P) ↔
       ∃ r : k, ∀ i ∈ s, w i = r * (w₁ i - w₂ i) := by
   rw [mem_vectorSpan_pair]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨r, hr⟩
     refine ⟨r, fun i hi => ?_⟩
     rw [s.affineCombination_vsub, ← s.weightedVSub_const_smul, ← sub_eq_zero, ← map_sub] at hr
@@ -901,7 +901,7 @@ faces are given by the same subset of points. -/
 theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ : Finset (Fin (n + 1))}
     {m₁ m₂ : ℕ} (h₁ : #fs₁ = m₁ + 1) (h₂ : #fs₂ = m₂ + 1) :
     fs₁.centroid k s.points = fs₂.centroid k s.points ↔ fs₁ = fs₂ := by
-  refine ⟨fun h => ?_, @congrArg _ _ fs₁ fs₂ (fun z => Finset.centroid k z s.points)⟩
+  refine ⟨fun h ↦ ?_, @congrArg _ _ fs₁ fs₂ (fun z => Finset.centroid k z s.points)⟩
   rw [Finset.centroid_eq_affineCombination_fintype,
     Finset.centroid_eq_affineCombination_fintype] at h
   have ha :=

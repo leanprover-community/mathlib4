@@ -241,7 +241,7 @@ lemma mem_ofUnits_of_isUnit_of_unit_mem (S : Subgroup Mˣ) {x : M} (h₁ : IsUni
 @[to_additive]
 lemma mem_ofUnits_iff_exists_isUnit (S : Subgroup Mˣ) (x : M) :
     x ∈ S.ofUnits ↔ ∃ h : IsUnit x, h.unit ∈ S :=
-  ⟨fun h => ⟨S.isUnit_of_mem_ofUnits h, S.unit_mem_of_mem_ofUnits h⟩,
+  ⟨fun h ↦ ⟨S.isUnit_of_mem_ofUnits h, S.unit_mem_of_mem_ofUnits h⟩,
   fun ⟨hm, he⟩ => S.mem_ofUnits_of_isUnit_of_unit_mem hm he⟩
 
 /-- The equivalence between the coercion of a subgroup `S` of `Mˣ` to a submonoid of `M` and

@@ -131,7 +131,7 @@ theorem smul (r : R) (hφ : IsSymmetric φ) : IsSymmetric (r • φ) :=
   (symmetricSubalgebra σ R).smul_mem hφ r
 
 @[simp]
-theorem map (hφ : IsSymmetric φ) (f : R →+* S) : IsSymmetric (map f φ) := fun e => by
+theorem map (hφ : IsSymmetric φ) (f : R →+* S) : IsSymmetric (map f φ) := fun e ↦ by
   rw [← map_rename, hφ]
 
 protected theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename e φ).IsSymmetric := fun _ => by
@@ -142,7 +142,7 @@ protected theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename e φ).
 @[simp]
 theorem _root_.MvPolynomial.isSymmetric_rename {e : σ ≃ τ} :
     (MvPolynomial.rename e φ).IsSymmetric ↔ φ.IsSymmetric :=
-  ⟨fun h => by simpa using (IsSymmetric.rename (R := R) h e.symm), (IsSymmetric.rename · e)⟩
+  ⟨fun h ↦ by simpa using (IsSymmetric.rename (R := R) h e.symm), (IsSymmetric.rename · e)⟩
 
 end CommSemiring
 

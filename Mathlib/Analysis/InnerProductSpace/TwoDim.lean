@@ -214,7 +214,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           linarith
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
-        have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
+        have hw : (w : E) ≠ 0 := fun h ↦ hw₀ (Submodule.coe_eq_zero.mp h)
         refine le_of_mul_le_mul_right ?_ (by rwa [norm_pos_iff] : 0 < ‖(w : E)‖)
         rw [← o.abs_areaForm_of_orthogonal hw']
         rw [← o.inner_rightAngleRotationAux₁_left x w]
@@ -514,7 +514,7 @@ theorem kahler_ne_zero {x y : E} (hx : x ≠ 0) (hy : y ≠ 0) : o.kahler x y �
   tauto
 
 theorem kahler_ne_zero_iff (x y : E) : o.kahler x y ≠ 0 ↔ x ≠ 0 ∧ y ≠ 0 := by
-  refine ⟨?_, fun h => o.kahler_ne_zero h.1 h.2⟩
+  refine ⟨?_, fun h ↦ o.kahler_ne_zero h.1 h.2⟩
   contrapose
   simp only [not_and_or, Classical.not_not, kahler_apply_apply, Complex.real_smul]
   rintro (rfl | rfl) <;> simp

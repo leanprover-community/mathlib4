@@ -175,15 +175,15 @@ theorem lt_ack_right (m n : ℕ) : n < ack m n :=
 
 -- we reorder the arguments to appease the equation compiler
 private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
-  | m, 0, _ => fun h => (not_lt_zero m h).elim
+  | m, 0, _ => fun h ↦ (not_lt_zero m h).elim
   | 0, m + 1, 0 => fun _h => by simpa using one_lt_ack_succ_right m 0
-  | 0, m + 1, n + 1 => fun h => by
+  | 0, m + 1, n + 1 => fun h ↦ by
     rw [ack_zero, ack_succ_succ]
     apply lt_of_le_of_lt (le_trans _ <| add_le_add_left (add_add_one_le_ack _ _) m) (add_lt_ack _ _)
     omega
-  | m₁ + 1, m₂ + 1, 0 => fun h => by
+  | m₁ + 1, m₂ + 1, 0 => fun h ↦ by
     simpa using ack_strict_mono_left' 1 ((add_lt_add_iff_right 1).1 h)
-  | m₁ + 1, m₂ + 1, n + 1 => fun h => by
+  | m₁ + 1, m₂ + 1, n + 1 => fun h ↦ by
     rw [ack_succ_succ, ack_succ_succ]
     exact
       (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
@@ -338,7 +338,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
     -- The proof is now simple.
     exact ⟨max a b + 9, fun n => this.trans_le <| ack_mono_right _ <| unpair_add_le n⟩
 
-theorem not_nat_primrec_ack_self : ¬Nat.Primrec fun n => ack n n := fun h => by
+theorem not_nat_primrec_ack_self : ¬Nat.Primrec fun n => ack n n := fun h ↦ by
   cases' exists_lt_ack_of_nat_primrec h with m hm
   exact (hm m).false
 

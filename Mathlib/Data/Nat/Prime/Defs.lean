@@ -82,7 +82,7 @@ theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m �
 
 @[inherit_doc Nat.Prime]
 theorem prime_def {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p := by
-  refine ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => ?_⟩
+  refine ⟨fun h ↦ ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h ↦ ?_⟩
   have h1 := Nat.one_lt_two.trans_le h.1
   refine ⟨mt Nat.isUnit_iff.mp h1.ne', fun a b hab => ?_⟩
   simp only [Nat.isUnit_iff]
@@ -157,8 +157,8 @@ theorem prime_five : Prime 5 := by decide
 end
 
 theorem dvd_prime {p m : ℕ} (pp : Prime p) : m ∣ p ↔ m = 1 ∨ m = p :=
-  ⟨fun d => pp.eq_one_or_self_of_dvd m d, fun h =>
-    h.elim (fun e => e.symm ▸ one_dvd _) fun e => e.symm ▸ dvd_rfl⟩
+  ⟨fun d ↦ pp.eq_one_or_self_of_dvd m d, fun h =>
+    h.elim (fun e ↦ e.symm ▸ one_dvd _) fun e ↦ e.symm ▸ dvd_rfl⟩
 
 theorem dvd_prime_two_le {p m : ℕ} (pp : Prime p) (H : 2 ≤ m) : m ∣ p ↔ m = p :=
   (dvd_prime pp).trans <| or_iff_right_of_imp <| Not.elim <| ne_of_gt H
@@ -259,7 +259,7 @@ theorem minFac_has_prop {n : ℕ} (n1 : n ≠ 1) : minFacProp n (minFac n) := by
   · exact ⟨le_rfl, d2, fun k k2 _ => k2⟩
   · refine
       minFacAux_has_prop n2 3 0 rfl fun m m2 d => (Nat.eq_or_lt_of_le m2).resolve_left (mt ?_ d2)
-    exact fun e => e.symm ▸ d
+    exact fun e ↦ e.symm ▸ d
 
 theorem minFac_dvd (n : ℕ) : minFac n ∣ n :=
   if n1 : n = 1 then by simp [n1] else (minFac_has_prop n1).2.1
@@ -393,11 +393,11 @@ theorem Prime.coprime_iff_not_dvd {p n : ℕ} (pp : Prime p) : Coprime p n ↔ �
     coprime_of_dvd fun _ m2 mp => ((prime_dvd_prime_iff_eq m2 pp).1 mp).symm ▸ nd⟩
 
 theorem Prime.dvd_mul {p m n : ℕ} (pp : Prime p) : p ∣ m * n ↔ p ∣ m ∨ p ∣ n :=
-  ⟨fun H => or_iff_not_imp_left.2 fun h => (pp.coprime_iff_not_dvd.2 h).dvd_of_dvd_mul_left H,
+  ⟨fun H => or_iff_not_imp_left.2 fun h ↦ (pp.coprime_iff_not_dvd.2 h).dvd_of_dvd_mul_left H,
     Or.rec (fun h : p ∣ m => h.mul_right _) fun h : p ∣ n => h.mul_left _⟩
 
 theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
-  ⟨fun h => ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
+  ⟨fun h ↦ ⟨h.ne_zero, h.not_unit, fun _ _ => h.dvd_mul.mp⟩, Prime.irreducible⟩
 
 alias ⟨Prime.prime, _root_.Prime.nat_prime⟩ := prime_iff
 

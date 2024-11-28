@@ -68,7 +68,7 @@ theorem ext'_iff {r s : Setoid α} : r = s ↔ ∀ a b, r.Rel a b ↔ s.Rel a b 
 
 /-- Two equivalence relations are equal iff their underlying binary operations are equal. -/
 theorem eq_iff_rel_eq {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ ⇑r₁ = ⇑r₂ :=
-  ⟨fun h => h ▸ rfl, fun h => Setoid.ext fun _ _ => h ▸ Iff.rfl⟩
+  ⟨fun h ↦ h ▸ rfl, fun h ↦ Setoid.ext fun _ _ => h ▸ Iff.rfl⟩
 
 /-- Defining `≤` for equivalence relations. -/
 instance : LE (Setoid α) :=
@@ -117,7 +117,7 @@ protected def prod (r : Setoid α) (s : Setoid β) :
     Setoid (α × β) where
   r x y := r x.1 y.1 ∧ s x.2 y.2
   iseqv :=
-    ⟨fun x => ⟨r.refl' x.1, s.refl' x.2⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩,
+    ⟨fun x => ⟨r.refl' x.1, s.refl' x.2⟩, fun h ↦ ⟨r.symm' h.1, s.symm' h.2⟩,
       fun h₁ h₂ => ⟨r.trans' h₁.1 h₂.1, s.trans' h₁.2 h₂.2⟩⟩
 
 lemma prod_apply {r : Setoid α} {s : Setoid β} {x₁ x₂ : α} {y₁ y₂ : β} :
@@ -167,7 +167,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
 instance : Min (Setoid α) :=
   ⟨fun r s =>
     ⟨fun x y => r x y ∧ s x y,
-      ⟨fun x => ⟨r.refl' x, s.refl' x⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
+      ⟨fun x => ⟨r.refl' x, s.refl' x⟩, fun h ↦ ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
         ⟨r.trans' h1.1 h2.1, s.trans' h1.2 h2.2⟩⟩⟩⟩
 
 /-- The infimum of 2 equivalence relations r and s is the same relation as the infimum
@@ -198,7 +198,7 @@ instance : PartialOrder (Setoid α) where
   le_refl _ _ _ := id
   le_trans _ _ _ hr hs _ _ h := hs <| hr h
   lt_iff_le_not_le _ _ := Iff.rfl
-  le_antisymm _ _ h1 h2 := Setoid.ext fun _ _ => ⟨fun h => h1 h, fun h => h2 h⟩
+  le_antisymm _ _ h1 h2 := Setoid.ext fun _ _ => ⟨fun h ↦ h1 h, fun h ↦ h2 h⟩
 
 /-- The complete lattice of equivalence relations on a type, with bottom element `=`
     and top element the trivial equivalence relation. -/
@@ -209,9 +209,9 @@ instance completeLattice : CompleteLattice (Setoid α) :=
     inf_le_left := fun _ _ _ _ h => h.1
     inf_le_right := fun _ _ _ _ h => h.2
     le_inf := fun _ _ _ h1 h2 _ _ h => ⟨h1 h, h2 h⟩
-    top := ⟨fun _ _ => True, ⟨fun _ => trivial, fun h => h, fun h1 _ => h1⟩⟩
+    top := ⟨fun _ _ => True, ⟨fun _ => trivial, fun h ↦ h, fun h1 _ => h1⟩⟩
     le_top := fun _ _ _ _ => trivial
-    bot := ⟨(· = ·), ⟨fun _ => rfl, fun h => h.symm, fun h1 h2 => h1.trans h2⟩⟩
+    bot := ⟨(· = ·), ⟨fun _ => rfl, fun h ↦ h.symm, fun h1 h2 => h1.trans h2⟩⟩
     bot_le := fun r x _ h => h ▸ r.2.1 x }
 
 @[simp]

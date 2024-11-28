@@ -108,10 +108,10 @@ theorem normalize_associated (x : α) : Associated (normalize x) x :=
   (associated_normalize _).symm
 
 theorem associated_normalize_iff {x y : α} : Associated x (normalize y) ↔ Associated x y :=
-  ⟨fun h => h.trans (normalize_associated y), fun h => h.trans (associated_normalize y)⟩
+  ⟨fun h ↦ h.trans (normalize_associated y), fun h ↦ h.trans (associated_normalize y)⟩
 
 theorem normalize_associated_iff {x y : α} : Associated (normalize x) y ↔ Associated x y :=
-  ⟨fun h => (associated_normalize _).trans h, fun h => (normalize_associated _).trans h⟩
+  ⟨fun h ↦ (associated_normalize _).trans h, fun h ↦ (normalize_associated _).trans h⟩
 
 theorem Associates.mk_normalize (x : α) : Associates.mk (normalize x) = Associates.mk x :=
   Associates.mk_eq_mk_iff_associated.2 (normalize_associated _)
@@ -157,7 +157,7 @@ theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
     _ = a * ↑u * ↑(normUnit a) * ↑u⁻¹ := by rw [mul_right_comm a]
 
 theorem normalize_eq_normalize_iff {x y : α} : normalize x = normalize y ↔ x ∣ y ∧ y ∣ x :=
-  ⟨fun h => ⟨Units.dvd_mul_right.1 ⟨_, h.symm⟩, Units.dvd_mul_right.1 ⟨_, h⟩⟩, fun ⟨hxy, hyx⟩ =>
+  ⟨fun h ↦ ⟨Units.dvd_mul_right.1 ⟨_, h.symm⟩, Units.dvd_mul_right.1 ⟨_, h⟩⟩, fun ⟨hxy, hyx⟩ =>
     normalize_eq_normalize hxy hyx⟩
 
 theorem dvd_antisymm_of_normalize_eq {a b : α} (ha : normalize a = a) (hb : normalize b = b)
@@ -292,7 +292,7 @@ theorem gcd_mul_lcm [GCDMonoid α] : ∀ a b : α, Associated (gcd a b * lcm a b
 section GCD
 
 theorem dvd_gcd_iff [GCDMonoid α] (a b c : α) : a ∣ gcd b c ↔ a ∣ b ∧ a ∣ c :=
-  Iff.intro (fun h => ⟨h.trans (gcd_dvd_left _ _), h.trans (gcd_dvd_right _ _)⟩) fun ⟨hab, hac⟩ =>
+  Iff.intro (fun h ↦ ⟨h.trans (gcd_dvd_left _ _), h.trans (gcd_dvd_right _ _)⟩) fun ⟨hab, hac⟩ =>
     dvd_gcd hab hac
 
 theorem gcd_comm [NormalizedGCDMonoid α] (a b : α) : gcd a b = gcd b a :=
@@ -347,7 +347,7 @@ theorem gcd_zero_right' [GCDMonoid α] (a : α) : Associated (gcd a 0) a :=
 @[simp]
 theorem gcd_eq_zero_iff [GCDMonoid α] (a b : α) : gcd a b = 0 ↔ a = 0 ∧ b = 0 :=
   Iff.intro
-    (fun h => by
+    (fun h ↦ by
       let ⟨ca, ha⟩ := gcd_dvd_left a b
       let ⟨cb, hb⟩ := gcd_dvd_right a b
       rw [h, zero_mul] at ha hb
@@ -458,14 +458,14 @@ theorem dvd_gcd_mul_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k
   (dvd_gcd (dvd_mul_right _ n) H).trans (gcd_mul_right' n k m).dvd
 
 theorem dvd_gcd_mul_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ gcd k m * n ↔ k ∣ m * n :=
-  ⟨fun h => h.trans (mul_dvd_mul (gcd_dvd_right k m) dvd_rfl), dvd_gcd_mul_of_dvd_mul⟩
+  ⟨fun h ↦ h.trans (mul_dvd_mul (gcd_dvd_right k m) dvd_rfl), dvd_gcd_mul_of_dvd_mul⟩
 
 theorem dvd_mul_gcd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k ∣ m * gcd k n := by
   rw [mul_comm] at H ⊢
   exact dvd_gcd_mul_of_dvd_mul H
 
 theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n ↔ k ∣ m * n :=
-  ⟨fun h => h.trans (mul_dvd_mul dvd_rfl (gcd_dvd_right k n)), dvd_mul_gcd_of_dvd_mul⟩
+  ⟨fun h ↦ h.trans (mul_dvd_mul dvd_rfl (gcd_dvd_right k n)), dvd_mul_gcd_of_dvd_mul⟩
 
 /-- Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
 

@@ -119,7 +119,7 @@ theorem inj (f : r ≼i s) {a b : α} : f a = f b ↔ a = b :=
   f.toRelEmbedding.inj
 
 theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rcases f.mem_range_of_rel h with ⟨a', rfl⟩
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
     fun ⟨_, e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
@@ -238,7 +238,7 @@ theorem leAdd_apply (r : α → α → Prop) (s : β → β → Prop) (a) : leAd
 
 protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
   ⟨by
-    refine fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => ?_
+    refine fun h ↦ Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => ?_
     obtain ⟨a', rfl⟩ := f.mem_range_of_rel hb
     exact ha _ (f.map_rel_iff.mp hb), f.toRelEmbedding.acc a⟩
 
@@ -404,7 +404,7 @@ theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top
 
 /-- Composition of an order isomorphism with a principal segment, as a principal segment. -/
 def relIsoTrans (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
-  ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c => by simp [g.mem_range_iff_rel]⟩
+  ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c ↦ by simp [g.mem_range_iff_rel]⟩
 
 @[simp]
 theorem relIsoTrans_apply (f : r ≃r s) (g : s ≺i t) (a : α) : relIsoTrans f g a = g (f a) :=
@@ -465,7 +465,7 @@ alias topLTTop := top_rel_top
 @[simps!]
 def ofElement {α : Type*} (r : α → α → Prop) (a : α) :
     @PrincipalSeg { b // r b a } α (Subrel r { b | r b a }) r :=
-  ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun ⟨⟨_, h⟩, rfl⟩ => h, fun h => ⟨⟨_, h⟩, rfl⟩⟩⟩
+  ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun ⟨⟨_, h⟩, rfl⟩ => h, fun h ↦ ⟨⟨_, h⟩, rfl⟩⟩⟩
 
 @[simp]
 theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofElement r a b = b.1 :=

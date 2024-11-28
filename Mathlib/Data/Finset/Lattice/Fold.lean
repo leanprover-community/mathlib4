@@ -109,12 +109,12 @@ theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
 theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := h.trans <| le_sup hb
 
 theorem sup_union [DecidableEq β] : (s₁ ∪ s₂).sup f = s₁.sup f ⊔ s₂.sup f :=
-  eq_of_forall_ge_iff fun c => by simp [or_imp, forall_and]
+  eq_of_forall_ge_iff fun c ↦ by simp [or_imp, forall_and]
 
 @[simp]
 theorem sup_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
     (s.biUnion t).sup f = s.sup fun x => (t x).sup f :=
-  eq_of_forall_ge_iff fun c => by simp [@forall_swap _ β]
+  eq_of_forall_ge_iff fun c ↦ by simp [@forall_swap _ β]
 
 theorem sup_const {s : Finset β} (h : s.Nonempty) (c : α) : (s.sup fun _ => c) = c :=
   eq_of_forall_ge_iff (fun _ => Finset.sup_le_iff.trans h.forall_const)
@@ -138,7 +138,7 @@ theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
   Finset.sup_le (fun _ hb => le_sup (h hb))
 
 protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
-    (s.sup fun b ↦ t.sup (f b)) = t.sup fun c => s.sup fun b ↦ f b c :=
+    (s.sup fun b ↦ t.sup (f b)) = t.sup fun c ↦ s.sup fun b ↦ f b c :=
   eq_of_forall_ge_iff fun a ↦ by simpa using forall₂_swap
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS does not simplify
@@ -363,7 +363,7 @@ theorem inf_mono (h : s₁ ⊆ s₂) : s₂.inf f ≤ s₁.inf f :=
   Finset.le_inf (fun _ hb => inf_le (h hb))
 
 protected theorem inf_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
-    (s.inf fun b ↦ t.inf (f b)) = t.inf fun c => s.inf fun b ↦ f b c :=
+    (s.inf fun b ↦ t.inf (f b)) = t.inf fun c ↦ s.inf fun b ↦ f b c :=
   @Finset.sup_comm αᵒᵈ _ _ _ _ _ _ _
 
 theorem inf_attach (s : Finset β) (f : β → α) : (s.attach.inf fun x => f x) = s.inf f :=
@@ -510,7 +510,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   induction' s using Finset.induction with i s hi ih
   · simp
   rw [inf_insert, ih, attach_insert, sup_inf_sup]
-  refine eq_of_forall_ge_iff fun c => ?_
+  refine eq_of_forall_ge_iff fun c ↦ ?_
   simp only [Finset.sup_le_iff, mem_product, mem_pi, and_imp, Prod.forall,
     inf_insert, inf_image]
   refine
@@ -753,10 +753,10 @@ theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempt
 theorem sup'_biUnion [DecidableEq β] {s : Finset γ} (Hs : s.Nonempty) {t : γ → Finset β}
     (Ht : ∀ b, (t b).Nonempty) :
     (s.biUnion t).sup' (Hs.biUnion fun b _ => Ht b) f = s.sup' Hs (fun b ↦ (t b).sup' (Ht b) f) :=
-  eq_of_forall_ge_iff fun c => by simp [@forall_swap _ β]
+  eq_of_forall_ge_iff fun c ↦ by simp [@forall_swap _ β]
 
 protected theorem sup'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β → γ → α) :
-    (s.sup' hs fun b ↦ t.sup' ht (f b)) = t.sup' ht fun c => s.sup' hs fun b ↦ f b c :=
+    (s.sup' hs fun b ↦ t.sup' ht (f b)) = t.sup' ht fun c ↦ s.sup' hs fun b ↦ f b c :=
   eq_of_forall_ge_iff fun a ↦ by simpa using forall₂_swap
 
 theorem sup'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
@@ -805,7 +805,7 @@ theorem sup'_mem (s : Set α) (w : ∀ᵉ (x ∈ s) (y ∈ s), x ⊔ y ∈ s) {�
 theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ x ∈ s, f x = g x) :
     s.sup' H f = t.sup' (h₁ ▸ H) g := by
   subst s
-  refine eq_of_forall_ge_iff fun c => ?_
+  refine eq_of_forall_ge_iff fun c ↦ ?_
   simp +contextual only [sup'_le_iff, h₂]
 
 theorem comp_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonempty) {f : β → α}
@@ -921,7 +921,7 @@ theorem inf'_biUnion [DecidableEq β] {s : Finset γ} (Hs : s.Nonempty) {t : γ 
   sup'_biUnion (α := αᵒᵈ) _ Hs Ht
 
 protected theorem inf'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β → γ → α) :
-    (s.inf' hs fun b ↦ t.inf' ht (f b)) = t.inf' ht fun c => s.inf' hs fun b ↦ f b c :=
+    (s.inf' hs fun b ↦ t.inf' ht (f b)) = t.inf' ht fun c ↦ s.inf' hs fun b ↦ f b c :=
   @Finset.sup'_comm αᵒᵈ _ _ _ _ _ hs ht _
 
 theorem inf'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :

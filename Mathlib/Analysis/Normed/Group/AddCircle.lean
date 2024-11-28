@@ -176,7 +176,7 @@ theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
   ext y
   simp only [dist_eq_norm, mem_preimage, mem_closedBall, zsmul_eq_mul, mem_iUnion, Real.norm_eq_abs,
     ← QuotientAddGroup.mk_sub, norm_eq, ← sub_sub]
-  refine ⟨fun h => ⟨round (p⁻¹ * (y - x)), h⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨round (p⁻¹ * (y - x)), h⟩, ?_⟩
   rintro ⟨n, hn⟩
   rw [← mul_le_mul_left (abs_pos.mpr <| inv_ne_zero hp), ← abs_mul, mul_sub, mul_comm _ p,
     inv_mul_cancel_left₀ hp] at hn ⊢

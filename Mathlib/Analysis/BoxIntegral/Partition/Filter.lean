@@ -351,15 +351,15 @@ theorem MemBaseSet.exists_common_compl
   · rcases h₁.4 hD with ⟨π, hπU, hπc⟩
     exact ⟨π, hπU, fun _ => hπc, fun _ => hπc.trans hc⟩
   · exact ⟨π₁.toPrepartition.compl, π₁.toPrepartition.iUnion_compl,
-      fun h => (hD h).elim, fun h => (hD h).elim⟩
+      fun h ↦ (hD h).elim, fun h ↦ (hD h).elim⟩
 
 protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c r₁ π₁)
     (hle : ∀ x ∈ Box.Icc I, r₂ x ≤ r₁ x) {π₂ : Prepartition I} (hU : π₂.iUnion = ↑I \ π₁.iUnion)
     (hc : l.bDistortion → π₂.distortion ≤ c) :
     l.MemBaseSet I c r₁ (π₁.unionComplToSubordinate π₂ hU r₂) :=
   ⟨hπ₁.1.disjUnion ((π₂.isSubordinate_toSubordinate r₂).mono hle) _,
-    fun h => (hπ₁.2 h).disjUnion (π₂.isHenstock_toSubordinate _) _,
-    fun h => (distortion_unionComplToSubordinate _ _ _ _).trans_le (max_le (hπ₁.3 h) (hc h)),
+    fun h ↦ (hπ₁.2 h).disjUnion (π₂.isHenstock_toSubordinate _) _,
+    fun h ↦ (distortion_unionComplToSubordinate _ _ _ _).trans_le (max_le (hπ₁.3 h) (hc h)),
     fun _ => ⟨⊥, by simp⟩⟩
 
 variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
@@ -446,7 +446,7 @@ theorem hasBasis_toFilterDistortioniUnion (l : IntegrationParams) (I : Box ι) (
 theorem hasBasis_toFilteriUnion (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :
     (l.toFilteriUnion I π₀).HasBasis (fun r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) => ∀ c, l.RCond (r c))
       fun r => { π | ∃ c, l.MemBaseSet I c (r c) π ∧ π.iUnion = π₀.iUnion } := by
-  have := fun c => l.hasBasis_toFilterDistortioniUnion I c π₀
+  have := fun c ↦ l.hasBasis_toFilterDistortioniUnion I c π₀
   simpa only [setOf_and, setOf_exists] using hasBasis_iSup this
 
 theorem hasBasis_toFilteriUnion_top (l : IntegrationParams) (I : Box ι) :
@@ -509,7 +509,7 @@ instance toFilter_neBot (l : IntegrationParams) (I : Box ι) : (l.toFilter I).Ne
 instance toFilteriUnion_neBot (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :
     (l.toFilteriUnion I π₀).NeBot :=
   (l.toFilterDistortioniUnion_neBot' I π₀).mono <|
-    le_iSup (fun c => l.toFilterDistortioniUnion I c π₀) _
+    le_iSup (fun c ↦ l.toFilterDistortioniUnion I c π₀) _
 
 theorem eventually_isPartition (l : IntegrationParams) (I : Box ι) :
     ∀ᶠ π in l.toFilteriUnion I ⊤, TaggedPrepartition.IsPartition π :=

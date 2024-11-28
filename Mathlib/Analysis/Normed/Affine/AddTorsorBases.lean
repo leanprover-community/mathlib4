@@ -128,7 +128,7 @@ theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : Affi
 
 theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V} :
     (interior (convexHull ℝ s)).Nonempty ↔ affineSpan ℝ s = ⊤ := by
-  refine ⟨affineSpan_eq_top_of_nonempty_interior, fun h => ?_⟩
+  refine ⟨affineSpan_eq_top_of_nonempty_interior, fun h ↦ ?_⟩
   obtain ⟨t, hts, b, hb⟩ := AffineBasis.exists_affine_subbasis h
   suffices (interior (convexHull ℝ (range b))).Nonempty by
     rw [hb, Subtype.range_coe_subtype, setOf_mem_eq] at this

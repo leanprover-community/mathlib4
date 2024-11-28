@@ -626,7 +626,7 @@ private def withLams {m} [Monad m] [MonadWithReader Context m]
   if lambdas.isEmpty then
     k
   else do
-    let e ← withReader (fun c => { c with bvars := lambdas ++ c.bvars }) k
+    let e ← withReader (fun c ↦ { c with bvars := lambdas ++ c.bvars }) k
     return lambdas.foldl (fun _ => ·.lam) e
 
 
@@ -697,7 +697,7 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
     withLams lambdas do
       let d' ← mkDTExprAux d false
       let b' ← withLocalDecl n bi d fun fvar =>
-        withReader (fun c => { c with bvars := fvar.fvarId! :: c.bvars }) do
+        withReader (fun c ↦ { c with bvars := fvar.fvarId! :: c.bvars }) do
           mkDTExprAux (b.instantiate1 fvar) false
       return .forall d' b'
   | .lit v      => withLams lambdas do return .lit v
@@ -732,7 +732,7 @@ def etaPossibilities (e : Expr) (lambdas : List FVarId) (k : Expr → List FVarI
   match e, lambdas with
   | .app f a, fvarId :: lambdas =>
     if isStarWithArg (.fvar fvarId) a then
-      withReader (fun c => { c with forbiddenVars := fvarId :: c.forbiddenVars }) do
+      withReader (fun c ↦ { c with forbiddenVars := fvarId :: c.forbiddenVars }) do
         etaPossibilities f lambdas k
     else
       failure
@@ -825,7 +825,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
     withLams lambdas do
     let d' ← mkDTExprsAux d false
     let b' ← withLocalDecl n bi d fun fvar =>
-      withReader (fun c => { c with bvars := fvar.fvarId! :: c.bvars }) do
+      withReader (fun c ↦ { c with bvars := fvar.fvarId! :: c.bvars }) do
         mkDTExprsAux (b.instantiate1 fvar) false
     return .forall d' b'
   | .lit v      => withLams lambdas do return .lit v

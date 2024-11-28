@@ -252,8 +252,8 @@ def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ
   source := {⟨v, by simp [hv]⟩}ᶜ
   target := Set.univ
   map_source' := by simp
-  map_target' {w} _ := fun h => (stereoInvFun_ne_north_pole hv w) (Set.eq_of_mem_singleton h)
-  left_inv' x hx := stereo_left_inv hv fun h => hx (by
+  map_target' {w} _ := fun h ↦ (stereoInvFun_ne_north_pole hv w) (Set.eq_of_mem_singleton h)
+  left_inv' x hx := stereo_left_inv hv fun h ↦ hx (by
     rw [← h] at hv
     apply Subtype.ext
     dsimp

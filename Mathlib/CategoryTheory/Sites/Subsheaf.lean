@@ -239,7 +239,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
 
 theorem Subpresheaf.eq_sheafify_iff (h : Presieve.IsSheaf J F) :
     G = G.sheafify J ↔ Presieve.IsSheaf J G.toPresheaf :=
-  ⟨fun e => e.symm ▸ G.sheafify_isSheaf h, G.eq_sheafify h⟩
+  ⟨fun e ↦ e.symm ▸ G.sheafify_isSheaf h, G.eq_sheafify h⟩
 
 theorem Subpresheaf.isSheaf_iff (h : Presieve.IsSheaf J F) :
     Presieve.IsSheaf J G.toPresheaf ↔

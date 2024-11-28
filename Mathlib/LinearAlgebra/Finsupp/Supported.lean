@@ -160,7 +160,7 @@ theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
 
 theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
     Disjoint (supported M R s) (supported M R t) ↔ Disjoint s t := by
-  refine ⟨fun h => Set.disjoint_left.mpr fun x hx1 hx2 => ?_, disjoint_supported_supported⟩
+  refine ⟨fun h ↦ Set.disjoint_left.mpr fun x hx1 hx2 => ?_, disjoint_supported_supported⟩
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   have := h.le_bot ⟨single_mem_supported R y hx1, single_mem_supported R y hx2⟩
   rw [mem_bot, single_eq_zero] at this

@@ -46,7 +46,7 @@ section MulZeroClass
 variable [MulZeroClass M₀] {a b : M₀}
 
 theorem left_ne_zero_of_mul : a * b ≠ 0 → a ≠ 0 :=
-  mt fun h => mul_eq_zero_of_left h b
+  mt fun h ↦ mul_eq_zero_of_left h b
 
 theorem right_ne_zero_of_mul : a * b ≠ 0 → b ≠ 0 :=
   mt (mul_eq_zero_of_right a)
@@ -110,7 +110,7 @@ def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
 /-- In a monoid with zero, zero equals one if and only if all elements of that semiring
 are equal. -/
 theorem subsingleton_iff_zero_eq_one : (0 : M₀) = 1 ↔ Subsingleton M₀ :=
-  ⟨fun h => haveI := uniqueOfZeroEqOne h; inferInstance, fun h => @Subsingleton.elim _ h _ _⟩
+  ⟨fun h ↦ haveI := uniqueOfZeroEqOne h; inferInstance, fun h ↦ @Subsingleton.elim _ h _ _⟩
 
 alias ⟨subsingleton_of_zero_eq_one, _⟩ := subsingleton_iff_zero_eq_one
 

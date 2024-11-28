@@ -265,11 +265,11 @@ theorem unit_naturality {X Y : C} (f : X ⟶ Y) :
 
 lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
-  ⟨fun h => by simp [← h], fun h => by simp [h]⟩
+  ⟨fun h ↦ by simp [← h], fun h ↦ by simp [h]⟩
 
 lemma eq_unit_comp_map_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
-  ⟨fun h => by simp [h], fun h => by simp [← h]⟩
+  ⟨fun h ↦ by simp [h], fun h ↦ by simp [← h]⟩
 
 theorem homEquiv_apply_eq {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     adj.homEquiv A B f = g ↔ f = (adj.homEquiv A B).symm g :=

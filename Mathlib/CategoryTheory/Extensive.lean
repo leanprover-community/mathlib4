@@ -254,8 +254,8 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
         fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     fapply BinaryCofan.isColimitMk
-    · exact fun s x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
-        fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
+    · exact fun s x => dite _ (fun h ↦ s.inl <| eX.symm ⟨x, h⟩)
+        fun h ↦ s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, _⟩
       dsimp

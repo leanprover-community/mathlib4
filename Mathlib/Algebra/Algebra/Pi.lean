@@ -109,8 +109,8 @@ variable [Algebra R A] [Algebra R B]
 @[simps]
 protected def compLeft (f : A →ₐ[R] B) (I : Type*) : (I → A) →ₐ[R] I → B :=
   { f.toRingHom.compLeft I with
-    toFun := fun h => f ∘ h
-    commutes' := fun c => by
+    toFun := fun h ↦ f ∘ h
+    commutes' := fun c ↦ by
       ext
       exact f.commutes' c }
 

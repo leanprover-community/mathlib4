@@ -354,7 +354,7 @@ theorem strictMono_y : StrictMono (yn a1)
   | m, n + 1, h => by
     have : yn a1 m ≤ yn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_y hl)
-        fun e => by rw [e]
+        fun e ↦ by rw [e]
     simp only [yn_succ, gt_iff_lt]; refine lt_of_le_of_lt ?_ (Nat.lt_add_of_pos_left <| x_pos a1 n)
     rw [← mul_one (yn a1 m)]
     exact mul_le_mul this (le_of_lt a1) (Nat.zero_le _) (Nat.zero_le _)
@@ -364,7 +364,7 @@ theorem strictMono_x : StrictMono (xn a1)
   | m, n + 1, h => by
     have : xn a1 m ≤ xn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_x hl)
-        fun e => by rw [e]
+        fun e ↦ by rw [e]
     simp only [xn_succ, gt_iff_lt]
     refine lt_of_lt_of_le (lt_of_le_of_lt this ?_) (Nat.le_add_right _ _)
     have t := Nat.mul_lt_mul_of_pos_left a1 (x_pos a1 n)
@@ -387,7 +387,7 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
         have co : Nat.Coprime (yn a1 m) (xn a1 (m * (n / m))) :=
           Nat.Coprime.symm <| (xy_coprime a1 _).coprime_dvd_right (y_mul_dvd a1 m (n / m))
         have m0 : 0 < m :=
-          m.eq_zero_or_pos.resolve_left fun e => by
+          m.eq_zero_or_pos.resolve_left fun e ↦ by
             rw [e, Nat.mod_zero] at hp;rw [e] at h
             exact _root_.ne_of_lt (strictMono_y a1 hp) (eq_zero_of_zero_dvd h).symm
         rw [← Nat.mod_add_div n m, yn_add] at h
@@ -572,7 +572,7 @@ theorem eq_of_xn_modEq_lem1 {i n} : ∀ {j}, i < j → j < n → xn a1 i % xn a1
   | j + 1, ij, jn => by
     suffices xn a1 j % xn a1 n < xn a1 (j + 1) % xn a1 n from
       (lt_or_eq_of_le (Nat.le_of_succ_le_succ ij)).elim
-        (fun h => lt_trans (eq_of_xn_modEq_lem1 h (le_of_lt jn)) this) fun h => by
+        (fun h ↦ lt_trans (eq_of_xn_modEq_lem1 h (le_of_lt jn)) this) fun h ↦ by
         rw [h]; exact this
     rw [Nat.mod_eq_of_lt (strictMono_x _ (Nat.lt_of_succ_lt jn)),
         Nat.mod_eq_of_lt (strictMono_x _ jn)]
@@ -657,7 +657,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
                     fun ⟨_, n1, _, j2⟩ => by
                       rw [n1, j2] at j2n; exact absurd j2n (by decide))
                 s)
-            fun h => by rw [h]; exact s
+            fun h ↦ by rw [h]; exact s
         lem1 (_root_.ne_of_gt jn) <|
           Int.lt_of_ofNat_lt_ofNat <| by
             rw [lem2 j jn (le_of_lt j2n), lem2 (j + 1) (Nat.le_succ_of_le jn) j2n]

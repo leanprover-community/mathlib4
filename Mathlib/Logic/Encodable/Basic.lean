@@ -169,7 +169,7 @@ theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
-  mem_decode₂'.trans (and_iff_right_of_imp fun e => e ▸ encodek _)
+  mem_decode₂'.trans (and_iff_right_of_imp fun e ↦ e ▸ encodek _)
 
 theorem decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = some a ↔ encode a = n :=
   mem_decode₂
@@ -198,7 +198,7 @@ theorem encodek₂ [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
 def decidableRangeEncode (α : Type*) [Encodable α] : DecidablePred (· ∈ Set.range (@encode α _)) :=
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
-    ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_is_partial_inv (Option.get _ h), Option.some_get]⟩,
+    ⟨fun h ↦ ⟨Option.get _ h, by rw [← decode₂_is_partial_inv (Option.get _ h), Option.some_get]⟩,
       fun ⟨n, hn⟩ => by rw [← hn, encodek₂]; exact rfl⟩
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
@@ -391,7 +391,7 @@ noncomputable def ofCountable (α : Type*) [Countable α] : Encodable α :=
 
 @[simp]
 theorem nonempty_encodable : Nonempty (Encodable α) ↔ Countable α :=
-  ⟨fun ⟨h⟩ => @Encodable.countable α h, fun h => ⟨@ofCountable _ h⟩⟩
+  ⟨fun ⟨h⟩ => @Encodable.countable α h, fun h ↦ ⟨@ofCountable _ h⟩⟩
 
 end Encodable
 

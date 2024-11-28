@@ -76,7 +76,7 @@ theorem disjoint_iff_eq_or_eq : Disjoint f g ↔ ∀ x : α, f x = x ∨ g x = x
 
 @[simp]
 theorem disjoint_refl_iff : Disjoint f f ↔ f = 1 := by
-  refine ⟨fun h => ?_, fun h => h.symm ▸ disjoint_one_left 1⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.symm ▸ disjoint_one_left 1⟩
   ext x
   cases' h x with hx hx <;> simp [hx]
 
@@ -90,7 +90,7 @@ theorem Disjoint.inv_right (h : Disjoint f g) : Disjoint f g⁻¹ :=
 
 @[simp]
 theorem disjoint_inv_left_iff : Disjoint f⁻¹ g ↔ Disjoint f g := by
-  refine ⟨fun h => ?_, Disjoint.inv_left⟩
+  refine ⟨fun h ↦ ?_, Disjoint.inv_left⟩
   convert h.inv_left
 
 @[simp]
@@ -152,8 +152,8 @@ theorem pow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
   | 0 => Or.inl rfl
   | n + 1 =>
     (pow_apply_eq_of_apply_apply_eq_self hffx n).elim
-      (fun h => Or.inr (by rw [pow_succ', mul_apply, h]))
-      fun h => Or.inl (by rw [pow_succ', mul_apply, h, hffx])
+      (fun h ↦ Or.inr (by rw [pow_succ', mul_apply, h]))
+      fun h ↦ Or.inl (by rw [pow_succ', mul_apply, h, hffx])
 
 theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
     ∀ i : ℤ, (f ^ i) x = x ∨ (f ^ i) x = f x
@@ -165,7 +165,7 @@ theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
 
 theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a : α} :
     (σ * τ) a = a ↔ σ a = a ∧ τ a = a := by
-  refine ⟨fun h => ?_, fun h => by rw [mul_apply, h.2, h.1]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [mul_apply, h.2, h.1]⟩
   cases' hστ a with hσ hτ
   · exact ⟨hσ, σ.injective (h.trans hσ.symm)⟩
   · exact ⟨(congr_arg σ hτ).symm.trans h, hτ⟩
@@ -176,8 +176,8 @@ theorem Disjoint.mul_eq_one_iff {σ τ : Perm α} (hστ : Disjoint σ τ) :
 
 theorem Disjoint.zpow_disjoint_zpow {σ τ : Perm α} (hστ : Disjoint σ τ) (m n : ℤ) :
     Disjoint (σ ^ m) (τ ^ n) := fun x =>
-  Or.imp (fun h => zpow_apply_eq_self_of_apply_eq_self h m)
-    (fun h => zpow_apply_eq_self_of_apply_eq_self h n) (hστ x)
+  Or.imp (fun h ↦ zpow_apply_eq_self_of_apply_eq_self h m)
+    (fun h ↦ zpow_apply_eq_self_of_apply_eq_self h n) (hστ x)
 
 theorem Disjoint.pow_disjoint_pow {σ τ : Perm α} (hστ : Disjoint σ τ) (m n : ℕ) :
     Disjoint (σ ^ m) (τ ^ n) :=
@@ -450,7 +450,7 @@ theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := b
   · simp [swap_apply_of_ne_of_ne, hx, hy]
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
-  refine ⟨fun h => ?_, fun h => support_swap h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ support_swap h⟩
   rintro rfl
   simp [Finset.ext_iff] at h
 

@@ -222,7 +222,7 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
           clear c
           intro c d
           apply Quot.inductionOn
-            (motive := fun d => r (Quot.mk Mcongr c) d →
+            (motive := fun d ↦ r (Quot.mk Mcongr c) d →
               Quot.lift (Quot.mk r') h₁ (Quot.mk Mcongr c) = Quot.lift (Quot.mk r') h₁ d) d
           clear d
           intro d rcd; apply Quot.sound; apply rcd)

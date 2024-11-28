@@ -45,7 +45,7 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     · exact Or.inr (Code.evaln_sound e)
     · subst y
       exact Or.inl (Code.evaln_sound e')
-  refine ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
+  refine ⟨this, ⟨fun h ↦ (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
   intro h
   rw [Nat.rfindOpt_dom]
   simp only [dom_iff_mem, Code.evaln_complete, Option.mem_def] at h
@@ -88,7 +88,7 @@ theorem merge' {f g : α →. σ} (hf : Partrec f) (hg : Partrec g) :
       rw [hx] at ha
     · exact Or.inl ha
     · exact Or.inr ha
-  refine ⟨this, ⟨fun h => (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
+  refine ⟨this, ⟨fun h ↦ (this _ ⟨h, rfl⟩).imp Exists.fst Exists.fst, ?_⟩⟩
   intro h
   rw [bind_dom]
   have hk : (k (encode a)).Dom :=
@@ -103,7 +103,7 @@ theorem merge {f g : α →. σ} (hf : Partrec f) (hg : Partrec g)
     ∃ k : α →. σ, Partrec k ∧ ∀ a x, x ∈ k a ↔ x ∈ f a ∨ x ∈ g a :=
   let ⟨k, hk, K⟩ := merge' hf hg
   ⟨k, hk, fun a x =>
-    ⟨(K _).1 _, fun h => by
+    ⟨(K _).1 _, fun h ↦ by
       have : (k a).Dom := (K _).2.2 (h.imp Exists.fst Exists.fst)
       refine ⟨this, ?_⟩
       cases' h with h h <;> cases' (K _).1 _ ⟨this, rfl⟩ with h' h'
@@ -191,7 +191,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   cases a; cases f n <;> simp
 
 /-- **Rice's Theorem** -/
-theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
+theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c ↦ eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
   cases' h with _ h
   obtain ⟨c, e⟩ :=
@@ -208,7 +208,7 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     contradiction
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
-    (ComputablePred fun c => c ∈ C) ↔ C = ∅ ∨ C = Set.univ := by
+    (ComputablePred fun c ↦ c ∈ C) ↔ C = ∅ ∨ C = Set.univ := by
   classical exact
       have hC : ∀ f, f ∈ C ↔ eval f ∈ eval '' C := fun f =>
         ⟨Set.mem_image_of_mem _, fun ⟨g, hg, e⟩ => (H _ _ e).1 hg⟩
@@ -220,16 +220,16 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
               rice (eval '' C) (h.of_eq hC)
                 (Partrec.nat_iff.1 <| eval_part.comp (const cf) Computable.id)
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
-        fun h => by {
+        fun h ↦ by {
           obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
             Computable.const _}⟩
 
 /-- The Halting problem is recursively enumerable -/
-theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
+theorem halting_problem_re (n) : RePred fun c ↦ (eval c n).Dom :=
   (eval_part.comp Computable.id (Computable.const _)).dom_re
 
 /-- The **Halting problem** is not computable -/
-theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
+theorem halting_problem (n) : ¬ComputablePred fun c ↦ (eval c n).Dom
   | h => rice { f | (f n).Dom } h Nat.Partrec.zero Nat.Partrec.none trivial
 
 -- Post's theorem on the equivalence of r.e., co-r.e. sets and
@@ -238,7 +238,7 @@ theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
 -- @[nolint decidable_classical]
 theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
     ComputablePred p ↔ RePred p ∧ RePred fun a ↦ ¬p a :=
-  ⟨fun h => ⟨h.to_re, h.not.to_re⟩, fun ⟨h₁, h₂⟩ =>
+  ⟨fun h ↦ ⟨h.to_re, h.not.to_re⟩, fun ⟨h₁, h₂⟩ =>
     ⟨‹_›, by
       obtain ⟨k, pk, hk⟩ :=
         Partrec.merge (h₁.map (Computable.const true).to₂) (h₂.map (Computable.const false).to₂)
@@ -257,7 +257,7 @@ theorem computable_iff_re_compl_re' {p : α → Prop} :
     ComputablePred p ↔ RePred p ∧ RePred fun a ↦ ¬p a := by
   classical exact computable_iff_re_compl_re
 
-theorem halting_problem_not_re (n) : ¬RePred fun c => ¬(eval c n).Dom
+theorem halting_problem_not_re (n) : ¬RePred fun c ↦ ¬(eval c n).Dom
   | h => halting_problem _ <| computable_iff_re_compl_re'.2 ⟨halting_problem_re _, h⟩
 
 end ComputablePred
@@ -351,7 +351,7 @@ theorem rfindOpt {n} {f : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) f)
       simp only [Nat.rfindOpt, exists_prop, tsub_eq_zero_iff_le, PFun.coe_val, Part.mem_bind_iff,
         Part.mem_some_iff, Option.mem_def, Part.mem_coe]
       refine
-        exists_congr fun a ↦ (and_congr (iff_of_eq ?_) Iff.rfl).trans (and_congr_right fun h => ?_)
+        exists_congr fun a ↦ (and_congr (iff_of_eq ?_) Iff.rfl).trans (and_congr_right fun h ↦ ?_)
       · congr
         funext n
         cases f (n ::ᵥ v) <;> simp [Nat.succ_le_succ] <;> rfl
@@ -389,17 +389,17 @@ theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ _ro
     ⟨fun h =>
       (h.comp <| (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by
         simp only [id, head_ofFn],
-      fun h => h.comp vector_head⟩
+      fun h ↦ h.comp vector_head⟩
 
 theorem part_iff₂ {f : ℕ → ℕ →. ℕ} : (@Partrec' 2 fun v => f v.head v.tail.head) ↔ Partrec₂ f :=
   part_iff.trans
     ⟨fun h =>
       (h.comp <| vector_cons.comp fst <| vector_cons.comp snd (const nil)).of_eq fun v => by
         simp only [head_cons, tail_cons],
-      fun h => h.comp vector_head (vector_head.comp vector_tail)⟩
+      fun h ↦ h.comp vector_head (vector_head.comp vector_tail)⟩
 
 theorem vec_iff {m n f} : @Vec m n f ↔ Computable f :=
-  ⟨fun h => by simpa only [ofFn_get] using vector_ofFn fun i => to_part (h i), fun h i =>
+  ⟨fun h ↦ by simpa only [ofFn_get] using vector_ofFn fun i => to_part (h i), fun h i =>
     of_part <| vector_get.comp h (const i)⟩
 
 end Nat.Partrec'

@@ -33,7 +33,7 @@ open Lean Parser PrettyPrinter Std
 
 namespace Superscript
 
-instance : Hashable Char := ⟨fun c => hash c.1⟩
+instance : Hashable Char := ⟨fun c ↦ hash c.1⟩
 
 /-- A bidirectional character mapping. -/
 structure Mapping where

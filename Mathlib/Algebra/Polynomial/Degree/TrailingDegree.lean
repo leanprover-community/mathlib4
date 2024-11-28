@@ -85,7 +85,7 @@ theorem natTrailingDegree_zero : natTrailingDegree (0 : R[X]) = 0 :=
 
 @[simp]
 theorem trailingDegree_eq_top : trailingDegree p = ⊤ ↔ p = 0 :=
-  ⟨fun h => support_eq_empty.1 (Finset.min_eq_top.1 h), fun h => by simp [h]⟩
+  ⟨fun h ↦ support_eq_empty.1 (Finset.min_eq_top.1 h), fun h ↦ by simp [h]⟩
 
 theorem trailingDegree_eq_natTrailingDegree (hp : p ≠ 0) :
     trailingDegree p = (natTrailingDegree p : ℕ∞) :=
@@ -150,7 +150,7 @@ lemma trailingDegree_ne_zero : trailingDegree p ≠ 0 ↔ coeff p 0 = 0 :=
 
 theorem trailingDegree_ne_of_natTrailingDegree_ne {n : ℕ} :
     p.natTrailingDegree ≠ n → trailingDegree p ≠ n :=
-  mt fun h => by rw [natTrailingDegree, h, ENat.toNat_coe]
+  mt fun h ↦ by rw [natTrailingDegree, h, ENat.toNat_coe]
 
 theorem natTrailingDegree_le_of_trailingDegree_le {n : ℕ} {hp : p ≠ 0}
     (H : (n : ℕ∞) ≤ trailingDegree p) : n ≤ natTrailingDegree p := by
@@ -245,7 +245,7 @@ theorem trailingCoeff_eq_zero : trailingCoeff p = 0 ↔ p = 0 :=
     _root_.by_contradiction fun hp =>
       mt mem_support_iff.1 (Classical.not_not.2 h)
         (mem_of_min (trailingDegree_eq_natTrailingDegree hp)),
-    fun h => h.symm ▸ leadingCoeff_zero⟩
+    fun h ↦ h.symm ▸ leadingCoeff_zero⟩
 
 theorem trailingCoeff_nonzero_iff_nonzero : trailingCoeff p ≠ 0 ↔ p ≠ 0 :=
   not_congr trailingCoeff_eq_zero
@@ -273,13 +273,13 @@ theorem natTrailingDegree_le_natDegree (p : R[X]) : p.natTrailingDegree ≤ p.na
 theorem natTrailingDegree_mul_X_pow {p : R[X]} (hp : p ≠ 0) (n : ℕ) :
     (p * X ^ n).natTrailingDegree = p.natTrailingDegree + n := by
   apply le_antisymm
-  · refine natTrailingDegree_le_of_ne_zero fun h => mt trailingCoeff_eq_zero.mp hp ?_
+  · refine natTrailingDegree_le_of_ne_zero fun h ↦ mt trailingCoeff_eq_zero.mp hp ?_
     rwa [trailingCoeff, ← coeff_mul_X_pow]
-  · rw [natTrailingDegree_eq_support_min' fun h => hp (mul_X_pow_eq_zero h), Finset.le_min'_iff]
+  · rw [natTrailingDegree_eq_support_min' fun h ↦ hp (mul_X_pow_eq_zero h), Finset.le_min'_iff]
     intro y hy
     have key : n ≤ y := by
       rw [mem_support_iff, coeff_mul_X_pow'] at hy
-      exact by_contra fun h => hy (if_neg h)
+      exact by_contra fun h ↦ hy (if_neg h)
     rw [mem_support_iff, coeff_mul_X_pow', if_pos key] at hy
     exact (le_tsub_iff_right key).mp (natTrailingDegree_le_of_ne_zero hy)
 
@@ -443,7 +443,7 @@ namespace Monic
 
 lemma eq_X_pow_iff_natDegree_le_natTrailingDegree (h₁ : p.Monic) :
     p = X ^ p.natDegree ↔ p.natDegree ≤ p.natTrailingDegree := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · nontriviality R
     rw [h, natTrailingDegree_X_pow, ← h]
   · ext n

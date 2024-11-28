@@ -43,7 +43,7 @@ theorem Prime.eq_two_or_odd {p : ℕ} (hp : Prime p) : p = 2 ∨ p % 2 = 1 :=
     ((hp.eq_one_or_self_of_dvd 2 (dvd_of_mod_eq_zero h)).resolve_left (by decide)).symm
 
 theorem Prime.eq_two_or_odd' {p : ℕ} (hp : Prime p) : p = 2 ∨ Odd p :=
-  Or.imp_right (fun h => ⟨p / 2, (div_add_mod p 2).symm.trans (congr_arg _ h)⟩) hp.eq_two_or_odd
+  Or.imp_right (fun h ↦ ⟨p / 2, (div_add_mod p 2).symm.trans (congr_arg _ h)⟩) hp.eq_two_or_odd
 
 section
 
@@ -78,7 +78,7 @@ theorem exists_dvd_of_not_prime2 {n : ℕ} (n2 : 2 ≤ n) (np : ¬Prime n) :
     (not_prime_iff_minFac_lt n2).1 np⟩
 
 theorem not_prime_of_dvd_of_ne {m n : ℕ} (h1 : m ∣ n) (h2 : m ≠ 1) (h3 : m ≠ n) : ¬Prime n :=
-  fun h => Or.elim (h.eq_one_or_self_of_dvd m h1) h2 h3
+  fun h ↦ Or.elim (h.eq_one_or_self_of_dvd m h1) h2 h3
 
 theorem not_prime_of_dvd_of_lt {m n : ℕ} (h1 : m ∣ n) (h2 : 2 ≤ m) (h3 : m < n) : ¬Prime n :=
   not_prime_of_dvd_of_ne h1 (ne_of_gt h2) (ne_of_lt h3)
@@ -151,13 +151,13 @@ theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
   not_imp_not.mp Prime.not_prime_pow' h
 
 theorem Prime.pow_eq_iff {p a k : ℕ} (hp : p.Prime) : a ^ k = p ↔ a = p ∧ k = 1 := by
-  refine ⟨fun h => ?_, fun h => by rw [h.1, h.2, pow_one]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h.1, h.2, pow_one]⟩
   rw [← h] at hp
   rw [← h, hp.eq_one_of_pow, eq_self_iff_true, _root_.and_true, pow_one]
 
 theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (hy : y ≠ 1) :
     x * y = p ^ 2 ↔ x = p ∧ y = p := by
-  refine ⟨fun h => ?_, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
+  refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ => h₁.symm ▸ h₂.symm ▸ (sq _).symm⟩
   have pdvdxy : p ∣ x * y := by rw [h]; simp [sq]
   -- Could be `wlog := hp.dvd_mul.1 pdvdxy using x y`, but that imports more than we want.
   suffices ∀ x' y' : ℕ, x' ≠ 1 → y' ≠ 1 → x' * y' = p ^ 2 → p ∣ x' → x' = p ∧ y' = p by
@@ -195,11 +195,11 @@ theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : Coprime p i ∨ p
   rw [pp.dvd_iff_not_coprime]; apply em
 
 theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : Coprime p n :=
-  (coprime_or_dvd_of_prime pp n).resolve_right fun h => Nat.lt_le_asymm hlt (le_of_dvd n_pos h)
+  (coprime_or_dvd_of_prime pp n).resolve_right fun h ↦ Nat.lt_le_asymm hlt (le_of_dvd n_pos h)
 
 theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Prime p) :
     p = n ∨ Coprime p n :=
-  hle.eq_or_lt.imp Eq.symm fun h => coprime_of_lt_prime n_pos h pp
+  hle.eq_or_lt.imp Eq.symm fun h ↦ coprime_of_lt_prime n_pos h pp
 
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
   simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]

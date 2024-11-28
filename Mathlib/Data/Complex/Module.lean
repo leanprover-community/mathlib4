@@ -129,9 +129,9 @@ open Submodule
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
   Basis.ofEquivFun
     { toFun := fun z => ![z.re, z.im]
-      invFun := fun c => c 0 + c 1 • I
+      invFun := fun c ↦ c 0 + c 1 • I
       left_inv := fun z => by simp
-      right_inv := fun c => by
+      right_inv := fun c ↦ by
         ext i
         fin_cases i <;> simp
       map_add' := fun z z' => by simp
@@ -260,7 +260,7 @@ theorem toMatrix_conjAe :
 theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ ℂ ∨ f = conjAe := by
   refine
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp ?_ ?_ <;>
-    refine fun h => algHom_ext ?_
+    refine fun h ↦ algHom_ext ?_
   exacts [h, conj_I.symm ▸ h]
 
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/

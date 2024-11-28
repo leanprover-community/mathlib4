@@ -356,7 +356,7 @@ theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : I
     exact mem_nhdsWithin.2 ⟨tᶜ, ht.isOpen_compl, zt, Subset.rfl⟩
   apply mem_of_superset this
   have : Ioc z y ⊆ s ∪ t := fun w hw => hab (xyab ⟨le_trans hz.1 (le_of_lt hw.1), hw.2⟩)
-  exact fun w ⟨wt, wzy⟩ => (this wzy).elim id fun h => (wt h).elim
+  exact fun w ⟨wt, wzy⟩ => (this wzy).elim id fun h ↦ (wt h).elim
 
 /-- A closed interval in a densely ordered conditionally complete linear order is preconnected. -/
 theorem isPreconnected_Icc : IsPreconnected (Icc a b) :=

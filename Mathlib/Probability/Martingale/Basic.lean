@@ -292,7 +292,7 @@ theorem Submartingale.condexp_sub_nonneg {f : ι → Ω → ℝ} (hf : Submartin
 theorem submartingale_iff_condexp_sub_nonneg [IsFiniteMeasure μ] {f : ι → Ω → ℝ} :
     Submartingale f ℱ μ ↔
       Adapted ℱ f ∧ (∀ i, Integrable (f i) μ) ∧ ∀ i j, i ≤ j → 0 ≤ᵐ[μ] μ[f j - f i|ℱ i] :=
-  ⟨fun h => ⟨h.adapted, h.integrable, fun _ _ => h.condexp_sub_nonneg⟩, fun ⟨hadp, hint, h⟩ =>
+  ⟨fun h ↦ ⟨h.adapted, h.integrable, fun _ _ => h.condexp_sub_nonneg⟩, fun ⟨hadp, hint, h⟩ =>
     submartingale_of_condexp_sub_nonneg hadp hint h⟩
 
 end Submartingale

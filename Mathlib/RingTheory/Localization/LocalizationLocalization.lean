@@ -180,7 +180,7 @@ noncomputable instance (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
     (by
       intro a ha
       rw [mem_nonZeroDivisors_iff_ne_zero]
-      exact fun h => ha (h.symm ▸ x.zero_mem))
+      exact fun h ↦ ha (h.symm ▸ x.zero_mem))
 
 instance {R : Type*} [CommRing R] [IsDomain R] (p : Ideal R) [p.IsPrime] :
     IsScalarTower R (Localization.AtPrime p) (FractionRing R) :=
@@ -202,7 +202,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
     exists_of_eq := fun {x₁ x₂} => by
       obtain ⟨⟨y₁, s₁⟩, e₁⟩ := IsLocalization.surj M x₁
       obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
-      refine (Set.exists_image_iff (algebraMap R S) N fun c => c * x₁ = c * x₂).mpr.comp ?_
+      refine (Set.exists_image_iff (algebraMap R S) N fun c ↦ c * x₁ = c * x₂).mpr.comp ?_
       dsimp only at e₁ e₂ ⊢
       suffices algebraMap R T (y₁ * s₂) = algebraMap R T (y₂ * s₁) →
           ∃ a : N, algebraMap R S (a * (y₁ * s₂)) = algebraMap R S (a * (y₂ * s₁)) by

@@ -452,7 +452,7 @@ theorem norm_pow_sub_one_of_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ ↑
     [hpri : Fact (p : ℕ).Prime] [IsCyclotomicExtension {p ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K)) {s : ℕ} (hs : s ≤ k) (hodd : p ≠ 2) :
     norm K (ζ ^ (p : ℕ) ^ s - 1) = (p : K) ^ (p : ℕ) ^ s := by
-  refine hζ.norm_pow_sub_one_of_prime_pow_ne_two hirr hs fun h => ?_
+  refine hζ.norm_pow_sub_one_of_prime_pow_ne_two hirr hs fun h ↦ ?_
   have coe_two : ((2 : ℕ+) : ℕ) = 2 := by norm_cast
   rw [← PNat.coe_inj, coe_two, PNat.pow_coe, ← pow_one 2] at h
 -- Porting note: the proof is slightly different because of coercions.
@@ -484,7 +484,7 @@ theorem norm_pow_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
     [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (2 ^ (k + 1)) K)) :
     norm K (ζ ^ 2 ^ k - 1) = (-2 : K) ^ 2 ^ k := by
-  have := hζ.pow_of_dvd (fun h => two_ne_zero (pow_eq_zero h)) (pow_dvd_pow 2 (le_succ k))
+  have := hζ.pow_of_dvd (fun h ↦ two_ne_zero (pow_eq_zero h)) (pow_dvd_pow 2 (le_succ k))
   rw [Nat.pow_div (le_succ k) zero_lt_two, Nat.succ_sub (le_refl k), Nat.sub_self, pow_one] at this
   have H : (-1 : L) - (1 : L) = algebraMap K L (-2) := by
     simp only [map_neg, map_ofNat]

@@ -745,7 +745,7 @@ theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (div
 theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeval x p = 0)
     (coeff_zero_ne : p.coeff 0 ≠ 0) : x⁻¹ = -(aeval x (divX p) / algebraMap _ _ (p.coeff 0)) := by
   convert inv_eq_of_aeval_divX_ne_zero (p := p) (L := L)
-    (mt (fun h => (algebraMap K L).injective ?_) coeff_zero_ne) using 1
+    (mt (fun h ↦ (algebraMap K L).injective ?_) coeff_zero_ne) using 1
   · rw [aeval_eq, zero_sub, div_neg]
   rw [RingHom.map_zero]
   convert aeval_eq

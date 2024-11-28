@@ -240,7 +240,7 @@ theorem orderOf_dvd_of_pow_eq_one (h : x ^ n = 1) : orderOf x ∣ n :=
 
 @[to_additive]
 theorem orderOf_dvd_iff_pow_eq_one {n : ℕ} : orderOf x ∣ n ↔ x ^ n = 1 :=
-  ⟨fun h => by rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd h, _root_.pow_zero],
+  ⟨fun h ↦ by rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd h, _root_.pow_zero],
     orderOf_dvd_of_pow_eq_one⟩
 
 @[to_additive addOrderOf_smul_dvd]
@@ -486,11 +486,11 @@ theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
   · rw [eq_comm, ModEq.comm, this (le_of_not_le hmn)]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
   rw [← mul_one (x ^ m), pow_add, mul_left_cancel_iff, pow_eq_one_iff_modEq]
-  exact ⟨fun h => Nat.ModEq.add_left _ h, fun h => Nat.ModEq.add_left_cancel' _ h⟩
+  exact ⟨fun h ↦ Nat.ModEq.add_left _ h, fun h ↦ Nat.ModEq.add_left_cancel' _ h⟩
 
 @[to_additive (attr := simp)]
 lemma injective_pow_iff_not_isOfFinOrder : Injective (fun n : ℕ ↦ x ^ n) ↔ ¬IsOfFinOrder x := by
-  refine ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩
+  refine ⟨fun h ↦ not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩
   rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, modEq_zero_iff] at hnm
 
 @[to_additive]
@@ -710,7 +710,7 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
             intro x
             suffices orderOf x ≤ n ∧ orderOf x ∣ n ↔ x ^ n = 1 by simpa [Nat.lt_succ_iff]
             exact
-              ⟨fun h => by
+              ⟨fun h ↦ by
                 let ⟨m, hm⟩ := h.2
                 rw [hm, pow_mul, pow_orderOf_eq_one, one_pow], fun h =>
                 ⟨orderOf_le_of_pow_eq_one hn.bot_lt h, orderOf_dvd_of_pow_eq_one h⟩⟩))
@@ -986,7 +986,7 @@ theorem image_range_orderOf [DecidableEq G] :
 /- TODO: Generalise to `Finite` + `CancelMonoid`. -/
 @[to_additive gcd_nsmul_card_eq_zero_iff]
 theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ gcd n (Fintype.card G) = 1 :=
-  ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h => by
+  ⟨fun h ↦ pow_gcd_eq_one _ h <| pow_card_eq_one, fun h ↦ by
     let ⟨m, hm⟩ := gcd_dvd_left n (Fintype.card G)
     rw [hm, pow_mul, h, one_pow]⟩
 

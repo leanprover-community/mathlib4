@@ -114,7 +114,7 @@ theorem countable_range [Countable ι] (f : ι → β) : (range f).Countable :=
 
 theorem countable_iff_exists_subset_range [Nonempty α] {s : Set α} :
     s.Countable ↔ ∃ f : ℕ → α, s ⊆ range f :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     inhabit α
     exact ⟨enumerateCountable h default, subset_range_enumerate _ _⟩, fun ⟨f, hsf⟩ =>
     (countable_range f).mono hsf⟩

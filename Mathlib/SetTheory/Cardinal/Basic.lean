@@ -708,7 +708,7 @@ theorem power_pos {a : Cardinal} (b : Cardinal) (ha : 0 < a) : 0 < a ^ b :=
 
 protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
   ⟨fun a =>
-    by_contradiction fun h => by
+    by_contradiction fun h ↦ by
       let ι := { c : Cardinal // ¬Acc (· < ·) c }
       let f : ι → Cardinal := Subtype.val
       haveI hι : Nonempty ι := ⟨⟨_, h⟩⟩
@@ -790,7 +790,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
 @[simp]
 theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
   le_antisymm
-    (le_of_not_gt fun h => by
+    (le_of_not_gt fun h ↦ by
       rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
       exact h.not_lt (lt_succ _))
@@ -1219,7 +1219,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
         simp only [not_exists.symm, not_forall.symm]
-        refine fun h => (H i).not_le ?_
+        refine fun h ↦ (H i).not_le ?_
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C
@@ -1474,7 +1474,7 @@ theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
   one_lt_aleph0.le
 
 theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rcases lt_lift_iff.1 h with ⟨c, h', rfl⟩
     rcases le_mk_iff_exists_set.1 h'.1 with ⟨S, rfl⟩
     suffices S.Finite by
@@ -1599,7 +1599,7 @@ theorem add_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a +
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← Nat.cast_add]; apply nat_lt_aleph0
 
 theorem add_lt_aleph0_iff {a b : Cardinal} : a + b < ℵ₀ ↔ a < ℵ₀ ∧ b < ℵ₀ :=
-  ⟨fun h => ⟨(self_le_add_right _ _).trans_lt h, (self_le_add_left _ _).trans_lt h⟩,
+  ⟨fun h ↦ ⟨(self_le_add_right _ _).trans_lt h, (self_le_add_left _ _).trans_lt h⟩,
    fun ⟨h1, h2⟩ => add_lt_aleph0 h1 h2⟩
 
 theorem aleph0_le_add_iff {a b : Cardinal} : ℵ₀ ≤ a + b ↔ ℵ₀ ≤ a ∨ ℵ₀ ≤ b := by
@@ -1624,7 +1624,7 @@ theorem mul_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a *
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← Nat.cast_mul]; apply nat_lt_aleph0
 
 theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 ∨ a < ℵ₀ ∧ b < ℵ₀ := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · by_cases ha : a = 0
     · exact Or.inl ha
     right
@@ -1678,7 +1678,7 @@ theorem mk_eq_aleph0 (α : Type*) [Countable α] [Infinite α] : #α = ℵ₀ :=
   mk_le_aleph0.antisymm <| aleph0_le_mk _
 
 theorem denumerable_iff {α : Type u} : Nonempty (Denumerable α) ↔ #α = ℵ₀ :=
-  ⟨fun ⟨h⟩ => mk_congr ((@Denumerable.eqv α h).trans Equiv.ulift.symm), fun h => by
+  ⟨fun ⟨h⟩ => mk_congr ((@Denumerable.eqv α h).trans Equiv.ulift.symm), fun h ↦ by
     cases' Quotient.exact h with f
     exact ⟨Denumerable.mk' <| f.trans Equiv.ulift⟩⟩
 
@@ -1717,7 +1717,7 @@ theorem aleph0_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ * no_index (OfNat
 
 @[simp]
 theorem add_le_aleph0 {c₁ c₂ : Cardinal} : c₁ + c₂ ≤ ℵ₀ ↔ c₁ ≤ ℵ₀ ∧ c₂ ≤ ℵ₀ :=
-  ⟨fun h => ⟨le_self_add.trans h, le_add_self.trans h⟩, fun h =>
+  ⟨fun h ↦ ⟨le_self_add.trans h, le_add_self.trans h⟩, fun h =>
     aleph0_add_aleph0 ▸ add_le_add h.1 h.2⟩
 
 @[simp]
@@ -2119,7 +2119,7 @@ theorem powerlt_le {a b c : Cardinal.{u}} : a ^< b ≤ c ↔ ∀ x < b, a ^ x �
 theorem powerlt_le_powerlt_left {a b c : Cardinal} (h : b ≤ c) : a ^< b ≤ a ^< c :=
   powerlt_le.2 fun _ hx => le_powerlt a <| hx.trans_le h
 
-theorem powerlt_mono_left (a) : Monotone fun c => a ^< c := fun _ _ => powerlt_le_powerlt_left
+theorem powerlt_mono_left (a) : Monotone fun c ↦ a ^< c := fun _ _ => powerlt_le_powerlt_left
 
 theorem powerlt_succ {a b : Cardinal} (h : a ≠ 0) : a ^< succ b = a ^ b :=
   (powerlt_le.2 fun _ h' => power_le_power_left h <| le_of_lt_succ h').antisymm <|

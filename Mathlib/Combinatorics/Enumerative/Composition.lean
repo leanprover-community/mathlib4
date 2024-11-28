@@ -130,7 +130,7 @@ namespace Composition
 variable (c : Composition n)
 
 instance (n : ℕ) : ToString (Composition n) :=
-  ⟨fun c => toString c.blocks⟩
+  ⟨fun c ↦ toString c.blocks⟩
 
 /-- The length of a composition, i.e., the number of blocks in the composition. -/
 abbrev length : ℕ :=

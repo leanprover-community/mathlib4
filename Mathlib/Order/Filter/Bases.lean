@@ -244,7 +244,7 @@ theorem HasBasis.eq_of_same_basis (hl : l.HasBasis p s) (hl' : l'.HasBasis p s) 
 
 -- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem hasBasis_iff : l.HasBasis p s ↔ ∀ t, t ∈ l ↔ ∃ i, p i ∧ s i ⊆ t :=
-  ⟨fun ⟨h⟩ => h, fun h => ⟨h⟩⟩
+  ⟨fun ⟨h⟩ => h, fun h ↦ ⟨h⟩⟩
 
 theorem HasBasis.ex_mem (h : l.HasBasis p s) : ∃ i, p i :=
   (h.mem_iff.mp univ_mem).imp fun _ => And.left
@@ -364,7 +364,7 @@ theorem hasBasis_self {l : Filter α} {P : Set α → Prop} :
     HasBasis l (fun s => s ∈ l ∧ P s) id ↔ ∀ t ∈ l, ∃ r ∈ l, P r ∧ r ⊆ t := by
   simp only [hasBasis_iff, id, and_assoc]
   exact forall_congr' fun s =>
-    ⟨fun h => h.1, fun h => ⟨h, fun ⟨t, hl, _, hts⟩ => mem_of_superset hl hts⟩⟩
+    ⟨fun h ↦ h.1, fun h ↦ ⟨h, fun ⟨t, hl, _, hts⟩ => mem_of_superset hl hts⟩⟩
 
 theorem HasBasis.comp_surjective (h : l.HasBasis p s) {g : ι' → ι} (hg : Function.Surjective g) :
     l.HasBasis (p ∘ g) (s ∘ g) :=

@@ -1554,7 +1554,7 @@ lemma prod_involution (g : ∀ a ∈ s, α) (hg₁ : ∀ a ha, f a * f (g a ha) 
       (by simp [hg₁]) (fun _ _ => hg₃ _ _) h₃ (fun _ _ => hg₄ _ _)
   simp only [mem_sdiff, mem_insert, mem_singleton, not_or, g_mem, true_and]
   rintro a ⟨ha₁, ha₂, ha₃⟩
-  refine ⟨fun h => by simp [← h, hg₄] at ha₃, fun h => ?_⟩
+  refine ⟨fun h ↦ by simp [← h, hg₄] at ha₃, fun h ↦ ?_⟩
   have : g (g a ha₁) (g_mem _ _) = g (g x hx) (g_mem _ _) := by simp only [h]
   exact ha₂ (by simpa [hg₄] using this)
 

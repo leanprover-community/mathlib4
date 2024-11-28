@@ -161,7 +161,7 @@ theorem prod_insert : s ×ˢ insert b t = (fun a ↦ (a, b)) '' s ∪ s ×ˢ t :
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745):
   -- was `simp +contextual [image, iff_def, or_imp, Imp.swap]`
   simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨hx, rfl|hy⟩ := h
     · exact Or.inl ⟨x, hx, rfl, rfl⟩
     · exact Or.inr ⟨hx, hy⟩
@@ -268,7 +268,7 @@ theorem Nonempty.snd : (s ×ˢ t).Nonempty → t.Nonempty := fun ⟨x, hx⟩ => 
 
 @[simp]
 theorem prod_nonempty_iff : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prod h.2⟩
 
 @[simp]
 theorem prod_eq_empty_iff : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
@@ -711,7 +711,7 @@ theorem pi_if {p : ι → Prop} [h : DecidablePred p] (s : Set ι) (t₁ t₂ : 
     (pi s fun i => if p i then t₁ i else t₂ i) =
       pi ({ i ∈ s | p i }) t₁ ∩ pi ({ i ∈ s | ¬p i }) t₂ := by
   ext f
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · constructor <;>
       · rintro i ⟨his, hpi⟩
         simpa [*] using h i
@@ -748,7 +748,7 @@ theorem pi_update_of_not_mem [DecidableEq ι] (hi : i ∉ s) (f : ∀ j, α j) (
     (t : ∀ j, α j → Set (β j)) : (s.pi fun j => t j (update f i a j)) = s.pi fun j => t j (f j) :=
   (pi_congr rfl) fun j hj => by
     rw [update_noteq]
-    exact fun h => hi (h ▸ hj)
+    exact fun h ↦ hi (h ▸ hj)
 
 theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
@@ -829,7 +829,7 @@ theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun 
 
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
-    ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
+    ⟨fun h ↦ or_iff_not_imp_right.2 ?_, fun h ↦ h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
   rw [← Ne, ← nonempty_iff_ne_empty]
   intro hne i hi
   simpa only [eval_image_pi hi hne, eval_image_pi hi (hne.mono h)] using
@@ -851,7 +851,7 @@ theorem eval_preimage' [DecidableEq ι] {s : Set (α i)} :
 theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
     (hf : ∀ j ∈ s, j ≠ i → f j ∈ t j) : update f i ⁻¹' s.pi t = t i := by
   ext x
-  refine ⟨fun h => ?_, fun hx j hj => ?_⟩
+  refine ⟨fun h ↦ ?_, fun hx j hj => ?_⟩
   · convert h i hi
     simp
   · obtain rfl | h := eq_or_ne j i

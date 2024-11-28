@@ -44,7 +44,7 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
       if pm : p m then ⟨m, pm, al⟩
       else
         have : ∀ n ≤ m, ¬p n := fun n h =>
-          Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
+          Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e ↦ by rw [e]; exact pm
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
     0 fun _ h => absurd h (Nat.not_lt_zero _)
 

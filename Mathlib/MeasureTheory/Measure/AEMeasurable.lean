@@ -102,11 +102,11 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
       rwa [hs _ _ hxs]
     · rcases hx with ⟨i, hi⟩
       rw [hs _ _ hi]
-      exact fun h => ⟨i, h, hi⟩
+      exact fun h ↦ ⟨i, h, hi⟩
   · refine measure_mono_null (fun x (hx : f x ≠ g x) => ?_) (hsμ i)
     contrapose! hx
     refine (piecewise_eq_of_not_mem _ _ _ ?_).symm
-    exact fun h => hx (mem_iInter.1 h i)
+    exact fun h ↦ hx (mem_iInter.1 h i)
 
 @[simp]
 theorem _root_.aemeasurable_sum_measure_iff [Countable ι] {μ : ι → Measure α} :
@@ -228,7 +228,7 @@ theorem aemeasurable_uIoc_iff [LinearOrder α] {f : α → β} {a b : α} :
   rw [uIoc_eq_union, aemeasurable_union_iff]
 
 theorem aemeasurable_iff_measurable [μ.IsComplete] : AEMeasurable f μ ↔ Measurable f :=
-  ⟨fun h => h.nullMeasurable.measurable_of_complete, fun h => h.aemeasurable⟩
+  ⟨fun h ↦ h.nullMeasurable.measurable_of_complete, fun h ↦ h.aemeasurable⟩
 
 theorem MeasurableEmbedding.aemeasurable_map_iff {g : β → γ} (hf : MeasurableEmbedding f) :
     AEMeasurable g (μ.map f) ↔ AEMeasurable (g ∘ f) μ := by
@@ -255,7 +255,7 @@ theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
 @[simp]
 theorem aemeasurable_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
     AEMeasurable f (c • μ) ↔ AEMeasurable f μ :=
-  ⟨fun h => ⟨h.mk f, h.measurable_mk, (ae_smul_measure_iff hc).1 h.ae_eq_mk⟩, fun h =>
+  ⟨fun h ↦ ⟨h.mk f, h.measurable_mk, (ae_smul_measure_iff hc).1 h.ae_eq_mk⟩, fun h =>
     ⟨h.mk f, h.measurable_mk, (ae_smul_measure_iff hc).2 h.ae_eq_mk⟩⟩
 
 theorem aemeasurable_of_aemeasurable_trim {α} {m m0 : MeasurableSpace α} {μ : Measure α}

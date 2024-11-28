@@ -210,7 +210,7 @@ theorem QuasilinearOn.monotoneOn_or_antitoneOn [LinearOrder β] (hf : Quasilinea
 
 theorem quasilinearOn_iff_monotoneOn_or_antitoneOn [LinearOrderedAddCommMonoid β]
     (hs : Convex 𝕜 s) : QuasilinearOn 𝕜 s f ↔ MonotoneOn f s ∨ AntitoneOn f s :=
-  ⟨fun h => h.monotoneOn_or_antitoneOn, fun h =>
-    h.elim (fun h => h.quasilinearOn hs) fun h => h.quasilinearOn hs⟩
+  ⟨fun h ↦ h.monotoneOn_or_antitoneOn, fun h =>
+    h.elim (fun h ↦ h.quasilinearOn hs) fun h ↦ h.quasilinearOn hs⟩
 
 end LinearOrderedField

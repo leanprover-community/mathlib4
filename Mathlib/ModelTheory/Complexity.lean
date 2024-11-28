@@ -91,7 +91,7 @@ theorem inf {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsQF ψ) : Is
 
 protected theorem relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsQF) (f : α → β ⊕ (Fin n)) :
     (φ.relabel f).IsQF :=
-  IsQF.recOn h isQF_bot (fun h => (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
+  IsQF.recOn h isQF_bot (fun h ↦ (h.relabel f).isQF) fun _ _ h1 h2 => h1.imp h2
 
 protected theorem liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
   IsQF.recOn h isQF_bot (fun ih => ih.liftAt.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
@@ -132,7 +132,7 @@ theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Pr
 
 theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
     (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsPrenex :=
-  IsPrenex.recOn h (fun h => (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
+  IsPrenex.recOn h (fun h ↦ (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
     fun _ h => by simp [h.ex]
 
 theorem IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
@@ -258,7 +258,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
       · inhabit M
         exact ⟨default, fun _h'' => h⟩
       · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
-        exact ⟨a, fun h => (ha h).elim⟩
+        exact ⟨a, fun h ↦ (ha h).elim⟩
   | ex _ ih =>
     intro ψ hψ
     refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_

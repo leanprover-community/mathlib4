@@ -89,7 +89,7 @@ theorem exists_maximal_of_nonempty_chains_bounded [Nonempty α]
   exists_maximal_of_chains_bounded
     (fun c hc =>
       (eq_empty_or_nonempty c).elim
-        (fun h => ⟨Classical.arbitrary α, fun x hx => (h ▸ hx : x ∈ (∅ : Set α)).elim⟩) (h c hc))
+        (fun h ↦ ⟨Classical.arbitrary α, fun x hx => (h ▸ hx : x ∈ (∅ : Set α)).elim⟩) (h c hc))
     trans
 
 section Preorder

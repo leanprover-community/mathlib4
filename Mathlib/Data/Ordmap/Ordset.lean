@@ -178,7 +178,7 @@ theorem balancedSz_zero {l : ℕ} : BalancedSz l 0 ↔ l ≤ 1 := by
 
 theorem balancedSz_up {l r₁ r₂ : ℕ} (h₁ : r₁ ≤ r₂) (h₂ : l + r₂ ≤ 1 ∨ r₂ ≤ delta * l)
     (H : BalancedSz l r₁) : BalancedSz l r₂ := by
-  refine or_iff_not_imp_left.2 fun h => ?_
+  refine or_iff_not_imp_left.2 fun h ↦ ?_
   refine ⟨?_, h₂.resolve_left h⟩
   cases H with
   | inl H =>
@@ -356,7 +356,7 @@ theorem Sized.dual : ∀ {t : Ordnode α}, Sized t → Sized (dual t)
   | node _ l _ r, ⟨rfl, sl, sr⟩ => ⟨by simp [size_dual, add_comm], Sized.dual sr, Sized.dual sl⟩
 
 theorem Sized.dual_iff {t : Ordnode α} : Sized (.dual t) ↔ Sized t :=
-  ⟨fun h => by rw [← dual_dual t]; exact h.dual, Sized.dual⟩
+  ⟨fun h ↦ by rw [← dual_dual t]; exact h.dual, Sized.dual⟩
 
 theorem Sized.rotateL {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (rotateL l x r) := by
   cases r; · exact hl.node' hr
@@ -404,10 +404,10 @@ theorem Any.imp {P Q : α → Prop} (H : ∀ a, P a → Q a) : ∀ {t}, Any P t 
   | node _ _ _ _ => Or.imp (Any.imp H) <| Or.imp (H _) (Any.imp H)
 
 theorem all_singleton {P : α → Prop} {x : α} : All P (singleton x) ↔ P x :=
-  ⟨fun h => h.2.1, fun h => ⟨⟨⟩, h, ⟨⟩⟩⟩
+  ⟨fun h ↦ h.2.1, fun h ↦ ⟨⟨⟩, h, ⟨⟩⟩⟩
 
 theorem any_singleton {P : α → Prop} {x : α} : Any P (singleton x) ↔ P x :=
-  ⟨by rintro (⟨⟨⟩⟩ | h | ⟨⟨⟩⟩); exact h, fun h => Or.inr (Or.inl h)⟩
+  ⟨by rintro (⟨⟨⟩⟩ | h | ⟨⟨⟩⟩); exact h, fun h ↦ Or.inr (Or.inl h)⟩
 
 theorem all_dual {P : α → Prop} : ∀ {t : Ordnode α}, All P (dual t) ↔ All P t
   | nil => Iff.rfl
@@ -486,7 +486,7 @@ theorem length_toList {t : Ordnode α} (h : Sized t) : (toList t).length = t.siz
 
 theorem equiv_iff {t₁ t₂ : Ordnode α} (h₁ : Sized t₁) (h₂ : Sized t₂) :
     Equiv t₁ t₂ ↔ toList t₁ = toList t₂ :=
-  and_iff_right_of_imp fun h => by rw [← length_toList h₁, h, length_toList h₂]
+  and_iff_right_of_imp fun h ↦ by rw [← length_toList h₁, h, length_toList h₂]
 
 /-! ### `mem` -/
 
@@ -797,7 +797,7 @@ theorem Bounded.dual :
 
 theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
     Bounded t o₁ o₂ ↔ @Bounded αᵒᵈ _ (.dual t) o₂ o₁ :=
-  ⟨Bounded.dual, fun h => by
+  ⟨Bounded.dual, fun h ↦ by
     have := Bounded.dual h; rwa [dual_dual, OrderDual.Preorder.dual_dual] at this⟩
 
 theorem Bounded.weak_left : ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → Bounded t ⊥ o₂
@@ -937,7 +937,7 @@ theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ → @
       ⟨by rw [size_dual, size_dual]; exact b.symm, br', bl'⟩⟩
 
 theorem Valid'.dual_iff {t : Ordnode α} {o₁ o₂} : Valid' o₁ t o₂ ↔ @Valid' αᵒᵈ _ o₂ (.dual t) o₁ :=
-  ⟨Valid'.dual, fun h => by
+  ⟨Valid'.dual, fun h ↦ by
     have := Valid'.dual h; rwa [dual_dual, OrderDual.Preorder.dual_dual] at this⟩
 
 theorem Valid.dual {t : Ordnode α} : Valid t → @Valid αᵒᵈ _ (.dual t) :=
@@ -1077,7 +1077,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
   have H3_0 : size l = 0 → size rl + size rr ≤ 2 := by
     intro l0; rw [l0] at H3
     exact
-      (or_iff_right_of_imp fun h => (mul_le_mul_left (by decide)).1 (le_trans h (by decide))).1 H3
+      (or_iff_right_of_imp fun h ↦ (mul_le_mul_left (by decide)).1 (le_trans h (by decide))).1 H3
   have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
     (or_iff_left_of_imp <| by omega).1 H3
   have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by omega
@@ -1520,8 +1520,8 @@ def Empty (s : Ordset α) : Prop :=
   s = ∅
 
 theorem empty_iff {s : Ordset α} : s = ∅ ↔ s.1.empty :=
-  ⟨fun h => by cases h; exact rfl,
-    fun h => by cases s with | mk s_val _ => cases s_val <;> [rfl; cases h]⟩
+  ⟨fun h ↦ by cases h; exact rfl,
+    fun h ↦ by cases s with | mk s_val _ => cases s_val <;> [rfl; cases h]⟩
 
 instance Empty.instDecidablePred : DecidablePred (@Empty α _) :=
   fun _ => decidable_of_iff' _ empty_iff

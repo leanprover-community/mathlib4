@@ -162,7 +162,7 @@ theorem log_eq_one_iff' {b n : ℕ} : log b n = 1 ↔ b ≤ n ∧ n < b * b := b
 
 theorem log_eq_one_iff {b n : ℕ} : log b n = 1 ↔ n < b * b ∧ 1 < b ∧ b ≤ n :=
   log_eq_one_iff'.trans
-    ⟨fun h => ⟨h.2, lt_mul_self_iff.1 (h.1.trans_lt h.2), h.1⟩, fun h => ⟨h.2.2, h.1⟩⟩
+    ⟨fun h ↦ ⟨h.2, lt_mul_self_iff.1 (h.1.trans_lt h.2), h.1⟩, fun h ↦ ⟨h.2.2, h.1⟩⟩
 
 theorem log_mul_base {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) : log b (n * b) = log b n + 1 := by
   apply log_eq_of_pow_le_of_lt_pow <;> rw [pow_succ', Nat.mul_comm b]
@@ -272,7 +272,7 @@ theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ 
   induction x using Nat.strong_induction_on generalizing y with | h x ih => ?_
   cases y
   · rw [Nat.pow_zero]
-    refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩
+    refine ⟨fun h ↦ (clog_of_right_le_one h b).le, ?_⟩
     simp_rw [← not_lt]
     contrapose!
     exact clog_pos hb

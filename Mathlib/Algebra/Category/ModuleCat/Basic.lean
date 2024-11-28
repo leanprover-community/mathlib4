@@ -106,7 +106,7 @@ instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun f => f.toFun }
-  forget_faithful := ⟨fun h => LinearMap.ext (fun x => by
+  forget_faithful := ⟨fun h ↦ LinearMap.ext (fun x => by
     dsimp at h
     rw [h])⟩
 

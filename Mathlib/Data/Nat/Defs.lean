@@ -380,7 +380,7 @@ lemma mul_lt_mul'' (hac : a < c) (hbd : b < d) : a * b < c * d :=
 lemma mul_self_lt_mul_self (h : m < n) : m * m < n * n := mul_lt_mul'' h h
 
 lemma mul_self_le_mul_self_iff : m * m ≤ n * n ↔ m ≤ n :=
-  ⟨fun h => Nat.le_of_not_lt fun h' => Nat.not_le_of_gt (mul_self_lt_mul_self h') h,
+  ⟨fun h ↦ Nat.le_of_not_lt fun h' => Nat.not_le_of_gt (mul_self_lt_mul_self h') h,
    mul_self_le_mul_self⟩
 
 lemma mul_self_lt_mul_self_iff : m * m < n * n ↔ m < n := by
@@ -1224,13 +1224,13 @@ lemma succ_div_of_not_dvd (hba : ¬b ∣ a + 1) : (a + 1) / b = a / b := by
   rw [succ_div, if_neg hba, Nat.add_zero]
 
 lemma dvd_iff_div_mul_eq (n d : ℕ) : d ∣ n ↔ n / d * d = n :=
-  ⟨fun h => Nat.div_mul_cancel h, fun h => by rw [← h]; exact Nat.dvd_mul_left _ _⟩
+  ⟨fun h ↦ Nat.div_mul_cancel h, fun h ↦ by rw [← h]; exact Nat.dvd_mul_left _ _⟩
 
 lemma dvd_iff_le_div_mul (n d : ℕ) : d ∣ n ↔ n ≤ n / d * d :=
   ((dvd_iff_div_mul_eq _ _).trans le_antisymm_iff).trans (and_iff_right (div_mul_le_self n d))
 
 lemma dvd_iff_dvd_dvd (n d : ℕ) : d ∣ n ↔ ∀ k : ℕ, k ∣ d → k ∣ n :=
-  ⟨fun h _ hkd => Nat.dvd_trans hkd h, fun h => h _ (Nat.dvd_refl _)⟩
+  ⟨fun h _ hkd => Nat.dvd_trans hkd h, fun h ↦ h _ (Nat.dvd_refl _)⟩
 
 lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
   if ha : a = 0 then by simp [ha]
@@ -1242,7 +1242,7 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
     show ∃ d, c / a = b * d from ⟨d, h2⟩
 
 @[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
-  ⟨fun h => mul_dvd_of_dvd_div hbc h, fun h => dvd_div_of_mul_dvd h⟩
+  ⟨fun h ↦ mul_dvd_of_dvd_div hbc h, fun h ↦ dvd_div_of_mul_dvd h⟩
 
 @[deprecated (since := "2024-06-18")] alias dvd_div_iff := dvd_div_iff_mul_dvd
 
@@ -1252,7 +1252,7 @@ lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
   exact Nat.dvd_mul_right a e
 
 @[simp] lemma div_dvd_iff_dvd_mul (h : b ∣ a) (hb : b ≠ 0) : a / b ∣ c ↔ a ∣ b * c :=
-  exists_congr <| fun d => by
+  exists_congr <| fun d ↦ by
   have := Nat.dvd_trans (Nat.dvd_mul_left _ d) (Nat.mul_dvd_mul_left d h)
   rw [eq_comm, Nat.mul_comm, ← Nat.mul_div_assoc d h,
     Nat.div_eq_iff_eq_mul_right (Nat.pos_of_ne_zero hb) this, Nat.mul_comm, eq_comm]
@@ -1292,12 +1292,12 @@ lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
-  ⟨fun h => Nat.dvd_antisymm ((h _).mpr (Nat.dvd_refl _)) ((h _).mp (Nat.dvd_refl _)),
+  ⟨fun h ↦ Nat.dvd_antisymm ((h _).mpr (Nat.dvd_refl _)) ((h _).mp (Nat.dvd_refl _)),
     fun h n => by rw [h]⟩
 
 /-- Two natural numbers are equal if and only if they have the same divisors. -/
 lemma dvd_left_iff_eq : (∀ a : ℕ, a ∣ m ↔ a ∣ n) ↔ m = n :=
-  ⟨fun h => Nat.dvd_antisymm ((h _).mp (Nat.dvd_refl _)) ((h _).mpr (Nat.dvd_refl _)),
+  ⟨fun h ↦ Nat.dvd_antisymm ((h _).mp (Nat.dvd_refl _)) ((h _).mpr (Nat.dvd_refl _)),
     fun h n => by rw [h]⟩
 
 /-- `dvd` is injective in the left argument -/

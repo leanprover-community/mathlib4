@@ -152,7 +152,7 @@ theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :
     a / b = #(Ico 1 (a / b).succ) := by simp
     _ = #{x ∈ Ico 1 c.succ | x * b ≤ a} :=
       congr_arg _ <| Finset.ext fun x => by
-        have : x * b ≤ a → x ≤ c := fun h => le_trans (by rwa [le_div_iff_mul_le hb0]) hc
+        have : x * b ≤ a → x ≤ c := fun h ↦ le_trans (by rwa [le_div_iff_mul_le hb0]) hc
         simp [Nat.lt_succ_iff, le_div_iff_mul_le hb0]; tauto
 
 /-- The given sum is the number of integer points in the triangle formed by the diagonal of the

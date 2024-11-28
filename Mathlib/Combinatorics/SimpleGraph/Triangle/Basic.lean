@@ -283,10 +283,10 @@ theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.C
   exact nonpos_of_mul_nonpos_left (this h₁) (cast_pos.2 <| sq_pos_of_pos Fintype.card_pos)
 
 theorem CliqueFree.not_farFromTriangleFree (hG : G.CliqueFree 3) (hε : 0 < ε) :
-    ¬G.FarFromTriangleFree ε := fun h => (h.nonpos hG).not_lt hε
+    ¬G.FarFromTriangleFree ε := fun h ↦ (h.nonpos hG).not_lt hε
 
 theorem FarFromTriangleFree.not_cliqueFree (hG : G.FarFromTriangleFree ε) (hε : 0 < ε) :
-    ¬G.CliqueFree 3 := fun h => (hG.nonpos h).not_lt hε
+    ¬G.CliqueFree 3 := fun h ↦ (hG.nonpos h).not_lt hε
 
 theorem FarFromTriangleFree.cliqueFinset_nonempty [DecidableEq α]
     (hG : G.FarFromTriangleFree ε) (hε : 0 < ε) : (G.cliqueFinset 3).Nonempty :=

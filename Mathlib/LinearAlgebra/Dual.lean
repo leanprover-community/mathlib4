@@ -1005,7 +1005,7 @@ theorem dualAnnihilator_top : (⊤ : Submodule R M).dualAnnihilator = ⊥ := by
   rw [eq_bot_iff]
   intro v
   simp_rw [mem_dualAnnihilator, mem_bot, mem_top, forall_true_left]
-  exact fun h => LinearMap.ext h
+  exact fun h ↦ LinearMap.ext h
 
 @[simp]
 theorem dualCoannihilator_bot : (⊥ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊤ :=

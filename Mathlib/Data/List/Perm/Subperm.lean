@@ -64,7 +64,7 @@ theorem cons_subperm_of_mem {a : α} {l₁ l₂ : List α} (d₁ : Nodup l₁) (
     have bm : b ∈ l₁ := p.subset <| mem_cons_self _ _
     have am : a ∈ r₂ := by
       simp only [find?, mem_cons] at h₂
-      exact h₂.resolve_left fun e => h₁ <| e.symm ▸ bm
+      exact h₂.resolve_left fun e ↦ h₁ <| e.symm ▸ bm
     rcases append_of_mem bm with ⟨t₁, t₂, rfl⟩
     have st : t₁ ++ t₂ <+ t₁ ++ b :: t₂ := by simp
     rcases ih (d₁.sublist st) (mt (fun x => st.subset x) h₁) am

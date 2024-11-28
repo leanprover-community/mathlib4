@@ -1020,7 +1020,7 @@ end SubtypeDomain
 
 theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} (a : α) :
     a ∈ s.sum.support → ∃ f ∈ s, a ∈ (f : α →₀ M).support :=
-  Multiset.induction_on s (fun h => False.elim (by simp at h))
+  Multiset.induction_on s (fun h ↦ False.elim (by simp at h))
     (by
       intro f s ih ha
       by_cases h : a ∈ f.support
@@ -1352,7 +1352,7 @@ variable {α M}
 theorem support_smul [AddMonoid M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a ↦ by
   simp only [smul_apply, mem_support_iff, Ne]
-  exact mt fun h => h.symm ▸ smul_zero _
+  exact mt fun h ↦ h.symm ▸ smul_zero _
 
 @[simp]
 theorem support_smul_eq [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] {b : R}

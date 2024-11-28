@@ -59,7 +59,7 @@ noncomputable def mvPolynomialSupportLEEquiv
       ext i m
       simp only [coeff, ne_eq, exists_prop, dite_eq_ite, Finsupp.coe_mk, ite_eq_left_iff]
       intro hm
-      have : m ∉ (p.1 i).support := fun h => hm (p.2 i h)
+      have : m ∉ (p.1 i).support := fun h ↦ hm (p.2 i h)
       simpa [coeff, eq_comm, MvPolynomial.mem_support_iff] using this
     right_inv := fun p => by ext; simp [coeff] }
 

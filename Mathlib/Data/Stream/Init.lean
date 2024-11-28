@@ -29,7 +29,7 @@ protected theorem eta (s : Stream' α) : (head s::tail s) = s :=
 
 @[ext]
 protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, get s₁ n = get s₂ n) → s₁ = s₂ :=
-  fun h => funext h
+  fun h ↦ funext h
 
 @[simp]
 theorem get_zero_cons (a : α) (s : Stream' α) : get (a::s) 0 = a :=

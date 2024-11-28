@@ -64,7 +64,7 @@ namespace ResidueField
 def lift {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S) [IsLocalHom f] :
     IsLocalRing.ResidueField R →+* S :=
   Ideal.Quotient.lift _ f fun a ha =>
-    by_contradiction fun h => ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
+    by_contradiction fun h ↦ ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
 
 theorem lift_comp_residue {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] (f : R →+* S)
     [IsLocalHom f] : (lift f).comp (residue R) = f :=

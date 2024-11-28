@@ -173,7 +173,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     and only if its kernel is closed. -/
 theorem LinearMap.continuous_iff_isClosed_ker (l : E →ₗ[𝕜] 𝕜) :
     Continuous l ↔ IsClosed (LinearMap.ker l : Set E) :=
-  ⟨fun h => isClosed_singleton.preimage h, l.continuous_of_isClosed_ker⟩
+  ⟨fun h ↦ isClosed_singleton.preimage h, l.continuous_of_isClosed_ker⟩
 
 /-- Over a nontrivially normed field, any linear form which is nonzero on a nonempty open set is
     automatically continuous. -/

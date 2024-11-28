@@ -41,7 +41,7 @@ sums up to `0`.
 -/
 def modSwap (i j : α) : Setoid (Perm α) :=
   ⟨fun σ τ => σ = τ ∨ σ = swap i j * τ, fun σ => Or.inl (refl σ), fun {σ τ} h =>
-    Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
+    Or.casesOn h (fun h ↦ Or.inl h.symm) fun h ↦ Or.inr (by rw [h, swap_mul_self_mul]),
     fun {σ τ υ} hστ hτυ => by
     cases' hστ with hστ hστ <;> cases' hτυ with hτυ hτυ <;> try rw [hστ, hτυ, swap_mul_self_mul] <;>
     simp [hστ, hτυ] -- Porting note: should close goals, but doesn't
@@ -76,7 +76,7 @@ def swapFactorsAux :
       ⟨swap x (f x)::m.1, by
         rw [List.prod_cons, m.2.1, ← mul_assoc, mul_def (swap x (f x)), swap_swap, ← one_def,
           one_mul],
-        fun {_} hg => ((List.mem_cons).1 hg).elim (fun h => ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
+        fun {_} hg => ((List.mem_cons).1 hg).elim (fun h ↦ ⟨x, f x, hfx, h⟩) (m.2.2 _)⟩
 
 /-- `swapFactors` represents a permutation as a product of a list of transpositions.
 The representation is non unique and depends on the linear order structure.
@@ -202,7 +202,7 @@ theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
     else
       ⟨⟨f⁻¹ a₂, f⁻¹ a₁⟩,
         mem_finPairsLT.2 <|
-          (le_of_not_gt hxa).lt_of_ne fun h => by
+          (le_of_not_gt hxa).lt_of_ne fun h ↦ by
             simp [mem_finPairsLT, f⁻¹.injective h, lt_irrefl] at ha, by
               dsimp [signBijAux]
               rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_lt]⟩
@@ -214,7 +214,7 @@ theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
     split_ifs with h
     · exact mem_finPairsLT.2 h
     · exact mem_finPairsLT.2
-        ((le_of_not_gt h).lt_of_ne fun h => (mem_finPairsLT.1 ha).ne (f.injective h.symm))
+        ((le_of_not_gt h).lt_of_ne fun h ↦ (mem_finPairsLT.1 ha).ne (f.injective h.symm))
 
 @[simp]
 theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
@@ -342,7 +342,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
     signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
     Pairwise fun x y => signAux2 l (swap x y) = -1
   have hfg : (e.symm.trans (f * g)).trans e = (e.symm.trans f).trans e * (e.symm.trans g).trans e :=
-    Equiv.ext fun h => by simp [mul_apply]
+    Equiv.ext fun h ↦ by simp [mul_apply]
   constructor
   · rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, ←
       signAux_eq_signAux2 _ _ e fun _ _ => hs _, ← signAux_eq_signAux2 _ _ e fun _ _ => hs _,
@@ -435,7 +435,7 @@ theorem sign_abs (f : Perm α) :
 variable (α)
 
 theorem sign_surjective [Nontrivial α] : Function.Surjective (sign : Perm α → ℤˣ) := fun a =>
-  (Int.units_eq_one_or a).elim (fun h => ⟨1, by simp [h]⟩) fun h =>
+  (Int.units_eq_one_or a).elim (fun h ↦ ⟨1, by simp [h]⟩) fun h =>
     let ⟨x, y, hxy⟩ := exists_pair_ne α
     ⟨swap x y, by rw [sign_swap hxy, h]⟩
 
@@ -444,7 +444,7 @@ variable {α}
 theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) : s = sign :=
   have : ∀ {f}, IsSwap f → s f = -1 := fun {f} ⟨x, y, hxy, hxy'⟩ =>
     hxy'.symm ▸
-      by_contradiction fun h => by
+      by_contradiction fun h ↦ by
         have : ∀ f, IsSwap f → s f = 1 := fun f ⟨a, b, hab, hab'⟩ => by
           rw [← isConj_iff_eq, ← Or.resolve_right (Int.units_eq_one_or _) h, hab']
           exact s.map_isConj (isConj_swap hab hxy)
@@ -495,7 +495,7 @@ theorem sign_bij [DecidableEq β] [Fintype β] {f : Perm α} {g : Perm β} (i : 
         (Equiv.ofBijective
           (fun x : { x // f x ≠ x } =>
             (⟨i x.1 x.2, by
-                have : f (f x) ≠ f x := mt (fun h => f.injective h) x.2
+                have : f (f x) ≠ f x := mt (fun h ↦ f.injective h) x.2
                 rw [← h _ x.2 this]
                 exact mt (hi _ _ this x.2) x.2⟩ :
               { y // g y ≠ y }))
@@ -530,7 +530,7 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
   · rw [← ha'] at *
     refine Or.inl ⟨l.mem_cons_self a, ?_⟩
     rw [prodExtendRight_apply_eq]
-  · refine Or.inr ⟨fun h => not_or_intro ha' not_mem_l ((List.mem_cons).mp h), ?_⟩
+  · refine Or.inr ⟨fun h ↦ not_or_intro ha' not_mem_l ((List.mem_cons).mp h), ?_⟩
     rw [prodExtendRight_apply_ne _ ha']
 
 section congr

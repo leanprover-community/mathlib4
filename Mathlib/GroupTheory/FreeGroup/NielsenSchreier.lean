@@ -165,7 +165,7 @@ private def root' : G :=
 -- Porting note: removed noncomputable. This is already declared at the beginning of the section.
 def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
   | _, Path.nil => 𝟙 _
-  | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e => of e) fun e => inv (of e)
+  | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e ↦ of e) fun e ↦ inv (of e)
 
 /-- For every vertex `a`, there is a canonical hom from the root, given by the path in the tree. -/
 def treeHom (a : G) : root' T ⟶ a :=
@@ -216,7 +216,7 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
     in the complement of the tree. -/
 lemma endIsFree : IsFreeGroup (End (root' T)) :=
   IsFreeGroup.ofUniqueLift ((wideSubquiverEquivSetTotal <| wideSubquiverSymmetrify T)ᶜ : Set _)
-    (fun e => loopOfHom T (of e.val.hom))
+    (fun e ↦ loopOfHom T (of e.val.hom))
     (by
       intro X _ f
       let f' : Labelling (Generators G) X := fun a b e =>

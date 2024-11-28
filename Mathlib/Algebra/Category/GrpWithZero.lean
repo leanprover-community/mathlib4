@@ -60,7 +60,7 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GrpWithZero where
   forget :=
   { obj := fun G => G
     map := fun f => f.toFun }
-  forget_faithful := ⟨fun h => DFunLike.coe_injective h⟩
+  forget_faithful := ⟨fun h ↦ DFunLike.coe_injective h⟩
 
 @[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) :
   (forget GrpWithZero).map f = f := rfl

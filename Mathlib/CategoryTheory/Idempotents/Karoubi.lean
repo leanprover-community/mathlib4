@@ -143,7 +143,7 @@ def toKaroubi : C ⥤ Karoubi C where
 instance : (toKaroubi C).Full where map_surjective f := ⟨f.f, rfl⟩
 
 instance : (toKaroubi C).Faithful where
-  map_injective := fun h => congr_arg Karoubi.Hom.f h
+  map_injective := fun h ↦ congr_arg Karoubi.Hom.f h
 
 variable {C}
 

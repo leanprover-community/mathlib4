@@ -70,7 +70,7 @@ def rfindX : { n // true ∈ p n ∧ ∀ m < n, false ∈ p m } :=
 end Rfind
 
 def rfind (p : ℕ →. Bool) : Part ℕ :=
-  ⟨_, fun h => (rfindX p h).1⟩
+  ⟨_, fun h ↦ (rfindX p h).1⟩
 
 theorem rfind_spec {p : ℕ →. Bool} {n : ℕ} (h : n ∈ rfind p) : true ∈ p n :=
   h.snd ▸ (rfindX p h.fst).2.1
@@ -87,13 +87,13 @@ theorem rfind_dom' {p : ℕ →. Bool} :
     (rfind p).Dom ↔ ∃ n, true ∈ p n ∧ ∀ {m : ℕ}, m ≤ n → (p m).Dom :=
   exists_congr fun _ =>
     and_congr_right fun pn =>
-      ⟨fun H _ h => (Decidable.eq_or_lt_of_le h).elim (fun e => e.symm ▸ pn.fst) (H _), fun H _ h =>
+      ⟨fun H _ h => (Decidable.eq_or_lt_of_le h).elim (fun e ↦ e.symm ▸ pn.fst) (H _), fun H _ h =>
         H (le_of_lt h)⟩
 
 @[simp]
 theorem mem_rfind {p : ℕ →. Bool} {n : ℕ} :
     n ∈ rfind p ↔ true ∈ p n ∧ ∀ {m : ℕ}, m < n → false ∈ p m :=
-  ⟨fun h => ⟨rfind_spec h, @rfind_min _ _ h⟩, fun ⟨h₁, h₂⟩ => by
+  ⟨fun h ↦ ⟨rfind_spec h, @rfind_min _ _ h⟩, fun ⟨h₁, h₂⟩ => by
     let ⟨m, hm⟩ := dom_iff_mem.1 <| (@rfind_dom p).2 ⟨_, h₁, fun {m} mn => (h₂ mn).fst⟩
     rcases lt_trichotomy m n with (h | h | h)
     · injection mem_unique (h₂ h) (rfind_spec hm)
@@ -103,7 +103,7 @@ theorem mem_rfind {p : ℕ →. Bool} {n : ℕ} :
 theorem rfind_min' {p : ℕ → Bool} {m : ℕ} (pm : p m) : ∃ n ∈ rfind p, n ≤ m :=
   have : true ∈ (p : ℕ →. Bool) m := ⟨trivial, pm⟩
   let ⟨n, hn⟩ := dom_iff_mem.1 <| (@rfind_dom p).2 ⟨m, this, fun {_} _ => ⟨⟩⟩
-  ⟨n, hn, not_lt.1 fun h => by injection mem_unique this (rfind_min hn h)⟩
+  ⟨n, hn, not_lt.1 fun h ↦ by injection mem_unique this (rfind_min hn h)⟩
 
 theorem rfind_zero_none (p : ℕ →. Bool) (p0 : p 0 = Part.none) : rfind p = Part.none :=
   eq_none_iff.2 fun _ h =>
@@ -118,7 +118,7 @@ theorem rfindOpt_spec {α} {f : ℕ → Option α} {a} (h : a ∈ rfindOpt f) : 
   ⟨n, mem_coe.1 h₂⟩
 
 theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a, a ∈ f n :=
-  ⟨fun h => (rfindOpt_spec ⟨h, rfl⟩).imp fun _ h => ⟨_, h⟩, fun h => by
+  ⟨fun h ↦ (rfindOpt_spec ⟨h, rfl⟩).imp fun _ h => ⟨_, h⟩, fun h ↦ by
     have h' : ∃ n, (f n).isSome := h.imp fun n => Option.isSome_iff_exists.2
     have s := Nat.find_spec h'
     have fd : (rfind fun n => (f n).isSome).Dom :=
@@ -418,8 +418,8 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem unpaired {f : ℕ → ℕ →. α} : Partrec (Nat.unpaired f) ↔ Partrec₂ f :=
-  ⟨fun h => by simpa using Partrec.comp (g := fun p : ℕ × ℕ => (p.1, p.2)) h Primrec₂.pair.to_comp,
-    fun h => h.comp Primrec.unpair.to_comp⟩
+  ⟨fun h ↦ by simpa using Partrec.comp (g := fun p : ℕ × ℕ => (p.1, p.2)) h Primrec₂.pair.to_comp,
+    fun h ↦ h.comp Primrec.unpair.to_comp⟩
 
 theorem unpaired' {f : ℕ → ℕ →. ℕ} : Nat.Partrec (Nat.unpaired f) ↔ Partrec₂ f :=
   Partrec.nat_iff.symm.trans unpaired
@@ -532,7 +532,7 @@ variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem option_some_iff {f : α → σ} : (Computable fun a ↦ Option.some (f a)) ↔ Computable f :=
-  ⟨fun h => encode_iff.1 <| Primrec.pred.to_comp.comp <| encode_iff.2 h, option_some.comp⟩
+  ⟨fun h ↦ encode_iff.1 <| Primrec.pred.to_comp.comp <| encode_iff.2 h, option_some.comp⟩
 
 theorem bind_decode_iff {f : α → β → Option σ} :
     (Computable₂ fun a n => (decode (α := β) n).bind (f a)) ↔ Computable₂ f :=
@@ -655,7 +655,7 @@ variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 open Computable
 
 theorem option_some_iff {f : α →. σ} : (Partrec fun a ↦ (f a).map Option.some) ↔ Partrec f :=
-  ⟨fun h => (Nat.Partrec.ppred.comp h).of_eq fun n => by
+  ⟨fun h ↦ (Nat.Partrec.ppred.comp h).of_eq fun n => by
       -- Porting note: needed to help with applying bind_some_eq_map because `Function.comp` got
       -- less reducible.
       simp [Part.bind_assoc, ← Function.comp_apply (f := Part.some) (g := encode), bind_some_eq_map,
@@ -691,7 +691,7 @@ theorem sum_casesOn_right {f : α → β ⊕ γ} {g : α → β → σ} {h : α 
 
 theorem sum_casesOn_left {f : α → β ⊕ γ} {g : α → β →. σ} {h : α → γ → σ} (hf : Computable f)
     (hg : Partrec₂ g) (hh : Computable₂ h) :
-    @Partrec _ σ _ _ fun a ↦ Sum.casesOn (f a) (g a) fun c => Part.some (h a c) :=
+    @Partrec _ σ _ _ fun a ↦ Sum.casesOn (f a) (g a) fun c ↦ Part.some (h a c) :=
   (sum_casesOn_right (sum_casesOn hf (sum_inr.comp snd).to₂ (sum_inl.comp snd).to₂) hh hg).of_eq
     fun a ↦ by cases f a <;> simp
 
@@ -702,7 +702,7 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
         ((∃ b' : σ, Sum.inl b' ∈ F a n) ∧ ∀ {m : ℕ}, m < n → ∃ b : α, Sum.inr b ∈ F a m) ∧
           Sum.inl b ∈ F a n) ↔
       b ∈ PFun.fix f a := by
-  intro F; refine ⟨fun h => ?_, fun h => ?_⟩
+  intro F; refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
     have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba

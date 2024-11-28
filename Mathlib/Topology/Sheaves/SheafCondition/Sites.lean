@@ -82,7 +82,7 @@ theorem covering_presieve_eq_self {Y : Opens X} (R : Presieve Y) :
     presieveOfCoveringAux (coveringOfPresieve Y R) Y = R := by
   funext Z
   ext f
-  exact ⟨fun ⟨⟨_, f', h⟩, rfl⟩ => by rwa [Subsingleton.elim f f'], fun h => ⟨⟨Z, f, h⟩, rfl⟩⟩
+  exact ⟨fun ⟨⟨_, f', h⟩, rfl⟩ => by rwa [Subsingleton.elim f f'], fun h ↦ ⟨⟨Z, f, h⟩, rfl⟩⟩
 
 namespace presieveOfCovering
 

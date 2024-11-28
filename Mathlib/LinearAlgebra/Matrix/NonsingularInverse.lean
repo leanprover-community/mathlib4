@@ -305,13 +305,13 @@ theorem inv_mul_cancel_left_of_invertible (B : Matrix n m α) [Invertible A] : A
 
 theorem inv_mul_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
     A⁻¹ * B = C ↔ B = A * C :=
-  ⟨fun h => by rw [← h, mul_inv_cancel_left_of_invertible],
-   fun h => by rw [h, inv_mul_cancel_left_of_invertible]⟩
+  ⟨fun h ↦ by rw [← h, mul_inv_cancel_left_of_invertible],
+   fun h ↦ by rw [h, inv_mul_cancel_left_of_invertible]⟩
 
 theorem mul_inv_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
     B * A⁻¹ = C ↔ B = C * A :=
-  ⟨fun h => by rw [← h, inv_mul_cancel_right_of_invertible],
-   fun h => by rw [h, mul_inv_cancel_right_of_invertible]⟩
+  ⟨fun h ↦ by rw [← h, inv_mul_cancel_right_of_invertible],
+   fun h ↦ by rw [h, mul_inv_cancel_right_of_invertible]⟩
 
 lemma inv_mulVec_eq_vec {A : Matrix n n α} [Invertible A]
     {u v : n → α} (hM : u = A.mulVec v) : A⁻¹.mulVec u = v := by

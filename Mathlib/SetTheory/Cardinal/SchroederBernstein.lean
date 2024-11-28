@@ -106,9 +106,9 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
           have : insert f s ∈ sets β := fun i x hx y hy => by
             cases' hx with hx hx <;> cases' hy with hy hy; · simp [hx, hy]
             · subst x
-              exact fun e => (hf i y hy e.symm).elim
+              exact fun e ↦ (hf i y hy e.symm).elim
             · subst y
-              exact fun e => (hf i x hx e).elim
+              exact fun e ↦ (hf i x hx e).elim
             · exact hs.prop i hx hy
           hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
         let ⟨i⟩ := I

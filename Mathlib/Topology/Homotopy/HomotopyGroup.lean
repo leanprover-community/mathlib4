@@ -407,7 +407,7 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
       (GenLoop.boundary _ (fun _ => 0) ⟨default, Or.inl rfl⟩)
       (GenLoop.boundary _ (fun _ => 1) ⟨default, Or.inr rfl⟩)
   invFun p :=
-    ⟨⟨fun c => p (c default), by continuity⟩,
+    ⟨⟨fun c ↦ p (c default), by continuity⟩,
       by
       rintro y ⟨i, iH | iH⟩ <;> cases Unique.eq_default i <;> apply (congr_arg p iH).trans
       exacts [p.source, p.target]⟩

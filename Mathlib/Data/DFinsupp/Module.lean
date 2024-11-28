@@ -64,7 +64,7 @@ each coordinate. -/
 instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
     Module γ (Π₀ i, β i) :=
   { inferInstanceAs (DistribMulAction γ (Π₀ i, β i)) with
-    zero_smul := fun c => ext fun i => by simp only [smul_apply, zero_smul, zero_apply]
+    zero_smul := fun c ↦ ext fun i => by simp only [smul_apply, zero_smul, zero_apply]
     add_smul := fun c x y => ext fun i => by simp only [add_apply, smul_apply, add_smul] }
 
 end Algebra

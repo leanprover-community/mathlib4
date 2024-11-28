@@ -122,7 +122,7 @@ theorem ContinuousOn.cpow (hf : ContinuousOn f s) (hg : ContinuousOn g s)
   (hf a ha).cpow (hg a ha) (h0 a ha)
 
 theorem ContinuousOn.const_cpow {b : ℂ} (hf : ContinuousOn f s) (h : b ≠ 0 ∨ ∀ a ∈ s, f a ≠ 0) :
-    ContinuousOn (fun x => b ^ f x) s := fun a ha => (hf a ha).const_cpow (h.imp id fun h => h a ha)
+    ContinuousOn (fun x => b ^ f x) s := fun a ha => (hf a ha).const_cpow (h.imp id fun h ↦ h a ha)
 
 theorem Continuous.cpow (hf : Continuous f) (hg : Continuous g)
     (h0 : ∀ a, f a ∈ slitPlane) : Continuous fun x => f x ^ g x :=
@@ -130,7 +130,7 @@ theorem Continuous.cpow (hf : Continuous f) (hg : Continuous g)
 
 theorem Continuous.const_cpow {b : ℂ} (hf : Continuous f) (h : b ≠ 0 ∨ ∀ a, f a ≠ 0) :
     Continuous fun x => b ^ f x :=
-  continuous_iff_continuousAt.2 fun a ↦ hf.continuousAt.const_cpow <| h.imp id fun h => h a
+  continuous_iff_continuousAt.2 fun a ↦ hf.continuousAt.const_cpow <| h.imp id fun h ↦ h a
 
 theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
     (h : ∀ a : α, a ∈ s → f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ b) s :=
@@ -215,7 +215,7 @@ theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
 
 theorem continuousAt_rpow (p : ℝ × ℝ) (h : p.1 ≠ 0 ∨ 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p :=
-  h.elim (fun h => continuousAt_rpow_of_ne p h) fun h => continuousAt_rpow_of_pos p h
+  h.elim (fun h ↦ continuousAt_rpow_of_ne p h) fun h ↦ continuousAt_rpow_of_pos p h
 
 @[fun_prop]
 theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 ≤ q) :
@@ -412,8 +412,8 @@ namespace NNReal
 
 theorem continuousAt_rpow_const {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 ≤ y) :
     ContinuousAt (fun z => z ^ y) x :=
-  h.elim (fun h => tendsto_id.nnrpow tendsto_const_nhds (Or.inl h)) fun h =>
-    h.eq_or_lt.elim (fun h => h ▸ by simp only [rpow_zero, continuousAt_const]) fun h =>
+  h.elim (fun h ↦ tendsto_id.nnrpow tendsto_const_nhds (Or.inl h)) fun h =>
+    h.eq_or_lt.elim (fun h ↦ h ▸ by simp only [rpow_zero, continuousAt_const]) fun h =>
       tendsto_id.nnrpow tendsto_const_nhds (Or.inr h)
 
 @[fun_prop]

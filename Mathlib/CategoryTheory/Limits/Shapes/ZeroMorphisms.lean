@@ -135,7 +135,7 @@ theorem eq_zero_of_image_eq_zero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : image
     f = 0 := by rw [← image.fac f, w, HasZeroMorphisms.comp_zero]
 
 theorem nonzero_image_of_nonzero {X Y : C} {f : X ⟶ Y} [HasImage f] (w : f ≠ 0) : image.ι f ≠ 0 :=
-  fun h => w (eq_zero_of_image_eq_zero h)
+  fun h ↦ w (eq_zero_of_image_eq_zero h)
 
 end
 
@@ -166,7 +166,7 @@ theorem eq_zero_of_tgt {X Y : C} (o : IsZero Y) (f : X ⟶ Y) : f = 0 :=
   o.eq_of_tgt _ _
 
 theorem iff_id_eq_zero (X : C) : IsZero X ↔ 𝟙 X = 0 :=
-  ⟨fun h => h.eq_of_src _ _, fun h =>
+  ⟨fun h ↦ h.eq_of_src _ _, fun h =>
     ⟨fun Y => ⟨⟨⟨0⟩, fun f => by
         rw [← id_comp f, ← id_comp (0 : X ⟶ Y), h, zero_comp, zero_comp]; simp only⟩⟩,
     fun Y => ⟨⟨⟨0⟩, fun f => by

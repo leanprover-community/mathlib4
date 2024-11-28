@@ -37,10 +37,10 @@ namespace Path
 variable {V : Type u} [Quiver V] {a b c d : V}
 
 lemma nil_ne_cons (p : Path a b) (e : b ⟶ a) : Path.nil ≠ p.cons e :=
-  fun h => by injection h
+  fun h ↦ by injection h
 
 lemma cons_ne_nil (p : Path a b) (e : b ⟶ a) : p.cons e ≠ Path.nil :=
-  fun h => by injection h
+  fun h ↦ by injection h
 
 lemma obj_eq_of_cons_eq_cons {p : Path a b} {p' : Path a c}
     {e : b ⟶ d} {e' : c ⟶ d} (h : p.cons e = p'.cons e') : b = c := by injection h
@@ -109,7 +109,7 @@ theorem length_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).length =
 
 theorem comp_inj {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (hq : q₁.length = q₂.length) :
     p₁.comp q₁ = p₂.comp q₂ ↔ p₁ = p₂ ∧ q₁ = q₂ := by
-  refine ⟨fun h => ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
+  refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
   induction q₁ with
   | nil =>
     rcases q₂ with _ | ⟨q₂, f₂⟩

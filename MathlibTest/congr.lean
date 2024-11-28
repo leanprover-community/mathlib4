@@ -15,7 +15,7 @@ theorem ex1 (a b c : Nat) (h : a = b) : a + c = b + c := by
 theorem ex2 (a b : Nat) (h : a = b) : ∀ c, a + c = b + c := by
   congr!
 
-theorem ex3 (a b : Nat) (h : a = b) : (fun c => a + c) = (fun c => b + c) := by
+theorem ex3 (a b : Nat) (h : a = b) : (fun c ↦ a + c) = (fun c ↦ b + c) := by
   congr!
 
 theorem ex4 (a b : Nat) : Fin (a + b) = Fin (b + a) := by

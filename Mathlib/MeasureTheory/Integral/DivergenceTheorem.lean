@@ -121,7 +121,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I : Box (
   have B :=
     hasIntegral_GP_divergence_of_forall_hasDerivWithinAt I f f' (s ∩ Box.Icc I)
       (hs.mono inter_subset_left) (fun x hx => Hc _ hx.2) fun x hx =>
-      Hd _ ⟨hx.1, fun h => hx.2 ⟨h, hx.1⟩⟩
+      Hd _ ⟨hx.1, fun h ↦ hx.2 ⟨h, hx.1⟩⟩
   rw [continuousOn_pi] at Hc
   refine (A.unique B).trans (sum_congr rfl fun i _ => ?_)
   refine congr_arg₂ Sub.sub ?_ ?_
@@ -399,7 +399,7 @@ theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {
         exact Hi.congr_set_ae Ioc_ae_eq_Icc.symm
     _ = f b - f a := by
       simp only [e, Fin.sum_univ_one, e_symm]
-      have : ∀ c : ℝ, const (Fin 0) c = isEmptyElim := fun c => Subsingleton.elim _ _
+      have : ∀ c : ℝ, const (Fin 0) c = isEmptyElim := fun c ↦ Subsingleton.elim _ _
       simp [this, volume_pi, Measure.pi_of_empty fun _ : Fin 0 => volume]
 
 /-- **Fundamental theorem of calculus, part 2**. This version assumes that `f` is continuous on the

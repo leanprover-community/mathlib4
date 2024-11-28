@@ -54,7 +54,7 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
   let h' := Pi.lt_def.1 hlt
   let ⟨i, hi, hl⟩ := hwf.has_min _ h'.2
-  ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h => hl j (lt_of_le_not_le (h'.1 j) h) hj⟩, hi⟩
+  ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h ↦ hl j (lt_of_le_not_le (h'.1 j) h) hj⟩, hi⟩
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
     (hlt : x < y) : Pi.Lex r (@fun _ => (· < ·)) x y := by
@@ -123,7 +123,7 @@ theorem toLex_strictMono : StrictMono (@toLex (∀ i, β i)) := fun a b h =>
 
 @[simp]
 theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a := by
-  refine ⟨?_, fun h => toLex_strictMono <| lt_update_self_iff.2 h⟩
+  refine ⟨?_, fun h ↦ toLex_strictMono <| lt_update_self_iff.2 h⟩
   rintro ⟨j, hj, h⟩
   dsimp at h
   obtain rfl : j = i := by
@@ -134,7 +134,7 @@ theorem lt_toLex_update_self_iff : toLex x < toLex (update x i a) ↔ x i < a :=
 
 @[simp]
 theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i := by
-  refine ⟨?_, fun h => toLex_strictMono <| update_lt_self_iff.2 h⟩
+  refine ⟨?_, fun h ↦ toLex_strictMono <| update_lt_self_iff.2 h⟩
   rintro ⟨j, hj, h⟩
   dsimp at h
   obtain rfl : j = i := by

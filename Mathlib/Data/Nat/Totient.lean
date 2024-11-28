@@ -211,7 +211,7 @@ theorem totient_prime {p : ℕ} (hp : p.Prime) : φ p = p - 1 := by
   rw [← pow_one p, totient_prime_pow hp] <;> simp
 
 theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Prime := by
-  refine ⟨fun h => ?_, totient_prime⟩
+  refine ⟨fun h ↦ ?_, totient_prime⟩
   replace hp : 1 < p := by
     apply lt_of_le_of_ne
     · rwa [succ_le_iff]
@@ -251,7 +251,7 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | n + 3 => by
     have : 3 ≤ n + 3 := le_add_self
     simp only [succ_succ_ne_one, false_or]
-    exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
+    exact ⟨fun h ↦ not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
   rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num

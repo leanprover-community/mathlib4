@@ -117,7 +117,7 @@ theorem segment_same (x : E) : [x -[𝕜] x] = {x} :=
   Set.ext fun z =>
     ⟨fun ⟨a, b, _, _, hab, hz⟩ => by
       simpa only [(add_smul _ _ _).symm, mem_singleton_iff, hab, one_smul, eq_comm] using hz,
-      fun h => mem_singleton_iff.1 h ▸ left_mem_segment 𝕜 z z⟩
+      fun h ↦ mem_singleton_iff.1 h ▸ left_mem_segment 𝕜 z z⟩
 
 theorem insert_endpoints_openSegment (x y : E) :
     insert x (insert y (openSegment 𝕜 x y)) = [x -[𝕜] y] := by
@@ -357,7 +357,7 @@ section LinearOrderedField
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
 
 theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (z - x) := by
-  refine ⟨sameRay_of_mem_segment, fun h => ?_⟩
+  refine ⟨sameRay_of_mem_segment, fun h ↦ ?_⟩
   rcases h.exists_eq_smul_add with ⟨a, b, ha, hb, hab, hxy, hzx⟩
   rw [add_comm, sub_add_sub_cancel] at hxy hzx
   rw [← mem_segment_translate _ (-x), neg_add_cancel]

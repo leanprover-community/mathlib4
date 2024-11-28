@@ -112,7 +112,7 @@ theorem image_update_Icc (f : ∀ i, α i) (i : ι) (a b : α i) :
     update f i '' Icc a b = Icc (update f i a) (update f i b) := by
   ext x
   rw [← Set.pi_univ_Icc]
-  refine ⟨?_, fun h => ⟨x i, ?_, ?_⟩⟩
+  refine ⟨?_, fun h ↦ ⟨x i, ?_, ?_⟩⟩
   · rintro ⟨c, hc, rfl⟩
     simpa [update_le_update_iff]
   · simpa only [Function.update_same] using h i (mem_univ i)

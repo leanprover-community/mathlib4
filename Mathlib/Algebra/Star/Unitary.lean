@@ -63,7 +63,7 @@ theorem star_mem {U : R} (hU : U ∈ unitary R) : star U ∈ unitary R :=
 
 @[simp]
 theorem star_mem_iff {U : R} : star U ∈ unitary R ↔ U ∈ unitary R :=
-  ⟨fun h => star_star U ▸ star_mem h, star_mem⟩
+  ⟨fun h ↦ star_star U ▸ star_mem h, star_mem⟩
 
 instance : Star (unitary R) :=
   ⟨fun U => ⟨star U, star_mem U.prop⟩⟩
@@ -173,10 +173,10 @@ instance : CommGroup (unitary R) :=
   { inferInstanceAs (Group (unitary R)), Submonoid.toCommMonoid _ with }
 
 theorem mem_iff_star_mul_self {U : R} : U ∈ unitary R ↔ star U * U = 1 :=
-  mem_iff.trans <| and_iff_left_of_imp fun h => mul_comm (star U) U ▸ h
+  mem_iff.trans <| and_iff_left_of_imp fun h ↦ mul_comm (star U) U ▸ h
 
 theorem mem_iff_self_mul_star {U : R} : U ∈ unitary R ↔ U * star U = 1 :=
-  mem_iff.trans <| and_iff_right_of_imp fun h => mul_comm U (star U) ▸ h
+  mem_iff.trans <| and_iff_right_of_imp fun h ↦ mul_comm U (star U) ▸ h
 
 end CommMonoid
 

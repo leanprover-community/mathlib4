@@ -201,7 +201,7 @@ theorem exists_mem_factors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p
   have hb0 : b ≠ 0 := fun hb0 => by simp_all
   have : Multiset.Rel Associated (p ::ₘ factors b) (factors a) :=
     factors_unique
-      (fun _ hx => (Multiset.mem_cons.1 hx).elim (fun h => h.symm ▸ hp) (irreducible_of_factor _))
+      (fun _ hx => (Multiset.mem_cons.1 hx).elim (fun h ↦ h.symm ▸ hp) (irreducible_of_factor _))
       irreducible_of_factor
       (Associated.symm <|
         calc
@@ -353,7 +353,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
 theorem irreducible_iff_prime_of_exists_prime_factors {p : α} : Irreducible p ↔ Prime p := by
   by_cases hp0 : p = 0
   · simp [hp0]
-  refine ⟨fun h => ?_, Prime.irreducible⟩
+  refine ⟨fun h ↦ ?_, Prime.irreducible⟩
   obtain ⟨f, hf⟩ := pf p hp0
   obtain ⟨q, hq, rfl⟩ := prime_factors_irreducible h hf
   rw [hq.prime_iff]
@@ -368,7 +368,7 @@ end ExistsPrimeFactors
 theorem UniqueFactorizationMonoid.iff_exists_prime_factors [CancelCommMonoidWithZero α] :
     UniqueFactorizationMonoid α ↔
       ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a :=
-  ⟨fun h => @UniqueFactorizationMonoid.exists_prime_factors _ _ h,
+  ⟨fun h ↦ @UniqueFactorizationMonoid.exists_prime_factors _ _ h,
     UniqueFactorizationMonoid.of_exists_prime_factors⟩
 
 section

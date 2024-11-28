@@ -537,7 +537,7 @@ standard Borel space. -/
 theorem measurableSet_preimage_iff_of_surjective [CountablySeparated Z]
     {f : X → Z} (hf : Measurable f) (hsurj : Surjective f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
-  refine ⟨fun h => ?_, fun h => hf h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ hf h⟩
   rcases exists_opensMeasurableSpace_of_countablySeparated Z with ⟨τ, _, _, _⟩
   apply AnalyticSet.measurableSet_of_compl
   · rw [← image_preimage_eq s hsurj]

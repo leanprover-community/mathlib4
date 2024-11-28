@@ -112,7 +112,7 @@ theorem Nonempty.image2 : s.Nonempty → t.Nonempty → (image2 f s t).Nonempty 
 
 @[simp]
 theorem image2_nonempty_iff : (image2 f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
-  ⟨fun ⟨_, a, ha, b, hb, _⟩ => ⟨⟨a, ha⟩, b, hb⟩, fun h => h.1.image2 h.2⟩
+  ⟨fun ⟨_, a, ha, b, hb, _⟩ => ⟨⟨a, ha⟩, b, hb⟩, fun h ↦ h.1.image2 h.2⟩
 
 theorem Nonempty.of_image2_left (h : (Set.image2 f s t).Nonempty) : s.Nonempty :=
   (image2_nonempty_iff.1 h).1

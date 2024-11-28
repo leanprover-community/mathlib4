@@ -149,7 +149,7 @@ theorem apply_norm_eq_sqrt_inner_adjoint_right (A : E →L[𝕜] F) (x : E) :
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all `x` and `y`. -/
 theorem eq_adjoint_iff (A : E →L[𝕜] F) (B : F →L[𝕜] E) : A = B† ↔ ∀ x y, ⟪A x, y⟫ = ⟪x, B y⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => ?_⟩
+  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
   ext x
   exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
 
@@ -374,7 +374,7 @@ theorem adjoint_comp (A : F →ₗ[𝕜] G) (B : E →ₗ[𝕜] F) :
 for all `x` and `y`. -/
 theorem eq_adjoint_iff (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ x y, ⟪A x, y⟫ = ⟪x, B y⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => ?_⟩
+  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
   ext x
   exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
 
@@ -383,18 +383,18 @@ for all basis vectors `x` and `y`. -/
 theorem eq_adjoint_iff_basis {ι₁ : Type*} {ι₂ : Type*} (b₁ : Basis ι₁ 𝕜 E) (b₂ : Basis ι₂ 𝕜 F)
     (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ (i₁ : ι₁) (i₂ : ι₂), ⟪A (b₁ i₁), b₂ i₂⟫ = ⟪b₁ i₁, B (b₂ i₂)⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => ?_⟩
+  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
   refine Basis.ext b₁ fun i₁ => ?_
   exact ext_inner_right_basis b₂ fun i₂ => by simp only [adjoint_inner_left, h i₁ i₂]
 
 theorem eq_adjoint_iff_basis_left {ι : Type*} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i y, ⟪A (b i), y⟫ = ⟪b i, B y⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => Basis.ext b fun i => ?_⟩
+  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h ↦ Basis.ext b fun i => ?_⟩
   exact ext_inner_right 𝕜 fun y => by simp only [h i, adjoint_inner_left]
 
 theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i x, ⟪A x, b i⟫ = ⟪x, B (b i)⟫ := by
-  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => ?_⟩
+  refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
   ext x
   exact ext_inner_right_basis b fun i => by simp only [h i, adjoint_inner_left]
 

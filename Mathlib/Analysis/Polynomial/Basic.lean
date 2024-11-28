@@ -58,7 +58,7 @@ theorem tendsto_atTop_of_leadingCoeff_nonneg (hdeg : 0 < P.degree) (hnng : 0 ≤
 
 theorem tendsto_atTop_iff_leadingCoeff_nonneg :
     Tendsto (fun x => eval x P) atTop atTop ↔ 0 < P.degree ∧ 0 ≤ P.leadingCoeff := by
-  refine ⟨fun h => ?_, fun h => tendsto_atTop_of_leadingCoeff_nonneg P h.1 h.2⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ tendsto_atTop_of_leadingCoeff_nonneg P h.1 h.2⟩
   have : Tendsto (fun x => P.leadingCoeff * x ^ P.natDegree) atTop atTop :=
     (isEquivalent_atTop_lead P).tendsto_atTop h
   rw [tendsto_const_mul_pow_atTop_iff, ← pos_iff_ne_zero, natDegree_pos_iff_degree_pos] at this
@@ -81,19 +81,19 @@ theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
 
 theorem abs_isBoundedUnder_iff :
     (IsBoundedUnder (· ≤ ·) atTop fun x => |eval x P|) ↔ P.degree ≤ 0 := by
-  refine ⟨fun h => ?_, fun h => ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
     (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
     (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
   contrapose! h
   exact not_isBoundedUnder_of_tendsto_atTop (abs_tendsto_atTop P h)
 
 theorem abs_tendsto_atTop_iff : Tendsto (fun x => abs <| eval x P) atTop atTop ↔ 0 < P.degree :=
-  ⟨fun h => not_le.mp (mt (abs_isBoundedUnder_iff P).mpr (not_isBoundedUnder_of_tendsto_atTop h)),
+  ⟨fun h ↦ not_le.mp (mt (abs_isBoundedUnder_iff P).mpr (not_isBoundedUnder_of_tendsto_atTop h)),
     abs_tendsto_atTop P⟩
 
 theorem tendsto_nhds_iff {c : 𝕜} :
     Tendsto (fun x => eval x P) atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have := P.isEquivalent_atTop_lead.tendsto_nhds h
     by_cases hP : P.leadingCoeff = 0
     · simp only [hP, zero_mul, tendsto_const_nhds_iff] at this
@@ -133,7 +133,7 @@ theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
 
 theorem div_tendsto_zero_iff_degree_lt (hQ : Q ≠ 0) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 0) ↔ P.degree < Q.degree := by
-  refine ⟨fun h => ?_, div_tendsto_zero_of_degree_lt P Q⟩
+  refine ⟨fun h ↦ ?_, div_tendsto_zero_of_degree_lt P Q⟩
   by_cases hPQ : P.leadingCoeff / Q.leadingCoeff = 0
   · simp only [div_eq_mul_inv, inv_eq_zero, mul_eq_zero] at hPQ
     cases' hPQ with hP0 hQ0
@@ -156,7 +156,7 @@ theorem div_tendsto_leadingCoeff_div_of_degree_eq (hdeg : P.degree = Q.degree) :
 theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
     (hpos : 0 < P.leadingCoeff / Q.leadingCoeff) :
     Tendsto (fun x => eval x P / eval x Q) atTop atTop := by
-  have hQ : Q ≠ 0 := fun h => by
+  have hQ : Q ≠ 0 := fun h ↦ by
     simp only [h, div_zero, leadingCoeff_zero] at hpos
     exact hpos.false
   rw [← natDegree_lt_natDegree_iff hQ] at hdeg
@@ -170,14 +170,14 @@ theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 
     Tendsto (fun x => eval x P / eval x Q) atTop atTop :=
   have ratio_pos : 0 < P.leadingCoeff / Q.leadingCoeff :=
     lt_of_le_of_ne hnng
-      (div_ne_zero (fun h => ne_zero_of_degree_gt hdeg <| leadingCoeff_eq_zero.mp h) fun h =>
+      (div_ne_zero (fun h ↦ ne_zero_of_degree_gt hdeg <| leadingCoeff_eq_zero.mp h) fun h =>
           hQ <| leadingCoeff_eq_zero.mp h).symm
   div_tendsto_atTop_of_degree_gt' P Q hdeg ratio_pos
 
 theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
     (hneg : P.leadingCoeff / Q.leadingCoeff < 0) :
     Tendsto (fun x => eval x P / eval x Q) atTop atBot := by
-  have hQ : Q ≠ 0 := fun h => by
+  have hQ : Q ≠ 0 := fun h ↦ by
     simp only [h, div_zero, leadingCoeff_zero] at hneg
     exact hneg.false
   rw [← natDegree_lt_natDegree_iff hQ] at hdeg
@@ -191,7 +191,7 @@ theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 
     Tendsto (fun x => eval x P / eval x Q) atTop atBot :=
   have ratio_neg : P.leadingCoeff / Q.leadingCoeff < 0 :=
     lt_of_le_of_ne hnps
-      (div_ne_zero (fun h => ne_zero_of_degree_gt hdeg <| leadingCoeff_eq_zero.mp h) fun h =>
+      (div_ne_zero (fun h ↦ ne_zero_of_degree_gt hdeg <| leadingCoeff_eq_zero.mp h) fun h =>
         hQ <| leadingCoeff_eq_zero.mp h)
   div_tendsto_atBot_of_degree_gt' P Q hdeg ratio_neg
 

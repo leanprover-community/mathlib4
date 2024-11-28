@@ -108,7 +108,7 @@ theorem Sphere.ne_iff {s₁ s₂ : Sphere P} :
 
 theorem Sphere.center_eq_iff_eq_of_mem {s₁ s₂ : Sphere P} {p : P} (hs₁ : p ∈ s₁) (hs₂ : p ∈ s₂) :
     s₁.center = s₂.center ↔ s₁ = s₂ := by
-  refine ⟨fun h => Sphere.ext h ?_, fun h => h ▸ rfl⟩
+  refine ⟨fun h ↦ Sphere.ext h ?_, fun h ↦ h ▸ rfl⟩
   rw [mem_sphere] at hs₁ hs₂
   rw [← hs₁, ← hs₂, h]
 
@@ -138,7 +138,7 @@ theorem cospherical_def (ps : Set P) :
 /-- A set of points is cospherical if and only if they lie in some sphere. -/
 theorem cospherical_iff_exists_sphere {ps : Set P} :
     Cospherical ps ↔ ∃ s : Sphere P, ps ⊆ (s : Set P) := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨c, r, h⟩
     exact ⟨⟨c, r⟩, h⟩
   · rcases h with ⟨s, h⟩

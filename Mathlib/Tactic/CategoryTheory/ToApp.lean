@@ -89,7 +89,7 @@ Given morphisms `f g : C ⟶ D` in the bicategory `Cat`, and an equation `η = �
 (possibly after a `∀` binder), produce the equation `∀ (X : C), f.app X = g.app X`, and simplify
 it using basic lemmas about `NatTrans.app`. -/
 def toAppExpr (e : Expr) : MetaM Expr := do
-  mapForallTelescope (fun e => do simpType catAppSimp (← mkAppM ``NatTrans.congr_app #[e])) e
+  mapForallTelescope (fun e ↦ do simpType catAppSimp (← mkAppM ``NatTrans.congr_app #[e])) e
 
 /--
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms

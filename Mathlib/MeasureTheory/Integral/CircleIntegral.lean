@@ -241,7 +241,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
       deriv (circleMap c R) θ • f (circleMap c R θ)) volume 0 (2 * π) := by
   by_cases h₀ : R = 0
   · simp (config := { unfoldPartialApp := true }) [h₀, const]
-  refine ⟨fun h => h.out, fun h => ?_⟩
+  refine ⟨fun h ↦ h.out, fun h ↦ ?_⟩
   simp only [CircleIntegrable, intervalIntegrable_iff, deriv_circleMap] at h ⊢
   refine (h.norm.const_mul |R|⁻¹).mono' ?_ ?_
   · have H : ∀ {θ}, circleMap 0 R θ * I ≠ 0 := fun {θ} => by simp [h₀, I_ne_zero]

@@ -72,7 +72,7 @@ theorem sublists'_cons (a : α) (l : List α) :
 theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
   induction' t with a t IH generalizing s
   · simp only [sublists'_nil, mem_singleton]
-    exact ⟨fun h => by rw [h], eq_nil_of_sublist_nil⟩
+    exact ⟨fun h ↦ by rw [h], eq_nil_of_sublist_nil⟩
   simp only [sublists'_cons, mem_append, IH, mem_map]
   constructor <;> intro h
   · rcases h with (h | ⟨s, h, rfl⟩)
@@ -324,7 +324,7 @@ theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
 
 @[simp]
 theorem nodup_sublists {l : List α} : Nodup (sublists l) ↔ Nodup l :=
-  ⟨fun h => (h.sublist (map_pure_sublist_sublists _)).of_map _, fun h =>
+  ⟨fun h ↦ (h.sublist (map_pure_sublist_sublists _)).of_map _, fun h =>
     (pairwise_sublists h).imp @fun l₁ l₂ h => by simpa using h.to_ne⟩
 
 @[simp]
@@ -337,7 +337,7 @@ protected alias ⟨Nodup.of_sublists', _⟩ := nodup_sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
   have : Pairwise (· ≠ ·) l.sublists' := Pairwise.imp
-    (fun h => Lex.to_ne (by convert h using 3; simp [swap, eq_comm])) h.sublists'
+    (fun h ↦ Lex.to_ne (by convert h using 3; simp [swap, eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 
 theorem sublists_map (f : α → β) : ∀ (l : List α),

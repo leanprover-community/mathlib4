@@ -130,7 +130,7 @@ protected def id (r : α → α → Prop) : r →r r :=
 /-- Composition of two relation homomorphisms is a relation homomorphism. -/
 @[simps]
 protected def comp (g : s →r t) (f : r →r s) : r →r t :=
-  ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
+  ⟨fun x => g (f x), fun h ↦ g.2 (f.2 h)⟩
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
 protected def swap (f : r →r s) : swap r →r swap s :=
@@ -167,7 +167,7 @@ theorem Function.Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     WellFounded r ↔ WellFounded s :=
   Iff.intro
     (RelHomClass.wellFounded (⟨surjInv hf,
-      fun h => by simpa only [o, surjInv_eq hf] using h⟩ : s →r r))
+      fun h ↦ by simpa only [o, surjInv_eq hf] using h⟩ : s →r r))
     (RelHomClass.wellFounded (⟨f, o.1⟩ : r →r s))
 
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
@@ -187,7 +187,7 @@ def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
 
 theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (hs : Equivalence s) :
     Equivalence (f ⁻¹'o s) :=
-  ⟨fun _ => hs.1 _, fun h => hs.2 h, fun h₁ h₂ => hs.3 h₁ h₂⟩
+  ⟨fun _ => hs.1 _, fun h ↦ hs.2 h, fun h₁ h₂ => hs.3 h₁ h₂⟩
 
 namespace RelEmbedding
 
@@ -433,11 +433,11 @@ theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
 def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
   haveI := @IsAsymm.isIrrefl β s _
-  refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
+  refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h ↦ ?_, H _ _⟩⟩
   · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_
-    · exact fun h => irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
-    · exact fun h => irrefl (r := s) (f b) (by simpa [e] using H _ _ h)
-  · refine (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => ?_) fun h' => ?_)
+    · exact fun h ↦ irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
+    · exact fun h ↦ irrefl (r := s) (f b) (by simpa [e] using H _ _ h)
+  · refine (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e ↦ ?_) fun h' => ?_)
     · subst e
       exact irrefl _ h
     · exact asymm (H _ _ h') h

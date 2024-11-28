@@ -121,7 +121,7 @@ include hs
 
 @[to_additive]
 theorem inv_mem_iff : a⁻¹ ∈ s ↔ a ∈ s :=
-  ⟨fun h => by simpa using hs.inv_mem h, inv_mem hs⟩
+  ⟨fun h ↦ by simpa using hs.inv_mem h, inv_mem hs⟩
 
 @[to_additive]
 theorem mul_mem_cancel_right (h : a ∈ s) : b * a ∈ s ↔ b ∈ s :=
@@ -162,7 +162,7 @@ theorem Additive.isNormalAddSubgroup [Group G] {s : Set G} (hs : IsNormalSubgrou
 theorem Additive.isNormalAddSubgroup_iff [Group G] {s : Set G} :
     @IsNormalAddSubgroup (Additive G) _ s ↔ IsNormalSubgroup s :=
   ⟨by rintro ⟨h₁, h₂⟩; exact @IsNormalSubgroup.mk G _ _ (Additive.isAddSubgroup_iff.1 h₁) @h₂,
-    fun h => Additive.isNormalAddSubgroup h⟩
+    fun h ↦ Additive.isNormalAddSubgroup h⟩
 
 theorem Multiplicative.isNormalSubgroup [AddGroup A] {s : Set A} (hs : IsNormalAddSubgroup s) :
     @IsNormalSubgroup (Multiplicative A) _ s :=
@@ -174,7 +174,7 @@ theorem Multiplicative.isNormalSubgroup_iff [AddGroup A] {s : Set A} :
   ⟨by
     rintro ⟨h₁, h₂⟩
     exact @IsNormalAddSubgroup.mk A _ _ (Multiplicative.isSubgroup_iff.1 h₁) @h₂,
-    fun h => Multiplicative.isNormalSubgroup h⟩
+    fun h ↦ Multiplicative.isNormalSubgroup h⟩
 
 namespace IsSubgroup
 

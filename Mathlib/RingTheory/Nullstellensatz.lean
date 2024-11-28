@@ -92,7 +92,7 @@ theorem zeroLocus_span (S : Set (MvPolynomial σ k)) :
 
 theorem mem_vanishingIdeal_singleton_iff (x : σ → k) (p : MvPolynomial σ k) :
     p ∈ (vanishingIdeal {x} : Ideal (MvPolynomial σ k)) ↔ eval x p = 0 :=
-  ⟨fun h => h x rfl, fun hpx _ hy => hy.symm ▸ hpx⟩
+  ⟨fun h ↦ h x rfl, fun hpx _ hy => hy.symm ▸ hpx⟩
 
 instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
     (vanishingIdeal {x} : Ideal (MvPolynomial σ k)).IsMaximal := by

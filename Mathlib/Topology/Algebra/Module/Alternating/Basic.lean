@@ -64,7 +64,7 @@ theorem range_toContinuousMultilinearMap :
         (toContinuousMultilinearMap :
           M [⋀^ι]→L[R] N → ContinuousMultilinearMap R (fun _ : ι => M) N) =
       {f | ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → f v = 0} :=
-  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h => ⟨⟨f, h⟩, rfl⟩⟩
+  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h ↦ ⟨⟨f, h⟩, rfl⟩⟩
 
 instance funLike : FunLike (M [⋀^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
@@ -102,7 +102,7 @@ theorem toAlternatingMap_injective :
 theorem range_toAlternatingMap :
     Set.range (toAlternatingMap : M [⋀^ι]→L[R] N → (M [⋀^ι]→ₗ[R] N)) =
       {f : M [⋀^ι]→ₗ[R] N | Continuous f} :=
-  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, DFunLike.ext' rfl⟩⟩
+  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h ↦ ⟨{ f with cont := h }, DFunLike.ext' rfl⟩⟩
 
 @[simp]
 theorem map_update_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :

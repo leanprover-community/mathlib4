@@ -122,7 +122,7 @@ end IsOrdinal
 the standard one. -/
 theorem isOrdinal_iff_isTrans :
     x.IsOrdinal ↔ x.IsTransitive ∧ IsTrans x.toSet (Subrel (· ∈ ·) _) := by
-  use fun h => ⟨h.isTransitive, h.isTrans⟩
+  use fun h ↦ ⟨h.isTransitive, h.isTrans⟩
   rintro ⟨h₁, ⟨h₂⟩⟩
   use h₁
   intro y z w hyz hzw hwx

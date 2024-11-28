@@ -91,7 +91,7 @@ instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := 
 
 theorem affine_isReduced_iff (R : CommRingCat) :
     IsReduced (Spec R) ↔ _root_.IsReduced R := by
-  refine ⟨?_, fun h => inferInstance⟩
+  refine ⟨?_, fun h ↦ inferInstance⟩
   intro h
   exact isReduced_of_injective (Scheme.ΓSpecIso R).inv
     (Scheme.ΓSpecIso R).symm.commRingCatIsoToRingEquiv.injective

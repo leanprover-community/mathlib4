@@ -107,7 +107,7 @@ def initList (tm : FinTM2) (s : List (tm.Γ tm.k₀)) : tm.Cfg where
   l := Option.some tm.main
   var := tm.initialState
   stk k :=
-    @dite (List (tm.Γ k)) (k = tm.k₀) (tm.kDecidableEq k tm.k₀) (fun h => by rw [h]; exact s)
+    @dite (List (tm.Γ k)) (k = tm.k₀) (tm.kDecidableEq k tm.k₀) (fun h ↦ by rw [h]; exact s)
       fun _ => []
 
 /-- The final configuration corresponding to a list in the output alphabet. -/
@@ -115,7 +115,7 @@ def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
   l := Option.none
   var := tm.initialState
   stk k :=
-    @dite (List (tm.Γ k)) (k = tm.k₁) (tm.kDecidableEq k tm.k₁) (fun h => by rw [h]; exact s)
+    @dite (List (tm.Γ k)) (k = tm.k₁) (tm.kDecidableEq k tm.k₁) (fun h ↦ by rw [h]; exact s)
       fun _ => []
 
 /-- A "proof" of the fact that `f` eventually reaches `b` when repeatedly evaluated on `a`,

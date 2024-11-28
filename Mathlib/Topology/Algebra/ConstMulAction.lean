@@ -106,11 +106,11 @@ theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => 
 action is."]
 instance ContinuousConstSMul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
     ContinuousConstSMul Mᵐᵒᵖ α :=
-  ⟨MulOpposite.rec' fun c => by simpa only [op_smul_eq_smul] using continuous_const_smul c⟩
+  ⟨MulOpposite.rec' fun c ↦ by simpa only [op_smul_eq_smul] using continuous_const_smul c⟩
 
 @[to_additive]
 instance MulOpposite.continuousConstSMul : ContinuousConstSMul M αᵐᵒᵖ :=
-  ⟨fun c => MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.const_smul c⟩
+  ⟨fun c ↦ MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.const_smul c⟩
 
 @[to_additive]
 instance : ContinuousConstSMul M αᵒᵈ := ‹ContinuousConstSMul M α›
@@ -177,7 +177,7 @@ theorem isClosed_setOf_map_smul {N : Type*} [Monoid N] (α β) [MulAction M α] 
     [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
     IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
   simp only [Set.setOf_forall]
-  exact isClosed_iInter fun c => isClosed_iInter fun x =>
+  exact isClosed_iInter fun c ↦ isClosed_iInter fun x =>
     isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
 
 end Monoid
@@ -189,7 +189,7 @@ variable {G : Type*} [TopologicalSpace α] [Group G] [MulAction G α] [Continuou
 @[to_additive]
 theorem tendsto_const_smul_iff {f : β → α} {l : Filter β} {a : α} (c : G) :
     Tendsto (fun x => c • f x) l (𝓝 <| c • a) ↔ Tendsto f l (𝓝 a) :=
-  ⟨fun h => by simpa only [inv_smul_smul] using h.const_smul c⁻¹, fun h => h.const_smul _⟩
+  ⟨fun h ↦ by simpa only [inv_smul_smul] using h.const_smul c⁻¹, fun h ↦ h.const_smul _⟩
 
 variable [TopologicalSpace β] {f : β → α} {b : β} {s : Set β}
 
@@ -492,7 +492,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   refine ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 ?_⟩
   rintro x ⟨x_in_U₀₀, x_in_K₀⟩ γ
   by_cases H : γ ∈ bad_Γ_set
-  · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
+  · exact fun h ↦ (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
     simp only [bad_Γ_set, image_smul, Classical.not_not, mem_setOf_eq, Ne] at H
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩

@@ -177,7 +177,7 @@ theorem gelfandTransform_bijective : Function.Bijective (gelfandTransform ℂ A)
   /- Separating points just means that elements of the `characterSpace` which agree at all points
     of `A` are the same functional, which is just extensionality. -/
   contrapose!
-  exact fun h => Subtype.ext (ContinuousLinearMap.ext fun a =>
+  exact fun h ↦ Subtype.ext (ContinuousLinearMap.ext fun a =>
     h (gelfandTransform ℂ A a) ⟨gelfandTransform ℂ A a, ⟨a, rfl⟩, rfl⟩)
 
 /-- The Gelfand transform as a `StarAlgEquiv` between a commutative unital C⋆-algebra over `ℂ`

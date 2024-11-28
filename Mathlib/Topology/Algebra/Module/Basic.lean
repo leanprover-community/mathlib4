@@ -1485,7 +1485,7 @@ variable {R S T M M₂ : Type*} [Semiring R] [Semiring S] [Semiring T] [Module R
   [SMulCommClass S T M₂]
 
 /-- Given `c : E →L[R] S`, `c.smulRightₗ` is the linear map from `F` to `E →L[R] F`
-sending `f` to `fun e => c e • f`. See also `ContinuousLinearMap.smulRightL`. -/
+sending `f` to `fun e ↦ c e • f`. See also `ContinuousLinearMap.smulRightL`. -/
 def smulRightₗ (c : M →L[R] S) : M₂ →ₗ[T] M →L[R] M₂ where
   toFun := c.smulRight
   map_add' x y := by

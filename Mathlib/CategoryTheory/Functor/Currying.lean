@@ -91,7 +91,7 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
 @[simps!]
 def flipIsoCurrySwapUncurry (F : C ⥤ D ⥤ E) : F.flip ≅ curry.obj (Prod.swap _ _ ⋙ uncurry.obj F) :=
-  NatIso.ofComponents fun d => NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents fun d ↦ NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The uncurrying of `F.flip` is isomorphic to
 swapping the factors followed by the uncurrying of `F`. -/

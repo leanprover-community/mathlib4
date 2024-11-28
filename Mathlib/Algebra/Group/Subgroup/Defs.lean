@@ -88,7 +88,7 @@ attribute [aesop safe apply (rule_sets := [SetLike])] inv_mem neg_mem
 @[to_additive (attr := simp)]
 theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] {H : S}
     {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
-  ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
+  ⟨fun h ↦ inv_inv x ▸ inv_mem h, inv_mem⟩
 
 variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 

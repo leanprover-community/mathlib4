@@ -307,7 +307,7 @@ theorem comap_top (f : M →ₙ* N) : (⊤ : Subsemigroup N).comap f = ⊤ :=
 
 @[to_additive (attr := simp)]
 theorem map_id (S : Subsemigroup M) : S.map (MulHom.id M) = S :=
-  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
+  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h ↦ ⟨_, h, rfl⟩⟩
 
 section GaloisCoinsertion
 

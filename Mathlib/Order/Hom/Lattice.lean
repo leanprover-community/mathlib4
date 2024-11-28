@@ -207,7 +207,7 @@ instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [Semi
     [OrderIsoClass F α β] : SupHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_sup := fun f a b =>
-      eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff] }
+      eq_of_forall_ge_iff fun c ↦ by simp only [← le_map_inv_iff, sup_le_iff] }
 
 
 -- See note [lower instance priority]
@@ -215,7 +215,7 @@ instance (priority := 100) OrderIsoClass.toInfHomClass [SemilatticeInf α] [Semi
     [OrderIsoClass F α β] : InfHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_inf := fun f a b =>
-      eq_of_forall_le_iff fun c => by simp only [← map_inv_le_iff, le_inf_iff] }
+      eq_of_forall_le_iff fun c ↦ by simp only [← map_inv_le_iff, le_inf_iff] }
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toSupBotHomClass [SemilatticeSup α] [OrderBot α]
@@ -401,12 +401,12 @@ theorem comp_assoc (f : SupHom γ δ) (g : SupHom β γ) (h : SupHom α β) :
 @[simp]
 theorem cancel_right {g₁ g₂ : SupHom β γ} {f : SupHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => SupHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h ↦ SupHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h ↦ congr_arg₂ _ h rfl⟩
 
 @[simp]
 theorem cancel_left {g : SupHom β γ} {f₁ f₂ : SupHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => SupHom.ext fun a ↦ hg <| by rw [← SupHom.comp_apply, h, SupHom.comp_apply],
+  ⟨fun h ↦ SupHom.ext fun a ↦ hg <| by rw [← SupHom.comp_apply, h, SupHom.comp_apply],
     congr_arg _⟩
 
 end Sup
@@ -577,12 +577,12 @@ theorem comp_assoc (f : InfHom γ δ) (g : InfHom β γ) (h : InfHom α β) :
 @[simp]
 theorem cancel_right {g₁ g₂ : InfHom β γ} {f : InfHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => InfHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h ↦ InfHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h ↦ congr_arg₂ _ h rfl⟩
 
 @[simp]
 theorem cancel_left {g : InfHom β γ} {f₁ f₂ : InfHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => InfHom.ext fun a ↦ hg <| by rw [← InfHom.comp_apply, h, InfHom.comp_apply],
+  ⟨fun h ↦ InfHom.ext fun a ↦ hg <| by rw [← InfHom.comp_apply, h, InfHom.comp_apply],
     congr_arg _⟩
 
 end Inf
@@ -761,12 +761,12 @@ theorem comp_assoc (f : SupBotHom γ δ) (g : SupBotHom β γ) (h : SupBotHom α
 @[simp]
 theorem cancel_right {g₁ g₂ : SupBotHom β γ} {f : SupBotHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h ↦ congr_arg₂ _ h rfl⟩
 
 @[simp]
 theorem cancel_left {g : SupBotHom β γ} {f₁ f₂ : SupBotHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => SupBotHom.ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ SupBotHom.ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end Sup
 
@@ -912,12 +912,12 @@ theorem comp_assoc (f : InfTopHom γ δ) (g : InfTopHom β γ) (h : InfTopHom α
 @[simp]
 theorem cancel_right {g₁ g₂ : InfTopHom β γ} {f : InfTopHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h ↦ ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h ↦ congr_arg₂ _ h rfl⟩
 
 @[simp]
 theorem cancel_left {g : InfTopHom β γ} {f₁ f₂ : InfTopHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => InfTopHom.ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ InfTopHom.ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end Inf
 
@@ -1081,12 +1081,12 @@ theorem id_comp (f : LatticeHom α β) : (LatticeHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {g₁ g₂ : LatticeHom β γ} {f : LatticeHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => LatticeHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h ↦ LatticeHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h ↦ congr_arg₂ _ h rfl⟩
 
 @[simp]
 theorem cancel_left {g : LatticeHom β γ} {f₁ f₂ : LatticeHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => LatticeHom.ext fun a ↦ hg <| by rw [← LatticeHom.comp_apply, h, LatticeHom.comp_apply],
+  ⟨fun h ↦ LatticeHom.ext fun a ↦ hg <| by rw [← LatticeHom.comp_apply, h, LatticeHom.comp_apply],
     congr_arg _⟩
 
 /-- `Subtype.val` as a `LatticeHom`. -/
@@ -1271,13 +1271,13 @@ theorem comp_assoc (f : BoundedLatticeHom γ δ) (g : BoundedLatticeHom β γ)
 @[simp]
 theorem cancel_right {g₁ g₂ : BoundedLatticeHom β γ} {f : BoundedLatticeHom α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => BoundedLatticeHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
-    fun h => congr_arg₂ _ h rfl⟩
+  ⟨fun h ↦ BoundedLatticeHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
+    fun h ↦ congr_arg₂ _ h rfl⟩
 
 @[simp]
 theorem cancel_left {g : BoundedLatticeHom β γ} {f₁ f₂ : BoundedLatticeHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 /-- `Subtype.val` as a `BoundedLatticeHom`. -/
 def subtypeVal {P : β → Prop} (Pbot : P ⊥) (Ptop : P ⊤)

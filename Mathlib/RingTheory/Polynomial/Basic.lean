@@ -856,7 +856,7 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
 
 theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
   ⟨comap_prime C constantCoeff (constantCoeff_C _), fun hr =>
-    ⟨fun h => hr.1 <| by
+    ⟨fun h ↦ hr.1 <| by
         rw [← C_inj, h]
         simp,
       fun h =>
@@ -915,7 +915,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
       let ⟨N, HN⟩ := hm
       let ⟨s, hs⟩ := I.is_fg_degreeLE N
       have hm2 : ∀ k, I.leadingCoeffNth k ≤ M := fun k =>
-        Or.casesOn (le_or_lt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
+        Or.casesOn (le_or_lt k N) (fun h ↦ HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
           Classical.by_contradiction fun hxm =>
             haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by

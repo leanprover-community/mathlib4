@@ -89,7 +89,7 @@ theorem map_zero : e 0 = 0 := by
 
 @[simp]
 theorem eq_zero_iff {x : V} : e x = 0 ↔ x = 0 :=
-  ⟨e.eq_zero' x, fun h => h.symm ▸ e.map_zero⟩
+  ⟨e.eq_zero' x, fun h ↦ h.symm ▸ e.map_zero⟩
 
 @[simp]
 theorem map_neg (x : V) : e (-x) = e x :=

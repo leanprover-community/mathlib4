@@ -348,7 +348,7 @@ theorem mdifferentiableWithinAt_prod_iff (f : M → M' × N') :
     MDifferentiableWithinAt I (I'.prod J') f s x ↔
       MDifferentiableWithinAt I I' (Prod.fst ∘ f) s x
       ∧ MDifferentiableWithinAt I J' (Prod.snd ∘ f) s x :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prod_mk h.2⟩
 
 theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂) f s x ↔
@@ -386,7 +386,7 @@ theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :
 theorem mdifferentiable_prod_iff (f : M → M' × N') :
     MDifferentiable I (I'.prod J') f ↔
       MDifferentiable I I' (Prod.fst ∘ f) ∧ MDifferentiable I J' (Prod.snd ∘ f) :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prod_mk h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ by convert h.1.prod_mk h.2⟩
 
 theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔

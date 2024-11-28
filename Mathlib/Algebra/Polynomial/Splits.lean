@@ -162,15 +162,15 @@ theorem Splits.comp_of_map_degree_le_one {f : K[X]} {p : K[X]} (hd : (p.map i).d
       have := h (irr.map (algEquivCMulXAddC _ _).symm) dvd
       rw [degree_eq_natDegree irr.ne_zero]
       rwa [algEquivCMulXAddC_symm_apply, ← comp_eq_aeval,
-        degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
+        degree_eq_natDegree (fun h ↦ WithBot.bot_ne_one (h ▸ this)),
         natDegree_comp, natDegree_C_mul (invertibleInvOf.ne_zero),
         natDegree_X_sub_C, mul_one] at this
 
 theorem splits_iff_comp_splits_of_degree_eq_one {f : K[X]} {p : K[X]} (hd : (p.map i).degree = 1) :
     f.Splits i ↔ (f.comp p).Splits i := by
   rw [← splits_id_iff_splits, ← splits_id_iff_splits (f := f.comp p), map_comp]
-  refine ⟨fun h => Splits.comp_of_map_degree_le_one
-    (le_of_eq (map_id (R := L) ▸ hd)) h, fun h => ?_⟩
+  refine ⟨fun h ↦ Splits.comp_of_map_degree_le_one
+    (le_of_eq (map_id (R := L) ▸ hd)) h, fun h ↦ ?_⟩
   let _ := invertibleOfNonzero (leadingCoeff_ne_zero.mpr
       (ne_zero_of_degree_gt (n := ⊥) (by rw [hd]; decide)))
   have : (map i f) = ((map i f).comp (map i p)).comp ((C ⅟ (map i p).leadingCoeff *
@@ -218,8 +218,8 @@ theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map
 
 theorem roots_ne_zero_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : natDegree (f.map i) ≠ 0) :
     (f.map i).roots ≠ 0 :=
-  let ⟨x, hx⟩ := exists_root_of_splits' i hs fun h => hf0 <| natDegree_eq_of_degree_eq_some h
-  fun h => by
+  let ⟨x, hx⟩ := exists_root_of_splits' i hs fun h ↦ hf0 <| natDegree_eq_of_degree_eq_some h
+  fun h ↦ by
   rw [← eval_map] at hx
   have : f.map i ≠ 0 := by intro; simp_all
   cases h.subst ((mem_roots this).2 hx)
@@ -240,7 +240,7 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   obtain ⟨q, he, hd, hr⟩ := exists_prod_multiset_X_sub_C_mul (p.map i)
   rw [← splits_id_iff_splits, ← he] at hsplit
   rw [← he] at hp
-  have hq : q ≠ 0 := fun h => hp (by rw [h, mul_zero])
+  have hq : q ≠ 0 := fun h ↦ hp (by rw [h, mul_zero])
   rw [← hd, add_right_eq_self]
   by_contra h
   have h' : (map (RingHom.id L) q).natDegree ≠ 0 := by simp [h]

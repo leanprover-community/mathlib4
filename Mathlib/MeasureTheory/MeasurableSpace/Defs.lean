@@ -258,7 +258,7 @@ theorem measurableSet_insert {a : α} {s : Set α} :
   exact ⟨fun h =>
     if ha : a ∈ s then by rwa [← insert_eq_of_mem ha]
     else insert_diff_self_of_not_mem ha ▸ h.diff (.singleton _),
-    fun h => h.insert a⟩
+    fun h ↦ h.insert a⟩
 
 theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : MeasurableSet s :=
   hs.induction_on .empty .singleton
@@ -343,7 +343,7 @@ theorem generateFrom_le {s : Set (Set α)} {m : MeasurableSpace α}
 
 theorem generateFrom_le_iff {s : Set (Set α)} (m : MeasurableSpace α) :
     generateFrom s ≤ m ↔ s ⊆ { t | MeasurableSet[m] t } :=
-  Iff.intro (fun h _ hu => h _ <| measurableSet_generateFrom hu) fun h => generateFrom_le h
+  Iff.intro (fun h _ hu => h _ <| measurableSet_generateFrom hu) fun h ↦ generateFrom_le h
 
 @[simp]
 theorem generateFrom_measurableSet [MeasurableSpace α] :

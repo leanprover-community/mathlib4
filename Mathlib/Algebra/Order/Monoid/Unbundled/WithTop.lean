@@ -203,11 +203,11 @@ protected theorem add_lt_add_right [LT α] [AddRightStrictMono α] (ha : a ≠ �
 
 protected theorem add_le_add_iff_left [LE α] [AddLeftMono α]
     [AddLeftReflectLE α] (ha : a ≠ ⊤) : a + b ≤ a + c ↔ b ≤ c :=
-  ⟨WithTop.le_of_add_le_add_left ha, fun h => add_le_add_left h a⟩
+  ⟨WithTop.le_of_add_le_add_left ha, fun h ↦ add_le_add_left h a⟩
 
 protected theorem add_le_add_iff_right [LE α] [AddRightMono α]
     [AddRightReflectLE α] (ha : a ≠ ⊤) : b + a ≤ c + a ↔ b ≤ c :=
-  ⟨WithTop.le_of_add_le_add_right ha, fun h => add_le_add_right h a⟩
+  ⟨WithTop.le_of_add_le_add_right ha, fun h ↦ add_le_add_right h a⟩
 
 protected theorem add_lt_add_iff_left [LT α] [AddLeftStrictMono α]
     [AddLeftReflectLT α] (ha : a ≠ ⊤) : a + b < a + c ↔ b < c :=
@@ -352,10 +352,10 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
     match a, b with
     | ⊤, ⊤ => by simp
     | (a : α), ⊤ => fun _ => ⟨⊤, rfl⟩
-    | (a : α), (b : α) => fun h => by
+    | (a : α), (b : α) => fun h ↦ by
       obtain ⟨c, rfl⟩ := exists_add_of_le (WithTop.coe_le_coe.1 h)
       exact ⟨c, rfl⟩
-    | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
+    | ⊤, (b : α) => fun h ↦ (not_top_le_coe _ h).elim⟩
 
 -- instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
 --     CanonicallyOrderedAddCommMonoid (WithTop α) :=
@@ -627,11 +627,11 @@ protected theorem add_lt_add_right [AddRightStrictMono α] (ha : a ≠ ⊥)
 
 protected theorem add_le_add_iff_left [AddLeftMono α]
     [AddLeftReflectLE α] (ha : a ≠ ⊥) : a + b ≤ a + c ↔ b ≤ c :=
-  ⟨WithBot.le_of_add_le_add_left ha, fun h => add_le_add_left h a⟩
+  ⟨WithBot.le_of_add_le_add_left ha, fun h ↦ add_le_add_left h a⟩
 
 protected theorem add_le_add_iff_right [AddRightMono α]
     [AddRightReflectLE α] (ha : a ≠ ⊥) : b + a ≤ c + a ↔ b ≤ c :=
-  ⟨WithBot.le_of_add_le_add_right ha, fun h => add_le_add_right h a⟩
+  ⟨WithBot.le_of_add_le_add_right ha, fun h ↦ add_le_add_right h a⟩
 
 protected theorem add_lt_add_iff_left [AddLeftStrictMono α]
     [AddLeftReflectLT α] (ha : a ≠ ⊥) : a + b < a + c ↔ b < c :=

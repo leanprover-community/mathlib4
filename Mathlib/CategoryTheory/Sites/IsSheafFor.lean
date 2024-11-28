@@ -243,7 +243,7 @@ equal when restricted to `R`.
 -/
 theorem restrict_inj {x₁ x₂ : FamilyOfElements P (generate R).arrows} (t₁ : x₁.Compatible)
     (t₂ : x₂.Compatible) : x₁.restrict (le_generate R) = x₂.restrict (le_generate R) → x₁ = x₂ :=
-  fun h => by
+  fun h ↦ by
   rw [← extend_restrict t₁, ← extend_restrict t₂]
   -- Porting note: congr fails to make progress
   apply congr_arg

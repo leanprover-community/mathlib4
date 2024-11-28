@@ -815,7 +815,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
           refine nhdsWithin_eq_nhdsWithin' (s := Ioi a) (Ioi_mem_nhds hz''.1) ?_
           simp only [Ioc_inter_Ioi, le_refl, sup_of_le_left]
           ext y
-          exact ⟨fun h => ⟨mem_Icc_of_Ioc h, mem_of_mem_inter_left h⟩, fun ⟨H1, H2⟩ => ⟨H2, H1.2⟩⟩
+          exact ⟨fun h ↦ ⟨mem_Icc_of_Ioc h, mem_of_mem_inter_left h⟩, fun ⟨H1, H2⟩ => ⟨H2, H1.2⟩⟩
         rw [← hfinal]
         exact self_mem_nhdsWithin
       have hcont : ContinuousOn f (Icc a b) := by

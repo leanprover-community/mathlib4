@@ -395,7 +395,7 @@ partial def _root_.Lean.MVarId.gcongr
         let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names
         -- B. If there is a template, look up the part of the template corresponding to the `j`-th
         -- input to the head function
-        let tpl ← tplArgs[j]!.1.mapM fun e => do
+        let tpl ← tplArgs[j]!.1.mapM fun e ↦ do
           let (_vs, _, e) ← lambdaMetaTelescope e
           pure e
         -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
@@ -474,7 +474,7 @@ elab "gcongr" template:(colGt term)?
   let .app (.app _rel lhs) _rhs ← withReducible g.getType'
     | throwError "gcongr failed, not a relation"
   -- Elaborate the template (e.g. `x * ?_ + _`), if the user gave one
-  let template ← template.mapM fun e => do
+  let template ← template.mapM fun e ↦ do
     Term.elabTerm e (← inferType lhs)
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList

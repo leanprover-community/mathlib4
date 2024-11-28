@@ -61,7 +61,7 @@ protected theorem equicontinuousAt_iff_pair {ι : Type*} [TopologicalSpace β] {
     exact H _ (dist_mem_uniformity hε)
   · intro U hU
     rcases mem_uniformity_dist.mp hU with ⟨ε, hε, hεU⟩
-    refine Exists.imp (fun V => And.imp_right fun h => ?_) (H _ hε)
+    refine Exists.imp (fun V => And.imp_right fun h ↦ ?_) (H _ hε)
     exact fun x hx x' hx' i => hεU (h _ hx _ hx' i)
 
 /-- Characterization of uniform equicontinuity for families of functions taking values in a

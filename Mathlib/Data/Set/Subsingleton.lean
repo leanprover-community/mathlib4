@@ -51,7 +51,7 @@ theorem subsingleton_of_forall_eq (a : α) (h : ∀ b ∈ s, b = a) : s.Subsingl
   (h _ hb).trans (h _ hc).symm
 
 theorem subsingleton_iff_singleton {x} (hx : x ∈ s) : s.Subsingleton ↔ s = {x} :=
-  ⟨fun h => h.eq_singleton_of_mem hx, fun h => h.symm ▸ subsingleton_singleton⟩
+  ⟨fun h ↦ h.eq_singleton_of_mem hx, fun h ↦ h.symm ▸ subsingleton_singleton⟩
 
 theorem Subsingleton.eq_empty_or_singleton (hs : s.Subsingleton) : s = ∅ ∨ ∃ x, s = {x} :=
   s.eq_empty_or_nonempty.elim Or.inl fun ⟨x, hx⟩ => Or.inr ⟨x, hs.eq_singleton_of_mem hx⟩
@@ -69,7 +69,7 @@ theorem subsingleton_of_univ_subsingleton (h : (univ : Set α).Subsingleton) : S
 
 @[simp]
 theorem subsingleton_univ_iff : (univ : Set α).Subsingleton ↔ Subsingleton α :=
-  ⟨subsingleton_of_univ_subsingleton, fun h => @subsingleton_univ _ h⟩
+  ⟨subsingleton_of_univ_subsingleton, fun h ↦ @subsingleton_univ _ h⟩
 
 lemma Subsingleton.inter_singleton : (s ∩ {a}).Subsingleton :=
   Set.subsingleton_of_subset_singleton Set.inter_subset_right
@@ -88,7 +88,7 @@ theorem subsingleton_isBot (α : Type*) [PartialOrder α] : Set.Subsingleton { x
 
 theorem exists_eq_singleton_iff_nonempty_subsingleton :
     (∃ a : α, s = {a}) ↔ s.Nonempty ∧ s.Subsingleton := by
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, rfl⟩
     exact ⟨singleton_nonempty a, subsingleton_singleton⟩
   · exact h.2.eq_empty_or_singleton.resolve_left h.1.ne_empty
@@ -97,9 +97,9 @@ theorem exists_eq_singleton_iff_nonempty_subsingleton :
 @[simp, norm_cast]
 theorem subsingleton_coe (s : Set α) : Subsingleton s ↔ s.Subsingleton := by
   constructor
-  · refine fun h => fun a ha b hb => ?_
+  · refine fun h ↦ fun a ha b hb => ?_
     exact SetCoe.ext_iff.2 (@Subsingleton.elim s h ⟨a, ha⟩ ⟨b, hb⟩)
-  · exact fun h => Subsingleton.intro fun a b => SetCoe.ext (h a.property b.property)
+  · exact fun h ↦ Subsingleton.intro fun a b => SetCoe.ext (h a.property b.property)
 
 theorem Subsingleton.coe_sort {s : Set α} : s.Subsingleton → Subsingleton s :=
   s.subsingleton_coe.2
@@ -202,7 +202,7 @@ theorem Nontrivial.not_subset_empty (hs : s.Nontrivial) : ¬s ⊆ ∅ :=
   hs.nonempty.not_subset_empty
 
 @[simp]
-theorem not_nontrivial_empty : ¬(∅ : Set α).Nontrivial := fun h => h.ne_empty rfl
+theorem not_nontrivial_empty : ¬(∅ : Set α).Nontrivial := fun h ↦ h.ne_empty rfl
 
 @[simp]
 theorem not_nontrivial_singleton {x} : ¬({x} : Set α).Nontrivial := fun H => by
@@ -227,7 +227,7 @@ theorem nontrivial_of_univ_nontrivial (h : (univ : Set α).Nontrivial) : Nontriv
 
 @[simp]
 theorem nontrivial_univ_iff : (univ : Set α).Nontrivial ↔ Nontrivial α :=
-  ⟨nontrivial_of_univ_nontrivial, fun h => @nontrivial_univ _ h⟩
+  ⟨nontrivial_of_univ_nontrivial, fun h ↦ @nontrivial_univ _ h⟩
 
 theorem nontrivial_of_nontrivial (hs : s.Nontrivial) : Nontrivial α :=
   let ⟨x, _, y, _, hxy⟩ := hs

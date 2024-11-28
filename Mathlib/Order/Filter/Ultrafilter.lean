@@ -74,7 +74,7 @@ theorem eq_of_le {f g : Ultrafilter α} (h : (f : Filter α) ≤ g) : f = g :=
 
 @[simp, norm_cast]
 theorem coe_le_coe {f g : Ultrafilter α} : (f : Filter α) ≤ g ↔ f = g :=
-  ⟨fun h => eq_of_le h, fun h => h ▸ le_rfl⟩
+  ⟨fun h ↦ eq_of_le h, fun h ↦ h ▸ le_rfl⟩
 
 @[simp, norm_cast]
 theorem coe_inj : (f : Filter α) = g ↔ f = g :=
@@ -91,7 +91,7 @@ theorem le_of_inf_neBot' (f : Ultrafilter α) {g : Filter α} (hg : NeBot (g ⊓
   f.le_of_inf_neBot <| by rwa [inf_comm]
 
 theorem inf_neBot_iff {f : Ultrafilter α} {g : Filter α} : NeBot (↑f ⊓ g) ↔ ↑f ≤ g :=
-  ⟨le_of_inf_neBot f, fun h => (inf_of_le_left h).symm ▸ f.neBot⟩
+  ⟨le_of_inf_neBot f, fun h ↦ (inf_of_le_left h).symm ▸ f.neBot⟩
 
 theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑f) g ↔ ¬↑f ≤ g := by
   rw [← inf_neBot_iff, neBot_iff, Ne, not_not, disjoint_iff]
@@ -100,7 +100,7 @@ theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑
 theorem compl_not_mem_iff : sᶜ ∉ f ↔ s ∈ f :=
   ⟨fun hsc =>
     le_principal_iff.1 <|
-      f.le_of_inf_neBot ⟨fun h => hsc <| mem_of_eq_bot <| by rwa [compl_compl]⟩,
+      f.le_of_inf_neBot ⟨fun h ↦ hsc <| mem_of_eq_bot <| by rwa [compl_compl]⟩,
     compl_not_mem⟩
 
 @[simp]
@@ -390,7 +390,7 @@ theorem tendsto_iff_ultrafilter (f : α → β) (l₁ : Filter α) (l₂ : Filte
   simpa only [tendsto_iff_comap] using le_iff_ultrafilter
 
 theorem exists_ultrafilter_iff {f : Filter α} : (∃ u : Ultrafilter α, ↑u ≤ f) ↔ NeBot f :=
-  ⟨fun ⟨_, uf⟩ => neBot_of_le uf, fun h => @exists_ultrafilter_le _ _ h⟩
+  ⟨fun ⟨_, uf⟩ => neBot_of_le uf, fun h ↦ @exists_ultrafilter_le _ _ h⟩
 
 theorem forall_neBot_le_iff {g : Filter α} {p : Filter α → Prop} (hp : Monotone p) :
     (∀ f : Filter α, NeBot f → f ≤ g → p f) ↔ ∀ f : Ultrafilter α, ↑f ≤ g → p f := by

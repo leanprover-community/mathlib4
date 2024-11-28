@@ -64,7 +64,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   choose! rs' hrs'F using this
   classical
   set r : (ι → ℝ) → Ioi (0 : ℝ) := s.piecewise rs rs'
-  refine ⟨fun _ => r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ hπp => ?_⟩; rw [mul_comm]
+  refine ⟨fun _ => r, fun c ↦ l.rCond_of_bRiemann_eq_false hl, fun c π hπ hπp => ?_⟩; rw [mul_comm]
   /- Then the union of boxes `J ∈ π` such that `π.tag ∈ s` includes `F` and is included by `U`,
     hence its measure is `ε`-close to the measure of `s`. -/
   dsimp [integralSum]
@@ -122,7 +122,7 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
     obtain ⟨r, hr₀, hr⟩ := nhds_basis_closedBall.mem_iff.1 ((hUo _).mem_nhds (hNU _ rfl))
     exact ⟨⟨r, hr₀⟩, hr⟩
   choose r hrU using this
-  refine ⟨fun _ => r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ _ => ?_⟩
+  refine ⟨fun _ => r, fun c ↦ l.rCond_of_bRiemann_eq_false hl, fun c π hπ _ => ?_⟩
   rw [dist_eq_norm, sub_zero, ← integralSum_fiberwise fun J => N (π.tag J)]
   refine le_trans ?_ (NNReal.coe_lt_coe.2 hcε).le
   refine (norm_sum_le_of_le _ ?_).trans
@@ -239,7 +239,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     of `fᵢ` over the boxes of this prepartition. For each `x`, we choose `r (Nx x)` as the radius
     at `x`. -/
   set r : ℝ≥0 → (ι → ℝ) → Ioi (0 : ℝ) := fun c x => (hfi' <| Nx x).convergenceR (δ <| Nx x) c x
-  refine ⟨r, fun c => l.rCond_of_bRiemann_eq_false hl, fun c π hπ hπp => ?_⟩
+  refine ⟨r, fun c ↦ l.rCond_of_bRiemann_eq_false hl, fun c π hπ hπp => ?_⟩
   /- Now we prove the estimate in 3 "jumps": first we replace `g x` in the formula for the
     integral sum by `f (Nx x)`; then we replace each `μ J • f (Nx (π.tag J)) (π.tag J)`
     by the Bochner integral of `f (Nx (π.tag J)) x` over `J`, then we jump to the Bochner

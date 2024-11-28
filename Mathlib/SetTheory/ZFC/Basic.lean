@@ -794,7 +794,7 @@ theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
   toSet_injective.eq_iff
 
 instance : IsAntisymm ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ hab hba => ext fun c => ⟨@hab c, @hba c⟩⟩
+  ⟨fun _ _ hab hba => ext fun c ↦ ⟨@hab c, @hba c⟩⟩
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
@@ -1218,7 +1218,7 @@ def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u}
 @[simp]
 theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
     z ∈ pairSep p x y ↔ ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b := by
-  refine mem_sep.trans ⟨And.right, fun e => ⟨?_, e⟩⟩
+  refine mem_sep.trans ⟨And.right, fun e ↦ ⟨?_, e⟩⟩
   rcases e with ⟨a, ax, b, bY, rfl, pab⟩
   simp only [mem_powerset, subset_def, mem_union, pair, mem_pair]
   rintro u (rfl | rfl) v <;> simp only [mem_singleton, mem_pair]
@@ -1618,7 +1618,7 @@ theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u}
     exact
       ⟨fun ⟨w, _, pr⟩ => by
         let ⟨wy, fw⟩ := ZFSet.pair_injective pr
-        rw [← fw, wy], fun e => by
+        rw [← fw, wy], fun e ↦ by
         subst e
         exact ⟨_, h, rfl⟩⟩
 

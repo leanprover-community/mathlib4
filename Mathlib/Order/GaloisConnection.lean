@@ -71,7 +71,7 @@ variable [Preorder α] [Preorder β] {l : α → β} {u : β → α}
 
 theorem monotone_intro (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a))
     (hlu : ∀ a, l (u a) ≤ a) : GaloisConnection l u := fun _ _ =>
-  ⟨fun h => (hul _).trans (hu h), fun h => (hl h).trans (hlu _)⟩
+  ⟨fun h ↦ (hul _).trans (hu h), fun h ↦ (hl h).trans (hlu _)⟩
 
 protected theorem dual {l : α → β} {u : β → α} (gc : GaloisConnection l u) :
     GaloisConnection (OrderDual.toDual ∘ u ∘ OrderDual.ofDual)
@@ -525,7 +525,7 @@ theorem l_biInf_of_ul_eq_self [CompleteLattice α] [CompleteLattice β] (gi : Ga
   exact gi.l_iInf_of_ul_eq_self _ fun _ => hf _ _
 
 theorem u_le_u_iff [Preorder α] [Preorder β] (gi : GaloisInsertion l u) {a b} : u a ≤ u b ↔ a ≤ b :=
-  ⟨fun h => (gi.le_l_u _).trans (gi.gc.l_le h), fun h => gi.gc.monotone_u h⟩
+  ⟨fun h ↦ (gi.le_l_u _).trans (gi.gc.l_le h), fun h ↦ gi.gc.monotone_u h⟩
 
 theorem strictMono_u [Preorder α] [Preorder β] (gi : GaloisInsertion l u) : StrictMono u :=
   strictMono_of_le_iff_le fun _ _ => gi.u_le_u_iff.symm

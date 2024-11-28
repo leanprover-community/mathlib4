@@ -815,7 +815,7 @@ section
 /-- The type of functions to a product `α × β` is equivalent to the type of pairs of functions
 `γ → α` and `γ → β`. -/
 def arrowProdEquivProdArrow (α β γ : Type*) : (γ → α × β) ≃ (γ → α) × (γ → β) where
-  toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
+  toFun := fun f => (fun c ↦ (f c).1, fun c ↦ (f c).2)
   invFun := fun p c => (p.1 c, p.2 c)
   left_inv := fun _ => rfl
   right_inv := fun p => by cases p; rfl
@@ -1004,7 +1004,7 @@ def uniqueCongr (e : α ≃ β) : Unique α ≃ Unique β where
 
 /-- If `α` is equivalent to `β`, then `IsEmpty α` is equivalent to `IsEmpty β`. -/
 theorem isEmpty_congr (e : α ≃ β) : IsEmpty α ↔ IsEmpty β :=
-  ⟨fun h => @Function.isEmpty _ _ h e.symm, fun h => @Function.isEmpty _ _ h e⟩
+  ⟨fun h ↦ @Function.isEmpty _ _ h e.symm, fun h ↦ @Function.isEmpty _ _ h e⟩
 
 protected theorem isEmpty (e : α ≃ β) [IsEmpty β] : IsEmpty α :=
   e.isEmpty_congr.mpr ‹_›
@@ -1445,7 +1445,7 @@ theorem symm_swap (a b : α) : (swap a b).symm = swap a b :=
 
 @[simp]
 theorem swap_eq_refl_iff {x y : α} : swap x y = Equiv.refl _ ↔ x = y := by
-  refine ⟨fun h => (Equiv.refl _).injective ?_, fun h => h ▸ swap_self _⟩
+  refine ⟨fun h ↦ (Equiv.refl _).injective ?_, fun h ↦ h ▸ swap_self _⟩
   rw [← h, swap_apply_left, h, refl_apply]
 
 theorem swap_comp_apply {a b x : α} (π : Perm α) :
@@ -1791,7 +1791,7 @@ noncomputable def Equiv.punitOfNonemptyOfSubsingleton [h : Nonempty α] [Subsing
 
 /-- `Unique (Unique α)` is equivalent to `Unique α`. -/
 def uniqueUniqueEquiv : Unique (Unique α) ≃ Unique α :=
-  equivOfSubsingletonOfSubsingleton (fun h => h.default) fun h =>
+  equivOfSubsingletonOfSubsingleton (fun h ↦ h.default) fun h =>
     { default := h, uniq := fun _ => Subsingleton.elim _ _ }
 
 /-- If `Unique β`, then `Unique α` is equivalent to `α ≃ β`. -/

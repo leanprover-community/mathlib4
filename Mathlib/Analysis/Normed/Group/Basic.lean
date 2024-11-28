@@ -316,7 +316,7 @@ definitional equalities (e.g., it does not take into account a possibly existing
 instance on `E`)."]
 abbrev GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E :=
   { f.toGroupSeminorm.toSeminormedGroup with
-    eq_of_dist_eq_zero := fun h => div_eq_one.1 <| eq_one_of_map_eq_zero f h }
+    eq_of_dist_eq_zero := fun h ↦ div_eq_one.1 <| eq_one_of_map_eq_zero f h }
 
 -- See note [reducible non-instances]
 /-- Construct a normed group from a norm, i.e., registering the distance and the metric space
@@ -808,7 +808,7 @@ end NNNorm
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
-    Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖) a (𝓝 0) := by
+    Tendsto f a (𝓝 b) ↔ Tendsto (fun e ↦ ‖f e / b‖) a (𝓝 0) := by
   simp only [← dist_eq_norm_div, ← tendsto_iff_dist_tendsto_zero]
 
 @[to_additive]

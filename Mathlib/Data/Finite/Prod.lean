@@ -160,14 +160,14 @@ theorem Finite.of_prod_right (h : (s ×ˢ t : Set (α × β)).Finite) : s.Nonemp
   fun ⟨a, ha⟩ => (h.image Prod.snd).subset fun b hb => ⟨(a, b), ⟨ha, hb⟩, rfl⟩
 
 protected theorem Infinite.prod_left (hs : s.Infinite) (ht : t.Nonempty) : (s ×ˢ t).Infinite :=
-  fun h => hs <| h.of_prod_left ht
+  fun h ↦ hs <| h.of_prod_left ht
 
 protected theorem Infinite.prod_right (ht : t.Infinite) (hs : s.Nonempty) : (s ×ˢ t).Infinite :=
-  fun h => ht <| h.of_prod_right hs
+  fun h ↦ ht <| h.of_prod_right hs
 
 protected theorem infinite_prod :
     (s ×ˢ t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · simp_rw [Set.Infinite, @and_comm ¬_, ← Classical.not_imp]
     by_contra!
     exact h ((this.1 h.nonempty.snd).prod <| this.2 h.nonempty.fst)
@@ -203,8 +203,8 @@ theorem Finite.toFinset_offDiag {s : Set α} [DecidableEq α] (hs : s.Finite) :
 
 theorem finite_image_fst_and_snd_iff {s : Set (α × β)} :
     (Prod.fst '' s).Finite ∧ (Prod.snd '' s).Finite ↔ s.Finite :=
-  ⟨fun h => (h.1.prod h.2).subset fun _ h => ⟨mem_image_of_mem _ h, mem_image_of_mem _ h⟩,
-    fun h => ⟨h.image _, h.image _⟩⟩
+  ⟨fun h ↦ (h.1.prod h.2).subset fun _ h => ⟨mem_image_of_mem _ h, mem_image_of_mem _ h⟩,
+    fun h ↦ ⟨h.image _, h.image _⟩⟩
 
 /-! ### Infinite sets -/
 
@@ -224,7 +224,7 @@ protected theorem Infinite.image2_right (ht : t.Infinite) (ha : a ∈ s) (hf : I
 
 theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a ↦ f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
-  refine ⟨fun h => Set.infinite_prod.1 ?_, ?_⟩
+  refine ⟨fun h ↦ Set.infinite_prod.1 ?_, ?_⟩
   · rw [← image_uncurry_prod] at h
     exact h.of_image _
   · rintro (⟨hs, b, hb⟩ | ⟨ht, a, ha⟩)

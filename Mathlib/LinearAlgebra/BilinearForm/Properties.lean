@@ -77,7 +77,7 @@ theorem isRefl_zero : (0 : BilinForm R M).IsRefl := fun _ _ _ => rfl
 
 @[simp]
 theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
-  ⟨fun h => neg_neg B ▸ h.neg, IsRefl.neg⟩
+  ⟨fun h ↦ neg_neg B ▸ h.neg, IsRefl.neg⟩
 
 /-- The proposition that a bilinear form is symmetric -/
 def IsSymm (B : BilinForm R M) : Prop := LinearMap.IsSymm B
@@ -113,7 +113,7 @@ theorem isSymm_zero : (0 : BilinForm R M).IsSymm := fun _ _ => rfl
 
 @[simp]
 theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
-  ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
+  ⟨fun h ↦ neg_neg B ▸ h.neg, IsSymm.neg⟩
 
 theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
   (forall₂_congr fun _ _ => by exact eq_comm).trans BilinForm.ext_iff.symm
@@ -152,7 +152,7 @@ theorem isAlt_zero : (0 : BilinForm R M).IsAlt := fun _ => rfl
 
 @[simp]
 theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
-  ⟨fun h => neg_neg B ▸ h.neg, IsAlt.neg⟩
+  ⟨fun h ↦ neg_neg B ▸ h.neg, IsAlt.neg⟩
 
 /-! ### Linear adjoints -/
 
@@ -310,7 +310,7 @@ variable (R M)
 /-- In a non-trivial module, zero is not non-degenerate. -/
 theorem not_nondegenerate_zero [Nontrivial M] : ¬(0 : BilinForm R M).Nondegenerate :=
   let ⟨m, hm⟩ := exists_ne (0 : M)
-  fun h => hm (h m fun _ => rfl)
+  fun h ↦ hm (h m fun _ => rfl)
 
 end
 
@@ -328,7 +328,7 @@ theorem Nondegenerate.congr {B : BilinForm R M} (e : M ≃ₗ[R] M') (h : B.Nond
 @[simp]
 theorem nondegenerate_congr_iff {B : BilinForm R M} (e : M ≃ₗ[R] M') :
     (congr e B).Nondegenerate ↔ B.Nondegenerate :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     convert h.congr e.symm
     rw [congr_congr, e.self_trans_symm, congr_refl, LinearEquiv.refl_apply], Nondegenerate.congr e⟩
 
@@ -489,7 +489,7 @@ theorem isAdjointPair_iff_eq_of_nondegenerate (B : BilinForm K V) (b : B.Nondege
   ⟨fun h =>
     B.isAdjointPair_unique_of_nondegenerate b φ ψ _ h
       (isAdjointPairLeftAdjointOfNondegenerate _ _ _),
-    fun h => h.symm ▸ isAdjointPairLeftAdjointOfNondegenerate _ _ _⟩
+    fun h ↦ h.symm ▸ isAdjointPairLeftAdjointOfNondegenerate _ _ _⟩
 
 end LinearAdjoints
 

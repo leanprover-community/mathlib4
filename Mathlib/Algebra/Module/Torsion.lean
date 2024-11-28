@@ -83,14 +83,14 @@ variable (R)
 
 @[simp]
 theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
-  refine ⟨fun h => ?_, fun h => by simp [h]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   rw [← one_smul R m, ← mem_torsionOf_iff m (1 : R), h]
   exact Submodule.mem_top
 
 @[simp]
 theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDivisors R M] (m : M) :
     torsionOf R M m = ⊥ ↔ m ≠ 0 := by
-  refine ⟨fun h contra => ?_, fun h => (Submodule.eq_bot_iff _).mpr fun r hr => ?_⟩
+  refine ⟨fun h contra => ?_, fun h ↦ (Submodule.eq_bot_iff _).mpr fun r hr => ?_⟩
   · rw [contra, torsionOf_zero] at h
     exact bot_ne_top.symm h
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
@@ -241,7 +241,7 @@ theorem mem_torsionBy_iff (x : M) : x ∈ torsionBy R M a ↔ a • x = 0 :=
 
 @[simp]
 theorem mem_torsionBySet_iff (x : M) : x ∈ torsionBySet R M s ↔ ∀ a : s, (a : R) • x = 0 := by
-  refine ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h => mem_sInf.mpr ?_⟩
+  refine ⟨fun h ⟨a, ha⟩ => mem_sInf.mp h _ (Set.mem_image_of_mem _ ha), fun h ↦ mem_sInf.mpr ?_⟩
   rintro _ ⟨a, ha, rfl⟩; exact h ⟨a, ha⟩
 
 @[simp]
@@ -298,7 +298,7 @@ theorem isTorsionBySet_singleton_iff : IsTorsionBySet R M {a} ↔ IsTorsionBy R 
 
 theorem isTorsionBySet_iff_torsionBySet_eq_top :
     IsTorsionBySet R M s ↔ Submodule.torsionBySet R M s = ⊤ :=
-  ⟨fun h => eq_top_iff.mpr fun _ _ => (mem_torsionBySet_iff _ _).mpr <| @h _, fun h x => by
+  ⟨fun h ↦ eq_top_iff.mpr fun _ _ => (mem_torsionBySet_iff _ _).mpr <| @h _, fun h x => by
     rw [← mem_torsionBySet_iff, h]
     trivial⟩
 
@@ -501,7 +501,7 @@ instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
     @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
-    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
+    (fun b d x => Quotient.inductionOn' d fun c ↦ (smul_assoc b c x : _))
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
 abbrev IsTorsionBy.module (hM : IsTorsionBy R M r) : Module (R ⧸ Ideal.span {r}) M :=
@@ -655,7 +655,7 @@ instance : SMulCommClass S R (torsion' R M S) :=
 
 /-- An `S`-torsion module is a module whose `S`-torsion submodule is the full space. -/
 theorem isTorsion'_iff_torsion'_eq_top : IsTorsion' M S ↔ torsion' R M S = ⊤ :=
-  ⟨fun h => eq_top_iff.mpr fun _ _ => @h _, fun h x => by
+  ⟨fun h ↦ eq_top_iff.mpr fun _ _ => @h _, fun h x => by
     rw [← @mem_torsion'_iff R, h]
     trivial⟩
 

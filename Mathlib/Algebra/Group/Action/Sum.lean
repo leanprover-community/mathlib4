@@ -68,11 +68,11 @@ instance [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCen
 
 @[to_additive]
 instance FaithfulSMulLeft [FaithfulSMul M α] : FaithfulSMul M (α ⊕ β) :=
-  ⟨fun h => eq_of_smul_eq_smul fun a : α => by injection h (inl a)⟩
+  ⟨fun h ↦ eq_of_smul_eq_smul fun a : α => by injection h (inl a)⟩
 
 @[to_additive]
 instance FaithfulSMulRight [FaithfulSMul M β] : FaithfulSMul M (α ⊕ β) :=
-  ⟨fun h => eq_of_smul_eq_smul fun b : β => by injection h (inr b)⟩
+  ⟨fun h ↦ eq_of_smul_eq_smul fun b : β => by injection h (inr b)⟩
 
 end SMul
 

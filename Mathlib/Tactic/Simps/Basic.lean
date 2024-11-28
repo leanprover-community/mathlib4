@@ -687,7 +687,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
       trace[simps.debug] "Projection {proj.strName} is likely unrelated to the projection of \
         {className}:\n{ex.toMessageData}"
       return none
-    let classArgs ← classArgs.mapM fun e => match e with
+    let classArgs ← classArgs.mapM fun e ↦ match e with
       | none => mkFreshExprMVar none
       | some e => pure e
     let classArgs := classArgs.map Arg.expr

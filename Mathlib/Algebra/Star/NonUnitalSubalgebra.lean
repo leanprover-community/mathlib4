@@ -583,7 +583,7 @@ theorem starClosure_le {S₁ : NonUnitalSubalgebra R A} {S₂ : NonUnitalStarSub
 
 theorem starClosure_le_iff {S₁ : NonUnitalSubalgebra R A} {S₂ : NonUnitalStarSubalgebra R A} :
     S₁.starClosure ≤ S₂ ↔ S₁ ≤ S₂.toNonUnitalSubalgebra :=
-  ⟨fun h => le_sup_left.trans h, starClosure_le⟩
+  ⟨fun h ↦ le_sup_left.trans h, starClosure_le⟩
 
 @[simp]
 theorem starClosure_toNonunitalSubalgebra {S : NonUnitalSubalgebra R A} :
@@ -668,8 +668,8 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalStarSubal
   intro s S
   rw [← toNonUnitalSubalgebra_le_iff, adjoin_toNonUnitalSubalgebra,
     NonUnitalAlgebra.adjoin_le_iff, coe_toNonUnitalSubalgebra]
-  exact ⟨fun h => Set.subset_union_left.trans h,
-    fun h => Set.union_subset h fun x hx => star_star x ▸ star_mem (show star x ∈ S from h hx)⟩
+  exact ⟨fun h ↦ Set.subset_union_left.trans h,
+    fun h ↦ Set.union_subset h fun x hx => star_star x ▸ star_mem (show star x ∈ S from h hx)⟩
 
 /-- Galois insertion between `adjoin` and `Subtype.val`. -/
 protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalStarSubalgebra R A) (↑) where
@@ -807,7 +807,7 @@ theorem coe_bot : ((⊥ : NonUnitalStarSubalgebra R A) : Set A) = {0} := by
 
 theorem eq_top_iff {S : NonUnitalStarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top,
-    fun h => by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
+    fun h ↦ by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
 @[simp]
 theorem range_id : NonUnitalStarAlgHom.range (NonUnitalStarAlgHom.id R A) = ⊤ :=

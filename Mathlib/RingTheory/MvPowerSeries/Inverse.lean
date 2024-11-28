@@ -217,7 +217,7 @@ theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_inv, if_pos rfl]
 
 theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ k φ = 0 :=
-  ⟨fun h => by simpa using congr_arg (constantCoeff σ k) h, fun h =>
+  ⟨fun h ↦ by simpa using congr_arg (constantCoeff σ k) h, fun h =>
     ext fun n => by
       classical
       rw [coeff_inv]

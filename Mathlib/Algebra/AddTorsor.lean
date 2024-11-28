@@ -92,7 +92,7 @@ theorem vadd_right_cancel {g₁ g₂ : G} (p : P) (h : g₁ +ᵥ p = g₂ +ᵥ p
 
 @[simp]
 theorem vadd_right_cancel_iff {g₁ g₂ : G} (p : P) : g₁ +ᵥ p = g₂ +ᵥ p ↔ g₁ = g₂ :=
-  ⟨vadd_right_cancel p, fun h => h ▸ rfl⟩
+  ⟨vadd_right_cancel p, fun h ↦ h ▸ rfl⟩
 
 /-- Adding a group element to the point `p` is an injective
 function. -/
@@ -119,7 +119,7 @@ theorem eq_of_vsub_eq_zero {p₁ p₂ : P} (h : p₁ -ᵥ p₂ = (0 : G)) : p₁
 equal. -/
 @[simp]
 theorem vsub_eq_zero_iff_eq {p₁ p₂ : P} : p₁ -ᵥ p₂ = (0 : G) ↔ p₁ = p₂ :=
-  Iff.intro eq_of_vsub_eq_zero fun h => h ▸ vsub_self _
+  Iff.intro eq_of_vsub_eq_zero fun h ↦ h ▸ vsub_self _
 
 theorem vsub_ne_zero {p q : P} : p -ᵥ q ≠ (0 : G) ↔ p ≠ q :=
   not_congr vsub_eq_zero_iff_eq
@@ -155,7 +155,7 @@ theorem vsub_sub_vsub_cancel_right (p₁ p₂ p₃ : P) : p₁ -ᵥ p₃ - (p₂
 and an equality of a subtraction of two points with a group
 element. -/
 theorem eq_vadd_iff_vsub_eq (p₁ : P) (g : G) (p₂ : P) : p₁ = g +ᵥ p₂ ↔ p₁ -ᵥ p₂ = g :=
-  ⟨fun h => h.symm ▸ vadd_vsub _ _, fun h => h ▸ (vsub_vadd _ _).symm⟩
+  ⟨fun h ↦ h.symm ▸ vadd_vsub _ _, fun h ↦ h ▸ (vsub_vadd _ _).symm⟩
 
 theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
     v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ -v₁ + v₂ = p₁ -ᵥ p₂ := by
@@ -183,7 +183,7 @@ theorem vsub_left_cancel {p₁ p₂ p : P} (h : p₁ -ᵥ p = p₂ -ᵥ p) : p�
 if and only if those points are equal. -/
 @[simp]
 theorem vsub_left_cancel_iff {p₁ p₂ p : P} : p₁ -ᵥ p = p₂ -ᵥ p ↔ p₁ = p₂ :=
-  ⟨vsub_left_cancel, fun h => h ▸ rfl⟩
+  ⟨vsub_left_cancel, fun h ↦ h ▸ rfl⟩
 
 /-- Subtracting the point `p` is an injective function. -/
 theorem vsub_left_injective (p : P) : Function.Injective ((· -ᵥ p) : P → G) := fun _ _ =>
@@ -199,7 +199,7 @@ theorem vsub_right_cancel {p₁ p₂ p : P} (h : p -ᵥ p₁ = p -ᵥ p₂) : p�
 if and only if those points are equal. -/
 @[simp]
 theorem vsub_right_cancel_iff {p₁ p₂ p : P} : p -ᵥ p₁ = p -ᵥ p₂ ↔ p₁ = p₂ :=
-  ⟨vsub_right_cancel, fun h => h ▸ rfl⟩
+  ⟨vsub_right_cancel, fun h ↦ h ▸ rfl⟩
 
 /-- Subtracting a point from the point `p` is an injective
 function. -/

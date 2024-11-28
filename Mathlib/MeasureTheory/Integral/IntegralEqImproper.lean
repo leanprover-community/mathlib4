@@ -1094,7 +1094,7 @@ theorem integral_comp_rpow_Ioi_of_pos {g : ℝ → E} {p : ℝ} (hp : 0 < p) :
 
 theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
     (∫ x in Ioi a, g (b * x)) = b⁻¹ • ∫ x in Ioi (b * a), g x := by
-  have : ∀ c : ℝ, MeasurableSet (Ioi c) := fun c => measurableSet_Ioi
+  have : ∀ c : ℝ, MeasurableSet (Ioi c) := fun c ↦ measurableSet_Ioi
   rw [← integral_indicator (this a), ← integral_indicator (this (b * a)),
     ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
   congr

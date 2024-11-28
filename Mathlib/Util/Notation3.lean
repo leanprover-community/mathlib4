@@ -597,7 +597,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       elabCommand <| ← `(command|
         /-- Pretty printer defined by `notation3` command. -/
         def $(Lean.mkIdent delabName) : Delab := whenPPOption getPPNotation <|
-          getExpr >>= fun e => $matcher MatchState.empty >>= fun s => $result)
+          getExpr >>= fun e ↦ $matcher MatchState.empty >>= fun s => $result)
       trace[notation3] "Defined delaborator {currNamespace ++ delabName}"
       let delabKeys := ms.foldr (·.1 ++ ·) []
       trace[notation3] "Adding `delab` attribute for keys {delabKeys}"

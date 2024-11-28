@@ -226,7 +226,7 @@ theorem top_factors {A B : C} (f : A ⟶ B) : (⊤ : Subobject B).Factors f :=
   ⟨f, comp_id _⟩
 
 theorem isIso_iff_mk_eq_top {X Y : C} (f : X ⟶ Y) [Mono f] : IsIso f ↔ mk f = ⊤ :=
-  ⟨fun _ => mk_eq_mk_of_comm _ _ (asIso f) (Category.comp_id _), fun h => by
+  ⟨fun _ => mk_eq_mk_of_comm _ _ (asIso f) (Category.comp_id _), fun h ↦ by
     rw [← ofMkLEMk_comp h.le, Category.comp_id]
     exact (isoOfMkEqMk _ _ h).isIso_hom⟩
 
@@ -307,7 +307,7 @@ theorem bot_factors_iff_zero {A B : C} (f : A ⟶ B) : (⊥ : Subobject B).Facto
     exact ⟨0, by simp⟩⟩
 
 theorem mk_eq_bot_iff_zero {f : X ⟶ Y} [Mono f] : Subobject.mk f = ⊥ ↔ f = 0 :=
-  ⟨fun h => by simpa [h, bot_factors_iff_zero] using mk_factors_self f, fun h =>
+  ⟨fun h ↦ by simpa [h, bot_factors_iff_zero] using mk_factors_self f, fun h =>
     mk_eq_mk_of_comm _ _ ((isoZeroOfMonoEqZero h).trans HasZeroObject.zeroIsoInitial) (by simp [h])⟩
 
 end ZeroOrderBot
@@ -363,7 +363,7 @@ theorem factors_right_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
 @[simp]
 theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     (X ⊓ Y).Factors f ↔ X.Factors f ∧ Y.Factors f :=
-  ⟨fun h => ⟨factors_left_of_inf_factors h, factors_right_of_inf_factors h⟩, by
+  ⟨fun h ↦ ⟨factors_left_of_inf_factors h, factors_right_of_inf_factors h⟩, by
     revert X Y
     apply Quotient.ind₂'
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
@@ -614,7 +614,7 @@ theorem le_sSup {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : f ≤ sSup 
 
 theorem symm_apply_mem_iff_mem_image {α β : Type*} (e : α ≃ β) (s : Set α) (x : β) :
     e.symm x ∈ s ↔ x ∈ e '' s :=
-  ⟨fun h => ⟨e.symm x, h, by simp⟩, by
+  ⟨fun h ↦ ⟨e.symm x, h, by simp⟩, by
     rintro ⟨a, m, rfl⟩
     simpa using m⟩
 

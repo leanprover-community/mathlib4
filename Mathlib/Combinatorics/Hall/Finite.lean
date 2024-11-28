@@ -54,7 +54,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
   rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases he : s'.Nonempty
   · have ha' : #s' < #(s'.biUnion fun x => t x) := by
-      convert ha he fun h => by simpa [← h] using mem_univ x using 2
+      convert ha he fun h ↦ by simpa [← h] using mem_univ x using 2
       ext x
       simp only [mem_image, mem_biUnion, exists_prop, SetCoe.exists, exists_and_right,
         exists_eq_right, Subtype.coe_mk]

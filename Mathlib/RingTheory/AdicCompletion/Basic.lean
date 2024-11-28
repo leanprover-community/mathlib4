@@ -53,7 +53,7 @@ theorem IsHausdorff.haus (_ : IsHausdorff I M) :
 
 theorem isHausdorff_iff :
     IsHausdorff I M ↔ ∀ x : M, (∀ n : ℕ, x ≡ 0 [SMOD (I ^ n • ⊤ : Submodule R M)]) → x = 0 :=
-  ⟨IsHausdorff.haus, fun h => ⟨h⟩⟩
+  ⟨IsHausdorff.haus, fun h ↦ ⟨h⟩⟩
 
 theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
@@ -65,7 +65,7 @@ theorem isPrecomplete_iff :
       ∀ f : ℕ → M,
         (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
           ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 variable (I M)
 

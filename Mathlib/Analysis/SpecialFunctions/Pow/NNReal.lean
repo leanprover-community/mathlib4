@@ -585,7 +585,7 @@ theorem rpow_lt_top_of_nonneg {x : ℝ≥0∞} {y : ℝ} (hy0 : 0 ≤ y) (h : x 
 theorem rpow_add {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) : x ^ (y + z) = x ^ y * x ^ z := by
   cases' x with x
   · exact (h'x rfl).elim
-  have : x ≠ 0 := fun h => by simp [h] at hx
+  have : x ≠ 0 := fun h ↦ by simp [h] at hx
   simp [← coe_rpow_of_ne_zero this, NNReal.rpow_add this]
 
 theorem rpow_add_of_nonneg {x : ℝ≥0∞} (y z : ℝ) (hy : 0 ≤ y) (hz : 0 ≤ z) :

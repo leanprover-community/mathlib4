@@ -71,7 +71,7 @@ theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) 
     diam (⋃ i ∈ o, s i) = ⨆ i ∈ o, diam (s i) := by cases o <;> simp
 
 theorem diam_insert : diam (insert x s) = max (⨆ y ∈ s, edist x y) (diam s) :=
-  eq_of_forall_ge_iff fun d => by
+  eq_of_forall_ge_iff fun d ↦ by
     simp only [diam_le_iff, forall_mem_insert, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
       zero_le, true_and, forall_and, and_self_iff, ← and_assoc]
 

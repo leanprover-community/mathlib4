@@ -173,7 +173,7 @@ theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (n + 1)) :
 theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (n + 1))
     (e : (n + 1) + m = (n + m) + 1) :
     insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) := by
-  refine Vector3.recOn t (fun e => ?_) (@fun k b t IH _ => ?_) e
+  refine Vector3.recOn t (fun e ↦ ?_) (@fun k b t IH _ => ?_) e
   · rfl
   have e' : (n + 1) + k = (n + k) + 1 := by omega
   change
@@ -246,7 +246,7 @@ theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
       (and_congr_right fun _ => IH).trans
         ⟨fun ⟨pa, h⟩ i => by
           refine i.cases' ?_ ?_
-          exacts [pa, h], fun h => ⟨?_, fun i => ?_⟩⟩
+          exacts [pa, h], fun h ↦ ⟨?_, fun i => ?_⟩⟩
     · simpa using h fz
     · simpa using h (fs i)
 

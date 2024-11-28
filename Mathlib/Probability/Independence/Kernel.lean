@@ -334,7 +334,7 @@ theorem IndepSets.union_iff {s₁ s₂ s' : Set (Set Ω)} {_mΩ : MeasurableSpac
   ⟨fun h =>
     ⟨indepSets_of_indepSets_of_le_left h Set.subset_union_left,
       indepSets_of_indepSets_of_le_left h Set.subset_union_right⟩,
-    fun h => IndepSets.union h.left h.right⟩
+    fun h ↦ IndepSets.union h.left h.right⟩
 
 theorem IndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (hyp : ∀ n, IndepSets (s n) s' κ μ) :
@@ -848,7 +848,7 @@ theorem Indep.indepSet_of_measurableSet {m₁ m₂ _ : MeasurableSpace Ω} {κ :
 theorem indep_iff_forall_indepSet (m₁ m₂ : MeasurableSpace Ω) {_m0 : MeasurableSpace Ω}
     (κ : Kernel α Ω) (μ : Measure α) :
     Indep m₁ m₂ κ μ ↔ ∀ s t, MeasurableSet[m₁] s → MeasurableSet[m₂] t → IndepSet s t κ μ :=
-  ⟨fun h => fun _s _t hs ht => h.indepSet_of_measurableSet hs ht, fun h s t hs ht =>
+  ⟨fun h ↦ fun _s _t hs ht => h.indepSet_of_measurableSet hs ht, fun h s t hs ht =>
     h s t hs ht s t (measurableSet_generateFrom (Set.mem_singleton s))
       (measurableSet_generateFrom (Set.mem_singleton t))⟩
 

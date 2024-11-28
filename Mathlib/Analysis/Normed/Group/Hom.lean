@@ -719,7 +719,7 @@ def NormNoninc (f : NormedAddGroupHom V W) : Prop :=
 namespace NormNoninc
 
 theorem normNoninc_iff_norm_le_one : f.NormNoninc ↔ ‖f‖ ≤ 1 := by
-  refine ⟨fun h => ?_, fun h => fun v => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ fun v => ?_⟩
   · refine opNorm_le_bound _ zero_le_one fun v => ?_
     simpa [one_mul] using h v
   · simpa using le_of_opNorm_le f h v

@@ -216,7 +216,7 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
   nth_rw 1 [x_eq]
   rw [smul_mem_smul_iff]
   constructor
-  · exact fun h => ⟨r⁻¹ • x, ⟨h, show r • r⁻¹ • x = x by simp⟩⟩
+  · exact fun h ↦ ⟨r⁻¹ • x, ⟨h, show r • r⁻¹ • x = x by simp⟩⟩
   · rintro ⟨w, _, (x'_eq : r • w = x)⟩
     simpa [← x'_eq ]
 
@@ -247,7 +247,7 @@ variable [InvolutiveStar R] [StarRing A] [StarModule R A]
 
 theorem star_mem_resolventSet_iff {r : R} {a : A} :
     star r ∈ resolventSet R a ↔ r ∈ resolventSet R (star a) := by
-  refine ⟨fun h => ?_, fun h => ?_⟩ <;>
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;>
     simpa only [mem_resolventSet_iff, Algebra.algebraMap_eq_smul_one, star_sub, star_smul,
       star_star, star_one] using IsUnit.star h
 

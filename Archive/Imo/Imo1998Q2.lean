@@ -88,7 +88,7 @@ theorem JudgePair.agree_iff_same_rating (p : JudgePair J) (c : C) :
 
 /-- The set of contestants on which two judges agree. -/
 def agreedContestants [Fintype C] (p : JudgePair J) : Finset C :=
-  Finset.univ.filter fun c => p.Agree r c
+  Finset.univ.filter fun c ↦ p.Agree r c
 section
 
 variable [Fintype J] [Fintype C]

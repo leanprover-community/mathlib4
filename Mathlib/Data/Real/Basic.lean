@@ -258,7 +258,7 @@ private irreducible_def lt : ℝ → ℝ → Prop
   | ⟨x⟩, ⟨y⟩ =>
     (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg =>
       propext <|
-        ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
+        ⟨fun h ↦ lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
           lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
 
 instance : LT ℝ :=
@@ -357,7 +357,7 @@ instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
     simp only [le_iff_eq_or_lt]
     rintro a b ⟨rfl, h⟩
     · simp only [lt_self_iff_false, or_false, forall_const]
-    · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
+    · exact fun c ↦ Or.inr ((add_lt_add_iff_left c).2 ‹_›)
   zero_le_one := le_of_lt Real.zero_lt_one
   mul_pos a b :=  by
     induction' a using Real.ind_mk with a

@@ -382,7 +382,7 @@ theorem inclusion'_top_functor (X : TopCat) :
   refine CategoryTheory.Functor.ext ?_ ?_
   · intro U
     ext x
-    exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩
+    exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h ↦ ⟨⟨x, trivial⟩, h, rfl⟩⟩
   · subsingleton
 
 theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U : Opens Y) :

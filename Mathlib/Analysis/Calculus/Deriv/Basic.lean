@@ -305,7 +305,7 @@ theorem HasDerivWithinAt.Ioi_iff_Ioo [LinearOrder 𝕜] [OrderClosedTopology �
 alias ⟨HasDerivWithinAt.Ioi_of_Ioo, HasDerivWithinAt.Ioo_of_Ioi⟩ := HasDerivWithinAt.Ioi_iff_Ioo
 
 theorem hasDerivAt_iff_isLittleO_nhds_zero :
-    HasDerivAt f f' x ↔ (fun h => f (x + h) - f x - h • f') =o[𝓝 0] fun h => h :=
+    HasDerivAt f f' x ↔ (fun h ↦ f (x + h) - f x - h • f') =o[𝓝 0] fun h ↦ h :=
   hasFDerivAt_iff_isLittleO_nhds_zero
 
 theorem HasDerivAtFilter.mono (h : HasDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
@@ -369,12 +369,12 @@ theorem DifferentiableAt.hasDerivAt (h : DifferentiableAt 𝕜 f x) : HasDerivAt
 
 @[simp]
 theorem hasDerivAt_deriv_iff : HasDerivAt f (deriv f x) x ↔ DifferentiableAt 𝕜 f x :=
-  ⟨fun h => h.differentiableAt, fun h => h.hasDerivAt⟩
+  ⟨fun h ↦ h.differentiableAt, fun h ↦ h.hasDerivAt⟩
 
 @[simp]
 theorem hasDerivWithinAt_derivWithin_iff :
     HasDerivWithinAt f (derivWithin f s x) s x ↔ DifferentiableWithinAt 𝕜 f s x :=
-  ⟨fun h => h.differentiableWithinAt, fun h => h.hasDerivWithinAt⟩
+  ⟨fun h ↦ h.differentiableWithinAt, fun h ↦ h.hasDerivWithinAt⟩
 
 theorem DifferentiableOn.hasDerivAt (h : DifferentiableOn 𝕜 f s) (hs : s ∈ 𝓝 x) :
     HasDerivAt f (deriv f x) x :=
@@ -476,7 +476,7 @@ theorem derivWithin_mem_iff {f : 𝕜 → F} {t : Set 𝕜} {s : Set F} {x : �
 
 theorem differentiableWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
     DifferentiableWithinAt 𝕜 f (Ioi x) x ↔ DifferentiableWithinAt 𝕜 f (Ici x) x :=
-  ⟨fun h => h.hasDerivWithinAt.Ici_of_Ioi.differentiableWithinAt, fun h =>
+  ⟨fun h ↦ h.hasDerivWithinAt.Ici_of_Ioi.differentiableWithinAt, fun h =>
     h.hasDerivWithinAt.Ioi_of_Ici.differentiableWithinAt⟩
 
 -- Golfed while splitting the file

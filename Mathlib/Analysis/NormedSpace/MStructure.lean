@@ -92,7 +92,7 @@ theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
     exact h.Lnorm x⟩
 
 theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) :=
-  ⟨Lcomplement, fun h => sub_sub_cancel 1 P ▸ h.Lcomplement⟩
+  ⟨Lcomplement, fun h ↦ sub_sub_cancel 1 P ▸ h.Lcomplement⟩
 
 theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     Commute P Q := by

@@ -294,7 +294,7 @@ namespace Bornology
 variable [Bornology α]
 
 theorem isBounded_univ : IsBounded (univ : Set α) ↔ BoundedSpace α :=
-  ⟨fun h => ⟨h⟩, fun h => h.1⟩
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
 
 theorem cobounded_eq_bot_iff : cobounded α = ⊥ ↔ BoundedSpace α := by
   rw [← isBounded_univ, isBounded_def, compl_univ, empty_mem_iff_bot]

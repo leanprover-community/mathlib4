@@ -149,7 +149,7 @@ theorem opNorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) (hM 
 theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, ‖x‖ ≠ 0 → ‖f x‖ ≤ M * ‖x‖) : ‖f‖ ≤ M :=
   opNorm_le_bound f hMp fun x =>
-    (ne_or_eq ‖x‖ 0).elim (hM x) fun h => by
+    (ne_or_eq ‖x‖ 0).elim (hM x) fun h ↦ by
       simp only [h, mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
 
 @[deprecated (since := "2024-02-02")] alias op_norm_le_bound' := opNorm_le_bound'

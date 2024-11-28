@@ -26,10 +26,10 @@ section OrderTop
 variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α}
 
 theorem StrictMono.apply_eq_top_iff (hf : StrictMono f) : f a = f ⊤ ↔ a = ⊤ :=
-  ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne h, congr_arg _⟩
+  ⟨fun h ↦ not_lt_top_iff.1 fun ha => (hf ha).ne h, congr_arg _⟩
 
 theorem StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = ⊤ :=
-  ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne' h, congr_arg _⟩
+  ⟨fun h ↦ not_lt_top_iff.1 fun ha => (hf ha).ne' h, congr_arg _⟩
 
 end OrderTop
 

@@ -587,7 +587,7 @@ def ofJ : EllipticCurve F :=
       two_or_three_ne_zero.neg_resolve_right h3
     else @ofJ0 _ _ <| invertibleOfNonzero h3
   else if h1728 : j = 1728 then
-    @ofJ1728 _ _ <| invertibleOfNonzero fun h => h0 <|
+    @ofJ1728 _ _ <| invertibleOfNonzero fun h ↦ h0 <|
     by rw [h1728, show (1728 : F) = 2 * 864 by norm_num1, h, zero_mul]
   else @ofJ' _ _ j (invertibleOfNonzero h0) (invertibleOfNonzero <| sub_ne_zero_of_ne h1728)
 
@@ -612,7 +612,7 @@ lemma ofJ_1728_of_two_ne_zero [h2 : NeZero (2 : F)] :
     ofJ 1728 = @ofJ1728 _ _ (invertibleOfNonzero h2.out) := by
   by_cases h3 : (3 : F) = 0
   · exact ofJ_1728_of_three_eq_zero h3
-  · have h : (1728 : F) ≠ 0 := fun h => or_iff_not_and_not.mp
+  · have h : (1728 : F) ≠ 0 := fun h ↦ or_iff_not_and_not.mp
       (mul_eq_zero.mp <| by rwa [show 2 ^ 6 * 3 ^ 3 = (1728 : F) by norm_num1])
       ⟨pow_ne_zero 6 h2.out, pow_ne_zero 3 h3⟩
     rw [ofJ, dif_neg h, dif_pos rfl]
@@ -634,7 +634,7 @@ lemma ofJ_j : (ofJ j).j = j := by
     · rw [h0, ofJ_0_of_three_ne_zero (h3 := neZero_iff.2 h3), @ofJ0_j _ _ <| invertibleOfNonzero h3]
   · by_cases h1728 : j = 1728
     · have h2 : (2 : F) ≠ 0 :=
-        fun h => h0 <| by rw [h1728, show (1728 : F) = 2 * 864 by norm_num1, h, zero_mul]
+        fun h ↦ h0 <| by rw [h1728, show (1728 : F) = 2 * 864 by norm_num1, h, zero_mul]
       rw [h1728, ofJ_1728_of_two_ne_zero (h2 := neZero_iff.2 h2),
         @ofJ1728_j _ _ <| invertibleOfNonzero h2]
     · rw [ofJ_ne_0_ne_1728 j h0 h1728,

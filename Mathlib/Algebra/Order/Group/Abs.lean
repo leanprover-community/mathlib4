@@ -153,19 +153,19 @@ theorem abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max |a| |c|
       simp [((@neg_le_neg_iff α ..).mpr hab).trans (neg_le_abs a)]⟩
 
 theorem min_abs_abs_le_abs_max : min |a| |b| ≤ |max a b| :=
-  (le_total a b).elim (fun h => (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
-    fun h => (min_le_left _ _).trans_eq <| congr_arg _ (max_eq_left h).symm
+  (le_total a b).elim (fun h ↦ (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
+    fun h ↦ (min_le_left _ _).trans_eq <| congr_arg _ (max_eq_left h).symm
 
 theorem min_abs_abs_le_abs_min : min |a| |b| ≤ |min a b| :=
-  (le_total a b).elim (fun h => (min_le_left _ _).trans_eq <| congr_arg _ (min_eq_left h).symm)
-    fun h => (min_le_right _ _).trans_eq <| congr_arg _ (min_eq_right h).symm
+  (le_total a b).elim (fun h ↦ (min_le_left _ _).trans_eq <| congr_arg _ (min_eq_left h).symm)
+    fun h ↦ (min_le_right _ _).trans_eq <| congr_arg _ (min_eq_right h).symm
 
 theorem abs_max_le_max_abs_abs : |max a b| ≤ max |a| |b| :=
-  (le_total a b).elim (fun h => (congr_arg _ <| max_eq_right h).trans_le <| le_max_right _ _)
-    fun h => (congr_arg _ <| max_eq_left h).trans_le <| le_max_left _ _
+  (le_total a b).elim (fun h ↦ (congr_arg _ <| max_eq_right h).trans_le <| le_max_right _ _)
+    fun h ↦ (congr_arg _ <| max_eq_left h).trans_le <| le_max_left _ _
 
 theorem abs_min_le_max_abs_abs : |min a b| ≤ max |a| |b| :=
-  (le_total a b).elim (fun h => (congr_arg _ <| min_eq_left h).trans_le <| le_max_left _ _) fun h =>
+  (le_total a b).elim (fun h ↦ (congr_arg _ <| min_eq_left h).trans_le <| le_max_left _ _) fun h =>
     (congr_arg _ <| min_eq_right h).trans_le <| le_max_right _ _
 
 theorem eq_of_abs_sub_eq_zero {a b : α} (h : |a - b| = 0) : a = b :=

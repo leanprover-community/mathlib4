@@ -30,7 +30,7 @@ theorem isPrimePow_of_minFac_pow_factorization_eq {n : ℕ}
 
 theorem isPrimePow_iff_minFac_pow_factorization_eq {n : ℕ} (hn : n ≠ 1) :
     IsPrimePow n ↔ n.minFac ^ n.factorization n.minFac = n :=
-  ⟨fun h => h.minFac_pow_factorization_eq, fun h => isPrimePow_of_minFac_pow_factorization_eq h hn⟩
+  ⟨fun h ↦ h.minFac_pow_factorization_eq, fun h ↦ isPrimePow_of_minFac_pow_factorization_eq h hn⟩
 
 theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
     IsPrimePow n ↔ ∃ p k : ℕ, 0 < k ∧ n.factorization = Finsupp.single p k := by
@@ -69,7 +69,7 @@ alias IsPrimePow.exists_ord_compl_eq_one := IsPrimePow.exists_ordCompl_eq_one
 
 theorem exists_ordCompl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
     IsPrimePow n ↔ ∃ p : ℕ, p.Prime ∧ ordCompl[p] n = 1 := by
-  refine ⟨fun h => IsPrimePow.exists_ordCompl_eq_one h, fun h => ?_⟩
+  refine ⟨fun h ↦ IsPrimePow.exists_ordCompl_eq_one h, fun h ↦ ?_⟩
   rcases h with ⟨p, pp, h⟩
   rw [isPrimePow_nat_iff]
   rw [← Nat.eq_of_dvd_of_div_eq_one (Nat.ordProj_dvd n p) h] at hn ⊢

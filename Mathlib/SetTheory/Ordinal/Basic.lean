@@ -1120,7 +1120,7 @@ theorem card_surjective : Function.Surjective card :=
 
 /-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
 def gciOrdCard : GaloisCoinsertion ord card :=
-  gc_ord_card.toGaloisCoinsertion fun c => c.card_ord.le
+  gc_ord_card.toGaloisCoinsertion fun c ↦ c.card_ord.le
 
 theorem ord_card_le (o : Ordinal) : o.card.ord ≤ o :=
   gc_ord_card.l_u_le _
@@ -1299,7 +1299,7 @@ theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
   apply lift_lt_univ'
 
 theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have := ord_lt_ord.2 h
     rw [ord_univ] at this
     cases' liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top]) with o e
@@ -1308,7 +1308,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
     exact ⟨_, this.symm⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ _⟩
 
 theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c' :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     let ⟨a, h', e⟩ := lt_lift_iff.1 h
     rw [← univ_id] at h'
     rcases lt_univ.{u}.1 h' with ⟨c', rfl⟩

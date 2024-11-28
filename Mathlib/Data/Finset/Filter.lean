@@ -134,7 +134,7 @@ theorem filter_ssubset {s : Finset α} : s.filter p ⊂ s ↔ ∃ x ∈ s, ¬p x
   ⟨fun h =>
     let ⟨x, hs, hp⟩ := Set.exists_of_ssubset h
     ⟨x, hs, mt (fun hp => mem_filter.2 ⟨hs, hp⟩) hp⟩,
-    fun ⟨_, hs, hp⟩ => ⟨s.filter_subset _, fun h => hp (mem_filter.1 (h hs)).2⟩⟩
+    fun ⟨_, hs, hp⟩ => ⟨s.filter_subset _, fun h ↦ hp (mem_filter.1 (h hs)).2⟩⟩
 
 variable (p)
 

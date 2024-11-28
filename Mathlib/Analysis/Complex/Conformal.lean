@@ -94,7 +94,7 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
           ∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g ∘L ↑conjCLE) ∧
         g ≠ 0 := by
   constructor
-  · exact fun h => ⟨h.is_complex_or_conj_linear, h.ne_zero⟩
+  · exact fun h ↦ ⟨h.is_complex_or_conj_linear, h.ne_zero⟩
   · rintro ⟨⟨map, rfl⟩ | ⟨map, hmap⟩, h₂⟩
     · refine isConformalMap_complex_linear ?_
       contrapose! h₂ with w

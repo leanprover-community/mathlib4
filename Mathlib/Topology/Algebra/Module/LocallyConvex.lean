@@ -83,7 +83,7 @@ theorem LocallyConvexSpace.ofBasisZero {ι : Type*} (b : ι → Set E) (p : ι �
 
 theorem locallyConvexSpace_iff_zero : LocallyConvexSpace 𝕜 E ↔
     (𝓝 0 : Filter E).HasBasis (fun s : Set E => s ∈ (𝓝 0 : Filter E) ∧ Convex 𝕜 s) id :=
-  ⟨fun h => @LocallyConvexSpace.convex_basis _ _ _ _ _ _ h 0, fun h =>
+  ⟨fun h ↦ @LocallyConvexSpace.convex_basis _ _ _ _ _ _ h 0, fun h =>
     LocallyConvexSpace.ofBasisZero 𝕜 E _ _ h fun _ => And.right⟩
 
 theorem locallyConvexSpace_iff_exists_convex_subset_zero :

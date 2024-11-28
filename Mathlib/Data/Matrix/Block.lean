@@ -112,7 +112,7 @@ theorem ext_iff_blocks {A B : Matrix (n ⊕ o) (l ⊕ m) α} :
     A = B ↔
       A.toBlocks₁₁ = B.toBlocks₁₁ ∧
         A.toBlocks₁₂ = B.toBlocks₁₂ ∧ A.toBlocks₂₁ = B.toBlocks₂₁ ∧ A.toBlocks₂₂ = B.toBlocks₂₂ :=
-  ⟨fun h => h ▸ ⟨rfl, rfl, rfl, rfl⟩, fun ⟨h₁₁, h₁₂, h₂₁, h₂₂⟩ => by
+  ⟨fun h ↦ h ▸ ⟨rfl, rfl, rfl, rfl⟩, fun ⟨h₁₁, h₁₂, h₂₁, h₂₂⟩ => by
     rw [← fromBlocks_toBlocks A, ← fromBlocks_toBlocks B, h₁₁, h₁₂, h₂₁, h₂₂]⟩
 
 @[simp]
@@ -749,7 +749,7 @@ theorem blockDiag'_diagonal [DecidableEq o] [∀ i, DecidableEq (m' i)] (d : (Σ
   ext fun i j => by
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [blockDiag'_apply, diagonal_apply_eq, diagonal_apply_eq]
-    · rw [blockDiag'_apply, diagonal_apply_ne _ hij, diagonal_apply_ne _ (mt (fun h => ?_) hij)]
+    · rw [blockDiag'_apply, diagonal_apply_ne _ hij, diagonal_apply_ne _ (mt (fun h ↦ ?_) hij)]
       cases h
       rfl
 

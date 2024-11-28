@@ -539,12 +539,12 @@ variable (𝕜)
 
 @[simp, norm_cast]
 theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : 𝕜)) x ↔ HasSum f x :=
-  ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.hasSum h,
+  ⟨fun h ↦ by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.hasSum h,
     ofRealCLM.hasSum⟩
 
 @[simp, norm_cast]
 theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : 𝕜)) ↔ Summable f :=
-  ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.summable h,
+  ⟨fun h ↦ by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.summable h,
     ofRealCLM.summable⟩
 
 @[norm_cast]
@@ -570,7 +570,7 @@ variable {𝕜}
 
 theorem hasSum_iff (f : α → 𝕜) (c : 𝕜) :
     HasSum f c ↔ HasSum (fun x => re (f x)) (re c) ∧ HasSum (fun x => im (f x)) (im c) := by
-  refine ⟨fun h => ⟨hasSum_re _ h, hasSum_im _ h⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨hasSum_re _ h, hasSum_im _ h⟩, ?_⟩
   rintro ⟨h₁, h₂⟩
   simpa only [re_add_im] using
     ((hasSum_ofReal 𝕜).mpr h₁).add (((hasSum_ofReal 𝕜).mpr h₂).mul_right I)

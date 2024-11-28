@@ -346,13 +346,13 @@ theorem embedding_mk_eq_of_isReal {φ : K →+* ℂ} (h : ComplexEmbedding.IsRea
 
 theorem isReal_iff {w : InfinitePlace K} :
     IsReal w ↔ ComplexEmbedding.IsReal (embedding w) := by
-  refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
+  refine ⟨?_, fun h ↦ ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
   rwa [embedding_mk_eq_of_isReal hφ]
 
 theorem isComplex_iff {w : InfinitePlace K} :
     IsComplex w ↔ ¬ComplexEmbedding.IsReal (embedding w) := by
-  refine ⟨?_, fun h => ⟨embedding w, h, mk_embedding w⟩⟩
+  refine ⟨?_, fun h ↦ ⟨embedding w, h, mk_embedding w⟩⟩
   rintro ⟨φ, ⟨hφ, rfl⟩⟩
   contrapose! hφ
   cases mk_eq_iff.mp (mk_embedding (mk φ)) with

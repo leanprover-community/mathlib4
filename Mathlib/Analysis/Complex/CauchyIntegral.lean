@@ -353,7 +353,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
   have hsub' : ball c R \ closedBall c r ⊆ ball c R \ {c} :=
     diff_subset_diff_right (singleton_subset_iff.2 <| mem_closedBall_self hr0.le)
   have hzne : ∀ z ∈ sphere c r, z ≠ c := fun z hz =>
-    ne_of_mem_of_not_mem hz fun h => hr0.ne' <| dist_self c ▸ Eq.symm h
+    ne_of_mem_of_not_mem hz fun h ↦ hr0.ne' <| dist_self c ▸ Eq.symm h
   /- The integral `∮ z in C(c, r), f z / (z - c)` does not depend on `0 < r ≤ R` and tends to
     `2πIy` as `r → 0`. -/
   calc

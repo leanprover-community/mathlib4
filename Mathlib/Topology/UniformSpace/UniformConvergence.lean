@@ -198,7 +198,7 @@ lemma tendstoUniformly_congr {F F' : ι → α → β} {f : α → β} (hF : F =
     TendstoUniformly F f p ↔ TendstoUniformly F' f p := by
   simp_rw [← tendstoUniformlyOn_univ] at *
   have HF := EventuallyEq.exists_mem hF
-  exact ⟨fun h => h.congr (by aesop), fun h => h.congr (by simp_rw [eqOn_comm]; aesop)⟩
+  exact ⟨fun h ↦ h.congr (by aesop), fun h ↦ h.congr (by simp_rw [eqOn_comm]; aesop)⟩
 
 theorem TendstoUniformlyOn.congr_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
     (hfg : EqOn f g s) : TendstoUniformlyOn F g p s := fun u hu => by
@@ -657,7 +657,7 @@ theorem tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace [CompactSpa
 theorem tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact (hs : IsCompact s) :
     TendstoLocallyUniformlyOn F f p s ↔ TendstoUniformlyOn F f p s := by
   haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  refine ⟨fun h => ?_, TendstoUniformlyOn.tendstoLocallyUniformlyOn⟩
+  refine ⟨fun h ↦ ?_, TendstoUniformlyOn.tendstoLocallyUniformlyOn⟩
   rwa [tendstoLocallyUniformlyOn_iff_tendstoLocallyUniformly_comp_coe,
     tendstoLocallyUniformly_iff_tendstoUniformly_of_compactSpace, ←
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe] at h

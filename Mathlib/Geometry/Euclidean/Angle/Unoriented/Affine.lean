@@ -276,7 +276,7 @@ theorem _root_.Sbtw.angle₃₂₁_eq_pi {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁
 /-- The angle between three points is π if and only if the second point is strictly between the
 other two. -/
 theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ Sbtw ℝ p₁ p₂ p₃ := by
-  refine ⟨?_, fun h => h.angle₁₂₃_eq_pi⟩
+  refine ⟨?_, fun h ↦ h.angle₁₂₃_eq_pi⟩
   rw [angle, angle_eq_pi_iff]
   rintro ⟨hp₁p₂, r, hr, hp₃p₂⟩
   refine ⟨⟨1 / (1 - r), ⟨div_nonneg zero_le_one (sub_nonneg.2 (hr.le.trans zero_le_one)),
@@ -375,7 +375,7 @@ theorem angle_eq_zero_iff_eq_and_ne_or_sbtw {p₁ p₂ p₃ : P} :
 angle between them is 0 or π. -/
 theorem collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
     Collinear ℝ ({p₁, p₂, p₃} : Set P) ↔ p₁ = p₂ ∨ p₃ = p₂ ∨ ∠ p₁ p₂ p₃ = 0 ∨ ∠ p₁ p₂ p₃ = π := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · replace h := h.wbtw_or_wbtw_or_wbtw
     by_cases h₁₂ : p₁ = p₂
     · exact Or.inl h₁₂

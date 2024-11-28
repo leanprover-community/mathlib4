@@ -291,7 +291,7 @@ lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
 theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
   rw [ae_le_set]
   refine
-    ⟨fun h => by simpa only [union_diff_left] using (ae_eq_set.mp h).1, fun h =>
+    ⟨fun h ↦ by simpa only [union_diff_left] using (ae_eq_set.mp h).1, fun h =>
       eventuallyLE_antisymm_iff.mpr
         ⟨by rwa [ae_le_set, union_diff_left],
           HasSubset.Subset.eventuallyLE subset_union_left⟩⟩
@@ -1106,7 +1106,7 @@ theorem nonpos_iff_eq_zero' : μ ≤ 0 ↔ μ = 0 :=
 
 @[simp]
 theorem measure_univ_eq_zero : μ univ = 0 ↔ μ = 0 :=
-  ⟨fun h => bot_unique fun s => (h ▸ measure_mono (subset_univ s) : μ s ≤ 0), fun h =>
+  ⟨fun h ↦ bot_unique fun s => (h ▸ measure_mono (subset_univ s) : μ s ≤ 0), fun h =>
     h.symm ▸ rfl⟩
 
 theorem measure_univ_ne_zero : μ univ ≠ 0 ↔ μ ≠ 0 :=

@@ -63,7 +63,7 @@ theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace �
   rw [Pi.zero_apply, ← @inner_self_eq_zero 𝕜]
   have h_closed : IsClosed {c : E | inner c (f x) = (0 : 𝕜)} :=
     isClosed_eq (continuous_id.inner continuous_const) continuous_const
-  exact @isClosed_property ℕ E _ s (fun c => inner c (f x) = (0 : 𝕜)) hs h_closed hx _
+  exact @isClosed_property ℕ E _ s (fun c ↦ inner c (f x) = (0 : 𝕜)) hs h_closed hx _
 
 local notation "⟪" x ", " y "⟫" => y x
 
@@ -388,7 +388,7 @@ theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero {f : α → E}
     (ht : MeasurableSet t) (hμt : μ t ≠ ∞) : f =ᵐ[μ.restrict t] 0 := by
   rcases (hf_int_finite t ht hμt.lt_top).aestronglyMeasurable.isSeparable_ae_range with
     ⟨u, u_sep, hu⟩
-  refine ae_eq_zero_of_forall_dual_of_isSeparable ℝ u_sep (fun c => ?_) hu
+  refine ae_eq_zero_of_forall_dual_of_isSeparable ℝ u_sep (fun c ↦ ?_) hu
   refine ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real ?_ ?_ ht hμt
   · intro s hs hμs
     exact ContinuousLinearMap.integrable_comp c (hf_int_finite s hs hμs)

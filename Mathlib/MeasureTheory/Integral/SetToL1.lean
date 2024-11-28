@@ -1470,7 +1470,7 @@ theorem setToFun_congr_measure {μ' : Measure α} (c c' : ℝ≥0∞) (hc : c �
   · exact setToFun_congr_measure_of_integrable c' hc' hμ'_le hT hT' f hf
   · -- if `f` is not integrable, both `setToFun` are 0.
     have h_int : ∀ g : α → E, ¬Integrable g μ → ¬Integrable g μ' := fun g =>
-      mt fun h => h.of_measure_le_smul _ hc hμ_le
+      mt fun h ↦ h.of_measure_le_smul _ hc hμ_le
     simp_rw [setToFun_undef _ hf, setToFun_undef _ (h_int f hf)]
 
 theorem setToFun_congr_measure_of_add_right {μ' : Measure α}

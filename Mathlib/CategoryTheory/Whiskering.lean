@@ -71,7 +71,7 @@ def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
       map := fun α => whiskerLeft F α }
   map τ :=
     { app := fun H =>
-        { app := fun c => H.map (τ.app c)
+        { app := fun c ↦ H.map (τ.app c)
           naturality := fun X Y f => by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
       naturality := fun X Y f => by ext; dsimp; rw [f.naturality] }
 
@@ -87,7 +87,7 @@ def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
       map := fun α => whiskerRight α H }
   map τ :=
     { app := fun F =>
-        { app := fun c => τ.app (F.obj c)
+        { app := fun c ↦ τ.app (F.obj c)
           naturality := fun X Y f => by dsimp; rw [τ.naturality] }
       naturality := fun X Y f => by ext; dsimp; rw [← NatTrans.naturality] }
 

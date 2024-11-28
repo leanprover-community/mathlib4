@@ -65,7 +65,7 @@ theorem mem_reesAlgebra_iff_support (f : R[X]) :
   apply forall_congr'
   intro a
   rw [mem_support_iff, Iff.comm, Classical.imp_iff_right_iff, Ne, ← imp_iff_not_or]
-  exact fun e => e.symm ▸ (I ^ a).zero_mem
+  exact fun e ↦ e.symm ▸ (I ^ a).zero_mem
 
 theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
     monomial i r ∈ reesAlgebra I ↔ r ∈ I ^ i := by

@@ -218,7 +218,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
     obtain ⟨j, g', hj⟩ := exists_locallyConstant_finite_nonempty _ hC f'
     refine ⟨j, ⟨ff ∘ g', g'.isLocallyConstant.comp _⟩, ?_⟩
     ext1 t
-    apply_fun fun e => e t at hj
+    apply_fun fun e ↦ e t at hj
     dsimp at hj ⊢
     rw [← hj]
     rfl

@@ -96,7 +96,7 @@ theorem IsSatisfiable.isFinitelySatisfiable (h : T.IsSatisfiable) : T.IsFinitely
 finitely satisfiable. -/
 theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
     T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=
-  ⟨Theory.IsSatisfiable.isFinitelySatisfiable, fun h => by
+  ⟨Theory.IsSatisfiable.isFinitelySatisfiable, fun h ↦ by
     classical
       set M : Finset T → Type max u v := fun T0 : Finset T =>
         (h (T0.map (Function.Embedding.subtype fun x => x ∈ T)) T0.map_subtype_subset).some.Carrier
@@ -176,7 +176,7 @@ theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type*} (T : �
   classical
     refine
       ⟨fun h s => h.mono (Set.iUnion_mono fun _ => Set.iUnion_subset_iff.2 fun _ => refl _),
-        fun h => ?_⟩
+        fun h ↦ ?_⟩
     rw [isSatisfiable_iff_isFinitelySatisfiable]
     intro s hs
     rw [Set.iUnion_eq_iUnion_finset] at hs
@@ -327,8 +327,8 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
 
 theorem models_formula_iff_onTheory_models_equivSentence {φ : L.Formula α} :
     T ⊨ᵇ φ ↔ (L.lhomWithConstants α).onTheory T ⊨ᵇ Formula.equivSentence φ := by
-  refine ⟨fun h => models_sentence_iff.2 (fun M => ?_),
-    fun h => models_formula_iff.2 (fun M v => ?_)⟩
+  refine ⟨fun h ↦ models_sentence_iff.2 (fun M => ?_),
+    fun h ↦ models_formula_iff.2 (fun M v => ?_)⟩
   · letI := (L.lhomWithConstants α).reduct M
     have : (L.lhomWithConstants α).IsExpansionOn M := LHom.isExpansionOn_reduct _ _
       -- why doesn't that instance just work?

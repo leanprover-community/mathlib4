@@ -311,10 +311,10 @@ theorem reduce_b {u : XgcdType} (h : u.r ≠ 0) : u.reduce = u.step.reduce.flip 
 theorem reduce_isReduced : ∀ u : XgcdType, u.reduce.IsReduced
   | u =>
     dite (u.r = 0)
-      (fun h => by
+      (fun h ↦ by
         rw [reduce_a h]
         exact u.finish_isReduced)
-      fun h => by
+      fun h ↦ by
       have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
       rw [reduce_b h, flip_isReduced]
       apply reduce_isReduced
@@ -338,7 +338,7 @@ theorem reduce_isSpecial' (u : XgcdType) (hs : u.IsSpecial) : u.reduce.IsSpecial
 
 theorem reduce_v : ∀ u : XgcdType, u.reduce.v = u.v
   | u =>
-    dite (u.r = 0) (fun h => by rw [reduce_a h, finish_v u h]) fun h => by
+    dite (u.r = 0) (fun h ↦ by rw [reduce_a h, finish_v u h]) fun h ↦ by
       have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
       rw [reduce_b h, flip_v, reduce_v (step u), step_v u h, Prod.swap_swap]
 

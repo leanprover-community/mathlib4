@@ -141,7 +141,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
         simp only
         rw [← hu (CategoryTheory.homOfLE subi).op, ← hu (CategoryTheory.homOfLE subi').op]
         let uii' := u (Opposite.op ({i, i'} : Finset ι))
-        exact fun h => Subtype.mk_eq_mk.mp (uii'.property.1 h)
+        exact fun h ↦ Subtype.mk_eq_mk.mp (uii'.property.1 h)
       · -- Show that it maps each index to the corresponding finite set
         intro i
         apply (u (Opposite.op ({i} : Finset ι))).property.2

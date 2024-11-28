@@ -63,13 +63,13 @@ theorem IsLowerSet.compl (hs : IsLowerSet s) : IsUpperSet sᶜ := fun _a _b h hb
 
 @[simp]
 theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     convert h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 
 @[simp]
 theorem isLowerSet_compl : IsLowerSet sᶜ ↔ IsUpperSet s :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     convert h.compl
     rw [compl_compl], IsUpperSet.compl⟩
 
@@ -272,10 +272,10 @@ section OrderTop
 variable [OrderTop α]
 
 theorem IsLowerSet.top_mem (hs : IsLowerSet s) : ⊤ ∈ s ↔ s = univ :=
-  ⟨fun h => eq_univ_of_forall fun _ => hs le_top h, fun h => h.symm ▸ mem_univ _⟩
+  ⟨fun h ↦ eq_univ_of_forall fun _ => hs le_top h, fun h ↦ h.symm ▸ mem_univ _⟩
 
 theorem IsUpperSet.top_mem (hs : IsUpperSet s) : ⊤ ∈ s ↔ s.Nonempty :=
-  ⟨fun h => ⟨_, h⟩, fun ⟨_a, ha⟩ => hs le_top ha⟩
+  ⟨fun h ↦ ⟨_, h⟩, fun ⟨_a, ha⟩ => hs le_top ha⟩
 
 theorem IsUpperSet.not_top_mem (hs : IsUpperSet s) : ⊤ ∉ s ↔ s = ∅ :=
   hs.top_mem.not.trans not_nonempty_iff_eq_empty
@@ -287,10 +287,10 @@ section OrderBot
 variable [OrderBot α]
 
 theorem IsUpperSet.bot_mem (hs : IsUpperSet s) : ⊥ ∈ s ↔ s = univ :=
-  ⟨fun h => eq_univ_of_forall fun _ => hs bot_le h, fun h => h.symm ▸ mem_univ _⟩
+  ⟨fun h ↦ eq_univ_of_forall fun _ => hs bot_le h, fun h ↦ h.symm ▸ mem_univ _⟩
 
 theorem IsLowerSet.bot_mem (hs : IsLowerSet s) : ⊥ ∈ s ↔ s.Nonempty :=
-  ⟨fun h => ⟨_, h⟩, fun ⟨_a, ha⟩ => hs bot_le ha⟩
+  ⟨fun h ↦ ⟨_, h⟩, fun ⟨_a, ha⟩ => hs bot_le ha⟩
 
 theorem IsLowerSet.not_bot_mem (hs : IsLowerSet s) : ⊥ ∉ s ↔ s = ∅ :=
   hs.bot_mem.not.trans not_nonempty_iff_eq_empty
@@ -1086,11 +1086,11 @@ variable [CompleteLattice α]
 
 @[simp]
 theorem Ici_sSup (S : Set α) : Ici (sSup S) = ⨆ a ∈ S, Ici a :=
-  SetLike.ext fun c => by simp only [mem_Ici_iff, mem_iSup_iff, sSup_le_iff]
+  SetLike.ext fun c ↦ by simp only [mem_Ici_iff, mem_iSup_iff, sSup_le_iff]
 
 @[simp]
 theorem Ici_iSup (f : ι → α) : Ici (⨆ i, f i) = ⨆ i, Ici (f i) :=
-  SetLike.ext fun c => by simp only [mem_Ici_iff, mem_iSup_iff, iSup_le_iff]
+  SetLike.ext fun c ↦ by simp only [mem_Ici_iff, mem_iSup_iff, iSup_le_iff]
 
 -- Porting note: no longer a @[simp]
 theorem Ici_iSup₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⨆ (i) (j), Ici (f i j) := by
@@ -1180,11 +1180,11 @@ variable [CompleteLattice α]
 
 @[simp]
 theorem Iic_sInf (S : Set α) : Iic (sInf S) = ⨅ a ∈ S, Iic a :=
-  SetLike.ext fun c => by simp only [mem_Iic_iff, mem_iInf₂_iff, le_sInf_iff]
+  SetLike.ext fun c ↦ by simp only [mem_Iic_iff, mem_iInf₂_iff, le_sInf_iff]
 
 @[simp]
 theorem Iic_iInf (f : ι → α) : Iic (⨅ i, f i) = ⨅ i, Iic (f i) :=
-  SetLike.ext fun c => by simp only [mem_Iic_iff, mem_iInf_iff, le_iInf_iff]
+  SetLike.ext fun c ↦ by simp only [mem_Iic_iff, mem_iInf_iff, le_iInf_iff]
 
 -- Porting note: no longer a @[simp]
 theorem Iic_iInf₂ (f : ∀ i, κ i → α) : Iic (⨅ (i) (j), f i j) = ⨅ (i) (j), Iic (f i j) := by
@@ -1382,7 +1382,7 @@ theorem Set.OrdConnected.upperClosure_inter_lowerClosure (h : s.OrdConnected) :
 
 theorem ordConnected_iff_upperClosure_inter_lowerClosure :
     s.OrdConnected ↔ ↑(upperClosure s) ∩ ↑(lowerClosure s) = s := by
-  refine ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h => ?_⟩
+  refine ⟨Set.OrdConnected.upperClosure_inter_lowerClosure, fun h ↦ ?_⟩
   rw [← h]
   exact (UpperSet.upper _).ordConnected.inter (LowerSet.lower _).ordConnected
 

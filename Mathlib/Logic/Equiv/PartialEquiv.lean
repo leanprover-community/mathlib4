@@ -204,7 +204,7 @@ theorem right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
 
 theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
     x = e.symm y ↔ e x = y :=
-  ⟨fun h => by rw [← e.right_inv hy, h], fun h => by rw [← e.left_inv hx, h]⟩
+  ⟨fun h ↦ by rw [← e.right_inv hy, h], fun h ↦ by rw [← e.left_inv hx, h]⟩
 
 protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 
@@ -329,7 +329,7 @@ protected theorem symm (h : e.IsImage s t) : e.symm.IsImage t s :=
 
 @[simp]
 theorem symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 protected theorem mapsTo (h : e.IsImage s t) : MapsTo e (e.source ∩ s) (e.target ∩ t) :=
   fun _ hx => ⟨e.mapsTo hx.1, (h hx.1).2 hx.2⟩

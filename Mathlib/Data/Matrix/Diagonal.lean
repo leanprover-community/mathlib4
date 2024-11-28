@@ -63,7 +63,7 @@ theorem diagonal_apply_ne' [Zero α] (d : n → α) {i j : n} (h : j ≠ i) : (d
 @[simp]
 theorem diagonal_eq_diagonal_iff [Zero α] {d₁ d₂ : n → α} :
     diagonal d₁ = diagonal d₂ ↔ ∀ i, d₁ i = d₂ i :=
-  ⟨fun h i => by simpa using congr_arg (fun m : Matrix n n α => m i i) h, fun h => by
+  ⟨fun h i => by simpa using congr_arg (fun m : Matrix n n α => m i i) h, fun h ↦ by
     rw [show d₁ = d₂ from funext h]⟩
 
 theorem diagonal_injective [Zero α] : Function.Injective (diagonal : (n → α) → Matrix n n α) :=

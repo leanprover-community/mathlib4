@@ -334,14 +334,14 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
     piiUnionInter π {i} = π i ∪ {univ} := by
   ext1 s
   simp only [piiUnionInter, exists_prop, mem_union]
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨t, hti, f, hfπ, rfl⟩
     simp only [subset_singleton_iff, Finset.mem_coe] at hti
     by_cases hi : i ∈ t
     · have ht_eq_i : t = {i} := by
         ext1 x
         rw [Finset.mem_singleton]
-        exact ⟨fun h => hti x h, fun h => h.symm ▸ hi⟩
+        exact ⟨fun h ↦ hti x h, fun h ↦ h.symm ▸ hi⟩
       simp only [ht_eq_i, Finset.mem_singleton, iInter_iInter_eq_left]
       exact Or.inl (hfπ i hi)
     · have ht_empty : t = ∅ := by
@@ -366,7 +366,7 @@ theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
       { s' : Set α | ∃ (t : Finset ι) (_ : ↑t ⊆ S), s' = ⋂ i ∈ t, s i } := by
   ext1 s'
   simp_rw [piiUnionInter, Set.mem_singleton_iff, exists_prop, Set.mem_setOf_eq]
-  refine ⟨fun h => ?_, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
+  refine ⟨fun h ↦ ?_, fun ⟨t, htS, h_eq⟩ => ⟨t, htS, s, fun _ _ => rfl, h_eq⟩⟩
   obtain ⟨t, htS, f, hft_eq, rfl⟩ := h
   refine ⟨t, htS, ?_⟩
   congr! 3
@@ -401,7 +401,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     simp_rw [← Set.inf_eq_inter]
     ext1 x
     simp only [g, inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
-    refine ⟨fun h i _ => ?_, fun h => ⟨fun i hi1 => ?_, fun i hi2 => ?_⟩⟩
+    refine ⟨fun h i _ => ?_, fun h ↦ ⟨fun i hi1 => ?_, fun i hi2 => ?_⟩⟩
     · split_ifs with h_1 h_2 h_2
       exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
         ⟨Set.mem_univ _, Set.mem_univ _⟩]
@@ -414,7 +414,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
   refine ⟨fun n hn => ?_, h_inter_eq⟩
   simp only [g]
   split_ifs with hn1 hn2 h
-  · refine hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h => ?_)
+  · refine hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h ↦ ?_)
     rw [h_inter_eq] at h_nonempty
     suffices h_empty : ⋂ i ∈ p1 ∪ p2, g i = ∅ from
       (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
@@ -519,7 +519,7 @@ theorem ext : ∀ {d₁ d₂ : DynkinSystem α}, (∀ s : Set α, d₁.Has s ↔
 variable (d : DynkinSystem α)
 
 theorem has_compl_iff {a} : d.Has aᶜ ↔ d.Has a :=
-  ⟨fun h => by simpa using d.has_compl h, fun h => d.has_compl h⟩
+  ⟨fun h ↦ by simpa using d.has_compl h, fun h ↦ d.has_compl h⟩
 
 theorem has_univ : d.Has univ := by simpa using d.has_compl d.has_empty
 
@@ -642,7 +642,7 @@ theorem generate_inter {s : Set (Set α)} (hs : IsPiSystem s) {t₁ t₂ : Set �
       have : generate s ≤ (generate s).restrictOn this :=
         generate_le _ fun s₂ hs₂ =>
           show (generate s).Has (s₂ ∩ s₁) from
-            (s₂ ∩ s₁).eq_empty_or_nonempty.elim (fun h => h.symm ▸ GenerateHas.empty) fun h =>
+            (s₂ ∩ s₁).eq_empty_or_nonempty.elim (fun h ↦ h.symm ▸ GenerateHas.empty) fun h =>
               GenerateHas.basic _ <| hs _ hs₂ _ hs₁ h
       have : (generate s).Has (t₂ ∩ s₁) := this _ ht₂
       show (generate s).Has (s₁ ∩ t₂) by rwa [inter_comm]

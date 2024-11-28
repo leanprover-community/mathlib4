@@ -538,7 +538,7 @@ theorem sub_eq_zero_of_upcrossingsBefore_lt (hab : a < b) (hn : upcrossingsBefor
   have : N ≤ upperCrossingTime a b f N n ω := by
     rw [upcrossingsBefore] at hn
     rw [← not_lt]
-    exact fun h => not_le.2 hn (le_csSup (upperCrossingTime_lt_bddAbove hab) h)
+    exact fun h ↦ not_le.2 hn (le_csSup (upperCrossingTime_lt_bddAbove hab) h)
   simp [stoppedValue, upperCrossingTime_stabilize' (Nat.le_succ n) this,
     lowerCrossingTime_stabilize' le_rfl (le_trans this upperCrossingTime_le_lowerCrossingTime)]
 
@@ -617,7 +617,7 @@ theorem crossing_pos_eq (hab : a < b) :
   have hab' : 0 < b - a := sub_pos.2 hab
   have hf : ∀ ω i, b - a ≤ (f i ω - a)⁺ ↔ b ≤ f i ω := by
     intro i ω
-    refine ⟨fun h => ?_, fun h => ?_⟩
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · rwa [← sub_le_sub_iff_right a, ←
         posPart_eq_of_posPart_pos (lt_of_lt_of_le hab' h)]
     · rw [← sub_le_sub_iff_right a] at h

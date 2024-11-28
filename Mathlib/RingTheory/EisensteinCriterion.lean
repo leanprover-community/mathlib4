@@ -83,7 +83,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
   have hf : f.map (mk P) = C (mk P (leadingCoeff f)) * X ^ natDegree f :=
     map_eq_C_mul_X_pow_of_forall_coeff_mem hfP
   have hfd0 : 0 < f.natDegree := WithBot.coe_lt_coe.1 (lt_of_lt_of_le hfd0 degree_le_natDegree)
-  ⟨mt degree_eq_zero_of_isUnit fun h => by simp_all only [lt_irrefl], by
+  ⟨mt degree_eq_zero_of_isUnit fun h ↦ by simp_all only [lt_irrefl], by
     rintro p q rfl
     rw [Polynomial.map_mul] at hf
     rcases mul_eq_mul_prime_pow
@@ -97,9 +97,9 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
         Ideal.mul_mem_mul (eval_zero_mem_ideal_of_eq_mul_X_pow hp hm0.ne')
           (eval_zero_mem_ideal_of_eq_mul_X_pow hq hn0.ne')
     have hpql0 : (mk P) (p * q).leadingCoeff ≠ 0 := by rwa [Ne, eq_zero_iff_mem]
-    have hp0 : p ≠ 0 := fun h => by
+    have hp0 : p ≠ 0 := fun h ↦ by
       simp_all only [zero_mul, eq_self_iff_true, not_true, Ne]
-    have hq0 : q ≠ 0 := fun h => by
+    have hq0 : q ≠ 0 := fun h ↦ by
       simp_all only [eq_self_iff_true, not_true, Ne, mul_zero]
     have hbc0 : degree b = 0 ∧ degree c = 0 := by
       apply_fun degree at hbc

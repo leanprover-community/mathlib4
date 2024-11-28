@@ -135,7 +135,7 @@ theorem mem_iff_generator_dvd (S : Ideal R) [S.IsPrincipal] {x : R} : x ∈ S �
 
 theorem prime_generator_of_isPrime (S : Ideal R) [S.IsPrincipal] [is_prime : S.IsPrime]
     (ne_bot : S ≠ ⊥) : Prime (generator S) :=
-  ⟨fun h => ne_bot ((eq_bot_iff_generator_eq_zero S).2 h), fun h =>
+  ⟨fun h ↦ ne_bot ((eq_bot_iff_generator_eq_zero S).2 h), fun h =>
     is_prime.ne_top (S.eq_top_of_isUnit_mem (generator_mem S) h), fun _ _ => by
     simpa only [← mem_iff_generator_dvd S] using is_prime.2⟩
 

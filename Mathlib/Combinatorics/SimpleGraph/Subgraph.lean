@@ -269,8 +269,8 @@ instance : Max G.Subgraph where
   max G₁ G₂ :=
     { verts := G₁.verts ∪ G₂.verts
       Adj := G₁.Adj ⊔ G₂.Adj
-      adj_sub := fun hab => Or.elim hab (fun h => G₁.adj_sub h) fun h => G₂.adj_sub h
-      edge_vert := Or.imp (fun h => G₁.edge_vert h) fun h => G₂.edge_vert h
+      adj_sub := fun hab => Or.elim hab (fun h ↦ G₁.adj_sub h) fun h ↦ G₂.adj_sub h
+      edge_vert := Or.imp (fun h ↦ G₁.edge_vert h) fun h ↦ G₂.edge_vert h
       symm := fun _ _ => Or.imp G₁.adj_symm G₂.adj_symm }
 
 /-- The intersection of two subgraphs. -/
@@ -279,7 +279,7 @@ instance : Min G.Subgraph where
     { verts := G₁.verts ∩ G₂.verts
       Adj := G₁.Adj ⊓ G₂.Adj
       adj_sub := fun hab => G₁.adj_sub hab.1
-      edge_vert := And.imp (fun h => G₁.edge_vert h) fun h => G₂.edge_vert h
+      edge_vert := And.imp (fun h ↦ G₁.edge_vert h) fun h ↦ G₂.edge_vert h
       symm := fun _ _ => And.imp G₁.adj_symm G₂.adj_symm }
 
 /-- The `top` subgraph is `G` as a subgraph of itself. -/
@@ -373,7 +373,7 @@ theorem sInf_adj_of_nonempty {s : Set G.Subgraph} (hs : s.Nonempty) :
   sInf_adj.trans <|
     and_iff_left_of_imp <| by
       obtain ⟨G', hG'⟩ := hs
-      exact fun h => G'.adj_sub (h _ hG')
+      exact fun h ↦ G'.adj_sub (h _ hG')
 
 theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → G.Subgraph} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by

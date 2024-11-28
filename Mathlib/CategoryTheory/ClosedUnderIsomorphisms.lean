@@ -60,7 +60,7 @@ lemma isoClosure_eq_self [ClosedUnderIsomorphisms P] : isoClosure P = P := by
 
 lemma isoClosure_le_iff [ClosedUnderIsomorphisms Q] : isoClosure P ≤ Q ↔ P ≤ Q :=
   ⟨(le_isoClosure P).trans,
-    fun h => (monotone_isoClosure h).trans (by rw [isoClosure_eq_self])⟩
+    fun h ↦ (monotone_isoClosure h).trans (by rw [isoClosure_eq_self])⟩
 
 instance : ClosedUnderIsomorphisms (isoClosure P) where
   of_iso := by

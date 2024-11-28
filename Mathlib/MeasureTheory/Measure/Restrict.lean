@@ -345,7 +345,7 @@ theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
 
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
-  refine ⟨fun h i => restrict_congr_mono (subset_iUnion _ _) h, fun h => ?_⟩
+  refine ⟨fun h i => restrict_congr_mono (subset_iUnion _ _) h, fun h ↦ ?_⟩
   ext1 t ht
   have D : Directed (· ⊆ ·) fun t : Finset ι => ⋃ i ∈ t, s i :=
     Monotone.directed_le fun t₁ t₂ ht => biUnion_subset_biUnion_left ht
@@ -866,7 +866,7 @@ theorem volume_preimage_coe (hs : NullMeasurableSet s) (ht : MeasurableSet t) :
     volume (((↑) : s → α) ⁻¹' t) = volume (t ∩ s) := by
   rw [volume_set_coe_def,
     comap_apply₀ _ _ Subtype.coe_injective
-      (fun h => MeasurableSet.nullMeasurableSet_subtype_coe hs)
+      (fun h ↦ MeasurableSet.nullMeasurableSet_subtype_coe hs)
       (measurable_subtype_coe ht).nullMeasurableSet,
     image_preimage_eq_inter_range, Subtype.range_coe]
 
@@ -922,7 +922,7 @@ theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
   · rw [mem_map_indicator_ae_iff_mem_map_restrict_ae_of_zero_mem ht hs]
     exact id
   rw [mem_map_indicator_ae_iff_of_zero_nmem ht, mem_map_restrict_ae_iff hs]
-  exact fun h => measure_mono_null (Set.inter_subset_left.trans Set.subset_union_left) h
+  exact fun h ↦ measure_mono_null (Set.inter_subset_left.trans Set.subset_union_left) h
 
 variable [Zero β]
 
@@ -958,7 +958,7 @@ theorem indicator_meas_zero (hs : μ s = 0) : indicator s f =ᵐ[μ] 0 :=
 theorem ae_eq_restrict_iff_indicator_ae_eq {g : α → β} (hs : MeasurableSet s) :
     f =ᵐ[μ.restrict s] g ↔ s.indicator f =ᵐ[μ] s.indicator g := by
   rw [Filter.EventuallyEq, ae_restrict_iff' hs]
-  refine ⟨fun h => ?_, fun h => ?_⟩ <;> filter_upwards [h] with x hx
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> filter_upwards [h] with x hx
   · by_cases hxs : x ∈ s
     · simp [hxs, hx hxs]
     · simp [hxs]

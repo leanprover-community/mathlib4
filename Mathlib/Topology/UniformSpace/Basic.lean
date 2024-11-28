@@ -375,7 +375,7 @@ protected theorem UniformSpace.ext {u₁ u₂ : UniformSpace α} (h : 𝓤[u₁]
 
 protected theorem UniformSpace.ext_iff {u₁ u₂ : UniformSpace α} :
     u₁ = u₂ ↔ ∀ s, s ∈ 𝓤[u₁] ↔ s ∈ 𝓤[u₂] :=
-  ⟨fun h _ => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
+  ⟨fun h _ => h ▸ Iff.rfl, fun h ↦ by ext; exact h _⟩
 
 theorem UniformSpace.ofCoreEq_toCore (u : UniformSpace α) (t : TopologicalSpace α)
     (h : t = u.toCore.toTopologicalSpace) : .ofCoreEq u.toCore t h = u :=
@@ -1707,6 +1707,6 @@ theorem Filter.Tendsto.congr_uniformity {α β} [UniformSpace β] {f g : α → 
 
 theorem Uniform.tendsto_congr {α β} [UniformSpace β] {f g : α → β} {l : Filter α} {b : β}
     (hfg : Tendsto (fun x => (f x, g x)) l (𝓤 β)) : Tendsto f l (𝓝 b) ↔ Tendsto g l (𝓝 b) :=
-  ⟨fun h => h.congr_uniformity hfg, fun h => h.congr_uniformity hfg.uniformity_symm⟩
+  ⟨fun h ↦ h.congr_uniformity hfg, fun h ↦ h.congr_uniformity hfg.uniformity_symm⟩
 
 set_option linter.style.longFile 1900

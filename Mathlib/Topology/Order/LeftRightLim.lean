@@ -182,7 +182,7 @@ theorem continuousWithinAt_Iio_iff_leftLim_eq :
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simp [leftLim_eq_of_eq_bot f h', ContinuousWithinAt, h']
   haveI : (𝓝[Iio x] x).NeBot := neBot_iff.2 h'
-  refine ⟨fun h => tendsto_nhds_unique (hf.tendsto_leftLim x) h.tendsto, fun h => ?_⟩
+  refine ⟨fun h ↦ tendsto_nhds_unique (hf.tendsto_leftLim x) h.tendsto, fun h ↦ ?_⟩
   have := hf.tendsto_leftLim x
   rwa [h] at this
 
@@ -195,7 +195,7 @@ theorem continuousWithinAt_Ioi_iff_rightLim_eq :
 /-- A monotone function is continuous at a point if and only if its left and right limits
 coincide. -/
 theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x = rightLim f x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have A : leftLim f x = f x :=
       hf.continuousWithinAt_Iio_iff_leftLim_eq.1 h.continuousWithinAt
     have B : rightLim f x = f x :=

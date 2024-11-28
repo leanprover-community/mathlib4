@@ -99,7 +99,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
   obtain ⟨i, hi, hi'⟩ := exists_min_image _ (fun i => M i (σ i)) univ_nonempty
   rw [exists_mem_doublyStochastic_eq_smul_iff hs] at hM
   let N : Matrix n n R := M - M i (σ i) • σ.permMatrix R
-  have hMi' : 0 < M i (σ i) := (hM.1 _ _).lt_of_ne' fun h => by
+  have hMi' : 0 < M i (σ i) := (hM.1 _ _).lt_of_ne' fun h ↦ by
     simpa [Equiv.toPEquiv_apply] using hσ _ _ h
   let s' : R := s - M i (σ i)
   have hs' : 0 ≤ s' := by

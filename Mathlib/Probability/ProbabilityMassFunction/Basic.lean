@@ -94,9 +94,9 @@ theorem apply_pos_iff (p : PMF α) (a : α) : 0 < p a ↔ a ∈ p.support :=
   pos_iff_ne_zero.trans (p.mem_support_iff a).symm
 
 theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := by
-  refine ⟨fun h => Set.Subset.antisymm (fun a' ha' => by_contra fun ha => ?_)
+  refine ⟨fun h ↦ Set.Subset.antisymm (fun a' ha' => by_contra fun ha => ?_)
     fun a' ha' => ha'.symm ▸ (p.mem_support_iff a).2 fun ha => zero_ne_one <| ha.symm.trans h,
-    fun h => _root_.trans (symm <| tsum_eq_single a
+    fun h ↦ _root_.trans (symm <| tsum_eq_single a
       fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha')) p.tsum_coe⟩
   suffices 1 < ∑' a, p a from ne_of_lt this p.tsum_coe.symm
   have : 0 < ∑' b, ite (b = a) 0 (p b) := lt_of_le_of_ne' zero_le'
@@ -168,7 +168,7 @@ theorem toOuterMeasure_apply_eq_zero_iff : p.toOuterMeasure s = 0 ↔ Disjoint p
   exact funext_iff.symm.trans Set.indicator_eq_zero'
 
 theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support ⊆ s := by
-  refine (p.toOuterMeasure_apply s).symm ▸ ⟨fun h a hap => ?_, fun h => ?_⟩
+  refine (p.toOuterMeasure_apply s).symm ▸ ⟨fun h a hap => ?_, fun h ↦ ?_⟩
   · refine by_contra fun hs => ne_of_lt ?_ (h.trans p.tsum_coe.symm)
     have hs' : s.indicator p a = 0 := Set.indicator_apply_eq_zero.2 fun hs' => False.elim <| hs hs'
     have hsa : s.indicator p a < p a := hs'.symm ▸ (p.apply_pos_iff a).2 hap

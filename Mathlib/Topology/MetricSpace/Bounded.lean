@@ -94,7 +94,7 @@ protected theorem _root_.Bornology.IsBounded.closure (h : IsBounded s) : IsBound
 
 @[simp]
 theorem isBounded_closure_iff : IsBounded (closure s) ↔ IsBounded s :=
-  ⟨fun h => h.subset subset_closure, fun h => h.closure⟩
+  ⟨fun h ↦ h.subset subset_closure, fun h ↦ h.closure⟩
 
 theorem hasBasis_cobounded_compl_closedBall (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
@@ -281,7 +281,7 @@ theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBou
 In a proper Hausdorff space, a set is compact if and only if it is closed and bounded. -/
 theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :
     IsCompact s ↔ IsClosed s ∧ IsBounded s :=
-  ⟨fun h => ⟨h.isClosed, h.isBounded⟩, fun h => isCompact_of_isClosed_isBounded h.1 h.2⟩
+  ⟨fun h ↦ ⟨h.isClosed, h.isBounded⟩, fun h ↦ isCompact_of_isClosed_isBounded h.1 h.2⟩
 
 theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
     CompactSpace α ↔ IsBounded (univ : Set α) :=
@@ -398,7 +398,7 @@ theorem dist_le_diam_of_mem' (h : EMetric.diam s ≠ ⊤) (hx : x ∈ s) (hy : y
 theorem isBounded_iff_ediam_ne_top : IsBounded s ↔ EMetric.diam s ≠ ⊤ :=
   isBounded_iff.trans <| Iff.intro
     (fun ⟨_C, hC⟩ => ne_top_of_le_ne_top ENNReal.ofReal_ne_top <| ediam_le_of_forall_dist_le hC)
-    fun h => ⟨diam s, fun _x hx _y hy => dist_le_diam_of_mem' h hx hy⟩
+    fun h ↦ ⟨diam s, fun _x hx _y hy => dist_le_diam_of_mem' h hx hy⟩
 
 alias ⟨_root_.Bornology.IsBounded.ediam_ne_top, _⟩ := isBounded_iff_ediam_ne_top
 

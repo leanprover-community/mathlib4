@@ -55,7 +55,7 @@ class IsJacobsonRing (R : Type*) [CommRing R] : Prop where
 
 theorem isJacobsonRing_iff {R} [CommRing R] :
     IsJacobsonRing R ↔ ∀ I : Ideal R, I.IsRadical → I.jacobson = I :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 theorem IsJacobsonRing.out {R} [CommRing R] :
     IsJacobsonRing R → ∀ {I : Ideal R}, I.IsRadical → I.jacobson = I :=
@@ -114,7 +114,7 @@ instance (priority := 100) isJacobsonRing_quotient [IsJacobsonRing R] : IsJacobs
     rfl⟩
 
 theorem isJacobsonRing_iso (e : R ≃+* S) : IsJacobsonRing R ↔ IsJacobsonRing S :=
-  ⟨fun h => @isJacobsonRing_of_surjective _ _ _ _ h ⟨(e : R →+* S), e.surjective⟩, fun h =>
+  ⟨fun h ↦ @isJacobsonRing_of_surjective _ _ _ _ h ⟨(e : R →+* S), e.surjective⟩, fun h =>
     @isJacobsonRing_of_surjective _ _ _ _ h ⟨(e.symm : S →+* R), e.symm.surjective⟩⟩
 
 theorem isJacobsonRing_of_isIntegral [Algebra R S] [Algebra.IsIntegral R S] [IsJacobsonRing R] :
@@ -160,7 +160,7 @@ See `le_relIso_of_maximal` for the more general relation isomorphism -/
 theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (J : Ideal S) :
     J.IsMaximal ↔ (comap (algebraMap R S) J).IsMaximal ∧ y ∉ Ideal.comap (algebraMap R S) J := by
   constructor
-  · refine fun h => ⟨?_, fun hy =>
+  · refine fun h ↦ ⟨?_, fun hy =>
       h.ne_top (Ideal.eq_top_of_isUnit_mem _ hy (map_units _ ⟨y, Submonoid.mem_powers _⟩))⟩
     have hJ : J.IsPrime := IsMaximal.isPrime h
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
@@ -177,7 +177,7 @@ theorem IsLocalization.isMaximal_iff_isMaximal_disjoint [H : IsJacobsonRing R] (
         rwa [disjoint_powers_iff_not_mem y hI.right.isPrime.isRadical]
       have : J ≤ I.map (algebraMap R S) := map_comap (Submonoid.powers y) S J ▸ map_mono hI.left
       exact absurd (h.1.2 _ (lt_of_le_of_ne this hJ)) hI_p.1
-  · refine fun h => ⟨⟨fun hJ => h.1.ne_top (eq_top_iff.2 ?_), fun I hI => ?_⟩⟩
+  · refine fun h ↦ ⟨⟨fun hJ => h.1.ne_top (eq_top_iff.2 ?_), fun I hI => ?_⟩⟩
     · rwa [eq_top_iff, ← (IsLocalization.orderEmbedding (powers y) S).le_iff_le] at hJ
     · have := congr_arg (Ideal.map (algebraMap R S)) (h.1.1.2 _ ⟨comap_mono (le_of_lt hI), ?_⟩)
       · rwa [map_comap (powers y) S I, Ideal.map_top] at this
@@ -208,7 +208,7 @@ def IsLocalization.orderIsoOfMaximal [IsJacobsonRing R] :
   left_inv J := Subtype.eq (map_comap (powers y) S J)
   right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint _ _ I.1 (IsMaximal.isPrime I.2.1)
     ((disjoint_powers_iff_not_mem y I.2.1.isPrime.isRadical).2 I.2.2))
-  map_rel_iff' {I I'} := ⟨fun h => show I.val ≤ I'.val from
+  map_rel_iff' {I I'} := ⟨fun h ↦ show I.val ≤ I'.val from
     map_comap (powers y) S I.val ▸ map_comap (powers y) S I'.val ▸ Ideal.map_mono h,
     fun h _ hx => h hx⟩
 
@@ -553,7 +553,7 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
   refine ((Ideal.Quotient.mk P').isIntegral_of_surjective Quotient.mk_surjective).trans _ _ ?_
   have : IsMaximal (Ideal.map (mapRingHom (Ideal.Quotient.mk (comap C P))) P) :=
     Or.recOn (map_eq_top_or_isMaximal_of_surjective f hf hP)
-      (fun h => absurd (_root_.trans (h ▸ hPJ : P = comap f ⊤) comap_top : P = ⊤) hP.ne_top) id
+      (fun h ↦ absurd (_root_.trans (h ▸ hPJ : P = comap f ⊤) comap_top : P = ⊤) hP.ne_top) id
   apply quotient_mk_comp_C_isIntegral_of_jacobson' _ ?_ (fun x hx => ?_)
   any_goals exact isJacobsonRing_quotient
   obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective x

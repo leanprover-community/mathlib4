@@ -178,7 +178,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   have hUu' : U = ⋃ i, u i := by
     ext x
     rw [mem_iUnion]
-    refine ⟨fun h => ⟨⟨x, h⟩, hux _⟩, ?_⟩
+    refine ⟨fun h ↦ ⟨⟨x, h⟩, hux _⟩, ?_⟩
     rintro ⟨x, hx⟩
     exact hUu x hx
   have hU' : IsOpen U := by

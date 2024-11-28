@@ -328,7 +328,7 @@ theorem _root_.Ordinal.lift_preOmega (o : Ordinal.{u}) :
 
 theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
     preAleph o ≤ c ↔ ∀ o' < o, preAleph o' ≤ c :=
-  ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h => by
+  ⟨fun h o' h' => (preAleph_le_preAleph.2 <| h'.le).trans h, fun h ↦ by
     rw [← preAleph.apply_symm_apply c, preAleph_le_preAleph, limit_le l]
     intro x h'
     rw [← preAleph_le_preAleph, preAleph.apply_symm_apply]
@@ -428,7 +428,7 @@ theorem aleph_toPartENat (o : Ordinal) : toPartENat (ℵ_ o) = ⊤ :=
 
 instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := by
   rw [toType_nonempty_iff_ne_zero, ← ord_zero]
-  exact fun h => (ord_injective h).not_gt (aleph_pos o)
+  exact fun h ↦ (ord_injective h).not_gt (aleph_pos o)
 
 theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
   rw [← ord_aleph]

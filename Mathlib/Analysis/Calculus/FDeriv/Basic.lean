@@ -302,7 +302,7 @@ theorem hasFDerivAt_iff_tendsto :
   hasFDerivAtFilter_iff_tendsto
 
 theorem hasFDerivAt_iff_isLittleO_nhds_zero :
-    HasFDerivAt f f' x ↔ (fun h : E => f (x + h) - f x - f' h) =o[𝓝 0] fun h => h := by
+    HasFDerivAt f f' x ↔ (fun h : E => f (x + h) - f x - f' h) =o[𝓝 0] fun h ↦ h := by
   rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, ← map_add_left_nhds_zero x, isLittleO_map]
   simp [Function.comp_def]
 
@@ -389,7 +389,7 @@ theorem hasFDerivWithinAt_insert {y : E} :
   · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
     apply Asymptotics.isLittleO_insert
     simp only [sub_self, map_zero]
-  refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
+  refine ⟨fun h ↦ h.mono <| subset_insert y s, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
   simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
 
 alias ⟨HasFDerivWithinAt.of_insert, HasFDerivWithinAt.insert'⟩ := hasFDerivWithinAt_insert
@@ -573,7 +573,7 @@ theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x
 
 theorem differentiableWithinAt_congr_nhds {t : Set E} (hst : 𝓝[s] x = 𝓝[t] x) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
-  ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
+  ⟨fun h ↦ h.congr_nhds hst, fun h ↦ h.congr_nhds hst.symm⟩
 
 theorem differentiableWithinAt_univ :
     DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
@@ -923,7 +923,7 @@ theorem DifferentiableOn.congr (h : DifferentiableOn 𝕜 f s) (h' : ∀ x ∈ s
 
 theorem differentiableOn_congr (h' : ∀ x ∈ s, f₁ x = f x) :
     DifferentiableOn 𝕜 f₁ s ↔ DifferentiableOn 𝕜 f s :=
-  ⟨fun h => DifferentiableOn.congr h fun y hy => (h' y hy).symm, fun h =>
+  ⟨fun h ↦ DifferentiableOn.congr h fun y hy => (h' y hy).symm, fun h =>
     DifferentiableOn.congr h h'⟩
 
 theorem DifferentiableAt.congr_of_eventuallyEq (h : DifferentiableAt 𝕜 f x) (hL : f₁ =ᶠ[𝓝 x] f) :

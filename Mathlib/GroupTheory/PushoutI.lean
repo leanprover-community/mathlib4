@@ -268,7 +268,7 @@ instance : Inhabited (NormalWord d) := ⟨NormalWord.empty⟩
 instance (i : ι) : Inhabited (Pair d i) :=
   ⟨{ (empty : NormalWord d) with
       head := 1,
-      fstIdx_ne := fun h => by cases h }⟩
+      fstIdx_ne := fun h ↦ by cases h }⟩
 
 @[ext]
 theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
@@ -571,7 +571,7 @@ theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)
   classical exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg prod (h empty)⟩
+  ⟨fun h ↦ by simpa using congr_arg prod (h empty)⟩
 
 instance (i : ι) : FaithfulSMul (G i) (NormalWord d) :=
   ⟨by simp [summand_smul_def']⟩

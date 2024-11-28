@@ -247,7 +247,7 @@ alias ContDiffWithinAt.congr_nhds := ContDiffWithinAt.congr_set
 
 theorem contDiffWithinAt_congr_set {t : Set E} (hst : s =ᶠ[𝓝 x] t) :
     ContDiffWithinAt 𝕜 n f s x ↔ ContDiffWithinAt 𝕜 n f t x :=
-  ⟨fun h => h.congr_set hst, fun h => h.congr_set hst.symm⟩
+  ⟨fun h ↦ h.congr_set hst, fun h ↦ h.congr_set hst.symm⟩
 
 @[deprecated (since := "2024-10-23")]
 alias contDiffWithinAt_congr_nhds := contDiffWithinAt_congr_set
@@ -622,9 +622,9 @@ theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDi
     ContDiffOn 𝕜 n f s ↔
       (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
         ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s :=
-  ⟨fun h => ⟨fun _m hm => h.continuousOn_iteratedFDerivWithin (mod_cast hm) hs, fun _m hm =>
+  ⟨fun h ↦ ⟨fun _m hm => h.continuousOn_iteratedFDerivWithin (mod_cast hm) hs, fun _m hm =>
       h.differentiableOn_iteratedFDerivWithin (mod_cast hm) hs⟩,
-    fun h => contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
+    fun h ↦ contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
 
 theorem contDiffOn_succ_of_fderivWithin {n : ℕ} (hf : DifferentiableOn 𝕜 f s)
     (h : ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 (n + 1) f s := by
@@ -638,7 +638,7 @@ differentiable there, and its derivative (expressed with `fderivWithin`) is `C^n
 theorem contDiffOn_succ_iff_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1) f s ↔
       DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s := by
-  refine ⟨fun H => ?_, fun h => contDiffOn_succ_of_fderivWithin h.1 h.2⟩
+  refine ⟨fun H => ?_, fun h ↦ contDiffOn_succ_of_fderivWithin h.1 h.2⟩
   refine ⟨H.differentiableOn le_add_self, fun x hx => ?_⟩
   rcases contDiffWithinAt_succ_iff_hasFDerivWithinAt.1 (H x hx) with ⟨u, hu, f', hff', hf'⟩
   rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
@@ -657,7 +657,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s)
     ContDiffOn 𝕜 (n + 1) f s ↔
       ∃ f' : E → E →L[𝕜] F, ContDiffOn 𝕜 n f' s ∧ ∀ x, x ∈ s → HasFDerivWithinAt f (f' x) s x := by
   rw [contDiffOn_succ_iff_fderivWithin hs]
-  refine ⟨fun h => ⟨fderivWithin 𝕜 f s, h.2, fun x hx => (h.1 x hx).hasFDerivWithinAt⟩, fun h => ?_⟩
+  refine ⟨fun h ↦ ⟨fderivWithin 𝕜 f s, h.2, fun x hx => (h.1 x hx).hasFDerivWithinAt⟩, fun h ↦ ?_⟩
   rcases h with ⟨f', h1, h2⟩
   refine ⟨fun x hx => (h2 x hx).differentiableWithinAt, fun x hx => ?_⟩
   exact (h1 x hx).congr_of_mem (fun y hy => (h2 y hy).fderivWithin (hs y hy)) hx
@@ -913,7 +913,7 @@ theorem contDiff_iff_ftaylorSeries :
     ContDiff 𝕜 n f ↔ HasFTaylorSeriesUpTo n f (ftaylorSeries 𝕜 f) := by
   constructor
   · rw [← contDiffOn_univ, ← hasFTaylorSeriesUpToOn_univ_iff, ← ftaylorSeriesWithin_univ]
-    exact fun h => ContDiffOn.ftaylorSeriesWithin h uniqueDiffOn_univ
+    exact fun h ↦ ContDiffOn.ftaylorSeriesWithin h uniqueDiffOn_univ
   · intro h; exact ⟨ftaylorSeries 𝕜 f, h⟩
 
 theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :

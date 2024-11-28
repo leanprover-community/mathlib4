@@ -403,7 +403,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   · congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
     simp only [SetLike.mem_coe, diagram_l, diagram_r, unop_op, Set.mem_preimage, Set.mem_image]
-    refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
+    refine ⟨fun h ↦ ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
     convert h1 using 1
     delta ι Multicoequalizer.π at h2

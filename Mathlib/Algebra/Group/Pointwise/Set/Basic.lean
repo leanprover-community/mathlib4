@@ -1153,7 +1153,7 @@ theorem univ_mul_univ : (univ : Set α) * univ = univ :=
 
 @[to_additive (attr := simp) nsmul_univ]
 theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
-  | 0 => fun h => (h rfl).elim
+  | 0 => fun h ↦ (h rfl).elim
   | 1 => fun _ => pow_one _
   | n + 2 => fun _ => by rw [pow_succ, univ_pow n.succ_ne_zero, univ_mul_univ]
 
@@ -1178,7 +1178,7 @@ variable [DivisionMonoid α] {s t : Set α} {n : ℤ}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · have hst : (s * t).Nonempty := h.symm.subst one_nonempty
     obtain ⟨a, ha⟩ := hst.of_image2_left
     obtain ⟨b, hb⟩ := hst.of_image2_right

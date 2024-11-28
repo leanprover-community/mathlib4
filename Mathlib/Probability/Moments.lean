@@ -295,8 +295,8 @@ theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (μ {ω | ε ≤ X ω}).toReal = (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal := by
       congr with ω
       simp only [Set.mem_setOf_eq, exp_le_exp, gt_iff_lt]
-      exact ⟨fun h => mul_le_mul_of_nonneg_left h ht_pos.le,
-        fun h => le_of_mul_le_mul_left h ht_pos⟩
+      exact ⟨fun h ↦ mul_le_mul_of_nonneg_left h ht_pos.le,
+        fun h ↦ le_of_mul_le_mul_left h ht_pos⟩
     _ ≤ (exp (t * ε))⁻¹ * μ[fun ω => exp (t * X ω)] := by
       have : exp (t * ε) * (μ {ω | exp (t * ε) ≤ exp (t * X ω)}).toReal ≤
           μ[fun ω => exp (t * X ω)] :=

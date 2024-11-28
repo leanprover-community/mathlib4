@@ -173,7 +173,7 @@ theorem orthogonal_span_singleton_eq_toLin_ker {B : BilinForm K V} (x : V) :
   ext y
   simp_rw [mem_orthogonal_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
   constructor
-  · exact fun h => h x ⟨1, one_smul _ _⟩
+  · exact fun h ↦ h x ⟨1, one_smul _ _⟩
   · rintro h _ ⟨z, rfl⟩
     rw [IsOrtho, smul_left, mul_eq_zero]
     exact Or.intro_right _ h

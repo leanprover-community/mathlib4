@@ -76,7 +76,7 @@ protected theorem nonempty : (F : Set P).Nonempty := F.dual.nonempty
 
 theorem directed : DirectedOn (· ≥ ·) (F : Set P) := F.dual.directed
 
-theorem mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h => F.dual.lower h
+theorem mem_of_le {F : PFilter P} : x ≤ y → x ∈ F → y ∈ F := fun h ↦ F.dual.lower h
 
 /-- Two filters are equal when their underlying sets are equal. -/
 @[ext]

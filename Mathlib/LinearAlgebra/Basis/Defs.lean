@@ -257,14 +257,14 @@ alias ⟨_, _root_.Basis.ext_elem⟩ := ext_elem_iff
 
 theorem repr_eq_iff {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
     ↑b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
-  ⟨fun h i => h ▸ b.repr_self i, fun h => b.ext fun i => (b.repr_self i).trans (h i).symm⟩
+  ⟨fun h i => h ▸ b.repr_self i, fun h ↦ b.ext fun i => (b.repr_self i).trans (h i).symm⟩
 
 theorem repr_eq_iff' {b : Basis ι R M} {f : M ≃ₗ[R] ι →₀ R} :
     b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
-  ⟨fun h i => h ▸ b.repr_self i, fun h => b.ext' fun i => (b.repr_self i).trans (h i).symm⟩
+  ⟨fun h i => h ▸ b.repr_self i, fun h ↦ b.ext' fun i => (b.repr_self i).trans (h i).symm⟩
 
 theorem apply_eq_iff {b : Basis ι R M} {x : M} {i : ι} : b i = x ↔ b.repr x = Finsupp.single i 1 :=
-  ⟨fun h => h ▸ b.repr_self i, fun h => b.repr.injective ((b.repr_self i).trans h.symm)⟩
+  ⟨fun h ↦ h ▸ b.repr_self i, fun h ↦ b.repr.injective ((b.repr_self i).trans h.symm)⟩
 
 /-- An unbundled version of `repr_eq_iff` -/
 theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f y)
@@ -781,7 +781,7 @@ theorem Basis.mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι 
     x ∈ P ↔ ∃ c : ι → R, x = ∑ i, c i • (b i : M) :=
   b.mem_submodule_iff.trans <|
     Finsupp.equivFunOnFinite.exists_congr_left.trans <|
-      exists_congr fun c => by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
+      exists_congr fun c ↦ by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
 
 theorem Basis.coord_equivFun_symm [Finite ι] (b : Basis ι R M) (i : ι) (f : ι → R) :
     b.coord i (b.equivFun.symm f) = f i :=

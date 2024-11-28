@@ -572,7 +572,7 @@ nonrec theorem Infinitesimal.neg {x : ℝ*} (hx : Infinitesimal x) : Infinitesim
 
 -- Porting note: swapped LHS and RHS, added `@[simp]`
 @[simp] theorem infinitesimal_neg {x : ℝ*} : Infinitesimal (-x) ↔ Infinitesimal x :=
-  ⟨fun h => neg_neg x ▸ h.neg, Infinitesimal.neg⟩
+  ⟨fun h ↦ neg_neg x ▸ h.neg, Infinitesimal.neg⟩
 
 nonrec theorem Infinitesimal.mul {x y : ℝ*} (hx : Infinitesimal x) (hy : Infinitesimal y) :
     Infinitesimal (x * y) := by simpa only [mul_zero] using hx.mul hy
@@ -602,7 +602,7 @@ theorem infinitePos_iff_infinitesimal_inv_pos {x : ℝ*} :
           inv_lt_of_inv_lt₀ (coe_lt_coe.2 hr) (by convert hip r⁻¹)⟩,
       inv_pos.2 <| hip 0⟩,
     fun ⟨hi, hp⟩ r =>
-    @_root_.by_cases (r = 0) (↑r < x) (fun h => Eq.substr h (inv_pos.mp hp)) fun h =>
+    @_root_.by_cases (r = 0) (↑r < x) (fun h ↦ Eq.substr h (inv_pos.mp hp)) fun h =>
       lt_of_le_of_lt (coe_le_coe.2 (le_abs_self r))
         ((inv_lt_inv₀ (inv_pos.mp hp) (coe_lt_coe.2 (abs_pos.2 h))).mp
           ((infinitesimal_def.mp hi) |r|⁻¹ (inv_pos.2 (abs_pos.2 h))).2)⟩

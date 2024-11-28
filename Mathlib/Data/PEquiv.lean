@@ -226,11 +226,11 @@ theorem ofSet_univ : ofSet Set.univ = PEquiv.refl α :=
 @[simp]
 theorem ofSet_eq_refl {s : Set α} [DecidablePred (· ∈ s)] :
     ofSet s = PEquiv.refl α ↔ s = Set.univ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [Set.eq_univ_iff_forall]
     intro
     rw [← mem_ofSet_self_iff, h]
-    exact rfl, fun h => by simp only [← ofSet_univ, h]⟩
+    exact rfl, fun h ↦ by simp only [← ofSet_univ, h]⟩
 
 end OfSet
 

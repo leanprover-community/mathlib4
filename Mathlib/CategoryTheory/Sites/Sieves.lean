@@ -393,7 +393,7 @@ theorem generate_sieve (S : Sieve X) : generate S = S :=
 
 /-- If the identity arrow is in a sieve, the sieve is maximal. -/
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
-  ⟨fun h => top_unique fun Y f _ => by simpa using downward_closed _ h f, fun h => h.symm ▸ trivial⟩
+  ⟨fun h ↦ top_unique fun Y f _ => by simpa using downward_closed _ h f, fun h ↦ h.symm ▸ trivial⟩
 
 /-- If an arrow set contains a split epi, it generates the maximal sieve. -/
 theorem generate_of_contains_isSplitEpi {R : Presieve X} (f : Y ⟶ X) [IsSplitEpi f] (hf : R f) :

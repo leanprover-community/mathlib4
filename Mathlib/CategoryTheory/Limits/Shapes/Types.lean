@@ -116,7 +116,7 @@ noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
 /-- A type is terminal if and only if it contains exactly one element. -/
 noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
   equivOfSubsingletonOfSubsingleton
-    (fun h => ((Iso.toEquiv (terminalIsoIsTerminal h).symm).unique))
+    (fun h ↦ ((Iso.toEquiv (terminalIsoIsTerminal h).symm).unique))
     (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (Equiv.equivOfUnique _ _)))
 
 /-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
@@ -888,8 +888,8 @@ def equivPushout' : Pushout f g ≃ Pushout' f g where
 lemma quot_mk_eq_iff [Mono f] (a b : X₁ ⊕ X₂) :
     (Quot.mk _ a : Pushout f g) = Quot.mk _ b ↔ Rel' f g a b := by
   rw [← (equivalence_rel' f g).quot_mk_eq_iff]
-  exact ⟨fun h => (equivPushout' f g).symm.injective h,
-    fun h => (equivPushout' f g).injective h⟩
+  exact ⟨fun h ↦ (equivPushout' f g).symm.injective h,
+    fun h ↦ (equivPushout' f g).injective h⟩
 
 lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
     (inl f g x₁ = inr f g x₂) ↔

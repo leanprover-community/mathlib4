@@ -92,7 +92,7 @@ theorem fg_of_fg_map {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M] [Add
   fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
 
 theorem fg_top (N : Submodule R M) : (⊤ : Submodule R N).FG ↔ N.FG :=
-  ⟨fun h => N.range_subtype ▸ map_top N.subtype ▸ h.map _, fun h =>
+  ⟨fun h ↦ N.range_subtype ▸ map_top N.subtype ▸ h.map _, fun h =>
     fg_of_fg_map_injective N.subtype Subtype.val_injective <| by rwa [map_top, range_subtype]⟩
 
 theorem fg_of_linearEquiv (e : M ≃ₗ[R] P) (h : (⊤ : Submodule R P).FG) : (⊤ : Submodule R M).FG :=

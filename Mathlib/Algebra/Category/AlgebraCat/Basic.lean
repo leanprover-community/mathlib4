@@ -131,7 +131,7 @@ instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun f => f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+  forget_faithful := ⟨fun h ↦ by ext x; simpa using congrFun h x⟩
 
 lemma forget_obj {A : AlgebraCat.{v} R} : (forget (AlgebraCat.{v} R)).obj A = A := rfl
 

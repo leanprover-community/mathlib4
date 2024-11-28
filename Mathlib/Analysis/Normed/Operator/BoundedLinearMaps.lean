@@ -122,12 +122,12 @@ theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap �
       _ ≤ ‖c‖ * (M * ‖x‖) := mul_le_mul_of_nonneg_left (hM _) (norm_nonneg _)
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
-theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e := by
-  rw [show (fun e => -f e) = fun e => (-1 : 𝕜) • f e by funext; simp]
+theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e ↦ -f e := by
+  rw [show (fun e ↦ -f e) = fun e ↦ (-1 : 𝕜) • f e by funext; simp]
   exact smul (-1) hf
 
 theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
-    IsBoundedLinearMap 𝕜 fun e => f e + g e :=
+    IsBoundedLinearMap 𝕜 fun e ↦ f e + g e :=
   let ⟨hlf, Mf, _, hMf⟩ := hf
   let ⟨hlg, Mg, _, hMg⟩ := hg
   (hlf.mk' _ + hlg.mk' _).isLinear.with_bound (Mf + Mg) fun x =>
@@ -136,7 +136,7 @@ theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
       _ ≤ (Mf + Mg) * ‖x‖ := by rw [add_mul]
 
 theorem sub (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
-    IsBoundedLinearMap 𝕜 fun e => f e - g e := by simpa [sub_eq_add_neg] using add hf (neg hg)
+    IsBoundedLinearMap 𝕜 fun e ↦ f e - g e := by simpa [sub_eq_add_neg] using add hf (neg hg)
 
 theorem comp {g : F → G} (hg : IsBoundedLinearMap 𝕜 g) (hf : IsBoundedLinearMap 𝕜 f) :
     IsBoundedLinearMap 𝕜 (g ∘ f) :=
@@ -467,7 +467,7 @@ spaces is an open subset of the space of linear maps between them.
 
 protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F)) := by
   rw [isOpen_iff_mem_nhds, forall_mem_range]
-  refine fun e => IsOpen.mem_nhds ?_ (mem_range_self _)
+  refine fun e ↦ IsOpen.mem_nhds ?_ (mem_range_self _)
   let O : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
   have h_O : Continuous O := isBoundedBilinearMap_comp.continuous_right
   convert show IsOpen (O ⁻¹' { x | IsUnit x }) from Units.isOpen.preimage h_O using 1

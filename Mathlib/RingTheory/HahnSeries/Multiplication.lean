@@ -360,7 +360,7 @@ protected lemma map_mul [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring
   simp only [map_coeff, mul_coeff, ZeroHom.coe_coe, map_sum, map_mul]
   refine Eq.symm (sum_subset (fun gh hgh => ?_) (fun gh hgh hz => ?_))
   · simp_all only [mem_addAntidiagonal, mem_support, map_coeff, ZeroHom.coe_coe, ne_eq, and_true]
-    exact ⟨fun h => hgh.1 (map_zero f ▸ congrArg f h), fun h => hgh.2.1 (map_zero f ▸ congrArg f h)⟩
+    exact ⟨fun h ↦ hgh.1 (map_zero f ▸ congrArg f h), fun h ↦ hgh.2.1 (map_zero f ▸ congrArg f h)⟩
   · simp_all only [mem_addAntidiagonal, mem_support, ne_eq, map_coeff, ZeroHom.coe_coe, and_true,
       not_and, not_not]
     by_cases h : f (x.coeff gh.1) = 0

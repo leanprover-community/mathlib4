@@ -323,7 +323,7 @@ section
 variable {p p'}
 
 theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← span_eq p, ← span_eq p', ← span_union] at h
     refine span_induction ?_ ?_ ?_ ?_ h
     · rintro y (h | h)
@@ -377,7 +377,7 @@ theorem nontrivial_span_singleton {x : M} (h : x ≠ 0) : Nontrivial (R ∙ x) :
     exact h H⟩
 
 theorem mem_span_singleton {y : M} : (x ∈ R ∙ y) ↔ ∃ a : R, a • y = x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     refine span_induction ?_ ?_ ?_ ?_ h
     · rintro y (rfl | ⟨⟨_⟩⟩)
       exact ⟨1, by simp⟩

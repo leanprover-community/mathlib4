@@ -280,12 +280,12 @@ theorem coe_mul (f g : α →ₙ+* α) : ⇑(f * g) = f ∘ g :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →ₙ+* γ} {f : α →ₙ+* β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 (NonUnitalRingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h ↦ ext <| hf.forall.2 (NonUnitalRingHom.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →ₙ+* γ} {f₁ f₂ : α →ₙ+* β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
+  ⟨fun h ↦ ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 
 end NonUnitalRingHom
 
@@ -498,7 +498,7 @@ theorem codomain_trivial_iff_map_one_eq_zero : (0 : β) = 1 ↔ f 1 = 0 := by rw
 /-- `f : α →+* β` has a trivial codomain iff it has a trivial range. -/
 theorem codomain_trivial_iff_range_trivial : (0 : β) = 1 ↔ ∀ x, f x = 0 :=
   f.codomain_trivial_iff_map_one_eq_zero.trans
-    ⟨fun h x => by rw [← mul_one x, map_mul, h, mul_zero], fun h => h 1⟩
+    ⟨fun h x => by rw [← mul_one x, map_mul, h, mul_zero], fun h ↦ h 1⟩
 
 /-- `f : α →+* β` doesn't map `1` to `0` if `β` is nontrivial -/
 theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
@@ -507,7 +507,7 @@ theorem map_one_ne_zero [Nontrivial β] : f 1 ≠ 0 :=
 include f in
 /-- If there is a homomorphism `f : α →+* β` and `β` is nontrivial, then `α` is nontrivial. -/
 theorem domain_nontrivial [Nontrivial β] : Nontrivial α :=
-  ⟨⟨1, 0, mt (fun h => show f 1 = 0 by rw [h, map_zero]) f.map_one_ne_zero⟩⟩
+  ⟨⟨1, 0, mt (fun h ↦ show f 1 = 0 by rw [h, map_zero]) f.map_one_ne_zero⟩⟩
 
 theorem codomain_trivial (f : α →+* β) [h : Subsingleton α] : Subsingleton β :=
   (subsingleton_or_nontrivial β).resolve_right fun _ =>
@@ -604,12 +604,12 @@ instance instMonoid : Monoid (α →+* α) where
 @[simp]
 theorem cancel_right {g₁ g₂ : β →+* γ} {f : α →+* β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => RingHom.ext <| hf.forall.2 (RingHom.ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h ↦ RingHom.ext <| hf.forall.2 (RingHom.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => RingHom.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
+  ⟨fun h ↦ RingHom.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h ↦ h ▸ rfl⟩
 
 end RingHom
 

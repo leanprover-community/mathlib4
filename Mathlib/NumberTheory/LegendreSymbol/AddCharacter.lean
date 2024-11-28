@@ -153,7 +153,7 @@ end ZModCharDef
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
 theorem zmod_char_ne_one_iff (n : ℕ) [NeZero n] (ψ : AddChar (ZMod n) C) : ψ ≠ 1 ↔ ψ 1 ≠ 1 := by
   rw [ne_one_iff]
-  refine ⟨?_, fun h => ⟨_, h⟩⟩
+  refine ⟨?_, fun h ↦ ⟨_, h⟩⟩
   contrapose!
   rintro h₁ a
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by
@@ -164,7 +164,7 @@ theorem zmod_char_ne_one_iff (n : ℕ) [NeZero n] (ψ : AddChar (ZMod n) C) : ψ
 theorem IsPrimitive.zmod_char_eq_one_iff (n : ℕ) [NeZero n]
     {ψ : AddChar (ZMod n) C} (hψ : IsPrimitive ψ) (a : ZMod n) :
     ψ a = 1 ↔ a = 0 := by
-  refine ⟨fun h => not_imp_comm.mp (@hψ a) ?_, fun ha => by rw [ha, map_zero_eq_one]⟩
+  refine ⟨fun h ↦ not_imp_comm.mp (@hψ a) ?_, fun ha => by rw [ha, map_zero_eq_one]⟩
   rw [zmod_char_ne_one_iff n (mulShift ψ a), mulShift_apply, mul_one, h, Classical.not_not]
 
 /-- The converse: if the additive character takes the value `1` only at `0`,

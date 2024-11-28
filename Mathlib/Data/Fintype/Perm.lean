@@ -53,14 +53,14 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
   · refine mem_append_left _ (IH fun x hx => mem_of_ne_of_mem ?_ (h x hx))
     rintro rfl
     exact hx hfa
-  have hfa' : f (f a) ≠ f a := mt (fun h => f.injective h) hfa
+  have hfa' : f (f a) ≠ f a := mt (fun h ↦ f.injective h) hfa
   have : ∀ x : α, (Equiv.swap a (f a) * f) x ≠ x → x ∈ l := by
     intro x hx
     have hxa : x ≠ a := by
       rintro rfl
       apply hx
       simp only [mul_apply, swap_apply_right]
-    refine List.mem_of_ne_of_mem hxa (h x fun h => ?_)
+    refine List.mem_of_ne_of_mem hxa (h x fun h ↦ ?_)
     simp only [mul_apply, swap_apply_def, mul_apply, Ne, apply_eq_iff_eq] at hx
     split_ifs at hx with h_1
     exacts [hxa (h.symm.trans h_1), hx h]
@@ -117,7 +117,7 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
       let ⟨x, hx, hx'⟩ := List.mem_flatMap.1 hf₂
       let ⟨g, hg⟩ := List.mem_map.1 hx'
       have hgxa : g⁻¹ x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
-      have hxa : x ≠ a := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
+      have hxa : x ≠ a := fun h ↦ (List.nodup_cons.1 hl).1 (h ▸ hx)
       exact (List.nodup_cons.1 hl).1 <|
           hgxa ▸ mem_of_mem_permsOfList hg.1 _ (by rwa [apply_inv_self, hgxa])
 
@@ -155,7 +155,7 @@ instance MulEquiv.instFintype
     {α β : Type*} [Mul α] [Mul β] [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] :
     Fintype (α ≃* β) where
   elems := Equiv.instFintype.elems.filterMap
-    (fun e => if h : ∀ a b : α, e (a * b) = e a * e b then (⟨e, h⟩ : α ≃* β) else none) (by aesop)
+    (fun e ↦ if h : ∀ a b : α, e (a * b) = e a * e b then (⟨e, h⟩ : α ≃* β) else none) (by aesop)
   complete me := (Finset.mem_filterMap ..).mpr ⟨me.toEquiv, Finset.mem_univ _, by {simp; rfl}⟩
 
 theorem Fintype.card_perm [Fintype α] : Fintype.card (Perm α) = (Fintype.card α)! :=

@@ -300,7 +300,7 @@ theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
   SubmonoidClass.coe_pow x n
 
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
-  ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
+  ⟨fun h ↦ Subtype.ext (Trans.trans h s.coe_zero.symm), fun h ↦ h.symm ▸ s.coe_zero⟩
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=

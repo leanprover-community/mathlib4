@@ -126,7 +126,7 @@ theorem mul_im : ∀ z w : K, im (z * w) = re z * im w + im z * re w :=
   RCLike.mul_im_ax
 
 theorem ext_iff {z w : K} : z = w ↔ re z = re w ∧ im z = im w :=
-  ⟨fun h => h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ => re_add_im z ▸ re_add_im w ▸ h₁ ▸ h₂ ▸ rfl⟩
+  ⟨fun h ↦ h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ => re_add_im z ▸ re_add_im w ▸ h₁ ▸ h₂ ▸ rfl⟩
 
 theorem ext {z w : K} (hre : re z = re w) (him : im z = im w) : z = w :=
   ext_iff.2 ⟨hre, him⟩
@@ -338,7 +338,7 @@ theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(r
   tfae_have 4 → 3
   | h => by
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
-  tfae_have 3 → 2 := fun h => ⟨_, h⟩
+  tfae_have 3 → 2 := fun h ↦ ⟨_, h⟩
   tfae_have 2 → 1 := fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
   tfae_finish
 
@@ -812,7 +812,7 @@ protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
   exact inv_pos_of_pos hx
 
 protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
-  refine ⟨fun h => ?_, fun h => RCLike.inv_pos_of_pos h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ RCLike.inv_pos_of_pos h⟩
   rw [← inv_inv z]
   exact RCLike.inv_pos_of_pos h
 
@@ -851,7 +851,7 @@ theorem toOrderedSMul : OrderedSMul ℝ K :=
     replace hab := hab.le
     rw [RCLike.le_iff_re_im] at hab
     rw [RCLike.le_iff_re_im, smul_re, smul_re, smul_im, smul_im]
-    exact hab.imp (fun h => mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
+    exact hab.imp (fun h ↦ mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
 
 scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 

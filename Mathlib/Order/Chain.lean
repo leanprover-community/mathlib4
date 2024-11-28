@@ -74,7 +74,7 @@ theorem IsChain.symm (h : IsChain r s) : IsChain (flip r) s :=
   h.mono' fun _ _ => Or.symm
 
 theorem isChain_of_trichotomous [IsTrichotomous α r] (s : Set α) : IsChain r s :=
-  fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h => h.resolve_left hab
+  fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h ↦ h.resolve_left hab
 
 protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b → a ≺ b ∨ b ≺ a) :
     IsChain r (insert a s) :=
@@ -84,7 +84,7 @@ lemma IsChain.pair (h : r a b) : IsChain r {a, b} :=
   IsChain.singleton.insert fun _ hb _ ↦ .inl <| (eq_of_mem_singleton hb).symm.recOn ‹_›
 
 theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
-  refine ⟨fun h => ⟨fun a b => ?_⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
+  refine ⟨fun h ↦ ⟨fun a b => ?_⟩, fun h ↦ @isChain_of_trichotomous _ _ h univ⟩
   rw [or_left_comm, or_iff_not_imp_left]
   exact h trivial trivial
 
@@ -107,10 +107,10 @@ section Total
 variable [IsRefl α r]
 
 theorem IsChain.total (h : IsChain r s) (hx : x ∈ s) (hy : y ∈ s) : x ≺ y ∨ y ≺ x :=
-  (eq_or_ne x y).elim (fun e => Or.inl <| e ▸ refl _) (h hx hy)
+  (eq_or_ne x y).elim (fun e ↦ Or.inl <| e ▸ refl _) (h hx hy)
 
 theorem IsChain.directedOn (H : IsChain r s) : DirectedOn r s := fun x hx y hy =>
-  ((H.total hx hy).elim fun h => ⟨y, hy, h, refl _⟩) fun h => ⟨x, hx, refl _, h⟩
+  ((H.total hx hy).elim fun h ↦ ⟨y, hy, h, refl _⟩) fun h ↦ ⟨x, hx, refl _, h⟩
 
 protected theorem IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f ⁻¹'o r) c) :
     Directed r fun x : { a : β // a ∈ c } => f x :=
@@ -118,7 +118,7 @@ protected theorem IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f 
     (by_cases fun hab : a = b => by
       simp only [hab, exists_prop, and_self_iff, Subtype.exists]
       exact ⟨b, hb, refl _⟩)
-    fun hab => ((h ha hb hab).elim fun h => ⟨⟨b, hb⟩, h, refl _⟩) fun h => ⟨⟨a, ha⟩, refl _, h⟩
+    fun hab => ((h ha hb hab).elim fun h ↦ ⟨⟨b, hb⟩, h, refl _⟩) fun h ↦ ⟨⟨a, ha⟩, refl _, h⟩
 
 theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a ∈ s) (mem2 : b ∈ s)
     (mem3 : c ∈ s) : ∃ (z : _) (_ : z ∈ s), r a z ∧ r b z ∧ r c z := by
@@ -207,7 +207,7 @@ private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
     · exact (h hc₃ ih).imp_left fun (h : c₂ = c₃) => h ▸ Subset.rfl
   | union _ ih =>
     refine or_iff_not_imp_left.2 fun hn => sUnion_subset fun a ha => ?_
-    exact (ih a ha).resolve_left fun h => hn <| h.trans <| subset_sUnion_of_mem ha
+    exact (ih a ha).resolve_left fun h ↦ hn <| h.trans <| subset_sUnion_of_mem ha
 
 private theorem chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
     (h : c₁ ⊆ c₂) : c₂ = c₁ ∨ SuccChain r c₁ ⊆ c₂ := by
@@ -236,13 +236,13 @@ theorem ChainClosure.total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r
 theorem ChainClosure.succ_fixpoint (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
     (hc : SuccChain r c₂ = c₂) : c₁ ⊆ c₂ := by
   induction hc₁ with
-  | succ hc₁ h => exact (chainClosure_succ_total hc₁ hc₂ h).elim (fun h => h ▸ hc.subset) id
+  | succ hc₁ h => exact (chainClosure_succ_total hc₁ hc₂ h).elim (fun h ↦ h ▸ hc.subset) id
   | union _ ih => exact sUnion_subset ih
 
 theorem ChainClosure.succ_fixpoint_iff (hc : ChainClosure r c) :
     SuccChain r c = c ↔ c = maxChain r :=
-  ⟨fun h => (subset_sUnion_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
-    fun h => subset_succChain.antisymm' <| (subset_sUnion_of_mem hc.succ).trans h.symm.subset⟩
+  ⟨fun h ↦ (subset_sUnion_of_mem hc).antisymm <| chainClosure_maxChain.succ_fixpoint hc h,
+    fun h ↦ subset_succChain.antisymm' <| (subset_sUnion_of_mem hc.succ).trans h.symm.subset⟩
 
 theorem ChainClosure.isChain (hc : ChainClosure r c) : IsChain r c := by
   induction hc with

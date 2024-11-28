@@ -200,7 +200,7 @@ theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) 
 
 theorem nodup_map_iff_inj_on {f : α → β} {l : List α} (d : Nodup l) :
     Nodup (map f l) ↔ ∀ x ∈ l, ∀ y ∈ l, f x = f y → x = y :=
-  ⟨inj_on_of_nodup_map, fun h => d.map_on h⟩
+  ⟨inj_on_of_nodup_map, fun h ↦ d.map_on h⟩
 
 protected theorem Nodup.map {f : α → β} (hf : Injective f) : Nodup l → Nodup (map f l) :=
   Nodup.map_on fun _ _ _ _ h => hf h
@@ -210,7 +210,7 @@ theorem nodup_map_iff {f : α → β} {l : List α} (hf : Injective f) : Nodup (
 
 @[simp]
 theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
-  ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
+  ⟨fun h ↦ attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
     Nodup.of_map Subtype.val ((attach_map_subtype_val l).symm ▸ h)⟩
 
 protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach
@@ -369,7 +369,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     congr 1
     refine List.filter_congr ?_
     intro x hx
-    have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
+    have : x ≠ b := fun h ↦ (nodup_cons.1 hl).1 (h ▸ hx)
     simp (config := {contextual := true}) [List.mem_filter, this, hx]
 end List
 

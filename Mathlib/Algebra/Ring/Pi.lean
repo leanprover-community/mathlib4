@@ -140,7 +140,7 @@ non-unital ring homomorphism `f` between `α` and `β`. -/
 @[simps]
 protected def NonUnitalRingHom.compLeft {α β : Type*} [NonUnitalNonAssocSemiring α]
     [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) (I : Type*) : (I → α) →ₙ+* I → β :=
-  { f.toMulHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
+  { f.toMulHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h ↦ f ∘ h }
 
 end NonUnitalRingHom
 
@@ -170,6 +170,6 @@ homomorphism `f` between `α` and `β`. -/
 @[simps]
 protected def RingHom.compLeft {α β : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
     (f : α →+* β) (I : Type*) : (I → α) →+* I → β :=
-  { f.toMonoidHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
+  { f.toMonoidHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h ↦ f ∘ h }
 
 end RingHom

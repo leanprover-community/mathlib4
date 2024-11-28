@@ -76,7 +76,7 @@ theorem iInf_localization_eq_bot : (⨅ v : MaximalSpectrum R,
       rcases Submodule.mem_span_singleton.mp
         (Submodule.mem_colon.mp hdenom x <| Submodule.mem_span_singleton_self x) with ⟨y, hy⟩
       exact hrange ⟨y, by rw [← mul_one <| algebraMap R K y, ← Algebra.smul_def, hy, one_smul]⟩
-    rcases denom.exists_le_maximal fun h => (h ▸ hdenom) Submodule.mem_top with ⟨max, hmax, hle⟩
+    rcases denom.exists_le_maximal fun h ↦ (h ▸ hdenom) Submodule.mem_top with ⟨max, hmax, hle⟩
     rcases hlocal ⟨max, hmax⟩ with ⟨n, d, hd, rfl⟩
     apply hd (hle <| Submodule.mem_colon.mpr fun _ hy => _)
     intro _ hy

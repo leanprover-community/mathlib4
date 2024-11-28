@@ -69,7 +69,7 @@ def Injective (f : α → β) : Prop :=
   ∀ ⦃a₁ a₂⦄, f a₁ = f a₂ → a₁ = a₂
 
 theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : Injective f) :
-    Injective (g ∘ f) := fun _a₁ _a₂ => fun h => hf (hg h)
+    Injective (g ∘ f) := fun _a₁ _a₂ => fun h ↦ hf (hg h)
 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/

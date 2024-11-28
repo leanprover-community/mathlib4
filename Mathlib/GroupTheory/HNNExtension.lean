@@ -583,7 +583,7 @@ theorem prod_injective : Injective
   (equiv φ d).symm.injective
 
 instance : FaithfulSMul (HNNExtension G A B φ) (NormalWord d) :=
-  ⟨fun h => by simpa using congr_arg (fun w => w.prod φ) (h empty)⟩
+  ⟨fun h ↦ by simpa using congr_arg (fun w => w.prod φ) (h empty)⟩
 
 end NormalWord
 

@@ -215,7 +215,7 @@ theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α)
       ⟨n, le_of_lt hn⟩)
   refine this.imp fun fl h z => ?_
   cases' h with h₁ h₂
-  exact ⟨fun h => le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
+  exact ⟨fun h ↦ le_trans (Int.cast_le.2 h) h₁, h₂ z⟩
 
 end StrictOrderedRing
 

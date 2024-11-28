@@ -1144,7 +1144,7 @@ theorem hasFTaylorSeriesUpToOn_pi {n : WithTop ℕ∞} :
   letI : ∀ (m : ℕ) (i : ι), NormedSpace 𝕜 (E[×m]→L[𝕜] F' i) := fun m i => inferInstance
   set L : ∀ m : ℕ, (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i := fun m =>
     ContinuousMultilinearMap.piₗᵢ _ _
-  refine ⟨fun h i => ?_, fun h => ⟨fun x hx => ?_, ?_, ?_⟩⟩
+  refine ⟨fun h i => ?_, fun h ↦ ⟨fun x hx => ?_, ?_, ?_⟩⟩
   · exact h.continuousLinearMap_comp (pr i)
   · ext1 i
     exact (h i).zero_eq x hx

@@ -329,7 +329,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     let candidates := candidates.map (·.1) |>.flatten
 
     trace[Meta.Tactic.fun_prop]
-      "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+      "candidate morphism theorems: {← candidates.mapM fun c ↦ ppOrigin (.decl c.thmName)}"
 
     for c in candidates do
       if let .some r ← tryTheorem? e (.decl c.thmName) funProp then
@@ -348,7 +348,7 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
   let candidates := candidates.map (·.1) |>.flatten
 
   trace[Meta.Tactic.fun_prop]
-    "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+    "candidate transition theorems: {← candidates.mapM fun c ↦ ppOrigin (.decl c.thmName)}"
 
   for c in candidates do
     if let .some r ← tryTheorem? e (.decl c.thmName) funProp then

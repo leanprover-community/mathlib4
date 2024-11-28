@@ -850,7 +850,7 @@ theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (supp
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     Memℒp (f + g) p μ ↔ Memℒp f p μ ∧ Memℒp g p μ := by
   borelize E
-  refine ⟨fun hfg => ⟨?_, ?_⟩, fun h => h.1.add h.2⟩
+  refine ⟨fun hfg => ⟨?_, ?_⟩, fun h ↦ h.1.add h.2⟩
   · rw [← Set.indicator_add_eq_left h]; exact hfg.indicator (measurableSet_support hf.measurable)
   · rw [← Set.indicator_add_eq_right h]; exact hfg.indicator (measurableSet_support hg.measurable)
 
@@ -947,7 +947,7 @@ theorem Memℒp.norm_rpow_div {f : α → E} (hf : Memℒp f p μ) (q : ℝ≥0�
 
 theorem memℒp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
     (q_top : q ≠ ∞) : Memℒp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ ↔ Memℒp f p μ := by
-  refine ⟨fun h => ?_, fun h => h.norm_rpow_div q⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.norm_rpow_div q⟩
   apply (memℒp_norm_iff hf).1
   convert h.norm_rpow_div q⁻¹ using 1
   · ext x
@@ -1071,7 +1071,7 @@ namespace LipschitzWith
 theorem memℒp_comp_iff_of_antilipschitz {α E F} {K K'} [MeasurableSpace α] {μ : Measure α}
     [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
     (hg' : AntilipschitzWith K' g) (g0 : g 0 = 0) : Memℒp (g ∘ f) p μ ↔ Memℒp f p μ :=
-  ⟨fun h => h.of_comp_antilipschitzWith hg.uniformContinuous hg' g0, fun h => hg.comp_memℒp g0 h⟩
+  ⟨fun h ↦ h.of_comp_antilipschitzWith hg.uniformContinuous hg' g0, fun h ↦ hg.comp_memℒp g0 h⟩
 
 /-- When `g` is a Lipschitz function sending `0` to `0` and `f` is in `Lp`, then `g ∘ f` is well
 defined as an element of `Lp`. -/
@@ -1808,7 +1808,7 @@ theorem toLp_norm_le [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] :
 
 theorem toLp_inj {f g : α →ᵇ E} [μ.IsOpenPosMeasure] [NormedField 𝕜] [NormedSpace 𝕜 E] :
     toLp (E := E) p μ 𝕜 f = toLp (E := E) p μ 𝕜 g ↔ f = g := by
-  refine ⟨fun h => ?_, by tauto⟩
+  refine ⟨fun h ↦ ?_, by tauto⟩
   rw [← DFunLike.coe_fn_eq, ← (map_continuous f).ae_eq_iff_eq μ (map_continuous g)]
   refine (coeFn_toLp p μ 𝕜 f).symm.trans (EventuallyEq.trans ?_ <| coeFn_toLp p μ 𝕜 g)
   rw [h]

@@ -810,7 +810,7 @@ theorem tendsto_atTop_atBot : Tendsto f atTop atBot ↔ ∀ b : β, ∃ i : α, 
 theorem tendsto_atTop_atTop_iff_of_monotone (hf : Monotone f) :
     Tendsto f atTop atTop ↔ ∀ b : β, ∃ a, b ≤ f a :=
   tendsto_atTop_atTop.trans <| forall_congr' fun _ => exists_congr fun a =>
-    ⟨fun h => h a (le_refl a), fun h _a' ha' => le_trans h <| hf ha'⟩
+    ⟨fun h ↦ h a (le_refl a), fun h _a' ha' => le_trans h <| hf ha'⟩
 
 theorem tendsto_atTop_atBot_iff_of_antitone (hf : Antitone f) :
     Tendsto f atTop atBot ↔ ∀ b : β, ∃ a, f a ≤ b :=
@@ -838,7 +838,7 @@ theorem tendsto_atBot_atBot : Tendsto f atBot atBot ↔ ∀ b : β, ∃ i : α, 
 theorem tendsto_atBot_atBot_iff_of_monotone (hf : Monotone f) :
     Tendsto f atBot atBot ↔ ∀ b : β, ∃ a, f a ≤ b :=
   tendsto_atBot_atBot.trans <| forall_congr' fun _ => exists_congr fun a =>
-    ⟨fun h => h a (le_refl a), fun h _a' ha' => le_trans (hf ha') h⟩
+    ⟨fun h ↦ h a (le_refl a), fun h _a' ha' => le_trans (hf ha') h⟩
 
 theorem tendsto_atBot_atTop_iff_of_antitone (hf : Antitone f) :
     Tendsto f atBot atTop ↔ ∀ b : β, ∃ a, b ≤ f a :=
@@ -1334,7 +1334,7 @@ theorem tendsto_iff_seq_tendsto {f : α → β} {k : Filter α} {l : Filter β} 
   have : NeBot (k ⊓ 𝓟 (f ⁻¹' sᶜ)) := by simpa [neBot_iff, inf_principal_eq_bot]
   rcases (k ⊓ 𝓟 (f ⁻¹' sᶜ)).exists_seq_tendsto with ⟨x, hx⟩
   rw [tendsto_inf, tendsto_principal] at hx
-  refine ⟨x, hx.1, fun h => ?_⟩
+  refine ⟨x, hx.1, fun h ↦ ?_⟩
   rcases (hx.2.and (h hs)).exists with ⟨N, hnmem, hmem⟩
   exact hnmem hmem
 

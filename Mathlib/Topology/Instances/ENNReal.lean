@@ -397,7 +397,7 @@ protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a 
   intro x
   refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
   · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
-  · exact Or.inl fun h => H (pow_eq_zero h)
+  · exact Or.inl fun h ↦ H (pow_eq_zero h)
   · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
       not_false_iff, false_and]
   · simp only [H, true_or, Ne, not_false_iff]
@@ -484,7 +484,7 @@ protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞
 @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
-  ⟨fun h => by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩
+  ⟨fun h ↦ by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩
 
 protected theorem Tendsto.div {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
     (hma : Tendsto ma f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ 0) (hmb : Tendsto mb f (𝓝 b))
@@ -513,7 +513,7 @@ theorem exists_countable_dense_no_zero_top :
   obtain ⟨s, s_count, s_dense, hs⟩ :
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ (∀ x, IsBot x → x ∉ s) ∧ ∀ x, IsTop x → x ∉ s :=
     exists_countable_dense_no_bot_top ℝ≥0∞
-  exact ⟨s, s_count, s_dense, fun h => hs.1 0 (by simp) h, fun h => hs.2 ∞ (by simp) h⟩
+  exact ⟨s, s_count, s_dense, fun h ↦ hs.1 0 (by simp) h, fun h ↦ hs.2 ∞ (by simp) h⟩
 
 @[deprecated ofReal_iInf (since := "2024-09-12")]
 theorem ofReal_cinfi (f : α → ℝ) [Nonempty α] :
@@ -599,7 +599,7 @@ protected theorem summable : Summable f :=
   ⟨_, ENNReal.hasSum⟩
 
 theorem tsum_coe_ne_top_iff_summable {f : β → ℝ≥0} : (∑' b, (f b : ℝ≥0∞)) ≠ ∞ ↔ Summable f := by
-  refine ⟨fun h => ?_, fun h => ENNReal.coe_tsum h ▸ ENNReal.coe_ne_top⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ENNReal.coe_tsum h ▸ ENNReal.coe_ne_top⟩
   lift ∑' b, (f b : ℝ≥0∞) to ℝ≥0 using h with a ha
   refine ⟨a, ENNReal.hasSum_coe.1 ?_⟩
   rw [ha]
@@ -719,7 +719,7 @@ theorem tsum_iSup_eq {α : Type*} (a : α) {f : α → ℝ≥0∞} : (∑' b : �
 
 theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0∞} (r : ℝ≥0∞) :
     HasSum f r ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 r) := by
-  refine ⟨HasSum.tendsto_sum_nat, fun h => ?_⟩
+  refine ⟨HasSum.tendsto_sum_nat, fun h ↦ ?_⟩
   rw [← iSup_eq_of_tendsto _ h, ← ENNReal.tsum_eq_iSup_nat]
   · exact ENNReal.summable.hasSum
   · exact fun s t hst => Finset.sum_le_sum_of_subset (Finset.range_subset.2 hst)
@@ -945,7 +945,7 @@ theorem summable_sigma {β : α → Type*} {f : (Σ x, β x) → ℝ≥0} :
     Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
   constructor
   · simp only [← NNReal.summable_coe, NNReal.coe_tsum]
-    exact fun h => ⟨h.sigma_factor, h.sigma⟩
+    exact fun h ↦ ⟨h.sigma_factor, h.sigma⟩
   · rintro ⟨h₁, h₂⟩
     simpa only [← ENNReal.tsum_coe_ne_top_iff_summable, ENNReal.tsum_sigma',
       ENNReal.coe_tsum (h₁ _)] using h₂

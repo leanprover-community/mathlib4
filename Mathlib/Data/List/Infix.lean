@@ -135,7 +135,7 @@ section InitsTails
 theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
   | s, [] =>
     suffices s = nil ↔ s <+: nil by simpa only [inits, mem_singleton]
-    ⟨fun h => h.symm ▸ prefix_rfl, eq_nil_of_prefix_nil⟩
+    ⟨fun h ↦ h.symm ▸ prefix_rfl, eq_nil_of_prefix_nil⟩
   | s, a :: t =>
     suffices (s = nil ∨ ∃ l ∈ inits t, a :: l = s) ↔ s <+: a :: t by simpa
     ⟨fun o =>

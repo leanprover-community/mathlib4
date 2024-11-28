@@ -171,7 +171,7 @@ theorem natDegree_derivative_lt {p : R[X]} (hp : p.natDegree ≠ 0) :
   · rw [hp', Polynomial.natDegree_zero]
     exact hp.bot_lt
   · rw [natDegree_lt_natDegree_iff hp']
-    exact degree_derivative_lt fun h => hp (h.symm ▸ natDegree_zero)
+    exact degree_derivative_lt fun h ↦ hp (h.symm ▸ natDegree_zero)
 
 theorem natDegree_derivative_le (p : R[X]) : p.derivative.natDegree ≤ p.natDegree - 1 := by
   by_cases p0 : p.natDegree = 0

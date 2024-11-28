@@ -43,7 +43,7 @@ inductive Independent : (ι → ℙ K V) → Prop
 /-- A family of points in a projective space is independent if and only if the representative
 vectors determined by the family are linearly independent. -/
 theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivization.rep ∘ f) := by
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨ff, hff, hh⟩
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)
     convert hh.units_smul a
@@ -57,7 +57,7 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
 /-- A family of points in projective space is independent if and only if the family of
 submodules which the points determine is independent in the lattice-theoretic sense. -/
 theorem independent_iff_iSupIndep : Independent f ↔ iSupIndep fun i => (f i).submodule := by
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨f, hf, hi⟩
     simp only [submodule_mk]
     exact (iSupIndep_iff_linearIndependent_of_ne_zero (R := K) hf).mpr hi
@@ -78,7 +78,7 @@ inductive Dependent : (ι → ℙ K V) → Prop
 /-- A family of points in a projective space is dependent if and only if their
 representatives are linearly dependent. -/
 theorem dependent_iff : Dependent f ↔ ¬LinearIndependent K (Projectivization.rep ∘ f) := by
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨ff, hff, hh1⟩
     contrapose! hh1
     choose a ha using fun i : ι => exists_smul_eq_mk_rep K (ff i) (hff i)

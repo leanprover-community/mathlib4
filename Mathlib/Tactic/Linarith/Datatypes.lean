@@ -29,7 +29,7 @@ when the `trace.linarith` option is set to true.
 -/
 def linarithTraceProofs {α} [ToMessageData α] (s : α) (l : List Expr) : MetaM Unit := do
   trace[linarith] "{s}"
-  trace[linarith] (← l.mapM fun e => do instantiateMVars (← inferType e))
+  trace[linarith] (← l.mapM fun e ↦ do instantiateMVars (← inferType e))
 
 /-! ### Linear expressions -/
 

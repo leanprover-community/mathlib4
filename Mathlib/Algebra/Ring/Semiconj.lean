@@ -46,14 +46,14 @@ theorem neg_right (h : SemiconjBy a x y) : SemiconjBy a (-x) (-y) := by
 
 @[simp]
 theorem neg_right_iff : SemiconjBy a (-x) (-y) ↔ SemiconjBy a x y :=
-  ⟨fun h => neg_neg x ▸ neg_neg y ▸ h.neg_right, SemiconjBy.neg_right⟩
+  ⟨fun h ↦ neg_neg x ▸ neg_neg y ▸ h.neg_right, SemiconjBy.neg_right⟩
 
 theorem neg_left (h : SemiconjBy a x y) : SemiconjBy (-a) x y := by
   simp only [SemiconjBy, h.eq, neg_mul, mul_neg]
 
 @[simp]
 theorem neg_left_iff : SemiconjBy (-a) x y ↔ SemiconjBy a x y :=
-  ⟨fun h => neg_neg a ▸ h.neg_left, SemiconjBy.neg_left⟩
+  ⟨fun h ↦ neg_neg a ▸ h.neg_left, SemiconjBy.neg_left⟩
 
 end
 

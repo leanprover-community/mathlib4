@@ -360,7 +360,7 @@ theorem starClosure_le {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} (h : 
 
 theorem starClosure_le_iff {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} :
     S₁.starClosure ≤ S₂ ↔ S₁ ≤ S₂.toSubalgebra :=
-  ⟨fun h => le_sup_left.trans h, starClosure_le⟩
+  ⟨fun h ↦ le_sup_left.trans h, starClosure_le⟩
 
 end Subalgebra
 
@@ -412,7 +412,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → StarSubalgebra R A
   intro s S
   rw [← toSubalgebra_le_iff, adjoin_toSubalgebra, Algebra.adjoin_le_iff, coe_toSubalgebra]
   exact
-    ⟨fun h => Set.subset_union_left.trans h, fun h =>
+    ⟨fun h ↦ Set.subset_union_left.trans h, fun h =>
       Set.union_subset h fun x hx => star_star x ▸ star_mem (show star x ∈ S from h hx)⟩
 
 /-- Galois insertion between `adjoin` and `coe`. -/
@@ -666,7 +666,7 @@ theorem coe_bot : ((⊥ : StarSubalgebra R A) : Set A) = Set.range (algebraMap R
 
 theorem eq_top_iff {S : StarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top,
-  fun h => by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
+  fun h ↦ by ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
 end StarSubalgebra
 

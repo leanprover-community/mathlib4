@@ -88,7 +88,7 @@ theorem coeff_eq_zero_of_natDegree_lt {p : R[X]} {n : ℕ} (h : p.natDegree < n)
 theorem ext_iff_natDegree_le {p q : R[X]} {n : ℕ} (hp : p.natDegree ≤ n) (hq : q.natDegree ≤ n) :
     p = q ↔ ∀ i ≤ n, p.coeff i = q.coeff i := by
   refine Iff.trans Polynomial.ext_iff ?_
-  refine forall_congr' fun i => ⟨fun h _ => h, fun h => ?_⟩
+  refine forall_congr' fun i => ⟨fun h _ => h, fun h ↦ ?_⟩
   refine (le_or_lt i n).elim h fun k => ?_
   exact
     (coeff_eq_zero_of_natDegree_lt (hp.trans_lt k)).trans
@@ -162,7 +162,7 @@ theorem eq_C_of_degree_eq_zero (h : degree p = 0) : p = C (coeff p 0) :=
   eq_C_of_degree_le_zero h.le
 
 theorem degree_le_zero_iff : degree p ≤ 0 ↔ p = C (coeff p 0) :=
-  ⟨eq_C_of_degree_le_zero, fun h => h.symm ▸ degree_C_le⟩
+  ⟨eq_C_of_degree_le_zero, fun h ↦ h.symm ▸ degree_C_le⟩
 
 theorem degree_add_eq_left_of_degree_lt (h : degree q < degree p) : degree (p + q) = degree p :=
   le_antisymm (max_eq_left_of_lt h ▸ degree_add_le _ _) <|
@@ -339,8 +339,8 @@ theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = 
     rw [pow_succ', pow_succ', leadingCoeff_mul' h₂, ih h₁]
 
 theorem degree_pow' : ∀ {n : ℕ}, leadingCoeff p ^ n ≠ 0 → degree (p ^ n) = n • degree p
-  | 0 => fun h => by rw [pow_zero, ← C_1] at *; rw [degree_C h, zero_nsmul]
-  | n + 1 => fun h => by
+  | 0 => fun h ↦ by rw [pow_zero, ← C_1] at *; rw [degree_C h, zero_nsmul]
+  | n + 1 => fun h ↦ by
     have h₁ : leadingCoeff p ^ n ≠ 0 := fun h₁ => h <| by rw [pow_succ, h₁, zero_mul]
     have h₂ : leadingCoeff (p ^ n) * leadingCoeff p ≠ 0 := by
       rwa [pow_succ, ← leadingCoeff_pow' h₁] at h
@@ -396,7 +396,7 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
       · rw [hp2, zero_mul, coeff_zero]
       · apply coeff_eq_zero_of_natDegree_lt
         have h1 : (p ^ i).natDegree < i * p.natDegree := by
-          refine lt_of_le_of_ne natDegree_pow_le fun h => hp2 ?_
+          refine lt_of_le_of_ne natDegree_pow_le fun h ↦ hp2 ?_
           rw [← h, hp1] at hi
           exact leadingCoeff_eq_zero.mp hi
         calc

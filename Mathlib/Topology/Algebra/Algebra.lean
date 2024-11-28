@@ -44,7 +44,7 @@ theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A)
 
 theorem continuous_algebraMap_iff_smul [TopologicalSemiring A] :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
-  refine ⟨fun h => ?_, fun h => have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
   simp only [Algebra.smul_def]
   exact (h.comp continuous_fst).mul continuous_snd
 
@@ -200,7 +200,7 @@ theorem ext_ring [TopologicalSpace R] {f g : R →A[R] A} : f = g :=
   coe_inj.mp (ext_id _ _ _)
 
 theorem ext_ring_iff [TopologicalSpace R] {f g : R →A[R] A} : f = g ↔ f 1 = g 1 :=
-  ⟨fun h => h ▸ rfl, fun _ => ext_ring ⟩
+  ⟨fun h ↦ h ▸ rfl, fun _ => ext_ring ⟩
 
 /-- If two continuous algebra maps are equal on a set `s`, then they are equal on the closure
 of the `Algebra.adjoin` of this set. -/

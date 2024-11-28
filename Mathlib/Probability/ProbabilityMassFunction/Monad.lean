@@ -67,10 +67,10 @@ theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 
   split_ifs with ha
   · refine (tsum_congr fun b ↦ ?_).trans (tsum_ite_eq a 1)
     exact ite_eq_left_iff.2 fun hb =>
-      symm (ite_eq_right_iff.2 fun h => (hb <| h.symm ▸ ha).elim)
+      symm (ite_eq_right_iff.2 fun h ↦ (hb <| h.symm ▸ ha).elim)
   · refine (tsum_congr fun b ↦ ?_).trans tsum_zero
     exact ite_eq_right_iff.2 fun hb =>
-      ite_eq_right_iff.2 fun h => (ha <| h ▸ hb).elim
+      ite_eq_right_iff.2 fun h ↦ (ha <| h ▸ hb).elim
 
 variable [MeasurableSpace α]
 
@@ -221,7 +221,7 @@ theorem bindOnSupport_eq_bind (p : PMF α) (f : α → PMF β) :
     (p.bindOnSupport fun a _ => f a) = p.bind f := by
   ext b
   have : ∀ a, ite (p a = 0) 0 (p a * f a b) = p a * f a b :=
-    fun a ↦ ite_eq_right_iff.2 fun h => h.symm ▸ symm (zero_mul <| f a b)
+    fun a ↦ ite_eq_right_iff.2 fun h ↦ h.symm ▸ symm (zero_mul <| f a b)
   simp only [bindOnSupport_apply fun a _ => f a, p.bind_apply f, dite_eq_ite, mul_ite,
     mul_zero, this]
 
@@ -280,14 +280,14 @@ theorem toOuterMeasure_bindOnSupport_apply :
       ∑' a, p a * if h : p a = 0 then 0 else (f a h).toOuterMeasure s := by
   simp only [toOuterMeasure_apply, Set.indicator_apply, bindOnSupport_apply]
   calc
-    (∑' b, ite (b ∈ s) (∑' a, p a * dite (p a = 0) (fun h => 0) fun h => f a h b) 0) =
-        ∑' (b) (a), ite (b ∈ s) (p a * dite (p a = 0) (fun h => 0) fun h => f a h b) 0 :=
+    (∑' b, ite (b ∈ s) (∑' a, p a * dite (p a = 0) (fun h ↦ 0) fun h ↦ f a h b) 0) =
+        ∑' (b) (a), ite (b ∈ s) (p a * dite (p a = 0) (fun h ↦ 0) fun h ↦ f a h b) 0 :=
       tsum_congr fun b ↦ by split_ifs with hbs <;> simp only [eq_self_iff_true, tsum_zero]
-    _ = ∑' (a) (b), ite (b ∈ s) (p a * dite (p a = 0) (fun h => 0) fun h => f a h b) 0 :=
+    _ = ∑' (a) (b), ite (b ∈ s) (p a * dite (p a = 0) (fun h ↦ 0) fun h ↦ f a h b) 0 :=
       ENNReal.tsum_comm
-    _ = ∑' a, p a * ∑' b, ite (b ∈ s) (dite (p a = 0) (fun h => 0) fun h => f a h b) 0 :=
+    _ = ∑' a, p a * ∑' b, ite (b ∈ s) (dite (p a = 0) (fun h ↦ 0) fun h ↦ f a h b) 0 :=
       (tsum_congr fun a ↦ by simp only [← ENNReal.tsum_mul_left, mul_ite, mul_zero])
-    _ = ∑' a, p a * dite (p a = 0) (fun h => 0) fun h => ∑' b, ite (b ∈ s) (f a h b) 0 :=
+    _ = ∑' a, p a * dite (p a = 0) (fun h ↦ 0) fun h ↦ ∑' b, ite (b ∈ s) (f a h b) 0 :=
       tsum_congr fun a ↦ by split_ifs with ha <;> simp only [ite_self, tsum_zero, eq_self_iff_true]
 
 /-- The measure of a set under `p.bindOnSupport f` is the sum over `a : α`

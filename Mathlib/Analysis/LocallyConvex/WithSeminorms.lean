@@ -406,7 +406,7 @@ theorem SeminormFamily.withSeminorms_of_hasBasis [TopologicalAddGroup E] (p : Se
 theorem SeminormFamily.withSeminorms_iff_nhds_eq_iInf [TopologicalAddGroup E]
     (p : SeminormFamily 𝕜 E ι) : WithSeminorms p ↔ (𝓝 (0 : E)) = ⨅ i, (𝓝 0).comap (p i) := by
   rw [← p.filter_eq_iInf]
-  refine ⟨fun h => ?_, p.withSeminorms_of_nhds⟩
+  refine ⟨fun h ↦ ?_, p.withSeminorms_of_nhds⟩
   rw [h.topology_eq_withSeminorms]
   exact AddGroupFilterBasis.nhds_zero_eq _
 

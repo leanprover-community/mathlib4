@@ -304,7 +304,7 @@ class Terminates (s : Computation α) : Prop where
   term : ∃ a, a ∈ s
 
 theorem terminates_iff (s : Computation α) : Terminates s ↔ ∃ a, a ∈ s :=
-  ⟨fun h => h.1, Terminates.mk⟩
+  ⟨fun h ↦ h.1, Terminates.mk⟩
 
 theorem terminates_of_mem {s : Computation α} {a : α} (h : a ∈ s) : Terminates s :=
   ⟨⟨a, h⟩⟩
@@ -484,7 +484,7 @@ theorem of_results_think {s : Computation α} {a n} (h : Results (think s) a n) 
 
 @[simp]
 theorem results_think_iff {s : Computation α} {a n} : Results (think s) a (n + 1) ↔ Results s a n :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     let ⟨n', r, e⟩ := of_results_think h
     injection e with h'; rwa [h'], results_think⟩
 
@@ -881,7 +881,7 @@ theorem lift_eq_iff_equiv (c₁ c₂ : Computation α) : LiftRel (· = ·) c₁ 
   ⟨fun ⟨h1, h2⟩ a =>
     ⟨fun a1 => by let ⟨b, b2, ab⟩ := h1 a1; rwa [ab],
      fun a2 => by let ⟨b, b1, ab⟩ := h2 a2; rwa [← ab]⟩,
-    fun e => ⟨fun {a} a1 => ⟨a, (e _).1 a1, rfl⟩, fun {a} a2 => ⟨a, (e _).2 a2, rfl⟩⟩⟩
+    fun e ↦ ⟨fun {a} a1 => ⟨a, (e _).1 a1, rfl⟩, fun {a} a2 => ⟨a, (e _).2 a2, rfl⟩⟩⟩
 
 theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun _ =>
   ⟨fun {a} as => ⟨a, as, H a⟩, fun {b} bs => ⟨b, bs, H b⟩⟩
@@ -1073,7 +1073,7 @@ theorem LiftRelAux.ret_left (R : α → β → Prop) (C : Computation α → Com
   apply cb.recOn (fun b ↦ _) fun cb => _
   · intro b
     exact
-      ⟨fun h => ⟨_, ret_mem _, h⟩, fun ⟨b', mb, h⟩ => by rw [mem_unique (ret_mem _) mb]; exact h⟩
+      ⟨fun h ↦ ⟨_, ret_mem _, h⟩, fun ⟨b', mb, h⟩ => by rw [mem_unique (ret_mem _) mb]; exact h⟩
   · intro
     rw [destruct_think]
     exact ⟨fun ⟨b, h, r⟩ => ⟨b, think_mem h, r⟩, fun ⟨b, h, r⟩ => ⟨b, of_think_mem h, r⟩⟩

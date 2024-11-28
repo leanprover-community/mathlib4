@@ -61,7 +61,7 @@ theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
 @[simp]
 theorem eventually_eventually_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
     (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝[s] y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
-  refine ⟨fun h => ?_, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 
@@ -432,13 +432,13 @@ theorem tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within {a : α} {l : Fi
 
 theorem tendsto_nhdsWithin_iff {a : α} {l : Filter β} {s : Set α} {f : β → α} :
     Tendsto f l (𝓝[s] a) ↔ Tendsto f l (𝓝 a) ∧ ∀ᶠ n in l, f n ∈ s :=
-  ⟨fun h => ⟨tendsto_nhds_of_tendsto_nhdsWithin h, eventually_mem_of_tendsto_nhdsWithin h⟩, fun h =>
+  ⟨fun h ↦ ⟨tendsto_nhds_of_tendsto_nhdsWithin h, eventually_mem_of_tendsto_nhdsWithin h⟩, fun h =>
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.1 h.2⟩
 
 @[simp]
 theorem tendsto_nhdsWithin_range {a : α} {l : Filter β} {f : β → α} :
     Tendsto f l (𝓝[range f] a) ↔ Tendsto f l (𝓝 a) :=
-  ⟨fun h => h.mono_right inf_le_left, fun h =>
+  ⟨fun h ↦ h.mono_right inf_le_left, fun h =>
     tendsto_inf.2 ⟨h, tendsto_principal.2 <| Eventually.of_forall mem_range_self⟩⟩
 
 theorem Filter.EventuallyEq.eq_of_nhdsWithin {s : Set α} {f g : α → β} {a : α} (h : f =ᶠ[𝓝[s] a] g)
@@ -756,7 +756,7 @@ this is found in another file although it is part of the basic API for `continuo
 
 theorem ContinuousWithinAt.diff_iff
     (ht : ContinuousWithinAt f t x) : ContinuousWithinAt f (s \ t) x ↔ ContinuousWithinAt f s x :=
-  ⟨fun h => (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
+  ⟨fun h ↦ (h.union ht).mono <| by simp only [diff_union_self, subset_union_left], fun h =>
     h.mono diff_subset⟩
 
 /-- See also `continuousWithinAt_diff_singleton` for the case of `s \ {y}`, but
@@ -836,7 +836,7 @@ theorem ContinuousOn.congr (h : ContinuousOn f s) (h' : EqOn g f s) :
 
 theorem continuousOn_congr (h' : EqOn g f s) :
     ContinuousOn g s ↔ ContinuousOn f s :=
-  ⟨fun h => ContinuousOn.congr h h'.symm, fun h => h.congr h'⟩
+  ⟨fun h ↦ ContinuousOn.congr h h'.symm, fun h ↦ h.congr h'⟩
 
 theorem Filter.EventuallyEq.congr_continuousWithinAt (h : f =ᶠ[𝓝[s] x] g) (hx : f x = g x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt g s x := by
@@ -1149,7 +1149,7 @@ theorem ContinuousWithinAt.snd {f : α → β × γ} {s : Set α} {a : α} (h : 
 theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} :
     ContinuousWithinAt f s x ↔
       ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 
 /-!
 ### Pi
@@ -1322,7 +1322,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
     cases' hx with hx hx
     · apply ContinuousWithinAt.union
       · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
-      · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by
+      · have : x ∉ closure { a | p a }ᶜ := fun h ↦ hx' ⟨subset_closure hx.2, by
           rwa [closure_compl] at h⟩
         exact continuousWithinAt_of_not_mem_closure fun h =>
           this (closure_inter_subset_inter_closure _ _ h).2
@@ -1464,5 +1464,5 @@ lemma ContinuousOn.union_continuousAt
     (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
     ContinuousOn f (s ∪ t) :=
   continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
-  (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
+  (fun h ↦ ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)

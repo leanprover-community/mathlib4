@@ -284,7 +284,7 @@ theorem isConj_of_cycleType_eq {σ τ : Perm α} (h : cycleType σ = cycleType �
     · exact (disjoint_mul_inv_of_mem_cycleFactorsFinset hσ'l).symm
 
 theorem isConj_iff_cycleType_eq {σ τ : Perm α} : IsConj σ τ ↔ σ.cycleType = τ.cycleType :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     obtain ⟨π, rfl⟩ := isConj_iff.1 h
     rw [cycleType_conj], isConj_of_cycleType_eq⟩
 
@@ -340,7 +340,7 @@ theorem card_compl_support_modEq [DecidableEq α] {p n : ℕ} [hp : Fact p.Prime
     obtain ⟨m, -, hm⟩ := (Nat.dvd_prime_pow hp.out).mp (orderOf_dvd_of_pow_eq_one hσ)
     obtain ⟨l, -, rfl⟩ := (Nat.dvd_prime_pow hp.out).mp
       ((congr_arg _ hm).mp (dvd_of_mem_cycleType hk))
-    exact dvd_pow_self _ fun h => (one_lt_of_mem_cycleType hk).ne <| by rw [h, pow_zero]
+    exact dvd_pow_self _ fun h ↦ (one_lt_of_mem_cycleType hk).ne <| by rw [h, pow_zero]
   · exact Finset.card_le_univ _
 
 open Function in
@@ -561,7 +561,7 @@ theorem filter_parts_partition_eq_cycleType {σ : Perm α} :
 
 theorem partition_eq_of_isConj {σ τ : Perm α} : IsConj σ τ ↔ σ.partition = τ.partition := by
   rw [isConj_iff_cycleType_eq]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [Nat.Partition.ext_iff, parts_partition, parts_partition, ← sum_cycleType, ← sum_cycleType,
       h]
   · rw [← filter_parts_partition_eq_cycleType, ← filter_parts_partition_eq_cycleType, h]
@@ -588,7 +588,7 @@ theorem card_support (h : IsThreeCycle σ) : σ.support.card = 3 := by
   rw [← sum_cycleType, h.cycleType, Multiset.sum_singleton]
 
 theorem _root_.card_support_eq_three_iff : σ.support.card = 3 ↔ σ.IsThreeCycle := by
-  refine ⟨fun h => ?_, IsThreeCycle.card_support⟩
+  refine ⟨fun h ↦ ?_, IsThreeCycle.card_support⟩
   by_cases h0 : σ.cycleType = 0
   · rw [← sum_cycleType, h0, sum_zero] at h
     exact (ne_of_lt zero_lt_three h).elim

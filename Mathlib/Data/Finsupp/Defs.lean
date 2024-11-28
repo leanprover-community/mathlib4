@@ -158,7 +158,7 @@ theorem not_mem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 
 theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 
 theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=
-  ⟨fun h => h ▸ ⟨rfl, fun _ _ => rfl⟩, fun ⟨h₁, h₂⟩ =>
+  ⟨fun h ↦ h ▸ ⟨rfl, fun _ _ => rfl⟩, fun ⟨h₁, h₂⟩ =>
     ext fun a ↦ by
       classical
       exact if h : a ∈ f.support then h₂ a h else by
@@ -305,7 +305,7 @@ theorem mem_support_single (a a' : α) (b : M) : a ∈ (single a' b).support ↔
   simp [single_apply_eq_zero, not_or]
 
 theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆ {a} ∧ f a = b := by
-  refine ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
+  refine ⟨fun h ↦ h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
   rintro ⟨h, rfl⟩
   ext x
   by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
@@ -380,7 +380,7 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
   ⟨fun h =>
     ⟨mem_support_iff.1 <| h.symm ▸ Finset.mem_singleton_self a,
       eq_single_iff.2 ⟨subset_of_eq h, rfl⟩⟩,
-    fun h => h.2.symm ▸ support_single_ne_zero _ h.1⟩
+    fun h ↦ h.2.symm ▸ support_single_ne_zero _ h.1⟩
 
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
@@ -398,10 +398,10 @@ theorem card_support_eq_one' {f : α →₀ M} :
   simp only [card_eq_one, support_eq_singleton']
 
 theorem support_subset_singleton {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ f = single a (f a) :=
-  ⟨fun h => eq_single_iff.mpr ⟨h, rfl⟩, fun h => (eq_single_iff.mp h).left⟩
+  ⟨fun h ↦ eq_single_iff.mpr ⟨h, rfl⟩, fun h ↦ (eq_single_iff.mp h).left⟩
 
 theorem support_subset_singleton' {f : α →₀ M} {a : α} : f.support ⊆ {a} ↔ ∃ b, f = single a b :=
-  ⟨fun h => ⟨f a, support_subset_singleton.mp h⟩, fun ⟨b, hb⟩ => by
+  ⟨fun h ↦ ⟨f a, support_subset_singleton.mp h⟩, fun ⟨b, hb⟩ => by
     rw [hb, support_subset_singleton, single_eq_same]⟩
 
 theorem card_support_le_one [Nonempty α] {f : α →₀ M} :
@@ -809,7 +809,7 @@ theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f
 theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     embDomain f v a = 0 := by
   classical
-    refine dif_neg (mt (fun h => ?_) h)
+    refine dif_neg (mt (fun h ↦ ?_) h)
     rcases Finset.mem_map.1 h with ⟨a, _h, rfl⟩
     exact Set.mem_range_self a
 

@@ -142,7 +142,7 @@ theorem le_nhds_of_cauchy_adhp {f : Filter α} {x : α} (hf : Cauchy f) (adhs : 
 
 theorem le_nhds_iff_adhp_of_cauchy {f : Filter α} {x : α} (hf : Cauchy f) :
     f ≤ 𝓝 x ↔ ClusterPt x f :=
-  ⟨fun h => ClusterPt.of_le_nhds' h hf.1, le_nhds_of_cauchy_adhp hf⟩
+  ⟨fun h ↦ ClusterPt.of_le_nhds' h hf.1, le_nhds_of_cauchy_adhp hf⟩
 
 nonrec theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f)
     (hm : UniformContinuous m) : Cauchy (map m f) :=

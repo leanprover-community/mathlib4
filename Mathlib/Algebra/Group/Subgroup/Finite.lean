@@ -132,7 +132,7 @@ theorem eq_bot_of_card_eq (h : Nat.card H = 1) : H = ⊥ :=
 
 @[to_additive card_le_one_iff_eq_bot]
 theorem card_le_one_iff_eq_bot [Finite H] : Nat.card H ≤ 1 ↔ H = ⊥ :=
-  ⟨H.eq_bot_of_card_le, fun h => by simp [h]⟩
+  ⟨H.eq_bot_of_card_le, fun h ↦ by simp [h]⟩
 
 @[to_additive] lemma eq_bot_iff_card : H = ⊥ ↔ Nat.card H = 1 :=
   ⟨by rintro rfl; exact card_bot, eq_bot_of_card_eq _⟩

@@ -93,10 +93,10 @@ theorem associated_one_iff_isUnit [Monoid M] {a : M} : (a : M) ~ᵤ 1 ↔ IsUnit
 @[simp]
 theorem associated_zero_iff_eq_zero [MonoidWithZero M] (a : M) : a ~ᵤ 0 ↔ a = 0 :=
   Iff.intro
-    (fun h => by
+    (fun h ↦ by
       let ⟨u, h⟩ := h.symm
       simpa using h.symm)
-    fun h => h ▸ Associated.refl a
+    fun h ↦ h ▸ Associated.refl a
 
 theorem associated_one_of_mul_eq_one [CommMonoid M] {a : M} (b : M) (hab : a * b = 1) : a ~ᵤ 1 :=
   show (Units.mkOfMulEqOne a b hab : M) ~ᵤ 1 from unit_associated_one
@@ -531,7 +531,7 @@ theorem coe_unit_eq_one (u : (Associates M)ˣ) : (u : Associates M) = 1 := by
   simp [eq_iff_true_of_subsingleton]
 
 theorem isUnit_iff_eq_one (a : Associates M) : IsUnit a ↔ a = 1 :=
-  Iff.intro (fun ⟨_, h⟩ => h ▸ coe_unit_eq_one _) fun h => h.symm ▸ isUnit_one
+  Iff.intro (fun ⟨_, h⟩ => h ▸ coe_unit_eq_one _) fun h ↦ h.symm ▸ isUnit_one
 
 theorem isUnit_iff_eq_bot {a : Associates M} : IsUnit a ↔ a = ⊥ := by
   rw [Associates.isUnit_iff_eq_one, bot_eq_one]
@@ -621,7 +621,7 @@ variable [MonoidWithZero M]
 
 @[simp]
 theorem mk_eq_zero {a : M} : Associates.mk a = 0 ↔ a = 0 :=
-  ⟨fun h => (associated_zero_iff_eq_zero a).1 <| Quotient.exact h, fun h => h.symm ▸ rfl⟩
+  ⟨fun h ↦ (associated_zero_iff_eq_zero a).1 <| Quotient.exact h, fun h ↦ h.symm ▸ rfl⟩
 
 @[simp]
 theorem quot_out_zero : Quot.out (0 : Associates M) = 0 := by rw [← mk_eq_zero, quot_out]
@@ -779,7 +779,7 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero M] {p q : M} (hp : Prime p) (n :
   | zero =>
     simp [← isUnit_iff_dvd_one, associated_one_iff_isUnit]
   | succ n ih =>
-    refine ⟨fun h => ?_, fun ⟨i, hi, hq⟩ => hq.dvd.trans (pow_dvd_pow p hi)⟩
+    refine ⟨fun h ↦ ?_, fun ⟨i, hi, hq⟩ => hq.dvd.trans (pow_dvd_pow p hi)⟩
     rw [pow_succ'] at h
     rcases hp.left_dvd_or_dvd_right_of_dvd_mul h with (⟨q, rfl⟩ | hno)
     · rw [mul_dvd_mul_iff_left hp.ne_zero, ih] at h

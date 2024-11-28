@@ -197,7 +197,7 @@ is of the expected type. -/
 def elaboratePattern (t : Term) (expectedType? : Option Expr) (forLhs : Bool) :
     Term.TermElabM Expr :=
   Term.withoutErrToSorry do
-    let t' ← processAntiquot t (fun h => if forLhs then `(cHole% lhs $h) else `(cHole% rhs $h))
+    let t' ← processAntiquot t (fun h ↦ if forLhs then `(cHole% lhs $h) else `(cHole% rhs $h))
     Term.elabTermEnsuringType t' expectedType?
 
 /-! ### Congruence generation -/

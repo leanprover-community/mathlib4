@@ -300,7 +300,7 @@ theorem cons_subset_cons {hs ht} : s.cons a hs ⊆ t.cons a ht ↔ s ⊆ t := by
   rwa [← coe_subset, coe_cons, coe_cons, Set.insert_subset_insert_iff, coe_subset]
 
 theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), s.cons a h ⊆ t := by
-  refine ⟨fun h => ?_, fun ⟨a, ha, h⟩ => ssubset_of_ssubset_of_subset (ssubset_cons _) h⟩
+  refine ⟨fun h ↦ ?_, fun ⟨a, ha, h⟩ => ssubset_of_ssubset_of_subset (ssubset_cons _) h⟩
   obtain ⟨a, hs, ht⟩ := not_subset.1 h.2
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
 
@@ -403,7 +403,7 @@ theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
 
 @[simp]
 theorem insert_eq_self : insert a s = s ↔ a ∈ s :=
-  ⟨fun h => h ▸ mem_insert_self _ _, insert_eq_of_mem⟩
+  ⟨fun h ↦ h ▸ mem_insert_self _ _, insert_eq_of_mem⟩
 
 theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not
@@ -461,7 +461,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
+  ⟨fun h ↦ eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
 theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a ↦ insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1

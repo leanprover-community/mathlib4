@@ -747,7 +747,7 @@ instance : ConcreteCategory.{0} SimplexCategory where
   forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }
-  forget_faithful := ⟨fun h => by ext : 2; exact h⟩
+  forget_faithful := ⟨fun h ↦ by ext : 2; exact h⟩
 
 end Concrete
 

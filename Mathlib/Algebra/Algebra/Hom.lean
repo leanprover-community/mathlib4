@@ -236,7 +236,7 @@ protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι �
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
   { f with
     toFun := f
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
+    commutes' := fun c ↦ by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
 
 @[simp]
 theorem coe_mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : ⇑(mk' f h) = f :=
@@ -322,7 +322,7 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
     toFun := f
     map_one' := map_one
     map_mul' := map_mul
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
+    commutes' := fun c ↦ by simp only [Algebra.algebraMap_eq_smul_one, f.map_smul, map_one] }
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :

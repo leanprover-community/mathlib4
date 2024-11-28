@@ -276,7 +276,7 @@ See also `LieModule.isNilpotent_iff_forall'` which assumes that `M` is Noetheria
 theorem LieModule.isNilpotent_iff_forall [IsNoetherian R L] :
     LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEnd R L M x :=
   ⟨fun _ ↦ isNilpotent_toEnd_of_isNilpotent R L M,
-   fun h => LieAlgebra.isEngelian_of_isNoetherian M h⟩
+   fun h ↦ LieAlgebra.isEngelian_of_isNoetherian M h⟩
 
 /-- Engel's theorem. -/
 theorem LieModule.isNilpotent_iff_forall' [IsNoetherian R M] :

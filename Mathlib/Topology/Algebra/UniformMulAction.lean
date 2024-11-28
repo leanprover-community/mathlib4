@@ -79,7 +79,7 @@ variable [SMul M X]
 @[to_additive]
 instance (priority := 100) UniformContinuousConstSMul.to_continuousConstSMul
     [UniformContinuousConstSMul M X] : ContinuousConstSMul M X :=
-  ⟨fun c => (uniformContinuous_const_smul c).continuous⟩
+  ⟨fun c ↦ (uniformContinuous_const_smul c).continuous⟩
 
 variable {M X Y}
 
@@ -163,7 +163,7 @@ variable [SMul M X]
 
 @[to_additive]
 noncomputable instance : SMul M (Completion X) :=
-  ⟨fun c => Completion.map (c • ·)⟩
+  ⟨fun c ↦ Completion.map (c • ·)⟩
 
 @[to_additive]
 theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·) x :=

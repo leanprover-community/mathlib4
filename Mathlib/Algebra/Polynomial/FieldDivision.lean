@@ -250,7 +250,7 @@ section DivisionRing
 variable [DivisionRing R] {p q : R[X]}
 
 theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 < degree p :=
-  lt_of_not_ge fun h => by
+  lt_of_not_ge fun h ↦ by
     rw [eq_C_of_degree_le_zero h] at hp0 hp
     exact hp (IsUnit.map C (IsUnit.mk0 (coeff p 0) (mt C_inj.2 (by simpa using hp0))))
 
@@ -356,7 +356,7 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
-  ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
+  ⟨fun h ↦ h ▸ EuclideanDomain.mod_lt _ hq0, fun h ↦ by
     classical
     have : ¬degree (q * C (leadingCoeff q)⁻¹) ≤ degree p :=
       not_le_of_gt <| by rwa [degree_mul_leadingCoeff_inv q hq0]
@@ -366,10 +366,10 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
     simp only [this, false_and, if_false]⟩
 
 theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have := EuclideanDomain.div_add_mod p q
     rwa [h, mul_zero, zero_add, mod_eq_self_iff hq0] at this,
-  fun h => by
+  fun h ↦ by
     have hlt : degree p < degree (q * C (leadingCoeff q)⁻¹) := by
       rwa [degree_mul_leadingCoeff_inv q hq0]
     have hm : Monic (q * C (leadingCoeff q)⁻¹) := monic_mul_leadingCoeff_inv hq0
@@ -460,7 +460,7 @@ theorem root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k}
 theorem root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]
     {ϕ : R →+* k} {f g : R[X]} {α : k} :
     (EuclideanDomain.gcd f g).eval₂ ϕ α = 0 ↔ f.eval₂ ϕ α = 0 ∧ g.eval₂ ϕ α = 0 :=
-  ⟨fun h => ⟨root_left_of_root_gcd h, root_right_of_root_gcd h⟩, fun h => eval₂_gcd_eq_zero h.1 h.2⟩
+  ⟨fun h ↦ ⟨root_left_of_root_gcd h, root_right_of_root_gcd h⟩, fun h ↦ eval₂_gcd_eq_zero h.1 h.2⟩
 
 theorem isRoot_gcd_iff_isRoot_left_right [DecidableEq R] {f g : R[X]} {α : R} :
     (EuclideanDomain.gcd f g).IsRoot α ↔ f.IsRoot α ∧ g.IsRoot α :=
@@ -536,7 +536,7 @@ theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one, one_mul]
 
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
-  ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
+  ⟨fun h ↦ dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
       rw [mul_assoc, mul_left_comm p, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one,
         one_mul, hr]⟩⟩
@@ -546,7 +546,7 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
     ⟨C a⁻¹ * r, by
       rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, inv_mul_cancel₀ ha, C.map_one,
         one_mul]⟩,
-    fun h => dvd_trans h (dvd_mul_left _ _)⟩
+    fun h ↦ dvd_trans h (dvd_mul_left _ _)⟩
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
     (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by

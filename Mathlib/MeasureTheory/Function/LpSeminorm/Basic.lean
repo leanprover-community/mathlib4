@@ -329,7 +329,7 @@ theorem Memℒp.neg {f : α → E} (hf : Memℒp f p μ) : Memℒp (-f) p μ :=
   ⟨AEStronglyMeasurable.neg hf.1, by simp [hf.right]⟩
 
 theorem memℒp_neg_iff {f : α → E} : Memℒp (-f) p μ ↔ Memℒp f p μ :=
-  ⟨fun h => neg_neg f ▸ h.neg, Memℒp.neg⟩
+  ⟨fun h ↦ neg_neg f ▸ h.neg, Memℒp.neg⟩
 
 end Neg
 
@@ -447,7 +447,7 @@ theorem memℒp_top_const (c : E) : Memℒp (fun _ : α => c) ∞ μ := by
 theorem memℒp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     Memℒp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   rw [← eLpNorm_const_lt_top_iff hp_ne_zero hp_ne_top]
-  exact ⟨fun h => h.2, fun h => ⟨aestronglyMeasurable_const, h⟩⟩
+  exact ⟨fun h ↦ h.2, fun h ↦ ⟨aestronglyMeasurable_const, h⟩⟩
 
 end Const
 
@@ -929,7 +929,7 @@ theorem Memℒp.norm {f : α → E} (h : Memℒp f p μ) : Memℒp (fun x => ‖
 
 theorem memℒp_norm_iff {f : α → E} (hf : AEStronglyMeasurable f μ) :
     Memℒp (fun x => ‖f x‖) p μ ↔ Memℒp f p μ :=
-  ⟨fun h => ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h => h.norm⟩
+  ⟨fun h ↦ ⟨hf, by rw [← eLpNorm_norm]; exact h.2⟩, fun h ↦ h.norm⟩
 
 theorem eLpNorm'_eq_zero_of_ae_zero {f : α → F} (hq0_lt : 0 < q) (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero hq0_lt]
@@ -1375,8 +1375,8 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {p : ℝ≥0∞} {f : ℕ → α
     filter_upwards with _
     rw [liminf_const (1 : ℝ≥0∞)]
     exact ENNReal.one_lt_top
-  have hp : p ≠ 0 := fun h => by simp [h] at hp0
-  have hp' : p ≠ ∞ := fun h => by simp [h] at hp0
+  have hp : p ≠ 0 := fun h ↦ by simp [h] at hp0
+  have hp' : p ≠ ∞ := fun h ↦ by simp [h] at hp0
   refine
     ae_lt_top (.liminf fun n => (hfmeas n).nnnorm.coe_nnreal_ennreal.pow_const p.toReal)
       (lt_of_le_of_lt

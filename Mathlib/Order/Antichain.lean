@@ -106,7 +106,7 @@ theorem image_relEmbedding (hs : IsAntichain r s) (φ : r ↪r r') : IsAntichain
 
 theorem preimage_relEmbedding {t : Set β} (ht : IsAntichain r' t) (φ : r ↪r r') :
     IsAntichain r (φ ⁻¹' t) := fun _ ha _s ha' hne hle =>
-  ht ha ha' (fun h => hne (φ.injective h)) (φ.map_rel_iff.mpr hle)
+  ht ha ha' (fun h ↦ hne (φ.injective h)) (φ.map_rel_iff.mpr hle)
 
 theorem image_relIso (hs : IsAntichain r s) (φ : r ≃r r') : IsAntichain r' (φ '' s) :=
   hs.image_relEmbedding φ.toRelEmbedding
@@ -116,7 +116,7 @@ theorem preimage_relIso {t : Set β} (hs : IsAntichain r' t) (φ : r ≃r r') :
   hs.preimage_relEmbedding φ.toRelEmbedding
 
 theorem image_relEmbedding_iff {φ : r ↪r r'} : IsAntichain r' (φ '' s) ↔ IsAntichain r s :=
-  ⟨fun h => (φ.injective.preimage_image s).subst (h.preimage_relEmbedding φ), fun h =>
+  ⟨fun h ↦ (φ.injective.preimage_image s).subst (h.preimage_relEmbedding φ), fun h =>
     h.image_relEmbedding φ⟩
 
 theorem image_relIso_iff {φ : r ≃r r'} : IsAntichain r' (φ '' s) ↔ IsAntichain r s :=
@@ -148,7 +148,7 @@ theorem preimage_iso [LE α] [LE β] {t : Set β} (ht : IsAntichain (· ≤ ·) 
 
 theorem preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :
     IsAntichain (· ≤ ·) (φ ⁻¹' t) ↔ IsAntichain (· ≤ ·) t :=
-  ⟨fun h => (φ.image_preimage t).subst (h.image_iso φ), fun h => h.preimage_iso _⟩
+  ⟨fun h ↦ (φ.image_preimage t).subst (h.image_iso φ), fun h ↦ h.preimage_iso _⟩
 
 theorem to_dual [LE α] (hs : IsAntichain (· ≤ ·) s) : @IsAntichain αᵒᵈ (· ≤ ·) s :=
   fun _ ha _ hb hab => hs hb ha hab.symm
@@ -162,7 +162,7 @@ theorem image_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
 
 theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
     IsAntichain (· ≤ ·) (compl ⁻¹' s) := fun _ ha _ ha' hne hle =>
-  hs ha' ha (fun h => hne (compl_inj_iff.mp h.symm)) (compl_le_compl hle)
+  hs ha' ha (fun h ↦ hne (compl_inj_iff.mp h.symm)) (compl_le_compl hle)
 
 end IsAntichain
 
@@ -177,15 +177,15 @@ section Preorder
 variable [Preorder α]
 
 theorem IsAntichain.not_lt (hs : IsAntichain (· ≤ ·) s) (ha : a ∈ s) (hb : b ∈ s) : ¬a < b :=
-  fun h => hs ha hb h.ne h.le
+  fun h ↦ hs ha hb h.ne h.le
 
 theorem isAntichain_and_least_iff : IsAntichain (· ≤ ·) s ∧ IsLeast s a ↔ s = {a} :=
-  ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq' hb h.2.1 (h.2.2 hb)⟩, by
+  ⟨fun h ↦ eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq' hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
     exact ⟨isAntichain_singleton _ _, isLeast_singleton⟩⟩
 
 theorem isAntichain_and_greatest_iff : IsAntichain (· ≤ ·) s ∧ IsGreatest s a ↔ s = {a} :=
-  ⟨fun h => eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq hb h.2.1 (h.2.2 hb)⟩, by
+  ⟨fun h ↦ eq_singleton_iff_unique_mem.2 ⟨h.2.1, fun _ hb => h.1.eq hb h.2.1 (h.2.2 hb)⟩, by
     rintro rfl
     exact ⟨isAntichain_singleton _ _, isGreatest_singleton⟩⟩
 

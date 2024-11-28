@@ -529,12 +529,12 @@ theorem neg_pi_div_two_ne_zero : ((-π / 2 : ℝ) : Angle) ≠ 0 := by
   exact div_ne_zero (neg_ne_zero.2 Real.pi_ne_zero) two_ne_zero
 
 theorem abs_toReal_coe_eq_self_iff {θ : ℝ} : |(θ : Angle).toReal| = θ ↔ 0 ≤ θ ∧ θ ≤ π :=
-  ⟨fun h => h ▸ ⟨abs_nonneg _, abs_toReal_le_pi _⟩, fun h =>
+  ⟨fun h ↦ h ▸ ⟨abs_nonneg _, abs_toReal_le_pi _⟩, fun h =>
     (toReal_coe_eq_self_iff.2 ⟨(Left.neg_neg_iff.2 Real.pi_pos).trans_le h.1, h.2⟩).symm ▸
       abs_eq_self.2 h.1⟩
 
 theorem abs_toReal_neg_coe_eq_self_iff {θ : ℝ} : |(-θ : Angle).toReal| = θ ↔ 0 ≤ θ ∧ θ ≤ π := by
-  refine ⟨fun h => h ▸ ⟨abs_nonneg _, abs_toReal_le_pi _⟩, fun h => ?_⟩
+  refine ⟨fun h ↦ h ▸ ⟨abs_nonneg _, abs_toReal_le_pi _⟩, fun h ↦ ?_⟩
   by_cases hnegpi : θ = π; · simp [hnegpi, Real.pi_pos.le]
   rw [← coe_neg,
     toReal_coe_eq_self_iff.2
@@ -565,7 +565,7 @@ theorem toReal_coe_eq_self_sub_two_mul_int_mul_pi_iff {θ : ℝ} {k : ℤ} :
     (θ : Angle).toReal = θ - 2 * k * π ↔ θ ∈ Set.Ioc ((2 * k - 1 : ℝ) * π) ((2 * k + 1) * π) := by
   rw [← sub_zero (θ : Angle), ← zsmul_zero k, ← coe_two_pi, ← coe_zsmul, ← coe_sub, zsmul_eq_mul, ←
     mul_assoc, mul_comm (k : ℝ), toReal_coe_eq_self_iff, Set.mem_Ioc]
-  exact ⟨fun h => ⟨by linarith, by linarith⟩, fun h => ⟨by linarith, by linarith⟩⟩
+  exact ⟨fun h ↦ ⟨by linarith, by linarith⟩, fun h ↦ ⟨by linarith, by linarith⟩⟩
 
 theorem toReal_coe_eq_self_sub_two_pi_iff {θ : ℝ} :
     (θ : Angle).toReal = θ - 2 * π ↔ θ ∈ Set.Ioc π (3 * π) := by
@@ -580,7 +580,7 @@ theorem two_nsmul_toReal_eq_two_mul_sub_two_pi {θ : Angle} :
   nth_rw 1 [← coe_toReal θ]
   rw [← coe_nsmul, two_nsmul, ← two_mul, toReal_coe_eq_self_sub_two_pi_iff, Set.mem_Ioc]
   exact
-    ⟨fun h => by linarith, fun h =>
+    ⟨fun h ↦ by linarith, fun h =>
       ⟨(div_lt_iff₀' (zero_lt_two' ℝ)).1 h, by linarith [pi_pos, toReal_le_pi θ]⟩⟩
 
 theorem two_zsmul_toReal_eq_two_mul_sub_two_pi {θ : Angle} :
@@ -592,7 +592,7 @@ theorem two_nsmul_toReal_eq_two_mul_add_two_pi {θ : Angle} :
   nth_rw 1 [← coe_toReal θ]
   rw [← coe_nsmul, two_nsmul, ← two_mul, toReal_coe_eq_self_add_two_pi_iff, Set.mem_Ioc]
   refine
-    ⟨fun h => by linarith, fun h =>
+    ⟨fun h ↦ by linarith, fun h =>
       ⟨by linarith [pi_pos, neg_pi_lt_toReal θ], (le_div_iff₀' (zero_lt_two' ℝ)).1 h⟩⟩
 
 theorem two_zsmul_toReal_eq_two_mul_add_two_pi {θ : Angle} :
@@ -610,7 +610,7 @@ theorem cos_toReal (θ : Angle) : Real.cos θ.toReal = cos θ := by
 theorem cos_nonneg_iff_abs_toReal_le_pi_div_two {θ : Angle} : 0 ≤ cos θ ↔ |θ.toReal| ≤ π / 2 := by
   nth_rw 1 [← coe_toReal θ]
   rw [abs_le, cos_coe]
-  refine ⟨fun h => ?_, cos_nonneg_of_mem_Icc⟩
+  refine ⟨fun h ↦ ?_, cos_nonneg_of_mem_Icc⟩
   by_contra hn
   rw [not_and_or, not_le, not_le] at hn
   refine (not_lt.2 h) ?_
@@ -782,7 +782,7 @@ theorem neg_coe_abs_toReal_of_sign_nonpos {θ : Angle} (h : θ.sign ≤ 0) : -�
 
 theorem eq_iff_sign_eq_and_abs_toReal_eq {θ ψ : Angle} :
     θ = ψ ↔ θ.sign = ψ.sign ∧ |θ.toReal| = |ψ.toReal| := by
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · rintro rfl
     exact ⟨rfl, rfl⟩
   rcases h with ⟨hs, hr⟩
@@ -825,7 +825,7 @@ theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℕ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   by_cases hpi : θ = π; · simp [hpi]
   rw [or_iff_right hpi]
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_contra hle
     rw [not_lt, le_abs, le_neg] at hle
     have hpi' : θ.toReal ≠ π := by simpa using hpi

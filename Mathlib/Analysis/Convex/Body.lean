@@ -201,7 +201,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     (hu : Tendsto u atTop (𝓝 0)) :
     ⋂ n : ℕ, (1 + (u n : ℝ)) • (K : Set V) = K := by
   ext x
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨C, hC_pos, hC_bdd⟩ := K.isBounded.exists_pos_norm_le
     rw [← K.isClosed.closure_eq, SeminormedAddCommGroup.mem_closure_iff]
     rw [← NNReal.tendsto_coe, NormedAddCommGroup.tendsto_atTop] at hu

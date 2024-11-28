@@ -40,12 +40,12 @@ theorem tendsto_abs_tan_atTop (k : ℤ) :
   tendsto_abs_tan_of_cos_eq_zero <| cos_eq_zero_iff.2 ⟨k, rfl⟩
 
 theorem continuousAt_tan {x : ℝ} : ContinuousAt tan x ↔ cos x ≠ 0 := by
-  refine ⟨fun hc h₀ => ?_, fun h => (hasDerivAt_tan h).continuousAt⟩
+  refine ⟨fun hc h₀ => ?_, fun h ↦ (hasDerivAt_tan h).continuousAt⟩
   exact not_tendsto_nhds_of_tendsto_atTop (tendsto_abs_tan_of_cos_eq_zero h₀) _
     (hc.norm.tendsto.mono_left inf_le_left)
 
 theorem differentiableAt_tan {x : ℝ} : DifferentiableAt ℝ tan x ↔ cos x ≠ 0 :=
-  ⟨fun h => continuousAt_tan.1 h.continuousAt, fun h => (hasDerivAt_tan h).differentiableAt⟩
+  ⟨fun h ↦ continuousAt_tan.1 h.continuousAt, fun h ↦ (hasDerivAt_tan h).differentiableAt⟩
 
 @[simp]
 theorem deriv_tan (x : ℝ) : deriv tan x = 1 / cos x ^ 2 :=
@@ -56,7 +56,7 @@ theorem deriv_tan (x : ℝ) : deriv tan x = 1 / cos x ^ 2 :=
 
 @[simp]
 theorem contDiffAt_tan {n x} : ContDiffAt ℝ n tan x ↔ cos x ≠ 0 :=
-  ⟨fun h => continuousAt_tan.1 h.continuousAt, fun h =>
+  ⟨fun h ↦ continuousAt_tan.1 h.continuousAt, fun h =>
     (Complex.contDiffAt_tan.2 <| mod_cast h).real_of_complex⟩
 
 theorem hasDerivAt_tan_of_mem_Ioo {x : ℝ} (h : x ∈ Ioo (-(π / 2) : ℝ) (π / 2)) :

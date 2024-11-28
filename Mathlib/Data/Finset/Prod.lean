@@ -184,7 +184,7 @@ theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
 
 @[simp]
 theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.product h.2⟩
 
 @[simp]
 theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ˢ t = ∅ ↔ s = ∅ ∨ t = ∅ := by

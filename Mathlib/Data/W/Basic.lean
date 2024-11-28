@@ -91,7 +91,7 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
     Infinite (WType β) :=
   ⟨by
     intro hf
-    have hba : b ≠ a := fun h => ha.elim (IsEmpty.elim' (show IsEmpty (β a) from h ▸ he))
+    have hba : b ≠ a := fun h ↦ ha.elim (IsEmpty.elim' (show IsEmpty (β a) from h ▸ he))
     refine
       not_injective_infinite_finite
         (fun n : ℕ =>

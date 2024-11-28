@@ -312,28 +312,28 @@ theorem mul_add_right_right {x y : R} (h : IsCoprime x y) (z : R) : IsCoprime x 
   exact h.add_mul_right_right z
 
 theorem add_mul_left_left_iff {x y z : R} : IsCoprime (x + y * z) y ↔ IsCoprime x y :=
-  ⟨of_add_mul_left_left, fun h => h.add_mul_left_left z⟩
+  ⟨of_add_mul_left_left, fun h ↦ h.add_mul_left_left z⟩
 
 theorem add_mul_right_left_iff {x y z : R} : IsCoprime (x + z * y) y ↔ IsCoprime x y :=
-  ⟨of_add_mul_right_left, fun h => h.add_mul_right_left z⟩
+  ⟨of_add_mul_right_left, fun h ↦ h.add_mul_right_left z⟩
 
 theorem add_mul_left_right_iff {x y z : R} : IsCoprime x (y + x * z) ↔ IsCoprime x y :=
-  ⟨of_add_mul_left_right, fun h => h.add_mul_left_right z⟩
+  ⟨of_add_mul_left_right, fun h ↦ h.add_mul_left_right z⟩
 
 theorem add_mul_right_right_iff {x y z : R} : IsCoprime x (y + z * x) ↔ IsCoprime x y :=
-  ⟨of_add_mul_right_right, fun h => h.add_mul_right_right z⟩
+  ⟨of_add_mul_right_right, fun h ↦ h.add_mul_right_right z⟩
 
 theorem mul_add_left_left_iff {x y z : R} : IsCoprime (y * z + x) y ↔ IsCoprime x y :=
-  ⟨of_mul_add_left_left, fun h => h.mul_add_left_left z⟩
+  ⟨of_mul_add_left_left, fun h ↦ h.mul_add_left_left z⟩
 
 theorem mul_add_right_left_iff {x y z : R} : IsCoprime (z * y + x) y ↔ IsCoprime x y :=
-  ⟨of_mul_add_right_left, fun h => h.mul_add_right_left z⟩
+  ⟨of_mul_add_right_left, fun h ↦ h.mul_add_right_left z⟩
 
 theorem mul_add_left_right_iff {x y z : R} : IsCoprime x (x * z + y) ↔ IsCoprime x y :=
-  ⟨of_mul_add_left_right, fun h => h.mul_add_left_right z⟩
+  ⟨of_mul_add_left_right, fun h ↦ h.mul_add_left_right z⟩
 
 theorem mul_add_right_right_iff {x y z : R} : IsCoprime x (z * x + y) ↔ IsCoprime x y :=
-  ⟨of_mul_add_right_right, fun h => h.mul_add_right_right z⟩
+  ⟨of_mul_add_right_right, fun h ↦ h.mul_add_right_right z⟩
 
 theorem neg_left {x y : R} (h : IsCoprime x y) : IsCoprime (-x) y := by
   obtain ⟨a, b, h⟩ := h
@@ -341,13 +341,13 @@ theorem neg_left {x y : R} (h : IsCoprime x y) : IsCoprime (-x) y := by
   rwa [neg_mul_neg]
 
 theorem neg_left_iff (x y : R) : IsCoprime (-x) y ↔ IsCoprime x y :=
-  ⟨fun h => neg_neg x ▸ h.neg_left, neg_left⟩
+  ⟨fun h ↦ neg_neg x ▸ h.neg_left, neg_left⟩
 
 theorem neg_right {x y : R} (h : IsCoprime x y) : IsCoprime x (-y) :=
   h.symm.neg_left.symm
 
 theorem neg_right_iff (x y : R) : IsCoprime x (-y) ↔ IsCoprime x y :=
-  ⟨fun h => neg_neg y ▸ h.neg_right, neg_right⟩
+  ⟨fun h ↦ neg_neg y ▸ h.neg_right, neg_right⟩
 
 theorem neg_neg {x y : R} (h : IsCoprime x y) : IsCoprime (-x) (-y) :=
   h.neg_left.neg_right

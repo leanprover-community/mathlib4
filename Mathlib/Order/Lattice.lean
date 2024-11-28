@@ -225,10 +225,10 @@ theorem sup_congr_right (ha : a ≤ b ⊔ c) (hb : b ≤ a ⊔ c) : a ⊔ c = b 
   (sup_le ha le_sup_right).antisymm <| sup_le hb le_sup_right
 
 theorem sup_eq_sup_iff_left : a ⊔ b = a ⊔ c ↔ b ≤ a ⊔ c ∧ c ≤ a ⊔ b :=
-  ⟨fun h => ⟨h ▸ le_sup_right, h.symm ▸ le_sup_right⟩, fun h => sup_congr_left h.1 h.2⟩
+  ⟨fun h ↦ ⟨h ▸ le_sup_right, h.symm ▸ le_sup_right⟩, fun h ↦ sup_congr_left h.1 h.2⟩
 
 theorem sup_eq_sup_iff_right : a ⊔ c = b ⊔ c ↔ a ≤ b ⊔ c ∧ b ≤ a ⊔ c :=
-  ⟨fun h => ⟨h ▸ le_sup_left, h.symm ▸ le_sup_left⟩, fun h => sup_congr_right h.1 h.2⟩
+  ⟨fun h ↦ ⟨h ▸ le_sup_left, h.symm ▸ le_sup_left⟩, fun h ↦ sup_congr_right h.1 h.2⟩
 
 theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
   hab.symm.not_le_or_not_le.imp left_lt_sup.2 right_lt_sup.2
@@ -245,7 +245,7 @@ theorem SemilatticeSup.ext_sup {α} {A B : SemilatticeSup α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)
     (x y : α) :
     (haveI := A; x ⊔ y) = x ⊔ y :=
-  eq_of_forall_ge_iff fun c => by simp only [sup_le_iff]; rw [← H, @sup_le_iff α A, H, H]
+  eq_of_forall_ge_iff fun c ↦ by simp only [sup_le_iff]; rw [← H, @sup_le_iff α A, H, H]
 
 theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
@@ -432,7 +432,7 @@ theorem SemilatticeInf.ext_inf {α} {A B : SemilatticeInf α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y)
     (x y : α) :
     (haveI := A; x ⊓ y) = x ⊓ y :=
-  eq_of_forall_le_iff fun c => by simp only [le_inf_iff]; rw [← H, @le_inf_iff α A, H, H]
+  eq_of_forall_le_iff fun c ↦ by simp only [le_inf_iff]; rw [← H, @le_inf_iff α A, H, H]
 
 theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
     (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
@@ -490,7 +490,7 @@ theorem semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder
       @SemilatticeInf.toPartialOrder _ (SemilatticeInf.mk' inf_comm inf_assoc inf_idem) :=
   PartialOrder.ext fun a b =>
     show a ⊔ b = b ↔ b ⊓ a = a from
-      ⟨fun h => by rw [← h, inf_comm, inf_sup_self], fun h => by rw [← h, sup_comm, sup_inf_self]⟩
+      ⟨fun h ↦ by rw [← h, inf_comm, inf_sup_self], fun h ↦ by rw [← h, sup_comm, sup_inf_self]⟩
 
 /-- A type with a pair of commutative and associative binary operations which satisfy two absorption
 laws relating the two operations has the structure of a lattice.
@@ -670,7 +670,7 @@ theorem inf_eq_min : a ⊓ b = min a b :=
   rfl
 
 theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b) :=
-  (IsTotal.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by
+  (IsTotal.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h ↦ by
   rwa [sup_eq_left.2 h]
 
 @[simp]
@@ -679,7 +679,7 @@ theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
     (le_total c b).imp
       (fun bc => by rwa [sup_eq_left.2 bc] at h)
       (fun bc => by rwa [sup_eq_right.2 bc] at h),
-    fun h => h.elim le_sup_of_le_left le_sup_of_le_right⟩
+    fun h ↦ h.elim le_sup_of_le_left le_sup_of_le_right⟩
 
 @[simp]
 theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
@@ -687,12 +687,12 @@ theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
     (le_total c b).imp
       (fun bc => by rwa [sup_eq_left.2 bc] at h)
       (fun bc => by rwa [sup_eq_right.2 bc] at h),
-    fun h => h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩
+    fun h ↦ h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩
 
 @[simp]
 theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=
-  ⟨fun h => ⟨le_sup_left.trans_lt h, le_sup_right.trans_lt h⟩,
-   fun h => sup_ind (p := (· < a)) b c h.1 h.2⟩
+  ⟨fun h ↦ ⟨le_sup_left.trans_lt h, le_sup_right.trans_lt h⟩,
+   fun h ↦ sup_ind (p := (· < a)) b c h.1 h.2⟩
 
 theorem inf_ind (a b : α) {p : α → Prop} : p a → p b → p (a ⊓ b) :=
   @sup_ind αᵒᵈ _ _ _ _
@@ -931,7 +931,7 @@ variable [LinearOrder α]
 
 theorem map_sup [SemilatticeSup β] {f : α → β} (hf : Monotone f) (x y : α) :
     f (x ⊔ y) = f x ⊔ f y :=
-  (IsTotal.total x y).elim (fun h : x ≤ y => by simp only [h, hf h, sup_of_le_right]) fun h => by
+  (IsTotal.total x y).elim (fun h : x ≤ y => by simp only [h, hf h, sup_of_le_right]) fun h ↦ by
     simp only [h, hf h, sup_of_le_left]
 
 theorem map_inf [SemilatticeInf β] {f : α → β} (hf : Monotone f) (x y : α) :

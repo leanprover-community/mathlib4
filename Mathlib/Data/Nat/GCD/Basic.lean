@@ -112,7 +112,7 @@ theorem lcm_dvd_mul (m n : ℕ) : lcm m n ∣ m * n :=
   lcm_dvd (dvd_mul_right _ _) (dvd_mul_left _ _)
 
 theorem lcm_dvd_iff {m n k : ℕ} : lcm m n ∣ k ↔ m ∣ k ∧ n ∣ k :=
-  ⟨fun h => ⟨(dvd_lcm_left _ _).trans h, (dvd_lcm_right _ _).trans h⟩, and_imp.2 lcm_dvd⟩
+  ⟨fun h ↦ ⟨(dvd_lcm_left _ _).trans h, (dvd_lcm_right _ _).trans h⟩, and_imp.2 lcm_dvd⟩
 
 theorem lcm_pos {m n : ℕ} : 0 < m → 0 < n → 0 < m.lcm n := by
   simp_rw [Nat.pos_iff_ne_zero]
@@ -140,10 +140,10 @@ theorem Coprime.lcm_eq_mul {m n : ℕ} (h : Coprime m n) : lcm m n = m * n := by
 theorem Coprime.symmetric : Symmetric Coprime := fun _ _ => Coprime.symm
 
 theorem Coprime.dvd_mul_right {m n k : ℕ} (H : Coprime k n) : k ∣ m * n ↔ k ∣ m :=
-  ⟨H.dvd_of_dvd_mul_right, fun h => dvd_mul_of_dvd_left h n⟩
+  ⟨H.dvd_of_dvd_mul_right, fun h ↦ dvd_mul_of_dvd_left h n⟩
 
 theorem Coprime.dvd_mul_left {m n k : ℕ} (H : Coprime k m) : k ∣ m * n ↔ k ∣ n :=
-  ⟨H.dvd_of_dvd_mul_left, fun h => dvd_mul_of_dvd_right h m⟩
+  ⟨H.dvd_of_dvd_mul_left, fun h ↦ dvd_mul_of_dvd_right h m⟩
 
 @[simp]
 theorem coprime_add_self_right {m n : ℕ} : Coprime m (n + m) ↔ Coprime m n := by
@@ -268,7 +268,7 @@ theorem dvd_mul {x m n : ℕ} : x ∣ m * n ↔ ∃ y z, y ∣ m ∧ z ∣ n ∧
     exact mul_dvd_mul hy hz
 
 theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
-  refine ⟨fun h => ?_, fun h => pow_dvd_pow_of_dvd h _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ pow_dvd_pow_of_dvd h _⟩
   rcases Nat.eq_zero_or_pos (gcd a b) with g0 | g0
   · simp [eq_zero_of_gcd_eq_zero_right g0]
   rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩

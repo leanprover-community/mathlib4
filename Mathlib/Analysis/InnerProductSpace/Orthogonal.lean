@@ -163,7 +163,7 @@ theorem top_orthogonal_eq_bot : (⊤ : Submodule 𝕜 E)ᗮ = ⊥ := by
   ext x
   rw [mem_bot, mem_orthogonal]
   exact
-    ⟨fun h => inner_self_eq_zero.mp (h x mem_top), by
+    ⟨fun h ↦ inner_self_eq_zero.mp (h x mem_top), by
       rintro rfl
       simp⟩
 
@@ -256,7 +256,7 @@ theorem IsOrtho.mono {U₁ V₁ U₂ V₂ : Submodule 𝕜 E} (hU : U₂ ≤ U�
 
 @[simp]
 theorem isOrtho_self {U : Submodule 𝕜 E} : U ⟂ U ↔ U = ⊥ :=
-  ⟨fun h => eq_bot_iff.mpr fun x hx => inner_self_eq_zero.mp (h hx x hx), fun h =>
+  ⟨fun h ↦ eq_bot_iff.mpr fun x hx => inner_self_eq_zero.mp (h hx x hx), fun h =>
     h.symm ▸ isOrtho_bot_left⟩
 
 @[simp]
@@ -275,7 +275,7 @@ theorem IsOrtho.ge {U V : Submodule 𝕜 E} (h : U ⟂ V) : V ≤ Uᗮ :=
 
 @[simp]
 theorem isOrtho_top_right {U : Submodule 𝕜 E} : U ⟂ ⊤ ↔ U = ⊥ :=
-  ⟨fun h => eq_bot_iff.mpr fun _x hx => inner_self_eq_zero.mp (h hx _ mem_top), fun h =>
+  ⟨fun h ↦ eq_bot_iff.mpr fun _x hx => inner_self_eq_zero.mp (h hx _ mem_top), fun h =>
     h.symm ▸ isOrtho_bot_left⟩
 
 @[simp]
@@ -336,14 +336,14 @@ theorem IsOrtho.comap (f : E →ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} (h : U 
 
 @[simp]
 theorem IsOrtho.map_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 E} : U.map f ⟂ V.map f ↔ U ⟂ V :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have hf : ∀ p : Submodule 𝕜 E, (p.map f).comap f.toLinearIsometry = p :=
       comap_map_eq_of_injective f.injective
     simpa only [hf] using h.comap f.toLinearIsometry, IsOrtho.map f.toLinearIsometry⟩
 
 @[simp]
 theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U.comap f ⟂ V.comap f ↔ U ⟂ V :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have hf : ∀ p : Submodule 𝕜 F, (p.comap f).map f.toLinearIsometry = p :=
       map_comap_eq_of_surjective f.surjective
     simpa only [hf] using h.map f.toLinearIsometry, IsOrtho.comap f.toLinearIsometry⟩

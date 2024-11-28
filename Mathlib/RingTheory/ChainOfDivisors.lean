@@ -65,7 +65,7 @@ namespace DivisorChain
 theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (hp : Prime p) :
     ∃ c : Fin (n + 1) → Associates M,
       c 1 = p ∧ StrictMono c ∧ ∀ {r : Associates M}, r ≤ p ^ n ↔ ∃ i, r = c i := by
-  refine ⟨fun i => p ^ (i : ℕ), ?_, fun n m h => ?_, @fun y => ⟨fun h => ?_, ?_⟩⟩
+  refine ⟨fun i => p ^ (i : ℕ), ?_, fun n m h => ?_, @fun y => ⟨fun h ↦ ?_, ?_⟩⟩
   · dsimp only
     rw [Fin.val_one', Nat.mod_eq_of_lt, pow_one]
     exact Nat.lt_succ_of_le (Nat.one_le_iff_ne_zero.mpr hn)

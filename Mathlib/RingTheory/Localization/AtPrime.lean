@@ -134,7 +134,7 @@ theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.prim
   ⟨fun h hx =>
     (isPrime_of_isPrime_disjoint I.primeCompl S I hI disjoint_compl_left).ne_top <|
       (Ideal.map (algebraMap R S) I).eq_top_of_isUnit_mem (Ideal.mem_map_of_mem _ hx) h,
-    fun h => map_units S ⟨x, h⟩⟩
+    fun h ↦ map_units S ⟨x, h⟩⟩
 
 -- Can't use typeclasses to infer the `IsLocalRing` instance, so use an `optParam` instead
 -- (since `IsLocalRing` is a `Prop`, there should be no unification issues.)

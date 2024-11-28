@@ -275,7 +275,7 @@ theorem bind_powerset_len {α : Type*} (S : Multiset α) :
 
 @[simp]
 theorem nodup_powerset {s : Multiset α} : Nodup (powerset s) ↔ Nodup s :=
-  ⟨fun h => (nodup_of_le (map_single_le_powerset _) h).of_map _,
+  ⟨fun h ↦ (nodup_of_le (map_single_le_powerset _) h).of_map _,
     Quotient.inductionOn s fun l h => by
       simp only [quot_mk_to_coe, powerset_coe', coe_nodup]
       refine (nodup_sublists'.2 h).map_on ?_

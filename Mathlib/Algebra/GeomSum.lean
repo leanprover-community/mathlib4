@@ -449,7 +449,7 @@ theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
       rw [pow_zero, Nat.div_one]
     _ = ∑ i ∈ range n.succ, a / b ^ i := by
       rw [range_eq_Ico, ← Nat.Ico_insert_succ_left (Nat.succ_pos _), sum_insert]
-      exact fun h => zero_lt_one.not_le (mem_Ico.1 h).1
+      exact fun h ↦ zero_lt_one.not_le (mem_Ico.1 h).1
     _ ≤ a * b / (b - 1) := Nat.geom_sum_le hb a _
     _ = (a * 1 + a * (b - 1)) / (b - 1) := by
       rw [← mul_add, add_tsub_cancel_of_le (one_le_two.trans hb)]
@@ -533,7 +533,7 @@ theorem Odd.geom_sum_pos [LinearOrderedRing α] (h : Odd n) : 0 < ∑ i ∈ rang
 
 theorem geom_sum_pos_iff [LinearOrderedRing α] (hn : n ≠ 0) :
     (0 < ∑ i ∈ range n, x ^ i) ↔ Odd n ∨ 0 < x + 1 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rw [or_iff_not_imp_left, ← not_le, Nat.not_odd_iff_even]
     refine fun hn hx => h.not_le ?_
     simpa [if_pos hn] using geom_sum_alternating_of_le_neg_one hx n
@@ -556,7 +556,7 @@ theorem geom_sum_ne_zero [LinearOrderedRing α] (hx : x ≠ -1) (hn : n ≠ 0) :
 
 theorem geom_sum_eq_zero_iff_neg_one [LinearOrderedRing α] (hn : n ≠ 0) :
     ∑ i ∈ range n, x ^ i = 0 ↔ x = -1 ∧ Even n := by
-  refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
+  refine ⟨fun h ↦ ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, if_true]⟩
   contrapose! h
   have hx := eq_or_ne x (-1)
   rcases hx with hx | hx

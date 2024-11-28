@@ -71,7 +71,7 @@ theorem insertIdx_comm (a b : α) :
     ∀ (i j : ℕ) (l : List α) (_ : i ≤ j) (_ : j ≤ length l),
       (l.insertIdx i a).insertIdx (j + 1) b = (l.insertIdx j b).insertIdx i a
   | 0, j, l => by simp [insertIdx]
-  | _ + 1, 0, _ => fun h => (Nat.not_lt_zero _ h).elim
+  | _ + 1, 0, _ => fun h ↦ (Nat.not_lt_zero _ h).elim
   | i + 1, j + 1, [] => by simp
   | i + 1, j + 1, c :: l => fun h₀ h₁ => by
     simp only [insertIdx_succ_cons, cons.injEq, true_and]

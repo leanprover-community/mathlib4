@@ -60,8 +60,8 @@ theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Fun
 
 theorem LinearEquiv.isAssociatedPrime_iff (l : M ≃ₗ[R] M') :
     IsAssociatedPrime I M ↔ IsAssociatedPrime I M' :=
-  ⟨fun h => h.map_of_injective l l.injective,
-    fun h => h.map_of_injective l.symm l.symm.injective⟩
+  ⟨fun h ↦ h.map_of_injective l l.injective,
+    fun h ↦ h.map_of_injective l.symm l.symm.injective⟩
 
 theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedPrime I M := by
   rintro ⟨hI, x, hx⟩

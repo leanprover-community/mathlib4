@@ -78,7 +78,7 @@ theorem self_empty {n : ℕ} : Ico n n = [] :=
 
 @[simp]
 theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
-  Iff.intro (fun h => Nat.sub_eq_zero_iff_le.mp <| by rw [← length, h, List.length]) eq_nil_of_le
+  Iff.intro (fun h ↦ Nat.sub_eq_zero_iff_le.mp <| by rw [← length, h, List.length]) eq_nil_of_le
 
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by

@@ -135,7 +135,7 @@ protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R
     ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
   rfl
 
-theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
+theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e ↦ (e : A₁ → A₂) :=
   DFunLike.coe_injective
 
 instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
@@ -702,7 +702,7 @@ theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
 @[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
     algebraMap R A₂ y = e x ↔ algebraMap R A₁ y = x :=
-  ⟨fun h => by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h =>
+  ⟨fun h ↦ by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h =>
     e.toAlgHom.algebraMap_eq_apply h⟩
 
 /-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/

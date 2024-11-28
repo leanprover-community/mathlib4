@@ -140,7 +140,7 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
         ⟨1, by
           rw [h]
           exact one_ne_zero⟩,
-      fun h => ?_⟩
+      fun h ↦ ?_⟩
   obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
   · exfalso
     refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)

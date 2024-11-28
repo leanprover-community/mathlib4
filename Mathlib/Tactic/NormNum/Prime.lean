@@ -210,7 +210,7 @@ theorem factorsHelper_cons' (n m a b : ℕ) (l : List ℕ) (h₁ : b * m = n) (h
   have pb : b.Prime := Nat.prime_def_minFac.2 ⟨le_trans pa.two_le h₂, h₃⟩
   let ⟨f₁, f₂, f₃⟩ := H pb
   ⟨List.Chain.cons h₂ f₁,
-    fun c h => (List.eq_or_mem_of_mem_cons h).elim (fun e => e.symm ▸ pb) (f₂ _),
+    fun c h => (List.eq_or_mem_of_mem_cons h).elim (fun e ↦ e.symm ▸ pb) (f₂ _),
     by rw [List.prod_cons, f₃, h₁]⟩
 
 theorem factorsHelper_cons (n m a b : ℕ) (l : List ℕ) (h₁ : b * m = n) (h₂ : a < b)

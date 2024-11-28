@@ -238,7 +238,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       · simp only [le_refl, if_true, add_le_iff_nonpos_right, Nat.le_zero, Nat.one_ne_zero,
           if_false, h]
       · have A : ¬i ≤ n := hi.not_le
-        have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
+        have B : ¬i + 1 ≤ n := fun h ↦ A (i.le_succ.trans h)
         simp only [A, B, if_false, le_rfl]
     refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩, ?_⟩
     · rw [mem_Iio]; exact Nat.lt_succ_self (n + 1)
@@ -270,7 +270,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       simp only [hi, this, if_true]
       exact hu (Nat.le_succ _)
     · have A : i < N := hi ▸ i.lt_succ_self
-      have B : ¬i + 1 < N := by rw [← hi]; exact fun h => h.ne rfl
+      have B : ¬i + 1 < N := by rw [← hi]; exact fun h ↦ h.ne rfl
       rw [if_pos A, if_neg B, if_pos hi]
       have T := Nat.find_min exists_N A
       push_neg at T
@@ -407,7 +407,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
       · refine Finset.sum_congr rfl fun i hi => ?_
         simp only [Finset.mem_range] at hi
         have B : ¬n + 1 + i ≤ n := by omega
-        have A : ¬n + 1 + i + 1 ≤ n := fun h => B ((n + 1 + i).le_succ.trans h)
+        have A : ¬n + 1 + i + 1 ≤ n := fun h ↦ B ((n + 1 + i).le_succ.trans h)
         have C : n + 1 + i - n = i + 1 := by
           rw [tsub_eq_iff_eq_add_of_le]
           · abel

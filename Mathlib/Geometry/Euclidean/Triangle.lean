@@ -102,9 +102,9 @@ theorem cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle {x y : V} (hx : x ≠ 0
   · rw [hxy, angle_self hy]
     simp
   · rw [Real.cos_add, cos_angle, cos_angle, cos_angle]
-    have hxn : ‖x‖ ≠ 0 := fun h => hx (norm_eq_zero.1 h)
-    have hyn : ‖y‖ ≠ 0 := fun h => hy (norm_eq_zero.1 h)
-    have hxyn : ‖x - y‖ ≠ 0 := fun h => hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
+    have hxn : ‖x‖ ≠ 0 := fun h ↦ hx (norm_eq_zero.1 h)
+    have hyn : ‖y‖ ≠ 0 := fun h ↦ hy (norm_eq_zero.1 h)
+    have hxyn : ‖x - y‖ ≠ 0 := fun h ↦ hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
     apply mul_right_cancel₀ hxn
     apply mul_right_cancel₀ hyn
     apply mul_right_cancel₀ hxyn
@@ -143,9 +143,9 @@ theorem sin_angle_sub_add_angle_sub_rev_eq_sin_angle {x y : V} (hx : x ≠ 0) (h
   · rw [hxy, angle_self hy]
     simp
   · rw [Real.sin_add, cos_angle, cos_angle]
-    have hxn : ‖x‖ ≠ 0 := fun h => hx (norm_eq_zero.1 h)
-    have hyn : ‖y‖ ≠ 0 := fun h => hy (norm_eq_zero.1 h)
-    have hxyn : ‖x - y‖ ≠ 0 := fun h => hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
+    have hxn : ‖x‖ ≠ 0 := fun h ↦ hx (norm_eq_zero.1 h)
+    have hyn : ‖y‖ ≠ 0 := fun h ↦ hy (norm_eq_zero.1 h)
+    have hxyn : ‖x - y‖ ≠ 0 := fun h ↦ hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
     apply mul_right_cancel₀ hxn
     apply mul_right_cancel₀ hyn
     apply mul_right_cancel₀ hxyn

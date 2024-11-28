@@ -70,12 +70,12 @@ theorem prod_mem_prod_iff [f.NeBot] [g.NeBot] : s ×ˢ t ∈ f ×ˢ g ↔ s ∈ 
       (fun ⟨hs's, ht't⟩ => ⟨mem_of_superset hs' hs's, mem_of_superset ht' ht't⟩) fun h =>
       h.elim (fun hs'e => absurd hs'e (nonempty_of_mem hs').ne_empty) fun ht'e =>
         absurd ht'e (nonempty_of_mem ht').ne_empty,
-    fun h => prod_mem_prod h.1 h.2⟩
+    fun h ↦ prod_mem_prod h.1 h.2⟩
 
 theorem mem_prod_principal {s : Set (α × β)} :
     s ∈ f ×ˢ 𝓟 t ↔ { a | ∀ b ∈ t, (a, b) ∈ s } ∈ f := by
   rw [← @exists_mem_subset_iff _ f, mem_prod_iff]
-  refine exists_congr fun u => Iff.rfl.and ⟨?_, fun h => ⟨t, mem_principal_self t, ?_⟩⟩
+  refine exists_congr fun u => Iff.rfl.and ⟨?_, fun h ↦ ⟨t, mem_principal_self t, ?_⟩⟩
   · rintro ⟨v, v_in, hv⟩ a a_in b b_in
     exact hv (mk_mem_prod a_in <| v_in b_in)
   · rintro ⟨x, y⟩ ⟨hx, hy⟩
@@ -264,12 +264,12 @@ theorem prod_le_prod {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁
     f₁ ×ˢ g₁ ≤ f₂ ×ˢ g₂ ↔ f₁ ≤ f₂ ∧ g₁ ≤ g₂ :=
   ⟨fun h =>
     ⟨map_fst_prod f₁ g₁ ▸ tendsto_fst.mono_left h, map_snd_prod f₁ g₁ ▸ tendsto_snd.mono_left h⟩,
-    fun h => prod_mono h.1 h.2⟩
+    fun h ↦ prod_mono h.1 h.2⟩
 
 @[simp]
 theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [NeBot g₁] :
     f₁ ×ˢ g₁ = f₂ ×ˢ g₂ ↔ f₁ = f₂ ∧ g₁ = g₂ := by
-  refine ⟨fun h => ?_, fun h => h.1 ▸ h.2 ▸ rfl⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.1 ▸ h.2 ▸ rfl⟩
   have hle : f₁ ≤ f₂ ∧ g₁ ≤ g₂ := prod_le_prod.1 h.le
   haveI := neBot_of_le hle.1; haveI := neBot_of_le hle.2
   exact ⟨hle.1.antisymm <| (prod_le_prod.1 h.ge).1, hle.2.antisymm <| (prod_le_prod.1 h.ge).2⟩

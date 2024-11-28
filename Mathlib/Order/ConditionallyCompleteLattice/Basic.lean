@@ -124,13 +124,13 @@ instance ConditionallyCompleteLinearOrder.toLinearOrder [ConditionallyCompleteLi
       · simp [hab]
       · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
         · simp [h₁]
-        · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂]
+        · simp [show ¬(a ≤ b) from fun h ↦ hab (le_antisymm h h₂), h₂]
     max_def := fun a b ↦ by
       by_cases hab : a = b
       · simp [hab]
       · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
         · simp [h₁]
-        · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂] }
+        · simp [show ¬(a ≤ b) from fun h ↦ hab (le_antisymm h h₂), h₂] }
 
 -- see Note [lower instance priority]
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
@@ -806,7 +806,7 @@ variable {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α
 theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) (hs₀ : s.Nonempty) (hs₁ : BddAbove s)
     (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup (image2 l s t) = l (sSup s) (sSup t) := by
-  refine eq_of_forall_ge_iff fun c => ?_
+  refine eq_of_forall_ge_iff fun c ↦ ?_
   rw [csSup_le_iff (hs₁.image2 (fun _ => (h₁ _).monotone_l) (fun _ => (h₂ _).monotone_l) ht₁)
       (hs₀.image2 ht₀),
     forall_image2_iff, forall₂_swap, (h₂ _).le_iff_le, csSup_le_iff ht₁ ht₀]

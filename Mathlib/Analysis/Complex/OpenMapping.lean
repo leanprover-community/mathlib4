@@ -78,7 +78,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
     is not constant in a neighborhood of `z₀`, then it is nonzero, and therefore bounded below, on
     every small enough circle around `z₀` and then `DiffContOnCl.ball_subset_image_closedBall`
     provides an explicit ball centered at `f z₀` contained in the range of `f`. -/
-  refine or_iff_not_imp_left.mpr fun h => ?_
+  refine or_iff_not_imp_left.mpr fun h ↦ ?_
   refine (nhds_basis_ball.le_basis_iff (nhds_basis_closedBall.map f)).mpr fun R hR => ?_
   have h1 := (hf.eventually_eq_or_eventually_ne analyticAt_const).resolve_left h
   have h2 : ∀ᶠ z in 𝓝 z₀, AnalyticAt ℂ f z := (isOpen_analyticAt ℂ f).eventually_mem hf

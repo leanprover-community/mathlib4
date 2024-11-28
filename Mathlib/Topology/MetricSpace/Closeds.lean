@@ -246,7 +246,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     range NonemptyCompacts.toCloseds =
       { s : Closeds α | (s : Set α).Nonempty ∧ IsCompact (s : Set α) } := by
     ext s
-    refine ⟨?_, fun h => ⟨⟨⟨s, h.2⟩, h.1⟩, Closeds.ext rfl⟩⟩
+    refine ⟨?_, fun h ↦ ⟨⟨⟨s, h.2⟩, h.1⟩, Closeds.ext rfl⟩⟩
     rintro ⟨s, hs, rfl⟩
     exact ⟨s.nonempty, s.isCompact⟩
   rw [this]

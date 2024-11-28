@@ -993,7 +993,7 @@ theorem one_le_exp {x : ℝ} (hx : 0 ≤ x) : 1 ≤ exp x := by linarith [add_on
 
 @[bound]
 theorem exp_pos (x : ℝ) : 0 < exp x :=
-  (le_total 0 x).elim (lt_of_lt_of_le zero_lt_one ∘ one_le_exp) fun h => by
+  (le_total 0 x).elim (lt_of_lt_of_le zero_lt_one ∘ one_le_exp) fun h ↦ by
     rw [← neg_neg x, Real.exp_neg]
     exact inv_pos.2 (lt_of_lt_of_le zero_lt_one (one_le_exp (neg_nonneg.2 h)))
 

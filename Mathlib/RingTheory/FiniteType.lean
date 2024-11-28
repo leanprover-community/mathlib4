@@ -201,7 +201,7 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   rfl
 
 theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
-  S.fg_top.symm.trans ⟨fun h => ⟨h⟩, fun h => h.out⟩
+  S.fg_top.symm.trans ⟨fun h ↦ ⟨h⟩, fun h ↦ h.out⟩
 
 end FiniteType
 
@@ -378,7 +378,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of'_mem_span [Nontrivial R] {m : M} {S : Set M} :
     of' R M m ∈ span R (of' R M '' S) ↔ m ∈ S := by
-  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of', ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
@@ -466,7 +466,7 @@ variable {R M}
 finite type. -/
 theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
     FiniteType R R[M] ↔ AddMonoid.FG M := by
-  refine ⟨fun h => ?_, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
   obtain ⟨S, hS⟩ := @exists_finset_adjoin_eq_top R M _ _ h
   refine AddMonoid.fg_def.2 ⟨S, (eq_top_iff' _).2 fun m => ?_⟩
   have hm : of' R M m ∈ Subalgebra.toSubmodule (adjoin R (of' R M '' ↑S)) := by
@@ -551,7 +551,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of_mem_span_of_iff [Nontrivial R] {m : M} {S : Set M} :
     of R M m ∈ span R (of R M '' S) ↔ m ∈ S := by
-  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of, MonoidHom.coe_mk, ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
@@ -625,7 +625,7 @@ theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
   ⟨fun h =>
     Monoid.fg_iff_add_fg.2 <|
       AddMonoidAlgebra.finiteType_iff_fg.1 <| h.equiv <| toAdditiveAlgEquiv R M,
-    fun h => @MonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
+    fun h ↦ @MonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
 
 /-- If `MonoidAlgebra R M` is of finite type then `M` is finitely generated. -/
 theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R (MonoidAlgebra R M)] :

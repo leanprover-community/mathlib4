@@ -253,7 +253,7 @@ theorem sq_add_sq_of_nat_prime_of_not_irreducible (p : ℕ) [hp : Fact p.Prime]
   have hpu : ¬IsUnit (p : ℤ[i]) :=
     mt norm_eq_one_iff.2 <| by
       rw [norm_natCast, Int.natAbs_mul, mul_eq_one]
-      exact fun h => (ne_of_lt hp.1.one_lt).symm h.1
+      exact fun h ↦ (ne_of_lt hp.1.one_lt).symm h.1
   have hab : ∃ a b, (p : ℤ[i]) = a * b ∧ ¬IsUnit a ∧ ¬IsUnit b := by
     -- Porting note: was
     -- simpa [irreducible_iff, hpu, not_forall, not_or] using hpi

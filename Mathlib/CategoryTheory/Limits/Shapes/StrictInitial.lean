@@ -200,8 +200,8 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
     refine ⟨⟨limit.lift _ ⟨_, ⟨?_, ?_⟩⟩, ?_, ?_⟩⟩
     · exact fun j =>
         dite (j = i)
-          (fun h => eqToHom (by cases h; rfl))
-          fun h => (H _ h).from _
+          (fun h ↦ eqToHom (by cases h; rfl))
+          fun h ↦ (H _ h).from _
     · intro j k f
       split_ifs with h h_1 h_1
       · cases h

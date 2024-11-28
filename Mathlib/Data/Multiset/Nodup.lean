@@ -115,11 +115,11 @@ theorem Nodup.map {f : α → β} {s : Multiset α} (hf : Injective f) : Nodup s
 
 theorem nodup_map_iff_of_inj_on {f : α → β} (d : ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y) :
     Nodup (map f s) ↔ Nodup s :=
-  ⟨Nodup.of_map _, fun h => h.map_on d⟩
+  ⟨Nodup.of_map _, fun h ↦ h.map_on d⟩
 
 theorem nodup_map_iff_of_injective {f : α → β} (d : Function.Injective f) :
     Nodup (map f s) ↔ Nodup s :=
-  ⟨Nodup.of_map _, fun h => h.map d⟩
+  ⟨Nodup.of_map _, fun h ↦ h.map d⟩
 
 theorem inj_on_of_nodup_map {f : α → β} {s : Multiset α} :
     Nodup (map f s) → ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
@@ -127,7 +127,7 @@ theorem inj_on_of_nodup_map {f : α → β} {s : Multiset α} :
 
 theorem nodup_map_iff_inj_on {f : α → β} {s : Multiset α} (d : Nodup s) :
     Nodup (map f s) ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
-  ⟨inj_on_of_nodup_map, fun h => d.map_on h⟩
+  ⟨inj_on_of_nodup_map, fun h ↦ d.map_on h⟩
 
 theorem Nodup.filter (p : α → Prop) [DecidablePred p] {s} : Nodup s → Nodup (filter p s) :=
   Quot.induction_on s fun _ => List.Nodup.filter (p ·)
@@ -175,7 +175,7 @@ theorem Nodup.inter_right [DecidableEq α] (s) : Nodup t → Nodup (s ∩ t) :=
 
 @[simp]
 theorem nodup_union [DecidableEq α] {s t : Multiset α} : Nodup (s ∪ t) ↔ Nodup s ∧ Nodup t :=
-  ⟨fun h => ⟨nodup_of_le (le_union_left _ _) h, nodup_of_le (le_union_right _ _) h⟩, fun ⟨h₁, h₂⟩ =>
+  ⟨fun h ↦ ⟨nodup_of_le (le_union_left _ _) h, nodup_of_le (le_union_right _ _) h⟩, fun ⟨h₁, h₂⟩ =>
     nodup_iff_count_le_one.2 fun a ↦ by
       rw [count_union]
       exact max_le (nodup_iff_count_le_one.1 h₁ a) (nodup_iff_count_le_one.1 h₂ a)⟩

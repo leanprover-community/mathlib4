@@ -182,7 +182,7 @@ class Productive (s : WSeq α) : Prop where
   get?_terminates : ∀ n, (get? s n).Terminates
 
 theorem productive_iff (s : WSeq α) : Productive s ↔ ∀ n, (get? s n).Terminates :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 instance get?_terminates (s : WSeq α) [h : Productive s] : ∀ n, (get? s n).Terminates :=
   h.get?_terminates

@@ -97,7 +97,7 @@ instance existsAddOfLE [StrictOrderedCommSemiring α] [ExistsAddOfLE α] :
     exact le_of_add_le_add_left h⟩
 
 instance nontrivial [LinearOrderedSemiring α] : Nontrivial { x : α // 0 ≤ x } :=
-  ⟨⟨0, 1, fun h => zero_ne_one (congr_arg Subtype.val h)⟩⟩
+  ⟨⟨0, 1, fun h ↦ zero_ne_one (congr_arg Subtype.val h)⟩⟩
 
 instance linearOrderedSemiring [LinearOrderedSemiring α] :
     LinearOrderedSemiring { x : α // 0 ≤ x } :=

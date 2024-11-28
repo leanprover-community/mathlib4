@@ -123,7 +123,7 @@ theorem mirror_inj : p.mirror = q.mirror ↔ p = q :=
 
 @[simp]
 theorem mirror_eq_zero : p.mirror = 0 ↔ p = 0 :=
-  ⟨fun h => by rw [← p.mirror_mirror, h, mirror_zero], fun h => by rw [h, mirror_zero]⟩
+  ⟨fun h ↦ by rw [← p.mirror_mirror, h, mirror_zero], fun h ↦ by rw [h, mirror_zero]⟩
 
 variable (p q)
 

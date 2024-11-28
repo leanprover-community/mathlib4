@@ -152,7 +152,7 @@ theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
 
 /-- A point belongs to the closure of `s` iff its infimum edistance to this set vanishes -/
 theorem mem_closure_iff_infEdist_zero : x ∈ closure s ↔ infEdist x s = 0 :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← infEdist_closure]
     exact infEdist_zero_of_mem h,
    fun h =>

@@ -890,12 +890,12 @@ theorem setLintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} {s
 
 theorem measure_eq_top_of_lintegral_ne_top {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) : μ {x | f x = ∞} = 0 :=
-  of_not_not fun h => hμf <| lintegral_eq_top_of_measure_eq_top_ne_zero hf h
+  of_not_not fun h ↦ hμf <| lintegral_eq_top_of_measure_eq_top_ne_zero hf h
 
 theorem measure_eq_top_of_setLintegral_ne_top {f : α → ℝ≥0∞} {s : Set α}
     (hf : AEMeasurable f (μ.restrict s)) (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     μ ({x ∈ s | f x = ∞}) = 0 :=
-  of_not_not fun h => hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
+  of_not_not fun h ↦ hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
 
 /-- **Markov's inequality**, also known as **Chebyshev's first inequality**. -/
 theorem meas_ge_le_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0)
@@ -926,7 +926,7 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   ⟨fun h =>
     (ae_eq_of_ae_le_of_lintegral_le (ae_of_all _ <| zero_le f) this hf
         (h.trans lintegral_zero.symm).le).symm,
-    fun h => (lintegral_congr_ae h).trans lintegral_zero⟩
+    fun h ↦ (lintegral_congr_ae h).trans lintegral_zero⟩
 
 @[simp]
 theorem lintegral_eq_zero_iff {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂μ = 0 ↔ f =ᵐ[μ] 0 :=

@@ -129,7 +129,7 @@ lemma IsCircuit.not_nil {p : G.Walk v v} (hp : IsCircuit p) : ¬ p.Nil := (hp.ne
 
 theorem isCycle_def {u : V} (p : G.Walk u u) :
     p.IsCycle ↔ p.IsTrail ∧ p ≠ nil ∧ p.support.tail.Nodup :=
-  Iff.intro (fun h => ⟨h.1.1, h.1.2, h.2⟩) fun h => ⟨⟨h.1, h.2.1⟩, h.2.2⟩
+  Iff.intro (fun h ↦ ⟨h.1.1, h.1.2, h.2⟩) fun h ↦ ⟨⟨h.1, h.2.1⟩, h.2.2⟩
 
 @[simp]
 theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :
@@ -228,7 +228,7 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   apply h.of_append_left
 
 @[simp]
-theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
+theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h ↦ h.ne_nil rfl
 
 lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
   | nil, hp => by cases hp.ne_nil rfl
@@ -771,7 +771,7 @@ lemma connected_iff_exists_forall_reachable : G.Connected ↔ ∃ v, ∀ w, G.Re
   · rintro ⟨v, h⟩
     exact ⟨fun u w => (h u).symm.trans (h w), ⟨v⟩⟩
 
-instance : CoeFun G.Connected fun _ => ∀ u v : V, G.Reachable u v := ⟨fun h => h.preconnected⟩
+instance : CoeFun G.Connected fun _ => ∀ u v : V, G.Reachable u v := ⟨fun h ↦ h.preconnected⟩
 
 theorem Connected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H) (hf : Surjective f)
     (hG : G.Connected) : H.Connected :=

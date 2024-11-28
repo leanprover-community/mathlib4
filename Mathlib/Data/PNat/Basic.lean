@@ -359,7 +359,7 @@ theorem dvd_antisymm {m n : ℕ+} : m ∣ n → n ∣ m → m = n := fun hmn hnm
   (le_of_dvd hmn).antisymm (le_of_dvd hnm)
 
 theorem dvd_one_iff (n : ℕ+) : n ∣ 1 ↔ n = 1 :=
-  ⟨fun h => dvd_antisymm h (one_dvd n), fun h => h.symm ▸ dvd_refl 1⟩
+  ⟨fun h ↦ dvd_antisymm h (one_dvd n), fun h ↦ h.symm ▸ dvd_refl 1⟩
 
 theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
   apply pos_iff_ne_zero.2

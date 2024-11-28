@@ -506,7 +506,7 @@ theorem isBoundedUnder_le_sup [SemilatticeSup α] {f : Filter β} {u v : β → 
   ⟨fun h =>
     ⟨h.mono_le <| Eventually.of_forall fun _ => le_sup_left,
       h.mono_le <| Eventually.of_forall fun _ => le_sup_right⟩,
-    fun h => h.1.sup h.2⟩
+    fun h ↦ h.1.sup h.2⟩
 
 theorem IsBoundedUnder.inf [SemilatticeInf α] {f : Filter β} {u v : β → α} :
     f.IsBoundedUnder (· ≥ ·) u →
@@ -981,7 +981,7 @@ theorem liminf_le_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α}
   have hbx : ∃ᶠ _ in f, b ≤ x := by
     revert h
     rw [← not_imp_not, not_frequently, not_frequently]
-    exact fun h => hb.mp (h.mono fun a hbx hba hax => hbx (hba.trans hax))
+    exact fun h ↦ hb.mp (h.mono fun a hbx hba hax => hbx (hba.trans hax))
   exact hbx.exists.choose_spec
 
 theorem le_limsup_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α} {u : α → β} {x : β}
@@ -1235,7 +1235,7 @@ theorem cofinite.blimsup_set_eq :
     blimsup s cofinite p = { x | { n | p n ∧ x ∈ s n }.Infinite } := by
   simp only [blimsup_eq, le_eq_subset, eventually_cofinite, not_forall, sInf_eq_sInter, exists_prop]
   ext x
-  refine ⟨fun h => ?_, fun hx t h => ?_⟩ <;> contrapose! h
+  refine ⟨fun h ↦ ?_, fun hx t h => ?_⟩ <;> contrapose! h
   · simp only [mem_sInter, mem_setOf_eq, not_forall, exists_prop]
     exact ⟨{x}ᶜ, by simpa using h, by simp⟩
   · exact hx.mono fun i hi => ⟨hi.1, fun hit => h (hit hi.2)⟩
@@ -1310,7 +1310,7 @@ theorem le_limsup_of_frequently_le {α β} [ConditionallyCompleteLinearOrder β]
   revert hu_le
   rw [← not_imp_not, not_frequently]
   simp_rw [← lt_iff_not_ge]
-  exact fun h => eventually_lt_of_limsup_lt h hu
+  exact fun h ↦ eventually_lt_of_limsup_lt h hu
 
 theorem liminf_le_of_frequently_le {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α}
     {u : α → β} {b : β} (hu_le : ∃ᶠ x in f, u x ≤ b)
@@ -1523,10 +1523,10 @@ open Filter
 theorem Monotone.isBoundedUnder_le_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMaxOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Monotone g) (hg' : Tendsto g atTop atTop) :
     IsBoundedUnder (· ≤ ·) l (g ∘ f) ↔ IsBoundedUnder (· ≤ ·) l f := by
-  refine ⟨?_, fun h => h.isBoundedUnder (α := β) hg⟩
+  refine ⟨?_, fun h ↦ h.isBoundedUnder (α := β) hg⟩
   rintro ⟨c, hc⟩; rw [eventually_map] at hc
   obtain ⟨b, hb⟩ : ∃ b, ∀ a ≥ b, c < g a := eventually_atTop.1 (hg'.eventually_gt_atTop c)
-  exact ⟨b, hc.mono fun x hx => not_lt.1 fun h => (hb _ h.le).not_le hx⟩
+  exact ⟨b, hc.mono fun x hx => not_lt.1 fun h ↦ (hb _ h.le).not_le hx⟩
 
 theorem Monotone.isBoundedUnder_ge_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMinOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Monotone g) (hg' : Tendsto g atBot atBot) :

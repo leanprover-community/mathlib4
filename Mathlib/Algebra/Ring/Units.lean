@@ -96,7 +96,7 @@ theorem IsUnit.neg [Monoid α] [HasDistribNeg α] {a : α} : IsUnit a → IsUnit
 
 @[simp]
 theorem IsUnit.neg_iff [Monoid α] [HasDistribNeg α] (a : α) : IsUnit (-a) ↔ IsUnit a :=
-  ⟨fun h => neg_neg a ▸ h.neg, IsUnit.neg⟩
+  ⟨fun h ↦ neg_neg a ▸ h.neg, IsUnit.neg⟩
 
 theorem isUnit_neg_one [Monoid α] [HasDistribNeg α] : IsUnit (-1 : α) := isUnit_one.neg
 

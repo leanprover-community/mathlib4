@@ -256,7 +256,7 @@ alias EMetric.uniformEmbedding_iff' := EMetric.isUniformEmbedding_iff'
 abbrev EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with
-    eq_of_edist_eq_zero := fun h => (EMetric.inseparable_iff.2 h).eq }
+    eq_of_edist_eq_zero := fun h ↦ (EMetric.inseparable_iff.2 h).eq }
 
 /-- The product of two emetric spaces, with the max distance, is an extended
 metric spaces. We make sure that the uniform structure thus constructed is the one

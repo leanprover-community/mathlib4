@@ -533,7 +533,7 @@ theorem orthogonalProjection_mem_subspace_eq_self (v : K) : orthogonalProjection
 
 /-- A point equals its orthogonal projection if and only if it lies in the subspace. -/
 theorem orthogonalProjection_eq_self_iff {v : E} : (orthogonalProjection K v : E) = v ↔ v ∈ K := by
-  refine ⟨fun h => ?_, fun h => eq_orthogonalProjection_of_mem_of_inner_eq_zero h ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ eq_orthogonalProjection_of_mem_of_inner_eq_zero h ?_⟩
   · rw [← h]
     simp
   · simp
@@ -802,7 +802,7 @@ theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [Has
 
 @[simp]
 theorem Submodule.orthogonal_eq_bot_iff [HasOrthogonalProjection K] : Kᗮ = ⊥ ↔ K = ⊤ := by
-  refine ⟨?_, fun h => by rw [h, Submodule.top_orthogonal_eq_bot]⟩
+  refine ⟨?_, fun h ↦ by rw [h, Submodule.top_orthogonal_eq_bot]⟩
   intro h
   have : K ⊔ Kᗮ = ⊤ := Submodule.sup_orthogonal_of_completeSpace
   rwa [h, sup_comm, bot_sup_eq] at this
@@ -1377,7 +1377,7 @@ theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal �
   rw [Submodule.orthogonal_eq_bot_iff]
   have hv_coe : range ((↑) : v → E) = v := by simp
   constructor
-  · refine fun h => ⟨Basis.mk hv.linearIndependent _, Basis.coe_mk _ ?_⟩
+  · refine fun h ↦ ⟨Basis.mk hv.linearIndependent _, Basis.coe_mk _ ?_⟩
     convert h.ge
   · rintro ⟨h, coe_h⟩
     rw [← h.span_eq, coe_h, hv_coe]

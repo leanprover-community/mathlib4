@@ -204,7 +204,7 @@ theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y
 theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     Continuous ↿g ↔ Continuous g :=
   Iff.symm <| continuous_induced_rng.trans
-    ⟨fun h => continuous_uncurry_of_continuous ⟨_, h⟩,
+    ⟨fun h ↦ continuous_uncurry_of_continuous ⟨_, h⟩,
     continuous_of_continuous_uncurry (fun (y : Y) ↦ ContinuousMap.mk (g y))⟩
 
 /-- A continuous map extending a path to `ℝ`, constant before `0` and after `1`. -/
@@ -745,7 +745,7 @@ theorem JoinedIn.joined (h : JoinedIn F x y) : Joined x y :=
 
 theorem joinedIn_iff_joined (x_in : x ∈ F) (y_in : y ∈ F) :
     JoinedIn F x y ↔ Joined (⟨x, x_in⟩ : F) (⟨y, y_in⟩ : F) :=
-  ⟨fun h => h.joined_subtype, fun h => ⟨h.somePath.map continuous_subtype_val, by simp⟩⟩
+  ⟨fun h ↦ h.joined_subtype, fun h ↦ ⟨h.somePath.map continuous_subtype_val, by simp⟩⟩
 
 @[simp]
 theorem joinedIn_univ : JoinedIn univ x y ↔ Joined x y := by
@@ -822,7 +822,7 @@ theorem mem_pathComponent_of_mem (h : x ∈ pathComponent y) : y ∈ pathCompone
   Joined.symm h
 
 theorem pathComponent_symm : x ∈ pathComponent y ↔ y ∈ pathComponent x :=
-  ⟨fun h => mem_pathComponent_of_mem h, fun h => mem_pathComponent_of_mem h⟩
+  ⟨fun h ↦ mem_pathComponent_of_mem h, fun h ↦ mem_pathComponent_of_mem h⟩
 
 theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
   ext z

@@ -179,9 +179,9 @@ namespace Term
 def constantsToVars : L[[γ]].Term α → L.Term (γ ⊕ α)
   | var a => var (Sum.inr a)
   | @func _ _ 0 f ts =>
-    Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c => var (Sum.inl c)
+    Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c ↦ var (Sum.inl c)
   | @func _ _ (_n + 1) f ts =>
-    Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c => isEmptyElim c
+    Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c ↦ isEmptyElim c
 
 -- Porting note: universes in different order
 /-- Sends a term with extra variables to a term with constants. -/
@@ -854,7 +854,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     ext ⟨i, j⟩
     simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
-    refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
+    refine ⟨fun h ↦ ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp
     · simp
     · rintro ⟨t, ⟨is, _⟩, ⟨js, _⟩⟩

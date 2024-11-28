@@ -112,7 +112,7 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
   directedOn_of_sup_mem (α := αᵒᵈ) H
 
 theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j =>
-  Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
+  Or.casesOn (total_of r (f i) (f j)) (fun h ↦ ⟨j, h, refl _⟩) fun h ↦ ⟨i, refl _, h⟩
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
@@ -126,7 +126,7 @@ theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ 
 theorem directed_id [IsDirected α r] : Directed r id := directed_of r
 
 theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
-  ⟨fun h => ⟨h⟩, @directed_id _ _⟩
+  ⟨fun h ↦ ⟨h⟩, @directed_id _ _⟩
 
 theorem directedOn_univ [IsDirected α r] : DirectedOn r Set.univ := fun a _ b _ =>
   let ⟨c, hc⟩ := directed_of r a b

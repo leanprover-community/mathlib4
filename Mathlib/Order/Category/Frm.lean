@@ -93,4 +93,4 @@ def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful :=
-  ⟨fun h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩
+  ⟨fun h ↦ Quiver.Hom.unop_inj <| Opens.comap_injective h⟩

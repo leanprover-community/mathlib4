@@ -152,7 +152,7 @@ See `Fintype.equivFinOfCardEq` for the noncomputable definition,
 and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
 -/
 def truncEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
-  (truncEquivFin α).map fun e => e.trans (finCongr h)
+  (truncEquivFin α).map fun e ↦ e.trans (finCongr h)
 
 /-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `Fin n`.
 
@@ -170,7 +170,7 @@ and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
 the specialization to `Fin`.
 -/
 def truncEquivOfCardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Trunc (α ≃ β) :=
-  (truncEquivFinOfCardEq h).bind fun e => (truncEquivFin β).map fun e' => e.trans e'.symm
+  (truncEquivFinOfCardEq h).bind fun e ↦ (truncEquivFin β).map fun e' => e.trans e'.symm
 
 /-- Two `Fintype`s with the same cardinality are (noncomputably) in bijection.
 
@@ -520,7 +520,7 @@ theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
       let ⟨x, hx⟩ := card_eq_one_iff.1 ha.symm
       rw [hx a, hx b], fun _ => ha ▸ le_rfl⟩
   | n + 2, ha =>
-    ⟨fun h => False.elim <| by rw [← ha] at h; cases h with | step h => cases h; , fun h =>
+    ⟨fun h ↦ False.elim <| by rw [← ha] at h; cases h with | step h => cases h; , fun h =>
       card_unit ▸ card_le_of_injective (fun _ => ()) fun _ _ _ => h _ _⟩
 
 theorem card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
@@ -611,12 +611,12 @@ variable [Fintype α] [Fintype β]
 
 theorem bijective_iff_injective_and_card (f : α → β) :
     Bijective f ↔ Injective f ∧ card α = card β :=
-  ⟨fun h => ⟨h.1, card_of_bijective h⟩, fun h =>
+  ⟨fun h ↦ ⟨h.1, card_of_bijective h⟩, fun h =>
     ⟨h.1, h.1.surjective_of_fintype <| equivOfCardEq h.2⟩⟩
 
 theorem bijective_iff_surjective_and_card (f : α → β) :
     Bijective f ↔ Surjective f ∧ card α = card β :=
-  ⟨fun h => ⟨h.2, card_of_bijective h⟩, fun h =>
+  ⟨fun h ↦ ⟨h.2, card_of_bijective h⟩, fun h =>
     ⟨h.1.injective_of_fintype <| equivOfCardEq h.2, h.1⟩⟩
 
 theorem _root_.Function.LeftInverse.rightInverse_of_card_le {f : α → β} {g : β → α}
@@ -892,7 +892,7 @@ theorem of_not_fintype (h : Fintype α → False) : Infinite α :=
 /-- If `s : Set α` is a proper subset of `α` and `f : α → s` is injective, then `α` is infinite. -/
 theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (hf : Injective f) :
     Infinite α :=
-  of_not_fintype fun h => by
+  of_not_fintype fun h ↦ by
     classical
       refine lt_irrefl (Fintype.card α) ?_
       calc
@@ -907,7 +907,7 @@ theorem of_surjective_from_set {s : Set α} (hs : s ≠ Set.univ) {f : s → α}
   of_injective_to_set hs (injective_surjInv hf)
 
 theorem exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
-  not_forall.1 fun h => Fintype.false ⟨s, h⟩
+  not_forall.1 fun h ↦ Fintype.false ⟨s, h⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=

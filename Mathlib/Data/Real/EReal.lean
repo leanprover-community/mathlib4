@@ -608,9 +608,9 @@ theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
 
 @[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
-    | ⊥ => fun h => absurd h bot_lt_zero.not_le
+    | ⊥ => fun h ↦ absurd h bot_lt_zero.not_le
     | ⊤ => fun _ => ⟨⊤, rfl⟩
-    | (x : ℝ) => fun h => ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
+    | (x : ℝ) => fun h ↦ ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
 
 instance : CanLift EReal ℝ≥0∞ (↑) (0 ≤ ·) := ⟨range_coe_ennreal.ge⟩
 
@@ -1225,7 +1225,7 @@ lemma induction₂_symm_neg {P : EReal → EReal → Prop}
     (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
     (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (coe_coe : ∀ x y : ℝ, P x y) :
     ∀ x y, P x y :=
-  have neg_right : ∀ {x y}, P x y → P x (-y) := fun h => symm <| neg_left <| symm h
+  have neg_right : ∀ {x y}, P x y → P x (-y) := fun h ↦ symm <| neg_left <| symm h
   have : ∀ x, (∀ y : ℝ, 0 < y → P x y) → ∀ y : ℝ, y < 0 → P x y := fun _ h y hy =>
     neg_neg (y : EReal) ▸ neg_right (h _ (neg_pos_of_neg hy))
   @induction₂_neg_left P neg_left top_top top_pos top_zero (this _ top_pos) (neg_right top_top)

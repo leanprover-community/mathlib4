@@ -72,7 +72,7 @@ theorem prod_primeFactorsList : ∀ {n}, n ≠ 0 → List.prod (primeFactorsList
     let m := minFac (k + 2)
     have : (k + 2) / m < (k + 2) := factors_lemma
     show (primeFactorsList (k + 2)).prod = (k + 2) by
-      have h₁ : (k + 2) / m ≠ 0 := fun h => by
+      have h₁ : (k + 2) / m ≠ 0 := fun h ↦ by
         have : (k + 2) = 0 * m := (Nat.div_eq_iff_eq_mul_left (minFac_pos _) (minFac_dvd _)).1 h
         rw [zero_mul] at this; exact (show k + 2 ≠ 0 by simp) this
       rw [primeFactorsList, List.prod_cons, prod_primeFactorsList h₁,
@@ -146,7 +146,7 @@ theorem dvd_of_mem_primeFactorsList {n p : ℕ} (h : p ∈ n.primeFactorsList) :
   · rwa [← mem_primeFactorsList_iff_dvd hn.ne' (prime_of_mem_primeFactorsList h)]
 
 theorem mem_primeFactorsList {n p} (hn : n ≠ 0) : p ∈ primeFactorsList n ↔ Prime p ∧ p ∣ n :=
-  ⟨fun h => ⟨prime_of_mem_primeFactorsList h, dvd_of_mem_primeFactorsList h⟩, fun ⟨hprime, hdvd⟩ =>
+  ⟨fun h ↦ ⟨prime_of_mem_primeFactorsList h, dvd_of_mem_primeFactorsList h⟩, fun ⟨hprime, hdvd⟩ =>
     (mem_primeFactorsList_iff_dvd hn hprime).mpr hdvd⟩
 
 @[simp] lemma mem_primeFactorsList' {n p} : p ∈ n.primeFactorsList ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by

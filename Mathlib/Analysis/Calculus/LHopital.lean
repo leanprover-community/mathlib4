@@ -203,7 +203,7 @@ theorem lhopital_zero_right_on_Ioo (hab : a < b) (hdf : DifferentiableOn ℝ f (
   have hdf : ∀ x ∈ Ioo a b, DifferentiableAt ℝ f x := fun x hx =>
     (hdf x hx).differentiableAt (Ioo_mem_nhds hx.1 hx.2)
   have hdg : ∀ x ∈ Ioo a b, DifferentiableAt ℝ g x := fun x hx =>
-    by_contradiction fun h => hg' x hx (deriv_zero_of_not_differentiableAt h)
+    by_contradiction fun h ↦ hg' x hx (deriv_zero_of_not_differentiableAt h)
   exact HasDerivAt.lhopital_zero_right_on_Ioo hab (fun x hx => (hdf x hx).hasDerivAt)
     (fun x hx => (hdg x hx).hasDerivAt) hg' hfa hga hdiv
 
@@ -226,7 +226,7 @@ theorem lhopital_zero_left_on_Ioo (hab : a < b) (hdf : DifferentiableOn ℝ f (I
   have hdf : ∀ x ∈ Ioo a b, DifferentiableAt ℝ f x := fun x hx =>
     (hdf x hx).differentiableAt (Ioo_mem_nhds hx.1 hx.2)
   have hdg : ∀ x ∈ Ioo a b, DifferentiableAt ℝ g x := fun x hx =>
-    by_contradiction fun h => hg' x hx (deriv_zero_of_not_differentiableAt h)
+    by_contradiction fun h ↦ hg' x hx (deriv_zero_of_not_differentiableAt h)
   exact HasDerivAt.lhopital_zero_left_on_Ioo hab (fun x hx => (hdf x hx).hasDerivAt)
     (fun x hx => (hdg x hx).hasDerivAt) hg' hfb hgb hdiv
 
@@ -237,7 +237,7 @@ theorem lhopital_zero_atTop_on_Ioi (hdf : DifferentiableOn ℝ f (Ioi a))
   have hdf : ∀ x ∈ Ioi a, DifferentiableAt ℝ f x := fun x hx =>
     (hdf x hx).differentiableAt (Ioi_mem_nhds hx)
   have hdg : ∀ x ∈ Ioi a, DifferentiableAt ℝ g x := fun x hx =>
-    by_contradiction fun h => hg' x hx (deriv_zero_of_not_differentiableAt h)
+    by_contradiction fun h ↦ hg' x hx (deriv_zero_of_not_differentiableAt h)
   exact HasDerivAt.lhopital_zero_atTop_on_Ioi (fun x hx => (hdf x hx).hasDerivAt)
     (fun x hx => (hdg x hx).hasDerivAt) hg' hftop hgtop hdiv
 
@@ -248,7 +248,7 @@ theorem lhopital_zero_atBot_on_Iio (hdf : DifferentiableOn ℝ f (Iio a))
   have hdf : ∀ x ∈ Iio a, DifferentiableAt ℝ f x := fun x hx =>
     (hdf x hx).differentiableAt (Iio_mem_nhds hx)
   have hdg : ∀ x ∈ Iio a, DifferentiableAt ℝ g x := fun x hx =>
-    by_contradiction fun h => hg' x hx (deriv_zero_of_not_differentiableAt h)
+    by_contradiction fun h ↦ hg' x hx (deriv_zero_of_not_differentiableAt h)
   exact HasDerivAt.lhopital_zero_atBot_on_Iio (fun x hx => (hdf x hx).hasDerivAt)
     (fun x hx => (hdg x hx).hasDerivAt) hg' hfbot hgbot hdiv
 
@@ -365,7 +365,7 @@ theorem lhopital_zero_nhds_right (hdf : ∀ᶠ x in 𝓝[>] a, DifferentiableAt 
     Tendsto (fun x => f x / g x) (𝓝[>] a) l := by
   have hdg : ∀ᶠ x in 𝓝[>] a, DifferentiableAt ℝ g x :=
     hg'.mp (Eventually.of_forall fun _ hg' =>
-      by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
+      by_contradiction fun h ↦ hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in 𝓝[>] a, HasDerivAt f (deriv f x) x :=
     hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in 𝓝[>] a, HasDerivAt g (deriv g x) x :=
@@ -380,7 +380,7 @@ theorem lhopital_zero_nhds_left (hdf : ∀ᶠ x in 𝓝[<] a, DifferentiableAt �
     Tendsto (fun x => f x / g x) (𝓝[<] a) l := by
   have hdg : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ g x :=
     hg'.mp (Eventually.of_forall fun _ hg' =>
-      by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
+      by_contradiction fun h ↦ hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (deriv f x) x :=
     hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in 𝓝[<] a, HasDerivAt g (deriv g x) x :=
@@ -414,7 +414,7 @@ theorem lhopital_zero_atTop (hdf : ∀ᶠ x : ℝ in atTop, DifferentiableAt ℝ
     Tendsto (fun x => f x / g x) atTop l := by
   have hdg : ∀ᶠ x in atTop, DifferentiableAt ℝ g x := hg'.mp
     (Eventually.of_forall fun _ hg' =>
-      by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
+      by_contradiction fun h ↦ hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in atTop, HasDerivAt f (deriv f x) x :=
     hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in atTop, HasDerivAt g (deriv g x) x :=
@@ -428,7 +428,7 @@ theorem lhopital_zero_atBot (hdf : ∀ᶠ x : ℝ in atBot, DifferentiableAt ℝ
     Tendsto (fun x => f x / g x) atBot l := by
   have hdg : ∀ᶠ x in atBot, DifferentiableAt ℝ g x :=
     hg'.mp (Eventually.of_forall fun _ hg' =>
-      by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h))
+      by_contradiction fun h ↦ hg' (deriv_zero_of_not_differentiableAt h))
   have hdf' : ∀ᶠ x in atBot, HasDerivAt f (deriv f x) x :=
     hdf.mp (Eventually.of_forall fun _ => DifferentiableAt.hasDerivAt)
   have hdg' : ∀ᶠ x in atBot, HasDerivAt g (deriv g x) x :=

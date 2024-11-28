@@ -35,7 +35,7 @@ theorem dvd_of_factorization_pos {n p : ℕ} (hn : n.factorization p ≠ 0) : p 
 
 theorem factorization_eq_zero_iff_remainder {p r : ℕ} (i : ℕ) (pp : p.Prime) (hr0 : r ≠ 0) :
     ¬p ∣ r ↔ (p * i + r).factorization p = 0 := by
-  refine ⟨factorization_eq_zero_of_remainder i, fun h => ?_⟩
+  refine ⟨factorization_eq_zero_of_remainder i, fun h ↦ ?_⟩
   rw [factorization_eq_zero_iff] at h
   contrapose! h
   refine ⟨pp, ?_, ?_⟩
@@ -82,7 +82,7 @@ theorem Prime.eq_of_factorization_pos {p q : ℕ} (hp : Prime p) (h : p.factoriz
 
 theorem eq_factorization_iff {n : ℕ} {f : ℕ →₀ ℕ} (hn : n ≠ 0) (hf : ∀ p ∈ f.support, Prime p) :
     f = n.factorization ↔ f.prod (· ^ ·) = n :=
-  ⟨fun h => by rw [h, factorization_prod_pow_eq_self hn], fun h => by
+  ⟨fun h ↦ by rw [h, factorization_prod_pow_eq_self hn], fun h ↦ by
     rw [← h, prod_pow_factorization_eq_self hf]⟩
 
 theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.support, Prime p) :
@@ -304,7 +304,7 @@ alias ord_proj_dvd_ord_proj_of_dvd := ordProj_dvd_ordProj_of_dvd
 
 theorem ordProj_dvd_ordProj_iff_dvd {a b : ℕ} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
     (∀ p : ℕ, ordProj[p] a ∣ ordProj[p] b) ↔ a ∣ b := by
-  refine ⟨fun h => ?_, fun hab p => ordProj_dvd_ordProj_of_dvd hb0 hab p⟩
+  refine ⟨fun h ↦ ?_, fun hab p => ordProj_dvd_ordProj_of_dvd hb0 hab p⟩
   rw [← factorization_le_iff_dvd ha0 hb0]
   intro q
   rcases le_or_lt q 1 with (hq_le | hq1)
@@ -336,7 +336,7 @@ alias ord_compl_dvd_ord_compl_of_dvd := ordCompl_dvd_ordCompl_of_dvd
 
 theorem ordCompl_dvd_ordCompl_iff_dvd (a b : ℕ) :
     (∀ p : ℕ, ordCompl[p] a ∣ ordCompl[p] b) ↔ a ∣ b := by
-  refine ⟨fun h => ?_, fun hab p => ordCompl_dvd_ordCompl_of_dvd hab p⟩
+  refine ⟨fun h ↦ ?_, fun hab p => ordCompl_dvd_ordCompl_of_dvd hab p⟩
   rcases eq_or_ne b 0 with (rfl | hb0)
   · simp
   if pa : a.Prime then ?_ else simpa [pa] using h a
@@ -396,7 +396,7 @@ theorem factorization_gcd {a b : ℕ} (ha_pos : a ≠ 0) (hb_pos : b ≠ 0) :
 theorem factorization_lcm {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a.lcm b).factorization = a.factorization ⊔ b.factorization := by
   rw [← add_right_inj (a.gcd b).factorization, ←
-    factorization_mul (mt gcd_eq_zero_iff.1 fun h => ha h.1) (lcm_ne_zero ha hb), gcd_mul_lcm,
+    factorization_mul (mt gcd_eq_zero_iff.1 fun h ↦ ha h.1) (lcm_ne_zero ha hb), gcd_mul_lcm,
     factorization_gcd ha hb, factorization_mul ha hb]
   ext1
   exact (min_add_max _ _).symm

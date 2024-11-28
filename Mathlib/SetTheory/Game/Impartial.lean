@@ -38,7 +38,7 @@ class Impartial (G : PGame) : Prop where
   out : ImpartialAux G
 
 theorem impartial_iff_aux {G : PGame} : G.Impartial ↔ G.ImpartialAux :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 theorem impartial_def {G : PGame} :
     G.Impartial ↔ (G ≈ -G) ∧ (∀ i, Impartial (G.moveLeft i)) ∧ ∀ j, Impartial (G.moveRight j) := by
@@ -154,16 +154,16 @@ theorem lf_zero_iff {G : PGame} [G.Impartial] : G ⧏ 0 ↔ 0 ⧏ G := by
   rw [← zero_lf_neg_iff, lf_congr_right (neg_equiv_self G)]
 
 theorem equiv_zero_iff_le : (G ≈ 0) ↔ G ≤ 0 :=
-  ⟨And.left, fun h => ⟨h, le_zero_iff.1 h⟩⟩
+  ⟨And.left, fun h ↦ ⟨h, le_zero_iff.1 h⟩⟩
 
 theorem fuzzy_zero_iff_lf : G ‖ 0 ↔ G ⧏ 0 :=
-  ⟨And.left, fun h => ⟨h, lf_zero_iff.1 h⟩⟩
+  ⟨And.left, fun h ↦ ⟨h, lf_zero_iff.1 h⟩⟩
 
 theorem equiv_zero_iff_ge : (G ≈ 0) ↔ 0 ≤ G :=
-  ⟨And.right, fun h => ⟨le_zero_iff.2 h, h⟩⟩
+  ⟨And.right, fun h ↦ ⟨le_zero_iff.2 h, h⟩⟩
 
 theorem fuzzy_zero_iff_gf : G ‖ 0 ↔ 0 ⧏ G :=
-  ⟨And.right, fun h => ⟨lf_zero_iff.2 h, h⟩⟩
+  ⟨And.right, fun h ↦ ⟨lf_zero_iff.2 h, h⟩⟩
 
 theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ (G ≈ 0) := by
   refine ⟨fun hb => ?_, fun hp i => ?_⟩

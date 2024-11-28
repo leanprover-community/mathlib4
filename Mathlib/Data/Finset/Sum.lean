@@ -159,10 +159,10 @@ lemma card_toRight_le : u.toRight.card ≤ u.card :=
 @[simp] lemma toRight_disjSum : (s.disjSum t).toRight = t := by ext x; simp
 
 lemma disjSum_eq_iff : s.disjSum t = u ↔ s = u.toLeft ∧ t = u.toRight :=
-  ⟨fun h => by simp [← h], fun h => by simp [h, toLeft_disjSum_toRight]⟩
+  ⟨fun h ↦ by simp [← h], fun h ↦ by simp [h, toLeft_disjSum_toRight]⟩
 
 lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
-  ⟨fun h => by simp [h], fun h => by simp [← h, toLeft_disjSum_toRight]⟩
+  ⟨fun h ↦ by simp [h], fun h ↦ by simp [← h, toLeft_disjSum_toRight]⟩
 
 @[simp] lemma toLeft_map_sumComm : (u.map (Equiv.sumComm _ _).toEmbedding).toLeft = u.toRight := by
   ext x; simp

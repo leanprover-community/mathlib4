@@ -78,7 +78,7 @@ The output `Format` is just so that the linter displays a better message. -/
 def areProp_toFormat (ctx : ContextInfo) (lc : LocalContext) (es : Array Expr) :
     CommandElabM (Array (Bool × Format)) := do
   ctx.runMetaM lc do
-    es.mapM fun e => do
+    es.mapM fun e ↦ do
       let typ ← inferType (← instantiateMVars e)
       return (typ.isProp, ← ppExpr e)
 

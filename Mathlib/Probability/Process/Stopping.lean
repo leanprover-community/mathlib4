@@ -273,7 +273,7 @@ theorem add {f : Filtration ℕ m} {τ π : Ω → ℕ} (hτ : IsStoppingTime f 
       MeasurableSet.iUnion fun hk => (hπ.measurableSet_eq_le hk).inter (hτ.add_const_nat i)
   ext ω
   simp only [Pi.add_apply, Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_prop]
-  refine ⟨fun h => ⟨π ω, by omega, rfl, h⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨π ω, by omega, rfl, h⟩, ?_⟩
   rintro ⟨j, hj, rfl, h⟩
   assumption
 
@@ -604,7 +604,7 @@ theorem measurableSet_inter_le_const_iff (hτ : IsStoppingTime f τ) (s : Set Ω
       MeasurableSet[(hτ.min_const i).measurableSpace] (s ∩ {ω | τ ω ≤ i}) := by
   rw [IsStoppingTime.measurableSet_min_iff hτ (isStoppingTime_const _ i),
     IsStoppingTime.measurableSpace_const, IsStoppingTime.measurableSet]
-  refine ⟨fun h => ⟨h, ?_⟩, fun h j => h.1 j⟩
+  refine ⟨fun h ↦ ⟨h, ?_⟩, fun h j => h.1 j⟩
   specialize h i
   rwa [Set.inter_assoc, Set.inter_self] at h
 
@@ -645,7 +645,7 @@ theorem measurableSet_eq_stopping_time [AddGroup ι] [TopologicalSpace ι] [Meas
       {ω | min (τ ω) j = min (π ω) j} ∩ {ω | τ ω ≤ j} ∩ {ω | π ω ≤ j} := by
     ext1 ω
     simp only [Set.mem_inter_iff, Set.mem_setOf_eq]
-    refine ⟨fun h => ⟨⟨?_, h.2⟩, ?_⟩, fun h => ⟨?_, h.1.2⟩⟩
+    refine ⟨fun h ↦ ⟨⟨?_, h.2⟩, ?_⟩, fun h ↦ ⟨?_, h.1.2⟩⟩
     · rw [h.1]
     · rw [← h.1]; exact h.2
     · cases' h with h' hσ_le
@@ -668,7 +668,7 @@ theorem measurableSet_eq_stopping_time_of_countable [Countable ι] [TopologicalS
       {ω | min (τ ω) j = min (π ω) j} ∩ {ω | τ ω ≤ j} ∩ {ω | π ω ≤ j} := by
     ext1 ω
     simp only [Set.mem_inter_iff, Set.mem_setOf_eq]
-    refine ⟨fun h => ⟨⟨?_, h.2⟩, ?_⟩, fun h => ⟨?_, h.1.2⟩⟩
+    refine ⟨fun h ↦ ⟨⟨?_, h.2⟩, ?_⟩, fun h ↦ ⟨?_, h.1.2⟩⟩
     · rw [h.1]
     · rw [← h.1]; exact h.2
     · cases' h with h' hπ_le
@@ -973,7 +973,7 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
   refine Finset.sum_congr ?_ fun _ _ => rfl
   ext i
   simp only [Finset.mem_filter, Set.mem_setOf_eq, Finset.mem_range, Finset.mem_Ico]
-  exact ⟨fun h => ⟨lt_trans h.2 (Nat.lt_succ_iff.2 <| hbdd _), h⟩, fun h => h.2⟩
+  exact ⟨fun h ↦ ⟨lt_trans h.2 (Nat.lt_succ_iff.2 <| hbdd _), h⟩, fun h ↦ h.2⟩
 
 section AddCommMonoid
 

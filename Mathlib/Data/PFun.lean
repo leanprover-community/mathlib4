@@ -109,7 +109,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 /-- The type of partial functions `α →. β` is equivalent to
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
-  ⟨fun f => ⟨fun a ↦ (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun _ =>
+  ⟨fun f => ⟨fun a ↦ (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h ↦ f.2 ⟨x, h⟩⟩, fun _ =>
     funext fun _ => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
@@ -225,7 +225,7 @@ theorem dom_of_mem_fix {f : α →. β ⊕ α} {a : α} {b : β} (h : b ∈ f.fi
 
 theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     b ∈ f.fix a ↔ Sum.inl b ∈ f a ∨ ∃ a', Sum.inr a' ∈ f a ∧ b ∈ f.fix a' :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
     rw [WellFounded.fixFEq] at h₂
     simp only [Part.mem_assert_iff] at h₂
@@ -233,7 +233,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     split at h₃
     next e => simp only [Part.mem_some_iff] at h₃; subst b; exact Or.inl ⟨h₂, e⟩
     next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
-   fun h => by
+   fun h ↦ by
     simp only [fix, Part.mem_assert_iff]
     rcases h with (⟨h₁, h₂⟩ | ⟨a', h, h₃⟩)
     · refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
@@ -440,7 +440,7 @@ theorem preimage_asSubtype (f : α →. β) (s : Set β) :
   simp only [Set.mem_preimage, Set.mem_setOf_eq, PFun.asSubtype, PFun.mem_preimage]
   show f.fn x.val _ ∈ s ↔ ∃ y ∈ s, y ∈ f x.val
   exact
-    Iff.intro (fun h => ⟨_, h, Part.get_mem _⟩) fun ⟨y, ys, fxy⟩ =>
+    Iff.intro (fun h ↦ ⟨_, h, Part.get_mem _⟩) fun ⟨y, ys, fxy⟩ =>
       have : f.fn x.val x.property ∈ f x.val := Part.get_mem _
       Part.mem_unique fxy this ▸ ys
 
@@ -524,7 +524,7 @@ theorem coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α �
 
 /-- Product of partial functions. -/
 def prodLift (f : α →. β) (g : α →. γ) : α →. β × γ := fun x =>
-  ⟨(f x).Dom ∧ (g x).Dom, fun h => ((f x).get h.1, (g x).get h.2)⟩
+  ⟨(f x).Dom ∧ (g x).Dom, fun h ↦ ((f x).get h.1, (g x).get h.2)⟩
 
 @[simp]
 theorem dom_prodLift (f : α →. β) (g : α →. γ) :
@@ -537,7 +537,7 @@ theorem get_prodLift (f : α →. β) (g : α →. γ) (x : α) (h) :
 
 @[simp]
 theorem prodLift_apply (f : α →. β) (g : α →. γ) (x : α) :
-    f.prodLift g x = ⟨(f x).Dom ∧ (g x).Dom, fun h => ((f x).get h.1, (g x).get h.2)⟩ :=
+    f.prodLift g x = ⟨(f x).Dom ∧ (g x).Dom, fun h ↦ ((f x).get h.1, (g x).get h.2)⟩ :=
   rfl
 
 theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
@@ -549,7 +549,7 @@ theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
 
 /-- Product of partial functions. -/
 def prodMap (f : α →. γ) (g : β →. δ) : α × β →. γ × δ := fun x =>
-  ⟨(f x.1).Dom ∧ (g x.2).Dom, fun h => ((f x.1).get h.1, (g x.2).get h.2)⟩
+  ⟨(f x.1).Dom ∧ (g x.2).Dom, fun h ↦ ((f x.1).get h.1, (g x.2).get h.2)⟩
 
 @[simp]
 theorem dom_prodMap (f : α →. γ) (g : β →. δ) :
@@ -562,7 +562,7 @@ theorem get_prodMap (f : α →. γ) (g : β →. δ) (x : α × β) (h) :
 
 @[simp]
 theorem prodMap_apply (f : α →. γ) (g : β →. δ) (x : α × β) :
-    f.prodMap g x = ⟨(f x.1).Dom ∧ (g x.2).Dom, fun h => ((f x.1).get h.1, (g x.2).get h.2)⟩ :=
+    f.prodMap g x = ⟨(f x.1).Dom ∧ (g x.2).Dom, fun h ↦ ((f x.1).get h.1, (g x.2).get h.2)⟩ :=
   rfl
 
 theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × δ} :

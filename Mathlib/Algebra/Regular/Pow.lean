@@ -53,7 +53,7 @@ theorem IsRightRegular.pow_iff {n : ℕ} (n0 : 0 < n) :
 
 /-- An element `a` is regular if and only if a positive power of `a` is regular. -/
 theorem IsRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRegular (a ^ n) ↔ IsRegular a :=
-  ⟨fun h => ⟨(IsLeftRegular.pow_iff n0).mp h.left, (IsRightRegular.pow_iff n0).mp h.right⟩, fun h =>
+  ⟨fun h ↦ ⟨(IsLeftRegular.pow_iff n0).mp h.left, (IsRightRegular.pow_iff n0).mp h.right⟩, fun h =>
     ⟨IsLeftRegular.pow n h.left, IsRightRegular.pow n h.right⟩⟩
 
 end Monoid

@@ -112,7 +112,7 @@ theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J =
   exact mul_mem_mul hy hx
 
 theorem mul_inv_cancel_iff {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ = 1 ↔ ∃ J, I * J = 1 :=
-  ⟨fun h => ⟨I⁻¹, h⟩, fun ⟨J, hJ⟩ => by rwa [← right_inverse_eq K I J hJ]⟩
+  ⟨fun h ↦ ⟨I⁻¹, h⟩, fun ⟨J, hJ⟩ => by rwa [← right_inverse_eq K I J hJ]⟩
 
 theorem mul_inv_cancel_iff_isUnit {I : FractionalIdeal R₁⁰ K} : I * I⁻¹ = 1 ↔ IsUnit I :=
   (mul_inv_cancel_iff K).trans isUnit_iff_exists_inv.symm
@@ -287,7 +287,7 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
     Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (h.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
-  · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
+  · exact fun h ↦ one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
 
 open Ring
 
@@ -378,7 +378,7 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
     refine ⟨Z.erase P, ?_, ?_⟩
     · convert hZI
       rw [this, Multiset.cons_erase hPZ']
-    · refine fun h => h_eraseZ (Z.erase P) ⟨h, ?_⟩ (Multiset.erase_lt.mpr hPZ)
+    · refine fun h ↦ h_eraseZ (Z.erase P) ⟨h, ?_⟩ (Multiset.erase_lt.mpr hPZ)
       exact hZP0
 namespace FractionalIdeal
 
@@ -510,7 +510,7 @@ theorem mul_right_le_iff [IsDedekindDomain A] {J : FractionalIdeal A⁰ K} (hJ :
   · intro h
     convert mul_right_mono J⁻¹ h <;> dsimp only <;>
     rw [mul_assoc, FractionalIdeal.mul_inv_cancel hJ, mul_one]
-  · exact fun h => mul_right_mono J h
+  · exact fun h ↦ mul_right_mono J h
 
 theorem mul_left_le_iff [IsDedekindDomain A] {J : FractionalIdeal A⁰ K} (hJ : J ≠ 0) {I I'} :
     J * I ≤ J * I' ↔ I ≤ I' := by convert mul_right_le_iff hJ using 1; simp only [mul_comm]
@@ -543,7 +543,7 @@ end FractionalIdeal
 to express that an integral domain is a Dedekind domain. -/
 theorem isDedekindDomain_iff_isDedekindDomainInv [IsDomain A] :
     IsDedekindDomain A ↔ IsDedekindDomainInv A :=
-  ⟨fun _h _I hI => FractionalIdeal.mul_inv_cancel hI, fun h => h.isDedekindDomain⟩
+  ⟨fun _h _I hI => FractionalIdeal.mul_inv_cancel hI, fun h ↦ h.isDedekindDomain⟩
 
 end Inverse
 
@@ -583,7 +583,7 @@ instance Ideal.isDomain : IsDomain (Ideal A) := { }
 
 /-- For ideals in a Dedekind domain, to divide is to contain. -/
 theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
-  ⟨Ideal.le_of_dvd, fun h => by
+  ⟨Ideal.le_of_dvd, fun h ↦ by
     by_cases hI : I = ⊥
     · have hJ : J = ⊥ := by rwa [hI, ← eq_bot_iff] at h
       rw [hI, hJ]
@@ -660,7 +660,7 @@ theorem Ideal.prime_iff_isPrime {P : Ideal A} (hP : P ≠ ⊥) : Prime P ↔ IsP
 of the monoid with zero `Ideal A`. -/
 theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨ Prime P :=
   ⟨fun hp => (eq_or_ne P ⊥).imp_right fun hp0 => Ideal.prime_of_isPrime hp0 hp, fun hp =>
-    hp.elim (fun h => h.symm ▸ Ideal.bot_prime) Ideal.isPrime_of_prime⟩
+    hp.elim (fun h ↦ h.symm ▸ Ideal.bot_prime) Ideal.isPrime_of_prime⟩
 
 @[simp]
 theorem Ideal.prime_span_singleton_iff {a : A} : Prime (Ideal.span {a}) ↔ Prime a := by
@@ -1324,7 +1324,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 
 theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
     Ideal.span {a} ∣ Ideal.span ({b} : Set R) ↔ a ∣ b :=
-  ⟨fun h => mem_span_singleton.mp (dvd_iff_le.mp h (mem_span_singleton.mpr (dvd_refl b))), fun h =>
+  ⟨fun h ↦ mem_span_singleton.mp (dvd_iff_le.mp h (mem_span_singleton.mpr (dvd_refl b))), fun h =>
     dvd_iff_le.mpr fun _d hd => mem_span_singleton.mpr (dvd_trans h (mem_span_singleton.mp hd))⟩
 
 @[simp]

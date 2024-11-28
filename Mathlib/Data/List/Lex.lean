@@ -48,7 +48,7 @@ namespace Lex
 
 theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
-  ⟨fun h => by cases' h with _ _ _ _ _ h _ _ _ _ h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
+  ⟨fun h ↦ by cases' h with _ _ _ _ _ h _ _ _ _ h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
 
 @[simp]
 theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
@@ -105,11 +105,11 @@ instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
   { isStrictWeakOrder_of_isOrderConnected with }
 
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
-  | l₁, [] => isFalse fun h => by cases h
+  | l₁, [] => isFalse fun h ↦ by cases h
   | [], _ :: _ => isTrue Lex.nil
   | a :: l₁, b :: l₂ => by
     haveI := decidableRel r l₁ l₂
-    refine decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => ?_, fun h => ?_⟩
+    refine decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · rcases h with (h | ⟨rfl, h⟩)
       · exact Lex.rel h
       · exact Lex.cons h
@@ -137,7 +137,7 @@ theorem to_ne : ∀ {l₁ l₂ : List α}, Lex (· ≠ ·) l₁ l₂ → l₁ �
 
 theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
-  ⟨to_ne, fun h => by
+  ⟨to_ne, fun h ↦ by
     induction' l₁ with a l₁ IH generalizing l₂ <;> cases' l₂ with b l₂
     · contradiction
     · apply nil

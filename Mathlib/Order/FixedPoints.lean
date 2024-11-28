@@ -187,7 +187,7 @@ theorem nextFixed_le {x : α} (hx : x ≤ f x) {y : fixedPoints f} (h : x ≤ y)
 @[simp]
 theorem nextFixed_le_iff {x : α} (hx : x ≤ f x) {y : fixedPoints f} :
     f.nextFixed x hx ≤ y ↔ x ≤ y :=
-  ⟨fun h => (f.le_nextFixed hx).trans h, f.nextFixed_le hx⟩
+  ⟨fun h ↦ (f.le_nextFixed hx).trans h, f.nextFixed_le hx⟩
 
 @[simp]
 theorem le_prevFixed_iff {x : α} (hx : f x ≤ x) {y : fixedPoints f} :

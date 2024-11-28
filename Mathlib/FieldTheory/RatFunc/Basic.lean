@@ -886,7 +886,7 @@ theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.denom := by
 
 @[simp]
 theorem num_eq_zero_iff {x : RatFunc K} : num x = 0 ↔ x = 0 :=
-  ⟨fun h => by rw [← num_div_denom x, h, RingHom.map_zero, zero_div], fun h => h.symm ▸ num_zero⟩
+  ⟨fun h ↦ by rw [← num_div_denom x, h, RingHom.map_zero, zero_div], fun h ↦ h.symm ▸ num_zero⟩
 
 theorem num_ne_zero {x : RatFunc K} (hx : x ≠ 0) : num x ≠ 0 :=
   mt num_eq_zero_iff.mp hx

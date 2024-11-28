@@ -114,7 +114,7 @@ theorem gauge_nonneg (x : E) : 0 ≤ gauge s x :=
   Real.sInf_nonneg fun _ hx => hx.1.le
 
 theorem gauge_neg (symmetric : ∀ x ∈ s, -x ∈ s) (x : E) : gauge s (-x) = gauge s x := by
-  have : ∀ x, -x ∈ s ↔ x ∈ s := fun x => ⟨fun h => by simpa using symmetric _ h, symmetric x⟩
+  have : ∀ x, -x ∈ s ↔ x ∈ s := fun x => ⟨fun h ↦ by simpa using symmetric _ h, symmetric x⟩
   simp_rw [gauge_def', smul_neg, this]
 
 theorem gauge_neg_set_neg (x : E) : gauge (-s) (-x) = gauge s x := by
@@ -132,7 +132,7 @@ theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Abso
     { x | gauge s x ≤ a } = ⋂ (r : ℝ) (_ : a < r), r • s := by
   ext x
   simp_rw [Set.mem_iInter, Set.mem_setOf_eq]
-  refine ⟨fun h r hr => ?_, fun h => le_of_forall_pos_lt_add fun ε hε => ?_⟩
+  refine ⟨fun h r hr => ?_, fun h ↦ le_of_forall_pos_lt_add fun ε hε => ?_⟩
   · have hr' := ha.trans_lt hr
     rw [mem_smul_set_iff_inv_smul_mem₀ hr'.ne']
     obtain ⟨δ, δ_pos, hδr, hδ⟩ := exists_lt_of_gauge_lt hs₂ (h.trans_lt hr)

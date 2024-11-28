@@ -274,9 +274,9 @@ theorem sdiff_sup : y \ (x ⊔ z) = y \ x ⊓ y \ z :=
                       inf_inf_sdiff, inf_bot_eq])
 
 theorem sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
-  ⟨fun h => eq_of_inf_eq_sup_eq (a := y \ x) (by rw [inf_inf_sdiff, h, inf_inf_sdiff])
+  ⟨fun h ↦ eq_of_inf_eq_sup_eq (a := y \ x) (by rw [inf_inf_sdiff, h, inf_inf_sdiff])
     (by rw [sup_inf_sdiff, h, sup_inf_sdiff]),
-    fun h => by rw [← sdiff_inf_self_right, ← sdiff_inf_self_right z y, inf_comm, h, inf_comm]⟩
+    fun h ↦ by rw [← sdiff_inf_self_right, ← sdiff_inf_self_right z y, inf_comm, h, inf_comm]⟩
 
 theorem sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x :=
   calc
@@ -288,13 +288,13 @@ theorem sdiff_eq_self_iff_disjoint' : x \ y = x ↔ Disjoint x y := by
   rw [sdiff_eq_self_iff_disjoint, disjoint_comm]
 
 theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
-  refine sdiff_le.lt_of_ne fun h => hy ?_
+  refine sdiff_le.lt_of_ne fun h ↦ hy ?_
   rw [sdiff_eq_self_iff_disjoint', disjoint_iff] at h
   rw [← h, inf_eq_right.mpr hx]
 
 @[simp]
 theorem le_sdiff_iff : x ≤ y \ x ↔ x = ⊥ :=
-  ⟨fun h => disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h => h.le.trans bot_le⟩
+  ⟨fun h ↦ disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h ↦ h.le.trans bot_le⟩
 
 @[simp] lemma sdiff_eq_right : x \ y = y ↔ x = ⊥ ∧ y = ⊥ := by
   rw [disjoint_sdiff_self_left.eq_iff]; aesop
@@ -569,12 +569,12 @@ theorem top_sdiff : ⊤ \ x = xᶜ :=
   top_sdiff' x
 
 theorem eq_compl_iff_isCompl : x = yᶜ ↔ IsCompl x y :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [h]
     exact isCompl_compl.symm, IsCompl.eq_compl⟩
 
 theorem compl_eq_iff_isCompl : xᶜ = y ↔ IsCompl x y :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← h]
     exact isCompl_compl, IsCompl.compl_eq⟩
 
@@ -625,7 +625,7 @@ theorem compl_inf : (x ⊓ y)ᶜ = xᶜ ⊔ yᶜ :=
 
 @[simp]
 theorem compl_le_compl_iff_le : yᶜ ≤ xᶜ ↔ x ≤ y :=
-  ⟨fun h => by have h := compl_le_compl h; simpa using h, compl_le_compl⟩
+  ⟨fun h ↦ by have h := compl_le_compl h; simpa using h, compl_le_compl⟩
 
 @[simp] lemma compl_lt_compl_iff_lt : yᶜ < xᶜ ↔ x < y :=
   lt_iff_lt_of_le_iff_le' compl_le_compl_iff_le compl_le_compl_iff_le

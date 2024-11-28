@@ -95,7 +95,7 @@ instance : Trans Membership.mem (· ⊆ ·) (Membership.mem : Filter α → Set 
 
 @[simp]
 theorem inter_mem_iff {s t : Set α} : s ∩ t ∈ f ↔ s ∈ f ∧ t ∈ f :=
-  ⟨fun h => ⟨mem_of_superset h inter_subset_left, mem_of_superset h inter_subset_right⟩,
+  ⟨fun h ↦ ⟨mem_of_superset h inter_subset_left, mem_of_superset h inter_subset_right⟩,
     and_imp.2 inter_mem⟩
 
 theorem diff_mem {s t : Set α} (hs : s ∈ f) (ht : tᶜ ∈ f) : s \ t ∈ f :=
@@ -310,7 +310,7 @@ theorem mem_iInf_of_mem {f : ι → Filter α} (i : ι) {s} (hs : s ∈ f i) : s
 
 @[simp]
 theorem le_principal_iff {s : Set α} {f : Filter α} : f ≤ 𝓟 s ↔ s ∈ f :=
-  ⟨fun h => h Subset.rfl, fun hs _ ht => mem_of_superset hs ht⟩
+  ⟨fun h ↦ h Subset.rfl, fun hs _ ht => mem_of_superset hs ht⟩
 
 theorem Iic_principal (s : Set α) : Iic (𝓟 s) = { l | s ∈ l } :=
   Set.ext fun _ => le_principal_iff
@@ -341,16 +341,16 @@ theorem generate_eq_biInf (S : Set (Set α)) : generate S = ⨅ s ∈ S, 𝓟 s 
 /-! ### Lattice equations -/
 
 theorem empty_mem_iff_bot {f : Filter α} : ∅ ∈ f ↔ f = ⊥ :=
-  ⟨fun h => bot_unique fun s _ => mem_of_superset h (empty_subset s), fun h => h.symm ▸ mem_bot⟩
+  ⟨fun h ↦ bot_unique fun s _ => mem_of_superset h (empty_subset s), fun h ↦ h.symm ▸ mem_bot⟩
 
 theorem nonempty_of_mem {f : Filter α} [hf : NeBot f] {s : Set α} (hs : s ∈ f) : s.Nonempty :=
-  s.eq_empty_or_nonempty.elim (fun h => absurd hs (h.symm ▸ mt empty_mem_iff_bot.mp hf.1)) id
+  s.eq_empty_or_nonempty.elim (fun h ↦ absurd hs (h.symm ▸ mt empty_mem_iff_bot.mp hf.1)) id
 
 theorem NeBot.nonempty_of_mem {f : Filter α} (hf : NeBot f) {s : Set α} (hs : s ∈ f) : s.Nonempty :=
   @Filter.nonempty_of_mem α f hf s hs
 
 @[simp]
-theorem empty_not_mem (f : Filter α) [NeBot f] : ¬∅ ∈ f := fun h => (nonempty_of_mem h).ne_empty rfl
+theorem empty_not_mem (f : Filter α) [NeBot f] : ¬∅ ∈ f := fun h ↦ (nonempty_of_mem h).ne_empty rfl
 
 theorem nonempty_of_neBot (f : Filter α) [NeBot f] : Nonempty α :=
   nonempty_of_exists <| nonempty_of_mem (univ_mem : univ ∈ f)
@@ -392,7 +392,7 @@ theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ :=
 
 theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
     (∀ s : Set α, s ∈ f → s.Nonempty) ↔ NeBot f :=
-  ⟨fun h => ⟨fun hf => not_nonempty_empty (h ∅ <| hf.symm ▸ mem_bot)⟩, @nonempty_of_mem _ _⟩
+  ⟨fun h ↦ ⟨fun hf => not_nonempty_empty (h ∅ <| hf.symm ▸ mem_bot)⟩, @nonempty_of_mem _ _⟩
 
 instance instNontrivialFilter [Nonempty α] : Nontrivial (Filter α) :=
   ⟨⟨⊤, ⊥, NeBot.ne <| forall_mem_nonempty_iff_neBot.1
@@ -639,7 +639,7 @@ theorem eventually_congr {f : Filter α} {p q : α → Prop} (h : ∀ᶠ x in f,
 @[simp]
 theorem eventually_or_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
     (∀ᶠ x in f, p ∨ q x) ↔ p ∨ ∀ᶠ x in f, q x :=
-  by_cases (fun h : p => by simp [h]) fun h => by simp [h]
+  by_cases (fun h : p => by simp [h]) fun h ↦ by simp [h]
 
 @[simp]
 theorem eventually_or_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
@@ -720,7 +720,7 @@ theorem Frequently.mono {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, 
 
 theorem Frequently.and_eventually {p q : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x)
     (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x := by
-  refine mt (fun h => hq.mp <| h.mono ?_) hp
+  refine mt (fun h ↦ hq.mp <| h.mono ?_) hp
   exact fun x hpq hq hp => hpq ⟨hp, hq⟩
 
 theorem Eventually.and_frequently {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f, p x)
@@ -1007,7 +1007,7 @@ theorem EventuallyEq.sub_eq [AddGroup β] {f g : α → β} {l : Filter α} (h :
 
 theorem eventuallyEq_iff_sub [AddGroup β] {f g : α → β} {l : Filter α} :
     f =ᶠ[l] g ↔ f - g =ᶠ[l] 0 :=
-  ⟨fun h => h.sub_eq, fun h => by simpa using h.add (EventuallyEq.refl l g)⟩
+  ⟨fun h ↦ h.sub_eq, fun h ↦ by simpa using h.add (EventuallyEq.refl l g)⟩
 
 theorem eventuallyEq_iff_all_subsets {f g : α → β} {l : Filter α} :
     f =ᶠ[l] g ↔ ∀ s : Set α, ∀ᶠ x in l, x ∈ s → f x = g x :=
@@ -1185,7 +1185,7 @@ theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
-  ⟨fun h => by rwa [← preimage_image_eq s hf], image_mem_map⟩
+  ⟨fun h ↦ by rwa [← preimage_image_eq s hf], image_mem_map⟩
 
 theorem range_mem_map : range m ∈ map m f := by
   rw [← image_univ]
@@ -1224,7 +1224,7 @@ variable {f : α → β} {l : Filter β} {p : α → Prop} {s : Set α}
 
 theorem mem_comap' : s ∈ comap f l ↔ { y | ∀ ⦃x⦄, f x = y → x ∈ s } ∈ l :=
   ⟨fun ⟨t, ht, hts⟩ => mem_of_superset ht fun y hy x hx => hts <| mem_preimage.2 <| by rwa [hx],
-    fun h => ⟨_, h, fun _ hx => hx rfl⟩⟩
+    fun h ↦ ⟨_, h, fun _ hx => hx rfl⟩⟩
 
 -- TODO: it would be nice to use `kernImage` much more to take advantage of common name and API,
 -- and then this would become `mem_comap'`
@@ -1477,7 +1477,7 @@ end
 @[simp]
 theorem comap_principal {t : Set β} : comap m (𝓟 t) = 𝓟 (m ⁻¹' t) :=
   Filter.ext fun _ => ⟨fun ⟨_u, hu, b⟩ => (preimage_mono hu).trans b,
-    fun h => ⟨t, Subset.rfl, h⟩⟩
+    fun h ↦ ⟨t, Subset.rfl, h⟩⟩
 
 theorem principal_subtype {α : Type*} (s : Set α) (t : Set s) :
     𝓟 t = comap (↑) (𝓟 (((↑) : s → α) '' t)) := by
@@ -1595,7 +1595,7 @@ instance canLift (c) (p) [CanLift α β c p] :
 
 theorem comap_le_comap_iff {f g : Filter β} {m : α → β} (hf : range m ∈ f) :
     comap m f ≤ comap m g ↔ f ≤ g :=
-  ⟨fun h => map_comap_of_mem hf ▸ (map_mono h).trans map_comap_le, fun h => comap_mono h⟩
+  ⟨fun h ↦ map_comap_of_mem hf ▸ (map_mono h).trans map_comap_le, fun h ↦ comap_mono h⟩
 
 theorem map_comap_of_surjective {f : α → β} (hf : Surjective f) (l : Filter β) :
     map f (comap f l) = l :=
@@ -1636,7 +1636,7 @@ theorem map_le_map_iff_of_injOn {l₁ l₂ : Filter α} {f : α → β} {s : Set
     mp_mem h₁ <|
       mem_of_superset (h <| image_mem_map (inter_mem h₂ ht)) fun _y ⟨_x, ⟨hxs, hxt⟩, hxy⟩ hys =>
         hinj hxs hys hxy ▸ hxt,
-    fun h => map_mono h⟩
+    fun h ↦ map_mono h⟩
 
 theorem map_le_map_iff {f g : Filter α} {m : α → β} (hm : Injective m) :
     map m f ≤ map m g ↔ f ≤ g := by rw [map_le_iff_le_comap, comap_map hm]
@@ -1739,7 +1739,7 @@ theorem NeBot.comap_of_image_mem {f : Filter β} {m : α → β} (hf : NeBot f) 
 theorem map_eq_bot_iff : map m f = ⊥ ↔ f = ⊥ :=
   ⟨by
     rw [← empty_mem_iff_bot, ← empty_mem_iff_bot]
-    exact id, fun h => by simp only [h, map_bot]⟩
+    exact id, fun h ↦ by simp only [h, map_bot]⟩
 
 theorem map_neBot_iff (f : α → β) {F : Filter α} : NeBot (map f F) ↔ NeBot F := by
   simp only [neBot_iff, Ne, map_eq_bot_iff]

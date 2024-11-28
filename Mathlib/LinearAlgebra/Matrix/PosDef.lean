@@ -261,7 +261,7 @@ end PosSemidef
 @[simp]
 theorem posSemidef_submatrix_equiv {M : Matrix n n R} (e : m ≃ n) :
     (M.submatrix e e).PosSemidef ↔ M.PosSemidef :=
-  ⟨fun h => by simpa using h.submatrix e.symm, fun h => h.submatrix _⟩
+  ⟨fun h ↦ by simpa using h.submatrix e.symm, fun h ↦ h.submatrix _⟩
 
 /-- The conjugate transpose of a matrix multiplied by the matrix is positive semidefinite -/
 theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R) :

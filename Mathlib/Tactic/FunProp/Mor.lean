@@ -65,7 +65,7 @@ For example calling this on `coe (f a) b` will put `f` in weak normal head form 
  -/
 partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConfig := {}) :
     MetaM Expr := do
-  whnfEasyCases e fun e => do
+  whnfEasyCases e fun e ↦ do
     let e ← whnfCore e cfg
 
     if let .some ⟨coe,f,x⟩ ← isMorApp? e then

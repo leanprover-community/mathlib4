@@ -119,7 +119,7 @@ theorem ext_abs_arg {x y : ℂ} (h₁ : abs x = abs y) (h₂ : x.arg = y.arg) : 
   rw [← abs_mul_exp_arg_mul_I x, ← abs_mul_exp_arg_mul_I y, h₁, h₂]
 
 theorem ext_abs_arg_iff {x y : ℂ} : x = y ↔ abs x = abs y ∧ arg x = arg y :=
-  ⟨fun h => h ▸ ⟨rfl, rfl⟩, and_imp.2 ext_abs_arg⟩
+  ⟨fun h ↦ h ▸ ⟨rfl, rfl⟩, and_imp.2 ext_abs_arg⟩
 
 theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   have hπ : 0 < π := Real.pi_pos
@@ -150,7 +150,7 @@ theorem arg_nonneg_iff {z : ℂ} : 0 ≤ arg z ↔ 0 ≤ z.im := by
   rcases eq_or_ne z 0 with (rfl | h₀); · simp
   calc
     0 ≤ arg z ↔ 0 ≤ Real.sin (arg z) :=
-      ⟨fun h => Real.sin_nonneg_of_mem_Icc ⟨h, arg_le_pi z⟩, by
+      ⟨fun h ↦ Real.sin_nonneg_of_mem_Icc ⟨h, arg_le_pi z⟩, by
         contrapose!
         intro h
         exact Real.sin_neg_of_neg_of_neg_pi_lt h (neg_pi_lt_arg _)⟩
@@ -205,7 +205,7 @@ lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg (no_index (OfNat.ofNat n)) = 0 :=
   natCast_arg
 
 theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [abs.nonneg]
   · cases' z with x y
@@ -274,7 +274,7 @@ theorem arg_of_im_nonneg_of_ne_zero {z : ℂ} (h₁ : 0 ≤ z.im) (h₂ : z ≠ 
   rw [← cos_arg h₂, Real.arccos_cos (arg_nonneg_iff.2 h₁) (arg_le_pi _)]
 
 theorem arg_of_im_pos {z : ℂ} (hz : 0 < z.im) : arg z = Real.arccos (z.re / abs z) :=
-  arg_of_im_nonneg_of_ne_zero hz.le fun h => hz.ne' <| h.symm ▸ rfl
+  arg_of_im_nonneg_of_ne_zero hz.le fun h ↦ hz.ne' <| h.symm ▸ rfl
 
 theorem arg_of_im_neg {z : ℂ} (hz : z.im < 0) : arg z = -Real.arccos (z.re / abs z) := by
   have h₀ : z ≠ 0 := mt (congr_arg im) hz.ne

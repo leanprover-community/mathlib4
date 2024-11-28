@@ -228,7 +228,7 @@ theorem const_apply (x : β) (i : ℕ) : (const x : ℕ → β) i = x :=
   rfl
 
 theorem const_inj {x y : β} : (const x : CauSeq β abv) = const y ↔ x = y :=
-  ⟨fun h => congr_arg (fun f : CauSeq β abv => (f : ℕ → β) 0) h, congr_arg _⟩
+  ⟨fun h ↦ congr_arg (fun f : CauSeq β abv => (f : ℕ → β) 0) h, congr_arg _⟩
 
 instance : Zero (CauSeq β abv) :=
   ⟨const 0⟩
@@ -411,7 +411,7 @@ theorem const_limZero {x : β} : LimZero (const x) ↔ x = 0 :=
       (eq_of_le_of_forall_le_of_dense (abv_nonneg abv _)) fun _ ε0 =>
         let ⟨_, hi⟩ := H _ ε0
         le_of_lt <| hi _ le_rfl,
-    fun e => e.symm ▸ zero_limZero⟩
+    fun e ↦ e.symm ▸ zero_limZero⟩
 
 instance equiv : Setoid (CauSeq β abv) :=
   ⟨fun f g => LimZero (f - g),
@@ -596,7 +596,7 @@ theorem not_limZero_of_pos {f : CauSeq α abs} : Pos f → ¬LimZero f
     not_lt_of_le h₁ (abs_lt.1 h₂).2
 
 theorem const_pos {x : α} : Pos (const x) ↔ 0 < x :=
-  ⟨fun ⟨_, K0, _, h⟩ => lt_of_lt_of_le K0 (h _ le_rfl), fun h => ⟨x, h, 0, fun _ _ => le_rfl⟩⟩
+  ⟨fun ⟨_, K0, _, h⟩ => lt_of_lt_of_le K0 (h _ le_rfl), fun h ↦ ⟨x, h, 0, fun _ _ => le_rfl⟩⟩
 
 theorem add_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f + g)
   | ⟨_, F0, hF⟩, ⟨_, G0, hG⟩ =>
@@ -625,7 +625,7 @@ theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine (le_total 0 (f i)).imp ?_ ?_ <;>
-    refine fun h => ⟨K, K0, i, fun j ij => ?_⟩ <;>
+    refine fun h ↦ ⟨K, K0, i, fun j ij => ?_⟩ <;>
     have := (hi _ ij).1 <;>
     cases' hi _ le_rfl with h₁ h₂
   · rwa [abs_of_nonneg] at this
@@ -665,7 +665,7 @@ theorem le_of_eq_of_le {f g h : CauSeq α abs} (hfg : f ≈ g) (hgh : g ≤ h) :
   hgh.elim (Or.inl ∘ CauSeq.lt_of_eq_of_lt hfg) (Or.inr ∘ Setoid.trans hfg)
 
 theorem le_of_le_of_eq {f g h : CauSeq α abs} (hfg : f ≤ g) (hgh : g ≈ h) : f ≤ h :=
-  hfg.elim (fun h => Or.inl (CauSeq.lt_of_lt_of_eq h hgh)) fun h => Or.inr (Setoid.trans h hgh)
+  hfg.elim (fun h ↦ Or.inl (CauSeq.lt_of_lt_of_eq h hgh)) fun h ↦ Or.inr (Setoid.trans h hgh)
 
 instance : Preorder (CauSeq α abs) where
   lt := (· < ·)
@@ -678,15 +678,15 @@ instance : Preorder (CauSeq α abs) where
     | Or.inr fg, Or.inl gh => Or.inl <| lt_of_eq_of_lt fg gh
     | Or.inr fg, Or.inr gh => Or.inr <| Setoid.trans fg gh
   lt_iff_le_not_le _ _ :=
-    ⟨fun h => ⟨Or.inl h, not_or_intro (mt (lt_trans h) lt_irrefl) (not_limZero_of_pos h)⟩,
-      fun ⟨h₁, h₂⟩ => h₁.resolve_right (mt (fun h => Or.inr (Setoid.symm h)) h₂)⟩
+    ⟨fun h ↦ ⟨Or.inl h, not_or_intro (mt (lt_trans h) lt_irrefl) (not_limZero_of_pos h)⟩,
+      fun ⟨h₁, h₂⟩ => h₁.resolve_right (mt (fun h ↦ Or.inr (Setoid.symm h)) h₂)⟩
 
 theorem le_antisymm {f g : CauSeq α abs} (fg : f ≤ g) (gf : g ≤ f) : f ≈ g :=
   fg.resolve_left (not_lt_of_le gf)
 
 theorem lt_total (f g : CauSeq α abs) : f < g ∨ f ≈ g ∨ g < f :=
   (trichotomy (g - f)).imp_right fun h =>
-    h.imp (fun h => Setoid.symm h) fun h => by rwa [neg_sub] at h
+    h.imp (fun h ↦ Setoid.symm h) fun h ↦ by rwa [neg_sub] at h
 
 theorem le_total (f g : CauSeq α abs) : f ≤ g ∨ g ≤ f :=
   (or_assoc.2 (lt_total f g)).imp_right Or.inl

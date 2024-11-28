@@ -356,7 +356,7 @@ theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i)
 instance : PartialOrder (Con M) where
   le_refl _ _ _ := id
   le_trans _ _ _ h1 h2 _ _ h := h2 <| h1 h
-  le_antisymm _ _ hc hd := ext fun _ _ => ⟨fun h => hc h, fun h => hd h⟩
+  le_antisymm _ _ hc hd := ext fun _ _ => ⟨fun h ↦ hc h, fun h ↦ hd h⟩
 
 /-- The complete lattice of congruence relations on a given type with a multiplication. -/
 @[to_additive "The complete lattice of additive congruence relations on a given type with
@@ -559,7 +559,7 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
           ⟨fun h =>
             let ⟨a, b, hx, hy, H⟩ := h
             d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
-            fun h => ⟨_, _, rfl, rfl, h⟩⟩
+            fun h ↦ ⟨_, _, rfl, rfl, h⟩⟩
   right_inv d :=
     -- Porting note: by exact needed for unknown reason
     by exact

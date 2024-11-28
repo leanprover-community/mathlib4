@@ -188,7 +188,7 @@ theorem neBot_inv_iff : f⁻¹.NeBot ↔ NeBot f :=
   map_neBot_iff _
 
 @[to_additive]
-protected theorem NeBot.inv : f.NeBot → f⁻¹.NeBot := fun h => h.map _
+protected theorem NeBot.inv : f.NeBot → f⁻¹.NeBot := fun h ↦ h.map _
 
 @[to_additive neg.instNeBot]
 lemma inv.instNeBot [NeBot f] : NeBot f⁻¹ := .inv ‹_›
@@ -218,14 +218,14 @@ scoped[Pointwise] attribute [instance] Filter.instInvolutiveInv Filter.instInvol
 
 @[to_additive (attr := simp)]
 protected theorem inv_le_inv_iff : f⁻¹ ≤ g⁻¹ ↔ f ≤ g :=
-  ⟨fun h => inv_inv f ▸ inv_inv g ▸ Filter.inv_le_inv h, Filter.inv_le_inv⟩
+  ⟨fun h ↦ inv_inv f ▸ inv_inv g ▸ Filter.inv_le_inv h, Filter.inv_le_inv⟩
 
 @[to_additive]
 theorem inv_le_iff_le_inv : f⁻¹ ≤ g ↔ f ≤ g⁻¹ := by rw [← Filter.inv_le_inv_iff, inv_inv]
 
 @[to_additive (attr := simp)]
 theorem inv_le_self : f⁻¹ ≤ f ↔ f⁻¹ = f :=
-  ⟨fun h => h.antisymm <| inv_le_iff_le_inv.1 h, Eq.le⟩
+  ⟨fun h ↦ h.antisymm <| inv_le_iff_le_inv.1 h, Eq.le⟩
 
 end InvolutiveInv
 
@@ -568,7 +568,7 @@ theorem top_mul_top : (⊤ : Filter α) * ⊤ = ⊤ :=
 
 @[to_additive nsmul_top]
 theorem top_pow : ∀ {n : ℕ}, n ≠ 0 → (⊤ : Filter α) ^ n = ⊤
-  | 0 => fun h => (h rfl).elim
+  | 0 => fun h ↦ (h rfl).elim
   | 1 => fun _ => pow_one _
   | n + 2 => fun _ => by rw [pow_succ, top_pow n.succ_ne_zero, top_mul_top]
 
@@ -962,7 +962,7 @@ theorem smul_filter_neBot_iff : (a • f).NeBot ↔ f.NeBot :=
   map_neBot_iff _
 
 @[to_additive]
-theorem NeBot.smul_filter : f.NeBot → (a • f).NeBot := fun h => h.map _
+theorem NeBot.smul_filter : f.NeBot → (a • f).NeBot := fun h ↦ h.map _
 
 @[to_additive]
 theorem NeBot.of_smul_filter : (a • f).NeBot → f.NeBot :=

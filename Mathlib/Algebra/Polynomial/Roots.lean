@@ -79,14 +79,14 @@ theorem card_roots_sub_C {p : R[X]} {a : R} (hp0 : 0 < degree p) :
     (Multiset.card (p - C a).roots : WithBot ℕ) ≤ degree p :=
   calc
     (Multiset.card (p - C a).roots : WithBot ℕ) ≤ degree (p - C a) :=
-      card_roots <| mt sub_eq_zero.1 fun h => not_le_of_gt hp0 <| h.symm ▸ degree_C_le
+      card_roots <| mt sub_eq_zero.1 fun h ↦ not_le_of_gt hp0 <| h.symm ▸ degree_C_le
     _ = degree p := by rw [sub_eq_add_neg, ← C_neg]; exact degree_add_C hp0
 
 theorem card_roots_sub_C' {p : R[X]} {a : R} (hp0 : 0 < degree p) :
     Multiset.card (p - C a).roots ≤ natDegree p :=
   WithBot.coe_le_coe.1
     (le_trans (card_roots_sub_C hp0)
-      (le_of_eq <| degree_eq_natDegree fun h => by simp_all [lt_irrefl]))
+      (le_of_eq <| degree_eq_natDegree fun h ↦ by simp_all [lt_irrefl]))
 
 @[simp]
 theorem count_roots [DecidableEq R] (p : R[X]) : p.roots.count a = rootMultiplicity a p := by

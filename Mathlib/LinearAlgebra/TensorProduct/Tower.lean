@@ -175,7 +175,7 @@ variable {R A B M N P Q}
 /-- Heterobasic version of `TensorProduct.map` -/
 def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
   lift <|
-    { toFun := fun h => h ∘ₗ g,
+    { toFun := fun h ↦ h ∘ₗ g,
       map_add' := fun h₁ h₂ => LinearMap.add_comp g h₂ h₁,
       map_smul' := fun c h => LinearMap.smul_comp c h g } ∘ₗ mk R A P Q ∘ₗ f
 

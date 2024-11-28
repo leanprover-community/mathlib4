@@ -91,7 +91,7 @@ theorem Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
   ⟨IsRightRegular.left_of_commute ca, IsLeftRegular.right_of_commute ca⟩
 
 theorem Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
-  ⟨fun h => h.left, fun h => ⟨h, h.right_of_commute ca⟩⟩
+  ⟨fun h ↦ h.left, fun h ↦ ⟨h, h.right_of_commute ca⟩⟩
 
 end Mul
 
@@ -191,7 +191,7 @@ theorem IsRegular.subsingleton (h : IsRegular (0 : R)) : Subsingleton R :=
 
 /-- The element `0` is left-regular if and only if `R` is trivial. -/
 theorem isLeftRegular_zero_iff_subsingleton : IsLeftRegular (0 : R) ↔ Subsingleton R :=
-  ⟨fun h => h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
+  ⟨fun h ↦ h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
 
 /-- In a non-trivial `MulZeroClass`, the `0` element is not left-regular. -/
 theorem not_isLeftRegular_zero_iff : ¬IsLeftRegular (0 : R) ↔ Nontrivial R := by
@@ -201,7 +201,7 @@ theorem not_isLeftRegular_zero_iff : ¬IsLeftRegular (0 : R) ↔ Nontrivial R :=
 
 /-- The element `0` is right-regular if and only if `R` is trivial. -/
 theorem isRightRegular_zero_iff_subsingleton : IsRightRegular (0 : R) ↔ Subsingleton R :=
-  ⟨fun h => h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
+  ⟨fun h ↦ h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
 
 /-- In a non-trivial `MulZeroClass`, the `0` element is not right-regular. -/
 theorem not_isRightRegular_zero_iff : ¬IsRightRegular (0 : R) ↔ Nontrivial R := by
@@ -211,7 +211,7 @@ theorem not_isRightRegular_zero_iff : ¬IsRightRegular (0 : R) ↔ Nontrivial R 
 
 /-- The element `0` is regular if and only if `R` is trivial. -/
 theorem isRegular_iff_subsingleton : IsRegular (0 : R) ↔ Subsingleton R :=
-  ⟨fun h => h.left.subsingleton, fun h =>
+  ⟨fun h ↦ h.left.subsingleton, fun h =>
     ⟨isLeftRegular_zero_iff_subsingleton.mpr h, isRightRegular_zero_iff_subsingleton.mpr h⟩⟩
 
 /-- A left-regular element of a `Nontrivial` `MulZeroClass` is non-zero. -/
@@ -241,7 +241,7 @@ theorem not_isRightRegular_zero [nR : Nontrivial R] : ¬IsRightRegular (0 : R) :
   not_isRightRegular_zero_iff.mpr nR
 
 /-- In a non-trivial ring, the element `0` is not regular -- with typeclasses. -/
-theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRegular.ne_zero h rfl
+theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h ↦ IsRegular.ne_zero h rfl
 
 @[simp] lemma IsLeftRegular.mul_left_eq_zero_iff (hb : IsLeftRegular b) : b * a = 0 ↔ a = 0 := by
   nth_rw 1 [← mul_zero b]

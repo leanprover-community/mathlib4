@@ -771,7 +771,7 @@ theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
-  ⟨fun h x => by rw [h]; exact mem_top, fun h => by
+  ⟨fun h x => by rw [h]; exact mem_top, fun h ↦ by
     ext x; exact ⟨fun _ => mem_top, fun _ => h x⟩⟩
 
 theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
@@ -811,7 +811,7 @@ theorem surjective_algebraMap_iff :
 
 theorem bijective_algebraMap_iff {R A : Type*} [Field R] [Semiring A] [Nontrivial A]
     [Algebra R A] : Function.Bijective (algebraMap R A) ↔ (⊤ : Subalgebra R A) = ⊥ :=
-  ⟨fun h => surjective_algebraMap_iff.1 h.2, fun h =>
+  ⟨fun h ↦ surjective_algebraMap_iff.1 h.2, fun h =>
     ⟨(algebraMap R A).injective, surjective_algebraMap_iff.2 h⟩⟩
 
 /-- The bottom subalgebra is isomorphic to the base ring. -/

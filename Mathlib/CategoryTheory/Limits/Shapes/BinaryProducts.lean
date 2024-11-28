@@ -389,7 +389,7 @@ theorem BinaryFan.isLimit_iff_isIso_snd {X Y : C} (h : IsTerminal X) (c : Binary
     Nonempty (IsLimit c) ↔ IsIso c.snd := by
   refine Iff.trans ?_ (BinaryFan.isLimit_iff_isIso_fst h (BinaryFan.mk c.snd c.fst))
   exact
-    ⟨fun h => ⟨BinaryFan.isLimitFlip h.some⟩, fun h =>
+    ⟨fun h ↦ ⟨BinaryFan.isLimitFlip h.some⟩, fun h =>
       ⟨(BinaryFan.isLimitFlip h.some).ofIsoLimit (isoBinaryFanMk c).symm⟩⟩
 
 /-- If `X' ≅ X`, then `X × Y` also is the product of `X'` and `Y`. -/
@@ -442,7 +442,7 @@ theorem BinaryCofan.isColimit_iff_isIso_inr {X Y : C} (h : IsInitial X) (c : Bin
     Nonempty (IsColimit c) ↔ IsIso c.inr := by
   refine Iff.trans ?_ (BinaryCofan.isColimit_iff_isIso_inl h (BinaryCofan.mk c.inr c.inl))
   exact
-    ⟨fun h => ⟨BinaryCofan.isColimitFlip h.some⟩, fun h =>
+    ⟨fun h ↦ ⟨BinaryCofan.isColimitFlip h.some⟩, fun h =>
       ⟨(BinaryCofan.isColimitFlip h.some).ofIsoColimit (isoBinaryCofanMk c).symm⟩⟩
 
 /-- If `X' ≅ X`, then `X ⨿ Y` also is the coproduct of `X'` and `Y`. -/

@@ -175,7 +175,7 @@ theorem exists_succ_iterate_or : (∃ n, succ^[n] a = b) ∨ ∃ n, succ^[n] b =
   (le_total a b).imp exists_succ_iterate_of_le exists_succ_iterate_of_le
 
 theorem Succ.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) (a b : α) : p a ↔ p b :=
-  (le_total a b).elim (Succ.rec_iff hsucc) fun h => (Succ.rec_iff hsucc h).symm
+  (le_total a b).elim (Succ.rec_iff hsucc) fun h ↦ (Succ.rec_iff hsucc h).symm
 
 end SuccOrder
 
@@ -191,7 +191,7 @@ theorem exists_pred_iterate_or : (∃ n, pred^[n] b = a) ∨ ∃ n, pred^[n] a =
   (le_total a b).imp exists_pred_iterate_of_le exists_pred_iterate_of_le
 
 theorem Pred.rec_linear {p : α → Prop} (hsucc : ∀ a, p a ↔ p (pred a)) (a b : α) : p a ↔ p b :=
-  (le_total a b).elim (Pred.rec_iff hsucc) fun h => (Pred.rec_iff hsucc h).symm
+  (le_total a b).elim (Pred.rec_iff hsucc) fun h ↦ (Pred.rec_iff hsucc h).symm
 
 end PredOrder
 

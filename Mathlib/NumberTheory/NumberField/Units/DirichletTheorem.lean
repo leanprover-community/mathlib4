@@ -95,7 +95,7 @@ theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
       add_eq_zero_iff_eq_neg] at h
     convert h using 1
     · refine (sum_subtype _ (fun w => ?_) (fun w => (mult w) * (Real.log (w (x : K))))).symm
-      exact ⟨ne_of_mem_erase, fun h => mem_erase_of_ne_of_mem h (mem_univ w)⟩
+      exact ⟨ne_of_mem_erase, fun h ↦ mem_erase_of_ne_of_mem h (mem_univ w)⟩
     · norm_num
   · exact fun w _ => pow_ne_zero _ (AbsoluteValue.ne_zero _ (coe_ne_zero x))
 
@@ -114,7 +114,7 @@ variable [NumberField K]
 theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
     logEmbedding K (Additive.ofMul x) = 0 ↔ x ∈ torsion K := by
   rw [mem_torsion]
-  refine ⟨fun h w => ?_, fun h => ?_⟩
+  refine ⟨fun h w => ?_, fun h ↦ ?_⟩
   · by_cases hw : w = w₀
     · suffices -mult w₀ * Real.log (w₀ (x : K)) = 0 by
         rw [neg_mul, neg_eq_zero, ← hw] at this

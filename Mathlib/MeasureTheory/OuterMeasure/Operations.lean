@@ -144,7 +144,7 @@ instance orderBot : OrderBot (OuterMeasure α) :=
     bot_le := fun a s => by simp only [coe_zero, Pi.zero_apply, coe_bot, zero_le] }
 
 theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
-  ⟨fun h => bot_unique fun s => (measure_mono <| subset_univ s).trans_eq h, fun h => h.symm ▸ rfl⟩
+  ⟨fun h ↦ bot_unique fun s => (measure_mono <| subset_univ s).trans_eq h, fun h ↦ h.symm ▸ rfl⟩
 
 section Supremum
 
@@ -324,7 +324,7 @@ theorem restrict_le_self (m : OuterMeasure α) (s : Set α) : restrict s m ≤ m
 @[simp]
 theorem map_le_restrict_range {β} {ma : OuterMeasure α} {mb : OuterMeasure β} {f : α → β} :
     map f ma ≤ restrict (range f) mb ↔ map f ma ≤ mb :=
-  ⟨fun h => h.trans (restrict_le_self _ _), fun h s => by simpa using h (s ∩ range f)⟩
+  ⟨fun h ↦ h.trans (restrict_le_self _ _), fun h s => by simpa using h (s ∩ range f)⟩
 
 theorem map_comap_of_surjective {β} {f : α → β} (hf : Surjective f) (m : OuterMeasure β) :
     map f (comap f m) = m :=
@@ -342,7 +342,7 @@ theorem top_apply {s : Set α} (h : s.Nonempty) : (⊤ : OuterMeasure α) s = �
   top_unique <| le_trans (by simp [smul_dirac_apply, as]) (le_iSup₂ (∞ • dirac a) trivial)
 
 theorem top_apply' (s : Set α) : (⊤ : OuterMeasure α) s = ⨅ _ : s = ∅, 0 :=
-  s.eq_empty_or_nonempty.elim (fun h => by simp [h]) fun h => by simp [h, h.ne_empty]
+  s.eq_empty_or_nonempty.elim (fun h ↦ by simp [h]) fun h ↦ by simp [h, h.ne_empty]
 
 @[simp]
 theorem comap_top (f : α → β) : comap f ⊤ = ⊤ :=

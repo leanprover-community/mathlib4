@@ -121,7 +121,7 @@ theorem smul_def (r : R) (x : s) : r • x = ⟨r • x, smul_mem r x.2⟩ :=
 @[simp]
 theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike S M]
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
-  ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
+  ⟨fun h ↦ by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
 
 end SMul
 
@@ -287,7 +287,7 @@ theorem val_smul_of_tower (s : S) (x : p) : ((s • x : p) : M) = s • (x : M) 
 @[simp]
 theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M] (g : G)
     {x : M} : g • x ∈ p ↔ x ∈ p :=
-  ⟨fun h => inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
+  ⟨fun h ↦ inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] :
@@ -386,7 +386,7 @@ theorem neg_mem (hx : x ∈ p) : -x ∈ p := by
 
 @[simp]
 theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [← neg_neg x]
     exact neg_mem _ h, neg_mem _⟩
 

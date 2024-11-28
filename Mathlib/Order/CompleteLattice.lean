@@ -745,10 +745,10 @@ theorem le_iInf₂_iff {f : ∀ i, κ i → α} : (a ≤ ⨅ (i) (j), f i j) ↔
   simp_rw [le_iInf_iff]
 
 theorem iSup_lt_iff : iSup f < a ↔ ∃ b, b < a ∧ ∀ i, f i ≤ b :=
-  ⟨fun h => ⟨iSup f, h, le_iSup f⟩, fun ⟨_, h, hb⟩ => (iSup_le hb).trans_lt h⟩
+  ⟨fun h ↦ ⟨iSup f, h, le_iSup f⟩, fun ⟨_, h, hb⟩ => (iSup_le hb).trans_lt h⟩
 
 theorem lt_iInf_iff : a < iInf f ↔ ∃ b, a < b ∧ ∀ i, b ≤ f i :=
-  ⟨fun h => ⟨iInf f, h, iInf_le f⟩, fun ⟨_, h, hb⟩ => h.trans_le <| le_iInf hb⟩
+  ⟨fun h ↦ ⟨iInf f, h, iInf_le f⟩, fun ⟨_, h, hb⟩ => h.trans_le <| le_iInf hb⟩
 
 theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
   le_antisymm (sSup_le le_iSup₂) (iSup₂_le fun _ => le_sSup)
@@ -894,11 +894,11 @@ theorem iInf_pos {p : Prop} {f : p → α} (hp : p) : ⨅ h : p, f h = f hp :=
 
 @[simp]
 theorem iSup_neg {p : Prop} {f : p → α} (hp : ¬p) : ⨆ h : p, f h = ⊥ :=
-  le_antisymm (iSup_le fun h => (hp h).elim) bot_le
+  le_antisymm (iSup_le fun h ↦ (hp h).elim) bot_le
 
 @[simp]
 theorem iInf_neg {p : Prop} {f : p → α} (hp : ¬p) : ⨅ h : p, f h = ⊤ :=
-  le_antisymm le_top <| le_iInf fun h => (hp h).elim
+  le_antisymm le_top <| le_iInf fun h ↦ (hp h).elim
 
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
@@ -973,7 +973,7 @@ theorem iInf_iInf_eq_left {b : β} {f : ∀ x : β, x = b → α} : ⨅ x, ⨅ h
 @[simp]
 theorem iSup_iSup_eq_right {b : β} {f : ∀ x : β, b = x → α} : ⨆ x, ⨆ h : b = x, f x h = f b rfl :=
   (le_iSup₂ b rfl).antisymm'
-    (iSup₂_le fun c => by
+    (iSup₂_le fun c ↦ by
       rintro rfl
       rfl)
 
@@ -1315,7 +1315,7 @@ theorem isLUB_biSup {s : Set β} {f : β → α} : IsLUB (f '' s) (⨆ x ∈ s, 
     @isLUB_iSup α s _ (f ∘ fun x => (x : β))
 
 theorem iSup_sigma {p : β → Type*} {f : Sigma p → α} : ⨆ x, f x = ⨆ (i) (j), f ⟨i, j⟩ :=
-  eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, Sigma.forall]
+  eq_of_forall_ge_iff fun c ↦ by simp only [iSup_le_iff, Sigma.forall]
 
 theorem iInf_sigma {p : β → Type*} {f : Sigma p → α} : ⨅ x, f x = ⨅ (i) (j), f ⟨i, j⟩ :=
   @iSup_sigma αᵒᵈ _ _ _ _
@@ -1341,7 +1341,7 @@ lemma iInf_psigma' {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → α) :
     (⨅ i, ⨅ j, f i j) = ⨅ ij : Σ' i, κ i, f ij.1 ij.2 := (iInf_psigma fun x ↦ f x.1 x.2).symm
 
 theorem iSup_prod {f : β × γ → α} : ⨆ x, f x = ⨆ (i) (j), f (i, j) :=
-  eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, Prod.forall]
+  eq_of_forall_ge_iff fun c ↦ by simp only [iSup_le_iff, Prod.forall]
 
 theorem iInf_prod {f : β × γ → α} : ⨅ x, f x = ⨅ (i) (j), f (i, j) :=
   @iSup_prod αᵒᵈ _ _ _ _
@@ -1370,13 +1370,13 @@ theorem iInf_image2 {γ δ} (f : β → γ → δ) (s : Set β) (t : Set γ) (g 
   iSup_image2 f s t (toDual ∘ g)
 
 theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
-  eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, iSup_le_iff, Sum.forall]
+  eq_of_forall_ge_iff fun c ↦ by simp only [sup_le_iff, iSup_le_iff, Sum.forall]
 
 theorem iInf_sum {f : β ⊕ γ → α} : ⨅ x, f x = (⨅ i, f (Sum.inl i)) ⊓ ⨅ j, f (Sum.inr j) :=
   @iSup_sum αᵒᵈ _ _ _ _
 
 theorem iSup_option (f : Option β → α) : ⨆ o, f o = f none ⊔ ⨆ b, f (Option.some b) :=
-  eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, sup_le_iff, Option.forall]
+  eq_of_forall_ge_iff fun c ↦ by simp only [iSup_le_iff, sup_le_iff, Option.forall]
 
 theorem iInf_option (f : Option β → α) : ⨅ o, f o = f none ⊓ ⨅ b, f (Option.some b) :=
   @iSup_option αᵒᵈ _ _ _

@@ -278,7 +278,7 @@ theorem top_himp : ⊤ ⇨ a = a :=
 
 /-- `p → q → r ↔ p ∧ q → r` -/
 theorem himp_himp (a b c : α) : a ⇨ b ⇨ c = a ⊓ b ⇨ c :=
-  eq_of_forall_le_iff fun d => by simp_rw [le_himp_iff, inf_assoc]
+  eq_of_forall_le_iff fun d ↦ by simp_rw [le_himp_iff, inf_assoc]
 
 /-- `(q → r) → (p → q) → q → r` -/
 theorem himp_le_himp_himp_himp : b ⇨ c ≤ (a ⇨ b) ⇨ a ⇨ c := by
@@ -296,10 +296,10 @@ theorem himp_left_comm (a b c : α) : a ⇨ b ⇨ c = b ⇨ a ⇨ c := by simp_r
 theorem himp_idem : b ⇨ b ⇨ a = b ⇨ a := by rw [himp_himp, inf_idem]
 
 theorem himp_inf_distrib (a b c : α) : a ⇨ b ⊓ c = (a ⇨ b) ⊓ (a ⇨ c) :=
-  eq_of_forall_le_iff fun d => by simp_rw [le_himp_iff, le_inf_iff, le_himp_iff]
+  eq_of_forall_le_iff fun d ↦ by simp_rw [le_himp_iff, le_inf_iff, le_himp_iff]
 
 theorem sup_himp_distrib (a b c : α) : a ⊔ b ⇨ c = (a ⇨ c) ⊓ (b ⇨ c) :=
-  eq_of_forall_le_iff fun d => by
+  eq_of_forall_le_iff fun d ↦ by
     rw [le_inf_iff, le_himp_comm, sup_le_iff]
     simp_rw [le_himp_comm]
 
@@ -463,7 +463,7 @@ theorem le_sup_sdiff_sup_sdiff : a ≤ b ⊔ (a \ c ⊔ c \ b) := by
   simpa using @sdiff_sdiff_sdiff_le_sdiff
 
 theorem sdiff_sdiff (a b c : α) : (a \ b) \ c = a \ (b ⊔ c) :=
-  eq_of_forall_ge_iff fun d => by simp_rw [sdiff_le_iff, sup_assoc]
+  eq_of_forall_ge_iff fun d ↦ by simp_rw [sdiff_le_iff, sup_assoc]
 
 theorem sdiff_sdiff_left : (a \ b) \ c = a \ (b ⊔ c) :=
   sdiff_sdiff _ _ _
@@ -481,10 +481,10 @@ theorem sdiff_idem : (a \ b) \ b = a \ b := by rw [sdiff_sdiff_left, sup_idem]
 theorem sdiff_sdiff_self : (a \ b) \ a = ⊥ := by rw [sdiff_sdiff_comm, sdiff_self, bot_sdiff]
 
 theorem sup_sdiff_distrib (a b c : α) : (a ⊔ b) \ c = a \ c ⊔ b \ c :=
-  eq_of_forall_ge_iff fun d => by simp_rw [sdiff_le_iff, sup_le_iff, sdiff_le_iff]
+  eq_of_forall_ge_iff fun d ↦ by simp_rw [sdiff_le_iff, sup_le_iff, sdiff_le_iff]
 
 theorem sdiff_inf_distrib (a b c : α) : a \ (b ⊓ c) = a \ b ⊔ a \ c :=
-  eq_of_forall_ge_iff fun d => by
+  eq_of_forall_ge_iff fun d ↦ by
     rw [sup_le_iff, sdiff_le_comm, le_inf_iff]
     simp_rw [sdiff_le_comm]
 

@@ -68,7 +68,7 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
     {a b : α} {l : List α} (h : a ∈ b :: l) : a = b ∨ a ≠ b ∧ a ∈ l := by
   by_cases hab : a = b
   · exact Or.inl hab
-  · exact ((List.mem_cons.1 h).elim Or.inl (fun h => Or.inr ⟨hab, h⟩))
+  · exact ((List.mem_cons.1 h).elim Or.inl (fun h ↦ Or.inr ⟨hab, h⟩))
 
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
@@ -86,7 +86,7 @@ theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : Lis
 @[simp]
 theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
     (hf : Function.Involutive f) (x : α) (l : List α) : (∃ y : α, y ∈ l ∧ f y = x) ↔ f x ∈ l :=
-  ⟨by rintro ⟨y, h, rfl⟩; rwa [hf y], fun h => ⟨f x, h, hf _⟩⟩
+  ⟨by rintro ⟨y, h, rfl⟩; rwa [hf y], fun h ↦ ⟨f x, h, hf _⟩⟩
 
 theorem mem_map_of_involutive {f : α → α} (hf : Involutive f) {a : α} {l : List α} :
     a ∈ map f l ↔ f a ∈ l := by rw [mem_map, hf.exists_mem_and_apply_eq_iff]
@@ -643,7 +643,7 @@ theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l�
 
 instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <+ l₂)
   | [], _ => isTrue <| nil_sublist _
-  | _ :: _, [] => isFalse fun h => List.noConfusion <| eq_nil_of_sublist_nil h
+  | _ :: _, [] => isFalse fun h ↦ List.noConfusion <| eq_nil_of_sublist_nil h
   | a :: l₁, b :: l₂ =>
     if h : a = b then
       @decidable_of_decidable_of_iff _ _ (decidableSublist l₁ l₂) <| h ▸ cons_sublist_cons.symm
@@ -681,7 +681,7 @@ variable [DecidableEq α]
 theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
   rw [indexOf, findIdx_cons, beq_self_eq_true, cond]
 
--- fun e => if_pos e
+-- fun e ↦ if_pos e
 theorem indexOf_cons_eq {a b : α} (l : List α) : b = a → indexOf a (b :: l) = 0
   | e => by rw [← e]; exact indexOf_cons_self b l
 
@@ -713,8 +713,8 @@ theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := b
   · rw [if_neg h]; exact succ_le_succ ih
 
 theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
-   fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length.1 h al⟩
+  ⟨fun h ↦ Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
+   fun al => (lt_of_le_of_ne indexOf_le_length) fun h ↦ indexOf_eq_length.1 h al⟩
 
 theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
   induction' l₁ with d₁ t₁ ih
@@ -816,12 +816,12 @@ theorem indexOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
 
 theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     indexOf x l = indexOf y l ↔ x = y :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     have x_eq_y :
         get l ⟨indexOf x l, indexOf_lt_length.2 hx⟩ =
         get l ⟨indexOf y l, indexOf_lt_length.2 hy⟩ := by
       simp only [h]
-    simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
+    simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h ↦ by subst h; rfl⟩
 
 @[deprecated getElem_reverse (since := "2024-06-12")]
 theorem get_reverse (l : List α) (i : Nat) (h1 h2) :

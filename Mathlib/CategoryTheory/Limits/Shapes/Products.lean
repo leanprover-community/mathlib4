@@ -349,7 +349,7 @@ lemma Pi.map'_id {f g : α → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b 
 lemma Pi.map'_comp_map' {f : α → C} {g : β → C} {h : γ → C} [HasProduct f] [HasProduct g]
     [HasProduct h] (p : β → α) (p' : γ → β) (q : ∀ (b : β), f (p b) ⟶ g b)
     (q' : ∀ (c : γ), g (p' c) ⟶ h c) :
-    Pi.map' p q ≫ Pi.map' p' q' = Pi.map' (p ∘ p') (fun c => q (p' c) ≫ q' c) := by
+    Pi.map' p q ≫ Pi.map' p' q' = Pi.map' (p ∘ p') (fun c ↦ q (p' c) ≫ q' c) := by
   ext; simp
 
 lemma Pi.map'_comp_map {f : α → C} {g h : β → C} [HasProduct f] [HasProduct g] [HasProduct h]
@@ -564,7 +564,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     HasProduct fun p : Σ i, f i => g p.1 p.2 where
   exists_limit := Nonempty.intro
     { cone := Fan.mk (∏ᶜ fun i => ∏ᶜ g i) (fun X => Pi.π (fun i => ∏ᶜ g i) X.1 ≫ Pi.π (g X.1) X.2)
-      isLimit := mkFanLimit _ (fun s => Pi.lift fun b ↦ Pi.lift fun c => s.proj ⟨b, c⟩)
+      isLimit := mkFanLimit _ (fun s => Pi.lift fun b ↦ Pi.lift fun c ↦ s.proj ⟨b, c⟩)
         (by aesop_cat)
         (by intro s m w; simp only [Fan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
 
@@ -585,7 +585,7 @@ instance {ι : Type*} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     { cocone := Cofan.mk (∐ fun i => ∐ g i)
         (fun X => Sigma.ι (g X.1) X.2 ≫ Sigma.ι (fun i => ∐ g i) X.1)
       isColimit := mkCofanColimit _
-        (fun s => Sigma.desc fun b ↦ Sigma.desc fun c => s.inj ⟨b, c⟩)
+        (fun s => Sigma.desc fun b ↦ Sigma.desc fun c ↦ s.inj ⟨b, c⟩)
         (by aesop_cat)
         (by intro s m w; simp only [Cofan.mk_pt]; symm; ext i x; simp_all [Sigma.forall]) }
 

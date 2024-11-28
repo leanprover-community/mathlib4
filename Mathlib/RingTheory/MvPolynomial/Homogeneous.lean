@@ -489,7 +489,7 @@ theorem sum_homogeneousComponent :
   ext1 d
   suffices φ.totalDegree < d.support.sum d → 0 = coeff d φ by
     simpa [coeff_sum, coeff_homogeneousComponent]
-  exact fun h => (coeff_eq_zero_of_totalDegree_lt h).symm
+  exact fun h ↦ (coeff_eq_zero_of_totalDegree_lt h).symm
 
 theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
     (h : p ∈ homogeneousSubmodule σ R n) :

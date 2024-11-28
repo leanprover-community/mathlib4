@@ -166,7 +166,7 @@ theorem coe_eq_singleton {H : Subgroup G} : (∃ g : G, (H : Set G) = {g}) ↔ H
       rw [hg]
       infer_instance
     H.eq_bot_of_subsingleton,
-    fun h => ⟨1, SetLike.ext'_iff.mp h⟩⟩
+    fun h ↦ ⟨1, SetLike.ext'_iff.mp h⟩⟩
 
 @[to_additive]
 theorem nontrivial_iff_exists_ne_one (H : Subgroup G) : Nontrivial H ↔ ∃ x ∈ H, x ≠ (1 : G) := by
@@ -327,7 +327,7 @@ open Set
 @[to_additive (attr := simp)
   "An additive subgroup `K` includes `closure k` if and only if it includes `k`"]
 theorem closure_le : closure k ≤ K ↔ k ⊆ K :=
-  ⟨Subset.trans subset_closure, fun h => sInf_le h⟩
+  ⟨Subset.trans subset_closure, fun h ↦ sInf_le h⟩
 
 @[to_additive]
 theorem closure_eq_of_le (h₁ : k ⊆ K) (h₂ : K ≤ closure k) : closure k = K :=
@@ -505,7 +505,7 @@ variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 
 @[to_additive]
 theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     rw [sup_eq_closure] at h
     refine Subgroup.closure_induction ?_ ?_ ?_ ?_ h
     · rintro y (h | h)

@@ -1150,7 +1150,7 @@ theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
   ⟨fun h =>
     let ⟨_r, _s, hrs⟩ := @exists_pair_ne _ h
     Nontrivial.of_polynomial_ne hrs,
-    fun h => @Polynomial.nontrivial _ _ h⟩
+    fun h ↦ @Polynomial.nontrivial _ _ h⟩
 
 section repr
 

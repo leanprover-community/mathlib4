@@ -45,7 +45,7 @@ class IsMaximal (I : Ideal α) : Prop where
   out : IsCoatom I
 
 theorem isMaximal_def {I : Ideal α} : I.IsMaximal ↔ IsCoatom I :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
 theorem IsMaximal.ne_top {I : Ideal α} (h : I.IsMaximal) : I ≠ ⊤ :=
   (isMaximal_def.1 h).1
@@ -63,7 +63,7 @@ theorem isMaximal_iff {I : Ideal α} :
             J.eq_top_iff_one.2 <| H x h₁ xI xJ⟩
 
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
-  eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩
+  eq_iff_le_not_lt.2 ⟨IJ, fun h ↦ hJ (hI.1.2 _ h)⟩
 
 instance : IsCoatomic (Ideal α) := by
   apply CompleteLattice.coatomic_of_top_compact
@@ -231,7 +231,7 @@ variable {K : Type u} [DivisionSemiring K] (I : Ideal K)
 namespace Ideal
 
 theorem bot_isMaximal : IsMaximal (⊥ : Ideal K) :=
-  ⟨⟨fun h => absurd ((eq_top_iff_one (⊤ : Ideal K)).mp rfl) (by rw [← h]; simp), fun I hI =>
+  ⟨⟨fun h ↦ absurd ((eq_top_iff_one (⊤ : Ideal K)).mp rfl) (by rw [← h]; simp), fun I hI =>
       or_iff_not_imp_left.mp (eq_bot_or_top I) (ne_of_gt hI)⟩⟩
 
 end Ideal

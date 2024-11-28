@@ -453,7 +453,7 @@ lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
   exact (Rat.coe_int_num_of_den_eq_one h).symm
 
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
-  ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.den_intCast r.num⟩
+  ⟨Rat.coe_int_num_of_den_eq_one, fun h ↦ h ▸ Rat.den_intCast r.num⟩
 
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
   ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩

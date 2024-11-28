@@ -64,7 +64,7 @@ variable [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] {c : R} {
 @[simp]
 theorem smul_eq_zero : c • x = 0 ↔ c = 0 ∨ x = 0 :=
   ⟨eq_zero_or_eq_zero_of_smul_eq_zero, fun h =>
-    h.elim (fun h => h.symm ▸ zero_smul R x) fun h => h.symm ▸ smul_zero c⟩
+    h.elim (fun h ↦ h.symm ▸ zero_smul R x) fun h ↦ h.symm ▸ smul_zero c⟩
 
 theorem smul_ne_zero_iff : c • x ≠ 0 ↔ c ≠ 0 ∧ x ≠ 0 := by rw [Ne, smul_eq_zero, not_or]
 

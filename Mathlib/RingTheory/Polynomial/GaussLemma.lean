@@ -110,7 +110,7 @@ variable {φ : R →+* S} (hinj : Function.Injective φ) {f : R[X]} (hf : f.IsPr
 include hinj hf
 
 theorem IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (map φ f) := by
-  refine ⟨(mapRingHom φ).isUnit_map, fun h => ?_⟩
+  refine ⟨(mapRingHom φ).isUnit_map, fun h ↦ ?_⟩
   rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
   have hdeg := degree_C u.ne_zero
   rw [hu, degree_map_eq_of_injective hinj] at hdeg
@@ -120,7 +120,7 @@ theorem IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (ma
 theorem IsPrimitive.irreducible_of_irreducible_map_of_injective (h_irr : Irreducible (map φ f)) :
     Irreducible f := by
   refine
-    ⟨fun h => h_irr.not_unit (IsUnit.map (mapRingHom φ) h), fun a b h =>
+    ⟨fun h ↦ h_irr.not_unit (IsUnit.map (mapRingHom φ) h), fun a b h =>
       (h_irr.isUnit_or_isUnit <| by rw [h, Polynomial.map_mul]).imp ?_ ?_⟩
   all_goals apply ((isPrimitive_of_dvd hf _).isUnit_iff_isUnit_map_of_injective hinj).mpr
   exacts [Dvd.intro _ h.symm, Dvd.intro_left _ h.symm]
@@ -203,7 +203,7 @@ theorem Monic.dvd_of_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q :
 
 theorem Monic.dvd_iff_fraction_map_dvd_fraction_map [IsIntegrallyClosed R] {p q : R[X]}
     (hp : p.Monic) (hq : q.Monic) : q.map (algebraMap R K) ∣ p.map (algebraMap R K) ↔ q ∣ p :=
-  ⟨fun h => hp.dvd_of_fraction_map_dvd_fraction_map hq h, fun ⟨a, b⟩ =>
+  ⟨fun h ↦ hp.dvd_of_fraction_map_dvd_fraction_map hq h, fun ⟨a, b⟩ =>
     ⟨a.map (algebraMap R K), b.symm ▸ Polynomial.map_mul (algebraMap R K)⟩⟩
 
 end IsIntegrallyClosed
@@ -237,7 +237,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     Irreducible p ↔ Irreducible (p.map (algebraMap R K)) := by
   -- Porting note: was `(IsFractionRing.injective _ _)`
   refine
-    ⟨fun hi => ⟨fun h => hi.not_unit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
+    ⟨fun hi => ⟨fun h ↦ hi.not_unit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
       hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective R K)⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ a
   obtain ⟨⟨d, d0⟩, hd⟩ := integerNormalization_map_to_map R⁰ b

@@ -59,7 +59,7 @@ lemma subset_span {s : Set R} : s ⊆ (span s : Set R) := by
 
 lemma mem_span_iff {s : Set R} {x} :
     x ∈ span s ↔ ∀ (I : TwoSidedIdeal R), s ⊆ I → x ∈ I := by
-  refine ⟨?_, fun h => h _ subset_span⟩
+  refine ⟨?_, fun h ↦ h _ subset_span⟩
   delta span
   rw [RingCon.ringConGen_eq]
   intro h I hI

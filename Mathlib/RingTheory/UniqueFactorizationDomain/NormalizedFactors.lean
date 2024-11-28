@@ -92,7 +92,7 @@ theorem exists_mem_normalizedFactors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irr
   have : Multiset.Rel Associated (p ::ₘ normalizedFactors b) (normalizedFactors a) :=
     factors_unique
       (fun _ hx =>
-        (Multiset.mem_cons.1 hx).elim (fun h => h.symm ▸ hp) (irreducible_of_normalized_factor _))
+        (Multiset.mem_cons.1 hx).elim (fun h ↦ h.symm ▸ hp) (irreducible_of_normalized_factor _))
       irreducible_of_normalized_factor
       (Associated.symm <|
         calc
@@ -173,7 +173,7 @@ theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducib
         normalizedFactors_irreducible ia]
     haveI := nontrivial_of_ne b 0 (ib b hb).ne_zero
     rw [Multiset.prod_cons, Multiset.map_cons,
-      normalizedFactors_mul ia.ne_zero (Multiset.prod_ne_zero fun h => (ib 0 h).ne_zero rfl),
+      normalizedFactors_mul ia.ne_zero (Multiset.prod_ne_zero fun h ↦ (ib 0 h).ne_zero rfl),
       normalizedFactors_irreducible ia, ih ib, Multiset.singleton_add]
 
 theorem dvd_iff_normalizedFactors_le_normalizedFactors {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :

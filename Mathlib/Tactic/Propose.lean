@@ -62,7 +62,7 @@ def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (requi
   let cfg := if !required.isEmpty then
     cfg.testSolutions (fun _ => do
     let r ← instantiateMVars (.mvar orig)
-    pure <| required.all fun e => e.occurs r)
+    pure <| required.all fun e ↦ e.occurs r)
   else
     cfg
   let cfg := cfg.synthInstance
@@ -90,7 +90,7 @@ def propose (lemmas : DiscrTree Name) (type : Expr) (required : Array Expr)
       let .true ← preservingMCtx <| withAssignableSyntheticOpaque <|
         isDefEq type (← inferType (mkAppN e args)) | failure
       g.assign (mkAppN e args)
-      let use := required.filterMap fun e => match e with | .fvar _ => none | _ => some e
+      let use := required.filterMap fun e ↦ match e with | .fvar _ => none | _ => some e
       solveByElim g (args.map fun a ↦ a.mvarId!) use required solveByElimDepth
       trace[Tactic.propose] "successfully filled in arguments for {lem}"
       pure <| some (lem, ← instantiateMVars (.mvar g))

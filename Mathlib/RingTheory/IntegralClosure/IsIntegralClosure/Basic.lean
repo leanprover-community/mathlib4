@@ -391,7 +391,7 @@ section IsIntegralClosure
 instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
     IsIntegralClosure (integralClosure R A) R A where
   algebraMap_injective' := Subtype.coe_injective
-  isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
+  isIntegral_iff {x} := ⟨fun h ↦ ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
 
 namespace IsIntegralClosure
 
@@ -642,7 +642,7 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   -- Porting note: added type ascription
   have : (Ideal.quotientMap I f le_rfl).comp g = (Ideal.Quotient.mk I).comp f :=
     Ideal.quotientMap_comp_mk le_rfl
-  refine ⟨fun h => ?_, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
   refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
 

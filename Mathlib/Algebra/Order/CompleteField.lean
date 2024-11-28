@@ -194,7 +194,7 @@ theorem inducedMap_nonneg (ha : 0 ≤ a) : 0 ≤ inducedMap α β a :=
   (inducedMap_zero α _).ge.trans <| inducedMap_mono _ _ ha
 
 theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a := by
-  refine ⟨fun h => ?_, fun hq => ?_⟩
+  refine ⟨fun h ↦ ?_, fun hq => ?_⟩
   · rw [← inducedMap_rat α] at h
     exact (inducedMap_mono α β).reflect_lt h
   · obtain ⟨q', hq, hqa⟩ := exists_rat_btwn hq
@@ -202,7 +202,7 @@ theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a :
     exact mod_cast hq
 
 theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
-  ⟨fun h => (exists_rat_btwn h).imp fun _ => And.imp_right coe_lt_inducedMap_iff.1,
+  ⟨fun h ↦ (exists_rat_btwn h).imp fun _ => And.imp_right coe_lt_inducedMap_iff.1,
     fun ⟨q, hbq, hqa⟩ => hbq.trans <| by rwa [coe_lt_inducedMap_iff]⟩
 
 @[simp]
@@ -289,7 +289,7 @@ def inducedOrderRingIso : β ≃+*o γ :=
     right_inv := inducedMap_inv_self _ _
     map_le_map_iff' := by
       dsimp
-      refine ⟨fun h => ?_, fun h => inducedMap_mono _ _ h⟩
+      refine ⟨fun h ↦ ?_, fun h ↦ inducedMap_mono _ _ h⟩
       convert inducedMap_mono γ β h <;>
       · rw [inducedOrderRingHom, AddMonoidHom.coe_fn_mkRingHomOfMulSelfOfTwoNeZero, inducedAddHom]
         dsimp

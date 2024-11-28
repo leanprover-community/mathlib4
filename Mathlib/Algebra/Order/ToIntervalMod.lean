@@ -469,7 +469,7 @@ theorem toIocMod_neg' (a b : α) : toIocMod hp (-a) b = p - toIcoMod hp a (-b) :
   simpa only [neg_neg] using toIocMod_neg hp (-a) (-b)
 
 theorem toIcoMod_eq_toIcoMod : toIcoMod hp a b = toIcoMod hp a c ↔ ∃ n : ℤ, c - b = n • p := by
-  refine ⟨fun h => ⟨toIcoDiv hp a c - toIcoDiv hp a b, ?_⟩, fun h => ?_⟩
+  refine ⟨fun h ↦ ⟨toIcoDiv hp a c - toIcoDiv hp a b, ?_⟩, fun h ↦ ?_⟩
   · conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul hp a b, ← toIcoMod_add_toIcoDiv_zsmul hp a c]
     rw [h, sub_smul]
     abel
@@ -478,7 +478,7 @@ theorem toIcoMod_eq_toIcoMod : toIcoMod hp a b = toIcoMod hp a c ↔ ∃ n : ℤ
     rw [hz, toIcoMod_zsmul_add]
 
 theorem toIocMod_eq_toIocMod : toIocMod hp a b = toIocMod hp a c ↔ ∃ n : ℤ, c - b = n • p := by
-  refine ⟨fun h => ⟨toIocDiv hp a c - toIocDiv hp a b, ?_⟩, fun h => ?_⟩
+  refine ⟨fun h ↦ ⟨toIocDiv hp a c - toIocDiv hp a b, ?_⟩, fun h ↦ ?_⟩
   · conv_lhs => rw [← toIocMod_add_toIocDiv_zsmul hp a b, ← toIocMod_add_toIocDiv_zsmul hp a c]
     rw [h, sub_smul]
     abel
@@ -497,10 +497,10 @@ theorem modEq_iff_toIcoMod_eq_left : a ≡ b [PMOD p] ↔ toIcoMod hp a b = a :=
   modEq_iff_eq_add_zsmul.trans
     ⟨by
       rintro ⟨n, rfl⟩
-      rw [toIcoMod_add_zsmul, toIcoMod_apply_left], fun h => ⟨toIcoDiv hp a b, eq_add_of_sub_eq h⟩⟩
+      rw [toIcoMod_add_zsmul, toIcoMod_apply_left], fun h ↦ ⟨toIcoDiv hp a b, eq_add_of_sub_eq h⟩⟩
 
 theorem modEq_iff_toIocMod_eq_right : a ≡ b [PMOD p] ↔ toIocMod hp a b = a + p := by
-  refine modEq_iff_eq_add_zsmul.trans ⟨?_, fun h => ⟨toIocDiv hp a b + 1, ?_⟩⟩
+  refine modEq_iff_eq_add_zsmul.trans ⟨?_, fun h ↦ ⟨toIocDiv hp a b + 1, ?_⟩⟩
   · rintro ⟨z, rfl⟩
     rw [toIocMod_add_zsmul, toIocMod_apply_left]
   · rwa [add_one_zsmul, add_left_comm, ← sub_eq_iff_eq_add']
@@ -535,7 +535,7 @@ theorem tfae_modEq :
   tfae_have 2 → 1 := by
     rw [← not_exists, not_imp_comm]
     have h' := toIcoMod_mem_Ico hp a b
-    exact fun h => ⟨_, h'.1.lt_of_ne' h, h'.2⟩
+    exact fun h ↦ ⟨_, h'.1.lt_of_ne' h, h'.2⟩
   tfae_finish
 
 variable {a b}

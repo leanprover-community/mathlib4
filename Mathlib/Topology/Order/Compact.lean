@@ -378,7 +378,7 @@ theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → �
     (hK : IsCompact K) (h0K : K.Nonempty) (hf : ContinuousOn f K) (y : α) :
     sSup (f '' K) < y ↔ ∀ x ∈ K, f x < y := by
   refine ⟨fun h x hx => (le_csSup (hK.bddAbove_image hf) <| mem_image_of_mem f hx).trans_lt h,
-    fun h => ?_⟩
+    fun h ↦ ?_⟩
   obtain ⟨x, hx, h2x⟩ := hK.exists_isMaxOn h0K hf
   refine (csSup_le (h0K.image f) ?_).trans_lt (h x hx)
   rintro _ ⟨x', hx', rfl⟩; exact h2x hx'

@@ -181,7 +181,7 @@ theorem convexOn_iff_slope_mono_adjacent :
     ConvexOn 𝕜 s f ↔
       Convex 𝕜 s ∧ ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) ≤ (f z - f y) / (z - y) :=
-  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_mono_adjacent⟩, fun h =>
+  ⟨fun h ↦ ⟨h.1, fun _ _ _ => h.slope_mono_adjacent⟩, fun h =>
     convexOn_of_slope_mono_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
 
 /-- A function `f : 𝕜 → 𝕜` is concave iff for any three points `x < y < z` the slope of the secant
@@ -191,7 +191,7 @@ theorem concaveOn_iff_slope_anti_adjacent :
       Convex 𝕜 s ∧
         ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) ≤ (f y - f x) / (y - x) :=
-  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_anti_adjacent⟩, fun h =>
+  ⟨fun h ↦ ⟨h.1, fun _ _ _ => h.slope_anti_adjacent⟩, fun h =>
     concaveOn_of_slope_anti_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
 
 /-- A function `f : 𝕜 → 𝕜` is strictly convex iff for any three points `x < y < z` the slope of
@@ -202,7 +202,7 @@ theorem strictConvexOn_iff_slope_strict_mono_adjacent :
       Convex 𝕜 s ∧
         ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f y - f x) / (y - x) < (f z - f y) / (z - y) :=
-  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_strict_mono_adjacent⟩, fun h =>
+  ⟨fun h ↦ ⟨h.1, fun _ _ _ => h.slope_strict_mono_adjacent⟩, fun h =>
     strictConvexOn_of_slope_strict_mono_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
 
 /-- A function `f : 𝕜 → 𝕜` is strictly concave iff for any three points `x < y < z` the slope of
@@ -213,7 +213,7 @@ theorem strictConcaveOn_iff_slope_strict_anti_adjacent :
       Convex 𝕜 s ∧
         ∀ ⦃x y z : 𝕜⦄,
           x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) < (f y - f x) / (y - x) :=
-  ⟨fun h => ⟨h.1, fun _ _ _ => h.slope_anti_adjacent⟩, fun h =>
+  ⟨fun h ↦ ⟨h.1, fun _ _ _ => h.slope_anti_adjacent⟩, fun h =>
     strictConcaveOn_of_slope_strict_anti_adjacent h.1 (@fun _ _ _ hx hy => h.2 hx hy)⟩
 
 theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)

@@ -114,7 +114,7 @@ theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
 
 theorem tendsto_coe' {f : Filter α} [NeBot f] {m : α → ℝ≥0} {x : ℝ} :
     Tendsto (fun a ↦ m a : α → ℝ) f (𝓝 x) ↔ ∃ hx : 0 ≤ x, Tendsto m f (𝓝 ⟨x, hx⟩) :=
-  ⟨fun h => ⟨ge_of_tendsto' h fun c => (m c).2, tendsto_coe.1 h⟩, fun ⟨_, hm⟩ => tendsto_coe.2 hm⟩
+  ⟨fun h ↦ ⟨ge_of_tendsto' h fun c ↦ (m c).2, tendsto_coe.1 h⟩, fun ⟨_, hm⟩ => tendsto_coe.2 hm⟩
 
 @[simp] theorem map_coe_atTop : map toReal atTop = atTop := map_val_Ici_atTop 0
 

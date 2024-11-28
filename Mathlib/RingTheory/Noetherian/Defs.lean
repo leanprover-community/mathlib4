@@ -71,14 +71,14 @@ open IsNoetherian
 
 /-- An R-module is Noetherian iff all its submodules are finitely-generated. -/
 theorem isNoetherian_def : IsNoetherian R M ↔ ∀ s : Submodule R M, s.FG :=
-  ⟨fun h => h.noetherian, IsNoetherian.mk⟩
+  ⟨fun h ↦ h.noetherian, IsNoetherian.mk⟩
 
 theorem isNoetherian_submodule {N : Submodule R M} :
     IsNoetherian R N ↔ ∀ s : Submodule R M, s ≤ N → s.FG := by
   refine ⟨fun ⟨hn⟩ => fun s hs =>
     have : s ≤ LinearMap.range N.subtype := N.range_subtype.symm ▸ hs
     Submodule.map_comap_eq_self this ▸ (hn _).map _,
-    fun h => ⟨fun s => ?_⟩⟩
+    fun h ↦ ⟨fun s => ?_⟩⟩
   have f := (Submodule.equivMapOfInjective N.subtype Subtype.val_injective s).symm
   have h₁ := h (s.map N.subtype) (Submodule.map_subtype_le N s)
   have h₂ : (⊤ : Submodule R (s.map N.subtype)).map f = ⊤ := by simp

@@ -79,7 +79,7 @@ theorem symm (h : ν ⟂ₘ μ) : μ ⟂ₘ ν :=
   ⟨iᶜ, hi.compl, hit, (compl_compl i).symm ▸ his⟩
 
 theorem comm : μ ⟂ₘ ν ↔ ν ⟂ₘ μ :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 @[simp]
 theorem zero_left : 0 ⟂ₘ μ :=

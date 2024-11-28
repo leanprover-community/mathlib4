@@ -136,7 +136,7 @@ theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).ma
     trans
     · refine Finset.sum_eq_single n (fun b _ h => ?_) ?_
       · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
-      · exact fun h => (h <| Finset.mem_univ n).elim
+      · exact fun h ↦ (h <| Finset.mem_univ n).elim
     · rw [eval_indicator_apply_eq_one, smul_eq_mul, mul_one]
 
 end

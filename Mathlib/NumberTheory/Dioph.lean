@@ -270,7 +270,7 @@ variable {α β γ : Type u} {S S' : Set (α → ℕ)}
 theorem ext (d : Dioph S) (H : ∀ v, v ∈ S ↔ v ∈ S') : Dioph S' := by rwa [← Set.ext H]
 
 theorem of_no_dummies (S : Set (α → ℕ)) (p : Poly α) (h : ∀ v, S v ↔ p v = 0) : Dioph S :=
-  ⟨PEmpty, ⟨p.map inl, fun v => (h v).trans ⟨fun h => ⟨PEmpty.elim, h⟩, fun ⟨_, ht⟩ => ht⟩⟩⟩
+  ⟨PEmpty, ⟨p.map inl, fun v => (h v).trans ⟨fun h ↦ ⟨PEmpty.elim, h⟩, fun ⟨_, ht⟩ => ht⟩⟩⟩
 
 theorem inject_dummies_lem (f : β → γ) (g : γ → Option β) (inv : ∀ x, g (f x) = some x)
     (p : Poly (α ⊕ β)) (v : α → ℕ) :
@@ -426,7 +426,7 @@ theorem diophPFun_comp1 {S : Set (Option α → ℕ)} (d : Dioph S) {f} (df : Di
 theorem diophFn_comp1 {S : Set (Option α → ℕ)} (d : Dioph S) {f : (α → ℕ) → ℕ} (df : DiophFn f) :
     Dioph {v | f v ::ₒ v ∈ S} :=
   ext (diophPFun_comp1 d <| cast (diophFn_iff_pFun f) df)
-    fun _ => ⟨fun ⟨_, h⟩ => h, fun h => ⟨trivial, h⟩⟩
+    fun _ => ⟨fun ⟨_, h⟩ => h, fun h ↦ ⟨trivial, h⟩⟩
 
 end
 
@@ -598,9 +598,9 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
             ⟨fun ⟨h, c, hc⟩ => by
               rw [← hc]; simp only [add_mul_mod_self_left]; cases' h with x0 hl
               · rw [x0, mod_zero]
-              exact mod_eq_of_lt hl, fun e => by
+              exact mod_eq_of_lt hl, fun e ↦ by
                 rw [← e]
-                exact ⟨or_iff_not_imp_left.2 fun h => mod_lt _ (Nat.pos_of_ne_zero h), x / y,
+                exact ⟨or_iff_not_imp_left.2 fun h ↦ mod_lt _ (Nat.pos_of_ne_zero h), x / y,
                   mod_add_div _ _⟩⟩
 
 scoped infixl:80 " D% " => Dioph.mod_dioph
@@ -664,7 +664,7 @@ theorem pell_dioph :
     exact proof
   exact Dioph.ext this fun v => matiyasevic.symm
 
-theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h (v &1)⟩ :=
+theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h ↦ xn h (v &1)⟩ :=
   have : Dioph fun v : Vector3 ℕ 3 => ∃ y, ∃ h : 1 < v &1, xn h (v &2) = v &0 ∧ yn h (v &2) = y :=
     let D_pell := pell_dioph.reindex_dioph (Fin2 4) [&2, &3, &1, &0]
     (D∃) 3 D_pell

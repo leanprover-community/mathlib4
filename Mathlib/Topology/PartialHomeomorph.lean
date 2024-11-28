@@ -71,7 +71,7 @@ While we may want to switch to this behavior later, doing it mid-port will break
 /-- Coercion of a `PartialHomeomorph` to function.
 Note that a `PartialHomeomorph` is not `DFunLike`. -/
 instance : CoeFun (PartialHomeomorph X Y) fun _ => X → Y :=
-  ⟨fun e => e.toFun'⟩
+  ⟨fun e ↦ e.toFun'⟩
 
 /-- The inverse of a partial homeomorphism -/
 @[symm]
@@ -230,7 +230,7 @@ theorem eventually_ne_nhdsWithin {x} (hx : x ∈ e.source) :
     ∀ᶠ x' in 𝓝[≠] x, e x' ≠ e x :=
   eventually_nhdsWithin_iff.2 <|
     (e.eventually_left_inverse hx).mono fun x' hx' =>
-      mt fun h => by rw [mem_singleton_iff, ← e.left_inv hx, ← h, hx']
+      mt fun h ↦ by rw [mem_singleton_iff, ← e.left_inv hx, ← h, hx']
 
 theorem nhdsWithin_source_inter {x} (hx : x ∈ e.source) (s : Set X) : 𝓝[e.source ∩ s] x = 𝓝[s] x :=
   nhdsWithin_inter_of_mem (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds e.open_source hx)
@@ -454,7 +454,7 @@ theorem symm_apply_mem_iff (h : e.IsImage s t) (hy : y ∈ e.target) : e.symm y 
 
 @[simp]
 theorem symm_iff : e.symm.IsImage t s ↔ e.IsImage s t :=
-  ⟨fun h => h.symm, fun h => h.symm⟩
+  ⟨fun h ↦ h.symm, fun h ↦ h.symm⟩
 
 protected theorem mapsTo (h : e.IsImage s t) : MapsTo e (e.source ∩ s) (e.target ∩ t) :=
   h.toPartialEquiv.mapsTo

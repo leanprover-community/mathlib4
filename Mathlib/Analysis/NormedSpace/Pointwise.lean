@@ -197,7 +197,7 @@ theorem exists_dist_lt_lt (hδ : 0 < δ) (hε : 0 < ε) (h : dist x z < ε + δ)
 -- This is also true for `ℚ`-normed spaces
 theorem disjoint_ball_ball_iff (hδ : 0 < δ) (hε : 0 < ε) :
     Disjoint (ball x δ) (ball y ε) ↔ δ + ε ≤ dist x y := by
-  refine ⟨fun h => le_of_not_lt fun hxy => ?_, ball_disjoint_ball⟩
+  refine ⟨fun h ↦ le_of_not_lt fun hxy => ?_, ball_disjoint_ball⟩
   rw [add_comm] at hxy
   obtain ⟨z, hxz, hzy⟩ := exists_dist_lt_lt hδ hε hxy
   rw [dist_comm] at hxz
@@ -206,7 +206,7 @@ theorem disjoint_ball_ball_iff (hδ : 0 < δ) (hε : 0 < ε) :
 -- This is also true for `ℚ`-normed spaces
 theorem disjoint_ball_closedBall_iff (hδ : 0 < δ) (hε : 0 ≤ ε) :
     Disjoint (ball x δ) (closedBall y ε) ↔ δ + ε ≤ dist x y := by
-  refine ⟨fun h => le_of_not_lt fun hxy => ?_, ball_disjoint_closedBall⟩
+  refine ⟨fun h ↦ le_of_not_lt fun hxy => ?_, ball_disjoint_closedBall⟩
   rw [add_comm] at hxy
   obtain ⟨z, hxz, hzy⟩ := exists_dist_lt_le hδ hε hxy
   rw [dist_comm] at hxz
@@ -219,7 +219,7 @@ theorem disjoint_closedBall_ball_iff (hδ : 0 ≤ δ) (hε : 0 < ε) :
 
 theorem disjoint_closedBall_closedBall_iff (hδ : 0 ≤ δ) (hε : 0 ≤ ε) :
     Disjoint (closedBall x δ) (closedBall y ε) ↔ δ + ε < dist x y := by
-  refine ⟨fun h => lt_of_not_ge fun hxy => ?_, closedBall_disjoint_closedBall⟩
+  refine ⟨fun h ↦ lt_of_not_ge fun hxy => ?_, closedBall_disjoint_closedBall⟩
   rw [add_comm] at hxy
   obtain ⟨z, hxz, hzy⟩ := exists_dist_le_le hδ hε hxy
   rw [dist_comm] at hxz
@@ -378,7 +378,7 @@ nonnegative. -/
 theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
     (sphere x r).Nonempty ↔ 0 ≤ r := by
   obtain ⟨y, hy⟩ := exists_ne x
-  refine ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr =>
+  refine ⟨fun h ↦ nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr =>
     ⟨r • ‖y - x‖⁻¹ • (y - x) + x, ?_⟩⟩
   have : ‖y - x‖ ≠ 0 := by simpa [sub_eq_zero]
   simp only [mem_sphere_iff_norm, add_sub_cancel_right, norm_smul, Real.norm_eq_abs, norm_inv,

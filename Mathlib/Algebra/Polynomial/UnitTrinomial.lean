@@ -217,20 +217,20 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
     rw [ofFinsupp_add]
     simp only [ofFinsupp_single]
     rw [C_mul_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
-  · exact fun h => h.2.ne rfl
+  · exact fun h ↦ h.2.ne rfl
   · refine ⟨?_, add_lt_add_left key n⟩
     rwa [add_comm, add_lt_add_iff_left, lt_add_iff_pos_left, tsub_pos_iff_lt]
-  · exact fun h => h.1.ne (add_comm k n)
+  · exact fun h ↦ h.1.ne (add_comm k n)
   · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
   · rw [← add_assoc, add_tsub_cancel_of_le hmn.le, add_comm]
-    exact fun h => h.1.ne rfl
+    exact fun h ↦ h.1.ne rfl
   · intro h
     have := h.1
     rw [add_comm, add_lt_add_iff_right] at this
     exact asymm this hmn
-  · exact fun h => h.1.ne rfl
-  · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) key
-  · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) (hkm.trans hmn)
+  · exact fun h ↦ h.1.ne rfl
+  · exact fun h ↦ asymm ((add_lt_add_iff_left k).mp h.1) key
+  · exact fun h ↦ asymm ((add_lt_add_iff_left k).mp h.1) (hkm.trans hmn)
 
 theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w) (hq : q = trinomial k m' n (u : ℤ) v w)

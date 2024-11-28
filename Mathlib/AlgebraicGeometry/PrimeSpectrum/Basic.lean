@@ -117,7 +117,7 @@ theorem zeroLocus_eq_iff {I J : Ideal R} :
 
 theorem vanishingIdeal_anti_mono_iff {s t : Set (PrimeSpectrum R)} (ht : IsClosed t) :
     s ⊆ t ↔ vanishingIdeal t ≤ vanishingIdeal s :=
-  ⟨vanishingIdeal_anti_mono, fun h => by
+  ⟨vanishingIdeal_anti_mono, fun h ↦ by
     rw [← ht.closure_subset_iff, ← ht.closure_eq]
     convert ← zeroLocus_anti_mono_ideal h <;> apply zeroLocus_vanishingIdeal_eq_closure⟩
 
@@ -133,7 +133,7 @@ def closedsEmbedding (R : Type*) [CommSemiring R] :
     (vanishingIdeal_anti_mono_iff s.2).symm
 
 theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField R := by
-  refine ⟨?_, fun h => ?_⟩
+  refine ⟨?_, fun h ↦ ?_⟩
   · intro h
     have hbot : Ideal.IsPrime (⊥ : Ideal R) := Ideal.bot_prime
     exact

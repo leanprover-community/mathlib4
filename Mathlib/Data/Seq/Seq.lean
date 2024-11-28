@@ -159,7 +159,7 @@ theorem mem_cons_of_mem (y : α) {a : α} : ∀ {s : Seq α}, a ∈ s → a ∈ 
   | ⟨_, _⟩ => Stream'.mem_cons_of_mem (some y)
 
 theorem eq_or_mem_of_mem_cons {a b : α} : ∀ {s : Seq α}, a ∈ cons b s → a = b ∨ a ∈ s
-  | ⟨_, _⟩, h => (Stream'.eq_or_mem_of_mem_cons h).imp_left fun h => by injection h
+  | ⟨_, _⟩, h => (Stream'.eq_or_mem_of_mem_cons h).imp_left fun h ↦ by injection h
 
 @[simp]
 theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a ∈ s :=
@@ -609,7 +609,7 @@ theorem length_nil : length (nil : Seq α) terminates_nil = 0 := rfl
 
 @[simp]
 theorem get?_zero_eq_none {s : Seq α} : s.get? 0 = none ↔ s = nil := by
-  refine ⟨fun h => ?_, fun h => h ▸ rfl⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ rfl⟩
   ext1 n
   exact le_stable s (Nat.zero_le _) h
 

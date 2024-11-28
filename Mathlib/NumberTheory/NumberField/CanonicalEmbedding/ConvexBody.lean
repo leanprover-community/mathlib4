@@ -337,7 +337,7 @@ theorem convexBodySum_volume_eq_zero_of_le_zero {B} (hB : B ≤ 0) :
   obtain hB | hB := lt_or_eq_of_le hB
   · suffices convexBodySum K B = ∅ by rw [this, measure_empty]
     ext x
-    refine ⟨fun hx => ?_, fun h => h.elim⟩
+    refine ⟨fun hx => ?_, fun h ↦ h.elim⟩
     rw [Set.mem_setOf] at hx
     linarith [convexBodySumFun_nonneg x]
   · suffices convexBodySum K B = { 0 } by rw [this, measure_singleton]

@@ -330,7 +330,7 @@ theorem _root_.Polynomial.toLaurent_injective :
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_inj (f g : R[X]) : toLaurent f = toLaurent g ↔ f = g :=
-  ⟨fun h => Polynomial.toLaurent_injective h, congr_arg _⟩
+  ⟨fun h ↦ Polynomial.toLaurent_injective h, congr_arg _⟩
 
 theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : toLaurent f ≠ 0 ↔ f ≠ 0 :=
   map_ne_zero_iff _ Polynomial.toLaurent_injective
@@ -422,7 +422,7 @@ theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
 
 @[simp]
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
-  refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, degree_zero]⟩
   rw [degree, Finset.max_eq_sup_withBot] at h
   ext n
   simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne, WithBot.coe_ne_bot] at h

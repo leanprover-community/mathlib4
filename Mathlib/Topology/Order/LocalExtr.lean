@@ -149,7 +149,7 @@ theorem IsLocalMaxOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalMaxOn f 
 
 theorem IsLocalExtrOn.not_nhds_le_map [TopologicalSpace β] (hf : IsLocalExtrOn f s a)
     [NeBot (𝓝[<] f a)] [NeBot (𝓝[>] f a)] : ¬𝓝 (f a) ≤ map f (𝓝[s] a) :=
-  hf.elim (fun h => h.not_nhds_le_map) fun h => h.not_nhds_le_map
+  hf.elim (fun h ↦ h.not_nhds_le_map) fun h ↦ h.not_nhds_le_map
 
 /-! ### Constant -/
 

@@ -216,7 +216,7 @@ protected lemma Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : α}
 
 lemma continuous_iff_continuous_dist [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ Continuous fun x : β × β => dist (f x.1) (f x.2) :=
-  ⟨fun h => h.fst'.dist h.snd', fun h =>
+  ⟨fun h ↦ h.fst'.dist h.snd', fun h =>
     continuous_iff_continuousAt.2 fun _ => tendsto_iff_dist_tendsto_zero.2 <|
       (h.comp (continuous_id.prod_mk continuous_const)).tendsto' _ _ <| dist_self _⟩
 

@@ -464,14 +464,14 @@ theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Fin
     intro c hs k hk A_eq
     have hAi : A i = B i + c i • B k := funext (A_eq i)
     rw [@ih (updateRow B i (A i)) (Function.update c i 0), hAi, det_updateRow_add_smul_self]
-    · exact mt (fun h => show k ∈ insert i s from h ▸ Finset.mem_insert_self _ _) hk
+    · exact mt (fun h ↦ show k ∈ insert i s from h ▸ Finset.mem_insert_self _ _) hk
     · intro i' hi'
       rw [Function.update_apply]
       split_ifs with hi'i
       · rfl
-      · exact hs i' fun h => hi' ((Finset.mem_insert.mp h).resolve_left hi'i)
+      · exact hs i' fun h ↦ hi' ((Finset.mem_insert.mp h).resolve_left hi'i)
     · exact k
-    · exact fun h => hk (Finset.mem_insert_of_mem h)
+    · exact fun h ↦ hk (Finset.mem_insert_of_mem h)
     · intro i' j'
       rw [updateRow_apply, Function.update_apply]
       split_ifs with hi'i
@@ -556,7 +556,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
   let preserving_snd : Finset (Equiv.Perm (n × o)) := {σ | ∀ x, (σ x).snd = x.snd}
   have mem_preserving_snd :
     ∀ {σ : Equiv.Perm (n × o)}, σ ∈ preserving_snd ↔ ∀ x, (σ x).snd = x.snd := fun {σ} =>
-    Finset.mem_filter.trans ⟨fun h => h.2, fun h => ⟨Finset.mem_univ _, h⟩⟩
+    Finset.mem_filter.trans ⟨fun h ↦ h.2, fun h ↦ ⟨Finset.mem_univ _, h⟩⟩
   rw [← Finset.sum_subset (Finset.subset_univ preserving_snd) _]
   -- And that these are in bijection with `o → Equiv.Perm m`.
   · refine (Finset.sum_bij (fun σ _ => prodCongrLeft fun k ↦ σ k (mem_univ k)) ?_ ?_ ?_ ?_).symm

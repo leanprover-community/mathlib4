@@ -123,10 +123,10 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
 /-- The product `x * r`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if
 `x` satisfies the same condition. -/
 theorem mul_rat_iff (hr : r ≠ 0) : LiouvilleWith p (x * r) ↔ LiouvilleWith p x :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     simpa only [mul_assoc, ← Rat.cast_mul, mul_inv_cancel₀ hr, Rat.cast_one, mul_one] using
       h.mul_rat (inv_ne_zero hr),
-    fun h => h.mul_rat hr⟩
+    fun h ↦ h.mul_rat hr⟩
 
 /-- The product `r * x`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if
 `x` satisfies the same condition. -/
@@ -176,7 +176,7 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
 
 @[simp]
 theorem add_rat_iff : LiouvilleWith p (x + r) ↔ LiouvilleWith p x :=
-  ⟨fun h => by simpa using h.add_rat (-r), fun h => h.add_rat r⟩
+  ⟨fun h ↦ by simpa using h.add_rat (-r), fun h ↦ h.add_rat r⟩
 
 @[simp]
 theorem rat_add_iff : LiouvilleWith p (r + x) ↔ LiouvilleWith p x := by rw [add_comm, add_rat_iff]
@@ -221,7 +221,7 @@ protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
 
 @[simp]
 theorem neg_iff : LiouvilleWith p (-x) ↔ LiouvilleWith p x :=
-  ⟨fun h => neg_neg x ▸ h.neg, LiouvilleWith.neg⟩
+  ⟨fun h ↦ neg_neg x ▸ h.neg, LiouvilleWith.neg⟩
 
 @[simp]
 theorem sub_rat_iff : LiouvilleWith p (x - r) ↔ LiouvilleWith p x := by

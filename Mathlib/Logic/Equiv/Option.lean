@@ -121,7 +121,7 @@ theorem removeNone_none {x : α} (h : e (some x) = none) : some (removeNone e x)
 
 @[simp]
 theorem option_symm_apply_none_iff : e.symm none = none ↔ e none = none :=
-  ⟨fun h => by simpa using (congr_arg e h).symm, fun h => by simpa using (congr_arg e.symm h).symm⟩
+  ⟨fun h ↦ by simpa using (congr_arg e h).symm, fun h ↦ by simpa using (congr_arg e.symm h).symm⟩
 
 theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm none = some x := by
   rcases h : e (some x) with a | a
@@ -231,7 +231,7 @@ theorem optionSubtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α �
     (b : { y : β // y ≠ x }) : ((optionSubtype x).symm e : Option α ≃ β).symm b = e.symm b := by
   simp only [optionSubtype, coe_fn_symm_mk, Subtype.coe_mk,
              Subtype.coe_eta, dite_eq_ite, ite_eq_right_iff]
-  exact fun h => False.elim (b.property h)
+  exact fun h ↦ False.elim (b.property h)
 
 variable [DecidableEq α] {a b : α}
 

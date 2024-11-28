@@ -198,7 +198,7 @@ theorem DifferentiableWithinAt.add_const (hf : DifferentiableWithinAt 𝕜 f s x
 @[simp]
 theorem differentiableWithinAt_add_const_iff (c : F) :
     DifferentiableWithinAt 𝕜 (fun y => f y + c) s x ↔ DifferentiableWithinAt 𝕜 f s x :=
-  ⟨fun h => by simpa using h.add_const (-c), fun h => h.add_const c⟩
+  ⟨fun h ↦ by simpa using h.add_const (-c), fun h ↦ h.add_const c⟩
 
 @[fun_prop]
 theorem DifferentiableAt.add_const (hf : DifferentiableAt 𝕜 f x) (c : F) :
@@ -208,7 +208,7 @@ theorem DifferentiableAt.add_const (hf : DifferentiableAt 𝕜 f x) (c : F) :
 @[simp]
 theorem differentiableAt_add_const_iff (c : F) :
     DifferentiableAt 𝕜 (fun y => f y + c) x ↔ DifferentiableAt 𝕜 f x :=
-  ⟨fun h => by simpa using h.add_const (-c), fun h => h.add_const c⟩
+  ⟨fun h ↦ by simpa using h.add_const (-c), fun h ↦ h.add_const c⟩
 
 @[fun_prop]
 theorem DifferentiableOn.add_const (hf : DifferentiableOn 𝕜 f s) (c : F) :
@@ -217,7 +217,7 @@ theorem DifferentiableOn.add_const (hf : DifferentiableOn 𝕜 f s) (c : F) :
 @[simp]
 theorem differentiableOn_add_const_iff (c : F) :
     DifferentiableOn 𝕜 (fun y => f y + c) s ↔ DifferentiableOn 𝕜 f s :=
-  ⟨fun h => by simpa using h.add_const (-c), fun h => h.add_const c⟩
+  ⟨fun h ↦ by simpa using h.add_const (-c), fun h ↦ h.add_const c⟩
 
 @[fun_prop]
 theorem Differentiable.add_const (hf : Differentiable 𝕜 f) (c : F) :
@@ -226,7 +226,7 @@ theorem Differentiable.add_const (hf : Differentiable 𝕜 f) (c : F) :
 @[simp]
 theorem differentiable_add_const_iff (c : F) :
     (Differentiable 𝕜 fun y => f y + c) ↔ Differentiable 𝕜 f :=
-  ⟨fun h => by simpa using h.add_const (-c), fun h => h.add_const c⟩
+  ⟨fun h ↦ by simpa using h.add_const (-c), fun h ↦ h.add_const c⟩
 
 theorem fderivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x :=
@@ -266,7 +266,7 @@ theorem DifferentiableWithinAt.const_add (hf : DifferentiableWithinAt 𝕜 f s x
 @[simp]
 theorem differentiableWithinAt_const_add_iff (c : F) :
     DifferentiableWithinAt 𝕜 (fun y => c + f y) s x ↔ DifferentiableWithinAt 𝕜 f s x :=
-  ⟨fun h => by simpa using h.const_add (-c), fun h => h.const_add c⟩
+  ⟨fun h ↦ by simpa using h.const_add (-c), fun h ↦ h.const_add c⟩
 
 @[fun_prop]
 theorem DifferentiableAt.const_add (hf : DifferentiableAt 𝕜 f x) (c : F) :
@@ -276,7 +276,7 @@ theorem DifferentiableAt.const_add (hf : DifferentiableAt 𝕜 f x) (c : F) :
 @[simp]
 theorem differentiableAt_const_add_iff (c : F) :
     DifferentiableAt 𝕜 (fun y => c + f y) x ↔ DifferentiableAt 𝕜 f x :=
-  ⟨fun h => by simpa using h.const_add (-c), fun h => h.const_add c⟩
+  ⟨fun h ↦ by simpa using h.const_add (-c), fun h ↦ h.const_add c⟩
 
 @[fun_prop]
 theorem DifferentiableOn.const_add (hf : DifferentiableOn 𝕜 f s) (c : F) :
@@ -285,7 +285,7 @@ theorem DifferentiableOn.const_add (hf : DifferentiableOn 𝕜 f s) (c : F) :
 @[simp]
 theorem differentiableOn_const_add_iff (c : F) :
     DifferentiableOn 𝕜 (fun y => c + f y) s ↔ DifferentiableOn 𝕜 f s :=
-  ⟨fun h => by simpa using h.const_add (-c), fun h => h.const_add c⟩
+  ⟨fun h ↦ by simpa using h.const_add (-c), fun h ↦ h.const_add c⟩
 
 @[fun_prop]
 theorem Differentiable.const_add (hf : Differentiable 𝕜 f) (c : F) :
@@ -294,7 +294,7 @@ theorem Differentiable.const_add (hf : Differentiable 𝕜 f) (c : F) :
 @[simp]
 theorem differentiable_const_add_iff (c : F) :
     (Differentiable 𝕜 fun y => c + f y) ↔ Differentiable 𝕜 f :=
-  ⟨fun h => by simpa using h.const_add (-c), fun h => h.const_add c⟩
+  ⟨fun h ↦ by simpa using h.const_add (-c), fun h ↦ h.const_add c⟩
 
 theorem fderivWithin_const_add (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
     fderivWithin 𝕜 (fun y => c + f y) s x = fderivWithin 𝕜 f s x := by
@@ -397,7 +397,7 @@ theorem DifferentiableWithinAt.neg (h : DifferentiableWithinAt 𝕜 f s x) :
 @[simp]
 theorem differentiableWithinAt_neg_iff :
     DifferentiableWithinAt 𝕜 (fun y => -f y) s x ↔ DifferentiableWithinAt 𝕜 f s x :=
-  ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
+  ⟨fun h ↦ by simpa only [neg_neg] using h.neg, fun h ↦ h.neg⟩
 
 @[fun_prop]
 theorem DifferentiableAt.neg (h : DifferentiableAt 𝕜 f x) : DifferentiableAt 𝕜 (fun y => -f y) x :=
@@ -405,7 +405,7 @@ theorem DifferentiableAt.neg (h : DifferentiableAt 𝕜 f x) : DifferentiableAt 
 
 @[simp]
 theorem differentiableAt_neg_iff : DifferentiableAt 𝕜 (fun y => -f y) x ↔ DifferentiableAt 𝕜 f x :=
-  ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
+  ⟨fun h ↦ by simpa only [neg_neg] using h.neg, fun h ↦ h.neg⟩
 
 @[fun_prop]
 theorem DifferentiableOn.neg (h : DifferentiableOn 𝕜 f s) : DifferentiableOn 𝕜 (fun y => -f y) s :=
@@ -413,7 +413,7 @@ theorem DifferentiableOn.neg (h : DifferentiableOn 𝕜 f s) : DifferentiableOn 
 
 @[simp]
 theorem differentiableOn_neg_iff : DifferentiableOn 𝕜 (fun y => -f y) s ↔ DifferentiableOn 𝕜 f s :=
-  ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
+  ⟨fun h ↦ by simpa only [neg_neg] using h.neg, fun h ↦ h.neg⟩
 
 @[fun_prop]
 theorem Differentiable.neg (h : Differentiable 𝕜 f) : Differentiable 𝕜 fun y => -f y := fun x =>
@@ -421,7 +421,7 @@ theorem Differentiable.neg (h : Differentiable 𝕜 f) : Differentiable 𝕜 fun
 
 @[simp]
 theorem differentiable_neg_iff : (Differentiable 𝕜 fun y => -f y) ↔ Differentiable 𝕜 f :=
-  ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
+  ⟨fun h ↦ by simpa only [neg_neg] using h.neg, fun h ↦ h.neg⟩
 
 theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x :=

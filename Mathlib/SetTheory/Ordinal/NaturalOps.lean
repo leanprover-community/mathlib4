@@ -465,7 +465,7 @@ theorem nmul_nadd_le {a' b' : Ordinal} (ha : a' ≤ a) (hb : b' ≤ b) :
   · exact le_rfl
 
 theorem lt_nmul_iff : c < a ⨳ b ↔ ∃ a' < a, ∃ b' < b, c ♯ a' ⨳ b' ≤ a' ⨳ b ♯ a ⨳ b' := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rw [nmul] at h
     simpa using not_mem_of_lt_csInf h ⟨0, fun _ _ => bot_le⟩
   · rintro ⟨a', ha, b', hb, h⟩
@@ -607,7 +607,7 @@ theorem lt_nmul_iff₃ :
       ∃ a' < a, ∃ b' < b, ∃ c' < c,
         d ♯ a' ⨳ b' ⨳ c ♯ a' ⨳ b ⨳ c' ♯ a ⨳ b' ⨳ c' ≤
           a' ⨳ b ⨳ c ♯ a ⨳ b' ⨳ c ♯ a ⨳ b ⨳ c' ♯ a' ⨳ b' ⨳ c' := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · rcases lt_nmul_iff.1 h with ⟨e, he, c', hc, H₁⟩
     rcases lt_nmul_iff.1 he with ⟨a', ha, b', hb, H₂⟩
     refine ⟨a', ha, b', hb, c', hc, ?_⟩

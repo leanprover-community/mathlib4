@@ -271,7 +271,7 @@ theorem MapsTo.range_restrict (f : α → β) (s : Set α) (t : Set β) (h : Map
   Set.range_subtype_map f h
 
 theorem mapsTo_iff_exists_map_subtype : MapsTo f s t ↔ ∃ g : s → t, ∀ x : s, f x = g x :=
-  ⟨fun h => ⟨h.restrict f s t, fun _ => rfl⟩, fun ⟨g, hg⟩ x hx => by
+  ⟨fun h ↦ ⟨h.restrict f s t, fun _ => rfl⟩, fun ⟨g, hg⟩ x hx => by
     rw [hg ⟨x, hx⟩]
     apply Subtype.coe_prop⟩
 
@@ -309,7 +309,7 @@ theorem EqOn.comp_right (hg : t.EqOn g₁ g₂) (hf : s.MapsTo f t) : s.EqOn (g�
   fun _ ha => hg <| hf ha
 
 theorem EqOn.mapsTo_iff (H : EqOn f₁ f₂ s) : MapsTo f₁ s t ↔ MapsTo f₂ s t :=
-  ⟨fun h => h.congr H, fun h => h.congr H.symm⟩
+  ⟨fun h ↦ h.congr H, fun h ↦ h.congr H.symm⟩
 
 theorem MapsTo.comp (h₁ : MapsTo g t p) (h₂ : MapsTo f s t) : MapsTo (g ∘ f) s p := fun _ h =>
   h₁ (h₂ h)
@@ -356,7 +356,7 @@ theorem mapsTo_union : MapsTo f (s₁ ∪ s₂) t ↔ MapsTo f s₁ t ∧ MapsTo
   ⟨fun h =>
     ⟨h.mono subset_union_left (Subset.refl t),
       h.mono subset_union_right (Subset.refl t)⟩,
-    fun h => h.1.union h.2⟩
+    fun h ↦ h.1.union h.2⟩
 
 theorem MapsTo.inter (h₁ : MapsTo f s t₁) (h₂ : MapsTo f s t₂) : MapsTo f s (t₁ ∩ t₂) := fun _ hx =>
   ⟨h₁ hx, h₂ hx⟩
@@ -372,7 +372,7 @@ theorem mapsTo_inter : MapsTo f s (t₁ ∩ t₂) ↔ MapsTo f s t₁ ∧ MapsTo
   ⟨fun h =>
     ⟨h.mono (Subset.refl s) inter_subset_left,
       h.mono (Subset.refl s) inter_subset_right⟩,
-    fun h => h.1.inter h.2⟩
+    fun h ↦ h.1.inter h.2⟩
 
 theorem mapsTo_univ (f : α → β) (s : Set α) : MapsTo f s univ := fun _ _ => trivial
 
@@ -467,7 +467,7 @@ theorem injOn_singleton (f : α → β) (a : α) : InjOn f {a} :=
 @[simp] lemma injOn_pair {b : α} : InjOn f {a, b} ↔ f a = f b → a = b := by unfold InjOn; aesop
 
 theorem InjOn.eq_iff {x y} (h : InjOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x = f y ↔ x = y :=
-  ⟨h hx hy, fun h => h ▸ rfl⟩
+  ⟨h hx hy, fun h ↦ h ▸ rfl⟩
 
 theorem InjOn.ne_iff {x y} (h : InjOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x ≠ f y ↔ x ≠ y :=
   (h.eq_iff hx hy).not
@@ -478,7 +478,7 @@ theorem InjOn.congr (h₁ : InjOn f₁ s) (h : EqOn f₁ f₂ s) : InjOn f₂ s 
   h hx ▸ h hy ▸ h₁ hx hy
 
 theorem EqOn.injOn_iff (H : EqOn f₁ f₂ s) : InjOn f₁ s ↔ InjOn f₂ s :=
-  ⟨fun h => h.congr H, fun h => h.congr H.symm⟩
+  ⟨fun h ↦ h.congr H, fun h ↦ h.congr H.symm⟩
 
 theorem InjOn.mono (h : s₁ ⊆ s₂) (ht : InjOn f s₂) : InjOn f s₁ := fun _ hx _ hy H =>
   ht (h hx) (h hy) H
@@ -559,14 +559,14 @@ theorem InjOn.mem_image_iff {x} (hf : InjOn f s) (hs : s₁ ⊆ s) (hx : x ∈ s
   ⟨hf.mem_of_mem_image hs hx, mem_image_of_mem f⟩
 
 theorem InjOn.preimage_image_inter (hf : InjOn f s) (hs : s₁ ⊆ s) : f ⁻¹' (f '' s₁) ∩ s = s₁ :=
-  ext fun _ => ⟨fun ⟨h₁, h₂⟩ => hf.mem_of_mem_image hs h₂ h₁, fun h => ⟨mem_image_of_mem _ h, hs h⟩⟩
+  ext fun _ => ⟨fun ⟨h₁, h₂⟩ => hf.mem_of_mem_image hs h₂ h₁, fun h ↦ ⟨mem_image_of_mem _ h, hs h⟩⟩
 
 theorem EqOn.cancel_left (h : s.EqOn (g ∘ f₁) (g ∘ f₂)) (hg : t.InjOn g) (hf₁ : s.MapsTo f₁ t)
     (hf₂ : s.MapsTo f₂ t) : s.EqOn f₁ f₂ := fun _ ha => hg (hf₁ ha) (hf₂ ha) (h ha)
 
 theorem InjOn.cancel_left (hg : t.InjOn g) (hf₁ : s.MapsTo f₁ t) (hf₂ : s.MapsTo f₂ t) :
     s.EqOn (g ∘ f₁) (g ∘ f₂) ↔ s.EqOn f₁ f₂ :=
-  ⟨fun h => h.cancel_left hg hf₁ hf₂, EqOn.comp_left⟩
+  ⟨fun h ↦ h.cancel_left hg hf₁ hf₂, EqOn.comp_left⟩
 
 lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t ⊆ u) :
     f '' (s ∩ t) = f '' s ∩ f '' t := by
@@ -801,7 +801,7 @@ theorem SurjOn.image_eq_of_mapsTo (h₁ : SurjOn f s t) (h₂ : MapsTo f s t) : 
   eq_of_subset_of_subset h₂.image_subset h₁
 
 theorem image_eq_iff_surjOn_mapsTo : f '' s = t ↔ s.SurjOn f t ∧ s.MapsTo f t := by
-  refine ⟨?_, fun h => h.1.image_eq_of_mapsTo h.2⟩
+  refine ⟨?_, fun h ↦ h.1.image_eq_of_mapsTo h.2⟩
   rintro rfl
   exact ⟨s.surjOn_image f, s.mapsTo_image f⟩
 
@@ -823,7 +823,7 @@ theorem EqOn.cancel_right (hf : s.EqOn (g₁ ∘ f) (g₂ ∘ f)) (hf' : s.SurjO
 
 theorem SurjOn.cancel_right (hf : s.SurjOn f t) (hf' : s.MapsTo f t) :
     s.EqOn (g₁ ∘ f) (g₂ ∘ f) ↔ t.EqOn g₁ g₂ :=
-  ⟨fun h => h.cancel_right hf, fun h => h.comp_right hf'⟩
+  ⟨fun h ↦ h.cancel_right hf, fun h ↦ h.comp_right hf'⟩
 
 theorem eqOn_comp_right_iff : s.EqOn (g₁ ∘ f) (g₂ ∘ f) ↔ (f '' s).EqOn g₁ g₂ :=
   (s.surjOn_image f).cancel_right <| s.mapsTo_image f
@@ -889,7 +889,7 @@ theorem BijOn.congr (h₁ : BijOn f₁ s t) (h : EqOn f₁ f₂ s) : BijOn f₂ 
   BijOn.mk (h₁.mapsTo.congr h) (h₁.injOn.congr h) (h₁.surjOn.congr h)
 
 theorem EqOn.bijOn_iff (H : EqOn f₁ f₂ s) : BijOn f₁ s t ↔ BijOn f₂ s t :=
-  ⟨fun h => h.congr H, fun h => h.congr H.symm⟩
+  ⟨fun h ↦ h.congr H, fun h ↦ h.congr H.symm⟩
 
 theorem BijOn.image_eq (h : BijOn f s t) : f '' s = t :=
   h.surjOn.image_eq_of_mapsTo h.mapsTo

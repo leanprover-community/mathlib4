@@ -471,7 +471,7 @@ instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
   map_injective := by
     intro ℱ ℱ' α β e
     ext1
-    apply_fun fun e => e.val at e
+    apply_fun fun e ↦ e.val at e
     dsimp [sheafPushforwardContinuous] at e
     rw [← sheafHom_eq G α.val, ← sheafHom_eq G β.val, e]
 

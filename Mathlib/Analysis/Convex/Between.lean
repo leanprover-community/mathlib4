@@ -143,7 +143,7 @@ theorem Wbtw.map {x y z : P} (h : Wbtw R x y z) (f : P →ᵃ[R] P') : Wbtw R (f
 
 theorem Function.Injective.wbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} (hf : Function.Injective f) :
     Wbtw R (f x) (f y) (f z) ↔ Wbtw R x y z := by
-  refine ⟨fun h => ?_, fun h => h.map _⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ h.map _⟩
   rwa [Wbtw, ← affineSegment_image, hf.mem_set_image] at h
 
 theorem Function.Injective.sbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} (hf : Function.Injective f) :
@@ -257,7 +257,7 @@ theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
 
 @[simp]
 theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · -- Porting note: Originally `simpa [Wbtw, affineSegment] using h`
     have ⟨_, _, h₂⟩ := h
     rw [h₂.symm, lineMap_same_apply]
@@ -266,11 +266,11 @@ theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
 
 @[simp]
 theorem not_sbtw_self_left (x y : P) : ¬Sbtw R x x y :=
-  fun h => h.ne_left rfl
+  fun h ↦ h.ne_left rfl
 
 @[simp]
 theorem not_sbtw_self_right (x y : P) : ¬Sbtw R x y y :=
-  fun h => h.ne_right rfl
+  fun h ↦ h.ne_right rfl
 
 variable {R}
 
@@ -289,7 +289,7 @@ theorem Sbtw.left_ne_right {x y z : P} (h : Sbtw R x y z) : x ≠ z :=
 
 theorem sbtw_iff_mem_image_Ioo_and_ne [NoZeroSMulDivisors R V] {x y z : P} :
     Sbtw R x y z ↔ y ∈ lineMap x z '' Set.Ioo (0 : R) 1 ∧ x ≠ z := by
-  refine ⟨fun h => ⟨h.mem_image_Ioo, h.left_ne_right⟩, fun h => ?_⟩
+  refine ⟨fun h ↦ ⟨h.mem_image_Ioo, h.left_ne_right⟩, fun h ↦ ?_⟩
   rcases h with ⟨⟨t, ht, rfl⟩, hxz⟩
   refine ⟨⟨t, Set.mem_Icc_of_Ioo ht, rfl⟩, ?_⟩
   rw [lineMap_apply, ← @vsub_ne_zero V, ← @vsub_ne_zero V _ _ _ _ z, vadd_vsub_assoc, vsub_self,
@@ -300,7 +300,7 @@ variable (R)
 
 @[simp]
 theorem not_sbtw_self (x y : P) : ¬Sbtw R x y x :=
-  fun h => h.left_ne_right rfl
+  fun h ↦ h.left_ne_right rfl
 
 theorem wbtw_swap_left_iff [NoZeroSMulDivisors R V] {x y : P} (z : P) :
     Wbtw R x y z ∧ Wbtw R y x z ↔ x = y := by
@@ -391,7 +391,7 @@ theorem wbtw_one_zero_iff {x : R} : Wbtw R 1 x 0 ↔ x ∈ Set.Icc (0 : R) 1 := 
 theorem sbtw_zero_one_iff {x : R} : Sbtw R 0 x 1 ↔ x ∈ Set.Ioo (0 : R) 1 := by
   rw [Sbtw, wbtw_zero_one_iff, Set.mem_Icc, Set.mem_Ioo]
   exact
-    ⟨fun h => ⟨h.1.1.lt_of_ne (Ne.symm h.2.1), h.1.2.lt_of_ne h.2.2⟩, fun h =>
+    ⟨fun h ↦ ⟨h.1.1.lt_of_ne (Ne.symm h.2.1), h.1.2.lt_of_ne h.2.2⟩, fun h =>
       ⟨⟨h.1.le, h.2.le⟩, h.1.ne', h.2.ne⟩⟩
 
 @[simp]
@@ -586,7 +586,7 @@ variable {R}
 
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     Wbtw R x y z ↔ x = y ∨ z ∈ lineMap x y '' Set.Ici (1 : R) := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨r, ⟨hr0, hr1⟩, rfl⟩
     rcases hr0.lt_or_eq with (hr0' | rfl)
     · rw [Set.mem_image]
@@ -612,7 +612,7 @@ theorem Wbtw.right_mem_affineSpan_of_left_ne {x y z : P} (h : Wbtw R x y z) (hne
 
 theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
     Sbtw R x y z ↔ x ≠ y ∧ z ∈ lineMap x y '' Set.Ioi (1 : R) := by
-  refine ⟨fun h => ⟨h.left_ne, ?_⟩, fun h => ?_⟩
+  refine ⟨fun h ↦ ⟨h.left_ne, ?_⟩, fun h ↦ ?_⟩
   · obtain ⟨r, ⟨hr, rfl⟩⟩ := h.wbtw.right_mem_image_Ici_of_left_ne h.left_ne
     rw [Set.mem_Ici] at hr
     rcases hr.lt_or_eq with (hrlt | rfl)
@@ -776,7 +776,7 @@ theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} :
       exact Or.inl (wbtw_or_wbtw_smul_vadd_of_nonneg _ _ hy0.le hz0.le)
 
 theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x) (z -ᵥ y) := by
-  refine ⟨Wbtw.sameRay_vsub, fun h => ?_⟩
+  refine ⟨Wbtw.sameRay_vsub, fun h ↦ ?_⟩
   rcases h with (h | h | ⟨r₁, r₂, hr₁, hr₂, h⟩)
   · rw [vsub_eq_zero_iff_eq] at h
     simp [h]

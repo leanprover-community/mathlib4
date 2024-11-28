@@ -41,7 +41,7 @@ class QuasiCompact (f : X ⟶ Y) : Prop where
   isCompact_preimage : ∀ U : Set Y, IsOpen U → IsCompact U → IsCompact (f.base ⁻¹' U)
 
 theorem quasiCompact_iff_spectral : QuasiCompact f ↔ IsSpectralMap f.base :=
-  ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.2⟩⟩
+  ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h ↦ ⟨h.2⟩⟩
 
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by

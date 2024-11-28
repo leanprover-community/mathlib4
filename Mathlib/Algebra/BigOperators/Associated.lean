@@ -25,7 +25,7 @@ namespace Prime
 variable [CommMonoidWithZero α] {p : α}
 
 theorem exists_mem_multiset_dvd (hp : Prime p) {s : Multiset α} : p ∣ s.prod → ∃ a ∈ s, p ∣ a :=
-  Multiset.induction_on s (fun h => (hp.not_dvd_one h).elim) fun a s ih h =>
+  Multiset.induction_on s (fun h ↦ (hp.not_dvd_one h).elim) fun a s ih h =>
     have : p ∣ a * s.prod := by simpa using h
     match hp.dvd_or_dvd this with
     | Or.inl h => ⟨a, Multiset.mem_cons_self a s, h⟩
@@ -34,7 +34,7 @@ theorem exists_mem_multiset_dvd (hp : Prime p) {s : Multiset α} : p ∣ s.prod 
       ⟨a, Multiset.mem_cons_of_mem has, h⟩
 
 theorem exists_mem_multiset_map_dvd (hp : Prime p) {s : Multiset β} {f : β → α} :
-    p ∣ (s.map f).prod → ∃ a ∈ s, p ∣ f a := fun h => by
+    p ∣ (s.map f).prod → ∃ a ∈ s, p ∣ f a := fun h ↦ by
   simpa only [exists_prop, Multiset.mem_map, exists_exists_and_eq_and] using
     hp.exists_mem_multiset_dvd h
 

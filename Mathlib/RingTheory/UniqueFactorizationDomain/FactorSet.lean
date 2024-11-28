@@ -489,7 +489,7 @@ theorem count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
     ⟨fun h =>
       Associates.le_of_count_ne_zero (Associates.mk_ne_zero.mpr ha0)
         (Associates.irreducible_mk.mpr hp) h,
-      fun h => ?_⟩
+      fun h ↦ ?_⟩
   rw [← pow_one (Associates.mk p),
     Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero.mpr ha0)
       (Associates.irreducible_mk.mpr hp)] at h

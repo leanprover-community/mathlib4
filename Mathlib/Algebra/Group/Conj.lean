@@ -46,7 +46,7 @@ theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
 theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
   ⟨fun ⟨c, hc⟩ => by
     rw [SemiconjBy, mul_comm, ← Units.mul_inv_eq_iff_eq_mul, mul_assoc, c.mul_inv, mul_one] at hc
-    exact hc, fun h => by rw [h]⟩
+    exact hc, fun h ↦ by rw [h]⟩
 
 protected theorem MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b → IsConj (f a) (f b)
   | ⟨c, hc⟩ => ⟨Units.map f c, by rw [Units.coe_map, SemiconjBy, ← f.map_mul, hc.eq, f.map_mul]⟩
@@ -62,7 +62,7 @@ variable [CancelMonoid α]
 -- not generalised.
 @[simp]
 theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 :=
-  ⟨fun ⟨_, hc⟩ => mul_right_cancel (hc.symm.trans ((mul_one _).trans (one_mul _).symm)), fun h => by
+  ⟨fun ⟨_, hc⟩ => mul_right_cancel (hc.symm.trans ((mul_one _).trans (one_mul _).symm)), fun h ↦ by
     rw [h]⟩
 
 @[simp]
@@ -246,7 +246,7 @@ theorem IsConj.conjugatesOf_eq {a b : α} (ab : IsConj a b) : conjugatesOf a = c
   Set.ext fun _ => ⟨fun ag => ab.symm.trans ag, fun bg => ab.trans bg⟩
 
 theorem isConj_iff_conjugatesOf_eq {a b : α} : IsConj a b ↔ conjugatesOf a = conjugatesOf b :=
-  ⟨IsConj.conjugatesOf_eq, fun h => by
+  ⟨IsConj.conjugatesOf_eq, fun h ↦ by
     have ha := @mem_conjugatesOf_self _ _ b -- Porting note: added `@`.
     rwa [← h] at ha⟩
 

@@ -141,7 +141,7 @@ theorem DifferentiableAt.zpow (hf : DifferentiableAt 𝕜 f a) (h : f a ≠ 0 �
 
 theorem DifferentiableOn.zpow (hf : DifferentiableOn 𝕜 f t) (h : (∀ x ∈ t, f x ≠ 0) ∨ 0 ≤ m) :
     DifferentiableOn 𝕜 (fun x => f x ^ m) t := fun x hx =>
-  (hf x hx).zpow <| h.imp_left fun h => h x hx
+  (hf x hx).zpow <| h.imp_left fun h ↦ h x hx
 
 theorem Differentiable.zpow (hf : Differentiable 𝕜 f) (h : (∀ x, f x ≠ 0) ∨ 0 ≤ m) :
-    Differentiable 𝕜 fun x => f x ^ m := fun x => (hf x).zpow <| h.imp_left fun h => h x
+    Differentiable 𝕜 fun x => f x ^ m := fun x => (hf x).zpow <| h.imp_left fun h ↦ h x

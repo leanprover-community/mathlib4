@@ -650,7 +650,7 @@ theorem _root_.Collinear.oangle_sign_of_sameRay_vsub {p₁ p₂ p₃ p₄ : P} (
       change q ∈ line[ℝ, p₁, p₂] at hq
       rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent]
       refine affineIndependent_of_ne_of_mem_of_not_mem_of_mem ?_ hq
-          (fun h => hc₅₁₂ ((collinear_insert_iff_of_mem_affineSpan h).2 (collinear_pair _ _ _))) ?_
+          (fun h ↦ hc₅₁₂ ((collinear_insert_iff_of_mem_affineSpan h).2 (collinear_pair _ _ _))) ?_
       · rwa [← @vsub_ne_zero V, vsub_vadd_eq_vsub_sub, vsub_self, zero_sub, neg_ne_zero]
       · refine vadd_mem_of_mem_direction ?_ hq
         rw [direction_affineSpan]

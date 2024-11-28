@@ -783,10 +783,10 @@ theorem mul_refl (e : E ≃ₗᵢ[R] E) : e * refl _ _ = e :=
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
 instance instCoeTCContinuousLinearEquiv : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) :=
-  ⟨fun e => ⟨e.toLinearEquiv, e.continuous, e.toIsometryEquiv.symm.continuous⟩⟩
+  ⟨fun e ↦ ⟨e.toLinearEquiv, e.continuous, e.toIsometryEquiv.symm.continuous⟩⟩
 
 instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
-  ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
+  ⟨fun e ↦ ↑(e : E ≃SL[σ₁₂] E₂)⟩
 
 @[simp]
 theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e :=

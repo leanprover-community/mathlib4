@@ -187,7 +187,7 @@ lemma AEMeasurable.ennreal_ofReal {f : α → ℝ} {μ : Measure α} (hf : AEMea
 @[simp, norm_cast]
 theorem measurable_coe_nnreal_real_iff {f : α → ℝ≥0} :
     Measurable (fun x => f x : α → ℝ) ↔ Measurable f :=
-  ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, Measurable.coe_nnreal_real⟩
+  ⟨fun h ↦ by simpa only [Real.toNNReal_coe] using h.real_toNNReal, Measurable.coe_nnreal_real⟩
 
 @[simp, norm_cast]
 theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} :
@@ -338,12 +338,12 @@ theorem AEMeasurable.ennreal_toNNReal {f : α → ℝ≥0∞} {μ : Measure α} 
 @[simp, norm_cast]
 theorem measurable_coe_nnreal_ennreal_iff {f : α → ℝ≥0} :
     (Measurable fun x => (f x : ℝ≥0∞)) ↔ Measurable f :=
-  ⟨fun h => h.ennreal_toNNReal, fun h => h.coe_nnreal_ennreal⟩
+  ⟨fun h ↦ h.ennreal_toNNReal, fun h ↦ h.coe_nnreal_ennreal⟩
 
 @[simp, norm_cast]
 theorem aemeasurable_coe_nnreal_ennreal_iff {f : α → ℝ≥0} {μ : Measure α} :
     AEMeasurable (fun x => (f x : ℝ≥0∞)) μ ↔ AEMeasurable f μ :=
-  ⟨fun h => h.ennreal_toNNReal, fun h => h.coe_nnreal_ennreal⟩
+  ⟨fun h ↦ h.ennreal_toNNReal, fun h ↦ h.coe_nnreal_ennreal⟩
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_toReal {f : α → ℝ≥0∞} (hf : Measurable f) :

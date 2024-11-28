@@ -179,7 +179,7 @@ theorem pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
   apply pow_prime_sub_pow_prime hp hp1
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
-  · exact fun h => hx (hp.dvd_of_dvd_pow h)
+  · exact fun h ↦ hx (hp.dvd_of_dvd_pow h)
 
 end IntegralDomain
 
@@ -202,7 +202,7 @@ theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (
     h.emultiplicity_eq_multiplicity]
   · rw [← geom_sum₂_mul]
     exact dvd_mul_of_dvd_right hxy _
-  · exact fun h => hx (hp.dvd_of_dvd_pow h)
+  · exact fun h ↦ hx (hp.dvd_of_dvd_pow h)
   · rw [Int.natCast_dvd_natCast]
     rintro ⟨c, rfl⟩
     refine hpn ⟨c, ?_⟩

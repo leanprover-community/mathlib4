@@ -219,6 +219,6 @@ end SetFiniteConstructors
 
 theorem forall_finite_image_eval_iff {δ : Type*} [Finite δ] {κ : δ → Type*} {s : Set (∀ d, κ d)} :
     (∀ d, (eval d '' s).Finite) ↔ s.Finite :=
-  ⟨fun h => (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ => h.image _⟩
+  ⟨fun h ↦ (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ => h.image _⟩
 
 end Set

@@ -288,7 +288,7 @@ theorem sInf_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
   sInf_adj.trans <|
     and_iff_left_of_imp <| by
       obtain ⟨G, hG⟩ := hs
-      exact fun h => (h _ hG).ne
+      exact fun h ↦ (h _ hG).ne
 
 theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
@@ -313,7 +313,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     bot_le := fun _ _ _ h => h.elim
     sdiff_eq := fun x y => by
       ext v w
-      refine ⟨fun h => ⟨h.1, ⟨?_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
+      refine ⟨fun h ↦ ⟨h.1, ⟨?_, h.2⟩⟩, fun h ↦ ⟨h.1, h.2.2⟩⟩
       rintro rfl
       exact x.irrefl h.1
     inf_compl_le_bot := fun _ _ _ h => False.elim <| h.2.2 h.1
@@ -572,7 +572,7 @@ theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ { e | e.IsDiag } := 
 @[simp]
 theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   ext v w
-  exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
+  exact ⟨fun h ↦ h.1, fun h ↦ ⟨h, G.ne_of_adj h⟩⟩
 
 @[simp]
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
@@ -668,7 +668,7 @@ theorem incidenceSet_inter_incidenceSet_of_not_adj (h : ¬G.Adj a b) (hn : a ≠
 
 instance decidableMemIncidenceSet [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     DecidablePred (· ∈ G.incidenceSet v) :=
-  inferInstanceAs <| DecidablePred fun e => e ∈ G.edgeSet ∧ v ∈ e
+  inferInstanceAs <| DecidablePred fun e ↦ e ∈ G.edgeSet ∧ v ∈ e
 
 @[simp]
 theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=

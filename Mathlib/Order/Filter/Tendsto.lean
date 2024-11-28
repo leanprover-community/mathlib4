@@ -147,7 +147,7 @@ theorem tendsto_comap {f : α → β} {x : Filter β} : Tendsto f (comap f x) x 
 @[simp]
 theorem tendsto_comap_iff {f : α → β} {g : β → γ} {a : Filter α} {c : Filter γ} :
     Tendsto f a (c.comap g) ↔ Tendsto (g ∘ f) a c :=
-  ⟨fun h => tendsto_comap.comp h, fun h => map_le_iff_le_comap.mp <| by rwa [map_map]⟩
+  ⟨fun h ↦ tendsto_comap.comp h, fun h ↦ map_le_iff_le_comap.mp <| by rwa [map_map]⟩
 
 theorem tendsto_comap'_iff {m : α → β} {f : Filter α} {g : Filter β} {i : γ → α} (h : range i ∈ f) :
     Tendsto (m ∘ i) (comap i f) g ↔ Tendsto m f g := by

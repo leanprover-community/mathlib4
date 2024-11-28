@@ -458,7 +458,7 @@ theorem realize_all_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : 
     {xs : Fin n → M} : (φ.liftAt 1 n).all.Realize v xs ↔ φ.Realize v xs := by
   inhabit M
   simp only [realize_all, realize_liftAt_one_self]
-  refine ⟨fun h => ?_, fun h a => ?_⟩
+  refine ⟨fun h ↦ ?_, fun h a => ?_⟩
   · refine (congr rfl (funext fun i => ?_)).mp (h default)
     simp
   · refine (congr rfl (funext fun i => ?_)).mp h
@@ -667,7 +667,7 @@ variable {M} (T : L.Theory)
 
 @[simp default-10]
 theorem Theory.model_iff : M ⊨ T ↔ ∀ φ ∈ T, M ⊨ φ :=
-  ⟨fun h => h.realize_of_mem, fun h => ⟨h⟩⟩
+  ⟨fun h ↦ h.realize_of_mem, fun h ↦ ⟨h⟩⟩
 
 theorem Theory.realize_sentence_of_mem [M ⊨ T] {φ : L.Sentence} (h : φ ∈ T) : M ⊨ φ :=
   Theory.Model.realize_of_mem φ h
@@ -692,7 +692,7 @@ theorem Model.union {T' : L.Theory} (h : M ⊨ T) (h' : M ⊨ T') : M ⊨ T ∪ 
 
 @[simp]
 theorem model_union_iff {T' : L.Theory} : M ⊨ T ∪ T' ↔ M ⊨ T ∧ M ⊨ T' :=
-  ⟨fun h => ⟨h.mono Set.subset_union_left, h.mono Set.subset_union_right⟩, fun h =>
+  ⟨fun h ↦ ⟨h.mono Set.subset_union_left, h.mono Set.subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 
 @[simp]
@@ -716,7 +716,7 @@ variable (M N)
 
 theorem realize_iff_of_model_completeTheory [N ⊨ L.completeTheory M] (φ : L.Sentence) :
     N ⊨ φ ↔ M ⊨ φ := by
-  refine ⟨fun h => ?_, (L.completeTheory M).realize_sentence_of_mem⟩
+  refine ⟨fun h ↦ ?_, (L.completeTheory M).realize_sentence_of_mem⟩
   contrapose! h
   rw [← Sentence.realize_not] at *
   exact (L.completeTheory M).realize_sentence_of_mem (mem_completeTheory.2 h)

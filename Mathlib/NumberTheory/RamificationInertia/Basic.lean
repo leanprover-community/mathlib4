@@ -204,7 +204,7 @@ theorem inertiaDeg_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸ 
     inertiaDeg f p P = 0 := by
   have := Ideal.Quotient.subsingleton_iff.mp hQ
   subst this
-  exact dif_neg fun h => hp.ne_top <| h.symm.trans comap_top
+  exact dif_neg fun h ↦ hp.ne_top <| h.symm.trans comap_top
 
 @[simp]
 theorem inertiaDeg_algebraMap [Algebra R S] [P.LiesOver p] [p.IsMaximal] :

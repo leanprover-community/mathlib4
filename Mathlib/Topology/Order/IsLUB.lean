@@ -170,7 +170,7 @@ theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGene
 theorem exists_seq_strictMono_tendsto' {α : Type*} [LinearOrder α] [TopologicalSpace α]
     [DenselyOrdered α] [OrderTopology α] [FirstCountableTopology α] {x y : α} (hy : y < x) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ Ioo y x) ∧ Tendsto u atTop (𝓝 x) := by
-  have hx : x ∉ Ioo y x := fun h => (lt_irrefl x h.2).elim
+  have hx : x ∉ Ioo y x := fun h ↦ (lt_irrefl x h.2).elim
   have ht : Set.Nonempty (Ioo y x) := nonempty_Ioo.2 hy
   rcases (isLUB_Ioo hy).exists_seq_strictMono_tendsto_of_not_mem hx ht with ⟨u, hu⟩
   exact ⟨u, hu.1, hu.2.2.symm⟩

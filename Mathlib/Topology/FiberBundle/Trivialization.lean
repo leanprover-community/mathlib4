@@ -738,7 +738,7 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
     · show (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_not_mem, e'.coe_fst hp']
       simp only [source_eq] at hp' ⊢
-      exact fun h => H.le_bot ⟨h, hp'⟩
+      exact fun h ↦ H.le_bot ⟨h, hp'⟩
 
 end Piecewise
 

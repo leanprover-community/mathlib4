@@ -74,7 +74,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
         · exact hab.not_le hba
       · rintro ⟨⟨j, b, hij⟩ | ⟨i, hab⟩, hba⟩
         · exact Lex.left _ _ hij
-        · exact Lex.right _ (hab.lt_of_not_le fun h => hba <| Lex.right _ h) }
+        · exact Lex.right _ (hab.lt_of_not_le fun h ↦ hba <| Lex.right _ h) }
 
 /-- Dictionary / lexicographic partial_order for dependent pairs. -/
 instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) :=

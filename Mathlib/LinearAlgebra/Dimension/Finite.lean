@@ -462,7 +462,7 @@ theorem Submodule.rank_eq_zero [Nontrivial R] [NoZeroSMulDivisors R M] {S : Subm
       congr_arg Subtype.val <|
         ((Submodule.eq_bot_iff _).1 <| Eq.symm <| Submodule.bot_eq_top_of_rank_eq_zero h) ⟨x, hx⟩
           Submodule.mem_top,
-    fun h => by rw [h, rank_bot]⟩
+    fun h ↦ by rw [h, rank_bot]⟩
 
 @[simp]
 theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R M]

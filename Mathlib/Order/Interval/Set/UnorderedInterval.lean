@@ -97,7 +97,7 @@ lemma uIcc_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂
 
 lemma uIcc_subset_uIcc_iff_mem :
     [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
-  Iff.intro (fun h => ⟨h left_mem_uIcc, h right_mem_uIcc⟩) fun h =>
+  Iff.intro (fun h ↦ ⟨h left_mem_uIcc, h right_mem_uIcc⟩) fun h =>
     uIcc_subset_uIcc h.1 h.2
 
 lemma uIcc_subset_uIcc_iff_le' :
@@ -220,8 +220,8 @@ lemma monotone_or_antitone_iff_uIcc :
   contrapose!
   rw [not_monotone_not_antitone_iff_exists_le_le]
   rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
-  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.2.not_lt <| max_lt hfab hfcb⟩
-  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.1.not_lt <| lt_min hfba hfbc⟩
+  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h ↦ h.2.not_lt <| max_lt hfab hfcb⟩
+  · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h ↦ h.1.not_lt <| lt_min hfba hfbc⟩
 
 -- Porting note: mathport expands the syntactic sugar `∀ a b c ∈ s` differently than Lean3
 lemma monotoneOn_or_antitoneOn_iff_uIcc :

@@ -431,8 +431,8 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (postcomposeEquivalence f).functor
-    unitIso := NatIso.ofComponents fun c => Cones.ext (e.unitIso.app _)
-    counitIso := NatIso.ofComponents fun c => Cones.ext (e.counitIso.app _) }
+    unitIso := NatIso.ofComponents fun c ↦ Cones.ext (e.unitIso.app _)
+    counitIso := NatIso.ofComponents fun c ↦ Cones.ext (e.counitIso.app _) }
 
 /-- If `F` reflects isomorphisms, then `Cones.functoriality F` reflects isomorphisms
 as well.
@@ -629,8 +629,8 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e.unitIso.symm ≪≫ Functor.rightUnitor _
   { functor := functoriality F e.functor
     inverse := functoriality (F ⋙ e.functor) e.inverse ⋙ (precomposeEquivalence f.symm).functor
-    unitIso := NatIso.ofComponents fun c => Cocones.ext (e.unitIso.app _)
-    counitIso := NatIso.ofComponents fun c => Cocones.ext (e.counitIso.app _) }
+    unitIso := NatIso.ofComponents fun c ↦ Cocones.ext (e.unitIso.app _)
+    counitIso := NatIso.ofComponents fun c ↦ Cocones.ext (e.counitIso.app _) }
 
 /-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms
 as well.
@@ -711,7 +711,7 @@ noncomputable def mapCoconeInvMapCocone {F : J ⥤ D} (H : D ⥤ C) [IsEquivalen
 @[simps!]
 def functorialityCompPostcompose {H H' : C ⥤ D} (α : H ≅ H') :
     Cones.functoriality F H ⋙ Cones.postcompose (whiskerLeft F α.hom) ≅ Cones.functoriality F H' :=
-  NatIso.ofComponents fun c => Cones.ext (α.app _)
+  NatIso.ofComponents fun c ↦ Cones.ext (α.app _)
 
 /-- For `F : J ⥤ C`, given a cone `c : Cone F`, and a natural isomorphism `α : H ≅ H'` for functors
 `H H' : C ⥤ D`, the postcomposition of the cone `H.mapCone` using the isomorphism `α` is
@@ -746,7 +746,7 @@ def mapConePostcomposeEquivalenceFunctor {α : F ≅ G} {c} :
 def functorialityCompPrecompose {H H' : C ⥤ D} (α : H ≅ H') :
     Cocones.functoriality F H ⋙ Cocones.precompose (whiskerLeft F α.inv) ≅
       Cocones.functoriality F H' :=
-  NatIso.ofComponents fun c => Cocones.ext (α.app _)
+  NatIso.ofComponents fun c ↦ Cocones.ext (α.app _)
 
 /--
 For `F : J ⥤ C`, given a cocone `c : Cocone F`, and a natural isomorphism `α : H ≅ H'` for functors
@@ -831,7 +831,7 @@ the category of cones on the opposite of `F`.
 -/
 def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   functor :=
-    { obj := fun c => op (Cocone.op c)
+    { obj := fun c ↦ op (Cocone.op c)
       map := fun {X} {Y} f =>
         Quiver.Hom.op
           { hom := f.hom.op
@@ -840,17 +840,17 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
               dsimp
               apply CoconeMorphism.w } }
   inverse :=
-    { obj := fun c => Cone.unop (unop c)
+    { obj := fun c ↦ Cone.unop (unop c)
       map := fun {X} {Y} f =>
         { hom := f.unop.hom.unop
           w := fun j => by
             apply Quiver.Hom.op_inj
             dsimp
             apply ConeMorphism.w } }
-  unitIso := NatIso.ofComponents (fun c => Cocones.ext (Iso.refl _))
+  unitIso := NatIso.ofComponents (fun c ↦ Cocones.ext (Iso.refl _))
   counitIso :=
     NatIso.ofComponents
-      (fun c => by
+      (fun c ↦ by
         induction c
         apply Iso.op
         exact Cones.ext (Iso.refl _))

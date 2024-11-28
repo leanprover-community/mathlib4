@@ -111,7 +111,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       mul_one, PNat.pow_coe, cast_pow, ← pow_mul, ← mul_assoc, mul_comm (k + 1), mul_assoc] at H
     have := mul_pos (succ_pos k) (tsub_pos_of_lt hp.out.one_lt)
     rw [← succ_pred_eq_of_pos this, mul_succ, pow_add _ _ ((p : ℕ) ^ k)] at H
-    replace H := (mul_left_inj' fun h => ?_).1 H
+    replace H := (mul_left_inj' fun h ↦ ?_).1 H
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · -- Porting note: was `replace h := pow_eq_zero h; rw [coe_coe] at h; simpa using hne.1`
       have := hne.1

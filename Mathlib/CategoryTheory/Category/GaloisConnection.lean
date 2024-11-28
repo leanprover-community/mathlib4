@@ -43,6 +43,6 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 -/
 theorem Adjunction.gc {L : X ⥤ Y} {R : Y ⥤ X} (adj : L ⊣ R) : GaloisConnection L.obj R.obj :=
   fun x y =>
-  ⟨fun h => ((adj.homEquiv x y).toFun h.hom).le, fun h => ((adj.homEquiv x y).invFun h.hom).le⟩
+  ⟨fun h ↦ ((adj.homEquiv x y).toFun h.hom).le, fun h ↦ ((adj.homEquiv x y).invFun h.hom).le⟩
 
 end CategoryTheory

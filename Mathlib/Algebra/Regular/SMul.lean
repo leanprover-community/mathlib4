@@ -170,7 +170,7 @@ protected theorem subsingleton (h : IsSMulRegular M (0 : R)) : Subsingleton M :=
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 theorem zero_iff_subsingleton : IsSMulRegular M (0 : R) ↔ Subsingleton M :=
-  ⟨fun h => h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
+  ⟨fun h ↦ h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
 
 /-- The `0` element is not `M`-regular, on a non-trivial module. -/
 theorem not_zero_iff : ¬IsSMulRegular M (0 : R) ↔ Nontrivial M := by

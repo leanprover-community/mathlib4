@@ -101,7 +101,7 @@ instance : LawfulMonadCont (ContT r m) where
 
 instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
   throw e _ := throw e
-  tryCatch act h f := tryCatch (act f) fun e => h e f
+  tryCatch act h f := tryCatch (act f) fun e ↦ h e f
 
 end ContT
 

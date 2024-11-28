@@ -75,7 +75,7 @@ instance : One PartENat :=
   ⟨some 1⟩
 
 instance : Add PartENat :=
-  ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h => get x h.1 + get y h.2⟩⟩
+  ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h ↦ get x h.1 + get y h.2⟩⟩
 
 instance (n : ℕ) : Decidable (some n).Dom :=
   isTrue trivial
@@ -140,7 +140,7 @@ instance : Bot PartENat :=
   ⟨0⟩
 
 instance : Max PartENat :=
-  ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h => x.get h.1 ⊔ y.get h.2⟩⟩
+  ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h ↦ x.get h.1 ⊔ y.get h.2⟩⟩
 
 theorem le_def (x y : PartENat) :
     x ≤ y ↔ ∃ h : y.Dom → x.Dom, ∀ hy : y.Dom, x.get (h hy) ≤ y.get hy :=
@@ -157,7 +157,7 @@ protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → 
 
 -- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem top_add (x : PartENat) : ⊤ + x = ⊤ :=
-  Part.ext' (iff_of_eq (false_and _)) fun h => h.left.elim
+  Part.ext' (iff_of_eq (false_and _)) fun h ↦ h.left.elim
 
 -- not a simp lemma as we will provide a `LinearOrderedAddCommMonoidWithTop` instance later
 theorem add_top (x : PartENat) : x + ⊤ = ⊤ := by rw [add_comm, top_add]
@@ -214,8 +214,8 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
   if hx : x.Dom then
     decidable_of_decidable_of_iff (le_def x y).symm
   else
-    if hy : y.Dom then isFalse fun h => hx <| dom_of_le_of_dom h hy
-    else isTrue ⟨fun h => (hy h).elim, fun h => (hy h).elim⟩
+    if hy : y.Dom then isFalse fun h ↦ hx <| dom_of_le_of_dom h hy
+    else isTrue ⟨fun h ↦ (hy h).elim, fun h ↦ (hy h).elim⟩
 
 -- Porting note: Removed. Use `Nat.castAddMonoidHom` instead.
 
@@ -252,7 +252,7 @@ noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
   { PartENat.partialOrder, PartENat.addCommMonoid with
     add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
       PartENat.casesOn c (by simp [top_add]) fun c =>
-        ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
+        ⟨fun h ↦ And.intro (dom_natCast _) (h₁ h.2), fun h ↦ by
           simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
 
 instance semilatticeSup : SemilatticeSup PartENat :=
@@ -269,7 +269,7 @@ instance orderBot : OrderBot PartENat where
 
 instance orderTop : OrderTop PartENat where
   top := ⊤
-  le_top _ := ⟨fun h => False.elim h, fun hy => False.elim hy⟩
+  le_top _ := ⟨fun h ↦ False.elim h, fun hy => False.elim hy⟩
 
 instance : ZeroLEOneClass PartENat where
   zero_le_one := bot_le
@@ -317,7 +317,7 @@ theorem top_eq_none : (⊤ : PartENat) = Part.none :=
 
 @[simp]
 theorem natCast_lt_top (x : ℕ) : (x : PartENat) < ⊤ :=
-  Ne.lt_top fun h => absurd (congr_arg Dom h) <| by simp only [dom_natCast]; exact true_ne_false
+  Ne.lt_top fun h ↦ absurd (congr_arg Dom h) <| by simp only [dom_natCast]; exact true_ne_false
 
 @[simp]
 theorem zero_lt_top : (0 : PartENat) < ⊤ :=
@@ -420,7 +420,7 @@ noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
     exists_add_of_le := fun {a b} =>
       PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
-        PartENat.casesOn a (fun h => ((natCast_lt_top _).not_le h).elim) fun a h =>
+        PartENat.casesOn a (fun h ↦ ((natCast_lt_top _).not_le h).elim) fun a h =>
           ⟨(b - a : ℕ), by
             rw [← Nat.cast_add, natCast_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩ }
 
@@ -443,7 +443,7 @@ protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ �
   norm_cast; apply add_lt_add_right h
 
 protected theorem add_lt_add_iff_right {x y z : PartENat} (hz : z ≠ ⊤) : x + z < y + z ↔ x < y :=
-  ⟨lt_of_add_lt_add_right, fun h => PartENat.add_lt_add_right h hz⟩
+  ⟨lt_of_add_lt_add_right, fun h ↦ PartENat.add_lt_add_right h hz⟩
 
 protected theorem add_lt_add_iff_left {x y z : PartENat} (hz : z ≠ ⊤) : z + x < z + y ↔ x < y := by
   rw [add_comm z, add_comm z, PartENat.add_lt_add_iff_right hz]
@@ -471,7 +471,7 @@ theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
   norm_cast; apply Nat.succ_le_of_lt; norm_cast at h
 
 theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x < y := by
-  refine ⟨fun h => ?_, add_one_le_of_lt⟩
+  refine ⟨fun h ↦ ?_, add_one_le_of_lt⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction' y using PartENat.casesOn with n
   · apply natCast_lt_top
@@ -482,7 +482,7 @@ theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e 
   rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, add_one_le_iff_lt (natCast_ne_top n)]
 
 theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x ≤ y := by
-  refine ⟨le_of_lt_add_one, fun h => ?_⟩
+  refine ⟨le_of_lt_add_one, fun h ↦ ?_⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction' y using PartENat.casesOn with n
   · rw [top_add]

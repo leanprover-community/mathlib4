@@ -337,7 +337,7 @@ theorem mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
 
 @[simp]
 theorem nonempty_ball : (ball x ε).Nonempty ↔ 0 < ε :=
-  ⟨fun ⟨_x, hx⟩ => pos_of_mem_ball hx, fun h => ⟨x, mem_ball_self h⟩⟩
+  ⟨fun ⟨_x, hx⟩ => pos_of_mem_ball hx, fun h ↦ ⟨x, mem_ball_self h⟩⟩
 
 @[simp]
 theorem ball_eq_empty : ball x ε = ∅ ↔ ε ≤ 0 := by
@@ -416,7 +416,7 @@ theorem mem_closedBall_self (h : 0 ≤ ε) : x ∈ closedBall x ε := by
 
 @[simp]
 theorem nonempty_closedBall : (closedBall x ε).Nonempty ↔ 0 ≤ ε :=
-  ⟨fun ⟨_x, hx⟩ => dist_nonneg.trans hx, fun h => ⟨x, mem_closedBall_self h⟩⟩
+  ⟨fun ⟨_x, hx⟩ => dist_nonneg.trans hx, fun h ↦ ⟨x, mem_closedBall_self h⟩⟩
 
 @[simp]
 theorem closedBall_eq_empty : closedBall x ε = ∅ ↔ ε < 0 := by
@@ -580,7 +580,7 @@ theorem isBounded_iff_eventually {s : Set α} :
 
 theorem isBounded_iff_exists_ge {s : Set α} (c : ℝ) :
     IsBounded s ↔ ∃ C, c ≤ C ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C :=
-  ⟨fun h => ((eventually_ge_atTop c).and (isBounded_iff_eventually.1 h)).exists, fun h =>
+  ⟨fun h ↦ ((eventually_ge_atTop c).and (isBounded_iff_eventually.1 h)).exists, fun h =>
     isBounded_iff.2 <| h.imp fun _ => And.right⟩
 
 theorem isBounded_iff_nndist {s : Set α} :

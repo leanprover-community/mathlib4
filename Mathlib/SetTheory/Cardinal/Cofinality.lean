@@ -186,7 +186,7 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
     ⟨⟨b, bS⟩, ba⟩
   let b := (IsWellFounded.wf : WellFounded s).min _ this
   have ba : ¬r b a := IsWellFounded.wf.min_mem _ this
-  refine ⟨b, ⟨b.2, fun c => not_imp_not.1 fun h => ?_⟩, ba⟩
+  refine ⟨b, ⟨b.2, fun c ↦ not_imp_not.1 fun h ↦ ?_⟩, ba⟩
   rw [show ∀ b : S, (⟨b, b.2⟩ : S) = b by intro b; cases b; rfl]
   exact IsWellFounded.wf.not_lt_min _ this (IsOrderConnected.neg_trans h ba)
 
@@ -279,7 +279,7 @@ theorem le_cof_iff_lsub {o : Ordinal} {a : Cardinal} :
 theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
     (hι : Cardinal.lift.{v, u} #ι < c.cof)
     (hf : ∀ i, f i < c) : lsub.{u, v} f < c :=
-  lt_of_le_of_ne (lsub_le hf) fun h => by
+  lt_of_le_of_ne (lsub_le hf) fun h ↦ by
     subst h
     exact (cof_lsub_le_lift.{u, v} f).not_lt hι
 
@@ -449,7 +449,7 @@ theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 :=
         ⟨fun a =>
           let ⟨_, h, _⟩ := hl a
           (mk_eq_zero_iff.1 (e.trans z)).elim' ⟨_, h⟩⟩,
-    fun e => by simp [e]⟩
+    fun e ↦ by simp [e]⟩
 
 theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
   cof_eq_zero.not
@@ -639,7 +639,7 @@ theorem IsNormal.cof_le {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
   · rw [hf.cof_eq ha]
 
 @[simp]
-theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
+theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h ↦ by
   rcases zero_or_succ_or_limit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
   · rw [add_succ, cof_succ, cof_succ]
@@ -650,7 +650,7 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
   · simp [not_zero_isLimit, Cardinal.aleph0_ne_zero]
   · simp [not_succ_isLimit, Cardinal.one_lt_aleph0]
   · simp only [l, iff_true]
-    refine le_of_not_lt fun h => ?_
+    refine le_of_not_lt fun h ↦ ?_
     cases' Cardinal.lt_aleph0.1 h with n e
     have := cof_cof o
     rw [e, ord_nat] at this
@@ -714,7 +714,7 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} :=
       rcases lt_univ'.1 h with ⟨c, rfl⟩
       rcases @cof_eq Ordinal.{u} (· < ·) _ with ⟨S, H, Se⟩
       rw [univ, ← lift_cof, ← Cardinal.lift_lift.{u+1, v, u}, Cardinal.lift_lt, ← Se]
-      refine lt_of_not_ge fun h => ?_
+      refine lt_of_not_ge fun h ↦ ?_
       cases' Cardinal.mem_range_lift_of_le h with a e
       refine Quotient.inductionOn a (fun α e => ?_) e
       cases' Quotient.exact e with f
@@ -928,7 +928,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩
         rw [← Se]
-        apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_right' h c
+        apply lt_imp_lt_of_le_imp_le fun h ↦ mul_le_mul_right' h c
         rw [mul_eq_self h, ← succ_le_iff, ← αe, ← sum_const']
         refine le_trans ?_ (sum_le_sum (fun (x : S) => card (typein r (x : α))) _ fun i => ?_)
         · simp only [← card_typein, ← mk_sigma]

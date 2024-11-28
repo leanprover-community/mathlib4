@@ -155,7 +155,7 @@ end Mul
 @[to_additive " A version of `measurable_sub_const` that assumes `MeasurableAdd` instead of
   `MeasurableSub`. This can be nice to avoid unnecessary type-class assumptions. "]
 theorem measurable_div_const' {G : Type*} [DivInvMonoid G] [MeasurableSpace G] [MeasurableMul G]
-    (g : G) : Measurable fun h => h / g := by simp_rw [div_eq_mul_inv, measurable_mul_const]
+    (g : G) : Measurable fun h ↦ h / g := by simp_rw [div_eq_mul_inv, measurable_mul_const]
 
 /-- This class assumes that the map `β × γ → β` given by `(x, y) ↦ x ^ y` is measurable. -/
 class MeasurablePow (β γ : Type*) [MeasurableSpace β] [MeasurableSpace γ] [Pow β γ] : Prop where
@@ -390,22 +390,22 @@ theorem AEMeasurable.inv (hf : AEMeasurable f μ) : AEMeasurable (fun x => (f x)
 @[to_additive (attr := simp)]
 theorem measurable_inv_iff {G : Type*} [Group G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : (Measurable fun x => (f x)⁻¹) ↔ Measurable f :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h ↦ by simpa only [inv_inv] using h.inv, fun h ↦ h.inv⟩
 
 @[to_additive (attr := simp)]
 theorem aemeasurable_inv_iff {G : Type*} [Group G] [MeasurableSpace G] [MeasurableInv G]
     {f : α → G} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h ↦ by simpa only [inv_inv] using h.inv, fun h ↦ h.inv⟩
 
 @[simp]
 theorem measurable_inv_iff₀ {G₀ : Type*} [GroupWithZero G₀] [MeasurableSpace G₀]
     [MeasurableInv G₀] {f : α → G₀} : (Measurable fun x => (f x)⁻¹) ↔ Measurable f :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h ↦ by simpa only [inv_inv] using h.inv, fun h ↦ h.inv⟩
 
 @[simp]
 theorem aemeasurable_inv_iff₀ {G₀ : Type*} [GroupWithZero G₀] [MeasurableSpace G₀]
     [MeasurableInv G₀] {f : α → G₀} : AEMeasurable (fun x => (f x)⁻¹) μ ↔ AEMeasurable f μ :=
-  ⟨fun h => by simpa only [inv_inv] using h.inv, fun h => h.inv⟩
+  ⟨fun h ↦ by simpa only [inv_inv] using h.inv, fun h ↦ h.inv⟩
 
 @[to_additive]
 instance Pi.measurableInv {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
@@ -520,7 +520,7 @@ instance measurableSMul₂_of_mul (M : Type*) [Mul M] [MeasurableSpace M] [Measu
 @[to_additive]
 instance Submonoid.measurableSMul {M α} [MeasurableSpace M] [MeasurableSpace α] [Monoid M]
     [MulAction M α] [MeasurableSMul M α] (s : Submonoid M) : MeasurableSMul s α :=
-  ⟨fun c => by simpa only using measurable_const_smul (c : M), fun x =>
+  ⟨fun c ↦ by simpa only using measurable_const_smul (c : M), fun x =>
     (measurable_smul_const x : Measurable fun c : M => c • x).comp measurable_subtype_coe⟩
 
 @[to_additive]
@@ -650,12 +650,12 @@ variable {G : Type*} [Group G] [MeasurableSpace G] [MulAction G β] [MeasurableS
 
 @[to_additive]
 theorem measurable_const_smul_iff (c : G) : (Measurable fun x => c • f x) ↔ Measurable f :=
-  ⟨fun h => by simpa [inv_smul_smul, Pi.smul_def] using h.const_smul c⁻¹, fun h => h.const_smul c⟩
+  ⟨fun h ↦ by simpa [inv_smul_smul, Pi.smul_def] using h.const_smul c⁻¹, fun h ↦ h.const_smul c⟩
 
 @[to_additive]
 theorem aemeasurable_const_smul_iff (c : G) :
     AEMeasurable (fun x => c • f x) μ ↔ AEMeasurable f μ :=
-  ⟨fun h => by simpa [inv_smul_smul, Pi.smul_def] using h.const_smul c⁻¹, fun h => h.const_smul c⟩
+  ⟨fun h ↦ by simpa [inv_smul_smul, Pi.smul_def] using h.const_smul c⁻¹, fun h ↦ h.const_smul c⟩
 
 @[to_additive]
 instance Units.instMeasurableSpace : MeasurableSpace Mˣ := MeasurableSpace.comap ((↑) : Mˣ → M) ‹_›
@@ -732,7 +732,7 @@ nonrec instance MeasurableSMul.op {M α} [MeasurableSpace M] [MeasurableSpace α
       show Measurable fun x => op c • x by
         simpa only [op_smul_eq_smul] using measurable_const_smul c,
     fun x =>
-    show Measurable fun c => op (unop c) • x by
+    show Measurable fun c ↦ op (unop c) • x by
       simpa only [op_smul_eq_smul] using (measurable_smul_const x).comp measurable_mul_unop⟩
 
 /-- If a scalar is central, then its right action is measurable when its left action is. -/
@@ -745,7 +745,7 @@ nonrec instance MeasurableSMul₂.op {M α} [MeasurableSpace M] [MeasurableSpace
 @[to_additive]
 instance measurableSMul_opposite_of_mul {M : Type*} [Mul M] [MeasurableSpace M]
     [MeasurableMul M] : MeasurableSMul Mᵐᵒᵖ M :=
-  ⟨fun c => measurable_mul_const (unop c), fun x => measurable_mul_unop.const_mul x⟩
+  ⟨fun c ↦ measurable_mul_const (unop c), fun x => measurable_mul_unop.const_mul x⟩
 
 @[to_additive]
 instance measurableSMul₂_opposite_of_mul {M : Type*} [Mul M] [MeasurableSpace M]

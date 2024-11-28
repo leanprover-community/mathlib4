@@ -553,7 +553,7 @@ theorem Basis.mem_span_iff_repr_mem (m : M) :
     m ∈ span R (Set.range b) ↔ ∀ i, b.repr m i ∈ Set.range (algebraMap R S) := by
   refine
     ⟨fun hm i => ⟨(b.restrictScalars R).repr ⟨m, hm⟩ i, b.restrictScalars_repr_apply R ⟨m, hm⟩ i⟩,
-      fun h => ?_⟩
+      fun h ↦ ?_⟩
   rw [← b.linearCombination_repr m, Finsupp.linearCombination_apply S _]
   refine sum_mem fun i _ => ?_
   obtain ⟨_, h⟩ := h i

@@ -225,7 +225,7 @@ theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) �
 
 /-- The only open sets in the indiscrete topology are the empty set and the whole space. -/
 theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     induction h with
     | basic _ h => exact False.elim h
     | univ => exact .inr rfl
@@ -269,7 +269,7 @@ theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : C
 singleton is open. -/
 theorem continuous_discrete_rng {α} [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β]
     {f : α → β} : Continuous f ↔ ∀ b : β, IsOpen (f ⁻¹' {b}) :=
-  ⟨fun h _ => (isOpen_discrete _).preimage h, fun h => ⟨fun s _ => by
+  ⟨fun h _ => (isOpen_discrete _).preimage h, fun h ↦ ⟨fun s _ => by
     rw [← biUnion_of_singleton s, preimage_iUnion₂]
     exact isOpen_biUnion fun _ _ => h _⟩⟩
 
@@ -294,7 +294,7 @@ theorem eq_bot_of_singletons_open {t : TopologicalSpace α} (h : ∀ x, IsOpen[t
 
 theorem forall_open_iff_discrete {X : Type*} [TopologicalSpace X] :
     (∀ s : Set X, IsOpen s) ↔ DiscreteTopology X :=
-  ⟨fun h => ⟨eq_bot_of_singletons_open fun _ => h _⟩, @isOpen_discrete _ _⟩
+  ⟨fun h ↦ ⟨eq_bot_of_singletons_open fun _ => h _⟩, @isOpen_discrete _ _⟩
 
 theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ s : Set α, IsClosed s :=
@@ -303,7 +303,7 @@ theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
 
 theorem singletons_open_iff_discrete {X : Type*} [TopologicalSpace X] :
     (∀ a : X, IsOpen ({a} : Set X)) ↔ DiscreteTopology X :=
-  ⟨fun h => ⟨eq_bot_of_singletons_open h⟩, fun a _ => @isOpen_discrete _ _ a _⟩
+  ⟨fun h ↦ ⟨eq_bot_of_singletons_open h⟩, fun a _ => @isOpen_discrete _ _ a _⟩
 
 theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [Finite α]
     (h : ∀ a : α, IsClosed {a}) : DiscreteTopology α :=

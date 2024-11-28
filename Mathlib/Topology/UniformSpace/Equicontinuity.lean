@@ -463,14 +463,14 @@ theorem equicontinuousOn_iff_range {F : ι → X → α} {S : Set X} :
 i.e the family `(↑) : range F → β → α` is uniformly equicontinuous. -/
 theorem uniformEquicontinuous_iff_range {F : ι → β → α} :
     UniformEquicontinuous F ↔ UniformEquicontinuous ((↑) : range F → β → α) :=
-  ⟨fun h => by rw [← comp_rangeSplitting F]; exact h.comp _, fun h =>
+  ⟨fun h ↦ by rw [← comp_rangeSplitting F]; exact h.comp _, fun h =>
     h.comp (rangeFactorization F)⟩
 
 /-- A family `𝓕 : ι → β → α` is uniformly equicontinuous on `S` iff `range 𝓕` is uniformly
 equicontinuous on `S`, i.e the family `(↑) : range F → β → α` is uniformly equicontinuous on `S`. -/
 theorem uniformEquicontinuousOn_iff_range {F : ι → β → α} {S : Set β} :
     UniformEquicontinuousOn F S ↔ UniformEquicontinuousOn ((↑) : range F → β → α) S :=
-  ⟨fun h => by rw [← comp_rangeSplitting F]; exact h.comp _, fun h =>
+  ⟨fun h ↦ by rw [← comp_rangeSplitting F]; exact h.comp _, fun h =>
     h.comp (rangeFactorization F)⟩
 
 section

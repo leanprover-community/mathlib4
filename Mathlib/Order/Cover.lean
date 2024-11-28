@@ -61,7 +61,7 @@ theorem AntisymmRel.wcovBy (h : AntisymmRel (· ≤ ·) a b) : a ⩿ b :=
   wcovBy_of_le_of_le h.1 h.2
 
 theorem WCovBy.wcovBy_iff_le (hab : a ⩿ b) : b ⩿ a ↔ b ≤ a :=
-  ⟨fun h => h.le, fun h => h.wcovBy_of_le hab.le⟩
+  ⟨fun h ↦ h.le, fun h ↦ h.wcovBy_of_le hab.le⟩
 
 theorem wcovBy_of_eq_or_eq (hab : a ≤ b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⩿ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
@@ -76,7 +76,7 @@ theorem WCovBy.trans_antisymm_rel (hab : a ⩿ b) (hbc : AntisymmRel (· ≤ ·)
   ⟨hab.le.trans hbc.1, fun _ had hdc => hab.2 had <| hdc.trans_le hbc.2⟩
 
 theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c ⩿ b :=
-  ⟨fun h => h.trans_antisymm_rel hab, fun h => h.trans_antisymm_rel hab.symm⟩
+  ⟨fun h ↦ h.trans_antisymm_rel hab, fun h ↦ h.trans_antisymm_rel hab.symm⟩
 
 /-- If `a ≤ b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
@@ -153,7 +153,7 @@ theorem WCovBy.eq_or_eq (h : a ⩿ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ 
 
 /-- An `iff` version of `WCovBy.eq_or_eq` and `wcovBy_of_eq_or_eq`. -/
 theorem wcovBy_iff_le_and_eq_or_eq : a ⩿ b ↔ a ≤ b ∧ ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b :=
-  ⟨fun h => ⟨h.le, fun _ => h.eq_or_eq⟩, And.rec wcovBy_of_eq_or_eq⟩
+  ⟨fun h ↦ ⟨h.le, fun _ => h.eq_or_eq⟩, And.rec wcovBy_of_eq_or_eq⟩
 
 theorem WCovBy.le_and_le_iff (h : a ⩿ b) : a ≤ c ∧ c ≤ b ↔ c = a ∨ c = b := by
   refine ⟨fun h2 => h.eq_or_eq h2.1 h2.2, ?_⟩; rintro (rfl | rfl)
@@ -186,7 +186,7 @@ section SemilatticeInf
 variable [SemilatticeInf α] {a b c : α}
 
 theorem WCovBy.inf_eq (hca : c ⩿ a) (hcb : c ⩿ b) (hab : a ≠ b) : a ⊓ b = c :=
-  (le_inf hca.le hcb.le).eq_of_not_gt fun h => hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
+  (le_inf hca.le hcb.le).eq_of_not_gt fun h ↦ hab.inf_lt_or_inf_lt.elim (hca.2 h) (hcb.2 h)
 
 end SemilatticeInf
 
@@ -272,14 +272,14 @@ theorem not_covBy_of_lt_of_lt (h₁ : a < b) (h₂ : b < c) : ¬a ⋖ c :=
   (not_covBy_iff (h₁.trans h₂)).2 ⟨b, h₁, h₂⟩
 
 theorem covBy_iff_wcovBy_and_lt : a ⋖ b ↔ a ⩿ b ∧ a < b :=
-  ⟨fun h => ⟨h.wcovBy, h.lt⟩, fun h => h.1.covBy_of_lt h.2⟩
+  ⟨fun h ↦ ⟨h.wcovBy, h.lt⟩, fun h ↦ h.1.covBy_of_lt h.2⟩
 
 theorem covBy_iff_wcovBy_and_not_le : a ⋖ b ↔ a ⩿ b ∧ ¬b ≤ a :=
-  ⟨fun h => ⟨h.wcovBy, h.lt.not_le⟩, fun h => h.1.covBy_of_not_le h.2⟩
+  ⟨fun h ↦ ⟨h.wcovBy, h.lt.not_le⟩, fun h ↦ h.1.covBy_of_not_le h.2⟩
 
 theorem wcovBy_iff_covBy_or_le_and_le : a ⩿ b ↔ a ⋖ b ∨ a ≤ b ∧ b ≤ a :=
-  ⟨fun h => or_iff_not_imp_right.mpr fun h' => h.covBy_of_not_le fun hba => h' ⟨h.le, hba⟩,
-    fun h' => h'.elim (fun h => h.wcovBy) fun h => h.1.wcovBy_of_le h.2⟩
+  ⟨fun h ↦ or_iff_not_imp_right.mpr fun h' => h.covBy_of_not_le fun hba => h' ⟨h.le, hba⟩,
+    fun h' => h'.elim (fun h ↦ h.wcovBy) fun h ↦ h.1.wcovBy_of_le h.2⟩
 
 alias ⟨WCovBy.covBy_or_le_and_le, _⟩ := wcovBy_iff_covBy_or_le_and_le
 
@@ -293,11 +293,11 @@ theorem CovBy.trans_antisymmRel (hab : a ⋖ b) (hbc : AntisymmRel (· ≤ ·) b
   ⟨hab.lt.trans_le hbc.1, fun _ had hdb => hab.2 had <| hdb.trans_le hbc.2⟩
 
 theorem covBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⋖ a ↔ c ⋖ b :=
-  ⟨fun h => h.trans_antisymmRel hab, fun h => h.trans_antisymmRel hab.symm⟩
+  ⟨fun h ↦ h.trans_antisymmRel hab, fun h ↦ h.trans_antisymmRel hab.symm⟩
 
 instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
   ⟨fun _ _ =>
-    covBy_iff_wcovBy_and_not_le.trans <| and_congr_right fun h => h.wcovBy_iff_le.not.symm⟩
+    covBy_iff_wcovBy_and_not_le.trans <| and_congr_right fun h ↦ h.wcovBy_iff_le.not.symm⟩
 
 instance CovBy.isIrrefl : IsIrrefl α (· ⋖ ·) :=
   ⟨fun _ ha => ha.ne rfl⟩
@@ -349,7 +349,7 @@ theorem WCovBy.covBy_of_ne (h : a ⩿ b) (h2 : a ≠ b) : a ⋖ b :=
   ⟨h.le.lt_of_ne h2, h.2⟩
 
 theorem covBy_iff_wcovBy_and_ne : a ⋖ b ↔ a ⩿ b ∧ a ≠ b :=
-  ⟨fun h => ⟨h.wcovBy, h.ne⟩, fun h => h.1.covBy_of_ne h.2⟩
+  ⟨fun h ↦ ⟨h.wcovBy, h.ne⟩, fun h ↦ h.1.covBy_of_ne h.2⟩
 
 theorem wcovBy_iff_covBy_or_eq : a ⩿ b ↔ a ⋖ b ∨ a = b := by
   rw [le_antisymm_iff, wcovBy_iff_covBy_or_le_and_le]
@@ -366,7 +366,7 @@ theorem CovBy.eq_or_eq (h : a ⋖ b) (h2 : a ≤ c) (h3 : c ≤ b) : c = a ∨ c
 
 /-- An `iff` version of `CovBy.eq_or_eq` and `covBy_of_eq_or_eq`. -/
 theorem covBy_iff_lt_and_eq_or_eq : a ⋖ b ↔ a < b ∧ ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b :=
-  ⟨fun h => ⟨h.lt, fun _ => h.eq_or_eq⟩, And.rec covBy_of_eq_or_eq⟩
+  ⟨fun h ↦ ⟨h.lt, fun _ => h.eq_or_eq⟩, And.rec covBy_of_eq_or_eq⟩
 
 theorem CovBy.Ico_eq (h : a ⋖ b) : Ico a b = {a} := by
   rw [← Ioo_union_left h.lt, h.Ioo_eq, empty_union]
@@ -410,7 +410,7 @@ theorem CovBy.unique_right (hb : a ⋖ b) (hc : a ⋖ c) : b = c :=
 /-- If `a`, `b`, `c` are consecutive and `a < x < c` then `x = b`. -/
 theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < x) (hxc : x < c) :
     x = b :=
-  le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
+  le_antisymm (le_of_not_lt fun h ↦ hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
 
 theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
   mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
@@ -513,7 +513,7 @@ theorem swap_covBy_swap : x.swap ⋖ y.swap ↔ x ⋖ y :=
   apply_covBy_apply_iff (OrderIso.prodComm : α × β ≃o β × α)
 
 theorem fst_eq_or_snd_eq_of_wcovBy : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
-  refine fun h => of_not_not fun hab => ?_
+  refine fun h ↦ of_not_not fun hab => ?_
   push_neg at hab
   exact
     h.2 (mk_lt_mk.2 <| Or.inl ⟨hab.1.lt_of_le h.1.1, le_rfl⟩)
@@ -541,7 +541,7 @@ theorem mk_covBy_mk_iff_right : (a, b₁) ⋖ (a, b₂) ↔ b₁ ⋖ b₂ := by
   simp_rw [covBy_iff_wcovBy_and_lt, mk_wcovBy_mk_iff_right, mk_lt_mk_iff_right]
 
 theorem mk_wcovBy_mk_iff : (a₁, b₁) ⩿ (a₂, b₂) ↔ a₁ ⩿ a₂ ∧ b₁ = b₂ ∨ b₁ ⩿ b₂ ∧ a₁ = a₂ := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · obtain rfl | rfl : a₁ = a₂ ∨ b₁ = b₂ := fst_eq_or_snd_eq_of_wcovBy h
     · exact Or.inr ⟨mk_wcovBy_mk_iff_right.1 h, rfl⟩
     · exact Or.inl ⟨mk_wcovBy_mk_iff_left.1 h, rfl⟩
@@ -550,7 +550,7 @@ theorem mk_wcovBy_mk_iff : (a₁, b₁) ⩿ (a₂, b₂) ↔ a₁ ⩿ a₂ ∧ b
     · exact mk_wcovBy_mk_iff_right.2 h
 
 theorem mk_covBy_mk_iff : (a₁, b₁) ⋖ (a₂, b₂) ↔ a₁ ⋖ a₂ ∧ b₁ = b₂ ∨ b₁ ⋖ b₂ ∧ a₁ = a₂ := by
-  refine ⟨fun h => ?_, ?_⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
   · obtain rfl | rfl : a₁ = a₂ ∨ b₁ = b₂ := fst_eq_or_snd_eq_of_wcovBy h.wcovBy
     · exact Or.inr ⟨mk_covBy_mk_iff_right.1 h, rfl⟩
     · exact Or.inl ⟨mk_covBy_mk_iff_left.1 h, rfl⟩

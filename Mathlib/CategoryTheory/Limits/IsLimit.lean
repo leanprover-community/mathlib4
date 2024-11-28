@@ -306,7 +306,7 @@ def ofWhiskerEquivalence {s : Cone F} (e : K ≌ J) (P : IsLimit (s.whisker e.fu
 /-- Given an equivalence of diagrams `e`, `s` is a limit cone iff `s.whisker e.functor` is.
 -/
 def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (s.whisker e.functor) :=
-  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
+  ⟨fun h ↦ h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 
 /-- A limit cone extended by an isomorphism is a limit cone. -/
 def extendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit s) :
@@ -769,7 +769,7 @@ def ofWhiskerEquivalence {s : Cocone F} (e : K ≌ J) (P : IsColimit (s.whisker 
 -/
 def whiskerEquivalenceEquiv {s : Cocone F} (e : K ≌ J) :
     IsColimit s ≃ IsColimit (s.whisker e.functor) :=
-  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
+  ⟨fun h ↦ h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 
 /-- A colimit cocone extended by an isomorphism is a colimit cocone. -/
 def extendIso {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] (hs : IsColimit s) :

@@ -150,7 +150,7 @@ theorem measurableSet_cut (r : α → β → Prop) (f : α →ₛ β) (h : ∀ b
   have : { a | r a (f a) } = ⋃ b ∈ range f, { a | r a b } ∩ f ⁻¹' {b} := by
     ext a
     suffices r a (f a) ↔ ∃ i, r a (f i) ∧ f a = f i by simpa
-    exact ⟨fun h => ⟨a, ⟨h, rfl⟩⟩, fun ⟨a', ⟨h', e⟩⟩ => e.symm ▸ h'⟩
+    exact ⟨fun h ↦ ⟨a, ⟨h, rfl⟩⟩, fun ⟨a', ⟨h', e⟩⟩ => e.symm ▸ h'⟩
   rw [this]
   exact
     MeasurableSet.biUnion f.finite_range.countable fun b _ =>
@@ -600,7 +600,7 @@ instance instBoundedOrder [LE β] [BoundedOrder β] : BoundedOrder (α →ₛ β
   { SimpleFunc.instOrderBot, SimpleFunc.instOrderTop with }
 
 theorem finset_sup_apply [SemilatticeSup β] [OrderBot β] {f : γ → α →ₛ β} (s : Finset γ) (a : α) :
-    s.sup f a = s.sup fun c => f c a := by
+    s.sup f a = s.sup fun c ↦ f c a := by
   refine Finset.induction_on s rfl ?_
   intro a s _ ih
   rw [Finset.sup_insert, Finset.sup_insert, sup_apply, ih]
@@ -1044,7 +1044,7 @@ theorem of_map {g : β → γ} (h : (f.map g).FinMeasSupp μ) (hg : ∀ b, g b =
 
 theorem map_iff {g : β → γ} (hg : ∀ {b}, g b = 0 ↔ b = 0) :
     (f.map g).FinMeasSupp μ ↔ f.FinMeasSupp μ :=
-  ⟨fun h => h.of_map fun _ => hg.1, fun h => h.map <| hg.2 rfl⟩
+  ⟨fun h ↦ h.of_map fun _ => hg.1, fun h ↦ h.map <| hg.2 rfl⟩
 
 protected theorem pair {g : α →ₛ γ} (hf : f.FinMeasSupp μ) (hg : g.FinMeasSupp μ) :
     (pair f g).FinMeasSupp μ :=
@@ -1086,7 +1086,7 @@ theorem of_lintegral_ne_top {f : α →ₛ ℝ≥0∞} (h : f.lintegral μ ≠ �
 
 theorem iff_lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hf : ∀ᵐ a ∂μ, f a ≠ ∞) :
     f.FinMeasSupp μ ↔ f.lintegral μ < ∞ :=
-  ⟨fun h => h.lintegral_lt_top hf, fun h => of_lintegral_ne_top h.ne⟩
+  ⟨fun h ↦ h.lintegral_lt_top hf, fun h ↦ of_lintegral_ne_top h.ne⟩
 
 end FinMeasSupp
 

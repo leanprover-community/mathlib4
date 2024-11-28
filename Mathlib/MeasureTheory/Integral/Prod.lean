@@ -384,7 +384,7 @@ theorem continuous_integral_integral :
   rw [continuous_iff_continuousAt]; intro g
   refine
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left
-      (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
+      (Eventually.of_forall fun h ↦ (L1.integrable_coeFn h).integral_prod_left) ?_
   simp_rw [←
     lintegral_fn_integral_sub (fun x => (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
       (L1.integrable_coeFn g)]

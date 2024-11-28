@@ -381,7 +381,7 @@ theorem ofSubtype_subtypePerm {f : Perm α} (h₁ : ∀ x, p x ↔ p (f x)) (h�
       -- Porting note: added `dsimp`
       dsimp only [OneHom.coe_mk]
       rw [Equiv.Perm.extendDomain_apply_not_subtype _ _ hx]
-      exact not_not.mp fun h => hx (h₂ x (Ne.symm h))
+      exact not_not.mp fun h ↦ hx (h₂ x (Ne.symm h))
 
 theorem ofSubtype_apply_of_mem (f : Perm (Subtype p)) (ha : p a) : ofSubtype f a = f ⟨a, ha⟩ :=
   extendDomain_apply_subtype _ _ ha

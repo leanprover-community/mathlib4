@@ -215,7 +215,7 @@ open AlgebraicIndependent
 
 theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) :
     AlgebraicIndependent R (f ∘ x) ↔ AlgebraicIndependent R x :=
-  ⟨fun h => h.of_comp f, fun h => h.map hf.injOn⟩
+  ⟨fun h ↦ h.of_comp f, fun h ↦ h.map hf.injOn⟩
 
 @[nontriviality]
 theorem algebraicIndependent_of_subsingleton [Subsingleton R] : AlgebraicIndependent R x :=
@@ -223,8 +223,8 @@ theorem algebraicIndependent_of_subsingleton [Subsingleton R] : AlgebraicIndepen
 
 theorem algebraicIndependent_equiv (e : ι ≃ ι') {f : ι' → A} :
     AlgebraicIndependent R (f ∘ e) ↔ AlgebraicIndependent R f :=
-  ⟨fun h => Function.comp_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective,
-    fun h => h.comp _ e.injective⟩
+  ⟨fun h ↦ Function.comp_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective,
+    fun h ↦ h.comp _ e.injective⟩
 
 theorem algebraicIndependent_equiv' (e : ι ≃ ι') {f : ι' → A} {g : ι → A} (h : f ∘ e = g) :
     AlgebraicIndependent R g ↔ AlgebraicIndependent R f :=

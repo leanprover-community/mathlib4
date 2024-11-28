@@ -235,7 +235,7 @@ variable (sq)
 
 theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor
-  exacts [fun h => h.exists_lift, fun h => mk h]
+  exacts [fun h ↦ h.exists_lift, fun h ↦ mk h]
 
 theorem iff_op : HasLift sq ↔ HasLift sq.op := by
   rw [iff, iff]

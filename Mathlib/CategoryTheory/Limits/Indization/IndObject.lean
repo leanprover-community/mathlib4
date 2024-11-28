@@ -176,7 +176,7 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     Theorem 6.1.5 of [Kashiwara2006] -/
 theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
     (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
-  ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
+  ⟨fun h ↦ ⟨h.isFiltered, h.finallySmall⟩,
    fun ⟨_, _⟩ => isIndObject_of_isFiltered_of_finallySmall A⟩
 
 /-- If a limit already exists in `C`, then the limit of the image of the diagram under the Yoneda

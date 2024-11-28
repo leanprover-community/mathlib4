@@ -381,7 +381,7 @@ theorem isColimit_iff_bijective_desc : Nonempty (IsColimit c) ↔ (Quot.desc c).
       suffices f₁ = f₂ by simpa [f₁, f₂] using congrFun this x
       refine hc.hom_ext fun j => funext fun x => ?_
       simpa [f₁, f₂] using ⟨Quot.ι F j x, by simp⟩
-  · refine fun h => ⟨?_⟩
+  · refine fun h ↦ ⟨?_⟩
     let e := Equiv.ofBijective _ h
     have h : ∀ j x, e.symm (c.ι.app j x) = Quot.ι F j x :=
       fun j x => e.injective (Equiv.ofBijective_apply_symm_apply _ _ _)

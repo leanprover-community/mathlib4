@@ -356,7 +356,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- A submodule is finitely generated if and only if it is finite-dimensional -/
 theorem fg_iff_finiteDimensional (s : Submodule K V) : s.FG ↔ FiniteDimensional K s :=
-  ⟨fun h => Module.finite_def.2 <| (fg_top s).2 h, fun h => (fg_top s).1 <| Module.finite_def.1 h⟩
+  ⟨fun h ↦ Module.finite_def.2 <| (fg_top s).2 h, fun h ↦ (fg_top s).1 <| Module.finite_def.1 h⟩
 
 /-- A submodule contained in a finite-dimensional submodule is
 finite-dimensional. -/
@@ -722,7 +722,7 @@ section finrank_eq_one
 -/
 theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
     finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ :=
-  ⟨fun h => by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
+  ⟨fun h ↦ by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
     finrank_eq_card_basis
       (Basis.mk (linearIndependent_singleton nz)
         (by

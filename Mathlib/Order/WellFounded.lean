@@ -70,7 +70,7 @@ theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h 
 
 theorem wellFounded_iff_has_min {r : α → α → Prop} :
     WellFounded r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m := by
-  refine ⟨fun h => h.has_min, fun h => ⟨fun x => ?_⟩⟩
+  refine ⟨fun h ↦ h.has_min, fun h ↦ ⟨fun x => ?_⟩⟩
   by_contra hx
   obtain ⟨m, hm, hm'⟩ := h {x | ¬Acc r x} ⟨x, hx⟩
   refine hm ⟨_, fun y hy => ?_⟩
@@ -261,7 +261,7 @@ let `bot : α`. This induction principle shows that `C (f bot)` holds, given tha
 theorem Acc.induction_bot' {α β} {r : α → α → Prop} {a bot : α} (ha : Acc r a) {C : β → Prop}
     {f : α → β} (ih : ∀ b, f b ≠ f bot → C (f b) → ∃ c, r c b ∧ C (f c)) : C (f a) → C (f bot) :=
   (@Acc.recOn _ _ (fun x _ => C (f x) → C (f bot)) _ ha) fun x _ ih' hC =>
-    (eq_or_ne (f x) (f bot)).elim (fun h => h ▸ hC) (fun h =>
+    (eq_or_ne (f x) (f bot)).elim (fun h ↦ h ▸ hC) (fun h =>
       let ⟨y, hy₁, hy₂⟩ := ih x h hC
       ih' y hy₁ hy₂)
 

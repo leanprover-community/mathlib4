@@ -186,7 +186,7 @@ theorem HasFiniteIntegral.right_of_add_measure {f : α → β} (h : HasFiniteInt
 @[simp]
 theorem hasFiniteIntegral_add_measure {f : α → β} :
     HasFiniteIntegral f (μ + ν) ↔ HasFiniteIntegral f μ ∧ HasFiniteIntegral f ν :=
-  ⟨fun h => ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h => h.1.add_measure h.2⟩
+  ⟨fun h ↦ ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h ↦ h.1.add_measure h.2⟩
 
 theorem HasFiniteIntegral.smul_measure {f : α → β} (h : HasFiniteIntegral f μ) {c : ℝ≥0∞}
     (hc : c ≠ ∞) : HasFiniteIntegral f (c • μ) := by
@@ -211,7 +211,7 @@ theorem HasFiniteIntegral.neg {f : α → β} (hfi : HasFiniteIntegral f μ) :
 
 @[simp]
 theorem hasFiniteIntegral_neg_iff {f : α → β} : HasFiniteIntegral (-f) μ ↔ HasFiniteIntegral f μ :=
-  ⟨fun h => neg_neg f ▸ h.neg, HasFiniteIntegral.neg⟩
+  ⟨fun h ↦ neg_neg f ▸ h.neg, HasFiniteIntegral.neg⟩
 
 theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a ↦ ‖f a‖) μ := by
@@ -499,7 +499,7 @@ theorem Integrable.right_of_add_measure {f : α → β} (h : Integrable f (μ + 
 @[simp]
 theorem integrable_add_measure {f : α → β} :
     Integrable f (μ + ν) ↔ Integrable f μ ∧ Integrable f ν :=
-  ⟨fun h => ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h => h.1.add_measure h.2⟩
+  ⟨fun h ↦ ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h ↦ h.1.add_measure h.2⟩
 
 @[simp]
 theorem integrable_zero_measure {_ : MeasurableSpace α} {f : α → β} :
@@ -522,10 +522,10 @@ theorem Integrable.smul_measure_nnreal {f : α → β} (h : Integrable f μ) {c 
 
 theorem integrable_smul_measure {f : α → β} {c : ℝ≥0∞} (h₁ : c ≠ 0) (h₂ : c ≠ ∞) :
     Integrable f (c • μ) ↔ Integrable f μ :=
-  ⟨fun h => by
+  ⟨fun h ↦ by
     simpa only [smul_smul, ENNReal.inv_mul_cancel h₁ h₂, one_smul] using
       h.smul_measure (ENNReal.inv_ne_top.2 h₁),
-    fun h => h.smul_measure h₂⟩
+    fun h ↦ h.smul_measure h₂⟩
 
 theorem integrable_inv_smul_measure {f : α → β} {c : ℝ≥0∞} (h₁ : c ≠ 0) (h₂ : c ≠ ∞) :
     Integrable f (c⁻¹ • μ) ↔ Integrable f μ :=
@@ -539,7 +539,7 @@ theorem Integrable.to_average {f : α → β} (h : Integrable f μ) : Integrable
 
 theorem integrable_average [IsFiniteMeasure μ] {f : α → β} :
     Integrable f ((μ univ)⁻¹ • μ) ↔ Integrable f μ :=
-  (eq_or_ne μ 0).by_cases (fun h => by simp [h]) fun h =>
+  (eq_or_ne μ 0).by_cases (fun h ↦ by simp [h]) fun h =>
     integrable_smul_measure (ENNReal.inv_ne_zero.2 <| measure_ne_top _ _)
       (ENNReal.inv_ne_top.2 <| mt Measure.measure_univ_eq_zero.1 h)
 
@@ -628,7 +628,7 @@ theorem Integrable.neg' {f : α → β} (hf : Integrable f μ) : Integrable (fun
 
 @[simp]
 theorem integrable_neg_iff {f : α → β} : Integrable (-f) μ ↔ Integrable f μ :=
-  ⟨fun h => neg_neg f ▸ h.neg, Integrable.neg⟩
+  ⟨fun h ↦ neg_neg f ▸ h.neg, Integrable.neg⟩
 
 /-- if `f` is integrable, then `f + g` is integrable iff `g` is.
 See `integrable_add_iff_integrable_right'` for the same statement with `fun x ↦ f x + g x` instead

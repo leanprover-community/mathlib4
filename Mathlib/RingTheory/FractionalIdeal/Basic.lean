@@ -296,7 +296,7 @@ variable (P) in
 @[simp]
 theorem exists_mem_algebraMap_eq {x : R} {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (∃ x', x' ∈ I ∧ algebraMap R P x' = algebraMap R P x) ↔ x ∈ I :=
-  ⟨fun ⟨_, hx', Eq⟩ => IsLocalization.injective _ h Eq ▸ hx', fun h => ⟨x, h, rfl⟩⟩
+  ⟨fun ⟨_, hx', Eq⟩ => IsLocalization.injective _ h Eq ▸ hx', fun h ↦ ⟨x, h, rfl⟩⟩
 
 theorem coeIdeal_injective' (h : S ≤ nonZeroDivisors R) :
     Function.Injective (fun (I : Ideal R) ↦ (I : FractionalIdeal S P)) := fun _ _ h' =>
@@ -319,7 +319,7 @@ theorem coeIdeal_ne_zero' {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
 end
 
 theorem coeToSubmodule_eq_bot {I : FractionalIdeal S P} : (I : Submodule R P) = ⊥ ↔ I = 0 :=
-  ⟨fun h => coeToSubmodule_injective (by simp [h]), fun h => by simp [h]⟩
+  ⟨fun h ↦ coeToSubmodule_injective (by simp [h]), fun h ↦ by simp [h]⟩
 
 theorem coeToSubmodule_ne_bot {I : FractionalIdeal S P} : ↑I ≠ (⊥ : Submodule R P) ↔ I ≠ 0 :=
   not_iff_not.mpr coeToSubmodule_eq_bot

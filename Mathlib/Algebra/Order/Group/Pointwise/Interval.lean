@@ -689,7 +689,7 @@ theorem preimage_const_mul_Icc_of_neg (a b : α) {c : α} (h : c < 0) :
 theorem preimage_mul_const_uIcc (ha : a ≠ 0) (b c : α) :
     (· * a) ⁻¹' [[b, c]] = [[b / a, c / a]] :=
   (lt_or_gt_of_ne ha).elim
-    (fun h => by
+    (fun h ↦ by
       simp [← Icc_min_max, h, h.le, min_div_div_right_of_nonpos, max_div_div_right_of_nonpos])
     fun ha : 0 < a => by simp [← Icc_min_max, ha, ha.le, min_div_div_right, max_div_div_right]
 
@@ -779,7 +779,7 @@ theorem image_mul_left_Ioc {a : α} (h : 0 < a) (b c : α) :
 theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
   exact
-    ⟨fun h => inv_inv x ▸ (inv_lt_inv₀ ha h.1).2 h.2, fun h =>
+    ⟨fun h ↦ inv_inv x ▸ (inv_lt_inv₀ ha h.1).2 h.2, fun h =>
       ⟨inv_pos.2 <| (inv_pos.2 ha).trans h,
         inv_inv a ▸ (inv_lt_inv₀ ((inv_pos.2 ha).trans h)
           (inv_pos.2 ha)).2 h⟩⟩

@@ -95,7 +95,7 @@ theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : G × P).1 ≤ (y : G × P).1
 
 @[to_additive VAddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (smulAntidiagonal s t a).Finite := by
-  refine Set.not_infinite.1 fun h => ?_
+  refine Set.not_infinite.1 fun h ↦ ?_
   have h1 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) := fun f hf =>
     hs (Prod.fst ∘ f) fun n => (mem_smulAntidiagonal.1 (hf n)).1
   have h2 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) := fun f hf =>

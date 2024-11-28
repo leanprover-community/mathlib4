@@ -262,7 +262,7 @@ theorem perm_of_mem_permutationsAux :
     exact ((perm_middle.trans (p.cons _)).append_right _).trans (perm_append_comm.cons _)
 
 theorem perm_of_mem_permutations {l₁ l₂ : List α} (h : l₁ ∈ permutations l₂) : l₁ ~ l₂ :=
-  (eq_or_mem_of_mem_cons h).elim (fun e => e ▸ Perm.refl _) fun m =>
+  (eq_or_mem_of_mem_cons h).elim (fun e ↦ e ▸ Perm.refl _) fun m =>
     append_nil l₂ ▸ perm_of_mem_permutationsAux m
 
 theorem length_permutationsAux :
@@ -377,12 +377,12 @@ theorem Perm.permutations {s t : List α} (h : s ~ t) : permutations s ~ permuta
 
 @[simp]
 theorem perm_permutations_iff {s t : List α} : permutations s ~ permutations t ↔ s ~ t :=
-  ⟨fun h => mem_permutations.1 <| h.mem_iff.1 <| mem_permutations.2 (Perm.refl _),
+  ⟨fun h ↦ mem_permutations.1 <| h.mem_iff.1 <| mem_permutations.2 (Perm.refl _),
     Perm.permutations⟩
 
 @[simp]
 theorem perm_permutations'_iff {s t : List α} : permutations' s ~ permutations' t ↔ s ~ t :=
-  ⟨fun h => mem_permutations'.1 <| h.mem_iff.1 <| mem_permutations'.2 (Perm.refl _),
+  ⟨fun h ↦ mem_permutations'.1 <| h.mem_iff.1 <| mem_permutations'.2 (Perm.refl _),
     Perm.permutations'⟩
 
 theorem getElem_permutations'Aux (s : List α) (x : α) (n : ℕ)
