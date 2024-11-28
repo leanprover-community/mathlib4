@@ -43,54 +43,54 @@ jobs:
           printf $'bfs=%s\n' "${bfs}" >> "${GITHUB_OUTPUT}"
 
       - if: ${{ ! steps.bot_fix_style.outputs.bfs == '' }}
-        id: user_permission
+        id: get_permission
         uses: actions-cool/check-user-permission@v2
         with:
           require: 'write'
 
       - name: Set condition to continue
-        id: get_permissions
+        id: user_permission
         run: |
           if [ ! "${{ steps.bot_fix_style.outputs.bfs }}" == "" ] &&
-              [ "${{ steps.user_permission.outputs.require-result }}" == "true" ]
+              [ "${{ steps.get_permission.outputs.require-result }}" == "true" ]
           then
-            printf $'continue=true\n' >> "${GITHUB_OUTPUT}"
+            printf $'require-result=true\n' >> "${GITHUB_OUTPUT}"
           else
-            printf $'continue=false\n' >> "${GITHUB_OUTPUT}"
+            printf $'require-result=false\n' >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Add reaction
-        if: ${{ steps.get_permissions.outputs.continue == 'true' }}
+        if: steps.user_permission.outputs.require-result == 'true'
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ github.event.comment.id }}  # check what this is called in other actions
           reactions: rocket
 
       - name: cleanup
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
       - uses: actions/checkout@v4
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         with:
           token: ${{ secrets.BOT_FIX_STYLE_TOKEN }}
 
       - name: Checkout PR branch
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         run: |
             gh pr checkout "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
         env:
             GH_TOKEN: ${{ secrets.BOT_FIX_STYLE_TOKEN }}
 
       - name: install Python
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: 3.8
 
       - name: install elan
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         run: |
           set -o pipefail
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
@@ -100,30 +100,30 @@ jobs:
       # run the same linting steps as in lint_and_suggest_pr.yaml
 
       - name: lint
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         run: |
           lake exe lint-style --fix
 
       - name: Install bibtool
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y bibtool
 
       - name: lint references.bib
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         run: |
           # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
           ./scripts/lint-bib.sh || true
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         run: |
           # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
           lake exe mk_all || true
 
       - name: Commit and push changes
-        if: steps.get_permissions.outputs.continue == 'true'
+        if: steps.user_permission.outputs.require-result == 'true'
         run: |
           # cleanup junk from build
           rm elan-init
