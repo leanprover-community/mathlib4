@@ -101,7 +101,7 @@ theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
   classical
     have : (∏ x ∈ (@univ Kˣ _).erase (-1), x) = 1 :=
       prod_involution (fun x _ => x⁻¹) (by simp)
-        (fun a => by simp (config := { contextual := true }) [Units.inv_eq_self_iff])
+        (fun a => by simp +contextual [Units.inv_eq_self_iff])
         (fun a => by simp [@inv_eq_iff_eq_inv _ _ a]) (by simp)
     rw [← insert_erase (mem_univ (-1 : Kˣ)), prod_insert (not_mem_erase _ _), this, mul_one]
 
@@ -172,6 +172,7 @@ theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
 theorem sum_subgroup_pow_eq_zero [CommRing K] [NoZeroDivisors K]
     {G : Subgroup Kˣ} [Fintype G] {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Fintype.card G) :
     ∑ x : G, ((x : Kˣ) : K) ^ k = 0 := by
+  rw [← Nat.card_eq_fintype_card] at k_lt_card_G
   nontriviality K
   have := NoZeroDivisors.to_isDomain K
   rcases (exists_pow_ne_one_of_isCyclic k_pos k_lt_card_G) with ⟨a, ha⟩
@@ -229,6 +230,8 @@ end
 
 variable (K) [Field K] [Fintype K]
 
+/-- The cardinality `q` is a power of the characteristic of `K`. -/
+@[stacks 09HY "first part"]
 theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : ℕ) := by
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime K p⟩
   letI : Module (ZMod p) K := { (ZMod.castHom dvd_rfl K : ZMod p →+* _).toModule with }
@@ -253,7 +256,7 @@ theorem cast_card_eq_zero : (q : K) = 0 := by
 theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣ i := by
   classical
     obtain ⟨x, hx⟩ := IsCyclic.exists_generator (α := Kˣ)
-    rw [← Fintype.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
+    rw [← Nat.card_eq_fintype_card, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hx,
       orderOf_dvd_iff_pow_eq_one]
     constructor
     · intro h; apply h
@@ -584,11 +587,12 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
       push_cast
       exact FiniteField.pow_card_sub_one_eq_one (y : F) (Units.ne_zero y)
     · subst a; intro h
-      have key : 2 * (Fintype.card F / 2) ∣ n * (Fintype.card F / 2) := by
+      rw [← Nat.card_eq_fintype_card] at hodd h
+      have key : 2 * (Nat.card F / 2) ∣ n * (Nat.card F / 2) := by
         rw [← pow_mul] at h
-        rw [hodd, ← Fintype.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
+        rw [hodd, ← Nat.card_units, ← orderOf_eq_card_of_forall_mem_zpowers hg]
         apply orderOf_dvd_of_pow_eq_one h
-      have : 0 < Fintype.card F / 2 := Nat.div_pos Fintype.one_lt_card (by norm_num)
+      have : 0 < Nat.card F / 2 := Nat.div_pos Finite.one_lt_card (by norm_num)
       obtain ⟨m, rfl⟩ := Nat.dvd_of_mul_dvd_mul_right this key
       refine ⟨g ^ m, ?_⟩
       dsimp

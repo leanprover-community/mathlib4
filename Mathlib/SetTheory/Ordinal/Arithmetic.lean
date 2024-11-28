@@ -573,6 +573,20 @@ theorem sub_sub (a b c : Ordinal) : a - b - c = a - (b + c) :=
 theorem add_sub_add_cancel (a b c : Ordinal) : a + b - (a + c) = b - c := by
   rw [← sub_sub, add_sub_cancel]
 
+theorem le_sub_of_add_le {a b c : Ordinal} (h : b + c ≤ a) : c ≤ a - b := by
+  rw [← add_le_add_iff_left b]
+  exact h.trans (le_add_sub a b)
+
+theorem sub_lt_of_lt_add {a b c : Ordinal} (h : a < b + c) (hc : 0 < c) : a - b < c := by
+  obtain hab | hba := lt_or_le a b
+  · rwa [Ordinal.sub_eq_zero_iff_le.2 hab.le]
+  · rwa [sub_lt_of_le hba]
+
+theorem lt_add_iff {a b c : Ordinal} (hc : c ≠ 0) : a < b + c ↔ ∃ d < c, a ≤ b + d := by
+  use fun h ↦ ⟨_, sub_lt_of_lt_add h hc.bot_lt, le_add_sub a b⟩
+  rintro ⟨d, hd, ha⟩
+  exact ha.trans_lt (add_lt_add_left hd b)
+
 theorem isLimit_sub {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
   ⟨ne_of_gt <| lt_sub.2 <| by rwa [add_zero], fun c h => by
     rw [lt_sub, add_succ]; exact l.2 _ (lt_sub.1 h)⟩
@@ -591,14 +605,14 @@ theorem one_add_omega0 : 1 + ω = ω := by
     cases a <;> cases b <;> intro H <;> cases' H with _ _ H _ _ H <;>
       [exact H.elim; exact Nat.succ_pos _; exact Nat.succ_lt_succ H]
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias one_add_omega := one_add_omega0
 
 @[simp]
 theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o := by
   rw [← Ordinal.add_sub_cancel_of_le h, ← add_assoc, one_add_omega0]
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias one_add_of_omega_le := one_add_of_omega0_le
 
 /-! ### Multiplication of ordinals -/
@@ -759,7 +773,7 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
           exact mul_le_of_limit_aux h H⟩
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
-  -- Porting note(#12129): additional beta reduction needed
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   ⟨fun b => by
       beta_reduce
       rw [mul_succ]
@@ -855,7 +869,7 @@ theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
   | H₂ _ _ => rw [succ_le_iff, lt_div c0]
   | H₃ _ h₁ h₂ =>
     revert h₁ h₂
-    simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, forall_true_iff]
+    simp +contextual only [mul_le_of_limit, limit_le, forall_true_iff]
 
 theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
   lt_iff_lt_of_le_iff_le <| le_div b0
@@ -1094,13 +1108,11 @@ theorem bfamilyOfFamily_typein {ι} (f : ι → α) (i) :
     bfamilyOfFamily f (typein _ i) (typein_lt_type _ i) = f i :=
   bfamilyOfFamily'_typein _ f i
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily'_enum {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] {o}
     (ho : type r = o) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily' r ho f (enum r ⟨i, by rwa [ho]⟩) = f i hi := by
   simp only [familyOfBFamily', typein_enum]
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem familyOfBFamily_enum (o : Ordinal) (f : ∀ a < o, α) (i hi) :
     familyOfBFamily o f (enum (α := o.toType) (· < ·) ⟨i, hi.trans_eq (type_toType _).symm⟩)
     = f i hi :=
@@ -1173,7 +1185,7 @@ def sup {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal.{max u v} :=
   iSup f
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-27")]
+@[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
 theorem sSup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : sSup (Set.range f) = sup.{_, v} f :=
   rfl
 
@@ -1183,7 +1195,7 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
   ⟨(iSup (succ ∘ card ∘ f)).ord, by
     rintro a ⟨i, rfl⟩
     exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
-      (le_ciSup (Cardinal.bddAbove_range.{_, v} _) _)))⟩
+      (le_ciSup (Cardinal.bddAbove_range _) _)))⟩
 
 theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
   obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
@@ -1236,16 +1248,19 @@ theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i �
   Ordinal.iSup_le
 
 /-- `lt_ciSup_iff'` whenever the input type is small in the output universe. -/
-protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
+protected theorem lt_iSup_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     a < iSup f ↔ ∃ i, a < f i :=
   lt_ciSup_iff' (bddAbove_of_small _)
+
+@[deprecated "No deprecation message was provided." (since := "2024-11-12")]
+alias lt_iSup := lt_iSup_iff
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.lt_iSup (since := "2024-08-27")]
 theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < sup.{_, v} f ↔ ∃ i, a < f i := by
   simpa only [not_forall, not_le] using not_congr (@sup_le_iff.{_, v} _ f a)
 
-@[deprecated (since := "2024-08-27")]
+@[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
 theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
     (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
   forall_congr' fun i => (Ordinal.le_iSup f i).lt_iff_ne.symm
@@ -1363,7 +1378,7 @@ theorem unbounded_range_of_sup_ge {α β : Type u} (r : α → α → Prop) [IsW
   unbounded_range_of_le_iSup r f h
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-27")]
+@[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
 theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a ∈ s) :
     a ≤ sup.{u, u} fun x => ((@equivShrink s hs).symm x).val := by
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
@@ -1408,7 +1423,7 @@ theorem IsNormal.apply_of_isLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsNorma
   rw [← H.map_iSup, ho.iSup_Iio]
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-08-27")]
+@[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
 theorem sup_eq_sSup {s : Set Ordinal.{u}} (hs : Small.{u} s) :
     (sup.{u, u} fun x => (@equivShrink s hs).symm x) = sSup s :=
   let hs' := bddAbove_iff_small.2 hs
@@ -1487,7 +1502,6 @@ theorem sup_eq_bsup' {o : Ordinal.{u}} {ι} (r : ι → ι → Prop) [IsWellOrde
     (f : ∀ a < o, Ordinal.{max u v}) : sup.{_, v} (familyOfBFamily' r ho f) = bsup.{_, v} o f :=
   sup_eq_sup r _ ho _ f
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     sSup (brange o f) = bsup.{_, v} o f := by
   congr
@@ -1589,6 +1603,9 @@ theorem bsup_le_of_brange_subset {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o'
 theorem bsup_eq_of_brange_eq {o o'} {f : ∀ a < o, Ordinal} {g : ∀ a < o', Ordinal}
     (h : brange o f = brange o' g) : bsup.{u, max v w} o f = bsup.{v, max u w} o' g :=
   (bsup_le_of_brange_subset.{u, v, w} h.le).antisymm (bsup_le_of_brange_subset.{v, u, w} h.ge)
+
+theorem iSup_eq_bsup {o} {f : ∀ a < o, Ordinal} : ⨆ a : Iio o, f a.1 a.2 = bsup o f := by
+  simp_rw [Iio, bsup, sup, iSup, range_familyOfBFamily, brange, range, Subtype.exists, mem_setOf]
 
 end bsup
 
@@ -1970,12 +1987,12 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
 
 Deprecated. If you need this value explicitly, write it in terms of `iSup`. If you just want an
 upper bound for the image of `op`, use that `Iio a ×ˢ Iio b` is a small set. -/
-@[deprecated (since := "2024-10-11")]
+@[deprecated "No deprecation message was provided."  (since := "2024-10-11")]
 def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
     Ordinal :=
   lsub (fun x : o₁.toType × o₂.toType => op (typein_lt_self x.1) (typein_lt_self x.2))
 
-@[deprecated (since := "2024-10-11")]
+@[deprecated "No deprecation message was provided."  (since := "2024-10-11")]
 theorem lt_blsub₂ {o₁ o₂ : Ordinal}
     (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
     (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
@@ -1996,34 +2013,34 @@ set_option linter.deprecated false
 def mex {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
   sInf (Set.range f)ᶜ
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ∉ Set.range f :=
   csInf_mem (nonempty_compl_range.{_, v} f)
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem le_mex_of_forall {ι : Type u} {f : ι → Ordinal.{max u v}} {a : Ordinal}
     (H : ∀ b < a, ∃ i, f i = b) : a ≤ mex.{_, v} f := by
   by_contra! h
   exact mex_not_mem_range f (H _ h)
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem ne_mex {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≠ mex.{_, v} f := by
   simpa using mex_not_mem_range.{_, v} f
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem mex_le_of_ne {ι} {f : ι → Ordinal} {a} (ha : ∀ i, f i ≠ a) : mex f ≤ a :=
   csInf_le' (by simp [ha])
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem exists_of_lt_mex {ι} {f : ι → Ordinal} {a} (ha : a < mex f) : ∃ i, f i = a := by
   by_contra! ha'
   exact ha.not_le (mex_le_of_ne ha')
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem mex_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ≤ lsub.{_, v} f :=
   csInf_le' (lsub_not_mem_range f)
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β → Ordinal.{max u v}}
     (h : Set.range f ⊆ Set.range g) : mex.{_, v} f ≤ mex.{_, v} g := by
   refine mex_le_of_ne fun i hi => ?_
@@ -2056,18 +2073,18 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
 def bmex (o : Ordinal) (f : ∀ a < o, Ordinal) : Ordinal :=
   mex (familyOfBFamily o f)
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem bmex_not_mem_brange {o : Ordinal} (f : ∀ a < o, Ordinal) : bmex o f ∉ brange o f := by
   rw [← range_familyOfBFamily]
   apply mex_not_mem_range
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
     (H : ∀ b < a, ∃ i hi, f i hi = b) : a ≤ bmex o f := by
   by_contra! h
   exact bmex_not_mem_brange f (H _ h)
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
     f i hi ≠ bmex.{_, v} o f := by
   convert (config := {transparency := .default})
@@ -2075,23 +2092,23 @@ theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
   -- Porting note: `familyOfBFamily_enum` → `typein_enum`
   rw [typein_enum]
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem bmex_le_of_ne {o : Ordinal} {f : ∀ a < o, Ordinal} {a} (ha : ∀ i hi, f i hi ≠ a) :
     bmex o f ≤ a :=
   mex_le_of_ne fun _i => ha _ _
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem exists_of_lt_bmex {o : Ordinal} {f : ∀ a < o, Ordinal} {a} (ha : a < bmex o f) :
     ∃ i hi, f i hi = a := by
   cases' exists_of_lt_mex ha with i hi
   exact ⟨_, typein_lt_self i, hi⟩
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem bmex_le_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     bmex.{_, v} o f ≤ blsub.{_, v} o f :=
   mex_le_lsub _
 
-@[deprecated (since := "2024-09-20")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
 theorem bmex_monotone {o o' : Ordinal.{u}}
     {f : ∀ a < o, Ordinal.{max u v}} {g : ∀ a < o', Ordinal.{max u v}}
     (h : brange o f ⊆ brange o' g) : bmex.{_, v} o f ≤ bmex.{_, v} o' g :=
@@ -2149,7 +2166,7 @@ theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
   rw [← Nat.cast_one, ← Nat.cast_add, add_comm]
   rfl
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias one_add_nat_cast := one_add_natCast
 
 -- See note [no_index around OfNat.ofNat]
@@ -2163,43 +2180,43 @@ theorem natCast_mul (m : ℕ) : ∀ n : ℕ, ((m * n : ℕ) : Ordinal) = m * n
   | 0 => by simp
   | n + 1 => by rw [Nat.mul_succ, Nat.cast_add, natCast_mul m n, Nat.cast_succ, mul_add_one]
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_mul := natCast_mul
 
 @[deprecated Nat.cast_le (since := "2024-10-17")]
 theorem natCast_le {m n : ℕ} : (m : Ordinal) ≤ n ↔ m ≤ n := Nat.cast_le
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_le := natCast_le
 
 @[deprecated Nat.cast_inj (since := "2024-10-17")]
 theorem natCast_inj {m n : ℕ} : (m : Ordinal) = n ↔ m = n := Nat.cast_inj
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_inj := natCast_inj
 
 @[deprecated Nat.cast_lt (since := "2024-10-17")]
 theorem natCast_lt {m n : ℕ} : (m : Ordinal) < n ↔ m < n := Nat.cast_lt
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_lt := natCast_lt
 
 @[deprecated Nat.cast_eq_zero (since := "2024-10-17")]
 theorem natCast_eq_zero {n : ℕ} : (n : Ordinal) = 0 ↔ n = 0 := Nat.cast_eq_zero
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_eq_zero := natCast_eq_zero
 
 @[deprecated Nat.cast_ne_zero (since := "2024-10-17")]
 theorem natCast_ne_zero {n : ℕ} : (n : Ordinal) ≠ 0 ↔ n ≠ 0 := Nat.cast_ne_zero
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_ne_zero := natCast_ne_zero
 
 @[deprecated Nat.cast_pos' (since := "2024-10-17")]
 theorem natCast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n := Nat.cast_pos'
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_pos := natCast_pos
 
 @[simp, norm_cast]
@@ -2210,7 +2227,7 @@ theorem natCast_sub (m n : ℕ) : ((m - n : ℕ) : Ordinal) = m - n := by
   · apply (add_left_cancel n).1
     rw [← Nat.cast_add, add_tsub_cancel_of_le h, Ordinal.add_sub_cancel_of_le (Nat.cast_le.2 h)]
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_sub := natCast_sub
 
 @[simp, norm_cast]
@@ -2225,7 +2242,7 @@ theorem natCast_div (m n : ℕ) : ((m / n : ℕ) : Ordinal) = m / n := by
         ← Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero hn)]
       apply Nat.lt_succ_self
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_div := natCast_div
 
 @[simp, norm_cast]
@@ -2233,7 +2250,7 @@ theorem natCast_mod (m n : ℕ) : ((m % n : ℕ) : Ordinal) = m % n := by
   rw [← add_left_cancel, div_add_mod, ← natCast_div, ← natCast_mul, ← Nat.cast_add,
     Nat.div_add_mod]
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias nat_cast_mod := natCast_mod
 
 @[simp]
@@ -2241,7 +2258,7 @@ theorem lift_natCast : ∀ n : ℕ, lift.{u, v} n = n
   | 0 => by simp
   | n + 1 => by simp [lift_natCast n]
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias lift_nat_cast := lift_natCast
 
 -- See note [no_index around OfNat.ofNat]
@@ -2276,31 +2293,27 @@ theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias lt_omega := lt_omega0
 
 theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias nat_lt_omega := nat_lt_omega0
 
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
 
-@[deprecated (since := "2024-09-30")]
-theorem omega_pos : 0 < ω :=
-  nat_lt_omega0 0
-
 theorem omega0_ne_zero : ω ≠ 0 :=
   omega0_pos.ne'
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias omega_ne_zero := omega0_ne_zero
 
 theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omega0 1
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias one_lt_omega := one_lt_omega0
 
 theorem isLimit_omega0 : IsLimit ω :=
@@ -2308,10 +2321,10 @@ theorem isLimit_omega0 : IsLimit ω :=
     let ⟨n, e⟩ := lt_omega0.1 h
     rw [e]; exact nat_lt_omega0 (n + 1)⟩
 
-@[deprecated (since := "2024-10-14")]
+@[deprecated "No deprecation message was provided."  (since := "2024-10-14")]
 alias omega0_isLimit := isLimit_omega0
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias omega_isLimit := isLimit_omega0
 
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
@@ -2320,7 +2333,7 @@ theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
       let ⟨n, e⟩ := lt_omega0.1 h
       rw [e, ← succ_le_iff]; exact H (n + 1)⟩
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias omega_le := omega0_le
 
 @[simp]
@@ -2332,7 +2345,7 @@ set_option linter.deprecated false in
 theorem sup_natCast : sup Nat.cast = ω :=
   iSup_natCast
 
-@[deprecated (since := "2024-04-17")]
+@[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias sup_nat_cast := sup_natCast
 
 theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
@@ -2342,7 +2355,7 @@ theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
 theorem omega0_le_of_isLimit {o} (h : IsLimit o) : ω ≤ o :=
   omega0_le.2 fun n => le_of_lt <| nat_lt_limit h n
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias omega_le_of_isLimit := omega0_le_of_isLimit
 
 theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
@@ -2360,7 +2373,7 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
     intro e
     simp only [e, mul_zero]
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
 
 theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
@@ -2404,7 +2417,7 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
 
-@[deprecated (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias IsNormal.apply_omega := IsNormal.apply_omega0
 
 @[simp]
@@ -2448,7 +2461,7 @@ theorem isLimit_ord {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
     · rw [ord_aleph0]
       exact Ordinal.isLimit_omega0
 
-@[deprecated (since := "2024-10-14")]
+@[deprecated "No deprecation message was provided."  (since := "2024-10-14")]
 alias ord_isLimit := isLimit_ord
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=

@@ -5,12 +5,10 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
-import Mathlib.Data.Subtype
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -20,8 +18,11 @@ We also define `Ring.inverse`, a globally defined function on any ring
 -/
 
 -- Guard against import creep
-assert_not_exists Multiplicative
 assert_not_exists DenselyOrdered
+assert_not_exists Equiv
+assert_not_exists Multiplicative
+assert_not_exists Subtype.restrict
+
 
 variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
@@ -67,7 +68,6 @@ theorem isUnit_zero_iff : IsUnit (0 : M₀) ↔ (0 : M₀) = 1 :=
   ⟨fun ⟨⟨_, a, (a0 : 0 * a = 1), _⟩, rfl⟩ => by rwa [zero_mul] at a0, fun h =>
     @isUnit_of_subsingleton _ _ (subsingleton_of_zero_eq_one h) 0⟩
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem not_isUnit_zero [Nontrivial M₀] : ¬IsUnit (0 : M₀) :=
   mt isUnit_zero_iff.1 zero_ne_one
 
@@ -179,11 +179,9 @@ theorem val_mk0 {a : G₀} (h : a ≠ 0) : (mk0 a h : G₀) = a :=
 theorem mk0_val (u : G₀ˣ) (h : (u : G₀) ≠ 0) : mk0 (u : G₀) h = u :=
   Units.ext rfl
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem mul_inv' (u : G₀ˣ) : u * (u : G₀)⁻¹ = 1 :=
   mul_inv_cancel₀ u.ne_zero
 
--- Porting note: removed `simp` tag because `simpNF` says it's redundant
 theorem inv_mul' (u : G₀ˣ) : (u⁻¹ : G₀) * u = 1 :=
   inv_mul_cancel₀ u.ne_zero
 
@@ -395,14 +393,6 @@ theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
 theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
 
-/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
-elements. -/
-@[simps] def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ {a : α // a ≠ 0} where
-  toFun a := ⟨a, a.ne_zero⟩
-  invFun a := Units.mk0 _ a.prop
-  left_inv _ := Units.ext rfl
-  right_inv _ := rfl
-
 end GroupWithZero
 
 section CommGroupWithZero
@@ -425,9 +415,9 @@ instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
 
-set_option linter.deprecated false in
 @[deprecated div_mul_cancel_left₀ (since := "2024-03-22")]
-lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := ha.isUnit.div_mul_right _
+lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := by
+  simp [div_mul_cancel_left₀ ha]
 
 lemma mul_div_cancel_left_of_imp (h : a = 0 → b = 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_of_imp h]
@@ -454,7 +444,9 @@ lemma div_eq_div_iff_div_eq_div' (hb : b ≠ 0) (hc : c ≠ 0) : a / b = c / d �
   conv_rhs => rw [← mul_left_inj' hc, div_mul_cancel₀ _ hc]
   rw [mul_comm _ c, div_mul_eq_mul_div, mul_div_assoc]
 
-lemma div_div_cancel' (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
+@[simp] lemma div_div_cancel₀ (ha : a ≠ 0) : a / (a / b) = b := ha.isUnit.div_div_cancel
+
+@[deprecated (since := "2024-11-25")] alias div_div_cancel' := div_div_cancel₀
 
 lemma div_div_cancel_left' (ha : a ≠ 0) : a / b / a = b⁻¹ := ha.isUnit.div_div_cancel_left
 

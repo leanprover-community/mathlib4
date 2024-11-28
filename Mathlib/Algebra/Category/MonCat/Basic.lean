@@ -65,7 +65,7 @@ instance : CoeSort MonCat Type* where
 @[to_additive]
 instance (X : MonCat) : Monoid X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -181,7 +181,7 @@ instance : CoeSort CommMonCat Type* where
 @[to_additive]
 instance (X : CommMonCat) : CommMonoid X := X.str
 
--- porting note (#10670): this instance was not necessary in mathlib
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -330,7 +330,7 @@ add_decl_doc addEquivIsoAddCommMonCatIso
 instance MonCat.forget_reflects_isos : (forget MonCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
-    -- Again a problem that exists already creeps into other things leanprover/lean4#2644
+    -- Again a problem that exists already creeps into other things https://github.com/leanprover/lean4/pull/2644
     -- this used to be `by aesop`; see next declaration
     let e : X ≃* Y := MulEquiv.mk i.toEquiv (MonoidHom.map_mul (show MonoidHom X Y from f))
     exact e.toMonCatIso.isIso_hom

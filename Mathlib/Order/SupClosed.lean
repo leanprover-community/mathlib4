@@ -3,10 +3,10 @@ Copyright (c) 2023 Yaël Dillies, Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Data.Finset.Lattice
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Closure
-import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Sets closed under join/meet
@@ -79,6 +79,17 @@ lemma supClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeSup (α i
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, SupClosed (t i)) : SupClosed (s.pi t) :=
   fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
 
+lemma SupClosed.insert_upperBounds {s : Set α} {a : α} (hs : SupClosed s) (ha : a ∈ upperBounds s) :
+    SupClosed (insert a s) := by
+  rw [SupClosed]
+  aesop
+
+lemma SupClosed.insert_lowerBounds {s : Set α} {a : α} (h : SupClosed s) (ha : a ∈ lowerBounds s) :
+    SupClosed (insert a s) := by
+  rw [SupClosed]
+  have ha' : ∀ b ∈ s, a ≤ b := fun _ a ↦ ha a
+  aesop
+
 end Set
 
 section Finset
@@ -143,6 +154,17 @@ lemma InfClosed.prod {t : Set β} (hs : InfClosed s) (ht : InfClosed t) : InfClo
 lemma infClosed_pi {ι : Type*} {α : ι → Type*} [∀ i, SemilatticeInf (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (ht : ∀ i ∈ s, InfClosed (t i)) : InfClosed (s.pi t) :=
   fun _a ha _b hb _i hi ↦ ht _ hi (ha _ hi) (hb _ hi)
+
+lemma InfClosed.insert_upperBounds {s : Set α} {a : α} (hs : InfClosed s) (ha : a ∈ upperBounds s) :
+    InfClosed (insert a s) := by
+  rw [InfClosed]
+  have ha' : ∀ b ∈ s, b ≤ a := fun _ a ↦ ha a
+  aesop
+
+lemma InfClosed.insert_lowerBounds {s : Set α} {a : α} (h : InfClosed s) (ha : a ∈ lowerBounds s) :
+    InfClosed (insert a s) := by
+  rw [InfClosed]
+  aesop
 
 end Set
 

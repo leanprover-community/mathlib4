@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
+import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.RowCol
@@ -40,8 +41,6 @@ universe u v w z
 open Equiv Equiv.Perm Finset Function
 
 namespace Matrix
-
-open Matrix
 
 variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 variable {R : Type v} [CommRing R]
@@ -179,12 +178,12 @@ theorem det_mul_left_comm (M N P : Matrix m m R) : det (M * (N * P)) = det (N * 
 theorem det_mul_right_comm (M N P : Matrix m m R) : det (M * N * P) = det (M * P * N) := by
   rw [Matrix.mul_assoc, Matrix.mul_assoc, det_mul, det_mul_comm N P, ← det_mul]
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
+-- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so `val` isn't needed
 theorem det_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     det (M.val * N * M⁻¹.val) = det N := by
   rw [det_mul_right_comm, Units.mul_inv, one_mul]
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
+-- TODO(https://github.com/leanprover-community/mathlib4/issues/6607): fix elaboration so `val` isn't needed
 theorem det_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
     det (M⁻¹.val * N * ↑M.val) = det N :=
   det_units_conj M⁻¹ N
@@ -210,7 +209,7 @@ theorem det_permute' (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix id σ).det = Perm.sign σ * M.det := by
   rw [← det_transpose, transpose_submatrix, det_permute, det_transpose]
 
-/-- Permuting rows and columns with the same equivalence has no effect. -/
+/-- Permuting rows and columns with the same equivalence does not change the determinant. -/
 @[simp]
 theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
     det (A.submatrix e e) = det A := by
@@ -222,6 +221,17 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
   apply Fintype.prod_equiv e
   intro i
   rw [Equiv.permCongr_apply, Equiv.symm_apply_apply, submatrix_apply]
+
+/-- Permuting rows and columns with two equivalences does not change the absolute value of the
+determinant. -/
+@[simp]
+theorem abs_det_submatrix_equiv_equiv {R : Type*} [LinearOrderedCommRing R]
+    (e₁ e₂ : n ≃ m) (A : Matrix m m R) :
+    |(A.submatrix e₁ e₂).det| = |A.det| := by
+  have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp
+  rw [hee]
+  show |((A.submatrix id (e₁.symm.trans e₂)).submatrix e₁ e₁).det| = |A.det|
+  rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute', abs_mul, abs_unit_intCast, one_mul]
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 
@@ -339,7 +349,7 @@ end DetZero
 
 theorem det_updateRow_add (M : Matrix n n R) (j : n) (u v : n → R) :
     det (updateRow M j <| u + v) = det (updateRow M j u) + det (updateRow M j v) :=
-  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_add M j u v
+  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_update_add M j u v
 
 theorem det_updateColumn_add (M : Matrix n n R) (j : n) (u v : n → R) :
     det (updateColumn M j <| u + v) = det (updateColumn M j u) + det (updateColumn M j v) := by
@@ -348,21 +358,25 @@ theorem det_updateColumn_add (M : Matrix n n R) (j : n) (u v : n → R) :
 
 theorem det_updateRow_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow M j <| s • u) = s * det (updateRow M j u) :=
-  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_smul M j s u
+  (detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_update_smul M j s u
 
 theorem det_updateColumn_smul (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateColumn M j <| s • u) = s * det (updateColumn M j u) := by
   rw [← det_transpose, ← updateRow_transpose, det_updateRow_smul]
   simp [updateRow_transpose, det_transpose]
 
-theorem det_updateRow_smul' (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
+theorem det_updateRow_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateRow (s • M) j u) = s ^ (Fintype.card n - 1) * det (updateRow M j u) :=
-  MultilinearMap.map_update_smul _ M j s u
+  MultilinearMap.map_update_smul_left _ M j s u
 
-theorem det_updateColumn_smul' (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
+@[deprecated (since := "2024-11-03")] alias det_updateRow_smul' := det_updateRow_smul_left
+
+theorem det_updateColumn_smul_left (M : Matrix n n R) (j : n) (s : R) (u : n → R) :
     det (updateColumn (s • M) j u) = s ^ (Fintype.card n - 1) * det (updateColumn M j u) := by
-  rw [← det_transpose, ← updateRow_transpose, transpose_smul, det_updateRow_smul']
+  rw [← det_transpose, ← updateRow_transpose, transpose_smul, det_updateRow_smul_left]
   simp [updateRow_transpose, det_transpose]
+
+@[deprecated (since := "2024-11-03")] alias det_updateColumn_smul' := det_updateColumn_smul_left
 
 theorem det_updateRow_sum_aux (M : Matrix n n R) {j : n} (s : Finset n) (hj : j ∉ s) (c : n → R)
     (a : R) :

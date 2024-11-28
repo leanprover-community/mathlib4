@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Topology.UniformSpace.OfFun
+import Mathlib.Topology.Bases
 
 /-!
 # Extended metric spaces
@@ -28,7 +29,7 @@ assert_not_exists Nat.instLocallyFiniteOrder
 assert_not_exists IsUniformEmbedding
 assert_not_exists TendstoUniformlyOnFilter
 
-open Set Filter
+open Filter Set Topology
 
 universe u v w
 
@@ -307,7 +308,8 @@ end ULift
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
-instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] : PseudoEMetricSpace (α × β) where
+instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
+  PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
   edist_comm x y := by simp [edist_comm]
@@ -495,7 +497,7 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
 
 section Compact
 
--- Porting note (#11215): TODO: generalize to a uniform space with metrizable uniformity
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a uniform space with metrizable uniformity
 /-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
@@ -655,11 +657,11 @@ theorem edist_ofAdd (a b : X) : edist (ofAdd a) (ofAdd b) = edist a b :=
   rfl
 
 @[simp]
-theorem edist_toMul (a b : Additive X) : edist (toMul a) (toMul b) = edist a b :=
+theorem edist_toMul (a b : Additive X) : edist a.toMul b.toMul = edist a b :=
   rfl
 
 @[simp]
-theorem edist_toAdd (a b : Multiplicative X) : edist (toAdd a) (toAdd b) = edist a b :=
+theorem edist_toAdd (a b : Multiplicative X) : edist a.toAdd b.toAdd = edist a b :=
   rfl
 
 end

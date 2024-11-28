@@ -129,9 +129,7 @@ theorem pairwise_union :
     (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   simp only [Set.Pairwise, mem_union, or_imp, forall_and]
-  exact
-    ⟨fun H => ⟨H.1.1, H.2.2, H.1.2, fun x hx y hy hne => H.2.1 y hy x hx hne.symm⟩,
-     fun H => ⟨⟨H.1, H.2.2.1⟩, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm, H.2.1⟩⟩
+  aesop
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
@@ -196,7 +194,7 @@ protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' 
 /-- See also `Set.Pairwise.image`. -/
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
     (f '' s).Pairwise r ↔ s.Pairwise (r on f) := by
-  simp (config := { contextual := true }) [h.eq_iff, Set.Pairwise]
+  simp +contextual [h.eq_iff, Set.Pairwise]
 
 lemma _root_.Pairwise.range_pairwise (hr : Pairwise (r on f)) : (Set.range f).Pairwise r :=
   image_univ ▸ (pairwise_univ.mpr hr).image

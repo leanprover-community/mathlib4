@@ -3,11 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.Finiteness
 
 /-!
 # The tensor product of R-algebras
@@ -110,6 +109,10 @@ lemma baseChange_mul (f g : Module.End R M) :
   ext; simp
 
 variable (R A M N)
+
+/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
+def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.congr (.refl _ _) e
 
 /-- `baseChange` as a linear map.
 
@@ -326,10 +329,10 @@ variable [NonAssocSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower 
 variable [NonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp +contextual
 
 protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
+  refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp +contextual
 
 instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
   one_mul := Algebra.TensorProduct.one_mul
@@ -562,7 +565,7 @@ theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
   with_reducible_and_instances rfl
--- fails at `with_reducible_and_instances rfl` #10906
+-- fails at `with_reducible_and_instances rfl` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Ring.toIntAlgebra _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
@@ -899,6 +902,15 @@ theorem map_comp [Algebra S C] [IsScalarTower R S C]
     map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
   ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
 
+lemma map_id_comp (g₂ : E →ₐ[R] F) (g₁ : D →ₐ[R] E) :
+    map (AlgHom.id S A) (g₂.comp g₁) = (map (AlgHom.id S A) g₂).comp (map (AlgHom.id S A) g₁) :=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
+lemma map_comp_id [Algebra S C] [IsScalarTower R S C]
+    (f₂ : B →ₐ[S] C) (f₁ : A →ₐ[S] B) :
+    map (f₂.comp f₁) (AlgHom.id R E) = (map f₂ (AlgHom.id R E)).comp (map f₁ (AlgHom.id R E)) :=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
 @[simp]
 theorem map_comp_includeLeft (f : A →ₐ[S] B) (g : C →ₐ[R] D) :
     (map f g).comp includeLeft = includeLeft.comp f :=
@@ -1033,11 +1045,17 @@ variable [Algebra R A] [Algebra R B] [Algebra R S]
 variable (f : A →ₐ[R] S) (g : B →ₐ[R] S)
 variable (R)
 
-/-- `LinearMap.mul'` is an `AlgHom` on commutative rings. -/
-def lmul' : S ⊗[R] S →ₐ[R] S :=
-  algHomOfLinearMapTensorProduct (LinearMap.mul' R S)
-    (fun a₁ a₂ b₁ b₂ => by simp only [LinearMap.mul'_apply, mul_mul_mul_comm]) <| by
-    simp only [LinearMap.mul'_apply, mul_one]
+/-- `LinearMap.mul'` as an `AlgHom` over the algebra. -/
+def lmul'' : S ⊗[R] S →ₐ[S] S :=
+  algHomOfLinearMapTensorProduct
+    { __ := LinearMap.mul' R S
+      map_smul' := fun s x ↦ x.induction_on (by simp)
+        (fun _ _ ↦ by simp [TensorProduct.smul_tmul', mul_assoc])
+        fun x y hx hy ↦ by simp_all [hx, hy, mul_add] }
+    (fun a₁ a₂ b₁ b₂ => by simp [mul_mul_mul_comm]) <| by simp
+
+/-- `LinearMap.mul'` as an `AlgHom` over the base ring. -/
+def lmul' : S ⊗[R] S →ₐ[R] S := (lmul'' R).restrictScalars R
 
 variable {R}
 
@@ -1055,6 +1073,15 @@ theorem lmul'_comp_includeLeft : (lmul' R : _ →ₐ[R] S).comp includeLeft = Al
 @[simp]
 theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = AlgHom.id R S :=
   AlgHom.ext <| one_mul
+
+variable (R S) in
+/-- If multiplication by elements of S can switch between the two factors of `S ⊗[R] S`,
+then `lmul''` is an isomorphism. -/
+def lmulEquiv [CompatibleSMul R S S S] : S ⊗[R] S ≃ₐ[S] S :=
+  .ofAlgHom (lmul'' R) includeLeft lmul'_comp_includeLeft <| AlgHom.ext fun x ↦ x.induction_on
+    (by simp) (fun x y ↦ show (x * y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y by
+      rw [mul_comm, ← smul_eq_mul, smul_tmul, smul_eq_mul, mul_one])
+    fun _ _ hx hy ↦ by simp_all [hx, hy, add_tmul]
 
 /-- If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
 We obtain a map `A ⊗[R] B →ₐ[R] S` that commutes with `f`, `g` via `a ⊗ b ↦ f(a) * g(b)`.
@@ -1092,89 +1119,6 @@ theorem productMap_range : (productMap f g).range = f.range ⊔ g.range := by
 
 end
 
-section Basis
-
-universe uM uι
-variable {M : Type uM} {ι : Type uι}
-variable [CommSemiring R] [Semiring A] [Algebra R A]
-variable [AddCommMonoid M] [Module R M] (b : Basis ι R M)
-variable (A)
-
-/-- Given an `R`-algebra `A` and an `R`-basis of `M`, this is an `R`-linear isomorphism
-`A ⊗[R] M ≃ (ι →₀ A)` (which is in fact `A`-linear). -/
-noncomputable def basisAux : A ⊗[R] M ≃ₗ[R] ι →₀ A :=
-  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique R A PUnit.{uι+1}).symm b.repr ≪≫ₗ
-    (finsuppTensorFinsupp R R A R PUnit ι).trans
-      (Finsupp.lcongr (Equiv.uniqueProd ι PUnit) (_root_.TensorProduct.rid R A))
-
-variable {A}
-
-theorem basisAux_tmul (a : A) (m : M) :
-    basisAux A b (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) := by
-  ext
-  simp [basisAux, ← Algebra.commutes, Algebra.smul_def]
-
-theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a • basisAux A b x :=
-  TensorProduct.induction_on x (by simp)
-    (fun x y => by simp only [TensorProduct.smul_tmul', basisAux_tmul, smul_assoc])
-    fun x y hx hy => by simp [hx, hy]
-
-variable (A)
-
-/-- Given a `R`-algebra `A`, this is the `A`-basis of `A ⊗[R] M` induced by a `R`-basis of `M`. -/
-noncomputable def basis : Basis ι A (A ⊗[R] M) where
-  repr := { basisAux A b with map_smul' := basisAux_map_smul b }
-
-variable {A}
-
-@[simp]
-theorem basis_repr_tmul (a : A) (m : M) :
-    (basis A b).repr (a ⊗ₜ m) = a • Finsupp.mapRange (algebraMap R A) (map_zero _) (b.repr m) :=
-  basisAux_tmul b a m -- Porting note: Lean 3 had _ _ _
-
-theorem basis_repr_symm_apply (a : A) (i : ι) :
-    (basis A b).repr.symm (Finsupp.single i a) = a ⊗ₜ b.repr.symm (Finsupp.single i 1) := by
-  rw [basis, LinearEquiv.coe_symm_mk] -- Porting note: `coe_symm_mk` isn't firing in `simp`
-  simp [Equiv.uniqueProd_symm_apply, basisAux]
-
-@[simp]
-theorem basis_apply (i : ι) : basis A b i = 1 ⊗ₜ b i := basis_repr_symm_apply b 1 i
-
-theorem basis_repr_symm_apply' (a : A) (i : ι) : a • basis A b i = a ⊗ₜ b i := by
-  simpa using basis_repr_symm_apply b a i
-
-section baseChange
-
-open LinearMap
-
-variable [Fintype ι]
-variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddCommMonoid N] [Module R N]
-variable (A : Type*) [CommSemiring A] [Algebra R A]
-
-lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
-    baseChange A (b'.linearMap b ij) = (basis A b').linearMap (basis A b) ij := by
-  apply (basis A b').ext
-  intro k
-  conv_lhs => simp only [basis_apply, baseChange_tmul]
-  simp_rw [Basis.linearMap_apply_apply, basis_apply]
-  split <;> simp only [TensorProduct.tmul_zero]
-
-variable [DecidableEq ι]
-
-lemma _root_.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
-    baseChange A (b.end ij) = (basis A b).end ij :=
-  b.baseChange_linearMap A b ij
-
-end baseChange
-
-end Basis
-
-instance (R A M : Type*)
-    [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
-    [CommSemiring A] [Algebra R A] :
-    Module.Free A (A ⊗[R] M) :=
-  Module.Free.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
-
 end TensorProduct
 
 end Algebra
@@ -1188,13 +1132,13 @@ variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
   [CommSemiring R] [CommSemiring A] [Algebra R A]
   [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
-@[simp]
-lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b₂ : Basis ι₂ R M₂) :
-    toMatrix (basis A b₁) (basis A b₂) (f.baseChange A) =
-    (toMatrix b₁ b₂ f).map (algebraMap R A) := by
-  ext; simp [toMatrix_apply]
-
 end LinearMap
+
+lemma Algebra.baseChange_lmul {R B : Type*} [CommRing R] [CommRing B] [Algebra R B]
+    {A : Type*} [CommRing A] [Algebra R A] (f : B) :
+    (Algebra.lmul R B f).baseChange A = Algebra.lmul A (A ⊗[R] B) (1 ⊗ₜ f) := by
+  ext i
+  simp
 
 namespace LinearMap
 
@@ -1266,12 +1210,6 @@ theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
   rfl
 
 end Module
-
-theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [Algebra K L]
-    (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
-    Module.Finite K ↥(E1 ⊔ E2) := by
-  rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
-  exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
 
 namespace TensorProduct.Algebra
 

@@ -60,7 +60,7 @@ of finite discrete spaces.
 -/
 
 
-open Set Function TopologicalSpace
+open Set Function TopologicalSpace Topology
 
 variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
@@ -104,7 +104,7 @@ theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.toSetoid x) :=
   Set.ext fun _ => eq_comm.trans Quotient.eq''
 
 theorem proj_surjective : Function.Surjective S.proj :=
-  Quotient.surjective_Quotient_mk''
+  Quotient.mk''_surjective
 
 theorem proj_isQuotientMap : IsQuotientMap S.proj :=
   isQuotientMap_quot_mk
@@ -136,7 +136,7 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
   rw [← fiber_eq]
   apply isClopen_preimage
 
-instance : Inf (DiscreteQuotient X) :=
+instance : Min (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
 instance : SemilatticeInf (DiscreteQuotient X) :=
@@ -150,7 +150,7 @@ instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
 instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 
--- Porting note (#11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
@@ -282,7 +282,8 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 @[simp]
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 
--- Porting note (#11215): TODO: figure out why `simpNF` says this is a bad `@[simp]` lemma
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out why `simpNF` says this is a bad `@[simp]` lemma
+-- See https://github.com/leanprover-community/batteries/issues/365
 theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩

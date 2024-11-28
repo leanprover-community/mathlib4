@@ -79,7 +79,7 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
         · simp_rw [update_noteq hne, y, I.piecewise_eq_of_mem _ _ hi]
           exact hc _ _ le_rfl _ hx
       _ = a • f x := by
-        rw [f.map_smul, update_eq_self, f.map_piecewise_smul, div_eq_mul_inv, mul_smul,
+        rw [f.map_update_smul, update_eq_self, f.map_piecewise_smul, div_eq_mul_inv, mul_smul,
           inv_smul_smul₀ hc₀']
 
 /-- The image of a von Neumann bounded set under a continuous multilinear map

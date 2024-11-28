@@ -183,7 +183,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
     have hf' := hfq.summable hq
     refine .of_norm_bounded_eventually _ hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } ?_ _ ?_)
     · have H : { x : α | 1 ≤ ‖f x‖ ^ q.toReal }.Finite := by
-        simpa using eventually_lt_of_tendsto_lt (by norm_num) hf'.tendsto_cofinite_zero
+        simpa using hf'.tendsto_cofinite_zero.eventually_lt_const (by norm_num)
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
     · show ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
       intro i hi
@@ -428,7 +428,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
 theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
   rw [lp.ext_iff, coeFn_zero]
 
--- porting note (#11083): this was very slow, so I squeezed the `simp` calls
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): this was very slow, so I squeezed the `simp` calls
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -740,7 +740,7 @@ instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRi
     NonUnitalNormedCommRing (lp B ∞) where
   mul_comm _ _ := ext <| mul_comm ..
 
--- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for mathlib3 #13719
+-- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_assoc (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩

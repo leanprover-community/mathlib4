@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
+import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.Says
@@ -11,18 +12,20 @@ import Mathlib.Tactic.Contrapose
 /-!
 # Intervals
 
-In any preorder `α`, we define intervals (which on each side can be either infinite, open, or
-closed) using the following naming conventions:
+In any preorder `α`, we define intervals
+(which on each side can be either infinite, open, or closed) using the following naming conventions:
+
 - `i`: infinite
 - `o`: open
 - `c`: closed
 
-Each interval has the name `I` + letter for left side + letter for right side. For instance,
-`Ioc a b` denotes the interval `(a, b]`.
+Each interval has the name `I` + letter for left side + letter for right side.
+For instance, `Ioc a b` denotes the interval `(a, b]`.
+The definitions can be found in `Order/Interval/Set/Defs`.
 
-This file contains these definitions, and basic facts on inclusion, intersection, difference of
-intervals (where the precise statements may depend on the properties of the order, in particular
-for some statements it should be `LinearOrder` or `DenselyOrdered`).
+This file contains basic facts on inclusion, intersection, difference of intervals
+(where the precise statements may depend on the properties of the order,
+in particular for some statements it should be `LinearOrder` or `DenselyOrdered`).
 
 TODO: This is just the beginning; a lot of rules are missing
 -/
@@ -39,93 +42,6 @@ section Preorder
 
 variable [Preorder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-/-- `Ioo a b` is the left-open right-open interval $(a, b)$. -/
-def Ioo (a b : α) :=
-  { x | a < x ∧ x < b }
-
-/-- `Ico a b` is the left-closed right-open interval $[a, b)$. -/
-def Ico (a b : α) :=
-  { x | a ≤ x ∧ x < b }
-
-/-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
-def Iio (b : α) :=
-  { x | x < b }
-
-/-- `Icc a b` is the left-closed right-closed interval $[a, b]$. -/
-def Icc (a b : α) :=
-  { x | a ≤ x ∧ x ≤ b }
-
-/-- `Iic b` is the left-infinite right-closed interval $(-∞, b]$. -/
-def Iic (b : α) :=
-  { x | x ≤ b }
-
-/-- `Ioc a b` is the left-open right-closed interval $(a, b]$. -/
-def Ioc (a b : α) :=
-  { x | a < x ∧ x ≤ b }
-
-/-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/
-def Ici (a : α) :=
-  { x | a ≤ x }
-
-/-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/
-def Ioi (a : α) :=
-  { x | a < x }
-
-theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b :=
-  rfl
-
-theorem Ico_def (a b : α) : { x | a ≤ x ∧ x < b } = Ico a b :=
-  rfl
-
-theorem Iio_def (a : α) : { x | x < a } = Iio a :=
-  rfl
-
-theorem Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b :=
-  rfl
-
-theorem Iic_def (b : α) : { x | x ≤ b } = Iic b :=
-  rfl
-
-theorem Ioc_def (a b : α) : { x | a < x ∧ x ≤ b } = Ioc a b :=
-  rfl
-
-theorem Ici_def (a : α) : { x | a ≤ x } = Ici a :=
-  rfl
-
-theorem Ioi_def (a : α) : { x | a < x } = Ioi a :=
-  rfl
-
-@[simp]
-theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Iio : x ∈ Iio b ↔ x < b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Iic : x ∈ Iic b ↔ x ≤ b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ici : x ∈ Ici a ↔ a ≤ x :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ioi : x ∈ Ioi a ↔ a < x :=
-  Iff.rfl
 
 instance decidableMemIoo [Decidable (a < x ∧ x < b)] : Decidable (x ∈ Ioo a b) := by assumption
 
@@ -1209,7 +1125,6 @@ theorem Iic_union_Ico_eq_Iio (h : a < b) : Iic a ∪ Ico a b = Iio b :=
 
 /-! #### Two finite intervals, `I?o` and `Ic?` -/
 
-
 theorem Ioo_subset_Ioo_union_Ico : Ioo a c ⊆ Ioo a b ∪ Ico b c := fun x hx =>
   (lt_or_le x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
 
@@ -1265,7 +1180,6 @@ theorem Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Icc b
 
 /-! #### Two finite intervals, `I?c` and `Io?` -/
 
-
 theorem Ioo_subset_Ioc_union_Ioo : Ioo a c ⊆ Ioc a b ∪ Ioo b c := fun x hx =>
   (le_or_lt x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
 
@@ -1320,7 +1234,6 @@ theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) 
   all_goals simp [*]
 
 /-! #### Two finite intervals with a common point -/
-
 
 theorem Ioo_subset_Ioc_union_Ico : Ioo a c ⊆ Ioc a b ∪ Ico b c :=
   Subset.trans Ioo_subset_Ioc_union_Ioo (union_subset_union_right _ Ioo_subset_Ico_self)
@@ -1400,6 +1313,11 @@ theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
   all_goals
     simp [*, min_eq_left_of_lt, min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt,
       le_of_lt h₂, le_of_lt h₁]
+
+theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : c < b) (h₃ : b₁ ≤ d) :
+    Ioo a₁ b₁ ⊆ Ioo a b ∪ Ioo c d := fun x hx =>
+  (lt_or_le x b).elim (fun hxb => Or.inl ⟨lt_of_le_of_lt h₁ hx.1, hxb⟩)
+    fun hxb => Or.inr ⟨lt_of_lt_of_le h₂ hxb, lt_of_lt_of_le hx.2 h₃⟩
 
 end LinearOrder
 
@@ -1502,11 +1420,11 @@ theorem Ioo_inter_Ioc_of_right_lt (h : b₂ < b₁) : Ioo a₁ b₁ ∩ Ioc a₂
 
 @[simp]
 theorem Ico_diff_Iio : Ico a b \ Iio c = Ico (max a c) b := by
-  rw [diff_eq, compl_Iio, Ico_inter_Ici, sup_eq_max]
+  rw [diff_eq, compl_Iio, Ico_inter_Ici]
 
 @[simp]
 theorem Ioc_diff_Ioi : Ioc a b \ Ioi c = Ioc a (min b c) :=
-  ext <| by simp (config := { contextual := true }) [iff_def]
+  ext <| by simp +contextual [iff_def]
 
 @[simp]
 theorem Ioc_inter_Ioi : Ioc a b ∩ Ioi c = Ioc (a ⊔ c) b := by
@@ -1515,11 +1433,11 @@ theorem Ioc_inter_Ioi : Ioc a b ∩ Ioi c = Ioc (a ⊔ c) b := by
 
 @[simp]
 theorem Ico_inter_Iio : Ico a b ∩ Iio c = Ico a (min b c) :=
-  ext <| by simp (config := { contextual := true }) [iff_def]
+  ext <| by simp +contextual [iff_def]
 
 @[simp]
 theorem Ioc_diff_Iic : Ioc a b \ Iic c = Ioc (max a c) b := by
-  rw [diff_eq, compl_Iic, Ioc_inter_Ioi, sup_eq_max]
+  rw [diff_eq, compl_Iic, Ioc_inter_Ioi]
 
 @[simp]
 theorem Ioc_union_Ioc_right : Ioc a b ∪ Ioc a c = Ioc a (max b c) := by
@@ -1634,4 +1552,4 @@ namespace Set
 
 end Set
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1700

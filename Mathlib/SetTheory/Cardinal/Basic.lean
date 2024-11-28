@@ -5,9 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
+import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Small.Set
+import Mathlib.Logic.UnivLE
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
@@ -142,7 +145,7 @@ protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
 /-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
-@[deprecated (since := "2024-10-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
 theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
   rfl
 
@@ -233,24 +236,20 @@ def lift (c : Cardinal.{v}) : Cardinal.{max v u} :=
 theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
   rfl
 
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
-@[simp, nolint simpNF]
+/-- `lift.{max u v, u}` equals `lift.{v, u}`.
+
+Unfortunately, the simp lemma doesn't work. -/
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
 /-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
-@[simp, nolint simpNF]
+@[deprecated lift_umax (since := "2024-10-24")]
 theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
   lift_umax
 
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- A cardinal lifted to a lower or equal universe equals itself. -/
-@[simp, nolint simpNF]
+/-- A cardinal lifted to a lower or equal universe equals itself.
+
+Unfortunately, the simp lemma doesn't work. -/
 theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
   inductionOn a fun _ => mk_congr Equiv.ulift
 
@@ -260,6 +259,7 @@ theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
   lift_id'.{u, u} a
 
 /-- A cardinal lifted to the zero universe equals itself. -/
+@[simp]
 theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
   lift_id'.{0, u} a
 
@@ -322,7 +322,7 @@ theorem lift_mk_shrink' (α : Type u) [Small.{v} α] :
 @[simp]
 theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
     Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
-  rw [← lift_umax', lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
+  rw [← lift_umax, lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
 
 /-- `Cardinal.lift` as an `InitialSeg`. -/
 @[simps!]
@@ -445,7 +445,10 @@ theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
 theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleton :=
   le_one_iff_subsingleton.trans s.subsingleton_coe
 
-alias ⟨_, _root_.Set.Subsingleton.cardinal_mk_le_one⟩ := mk_le_one_iff_set_subsingleton
+alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
+
+@[deprecated (since := "2024-11-10")]
+alias _root_.Set.Subsingleton.cardinal_mk_le_one := Set.Subsingleton.cardinalMk_le_one
 
 instance : Add Cardinal.{u} :=
   ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
@@ -722,8 +725,6 @@ instance : WellFoundedRelation Cardinal.{u} :=
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
 
-instance wo : @IsWellOrder Cardinal.{u} (· < ·) where
-
 instance : ConditionallyCompleteLinearOrderBot Cardinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
@@ -984,13 +985,6 @@ theorem exists_wellOrder : ∃ (_ : LinearOrder α), WellFoundedLT α := by
 
 namespace Cardinal
 
-/-- The range of an indexed cardinal function, whose outputs live in a higher universe than the
-    inputs, is always bounded above. -/
-theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
-  ⟨sum f, by
-    rintro a ⟨i, rfl⟩
-    exact le_sum f i⟩
-
 instance small_Iic (a : Cardinal.{u}) : Small.{u} (Iic a) := by
   rw [← mk_out a]
   apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
@@ -1007,17 +1001,15 @@ instance small_Ioo (a b : Cardinal.{u}) : Small.{u} (Ioo a b) := small_subset Io
 theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, ha⟩ => @small_subset _ (Iic a) s (fun _ h => ha h) _, by
     rintro ⟨ι, ⟨e⟩⟩
-    suffices (range fun x : ι => (e.symm x).1) = s by
-      rw [← this]
-      apply bddAbove_range.{u, u}
-    ext x
-    refine ⟨?_, fun hx => ⟨e ⟨x, hx⟩, ?_⟩⟩
-    · rintro ⟨a, rfl⟩
-      exact (e.symm a).2
-    · simp_rw [Equiv.symm_apply_apply]⟩
+    use sum.{u, u} fun x ↦ e.symm x
+    intro a ha
+    simpa using le_sum (fun x ↦ e.symm x) (e ⟨a, ha⟩)⟩
 
 theorem bddAbove_of_small (s : Set Cardinal.{u}) [h : Small.{u} s] : BddAbove s :=
   bddAbove_iff_small.2 h
+
+theorem bddAbove_range {ι : Type*} [Small.{u} ι] (f : ι → Cardinal.{u}) : BddAbove (Set.range f) :=
+  bddAbove_of_small _
 
 theorem bddAbove_image (f : Cardinal.{u} → Cardinal.{max u v}) {s : Set Cardinal.{u}}
     (hs : BddAbove s) : BddAbove (f '' s) := by
@@ -1034,7 +1026,7 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbo
 theorem sum_le_iSup_lift {ι : Type u}
     (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
   rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
-  exact sum_le_sum _ _ (le_ciSup <| bddAbove_range f)
+  exact sum_le_sum _ _ (le_ciSup <| bddAbove_of_small _)
 
 theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
   rw [← lift_id #ι]
@@ -1210,7 +1202,7 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
   · intro f
     rw [Fintype.univ_pempty, Finset.prod_empty, lift_one, Cardinal.prod, mk_eq_one]
   · intro α hα h f
-    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax'.{v, u}, mk_out, ←
+    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax.{v, u}, mk_out, ←
         Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
     simp only [lift_id]
 
@@ -1590,6 +1582,13 @@ theorem le_aleph0_iff_subtype_countable {p : α → Prop} :
     #{ x // p x } ≤ ℵ₀ ↔ { x | p x }.Countable :=
   le_aleph0_iff_set_countable
 
+theorem aleph0_lt_mk_iff : ℵ₀ < #α ↔ Uncountable α := by
+  rw [← not_le, ← not_countable_iff, not_iff_not, mk_le_aleph0_iff]
+
+@[simp]
+theorem aleph0_lt_mk [Uncountable α] : ℵ₀ < #α :=
+  aleph0_lt_mk_iff.mpr ‹_›
+
 instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
   ⟨fun _ hx =>
     let ⟨n, hn⟩ := lt_aleph0.mp hx
@@ -1882,13 +1881,13 @@ theorem mk_iUnion_le_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
-    (h : Pairwise fun i j => Disjoint (f i) (f j)) : #(⋃ i, f i) = sum fun i => #(f i) :=
+    (h : Pairwise (Disjoint on f)) : #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
     #(⋃ i, f i) = #(Σi, f i) := mk_congr (Set.unionEqSigmaOfDisjoint h)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
-    (h : Pairwise fun i j => Disjoint (f i) (f j)) :
+    (h : Pairwise (Disjoint on f)) :
     lift.{v} #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
     lift.{v} #(⋃ i, f i) = #(Σi, f i) :=
