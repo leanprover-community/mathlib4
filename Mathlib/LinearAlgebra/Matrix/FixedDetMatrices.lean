@@ -181,9 +181,8 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
       simp only [smul_def, Fin.isValue, coe_T_zpow]
       suffices A.1 1 0 = 0 ∧ n * A.1 1 0 < A.1 0 0 ∧
           n * A.1 1 1 ≤ A.1 0 1 ∧ |A.1 0 1 + -(n * A.1 1 1)| < |A.1 1 1| by
-        simp only [reps, Fin.isValue, zpow_neg, Set.mem_setOf_eq]
-        simp only [cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply]
-        simpa [vecMul, vecHead, vecTail]
+        simpa [reps, Fin.isValue, zpow_neg, Set.mem_setOf_eq, cons_mul, Nat.succ_eq_add_one,
+        Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, vecMul, vecHead, vecTail]
       simp_all only [h, mul_comm n, zero_mul, ← sub_eq_add_neg, ← h2,
         Fin.isValue, h1, h3, and_true, true_and]
     · simp only [reps, Fin.isValue, reduce_of_not_pos h h1, Int.ediv_neg, neg_neg, smul_def, ←
