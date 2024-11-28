@@ -64,12 +64,12 @@ def is_set_option : Syntax → Bool :=
   fun stx ↦ parse_set_option stx matches some _name
 
 /-- TODO: add a doc-string! -/
-def findErrors (stx : Syntax) : Option (Lean.Option Bool × Syntax × MessageData):= Id.run do
+def findErrors (stx : Syntax) : Option (Syntax × MessageData):= Id.run do
   if let some head := stx.find? is_set_option then
     if let some name := parse_set_option head then
       let forbidden := [`debug, `pp, `profiler, `trace]
       if forbidden.contains name.getRoot then
-        return some (linter.style.setOption, head,
+        return some (head,
             m!"Setting options starting with '{"', '".intercalate (forbidden.map (·.toString))}' \
                is only intended for development and not for final code. \
                If you intend to submit this contribution to the Mathlib project, \
@@ -123,7 +123,7 @@ register_option linter.style.missingEnd : Bool := {
 namespace Style.missingEnd
 
 /-- TODO: add a doc-string! -/
-def findErrors (stx : Syntax) : CommandElabM (Option (Lean.Option Bool × Syntax × MessageData)) := do
+def findErrors (stx : Syntax) : CommandElabM (Option (Syntax × MessageData)) := do
   -- Only run this linter at the end of a module.
   unless stx.isOfKind ``Lean.Parser.Command.eoi do return none
   let sc ← getScopes
@@ -137,7 +137,7 @@ def findErrors (stx : Syntax) : CommandElabM (Option (Lean.Option Bool × Syntax
   if !ends.isEmpty then
     let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
       a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
-    return some (linter.style.missingEnd, stx, m!"unclosed sections or namespaces; expected: '{ending}'")
+    return some (stx, m!"unclosed sections or namespaces; expected: '{ending}'")
   return none
 
 @[inherit_doc Mathlib.Linter.linter.style.missingEnd]
@@ -211,14 +211,14 @@ def unwanted_cdot (stx : Syntax) : Array Syntax :=
 namespace Style
 
 /-- TODO: add a doc-string! -/
-def cdotLinter.findErrors (stx : Syntax) : List (Lean.Option Bool × Syntax × MessageData) := Id.run do
+def cdotLinter.findErrors (stx : Syntax) : List (Syntax × MessageData) := Id.run do
   let res := unwanted_cdot stx |>.map (fun s ↦
-    (linter.style.cdot, s, m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."))
+    (s, m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."))
   let mut res2 := #[]
   for cdot in Mathlib.Linter.findCDot stx do
     if let some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) := cdot.find? (·.isOfKind `token.«· ») then
       if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
-        res2 := res2.push (linter.style.cdot, cdot, m!"This central dot `·` is isolated; please merge it with the next line.")
+        res2 := res2.push (cdot, m!"This central dot `·` is isolated; please merge it with the next line.")
   return res.toList ++ res2.toList
 
 @[inherit_doc linter.style.cdot]
@@ -270,8 +270,8 @@ def findDollarSyntax : Syntax → Array Syntax
   |_ => #[]
 
 /-- TODO: add a doc-string! -/
-def findErrors (stx : Syntax) : Array (Lean.Option Bool × Syntax × MessageData) := Id.run do
-  findDollarSyntax stx |>.map (fun s ↦ (linter.style.dollarSyntax, s, m!"Please use '<|' instead of '$' for the pipe operator."))
+def findErrors (stx : Syntax) : Array (Syntax × MessageData) := Id.run do
+  findDollarSyntax stx |>.map (fun s ↦ (s, m!"Please use '<|' instead of '$' for the pipe operator."))
 
 @[inherit_doc linter.style.dollarSyntax]
 def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -318,9 +318,9 @@ def findLambdaSyntax : Syntax → Array Syntax
   |_ => #[]
 
 /-- TODO: add a doc-string! -/
-def findErrors (stx : Syntax) : Array (Lean.Option Bool × Syntax × MessageData) := Id.run do
+def findErrors (stx : Syntax) : Array (Syntax × MessageData) := Id.run do
   findLambdaSyntax stx |>.filterMap (fun s ↦ if let .atom _ "λ" := s[0] then
-    some (linter.style.lambdaSyntax, s[0], m!"Please use 'fun' and not 'λ' to define anonymous \
+    some (s[0], m!"Please use 'fun' and not 'λ' to define anonymous \
       functions.\nThe 'λ' syntax is deprecated in mathlib4.") else none)
 
 @[inherit_doc linter.style.lambdaSyntax]
@@ -430,23 +430,23 @@ def jointSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← MonadState.get).messages.hasErrors then
     return
   if Linter.getLinterValue linter.style.setOption (← getOptions) then
-    if let some (opt, s, msg) := Mathlib.Linter.Style.setOption.findErrors stx then
-      Linter.logLint opt s msg
+    if let some (s, msg) := Mathlib.Linter.Style.setOption.findErrors stx then
+      Linter.logLint linter.style.setOption s msg
   if Linter.getLinterValue linter.style.missingEnd (← getOptions) then
-    if let some (opt, s, msg) ← Mathlib.Linter.Style.missingEnd.findErrors stx then
-      Linter.logLint opt s msg
+    if let some (s, msg) ← Mathlib.Linter.Style.missingEnd.findErrors stx then
+      Linter.logLint linter.style.missingEnd s msg
   if Linter.getLinterValue linter.style.dollarSyntax (← getOptions) then
     let err := Mathlib.Linter.Style.dollarSyntax.findErrors stx
-    for (opt, s, msg) in err do
-      Linter.logLint opt s msg
+    for (s, msg) in err do
+      Linter.logLint linter.style.dollarSyntax s msg
   if Linter.getLinterValue linter.style.cdot (← getOptions) then
     let err := Mathlib.Linter.Style.cdotLinter.findErrors stx
-    for (opt, s, msg) in err do
-      Linter.logLint opt s msg
+    for (s, msg) in err do
+      Linter.logLint linter.style.cdot s msg
   if Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) then
     let err := Mathlib.Linter.Style.lambdaSyntax.findErrors stx
-    for (opt, s, msg) in err do
-      Linter.logLint opt s msg
+    for (s, msg) in err do
+      Linter.logLint linter.style.lambdaSyntax s msg
 
 initialize addLinter jointSyntaxLinter
 
