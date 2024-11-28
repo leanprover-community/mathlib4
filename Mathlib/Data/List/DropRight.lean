@@ -69,10 +69,10 @@ lemma rtake_length_le {α : Type _} {n : ℕ} {l : List α} (h : List.length l �
   rw [Nat.sub_eq_zero_of_le h]
   apply List.drop_zero
 
-@[simp]
 theorem rtake_nil : rtake ([] : List α) n = [] := by
   simp only [length_nil, Nat.zero_le, rtake_length_le]
 
+@[simp]
 theorem rtake_zero : rtake l 0 = [] := by simp [rtake]
 
 theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) := by
