@@ -268,34 +268,19 @@ lemma tensorDistriFree_polar
     above_diag Q₁ bm₁ i₁ j₁ h₁, above_diag Q₂ bm₂ i₂ j₂ h₂]
 
 
+lemma tensorDistriFree_left_self (a : M₁) (b c : M₂):
+    polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (a ⊗ₜ b) (a ⊗ₜ c) =
+    Q₁ (a) ⊗ₜ (polarBilin Q₂) (b) (c) := by
+  rw [tensorDistribFree_apply, polar_toQuadraticMap, BilinMap.tensorDistrib_tmul,
+    BilinMap.tensorDistrib_tmul, ← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin,
+    ← TensorProduct.tmul_add, ← toBilin_symm_eq_Polar Q₂ bm₂]
+  rfl
+
 lemma tensorDistriFree_polar1
     (i₁ j₁ : ι₁) (i₂ j₂ : ι₂) (h₁ : i₁ = j₁) :
     polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ j₁ ⊗ₜ bm₂ j₂) =
     Q₁ (bm₁ i₁) ⊗ₜ (polarBilin Q₂) (bm₂ i₂) (bm₂ j₂) := by
-  rw [tensorDistribFree_apply, polar_toQuadraticMap, BilinMap.tensorDistrib_tmul,
-    BilinMap.tensorDistrib_tmul]
-  rw [← h₁]
-  rw [← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin]
-  rw [← TensorProduct.tmul_add]
-  rw [← toBilin_symm_eq_Polar Q₂ bm₂]
-  rfl
-
-
-  --rw [polar_self]
-    --, below_diag Q₁ bm₁ j₁ i₁ h₁, zero_tmul, add_zero,
-    --above_diag Q₁ bm₁ i₁ j₁ h₁, above_diag Q₂ bm₂ i₂ j₂ h₂]
-
-
-/-
-lemma tensorDistriFree_polar_self
-    (i₁ : ι₁) (i₂ : ι₂) :
-    polar (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂)) (bm₁ i₁ ⊗ₜ bm₂ i₂) (bm₁ i₁ ⊗ₜ bm₂ i₂) =
-    2 • Q₁ (bm₁ i₁) ⊗ₜ Q₂ (bm₂ i₂) := by
-  rw [polar_self, tensorDistribFree_apply, BilinMap.toQuadraticMap_apply,
-    BilinMap.tensorDistrib_tmul]
-  rw [← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin]
-  rw [← BilinMap.toQuadraticMap_apply, toQuadraticMap_toBilin]
--/
+  rw [← h₁, tensorDistriFree_left_self]
 
 theorem qt_expansion (x : M₁ ⊗[R] M₂) :
     let Q := (tensorDistribFree R A bm₁ bm₂ (Q₁ ⊗ₜ Q₂))
