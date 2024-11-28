@@ -253,11 +253,38 @@ variable (j : ι)
 
 @[reassoc (attr := simp)]
 lemma opcyclesOpIso_hom_toCycles_op :
-    (K.opcyclesOpIso i).hom ≫ (K.toCycles j i).op = K.op.fromOpcycles i j := sorry
+    (K.opcyclesOpIso i).hom ≫ (K.toCycles j i).op = K.op.fromOpcycles i j := by
+  by_cases hij : c.Rel j i
+  · obtain rfl := c.prev_eq' hij
+    exact (K.sc i).opcyclesOpIso_hom_toCycles_op
+  · rw [K.toCycles_eq_zero hij, K.op.fromOpcycles_eq_zero hij, op_zero, comp_zero]
 
 @[reassoc (attr := simp)]
 lemma fromOpcycles_op_cyclesOpIso_inv :
-    (K.fromOpcycles i j).op ≫ (K.cyclesOpIso i).inv = K.op.toCycles j i := sorry
+    (K.fromOpcycles i j).op ≫ (K.cyclesOpIso i).inv = K.op.toCycles j i := by
+  by_cases hij : c.Rel i j
+  · obtain rfl := c.next_eq' hij
+    exact (K.sc i).fromOpcycles_op_cyclesOpIso_inv
+  · rw [K.op.toCycles_eq_zero hij, K.fromOpcycles_eq_zero hij, op_zero, zero_comp]
+
+end
+
+section
+
+variable {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
+  [K.HasHomology i] [L.HasHomology i]
+
+@[reassoc]
+lemma opcyclesOpIso_hom_naturality :
+    (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op =
+      opcyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.opcyclesOpIso i).hom :=
+  ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
+
+@[reassoc]
+lemma cyclesOpIso_inv_naturality :
+    (opcyclesMap φ i).op ≫ (K.cyclesOpIso i).inv =
+      (L.cyclesOpIso i).inv ≫ cyclesMap ((opFunctor _ _).map φ.op) _ :=
+  ShortComplex.cyclesOpIso_inv_naturality ((shortComplexFunctor V c i).map φ)
 
 end
 

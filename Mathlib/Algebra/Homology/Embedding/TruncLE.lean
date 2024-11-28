@@ -98,7 +98,10 @@ lemma truncLE'Map_f_eq_cyclesMap {i : ι} (hi : e.BoundaryLE i) {i' : ι'} (h : 
     (truncLE'Map φ e).f i =
       (K.truncLE'XIsoCycles e h hi).hom ≫ cyclesMap φ i' ≫
         (L.truncLE'XIsoCycles e h hi).inv := by
-  sorry
+  apply Quiver.Hom.op_inj
+  dsimp [truncLE'Map, truncLE'XIsoCycles]
+  rw [assoc, assoc, truncGE'Map_f_eq_opcyclesMap _ e.op (by simpa) h,
+    opcyclesOpIso_hom_naturality_assoc, Iso.hom_inv_id_assoc]
 
 lemma truncLE'Map_f_eq {i : ι} (hi : ¬ e.BoundaryLE i) {i' : ι'} (h : e.f i = i') :
     (truncLE'Map φ e).f i =
@@ -194,7 +197,8 @@ instance (i' : ι') : Mono ((K.ιTruncLE e).f i') :=
 instance : Mono (K.ιTruncLE e) := mono_of_mono_f _ (fun _ => inferInstance)
 
 instance : (K.truncLE e).IsStrictlySupported e := by
-  sorry
+  rw [← isStrictlySupported_op_iff]
+  exact inferInstanceAs ((K.op.truncGE e.op).IsStrictlySupported e.op)
 
 variable {K L} in
 @[reassoc (attr := simp)]
@@ -204,12 +208,12 @@ lemma ιTruncLE_naturality :
     (πTruncGE_naturality ((opFunctor C c').map φ.op) e.op))
 
 instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
-    [K.IsStrictlySupported e'] : (K.truncLE e).IsStrictlySupported e' where
-  isZero := by
-    sorry
+    [K.IsStrictlySupported e'] : (K.truncLE e).IsStrictlySupported e' := by
+  rw [← isStrictlySupported_op_iff]
+  exact inferInstanceAs ((K.op.truncGE e.op).IsStrictlySupported e'.op)
 
-instance [K.IsStrictlySupported e] : IsIso (K.ιTruncLE e) := by
-  sorry
+instance [K.IsStrictlySupported e] : IsIso (K.ιTruncLE e) :=
+  inferInstanceAs (IsIso ((unopFunctor C c'.symm).map (K.op.πTruncGE e.op).op))
 
 end
 
