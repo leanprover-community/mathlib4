@@ -49,8 +49,8 @@ theorem commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i 
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
     ← Nat.card_pi, Commute, SemiconjBy, funext_iff]
   congr 2
-  exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
-    fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
+  exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a ↦ (x a).1.1,
+    fun a ↦ (x a).1.2⟩, fun a ↦ (x a).2⟩, fun x => rfl, fun x => rfl⟩
 
 theorem commProb_function {α β : Type*} [Fintype α] [Mul β] :
     commProb (α → β) = (commProb β) ^ Fintype.card α := by

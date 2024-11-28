@@ -99,7 +99,7 @@ theorem singleton_prod : ({a} : Set α) ×ˢ t = Prod.mk a '' t := by
   simp [and_left_comm, eq_comm]
 
 @[simp]
-theorem prod_singleton : s ×ˢ ({b} : Set β) = (fun a => (a, b)) '' s := by
+theorem prod_singleton : s ×ˢ ({b} : Set β) = (fun a ↦ (a, b)) '' s := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
@@ -156,7 +156,7 @@ theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
   ext ⟨x, y⟩
   simp +contextual [image, iff_def, or_imp]
 
-theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
+theorem prod_insert : s ×ˢ insert b t = (fun a ↦ (a, b)) '' s ∪ s ×ˢ t := by
   ext ⟨x, y⟩
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745):
   -- was `simp +contextual [image, iff_def, or_imp, Imp.swap]`
@@ -190,7 +190,7 @@ theorem mk_preimage_prod (f : γ → α) (g : γ → β) :
   rfl
 
 @[simp]
-theorem mk_preimage_prod_left (hb : b ∈ t) : (fun a => (a, b)) ⁻¹' s ×ˢ t = s := by
+theorem mk_preimage_prod_left (hb : b ∈ t) : (fun a ↦ (a, b)) ⁻¹' s ×ˢ t = s := by
   ext a
   simp [hb]
 
@@ -200,7 +200,7 @@ theorem mk_preimage_prod_right (ha : a ∈ s) : Prod.mk a ⁻¹' s ×ˢ t = t :=
   simp [ha]
 
 @[simp]
-theorem mk_preimage_prod_left_eq_empty (hb : b ∉ t) : (fun a => (a, b)) ⁻¹' s ×ˢ t = ∅ := by
+theorem mk_preimage_prod_left_eq_empty (hb : b ∉ t) : (fun a ↦ (a, b)) ⁻¹' s ×ˢ t = ∅ := by
   ext a
   simp [hb]
 
@@ -210,17 +210,17 @@ theorem mk_preimage_prod_right_eq_empty (ha : a ∉ s) : Prod.mk a ⁻¹' s ×ˢ
   simp [ha]
 
 theorem mk_preimage_prod_left_eq_if [DecidablePred (· ∈ t)] :
-    (fun a => (a, b)) ⁻¹' s ×ˢ t = if b ∈ t then s else ∅ := by split_ifs with h <;> simp [h]
+    (fun a ↦ (a, b)) ⁻¹' s ×ˢ t = if b ∈ t then s else ∅ := by split_ifs with h <;> simp [h]
 
 theorem mk_preimage_prod_right_eq_if [DecidablePred (· ∈ s)] :
     Prod.mk a ⁻¹' s ×ˢ t = if a ∈ s then t else ∅ := by split_ifs with h <;> simp [h]
 
 theorem mk_preimage_prod_left_fn_eq_if [DecidablePred (· ∈ t)] (f : γ → α) :
-    (fun a => (f a, b)) ⁻¹' s ×ˢ t = if b ∈ t then f ⁻¹' s else ∅ := by
+    (fun a ↦ (f a, b)) ⁻¹' s ×ˢ t = if b ∈ t then f ⁻¹' s else ∅ := by
   rw [← mk_preimage_prod_left_eq_if, prod_preimage_left, preimage_preimage]
 
 theorem mk_preimage_prod_right_fn_eq_if [DecidablePred (· ∈ s)] (g : δ → β) :
-    (fun b => (a, g b)) ⁻¹' s ×ˢ t = if a ∈ s then g ⁻¹' t else ∅ := by
+    (fun b ↦ (a, g b)) ⁻¹' s ×ˢ t = if a ∈ s then g ⁻¹' t else ∅ := by
   rw [← mk_preimage_prod_right_eq_if, prod_preimage_right, preimage_preimage]
 
 @[simp]
@@ -282,7 +282,7 @@ theorem image_prod_mk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
   rintro _ ⟨x, hx, rfl⟩
   exact mk_mem_prod (mem_image_of_mem f hx) (mem_image_of_mem g hx)
 
-theorem image_prod_mk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s ⊆ s ×ˢ t := by
+theorem image_prod_mk_subset_prod_left (hb : b ∈ t) : (fun a ↦ (a, b)) '' s ⊆ s ×ˢ t := by
   rintro _ ⟨a, ha, rfl⟩
   exact ⟨ha, hb⟩
 

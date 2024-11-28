@@ -172,7 +172,7 @@ statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a versio
 given in `Filter.Tendsto.const_mul_atTop`). -/
 theorem Tendsto.const_mul_atTop' (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop := by
-  refine tendsto_atTop.2 fun b => ?_
+  refine tendsto_atTop.2 fun b ↦ ?_
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   rw [nsmul_eq_mul'] at hn
   filter_upwards [tendsto_atTop.1 hf (n * max b 0)] with x hx
@@ -190,7 +190,7 @@ statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a versio
 given in `Filter.Tendsto.atTop_mul_const`). -/
 theorem Tendsto.atTop_mul_const' (hr : 0 < r) (hf : Tendsto f l atTop) :
     Tendsto (fun x => f x * r) l atTop := by
-  refine tendsto_atTop.2 fun b => ?_
+  refine tendsto_atTop.2 fun b ↦ ?_
   obtain ⟨n : ℕ, hn : 1 ≤ n • r⟩ := Archimedean.arch 1 hr
   have hn' : 1 ≤ (n : R) * r := by rwa [nsmul_eq_mul] at hn
   filter_upwards [tendsto_atTop.1 hf (max b 0 * n)] with x hx

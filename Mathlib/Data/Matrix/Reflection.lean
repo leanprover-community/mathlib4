@@ -157,7 +157,7 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 
 /-- `Matrix.mulVec` with better defeq for `Fin` -/
 def mulVecᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) : Fin l → α :=
-  FinVec.map (fun a => dotProductᵣ a v) A
+  FinVec.map (fun a ↦ dotProductᵣ a v) A
 
 /-- This can be used to prove
 ```lean
@@ -179,7 +179,7 @@ example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b�
 
 /-- `Matrix.vecMul` with better defeq for `Fin` -/
 def vecMulᵣ [Mul α] [Add α] [Zero α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) : Fin m → α :=
-  FinVec.map (fun a => dotProductᵣ v a) Aᵀ
+  FinVec.map (fun a ↦ dotProductᵣ v a) Aᵀ
 
 /-- This can be used to prove
 ```lean

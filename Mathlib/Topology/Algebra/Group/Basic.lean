@@ -368,7 +368,7 @@ theorem continuousInv_iInf {ts' : ι' → TopologicalSpace G}
 theorem continuousInv_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @ContinuousInv G t₁ _)
     (h₂ : @ContinuousInv G t₂ _) : @ContinuousInv G (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine continuousInv_iInf fun b => ?_
+  refine continuousInv_iInf fun b ↦ ?_
   cases b <;> assumption
 
 end LatticeOps
@@ -462,7 +462,7 @@ instance AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
   ⟨continuous_prod_of_discrete_left.mpr continuous_zsmul⟩
 
 @[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.zpow {f : α → G} (h : Continuous f) (z : ℤ) : Continuous fun b => f b ^ z :=
+theorem Continuous.zpow {f : α → G} (h : Continuous f) (z : ℤ) : Continuous fun b ↦ f b ^ z :=
   (continuous_zpow z).comp h
 
 @[to_additive]
@@ -1591,7 +1591,7 @@ theorem topologicalGroup_iInf {ts' : ι → TopologicalSpace G}
 theorem topologicalGroup_inf {t₁ t₂ : TopologicalSpace G} (h₁ : @TopologicalGroup G t₁ _)
     (h₂ : @TopologicalGroup G t₂ _) : @TopologicalGroup G (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine topologicalGroup_iInf fun b => ?_
+  refine topologicalGroup_iInf fun b ↦ ?_
   cases b <;> assumption
 
 end LatticeOps

@@ -119,7 +119,7 @@ variable (F : Pseudofunctor B C)
 @[simps]
 def toOplax : OplaxFunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => (F.mapId a).hom
+  mapId := fun a ↦ (F.mapId a).hom
   mapComp := fun f g => (F.mapComp f g).hom
 
 instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
@@ -129,7 +129,7 @@ instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
 @[simps]
 def toLax : LaxFunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => (F.mapId a).inv
+  mapId := fun a ↦ (F.mapId a).inv
   mapComp := fun f g => (F.mapComp f g).inv
   map₂_leftUnitor f := by
     rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
@@ -145,7 +145,7 @@ instance hasCoeToLax : Coe (Pseudofunctor B C) (LaxFunctor B C) :=
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B where
   toPrelaxFunctor := PrelaxFunctor.id B
-  mapId := fun a => Iso.refl (𝟙 a)
+  mapId := fun a ↦ Iso.refl (𝟙 a)
   mapComp := fun f g => Iso.refl (f ≫ g)
 
 instance : Inhabited (Pseudofunctor B B) :=
@@ -155,7 +155,7 @@ instance : Inhabited (Pseudofunctor B B) :=
 @[simps]
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
-  mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
+  mapId := fun a ↦ G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
   -- Note: whilst these are all provable by `aesop_cat`, the proof is very slow
   map₂_whisker_left f η := by dsimp; simp
@@ -279,7 +279,7 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C whe
 noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => asIso (F.mapId a)
+  mapId := fun a ↦ asIso (F.mapId a)
   mapComp := fun f g => asIso (F.mapComp f g)
   map₂_whisker_left := fun f g h η => by
     dsimp
@@ -316,7 +316,7 @@ def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
 noncomputable def mkOfLax' (F : LaxFunctor B C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C :=
   mkOfLax F
-  { mapIdIso := fun a => (asIso (F.mapId a)).symm
+  { mapIdIso := fun a ↦ (asIso (F.mapId a)).symm
     mapCompIso := fun f g => (asIso (F.mapComp f g)).symm }
 
 end

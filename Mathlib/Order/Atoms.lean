@@ -75,7 +75,7 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
-    forall_congr' fun b => by
+    forall_congr' fun b ↦ by
       simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_le]
 
 end Preorder
@@ -259,13 +259,13 @@ variable {α}
 
 @[simp]
 theorem isCoatomic_dual_iff_isAtomic [OrderBot α] : IsCoatomic αᵒᵈ ↔ IsAtomic α :=
-  ⟨fun h => ⟨fun b => by apply h.eq_top_or_exists_le_coatom⟩, fun h =>
-    ⟨fun b => by apply h.eq_bot_or_exists_atom_le⟩⟩
+  ⟨fun h => ⟨fun b ↦ by apply h.eq_top_or_exists_le_coatom⟩, fun h =>
+    ⟨fun b ↦ by apply h.eq_bot_or_exists_atom_le⟩⟩
 
 @[simp]
 theorem isAtomic_dual_iff_isCoatomic [OrderTop α] : IsAtomic αᵒᵈ ↔ IsCoatomic α :=
-  ⟨fun h => ⟨fun b => by apply h.eq_bot_or_exists_atom_le⟩, fun h =>
-    ⟨fun b => by apply h.eq_top_or_exists_le_coatom⟩⟩
+  ⟨fun h => ⟨fun b ↦ by apply h.eq_bot_or_exists_atom_le⟩, fun h =>
+    ⟨fun b ↦ by apply h.eq_top_or_exists_le_coatom⟩⟩
 
 namespace IsAtomic
 
@@ -476,11 +476,11 @@ variable {α}
 
 @[simp]
 theorem isCoatomistic_dual_iff_isAtomistic : IsCoatomistic αᵒᵈ ↔ IsAtomistic α :=
-  ⟨fun h => ⟨fun b => by apply h.eq_sInf_coatoms⟩, fun h => ⟨fun b => by apply h.eq_sSup_atoms⟩⟩
+  ⟨fun h => ⟨fun b ↦ by apply h.eq_sInf_coatoms⟩, fun h => ⟨fun b ↦ by apply h.eq_sSup_atoms⟩⟩
 
 @[simp]
 theorem isAtomistic_dual_iff_isCoatomistic : IsAtomistic αᵒᵈ ↔ IsCoatomistic α :=
-  ⟨fun h => ⟨fun b => by apply h.eq_sSup_atoms⟩, fun h => ⟨fun b => by apply h.eq_sInf_coatoms⟩⟩
+  ⟨fun h => ⟨fun b ↦ by apply h.eq_sSup_atoms⟩, fun h => ⟨fun b ↦ by apply h.eq_sInf_coatoms⟩⟩
 
 namespace IsAtomistic
 
@@ -490,7 +490,7 @@ instance _root_.OrderDual.instIsCoatomistic [h : IsAtomistic α] : IsCoatomistic
 variable [IsAtomistic α]
 
 instance (priority := 100) : IsAtomic α :=
-  ⟨fun b => by
+  ⟨fun b ↦ by
     rcases eq_sSup_atoms b with ⟨s, rfl, hs⟩
     rcases s.eq_empty_or_nonempty with h | h
     · simp [h]
@@ -532,7 +532,7 @@ instance _root_.OrderDual.instIsAtomistic [h : IsCoatomistic α] : IsAtomistic �
 variable [IsCoatomistic α]
 
 instance (priority := 100) : IsCoatomic α :=
-  ⟨fun b => by
+  ⟨fun b ↦ by
     rcases eq_sInf_coatoms b with ⟨s, rfl, hs⟩
     rcases s.eq_empty_or_nonempty with h | h
     · simp [h]
@@ -576,10 +576,10 @@ theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
   constructor <;> intro i <;> haveI := i
   · exact
       { exists_pair_ne := @exists_pair_ne α _
-        eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.ofDual a) : _ ∨ _) }
+        eq_bot_or_eq_top := fun a ↦ Or.symm (eq_bot_or_eq_top (OrderDual.ofDual a) : _ ∨ _) }
   · exact
       { exists_pair_ne := @exists_pair_ne αᵒᵈ _
-        eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.toDual a)) }
+        eq_bot_or_eq_top := fun a ↦ Or.symm (eq_bot_or_eq_top (OrderDual.toDual a)) }
 
 theorem IsSimpleOrder.bot_ne_top [LE α] [BoundedOrder α] [IsSimpleOrder α] : (⊥ : α) ≠ (⊤ : α) := by
   obtain ⟨a, b, h⟩ := exists_pair_ne α
@@ -670,7 +670,7 @@ protected def distribLattice : DistribLattice α :=
 
 -- see Note [lower instance priority]
 instance (priority := 100) : IsAtomic α :=
-  ⟨fun b => (eq_bot_or_eq_top b).imp_right fun h => ⟨⊤, ⟨isAtom_top, ge_of_eq h⟩⟩⟩
+  ⟨fun b ↦ (eq_bot_or_eq_top b).imp_right fun h => ⟨⊤, ⟨isAtom_top, ge_of_eq h⟩⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) : IsCoatomic α :=
@@ -791,7 +791,7 @@ theorem isSimpleOrder_iff_isAtom_top [PartialOrder α] [BoundedOrder α] :
     IsSimpleOrder α ↔ IsAtom (⊤ : α) :=
   ⟨fun h => @isAtom_top _ _ _ h, fun h =>
     { exists_pair_ne := ⟨⊤, ⊥, h.1⟩
-      eq_bot_or_eq_top := fun a => ((eq_or_lt_of_le le_top).imp_right (h.2 a)).symm }⟩
+      eq_bot_or_eq_top := fun a ↦ ((eq_or_lt_of_le le_top).imp_right (h.2 a)).symm }⟩
 
 theorem isSimpleOrder_iff_isCoatom_bot [PartialOrder α] [BoundedOrder α] :
     IsSimpleOrder α ↔ IsCoatom (⊥ : α) :=

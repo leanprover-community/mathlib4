@@ -176,7 +176,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     ℕ →₀ ℕ := fun p _ => {
       toFun := fun i => Multiset.count i p.parts • i
       support := Finset.filter (fun i => i ≠ 0) p.parts.toFinset
-      mem_support_toFun := fun a => by
+      mem_support_toFun := fun a ↦ by
         simp only [smul_eq_mul, ne_eq, mul_eq_zero, Multiset.count_eq_zero]
         rw [not_or, not_not]
         simp only [Multiset.mem_toFinset, not_not, mem_filter] }

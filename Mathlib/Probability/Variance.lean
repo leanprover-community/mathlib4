@@ -203,7 +203,7 @@ theorem variance_le_expectation_sq [IsProbabilityMeasure μ] {X : Ω → ℝ}
     · simp only [integral_undef hint, Pi.pow_apply, Pi.sub_apply, sub_zero]
       exact le_rfl
     · rw [integral_undef]
-      · exact integral_nonneg fun a => sq_nonneg _
+      · exact integral_nonneg fun a ↦ sq_nonneg _
       intro h
       have A : Memℒp (X - fun ω : Ω => μ[X]) 2 μ :=
         (memℒp_two_iff_integrable_sq (hint.aestronglyMeasurable.sub aestronglyMeasurable_const)).2 h
@@ -265,7 +265,7 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : M
 theorem IndepFun.variance_add [IsProbabilityMeasure μ] {X Y : Ω → ℝ} (hX : Memℒp X 2 μ)
     (hY : Memℒp Y 2 μ) (h : IndepFun X Y μ) : variance (X + Y) μ = variance X μ + variance Y μ :=
   calc
-    variance (X + Y) μ = μ[fun a => X a ^ 2 + Y a ^ 2 + 2 * X a * Y a] - μ[X + Y] ^ 2 := by
+    variance (X + Y) μ = μ[fun a ↦ X a ^ 2 + Y a ^ 2 + 2 * X a * Y a] - μ[X + Y] ^ 2 := by
       simp [variance_def' (hX.add hY), add_sq']
     _ = μ[X ^ 2] + μ[Y ^ 2] + (2 : ℝ) * μ[X * Y] - (μ[X] + μ[Y]) ^ 2 := by
       simp only [Pi.add_apply, Pi.pow_apply, Pi.mul_apply, mul_assoc]

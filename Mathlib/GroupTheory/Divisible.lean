@@ -104,7 +104,7 @@ class RootableBy where
 
 @[to_additive smul_right_surj_of_divisibleBy]
 theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
-    Function.Surjective (fun a => a ^ n : A → A) := fun x =>
+    Function.Surjective (fun a ↦ a ^ n : A → A) := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
 
 /--
@@ -115,7 +115,7 @@ implies the textbook approach.
       "An `AddMonoid A` is `α`-divisible iff `n • _` is a surjective function, i.e. the constructive
       version implies the textbook approach."]
 noncomputable def rootableByOfPowLeftSurj
-    (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
+    (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a ↦ a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
   root_zero _ := by classical exact dif_pos rfl
   root_cancel a hn := by
@@ -167,7 +167,7 @@ variable (A : Type*) [AddCommGroup A]
 
 theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n ≠ 0) :
     n • (⊤ : AddSubgroup A) = ⊤ :=
-  AddSubgroup.map_top_of_surjective _ fun a => ⟨DivisibleBy.div a n, DivisibleBy.div_cancel _ hn⟩
+  AddSubgroup.map_top_of_surjective _ fun a ↦ ⟨DivisibleBy.div a n, DivisibleBy.div_cancel _ hn⟩
 
 /-- If for all `n ≠ 0 ∈ ℤ`, `n • A = A`, then `A` is divisible.
 -/

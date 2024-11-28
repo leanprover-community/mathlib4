@@ -272,7 +272,7 @@ theorem cancel_right {g₁ g₂ : TopHom β γ} {f : TopHom α β} (hf : Surject
 @[simp]
 theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => TopHom.ext fun a => hg <| by rw [← TopHom.comp_apply, h, TopHom.comp_apply],
+  ⟨fun h => TopHom.ext fun a ↦ hg <| by rw [← TopHom.comp_apply, h, TopHom.comp_apply],
     congr_arg _⟩
 
 end Top
@@ -445,7 +445,7 @@ theorem cancel_right {g₁ g₂ : BotHom β γ} {f : BotHom α β} (hf : Surject
 @[simp]
 theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => BotHom.ext fun a => hg <| by rw [← BotHom.comp_apply, h, BotHom.comp_apply],
+  ⟨fun h => BotHom.ext fun a ↦ hg <| by rw [← BotHom.comp_apply, h, BotHom.comp_apply],
     congr_arg _⟩
 
 end Bot

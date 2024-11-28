@@ -244,7 +244,7 @@ theorem realize_noTopOrder_iff : M ⊨ L.noTopOrderSentence ↔ NoTopOrder M := 
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
+  refine ⟨fun h => ⟨fun a ↦ h a⟩, ?_⟩
   intro h a
   exact exists_not_le a
 
@@ -252,7 +252,7 @@ theorem realize_noBotOrder_iff : M ⊨ L.noBotOrderSentence ↔ NoBotOrder M := 
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
+  refine ⟨fun h => ⟨fun a ↦ h a⟩, ?_⟩
   intro h a
   exact exists_not_ge a
 

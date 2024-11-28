@@ -103,7 +103,7 @@ theorem monotone_l : Monotone l :=
 
 theorem upperBounds_l_image (s : Set α) :
     upperBounds (l '' s) = u ⁻¹' upperBounds s :=
-  Set.ext fun b => by simp [upperBounds, gc _ _]
+  Set.ext fun b ↦ by simp [upperBounds, gc _ _]
 
 theorem lowerBounds_u_image (s : Set β) :
     lowerBounds (u '' s) = l ⁻¹' lowerBounds s :=
@@ -426,7 +426,7 @@ def GaloisInsertion.monotoneIntro {α β : Type*} [Preorder α] [Preorder β] {l
     (hu : Monotone u) (hl : Monotone l) (hul : ∀ a, a ≤ u (l a)) (hlu : ∀ b, l (u b) = b) :
     GaloisInsertion l u where
   choice x _ := l x
-  gc := GaloisConnection.monotone_intro hu hl hul fun b => le_of_eq (hlu b)
+  gc := GaloisConnection.monotone_intro hu hl hul fun b ↦ le_of_eq (hlu b)
   le_l_u b := le_of_eq <| (hlu b).symm
   choice_eq _ _ := rfl
 
@@ -581,7 +581,7 @@ abbrev liftOrderTop [Preorder α] [OrderTop α] (gi : GaloisInsertion l u) :
     OrderTop β where
   top := gi.choice ⊤ <| le_top
   le_top := by
-    simp only [gi.choice_eq]; exact fun b => (gi.le_l_u b).trans (gi.gc.monotone_l le_top)
+    simp only [gi.choice_eq]; exact fun b ↦ (gi.le_l_u b).trans (gi.gc.monotone_l le_top)
 
 -- See note [reducible non instances]
 /-- Lift the top, bottom, suprema, and infima along a Galois insertion -/

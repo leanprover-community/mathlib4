@@ -1132,7 +1132,7 @@ theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
 as the fundamental sequence converging to `ε₀` (which is not an `ONote`). Extending the fast
 growing hierarchy beyond this requires a definition of fundamental sequence for larger ordinals. -/
 def fastGrowingε₀ (i : ℕ) : ℕ :=
-  fastGrowing ((fun a => a.oadd 1 0)^[i] 0) i
+  fastGrowing ((fun a ↦ a.oadd 1 0)^[i] 0) i
 
 theorem fastGrowingε₀_zero : fastGrowingε₀ 0 = 1 := by simp [fastGrowingε₀]
 

@@ -186,7 +186,7 @@ instance PiFinsetCoe.canLift' (ι α : Type*) [_ne : Nonempty α] (s : Finset ι
     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiFinsetCoe.canLift ι (fun _ => α) s
 
-instance FinsetCoe.canLift (s : Finset α) : CanLift α s (↑) fun a => a ∈ s where
+instance FinsetCoe.canLift (s : Finset α) : CanLift α s (↑) fun a ↦ a ∈ s where
   prf a ha := ⟨⟨a, ha⟩, rfl⟩
 
 @[simp, norm_cast]
@@ -262,7 +262,7 @@ theorem not_mem_mono {s t : Finset α} (h : s ⊆ t) {a : α} : a ∉ t → a �
   mt <| @h _
 
 theorem Subset.antisymm {s₁ s₂ : Finset α} (H₁ : s₁ ⊆ s₂) (H₂ : s₂ ⊆ s₁) : s₁ = s₂ :=
-  ext fun a => ⟨@H₁ a, @H₂ a⟩
+  ext fun a ↦ ⟨@H₁ a, @H₂ a⟩
 
 theorem subset_iff {s₁ s₂ : Finset α} : s₁ ⊆ s₂ ↔ ∀ ⦃x⦄, x ∈ s₁ → x ∈ s₂ :=
   Iff.rfl

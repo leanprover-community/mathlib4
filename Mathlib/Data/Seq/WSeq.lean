@@ -224,7 +224,7 @@ def filterMap (f : α → Option β) : WSeq α → WSeq β :=
 
 /-- Select the elements of `s` that satisfy `p`. -/
 def filter (p : α → Prop) [DecidablePred p] : WSeq α → WSeq α :=
-  filterMap fun a => if p a then some a else none
+  filterMap fun a ↦ if p a then some a else none
 
 -- example of infinite list manipulations
 /-- Get the first element of `s` satisfying `p`. -/
@@ -698,7 +698,7 @@ theorem destruct_tail (s : WSeq α) : destruct (tail s) = destruct s >>= tail.au
 @[simp]
 def drop.aux : ℕ → Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | 0 => Computation.pure
-  | n + 1 => fun a => tail.aux a >>= drop.aux n
+  | n + 1 => fun a ↦ tail.aux a >>= drop.aux n
 
 theorem drop.aux_none : ∀ n, @drop.aux α n none = Computation.pure none
   | 0 => rfl
@@ -1176,7 +1176,7 @@ theorem toList_ofList (l : List α) : l ∈ toList (ofList l) := by
 
 @[simp]
 theorem destruct_ofSeq (s : Seq α) :
-    destruct (ofSeq s) = Computation.pure (s.head.map fun a => (a, ofSeq s.tail)) :=
+    destruct (ofSeq s) = Computation.pure (s.head.map fun a ↦ (a, ofSeq s.tail)) :=
   destruct_eq_pure <| by
     simp only [destruct, Seq.destruct, Option.map_eq_map, ofSeq, Computation.corec_eq, rmap,
       Seq.head]
@@ -1495,10 +1495,10 @@ theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
       match c1, c2, h with
       | _, _, ⟨s, rfl, rfl⟩ => by
         clear h
-        -- Porting note: `ret` is simplified in `simp` so `ret`s become `fun a => cons a nil` here.
+        -- Porting note: `ret` is simplified in `simp` so `ret`s become `fun a ↦ cons a nil` here.
         have : ∀ s, ∃ s' : WSeq α,
-            (map (fun a => cons a nil) s).join.destruct =
-              (map (fun a => cons a nil) s').join.destruct ∧ destruct s = s'.destruct :=
+            (map (fun a ↦ cons a nil) s).join.destruct =
+              (map (fun a ↦ cons a nil) s').join.destruct ∧ destruct s = s'.destruct :=
           fun s => ⟨s, rfl, rfl⟩
         induction' s using WSeq.recOn with a s s <;>
           simp (config := { unfoldPartialApp := true }) [ret, ret_mem, this, Option.exists]

@@ -158,7 +158,7 @@ theorem lt_floor_add_one (a : α) : a < ⌊a⌋₊ + 1 := by simpa using lt_succ
 
 @[simp]
 theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋₊ = n :=
-  eq_of_forall_le_iff fun a => by
+  eq_of_forall_le_iff fun a ↦ by
     rw [le_floor_iff, Nat.cast_le]
     exact n.cast_nonneg
 
@@ -272,13 +272,13 @@ theorem le_ceil (a : α) : a ≤ ⌈a⌉₊ :=
 @[simp]
 theorem ceil_intCast {α : Type*} [LinearOrderedRing α] [FloorSemiring α] (z : ℤ) :
     ⌈(z : α)⌉₊ = z.toNat :=
-  eq_of_forall_ge_iff fun a => by
+  eq_of_forall_ge_iff fun a ↦ by
     simp only [ceil_le, Int.toNat_le]
     norm_cast
 
 @[simp]
 theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉₊ = n :=
-  eq_of_forall_ge_iff fun a => by rw [ceil_le, cast_le]
+  eq_of_forall_ge_iff fun a ↦ by rw [ceil_le, cast_le]
 
 theorem ceil_mono : Monotone (ceil : α → ℕ) :=
   gc_ceil_coe.monotone_l
@@ -387,7 +387,7 @@ theorem preimage_Iic {a : α} (ha : 0 ≤ a) : (Nat.cast : ℕ → α) ⁻¹' Se
   simp [le_floor_iff, ha]
 
 theorem floor_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n :=
-  eq_of_forall_le_iff fun b => by
+  eq_of_forall_le_iff fun b ↦ by
     rw [le_floor_iff (add_nonneg ha n.cast_nonneg)]
     obtain hb | hb := le_total n b
     · obtain ⟨d, rfl⟩ := exists_add_of_le hb
@@ -429,7 +429,7 @@ theorem floor_sub_ofNat [Sub α] [OrderedSub α] [ExistsAddOfLE α] (a : α) (n 
   floor_sub_nat a n
 
 theorem ceil_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
-  eq_of_forall_ge_iff fun b => by
+  eq_of_forall_ge_iff fun b ↦ by
     rw [← not_lt, ← not_lt, not_iff_not, lt_ceil]
     obtain hb | hb := le_or_lt n b
     · obtain ⟨d, rfl⟩ := exists_add_of_le hb
@@ -546,7 +546,7 @@ end Nat
 theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
     Subsingleton (FloorSemiring α) := by
   refine ⟨fun H₁ H₂ => ?_⟩
-  have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n => rfl
+  have : H₁.ceil = H₂.ceil := funext fun a ↦ (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n => rfl
   have : H₁.floor = H₂.floor := by
     ext a
     cases' lt_or_le a 0 with h h
@@ -586,14 +586,14 @@ instance : FloorRing ℤ where
 def FloorRing.ofFloor (α) [LinearOrderedRing α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
-    ceil := fun a => -floor (-a)
+    ceil := fun a ↦ -floor (-a)
     gc_coe_floor
     gc_ceil_coe := fun a z => by rw [neg_le, ← gc_coe_floor, Int.cast_neg, neg_le_neg_iff] }
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
 def FloorRing.ofCeil (α) [LinearOrderedRing α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
-  { floor := fun a => -ceil (-a)
+  { floor := fun a ↦ -ceil (-a)
     ceil
     gc_coe_floor := fun a z => by rw [le_neg, gc_ceil_coe, Int.cast_neg, neg_le_neg_iff]
     gc_ceil_coe }
@@ -687,11 +687,11 @@ theorem sub_one_lt_floor (a : α) : a - 1 < ⌊a⌋ :=
 
 @[simp]
 theorem floor_intCast (z : ℤ) : ⌊(z : α)⌋ = z :=
-  eq_of_forall_le_iff fun a => by rw [le_floor, Int.cast_le]
+  eq_of_forall_le_iff fun a ↦ by rw [le_floor, Int.cast_le]
 
 @[simp]
 theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋ = n :=
-  eq_of_forall_le_iff fun a => by rw [le_floor, ← cast_natCast, cast_le]
+  eq_of_forall_le_iff fun a ↦ by rw [le_floor, ← cast_natCast, cast_le]
 
 @[simp]
 theorem floor_zero : ⌊(0 : α)⌋ = 0 := by rw [← cast_zero, floor_intCast]
@@ -715,7 +715,7 @@ theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
 
 @[simp]
 theorem floor_add_int (a : α) (z : ℤ) : ⌊a + z⌋ = ⌊a⌋ + z :=
-  eq_of_forall_le_iff fun a => by
+  eq_of_forall_le_iff fun a ↦ by
     rw [le_floor, ← sub_le_iff_le_add, ← sub_le_iff_le_add, le_floor, Int.cast_sub]
 
 @[simp]
@@ -1117,11 +1117,11 @@ lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ce
 
 @[simp]
 theorem ceil_intCast (z : ℤ) : ⌈(z : α)⌉ = z :=
-  eq_of_forall_ge_iff fun a => by rw [ceil_le, Int.cast_le]
+  eq_of_forall_ge_iff fun a ↦ by rw [ceil_le, Int.cast_le]
 
 @[simp]
 theorem ceil_natCast (n : ℕ) : ⌈(n : α)⌉ = n :=
-  eq_of_forall_ge_iff fun a => by rw [ceil_le, ← cast_natCast, cast_le]
+  eq_of_forall_ge_iff fun a ↦ by rw [ceil_le, ← cast_natCast, cast_le]
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -1626,8 +1626,8 @@ end FloorRingToSemiring
 theorem subsingleton_floorRing {α} [LinearOrderedRing α] : Subsingleton (FloorRing α) := by
   refine ⟨fun H₁ H₂ => ?_⟩
   have : H₁.floor = H₂.floor :=
-    funext fun a => (H₁.gc_coe_floor.u_unique H₂.gc_coe_floor) fun _ => rfl
-  have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil_coe.l_unique H₂.gc_ceil_coe) fun _ => rfl
+    funext fun a ↦ (H₁.gc_coe_floor.u_unique H₂.gc_coe_floor) fun _ => rfl
+  have : H₁.ceil = H₂.ceil := funext fun a ↦ (H₁.gc_ceil_coe.l_unique H₂.gc_ceil_coe) fun _ => rfl
   cases H₁; cases H₂; congr
 
 namespace Mathlib.Meta.Positivity

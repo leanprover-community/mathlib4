@@ -334,7 +334,7 @@ theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = 
 
 @[simp]
 theorem cancel_left (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => HeytingHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h => HeytingHom.ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end HeytingHom
 
@@ -440,7 +440,7 @@ theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = 
 
 @[simp]
 theorem cancel_left (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => CoheytingHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h => CoheytingHom.ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end CoheytingHom
 
@@ -544,6 +544,6 @@ theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = 
 
 @[simp]
 theorem cancel_left (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => BiheytingHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h => BiheytingHom.ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end BiheytingHom

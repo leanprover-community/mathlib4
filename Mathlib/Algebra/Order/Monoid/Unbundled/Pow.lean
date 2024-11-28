@@ -168,7 +168,7 @@ theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ 
     exact mul_le_mul' (pow_le_pow_left' hab k) hab
 
 @[to_additive Monotone.const_nsmul]
-theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a => f a ^ n
+theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a ↦ f a ^ n
   | 0 => by simpa using monotone_const
   | n + 1 => by
     simp_rw [pow_succ]

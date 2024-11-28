@@ -158,7 +158,7 @@ theorem measurableSet_cut (r : α → β → Prop) (f : α →ₛ β) (h : ∀ b
 
 @[measurability]
 theorem measurableSet_preimage (f : α →ₛ β) (s) : MeasurableSet (f ⁻¹' s) :=
-  measurableSet_cut (fun _ b => b ∈ s) f fun b => MeasurableSet.const (b ∈ s)
+  measurableSet_cut (fun _ b => b ∈ s) f fun b ↦ MeasurableSet.const (b ∈ s)
 
 /-- A simple function is measurable -/
 @[measurability, fun_prop]
@@ -224,14 +224,14 @@ theorem range_indicator {s : Set α} (hs : MeasurableSet s) (hs_nonempty : s.Non
     (nonempty_compl.2 hs_ne_univ).image_const, singleton_union, Function.const]
 
 theorem measurable_bind [MeasurableSpace γ] (f : α →ₛ β) (g : β → α → γ)
-    (hg : ∀ b, Measurable (g b)) : Measurable fun a => g (f a) a := fun s hs =>
-  f.measurableSet_cut (fun a b => g b a ∈ s) fun b => hg b hs
+    (hg : ∀ b, Measurable (g b)) : Measurable fun a ↦ g (f a) a := fun s hs =>
+  f.measurableSet_cut (fun a b => g b a ∈ s) fun b ↦ hg b hs
 
 /-- If `f : α →ₛ β` is a simple function and `g : β → α →ₛ γ` is a family of simple functions,
 then `f.bind g` binds the first argument of `g` to `f`. In other words, `f.bind g a = g (f a) a`. -/
 def bind (f : α →ₛ β) (g : β → α →ₛ γ) : α →ₛ γ :=
-  ⟨fun a => g (f a) a, fun c =>
-    f.measurableSet_cut (fun a b => g b a = c) fun b => (g b).measurableSet_preimage {c},
+  ⟨fun a ↦ g (f a) a, fun c =>
+    f.measurableSet_cut (fun a b => g b a = c) fun b ↦ (g b).measurableSet_preimage {c},
     (f.finite_range.biUnion fun b _ => (g b).finite_range).subset <| by
       rintro _ ⟨a, rfl⟩; simp⟩
 
@@ -329,7 +329,7 @@ theorem seq_apply (f : α →ₛ β → γ) (g : α →ₛ β) (a : α) : f.seq 
   rfl
 
 /-- Combine two simple functions `f : α →ₛ β` and `g : α →ₛ β`
-into `fun a => (f a, g a)`. -/
+into `fun a ↦ (f a, g a)`. -/
 def pair (f : α →ₛ β) (g : α →ₛ γ) : α →ₛ β × γ :=
   (f.map Prod.mk).seq g
 
@@ -453,7 +453,7 @@ theorem sup_eq_map₂ [Max β] (f g : α →ₛ β) : f ⊔ g = (pair f g).map f
   rfl
 
 @[to_additive]
-theorem const_mul_eq_map [Mul β] (f : α →ₛ β) (b : β) : const α b * f = f.map fun a => b * a :=
+theorem const_mul_eq_map [Mul β] (f : α →ₛ β) (b : β) : const α b * f = f.map fun a ↦ b * a :=
   rfl
 
 @[to_additive]
@@ -569,7 +569,7 @@ end Preorder
 
 instance instPartialOrder [PartialOrder β] : PartialOrder (α →ₛ β) :=
   { SimpleFunc.instPreorder with
-    le_antisymm := fun _f _g hfg hgf => ext fun a => le_antisymm (hfg a) (hgf a) }
+    le_antisymm := fun _f _g hfg hgf => ext fun a ↦ le_antisymm (hfg a) (hgf a) }
 
 instance instOrderBot [LE β] [OrderBot β] : OrderBot (α →ₛ β) where
   bot := const α ⊥
@@ -777,7 +777,7 @@ lemma iSup_coe_eapprox (hf : Measurable f) : ⨆ n, ⇑(eapprox f n) = f := by
 
 theorem eapprox_comp [MeasurableSpace γ] {f : γ → ℝ≥0∞} {g : α → γ} {n : ℕ} (hf : Measurable f)
     (hg : Measurable g) : (eapprox (f ∘ g) n : α → ℝ≥0∞) = (eapprox f n : γ →ₛ ℝ≥0∞) ∘ g :=
-  funext fun a => approx_comp a hf hg
+  funext fun a ↦ approx_comp a hf hg
 
 /-- Approximate a function `α → ℝ≥0∞` by a series of simple functions taking their values
 in `ℝ≥0`. -/
@@ -862,7 +862,7 @@ theorem add_lintegral (f g : α →ₛ ℝ≥0∞) : (f + g).lintegral μ = f.li
 theorem const_mul_lintegral (f : α →ₛ ℝ≥0∞) (x : ℝ≥0∞) :
     (const α x * f).lintegral μ = x * f.lintegral μ :=
   calc
-    (f.map fun a => x * a).lintegral μ = ∑ r ∈ f.range, x * r * μ (f ⁻¹' {r}) := map_lintegral _ _
+    (f.map fun a ↦ x * a).lintegral μ = ∑ r ∈ f.range, x * r * μ (f ⁻¹' {r}) := map_lintegral _ _
     _ = x * ∑ r ∈ f.range, r * μ (f ⁻¹' {r}) := by simp_rw [Finset.mul_sum, mul_assoc]
 
 /-- Integral of a simple function `α →ₛ ℝ≥0∞` as a bilinear map. -/

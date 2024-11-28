@@ -176,7 +176,7 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
     apply ActionCategory.cases
     intros
     rfl
-  { toFun := fun g => ⟨fun b => F.map (homOfPair b g), g⟩
+  { toFun := fun g => ⟨fun b ↦ F.map (homOfPair b g), g⟩
     map_one' := by
       dsimp
       ext1

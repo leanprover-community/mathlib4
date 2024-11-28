@@ -121,7 +121,7 @@ theorem Measurable.sup' (hf : Measurable f) (hg : Measurable g) : Measurable (f 
   measurable_sup.comp (hf.prod_mk hg)
 
 @[measurability]
-theorem Measurable.sup (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊔ g a :=
+theorem Measurable.sup (hf : Measurable f) (hg : Measurable g) : Measurable fun a ↦ f a ⊔ g a :=
   measurable_sup.comp (hf.prod_mk hg)
 
 @[measurability]
@@ -131,7 +131,7 @@ theorem AEMeasurable.sup' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
 
 @[measurability]
 theorem AEMeasurable.sup (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a ⊔ g a) μ :=
+    AEMeasurable (fun a ↦ f a ⊔ g a) μ :=
   measurable_sup.comp_aemeasurable (hf.prod_mk hg)
 
 instance (priority := 100) MeasurableSup₂.toMeasurableSup : MeasurableSup M :=
@@ -178,7 +178,7 @@ theorem Measurable.inf' (hf : Measurable f) (hg : Measurable g) : Measurable (f 
   measurable_inf.comp (hf.prod_mk hg)
 
 @[measurability]
-theorem Measurable.inf (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊓ g a :=
+theorem Measurable.inf (hf : Measurable f) (hg : Measurable g) : Measurable fun a ↦ f a ⊓ g a :=
   measurable_inf.comp (hf.prod_mk hg)
 
 @[measurability]
@@ -188,7 +188,7 @@ theorem AEMeasurable.inf' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
 
 @[measurability]
 theorem AEMeasurable.inf (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a ⊓ g a) μ :=
+    AEMeasurable (fun a ↦ f a ⊓ g a) μ :=
   measurable_inf.comp_aemeasurable (hf.prod_mk hg)
 
 instance (priority := 100) MeasurableInf₂.to_hasMeasurableInf : MeasurableInf M :=

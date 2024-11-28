@@ -27,7 +27,7 @@ namespace PSet
 
 /-- The ordinal rank of a pre-set -/
 noncomputable def rank : PSet.{u} → Ordinal.{u}
-  | ⟨_, A⟩ => lsub fun a => rank (A a)
+  | ⟨_, A⟩ => lsub fun a ↦ rank (A a)
 
 theorem rank_congr : ∀ {x y : PSet}, Equiv x y → rank x = rank y
   | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ =>
@@ -49,7 +49,7 @@ theorem rank_lt_of_mem : ∀ {x y : PSet}, y ∈ x → rank y < rank x
 theorem rank_le_iff {o : Ordinal} : ∀ {x : PSet}, rank x ≤ o ↔ ∀ ⦃y⦄, y ∈ x → rank y < o
   | ⟨_, A⟩ =>
     ⟨fun h _ h' => (rank_lt_of_mem h').trans_le h, fun h =>
-      lsub_le fun a => h (Mem.mk A a)⟩
+      lsub_le fun a ↦ h (Mem.mk A a)⟩
 
 theorem lt_rank_iff {o : Ordinal} {x : PSet} : o < rank x ↔ ∃ y ∈ x, o ≤ rank y := by
   rw [← not_iff_not, not_lt, rank_le_iff]

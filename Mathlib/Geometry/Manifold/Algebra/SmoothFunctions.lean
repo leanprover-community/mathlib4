@@ -138,7 +138,7 @@ instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [L
     Group C^∞⟮I, N; I', G⟯ :=
   { SmoothMap.monoid with
     inv := fun f => ⟨fun x => (f x)⁻¹, f.contMDiff.inv⟩
-    inv_mul_cancel := fun a => by ext; exact inv_mul_cancel _
+    inv_mul_cancel := fun a ↦ by ext; exact inv_mul_cancel _
     div := fun f g => ⟨f / g, f.contMDiff.div g.contMDiff⟩
     div_eq_mul_inv := fun f g => by ext; exact div_eq_mul_inv _ _ }
 
@@ -175,8 +175,8 @@ instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H'
     SmoothMap.monoid with
     left_distrib := fun a b c => by ext; exact left_distrib _ _ _
     right_distrib := fun a b c => by ext; exact right_distrib _ _ _
-    zero_mul := fun a => by ext; exact zero_mul _
-    mul_zero := fun a => by ext; exact mul_zero _ }
+    zero_mul := fun a ↦ by ext; exact zero_mul _
+    mul_zero := fun a ↦ by ext; exact mul_zero _ }
 
 instance ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [SmoothRing I' R] :
     Ring C^∞⟮I, N; I', R⟯ :=

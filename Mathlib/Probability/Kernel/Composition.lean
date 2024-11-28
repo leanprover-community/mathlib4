@@ -295,13 +295,13 @@ theorem ae_kernel_lt_top (a : α) (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
   exact (this b).trans_lt hb
 
 theorem compProd_null (a : α) (hs : MeasurableSet s) :
-    (κ ⊗ₖ η) a s = 0 ↔ (fun b => η (a, b) (Prod.mk b ⁻¹' s)) =ᵐ[κ a] 0 := by
+    (κ ⊗ₖ η) a s = 0 ↔ (fun b ↦ η (a, b) (Prod.mk b ⁻¹' s)) =ᵐ[κ a] 0 := by
   rw [Kernel.compProd_apply hs, lintegral_eq_zero_iff]
   · rfl
   · exact Kernel.measurable_kernel_prod_mk_left' hs a
 
 theorem ae_null_of_compProd_null (h : (κ ⊗ₖ η) a s = 0) :
-    (fun b => η (a, b) (Prod.mk b ⁻¹' s)) =ᵐ[κ a] 0 := by
+    (fun b ↦ η (a, b) (Prod.mk b ⁻¹' s)) =ᵐ[κ a] 0 := by
   obtain ⟨t, hst, mt, ht⟩ := exists_measurable_superset_of_null h
   simp_rw [compProd_null a mt] at ht
   rw [Filter.eventuallyLE_antisymm_iff]
@@ -347,7 +347,7 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
   have :
     ∀ b,
       η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
-        s.indicator (fun b => η (a, b) ({c : γ | (b, c) ∈ u} ∩ t)) b := by
+        s.indicator (fun b ↦ η (a, b) ({c : γ | (b, c) ∈ u} ∩ t)) b := by
     intro b
     classical
     rw [Set.indicator_apply]
@@ -392,11 +392,11 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
     · exact fun i j hij b => h_mono hij _
   simp_rw [this]
   have h_some_meas_integral :
-    ∀ f' : SimpleFunc (β × γ) ℝ≥0∞, Measurable fun b => ∫⁻ c, f' (b, c) ∂η (a, b) := by
+    ∀ f' : SimpleFunc (β × γ) ℝ≥0∞, Measurable fun b ↦ ∫⁻ c, f' (b, c) ∂η (a, b) := by
     intro f'
     have :
-      (fun b => ∫⁻ c, f' (b, c) ∂η (a, b)) =
-        (fun ab => ∫⁻ c, f' (ab.2, c) ∂η ab) ∘ fun b => (a, b) := by
+      (fun b ↦ ∫⁻ c, f' (b, c) ∂η (a, b)) =
+        (fun ab => ∫⁻ c, f' (ab.2, c) ∂η ab) ∘ fun b ↦ (a, b) := by
       ext1 ab; rfl
     rw [this]
     apply Measurable.comp _ (measurable_prod_mk_left (m := mα))
@@ -530,7 +530,7 @@ theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [
   let Cη := IsFiniteKernel.bound η
   calc
     ∫⁻ b, η (a, b) Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
-      lintegral_mono fun b => measure_le_bound η (a, b) Set.univ
+      lintegral_mono fun b ↦ measure_le_bound η (a, b) Set.univ
     _ = Cη * κ a Set.univ := MeasureTheory.lintegral_const Cη
     _ = κ a Set.univ * Cη := mul_comm _ _
 
@@ -655,7 +655,7 @@ theorem sum_map_seq (κ : Kernel α β) [IsSFiniteKernel κ] (f : β → γ) :
 
 lemma IsMarkovKernel.map (κ : Kernel α β) [IsMarkovKernel κ] (hf : Measurable f) :
     IsMarkovKernel (map κ f) :=
-  ⟨fun a => ⟨by rw [map_apply' κ hf a MeasurableSet.univ, Set.preimage_univ, measure_univ]⟩⟩
+  ⟨fun a ↦ ⟨by rw [map_apply' κ hf a MeasurableSet.univ, Set.preimage_univ, measure_univ]⟩⟩
 
 instance IsZeroOrMarkovKernel.map (κ : Kernel α β) [IsZeroOrMarkovKernel κ] (f : β → γ) :
     IsZeroOrMarkovKernel (map κ f) := by
@@ -667,7 +667,7 @@ instance IsZeroOrMarkovKernel.map (κ : Kernel α β) [IsZeroOrMarkovKernel κ] 
 
 instance IsFiniteKernel.map (κ : Kernel α β) [IsFiniteKernel κ] (f : β → γ) :
     IsFiniteKernel (map κ f) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a ↦ ?_⟩⟩
   by_cases hf : Measurable f
   · rw [map_apply' κ hf a MeasurableSet.univ]
     exact measure_le_bound κ a _
@@ -724,11 +724,11 @@ theorem sum_comap_seq (κ : Kernel α β) [IsSFiniteKernel κ] (hg : Measurable 
 
 instance IsMarkovKernel.comap (κ : Kernel α β) [IsMarkovKernel κ] (hg : Measurable g) :
     IsMarkovKernel (comap κ g hg) :=
-  ⟨fun a => ⟨by rw [comap_apply' κ hg a Set.univ, measure_univ]⟩⟩
+  ⟨fun a ↦ ⟨by rw [comap_apply' κ hg a Set.univ, measure_univ]⟩⟩
 
 instance IsFiniteKernel.comap (κ : Kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a ↦ ?_⟩⟩
   rw [comap_apply' κ hg a Set.univ]
   exact measure_le_bound κ _ _
 

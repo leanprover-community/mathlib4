@@ -199,7 +199,7 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
   · have hne : (Set.range a).Nonempty := ⟨a 0, by simp⟩
     obtain ⟨x, ⟨n, rfl⟩, H⟩ := h.has_min _ hne
     exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
-  · refine RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun a => ?_⟩
+  · refine RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun a ↦ ?_⟩
     obtain ⟨n, hn⟩ := h (a.swap : ((· < ·) : ℕ → ℕ → Prop) →r ((· < ·) : α → α → Prop)).toOrderHom
     exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
 

@@ -31,7 +31,7 @@ variable [∀ i, SMul M (α i)] [∀ i, SMul N (α i)] (a : M) (i : ι) (b : α 
 
 @[to_additive Sigma.VAdd]
 instance : SMul M (Σi, α i) :=
-  ⟨fun a => (Sigma.map id) fun _ => (a • ·)⟩
+  ⟨fun a ↦ (Sigma.map id) fun _ => (a • ·)⟩
 
 @[to_additive]
 theorem smul_def : a • x = x.map id fun _ => (a • ·) :=

@@ -240,7 +240,7 @@ theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
 
 Unfortunately, the simp lemma doesn't work. -/
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
-  funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
+  funext fun a ↦ inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
 /-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
 @[deprecated lift_umax (since := "2024-10-24")]
@@ -845,7 +845,7 @@ def sum {ι} (f : ι → Cardinal) : Cardinal :=
 
 theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
   rw [← Quotient.out_eq (f i)]
-  exact ⟨⟨fun a => ⟨i, a⟩, fun a b h => by injection h⟩⟩
+  exact ⟨⟨fun a ↦ ⟨i, a⟩, fun a b h => by injection h⟩⟩
 
 theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
   ciSup_le' <| le_sum _
@@ -1180,7 +1180,7 @@ theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
   simp_rw [prod, sum, power_def]
   apply mk_congr
   refine (Equiv.piCurry fun _ _ => α).trans ?_
-  refine Equiv.piCongrRight fun b => ?_
+  refine Equiv.piCongrRight fun b ↦ ?_
   refine (Equiv.arrowCongr outMkEquiv (Equiv.refl α)).trans ?_
   exact outMkEquiv.symm
 
@@ -1203,7 +1203,7 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
     rw [Fintype.univ_pempty, Finset.prod_empty, lift_one, Cardinal.prod, mk_eq_one]
   · intro α hα h f
     rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax.{v, u}, mk_out, ←
-        Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
+        Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a ↦ f (some a)]
     simp only [lift_id]
 
 /-- **König's theorem** -/
@@ -1646,7 +1646,7 @@ theorem aleph0_le_mul_iff {a b : Cardinal} : ℵ₀ ≤ a * b ↔ a ≠ 0 ∧ b 
 
 /-- See also `Cardinal.aleph0_le_mul_iff'`. -/
 theorem aleph0_le_mul_iff' {a b : Cardinal.{u}} : ℵ₀ ≤ a * b ↔ a ≠ 0 ∧ ℵ₀ ≤ b ∨ ℵ₀ ≤ a ∧ b ≠ 0 := by
-  have : ∀ {a : Cardinal.{u}}, ℵ₀ ≤ a → a ≠ 0 := fun a => ne_bot_of_le_ne_bot aleph0_ne_zero a
+  have : ∀ {a : Cardinal.{u}}, ℵ₀ ≤ a → a ≠ 0 := fun a ↦ ne_bot_of_le_ne_bot aleph0_ne_zero a
   simp only [aleph0_le_mul_iff, and_or_left, and_iff_right_of_imp this, @and_left_comm (a ≠ 0)]
   simp only [and_comm, or_comm]
 

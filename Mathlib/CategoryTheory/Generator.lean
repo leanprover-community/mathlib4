@@ -497,7 +497,7 @@ theorem isSeparator_sigma {β : Type w} (f : β → C) [HasCoproduct f] :
   refine
     ⟨fun h X Y u v huv => ?_, fun h =>
       (isSeparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => colimit.hom_ext fun b => ?_
+  · refine h.def _ _ fun g => colimit.hom_ext fun b ↦ ?_
     simpa using huv (f b.as) (by simp) (colimit.ι (Discrete.functor f) _ ≫ g)
   · obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
     classical simpa using Sigma.ι f b ≫= huv (Sigma.desc (Pi.single b g))
@@ -532,7 +532,7 @@ theorem isCoseparator_pi {β : Type w} (f : β → C) [HasProduct f] :
   refine
     ⟨fun h X Y u v huv => ?_, fun h =>
       (isCoseparator_def _).2 fun X Y u v huv => h _ _ fun Z hZ g => ?_⟩
-  · refine h.def _ _ fun g => limit.hom_ext fun b => ?_
+  · refine h.def _ _ fun g => limit.hom_ext fun b ↦ ?_
     simpa using huv (f b.as) (by simp) (g ≫ limit.π (Discrete.functor f) _)
   · obtain ⟨b, rfl⟩ := Set.mem_range.1 hZ
     classical simpa using huv (Pi.lift (Pi.single b g)) =≫ Pi.π f b

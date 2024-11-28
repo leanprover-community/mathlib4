@@ -231,7 +231,7 @@ theorem Separable.injective_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} [Fintyp
   hfs.inj_of_prod_X_sub_C (mem_univ _) (mem_univ _) hfxy
 
 theorem nodup_of_separable_prod [Nontrivial R] {s : Multiset R}
-    (hs : Separable (Multiset.map (fun a => X - C a) s).prod) : s.Nodup := by
+    (hs : Separable (Multiset.map (fun a ↦ X - C a) s).prod) : s.Nodup := by
   rw [Multiset.nodup_iff_ne_cons_cons]
   rintro a t rfl
   refine not_isUnit_X_sub_C a (isUnit_of_self_mul_dvd_separable hs ?_)

@@ -148,7 +148,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     · apply ENNReal.mul_ne_top ENNReal.ofReal_ne_top
       by_cases h : (0 : ℝ) < s <;> · simp [h]
     simp_rw [show
-        (fun a => (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f a)) = fun a =>
+        (fun a ↦ (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f a)) = fun a =>
           {a : α | s ≤ f a}.indicator (fun _ => 1) a
         by funext a; by_cases h : s ≤ f a <;> simp [h]]
     rw [lintegral_indicator₀]

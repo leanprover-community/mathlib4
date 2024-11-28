@@ -889,7 +889,7 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C)
     (hg : RingHom.ker f ≤ RingHom.ker g) :
     B →+* C :=
   { AddMonoidHom.liftOfRightInverse f.toAddMonoidHom f_inv hf ⟨g.toAddMonoidHom, hg⟩ with
-    toFun := fun b => g (f_inv b)
+    toFun := fun b ↦ g (f_inv b)
     map_one' := by
       rw [← map_one g, ← sub_eq_zero, ← map_sub g, ← mem_ker]
       apply hg

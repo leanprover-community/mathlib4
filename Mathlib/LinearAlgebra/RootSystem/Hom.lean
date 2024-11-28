@@ -556,7 +556,7 @@ lemma coweightHom_toLinearMap {P : RootPairing ι R M N} (g : Aut P) :
   rfl
 
 lemma coweightHom_injective (P : RootPairing ι R M N) : Injective (Equiv.coweightHom P) := by
-  refine Injective.of_comp (f := fun a => MulOpposite.op a) fun g g' hgg' => ?_
+  refine Injective.of_comp (f := fun a ↦ MulOpposite.op a) fun g g' hgg' => ?_
   have h : (MulOpposite.unop ((coweightHom P) g)).toLinearMap =
       (MulOpposite.unop ((coweightHom P) g')).toLinearMap := by
     simp_all

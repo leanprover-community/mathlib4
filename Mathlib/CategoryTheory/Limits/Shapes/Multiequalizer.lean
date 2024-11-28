@@ -187,11 +187,11 @@ variable [HasProduct I.left] [HasProduct I.right]
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.fst`. -/
 noncomputable def fstPiMap : ∏ᶜ I.left ⟶ ∏ᶜ I.right :=
-  Pi.lift fun b => Pi.π I.left (I.fstTo b) ≫ I.fst b
+  Pi.lift fun b ↦ Pi.π I.left (I.fstTo b) ≫ I.fst b
 
 /-- The induced map `∏ᶜ I.left ⟶ ∏ᶜ I.right` via `I.snd`. -/
 noncomputable def sndPiMap : ∏ᶜ I.left ⟶ ∏ᶜ I.right :=
-  Pi.lift fun b => Pi.π I.left (I.sndTo b) ≫ I.snd b
+  Pi.lift fun b ↦ Pi.π I.left (I.sndTo b) ≫ I.snd b
 
 @[reassoc (attr := simp)]
 theorem fstPiMap_π (b) : I.fstPiMap ≫ Pi.π I.right b = Pi.π I.left _ ≫ I.fst b := by
@@ -250,11 +250,11 @@ variable [HasCoproduct I.left] [HasCoproduct I.right]
 
 /-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.fst`. -/
 noncomputable def fstSigmaMap : ∐ I.left ⟶ ∐ I.right :=
-  Sigma.desc fun b => I.fst b ≫ Sigma.ι _ (I.fstFrom b)
+  Sigma.desc fun b ↦ I.fst b ≫ Sigma.ι _ (I.fstFrom b)
 
 /-- The induced map `∐ I.left ⟶ ∐ I.right` via `I.snd`. -/
 noncomputable def sndSigmaMap : ∐ I.left ⟶ ∐ I.right :=
-  Sigma.desc fun b => I.snd b ≫ Sigma.ι _ (I.sndFrom b)
+  Sigma.desc fun b ↦ I.snd b ≫ Sigma.ι _ (I.sndFrom b)
 
 @[reassoc (attr := simp)]
 theorem ι_fstSigmaMap (b) : Sigma.ι I.left b ≫ I.fstSigmaMap = I.fst b ≫ Sigma.ι I.right _ := by

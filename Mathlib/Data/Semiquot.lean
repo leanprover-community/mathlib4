@@ -83,7 +83,7 @@ theorem mem_blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) {a : α} : a �
 
 /-- Convert a `Trunc α` to a `Semiquot α`. -/
 def ofTrunc (q : Trunc α) : Semiquot α :=
-  ⟨Set.univ, q.map fun a => ⟨a, trivial⟩⟩
+  ⟨Set.univ, q.map fun a ↦ ⟨a, trivial⟩⟩
 
 /-- Convert a `Semiquot α` to a `Trunc α`. -/
 def toTrunc (q : Semiquot α) : Trunc α :=
@@ -108,7 +108,7 @@ theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ �
 
 /-- Apply a function returning a `Semiquot` to a `Semiquot`. -/
 def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
-  ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a => (f a.1).2.map fun b => ⟨b.1, Set.mem_biUnion a.2 b.2⟩⟩
+  ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a ↦ (f a.1).2.map fun b ↦ ⟨b.1, Set.mem_biUnion a.2 b.2⟩⟩
 
 @[simp]
 theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) :
@@ -181,7 +181,7 @@ theorem get_mem {q : Semiquot α} (p) : get q p ∈ q := by
   unfold get; rw [liftOn_ofMem q _ _ a h]; exact h
 
 theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
-  ext.2 fun a => by simpa using ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
+  ext.2 fun a ↦ by simpa using ⟨fun h => p _ h _ (get_mem _), fun e => e.symm ▸ get_mem _⟩
 
 @[simp]
 theorem pure_isPure (a : α) : IsPure (pure a)
@@ -217,7 +217,7 @@ theorem mem_univ [Inhabited α] : ∀ a, a ∈ @univ α _ :=
 
 @[congr]
 theorem univ_unique (I J : Inhabited α) : @univ _ I = @univ _ J :=
-  ext.2 fun a => refl (a ∈ univ)
+  ext.2 fun a ↦ refl (a ∈ univ)
 
 @[simp]
 theorem isPure_univ [Inhabited α] : @IsPure α univ ↔ Subsingleton α :=

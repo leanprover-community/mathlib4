@@ -358,7 +358,7 @@ def assert (p : Prop) (f : p → Part α) : Part α :=
 /-- The bind operation has value `g (f.get)`, and is defined when all the
   parts are defined. -/
 protected def bind (f : Part α) (g : α → Part β) : Part β :=
-  assert (Dom f) fun b => g (f.get b)
+  assert (Dom f) fun b ↦ g (f.get b)
 
 /-- The map operation for `Part` just maps the value and maintains the same domain. -/
 @[simps]
@@ -376,7 +376,7 @@ theorem mem_map_iff (f : α → β) {o : Part α} {b} : b ∈ map f o ↔ ∃ a 
 
 @[simp]
 theorem map_none (f : α → β) : map f none = none :=
-  eq_none_iff.2 fun a => by simp
+  eq_none_iff.2 fun a ↦ by simp
 
 @[simp]
 theorem map_some (f : α → β) (a : α) : map f (some a) = some (f a) :=
@@ -427,7 +427,7 @@ theorem Dom.of_bind {f : α → Part β} {a : Part α} (h : (a.bind f).Dom) : a.
 
 @[simp]
 theorem bind_none (f : α → Part β) : none.bind f = none :=
-  eq_none_iff.2 fun a => by simp
+  eq_none_iff.2 fun a ↦ by simp
 
 @[simp]
 theorem bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
@@ -441,7 +441,7 @@ theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = m
 
 theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]
     [Decidable (o.bind f).Dom] :
-    (o.bind f).toOption = o.toOption.elim Option.none fun a => (f a).toOption := by
+    (o.bind f).toOption = o.toOption.elim Option.none fun a ↦ (f a).toOption := by
   by_cases h : o.Dom
   · simp_rw [h.toOption, h.bind]
     rfl
@@ -450,7 +450,7 @@ theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ 
 
 theorem bind_assoc {γ} (f : Part α) (g : α → Part β) (k : β → Part γ) :
     (f.bind g).bind k = f.bind fun x => (g x).bind k :=
-  ext fun a => by
+  ext fun a ↦ by
     simp only [mem_bind_iff]
     exact ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩,
            fun ⟨_, h₁, _, h₂, h₃⟩ => ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩

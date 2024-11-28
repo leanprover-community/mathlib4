@@ -526,7 +526,7 @@ def ofMagma [Mul G] : G →ₙ* MonoidAlgebra k G where
 @[simps]
 def of [MulOneClass G] : G →* MonoidAlgebra k G :=
   { ofMagma k G with
-    toFun := fun a => single a 1
+    toFun := fun a ↦ single a 1
     map_one' := rfl }
 
 end
@@ -574,7 +574,7 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (HMul.hMul (β := MonoidAlgebra k G) f (single 1 r)) x = f x * r :=
-  f.mul_single_apply_aux fun a => by rw [mul_one]
+  f.mul_single_apply_aux fun a ↦ by rw [mul_one]
 
 theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
     (h : ¬∃ d, g' = d * g) : (x * single g r) g' = 0 := by
@@ -602,7 +602,7 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (single (1 : G) r * f) x = r * f x :=
-  f.single_mul_apply_aux fun a => by rw [one_mul]
+  f.single_mul_apply_aux fun a ↦ by rw [one_mul]
 
 theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
     (h : ¬∃ d, g' = g * d) : (single g r * x) g' = 0 := by
@@ -1290,11 +1290,11 @@ def ofMagma [Add G] : Multiplicative G →ₙ* k[G] where
 /-- Embedding of a magma with zero into its magma algebra. -/
 def of [AddZeroClass G] : Multiplicative G →* k[G] :=
   { ofMagma k G with
-    toFun := fun a => single a 1
+    toFun := fun a ↦ single a 1
     map_one' := rfl }
 
 /-- Embedding of a magma with zero `G`, into its magma algebra, having `G` as source. -/
-def of' : G → k[G] := fun a => single a 1
+def of' : G → k[G] := fun a ↦ single a 1
 
 end
 
@@ -1339,7 +1339,7 @@ theorem mul_single_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
 
 theorem mul_single_zero_apply [AddZeroClass G] (f : k[G]) (r : k) (x : G) :
     (f * single (0 : G) r) x = f x * r :=
-  f.mul_single_apply_aux r _ _ _ fun a => by rw [add_zero]
+  f.mul_single_apply_aux r _ _ _ fun a ↦ by rw [add_zero]
 
 theorem mul_single_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : k[G])
     (h : ¬∃ d, g' = d + g) : (x * single g r) g' = 0 :=
@@ -1351,7 +1351,7 @@ theorem single_mul_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
 
 theorem single_zero_mul_apply [AddZeroClass G] (f : k[G]) (r : k) (x : G) :
     (single (0 : G) r * f) x = r * f x :=
-  f.single_mul_apply_aux r _ _ _ fun a => by rw [zero_add]
+  f.single_mul_apply_aux r _ _ _ fun a ↦ by rw [zero_add]
 
 theorem single_mul_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : k[G])
     (h : ¬∃ d, g' = g + d) : (single g r * x) g' = 0 :=

@@ -135,7 +135,7 @@ theorem Set.Finite.measurableSet_sUnion {s : Set (Set α)} (hs : s.Finite)
 @[measurability]
 theorem MeasurableSet.iInter [Countable ι] {f : ι → Set α} (h : ∀ b, MeasurableSet (f b)) :
     MeasurableSet (⋂ b, f b) :=
-  .of_compl <| by rw [compl_iInter]; exact .iUnion fun b => (h b).compl
+  .of_compl <| by rw [compl_iInter]; exact .iUnion fun b ↦ (h b).compl
 
 theorem MeasurableSet.biInter {f : β → Set α} {s : Set β} (hs : s.Countable)
     (h : ∀ b ∈ s, MeasurableSet (f b)) : MeasurableSet (⋂ b ∈ s, f b) :=

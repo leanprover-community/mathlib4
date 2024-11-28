@@ -641,7 +641,7 @@ theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
 
 theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
-  have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prod_mk_nhds hg
+  have : Tendsto (fun b ↦ (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prod_mk_nhds hg
   show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
 
 alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
@@ -803,13 +803,13 @@ nonrec theorem ContinuousAt.eventually_lt {x₀ : β} (hf : ContinuousAt f x₀)
 
 @[continuity, fun_prop]
 protected theorem Continuous.min (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun b => min (f b) (g b) := by
+    Continuous fun b ↦ min (f b) (g b) := by
   simp only [min_def]
   exact hf.if_le hg hf hg fun x => id
 
 @[continuity, fun_prop]
 protected theorem Continuous.max (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun b => max (f b) (g b) :=
+    Continuous fun b ↦ max (f b) (g b) :=
   Continuous.min (α := αᵒᵈ) hf hg
 
 end
@@ -821,11 +821,11 @@ theorem continuous_max : Continuous fun p : α × α => max p.1 p.2 :=
   continuous_fst.max continuous_snd
 
 protected theorem Filter.Tendsto.max {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
-    (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => max (f b) (g b)) b (𝓝 (max a₁ a₂)) :=
+    (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b ↦ max (f b) (g b)) b (𝓝 (max a₁ a₂)) :=
   (continuous_max.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
 
 protected theorem Filter.Tendsto.min {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
-    (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => min (f b) (g b)) b (𝓝 (min a₁ a₂)) :=
+    (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b ↦ min (f b) (g b)) b (𝓝 (min a₁ a₂)) :=
   (continuous_min.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
 
 protected theorem Filter.Tendsto.max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :

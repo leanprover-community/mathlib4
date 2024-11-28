@@ -456,7 +456,7 @@ theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card
 
 theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set.range f)] :
     Fintype.card (Set.range f) ≤ Fintype.card α :=
-  Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
+  Fintype.card_le_of_surjective (fun a ↦ ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
 
 theorem card_range {α β F : Type*} [FunLike F α β] [EmbeddingLike F α β] (f : F) [Fintype α]
     [Fintype (Set.range f)] : Fintype.card (Set.range f) = Fintype.card α :=
@@ -514,7 +514,7 @@ theorem card_le_one_iff : card α ≤ 1 ↔ ∀ a b : α, a = b :=
   have hn : n = card α := rfl
   match n, hn with
   | 0, ha =>
-    ⟨fun _h => fun a => (card_eq_zero_iff.1 ha.symm).elim a, fun _ => ha ▸ Nat.le_succ _⟩
+    ⟨fun _h => fun a ↦ (card_eq_zero_iff.1 ha.symm).elim a, fun _ => ha ▸ Nat.le_succ _⟩
   | 1, ha =>
     ⟨fun _h => fun a b => by
       let ⟨x, hx⟩ := card_eq_one_iff.1 ha.symm
@@ -979,7 +979,7 @@ instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β)
 
 instance instInfiniteProdSubtypeCommute [Mul α] [Infinite α] :
     Infinite { p : α × α // Commute p.1 p.2 } :=
-  Infinite.of_injective (fun a => ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
+  Infinite.of_injective (fun a ↦ ⟨⟨a, a⟩, rfl⟩) (by intro; simp)
 
 namespace Infinite
 

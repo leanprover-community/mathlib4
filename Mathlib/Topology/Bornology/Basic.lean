@@ -178,7 +178,7 @@ theorem IsBounded.subset (ht : IsBounded t) (hs : s ⊆ t) : IsBounded s :=
 
 @[simp]
 theorem sUnion_bounded_univ : ⋃₀ { s : Set α | IsBounded s } = univ :=
-  sUnion_eq_univ_iff.2 fun a => ⟨{a}, isBounded_singleton, mem_singleton a⟩
+  sUnion_eq_univ_iff.2 fun a ↦ ⟨{a}, isBounded_singleton, mem_singleton a⟩
 
 theorem IsBounded.insert (h : IsBounded s) (x : α) : IsBounded (insert x s) :=
   isBounded_singleton.union h

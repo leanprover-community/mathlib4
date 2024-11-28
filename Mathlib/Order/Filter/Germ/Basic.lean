@@ -92,7 +92,7 @@ instance coeTC : CoeTC ((a : _) → ε a) (l.Product ε) :=
   ⟨@Quotient.mk' _ (productSetoid _ ε)⟩
 
 instance instInhabited [(a : _) → Inhabited (ε a)] : Inhabited (l.Product ε) :=
-  ⟨(↑fun a => (default : ε a) : l.Product ε)⟩
+  ⟨(↑fun a ↦ (default : ε a) : l.Product ε)⟩
 
 end Product
 

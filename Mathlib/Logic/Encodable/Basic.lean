@@ -82,13 +82,13 @@ def decidableEqOfEncodable (α) [Encodable α] : DecidableEq α
 /-- If `α` is encodable and there is an injection `f : β → α`, then `β` is encodable as well. -/
 def ofLeftInjection [Encodable α] (f : β → α) (finv : α → Option β)
     (linv : ∀ b, finv (f b) = some b) : Encodable β :=
-  ⟨fun b => encode (f b), fun n => (decode n).bind finv, fun b => by
+  ⟨fun b ↦ encode (f b), fun n => (decode n).bind finv, fun b ↦ by
     simp [Encodable.encodek, linv]⟩
 
 /-- If `α` is encodable and `f : β → α` is invertible, then `β` is encodable as well. -/
 def ofLeftInverse [Encodable α] (f : β → α) (finv : α → β) (linv : ∀ b, finv (f b) = b) :
     Encodable β :=
-  ofLeftInjection f (some ∘ finv) fun b => congr_arg some (linv b)
+  ofLeftInjection f (some ∘ finv) fun b ↦ congr_arg some (linv b)
 
 /-- Encodability is preserved by equivalence. -/
 def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
@@ -136,7 +136,7 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 
 /-- If `α` is encodable, then so is `Option α`. -/
 instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Option α) :=
-  ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
+  ⟨fun o => Option.casesOn o Nat.zero fun a ↦ succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
     cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
 
@@ -161,7 +161,7 @@ theorem decode_option_succ [Encodable α] (n) :
 exists, and returns `none` if it doesn't. This requirement could be imposed directly on `decode` but
 is not to help make the definition easier to use. -/
 def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
-  (decode n).bind (Option.guard fun a => encode a = n)
+  (decode n).bind (Option.guard fun a ↦ encode a = n)
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
@@ -300,7 +300,7 @@ def encodeSigma : Sigma γ → ℕ
 /-- Explicit decoding function for `Sigma γ` -/
 def decodeSigma (n : ℕ) : Option (Sigma γ) :=
   let (n₁, n₂) := unpair n
-  (decode n₁).bind fun a => (decode n₂).map <| Sigma.mk a
+  (decode n₁).bind fun a ↦ (decode n₂).map <| Sigma.mk a
 
 instance _root_.Sigma.encodable : Encodable (Sigma γ) :=
   ⟨encodeSigma, decodeSigma, fun ⟨a, b⟩ => by
@@ -309,7 +309,7 @@ instance _root_.Sigma.encodable : Encodable (Sigma γ) :=
 @[simp]
 theorem decode_sigma_val (n : ℕ) :
     (decode n : Option (Sigma γ)) =
-      (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Sigma.mk a :=
+      (decode n.unpair.1).bind fun a ↦ (decode n.unpair.2).map <| Sigma.mk a :=
   rfl
 
 @[simp]
@@ -329,7 +329,7 @@ instance Prod.encodable : Encodable (α × β) :=
 @[simp]
 theorem decode_prod_val (n : ℕ) :
     (@decode (α × β) _ n : Option (α × β))
-      = (decode n.unpair.1).bind fun a => (decode n.unpair.2).map <| Prod.mk a := by
+      = (decode n.unpair.1).bind fun a ↦ (decode n.unpair.2).map <| Prod.mk a := by
   simp only [decode_ofEquiv, Equiv.symm_symm, decode_sigma_val]
   cases (decode n.unpair.1 : Option α) <;> cases (decode n.unpair.2 : Option β)
   <;> rfl
@@ -352,7 +352,7 @@ def encodeSubtype : { a : α // P a } → ℕ
 
 /-- Explicit decoding function for a decidable subtype of an encodable type -/
 def decodeSubtype (v : ℕ) : Option { a : α // P a } :=
-  (decode v).bind fun a => if h : P a then some ⟨a, h⟩ else none
+  (decode v).bind fun a ↦ if h : P a then some ⟨a, h⟩ else none
 
 /-- A decidable subtype of an encodable type is encodable. -/
 instance _root_.Subtype.encodable : Encodable { a : α // P a } :=

@@ -142,7 +142,7 @@ def mkMap (type : Name) (m : MVarId) : TermElabM Unit := do
         fun ctor fields => do
           let m ← mkFreshExprSyntheticOpaqueMVar target
           let args := fields.map Expr.fvar
-          let args₀ ← args.mapM fun a => do
+          let args₀ ← args.mapM fun a ↦ do
             let b := xtype.occurs (← inferType a)
             return (b, a)
           mapConstructor
@@ -252,7 +252,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
 def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
     (deps : List DerivingHandler := [])
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) :
-    DerivingHandler := fun a => do
+    DerivingHandler := fun a ↦ do
   let #[n] := a | return false -- mutually inductive types are not supported yet
   let ok ← deps.mapM fun f => f a
   unless ok.and do return false
@@ -382,7 +382,7 @@ def mkTraverse (type : Name) (m : MVarId) : TermElabM Unit := do
         fun ctor fields => do
           let m ← mkFreshExprSyntheticOpaqueMVar target
           let args := fields.map Expr.fvar
-          let args₀ ← args.mapM fun a => do
+          let args₀ ← args.mapM fun a ↦ do
             let b := xtype.occurs (← inferType a)
             return (b, a)
           traverseConstructor

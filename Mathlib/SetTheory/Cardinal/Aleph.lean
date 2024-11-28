@@ -739,7 +739,7 @@ theorem isNormal_beth : IsNormal (ord ∘ beth) := by
   refine (isNormal_iff_strictMono_limit _).2
     ⟨ord_strictMono.comp beth_strictMono, fun o ho a ha ↦ ?_⟩
   rw [comp_apply, beth_limit ho, ord_le]
-  exact ciSup_le' fun b => ord_le.1 (ha _ b.2)
+  exact ciSup_le' fun b ↦ ord_le.1 (ha _ b.2)
 
 @[deprecated isNormal_beth (since := "2024-10-11")]
 theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=

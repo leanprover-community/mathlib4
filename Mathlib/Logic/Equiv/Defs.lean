@@ -594,14 +594,14 @@ def psigmaCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ 
 theorem psigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Sort*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (psigmaCongrRight F).trans (psigmaCongrRight G) =
-      psigmaCongrRight fun a => (F a).trans (G a) := rfl
+      psigmaCongrRight fun a ↦ (F a).trans (G a) := rfl
 
 theorem psigmaCongrRight_symm {α} {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) :
-    (psigmaCongrRight F).symm = psigmaCongrRight fun a => (F a).symm := rfl
+    (psigmaCongrRight F).symm = psigmaCongrRight fun a ↦ (F a).symm := rfl
 
 @[simp]
 theorem psigmaCongrRight_refl {α} {β : α → Sort*} :
-    (psigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ' a, β a) := rfl
+    (psigmaCongrRight fun a ↦ Equiv.refl (β a)) = Equiv.refl (Σ' a, β a) := rfl
 
 /-- A family of equivalences `Π a, β₁ a ≃ β₂ a` generates an equivalence between `Σ a, β₁ a` and
 `Σ a, β₂ a`. -/
@@ -615,14 +615,14 @@ def sigmaCongrRight {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β
 theorem sigmaCongrRight_trans {α} {β₁ β₂ β₃ : α → Type*}
     (F : ∀ a, β₁ a ≃ β₂ a) (G : ∀ a, β₂ a ≃ β₃ a) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) =
-      sigmaCongrRight fun a => (F a).trans (G a) := rfl
+      sigmaCongrRight fun a ↦ (F a).trans (G a) := rfl
 
 theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁ a ≃ β₂ a) :
-    (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm := rfl
+    (sigmaCongrRight F).symm = sigmaCongrRight fun a ↦ (F a).symm := rfl
 
 @[simp]
 theorem sigmaCongrRight_refl {α} {β : α → Type*} :
-    (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
+    (sigmaCongrRight fun a ↦ Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
 
 /-- A `PSigma` with `Prop` fibers is equivalent to the subtype. -/
 def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ' i, P i) ≃ Subtype P where
@@ -651,15 +651,15 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
 
 @[simp] theorem sigmaCongrRight_trans {α} {β : α → Sort _}
     (F : ∀ a, Perm (β a)) (G : ∀ a, Perm (β a)) :
-    (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) :=
+    (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a ↦ (F a).trans (G a) :=
   Equiv.sigmaCongrRight_trans F G
 
 @[simp] theorem sigmaCongrRight_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
-    (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
+    (sigmaCongrRight F).symm = sigmaCongrRight fun a ↦ (F a).symm :=
   Equiv.sigmaCongrRight_symm F
 
 @[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
-    (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
+    (sigmaCongrRight fun a ↦ Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
   Equiv.sigmaCongrRight_refl
 
 end Perm
@@ -692,7 +692,7 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
 /-- `Sigma` type with a constant fiber is equivalent to the product. -/
 @[simps (config := { attrs := [`mfld_simps] }) apply symm_apply]
 def sigmaEquivProd (α β : Type*) : (Σ _ : α, β) ≃ α × β :=
-  ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
+  ⟨fun a ↦ ⟨a.1, a.2⟩, fun a ↦ ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
 /-- If each fiber of a `Sigma` type is equivalent to a fixed type, then the sigma type
 is equivalent to the product. -/

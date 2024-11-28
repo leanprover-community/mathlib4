@@ -126,11 +126,11 @@ theorem ContinuousOn.const_cpow {b : ℂ} (hf : ContinuousOn f s) (h : b ≠ 0 �
 
 theorem Continuous.cpow (hf : Continuous f) (hg : Continuous g)
     (h0 : ∀ a, f a ∈ slitPlane) : Continuous fun x => f x ^ g x :=
-  continuous_iff_continuousAt.2 fun a => hf.continuousAt.cpow hg.continuousAt (h0 a)
+  continuous_iff_continuousAt.2 fun a ↦ hf.continuousAt.cpow hg.continuousAt (h0 a)
 
 theorem Continuous.const_cpow {b : ℂ} (hf : Continuous f) (h : b ≠ 0 ∨ ∀ a, f a ≠ 0) :
     Continuous fun x => b ^ f x :=
-  continuous_iff_continuousAt.2 fun a => hf.continuousAt.const_cpow <| h.imp id fun h => h a
+  continuous_iff_continuousAt.2 fun a ↦ hf.continuousAt.const_cpow <| h.imp id fun h => h a
 
 theorem ContinuousOn.cpow_const {b : ℂ} (hf : ContinuousOn f s)
     (h : ∀ a : α, a ∈ s → f a ∈ slitPlane) : ContinuousOn (fun x => f x ^ b) s :=
@@ -239,7 +239,7 @@ theorem Filter.Tendsto.rpow {l : Filter α} {f g : α → ℝ} {x y : ℝ} (hf :
   (Real.continuousAt_rpow (x, y) h).tendsto.comp (hf.prod_mk_nhds hg)
 
 theorem Filter.Tendsto.rpow_const {l : Filter α} {f : α → ℝ} {x p : ℝ} (hf : Tendsto f l (𝓝 x))
-    (h : x ≠ 0 ∨ 0 ≤ p) : Tendsto (fun a => f a ^ p) l (𝓝 (x ^ p)) :=
+    (h : x ≠ 0 ∨ 0 ≤ p) : Tendsto (fun a ↦ f a ^ p) l (𝓝 (x ^ p)) :=
   if h0 : 0 = p then h0 ▸ by simp [tendsto_const_nhds]
   else hf.rpow tendsto_const_nhds (h.imp id fun h' => h'.lt_of_ne h0)
 
@@ -359,7 +359,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
   need `by exact` to deal with tricky unification -/
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
-    ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x := by
+    ContinuousAt (fun a ↦ (a : ℂ) ^ y : ℝ → ℂ) x := by
   exact ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
           ((continuous_id (X := ℝ)).prod_mk (continuous_const (y := y))).continuousAt
 
@@ -405,7 +405,7 @@ open Filter
 
 theorem Filter.Tendsto.nnrpow {α : Type*} {f : Filter α} {u : α → ℝ≥0} {v : α → ℝ} {x : ℝ≥0}
     {y : ℝ} (hx : Tendsto u f (𝓝 x)) (hy : Tendsto v f (𝓝 y)) (h : x ≠ 0 ∨ 0 < y) :
-    Tendsto (fun a => u a ^ v a) f (𝓝 (x ^ y)) :=
+    Tendsto (fun a ↦ u a ^ v a) f (𝓝 (x ^ y)) :=
   Tendsto.comp (NNReal.continuousAt_rpow h) (hx.prod_mk_nhds hy)
 
 namespace NNReal

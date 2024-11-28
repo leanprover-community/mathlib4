@@ -186,7 +186,7 @@ theorem mulSupport_prod_mk' (f : α → M × N) :
 
 @[to_additive]
 theorem mulSupport_along_fiber_subset (f : α × β → M) (a : α) :
-    (mulSupport fun b => f (a, b)) ⊆ (mulSupport f).image Prod.snd :=
+    (mulSupport fun b ↦ f (a, b)) ⊆ (mulSupport f).image Prod.snd :=
   fun x hx => ⟨(a, x), by simpa using hx⟩
 
 @[to_additive]

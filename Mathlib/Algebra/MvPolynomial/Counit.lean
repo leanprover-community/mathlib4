@@ -50,7 +50,7 @@ theorem ACounit_C (a : A) : ACounit A B (C a) = algebraMap A B a :=
 
 variable (A)
 
-theorem ACounit_surjective : Surjective (ACounit A B) := fun b => ⟨X b, ACounit_X A b⟩
+theorem ACounit_surjective : Surjective (ACounit A B) := fun b ↦ ⟨X b, ACounit_X A b⟩
 
 /-- `MvPolynomial.counit R` is the natural surjective ring homomorphism
 `MvPolynomial R ℤ →+* R` obtained by `X r ↦ r`.

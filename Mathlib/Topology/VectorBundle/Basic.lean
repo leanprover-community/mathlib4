@@ -355,7 +355,7 @@ class VectorBundle : Prop where
   trivialization_linear' : ∀ (e : Trivialization F (π F E)) [MemTrivializationAtlas e], e.IsLinear R
   continuousOn_coordChange' :
     ∀ (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e'],
-      ContinuousOn (fun b => Trivialization.coordChangeL R e e' b : B → F →L[R] F)
+      ContinuousOn (fun b ↦ Trivialization.coordChangeL R e e' b : B → F →L[R] F)
         (e.baseSet ∩ e'.baseSet)
 
 variable {F E}
@@ -366,7 +366,7 @@ instance (priority := 100) trivialization_linear [VectorBundle R F E] (e : Trivi
 
 theorem continuousOn_coordChange [VectorBundle R F E] (e e' : Trivialization F (π F E))
     [MemTrivializationAtlas e] [MemTrivializationAtlas e'] :
-    ContinuousOn (fun b => Trivialization.coordChangeL R e e' b : B → F →L[R] F)
+    ContinuousOn (fun b ↦ Trivialization.coordChangeL R e e' b : B → F →L[R] F)
       (e.baseSet ∩ e'.baseSet) :=
   VectorBundle.continuousOn_coordChange' e e'
 

@@ -172,7 +172,7 @@ namespace Set
 /-- `univ α` is equivalent to `α`. -/
 @[simps apply symm_apply]
 protected def univ (α) : @univ α ≃ α :=
-  ⟨Subtype.val, fun a => ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
+  ⟨Subtype.val, fun a ↦ ⟨a, trivial⟩, fun ⟨_, _⟩ => rfl, fun _ => rfl⟩
 
 /-- An empty set is equivalent to the `Empty` type. -/
 protected def empty (α) : (∅ : Set α) ≃ Empty :=
@@ -394,7 +394,7 @@ protected def prod {α β} (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ s × t 
 protected def univPi {α : Type*} {β : α → Type*} (s : ∀ a, Set (β a)) :
     pi univ s ≃ ∀ a, s a where
   toFun f a := ⟨(f : ∀ a, β a) a, f.2 a (mem_univ a)⟩
-  invFun f := ⟨fun a => f a, fun a _ => (f a).2⟩
+  invFun f := ⟨fun a ↦ f a, fun a _ => (f a).2⟩
   left_inv := fun ⟨f, hf⟩ => by
     ext a
     rfl

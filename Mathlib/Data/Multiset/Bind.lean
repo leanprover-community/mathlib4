@@ -99,7 +99,7 @@ def bind (s : Multiset α) (f : α → Multiset β) : Multiset β :=
   (s.map f).join
 
 @[simp]
-theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a => f a) = l.flatMap f := by
+theorem coe_bind (l : List α) (f : α → List β) : (@bind α β l fun a ↦ f a) = l.flatMap f := by
   rw [List.flatMap, ← coe_join, List.map_map]
   rfl
 
@@ -120,11 +120,11 @@ theorem add_bind : (s + t).bind f = s.bind f + t.bind f := by simp [bind]
 theorem bind_zero : s.bind (fun _ => 0 : α → Multiset β) = 0 := by simp [bind, join, nsmul_zero]
 
 @[simp]
-theorem bind_add : (s.bind fun a => f a + g a) = s.bind f + s.bind g := by simp [bind, join]
+theorem bind_add : (s.bind fun a ↦ f a + g a) = s.bind f + s.bind g := by simp [bind, join]
 
 @[simp]
 theorem bind_cons (f : α → β) (g : α → Multiset β) :
-    (s.bind fun a => f a ::ₘ g a) = map f s + s.bind g :=
+    (s.bind fun a ↦ f a ::ₘ g a) = map f s + s.bind g :=
   Multiset.induction_on s (by simp)
     (by simp +contextual [add_comm, add_left_comm, add_assoc])
 
@@ -149,27 +149,27 @@ theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f
   simp [bind_congr hf]
 
 theorem map_bind (m : Multiset α) (n : α → Multiset β) (f : β → γ) :
-    map f (bind m n) = bind m fun a => map f (n a) := by simp [bind]
+    map f (bind m n) = bind m fun a ↦ map f (n a) := by simp [bind]
 
 theorem bind_map (m : Multiset α) (n : β → Multiset γ) (f : α → β) :
-    bind (map f m) n = bind m fun a => n (f a) :=
+    bind (map f m) n = bind m fun a ↦ n (f a) :=
   Multiset.induction_on m (by simp) (by simp +contextual)
 
 theorem bind_assoc {s : Multiset α} {f : α → Multiset β} {g : β → Multiset γ} :
-    (s.bind f).bind g = s.bind fun a => (f a).bind g :=
+    (s.bind f).bind g = s.bind fun a ↦ (f a).bind g :=
   Multiset.induction_on s (by simp) (by simp +contextual)
 
 theorem bind_bind (m : Multiset α) (n : Multiset β) {f : α → β → Multiset γ} :
-    ((bind m) fun a => (bind n) fun b => f a b) = (bind n) fun b => (bind m) fun a => f a b :=
+    ((bind m) fun a ↦ (bind n) fun b ↦ f a b) = (bind n) fun b ↦ (bind m) fun a ↦ f a b :=
   Multiset.induction_on m (by simp) (by simp +contextual)
 
 theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ} :
-    ((bind m) fun a => n.map fun b => f a b) = (bind n) fun b => m.map fun a => f a b :=
+    ((bind m) fun a ↦ n.map fun b ↦ f a b) = (bind n) fun b ↦ m.map fun a ↦ f a b :=
   Multiset.induction_on m (by simp) (by simp +contextual)
 
 @[to_additive (attr := simp)]
 theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
-    (s.bind t).prod = (s.map fun a => (t a).prod).prod := by simp [bind]
+    (s.bind t).prod = (s.map fun a ↦ (t a).prod).prod := by simp [bind]
 
 theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α → Multiset γ}
     {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) :
@@ -179,11 +179,11 @@ theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α
   exact hst.mono fun a _ b _ hr => h hr
 
 theorem count_sum [DecidableEq α] {m : Multiset β} {f : β → Multiset α} {a : α} :
-    count a (map f m).sum = sum (m.map fun b => count a <| f b) :=
+    count a (map f m).sum = sum (m.map fun b ↦ count a <| f b) :=
   Multiset.induction_on m (by simp) (by simp)
 
 theorem count_bind [DecidableEq α] {m : Multiset β} {f : β → Multiset α} {a : α} :
-    count a (bind m f) = sum (m.map fun b => count a <| f b) :=
+    count a (bind m f) = sum (m.map fun b ↦ count a <| f b) :=
   count_sum
 
 theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : α} (hx : x ∈ S) :
@@ -203,7 +203,7 @@ variable {f s t}
 
 @[simp] lemma nodup_bind :
     Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise (Disjoint on f) := by
-  have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
+  have : ∀ a, ∃ l : List β, f a = l := fun a ↦ Quot.induction_on (f a) fun l => ⟨l, rfl⟩
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
   have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
@@ -232,7 +232,7 @@ variable (a : α) (b : β) (s : Multiset α) (t : Multiset β)
 /-- The multiplicity of `(a, b)` in `s ×ˢ t` is
   the product of the multiplicity of `a` in `s` and `b` in `t`. -/
 def product (s : Multiset α) (t : Multiset β) : Multiset (α × β) :=
-  s.bind fun a => t.map <| Prod.mk a
+  s.bind fun a ↦ t.map <| Prod.mk a
 
 instance instSProd : SProd (Multiset α) (Multiset β) (Multiset (α × β)) where
   sprod := Multiset.product
@@ -255,7 +255,7 @@ theorem cons_product : (a ::ₘ s) ×ˢ t = map (Prod.mk a) t + s ×ˢ t := by s
 theorem product_zero : s ×ˢ (0 : Multiset β) = 0 := by simp [SProd.sprod, product]
 
 @[simp]
-theorem product_cons : s ×ˢ (b ::ₘ t) = (s.map fun a => (a, b)) + s ×ˢ t := by
+theorem product_cons : s ×ˢ (b ::ₘ t) = (s.map fun a ↦ (a, b)) + s ×ˢ t := by
   simp [SProd.sprod, product]
 
 @[simp]
@@ -295,11 +295,11 @@ variable {σ : α → Type*} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ
 /-- `Multiset.sigma s t` is the dependent version of `Multiset.product`. It is the sum of
   `(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/
 protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (Σa, σ a) :=
-  s.bind fun a => (t a).map <| Sigma.mk a
+  s.bind fun a ↦ (t a).map <| Sigma.mk a
 
 @[simp]
 theorem coe_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    (@Multiset.sigma α σ l₁ fun a => l₂ a) = l₁.sigma l₂ := by
+    (@Multiset.sigma α σ l₁ fun a ↦ l₂ a) = l₁.sigma l₂ := by
   rw [Multiset.sigma, List.sigma, ← coe_bind]
   simp
 
@@ -313,7 +313,7 @@ theorem cons_sigma : (a ::ₘ s).sigma t = (t a).map (Sigma.mk a) + s.sigma t :=
 
 @[simp]
 theorem sigma_singleton (b : α → β) :
-    (({a} : Multiset α).sigma fun a => ({b a} : Multiset β)) = {⟨a, b a⟩} :=
+    (({a} : Multiset α).sigma fun a ↦ ({b a} : Multiset β)) = {⟨a, b a⟩} :=
   rfl
 
 @[simp]
@@ -322,13 +322,13 @@ theorem add_sigma (s t : Multiset α) (u : ∀ a, Multiset (σ a)) :
 
 @[simp]
 theorem sigma_add :
-    ∀ t u : ∀ a, Multiset (σ a), (s.sigma fun a => t a + u a) = s.sigma t + s.sigma u :=
+    ∀ t u : ∀ a, Multiset (σ a), (s.sigma fun a ↦ t a + u a) = s.sigma t + s.sigma u :=
   Multiset.induction_on s (fun _ _ => rfl) fun a s IH t u => by
     rw [cons_sigma, IH]
     simp [add_comm, add_left_comm, add_assoc]
 
 @[simp]
-theorem card_sigma : card (s.sigma t) = sum (map (fun a => card (t a)) s) := by
+theorem card_sigma : card (s.sigma t) = sum (map (fun a ↦ card (t a)) s) := by
   simp [Multiset.sigma, (· ∘ ·)]
 
 variable {s t}
@@ -339,7 +339,7 @@ variable {s t}
 protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
   Quot.induction_on s fun l₁ => by
-    choose f hf using fun a => Quotient.exists_rep (t a)
+    choose f hf using fun a ↦ Quotient.exists_rep (t a)
     simpa [← funext hf] using List.Nodup.sigma
 
 end Sigma

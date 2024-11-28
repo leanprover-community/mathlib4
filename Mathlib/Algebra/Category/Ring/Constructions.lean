@@ -142,7 +142,7 @@ theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsi
 
 /-- `ℤ` is the initial object of `CommRingCat`. -/
 def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
-  IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩)
+  IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a ↦ a.ext_int _⟩)
 
 /-- `ULift.{u} ℤ` is initial in `CommRingCat`. -/
 def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=

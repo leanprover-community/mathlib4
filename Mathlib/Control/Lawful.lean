@@ -132,7 +132,7 @@ theorem run_map (f : α → β) [LawfulMonad m] : (f <$> x).run = Option.map f <
 
 @[simp]
 theorem run_monadLift {n} [MonadLiftT n m] (x : n α) :
-    (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a => pure (some a) :=
+    (monadLift x : OptionT m α).run = (monadLift x : m α) >>= fun a ↦ pure (some a) :=
   rfl
 
 end Monad

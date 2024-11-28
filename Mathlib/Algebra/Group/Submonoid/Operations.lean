@@ -1005,7 +1005,7 @@ instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
 instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
       (S : Submonoid M') :
     IsScalarTower S α β :=
-  ⟨fun a => (smul_assoc (a : M') : _)⟩
+  ⟨fun a ↦ (smul_assoc (a : M') : _)⟩
 
 section SMul
 variable [SMul M' α] {S : Submonoid M'}

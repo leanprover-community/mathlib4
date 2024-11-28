@@ -101,7 +101,7 @@ protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α 
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
-  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
+  ⟨fun a ↦ or_self_iff.1 <| total_of r a a⟩
 
 theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
   | _, _, h, rfl => irrefl _ h
@@ -427,7 +427,7 @@ theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr 
   { hr with
     trichotomous := fun a b => Or.inr <| Or.inl <| Subsingleton.elim a b,
     trans := fun a b _ h => (not_rel_of_subsingleton r a b h).elim,
-    wf := ⟨fun a => ⟨_, fun y h => (not_rel_of_subsingleton r y a h).elim⟩⟩ }
+    wf := ⟨fun a ↦ ⟨_, fun y h => (not_rel_of_subsingleton r y a h).elim⟩⟩ }
 
 instance [Subsingleton α] : IsWellOrder α EmptyRelation :=
   Subsingleton.isWellOrder _
@@ -503,7 +503,7 @@ end Set
 namespace Order.Preimage
 
 instance instIsRefl {r : α → α → Prop} [IsRefl α r] {f : β → α} : IsRefl β (f ⁻¹'o r) :=
-  ⟨fun a => refl_of r (f a)⟩
+  ⟨fun a ↦ refl_of r (f a)⟩
 
 instance instIsTrans {r : α → α → Prop} [IsTrans α r] {f : β → α} : IsTrans β (f ⁻¹'o r) :=
   ⟨fun _ _ _ => trans_of r⟩

@@ -373,7 +373,7 @@ theorem map_pure_prod (f : α → β → γ) (a : α) (B : Filter β) :
   rw [Filter.pure_prod]; rfl
 
 @[simp]
-theorem prod_pure {b : β} : f ×ˢ pure b = map (fun a => (a, b)) f := by
+theorem prod_pure {b : β} : f ×ˢ pure b = map (fun a ↦ (a, b)) f := by
   rw [prod_eq, seq_pure, map_map]; rfl
 
 theorem prod_pure_pure {a : α} {b : β} :
@@ -484,7 +484,7 @@ theorem map_prod_map_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {�
   refine ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ ?_⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ ?_⟩⟩ <;> convert hx
 
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
-`𝓟 {i}`, the first under the constant function `fun a => b` and the second under the identity
+`𝓟 {i}`, the first under the constant function `fun a ↦ b` and the second under the identity
 function. Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this
 provides an example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict.
 -/
@@ -495,7 +495,7 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type*} (a : α) 
     image_id, prod_univ, univ_prod, id]
 
 /-- Characterization of the `Filter.map` of the coproduct of two principal filters `𝓟 {a}` and
-`𝓟 {i}`, under the `Prod.map` of two functions, respectively the constant function `fun a => b` and
+`𝓟 {i}`, under the `Prod.map` of two functions, respectively the constant function `fun a ↦ b` and
 the identity function.  Together with the previous lemma,
 `map_const_principal_coprod_map_id_principal`, this provides an example showing that the inequality
 in the lemma `map_prod_map_coprod_le` can be strict. -/

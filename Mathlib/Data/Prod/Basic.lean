@@ -282,7 +282,7 @@ theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
 theorem map_leftInverse [Nonempty β] [Nonempty δ] {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α}
     {g₂ : δ → γ} : LeftInverse (map f₁ g₁) (map f₂ g₂) ↔ LeftInverse f₁ f₂ ∧ LeftInverse g₁ g₂ :=
   ⟨fun h =>
-    ⟨fun b => by
+    ⟨fun b ↦ by
       inhabit δ
       exact congr_arg Prod.fst (h (b, default)),
       fun d => by

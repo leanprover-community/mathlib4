@@ -152,7 +152,7 @@ theorem forall_isConj {p : ConjClasses α → Prop} : (∀ a, p a) ↔ ∀ a, p 
   Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
 
 theorem mk_surjective : Function.Surjective (@ConjClasses.mk α _) :=
-  forall_isConj.2 fun a => ⟨a, rfl⟩
+  forall_isConj.2 fun a ↦ ⟨a, rfl⟩
 
 instance : One (ConjClasses α) :=
   ⟨⟦1⟧⟩

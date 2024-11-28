@@ -65,7 +65,7 @@ def cof (r : α → α → Prop) : Cardinal :=
 /-- The set in the definition of `Order.cof` is nonempty. -/
 private theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
     { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }.Nonempty :=
-  ⟨_, Set.univ, fun a => ⟨a, ⟨⟩, refl _⟩, rfl⟩
+  ⟨_, Set.univ, fun a ↦ ⟨a, ⟨⟩, refl _⟩, rfl⟩
 
 theorem cof_le (r : α → α → Prop) {S : Set α} (h : ∀ a, ∃ b ∈ S, r a b) : cof r ≤ #S :=
   csInf_le' ⟨S, h, rfl⟩
@@ -86,7 +86,7 @@ private theorem cof_le_lift [IsRefl β s] (f : r ≃r s) :
   rw [Order.cof, Order.cof, lift_sInf, lift_sInf, le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
   apply csInf_le'
-  refine ⟨_, ⟨f.symm '' u, fun a => ?_, rfl⟩, lift_mk_eq'.2 ⟨(f.symm.toEquiv.image u).symm⟩⟩
+  refine ⟨_, ⟨f.symm '' u, fun a ↦ ?_, rfl⟩, lift_mk_eq'.2 ⟨(f.symm.toEquiv.image u).symm⟩⟩
   rcases H (f a) with ⟨b, hb, hb'⟩
   refine ⟨f.symm b, mem_image_of_mem _ hb, f.map_rel_iff.1 ?_⟩
   rwa [RelIso.apply_symm_apply]
@@ -207,7 +207,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
   · rintro a ⟨ι, f, hf, rfl⟩
     rw [← type_toType o]
     refine
-      (cof_type_le fun a => ?_).trans
+      (cof_type_le fun a ↦ ?_).trans
         (@mk_le_of_injective _ _
           (fun s : typein ((· < ·) : o.toType → o.toType → Prop) ⁻¹' Set.range f =>
             Classical.choose s.prop)
@@ -461,7 +461,7 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
     change cof (type _) ≤ _
     rw [← (_ : #_ = 1)]
     · apply cof_type_le
-      refine fun a => ⟨Sum.inr PUnit.unit, Set.mem_singleton _, ?_⟩
+      refine fun a ↦ ⟨Sum.inr PUnit.unit, Set.mem_singleton _, ?_⟩
       rcases a with (a | ⟨⟨⟨⟩⟩⟩) <;> simp [EmptyRelation]
     · rw [Cardinal.mk_fintype, Set.card_singleton]
       simp
@@ -989,13 +989,13 @@ theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α �
     exact infinite_univ
   by_contra h
   simp only [not_le] at h
-  let u : ∀ b, ∃ a, b ∈ f a := fun b => by simpa using (w.ge : _) (Set.mem_univ b)
-  let u' : β → range f := fun b => ⟨f (u b).choose, by simp⟩
+  let u : ∀ b, ∃ a, b ∈ f a := fun b ↦ by simpa using (w.ge : _) (Set.mem_univ b)
+  let u' : β → range f := fun b ↦ ⟨f (u b).choose, by simp⟩
   have v' : ∀ a, u' ⁻¹' {⟨f a, by simp⟩} ≤ f a := by
     rintro a p m
     simp? [u']  at m says simp only [mem_preimage, mem_singleton_iff, Subtype.mk.injEq, u'] at m
     rw [← m]
-    apply fun b => (u b).choose_spec
+    apply fun b ↦ (u b).choose_spec
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h k
   exact (@Infinite.of_injective _ _ p (inclusion (v' a)) (inclusion_injective _)).false
 

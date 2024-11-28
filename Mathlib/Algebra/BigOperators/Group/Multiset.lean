@@ -174,8 +174,8 @@ theorem prod_map_pow {n : ℕ} : (m.map fun i => f i ^ n).prod = (m.map f).prod 
 
 @[to_additive]
 theorem prod_map_prod_map (m : Multiset β') (n : Multiset γ) {f : β' → γ → α} :
-    prod (m.map fun a => prod <| n.map fun b => f a b) =
-      prod (n.map fun b => prod <| m.map fun a => f a b) :=
+    prod (m.map fun a ↦ prod <| n.map fun b ↦ f a b) =
+      prod (n.map fun b ↦ prod <| m.map fun a ↦ f a b) :=
   Multiset.induction_on m (by simp) fun a m ih => by simp [ih]
 
 @[to_additive]
@@ -278,7 +278,7 @@ theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod
 end DivisionCommMonoid
 
 @[simp]
-theorem sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α)).sum = s :=
+theorem sum_map_singleton (s : Multiset α) : (s.map fun a ↦ ({a} : Multiset α)).sum = s :=
   Multiset.induction_on s (by simp) (by simp)
 
 theorem sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (· % n)).sum % n := by

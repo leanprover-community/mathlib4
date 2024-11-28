@@ -192,7 +192,7 @@ theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ lo
     c ^ log b n ≤ b ^ log b n := Nat.pow_le_pow_left hb _
     _ ≤ n := pow_log_le_self _ hn
 
-theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) := fun _ hc _ _ hb =>
+theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b ↦ log b n) (Set.Ioi 1) := fun _ hc _ _ hb =>
   log_anti_left (Set.mem_Iio.1 hc) hb
 
 @[simp]

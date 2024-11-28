@@ -183,7 +183,7 @@ theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
   rwa [h, inf_comm, top_inf_eq] at this
 
 theorem orthogonalFamily_self :
-    OrthogonalFamily 𝕜 (fun b => ↥(cond b K Kᗮ)) fun b => (cond b K Kᗮ).subtypeₗᵢ
+    OrthogonalFamily 𝕜 (fun b ↦ ↥(cond b K Kᗮ)) fun b ↦ (cond b K Kᗮ).subtypeₗᵢ
   | true, true => absurd rfl
   | true, false => fun _ x y => inner_right_of_mem_orthogonal x.prop y.prop
   | false, true => fun _ x y => inner_left_of_mem_orthogonal y.prop x.prop

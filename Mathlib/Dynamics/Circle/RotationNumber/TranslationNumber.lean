@@ -781,7 +781,7 @@ theorem translationNumber_lt_of_forall_lt_add (hf : Continuous f) {z : ℝ} (hz 
   refine lt_of_le_of_lt ?_ (sub_lt_iff_lt_add'.2 <| hz x)
   apply translationNumber_le_of_le_add
   simp only [← sub_le_iff_le_add']
-  exact f.forall_map_sub_of_Icc (fun a => a ≤ f x - x) hx
+  exact f.forall_map_sub_of_Icc (fun a ↦ a ≤ f x - x) hx
 
 theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz : ∀ x, x + z < f x) :
     z < τ f := by

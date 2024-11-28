@@ -193,7 +193,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
             exact h b ⟨lt_of_mul_lt_mul_left ha (zero_le _), mul_comm _ _⟩)
     _ = _ := by
       have h1 : Function.Injective (· * p) := mul_left_injective₀ hp.ne_zero
-      have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a => by
+      have h2 : (range (p ^ n)).image (· * p) ⊆ range (p ^ (n + 1)) := fun a ↦ by
         simp only [mem_image, mem_range, exists_imp]
         rintro b ⟨h, rfl⟩
         rw [Nat.pow_succ]

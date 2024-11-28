@@ -160,7 +160,7 @@ protected theorem inj (f : α ≃. β) {a₁ a₂ : α} {b : β} (h₁ : b ∈ f
 theorem injective_of_forall_ne_isSome (f : α ≃. β) (a₂ : α)
     (h : ∀ a₁ : α, a₁ ≠ a₂ → isSome (f a₁)) : Injective f :=
   HasLeftInverse.injective
-    ⟨fun b => Option.recOn b a₂ fun b' => Option.recOn (f.symm b') a₂ id, fun x => by
+    ⟨fun b ↦ Option.recOn b a₂ fun b' => Option.recOn (f.symm b') a₂ id, fun x => by
       classical
         cases hfx : f x
         · have : x = a₂ := not_imp_comm.1 (h x) (hfx.symm ▸ by simp)
@@ -381,8 +381,8 @@ instance : OrderBot (α ≃. β) :=
 instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
   { instPartialOrderPEquiv with
     inf := fun f g =>
-      { toFun := fun a => if f a = g a then f a else none
-        invFun := fun b => if f.symm b = g.symm b then f.symm b else none
+      { toFun := fun a ↦ if f a = g a then f a else none
+        invFun := fun b ↦ if f.symm b = g.symm b then f.symm b else none
         inv := fun a b => by
           have hf := @mem_iff_mem _ _ f a b
           have hg := @mem_iff_mem _ _ g a b

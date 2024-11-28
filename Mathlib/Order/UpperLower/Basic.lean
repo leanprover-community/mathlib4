@@ -338,10 +338,10 @@ section PartialOrder
 variable [PartialOrder α] {s : Set α}
 
 theorem isUpperSet_iff_forall_lt : IsUpperSet s ↔ ∀ ⦃a b : α⦄, a < b → a ∈ s → b ∈ s :=
-  forall_congr' fun a => by simp [le_iff_eq_or_lt, or_imp, forall_and]
+  forall_congr' fun a ↦ by simp [le_iff_eq_or_lt, or_imp, forall_and]
 
 theorem isLowerSet_iff_forall_lt : IsLowerSet s ↔ ∀ ⦃a b : α⦄, b < a → a ∈ s → b ∈ s :=
-  forall_congr' fun a => by simp [le_iff_eq_or_lt, or_imp, forall_and]
+  forall_congr' fun a ↦ by simp [le_iff_eq_or_lt, or_imp, forall_and]
 
 theorem isUpperSet_iff_Ioi_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Ioi a ⊆ s := by
   simp [isUpperSet_iff_forall_lt, subset_def, @forall_swap (_ ∈ s)]

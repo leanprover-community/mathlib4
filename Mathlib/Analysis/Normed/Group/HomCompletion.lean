@@ -203,6 +203,6 @@ theorem NormedAddGroupHom.extension_unique (f : NormedAddGroupHom G H)
     {g : NormedAddGroupHom (Completion G) H} (hg : ∀ v, f v = g v) : f.extension = g := by
   ext v
   rw [NormedAddGroupHom.extension_coe_to_fun,
-    Completion.extension_unique f.uniformContinuous g.uniformContinuous fun a => hg a]
+    Completion.extension_unique f.uniformContinuous g.uniformContinuous fun a ↦ hg a]
 
 end Extension

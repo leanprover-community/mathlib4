@@ -31,7 +31,7 @@ variable [NonUnitalNonAssocSemiring α] [StarRing α]
 
 instance : Star (CentroidHom α) where
   star f :=
-  { toFun := fun a => star (f (star a))
+  { toFun := fun a ↦ star (f (star a))
     map_zero' := by
       simp only [star_zero, map_zero]
     map_add' := fun a b => by simp only [star_add, map_add]

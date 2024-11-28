@@ -287,7 +287,7 @@ instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G
       have H := fun {R : Sylow p G} {S : orbit G P} =>
         calc
           S ∈ fixedPoints R (orbit G P) ↔ S.1 ∈ fixedPoints R (Sylow p G) :=
-            forall_congr' fun a => Subtype.ext_iff
+            forall_congr' fun a ↦ Subtype.ext_iff
           _ ↔ R.1 ≤ S := R.2.sylow_mem_fixedPoints_iff
           _ ↔ S.1.1 = R := ⟨fun h => R.3 S.1.2 h, ge_of_eq⟩
       suffices Set.Nonempty (fixedPoints Q (orbit G P)) by

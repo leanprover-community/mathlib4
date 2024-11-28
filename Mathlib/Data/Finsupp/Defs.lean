@@ -159,7 +159,7 @@ theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [�
 
 theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=
   ⟨fun h => h ▸ ⟨rfl, fun _ _ => rfl⟩, fun ⟨h₁, h₂⟩ =>
-    ext fun a => by
+    ext fun a ↦ by
       classical
       exact if h : a ∈ f.support then h₂ a h else by
         have hf : f a = 0 := not_mem_support_iff.1 h
@@ -183,7 +183,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
-  simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
+  simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a ↦ not_imp_comm
 
 /-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/
@@ -207,7 +207,7 @@ noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →�
 
 @[ext]
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
-  ext fun a => by rwa [Unique.eq_default a]
+  ext fun a ↦ by rwa [Unique.eq_default a]
 
 end Basic
 
@@ -690,7 +690,7 @@ bundled (defined in `Data/Finsupp/Basic`):
 * `Finsupp.mapRange.linearEquiv`
 -/
 def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
-  onFinset g.support (f ∘ g) fun a => by
+  onFinset g.support (f ∘ g) fun a ↦ by
     rw [mem_support_iff, not_imp_not]; exact fun H => (congr_arg f H).trans hf
 
 @[simp]
@@ -814,7 +814,7 @@ theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a 
     exact Set.mem_range_self a
 
 theorem embDomain_injective (f : α ↪ β) : Function.Injective (embDomain f : (α →₀ M) → β →₀ M) :=
-  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply] using DFunLike.ext_iff.1 h (f a)
+  fun l₁ l₂ h => ext fun a ↦ by simpa only [embDomain_apply] using DFunLike.ext_iff.1 h (f a)
 
 @[simp]
 theorem embDomain_inj {f : α ↪ β} {l₁ l₂ : α →₀ M} : embDomain f l₁ = embDomain f l₂ ↔ l₁ = l₂ :=
@@ -878,7 +878,7 @@ variable [Zero M] [Zero N] [Zero P]
 def zipWith (f : M → N → P) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α →₀ N) : α →₀ P :=
   onFinset
     (haveI := Classical.decEq α; g₁.support ∪ g₂.support)
-    (fun a => f (g₁ a) (g₂ a))
+    (fun a ↦ f (g₁ a) (g₂ a))
     fun a (H : f _ _ ≠ 0) => by
       classical
       rw [mem_union, mem_support_iff, mem_support_iff, ← not_and_or]

@@ -1163,7 +1163,7 @@ theorem sum_eq_iff_sum_mul_moebius_eq [Ring R] {f g : ℕ → R} :
       ∀ n > 0, ∑ x ∈ n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd = f n := by
   rw [sum_eq_iff_sum_smul_moebius_eq]
   apply forall_congr'
-  refine fun a => imp_congr_right fun _ => (sum_congr rfl fun x _hx => ?_).congr_left
+  refine fun a ↦ imp_congr_right fun _ => (sum_congr rfl fun x _hx => ?_).congr_left
   rw [zsmul_eq_mul]
 
 /-- Möbius inversion for functions to a `CommGroup`. -/

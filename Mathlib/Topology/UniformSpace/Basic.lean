@@ -1069,7 +1069,7 @@ instance : CompleteLattice (UniformSpace α) :=
     inf_le_left := fun a _ => show _ ≤ a.uniformity from inf_le_left
     inf_le_right := fun _ b => show _ ≤ b.uniformity from inf_le_right
     top := ⊤
-    le_top := fun a => show a.uniformity ≤ ⊤ from le_top
+    le_top := fun a ↦ show a.uniformity ≤ ⊤ from le_top
     bot := ⊥
     bot_le := fun u => u.toCore.refl
     sSup := fun tt => sInf { t | ∀ t' ∈ tt, t' ≤ t }
@@ -1456,16 +1456,16 @@ theorem uniformContinuous_snd [UniformSpace α] [UniformSpace β] :
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
 theorem UniformContinuous.prod_mk {f₁ : α → β} {f₂ : α → γ} (h₁ : UniformContinuous f₁)
-    (h₂ : UniformContinuous f₂) : UniformContinuous fun a => (f₁ a, f₂ a) := by
+    (h₂ : UniformContinuous f₂) : UniformContinuous fun a ↦ (f₁ a, f₂ a) := by
   rw [UniformContinuous, uniformity_prod]
   exact tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
 theorem UniformContinuous.prod_mk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
-    UniformContinuous fun a => f (a, b) :=
+    UniformContinuous fun a ↦ f (a, b) :=
   h.comp (uniformContinuous_id.prod_mk uniformContinuous_const)
 
 theorem UniformContinuous.prod_mk_right {f : α × β → γ} (h : UniformContinuous f) (a) :
-    UniformContinuous fun b => f (a, b) :=
+    UniformContinuous fun b ↦ f (a, b) :=
   h.comp (uniformContinuous_const.prod_mk uniformContinuous_id)
 
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}

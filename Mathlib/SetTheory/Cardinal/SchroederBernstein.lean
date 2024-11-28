@@ -123,7 +123,7 @@ end Wo
 instance. -/
 -- Porting note: `ULift.{max u v, u} α` was `ULift α`
 theorem total (α : Type u) (β : Type v) : Nonempty (α ↪ β) ∨ Nonempty (β ↪ α) :=
-  match @min_injective Bool (fun b => cond b (ULift.{max u v, u} α) (ULift.{max u v, v} β)) ⟨true⟩
+  match @min_injective Bool (fun b ↦ cond b (ULift.{max u v, u} α) (ULift.{max u v, v} β)) ⟨true⟩
     with
   | ⟨true, ⟨h⟩⟩ =>
     let ⟨f, hf⟩ := h false

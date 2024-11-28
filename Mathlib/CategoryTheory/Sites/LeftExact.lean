@@ -87,12 +87,12 @@ instance preservesLimit_diagramFunctor
         fac := by
           intro E k
           dsimp [diagramNatTrans]
-          refine Multiequalizer.hom_ext _ _ _ (fun a => ?_)
+          refine Multiequalizer.hom_ext _ _ _ (fun a ↦ ?_)
           simp only [Multiequalizer.lift_ι, Multiequalizer.lift_ι_assoc, Category.assoc,
             liftToDiagramLimitObjAux_fac]
         uniq := by
           intro E m hm
-          refine Multiequalizer.hom_ext _ _ _ (fun a => limit_obj_ext (fun j => ?_))
+          refine Multiequalizer.hom_ext _ _ _ (fun a ↦ limit_obj_ext (fun j => ?_))
           dsimp [liftToDiagramLimitObj]
           rw [Multiequalizer.lift_ι, Category.assoc, liftToDiagramLimitObjAux_fac, ← hm,
             Category.assoc]

@@ -667,8 +667,8 @@ theorem Measurable.snd {f : α → β × γ} (hf : Measurable f) : Measurable fu
   measurable_snd.comp hf
 
 @[measurability]
-theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a).1)
-    (hf₂ : Measurable fun a => (f a).2) : Measurable f :=
+theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a ↦ (f a).1)
+    (hf₂ : Measurable fun a ↦ (f a).2) : Measurable f :=
   Measurable.of_le_map <|
     sup_le
       (by
@@ -703,7 +703,7 @@ theorem Measurable.of_uncurry_right {f : α → β → γ} (hf : Measurable (unc
   hf.comp measurable_prod_mk_right
 
 theorem measurable_prod {f : α → β × γ} :
-    Measurable f ↔ (Measurable fun a => (f a).1) ∧ Measurable fun a => (f a).2 :=
+    Measurable f ↔ (Measurable fun a ↦ (f a).1) ∧ Measurable fun a ↦ (f a).2 :=
   ⟨fun hf => ⟨measurable_fst.comp hf, measurable_snd.comp hf⟩, fun h => Measurable.prod h.1 h.2⟩
 
 @[fun_prop, measurability]
@@ -822,7 +822,7 @@ section Pi
 variable {π : δ → Type*} [MeasurableSpace α]
 
 instance MeasurableSpace.pi [m : ∀ a, MeasurableSpace (π a)] : MeasurableSpace (∀ a, π a) :=
-  ⨆ a, (m a).comap fun b => b a
+  ⨆ a, (m a).comap fun b ↦ b a
 
 variable [∀ a, MeasurableSpace (π a)] [MeasurableSpace γ]
 
@@ -1394,7 +1394,7 @@ theorem coe_insert [MeasurableSingletonClass α] (a : α)
 
 instance Subtype.instSingleton [MeasurableSingletonClass α] :
     Singleton α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun a => ⟨{a}, .singleton _⟩⟩
+  ⟨fun a ↦ ⟨{a}, .singleton _⟩⟩
 
 @[simp] theorem coe_singleton [MeasurableSingletonClass α] (a : α) :
     ↑({a} : Subtype (MeasurableSet : Set α → Prop)) = ({a} : Set α) :=

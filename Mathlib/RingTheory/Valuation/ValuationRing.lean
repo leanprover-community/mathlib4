@@ -104,7 +104,7 @@ instance : Mul (ValueGroup A K) :=
 
 instance : Inv (ValueGroup A K) :=
   Inv.mk fun x =>
-    Quotient.liftOn' x (fun a => Quotient.mk'' a⁻¹)
+    Quotient.liftOn' x (fun a ↦ Quotient.mk'' a⁻¹)
       (by
         rintro _ a ⟨b, rfl⟩
         apply Quotient.sound'
@@ -224,7 +224,7 @@ theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, a
 noncomputable def equivInteger : A ≃+* (valuation A K).integer :=
   RingEquiv.ofBijective
     (show A →ₙ+* (valuation A K).integer from
-      { toFun := fun a => ⟨algebraMap A K a, (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩⟩
+      { toFun := fun a ↦ ⟨algebraMap A K a, (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩⟩
         map_mul' := fun _ _ => by ext1; exact (algebraMap A K).map_mul _ _
         map_zero' := by ext1; exact (algebraMap A K).map_zero
         map_add' := fun _ _ => by ext1; exact (algebraMap A K).map_add _ _ })

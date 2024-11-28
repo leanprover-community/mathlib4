@@ -229,7 +229,7 @@ nonrec theorem comap_comap (f : Ultrafilter γ) {m : α → β} {n : β → γ} 
 
 /-- The principal ultrafilter associated to a point `x`. -/
 instance : Pure Ultrafilter :=
-  ⟨fun a => ofComplNotMemIff (pure a) fun s => by simp⟩
+  ⟨fun a ↦ ofComplNotMemIff (pure a) fun s => by simp⟩
 
 @[simp]
 theorem mem_pure {a : α} {s : Set α} : s ∈ (pure a : Ultrafilter α) ↔ a ∈ s :=

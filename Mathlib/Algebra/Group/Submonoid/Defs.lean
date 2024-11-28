@@ -262,7 +262,7 @@ theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
 
 @[to_additive]
 instance [Subsingleton M] : Unique (Submonoid M) :=
-  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
+  ⟨⟨⊥⟩, fun a ↦ @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
 
 @[to_additive]
 instance [Nontrivial M] : Nontrivial (Submonoid M) :=

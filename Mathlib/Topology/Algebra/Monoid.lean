@@ -147,25 +147,25 @@ variable {𝕜 : Type*} [Preorder 𝕜] [Zero 𝕜] [Mul 𝕜] [TopologicalSpace
 include hb
 
 theorem Filter.TendstoNhdsWithinIoi.const_mul [PosMulStrictMono 𝕜] [PosMulReflectLT 𝕜]
-    (h : Tendsto f l (𝓝[>] c)) : Tendsto (fun a => b * f a) l (𝓝[>] (b * c)) :=
+    (h : Tendsto f l (𝓝[>] c)) : Tendsto (fun a ↦ b * f a) l (𝓝[>] (b * c)) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       ((tendsto_nhds_of_tendsto_nhdsWithin h).const_mul b) <|
     (tendsto_nhdsWithin_iff.mp h).2.mono fun _ => (mul_lt_mul_left hb).mpr
 
 theorem Filter.TendstoNhdsWithinIio.const_mul [PosMulStrictMono 𝕜] [PosMulReflectLT 𝕜]
-    (h : Tendsto f l (𝓝[<] c)) : Tendsto (fun a => b * f a) l (𝓝[<] (b * c)) :=
+    (h : Tendsto f l (𝓝[<] c)) : Tendsto (fun a ↦ b * f a) l (𝓝[<] (b * c)) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       ((tendsto_nhds_of_tendsto_nhdsWithin h).const_mul b) <|
     (tendsto_nhdsWithin_iff.mp h).2.mono fun _ => (mul_lt_mul_left hb).mpr
 
 theorem Filter.TendstoNhdsWithinIoi.mul_const [MulPosStrictMono 𝕜] [MulPosReflectLT 𝕜]
-    (h : Tendsto f l (𝓝[>] c)) : Tendsto (fun a => f a * b) l (𝓝[>] (c * b)) :=
+    (h : Tendsto f l (𝓝[>] c)) : Tendsto (fun a ↦ f a * b) l (𝓝[>] (c * b)) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       ((tendsto_nhds_of_tendsto_nhdsWithin h).mul_const b) <|
     (tendsto_nhdsWithin_iff.mp h).2.mono fun _ => (mul_lt_mul_right hb).mpr
 
 theorem Filter.TendstoNhdsWithinIio.mul_const [MulPosStrictMono 𝕜] [MulPosReflectLT 𝕜]
-    (h : Tendsto f l (𝓝[<] c)) : Tendsto (fun a => f a * b) l (𝓝[<] (c * b)) :=
+    (h : Tendsto f l (𝓝[<] c)) : Tendsto (fun a ↦ f a * b) l (𝓝[<] (c * b)) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       ((tendsto_nhds_of_tendsto_nhdsWithin h).mul_const b) <|
     (tendsto_nhdsWithin_iff.mp h).2.mono fun _ => (mul_lt_mul_right hb).mpr
@@ -548,7 +548,7 @@ theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
 theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
     ∀ l : List ι,
       (∀ i ∈ l, Tendsto (f i) x (𝓝 (a i))) →
-        Tendsto (fun b => (l.map fun c => f c b).prod) x (𝓝 (l.map a).prod)
+        Tendsto (fun b ↦ (l.map fun c => f c b).prod) x (𝓝 (l.map a).prod)
   | [], _ => by simp [tendsto_const_nhds]
   | f::l, h => by
     simp only [List.map_cons, List.prod_cons]
@@ -558,14 +558,14 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
 
 @[to_additive (attr := continuity)]
 theorem continuous_list_prod {f : ι → X → M} (l : List ι) (h : ∀ i ∈ l, Continuous (f i)) :
-    Continuous fun a => (l.map fun i => f i a).prod :=
+    Continuous fun a ↦ (l.map fun i => f i a).prod :=
   continuous_iff_continuousAt.2 fun x =>
     tendsto_list_prod l fun c hc => continuous_iff_continuousAt.1 (h c hc) x
 
 @[to_additive]
 theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
     (h : ∀ i ∈ l, ContinuousOn (f i) t) :
-    ContinuousOn (fun a => (l.map fun i => f i a).prod) t := by
+    ContinuousOn (fun a ↦ (l.map fun i => f i a).prod) t := by
   intro x hx
   rw [continuousWithinAt_iff_continuousAt_restrict _ hx]
   refine tendsto_list_prod _ fun i hi => ?_
@@ -598,7 +598,7 @@ instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
 -- lemmas with reducible transparency, preventing the unfolding of `^`. But this
 -- is quite an invasive change.
 @[to_additive (attr := aesop safe -100 (rule_sets := [Continuous]), fun_prop)]
-theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
+theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b ↦ f b ^ n :=
   (continuous_pow n).comp h
 
 @[to_additive]
@@ -722,36 +722,36 @@ variable [ContinuousMul M]
 @[to_additive]
 theorem tendsto_multiset_prod {f : ι → α → M} {x : Filter α} {a : ι → M} (s : Multiset ι) :
     (∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) →
-      Tendsto (fun b => (s.map fun c => f c b).prod) x (𝓝 (s.map a).prod) := by
+      Tendsto (fun b ↦ (s.map fun c => f c b).prod) x (𝓝 (s.map a).prod) := by
   rcases s with ⟨l⟩
   simpa using tendsto_list_prod l
 
 @[to_additive]
 theorem tendsto_finset_prod {f : ι → α → M} {x : Filter α} {a : ι → M} (s : Finset ι) :
     (∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) →
-      Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) :=
+      Tendsto (fun b ↦ ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) :=
   tendsto_multiset_prod _
 
 @[to_additive (attr := continuity)]
 theorem continuous_multiset_prod {f : ι → X → M} (s : Multiset ι) :
-    (∀ i ∈ s, Continuous (f i)) → Continuous fun a => (s.map fun i => f i a).prod := by
+    (∀ i ∈ s, Continuous (f i)) → Continuous fun a ↦ (s.map fun i => f i a).prod := by
   rcases s with ⟨l⟩
   simpa using continuous_list_prod l
 
 @[to_additive]
 theorem continuousOn_multiset_prod {f : ι → X → M} (s : Multiset ι) {t : Set X} :
-    (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a => (s.map fun i => f i a).prod) t := by
+    (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a ↦ (s.map fun i => f i a).prod) t := by
   rcases s with ⟨l⟩
   simpa using continuousOn_list_prod l
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_finset_prod {f : ι → X → M} (s : Finset ι) :
-    (∀ i ∈ s, Continuous (f i)) → Continuous fun a => ∏ i ∈ s, f i a :=
+    (∀ i ∈ s, Continuous (f i)) → Continuous fun a ↦ ∏ i ∈ s, f i a :=
   continuous_multiset_prod _
 
 @[to_additive]
 theorem continuousOn_finset_prod {f : ι → X → M} (s : Finset ι) {t : Set X} :
-    (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a => ∏ i ∈ s, f i a) t :=
+    (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a ↦ ∏ i ∈ s, f i a) t :=
   continuousOn_multiset_prod _
 
 @[to_additive]
@@ -824,7 +824,7 @@ theorem continuousMul_iInf {ts : ι' → TopologicalSpace M}
 theorem continuousMul_inf {t₁ t₂ : TopologicalSpace M} (h₁ : @ContinuousMul M t₁ _)
     (h₂ : @ContinuousMul M t₂ _) : @ContinuousMul M (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine continuousMul_iInf fun b => ?_
+  refine continuousMul_iInf fun b ↦ ?_
   cases b <;> assumption
 
 end LatticeOps

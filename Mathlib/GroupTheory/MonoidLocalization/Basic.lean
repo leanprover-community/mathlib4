@@ -1294,7 +1294,7 @@ namespace Localization
 variable {α : Type*} [CancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
-theorem mk_left_injective (b : s) : Injective fun a => mk a b := fun c d h => by
+theorem mk_left_injective (b : s) : Injective fun a ↦ mk a b := fun c d h => by
   simpa [mk_eq_mk_iff, r_iff_exists] using h
 
 @[to_additive]

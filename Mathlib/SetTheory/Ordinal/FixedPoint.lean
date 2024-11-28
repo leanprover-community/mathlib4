@@ -393,7 +393,7 @@ theorem derivBFamily_eq_enumOrd (H : ∀ i hi, IsNormal (f i hi)) :
   rw [eq_comm, eq_enumOrd _ (not_bddAbove_fp_bfamily H)]
   use (isNormal_derivBFamily f).strictMono
   rw [Set.range_eq_iff]
-  refine ⟨fun a => Set.mem_iInter₂.2 fun i hi => derivBFamily_fp (H i hi) a, fun a ha => ?_⟩
+  refine ⟨fun a ↦ Set.mem_iInter₂.2 fun i hi => derivBFamily_fp (H i hi) a, fun a ha => ?_⟩
   rw [Set.mem_iInter₂] at ha
   rwa [← fp_iff_derivBFamily H]
 

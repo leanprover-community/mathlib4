@@ -87,7 +87,7 @@ maps. E.g., if `M = R`, then it suffices to verify `φ (single a 1) = ψ (single
 @[ext high]
 theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a, φ.comp (lsingle a) = ψ.comp (lsingle a)) :
     φ = ψ :=
-  lhom_ext fun a => LinearMap.congr_fun (h a)
+  lhom_ext fun a ↦ LinearMap.congr_fun (h a)
 
 /-- Interpret `fun f : α →₀ M ↦ f a` as a linear map. -/
 def lapply (a : α) : (α →₀ M) →ₗ[R] M :=

@@ -66,7 +66,7 @@ instance [AddGroup R] [TopologicalAddGroup R] : TopologicalAddGroup (Matrix m n 
 resulting matrix are continuous -/
 @[continuity]
 theorem continuous_matrix [TopologicalSpace α] {f : α → Matrix m n R}
-    (h : ∀ i j, Continuous fun a => f a i j) : Continuous f :=
+    (h : ∀ i j, Continuous fun a ↦ f a i j) : Continuous f :=
   continuous_pi fun _ => continuous_pi fun _ => h _ _
 
 theorem Continuous.matrix_elem {A : X → Matrix m n R} (hA : Continuous A) (i : m) (j : n) :

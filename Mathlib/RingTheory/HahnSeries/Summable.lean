@@ -85,7 +85,7 @@ theorem isPWO_iUnion_support (s : SummableFamily Γ R α) : Set.IsPWO (⋃ a : �
   s.isPWO_iUnion_support'
 
 theorem finite_co_support (s : SummableFamily Γ R α) (g : Γ) :
-    (Function.support fun a => (s a).coeff g).Finite :=
+    (Function.support fun a ↦ (s a).coeff g).Finite :=
   s.finite_co_support' g
 
 theorem coe_injective : @Function.Injective (SummableFamily Γ R α) (α → HahnSeries Γ R) (⇑) :=
@@ -102,7 +102,7 @@ instance : Add (SummableFamily Γ R α) :=
         (x.isPWO_iUnion_support.union y.isPWO_iUnion_support).mono
           (by
             rw [← Set.iUnion_union_distrib]
-            exact Set.iUnion_mono fun a => support_add_subset)
+            exact Set.iUnion_mono fun a ↦ support_add_subset)
       finite_co_support' := fun g =>
         ((x.finite_co_support g).union (y.finite_co_support g)).subset
           (by
@@ -234,7 +234,7 @@ variable [PartialOrder Γ] [AddCommGroup R] {s t : SummableFamily Γ R α} {a : 
 
 instance : Neg (SummableFamily Γ R α) :=
   ⟨fun s =>
-    { toFun := fun a => -s a
+    { toFun := fun a ↦ -s a
       isPWO_iUnion_support' := by
         simp_rw [support_neg]
         exact s.isPWO_iUnion_support
@@ -245,7 +245,7 @@ instance : Neg (SummableFamily Γ R α) :=
 instance : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
     zsmul := zsmulRec
-    neg_add_cancel := fun a => by
+    neg_add_cancel := fun a ↦ by
       ext
       apply neg_add_cancel }
 
@@ -301,7 +301,7 @@ theorem isPWO_iUnion_support_prod_smul {s : α → HahnSeries Γ R} {t : β → 
     contrapose! hx
     simp only [Set.mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
     rw [mem_support, not_not, HahnModule.smul_coeff, hx, sum_empty]
-  refine Set.Subset.trans (Set.iUnion_mono fun a => (hsupp a)) ?_
+  refine Set.Subset.trans (Set.iUnion_mono fun a ↦ (hsupp a)) ?_
   simp_all only [Set.iUnion_subset_iff, Prod.forall]
   exact fun a b => Set.vadd_subset_vadd (Set.subset_iUnion_of_subset a fun x y ↦ y)
     (Set.subset_iUnion_of_subset b fun x y ↦ y)
@@ -512,7 +512,7 @@ theorem hsum_embDomain : (s.embDomain f).hsum = s.hsum := by
   classical
   ext g
   simp only [hsum_coeff, embDomain_apply, apply_dite HahnSeries.coeff, dite_apply, zero_coeff]
-  exact finsum_emb_domain f fun a => (s a).coeff g
+  exact finsum_emb_domain f fun a ↦ (s a).coeff g
 
 end EmbDomain
 

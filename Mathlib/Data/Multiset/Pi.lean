@@ -103,7 +103,7 @@ variable {α : Type*} [DecidableEq α] {β : α → Type*}
 /-- `pi m t` constructs the Cartesian product over `t` indexed by `m`. -/
 def pi (m : Multiset α) (t : ∀ a, Multiset (β a)) : Multiset (∀ a ∈ m, β a) :=
   m.recOn {Pi.empty β}
-    (fun a m (p : Multiset (∀ a ∈ m, β a)) => (t a).bind fun b => p.map <| Pi.cons m a b)
+    (fun a m (p : Multiset (∀ a ∈ m, β a)) => (t a).bind fun b ↦ p.map <| Pi.cons m a b)
     (by
       intro a a' m n
       by_cases eq : a = a'
@@ -126,11 +126,11 @@ theorem pi_zero (t : ∀ a, Multiset (β a)) : pi 0 t = {Pi.empty β} :=
 
 @[simp]
 theorem pi_cons (m : Multiset α) (t : ∀ a, Multiset (β a)) (a : α) :
-    pi (a ::ₘ m) t = (t a).bind fun b => (pi m t).map <| Pi.cons m a b :=
+    pi (a ::ₘ m) t = (t a).bind fun b ↦ (pi m t).map <| Pi.cons m a b :=
   recOn_cons a m
 
 theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
-    card (pi m t) = prod (m.map fun a => card (t a)) :=
+    card (pi m t) = prod (m.map fun a ↦ card (t a)) :=
   Multiset.induction_on m (by simp) (by simp +contextual [mul_comm])
 
 protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :

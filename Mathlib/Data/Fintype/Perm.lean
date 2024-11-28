@@ -31,7 +31,7 @@ variable [DecidableEq α] [DecidableEq β]
 /-- Given a list, produce a list of all permutations of its elements. -/
 def permsOfList : List α → List (Perm α)
   | [] => [1]
-  | a :: l => permsOfList l ++ l.flatMap fun b => (permsOfList l).map fun f => Equiv.swap a b * f
+  | a :: l => permsOfList l ++ l.flatMap fun b ↦ (permsOfList l).map fun f => Equiv.swap a b * f
 
 theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length !
   | [] => rfl

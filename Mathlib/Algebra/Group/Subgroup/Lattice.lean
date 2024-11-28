@@ -291,7 +291,7 @@ theorem nontrivial_iff : Nontrivial (Subgroup G) ↔ Nontrivial G :=
 
 @[to_additive]
 instance [Subsingleton G] : Unique (Subgroup G) :=
-  ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
+  ⟨⟨⊥⟩, fun a ↦ @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
 
 @[to_additive]
 instance [Nontrivial G] : Nontrivial (Subgroup G) :=

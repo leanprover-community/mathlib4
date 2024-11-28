@@ -102,7 +102,7 @@ theorem eval_continuous (y : F) : Continuous fun x : WeakBilin B => B x y :=
   (continuous_pi_iff.mp (coeFn_continuous B)) y
 
 theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakBilin B}
-    (h : ∀ y, Continuous fun a => B (g a) y) : Continuous g :=
+    (h : ∀ y, Continuous fun a ↦ B (g a) y) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 
 /-- The coercion `(fun x y => B x y) : E → (F → 𝕜)` is an embedding. -/

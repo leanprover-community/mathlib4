@@ -291,7 +291,7 @@ theorem parallel_empty (S : WSeq (Computation α)) (h : S.head ~> none) : parall
 -- The reason this isn't trivial from exists_of_mem_parallel is because it eliminates to Sort
 def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S, ∀ a ∈ s, C a) {a}
     (h : a ∈ parallel S) : C a := by
-  let T : WSeq (Computation (α × Computation α)) := S.map fun c => c.map fun a => (a, c)
+  let T : WSeq (Computation (α × Computation α)) := S.map fun c => c.map fun a ↦ (a, c)
   have : S = T.map (map fun c => c.1) := by
     rw [← WSeq.map_comp]
     refine (WSeq.map_id _).symm.trans (congr_arg (fun f => WSeq.map f S) ?_)

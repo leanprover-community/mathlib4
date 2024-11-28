@@ -335,7 +335,7 @@ theorem models_formula_iff_onTheory_models_equivSentence {φ : L.Formula α} :
     rw [Formula.realize_equivSentence]
     have : M ⊨ T := (LHom.onTheory_model _ _).1 M.is_model -- why isn't M.is_model inferInstance?
     let M' := Theory.ModelType.of T M
-    exact h M' (fun a => (L.con a : M)) _
+    exact h M' (fun a ↦ (L.con a : M)) _
   · letI : (constantsOn α).Structure M := constantsOn.structure v
     have : M ⊨ (L.lhomWithConstants α).onTheory T := (LHom.onTheory_model _ _).2 inferInstance
     exact (Formula.realize_equivSentence _ _).1 (h.realize_sentence M)

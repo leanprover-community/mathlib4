@@ -214,7 +214,7 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
   exact (hf.image_preimage _).symm
 
 theorem isBounded_of_image2_left (f : α → β → γ) {K₁ : ℝ≥0}
-    (hf : ∀ b, AntilipschitzWith K₁ fun a => f a b) {s : Set α} {t : Set β}
+    (hf : ∀ b, AntilipschitzWith K₁ fun a ↦ f a b) {s : Set α} {t : Set β}
     (hst : IsBounded (Set.image2 f s t)) : IsBounded s ∨ IsBounded t := by
   contrapose! hst
   obtain ⟨b, hb⟩ : t.Nonempty := nonempty_of_not_isBounded hst.2

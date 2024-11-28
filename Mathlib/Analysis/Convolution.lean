@@ -930,7 +930,7 @@ variable [NormedAddCommGroup G] [BorelSpace G]
 
 theorem convolution_precompR_apply {g : G → E'' →L[𝕜] E'} (hf : LocallyIntegrable f μ)
     (hcg : HasCompactSupport g) (hg : Continuous g) (x₀ : G) (x : E'') :
-    (f ⋆[L.precompR E'', μ] g) x₀ x = (f ⋆[L, μ] fun a => g a x) x₀ := by
+    (f ⋆[L.precompR E'', μ] g) x₀ x = (f ⋆[L, μ] fun a ↦ g a x) x₀ := by
   have := hcg.convolutionExists_right (L.precompR E'' : _) hf hg x₀
   simp_rw [convolution_def, ContinuousLinearMap.integral_apply this]
   rfl
@@ -1120,7 +1120,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       ‖L.precompR (P × G) (f a) (g' (x.fst, x.snd - a))‖ ≤ bound a := by
     filter_upwards with a x hx
     rw [Prod.dist_eq, dist_eq_norm, dist_eq_norm] at hx
-    have : (-tsupport fun a => g' (x.1, a)) + ball q₀.2 δ ⊆ U := by
+    have : (-tsupport fun a ↦ g' (x.1, a)) + ball q₀.2 δ ⊆ U := by
       apply Subset.trans _ hδ
       rw [K'_def, add_assoc]
       apply add_subset_add

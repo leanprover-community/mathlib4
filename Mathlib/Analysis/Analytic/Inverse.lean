@@ -491,12 +491,12 @@ theorem radius_rightInv_pos_of_radius_pos
     ∃ (a : _) (apos : 0 < a),
       2 * I * C * r ^ 2 * (I + 1) ^ 2 * a ≤ 1 ∧ r * (I + 1) * a ≤ 1 / 2 := by
     have :
-      Tendsto (fun a => 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a) (𝓝 0)
+      Tendsto (fun a ↦ 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a) (𝓝 0)
         (𝓝 (2 * I * C * r ^ 2 * (I + 1) ^ 2 * 0)) :=
       tendsto_const_nhds.mul tendsto_id
     have A : ∀ᶠ a in 𝓝 0, 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a < 1 := by
       apply (tendsto_order.1 this).2; simp [zero_lt_one]
-    have : Tendsto (fun a => r * (I + 1) * a) (𝓝 0) (𝓝 (r * (I + 1) * 0)) :=
+    have : Tendsto (fun a ↦ r * (I + 1) * a) (𝓝 0) (𝓝 (r * (I + 1) * 0)) :=
       tendsto_const_nhds.mul tendsto_id
     have B : ∀ᶠ a in 𝓝 0, r * (I + 1) * a < 1 / 2 := by
       apply (tendsto_order.1 this).2; simp [zero_lt_one]

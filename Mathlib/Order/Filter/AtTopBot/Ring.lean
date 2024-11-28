@@ -69,12 +69,12 @@ variable [LinearOrderedSemiring α] {l : Filter β} {f : β → α}
 
 theorem Tendsto.atTop_of_const_mul {c : α} (hc : 0 < c) (hf : Tendsto (fun x => c * f x) l atTop) :
     Tendsto f l atTop :=
-  tendsto_atTop.2 fun b => (tendsto_atTop.1 hf (c * b)).mono
+  tendsto_atTop.2 fun b ↦ (tendsto_atTop.1 hf (c * b)).mono
     fun _x hx => le_of_mul_le_mul_left hx hc
 
 theorem Tendsto.atTop_of_mul_const {c : α} (hc : 0 < c) (hf : Tendsto (fun x => f x * c) l atTop) :
     Tendsto f l atTop :=
-  tendsto_atTop.2 fun b => (tendsto_atTop.1 hf (b * c)).mono
+  tendsto_atTop.2 fun b ↦ (tendsto_atTop.1 hf (b * c)).mono
     fun _x hx => le_of_mul_le_mul_right hx hc
 
 @[simp]

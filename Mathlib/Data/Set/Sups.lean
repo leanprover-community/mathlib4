@@ -83,7 +83,7 @@ theorem sups_subset_left : t₁ ⊆ t₂ → s ⊻ t₁ ⊆ s ⊻ t₂ :=
 theorem sups_subset_right : s₁ ⊆ s₂ → s₁ ⊻ t ⊆ s₂ ⊻ t :=
   image2_subset_right
 
-theorem image_subset_sups_left : b ∈ t → (fun a => a ⊔ b) '' s ⊆ s ⊻ t :=
+theorem image_subset_sups_left : b ∈ t → (fun a ↦ a ⊔ b) '' s ⊆ s ⊻ t :=
   image_subset_image2_left
 
 theorem image_subset_sups_right : a ∈ s → (· ⊔ ·) a '' t ⊆ s ⊻ t :=
@@ -122,11 +122,11 @@ theorem sups_eq_empty : s ⊻ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image2_eq_empty_iff
 
 @[simp]
-theorem singleton_sups : {a} ⊻ t = t.image fun b => a ⊔ b :=
+theorem singleton_sups : {a} ⊻ t = t.image fun b ↦ a ⊔ b :=
   image2_singleton_left
 
 @[simp]
-theorem sups_singleton : s ⊻ {b} = s.image fun a => a ⊔ b :=
+theorem sups_singleton : s ⊻ {b} = s.image fun a ↦ a ⊔ b :=
   image2_singleton_right
 
 theorem singleton_sups_singleton : ({a} ⊻ {b} : Set α) = {a ⊔ b} :=
@@ -213,7 +213,7 @@ theorem infs_subset_left : t₁ ⊆ t₂ → s ⊼ t₁ ⊆ s ⊼ t₂ :=
 theorem infs_subset_right : s₁ ⊆ s₂ → s₁ ⊼ t ⊆ s₂ ⊼ t :=
   image2_subset_right
 
-theorem image_subset_infs_left : b ∈ t → (fun a => a ⊓ b) '' s ⊆ s ⊼ t :=
+theorem image_subset_infs_left : b ∈ t → (fun a ↦ a ⊓ b) '' s ⊆ s ⊼ t :=
   image_subset_image2_left
 
 theorem image_subset_infs_right : a ∈ s → (a ⊓ ·) '' t ⊆ s ⊼ t :=
@@ -252,11 +252,11 @@ theorem infs_eq_empty : s ⊼ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image2_eq_empty_iff
 
 @[simp]
-theorem singleton_infs : {a} ⊼ t = t.image fun b => a ⊓ b :=
+theorem singleton_infs : {a} ⊼ t = t.image fun b ↦ a ⊓ b :=
   image2_singleton_left
 
 @[simp]
-theorem infs_singleton : s ⊼ {b} = s.image fun a => a ⊓ b :=
+theorem infs_singleton : s ⊼ {b} = s.image fun a ↦ a ⊓ b :=
   image2_singleton_right
 
 theorem singleton_infs_singleton : ({a} ⊼ {b} : Set α) = {a ⊓ b} :=

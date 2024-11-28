@@ -193,7 +193,7 @@ theorem exists_measurable_superset_forall_eq [Countable ι] (μ : ι → Measure
 theorem exists_measurable_superset₂ (μ ν : Measure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = μ s ∧ ν t = ν s := by
   simpa only [Bool.forall_bool.trans and_comm] using
-    exists_measurable_superset_forall_eq (fun b => cond b μ ν) s
+    exists_measurable_superset_forall_eq (fun b ↦ cond b μ ν) s
 
 theorem exists_measurable_superset_of_null (h : μ s = 0) : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = 0 :=
   h ▸ exists_measurable_superset μ s

@@ -791,10 +791,10 @@ theorem mk_sum {ι : Type*} (f : ι → R) (s : Finset ι) (b : M) :
     mk (∑ i ∈ s, f i) b = ∑ i ∈ s, mk (f i) b :=
   map_sum (mkAddMonoidHom b) f s
 
-theorem mk_list_sum (l : List R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
+theorem mk_list_sum (l : List R) (b : M) : mk l.sum b = (l.map fun a ↦ mk a b).sum :=
   map_list_sum (mkAddMonoidHom b) l
 
-theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => mk a b).sum :=
+theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a ↦ mk a b).sum :=
   (mkAddMonoidHom b).map_multiset_sum l
 
 instance isLocalization : IsLocalization M (Localization M) where

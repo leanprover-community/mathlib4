@@ -169,7 +169,7 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
     exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl
 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
-  ⟨fun a => have := a.isWellFounded; Subsingleton.elim a⟩
+  ⟨fun a ↦ have := a.isWellFounded; Subsingleton.elim a⟩
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
@@ -365,7 +365,7 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
 
 /-- Composition of a principal segment with an initial segment, as a principal segment -/
 def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
-  ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
+  ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a ↦ by
     simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
 
 @[simp]
@@ -522,7 +522,7 @@ end PrincipalSeg
 theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ (α : Type u) (r : α → α → Prop) (_ : r ≺i s), WellFounded r :=
   ⟨fun wf _ _ f => RelHomClass.wellFounded f.toRelEmbedding wf, fun h =>
-    wellFounded_iff_wellFounded_subrel.mpr fun b => h _ _ (PrincipalSeg.ofElement s b)⟩
+    wellFounded_iff_wellFounded_subrel.mpr fun b ↦ h _ _ (PrincipalSeg.ofElement s b)⟩
 
 /-! ### Properties of initial and principal segments -/
 
@@ -614,12 +614,12 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
   | Sum.inl f, Sum.inl g => Classical.choice <| by
       obtain h | h | h := trichotomous_of (Sum.Lex r s) f.top g.top
       · exact ⟨Sum.inl <| (f.codRestrict {x | Sum.Lex r s x g.top}
-          (fun a => _root_.trans (f.lt_top a) h) h).transRelIso g.subrelIso⟩
+          (fun a ↦ _root_.trans (f.lt_top a) h) h).transRelIso g.subrelIso⟩
       · let f := f.subrelIso
         rw [h] at f
         exact ⟨Sum.inl <| (f.symm.trans g.subrelIso).toInitialSeg⟩
       · exact ⟨Sum.inr <| (g.codRestrict {x | Sum.Lex r s x f.top}
-          (fun a => _root_.trans (g.lt_top a) h) h).transRelIso f.subrelIso⟩
+          (fun a ↦ _root_.trans (g.lt_top a) h) h).transRelIso f.subrelIso⟩
 
 /-! ### Initial or principal segments with `<` -/
 

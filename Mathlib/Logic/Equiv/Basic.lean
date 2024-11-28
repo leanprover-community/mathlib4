@@ -151,7 +151,7 @@ section
 /-- `PUnit` is a right identity for type product up to an equivalence. -/
 @[simps]
 def prodPUnit (α) : α × PUnit ≃ α :=
-  ⟨fun p => p.1, fun a => (a, PUnit.unit), fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
+  ⟨fun p => p.1, fun a ↦ (a, PUnit.unit), fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
 
 /-- `PUnit` is a left identity for type product up to an equivalence. -/
 @[simps!]
@@ -163,7 +163,7 @@ def punitProd (α) : PUnit × α ≃ α :=
 /-- `PUnit` is a right identity for dependent type product up to an equivalence. -/
 @[simps]
 def sigmaPUnit (α) : (_ : α) × PUnit ≃ α :=
-  ⟨fun p => p.1, fun a => ⟨a, PUnit.unit⟩, fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
+  ⟨fun p => p.1, fun a ↦ ⟨a, PUnit.unit⟩, fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
 
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
 def prodUnique (α β) [Unique β] : α × β ≃ α :=
@@ -323,8 +323,8 @@ end Perm
 
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
 def boolEquivPUnitSumPUnit : Bool ≃ PUnit.{u + 1} ⊕ PUnit.{v + 1} :=
-  ⟨fun b => b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
-    fun b => by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
+  ⟨fun b ↦ b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
+    fun b ↦ by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/
 @[simps (config := .asFn) apply]
@@ -450,9 +450,9 @@ product over `α` of `β (some α)` and `β none` -/
 @[simps]
 def piOptionEquivProd {α} {β : Option α → Type*} :
     (∀ a : Option α, β a) ≃ β none × ∀ a : α, β (some a) where
-  toFun f := (f none, fun a => f (some a))
+  toFun f := (f none, fun a ↦ f (some a))
   invFun x a := Option.casesOn a x.fst x.snd
-  left_inv f := funext fun a => by cases a <;> rfl
+  left_inv f := funext fun a ↦ by cases a <;> rfl
   right_inv x := by simp
 
 /-- `α ⊕ β` is equivalent to a `Sigma`-type over `Bool`. Note that this definition assumes `α` and
@@ -599,10 +599,10 @@ is naturally equivalent to the type of functions `{a // ¬ p a} → β`. -/
 @[simps]
 def subtypePreimage : { x : α → β // x ∘ Subtype.val = x₀ } ≃ ({ a // ¬p a } → β) where
   toFun (x : { x : α → β // x ∘ Subtype.val = x₀ }) a := (x : α → β) a
-  invFun x := ⟨fun a => if h : p a then x₀ ⟨a, h⟩ else x ⟨a, h⟩, funext fun ⟨_, h⟩ => dif_pos h⟩
+  invFun x := ⟨fun a ↦ if h : p a then x₀ ⟨a, h⟩ else x ⟨a, h⟩, funext fun ⟨_, h⟩ => dif_pos h⟩
   left_inv := fun ⟨x, hx⟩ =>
     Subtype.val_injective <|
-      funext fun a => by
+      funext fun a ↦ by
         dsimp only
         split_ifs
         · rw [← hx]; rfl
@@ -1036,7 +1036,7 @@ theorem subtypeEquiv_refl {p : α → Prop} (h : ∀ a, p a ↔ p (Equiv.refl _ 
 @[simp]
 theorem subtypeEquiv_symm {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h : ∀ a : α, p a ↔ q (e a)) :
     (e.subtypeEquiv h).symm =
-      e.symm.subtypeEquiv fun a => by
+      e.symm.subtypeEquiv fun a ↦ by
         convert (h <| e.symm a).symm
         exact (e.apply_symm_apply a).symm :=
   rfl
@@ -1045,7 +1045,7 @@ theorem subtypeEquiv_symm {p : α → Prop} {q : β → Prop} (e : α ≃ β) (h
 theorem subtypeEquiv_trans {p : α → Prop} {q : β → Prop} {r : γ → Prop} (e : α ≃ β) (f : β ≃ γ)
     (h : ∀ a : α, p a ↔ q (e a)) (h' : ∀ b : β, q b ↔ r (f b)) :
     (e.subtypeEquiv h).trans (f.subtypeEquiv h')
-    = (e.trans f).subtypeEquiv fun a => (h a).trans (h' <| e a) :=
+    = (e.trans f).subtypeEquiv fun a ↦ (h a).trans (h' <| e a) :=
   rfl
 
 @[simp]
@@ -1090,7 +1090,7 @@ def subtypeSubtypeEquivSubtypeExists (p : α → Prop) (q : Subtype p → Prop) 
     ⟨a.1, a.1.2, by
       rcases a with ⟨⟨a, hap⟩, haq⟩
       exact haq⟩,
-    fun a => ⟨⟨a, a.2.fst⟩, a.2.snd⟩, fun ⟨⟨_, _⟩, _⟩ => rfl, fun ⟨_, _, _⟩ => rfl⟩
+    fun a ↦ ⟨⟨a, a.2.fst⟩, a.2.snd⟩, fun ⟨⟨_, _⟩, _⟩ => rfl, fun ⟨_, _, _⟩ => rfl⟩
 
 /-- A subtype of a subtype is equivalent to the subtype of elements satisfying both predicates. -/
 @[simps!]
@@ -1178,7 +1178,7 @@ to the type of functions `∀ a, {b : β a // p a b}`. -/
 def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
     { f : ∀ a, β a // ∀ a, p a (f a) } ≃ ∀ a, { b : β a // p a b } where
   toFun := fun f a => ⟨f.1 a, f.2 a⟩
-  invFun := fun f => ⟨fun a => (f a).1, fun a => (f a).2⟩
+  invFun := fun f => ⟨fun a ↦ (f a).1, fun a ↦ (f a).2⟩
   left_inv := by
     rintro ⟨f, h⟩
     rfl
@@ -1364,7 +1364,7 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} 
         heq_of_eq (Quotient.sound ((h _ _).2 hab)))
       a.2
   invFun a :=
-    Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun _ _ hab =>
+    Quotient.liftOn a (fun a ↦ (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun _ _ hab =>
       Subtype.ext_val (Quotient.sound ((h _ _).1 hab))
   left_inv := by exact fun ⟨a, ha⟩ => Quotient.inductionOn a (fun b hb => rfl) ha
   right_inv a := by exact Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
@@ -1464,7 +1464,7 @@ theorem comp_swap_eq_update (i j : α) (f : α → β) :
 theorem symm_trans_swap_trans [DecidableEq β] (a b : α) (e : α ≃ β) :
     (e.symm.trans (swap a b)).trans e = swap (e a) (e b) :=
   Equiv.ext fun x => by
-    have : ∀ a, e.symm x = a ↔ x = e a := fun a => by
+    have : ∀ a, e.symm x = a ↔ x = e a := fun a ↦ by
       rw [@eq_comm _ (e.symm x)]
       constructor <;> intros <;> simp_all
     simp only [trans_apply, swap_apply_def, this]
@@ -1683,7 +1683,7 @@ theorem coe_piCongr_symm : ((h₁.piCongr h₂).symm :
   rfl
 
 theorem piCongr_symm_apply (f : ∀ b, Z b) :
-    (h₁.piCongr h₂).symm f = fun a => (h₂ a).symm (f (h₁ a)) :=
+    (h₁.piCongr h₂).symm f = fun a ↦ (h₂ a).symm (f (h₁ a)) :=
   rfl
 
 @[simp]
@@ -1701,14 +1701,14 @@ an equivalence of the base spaces and a family
 of equivalences of the matching fibres.
 -/
 def piCongr' : (∀ a, W a) ≃ ∀ b, Z b :=
-  (piCongr h₁.symm fun b => (h₂ b).symm).symm
+  (piCongr h₁.symm fun b ↦ (h₂ b).symm).symm
 
 @[simp]
 theorem coe_piCongr' :
     (h₁.piCongr' h₂ : (∀ a, W a) → ∀ b, Z b) = fun f b => h₂ b <| f <| h₁.symm b :=
   rfl
 
-theorem piCongr'_apply (f : ∀ a, W a) : h₁.piCongr' h₂ f = fun b => h₂ b <| f <| h₁.symm b :=
+theorem piCongr'_apply (f : ∀ a, W a) : h₁.piCongr' h₂ f = fun b ↦ h₂ b <| f <| h₁.symm b :=
   rfl
 
 @[simp]

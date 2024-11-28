@@ -84,7 +84,7 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         let .some projName := info.getProjFn? i | unreachable!
         let p ← mkAppM projName #[x]
         fn := p.getAppFn
-        args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
+        args := p.getAppArgs.map (fun a ↦ {expr:=a}) ++ args
 
       let mainArgs := args
         |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i else none)
@@ -174,7 +174,7 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
     let n := f.args.size
     if f.args[n-1]!.coe.isSome then
       return .exact
-    else if f.args.any (fun a => a.coe.isSome) then
+    else if f.args.any (fun a ↦ a.coe.isSome) then
       return .overApplied
     else
       return .none

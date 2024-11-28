@@ -191,7 +191,7 @@ theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.na
     (h_monomial : ∀ {n : ℕ} {a : R}, a ≠ 0 → n ≠ 0 → M (monomial n a)) : M f := by
   suffices f.natDegree = 0 ∨ M f from Or.recOn this (fun h => (f0 h).elim) id
   refine Polynomial.induction_on f ?_ ?_ ?_
-  · exact fun a => Or.inl (natDegree_C _)
+  · exact fun a ↦ Or.inl (natDegree_C _)
   · rintro p q (hp | hp) (hq | hq)
     · refine Or.inl ?_
       rw [eq_C_of_natDegree_eq_zero hp, eq_C_of_natDegree_eq_zero hq, ← C_add, natDegree_C]

@@ -278,7 +278,7 @@ theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
   | all _ h =>
     intros
     rw [realize_all, toPrenex, realize_all]
-    exact forall_congr' fun a => h
+    exact forall_congr' fun a ↦ h
 
 theorem IsQF.induction_on_sup_not {P : L.BoundedFormula α n → Prop} {φ : L.BoundedFormula α n}
     (h : IsQF φ) (hf : P (⊥ : L.BoundedFormula α n))

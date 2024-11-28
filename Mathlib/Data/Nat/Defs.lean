@@ -1302,7 +1302,7 @@ lemma dvd_left_iff_eq : (∀ a : ℕ, a ∣ m ↔ a ∣ n) ↔ m = n :=
 
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
-  dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
+  dvd_right_iff_eq.mp fun a ↦ iff_of_eq (congr_fun h a)
 
 lemma div_lt_div_of_lt_of_dvd {a b d : ℕ} (hdb : d ∣ b) (h : a < b) : a / d < b / d := by
   rw [Nat.lt_div_iff_mul_lt hdb]

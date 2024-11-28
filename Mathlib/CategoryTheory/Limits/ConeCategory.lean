@@ -151,7 +151,7 @@ def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (co
 def Cone.isLimitEquivIsTerminal {F : J ⥤ C} (c : Cone F) : IsLimit c ≃ IsTerminal c :=
   IsLimit.isoUniqueConeMorphism.toEquiv.trans
     { toFun := fun _ => IsTerminal.ofUnique _
-      invFun := fun h s => ⟨⟨IsTerminal.from h s⟩, fun a => IsTerminal.hom_ext h a _⟩
+      invFun := fun h s => ⟨⟨IsTerminal.from h s⟩, fun a ↦ IsTerminal.hom_ext h a _⟩
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
 
@@ -310,7 +310,7 @@ def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (
 def Cocone.isColimitEquivIsInitial {F : J ⥤ C} (c : Cocone F) : IsColimit c ≃ IsInitial c :=
   IsColimit.isoUniqueCoconeMorphism.toEquiv.trans
     { toFun := fun _ => IsInitial.ofUnique _
-      invFun := fun h s => ⟨⟨IsInitial.to h s⟩, fun a => IsInitial.hom_ext h a _⟩
+      invFun := fun h s => ⟨⟨IsInitial.to h s⟩, fun a ↦ IsInitial.hom_ext h a _⟩
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
 

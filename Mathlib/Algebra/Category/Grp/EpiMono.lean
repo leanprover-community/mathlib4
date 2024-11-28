@@ -257,7 +257,7 @@ theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b
   rw [← mul_assoc, inv_mul_cancel, one_mul]
 
 theorem agree : f.range = { x | h x = g x } := by
-  refine Set.ext fun b => ⟨?_, fun hb : h b = g b => by_contradiction fun r => ?_⟩
+  refine Set.ext fun b ↦ ⟨?_, fun hb : h b = g b => by_contradiction fun r => ?_⟩
   · rintro ⟨a, rfl⟩
     change h (f a) = g (f a)
     ext ⟨⟨_, ⟨y, rfl⟩⟩⟩

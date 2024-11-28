@@ -1950,7 +1950,7 @@ alias RegularSpace.ofLift'_closure := RegularSpace.of_lift'_closure
 theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {s : ∀ a, ι a → Set X}
     (h₁ : ∀ a, (𝓝 a).HasBasis (p a) (s a)) (h₂ : ∀ a i, p a i → IsClosed (s a i)) :
     RegularSpace X :=
-  .of_lift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
+  .of_lift'_closure fun a ↦ (h₁ a).lift'_closure_eq_self (h₂ a)
 
 @[deprecated (since := "2024-02-28")]
 alias RegularSpace.ofBasis := RegularSpace.of_hasBasis
@@ -2031,7 +2031,7 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_closure_subset {B : Set (Set 
 protected theorem Topology.IsInducing.regularSpace [TopologicalSpace Y] {f : Y → X}
     (hf : IsInducing f) : RegularSpace Y :=
   .of_hasBasis
-    (fun b => by rw [hf.nhds_eq_comap b]; exact (closed_nhds_basis _).comap _)
+    (fun b ↦ by rw [hf.nhds_eq_comap b]; exact (closed_nhds_basis _).comap _)
     fun b s hs => by exact hs.2.preimage hf.continuous
 
 @[deprecated (since := "2024-10-28")] alias Inducing.regularSpace := IsInducing.regularSpace

@@ -116,7 +116,7 @@ lemma isOpen_iff_of_cover {f : α → Set X} (ho : ∀ i, IsOpen (f i)) (hU : (�
   exact isOpen_iUnion fun i ↦ h i
 
 @[simp] theorem isOpen_empty : IsOpen (∅ : Set X) := by
-  rw [← sUnion_empty]; exact isOpen_sUnion fun a => False.elim
+  rw [← sUnion_empty]; exact isOpen_sUnion fun a ↦ False.elim
 
 theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) :
     (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=

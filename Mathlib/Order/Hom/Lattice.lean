@@ -406,7 +406,7 @@ theorem cancel_right {g₁ g₂ : SupHom β γ} {f : SupHom α β} (hf : Surject
 @[simp]
 theorem cancel_left {g : SupHom β γ} {f₁ f₂ : SupHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => SupHom.ext fun a => hg <| by rw [← SupHom.comp_apply, h, SupHom.comp_apply],
+  ⟨fun h => SupHom.ext fun a ↦ hg <| by rw [← SupHom.comp_apply, h, SupHom.comp_apply],
     congr_arg _⟩
 
 end Sup
@@ -582,7 +582,7 @@ theorem cancel_right {g₁ g₂ : InfHom β γ} {f : InfHom α β} (hf : Surject
 @[simp]
 theorem cancel_left {g : InfHom β γ} {f₁ f₂ : InfHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => InfHom.ext fun a => hg <| by rw [← InfHom.comp_apply, h, InfHom.comp_apply],
+  ⟨fun h => InfHom.ext fun a ↦ hg <| by rw [← InfHom.comp_apply, h, InfHom.comp_apply],
     congr_arg _⟩
 
 end Inf
@@ -766,7 +766,7 @@ theorem cancel_right {g₁ g₂ : SupBotHom β γ} {f : SupBotHom α β} (hf : S
 @[simp]
 theorem cancel_left {g : SupBotHom β γ} {f₁ f₂ : SupBotHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => SupBotHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h => SupBotHom.ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end Sup
 
@@ -917,7 +917,7 @@ theorem cancel_right {g₁ g₂ : InfTopHom β γ} {f : InfTopHom α β} (hf : S
 @[simp]
 theorem cancel_left {g : InfTopHom β γ} {f₁ f₂ : InfTopHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => InfTopHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h => InfTopHom.ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end Inf
 
@@ -1086,7 +1086,7 @@ theorem cancel_right {g₁ g₂ : LatticeHom β γ} {f : LatticeHom α β} (hf :
 @[simp]
 theorem cancel_left {g : LatticeHom β γ} {f₁ f₂ : LatticeHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => LatticeHom.ext fun a => hg <| by rw [← LatticeHom.comp_apply, h, LatticeHom.comp_apply],
+  ⟨fun h => LatticeHom.ext fun a ↦ hg <| by rw [← LatticeHom.comp_apply, h, LatticeHom.comp_apply],
     congr_arg _⟩
 
 /-- `Subtype.val` as a `LatticeHom`. -/
@@ -1277,7 +1277,7 @@ theorem cancel_right {g₁ g₂ : BoundedLatticeHom β γ} {f : BoundedLatticeHo
 @[simp]
 theorem cancel_left {g : BoundedLatticeHom β γ} {f₁ f₂ : BoundedLatticeHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h => ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 /-- `Subtype.val` as a `BoundedLatticeHom`. -/
 def subtypeVal {P : β → Prop} (Pbot : P ⊥) (Ptop : P ⊤)

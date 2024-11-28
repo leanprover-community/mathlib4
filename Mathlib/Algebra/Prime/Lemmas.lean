@@ -53,8 +53,8 @@ theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p
         convert ← map_dvd g h <;> apply hinv⟩
 
 theorem MulEquiv.prime_iff (e : M ≃* N) : Prime p ↔ Prime (e p) :=
-  ⟨fun h => (comap_prime e.symm e fun a => by simp) <| (e.symm_apply_apply p).substr h,
-    comap_prime e e.symm fun a => by simp⟩
+  ⟨fun h => (comap_prime e.symm e fun a ↦ by simp) <| (e.symm_apply_apply p).substr h,
+    comap_prime e e.symm fun a ↦ by simp⟩
 
 end Map
 

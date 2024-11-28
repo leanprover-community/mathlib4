@@ -95,9 +95,9 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
       exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
     | transitive Y R S _ _ a b =>
       obtain ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩ := a
-      choose β _ Y_n π_n H using fun a => b (h₂ a)
+      choose β _ Y_n π_n H using fun a ↦ b (h₂ a)
       exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),
-        EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a => (H a).1),
+        EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a ↦ (H a).1),
         fun c => (H c.fst).2 c.snd⟩
   · exact coherentTopology.mem_sieves_of_hasEffectiveEpiFamily S
 

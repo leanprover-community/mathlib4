@@ -72,23 +72,23 @@ theorem image_restrict (f : α → β) (s t : Set α) :
 @[simp]
 theorem restrict_dite {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
-    (s.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
-  funext fun a => dif_pos a.2
+    (s.restrict fun a ↦ if h : a ∈ s then f a h else g a h) = (fun a : s => f a a.2) :=
+  funext fun a ↦ dif_pos a.2
 
 @[simp]
 theorem restrict_dite_compl {s : Set α} [∀ x, Decidable (x ∈ s)] (f : ∀ a ∈ s, β)
     (g : ∀ a ∉ s, β) :
-    (sᶜ.restrict fun a => if h : a ∈ s then f a h else g a h) = (fun a : (sᶜ : Set α) => g a a.2) :=
-  funext fun a => dif_neg a.2
+    (sᶜ.restrict fun a ↦ if h : a ∈ s then f a h else g a h) = (fun a : (sᶜ : Set α) => g a a.2) :=
+  funext fun a ↦ dif_neg a.2
 
 @[simp]
 theorem restrict_ite (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    (s.restrict fun a => if a ∈ s then f a else g a) = s.restrict f :=
+    (s.restrict fun a ↦ if a ∈ s then f a else g a) = s.restrict f :=
   restrict_dite _ _
 
 @[simp]
 theorem restrict_ite_compl (f g : α → β) (s : Set α) [∀ x, Decidable (x ∈ s)] :
-    (sᶜ.restrict fun a => if a ∈ s then f a else g a) = sᶜ.restrict g :=
+    (sᶜ.restrict fun a ↦ if a ∈ s then f a else g a) = sᶜ.restrict g :=
   restrict_dite_compl _ _
 
 @[simp]
@@ -1399,7 +1399,7 @@ theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁
 theorem eqOn_piecewise {f f' g : α → β} {t} :
     EqOn (s.piecewise f f') g t ↔ EqOn f g (t ∩ s) ∧ EqOn f' g (t ∩ sᶜ) := by
   simp only [EqOn, ← forall_and]
-  refine forall_congr' fun a => ?_; by_cases a ∈ s <;> simp [*]
+  refine forall_congr' fun a ↦ ?_; by_cases a ∈ s <;> simp [*]
 
 theorem EqOn.piecewise_ite' {f f' g : α → β} {t t'} (h : EqOn f g (t ∩ s))
     (h' : EqOn f' g (t' ∩ sᶜ)) : EqOn (s.piecewise f f') g (s.ite t t') := by
@@ -1553,7 +1553,7 @@ theorem update_comp_eq_of_not_mem_range {α : Sort*} {β : Type*} {γ : Sort*} [
     (g : β → γ) {f : α → β} {i : β} (a : γ) (h : i ∉ Set.range f) : update g i a ∘ f = g ∘ f :=
   update_comp_eq_of_not_mem_range' g a h
 
-theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a => insert a s := fun _a ha _ _ =>
+theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a ↦ insert a s := fun _a ha _ _ =>
   (insert_inj ha).1
 
 lemma apply_eq_of_range_eq_singleton {f : α → β} {b : β} (h : range f = {b}) (a : α) :

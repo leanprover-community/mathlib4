@@ -166,7 +166,7 @@ lemma EffectiveEpiFamily.uniq {B W : C} {α : Type*} (X : α → C) (π : (a : �
 lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (m₁ m₂ : B ⟶ W) (h : ∀ a, π a ≫ m₁ = π a ≫ m₂) :
     m₁ = m₂ := by
-  have : m₂ = EffectiveEpiFamily.desc X π (fun a => π a ≫ m₂)
+  have : m₂ = EffectiveEpiFamily.desc X π (fun a ↦ π a ≫ m₂)
       (fun a₁ a₂ g₁ g₂ h => by simp only [← Category.assoc, h]) := by
     apply EffectiveEpiFamily.uniq; intro; rfl
   rw [this]
@@ -253,7 +253,7 @@ def EffectiveEpiFamilyStruct.reindex
     (X : α → C)
     (π : (a : α) → (X a ⟶ B))
     (e : α' ≃ α)
-    (P : EffectiveEpiFamilyStruct (fun a => X (e a)) (fun a => π (e a))) :
+    (P : EffectiveEpiFamilyStruct (fun a ↦ X (e a)) (fun a ↦ π (e a))) :
     EffectiveEpiFamilyStruct X π where
   desc := fun f h => P.desc (fun _ => f _) (fun _ _ => h _ _)
   fac _ _ a := by
@@ -269,7 +269,7 @@ lemma EffectiveEpiFamily.reindex
     (X : α → C)
     (π : (a : α) → (X a ⟶ B))
     (e : α' ≃ α)
-    (h : EffectiveEpiFamily (fun a => X (e a)) (fun a => π (e a))) :
+    (h : EffectiveEpiFamily (fun a ↦ X (e a)) (fun a ↦ π (e a))) :
     EffectiveEpiFamily X π :=
   .mk <| .intro <| @EffectiveEpiFamily.getStruct _ _ _ _ _ _ h |>.reindex _ _ e
 

@@ -224,7 +224,7 @@ section Neg
 variable [Neg R]
 
 -- Porting note: removed `simps`, added simp lemmas manually
-instance : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
+instance : Neg ℍ[R,c₁,c₂] := ⟨fun a ↦ ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 
 @[simp] theorem neg_re : (-a).re = -a.re := rfl
 
@@ -1218,7 +1218,7 @@ variable [LinearOrderedField R] (a b : ℍ[R])
 
 @[simps (config := .lemmasOnly)]
 instance instInv : Inv ℍ[R] :=
-  ⟨fun a => (normSq a)⁻¹ • star a⟩
+  ⟨fun a ↦ (normSq a)⁻¹ • star a⟩
 
 instance instGroupWithZero : GroupWithZero ℍ[R] :=
   { Quaternion.instNontrivial,

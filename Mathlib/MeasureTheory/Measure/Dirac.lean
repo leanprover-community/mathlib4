@@ -94,12 +94,12 @@ theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α
   ext s
   have : ∀ y ∈ s, MeasurableSet (f ⁻¹' {y}) := fun y _ => hf (measurableSet_singleton _)
   simp [← tsum_measure_preimage_singleton (to_countable s) this, *,
-    tsum_subtype s fun b => μ (f ⁻¹' {b}), ← indicator_mul_right s fun b => μ (f ⁻¹' {b})]
+    tsum_subtype s fun b ↦ μ (f ⁻¹' {b}), ← indicator_mul_right s fun b ↦ μ (f ⁻¹' {b})]
 
 /-- A measure on a countable type is a sum of Dirac measures. -/
 @[simp]
 theorem sum_smul_dirac [Countable α] [MeasurableSingletonClass α] (μ : Measure α) :
-    (sum fun a => μ {a} • dirac a) = μ := by simpa using (map_eq_sum μ id measurable_id).symm
+    (sum fun a ↦ μ {a} • dirac a) = μ := by simpa using (map_eq_sum μ id measurable_id).symm
 
 /-- Given that `α` is a countable, measurable space with all singleton sets measurable,
 write the measure of a set `s` as the sum of the measure of `{x}` for all `x ∈ s`. -/
@@ -108,7 +108,7 @@ theorem tsum_indicator_apply_singleton [Countable α] [MeasurableSingletonClass 
   classical
   calc
     (∑' x : α, s.indicator (fun x => μ {x}) x) =
-      Measure.sum (fun a => μ {a} • Measure.dirac a) s := by
+      Measure.sum (fun a ↦ μ {a} • Measure.dirac a) s := by
       simp only [Measure.sum_apply _ hs, Measure.smul_apply, smul_eq_mul, Measure.dirac_apply,
         Set.indicator_apply, mul_ite, Pi.one_apply, mul_one, mul_zero]
     _ = μ s := by rw [μ.sum_smul_dirac]

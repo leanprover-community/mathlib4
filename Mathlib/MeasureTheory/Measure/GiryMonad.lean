@@ -48,7 +48,7 @@ theorem measurable_coe {s : Set α} (hs : MeasurableSet s) : Measurable fun μ :
   Measurable.of_comap_le <| le_iSup_of_le s <| le_iSup_of_le hs <| le_rfl
 
 theorem measurable_of_measurable_coe (f : β → Measure α)
-    (h : ∀ (s : Set α), MeasurableSet s → Measurable fun b => f b s) : Measurable f :=
+    (h : ∀ (s : Set α), MeasurableSet s → Measurable fun b ↦ f b s) : Measurable f :=
   Measurable.of_le_map <|
     iSup₂_le fun s hs =>
       MeasurableSpace.comap_le_iff_le_map.2 <| by rw [MeasurableSpace.map_comp]; exact h s hs
@@ -61,7 +61,7 @@ instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : Measurable
   · exact (Measure.measurable_coe hs).comp measurable_snd
 
 theorem measurable_measure {μ : α → Measure β} :
-    Measurable μ ↔ ∀ (s : Set β), MeasurableSet s → Measurable fun b => μ b s :=
+    Measurable μ ↔ ∀ (s : Set β), MeasurableSet s → Measurable fun b ↦ μ b s :=
   ⟨fun hμ _s hs => (measurable_coe hs).comp hμ, measurable_of_measurable_coe μ⟩
 
 theorem measurable_map (f : α → β) (hf : Measurable f) :
@@ -167,7 +167,7 @@ theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ
   (lintegral_join hf).trans (lintegral_map (measurable_lintegral hf) hμ)
 
 theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure β} {g : β → Measure γ}
-    (hf : Measurable f) (hg : Measurable g) : bind (bind m f) g = bind m fun a => bind (f a) g := by
+    (hf : Measurable f) (hg : Measurable g) : bind (bind m f) g = bind m fun a ↦ bind (f a) g := by
   ext1 s hs
   erw [bind_apply hs hg, bind_apply hs ((measurable_bind' hg).comp hf),
     lintegral_bind hf ((measurable_coe hs).comp hg)]

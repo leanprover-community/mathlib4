@@ -75,7 +75,7 @@ def CompSource.toString : CompSource → String
   | (CompSource.scale n c) => ToString.toString n ++ " * " ++ CompSource.toString c
 
 instance : ToFormat CompSource :=
-  ⟨fun a => CompSource.toString a⟩
+  ⟨fun a ↦ CompSource.toString a⟩
 
 /--
 A `PComp` stores a linear comparison `Σ cᵢ*xᵢ R 0`,

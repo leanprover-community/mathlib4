@@ -989,7 +989,7 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
   have gf : ∀ a : α, a = g (f a) := by
     intro
     rw [← cmp_eq_eq_iff, h, cmp_self_eq_eq]
-  { toFun := f, invFun := g, left_inv := fun a => (gf a).symm,
+  { toFun := f, invFun := g, left_inv := fun a ↦ (gf a).symm,
     right_inv := by
       intro
       rw [← cmp_eq_eq_iff, ← h, cmp_self_eq_eq],

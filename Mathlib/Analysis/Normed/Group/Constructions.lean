@@ -286,17 +286,17 @@ variable [∀ i, SeminormedGroup (π i)] [SeminormedGroup E] (f : ∀ i, π i) {
 /-- Finite product of seminormed groups, using the sup norm. -/
 @[to_additive "Finite product of seminormed groups, using the sup norm."]
 instance Pi.seminormedGroup : SeminormedGroup (∀ i, π i) where
-  norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
+  norm f := ↑(Finset.univ.sup fun b ↦ ‖f b‖₊)
   dist_eq x y :=
     congr_arg (toReal : ℝ≥0 → ℝ) <|
       congr_arg (Finset.sup Finset.univ) <|
-        funext fun a => show nndist (x a) (y a) = ‖x a / y a‖₊ from nndist_eq_nnnorm_div (x a) (y a)
+        funext fun a ↦ show nndist (x a) (y a) = ‖x a / y a‖₊ from nndist_eq_nnnorm_div (x a) (y a)
 
 @[to_additive Pi.norm_def]
-lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
+lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b ↦ ‖f b‖₊) := rfl
 
 @[to_additive Pi.nnnorm_def]
-lemma Pi.nnnorm_def' : ‖f‖₊ = Finset.univ.sup fun b => ‖f b‖₊ := Subtype.eta _ _
+lemma Pi.nnnorm_def' : ‖f‖₊ = Finset.univ.sup fun b ↦ ‖f b‖₊ := Subtype.eta _ _
 
 /-- The seminorm of an element in a product space is `≤ r` if and only if the norm of each
 component is. -/

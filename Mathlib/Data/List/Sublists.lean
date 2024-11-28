@@ -115,7 +115,7 @@ theorem sublistsAux_eq_array_foldl :
 
 theorem sublistsAux_eq_flatMap :
     sublistsAux = fun (a : α) (r : List (List α)) => r.flatMap fun l => [l, a :: l] :=
-  funext fun a => funext fun r =>
+  funext fun a ↦ funext fun r =>
   List.reverseRecOn r
     (by simp [sublistsAux])
     (fun r l ih => by

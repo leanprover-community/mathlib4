@@ -476,7 +476,7 @@ variable {π π' : δ' → Type*} [∀ x, MeasurableSpace (π x)] [∀ x, Measur
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
   between `Π a, β₁ a` and `Π a, β₂ a`. -/
 def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π' a where
-  toEquiv := .piCongrRight fun a => (e a).toEquiv
+  toEquiv := .piCongrRight fun a ↦ (e a).toEquiv
   measurable_toFun :=
     measurable_pi_lambda _ fun i => (e i).measurable_toFun.comp (measurable_pi_apply i)
   measurable_invFun :=
@@ -751,7 +751,7 @@ end MeasurableEmbedding
 
 theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β]
     (h : Measurable (compl : β → β)) (f : α → β) :
-    MeasurableSpace.comap (fun a => (f a)ᶜ) inferInstance =
+    MeasurableSpace.comap (fun a ↦ (f a)ᶜ) inferInstance =
       MeasurableSpace.comap f inferInstance := by
   rw [← Function.comp_def, ← MeasurableSpace.comap_comp]
   congr

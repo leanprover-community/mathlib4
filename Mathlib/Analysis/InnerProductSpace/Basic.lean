@@ -617,13 +617,13 @@ theorem inner_sum {ι : Type*} (s : Finset ι) (f : ι → E) (x : E) :
 /-- An inner product with a sum on the left, `Finsupp` version. -/
 protected theorem Finsupp.sum_inner {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
     ⟪l.sum fun (i : ι) (a : 𝕜) => a • v i, x⟫ = l.sum fun (i : ι) (a : 𝕜) => conj a • ⟪v i, x⟫ := by
-  convert sum_inner (𝕜 := 𝕜) l.support (fun a => l a • v a) x
+  convert sum_inner (𝕜 := 𝕜) l.support (fun a ↦ l a • v a) x
   simp only [inner_smul_left, Finsupp.sum, smul_eq_mul]
 
 /-- An inner product with a sum on the right, `Finsupp` version. -/
 protected theorem Finsupp.inner_sum {ι : Type*} (l : ι →₀ 𝕜) (v : ι → E) (x : E) :
     ⟪x, l.sum fun (i : ι) (a : 𝕜) => a • v i⟫ = l.sum fun (i : ι) (a : 𝕜) => a • ⟪x, v i⟫ := by
-  convert inner_sum (𝕜 := 𝕜) l.support (fun a => l a • v a) x
+  convert inner_sum (𝕜 := 𝕜) l.support (fun a ↦ l a • v a) x
   simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
 
 protected theorem DFinsupp.sum_inner {ι : Type*} [DecidableEq ι] {α : ι → Type*}
@@ -2445,7 +2445,7 @@ instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
     Completion.induction_on x
       (isClosed_eq (continuous_norm.pow 2)
         (continuous_re.comp (Continuous.inner continuous_id' continuous_id')))
-      fun a => by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]
+      fun a ↦ by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]
   conj_symm x y :=
     Completion.induction_on₂ x y
       (isClosed_eq (continuous_conj.comp (Continuous.inner continuous_snd continuous_fst))

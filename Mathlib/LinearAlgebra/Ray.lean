@@ -405,7 +405,7 @@ variable {R}
 instance : InvolutiveNeg (Module.Ray R M) where
   neg := Neg.neg
   neg_neg x := by apply ind R (by simp) x
-  -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
+  -- Quotient.ind (fun a ↦ congr_arg Quotient.mk' <| neg_neg _) x
 
 /-- A ray does not equal its own negation. -/
 theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by

@@ -85,7 +85,7 @@ section
 variable [PreservesColimit F (forget C)]
 
 theorem from_union_surjective_of_isColimit {D : Cocone F} (hD : IsColimit D) :
-    let ff : (Σj : J, F.obj j) → D.pt := fun a => D.ι.app a.1 a.2
+    let ff : (Σj : J, F.obj j) → D.pt := fun a ↦ D.ι.app a.1 a.2
     Function.Surjective ff := by
   intro ff x
   let E : Cocone (F ⋙ forget C) := (forget C).mapCocone D

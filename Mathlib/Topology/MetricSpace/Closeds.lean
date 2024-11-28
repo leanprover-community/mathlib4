@@ -205,7 +205,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     refine ⟨F, ?_, fun u _ => ?_⟩
     -- `F` is finite
     · apply @Finite.of_finite_image _ _ F _
-      · apply fs.finite_subsets.subset fun b => _
+      · apply fs.finite_subsets.subset fun b ↦ _
         · exact fun s => (s : Set α)
         simp only [F, and_imp, Set.mem_image, Set.mem_setOf_eq, exists_imp]
         intro _ x hx hx'

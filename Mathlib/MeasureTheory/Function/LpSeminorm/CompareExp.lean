@@ -31,7 +31,7 @@ theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) 
   have hpq : p < q := lt_of_le_of_ne hpq hpq_eq
   let g := fun _ : α => (1 : ℝ≥0∞)
   have h_rw : (∫⁻ a, (‖f a‖₊ : ℝ≥0∞) ^ p ∂μ) = ∫⁻ a, ((‖f a‖₊ : ℝ≥0∞) * g a) ^ p ∂μ :=
-    lintegral_congr fun a => by simp [g]
+    lintegral_congr fun a ↦ by simp [g]
   repeat' rw [eLpNorm']
   rw [h_rw]
   let r := p * q / (q - p)

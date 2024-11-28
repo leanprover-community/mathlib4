@@ -548,7 +548,7 @@ def compChangeOfVariables (m M N : ℕ) (i : Σ n, Fin n → ℕ) (hi : i ∈ co
     Σ n, Composition n := by
   rcases i with ⟨n, f⟩
   rw [mem_compPartialSumSource_iff] at hi
-  refine ⟨∑ j, f j, ofFn fun a => f a, fun hi' => ?_, by simp [sum_ofFn]⟩
+  refine ⟨∑ j, f j, ofFn fun a ↦ f a, fun hi' => ?_, by simp [sum_ofFn]⟩
   rename_i i
   obtain ⟨j, rfl⟩ : ∃ j : Fin n, f j = i := by rwa [mem_ofFn, Set.mem_range] at hi'
   exact (hi.2 j).1
@@ -582,7 +582,7 @@ theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
   refine ⟨⟨c.length, c.blocksFun⟩, ?_, ?_⟩
   · simp only [compPartialSumTargetSet, Set.mem_setOf_eq] at hi
     simp only [mem_compPartialSumSource_iff, hi.left, hi.right, true_and, and_true]
-    exact fun a => c.one_le_blocks' _
+    exact fun a ↦ c.one_le_blocks' _
   · dsimp [compChangeOfVariables]
     rw [Composition.sigma_eq_iff_blocks_eq]
     simp only [Composition.blocksFun, Composition.blocks, Subtype.coe_eta]

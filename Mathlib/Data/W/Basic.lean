@@ -75,7 +75,7 @@ variable {β}
 -- Porting note: Universes have a different order than mathlib3 definition
 /-- The canonical map from `WType β` into any type `γ` given a map `(Σ a : α, β a → γ) → γ`. -/
 def elim (γ : Type*) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
-  | ⟨a, f⟩ => fγ ⟨a, fun b => elim γ fγ (f b)⟩
+  | ⟨a, f⟩ => fγ ⟨a, fun b ↦ elim γ fγ (f b)⟩
 
 theorem elim_injective (γ : Type*) (fγ : (Σa : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)

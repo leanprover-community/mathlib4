@@ -437,7 +437,7 @@ theorem forall_associated [Monoid M] {p : Associates M → Prop} :
   Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
 
 theorem mk_surjective [Monoid M] : Function.Surjective (@Associates.mk M _) :=
-  forall_associated.2 fun a => ⟨a, rfl⟩
+  forall_associated.2 fun a ↦ ⟨a, rfl⟩
 
 instance [Monoid M] : One (Associates M) :=
   ⟨⟦1⟧⟩
@@ -483,8 +483,8 @@ theorem mk_mul_mk {x y : M} : Associates.mk x * Associates.mk y = Associates.mk 
 instance instCommMonoid : CommMonoid (Associates M) where
   one := 1
   mul := (· * ·)
-  mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
-  one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
+  mul_one a' := Quotient.inductionOn a' fun a ↦ show ⟦a * 1⟧ = ⟦a⟧ by simp
+  one_mul a' := Quotient.inductionOn a' fun a ↦ show ⟦1 * a⟧ = ⟦a⟧ by simp
   mul_assoc a' b' c' :=
     Quotient.inductionOn₃ a' b' c' fun a b c =>
       show ⟦a * b * c⟧ = ⟦a * (b * c)⟧ by rw [mul_assoc]

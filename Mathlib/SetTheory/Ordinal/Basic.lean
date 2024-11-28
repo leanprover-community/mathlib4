@@ -991,7 +991,7 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
 `Ordinal.{v}` as a principal segment when `u < v`. -/
 def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
   ⟨↑liftInitialSeg.{max (u + 1) v, u}, univ.{u, v}, by
-    refine fun b => inductionOn b ?_; intro β s _
+    refine fun b ↦ inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
     · cases' h with a e
       rw [← e]
@@ -1008,7 +1008,7 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
       intro α r _ hf
       refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
         ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
-      · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
+      · exact fun b ↦ enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
       · refine fun a b h => (typein_lt_typein r).1 ?_
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h

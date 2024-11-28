@@ -59,13 +59,13 @@ variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 theorem StronglyMeasurable.apply_continuousLinearMap
     {_m : MeasurableSpace α} {φ : α → F →L[𝕜] E} (hφ : StronglyMeasurable φ) (v : F) :
-    StronglyMeasurable fun a => φ a v :=
+    StronglyMeasurable fun a ↦ φ a v :=
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_stronglyMeasurable hφ
 
 @[measurability]
 theorem MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E}
     (hφ : AEStronglyMeasurable φ μ) (v : F) :
-    AEStronglyMeasurable (fun a => φ a v) μ :=
+    AEStronglyMeasurable (fun a ↦ φ a v) μ :=
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_aestronglyMeasurable hφ
 
 theorem ContinuousLinearMap.aestronglyMeasurable_comp₂ (L : E →L[𝕜] F →L[𝕜] G) {f : α → E}

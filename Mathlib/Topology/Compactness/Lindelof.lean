@@ -372,7 +372,7 @@ theorem isLindelof_iff_countable [DiscreteTopology X] : IsLindelof s ↔ s.Count
   ⟨fun h => h.countable_of_discrete, fun h => h.isLindelof⟩
 
 theorem IsLindelof.union (hs : IsLindelof s) (ht : IsLindelof t) : IsLindelof (s ∪ t) := by
-  rw [union_eq_iUnion]; exact isLindelof_iUnion fun b => by cases b <;> assumption
+  rw [union_eq_iUnion]; exact isLindelof_iUnion fun b ↦ by cases b <;> assumption
 
 protected theorem IsLindelof.insert (hs : IsLindelof s) (a) : IsLindelof (insert a s) :=
   isLindelof_singleton.union hs

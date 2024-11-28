@@ -438,10 +438,10 @@ section Nonempty
 variable [Preorder α] [Nonempty α] {f : Filter β} {u : β → α}
 
 theorem isBounded_le_atBot : (atBot : Filter α).IsBounded (· ≤ ·) :=
-  ‹Nonempty α›.elim fun a => ⟨a, eventually_le_atBot _⟩
+  ‹Nonempty α›.elim fun a ↦ ⟨a, eventually_le_atBot _⟩
 
 theorem isBounded_ge_atTop : (atTop : Filter α).IsBounded (· ≥ ·) :=
-  ‹Nonempty α›.elim fun a => ⟨a, eventually_ge_atTop _⟩
+  ‹Nonempty α›.elim fun a ↦ ⟨a, eventually_ge_atTop _⟩
 
 theorem Tendsto.isBoundedUnder_le_atBot (h : Tendsto u f atBot) : f.IsBoundedUnder (· ≤ ·) u :=
   isBounded_le_atBot.mono h
@@ -475,7 +475,7 @@ theorem isBounded_ge_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsBo
 theorem _root_.OrderIso.isBoundedUnder_le_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≤ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (Function.Surjective.exists e.surjective).trans <|
-    exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
+    exists_congr fun a ↦ by simp only [eventually_map, e.le_iff_le]
 
 @[simp]
 theorem _root_.OrderIso.isBoundedUnder_ge_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
@@ -494,14 +494,14 @@ theorem isBoundedUnder_ge_inv [OrderedCommGroup α] {l : Filter β} {u : β → 
 
 theorem IsBoundedUnder.sup [SemilatticeSup α] {f : Filter β} {u v : β → α} :
     f.IsBoundedUnder (· ≤ ·) u →
-      f.IsBoundedUnder (· ≤ ·) v → f.IsBoundedUnder (· ≤ ·) fun a => u a ⊔ v a
+      f.IsBoundedUnder (· ≤ ·) v → f.IsBoundedUnder (· ≤ ·) fun a ↦ u a ⊔ v a
   | ⟨bu, (hu : ∀ᶠ x in f, u x ≤ bu)⟩, ⟨bv, (hv : ∀ᶠ x in f, v x ≤ bv)⟩ =>
     ⟨bu ⊔ bv, show ∀ᶠ x in f, u x ⊔ v x ≤ bu ⊔ bv
       by filter_upwards [hu, hv] with _ using sup_le_sup⟩
 
 @[simp]
 theorem isBoundedUnder_le_sup [SemilatticeSup α] {f : Filter β} {u v : β → α} :
-    (f.IsBoundedUnder (· ≤ ·) fun a => u a ⊔ v a) ↔
+    (f.IsBoundedUnder (· ≤ ·) fun a ↦ u a ⊔ v a) ↔
       f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (· ≤ ·) v :=
   ⟨fun h =>
     ⟨h.mono_le <| Eventually.of_forall fun _ => le_sup_left,
@@ -510,17 +510,17 @@ theorem isBoundedUnder_le_sup [SemilatticeSup α] {f : Filter β} {u v : β → 
 
 theorem IsBoundedUnder.inf [SemilatticeInf α] {f : Filter β} {u v : β → α} :
     f.IsBoundedUnder (· ≥ ·) u →
-      f.IsBoundedUnder (· ≥ ·) v → f.IsBoundedUnder (· ≥ ·) fun a => u a ⊓ v a :=
+      f.IsBoundedUnder (· ≥ ·) v → f.IsBoundedUnder (· ≥ ·) fun a ↦ u a ⊓ v a :=
   IsBoundedUnder.sup (α := αᵒᵈ)
 
 @[simp]
 theorem isBoundedUnder_ge_inf [SemilatticeInf α] {f : Filter β} {u v : β → α} :
-    (f.IsBoundedUnder (· ≥ ·) fun a => u a ⊓ v a) ↔
+    (f.IsBoundedUnder (· ≥ ·) fun a ↦ u a ⊓ v a) ↔
       f.IsBoundedUnder (· ≥ ·) u ∧ f.IsBoundedUnder (· ≥ ·) v :=
   isBoundedUnder_le_sup (α := αᵒᵈ)
 
 theorem isBoundedUnder_le_abs [LinearOrderedAddCommGroup α] {f : Filter β} {u : β → α} :
-    (f.IsBoundedUnder (· ≤ ·) fun a => |u a|) ↔
+    (f.IsBoundedUnder (· ≤ ·) fun a ↦ |u a|) ↔
       f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (· ≥ ·) u :=
   isBoundedUnder_le_sup.trans <| and_congr Iff.rfl isBoundedUnder_le_neg
 
@@ -1201,19 +1201,19 @@ theorem limsup_compl : (limsup u f)ᶜ = liminf (compl ∘ u) f := by
 theorem liminf_compl : (liminf u f)ᶜ = limsup (compl ∘ u) f := by
   simp only [limsup_eq_iInf_iSup, compl_iInf, compl_iSup, liminf_eq_iSup_iInf, Function.comp_apply]
 
-theorem limsup_sdiff (a : α) : limsup u f \ a = limsup (fun b => u b \ a) f := by
+theorem limsup_sdiff (a : α) : limsup u f \ a = limsup (fun b ↦ u b \ a) f := by
   simp only [limsup_eq_iInf_iSup, sdiff_eq]
   rw [biInf_inf (⟨univ, univ_mem⟩ : ∃ i : Set β, i ∈ f)]
   simp_rw [inf_comm, inf_iSup₂_eq, inf_comm]
 
-theorem liminf_sdiff [NeBot f] (a : α) : liminf u f \ a = liminf (fun b => u b \ a) f := by
+theorem liminf_sdiff [NeBot f] (a : α) : liminf u f \ a = liminf (fun b ↦ u b \ a) f := by
   simp only [sdiff_eq, inf_comm _ aᶜ, inf_liminf]
 
-theorem sdiff_limsup [NeBot f] (a : α) : a \ limsup u f = liminf (fun b => a \ u b) f := by
+theorem sdiff_limsup [NeBot f] (a : α) : a \ limsup u f = liminf (fun b ↦ a \ u b) f := by
   rw [← compl_inj_iff]
   simp only [sdiff_eq, liminf_compl, comp_def, compl_inf, compl_compl, sup_limsup]
 
-theorem sdiff_liminf (a : α) : a \ liminf u f = limsup (fun b => a \ u b) f := by
+theorem sdiff_liminf (a : α) : a \ liminf u f = limsup (fun b ↦ a \ u b) f := by
   rw [← compl_inj_iff]
   simp only [sdiff_eq, limsup_compl, comp_def, compl_inf, compl_compl, sup_liminf]
 

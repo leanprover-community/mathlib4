@@ -273,7 +273,7 @@ private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b := by
 instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ :=
   { ‹GroupWithZero G₀› with
     inv := Inv.inv,
-    inv_inv := fun a => by
+    inv_inv := fun a ↦ by
       by_cases h : a = 0
       · simp [h]
       · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)

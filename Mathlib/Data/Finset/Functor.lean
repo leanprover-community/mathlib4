@@ -131,8 +131,8 @@ instance commApplicative : CommApplicative Finset :=
   { Finset.lawfulApplicative with
     commutative_prod := fun s t => by
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
-      change (s.biUnion fun a => t.image fun b => (a, b))
-        = t.biUnion fun b => s.image fun a => (a, b)
+      change (s.biUnion fun a ↦ t.image fun b ↦ (a, b))
+        = t.biUnion fun b ↦ s.image fun a ↦ (a, b)
       trans s ×ˢ t <;> [rw [product_eq_biUnion]; rw [product_eq_biUnion_right]] }
 
 end Applicative

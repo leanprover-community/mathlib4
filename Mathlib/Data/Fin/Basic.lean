@@ -1456,7 +1456,7 @@ open Nat Int
 
 /-- Negation on `Fin n` -/
 instance neg (n : ℕ) : Neg (Fin n) :=
-  ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
+  ⟨fun a ↦ ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
 
 theorem neg_def (a : Fin n) : -a = ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩ := rfl
 

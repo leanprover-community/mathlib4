@@ -70,7 +70,7 @@ theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : S
 
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
-  ⟨fun a => by rw [deterministic_apply hf]; infer_instance⟩
+  ⟨fun a ↦ by rw [deterministic_apply hf]; infer_instance⟩
 
 theorem lintegral_deterministic' {f : β → ℝ≥0∞} {g : α → β} {a : α} (hg : Measurable g)
     (hf : Measurable f) : ∫⁻ x, f x ∂deterministic g hg a = f (g a) := by
@@ -268,7 +268,7 @@ alias set_lintegral_restrict := setLIntegral_restrict
 
 instance IsFiniteKernel.restrict (κ : Kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (κ.restrict hs) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a ↦ ?_⟩⟩
   rw [restrict_apply' κ hs a MeasurableSet.univ]
   exact measure_le_bound κ a _
 
@@ -290,7 +290,7 @@ noncomputable def comapRight (κ : Kernel α β) (hf : MeasurableEmbedding f) : 
   toFun a := (κ a).comap f
   measurable' := by
     refine Measure.measurable_measure.mpr fun t ht => ?_
-    have : (fun a => Measure.comap f (κ a) t) = fun a => κ a (f '' t) := by
+    have : (fun a ↦ Measure.comap f (κ a) t) = fun a ↦ κ a (f '' t) := by
       ext1 a
       rw [Measure.comap_apply _ hf.injective _ _ ht]
       exact fun s' hs' ↦ hf.measurableSet_image.mpr hs'
@@ -312,14 +312,14 @@ lemma comapRight_id (κ : Kernel α β) : comapRight κ MeasurableEmbedding.id =
 
 theorem IsMarkovKernel.comapRight (κ : Kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by
-  refine ⟨fun a => ⟨?_⟩⟩
+  refine ⟨fun a ↦ ⟨?_⟩⟩
   rw [comapRight_apply' κ hf a MeasurableSet.univ]
   simp only [Set.image_univ, Subtype.range_coe_subtype, Set.setOf_mem_eq]
   exact hκ a
 
 instance IsFiniteKernel.comapRight (κ : Kernel α β) [IsFiniteKernel κ]
     (hf : MeasurableEmbedding f) : IsFiniteKernel (comapRight κ hf) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a ↦ ?_⟩⟩
   rw [comapRight_apply' κ hf a .univ]
   exact measure_le_bound κ a _
 
@@ -360,12 +360,12 @@ theorem piecewise_apply' (a : α) (t : Set β) :
 
 instance IsMarkovKernel.piecewise [IsMarkovKernel κ] [IsMarkovKernel η] :
     IsMarkovKernel (piecewise hs κ η) := by
-  refine ⟨fun a => ⟨?_⟩⟩
+  refine ⟨fun a ↦ ⟨?_⟩⟩
   rw [piecewise_apply', measure_univ, measure_univ, ite_self]
 
 instance IsFiniteKernel.piecewise [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (piecewise hs κ η) := by
-  refine ⟨⟨max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η), ?_, fun a => ?_⟩⟩
+  refine ⟨⟨max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η), ?_, fun a ↦ ?_⟩⟩
   · exact max_lt (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η)
   rw [piecewise_apply']
   exact (ite_le_sup _ _ _).trans (sup_le_sup (measure_le_bound _ _ _) (measure_le_bound _ _ _))

@@ -248,7 +248,7 @@ theorem appendFun_id_id {α : TypeVec n} {β : Type*} :
   eq_of_drop_last_eq rfl rfl
 
 instance subsingleton0 : Subsingleton (TypeVec 0) :=
-  ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- Porting note: `by apply` necessary?
+  ⟨fun a b => funext fun a ↦ by apply Fin2.elim0 a⟩ -- Porting note: `by apply` necessary?
 
 -- Porting note: `simp` attribute `TypeVec` moved to file `Tactic/Attr/Register.lean`
 

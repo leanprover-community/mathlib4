@@ -44,13 +44,13 @@ theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFins
 
 @[simp]
 theorem coe_piFinset (t : ∀ a, Finset (δ a)) :
-    (piFinset t : Set (∀ a, δ a)) = Set.pi Set.univ fun a => t a :=
+    (piFinset t : Set (∀ a, δ a)) = Set.pi Set.univ fun a ↦ t a :=
   Set.ext fun x => by
     rw [Set.mem_univ_pi]
     exact Fintype.mem_piFinset
 
 theorem piFinset_subset (t₁ t₂ : ∀ a, Finset (δ a)) (h : ∀ a, t₁ a ⊆ t₂ a) :
-    piFinset t₁ ⊆ piFinset t₂ := fun _ hg => mem_piFinset.2 fun a => h a <| mem_piFinset.1 hg a
+    piFinset t₁ ⊆ piFinset t₂ := fun _ hg => mem_piFinset.2 fun a ↦ h a <| mem_piFinset.1 hg a
 
 @[simp]
 theorem piFinset_eq_empty : piFinset s = ∅ ↔ ∃ i, s i = ∅ := by simp [piFinset]

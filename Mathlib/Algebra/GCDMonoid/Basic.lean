@@ -954,7 +954,7 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
       · rw [mul_zero, a0, zero_mul]
       · rw [← Classical.choose_spec ((gcd_dvd_left a b).trans (Dvd.intro b rfl))]
     lcm_zero_left := fun _ => if_pos rfl
-    lcm_zero_right := fun a => by
+    lcm_zero_right := fun a ↦ by
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with a0
@@ -1015,7 +1015,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
           Classical.choose_spec (dvd_normalize_iff.2 ((gcd_dvd_left a b).trans (Dvd.intro b rfl)))]
         exact normalize_associated (a * b)
     lcm_zero_left := fun _ => if_pos rfl
-    lcm_zero_right := fun a => by
+    lcm_zero_right := fun a ↦ by
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       beta_reduce
       split_ifs with a0

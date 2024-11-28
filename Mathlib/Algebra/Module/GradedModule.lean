@@ -58,10 +58,10 @@ variable [AddMonoid ιA] [VAdd ιA ιB] [∀ i : ιA, AddCommMonoid (A i)] [∀ 
 @[simps]
 def gsmulHom [GMonoid A] [Gmodule A M] {i j} : A i →+ M j →+ M (i +ᵥ j) where
   toFun a :=
-    { toFun := fun b => GSMul.smul a b
+    { toFun := fun b ↦ GSMul.smul a b
       map_zero' := GdistribMulAction.smul_zero _
       map_add' := GdistribMulAction.smul_add _ }
-  map_zero' := AddMonoidHom.ext fun a => Gmodule.zero_smul a
+  map_zero' := AddMonoidHom.ext fun a ↦ Gmodule.zero_smul a
   map_add' _a₁ _a₂ := AddMonoidHom.ext fun _b => Gmodule.add_smul _ _ _
 
 namespace Gmodule

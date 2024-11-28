@@ -512,7 +512,7 @@ This is a stronger version of `MulSemiringAction.toRingHom` and
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
-    toFun := fun a => m • a
+    toFun := fun a ↦ m • a
     commutes' := smul_algebraMap _ }
 
 theorem toAlgHom_injective [FaithfulSMul M A] :

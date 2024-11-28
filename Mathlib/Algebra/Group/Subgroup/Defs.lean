@@ -130,7 +130,7 @@ namespace InvMemClass
 @[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
 instance inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
   [InvMemClass S G] {H : S} : Inv H :=
-  ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
+  ⟨fun a ↦ ⟨a⁻¹, inv_mem a.2⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
@@ -449,7 +449,7 @@ instance one : One H :=
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an inverse."]
 instance inv : Inv H :=
-  ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
+  ⟨fun a ↦ ⟨a⁻¹, H.inv_mem a.2⟩⟩
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits a subtraction."]

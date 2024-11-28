@@ -335,7 +335,7 @@ theorem ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2
 /-- This is not an instance because it loops with `AddTorsor.nonempty`. -/
 abbrev toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
   vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.2 b.2⟩
-  zero_vadd := fun a => by
+  zero_vadd := fun a ↦ by
     ext
     exact zero_vadd _ _
   add_vadd a b c := by

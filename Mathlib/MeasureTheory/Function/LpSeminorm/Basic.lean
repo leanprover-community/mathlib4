@@ -628,7 +628,7 @@ alias snorm_indicator_sub_indicator := eLpNorm_indicator_sub_indicator
 
 @[simp]
 theorem eLpNorm'_norm {f : α → F} :
-    eLpNorm' (fun a => ‖f a‖) q μ = eLpNorm' f q μ := by simp [eLpNorm']
+    eLpNorm' (fun a ↦ ‖f a‖) q μ = eLpNorm' f q μ := by simp [eLpNorm']
 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_norm := eLpNorm'_norm

@@ -211,12 +211,12 @@ end Real
 `condexpL2_comp_continuousLinearMap` for a more general result about commuting with continuous
 linear maps. -/
 theorem condexpL2_const_inner (hm : m ≤ m0) (f : Lp E 2 μ) (c : E) :
-    condexpL2 𝕜 𝕜 hm (((Lp.memℒp f).const_inner c).toLp fun a => ⟪c, f a⟫) =ᵐ[μ]
-    fun a => ⟪c, (condexpL2 E 𝕜 hm f : α → E) a⟫ := by
+    condexpL2 𝕜 𝕜 hm (((Lp.memℒp f).const_inner c).toLp fun a ↦ ⟪c, f a⟫) =ᵐ[μ]
+    fun a ↦ ⟪c, (condexpL2 E 𝕜 hm f : α → E) a⟫ := by
   rw [lpMeas_coe]
-  have h_mem_Lp : Memℒp (fun a => ⟪c, (condexpL2 E 𝕜 hm f : α → E) a⟫) 2 μ := by
+  have h_mem_Lp : Memℒp (fun a ↦ ⟪c, (condexpL2 E 𝕜 hm f : α → E) a⟫) 2 μ := by
     refine Memℒp.const_inner _ ?_; rw [lpMeas_coe]; exact Lp.memℒp _
-  have h_eq : h_mem_Lp.toLp _ =ᵐ[μ] fun a => ⟪c, (condexpL2 E 𝕜 hm f : α → E) a⟫ :=
+  have h_eq : h_mem_Lp.toLp _ =ᵐ[μ] fun a ↦ ⟪c, (condexpL2 E 𝕜 hm f : α → E) a⟫ :=
     h_mem_Lp.coeFn_toLp
   refine EventuallyEq.trans ?_ h_eq
   refine Lp.ae_eq_of_forall_setIntegral_eq' 𝕜 hm _ _ two_ne_zero ENNReal.coe_ne_top

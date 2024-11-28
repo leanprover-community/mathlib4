@@ -30,15 +30,15 @@ variable {π : β → Type*} [Fintype β]
 
 -- Porting note: reordered instances
 instance [∀ b, EDist (π b)] : EDist (∀ b, π b) where
-  edist f g := Finset.sup univ fun b => edist (f b) (g b)
+  edist f g := Finset.sup univ fun b ↦ edist (f b) (g b)
 
 theorem edist_pi_def [∀ b, EDist (π b)] (f g : ∀ b, π b) :
-    edist f g = Finset.sup univ fun b => edist (f b) (g b) :=
+    edist f g = Finset.sup univ fun b ↦ edist (f b) (g b) :=
   rfl
 
 theorem edist_le_pi_edist [∀ b, EDist (π b)] (f g : ∀ b, π b) (b : β) :
     edist (f b) (g b) ≤ edist f g :=
-  le_sup (f := fun b => edist (f b) (g b)) (Finset.mem_univ b)
+  le_sup (f := fun b ↦ edist (f b) (g b)) (Finset.mem_univ b)
 
 theorem edist_pi_le_iff [∀ b, EDist (π b)] {f g : ∀ b, π b} {d : ℝ≥0∞} :
     edist f g ≤ d ↔ ∀ b, edist (f b) (g b) ≤ d :=
@@ -59,7 +59,7 @@ spaces. -/
 instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetricSpace (∀ b, π b) where
   edist_self f := bot_unique <| Finset.sup_le <| by simp
   edist_comm f g := by simp [edist_pi_def, edist_comm]
-  edist_triangle _ g _ := edist_pi_le_iff.2 fun b => le_trans (edist_triangle _ (g b) _)
+  edist_triangle _ g _ := edist_pi_le_iff.2 fun b ↦ le_trans (edist_triangle _ (g b) _)
     (add_le_add (edist_le_pi_edist _ _ _) (edist_le_pi_edist _ _ _))
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by

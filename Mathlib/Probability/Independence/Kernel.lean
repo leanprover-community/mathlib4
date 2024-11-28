@@ -1071,7 +1071,7 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
 
 theorem iIndepFun.indepFun_prod_mk (hf_Indep : iIndepFun m f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFun (fun a => (f i a, f j a)) (f k) κ μ := by
+    IndepFun (fun a ↦ (f i a, f j a)) (f k) κ μ := by
   classical
   have h_right : f k =
     (fun p : ∀ j : ({k} : Finset ι), β j => p ⟨k, Finset.mem_singleton_self k⟩) ∘

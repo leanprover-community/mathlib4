@@ -220,7 +220,7 @@ structure TM2ComputableInPolyTime {α β : Type} (ea : FinEncoding α) (eb : Fin
 /-- A forgetful map, forgetting the time bound on the number of steps. -/
 def TM2ComputableInTime.toTM2Computable {α β : Type} {ea : FinEncoding α} {eb : FinEncoding β}
     {f : α → β} (h : TM2ComputableInTime ea eb f) : TM2Computable ea eb f :=
-  ⟨h.toTM2ComputableAux, fun a => TM2OutputsInTime.toTM2Outputs (h.outputsFun a)⟩
+  ⟨h.toTM2ComputableAux, fun a ↦ TM2OutputsInTime.toTM2Outputs (h.outputsFun a)⟩
 
 /-- A forgetful map, forgetting that the time function is polynomial. -/
 def TM2ComputableInPolyTime.toTM2ComputableInTime {α β : Type} {ea : FinEncoding α}

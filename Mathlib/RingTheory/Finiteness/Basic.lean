@@ -152,7 +152,7 @@ theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →
 theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactElement s := by
   classical
     -- Introduce shorthand for span of an element
-    let sp : M → Submodule R M := fun a => span R {a}
+    let sp : M → Submodule R M := fun a ↦ span R {a}
     -- Trivial rewrite lemma; a small hack since simp (only) & rw can't accomplish this smoothly.
     have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
     constructor

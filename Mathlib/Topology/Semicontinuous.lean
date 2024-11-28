@@ -358,7 +358,7 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
       _ ≤ g (f a) := gmon (min_le_right _ _)
 
   · simp only [not_exists, not_lt] at h
-    exact Filter.Eventually.of_forall fun a => hy.trans_le (gmon (h (f a)))
+    exact Filter.Eventually.of_forall fun a ↦ hy.trans_le (gmon (h (f a)))
 
 theorem ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
     (hf : LowerSemicontinuousAt f x) (gmon : Monotone g) : LowerSemicontinuousAt (g ∘ f) x := by
@@ -649,7 +649,7 @@ theorem lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ∑' i, f i x') s x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  refine lowerSemicontinuousWithinAt_iSup fun b => ?_
+  refine lowerSemicontinuousWithinAt_iSup fun b ↦ ?_
   exact lowerSemicontinuousWithinAt_sum fun i _hi => h i
 
 theorem lowerSemicontinuousAt_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, LowerSemicontinuousAt (f i) x) :

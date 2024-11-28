@@ -42,7 +42,7 @@ theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h 
 
 /-- See Note [continuity lemma statement]. -/
 protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → α} (hf : Continuous ↿f)
-    (hg : Continuous g) : Continuous fun a => IccExtend h (f a) (g a) :=
+    (hg : Continuous g) : Continuous fun a ↦ IccExtend h (f a) (g a) :=
   show Continuous (↿f ∘ fun x => (x, projIcc a b h (g x)))
   from hf.comp <| continuous_id.prod_mk <| continuous_projIcc.comp hg
 
@@ -54,6 +54,6 @@ protected theorem Continuous.Icc_extend' {f : Icc a b → β} (hf : Continuous f
 
 theorem ContinuousAt.IccExtend {x : γ} (f : γ → Icc a b → β) {g : γ → α}
     (hf : ContinuousAt (↿f) (x, projIcc a b h (g x))) (hg : ContinuousAt g x) :
-    ContinuousAt (fun a => IccExtend h (f a) (g a)) x :=
+    ContinuousAt (fun a ↦ IccExtend h (f a) (g a)) x :=
   show ContinuousAt (↿f ∘ fun x => (x, projIcc a b h (g x))) x from
     ContinuousAt.comp hf <| continuousAt_id.prod <| continuous_projIcc.continuousAt.comp hg

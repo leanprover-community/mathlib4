@@ -223,7 +223,7 @@ theorem sub {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
 theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s, Memℓp (f i) p) :
-    Memℓp (fun a => ∑ i ∈ s, f i a) p := by
+    Memℓp (fun a ↦ ∑ i ∈ s, f i a) p := by
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_

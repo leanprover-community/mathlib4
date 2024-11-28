@@ -99,7 +99,7 @@ noncomputable def induced : HasShift D A :=
           simpa using NatTrans.congr_app this X
         apply ((whiskeringLeft C D D).obj F).map_injective
         ext X
-        have eq := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
+        have eq := dcongr_arg (fun a ↦ (i a).hom.app X) (zero_add n)
         dsimp
         simp only [Induced.add_hom_app_obj, eq, shiftFunctorAdd_zero_add_hom_app,
           Functor.map_comp, eqToHom_map, Category.assoc, eqToHom_trans_assoc,
@@ -114,7 +114,7 @@ noncomputable def induced : HasShift D A :=
         apply ((whiskeringLeft C D D).obj F).map_injective
         ext X
         dsimp
-        erw [Induced.add_hom_app_obj, dcongr_arg (fun a => (i a).hom.app X) (add_zero n),
+        erw [Induced.add_hom_app_obj, dcongr_arg (fun a ↦ (i a).hom.app X) (add_zero n),
           ← cancel_mono ((s 0).map ((i n).hom.app X)), Category.assoc,
           Category.assoc, Category.assoc, Category.assoc, Category.assoc,
           Category.assoc, ← (s 0).map_comp, Iso.inv_hom_id_app, Functor.map_id, Category.comp_id,
@@ -146,7 +146,7 @@ noncomputable def induced : HasShift D A :=
           erw [← Functor.map_comp, ← Functor.map_comp, Iso.inv_hom_id_app,
             (s m₂).map_id, (s m₃).map_id]
         erw [Category.comp_id, ← NatTrans.naturality_assoc, reassoc_of% eq,
-          dcongr_arg (fun a => (i a).hom.app X) (add_assoc m₁ m₂ m₃).symm]
+          dcongr_arg (fun a ↦ (i a).hom.app X) (add_assoc m₁ m₂ m₃).symm]
         simp only [Functor.comp_obj, eqToHom_map, eqToHom_app, NatTrans.naturality_assoc,
           Induced.add_hom_app_obj, Functor.comp_map, Category.assoc, Iso.inv_hom_id_app_assoc,
           eqToHom_trans_assoc, eqToHom_refl, Category.id_comp, Category.comp_id,
@@ -212,7 +212,7 @@ def Functor.CommShift.ofInduced :
     F.CommShift A := by
   letI := HasShift.induced F A s i
   exact
-    { iso := fun a => (i a).symm
+    { iso := fun a ↦ (i a).symm
       zero := by
         ext X
         dsimp

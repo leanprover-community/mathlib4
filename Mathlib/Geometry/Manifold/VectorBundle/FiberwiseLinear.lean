@@ -245,7 +245,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
   trans' := by
     simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ ⟨φ', U', hU', hφ', h2φ', heφ'⟩
-    refine ⟨fun b => (φ b).trans (φ' b), _, hU.inter hU', ?_, ?_,
+    refine ⟨fun b ↦ (φ b).trans (φ' b), _, hU.inter hU', ?_, ?_,
       Setoid.trans (PartialHomeomorph.EqOnSource.trans' heφ heφ') ⟨?_, ?_⟩⟩
     · show
         ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤
@@ -262,7 +262,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
   symm' := fun e ↦ by
     simp only [mem_aux]
     rintro ⟨φ, U, hU, hφ, h2φ, heφ⟩
-    refine ⟨fun b => (φ b).symm, U, hU, h2φ, ?_, PartialHomeomorph.EqOnSource.symm' heφ⟩
+    refine ⟨fun b ↦ (φ b).symm, U, hU, h2φ, ?_, PartialHomeomorph.EqOnSource.symm' heφ⟩
     simp_rw [ContinuousLinearEquiv.symm_symm]
     exact hφ
   id_mem' := by

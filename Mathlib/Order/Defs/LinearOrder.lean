@@ -132,7 +132,7 @@ namespace Nat
 
 @[deprecated "No deprecation message was provided." (since := "2024-08-23")]
 protected def ltGeByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
-  Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
+  Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a ↦ absurd a h) fun a ↦ a)
 
 set_option linter.deprecated false in
 @[deprecated ltByCases (since := "2024-08-23")]

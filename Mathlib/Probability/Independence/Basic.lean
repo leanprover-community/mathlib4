@@ -635,7 +635,7 @@ lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep
 
 lemma iIndepFun.indepFun_prod_mk (hf_Indep : iIndepFun m f μ) (hf_meas : ∀ i, Measurable (f i))
     (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFun (fun a => (f i a, f j a)) (f k) μ :=
+    IndepFun (fun a ↦ (f i a, f j a)) (f k) μ :=
   Kernel.iIndepFun.indepFun_prod_mk hf_Indep hf_meas i j k hik hjk
 
 open Finset in

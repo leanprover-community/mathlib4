@@ -349,7 +349,7 @@ theorem tendsto_atBot [Preorder β] {m : α → β} {f : Filter α} :
 
 theorem tendsto_atTop_mono' [Preorder β] (l : Filter α) ⦃f₁ f₂ : α → β⦄ (h : f₁ ≤ᶠ[l] f₂)
     (h₁ : Tendsto f₁ l atTop) : Tendsto f₂ l atTop :=
-  tendsto_atTop.2 fun b => by filter_upwards [tendsto_atTop.1 h₁ b, h] with x using le_trans
+  tendsto_atTop.2 fun b ↦ by filter_upwards [tendsto_atTop.1 h₁ b, h] with x using le_trans
 
 theorem tendsto_atBot_mono' [Preorder β] (l : Filter α) ⦃f₁ f₂ : α → β⦄ (h : f₁ ≤ᶠ[l] f₂) :
     Tendsto f₂ l atBot → Tendsto f₁ l atBot :=
@@ -782,7 +782,7 @@ theorem tendsto_atTop_atBot_of_antitone [Preorder α] [Preorder β] {f : α → 
 
 theorem tendsto_atBot_atBot_of_monotone [Preorder α] [Preorder β] {f : α → β} (hf : Monotone f)
     (h : ∀ b, ∃ a, f a ≤ b) : Tendsto f atBot atBot :=
-  tendsto_iInf.2 fun b => tendsto_principal.2 <|
+  tendsto_iInf.2 fun b ↦ tendsto_principal.2 <|
     let ⟨a, ha⟩ := h b; mem_of_superset (mem_atBot a) fun _a' ha' => le_trans (hf ha') ha
 
 theorem tendsto_atBot_atTop_of_antitone [Preorder α] [Preorder β] {f : α → β} (hf : Antitone f)
@@ -1170,18 +1170,18 @@ theorem tendsto_comp_val_Iic_atBot [Preorder α] [IsDirected α (· ≥ ·)]
     Tendsto (fun x : Iic a => f x) atBot l ↔ Tendsto f atBot l :=
   tendsto_comp_val_Ici_atTop (α := αᵒᵈ)
 
-theorem map_add_atTop_eq_nat (k : ℕ) : map (fun a => a + k) atTop = atTop :=
+theorem map_add_atTop_eq_nat (k : ℕ) : map (fun a ↦ a + k) atTop = atTop :=
   map_atTop_eq_of_gc (· - k) k (fun _ _ h => Nat.add_le_add_right h k)
     (fun _ _ h => (Nat.le_sub_iff_add_le h).symm) fun a h => by rw [Nat.sub_add_cancel h]
 
-theorem map_sub_atTop_eq_nat (k : ℕ) : map (fun a => a - k) atTop = atTop :=
+theorem map_sub_atTop_eq_nat (k : ℕ) : map (fun a ↦ a - k) atTop = atTop :=
   map_atTop_eq_of_gc (· + k) 0 (fun _ _ h => Nat.sub_le_sub_right h _)
     (fun _ _ _ => Nat.sub_le_iff_le_add) fun b _ => by rw [Nat.add_sub_cancel_right]
 
-theorem tendsto_add_atTop_nat (k : ℕ) : Tendsto (fun a => a + k) atTop atTop :=
+theorem tendsto_add_atTop_nat (k : ℕ) : Tendsto (fun a ↦ a + k) atTop atTop :=
   le_of_eq (map_add_atTop_eq_nat k)
 
-theorem tendsto_sub_atTop_nat (k : ℕ) : Tendsto (fun a => a - k) atTop atTop :=
+theorem tendsto_sub_atTop_nat (k : ℕ) : Tendsto (fun a ↦ a - k) atTop atTop :=
   le_of_eq (map_sub_atTop_eq_nat k)
 
 theorem tendsto_add_atTop_iff_nat {f : ℕ → α} {l : Filter α} (k : ℕ) :
@@ -1189,8 +1189,8 @@ theorem tendsto_add_atTop_iff_nat {f : ℕ → α} {l : Filter α} (k : ℕ) :
   show Tendsto (f ∘ fun n => n + k) atTop l ↔ Tendsto f atTop l by
     rw [← tendsto_map'_iff, map_add_atTop_eq_nat]
 
-theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop = atTop :=
-  map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun _ _ h => Nat.div_le_div_right h)
+theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a ↦ a / k) atTop = atTop :=
+  map_atTop_eq_of_gc (fun b ↦ k * b + (k - 1)) 1 (fun _ _ h => Nat.div_le_div_right h)
     -- Porting note: there was a parse error in `calc`, use `simp` instead
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
     fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, add_zero]; omega
@@ -1242,7 +1242,7 @@ end IsCodirected
 it tends to `atTop` along `atTop`. -/
 theorem tendsto_atTop_of_monotone_of_filter [Preorder ι] [Preorder α] {l : Filter ι} {u : ι → α}
     (h : Monotone u) [NeBot l] (hu : Tendsto u l atTop) : Tendsto u atTop atTop :=
-  h.tendsto_atTop_atTop fun b => (hu.eventually (mem_atTop b)).exists
+  h.tendsto_atTop_atTop fun b ↦ (hu.eventually (mem_atTop b)).exists
 
 /-- If a monotone function `u : ι → α` tends to `atBot` along *some* non-trivial filter `l`, then
 it tends to `atBot` along `atBot`. -/

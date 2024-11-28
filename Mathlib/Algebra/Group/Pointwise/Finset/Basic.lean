@@ -1214,7 +1214,7 @@ theorem isUnit_iff_singleton_aux {α} [Group α] {s : Finset α} :
 
 @[to_additive (attr := simp)]
 theorem image_mul_left :
-    image (fun b => a * b) t = preimage t (fun b => a⁻¹ * b) (mul_right_injective _).injOn :=
+    image (fun b ↦ a * b) t = preimage t (fun b ↦ a⁻¹ * b) (mul_right_injective _).injOn :=
   coe_injective <| by simp
 
 @[to_additive (attr := simp)]
@@ -1223,7 +1223,7 @@ theorem image_mul_right : image (· * b) t = preimage t (· * b⁻¹) (mul_left_
 
 @[to_additive]
 theorem image_mul_left' :
-    image (fun b => a⁻¹ * b) t = preimage t (fun b => a * b) (mul_right_injective _).injOn := by
+    image (fun b ↦ a⁻¹ * b) t = preimage t (fun b ↦ a * b) (mul_right_injective _).injOn := by
   simp
 
 @[to_additive]
@@ -1473,7 +1473,7 @@ theorem op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=
   image_subset_image₂_left
 
 @[to_additive (attr := simp)]
-theorem biUnion_op_smul_finset (s t : Finset α) : (t.biUnion fun a => op a • s) = s * t :=
+theorem biUnion_op_smul_finset (s t : Finset α) : (t.biUnion fun a ↦ op a • s) = s * t :=
   biUnion_image_right
 
 @[to_additive]
@@ -1700,7 +1700,7 @@ the size of `s` divides the size of `s * t`. -/
 @[to_additive "If the right cosets of `s` by elements of `t` are disjoint (but not necessarily
 distinct!), then the size of `s` divides the size of `s + t`."]
 theorem card_dvd_card_mul_left {s t : Finset α} :
-    ((fun b => s.image fun a => a * b) '' (t : Set α)).PairwiseDisjoint id →
+    ((fun b ↦ s.image fun a ↦ a * b) '' (t : Set α)).PairwiseDisjoint id →
       s.card ∣ (s * t).card :=
   card_dvd_card_image₂_left fun _ _ => mul_left_injective _
 

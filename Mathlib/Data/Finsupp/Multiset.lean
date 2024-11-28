@@ -126,11 +126,11 @@ variable [DecidableEq α]
 the multiplicities of the elements of `s`. -/
 @[simps symm_apply]
 def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
-  toFun s := ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
+  toFun s := ⟨s.toFinset, fun a ↦ s.count a, fun a ↦ by simp⟩
   invFun f := Finsupp.toMultiset f
   map_add' _ _ := Finsupp.ext fun _ => count_add _ _ _
   right_inv f :=
-    Finsupp.ext fun a => by
+    Finsupp.ext fun a ↦ by
       simp only [Finsupp.toMultiset_apply, Finsupp.sum, Multiset.count_sum',
         Multiset.count_singleton, mul_boole, Finsupp.coe_mk, Finsupp.mem_support_iff,
         Multiset.count_nsmul, Finset.sum_ite_eq, ite_not, ite_eq_right_iff]

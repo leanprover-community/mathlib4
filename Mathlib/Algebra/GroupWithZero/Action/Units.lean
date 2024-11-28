@@ -75,7 +75,7 @@ instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
 instance instDistribMulAction [Monoid M] [AddMonoid α] [DistribMulAction M α] :
     DistribMulAction Mˣ α where
   __ := instDistribSMulUnits
-  one_smul := fun b => one_smul M b
+  one_smul := fun b ↦ one_smul M b
   mul_smul := fun x y b => mul_smul (x : M) y b
 
 instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M α] :

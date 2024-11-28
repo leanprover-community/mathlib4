@@ -190,8 +190,8 @@ def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t
 variable {t : Cone F}
 
 theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
-    m = h.lift { pt := W, π := { app := fun b => m ≫ t.π.app b } } :=
-  h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun _ => rfl
+    m = h.lift { pt := W, π := { app := fun b ↦ m ≫ t.π.app b } } :=
+  h.uniq { pt := W, π := { app := fun b ↦ m ≫ t.π.app b } } m fun _ => rfl
 
 /-- Two morphisms into a limit are equal if their compositions with
   each cone morphism are equal. -/
@@ -644,12 +644,12 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
       h.desc
         { pt := W
           ι :=
-            { app := fun b => t.ι.app b ≫ m
+            { app := fun b ↦ t.ι.app b ≫ m
               naturality := by intros; erw [← assoc, t.ι.naturality, comp_id, comp_id] } } :=
   h.uniq
     { pt := W
       ι :=
-        { app := fun b => t.ι.app b ≫ m
+        { app := fun b ↦ t.ι.app b ≫ m
           naturality := _ } }
     m fun _ => rfl
 

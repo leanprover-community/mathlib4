@@ -174,13 +174,13 @@ protected theorem all {φ ψ : L.BoundedFormula α (n + 1)}
     (h : φ ⇔[T] ψ) : φ.all ⇔[T] ψ.all := by
   simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_all]
-  exact fun M v xs => forall_congr' fun a => h.realize_bd_iff
+  exact fun M v xs => forall_congr' fun a ↦ h.realize_bd_iff
 
 protected theorem ex {φ ψ : L.BoundedFormula α (n + 1)} (h : φ ⇔[T] ψ) :
     φ.ex ⇔[T] ψ.ex := by
   simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_ex]
-  exact fun M v xs => exists_congr fun a => h.realize_bd_iff
+  exact fun M v xs => exists_congr fun a ↦ h.realize_bd_iff
 
 protected theorem not {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
     φ.not ⇔[T] ψ.not := by

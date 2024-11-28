@@ -112,7 +112,7 @@ theorem AEMeasurable.mul_const [MeasurableMul M] (hf : AEMeasurable f μ) (c : M
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.mul [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => f a * g a :=
+    Measurable fun a ↦ f a * g a :=
   measurable_mul.comp (hf.prod_mk hg)
 
 /-- Compositional version of `Measurable.mul` for use by `fun_prop`. -/
@@ -129,7 +129,7 @@ theorem AEMeasurable.mul' [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AE
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.mul [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a * g a) μ :=
+    AEMeasurable (fun a ↦ f a * g a) μ :=
   measurable_mul.comp_aemeasurable (hf.prod_mk hg)
 
 @[to_additive]
@@ -265,7 +265,7 @@ theorem AEMeasurable.div_const [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.div [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => f a / g a :=
+    Measurable fun a ↦ f a / g a :=
   measurable_div.comp (hf.prod_mk hg)
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
@@ -280,7 +280,7 @@ theorem AEMeasurable.div' [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AE
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.div [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
-    AEMeasurable (fun a => f a / g a) μ :=
+    AEMeasurable (fun a ↦ f a / g a) μ :=
   measurable_div.comp_aemeasurable (hf.prod_mk hg)
 
 @[to_additive]
@@ -841,7 +841,7 @@ theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurabl
 
 @[to_additive (attr := measurability)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
-    AEMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
+    AEMeasurable (fun a ↦ ∏ i ∈ s, f i a) μ := by
   simpa only [← Finset.prod_apply] using s.aemeasurable_prod' hf
 
 end CommMonoid

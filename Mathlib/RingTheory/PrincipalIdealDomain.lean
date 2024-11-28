@@ -131,7 +131,7 @@ theorem associated_generator_span_self [IsPrincipalIdealRing R] [IsDomain R] (r 
   exact Ideal.span_singleton_generator _
 
 theorem mem_iff_generator_dvd (S : Ideal R) [S.IsPrincipal] {x : R} : x ∈ S ↔ generator S ∣ x :=
-  (mem_iff_eq_smul_generator S).trans (exists_congr fun a => by simp only [mul_comm, smul_eq_mul])
+  (mem_iff_eq_smul_generator S).trans (exists_congr fun a ↦ by simp only [mul_comm, smul_eq_mul])
 
 theorem prime_generator_of_isPrime (S : Ideal R) [S.IsPrincipal] [is_prime : S.IsPrime]
     (ne_bot : S ≠ ⊥) : Prime (generator S) :=
@@ -279,7 +279,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
               fun hx =>
                 let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
                 hy.symm ▸ S.mul_mem_right _ hmin.1⟩⟩
-      else ⟨0, Submodule.ext fun a => by
+      else ⟨0, Submodule.ext fun a ↦ by
             rw [← @Submodule.bot_coe R R _ _ _, span_eq, Submodule.mem_bot]
             exact ⟨fun haS => by_contra fun ha0 => h ⟨a, ⟨haS, ha0⟩⟩,
               fun h₁ => h₁.symm ▸ S.zero_mem⟩⟩⟩

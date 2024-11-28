@@ -909,14 +909,14 @@ variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (
 include hp
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
-  refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
+  refine eq_univ_iff_forall.mpr fun b ↦ mem_iUnion.mpr ?_
   rcases sub_toIocDiv_zsmul_mem_Ioc hp a b with ⟨hl, hr⟩
   refine ⟨toIocDiv hp a b, ⟨lt_sub_iff_add_lt.mp hl, ?_⟩⟩
   rw [add_smul, one_smul, ← add_assoc]
   convert sub_le_iff_le_add.mp hr using 1; abel
 
 theorem iUnion_Ico_add_zsmul : ⋃ n : ℤ, Ico (a + n • p) (a + (n + 1) • p) = univ := by
-  refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
+  refine eq_univ_iff_forall.mpr fun b ↦ mem_iUnion.mpr ?_
   rcases sub_toIcoDiv_zsmul_mem_Ico hp a b with ⟨hl, hr⟩
   refine ⟨toIcoDiv hp a b, ⟨le_sub_iff_add_le.mp hl, ?_⟩⟩
   rw [add_smul, one_smul, ← add_assoc]

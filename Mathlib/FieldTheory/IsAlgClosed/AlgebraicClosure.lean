@@ -171,7 +171,7 @@ theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
 -- Porting note: the following two declarations were added during the port to be used in the
 -- definition of toStepOfLE
 private def toStepOfLE' (m n : ℕ) (h : m ≤ n) : Step k m → Step k n :=
-Nat.leRecOn h @fun a => toStepSucc k a
+Nat.leRecOn h @fun a ↦ toStepSucc k a
 
 private theorem toStepOfLE'.succ (m n : ℕ) (h : m ≤ n) :
     toStepOfLE' k m (Nat.succ n) (h.trans n.le_succ) =
@@ -428,7 +428,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
   classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]
-  refine forall_imp fun a => ?_
+  refine forall_imp fun a ↦ ?_
   by_cases haf : f.eval a = 0
   · have h0 : 0 < f.rootMultiplicity a := (rootMultiplicity_pos hf0).2 haf
     rw [derivative_rootMultiplicity_of_root haf]

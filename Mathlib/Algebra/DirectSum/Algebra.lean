@@ -135,7 +135,7 @@ This is the graded version of `LinearMap.mul`, and the linear version of `Direct
 @[simps]
 def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
   toFun a :=
-    { toFun := fun b => GradedMonoid.GMul.mul a b
+    { toFun := fun b ↦ GradedMonoid.GMul.mul a b
       map_smul' := fun r x => by
         injection (smul_comm r (GradedMonoid.mk _ a) (GradedMonoid.mk _ x)).symm
       map_add' := GNonUnitalNonAssocSemiring.mul_add _ }

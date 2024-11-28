@@ -1562,7 +1562,7 @@ namespace Int
 
 /-- Cast a `SNum` to the corresponding integer. -/
 def ofSnum : SNum → ℤ :=
-  SNum.rec' (fun a => cond a (-1) 0) fun a _p IH => cond a (2 * IH + 1) (2 * IH)
+  SNum.rec' (fun a ↦ cond a (-1) 0) fun a _p IH => cond a (2 * IH + 1) (2 * IH)
 
 instance snumCoe : Coe SNum ℤ :=
   ⟨ofSnum⟩

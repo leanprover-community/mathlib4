@@ -1054,7 +1054,7 @@ theorem inter_empty_of_inter_sUnion_empty {s t : Set α} {S : Set (Set α)} (hs 
     rw [← h]; exact inter_subset_inter_right _ (subset_sUnion_of_mem hs)
 
 theorem range_sigma_eq_iUnion_range {γ : α → Type*} (f : Sigma γ → β) :
-    range f = ⋃ a, range fun b => f ⟨a, b⟩ :=
+    range f = ⋃ a, range fun b ↦ f ⟨a, b⟩ :=
   Set.ext <| by simp
 
 theorem iUnion_eq_range_sigma (s : α → Set β) : ⋃ i, s i = range fun a : Σi, s i => a.2 := by
@@ -1436,10 +1436,10 @@ theorem univ_subtype {p : α → Prop} : (univ : Set (Subtype p)) = ⋃ (x) (h :
   Set.ext fun ⟨x, h⟩ => by simp [h]
 
 theorem range_eq_iUnion {ι} (f : ι → α) : range f = ⋃ i, {f i} :=
-  Set.ext fun a => by simp [@eq_comm α a]
+  Set.ext fun a ↦ by simp [@eq_comm α a]
 
 theorem image_eq_iUnion (f : α → β) (s : Set α) : f '' s = ⋃ i ∈ s, {f i} :=
-  Set.ext fun b => by simp [@eq_comm β b]
+  Set.ext fun b ↦ by simp [@eq_comm β b]
 
 theorem biUnion_range {f : ι → α} {g : α → Set β} : ⋃ x ∈ range f, g x = ⋃ y, g (f y) :=
   iSup_range
@@ -1663,10 +1663,10 @@ theorem image2_sInter_subset_right (s : Set α) (T : Set (Set β)) :
   rw [sInter_eq_biInter]
   exact image2_iInter₂_subset_right ..
 
-theorem prod_eq_biUnion_left : s ×ˢ t = ⋃ a ∈ s, (fun b => (a, b)) '' t := by
+theorem prod_eq_biUnion_left : s ×ˢ t = ⋃ a ∈ s, (fun b ↦ (a, b)) '' t := by
   rw [iUnion_image_left, image2_mk_eq_prod]
 
-theorem prod_eq_biUnion_right : s ×ˢ t = ⋃ b ∈ t, (fun a => (a, b)) '' s := by
+theorem prod_eq_biUnion_right : s ×ˢ t = ⋃ b ∈ t, (fun a ↦ (a, b)) '' s := by
   rw [iUnion_image_right, image2_mk_eq_prod]
 
 end Image2
@@ -1730,7 +1730,7 @@ theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
   exact hx.2 _ ha (hx.1 _ ha)
 
 theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)) :
-    ⋃ x : (a : α) → ι a, pi univ (fun a => t a (x a)) = pi univ fun a => ⋃ j : ι a, t a j := by
+    ⋃ x : (a : α) → ι a, pi univ (fun a ↦ t a (x a)) = pi univ fun a ↦ ⋃ j : ι a, t a j := by
   ext
   simp [Classical.skolem]
 

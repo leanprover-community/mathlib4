@@ -291,7 +291,7 @@ theorem compl_ne_univ_iff_nonempty (s : Finset α) : sᶜ ≠ univ ↔ s.Nonempt
 theorem compl_singleton (a : α) : ({a} : Finset α)ᶜ = univ.erase a := by
   rw [compl_eq_univ_sdiff, sdiff_singleton_eq_erase]
 
-theorem insert_inj_on' (s : Finset α) : Set.InjOn (fun a => insert a s) (sᶜ : Finset α) := by
+theorem insert_inj_on' (s : Finset α) : Set.InjOn (fun a ↦ insert a s) (sᶜ : Finset α) := by
   rw [coe_compl]
   exact s.insert_inj_on
 
@@ -325,7 +325,7 @@ theorem map_univ_equiv [Fintype β] (f : β ≃ α) : univ.map f.toEmbedding = u
 
 theorem univ_map_equiv_to_embedding {α β : Type*} [Fintype α] [Fintype β] (e : α ≃ β) :
     univ.map e.toEmbedding = univ :=
-  eq_univ_iff_forall.mpr fun b => mem_map.mpr ⟨e.symm b, mem_univ _, by simp⟩
+  eq_univ_iff_forall.mpr fun b ↦ mem_map.mpr ⟨e.symm b, mem_univ _, by simp⟩
 
 @[simp]
 theorem univ_filter_exists (f : α → β) [Fintype β] [DecidablePred fun y => ∃ x, f x = y]
@@ -497,11 +497,11 @@ This function computes by checking all terms `a : α` to find the `f a = b`, so 
 `N = Fintype.card α`.
 -/
 def invOfMemRange : Set.range f → α := fun b =>
-  Finset.choose (fun a => f a = b) Finset.univ
+  Finset.choose (fun a ↦ f a = b) Finset.univ
     ((existsUnique_congr (by simp)).mp (hf.existsUnique_of_mem_range b.property))
 
 theorem left_inv_of_invOfMemRange (b : Set.range f) : f (hf.invOfMemRange b) = b :=
-  (Finset.choose_spec (fun a => f a = b) _ _).right
+  (Finset.choose_spec (fun a ↦ f a = b) _ _).right
 
 @[simp]
 theorem right_inv_of_invOfMemRange (a : α) : hf.invOfMemRange ⟨f a, Set.mem_range_self a⟩ = a :=
@@ -888,11 +888,11 @@ instance Multiplicative.fintype : ∀ [Fintype α], Fintype (Multiplicative α) 
 
 /-- Given that `α × β` is a fintype, `α` is also a fintype. -/
 def Fintype.prodLeft {α β} [DecidableEq α] [Fintype (α × β)] [Nonempty β] : Fintype α :=
-  ⟨(@univ (α × β) _).image Prod.fst, fun a => by simp⟩
+  ⟨(@univ (α × β) _).image Prod.fst, fun a ↦ by simp⟩
 
 /-- Given that `α × β` is a fintype, `β` is also a fintype. -/
 def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α] : Fintype β :=
-  ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
+  ⟨(@univ (α × β) _).image Prod.snd, fun b ↦ by simp⟩
 
 instance ULift.fintype (α : Type*) [Fintype α] : Fintype (ULift α) :=
   Fintype.ofEquiv _ Equiv.ulift.symm
@@ -1061,7 +1061,7 @@ variable [Fintype α] [DecidableEq β] {f : α → β}
 /-- `bijInv f` is the unique inverse to a bijection `f`. This acts
   as a computable alternative to `Function.invFun`. -/
 def bijInv (f_bij : Bijective f) (b : β) : α :=
-  Fintype.choose (fun a => f a = b)
+  Fintype.choose (fun a ↦ f a = b)
     (by
       rcases f_bij.right b with ⟨a', fa_eq_b⟩
       rw [← fa_eq_b]

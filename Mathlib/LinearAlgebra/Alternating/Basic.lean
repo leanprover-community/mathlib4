@@ -252,13 +252,13 @@ alternating map taking values in the space of functions `Π i, N i`. -/
 @[simps!]
 def pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
     (f : ∀ i, M [⋀^ι]→ₗ[R] N i) : M [⋀^ι]→ₗ[R] (∀ i, N i) :=
-  { MultilinearMap.pi fun a => (f a).toMultilinearMap with
-    map_eq_zero_of_eq' := fun _ _ _ h hne => funext fun a => (f a).map_eq_zero_of_eq _ h hne }
+  { MultilinearMap.pi fun a ↦ (f a).toMultilinearMap with
+    map_eq_zero_of_eq' := fun _ _ _ h hne => funext fun a ↦ (f a).map_eq_zero_of_eq _ h hne }
 
 @[simp]
 theorem coe_pi {ι' : Type*} {N : ι' → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
     (f : ∀ i, M [⋀^ι]→ₗ[R] N i) :
-    (pi f : MultilinearMap R (fun _ : ι => M) (∀ i, N i)) = MultilinearMap.pi fun a => f a :=
+    (pi f : MultilinearMap R (fun _ : ι => M) (∀ i, N i)) = MultilinearMap.pi fun a ↦ f a :=
   rfl
 
 /-- Given an alternating `R`-multilinear map `f` taking values in `R`, `f.smul_right z` is the map

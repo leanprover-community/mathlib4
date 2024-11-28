@@ -195,7 +195,7 @@ lemma continuous_dual_apply (x : E) (y : F⋆) : Continuous fun (A : E →WOT[�
 
 @[fun_prop]
 lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g : α → E →WOT[𝕜] F}
-    (h : ∀ x (y : F⋆), Continuous fun a => y (g a x)) : Continuous g :=
+    (h : ∀ x (y : F⋆), Continuous fun a ↦ y (g a x)) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr fun p => h p.1 p.2)
 
 lemma isInducing_inducingFn : IsInducing (inducingFn 𝕜 E F) := ⟨rfl⟩
@@ -213,7 +213,7 @@ open Filter in
 `A : E →WOT[𝕜] F` along filter `l` iff `y (f a x)` tends to `y (A x)` along the same filter. -/
 lemma tendsto_iff_forall_dual_apply_tendsto {α : Type*} {l : Filter α} {f : α → E →WOT[𝕜] F}
     {A : E →WOT[𝕜] F} :
-    Tendsto f l (𝓝 A) ↔ ∀ x (y : F⋆), Tendsto (fun a => y (f a x)) l (𝓝 (y (A x))) := by
+    Tendsto f l (𝓝 A) ↔ ∀ x (y : F⋆), Tendsto (fun a ↦ y (f a x)) l (𝓝 (y (A x))) := by
   simp [isInducing_inducingFn.tendsto_nhds_iff, tendsto_pi_nhds]
 
 lemma le_nhds_iff_forall_dual_apply_le_nhds {l : Filter (E →WOT[𝕜] F)} {A : E →WOT[𝕜] F} :

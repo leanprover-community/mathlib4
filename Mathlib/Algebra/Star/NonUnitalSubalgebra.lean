@@ -431,7 +431,7 @@ theorem range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) 
 /-- Restrict the codomain of a non-unital star algebra homomorphism. -/
 def codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →⋆ₙₐ[R] S where
   toNonUnitalAlgHom := NonUnitalAlgHom.codRestrict f S.toNonUnitalSubalgebra hf
-  map_star' := fun a => Subtype.ext <| map_star f a
+  map_star' := fun a ↦ Subtype.ext <| map_star f a
 
 @[simp]
 theorem subtype_comp_codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :

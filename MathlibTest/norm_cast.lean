@@ -91,7 +91,7 @@ instance : Zero (WithZero α) := ⟨none⟩
 instance [One α] : One (WithZero α) := ⟨some 1⟩
 
 instance [Mul α] : MulZeroClass (WithZero α) where
-  mul o₁ o₂ := o₁.bind fun a => o₂.map fun b => a * b
+  mul o₁ o₂ := o₁.bind fun a ↦ o₂.map fun b ↦ a * b
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl
 

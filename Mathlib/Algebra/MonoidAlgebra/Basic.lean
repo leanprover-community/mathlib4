@@ -46,7 +46,7 @@ values on the functions `single a 1`. -/
 theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
   NonUnitalAlgHom.to_distribMulActionHom_injective <|
-    Finsupp.distribMulActionHom_ext' fun a => DistribMulActionHom.ext_ring (h a)
+    Finsupp.distribMulActionHom_ext' fun a ↦ DistribMulActionHom.ext_ring (h a)
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -61,7 +61,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     (G →ₙ* A) ≃ (MonoidAlgebra k G →ₙₐ[k] A) where
   toFun f :=
     { liftAddHom fun x => (smulAddHom k A).flip (f x) with
-      toFun := fun a => a.sum fun m t => t • f m
+      toFun := fun a ↦ a.sum fun m t => t • f m
       map_smul' := fun t' a => by
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
         beta_reduce
@@ -156,7 +156,7 @@ def liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (
 values on the functions `single a 1`. -/
 theorem algHom_ext ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
-  AlgHom.toLinearMap_injective <| Finsupp.lhom_ext' fun a => LinearMap.ext_ring (h a)
+  AlgHom.toLinearMap_injective <| Finsupp.lhom_ext' fun a ↦ LinearMap.ext_ring (h a)
 
 -- Porting note: The priority must be `high`.
 /-- See note [partially-applied ext lemmas]. -/
@@ -370,7 +370,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
   { (MonoidAlgebra.liftMagma k : (Multiplicative G →ₙ* A) ≃ (_ →ₙₐ[k] A)) with
     toFun := fun f =>
       { (MonoidAlgebra.liftMagma k f : _) with
-        toFun := fun a => sum a fun m t => t • f (Multiplicative.ofAdd m) }
+        toFun := fun a ↦ sum a fun m t => t • f (Multiplicative.ofAdd m) }
     invFun := fun F => F.toMulHom.comp (ofMagma k G) }
 
 end NonUnitalNonAssocAlgebra

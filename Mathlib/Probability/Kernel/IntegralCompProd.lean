@@ -43,7 +43,7 @@ variable {α β γ E : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace 
 namespace ProbabilityTheory
 
 theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
-    HasFiniteIntegral (fun b => (η (a, b) (Prod.mk b ⁻¹' s)).toReal) (κ a) := by
+    HasFiniteIntegral (fun b ↦ (η (a, b) (Prod.mk b ⁻¹' s)).toReal) (κ a) := by
   let t := toMeasurable ((κ ⊗ₖ η) a) s
   simp_rw [HasFiniteIntegral, ennnorm_eq_ofReal toReal_nonneg]
   calc
@@ -58,7 +58,7 @@ theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ 
     _ < ⊤ := h2s.lt_top
 
 theorem integrable_kernel_prod_mk_left (a : α) {s : Set (β × γ)} (hs : MeasurableSet s)
-    (h2s : (κ ⊗ₖ η) a s ≠ ∞) : Integrable (fun b => (η (a, b) (Prod.mk b ⁻¹' s)).toReal) (κ a) := by
+    (h2s : (κ ⊗ₖ η) a s ≠ ∞) : Integrable (fun b ↦ (η (a, b) (Prod.mk b ⁻¹' s)).toReal) (κ a) := by
   constructor
   · exact (measurable_kernel_prod_mk_left' hs a).ennreal_toReal.aestronglyMeasurable
   · exact hasFiniteIntegral_prod_mk_left a h2s

@@ -85,9 +85,9 @@ theorem isLeast_lfp : IsLeast (fixedPoints f) f.lfp :=
 theorem lfp_induction {p : α → Prop} (step : ∀ a, p a → a ≤ f.lfp → p (f a))
     (hSup : ∀ s, (∀ a ∈ s, p a) → p (sSup s)) : p f.lfp := by
   set s := { a | a ≤ f.lfp ∧ p a }
-  specialize hSup s fun a => And.right
+  specialize hSup s fun a ↦ And.right
   suffices sSup s = f.lfp from this ▸ hSup
-  have h : sSup s ≤ f.lfp := sSup_le fun b => And.left
+  have h : sSup s ≤ f.lfp := sSup_le fun b ↦ And.left
   have hmem : f (sSup s) ∈ s := ⟨f.map_le_lfp h, step _ hSup h⟩
   exact h.antisymm (f.lfp_le <| le_sSup hmem)
 

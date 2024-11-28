@@ -136,7 +136,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
 
 theorem injective_id : Injective (@id α) := fun _a₁ _a₂ h => h
 
-theorem surjective_id : Surjective (@id α) := fun a => ⟨a, rfl⟩
+theorem surjective_id : Surjective (@id α) := fun a ↦ ⟨a, rfl⟩
 
 theorem bijective_id : Bijective (@id α) :=
   ⟨injective_id, surjective_id⟩

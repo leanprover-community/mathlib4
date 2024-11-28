@@ -83,16 +83,16 @@ section ToFin
 variable {α : Type*} [Preorder α] {f : α → Fin (n + 1)}
 
 lemma strictMono_pred_comp (hf : ∀ a, f a ≠ 0) (hf₂ : StrictMono f) :
-    StrictMono (fun a => pred (f a) (hf a)) := fun _ _ h => pred_lt_pred_iff.2 (hf₂ h)
+    StrictMono (fun a ↦ pred (f a) (hf a)) := fun _ _ h => pred_lt_pred_iff.2 (hf₂ h)
 
 lemma monotone_pred_comp (hf : ∀ a, f a ≠ 0) (hf₂ : Monotone f) :
-    Monotone (fun a => pred (f a) (hf a)) := fun _ _ h => pred_le_pred_iff.2 (hf₂ h)
+    Monotone (fun a ↦ pred (f a) (hf a)) := fun _ _ h => pred_le_pred_iff.2 (hf₂ h)
 
 lemma strictMono_castPred_comp (hf : ∀ a, f a ≠ last n) (hf₂ : StrictMono f) :
-    StrictMono (fun a => castPred (f a) (hf a)) := fun _ _ h => castPred_lt_castPred_iff.2 (hf₂ h)
+    StrictMono (fun a ↦ castPred (f a) (hf a)) := fun _ _ h => castPred_lt_castPred_iff.2 (hf₂ h)
 
 lemma monotone_castPred_comp (hf : ∀ a, f a ≠ last n) (hf₂ : Monotone f) :
-    Monotone (fun a => castPred (f a) (hf a)) := fun _ _ h => castPred_le_castPred_iff.2 (hf₂ h)
+    Monotone (fun a ↦ castPred (f a) (hf a)) := fun _ _ h => castPred_le_castPred_iff.2 (hf₂ h)
 
 end ToFin
 

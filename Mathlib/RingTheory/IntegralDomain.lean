@@ -36,10 +36,10 @@ section CancelMonoidWithZero
 -- There doesn't seem to be a better home for these right now
 variable {M : Type*} [CancelMonoidWithZero M] [Finite M]
 
-theorem mul_right_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b => a * b :=
+theorem mul_right_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b ↦ a * b :=
   Finite.injective_iff_bijective.1 <| mul_right_injective₀ ha
 
-theorem mul_left_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b => b * a :=
+theorem mul_left_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b ↦ b * a :=
   Finite.injective_iff_bijective.1 <| mul_left_injective₀ ha
 
 /-- Every finite nontrivial cancel_monoid_with_zero is a group_with_zero. -/
@@ -47,7 +47,7 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
     ‹CancelMonoidWithZero M› with
-    inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
+    inv := fun a ↦ if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
       simp only [Inv.inv, dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _

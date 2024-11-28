@@ -59,7 +59,7 @@ def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
 instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lift X.asLimitCone) :=
   CompHausLike.isIso_of_bijective _
     (by
-      refine ⟨fun a b h => ?_, fun a => ?_⟩
+      refine ⟨fun a b h => ?_, fun a ↦ ?_⟩
       · refine DiscreteQuotient.eq_of_forall_proj_eq fun S => ?_
         apply_fun fun f : (limitCone.{u, u} X.diagram).pt => f.val S at h
         exact h

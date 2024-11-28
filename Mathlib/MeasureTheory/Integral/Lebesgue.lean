@@ -98,7 +98,7 @@ theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a,
   lintegral_mono hfg
 
 theorem lintegral_mono_nnreal {f g : α → ℝ≥0} (h : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
-  lintegral_mono fun a => ENNReal.coe_le_coe.2 (h a)
+  lintegral_mono fun a ↦ ENNReal.coe_le_coe.2 (h a)
 
 theorem iSup_lintegral_measurable_le_eq_lintegral (f : α → ℝ≥0∞) :
     ⨆ (g : α → ℝ≥0∞) (_ : Measurable g) (_ : g ≤ f), ∫⁻ a, g a ∂μ = ∫⁻ a, f a ∂μ := by
@@ -188,7 +188,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
     le_antisymm (iSup₂_le fun φ hφ ↦ ?_) (iSup_mono' fun φ ↦ ⟨φ.map ((↑) : ℝ≥0 → ℝ≥0∞), le_rfl⟩)
   by_cases h : ∀ᵐ a ∂μ, φ a ≠ ∞
   · let ψ := φ.map ENNReal.toNNReal
-    replace h : ψ.map ((↑) : ℝ≥0 → ℝ≥0∞) =ᵐ[μ] φ := h.mono fun a => ENNReal.coe_toNNReal
+    replace h : ψ.map ((↑) : ℝ≥0 → ℝ≥0∞) =ᵐ[μ] φ := h.mono fun a ↦ ENNReal.coe_toNNReal
     have : ∀ x, ↑(ψ x) ≤ f x := fun x => le_trans ENNReal.coe_toNNReal_le_self (hφ x)
     exact le_iSup₂_of_le (φ.map ENNReal.toNNReal) this (ge_of_eq <| lintegral_congr h)
   · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_zero_iff_ae_nmem.1 h
@@ -352,7 +352,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   refine ENNReal.le_of_forall_lt_one_mul_le fun a ha => ?_
   rcases ENNReal.lt_iff_exists_coe.1 ha with ⟨r, rfl, _⟩
   have ha : r < 1 := ENNReal.coe_lt_coe.1 ha
-  let rs := s.map fun a => r * a
+  let rs := s.map fun a ↦ r * a
   have eq_rs : rs.map c = (const α r : α →ₛ ℝ≥0∞) * map c s := rfl
   have eq : ∀ p, rs.map c ⁻¹' {p} = ⋃ n, rs.map c ⁻¹' {p} ∩ { a | p ≤ f n a } := by
     intro p
@@ -547,13 +547,13 @@ integral of `f + g` equals the sum of integrals. This lemma assumes that `f` is 
 theorem lintegral_add_left {f : α → ℝ≥0∞} (hf : Measurable f) (g : α → ℝ≥0∞) :
     ∫⁻ a, f a + g a ∂μ = ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ := by
   refine le_antisymm ?_ (le_lintegral_add _ _)
-  rcases exists_measurable_le_lintegral_eq μ fun a => f a + g a with ⟨φ, hφm, hφ_le, hφ_eq⟩
+  rcases exists_measurable_le_lintegral_eq μ fun a ↦ f a + g a with ⟨φ, hφm, hφ_le, hφ_eq⟩
   calc
     ∫⁻ a, f a + g a ∂μ = ∫⁻ a, φ a ∂μ := hφ_eq
-    _ ≤ ∫⁻ a, f a + (φ a - f a) ∂μ := lintegral_mono fun a => le_add_tsub
+    _ ≤ ∫⁻ a, f a + (φ a - f a) ∂μ := lintegral_mono fun a ↦ le_add_tsub
     _ = ∫⁻ a, f a ∂μ + ∫⁻ a, φ a - f a ∂μ := lintegral_add_aux hf (hφm.sub hf)
     _ ≤ ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ :=
-      add_le_add_left (lintegral_mono fun a => tsub_le_iff_left.2 <| hφ_le a) _
+      add_le_add_left (lintegral_mono fun a ↦ tsub_le_iff_left.2 <| hφ_le a) _
 
 theorem lintegral_add_left' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (g : α → ℝ≥0∞) :
     ∫⁻ a, f a + g a ∂μ = ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ := by
@@ -1090,7 +1090,7 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
   have : ∀ a, ⨅ b, f b a = ⨅ n, f (h_directed.sequence f n) a := by
     refine fun a =>
       le_antisymm (le_iInf fun n => iInf_le _ _)
-        (le_iInf fun b => iInf_le_of_le (Encodable.encode b + 1) ?_)
+        (le_iInf fun b ↦ iInf_le_of_le (Encodable.encode b + 1) ?_)
     exact h_directed.sequence_le b a
   -- Porting note: used `∘` below to deal with its reduced reducibility
   calc
@@ -1101,9 +1101,9 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
       · exact hf_int _
       · exact fun n => hf _
     _ = ⨅ b, ∫⁻ a, f b a ∂μ := by
-      refine le_antisymm (le_iInf fun b => ?_) (le_iInf fun n => ?_)
+      refine le_antisymm (le_iInf fun b ↦ ?_) (le_iInf fun n => ?_)
       · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_directed.sequence_le b)
-      · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
+      · exact iInf_le (fun b ↦ ∫⁻ a, f b a ∂μ) _
 
 /-- Known as Fatou's lemma, version with `AEMeasurable` functions -/
 theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
@@ -1236,15 +1236,15 @@ theorem lintegral_iSup_directed_of_measurable [Countable β] {f : β → α → 
   inhabit β
   have : ∀ a, ⨆ b, f b a = ⨆ n, f (h_directed.sequence f n) a := by
     intro a
-    refine le_antisymm (iSup_le fun b => ?_) (iSup_le fun n => le_iSup (fun n => f n a) _)
+    refine le_antisymm (iSup_le fun b ↦ ?_) (iSup_le fun n => le_iSup (fun n => f n a) _)
     exact le_iSup_of_le (encode b + 1) (h_directed.le_sequence b a)
   calc
     ∫⁻ a, ⨆ b, f b a ∂μ = ∫⁻ a, ⨆ n, f (h_directed.sequence f n) a ∂μ := by simp only [this]
     _ = ⨆ n, ∫⁻ a, f (h_directed.sequence f n) a ∂μ :=
       (lintegral_iSup (fun n => hf _) h_directed.sequence_mono)
     _ = ⨆ b, ∫⁻ a, f b a ∂μ := by
-      refine le_antisymm (iSup_le fun n => ?_) (iSup_le fun b => ?_)
-      · exact le_iSup (fun b => ∫⁻ a, f b a ∂μ) _
+      refine le_antisymm (iSup_le fun n => ?_) (iSup_le fun b ↦ ?_)
+      · exact le_iSup (fun b ↦ ∫⁻ a, f b a ∂μ) _
       · exact le_iSup_of_le (encode b + 1) (lintegral_mono <| h_directed.le_sequence b)
 
 /-- Monotone convergence for a supremum over a directed family and indexed by a countable type. -/
@@ -1288,8 +1288,8 @@ theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i
   · intro s t
     use s ∪ t
     constructor
-    · exact fun a => Finset.sum_le_sum_of_subset Finset.subset_union_left
-    · exact fun a => Finset.sum_le_sum_of_subset Finset.subset_union_right
+    · exact fun a ↦ Finset.sum_le_sum_of_subset Finset.subset_union_left
+    · exact fun a ↦ Finset.sum_le_sum_of_subset Finset.subset_union_right
 
 open Measure
 
@@ -1572,13 +1572,13 @@ alias set_lintegral_dirac := setLIntegral_dirac
 theorem lintegral_count' {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂count = ∑' a, f a := by
   rw [count, lintegral_sum_measure]
   congr
-  exact funext fun a => lintegral_dirac' a hf
+  exact funext fun a ↦ lintegral_dirac' a hf
 
 theorem lintegral_count [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
     ∫⁻ a, f a ∂count = ∑' a, f a := by
   rw [count, lintegral_sum_measure]
   congr
-  exact funext fun a => lintegral_dirac a f
+  exact funext fun a ↦ lintegral_dirac a f
 
 theorem _root_.ENNReal.tsum_const_eq [MeasurableSingletonClass α] (c : ℝ≥0∞) :
     ∑' _ : α, c = c * Measure.count (univ : Set α) := by rw [← lintegral_count, lintegral_const]

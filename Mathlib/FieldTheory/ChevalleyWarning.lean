@@ -188,7 +188,7 @@ Then the number of common solutions of the `f₁` and `f₂` is divisible by `p`
 theorem char_dvd_card_solutions_of_add_lt {f₁ f₂ : MvPolynomial σ K}
     (h : f₁.totalDegree + f₂.totalDegree < Fintype.card σ) :
     p ∣ Fintype.card { x : σ → K // eval x f₁ = 0 ∧ eval x f₂ = 0 } := by
-  let F : Bool → MvPolynomial σ K := fun b => cond b f₂ f₁
+  let F : Bool → MvPolynomial σ K := fun b ↦ cond b f₂ f₁
   have : (∑ b : Bool, (F b).totalDegree) < Fintype.card σ := (add_comm _ _).trans_lt h
   simpa only [Bool.forall_bool] using char_dvd_card_solutions_of_fintype_sum_lt p this
 

@@ -851,7 +851,7 @@ theorem countable_meas_level_set_pos₀ {α β : Type*} {_ : MeasurableSpace α}
   have level_sets_disjoint : Pairwise (Disjoint on fun t : β => { a : α | g a = t }) :=
     fun s t hst => Disjoint.preimage g (disjoint_singleton.mpr hst)
   exact Measure.countable_meas_pos_of_disjoint_iUnion₀
-    (fun b => g_mble (‹MeasurableSingletonClass β›.measurableSet_singleton b))
+    (fun b ↦ g_mble (‹MeasurableSingletonClass β›.measurableSet_singleton b))
     ((fun _ _ h ↦ Disjoint.aedisjoint (level_sets_disjoint h)))
 
 theorem countable_meas_level_set_pos {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
@@ -1312,7 +1312,7 @@ theorem exists_ne_forall_mem_nhds_pos_measure_preimage {β} [TopologicalSpace β
     ∃ a b : β, a ≠ b ∧ (∀ s ∈ 𝓝 a, 0 < μ (f ⁻¹' s)) ∧ ∀ t ∈ 𝓝 b, 0 < μ (f ⁻¹' t) := by
   -- We use an `OuterMeasure` so that the proof works without `Measurable f`
   set m : OuterMeasure β := OuterMeasure.map f μ.toOuterMeasure
-  replace h : ∀ b : β, m {b}ᶜ ≠ 0 := fun b => not_eventually.mpr (h b)
+  replace h : ∀ b : β, m {b}ᶜ ≠ 0 := fun b ↦ not_eventually.mpr (h b)
   inhabit β
   have : m univ ≠ 0 := ne_bot_of_le_ne_bot (h default) (measure_mono <| subset_univ _)
   rcases exists_mem_forall_mem_nhdsWithin_pos_measure this with ⟨b, -, hb⟩

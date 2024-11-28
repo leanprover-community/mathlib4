@@ -218,7 +218,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
   simp only [mem_bot]; ext x
   haveI := Classical.decPred fun x => x ∈ s
   by_cases xs : x ∈ s
-  · have : Finsupp.sum l (fun a => Finsupp.single (f a)) (f x) = 0 := by
+  · have : Finsupp.sum l (fun a ↦ Finsupp.single (f a)) (f x) = 0 := by
       rw [h₂]
       rfl
     rw [Finsupp.sum_apply, Finsupp.sum_eq_single x, single_eq_same] at this

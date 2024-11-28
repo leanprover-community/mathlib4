@@ -54,7 +54,7 @@ def codRestrict (α : Type*) {β : Type*} (bs : Set β) :
     { f : α ↪ β // ∀ a, f a ∈ bs } ≃
       (α ↪ bs) where
   toFun f := (f : α ↪ β).codRestrict bs f.prop
-  invFun f := ⟨f.trans (Function.Embedding.subtype _), fun a => (f a).prop⟩
+  invFun f := ⟨f.trans (Function.Embedding.subtype _), fun a ↦ (f a).prop⟩
   left_inv x := by ext; rfl
   right_inv x := by ext; rfl
 

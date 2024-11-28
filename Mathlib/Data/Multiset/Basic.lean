@@ -296,7 +296,7 @@ end Mem
 
 
 instance : Singleton α (Multiset α) :=
-  ⟨fun a => a ::ₘ 0⟩
+  ⟨fun a ↦ a ::ₘ 0⟩
 
 instance : LawfulSingleton α (Multiset α) :=
   ⟨fun _ => rfl⟩
@@ -372,7 +372,7 @@ theorem mem_of_subset {s t : Multiset α} {a : α} (h : s ⊆ t) : a ∈ s → a
   @h _
 
 @[simp]
-theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun a => (not_mem_nil a).elim
+theorem zero_subset (s : Multiset α) : 0 ⊆ s := fun a ↦ (not_mem_nil a).elim
 
 theorem subset_cons (s : Multiset α) (a : α) : s ⊆ a ::ₘ s := fun _ => mem_cons_of_mem
 
@@ -1424,7 +1424,7 @@ instance decidableDforallMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a 
     Decidable (∀ (a) (h : a ∈ m), p a h) :=
   @decidable_of_iff _ _
     (Iff.intro (fun h a ha => h ⟨a, ha⟩ (mem_attach _ _)) fun h ⟨_a, _ha⟩ _ => h _ _)
-    (@Multiset.decidableForallMultiset _ m.attach (fun a => p a.1 a.2) _)
+    (@Multiset.decidableForallMultiset _ m.attach (fun a ↦ p a.1 a.2) _)
 
 /-- decidable equality for functions whose domain is bounded by multisets -/
 instance decidableEqPiMultiset {β : α → Type*} [∀ a, DecidableEq (β a)] :
@@ -1441,7 +1441,7 @@ instance decidableDexistsMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a 
   @decidable_of_iff _ _
     (Iff.intro (fun ⟨⟨a, ha₁⟩, _, ha₂⟩ => ⟨a, ha₁, ha₂⟩) fun ⟨a, ha₁, ha₂⟩ =>
       ⟨⟨a, ha₁⟩, mem_attach _ _, ha₂⟩)
-    (@Multiset.decidableExistsMultiset { a // a ∈ m } m.attach (fun a => p a.1 a.2) _)
+    (@Multiset.decidableExistsMultiset { a // a ∈ m } m.attach (fun a ↦ p a.1 a.2) _)
 
 end DecidablePiExists
 
@@ -1841,17 +1841,17 @@ theorem filter_inter [DecidableEq α] (s t : Multiset α) :
 
 @[simp]
 theorem filter_filter (q) [DecidablePred q] (s : Multiset α) :
-    filter p (filter q s) = filter (fun a => p a ∧ q a) s :=
+    filter p (filter q s) = filter (fun a ↦ p a ∧ q a) s :=
   Quot.inductionOn s fun l => by simp
 
 lemma filter_comm (q) [DecidablePred q] (s : Multiset α) :
     filter p (filter q s) = filter q (filter p s) := by simp [and_comm]
 
 theorem filter_add_filter (q) [DecidablePred q] (s : Multiset α) :
-    filter p s + filter q s = filter (fun a => p a ∨ q a) s + filter (fun a => p a ∧ q a) s :=
+    filter p s + filter q s = filter (fun a ↦ p a ∨ q a) s + filter (fun a ↦ p a ∧ q a) s :=
   Multiset.induction_on s rfl fun a s IH => by by_cases p a <;> by_cases q a <;> simp [*]
 
-theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) s = s := by
+theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a ↦ ¬p a) s = s := by
   rw [filter_add_filter, filter_eq_self.2, filter_eq_nil.2]
   · simp only [add_zero]
   · simp [Decidable.em, -Bool.not_eq_true, -not_and, not_and_or, or_comm]
@@ -1865,8 +1865,8 @@ theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map 
 
 -- TODO: rename to `map_filter` when the deprecated alias above is removed.
 lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
-    [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
-    (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+    [DecidablePred fun b ↦ ∃ a, p a ∧ f a = b] :
+    (s.filter p).map f = (s.map f).filter fun b ↦ ∃ a, p a ∧ f a = b := by
   simp [comp_def, filter_map, hf.eq_iff]
 
 lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
@@ -2025,10 +2025,10 @@ theorem countP_le_of_le {s t} (h : s ≤ t) : countP p s ≤ countP p t := by
 
 @[simp]
 theorem countP_filter (q) [DecidablePred q] (s : Multiset α) :
-    countP p (filter q s) = countP (fun a => p a ∧ q a) s := by simp [countP_eq_card_filter]
+    countP p (filter q s) = countP (fun a ↦ p a ∧ q a) s := by simp [countP_eq_card_filter]
 
 theorem countP_eq_countP_filter_add (s) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
-    countP p s = (filter q s).countP p + (filter (fun a => ¬q a) s).countP p :=
+    countP p s = (filter q s).countP p + (filter (fun a ↦ ¬q a) s).countP p :=
   Quot.inductionOn s fun l => by
     convert l.countP_eq_countP_filter_add (p ·) (q ·)
     simp [countP_filter]
@@ -2042,7 +2042,7 @@ theorem countP_False {s : Multiset α} : countP (fun _ => False) s = 0 :=
   Quot.inductionOn s fun _l => congrFun List.countP_false _
 
 theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
-    countP p (map f s) = card (s.filter fun a => p (f a)) := by
+    countP p (map f s) = card (s.filter fun a ↦ p (f a)) := by
   refine Multiset.induction_on s ?_ fun a t IH => ?_
   · rw [map_zero, countP_zero, filter_zero, card_zero]
   · rw [map_cons, countP_cons, IH, filter_cons, card_add, apply_ite card, card_zero, card_singleton,
@@ -2256,18 +2256,18 @@ theorem coe_inter (s t : List α) : (s ∩ t : Multiset α) = (s.bagInter t : Li
 
 theorem le_iff_count {s t : Multiset α} : s ≤ t ↔ ∀ a, count a s ≤ count a t :=
   ⟨fun h a => count_le_of_le a h, fun al => by
-    rw [← (ext.2 fun a => by simp [max_eq_right (al a)] : s ∪ t = t)]; apply le_union_left⟩
+    rw [← (ext.2 fun a ↦ by simp [max_eq_right (al a)] : s ∪ t = t)]; apply le_union_left⟩
 
 instance : DistribLattice (Multiset α) :=
   { le_sup_inf := fun s t u =>
       le_of_eq <|
         Eq.symm <|
-          ext.2 fun a => by
+          ext.2 fun a ↦ by
             simp only [max_min_distrib_left, Multiset.count_inter, Multiset.sup_eq_union,
               Multiset.count_union, Multiset.inf_eq_inter] }
 
 theorem count_map {α β : Type*} (f : α → β) (s : Multiset α) [DecidableEq β] (b : β) :
-    count b (map f s) = card (s.filter fun a => b = f a) := by
+    count b (map f s) = card (s.filter fun a ↦ b = f a) := by
   simp [Bool.beq_eq_decide_eq, eq_comm, count, countP_map]
 
 /-- `Multiset.map f` preserves `count` if `f` is injective on the set of elements contained in
@@ -2342,7 +2342,7 @@ section Embedding
 theorem map_le_map_iff {f : α → β} (hf : Function.Injective f) {s t : Multiset α} :
     s.map f ≤ t.map f ↔ s ≤ t := by
   classical
-    refine ⟨fun h => le_iff_count.mpr fun a => ?_, map_le_map⟩
+    refine ⟨fun h => le_iff_count.mpr fun a ↦ ?_, map_le_map⟩
     simpa [count_map_eq_count' f _ hf] using le_iff_count.mp h (f a)
 
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a multiset to its
@@ -2592,7 +2592,7 @@ theorem map_mk_eq_map_mk_of_rel {r : α → α → Prop} {s t : Multiset α} (hs
 theorem exists_multiset_eq_map_quot_mk {r : α → α → Prop} (s : Multiset (Quot r)) :
     ∃ t : Multiset α, s = t.map (Quot.mk r) :=
   Multiset.induction_on s ⟨0, rfl⟩ fun a _s ⟨t, ht⟩ =>
-    Quot.inductionOn a fun a => ht.symm ▸ ⟨a ::ₘ t, (map_cons _ _ _).symm⟩
+    Quot.inductionOn a fun a ↦ ht.symm ▸ ⟨a ::ₘ t, (map_cons _ _ _).symm⟩
 
 theorem induction_on_multiset_quot {r : α → α → Prop} {p : Multiset (Quot r) → Prop}
     (s : Multiset (Quot r)) : (∀ s : Multiset α, p (s.map (Quot.mk r))) → p s :=

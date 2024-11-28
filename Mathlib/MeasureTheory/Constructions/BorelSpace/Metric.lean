@@ -74,7 +74,7 @@ theorem measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
 
 @[measurability, fun_prop]
 theorem Measurable.dist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun b => dist (f b) (g b) :=
+    Measurable fun b ↦ dist (f b) (g b) :=
   (@continuous_dist α _).measurable2 hf hg
 
 @[measurability]
@@ -83,7 +83,7 @@ theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
 
 @[measurability, fun_prop]
 theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun b => nndist (f b) (g b) :=
+    Measurable fun b ↦ nndist (f b) (g b) :=
   (@continuous_nndist α _).measurable2 hf hg
 
 end
@@ -170,12 +170,12 @@ theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
 
 @[measurability, fun_prop]
 theorem Measurable.edist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun b => edist (f b) (g b) :=
+    Measurable fun b ↦ edist (f b) (g b) :=
   (@continuous_edist α _).measurable2 hf hg
 
 @[measurability, fun_prop]
 theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun a => edist (f a) (g a)) μ :=
+    (hg : AEMeasurable g μ) : AEMeasurable (fun a ↦ edist (f a) (g a)) μ :=
   (@continuous_edist α _).aemeasurable2 hf hg
 
 end PseudoEMetricSpace
@@ -219,12 +219,12 @@ theorem measurable_norm : Measurable (norm : α → ℝ) :=
   continuous_norm.measurable
 
 @[measurability, fun_prop]
-theorem Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a => norm (f a) :=
+theorem Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a ↦ norm (f a) :=
   measurable_norm.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun a => norm (f a)) μ :=
+    AEMeasurable (fun a ↦ norm (f a)) μ :=
   measurable_norm.comp_aemeasurable hf
 
 @[measurability]
@@ -232,12 +232,12 @@ theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
   continuous_nnnorm.measurable
 
 @[measurability, fun_prop]
-theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
+theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a ↦ ‖f a‖₊ :=
   measurable_nnnorm.comp hf
 
 @[measurability, fun_prop]
 theorem AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun a => ‖f a‖₊) μ :=
+    AEMeasurable (fun a ↦ ‖f a‖₊) μ :=
   measurable_nnnorm.comp_aemeasurable hf
 
 @[measurability]
@@ -245,12 +245,12 @@ theorem measurable_ennnorm : Measurable fun x : α => (‖x‖₊ : ℝ≥0∞) 
   measurable_nnnorm.coe_nnreal_ennreal
 
 @[measurability, fun_prop]
-theorem Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=
+theorem Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a ↦ (‖f a‖₊ : ℝ≥0∞) :=
   hf.nnnorm.coe_nnreal_ennreal
 
 @[measurability, fun_prop]
 theorem AEMeasurable.ennnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun a => (‖f a‖₊ : ℝ≥0∞)) μ :=
+    AEMeasurable (fun a ↦ (‖f a‖₊ : ℝ≥0∞)) μ :=
   measurable_ennnorm.comp_aemeasurable hf
 
 end NormedAddCommGroup

@@ -97,10 +97,10 @@ def evalOpt (f : α →. β) [D : DecidablePred (· ∈ Dom f)] (x : α) : Optio
 /-- Partial function extensionality -/
 theorem ext' {f g : α →. β} (H1 : ∀ a, a ∈ Dom f ↔ a ∈ Dom g) (H2 : ∀ a p q, f.fn a p = g.fn a q) :
     f = g :=
-  funext fun a => Part.ext' (H1 a) (H2 a)
+  funext fun a ↦ Part.ext' (H1 a) (H2 a)
 
 theorem ext {f g : α →. β} (H : ∀ a b, b ∈ f a ↔ b ∈ g a) : f = g :=
-  funext fun a => Part.ext (H a)
+  funext fun a ↦ Part.ext (H a)
 
 /-- Turns a partial function into a function out of its domain. -/
 def asSubtype (f : α →. β) (s : f.Dom) : β :=
@@ -109,7 +109,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 /-- The type of partial functions `α →. β` is equivalent to
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
-  ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun _ =>
+  ⟨fun f => ⟨fun a ↦ (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun _ =>
     funext fun _ => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
@@ -118,7 +118,7 @@ theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x)
 
 /-- Turn a total function into a partial function. -/
 @[coe]
-protected def lift (f : α → β) : α →. β := fun a => Part.some (f a)
+protected def lift (f : α → β) : α →. β := fun a ↦ Part.some (f a)
 
 instance coe : Coe (α → β) (α →. β) :=
   ⟨PFun.lift⟩
@@ -132,7 +132,7 @@ theorem dom_coe (f : α → β) : (f : α →. β).Dom = Set.univ :=
   rfl
 
 theorem lift_injective : Injective (PFun.lift : (α → β) → α →. β) := fun _ _ h =>
-  funext fun a => Part.some_injective <| congr_fun h a
+  funext fun a ↦ Part.some_injective <| congr_fun h a
 
 /-- Graph of a partial function `f` as the set of pairs `(x, f x)` where `x` is in the domain of
 `f`. -/
@@ -176,14 +176,14 @@ theorem lift_graph {f : α → β} {a b} : (a, b) ∈ (f : α →. β).graph ↔
 protected def pure (x : β) : α →. β := fun _ => Part.some x
 
 /-- The monad `bind` function, pointwise `Part.bind` -/
-def bind (f : α →. β) (g : β → α →. γ) : α →. γ := fun a => (f a).bind fun b => g b a
+def bind (f : α →. β) (g : β → α →. γ) : α →. γ := fun a ↦ (f a).bind fun b ↦ g b a
 
 @[simp]
-theorem bind_apply (f : α →. β) (g : β → α →. γ) (a : α) : f.bind g a = (f a).bind fun b => g b a :=
+theorem bind_apply (f : α →. β) (g : β → α →. γ) (a : α) : f.bind g a = (f a).bind fun b ↦ g b a :=
   rfl
 
 /-- The monad `map` function, pointwise `Part.map` -/
-def map (f : β → γ) (g : α →. β) : α →. γ := fun a => (g a).map f
+def map (f : β → γ) (g : α →. β) : α →. γ := fun a ↦ (g a).map f
 
 instance monad : Monad (PFun α) where
   pure := PFun.pure
@@ -194,7 +194,7 @@ instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_pure_comp := fun _ _ => funext fun _ => Part.bind_some_eq_map _ _)
   (id_map := fun f => by funext a; dsimp [Functor.map, PFun.map]; cases f a; rfl)
   (pure_bind := fun x f => funext fun _ => Part.bind_some _ (f x))
-  (bind_assoc := fun f g k => funext fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a)
+  (bind_assoc := fun f g k => funext fun a ↦ (f a).bind_assoc (fun b ↦ g b a) fun b ↦ k b a)
 
 theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
   p.subset_univ
@@ -445,7 +445,7 @@ theorem preimage_asSubtype (f : α →. β) (s : Set β) :
       Part.mem_unique fxy this ▸ ys
 
 /-- Turns a function into a partial function to a subtype. -/
-def toSubtype (p : β → Prop) (f : α → β) : α →. Subtype p := fun a => ⟨p (f a), Subtype.mk _⟩
+def toSubtype (p : β → Prop) (f : α → β) : α →. Subtype p := fun a ↦ ⟨p (f a), Subtype.mk _⟩
 
 @[simp]
 theorem dom_toSubtype (p : β → Prop) (f : α → β) : (toSubtype p f).Dom = { a | p (f a) } :=
@@ -477,7 +477,7 @@ theorem id_apply (a : α) : PFun.id α a = Part.some a :=
   rfl
 
 /-- Composition of partial functions as a partial function. -/
-def comp (f : β →. γ) (g : α →. β) : α →. γ := fun a => (g a).bind f
+def comp (f : β →. γ) (g : α →. β) : α →. γ := fun a ↦ (g a).bind f
 
 @[simp]
 theorem comp_apply (f : β →. γ) (g : α →. β) (a : α) : f.comp g a = (g a).bind f :=
@@ -576,7 +576,7 @@ theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
     prodLift (f.comp ((Prod.fst : α × β → α) : α × β →. α))
         (g.comp ((Prod.snd : α × β → β) : α × β →. β)) =
       prodMap f g :=
-  ext fun a => by simp
+  ext fun a ↦ by simp
 
 @[simp]
 theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=

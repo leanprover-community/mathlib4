@@ -225,7 +225,7 @@ instance [Inhabited α] : Inhabited (CauchyFilter α) :=
   ⟨pureCauchy default⟩
 
 instance [h : Nonempty α] : Nonempty (CauchyFilter α) :=
-  h.recOn fun a => Nonempty.intro <| CauchyFilter.pureCauchy a
+  h.recOn fun a ↦ Nonempty.intro <| CauchyFilter.pureCauchy a
 
 section Extend
 

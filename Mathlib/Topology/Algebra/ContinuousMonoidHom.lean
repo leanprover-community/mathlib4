@@ -336,7 +336,7 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [TopologicalGroup B
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where
   toFun g := f.comp g
   map_one' := ext fun _a => map_one f
-  map_mul' g h := ext fun a => map_mul f (g a) (h a)
+  map_mul' g h := ext fun a ↦ map_mul f (g a) (h a)
   continuous_toFun := f.continuous_comp_right
 
 section LocallyCompact

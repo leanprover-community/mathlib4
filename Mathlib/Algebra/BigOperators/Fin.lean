@@ -285,7 +285,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       · rw [zero_pow n.succ_ne_zero] at a
         exact a.elim0
       · exact Nat.mod_lt _ m.succ_pos⟩)
-    fun a => by
+    fun a ↦ by
       dsimp
       induction n with
       | zero => subsingleton [(finCongr <| pow_zero _).subsingleton]

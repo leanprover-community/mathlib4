@@ -250,7 +250,7 @@ theorem principal_add_iff_zero_or_omega0_opow :
     simp only [ho, false_or]
     refine
       ⟨fun H => ⟨_, ((lt_or_eq_of_le (opow_log_le_self _ ho)).resolve_left fun h => ?_)⟩,
-        fun ⟨b, e⟩ => e.symm ▸ fun a => add_omega0_opow⟩
+        fun ⟨b, e⟩ => e.symm ▸ fun a ↦ add_omega0_opow⟩
     have := H _ h
     have := lt_opow_succ_log_self one_lt_omega0 o
     rw [opow_succ, lt_mul_of_limit isLimit_omega0] at this

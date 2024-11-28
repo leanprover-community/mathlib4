@@ -43,7 +43,7 @@ Return (in the monad) the prefix as a `List`, along with the remaining elements 
 -/
 @[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def getUpToFirst (L : MLList m α) (p : α → Bool) : m (List α × MLList m α) :=
-  L.getUpToFirstM fun a => pure (.up (p a))
+  L.getUpToFirstM fun a ↦ pure (.up (p a))
 
 /--
 Extract a maximal prefix of a lazy list consisting of elements
@@ -74,7 +74,7 @@ and pushed back on to the remaining lazy list.)
 -/
 @[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def splitWhile (L : MLList m α) (p : α → Bool) : m (List α × MLList m α) :=
-  L.splitWhileM fun a => pure (.up (p a))
+  L.splitWhileM fun a ↦ pure (.up (p a))
 
 /--
 Splits a lazy list into contiguous sublists of elements with the same value under
@@ -86,7 +86,7 @@ and a maximal list of elements having that value.
 partial def groupByM [DecidableEq β] (L : MLList m α) (f : α → m β) : MLList m (β × List α) :=
   L.cases (fun _ => nil) fun a t => squash fun _ => do
     let b ← f a
-    let (l, t') ← t.splitWhileM (fun a => do return .up ((← f a) = b))
+    let (l, t') ← t.splitWhileM (fun a ↦ do return .up ((← f a) = b))
     return cons (b, a :: l) (t'.groupByM f)
 
 /--
@@ -96,7 +96,7 @@ and a maximal list of elements having that value.
 -/
 @[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def groupBy [DecidableEq β] (L : MLList m α) (f : α → β) : MLList m (β × List α) :=
-  L.groupByM fun a => pure (f a)
+  L.groupByM fun a ↦ pure (f a)
 
 -- local instance : DecidableEq (ULift Bool) := fun a b => by
 --   cases' a with a; cases' b with b; cases a <;> cases b <;>
@@ -121,6 +121,6 @@ starting a new sublist each time a predicate changes from `false` to `true`.
 -/
 @[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def splitAtBecomesTrue (L : MLList m α) (p : α → Bool) : MLList m (List α) :=
-  L.splitAtBecomesTrueM fun a => pure (.up (p a))
+  L.splitAtBecomesTrueM fun a ↦ pure (.up (p a))
 
 end MLList

@@ -167,13 +167,13 @@ theorem map_expand {p : ℕ} {f : R →+* S} {q : R[X]} :
 
 @[simp]
 theorem expand_eval (p : ℕ) (P : R[X]) (r : R) : eval r (expand R p P) = eval (r ^ p) P := by
-  refine Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => ?_) fun n a _ => by simp
+  refine Polynomial.induction_on P (fun a ↦ by simp) (fun f g hf hg => ?_) fun n a _ => by simp
   rw [map_add, eval_add, eval_add, hf, hg]
 
 @[simp]
 theorem expand_aeval {A : Type*} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X]) (r : A) :
     aeval r (expand R p P) = aeval (r ^ p) P := by
-  refine Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => ?_) fun n a _ => by simp
+  refine Polynomial.induction_on P (fun a ↦ by simp) (fun f g hf hg => ?_) fun n a _ => by simp
   rw [map_add, aeval_add, aeval_add, hf, hg]
 
 /-- The opposite of `expand`: sends `∑ aₙ xⁿᵖ` to `∑ aₙ xⁿ`. -/

@@ -21,14 +21,14 @@ universe u
   and proofs. This can be used to track data without storing it
   literally. -/
 def Erased (α : Sort u) : Sort max 1 u :=
-  Σ's : α → Prop, ∃ a, (fun b => a = b) = s
+  Σ's : α → Prop, ∃ a, (fun b ↦ a = b) = s
 
 namespace Erased
 
 /-- Erase a value. -/
 @[inline]
 def mk {α} (a : α) : Erased α :=
-  ⟨fun b => a = b, a, rfl⟩
+  ⟨fun b ↦ a = b, a, rfl⟩
 
 /-- Extracts the erased value, noncomputably. -/
 noncomputable def out {α} : Erased α → α
@@ -87,7 +87,7 @@ This is a separate definition because `α` and `β` can live in different
 universes (the universe is fixed in `Monad`).
 -/
 def bind {α β} (a : Erased α) (f : α → Erased β) : Erased β :=
-  ⟨fun b => (f a.out).1 b, (f a.out).2⟩
+  ⟨fun b ↦ (f a.out).1 b, (f a.out).2⟩
 
 @[simp]
 theorem bind_eq_out {α β} (a f) : @bind α β a f = f a.out := rfl

@@ -159,7 +159,7 @@ theorem wittStructureRat_existsUnique (Φ : MvPolynomial idx ℚ) :
 
 theorem wittStructureRat_rec_aux (Φ : MvPolynomial idx ℚ) (n : ℕ) :
     wittStructureRat p Φ n * C ((p : ℚ) ^ n) =
-      bind₁ (fun b => rename (fun i => (b, i)) (W_ ℚ n)) Φ -
+      bind₁ (fun b ↦ rename (fun i => (b, i)) (W_ ℚ n)) Φ -
         ∑ i ∈ range n, C ((p : ℚ) ^ i) * wittStructureRat p Φ i ^ p ^ (n - i) := by
   have := xInTermsOfW_aux p ℚ n
   replace := congr_arg (bind₁ fun k : ℕ => bind₁ (fun i => rename (Prod.mk i) (W_ ℚ k)) Φ) this
@@ -174,7 +174,7 @@ theorem wittStructureRat_rec_aux (Φ : MvPolynomial idx ℚ) (n : ℕ) :
 theorem wittStructureRat_rec (Φ : MvPolynomial idx ℚ) (n : ℕ) :
     wittStructureRat p Φ n =
       C (1 / (p : ℚ) ^ n) *
-        (bind₁ (fun b => rename (fun i => (b, i)) (W_ ℚ n)) Φ -
+        (bind₁ (fun b ↦ rename (fun i => (b, i)) (W_ ℚ n)) Φ -
           ∑ i ∈ range n, C ((p : ℚ) ^ i) * wittStructureRat p Φ i ^ p ^ (n - i)) := by
   calc
     wittStructureRat p Φ n = C (1 / (p : ℚ) ^ n) * (wittStructureRat p Φ n * C ((p : ℚ) ^ n)) := ?_
@@ -205,7 +205,7 @@ theorem bind₁_rename_expand_wittPolynomial (Φ : MvPolynomial idx ℤ) (n : �
         m < n + 1 →
           map (Int.castRingHom ℚ) (wittStructureInt p Φ m) =
             wittStructureRat p (map (Int.castRingHom ℚ) Φ) m) :
-    bind₁ (fun b => rename (fun i => (b, i)) (expand p (W_ ℤ n))) Φ =
+    bind₁ (fun b ↦ rename (fun i => (b, i)) (expand p (W_ ℤ n))) Φ =
       bind₁ (fun i => expand p (wittStructureInt p Φ i)) (W_ ℤ n) := by
   apply MvPolynomial.map_injective (Int.castRingHom ℚ) Int.cast_injective
   simp only [map_bind₁, map_rename, map_expand, rename_expand, map_wittPolynomial]

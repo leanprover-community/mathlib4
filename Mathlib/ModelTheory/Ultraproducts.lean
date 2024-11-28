@@ -73,12 +73,12 @@ instance «structure» : L.Structure ((u : Filter α).Product M) :=
 
 theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
     (funMap f fun i => (x i : (u : Filter α).Product M)) =
-      (fun a => funMap f fun i => x i a : (u : Filter α).Product M) := by
+      (fun a ↦ funMap f fun i => x i a : (u : Filter α).Product M) := by
   apply funMap_quotient_mk'
 
 theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
     (t.realize fun i => (x i : (u : Filter α).Product M)) =
-      (fun a => t.realize fun i => x i a : (u : Filter α).Product M) := by
+      (fun a ↦ t.realize fun i => x i a : (u : Filter α).Product M) := by
   convert @Term.realize_quotient_mk' L _ ((u : Filter α).productSetoid M)
       (Ultraproduct.setoidPrestructure M u) _ t x using 2
   ext a
@@ -98,14 +98,14 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
   | falsum => simp only [BoundedFormula.Realize, eventually_const]
   | equal =>
     have h2 : ∀ a : α, (Sum.elim (fun i : β => x i a) fun i => v i a) = fun i => Sum.elim x v i a :=
-      fun a => funext fun i => Sum.casesOn i (fun i => rfl) fun i => rfl
+      fun a ↦ funext fun i => Sum.casesOn i (fun i => rfl) fun i => rfl
     simp only [BoundedFormula.Realize, h2, term_realize_cast]
     erw [(Sum.comp_elim ((↑) : (∀ a, M a) → (u : Filter α).Product M) x v).symm,
       term_realize_cast, term_realize_cast]
     exact Quotient.eq''
   | rel =>
     have h2 : ∀ a : α, (Sum.elim (fun i : β => x i a) fun i => v i a) = fun i => Sum.elim x v i a :=
-      fun a => funext fun i => Sum.casesOn i (fun i => rfl) fun i => rfl
+      fun a ↦ funext fun i => Sum.casesOn i (fun i => rfl) fun i => rfl
     simp only [BoundedFormula.Realize, h2]
     erw [(Sum.comp_elim ((↑) : (∀ a, M a) → (u : Filter α).Product M) x v).symm]
     conv_lhs => enter [2, i]; erw [term_realize_cast]

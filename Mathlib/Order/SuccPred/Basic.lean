@@ -527,7 +527,7 @@ instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
 
 theorem succ_eq_sInf [CompleteLattice α] [SuccOrder α] (a : α) :
     succ a = sInf (Set.Ioi a) := by
-  apply (le_sInf fun b => succ_le_of_lt).antisymm
+  apply (le_sInf fun b ↦ succ_le_of_lt).antisymm
   obtain rfl | ha := eq_or_ne a ⊤
   · rw [succ_top]
     exact le_top
@@ -538,8 +538,8 @@ theorem succ_eq_iInf [CompleteLattice α] [SuccOrder α] (a : α) : succ a = ⨅
 
 theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrder α] (a : α) :
     succ a = sInf (Set.Ioi a) := by
-  apply (le_csInf nonempty_Ioi fun b => succ_le_of_lt).antisymm
-  exact csInf_le ⟨a, fun b => le_of_lt⟩ <| lt_succ a
+  apply (le_csInf nonempty_Ioi fun b ↦ succ_le_of_lt).antisymm
+  exact csInf_le ⟨a, fun b ↦ le_of_lt⟩ <| lt_succ a
 
 /-! ### Predecessor order -/
 
@@ -1088,7 +1088,7 @@ instance [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) :=
   ⟨by
     intro
     cases' h : pred (⊤ : WithTop α) with a ha
-    · exact hα.elim fun a => (min_of_le_pred h.ge).not_lt <| coe_lt_top a
+    · exact hα.elim fun a ↦ (min_of_le_pred h.ge).not_lt <| coe_lt_top a
     · obtain ⟨c, hc⟩ := exists_gt a
       rw [← coe_lt_coe, ← h] at hc
       exact (le_pred_of_lt (coe_lt_top c)).not_lt hc⟩
@@ -1200,7 +1200,7 @@ instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
   ⟨by
     intro
     cases' h : succ (⊥ : WithBot α) with a ha
-    · exact hα.elim fun a => (max_of_succ_le h.le).not_lt <| bot_lt_coe a
+    · exact hα.elim fun a ↦ (max_of_succ_le h.le).not_lt <| bot_lt_coe a
     · obtain ⟨c, hc⟩ := exists_lt a
       rw [← coe_lt_coe, ← h] at hc
       exact (succ_le_of_lt (bot_lt_coe _)).not_lt hc⟩

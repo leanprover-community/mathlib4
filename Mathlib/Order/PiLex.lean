@@ -183,7 +183,7 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
 
 theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
     NoMaxOrder (Lex (∀ i, β i)) :=
-  ⟨fun a => by
+  ⟨fun a ↦ by
     let ⟨b, hb⟩ := exists_gt (a i)
     classical
     exact ⟨Function.update a i b, i, fun j hj =>

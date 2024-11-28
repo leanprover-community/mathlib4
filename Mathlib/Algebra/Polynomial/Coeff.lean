@@ -98,7 +98,7 @@ lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
   map_list_sum (lcoeff R n) _
 
 lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) :
-    (l.map f).sum.coeff n = (l.map (fun a => (f a).coeff n)).sum := by
+    (l.map f).sum.coeff n = (l.map (fun a ↦ (f a).coeff n)).sum := by
   simp_rw [coeff_list_sum, List.map_map, Function.comp_def, lcoeff_apply]
 
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :

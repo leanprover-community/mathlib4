@@ -214,7 +214,7 @@ section UniformOfFinset
 
 /-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
 def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
-  refine ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s ?_ ?_
+  refine ofFinset (fun a ↦ if a ∈ s then s.card⁻¹ else 0) s ?_ ?_
   · simp only [Finset.sum_ite_mem, Finset.inter_self, Finset.sum_const, nsmul_eq_mul]
     have : (s.card : ℝ≥0∞) ≠ 0 := by
       simpa only [Ne, Nat.cast_eq_zero, Finset.card_eq_zero] using
@@ -315,7 +315,7 @@ section OfMultiset
 /-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
   elements in `s` that are `a`. -/
 def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
-  ⟨fun a => s.count a / (Multiset.card s),
+  ⟨fun a ↦ s.count a / (Multiset.card s),
     ENNReal.summable.hasSum_iff.2
       (calc
         (∑' b : α, (s.count b : ℝ≥0∞) / (Multiset.card s))

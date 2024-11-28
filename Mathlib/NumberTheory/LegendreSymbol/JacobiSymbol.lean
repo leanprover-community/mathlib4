@@ -235,7 +235,7 @@ theorem prime_dvd_of_eq_neg_one {p : ℕ} [Fact p.Prime] {a : ℤ} (h : J(a | p)
   exact legendreSym.prime_dvd_of_eq_neg_one h hxy
 
 /-- We can pull out a product over a list in the first argument of the Jacobi symbol. -/
-theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.prod | n) = (l.map fun a => J(a | n)).prod := by
+theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.prod | n) = (l.map fun a ↦ J(a | n)).prod := by
   induction' l with n l' ih
   · simp only [List.prod_nil, List.map_nil, one_left]
   · rw [List.map, List.prod_cons, List.prod_cons, mul_left, ih]

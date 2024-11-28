@@ -78,12 +78,12 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
     (bound : ι → α → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound n a)
     (bound_summable : ∀ᵐ a ∂μ, Summable fun n => bound n a)
-    (bound_integrable : Integrable (fun a => ∑' n, bound n a) μ)
+    (bound_integrable : Integrable (fun a ↦ ∑' n, bound n a) μ)
     (h_lim : ∀ᵐ a ∂μ, HasSum (fun n => F n a) (f a)) :
     HasSum (fun n => ∫ a, F n a ∂μ) (∫ a, f a ∂μ) := by
   have hb_nonneg : ∀ᵐ a ∂μ, ∀ n, 0 ≤ bound n a :=
-    eventually_countable_forall.2 fun n => (h_bound n).mono fun a => (norm_nonneg _).trans
-  have hb_le_tsum : ∀ n, bound n ≤ᵐ[μ] fun a => ∑' n, bound n a := by
+    eventually_countable_forall.2 fun n => (h_bound n).mono fun a ↦ (norm_nonneg _).trans
+  have hb_le_tsum : ∀ n, bound n ≤ᵐ[μ] fun a ↦ ∑' n, bound n a := by
     intro n
     filter_upwards [hb_nonneg, bound_summable]
       with _ ha0 ha_sum using le_tsum ha_sum _ fun i _ => ha0 i
@@ -92,7 +92,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
     exact EventuallyLE.trans (h_bound n) (hb_le_tsum n)
   simp only [HasSum, ← integral_finset_sum _ fun n _ => hF_integrable n]
   refine tendsto_integral_filter_of_dominated_convergence
-      (fun a => ∑' n, bound n a) ?_ ?_ bound_integrable h_lim
+      (fun a ↦ ∑' n, bound n a) ?_ ?_ bound_integrable h_lim
   · exact Eventually.of_forall fun s => s.aestronglyMeasurable_sum fun n _ => hF_meas n
   · filter_upwards with s
     filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
@@ -165,7 +165,7 @@ variable {α E : Type*} [MeasurableSpace α]
 theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
     (hfi : IntegrableOn f (s 0) μ) :
     Tendsto (fun i => ∫ a in s i, f a ∂μ) atTop (𝓝 (∫ a in ⋂ n, s n, f a ∂μ)) := by
-  let bound : α → ℝ := indicator (s 0) fun a => ‖f a‖
+  let bound : α → ℝ := indicator (s 0) fun a ↦ ‖f a‖
   have h_int_eq : (fun i => ∫ a in s i, f a ∂μ) = fun i => ∫ a, (s i).indicator f a ∂μ :=
     funext fun i => (integral_indicator (hsm i)).symm
   rw [h_int_eq]
@@ -178,7 +178,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
     refine fun n => Eventually.of_forall fun x => ?_
-    exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
+    exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a ↦ norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
 @[deprecated (since := "2024-04-17")]
@@ -308,7 +308,7 @@ variable {E X : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSp
 
 theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     (h_int : IntervalIntegrable f μ (min a b₁) (max a b₂)) :
-    ContinuousWithinAt (fun b => ∫ x in a..b, f x ∂μ) (Icc b₁ b₂) b₀ := by
+    ContinuousWithinAt (fun b ↦ ∫ x in a..b, f x ∂μ) (Icc b₁ b₂) b₀ := by
   by_cases h₀ : b₀ ∈ Icc b₁ b₂
   · have h₁₂ : b₁ ≤ b₂ := h₀.1.trans h₀.2
     have min₁₂ : min b₁ b₂ = b₁ := min_eq_left h₁₂
@@ -332,7 +332,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     apply ContinuousWithinAt.congr _ this (this _ h₀); clear this
     refine continuousWithinAt_const.add ?_
     have :
-      (fun b => ∫ x in b₁..b, f x ∂μ) =ᶠ[𝓝[Icc b₁ b₂] b₀] fun b =>
+      (fun b ↦ ∫ x in b₁..b, f x ∂μ) =ᶠ[𝓝[Icc b₁ b₂] b₀] fun b =>
         ∫ x in b₁..b₂, indicator {x | x ≤ b} f x ∂μ := by
       apply eventuallyEq_of_mem self_mem_nhdsWithin
       exact fun b b_in => (integral_indicator b_in).symm
@@ -471,7 +471,7 @@ theorem continuousOn_primitive_Icc (h_int : IntegrableOn f (Icc a b) μ) :
 
 /-- Note: this assumes that `f` is `IntervalIntegrable`, in contrast to some other lemmas here. -/
 theorem continuousOn_primitive_interval' (h_int : IntervalIntegrable f μ b₁ b₂)
-    (ha : a ∈ [[b₁, b₂]]) : ContinuousOn (fun b => ∫ x in a..b, f x ∂μ) [[b₁, b₂]] := fun _ _ ↦ by
+    (ha : a ∈ [[b₁, b₂]]) : ContinuousOn (fun b ↦ ∫ x in a..b, f x ∂μ) [[b₁, b₂]] := fun _ _ ↦ by
   refine continuousWithinAt_primitive (measure_singleton _) ?_
   rw [min_eq_right ha.1, max_eq_right ha.2]
   simpa [intervalIntegrable_iff, uIoc] using h_int
@@ -487,7 +487,7 @@ theorem continuousOn_primitive_interval_left (h_int : IntegrableOn f (uIcc a b) 
   exact (continuousOn_primitive_interval h_int).neg
 
 theorem continuous_primitive (h_int : ∀ a b, IntervalIntegrable f μ a b) (a : ℝ) :
-    Continuous fun b => ∫ x in a..b, f x ∂μ := by
+    Continuous fun b ↦ ∫ x in a..b, f x ∂μ := by
   rw [continuous_iff_continuousAt]
   intro b₀
   cases' exists_lt b₀ with b₁ hb₁
@@ -496,7 +496,7 @@ theorem continuous_primitive (h_int : ∀ a b, IntervalIntegrable f μ a b) (a :
   exact continuousWithinAt_primitive (measure_singleton b₀) (h_int _ _)
 
 nonrec theorem _root_.MeasureTheory.Integrable.continuous_primitive (h_int : Integrable f μ)
-    (a : ℝ) : Continuous fun b => ∫ x in a..b, f x ∂μ :=
+    (a : ℝ) : Continuous fun b ↦ ∫ x in a..b, f x ∂μ :=
   continuous_primitive (fun _ _ => h_int.intervalIntegrable) a
 
 variable [IsLocallyFiniteMeasure μ] {f : X → ℝ → E}

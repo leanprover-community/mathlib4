@@ -420,7 +420,7 @@ def f2 (a : α) := a
 error: `fun_prop` was unable to prove `Con fun x => x + f1 x`
 
 Issues:
-  No theorems found for `f1` in order to prove `Con fun a => f1 a`
+  No theorems found for `f1` in order to prove `Con fun a ↦ f1 a`
 -/
 #guard_msgs in
 example [Add α] : Con (fun x : α => x + f1 x) := by fun_prop
@@ -429,7 +429,7 @@ example [Add α] : Con (fun x : α => x + f1 x) := by fun_prop
 error: `fun_prop` was unable to prove `Con fun x => f1 x + f1 x`
 
 Issues:
-  No theorems found for `f1` in order to prove `Con fun a => f1 a`
+  No theorems found for `f1` in order to prove `Con fun a ↦ f1 a`
 -/
 #guard_msgs in
 example [Add α] : Con (fun x : α => f1 x + f1 x) := by fun_prop
@@ -438,7 +438,7 @@ example [Add α] : Con (fun x : α => f1 x + f1 x) := by fun_prop
 error: `fun_prop` was unable to prove `Con fun x => f2 x + f1 x`
 
 Issues:
-  No theorems found for `f2` in order to prove `Con fun a => f2 a`
+  No theorems found for `f2` in order to prove `Con fun a ↦ f2 a`
 -/
 #guard_msgs in
 example [Add α] : Con (fun x : α => f2 x + f1 x) := by fun_prop

@@ -121,7 +121,7 @@ class CompletelyDistribLattice (α : Type u) extends CompleteLattice α, Biheyti
 
 theorem le_iInf_iSup [CompleteLattice α] {f : ∀ a, κ a → α} :
     (⨆ g : ∀ a, κ a, ⨅ a, f a (g a)) ≤ ⨅ a, ⨆ b, f a b :=
-  iSup_le fun _ => le_iInf fun a => le_trans (iInf_le _ a) (le_iSup _ _)
+  iSup_le fun _ => le_iInf fun a ↦ le_trans (iInf_le _ a) (le_iSup _ _)
 
 lemma iSup_iInf_le [CompleteLattice α] {f : ∀ a, κ a → α} :
     ⨆ a, ⨅ b, f a b ≤ ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
@@ -238,8 +238,8 @@ lemma iInf_iSup_eq' (f : ∀ a, κ a → α) :
       simp_rw [iInf_subtype, iInf_range, iSup_subtype, iSup_range]
     _ = _ := minAx.iInf_iSup_eq _
     _ ≤ _ := iSup_le fun g => by
-      refine le_trans ?_ <| le_iSup _ fun a => Classical.choose (g ⟨_, a, rfl⟩).2
-      refine le_iInf fun a => le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) ?_
+      refine le_trans ?_ <| le_iSup _ fun a ↦ Classical.choose (g ⟨_, a, rfl⟩).2
+      refine le_iInf fun a ↦ le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) ?_
       rw [← Classical.choose_spec (g ⟨_, a, rfl⟩).2]
 
 lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
@@ -255,7 +255,7 @@ lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
     have := hh _ h rfl
     contradiction
   refine le_trans ?_ (le_iSup _ a)
-  refine le_iInf fun b => ?_
+  refine le_iInf fun b ↦ ?_
   obtain ⟨h, rfl, rfl⟩ := ha b
   exact iInf_le _ _
 
@@ -329,7 +329,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
             lt_irrefl x (lt_of_lt_of_le hl (le_trans (iInf_le _ a) h))
       choose f hf using this
       refine le_trans ?_ (le_iSup _ f)
-      exact le_iInf fun a => le_of_lt (hf a)
+      exact le_iInf fun a ↦ le_of_lt (hf a)
     else
       refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl ?_
       replace h : ∀ x, x ≤ rhs ∨ lhs ≤ x := by
@@ -340,7 +340,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
       have : ∀ a, lhs ≤ g a (f a) := fun a =>
         (h (g a (f a))).resolve_left (by simpa using hf a)
       refine le_trans ?_ (le_iSup _ f)
-      exact le_iInf fun a => this _
+      exact le_iInf fun a ↦ this _
 
 section Frame
 

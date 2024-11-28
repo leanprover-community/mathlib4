@@ -138,8 +138,8 @@ theorem sup_mono (h : s₁ ⊆ s₂) : s₁.sup f ≤ s₂.sup f :=
   Finset.sup_le (fun _ hb => le_sup (h hb))
 
 protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
-    (s.sup fun b => t.sup (f b)) = t.sup fun c => s.sup fun b => f b c :=
-  eq_of_forall_ge_iff fun a => by simpa using forall₂_swap
+    (s.sup fun b ↦ t.sup (f b)) = t.sup fun c => s.sup fun b ↦ f b c :=
+  eq_of_forall_ge_iff fun a ↦ by simpa using forall₂_swap
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS does not simplify
 theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x) = s.sup f :=
@@ -148,7 +148,7 @@ theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x)
 /-- See also `Finset.product_biUnion`. -/
 theorem sup_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).sup f = s.sup fun i => t.sup fun i' => f ⟨i, i'⟩ :=
-  eq_of_forall_ge_iff fun a => by simp [@forall_swap _ γ]
+  eq_of_forall_ge_iff fun a ↦ by simp [@forall_swap _ γ]
 
 theorem sup_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) :
     (s ×ˢ t).sup f = t.sup fun i' => s.sup fun i => f ⟨i, i'⟩ := by
@@ -176,7 +176,7 @@ theorem sup_erase_bot [DecidableEq α] (s : Finset α) : (s.erase ⊥).sup id = 
   · exact le_sup (mem_erase.2 ⟨ha', ha⟩)
 
 theorem sup_sdiff_right {α β : Type*} [GeneralizedBooleanAlgebra α] (s : Finset β) (f : β → α)
-    (a : α) : (s.sup fun b => f b \ a) = s.sup f \ a := by
+    (a : α) : (s.sup fun b ↦ f b \ a) = s.sup f \ a := by
   induction s using Finset.cons_induction with
   | empty => rw [sup_empty, sup_empty, bot_sdiff]
   | cons _ _ _ h => rw [sup_cons, sup_cons, h, sup_sdiff]
@@ -363,7 +363,7 @@ theorem inf_mono (h : s₁ ⊆ s₂) : s₂.inf f ≤ s₁.inf f :=
   Finset.le_inf (fun _ hb => inf_le (h hb))
 
 protected theorem inf_comm (s : Finset β) (t : Finset γ) (f : β → γ → α) :
-    (s.inf fun b => t.inf (f b)) = t.inf fun c => s.inf fun b => f b c :=
+    (s.inf fun b ↦ t.inf (f b)) = t.inf fun c => s.inf fun b ↦ f b c :=
   @Finset.sup_comm αᵒᵈ _ _ _ _ _ _ _
 
 theorem inf_attach (s : Finset β) (f : β → α) : (s.attach.inf fun x => f x) = s.inf f :=
@@ -542,33 +542,33 @@ section BooleanAlgebra
 variable [BooleanAlgebra α] {s : Finset ι}
 
 theorem sup_sdiff_left (s : Finset ι) (f : ι → α) (a : α) :
-    (s.sup fun b => a \ f b) = a \ s.inf f := by
+    (s.sup fun b ↦ a \ f b) = a \ s.inf f := by
   induction s using Finset.cons_induction with
   | empty => rw [sup_empty, inf_empty, sdiff_top]
   | cons _ _ _ h => rw [sup_cons, inf_cons, h, sdiff_inf]
 
 theorem inf_sdiff_left (hs : s.Nonempty) (f : ι → α) (a : α) :
-    (s.inf fun b => a \ f b) = a \ s.sup f := by
+    (s.inf fun b ↦ a \ f b) = a \ s.sup f := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton => rw [sup_singleton, inf_singleton]
   | cons _ _ _ _ ih => rw [sup_cons, inf_cons, ih, sdiff_sup]
 
 theorem inf_sdiff_right (hs : s.Nonempty) (f : ι → α) (a : α) :
-    (s.inf fun b => f b \ a) = s.inf f \ a := by
+    (s.inf fun b ↦ f b \ a) = s.inf f \ a := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton => rw [inf_singleton, inf_singleton]
   | cons _ _ _ _ ih => rw [inf_cons, inf_cons, ih, inf_sdiff]
 
 theorem inf_himp_right (s : Finset ι) (f : ι → α) (a : α) :
-    (s.inf fun b => f b ⇨ a) = s.sup f ⇨ a :=
+    (s.inf fun b ↦ f b ⇨ a) = s.sup f ⇨ a :=
   @sup_sdiff_left αᵒᵈ _ _ _ _ _
 
 theorem sup_himp_right (hs : s.Nonempty) (f : ι → α) (a : α) :
-    (s.sup fun b => f b ⇨ a) = s.inf f ⇨ a :=
+    (s.sup fun b ↦ f b ⇨ a) = s.inf f ⇨ a :=
   @inf_sdiff_left αᵒᵈ _ _ _ hs _ _
 
 theorem sup_himp_left (hs : s.Nonempty) (f : ι → α) (a : α) :
-    (s.sup fun b => a ⇨ f b) = a ⇨ s.sup f :=
+    (s.sup fun b ↦ a ⇨ f b) = a ⇨ s.sup f :=
   @inf_sdiff_right αᵒᵈ _ _ _ hs _ _
 
 @[simp]
@@ -748,20 +748,20 @@ theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
     (s₁ ∪ s₂).sup' (h₁.mono subset_union_left) f = s₁.sup' h₁ f ⊔ s₂.sup' h₂ f :=
-  eq_of_forall_ge_iff fun a => by simp [or_imp, forall_and]
+  eq_of_forall_ge_iff fun a ↦ by simp [or_imp, forall_and]
 
 theorem sup'_biUnion [DecidableEq β] {s : Finset γ} (Hs : s.Nonempty) {t : γ → Finset β}
     (Ht : ∀ b, (t b).Nonempty) :
-    (s.biUnion t).sup' (Hs.biUnion fun b _ => Ht b) f = s.sup' Hs (fun b => (t b).sup' (Ht b) f) :=
+    (s.biUnion t).sup' (Hs.biUnion fun b _ => Ht b) f = s.sup' Hs (fun b ↦ (t b).sup' (Ht b) f) :=
   eq_of_forall_ge_iff fun c => by simp [@forall_swap _ β]
 
 protected theorem sup'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β → γ → α) :
-    (s.sup' hs fun b => t.sup' ht (f b)) = t.sup' ht fun c => s.sup' hs fun b => f b c :=
-  eq_of_forall_ge_iff fun a => by simpa using forall₂_swap
+    (s.sup' hs fun b ↦ t.sup' ht (f b)) = t.sup' ht fun c => s.sup' hs fun b ↦ f b c :=
+  eq_of_forall_ge_iff fun a ↦ by simpa using forall₂_swap
 
 theorem sup'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
     (s ×ˢ t).sup' h f = s.sup' h.fst fun i => t.sup' h.snd fun i' => f ⟨i, i'⟩ :=
-  eq_of_forall_ge_iff fun a => by simp [@forall_swap _ γ]
+  eq_of_forall_ge_iff fun a ↦ by simp [@forall_swap _ γ]
 
 theorem sup'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
     (s ×ˢ t).sup' h f = t.sup' h.snd fun i' => s.sup' h.fst fun i => f ⟨i, i'⟩ := by
@@ -917,11 +917,11 @@ theorem inf'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempt
 
 theorem inf'_biUnion [DecidableEq β] {s : Finset γ} (Hs : s.Nonempty) {t : γ → Finset β}
     (Ht : ∀ b, (t b).Nonempty) :
-    (s.biUnion t).inf' (Hs.biUnion fun b _ => Ht b) f = s.inf' Hs (fun b => (t b).inf' (Ht b) f) :=
+    (s.biUnion t).inf' (Hs.biUnion fun b _ => Ht b) f = s.inf' Hs (fun b ↦ (t b).inf' (Ht b) f) :=
   sup'_biUnion (α := αᵒᵈ) _ Hs Ht
 
 protected theorem inf'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) (f : β → γ → α) :
-    (s.inf' hs fun b => t.inf' ht (f b)) = t.inf' ht fun c => s.inf' hs fun b => f b c :=
+    (s.inf' hs fun b ↦ t.inf' ht (f b)) = t.inf' ht fun c => s.inf' hs fun b ↦ f b c :=
   @Finset.sup'_comm αᵒᵈ _ _ _ _ _ hs ht _
 
 theorem inf'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
@@ -1031,26 +1031,26 @@ end Inf
 @[simp]
 protected theorem sup_apply {C : β → Type*} [∀ b : β, SemilatticeSup (C b)]
     [∀ b : β, OrderBot (C b)] (s : Finset α) (f : α → ∀ b : β, C b) (b : β) :
-    s.sup f b = s.sup fun a => f a b :=
+    s.sup f b = s.sup fun a ↦ f a b :=
   comp_sup_eq_sup_comp (fun x : ∀ b : β, C b => x b) (fun _ _ => rfl) rfl
 
 @[simp]
 protected theorem inf_apply {C : β → Type*} [∀ b : β, SemilatticeInf (C b)]
     [∀ b : β, OrderTop (C b)] (s : Finset α) (f : α → ∀ b : β, C b) (b : β) :
-    s.inf f b = s.inf fun a => f a b :=
-  Finset.sup_apply (C := fun b => (C b)ᵒᵈ) s f b
+    s.inf f b = s.inf fun a ↦ f a b :=
+  Finset.sup_apply (C := fun b ↦ (C b)ᵒᵈ) s f b
 
 @[simp]
 protected theorem sup'_apply {C : β → Type*} [∀ b : β, SemilatticeSup (C b)]
     {s : Finset α} (H : s.Nonempty) (f : α → ∀ b : β, C b) (b : β) :
-    s.sup' H f b = s.sup' H fun a => f a b :=
+    s.sup' H f b = s.sup' H fun a ↦ f a b :=
   comp_sup'_eq_sup'_comp H (fun x : ∀ b : β, C b => x b) fun _ _ => rfl
 
 @[simp]
 protected theorem inf'_apply {C : β → Type*} [∀ b : β, SemilatticeInf (C b)]
     {s : Finset α} (H : s.Nonempty) (f : α → ∀ b : β, C b) (b : β) :
-    s.inf' H f b = s.inf' H fun a => f a b :=
-  Finset.sup'_apply (C := fun b => (C b)ᵒᵈ) H f b
+    s.inf' H f b = s.inf' H fun a ↦ f a b :=
+  Finset.sup'_apply (C := fun b ↦ (C b)ᵒᵈ) H f b
 
 @[simp]
 theorem toDual_sup' [SemilatticeSup α] {s : Finset ι} (hs : s.Nonempty) (f : ι → α) :
@@ -1165,7 +1165,7 @@ theorem map_finset_sup [DecidableEq α] [DecidableEq β] (s : Finset γ) (f : γ
   Finset.comp_sup_eq_sup_comp _ (fun _ _ => map_union hg) (map_zero _)
 
 theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset β) (b : β) :
-    count b (s.sup f) = s.sup fun a => count b (f a) := by
+    count b (s.sup f) = s.sup fun a ↦ count b (f a) := by
   letI := Classical.decEq α
   refine s.induction ?_ ?_
   · exact count_zero _
@@ -1199,7 +1199,7 @@ theorem sup_eq_biUnion {α β} [DecidableEq β] (s : Finset α) (t : α → Fins
 
 @[simp]
 theorem sup_singleton'' (s : Finset β) (f : β → α) :
-    (s.sup fun b => {f b}) = s.image f := by
+    (s.sup fun b ↦ {f b}) = s.image f := by
   ext a
   rw [mem_sup, mem_image]
   simp only [mem_singleton, eq_comm]

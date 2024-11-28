@@ -181,7 +181,7 @@ theorem coe_iSup {ι} (f : ι → OuterMeasure α) : ⇑(⨆ i, f i) = ⨆ i, �
 
 @[simp]
 theorem sup_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ ⊔ m₂) s = m₁ s ⊔ m₂ s := by
-  have := iSup_apply (fun b => cond b m₁ m₂) s; rwa [iSup_bool_eq, iSup_bool_eq] at this
+  have := iSup_apply (fun b ↦ cond b m₁ m₂) s; rwa [iSup_bool_eq, iSup_bool_eq] at this
 
 theorem smul_iSup {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     {ι : Sort*} (f : ι → OuterMeasure α) (c : R) :

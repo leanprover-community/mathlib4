@@ -151,7 +151,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     rcases hf' with ⟨m, hm⟩
     let Y := NonemptyFinLinOrd.of (ULift (Fin 2))
     let p₁ : B ⟶ Y :=
-      ⟨fun b => if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
+      ⟨fun b ↦ if b < m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le
@@ -159,7 +159,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
           exact h₁ (lt_of_le_of_lt h h₂)
         · rfl⟩
     let p₂ : B ⟶ Y :=
-      ⟨fun b => if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
+      ⟨fun b ↦ if b ≤ m then ULift.up 0 else ULift.up 1, fun x₁ x₂ h => by
         simp only
         split_ifs with h₁ h₂ h₂
         any_goals apply Fin.zero_le

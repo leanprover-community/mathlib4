@@ -238,7 +238,7 @@ theorem orderedInsert_length : ∀ (L : List α) (a : α), (L.orderedInsert r a)
 /-- An alternative definition of `orderedInsert` using `takeWhile` and `dropWhile`. -/
 theorem orderedInsert_eq_take_drop (a : α) :
     ∀ l : List α,
-      l.orderedInsert r a = (l.takeWhile fun b => ¬a ≼ b) ++ a :: l.dropWhile fun b => ¬a ≼ b
+      l.orderedInsert r a = (l.takeWhile fun b ↦ ¬a ≼ b) ++ a :: l.dropWhile fun b ↦ ¬a ≼ b
   | [] => rfl
   | b :: l => by
     dsimp only [orderedInsert]
@@ -246,8 +246,8 @@ theorem orderedInsert_eq_take_drop (a : α) :
 
 theorem insertionSort_cons_eq_take_drop (a : α) (l : List α) :
     insertionSort r (a :: l) =
-      ((insertionSort r l).takeWhile fun b => ¬a ≼ b) ++
-        a :: (insertionSort r l).dropWhile fun b => ¬a ≼ b :=
+      ((insertionSort r l).takeWhile fun b ↦ ¬a ≼ b) ++
+        a :: (insertionSort r l).dropWhile fun b ↦ ¬a ≼ b :=
   orderedInsert_eq_take_drop r a _
 
 @[simp]

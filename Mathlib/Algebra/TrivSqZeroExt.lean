@@ -710,7 +710,7 @@ variable [Neg M] [Inv R] [SMul Rᵐᵒᵖ M] [SMul R M]
 
 Strictly this is only a _two_-sided inverse when the left and right actions associate. -/
 instance instInv : Inv (tsze R M) :=
-  ⟨fun b => (b.1⁻¹, -(b.1⁻¹ •> b.2 <• b.1⁻¹))⟩
+  ⟨fun b ↦ (b.1⁻¹, -(b.1⁻¹ •> b.2 <• b.1⁻¹))⟩
 
 @[simp] theorem fst_inv (x : tsze R M) : fst x⁻¹ = (fst x)⁻¹ :=
   rfl

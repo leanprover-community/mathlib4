@@ -99,7 +99,7 @@ instance (priority := 100) Prop.countable (p : Prop) : Countable p :=
   Subsingleton.to_countable
 
 instance Bool.countable : Countable Bool :=
-  ⟨⟨fun b => cond b 0 1, Bool.injective_iff.2 Nat.one_ne_zero⟩⟩
+  ⟨⟨fun b ↦ cond b 0 1, Bool.injective_iff.2 Nat.one_ne_zero⟩⟩
 
 instance Prop.countable' : Countable Prop :=
   Countable.of_equiv Bool Equiv.propEquivBool.symm

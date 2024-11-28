@@ -474,7 +474,7 @@ theorem infinitePos_of_tendsto_top {f : ℕ → ℝ} (hf : Tendsto f atTop atTop
     InfinitePos (ofSeq f) := fun r =>
   have hf' := tendsto_atTop_atTop.mp hf
   let ⟨i, hi⟩ := hf' (r + 1)
-  have hi' : ∀ a : ℕ, f a < r + 1 → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
+  have hi' : ∀ a : ℕ, f a < r + 1 → a < i := fun a ↦ lt_imp_lt_of_le_imp_le (hi a)
   have hS : { a : ℕ | r < f a }ᶜ ⊆ { a : ℕ | a ≤ i } := by
     simp only [Set.compl_setOf, not_lt]
     exact fun a har => le_of_lt (hi' a (lt_of_le_of_lt har (lt_add_one _)))
@@ -484,7 +484,7 @@ theorem infiniteNeg_of_tendsto_bot {f : ℕ → ℝ} (hf : Tendsto f atTop atBot
     InfiniteNeg (ofSeq f) := fun r =>
   have hf' := tendsto_atTop_atBot.mp hf
   let ⟨i, hi⟩ := hf' (r - 1)
-  have hi' : ∀ a : ℕ, r - 1 < f a → a < i := fun a => lt_imp_lt_of_le_imp_le (hi a)
+  have hi' : ∀ a : ℕ, r - 1 < f a → a < i := fun a ↦ lt_imp_lt_of_le_imp_le (hi a)
   have hS : { a : ℕ | f a < r }ᶜ ⊆ { a : ℕ | a ≤ i } := by
     simp only [Set.compl_setOf, not_lt]
     exact fun a har => le_of_lt (hi' a (lt_of_lt_of_le (sub_one_lt _) har))

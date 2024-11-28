@@ -49,7 +49,7 @@ variable [DivInvMonoid G₀] [TopologicalSpace G₀] [ContinuousMul G₀] {f : �
   {l : Filter α}
 
 theorem Filter.Tendsto.div_const {x : G₀} (hf : Tendsto f l (𝓝 x)) (y : G₀) :
-    Tendsto (fun a => f a / y) l (𝓝 (x / y)) := by
+    Tendsto (fun a ↦ f a / y) l (𝓝 (x / y)) := by
   simpa only [div_eq_mul_inv] using hf.mul tendsto_const_nhds
 
 variable [TopologicalSpace α]

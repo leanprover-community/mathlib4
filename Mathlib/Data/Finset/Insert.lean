@@ -64,7 +64,7 @@ variable {s : Finset α} {a b : α}
 This differs from `insert a ∅` in that it does not require a `DecidableEq` instance for `α`.
 -/
 instance : Singleton α (Finset α) :=
-  ⟨fun a => ⟨{a}, nodup_singleton a⟩⟩
+  ⟨fun a ↦ ⟨{a}, nodup_singleton a⟩⟩
 
 @[simp]
 theorem singleton_val (a : α) : ({a} : Finset α).1 = {a} :=
@@ -203,7 +203,7 @@ theorem Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = 
   fun ⟨a, ha⟩ => (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 
 instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
-  ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
+  ‹Nonempty α›.elim fun a ↦ ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
 
 instance [IsEmpty α] : Unique (Finset α) where
   default := ∅
@@ -385,7 +385,7 @@ theorem eq_of_mem_insert_of_not_mem (ha : b ∈ insert a s) (hb : b ∉ s) : b =
 
 @[simp]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
-  ext fun a => by simp
+  ext fun a ↦ by simp
 
 @[simp, norm_cast]
 theorem coe_insert (a : α) (s : Finset α) : ↑(insert a s) = (insert a s : Set α) :=
@@ -395,7 +395,7 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 
 instance : LawfulSingleton α (Finset α) :=
-  ⟨fun a => by ext; simp⟩
+  ⟨fun a ↦ by ext; simp⟩
 
 @[simp]
 theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
@@ -463,7 +463,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h => eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
-theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
+theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a ↦ insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1
 
 theorem ssubset_iff : s ⊂ t ↔ ∃ a ∉ s, insert a s ⊆ t := mod_cast @Set.ssubset_iff_insert α s t

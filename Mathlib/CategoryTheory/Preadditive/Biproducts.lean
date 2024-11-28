@@ -266,8 +266,8 @@ end HasFiniteBiproducts
 @[simps]
 def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
     (f : γ → C) [HasBiproduct f] [HasBiproduct (f ∘ ε)] : ⨁ f ∘ ε ≅ ⨁ f where
-  hom := biproduct.desc fun b => biproduct.ι f (ε b)
-  inv := biproduct.lift fun b => biproduct.π f (ε b)
+  hom := biproduct.desc fun b ↦ biproduct.ι f (ε b)
+  inv := biproduct.lift fun b ↦ biproduct.π f (ε b)
   hom_inv_id := by
     ext b b'
     by_cases h : b' = b
@@ -860,7 +860,7 @@ lemma preservesBiproduct_of_preservesProduct {f : J → C} [PreservesLimit (Disc
     preserves the biproduct of `f`. For the converse, see `mapBiproduct`. -/
 lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct f]
     [HasBiproduct (F.obj ∘ f)] [Mono (biproductComparison F f)] : PreservesBiproduct f F := by
-  haveI : HasProduct fun b => F.obj (f b) := by
+  haveI : HasProduct fun b ↦ F.obj (f b) := by
     change HasProduct (F.obj ∘ f)
     infer_instance
   have that : piComparison F f =

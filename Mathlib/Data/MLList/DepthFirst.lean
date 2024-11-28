@@ -78,7 +78,7 @@ use Brendan McKay's method of "generation by canonical construction path".
 def depthFirstRemovingDuplicates {α : Type u} [BEq α] [Hashable α]
     (f : α → MLList m α) (a : α) (maxDepth : Option Nat := none) : MLList m α :=
 let f' : α → MLList (StateT.{u} (Std.HashSet α) m) α := fun a =>
-  (f a).liftM >>= fun b => do
+  (f a).liftM >>= fun b ↦ do
     let s ← get
     if s.contains b then failure
     set <| s.insert b
@@ -95,4 +95,4 @@ This version describes the graph using `α → List α`, and returns the list of
 def depthFirstRemovingDuplicates' [BEq α] [Hashable α]
     (f : α → List α) (a : α) (maxDepth : Option Nat := none) : List α :=
 depthFirstRemovingDuplicates
-  (fun a => (.ofList (f a) : MLList Option α)) a maxDepth |>.force |>.get!
+  (fun a ↦ (.ofList (f a) : MLList Option α)) a maxDepth |>.force |>.get!

@@ -60,7 +60,7 @@ theorem rename_X (f : σ → τ) (i : σ) : rename f (X i : MvPolynomial σ R) =
 theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPolynomial σ R) :
     map f (rename g p) = rename g (map f p) := by
   apply MvPolynomial.induction_on p
-    (fun a => by simp only [map_C, rename_C])
+    (fun a ↦ by simp only [map_C, rename_C])
     (fun p q hp hq => by simp only [hp, hq, map_add]) fun p n hp => by
     simp only [hp, rename_X, map_X, map_mul]
 

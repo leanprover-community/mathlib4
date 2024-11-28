@@ -860,7 +860,7 @@ lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   rw [fst_apply hs, ← prod_univ, prod_prod, measure_univ, mul_one]
 
 theorem fst_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
-    (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).fst = μ.map X := by
+    (hY : AEMeasurable Y μ) : (μ.map fun a ↦ (X a, Y a)).fst = μ.map X := by
   by_cases hX : AEMeasurable X μ
   · ext1 s hs
     rw [Measure.fst_apply hs, Measure.map_apply_of_aemeasurable (hX.prod_mk hY) (measurable_fst hs),
@@ -871,7 +871,7 @@ theorem fst_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
     simp [map_of_not_aemeasurable, hX, this]
 
 theorem fst_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
-    (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
+    (hY : Measurable Y) : (μ.map fun a ↦ (X a, Y a)).fst = μ.map X :=
   fst_map_prod_mk₀ hY.aemeasurable
 
 @[simp]
@@ -918,7 +918,7 @@ lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by
   rw [snd_apply hs, ← univ_prod, prod_prod, measure_univ, one_mul]
 
 theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX : AEMeasurable X μ) :
-    (μ.map fun a => (X a, Y a)).snd = μ.map Y := by
+    (μ.map fun a ↦ (X a, Y a)).snd = μ.map Y := by
   by_cases hY : AEMeasurable Y μ
   · ext1 s hs
     rw [Measure.snd_apply hs, Measure.map_apply_of_aemeasurable (hX.prod_mk hY) (measurable_snd hs),
@@ -929,7 +929,7 @@ theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX
     simp [map_of_not_aemeasurable, hY, this]
 
 theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X) :
-    (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
+    (μ.map fun a ↦ (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
 
 @[simp]

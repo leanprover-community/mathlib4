@@ -68,7 +68,7 @@ protected theorem wellFoundedLT [Preorder N] [WellFoundedLT N] (hbot : ∀ n : N
 
 instance wellFoundedLT' {N} [CanonicallyOrderedAddCommMonoid N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
-  Finsupp.wellFoundedLT fun a => (zero_le a).not_lt
+  Finsupp.wellFoundedLT fun a ↦ (zero_le a).not_lt
 
 instance wellFoundedLT_of_finite [Finite α] [Preorder N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=

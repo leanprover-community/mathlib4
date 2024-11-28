@@ -79,10 +79,10 @@ theorem limsup_add_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :
 theorem limsup_liminf_le_liminf_limsup {β} [Countable β] {f : Filter α} [CountableInterFilter f]
     {g : Filter β} (u : α → β → ℝ≥0∞) :
     (f.limsup fun a : α => g.liminf fun b : β => u a b) ≤
-      g.liminf fun b => f.limsup fun a => u a b :=
+      g.liminf fun b ↦ f.limsup fun a ↦ u a b :=
   have h1 : ∀ᶠ a in f, ∀ b, u a b ≤ f.limsup fun a' => u a' b := by
     rw [eventually_countable_forall]
-    exact fun b => ENNReal.eventually_le_limsup fun a => u a b
+    exact fun b ↦ ENNReal.eventually_le_limsup fun a ↦ u a b
   sInf_le <| h1.mono fun x hx => Filter.liminf_le_liminf (Filter.Eventually.of_forall hx)
 
 end ENNReal

@@ -377,7 +377,7 @@ lemma prod_mul_prod_eq_prod_zipWith_of_length_eq (l l' : List M) (h : l.length =
 
 @[to_additive]
 lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : List α) :
-    (l.map fun a => if p a then f a else g a).prod =
+    (l.map fun a ↦ if p a then f a else g a).prod =
       ((l.filter p).map f).prod * ((l.filter fun a ↦ ¬p a).map g).prod := by
   induction l with
   | nil => simp

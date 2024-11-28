@@ -460,11 +460,11 @@ noncomputable def _root_.NormedRing.algEquivComplexOfComplete [CompleteSpace A] 
   let nt : Nontrivial A := ⟨⟨1, 0, hA.mp ⟨⟨1, 1, mul_one _, mul_one _⟩, rfl⟩⟩⟩
   { Algebra.ofId ℂ A with
     toFun := algebraMap ℂ A
-    invFun := fun a => (@spectrum.nonempty _ _ _ _ nt a).some
+    invFun := fun a ↦ (@spectrum.nonempty _ _ _ _ nt a).some
     left_inv := fun z => by
       simpa only [@scalar_eq _ _ _ _ _ nt _] using
         (@spectrum.nonempty _ _ _ _ nt <| algebraMap ℂ A z).some_mem
-    right_inv := fun a => algebraMap_eq_of_mem (@hA) (@spectrum.nonempty _ _ _ _ nt a).some_mem }
+    right_inv := fun a ↦ algebraMap_eq_of_mem (@hA) (@spectrum.nonempty _ _ _ _ nt a).some_mem }
 
 end GelfandMazurIsomorphism
 
@@ -547,7 +547,7 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 theorem toContinuousLinearMap_norm [NormOneClass A] (φ : A →ₐ[𝕜] 𝕜) :
     ‖φ.toContinuousLinearMap‖ = 1 :=
   ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one
-    (fun a => (one_mul ‖a‖).symm ▸ spectrum.norm_le_norm_of_mem (apply_mem_spectrum φ _))
+    (fun a ↦ (one_mul ‖a‖).symm ▸ spectrum.norm_le_norm_of_mem (apply_mem_spectrum φ _))
     fun _ _ h => by simpa only [coe_toContinuousLinearMap, map_one, norm_one, mul_one] using h 1
 
 end NontriviallyNormedField

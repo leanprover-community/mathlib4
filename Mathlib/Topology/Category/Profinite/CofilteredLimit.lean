@@ -133,8 +133,8 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   have hj : ∀ a, j a ∈ (Finset.univ.image j : Finset J) := by
     intro a
     simp only [Finset.mem_image, Finset.mem_univ, true_and, exists_apply_eq_apply]
-  let fs : ∀ a : α, j0 ⟶ j a := fun a => (hj0 (hj a)).some
-  let gg : α → LocallyConstant (F.obj j0) (Fin 2) := fun a => (g a).comap (F.map (fs _))
+  let fs : ∀ a : α, j0 ⟶ j a := fun a ↦ (hj0 (hj a)).some
+  let gg : α → LocallyConstant (F.obj j0) (Fin 2) := fun a ↦ (g a).comap (F.map (fs _))
   let ggg := LocallyConstant.unflip gg
   refine ⟨j0, ggg, ?_⟩
   have : f.map ι = LocallyConstant.unflip (f.map ι).flip := by simp

@@ -483,7 +483,7 @@ theorem isCompact_iff_finite [DiscreteTopology X] : IsCompact s ↔ s.Finite :=
   ⟨fun h => h.finite_of_discrete, fun h => h.isCompact⟩
 
 theorem IsCompact.union (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s ∪ t) := by
-  rw [union_eq_iUnion]; exact isCompact_iUnion fun b => by cases b <;> assumption
+  rw [union_eq_iUnion]; exact isCompact_iUnion fun b ↦ by cases b <;> assumption
 
 protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a s) :=
   isCompact_singleton.union hs

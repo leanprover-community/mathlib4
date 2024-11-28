@@ -72,12 +72,12 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpac
 
 @[fun_prop, measurability]
 theorem Measurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : Measurable φ) (v : F) :
-    Measurable fun a => φ a v :=
+    Measurable fun a ↦ φ a v :=
   (ContinuousLinearMap.apply 𝕜 E v).measurable.comp hφ
 
 @[measurability]
 theorem AEMeasurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E} {μ : Measure α}
-    (hφ : AEMeasurable φ μ) (v : F) : AEMeasurable (fun a => φ a v) μ :=
+    (hφ : AEMeasurable φ μ) (v : F) : AEMeasurable (fun a ↦ φ a v) μ :=
   (ContinuousLinearMap.apply 𝕜 E v).measurable.comp_aemeasurable hφ
 
 end ContinuousLinearMapNontriviallyNormedField

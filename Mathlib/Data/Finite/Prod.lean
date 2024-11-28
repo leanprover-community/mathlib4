@@ -39,7 +39,7 @@ end Finite
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
   haveI := Fintype.ofFinite (PLift α)
-  haveI := fun a => Fintype.ofFinite (PLift (β a))
+  haveI := fun a ↦ Fintype.ofFinite (PLift (β a))
   exact
     Finite.of_equiv (∀ a : PLift α, PLift (β (Equiv.plift a)))
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
@@ -215,14 +215,14 @@ section Image2
 variable {f : α → β → γ} {s : Set α} {t : Set β} {a : α} {b : β}
 
 protected theorem Infinite.image2_left (hs : s.Infinite) (hb : b ∈ t)
-    (hf : InjOn (fun a => f a b) s) : (image2 f s t).Infinite :=
+    (hf : InjOn (fun a ↦ f a b) s) : (image2 f s t).Infinite :=
   (hs.image hf).mono <| image_subset_image2_left hb
 
 protected theorem Infinite.image2_right (ht : t.Infinite) (ha : a ∈ s) (hf : InjOn (f a) t) :
     (image2 f s t).Infinite :=
   (ht.image hf).mono <| image_subset_image2_right ha
 
-theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
+theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a ↦ f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
   refine ⟨fun h => Set.infinite_prod.1 ?_, ?_⟩
   · rw [← image_uncurry_prod] at h

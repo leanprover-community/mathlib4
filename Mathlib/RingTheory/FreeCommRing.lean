@@ -135,7 +135,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
   right_inv F := MonoidHom.ext fun x =>
     let F' := MonoidHom.toAdditive'' F
     let x' := x.toAdd
-    show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
+    show (Multiset.map (fun a ↦ F' {a}) x').sum = F' x' by
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
@@ -209,7 +209,7 @@ end IsSupported
 /-- The restriction map from `FreeCommRing α` to `FreeCommRing s` where `s : Set α`, defined
   by sending all variables not in `s` to zero. -/
 def restriction (s : Set α) [DecidablePred (· ∈ s)] : FreeCommRing α →+* FreeCommRing s :=
-  lift (fun a => if H : a ∈ s then of ⟨a, H⟩ else 0)
+  lift (fun a ↦ if H : a ∈ s then of ⟨a, H⟩ else 0)
 
 section Restriction
 
@@ -226,7 +226,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   fun hps : IsSupported (of p) s => by
   haveI := Classical.decPred s
   have : ∀ x, IsSupported x s →
-        ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
+        ∃ n : ℤ, lift (fun a ↦ if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
     intro x hx
     refine Subring.InClosure.recOn hx ?_ ?_ ?_ ?_
     · use 1
@@ -386,7 +386,7 @@ end FreeRing
 /-- The free commutative ring on `α` is isomorphic to the polynomial ring over ℤ with
     variables in `α` -/
 def freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ :=
-  RingEquiv.ofHomInv (FreeCommRing.lift <| (fun a => MvPolynomial.X a : α → MvPolynomial α ℤ))
+  RingEquiv.ofHomInv (FreeCommRing.lift <| (fun a ↦ MvPolynomial.X a : α → MvPolynomial α ℤ))
     (MvPolynomial.eval₂Hom (Int.castRingHom (FreeCommRing α)) FreeCommRing.of)
     (by ext; simp) (by ext <;> simp)
 

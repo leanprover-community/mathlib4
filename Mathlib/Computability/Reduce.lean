@@ -41,7 +41,7 @@ def ManyOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop)
 infixl:1000 " ≤₀ " => ManyOneReducible
 
 theorem ManyOneReducible.mk {α β} [Primcodable α] [Primcodable β] {f : α → β} (q : β → Prop)
-    (h : Computable f) : (fun a => q (f a)) ≤₀ q :=
+    (h : Computable f) : (fun a ↦ q (f a)) ≤₀ q :=
   ⟨f, h, fun _ => Iff.rfl⟩
 
 @[refl]
@@ -53,7 +53,7 @@ theorem ManyOneReducible.trans {α β γ} [Primcodable α] [Primcodable β] [Pri
     {p : α → Prop} {q : β → Prop} {r : γ → Prop} : p ≤₀ q → q ≤₀ r → p ≤₀ r
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨g ∘ f, c₂.comp c₁,
-      fun a => ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
+      fun a ↦ ⟨fun h => by erw [← h₂, ← h₁]; assumption, fun h => by rwa [h₁, h₂]⟩⟩
 
 theorem reflexive_manyOneReducible {α} [Primcodable α] : Reflexive (@ManyOneReducible α α _ _) :=
   manyOneReducible_refl
@@ -72,7 +72,7 @@ def OneOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop) 
 infixl:1000 " ≤₁ " => OneOneReducible
 
 theorem OneOneReducible.mk {α β} [Primcodable α] [Primcodable β] {f : α → β} (q : β → Prop)
-    (h : Computable f) (i : Injective f) : (fun a => q (f a)) ≤₁ q :=
+    (h : Computable f) (i : Injective f) : (fun a ↦ q (f a)) ≤₁ q :=
   ⟨f, h, i, fun _ => Iff.rfl⟩
 
 @[refl]
@@ -113,7 +113,7 @@ open Computable
 theorem computable_of_manyOneReducible {p : α → Prop} {q : β → Prop} (h₁ : p ≤₀ q)
     (h₂ : ComputablePred q) : ComputablePred p := by
   rcases h₁ with ⟨f, c, hf⟩
-  rw [show p = fun a => q (f a) from Set.ext hf]
+  rw [show p = fun a ↦ q (f a) from Set.ext hf]
   rcases computable_iff.1 h₂ with ⟨g, hg, rfl⟩
   exact ⟨by infer_instance, by simpa using hg.comp c⟩
 

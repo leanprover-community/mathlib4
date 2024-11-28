@@ -205,11 +205,11 @@ instance noMaxOrder [LT α] [LT β] [NoMaxOrder α] [NoMaxOrder β] : NoMaxOrder
 @[simp]
 theorem noMinOrder_iff [LT α] [LT β] : NoMinOrder (α ⊕ β) ↔ NoMinOrder α ∧ NoMinOrder β :=
   ⟨fun _ =>
-    ⟨⟨fun a => by
+    ⟨⟨fun a ↦ by
         obtain ⟨b | b, h⟩ := exists_lt (inl a : α ⊕ β)
         · exact ⟨b, inl_lt_inl_iff.1 h⟩
         · exact (not_inr_lt_inl h).elim⟩,
-      ⟨fun a => by
+      ⟨fun a ↦ by
         obtain ⟨b | b, h⟩ := exists_lt (inr a : α ⊕ β)
         · exact (not_inl_lt_inr h).elim
         · exact ⟨b, inr_lt_inr_iff.1 h⟩⟩⟩,
@@ -218,11 +218,11 @@ theorem noMinOrder_iff [LT α] [LT β] : NoMinOrder (α ⊕ β) ↔ NoMinOrder �
 @[simp]
 theorem noMaxOrder_iff [LT α] [LT β] : NoMaxOrder (α ⊕ β) ↔ NoMaxOrder α ∧ NoMaxOrder β :=
   ⟨fun _ =>
-    ⟨⟨fun a => by
+    ⟨⟨fun a ↦ by
         obtain ⟨b | b, h⟩ := exists_gt (inl a : α ⊕ β)
         · exact ⟨b, inl_lt_inl_iff.1 h⟩
         · exact (not_inl_lt_inr h).elim⟩,
-      ⟨fun a => by
+      ⟨fun a ↦ by
         obtain ⟨b | b, h⟩ := exists_gt (inr a : α ⊕ β)
         · exact (not_inr_lt_inl h).elim
         · exact ⟨b, inr_lt_inr_iff.1 h⟩⟩⟩,

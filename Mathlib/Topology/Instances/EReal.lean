@@ -62,13 +62,13 @@ alias openEmbedding_coe := isOpenEmbedding_coe
 
 @[norm_cast]
 theorem tendsto_coe {α : Type*} {f : Filter α} {m : α → ℝ} {a : ℝ} :
-    Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
+    Tendsto (fun a ↦ (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   isEmbedding_coe.tendsto_nhds_iff.symm
 
 theorem _root_.continuous_coe_real_ereal : Continuous ((↑) : ℝ → EReal) :=
   isEmbedding_coe.continuous
 
-theorem continuous_coe_iff {f : α → ℝ} : (Continuous fun a => (f a : EReal)) ↔ Continuous f :=
+theorem continuous_coe_iff {f : α → ℝ} : (Continuous fun a ↦ (f a : EReal)) ↔ Continuous f :=
   isEmbedding_coe.continuous_iff.symm
 
 theorem nhds_coe {r : ℝ} : 𝓝 (r : EReal) = (𝓝 r).map (↑) :=
@@ -110,14 +110,14 @@ alias closedEmbedding_coe_ennreal := isClosedEmbedding_coe_ennreal
 
 @[norm_cast]
 theorem tendsto_coe_ennreal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
-    Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
+    Tendsto (fun a ↦ (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   isEmbedding_coe_ennreal.tendsto_nhds_iff.symm
 
 theorem _root_.continuous_coe_ennreal_ereal : Continuous ((↑) : ℝ≥0∞ → EReal) :=
   isEmbedding_coe_ennreal.continuous
 
 theorem continuous_coe_ennreal_iff {f : α → ℝ≥0∞} :
-    (Continuous fun a => (f a : EReal)) ↔ Continuous f :=
+    (Continuous fun a ↦ (f a : EReal)) ↔ Continuous f :=
   isEmbedding_coe_ennreal.continuous_iff.symm
 
 /-! ### Neighborhoods of infinity -/

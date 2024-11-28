@@ -185,7 +185,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     refine isConj_of_support_equiv ?_ ?_
     · refine
           ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1'')).trans
-            ((Equiv.sumCongr (subtypeEquiv f fun a => ?_) (subtypeEquiv g fun a => ?_)).trans
+            ((Equiv.sumCongr (subtypeEquiv f fun a ↦ ?_) (subtypeEquiv g fun a ↦ ?_)).trans
               ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2'')).symm) <;>
       · simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
           apply_eq_iff_eq]

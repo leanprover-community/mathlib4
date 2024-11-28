@@ -34,7 +34,7 @@ theorem slope_fun_def (f : k → PE) : slope f = fun a b => (b - a)⁻¹ • (f 
 theorem slope_def_field (f : k → k) (a b : k) : slope f a b = (f b - f a) / (b - a) :=
   (div_eq_inv_mul _ _).symm
 
-theorem slope_fun_def_field (f : k → k) (a : k) : slope f a = fun b => (f b - f a) / (b - a) :=
+theorem slope_fun_def_field (f : k → k) (a : k) : slope f a = fun b ↦ (f b - f a) / (b - a) :=
   (div_eq_inv_mul _ _).symm
 
 @[simp]

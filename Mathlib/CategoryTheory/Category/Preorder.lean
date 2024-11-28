@@ -122,11 +122,11 @@ theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
 
 instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
   default := homOfLE le_top
-  uniq := fun a => by rfl
+  uniq := fun a ↦ by rfl
 
 instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
   default := homOfLE bot_le
-  uniq := fun a => by rfl
+  uniq := fun a ↦ by rfl
 
 variable (X) in
 /-- The equivalence of categories from the order dual of a preordered type `X`

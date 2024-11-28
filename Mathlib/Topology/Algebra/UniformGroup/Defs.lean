@@ -196,7 +196,7 @@ theorem uniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
 theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β u₁ _)
     (h₂ : @UniformGroup β u₂ _) : @UniformGroup β (u₁ ⊓ u₂) _ := by
   rw [inf_eq_iInf]
-  refine uniformGroup_iInf fun b => ?_
+  refine uniformGroup_iInf fun b ↦ ?_
   cases b <;> assumption
 
 end LatticeOps

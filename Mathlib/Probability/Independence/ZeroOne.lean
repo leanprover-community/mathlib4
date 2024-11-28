@@ -137,8 +137,8 @@ theorem Kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : 
   replace h_indep := h_indep.congr η_eq
   apply Indep.congr (Filter.EventuallyEq.symm η_eq)
   apply indep_iSup_of_directed_le
-  · exact fun a => indep_biSup_limsup h_le h_indep hf (hnsp a)
-  · exact fun a => iSup₂_le fun n _ => h_le n
+  · exact fun a ↦ indep_biSup_limsup h_le h_indep hf (hnsp a)
+  · exact fun a ↦ iSup₂_le fun n _ => h_le n
   · exact limsup_le_iSup.trans (iSup_le h_le)
   · intro a b
     obtain ⟨c, hc⟩ := hns a b

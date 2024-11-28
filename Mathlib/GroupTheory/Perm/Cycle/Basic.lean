@@ -913,7 +913,7 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
     simp
 
 theorem prod_self_eq_iUnion_perm (hf : f.IsCycleOn s) :
-    s ×ˢ s = ⋃ n : ℤ, (fun a => (a, (f ^ n) a)) '' s := by
+    s ×ˢ s = ⋃ n : ℤ, (fun a ↦ (a, (f ^ n) a)) '' s := by
   ext ⟨a, b⟩
   simp only [Set.mem_prod, Set.mem_iUnion, Set.mem_image]
   refine ⟨fun hx => ?_, ?_⟩

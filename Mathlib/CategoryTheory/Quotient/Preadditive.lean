@@ -41,7 +41,7 @@ def add (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂
 with the addition. -/
 def neg (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂) (_ : r g₁ g₂), r (f₁ + g₁) (f₂ + g₂))
     {X Y : Quotient r} (f : X ⟶ Y) : X ⟶ Y :=
-  Quot.liftOn f (fun a => Quot.mk _ (-a))
+  Quot.liftOn f (fun a ↦ Quot.mk _ (-a))
     (fun f g => by
       intro hfg
       simp only [compClosure_iff_self] at hfg

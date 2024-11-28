@@ -81,21 +81,21 @@ variable [OrderedCancelAddCommMonoid β] {l : Filter α} {f g : α → β}
 
 theorem tendsto_atTop_of_add_const_left (C : β) (hf : Tendsto (fun x => C + f x) l atTop) :
     Tendsto f l atTop :=
-  tendsto_atTop.2 fun b => (tendsto_atTop.1 hf (C + b)).mono fun _ => le_of_add_le_add_left
+  tendsto_atTop.2 fun b ↦ (tendsto_atTop.1 hf (C + b)).mono fun _ => le_of_add_le_add_left
 
 -- Porting note: the "order dual" trick timeouts
 theorem tendsto_atBot_of_add_const_left (C : β) (hf : Tendsto (fun x => C + f x) l atBot) :
     Tendsto f l atBot :=
-  tendsto_atBot.2 fun b => (tendsto_atBot.1 hf (C + b)).mono fun _ => le_of_add_le_add_left
+  tendsto_atBot.2 fun b ↦ (tendsto_atBot.1 hf (C + b)).mono fun _ => le_of_add_le_add_left
 
 theorem tendsto_atTop_of_add_const_right (C : β) (hf : Tendsto (fun x => f x + C) l atTop) :
     Tendsto f l atTop :=
-  tendsto_atTop.2 fun b => (tendsto_atTop.1 hf (b + C)).mono fun _ => le_of_add_le_add_right
+  tendsto_atTop.2 fun b ↦ (tendsto_atTop.1 hf (b + C)).mono fun _ => le_of_add_le_add_right
 
 -- Porting note: the "order dual" trick timeouts
 theorem tendsto_atBot_of_add_const_right (C : β) (hf : Tendsto (fun x => f x + C) l atBot) :
     Tendsto f l atBot :=
-  tendsto_atBot.2 fun b => (tendsto_atBot.1 hf (b + C)).mono fun _ => le_of_add_le_add_right
+  tendsto_atBot.2 fun b ↦ (tendsto_atBot.1 hf (b + C)).mono fun _ => le_of_add_le_add_right
 
 theorem tendsto_atTop_of_add_bdd_above_left' (C) (hC : ∀ᶠ x in l, f x ≤ C)
     (h : Tendsto (fun x => f x + g x) l atTop) : Tendsto g l atTop :=

@@ -126,7 +126,7 @@ lemma map₂_rightUnitor_hom {a b : B} (f : a ⟶ b) :
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : LaxFunctor B B where
   toPrelaxFunctor := PrelaxFunctor.id B
-  mapId := fun a => 𝟙 (𝟙 a)
+  mapId := fun a ↦ 𝟙 (𝟙 a)
   mapComp := fun f g => 𝟙 (f ≫ g)
 
 instance : Inhabited (LaxFunctor B B) :=
@@ -137,7 +137,7 @@ instance : Inhabited (LaxFunctor B B) :=
 def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : LaxFunctor C D) :
     LaxFunctor B D where
   toPrelaxFunctor := PrelaxFunctor.comp F.toPrelaxFunctor G.toPrelaxFunctor
-  mapId := fun a => G.mapId (F.obj a) ≫ G.map₂ (F.mapId a)
+  mapId := fun a ↦ G.mapId (F.obj a) ≫ G.map₂ (F.mapId a)
   mapComp := fun f g => G.mapComp (F.map f) (F.map g) ≫ G.map₂ (F.mapComp f g)
   mapComp_naturality_left := fun η g => by
     dsimp

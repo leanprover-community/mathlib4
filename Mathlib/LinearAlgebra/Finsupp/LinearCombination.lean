@@ -241,7 +241,7 @@ theorem linearCombination_option (v : Option α → M) (f : Option α →₀ R) 
 
 theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : β → α →₀ R)
     (f : β →₀ R) : linearCombination R A (linearCombination R B f) =
-      linearCombination R (fun b => linearCombination R A (B b)) f := by
+      linearCombination R (fun b ↦ linearCombination R A (B b)) f := by
   classical
   simp only [linearCombination_apply]
   apply induction_linear f

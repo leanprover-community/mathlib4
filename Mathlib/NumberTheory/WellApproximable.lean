@@ -138,7 +138,7 @@ theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
     rw [sq] at han
     rwa [(Commute.all a b).orderOf_mul_eq_right_of_forall_prime_mul_dvd (orderOf_pos_iff.mp hn)
       fun p _ hp' => dvd_trans (mul_dvd_mul_right hp' <| orderOf a) han]
-  let f : {b : A | orderOf b = n} → {b : A | orderOf b = n} := fun b => ⟨a * b, han b.property⟩
+  let f : {b : A | orderOf b = n} → {b : A | orderOf b = n} := fun b ↦ ⟨a * b, han b.property⟩
   have hf : Surjective f := by
     rintro ⟨b, hb⟩
     refine ⟨⟨a⁻¹ * b, ?_⟩, ?_⟩
@@ -147,7 +147,7 @@ theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
       simpa
     · simp only [f, Subtype.mk_eq_mk, Subtype.coe_mk, mul_inv_cancel_left]
   simpa only [mem_setOf_eq, Subtype.coe_mk, iUnion_coe_set] using
-    hf.iUnion_comp fun b => ball (b : A) δ
+    hf.iUnion_comp fun b ↦ ball (b : A) δ
 
 end approxOrderOf
 

@@ -255,7 +255,7 @@ protected theorem iff_le_add_mul {f : α → ℝ} {K : ℝ≥0} :
 
 theorem isBounded_image2 (f : α → β → γ) {K₁ K₂ : ℝ≥0} {s : Set α} {t : Set β}
     (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t)
-    (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (fun a => f a b) s)
+    (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (fun a ↦ f a b) s)
     (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) : Bornology.IsBounded (Set.image2 f s t) :=
   Metric.isBounded_iff_ediam_ne_top.2 <|
     ne_top_of_le_ne_top

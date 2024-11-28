@@ -299,7 +299,7 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
 
 theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
-  refine le_iInf fun a => le_iInf fun b => le_iInf fun h => ?_
+  refine le_iInf fun a ↦ le_iInf fun b ↦ le_iInf fun h => ?_
   refine
     le_trans
       (add_le_add (f.length_mono <| inter_subset_inter_left _ h)

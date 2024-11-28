@@ -770,7 +770,7 @@ noncomputable def _root_.StarAlgEquiv.ofInjective (f : A →⋆ₐ[R] B)
     (hf : Function.Injective f) : A ≃⋆ₐ[R] f.range :=
   { AlgEquiv.ofInjective (f : A →ₐ[R] B) hf with
     toFun := f.rangeRestrict
-    map_star' := fun a => Subtype.ext (map_star f a)
+    map_star' := fun a ↦ Subtype.ext (map_star f a)
     map_smul' := fun r a => Subtype.ext (map_smul f r a) }
 end StarAlgHom
 

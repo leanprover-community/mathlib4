@@ -757,7 +757,7 @@ variable (α)
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move to `Topology.UniformSpace.Basic`
 instance (priority := 100) firstCountableTopology : FirstCountableTopology α :=
-  ⟨fun a => by rw [nhds_eq_comap_uniformity]; infer_instance⟩
+  ⟨fun a ↦ by rw [nhds_eq_comap_uniformity]; infer_instance⟩
 
 /-- A separable uniform space with countably generated uniformity filter is second countable:
 one obtains a countable basis by taking the balls centered at points in a dense subset,

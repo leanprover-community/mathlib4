@@ -108,7 +108,7 @@ since users will have computable inverses in some applications.
 See note [reducible non-instances]. -/
 protected noncomputable abbrev groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) :=
-  { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
+  { inv := fun a ↦ if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dif_pos rfl }

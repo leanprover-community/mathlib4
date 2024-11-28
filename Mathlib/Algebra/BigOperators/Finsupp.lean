@@ -253,7 +253,7 @@ theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M →
   coe_finset_sum _ _
 
 theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M → β →₀ N} :
-    (f.sum g).support ⊆ f.support.biUnion fun a => (g a (f a)).support := by
+    (f.sum g).support ⊆ f.support.biUnion fun a ↦ (g a (f a)).support := by
   have : ∀ c, (f.sum fun a b => g a b c) ≠ 0 → ∃ a, f a ≠ 0 ∧ ¬(g a (f a)) c = 0 := fun a₁ h =>
     let ⟨a, ha, ne⟩ := Finset.exists_ne_zero_of_sum_ne_zero h
     ⟨a, mem_support_iff.mp ha, ne⟩
@@ -318,7 +318,7 @@ theorem prod_add_index' [AddZeroClass M] [CommMonoid N] {f g : α →₀ M} {h :
 @[simp]
 theorem sum_hom_add_index [AddZeroClass M] [AddCommMonoid N] {f g : α →₀ M} (h : α → M →+ N) :
     ((f + g).sum fun x => h x) = (f.sum fun x => h x) + g.sum fun x => h x :=
-  sum_add_index' (fun a => (h a).map_zero) fun a => (h a).map_add
+  sum_add_index' (fun a ↦ (h a).map_zero) fun a ↦ (h a).map_add
 
 @[simp]
 theorem prod_hom_add_index [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
@@ -326,7 +326,7 @@ theorem prod_hom_add_index [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
     ((f + g).prod fun a b => h a (Multiplicative.ofAdd b)) =
       (f.prod fun a b => h a (Multiplicative.ofAdd b)) *
         g.prod fun a b => h a (Multiplicative.ofAdd b) :=
-  prod_add_index' (fun a => (h a).map_one) fun a => (h a).map_mul
+  prod_add_index' (fun a ↦ (h a).map_one) fun a ↦ (h a).map_mul
 
 /-- The canonical isomorphism between families of additive monoid homomorphisms `α → (M →+ N)`
 and monoid homomorphisms `(α →₀ M) →+ N`. -/
@@ -407,14 +407,14 @@ theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → 
 @[simp]
 theorem liftAddHom_comp_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α) :
     ((liftAddHom (α := α) (M := M) (N := N)) f).comp (singleAddHom a) = f a :=
-  AddMonoidHom.ext fun b => liftAddHom_apply_single f a b
+  AddMonoidHom.ext fun b ↦ liftAddHom_apply_single f a b
 
 theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g : N →+ P)
     (f : α → M →+ N) :
     g.comp ((liftAddHom (α := α) (M := M) (N := N)) f) =
-      (liftAddHom (α := α) (M := M) (N := P)) fun a => g.comp (f a) :=
+      (liftAddHom (α := α) (M := M) (N := P)) fun a ↦ g.comp (f a) :=
   liftAddHom.symm_apply_eq.1 <|
-    funext fun a => by
+    funext fun a ↦ by
       rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 
 theorem sum_sub_index [AddCommGroup β] [AddCommGroup γ] {f g : α →₀ β} {h : α → β → γ}

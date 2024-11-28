@@ -908,7 +908,7 @@ theorem finprod_mem_biUnion {I : Set ι} {t : ι → Set α} (h : I.PairwiseDisj
     (ht : ∀ i ∈ I, (t i).Finite) : ∏ᶠ a ∈ ⋃ x ∈ I, t x, f a = ∏ᶠ i ∈ I, ∏ᶠ j ∈ t i, f j := by
   haveI := hI.fintype
   rw [biUnion_eq_iUnion, finprod_mem_iUnion, ← finprod_set_coe_eq_finprod_mem]
-  exacts [fun x y hxy => h x.2 y.2 (Subtype.coe_injective.ne hxy), fun b => ht b b.2]
+  exacts [fun x y hxy => h x.2 y.2 (Subtype.coe_injective.ne hxy), fun b ↦ ht b b.2]
 
 /-- If `t` is a finite set of pairwise disjoint finite sets, then the product of `f a`
 over `a ∈ ⋃₀ t` is the product over `s ∈ t` of the products of `f a` over `a ∈ s`. -/
@@ -978,10 +978,10 @@ theorem finprod_eq_zero {M₀ : Type*} [CommMonoidWithZero M₀] (f : α → M�
 
 @[to_additive]
 theorem finprod_prod_comm (s : Finset β) (f : α → β → M)
-    (h : ∀ b ∈ s, (mulSupport fun a => f a b).Finite) :
+    (h : ∀ b ∈ s, (mulSupport fun a ↦ f a b).Finite) :
     (∏ᶠ a : α, ∏ b ∈ s, f a b) = ∏ b ∈ s, ∏ᶠ a : α, f a b := by
   have hU :
-    (mulSupport fun a => ∏ b ∈ s, f a b) ⊆
+    (mulSupport fun a ↦ ∏ b ∈ s, f a b) ⊆
       (s.finite_toSet.biUnion fun b hb => h b (Finset.mem_coe.1 hb)).toFinset := by
     rw [Finite.coe_toFinset]
     intro x hx
@@ -1009,7 +1009,7 @@ theorem finsum_mul {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support
 
 @[to_additive]
 theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : Finset α) (f : α → M)
-    (g : α → β) : (mulSupport fun b => (s.filter fun a => g a = b).prod f) ⊆ s.image g := by
+    (g : α → β) : (mulSupport fun b ↦ (s.filter fun a ↦ g a = b).prod f) ⊆ s.image g := by
   simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe, Function.support_subset_iff]
   intro b h
   suffices (s.filter fun a : α => g a = b).Nonempty by
@@ -1082,7 +1082,7 @@ theorem finprod_emb_domain' {f : α → β} (hf : Injective f) [DecidablePred (�
     (g : α → M) :
     (∏ᶠ b : β, if h : b ∈ Set.range f then g (Classical.choose h) else 1) = ∏ᶠ a : α, g a := by
   simp_rw [← finprod_eq_dif]
-  rw [finprod_dmem, finprod_mem_range hf, finprod_congr fun a => _]
+  rw [finprod_dmem, finprod_mem_range hf, finprod_congr fun a ↦ _]
   intro a
   rw [dif_pos (Set.mem_range_self a), hf (Classical.choose_spec (Set.mem_range_self a))]
 

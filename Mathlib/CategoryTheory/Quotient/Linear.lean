@@ -50,7 +50,7 @@ def module' (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f�
     [Preadditive (Quotient r)] [(functor r).Additive] (X Y : C) :
     Module R ((functor r).obj X ⟶ (functor r).obj Y) :=
   letI := smul r hr ((functor r).obj X) ((functor r).obj Y)
-  { smul_zero := fun a => by
+  { smul_zero := fun a ↦ by
       dsimp
       rw [← (functor r).map_zero X Y, smul_eq, smul_zero]
     zero_smul := fun f => by

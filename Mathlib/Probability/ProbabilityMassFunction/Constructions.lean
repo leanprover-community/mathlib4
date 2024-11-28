@@ -50,7 +50,7 @@ theorem map_apply : (map f p) b = ∑' a, if b = f a then p a else 0 := by simp 
 
 @[simp]
 theorem support_map : (map f p).support = f '' p.support :=
-  Set.ext fun b => by simp [map, @eq_comm β b]
+  Set.ext fun b ↦ by simp [map, @eq_comm β b]
 
 theorem mem_support_map_iff : b ∈ (map f p).support ↔ ∃ a ∈ p.support, f a = b := by simp
 
@@ -64,7 +64,7 @@ theorem map_comp (g : β → γ) : (p.map f).map g = p.map (g ∘ f) := by simp 
 theorem pure_map (a : α) : (pure a).map f = pure (f a) :=
   pure_bind _ _
 
-theorem map_bind (q : α → PMF β) (f : β → γ) : (p.bind q).map f = p.bind fun a => (q a).map f :=
+theorem map_bind (q : α → PMF β) (f : β → γ) : (p.bind q).map f = p.bind fun a ↦ (q a).map f :=
   bind_bind _ _ _
 
 @[simp]
@@ -104,7 +104,7 @@ section Seq
 
 /-- The monadic sequencing operation for `PMF`. -/
 def seq (q : PMF (α → β)) (p : PMF α) : PMF β :=
-  q.bind fun m => p.bind fun a => pure (m a)
+  q.bind fun m => p.bind fun a ↦ pure (m a)
 
 variable (q : PMF (α → β)) (p : PMF α) (b : β)
 
@@ -113,12 +113,12 @@ theorem monad_seq_eq_seq {α β : Type u} (q : PMF (α → β)) (p : PMF α) : q
 @[simp]
 theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
-  refine tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a => ?_)
+  refine tsum_congr fun f => ENNReal.tsum_mul_left.symm.trans (tsum_congr fun a ↦ ?_)
   simpa only [mul_zero] using mul_ite (b = f a) (q f) (p a) 0
 
 @[simp]
 theorem support_seq : (seq q p).support = ⋃ f ∈ q.support, f '' p.support :=
-  Set.ext fun b => by simp [-mem_support_iff, seq, @eq_comm β b]
+  Set.ext fun b ↦ by simp [-mem_support_iff, seq, @eq_comm β b]
 
 theorem mem_support_seq_iff : b ∈ (seq q p).support ↔ ∃ f ∈ q.support, b ∈ f '' p.support := by simp
 
@@ -147,8 +147,8 @@ where `x` is in universe `0`, but the return value is in universe `u`.
 instance : ULiftable PMF.{u} PMF.{v} where
   congr e :=
     { toFun := map e, invFun := map e.symm
-      left_inv := fun a => by simp [map_comp, map_id]
-      right_inv := fun a => by simp [map_comp, map_id] }
+      left_inv := fun a ↦ by simp [map_comp, map_id]
+      right_inv := fun a ↦ by simp [map_comp, map_id] }
 
 section OfFinset
 
@@ -165,7 +165,7 @@ theorem ofFinset_apply (a : α) : ofFinset f s h h' a = f a := rfl
 
 @[simp]
 theorem support_ofFinset : (ofFinset f s h h').support = ↑s ∩ Function.support f :=
-  Set.ext fun a => by simpa [mem_support_iff] using mt (h' a)
+  Set.ext fun a ↦ by simpa [mem_support_iff] using mt (h' a)
 
 theorem mem_support_ofFinset_iff (a : α) : a ∈ (ofFinset f s h h').support ↔ a ∈ s ∧ f a ≠ 0 := by
   simp
@@ -237,7 +237,7 @@ section normalize
 /-- Given an `f` with non-zero and non-infinite sum, get a `PMF` by normalizing `f` by its `tsum`.
 -/
 def normalize (f : α → ℝ≥0∞) (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞) : PMF α :=
-  ⟨fun a => f a * (∑' x, f x)⁻¹,
+  ⟨fun a ↦ f a * (∑' x, f x)⁻¹,
     ENNReal.summable.hasSum_iff.2 (ENNReal.tsum_mul_right.trans (ENNReal.mul_inv_cancel hf0 hf))⟩
 
 variable {f : α → ℝ≥0∞} (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞)
@@ -247,7 +247,7 @@ theorem normalize_apply (a : α) : (normalize f hf0 hf) a = f a * (∑' x, f x)�
 
 @[simp]
 theorem support_normalize : (normalize f hf0 hf).support = Function.support f :=
-  Set.ext fun a => by simp [hf, mem_support_iff]
+  Set.ext fun a ↦ by simp [hf, mem_support_iff]
 
 theorem mem_support_normalize_iff (a : α) : a ∈ (normalize f hf0 hf).support ↔ f a ≠ 0 := by simp
 
@@ -288,7 +288,7 @@ section bernoulli
 
 /-- A `PMF` which assigns probability `p` to `true` and `1 - p` to `false`. -/
 def bernoulli (p : ℝ≥0∞) (h : p ≤ 1) : PMF Bool :=
-  ofFintype (fun b => cond b p (1 - p)) (by simp [h])
+  ofFintype (fun b ↦ cond b p (1 - p)) (by simp [h])
 
 variable {p : ℝ≥0∞} (h : p ≤ 1) (b : Bool)
 
@@ -297,7 +297,7 @@ theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := rfl
 
 @[simp]
 theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
-  refine Set.ext fun b => ?_
+  refine Set.ext fun b ↦ ?_
   induction b
   · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne, tsub_eq_zero_iff_le, not_le]
     exact ⟨ne_of_lt, lt_of_le_of_ne h⟩

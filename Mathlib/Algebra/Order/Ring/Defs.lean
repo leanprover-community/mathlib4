@@ -298,7 +298,7 @@ instance (priority := 100) StrictOrderedSemiring.toCharZero [StrictOrderedSemiri
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedSemiring.toNoMaxOrder : NoMaxOrder α :=
-  ⟨fun a => ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
+  ⟨fun a ↦ ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
 
 end StrictOrderedSemiring
 

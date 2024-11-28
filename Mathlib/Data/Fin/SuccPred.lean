@@ -36,7 +36,7 @@ instance : ∀ {n : ℕ}, SuccOrder (Fin n)
         rw [if_neg ha.not_lt])
 
 @[simp]
-theorem succ_eq {n : ℕ} : SuccOrder.succ = fun a => if a < Fin.last n then a + 1 else a :=
+theorem succ_eq {n : ℕ} : SuccOrder.succ = fun a ↦ if a < Fin.last n then a + 1 else a :=
   rfl
 
 @[simp]

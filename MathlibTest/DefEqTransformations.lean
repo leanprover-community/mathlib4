@@ -72,13 +72,13 @@ example {α : Type u} (f : α → α) (a : α) :
   guard_target =ₛ f a = f a
   rfl
 
-example (f : Nat → Nat) : (fun a => f a) = (fun a => f (f a)) := by
+example (f : Nat → Nat) : (fun a ↦ f a) = (fun a ↦ f (f a)) := by
   eta_expand
-  guard_target =ₛ (fun a => f a) = (fun a => f (f a))
+  guard_target =ₛ (fun a ↦ f a) = (fun a ↦ f (f a))
   eta_reduce
-  guard_target =ₛ f = fun a => f (f a)
+  guard_target =ₛ f = fun a ↦ f (f a)
   eta_expand
-  guard_target =ₛ (fun a => f a) = (fun a => f (f a))
+  guard_target =ₛ (fun a ↦ f a) = (fun a ↦ f (f a))
   exact test_sorry
 
 example : (fun (a b : Nat) => a + b) = (· + ·) := by

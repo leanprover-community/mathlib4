@@ -48,7 +48,7 @@ def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
 
 /-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
 instance : Membership α (Stream' α) :=
-  ⟨fun s a => Any (fun b => a = b) s⟩
+  ⟨fun s a => Any (fun b ↦ a = b) s⟩
 
 /-- Apply a function `f` to all elements of a stream `s`. -/
 def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (get s n)
@@ -70,7 +70,7 @@ def iterate (f : α → α) (a : α) : Stream' α
   | 0 => a
   | n + 1 => f (iterate f a n)
 
-def corec (f : α → β) (g : α → α) : α → Stream' β := fun a => map f (iterate g a)
+def corec (f : α → β) (g : α → α) : α → Stream' β := fun a ↦ map f (iterate g a)
 
 def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a

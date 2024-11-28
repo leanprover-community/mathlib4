@@ -274,7 +274,7 @@ theorem cancel_right {f₁ f₂ : β →+*o γ} {g : α →+*o β} (hg : Surject
 @[simp]
 theorem cancel_left {f : β →+*o γ} {g₁ g₂ : α →+*o β} (hf : Injective f) :
     f.comp g₁ = f.comp g₂ ↔ g₁ = g₂ :=
-  ⟨fun h => ext fun a => hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+  ⟨fun h => ext fun a ↦ hf <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 end Preorder
 

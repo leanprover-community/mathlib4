@@ -91,8 +91,8 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     have h1 := congr_fun₂ h.hom_inv_id
     have h2 := congr_fun₂ h.inv_hom_id
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
-    obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
-    obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
+    obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a ↦ (h1 a a).mpr rfl)
+    obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a ↦ (h2 a a).mpr rfl)
     suffices hif : IsIso (C := Type u) f by
       use asIso f
       ext x y
@@ -132,7 +132,7 @@ def opFunctor : RelCat ⥤ RelCatᵒᵖ where
     congr
     ext x y
     apply exists_congr
-    exact fun a => And.comm
+    exact fun a ↦ And.comm
 
 /-- The other direction of `opFunctor`. -/
 def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
@@ -146,7 +146,7 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
     unfold Category.opposite
     ext x y
     apply exists_congr
-    exact fun a => And.comm
+    exact fun a ↦ And.comm
 
 @[simp] theorem opFunctor_comp_unopFunctor_eq :
     Functor.comp opFunctor unopFunctor = Functor.id _ := rfl

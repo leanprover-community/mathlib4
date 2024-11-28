@@ -431,7 +431,7 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*} [LinearOrderedSemifield α]
 
 
 theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
-    IsGLB ((fun b => a * b) '' s) (a * b) := by
+    IsGLB ((fun b ↦ a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
   · exact (OrderIso.mulLeft₀ _ ha).isGLB_image'.2 hs
   · simp_rw [zero_mul]
@@ -439,7 +439,7 @@ theorem IsGLB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
     exact isGLB_singleton
 
 theorem IsGLB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsGLB s b) :
-    IsGLB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+    IsGLB ((fun b ↦ b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 end LinearOrderedSemifield
 
@@ -706,7 +706,7 @@ theorem sub_one_div_inv_le_two (a2 : 2 ≤ a) : (1 - 1 / a)⁻¹ ≤ 2 := by
 
 -- TODO: Generalize to `LinearOrderedSemifield`
 theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => a * b) '' s) (a * b) := by
+    IsLUB ((fun b ↦ a * b) '' s) (a * b) := by
   rcases lt_or_eq_of_le ha with (ha | rfl)
   · exact (OrderIso.mulLeft₀ _ ha).isLUB_image'.2 hs
   · simp_rw [zero_mul]
@@ -715,7 +715,7 @@ theorem IsLUB.mul_left {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
 
 -- TODO: Generalize to `LinearOrderedSemifield`
 theorem IsLUB.mul_right {s : Set α} (ha : 0 ≤ a) (hs : IsLUB s b) :
-    IsLUB ((fun b => b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
+    IsLUB ((fun b ↦ b * a) '' s) (b * a) := by simpa [mul_comm] using hs.mul_left ha
 
 /-! ### Miscellaneous lemmas -/
 

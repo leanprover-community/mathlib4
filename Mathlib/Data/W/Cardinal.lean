@@ -66,7 +66,7 @@ theorem cardinalMk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
     let m := max (lift.{v} #α) ℵ₀
     cardinalMk_le_of_le' <|
       calc
-        (Cardinal.sum fun a => m ^ lift.{u} #(β a)) ≤ lift.{v} #α * ⨆ a, m ^ lift.{u} #(β a) :=
+        (Cardinal.sum fun a ↦ m ^ lift.{u} #(β a)) ≤ lift.{v} #α * ⨆ a, m ^ lift.{u} #(β a) :=
           Cardinal.sum_le_iSup_lift _
         _ ≤ m * ⨆ a, m ^ lift.{u} #(β a) := mul_le_mul' (le_max_left _ _) le_rfl
         _ = m :=

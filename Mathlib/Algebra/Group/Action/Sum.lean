@@ -31,7 +31,7 @@ variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (b : α) (c : �
 
 @[to_additive Sum.hasVAdd]
 instance : SMul M (α ⊕ β) :=
-  ⟨fun a => Sum.map (a • ·) (a • ·)⟩
+  ⟨fun a ↦ Sum.map (a • ·) (a • ·)⟩
 
 @[to_additive]
 theorem smul_def : a • x = x.map (a • ·) (a • ·) :=

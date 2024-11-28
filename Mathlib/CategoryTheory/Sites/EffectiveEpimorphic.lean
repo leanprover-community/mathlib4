@@ -172,7 +172,7 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
     IsColimit (Sieve.generateFamily X π : Presieve B).cocone :=
   letI D := FullSubcategory fun T : Over B => Sieve.generateFamily X π T.hom
   letI F : D ⥤ _ := (Sieve.generateFamily X π).arrows.diagram
-  { desc := fun S => H.desc (fun a => S.ι.app ⟨Over.mk (π a), ⟨a,𝟙 _, by simp⟩⟩) <| by
+  { desc := fun S => H.desc (fun a ↦ S.ι.app ⟨Over.mk (π a), ⟨a,𝟙 _, by simp⟩⟩) <| by
       intro Z a₁ a₂ g₁ g₂ h
       dsimp
       let A₁ : D := ⟨Over.mk (π a₁), a₁, 𝟙 _, by simp⟩

@@ -73,7 +73,7 @@ theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable 
     (hh : AEStronglyMeasurable h μ) :
     (∫⁻ a, edist (f a) (g a) ∂μ) ≤ (∫⁻ a, edist (f a) (h a) ∂μ) + ∫⁻ a, edist (g a) (h a) ∂μ := by
   rw [← lintegral_add_left' (hf.edist hh)]
-  refine lintegral_mono fun a => ?_
+  refine lintegral_mono fun a ↦ ?_
   apply edist_triangle_right
 
 theorem lintegral_nnnorm_zero : (∫⁻ _ : α, ‖(0 : β)‖₊ ∂μ) = 0 := by simp
@@ -214,14 +214,14 @@ theorem hasFiniteIntegral_neg_iff {f : α → β} : HasFiniteIntegral (-f) μ �
   ⟨fun h => neg_neg f ▸ h.neg, HasFiniteIntegral.neg⟩
 
 theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
-    HasFiniteIntegral (fun a => ‖f a‖) μ := by
-  have eq : (fun a => (nnnorm ‖f a‖ : ℝ≥0∞)) = fun a => (‖f a‖₊ : ℝ≥0∞) := by
+    HasFiniteIntegral (fun a ↦ ‖f a‖) μ := by
+  have eq : (fun a ↦ (nnnorm ‖f a‖ : ℝ≥0∞)) = fun a ↦ (‖f a‖₊ : ℝ≥0∞) := by
     funext
     rw [nnnorm_norm]
   rwa [HasFiniteIntegral, eq]
 
 theorem hasFiniteIntegral_norm_iff (f : α → β) :
-    HasFiniteIntegral (fun a => ‖f a‖) μ ↔ HasFiniteIntegral f μ :=
+    HasFiniteIntegral (fun a ↦ ‖f a‖) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr' <| Eventually.of_forall fun x => norm_norm (f x)
 
 theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
@@ -324,7 +324,7 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
     rwa [lintegral_zero] at this
   -- Using the dominated convergence theorem.
   refine tendsto_lintegral_of_dominated_convergence' _ ?_ hb ?_ ?_
-  -- Show `fun a => ‖f a - F n a‖` is almost everywhere measurable for all `n`
+  -- Show `fun a ↦ ‖f a - F n a‖` is almost everywhere measurable for all `n`
   · exact fun n =>
       measurable_ofReal.comp_aemeasurable ((F_measurable n).sub f_measurable).norm.aemeasurable
   -- Show `2 * bound` `HasFiniteIntegral`
@@ -346,11 +346,11 @@ section PosPart
 
 
 theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
-    HasFiniteIntegral (fun a => max (f a) 0) μ :=
+    HasFiniteIntegral (fun a ↦ max (f a) 0) μ :=
   hf.mono <| Eventually.of_forall fun x => by simp [abs_le, le_abs_self]
 
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
-    HasFiniteIntegral (fun a => min (f a) 0) μ :=
+    HasFiniteIntegral (fun a ↦ min (f a) 0) μ :=
   hf.mono <| Eventually.of_forall fun x => by simpa [abs_le] using neg_abs_le _
 
 end PosPart
@@ -596,7 +596,7 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
     HasFiniteIntegral (f + g) μ :=
   calc
     (∫⁻ a, ‖f a + g a‖₊ ∂μ) ≤ ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ :=
-      lintegral_mono fun a => by
+      lintegral_mono fun a ↦ by
         -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `exact mod_cast`
         beta_reduce
         exact mod_cast nnnorm_add_le _ _
@@ -613,7 +613,7 @@ theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → β}
     (integrable_zero _ _ _) hf
 
 theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → β}
-    (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
+    (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a ↦ ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
 
 /-- If `f` is integrable, then so is `-f`.
@@ -701,7 +701,7 @@ lemma integrable_const_add_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
 theorem Integrable.sub {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (f - g) μ := by simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun a => ‖f a‖) μ :=
+theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun a ↦ ‖f a‖) μ :=
   ⟨hf.aestronglyMeasurable.norm, hf.hasFiniteIntegral.norm⟩
 
 theorem Integrable.inf {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf : Integrable f μ)
@@ -715,7 +715,7 @@ theorem Integrable.sup {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf
   exact hf.sup hg
 
 theorem Integrable.abs {β} [NormedLatticeAddCommGroup β] {f : α → β} (hf : Integrable f μ) :
-    Integrable (fun a => |f a|) μ := by
+    Integrable (fun a ↦ |f a|) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.abs
 
@@ -769,7 +769,7 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β]
     _ < ∞ := ENNReal.mul_lt_top hf.2 hg'.lt_top
 
 theorem integrable_norm_iff {f : α → β} (hf : AEStronglyMeasurable f μ) :
-    Integrable (fun a => ‖f a‖) μ ↔ Integrable f μ := by
+    Integrable (fun a ↦ ‖f a‖) μ ↔ Integrable f μ := by
   simp_rw [Integrable, and_iff_right hf, and_iff_right hf.norm, hasFiniteIntegral_norm_iff]
 
 theorem integrable_of_norm_sub_le {f₀ f₁ : α → β} {g : α → ℝ} (hf₁_m : AEStronglyMeasurable f₁ μ)
@@ -1087,12 +1087,12 @@ section PosPart
 
 
 theorem Integrable.pos_part {f : α → ℝ} (hf : Integrable f μ) :
-    Integrable (fun a => max (f a) 0) μ :=
+    Integrable (fun a ↦ max (f a) 0) μ :=
   ⟨(hf.aestronglyMeasurable.aemeasurable.max aemeasurable_const).aestronglyMeasurable,
     hf.hasFiniteIntegral.max_zero⟩
 
 theorem Integrable.neg_part {f : α → ℝ} (hf : Integrable f μ) :
-    Integrable (fun a => max (-f a) 0) μ :=
+    Integrable (fun a ↦ max (-f a) 0) μ :=
   hf.neg.pos_part
 
 end PosPart
@@ -1450,7 +1450,7 @@ theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
 
 theorem toL1_smul (f : α → β) (hf : Integrable f μ) (k : 𝕜) :
-    toL1 (fun a => k • f a) (hf.smul k) = k • toL1 f hf :=
+    toL1 (fun a ↦ k • f a) (hf.smul k) = k • toL1 f hf :=
   rfl
 
 theorem toL1_smul' (f : α → β) (hf : Integrable f μ) (k : 𝕜) :
@@ -1488,7 +1488,7 @@ theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E)
     Integrable (fun a : α => L (φ a)) μ :=
   ((Integrable.norm φ_int).const_mul ‖L‖).mono'
     (L.continuous.comp_aestronglyMeasurable φ_int.aestronglyMeasurable)
-    (Eventually.of_forall fun a => L.le_opNorm (φ a))
+    (Eventually.of_forall fun a ↦ L.le_opNorm (φ a))
 
 @[simp]
 theorem ContinuousLinearEquiv.integrable_comp_iff {φ : α → H} (L : H ≃L[𝕜] E) :
@@ -1502,7 +1502,7 @@ theorem LinearIsometryEquiv.integrable_comp_iff {φ : α → H} (L : H ≃ₗᵢ
   ContinuousLinearEquiv.integrable_comp_iff (L : H ≃L[𝕜] E)
 
 theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
-    (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=
+    (φ_int : Integrable φ μ) (v : H) : Integrable (fun a ↦ φ a v) μ :=
   (ContinuousLinearMap.apply 𝕜 _ v).integrable_comp φ_int
 
 end ContinuousLinearMap

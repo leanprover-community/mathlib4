@@ -43,7 +43,7 @@ theorem image2_subset_left (ht : t ⊆ t') : image2 f s t ⊆ image2 f s t' :=
 theorem image2_subset_right (hs : s ⊆ s') : image2 f s t ⊆ image2 f s' t :=
   image2_subset hs Subset.rfl
 
-theorem image_subset_image2_left (hb : b ∈ t) : (fun a => f a b) '' s ⊆ image2 f s t :=
+theorem image_subset_image2_left (hb : b ∈ t) : (fun a ↦ f a b) '' s ⊆ image2 f s t :=
   forall_mem_image.2 fun _ ha => mem_image2_of_mem ha hb
 
 theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
@@ -57,10 +57,10 @@ theorem forall_image2_iff {p : γ → Prop} :
 theorem image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
   forall_image2_iff
 
-theorem image2_subset_iff_left : image2 f s t ⊆ u ↔ ∀ a ∈ s, (fun b => f a b) '' t ⊆ u := by
+theorem image2_subset_iff_left : image2 f s t ⊆ u ↔ ∀ a ∈ s, (fun b ↦ f a b) '' t ⊆ u := by
   simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage]
 
-theorem image2_subset_iff_right : image2 f s t ⊆ u ↔ ∀ b ∈ t, (fun a => f a b) '' s ⊆ u := by
+theorem image2_subset_iff_right : image2 f s t ⊆ u ↔ ∀ b ∈ t, (fun a ↦ f a b) '' s ⊆ u := by
   simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage, @forall₂_swap α]
 
 variable (f)
@@ -141,17 +141,17 @@ theorem image2_singleton_left : image2 f {a} t = f a '' t :=
   ext fun x => by simp
 
 @[simp]
-theorem image2_singleton_right : image2 f s {b} = (fun a => f a b) '' s :=
+theorem image2_singleton_right : image2 f s {b} = (fun a ↦ f a b) '' s :=
   ext fun x => by simp
 
 theorem image2_singleton : image2 f {a} {b} = {f a b} := by simp
 
 @[simp]
-theorem image2_insert_left : image2 f (insert a s) t = (fun b => f a b) '' t ∪ image2 f s t := by
+theorem image2_insert_left : image2 f (insert a s) t = (fun b ↦ f a b) '' t ∪ image2 f s t := by
   rw [insert_eq, image2_union_left, image2_singleton_left]
 
 @[simp]
-theorem image2_insert_right : image2 f s (insert b t) = (fun a => f a b) '' s ∪ image2 f s t := by
+theorem image2_insert_right : image2 f s (insert b t) = (fun a ↦ f a b) '' s ∪ image2 f s t := by
   rw [insert_eq, image2_union_right, image2_singleton_right]
 
 @[congr]

@@ -124,7 +124,7 @@ instance : FastIsEmpty (Fin 0) := {}
 
 instance {α : Sort u} [inst : FastIsEmpty α] {β : (x : α) → Sort v} :
     FastSubsingleton ((x : α) → β x) where
-  inst.allEq _ _ := funext fun a => (inst.inst.false a).elim
+  inst.allEq _ _ := funext fun a ↦ (inst.inst.false a).elim
 
 instance {α : Sort u} {β : (x : α) → Sort v} [inst : ∀ x, FastSubsingleton (β x)] :
     FastSubsingleton ((x : α) → β x) where

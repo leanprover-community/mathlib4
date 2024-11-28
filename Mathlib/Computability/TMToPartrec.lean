@@ -313,7 +313,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
   | comp g _ _ IHf IHg => exact exists_code.comp IHf IHg
   | @rfind n f _ IHf =>
     obtain ⟨cf, hf⟩ := IHf; refine ⟨rfind cf, fun v => ?_⟩
-    replace hf := fun a => hf (a ::ᵥ v)
+    replace hf := fun a ↦ hf (a ::ᵥ v)
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
       show ∀ x, pure x = [x] from fun _ => rfl] at hf ⊢
     refine Part.ext fun x => ?_
@@ -1208,7 +1208,7 @@ def splitAtPred {α} (p : α → Bool) : List α → List α × Option α × Lis
 theorem splitAtPred_eq {α} (p : α → Bool) :
     ∀ L l₁ o l₂,
       (∀ x ∈ l₁, p x = false) →
-        Option.elim' (L = l₁ ∧ l₂ = []) (fun a => p a = true ∧ L = l₁ ++ a::l₂) o →
+        Option.elim' (L = l₁ ∧ l₂ = []) (fun a ↦ p a = true ∧ L = l₁ ++ a::l₂) o →
           splitAtPred p L = (l₁, o, l₂)
   | [], _, none, _, _, ⟨rfl, rfl⟩ => rfl
   | [], l₁, some o, l₂, _, ⟨_, h₃⟩ => by simp at h₃

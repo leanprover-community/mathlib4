@@ -46,7 +46,7 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
     (∫⁻ ω, f ω * T.indicator (fun _ => c) ω ∂μ) =
       (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, T.indicator (fun _ => c) ω ∂μ := by
   revert f
-  have h_mul_indicator : ∀ g, Measurable g → Measurable fun a => g a * T.indicator (fun _ => c) a :=
+  have h_mul_indicator : ∀ g, Measurable g → Measurable fun a ↦ g a * T.indicator (fun _ => c) a :=
     fun g h_mg => h_mg.mul (measurable_const.indicator h_meas_T)
   apply @Measurable.ennreal_induction _ Mf
   · intro c' s' h_meas_s'
@@ -131,9 +131,9 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMea
 theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
     [NormedDivisionRing β] [BorelSpace β] (hXY : IndepFun X Y μ) (hX : Integrable X μ)
     (hY : Integrable Y μ) : Integrable (X * Y) μ := by
-  let nX : Ω → ENNReal := fun a => ‖X a‖₊
-  let nY : Ω → ENNReal := fun a => ‖Y a‖₊
-  have hXY' : IndepFun (fun a => ‖X a‖₊) (fun a => ‖Y a‖₊) μ :=
+  let nX : Ω → ENNReal := fun a ↦ ‖X a‖₊
+  let nY : Ω → ENNReal := fun a ↦ ‖Y a‖₊
+  have hXY' : IndepFun (fun a ↦ ‖X a‖₊) (fun a ↦ ‖Y a‖₊) μ :=
     hXY.comp measurable_nnnorm measurable_nnnorm
   have hXY'' : IndepFun nX nY μ :=
     hXY'.comp measurable_coe_nnreal_ennreal measurable_coe_nnreal_ennreal
@@ -193,9 +193,9 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
 theorem IndepFun.integral_mul_of_nonneg (hXY : IndepFun X Y μ) (hXp : 0 ≤ X) (hYp : 0 ≤ Y)
     (hXm : AEMeasurable X μ) (hYm : AEMeasurable Y μ) :
     integral μ (X * Y) = integral μ X * integral μ Y := by
-  have h1 : AEMeasurable (fun a => ENNReal.ofReal (X a)) μ :=
+  have h1 : AEMeasurable (fun a ↦ ENNReal.ofReal (X a)) μ :=
     ENNReal.measurable_ofReal.comp_aemeasurable hXm
-  have h2 : AEMeasurable (fun a => ENNReal.ofReal (Y a)) μ :=
+  have h2 : AEMeasurable (fun a ↦ ENNReal.ofReal (Y a)) μ :=
     ENNReal.measurable_ofReal.comp_aemeasurable hYm
   have h3 : AEMeasurable (X * Y) μ := hXm.mul hYm
   have h4 : 0 ≤ᵐ[μ] X * Y := ae_of_all _ fun ω => mul_nonneg (hXp ω) (hYp ω)

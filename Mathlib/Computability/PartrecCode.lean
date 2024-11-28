@@ -55,7 +55,7 @@ theorem rfind' {f} (hf : Nat.Partrec f) :
               Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a (n + b))).1
           ?_)
         (Primrec.nat_add.comp Primrec.snd <| Primrec.snd.comp Primrec.fst).to_comp.to₂
-    have : Nat.Partrec (fun a => Nat.rfind (fun n => (fun m => decide (m = 0)) <$>
+    have : Nat.Partrec (fun a ↦ Nat.rfind (fun n => (fun m => decide (m = 0)) <$>
       Nat.unpaired (fun a b => f (Nat.pair (Nat.unpair a).1 (b + (Nat.unpair a).2)))
         (Nat.pair a n))) :=
       rfind
@@ -261,7 +261,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
     let RF (a) cf hf := rf a (cf, hf)
     let F (a : α) (c : Code) : σ :=
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (PR a) (CO a) (PC a) (RF a)
-    Primrec (fun a => F a (c a) : α → σ) := by
+    Primrec (fun a ↦ F a (c a) : α → σ) := by
   intros _ _ _ _ F
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
     letI a := p.1.1; letI IH := p.1.2; letI n := p.2.1; letI m := p.2.2
@@ -312,7 +312,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
-    |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
+    |>.comp .id (encode_iff.2 hc) |>.of_eq fun a ↦ by simp
   iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
@@ -342,7 +342,7 @@ theorem rec_prim {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (hc
     {rf : α → Code → σ → σ} (hrf : Primrec fun a : α × Code × σ => rf a.1 a.2.1 a.2.2) :
     let F (a : α) (c : Code) : σ :=
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (pr a) (co a) (pc a) (rf a)
-    Primrec fun a => F a (c a) :=
+    Primrec fun a ↦ F a (c a) :=
   rec_prim' hc hz hs hl hr
     (pr := fun a b => pr a b.1 b.2.1 b.2.2.1 b.2.2.2) (.mk hpr)
     (co := fun a b => co a b.1 b.2.1 b.2.2.1 b.2.2.2) (.mk hco)
@@ -369,7 +369,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
     let RF (a) cf hf := rf a (cf, hf)
     let F (a : α) (c : Code) : σ :=
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (PR a) (CO a) (PC a) (RF a)
-    Computable fun a => F a (c a) := by
+    Computable fun a ↦ F a (c a) := by
   -- TODO(Mario): less copy-paste from previous proof
   intros _ _ _ _ F
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
@@ -422,7 +422,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       ((fst.pair snd).comp <| fst.comp <| fst.comp <| fst.comp <| fst).pair <|
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
-    |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
+    |>.comp .id (encode_iff.2 hc) |>.of_eq fun a ↦ by simp
   iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
@@ -625,11 +625,11 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       simp? [Seq.seq, Option.bind_eq_some] at h ⊢ says
         simp only [Seq.seq, Option.map_eq_map, Option.mem_def, Option.bind_eq_some,
           Option.map_eq_some', exists_exists_and_eq_and] at h ⊢
-      exact h.imp fun a => And.imp (hf _ _) <| Exists.imp fun b => And.imp_left (hg _ _)
+      exact h.imp fun a ↦ And.imp (hf _ _) <| Exists.imp fun b ↦ And.imp_left (hg _ _)
     · -- comp cf cg
       simp? [Bind.bind, Option.bind_eq_some] at h ⊢ says
         simp only [bind, Option.mem_def, Option.bind_eq_some] at h ⊢
-      exact h.imp fun a => And.imp (hg _ _) (hf _ _)
+      exact h.imp fun a ↦ And.imp (hg _ _) (hf _ _)
     · -- prec cf cg
       revert h
       simp only [unpaired, bind, Option.mem_def]
@@ -984,14 +984,14 @@ theorem eval_eq_rfindOpt (c n) : eval c n = Nat.rfindOpt fun k => evaln k c n :=
 theorem eval_part : Partrec₂ eval :=
   (Partrec.rfindOpt
     (evaln_prim.to_comp.comp ((Computable.snd.pair (fst.comp fst)).pair (snd.comp fst))).to₂).of_eq
-    fun a => by simp [eval_eq_rfindOpt]
+    fun a ↦ by simp [eval_eq_rfindOpt]
 
 /-- Roger's fixed-point theorem: Any total, computable `f` has a fixed point: That is, under the
 interpretation given by `Nat.Partrec.Code.eval`, there is a code `c` such that `c` and `f c` have
 the same evaluation.
 -/
 theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval (f c) = eval c :=
-  let g (x y : ℕ) : Part ℕ := eval (ofNat Code x) x >>= fun b => eval (ofNat Code b) y
+  let g (x y : ℕ) : Part ℕ := eval (ofNat Code x) x >>= fun b ↦ eval (ofNat Code b) y
   have : Partrec₂ g :=
     (eval_part.comp ((Computable.ofNat _).comp fst) fst).bind
       (eval_part.comp ((Computable.ofNat _).comp snd) (snd.comp fst)).to₂

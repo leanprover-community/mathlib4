@@ -52,7 +52,7 @@ theorem sym2_cons (a : α) (s : Finset α) (ha : a ∉ s) :
   val_injective <| Multiset.sym2_cons _ _
 
 theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) :
-    (insert a s).sym2 = ((insert a s).image fun b => s(a, b)) ∪ s.sym2 := by
+    (insert a s).sym2 = ((insert a s).image fun b ↦ s(a, b)) ∪ s.sym2 := by
   obtain ha | ha := Decidable.em (a ∈ s)
   · simp only [insert_eq_of_mem ha, right_eq_union, image_subset_iff]
     aesop

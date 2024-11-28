@@ -224,7 +224,7 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
                 (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sum_inl_fin
           _)
     simp only [mem_preimage, mem_image, exists_exists_and_eq_and]
-    refine exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => ?_)
+    refine exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a ↦ ?_)
     simp
 
 /-- Shows that definability is closed under finite projections. -/
@@ -243,7 +243,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       A.Definable L { x : α → M | ∀ a, x a = x (rangeSplitting f (rangeFactorization f a)) } := by
       have h' : ∀ a,
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
-          refine fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
+          refine fun a ↦ ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
           simp
       refine (congr rfl (ext ?_)).mp (definable_finset_biInter h' Finset.univ)
       simp
@@ -257,7 +257,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       rw [hx a, ← Function.comp_apply (f := x), ← hy]
       simp
     · rintro ⟨y, ys, rfl⟩
-      refine ⟨⟨y, ys, ?_⟩, fun a => ?_⟩
+      refine ⟨⟨y, ys, ?_⟩, fun a ↦ ?_⟩
       · ext
         simp [Set.apply_rangeSplitting f]
       · rw [Function.comp_apply, Function.comp_apply, apply_rangeSplitting f,

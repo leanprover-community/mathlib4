@@ -664,7 +664,7 @@ namespace OrderHom
 @[simps]
 protected def ωSup (c : Chain (α →o β)) : α →o β where
   toFun a := ωSup (c.map (OrderHom.apply a))
-  monotone' _ _ h := ωSup_le_ωSup_of_le ((Chain.map_le_map _) fun a => a.monotone h)
+  monotone' _ _ h := ωSup_le_ωSup_of_le ((Chain.map_le_map _) fun a ↦ a.monotone h)
 
 @[simps! ωSup_coe]
 instance omegaCompletePartialOrder : OmegaCompletePartialOrder (α →o β) :=

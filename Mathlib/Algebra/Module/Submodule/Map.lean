@@ -94,7 +94,7 @@ theorem apply_coe_mem_map (f : F) {p : Submodule R M} (r : p) : f r ∈ map f p 
 
 @[simp]
 theorem map_id : map (LinearMap.id : M →ₗ[R] M) p = p :=
-  Submodule.ext fun a => by simp
+  Submodule.ext fun a ↦ by simp
 
 theorem map_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] (f : M →ₛₗ[σ₁₂] M₂)
     (g : M₂ →ₛₗ[σ₂₃] M₃) (p : Submodule R M) : map (g.comp f : M →ₛₗ[σ₁₃] M₃) p = map g (map f p) :=

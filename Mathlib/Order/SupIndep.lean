@@ -170,7 +170,7 @@ theorem supIndep_univ_fin_two (f : Fin 2 → α) :
   haveI : (0 : Fin 2) ≠ 1 := by simp
   supIndep_pair this
 
-theorem SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep fun a => f a := by
+theorem SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep fun a ↦ f a := by
   intro t _ i _ hi
   classical
     have : (fun (a : { x // x ∈ s }) => f ↑a) = f ∘ (fun a : { x // x ∈ s } => ↑a) := rfl
@@ -181,7 +181,7 @@ theorem SupIndep.attach (hs : s.SupIndep f) : s.attach.SupIndep fun a => f a := 
     rwa [Subtype.ext hji] at hj
 
 @[simp]
-theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by
+theorem supIndep_attach : (s.attach.SupIndep fun a ↦ f a) ↔ s.SupIndep f := by
   refine ⟨fun h t ht i his hit => ?_, SupIndep.attach⟩
   classical
   convert h (filter_subset (fun (i : { x // x ∈ s }) => (i : ι) ∈ t) _) (mem_attach _ ⟨i, ‹_›⟩)
@@ -189,7 +189,7 @@ theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := b
   refine eq_of_forall_ge_iff ?_
   simp only [Finset.sup_le_iff, mem_filter, mem_attach, true_and, Function.comp_apply,
     Subtype.forall, Subtype.coe_mk]
-  exact fun a => forall_congr' fun j => ⟨fun h _ => h, fun h hj => h (ht hj) hj⟩
+  exact fun a ↦ forall_congr' fun j => ⟨fun h _ => h, fun h hj => h (ht hj) hj⟩
 
 end Lattice
 
@@ -221,8 +221,8 @@ theorem SupIndep.biUnion [DecidableEq ι] {s : Finset ι'} {g : ι' → Finset �
 
 /-- Bind operation for `SupIndep`. -/
 theorem SupIndep.sigma {β : ι → Type*} {s : Finset ι} {g : ∀ i, Finset (β i)} {f : Sigma β → α}
-    (hs : s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)
-    (hg : ∀ i ∈ s, (g i).SupIndep fun b => f ⟨i, b⟩) : (s.sigma g).SupIndep f := by
+    (hs : s.SupIndep fun i => (g i).sup fun b ↦ f ⟨i, b⟩)
+    (hg : ∀ i ∈ s, (g i).SupIndep fun b ↦ f ⟨i, b⟩) : (s.sigma g).SupIndep f := by
   rintro t ht ⟨i, b⟩ hi hit
   rw [Finset.disjoint_sup_right]
   rintro ⟨j, c⟩ hj

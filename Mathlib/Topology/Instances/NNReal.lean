@@ -109,11 +109,11 @@ instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
 
 @[simp, norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
-    Tendsto (fun a => (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ Tendsto m f (𝓝 x) :=
+    Tendsto (fun a ↦ (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ Tendsto m f (𝓝 x) :=
   tendsto_subtype_rng.symm
 
 theorem tendsto_coe' {f : Filter α} [NeBot f] {m : α → ℝ≥0} {x : ℝ} :
-    Tendsto (fun a => m a : α → ℝ) f (𝓝 x) ↔ ∃ hx : 0 ≤ x, Tendsto m f (𝓝 ⟨x, hx⟩) :=
+    Tendsto (fun a ↦ m a : α → ℝ) f (𝓝 x) ↔ ∃ hx : 0 ≤ x, Tendsto m f (𝓝 ⟨x, hx⟩) :=
   ⟨fun h => ⟨ge_of_tendsto' h fun c => (m c).2, tendsto_coe.1 h⟩, fun ⟨_, hm⟩ => tendsto_coe.2 hm⟩
 
 @[simp] theorem map_coe_atTop : map toReal atTop = atTop := map_val_Ici_atTop 0
@@ -123,11 +123,11 @@ theorem comap_coe_atTop : comap toReal atTop = atTop := (atTop_Ici_eq 0).symm
 
 @[simp, norm_cast]
 theorem tendsto_coe_atTop {f : Filter α} {m : α → ℝ≥0} :
-    Tendsto (fun a => (m a : ℝ)) f atTop ↔ Tendsto m f atTop :=
+    Tendsto (fun a ↦ (m a : ℝ)) f atTop ↔ Tendsto m f atTop :=
   tendsto_Ici_atTop.symm
 
 theorem _root_.tendsto_real_toNNReal {f : Filter α} {m : α → ℝ} {x : ℝ} (h : Tendsto m f (𝓝 x)) :
-    Tendsto (fun a => Real.toNNReal (m a)) f (𝓝 (Real.toNNReal x)) :=
+    Tendsto (fun a ↦ Real.toNNReal (m a)) f (𝓝 (Real.toNNReal x)) :=
   (continuous_real_toNNReal.tendsto _).comp h
 
 @[simp]
@@ -155,7 +155,7 @@ theorem _root_.Real.tendsto_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop :
 theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]; rfl
 
-theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < a) fun a => Iio a :=
+theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < a) fun a ↦ Iio a :=
   nhds_bot_basis
 
 instance : ContinuousSub ℝ≥0 :=
@@ -168,7 +168,7 @@ instance [TopologicalSpace α] [MulAction ℝ α] [ContinuousSMul ℝ α] :
   continuous_smul := continuous_induced_dom.fst'.smul continuous_snd
 
 @[norm_cast]
-theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} : HasSum (fun a => (f a : ℝ)) (r : ℝ) ↔ HasSum f r := by
+theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} : HasSum (fun a ↦ (f a : ℝ)) (r : ℝ) ↔ HasSum f r := by
   simp only [HasSum, ← coe_sum, tendsto_coe]
 
 protected theorem _root_.HasSum.toNNReal {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
@@ -182,7 +182,7 @@ theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 �
   hf.hasSum.toNNReal hf_nonneg
 
 @[norm_cast]
-theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f := by
+theorem summable_coe {f : α → ℝ≥0} : (Summable fun a ↦ (f a : ℝ)) ↔ Summable f := by
   constructor
   · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
   · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩

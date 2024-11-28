@@ -357,13 +357,13 @@ theorem adjoin_rootSet_eq_range [Algebra R K] [Algebra R L] {p : R[X]}
   exact (Subalgebra.map_injective f.toRingHom.injective).eq_iff
 
 theorem eq_prod_roots_of_splits {p : K[X]} {i : K →+* L} (hsplit : Splits i p) :
-    p.map i = C (i p.leadingCoeff) * ((p.map i).roots.map fun a => X - C a).prod := by
+    p.map i = C (i p.leadingCoeff) * ((p.map i).roots.map fun a ↦ X - C a).prod := by
   rw [← leadingCoeff_map]; symm
   apply C_leadingCoeff_mul_prod_multiset_X_sub_C
   rw [natDegree_map]; exact (natDegree_eq_card_roots hsplit).symm
 
 theorem eq_prod_roots_of_splits_id {p : K[X]} (hsplit : Splits (RingHom.id K) p) :
-    p = C p.leadingCoeff * (p.roots.map fun a => X - C a).prod := by
+    p = C p.leadingCoeff * (p.roots.map fun a ↦ X - C a).prod := by
   simpa using eq_prod_roots_of_splits hsplit
 
 theorem Splits.dvd_of_roots_le_roots {p q : K[X]} (hp : p.Splits (RingHom.id _)) (hp0 : p ≠ 0)
@@ -391,7 +391,7 @@ theorem eval_eq_prod_roots_sub_of_splits_id {p : K[X]}
   rw [Algebra.id.map_eq_id, map_id]
 
 theorem eq_prod_roots_of_monic_of_splits_id {p : K[X]} (m : Monic p)
-    (hsplit : Splits (RingHom.id K) p) : p = (p.roots.map fun a => X - C a).prod := by
+    (hsplit : Splits (RingHom.id K) p) : p = (p.roots.map fun a ↦ X - C a).prod := by
   convert eq_prod_roots_of_splits_id hsplit
   simp [m]
 
@@ -506,7 +506,7 @@ theorem splits_iff_card_roots {p : K[X]} :
 theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (algebraMap K L)) {r : L} (hr : r ∈ P.aroots L) :
     aeval r (Polynomial.derivative P) =
-    (((P.aroots L).erase r).map fun a => r - a).prod := by
+    (((P.aroots L).erase r).map fun a ↦ r - a).prod := by
   replace hmo := hmo.map (algebraMap K L)
   replace hP := (splits_id_iff_splits (algebraMap K L)).2 hP
   rw [aeval_def, ← eval_map, ← derivative_map]

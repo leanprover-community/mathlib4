@@ -72,7 +72,7 @@ theorem card_functions_sum_skolem₁_le : #(Σ n, (L.sum L.skolem₁).Functions 
 /-- The structure assigning each function symbol of `L.skolem₁` to a skolem function generated with
 choice. -/
 noncomputable instance skolem₁Structure : L.skolem₁.Structure M :=
-  ⟨fun {_} φ x => Classical.epsilon fun a => φ.Realize default (Fin.snoc x a : _ → M), fun {_} r =>
+  ⟨fun {_} φ x => Classical.epsilon fun a ↦ φ.Realize default (Fin.snoc x a : _ → M), fun {_} r =>
     Empty.elim r⟩
 
 namespace Substructure
@@ -83,7 +83,7 @@ theorem skolem₁_reduct_isElementary (S : (L.sum L.skolem₁).Substructure M) :
   intro n φ x a h
   let φ' : (L.sum L.skolem₁).Functions n := LHom.sumInr.onFunction φ
   use ⟨funMap φ' ((↑) ∘ x), ?_⟩
-  · exact Classical.epsilon_spec (p := fun a => BoundedFormula.Realize φ default
+  · exact Classical.epsilon_spec (p := fun a ↦ BoundedFormula.Realize φ default
           (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩
   · exact S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
       exact fun i => (x i).2)

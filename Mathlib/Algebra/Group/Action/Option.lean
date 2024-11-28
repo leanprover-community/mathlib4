@@ -30,7 +30,7 @@ variable [SMul M α] [SMul N α] (a : M) (b : α) (x : Option α)
 
 @[to_additive Option.VAdd]
 instance : SMul M (Option α) :=
-  ⟨fun a => Option.map <| (a • ·)⟩
+  ⟨fun a ↦ Option.map <| (a • ·)⟩
 
 @[to_additive]
 theorem smul_def : a • x = x.map (a • ·) :=

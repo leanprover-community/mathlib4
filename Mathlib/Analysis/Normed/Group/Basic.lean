@@ -364,7 +364,7 @@ theorem inseparable_one_iff_norm {a : E} : Inseparable a 1 ↔ ‖a‖ = 0 := by
 
 @[to_additive (attr := simp)]
 theorem dist_one_left : dist (1 : E) = norm :=
-  funext fun a => by rw [dist_comm, dist_one_right]
+  funext fun a ↦ by rw [dist_comm, dist_one_right]
 
 @[to_additive]
 theorem norm_div_rev (a b : E) : ‖a / b‖ = ‖b / a‖ := by
@@ -548,11 +548,11 @@ lemma norm_div_eq_norm_left (x : E) {y : E} (h : ‖y‖ = 0) : ‖x / y‖ = �
 
 @[to_additive ball_eq]
 theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x / y‖ < ε } :=
-  Set.ext fun a => by simp [dist_eq_norm_div]
+  Set.ext fun a ↦ by simp [dist_eq_norm_div]
 
 @[to_additive]
 theorem ball_one_eq (r : ℝ) : ball (1 : E) r = { x | ‖x‖ < r } :=
-  Set.ext fun a => by simp
+  Set.ext fun a ↦ by simp
 
 @[to_additive mem_ball_iff_norm]
 theorem mem_ball_iff_norm'' : b ∈ ball a r ↔ ‖b / a‖ < r := by rw [mem_ball, dist_eq_norm_div]
@@ -660,7 +660,7 @@ section NNNorm
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) SeminormedGroup.toNNNorm : NNNorm E :=
-  ⟨fun a => ⟨‖a‖, norm_nonneg' a⟩⟩
+  ⟨fun a ↦ ⟨‖a‖, norm_nonneg' a⟩⟩
 
 @[to_additive (attr := simp, norm_cast) coe_nnnorm]
 theorem coe_nnnorm' (a : E) : (‖a‖₊ : ℝ) = ‖a‖ := rfl
@@ -844,12 +844,12 @@ theorem squeeze_one_norm {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h :
   squeeze_one_norm' <| Eventually.of_forall h
 
 @[to_additive]
-theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) (𝓝 0) := by
+theorem tendsto_norm_div_self (x : E) : Tendsto (fun a ↦ ‖a / x‖) (𝓝 x) (𝓝 0) := by
   simpa [dist_eq_norm_div] using
     tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (x : E)) (𝓝 x) _)
 
 @[to_additive tendsto_norm]
-theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
+theorem tendsto_norm' {x : E} : Tendsto (fun a ↦ ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
   simpa using tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (1 : E)) _ _)
 
 /-- See `tendsto_norm_one` for a version with pointed neighborhoods. -/

@@ -160,7 +160,7 @@ theorem leftCoset_mem_leftCoset {a : α} (ha : a ∈ s) : a • (s : Set α) = s
 
 @[to_additive rightAddCoset_mem_rightAddCoset]
 theorem rightCoset_mem_rightCoset {a : α} (ha : a ∈ s) : op a • (s : Set α) = s :=
-  Set.ext fun b => by simp [mem_rightCoset_iff, mul_mem_cancel_right (s.inv_mem ha)]
+  Set.ext fun b ↦ by simp [mem_rightCoset_iff, mul_mem_cancel_right (s.inv_mem ha)]
 
 @[to_additive]
 theorem orbit_subgroup_eq_rightCoset (a : α) : MulAction.orbit s a = op a • s :=
@@ -176,7 +176,7 @@ theorem orbit_subgroup_one_eq_self : MulAction.orbit s (1 : α) = s :=
 
 @[to_additive eq_addCosets_of_normal]
 theorem eq_cosets_of_normal (N : s.Normal) (g : α) : g • (s : Set α) = op g • s :=
-  Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff, N.mem_comm_iff]
+  Set.ext fun a ↦ by simp [mem_leftCoset_iff, mem_rightCoset_iff, N.mem_comm_iff]
 
 @[to_additive normal_of_eq_addCosets]
 theorem normal_of_eq_cosets (h : ∀ g : α, g • (s : Set α) = op g • s) : s.Normal :=
@@ -388,12 +388,12 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       change (f a.1 * b)⁻¹ * (f a.1 * c) ∈ s
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
   left_inv := by
-    refine Quotient.ind' fun a => ?_
+    refine Quotient.ind' fun a ↦ ?_
     simp_rw [Quotient.map'_mk'', id, mul_inv_cancel_left]
   right_inv := by
     refine Prod.rec ?_
-    refine Quotient.ind' fun a => ?_
-    refine Quotient.ind' fun b => ?_
+    refine Quotient.ind' fun a ↦ ?_
+    refine Quotient.ind' fun b ↦ ?_
     have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
     simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]

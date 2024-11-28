@@ -66,7 +66,7 @@ preserves multiplication when the target is commutative. -/
       "A sum of maps which preserves addition, preserves addition when the target
       is commutative."]
 theorem mul {α β} [Semigroup α] [CommSemigroup β] {f g : α → β} (hf : IsMulHom f)
-    (hg : IsMulHom g) : IsMulHom fun a => f a * g a :=
+    (hg : IsMulHom g) : IsMulHom fun a ↦ f a * g a :=
   { map_mul := fun a b => by
       simp only [hf.map_mul, hg.map_mul, mul_comm, mul_assoc, mul_left_comm] }
 
@@ -75,7 +75,7 @@ preserves multiplication when the target is commutative. -/
 @[to_additive
       "The negation of a map which preserves addition, preserves addition when
       the target is commutative."]
-theorem inv {α β} [Mul α] [CommGroup β] {f : α → β} (hf : IsMulHom f) : IsMulHom fun a => (f a)⁻¹ :=
+theorem inv {α β} [Mul α] [CommGroup β] {f : α → β} (hf : IsMulHom f) : IsMulHom fun a ↦ (f a)⁻¹ :=
   { map_mul := fun a b => (hf.map_mul a b).symm ▸ mul_inv _ _ }
 
 end IsMulHom
@@ -149,7 +149,7 @@ preserves multiplication when the target is commutative. -/
       "The negation of a map which preserves addition, preserves addition
       when the target is commutative."]
 theorem inv {α β} [MulOneClass α] [CommGroup β] {f : α → β} (hf : IsMonoidHom f) :
-    IsMonoidHom fun a => (f a)⁻¹ :=
+    IsMonoidHom fun a ↦ (f a)⁻¹ :=
   { map_one := hf.map_one.symm ▸ inv_one
     map_mul := fun a b => (hf.map_mul a b).symm ▸ mul_inv _ _ }
 
@@ -280,7 +280,7 @@ end
       "The sum of two additive group homomorphisms is an additive group homomorphism
       if the target is commutative."]
 theorem mul {α β} [Group α] [CommGroup β] {f g : α → β} (hf : IsGroupHom f) (hg : IsGroupHom g) :
-    IsGroupHom fun a => f a * g a :=
+    IsGroupHom fun a ↦ f a * g a :=
   { map_mul := (hf.toIsMulHom.mul hg.toIsMulHom).map_mul }
 
 /-- The inverse of a group homomorphism is a group homomorphism if the target is commutative. -/
@@ -288,7 +288,7 @@ theorem mul {α β} [Group α] [CommGroup β] {f g : α → β} (hf : IsGroupHom
       "The negation of an additive group homomorphism is an additive group homomorphism
       if the target is commutative."]
 theorem inv {α β} [Group α] [CommGroup β] {f : α → β} (hf : IsGroupHom f) :
-    IsGroupHom fun a => (f a)⁻¹ :=
+    IsGroupHom fun a ↦ (f a)⁻¹ :=
   { map_mul := hf.toIsMulHom.inv.map_mul }
 
 end IsGroupHom
@@ -337,7 +337,7 @@ theorem Inv.isGroupHom [CommGroup α] : IsGroupHom (Inv.inv : α → α) :=
 /-- The difference of two additive group homomorphisms is an additive group
 homomorphism if the target is commutative. -/
 theorem IsAddGroupHom.sub {α β} [AddGroup α] [AddCommGroup β] {f g : α → β} (hf : IsAddGroupHom f)
-    (hg : IsAddGroupHom g) : IsAddGroupHom fun a => f a - g a := by
+    (hg : IsAddGroupHom g) : IsAddGroupHom fun a ↦ f a - g a := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
 namespace Units

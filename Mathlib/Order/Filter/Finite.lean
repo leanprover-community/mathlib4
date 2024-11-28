@@ -189,13 +189,13 @@ theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
   simp only [← Finset.set_biInter_coe, biInter_eq_iInter, iInf_subtype']
   refine ⟨fun h => ?_, ?_⟩
   · rcases (mem_iInf_of_finite _).1 h with ⟨p, hp, rfl⟩
-    refine ⟨fun a => if h : a ∈ s then p ⟨a, h⟩ else univ,
+    refine ⟨fun a ↦ if h : a ∈ s then p ⟨a, h⟩ else univ,
             fun a ha => by simpa [ha] using hp ⟨a, ha⟩, ?_⟩
     refine iInter_congr_of_surjective id surjective_id ?_
     rintro ⟨a, ha⟩
     simp [ha]
   · rintro ⟨p, hpf, rfl⟩
-    exact iInter_mem.2 fun a => mem_iInf_of_mem a (hpf a a.2)
+    exact iInter_mem.2 fun a ↦ mem_iInf_of_mem a (hpf a a.2)
 
 
 @[elab_as_elim]

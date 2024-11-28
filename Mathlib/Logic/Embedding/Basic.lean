@@ -232,12 +232,12 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
 def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
-  ⟨fun a => (a, b), fun _ _ h => congr_arg Prod.fst h⟩
+  ⟨fun a ↦ (a, b), fun _ _ h => congr_arg Prod.fst h⟩
 
 /-- Fixing an element `a : α` gives an embedding `β ↪ α × β`. -/
 @[simps]
 def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
-  ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
+  ⟨fun b ↦ (a, b), fun _ _ h => congr_arg Prod.snd h⟩
 
 @[deprecated (since := "2024-11-12")] alias sectl := sectL
 @[deprecated (since := "2024-11-12")] alias sectr := sectR
@@ -295,7 +295,7 @@ def sigmaMk (a : α) : β a ↪ Σx, β x :=
 of embeddings, then `Sigma.map f g` is an embedding. -/
 @[simps apply]
 def sigmaMap (f : α ↪ α') (g : ∀ a, β a ↪ β' (f a)) : (Σa, β a) ↪ Σa', β' a' :=
-  ⟨Sigma.map f fun a => g a, f.injective.sigma_map fun a => (g a).injective⟩
+  ⟨Sigma.map f fun a ↦ g a, f.injective.sigma_map fun a ↦ (g a).injective⟩
 
 end Sigma
 
@@ -303,7 +303,7 @@ end Sigma
 `e : Π a, (β a ↪ γ a)`. This embedding sends `f` to `fun a ↦ e a (f a)`. -/
 @[simps]
 def piCongrRight {α : Sort*} {β γ : α → Sort*} (e : ∀ a, β a ↪ γ a) : (∀ a, β a) ↪ ∀ a, γ a :=
-  ⟨fun f a => e a (f a), fun _ _ h => funext fun a => (e a).injective (congr_fun h a)⟩
+  ⟨fun f a => e a (f a), fun _ _ h => funext fun a ↦ (e a).injective (congr_fun h a)⟩
 
 /-- An embedding `e : α ↪ β` defines an embedding `(γ → α) ↪ (γ → β)` that sends each `f`
 to `e ∘ f`. -/

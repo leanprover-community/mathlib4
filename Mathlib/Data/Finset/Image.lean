@@ -186,7 +186,7 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
 
 lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
     [DecidablePred (∃ a, p a ∧ f a = ·)] :
-    (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+    (s.filter p).map f = (s.map f).filter fun b ↦ ∃ a, p a ∧ f a = b := by
   simp [Function.comp_def, filter_map, f.injective.eq_iff]
 
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
@@ -270,13 +270,13 @@ theorem disjoint_range_addRightEmbedding (a : ℕ) (s : Finset ℕ) :
 
 theorem map_disjiUnion {f : α ↪ β} {s : Finset α} {t : β → Finset γ} {h} :
     (s.map f).disjiUnion t h =
-      s.disjiUnion (fun a => t (f a)) fun _ ha _ hb hab =>
+      s.disjiUnion (fun a ↦ t (f a)) fun _ ha _ hb hab =>
         h (mem_map_of_mem _ ha) (mem_map_of_mem _ hb) (f.injective.ne hab) :=
   eq_of_veq <| Multiset.bind_map _ _ _
 
 theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h} :
     (s.disjiUnion t h).map f =
-      s.disjiUnion (fun a => (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
+      s.disjiUnion (fun a ↦ (t a).map f) (h.mono' fun _ _ ↦ (disjoint_map _).2) :=
   eq_of_veq <| Multiset.map_bind _ _ _
 
 end Map
@@ -333,7 +333,7 @@ instance canLift (c) (p) [CanLift β α c p] :
   prf := by
     rintro ⟨⟨l⟩, hd : l.Nodup⟩ hl
     lift l to List α using hl
-    exact ⟨⟨l, hd.of_map _⟩, ext fun a => by simp⟩
+    exact ⟨⟨l, hd.of_map _⟩, ext fun a ↦ by simp⟩
 
 theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.image g s := by
   ext
@@ -422,7 +422,7 @@ theorem coe_image_subset_range : ↑(s.image f) ⊆ Set.range f :=
 
 theorem filter_image {p : β → Prop} [DecidablePred p] :
     (s.image f).filter p = (s.filter fun a ↦ p (f a)).image f :=
-  ext fun b => by
+  ext fun b ↦ by
     simp only [mem_filter, mem_image, exists_prop]
     exact
       ⟨by rintro ⟨⟨x, h1, rfl⟩, h2⟩; exact ⟨x, ⟨h1, h2⟩, rfl⟩,
@@ -551,20 +551,20 @@ theorem map_erase [DecidableEq α] (f : α ↪ β) (s : Finset α) (a : α) :
   exact s.image_erase f.2 a
 
 theorem image_biUnion [DecidableEq γ] {f : α → β} {s : Finset α} {t : β → Finset γ} :
-    (s.image f).biUnion t = s.biUnion fun a => t (f a) :=
+    (s.image f).biUnion t = s.biUnion fun a ↦ t (f a) :=
   haveI := Classical.decEq α
   Finset.induction_on s rfl fun a s _ ih => by simp only [image_insert, biUnion_insert, ih]
 
 theorem biUnion_image [DecidableEq γ] {s : Finset α} {t : α → Finset β} {f : β → γ} :
-    (s.biUnion t).image f = s.biUnion fun a => (t a).image f :=
+    (s.biUnion t).image f = s.biUnion fun a ↦ (t a).image f :=
   haveI := Classical.decEq α
   Finset.induction_on s rfl fun a s _ ih => by simp only [biUnion_insert, image_union, ih]
 
 theorem image_biUnion_filter_eq [DecidableEq α] (s : Finset β) (g : β → α) :
-    ((s.image g).biUnion fun a => s.filter fun c => g c = a) = s :=
+    ((s.image g).biUnion fun a ↦ s.filter fun c => g c = a) = s :=
   biUnion_filter_eq_of_maps_to fun _ => mem_image_of_mem g
 
-theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image f :=
+theorem biUnion_singleton {f : α → β} : (s.biUnion fun a ↦ {f a}) = s.image f :=
   ext fun x => by simp only [mem_biUnion, mem_image, mem_singleton, eq_comm]
 
 end Image

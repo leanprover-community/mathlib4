@@ -45,7 +45,7 @@ lemma extensiveTopology.mem_sieves_iff_contains_colimit_cofan {X : C} (S : Sieve
       exact Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X _)
     | transitive X R S _ _ a b =>
       obtain ⟨α, w, Y₁, π, h, h'⟩ := a
-      choose β _ Y_n π_n H using fun a => b (h' a)
+      choose β _ Y_n π_n H using fun a ↦ b (h' a)
       exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),
         ⟨Limits.Cofan.isColimitTrans _ h.some _ (fun a ↦ (H a).1.some)⟩,
         fun c => (H c.fst).2 c.snd⟩

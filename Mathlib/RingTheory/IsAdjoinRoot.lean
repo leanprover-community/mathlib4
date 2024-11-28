@@ -248,7 +248,7 @@ variable (x)
 /-- Lift the algebra map `R → T` to `S →ₐ[R] T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
 def liftHom (h : IsAdjoinRoot S f) : S →ₐ[R] T :=
-  { h.lift (algebraMap R T) x hx' with commutes' := fun a => h.lift_algebraMap hx' a }
+  { h.lift (algebraMap R T) x hx' with commutes' := fun a ↦ h.lift_algebraMap hx' a }
 
 variable {x}
 

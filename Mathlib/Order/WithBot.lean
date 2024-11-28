@@ -347,7 +347,7 @@ theorem monotone_map_iff {f : α → β} : Monotone (WithBot.map f) ↔ Monotone
 alias ⟨_, _root_.Monotone.withBot_map⟩ := monotone_map_iff
 
 theorem strictMono_iff {f : WithBot α → β} :
-    StrictMono f ↔ StrictMono (fun a => f a : α → β) ∧ ∀ x : α, f ⊥ < f x :=
+    StrictMono f ↔ StrictMono (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊥ < f x :=
   ⟨fun h => ⟨h.comp WithBot.coe_strictMono, fun _ => h (bot_lt_coe _)⟩, fun h =>
     WithBot.forall.2
       ⟨WithBot.forall.2 ⟨flip absurd (lt_irrefl _), fun x _ => h.2 x⟩, fun _ =>
@@ -521,7 +521,7 @@ theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMinOrder α]
 instance noTopOrder [LE α] [NoTopOrder α] [Nonempty α] : NoTopOrder (WithBot α) :=
   ⟨by
     apply recBotCoe
-    · exact ‹Nonempty α›.elim fun a => ⟨a, not_coe_le_bot a⟩
+    · exact ‹Nonempty α›.elim fun a ↦ ⟨a, not_coe_le_bot a⟩
 
     · intro a
       obtain ⟨b, h⟩ := exists_not_le a
@@ -532,7 +532,7 @@ instance noMaxOrder [LT α] [NoMaxOrder α] [Nonempty α] : NoMaxOrder (WithBot 
   ⟨by
     apply WithBot.recBotCoe
     · apply ‹Nonempty α›.elim
-      exact fun a => ⟨a, WithBot.bot_lt_coe a⟩
+      exact fun a ↦ ⟨a, WithBot.bot_lt_coe a⟩
 
     · intro a
       obtain ⟨b, ha⟩ := exists_gt a

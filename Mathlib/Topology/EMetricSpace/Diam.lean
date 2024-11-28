@@ -126,7 +126,7 @@ theorem diam_pi_le_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricS
     {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, diam (s b) ≤ c) : diam (Set.pi univ s) ≤ c := by
   refine diam_le fun x hx y hy => edist_pi_le_iff.mpr ?_
   rw [mem_univ_pi] at hx hy
-  exact fun b => diam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
+  exact fun b ↦ diam_le_iff.1 (h b) (x b) (hx b) (y b) (hy b)
 
 end
 

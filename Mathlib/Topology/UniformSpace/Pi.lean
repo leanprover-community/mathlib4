@@ -29,7 +29,7 @@ lemma Pi.uniformSpace_eq :
   ext : 1; rfl
 
 theorem Pi.uniformity :
-    𝓤 (∀ i, α i) = ⨅ i : ι, (Filter.comap fun a => (a.1 i, a.2 i)) (𝓤 (α i)) :=
+    𝓤 (∀ i, α i) = ⨅ i : ι, (Filter.comap fun a ↦ (a.1 i, a.2 i)) (𝓤 (α i)) :=
   iInf_uniformity
 
 variable {α}

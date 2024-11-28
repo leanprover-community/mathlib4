@@ -123,7 +123,7 @@ instance himp : HImp (Regular α) :=
   ⟨fun a b => ⟨a ⇨ b, a.2.himp b.2⟩⟩
 
 instance hasCompl : HasCompl (Regular α) :=
-  ⟨fun a => ⟨aᶜ, isRegular_compl _⟩⟩
+  ⟨fun a ↦ ⟨aᶜ, isRegular_compl _⟩⟩
 
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : Regular α) : α) = ⊤ :=
@@ -164,7 +164,7 @@ theorem coe_lt_coe {a b : Regular α} : (a : α) < b ↔ a < b :=
 
 /-- **Regularization** of `a`. The smallest regular element greater than `a`. -/
 def toRegular : α →o Regular α :=
-  ⟨fun a => ⟨aᶜᶜ, isRegular_compl _⟩, fun _ _ h =>
+  ⟨fun a ↦ ⟨aᶜᶜ, isRegular_compl _⟩, fun _ _ h =>
     coe_le_coe.1 <| compl_le_compl <| compl_le_compl h⟩
 
 @[simp, norm_cast]

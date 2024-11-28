@@ -191,7 +191,7 @@ theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpa
     induced f ‹TopologicalSpace β› = Preorder.topology α := by
   let _ := Preorder.topology α; have : OrderTopology α := ⟨rfl⟩
   refine le_antisymm (induced_topology_le_preorder hf) ?_
-  refine le_of_nhds_le_nhds fun a => ?_
+  refine le_of_nhds_le_nhds fun a ↦ ?_
   simp only [nhds_eq_order, nhds_induced, comap_inf, comap_iInf, comap_principal]
   refine inf_le_inf (le_iInf₂ fun b hb => ?_) (le_iInf₂ fun b hb => ?_)
   · rcases em (∃ x, ¬(b < f x)) with (⟨x, hx⟩ | hb)
@@ -442,11 +442,11 @@ theorem mem_nhds_iff_exists_Ioo_subset [OrderTopology α] [NoMaxOrder α] [NoMin
   mem_nhds_iff_exists_Ioo_subset' (exists_lt a) (exists_gt a)
 
 theorem nhds_basis_Ioo' [OrderTopology α] {a : α} (hl : ∃ l, l < a) (hu : ∃ u, a < u) :
-    (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b => Ioo b.1 b.2 :=
+    (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b ↦ Ioo b.1 b.2 :=
   ⟨fun s => (mem_nhds_iff_exists_Ioo_subset' hl hu).trans <| by simp⟩
 
 theorem nhds_basis_Ioo [OrderTopology α] [NoMaxOrder α] [NoMinOrder α] (a : α) :
-    (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b => Ioo b.1 b.2 :=
+    (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b ↦ Ioo b.1 b.2 :=
   nhds_basis_Ioo' (exists_lt a) (exists_gt a)
 
 theorem Filter.Eventually.exists_Ioo_subset [OrderTopology α] [NoMaxOrder α] [NoMinOrder α] {a : α}

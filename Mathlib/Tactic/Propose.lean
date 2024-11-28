@@ -91,7 +91,7 @@ def propose (lemmas : DiscrTree Name) (type : Expr) (required : Array Expr)
         isDefEq type (← inferType (mkAppN e args)) | failure
       g.assign (mkAppN e args)
       let use := required.filterMap fun e => match e with | .fvar _ => none | _ => some e
-      solveByElim g (args.map fun a => a.mvarId!) use required solveByElimDepth
+      solveByElim g (args.map fun a ↦ a.mvarId!) use required solveByElimDepth
       trace[Tactic.propose] "successfully filled in arguments for {lem}"
       pure <| some (lem, ← instantiateMVars (.mvar g))
     catch _ => pure none

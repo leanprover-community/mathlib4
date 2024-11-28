@@ -156,7 +156,7 @@ theorem locallyConvexSpace_iInf {ts' : ι → TopologicalSpace E}
 theorem locallyConvexSpace_inf {t₁ t₂ : TopologicalSpace E} (h₁ : @LocallyConvexSpace 𝕜 E _ _ _ t₁)
     (h₂ : @LocallyConvexSpace 𝕜 E _ _ _ t₂) : @LocallyConvexSpace 𝕜 E _ _ _ (t₁ ⊓ t₂) := by
   rw [inf_eq_iInf]
-  refine locallyConvexSpace_iInf fun b => ?_
+  refine locallyConvexSpace_iInf fun b ↦ ?_
   cases b <;> assumption
 
 theorem locallyConvexSpace_induced {t : TopologicalSpace F} [LocallyConvexSpace 𝕜 F]

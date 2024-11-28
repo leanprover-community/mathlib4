@@ -74,8 +74,8 @@ instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
     Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
-  one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul β a)
-  mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
+  one_smul q := Quotient.inductionOn' q fun a ↦ congr_arg Quotient.mk'' (one_smul β a)
+  mul_smul b b' q := Quotient.inductionOn' q fun a ↦ congr_arg Quotient.mk'' (mul_smul b b' a)
 
 variable {β}
 

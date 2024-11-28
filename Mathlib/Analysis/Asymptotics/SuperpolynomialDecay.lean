@@ -69,7 +69,7 @@ theorem SuperpolynomialDecay.congr' (hf : SuperpolynomialDecay l k f) (hfg : f =
 
 theorem SuperpolynomialDecay.congr (hf : SuperpolynomialDecay l k f) (hfg : ∀ x, f x = g x) :
     SuperpolynomialDecay l k g := fun z =>
-  (hf z).congr fun x => (congr_arg fun a => k x ^ z * a) <| hfg x
+  (hf z).congr fun x => (congr_arg fun a ↦ k x ^ z * a) <| hfg x
 
 @[simp]
 theorem superpolynomialDecay_zero (l : Filter α) (k : α → β) : SuperpolynomialDecay l k 0 :=
@@ -148,7 +148,7 @@ theorem superpolynomialDecay_iff_abs_tendsto_zero :
     (tendsto_zero_iff_abs_tendsto_zero _).2 (h z)⟩
 
 theorem superpolynomialDecay_iff_superpolynomialDecay_abs :
-    SuperpolynomialDecay l k f ↔ SuperpolynomialDecay l (fun a => |k a|) fun a => |f a| :=
+    SuperpolynomialDecay l k f ↔ SuperpolynomialDecay l (fun a ↦ |k a|) fun a ↦ |f a| :=
   (superpolynomialDecay_iff_abs_tendsto_zero l k f).trans
     (by simp_rw [SuperpolynomialDecay, abs_mul, abs_pow])
 
@@ -219,7 +219,7 @@ theorem superpolynomialDecay_iff_zpow_tendsto_zero (hk : Tendsto k l atTop) :
   · unfold Tendsto
     lift z to ℕ using hz
     simpa using h z
-  · have : Tendsto (fun a => k a ^ z) l (𝓝 0) :=
+  · have : Tendsto (fun a ↦ k a ^ z) l (𝓝 0) :=
       Tendsto.comp (tendsto_zpow_atTop_zero (not_le.1 hz)) hk
     have h : Tendsto f l (𝓝 0) := by simpa using h 0
     exact zero_mul (0 : β) ▸ this.mul h
@@ -228,13 +228,13 @@ variable {f}
 
 theorem SuperpolynomialDecay.param_zpow_mul (hk : Tendsto k l atTop)
     (hf : SuperpolynomialDecay l k f) (z : ℤ) :
-    SuperpolynomialDecay l k fun a => k a ^ z * f a := by
+    SuperpolynomialDecay l k fun a ↦ k a ^ z * f a := by
   rw [superpolynomialDecay_iff_zpow_tendsto_zero _ hk] at hf ⊢
   refine fun z' => (hf <| z' + z).congr' ((hk.eventually_ne_atTop 0).mono fun x hx => ?_)
   simp [zpow_add₀ hx, mul_assoc, Pi.mul_apply]
 
 theorem SuperpolynomialDecay.mul_param_zpow (hk : Tendsto k l atTop)
-    (hf : SuperpolynomialDecay l k f) (z : ℤ) : SuperpolynomialDecay l k fun a => f a * k a ^ z :=
+    (hf : SuperpolynomialDecay l k f) (z : ℤ) : SuperpolynomialDecay l k fun a ↦ f a * k a ^ z :=
   (hf.param_zpow_mul hk z).congr fun _ => mul_comm _ _
 
 theorem SuperpolynomialDecay.inv_param_mul (hk : Tendsto k l atTop)
@@ -285,7 +285,7 @@ theorem superpolynomialDecay_iff_norm_tendsto_zero :
     tendsto_zero_iff_norm_tendsto_zero.2 (h z)⟩
 
 theorem superpolynomialDecay_iff_superpolynomialDecay_norm :
-    SuperpolynomialDecay l k f ↔ SuperpolynomialDecay l (fun a => ‖k a‖) fun a => ‖f a‖ :=
+    SuperpolynomialDecay l k f ↔ SuperpolynomialDecay l (fun a ↦ ‖k a‖) fun a ↦ ‖f a‖ :=
   (superpolynomialDecay_iff_norm_tendsto_zero l k f).trans (by simp [SuperpolynomialDecay])
 
 variable {l k}
@@ -303,7 +303,7 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
   · suffices (fun a : α => k a ^ z * f a) =O[l] fun a : α => (k a)⁻¹ from
       IsBigO.trans_tendsto this hk.inv_tendsto_atTop
     refine
-      ((isBigO_refl (fun a => k a ^ z) l).mul (h (-(z + 1)))).trans
+      ((isBigO_refl (fun a ↦ k a ^ z) l).mul (h (-(z + 1)))).trans
         (IsBigO.of_bound 1 <| hk0.mono fun a ha0 => ?_)
     simp only [one_mul, neg_add z 1, zpow_add₀ ha0, ← mul_assoc, zpow_neg,
       mul_inv_cancel₀ (zpow_ne_zero z ha0), zpow_one]

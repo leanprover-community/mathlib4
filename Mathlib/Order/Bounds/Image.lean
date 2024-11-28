@@ -462,7 +462,7 @@ theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
 
 theorem isGLB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsGLB s f ↔ ∀ a, IsGLB (Function.eval a '' s) (f a) :=
-  @isLUB_pi α (fun a => (π a)ᵒᵈ) _ s f
+  @isLUB_pi α (fun a ↦ (π a)ᵒᵈ) _ s f
 
 end Pi
 

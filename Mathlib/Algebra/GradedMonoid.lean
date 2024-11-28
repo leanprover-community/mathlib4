@@ -411,7 +411,7 @@ theorem List.dProd_cons (fι : α → ι) (fA : ∀ a, A (fι a)) (a : α) (l : 
   rfl
 
 theorem GradedMonoid.mk_list_dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) :
-    GradedMonoid.mk _ (l.dProd fι fA) = (l.map fun a => GradedMonoid.mk (fι a) (fA a)).prod := by
+    GradedMonoid.mk _ (l.dProd fι fA) = (l.map fun a ↦ GradedMonoid.mk (fι a) (fA a)).prod := by
   match l with
   | [] => simp only [List.dProdIndex_nil, List.dProd_nil, List.map_nil, List.prod_nil]; rfl
   | head::tail =>
@@ -623,7 +623,7 @@ variable {α S : Type*} [SetLike S R] [Monoid R] [AddMonoid ι]
 @[simp]
 theorem SetLike.coe_list_dProd (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι)
     (fA : ∀ a, A (fι a)) (l : List α) : ↑(@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA)
-    = (List.prod (l.map fun a => fA a) : R) := by
+    = (List.prod (l.map fun a ↦ fA a) : R) := by
   match l with
   | [] =>
     rw [List.dProd_nil, coe_gOne, List.map_nil, List.prod_nil]
@@ -635,7 +635,7 @@ theorem SetLike.coe_list_dProd (A : ι → S) [SetLike.GradedMonoid A] (fι : α
 theorem SetLike.list_dProd_eq (A : ι → S) [SetLike.GradedMonoid A] (fι : α → ι) (fA : ∀ a, A (fι a))
     (l : List α) :
     (@List.dProd _ _ (fun i => ↥(A i)) _ _ l fι fA) =
-      ⟨List.prod (l.map fun a => fA a),
+      ⟨List.prod (l.map fun a ↦ fA a),
         (l.dProdIndex_eq_map_sum fι).symm ▸
           list_prod_map_mem_graded l _ _ fun i _ => (fA i).prop⟩ :=
   Subtype.ext <| SetLike.coe_list_dProd _ _ _ _

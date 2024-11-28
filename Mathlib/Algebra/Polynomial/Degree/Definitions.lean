@@ -394,7 +394,7 @@ theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) �
     exact le_rfl
 
 theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
-    degree (∑ i ∈ s, f i) ≤ s.sup fun b => degree (f b) :=
+    degree (∑ i ∈ s, f i) ≤ s.sup fun b ↦ degree (f b) :=
   Finset.cons_induction_on s (by simp only [sum_empty, sup_empty, degree_zero, le_refl])
     fun a s has ih =>
     calc

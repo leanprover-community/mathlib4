@@ -105,13 +105,13 @@ instance inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabi
 without its contents -/
 def M.corecShape {β : Type u} (g₀ : β → P.A) (g₂ : ∀ b : β, P.last.B (g₀ b) → β) :
     β → P.last.M :=
-  PFunctor.M.corec fun b => ⟨g₀ b, g₂ b⟩
+  PFunctor.M.corec fun b ↦ ⟨g₀ b, g₂ b⟩
 
 /-- Proof of type equality as an arrow -/
 def castDropB {a a' : P.A} (h : a = a') : P.drop.B a ⟹ P.drop.B a' := fun _i b => Eq.recOn h b
 
 /-- Proof of type equality as a function -/
-def castLastB {a a' : P.A} (h : a = a') : P.last.B a → P.last.B a' := fun b => Eq.recOn h b
+def castLastB {a a' : P.A} (h : a = a') : P.last.B a → P.last.B a' := fun b ↦ Eq.recOn h b
 
 /-- Using corecursion, construct the contents of an M-type -/
 def M.corecContents {α : TypeVec.{u} n}
@@ -147,7 +147,7 @@ def M.corec' {α : TypeVec n} {β : Type u} (g₀ : β → P.A) (g₁ : ∀ b : 
 
 /-- Corecursor for M-type of `P` -/
 def M.corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) : β → P.M α :=
-  M.corec' P (fun b => (g b).fst) (fun b => dropFun (g b).snd) fun b => lastFun (g b).snd
+  M.corec' P (fun b ↦ (g b).fst) (fun b ↦ dropFun (g b).snd) fun b ↦ lastFun (g b).snd
 
 /-- Implementation of destructor for M-type of `P` -/
 def M.pathDestLeft {α : TypeVec n} {x : P.last.M} {a : P.A} {f : P.last.B a → P.last.M}
@@ -228,7 +228,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     rcases M.bisim_lemma P e₁ with ⟨g₁', e₁', rfl, rfl⟩
     rcases M.bisim_lemma P e₂ with ⟨g₂', e₂', _, rfl⟩
     rw [e₁', e₂']
-    exact ⟨_, _, _, rfl, rfl, fun b => ⟨_, _, h' b, rfl, rfl⟩⟩
+    exact ⟨_, _, _, rfl, rfl, fun b ↦ ⟨_, _, h' b, rfl, rfl⟩⟩
   subst this
   congr with (i p)
   induction' p with x a f h' i c x a f h' i c p IH <;>

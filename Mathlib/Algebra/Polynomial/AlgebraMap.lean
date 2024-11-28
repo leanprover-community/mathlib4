@@ -183,7 +183,7 @@ theorem mapAlgHom_comp (C : Type z) [Semiring C] [Algebra R C] (f : B →ₐ[R] 
   congr
 
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
-    (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
+    (CAlgHom.comp f) X (fun a ↦ (commute_X (C (f a))).symm) := by
   apply AlgHom.ext
   intro x
   congr

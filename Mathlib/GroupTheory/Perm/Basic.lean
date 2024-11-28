@@ -208,7 +208,7 @@ theorem sigmaCongrRight_mul {α : Type*} {β : α → Type*} (F : ∀ a, Perm (�
 
 @[simp]
 theorem sigmaCongrRight_inv {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a)) :
-    (sigmaCongrRight F)⁻¹ = sigmaCongrRight fun a => (F a)⁻¹ :=
+    (sigmaCongrRight F)⁻¹ = sigmaCongrRight fun a ↦ (F a)⁻¹ :=
   sigmaCongrRight_symm F
 
 @[simp]
@@ -426,7 +426,7 @@ protected def subtypeEquivSubtypePerm (p : α → Prop) [DecidablePred p] :
         Decidable.not_imp_not.1 fun ha hfa => ha <| f.prop a ha ▸ hfa⟩
   left_inv := Equiv.Perm.subtypePerm_ofSubtype
   right_inv f :=
-    Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a => Not.decidable_imp_symm <| f.prop a)
+    Subtype.ext ((Equiv.Perm.ofSubtype_subtypePerm _) fun a ↦ Not.decidable_imp_symm <| f.prop a)
 
 theorem subtypeEquivSubtypePerm_apply_of_mem (f : Perm (Subtype p)) (h : p a) :
     -- Porting note: was `Perm.subtypeEquivSubtypePerm p f a`

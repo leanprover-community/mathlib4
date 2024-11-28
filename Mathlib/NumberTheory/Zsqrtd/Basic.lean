@@ -913,7 +913,7 @@ root. Conversely, this associates to every mapping `ℤ√d →+* R` a value of 
 @[simps]
 def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
   toFun r :=
-    { toFun := fun a => a.1 + a.2 * (r : R)
+    { toFun := fun a ↦ a.1 + a.2 * (r : R)
       map_zero' := by simp
       map_add' := fun a b => by
         simp only [add_re, Int.cast_add, add_im]

@@ -40,7 +40,7 @@ theorem smul_sum [Zero β] [AddCommMonoid M] [DistribSMul R M] {v : α →₀ β
 @[simp]
 theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂]
     [Module R M₂] {v : α →₀ M} {c : R} {h : α → M →ₗ[R] M₂} :
-    ((c • v).sum fun a => h a) = c • v.sum fun a => h a := by
+    ((c • v).sum fun a ↦ h a) = c • v.sum fun a ↦ h a := by
   rw [Finsupp.sum_smul_index', Finsupp.smul_sum]
   · simp only [map_smul]
   · intro i
@@ -104,7 +104,7 @@ def lsum : (α → M →ₗ[R] N) ≃ₗ[S] (α →₀ M) →ₗ[R] N where
 theorem coe_lsum (f : α → M →ₗ[R] N) : (lsum S f : (α →₀ M) → N) = fun d => d.sum fun i => f i :=
   rfl
 
-theorem lsum_apply (f : α → M →ₗ[R] N) (l : α →₀ M) : Finsupp.lsum S f l = l.sum fun b => f b :=
+theorem lsum_apply (f : α → M →ₗ[R] N) (l : α →₀ M) : Finsupp.lsum S f l = l.sum fun b ↦ f b :=
   rfl
 
 theorem lsum_single (f : α → M →ₗ[R] N) (i : α) (m : M) :

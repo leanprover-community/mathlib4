@@ -229,14 +229,14 @@ theorem roots_C_mul_X_pow (ha : a ≠ 0) (n : ℕ) :
 theorem roots_monomial (ha : a ≠ 0) (n : ℕ) : (monomial n a).roots = n • ({0} : Multiset R) := by
   rw [← C_mul_X_pow_eq_monomial, roots_C_mul_X_pow ha]
 
-theorem roots_prod_X_sub_C (s : Finset R) : (s.prod fun a => X - C a).roots = s.val := by
-  apply (roots_prod (fun a => X - C a) s ?_).trans
+theorem roots_prod_X_sub_C (s : Finset R) : (s.prod fun a ↦ X - C a).roots = s.val := by
+  apply (roots_prod (fun a ↦ X - C a) s ?_).trans
   · simp_rw [roots_X_sub_C]
     rw [Multiset.bind_singleton, Multiset.map_id']
   · refine prod_ne_zero_iff.mpr (fun a _ => X_sub_C_ne_zero a)
 
 @[simp]
-theorem roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a => X - C a).prod.roots = s := by
+theorem roots_multiset_prod_X_sub_C (s : Multiset R) : (s.map fun a ↦ X - C a).prod.roots = s := by
   rw [roots_multiset_prod, Multiset.bind_map]
   · simp_rw [roots_X_sub_C]
     rw [Multiset.bind_singleton, Multiset.map_id']
@@ -593,16 +593,16 @@ lemma exists_eval_ne_zero_of_natDegree_lt_card (f : R[X]) (hf : f ≠ 0) (hfR : 
   contrapose! hf
   exact eq_zero_of_forall_eval_zero_of_natDegree_lt_card f hf hfR
 
-theorem monic_prod_multiset_X_sub_C : Monic (p.roots.map fun a => X - C a).prod :=
+theorem monic_prod_multiset_X_sub_C : Monic (p.roots.map fun a ↦ X - C a).prod :=
   monic_multiset_prod_of_monic _ _ fun a _ => monic_X_sub_C a
 
 theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
-    (p.roots.map fun a => X - C a).prod =
-      p.roots.toFinset.prod fun a => (X - C a) ^ rootMultiplicity a p := by
+    (p.roots.map fun a ↦ X - C a).prod =
+      p.roots.toFinset.prod fun a ↦ (X - C a) ^ rootMultiplicity a p := by
   simp only [count_roots, Finset.prod_multiset_map_count]
 
 /-- The product `∏ (X - a)` for `a` inside the multiset `p.roots` divides `p`. -/
-theorem prod_multiset_X_sub_C_dvd (p : R[X]) : (p.roots.map fun a => X - C a).prod ∣ p := by
+theorem prod_multiset_X_sub_C_dvd (p : R[X]) : (p.roots.map fun a ↦ X - C a).prod ∣ p := by
   classical
   rw [← map_dvd_map _ (IsFractionRing.injective R <| FractionRing R) monic_prod_multiset_X_sub_C]
   rw [prod_multiset_root_eq_finset_root, Polynomial.map_prod]
@@ -613,19 +613,19 @@ theorem prod_multiset_X_sub_C_dvd (p : R[X]) : (p.roots.map fun a => X - C a).pr
 
 /-- A Galois connection. -/
 theorem _root_.Multiset.prod_X_sub_C_dvd_iff_le_roots {p : R[X]} (hp : p ≠ 0) (s : Multiset R) :
-    (s.map fun a => X - C a).prod ∣ p ↔ s ≤ p.roots := by
+    (s.map fun a ↦ X - C a).prod ∣ p ↔ s ≤ p.roots := by
   classical exact
   ⟨fun h =>
     Multiset.le_iff_count.2 fun r => by
       rw [count_roots, le_rootMultiplicity_iff hp, ← Multiset.prod_replicate, ←
-        Multiset.map_replicate fun a => X - C a, ← Multiset.filter_eq]
+        Multiset.map_replicate fun a ↦ X - C a, ← Multiset.filter_eq]
       exact (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| s.filter_le _).trans h,
     fun h =>
     (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map h).trans p.prod_multiset_X_sub_C_dvd⟩
 
 theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
     ∃ q,
-      (p.roots.map fun a => X - C a).prod * q = p ∧
+      (p.roots.map fun a ↦ X - C a).prod * q = p ∧
         Multiset.card p.roots + q.natDegree = p.natDegree ∧ q.roots = 0 := by
   obtain ⟨q, he⟩ := p.prod_multiset_X_sub_C_dvd
   use q, he.symm
@@ -643,7 +643,7 @@ theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
 /-- A polynomial `p` that has as many roots as its degree
 can be written `p = p.leadingCoeff * ∏(X - a)`, for `a` in `p.roots`. -/
 theorem C_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots = p.natDegree) :
-    C p.leadingCoeff * (p.roots.map fun a => X - C a).prod = p :=
+    C p.leadingCoeff * (p.roots.map fun a ↦ X - C a).prod = p :=
   (eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le monic_prod_multiset_X_sub_C
       p.prod_multiset_X_sub_C_dvd
       ((natDegree_multiset_prod_X_sub_C_eq_card _).trans hroots).ge).symm
@@ -651,7 +651,7 @@ theorem C_leadingCoeff_mul_prod_multiset_X_sub_C (hroots : Multiset.card p.roots
 /-- A monic polynomial `p` that has as many roots as its degree
 can be written `p = ∏(X - a)`, for `a` in `p.roots`. -/
 theorem prod_multiset_X_sub_C_of_monic_of_roots_card_eq (hp : p.Monic)
-    (hroots : Multiset.card p.roots = p.natDegree) : (p.roots.map fun a => X - C a).prod = p := by
+    (hroots : Multiset.card p.roots = p.natDegree) : (p.roots.map fun a ↦ X - C a).prod = p := by
   convert C_leadingCoeff_mul_prod_multiset_X_sub_C hroots
   rw [hp.leadingCoeff, C_1, one_mul]
 
@@ -704,7 +704,7 @@ theorem count_map_roots [IsDomain A] [DecidableEq B] {p : A[X]} {f : A →+* B} 
     (b : B) :
     (p.roots.map f).count b ≤ rootMultiplicity b (p.map f) := by
   rw [le_rootMultiplicity_iff hmap, ← Multiset.prod_replicate, ←
-    Multiset.map_replicate fun a => X - C a]
+    Multiset.map_replicate fun a ↦ X - C a]
   rw [← Multiset.filter_eq]
   refine
     (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
@@ -724,7 +724,7 @@ theorem count_map_roots_of_injective [IsDomain A] [DecidableEq B] (p : A[X]) {f 
 theorem map_roots_le [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
     p.roots.map f ≤ (p.map f).roots := by
   classical
-  exact Multiset.le_iff_count.2 fun b => by
+  exact Multiset.le_iff_count.2 fun b ↦ by
     rw [count_roots]
     apply count_map_roots h
 

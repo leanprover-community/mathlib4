@@ -53,7 +53,7 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
   refine le_antisymm ?_ (generateFrom_le ?_)
   · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
     letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
-    have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
+    have H : ∀ a : α, MeasurableSet (Iio a) := fun a ↦ GenerateMeasurable.basic _ ⟨_, rfl⟩
     refine generateFrom_le ?_
     rintro _ ⟨a, rfl | rfl⟩
     · rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
@@ -267,7 +267,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
   refine le_antisymm ?_ (generateFrom_Ico_mem_le_borel _ _)
   letI : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
-  refine generateFrom_le (forall_mem_range.2 fun a => ?_)
+  refine generateFrom_le (forall_mem_range.2 fun a ↦ ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
   by_cases ha : ∀ b < a, (Ioo b a).Nonempty
   · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u ≤ a), Ico l u)
@@ -449,24 +449,24 @@ variable [SecondCountableTopology α]
 
 @[measurability]
 theorem Measurable.max {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => max (f a) (g a) := by
+    Measurable fun a ↦ max (f a) (g a) := by
   simpa only [max_def'] using hf.piecewise (measurableSet_le hg hf) hg
 
 @[measurability]
 nonrec theorem AEMeasurable.max {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun a => max (f a) (g a)) μ :=
-  ⟨fun a => max (hf.mk f a) (hg.mk g a), hf.measurable_mk.max hg.measurable_mk,
+    (hg : AEMeasurable g μ) : AEMeasurable (fun a ↦ max (f a) (g a)) μ :=
+  ⟨fun a ↦ max (hf.mk f a) (hg.mk g a), hf.measurable_mk.max hg.measurable_mk,
     EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
 
 @[measurability]
 theorem Measurable.min {f g : δ → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun a => min (f a) (g a) := by
+    Measurable fun a ↦ min (f a) (g a) := by
   simpa only [min_def] using hf.piecewise (measurableSet_le hf hg) hg
 
 @[measurability]
 nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeasurable f μ)
-    (hg : AEMeasurable g μ) : AEMeasurable (fun a => min (f a) (g a)) μ :=
-  ⟨fun a => min (hf.mk f a) (hg.mk g a), hf.measurable_mk.min hg.measurable_mk,
+    (hg : AEMeasurable g μ) : AEMeasurable (fun a ↦ min (f a) (g a)) μ :=
+  ⟨fun a ↦ min (hf.mk f a) (hg.mk g a), hf.measurable_mk.min hg.measurable_mk,
     EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
 
 end LinearOrder
@@ -722,7 +722,7 @@ section ConditionallyCompleteLattice
 
 @[measurability]
 theorem Measurable.iSup_Prop {α} {mα : MeasurableSpace α} [ConditionallyCompleteLattice α]
-    (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨆ _ : p, f b := by
+    (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b ↦ ⨆ _ : p, f b := by
   classical
   simp_rw [ciSup_eq_ite]
   split_ifs with h
@@ -731,7 +731,7 @@ theorem Measurable.iSup_Prop {α} {mα : MeasurableSpace α} [ConditionallyCompl
 
 @[measurability]
 theorem Measurable.iInf_Prop {α} {mα : MeasurableSpace α} [ConditionallyCompleteLattice α]
-    (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨅ _ : p, f b := by
+    (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b ↦ ⨅ _ : p, f b := by
   classical
   simp_rw [ciInf_eq_ite]
   split_ifs with h
@@ -776,7 +776,7 @@ alias measurable_iSup := Measurable.iSup
 
 @[measurability]
 protected theorem AEMeasurable.iSup {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
-    (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i, f i b) μ := by
+    (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b ↦ ⨆ i, f i b) μ := by
   refine ⟨fun b ↦ ⨆ i, (hf i).mk (f i) b, .iSup (fun i ↦ (hf i).measurable_mk), ?_⟩
   filter_upwards [ae_all_iff.2 (fun i ↦ (hf i).ae_eq_mk)] with b hb using by simp [hb]
 
@@ -785,7 +785,7 @@ alias aemeasurable_iSup := AEMeasurable.iSup
 
 @[measurability, fun_prop]
 protected theorem Measurable.iInf {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
-    Measurable fun b => ⨅ i, f i b :=
+    Measurable fun b ↦ ⨅ i, f i b :=
   .iSup (α := αᵒᵈ) hf
 
 @[deprecated (since := "2024-10-21")]
@@ -793,7 +793,7 @@ alias measurable_iInf := Measurable.iInf
 
 @[measurability]
 protected theorem AEMeasurable.iInf {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α}
-    (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i, f i b) μ :=
+    (hf : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun b ↦ ⨅ i, f i b) μ :=
   .iSup (α := αᵒᵈ) hf
 
 @[deprecated (since := "2024-10-21")]
@@ -818,7 +818,7 @@ protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs :
 alias measurable_sInf := Measurable.sInf
 
 theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨆ i ∈ s, f i b := by
+    (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b ↦ ⨆ i ∈ s, f i b := by
   haveI : Encodable s := hs.toEncodable
   by_cases H : ∀ i, i ∈ s
   · have : ∀ b, ⨆ i ∈ s, f i b = ⨆ (i : s), f i b :=
@@ -835,7 +835,7 @@ theorem Measurable.biSup {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Counta
 alias measurable_biSup := Measurable.biSup
 
 theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨆ i ∈ s, f i b) μ := by
+    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b ↦ ⨆ i ∈ s, f i b) μ := by
   classical
   let g : ι → δ → α := fun i ↦ if hi : i ∈ s then (hf i hi).mk (f i) else fun _b ↦ sSup ∅
   have : ∀ i ∈ s, Measurable (g i) := by
@@ -851,14 +851,14 @@ theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
 alias aemeasurable_biSup := AEMeasurable.biSup
 
 theorem Measurable.biInf {ι} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b => ⨅ i ∈ s, f i b :=
+    (hf : ∀ i ∈ s, Measurable (f i)) : Measurable fun b ↦ ⨅ i ∈ s, f i b :=
   .biSup (α := αᵒᵈ) s hs hf
 
 @[deprecated (since := "2024-10-21")]
 alias measurable_biInf := Measurable.biInf
 
 theorem AEMeasurable.biInf {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ → α} (hs : s.Countable)
-    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b => ⨅ i ∈ s, f i b) μ :=
+    (hf : ∀ i ∈ s, AEMeasurable (f i) μ) : AEMeasurable (fun b ↦ ⨅ i ∈ s, f i b) μ :=
   .biSup (α := αᵒᵈ) s hs hf
 
 @[deprecated (since := "2024-10-21")]

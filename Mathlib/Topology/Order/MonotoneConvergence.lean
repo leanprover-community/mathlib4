@@ -86,7 +86,7 @@ theorem tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atTop (𝓝 a) := by
   suffices Tendsto (rangeFactorization f) atTop atTop from
     (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
-  exact h_mono.rangeFactorization.tendsto_atTop_atTop fun b => b.2.imp fun a ha => ha.ge
+  exact h_mono.rangeFactorization.tendsto_atTop_atTop fun b ↦ b.2.imp fun a ha => ha.ge
 
 theorem tendsto_atBot_isLUB (h_anti : Antitone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atBot (𝓝 a) := by convert tendsto_atTop_isLUB h_anti.dual_left ha using 1

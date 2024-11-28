@@ -150,7 +150,7 @@ instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinE
     (by rintro ⟨x, h⟩; simpa)
 
 instance (β : α → Type v) [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Sigma β) :=
-  ofList ((toList α).flatMap fun a => (toList (β a)).map <| Sigma.mk a)
+  ofList ((toList α).flatMap fun a ↦ (toList (β a)).map <| Sigma.mk a)
     (by intro x; cases x; simp)
 
 instance PSigma.finEnum [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Σ'a, β a) :=
@@ -169,7 +169,7 @@ instance PSigma.finEnumPropRight {β : α → Prop} [FinEnum α] [∀ a, Decidab
 instance PSigma.finEnumPropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :
     FinEnum (Σ'a, β a) :=
   if h : ∃ a, β a then ofList [⟨h.fst, h.snd⟩] (by rintro ⟨⟩; simp)
-  else ofList [] fun a => (h ⟨a.fst, a.snd⟩).elim
+  else ofList [] fun a ↦ (h ⟨a.fst, a.snd⟩).elim
 
 instance [DecidableEq α] (xs : List α) : FinEnum { x : α // x ∈ xs } := ofList xs.attach (by simp)
 

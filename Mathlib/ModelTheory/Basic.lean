@@ -772,7 +772,7 @@ section Empty
 def emptyStructure : Language.empty.Structure M where
 
 instance : Unique (Language.empty.Structure M) :=
-  ⟨⟨Language.emptyStructure⟩, fun a => by
+  ⟨⟨Language.emptyStructure⟩, fun a ↦ by
     ext _ f <;> exact Empty.elim f⟩
 
 variable [Language.empty.Structure M] [Language.empty.Structure N]

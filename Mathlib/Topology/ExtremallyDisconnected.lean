@@ -158,7 +158,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     fun c hc _ h => mem_iInter.mp h ⟨c, hc⟩⟩
   -- prove intersection of chain is mapped onto $A$
   by_cases hC : Nonempty C
-  · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
+  · refine eq_univ_of_forall fun a ↦ inter_nonempty_iff_exists_left.mp ?_
     -- apply Cantor's intersection theorem
     refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
@@ -258,12 +258,12 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   -- apply Lemma 2.4 to get closed $E$ satisfying "Zorn subset condition"
   let π₁ : D → A := Prod.fst ∘ Subtype.val
   have π₁_cont : Continuous π₁ := continuous_fst.comp continuous_subtype_val
-  have π₁_surj : π₁.Surjective := fun a => ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
+  have π₁_surj : π₁.Surjective := fun a ↦ ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
   rcases exists_compact_surjective_zorn_subset π₁_cont π₁_surj with ⟨E, _, E_onto, E_min⟩
   -- apply Lemma 2.3 to get homeomorphism $\pi_1|_E : E \to A$
   let ρ : E → A := E.restrict π₁
   have ρ_cont : Continuous ρ := π₁_cont.continuousOn.restrict
-  have ρ_surj : ρ.Surjective := fun a => by
+  have ρ_surj : ρ.Surjective := fun a ↦ by
     rcases (E_onto ▸ mem_univ a : a ∈ π₁ '' E) with ⟨d, ⟨hd, rfl⟩⟩; exact ⟨⟨d, hd⟩, rfl⟩
   let ρ' := ExtremallyDisconnected.homeoCompactToT2 ρ_cont ρ_surj E_min
   -- prove $\rho := \pi_2|_E \circ \pi_1|_E^{-1}$ satisfies $\phi = f \circ \rho$

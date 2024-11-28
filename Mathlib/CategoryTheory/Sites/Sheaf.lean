@@ -438,7 +438,7 @@ def Sheaf.isTerminalOfBotCover (F : Sheaf J A) (X : C) (H : ⊥ ∈ J X) :
   refine @IsTerminal.ofUnique _ _ _ ?_
   intro Y
   choose t h using F.2 Y _ H (by tauto) (by tauto)
-  exact ⟨⟨t⟩, fun a => h.2 a (by tauto)⟩
+  exact ⟨⟨t⟩, fun a ↦ h.2 a (by tauto)⟩
 
 section Preadditive
 

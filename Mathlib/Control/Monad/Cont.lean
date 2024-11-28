@@ -111,7 +111,7 @@ section
 variable [Monad m]
 
 def ExceptT.mkLabel {α β ε} : Label (Except.{u, u} ε α) m β → Label α (ExceptT ε m) β
-  | ⟨f⟩ => ⟨fun a => monadLift <| f (Except.ok a)⟩
+  | ⟨f⟩ => ⟨fun a ↦ monadLift <| f (Except.ok a)⟩
 
 theorem ExceptT.goto_mkLabel {α β ε : Type _} (x : Label (Except.{u, u} ε α) m β) (i : α) :
     goto (ExceptT.mkLabel x) i = ExceptT.mk (Except.ok <$> goto x (Except.ok i)) := by
@@ -137,10 +137,10 @@ instance {ε} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ExceptT ε m)
   callCC_dummy := by intros; simp only [callCC, ExceptT.callCC, @callCC_dummy m _]; ext; rfl
 
 def OptionT.mkLabel {α β} : Label (Option.{u} α) m β → Label α (OptionT m) β
-  | ⟨f⟩ => ⟨fun a => monadLift <| f (some a)⟩
+  | ⟨f⟩ => ⟨fun a ↦ monadLift <| f (some a)⟩
 
 theorem OptionT.goto_mkLabel {α β : Type _} (x : Label (Option.{u} α) m β) (i : α) :
-    goto (OptionT.mkLabel x) i = OptionT.mk (goto x (some i) >>= fun a => pure (some a)) :=
+    goto (OptionT.mkLabel x) i = OptionT.mk (goto x (some i) >>= fun a ↦ pure (some a)) :=
   rfl
 
 nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
@@ -167,10 +167,10 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
                  instances. -/
 
 def WriterT.mkLabel {α β ω} [EmptyCollection ω] : Label (α × ω) m β → Label α (WriterT ω m) β
-  | ⟨f⟩ => ⟨fun a => monadLift <| f (a, ∅)⟩
+  | ⟨f⟩ => ⟨fun a ↦ monadLift <| f (a, ∅)⟩
 
 def WriterT.mkLabel' {α β ω} [Monoid ω] : Label (α × ω) m β → Label α (WriterT ω m) β
-  | ⟨f⟩ => ⟨fun a => monadLift <| f (a, 1)⟩
+  | ⟨f⟩ => ⟨fun a ↦ monadLift <| f (a, 1)⟩
 
 theorem WriterT.goto_mkLabel {α β ω : Type _} [EmptyCollection ω] (x : Label (α × ω) m β) (i : α) :
     goto (WriterT.mkLabel x) i = monadLift (goto x (i, ∅)) := by cases x; rfl
@@ -196,7 +196,7 @@ instance (ω) [Monad m] [Monoid ω] [MonadCont m] : MonadCont (WriterT ω m) whe
   callCC := WriterT.callCC'
 
 def StateT.mkLabel {α β σ : Type u} : Label (α × σ) m (β × σ) → Label α (StateT σ m) β
-  | ⟨f⟩ => ⟨fun a => StateT.mk (fun s => f (a, s))⟩
+  | ⟨f⟩ => ⟨fun a ↦ StateT.mk (fun s => f (a, s))⟩
 
 theorem StateT.goto_mkLabel {α β σ : Type u} (x : Label (α × σ) m (β × σ)) (i : α) :
     goto (StateT.mkLabel x) i = StateT.mk (fun s => goto x (i, s)) := by cases x; rfl

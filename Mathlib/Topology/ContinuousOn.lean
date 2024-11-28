@@ -1205,13 +1205,13 @@ protected theorem ContinuousOn.iterate {f : α → α} {s : Set α} (hcont : Con
 theorem ContinuousWithinAt.fin_insertNth {n} {π : Fin (n + 1) → Type*}
     [∀ i, TopologicalSpace (π i)] (i : Fin (n + 1)) {f : α → π i} {a : α} {s : Set α}
     (hf : ContinuousWithinAt f s a) {g : α → ∀ j : Fin n, π (i.succAbove j)}
-    (hg : ContinuousWithinAt g s a) : ContinuousWithinAt (fun a => i.insertNth (f a) (g a)) s a :=
+    (hg : ContinuousWithinAt g s a) : ContinuousWithinAt (fun a ↦ i.insertNth (f a) (g a)) s a :=
   hf.tendsto.fin_insertNth i hg
 
 nonrec theorem ContinuousOn.fin_insertNth {n} {π : Fin (n + 1) → Type*}
     [∀ i, TopologicalSpace (π i)] (i : Fin (n + 1)) {f : α → π i} {s : Set α}
     (hf : ContinuousOn f s) {g : α → ∀ j : Fin n, π (i.succAbove j)} (hg : ContinuousOn g s) :
-    ContinuousOn (fun a => i.insertNth (f a) (g a)) s := fun a ha =>
+    ContinuousOn (fun a ↦ i.insertNth (f a) (g a)) s := fun a ha =>
   (hf a ha).fin_insertNth i (hg a ha)
 
 theorem Set.LeftInvOn.map_nhdsWithin_eq {f : α → β} {g : β → α} {x : β} {s : Set β}
@@ -1314,7 +1314,7 @@ theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a
       ∀ a ∈ s ∩ frontier { a | p a },
         Tendsto g (𝓝[s ∩ { a | ¬p a }] a) (𝓝 <| if p a then f a else g a))
     (hf : ContinuousOn f <| s ∩ { a | p a }) (hg : ContinuousOn g <| s ∩ { a | ¬p a }) :
-    ContinuousOn (fun a => if p a then f a else g a) s := by
+    ContinuousOn (fun a ↦ if p a then f a else g a) s := by
   intro x hx
   by_cases hx' : x ∈ frontier { a | p a }
   · exact (hpf x ⟨hx, hx'⟩).piecewise_nhdsWithin (hpg x ⟨hx, hx'⟩)
@@ -1344,7 +1344,7 @@ theorem ContinuousOn.if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ s ∩ frontier { a | p a }, f a = g a)
     (hf : ContinuousOn f <| s ∩ closure { a | p a })
     (hg : ContinuousOn g <| s ∩ closure { a | ¬p a }) :
-    ContinuousOn (fun a => if p a then f a else g a) s := by
+    ContinuousOn (fun a ↦ if p a then f a else g a) s := by
   apply ContinuousOn.if'
   · rintro a ha
     simp only [← hp a ha, ite_self]
@@ -1368,29 +1368,29 @@ theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
     (hpf : ∀ a ∈ frontier { x | p x }, Tendsto f (𝓝[{ x | p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
-    Continuous fun a => ite (p a) (f a) (g a) := by
+    Continuous fun a ↦ ite (p a) (f a) (g a) := by
   rw [continuous_iff_continuousOn_univ]
   apply ContinuousOn.if' <;> simp [*] <;> assumption
 
 theorem continuous_if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : ContinuousOn f (closure { x | p x }))
     (hg : ContinuousOn g (closure { x | ¬p x })) :
-    Continuous fun a => if p a then f a else g a := by
+    Continuous fun a ↦ if p a then f a else g a := by
   rw [continuous_iff_continuousOn_univ]
   apply ContinuousOn.if <;> simpa
 
 theorem Continuous.if {p : α → Prop} [∀ a, Decidable (p a)]
     (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun a => if p a then f a else g a :=
+    Continuous fun a ↦ if p a then f a else g a :=
   continuous_if hp hf.continuousOn hg.continuousOn
 
 theorem continuous_if_const (p : Prop) [Decidable p] (hf : p → Continuous f)
-    (hg : ¬p → Continuous g) : Continuous fun a => if p then f a else g a := by
+    (hg : ¬p → Continuous g) : Continuous fun a ↦ if p then f a else g a := by
   split_ifs with h
   exacts [hf h, hg h]
 
 theorem Continuous.if_const (p : Prop) [Decidable p] (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun a => if p then f a else g a :=
+    (hg : Continuous g) : Continuous fun a ↦ if p then f a else g a :=
   continuous_if_const p (fun _ => hf) fun _ => hg
 
 theorem continuous_piecewise [∀ a, Decidable (a ∈ s)]

@@ -432,7 +432,7 @@ theorem HasFDerivAt.lim_real (hf : HasFDerivAt f f' x) (v : E) :
     Tendsto (fun c : ℝ => c • (f (x + c⁻¹ • v) - f x)) atTop (𝓝 (f' v)) := by
   apply hf.lim v
   rw [tendsto_atTop_atTop]
-  exact fun b => ⟨b, fun a ha => le_trans ha (le_abs_self _)⟩
+  exact fun b ↦ ⟨b, fun a ha => le_trans ha (le_abs_self _)⟩
 
 end
 

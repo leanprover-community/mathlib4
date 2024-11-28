@@ -243,7 +243,7 @@ theorem nth_mul_coeff' (n : ℕ) :
     rintro ⟨a, ha⟩
     apply Function.uncurry ![x, y]
     simp_rw [product_val, this, range_val, Multiset.range_succ] at ha
-    let S : Set (Fin 2 × ℕ) := (fun a => a.2 = n ∨ a.2 < n)
+    let S : Set (Fin 2 × ℕ) := (fun a ↦ a.2 = n ∨ a.2 < n)
     have ha' : a ∈ S := by
       convert ha
       dsimp [S]

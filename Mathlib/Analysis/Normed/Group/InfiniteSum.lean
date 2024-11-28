@@ -82,16 +82,16 @@ theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
     _ ≤ ‖∑ k ∈ _, g k‖ := le_abs_self _
     _ < ε := hg
 
-theorem cauchySeq_finset_of_summable_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) :
+theorem cauchySeq_finset_of_summable_norm {f : ι → E} (hf : Summable fun a ↦ ‖f a‖) :
     CauchySeq fun s : Finset ι => ∑ a ∈ s, f a :=
   cauchySeq_finset_of_norm_bounded _ hf fun _i => le_rfl
 
 /-- If a function `f` is summable in norm, and along some sequence of finsets exhausting the space
 its sum is converging to a limit `a`, then this holds along all finsets, i.e., `f` is summable
 with sum `a`. -/
-theorem hasSum_of_subseq_of_summable {f : ι → E} (hf : Summable fun a => ‖f a‖) {s : α → Finset ι}
+theorem hasSum_of_subseq_of_summable {f : ι → E} (hf : Summable fun a ↦ ‖f a‖) {s : α → Finset ι}
     {p : Filter α} [NeBot p] (hs : Tendsto s p atTop) {a : E}
-    (ha : Tendsto (fun b => ∑ i ∈ s b, f i) p (𝓝 a)) : HasSum f a :=
+    (ha : Tendsto (fun b ↦ ∑ i ∈ s b, f i) p (𝓝 a)) : HasSum f a :=
   tendsto_nhds_of_cauchySeq_of_subseq (cauchySeq_finset_of_summable_norm hf) hs ha
 
 theorem hasSum_iff_tendsto_nat_of_summable_norm {f : ℕ → E} {a : E} (hf : Summable fun i => ‖f i‖) :
@@ -158,8 +158,8 @@ theorem Summable.of_nnnorm_bounded {f : ι → E} (g : ι → ℝ≥0) (hg : Sum
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
   .of_norm_bounded (fun i => (g i : ℝ)) (NNReal.summable_coe.2 hg) h
 
-theorem Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
+theorem Summable.of_norm {f : ι → E} (hf : Summable fun a ↦ ‖f a‖) : Summable f :=
   .of_norm_bounded _ hf fun _i => le_rfl
 
-theorem Summable.of_nnnorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) : Summable f :=
+theorem Summable.of_nnnorm {f : ι → E} (hf : Summable fun a ↦ ‖f a‖₊) : Summable f :=
   .of_nnnorm_bounded _ hf fun _i => le_rfl

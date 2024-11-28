@@ -282,7 +282,7 @@ lemma apply_apply [ContinuousConstSMul 𝕜 F] {m : Π i, E i} {c : ContinuousMu
 
 theorem hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F}
     {q : ContinuousMultilinearMap 𝕜 E F} (h : HasSum p q) (m : Π i, E i) :
-    HasSum (fun a => p a m) (q m) :=
+    HasSum (fun a ↦ p a m) (q m) :=
   h.map (applyAddHom m) (continuous_eval_const m)
 
 theorem tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F} (hp : Summable p)

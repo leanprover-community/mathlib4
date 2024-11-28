@@ -31,7 +31,7 @@ theorem setOf_liouville_eq_iInter_iUnion :
 theorem IsGδ.setOf_liouville : IsGδ { x | Liouville x } := by
   rw [setOf_liouville_eq_iInter_iUnion]
   refine .iInter fun n => IsOpen.isGδ ?_
-  refine isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => ?_
+  refine isOpen_iUnion fun a ↦ isOpen_iUnion fun b ↦ isOpen_iUnion fun _hb => ?_
   exact isOpen_ball.inter isClosed_singleton.isOpen_compl
 
 @[deprecated (since := "2024-02-15")] alias isGδ_setOf_liouville := IsGδ.setOf_liouville
@@ -55,7 +55,7 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
   refine eventually_residual_irrational.and ?_
   refine residual_of_dense_Gδ ?_ (Rat.isDenseEmbedding_coe_real.dense.mono ?_)
   · exact .iInter fun n => IsOpen.isGδ <|
-          isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => isOpen_ball
+          isOpen_iUnion fun a ↦ isOpen_iUnion fun b ↦ isOpen_iUnion fun _hb => isOpen_ball
   · rintro _ ⟨r, rfl⟩
     simp only [mem_iInter, mem_iUnion]
     refine fun n => ⟨r.num * 2, r.den * 2, ?_, ?_⟩

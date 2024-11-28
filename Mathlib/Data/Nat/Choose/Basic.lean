@@ -316,7 +316,7 @@ theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
 theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ choose b c :=
   Nat.add_sub_cancel' h ▸ choose_le_add a (b - a) c
 
-theorem choose_mono (b : ℕ) : Monotone fun a => choose a b := fun _ _ => choose_le_choose b
+theorem choose_mono (b : ℕ) : Monotone fun a ↦ choose a b := fun _ _ => choose_le_choose b
 
 /-! #### Multichoose
 

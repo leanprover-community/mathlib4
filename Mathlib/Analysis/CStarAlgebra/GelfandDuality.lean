@@ -136,7 +136,7 @@ variable (A)
 /-- The Gelfand transform is an isometry when the algebra is a C⋆-algebra over `ℂ`. -/
 theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
   nontriviality A
-  refine AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a => ?_
+  refine AddMonoidHomClass.isometry_of_norm (gelfandTransform ℂ A) fun a ↦ ?_
   /- By `spectrum.gelfandTransform_eq`, the spectra of `star a * a` and its
     `gelfandTransform` coincide. Therefore, so do their spectral radii, and since they are
     self-adjoint, so also do their norms. Applying the C⋆-property of the norm and taking square
@@ -210,7 +210,7 @@ noncomputable def compContinuousMap (ψ : A →⋆ₐ[𝕜] B) :
   toFun φ := equivAlgHom.symm ((equivAlgHom φ).comp ψ.toAlgHom)
   continuous_toFun :=
     Continuous.subtype_mk
-      (continuous_of_continuous_eval fun a => map_continuous <| gelfandTransform 𝕜 B (ψ a)) _
+      (continuous_of_continuous_eval fun a ↦ map_continuous <| gelfandTransform 𝕜 B (ψ a)) _
 
 variable (A)
 

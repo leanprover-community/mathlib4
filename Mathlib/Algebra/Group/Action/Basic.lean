@@ -124,7 +124,7 @@ def arrowAction {G A B : Type*} [DivisionMonoid G] [MulAction G A] : MulAction G
     show (fun x => f ((1 : G)⁻¹ • x)) = f
     simp only [inv_one, one_smul]
   mul_smul x y f := by
-    show (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
+    show (fun a ↦ f ((x*y)⁻¹ • a)) = (fun a ↦ f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
 
 end Arrow

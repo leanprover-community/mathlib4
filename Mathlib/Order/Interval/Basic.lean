@@ -157,7 +157,7 @@ theorem dual_map (f : α →o β) (a : NonemptyInterval α) :
 
 /-- Binary pushforward of nonempty intervals. -/
 @[simps]
-def map₂ (f : α → β → γ) (h₀ : ∀ b, Monotone fun a => f a b) (h₁ : ∀ a, Monotone (f a)) :
+def map₂ (f : α → β → γ) (h₀ : ∀ b, Monotone fun a ↦ f a b) (h₁ : ∀ a, Monotone (f a)) :
     NonemptyInterval α → NonemptyInterval β → NonemptyInterval γ := fun s t =>
   ⟨(f s.fst t.fst, f s.snd t.snd), (h₀ _ s.fst_le_snd).trans <| h₁ _ t.fst_le_snd⟩
 

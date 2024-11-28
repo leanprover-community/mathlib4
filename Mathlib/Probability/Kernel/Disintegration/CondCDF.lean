@@ -335,7 +335,7 @@ instance instIsProbabilityMeasureCondCDF (ρ : Measure (α × ℝ)) (a : α) :
 
 /-- The function `a ↦ (condCDF ρ a).measure` is measurable. -/
 theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
-    Measurable fun a => (condCDF ρ a).measure := by
+    Measurable fun a ↦ (condCDF ρ a).measure := by
   rw [Measure.measurable_measure]
   refine fun s hs => ?_
   -- Porting note: supplied `C`
@@ -348,8 +348,8 @@ theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
     exact (measurable_condCDF ρ u).ennreal_ofReal
   · intro t ht ht_cd_meas
     have :
-      (fun a => (condCDF ρ a).measure tᶜ) =
-        (fun a => (condCDF ρ a).measure univ) - fun a => (condCDF ρ a).measure t := by
+      (fun a ↦ (condCDF ρ a).measure tᶜ) =
+        (fun a ↦ (condCDF ρ a).measure univ) - fun a ↦ (condCDF ρ a).measure t := by
       ext1 a
       rw [measure_compl ht (measure_ne_top (condCDF ρ a).measure _), Pi.sub_apply]
     simp_rw [this, measure_condCDF_univ ρ]

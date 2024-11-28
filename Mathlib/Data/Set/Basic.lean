@@ -1009,7 +1009,7 @@ def subtypeInsertEquivOption
 
 /- porting note: instance was in core in Lean3 -/
 instance : LawfulSingleton α (Set α) :=
-  ⟨fun x => Set.ext fun a => by
+  ⟨fun x => Set.ext fun a ↦ by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
     exact Iff.rfl⟩
 
@@ -2119,11 +2119,11 @@ theorem AntitoneOn.union [Preorder β] {f g : β → Set α} {s : Set β} (hf : 
 
 namespace Set
 
-theorem monotone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Monotone fun a => p a b) :
-    Monotone fun a => { b | p a b } := fun _ _ h b => hp b h
+theorem monotone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Monotone fun a ↦ p a b) :
+    Monotone fun a ↦ { b | p a b } := fun _ _ h b => hp b h
 
-theorem antitone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Antitone fun a => p a b) :
-    Antitone fun a => { b | p a b } := fun _ _ h b => hp b h
+theorem antitone_setOf [Preorder α] {p : α → β → Prop} (hp : ∀ b, Antitone fun a ↦ p a b) :
+    Antitone fun a ↦ { b | p a b } := fun _ _ h b => hp b h
 
 /-- Quantifying over a set is antitone in the set -/
 theorem antitone_bforall {P : α → Prop} : Antitone fun s : Set α => ∀ x ∈ s, P x :=

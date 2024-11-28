@@ -1377,9 +1377,9 @@ theorem foldrM_eq_foldr (f : α → β → m β) (b l) :
 attribute [simp] mapM mapM'
 
 theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
-    List.foldlM f b l = foldl (fun mb a => mb >>= fun b => f b a) (pure b) l := by
+    List.foldlM f b l = foldl (fun mb a => mb >>= fun b ↦ f b a) (pure b) l := by
   suffices h :
-    ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
+    ∀ mb : m β, (mb >>= fun b ↦ List.foldlM f b l) = foldl (fun mb a => mb >>= fun b ↦ f b a) mb l
     by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
@@ -1758,8 +1758,8 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 
 -- TODO rename to `map_filter` when the deprecated `map_filter` is removed from Lean.
 lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
-    [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
-    (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+    [DecidablePred fun b ↦ ∃ a, p a ∧ f a = b] :
+    (l.filter p).map f = (l.map f).filter fun b ↦ ∃ a, p a ∧ f a = b := by
   simp [comp_def, filter_map, hf.eq_iff]
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
@@ -1846,7 +1846,7 @@ theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
       · exact IH hx
 
 theorem takeWhile_takeWhile (p q : α → Bool) (l : List α) :
-    takeWhile p (takeWhile q l) = takeWhile (fun a => p a ∧ q a) l := by
+    takeWhile p (takeWhile q l) = takeWhile (fun a ↦ p a ∧ q a) l := by
   induction' l with hd tl IH
   · simp
   · by_cases hp : p hd <;> by_cases hq : q hd <;> simp [takeWhile, hp, hq, IH]
@@ -2004,7 +2004,7 @@ section Map₂Left'
 -- simplifier because `map₂Left'` is marked `@[simp]`.
 @[simp]
 theorem map₂Left'_nil_right (f : α → Option β → γ) (as) :
-    map₂Left' f as [] = (as.map fun a => f a none, []) := by cases as <;> rfl
+    map₂Left' f as [] = (as.map fun a ↦ f a none, []) := by cases as <;> rfl
 
 end Map₂Left'
 
@@ -2041,7 +2041,7 @@ section ZipLeft'
 variable (a : α) (as : List α) (b : β) (bs : List β)
 
 @[simp]
-theorem zipLeft'_nil_right : zipLeft' as ([] : List β) = (as.map fun a => (a, none), []) := by
+theorem zipLeft'_nil_right : zipLeft' as ([] : List β) = (as.map fun a ↦ (a, none), []) := by
   cases as <;> rfl
 
 @[simp]
@@ -2050,7 +2050,7 @@ theorem zipLeft'_nil_left : zipLeft' ([] : List α) bs = ([], bs) :=
 
 @[simp]
 theorem zipLeft'_cons_nil :
-    zipLeft' (a :: as) ([] : List β) = ((a, none) :: as.map fun a => (a, none), []) :=
+    zipLeft' (a :: as) ([] : List β) = ((a, none) :: as.map fun a ↦ (a, none), []) :=
   rfl
 
 @[simp]
@@ -2069,7 +2069,7 @@ section ZipRight'
 variable (a : α) (as : List α) (b : β) (bs : List β)
 
 @[simp]
-theorem zipRight'_nil_left : zipRight' ([] : List α) bs = (bs.map fun b => (none, b), []) := by
+theorem zipRight'_nil_left : zipRight' ([] : List α) bs = (bs.map fun b ↦ (none, b), []) := by
   cases bs <;> rfl
 
 @[simp]
@@ -2078,7 +2078,7 @@ theorem zipRight'_nil_right : zipRight' as ([] : List β) = ([], as) :=
 
 @[simp]
 theorem zipRight'_nil_cons :
-    zipRight' ([] : List α) (b :: bs) = ((none, b) :: bs.map fun b => (none, b), []) :=
+    zipRight' ([] : List α) (b :: bs) = ((none, b) :: bs.map fun b ↦ (none, b), []) :=
   rfl
 
 @[simp]
@@ -2099,7 +2099,7 @@ variable (f : α → Option β → γ) (as : List α)
 -- The definitional equalities for `map₂Left` can already be used by the
 -- simplifier because `map₂Left` is marked `@[simp]`.
 @[simp]
-theorem map₂Left_nil_right : map₂Left f as [] = as.map fun a => f a none := by cases as <;> rfl
+theorem map₂Left_nil_right : map₂Left f as [] = as.map fun a ↦ f a none := by cases as <;> rfl
 
 theorem map₂Left_eq_map₂Left' : ∀ as bs, map₂Left f as bs = (map₂Left' f as bs).fst
   | [], _ => by simp
@@ -2157,7 +2157,7 @@ section ZipLeft
 variable (a : α) (as : List α) (b : β) (bs : List β)
 
 @[simp]
-theorem zipLeft_nil_right : zipLeft as ([] : List β) = as.map fun a => (a, none) := by
+theorem zipLeft_nil_right : zipLeft as ([] : List β) = as.map fun a ↦ (a, none) := by
   cases as <;> rfl
 
 @[simp]
@@ -2166,7 +2166,7 @@ theorem zipLeft_nil_left : zipLeft ([] : List α) bs = [] :=
 
 @[simp]
 theorem zipLeft_cons_nil :
-    zipLeft (a :: as) ([] : List β) = (a, none) :: as.map fun a => (a, none) :=
+    zipLeft (a :: as) ([] : List β) = (a, none) :: as.map fun a ↦ (a, none) :=
   rfl
 
 @[simp]
@@ -2194,7 +2194,7 @@ section ZipRight
 variable (a : α) (as : List α) (b : β) (bs : List β)
 
 @[simp]
-theorem zipRight_nil_left : zipRight ([] : List α) bs = bs.map fun b => (none, b) := by
+theorem zipRight_nil_left : zipRight ([] : List α) bs = bs.map fun b ↦ (none, b) := by
   cases bs <;> rfl
 
 @[simp]
@@ -2203,7 +2203,7 @@ theorem zipRight_nil_right : zipRight as ([] : List β) = [] :=
 
 @[simp]
 theorem zipRight_nil_cons :
-    zipRight ([] : List α) (b :: bs) = (none, b) :: bs.map fun b => (none, b) :=
+    zipRight ([] : List α) (b :: bs) = (none, b) :: bs.map fun b ↦ (none, b) :=
   rfl
 
 @[simp]

@@ -486,7 +486,7 @@ theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ �
 
 theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
     (rename f p).totalDegree ≤ p.totalDegree :=
-  Finset.sup_le fun b => by
+  Finset.sup_le fun b ↦ by
     classical
     intro h
     rw [rename_eq] at h

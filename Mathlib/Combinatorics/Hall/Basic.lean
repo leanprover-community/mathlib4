@@ -158,7 +158,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
 finite set is finite. -/
 instance {α : Type u} {β : Type v} [DecidableEq β] (r : α → β → Prop)
     [∀ a : α, Fintype (Rel.image r {a})] (A : Finset α) : Fintype (Rel.image r A) := by
-  have h : Rel.image r A = (A.biUnion fun a => (Rel.image r {a}).toFinset : Set β) := by
+  have h : Rel.image r A = (A.biUnion fun a ↦ (Rel.image r {a}).toFinset : Set β) := by
     ext
     -- Porting note: added `Set.mem_toFinset`
     simp [Rel.image, (Set.mem_toFinset)]

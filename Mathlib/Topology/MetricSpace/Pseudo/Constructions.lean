@@ -198,7 +198,7 @@ lemma uniformContinuous_dist : UniformContinuous fun p : α × α => dist p.1 p.
       _ = ε := add_halves ε⟩
 
 protected lemma UniformContinuous.dist [UniformSpace β] {f g : β → α} (hf : UniformContinuous f)
-    (hg : UniformContinuous g) : UniformContinuous fun b => dist (f b) (g b) :=
+    (hg : UniformContinuous g) : UniformContinuous fun b ↦ dist (f b) (g b) :=
   uniformContinuous_dist.comp (hf.prod_mk hg)
 
 @[continuity]
@@ -206,7 +206,7 @@ lemma continuous_dist : Continuous fun p : α × α ↦ dist p.1 p.2 := uniformC
 
 @[continuity, fun_prop]
 protected lemma Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
+    (hg : Continuous g) : Continuous fun b ↦ dist (f b) (g b) :=
   continuous_dist.comp (hf.prod_mk hg : _)
 
 protected lemma Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : α}
@@ -224,7 +224,7 @@ lemma uniformContinuous_nndist : UniformContinuous fun p : α × α => nndist p.
   uniformContinuous_dist.subtype_mk _
 
 protected lemma UniformContinuous.nndist [UniformSpace β] {f g : β → α} (hf : UniformContinuous f)
-    (hg : UniformContinuous g) : UniformContinuous fun b => nndist (f b) (g b) :=
+    (hg : UniformContinuous g) : UniformContinuous fun b ↦ nndist (f b) (g b) :=
   uniformContinuous_nndist.comp (hf.prod_mk hg)
 
 lemma continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
@@ -232,7 +232,7 @@ lemma continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
 
 @[fun_prop]
 protected lemma Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
+    (hg : Continuous g) : Continuous fun b ↦ nndist (f b) (g b) :=
   continuous_nndist.comp (hf.prod_mk hg : _)
 
 protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : α}

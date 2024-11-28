@@ -93,7 +93,7 @@ protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolyno
 theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
   obtain ⟨s, hS⟩ := hA.out
-  refine ⟨⟨s, eq_top_iff.2 fun b => ?_⟩⟩
+  refine ⟨⟨s, eq_top_iff.2 fun b ↦ ?_⟩⟩
   have le : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S s) := by
     apply (Algebra.adjoin_le _ : adjoin R (s : Set A) ≤ Subalgebra.restrictScalars R (adjoin S ↑s))
     simp only [Subalgebra.coe_restrictScalars]
@@ -240,7 +240,7 @@ theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg 
   exact Algebra.FiniteType.of_surjective hf
     { g with
       toFun := g
-      commutes' := fun a => rfl }
+      commutes' := fun a ↦ rfl }
     hg
 
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.FiniteType := by

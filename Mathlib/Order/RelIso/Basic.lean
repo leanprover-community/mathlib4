@@ -284,7 +284,7 @@ theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
   exact f.map_rel_iff.symm
 
 protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
-  ⟨fun a => mt f.map_rel_iff.2 (irrefl (f a))⟩
+  ⟨fun a ↦ mt f.map_rel_iff.2 (irrefl (f a))⟩
 
 protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
@@ -449,7 +449,7 @@ theorem ofMonotone_coe [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H) 
 
 /-- A relation embedding from an empty type. -/
 def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r ↪r s :=
-  ⟨Embedding.ofIsEmpty, @fun a => isEmptyElim a⟩
+  ⟨Embedding.ofIsEmpty, @fun a ↦ isEmptyElim a⟩
 
 /-- `Sum.inl` as a relation embedding into `Sum.LiftRel r s`. -/
 @[simps]
@@ -721,7 +721,7 @@ def prodLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso �
 
 /-- Two relations on empty types are isomorphic. -/
 def relIsoOfIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] [IsEmpty β] : r ≃r s :=
-  ⟨Equiv.equivOfIsEmpty α β, @fun a => isEmptyElim a⟩
+  ⟨Equiv.equivOfIsEmpty α β, @fun a ↦ isEmptyElim a⟩
 
 /-- Two irreflexive relations on a unique type are isomorphic. -/
 def relIsoOfUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]

@@ -137,7 +137,7 @@ theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ 
   suffices (σ : Perm α) = 1 by
     rw [this] at h_mem
     exact h1 h_mem
-  exact ext fun a => or_self_iff.mp (h_disjoint a)
+  exact ext fun a ↦ or_self_iff.mp (h_disjoint a)
 
 theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x
   | 0 => rfl
@@ -399,7 +399,7 @@ theorem Disjoint.disjoint_support (h : Disjoint f g) : _root_.Disjoint f.support
   disjoint_iff_disjoint_support.1 h
 
 theorem Disjoint.support_mul (h : Disjoint f g) : (f * g).support = f.support ∪ g.support := by
-  refine le_antisymm (support_mul_le _ _) fun a => ?_
+  refine le_antisymm (support_mul_le _ _) fun a ↦ ?_
   rw [mem_union, mem_support, mem_support, mem_support, mul_apply, ← not_and_or, not_imp_not]
   exact
     (h a).elim (fun hf h => ⟨hf, f.apply_eq_iff_eq.mp (h.trans hf.symm)⟩) fun hg h =>
@@ -605,7 +605,7 @@ theorem card_support_eq_two {f : Perm α} : #f.support = 2 ↔ IsSwap f := by
     rw [mem_singleton] at hmem
     refine ⟨x, y, hmem, ?_⟩
     ext a
-    have key : ∀ b, f b ≠ b ↔ _ := fun b => by rw [← mem_support, ← hins, mem_insert, mem_singleton]
+    have key : ∀ b, f b ≠ b ↔ _ := fun b ↦ by rw [← mem_support, ← hins, mem_insert, mem_singleton]
     by_cases ha : f a = a
     · have ha' := not_or.mp (mt (key a).mpr (not_not.mpr ha))
       rw [ha, swap_apply_of_ne_of_ne ha'.1 ha'.2]

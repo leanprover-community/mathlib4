@@ -100,7 +100,7 @@ theorem Equiv.exists_right {x y : PSet} (h : Equiv x y) : ∀ j, ∃ i, Equiv (x
 
 @[refl]
 protected theorem Equiv.refl : ∀ x, Equiv x x
-  | ⟨_, _⟩ => ⟨fun a => ⟨a, Equiv.refl _⟩, fun a => ⟨a, Equiv.refl _⟩⟩
+  | ⟨_, _⟩ => ⟨fun a ↦ ⟨a, Equiv.refl _⟩, fun a ↦ ⟨a, Equiv.refl _⟩⟩
 
 protected theorem Equiv.rfl {x} : Equiv x x :=
   Equiv.refl x
@@ -199,7 +199,7 @@ theorem func_mem (x : PSet) (i : x.Type) : x.Func i ∈ x := by
 
 theorem Mem.ext : ∀ {x y : PSet.{u}}, (∀ w : PSet.{u}, w ∈ x ↔ w ∈ y) → Equiv x y
   | ⟨_, A⟩, ⟨_, B⟩, h =>
-    ⟨fun a => (h (A a)).1 (Mem.mk A a), fun b =>
+    ⟨fun a ↦ (h (A a)).1 (Mem.mk A a), fun b =>
       let ⟨a, ha⟩ := (h (B b)).2 (Mem.mk B b)
       ⟨a, ha.symm⟩⟩
 
@@ -216,7 +216,7 @@ theorem equiv_iff_mem {x y : PSet.{u}} : Equiv x y ↔ ∀ {w : PSet.{u}}, w ∈
   ⟨Mem.congr_right,
     match x, y with
     | ⟨_, A⟩, ⟨_, B⟩ => fun h =>
-      ⟨fun a => h.1 (Mem.mk A a), fun b =>
+      ⟨fun a ↦ h.1 (Mem.mk A a), fun b =>
         let ⟨a, h⟩ := h.2 (Mem.mk B b)
         ⟨a, h.symm⟩⟩⟩
 
@@ -615,7 +615,7 @@ namespace Resp
 def evalAux :
     ∀ {n},
       { f : Resp n → OfArity ZFSet.{u} ZFSet.{u} n // ∀ a b : Resp n, Resp.Equiv a b → f a = f b }
-  | 0 => ⟨fun a => ⟦a.1⟧, fun _ _ h => Quotient.sound h⟩
+  | 0 => ⟨fun a ↦ ⟦a.1⟧, fun _ _ h => Quotient.sound h⟩
   | n + 1 =>
     let F : Resp (n + 1) → OfArity ZFSet ZFSet (n + 1) := fun a =>
       @Quotient.lift _ _ PSet.setoid (fun x => evalAux.1 (a.f x)) fun _ _ h =>
@@ -733,7 +733,7 @@ theorem mem_toSet (a u : ZFSet.{u}) : a ∈ u.toSet ↔ a ∈ u :=
   Iff.rfl
 
 instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
-  Quotient.inductionOn x fun a => by
+  Quotient.inductionOn x fun a ↦ by
     let f : a.Type → (mk a).toSet := fun i => ⟨mk <| a.Func i, func_mem a i⟩
     suffices Function.Surjective f by exact small_of_surjective this
     rintro ⟨y, hb⟩
@@ -998,7 +998,7 @@ def sUnion : ZFSet → ZFSet :=
     fun ⟨_, A⟩ ⟨_, B⟩ ⟨αβ, βα⟩ =>
       ⟨sUnion_lem A B αβ, fun a =>
         Exists.elim
-          (sUnion_lem B A (fun b => Exists.elim (βα b) fun c hc => ⟨c, PSet.Equiv.symm hc⟩) a)
+          (sUnion_lem B A (fun b ↦ Exists.elim (βα b) fun c hc => ⟨c, PSet.Equiv.symm hc⟩) a)
           fun b hb => ⟨b, PSet.Equiv.symm hb⟩⟩
 
 @[inherit_doc]
@@ -1400,7 +1400,7 @@ theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
 theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
   ⟨by
     have H : ∀ x : ZFSet.{u}, @Acc Class.{u} (· ∈ ·) ↑x := by
-      refine fun a => ZFSet.inductionOn a fun x IH => ⟨_, ?_⟩
+      refine fun a ↦ ZFSet.inductionOn a fun x IH => ⟨_, ?_⟩
       rintro A ⟨z, rfl, hz⟩
       exact IH z hz
     refine fun A => ⟨A, ?_⟩

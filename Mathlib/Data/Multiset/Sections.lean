@@ -22,7 +22,7 @@ which can be put in bijection with `s`, so each element is a member of the corre
 -/
 
 def Sections (s : Multiset (Multiset α)) : Multiset (Multiset α) :=
-  Multiset.recOn s {0} (fun s _ c => s.bind fun a => c.map (Multiset.cons a)) fun a₀ a₁ _ pi => by
+  Multiset.recOn s {0} (fun s _ c => s.bind fun a ↦ c.map (Multiset.cons a)) fun a₀ a₁ _ pi => by
     simp [map_bind, bind_bind a₀ a₁, cons_swap]
 
 @[simp]
@@ -31,7 +31,7 @@ theorem sections_zero : Sections (0 : Multiset (Multiset α)) = {0} :=
 
 @[simp]
 theorem sections_cons (s : Multiset (Multiset α)) (m : Multiset α) :
-    Sections (m ::ₘ s) = m.bind fun a => (Sections s).map (Multiset.cons a) :=
+    Sections (m ::ₘ s) = m.bind fun a ↦ (Sections s).map (Multiset.cons a) :=
   recOn_cons m s
 
 theorem coe_sections :

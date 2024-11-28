@@ -338,8 +338,8 @@ theorem coeFn_pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : f.pair g =ᵐ
 
 /-- Given a continuous function `g : β → γ → δ`, and almost everywhere equal functions
     `[f₁] : α →ₘ β` and `[f₂] : α →ₘ γ`, return the equivalence class of the function
-    `fun a => g (f₁ a) (f₂ a)`, i.e., the almost everywhere equal function
-    `[fun a => g (f₁ a) (f₂ a)] : α →ₘ γ` -/
+    `fun a ↦ g (f₁ a) (f₂ a)`, i.e., the almost everywhere equal function
+    `[fun a ↦ g (f₁ a) (f₂ a)] : α →ₘ γ` -/
 def comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β) (f₂ : α →ₘ[μ] γ) :
     α →ₘ[μ] δ :=
   comp _ hg (f₁.pair f₂)
@@ -348,7 +348,7 @@ def comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →�
 theorem comp₂_mk_mk (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α → β) (f₂ : α → γ)
     (hf₁ hf₂) :
     comp₂ g hg (mk f₁ hf₁ : α →ₘ[μ] β) (mk f₂ hf₂) =
-      mk (fun a => g (f₁ a) (f₂ a)) (hg.comp_aestronglyMeasurable (hf₁.prod_mk hf₂)) :=
+      mk (fun a ↦ g (f₁ a) (f₂ a)) (hg.comp_aestronglyMeasurable (hf₁.prod_mk hf₂)) :=
   rfl
 
 theorem comp₂_eq_pair (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -356,12 +356,12 @@ theorem comp₂_eq_pair (g : β → γ → δ) (hg : Continuous (uncurry g)) (f�
   rfl
 
 theorem comp₂_eq_mk (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
-    (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ = mk (fun a => g (f₁ a) (f₂ a))
+    (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ = mk (fun a ↦ g (f₁ a) (f₂ a))
       (hg.comp_aestronglyMeasurable (f₁.aestronglyMeasurable.prod_mk f₂.aestronglyMeasurable)) := by
   rw [comp₂_eq_pair, pair_eq_mk, comp_mk]; rfl
 
 theorem coeFn_comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
-    (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ =ᵐ[μ] fun a => g (f₁ a) (f₂ a) := by
+    (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ =ᵐ[μ] fun a ↦ g (f₁ a) (f₂ a) := by
   rw [comp₂_eq_mk]
   apply coeFn_mk
 
@@ -373,8 +373,8 @@ variable [MeasurableSpace β] [PseudoMetrizableSpace β] [BorelSpace β]
 
 /-- Given a measurable function `g : β → γ → δ`, and almost everywhere equal functions
     `[f₁] : α →ₘ β` and `[f₂] : α →ₘ γ`, return the equivalence class of the function
-    `fun a => g (f₁ a) (f₂ a)`, i.e., the almost everywhere equal function
-    `[fun a => g (f₁ a) (f₂ a)] : α →ₘ γ`. This requires `δ` to have second-countable topology. -/
+    `fun a ↦ g (f₁ a) (f₂ a)`, i.e., the almost everywhere equal function
+    `[fun a ↦ g (f₁ a) (f₂ a)] : α →ₘ γ`. This requires `δ` to have second-countable topology. -/
 def comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
     (f₂ : α →ₘ[μ] γ) : α →ₘ[μ] δ :=
   compMeasurable _ hg (f₁.pair f₂)
@@ -383,7 +383,7 @@ def comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁
 theorem comp₂Measurable_mk_mk (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α → β)
     (f₂ : α → γ) (hf₁ hf₂) :
     comp₂Measurable g hg (mk f₁ hf₁ : α →ₘ[μ] β) (mk f₂ hf₂) =
-      mk (fun a => g (f₁ a) (f₂ a))
+      mk (fun a ↦ g (f₁ a) (f₂ a))
         (hg.comp_aemeasurable (hf₁.aemeasurable.prod_mk hf₂.aemeasurable)).aestronglyMeasurable :=
   rfl
 
@@ -394,12 +394,12 @@ theorem comp₂Measurable_eq_pair (g : β → γ → δ) (hg : Measurable (uncur
 theorem comp₂Measurable_eq_mk (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
     (f₂ : α →ₘ[μ] γ) :
     comp₂Measurable g hg f₁ f₂ =
-      mk (fun a => g (f₁ a) (f₂ a))
+      mk (fun a ↦ g (f₁ a) (f₂ a))
         (hg.comp_aemeasurable (f₁.aemeasurable.prod_mk f₂.aemeasurable)).aestronglyMeasurable := by
   rw [comp₂Measurable_eq_pair, pair_eq_mk, compMeasurable_mk]; rfl
 
 theorem coeFn_comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
-    (f₂ : α →ₘ[μ] γ) : comp₂Measurable g hg f₁ f₂ =ᵐ[μ] fun a => g (f₁ a) (f₂ a) := by
+    (f₂ : α →ₘ[μ] γ) : comp₂Measurable g hg f₁ f₂ =ᵐ[μ] fun a ↦ g (f₁ a) (f₂ a) := by
   rw [comp₂Measurable_eq_mk]
   apply coeFn_mk
 
@@ -858,7 +858,7 @@ theorem posPart_mk (f : α → γ) (hf) :
         ((continuous_id.max continuous_const).comp_aestronglyMeasurable hf) :=
   rfl
 
-theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => max (f a) 0 :=
+theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a ↦ max (f a) 0 :=
   coeFn_comp _ _ _
 
 end PosPart

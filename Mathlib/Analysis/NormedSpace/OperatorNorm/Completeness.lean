@@ -198,7 +198,7 @@ def extend : Fₗ →SL[σ₁₂] F :=
         simp only [eq, ← e.map_add]
         exact f.map_add _ _
     map_smul' := fun k => by
-      refine fun b => h_dense.induction_on b ?_ ?_
+      refine fun b ↦ h_dense.induction_on b ?_ ?_
       · exact isClosed_eq (cont.comp (continuous_const_smul _))
           ((continuous_const_smul _).comp cont)
       · intro x
