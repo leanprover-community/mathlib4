@@ -1,12 +1,17 @@
 /-
-Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
+Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
-/-! ## Equivalence of smoothness with the basic definition for functions between vector spaces
+/-! ## Equivalence of manifold differentiability with the basic definition for functions between
+vector spaces
+
+The API in this file is mostly copied from `Mathlib.Geometry.Manifold.ContMDiff.NormedSpace`,
+providing the same statements for higher smoothness. In this file, we do the same for
+differentiability.
 
 -/
 
@@ -45,7 +50,7 @@ section Module
 theorem DifferentiableWithinAt.comp_mdifferentiableWithinAt
     {g : F → F'} {f : M → F} {s : Set M} {t : Set F}
     {x : M} (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : MDifferentiableWithinAt I 𝓘(𝕜, F) f s x)
-    (h : s ⊆ f ⁻¹' t) : MDifferentiableWithinAt I 𝓘(𝕜, F') (g ∘ f) s x :=
+    (h : MapsTo f s t) : MDifferentiableWithinAt I 𝓘(𝕜, F') (g ∘ f) s x :=
   hg.mdifferentiableWithinAt.comp x hf h
 
 theorem DifferentiableAt.comp_mdifferentiableWithinAt {g : F → F'} {f : M → F} {s : Set M}
@@ -166,7 +171,7 @@ theorem MDifferentiableWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : 
     (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2)
     (by apply (Differentiable.differentiableAt _).differentiableWithinAt
         exact differentiable_fst.clm_apply differentiable_snd) (hg.prod_mk_space hf)
-    (by simp_rw [preimage_univ, subset_univ])
+    (by simp_rw [mapsTo_univ])
 
 /-- Applying a linear map to a vector is smooth. Version in vector spaces. For a
 version in nontrivial vector bundles, see `MDifferentiableAt.clm_apply_of_inCoordinates`. -/
@@ -177,7 +182,7 @@ theorem MDifferentiableAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → 
     (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2)
     (by apply (Differentiable.differentiableAt _).differentiableWithinAt
         exact differentiable_fst.clm_apply differentiable_snd) (hg.prod_mk_space hf)
-    (by simp_rw [preimage_univ, subset_univ])
+    (by simp_rw [mapsTo_univ])
 
 theorem MDifferentiableOn.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M}
     (hg : MDifferentiableOn I 𝓘(𝕜, F₁ →L[𝕜] F₂) g s) (hf : MDifferentiableOn I 𝓘(𝕜, F₁) f s) :

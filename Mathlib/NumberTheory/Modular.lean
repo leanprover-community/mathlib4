@@ -175,7 +175,7 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     ![by
       refine
         LinearMap.GeneralLinearGroup.generalLinearEquiv ℝ (Fin 2 → ℝ)
-          (GeneralLinearGroup.toLinear (planeConformalMatrix (cd 0 : ℝ) (-(cd 1 : ℝ)) ?_))
+          (GeneralLinearGroup.toLin (planeConformalMatrix (cd 0 : ℝ) (-(cd 1 : ℝ)) ?_))
       norm_cast
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
@@ -210,12 +210,12 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   · simp only [Fin.isValue, Int.cast_one, map_apply_coe, RingHom.mapMatrix_apply,
       Int.coe_castRingHom, lcRow0_apply, map_apply, Fin.zero_eta, id_eq, Function.comp_apply,
       of_apply, cons_val', cons_val_zero, empty_val', cons_val_fin_one, lcRow0Extend_apply,
-      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
+      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec, dotProduct, Fin.sum_univ_two,
       cons_val_one, head_cons, mB, f₁]
   · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
     simp only [Fin.zero_eta, id_eq, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
-      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
+      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
       mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
     simp only [Fin.isValue, Fin.mk_one, val_planeConformalMatrix, neg_neg, of_apply, cons_val',
       empty_val', cons_val_fin_one, cons_val_one, head_fin_const, map_apply, Fin.sum_univ_two,
