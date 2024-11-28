@@ -955,13 +955,12 @@ end MvPolynomial
 section Infinite
 
 theorem Transcendental.infinite {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
-    [Nontrivial R] {x : A} (hx : Transcendental R x) : Infinite A := by
-  rw [transcendental_iff_injective] at hx
-  exact Infinite.of_injective _ hx
+    [Nontrivial R] {x : A} (hx : Transcendental R x) : Infinite A :=
+  .of_injective _ (transcendental_iff_injective.mp hx)
 
 theorem Algebra.Transcendental.infinite (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
-    [Nontrivial R] [Algebra.Transcendental R A] : Infinite A := by
-  obtain ⟨x, hx⟩ := ‹Algebra.Transcendental R A›
-  exact hx.infinite
+    [Nontrivial R] [Algebra.Transcendental R A] : Infinite A :=
+  have ⟨x, hx⟩ := ‹Algebra.Transcendental R A›
+  hx.infinite
 
 end Infinite
