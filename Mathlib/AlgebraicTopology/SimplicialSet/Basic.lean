@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
