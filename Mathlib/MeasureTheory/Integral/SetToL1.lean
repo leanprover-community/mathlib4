@@ -353,7 +353,7 @@ theorem setToSimpleFunc_congr (T : Set α → E →L[ℝ] F)
   refine setToSimpleFunc_congr' T h_add hf ((integrable_congr h).mp hf) ?_
   refine fun x y hxy => h_zero _ ((measurableSet_fiber f x).inter (measurableSet_fiber g y)) ?_
   rw [EventuallyEq, ae_iff] at h
-  refine measure_mono_null (fun z => ?_) h
+  refine measure_mono_null (fun z ↦ ?_) h
   simp_rw [Set.mem_inter_iff, Set.mem_setOf_eq, Set.mem_preimage, Set.mem_singleton_iff]
   intro h
   rwa [h.1, h.2]

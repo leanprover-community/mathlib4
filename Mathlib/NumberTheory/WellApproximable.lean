@@ -245,7 +245,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     exact union_ae_eq_right_of_ae_eq_empty ((union_ae_eq_right_of_ae_eq_empty hA).trans hB)
   have hA : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∨ A p =ᵐ[μ] univ := by
     rintro ⟨p, hp⟩
-    let f : 𝕊 → 𝕊 := fun y => (p : ℕ) • y
+    let f : 𝕊 → 𝕊 := fun y ↦ (p : ℕ) • y
     suffices
       f '' A p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n => 0 < n ∧ p∤n by
       apply (ergodic_nsmul hp.one_lt).ae_empty_or_univ_of_image_ae_le (hA₀ p).nullMeasurableSet
@@ -258,7 +258,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
   have hB : ∀ p : Nat.Primes, B p =ᵐ[μ] (∅ : Set 𝕊) ∨ B p =ᵐ[μ] univ := by
     rintro ⟨p, hp⟩
     let x := u ⟨p, hp⟩
-    let f : 𝕊 → 𝕊 := fun y => p • y + x
+    let f : 𝕊 → 𝕊 := fun y ↦ p • y + x
     suffices
       f '' B p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n => 0 < n ∧ p∣∣n by
       apply (ergodic_nsmul_add x hp.one_lt).ae_empty_or_univ_of_image_ae_le
@@ -273,11 +273,11 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       rw [hu₀, Subtype.coe_mk, hp.coprime_iff_not_dvd, q.mul_div_cancel_left hp.pos]
       exact fun contra => h_ndiv (mul_dvd_mul_left p contra)
     replace h_div : n / p * p = n := Nat.div_mul_cancel h_div
-    have hf : f = (fun y => x + y) ∘ fun y => p • y := by
+    have hf : f = (fun y ↦ x + y) ∘ fun y ↦ p • y := by
       ext; simp [add_comm x]
     simp_rw [Function.comp_apply, le_eq_subset]
     rw [sSupHom.setImage_toFun, hf, image_comp]
-    have := @monotone_image 𝕊 𝕊 fun y => x + y
+    have := @monotone_image 𝕊 𝕊 fun y ↦ x + y
     specialize this (approxAddOrderOf.image_nsmul_subset (δ n) (n / p) hp.pos)
     simp only [h_div] at this ⊢
     refine this.trans ?_

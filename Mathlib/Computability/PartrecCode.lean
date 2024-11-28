@@ -586,7 +586,7 @@ def evaln : ℕ → Code → ℕ → Option ℕ
   | k + 1, prec cf cg => fun n => do
     guard (n ≤ k)
     n.unpaired fun a n =>
-      n.casesOn (evaln (k + 1) cf a) fun y => do
+      n.casesOn (evaln (k + 1) cf a) fun y ↦ do
         let i ← evaln k (prec cf cg) (Nat.pair a y)
         evaln (k + 1) cg (Nat.pair a (Nat.pair y i))
   | k + 1, rfind' cf => fun n => do
@@ -786,7 +786,7 @@ private def G (L : List (List (Option ℕ))) : Option (List (Option ℕ)) :=
             lup L (k, cf) x)
           (fun cf cg _ _ =>
             let z := n.unpair.1
-            n.unpair.2.casesOn (lup L (k, cf) z) fun y => do
+            n.unpair.2.casesOn (lup L (k, cf) z) fun y ↦ do
               let i ← lup L (k', c) (Nat.pair z y)
               lup L (k, cg) (Nat.pair z (Nat.pair y i)))
           (fun cf _ =>

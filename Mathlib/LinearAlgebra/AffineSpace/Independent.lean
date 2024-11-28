@@ -901,7 +901,7 @@ faces are given by the same subset of points. -/
 theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ : Finset (Fin (n + 1))}
     {m₁ m₂ : ℕ} (h₁ : #fs₁ = m₁ + 1) (h₂ : #fs₂ = m₂ + 1) :
     fs₁.centroid k s.points = fs₂.centroid k s.points ↔ fs₁ = fs₂ := by
-  refine ⟨fun h ↦ ?_, @congrArg _ _ fs₁ fs₂ (fun z => Finset.centroid k z s.points)⟩
+  refine ⟨fun h ↦ ?_, @congrArg _ _ fs₁ fs₂ (fun z ↦ Finset.centroid k z s.points)⟩
   rw [Finset.centroid_eq_affineCombination_fintype,
     Finset.centroid_eq_affineCombination_fintype] at h
   have ha :=

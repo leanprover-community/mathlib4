@@ -280,7 +280,7 @@ into an eta-expanded "normal form."
 This also exists as a `conv`-mode tactic.
 
 For example, if `f` takes two arguments, then `f` becomes `fun x y => f x y`
-and `f x` becomes `fun y => f x y`.
+and `f x` becomes `fun y ↦ f x y`.
 
 This can be useful to turn, for example, a raw `HAdd.hAdd` into `fun x y => x + y`.
 -/

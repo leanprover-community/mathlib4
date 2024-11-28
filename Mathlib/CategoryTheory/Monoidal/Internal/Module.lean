@@ -133,7 +133,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     set_option tactic.skipAssignedInstances false in
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x ↦ LinearMap.ext fun y =>
-      LinearMap.ext fun z => ?_
+      LinearMap.ext fun z ↦ ?_
     dsimp only [compr₂_apply, TensorProduct.mk_apply]
     rw [compr₂_apply, compr₂_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644

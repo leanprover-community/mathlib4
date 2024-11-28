@@ -72,7 +72,7 @@ theorem iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
     ⨅ r : { r' : ℚ // x < r' }, f r = f x := by
   rw [← iInf_Ioi_eq f x]
   refine (Real.iInf_Ioi_eq_iInf_rat_gt _ ?_ f.mono).symm
-  refine ⟨f x, fun y => ?_⟩
+  refine ⟨f x, fun y ↦ ?_⟩
   rintro ⟨y, hy_mem, rfl⟩
   exact f.mono (le_of_lt hy_mem)
 
@@ -439,7 +439,7 @@ theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
   have h_le2 : ∀ x, leftLim f x ≤ f x := fun x ↦ Monotone.leftLim_le f.mono le_rfl
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le (hf.comp ?_) hf h_le1 h_le2
   rw [tendsto_atTop_atTop]
-  exact fun y => ⟨y + 1, fun z hyz => by rwa [le_sub_iff_add_le]⟩
+  exact fun y ↦ ⟨y + 1, fun z hyz => by rwa [le_sub_iff_add_le]⟩
 
 theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     f.measure univ = ofReal (u - l) := by

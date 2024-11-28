@@ -192,14 +192,14 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
     intro x y hyu
     refine (hΦ y (hUu x hyu)).trans ?_
     exact iUnionLift_mk ⟨y, hyu⟩ _
-  have hΦ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun y => (Φ y : F →L[𝕜] F)) U := by
+  have hΦ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun y ↦ (Φ y : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
     refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩
     refine (ContMDiffOn.congr (hφ ⟨x, hx⟩) ?_).mono inter_subset_right
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
-  have h2Φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun y => ((Φ y).symm : F →L[𝕜] F)) U := by
+  have h2Φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) ⊤ (fun y ↦ ((Φ y).symm : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn
     intro x hx
     refine ⟨u ⟨x, hx⟩, hu ⟨x, hx⟩, hux _, ?_⟩

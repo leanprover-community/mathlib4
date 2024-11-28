@@ -371,7 +371,7 @@ def omega : PSet :=
 
 /-- The pre-set separation operation `{x ∈ a | p x}` -/
 protected def sep (p : PSet → Prop) (x : PSet) : PSet :=
-  ⟨{ a // p (x.Func a) }, fun y => x.Func y.1⟩
+  ⟨{ a // p (x.Func a) }, fun y ↦ x.Func y.1⟩
 
 instance : Sep PSet PSet :=
   ⟨PSet.sep⟩
@@ -384,7 +384,7 @@ theorem mem_sep {p : PSet → Prop} (H : ∀ x y, Equiv x y → p x → p y) :
 
 /-- The pre-set powerset operator -/
 def powerset (x : PSet) : PSet :=
-  ⟨Set x.Type, fun p => ⟨{ a // p a }, fun y => x.Func y.1⟩⟩
+  ⟨Set x.Type, fun p => ⟨{ a // p a }, fun y ↦ x.Func y.1⟩⟩
 
 @[simp]
 theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x
@@ -815,7 +815,7 @@ theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
 
 @[simp]
 theorem empty_subset (x : ZFSet.{u}) : (∅ : ZFSet) ⊆ x :=
-  Quotient.inductionOn x fun y => subset_iff.2 <| PSet.empty_subset y
+  Quotient.inductionOn x fun y ↦ subset_iff.2 <| PSet.empty_subset y
 
 @[simp]
 theorem not_nonempty_empty : ¬ZFSet.Nonempty ∅ := by simp [ZFSet.Nonempty]
@@ -930,7 +930,7 @@ theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
-  Quotient.map (PSet.sep fun y => p (mk y))
+  Quotient.map (PSet.sep fun y ↦ p (mk y))
     fun ⟨α, A⟩ ⟨β, B⟩ ⟨αβ, βα⟩ =>
       ⟨fun ⟨a, pa⟩ =>
         let ⟨b, hb⟩ := αβ a
@@ -1006,7 +1006,7 @@ prefix:110 "⋃₀ " => ZFSet.sUnion
 
 /-- The intersection operator, the collection of elements in all of the elements of a ZFC set. We
 define `⋂₀ ∅ = ∅`. -/
-def sInter (x : ZFSet) : ZFSet := (⋃₀ x).sep (fun y => ∀ z ∈ x, y ∈ z)
+def sInter (x : ZFSet) : ZFSet := (⋃₀ x).sep (fun y ↦ ∀ z ∈ x, y ∈ z)
 
 @[inherit_doc]
 prefix:110 "⋂₀ " => ZFSet.sInter
@@ -1045,11 +1045,11 @@ theorem not_mem_sInter_of_not_mem {x y z : ZFSet} (hy : ¬y ∈ z) (hz : z ∈ x
 
 @[simp]
 theorem sUnion_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
-  ext fun y => by simp_rw [mem_sUnion, mem_singleton, exists_eq_left]
+  ext fun y ↦ by simp_rw [mem_sUnion, mem_singleton, exists_eq_left]
 
 @[simp]
 theorem sInter_singleton {x : ZFSet.{u}} : ⋂₀ ({x} : ZFSet) = x :=
-  ext fun y => by simp_rw [mem_sInter (singleton_nonempty x), mem_singleton, forall_eq]
+  ext fun y ↦ by simp_rw [mem_sInter (singleton_nonempty x), mem_singleton, forall_eq]
 
 @[simp]
 theorem toSet_sUnion (x : ZFSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSet) := by
@@ -1074,11 +1074,11 @@ protected def union (x y : ZFSet.{u}) : ZFSet.{u} :=
 
 /-- The binary intersection operation -/
 protected def inter (x y : ZFSet.{u}) : ZFSet.{u} :=
-  ZFSet.sep (fun z => z ∈ y) x -- { z ∈ x | z ∈ y }
+  ZFSet.sep (fun z ↦ z ∈ y) x -- { z ∈ x | z ∈ y }
 
 /-- The set difference operation -/
 protected def diff (x y : ZFSet.{u}) : ZFSet.{u} :=
-  ZFSet.sep (fun z => z ∉ y) x -- { z ∈ x | z ∉ y }
+  ZFSet.sep (fun z ↦ z ∉ y) x -- { z ∈ x | z ∉ y }
 
 instance : Union ZFSet :=
   ⟨ZFSet.union⟩
@@ -1096,13 +1096,13 @@ theorem toSet_union (x y : ZFSet.{u}) : (x ∪ y).toSet = x.toSet ∪ y.toSet :=
 
 @[simp]
 theorem toSet_inter (x y : ZFSet.{u}) : (x ∩ y).toSet = x.toSet ∩ y.toSet := by
-  change (ZFSet.sep (fun z => z ∈ y) x).toSet = _
+  change (ZFSet.sep (fun z ↦ z ∈ y) x).toSet = _
   ext
   simp
 
 @[simp]
 theorem toSet_sdiff (x y : ZFSet.{u}) : (x \ y).toSet = x.toSet \ y.toSet := by
-  change (ZFSet.sep (fun z => z ∉ y) x).toSet = _
+  change (ZFSet.sep (fun z ↦ z ∉ y) x).toSet = _
   ext
   simp
 
@@ -1147,7 +1147,7 @@ theorem mem_irrefl (x : ZFSet) : x ∉ x :=
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
     h <| (eq_empty x).2 fun y =>
-      @inductionOn (fun z => z ∉ x) y fun z IH zx =>
+      @inductionOn (fun z ↦ z ∉ x) y fun z IH zx =>
         ne ⟨z, zx, (eq_empty _).2 fun w wxz =>
           let ⟨wx, wz⟩ := mem_inter.1 wxz
           IH w wz wx⟩
@@ -1190,7 +1190,7 @@ noncomputable def range {α : Type u} (f : α → ZFSet.{max u v}) : ZFSet.{max 
 @[simp]
 theorem mem_range {α : Type u} {f : α → ZFSet.{max u v}} {x : ZFSet.{max u v}} :
     x ∈ range.{u, v} f ↔ x ∈ Set.range f :=
-  Quotient.inductionOn x fun y => by
+  Quotient.inductionOn x fun y ↦ by
     constructor
     · rintro ⟨z, hz⟩
       exact ⟨z.down, Quotient.eq_mk_iff_out.2 hz.symm⟩
@@ -1213,7 +1213,7 @@ theorem toSet_pair (x y : ZFSet.{u}) : (pair x y).toSet = {{x}, {x, y}} := by si
 
 /-- A subset of pairs `{(a, b) ∈ x × y | p a b}` -/
 def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u} :=
-  (powerset (powerset (x ∪ y))).sep fun z => ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b
+  (powerset (powerset (x ∪ y))).sep fun z ↦ ∃ a ∈ x, ∃ b ∈ y, z = pair a b ∧ p a b
 
 @[simp]
 theorem mem_pairSep {p} {x y z : ZFSet.{u}} :
@@ -1271,7 +1271,7 @@ instance : Definable₂ pair := by unfold pair; infer_instance
 
 /-- Graph of a function: `map f x` is the ZFC function which maps `a ∈ x` to `f a` -/
 def map (f : ZFSet → ZFSet) [Definable₁ f] : ZFSet → ZFSet :=
-  image fun y => pair y (f y)
+  image fun y ↦ pair y (f y)
 
 @[simp]
 theorem mem_map {f : ZFSet → ZFSet} [Definable₁ f] {x y : ZFSet} :
@@ -1463,7 +1463,7 @@ def sInter (x : Class) : Class :=
 prefix:110 "⋂₀ " => Class.sInter
 
 theorem ofSet.inj {x y : ZFSet.{u}} (h : (x : Class.{u}) = y) : x = y :=
-  ZFSet.ext fun z => by
+  ZFSet.ext fun z ↦ by
     change (x : Class.{u}) z ↔ (y : Class.{u}) z
     rw [h]
 
@@ -1490,7 +1490,7 @@ theorem coe_sep (p : Class.{u}) (x : ZFSet.{u}) :
 
 @[simp, norm_cast]
 theorem coe_empty : ↑(∅ : ZFSet.{u}) = (∅ : Class.{u}) :=
-  ext fun y => iff_false _ ▸ ZFSet.not_mem_empty y
+  ext fun y ↦ iff_false _ ▸ ZFSet.not_mem_empty y
 
 @[simp, norm_cast]
 theorem coe_insert (x y : ZFSet.{u}) : ↑(insert x y) = @insert ZFSet.{u} Class.{u} _ x y :=
@@ -1598,7 +1598,7 @@ theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
 
 /-- Function value -/
 def fval (F A : Class.{u}) : Class.{u} :=
-  iota fun y => ToSet (fun x ↦ F (ZFSet.pair x y)) A
+  iota fun y ↦ ToSet (fun x ↦ F (ZFSet.pair x y)) A
 
 @[inherit_doc]
 infixl:100 " ′ " => fval
@@ -1613,7 +1613,7 @@ namespace ZFSet
 @[simp]
 theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u}}
     (h : y ∈ x) : (ZFSet.map f x ′ y : Class.{u}) = f y :=
-  Class.iota_val _ _ fun z => by
+  Class.iota_val _ _ fun z ↦ by
     rw [Class.toSet_of_ZFSet, Class.coe_apply, mem_map]
     exact
       ⟨fun ⟨w, _, pr⟩ => by
@@ -1626,7 +1626,7 @@ variable (x : ZFSet.{u})
 
 /-- A choice function on the class of nonempty ZFC sets. -/
 noncomputable def choice : ZFSet :=
-  @map (fun y => Classical.epsilon fun z => z ∈ y) (Classical.allZFSetDefinable _) x
+  @map (fun y ↦ Classical.epsilon fun z ↦ z ∈ y) (Classical.allZFSetDefinable _) x
 
 theorem choice_mem_aux (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
     (Classical.epsilon fun z : ZFSet.{u} => z ∈ y) ∈ y :=

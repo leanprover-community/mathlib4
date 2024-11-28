@@ -455,7 +455,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
   abs {α} := by
     dsimp [Functor.Comp]
     intro p
-    exact abs ⟨p.1.1, fun x ↦ abs ⟨p.1.2 x, fun y => p.2 ⟨x, y⟩⟩⟩
+    exact abs ⟨p.1.1, fun x ↦ abs ⟨p.1.2 x, fun y ↦ p.2 ⟨x, y⟩⟩⟩
   repr {α} := by
     dsimp [Functor.Comp]
     intro y

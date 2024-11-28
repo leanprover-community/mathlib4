@@ -267,7 +267,7 @@ variable [AddCommGroup E] [Module 𝕜 E] [NoZeroSMulDivisors 𝕜 E] [Continuou
   {s : Set E}
 
 theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
-    StrictConvex 𝕜 ((fun z => c • z) ⁻¹' s) := by
+    StrictConvex 𝕜 ((fun z ↦ c • z) ⁻¹' s) := by
   classical
     obtain rfl | hc := eq_or_ne c 0
     · simp_rw [zero_smul, preimage_const]

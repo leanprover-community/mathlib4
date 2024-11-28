@@ -71,20 +71,20 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_kernel_compProd [Norm
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.compProd_mk_left {δ : Type*} [TopologicalSpace δ]
     {f : β × γ → δ} (hf : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
-    ∀ᵐ x ∂κ a, AEStronglyMeasurable (fun y => f (x, y)) (η (a, x)) := by
+    ∀ᵐ x ∂κ a, AEStronglyMeasurable (fun y ↦ f (x, y)) (η (a, x)) := by
   filter_upwards [ae_ae_of_ae_compProd hf.ae_eq_mk] with x hx using
-    ⟨fun y => hf.mk f (x, y), hf.stronglyMeasurable_mk.comp_measurable measurable_prod_mk_left, hx⟩
+    ⟨fun y ↦ hf.mk f (x, y), hf.stronglyMeasurable_mk.comp_measurable measurable_prod_mk_left, hx⟩
 
 /-! ### Integrability -/
 
 
 theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyMeasurable f) :
     HasFiniteIntegral f ((κ ⊗ₖ η) a) ↔
-      (∀ᵐ x ∂κ a, HasFiniteIntegral (fun y => f (x, y)) (η (a, x))) ∧
+      (∀ᵐ x ∂κ a, HasFiniteIntegral (fun y ↦ f (x, y)) (η (a, x))) ∧
         HasFiniteIntegral (fun x ↦ ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
   simp only [HasFiniteIntegral]
   rw [Kernel.lintegral_compProd _ _ _ h1f.ennnorm]
-  have : ∀ x, ∀ᵐ y ∂η (a, x), 0 ≤ ‖f (x, y)‖ := fun x ↦ Eventually.of_forall fun y => norm_nonneg _
+  have : ∀ x, ∀ᵐ y ∂η (a, x), 0 ≤ ‖f (x, y)‖ := fun x ↦ Eventually.of_forall fun y ↦ norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prod_mk_left).aestronglyMeasurable,
     ennnorm_eq_ofReal toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
@@ -99,7 +99,7 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
 theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
     (h1f : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
     HasFiniteIntegral f ((κ ⊗ₖ η) a) ↔
-      (∀ᵐ x ∂κ a, HasFiniteIntegral (fun y => f (x, y)) (η (a, x))) ∧
+      (∀ᵐ x ∂κ a, HasFiniteIntegral (fun y ↦ f (x, y)) (η (a, x))) ∧
         HasFiniteIntegral (fun x ↦ ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
   rw [hasFiniteIntegral_congr h1f.ae_eq_mk,
     hasFiniteIntegral_compProd_iff h1f.stronglyMeasurable_mk]
@@ -113,13 +113,13 @@ theorem hasFiniteIntegral_compProd_iff' ⦃f : β × γ → E⦄
 
 theorem integrable_compProd_iff ⦃f : β × γ → E⦄ (hf : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
     Integrable f ((κ ⊗ₖ η) a) ↔
-      (∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x))) ∧
+      (∀ᵐ x ∂κ a, Integrable (fun y ↦ f (x, y)) (η (a, x))) ∧
         Integrable (fun x ↦ ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
   simp only [Integrable, hasFiniteIntegral_compProd_iff' hf, hf.norm.integral_kernel_compProd,
     hf, hf.compProd_mk_left, eventually_and, true_and]
 
 theorem _root_.MeasureTheory.Integrable.compProd_mk_left_ae ⦃f : β × γ → E⦄
-    (hf : Integrable f ((κ ⊗ₖ η) a)) : ∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x)) :=
+    (hf : Integrable f ((κ ⊗ₖ η) a)) : ∀ᵐ x ∂κ a, Integrable (fun y ↦ f (x, y)) (η (a, x)) :=
   ((integrable_compProd_iff hf.aestronglyMeasurable).mp hf).1
 
 theorem _root_.MeasureTheory.Integrable.integral_norm_compProd ⦃f : β × γ → E⦄
@@ -134,7 +134,7 @@ theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E]
       (norm_integral_le_integral_norm _).trans_eq <|
         (norm_of_nonneg <|
             integral_nonneg_of_ae <|
-              Eventually.of_forall fun y => (norm_nonneg (f (x, y)) : _)).symm
+              Eventually.of_forall fun y ↦ (norm_nonneg (f (x, y)) : _)).symm
 
 /-! ### Bochner integral -/
 
@@ -211,7 +211,7 @@ theorem Kernel.continuous_integral_integral :
       (fun i : β × γ →₁[(κ ⊗ₖ η) a] E => ∫⁻ x, ∫⁻ y : γ, ‖i (x, y) - g (x, y)‖₊ ∂η (a, x) ∂κ a)
       (𝓝 g) (𝓝 0)
   have : ∀ i : (MeasureTheory.Lp (α := β × γ) E 1 (((κ ⊗ₖ η) a) : Measure (β × γ))),
-      Measurable fun z => (‖i z - g z‖₊ : ℝ≥0∞) := fun i =>
+      Measurable fun z ↦ (‖i z - g z‖₊ : ℝ≥0∞) := fun i =>
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).ennnorm
   simp_rw [← Kernel.lintegral_compProd _ _ _ (this _), ← L1.ofReal_norm_sub_eq_lintegral, ←
     ofReal_zero]

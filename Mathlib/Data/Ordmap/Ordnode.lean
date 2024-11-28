@@ -364,7 +364,7 @@ For example, suppose we compare pairs of numbers using only their first coordina
 The `∈` relation is equivalent to `Amem` as long as the `Ordnode` is well formed,
 and should always be used instead of `Amem`. -/
 def Amem [LE α] (x : α) : Ordnode α → Prop :=
-  Any fun y => x ≤ y ∧ y ≤ x
+  Any fun y ↦ x ≤ y ∧ y ≤ x
 
 instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
     ∀ t, Decidable (Amem x t) := by

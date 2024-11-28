@@ -59,7 +59,7 @@ theorem mem_classes (r : Setoid α) (y) : { x | r x y } ∈ r.classes :=
   ⟨y, rfl⟩
 
 theorem classes_ker_subset_fiber_set {β : Type*} (f : α → β) :
-    (Setoid.ker f).classes ⊆ Set.range fun y => { x | f x = y } := by
+    (Setoid.ker f).classes ⊆ Set.range fun y ↦ { x | f x = y } := by
   rintro s ⟨x, rfl⟩
   rw [Set.mem_range]
   exact ⟨f x, rfl⟩

@@ -53,7 +53,7 @@ I document here what features are not in the original:
 - Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
   possible reduced key sequences. This is for terms of the form `fun x ↦ f (?m x₁ .. xₙ)`, where
   `?m` is a metavariable, and one of `x₁, .., xₙ` in `x`.
-  For example, the pattern `Continuous fun y => Real.exp (f y)])` is indexed by
+  For example, the pattern `Continuous fun y ↦ Real.exp (f y)])` is indexed by
   both `[⟨Continuous, 5⟩, *0, ⟨Real, 0⟩, *1, *2, λ, ⟨Real.exp⟩, *3]`
   and  `[⟨Continuous, 5⟩, *0, ⟨Real, 0⟩, *1, *2, ⟨Real.exp⟩]`
   so that it also comes up if you search with `Continuous Real.exp`.

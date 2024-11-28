@@ -74,7 +74,7 @@ abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀
         (fun hz => (hs hx hz).trans (le_max_left _ _))
         (fun hz => (dist_triangle x y z).trans <|
           (add_le_add le_rfl (ht hy hz)).trans (le_max_right _ _))⟩)
-    fun z => ⟨dist z z, forall_eq.2 <| forall_eq.2 le_rfl⟩
+    fun z ↦ ⟨dist z z, forall_eq.2 <| forall_eq.2 le_rfl⟩
 
 /-- The distance function (given an ambient metric space on `α`), which returns
   a nonnegative real number `dist x y` given `x y : α`. -/
@@ -365,11 +365,11 @@ theorem ball_eq_ball' (ε : ℝ) (x : α) :
 
 @[simp]
 theorem iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
-  iUnion_eq_univ_iff.2 fun y => exists_nat_gt (dist y x)
+  iUnion_eq_univ_iff.2 fun y ↦ exists_nat_gt (dist y x)
 
 @[simp]
 theorem iUnion_ball_nat_succ (x : α) : ⋃ n : ℕ, ball x (n + 1) = univ :=
-  iUnion_eq_univ_iff.2 fun y => (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
+  iUnion_eq_univ_iff.2 fun y ↦ (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
 
 /-- `closedBall x ε` is the set of all points `y` with `dist y x ≤ ε` -/
 def closedBall (x : α) (ε : ℝ) :=
@@ -536,7 +536,7 @@ theorem dist_lt_add_of_nonempty_ball_inter_ball (h : (ball x ε₁ ∩ ball y ε
 
 @[simp]
 theorem iUnion_closedBall_nat (x : α) : ⋃ n : ℕ, closedBall x n = univ :=
-  iUnion_eq_univ_iff.2 fun y => exists_nat_ge (dist y x)
+  iUnion_eq_univ_iff.2 fun y ↦ exists_nat_ge (dist y x)
 
 theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ closedBall x n = s := by
   rw [← inter_iUnion, iUnion_closedBall_nat, inter_univ]
@@ -897,7 +897,7 @@ instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetri
 
 /-- In a pseudometric space, an open ball of infinite radius is the whole space -/
 theorem Metric.eball_top_eq_univ (x : α) : EMetric.ball x ∞ = Set.univ :=
-  Set.eq_univ_iff_forall.mpr fun y => edist_lt_top y x
+  Set.eq_univ_iff_forall.mpr fun y ↦ edist_lt_top y x
 
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
@@ -1040,7 +1040,7 @@ theorem Real.sub_le_dist (x y : ℝ) : x - y ≤ dist x y := by
   exact Or.inl (le_refl _)
 
 theorem Real.ball_eq_Ioo (x r : ℝ) : ball x r = Ioo (x - r) (x + r) :=
-  Set.ext fun y => by
+  Set.ext fun y ↦ by
     rw [mem_ball, dist_comm, Real.dist_eq, abs_sub_lt_iff, mem_Ioo, ← sub_lt_iff_lt_add',
       sub_lt_comm]
 

@@ -144,7 +144,7 @@ does beta-reduction through let bindings without inlining them.
 
 Example
 ```
-beta' (fun x ↦ let y := x * x; fun z => x + y + z) #[a,b]
+beta' (fun x ↦ let y := x * x; fun z ↦ x + y + z) #[a,b]
 ==>
 let y := a * a; a + y + b
 ```
@@ -157,7 +157,7 @@ arguments through let bindings without inlining them.
 
 Example
 ```
-headBeta' ((fun x ↦ let y := x * x; fun z => x + y + z) a b)
+headBeta' ((fun x ↦ let y := x * x; fun z ↦ x + y + z) a b)
 ==>
 let y := a * a; a + y + b
 ```

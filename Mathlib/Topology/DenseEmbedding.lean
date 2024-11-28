@@ -332,7 +332,7 @@ variable {f : α → β}
 /-- Two continuous functions to a t2-space that agree on the dense range of a function are equal. -/
 theorem DenseRange.equalizer (hfd : DenseRange f) {g h : β → γ} (hg : Continuous g)
     (hh : Continuous h) (H : g ∘ f = h ∘ f) : g = h :=
-  funext fun y => hfd.induction_on y (isClosed_eq hg hh) <| congr_fun H
+  funext fun y ↦ hfd.induction_on y (isClosed_eq hg hh) <| congr_fun H
 
 end
 

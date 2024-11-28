@@ -367,7 +367,7 @@ theorem _root_.Matrix.nondegenerate_toBilin'_iff_nondegenerate_toBilin {M : Matr
 -- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
 theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₂} (h : M.Nondegenerate) :
     M.toBilin'.Nondegenerate := fun x hx =>
-  h.eq_zero_of_ortho fun y => by simpa only [toBilin'_apply'] using hx y
+  h.eq_zero_of_ortho fun y ↦ by simpa only [toBilin'_apply'] using hx y
 
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₂} :

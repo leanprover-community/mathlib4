@@ -496,7 +496,7 @@ open PrimeSpectrum
 The bundled continuous version is `PrimeSpectrum.comap`. -/
 abbrev RingHom.specComap {R S : Type*} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
     PrimeSpectrum S → PrimeSpectrum R :=
-  fun y => ⟨Ideal.comap f y.asIdeal, inferInstance⟩
+  fun y ↦ ⟨Ideal.comap f y.asIdeal, inferInstance⟩
 
 namespace PrimeSpectrum
 

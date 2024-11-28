@@ -477,7 +477,7 @@ theorem coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul �
 theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, 𝕜)) = algebraMap 𝕜 𝓜(𝕜, 𝕜) := by
   ext x : 3
   · rfl -- `fst` is defeq
-  · refine ContinuousLinearMap.ext fun y => ?_
+  · refine ContinuousLinearMap.ext fun y ↦ ?_
     exact mul_comm y x  -- `snd` multiplies on the wrong side
 
 /-- The coercion of an algebra into its multiplier algebra as a non-unital star algebra
@@ -546,7 +546,7 @@ instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
   apply IsClosed.isComplete
   simp only [range_toProdMulOpposite, Set.setOf_forall]
-  refine isClosed_iInter fun x ↦ isClosed_iInter fun y => isClosed_eq ?_ ?_
+  refine isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq ?_ ?_
   · exact
       ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp <| continuous_unop.comp continuous_snd).mul
         continuous_const

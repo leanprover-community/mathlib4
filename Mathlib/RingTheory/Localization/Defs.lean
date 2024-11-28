@@ -559,7 +559,7 @@ such that `g(M) ⊆ T`.
 We send `z : S` to `algebraMap P Q (g x) * (algebraMap P Q (g y))⁻¹`, where
 `(x, y) : R × M` are such that `z = f x * (f y)⁻¹`. -/
 noncomputable def map (g : R →+* P) (hy : M ≤ T.comap g) : S →+* Q :=
-  lift (M := M) (g := (algebraMap P Q).comp g) fun y => map_units _ ⟨g y, hy y.2⟩
+  lift (M := M) (g := (algebraMap P Q).comp g) fun y ↦ map_units _ ⟨g y, hy y.2⟩
 
 end
 
@@ -570,19 +570,19 @@ include hy
 -- Porting note: added `simp` attribute, since it proves very similar lemmas marked `simp`
 @[simp]
 theorem map_eq (x) : map Q g hy ((algebraMap R S) x) = algebraMap P Q (g x) :=
-  lift_eq (fun y => map_units _ ⟨g y, hy y.2⟩) x
+  lift_eq (fun y ↦ map_units _ ⟨g y, hy y.2⟩) x
 
 @[simp]
 theorem map_comp : (map Q g hy).comp (algebraMap R S) = (algebraMap P Q).comp g :=
-  lift_comp fun y => map_units _ ⟨g y, hy y.2⟩
+  lift_comp fun y ↦ map_units _ ⟨g y, hy y.2⟩
 
 theorem map_mk' (x) (y : M) : map Q g hy (mk' S x y) = mk' Q (g x) ⟨g y, hy y.2⟩ :=
   Submonoid.LocalizationMap.map_mk' (toLocalizationMap M S) (g := g.toMonoidHom)
-    (fun y => hy y.2) (k := toLocalizationMap T Q) ..
+    (fun y ↦ hy y.2) (k := toLocalizationMap T Q) ..
 
 theorem map_unique (j : S →+* Q) (hj : ∀ x : R, j (algebraMap R S x) = algebraMap P Q (g x)) :
     map Q g hy = j :=
-  lift_unique (fun y => map_units _ ⟨g y, hy y.2⟩) hj
+  lift_unique (fun y ↦ map_units _ ⟨g y, hy y.2⟩) hj
 
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
@@ -590,7 +590,7 @@ theorem map_comp_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSem
     [Algebra A W] [IsLocalization U W] {l : P →+* A} (hl : T ≤ U.comap l) :
     (map W l hl).comp (map Q g hy : S →+* _) = map W (l.comp g) fun _ hx => hl (hy hx) :=
   RingHom.ext fun x =>
-    Submonoid.LocalizationMap.map_map (P := P) (toLocalizationMap M S) (fun y => hy y.2)
+    Submonoid.LocalizationMap.map_map (P := P) (toLocalizationMap M S) (fun y ↦ hy y.2)
       (toLocalizationMap U W) (fun w => hl w.2) x
 
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition

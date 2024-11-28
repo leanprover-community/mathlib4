@@ -158,7 +158,7 @@ theorem exists_finiteIndex_of_leftCoset_cover_aux [DecidableEq (Subgroup G)]
       exact Finset.mem_erase.mpr ⟨this.2, Finset.mem_image_of_mem H this.1⟩
     have hK (k : κ) : K k ≠ H j := ((Finset.mem_erase.mp (hK' k)).left ·)
     replace hcovers : ⋃ k ∈ Finset.univ, f k • (K k : Set G) = Set.univ :=
-        Set.iUnion₂_eq_univ_iff.mpr fun y => by
+        Set.iUnion₂_eq_univ_iff.mpr fun y ↦ by
       rw [← s.filter_union_filter_neg_eq (H · = H j), Finset.set_biUnion_union] at hcovers
       cases (Set.mem_union _ _ _).mp (hcovers.superset (Set.mem_univ y)) with
       | inl hy =>

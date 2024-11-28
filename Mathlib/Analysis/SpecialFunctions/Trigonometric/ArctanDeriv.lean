@@ -33,7 +33,7 @@ theorem tendsto_abs_tan_of_cos_eq_zero {x : ℝ} (hx : cos x = 0) :
   simp only [← Complex.abs_ofReal, Complex.ofReal_tan]
   refine (Complex.tendsto_abs_tan_of_cos_eq_zero hx).comp ?_
   refine Tendsto.inf Complex.continuous_ofReal.continuousAt ?_
-  exact tendsto_principal_principal.2 fun y => mt Complex.ofReal_inj.1
+  exact tendsto_principal_principal.2 fun y ↦ mt Complex.ofReal_inj.1
 
 theorem tendsto_abs_tan_atTop (k : ℤ) :
     Tendsto (fun x ↦ abs (tan x)) (𝓝[≠] ((2 * k + 1) * π / 2)) atTop :=

@@ -95,7 +95,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at this
   rcases this with ⟨n, a, ε, ⟨εpos, H⟩⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
+  refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y ↦ ?_⟩
   rcases eq_or_ne y 0 with rfl | hy
   · use 0
     simp
@@ -174,7 +174,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     intro y
     rw [← dist_eq_norm, dist_comm]
     exact (hg y).1
-  refine ⟨2 * C + 1, by linarith, fun y => ?_⟩
+  refine ⟨2 * C + 1, by linarith, fun y ↦ ?_⟩
   have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
     induction n with
@@ -289,8 +289,8 @@ theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
   use {
       toFun := fsymm
       nnnorm := ⟨C, hC.lt.le⟩
-      bound' := fun y => (h y).2
-      right_inv' := fun y => (h y).1 }
+      bound' := fun y ↦ (h y).2
+      right_inv' := fun y ↦ (h y).1 }
   exact hC
 
 end

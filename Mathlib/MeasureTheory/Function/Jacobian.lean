@@ -467,7 +467,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   -- start from a Lebesgue density point `x`, belonging to `s`.
   intro x hx xs
   -- consider an arbitrary vector `z`.
-  apply ContinuousLinearMap.opNorm_le_bound _ δ.2 fun z => ?_
+  apply ContinuousLinearMap.opNorm_le_bound _ δ.2 fun z ↦ ?_
   -- to show that `‖(f' x - A) z‖ ≤ δ ‖z‖`, it suffices to do it up to some error that vanishes
   -- asymptotically in terms of `ε > 0`.
   suffices H : ∀ ε, 0 < ε → ‖(f' x - A) z‖ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε by

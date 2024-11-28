@@ -45,7 +45,7 @@ theorem hasStrictFDerivAt_cpow' {x y : ℂ} (hp : x ∈ slitPlane) :
   @hasStrictFDerivAt_cpow (x, y) hp
 
 theorem hasStrictDerivAt_const_cpow {x y : ℂ} (h : x ≠ 0 ∨ y ≠ 0) :
-    HasStrictDerivAt (fun y => x ^ y) (x ^ y * log x) y := by
+    HasStrictDerivAt (fun y ↦ x ^ y) (x ^ y * log x) y := by
   rcases em (x = 0) with (rfl | hx)
   · replace h := h.neg_resolve_left rfl
     rw [log_zero, mul_zero]
@@ -214,7 +214,7 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
     -- convert (((hasDerivAt_id (x : ℂ)).cpow_const _).div_const (r + 1)).comp_ofReal using 1
     -- · rw [add_sub_cancel, id.def, mul_one, mul_comm, mul_div_cancel _ hr]
     -- · rw [id.def, ofReal_re]; exact Or.inl hx
-    apply HasDerivAt.comp_ofReal (e := fun y => (y : ℂ) ^ (r + 1) / (r + 1))
+    apply HasDerivAt.comp_ofReal (e := fun y ↦ (y : ℂ) ^ (r + 1) / (r + 1))
     convert HasDerivAt.div_const (𝕜 := ℂ) ?_ (r + 1) using 1
     · exact (mul_div_cancel_right₀ _ hr).symm
     · convert HasDerivAt.cpow_const ?_ ?_ using 1
@@ -543,12 +543,12 @@ theorem HasDerivAt.rpow (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) (h : 0
   exact hf.rpow hg h
 
 theorem HasDerivWithinAt.rpow_const (hf : HasDerivWithinAt f f' s x) (hx : f x ≠ 0 ∨ 1 ≤ p) :
-    HasDerivWithinAt (fun y => f y ^ p) (f' * p * f x ^ (p - 1)) s x := by
+    HasDerivWithinAt (fun y ↦ f y ^ p) (f' * p * f x ^ (p - 1)) s x := by
   convert (hasDerivAt_rpow_const hx).comp_hasDerivWithinAt x hf using 1
   ring
 
 theorem HasDerivAt.rpow_const (hf : HasDerivAt f f' x) (hx : f x ≠ 0 ∨ 1 ≤ p) :
-    HasDerivAt (fun y => f y ^ p) (f' * p * f x ^ (p - 1)) x := by
+    HasDerivAt (fun y ↦ f y ^ p) (f' * p * f x ^ (p - 1)) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hf.rpow_const hx
 

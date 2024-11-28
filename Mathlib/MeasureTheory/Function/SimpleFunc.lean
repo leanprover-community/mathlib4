@@ -987,7 +987,7 @@ theorem lintegral_congr {f g : α →ₛ ℝ≥0∞} (h : f =ᵐ[μ] g) : f.lint
 theorem lintegral_map' {β} [MeasurableSpace β] {μ' : Measure β} (f : α →ₛ ℝ≥0∞) (g : β →ₛ ℝ≥0∞)
     (m' : α → β) (eq : ∀ a, f a = g (m' a)) (h : ∀ s, MeasurableSet s → μ' s = μ (m' ⁻¹' s)) :
     f.lintegral μ = g.lintegral μ' :=
-  lintegral_eq_of_measure_preimage fun y => by
+  lintegral_eq_of_measure_preimage fun y ↦ by
     simp only [preimage, eq]
     exact (h (g ⁻¹' {y}) (g.measurableSet_preimage _)).symm
 

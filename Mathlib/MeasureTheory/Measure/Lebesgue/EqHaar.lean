@@ -399,7 +399,7 @@ variable (μ)
 theorem addHaar_image_homothety (x : E) (r : ℝ) (s : Set E) :
     μ (AffineMap.homothety x r '' s) = ENNReal.ofReal (abs (r ^ finrank ℝ E)) * μ s :=
   calc
-    μ (AffineMap.homothety x r '' s) = μ ((fun y => y + x) '' (r • (fun y => y + -x) '' s)) := by
+    μ (AffineMap.homothety x r '' s) = μ ((fun y ↦ y + x) '' (r • (fun y ↦ y + -x) '' s)) := by
       simp only [← image_smul, image_image, ← sub_eq_add_neg]; rfl
     _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)) * μ s := by
       simp only [image_add_right, measure_preimage_add_right, addHaar_smul]

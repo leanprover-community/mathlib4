@@ -129,8 +129,8 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integrable_truncation [IsFinit
 theorem moment_truncation_eq_intervalIntegral (hf : AEStronglyMeasurable f μ) {A : ℝ} (hA : 0 ≤ A)
     {n : ℕ} (hn : n ≠ 0) : ∫ x, truncation f A x ^ n ∂μ = ∫ y in -A..A, y ^ n ∂Measure.map f μ := by
   have M : MeasurableSet (Set.Ioc (-A) A) := measurableSet_Ioc
-  change ∫ x, (fun z => indicator (Set.Ioc (-A) A) id z ^ n) (f x) ∂μ = _
-  rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le,
+  change ∫ x, (fun z ↦ indicator (Set.Ioc (-A) A) id z ^ n) (f x) ∂μ = _
+  rw [← integral_map (f := fun z ↦ _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le,
     ← integral_indicator M]
   · simp only [indicator, zero_pow hn, id, ite_pow]
   · linarith
@@ -142,13 +142,13 @@ theorem moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurab
   have M : MeasurableSet (Set.Ioc 0 A) := measurableSet_Ioc
   have M' : MeasurableSet (Set.Ioc A 0) := measurableSet_Ioc
   rw [truncation_eq_of_nonneg h'f]
-  change ∫ x, (fun z => indicator (Set.Ioc 0 A) id z ^ n) (f x) ∂μ = _
+  change ∫ x, (fun z ↦ indicator (Set.Ioc 0 A) id z ^ n) (f x) ∂μ = _
   rcases le_or_lt 0 A with (hA | hA)
-  · rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le hA,
+  · rw [← integral_map (f := fun z ↦ _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le hA,
       ← integral_indicator M]
     · simp only [indicator, zero_pow hn, id, ite_pow]
     · exact ((measurable_id.indicator M).pow_const n).aestronglyMeasurable
-  · rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_ge hA.le,
+  · rw [← integral_map (f := fun z ↦ _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_ge hA.le,
       ← integral_indicator M']
     · simp only [Set.Ioc_eq_empty_of_le hA.le, zero_pow hn, Set.indicator_empty, integral_zero,
         zero_eq_neg]

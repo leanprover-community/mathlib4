@@ -486,7 +486,7 @@ theorem convolution_mono_right_of_nonneg {f g g' : G → ℝ}
   · exact convolution_mono_right H hfg' hf hg
   have : (f ⋆[lsmul ℝ ℝ, μ] g) x = 0 := integral_undef H
   rw [this]
-  exact integral_nonneg fun y => mul_nonneg (hf y) (hg' (x - y))
+  exact integral_nonneg fun y ↦ mul_nonneg (hf y) (hg' (x - y))
 
 variable (L)
 
@@ -898,11 +898,11 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
       ((measurable_const.sub measurable_snd).sub measurable_fst)
     refine QuasiMeasurePreserving.absolutelyContinuous ?_
     refine QuasiMeasurePreserving.prod_of_left
-      ((measurable_const.sub measurable_snd).sub measurable_fst) (Eventually.of_forall fun y => ?_)
+      ((measurable_const.sub measurable_snd).sub measurable_fst) (Eventually.of_forall fun y ↦ ?_)
     dsimp only
     exact quasiMeasurePreserving_sub_left_of_right_invariant μ _
   have h2_meas :
-    AEStronglyMeasurable (fun y => ∫ x, ‖L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))‖ ∂μ) ν :=
+    AEStronglyMeasurable (fun y ↦ ∫ x, ‖L₃ (f y) (L₄ (g x) (k (x₀ - y - x)))‖ ∂μ) ν :=
     h_meas.prod_swap.norm.integral_prod_right'
   have h3 : map (fun z : G × G => (z.1 - z.2, z.2)) (μ.prod ν) = μ.prod ν :=
     (measurePreserving_sub_prod μ ν).map_eq
@@ -1094,7 +1094,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     have M : HasCompactSupport (g q₀.1) := HasCompactSupport.intro hk fun x hx => hgs q₀.1 x hq₀ hx
     apply M.convolutionExists_right L hf (A q₀.1 hq₀) q₀.2
   have I3 : AEStronglyMeasurable (fun a : G => (L (f a)).comp (g' (q₀.fst, q₀.snd - a))) μ := by
-    have T : HasCompactSupport fun y => g' (q₀.1, y) :=
+    have T : HasCompactSupport fun y ↦ g' (q₀.1, y) :=
       HasCompactSupport.intro hk fun x hx => g'_zero q₀.1 x hq₀ hx
     apply (HasCompactSupport.convolutionExists_right (L.precompR (P × G) : _) T hf _ q₀.2).1
     have : ContinuousOn g' (s ×ˢ univ) :=

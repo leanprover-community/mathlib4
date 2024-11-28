@@ -83,7 +83,7 @@ def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
             aesop_cat )
         simpa using (f.naturality ψ).symm }
   invFun g :=
-    { app := fun y => yonedaEquiv (y.hom ≫ g)
+    { app := fun y ↦ yonedaEquiv (y.hom ≫ g)
       naturality := fun {X₁ X₂} φ => by
         dsimp
         rw [← CostructuredArrow.w φ]

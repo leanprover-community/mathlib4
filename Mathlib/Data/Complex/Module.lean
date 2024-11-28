@@ -128,9 +128,9 @@ open Submodule
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
   Basis.ofEquivFun
-    { toFun := fun z => ![z.re, z.im]
+    { toFun := fun z ↦ ![z.re, z.im]
       invFun := fun c ↦ c 0 + c 1 • I
-      left_inv := fun z => by simp
+      left_inv := fun z ↦ by simp
       right_inv := fun c ↦ by
         ext i
         fin_cases i <;> simp

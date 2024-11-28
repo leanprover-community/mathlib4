@@ -305,7 +305,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
   · intro h
     rcases h n.succ le_rfl with ⟨u, hu, p, Hp⟩
     refine
-      ⟨u, hu, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1), fun y hy =>
+      ⟨u, hu, fun y ↦ (continuousMultilinearCurryFin1 𝕜 E F) (p y 1), fun y hy =>
         Hp.hasFDerivWithinAt (mod_cast (Nat.le_add_left 1 n)) hy, ?_⟩
     intro m hm
     refine ⟨u, ?_, fun y : E => (p y).shift, ?_⟩
@@ -327,7 +327,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
         hasFTaylorSeriesUpToOn_succ_iff_right]
       refine ⟨fun y _ => rfl, fun y hy => ?_, ?_⟩
       · change
-          HasFDerivWithinAt (fun z => (continuousMultilinearCurryFin0 𝕜 E F).symm (f z))
+          HasFDerivWithinAt (fun z ↦ (continuousMultilinearCurryFin0 𝕜 E F).symm (f z))
             (FormalMultilinearSeries.unshift (p' y) (f y) 1).curryLeft (v ∩ u) y
         -- Porting note: needed `erw` here.
         -- https://github.com/leanprover-community/mathlib4/issues/5164
@@ -486,7 +486,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt {n : ℕ} :
   · intro h x hx
     rcases (h x hx) n.succ le_rfl with ⟨u, hu, p, Hp⟩
     refine
-      ⟨u, hu, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1), fun y hy =>
+      ⟨u, hu, fun y ↦ (continuousMultilinearCurryFin1 𝕜 E F) (p y 1), fun y hy =>
         Hp.hasFDerivWithinAt (mod_cast (Nat.le_add_left 1 n)) hy, ?_⟩
     rw [show (n.succ : WithTop ℕ∞) = (n : ℕ) + 1 from rfl,
       hasFTaylorSeriesUpToOn_succ_iff_right] at Hp
@@ -627,7 +627,7 @@ theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDi
     fun h ↦ contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
 
 theorem contDiffOn_succ_of_fderivWithin {n : ℕ} (hf : DifferentiableOn 𝕜 f s)
-    (h : ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 (n + 1) f s := by
+    (h : ContDiffOn 𝕜 n (fun y ↦ fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 (n + 1) f s := by
   intro x hx
   rw [contDiffWithinAt_succ_iff_hasFDerivWithinAt, insert_eq_of_mem hx]
   exact
@@ -637,7 +637,7 @@ theorem contDiffOn_succ_of_fderivWithin {n : ℕ} (hf : DifferentiableOn 𝕜 f 
 differentiable there, and its derivative (expressed with `fderivWithin`) is `C^n`. -/
 theorem contDiffOn_succ_iff_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1) f s ↔
-      DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s := by
+      DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 n (fun y ↦ fderivWithin 𝕜 f s y) s := by
   refine ⟨fun H => ?_, fun h ↦ contDiffOn_succ_of_fderivWithin h.1 h.2⟩
   refine ⟨H.differentiableOn le_add_self, fun x hx => ?_⟩
   rcases contDiffWithinAt_succ_iff_hasFDerivWithinAt.1 (H x hx) with ⟨u, hu, f', hff', hf'⟩
@@ -666,7 +666,7 @@ theorem contDiffOn_succ_iff_hasFDerivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s)
 differentiable there, and its derivative (expressed with `fderiv`) is `C^n`. -/
 theorem contDiffOn_succ_iff_fderiv_of_isOpen {n : ℕ} (hs : IsOpen s) :
     ContDiffOn 𝕜 (n + 1) f s ↔
-      DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 n (fun y => fderiv 𝕜 f y) s := by
+      DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 n (fun y ↦ fderiv 𝕜 f y) s := by
   rw [contDiffOn_succ_iff_fderivWithin hs.uniqueDiffOn]
   exact Iff.rfl.and (contDiffOn_congr fun x hx ↦ fderivWithin_of_isOpen hs hx)
 
@@ -674,7 +674,7 @@ theorem contDiffOn_succ_iff_fderiv_of_isOpen {n : ℕ} (hs : IsOpen s) :
 there, and its derivative (expressed with `fderivWithin`) is `C^∞`. -/
 theorem contDiffOn_top_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ∞ f s ↔
-      DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fun y => fderivWithin 𝕜 f s y) s := by
+      DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fun y ↦ fderivWithin 𝕜 f s y) s := by
   constructor
   · intro h
     refine ⟨h.differentiableOn (mod_cast le_top), ?_⟩
@@ -689,12 +689,12 @@ theorem contDiffOn_top_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
 /-- A function is `C^∞` on an open domain if and only if it is differentiable there, and its
 derivative (expressed with `fderiv`) is `C^∞`. -/
 theorem contDiffOn_top_iff_fderiv_of_isOpen (hs : IsOpen s) :
-    ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fun y => fderiv 𝕜 f y) s := by
+    ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fun y ↦ fderiv 𝕜 f y) s := by
   rw [contDiffOn_top_iff_fderivWithin hs.uniqueDiffOn]
   exact Iff.rfl.and <| contDiffOn_congr fun x hx ↦ fderivWithin_of_isOpen hs hx
 
 protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
-    (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (fun y => fderivWithin 𝕜 f s y) s := by
+    (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (fun y ↦ fderivWithin 𝕜 f s y) s := by
   rcases le_or_lt ∞ n with hn | hn
   · have : ContDiffOn 𝕜 ∞ (fun y ↦ fderivWithin 𝕜 f s y) s :=
       ((contDiffOn_top_iff_fderivWithin hs).1 (hf.of_le hn)).2
@@ -708,7 +708,7 @@ protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : Uni
       exact ((contDiffOn_succ_iff_fderivWithin hs).1 (hf.of_le hmn)).2
 
 theorem ContDiffOn.fderiv_of_isOpen (hf : ContDiffOn 𝕜 n f s) (hs : IsOpen s) (hmn : m + 1 ≤ n) :
-    ContDiffOn 𝕜 m (fun y => fderiv 𝕜 f y) s :=
+    ContDiffOn 𝕜 m (fun y ↦ fderiv 𝕜 f y) s :=
   (hf.fderivWithin hs.uniqueDiffOn hmn).congr fun _ hx => (fderivWithin_of_isOpen hs hx).symm
 
 theorem ContDiffOn.continuousOn_fderivWithin (h : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
@@ -942,7 +942,7 @@ theorem contDiff_of_differentiable_iteratedFDeriv {n : ℕ∞}
 /-- A function is `C^(n + 1)` if and only if it is differentiable,
 and its derivative (formulated in terms of `fderiv`) is `C^n`. -/
 theorem contDiff_succ_iff_fderiv {n : ℕ} :
-    ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧ ContDiff 𝕜 n fun y => fderiv 𝕜 f y := by
+    ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧ ContDiff 𝕜 n fun y ↦ fderiv 𝕜 f y := by
   simp only [← contDiffOn_univ, ← differentiableOn_univ, ← fderivWithin_univ,
     contDiffOn_succ_iff_fderivWithin uniqueDiffOn_univ]
 
@@ -952,7 +952,7 @@ theorem contDiff_one_iff_fderiv : ContDiff 𝕜 1 f ↔ Differentiable 𝕜 f �
 /-- A function is `C^∞` if and only if it is differentiable,
 and its derivative (formulated in terms of `fderiv`) is `C^∞`. -/
 theorem contDiff_top_iff_fderiv :
-    ContDiff 𝕜 ∞ f ↔ Differentiable 𝕜 f ∧ ContDiff 𝕜 ∞ fun y => fderiv 𝕜 f y := by
+    ContDiff 𝕜 ∞ f ↔ Differentiable 𝕜 f ∧ ContDiff 𝕜 ∞ fun y ↦ fderiv 𝕜 f y := by
   simp only [← contDiffOn_univ, ← differentiableOn_univ, ← fderivWithin_univ]
   rw [contDiffOn_top_iff_fderivWithin uniqueDiffOn_univ]
 

@@ -245,12 +245,12 @@ section GroupWithZero
 variable [GroupWithZero G₀] {a b x : G₀}
 
 theorem GroupWithZero.mul_right_injective (h : x ≠ 0) :
-    Function.Injective fun y => x * y := fun y y' w => by
-  simpa only [← mul_assoc, inv_mul_cancel₀ h, one_mul] using congr_arg (fun y => x⁻¹ * y) w
+    Function.Injective fun y ↦ x * y := fun y y' w => by
+  simpa only [← mul_assoc, inv_mul_cancel₀ h, one_mul] using congr_arg (fun y ↦ x⁻¹ * y) w
 
 theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
-    Function.Injective fun y => y * x := fun y y' w => by
-  simpa only [mul_assoc, mul_inv_cancel₀ h, mul_one] using congr_arg (fun y => y * x⁻¹) w
+    Function.Injective fun y ↦ y * x := fun y y' w => by
+  simpa only [mul_assoc, mul_inv_cancel₀ h, mul_one] using congr_arg (fun y ↦ y * x⁻¹) w
 
 @[simp]
 theorem inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=

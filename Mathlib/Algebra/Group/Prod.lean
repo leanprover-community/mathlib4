@@ -419,7 +419,7 @@ def inl : M →* M × N :=
       "Given additive monoids `A`, `B`, the natural inclusion homomorphism
       from `B` to `A × B`."]
 def inr : N →* M × N :=
-  { toFun := fun y => (1, y),
+  { toFun := fun y ↦ (1, y),
     map_one' := rfl,
     map_mul' := fun _ _ => Prod.ext (one_mul 1).symm rfl }
 

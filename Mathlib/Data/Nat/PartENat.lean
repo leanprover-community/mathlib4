@@ -386,7 +386,7 @@ theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
 
 instance isTotal : IsTotal PartENat (· ≤ ·) where
   total x y :=
-    PartENat.casesOn (P := fun z => z ≤ y ∨ y ≤ z) x (Or.inr le_top)
+    PartENat.casesOn (P := fun z ↦ z ≤ y ∨ y ≤ z) x (Or.inr le_top)
       (PartENat.casesOn y (fun _ => Or.inl le_top) fun x y =>
         (le_total x y).elim (Or.inr ∘ coe_le_coe.2) (Or.inl ∘ coe_le_coe.2))
 

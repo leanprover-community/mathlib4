@@ -683,7 +683,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
   have A : ∀ (x : s) (n : ℕ), dist (g x) (u ((x : ℕ → ℕ) n)) ≤ (1 / 2) ^ n := fun x n =>
     (mem_iInter.1 x.2.some_mem n : _)
   have g_cont : Continuous g := by
-    refine continuous_iff_continuousAt.2 fun y => ?_
+    refine continuous_iff_continuousAt.2 fun y ↦ ?_
     refine continuousAt_of_locally_lipschitz zero_lt_one 4 fun x hxy => ?_
     rcases eq_or_ne x y with (rfl | hne)
     · simp

@@ -302,7 +302,7 @@ theorem signAux_eq_signAux2 {n : ℕ} :
     ∀ (l : List α) (f : Perm α) (e : α ≃ Fin n) (_h : ∀ x, f x ≠ x → x ∈ l),
       signAux ((e.symm.trans f).trans e) = signAux2 l f
   | [], f, e, h => by
-    have : f = 1 := Equiv.ext fun y => Classical.not_not.1 (mt (h y) (List.not_mem_nil _))
+    have : f = 1 := Equiv.ext fun y ↦ Classical.not_not.1 (mt (h y) (List.not_mem_nil _))
     rw [this, one_def, Equiv.trans_refl, Equiv.symm_trans_self, ← one_def, signAux_one, signAux2]
   | x::l, f, e, h => by
     rw [signAux2]

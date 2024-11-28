@@ -109,7 +109,7 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
       intro c₁ c₂ h
       rw [← sub_eq_zero, ← sub_smul] at h ⊢
       exact H _ h
-    { toFun := fun z => Classical.choose (mem_span_singleton.1 z.prop) • y
+    { toFun := fun z ↦ Classical.choose (mem_span_singleton.1 z.prop) • y
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       -- Porting note: Were `Classical.choose_spec (mem_span_singleton.1 _)`.
       map_add' := fun y z => by
@@ -260,7 +260,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
       ∀ (x : f.domain) (y : g.domain) (z : ↥(f.domain ⊔ g.domain)),
         (x : E) + y = ↑z → fg z = f x + g y := by
   choose x hx y hy hxy using fun z : ↥(f.domain ⊔ g.domain) => mem_sup.1 z.prop
-  set fg := fun z => f ⟨x z, hx z⟩ + g ⟨y z, hy z⟩
+  set fg := fun z ↦ f ⟨x z, hx z⟩ + g ⟨y z, hy z⟩
   have fg_eq : ∀ (x' : f.domain) (y' : g.domain) (z' : ↥(f.domain ⊔ g.domain))
       (_H : (x' : E) + y' = z'), fg z' = f x' + g y' := by
     intro x' y' z' H

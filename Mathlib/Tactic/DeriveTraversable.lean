@@ -348,7 +348,7 @@ def traverseConstructor (c n : Name) (applInst f α β : Expr) (args₀ : List E
   let args' ← args₁.mapM (fun (y : Bool × Expr) =>
       if y.1 then return (true, mkAppN (.fvar ad) #[g.appFn!, applInst, α, β, f, y.2])
       else traverseField n g.appFn! f α y.2)
-  let gargs := args'.filterMap (fun y => if y.1 then some y.2 else none)
+  let gargs := args'.filterMap (fun y ↦ if y.1 then some y.2 else none)
   let v ← mkFunCtor c (args₀.map (fun e ↦ (false, e)) ++ args')
   let pureInst ← mkAppOptM ``Applicative.toPure #[none, applInst]
   let constr' ← mkAppOptM ``Pure.pure #[none, pureInst, none, v]
@@ -364,7 +364,7 @@ where
     | (true, x) :: xs =>
       let n ← mkFreshUserName `x
       let t ← inferType x
-      withLocalDeclD n t.appArg! fun y => mkFunCtor c xs (fvars.push y) (aargs.push y)
+      withLocalDeclD n t.appArg! fun y ↦ mkFunCtor c xs (fvars.push y) (aargs.push y)
     | (false, x) :: xs => mkFunCtor c xs fvars (aargs.push x)
     | [] => liftM <| mkAppOptM c (aargs.map some) >>= mkLambdaFVars fvars
 

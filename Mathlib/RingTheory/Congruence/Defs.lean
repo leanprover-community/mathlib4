@@ -296,7 +296,7 @@ section IntCast
 variable [AddGroupWithOne R] [Mul R] (c : RingCon R)
 
 instance : IntCast c.Quotient :=
-  ⟨fun z => ↑(z : R)⟩
+  ⟨fun z ↦ ↑(z : R)⟩
 
 @[simp, norm_cast]
 theorem coe_intCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=

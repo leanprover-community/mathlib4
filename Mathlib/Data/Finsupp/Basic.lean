@@ -1327,8 +1327,8 @@ instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →�
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (α →₀ M) :=
   { Finsupp.distribSMul _ _ with
-    one_smul := fun x ↦ ext fun y => one_smul R (x y)
-    mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
+    one_smul := fun x ↦ ext fun y ↦ one_smul R (x y)
+    mul_smul := fun r s x => ext fun y ↦ mul_smul r s (x y) }
 
 instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
   [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where

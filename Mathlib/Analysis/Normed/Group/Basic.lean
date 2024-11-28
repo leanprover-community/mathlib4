@@ -941,7 +941,7 @@ end
 @[to_additive eventually_ne_of_tendsto_norm_atTop "If `‖y‖→∞`, then we can assume `y≠x` for any
 fixed `x`"]
 theorem eventually_ne_of_tendsto_norm_atTop' {l : Filter α} {f : α → E}
-    (h : Tendsto (fun y => ‖f y‖) l atTop) (x : E) : ∀ᶠ y in l, f y ≠ x :=
+    (h : Tendsto (fun y ↦ ‖f y‖) l atTop) (x : E) : ∀ᶠ y in l, f y ≠ x :=
   (h.eventually_ne_atTop _).mono fun _x => ne_of_apply_ne norm
 
 @[to_additive]
@@ -961,7 +961,7 @@ theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ
 theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one {f : ι → κ → G}
     {l : Filter ι} {l' : Filter κ} :
     UniformCauchySeqOnFilter f l l' ↔
-      TendstoUniformlyOnFilter (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) l' := by
+      TendstoUniformlyOnFilter (fun n : ι × ι => fun z ↦ f n.fst z / f n.snd z) 1 (l ×ˢ l) l' := by
   refine ⟨fun hf u hu => ?_, fun hf u hu => ?_⟩
   · obtain ⟨ε, hε, H⟩ := uniformity_basis_dist.mem_uniformity_iff.mp hu
     refine
@@ -978,7 +978,7 @@ theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_on
 theorem SeminormedGroup.uniformCauchySeqOn_iff_tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ}
     {l : Filter ι} :
     UniformCauchySeqOn f l s ↔
-      TendstoUniformlyOn (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) s := by
+      TendstoUniformlyOn (fun n : ι × ι => fun z ↦ f n.fst z / f n.snd z) 1 (l ×ˢ l) s := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter,
     uniformCauchySeqOn_iff_uniformCauchySeqOnFilter,
     SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one]

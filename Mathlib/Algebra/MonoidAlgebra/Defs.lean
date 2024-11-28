@@ -318,7 +318,7 @@ instance nonUnitalRing [Ring k] [Semigroup G] : NonUnitalRing (MonoidAlgebra k G
 instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G) :=
   { MonoidAlgebra.addCommGroup,
     MonoidAlgebra.nonAssocSemiring with
-    intCast := fun z => single 1 (z : k)
+    intCast := fun z ↦ single 1 (z : k)
     -- Porting note: Both were `simpa`.
     intCast_ofNat := fun n => by simp; rfl
     intCast_negSucc := fun n => by simp; rfl }
@@ -1111,7 +1111,7 @@ instance nonUnitalRing [Ring k] [AddSemigroup G] : NonUnitalRing k[G] :=
 instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
   { AddMonoidAlgebra.addCommGroup,
     AddMonoidAlgebra.nonAssocSemiring with
-    intCast := fun z => single 0 (z : k)
+    intCast := fun z ↦ single 0 (z : k)
     -- Porting note: Both were `simpa`.
     intCast_ofNat := fun n => by simp; rfl
     intCast_negSucc := fun n => by simp; rfl }

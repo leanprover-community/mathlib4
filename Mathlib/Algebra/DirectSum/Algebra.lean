@@ -139,7 +139,7 @@ def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
       map_smul' := fun r x => by
         injection (smul_comm r (GradedMonoid.mk _ a) (GradedMonoid.mk _ x)).symm
       map_add' := GNonUnitalNonAssocSemiring.mul_add _ }
-  map_smul' r x := LinearMap.ext fun y => by
+  map_smul' r x := LinearMap.ext fun y ↦ by
     injection smul_assoc r (GradedMonoid.mk _ x) (GradedMonoid.mk _ y)
   map_add' _ _ := LinearMap.ext fun _ => GNonUnitalNonAssocSemiring.add_mul _ _ _
 

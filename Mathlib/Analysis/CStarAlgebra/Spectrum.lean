@@ -166,7 +166,7 @@ theorem IsSelfAdjoint.im_eq_zero_of_mem_spectrum {a : A} (ha : IsSelfAdjoint a)
 /-- The spectrum of a selfadjoint is real -/
 theorem IsSelfAdjoint.val_re_map_spectrum {a : A} (ha : IsSelfAdjoint a) :
     spectrum ℂ a = ((↑) ∘ re '' spectrum ℂ a : Set ℂ) :=
-  le_antisymm (fun z hz => ⟨z, hz, (ha.mem_spectrum_eq_re hz).symm⟩) fun z => by
+  le_antisymm (fun z hz => ⟨z, hz, (ha.mem_spectrum_eq_re hz).symm⟩) fun z ↦ by
     rintro ⟨z, hz, rfl⟩
     simpa only [(ha.mem_spectrum_eq_re hz).symm, Function.comp_apply] using hz
 

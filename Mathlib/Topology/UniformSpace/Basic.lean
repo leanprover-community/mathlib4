@@ -667,7 +667,7 @@ theorem nhds_basis_uniformity {p : ι → Prop} {s : ι → Set (α × α)} (h :
   rw [comap_swap_uniformity] at h
   exact nhds_basis_uniformity' h
 
-theorem nhds_eq_comap_uniformity' {x : α} : 𝓝 x = (𝓤 α).comap fun y => (y, x) :=
+theorem nhds_eq_comap_uniformity' {x : α} : 𝓝 x = (𝓤 α).comap fun y ↦ (y, x) :=
   (nhds_basis_uniformity (𝓤 α).basis_sets).eq_of_same_basis <| (𝓤 α).basis_sets.comap _
 
 theorem UniformSpace.mem_nhds_iff {x : α} {s : Set α} : s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 α, ball x V ⊆ s := by
@@ -761,7 +761,7 @@ theorem nhds_eq_uniformity_prod {a b : α} :
   rw [nhds_prod_eq, nhds_nhds_eq_uniformity_uniformity_prod, lift_lift'_same_eq_lift']
   · exact fun s => monotone_const.set_prod monotone_preimage
   · refine fun t => Monotone.set_prod ?_ monotone_const
-    exact monotone_preimage (f := fun y => (y, a))
+    exact monotone_preimage (f := fun y ↦ (y, a))
 
 theorem nhdset_of_mem_uniformity {d : Set (α × α)} (s : Set (α × α)) (hd : d ∈ 𝓤 α) :
     ∃ t : Set (α × α), IsOpen t ∧ s ⊆ t ∧
@@ -881,7 +881,7 @@ isOpen_iff_open_ball_subset := isOpen_iff_isOpen_ball_subset
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :
     ⋃ x ∈ s, ball x U = univ := by
-  refine iUnion₂_eq_univ_iff.2 fun y => ?_
+  refine iUnion₂_eq_univ_iff.2 fun y ↦ ?_
   rcases hs.inter_nhds_nonempty (mem_nhds_right y hU) with ⟨x, hxs, hxy : (x, y) ∈ U⟩
   exact ⟨x, hxs, hxy⟩
 

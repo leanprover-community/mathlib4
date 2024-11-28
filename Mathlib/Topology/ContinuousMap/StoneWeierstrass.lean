@@ -208,7 +208,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- Thus for each `x` we have the desired `h x : A` so `f z - ε < h x z` everywhere
   -- and `h x x = f x`.
   let h : X → L := fun x =>
-    ⟨(ys x).sup' (ys_nonempty x) fun y => (g x y : C(X, ℝ)),
+    ⟨(ys x).sup' (ys_nonempty x) fun y ↦ (g x y : C(X, ℝ)),
       Finset.sup'_mem _ sup_mem _ _ _ fun y _ => hg x y⟩
   have lt_h : ∀ x z, f z - ε < (h x : X → ℝ) z := by
     intro x z

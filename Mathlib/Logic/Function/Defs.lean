@@ -121,7 +121,7 @@ theorem rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α}
   injf h
 
 theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : Surjective f :=
-  fun y => ⟨g y, h y⟩
+  fun y ↦ ⟨g y, h y⟩
 
 theorem HasRightInverse.surjective {f : α → β} : HasRightInverse f → Surjective f
   | ⟨_finv, inv⟩ => inv.surjective

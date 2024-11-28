@@ -863,7 +863,7 @@ theorem Bounded.of_gt :
 
 theorem Bounded.to_sep {t₁ t₂ o₁ o₂} {x : α}
     (h₁ : Bounded t₁ o₁ (x : WithTop α)) (h₂ : Bounded t₂ (x : WithBot α) o₂) :
-    t₁.All fun y => t₂.All fun z : α => y < z := by
+    t₁.All fun y ↦ t₂.All fun z : α => y < z := by
   refine h₁.mem_lt.imp fun y yx => ?_
   exact h₂.mem_gt.imp fun z xz => lt_trans yx xz
 
@@ -1237,7 +1237,7 @@ theorem eraseMax.valid {t} (h : @Valid α _ t) : Valid (eraseMax t) := by
   rw [Valid.dual_iff, dual_eraseMax]; exact eraseMin.valid h.dual
 
 theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
-    (sep : l.All fun x ↦ r.All fun y => x < y) (bal : BalancedSz (size l) (size r)) :
+    (sep : l.All fun x ↦ r.All fun y ↦ x < y) (bal : BalancedSz (size l) (size r)) :
     Valid' o₁ (@glue α l r) o₂ ∧ size (glue l r) = size l + size r := by
   cases' l with ls ll lx lr; · exact ⟨hr, (zero_add _).symm⟩
   cases' r with rs rl rx rr; · exact ⟨hl, rfl⟩
@@ -1294,7 +1294,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
   intro _ _; rw [e]; unfold delta at hr₂ ⊢; omega
 
 theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
-    (sep : l.All fun x ↦ r.All fun y => x < y) :
+    (sep : l.All fun x ↦ r.All fun y ↦ x < y) :
     Valid' o₁ (@merge α l r) o₂ ∧ size (merge l r) = size l + size r := by
   induction' l with ls ll lx lr _ IHlr generalizing o₁ o₂ r
   · exact ⟨hr, (zero_add _).symm⟩
@@ -1314,7 +1314,7 @@ theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' 
   · refine Valid'.glue_aux hl hr sep (Or.inr ⟨not_lt.1 h_1, not_lt.1 h⟩)
 
 theorem Valid.merge {l r} (hl : Valid l) (hr : Valid r)
-    (sep : l.All fun x ↦ r.All fun y => x < y) : Valid (@merge α l r) :=
+    (sep : l.All fun x ↦ r.All fun y ↦ x < y) : Valid (@merge α l r) :=
   (Valid'.merge_aux hl hr sep).1
 
 theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (f : α → α) (x : α)

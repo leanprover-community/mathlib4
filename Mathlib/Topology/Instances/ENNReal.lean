@@ -942,7 +942,7 @@ theorem tsum_comp_le_tsum_of_inj {β : Type*} {f : α → ℝ≥0} (hf : Summabl
     hf
 
 theorem summable_sigma {β : α → Type*} {f : (Σ x, β x) → ℝ≥0} :
-    Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x ↦ ∑' y, f ⟨x, y⟩ := by
+    Summable f ↔ (∀ x, Summable fun y ↦ f ⟨x, y⟩) ∧ Summable fun x ↦ ∑' y, f ⟨x, y⟩ := by
   constructor
   · simp only [← NNReal.summable_coe, NNReal.coe_tsum]
     exact fun h ↦ ⟨h.sigma_factor, h.sigma⟩

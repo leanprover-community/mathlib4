@@ -138,9 +138,9 @@ See note [reducible non-instances]. -/
 abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
-    intCast := fun z => algebraMap R A z
-    intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
-    intCast_negSucc := fun z => by simp }
+    intCast := fun z ↦ algebraMap R A z
+    intCast_ofNat := fun z ↦ by simp only [Int.cast_natCast, map_natCast]
+    intCast_negSucc := fun z ↦ by simp }
 
 instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
   toFun := Subtype.val

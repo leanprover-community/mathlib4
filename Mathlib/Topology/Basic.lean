@@ -1272,7 +1272,7 @@ theorem Filter.Frequently.mem_of_closed (h : ∃ᶠ x in 𝓝 x, x ∈ s)
 
 theorem IsClosed.mem_of_frequently_of_tendsto {f : α → X} {b : Filter α}
     (hs : IsClosed s) (h : ∃ᶠ x in b, f x ∈ s) (hf : Tendsto f b (𝓝 x)) : x ∈ s :=
-  (hf.frequently <| show ∃ᶠ x in b, (fun y => y ∈ s) (f x) from h).mem_of_closed hs
+  (hf.frequently <| show ∃ᶠ x in b, (fun y ↦ y ∈ s) (f x) from h).mem_of_closed hs
 
 theorem IsClosed.mem_of_tendsto {f : α → X} {b : Filter α} [NeBot b]
     (hs : IsClosed s) (hf : Tendsto f b (𝓝 x)) (h : ∀ᶠ x in b, f x ∈ s) : x ∈ s :=
@@ -1473,7 +1473,7 @@ theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
 
 theorem continuous_of_const (h : ∀ x y, f x = f y) : Continuous f :=
   continuous_iff_continuousAt.mpr fun x =>
-    Filter.EventuallyEq.continuousAt <| Eventually.of_forall fun y => h y x
+    Filter.EventuallyEq.continuousAt <| Eventually.of_forall fun y ↦ h y x
 
 theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt

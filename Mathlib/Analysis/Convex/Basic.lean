@@ -392,7 +392,7 @@ variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F] {s 
 theorem Convex.smul (hs : Convex 𝕜 s) (c : 𝕜) : Convex 𝕜 (c • s) :=
   hs.linear_image (LinearMap.lsmul _ _ c)
 
-theorem Convex.smul_preimage (hs : Convex 𝕜 s) (c : 𝕜) : Convex 𝕜 ((fun z => c • z) ⁻¹' s) :=
+theorem Convex.smul_preimage (hs : Convex 𝕜 s) (c : 𝕜) : Convex 𝕜 ((fun z ↦ c • z) ⁻¹' s) :=
   hs.linear_preimage (LinearMap.lsmul _ _ c)
 
 theorem Convex.affinity (hs : Convex 𝕜 s) (z : E) (c : 𝕜) :

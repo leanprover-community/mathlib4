@@ -111,7 +111,7 @@ theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
 
 @[simp]
 nonrec theorem map_mul (f g : ContinuousMonoidHom A G) : map (f * g) = map f * map g :=
-  ext fun x ↦ ext fun y => map_mul x (f y) (g y)
+  ext fun x ↦ ext fun y ↦ map_mul x (f y) (g y)
 
 variable (A B C G)
 

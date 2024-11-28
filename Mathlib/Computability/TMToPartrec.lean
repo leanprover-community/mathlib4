@@ -325,7 +325,7 @@ theorem exists_code {n} {f : Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     constructor
     · rintro ⟨v', h1, rfl⟩
       suffices ∀ v₁ : List ℕ, v' ∈ PFun.fix
-        (fun v => (cf.eval v).bind fun y => Part.some <|
+        (fun v => (cf.eval v).bind fun y ↦ Part.some <|
           if y.headI = 0 then Sum.inl (v.headI.succ :: v.tail)
             else Sum.inr (v.headI.succ :: v.tail)) v₁ →
         ∀ n, (v₁ = n :: v.val) → (∀ m < n, ¬f (m ::ᵥ v) = 0) →

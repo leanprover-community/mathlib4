@@ -152,7 +152,7 @@ lemma piecewise_le_of_le_of_le (hf : f ≤ h) (hg : g ≤ h) : s.piecewise f g �
   piecewise_cases s f g (· ≤ h x) (hf x) (hg x)
 
 lemma le_piecewise_of_le_of_le (hf : h ≤ f) (hg : h ≤ g) : h ≤ s.piecewise f g := fun x =>
-  piecewise_cases s f g (fun y => h x ≤ y) (hf x) (hg x)
+  piecewise_cases s f g (fun y ↦ h x ≤ y) (hf x) (hg x)
 
 lemma piecewise_le_piecewise' (hf : ∀ x ∈ s, f x ≤ f' x) (hg : ∀ x ∉ s, g x ≤ g' x) :
     s.piecewise f g ≤ s.piecewise f' g' := fun x ↦ by by_cases hx : x ∈ s <;> simp [hx, *]

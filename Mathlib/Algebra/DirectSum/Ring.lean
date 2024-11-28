@@ -344,7 +344,7 @@ variable [∀ i, AddCommGroup (A i)] [AddMonoid ι] [GRing A]
 instance ring : Ring (⨁ i, A i) :=
   { DirectSum.semiring A,
     (inferInstance : AddCommGroup (⨁ i, A i)) with
-    toIntCast.intCast := fun z => of A 0 <| (GRing.intCast z)
+    toIntCast.intCast := fun z ↦ of A 0 <| (GRing.intCast z)
     intCast_ofNat := fun _ => congrArg (of A 0) <| GRing.intCast_ofNat _
     intCast_negSucc := fun _ =>
       (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _}

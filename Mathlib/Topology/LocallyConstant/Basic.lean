@@ -136,7 +136,7 @@ theorem apply_eq_of_preconnectedSpace [PreconnectedSpace X] {f : X → Y} (hf : 
 
 theorem eq_const [PreconnectedSpace X] {f : X → Y} (hf : IsLocallyConstant f) (x : X) :
     f = Function.const X (f x) :=
-  funext fun y => hf.apply_eq_of_preconnectedSpace y x
+  funext fun y ↦ hf.apply_eq_of_preconnectedSpace y x
 
 theorem exists_eq_const [PreconnectedSpace X] [Nonempty Y] {f : X → Y} (hf : IsLocallyConstant f) :
     ∃ y, f = Function.const X y := by

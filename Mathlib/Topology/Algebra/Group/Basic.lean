@@ -1428,7 +1428,7 @@ instance (priority := 100) SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace 
   · intro n
     exact (Homeomorph.mulRight _).isCompact_preimage.mpr hLc
   · refine iUnion_eq_univ_iff.2 fun x ↦ ?_
-    obtain ⟨_, ⟨n, rfl⟩, hn⟩ : (range (denseSeq G) ∩ (fun y => x * y) ⁻¹' L).Nonempty := by
+    obtain ⟨_, ⟨n, rfl⟩, hn⟩ : (range (denseSeq G) ∩ (fun y ↦ x * y) ⁻¹' L).Nonempty := by
       rw [← (Homeomorph.mulLeft x).apply_symm_apply 1] at hL1
       exact (denseRange_denseSeq G).inter_nhds_nonempty
           ((Homeomorph.mulLeft x).continuous.continuousAt <| hL1)

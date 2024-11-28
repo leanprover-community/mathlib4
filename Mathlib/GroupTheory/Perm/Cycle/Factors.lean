@@ -53,7 +53,7 @@ theorem cycleOf_apply (f : Perm α) [DecidableRel f.SameCycle] (x y : α) :
 
 theorem cycleOf_inv (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     (cycleOf f x)⁻¹ = cycleOf f⁻¹ x :=
-  Equiv.ext fun y => by
+  Equiv.ext fun y ↦ by
     rw [inv_eq_iff_eq, cycleOf_apply, cycleOf_apply]
     split_ifs <;> simp_all [sameCycle_inv, sameCycle_inv_apply_right]
 

@@ -50,7 +50,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t))
     (s' : Finset { x' : ι | x' ≠ x }) : #s' ≤ #(s'.biUnion fun x' => (t x').erase a) := by
   haveI := Classical.decEq ι
-  specialize ha (s'.image fun z => z.1)
+  specialize ha (s'.image fun z ↦ z.1)
   rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases he : s'.Nonempty
   · have ha' : #s' < #(s'.biUnion fun x ↦ t x) := by
@@ -104,7 +104,7 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
 
   rcases ih t' card_ι'.le (hall_cond_of_erase y ha) with ⟨f', hfinj, hfr⟩
   -- Extend the resulting function.
-  refine ⟨fun z => if h : z = x then y else f' ⟨z, h⟩, ?_, ?_⟩
+  refine ⟨fun z ↦ if h : z = x then y else f' ⟨z, h⟩, ?_, ?_⟩
   · rintro z₁ z₂
     have key : ∀ {x}, y ≠ f' x := by
       intro x h
@@ -123,7 +123,7 @@ theorem hall_cond_of_restrict {ι : Type u} {t : ι → Finset α} {s : Finset �
     #s' ≤ #(s'.biUnion fun a' => t a') := by
   classical
     rw [← card_image_of_injective s' Subtype.coe_injective]
-    convert ht (s'.image fun z => z.1) using 1
+    convert ht (s'.image fun z ↦ z.1) using 1
     apply congr_arg
     ext y
     simp
@@ -132,12 +132,12 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     (hus : #s = #(s.biUnion t)) (ht : ∀ s : Finset ι, #s ≤ #(s.biUnion t))
     (s' : Finset (sᶜ : Set ι)) : #s' ≤ #(s'.biUnion fun x' => t x' \ s.biUnion t) := by
   haveI := Classical.decEq ι
-  have disj : Disjoint s (s'.image fun z => z.1) := by
+  have disj : Disjoint s (s'.image fun z ↦ z.1) := by
     simp only [disjoint_left, not_exists, mem_image, exists_prop, SetCoe.exists, exists_and_right,
       exists_eq_right, Subtype.coe_mk]
     intro x hx hc _
     exact absurd hx hc
-  have : #s' = #(s ∪ s'.image fun z => z.1) - #s := by
+  have : #s' = #(s ∪ s'.image fun z ↦ z.1) - #s := by
     simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
   refine (Nat.sub_le_sub_right (ht _) _).trans ?_

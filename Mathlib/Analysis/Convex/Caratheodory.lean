@@ -57,14 +57,14 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
   clear h
   let s := {z ∈ t | 0 < g z}
   obtain ⟨i₀, mem, w⟩ : ∃ i₀ ∈ s, ∀ i ∈ s, f i₀ / g i₀ ≤ f i / g i := by
-    apply s.exists_min_image fun z => f z / g z
+    apply s.exists_min_image fun z ↦ f z / g z
     obtain ⟨x, hx, hgx⟩ : ∃ x ∈ t, 0 < g x := gpos
     exact ⟨x, mem_filter.mpr ⟨hx, hgx⟩⟩
   have hg : 0 < g i₀ := by
     rw [mem_filter] at mem
     exact mem.2
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
-  let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
+  let k : E → 𝕜 := fun z ↦ f z - f i₀ / g i₀ * g z
   have hk : k i₀ = 0 := by field_simp [k, ne_of_gt hg]
   have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
     calc

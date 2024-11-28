@@ -567,7 +567,7 @@ theorem image_mk_segment_left (x₁ x₂ : E) (y : F) :
   simp [Convex.combo_self ha.2.2]
 
 theorem image_mk_segment_right (x : E) (y₁ y₂ : F) :
-    (fun y => (x, y)) '' [y₁ -[𝕜] y₂] = [(x, y₁) -[𝕜] (x, y₂)] := by
+    (fun y ↦ (x, y)) '' [y₁ -[𝕜] y₂] = [(x, y₁) -[𝕜] (x, y₂)] := by
   rw [segment_eq_image₂, segment_eq_image₂, image_image]
   refine EqOn.image_eq fun a ha ↦ ?_
   simp [Convex.combo_self ha.2.2]
@@ -580,7 +580,7 @@ theorem image_mk_openSegment_left (x₁ x₂ : E) (y : F) :
 
 @[simp]
 theorem image_mk_openSegment_right (x : E) (y₁ y₂ : F) :
-    (fun y => (x, y)) '' openSegment 𝕜 y₁ y₂ = openSegment 𝕜 (x, y₁) (x, y₂) := by
+    (fun y ↦ (x, y)) '' openSegment 𝕜 y₁ y₂ = openSegment 𝕜 (x, y₁) (x, y₂) := by
   rw [openSegment_eq_image₂, openSegment_eq_image₂, image_image]
   refine EqOn.image_eq fun a ha ↦ ?_
   simp [Convex.combo_self ha.2.2]

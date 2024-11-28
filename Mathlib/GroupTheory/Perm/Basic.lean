@@ -455,7 +455,7 @@ theorem swap_mul_self (i j : α) : swap i j * swap i j = 1 :=
   swap_swap i j
 
 theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap (f⁻¹ x) (f⁻¹ y) :=
-  Equiv.ext fun z => by
+  Equiv.ext fun z ↦ by
     simp only [Perm.mul_apply, swap_apply_def]
     split_ifs <;>
       simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, eq_self_iff_true, not_true]

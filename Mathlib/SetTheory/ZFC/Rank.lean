@@ -72,7 +72,7 @@ theorem rank_insert : rank (insert x y) = max (succ (rank x)) (rank y) := by
     · simp [rank_lt_of_mem h]
   · apply max_le
     · exact (rank_lt_of_mem (mem_insert x y)).succ_le
-    · exact rank_mono (subset_iff.2 fun z => mem_insert_of_mem x)
+    · exact rank_mono (subset_iff.2 fun z ↦ mem_insert_of_mem x)
 
 @[simp]
 theorem rank_singleton : rank {x} = succ (rank x) :=

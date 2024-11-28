@@ -123,7 +123,7 @@ instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSu
 instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GRing fun i => A i :=
   { SetLike.gsemiring A with
-    intCast := fun z => ⟨z, SetLike.intCast_mem_graded _ _⟩
+    intCast := fun z ↦ ⟨z, SetLike.intCast_mem_graded _ _⟩
     intCast_ofNat := fun _n => Subtype.ext <| Int.cast_natCast _
     intCast_negSucc_ofNat := fun n => Subtype.ext <| Int.cast_negSucc n }
 

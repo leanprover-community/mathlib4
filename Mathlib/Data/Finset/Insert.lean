@@ -538,7 +538,7 @@ lemma Nonempty.exists_cons_eq {α} {s : Finset α} (hs : s.Nonempty) : ∃ t a h
 def subtypeInsertEquivOption {t : Finset α} {x : α} (h : x ∉ t) :
     { i // i ∈ insert x t } ≃ Option { i // i ∈ t } where
   toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert.mp y.2).resolve_left h⟩
-  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z => ⟨z, mem_insert_of_mem z.2⟩
+  invFun y := (y.elim ⟨x, mem_insert_self _ _⟩) fun z ↦ ⟨z, mem_insert_of_mem z.2⟩
   left_inv y := by
     by_cases h : ↑y = x
     · simp only [Subtype.ext_iff, h, Option.elim, dif_pos, Subtype.coe_mk]

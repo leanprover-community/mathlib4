@@ -12,7 +12,7 @@ import Mathlib.Analysis.Normed.Group.NullSubmodule
 
 We consider an inner product space `E` over `𝕜`, which is either `ℝ` or `ℂ`. We define
 `toDualMap`, a conjugate-linear isometric embedding of `E` into its dual, which maps an element
-`x` of the space to `fun y => ⟪x, y⟫`.
+`x` of the space to `fun y ↦ ⟪x, y⟫`.
 
 Under the hypothesis of completeness (i.e., for Hilbert spaces), we upgrade this to `toDual`, a
 conjugate-linear isometric *equivalence* of `E` onto its dual; that is, we establish the
@@ -56,7 +56,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 local postfix:90 "†" => starRingEnd _
 
 /-- An element `x` of an inner product space `E` induces an element of the dual space `Dual 𝕜 E`,
-the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric embedding of `E`
+the map `fun y ↦ ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric embedding of `E`
 into `Dual 𝕜 E`.
 If `E` is complete, this operation is surjective, hence a conjugate-linear isometric equivalence;
 see `toDual`.

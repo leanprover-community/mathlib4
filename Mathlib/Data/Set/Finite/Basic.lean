@@ -957,7 +957,7 @@ is finite. -/
 lemma Finite.of_forall_not_lt_lt (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) : Finite α := by
   nontriviality α
   rcases exists_pair_ne α with ⟨x, y, hne⟩
-  refine @Finite.of_fintype α ⟨{x, y}, fun z => ?_⟩
+  refine @Finite.of_fintype α ⟨{x, y}, fun z ↦ ?_⟩
   simpa [hne] using eq_or_eq_or_eq_of_forall_not_lt_lt h z x y
 
 /-- If a set `s` does not contain any triple of elements `x < y < z`, then `s` is finite. -/

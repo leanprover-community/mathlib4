@@ -165,7 +165,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
     (Hc : ContinuousOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
     (Hd : ∀ x ∈ Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im) \ s,
       HasFDerivAt f (f' x) x)
-    (Hi : IntegrableOn (fun z => I • f' z 1 - f' z I) ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
+    (Hi : IntegrableOn (fun z ↦ I • f' z 1 - f' z I) ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I)) +
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
       I • ∫ y : ℝ in z.im..w.im, f (re z + y * I) =
@@ -209,7 +209,7 @@ theorem integral_boundary_rect_of_continuousOn_of_hasFDerivAt_real (f : ℂ → 
     (z w : ℂ) (Hc : ContinuousOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
     (Hd : ∀ x ∈ Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im),
       HasFDerivAt f (f' x) x)
-    (Hi : IntegrableOn (fun z => I • f' z 1 - f' z I) ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
+    (Hi : IntegrableOn (fun z ↦ I • f' z 1 - f' z I) ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I)) +
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
       I • (∫ y : ℝ in z.im..w.im, f (re z + y * I)) =
@@ -224,7 +224,7 @@ $2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\part
 over the rectangle. -/
 theorem integral_boundary_rect_of_differentiableOn_real (f : ℂ → E) (z w : ℂ)
     (Hd : DifferentiableOn ℝ f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
-    (Hi : IntegrableOn (fun z => I • fderiv ℝ f z 1 - fderiv ℝ f z I)
+    (Hi : IntegrableOn (fun z ↦ I • fderiv ℝ f z 1 - fderiv ℝ f z I)
       ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I)) +
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
@@ -249,7 +249,7 @@ theorem integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : �
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
       I • (∫ y : ℝ in z.im..w.im, f (re z + y * I)) = 0 := by
   refine (integral_boundary_rect_of_hasFDerivAt_real_off_countable f
-    (fun z => (fderiv ℂ f z).restrictScalars ℝ) z w s hs Hc
+    (fun z ↦ (fderiv ℂ f z).restrictScalars ℝ) z w s hs Hc
     (fun x hx => (Hd x hx).hasFDerivAt.restrictScalars ℝ) ?_).trans ?_ <;>
       simp [← ContinuousLinearMap.map_smul]
 
@@ -365,7 +365,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       · simp [hr0.ne']
     _ = ‖∮ z in C(c, r), (z - c)⁻¹ • (f z - y)‖ := by
       simp only [smul_sub]
-      have hc' : ContinuousOn (fun z => (z - c)⁻¹) (sphere c r) :=
+      have hc' : ContinuousOn (fun z ↦ (z - c)⁻¹) (sphere c r) :=
         (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hzne _ hz
       rw [circleIntegral.integral_sub] <;> refine (hc'.smul ?_).circleIntegrable hr0.le
       · exact hc.mono <| subset_inter
@@ -424,11 +424,11 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux {R : 
       (hd _ (diff_subset_diff_right (subset_insert _ _) hz))
   have HI := circleIntegral_eq_zero_of_differentiable_on_off_countable hR.le hws hcF hdF
   have hne : ∀ z ∈ sphere c R, z ≠ w := fun z hz => ne_of_mem_of_not_mem hz (ne_of_lt hw.1)
-  have hFeq : EqOn F (fun z => (z - w)⁻¹ • f z - (z - w)⁻¹ • f w) (sphere c R) := fun z hz ↦
+  have hFeq : EqOn F (fun z ↦ (z - w)⁻¹ • f z - (z - w)⁻¹ • f w) (sphere c R) := fun z hz ↦
     calc
       F z = (z - w)⁻¹ • (f z - f w) := update_noteq (hne z hz) _ _
       _ = (z - w)⁻¹ • f z - (z - w)⁻¹ • f w := smul_sub _ _ _
-  have hc' : ContinuousOn (fun z => (z - w)⁻¹) (sphere c R) :=
+  have hc' : ContinuousOn (fun z ↦ (z - w)⁻¹) (sphere c R) :=
     (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hne z hz
   rw [← circleIntegral.integral_sub_inv_of_mem_ball hw.1, ← circleIntegral.integral_smul_const, ←
     sub_eq_zero, ← circleIntegral.integral_sub, ← circleIntegral.integral_congr hR.le hFeq, HI]

@@ -188,7 +188,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
-  { toFun := fun z => exp z.toAdd,
+  { toFun := fun z ↦ exp z.toAdd,
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 

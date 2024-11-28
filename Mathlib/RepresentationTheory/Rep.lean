@@ -271,7 +271,7 @@ variable {k G}
 noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
   hom := Finsupp.lift _ _ _ fun g => A.ρ g x
   comm g := by
-    refine Finsupp.lhom_ext' fun y => LinearMap.ext_ring ?_
+    refine Finsupp.lhom_ext' fun y ↦ LinearMap.ext_ring ?_
 /- Porting note: rest of broken proof was
     simpa only [LinearMap.comp_apply, ModuleCat.comp_def, Finsupp.lsingle_apply, Finsupp.lift_apply,
       Action_ρ_eq_ρ, of_ρ_apply, Representation.ofMulAction_single, Finsupp.sum_single_index,
@@ -333,7 +333,7 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
     { hom := ModuleCat.asHom (LinearMap.llcomp k _ _ _ f.hom)
-      comm := fun g => LinearMap.ext fun x ↦ LinearMap.ext fun y => by
+      comm := fun g => LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ by
         show f.hom (X.ρ g _) = _
         simp only [hom_comm_apply]; rfl }
   map_id := fun _ => by ext; rfl
@@ -350,7 +350,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
       comm := fun g => by
-        refine LinearMap.ext fun x ↦ LinearMap.ext fun y => ?_
+        refine LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ ?_
         change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
         rw [← hom_comm_apply]
         change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)

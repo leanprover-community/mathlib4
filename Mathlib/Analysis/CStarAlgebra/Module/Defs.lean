@@ -117,7 +117,7 @@ lemma inner_smul_right_real {z : ℝ} {x y : E} : ⟪x, z • y⟫ = z • ⟪x,
 
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a sesquilinear map. -/
 def innerₛₗ : E →ₗ⋆[ℂ] E →ₗ[ℂ] A where
-  toFun x := { toFun := fun y => ⟪x, y⟫
+  toFun x := { toFun := fun y ↦ ⟪x, y⟫
                map_add' := fun z y => by simp
                map_smul' := fun z y => by simp }
   map_add' z y := by ext; simp

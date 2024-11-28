@@ -669,7 +669,7 @@ theorem map.mk : map f (mk L) = mk (L.map fun x ↦ (f x.1, x.2)) :=
 theorem map.id (x : FreeGroup α) : map id x = x := by rcases x with ⟨L⟩; simp [List.map_id']
 
 @[to_additive (attr := simp)]
-theorem map.id' (x : FreeGroup α) : map (fun z => z) x = x :=
+theorem map.id' (x : FreeGroup α) : map (fun z ↦ z) x = x :=
   map.id x
 
 @[to_additive]

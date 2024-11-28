@@ -506,7 +506,7 @@ theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (
   ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
 
 instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
-  fun z => z.recOnSubsingleton fun a ↦ decidable_of_iff' _ (isDiag_iff_proj_eq a)
+  fun z ↦ z.recOnSubsingleton fun a ↦ decidable_of_iff' _ (isDiag_iff_proj_eq a)
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
   contrapose! hd
@@ -558,7 +558,7 @@ theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r)
   other_ne (fromRel_irreflexive.mp irrefl hz) h
 
 instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
-    DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton fun _ => h _ _
+    DecidablePred (· ∈ Sym2.fromRel sym) := fun z ↦ z.recOnSubsingleton fun _ => h _ _
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symmetric`). -/
@@ -575,7 +575,7 @@ theorem toRel_fromRel (sym : Symmetric r) : ToRel (fromRel sym) = r :=
   rfl
 
 theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
-  Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
+  Set.ext fun z ↦ Sym2.ind (fun _ _ => Iff.rfl) z
 
 end Relations
 

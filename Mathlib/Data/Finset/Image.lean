@@ -430,7 +430,7 @@ theorem filter_image {p : β → Prop} [DecidablePred p] :
 
 @[deprecated filter_mem_eq_inter (since := "2024-09-15")]
 theorem filter_mem_image_eq_image (f : α → β) (s : Finset α) (t : Finset β) (h : ∀ x ∈ s, f x ∈ t) :
-    (t.filter fun y => y ∈ s.image f) = s.image f := by
+    (t.filter fun y ↦ y ∈ s.image f) = s.image f := by
   rwa [filter_mem_eq_inter, inter_eq_right, image_subset_iff]
 
 theorem fiber_nonempty_iff_mem_image {y : β} : (s.filter (f · = y)).Nonempty ↔ y ∈ s.image f := by
@@ -717,7 +717,7 @@ theorem subset_set_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : 
     rw [coe_image]
     exact Set.image_subset f ht
   intro h
-  letI : CanLift β s (f ∘ (↑)) fun y => y ∈ f '' s := ⟨fun y ⟨x, hxt, hy⟩ => ⟨⟨x, hxt⟩, hy⟩⟩
+  letI : CanLift β s (f ∘ (↑)) fun y ↦ y ∈ f '' s := ⟨fun y ⟨x, hxt, hy⟩ => ⟨⟨x, hxt⟩, hy⟩⟩
   lift t to Finset s using h
   refine ⟨t.map (Embedding.subtype _), map_subtype_subset _, ?_⟩
   ext y; simp

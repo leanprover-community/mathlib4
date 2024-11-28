@@ -567,7 +567,7 @@ theorem eq_univ_of_forall {s : Set α} : (∀ x, x ∈ s) → s = univ :=
 
 theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
-  exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
+  exact eq_univ_of_forall fun y ↦ by rwa [Subsingleton.elim y x]
 
 theorem eq_univ_of_subset {s t : Set α} (h : s ⊆ t) (hs : s = univ) : t = univ :=
   eq_univ_of_univ_subset <| (hs ▸ h : univ ⊆ t)
@@ -992,7 +992,7 @@ def subtypeInsertEquivOption
     [DecidableEq α] {t : Set α} {x : α} (h : x ∉ t) :
     { i // i ∈ insert x t } ≃ Option { i // i ∈ t } where
   toFun y := if h : ↑y = x then none else some ⟨y, (mem_insert_iff.mp y.2).resolve_left h⟩
-  invFun y := (y.elim ⟨x, mem_insert _ _⟩) fun z => ⟨z, mem_insert_of_mem _ z.2⟩
+  invFun y := (y.elim ⟨x, mem_insert _ _⟩) fun z ↦ ⟨z, mem_insert_of_mem _ z.2⟩
   left_inv y := by
     by_cases h : ↑y = x
     · simp only [Subtype.ext_iff, h, Option.elim, dif_pos, Subtype.coe_mk]
@@ -2034,7 +2034,7 @@ namespace Subsingleton
 variable {α : Type*} [Subsingleton α]
 
 theorem eq_univ_of_nonempty {s : Set α} : s.Nonempty → s = univ := fun ⟨x, hx⟩ =>
-  eq_univ_of_forall fun y => Subsingleton.elim x y ▸ hx
+  eq_univ_of_forall fun y ↦ Subsingleton.elim x y ▸ hx
 
 @[elab_as_elim]
 theorem set_cases {p : Set α → Prop} (h0 : p ∅) (h1 : p univ) (s) : p s :=

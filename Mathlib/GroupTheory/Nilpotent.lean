@@ -142,7 +142,7 @@ theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
   simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep,
     Subgroup.mem_center_iff, mem_mk, mem_bot, Set.mem_setOf_eq]
-  exact forall_congr' fun y => by rw [mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
+  exact forall_congr' fun y ↦ by rw [mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
 
 variable {G}
 
@@ -211,7 +211,7 @@ theorem ascending_central_series_le_upper (H : ℕ → Subgroup G) (hH : IsAscen
   | n + 1 => by
     intro x hx
     rw [mem_upperCentralSeries_succ_iff]
-    exact fun y => ascending_central_series_le_upper H hH n (hH.2 x n hx y)
+    exact fun y ↦ ascending_central_series_le_upper H hH n (hH.2 x n hx y)
 
 variable (G)
 

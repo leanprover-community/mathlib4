@@ -329,7 +329,7 @@ theorem comp_mul_le (f g : F →* E) : p.comp (f * g) ≤ p.comp f + p.comp g :=
 
 @[to_additive]
 theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
-    BddBelow (range fun y => p y + q (x / y)) :=
+    BddBelow (range fun y ↦ p y + q (x / y)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
@@ -517,7 +517,7 @@ section AddCommGroup
 variable [AddCommGroup E]
 
 theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
-    BddBelow (range fun y => p y + q (x - y)) :=
+    BddBelow (range fun y ↦ p y + q (x - y)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp

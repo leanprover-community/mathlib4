@@ -362,7 +362,7 @@ theorem id_continuous' : Continuous' (@id α) :=
 
 @[deprecated ωScottContinuous.const (since := "2024-05-29")]
 theorem continuous_const (x : β) : Continuous (OrderHom.const α x) := fun c =>
-  eq_of_forall_ge_iff fun z => by rw [ωSup_le_iff, Chain.map_coe, OrderHom.const_coe_coe]; simp
+  eq_of_forall_ge_iff fun z ↦ by rw [ωSup_le_iff, Chain.map_coe, OrderHom.const_coe_coe]; simp
 
 @[deprecated ωScottContinuous.const (since := "2024-05-29")]
 theorem const_continuous' (x : β) : Continuous' (Function.const α x) :=
@@ -640,7 +640,7 @@ set_option linter.deprecated false
 @[deprecated ωScottContinuous.inf (since := "2024-05-29")]
 theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g) :
     Continuous (f ⊓ g) := by
-  refine fun c ↦ eq_of_forall_ge_iff fun z => ?_
+  refine fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_
   simp only [inf_le_iff, hf c, hg c, ωSup_le_iff, ← forall_or_left, ← forall_or_right,
              Chain.map_coe, OrderHom.coe_inf, Pi.inf_apply, Function.comp]
   exact ⟨fun h _ ↦ h _ _, fun h i j ↦

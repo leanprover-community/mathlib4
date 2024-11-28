@@ -41,7 +41,7 @@ theorem Measurable.ceil [OpensMeasurableSpace R] {f : α → R} (hf : Measurable
 theorem measurable_fract [BorelSpace R] : Measurable (Int.fract : R → R) := by
   intro s hs
   rw [Int.preimage_fract]
-  exact MeasurableSet.iUnion fun z => measurable_id.sub_const _ (hs.inter measurableSet_Ico)
+  exact MeasurableSet.iUnion fun z ↦ measurable_id.sub_const _ (hs.inter measurableSet_Ico)
 
 @[measurability]
 theorem Measurable.fract [BorelSpace R] {f : α → R} (hf : Measurable f) :

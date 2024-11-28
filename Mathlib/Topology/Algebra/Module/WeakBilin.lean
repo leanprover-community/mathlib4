@@ -152,7 +152,7 @@ continuous. -/
 instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B) where
   toContinuousAdd := by infer_instance
   continuous_neg := by
-    refine continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => ?_)
+    refine continuous_induced_rng.2 (continuous_pi_iff.mpr fun y ↦ ?_)
     refine cast (congr_arg _ ?_) (eval_continuous B (-y))
     ext x
     simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]

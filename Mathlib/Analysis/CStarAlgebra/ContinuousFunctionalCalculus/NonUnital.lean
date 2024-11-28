@@ -364,7 +364,7 @@ lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf0 : ∀ i ∈ s, f i 0 = 0 := by cfc_zero_tac) :
     cfcₙ (∑ i in s, f i) a = ∑ i in s, cfcₙ (f i) a := by
   by_cases ha : p a
-  · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
+  · have hsum : s.sum f = fun z ↦ ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
       rw [sum_coe_sort s, hsum]
       exact continuousOn_finset_sum s fun i hi => hf i hi

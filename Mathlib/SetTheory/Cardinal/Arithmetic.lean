@@ -701,7 +701,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
     apply mk_range_le
   rintro ⟨s, ⟨g⟩⟩
   classical
-  use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val
+  use fun y ↦ if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val
                else Sum.inr (ULift.up 0)
   apply Subtype.eq; ext x
   constructor

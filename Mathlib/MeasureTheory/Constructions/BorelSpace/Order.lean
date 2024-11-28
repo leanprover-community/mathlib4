@@ -514,7 +514,7 @@ theorem measurable_of_Iio {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
 
 theorem UpperSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : UpperSemicontinuous f) : Measurable f :=
-  measurable_of_Iio fun y => (hf.isOpen_preimage y).measurableSet
+  measurable_of_Iio fun y ↦ (hf.isOpen_preimage y).measurableSet
 
 theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Ioi x)) : Measurable f := by
   convert measurable_generateFrom (α := δ) _
@@ -523,7 +523,7 @@ theorem measurable_of_Ioi {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
 
 theorem LowerSemicontinuous.measurable [TopologicalSpace δ] [OpensMeasurableSpace δ] {f : δ → α}
     (hf : LowerSemicontinuous f) : Measurable f :=
-  measurable_of_Ioi fun y => (hf.isOpen_preimage y).measurableSet
+  measurable_of_Ioi fun y ↦ (hf.isOpen_preimage y).measurableSet
 
 theorem measurable_of_Iic {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' Iic x)) : Measurable f := by
   apply measurable_of_Ioi

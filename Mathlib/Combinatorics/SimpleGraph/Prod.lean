@@ -193,7 +193,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
   Fintype.ofEquiv
     ((G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2) <|
         Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _)
-    ((Equiv.refl _).subtypeEquiv fun y => by
+    ((Equiv.refl _).subtypeEquiv fun y ↦ by
       simp_rw [Finset.mem_disjUnion, Finset.mem_product, Finset.mem_singleton, mem_neighborFinset,
         mem_neighborSet, Equiv.refl_apply, boxProd_adj]
       simp only [eq_comm, and_comm])

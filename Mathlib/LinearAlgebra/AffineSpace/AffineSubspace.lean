@@ -653,7 +653,7 @@ theorem mem_affineSpan_singleton : p₁ ∈ affineSpan k ({p₂} : Set P) ↔ p�
 @[simp]
 theorem preimage_coe_affineSpan_singleton (x : P) :
     ((↑) : affineSpan k ({x} : Set P) → P) ⁻¹' {x} = univ :=
-  eq_univ_of_forall fun y => (AffineSubspace.mem_affineSpan_singleton _ _).1 y.2
+  eq_univ_of_forall fun y ↦ (AffineSubspace.mem_affineSpan_singleton _ _).1 y.2
 
 /-- The span of a union of sets is the sup of their spans. -/
 theorem span_union (s t : Set P) : affineSpan k (s ∪ t) = affineSpan k s ⊔ affineSpan k t :=
@@ -1092,7 +1092,7 @@ theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → P
     {x : P} (h : x ∈ affineSpan k s) : p x h := by
   refine Exists.elim ?_ fun (hx : x ∈ affineSpan k s) (hc : p x hx) => hc
   -- Porting note: Lean couldn't infer the motive
-  refine affineSpan_induction (p := fun y => ∃ z, p y z) h ?_ ?_
+  refine affineSpan_induction (p := fun y ↦ ∃ z, p y z) h ?_ ?_
   · exact fun y hy => ⟨subset_affineSpan _ _ hy, mem y hy⟩
   · exact fun c u v w hu hv hw =>
       Exists.elim hu fun hu' hu =>

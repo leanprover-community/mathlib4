@@ -59,7 +59,7 @@ noncomputable def _root_.Complex.abs : AbsoluteValue ℂ ℝ where
 
 end AbsTheory
 
-theorem abs_def : (Complex.abs : ℂ → ℝ) = fun z => (normSq z).sqrt :=
+theorem abs_def : (Complex.abs : ℂ → ℝ) = fun z ↦ (normSq z).sqrt :=
   rfl
 
 theorem abs_apply {z : ℂ} : Complex.abs z = (normSq z).sqrt :=

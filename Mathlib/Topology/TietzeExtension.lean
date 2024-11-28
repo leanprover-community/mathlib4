@@ -191,7 +191,7 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : IsClosedEmb
     rwa [Iic_disjoint_Ici, not_le]
   rcases exists_bounded_mem_Icc_of_closed_of_le hc₁ hc₂ hd hf3.le with ⟨g, hg₁, hg₂, hgf⟩
   refine ⟨g, ?_, ?_⟩
-  · refine (norm_le <| div_nonneg hf.le h3.le).mpr fun y => ?_
+  · refine (norm_le <| div_nonneg hf.le h3.le).mpr fun y ↦ ?_
     simpa [abs_le, neg_div] using hgf y
   · refine (dist_le <| mul_nonneg h23.le hf.le).mpr fun x ↦ ?_
     have hfx : -‖f‖ ≤ f x ∧ f x ≤ ‖f‖ := by
@@ -300,7 +300,7 @@ theorem exists_extension_forall_mem_Icc_of_isClosedEmbedding (f : X →ᵇ ℝ) 
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ Icc a b) ∧ g ∘ e = f := by
   rcases exists_extension_norm_eq_of_isClosedEmbedding (f - const X ((a + b) / 2)) he with
     ⟨g, hgf, hge⟩
-  refine ⟨const Y ((a + b) / 2) + g, fun y => ?_, ?_⟩
+  refine ⟨const Y ((a + b) / 2) + g, fun y ↦ ?_, ?_⟩
   · suffices ‖f - const X ((a + b) / 2)‖ ≤ (b - a) / 2 by
       simpa [Real.Icc_eq_closedBall, add_mem_closedBall_iff_norm] using
         (norm_coe_le_norm g y).trans (hgf.trans_le this)
@@ -349,7 +349,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
     rcases exists_extension_forall_mem_Icc_of_isClosedEmbedding f hmem hle he with ⟨g, hg_mem, hgf⟩
     -- If `a ∈ range f`, then we are done.
     rcases em (∃ x, f x = a) with (⟨x, rfl⟩ | ha')
-    · exact ⟨g, fun y => ⟨x, hg_mem _⟩, hgf⟩
+    · exact ⟨g, fun y ↦ ⟨x, hg_mem _⟩, hgf⟩
     /- Otherwise, `g ⁻¹' {a}` is disjoint with `range e ∪ g ⁻¹' (Ici c)`, hence there exists a
         function `dg : Y → ℝ` such that `dg ∘ e = 0`, `dg y = 0` whenever `c ≤ g y`, `dg y = c - a`
         whenever `g y = a`, and `0 ≤ dg y ≤ c - a` for all `y`. -/
@@ -366,7 +366,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
     replace hgf : ∀ x, (g + dg) (e x) = f x := by
       intro x
       simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
-    refine ⟨g + dg, fun y => ?_, funext hgf⟩
+    refine ⟨g + dg, fun y ↦ ?_, funext hgf⟩
     have hay : a < (g + dg) y := by
       rcases (hg_mem y).1.eq_or_lt with (rfl | hlt)
       · refine (lt_add_iff_pos_right _).2 ?_
@@ -385,7 +385,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
     minor modifications that make it hard to deduplicate code. -/
   choose xl hxl hgb using hg_mem
   rcases em (∃ x, f x = b) with (⟨x, rfl⟩ | hb')
-  · exact ⟨g, fun y => ⟨xl y, x, hxl y, hgb y⟩, hgf⟩
+  · exact ⟨g, fun y ↦ ⟨xl y, x, hxl y, hgb y⟩, hgf⟩
   have hd : Disjoint (range e ∪ g ⁻¹' Iic c) (g ⁻¹' {b}) := by
     refine disjoint_union_left.2 ⟨?_, Disjoint.preimage _ ?_⟩
     · rw [Set.disjoint_left]
@@ -399,7 +399,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
   replace hgf : ∀ x, (g - dg) (e x) = f x := by
     intro x
     simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
-  refine ⟨g - dg, fun y => ?_, funext hgf⟩
+  refine ⟨g - dg, fun y ↦ ?_, funext hgf⟩
   have hyb : (g - dg) y < b := by
     rcases (hgb y).eq_or_lt with (rfl | hlt)
     · refine (sub_lt_self_iff _).2 ?_
@@ -442,7 +442,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : X →ᵇ ℝ) {t :
   · rcases hne with ⟨c, hc⟩
     exact ⟨const Y c, fun _ => hc, funext fun x ↦ isEmptyElim x⟩
   rcases exists_extension_forall_exists_le_ge_of_isClosedEmbedding f he with ⟨g, hg, hgf⟩
-  refine ⟨g, fun y => ?_, hgf⟩
+  refine ⟨g, fun y ↦ ?_, hgf⟩
   rcases hg y with ⟨xl, xu, h⟩
   exact hs.out (hf _) (hf _) h
 
@@ -495,11 +495,11 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
   have hFt : ∀ x, F x ∈ t' := fun x ↦ mem_image_of_mem _ (hf x)
   rcases F.exists_extension_forall_mem_of_isClosedEmbedding hFt (hne.image _) he with ⟨G, hG, hGF⟩
   let g : C(Y, ℝ) :=
-    ⟨h.symm ∘ codRestrict G _ fun y => ht_sub (hG y),
+    ⟨h.symm ∘ codRestrict G _ fun y ↦ ht_sub (hG y),
       h.symm.continuous.comp <| G.continuous.subtype_mk _⟩
   have hgG : ∀ {y a}, g y = a ↔ G y = h a := @fun y a =>
     h.toEquiv.symm_apply_eq.trans Subtype.ext_iff
-  refine ⟨g, fun y => ?_, ?_⟩
+  refine ⟨g, fun y ↦ ?_, ?_⟩
   · rcases hG y with ⟨a, ha, hay⟩
     convert ha
     exact hgG.2 hay.symm

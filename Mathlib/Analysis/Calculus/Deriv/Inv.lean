@@ -49,7 +49,7 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
   rw [← sub_self (x * x)⁻¹]
   exact tendsto_const_nhds.sub ((continuous_mul.tendsto (x, x)).inv₀ <| mul_ne_zero hx hx)
 
-theorem hasDerivAt_inv (x_ne_zero : x ≠ 0) : HasDerivAt (fun y => y⁻¹) (-(x ^ 2)⁻¹) x :=
+theorem hasDerivAt_inv (x_ne_zero : x ≠ 0) : HasDerivAt (fun y ↦ y⁻¹) (-(x ^ 2)⁻¹) x :=
   (hasStrictDerivAt_inv x_ne_zero).hasDerivAt
 
 theorem hasDerivWithinAt_inv (x_ne_zero : x ≠ 0) (s : Set 𝕜) :
@@ -97,12 +97,12 @@ theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s 
 variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
-    HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) s x := by
+    HasDerivWithinAt (fun y ↦ (c y)⁻¹) (-c' / c x ^ 2) s x := by
   convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
   field_simp
 
 theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
-    HasDerivAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) x := by
+    HasDerivAt (fun y ↦ (c y)⁻¹) (-c' / c x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.inv hx
 
@@ -126,21 +126,21 @@ variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 �
 
 theorem HasDerivWithinAt.div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x)
     (hx : d x ≠ 0) :
-    HasDerivWithinAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) s x := by
+    HasDerivWithinAt (fun y ↦ c y / d y) ((c' * d x - c x * d') / d x ^ 2) s x := by
   convert hc.mul ((hasDerivAt_inv hx).comp_hasDerivWithinAt x hd) using 1
   · simp only [div_eq_mul_inv, (· ∘ ·)]
   · field_simp
     ring
 
 theorem HasStrictDerivAt.div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x)
-    (hx : d x ≠ 0) : HasStrictDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
+    (hx : d x ≠ 0) : HasStrictDerivAt (fun y ↦ c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   convert hc.mul ((hasStrictDerivAt_inv hx).comp x hd) using 1
   · simp only [div_eq_mul_inv, (· ∘ ·)]
   · field_simp
     ring
 
 theorem HasDerivAt.div (hc : HasDerivAt c c' x) (hd : HasDerivAt d d' x) (hx : d x ≠ 0) :
-    HasDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
+    HasDerivAt (fun y ↦ c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.div hd hx
 

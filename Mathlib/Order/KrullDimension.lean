@@ -476,7 +476,7 @@ lemma coheight_eq_coe_iff {x : α} {n : ℕ} :
 
 /-- The elements of finite height `n` are the minimial elements among those of height `≥ n`. -/
 lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
-    height a = n ↔ Minimal (fun y => n ≤ height y) a := by
+    height a = n ↔ Minimal (fun y ↦ n ≤ height y) a := by
   by_cases hfin : height a < ⊤
   · cases hn : n with
     | zero => simp
@@ -491,7 +491,7 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
 
 /-- The elements of finite coheight `n` are the maximal elements among those of coheight `≥ n`. -/
 lemma coheight_eq_coe_iff_maximal_le_coheight {a : α} {n : ℕ} :
-    coheight a = n ↔ Maximal (fun y => n ≤ coheight y) a :=
+    coheight a = n ↔ Maximal (fun y ↦ n ≤ coheight y) a :=
   height_eq_coe_iff_minimal_le_height (α := αᵒᵈ)
 
 end height

@@ -295,7 +295,7 @@ theorem Continuous.exists_forall_le' [ClosedIicTopology α] {f : β → α} (hf 
     (x₀ : β) (h : ∀ᶠ x in cocompact β, f x₀ ≤ f x) : ∃ x : β, ∀ y : β, f x ≤ f y :=
   let ⟨x, _, hx⟩ := hf.continuousOn.exists_isMinOn' isClosed_univ (mem_univ x₀)
     (by rwa [principal_univ, inf_top_eq])
-  ⟨x, fun y => hx (mem_univ y)⟩
+  ⟨x, fun y ↦ hx (mem_univ y)⟩
 
 /-- The **extreme value theorem**: if a continuous function `f` is smaller than a value in its range
 away from compact sets, then it has a global maximum. -/
@@ -506,7 +506,7 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
   intro x
   obtain ⟨y, hyK, h2y, hy⟩ :=
     hK.exists_sSup_image_eq_and_ge h0K
-      (show Continuous fun y => f x y from hf.comp <| Continuous.Prod.mk x).continuousOn
+      (show Continuous fun y ↦ f x y from hf.comp <| Continuous.Prod.mk x).continuousOn
   rw [ContinuousAt, h2y, tendsto_order]
   have := tendsto_order.mp ((show Continuous fun x ↦ f x y
     from hf.comp <| continuous_id.prod_mk continuous_const).tendsto x)

@@ -447,7 +447,7 @@ variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [NontriviallyNormedField �
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/
 theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
     (hf' : UniformCauchySeqOnFilter f' l l') :
-    UniformCauchySeqOnFilter (fun n => fun z => (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l l' := by
+    UniformCauchySeqOnFilter (fun n => fun z ↦ (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l l' := by
   -- The tricky part of this proof is that operator norms are written in terms of `≤` whereas
   -- metrics are written in terms of `<`. So we need to shrink `ε` utilizing the archimedean
   -- property of `ℝ`
@@ -480,7 +480,7 @@ theorem uniformCauchySeqOn_ball_of_deriv {r : ℝ} (hf' : UniformCauchySeqOn f' 
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf
   rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter] at hf'
   have hf' :
-    UniformCauchySeqOn (fun n => fun z => (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l
+    UniformCauchySeqOn (fun n => fun z ↦ (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l
       (Metric.ball x r) := by
     rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter]
     exact hf'.one_smulRight

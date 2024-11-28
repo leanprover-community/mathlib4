@@ -685,7 +685,7 @@ theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
     [AlgHomClass F R (adjoin R s) B] [StarHomClass F (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
   refine DFunLike.ext f g fun a =>
-    adjoin_induction_subtype (p := fun y => f y = g y) a (fun x hx => ?_) (fun r => ?_)
+    adjoin_induction_subtype (p := fun y ↦ f y = g y) a (fun x hx => ?_) (fun r => ?_)
     (fun x y hx hy => ?_) (fun x y hx hy => ?_) fun x hx => ?_
   · exact h ⟨x, subset_adjoin R s hx⟩ hx
   · simp only [AlgHomClass.commutes]

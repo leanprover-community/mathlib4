@@ -25,7 +25,7 @@ variable {𝕜 : Type*} {E : Type*} {F : Type*} [RCLike 𝕜] [AddCommGroup E] [
 @[ext]
 lemma ext_inner {A B : E →WOT[𝕜] F} (h : ∀ x y, ⟪y, A x⟫_𝕜 = ⟪y, B x⟫_𝕜) : A = B := by
   rw [ext_iff]
-  exact fun x ↦ ext_inner_left 𝕜 fun y => h x y
+  exact fun x ↦ ext_inner_left 𝕜 fun y ↦ h x y
 
 open Filter in
 /-- The defining property of the weak operator topology: a function `f` tends to

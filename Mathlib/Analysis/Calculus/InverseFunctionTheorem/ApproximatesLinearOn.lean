@@ -354,7 +354,7 @@ theorem to_inv (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c) (hc : Sub
     ApproximatesLinearOn (hf.toPartialEquiv hc).symm (f'.symm : F →L[𝕜] E) (f '' s)
       (N * (N⁻¹ - c)⁻¹ * c) := fun x hx y hy ↦ by
   set A := hf.toPartialEquiv hc
-  have Af : ∀ z, A z = f z := fun z => rfl
+  have Af : ∀ z, A z = f z := fun z ↦ rfl
   rcases (mem_image _ _ _).1 hx with ⟨x', x's, rfl⟩
   rcases (mem_image _ _ _).1 hy with ⟨y', y's, rfl⟩
   rw [← Af x', ← Af y', A.left_inv x's, A.left_inv y's]

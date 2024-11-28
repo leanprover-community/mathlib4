@@ -51,7 +51,7 @@ theorem opNorm_ext [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) (g : E 
       rw [h x]
       exact le_opNorm _ _)
     fun c hc h₂ =>
-    opNorm_le_bound _ hc fun z => by
+    opNorm_le_bound _ hc fun z ↦ by
       rw [← h z]
       exact h₂ z
 

@@ -345,7 +345,7 @@ section Constructions
 theorem measurable_to_countable [MeasurableSpace α] [Countable α] [MeasurableSpace β] {f : β → α}
     (h : ∀ y, MeasurableSet (f ⁻¹' {f y})) : Measurable f := fun s _ => by
   rw [← biUnion_preimage_singleton]
-  refine MeasurableSet.iUnion fun y => MeasurableSet.iUnion fun hy => ?_
+  refine MeasurableSet.iUnion fun y ↦ MeasurableSet.iUnion fun hy => ?_
   by_cases hyf : y ∈ range f
   · rcases hyf with ⟨y, rfl⟩
     apply h
@@ -353,7 +353,7 @@ theorem measurable_to_countable [MeasurableSpace α] [Countable α] [MeasurableS
 
 theorem measurable_to_countable' [MeasurableSpace α] [Countable α] [MeasurableSpace β] {f : β → α}
     (h : ∀ x, MeasurableSet (f ⁻¹' {x})) : Measurable f :=
-  measurable_to_countable fun y => h (f y)
+  measurable_to_countable fun y ↦ h (f y)
 
 theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞} :
     Measurable f ↔ ∀ n : ℕ, MeasurableSet (f ⁻¹' {↑n}) := by

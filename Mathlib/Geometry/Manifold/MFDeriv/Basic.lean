@@ -914,7 +914,7 @@ theorem HasMFDerivWithinAt.congr_of_eventuallyEq (h : HasMFDerivWithinAt I I' f 
       (extChartAt I x).symm ⁻¹' {y | f₁ y = f y} ∈
         𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x :=
       extChartAt_preimage_mem_nhdsWithin h₁
-    apply Filter.mem_of_superset this fun y => _
+    apply Filter.mem_of_superset this fun y ↦ _
     simp +contextual only [hx, mfld_simps]
   · simp only [hx, mfld_simps]
 

@@ -217,7 +217,7 @@ theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ :=
 variable {𝕜}
 
 theorem opNorm_lsmul_apply_le (x : 𝕜') : ‖(lsmul 𝕜 𝕜' x : E →L[𝕜] E)‖ ≤ ‖x‖ :=
-  ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y => norm_smul_le x y
+  ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y ↦ norm_smul_le x y
 
 @[deprecated (since := "2024-02-02")] alias op_norm_lsmul_apply_le := opNorm_lsmul_apply_le
 

@@ -120,12 +120,12 @@ theorem ergodic_zsmul {n : ℤ} (hn : 1 < |n|) : Ergodic fun y : AddCircle T => 
 theorem ergodic_nsmul {n : ℕ} (hn : 1 < n) : Ergodic fun y : AddCircle T => n • y :=
   ergodic_zsmul (by simp [hn] : 1 < |(n : ℤ)|)
 
-theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y => n • y + x := by
-  set f : AddCircle T → AddCircle T := fun y => n • y + x
+theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fun y ↦ n • y + x := by
+  set f : AddCircle T → AddCircle T := fun y ↦ n • y + x
   let e : AddCircle T ≃ᵐ AddCircle T := MeasurableEquiv.addLeft (DivisibleBy.div x <| n - 1)
   have he : MeasurePreserving e volume volume :=
     measurePreserving_add_left volume (DivisibleBy.div x <| n - 1)
-  suffices e ∘ f ∘ e.symm = fun y => n • y by
+  suffices e ∘ f ∘ e.symm = fun y ↦ n • y by
     rw [← he.ergodic_conjugate_iff, this]; exact ergodic_zsmul h
   replace h : n - 1 ≠ 0 := by
     rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
@@ -137,7 +137,7 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
     smul_add, zsmul_neg', neg_smul, neg_add_rev]
   abel
 
-theorem ergodic_nsmul_add (x : AddCircle T) {n : ℕ} (h : 1 < n) : Ergodic fun y => n • y + x :=
+theorem ergodic_nsmul_add (x : AddCircle T) {n : ℕ} (h : 1 < n) : Ergodic fun y ↦ n • y + x :=
   ergodic_zsmul_add x (by simp [h] : 1 < |(n : ℤ)|)
 
 end AddCircle

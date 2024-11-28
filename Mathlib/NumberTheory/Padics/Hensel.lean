@@ -485,4 +485,4 @@ theorem hensels_lemma :
   exact if ha : F.eval a = 0 then ⟨a, a_is_soln hnorm ha⟩
   else by
     exact ⟨soln_gen hnorm, eval_soln hnorm,
-      soln_dist_to_a_lt_deriv hnorm ha, soln_deriv_norm hnorm, fun z => soln_unique hnorm ha z⟩
+      soln_dist_to_a_lt_deriv hnorm ha, soln_deriv_norm hnorm, fun z ↦ soln_unique hnorm ha z⟩

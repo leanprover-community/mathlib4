@@ -368,7 +368,7 @@ lemma iff_exact_iff_rTensor_exact :
         Function.Exact l12 l23 ↔ Function.Exact (l12.rTensor M) (l23.rTensor M)) :=
   ⟨fun fl => exact_iff_rTensor_exact R M, fun iff_exact =>
     iff_flat_and_rTensor_reflects_triviality _ _ |>.2 ⟨Flat.iff_rTensor_exact.2 <| by aesop,
-    fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y => by
+    fun N _ _ h => subsingleton_iff_forall_eq 0 |>.2 <| fun y ↦ by
       simpa [eq_comm] using (iff_exact (0 : PUnit →ₗ[R] N) (0 : N →ₗ[R] PUnit) |>.2 fun x ↦ by
         simpa using Subsingleton.elim _ _) y⟩⟩
 
@@ -444,7 +444,7 @@ lemma iff_zero_iff_lTensor_zero :
     fun ⟨flat, Z⟩ => iff_flat_and_lTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
       have := Z (LinearMap.id : N →ₗ[R] N) |>.1 (by ext; exact Subsingleton.elim _ _)
       rw [subsingleton_iff_forall_eq 0]
-      exact fun y => congr($this y)⟩⟩
+      exact fun y ↦ congr($this y)⟩⟩
 
 /--
 An `R`-module `M` is faithfully flat iff it is flat and for all linear maps `f`, the map
@@ -459,7 +459,7 @@ lemma iff_zero_iff_rTensor_zero :
     fun ⟨flat, Z⟩ => iff_flat_and_rTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
       have := Z (LinearMap.id : N →ₗ[R] N) |>.1 (by ext; exact Subsingleton.elim _ _)
       rw [subsingleton_iff_forall_eq 0]
-      exact fun y => congr($this y)⟩⟩
+      exact fun y ↦ congr($this y)⟩⟩
 
 end fixed_universe
 

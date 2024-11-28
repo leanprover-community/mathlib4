@@ -373,7 +373,7 @@ theorem isColimit_iff_bijective_desc : Nonempty (IsColimit c) ↔ (Quot.desc c).
   classical
   refine ⟨?_, ?_⟩
   · refine fun ⟨hc⟩ => ⟨fun x y h => ?_, fun x ↦ ?_⟩
-    · let f : Quot F → ULift.{u} Bool := fun z => ULift.up (x = z)
+    · let f : Quot F → ULift.{u} Bool := fun z ↦ ULift.up (x = z)
       suffices f x = f y by simpa [f] using this
       rw [← Quot.desc_toCocone_desc c f hc x, h, Quot.desc_toCocone_desc]
     · let f₁ : c.pt ⟶ ULift.{u} Bool := fun _ => ULift.up true

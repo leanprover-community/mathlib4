@@ -476,11 +476,11 @@ theorem closedBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedBa
 
 theorem ball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     ball x r ×ˢ ball y r = ball (x, y) r :=
-  ext fun z => by simp [Prod.edist_eq]
+  ext fun z ↦ by simp [Prod.edist_eq]
 
 theorem closedBall_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     closedBall x r ×ˢ closedBall y r = closedBall (x, y) r :=
-  ext fun z => by simp [Prod.edist_eq]
+  ext fun z ↦ by simp [Prod.edist_eq]
 
 /-- ε-characterization of the closure in pseudoemetric spaces -/
 theorem mem_closure_iff : x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, edist x y < ε :=

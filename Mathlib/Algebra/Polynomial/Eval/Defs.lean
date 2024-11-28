@@ -116,7 +116,7 @@ theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
     { toFun := eval₂ f x
       map_zero' := eval₂_zero _ _
       map_add' := fun p q => eval₂_add _ _ }
-  have A : ∀ y, eval₂ f x y = T y := fun y => rfl
+  have A : ∀ y, eval₂ f x y = T y := fun y ↦ rfl
   simp only [A]
   rw [sum, map_sum, sum]
 
@@ -363,7 +363,7 @@ theorem IsRoot.dvd {R : Type*} [CommSemiring R] {p q : R[X]} {x : R} (h : p.IsRo
 
 theorem not_isRoot_C (r a : R) (hr : r ≠ 0) : ¬IsRoot (C r) a := by simpa using hr
 
-theorem eval_surjective (x : R) : Function.Surjective <| eval x := fun y => ⟨C y, eval_C⟩
+theorem eval_surjective (x : R) : Function.Surjective <| eval x := fun y ↦ ⟨C y, eval_C⟩
 
 end Eval
 

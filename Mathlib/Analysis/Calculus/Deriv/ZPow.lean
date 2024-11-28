@@ -102,7 +102,7 @@ theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
       Finset.prod_range_succ, Int.ofNat_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast, mul_assoc]
 
 theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
-    deriv^[k] (fun y => y ^ m) x = (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) :=
+    deriv^[k] (fun y ↦ y ^ m) x = (∏ i ∈ Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) :=
   congr_fun (iter_deriv_zpow' m k) x
 
 theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :

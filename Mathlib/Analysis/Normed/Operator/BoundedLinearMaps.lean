@@ -346,7 +346,7 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_left (h : IsBoundedBilinearMap �
   (h.toContinuousLinearMap.flip y).isBoundedLinearMap
 
 theorem IsBoundedBilinearMap.isBoundedLinearMap_right (h : IsBoundedBilinearMap 𝕜 f) (x : E) :
-    IsBoundedLinearMap 𝕜 fun y => f (x, y) :=
+    IsBoundedLinearMap 𝕜 fun y ↦ f (x, y) :=
   (h.toContinuousLinearMap x).isBoundedLinearMap
 
 theorem isBoundedBilinearMap_smul {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {E : Type*}

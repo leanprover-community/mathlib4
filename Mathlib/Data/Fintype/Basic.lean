@@ -89,7 +89,7 @@ theorem coe_eq_univ : (s : Set α) = Set.univ ↔ s = univ := by rw [← coe_uni
 
 theorem Nonempty.eq_univ [Subsingleton α] : s.Nonempty → s = univ := by
   rintro ⟨x, hx⟩
-  exact eq_univ_of_forall fun y => by rwa [Subsingleton.elim y x]
+  exact eq_univ_of_forall fun y ↦ by rwa [Subsingleton.elim y x]
 
 theorem univ_nonempty_iff : (univ : Finset α).Nonempty ↔ Nonempty α := by
   rw [← coe_nonempty, coe_univ, Set.nonempty_iff_univ_nonempty]
@@ -328,15 +328,15 @@ theorem univ_map_equiv_to_embedding {α β : Type*} [Fintype α] [Fintype β] (e
   eq_univ_iff_forall.mpr fun b ↦ mem_map.mpr ⟨e.symm b, mem_univ _, by simp⟩
 
 @[simp]
-theorem univ_filter_exists (f : α → β) [Fintype β] [DecidablePred fun y => ∃ x, f x = y]
-    [DecidableEq β] : (Finset.univ.filter fun y => ∃ x, f x = y) = Finset.univ.image f := by
+theorem univ_filter_exists (f : α → β) [Fintype β] [DecidablePred fun y ↦ ∃ x, f x = y]
+    [DecidableEq β] : (Finset.univ.filter fun y ↦ ∃ x, f x = y) = Finset.univ.image f := by
   ext
   simp
 
 /-- Note this is a special case of `(Finset.image_preimage f univ _).symm`. -/
-theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y => y ∈ Set.range f]
-    [DecidableEq β] : (Finset.univ.filter fun y => y ∈ Set.range f) = Finset.univ.image f := by
-  letI : DecidablePred (fun y => ∃ x, f x = y) := by simpa using ‹_›
+theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y ↦ y ∈ Set.range f]
+    [DecidableEq β] : (Finset.univ.filter fun y ↦ y ∈ Set.range f) = Finset.univ.image f := by
+  letI : DecidablePred (fun y ↦ ∃ x, f x = y) := by simpa using ‹_›
   exact univ_filter_exists f
 
 theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :

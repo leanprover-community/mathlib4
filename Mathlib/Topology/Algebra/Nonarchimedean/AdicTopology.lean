@@ -98,9 +98,9 @@ theorem hasBasis_nhds_zero_adic (I : Ideal R) :
 
 theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
     HasBasis (@nhds R I.adicTopology x) (fun _n : ℕ => True) fun n =>
-      (fun y => x + y) '' (I ^ n : Ideal R) := by
+      (fun y ↦ x + y) '' (I ^ n : Ideal R) := by
   letI := I.adicTopology
-  have := I.hasBasis_nhds_zero_adic.map fun y => x + y
+  have := I.hasBasis_nhds_zero_adic.map fun y ↦ x + y
   rwa [map_add_left_nhds_zero x] at this
 
 variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]

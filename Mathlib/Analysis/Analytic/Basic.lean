@@ -437,7 +437,7 @@ theorem HasFPowerSeriesWithinOnBall.analyticWithinAt (hf : HasFPowerSeriesWithin
 /-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z - y)` has the
 same power series around `x + y`. -/
 theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y : E) :
-    HasFPowerSeriesOnBall (fun z => f (z - y)) p (x + y) r :=
+    HasFPowerSeriesOnBall (fun z ↦ f (z - y)) p (x + y) r :=
   { r_le := hf.r_le
     r_pos := hf.r_pos
     hasSum := fun {z} hz => by
@@ -988,7 +988,7 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx {r' : ℝ≥0}
 theorem HasFPowerSeriesWithinAt.isBigO_sub_partialSum_pow
     (hf : HasFPowerSeriesWithinAt f p s x) (n : ℕ) :
     (fun y : E => f (x + y) - p.partialSum n y)
-      =O[𝓝[(x + ·)⁻¹' insert x s] 0] fun y => ‖y‖ ^ n := by
+      =O[𝓝[(x + ·)⁻¹' insert x s] 0] fun y ↦ ‖y‖ ^ n := by
   rcases hf with ⟨r, hf⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
   obtain ⟨a, -, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
@@ -1003,7 +1003,7 @@ theorem HasFPowerSeriesWithinAt.isBigO_sub_partialSum_pow
 /-- Taylor formula for an analytic function, `IsBigO` version. -/
 theorem HasFPowerSeriesAt.isBigO_sub_partialSum_pow
     (hf : HasFPowerSeriesAt f p x) (n : ℕ) :
-    (fun y : E => f (x + y) - p.partialSum n y) =O[𝓝 0] fun y => ‖y‖ ^ n := by
+    (fun y : E => f (x + y) - p.partialSum n y) =O[𝓝 0] fun y ↦ ‖y‖ ^ n := by
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   simpa using hf.isBigO_sub_partialSum_pow n
 
@@ -1015,7 +1015,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (hr : r' < r) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
       =O[𝓟 (EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
-      fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
+      fun y ↦ ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   lift r' to ℝ≥0 using ne_top_of_lt hr
   rcases (zero_le r').eq_or_lt with (rfl | hr'0)
   · simp only [ENNReal.coe_zero, EMetric.ball_zero, empty_inter, principal_empty, isBigO_bot]
@@ -1071,7 +1071,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
           ((hasSum_geometric_of_norm_lt_one this).mul_left 2)
     exact hA.norm_le_of_bounded hBL hAB
   suffices L =O[𝓟 (EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
-      fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ by
+      fun y ↦ ‖y - (x, x)‖ * ‖y.1 - y.2‖ by
     refine (IsBigO.of_bound 1 (eventually_principal.2 fun y hy => ?_)).trans this
     rw [one_mul]
     exact (hL y hy).trans (le_abs_self _)
@@ -1085,7 +1085,7 @@ ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded 
 theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
     (hf : HasFPowerSeriesOnBall f p x r) (hr : r' < r) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
-      =O[𝓟 (EMetric.ball (x, x) r')] fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
+      =O[𝓟 (EMetric.ball (x, x) r')] fun y ↦ ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa using hf.isBigO_image_sub_image_sub_deriv_principal hr
 
@@ -1118,7 +1118,7 @@ within `s × s`. -/
 theorem HasFPowerSeriesWithinAt.isBigO_image_sub_norm_mul_norm_sub
     (hf : HasFPowerSeriesWithinAt f p s x) :
     (fun y : E × E => f y.1 - f y.2 - p 1 fun _ => y.1 - y.2)
-      =O[𝓝[(insert x s) ×ˢ (insert x s)] (x, x)] fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
+      =O[𝓝[(insert x s) ×ˢ (insert x s)] (x, x)] fun y ↦ ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   rcases hf with ⟨r, hf⟩
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hf.r_pos with ⟨r', r'0, h⟩
   refine (hf.isBigO_image_sub_image_sub_deriv_principal h).mono ?_
@@ -1139,7 +1139,7 @@ of the partial sums of this power series on strict subdisks of the disk of conve
 `f (x + y)` is the uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesWithinOnBall.tendstoUniformlyOn {r' : ℝ≥0}
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
-    TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+    TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y ↦ f (x + y)) atTop
       ((x + ·)⁻¹' (insert x s) ∩ Metric.ball (0 : E) r') := by
   obtain ⟨a, ha, C, -, hp⟩ : ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ y ∈ Metric.ball (0 : E) r', ∀ n,
     x + y ∈ insert x s → ‖f (x + y) - p.partialSum n y‖ ≤ C * a ^ n := hf.uniform_geometric_approx h
@@ -1156,7 +1156,7 @@ partial sums of this power series on strict subdisks of the disk of convergence,
 is the uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesOnBall.tendstoUniformlyOn {r' : ℝ≥0} (hf : HasFPowerSeriesOnBall f p x r)
     (h : (r' : ℝ≥0∞) < r) :
-    TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+    TendstoUniformlyOn (fun n y => p.partialSum n y) (fun y ↦ f (x + y)) atTop
       (Metric.ball (0 : E) r') := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa using hf.tendstoUniformlyOn h
@@ -1166,7 +1166,7 @@ uniform limit of the partial sums of this power series on the disk of convergenc
 is the locally uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn
     (hf : HasFPowerSeriesWithinOnBall f p s x r) :
-    TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+    TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y ↦ f (x + y)) atTop
       ((x + ·)⁻¹' (insert x s) ∩ EMetric.ball (0 : E) r) := by
   intro u hu y hy
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 hy.2 with ⟨r', yr', hr'⟩
@@ -1182,7 +1182,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn
 the partial sums of this power series on the disk of convergence, i.e., `f (x + y)`
 is the locally uniform limit of `p.partialSum n y` there. -/
 theorem HasFPowerSeriesOnBall.tendstoLocallyUniformlyOn (hf : HasFPowerSeriesOnBall f p x r) :
-    TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y => f (x + y)) atTop
+    TendstoLocallyUniformlyOn (fun n y => p.partialSum n y) (fun y ↦ f (x + y)) atTop
       (EMetric.ball (0 : E) r) := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa using hf.tendstoLocallyUniformlyOn
@@ -1194,7 +1194,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoUniformlyOn' {r' : ℝ≥0}
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (h : (r' : ℝ≥0∞) < r) :
     TendstoUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
       (insert x s ∩ Metric.ball (x : E) r') := by
-  convert (hf.tendstoUniformlyOn h).comp fun y => y - x using 1
+  convert (hf.tendstoUniformlyOn h).comp fun y ↦ y - x using 1
   · simp [Function.comp_def]
   · ext z
     simp [dist_eq_norm]

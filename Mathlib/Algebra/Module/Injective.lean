@@ -351,7 +351,7 @@ theorem extensionOfMax_le (h : Module.Baer R Q) {y : N} :
 
 theorem extensionOfMax_to_submodule_eq_top (h : Module.Baer R Q) :
     (extensionOfMax i f).domain = ⊤ := by
-  refine Submodule.eq_top_iff'.mpr fun y => ?_
+  refine Submodule.eq_top_iff'.mpr fun y ↦ ?_
   dsimp
   rw [← extensionOfMax_is_max i f _ (extensionOfMax_le i f h), extensionOfMaxAdjoin,
     Submodule.mem_sup]

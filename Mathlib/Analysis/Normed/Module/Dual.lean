@@ -194,7 +194,7 @@ theorem smul_mem_polar {s : Set E} {x' : Dual 𝕜 E} {c : 𝕜} (hc : ∀ z, z 
   by_cases c_zero : c = 0
   · simp only [c_zero, inv_zero, zero_smul]
     exact (dualPairing 𝕜 E).flip.zero_mem_polar _
-  have eq : ∀ z, ‖c⁻¹ • x' z‖ = ‖c⁻¹‖ * ‖x' z‖ := fun z => norm_smul c⁻¹ _
+  have eq : ∀ z, ‖c⁻¹ • x' z‖ = ‖c⁻¹‖ * ‖x' z‖ := fun z ↦ norm_smul c⁻¹ _
   have le : ∀ z, z ∈ s → ‖c⁻¹ • x' z‖ ≤ ‖c⁻¹‖ * ‖c‖ := by
     intro z hzs
     rw [eq z]

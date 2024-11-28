@@ -114,7 +114,7 @@ theorem measurable_kernel_prod_mk_left' [IsSFiniteKernel η] {s : Set (β × γ)
   exact (measurable_fst.snd.prod_mk measurable_snd) hs
 
 theorem measurable_kernel_prod_mk_right [IsSFiniteKernel κ] {s : Set (β × α)}
-    (hs : MeasurableSet s) : Measurable fun y => κ y ((fun x ↦ (x, y)) ⁻¹' s) :=
+    (hs : MeasurableSet s) : Measurable fun y ↦ κ y ((fun x ↦ (x, y)) ⁻¹' s) :=
   measurable_kernel_prod_mk_left (measurableSet_swap_iff.mpr hs)
 
 end Kernel
@@ -200,11 +200,11 @@ alias _root_.Measurable.set_lintegral_kernel_prod_right :=
   _root_.Measurable.setLIntegral_kernel_prod_right
 
 theorem _root_.Measurable.lintegral_kernel_prod_left' {f : β × α → ℝ≥0∞} (hf : Measurable f) :
-    Measurable fun y => ∫⁻ x, f (x, y) ∂κ y :=
+    Measurable fun y ↦ ∫⁻ x, f (x, y) ∂κ y :=
   (measurable_swap_iff.mpr hf).lintegral_kernel_prod_right'
 
 theorem _root_.Measurable.lintegral_kernel_prod_left {f : β → α → ℝ≥0∞}
-    (hf : Measurable (uncurry f)) : Measurable fun y => ∫⁻ x, f x y ∂κ y :=
+    (hf : Measurable (uncurry f)) : Measurable fun y ↦ ∫⁻ x, f x y ∂κ y :=
   hf.lintegral_kernel_prod_left'
 
 theorem _root_.Measurable.setLIntegral_kernel_prod_left {f : β → α → ℝ≥0∞}
@@ -281,14 +281,14 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
       simp only [f',  hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
         mem_setOf_eq]
       refine
-        tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)
+        tendsto_integral_of_dominated_convergence (fun y ↦ ‖f x y‖ + ‖f x y‖)
           (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
       · -- Porting note: was
         -- exact fun n => Eventually.of_forall fun y =>
         --   SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
         exact fun n => Eventually.of_forall fun y =>
           SimpleFunc.norm_approxOn_zero_le hf.measurable (by simp) (x, y) n
-      · refine Eventually.of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) ?_
+      · refine Eventually.of_forall fun y ↦ SimpleFunc.tendsto_approxOn hf.measurable (by simp) ?_
         apply subset_closure
         simp [-uncurry_apply_pair]
     · simp [f', hfx, integral_undef]
@@ -310,18 +310,18 @@ theorem StronglyMeasurable.integral_kernel_prod_right'' {f : β × γ → E}
     simpa using this
 
 theorem StronglyMeasurable.integral_kernel_prod_left ⦃f : β → α → E⦄
-    (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun y => ∫ x, f x y ∂κ y :=
+    (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun y ↦ ∫ x, f x y ∂κ y :=
   (hf.comp_measurable measurable_swap).integral_kernel_prod_right'
 
 theorem StronglyMeasurable.integral_kernel_prod_left' ⦃f : β × α → E⦄ (hf : StronglyMeasurable f) :
-    StronglyMeasurable fun y => ∫ x, f (x, y) ∂κ y :=
+    StronglyMeasurable fun y ↦ ∫ x, f (x, y) ∂κ y :=
   (hf.comp_measurable measurable_swap).integral_kernel_prod_right'
 
 theorem StronglyMeasurable.integral_kernel_prod_left'' {f : γ × β → E} (hf : StronglyMeasurable f) :
-    StronglyMeasurable fun y => ∫ x, f (x, y) ∂η (a, y) := by
+    StronglyMeasurable fun y ↦ ∫ x, f (x, y) ∂η (a, y) := by
   change
     StronglyMeasurable
-      ((fun y => ∫ x, (fun u : γ × α × β => f (u.1, u.2.2)) (x, y) ∂η y) ∘ fun x ↦ (a, x))
+      ((fun y ↦ ∫ x, (fun u : γ × α × β => f (u.1, u.2.2)) (x, y) ∂η y) ∘ fun x ↦ (a, x))
   apply StronglyMeasurable.comp_measurable _ (measurable_prod_mk_left (m := mα))
   · have := MeasureTheory.StronglyMeasurable.integral_kernel_prod_left' (κ := η)
       (hf.comp_measurable (measurable_fst.prod_mk measurable_snd.snd))

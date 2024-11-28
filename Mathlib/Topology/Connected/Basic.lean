@@ -101,7 +101,7 @@ theorem isPreconnected_of_forall_pair {s : Set α}
     (H : ∀ x ∈ s, ∀ y ∈ s, ∃ t, t ⊆ s ∧ x ∈ t ∧ y ∈ t ∧ IsPreconnected t) :
     IsPreconnected s := by
   rcases eq_empty_or_nonempty s with (rfl | ⟨x, hx⟩)
-  exacts [isPreconnected_empty, isPreconnected_of_forall x fun y => H x hx y]
+  exacts [isPreconnected_empty, isPreconnected_of_forall x fun y ↦ H x hx y]
 
 /-- A union of a family of preconnected sets with a common point is preconnected as well. -/
 theorem isPreconnected_sUnion (x : α) (c : Set (Set α)) (H1 : ∀ s ∈ c, x ∈ s)

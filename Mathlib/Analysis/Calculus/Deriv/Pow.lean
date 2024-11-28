@@ -68,11 +68,11 @@ theorem derivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x) :
   (hasDerivWithinAt_pow n x s).derivWithin hxs
 
 theorem HasDerivWithinAt.pow (hc : HasDerivWithinAt c c' s x) :
-    HasDerivWithinAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') s x :=
+    HasDerivWithinAt (fun y ↦ c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') s x :=
   (hasDerivAt_pow n (c x)).comp_hasDerivWithinAt x hc
 
 theorem HasDerivAt.pow (hc : HasDerivAt c c' x) :
-    HasDerivAt (fun y => c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x := by
+    HasDerivAt (fun y ↦ c y ^ n) ((n : 𝕜) * c x ^ (n - 1) * c') x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.pow n
 

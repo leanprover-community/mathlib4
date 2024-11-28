@@ -106,7 +106,7 @@ theorem measurable_edist_right : Measurable (edist x) :=
   (continuous_const.edist continuous_id).measurable
 
 @[measurability, fun_prop]
-theorem measurable_edist_left : Measurable fun y => edist y x :=
+theorem measurable_edist_left : Measurable fun y ↦ edist y x :=
   (continuous_id.edist continuous_const).measurable
 
 @[measurability]

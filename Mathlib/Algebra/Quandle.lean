@@ -243,8 +243,8 @@ instance oppositeRack : Rack Rᵐᵒᵖ where
     simp only [op_inj, unop_op, op_unop]
     rw [self_distrib_inv]
   invAct x y := op (Shelf.act (unop x) (unop y))
-  left_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y => by simp
-  right_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y => by simp
+  left_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦ by simp
+  right_inv := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦ by simp
 
 @[simp]
 theorem op_act_op_eq {x y : R} : op x ◃ op y = op (x ◃⁻¹ y) :=

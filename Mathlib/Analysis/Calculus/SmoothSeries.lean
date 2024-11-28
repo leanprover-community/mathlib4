@@ -69,7 +69,7 @@ derivatives. -/
 theorem hasFDerivAt_tsum_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
     (h's : IsPreconnected s) (hf : ∀ n x, x ∈ s → HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, x ∈ s → ‖f' n x‖ ≤ u n) (hx₀ : x₀ ∈ s) (hf0 : Summable fun n => f n x₀)
-    (hx : x ∈ s) : HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
+    (hx : x ∈ s) : HasFDerivAt (fun y ↦ ∑' n, f n y) (∑' n, f' n x) x := by
   classical
     have A :
       ∀ x : E, x ∈ s → Tendsto (fun t : Finset α => ∑ n ∈ t, f n x) atTop (𝓝 (∑' n, f n x)) := by
@@ -87,7 +87,7 @@ derivatives. -/
 theorem hasDerivAt_tsum_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
     (h't : IsPreconnected t) (hg : ∀ n y, y ∈ t → HasDerivAt (g n) (g' n y) y)
     (hg' : ∀ n y, y ∈ t → ‖g' n y‖ ≤ u n) (hy₀ : y₀ ∈ t) (hg0 : Summable fun n => g n y₀)
-    (hy : y ∈ t) : HasDerivAt (fun z => ∑' n, g n z) (∑' n, g' n y) y := by
+    (hy : y ∈ t) : HasDerivAt (fun z ↦ ∑' n, g n z) (∑' n, g' n y) y := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg ⊢
   convert hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
   · exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 F 1).map_tsum <|
@@ -119,7 +119,7 @@ point, and all functions in the series are differentiable with a summable bound 
 then the series is differentiable and its derivative is the sum of the derivatives. -/
 theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
-    HasFDerivAt (fun y => ∑' n, f n y) (∑' n, f' n x) x := by
+    HasFDerivAt (fun y ↦ ∑' n, f n y) (∑' n, f' n x) x := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact hasFDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
@@ -130,7 +130,7 @@ point, and all functions in the series are differentiable with a summable bound 
 then the series is differentiable and its derivative is the sum of the derivatives. -/
 theorem hasDerivAt_tsum (hu : Summable u) (hg : ∀ n y, HasDerivAt (g n) (g' n y) y)
     (hg' : ∀ n y, ‖g' n y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) (y : 𝕜) :
-    HasDerivAt (fun z => ∑' n, g n z) (∑' n, g' n y) y := by
+    HasDerivAt (fun z ↦ ∑' n, g n z) (∑' n, g' n y) y := by
   exact hasDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n y _ => hg n y) (fun n y _ => hg' n y) (mem_univ _) hg0 (mem_univ _)
 
@@ -139,7 +139,7 @@ with a summable bound on the derivatives, then the series is differentiable.
 Note that our assumptions do not ensure the pointwise convergence, but if there is no pointwise
 convergence then the series is zero everywhere so the result still holds. -/
 theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
-    (hf' : ∀ n x, ‖f' n x‖ ≤ u n) : Differentiable 𝕜 fun y => ∑' n, f n y := by
+    (hf' : ∀ n x, ‖f' n x‖ ≤ u n) : Differentiable 𝕜 fun y ↦ ∑' n, f n y := by
   by_cases h : ∃ x₀, Summable fun n => f n x₀
   · rcases h with ⟨x₀, hf0⟩
     intro x
@@ -154,30 +154,30 @@ with a summable bound on the derivatives, then the series is differentiable.
 Note that our assumptions do not ensure the pointwise convergence, but if there is no pointwise
 convergence then the series is zero everywhere so the result still holds. -/
 theorem differentiable_tsum' (hu : Summable u) (hg : ∀ n y, HasDerivAt (g n) (g' n y) y)
-    (hg' : ∀ n y, ‖g' n y‖ ≤ u n) : Differentiable 𝕜 fun z => ∑' n, g n z := by
+    (hg' : ∀ n y, ‖g' n y‖ ≤ u n) : Differentiable 𝕜 fun z ↦ ∑' n, g n z := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg
   refine differentiable_tsum hu hg ?_
   simpa? says simpa only [ContinuousLinearMap.norm_smulRight_apply, norm_one, one_mul]
 
 theorem fderiv_tsum_apply (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
     (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
-    fderiv 𝕜 (fun y => ∑' n, f n y) x = ∑' n, fderiv 𝕜 (f n) x :=
+    fderiv 𝕜 (fun y ↦ ∑' n, f n y) x = ∑' n, fderiv 𝕜 (f n) x :=
   (hasFDerivAt_tsum hu (fun n x => (hf n x).hasFDerivAt) hf' hf0 _).fderiv
 
 theorem deriv_tsum_apply (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
     (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) (y : 𝕜) :
-    deriv (fun z => ∑' n, g n z) y = ∑' n, deriv (g n) y :=
+    deriv (fun z ↦ ∑' n, g n z) y = ∑' n, deriv (g n) y :=
   (hasDerivAt_tsum hu (fun n y => (hg n y).hasDerivAt) hg' hg0 _).deriv
 
 theorem fderiv_tsum (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
     (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) :
-    (fderiv 𝕜 fun y => ∑' n, f n y) = fun x ↦ ∑' n, fderiv 𝕜 (f n) x := by
+    (fderiv 𝕜 fun y ↦ ∑' n, f n y) = fun x ↦ ∑' n, fderiv 𝕜 (f n) x := by
   ext1 x
   exact fderiv_tsum_apply hu hf hf' hf0 x
 
 theorem deriv_tsum (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
     (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) :
-    (deriv fun y => ∑' n, g n y) = fun y => ∑' n, deriv (g n) y := by
+    (deriv fun y ↦ ∑' n, g n y) = fun y ↦ ∑' n, deriv (g n) y := by
   ext1 x
   exact deriv_tsum_apply hu hg hg' hg0 x
 
@@ -189,7 +189,7 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hv : ∀ k : ℕ, (k : ℕ∞) ≤ N → Summable (v k))
     (h'f : ∀ (k : ℕ) (i : α) (x : E), (k : ℕ∞) ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) {k : ℕ}
     (hk : (k : ℕ∞) ≤ N) :
-    (iteratedFDeriv 𝕜 k fun y => ∑' n, f n y) = fun x ↦ ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
+    (iteratedFDeriv 𝕜 k fun y ↦ ∑' n, f n y) = fun x ↦ ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
   induction' k with k IH
   · ext1 x
     simp_rw [iteratedFDeriv_zero_eq_comp]
@@ -213,7 +213,7 @@ theorem iteratedFDeriv_tsum_apply (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hv : ∀ k : ℕ, (k : ℕ∞) ≤ N → Summable (v k))
     (h'f : ∀ (k : ℕ) (i : α) (x : E), (k : ℕ∞) ≤ N → ‖iteratedFDeriv 𝕜 k (f i) x‖ ≤ v k i) {k : ℕ}
     (hk : (k : ℕ∞) ≤ N) (x : E) :
-    iteratedFDeriv 𝕜 k (fun y => ∑' n, f n y) x = ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
+    iteratedFDeriv 𝕜 k (fun y ↦ ∑' n, f n y) x = ∑' n, iteratedFDeriv 𝕜 k (f n) x := by
   rw [iteratedFDeriv_tsum hf hv h'f hk]
 
 /-- Consider a series of functions `∑' i, f i x`. Assume that each individual function `f i` is of

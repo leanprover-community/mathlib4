@@ -87,17 +87,17 @@ section deriv
 variable {f : ℝ → ℝ} {x f' : ℝ} {s : Set ℝ}
 
 theorem HasDerivWithinAt.log (hf : HasDerivWithinAt f f' s x) (hx : f x ≠ 0) :
-    HasDerivWithinAt (fun y => log (f y)) (f' / f x) s x := by
+    HasDerivWithinAt (fun y ↦ log (f y)) (f' / f x) s x := by
   rw [div_eq_inv_mul]
   exact (hasDerivAt_log hx).comp_hasDerivWithinAt x hf
 
 theorem HasDerivAt.log (hf : HasDerivAt f f' x) (hx : f x ≠ 0) :
-    HasDerivAt (fun y => log (f y)) (f' / f x) x := by
+    HasDerivAt (fun y ↦ log (f y)) (f' / f x) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hf.log hx
 
 theorem HasStrictDerivAt.log (hf : HasStrictDerivAt f f' x) (hx : f x ≠ 0) :
-    HasStrictDerivAt (fun y => log (f y)) (f' / f x) x := by
+    HasStrictDerivAt (fun y ↦ log (f y)) (f' / f x) x := by
   rw [div_eq_inv_mul]
   exact (hasStrictDerivAt_log hx).comp x hf
 

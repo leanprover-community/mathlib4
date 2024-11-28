@@ -44,7 +44,7 @@ theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y
   rw [segment_eq_image_lineMap, affineSegment]
 
 theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
-  refine Set.ext fun z => ?_
+  refine Set.ext fun z ↦ ?_
   constructor <;>
     · rintro ⟨t, ht, hxy⟩
       refine ⟨1 - t, ?_, ?_⟩

@@ -81,8 +81,8 @@ variable {X}
 
 theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneCech X) := by
   intro Y Z _tsY _tsZ _csY _t2Y _csZ _csZ f g hf hg g_sur
-  let s : Z → Y := fun z => Classical.choose <| g_sur z
-  have hs : g ∘ s = id := funext fun z => Classical.choose_spec (g_sur z)
+  let s : Z → Y := fun z ↦ Classical.choose <| g_sur z
+  have hs : g ∘ s = id := funext fun z ↦ Classical.choose_spec (g_sur z)
   let t := s ∘ f ∘ stoneCechUnit
   have ht : Continuous t := continuous_of_discreteTopology
   let h : StoneCech X → Y := stoneCechExtend ht

@@ -62,7 +62,7 @@ attribute [local ext] Complex.ext
 
 theorem re_surjective : Surjective re := fun x ↦ ⟨⟨x, 0⟩, rfl⟩
 
-theorem im_surjective : Surjective im := fun y => ⟨⟨0, y⟩, rfl⟩
+theorem im_surjective : Surjective im := fun y ↦ ⟨⟨0, y⟩, rfl⟩
 
 @[simp]
 theorem range_re : range re = univ :=
@@ -101,7 +101,7 @@ theorem ofReal_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
 theorem ofReal_injective : Function.Injective ((↑) : ℝ → ℂ) := fun _ _ => congrArg re
 
 -- Porting note: made coercion explicit
-instance canLift : CanLift ℂ ℝ (↑) fun z => z.im = 0 where
+instance canLift : CanLift ℂ ℝ (↑) fun z ↦ z.im = 0 where
   prf z hz := ⟨z.re, ext rfl hz.symm⟩
 
 /-- The product of a set on the real axis and a set on the imaginary axis of the complex plane,
@@ -183,7 +183,7 @@ theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
 -- replaced by `Complex.ofReal_ofNat`
 
 instance : Neg ℂ :=
-  ⟨fun z => ⟨-z.re, -z.im⟩⟩
+  ⟨fun z ↦ ⟨-z.re, -z.im⟩⟩
 
 @[simp]
 theorem neg_re (z : ℂ) : (-z).re = -z.re :=
@@ -692,7 +692,7 @@ theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z *
 
 
 noncomputable instance : Inv ℂ :=
-  ⟨fun z => conj z * ((normSq z)⁻¹ : ℝ)⟩
+  ⟨fun z ↦ conj z * ((normSq z)⁻¹ : ℝ)⟩
 
 theorem inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
   rfl

@@ -195,7 +195,7 @@ noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap
       comap_map_eq_map_adjoin_of_coprime_conductor hx h_alg] at hu
   · -- Surjectivity follows from the surjectivity of the canonical map `R<x> → S ⧸ (I * S)`,
     -- which in turn follows from the fact that `I * S + (conductor R x) = S`.
-    refine Ideal.Quotient.lift_surjective_of_surjective _ _ fun y => ?_
+    refine Ideal.Quotient.lift_surjective_of_surjective _ _ fun y ↦ ?_
     obtain ⟨z, hz⟩ := Ideal.Quotient.mk_surjective y
     have : z ∈ conductor R x ⊔ I.map (algebraMap R S) := by
       suffices conductor R x ⊔ I.map (algebraMap R S) = ⊤ by simp only [this, Submodule.mem_top]

@@ -1233,7 +1233,7 @@ theorem get_zero_scanl {h : 0 < (scanl f b l).length} : (scanl f b l).get ⟨0, 
   simp [getElem_scanl_zero]
 
 theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
-    ((scanl f b l).get? i).bind fun x ↦ (l.get? i).map fun y => f x y := by
+    ((scanl f b l).get? i).bind fun x ↦ (l.get? i).map fun y ↦ f x y := by
   induction' l with hd tl hl generalizing b i
   · symm
     simp only [Option.bind_eq_none', get?, forall₂_true_iff, not_false_iff, Option.map_none',

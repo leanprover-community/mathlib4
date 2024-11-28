@@ -32,7 +32,7 @@ with derivative `f'`. -/
 theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x : E} {f' : E →L[ℝ] F}
     (f_diff : DifferentiableOn ℝ f s) (s_conv : Convex ℝ s) (s_open : IsOpen s)
     (f_cont : ∀ y ∈ closure s, ContinuousWithinAt f s y)
-    (h : Tendsto (fun y => fderiv ℝ f y) (𝓝[s] x) (𝓝 f')) :
+    (h : Tendsto (fun y ↦ fderiv ℝ f y) (𝓝[s] x) (𝓝 f')) :
     HasFDerivWithinAt f f' (closure s) x := by
   classical
     -- one can assume without loss of generality that `x` belongs to the closure of `s`, as the

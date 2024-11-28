@@ -108,7 +108,7 @@ namespace WellFoundedOn
 
 protected theorem induction (hs : s.WellFoundedOn r) (hx : x ∈ s) {P : α → Prop}
     (hP : ∀ y ∈ s, (∀ z ∈ s, r z y → P z) → P y) : P x := by
-  let Q : s → Prop := fun y => P y
+  let Q : s → Prop := fun y ↦ P y
   change Q ⟨x, hx⟩
   refine WellFounded.induction hs ⟨x, hx⟩ ?_
   simpa only [Subtype.forall]

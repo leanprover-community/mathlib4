@@ -413,7 +413,7 @@ instead of continuity of `f` on subsets of the product space. -/
 theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith [PseudoEMetricSpace α]
     [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s s' : Set α} {t : Set β}
     (hs' : s' ⊆ s) (hss' : s ⊆ closure s') (K : ℝ≥0)
-    (ha : ∀ a ∈ s', ContinuousOn (fun y => f (a, y)) t)
+    (ha : ∀ a ∈ s', ContinuousOn (fun y ↦ f (a, y)) t)
     (hb : ∀ b ∈ t, LipschitzOnWith K (fun x ↦ f (x, b)) s) : ContinuousOn f (s ×ˢ t) := by
   rintro ⟨x, y⟩ ⟨hx : x ∈ s, hy : y ∈ t⟩
   refine EMetric.nhds_basis_closed_eball.tendsto_right_iff.2 fun ε (ε0 : 0 < ε) => ?_
@@ -448,7 +448,7 @@ The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fu
 instead of continuity of `f` on subsets of the product space. -/
 theorem continuousOn_prod_of_continuousOn_lipschitzOnWith [PseudoEMetricSpace α]
     [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t : Set β} (K : ℝ≥0)
-    (ha : ∀ a ∈ s, ContinuousOn (fun y => f (a, y)) t)
+    (ha : ∀ a ∈ s, ContinuousOn (fun y ↦ f (a, y)) t)
     (hb : ∀ b ∈ t, LipschitzOnWith K (fun x ↦ f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
   continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith
     f Subset.rfl subset_closure K ha hb
@@ -462,7 +462,7 @@ The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fu
 instead of continuity of `f` on subsets of the product space. -/
 theorem continuous_prod_of_dense_continuous_lipschitzWith [PseudoEMetricSpace α]
     [TopologicalSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) {s : Set α}
-    (hs : Dense s) (ha : ∀ a ∈ s, Continuous fun y => f (a, y))
+    (hs : Dense s) (ha : ∀ a ∈ s, Continuous fun y ↦ f (a, y))
     (hb : ∀ b, LipschitzWith K fun x ↦ f (x, b)) : Continuous f := by
   simp only [continuous_iff_continuousOn_univ, ← univ_prod_univ, ← lipschitzOnWith_univ] at *
   exact continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith f (subset_univ _)
@@ -475,6 +475,6 @@ theorem continuous_prod_of_dense_continuous_lipschitzWith [PseudoEMetricSpace α
 The actual statement uses (Lipschitz) continuity of `fun y ↦ f (a, y)` and `fun x ↦ f (x, b)`
 instead of continuity of `f` on subsets of the product space. -/
 theorem continuous_prod_of_continuous_lipschitzWith [PseudoEMetricSpace α] [TopologicalSpace β]
-    [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, Continuous fun y => f (a, y))
+    [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, Continuous fun y ↦ f (a, y))
     (hb : ∀ b, LipschitzWith K fun x ↦ f (x, b)) : Continuous f :=
   continuous_prod_of_dense_continuous_lipschitzWith f K dense_univ (fun _ _ ↦ ha _) hb

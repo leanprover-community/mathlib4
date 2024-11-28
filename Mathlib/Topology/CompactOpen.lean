@@ -474,7 +474,7 @@ variable {X₀ X Y Z : Type*} [TopologicalSpace X₀] [TopologicalSpace X] [Topo
 theorem Topology.IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) {g : X × Y → Z}
     (hg : Continuous fun p : X₀ × Y => g (f p.1, p.2)) : Continuous g := by
   let Gf : C(X₀, C(Y, Z)) := ContinuousMap.curry ⟨_, hg⟩
-  have h : ∀ x : X, Continuous fun y => g (x, y) := by
+  have h : ∀ x : X, Continuous fun y ↦ g (x, y) := by
     intro x
     obtain ⟨x₀, rfl⟩ := hf.surjective x
     exact (Gf x₀).continuous

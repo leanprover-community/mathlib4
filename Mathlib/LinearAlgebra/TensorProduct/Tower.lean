@@ -80,7 +80,7 @@ bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N �
 nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
   { curry (f.restrictScalars R) with
     toFun := curry (f.restrictScalars R)
-    map_smul' := fun c x => LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
+    map_smul' := fun c x => LinearMap.ext fun y ↦ f.map_smul c (x ⊗ₜ y) }
 
 theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
     restrictScalars R (curry f) = TensorProduct.curry (f.restrictScalars R) :=
@@ -161,7 +161,7 @@ canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map 
 def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
   LinearEquiv.ofLinear (uncurry R A B M N P) (lcurry R A B M N P)
     (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
-    (LinearMap.ext fun f => LinearMap.ext fun x ↦ LinearMap.ext fun y => lift_tmul f x y)
+    (LinearMap.ext fun f => LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ lift_tmul f x y)
 
 /-- Heterobasic version of `TensorProduct.mk`:
 

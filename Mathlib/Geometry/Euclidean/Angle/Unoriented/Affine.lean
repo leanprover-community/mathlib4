@@ -46,7 +46,7 @@ nonrec def angle (p1 p2 p3 : P) : ℝ :=
 
 theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x := by
-  let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
+  let f : P × P × P → V × V := fun y ↦ (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
   have hf1 : (f x).1 ≠ 0 := by simp [hx12]
   have hf2 : (f x).2 ≠ 0 := by simp [hx32]
   exact (InnerProductGeometry.continuousAt_angle hf1 hf2).comp

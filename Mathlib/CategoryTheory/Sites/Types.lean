@@ -32,7 +32,7 @@ def typesGrothendieckTopology : GrothendieckTopology (Type u) where
 @[simps]
 def discreteSieve (α : Type u) : Sieve α where
   arrows _ f := ∃ x, ∀ y, f y = x
-  downward_closed := fun ⟨x, hx⟩ g => ⟨x, fun y => hx <| g y⟩
+  downward_closed := fun ⟨x, hx⟩ g => ⟨x, fun y ↦ hx <| g y⟩
 
 theorem discreteSieve_mem (α : Type u) : discreteSieve α ∈ typesGrothendieckTopology α :=
   fun x ↦ ⟨x, fun _ => rfl⟩
@@ -49,10 +49,10 @@ theorem generate_discretePresieve_mem (α : Type u) :
 theorem Presieve.isSheaf_yoneda' {α : Type u} :
     Presieve.IsSheaf typesGrothendieckTopology (yoneda.obj α) :=
   fun β _ hs x hx =>
-  ⟨fun y => x _ (hs y) PUnit.unit, fun γ f h =>
-    funext fun z => by
+  ⟨fun y ↦ x _ (hs y) PUnit.unit, fun γ f h =>
+    funext fun z ↦ by
       convert congr_fun (hx (𝟙 _) (fun _ => z) (hs <| f z) h rfl) PUnit.unit using 1,
-    fun f hf => funext fun y => by convert congr_fun (hf _ (hs y)) PUnit.unit⟩
+    fun f hf => funext fun y ↦ by convert congr_fun (hf _ (hs y)) PUnit.unit⟩
 
 /-- The sheaf condition for `yoneda'`. -/
 theorem Presheaf.isSheaf_yoneda' {α : Type u} :
@@ -158,7 +158,7 @@ noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u
         { hom := fun x _ => x
           inv := fun f => f PUnit.unit
           hom_inv_id := funext fun _ => rfl
-          inv_hom_id := funext fun _ => funext fun y => PUnit.casesOn y rfl })
+          inv_hom_id := funext fun _ => funext fun y ↦ PUnit.casesOn y rfl })
       fun _ => rfl
   counitIso := Iso.symm <|
       NatIso.ofComponents (fun S => equivYoneda' S) (fun {S₁ S₂} f => by
@@ -181,11 +181,11 @@ theorem typesGrothendieckTopology_eq_canonical :
   refine ⟨yoneda.obj (ULift Bool), ⟨_, rfl⟩, GrothendieckTopology.ext ?_⟩
   funext α
   ext S
-  refine ⟨fun hs x => ?_, fun hs β f => Presieve.isSheaf_yoneda' _ fun y => hs _⟩
+  refine ⟨fun hs x => ?_, fun hs β f => Presieve.isSheaf_yoneda' _ fun y ↦ hs _⟩
   by_contra hsx
   have : (fun _ => ULift.up true) = fun _ => ULift.up false :=
     (hs PUnit fun _ => x).isSeparatedFor.ext
-      fun β f hf => funext fun y => hsx.elim <| S.2 hf fun _ => y
+      fun β f hf => funext fun y ↦ hsx.elim <| S.2 hf fun _ => y
   simp [funext_iff] at this
 
 end CategoryTheory

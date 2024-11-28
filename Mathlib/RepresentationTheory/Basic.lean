@@ -319,7 +319,7 @@ noncomputable instance :
 theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k G G).asModule) :
     x • y = (x * y : MonoidAlgebra k G) := -- by
   -- Porting note: trouble figuring out the motive
-  x.induction_on (p := fun z => z • y = z * y)
+  x.induction_on (p := fun z ↦ z • y = z * y)
     (fun g => by
       show asAlgebraHom (ofMulAction k G G) _ _ = _; ext
       simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,

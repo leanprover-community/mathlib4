@@ -92,9 +92,9 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       ‖f' (Pi.single i (I.upper i - I.lower i)) -
           (f (e (I.upper i) y) - f (e (I.lower i) y))‖ ≤
         2 * ε * diam (Box.Icc I) := fun y hy ↦ by
-    set g := fun y => f y - a - f' (y - x) with hg
+    set g := fun y ↦ f y - a - f' (y - x) with hg
     change ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * ‖y - x‖ at hε
-    clear_value g; obtain rfl : f = fun y => a + f' (y - x) + g y := by simp [hg]
+    clear_value g; obtain rfl : f = fun y ↦ a + f' (y - x) + g y := by simp [hg]
     convert_to ‖g (e (I.lower i) y) - g (e (I.upper i) y)‖ ≤ _
     · congr 1
       have := Fin.insertNth_sub_same (α := fun _ ↦ ℝ) i (I.upper i) (I.lower i) y
@@ -196,7 +196,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     have Hl : J.lower i ∈ Icc (J.lower i) (J.upper i) := Set.left_mem_Icc.2 (J.lower_le_upper i)
     have Hu : J.upper i ∈ Icc (J.lower i) (J.upper i) := Set.right_mem_Icc.2 (J.lower_le_upper i)
     have Hi : ∀ x ∈ Icc (J.lower i) (J.upper i),
-        Integrable.{0, u, u} (J.face i) GP (fun y => f (i.insertNth x y))
+        Integrable.{0, u, u} (J.face i) GP (fun y ↦ f (i.insertNth x y))
           BoxAdditiveMap.volume := fun x hx =>
       integrable_of_continuousOn _ (Box.continuousOn_face_Icc (Hc.mono <| Box.le_iff_Icc.1 hJI) hx)
         volume

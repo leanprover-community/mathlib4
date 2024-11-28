@@ -888,7 +888,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
   filter_upwards [v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
     with a h'a h''a
   simp only [Function.comp_apply, ENNReal.toReal_div, setAverage_eq, div_eq_inv_mul]
-  have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
+  have A : IntegrableOn (fun y ↦ (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
     exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
   rw [lintegral_coe_eq_integral _ A, ENNReal.toReal_ofReal (by positivity)]

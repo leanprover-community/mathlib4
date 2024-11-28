@@ -130,7 +130,7 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
 /-- Helper lemma for calculating the derivative of the monomial that appears in Taylor
 expansions. -/
 theorem monomial_has_deriv_aux (t x : ℝ) (n : ℕ) :
-    HasDerivAt (fun y => (x - y) ^ (n + 1)) (-(n + 1) * (x - t) ^ n) t := by
+    HasDerivAt (fun y ↦ (x - y) ^ (n + 1)) (-(n + 1) * (x - t) ^ n) t := by
   simp_rw [sub_eq_neg_add]
   rw [← neg_one_mul, mul_comm (-1 : ℝ), mul_assoc, mul_comm (-1 : ℝ), ← mul_assoc]
   convert HasDerivAt.pow (n + 1) ((hasDerivAt_id t).neg.add_const x)
@@ -140,7 +140,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
     (ht : UniqueDiffWithinAt ℝ t y) (hs : s ∈ 𝓝[t] y)
     (hf : DifferentiableWithinAt ℝ (iteratedDerivWithin (k + 1) f s) s y) :
     HasDerivWithinAt
-      (fun z => (((k + 1 : ℝ) * k !)⁻¹ * (x - z) ^ (k + 1)) • iteratedDerivWithin (k + 1) f s z)
+      (fun z ↦ (((k + 1 : ℝ) * k !)⁻¹ * (x - z) ^ (k + 1)) • iteratedDerivWithin (k + 1) f s z)
       ((((k + 1 : ℝ) * k !)⁻¹ * (x - y) ^ (k + 1)) • iteratedDerivWithin (k + 2) f s y -
         ((k ! : ℝ)⁻¹ * (x - y) ^ k) • iteratedDerivWithin (k + 1) f s y) t y := by
   replace hf :
@@ -192,7 +192,7 @@ Version for open intervals -/
 theorem taylorWithinEval_hasDerivAt_Ioo {f : ℝ → E} {a b t : ℝ} (x : ℝ) {n : ℕ} (hx : a < b)
     (ht : t ∈ Ioo a b) (hf : ContDiffOn ℝ n f (Icc a b))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Ioo a b)) :
-    HasDerivAt (fun y => taylorWithinEval f n (Icc a b) y x)
+    HasDerivAt (fun y ↦ taylorWithinEval f n (Icc a b) y x)
       (((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) t :=
   have h_nhds : Ioo a b ∈ 𝓝 t := isOpen_Ioo.mem_nhds ht
   have h_nhds' : Ioo a b ∈ 𝓝[Icc a b] t := nhdsWithin_le_nhds h_nhds
@@ -205,7 +205,7 @@ Version for closed intervals -/
 theorem hasDerivWithinAt_taylorWithinEval_at_Icc {f : ℝ → E} {a b t : ℝ} (x : ℝ) {n : ℕ}
     (hx : a < b) (ht : t ∈ Icc a b) (hf : ContDiffOn ℝ n f (Icc a b))
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Icc a b)) :
-    HasDerivWithinAt (fun y => taylorWithinEval f n (Icc a b) y x)
+    HasDerivWithinAt (fun y ↦ taylorWithinEval f n (Icc a b) y x)
       (((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) (Icc a b) t :=
   hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc hx t ht) (uniqueDiffOn_Icc hx)
     self_mem_nhdsWithin ht rfl.subset hf (hf' t ht)
@@ -321,7 +321,7 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     -- Estimate the iterated derivative by `C`
     · exact hC y ⟨hay, hyx.le.trans hx.2⟩
   -- Apply the mean value theorem for vector valued functions:
-  have A : ∀ t ∈ Icc a x, HasDerivWithinAt (fun y => taylorWithinEval f n (Icc a b) y x)
+  have A : ∀ t ∈ Icc a x, HasDerivWithinAt (fun y ↦ taylorWithinEval f n (Icc a b) y x)
       (((↑n !)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) (Icc a x) t := by
     intro t ht
     have I : Icc a x ⊆ Icc a b := Icc_subset_Icc_right hx.2
@@ -346,9 +346,9 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
     have : x = a := by simpa [← le_antisymm_iff] using hx
     simp [← this]
   -- We estimate by the supremum of the norm of the iterated derivative
-  let g : ℝ → ℝ := fun y => ‖iteratedDerivWithin (n + 1) f (Icc a b) y‖
+  let g : ℝ → ℝ := fun y ↦ ‖iteratedDerivWithin (n + 1) f (Icc a b) y‖
   use SupSet.sSup (g '' Icc a b) / (n !)
   intro x hx
   rw [div_mul_eq_mul_div₀]
-  refine taylor_mean_remainder_bound hab hf hx fun y => ?_
+  refine taylor_mean_remainder_bound hab hf hx fun y ↦ ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc

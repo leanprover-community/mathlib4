@@ -165,7 +165,7 @@ theorem dist_lt_of_nonempty_compact [Nonempty α] [CompactSpace α]
   have c : Continuous fun x ↦ dist (f x) (g x) := by continuity
   obtain ⟨x, -, le⟩ :=
     IsCompact.exists_isMaxOn isCompact_univ Set.univ_nonempty (Continuous.continuousOn c)
-  exact lt_of_le_of_lt (dist_le_iff_of_nonempty.mpr fun y => le trivial) (w x)
+  exact lt_of_le_of_lt (dist_le_iff_of_nonempty.mpr fun y ↦ le trivial) (w x)
 
 theorem dist_lt_iff_of_compact [CompactSpace α] (C0 : (0 : ℝ) < C) :
     dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C := by
@@ -498,7 +498,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
     @finite_cover_balls_of_compact β _ _ isCompact_univ _ ε₂0
   rcases hfin.nonempty_fintype with ⟨_⟩
   -- Associate to every point `y` in the space a nearby point `F y` in `tβ`
-  choose F hF using fun y => show ∃ z ∈ tβ, dist y z < ε₂ by simpa using htβ (mem_univ y)
+  choose F hF using fun y ↦ show ∃ z ∈ tβ, dist y z < ε₂ by simpa using htβ (mem_univ y)
   -- `F : β → β`, `hF : ∀ (y : β), F y ∈ tβ ∧ dist y (F y) < ε₂`
   /- Associate to every function a discrete approximation, mapping each point in `tα`
     to a point in `tβ` close to its true image by the function. -/

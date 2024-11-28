@@ -48,15 +48,15 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
     at `z₀` so it is not constant on the disk, which implies that its infimum is equal to `0` and
     hence that `v` is in the range of `f`. -/
   rintro v hv
-  have h1 : DiffContOnCl ℂ (fun z => f z - v) (ball z₀ r) := h.sub_const v
-  have h2 : ContinuousOn (fun z => ‖f z - v‖) (closedBall z₀ r) :=
+  have h1 : DiffContOnCl ℂ (fun z ↦ f z - v) (ball z₀ r) := h.sub_const v
+  have h2 : ContinuousOn (fun z ↦ ‖f z - v‖) (closedBall z₀ r) :=
     continuous_norm.comp_continuousOn (closure_ball z₀ hr.ne.symm ▸ h1.continuousOn)
   have h3 : AnalyticOnNhd ℂ f (ball z₀ r) := h.differentiableOn.analyticOnNhd isOpen_ball
   have h4 : ∀ z ∈ sphere z₀ r, ε / 2 ≤ ‖f z - v‖ := fun z hz => by
     linarith [hf z hz, show ‖v - f z₀‖ < ε / 2 from mem_ball.mp hv,
       norm_sub_sub_norm_sub_le_norm_sub (f z) v (f z₀)]
   have h5 : ‖f z₀ - v‖ < ε / 2 := by simpa [← dist_eq_norm, dist_comm] using mem_ball.mp hv
-  obtain ⟨z, hz1, hz2⟩ : ∃ z ∈ ball z₀ r, IsLocalMin (fun z => ‖f z - v‖) z :=
+  obtain ⟨z, hz1, hz2⟩ : ∃ z ∈ ball z₀ r, IsLocalMin (fun z ↦ ‖f z - v‖) z :=
     exists_isLocalMin_mem_ball h2 (mem_closedBall_self hr.le) fun z hz => h5.trans_le (h4 z hz)
   refine ⟨z, ball_subset_closedBall hz1, sub_eq_zero.mp ?_⟩
   have h6 := h1.differentiableOn.eventually_differentiableAt (isOpen_ball.mem_nhds hz1)
@@ -116,7 +116,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     If on the other hand there is one line along which `g` is not eventually constant, then the
     one-dimensional version of the open mapping theorem can be used to conclude. -/
   let ray : E → ℂ → E := fun z t => z₀ + t • z
-  let gray : E → ℂ → ℂ := fun z => g ∘ ray z
+  let gray : E → ℂ → ℂ := fun z ↦ g ∘ ray z
   obtain ⟨r, hr, hgr⟩ := isOpen_iff.mp (isOpen_analyticAt ℂ g) z₀ hg
   have h1 : ∀ z ∈ sphere (0 : E) 1, AnalyticOnNhd ℂ (gray z) (ball 0 r) := by
     refine fun z hz t ht => AnalyticAt.comp ?_ ?_

@@ -475,13 +475,13 @@ theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
   rfl
 
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
-    mfderiv I' (I.prod I') (fun y => (x₀, y)) y₀ =
+    mfderiv I' (I.prod I') (fun y ↦ (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
   refine (mdifferentiableAt_const.mfderiv_prod mdifferentiableAt_id).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
 
 theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
-    tangentMap I' (I.prod I') (fun y => (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
+    tangentMap I' (I.prod I') (fun y ↦ (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
   simp only [tangentMap, mfderiv_prod_right, TotalSpace.mk_inj]
   rfl
 

@@ -99,7 +99,7 @@ theorem measurable_measure_prod_mk_left [SFinite ν] {s : Set (α × β)} (hs : 
 /-- If `μ` is a σ-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
   a measurable function. -/
 theorem measurable_measure_prod_mk_right {μ : Measure α} [SFinite μ] {s : Set (α × β)}
-    (hs : MeasurableSet s) : Measurable fun y => μ ((fun x ↦ (x, y)) ⁻¹' s) :=
+    (hs : MeasurableSet s) : Measurable fun y ↦ μ ((fun x ↦ (x, y)) ⁻¹' s) :=
   measurable_measure_prod_mk_left (measurableSet_swap_iff.mpr hs)
 
 theorem Measurable.map_prod_mk_left [SFinite ν] :
@@ -144,14 +144,14 @@ theorem Measurable.lintegral_prod_right [SFinite ν] {f : α → β → ℝ≥0�
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   the symmetric version of Tonelli's theorem is measurable. -/
 theorem Measurable.lintegral_prod_left' [SFinite μ] {f : α × β → ℝ≥0∞} (hf : Measurable f) :
-    Measurable fun y => ∫⁻ x, f (x, y) ∂μ :=
+    Measurable fun y ↦ ∫⁻ x, f (x, y) ∂μ :=
   (measurable_swap_iff.mpr hf).lintegral_prod_right'
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   the symmetric version of Tonelli's theorem is measurable.
   This version has the argument `f` in curried form. -/
 theorem Measurable.lintegral_prod_left [SFinite μ] {f : α → β → ℝ≥0∞}
-    (hf : Measurable (uncurry f)) : Measurable fun y => ∫⁻ x, f x y ∂μ :=
+    (hf : Measurable (uncurry f)) : Measurable fun y ↦ ∫⁻ x, f x y ∂μ :=
   hf.lintegral_prod_left'
 
 /-! ### The product measure -/
@@ -695,7 +695,7 @@ namespace QuasiMeasurePreserving
 
 theorem prod_of_right {f : α × β → γ} {μ : Measure α} {ν : Measure β} {τ : Measure γ}
     (hf : Measurable f) [SFinite ν]
-    (h2f : ∀ᵐ x ∂μ, QuasiMeasurePreserving (fun y => f (x, y)) ν τ) :
+    (h2f : ∀ᵐ x ∂μ, QuasiMeasurePreserving (fun y ↦ f (x, y)) ν τ) :
     QuasiMeasurePreserving f (μ.prod ν) τ := by
   refine ⟨hf, ?_⟩
   refine AbsolutelyContinuous.mk fun s hs h2s => ?_
@@ -770,7 +770,7 @@ theorem lintegral_prod_of_measurable :
     conv_rhs => enter [2, x]; erw [lintegral_add_left (hf.comp (m (x := x)))]
     simp [lintegral_add_left, Measurable.lintegral_prod_right', hf, h2f, h2g]
   · intro f hf h2f h3f
-    have kf : ∀ x n, Measurable fun y => f n (x, y) := fun x n => (hf n).comp m
+    have kf : ∀ x n, Measurable fun y ↦ f n (x, y) := fun x n => (hf n).comp m
     have k2f : ∀ x, Monotone fun n y => f n (x, y) := fun x i j hij y => h2f hij (x, y)
     have lf : ∀ n, Measurable fun x ↦ ∫⁻ y, f n (x, y) ∂ν := fun n => (hf n).lintegral_prod_right'
     have l2f : Monotone fun n x => ∫⁻ y, f n (x, y) ∂ν := fun i j hij x =>

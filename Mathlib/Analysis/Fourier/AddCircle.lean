@@ -287,7 +287,7 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     intro x; rfl
   -- After https://github.com/leanprover/lean4/pull/3124, we need to add `singlePass := true` to avoid an infinite loop.
   simp_rw (config := {singlePass := true}) [this]
-  rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
+  rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z ↦ _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
 
@@ -438,7 +438,7 @@ theorem hasDerivAt_fourier (n : ℤ) (x : ℝ) :
     HasDerivAt (fun y : ℝ => fourier n (y : AddCircle T))
       (2 * π * I * n / T * fourier n (x : AddCircle T)) x := by
   simp_rw [fourier_coe_apply]
-  refine (?_ : HasDerivAt (fun y => exp (2 * π * I * n * y / T)) _ _).comp_ofReal
+  refine (?_ : HasDerivAt (fun y ↦ exp (2 * π * I * n * y / T)) _ _).comp_ofReal
   rw [(fun α β => by ring : ∀ α β : ℂ, α * exp β = exp β * α)]
   refine (hasDerivAt_exp _).comp (x : ℂ) ?_
   convert hasDerivAt_mul_const (2 * ↑π * I * ↑n / T) using 1

@@ -1157,16 +1157,16 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
 
 theorem continuousWithinAt_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     {f : α → ∀ i, π i} {s : Set α} {x : α} :
-    ContinuousWithinAt f s x ↔ ∀ i, ContinuousWithinAt (fun y => f y i) s x :=
+    ContinuousWithinAt f s x ↔ ∀ i, ContinuousWithinAt (fun y ↦ f y i) s x :=
   tendsto_pi_nhds
 
 theorem continuousOn_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    {f : α → ∀ i, π i} {s : Set α} : ContinuousOn f s ↔ ∀ i, ContinuousOn (fun y => f y i) s :=
+    {f : α → ∀ i, π i} {s : Set α} : ContinuousOn f s ↔ ∀ i, ContinuousOn (fun y ↦ f y i) s :=
   ⟨fun h i x hx => tendsto_pi_nhds.1 (h x hx) i, fun h x hx => tendsto_pi_nhds.2 fun i => h i x hx⟩
 
 @[fun_prop]
 theorem continuousOn_pi' {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    {f : α → ∀ i, π i} {s : Set α} (hf : ∀ i, ContinuousOn (fun y => f y i) s) :
+    {f : α → ∀ i, π i} {s : Set α} (hf : ∀ i, ContinuousOn (fun y ↦ f y i) s) :
     ContinuousOn f s :=
   continuousOn_pi.2 hf
 

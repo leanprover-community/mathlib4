@@ -169,10 +169,10 @@ lemma dist_prod_same_right {x₁ x₂ : α} {y : β} : dist (x₁, y) (x₂, y) 
   simp [Prod.dist_eq, dist_nonneg]
 
 lemma ball_prod_same (x : α) (y : β) (r : ℝ) : ball x r ×ˢ ball y r = ball (x, y) r :=
-  ext fun z => by simp [Prod.dist_eq]
+  ext fun z ↦ by simp [Prod.dist_eq]
 
 lemma closedBall_prod_same (x : α) (y : β) (r : ℝ) :
-    closedBall x r ×ˢ closedBall y r = closedBall (x, y) r := ext fun z => by simp [Prod.dist_eq]
+    closedBall x r ×ˢ closedBall y r = closedBall (x, y) r := ext fun z ↦ by simp [Prod.dist_eq]
 
 lemma sphere_prod (x : α × β) (r : ℝ) :
     sphere x r = sphere x.1 r ×ˢ closedBall x.2 r ∪ closedBall x.1 r ×ˢ sphere x.2 r := by

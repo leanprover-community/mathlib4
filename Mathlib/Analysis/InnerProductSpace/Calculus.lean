@@ -144,7 +144,7 @@ theorem ContDiff.norm_sq (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x ↦ ‖f
   (contDiff_norm_sq 𝕜).comp hf
 
 theorem ContDiffWithinAt.norm_sq (hf : ContDiffWithinAt ℝ n f s x) :
-    ContDiffWithinAt ℝ n (fun y => ‖f y‖ ^ 2) s x :=
+    ContDiffWithinAt ℝ n (fun y ↦ ‖f y‖ ^ 2) s x :=
   (contDiff_norm_sq 𝕜).contDiffAt.comp_contDiffWithinAt x hf
 
 nonrec theorem ContDiffAt.norm_sq (hf : ContDiffAt ℝ n f x) : ContDiffAt ℝ n (‖f ·‖ ^ 2) x :=
@@ -155,37 +155,37 @@ theorem contDiffAt_norm {x : E} (hx : x ≠ 0) : ContDiffAt ℝ n norm x := by
   simpa only [id, sqrt_sq, norm_nonneg] using (contDiffAt_id.norm_sq 𝕜).sqrt this
 
 theorem ContDiffAt.norm (hf : ContDiffAt ℝ n f x) (h0 : f x ≠ 0) :
-    ContDiffAt ℝ n (fun y => ‖f y‖) x :=
+    ContDiffAt ℝ n (fun y ↦ ‖f y‖) x :=
   (contDiffAt_norm 𝕜 h0).comp x hf
 
 theorem ContDiffAt.dist (hf : ContDiffAt ℝ n f x) (hg : ContDiffAt ℝ n g x) (hne : f x ≠ g x) :
-    ContDiffAt ℝ n (fun y => dist (f y) (g y)) x := by
+    ContDiffAt ℝ n (fun y ↦ dist (f y) (g y)) x := by
   simp only [dist_eq_norm]
   exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
 
 theorem ContDiffWithinAt.norm (hf : ContDiffWithinAt ℝ n f s x) (h0 : f x ≠ 0) :
-    ContDiffWithinAt ℝ n (fun y => ‖f y‖) s x :=
+    ContDiffWithinAt ℝ n (fun y ↦ ‖f y‖) s x :=
   (contDiffAt_norm 𝕜 h0).comp_contDiffWithinAt x hf
 
 theorem ContDiffWithinAt.dist (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x)
-    (hne : f x ≠ g x) : ContDiffWithinAt ℝ n (fun y => dist (f y) (g y)) s x := by
+    (hne : f x ≠ g x) : ContDiffWithinAt ℝ n (fun y ↦ dist (f y) (g y)) s x := by
   simp only [dist_eq_norm]; exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
 
-theorem ContDiffOn.norm_sq (hf : ContDiffOn ℝ n f s) : ContDiffOn ℝ n (fun y => ‖f y‖ ^ 2) s :=
+theorem ContDiffOn.norm_sq (hf : ContDiffOn ℝ n f s) : ContDiffOn ℝ n (fun y ↦ ‖f y‖ ^ 2) s :=
   fun x hx => (hf x hx).norm_sq 𝕜
 
 theorem ContDiffOn.norm (hf : ContDiffOn ℝ n f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
-    ContDiffOn ℝ n (fun y => ‖f y‖) s := fun x hx => (hf x hx).norm 𝕜 (h0 x hx)
+    ContDiffOn ℝ n (fun y ↦ ‖f y‖) s := fun x hx => (hf x hx).norm 𝕜 (h0 x hx)
 
 theorem ContDiffOn.dist (hf : ContDiffOn ℝ n f s) (hg : ContDiffOn ℝ n g s)
-    (hne : ∀ x ∈ s, f x ≠ g x) : ContDiffOn ℝ n (fun y => dist (f y) (g y)) s := fun x hx =>
+    (hne : ∀ x ∈ s, f x ≠ g x) : ContDiffOn ℝ n (fun y ↦ dist (f y) (g y)) s := fun x hx =>
   (hf x hx).dist 𝕜 (hg x hx) (hne x hx)
 
-theorem ContDiff.norm (hf : ContDiff ℝ n f) (h0 : ∀ x, f x ≠ 0) : ContDiff ℝ n fun y => ‖f y‖ :=
+theorem ContDiff.norm (hf : ContDiff ℝ n f) (h0 : ∀ x, f x ≠ 0) : ContDiff ℝ n fun y ↦ ‖f y‖ :=
   contDiff_iff_contDiffAt.2 fun x ↦ hf.contDiffAt.norm 𝕜 (h0 x)
 
 theorem ContDiff.dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (hne : ∀ x, f x ≠ g x) :
-    ContDiff ℝ n fun y => dist (f y) (g y) :=
+    ContDiff ℝ n fun y ↦ dist (f y) (g y) :=
   contDiff_iff_contDiffAt.2 fun x ↦ hf.contDiffAt.dist 𝕜 hg.contDiffAt (hne x)
 
 end
@@ -219,49 +219,49 @@ section
 include 𝕜
 
 theorem DifferentiableAt.norm_sq (hf : DifferentiableAt ℝ f x) :
-    DifferentiableAt ℝ (fun y => ‖f y‖ ^ 2) x :=
+    DifferentiableAt ℝ (fun y ↦ ‖f y‖ ^ 2) x :=
   ((contDiffAt_id.norm_sq 𝕜).differentiableAt le_rfl).comp x hf
 
 theorem DifferentiableAt.norm (hf : DifferentiableAt ℝ f x) (h0 : f x ≠ 0) :
-    DifferentiableAt ℝ (fun y => ‖f y‖) x :=
+    DifferentiableAt ℝ (fun y ↦ ‖f y‖) x :=
   ((contDiffAt_norm 𝕜 h0).differentiableAt le_rfl).comp x hf
 
 theorem DifferentiableAt.dist (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
-    (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y => dist (f y) (g y)) x := by
+    (hne : f x ≠ g x) : DifferentiableAt ℝ (fun y ↦ dist (f y) (g y)) x := by
   simp only [dist_eq_norm]; exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
 
-theorem Differentiable.norm_sq (hf : Differentiable ℝ f) : Differentiable ℝ fun y => ‖f y‖ ^ 2 :=
+theorem Differentiable.norm_sq (hf : Differentiable ℝ f) : Differentiable ℝ fun y ↦ ‖f y‖ ^ 2 :=
   fun x ↦ (hf x).norm_sq 𝕜
 
 theorem Differentiable.norm (hf : Differentiable ℝ f) (h0 : ∀ x, f x ≠ 0) :
-    Differentiable ℝ fun y => ‖f y‖ := fun x ↦ (hf x).norm 𝕜 (h0 x)
+    Differentiable ℝ fun y ↦ ‖f y‖ := fun x ↦ (hf x).norm 𝕜 (h0 x)
 
 theorem Differentiable.dist (hf : Differentiable ℝ f) (hg : Differentiable ℝ g)
-    (hne : ∀ x, f x ≠ g x) : Differentiable ℝ fun y => dist (f y) (g y) := fun x =>
+    (hne : ∀ x, f x ≠ g x) : Differentiable ℝ fun y ↦ dist (f y) (g y) := fun x =>
   (hf x).dist 𝕜 (hg x) (hne x)
 
 theorem DifferentiableWithinAt.norm_sq (hf : DifferentiableWithinAt ℝ f s x) :
-    DifferentiableWithinAt ℝ (fun y => ‖f y‖ ^ 2) s x :=
+    DifferentiableWithinAt ℝ (fun y ↦ ‖f y‖ ^ 2) s x :=
   ((contDiffAt_id.norm_sq 𝕜).differentiableAt le_rfl).comp_differentiableWithinAt x hf
 
 theorem DifferentiableWithinAt.norm (hf : DifferentiableWithinAt ℝ f s x) (h0 : f x ≠ 0) :
-    DifferentiableWithinAt ℝ (fun y => ‖f y‖) s x :=
+    DifferentiableWithinAt ℝ (fun y ↦ ‖f y‖) s x :=
   ((contDiffAt_id.norm 𝕜 h0).differentiableAt le_rfl).comp_differentiableWithinAt x hf
 
 theorem DifferentiableWithinAt.dist (hf : DifferentiableWithinAt ℝ f s x)
     (hg : DifferentiableWithinAt ℝ g s x) (hne : f x ≠ g x) :
-    DifferentiableWithinAt ℝ (fun y => dist (f y) (g y)) s x := by
+    DifferentiableWithinAt ℝ (fun y ↦ dist (f y) (g y)) s x := by
   simp only [dist_eq_norm]
   exact (hf.sub hg).norm 𝕜 (sub_ne_zero.2 hne)
 
 theorem DifferentiableOn.norm_sq (hf : DifferentiableOn ℝ f s) :
-    DifferentiableOn ℝ (fun y => ‖f y‖ ^ 2) s := fun x hx => (hf x hx).norm_sq 𝕜
+    DifferentiableOn ℝ (fun y ↦ ‖f y‖ ^ 2) s := fun x hx => (hf x hx).norm_sq 𝕜
 
 theorem DifferentiableOn.norm (hf : DifferentiableOn ℝ f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
-    DifferentiableOn ℝ (fun y => ‖f y‖) s := fun x hx => (hf x hx).norm 𝕜 (h0 x hx)
+    DifferentiableOn ℝ (fun y ↦ ‖f y‖) s := fun x hx => (hf x hx).norm 𝕜 (h0 x hx)
 
 theorem DifferentiableOn.dist (hf : DifferentiableOn ℝ f s) (hg : DifferentiableOn ℝ g s)
-    (hne : ∀ x ∈ s, f x ≠ g x) : DifferentiableOn ℝ (fun y => dist (f y) (g y)) s := fun x hx =>
+    (hne : ∀ x ∈ s, f x ≠ g x) : DifferentiableOn ℝ (fun y ↦ dist (f y) (g y)) s := fun x hx =>
   (hf x hx).dist 𝕜 (hg x hx) (hne x hx)
 
 end

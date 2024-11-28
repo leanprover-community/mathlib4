@@ -145,9 +145,9 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [Nontrivial R] [AddCommGroup 
   · rintro ⟨x, nz, w⟩
     refine ⟨ofRepr <| LinearEquiv.symm
       { toFun := fun f => f default • x
-        invFun := fun y => Finsupp.single default (w y).choose
+        invFun := fun y ↦ Finsupp.single default (w y).choose
         left_inv := fun f => Finsupp.unique_ext ?_
-        right_inv := fun y => ?_
+        right_inv := fun y ↦ ?_
         map_add' := fun y z => ?_
         map_smul' := fun c y => ?_ }⟩
     · simp [Finsupp.add_apply, add_smul]
@@ -396,7 +396,7 @@ noncomputable def mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y 
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) : Basis (Fin (n + 1)) R O :=
   mkFinCons ⟨y, yO⟩ (b.map (Submodule.comapSubtypeEquivOfLe hNO).symm)
     (fun c x hc hx => hli c x (Submodule.mem_comap.mp hc) (congr_arg ((↑) : O → M) hx))
-    fun z => hsp z z.2
+    fun z ↦ hsp z z.2
 
 @[simp]
 theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)

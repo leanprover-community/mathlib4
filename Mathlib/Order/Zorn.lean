@@ -126,7 +126,7 @@ theorem zorn_le_nonempty₀ (s : Set α)
   · rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
     exact ⟨m, hxm, hms, fun z hzs hmz => @hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   · rcases c.eq_empty_or_nonempty with (rfl | ⟨y, hy⟩)
-    · exact ⟨x, ⟨hxs, le_rfl⟩, fun z => False.elim⟩
+    · exact ⟨x, ⟨hxs, le_rfl⟩, fun z ↦ False.elim⟩
     · rcases ih c (fun z hz => (hcs hz).1) hc y hy with ⟨z, hzs, hz⟩
       exact ⟨z, ⟨hzs, (hcs hy).2.trans <| hz _ hy⟩, hz⟩
 

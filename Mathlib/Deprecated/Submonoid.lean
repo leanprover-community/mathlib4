@@ -80,9 +80,9 @@ theorem IsSubmonoid.inter {s₁ s₂ : Set M} (is₁ : IsSubmonoid s₁) (is₂ 
       an `AddSubmonoid` of `M`."]
 theorem IsSubmonoid.iInter {ι : Sort*} {s : ι → Set M} (h : ∀ y : ι, IsSubmonoid (s y)) :
     IsSubmonoid (Set.iInter s) :=
-  { one_mem := Set.mem_iInter.2 fun y => (h y).one_mem
+  { one_mem := Set.mem_iInter.2 fun y ↦ (h y).one_mem
     mul_mem := fun h₁ h₂ =>
-      Set.mem_iInter.2 fun y => (h y).mul_mem (Set.mem_iInter.1 h₁ y) (Set.mem_iInter.1 h₂ y) }
+      Set.mem_iInter.2 fun y ↦ (h y).mul_mem (Set.mem_iInter.1 h₁ y) (Set.mem_iInter.1 h₂ y) }
 
 /-- The union of an indexed, directed, nonempty set of submonoids of a monoid `M` is a submonoid
     of `M`. -/

@@ -201,7 +201,7 @@ instance completeSpace : CompleteSpace ℤ_[p] :=
   have : IsClosed { x : ℚ_[p] | ‖x‖ ≤ 1 } := isClosed_le continuous_norm continuous_const
   this.completeSpace_coe
 
-instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
+instance : Norm ℤ_[p] := ⟨fun z ↦ ‖(z : ℚ_[p])‖⟩
 
 variable {p}
 

@@ -398,9 +398,9 @@ theorem PartialHomeomorph.hasFDerivAt_symm (f : PartialHomeomorph E F) {f' : E �
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ f x := by
   rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
-  have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
-    isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z => hC _
-  have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.isLittleO.trans_isBigO A
+  have A : (fun z ↦ z - x) =O[𝓝[s] x] fun z ↦ f' (z - x) :=
+    isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z ↦ hC _
+  have : (fun z ↦ f z - f x) ~[𝓝[s] x] fun z ↦ f' (z - x) := h.isLittleO.trans_isBigO A
   simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
 
 theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :

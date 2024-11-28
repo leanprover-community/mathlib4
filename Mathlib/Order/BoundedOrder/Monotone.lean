@@ -90,25 +90,25 @@ theorem antitone_le {x : α} : Antitone (· ≤ x) := fun _ _ h' h => h'.trans h
 theorem antitone_lt {x : α} : Antitone (· < x) := fun _ _ h' h => h'.trans_lt h
 
 theorem Monotone.forall {P : β → α → Prop} (hP : ∀ x, Monotone (P x)) :
-    Monotone fun y => ∀ x, P x y :=
+    Monotone fun y ↦ ∀ x, P x y :=
   fun _ _ hy h x => hP x hy <| h x
 
 theorem Antitone.forall {P : β → α → Prop} (hP : ∀ x, Antitone (P x)) :
-    Antitone fun y => ∀ x, P x y :=
+    Antitone fun y ↦ ∀ x, P x y :=
   fun _ _ hy h x => hP x hy (h x)
 
 theorem Monotone.ball {P : β → α → Prop} {s : Set β} (hP : ∀ x ∈ s, Monotone (P x)) :
-    Monotone fun y => ∀ x ∈ s, P x y := fun _ _ hy h x hx => hP x hx hy (h x hx)
+    Monotone fun y ↦ ∀ x ∈ s, P x y := fun _ _ hy h x hx => hP x hx hy (h x hx)
 
 theorem Antitone.ball {P : β → α → Prop} {s : Set β} (hP : ∀ x ∈ s, Antitone (P x)) :
-    Antitone fun y => ∀ x ∈ s, P x y := fun _ _ hy h x hx => hP x hx hy (h x hx)
+    Antitone fun y ↦ ∀ x ∈ s, P x y := fun _ _ hy h x hx => hP x hx hy (h x hx)
 
 theorem Monotone.exists {P : β → α → Prop} (hP : ∀ x, Monotone (P x)) :
-    Monotone fun y => ∃ x, P x y :=
+    Monotone fun y ↦ ∃ x, P x y :=
   fun _ _ hy ⟨x, hx⟩ ↦ ⟨x, hP x hy hx⟩
 
 theorem Antitone.exists {P : β → α → Prop} (hP : ∀ x, Antitone (P x)) :
-    Antitone fun y => ∃ x, P x y :=
+    Antitone fun y ↦ ∃ x, P x y :=
   fun _ _ hy ⟨x, hx⟩ ↦ ⟨x, hP x hy hx⟩
 
 theorem forall_ge_iff {P : α → Prop} {x₀ : α} (hP : Monotone P) :

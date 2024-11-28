@@ -1304,11 +1304,11 @@ theorem tendsto_pi_nhds {f : Y → ∀ i, π i} {g : ∀ i, π i} {u : Filter Y}
   rw [nhds_pi, Filter.tendsto_pi]
 
 theorem continuousAt_pi {f : X → ∀ i, π i} {x : X} :
-    ContinuousAt f x ↔ ∀ i, ContinuousAt (fun y => f y i) x :=
+    ContinuousAt f x ↔ ∀ i, ContinuousAt (fun y ↦ f y i) x :=
   tendsto_pi_nhds
 
 @[fun_prop]
-theorem continuousAt_pi' {f : X → ∀ i, π i} {x : X} (hf : ∀ i, ContinuousAt (fun y => f y i) x) :
+theorem continuousAt_pi' {f : X → ∀ i, π i} {x : X} (hf : ∀ i, ContinuousAt (fun y ↦ f y i) x) :
     ContinuousAt f x :=
   continuousAt_pi.2 hf
 

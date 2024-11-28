@@ -86,7 +86,7 @@ instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMono
   AddMonoidHom.addCommGroup
 
 instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) :=
-  { intCast := fun z => z • (1 : AddMonoid.End M) }
+  { intCast := fun z ↦ z • (1 : AddMonoid.End M) }
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]

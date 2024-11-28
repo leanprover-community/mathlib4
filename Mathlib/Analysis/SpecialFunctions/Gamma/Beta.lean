@@ -544,7 +544,7 @@ namespace Complex
 
 theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     Gamma s * Gamma (s + 1 / 2) = Gamma (2 * s) * (2 : ℂ) ^ (1 - 2 * s) * ↑(√π) := by
-  suffices (fun z => (Gamma z)⁻¹ * (Gamma (z + 1 / 2))⁻¹) = fun z =>
+  suffices (fun z ↦ (Gamma z)⁻¹ * (Gamma (z + 1 / 2))⁻¹) = fun z =>
       (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(√π) by
     convert congr_arg Inv.inv (congr_fun this s) using 1
     · rw [mul_inv, inv_inv, inv_inv]
@@ -554,7 +554,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     refine (differentiable_one_div_Gamma.mul ?_).differentiableOn
     exact differentiable_one_div_Gamma.comp (differentiable_id.add (differentiable_const _))
   have h2 : AnalyticOnNhd ℂ
-      (fun z => (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(√π)) univ := by
+      (fun z ↦ (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(√π)) univ := by
     refine DifferentiableOn.analyticOnNhd ?_ isOpen_univ
     refine (Differentiable.mul ?_ (differentiable_const _)).differentiableOn
     apply Differentiable.mul

@@ -133,7 +133,7 @@ theorem HasFiniteFPowerSeriesOnBall.congr (hf : HasFiniteFPowerSeriesOnBall f p 
 /-- If a function `f` has a finite power series `p` around `x`, then the function
 `z ↦ f (z - y)` has the same finite power series around `x + y`. -/
 theorem HasFiniteFPowerSeriesOnBall.comp_sub (hf : HasFiniteFPowerSeriesOnBall f p x n r) (y : E) :
-    HasFiniteFPowerSeriesOnBall (fun z => f (z - y)) p (x + y) n r :=
+    HasFiniteFPowerSeriesOnBall (fun z ↦ f (z - y)) p (x + y) n r :=
   ⟨hf.1.comp_sub y, hf.finite⟩
 
 theorem HasFiniteFPowerSeriesOnBall.mono (hf : HasFiniteFPowerSeriesOnBall f p x n r)

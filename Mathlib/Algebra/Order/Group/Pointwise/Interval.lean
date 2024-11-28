@@ -788,7 +788,7 @@ theorem inv_Ioi₀ {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
   rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
 
 theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx : 0 < x) :
-    (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
+    (fun y ↦ x * y) '' Ioi (0 : k) = Ioi 0 := by
   erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage,
     preimage_const_mul_Ioi 0 (inv_pos.mpr hx), zero_div]
 

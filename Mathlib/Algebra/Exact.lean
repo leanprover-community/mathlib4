@@ -50,7 +50,7 @@ lemma comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 :=
 
 lemma of_comp_of_mem_range [Zero P] (h1 : g ∘ f = 0)
     (h2 : ∀ x, g x = 0 → x ∈ Set.range f) : Exact f g :=
-  fun y => Iff.intro (h2 y) <|
+  fun y ↦ Iff.intro (h2 y) <|
     Exists.rec ((forall_apply_eq_imp_iff (p := (g · = 0))).mpr (congrFun h1) y)
 
 lemma comp_injective [Zero P] [Zero P'] (exact : Exact f g)

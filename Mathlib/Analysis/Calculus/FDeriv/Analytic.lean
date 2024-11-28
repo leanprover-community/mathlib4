@@ -82,7 +82,7 @@ theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWith
     (fun y ↦ f y.1 - f y.2 - ((continuousMultilinearCurryFin1 𝕜 E F) (p 1)) (y.1 - y.2))
       =o[𝓝[insert x s ×ˢ insert x s] (x, x)] fun y ↦ y.1 - y.2 := by
   refine h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right ?_)
-  refine isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
+  refine isLittleO_iff_exists_eq_mul.2 ⟨fun y ↦ ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
   apply Tendsto.mono_left _ nhdsWithin_le_nhds
   refine (continuous_id.sub continuous_const).norm.tendsto' _ _ ?_
   rw [_root_.id, sub_self, norm_zero]

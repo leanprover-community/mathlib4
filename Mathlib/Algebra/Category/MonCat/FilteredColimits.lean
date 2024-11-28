@@ -290,7 +290,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc := colimitDesc.{v, u} F
   fac t j := MonoidHom.ext fun x ↦ congr_fun ((Types.TypeMax.colimitCoconeIsColimit.{v, u}
     (F ⋙ forget MonCat)).fac ((forget MonCat).mapCocone t) j) x
-  uniq t m h := MonoidHom.ext fun y => congr_fun
+  uniq t m h := MonoidHom.ext fun y ↦ congr_fun
       ((Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
         ((forget MonCat).map m)
         fun j => funext fun x ↦ DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y

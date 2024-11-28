@@ -641,7 +641,7 @@ theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff_separatingLeft_toLinear
 -- Lemmas transferring nondegeneracy between a matrix and its associated bilinear form
 theorem _root_.Matrix.Nondegenerate.toLinearMap₂' {M : Matrix ι ι R₁} (h : M.Nondegenerate) :
     (Matrix.toLinearMap₂' R₁ M).SeparatingLeft (R := R₁) := fun x hx =>
-  h.eq_zero_of_ortho fun y => by simpa only [toLinearMap₂'_apply'] using hx y
+  h.eq_zero_of_ortho fun y ↦ by simpa only [toLinearMap₂'_apply'] using hx y
 
 @[simp]
 theorem _root_.Matrix.separatingLeft_toLinearMap₂'_iff {M : Matrix ι ι R₁} :

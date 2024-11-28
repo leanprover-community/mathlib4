@@ -73,18 +73,18 @@ theorem SuperpolynomialDecay.congr (hf : SuperpolynomialDecay l k f) (hfg : ∀ 
 
 @[simp]
 theorem superpolynomialDecay_zero (l : Filter α) (k : α → β) : SuperpolynomialDecay l k 0 :=
-  fun z => by simpa only [Pi.zero_apply, mul_zero] using tendsto_const_nhds
+  fun z ↦ by simpa only [Pi.zero_apply, mul_zero] using tendsto_const_nhds
 
 theorem SuperpolynomialDecay.add [ContinuousAdd β] (hf : SuperpolynomialDecay l k f)
-    (hg : SuperpolynomialDecay l k g) : SuperpolynomialDecay l k (f + g) := fun z => by
+    (hg : SuperpolynomialDecay l k g) : SuperpolynomialDecay l k (f + g) := fun z ↦ by
   simpa only [mul_add, add_zero, Pi.add_apply] using (hf z).add (hg z)
 
 theorem SuperpolynomialDecay.mul [ContinuousMul β] (hf : SuperpolynomialDecay l k f)
-    (hg : SuperpolynomialDecay l k g) : SuperpolynomialDecay l k (f * g) := fun z => by
+    (hg : SuperpolynomialDecay l k g) : SuperpolynomialDecay l k (f * g) := fun z ↦ by
   simpa only [mul_assoc, one_mul, mul_zero, pow_zero] using (hf z).mul (hg 0)
 
 theorem SuperpolynomialDecay.mul_const [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
-    SuperpolynomialDecay l k fun n => f n * c := fun z => by
+    SuperpolynomialDecay l k fun n => f n * c := fun z ↦ by
   simpa only [← mul_assoc, zero_mul] using Tendsto.mul_const c (hf z)
 
 theorem SuperpolynomialDecay.const_mul [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
@@ -199,7 +199,7 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
     ∀ z : ℕ, IsBoundedUnder (· ≤ ·) l fun a : α => |k a ^ z * f a| := by
   refine
     ⟨fun h z => Tendsto.isBoundedUnder_le (Tendsto.abs (h z)), fun h =>
-      (superpolynomialDecay_iff_abs_tendsto_zero l k f).2 fun z => ?_⟩
+      (superpolynomialDecay_iff_abs_tendsto_zero l k f).2 fun z ↦ ?_⟩
   obtain ⟨m, hm⟩ := h (z + 1)
   have h1 : Tendsto (fun _ : α => (0 : β)) l (𝓝 0) := tendsto_const_nhds
   have h2 : Tendsto (fun a : α => |(k a)⁻¹| * m) l (𝓝 0) :=
@@ -311,7 +311,7 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
 
 theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =o[l] fun a : α => k a ^ z := by
-  refine ⟨fun h z => ?_, fun h ↦ (superpolynomialDecay_iff_isBigO f hk).2 fun z => (h z).isBigO⟩
+  refine ⟨fun h z => ?_, fun h ↦ (superpolynomialDecay_iff_isBigO f hk).2 fun z ↦ (h z).isBigO⟩
   have hk0 : ∀ᶠ x in l, k x ≠ 0 := hk.eventually_ne_atTop 0
   have : (fun _ : α => (1 : β)) =o[l] k :=
     isLittleO_of_tendsto' (hk0.mono fun x hkx hkx' => absurd hkx' hkx)

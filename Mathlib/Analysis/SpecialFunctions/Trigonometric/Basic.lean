@@ -51,7 +51,7 @@ namespace Complex
 
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin := by
-  change Continuous fun z => (exp (-z * I) - exp (z * I)) * I / 2
+  change Continuous fun z ↦ (exp (-z * I) - exp (z * I)) * I / 2
   continuity
 
 @[fun_prop]
@@ -60,7 +60,7 @@ theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
 
 @[continuity, fun_prop]
 theorem continuous_cos : Continuous cos := by
-  change Continuous fun z => (exp (z * I) + exp (-z * I)) / 2
+  change Continuous fun z ↦ (exp (z * I) + exp (-z * I)) / 2
   continuity
 
 @[fun_prop]
@@ -69,12 +69,12 @@ theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
 
 @[continuity, fun_prop]
 theorem continuous_sinh : Continuous sinh := by
-  change Continuous fun z => (exp z - exp (-z)) / 2
+  change Continuous fun z ↦ (exp z - exp (-z)) / 2
   continuity
 
 @[continuity, fun_prop]
 theorem continuous_cosh : Continuous cosh := by
-  change Continuous fun z => (exp z + exp (-z)) / 2
+  change Continuous fun z ↦ (exp z + exp (-z)) / 2
   continuity
 
 end Complex
@@ -405,7 +405,7 @@ theorem sin_nonneg_of_mem_Icc {x : ℝ} (hx : x ∈ Icc 0 π) : 0 ≤ sin x := b
   rw [← closure_Ioo pi_ne_zero.symm] at hx
   exact
     closure_lt_subset_le continuous_const continuous_sin
-      (closure_mono (fun y => sin_pos_of_mem_Ioo) hx)
+      (closure_mono (fun y ↦ sin_pos_of_mem_Ioo) hx)
 
 theorem sin_nonneg_of_nonneg_of_le_pi {x : ℝ} (h0x : 0 ≤ x) (hxp : x ≤ π) : 0 ≤ sin x :=
   sin_nonneg_of_mem_Icc ⟨h0x, hxp⟩

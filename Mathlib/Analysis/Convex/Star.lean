@@ -261,7 +261,7 @@ theorem StarConvex.smul (hs : StarConvex 𝕜 x s) (c : 𝕜) : StarConvex 𝕜 
   hs.linear_image <| LinearMap.lsmul _ _ c
 
 theorem StarConvex.preimage_smul {c : 𝕜} (hs : StarConvex 𝕜 (c • x) s) :
-    StarConvex 𝕜 x ((fun z => c • z) ⁻¹' s) :=
+    StarConvex 𝕜 x ((fun z ↦ c • z) ⁻¹' s) :=
   hs.linear_preimage (LinearMap.lsmul _ _ c)
 
 theorem StarConvex.affinity (hs : StarConvex 𝕜 x s) (z : E) (c : 𝕜) :

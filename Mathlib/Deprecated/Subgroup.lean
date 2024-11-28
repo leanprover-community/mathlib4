@@ -97,9 +97,9 @@ theorem IsSubgroup.inter {s₁ s₂ : Set G} (hs₁ : IsSubgroup s₁) (hs₂ : 
 @[to_additive]
 theorem IsSubgroup.iInter {ι : Sort*} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
     IsSubgroup (Set.iInter s) :=
-  { IsSubmonoid.iInter fun y => (hs y).toIsSubmonoid with
+  { IsSubmonoid.iInter fun y ↦ (hs y).toIsSubmonoid with
     inv_mem := fun h =>
-      Set.mem_iInter.2 fun y => IsSubgroup.inv_mem (hs _) (Set.mem_iInter.1 h y) }
+      Set.mem_iInter.2 fun y ↦ IsSubgroup.inv_mem (hs _) (Set.mem_iInter.1 h y) }
 
 @[to_additive]
 theorem isSubgroup_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set G}

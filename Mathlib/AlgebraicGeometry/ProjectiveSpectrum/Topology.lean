@@ -370,7 +370,7 @@ theorem basicOpen_pow (f : A) (n : ℕ) (hn : 0 < n) : basicOpen 𝒜 (f ^ n) = 
 theorem basicOpen_eq_union_of_projection (f : A) :
     basicOpen 𝒜 f = ⨆ i : ℕ, basicOpen 𝒜 (GradedAlgebra.proj 𝒜 i f) :=
   TopologicalSpace.Opens.ext <|
-    Set.ext fun z => by
+    Set.ext fun z ↦ by
       erw [mem_coe_basicOpen, TopologicalSpace.Opens.mem_sSup]
       constructor <;> intro hz
       · rcases show ∃ i, GradedAlgebra.proj 𝒜 i f ∉ z.asHomogeneousIdeal by

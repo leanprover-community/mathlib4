@@ -466,7 +466,7 @@ product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor s
 theorem HasFTaylorSeriesUpToOn.prod {n : WithTop ℕ∞}
     (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
-    HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
+    HasFTaylorSeriesUpToOn n (fun y ↦ (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
   set L := fun m => ContinuousMultilinearMap.prodL 𝕜 (fun _ : Fin m => E) F G
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
@@ -954,7 +954,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
       true_and, subset_preimage_image]
   obtain ⟨v, hv, hvs, f', hvf', hf'⟩ := contDiffWithinAt_succ_iff_hasFDerivWithinAt'.mp hf
   refine
-    ⟨(fun z => (z, g z)) ⁻¹' v ∩ insert x₀ s, ?_, inter_subset_right, fun z =>
+    ⟨(fun z ↦ (z, g z)) ⁻¹' v ∩ insert x₀ s, ?_, inter_subset_right, fun z =>
       (f' (z, g z)).comp (ContinuousLinearMap.inr 𝕜 E F), ?_, ?_⟩
   · refine inter_mem ?_ self_mem_nhdsWithin
     have := mem_of_mem_nhdsWithin (mem_insert _ _) hv
@@ -1427,7 +1427,7 @@ theorem contDiffWithinAt_prod' {t : Finset ι} {f : ι → E → 𝔸'}
 
 theorem contDiffWithinAt_prod {t : Finset ι} {f : ι → E → 𝔸'}
     (h : ∀ i ∈ t, ContDiffWithinAt 𝕜 n (f i) s x) :
-    ContDiffWithinAt 𝕜 n (fun y => ∏ i ∈ t, f i y) s x := by
+    ContDiffWithinAt 𝕜 n (fun y ↦ ∏ i ∈ t, f i y) s x := by
   simpa only [← Finset.prod_apply] using contDiffWithinAt_prod' h
 
 theorem contDiffAt_prod' {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiffAt 𝕜 n (f i) x) :
@@ -1435,14 +1435,14 @@ theorem contDiffAt_prod' {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈
   contDiffWithinAt_prod' h
 
 theorem contDiffAt_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiffAt 𝕜 n (f i) x) :
-    ContDiffAt 𝕜 n (fun y => ∏ i ∈ t, f i y) x :=
+    ContDiffAt 𝕜 n (fun y ↦ ∏ i ∈ t, f i y) x :=
   contDiffWithinAt_prod h
 
 theorem contDiffOn_prod' {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiffOn 𝕜 n (f i) s) :
     ContDiffOn 𝕜 n (∏ i ∈ t, f i) s := fun x hx => contDiffWithinAt_prod' fun i hi => h i hi x hx
 
 theorem contDiffOn_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiffOn 𝕜 n (f i) s) :
-    ContDiffOn 𝕜 n (fun y => ∏ i ∈ t, f i y) s := fun x hx =>
+    ContDiffOn 𝕜 n (fun y ↦ ∏ i ∈ t, f i y) s := fun x hx =>
   contDiffWithinAt_prod fun i hi => h i hi x hx
 
 theorem contDiff_prod' {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiff 𝕜 n (f i)) :
@@ -1450,7 +1450,7 @@ theorem contDiff_prod' {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t
   contDiff_iff_contDiffAt.mpr fun _ => contDiffAt_prod' fun i hi => (h i hi).contDiffAt
 
 theorem contDiff_prod {t : Finset ι} {f : ι → E → 𝔸'} (h : ∀ i ∈ t, ContDiff 𝕜 n (f i)) :
-    ContDiff 𝕜 n fun y => ∏ i ∈ t, f i y :=
+    ContDiff 𝕜 n fun y ↦ ∏ i ∈ t, f i y :=
   contDiff_iff_contDiffAt.mpr fun _ => contDiffAt_prod fun i hi => (h i hi).contDiffAt
 
 theorem ContDiff.pow {f : E → 𝔸} (hf : ContDiff 𝕜 n f) : ∀ m : ℕ, ContDiff 𝕜 n fun x ↦ f x ^ m
@@ -1458,15 +1458,15 @@ theorem ContDiff.pow {f : E → 𝔸} (hf : ContDiff 𝕜 n f) : ∀ m : ℕ, Co
   | m + 1 => by simpa [pow_succ] using (hf.pow m).mul hf
 
 theorem ContDiffWithinAt.pow {f : E → 𝔸} (hf : ContDiffWithinAt 𝕜 n f s x) (m : ℕ) :
-    ContDiffWithinAt 𝕜 n (fun y => f y ^ m) s x :=
+    ContDiffWithinAt 𝕜 n (fun y ↦ f y ^ m) s x :=
   (contDiff_id.pow m).comp_contDiffWithinAt hf
 
 nonrec theorem ContDiffAt.pow {f : E → 𝔸} (hf : ContDiffAt 𝕜 n f x) (m : ℕ) :
-    ContDiffAt 𝕜 n (fun y => f y ^ m) x :=
+    ContDiffAt 𝕜 n (fun y ↦ f y ^ m) x :=
   hf.pow m
 
 theorem ContDiffOn.pow {f : E → 𝔸} (hf : ContDiffOn 𝕜 n f s) (m : ℕ) :
-    ContDiffOn 𝕜 n (fun y => f y ^ m) s := fun y hy => (hf y hy).pow m
+    ContDiffOn 𝕜 n (fun y ↦ f y ^ m) s := fun y hy => (hf y hy).pow m
 
 theorem ContDiffWithinAt.div_const {f : E → 𝕜'} {n} (hf : ContDiffWithinAt 𝕜 n f s x) (c : 𝕜') :
     ContDiffWithinAt 𝕜 n (fun x ↦ f x / c) s x := by
@@ -1536,23 +1536,23 @@ theorem contDiff_const_smul (c : R) : ContDiff 𝕜 n fun p : F => c • p :=
 /-- The scalar multiplication of a constant and a `C^n` function within a set at a point is `C^n`
 within this set at this point. -/
 theorem ContDiffWithinAt.const_smul {s : Set E} {f : E → F} {x : E} (c : R)
-    (hf : ContDiffWithinAt 𝕜 n f s x) : ContDiffWithinAt 𝕜 n (fun y => c • f y) s x :=
+    (hf : ContDiffWithinAt 𝕜 n f s x) : ContDiffWithinAt 𝕜 n (fun y ↦ c • f y) s x :=
   (contDiff_const_smul c).contDiffAt.comp_contDiffWithinAt x hf
 
 /-- The scalar multiplication of a constant and a `C^n` function at a point is `C^n` at this
 point. -/
 theorem ContDiffAt.const_smul {f : E → F} {x : E} (c : R) (hf : ContDiffAt 𝕜 n f x) :
-    ContDiffAt 𝕜 n (fun y => c • f y) x := by
+    ContDiffAt 𝕜 n (fun y ↦ c • f y) x := by
   rw [← contDiffWithinAt_univ] at *; exact hf.const_smul c
 
 /-- The scalar multiplication of a constant and a `C^n` function is `C^n`. -/
 theorem ContDiff.const_smul {f : E → F} (c : R) (hf : ContDiff 𝕜 n f) :
-    ContDiff 𝕜 n fun y => c • f y :=
+    ContDiff 𝕜 n fun y ↦ c • f y :=
   (contDiff_const_smul c).comp hf
 
 /-- The scalar multiplication of a constant and a `C^n` on a domain is `C^n`. -/
 theorem ContDiffOn.const_smul {s : Set E} {f : E → F} (c : R) (hf : ContDiffOn 𝕜 n f s) :
-    ContDiffOn 𝕜 n (fun y => c • f y) s := fun x hx => (hf x hx).const_smul c
+    ContDiffOn 𝕜 n (fun y ↦ c • f y) s := fun x hx => (hf x hx).const_smul c
 
 variable {i : ℕ} {a : R}
 

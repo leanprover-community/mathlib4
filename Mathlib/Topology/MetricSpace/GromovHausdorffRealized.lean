@@ -256,7 +256,7 @@ theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
 private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
   obtain ⟨Cf, hCf⟩ := f.isBounded_range.bddAbove
-  refine ⟨Cf + C, forall_mem_range.2 fun y => ?_⟩
+  refine ⟨Cf + C, forall_mem_range.2 fun y ↦ ?_⟩
   calc
     ⨅ x, f (inl x, inr y) + C ≤ f (inl default, inr y) + C := ciInf_le (HD_below_aux2 C) default
     _ ≤ Cf + C := add_le_add ((fun x ↦ hCf (mem_range_self x)) _) le_rfl
@@ -276,7 +276,7 @@ private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
   -- iSup to iSup and iInf to iInf
   have Z : (⨆ x, ⨅ y, f (inl x, inr y)) ≤ ⨆ x, ⨅ y, g (inl x, inr y) + dist f g :=
     ciSup_mono (HD_bound_aux1 _ (dist f g)) fun x =>
-      ciInf_mono ⟨cf, forall_mem_range.2 fun i => Hcf _⟩ fun y => coe_le_coe_add_dist
+      ciInf_mono ⟨cf, forall_mem_range.2 fun i => Hcf _⟩ fun y ↦ coe_le_coe_add_dist
   -- move the `dist f g` out of the infimum and the supremum, arguing that continuous monotone maps
   -- (here the addition of `dist f g`) preserve infimum and supremum
   have E1 : ∀ x, (⨅ y, g (inl x, inr y)) + dist f g = ⨅ y, g (inl x, inr y) + dist f g := by
@@ -304,7 +304,7 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
   -- iSup to iSup and iInf to iInf
   have Z : (⨆ y, ⨅ x, f (inl x, inr y)) ≤ ⨆ y, ⨅ x, g (inl x, inr y) + dist f g :=
     ciSup_mono (HD_bound_aux2 _ (dist f g)) fun y =>
-      ciInf_mono ⟨cf, forall_mem_range.2 fun i => Hcf _⟩ fun y => coe_le_coe_add_dist
+      ciInf_mono ⟨cf, forall_mem_range.2 fun i => Hcf _⟩ fun y ↦ coe_le_coe_add_dist
   -- move the `dist f g` out of the infimum and the supremum, arguing that continuous monotone maps
   -- (here the addition of `dist f g`) preserve infimum and supremum
   have E1 : ∀ y, (⨅ x, g (inl x, inr y)) + dist f g = ⨅ x, g (inl x, inr y) + dist f g := by
@@ -382,7 +382,7 @@ private theorem candidatesB_nonempty : (candidatesB X Y).Nonempty :=
 be sufficient to look for functions with `HD(f)` bounded by this bound. -/
 theorem HD_candidatesBDist_le :
     HD (candidatesBDist X Y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
-  refine max_le (ciSup_le fun x ↦ ?_) (ciSup_le fun y => ?_)
+  refine max_le (ciSup_le fun x ↦ ?_) (ciSup_le fun y ↦ ?_)
   · have A : ⨅ y, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl x, inr default) :=
       ciInf_le (by simpa using HD_below_aux1 0) default
     have B : dist (inl x) (inr default) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) :=

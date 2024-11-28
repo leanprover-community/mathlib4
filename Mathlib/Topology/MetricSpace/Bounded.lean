@@ -536,7 +536,7 @@ theorem comap_dist_left_atTop_eq_cocompact [ProperSpace α] (x : α) :
     comap (dist x) atTop = cocompact α := by simp [cobounded_eq_cocompact]
 
 theorem tendsto_cocompact_of_tendsto_dist_comp_atTop {f : β → α} {l : Filter β} (x : α)
-    (h : Tendsto (fun y => dist (f y) x) l atTop) : Tendsto f l (cocompact α) :=
+    (h : Tendsto (fun y ↦ dist (f y) x) l atTop) : Tendsto f l (cocompact α) :=
   ((tendsto_dist_right_atTop_iff _).1 h).mono_right cobounded_le_cocompact
 
 theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [DiscreteTopology s]

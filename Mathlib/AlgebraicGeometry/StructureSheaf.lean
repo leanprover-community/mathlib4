@@ -157,11 +157,11 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Subring (∀ x : U.unop, Localizations R x) where
   carrier := { f | (isLocallyFraction R).pred f }
   zero_mem' := by
-    refine fun x ↦ ⟨unop U, x.2, 𝟙 _, 0, 1, fun y => ⟨?_, ?_⟩⟩
+    refine fun x ↦ ⟨unop U, x.2, 𝟙 _, 0, 1, fun y ↦ ⟨?_, ?_⟩⟩
     · rw [← Ideal.ne_top_iff_one]; exact y.1.isPrime.1
     · simp
   one_mem' := by
-    refine fun x ↦ ⟨unop U, x.2, 𝟙 _, 1, 1, fun y => ⟨?_, ?_⟩⟩
+    refine fun x ↦ ⟨unop U, x.2, 𝟙 _, 1, 1, fun y ↦ ⟨?_, ?_⟩⟩
     · rw [← Ideal.ne_top_iff_one]; exact y.1.isPrime.1
     · simp
   add_mem' := by
@@ -296,7 +296,7 @@ def const (f g : R) (U : Opens (PrimeSpectrum.Top R))
     (hu : ∀ x ∈ U, g ∈ (x : PrimeSpectrum.Top R).asIdeal.primeCompl) :
     (structureSheaf R).1.obj (op U) :=
   ⟨fun x ↦ IsLocalization.mk' _ f ⟨g, hu x x.2⟩, fun x =>
-    ⟨U, x.2, 𝟙 _, f, g, fun y => ⟨hu y y.2, IsLocalization.mk'_spec _ _ _⟩⟩⟩
+    ⟨U, x.2, 𝟙 _, f, g, fun y ↦ ⟨hu y y.2, IsLocalization.mk'_spec _ _ _⟩⟩⟩
 
 @[simp]
 theorem const_apply (f g : R) (U : Opens (PrimeSpectrum.Top R))
@@ -317,7 +317,7 @@ theorem exists_const (U) (s : (structureSheaf R).1.obj (op U)) (x : PrimeSpectru
       const R f g V hg = (structureSheaf R).1.map i.op s :=
   let ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
   ⟨V, hxV, iVU, f, g, fun y hyV => (hfg ⟨y, hyV⟩).1,
-    Subtype.eq <| funext fun y => IsLocalization.mk'_eq_iff_eq_mul.2 <| Eq.symm <| (hfg y).2⟩
+    Subtype.eq <| funext fun y ↦ IsLocalization.mk'_eq_iff_eq_mul.2 <| Eq.symm <| (hfg y).2⟩
 
 @[simp]
 theorem res_const (f g : R) (U hu V hv i) :
@@ -736,7 +736,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
     simp only [← hk, pow_add, pow_one]
     -- To accommodate for the difference `k`, we multiply both sides of the equation `n_spec (i, j)`
     -- by `(h i * h j) ^ k`
-    convert congr_arg (fun z => z * (h i * h j) ^ k) (n_spec (i, j)) using 1 <;>
+    convert congr_arg (fun z ↦ z * (h i * h j) ^ k) (n_spec (i, j)) using 1 <;>
       · simp only [n, mul_pow]; ring
   -- Lastly, we need to show that the new fractions still represent our original `s`
   intro i _

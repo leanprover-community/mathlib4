@@ -262,7 +262,7 @@ theorem ContinuousOn.circleIntegrable {f : ℂ → E} {c : ℂ} {R : ℝ} (hR : 
 and radius `|R|` if and only if `R = 0` or `0 ≤ n`, or `w` does not belong to this circle. -/
 @[simp]
 theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
-    CircleIntegrable (fun z => (z - w) ^ n) c R ↔ R = 0 ∨ 0 ≤ n ∨ w ∉ sphere c |R| := by
+    CircleIntegrable (fun z ↦ (z - w) ^ n) c R ↔ R = 0 ∨ 0 ≤ n ∨ w ∉ sphere c |R| := by
   constructor
   · intro h; contrapose! h; rcases h with ⟨hR, hn, hw⟩
     simp only [circleIntegrable_iff R, deriv_circleMap]
@@ -295,7 +295,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
 
 @[simp]
 theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
-    CircleIntegrable (fun z => (z - w)⁻¹) c R ↔ R = 0 ∨ w ∉ sphere c |R| := by
+    CircleIntegrable (fun z ↦ (z - w)⁻¹) c R ↔ R = 0 ∨ w ∉ sphere c |R| := by
   simp only [← zpow_neg_one, circleIntegrable_sub_zpow_iff]; norm_num
 
 variable [NormedSpace ℂ E]
@@ -445,7 +445,7 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
   · exact integral_sub_zpow_of_undef (hn.trans (by decide)) hw
   push_neg at H
   have hd : ∀ z, z ≠ w ∨ -1 ≤ n →
-      HasDerivAt (fun z => (z - w) ^ (n + 1) / (n + 1)) ((z - w) ^ n) z := by
+      HasDerivAt (fun z ↦ (z - w) ^ (n + 1) / (n + 1)) ((z - w) ^ n) z := by
     intro z hne
     convert ((hasDerivAt_zpow (n + 1) _ (hne.imp _ _)).comp z
       ((hasDerivAt_id z).sub_const w)).div_const _ using 1

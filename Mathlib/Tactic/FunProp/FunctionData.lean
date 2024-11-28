@@ -281,7 +281,7 @@ def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat)
     let gx ← mkProdElem gxs -- this can crash if we have dependent types
     let g ← withLCtx fData.lctx fData.insts <| mkLambdaFVars #[fData.mainVar] gx
 
-    withLocalDeclD `y (← inferType gx) fun y => do
+    withLocalDeclD `y (← inferType gx) fun y ↦ do
 
       let ys ← mkProdSplitElem y gxs.size
       let args' := (args.zip ys).foldl (init := fData.args)

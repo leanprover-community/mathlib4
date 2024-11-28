@@ -333,7 +333,7 @@ theorem fixInduction'_fwd {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a
   rw [fixInduction_spec]
   -- Porting note: the explicit motive required because `simp` behaves differently
   refine Eq.rec (motive := fun x e =>
-      Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x ?_ ?_
+      Sum.casesOn (motive := fun y ↦ (f a).get (dom_of_mem_fix h) = y → C a) x ?_ ?_
       (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = _) ?_
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
   simp

@@ -277,7 +277,7 @@ variable [Module 𝕜 E] [SMul 𝕜 β] {s : Set E} {f : E → β}
 
 /-- Right translation preserves convexity. -/
 theorem ConvexOn.translate_right (hf : ConvexOn 𝕜 s f) (c : E) :
-    ConvexOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => c + z) :=
+    ConvexOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ c + z) :=
   ⟨hf.1.translate_preimage_right _, fun x hx y hy a b ha hb hab =>
     calc
       f (c + (a • x + b • y)) = f (a • (c + x) + b • (c + y)) := by
@@ -287,17 +287,17 @@ theorem ConvexOn.translate_right (hf : ConvexOn 𝕜 s f) (c : E) :
 
 /-- Right translation preserves concavity. -/
 theorem ConcaveOn.translate_right (hf : ConcaveOn 𝕜 s f) (c : E) :
-    ConcaveOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => c + z) :=
+    ConcaveOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ c + z) :=
   hf.dual.translate_right _
 
 /-- Left translation preserves convexity. -/
 theorem ConvexOn.translate_left (hf : ConvexOn 𝕜 s f) (c : E) :
-    ConvexOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) := by
+    ConvexOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ z + c) := by
   simpa only [add_comm c] using hf.translate_right c
 
 /-- Left translation preserves concavity. -/
 theorem ConcaveOn.translate_left (hf : ConcaveOn 𝕜 s f) (c : E) :
-    ConcaveOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) :=
+    ConcaveOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ z + c) :=
   hf.dual.translate_left _
 
 end Module
@@ -862,7 +862,7 @@ variable [AddCancelCommMonoid E] [OrderedAddCommMonoid β] [Module 𝕜 E] [SMul
 
 /-- Right translation preserves strict convexity. -/
 theorem StrictConvexOn.translate_right (hf : StrictConvexOn 𝕜 s f) (c : E) :
-    StrictConvexOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => c + z) :=
+    StrictConvexOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ c + z) :=
   ⟨hf.1.translate_preimage_right _, fun x hx y hy hxy a b ha hb hab =>
     calc
       f (c + (a • x + b • y)) = f (a • (c + x) + b • (c + y)) := by
@@ -871,17 +871,17 @@ theorem StrictConvexOn.translate_right (hf : StrictConvexOn 𝕜 s f) (c : E) :
 
 /-- Right translation preserves strict concavity. -/
 theorem StrictConcaveOn.translate_right (hf : StrictConcaveOn 𝕜 s f) (c : E) :
-    StrictConcaveOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => c + z) :=
+    StrictConcaveOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ c + z) :=
   hf.dual.translate_right _
 
 /-- Left translation preserves strict convexity. -/
 theorem StrictConvexOn.translate_left (hf : StrictConvexOn 𝕜 s f) (c : E) :
-    StrictConvexOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) := by
+    StrictConvexOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ z + c) := by
   simpa only [add_comm] using hf.translate_right c
 
 /-- Left translation preserves strict concavity. -/
 theorem StrictConcaveOn.translate_left (hf : StrictConcaveOn 𝕜 s f) (c : E) :
-    StrictConcaveOn 𝕜 ((fun z => c + z) ⁻¹' s) (f ∘ fun z => z + c) := by
+    StrictConcaveOn 𝕜 ((fun z ↦ c + z) ⁻¹' s) (f ∘ fun z ↦ z + c) := by
   simpa only [add_comm] using hf.translate_right c
 
 end AddCancelCommMonoid

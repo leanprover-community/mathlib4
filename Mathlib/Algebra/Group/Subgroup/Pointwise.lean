@@ -289,13 +289,13 @@ theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {
 
 @[to_additive]
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
+    (fun y ↦ h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y ↦ h • y) '' s) := by
   simp [preimage_preimage, mul_assoc]
 
 -- Porting note: deprecate?
 @[to_additive]
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
-    (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
+    (fun y ↦ h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y ↦ h • y) '' s) :=
   smul_opposite_image_mul_preimage' g h s
 
 /-! ### Pointwise action -/

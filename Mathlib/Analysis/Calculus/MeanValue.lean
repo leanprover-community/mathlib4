@@ -107,7 +107,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     have : ∀ᶠ x in 𝓝[Icc a b] x, f x < B x :=
       A x (Ico_subset_Icc_self xab) (IsOpen.mem_nhds (isOpen_lt continuous_fst continuous_snd) hxB)
     have : ∀ᶠ x in 𝓝[>] x, f x < B x := nhdsWithin_le_of_mem (Icc_mem_nhdsWithin_Ioi xab) this
-    exact this.mono fun y => le_of_lt
+    exact this.mono fun y ↦ le_of_lt
   · rcases exists_between (bound x xab hxB) with ⟨r, hfr, hrB⟩
     specialize hf' x xab r hfr
     have HB : ∀ᶠ z in 𝓝[>] x, r < slope B x z :=
@@ -674,7 +674,7 @@ theorem _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiab
 then it is a constant function. -/
 theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
-  is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← deriv_fderiv, hf']) _ _
+  is_const_of_fderiv_eq_zero hf (fun z ↦ by ext; simp [← deriv_fderiv, hf']) _ _
 
 end Convex
 
@@ -946,7 +946,7 @@ theorem Convex.image_sub_lt_mul_sub_of_deriv_lt {D : Set ℝ} (hD : Convex ℝ D
     (hf : ContinuousOn f D) (hf' : DifferentiableOn ℝ f (interior D)) {C}
     (lt_hf' : ∀ x ∈ interior D, deriv f x < C) (x : ℝ) (hx : x ∈ D) (y : ℝ) (hy : y ∈ D)
     (hxy : x < y) : f y - f x < C * (y - x) :=
-  have hf'_gt : ∀ x ∈ interior D, -C < deriv (fun y => -f y) x := fun x hx => by
+  have hf'_gt : ∀ x ∈ interior D, -C < deriv (fun y ↦ -f y) x := fun x hx => by
     rw [deriv.neg, neg_lt_neg_iff]
     exact lt_hf' x hx
   by linarith [hD.mul_sub_lt_image_sub_of_lt_deriv hf.neg hf'.neg hf'_gt x hx y hy hxy]
@@ -966,7 +966,7 @@ theorem Convex.image_sub_le_mul_sub_of_deriv_le {D : Set ℝ} (hD : Convex ℝ D
     (hf : ContinuousOn f D) (hf' : DifferentiableOn ℝ f (interior D)) {C}
     (le_hf' : ∀ x ∈ interior D, deriv f x ≤ C) (x : ℝ) (hx : x ∈ D) (y : ℝ) (hy : y ∈ D)
     (hxy : x ≤ y) : f y - f x ≤ C * (y - x) :=
-  have hf'_ge : ∀ x ∈ interior D, -C ≤ deriv (fun y => -f y) x := fun x hx => by
+  have hf'_ge : ∀ x ∈ interior D, -C ≤ deriv (fun y ↦ -f y) x := fun x hx => by
     rw [deriv.neg, neg_le_neg_iff]
     exact le_hf' x hx
   by linarith [hD.mul_sub_le_image_sub_of_le_deriv hf.neg hf'.neg hf'_ge x hx y hy hxy]

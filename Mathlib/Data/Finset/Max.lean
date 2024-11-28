@@ -417,7 +417,7 @@ theorem card_le_of_interleaved {s t : Finset α}
     rcases exists_next_right ⟨y, hy, hxy⟩ with ⟨a, has, hxa, ha⟩
     rcases h x hx a has hxa fun z hzs hz => hz.2.not_le <| ha _ hzs hz.1 with ⟨b, hbt, hxb, hba⟩
     exact ⟨b, hbt, hxb, hba.trans_le <| ha _ hy hxy⟩
-  set f : α → WithTop α := fun x ↦ (t.filter fun y => x < y).min
+  set f : α → WithTop α := fun x ↦ (t.filter fun y ↦ x < y).min
   have f_mono : StrictMonoOn f s := by
     intro x hx y hy hxy
     rcases h x hx y hy hxy with ⟨a, hat, hxa, hay⟩

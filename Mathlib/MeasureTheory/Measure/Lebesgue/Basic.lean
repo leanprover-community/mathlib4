@@ -474,7 +474,7 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
     (hg : AEMeasurable g (μ.restrict s)) (hs : MeasurableSet s) :
     μ.prod volume (regionBetween f g s) = ∫⁻ y in s, ENNReal.ofReal ((g - f) y) ∂μ := by
   have h₁ :
-    (fun y => ENNReal.ofReal ((g - f) y)) =ᵐ[μ.restrict s] fun y =>
+    (fun y ↦ ENNReal.ofReal ((g - f) y)) =ᵐ[μ.restrict s] fun y =>
       ENNReal.ofReal ((AEMeasurable.mk g hg - AEMeasurable.mk f hf) y) :=
     (hg.ae_eq_mk.sub hf.ae_eq_mk).fun_comp ENNReal.ofReal
   have h₂ :

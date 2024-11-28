@@ -100,20 +100,20 @@ variable [TopologicalSpace α] {f : α → ℂ} {s : Set α} {x : α}
 
 nonrec
 theorem ContinuousWithinAt.cexp (h : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun y => exp (f y)) s x :=
+    ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.cexp
 
 @[fun_prop]
 nonrec
-theorem ContinuousAt.cexp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
+theorem ContinuousAt.cexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
   h.cexp
 
 @[fun_prop]
-theorem ContinuousOn.cexp (h : ContinuousOn f s) : ContinuousOn (fun y => exp (f y)) s :=
+theorem ContinuousOn.cexp (h : ContinuousOn f s) : ContinuousOn (fun y ↦ exp (f y)) s :=
   fun x hx => (h x hx).cexp
 
 @[fun_prop]
-theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
+theorem Continuous.cexp (h : Continuous f) : Continuous fun y ↦ exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.cexp
 
 /-- The complex exponential function is uniformly continuous on left half planes. -/

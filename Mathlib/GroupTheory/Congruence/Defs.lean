@@ -745,7 +745,7 @@ instance hasDiv : Div c.Quotient :=
     subtraction. -/
 instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
     SMul ℤ c.Quotient :=
-  ⟨fun z => (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
+  ⟨fun z ↦ (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
 
 /-- The integer power induced on the quotient by a congruence relation on a type with a
     division. -/

@@ -275,11 +275,11 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
     Measurable g := by
   rcases u.exists_seq_tendsto with ⟨x, hx⟩
   rw [tendsto_pi_nhds] at lim
-  have : (fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop) = g := by
+  have : (fun y ↦ liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop) = g := by
     ext1 y
     exact ((lim y).comp hx).liminf_eq
   rw [← this]
-  show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
+  show Measurable fun y ↦ liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
   exact .liminf fun n => hf (x n)
 
 @[deprecated (since := "2024-03-09")] alias

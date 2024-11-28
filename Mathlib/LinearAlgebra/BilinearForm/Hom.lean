@@ -93,7 +93,7 @@ the left. -/
 def toLinHomFlip : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
   flipHom.toLinearMap
 
-theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : toLinHomFlip (M := M) A x = fun y => A y x :=
+theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : toLinHomFlip (M := M) A x = fun y ↦ A y x :=
   rfl
 
 end ToLin'

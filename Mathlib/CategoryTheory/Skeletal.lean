@@ -229,7 +229,7 @@ def map₂ObjMap (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D → Thi
 /-- For each `x : ThinSkeleton C`, we promote `map₂ObjMap F x` to a functor -/
 def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ ThinSkeleton E :=
   fun x =>
-    { obj := fun y => map₂ObjMap F x y
+    { obj := fun y ↦ map₂ObjMap F x y
       map := fun {y₁} {y₂} => @Quotient.recOnSubsingleton C (isIsomorphicSetoid C)
         (fun x ↦ (y₁ ⟶ y₂) → (map₂ObjMap F x y₁ ⟶ map₂ObjMap F x y₂)) _ x fun X
           => Quotient.recOnSubsingleton₂ y₁ y₂ fun _ _ hY =>

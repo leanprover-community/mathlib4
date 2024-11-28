@@ -87,7 +87,7 @@ theorem PartialHomeomorph.hasDerivAt_symm (f : PartialHomeomorph 𝕜 𝕜) {a f
 theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ f x :=
   (hasDerivAt_iff_hasFDerivAt.1 h).eventually_ne
-    ⟨‖f'‖⁻¹, fun z => by field_simp [norm_smul, mt norm_eq_zero.1 hf']⟩
+    ⟨‖f'‖⁻¹, fun z ↦ by field_simp [norm_smul, mt norm_eq_zero.1 hf']⟩
 
 theorem HasDerivAt.tendsto_punctured_nhds (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     Tendsto f (𝓝[≠] x) (𝓝[≠] f x) :=

@@ -109,7 +109,7 @@ variable (B : E →L[𝕜] F →L[𝕜] G)
 theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G' → F}
     {f' : G' →L[𝕜] E} {g' : G' →L[𝕜] F} {x : G'} {s : Set G'} (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
-    HasFDerivWithinAt (fun y => B (f y) (g y))
+    HasFDerivWithinAt (fun y ↦ B (f y) (g y))
       (B.precompR G' (f x) g' + B.precompL G' f' (g x)) s x := by
   exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
 
@@ -118,27 +118,27 @@ theorem ContinuousLinearMap.hasFDerivWithinAt_of_bilinear {f : G' → E} {g : G'
 @[fun_prop]
 theorem ContinuousLinearMap.hasFDerivAt_of_bilinear {f : G' → E} {g : G' → F} {f' : G' →L[𝕜] E}
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
-    HasFDerivAt (fun y => B (f y) (g y)) (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x := by
+    HasFDerivAt (fun y ↦ B (f y) (g y)) (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x := by
   exact (B.isBoundedBilinearMap.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
 
 @[fun_prop]
 theorem ContinuousLinearMap.hasStrictFDerivAt_of_bilinear
     {f : G' → E} {g : G' → F} {f' : G' →L[𝕜] E}
     {g' : G' →L[𝕜] F} {x : G'} (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
-    HasStrictFDerivAt (fun y => B (f y) (g y))
+    HasStrictFDerivAt (fun y ↦ B (f y) (g y))
       (B.precompR G' (f x) g' + B.precompL G' f' (g x)) x :=
   (B.isBoundedBilinearMap.hasStrictFDerivAt (f x, g x)).comp x (hf.prod hg)
 
 theorem ContinuousLinearMap.fderivWithin_of_bilinear {f : G' → E} {g : G' → F} {x : G'} {s : Set G'}
     (hf : DifferentiableWithinAt 𝕜 f s x) (hg : DifferentiableWithinAt 𝕜 g s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun y => B (f y) (g y)) s x =
+    fderivWithin 𝕜 (fun y ↦ B (f y) (g y)) s x =
       B.precompR G' (f x) (fderivWithin 𝕜 g s x) + B.precompL G' (fderivWithin 𝕜 f s x) (g x) :=
   (B.hasFDerivWithinAt_of_bilinear hf.hasFDerivWithinAt hg.hasFDerivWithinAt).fderivWithin hs
 
 theorem ContinuousLinearMap.fderiv_of_bilinear {f : G' → E} {g : G' → F} {x : G'}
     (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
-    fderiv 𝕜 (fun y => B (f y) (g y)) x =
+    fderiv 𝕜 (fun y ↦ B (f y) (g y)) x =
       B.precompR G' (f x) (fderiv 𝕜 g x) + B.precompL G' (fderiv 𝕜 f x) (g x) :=
   (B.hasFDerivAt_of_bilinear hf.hasFDerivAt hg.hasFDerivAt).fderiv
 

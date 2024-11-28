@@ -500,7 +500,7 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
     exact Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)
   intro x _
   have a := Complex.hasDerivAt_sin (↑x * z)
-  have b : HasDerivAt (fun y => y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
+  have b : HasDerivAt (fun y ↦ y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
   have c : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
   have d := HasDerivAt.comp_ofReal (c.div_const z)
   simp only [mul_comm] at d
@@ -540,7 +540,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
       convert (hasDerivAt_pow 2 (x : ℂ)).const_add 1
       simp
     have g :
-      ∀ {z : ℂ}, 0 < z.re → HasDerivAt (fun z => z ^ (t + 1) / (2 * (t + 1))) (z ^ t / 2) z := by
+      ∀ {z : ℂ}, 0 < z.re → HasDerivAt (fun z ↦ z ^ (t + 1) / (2 * (t + 1))) (z ^ t / 2) z := by
       intro z hz
       convert (HasDerivAt.cpow_const (c := t + 1) (hasDerivAt_id _)
         (Or.inl hz)).div_const (2 * (t + 1)) using 1
@@ -589,7 +589,7 @@ theorem integral_sin_pow_aux :
   let C := sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b
   have h : ∀ α β γ : ℝ, β * α * γ * α = β * (α * α * γ) := fun α β γ => by ring
   have hu : ∀ x ∈ [[a, b]],
-      HasDerivAt (fun y => sin y ^ (n + 1)) ((n + 1 : ℕ) * cos x * sin x ^ n) x :=
+      HasDerivAt (fun y ↦ sin y ^ (n + 1)) ((n + 1 : ℕ) * cos x * sin x ^ n) x :=
     fun x _ => by simpa only [mul_right_comm] using (hasDerivAt_sin x).pow (n + 1)
   have hv : ∀ x ∈ [[a, b]], HasDerivAt (-cos) (sin x) x := fun x _ => by
     simpa only [neg_neg] using (hasDerivAt_cos x).neg
@@ -656,7 +656,7 @@ theorem integral_cos_pow_aux :
   let C := cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a
   have h : ∀ α β γ : ℝ, β * α * γ * α = β * (α * α * γ) := fun α β γ => by ring
   have hu : ∀ x ∈ [[a, b]],
-      HasDerivAt (fun y => cos y ^ (n + 1)) (-(n + 1 : ℕ) * sin x * cos x ^ n) x :=
+      HasDerivAt (fun y ↦ cos y ^ (n + 1)) (-(n + 1 : ℕ) * sin x * cos x ^ n) x :=
     fun x _ => by
       simpa only [mul_right_comm, neg_mul, mul_neg] using (hasDerivAt_cos x).pow (n + 1)
   have hv : ∀ x ∈ [[a, b]], HasDerivAt sin (cos x) x := fun x _ => hasDerivAt_sin x

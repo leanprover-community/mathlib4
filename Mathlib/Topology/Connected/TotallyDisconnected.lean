@@ -279,7 +279,7 @@ instance ConnectedComponents.totallyDisconnectedSpace :
   refine ConnectedComponents.surjective_coe.forall.2 fun x ↦ ?_
   rw [← ConnectedComponents.isQuotientMap_coe.image_connectedComponent, ←
     connectedComponents_preimage_singleton, image_preimage_eq _ ConnectedComponents.surjective_coe]
-  refine ConnectedComponents.surjective_coe.forall.2 fun y => ?_
+  refine ConnectedComponents.surjective_coe.forall.2 fun y ↦ ?_
   rw [connectedComponents_preimage_singleton]
   exact isConnected_connectedComponent
 

@@ -493,7 +493,7 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
   · simp [sum_attach (f := fun a ↦ (f a).natAbs)]
   · intro x hx
     simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
-      sum_attach (s := s) (f := fun y => if y = x then f y else 0)]
+      sum_attach (s := s) (f := fun y ↦ if y = x then f y else 0)]
 
 /-- We can decompose a sum of absolute value `n` into a sum of `n` signs. -/
 theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :

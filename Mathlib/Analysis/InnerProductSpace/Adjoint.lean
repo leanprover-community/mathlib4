@@ -151,7 +151,7 @@ for all `x` and `y`. -/
 theorem eq_adjoint_iff (A : E →L[𝕜] F) (B : F →L[𝕜] E) : A = B† ↔ ∀ x y, ⟪A x, y⟫ = ⟪x, B y⟫ := by
   refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
   ext x
-  exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
+  exact ext_inner_right 𝕜 fun y ↦ by simp only [adjoint_inner_left, h x y]
 
 @[simp]
 theorem adjoint_id :
@@ -262,7 +262,7 @@ theorem adjoint_conj {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : F →L[�
 theorem _root_.ContinuousLinearMap.isSelfAdjoint_iff_isSymmetric {A : E →L[𝕜] E} :
     IsSelfAdjoint A ↔ (A : E →ₗ[𝕜] E).IsSymmetric :=
   ⟨fun hA => hA.isSymmetric, fun hA =>
-    ext fun x ↦ ext_inner_right 𝕜 fun y => (A.adjoint_inner_left y x).symm ▸ (hA x y).symm⟩
+    ext fun x ↦ ext_inner_right 𝕜 fun y ↦ (A.adjoint_inner_left y x).symm ▸ (hA x y).symm⟩
 
 theorem _root_.LinearMap.IsSymmetric.isSelfAdjoint {A : E →L[𝕜] E}
     (hA : (A : E →ₗ[𝕜] E).IsSymmetric) : IsSelfAdjoint A := by
@@ -376,7 +376,7 @@ theorem eq_adjoint_iff (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ x y, ⟪A x, y⟫ = ⟪x, B y⟫ := by
   refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h ↦ ?_⟩
   ext x
-  exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
+  exact ext_inner_right 𝕜 fun y ↦ by simp only [adjoint_inner_left, h x y]
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all basis vectors `x` and `y`. -/
@@ -390,7 +390,7 @@ theorem eq_adjoint_iff_basis {ι₁ : Type*} {ι₂ : Type*} (b₁ : Basis ι₁
 theorem eq_adjoint_iff_basis_left {ι : Type*} (b : Basis ι 𝕜 E) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i y, ⟪A (b i), y⟫ = ⟪b i, B y⟫ := by
   refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h ↦ Basis.ext b fun i => ?_⟩
-  exact ext_inner_right 𝕜 fun y => by simp only [h i, adjoint_inner_left]
+  exact ext_inner_right 𝕜 fun y ↦ by simp only [h i, adjoint_inner_left]
 
 theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ i x, ⟪A x, b i⟫ = ⟪x, B (b i)⟫ := by

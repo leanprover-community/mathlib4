@@ -509,7 +509,7 @@ alias inl_nat_cast := inl_natCast
 
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
-    intCast := fun z => inl z
+    intCast := fun z ↦ inl z
     intCast_ofNat := fun _n => ext (Int.cast_natCast _) rfl
     intCast_negSucc := fun _n => ext (Int.cast_negSucc _) neg_zero.symm }
 

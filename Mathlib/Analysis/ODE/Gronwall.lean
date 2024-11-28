@@ -60,7 +60,7 @@ theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
     ring
 
 theorem hasDerivAt_gronwallBound_shift (δ K ε x a : ℝ) :
-    HasDerivAt (fun y => gronwallBound δ K ε (y - a)) (K * gronwallBound δ K ε (x - a) + ε) x := by
+    HasDerivAt (fun y ↦ gronwallBound δ K ε (y - a)) (K * gronwallBound δ K ε (x - a) + ε) x := by
   convert (hasDerivAt_gronwallBound δ K ε _).comp x ((hasDerivAt_id x).sub_const a) using 1
   rw [id, mul_one]
 

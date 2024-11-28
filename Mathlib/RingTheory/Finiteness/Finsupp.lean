@@ -45,7 +45,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
     exact ⟨x, hx1, hx2⟩
   have : ∃ g : P → M, ∀ y ∈ t1, g y ∈ s ∧ f (g y) = y := by
     choose g hg1 hg2 using this
-    exists fun y => if H : y ∈ t1 then g y H else 0
+    exists fun y ↦ if H : y ∈ t1 then g y H else 0
     intro y H
     constructor
     · simp only [dif_pos H]

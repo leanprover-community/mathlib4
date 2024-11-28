@@ -46,7 +46,7 @@ theorem TopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R] [Line
     _ < ε := mul_lt_of_le_one_of_lt_of_nonneg hx.le hy (norm_nonneg _)
   case hmul_left => exact fun x ↦ h0 _ (norm x) (norm_nonneg _) (norm_mul_le x)
   case hmul_right =>
-    exact fun y => h0 (· * y) (norm y) (norm_nonneg y) fun x =>
+    exact fun y ↦ h0 (· * y) (norm y) (norm_nonneg y) fun x =>
       (norm_mul_le x y).trans_eq (mul_comm _ _)
 
 variable {𝕜 α : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]

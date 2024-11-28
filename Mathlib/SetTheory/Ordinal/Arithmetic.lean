@@ -1368,7 +1368,7 @@ theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [Is
     (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
   (not_bounded_iff _).1 fun ⟨x, hx⟩ =>
     h.not_lt <| lt_of_le_of_lt
-      (Ordinal.iSup_le fun y => ((typein_lt_typein r).2 <| hx _ <| mem_range_self y).le)
+      (Ordinal.iSup_le fun y ↦ ((typein_lt_typein r).2 <| hx _ <| mem_range_self y).le)
       (typein_lt_type r x)
 
 set_option linter.deprecated false in

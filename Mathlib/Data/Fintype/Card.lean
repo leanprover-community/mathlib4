@@ -473,7 +473,7 @@ theorem exists_ne_map_eq_of_card_lt (f : α → β) (h : Fintype.card β < Finty
 theorem card_eq_one_iff : card α = 1 ↔ ∃ x : α, ∀ y, y = x := by
   rw [← card_unit, card_eq]
   exact
-    ⟨fun ⟨a⟩ => ⟨a.symm (), fun y => a.injective (Subsingleton.elim _ _)⟩,
+    ⟨fun ⟨a⟩ => ⟨a.symm (), fun y ↦ a.injective (Subsingleton.elim _ _)⟩,
      fun ⟨x, hx⟩ =>
       ⟨⟨fun _ => (), fun _ => x, fun _ => (hx _).trans (hx _).symm, fun _ =>
           Subsingleton.elim _ _⟩⟩⟩
@@ -1067,7 +1067,7 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
   classical
     by_contra! hf
     cases nonempty_fintype β
-    haveI := fun y => fintypeOfNotInfinite <| hf y
+    haveI := fun y ↦ fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
       { elems := univ.biUnion fun y : β => (f ⁻¹' {y}).toFinset
         complete := by simp }

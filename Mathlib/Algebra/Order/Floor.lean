@@ -1088,10 +1088,10 @@ theorem ceil_le : ⌈a⌉ ≤ z ↔ a ≤ z :=
   gc_ceil_coe a z
 
 theorem floor_neg : ⌊-a⌋ = -⌈a⌉ :=
-  eq_of_forall_le_iff fun z => by rw [le_neg, ceil_le, le_floor, Int.cast_neg, le_neg]
+  eq_of_forall_le_iff fun z ↦ by rw [le_neg, ceil_le, le_floor, Int.cast_neg, le_neg]
 
 theorem ceil_neg : ⌈-a⌉ = -⌊a⌋ :=
-  eq_of_forall_ge_iff fun z => by rw [neg_le, ceil_le, le_floor, Int.cast_neg, neg_le]
+  eq_of_forall_ge_iff fun z ↦ by rw [neg_le, ceil_le, le_floor, Int.cast_neg, neg_le]
 
 theorem lt_ceil : z < ⌈a⌉ ↔ (z : α) < a :=
   lt_iff_lt_of_le_iff_le ceil_le

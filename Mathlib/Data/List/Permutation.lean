@@ -163,7 +163,7 @@ theorem length_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List
 
 theorem foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
     foldr (fun y r => (permutationsAux2 t ts r y id).2) r L =
-      (L.flatMap fun y => (permutationsAux2 t ts [] y id).2) ++ r := by
+      (L.flatMap fun y ↦ (permutationsAux2 t ts [] y id).2) ++ r := by
   induction' L with l L ih
   · rfl
   · simp_rw [foldr_cons, ih, flatMap_cons, append_assoc, permutationsAux2_append]

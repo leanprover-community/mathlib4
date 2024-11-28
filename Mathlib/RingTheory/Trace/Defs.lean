@@ -114,7 +114,7 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
     Matrix.trace, Matrix.trace, Matrix.trace, ← Finset.univ_product_univ, Finset.sum_product]
   refine Finset.sum_congr rfl fun i _ ↦ ?_
   simp only [map_sum, smulTower_leftMulMatrix, Finset.sum_apply, Matrix.diag,
-    Finset.sum_apply i (Finset.univ : Finset κ) fun y => leftMulMatrix b (leftMulMatrix c x y y)]
+    Finset.sum_apply i (Finset.univ : Finset κ) fun y ↦ leftMulMatrix b (leftMulMatrix c x y y)]
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
     [Finite κ] (b : Basis ι R S) (c : Basis κ S T) :

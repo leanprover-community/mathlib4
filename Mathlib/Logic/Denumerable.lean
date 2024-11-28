@@ -237,7 +237,7 @@ def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
 theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
   | x => fun hx => by
     set t : List s :=
-      ((List.range x).filter fun y => y ∈ s).pmap
+      ((List.range x).filter fun y ↦ y ∈ s).pmap
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
         (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by

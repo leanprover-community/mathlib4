@@ -237,7 +237,7 @@ theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l :
     constructor
     · apply tendsto_const_nhds.add (tangentConeAt.lim_zero l clim cdlim)
     · rwa [tendsto_principal]
-  have : (fun y => f y - f x - f' (y - x)) =o[𝓝[s] x] fun y => y - x := h.isLittleO
+  have : (fun y ↦ f y - f x - f' (y - x)) =o[𝓝[s] x] fun y ↦ y - x := h.isLittleO
   have : (fun n => f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n => x + d n - x :=
     this.comp_tendsto tendsto_arg
   have : (fun n => f (x + d n) - f x - f' (d n)) =o[l] d := by simpa only [add_sub_cancel_left]

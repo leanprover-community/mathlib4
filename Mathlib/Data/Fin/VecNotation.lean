@@ -153,7 +153,7 @@ theorem cons_head_tail (u : Fin m.succ → α) : vecCons (vecHead u) (vecTail u)
 
 @[simp]
 theorem range_cons (x : α) (u : Fin n → α) : Set.range (vecCons x u) = {x} ∪ Set.range u :=
-  Set.ext fun y => by simp [Fin.exists_fin_succ, eq_comm]
+  Set.ext fun y ↦ by simp [Fin.exists_fin_succ, eq_comm]
 
 @[simp]
 theorem range_empty (u : Fin 0 → α) : Set.range u = ∅ :=

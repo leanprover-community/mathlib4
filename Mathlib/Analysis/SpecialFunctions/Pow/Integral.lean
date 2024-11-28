@@ -87,7 +87,7 @@ theorem lintegral_rpow_eq_lintegral_meas_lt_mul :
     ∫⁻ ω, ENNReal.ofReal (f ω ^ p) ∂μ =
       ENNReal.ofReal p * ∫⁻ t in Ioi 0, μ {a : α | t < f a} * ENNReal.ofReal (t ^ (p - 1)) := by
   rw [lintegral_rpow_eq_lintegral_meas_le_mul μ f_nn f_mble p_pos]
-  apply congr_arg fun z => ENNReal.ofReal p * z
+  apply congr_arg fun z ↦ ENNReal.ofReal p * z
   apply lintegral_congr_ae
   filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f]
     with t ht

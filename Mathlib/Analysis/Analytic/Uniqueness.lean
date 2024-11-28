@@ -40,7 +40,7 @@ section Uniqueness
 open ContinuousMultilinearMap
 
 theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E[×n]→L[𝕜] F}
-    (h : (fun y => p fun _ => y) =O[𝓝 0] fun y => ‖y‖ ^ (n + 1)) (y : E) : (p fun _ => y) = 0 := by
+    (h : (fun y ↦ p fun _ => y) =O[𝓝 0] fun y ↦ ‖y‖ ^ (n + 1)) (y : E) : (p fun _ => y) = 0 := by
   obtain ⟨c, c_pos, hc⟩ := h.exists_pos
   obtain ⟨t, ht, t_open, z_mem⟩ := eventually_nhds_iff.mp (isBigOWith_iff.mp hc)
   obtain ⟨δ, δ_pos, δε⟩ := (Metric.isOpen_iff.mp t_open) 0 z_mem
@@ -95,7 +95,7 @@ terms `p n (fun i ↦ y)` appearing in the sum are zero for any `n : ℕ`, `y : 
 theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     (h : HasFPowerSeriesAt 0 p x) (n : ℕ) : ∀ y : E, (p n fun _ => y) = 0 := by
   refine Nat.strong_induction_on n fun k hk => ?_
-  have psum_eq : p.partialSum (k + 1) = fun y => p k fun _ => y := by
+  have psum_eq : p.partialSum (k + 1) = fun y ↦ p k fun _ => y := by
     funext z
     refine Finset.sum_eq_single _ (fun b hb hnb => ?_) fun hn => ?_
     · have := Finset.mem_range_succ_iff.mp hb

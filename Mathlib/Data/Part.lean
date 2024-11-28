@@ -457,11 +457,11 @@ theorem bind_assoc {γ} (f : Part α) (g : α → Part β) (k : β → Part γ) 
 
 @[simp]
 theorem bind_map {γ} (f : α → β) (x) (g : β → Part γ) :
-    (map f x).bind g = x.bind fun y => g (f y) := by rw [← bind_some_eq_map, bind_assoc]; simp
+    (map f x).bind g = x.bind fun y ↦ g (f y) := by rw [← bind_some_eq_map, bind_assoc]; simp
 
 @[simp]
 theorem map_bind {γ} (f : α → Part β) (x : Part α) (g : β → γ) :
-    map g (x.bind f) = x.bind fun y => map g (f y) := by
+    map g (x.bind f) = x.bind fun y ↦ map g (f y) := by
   rw [← bind_some_eq_map, bind_assoc]; simp [bind_some_eq_map]
 
 theorem map_map (g : β → γ) (f : α → β) (o : Part α) : map g (map f o) = map (g ∘ f) o := by
@@ -595,12 +595,12 @@ section
 theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·) b := rfl
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
 theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
-theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl
-theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y => map (y % ·) b := rfl
-theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y => map (y ++ ·) b := rfl
-theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y => map (y ∩ ·) b := rfl
-theorem union_def [Union α] (a b : Part α) : a ∪ b = bind a fun y => map (y ∪ ·) b := rfl
-theorem sdiff_def [SDiff α] (a b : Part α) : a \ b = bind a fun y => map (y \ ·) b := rfl
+theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y ↦ map (y / ·) b := rfl
+theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y ↦ map (y % ·) b := rfl
+theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y ↦ map (y ++ ·) b := rfl
+theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y ↦ map (y ∩ ·) b := rfl
+theorem union_def [Union α] (a b : Part α) : a ∪ b = bind a fun y ↦ map (y ∪ ·) b := rfl
+theorem sdiff_def [SDiff α] (a b : Part α) : a \ b = bind a fun y ↦ map (y \ ·) b := rfl
 
 end
 

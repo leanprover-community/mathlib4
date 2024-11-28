@@ -457,7 +457,7 @@ def toSpanSingleton (x : M) : R →ₗ[R] M :=
 
 /-- The range of `toSpanSingleton x` is the span of `x`. -/
 theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M x) :=
-  Submodule.ext fun y => by
+  Submodule.ext fun y ↦ by
     refine Iff.trans ?_ LinearMap.mem_range.symm
     exact mem_span_singleton
 

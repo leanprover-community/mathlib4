@@ -87,7 +87,7 @@ theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x)
   obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
   use ⟨U, m⟩
   fconstructor
-  · exact fun y => F.germ _ _ y.2 s
+  · exact fun y ↦ F.germ _ _ y.2 s
   · exact ⟨PrelocalPredicate.sheafifyOf ⟨s, fun _ => rfl⟩, rfl⟩
 
 theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) := by

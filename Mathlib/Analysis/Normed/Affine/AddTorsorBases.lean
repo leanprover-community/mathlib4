@@ -81,9 +81,9 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
   obtain ⟨q, hq⟩ := hne
   obtain ⟨ε, ε0, hεu⟩ := Metric.nhds_basis_closedBall.mem_iff.1 (hu.mem_nhds <| hsu hq)
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := exists_subset_affineIndependent_affineSpan_eq_top h
-  let f : P → P := fun y => lineMap q y (ε / dist y q)
+  let f : P → P := fun y ↦ lineMap q y (ε / dist y q)
   have hf : ∀ y, f y ∈ u := by
-    refine fun y => hεu ?_
+    refine fun y ↦ hεu ?_
     simp only [f]
     rw [Metric.mem_closedBall, lineMap_apply, dist_vadd_left, norm_smul, Real.norm_eq_abs,
       dist_eq_norm_vsub V y q, abs_div, abs_of_pos ε0, abs_of_nonneg (norm_nonneg _), div_mul_comm]

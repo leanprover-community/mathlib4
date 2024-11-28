@@ -621,7 +621,7 @@ theorem Eventually.mono {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f,
 
 theorem forall_eventually_of_eventually_forall {f : Filter α} {p : α → β → Prop}
     (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y :=
-  fun y => h.mono fun _ h => h y
+  fun y ↦ h.mono fun _ h => h y
 
 @[simp]
 theorem eventually_and {p q : α → Prop} {f : Filter α} :

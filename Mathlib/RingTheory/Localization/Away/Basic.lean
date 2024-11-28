@@ -302,7 +302,7 @@ theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [Co
   { map_units' := by
       rintro ⟨_, n, rfl⟩
       exact (algebraMap R S).isUnit_map (hr.pow _)
-    surj' := fun z => by
+    surj' := fun z ↦ by
       obtain ⟨z', rfl⟩ := H.2 z
       exact ⟨⟨z', 1⟩, by simp⟩
     exists_of_eq := fun {x y} => by

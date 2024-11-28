@@ -335,7 +335,7 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     rw [mem_Ioi] at hq
     obtain ⟨y, hxy, hyq⟩ := exists_rat_btwn hq
     refine (ciInf_le ?_ ?_).trans ?_
-    · refine ⟨hf.some, fun z => ?_⟩
+    · refine ⟨hf.some, fun z ↦ ?_⟩
       rintro ⟨u, rfl⟩
       suffices hfu : f u ∈ f '' Ioi x from hf.choose_spec hfu
       exact ⟨u, u.prop, rfl⟩

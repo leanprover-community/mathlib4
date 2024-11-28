@@ -1016,7 +1016,7 @@ theorem subsingleton_of_preimage (hf : Function.Surjective f) (s : Set β)
   exact congr_arg f (hs hx hy)
 
 theorem subsingleton_range {α : Sort*} [Subsingleton α] (f : α → β) : (range f).Subsingleton :=
-  forall_mem_range.2 fun x ↦ forall_mem_range.2 fun y => congr_arg f (Subsingleton.elim x y)
+  forall_mem_range.2 fun x ↦ forall_mem_range.2 fun y ↦ congr_arg f (Subsingleton.elim x y)
 
 /-- The preimage of a nontrivial set under a surjective map is nontrivial. -/
 theorem Nontrivial.preimage {s : Set β} (hs : s.Nontrivial)
@@ -1107,7 +1107,7 @@ theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective 
 
 theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     range (g ∘ f) = range g :=
-  ext fun y => (@Surjective.exists _ _ _ hf fun x ↦ g x = y).symm
+  ext fun y ↦ (@Surjective.exists _ _ _ hf fun x ↦ g x = y).symm
 
 theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=

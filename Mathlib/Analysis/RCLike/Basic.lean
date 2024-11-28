@@ -664,7 +664,7 @@ theorem im_le_norm (z : K) : im z ≤ ‖z‖ :=
 
 theorem im_eq_zero_of_le {a : K} (h : ‖a‖ ≤ re a) : im a = 0 := by
   simpa only [mul_self_norm a, normSq_apply, self_eq_add_right, mul_self_eq_zero]
-    using congr_arg (fun z => z * z) ((re_le_norm a).antisymm h)
+    using congr_arg (fun z ↦ z * z) ((re_le_norm a).antisymm h)
 
 theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
   rw [← conj_eq_iff_re, conj_eq_iff_im, im_eq_zero_of_le h]

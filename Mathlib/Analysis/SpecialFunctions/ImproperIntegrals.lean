@@ -30,7 +30,7 @@ open scoped Topology
 theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   refine
     integrableOn_Iic_of_intervalIntegral_norm_bounded (exp c) c
-      (fun y => intervalIntegrable_exp.1) tendsto_id
+      (fun y ↦ intervalIntegrable_exp.1) tendsto_id
       (eventually_of_mem (Iic_mem_atBot 0) fun y _ => ?_)
   simp_rw [norm_of_nonneg (exp_pos _).le, integral_exp, sub_le_self_iff]
   exact (exp_pos _).le

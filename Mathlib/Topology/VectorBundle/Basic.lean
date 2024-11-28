@@ -111,12 +111,12 @@ variable {R}
 
 open Classical in
 theorem coe_linearMapAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) :
-    ⇑(e.linearMapAt R b) = fun y => if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 := by
+    ⇑(e.linearMapAt R b) = fun y ↦ if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 := by
   rw [Pretrivialization.linearMapAt]
   split_ifs <;> rfl
 
 theorem coe_linearMapAt_of_mem (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
-    (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
+    (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y ↦ (e ⟨b, y⟩).2 := by
   simp_rw [coe_linearMapAt, if_pos hb]
 
 open Classical in
@@ -211,11 +211,11 @@ variable {R}
 
 open Classical in
 theorem coe_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) :
-    ⇑(e.linearMapAt R b) = fun y => if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 :=
+    ⇑(e.linearMapAt R b) = fun y ↦ if b ∈ e.baseSet then (e ⟨b, y⟩).2 else 0 :=
   e.toPretrivialization.coe_linearMapAt b
 
 theorem coe_linearMapAt_of_mem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
-    (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y => (e ⟨b, y⟩).2 := by
+    (hb : b ∈ e.baseSet) : ⇑(e.linearMapAt R b) = fun y ↦ (e ⟨b, y⟩).2 := by
   simp_rw [coe_linearMapAt, if_pos hb]
 
 open Classical in
@@ -255,7 +255,7 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
         refine (e'.continuousOn.comp_continuous ?_ ?_).snd
         · exact e.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
             mk_mem_prod hb.1 (mem_univ y)
-        · exact fun y => e'.mem_source.mpr hb.2
+        · exact fun y ↦ e'.mem_source.mpr hb.2
       · rw [dif_neg hb]
         exact continuous_id
     continuous_invFun := by
@@ -264,7 +264,7 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
         refine (e.continuousOn.comp_continuous ?_ ?_).snd
         · exact e'.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
             mk_mem_prod hb.2 (mem_univ y)
-        exact fun y => e.mem_source.mpr hb.1
+        exact fun y ↦ e.mem_source.mpr hb.1
       · rw [dif_neg hb]
         exact continuous_id }
 
@@ -416,7 +416,7 @@ is in fact a continuous linear equiv between the fibers and the model fiber. -/
 def continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     (hb : b ∈ e.baseSet) : E b ≃L[R] F :=
   { e.toPretrivialization.linearEquivAt R b hb with
-    toFun := fun y => (e ⟨b, y⟩).2 -- given explicitly to help `simps`
+    toFun := fun y ↦ (e ⟨b, y⟩).2 -- given explicitly to help `simps`
     invFun := e.symm b -- given explicitly to help `simps`
     continuous_toFun := (e.continuousOn.comp_continuous
       (FiberBundle.totalSpaceMk_isInducing F E b).continuous fun _ => e.mem_source.mpr hb).snd

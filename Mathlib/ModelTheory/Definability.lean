@@ -224,7 +224,7 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
                 (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sum_inl_fin
           _)
     simp only [mem_preimage, mem_image, exists_exists_and_eq_and]
-    refine exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a ↦ ?_)
+    refine exists_congr fun y ↦ and_congr_right fun _ => Eq.congr_left (funext fun a ↦ ?_)
     simp
 
 /-- Shows that definability is closed under finite projections. -/

@@ -67,7 +67,7 @@ theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s 
     Tendsto (fun x : ℝ => |x| ^ s * rexp (-a * x ^ 2)) (cocompact ℝ) (𝓝 0) := by
   conv in rexp _ => rw [← sq_abs]
   erw [cocompact_eq_atBot_atTop, ← comap_abs_atTop,
-    @tendsto_comap'_iff _ _ _ (fun y => y ^ s * rexp (-a * y ^ 2)) _ _ _
+    @tendsto_comap'_iff _ _ _ (fun y ↦ y ^ s * rexp (-a * y ^ 2)) _ _ _
       (mem_atTop_sets.mpr ⟨0, fun b hb => ⟨b, abs_of_nonneg hb⟩⟩)]
   exact
     (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg ha s).tendsto_zero_of_tendsto

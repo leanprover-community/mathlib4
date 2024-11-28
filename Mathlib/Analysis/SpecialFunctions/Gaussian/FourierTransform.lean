@@ -150,7 +150,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
   have C : ∀ T : ℝ, I₂ T - I₁ T + I * I₄ T - I * I₅ T = 0 := by
     intro T
     have :=
-      integral_boundary_rect_eq_zero_of_differentiableOn (fun z => cexp (-b * z ^ 2)) (-T)
+      integral_boundary_rect_eq_zero_of_differentiableOn (fun z ↦ cexp (-b * z ^ 2)) (-T)
         (T + c * I)
         (by
           refine Differentiable.differentiableOn (Differentiable.const_mul ?_ _).cexp

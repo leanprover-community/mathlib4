@@ -106,7 +106,7 @@ theorem add_im (z w : ℤ√d) : (z + w).im = z.im + w.im :=
 
 /-- Negation in `ℤ√d` -/
 instance : Neg (ℤ√d) :=
-  ⟨fun z => ⟨-z.1, -z.2⟩⟩
+  ⟨fun z ↦ ⟨-z.1, -z.2⟩⟩
 
 @[simp]
 theorem neg_re (z : ℤ√d) : (-z).re = -z.re :=
@@ -669,7 +669,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   cases' y with y
   · simp
     trivial
-  have h : ∀ y, SqLe y d (d * y) 1 := fun y => by
+  have h : ∀ y, SqLe y d (d * y) 1 := fun y ↦ by
     simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_right (y * y) (Nat.le_mul_self d)
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
   exact h (y + 1)

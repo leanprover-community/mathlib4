@@ -164,7 +164,7 @@ of `M⁻¹S` acting on `N⁻¹S`. -/
 noncomputable def localizationAlgebraOfSubmonoidLe (M N : Submonoid R) (h : M ≤ N)
     [IsLocalization M S] [IsLocalization N T] : Algebra S T :=
   (@IsLocalization.lift R _ M S _ _ T _ _ (algebraMap R T)
-    (fun y => map_units T ⟨↑y, h y.prop⟩)).toAlgebra
+    (fun y ↦ map_units T ⟨↑y, h y.prop⟩)).toAlgebra
 
 /-- If `M ≤ N` are submonoids of `R`, then the natural map `M⁻¹S →+* N⁻¹S` commutes with the
 localization maps -/
@@ -195,7 +195,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
       rintro ⟨_, ⟨y, hy, rfl⟩⟩
       convert IsLocalization.map_units T ⟨y, hy⟩
       exact (IsScalarTower.algebraMap_apply _ _ _ _).symm
-    surj' := fun y => by
+    surj' := fun y ↦ by
       obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj N y
       refine ⟨⟨algebraMap R S x, _, _, s.prop, rfl⟩, ?_⟩
       simpa [← IsScalarTower.algebraMap_apply] using e
@@ -227,12 +227,12 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
 localization at `N` is equal to the localizaton of `M`. -/
 theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization M S] (h : M ≤ N)
     (h' : ∀ x : N, ∃ m : R, m * x ∈ M) : IsLocalization N S :=
-  { map_units' := fun y => by
+  { map_units' := fun y ↦ by
       obtain ⟨m, hm⟩ := h' y
       have := IsLocalization.map_units S ⟨_, hm⟩
       rw [map_mul] at this
       exact (IsUnit.mul_iff.mp this).2
-    surj' := fun z => by
+    surj' := fun z ↦ by
       obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M z
       exact ⟨⟨y, _, h s.prop⟩, e⟩
     exists_of_eq := fun {_ _} => by
