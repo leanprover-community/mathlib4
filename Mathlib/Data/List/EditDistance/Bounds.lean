@@ -79,7 +79,7 @@ theorem le_suffixLevenshtein_append_minimum (xs : List α) (ys₁ ys₂) :
 theorem suffixLevenshtein_minimum_le_levenshtein_append (xs ys₁ ys₂) :
     (suffixLevenshtein C xs ys₂).1.minimum ≤ levenshtein C xs (ys₁ ++ ys₂) := by
   cases ys₁ with
-  | nil => exact List.minimum_le_of_mem' (List.get_mem _ _ _)
+  | nil => exact List.minimum_le_of_mem' (List.getElem_mem _)
   | cons y ys₁ =>
       exact (le_suffixLevenshtein_append_minimum _ _ _).trans
         (suffixLevenshtein_minimum_le_levenshtein_cons _ _ _)

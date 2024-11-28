@@ -76,7 +76,7 @@ lemma cardinalMk_closure_le_max : #(closure s) ≤ max #s ℵ₀ :=
         exact (add_lt_aleph0 this h).le
       · rw [max_eq_left h, add_eq_right h (this.le.trans h), max_eq_left h]
     rintro (n|_)
-    · fin_cases n <;> infer_instance
+    · fin_cases n <;> (dsimp only [id_eq]; infer_instance)
     infer_instance
 
 @[deprecated (since := "2024-11-10")] alias cardinal_mk_closure_le_max := cardinalMk_closure_le_max

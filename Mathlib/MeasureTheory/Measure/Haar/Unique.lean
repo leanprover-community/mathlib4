@@ -910,7 +910,7 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
   have h : haarMeasure K = (haarScalarFactor (haarMeasure K) ν : ℝ≥0∞) • ν :=
     isMulLeftInvariant_eq_smul (haarMeasure K) ν
   rw [haarMeasure_unique μ K, h, smul_smul]
-  exact AbsolutelyContinuous.smul (Eq.absolutelyContinuous rfl) _
+  exact smul_absolutelyContinuous
 
 /-- A continuous surjective monoid homomorphism of topological groups with compact codomain
 is measure preserving, provided that the Haar measures on the domain and on the codomain
