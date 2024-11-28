@@ -756,7 +756,7 @@ lemma pullback_functorPushforward_equivalence_eq {X : C} (S : Sieve X) :
     Sieve.pullback (e.unit.app X) (Sieve.functorPushforward e.inverse
       (Sieve.functorPushforward e.functor S)) = S := by ext; simp
 
-lemma mem_functorPushforward_of_full [F.Full] {X Y : C} (R : Sieve X) (f : F.obj Y ⟶ F.obj X) :
+lemma mem_functorPushforward_iff_of_full [F.Full] {X Y : C} (R : Sieve X) (f : F.obj Y ⟶ F.obj X) :
     (R.arrows.functorPushforward F) f ↔ ∃ (g : Y ⟶ X), F.map g = f ∧ R g := by
   refine ⟨fun ⟨Z, g, h, hg, hcomp⟩ ↦ ?_, fun ⟨g, hcomp, hg⟩ ↦ ?_⟩
   · obtain ⟨h', hh'⟩ := F.map_surjective h
@@ -766,10 +766,10 @@ lemma mem_functorPushforward_of_full [F.Full] {X Y : C} (R : Sieve X) (f : F.obj
   · use Y, g, 𝟙 _, hg
     simp [hcomp]
 
-lemma mem_functorPushforward_of_full_of_faithful [F.Full] [F.Faithful]
+lemma mem_functorPushforward_iff_of_full_of_faithful [F.Full] [F.Faithful]
     {X Y : C} (R : Sieve X) (f : Y ⟶ X) :
     (R.arrows.functorPushforward F) (F.map f) ↔ R f := by
-  rw [Sieve.mem_functorPushforward_of_full]
+  rw [Sieve.mem_functorPushforward_iff_of_full]
   refine ⟨fun ⟨g, hcomp, hg⟩ ↦ ?_, fun hf ↦ ⟨f, rfl, hf⟩⟩
   rwa [← F.map_injective hcomp]
 

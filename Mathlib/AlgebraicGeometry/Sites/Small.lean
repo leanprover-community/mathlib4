@@ -16,8 +16,8 @@ generating pretopologies.
 
 ## Main definitions
 
-- `AlgebraicGeometry.Scheme.overGrothendieckTopology`: the localization of
-  the topology on `Scheme` induced by `P` at `S`.
+- `AlgebraicGeometry.Scheme.overGrothendieckTopology`: the Grothendieck topology on `Over S`
+  obtained by localizing the topology on `Scheme` induced by `P` at `S`.
 - `AlgebraicGeometry.Scheme.overPretopology`: the pretopology on `Over S` defined by
   `P`-coverings of `S`-schemes. The induced topology agrees with
   `AlgebraicGeometry.Scheme.overGrothendieckTopology`.
@@ -72,7 +72,8 @@ variable [P.IsMultiplicative] [P.RespectsIso]
 
 variable (P Q S)
 
-/-- The pretopology on `Over S` where coverings are given by covers of `S`-schemes. -/
+/-- The pretopology on `Over S` induced by `P` where coverings are given by `P`-covers
+of `S`-schemes. -/
 def overPretopology : Pretopology (Over S) where
   coverings Y R := ∃ (𝒰 : Cover.{u} P Y.left) (_ : 𝒰.Over S), R = 𝒰.toPresieveOver
   has_isos {X Y} f _ := ⟨coverOfIsIso f.left, inferInstance, (Presieve.ofArrows_pUnit _).symm⟩
@@ -151,14 +152,18 @@ abbrev smallGrothendieckTopologyOfLE (hPQ : P ≤ Q) : GrothendieckTopology (Q.O
     locallyCoverDense_of_le S hPQ
   (MorphismProperty.Over.forget Q ⊤ S).inducedTopology (S.overGrothendieckTopology P)
 
-/-- A special case of `smallGrothendieckTopologyOfLE` for the most common case, where `P = Q`. -/
+/-- The Grothendieck topology on the category of schemes over `S` with `P` induced by `P`, i.e.
+coverings are simply surjective families. This is the induced topology by the topology on `S`
+defined by `P` via the inclusion `P.Over ⊤ S ⥤ Over S`.
+
+This is a special case of `smallGrothendieckTopologyOfLE` for the case `P = Q`. -/
 abbrev smallGrothendieckTopology : GrothendieckTopology (P.Over ⊤ S) :=
   (MorphismProperty.Over.forget P ⊤ S).inducedTopology (S.overGrothendieckTopology P)
 
-variable [Q.IsStableUnderBaseChange] [Q.HasOfPostcompProperty]
+variable [Q.IsStableUnderBaseChange] [Q.HasOfPostcompProperty Q]
 
-/-- The pretopology defind on the subcategory of `S`-schemes satisfying `P` where coverings
-are given by `Q`-coverings in `S`-schemes satisfying `P`.
+/-- The pretopology defind on the subcategory of `S`-schemes satisfying `Q` where coverings
+are given by `P`-coverings in `S`-schemes satisfying `Q`.
 The most common case is `P = Q`. In this case, this is simply surjective families
 in `S`-schemes with `P`. -/
 def smallPretopology : Pretopology (Q.Over ⊤ S) where
@@ -200,13 +205,14 @@ lemma smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology (hPQ : P 
     · rintro - - ⟨i⟩
       let fi : (𝒰.obj i).asOverProp S (hj i) ⟶ X := (𝒰.map i).asOverProp S
       have : R.functorPushforward _ ((MorphismProperty.Over.forget Q ⊤ S).map fi) := le _ ⟨i⟩
-      rwa [Sieve.functorPushforward_apply, Sieve.mem_functorPushforward_of_full_of_faithful] at this
+      rwa [Sieve.functorPushforward_apply,
+        Sieve.mem_functorPushforward_iff_of_full_of_faithful] at this
   · rintro ⟨T, ⟨𝒰, h, p, rfl⟩, le⟩
     use 𝒰, h
     rintro - - ⟨i⟩
     exact ⟨(𝒰.obj i).asOverProp S (p i), (𝒰.map i).asOverProp S, 𝟙 _, le _ ⟨i⟩, rfl⟩
 
-lemma smallGrothendieckTopology_eq_toGrothendieck_smallPretopology [P.HasOfPostcompProperty] :
+lemma smallGrothendieckTopology_eq_toGrothendieck_smallPretopology [P.HasOfPostcompProperty P] :
     S.smallGrothendieckTopology P = (S.smallPretopology P P).toGrothendieck :=
   S.smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology le_rfl
 
@@ -240,7 +246,7 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
     · rintro - - ⟨i⟩
       exact hf i
 
-lemma mem_smallGrothendieckTopology [P.HasOfPostcompProperty] (X : P.Over ⊤ S) (R : Sieve X) :
+lemma mem_smallGrothendieckTopology [P.HasOfPostcompProperty P] (X : P.Over ⊤ S) (R : Sieve X) :
     R ∈ S.smallGrothendieckTopology P X ↔
       ∃ (𝒰 : Cover.{u} P X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.obj j ↘ S)),
           𝒰.toPresieveOverProp h ≤ R.arrows := by
