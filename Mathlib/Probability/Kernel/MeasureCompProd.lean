@@ -58,6 +58,11 @@ lemma compProd_apply [SFinite μ] [IsSFiniteKernel κ] {s : Set (α × β)} (hs 
   simp_rw [compProd, Kernel.compProd_apply hs, Kernel.const_apply, Kernel.prodMkLeft_apply']
   rfl
 
+@[simp]
+lemma compProd_apply_univ [SFinite μ] [IsMarkovKernel κ] : (μ ⊗ₘ κ) .univ = μ .univ := by
+  rw [compProd_apply .univ]
+  simp
+
 lemma compProd_apply_prod [SFinite μ] [IsSFiniteKernel κ]
     {s : Set α} {t : Set β} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     (μ ⊗ₘ κ) (s ×ˢ t) = ∫⁻ a in s, κ a t ∂μ := by
@@ -91,18 +96,39 @@ lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (∀ᵐ x ∂(μ ⊗ₘ κ), p x) ↔ ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
   Kernel.ae_compProd_iff hp
 
+/-- The composition product of a measure and a constant kernel is the product between the two
+measures. -/
+@[simp]
+lemma compProd_const {ν : Measure β} [SFinite μ] [SFinite ν] :
+    μ ⊗ₘ (Kernel.const α ν) = μ.prod ν := by
+  ext s hs
+  simp_rw [compProd_apply hs, prod_apply hs, Kernel.const_apply]
+
+@[simp]
 lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : Kernel α β) :
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
   by_cases hκ : IsSFiniteKernel κ
   · simp_rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left, Kernel.add_apply]
   · simp [compProd_of_not_isSFiniteKernel _ _ hκ]
 
+@[simp]
 lemma compProd_add_right (μ : Measure α) (κ η : Kernel α β)
     [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₘ (κ + η) = μ ⊗ₘ κ + μ ⊗ₘ η := by
   by_cases hμ : SFinite μ
   · simp_rw [Measure.compProd, Kernel.prodMkLeft_add, Kernel.compProd_add_right, Kernel.add_apply]
   · simp [compProd_of_not_sfinite _ _ hμ]
+
+@[simp]
+lemma fst_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsMarkovKernel κ] :
+    (μ ⊗ₘ κ).fst = μ := by
+  ext s
+  rw [compProd, Measure.fst, ← Kernel.fst_apply, Kernel.fst_compProd, Kernel.const_apply]
+
+lemma compProd_smul_left (a : ℝ≥0∞) [SFinite μ] [IsSFiniteKernel κ] :
+    (a • μ) ⊗ₘ κ = a • (μ ⊗ₘ κ) := by
+  ext s hs
+  simp only [compProd_apply hs, lintegral_smul_measure, smul_apply, smul_eq_mul]
 
 section Integral
 
@@ -163,11 +189,8 @@ lemma dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
     Measure.dirac () ⊗ₘ Kernel.const Unit μ = μ.map (Prod.mk ()) := by
   rw [dirac_unit_compProd, Kernel.const_apply]
 
-@[simp]
 lemma snd_dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
-    snd (Measure.dirac () ⊗ₘ Kernel.const Unit μ) = μ := by
-  rw [dirac_unit_compProd_const, snd, map_map measurable_snd measurable_prod_mk_left]
-  simp
+    snd (Measure.dirac () ⊗ₘ Kernel.const Unit μ) = μ := by simp
 
 instance : SFinite (μ ⊗ₘ κ) := by rw [compProd]; infer_instance
 
