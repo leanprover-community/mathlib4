@@ -614,6 +614,11 @@ lemma exactAt_iff_isZero_homology [K.HasHomology i] :
   dsimp [homology]
   rw [exactAt_iff, ShortComplex.exact_iff_isZero_homology]
 
+variable {K i} in
+lemma ExactAt.isZero_homology [K.HasHomology i] (h : K.ExactAt i) :
+    IsZero (K.homology i) := by
+  rwa [← exactAt_iff_isZero_homology]
+
 end HomologicalComplex
 
 namespace ChainComplex

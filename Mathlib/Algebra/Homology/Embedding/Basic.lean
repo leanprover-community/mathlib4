@@ -210,4 +210,26 @@ instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_i
 instance : (embeddingUpIntLE p).IsTruncLE where
   mem_prev {_ k} h := ⟨k + 1, by dsimp at h ⊢; omega⟩
 
+lemma not_mem_range_embeddingUpIntLE_iff (n : ℤ) :
+    (∀ (i : ℕ), (embeddingUpIntLE p).f i ≠ n) ↔ p < n := by
+  constructor
+  · intro h
+    by_contra!
+    obtain ⟨k, rfl⟩ := Int.le.dest this
+    exact (h k) (by simp)
+  · intros
+    dsimp
+    omega
+
+lemma not_mem_range_embeddingUpIntGE_iff (n : ℤ) :
+    (∀ (i : ℕ), (embeddingUpIntGE p).f i ≠ n) ↔ n < p := by
+  constructor
+  · intro h
+    by_contra!
+    obtain ⟨k, rfl⟩ := Int.le.dest this
+    exact (h k) (by simp)
+  · intros
+    dsimp
+    omega
+
 end ComplexShape
