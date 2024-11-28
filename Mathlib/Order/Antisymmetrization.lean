@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Relation
+import Mathlib.Tactic.Tauto
 
 /-!
 # Turning a preorder into a partial order
@@ -134,6 +135,12 @@ section Preorder
 
 variable [Preorder α] [Preorder β]
 
+theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ a ⋚ b := by
+  rw [lt_iff_le_not_le, antisymmRel_iff]
+  tauto
+
+alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
+
 @[trans]
 theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : b ⋚ c) : a ≤ c :=
   h₁.trans h₂.le
@@ -198,13 +205,6 @@ theorem AntisymmRel.antisymmRel_congr_left (h : a ⋚ b) : a ⋚ c ↔ b ⋚ c :
 
 theorem AntisymmRel.antisymmRel_congr_right (h : b ⋚ c) : a ⋚ b ↔ a ⋚ c :=
   (antisymmRel_refl _ a).antisymmRel_congr h
-
-theorem lt_or_antisymmRel_of_le (h : a ≤ b) : a < b ∨ a ⋚ b := by
-  by_cases h' : b ≤ a
-  · exact Or.inr ⟨h, h'⟩
-  · exact Or.inl (lt_of_le_not_le h h')
-
-alias LE.le.lt_or_antisymmRel := lt_or_antisymmRel_of_le
 
 theorem AntisymmRel.image (h : a ⋚ b) {f : α → β} (hf : Monotone f) : f a ⋚ f b :=
   ⟨hf h.1, hf h.2⟩

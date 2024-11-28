@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Order.Antisymmetrization
-import Mathlib.Tactic.Tauto
 
 /-!
 # Incomparability relation
@@ -88,6 +87,10 @@ variable [Preorder α]
 theorem IncompRel.not_lt (h : a ‖ b) : ¬ a < b := mt le_of_lt h.not_le
 theorem IncompRel.not_gt (h : a ‖ b) : ¬ b < a := mt le_of_lt h.not_ge
 theorem LT.lt.not_incompRel (h : a < b) : ¬ a ‖ b := fun h' ↦ h'.not_lt h
+
+theorem not_le_iff_lt_or_incompRel : ¬ b ≤ a ↔ a < b ∨ a ‖ b := by
+  rw [lt_iff_le_not_le, incompRel_iff]
+  tauto
 
 /-- Exactly one of the following is true. -/
 theorem lt_or_antisymmRel_or_gt_or_incompRel (a b : α) : a < b ∨ a ⋚ b ∨ b < a ∨ a ‖ b := by
