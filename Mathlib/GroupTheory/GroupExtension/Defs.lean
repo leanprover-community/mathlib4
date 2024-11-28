@@ -98,6 +98,12 @@ structure Section where
   /-- `Section` is a right inverse to `S.rightHom` -/
   rightInverse_rightHom : Function.RightInverse toFun S.rightHom
 
+/-- `Section` of an additive group extension is a right inverse to `S.rightHom`. -/
+structure Section where
+  toFun : G → E
+  /-- `Section` is a right inverse to `S.rightHom` -/
+  rightInverse_rightHom : Function.RightInverse toFun S.rightHom
+
 /-- `Splitting` of an additive group extension is a section homomorphism. -/
 structure Splitting extends G →+ E, S.Section
 
@@ -256,6 +262,36 @@ theorem rightHom_section (g : G) : S.rightHom (σ g) = g := σ.rightInverse_righ
 
 @[to_additive (attr := simp)]
 theorem rightHom_comp_section : S.rightHom ∘ σ = id := σ.rightInverse_rightHom.comp_eq_id
+
+end Section
+
+/-- `Section` of a group extension is a right inverse to `S.rightHom`. -/
+@[to_additive]
+structure Section where
+  toFun : G → E
+  /-- `Section` is a right inverse to `S.rightHom` -/
+  rightInverse_rightHom : Function.RightInverse toFun S.rightHom
+
+namespace Section
+
+@[to_additive]
+instance : FunLike S.Section G E where
+  coe := toFun
+  coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ ↦ by congr
+
+variable {S}
+
+@[to_additive (attr := simp)]
+theorem coe_mk (σ : G → E) (hσ : Function.RightInverse σ S.rightHom) : (mk σ hσ : G → E) = σ := rfl
+
+variable (σ : S.Section)
+
+@[to_additive (attr := simp)]
+theorem rightHom_section (g : G) : S.rightHom (σ g) = g := σ.rightInverse_rightHom g
+
+@[to_additive (attr := simp)]
+theorem rightHom_comp_section : S.rightHom ∘ σ = id :=
+  Function.RightInverse.comp_eq_id σ.rightInverse_rightHom
 
 end Section
 
