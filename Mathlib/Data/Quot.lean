@@ -227,7 +227,7 @@ protected def hrecOn₂ (qa : Quotient sa) (qb : Quotient sb) (f : ∀ a b, φ �
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
 to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
-protected def map (f : α → β) (h : ∀ a b : α, a ≈ b → f a ≈ f b) : Quotient sa → Quotient sb :=
+protected def map (f : α → β) (h : ∀ ⦃a b : α⦄, a ≈ b → f a ≈ f b) : Quotient sa → Quotient sb :=
   Quot.map f h
 
 @[simp]
@@ -240,7 +240,7 @@ variable {γ : Sort*} {sc : Setoid γ}
 /-- Map a function `f : α → β → γ` that sends equivalent elements to equivalent elements
 to a function `f : Quotient sa → Quotient sb → Quotient sc`.
 Useful to define binary operations on quotients. -/
-protected def map₂ (f : α → β → γ) (h : ∀ a₁ a₂ b₁ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ ≈ f a₂ b₂) :
+protected def map₂ (f : α → β → γ) (h : ∀ ⦃a₁ a₂ b₁ b₂⦄, a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ ≈ f a₂ b₂) :
     Quotient sa → Quotient sb → Quotient sc :=
   Quotient.lift₂ (fun x y ↦ ⟦f x y⟧) fun _ _ _ _ h₁ h₂ ↦ Quot.sound <| h _ _ _ _ h₁ h₂
 
