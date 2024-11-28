@@ -26,7 +26,7 @@ open TensorProduct CategoryTheory Limits
 
 variable {R S : CommRingCat.{u}}
 
-namespace CommRingCat
+namespace CommRingCat.Under
 
 section Algebra
 
@@ -37,12 +37,12 @@ section Pi
 variable {ι : Type u} (P : ι → Under R)
 
 /-- The canonical fan on `P : ι → Under R` given by `∀ i, P i`. -/
-def Under.piFan : Fan P :=
+def piFan : Fan P :=
   Fan.mk (Under.mk <| ofHom <| Pi.ringHom (fun i ↦ (P i).hom))
     (fun i ↦ Under.homMk (Pi.evalRingHom _ i))
 
 /-- The canonical fan is limiting. -/
-def Under.piFanIsLimit : IsLimit (piFan P) :=
+def piFanIsLimit : IsLimit (piFan P) :=
   isLimitOfReflects (Under.forget R) <|
     (isLimitMapConeFanMkEquiv (Under.forget R) P _).symm <|
       CommRingCat.piFanIsLimit (fun i ↦ (P i).right)
@@ -95,7 +95,7 @@ instance (J : Type) [Finite J] :
     PreservesLimitsOfShape (Discrete J) (tensorProd R S) :=
   let J' : Type u := ULift.{u} J
   have : PreservesLimitsOfShape (Discrete J') (tensorProd R S) :=
-    preservesLimitsOfShapeDiscrete (tensorProd R S)
+    preservesLimitsOfShape_of_discrete (tensorProd R S)
   let e : Discrete J' ≌ Discrete J := Discrete.equivalence Equiv.ulift
   preservesLimitsOfShape_of_equiv e (R.tensorProd S)
 
@@ -113,36 +113,36 @@ lemma equalizer_comp {A B : Under R} (f g : A ⟶ B) :
   exact a.property
 
 /-- The canonical fork on `f g : A ⟶ B` given by the equalizer. -/
-def Under.equalizerFork {A B : Under R} (f g : A ⟶ B) :
+def equalizerFork {A B : Under R} (f g : A ⟶ B) :
     Fork f g :=
   Fork.ofι ((AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder)
     (by rw [equalizer_comp])
 
 @[simp]
-lemma Under.equalizerFork_ι {A B : Under R} (f g : A ⟶ B) :
+lemma equalizerFork_ι {A B : Under R} (f g : A ⟶ B) :
     (Under.equalizerFork f g).ι = (AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder := rfl
 
 /-- Variant of `Under.equalizerFork'` for algebra maps. This is definitionally equal to
 `Under.equalizerFork` but this is costly in applications. -/
-def Under.equalizerFork' {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+def equalizerFork' {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
     (f g : A →ₐ[R] B) :
     Fork f.toUnder g.toUnder :=
   Fork.ofι ((AlgHom.equalizer f g).val.toUnder) <| by ext a; exact a.property
 
 @[simp]
-lemma Under.equalizerFork'_ι {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+lemma equalizerFork'_ι {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
     (f g : A →ₐ[R] B) :
     (Under.equalizerFork' f g).ι = (AlgHom.equalizer f g).val.toUnder := rfl
 
 /-- The canonical fork on `f g : A ⟶ B` is limiting. -/
-def Under.equalizerForkIsLimit {A B : Under R} (f g : A ⟶ B) :
+def equalizerForkIsLimit {A B : Under R} (f g : A ⟶ B) :
     IsLimit (Under.equalizerFork f g) :=
   isLimitOfReflects (Under.forget R) <|
     (isLimitMapConeForkEquiv (Under.forget R) (equalizer_comp f g)).invFun <|
       CommRingCat.equalizerForkIsLimit f.right g.right
 
 /-- Variant of `Under.equalizerForkIsLimit` for algebra maps. -/
-def Under.equalizerFork'IsLimit {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
+def equalizerFork'IsLimit {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
     [Algebra R B] (f g : A →ₐ[R] B) :
     IsLimit (Under.equalizerFork' f g) :=
   Under.equalizerForkIsLimit f.toUnder g.toUnder
@@ -204,10 +204,10 @@ instance : PreservesFiniteProducts (Under.pushout f) where
     preservesLimitsOfShape_of_natIso (tensorProdIsoPushout R S)
 
 /-- `Under.pushout f` preserves finite limits if `f` is flat. -/
-def preservesFiniteLimitsOfFlat (hf : RingHom.Flat f) :
+lemma preservesFiniteLimits_of_flat (hf : RingHom.Flat f) :
     PreservesFiniteLimits (Under.pushout f) where
   preservesFiniteLimits _ :=
     letI : Algebra R S := RingHom.toAlgebra f
     preservesLimitsOfShape_of_natIso (tensorProdIsoPushout R S)
 
-end CommRingCat
+end CommRingCat.Under
