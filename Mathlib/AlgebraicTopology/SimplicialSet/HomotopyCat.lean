@@ -44,26 +44,27 @@ the category of 2-truncated simplicial sets.
 -/
 
 namespace CategoryTheory
+namespace SSet
 open Category Limits Functor Opposite Simplicial
 universe v u
 
 section
 
 /-- A simplicial set `S` has an underlying refl quiver with `S _[0]` as its underlying type.-/
-def SSet.OneTruncation (S : SSet) := S _[0]
+def OneTruncation (S : SSet) := S _[0]
 
 /-- The source vertex of `f : S _[1]` for use in defining the underlying refl quiver.-/
-def SSet.OneTruncation.src {S : SSet} (f : S _[1]) : OneTruncation S := S.δ 1 f
+def OneTruncation.src {S : SSet} (f : S _[1]) : OneTruncation S := S.δ 1 f
 
 /-- The target vertex of `f : S _[1]` for use in defining the underlying refl quiver.-/
-def SSet.OneTruncation.tgt {S : SSet} (f : S _[1]) : OneTruncation S := S.δ 0 f
+def OneTruncation.tgt {S : SSet} (f : S _[1]) : OneTruncation S := S.δ 0 f
 
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are subtypes of `S _[1]`.-/
-def SSet.OneTruncation.Hom {S : SSet} (X Y : OneTruncation S) :=
+def OneTruncation.Hom {S : SSet} (X Y : OneTruncation S) :=
   {p : S _[1] // src p = X ∧ tgt p = Y}
 
 /-- A simplicial set `S` has an underlying refl quiver `SSet.OneTruncation S`.-/
-instance (S : SSet) : ReflQuiver (SSet.OneTruncation S) where
+instance (S : SSet) : ReflQuiver (OneTruncation S) where
   Hom X Y := SSet.OneTruncation.Hom X Y
   id X := by
     refine ⟨S.σ 0 X, ?_, ?_⟩ <;> change (S.δ _ (S.σ _ _)) = X
@@ -71,7 +72,7 @@ instance (S : SSet) : ReflQuiver (SSet.OneTruncation S) where
     · apply SSet.δ_comp_σ_self_apply 0
 
 /-- The functor that carries a simplicial set to its underlying refl quiver.-/
-def SSet.oneTruncation : SSet.{u} ⥤ ReflQuiv.{u,u} where
+def oneTruncation : SSet.{u} ⥤ ReflQuiv.{u,u} where
   obj S := ReflQuiv.of (OneTruncation S)
   map {S T} F := {
     obj := F.app (op [0])
@@ -91,27 +92,26 @@ def SSet.oneTruncation : SSet.{u} ⥤ ReflQuiv.{u,u} where
       rfl
   }
 
-@[ext] lemma hom_ext {S : SSet} {x y : SSet.OneTruncation S} {f g : x ⟶ y} :
+@[ext] lemma hom_ext {S : SSet} {x y : OneTruncation S} {f g : x ⟶ y} :
     f.1 = g.1 → f = g := Subtype.ext
 
 section
 variable {C : Type u} [Category.{v} C]
 
-theorem opstuff.{w} (V : Cᵒᵖ ⥤ Type w) {X Y Z : C} {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
-    α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
+private lemma map_map_of_eq.{w} (V : Cᵒᵖ ⥤ Type w) {X Y Z : C} {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z}
+    {φ} : α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
   rintro rfl
   change (V.map _ ≫ V.map _) _ = _
   rw [← map_comp]; rfl
 
-
 /-- An arrow `f : X ⟶ Y` in the refl quiver of a nerve induces an arrow in the category `C`.-/
-def SSet.OneTruncation.ofNerve.map {X Y : OneTruncation (nerve C)}
+def OneTruncation.ofNerve.map {X Y : OneTruncation (nerve C)}
     (f : X ⟶ Y) : X.left ⟶ Y.left :=
   eqToHom (congrArg (·.left) f.2.1.symm) ≫ f.1.hom ≫ eqToHom (congrArg (·.left) f.2.2)
 
 /-- The refl prefunctor from the refl quiver underlying a nerve to the refl quiver underlying a
 category.-/
-def SSet.OneTruncation.ofNerve.hom : OneTruncation (nerve C) ⥤rq C where
+def OneTruncation.ofNerve.hom : OneTruncation (nerve C) ⥤rq C where
   obj := (·.left)
   map := OneTruncation.ofNerve.map
   map_id := fun X : ComposableArrows _ 0 => by
@@ -120,14 +120,14 @@ def SSet.OneTruncation.ofNerve.hom : OneTruncation (nerve C) ⥤rq C where
 
 /-- The refl prefunctor from the refl quiver underlying a category to the refl quiver underlying
 a nerve.-/
-def SSet.OneTruncation.ofNerve.inv : C ⥤rq OneTruncation (nerve C) where
+def OneTruncation.ofNerve.inv : C ⥤rq OneTruncation (nerve C) where
   obj := (.mk₀ ·)
   map := fun f => by
     refine ⟨.mk₁ f, ?_, ?_⟩ <;> apply ComposableArrows.ext₀ <;> simp <;> rfl
   map_id _ := by ext; apply ComposableArrows.ext₁ <;> simp <;> rfl
 
 /-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category.-/
-def SSet.OneTruncation.ofNerve (C : Type u) [Category.{u} C] :
+def OneTruncation.ofNerve (C : Type u) [Category.{u} C] :
     ReflQuiv.of (OneTruncation (nerve C)) ≅ ReflQuiv.of C := by
   refine {
     hom := ofNerve.hom
@@ -157,7 +157,7 @@ def SSet.OneTruncation.ofNerve (C : Type u) [Category.{u} C] :
 /-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
 category.-/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
-def SSet.OneTruncation.ofNerve.natIso :
+def OneTruncation.ofNerve.natIso :
     nerveFunctor.{u,u} ⋙ SSet.oneTruncation ≅ ReflQuiv.forget := by
   refine NatIso.ofComponents (fun C => OneTruncation.ofNerve C) ?nat
   · intro C D F
@@ -183,24 +183,24 @@ private def δ1 : [1] ⟶ [2] := SimplexCategory.δ (n := 1) 1
 private def δ2 : [1] ⟶ [2] := SimplexCategory.δ (n := 1) 2
 
 private def ev02 {V : SSet} (φ : V _[2]) : ev0 φ ⟶ ev2 φ :=
-  ⟨V.map δ1.op φ, opstuff V rfl, opstuff V rfl⟩
+  ⟨V.map δ1.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
 private def ev01 {V : SSet} (φ : V _[2]) : ev0 φ ⟶ ev1 φ :=
-  ⟨V.map δ2.op φ, opstuff V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), opstuff V rfl⟩
+  ⟨V.map δ2.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
 private def ev12 {V : SSet} (φ : V _[2]) : ev1 φ ⟶ ev2 φ :=
   ⟨V.map δ0.op φ,
-    opstuff V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
-    opstuff V rfl⟩
+    map_map_of_eq V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
+    map_map_of_eq V rfl⟩
 
 /-- The 2-simplices in a simplicial set `V` generate a hom relation on the free category on
 the underlying refl quiver of `V`.-/
-inductive SSet.HoRel {V : SSet} :
+inductive HoRel {V : SSet} :
     (X Y : Cat.freeRefl.obj (ReflQuiv.of (OneTruncation V))) → (f g : X ⟶ Y) → Prop
   | mk (φ : V _[2]) :
     HoRel _ _
       (Quot.mk _ (.cons .nil (ev02 φ)))
       (Quot.mk _ (.cons (.cons .nil (ev01 φ)) (ev12 φ)))
 
-theorem SSet.HoRel.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation V)
+theorem HoRel.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation V)
     (hX : X = X') (hY : Y = Y') (hZ : Z = Z')
     (f : X ⟶ Z) (f' : X' ⟶ Z') (hf : f.1 = f'.1)
     (g : X ⟶ Y) (g' : X' ⟶ Y') (hg : g.1 = g'.1)
@@ -218,13 +218,13 @@ theorem SSet.HoRel.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation V)
 
 /-- The homotopy category of a simplicial set is a quotient of the free category generated by its
 underlying refl quiver by the hom relation `HoRel`.-/
-def SSet.hoCat (V : SSet.{u}) : Type u :=
+def hoCat (V : SSet.{u}) : Type u :=
   Quotient (C := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation V))) (HoRel (V := V))
 
-instance (V : SSet.{u}) : Category.{u} (SSet.hoCat V) := inferInstanceAs (Category (Quotient ..))
+instance (V : SSet.{u}) : Category.{u} (hoCat V) := inferInstanceAs (Category (Quotient ..))
 
 /-- A map of simplicial sets induces a functor between homotopy categories.-/
-def SSet.hoFunctorMap {V W : SSet.{u}} (F : V ⟶ W) : SSet.hoCat V ⥤ SSet.hoCat W :=
+def hoFunctorMap {V W : SSet.{u}} (F : V ⟶ W) : hoCat V ⥤ hoCat W :=
   Quotient.lift _ (((SSet.oneTruncation ⋙ Cat.freeRefl).map F) ⋙ Quotient.functor _)
     (fun X Y f g hfg => by
       let .mk φ := hfg
@@ -241,8 +241,8 @@ def SSet.hoFunctorMap {V W : SSet.{u}} (F : V ⟶ W) : SSet.hoCat V ⥤ SSet.hoC
       · exact congrFun (F.naturality δ0.op) φ)
 
 /-- The functor that takes a simplicial set to its homotopy category. This should be isomorphic to
-the similiarly defined `SSet.hoFunctor` below, though this has not yet been proven.-/
-def SSet.hoFunctor' : SSet.{u} ⥤ Cat.{u,u} where
+the similiarly defined `hoFunctor` below, though this has not yet been proven.-/
+def hoFunctor' : SSet.{u} ⥤ Cat.{u,u} where
   obj V := Cat.of (SSet.hoCat V)
   map {S T} F := SSet.hoFunctorMap F
   map_id S := by
@@ -272,30 +272,30 @@ local macro:max (priority := high) "[" n:term "]₂" : term =>
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _[0]₂` as its underlying
 type.-/
-def SSet.OneTruncation₂ (S : SSet.Truncated 2) := S _[0]₂
+def OneTruncation₂ (S : SSet.Truncated 2) := S _[0]₂
 
 /-- Abbreviations for face maps in the 2-truncated simplex category.-/
-abbrev SSet.δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
+abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
     (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n + 1], hn'⟩ := SimplexCategory.δ i
 
 /-- Abbreviations for degeneracy maps in the 2-truncated simplex category.-/
-abbrev SSet.σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
+abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
     (⟨[n+1], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n], hn'⟩ := SimplexCategory.σ i
 
 /-- The source vertex of `f : S _[1]₂` for use in defining the underlying refl quiver.-/
-def SSet.OneTruncation₂.src {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation₂ S :=
+def OneTruncation₂.src {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation₂ S :=
   S.map (δ₂ (n := 0) 1).op f
 
 /-- The target vertex of `f : S _[1]₂` for use in defining the underlying refl quiver.-/
-def SSet.OneTruncation₂.tgt {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation₂ S :=
+def OneTruncation₂.tgt {S : SSet.Truncated 2} (f : S _[1]₂) : OneTruncation₂ S :=
   S.map (δ₂ (n := 0) 0).op f
 
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are subtypes of `S _[1]₂`.-/
-def SSet.OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S) :=
+def OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S) :=
   {p : S _[1]₂ // src p = X ∧ tgt p = Y}
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`.-/
-instance (S : SSet.Truncated 2) : ReflQuiver (SSet.OneTruncation₂ S) where
+instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
   Hom X Y := SSet.OneTruncation₂.Hom X Y
   id X := by
     refine ⟨S.map (SSet.σ₂ (n := 0) 0).op X, ?_, ?_⟩ <;>
@@ -307,7 +307,7 @@ instance (S : SSet.Truncated 2) : ReflQuiver (SSet.OneTruncation₂ S) where
       rfl
 
 /-- The functor that carries a 2-truncated simplicial set to its underlying refl quiver.-/
-def SSet.oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u,u} where
+def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u,u} where
   obj S := ReflQuiv.of (OneTruncation₂ S)
   map {S T} F := {
     obj := F.app (op [0]₂)
@@ -336,7 +336,7 @@ open SSet
 
 /-- A natural isomorphism between the underlying refl quivers of a simplicial set `V` and its
 2-truncation.-/
-def SSet.OneTruncation₂.ofTwoTruncationIso (V : SSet) :
+def OneTruncation₂.ofTwoTruncationIso (V : SSet) :
     ReflQuiv.of (OneTruncation₂ ((SSet.truncation 2).obj V)) ≅ ReflQuiv.of (OneTruncation V) :=
   .refl _
 
@@ -355,24 +355,24 @@ private def δ2₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 2
 private def δ0₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 0
 
 private def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
-  ⟨V.map δ1₂.op φ, opstuff V rfl, opstuff V rfl⟩
+  ⟨V.map δ1₂.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
 private def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
-  ⟨V.map δ2₂.op φ, opstuff V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), opstuff V rfl⟩
+  ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
 private def ev12₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev1₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ0₂.op φ,
-    opstuff V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
-    opstuff V rfl⟩
+    map_map_of_eq V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
+    map_map_of_eq V rfl⟩
 
 /-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
 category on the underlying refl quiver of `V`.-/
-inductive SSet.HoRel₂ {V : SSet.Truncated 2} :
+inductive HoRel₂ {V : SSet.Truncated 2} :
     (X Y : Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V))) → (f g : X ⟶ Y) → Prop
   | mk (φ : V _[2]₂) :
     HoRel₂ _ _
       (Quot.mk _ (.cons .nil (ev02₂ φ)))
       (Quot.mk _ (.cons (.cons .nil (ev01₂ φ)) (ev12₂ φ)))
 
-theorem SSet.HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
+theorem HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
     (hX : X = X') (hY : Y = Y') (hZ : Z = Z')
     (f : X ⟶ Z) (f' : X' ⟶ Z') (hf : f.1 = f'.1)
     (g : X ⟶ Y) (g' : X' ⟶ Y') (hg : g.1 = g'.1)
@@ -389,7 +389,7 @@ theorem SSet.HoRel₂.ext_triangle {V} (X X' Y Y' Z Z' : OneTruncation₂ V)
   congr! <;> apply Subtype.ext <;> assumption
 
 /-- The type underlying the homotopy category of a 2-truncated simplicial set `V`.-/
-def SSet.hoFunctor₂Obj (V : SSet.Truncated.{u} 2) : Type u :=
+def hoFunctor₂Obj (V : SSet.Truncated.{u} 2) : Type u :=
   Quotient (C := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V))) (HoRel₂ (V := V))
 
 instance (V : SSet.Truncated.{u} 2) : Category.{u} (SSet.hoFunctor₂Obj V) :=
@@ -397,24 +397,22 @@ instance (V : SSet.Truncated.{u} 2) : Category.{u} (SSet.hoFunctor₂Obj V) :=
 
 /-- A canonical functor from the free category on the refl quiver underlying a 2-truncated
 simplicial set `V` to its homotopy category.-/
-def SSet.hoFunctor₂Obj.quotientFunctor (V : SSet.Truncated.{u} 2) :
+def hoFunctor₂Obj.quotientFunctor (V : SSet.Truncated.{u} 2) :
     Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V)) ⥤ SSet.hoFunctor₂Obj V :=
   Quotient.functor (C := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V))) (HoRel₂ (V := V))
 
 /-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an
 epimorphism.-/
-theorem SSet.hoFunctor₂Obj.lift_unique' (V : SSet.Truncated.{u} 2)
-    {D} [Category D] (F₁ F₂ : SSet.hoFunctor₂Obj V ⥤ D)
+theorem hoFunctor₂Obj.lift_unique' (V : SSet.Truncated.{u} 2)
+    {D} [Category D] (F₁ F₂ : hoFunctor₂Obj V ⥤ D)
     (h : quotientFunctor V ⋙ F₁ = quotientFunctor V ⋙ F₂) : F₁ = F₂ :=
   Quotient.lift_unique' (C := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ V)))
     (HoRel₂ (V := V)) _ _ h
 
 /-- A map of 2-truncated simplicial sets induces a functor between homotopy categories.-/
-def SSet.hoFunctor₂Map {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) :
-    SSet.hoFunctor₂Obj V ⥤ SSet.hoFunctor₂Obj W :=
+def hoFunctor₂Map {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) : hoFunctor₂Obj V ⥤ hoFunctor₂Obj W :=
   Quotient.lift _
-    ((by exact (SSet.oneTruncation₂ ⋙ Cat.freeRefl).map F) ⋙
-      SSet.hoFunctor₂Obj.quotientFunctor _)
+    ((by exact (oneTruncation₂ ⋙ Cat.freeRefl).map F) ⋙ hoFunctor₂Obj.quotientFunctor _)
     (fun X Y f g hfg => by
       let .mk φ := hfg
       apply Quotient.sound
@@ -428,9 +426,9 @@ def SSet.hoFunctor₂Map {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) :
       · exact congrFun (F.naturality δ0₂.op) φ)
 
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category.-/
-def SSet.hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
-  obj V := Cat.of (SSet.hoFunctor₂Obj V)
-  map {S T} F := SSet.hoFunctor₂Map F
+def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
+  obj V := Cat.of (hoFunctor₂Obj V)
+  map {S T} F := hoFunctor₂Map F
   map_id S := by
     apply Quotient.lift_unique'
     simp [hoFunctor₂Map, Quotient.lift_spec]
@@ -441,16 +439,16 @@ def SSet.hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
     rw [Quotient.lift_spec, Cat.comp_eq_comp, Cat.comp_eq_comp, ← Functor.assoc, Functor.assoc,
       Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
 
-theorem SSet.hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
-    (SSet.oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙
-    hoFunctor₂Obj.quotientFunctor Y =
-    SSet.hoFunctor₂Obj.quotientFunctor X ⋙ hoFunctor₂Map f := rfl
+theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
+    (oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ hoFunctor₂Obj.quotientFunctor Y =
+      hoFunctor₂Obj.quotientFunctor X ⋙ hoFunctor₂Map f := rfl
 
 /-- The functor that takes a simplicial set to its homotopy category by passing through the
-2-truncation. This should be naturally isomorphic to `SSet.hoFunctor'`.-/
-def SSet.hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ SSet.hoFunctor₂
+2-truncation. This should be naturally isomorphic to `hoFunctor'`.-/
+def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ hoFunctor₂
 
 end
 end
 
+end SSet
 end CategoryTheory
