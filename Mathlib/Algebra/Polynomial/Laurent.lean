@@ -332,11 +332,13 @@ theorem _root_.Polynomial.toLaurent_injective :
 theorem _root_.Polynomial.toLaurent_inj (f g : R[X]) : toLaurent f = toLaurent g ↔ f = g :=
   ⟨fun h => Polynomial.toLaurent_injective h, congr_arg _⟩
 
-theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : f ≠ 0 ↔ toLaurent f ≠ 0 :=
-  (map_ne_zero_iff _ Polynomial.toLaurent_injective).symm
+@[simp]
+theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : toLaurent f ≠ 0 ↔ f ≠ 0 :=
+  map_ne_zero_iff _ Polynomial.toLaurent_injective
 
-theorem _root_.Polynomial.toLaurent_eq_zero {f : R[X]} : f = 0 ↔ toLaurent f = 0 :=
-  (map_eq_zero_iff _ Polynomial.toLaurent_injective).symm
+@[simp]
+theorem _root_.Polynomial.toLaurent_eq_zero {f : R[X]} : toLaurent f = 0 ↔ f = 0 :=
+  map_eq_zero_iff _ Polynomial.toLaurent_injective
 
 theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f' = f * T n := by
   refine f.induction_on' ?_ fun n a => ?_ <;> clear f
