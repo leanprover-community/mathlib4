@@ -206,7 +206,6 @@ theorem Function.extend_of_isEmpty [IsEmpty α] (f : α → β) (g : α → γ) 
     Function.extend f g h = h :=
   funext fun _ ↦ (Function.extend_apply' _ _ _) fun ⟨a, _⟩ ↦ isEmptyElim a
 
-section
 open Relator
 
 universe u₁ u₂
@@ -223,5 +222,3 @@ theorem rightTotal_empty [IsEmpty β] : RightTotal R := by
 @[simp]
 theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=
   ⟨leftTotal_empty R, rightTotal_empty R⟩
-
-end

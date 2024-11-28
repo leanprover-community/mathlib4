@@ -6,6 +6,7 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zh
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertIdx
 import Mathlib.Logic.Relation
+import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
 
@@ -393,7 +394,7 @@ theorem moveRight_memᵣ (x : PGame) (b) : x.moveRight b ∈ᵣ x := ⟨_, .rfl�
 theorem identical_of_isEmpty (x y : PGame)
     [IsEmpty x.LeftMoves] [IsEmpty x.RightMoves]
     [IsEmpty y.LeftMoves] [IsEmpty y.RightMoves] : x ≡ y :=
-  identical_iff.2 (by simp [Relator.biTotal_empty])
+  identical_iff.2 (by simp [biTotal_empty])
 
 /-- `Identical` as a `Setoid`. -/
 def identicalSetoid : Setoid PGame :=
