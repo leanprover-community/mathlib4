@@ -163,11 +163,8 @@ lemma S_smul_four (A : Δ m) : S • S • S • S • A = A := by
   simp only [smul_def, ← mul_assoc, S_mul_S_eq, neg_mul, one_mul, mul_neg, neg_neg, Subtype.coe_eta]
 
 @[simp]
-lemma T_S_rel (A : Δ m) : S • S • S • T • S • T • S • A = T⁻¹ • A := by
-  have : S • S • S • T • S • T • S = T⁻¹ := by
-    ext i j
-    fin_cases i <;> fin_cases j <;> rfl
-  simp_rw [← this, ← smul_assoc]
+lemma T_S_rel_smul (A : Δ m) : S • S • S • T • S • T • S • A = T⁻¹ • A := by
+  simp_rw [← T_S_rel, ← smul_assoc]
 
 lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m := by
   induction A using reduce_rec with
@@ -189,14 +186,13 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
         simpa [vecMul, vecHead, vecTail]
       simp_all only [h, mul_comm n, zero_mul, ← sub_eq_add_neg, ← h2,
         Fin.isValue, h1, h3, and_true, true_and]
-    · simp only [reduce_of_not_pos h h1]
-      simp only [reps, zpow_neg, Set.mem_setOf_eq, coe_inv, coe_T_zpow, adjugate_fin_two_of,
-        neg_zero, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply,
-        of_apply, cons_val', vecMul, cons_dotProduct, vecHead, one_mul, vecTail, dotProduct_empty,
-        Function.comp_apply, Fin.succ_zero_eq_one, neg_mul, add_zero, zero_mul, zero_add, mul_zero,
-        empty_val', cons_val_fin_one, cons_val_one, cons_val_zero, le_add_neg_iff_add_le, lt_neg,
-        Int.ediv_neg, neg_neg, smul_def, ← mul_assoc, S_mul_S_eq, mul_neg, neg_of, neg_cons,
-        neg_empty, Pi.neg_apply, neg_add_rev, abs_neg, ← le_neg, h, true_and]
+    · simp only [reps, Fin.isValue, reduce_of_not_pos h h1, Int.ediv_neg, neg_neg, smul_def, ←
+        mul_assoc, S_mul_S_eq, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
+        Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty,
+        Set.mem_setOf_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
+        vecTail, Function.comp_apply, Fin.succ_zero_eq_one, h, mul_zero, dotProduct_empty, add_zero,
+        zero_mul, neg_zero, empty_val', cons_val_fin_one, cons_val_one, cons_val_zero, lt_neg,
+        neg_add_rev, zero_add, le_add_neg_iff_add_le, ← le_neg, abs_neg, true_and]
       refine ⟨?_, Int.ediv_mul_le _ hd, ?_⟩
       · simp only [Int.lt_iff_le_and_ne]
         exact ⟨not_lt.mp h1, A_a_ne_zero h hm⟩
@@ -216,7 +212,7 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
     C (T • B) ↔ C B := by
   refine ⟨?_, hT _⟩
   intro ih
-  rw [show B = T⁻¹ • T • B by simp, ← T_S_rel]
+  rw [show B = T⁻¹ • T • B by simp, ← T_S_rel_smul]
   solve_by_elim (config := {maxDepth := 10})
 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
