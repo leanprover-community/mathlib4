@@ -52,11 +52,17 @@ theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
 theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨refl _, refl _⟩
 
+instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
+  refl a := antisymmRel_refl r a
+
 variable {r}
 
 @[symm]
 theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
   And.symm
+
+instance : IsSymm α (AntisymmRel r) where
+  symm _ _ := AntisymmRel.symm
 
 theorem AntisymmRel.comm : AntisymmRel r a b ↔ AntisymmRel r b a :=
   And.comm
@@ -66,8 +72,11 @@ theorem AntisymmRel.trans [IsTrans α r] (hab : AntisymmRel r a b) (hbc : Antisy
     AntisymmRel r a c :=
   ⟨_root_.trans hab.1 hbc.1, _root_.trans hbc.2 hab.2⟩
 
-instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) := fun _ _ =>
-  instDecidableAnd
+instance [IsTrans α r] : IsTrans α (AntisymmRel r) where
+  trans _ _ _ := AntisymmRel.trans
+
+instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) :=
+  fun _ _ ↦ instDecidableAnd
 
 @[simp]
 theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b ↔ a = b :=
