@@ -708,6 +708,22 @@ theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
 
+@[to_additive (attr := simp) nnnorm_abs_zsmul]
+theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
+  NNReal.eq <| norm_zpow_abs a n
+
+@[to_additive (attr := simp) nnnorm_natAbs_smul]
+theorem nnnorm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖₊ = ‖a ^ n‖₊ :=
+  NNReal.eq <| norm_pow_natAbs a n
+
+@[to_additive nnnorm_isUnit_zsmul]
+theorem nnnorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = ‖a‖₊ :=
+  NNReal.eq <| norm_zpow_isUnit a hn
+
+@[simp]
+theorem nnnorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
+  NNReal.eq <| norm_isUnit_zsmul a n.isUnit
+
 @[to_additive (attr := simp)]
 theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nndist_eq_nnnorm_div]
 
