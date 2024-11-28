@@ -47,7 +47,6 @@ normed group
 variable {𝓕 α ι κ E F G : Type*}
 
 open Filter Function Metric Bornology
-
 open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 /-- Auxiliary class, endowing a type `E` with a function `norm : E → ℝ` with notation `‖x‖`. This
@@ -65,7 +64,6 @@ class NNNorm (E : Type*) where
   nnnorm : E → ℝ≥0
 
 export Norm (norm)
-
 export NNNorm (nnnorm)
 
 @[inherit_doc]
