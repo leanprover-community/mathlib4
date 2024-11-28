@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
+import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Lemmas about squarefreeness of natural numbers
