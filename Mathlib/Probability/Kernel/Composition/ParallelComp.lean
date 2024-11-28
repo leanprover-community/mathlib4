@@ -86,6 +86,15 @@ lemma swap_parallelComp {κ : Kernel α β} [IsSFiniteKernel κ]
     prodMkLeft_apply, prodMkRight_apply, prodMkRight_apply]
   rfl
 
+/-- For a deterministic kernel, copying then applying the kernel to the two copies is the same
+as first applying the kernel then copying. -/
+lemma deterministic_comp_copy {f : α → β} (hf : Measurable f) :
+    (Kernel.deterministic f hf ∥ₖ Kernel.deterministic f hf) ∘ₖ Kernel.copy α
+      = Kernel.copy β ∘ₖ Kernel.deterministic f hf := by
+  rw [Kernel.parallelComp_comp_copy, Kernel.deterministic_prod_deterministic,
+    Kernel.copy, Kernel.deterministic_comp_deterministic]
+  rfl
+
 end ParallelComp
 
 end ProbabilityTheory.Kernel

@@ -35,7 +35,6 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 Defined using `MeasureTheory.Measure.bind` -/
 scoped[ProbabilityTheory] notation3 κ " ∘ₘ " μ:100 => MeasureTheory.Measure.bind μ κ
 
-
 lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :
     (κ ∘ₘ μ).map f = (κ.map f) ∘ₘ μ := by
   ext s hs
@@ -61,10 +60,18 @@ lemma snd_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFinite
   · rfl
   · exact measurable_snd hs
 
+lemma comp_swap {μ : Measure (α × β)} : (Kernel.swap α β) ∘ₘ μ = μ.map Prod.swap :=
+  comp_deterministic_eq_map measurable_swap
+
 lemma compProd_eq_comp_prod (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFiniteKernel κ] :
     μ ⊗ₘ κ = (Kernel.id ×ₖ κ) ∘ₘ μ := by
   rw [compProd, Kernel.compProd_prodMkLeft_eq_comp]
   rfl
+
+lemma compProd_eq_parallelComp_comp_copy_comp (μ : Measure α) [SFinite μ]
+    (κ : Kernel α β) [IsSFiniteKernel κ] :
+    μ ⊗ₘ κ = (Kernel.id ∥ₖ κ) ∘ₘ Kernel.copy α ∘ₘ μ := by
+  rw [compProd_eq_comp_prod, ← Kernel.parallelComp_comp_copy, Measure.comp_assoc]
 
 lemma compProd_id [SFinite μ] : μ ⊗ₘ Kernel.id = μ.map (fun x ↦ (x, x)) := by
   rw [compProd_eq_comp_prod, Kernel.id, Kernel.deterministic_prod_deterministic,

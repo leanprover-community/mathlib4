@@ -123,6 +123,24 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : Kernel α Ω) [IsFiniteKernel
     exacts [rfl, measurable_prod_mk_left hs]
   · exact measurable_id.prod_map hf.measurable hs
 
+lemma condKernel_compProd_measure [StandardBorelSpace β] [Nonempty β]
+    (μ : Measure α) [IsFiniteMeasure μ] (κ : Kernel α β) [IsMarkovKernel κ] :
+    (μ ⊗ₘ κ).condKernel =ᵐ[μ] κ := by
+  suffices (μ ⊗ₘ κ).condKernel =ᵐ[(μ ⊗ₘ κ).fst] κ by rwa [Measure.fst_compProd] at this
+  symm
+  refine eq_condKernel_of_measure_eq_compProd _ ?_
+  rw [Measure.fst_compProd]
+
+lemma Kernel.ae_eq_of_compProd_eq [StandardBorelSpace β] [Nonempty β]
+    {μ : Measure α} [IsFiniteMeasure μ] {κ η : Kernel α β} [IsMarkovKernel κ] [IsFiniteKernel η]
+    (h : μ ⊗ₘ κ = μ ⊗ₘ η) :
+    κ =ᵐ[μ] η := by
+  have h_eq_compProd : μ ⊗ₘ κ = (μ ⊗ₘ κ).fst ⊗ₘ η := by rw [Measure.fst_compProd, h]
+  have h1 := eq_condKernel_of_measure_eq_compProd η h_eq_compProd
+  rw [Measure.fst_compProd] at h1
+  filter_upwards [h1, condKernel_compProd_measure μ κ] with x h1 h2
+  rw [h1, ← h2]
+
 end Measure
 
 section KernelAndMeasure
