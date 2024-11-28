@@ -61,8 +61,7 @@ theorem measure_iUnion_le [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) �
     μ (⋃ i, t i) = μ (⋃ i, disjointed t i) := by rw [iUnion_disjointed]
     _ ≤ ∑' i, μ (disjointed t i) :=
       OuterMeasureClass.measure_iUnion_nat_le _ _ (disjoint_disjointed _)
-      -- FIXME: Why does `gcongr` unfold `DFunLike.coe` below?
-    _ ≤ ∑' i, μ (t i) := by gcongr; exact measure_mono (disjointed_subset ..)
+    _ ≤ ∑' i, μ (t i) := by gcongr; exact disjointed_subset ..
 
 theorem measure_biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → Set α) :
     μ (⋃ i ∈ I, s i) ≤ ∑' i : I, μ (s i) := by
