@@ -69,7 +69,9 @@ variable [HasZeroObject C]
 of complex shapes `e` which satisfies `e.IsTruncLE`. -/
 noncomputable def truncLE : HomologicalComplex C c' := (K.op.truncGE e.op).unop
 
-def truncLEIso : K.truncLE e ≅ (K.truncLE' e).extend e := sorry
+/-- The canonical isomorphism `K.truncLE e ≅ (K.truncLE' e).extend e`. -/
+noncomputable def truncLEIso : K.truncLE e ≅ (K.truncLE' e).extend e :=
+  (unopFunctor C c'.symm).mapIso ((K.truncLE' e).extendOpIso e).symm.op
 
 /-- The isomorphism `(K.truncLE e).X i' ≅ K.X i'` when `e.f i = i'`
 and `e.BoundaryLE i` does not hold. -/
