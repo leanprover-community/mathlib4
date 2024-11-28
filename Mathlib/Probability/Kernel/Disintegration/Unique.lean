@@ -141,6 +141,18 @@ lemma Kernel.ae_eq_of_compProd_eq [StandardBorelSpace β] [Nonempty β]
   filter_upwards [h1, condKernel_compProd_measure μ κ] with x h1 h2
   rw [h1, ← h2]
 
+/-- Two Markov kernels `κ` and `η` into a standard Borel space are `μ`-a.e. equal iff the
+composition-products `μ ⊗ₘ κ` and `μ ⊗ₘ η` are equal. -/
+lemma Kernel.ae_eq_iff_compProd_eq [StandardBorelSpace β] [Nonempty β]
+    {μ : Measure α} [IsFiniteMeasure μ] {κ η : Kernel α β} [IsMarkovKernel κ] [IsFiniteKernel η] :
+    κ =ᵐ[μ] η ↔ μ ⊗ₘ κ = μ ⊗ₘ η := by
+  refine ⟨fun h ↦ ?_, Kernel.ae_eq_of_compProd_eq⟩
+  ext s hs
+  rw [Measure.compProd_apply hs, Measure.compProd_apply hs]
+  refine lintegral_congr_ae ?_
+  filter_upwards [h] with a ha
+  rw [ha]
+
 end Measure
 
 section KernelAndMeasure

@@ -55,7 +55,8 @@ lemma compProd_posterior_eq_map_swap (κ : Kernel α β) (μ : Measure α)
     [IsFiniteMeasure μ] [IsFiniteKernel κ] :
     (κ ∘ₘ μ) ⊗ₘ κ†μ = (μ ⊗ₘ κ).map Prod.swap := by
   have h := ((μ ⊗ₘ κ).map Prod.swap).disintegrate ((μ ⊗ₘ κ).map Prod.swap).condKernel
-  rwa [Measure.fst_swap_compProd] at h
+  simp only [Measure.fst_map_swap, Measure.snd_compProd] at h
+  exact h
 
 lemma compProd_posterior_eq_swap_comp (κ : Kernel α β) (μ : Measure α)
     [IsFiniteMeasure μ] [IsFiniteKernel κ] :
@@ -93,19 +94,16 @@ lemma posterior_prod_id_comp (κ : Kernel α β) (μ : Measure α)
     compProd_posterior_eq_swap_comp, Measure.comp_assoc, Kernel.swap_swap, Measure.comp_id]
 
 /-- The Bayesian inverse is unique up to a `κ ∘ₘ μ`-null set. -/
-lemma eq_posterior_of_compProd_eq (η : Kernel β α) [IsFiniteKernel η]
+lemma ae_eq_posterior_of_compProd_eq (η : Kernel β α) [IsFiniteKernel η]
     (h : (κ ∘ₘ μ) ⊗ₘ η = (μ ⊗ₘ κ).map Prod.swap) :
-    η =ᵐ[κ ∘ₘ μ] κ†μ := by
-  rw [← Measure.fst_swap_compProd] at h
-  convert eq_condKernel_of_measure_eq_compProd η h.symm
-  rw [Measure.fst_swap_compProd]
-  rfl
+    η =ᵐ[κ ∘ₘ μ] κ†μ :=
+  (Kernel.ae_eq_of_compProd_eq ((compProd_posterior_eq_map_swap _ _).trans h.symm)).symm
 
 /-- The Bayesian inverse is unique up to a `κ ∘ₘ μ`-null set. -/
-lemma eq_posterior_of_compProd_eq_swap_comp (η : Kernel β α) [IsFiniteKernel η]
+lemma ae_eq_posterior_of_compProd_eq_swap_comp (η : Kernel β α) [IsFiniteKernel η]
     (h : ((κ ∘ₘ μ) ⊗ₘ η) = Kernel.swap α β ∘ₘ μ ⊗ₘ κ) :
     η =ᵐ[κ ∘ₘ μ] κ†μ :=
-  eq_posterior_of_compProd_eq η <| by rw [h, Measure.comp_swap]
+  ae_eq_posterior_of_compProd_eq η <| by rw [h, Measure.comp_swap]
 
 @[simp]
 lemma posterior_comp_self [IsMarkovKernel κ] : (κ†μ) ∘ₘ κ ∘ₘ μ = μ := by
@@ -118,25 +116,23 @@ lemma posterior_posterior [StandardBorelSpace β] [Nonempty β] [IsMarkovKernel 
   suffices κ =ᵐ[(κ†μ) ∘ₘ κ ∘ₘ μ] (κ†μ)†(κ ∘ₘ μ) by
     rw [posterior_comp_self] at this
     filter_upwards [this] with a h using h.symm
-  refine eq_posterior_of_compProd_eq_swap_comp κ ?_
+  refine ae_eq_posterior_of_compProd_eq_swap_comp κ ?_
   rw [posterior_comp_self, compProd_posterior_eq_swap_comp κ μ, Measure.comp_assoc,
     Kernel.swap_swap, Measure.comp_id]
 
 /-- The Bayesian inverse of the identity kernel is the identity kernel. -/
-lemma posterior_id : Kernel.id†μ =ᵐ[μ] Kernel.id := by
+lemma posterior_id (μ : Measure α) [IsFiniteMeasure μ] : Kernel.id†μ =ᵐ[μ] Kernel.id := by
   suffices Kernel.id =ᵐ[Kernel.id ∘ₘ μ] (Kernel.id : Kernel α α)†μ by
     rw [Measure.comp_id] at this
     filter_upwards [this] with a ha using ha.symm
-  refine eq_posterior_of_compProd_eq Kernel.id ?_
-  rw [Measure.comp_id, Measure.compProd_id, Measure.map_map measurable_swap]
-  · congr
-  · exact measurable_id.prod_mk measurable_id
+  refine ae_eq_posterior_of_compProd_eq_swap_comp Kernel.id ?_
+  rw [Measure.comp_id, Measure.compProd_id_eq_copy_comp, Measure.comp_assoc, Kernel.swap_copy]
 
 /-- The Bayesian inverse is contravariant. -/
 lemma posterior_comp [StandardBorelSpace β] [Nonempty β] {η : Kernel β γ} [IsFiniteKernel η] :
     (η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] (κ†μ) ∘ₖ η†(κ ∘ₘ μ) := by
   rw [Measure.comp_assoc]
-  refine (eq_posterior_of_compProd_eq_swap_comp ((κ†μ) ∘ₖ η†(κ ∘ₘ μ)) ?_).symm
+  refine (ae_eq_posterior_of_compProd_eq_swap_comp ((κ†μ) ∘ₖ η†(κ ∘ₘ μ)) ?_).symm
   simp_rw [Measure.compProd_eq_comp_prod, ← Kernel.parallelComp_comp_copy,
     Kernel.parallelComp_comp_right, ← Measure.comp_assoc]
   calc (Kernel.id ∥ₖ κ†μ) ∘ₘ (Kernel.id ∥ₖ η†(κ ∘ₘ μ)) ∘ₘ (Kernel.copy γ) ∘ₘ η ∘ₘ κ ∘ₘ μ

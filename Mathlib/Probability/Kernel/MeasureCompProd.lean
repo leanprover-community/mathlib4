@@ -117,12 +117,14 @@ lemma compProd_const {ν : Measure β} [SFinite μ] [SFinite ν] :
   ext s hs
   simp_rw [compProd_apply hs, prod_apply hs, Kernel.const_apply]
 
+@[simp]
 lemma compProd_add_left (μ ν : Measure α) [SFinite μ] [SFinite ν] (κ : Kernel α β) :
     (μ + ν) ⊗ₘ κ = μ ⊗ₘ κ + ν ⊗ₘ κ := by
   by_cases hκ : IsSFiniteKernel κ
   · simp_rw [Measure.compProd, Kernel.const_add, Kernel.compProd_add_left, Kernel.add_apply]
   · simp [compProd_of_not_isSFiniteKernel _ _ hκ]
 
+@[simp]
 lemma compProd_add_right (μ : Measure α) (κ η : Kernel α β)
     [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     μ ⊗ₘ (κ + η) = μ ⊗ₘ κ + μ ⊗ₘ η := by
@@ -135,6 +137,11 @@ lemma fst_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsMarkovK
     (μ ⊗ₘ κ).fst = μ := by
   ext s
   rw [compProd, Measure.fst, ← Kernel.fst_apply, Kernel.fst_compProd, Kernel.const_apply]
+
+lemma compProd_smul_left (a : ℝ≥0∞) [SFinite μ] [IsSFiniteKernel κ] :
+    (a • μ) ⊗ₘ κ = a • (μ ⊗ₘ κ) := by
+  ext s hs
+  simp only [compProd_apply hs, lintegral_smul_measure, smul_apply, smul_eq_mul]
 
 section Integral
 
