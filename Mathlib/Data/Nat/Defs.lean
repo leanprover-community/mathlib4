@@ -957,7 +957,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
 /-- A subset of `ℕ` containing `k : ℕ` and closed under `Nat.succ` contains every `n ≥ k`. -/
 lemma set_induction_bounded {S : Set ℕ} (hk : k ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S)
     (hnk : k ≤ n) : n ∈ S :=
-  @leRecOn (fun n => n ∈ S) k n hnk @h_ind hk
+  @leRecOn (fun n ↦ n ∈ S) k n hnk @h_ind hk
 
 /-- A subset of `ℕ` containing zero and closed under `Nat.succ` contains all of `ℕ`. -/
 lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S) (n : ℕ) :

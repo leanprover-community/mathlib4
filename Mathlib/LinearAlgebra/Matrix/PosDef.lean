@@ -47,9 +47,9 @@ def PosSemidef (M : Matrix n n R) :=
 
 protected theorem PosSemidef.diagonal [StarOrderedRing R] [DecidableEq n] {d : n → R} (h : 0 ≤ d) :
     PosSemidef (diagonal d) :=
-  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i),
+  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i ↦ IsSelfAdjoint.of_nonneg (h i),
     fun x ↦ by
-      refine Fintype.sum_nonneg fun i => ?_
+      refine Fintype.sum_nonneg fun i ↦ ?_
       simpa only [mulVec_diagonal, ← mul_assoc] using conjugate_nonneg (h i) _⟩
 
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
@@ -99,7 +99,7 @@ protected lemma zero : PosSemidef (0 : Matrix n n R) :=
 
 protected lemma one [StarOrderedRing R] [DecidableEq n] : PosSemidef (1 : Matrix n n R) :=
   ⟨isHermitian_one, fun x ↦ by
-    rw [one_mulVec]; exact Fintype.sum_nonneg fun i => star_mul_self_nonneg _⟩
+    rw [one_mulVec]; exact Fintype.sum_nonneg fun i ↦ star_mul_self_nonneg _⟩
 
 protected theorem natCast [StarOrderedRing R] [DecidableEq n] (d : ℕ) :
     PosSemidef (d : Matrix n n R) :=
@@ -350,12 +350,12 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
 protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     {d : n → R} (h : ∀ i, 0 < d i) :
     PosDef (diagonal d) :=
-  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i => IsSelfAdjoint.of_nonneg (h i).le,
+  ⟨isHermitian_diagonal_of_self_adjoint _ <| funext fun i ↦ IsSelfAdjoint.of_nonneg (h i).le,
     fun x hx => by
       refine Fintype.sum_pos ?_
       simp_rw [mulVec_diagonal, ← mul_assoc, Pi.lt_def]
       obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
-      exact ⟨fun i => conjugate_nonneg (h i).le _,
+      exact ⟨fun i ↦ conjugate_nonneg (h i).le _,
         i, conjugate_pos (h _) (isRegular_of_ne_zero hi)⟩⟩
 
 @[simp]

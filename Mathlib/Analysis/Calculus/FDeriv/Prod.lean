@@ -424,7 +424,7 @@ theorem hasFDerivWithinAt_pi :
 theorem differentiableWithinAt_pi :
     DifferentiableWithinAt 𝕜 Φ s x ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x ↦ Φ x i) s x :=
   ⟨fun h i => (hasFDerivWithinAt_pi'.1 h.hasFDerivWithinAt i).differentiableWithinAt, fun h =>
-    (hasFDerivWithinAt_pi.2 fun i => (h i).hasFDerivWithinAt).differentiableWithinAt⟩
+    (hasFDerivWithinAt_pi.2 fun i ↦ (h i).hasFDerivWithinAt).differentiableWithinAt⟩
 
 @[fun_prop]
 theorem differentiableWithinAt_pi'' (hφ : ∀ i, DifferentiableWithinAt 𝕜 (fun x ↦ Φ x i) s x) :
@@ -439,7 +439,7 @@ theorem differentiableWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i
 @[simp]
 theorem differentiableAt_pi : DifferentiableAt 𝕜 Φ x ↔ ∀ i, DifferentiableAt 𝕜 (fun x ↦ Φ x i) x :=
   ⟨fun h i => (hasFDerivAt_pi'.1 h.hasFDerivAt i).differentiableAt, fun h =>
-    (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).differentiableAt⟩
+    (hasFDerivAt_pi.2 fun i ↦ (h i).hasFDerivAt).differentiableAt⟩
 
 @[fun_prop]
 theorem differentiableAt_pi'' (hφ : ∀ i, DifferentiableAt 𝕜 (fun x ↦ Φ x i) x) :
@@ -454,7 +454,7 @@ theorem differentiableAt_apply (i : ι) (f : ∀ i, F' i) :
 
 theorem differentiableOn_pi : DifferentiableOn 𝕜 Φ s ↔ ∀ i, DifferentiableOn 𝕜 (fun x ↦ Φ x i) s :=
   ⟨fun h i x hx => differentiableWithinAt_pi.1 (h x hx) i, fun h x hx =>
-    differentiableWithinAt_pi.2 fun i => h i x hx⟩
+    differentiableWithinAt_pi.2 fun i ↦ h i x hx⟩
 
 @[fun_prop]
 theorem differentiableOn_pi'' (hφ : ∀ i, DifferentiableOn 𝕜 (fun x ↦ Φ x i) s) :
@@ -468,7 +468,7 @@ theorem differentiableOn_apply (i : ι) (s' : Set (∀ i, F' i)) :
   apply h; apply differentiableOn_id
 
 theorem differentiable_pi : Differentiable 𝕜 Φ ↔ ∀ i, Differentiable 𝕜 fun x ↦ Φ x i :=
-  ⟨fun h i x => differentiableAt_pi.1 (h x) i, fun h x => differentiableAt_pi.2 fun i => h i x⟩
+  ⟨fun h i x => differentiableAt_pi.1 (h x) i, fun h x => differentiableAt_pi.2 fun i ↦ h i x⟩
 
 @[fun_prop]
 theorem differentiable_pi'' (hφ : ∀ i, Differentiable 𝕜 fun x ↦ Φ x i) :
@@ -481,12 +481,12 @@ theorem differentiable_apply (i : ι) :
 -- TODO: find out which version (`φ` or `Φ`) works better with `rw`/`simp`
 theorem fderivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (φ i) s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x i => φ i x) s x = pi fun i => fderivWithin 𝕜 (φ i) s x :=
-  (hasFDerivWithinAt_pi.2 fun i => (h i).hasFDerivWithinAt).fderivWithin hs
+    fderivWithin 𝕜 (fun x i => φ i x) s x = pi fun i ↦ fderivWithin 𝕜 (φ i) s x :=
+  (hasFDerivWithinAt_pi.2 fun i ↦ (h i).hasFDerivWithinAt).fderivWithin hs
 
 theorem fderiv_pi (h : ∀ i, DifferentiableAt 𝕜 (φ i) x) :
-    fderiv 𝕜 (fun x i => φ i x) x = pi fun i => fderiv 𝕜 (φ i) x :=
-  (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).fderiv
+    fderiv 𝕜 (fun x i => φ i x) x = pi fun i ↦ fderiv 𝕜 (φ i) x :=
+  (hasFDerivAt_pi.2 fun i ↦ (h i).hasFDerivAt).fderiv
 
 end Pi
 

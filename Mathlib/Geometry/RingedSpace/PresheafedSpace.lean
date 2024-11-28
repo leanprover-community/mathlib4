@@ -193,7 +193,7 @@ theorem comp_base {X Y Z : PresheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rfl
 
 instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ => (↑X → ↑Y) :=
-  ⟨fun f => f.base⟩
+  ⟨fun f ↦ f.base⟩
 
 -- Porting note: removed as this is a syntactic tauto
 --theorem coe_to_fun_eq {X Y : PresheafedSpace.{v, v, u} C} (f : X ⟶ Y) : (f : ↑X → ↑Y) = f.base :=
@@ -261,7 +261,7 @@ def sheafIsoOfIso (H : X ≅ Y) : Y.2 ≅ H.hom.base _* X.2 where
   hom_inv_id := by
     ext U
     rw [NatTrans.comp_app]
-    simpa using congr_arg (fun f => f ≫ eqToHom _) (congr_app H.inv_hom_id (op U))
+    simpa using congr_arg (fun f ↦ f ≫ eqToHom _) (congr_app H.inv_hom_id (op U))
   inv_hom_id := by
     ext U
     dsimp
@@ -333,7 +333,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
     rw [PresheafedSpace.comp_c_app, PresheafedSpace.comp_c_app,
       PresheafedSpace.ofRestrict_c_app, Category.assoc, cancel_epi] at this
     have h : _ ≫ _ = _ ≫ _ ≫ _ :=
-      congr_arg (fun f => (X.restrict hf).presheaf.map (eqToHom hV).op ≫ f) this
+      congr_arg (fun f ↦ (X.restrict hf).presheaf.map (eqToHom hV).op ≫ f) this
     simp only [g₁.c.naturality, g₂.c.naturality_assoc] at h
     simp only [eqToHom_op, eqToHom_unop, eqToHom_map, eqToHom_trans,
       ← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc] at h

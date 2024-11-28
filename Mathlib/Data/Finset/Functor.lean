@@ -64,12 +64,12 @@ variable {α β : Type u} [∀ P, Decidable P]
 
 protected instance applicative : Applicative Finset :=
   { Finset.functor, Finset.pure with
-    seq := fun t s => t.sup fun f => (s ()).image f
+    seq := fun t s => t.sup fun f ↦ (s ()).image f
     seqLeft := fun s t => if t () = ∅ then ∅ else s
     seqRight := fun s t => if s = ∅ then ∅ else t () }
 
 @[simp]
-theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
+theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f ↦ s.image f :=
   rfl
 
 @[simp]

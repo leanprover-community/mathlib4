@@ -113,7 +113,7 @@ variable (R M)
 
 -- see Note [lower instance priority]
 instance (priority := 80) _root_.isNoetherian_of_finite [Finite M] : IsNoetherian R M :=
-  ⟨fun s => ⟨(s : Set M).toFinite.toFinset, by rw [Set.Finite.coe_toFinset, Submodule.span_eq]⟩⟩
+  ⟨fun s ↦ ⟨(s : Set M).toFinite.toFinset, by rw [Set.Finite.coe_toFinset, Submodule.span_eq]⟩⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Module.Finite R M :=
@@ -317,7 +317,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
       R ((↑s : Set M) → R) N _ _ _ (Pi.module _ _ _) _ ?_ ?_ isNoetherian_pi
   · fapply LinearMap.mk
     · fapply AddHom.mk
-      · exact fun f => ⟨∑ i ∈ s.attach, f i • i.1, N.sum_mem fun c _ => N.smul_mem _ <| this _ c.2⟩
+      · exact fun f ↦ ⟨∑ i ∈ s.attach, f i • i.1, N.sum_mem fun c _ => N.smul_mem _ <| this _ c.2⟩
       · intro f g
         apply Subtype.eq
         change (∑ i ∈ s.attach, (f i + g i) • _) = _

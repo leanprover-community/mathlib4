@@ -273,12 +273,12 @@ theorem nilpotent_iff_finite_descending_central_series :
   rw [nilpotent_iff_finite_ascending_central_series]
   constructor
   · rintro ⟨n, H, hH, hn⟩
-    refine ⟨n, fun m => H (n - m), is_decending_rev_series_of_is_ascending G hn hH, ?_⟩
+    refine ⟨n, fun m ↦ H (n - m), is_decending_rev_series_of_is_ascending G hn hH, ?_⟩
     dsimp only
     rw [tsub_self]
     exact hH.1
   · rintro ⟨n, H, hH, hn⟩
-    refine ⟨n, fun m => H (n - m), is_ascending_rev_series_of_is_descending G hn hH, ?_⟩
+    refine ⟨n, fun m ↦ H (n - m), is_ascending_rev_series_of_is_descending G hn hH, ?_⟩
     dsimp only
     rw [tsub_self]
     exact hH.1
@@ -396,12 +396,12 @@ theorem least_descending_central_series_length_eq_nilpotencyClass :
   rw [← least_ascending_central_series_length_eq_nilpotencyClass]
   refine le_antisymm (Nat.find_mono ?_) (Nat.find_mono ?_)
   · rintro n ⟨H, ⟨hH, hn⟩⟩
-    refine ⟨fun m => H (n - m), is_decending_rev_series_of_is_ascending G hn hH, ?_⟩
+    refine ⟨fun m ↦ H (n - m), is_decending_rev_series_of_is_ascending G hn hH, ?_⟩
     dsimp only
     rw [tsub_self]
     exact hH.1
   · rintro n ⟨H, ⟨hH, hn⟩⟩
-    refine ⟨fun m => H (n - m), is_ascending_rev_series_of_is_descending G hn hH, ?_⟩
+    refine ⟨fun m ↦ H (n - m), is_ascending_rev_series_of_is_descending G hn hH, ?_⟩
     dsimp only
     rw [tsub_self]
     exact hH.1
@@ -690,7 +690,7 @@ instance isNilpotent_prod [IsNilpotent G₁] [IsNilpotent G₂] : IsNilpotent (G
 theorem nilpotencyClass_prod [IsNilpotent G₁] [IsNilpotent G₂] :
     Group.nilpotencyClass (G₁ × G₂) =
     max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂) := by
-  refine eq_of_forall_ge_iff fun k => ?_
+  refine eq_of_forall_ge_iff fun k ↦ ?_
   simp only [max_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
     lowerCentralSeries_prod, prod_eq_bot_iff]
 
@@ -703,16 +703,16 @@ variable {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
 
 theorem lowerCentralSeries_pi_le (n : ℕ) :
     lowerCentralSeries (∀ i, Gs i) n ≤ Subgroup.pi Set.univ
-      fun i => lowerCentralSeries (Gs i) n := by
+      fun i ↦ lowerCentralSeries (Gs i) n := by
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
   · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
-      _ ≤ ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_mono ih (le_refl _)
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
-      _ ≤ pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_pi_pi_le _ _
-      _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
+      _ ≤ ⁅pi fun i ↦ lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_mono ih (le_refl _)
+      _ = ⁅pi fun i ↦ lowerCentralSeries (Gs i) n, pi fun i ↦ ⊤⁆ := by simp [pi, pi_top]
+      _ ≤ pi fun i ↦ ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_pi_pi_le _ _
+      _ = pi fun i ↦ lowerCentralSeries (Gs i) n.succ := rfl
 
 /-- products of nilpotent groups are nilpotent if their nilpotency class is bounded -/
 theorem isNilpotent_pi_of_bounded_class [∀ i, IsNilpotent (Gs i)] (n : ℕ)
@@ -734,30 +734,30 @@ variable {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
 
 theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
     lowerCentralSeries (∀ i, Gs i) n = Subgroup.pi Set.univ
-      fun i => lowerCentralSeries (Gs i) n := by
+      fun i ↦ lowerCentralSeries (Gs i) n := by
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
   · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := by rw [ih]
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
-      _ = pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_pi_pi_of_finite _ _
-      _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
+      _ = ⁅pi fun i ↦ lowerCentralSeries (Gs i) n, ⊤⁆ := by rw [ih]
+      _ = ⁅pi fun i ↦ lowerCentralSeries (Gs i) n, pi fun i ↦ ⊤⁆ := by simp [pi, pi_top]
+      _ = pi fun i ↦ ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_pi_pi_of_finite _ _
+      _ = pi fun i ↦ lowerCentralSeries (Gs i) n.succ := rfl
 
 /-- n-ary products of nilpotent groups are nilpotent -/
 instance isNilpotent_pi [Finite η] [∀ i, IsNilpotent (Gs i)] : IsNilpotent (∀ i, Gs i) := by
   cases nonempty_fintype η
   rw [nilpotent_iff_lowerCentralSeries]
-  refine ⟨Finset.univ.sup fun i => Group.nilpotencyClass (Gs i), ?_⟩
+  refine ⟨Finset.univ.sup fun i ↦ Group.nilpotencyClass (Gs i), ?_⟩
   rw [lowerCentralSeries_pi_of_finite, pi_eq_bot_iff]
   intro i
   rw [lowerCentralSeries_eq_bot_iff_nilpotencyClass_le]
-  exact Finset.le_sup (f := fun i => Group.nilpotencyClass (Gs i)) (Finset.mem_univ i)
+  exact Finset.le_sup (f := fun i ↦ Group.nilpotencyClass (Gs i)) (Finset.mem_univ i)
 
 /-- The nilpotency class of an n-ary product is the sup of the nilpotency classes of the factors -/
 theorem nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
-    Group.nilpotencyClass (∀ i, Gs i) = Finset.univ.sup fun i => Group.nilpotencyClass (Gs i) := by
+    Group.nilpotencyClass (∀ i, Gs i) = Finset.univ.sup fun i ↦ Group.nilpotencyClass (Gs i) := by
   apply eq_of_forall_ge_iff
   intro k
   simp only [Finset.sup_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,

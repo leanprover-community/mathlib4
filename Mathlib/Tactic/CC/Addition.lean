@@ -1714,7 +1714,7 @@ def propagateBetaToEqc (fnRoots lambdas : Array Expr) (newLambdaApps : Array Exp
   if lambdas.isEmpty then return newLambdaApps
   let mut newLambdaApps := newLambdaApps
   let lambdaRoot ← getRoot lambdas.back!
-  guard (← lambdas.allM fun l => pure l.isLambda <&&> (· == lambdaRoot) <$> getRoot l)
+  guard (← lambdas.allM fun l ↦ pure l.isLambda <&&> (· == lambdaRoot) <$> getRoot l)
   for fnRoot in fnRoots do
     if let some ps := (← get).parents.find? fnRoot then
       for { expr := p,.. } in ps do

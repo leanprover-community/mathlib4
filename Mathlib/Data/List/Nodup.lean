@@ -74,7 +74,7 @@ theorem nodup_iff_injective_getElem {l : List α} :
 theorem nodup_iff_injective_get {l : List α} :
     Nodup l ↔ Function.Injective l.get := by
   rw [nodup_iff_injective_getElem]
-  change _ ↔ Injective (fun i => l.get i)
+  change _ ↔ Injective (fun i ↦ l.get i)
   simp
 
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :

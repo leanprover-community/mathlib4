@@ -62,7 +62,7 @@ def natLERec (m n : ℕ) (h : m ≤ n) : G' m ↪[L] G' n :=
 
 @[simp]
 theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
-    (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k => f' k) := by
+    (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k ↦ f' k) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction' k with k ih
@@ -375,7 +375,7 @@ theorem lift_of {i} (x : G i) : lift L ι G f g Hg (of L ι G f i x) = g i x := 
 
 theorem lift_unique (F : DirectLimit G f ↪[L] P) (x) :
     F x =
-      lift L ι G f (fun i => F.comp <| of L ι G f i)
+      lift L ι G f (fun i ↦ F.comp <| of L ι G f i)
         (fun i j hij x => by rw [F.comp_apply, F.comp_apply, of_f]) x :=
   DirectLimit.inductionOn x fun i x => by rw [lift_of]; rfl
 
@@ -419,7 +419,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) := by
   refine ⟨⟨⋃ i, DirectLimit.of L ι G f i '' Classical.choose (h i).out, ?_, ?_⟩⟩
-  · exact Set.countable_iUnion fun i => Set.Countable.image (Classical.choose_spec (h i).out).1 _
+  · exact Set.countable_iUnion fun i ↦ Set.Countable.image (Classical.choose_spec (h i).out).1 _
   · rw [eq_top_iff, Substructure.closure_iUnion]
     simp_rw [← Embedding.coe_toHom, Substructure.closure_image]
     rw [le_iSup_iff]

@@ -196,10 +196,10 @@ def PComp.assump (c : Comp) (n : ℕ) : PComp where
   vars := .ofList c.vars _
 
 instance : ToFormat PComp :=
-  ⟨fun p => format p.c.coeffs ++ toString p.c.str ++ "0"⟩
+  ⟨fun p ↦ format p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
 instance : ToString PComp :=
-  ⟨fun p => toString p.c.coeffs ++ toString p.c.str ++ "0"⟩
+  ⟨fun p ↦ toString p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
 /-- A collection of comparisons. -/
 abbrev PCompSet := RBSet PComp PComp.cmp

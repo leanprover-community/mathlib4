@@ -114,7 +114,7 @@ variable [SampleableExt α] [SampleableExt β] [Repr α]
 
 instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
-  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp
+  interp := fun f ↦ (f.comp SampleableExt.interp).applyFinsupp
   sample := SampleableExt.sample (α := α → β)
   -- note: no way of shrinking the domain without an inverse to `interp`
   shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
@@ -122,7 +122,7 @@ instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
 -- TODO: support a non-constant codomain type
 instance DFinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
-  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDFinsupp
+  interp := fun f ↦ (f.comp SampleableExt.interp).applyFinsupp.toDFinsupp
   sample := SampleableExt.sample (α := α → β)
   -- note: no way of shrinking the domain without an inverse to `interp`
   shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }

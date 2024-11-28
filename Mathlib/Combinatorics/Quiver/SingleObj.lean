@@ -122,7 +122,7 @@ theorem pathToList_listToPath (l : List α) : pathToList (listToPath l) = l := b
 
 /-- Paths in `SingleObj α` quiver correspond to lists of elements of type `α`. -/
 def pathEquivList : Path (star α) (star α) ≃ List α :=
-  ⟨pathToList, listToPath, fun p => listToPath_pathToList p, pathToList_listToPath⟩
+  ⟨pathToList, listToPath, fun p ↦ listToPath_pathToList p, pathToList_listToPath⟩
 
 @[simp]
 theorem pathEquivList_nil : pathEquivList Path.nil = ([] : List α) :=

@@ -25,7 +25,7 @@ instance [Inhabited α] : Inhabited (Stream' α) :=
   ⟨Stream'.const default⟩
 
 protected theorem eta (s : Stream' α) : (head s::tail s) = s :=
-  funext fun i => by cases i <;> rfl
+  funext fun i ↦ by cases i <;> rfl
 
 @[ext]
 protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, get s₁ n = get s₂ n) → s₁ = s₂ :=
@@ -79,7 +79,7 @@ theorem head_drop (a : Stream' α) (n : ℕ) : (a.drop n).head = a.get n := by s
 
 theorem cons_injective2 : Function.Injective2 (cons : α → Stream' α → Stream' α) := fun x y s t h =>
   ⟨by rw [← get_zero_cons x s, h, get_zero_cons],
-    Stream'.ext fun n => by rw [← get_succ_cons n _ x, h, get_succ_cons]⟩
+    Stream'.ext fun n ↦ by rw [← get_succ_cons n _ x, h, get_succ_cons]⟩
 
 theorem cons_injective_left (s : Stream' α) : Function.Injective fun x ↦ cons x s :=
   cons_injective2.left _
@@ -260,7 +260,7 @@ theorem get_of_bisim (bisim : IsBisimulation R) :
 
 -- If two streams are bisimilar, then they are equal
 theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun r =>
-  Stream'.ext fun n => And.left (get_of_bisim R bisim n r)
+  Stream'.ext fun n ↦ And.left (get_of_bisim R bisim n r)
 
 end Bisim
 
@@ -289,7 +289,7 @@ theorem coinduction {s₁ s₂ : Stream' α} :
       have h₃ :
         ∀ (β : Type u) (fr : Stream' α → β),
           fr (tail s₁) = fr (tail s₂) → fr (tail (tail s₁)) = fr (tail (tail s₂)) :=
-        fun β fr => And.right h β fun s => fr (tail s)
+        fun β fr => And.right h β fun s ↦ fr (tail s)
       And.intro h₁ (And.intro h₂ h₃))
     (And.intro hh ht)
 
@@ -341,7 +341,7 @@ theorem get_unfolds_head_tail : ∀ (n : ℕ) (s : Stream' α),
     rw [get_succ, get_succ, unfolds_eq, tail_cons, ih]
 
 theorem unfolds_head_eq : ∀ s : Stream' α, unfolds head tail s = s := fun s =>
-  Stream'.ext fun n => get_unfolds_head_tail n s
+  Stream'.ext fun n ↦ get_unfolds_head_tail n s
 
 theorem interleave_eq (s₁ s₂ : Stream' α) : s₁ ⋈ s₂ = head s₁::head s₂::(tail s₁ ⋈ tail s₂) := by
   let t := tail s₁ ⋈ tail s₂

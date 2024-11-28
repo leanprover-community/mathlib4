@@ -29,8 +29,8 @@ category.
 -/
 def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :
     K.sections ≃ (K ⋙ uliftFunctor.{v, u}).sections where
-  toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
-  invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
+  toFun := fun ⟨u, hu⟩ => ⟨fun j ↦ ⟨u j⟩, fun f ↦ by simp [hu f]⟩
+  invFun := fun ⟨u, hu⟩ => ⟨fun j ↦ (u j).down, @fun j j' f => by simp [← hu f]⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -45,7 +45,7 @@ instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
         rw [Types.isLimit_iff ((uliftFunctor.{v, u}).mapCone c)]
         intro s hs
         obtain ⟨x, hx₁, hx₂⟩ := (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv K).symm ⟨s, hs⟩).2
-        exact ⟨⟨x⟩, fun i => ULift.ext _ _ (hx₁ i),
+        exact ⟨⟨x⟩, fun i ↦ ULift.ext _ _ (hx₁ i),
           fun y hy => ULift.ext _ _ (hx₂ y.down fun i ↦ ULift.ext_iff.mp (hy i))⟩ } }
 
 /--

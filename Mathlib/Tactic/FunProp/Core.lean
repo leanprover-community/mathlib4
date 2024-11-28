@@ -101,7 +101,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
 def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
+    (fun r ↦ return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
 
   if (← isDefEq type e) then
 
@@ -203,7 +203,7 @@ def applyConstRule (funPropDecl : FunPropDecl) (e : Expr)
 /--
 Try to prove `e` using using *apply lambda theorem*.
 
-For example, `e = q(Continuous fun f => f x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
+For example, `e = q(Continuous fun f ↦ f x)` and `funPropDecl` is `FunPropDecl` for `Continuous`.
 -/
 def applyApplyRule (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
@@ -383,7 +383,7 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       applyCompRule funPropDecl e f g funProp
 
 
-/-- Prove function property of `fun f => f x₁ ... xₙ`. -/
+/-- Prove function property of `fun f ↦ f x₁ ... xₙ`. -/
 def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
@@ -612,12 +612,12 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
 /-- Cache result if it does not have any subgoals. -/
 def cacheResult (e : Expr) (r : Result) : FunPropM Result := do -- return proof?
-  modify (fun s => { s with cache := s.cache.insert e { expr := q(True), proof? := r.proof} })
+  modify (fun s ↦ { s with cache := s.cache.insert e { expr := q(True), proof? := r.proof} })
   return r
 
 /-- Cache for failed goals such that `fun_prop` can fail fast next time. -/
 def cacheFailure (e : Expr) : FunPropM Unit := do -- return proof?
-  modify (fun s => { s with failureCache := s.failureCache.insert e })
+  modify (fun s ↦ { s with failureCache := s.failureCache.insert e })
 
 
 mutual
@@ -627,7 +627,7 @@ mutual
     let e ← instantiateMVars e
 
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
+      (fun r ↦ do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
 
     -- check cache for succesfull goals
     if let .some { expr := _, proof? := .some proof } := (← get).cache.find? e then

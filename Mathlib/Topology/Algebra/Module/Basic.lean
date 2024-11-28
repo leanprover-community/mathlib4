@@ -207,7 +207,7 @@ theorem LinearMap.continuous_on_pi {ι : Type*} {R : Type*} {M : Type*} [Finite 
   classical
     -- for the proof, write `f` in the standard basis, and use that each coordinate is a continuous
     -- function.
-    have : (f : (ι → R) → M) = fun x ↦ ∑ i : ι, x i • f fun j => if i = j then 1 else 0 := by
+    have : (f : (ι → R) → M) = fun x ↦ ∑ i : ι, x i • f fun j ↦ if i = j then 1 else 0 := by
       ext x
       exact f.pi_apply_eq_sum_univ x
     rw [this]
@@ -1117,14 +1117,14 @@ variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoi
 /-- `pi` construction for continuous linear functions. From a family of continuous linear functions
 it produces a continuous linear function into a family of topological modules. -/
 def pi (f : ∀ i, M →L[R] φ i) : M →L[R] ∀ i, φ i :=
-  ⟨LinearMap.pi fun i => f i, continuous_pi fun i => (f i).continuous⟩
+  ⟨LinearMap.pi fun i ↦ f i, continuous_pi fun i ↦ (f i).continuous⟩
 
 @[simp]
 theorem coe_pi' (f : ∀ i, M →L[R] φ i) : ⇑(pi f) = fun c i => f i c :=
   rfl
 
 @[simp]
-theorem coe_pi (f : ∀ i, M →L[R] φ i) : (pi f : M →ₗ[R] ∀ i, φ i) = LinearMap.pi fun i => f i :=
+theorem coe_pi (f : ∀ i, M →L[R] φ i) : (pi f : M →ₗ[R] ∀ i, φ i) = LinearMap.pi fun i ↦ f i :=
   rfl
 
 theorem pi_apply (f : ∀ i, M →L[R] φ i) (c : M) (i : ι) : pi f c i = f i c :=
@@ -1138,7 +1138,7 @@ theorem pi_zero : pi (fun _ => 0 : ∀ i, M →L[R] φ i) = 0 :=
   ext fun _ => rfl
 
 theorem pi_comp (f : ∀ i, M →L[R] φ i) (g : M₂ →L[R] M) :
-    (pi f).comp g = pi fun i => (f i).comp g :=
+    (pi f).comp g = pi fun i ↦ (f i).comp g :=
   rfl
 
 /-- The projections from a family of topological modules are continuous linear maps. -/
@@ -1170,7 +1170,7 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
 
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
-def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
+def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i ↦ i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) :
     Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i where
@@ -1182,7 +1182,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
           x ∈ (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i))
   continuous_invFun :=
     Continuous.subtype_mk
-      (continuous_pi fun i => by
+      (continuous_pi fun i ↦ by
         dsimp
         split_ifs <;> [apply continuous_apply; exact continuous_zero])
       _
@@ -1235,7 +1235,7 @@ section
 variable [TopologicalAddGroup M₂]
 
 instance neg : Neg (M →SL[σ₁₂] M₂) :=
-  ⟨fun f => ⟨-f, f.2.neg⟩⟩
+  ⟨fun f ↦ ⟨-f, f.2.neg⟩⟩
 
 @[simp]
 theorem neg_apply (f : M →SL[σ₁₂] M₂) (x : M) : (-f) x = -f x :=
@@ -2044,7 +2044,7 @@ def piCongrRight : ((i : ι) → M i) ≃L[R₁] (i : ι) → N i :=
     continuous_toFun := by
       exact continuous_pi fun i ↦ (f i).continuous_toFun.comp (continuous_apply i)
     continuous_invFun := by
-      exact continuous_pi fun i => (f i).continuous_invFun.comp (continuous_apply i) }
+      exact continuous_pi fun i ↦ (f i).continuous_invFun.comp (continuous_apply i) }
 
 @[simp]
 theorem piCongrRight_apply (m : (i : ι) → M i) (i : ι) :

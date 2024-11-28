@@ -80,7 +80,7 @@ theorem PairwiseDisjoint.biUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → 
 /-- If the suprema of columns are pairwise disjoint and suprema of rows as well, then everything is
 pairwise disjoint. Not to be confused with `Set.PairwiseDisjoint.prod`. -/
 theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}
-    (hs : s.PairwiseDisjoint fun i => ⨆ i' ∈ t, f (i, i'))
+    (hs : s.PairwiseDisjoint fun i ↦ ⨆ i' ∈ t, f (i, i'))
     (ht : t.PairwiseDisjoint fun i' => ⨆ i ∈ s, f (i, i')) :
     (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint f := by
   rintro ⟨i, i'⟩ hi ⟨j, j'⟩ hj h
@@ -101,7 +101,7 @@ variable [Frame α]
 
 theorem pairwiseDisjoint_prod_left {s : Set ι} {t : Set ι'} {f : ι × ι' → α} :
     (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint f ↔
-      (s.PairwiseDisjoint fun i => ⨆ i' ∈ t, f (i, i')) ∧
+      (s.PairwiseDisjoint fun i ↦ ⨆ i' ∈ t, f (i, i')) ∧
         t.PairwiseDisjoint fun i' => ⨆ i ∈ s, f (i, i') := by
   refine
       ⟨fun h ↦ ⟨fun i hi j hj hij => ?_, fun i hi j hj hij => ?_⟩, fun h ↦ h.1.prod_left h.2⟩ <;>

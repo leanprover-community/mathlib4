@@ -67,7 +67,7 @@ variable [SemilatticeSup M]
 
 /-- The weighted total degree of a multivariate polynomial, taking values in `WithBot M`. -/
 def weightedTotalDegree' (w : σ → M) (p : MvPolynomial σ R) : WithBot M :=
-  p.support.sup fun s => weight w s
+  p.support.sup fun s ↦ weight w s
 
 /-- The `weightedTotalDegree'` of a polynomial `p` is `⊥` if and only if `p = 0`. -/
 theorem weightedTotalDegree'_eq_bot_iff (w : σ → M) (p : MvPolynomial σ R) :
@@ -88,7 +88,7 @@ variable [OrderBot M]
 /-- When `M` has a `⊥` element, we can define the weighted total degree of a multivariate
   polynomial as a function taking values in `M`. -/
 def weightedTotalDegree (w : σ → M) (p : MvPolynomial σ R) : M :=
-  p.support.sup fun s => weight w s
+  p.support.sup fun s ↦ weight w s
 
 /-- This lemma relates `weightedTotalDegree` and `weightedTotalDegree'`. -/
 theorem weightedTotalDegree_coe (w : σ → M) (p : MvPolynomial σ R) (hp : p ≠ 0) :
@@ -352,10 +352,10 @@ theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
   exact lt_of_le_of_lt (le_weightedTotalDegree w hd.1) h
 
 theorem weightedHomogeneousComponent_finsupp :
-    (Function.support fun m => weightedHomogeneousComponent w m φ).Finite := by
+    (Function.support fun m ↦ weightedHomogeneousComponent w m φ).Finite := by
   suffices
-    (Function.support fun m => weightedHomogeneousComponent w m φ) ⊆
-      (fun d => weight w d) '' φ.support by
+    (Function.support fun m ↦ weightedHomogeneousComponent w m φ) ⊆
+      (fun d ↦ weight w d) '' φ.support by
     exact Finite.subset ((fun d : σ →₀ ℕ => (weight w) d) '' ↑(support φ)).toFinite this
   intro m hm
   by_contra hm'
@@ -368,7 +368,7 @@ variable (w)
 
 /-- Every polynomial is the sum of its weighted homogeneous components. -/
 theorem sum_weightedHomogeneousComponent :
-    (finsum fun m => weightedHomogeneousComponent w m φ) = φ := by
+    (finsum fun m ↦ weightedHomogeneousComponent w m φ) = φ := by
   classical
   rw [finsum_eq_sum _ (weightedHomogeneousComponent_finsupp φ)]
   ext1 d
@@ -385,7 +385,7 @@ theorem sum_weightedHomogeneousComponent :
     exact this.symm
 
 theorem finsum_weightedHomogeneousComponent :
-    (finsum fun m => weightedHomogeneousComponent w m φ) = φ := by
+    (finsum fun m ↦ weightedHomogeneousComponent w m φ) = φ := by
   rw [sum_weightedHomogeneousComponent]
 
 variable {w}
@@ -470,7 +470,7 @@ theorem DirectSum.coeAddMonoidHom_eq_support_sum [DecidableEq σ] [DecidableEq R
 theorem DirectSum.coeLinearMap_eq_finsum [DecidableEq M]
     (x : DirectSum M fun i : M => ↥(weightedHomogeneousSubmodule R w i)) :
     (DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
-      finsum fun m => x m := by
+      finsum fun m ↦ x m := by
   classical
   rw [DirectSum.coeLinearMap_eq_dfinsupp_sum, DFinsupp.sum, finsum_eq_sum_of_support_subset]
   apply DirectSum.support_subset

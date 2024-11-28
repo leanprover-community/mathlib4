@@ -36,7 +36,7 @@ variable {R : Cᵒᵖ ⥤ RingCat.{u}}
 lemma isSheaf_of_isLimit (hc : IsLimit c) (hF : ∀ j, Presheaf.IsSheaf J (F.obj j).presheaf) :
     Presheaf.IsSheaf J (c.pt.presheaf) := by
   let G : D ⥤ Sheaf J AddCommGrp.{v} :=
-    { obj := fun j => ⟨(F.obj j).presheaf, hF j⟩
+    { obj := fun j ↦ ⟨(F.obj j).presheaf, hF j⟩
       map := fun φ => ⟨(PresheafOfModules.toPresheaf R).map (F.map φ)⟩ }
   exact Sheaf.isSheaf_of_isLimit G _ (isLimitOfPreserves (toPresheaf R) hc)
 
@@ -61,7 +61,7 @@ noncomputable instance createsLimit : CreatesLimit F (forget _) :=
   createsLimitOfFullyFaithfulOfIso' (limit.isLimit (F ⋙ forget _))
     (mk (limit (F ⋙ forget _))
       (PresheafOfModules.isSheaf_of_isLimit (limit.isLimit (F ⋙ forget _))
-        (fun j => (F.obj j).isSheaf))) (Iso.refl _)
+        (fun j ↦ (F.obj j).isSheaf))) (Iso.refl _)
 
 instance hasLimit : HasLimit F := hasLimit_of_created F (forget _)
 

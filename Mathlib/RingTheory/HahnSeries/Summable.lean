@@ -49,7 +49,7 @@ theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Ring 
   apply (x.isWF_support.isPWO.addSubmonoid_closure _).mono _
   · exact fun g hg => WithTop.coe_le_coe.1
       (le_trans (le_of_lt hx) (orderTop_le_of_coeff_ne_zero hg))
-  refine Set.iUnion_subset fun n => ?_
+  refine Set.iUnion_subset fun n ↦ ?_
   induction' n with n ih <;> intro g hn
   · simp only [pow_zero, support_one, Set.mem_singleton_iff] at hn
     rw [hn, SetLike.mem_coe]
@@ -163,7 +163,7 @@ theorem coeff_def (s : SummableFamily Γ R α) (a : α) (g : Γ) : s.coeff g a =
 def hsum (s : SummableFamily Γ R α) : HahnSeries Γ R where
   coeff g := ∑ᶠ i, (s i).coeff g
   isPWO_support' :=
-    s.isPWO_iUnion_support.mono fun g => by
+    s.isPWO_iUnion_support.mono fun g ↦ by
       contrapose
       rw [Set.mem_iUnion, not_exists, Function.mem_support, Classical.not_not]
       simp_rw [mem_support, Classical.not_not]
@@ -214,7 +214,7 @@ theorem hsum_single (x : HahnSeries Γ R) : (single x).hsum = x := by
 def Equiv (e : α ≃ β) (s : SummableFamily Γ R α) : SummableFamily Γ R β where
   toFun b := s (e.symm b)
   isPWO_iUnion_support' := by
-    refine Set.IsPWO.mono s.isPWO_iUnion_support fun g => ?_
+    refine Set.IsPWO.mono s.isPWO_iUnion_support fun g ↦ ?_
     simp only [Set.mem_iUnion, mem_support, ne_eq, forall_exists_index]
     exact fun b hg => Exists.intro (e.symm b) hg
   finite_co_support' g :=
@@ -238,7 +238,7 @@ instance : Neg (SummableFamily Γ R α) :=
       isPWO_iUnion_support' := by
         simp_rw [support_neg]
         exact s.isPWO_iUnion_support
-      finite_co_support' := fun g => by
+      finite_co_support' := fun g ↦ by
         simp only [neg_coeff', Pi.neg_apply, Ne, neg_eq_zero]
         exact s.finite_co_support g }⟩
 

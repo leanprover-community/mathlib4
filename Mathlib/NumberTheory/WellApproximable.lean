@@ -82,12 +82,12 @@ distances `δ₁, δ₂, ...`, `addWellApproximable A δ` is the limsup as `n �
 `approxAddOrderOf A n δₙ`. Thus, it is the set of points that lie in infinitely many of the sets
 `approxAddOrderOf A n δₙ`."]
 def wellApproximable (A : Type*) [SeminormedGroup A] (δ : ℕ → ℝ) : Set A :=
-  blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n
+  blimsup (fun n ↦ approxOrderOf A n (δ n)) atTop fun n ↦ 0 < n
 
 @[to_additive mem_add_wellApproximable_iff]
 theorem mem_wellApproximable_iff {A : Type*} [SeminormedGroup A] {δ : ℕ → ℝ} {a : A} :
     a ∈ wellApproximable A δ ↔
-      a ∈ blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n :=
+      a ∈ blimsup (fun n ↦ approxOrderOf A n (δ n)) atTop fun n ↦ 0 < n :=
   Iff.rfl
 
 namespace approxOrderOf
@@ -166,7 +166,7 @@ theorem mem_addWellApproximable_iff (δ : ℕ → ℝ) (x : UnitAddCircle) :
       {n : ℕ | ∃ m < n, gcd m n = 1 ∧ ‖x - ↑((m : ℝ) / n)‖ < δ n}.Infinite := by
   simp only [mem_add_wellApproximable_iff, ← Nat.cofinite_eq_atTop, cofinite.blimsup_set_eq,
     mem_setOf_eq]
-  refine iff_of_eq (congr_arg Set.Infinite <| ext fun n => ⟨fun hn => ?_, fun hn => ?_⟩)
+  refine iff_of_eq (congr_arg Set.Infinite <| ext fun n ↦ ⟨fun hn => ?_, fun hn => ?_⟩)
   · exact (mem_approxAddOrderOf_iff hn.1).mp hn.2
   · have h : 0 < n := by obtain ⟨m, hm₁, _, _⟩ := hn; exact pos_of_gt hm₁
     exact ⟨h, (mem_approxAddOrderOf_iff h).mpr hn⟩
@@ -190,9 +190,9 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
 
     Let `E := addWellApproximable 𝕊 δ`. For each prime `p : ℕ`, we can partition `E` into three
     pieces `E = (A p) ∪ (B p) ∪ (C p)` where:
-      `A p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n => 0 < n ∧ (p ∤ n))`
-      `B p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n => 0 < n ∧ (p ∣∣ n))`
-      `C p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n => 0 < n ∧ (p*p ∣ n))`.
+      `A p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n ↦ 0 < n ∧ (p ∤ n))`
+      `B p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n ↦ 0 < n ∧ (p ∣∣ n))`
+      `C p = blimsup (approxAddOrderOf 𝕊 n (δ n)) atTop (fun n ↦ 0 < n ∧ (p*p ∣ n))`.
     In other words, `A p` is the set of points `x` for which there exist infinitely-many `n` such
     that `x` is within a distance `δ n` of a point of order `n` and `p ∤ n`. Similarly for `B`, `C`.
 
@@ -210,20 +210,20 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     `AddCircle.ae_empty_or_univ_of_forall_vadd_ae_eq_self`. -/
   letI : SemilatticeSup Nat.Primes := Nat.Subtype.semilatticeSup _
   set μ : Measure 𝕊 := volume
-  set u : Nat.Primes → 𝕊 := fun p => ↑((↑(1 : ℕ) : ℝ) / ((p : ℕ) : ℝ) * T)
+  set u : Nat.Primes → 𝕊 := fun p ↦ ↑((↑(1 : ℕ) : ℝ) / ((p : ℕ) : ℝ) * T)
   have hu₀ : ∀ p : Nat.Primes, addOrderOf (u p) = (p : ℕ) := by
     rintro ⟨p, hp⟩; exact addOrderOf_div_of_gcd_eq_one hp.pos (gcd_one_left p)
   have hu : Tendsto (addOrderOf ∘ u) atTop atTop := by
     rw [(funext hu₀ : addOrderOf ∘ u = (↑))]
     have h_mono : Monotone ((↑) : Nat.Primes → ℕ) := fun p q hpq => hpq
-    refine h_mono.tendsto_atTop_atTop fun n => ?_
+    refine h_mono.tendsto_atTop_atTop fun n ↦ ?_
     obtain ⟨p, hp, hp'⟩ := n.exists_infinite_primes
     exact ⟨⟨p, hp'⟩, hp⟩
   set E := addWellApproximable 𝕊 δ
-  set X : ℕ → Set 𝕊 := fun n => approxAddOrderOf 𝕊 n (δ n)
-  set A : ℕ → Set 𝕊 := fun p => blimsup X atTop fun n => 0 < n ∧ p∤n
-  set B : ℕ → Set 𝕊 := fun p => blimsup X atTop fun n => 0 < n ∧ p∣∣n
-  set C : ℕ → Set 𝕊 := fun p => blimsup X atTop fun n => 0 < n ∧ p ^ 2 ∣ n
+  set X : ℕ → Set 𝕊 := fun n ↦ approxAddOrderOf 𝕊 n (δ n)
+  set A : ℕ → Set 𝕊 := fun p ↦ blimsup X atTop fun n ↦ 0 < n ∧ p∤n
+  set B : ℕ → Set 𝕊 := fun p ↦ blimsup X atTop fun n ↦ 0 < n ∧ p∣∣n
+  set C : ℕ → Set 𝕊 := fun p ↦ blimsup X atTop fun n ↦ 0 < n ∧ p ^ 2 ∣ n
   have hA₀ : ∀ p, MeasurableSet (A p) := fun p =>
     MeasurableSet.measurableSet_blimsup fun n _ => isOpen_thickening.measurableSet
   have hB₀ : ∀ p, MeasurableSet (B p) := fun p =>
@@ -247,10 +247,10 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rintro ⟨p, hp⟩
     let f : 𝕊 → 𝕊 := fun y ↦ (p : ℕ) • y
     suffices
-      f '' A p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n => 0 < n ∧ p∤n by
+      f '' A p ⊆ blimsup (fun n ↦ approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n ↦ 0 < n ∧ p∤n by
       apply (ergodic_nsmul hp.one_lt).ae_empty_or_univ_of_image_ae_le (hA₀ p).nullMeasurableSet
       apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
-      exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∤n) (fun n => {y | addOrderOf y = n})
+      exact blimsup_thickening_mul_ae_eq μ (fun n ↦ 0 < n ∧ p∤n) (fun n ↦ {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
     refine (sSupHom.setImage f).apply_blimsup_le.trans (mono_blimsup fun n hn => ?_)
     replace hn := Nat.coprime_comm.mp (hp.coprime_iff_not_dvd.2 hn.2)
@@ -260,11 +260,11 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     let x := u ⟨p, hp⟩
     let f : 𝕊 → 𝕊 := fun y ↦ p • y + x
     suffices
-      f '' B p ⊆ blimsup (fun n => approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n => 0 < n ∧ p∣∣n by
+      f '' B p ⊆ blimsup (fun n ↦ approxAddOrderOf 𝕊 n (p * δ n)) atTop fun n ↦ 0 < n ∧ p∣∣n by
       apply (ergodic_nsmul_add x hp.one_lt).ae_empty_or_univ_of_image_ae_le
         (hB₀ p).nullMeasurableSet
       apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
-      exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∣∣n) (fun n => {y | addOrderOf y = n})
+      exact blimsup_thickening_mul_ae_eq μ (fun n ↦ 0 < n ∧ p∣∣n) (fun n ↦ {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
     refine (sSupHom.setImage f).apply_blimsup_le.trans (mono_blimsup ?_)
     rintro n ⟨hn, h_div, h_ndiv⟩

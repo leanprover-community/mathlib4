@@ -123,7 +123,7 @@ theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
   rfl
 
 instance instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
-  refine ⟨fun s => ⟨-s, ?_⟩⟩
+  refine ⟨fun s ↦ ⟨-s, ?_⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
   rw [contMDiffAt_section] at hs ⊢

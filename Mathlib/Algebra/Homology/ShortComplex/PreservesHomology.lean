@@ -686,7 +686,7 @@ noncomputable def cyclesFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.cyclesFunctor D ≅
       ShortComplex.cyclesFunctor C ⋙ F :=
   NatIso.ofComponents (fun S => S.mapCyclesIso F)
-    (fun f => ShortComplex.mapCyclesIso_hom_naturality f F)
+    (fun f ↦ ShortComplex.mapCyclesIso_hom_naturality f F)
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ leftHomologyFunctor D ≅ leftHomologyFunctor C ⋙ F`
@@ -695,7 +695,7 @@ noncomputable def leftHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.leftHomologyFunctor D ≅
       ShortComplex.leftHomologyFunctor C ⋙ F :=
   NatIso.ofComponents (fun S => S.mapLeftHomologyIso F)
-    (fun f => ShortComplex.mapLeftHomologyIso_hom_naturality f F)
+    (fun f ↦ ShortComplex.mapLeftHomologyIso_hom_naturality f F)
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ opcyclesFunctor D ≅ opcyclesFunctor C ⋙ F`
@@ -704,7 +704,7 @@ noncomputable def opcyclesFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.opcyclesFunctor D ≅
       ShortComplex.opcyclesFunctor C ⋙ F :=
   NatIso.ofComponents (fun S => S.mapOpcyclesIso F)
-    (fun f => ShortComplex.mapOpcyclesIso_hom_naturality f F)
+    (fun f ↦ ShortComplex.mapOpcyclesIso_hom_naturality f F)
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ rightHomologyFunctor D ≅ rightHomologyFunctor C ⋙ F`
@@ -713,7 +713,7 @@ noncomputable def rightHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.rightHomologyFunctor D ≅
       ShortComplex.rightHomologyFunctor C ⋙ F :=
   NatIso.ofComponents (fun S => S.mapRightHomologyIso F)
-    (fun f => ShortComplex.mapRightHomologyIso_hom_naturality f F)
+    (fun f ↦ ShortComplex.mapRightHomologyIso_hom_naturality f F)
 
 end
 
@@ -725,7 +725,7 @@ noncomputable def homologyFunctorIso
     F.mapShortComplex ⋙ ShortComplex.homologyFunctor D ≅
       ShortComplex.homologyFunctor C ⋙ F :=
   NatIso.ofComponents (fun S => S.mapHomologyIso F)
-    (fun f => ShortComplex.mapHomologyIso_hom_naturality f F)
+    (fun f ↦ ShortComplex.mapHomologyIso_hom_naturality f F)
 
 section
 

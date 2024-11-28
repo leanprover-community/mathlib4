@@ -214,11 +214,11 @@ theorem range_normSq : range normSq = Ici 0 :=
 
 local notation "abs'" => _root_.abs
 
-theorem isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).re := fun _ ε0 =>
+theorem isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n ↦ (f n).re := fun _ ε0 =>
   (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa using abs_re_le_abs (f j - f i)) (H _ ij)
 
-theorem isCauSeq_im (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).im := fun ε ε0 =>
+theorem isCauSeq_im (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n ↦ (f n).im := fun ε ε0 =>
   (f.cauchy ε0).imp fun i H j ij ↦ by
     simpa only [← ofReal_sub, abs_ofReal, sub_re] using (abs_im_le_abs _).trans_lt <| H _ ij
 
@@ -253,7 +253,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
     rwa [add_halves] at this
 
 instance instIsComplete : CauSeq.IsComplete ℂ Complex.abs :=
-  ⟨fun f => ⟨limAux f, equiv_limAux f⟩⟩
+  ⟨fun f ↦ ⟨limAux f, equiv_limAux f⟩⟩
 
 open CauSeq
 
@@ -273,7 +273,7 @@ theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := b
   rw [lim_eq_lim_im_add_lim_re]; simp [ofReal]
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
-    IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
+    IsCauSeq Complex.abs fun n ↦ conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
     rw [← RingHom.map_sub, abs_conj]; exact hi j hj⟩

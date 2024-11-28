@@ -481,7 +481,7 @@ variable {f g : α → M} {a b : α} {s t : Set α}
 @[to_additive]
 theorem finprod_mem_congr (h₀ : s = t) (h₁ : ∀ x ∈ t, f x = g x) :
     ∏ᶠ i ∈ s, f i = ∏ᶠ i ∈ t, g i :=
-  h₀.symm ▸ finprod_congr fun i => finprod_congr_Prop rfl (h₁ i)
+  h₀.symm ▸ finprod_congr fun i ↦ finprod_congr_Prop rfl (h₁ i)
 
 @[to_additive]
 theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : ∏ᶠ i, f i = 1 := by

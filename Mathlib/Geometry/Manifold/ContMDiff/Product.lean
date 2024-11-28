@@ -328,7 +328,7 @@ theorem contMDiffWithinAt_pi_space :
 theorem contMDiffOn_pi_space :
     ContMDiffOn I 𝓘(𝕜, ∀ i, Fi i) n φ s ↔ ∀ i, ContMDiffOn I 𝓘(𝕜, Fi i) n (fun x ↦ φ x i) s :=
   ⟨fun h i x hx => contMDiffWithinAt_pi_space.1 (h x hx) i, fun h x hx =>
-    contMDiffWithinAt_pi_space.2 fun i => h i x hx⟩
+    contMDiffWithinAt_pi_space.2 fun i ↦ h i x hx⟩
 
 theorem contMDiffAt_pi_space :
     ContMDiffAt I 𝓘(𝕜, ∀ i, Fi i) n φ x ↔ ∀ i, ContMDiffAt I 𝓘(𝕜, Fi i) n (fun x ↦ φ x i) x :=
@@ -336,7 +336,7 @@ theorem contMDiffAt_pi_space :
 
 theorem contMDiff_pi_space :
     ContMDiff I 𝓘(𝕜, ∀ i, Fi i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Fi i) n fun x ↦ φ x i :=
-  ⟨fun h i x => contMDiffAt_pi_space.1 (h x) i, fun h x => contMDiffAt_pi_space.2 fun i => h i x⟩
+  ⟨fun h i x => contMDiffAt_pi_space.1 (h x) i, fun h x => contMDiffAt_pi_space.2 fun i ↦ h i x⟩
 
 @[deprecated (since := "2024-11-20")] alias smoothWithinAt_pi_space := contMDiffWithinAt_pi_space
 

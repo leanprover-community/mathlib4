@@ -63,7 +63,7 @@ given by `Pi.mulHom f x b = f b x`. -/
   `Pi.addHom f x b = f b x`."]
 def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i) : γ →ₙ* ∀ i, f i where
   toFun x i := g i x
-  map_mul' x y := funext fun i => (g i).map_mul x y
+  map_mul' x y := funext fun i ↦ (g i).map_mul x y
 
 @[to_additive]
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
@@ -78,15 +78,15 @@ theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul �
   `Pi.addMonoidHom f : γ →+ Π a, β a` given by `Pi.addMonoidHom f x b = f b x`."]
 def Pi.monoidHom {γ : Type w} [∀ i, MulOneClass (f i)] [MulOneClass γ] (g : ∀ i, γ →* f i) :
     γ →* ∀ i, f i :=
-  { Pi.mulHom fun i => (g i).toMulHom with
+  { Pi.mulHom fun i ↦ (g i).toMulHom with
     toFun := fun x i => g i x
-    map_one' := funext fun i => (g i).map_one }
+    map_one' := funext fun i ↦ (g i).map_one }
 
 @[to_additive]
 theorem Pi.monoidHom_injective {γ : Type w} [Nonempty I] [∀ i, MulOneClass (f i)] [MulOneClass γ]
     (g : ∀ i, γ →* f i) (hg : ∀ i, Function.Injective (g i)) :
     Function.Injective (Pi.monoidHom g) :=
-  Pi.mulHom_injective (fun i => (g i).toMulHom) hg
+  Pi.mulHom_injective (fun i ↦ (g i).toMulHom) hg
 
 variable (f)
 variable [(i : I) → Mul (f i)]
@@ -355,17 +355,17 @@ theorem update_one [∀ i, One (f i)] [DecidableEq I] (i : I) : update (1 : ∀ 
 @[to_additive]
 theorem update_mul [∀ i, Mul (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
     (x₂ : f i) : update (f₁ * f₂) i (x₁ * x₂) = update f₁ i x₁ * update f₂ i x₂ :=
-  funext fun j => (apply_update₂ (fun _ => (· * ·)) f₁ f₂ i x₁ x₂ j).symm
+  funext fun j ↦ (apply_update₂ (fun _ => (· * ·)) f₁ f₂ i x₁ x₂ j).symm
 
 @[to_additive]
 theorem update_inv [∀ i, Inv (f i)] [DecidableEq I] (f₁ : ∀ i, f i) (i : I) (x₁ : f i) :
     update f₁⁻¹ i x₁⁻¹ = (update f₁ i x₁)⁻¹ :=
-  funext fun j => (apply_update (fun _ => Inv.inv) f₁ i x₁ j).symm
+  funext fun j ↦ (apply_update (fun _ => Inv.inv) f₁ i x₁ j).symm
 
 @[to_additive]
 theorem update_div [∀ i, Div (f i)] [DecidableEq I] (f₁ f₂ : ∀ i, f i) (i : I) (x₁ : f i)
     (x₂ : f i) : update (f₁ / f₂) i (x₁ / x₂) = update f₁ i x₁ / update f₂ i x₂ :=
-  funext fun j => (apply_update₂ (fun _ => (· / ·)) f₁ f₂ i x₁ x₂ j).symm
+  funext fun j ↦ (apply_update₂ (fun _ => (· / ·)) f₁ f₂ i x₁ x₂ j).symm
 
 variable [One α] [Nonempty ι] {a : α}
 

@@ -154,7 +154,7 @@ end Embedding
 /-- The obvious embedding from `up ℕ` to `up ℤ`. -/
 @[simps!]
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
-  Embedding.mk' _ _ (fun n => n)
+  Embedding.mk' _ _ (fun n ↦ n)
     (fun _ _ h => by simpa using h)
     (by dsimp; omega)
 
@@ -166,7 +166,7 @@ instance : embeddingUpNat.IsTruncGE where
 /-- The embedding from `down ℕ` to `up ℤ` with sends `n` to `-n`. -/
 @[simps!]
 def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
-  Embedding.mk' _ _ (fun n => -n)
+  Embedding.mk' _ _ (fun n ↦ -n)
     (fun _ _ h => by simpa using h)
     (by dsimp; omega)
 
@@ -180,7 +180,7 @@ variable (p : ℤ)
 /-- The embedding from `up ℕ` to `up ℤ` which sends `n : ℕ` to `p + n`. -/
 @[simps!]
 def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
-  Embedding.mk' _ _ (fun n => p + n)
+  Embedding.mk' _ _ (fun n ↦ p + n)
     (fun _ _ h => by dsimp at h; omega)
     (by dsimp; omega)
 
@@ -192,7 +192,7 @@ instance : (embeddingUpIntGE p).IsTruncGE where
 /-- The embedding from `down ℕ` to `up ℤ` which sends `n : ℕ` to `p - n`. -/
 @[simps!]
 def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
-  Embedding.mk' _ _ (fun n => p - n)
+  Embedding.mk' _ _ (fun n ↦ p - n)
     (fun _ _ h => by dsimp at h; omega)
     (by dsimp; omega)
 

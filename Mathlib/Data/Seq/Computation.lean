@@ -259,7 +259,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
     match t₁, t₂, e with
     | _, _, ⟨s, s', rfl, rfl, r⟩ =>
       suffices head s = head s' ∧ R (tail s) (tail s') from
-        And.imp id (fun r => ⟨tail s, tail s', by cases s; rfl, by cases s'; rfl, r⟩) this
+        And.imp id (fun r ↦ ⟨tail s, tail s', by cases s; rfl, by cases s'; rfl, r⟩) this
       have h := bisim r; revert r h
       apply recOn s _ _ <;> intro r' <;> apply recOn s' _ _ <;> intro a' r h
       · constructor <;> dsimp at h
@@ -504,7 +504,7 @@ theorem length_thinkN (s : Computation α) [_h : Terminates s] (n) :
 theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (pure a) n := by
   revert s
   induction n with | zero => _ | succ n IH => _ <;>
-  (intro s; apply recOn s (fun a' => _) fun s => _) <;> intro a h
+  (intro s; apply recOn s (fun a' => _) fun s ↦ _) <;> intro a h
   · rw [← eq_of_pure_mem h.mem]
     rfl
   · cases' of_results_think h with n h
@@ -538,7 +538,7 @@ def terminatesRecOn
 /-- Map a function on the result of a computation. -/
 def map (f : α → β) : Computation α → Computation β
   | ⟨s, al⟩ =>
-    ⟨s.map fun o => Option.casesOn o none (some ∘ f), fun n b => by
+    ⟨s.map fun o ↦ Option.casesOn o none (some ∘ f), fun n b => by
       dsimp [Stream'.map, Stream'.get]
       induction' e : s n with a <;> intro h
       · contradiction

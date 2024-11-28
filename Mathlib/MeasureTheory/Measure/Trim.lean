@@ -99,7 +99,7 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
   refine
     { set := spanningSets (μ.trim (hm₂.trans hm))
       set_mem := fun _ => Set.mem_univ _
-      finite := fun i => ?_
+      finite := fun i ↦ ?_
       spanning := iUnion_spanningSets _ }
   calc
     (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =

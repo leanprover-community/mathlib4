@@ -357,11 +357,11 @@ open IsFiltered in
 instance final_eval [∀ s, IsFiltered (I s)] (s : α) : (Pi.eval I s).Final := by
   classical
   apply Functor.final_of_exists_of_isFiltered
-  · exact fun i => ⟨Function.update (fun t => nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
+  · exact fun i ↦ ⟨Function.update (fun t ↦ nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
   · intro d c f g
-    let c't : (∀ s, (c' : I s) × (c s ⟶ c')) := Function.update (fun t => ⟨c t, 𝟙 (c t)⟩)
+    let c't : (∀ s, (c' : I s) × (c s ⟶ c')) := Function.update (fun t ↦ ⟨c t, 𝟙 (c t)⟩)
       s ⟨coeq f g, coeqHom f g⟩
-    refine ⟨fun t => (c't t).1, fun t => (c't t).2, ?_⟩
+    refine ⟨fun t ↦ (c't t).1, fun t ↦ (c't t).2, ?_⟩
     dsimp only [Pi.eval_obj, Pi.eval_map, c't]
     rw [Function.update_same]
     simpa using coeq_condition _ _
@@ -370,11 +370,11 @@ open IsCofiltered in
 instance initial_eval [∀ s, IsCofiltered (I s)] (s : α) : (Pi.eval I s).Initial := by
   classical
   apply Functor.initial_of_exists_of_isCofiltered
-  · exact fun i => ⟨Function.update (fun t => nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
+  · exact fun i ↦ ⟨Function.update (fun t ↦ nonempty.some) s i, ⟨by simpa using 𝟙 _⟩⟩
   · intro d c f g
-    let c't : (∀ s, (c' : I s) × (c' ⟶ c s)) := Function.update (fun t => ⟨c t, 𝟙 (c t)⟩)
+    let c't : (∀ s, (c' : I s) × (c' ⟶ c s)) := Function.update (fun t ↦ ⟨c t, 𝟙 (c t)⟩)
       s ⟨eq f g, eqHom f g⟩
-    refine ⟨fun t => (c't t).1, fun t => (c't t).2, ?_⟩
+    refine ⟨fun t ↦ (c't t).1, fun t ↦ (c't t).2, ?_⟩
     dsimp only [Pi.eval_obj, Pi.eval_map, c't]
     rw [Function.update_same]
     simpa using eq_condition _ _

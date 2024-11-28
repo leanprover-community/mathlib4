@@ -393,31 +393,31 @@ theorem setIntegral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
     ∫ x in s, condexpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ := by
   let S := spanningSets (μ.trim hm)
   have hS_meas : ∀ i, MeasurableSet[m] (S i) := measurableSet_spanningSets (μ.trim hm)
-  have hS_meas0 : ∀ i, MeasurableSet (S i) := fun i => hm _ (hS_meas i)
+  have hS_meas0 : ∀ i, MeasurableSet (S i) := fun i ↦ hm _ (hS_meas i)
   have hs_eq : s = ⋃ i, S i ∩ s := by
     simp_rw [Set.inter_comm]
     rw [← Set.inter_iUnion, iUnion_spanningSets (μ.trim hm), Set.inter_univ]
   have hS_finite : ∀ i, μ (S i ∩ s) < ∞ := by
-    refine fun i => (measure_mono Set.inter_subset_left).trans_lt ?_
+    refine fun i ↦ (measure_mono Set.inter_subset_left).trans_lt ?_
     have hS_finite_trim := measure_spanningSets_lt_top (μ.trim hm) i
     rwa [trim_measurableSet_eq hm (hS_meas i)] at hS_finite_trim
-  have h_mono : Monotone fun i => S i ∩ s := by
+  have h_mono : Monotone fun i ↦ S i ∩ s := by
     intro i j hij x
     simp_rw [Set.mem_inter_iff]
     exact fun h ↦ ⟨monotone_spanningSets (μ.trim hm) hij h.1, h.2⟩
   have h_eq_forall :
-    (fun i => ∫ x in S i ∩ s, condexpL1CLM F' hm μ f x ∂μ) = fun i => ∫ x in S i ∩ s, f x ∂μ :=
+    (fun i ↦ ∫ x in S i ∩ s, condexpL1CLM F' hm μ f x ∂μ) = fun i ↦ ∫ x in S i ∩ s, f x ∂μ :=
     funext fun i =>
       setIntegral_condexpL1CLM_of_measure_ne_top f (@MeasurableSet.inter α m _ _ (hS_meas i) hs)
         (hS_finite i).ne
-  have h_right : Tendsto (fun i => ∫ x in S i ∩ s, f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ)) := by
+  have h_right : Tendsto (fun i ↦ ∫ x in S i ∩ s, f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ)) := by
     have h :=
-      tendsto_setIntegral_of_monotone (fun i => (hS_meas0 i).inter (hm s hs)) h_mono
+      tendsto_setIntegral_of_monotone (fun i ↦ (hS_meas0 i).inter (hm s hs)) h_mono
         (L1.integrable_coeFn f).integrableOn
     rwa [← hs_eq] at h
-  have h_left : Tendsto (fun i => ∫ x in S i ∩ s, condexpL1CLM F' hm μ f x ∂μ) atTop
+  have h_left : Tendsto (fun i ↦ ∫ x in S i ∩ s, condexpL1CLM F' hm μ f x ∂μ) atTop
       (𝓝 (∫ x in s, condexpL1CLM F' hm μ f x ∂μ)) := by
-    have h := tendsto_setIntegral_of_monotone (fun i => (hS_meas0 i).inter (hm s hs)) h_mono
+    have h := tendsto_setIntegral_of_monotone (fun i ↦ (hS_meas0 i).inter (hm s hs)) h_mono
       (L1.integrable_coeFn (condexpL1CLM F' hm μ f)).integrableOn
     rwa [← hs_eq] at h
   rw [h_eq_forall] at h_left

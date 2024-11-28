@@ -78,7 +78,7 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
   toFun s := map (Fin.predAbove 0) s.1
   invFun s :=
     ⟨map (Fin.succAbove 0) s,
-      (mt mem_map.1) (not_exists.2 fun t => not_and.2 fun _ => Fin.succAbove_ne _ t)⟩
+      (mt mem_map.1) (not_exists.2 fun t ↦ not_and.2 fun _ => Fin.succAbove_ne _ t)⟩
   left_inv s := by
     ext1
     simp only [map_map]

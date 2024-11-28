@@ -457,7 +457,7 @@ theorem add_def (α β : Type u) : #α + #β = #(α ⊕ β) :=
   rfl
 
 instance : NatCast Cardinal.{u} :=
-  ⟨fun n => lift #(Fin n)⟩
+  ⟨fun n ↦ lift #(Fin n)⟩
 
 @[simp]
 theorem mk_sum (α : Type u) (β : Type v) : #(α ⊕ β) = lift.{v, u} #α + lift.{u, v} #β :=
@@ -713,7 +713,7 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
       let f : ι → Cardinal := Subtype.val
       haveI hι : Nonempty ι := ⟨⟨_, h⟩⟩
       obtain ⟨⟨c : Cardinal, hc : ¬Acc (· < ·) c⟩, ⟨h_1 : ∀ j, (f ⟨c, hc⟩).out ↪ (f j).out⟩⟩ :=
-        Embedding.min_injective fun i => (f i).out
+        Embedding.min_injective fun i ↦ (f i).out
       refine hc (Acc.intro _ fun j h' => by_contradiction fun hj => h'.2 ?_)
       have : #_ ≤ #_ := ⟨h_1 ⟨j, hj⟩⟩
       simpa only [mk_out] using this⟩
@@ -851,7 +851,7 @@ theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
   ciSup_le' <| le_sum _
 
 @[simp]
-theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
+theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i ↦ #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 
 theorem mk_sigma_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
@@ -876,11 +876,11 @@ theorem mk_sigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f 
 
 theorem mk_psigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
     #(Σ' i, f i) = #(Σ' i, g i) :=
-  mk_congr <| .psigmaCongrRight fun i => Classical.choice <| Cardinal.eq.mp (h i)
+  mk_congr <| .psigmaCongrRight fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
 
 theorem mk_psigma_congrRight_prop {ι : Prop} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
     #(Σ' i, f i) = #(Σ' i, g i) :=
-  mk_congr <| .psigmaCongrRight fun i => Classical.choice <| Cardinal.eq.mp (h i)
+  mk_congr <| .psigmaCongrRight fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
 
 theorem mk_sigma_arrow {ι} (α : Type*) (f : ι → Type*) :
     #(Sigma f → α) = #(Π i, f i → α) := mk_congr <| Equiv.piCurry fun _ _ ↦ α
@@ -904,12 +904,12 @@ theorem sum_add_distrib {ι} (f g : ι → Cardinal) : sum (f + g) = sum f + sum
 
 @[simp]
 theorem sum_add_distrib' {ι} (f g : ι → Cardinal) :
-    (Cardinal.sum fun i => f i + g i) = sum f + sum g :=
+    (Cardinal.sum fun i ↦ f i + g i) = sum f + sum g :=
   sum_add_distrib f g
 
 @[simp]
 theorem lift_sum {ι : Type u} (f : ι → Cardinal.{v}) :
-    Cardinal.lift.{w} (Cardinal.sum f) = Cardinal.sum fun i => Cardinal.lift.{w} (f i) :=
+    Cardinal.lift.{w} (Cardinal.sum f) = Cardinal.sum fun i ↦ Cardinal.lift.{w} (f i) :=
   Equiv.cardinal_eq <|
     Equiv.ulift.trans <|
       Equiv.sigmaCongrRight fun a =>
@@ -944,8 +944,8 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
         (hf b)
 
 theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
-    Cardinal.sum f = f 0 + Cardinal.sum fun i => f (i + 1) := by
-  refine (Equiv.sigmaNatSucc fun i => Quotient.out (f i)).cardinal_eq.trans ?_
+    Cardinal.sum f = f 0 + Cardinal.sum fun i ↦ f (i + 1) := by
+  refine (Equiv.sigmaNatSucc fun i ↦ Quotient.out (f i)).cardinal_eq.trans ?_
   simp only [mk_sum, mk_out, lift_id, mk_sigma]
 
 end Cardinal
@@ -1072,7 +1072,7 @@ theorem lift_iSup_le_lift_iSup {ι : Type v} {ι' : Type v'} {f : ι → Cardina
     {f' : ι' → Cardinal.{w'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) {g : ι → ι'}
     (h : ∀ i, lift.{w'} (f i) ≤ lift.{w} (f' (g i))) : lift.{w'} (iSup f) ≤ lift.{w} (iSup f') := by
   rw [lift_iSup hf, lift_iSup hf']
-  exact ciSup_mono' (bddAbove_range_comp.{_,_,w} hf' _) fun i => ⟨_, h i⟩
+  exact ciSup_mono' (bddAbove_range_comp.{_,_,w} hf' _) fun i ↦ ⟨_, h i⟩
 
 /-- A variant of `lift_iSup_le_lift_iSup` with universes specialized via `w = v` and `w' = v'`.
 This is sometimes necessary to avoid universe unification issues. -/
@@ -1122,7 +1122,7 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
   #(Π i, (f i).out)
 
 @[simp]
-theorem mk_pi {ι : Type u} (α : ι → Type v) : #(Π i, α i) = prod fun i => #(α i) :=
+theorem mk_pi {ι : Type u} (α : ι → Type v) : #(Π i, α i) = prod fun i ↦ #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
 
 theorem mk_pi_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
@@ -1186,10 +1186,10 @@ theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
 
 @[simp]
 theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
-    lift.{w} (prod c) = prod fun i => lift.{w} (c i) := by
+    lift.{w} (prod c) = prod fun i ↦ lift.{w} (c i) := by
   lift c to ι → Type v using fun _ => trivial
   simp only [← mk_pi, ← mk_uLift]
-  exact mk_congr (Equiv.ulift.trans <| Equiv.piCongrRight fun i => Equiv.ulift.symm)
+  exact mk_congr (Equiv.ulift.trans <| Equiv.piCongrRight fun i ↦ Equiv.ulift.symm)
 
 theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{v}) :
     prod f = Cardinal.lift.{u} (∏ i, f i) := by
@@ -1210,7 +1210,7 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
   lt_of_not_ge fun ⟨F⟩ => by
     have : Inhabited (∀ i : ι, (g i).out) := by
-      refine ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 ?_⟩
+      refine ⟨fun i ↦ Classical.choice <| mk_ne_zero_iff.1 ?_⟩
       rw [mk_out]
       exact (H i).ne_bot
     let G := invFun F
@@ -1868,31 +1868,31 @@ theorem mk_image_eq_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α
     lift.{u} #(f '' s) = lift.{v} #s :=
   mk_image_eq_of_injOn_lift _ _ h.injOn
 
-theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
+theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i ↦ #(f i) :=
   calc
     #(⋃ i, f i) ≤ #(Σi, f i) := mk_le_of_surjective (Set.sigmaToiUnion_surjective f)
-    _ = sum fun i => #(f i) := mk_sigma _
+    _ = sum fun i ↦ #(f i) := mk_sigma _
 
 theorem mk_iUnion_le_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α} :
-    lift.{v} #(⋃ i, f i) ≤ sum fun i => #(f i) :=
+    lift.{v} #(⋃ i, f i) ≤ sum fun i ↦ #(f i) :=
   calc
     lift.{v} #(⋃ i, f i) ≤ #(Σi, f i) :=
       mk_le_of_surjective <| ULift.up_surjective.comp (Set.sigmaToiUnion_surjective f)
-    _ = sum fun i => #(f i) := mk_sigma _
+    _ = sum fun i ↦ #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
-    (h : Pairwise (Disjoint on f)) : #(⋃ i, f i) = sum fun i => #(f i) :=
+    (h : Pairwise (Disjoint on f)) : #(⋃ i, f i) = sum fun i ↦ #(f i) :=
   calc
     #(⋃ i, f i) = #(Σi, f i) := mk_congr (Set.unionEqSigmaOfDisjoint h)
-    _ = sum fun i => #(f i) := mk_sigma _
+    _ = sum fun i ↦ #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
     (h : Pairwise (Disjoint on f)) :
-    lift.{v} #(⋃ i, f i) = sum fun i => #(f i) :=
+    lift.{v} #(⋃ i, f i) = sum fun i ↦ #(f i) :=
   calc
     lift.{v} #(⋃ i, f i) = #(Σi, f i) :=
       mk_congr <| .trans Equiv.ulift (Set.unionEqSigmaOfDisjoint h)
-    _ = sum fun i => #(f i) := mk_sigma _
+    _ = sum fun i ↦ #(f i) := mk_sigma _
 
 theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #ι * ⨆ i, #(f i) :=
   mk_iUnion_le_sum_mk.trans (sum_le_iSup _)

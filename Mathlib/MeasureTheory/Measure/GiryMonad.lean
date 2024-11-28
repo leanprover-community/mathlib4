@@ -78,7 +78,7 @@ theorem measurable_dirac : Measurable (Measure.dirac : α → Measure α) := by
 theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun μ : Measure α => ∫⁻ x, f x ∂μ := by
   simp only [lintegral_eq_iSup_eapprox_lintegral, hf, SimpleFunc.lintegral]
-  refine .iSup fun n => Finset.measurable_sum _ fun i _ => ?_
+  refine .iSup fun n ↦ Finset.measurable_sum _ fun i _ => ?_
   refine Measurable.const_mul ?_ _
   exact measurable_coe ((SimpleFunc.eapprox f n).measurableSet_preimage _)
 
@@ -116,14 +116,14 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
       Monotone (fun n μ => ∑ r ∈ s n, r * f n r μ) →
       ⨆ n, ∑ r ∈ s n, r * ∫⁻ μ, f n r μ ∂m = ∫⁻ μ, ⨆ n, ∑ r ∈ s n, r * f n r μ ∂m by
     refine
-      this (fun n => SimpleFunc.range (SimpleFunc.eapprox f n))
+      this (fun n ↦ SimpleFunc.range (SimpleFunc.eapprox f n))
         (fun n r μ => μ (SimpleFunc.eapprox f n ⁻¹' {r})) ?_ ?_
     · exact fun n r => measurable_coe (SimpleFunc.measurableSet_preimage _ _)
     · exact fun n m h μ => SimpleFunc.lintegral_mono (SimpleFunc.monotone_eapprox _ h) le_rfl
   intro s f hf hm
   rw [lintegral_iSup _ hm]
   swap
-  · exact fun n => Finset.measurable_sum _ fun r _ => (hf _ _).const_mul _
+  · exact fun n ↦ Finset.measurable_sum _ fun r _ => (hf _ _).const_mul _
   congr
   funext n
   rw [lintegral_finset_sum (s n)]
@@ -159,7 +159,7 @@ lemma bind_const {m : Measure α} {ν : Measure β} : m.bind (fun _ ↦ ν) = m 
   ext s hs
   rw [bind_apply hs measurable_const, lintegral_const, smul_apply, smul_eq_mul, mul_comm]
 
-theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurable fun m => bind m g :=
+theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurable fun m ↦ bind m g :=
   measurable_join.comp (measurable_map _ hg)
 
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : Measurable μ)

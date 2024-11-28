@@ -161,7 +161,7 @@ theorem ofQuotientStabilizer_mk (g : α) : ofQuotientStabilizer α x (QuotientGr
 
 @[to_additive]
 theorem ofQuotientStabilizer_mem_orbit (g) : ofQuotientStabilizer α x g ∈ orbit α x :=
-  Quotient.inductionOn' g fun g => ⟨g, rfl⟩
+  Quotient.inductionOn' g fun g ↦ ⟨g, rfl⟩
 
 @[to_additive]
 theorem ofQuotientStabilizer_smul (g : α) (g' : α ⧸ MulAction.stabilizer α x) :
@@ -181,7 +181,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 @[to_additive "Orbit-stabilizer theorem."]
 noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ stabilizer α b :=
   Equiv.symm <|
-    Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
+    Equiv.ofBijective (fun g ↦ ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
       ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
         fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.eq hgb⟩⟩
 
@@ -481,7 +481,7 @@ noncomputable def quotientCenterEmbedding {S : Set G} (hS : closure S = ⊤) :
     G ⧸ center G ↪ S → commutatorSet G :=
   (quotientEquivOfEq (center_eq_infi' S hS)).toEmbedding.trans
     ((quotientiInfEmbedding _).trans
-      (Function.Embedding.piCongrRight fun g => quotientCentralizerEmbedding (g : G)))
+      (Function.Embedding.piCongrRight fun g ↦ quotientCentralizerEmbedding (g : G)))
 
 theorem quotientCenterEmbedding_apply {S : Set G} (hS : closure S = ⊤) (g : G) (s : S) :
     quotientCenterEmbedding hS g s = ⟨⁅g, s⁆, g, s, rfl⟩ :=

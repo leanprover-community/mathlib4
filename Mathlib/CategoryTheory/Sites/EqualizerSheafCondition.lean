@@ -81,7 +81,7 @@ The left morphism of the fork diagram given in Equation (3) of [MM92], as well a
 of <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 def forkMap : P.obj (op X) ⟶ FirstObj P R :=
-  Pi.lift fun f => P.map f.2.1.op
+  Pi.lift fun f ↦ P.map f.2.1.op
 
 /-!
 This section establishes the equivalence between the sheaf condition of Equation (3) [MM92] and

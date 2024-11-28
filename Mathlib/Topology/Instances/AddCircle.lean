@@ -93,7 +93,7 @@ theorem toIcoMod_eventuallyEq_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) 
   IsOpen.mem_nhds
       (by
         rw [Ico_eq_locus_Ioc_eq_iUnion_Ioo]
-        exact isOpen_iUnion fun i => isOpen_Ioo) <|
+        exact isOpen_iUnion fun i ↦ isOpen_Ioo) <|
     (not_modEq_iff_toIcoMod_eq_toIocMod hp).1 <| not_modEq_iff_ne_mod_zmultiples.2 hx
 
 theorem continuousAt_toIcoMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : ContinuousAt (toIcoMod hp a) x :=
@@ -449,9 +449,9 @@ satisfies `0 ≤ m < n`. -/
 def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     { u : AddCircle p | addOrderOf u = n } ≃ { m | m < n ∧ m.gcd n = 1 } :=
   Equiv.symm <|
-    Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
+    Equiv.ofBijective (fun m ↦ ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
-        refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
+        refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u ↦ ?_⟩
         · simp_rw [Subtype.ext_iff] at h
           rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_natCast m₁,
             ← Int.cast_natCast m₂, ← Int.cast_sub, coe_eq_zero_iff] at h

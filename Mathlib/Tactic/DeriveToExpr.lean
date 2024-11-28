@@ -79,7 +79,7 @@ where
           ctorArgs := ctorArgs.push a
           rhsArgs := rhsArgs.push <| ← mkArg xs[ctorInfo.numParams + i]! a
         patterns := patterns.push (← `(@$(mkIdent ctorName):ident $ctorArgs:term*))
-        let levels ← indVal.levelParams.toArray.mapM (fun u => `(toLevel.{$(mkIdent u)}))
+        let levels ← indVal.levelParams.toArray.mapM (fun u ↦ `(toLevel.{$(mkIdent u)}))
         let rhs : Term ←
           mkAppNTerm (← `(Expr.const $(quote ctorInfo.name) [$levels,*])) rhsArgs
         `(matchAltExpr| | $[$patterns:term],* => $rhs)
@@ -89,7 +89,7 @@ where
 /-- Create the body of the `toTypeExpr` function for the `ToExpr` instance.
 Calls `toExpr` and `toTypeExpr` to the arguments to the type constructor. -/
 def mkToTypeExpr (argNames : Array Name) (indVal : InductiveVal) : TermElabM Term := do
-  let levels ← indVal.levelParams.toArray.mapM (fun u => `(toLevel.{$(mkIdent u)}))
+  let levels ← indVal.levelParams.toArray.mapM (fun u ↦ `(toLevel.{$(mkIdent u)}))
   forallTelescopeReducing indVal.type fun xs _ => do
     let mut args : Array Term := #[]
     for i in [:xs.size] do
@@ -141,7 +141,7 @@ def fixIndType (indVal : InductiveVal) (t : Term) : TermElabM Term :=
 
 /-- Make `ToLevel` instance binders for all the level variables. -/
 def mkToLevelBinders (indVal : InductiveVal) : TermElabM (TSyntaxArray ``instBinderF) := do
-  indVal.levelParams.toArray.mapM (fun u => `(instBinderF| [ToLevel.{$(mkIdent u)}]))
+  indVal.levelParams.toArray.mapM (fun u ↦ `(instBinderF| [ToLevel.{$(mkIdent u)}]))
 
 open TSyntax.Compat in
 /-- Make a `toExpr` function for the given inductive type.

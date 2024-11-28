@@ -234,7 +234,7 @@ def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
         (match b, l with
         | true, l => D l
         | false, _ => PUnit)
-    by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l => (this l).2⟩
+    by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l ↦ (this l).2⟩
   intros b l
   induction' l with a b a l IH₁ IH
   · exact ⟨C0 _, ⟨⟩⟩

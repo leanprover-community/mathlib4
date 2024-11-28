@@ -110,7 +110,7 @@ are a uniform Cauchy sequence in a neighborhood of `x`, then the functions form 
 sequence in a neighborhood of `x`. -/
 theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
-    (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
+    (hfg : Cauchy (map (fun n ↦ f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero] at hf' ⊢
@@ -174,7 +174,7 @@ convergence. See `cauchy_map_of_uniformCauchySeqOn_fderiv`.
 -/
 theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f' l (Metric.ball x r))
     (hf : ∀ n : ι, ∀ y : E, y ∈ Metric.ball x r → HasFDerivAt (f n) (f' n y) y)
-    (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
+    (hfg : Cauchy (map (fun n ↦ f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   have : NeBot l := (cauchy_map_iff.1 hfg).1
@@ -214,7 +214,7 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
     refine Metric.tendstoUniformlyOn_iff.mpr fun ε hε => ?_
     obtain ⟨t, ht, ht'⟩ := (Metric.cauchy_iff.mp hfg).2 ε hε
     rw [eventually_prod_iff]
-    refine ⟨fun n => f n x ∈ t, ht, fun n => f n x ∈ t, ht, ?_⟩
+    refine ⟨fun n ↦ f n x ∈ t, ht, fun n ↦ f n x ∈ t, ht, ?_⟩
     intro n hn n' hn' z _
     rw [dist_eq_norm, Pi.zero_apply, zero_sub, norm_neg, ← dist_eq_norm]
     exact ht' _ hn _ hn'
@@ -224,10 +224,10 @@ preconnected open set, they form a Cauchy sequence _at_ `x`, and their derivativ
 uniformly on the set, then the functions form a Cauchy sequence at any point in the set. -/
 theorem cauchy_map_of_uniformCauchySeqOn_fderiv {s : Set E} (hs : IsOpen s) (h's : IsPreconnected s)
     (hf' : UniformCauchySeqOn f' l s) (hf : ∀ n : ι, ∀ y : E, y ∈ s → HasFDerivAt (f n) (f' n y) y)
-    {x₀ x : E} (hx₀ : x₀ ∈ s) (hx : x ∈ s) (hfg : Cauchy (map (fun n => f n x₀) l)) :
-    Cauchy (map (fun n => f n x) l) := by
+    {x₀ x : E} (hx₀ : x₀ ∈ s) (hx : x ∈ s) (hfg : Cauchy (map (fun n ↦ f n x₀) l)) :
+    Cauchy (map (fun n ↦ f n x) l) := by
   have : NeBot l := (cauchy_map_iff.1 hfg).1
-  let t := { y | y ∈ s ∧ Cauchy (map (fun n => f n y) l) }
+  let t := { y | y ∈ s ∧ Cauchy (map (fun n ↦ f n y) l) }
   suffices H : s ⊆ t from (H hx).2
   have A : ∀ x ε, x ∈ t → Metric.ball x ε ⊆ s → Metric.ball x ε ⊆ t := fun x ε xt hx y hy =>
     ⟨hx hy,
@@ -258,7 +258,7 @@ theorem difference_quotients_converge_uniformly
     {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
-    (hfg : ∀ᶠ y : E in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) :
+    (hfg : ∀ᶠ y : E in 𝓝 x, Tendsto (fun n ↦ f n y) l (𝓝 (g y))) :
     TendstoUniformlyOnFilter (fun n : ι => fun y : E => (‖y - x‖⁻¹ : 𝕜) • (f n y - f n x))
       (fun y : E => (‖y - x‖⁻¹ : 𝕜) • (g y - g x)) l (𝓝 x) := by
   let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
@@ -305,7 +305,7 @@ In words the assumptions mean the following:
 theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
-    (hfg : ∀ᶠ y in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) : HasFDerivAt g (g' x) x := by
+    (hfg : ∀ᶠ y in 𝓝 x, Tendsto (fun n ↦ f n y) l (𝓝 (g y))) : HasFDerivAt g (g' x) x := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   -- The proof strategy follows several steps:
   --   1. The quantifiers in the definition of the derivative are
@@ -392,7 +392,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
 
 theorem hasFDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set E} (hs : IsOpen s)
     (hf' : TendstoLocallyUniformlyOn f' g' l s) (hf : ∀ n, ∀ x ∈ s, HasFDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) :
+    (hfg : ∀ x ∈ s, Tendsto (fun n ↦ f n x) l (𝓝 (g x))) (hx : x ∈ s) :
     HasFDerivAt g (g' x) x := by
   have h1 : s ∈ 𝓝 x := hs.mem_nhds hx
   have h3 : Set.univ ×ˢ s ∈ l ×ˢ 𝓝 x := by simp only [h1, prod_mem_prod_iff, univ_mem, and_self_iff]
@@ -406,7 +406,7 @@ in terms of `DifferentiableOn` rather than `HasFDerivAt`. This makes a few proof
 complex analysis where holomorphicity is assumed but the derivative is not known a priori. -/
 theorem hasFDerivAt_of_tendsto_locally_uniformly_on' [NeBot l] {s : Set E} (hs : IsOpen s)
     (hf' : TendstoLocallyUniformlyOn (fderiv 𝕜 ∘ f) g' l s) (hf : ∀ n, DifferentiableOn 𝕜 (f n) s)
-    (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) :
+    (hfg : ∀ x ∈ s, Tendsto (fun n ↦ f n x) l (𝓝 (g x))) (hx : x ∈ s) :
     HasFDerivAt g (g' x) x := by
   refine hasFDerivAt_of_tendstoLocallyUniformlyOn hs hf' (fun n z hz => ?_) hfg hx
   exact ((hf n z hz).differentiableAt (hs.mem_nhds hz)).hasFDerivAt
@@ -416,7 +416,7 @@ _uniformly_ to their limit on an open set containing `x`. -/
 theorem hasFDerivAt_of_tendstoUniformlyOn [NeBot l] {s : Set E} (hs : IsOpen s)
     (hf' : TendstoUniformlyOn f' g' l s)
     (hf : ∀ n : ι, ∀ x : E, x ∈ s → HasFDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x : E, x ∈ s → Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) :
+    (hfg : ∀ x : E, x ∈ s → Tendsto (fun n ↦ f n x) l (𝓝 (g x))) (hx : x ∈ s) :
     HasFDerivAt g (g' x) x :=
   hasFDerivAt_of_tendstoLocallyUniformlyOn hs hf'.tendstoLocallyUniformlyOn hf hfg hx
 
@@ -424,9 +424,9 @@ theorem hasFDerivAt_of_tendstoUniformlyOn [NeBot l] {s : Set E} (hs : IsOpen s)
 _uniformly_ to their limit. -/
 theorem hasFDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' l)
     (hf : ∀ n : ι, ∀ x : E, HasFDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x : E, Tendsto (fun n => f n x) l (𝓝 (g x))) (x : E) : HasFDerivAt g (g' x) x := by
+    (hfg : ∀ x : E, Tendsto (fun n ↦ f n x) l (𝓝 (g x))) (x : E) : HasFDerivAt g (g' x) x := by
   have hf : ∀ n : ι, ∀ x : E, x ∈ Set.univ → HasFDerivAt (f n) (f' n x) x := by simp [hf]
-  have hfg : ∀ x : E, x ∈ Set.univ → Tendsto (fun n => f n x) l (𝓝 (g x)) := by simp [hfg]
+  have hfg : ∀ x : E, x ∈ Set.univ → Tendsto (fun n ↦ f n x) l (𝓝 (g x)) := by simp [hfg]
   have hf' : TendstoUniformlyOn f' g' l Set.univ := by rwa [tendstoUniformlyOn_univ]
   exact hasFDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg (Set.mem_univ x)
 
@@ -447,7 +447,7 @@ variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [NontriviallyNormedField �
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/
 theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
     (hf' : UniformCauchySeqOnFilter f' l l') :
-    UniformCauchySeqOnFilter (fun n => fun z ↦ (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l l' := by
+    UniformCauchySeqOnFilter (fun n ↦ fun z ↦ (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l l' := by
   -- The tricky part of this proof is that operator norms are written in terms of `≤` whereas
   -- metrics are written in terms of `<`. So we need to shrink `ε` utilizing the archimedean
   -- property of `ℝ`
@@ -470,17 +470,17 @@ variable [IsRCLikeNormedField 𝕜]
 
 theorem uniformCauchySeqOnFilter_of_deriv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × 𝕜 in l ×ˢ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2)
-    (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
+    (hfg : Cauchy (map (fun n ↦ f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf
   exact uniformCauchySeqOnFilter_of_fderiv hf'.one_smulRight hf hfg
 
 theorem uniformCauchySeqOn_ball_of_deriv {r : ℝ} (hf' : UniformCauchySeqOn f' l (Metric.ball x r))
     (hf : ∀ n : ι, ∀ y : 𝕜, y ∈ Metric.ball x r → HasDerivAt (f n) (f' n y) y)
-    (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
+    (hfg : Cauchy (map (fun n ↦ f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf
   rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter] at hf'
   have hf' :
-    UniformCauchySeqOn (fun n => fun z ↦ (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l
+    UniformCauchySeqOn (fun n ↦ fun z ↦ (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l
       (Metric.ball x r) := by
     rw [uniformCauchySeqOn_iff_uniformCauchySeqOnFilter]
     exact hf'.one_smulRight
@@ -489,7 +489,7 @@ theorem uniformCauchySeqOn_ball_of_deriv {r : ℝ} (hf' : UniformCauchySeqOn f' 
 theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × 𝕜 in l ×ˢ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2)
-    (hfg : ∀ᶠ y in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) : HasDerivAt g (g' x) x := by
+    (hfg : ∀ᶠ y in 𝓝 x, Tendsto (fun n ↦ f n y) l (𝓝 (g y))) : HasDerivAt g (g' x) x := by
   -- The first part of the proof rewrites `hf` and the goal to be functions so that Lean
   -- can recognize them when we apply `hasFDerivAt_of_tendstoUniformlyOnFilter`
   let F' n z := (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)
@@ -517,7 +517,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
 theorem hasDerivAt_of_tendstoLocallyUniformlyOn [NeBot l] {s : Set 𝕜} (hs : IsOpen s)
     (hf' : TendstoLocallyUniformlyOn f' g' l s)
     (hf : ∀ᶠ n in l, ∀ x ∈ s, HasDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) : HasDerivAt g (g' x) x := by
+    (hfg : ∀ x ∈ s, Tendsto (fun n ↦ f n x) l (𝓝 (g x))) (hx : x ∈ s) : HasDerivAt g (g' x) x := by
   have h1 : s ∈ 𝓝 x := hs.mem_nhds hx
   have h2 : ∀ᶠ n : ι × 𝕜 in l ×ˢ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2 :=
     eventually_prod_iff.2 ⟨_, hf, fun x ↦ x ∈ s, h1, fun {n} => id⟩
@@ -530,23 +530,23 @@ analysis where holomorphicity is assumed but the derivative is not known a prior
 theorem hasDerivAt_of_tendsto_locally_uniformly_on' [NeBot l] {s : Set 𝕜} (hs : IsOpen s)
     (hf' : TendstoLocallyUniformlyOn (deriv ∘ f) g' l s)
     (hf : ∀ᶠ n in l, DifferentiableOn 𝕜 (f n) s)
-    (hfg : ∀ x ∈ s, Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) : HasDerivAt g (g' x) x := by
+    (hfg : ∀ x ∈ s, Tendsto (fun n ↦ f n x) l (𝓝 (g x))) (hx : x ∈ s) : HasDerivAt g (g' x) x := by
   refine hasDerivAt_of_tendstoLocallyUniformlyOn hs hf' ?_ hfg hx
   filter_upwards [hf] with n h z hz using ((h z hz).differentiableAt (hs.mem_nhds hz)).hasDerivAt
 
 theorem hasDerivAt_of_tendstoUniformlyOn [NeBot l] {s : Set 𝕜} (hs : IsOpen s)
     (hf' : TendstoUniformlyOn f' g' l s)
     (hf : ∀ᶠ n in l, ∀ x : 𝕜, x ∈ s → HasDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x : 𝕜, x ∈ s → Tendsto (fun n => f n x) l (𝓝 (g x))) (hx : x ∈ s) :
+    (hfg : ∀ x : 𝕜, x ∈ s → Tendsto (fun n ↦ f n x) l (𝓝 (g x))) (hx : x ∈ s) :
     HasDerivAt g (g' x) x :=
   hasDerivAt_of_tendstoLocallyUniformlyOn hs hf'.tendstoLocallyUniformlyOn hf hfg hx
 
 theorem hasDerivAt_of_tendstoUniformly [NeBot l] (hf' : TendstoUniformly f' g' l)
     (hf : ∀ᶠ n in l, ∀ x : 𝕜, HasDerivAt (f n) (f' n x) x)
-    (hfg : ∀ x : 𝕜, Tendsto (fun n => f n x) l (𝓝 (g x))) (x : 𝕜) : HasDerivAt g (g' x) x := by
+    (hfg : ∀ x : 𝕜, Tendsto (fun n ↦ f n x) l (𝓝 (g x))) (x : 𝕜) : HasDerivAt g (g' x) x := by
   have hf : ∀ᶠ n in l, ∀ x : 𝕜, x ∈ Set.univ → HasDerivAt (f n) (f' n x) x := by
     filter_upwards [hf] with n h x _ using h x
-  have hfg : ∀ x : 𝕜, x ∈ Set.univ → Tendsto (fun n => f n x) l (𝓝 (g x)) := by simp [hfg]
+  have hfg : ∀ x : 𝕜, x ∈ Set.univ → Tendsto (fun n ↦ f n x) l (𝓝 (g x)) := by simp [hfg]
   have hf' : TendstoUniformlyOn f' g' l Set.univ := by rwa [tendstoUniformlyOn_univ]
   exact hasDerivAt_of_tendstoUniformlyOn isOpen_univ hf' hf hfg (Set.mem_univ x)
 

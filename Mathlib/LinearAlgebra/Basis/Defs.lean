@@ -113,7 +113,7 @@ instance instFunLike : FunLike (Basis ι R M) ι M where
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
 
 @[simp]
-theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i => e.symm (Finsupp.single i 1) :=
+theorem coe_ofRepr (e : M ≃ₗ[R] ι →₀ R) : ⇑(ofRepr e) = fun i ↦ e.symm (Finsupp.single i 1) :=
   rfl
 
 protected theorem injective [Nontrivial R] : Injective b :=
@@ -145,7 +145,7 @@ theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.linearCombination R b v :=
 
 @[simp]
 theorem coe_repr_symm : ↑b.repr.symm = Finsupp.linearCombination R b :=
-  LinearMap.ext fun v => b.repr_symm_apply v
+  LinearMap.ext fun v ↦ b.repr_symm_apply v
 
 @[simp]
 theorem repr_linearCombination (v) : b.repr (Finsupp.linearCombination _ b v) = v := by
@@ -205,7 +205,7 @@ noncomputable def sumCoords : M →ₗ[R] R :=
   (Finsupp.lsum ℕ fun _ => LinearMap.id) ∘ₗ (b.repr : M →ₗ[R] ι →₀ R)
 
 @[simp]
-theorem coe_sumCoords : (b.sumCoords : M → R) = fun m => (b.repr m).sum fun _ => id :=
+theorem coe_sumCoords : (b.sumCoords : M → R) = fun m ↦ (b.repr m).sum fun _ => id :=
   rfl
 
 @[simp high]
@@ -257,11 +257,11 @@ alias ⟨_, _root_.Basis.ext_elem⟩ := ext_elem_iff
 
 theorem repr_eq_iff {b : Basis ι R M} {f : M →ₗ[R] ι →₀ R} :
     ↑b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
-  ⟨fun h i => h ▸ b.repr_self i, fun h ↦ b.ext fun i => (b.repr_self i).trans (h i).symm⟩
+  ⟨fun h i => h ▸ b.repr_self i, fun h ↦ b.ext fun i ↦ (b.repr_self i).trans (h i).symm⟩
 
 theorem repr_eq_iff' {b : Basis ι R M} {f : M ≃ₗ[R] ι →₀ R} :
     b.repr = f ↔ ∀ i, f (b i) = Finsupp.single i 1 :=
-  ⟨fun h i => h ▸ b.repr_self i, fun h ↦ b.ext' fun i => (b.repr_self i).trans (h i).symm⟩
+  ⟨fun h i => h ▸ b.repr_self i, fun h ↦ b.ext' fun i ↦ (b.repr_self i).trans (h i).symm⟩
 
 theorem apply_eq_iff {b : Basis ι R M} {x : M} {i : ι} : b i = x ↔ b.repr x = Finsupp.single i 1 :=
   ⟨fun h ↦ h ▸ b.repr_self i, fun h ↦ b.repr.injective ((b.repr_self i).trans h.symm)⟩
@@ -276,7 +276,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
       map_add' := fun _ _ => by beta_reduce; rw [hadd, Pi.add_apply]
       map_smul' := fun _ _ => by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
-    refine b.ext fun j => ?_
+    refine b.ext fun j ↦ ?_
     show b.repr (b j) i = f (b j) i
     rw [b.repr_self, f_eq]
   calc
@@ -421,7 +421,7 @@ theorem repr_reindex : (b.reindex e).repr x = (b.repr x).mapDomain e :=
 
 @[simp]
 theorem reindex_refl : b.reindex (Equiv.refl ι) = b :=
-  eq_of_apply_eq fun i => by simp
+  eq_of_apply_eq fun i ↦ by simp
 
 /-- `simp` can prove this as `Basis.coe_reindex` + `EquivLike.range_comp` -/
 theorem range_reindex : Set.range (b.reindex e) = Set.range b := by
@@ -478,7 +478,7 @@ theorem reindexRange_repr' (x : M) {bi : M} {i : ι} (h : b i = bi) :
   · intro i
     ext j
     simp only [reindexRange_repr_self]
-    apply Finsupp.single_apply_left (f := fun i => (⟨b i, _⟩ : Set.range b))
+    apply Finsupp.single_apply_left (f := fun i ↦ (⟨b i, _⟩ : Set.range b))
     exact fun i j h => b.injective (Subtype.mk.inj h)
 
 @[simp]
@@ -565,13 +565,13 @@ def constr : (ι → M') ≃ₗ[S] M →ₗ[R] M' where
     ext
     simp
   right_inv f := by
-    refine b.ext fun i => ?_
+    refine b.ext fun i ↦ ?_
     simp
   map_add' f g := by
-    refine b.ext fun i => ?_
+    refine b.ext fun i ↦ ?_
     simp
   map_smul' c f := by
-    refine b.ext fun i => ?_
+    refine b.ext fun i ↦ ?_
     simp
 
 theorem constr_def (f : ι → M') :
@@ -589,9 +589,9 @@ theorem constr_basis (f : ι → M') (i : ι) : (constr (M' := M') b S f : M →
 
 theorem constr_eq {g : ι → M'} {f : M →ₗ[R] M'} (h : ∀ i, g i = f (b i)) :
     constr (M' := M') b S g = f :=
-  b.ext fun i => (b.constr_basis S g i).trans (h i)
+  b.ext fun i ↦ (b.constr_basis S g i).trans (h i)
 
-theorem constr_self (f : M →ₗ[R] M') : (constr (M' := M') b S fun i => f (b i)) = f :=
+theorem constr_self (f : M →ₗ[R] M') : (constr (M' := M') b S fun i ↦ f (b i)) = f :=
   b.constr_eq S fun _ => rfl
 
 theorem constr_range {f : ι → M'} :
@@ -603,7 +603,7 @@ theorem constr_range {f : ι → M'} :
 @[simp]
 theorem constr_comp (f : M' →ₗ[R] M') (v : ι → M') :
     constr (M' := M') b S (f ∘ v) = f.comp (constr (M' := M') b S v) :=
-  b.ext fun i => by simp only [Basis.constr_basis, LinearMap.comp_apply, Function.comp]
+  b.ext fun i ↦ by simp only [Basis.constr_basis, LinearMap.comp_apply, Function.comp]
 
 end Constr
 
@@ -622,16 +622,16 @@ theorem equiv_apply : b.equiv b' e (b i) = b' (e i) := by simp [Basis.equiv]
 
 @[simp]
 theorem equiv_refl : b.equiv b (Equiv.refl ι) = LinearEquiv.refl R M :=
-  b.ext' fun i => by simp
+  b.ext' fun i ↦ by simp
 
 @[simp]
 theorem equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm :=
-  b'.ext' fun i => (b.equiv b' e).injective (by simp)
+  b'.ext' fun i ↦ (b.equiv b' e).injective (by simp)
 
 @[simp]
 theorem equiv_trans {ι'' : Type*} (b'' : Basis ι'' R M'') (e : ι ≃ ι') (e' : ι' ≃ ι'') :
     (b.equiv b' e).trans (b'.equiv b'' e') = b.equiv b'' (e.trans e') :=
-  b.ext' fun i => by simp
+  b.ext' fun i ↦ by simp
 
 @[simp]
 theorem map_equiv (b : Basis ι R M) (b' : Basis ι' R M') (e : ι ≃ ι') :
@@ -647,9 +647,9 @@ section Singleton
 protected def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :=
   ofRepr
     { toFun := fun x ↦ Finsupp.single default x
-      invFun := fun f => f default
+      invFun := fun f ↦ f default
       left_inv := fun x ↦ by simp
-      right_inv := fun f => Finsupp.unique_ext (by simp)
+      right_inv := fun f ↦ Finsupp.unique_ext (by simp)
       map_add' := fun x y => by simp
       map_smul' := fun c x => by simp }
 
@@ -750,10 +750,10 @@ theorem Basis.ofEquivFun_repr_apply [Finite ι] (e : M ≃ₗ[R] ι → R) (x : 
 
 @[simp]
 theorem Basis.coe_ofEquivFun [Finite ι] [DecidableEq ι] (e : M ≃ₗ[R] ι → R) :
-    (Basis.ofEquivFun e : ι → M) = fun i => e.symm (Pi.single i 1) :=
+    (Basis.ofEquivFun e : ι → M) = fun i ↦ e.symm (Pi.single i 1) :=
   funext fun i =>
     e.injective <|
-      funext fun j => by
+      funext fun j ↦ by
         simp [Basis.ofEquivFun, ← Finsupp.single_eq_pi_single]
 
 @[simp]

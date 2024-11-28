@@ -182,7 +182,7 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
             { toFun := f ∘ some ∘ some
               map_sup' := fun a b => (congr_arg f <| by rfl).trans (f.map_sup' _ _)
               map_inf' := fun a b => (congr_arg f <| by rfl).trans (f.map_inf' _ _) }
-          invFun := fun f => LatticeHom.withTopWithBot' f
+          invFun := fun f ↦ LatticeHom.withTopWithBot' f
           left_inv := fun f =>
             BoundedLatticeHom.ext fun a =>
               match a with

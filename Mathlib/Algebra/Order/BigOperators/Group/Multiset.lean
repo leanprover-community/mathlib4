@@ -43,7 +43,7 @@ lemma all_one_of_le_one_le_of_prod_eq_one :
     (∀ x ∈ s, (1 : α) ≤ x) → s.prod = 1 → ∀ x ∈ s, x = (1 : α) :=
   Quotient.inductionOn s (by
     simp only [quot_mk_to_coe, prod_coe, mem_coe]
-    exact fun l => List.all_one_of_le_one_le_of_prod_eq_one)
+    exact fun l ↦ List.all_one_of_le_one_le_of_prod_eq_one)
 
 @[to_additive]
 lemma prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by

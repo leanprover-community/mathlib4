@@ -207,7 +207,7 @@ theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, 
       (one_div_nonneg.mpr (cast_nonneg _))
   apply isBoundedUnder_of
   by_cases hfx : p x ≤ 1
-  · use 1, fun m => le_trans (h_le m)
+  · use 1, fun m ↦ le_trans (h_le m)
       (rpow_le_one (apply_nonneg _ _) hfx (div_nonneg (cast_nonneg _) (cast_nonneg _)))
   · use p x
     intro m

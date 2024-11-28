@@ -111,18 +111,18 @@ instance (X : C) : AddCommGroup (End X) := by
 
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
-  mk' (fun g => f ≫ g) fun g g' => by simp
+  mk' (fun g ↦ f ≫ g) fun g g' => by simp
 
 /-- Composition by a fixed right argument as a group homomorphism -/
 def rightComp (P : C) {Q R : C} (g : Q ⟶ R) : (P ⟶ Q) →+ (P ⟶ R) :=
-  mk' (fun f => f ≫ g) fun f f' => by simp
+  mk' (fun f ↦ f ≫ g) fun f f' => by simp
 
 variable {P Q R : C} (f f' : P ⟶ Q) (g g' : Q ⟶ R)
 
 /-- Composition as a bilinear group homomorphism -/
 def compHom : (P ⟶ Q) →+ (Q ⟶ R) →+ (P ⟶ R) :=
-  AddMonoidHom.mk' (fun f => leftComp _ f) fun f₁ f₂ =>
-    AddMonoidHom.ext fun g => (rightComp _ g).map_add f₁ f₂
+  AddMonoidHom.mk' (fun f ↦ leftComp _ f) fun f₁ f₂ =>
+    AddMonoidHom.ext fun g ↦ (rightComp _ g).map_add f₁ f₂
 
 -- Porting note: simp can prove the reassoc version
 @[reassoc, simp]
@@ -185,8 +185,8 @@ the correct Monoid structure on End. Moved both down after preadditiveHasZeroMor
 to make use of them -/
 instance {X : C} : Semiring (End X) :=
   { End.monoid with
-    zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
-    mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
+    zero_mul := fun f ↦ by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
+    mul_zero := fun f ↦ by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
     left_distrib := fun f g h => Preadditive.add_comp X X X g h f
     right_distrib := fun f g h => Preadditive.comp_add X X X h f g }
 

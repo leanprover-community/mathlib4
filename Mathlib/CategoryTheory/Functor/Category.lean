@@ -136,9 +136,9 @@ namespace Functor
 @[simps]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
-    { obj := fun j => (F.obj j).obj k,
-      map := fun f => (F.map f).app k, }
-  map f := { app := fun j => (F.obj j).map f }
+    { obj := fun j ↦ (F.obj j).obj k,
+      map := fun f ↦ (F.map f).app k, }
+  map f := { app := fun j ↦ (F.obj j).map f }
 
 end Functor
 

@@ -121,7 +121,7 @@ theorem coe_one : ↑(1 : { p : M₁ // IsIdempotentElem p }) = (1 : M₁) :=
   rfl
 
 instance : HasCompl { p : R // IsIdempotentElem p } :=
-  ⟨fun p => ⟨1 - p, p.prop.one_sub⟩⟩
+  ⟨fun p ↦ ⟨1 - p, p.prop.one_sub⟩⟩
 
 @[simp]
 theorem coe_compl (p : { p : R // IsIdempotentElem p }) : ↑pᶜ = (1 : R) - ↑p :=

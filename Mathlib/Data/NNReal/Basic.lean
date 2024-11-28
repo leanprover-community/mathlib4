@@ -160,7 +160,7 @@ theorem le_iInf_mul {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i,
 
 theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a ≤ g i * h j) :
     a ≤ iInf g * iInf h :=
-  le_iInf_mul fun i => le_mul_iInf <| H i
+  le_iInf_mul fun i ↦ le_mul_iInf <| H i
 
 end Csupr
 

@@ -76,7 +76,7 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι} (I_fin : I.Finite)
     {V : I → Set α} (hV : ∀ (i : I), V i ∈ s i) (hU : ⋂ i, V i ⊆ U) : U ∈ ⨅ i, s i := by
   haveI := I_fin.fintype
-  refine mem_of_superset (iInter_mem.2 fun i => ?_) hU
+  refine mem_of_superset (iInter_mem.2 fun i ↦ ?_) hU
   exact mem_iInf_of_mem (i : ι) (hV _)
 
 theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
@@ -87,7 +87,7 @@ theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
     rintro ⟨t, tsub, tfin, tinter⟩
     rcases eq_finite_iUnion_of_finite_subset_iUnion tfin tsub with ⟨I, Ifin, σ, σfin, σsub, rfl⟩
     rw [sInter_iUnion] at tinter
-    set V := fun i => U ∪ ⋂₀ σ i with hV
+    set V := fun i ↦ U ∪ ⋂₀ σ i with hV
     have V_in : ∀ (i : I), V i ∈ s i := by
       rintro i
       have : ⋂₀ σ i ∈ s i := by
@@ -105,9 +105,9 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
         (∀ i ∉ I, V i = univ) ∧ (U = ⋂ i ∈ I, V i) ∧ U = ⋂ i, V i := by
   classical
   simp only [mem_iInf, SetCoe.forall', biInter_eq_iInter]
-  refine ⟨?_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i => V i, fun i => hVs i, hVU⟩⟩
+  refine ⟨?_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i ↦ V i, fun i ↦ hVs i, hVU⟩⟩
   rintro ⟨I, If, V, hV, rfl⟩
-  refine ⟨I, If, fun i => if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i => ?_, fun i hi => ?_, ?_⟩
+  refine ⟨I, If, fun i ↦ if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i ↦ ?_, fun i hi => ?_, ?_⟩
   · dsimp only
     split_ifs
     exacts [hV ⟨i,_⟩, univ_mem]
@@ -123,7 +123,7 @@ theorem mem_iInf_of_finite {ι : Type*} [Finite ι] {α : Type*} {f : ι → Fil
     (s ∈ ⨅ i, f i) ↔ ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by
   refine ⟨exists_iInter_of_mem_iInf, ?_⟩
   rintro ⟨t, ht, rfl⟩
-  exact iInter_mem.2 fun i => mem_iInf_of_mem i (ht i)
+  exact iInter_mem.2 fun i ↦ mem_iInf_of_mem i (ht i)
 
 /-! ### Lattice equations -/
 
@@ -133,8 +133,8 @@ theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {
   have : Pairwise fun i j => ∃ (s : {s // s ∈ l i}) (t : {t // t ∈ l j}), Disjoint s.1 t.1 := by
     simpa only [Pairwise, Function.onFun, Filter.disjoint_iff, exists_prop, Subtype.exists] using hd
   choose! s t hst using this
-  refine ⟨fun i => ⋂ j, @s i j ∩ @t j i, fun i => ?_, fun i j hij => ?_⟩
-  exacts [iInter_mem.2 fun j => inter_mem (@s i j).2 (@t j i).2,
+  refine ⟨fun i ↦ ⋂ j, @s i j ∩ @t j i, fun i ↦ ?_, fun i j hij => ?_⟩
+  exacts [iInter_mem.2 fun j ↦ inter_mem (@s i j).2 (@t j i).2,
     (hst hij).mono ((iInter_subset _ j).trans inter_subset_left)
       ((iInter_subset _ i).trans inter_subset_right)]
 
@@ -144,8 +144,8 @@ theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type*} {l : ι → F
   haveI := ht.to_subtype
   rcases (hd.subtype _ _).exists_mem_filter_of_disjoint with ⟨s, hsl, hsd⟩
   lift s to (i : t) → {s // s ∈ l i} using hsl
-  rcases @Subtype.exists_pi_extension ι (fun i => { s // s ∈ l i }) _ _ s with ⟨s, rfl⟩
-  exact ⟨fun i => s i, fun i => (s i).2, hsd.set_of_subtype _ _⟩
+  rcases @Subtype.exists_pi_extension ι (fun i ↦ { s // s ∈ l i }) _ _ s with ⟨s, rfl⟩
+  exact ⟨fun i ↦ s i, fun i ↦ (s i).2, hsd.set_of_subtype _ _⟩
 
 
 theorem iInf_sets_eq_finite {ι : Type*} (f : ι → Filter α) :
@@ -175,7 +175,7 @@ abbrev coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
       rw [sInf_eq_iInf', ← Filter.mem_sets, iInf_sets_eq_finite, mem_iUnion] at h₂
       obtain ⟨u, hu⟩ := h₂
       rw [← Finset.inf_eq_iInf] at hu
-      suffices ⨅ i : s, f ⊔ ↑i ≤ f ⊔ u.inf fun i => ↑i from this ⟨h₁, hu⟩
+      suffices ⨅ i : s, f ⊔ ↑i ≤ f ⊔ u.inf fun i ↦ ↑i from this ⟨h₁, hu⟩
       refine Finset.induction_on u (le_sup_of_le_right le_top) ?_
       rintro ⟨i⟩ u _ ih
       rw [Finset.inf_insert, sup_inf_left]

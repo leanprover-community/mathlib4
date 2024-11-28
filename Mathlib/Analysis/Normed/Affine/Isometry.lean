@@ -582,11 +582,11 @@ def vaddConst (p : P) : V ≃ᵃⁱ[𝕜] P :=
 variable {𝕜}
 
 @[simp]
-theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v => v +ᵥ p :=
+theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v ↦ v +ᵥ p :=
   rfl
 
 @[simp]
-theorem coe_vaddConst' (p : P) : ↑(AffineEquiv.vaddConst 𝕜 p) = fun v => v +ᵥ p :=
+theorem coe_vaddConst' (p : P) : ↑(AffineEquiv.vaddConst 𝕜 p) = fun v ↦ v +ᵥ p :=
   rfl
 
 @[simp]

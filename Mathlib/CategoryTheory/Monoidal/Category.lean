@@ -794,7 +794,7 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) : (rightAssocTensor C).map f = 
 def curriedTensor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⊗ Y
-      map := fun g => X ◁ g }
+      map := fun g ↦ X ◁ g }
   map f :=
     { app := fun Y => f ▷ Y }
 

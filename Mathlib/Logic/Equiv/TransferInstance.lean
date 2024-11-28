@@ -330,9 +330,9 @@ noncomputable instance [Small.{v} α] [NonUnitalSemiring α] : NonUnitalSemiring
 /-- Transfer `AddMonoidWithOne` across an `Equiv` -/
 protected abbrev addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
   { e.addMonoid, e.one with
-    natCast := fun n => e.symm n
+    natCast := fun n ↦ e.symm n
     natCast_zero := e.injective (by simp [zero_def])
-    natCast_succ := fun n => e.injective (by simp [add_def, one_def]) }
+    natCast_succ := fun n ↦ e.injective (by simp [add_def, one_def]) }
 
 noncomputable instance [Small.{v} α] [AddMonoidWithOne α] : AddMonoidWithOne (Shrink.{v} α) :=
   (equivShrink α).symm.addMonoidWithOne
@@ -341,8 +341,8 @@ noncomputable instance [Small.{v} α] [AddMonoidWithOne α] : AddMonoidWithOne (
 protected abbrev addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
   { e.addMonoidWithOne,
     e.addGroup with
-    intCast := fun n => e.symm n
-    intCast_ofNat := fun n => by simp only [Int.cast_natCast]; rfl
+    intCast := fun n ↦ e.symm n
+    intCast_ofNat := fun n ↦ by simp only [Int.cast_natCast]; rfl
     intCast_negSucc := fun _ =>
       congr_arg e.symm <| (Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm }
 
@@ -644,7 +644,7 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
   intros
   exact
     { Equiv.ringEquiv e with
-      commutes' := fun r => by
+      commutes' := fun r ↦ by
         apply e.symm.injective
         simp only [RingEquiv.toEquiv_eq_coe, toFun_as_coe, EquivLike.coe_coe, ringEquiv_apply,
           symm_apply_apply, algebraMap_def] }

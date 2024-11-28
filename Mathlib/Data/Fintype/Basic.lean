@@ -967,7 +967,7 @@ variable [Fintype α]
 sets on a finite type are finite.) -/
 noncomputable def finsetEquivSet : Finset α ≃ Set α where
   toFun := (↑)
-  invFun := by classical exact fun s => s.toFinset
+  invFun := by classical exact fun s ↦ s.toFinset
   left_inv s := by convert Finset.toFinset_coe s
   right_inv s := by classical exact s.coe_toFinset
 
@@ -1014,7 +1014,7 @@ instance PSigma.fintypePropProp {α : Prop} {β : α → Prop} [Decidable α] [�
 
 instance pfunFintype (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, Fintype (α hp)] :
     Fintype (∀ hp : p, α hp) :=
-  if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ => a, fun f => f hp, fun _ => rfl, fun _ => rfl⟩
+  if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ => a, fun f ↦ f hp, fun _ => rfl, fun _ => rfl⟩
   else ⟨singleton fun h ↦ (hp h).elim, fun h ↦ mem_singleton.2
     (funext fun x ↦ by contradiction)⟩
 
@@ -1152,12 +1152,12 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
       rcases h ∅ (by simp) with ⟨y, _⟩
       exact ⟨y⟩
     choose! F hF using h
-    have h' : ∀ s : Finset α, ∃ y, (∀ x ∈ s, P x) → P y ∧ ∀ x ∈ s, r x y := fun s => ⟨F s, hF s⟩
+    have h' : ∀ s : Finset α, ∃ y, (∀ x ∈ s, P x) → P y ∧ ∀ x ∈ s, r x y := fun s ↦ ⟨F s, hF s⟩
     set f := seqOfForallFinsetExistsAux P r h' with hf
     have A : ∀ n : ℕ, P (f n) := by
       intro n
       induction' n using Nat.strong_induction_on with n IH
-      have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.1 n.2
+      have IH' : ∀ x : Fin n, P (f x) := fun n ↦ IH n.1 n.2
       rw [hf, seqOfForallFinsetExistsAux]
       exact
         (Classical.choose_spec

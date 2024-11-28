@@ -243,7 +243,7 @@ variable {ι : Type*}
 @[to_additive]
 instance Pi.continuousInv {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Inv (C i)]
     [∀ i, ContinuousInv (C i)] : ContinuousInv (∀ i, C i) where
-  continuous_inv := continuous_pi fun i => (continuous_apply i).inv
+  continuous_inv := continuous_pi fun i ↦ (continuous_apply i).inv
 
 /-- A version of `Pi.continuousInv` for non-dependent functions. It is needed because sometimes
 Lean fails to use `Pi.continuousInv` for non-dependent functions. -/
@@ -266,7 +266,7 @@ variable (G₁ G₂ : Type*) [TopologicalSpace G₂] [T2Space G₂]
 theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
     IsClosed { f : G₁ → G₂ | ∀ x, f x⁻¹ = (f x)⁻¹ } := by
   simp only [setOf_forall]
-  exact isClosed_iInter fun i => isClosed_eq (continuous_apply _) (continuous_apply _).inv
+  exact isClosed_iInter fun i ↦ isClosed_eq (continuous_apply _) (continuous_apply _).inv
 
 end PointwiseLimits
 
@@ -539,7 +539,7 @@ instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
     [∀ b, TopologicalGroup (C b)] : TopologicalGroup (∀ b, C b) where
-  continuous_inv := continuous_pi fun i => (continuous_apply i).inv
+  continuous_inv := continuous_pi fun i ↦ (continuous_apply i).inv
 
 open MulOpposite
 
@@ -726,7 +726,7 @@ theorem map_mul_right_nhds_one (x : G) : map (· * x) (𝓝 1) = 𝓝 x := by si
 @[to_additive]
 theorem Filter.HasBasis.nhds_of_one {ι : Sort*} {p : ι → Prop} {s : ι → Set G}
     (hb : HasBasis (𝓝 1 : Filter G) p s) (x : G) :
-    HasBasis (𝓝 x) p fun i => { y | y / x ∈ s i } := by
+    HasBasis (𝓝 x) p fun i ↦ { y | y / x ∈ s i } := by
   rw [← nhds_translation_mul_inv]
   simp_rw [div_eq_mul_inv]
   exact hb.comap _
@@ -846,7 +846,7 @@ theorem TopologicalGroup.exists_antitone_basis_nhds_one [FirstCountableTopology 
     rintro - ⟨a, ha, b, hb, rfl⟩
     exact h a b (u_anti ((le_max_left _ _).trans hm) ha) (u_anti ((le_max_right _ _).trans hm) hb)
   obtain ⟨φ, -, hφ, φ_anti_basis⟩ := HasAntitoneBasis.subbasis_with_rel ⟨hu, u_anti⟩ event_mul
-  exact ⟨u ∘ φ, φ_anti_basis, fun n => hφ n.lt_succ_self⟩
+  exact ⟨u ∘ φ, φ_anti_basis, fun n ↦ hφ n.lt_succ_self⟩
 
 end TopologicalGroup
 
@@ -1424,7 +1424,7 @@ theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
 instance (priority := 100) SeparableWeaklyLocallyCompactGroup.sigmaCompactSpace [SeparableSpace G]
     [WeaklyLocallyCompactSpace G] : SigmaCompactSpace G := by
   obtain ⟨L, hLc, hL1⟩ := exists_compact_mem_nhds (1 : G)
-  refine ⟨⟨fun n => (fun x ↦ x * denseSeq G n) ⁻¹' L, ?_, ?_⟩⟩
+  refine ⟨⟨fun n ↦ (fun x ↦ x * denseSeq G n) ⁻¹' L, ?_, ?_⟩⟩
   · intro n
     exact (Homeomorph.mulRight _).isCompact_preimage.mpr hLc
   · refine iUnion_eq_univ_iff.2 fun x ↦ ?_

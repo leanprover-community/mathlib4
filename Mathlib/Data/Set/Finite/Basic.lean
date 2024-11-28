@@ -280,7 +280,7 @@ instance fintypeDiffLeft (s t : Set α) [Fintype s] [DecidablePred (· ∈ t)] :
 structure. -/
 def fintypeBiUnion [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
     (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
-  haveI : ∀ i : toFinset s, Fintype (t i) := fun i => H i (mem_toFinset.1 i.2)
+  haveI : ∀ i : toFinset s, Fintype (t i) := fun i ↦ H i (mem_toFinset.1 i.2)
   Fintype.ofFinset (s.toFinset.attach.biUnion fun x ↦ (t x).toFinset) fun x ↦ by simp
 
 instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
@@ -674,7 +674,7 @@ theorem Finite.induction_on {C : Set α → Prop} {s : Set α} (h : s.Finite) (H
 @[elab_as_elim]
 theorem Finite.induction_on' {C : Set α → Prop} {S : Set α} (h : S.Finite) (H0 : C ∅)
     (H1 : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → C s → C (insert a s)) : C S := by
-  refine @Set.Finite.induction_on α (fun s => s ⊆ S → C s) S h (fun _ => H0) ?_ Subset.rfl
+  refine @Set.Finite.induction_on α (fun s ↦ s ⊆ S → C s) S h (fun _ => H0) ?_ Subset.rfl
   intro a s has _ hCs haS
   rw [insert_subset_iff] at haS
   exact H1 haS.1 haS.2 has (hCs haS.2)
@@ -702,8 +702,8 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   haveI : Nonempty γ := (h ∅ finite_empty).nonempty
   choose! c hc using h
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
-  set u : ℕ → γ := fun n => Nat.strongRecOn' n f
-  refine ⟨u, fun n => ?_⟩
+  set u : ℕ → γ := fun n ↦ Nat.strongRecOn' n f
+  refine ⟨u, fun n ↦ ?_⟩
   convert hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
   exact Nat.strongRecOn'_beta
@@ -868,10 +868,10 @@ variable [Preorder α] [Nonempty α] {s : Set α}
 
 theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
   inhabit α
-  set f : ℕ → α := fun n => Nat.recOn n (h default).choose fun _ a => (h a).choose
+  set f : ℕ → α := fun n ↦ Nat.recOn n (h default).choose fun _ a => (h a).choose
   have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
   exact infinite_of_injective_forall_mem
-    (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
+    (strictMono_nat_of_lt_succ fun n ↦ (h _).choose_spec.2).injective hf
 
 theorem infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
   infinite_of_forall_exists_gt (α := αᵒᵈ) h

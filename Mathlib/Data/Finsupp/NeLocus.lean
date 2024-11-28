@@ -80,14 +80,14 @@ theorem subset_mapRange_neLocus [DecidableEq N] [Zero N] [DecidableEq M] [Zero M
 
 theorem zipWith_neLocus_eq_left [DecidableEq N] [Zero M] [DecidableEq P] [Zero P] [Zero N]
     {F : M → N → P} (F0 : F 0 0 = 0) (f : α →₀ M) (g₁ g₂ : α →₀ N)
-    (hF : ∀ f, Function.Injective fun g => F f g) :
+    (hF : ∀ f, Function.Injective fun g ↦ F f g) :
     (zipWith F F0 f g₁).neLocus (zipWith F F0 f g₂) = g₁.neLocus g₂ := by
   ext
   simpa only [mem_neLocus] using (hF _).ne_iff
 
 theorem zipWith_neLocus_eq_right [DecidableEq M] [Zero M] [DecidableEq P] [Zero P] [Zero N]
     {F : M → N → P} (F0 : F 0 0 = 0) (f₁ f₂ : α →₀ M) (g : α →₀ N)
-    (hF : ∀ g, Function.Injective fun f => F f g) :
+    (hF : ∀ g, Function.Injective fun f ↦ F f g) :
     (zipWith F F0 f₁ g).neLocus (zipWith F F0 f₂ g) = f₁.neLocus f₂ := by
   ext
   simpa only [mem_neLocus] using (hF _).ne_iff

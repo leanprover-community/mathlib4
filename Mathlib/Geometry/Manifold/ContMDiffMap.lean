@@ -59,7 +59,7 @@ protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
 
 -- Porting note: use generic instance instead
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
---   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
+--   ⟨fun f ↦ ⟨f, f.contMDiff.continuous⟩⟩
 
 attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
 
@@ -116,4 +116,4 @@ end ContMDiffMap
 
 instance ContinuousLinearMap.hasCoeToContMDiffMap :
     Coe (E →L[𝕜] E') C^n⟮𝓘(𝕜, E), E; 𝓘(𝕜, E'), E'⟯ :=
-  ⟨fun f => ⟨f, f.contMDiff⟩⟩
+  ⟨fun f ↦ ⟨f, f.contMDiff⟩⟩

@@ -67,7 +67,7 @@ def LocallyBoundedMapClass.toLocallyBoundedMap [Bornology α] [Bornology β]
 
 instance [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] :
     CoeTC F (LocallyBoundedMap α β) :=
-  ⟨fun f => ⟨f, comap_cobounded_le f⟩⟩
+  ⟨fun f ↦ ⟨f, comap_cobounded_le f⟩⟩
 
 namespace LocallyBoundedMap
 

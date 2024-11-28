@@ -126,7 +126,7 @@ protected lemma map_zero [Zero S] (f : ZeroHom R S) :
 /-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
 def ofIterate [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
     HahnSeries (Γ ×ₗ Γ') R where
-  coeff := fun g => coeff (coeff x g.1) g.2
+  coeff := fun g ↦ coeff (coeff x g.1) g.2
   isPWO_support' := by
     refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
     · refine Set.IsPWO.mono x.isPWO_support' ?_
@@ -142,14 +142,14 @@ lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
 /-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
 def toIterate [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
     HahnSeries Γ (HahnSeries Γ' R) where
-  coeff := fun g => {
+  coeff := fun g ↦ {
     coeff := fun g' => coeff x (g, g')
     isPWO_support' := Set.PartiallyWellOrderedOn.fiberProdLex x.isPWO_support' g
   }
   isPWO_support' := by
-    have h₁ : (Function.support fun g => HahnSeries.mk (fun g' => x.coeff (g, g'))
+    have h₁ : (Function.support fun g ↦ HahnSeries.mk (fun g' => x.coeff (g, g'))
         (Set.PartiallyWellOrderedOn.fiberProdLex x.isPWO_support' g)) = Function.support
-        fun g => fun g' => x.coeff (g, g') := by
+        fun g ↦ fun g' => x.coeff (g, g') := by
       simp only [Function.support, ne_eq, mk_eq_zero]
     rw [h₁, Function.support_curry' x.coeff]
     exact Set.PartiallyWellOrderedOn.imageProdLex x.isPWO_support'

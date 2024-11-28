@@ -45,7 +45,7 @@ theorem diagonal_comp_stdBasis (w : n → R) (i : n) :
   LinearMap.ext fun x ↦ (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
 
 theorem diagonal_toLin' (w : n → R) :
-    toLin' (diagonal w) = LinearMap.pi fun i => w i • LinearMap.proj i :=
+    toLin' (diagonal w) = LinearMap.pi fun i ↦ w i • LinearMap.proj i :=
   LinearMap.ext fun _ => funext fun _ => mulVec_diagonal _ _ _
 
 end CommSemiring

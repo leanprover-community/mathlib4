@@ -231,7 +231,7 @@ end Nat
 namespace Finset
 
 theorem range_image_pred_top_sub (n : ℕ) :
-    ((Finset.range n).image fun j => n - 1 - j) = Finset.range n := by
+    ((Finset.range n).image fun j ↦ n - 1 - j) = Finset.range n := by
   cases n
   · rw [range_zero, image_empty]
   · rw [Finset.range_eq_Ico, Nat.Ico_image_const_sub_eq_Ico (Nat.zero_le _)]

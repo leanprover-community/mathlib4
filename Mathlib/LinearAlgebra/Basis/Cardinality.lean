@@ -91,14 +91,14 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
   obtain ⟨b', w⟩ := h
   -- Using this, we'll construct a linearly independent family strictly larger than `v`,
   -- by also using this `b b'`.
-  let v' : Option κ → M := fun o => o.elim (b b') v
+  let v' : Option κ → M := fun o ↦ o.elim (b b') v
   have r : range v ⊆ range v' := by
     rintro - ⟨k, rfl⟩
     use some k
     simp only [v', Option.elim_some]
   have r' : b b' ∉ range v := by
     rintro ⟨k, p⟩
-    simpa [w] using congr_arg (fun m => (b.repr m) b') p
+    simpa [w] using congr_arg (fun m ↦ (b.repr m) b') p
   have r'' : range v ≠ range v' := by
     intro e
     have p : b b' ∈ range v' := by

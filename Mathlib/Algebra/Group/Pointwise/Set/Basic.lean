@@ -247,7 +247,7 @@ theorem inv_insert (a : α) (s : Set α) : (insert a s)⁻¹ = insert a⁻¹ s�
   rw [insert_eq, union_inv, inv_singleton, insert_eq]
 
 @[to_additive]
-theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i => (f i)⁻¹ := by
+theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i ↦ (f i)⁻¹ := by
   rw [← image_inv_eq_inv]
   exact (range_comp ..).symm
 

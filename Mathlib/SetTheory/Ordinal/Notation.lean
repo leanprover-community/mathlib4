@@ -332,7 +332,7 @@ theorem NF.of_dvd_omega0_opow {b e n a} (h : NF (ONote.oadd e n a))
     (d : ω ^ b ∣ repr (ONote.oadd e n a)) :
     b ≤ repr e ∧ ω ^ b ∣ repr a := by
   have := mt repr_inj.1 (fun h ↦ by injection h : ONote.oadd e n a ≠ 0)
-  have L := le_of_not_lt fun l => not_le_of_lt (h.below_of_lt l).repr_lt (le_of_dvd this d)
+  have L := le_of_not_lt fun l ↦ not_le_of_lt (h.below_of_lt l).repr_lt (le_of_dvd this d)
   simp only [repr] at d
   exact ⟨L, (dvd_add_iff <| (opow_dvd_opow _ L).mul_right _).1 d⟩
 
@@ -945,16 +945,16 @@ def fundamentalSequence : ONote → (Option ONote) ⊕ (ℕ → ONote)
   | zero => Sum.inl none
   | oadd a m b =>
     match fundamentalSequence b with
-    | Sum.inr f => Sum.inr fun i => oadd a m (f i)
+    | Sum.inr f => Sum.inr fun i ↦ oadd a m (f i)
     | Sum.inl (some b') => Sum.inl (some (oadd a m b'))
     | Sum.inl none =>
       match fundamentalSequence a, m.natPred with
       | Sum.inl none, 0 => Sum.inl (some zero)
       | Sum.inl none, m + 1 => Sum.inl (some (oadd zero m.succPNat zero))
-      | Sum.inl (some a'), 0 => Sum.inr fun i => oadd a' i.succPNat zero
-      | Sum.inl (some a'), m + 1 => Sum.inr fun i => oadd a m.succPNat (oadd a' i.succPNat zero)
-      | Sum.inr f, 0 => Sum.inr fun i => oadd (f i) 1 zero
-      | Sum.inr f, m + 1 => Sum.inr fun i => oadd a m.succPNat (oadd (f i) 1 zero)
+      | Sum.inl (some a'), 0 => Sum.inr fun i ↦ oadd a' i.succPNat zero
+      | Sum.inl (some a'), m + 1 => Sum.inr fun i ↦ oadd a m.succPNat (oadd a' i.succPNat zero)
+      | Sum.inr f, 0 => Sum.inr fun i ↦ oadd (f i) 1 zero
+      | Sum.inr f, m + 1 => Sum.inr fun i ↦ oadd a m.succPNat (oadd (f i) 1 zero)
 
 private theorem exists_lt_add {α} [hα : Nonempty α] {o : Ordinal} {f : α → Ordinal}
     (H : ∀ ⦃a⦄, a < o → ∃ i, a < f i) {b : Ordinal} ⦃a⦄ (h : a < b + o) : ∃ i, a < b + f i := by
@@ -1032,7 +1032,7 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       apply nat_lt_omega0
     · have := opow_pos (repr a') omega0_pos
       refine
-        ⟨isLimit_add _ (isLimit_mul this isLimit_omega0), fun i => ⟨this, ?_, ?_⟩,
+        ⟨isLimit_add _ (isLimit_mul this isLimit_omega0), fun i ↦ ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega0'⟩
       · rw [← mul_succ, ← natCast_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega0
@@ -1040,13 +1040,13 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
         rw [repr, ← zero_def, repr, add_zero, iha.1, opow_succ, Ordinal.mul_lt_mul_iff_left this]
         apply nat_lt_omega0
     · rcases iha with ⟨h1, h2, h3⟩
-      refine ⟨isLimit_opow one_lt_omega0 h1, fun i => ?_,
+      refine ⟨isLimit_opow one_lt_omega0 h1, fun i ↦ ?_,
         exists_lt_omega0_opow' one_lt_omega0 h1 h3⟩
       obtain ⟨h4, h5, h6⟩ := h2 i
       exact ⟨h4, h5, fun H => @NF.oadd_zero _ _ (h6 H.fst)⟩
     · rcases iha with ⟨h1, h2, h3⟩
       refine
-        ⟨isLimit_add _ (isLimit_opow one_lt_omega0 h1), fun i => ?_,
+        ⟨isLimit_add _ (isLimit_opow one_lt_omega0 h1), fun i ↦ ?_,
           exists_lt_add (exists_lt_omega0_opow' one_lt_omega0 h1 h3)⟩
       obtain ⟨h4, h5, h6⟩ := h2 i
       refine ⟨h4, h5, fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (h6 H.fst)))⟩
@@ -1078,7 +1078,7 @@ def fastGrowing : ONote → ℕ → ℕ
     | Sum.inl none, _ => Nat.succ
     | Sum.inl (some a), h =>
       have : a < o := by rw [lt_def, h.1]; apply lt_succ
-      fun i => (fastGrowing a)^[i] i
+      fun i ↦ (fastGrowing a)^[i] i
     | Sum.inr f, h => fun i =>
       have : f i < o := (h.2.1 i).2.1
       fastGrowing (f i) i
@@ -1093,7 +1093,7 @@ theorem fastGrowing_def {o : ONote} {x} (e : fundamentalSequence o = x) :
         x, e ▸ fundamentalSequence_has_prop o with
       | Sum.inl none, _ => Nat.succ
       | Sum.inl (some a), _ =>
-        fun i => (fastGrowing a)^[i] i
+        fun i ↦ (fastGrowing a)^[i] i
       | Sum.inr f, _ => fun i =>
         fastGrowing (f i) i := by
   subst x
@@ -1104,11 +1104,11 @@ theorem fastGrowing_zero' (o : ONote) (h : fundamentalSequence o = Sum.inl none)
   rw [fastGrowing_def h]
 
 theorem fastGrowing_succ (o) {a} (h : fundamentalSequence o = Sum.inl (some a)) :
-    fastGrowing o = fun i => (fastGrowing a)^[i] i := by
+    fastGrowing o = fun i ↦ (fastGrowing a)^[i] i := by
   rw [fastGrowing_def h]
 
 theorem fastGrowing_limit (o) {f} (h : fundamentalSequence o = Sum.inr f) :
-    fastGrowing o = fun i => fastGrowing (f i) i := by
+    fastGrowing o = fun i ↦ fastGrowing (f i) i := by
   rw [fastGrowing_def h]
 
 @[simp]
@@ -1116,13 +1116,13 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
   fastGrowing_zero' _ rfl
 
 @[simp]
-theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
+theorem fastGrowing_one : fastGrowing 1 = fun n ↦ 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
   suffices ∀ a b, Nat.succ^[a] b = b + a from this _ _
   intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_assoc, -Function.iterate_succ]
 
 @[simp]
-theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
+theorem fastGrowing_two : fastGrowing 2 = fun n ↦ (2 ^ n) * n := by
   rw [@fastGrowing_succ 2 1 rfl]; funext i; rw [fastGrowing_one]
   suffices ∀ a b, (fun n : ℕ => 2 * n)^[a] b = (2 ^ a) * b from this _ _
   intro a b; induction a <;>

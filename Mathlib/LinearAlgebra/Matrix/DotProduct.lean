@@ -55,7 +55,7 @@ theorem dotProduct_eq_iff {v w : n → R} : (∀ u, dotProduct v u = dotProduct 
   ⟨fun h ↦ dotProduct_eq v w h, fun h _ => h ▸ rfl⟩
 
 theorem dotProduct_eq_zero (v : n → R) (h : ∀ w, dotProduct v w = 0) : v = 0 :=
-  dotProduct_eq _ _ fun u => (h u).symm ▸ (zero_dotProduct u).symm
+  dotProduct_eq _ _ fun u ↦ (h u).symm ▸ (zero_dotProduct u).symm
 
 theorem dotProduct_eq_zero_iff {v : n → R} : (∀ w, dotProduct v w = 0) ↔ v = 0 :=
   ⟨fun h ↦ dotProduct_eq_zero v h, fun h w => h.symm ▸ zero_dotProduct w⟩
@@ -173,9 +173,9 @@ theorem dotProduct_star_self_pos_iff {v : n → R} :
   cases subsingleton_or_nontrivial R
   · obtain rfl : v = 0 := Subsingleton.elim _ _
     simp
-  refine (Fintype.sum_pos_iff_of_nonneg fun i => star_mul_self_nonneg _).trans ?_
+  refine (Fintype.sum_pos_iff_of_nonneg fun i ↦ star_mul_self_nonneg _).trans ?_
   simp_rw [Pi.lt_def, Function.ne_iff, Pi.zero_apply]
-  refine (and_iff_right fun i => star_mul_self_nonneg (v i)).trans <| exists_congr fun i => ?_
+  refine (and_iff_right fun i ↦ star_mul_self_nonneg (v i)).trans <| exists_congr fun i ↦ ?_
   constructor
   · rintro h hv
     simp [hv] at h

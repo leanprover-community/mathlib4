@@ -153,7 +153,7 @@ theorem hitting_le_iff_of_exists [WellFoundedLT ι] {m : ι}
       obtain ⟨k₁, hk₁_mem, hk₁_s⟩ := h_exists
       obtain ⟨k₂, hk₂_mem, hk₂_s⟩ := h'
       refine ⟨min k₁ k₂, ⟨le_min hk₁_mem.1 hk₂_mem.1, min_le_min hk₁_mem.2 hk₂_mem.2⟩, ?_⟩
-      exact min_rec' (fun j => u j ω ∈ s) hk₁_s hk₂_s
+      exact min_rec' (fun j ↦ u j ω ∈ s) hk₁_s hk₂_s
     obtain ⟨k, hk₁, hk₂⟩ := h''
     refine le_trans ?_ (hk₁.2.trans (min_le_right _ _))
     exact hitting_le_of_mem hk₁.1 (hk₁.2.trans (min_le_left _ _)) hk₂
@@ -255,7 +255,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
     rintro m hm rfl
     exact lt_of_lt_of_le hm (le_hitting (hτbdd _) _)
   rw [h₁, h₂, Set.union_empty]
-  exact MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
+  exact MeasurableSet.iUnion fun i ↦ MeasurableSet.iUnion fun hi =>
     (f.mono hi _ (hτ.measurableSet_eq i)).inter (hitting_isStoppingTime hf hs n)
 
 section CompleteLattice

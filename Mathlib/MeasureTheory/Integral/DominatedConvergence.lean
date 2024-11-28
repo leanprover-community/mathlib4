@@ -53,8 +53,8 @@ variable {α E G : Type*}
 theorem tendsto_integral_of_dominated_convergence {F : ℕ → α → G} {f : α → G} (bound : α → ℝ)
     (F_measurable : ∀ n, AEStronglyMeasurable (F n) μ) (bound_integrable : Integrable bound μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
-    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
-    Tendsto (fun n => ∫ a, F n a ∂μ) atTop (𝓝 <| ∫ a, f a ∂μ) := by
+    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F n a) atTop (𝓝 (f a))) :
+    Tendsto (fun n ↦ ∫ a, F n a ∂μ) atTop (𝓝 <| ∫ a, f a ∂μ) := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, L1.integral]
     exact tendsto_setToFun_of_dominated_convergence (dominatedFinMeasAdditive_weightedSMul μ)
@@ -65,8 +65,8 @@ theorem tendsto_integral_of_dominated_convergence {F : ℕ → α → G} {f : α
 theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι} [l.IsCountablyGenerated]
     {F : ι → α → G} {f : α → G} (bound : α → ℝ) (hF_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) μ)
     (h_bound : ∀ᶠ n in l, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
-    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) l (𝓝 (f a))) :
-    Tendsto (fun n => ∫ a, F n a ∂μ) l (𝓝 <| ∫ a, f a ∂μ) := by
+    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F n a) l (𝓝 (f a))) :
+    Tendsto (fun n ↦ ∫ a, F n a ∂μ) l (𝓝 <| ∫ a, f a ∂μ) := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, L1.integral]
     exact tendsto_setToFun_filter_of_dominated_convergence (dominatedFinMeasAdditive_weightedSMul μ)
@@ -77,23 +77,23 @@ theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι} [l
 theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → α → G} {f : α → G}
     (bound : ι → α → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound n a)
-    (bound_summable : ∀ᵐ a ∂μ, Summable fun n => bound n a)
+    (bound_summable : ∀ᵐ a ∂μ, Summable fun n ↦ bound n a)
     (bound_integrable : Integrable (fun a ↦ ∑' n, bound n a) μ)
-    (h_lim : ∀ᵐ a ∂μ, HasSum (fun n => F n a) (f a)) :
-    HasSum (fun n => ∫ a, F n a ∂μ) (∫ a, f a ∂μ) := by
+    (h_lim : ∀ᵐ a ∂μ, HasSum (fun n ↦ F n a) (f a)) :
+    HasSum (fun n ↦ ∫ a, F n a ∂μ) (∫ a, f a ∂μ) := by
   have hb_nonneg : ∀ᵐ a ∂μ, ∀ n, 0 ≤ bound n a :=
-    eventually_countable_forall.2 fun n => (h_bound n).mono fun a ↦ (norm_nonneg _).trans
+    eventually_countable_forall.2 fun n ↦ (h_bound n).mono fun a ↦ (norm_nonneg _).trans
   have hb_le_tsum : ∀ n, bound n ≤ᵐ[μ] fun a ↦ ∑' n, bound n a := by
     intro n
     filter_upwards [hb_nonneg, bound_summable]
       with _ ha0 ha_sum using le_tsum ha_sum _ fun i _ => ha0 i
   have hF_integrable : ∀ n, Integrable (F n) μ := by
-    refine fun n => bound_integrable.mono' (hF_meas n) ?_
+    refine fun n ↦ bound_integrable.mono' (hF_meas n) ?_
     exact EventuallyLE.trans (h_bound n) (hb_le_tsum n)
   simp only [HasSum, ← integral_finset_sum _ fun n _ => hF_integrable n]
   refine tendsto_integral_filter_of_dominated_convergence
       (fun a ↦ ∑' n, bound n a) ?_ ?_ bound_integrable h_lim
-  · exact Eventually.of_forall fun s => s.aestronglyMeasurable_sum fun n _ => hF_meas n
+  · exact Eventually.of_forall fun s ↦ s.aestronglyMeasurable_sum fun n _ => hF_meas n
   · filter_upwards with s
     filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
       with a hFa ha0 has
@@ -106,8 +106,8 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     ∫ a : α, ∑' i, f i a ∂μ = ∑' i, ∫ a : α, f i a ∂μ := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral, hG]
-  have hf'' : ∀ i, AEMeasurable (fun x ↦ (‖f i x‖₊ : ℝ≥0∞)) μ := fun i => (hf i).ennnorm
-  have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
+  have hf'' : ∀ i, AEMeasurable (fun x ↦ (‖f i x‖₊ : ℝ≥0∞)) μ := fun i ↦ (hf i).ennnorm
+  have hhh : ∀ᵐ a : α ∂μ, Summable fun n ↦ (‖f n a‖₊ : ℝ) := by
     rw [← lintegral_tsum hf''] at hf'
     refine (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono ?_
     intro x hx
@@ -122,7 +122,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     rw [aestronglyMeasurable_iff_aemeasurable]
     apply AEMeasurable.coe_nnreal_real
     apply AEMeasurable.nnreal_tsum
-    exact fun i => (hf i).nnnorm.aemeasurable
+    exact fun i ↦ (hf i).nnnorm.aemeasurable
   · dsimp [HasFiniteIntegral]
     have : ∫⁻ a, ∑' n, ‖f n a‖₊ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
     convert this using 1
@@ -164,10 +164,10 @@ variable {α E : Type*} [MeasurableSpace α]
 
 theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
     (hfi : IntegrableOn f (s 0) μ) :
-    Tendsto (fun i => ∫ a in s i, f a ∂μ) atTop (𝓝 (∫ a in ⋂ n, s n, f a ∂μ)) := by
+    Tendsto (fun i ↦ ∫ a in s i, f a ∂μ) atTop (𝓝 (∫ a in ⋂ n, s n, f a ∂μ)) := by
   let bound : α → ℝ := indicator (s 0) fun a ↦ ‖f a‖
-  have h_int_eq : (fun i => ∫ a in s i, f a ∂μ) = fun i => ∫ a, (s i).indicator f a ∂μ :=
-    funext fun i => (integral_indicator (hsm i)).symm
+  have h_int_eq : (fun i ↦ ∫ a in s i, f a ∂μ) = fun i ↦ ∫ a, (s i).indicator f a ∂μ :=
+    funext fun i ↦ (integral_indicator (hsm i)).symm
   rw [h_int_eq]
   rw [← integral_indicator (MeasurableSet.iInter hsm)]
   refine tendsto_integral_of_dominated_convergence bound ?_ ?_ ?_ ?_
@@ -177,7 +177,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
   · rw [integrable_indicator_iff (hsm 0)]
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
-    refine fun n => Eventually.of_forall fun x ↦ ?_
+    refine fun n ↦ Eventually.of_forall fun x ↦ ?_
     exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a ↦ norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
@@ -203,8 +203,8 @@ nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter
     (hF_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) (μ.restrict (Ι a b)))
     (h_bound : ∀ᶠ n in l, ∀ᵐ x ∂μ, x ∈ Ι a b → ‖F n x‖ ≤ bound x)
     (bound_integrable : IntervalIntegrable bound μ a b)
-    (h_lim : ∀ᵐ x ∂μ, x ∈ Ι a b → Tendsto (fun n => F n x) l (𝓝 (f x))) :
-    Tendsto (fun n => ∫ x in a..b, F n x ∂μ) l (𝓝 <| ∫ x in a..b, f x ∂μ) := by
+    (h_lim : ∀ᵐ x ∂μ, x ∈ Ι a b → Tendsto (fun n ↦ F n x) l (𝓝 (f x))) :
+    Tendsto (fun n ↦ ∫ x in a..b, F n x ∂μ) l (𝓝 <| ∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegrable_iff, intervalIntegral_eq_integral_uIoc,
     ← ae_restrict_iff' (α := ℝ) (μ := μ) measurableSet_uIoc] at *
   exact tendsto_const_nhds.smul <|
@@ -214,10 +214,10 @@ nonrec theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter
 nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → ℝ → E}
     (bound : ι → ℝ → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) (μ.restrict (Ι a b)))
     (h_bound : ∀ n, ∀ᵐ t ∂μ, t ∈ Ι a b → ‖F n t‖ ≤ bound n t)
-    (bound_summable : ∀ᵐ t ∂μ, t ∈ Ι a b → Summable fun n => bound n t)
-    (bound_integrable : IntervalIntegrable (fun t => ∑' n, bound n t) μ a b)
-    (h_lim : ∀ᵐ t ∂μ, t ∈ Ι a b → HasSum (fun n => F n t) (f t)) :
-    HasSum (fun n => ∫ t in a..b, F n t ∂μ) (∫ t in a..b, f t ∂μ) := by
+    (bound_summable : ∀ᵐ t ∂μ, t ∈ Ι a b → Summable fun n ↦ bound n t)
+    (bound_integrable : IntervalIntegrable (fun t ↦ ∑' n, bound n t) μ a b)
+    (h_lim : ∀ᵐ t ∂μ, t ∈ Ι a b → HasSum (fun n ↦ F n t) (f t)) :
+    HasSum (fun n ↦ ∫ t in a..b, F n t ∂μ) (∫ t in a..b, f t ∂μ) := by
   simp only [intervalIntegrable_iff, intervalIntegral_eq_integral_uIoc, ←
     ae_restrict_iff' (α := ℝ) (μ := μ) measurableSet_uIoc] at *
   exact
@@ -234,7 +234,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
   · simp [intervalIntegral, integral, hE, hasSum_zero]
   apply hasSum_integral_of_dominated_convergence
     (fun i (x : ℝ) => ‖(f i).restrict ↑(⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ)‖)
-    (fun i => (map_continuous <| f i).aestronglyMeasurable)
+    (fun i ↦ (map_continuous <| f i).aestronglyMeasurable)
   · intro i; filter_upwards with x hx
     apply ContinuousMap.norm_coe_le_norm ((f i).restrict _) ⟨x, _⟩
     exact ⟨hx.1.le, hx.2⟩

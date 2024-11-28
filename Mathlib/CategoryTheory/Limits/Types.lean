@@ -128,8 +128,8 @@ lemma limitCone_pt_ext {x y : (limitCone F).pt}
 @[simps]
 noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) where
   lift s v := equivShrink F.sections
-    { val := fun j => s.π.app j v
-      property := fun f => congr_fun (Cone.w s f) _ }
+    { val := fun j ↦ s.π.app j v
+      property := fun f ↦ congr_fun (Cone.w s f) _ }
   uniq := fun _ _ w => by
     ext x j
     simpa using congr_fun (w j) x
@@ -163,8 +163,8 @@ noncomputable def limitCone (F : J ⥤ TypeMax.{v, u}) : Cone F where
 @[simps]
 noncomputable def limitConeIsLimit (F : J ⥤ TypeMax.{v, u}) : IsLimit (limitCone F) where
   lift s v :=
-    { val := fun j => s.π.app j v
-      property := fun f => congr_fun (Cone.w s f) _ }
+    { val := fun j ↦ s.π.app j v
+      property := fun f ↦ congr_fun (Cone.w s f) _ }
   uniq := fun _ _ w => by
     funext x
     apply Subtype.ext
@@ -362,7 +362,7 @@ lemma Quot.map_ι {j j' : J} {f : j ⟶ j'} (x : F.obj j) : Quot.ι F j' (F.map 
 @[simps]
 def toCocone {α : Type u} (f : Quot F → α) : Cocone F where
   pt := α
-  ι := { app := fun j => f ∘ Quot.ι F j }
+  ι := { app := fun j ↦ f ∘ Quot.ι F j }
 
 lemma Quot.desc_toCocone_desc {α : Type u} (f : Quot F → α) (hc : IsColimit c) (x : Quot F) :
     hc.desc (toCocone f) (Quot.desc c x) = f x := by
@@ -379,14 +379,14 @@ theorem isColimit_iff_bijective_desc : Nonempty (IsColimit c) ↔ (Quot.desc c).
     · let f₁ : c.pt ⟶ ULift.{u} Bool := fun _ => ULift.up true
       let f₂ : c.pt ⟶ ULift.{u} Bool := fun x ↦ ULift.up (∃ a, Quot.desc c a = x)
       suffices f₁ = f₂ by simpa [f₁, f₂] using congrFun this x
-      refine hc.hom_ext fun j => funext fun x ↦ ?_
+      refine hc.hom_ext fun j ↦ funext fun x ↦ ?_
       simpa [f₁, f₂] using ⟨Quot.ι F j x, by simp⟩
   · refine fun h ↦ ⟨?_⟩
     let e := Equiv.ofBijective _ h
     have h : ∀ j x, e.symm (c.ι.app j x) = Quot.ι F j x :=
       fun j x => e.injective (Equiv.ofBijective_apply_symm_apply _ _ _)
     exact
-      { desc := fun s => Quot.desc s ∘ e.symm
+      { desc := fun s ↦ Quot.desc s ∘ e.symm
         fac := fun s j => by
           ext x
           simp [h]
@@ -689,7 +689,7 @@ transformations `(const J).obj X ⟶ F`. -/
 def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F ⋙ coyoneda.obj (op X)).sections ≃ ((const J).obj X ⟶ F) where
   toFun s :=
-    { app := fun j => s.val j
+    { app := fun j ↦ s.val j
       naturality := fun j j' f => by
         dsimp
         rw [Category.id_comp]
@@ -704,12 +704,12 @@ transformations `F ⟶ (const J).obj X`. -/
 def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F.op ⋙ yoneda.obj X).sections ≃ (F ⟶ (const J).obj X) where
   toFun s :=
-    { app := fun j => s.val (op j)
+    { app := fun j ↦ s.val (op j)
       naturality := fun j j' f => by
         dsimp
         rw [Category.comp_id]
         exact (s.property f.op) }
-  invFun τ := ⟨fun j => τ.app j.unop, fun {j j'} f => by simp [τ.naturality f.unop]⟩
+  invFun τ := ⟨fun j ↦ τ.app j.unop, fun {j j'} f => by simp [τ.naturality f.unop]⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -719,12 +719,12 @@ transformations `(const J).obj X ⟶ F`. -/
 def compYonedaSectionsEquiv (F : J ⥤ Cᵒᵖ) (X : C) :
     (F ⋙ yoneda.obj X).sections ≃ ((const J).obj (op X) ⟶ F) where
   toFun s :=
-    { app := fun j => (s.val j).op
+    { app := fun j ↦ (s.val j).op
       naturality := fun j j' f => by
         dsimp
         rw [Category.id_comp]
         exact Quiver.Hom.unop_inj (s.property f).symm }
-  invFun τ := ⟨fun j => (τ.app j).unop,
+  invFun τ := ⟨fun j ↦ (τ.app j).unop,
     fun {j j'} f => Quiver.Hom.op_inj (by simpa using (τ.naturality f).symm)⟩
   left_inv _ := rfl
   right_inv _ := rfl

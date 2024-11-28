@@ -58,10 +58,10 @@ theorem coe_product (s : Finset α) (t : Finset β) :
     (↑(s ×ˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
   Set.ext fun _ => Finset.mem_product
 
-theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i => by
+theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i ↦ by
   simp +contextual [mem_image]
 
-theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd ⊆ t := fun i => by
+theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd ⊆ t := fun i ↦ by
   simp +contextual [mem_image]
 
 theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ˢ t).image Prod.fst = s := by
@@ -198,7 +198,7 @@ theorem singleton_product {a : α} :
   simp [and_left_comm, eq_comm]
 
 @[simp]
-theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk.inj_right _⟩ := by
+theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i ↦ (i, b), Prod.mk.inj_right _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
@@ -367,7 +367,7 @@ theorem offDiag_filter_lt_eq_filter_le {ι}
     [PartialOrder ι] [DecidableEq ι]
     [DecidableRel (LE.le (α := ι))] [DecidableRel (LT.lt (α := ι))]
     (s : Finset ι) :
-    s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
+    s.offDiag.filter (fun i ↦ i.1 < i.2) = s.offDiag.filter (fun i ↦ i.1 ≤ i.2) := by
   rw [Finset.filter_inj']
   rintro ⟨i, j⟩
   simp_rw [mem_offDiag, and_imp]

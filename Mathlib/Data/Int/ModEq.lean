@@ -81,7 +81,7 @@ theorem modEq_iff_dvd : a ≡ b [ZMOD n] ↔ n ∣ b - a := by
 
 theorem modEq_iff_add_fac {a b n : ℤ} : a ≡ b [ZMOD n] ↔ ∃ t, b = a + n * t := by
   rw [modEq_iff_dvd]
-  exact exists_congr fun t => sub_eq_iff_eq_add'
+  exact exists_congr fun t ↦ sub_eq_iff_eq_add'
 
 alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
 

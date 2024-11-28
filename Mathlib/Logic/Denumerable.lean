@@ -83,7 +83,7 @@ def mk' {α} (e : α ≃ ℕ) : Denumerable α where
 way. -/
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
   { Encodable.ofEquiv _ e with
-    decode_inv := fun n => by
+    decode_inv := fun n ↦ by
       -- Porting note: replaced `simp`
       simp_rw [Option.mem_def, decode_ofEquiv e, encode_ofEquiv e, decode_eq_ofNat,
         Option.map_some', Option.some_inj, exists_eq_left', Equiv.apply_symm_apply,
@@ -111,7 +111,7 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
 
 /-- If `α` is denumerable, then so is `Option α`. -/
 instance option : Denumerable (Option α) :=
-  ⟨fun n => by
+  ⟨fun n ↦ by
     cases n with
     | zero =>
       refine ⟨none, ?_, encode_none⟩
@@ -123,7 +123,7 @@ instance option : Denumerable (Option α) :=
 
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
-  ⟨fun n => by
+  ⟨fun n ↦ by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
     simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
       Option.mem_def, Sum.exists]
@@ -135,7 +135,7 @@ variable {γ : α → Type*} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
 instance sigma : Denumerable (Sigma γ) :=
-  ⟨fun n => by simp [decodeSigma]⟩
+  ⟨fun n ↦ by simp [decodeSigma]⟩
 
 @[simp]
 theorem sigma_ofNat_val (n : ℕ) :

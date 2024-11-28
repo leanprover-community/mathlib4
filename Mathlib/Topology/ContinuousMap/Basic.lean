@@ -58,8 +58,8 @@ The continuous functions from `α` to `β` are the same as the plain functions w
 -/
 @[simps]
 def equivFnOfDiscrete [DiscreteTopology α] : C(α, β) ≃ (α → β) :=
-  ⟨fun f => f,
-    fun f => ⟨f, continuous_of_discreteTopology⟩,
+  ⟨fun f ↦ f,
+    fun f ↦ ⟨f, continuous_of_discreteTopology⟩,
     fun _ => by ext; rfl,
     fun _ => by ext; rfl⟩
 
@@ -327,7 +327,7 @@ of sets in `α` which contain a neighbourhood of each point in `α` and (2) the 
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover' : C(α, β) := by
   let S : A → Set α := (↑)
-  let F : ∀ i : A, C(i, β) := fun i => F i i.prop
+  let F : ∀ i : A, C(i, β) := fun i ↦ F i i.prop
   refine liftCover S F (fun i j => hF i i.prop j j.prop) ?_
   intro x
   obtain ⟨s, hs, hsx⟩ := hA x

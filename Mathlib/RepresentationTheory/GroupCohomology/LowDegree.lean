@@ -93,8 +93,8 @@ section Differentials
 @[simps]
 def dZero : A →ₗ[k] G → A where
   toFun m g := A.ρ g m - m
-  map_add' x y := funext fun g => by simp only [map_add, add_sub_add_comm]; rfl
-  map_smul' r x := funext fun g => by dsimp; rw [map_smul, smul_sub]
+  map_add' x y := funext fun g ↦ by simp only [map_add, add_sub_add_comm]; rfl
+  map_smul' r x := funext fun g ↦ by dsimp; rw [map_smul, smul_sub]
 
 theorem dZero_ker_eq_invariants : LinearMap.ker (dZero A) = invariants A.ρ := by
   ext x
@@ -111,8 +111,8 @@ theorem dZero_ker_eq_invariants : LinearMap.ker (dZero A) = invariants A.ρ := b
 @[simps]
 def dOne : (G → A) →ₗ[k] G × G → A where
   toFun f g := A.ρ g.1 (f g.2) - f (g.1 * g.2) + f g.1
-  map_add' x y := funext fun g => by dsimp; rw [map_add, add_add_add_comm, add_sub_add_comm]
-  map_smul' r x := funext fun g => by dsimp; rw [map_smul, smul_add, smul_sub]
+  map_add' x y := funext fun g ↦ by dsimp; rw [map_add, add_add_add_comm, add_sub_add_comm]
+  map_smul' r x := funext fun g ↦ by dsimp; rw [map_smul, smul_add, smul_sub]
 
 /-- The 2nd differential in the complex of inhomogeneous cochains of `A : Rep k G`, as a
 `k`-linear map `Fun(G × G, A) → Fun(G × G × G, A)`. It sends
@@ -122,11 +122,11 @@ def dTwo : (G × G → A) →ₗ[k] G × G × G → A where
   toFun f g :=
     A.ρ g.1 (f (g.2.1, g.2.2)) - f (g.1 * g.2.1, g.2.2) + f (g.1, g.2.1 * g.2.2) - f (g.1, g.2.1)
   map_add' x y :=
-    funext fun g => by
+    funext fun g ↦ by
       dsimp
       rw [map_add, add_sub_add_comm (A.ρ _ _), add_sub_assoc, add_sub_add_comm, add_add_add_comm,
         add_sub_assoc, add_sub_assoc]
-  map_smul' r x := funext fun g => by dsimp; simp only [map_smul, smul_add, smul_sub]
+  map_smul' r x := funext fun g ↦ by dsimp; simp only [map_smul, smul_add, smul_sub]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `dZero` gives a simpler expression for the 0th differential: that is, the following
@@ -741,7 +741,7 @@ instance : Mono (shortComplexH0 A).f := by
 lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro (x : A) (hx : dZero _ x = 0)
-  refine ⟨⟨x, fun g => ?_⟩, rfl⟩
+  refine ⟨⟨x, fun g ↦ ?_⟩, rfl⟩
   rw [← sub_eq_zero]
   exact congr_fun hx g
 

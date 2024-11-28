@@ -115,9 +115,9 @@ theorem superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
   let w' := fun i ↦ (v i - m).toNat
   have hw' : ∀ i, (w' i : ℤ) = v i - m := fun i ↦ Int.toNat_sub_of_le (inf'_le _ (mem_univ _))
   have h := Matrix.det_eval_matrixOfPolynomials_eq_det_vandermonde (fun i ↦ ↑(w' i))
-      (fun i => descPochhammer ℤ i)
-      (fun i => descPochhammer_natDegree ℤ i)
-      (fun i => monic_descPochhammer ℤ i)
+      (fun i ↦ descPochhammer ℤ i)
+      (fun i ↦ descPochhammer_natDegree ℤ i)
+      (fun i ↦ monic_descPochhammer ℤ i)
   conv_lhs at h => simp only [hw', Matrix.det_vandermonde_sub]
   use (Matrix.of (fun (i j : Fin (n + 1)) => (Nat.choose (w' i) (j : ℕ) : ℤ))).det
   simp [h, matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose w', Fin.prod_univ_eq_prod_range]

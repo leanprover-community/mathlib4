@@ -136,7 +136,7 @@ lemma ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p : ℤ) :
   simp only [ofHoms, mk_v, eqToHom_refl, comp_id]
 
 @[simp]
-lemma ofHoms_zero : ofHoms (fun p => (0 : F.X p ⟶ G.X p)) = 0 := by aesop_cat
+lemma ofHoms_zero : ofHoms (fun p ↦ (0 : F.X p ⟶ G.X p)) = 0 := by aesop_cat
 
 @[simp]
 lemma ofHoms_v_comp_d (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p q q' : ℤ) (hpq : p + 0 = q) :
@@ -153,7 +153,7 @@ lemma d_comp_ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p' p q : ℤ) (hpq 
   rw [ofHoms_v]
 
 /-- The `0`-cochain attached to a morphism of cochain complexes. -/
-def ofHom (φ : F ⟶ G) : Cochain F G 0 := ofHoms (fun p => φ.f p)
+def ofHom (φ : F ⟶ G) : Cochain F G 0 := ofHoms (fun p ↦ φ.f p)
 
 variable (F G)
 
@@ -378,7 +378,7 @@ protected lemma comp_id {n : ℤ} (z₁ : Cochain F G n) :
 
 @[simp]
 lemma ofHoms_comp (φ : ∀ (p : ℤ), F.X p ⟶ G.X p) (ψ : ∀ (p : ℤ), G.X p ⟶ K.X p) :
-    (ofHoms φ).comp (ofHoms ψ) (zero_add 0) = ofHoms (fun p => φ p ≫ ψ p) := by aesop_cat
+    (ofHoms φ).comp (ofHoms ψ) (zero_add 0) = ofHoms (fun p ↦ φ p ≫ ψ p) := by aesop_cat
 
 @[simp]
 lemma ofHom_comp (f : F ⟶ G) (g : G ⟶ K) :
@@ -752,7 +752,7 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
   invFun z :=
     { hom := fun i j => if hij : i + (-1) = j then z.1.v i j hij else 0
       zero := fun i j (hij : j + 1 ≠ i) => dif_neg (fun _ => hij (by omega))
-      comm := fun p => by
+      comm := fun p ↦ by
         have eq := Cochain.congr_v z.2 p p (add_zero p)
         have h₁ : (ComplexShape.up ℤ).Rel (p - 1) p := by simp
         have h₂ : (ComplexShape.up ℤ).Rel p (p + 1) := by simp

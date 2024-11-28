@@ -168,7 +168,7 @@ theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s 
 
 /-- Coercion from a finset to the corresponding subtype. -/
 instance {α : Type u} : CoeSort (Finset α) (Type u) :=
-  ⟨fun s => { x // x ∈ s }⟩
+  ⟨fun s ↦ { x // x ∈ s }⟩
 
 protected theorem forall_coe {α : Type*} (s : Finset α) (p : s → Prop) :
     (∀ x : s, p x) ↔ ∀ (x : α) (h : x ∈ s), p ⟨x, h⟩ :=

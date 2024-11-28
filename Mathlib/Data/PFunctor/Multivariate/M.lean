@@ -170,7 +170,7 @@ def M.dest {α : TypeVec n} (x : P.M α) : P (α ::: P.M α) :=
 
 /-- Constructor for M-types -/
 def M.mk {α : TypeVec n} : P (α.append1 (P.M α)) → P.M α :=
-  M.corec _ fun i => appendFun id (M.dest P) <$$> i
+  M.corec _ fun i ↦ appendFun id (M.dest P) <$$> i
 
 theorem M.dest'_eq_dest' {α : TypeVec n} {x : P.last.M} {a₁ : P.A}
     {f₁ : P.last.B a₁ → P.last.M} (h₁ : PFunctor.M.dest x = ⟨a₁, f₁⟩) {a₂ : P.A}

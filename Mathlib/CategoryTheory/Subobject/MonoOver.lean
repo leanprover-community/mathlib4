@@ -149,11 +149,11 @@ def liftIso {Y : D} {F₁ F₂ : Over Y ⥤ Over X} (h₁ h₂) (i : F₁ ≅ F�
 
 /-- `MonoOver.lift` commutes with composition of functors. -/
 def liftComp {X Z : C} {Y : D} (F : Over X ⥤ Over Y) (G : Over Y ⥤ Over Z) (h₁ h₂) :
-    lift F h₁ ⋙ lift G h₂ ≅ lift (F ⋙ G) fun f => h₂ ⟨_, h₁ f⟩ :=
+    lift F h₁ ⋙ lift G h₂ ≅ lift (F ⋙ G) fun f ↦ h₂ ⟨_, h₁ f⟩ :=
   Functor.fullyFaithfulCancelRight (MonoOver.forget _) (Iso.refl _)
 
 /-- `MonoOver.lift` preserves the identity functor. -/
-def liftId : (lift (𝟭 (Over X)) fun f => f.2) ≅ 𝟭 _ :=
+def liftId : (lift (𝟭 (Over X)) fun f ↦ f.2) ≅ 𝟭 _ :=
   Functor.fullyFaithfulCancelRight (MonoOver.forget _) (Iso.refl _)
 
 @[simp]
@@ -193,7 +193,7 @@ variable [HasPullbacks C]
 /-- When `C` has pullbacks, a morphism `f : X ⟶ Y` induces a functor `MonoOver Y ⥤ MonoOver X`,
 by pulling back a monomorphism along `f`. -/
 def pullback (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X :=
-  MonoOver.lift (Over.pullback f) (fun g => by
+  MonoOver.lift (Over.pullback f) (fun g ↦ by
     haveI : Mono ((forget Y).obj g).hom := (inferInstance : Mono g.arrow)
     apply pullback.snd_of_mono)
 
@@ -223,7 +223,7 @@ section Map
 by post-composition with a monomorphism `f : X ⟶ Y`.
 -/
 def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y :=
-  lift (Over.map f) fun g => mono_comp g.arrow f
+  lift (Over.map f) fun g ↦ mono_comp g.arrow f
 
 /-- `MonoOver.map` commutes with composition (up to a natural isomorphism). -/
 def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] : map (f ≫ g) ≅ map f ⋙ map g :=
@@ -271,11 +271,11 @@ variable (X)
 @[simps]
 def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
   functor :=
-    lift (Over.post e.functor) fun f => by
+    lift (Over.post e.functor) fun f ↦ by
       dsimp
       infer_instance
   inverse :=
-    (lift (Over.post e.inverse) fun f => by
+    (lift (Over.post e.inverse) fun f ↦ by
         dsimp
         infer_instance) ⋙
       (mapIso (e.unitIso.symm.app X)).functor
@@ -341,12 +341,12 @@ def image : Over X ⥤ MonoOver X where
 def imageForgetAdj : image ⊣ forget X :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun f g =>
-        { toFun := fun k => by
+        { toFun := fun k ↦ by
             apply Over.homMk (factorThruImage f.hom ≫ k.left) _
             change (factorThruImage f.hom ≫ k.left) ≫ _ = f.hom
             rw [assoc, Over.w k]
             apply image.fac
-          invFun := fun k => by
+          invFun := fun k ↦ by
             refine Over.homMk ?_ ?_
             · exact
                 image.lift
@@ -356,7 +356,7 @@ def imageForgetAdj : image ⊣ forget X :=
                     fac := Over.w k }
             · apply image.lift_fac
           left_inv := fun _ => Subsingleton.elim _ _
-          right_inv := fun k => by
+          right_inv := fun k ↦ by
             ext1
             change factorThruImage _ ≫ image.lift _ = _
             rw [← cancel_mono g.arrow, assoc, image.lift_fac, image.fac f.hom]

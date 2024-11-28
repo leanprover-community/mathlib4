@@ -51,7 +51,7 @@ theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
   haveI : IsWellOrder α (· < ·) := wo
   -- Define an order `s` on `α × α` by writing `(a, b) < (c, d)` if `max a b < max c d`, or
   -- the max are equal and `a < c`, or the max are equal and `a = c` and `b < d`.
-  let g : α × α → α := fun p => max p.1 p.2
+  let g : α × α → α := fun p ↦ max p.1 p.2
   let f : α × α ↪ Ordinal × α × α :=
     ⟨fun p : α × α => (typein (· < ·) (g p), p), fun p q => congr_arg Prod.snd⟩
   let s := f ⁻¹'o Prod.Lex (· < ·) (Prod.Lex (· < ·) (· < ·))
@@ -509,7 +509,7 @@ theorem prod_eq_two_power {ι : Type u} [Infinite ι] {c : ι → Cardinal.{v}} 
   · refine (prod_le_prod _ _ h₂).trans_eq ?_
     rw [prod_const, lift_lift, ← lift_power, power_self_eq (aleph0_le_mk ι), lift_umax.{u, v}]
   · rw [← prod_const', lift_prod]
-    refine prod_le_prod _ _ fun i => ?_
+    refine prod_le_prod _ _ fun i ↦ ?_
     rw [lift_two, ← lift_two.{u, v}, lift_le]
     exact h₁ i
 
@@ -662,7 +662,7 @@ theorem mk_list_eq_mk (α : Type u) [Infinite α] : #(List α) = #α :=
     le_antisymm ((le_def _ _).2 ⟨⟨fun a ↦ [a], fun _ => by simp⟩⟩) <|
       calc
         #(List α) = sum fun n : ℕ => #α ^ (n : Cardinal.{u}) := mk_list_eq_sum_pow α
-        _ ≤ sum fun _ : ℕ => #α := sum_le_sum _ _ fun n => pow_le H1 <| nat_lt_aleph0 n
+        _ ≤ sum fun _ : ℕ => #α := sum_le_sum _ _ fun n ↦ pow_le H1 <| nat_lt_aleph0 n
         _ = #α := by simp [H1]
 
 theorem mk_list_eq_aleph0 (α : Type u) [Countable α] [Nonempty α] : #(List α) = ℵ₀ :=
@@ -739,7 +739,7 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     #{ t : Set α // t ⊆ s ∧ #t ≤ c } ≤ max #s ℵ₀ ^ c := by
   refine le_trans ?_ (mk_bounded_set_le s c)
   refine ⟨Embedding.codRestrict _ ?_ ?_⟩
-  · use fun t => (↑) ⁻¹' t.1
+  · use fun t ↦ (↑) ⁻¹' t.1
     rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
     apply Subtype.eq
     dsimp only at h ⊢

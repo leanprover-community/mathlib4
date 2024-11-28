@@ -131,7 +131,7 @@ of neighborhoods of zero. -/
 def topology : TopologicalSpace A :=
   hB.toRingFilterBasis.toAddGroupFilterBasis.topology
 
-theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun i => B i :=
+theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fun i ↦ B i :=
   ⟨by
     intro s
     rw [hB.toRingFilterBasis.toAddGroupFilterBasis.nhds_zero_hasBasis.mem_iff]
@@ -142,7 +142,7 @@ theorem hasBasis_nhds_zero : HasBasis (@nhds A hB.topology 0) (fun _ => True) fu
       exact ⟨B i, ⟨i, rfl⟩, hi⟩⟩
 
 theorem hasBasis_nhds (a : A) :
-    HasBasis (@nhds A hB.topology a) (fun _ => True) fun i => { b | b - a ∈ B i } :=
+    HasBasis (@nhds A hB.topology a) (fun _ => True) fun i ↦ { b | b - a ∈ B i } :=
   ⟨by
     intro s
     rw [(hB.toRingFilterBasis.toAddGroupFilterBasis.nhds_hasBasis a).mem_iff]
@@ -209,8 +209,8 @@ namespace SubmodulesRingBasis
 variable {B : ι → Submodule R A} (hB : SubmodulesRingBasis B)
 
 theorem toRing_subgroups_basis (hB : SubmodulesRingBasis B) :
-    RingSubgroupsBasis fun i => (B i).toAddSubgroup := by
-  apply RingSubgroupsBasis.of_comm (fun i => (B i).toAddSubgroup) hB.inter hB.mul
+    RingSubgroupsBasis fun i ↦ (B i).toAddSubgroup := by
+  apply RingSubgroupsBasis.of_comm (fun i ↦ (B i).toAddSubgroup) hB.inter hB.mul
   intro a i
   rcases hB.leftMul a i with ⟨j, hj⟩
   use j

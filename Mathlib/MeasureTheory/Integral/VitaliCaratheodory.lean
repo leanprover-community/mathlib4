@@ -175,14 +175,14 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
   choose g f_le_g gcont hg using this
   refine ⟨fun x ↦ ∑' n, g n x, fun x ↦ ?_, ?_, ?_⟩
   · rw [← SimpleFunc.tsum_eapproxDiff f hf]
-    exact ENNReal.tsum_le_tsum fun n => ENNReal.coe_le_coe.2 (f_le_g n x)
-  · refine lowerSemicontinuous_tsum fun n => ?_
+    exact ENNReal.tsum_le_tsum fun n ↦ ENNReal.coe_le_coe.2 (f_le_g n x)
+  · refine lowerSemicontinuous_tsum fun n ↦ ?_
     exact
       ENNReal.continuous_coe.comp_lowerSemicontinuous (gcont n) fun x y hxy =>
         ENNReal.coe_le_coe.2 hxy
   · calc
       ∫⁻ x, ∑' n : ℕ, g n x ∂μ = ∑' n, ∫⁻ x, g n x ∂μ := by
-        rw [lintegral_tsum fun n => (gcont n).measurable.coe_nnreal_ennreal.aemeasurable]
+        rw [lintegral_tsum fun n ↦ (gcont n).measurable.coe_nnreal_ennreal.aemeasurable]
       _ ≤ ∑' n, ((∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n) := ENNReal.tsum_le_tsum hg
       _ = ∑' n, ∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ + ∑' n, δ n := ENNReal.tsum_add
       _ ≤ (∫⁻ x : α, f x ∂μ) + ε := by

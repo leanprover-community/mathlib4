@@ -69,7 +69,7 @@ theorem Lex.mono_right (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, 
     Lex r s₂ a b :=
   h.mono (fun _ _ => id) hs
 
-theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap (s i)) b a := by
+theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i ↦ Function.swap (s i)) b a := by
   constructor <;>
     · rintro (⟨a, b, h⟩ | ⟨a, b, h⟩)
       exacts [Lex.left _ _ h, Lex.right _ _ h]

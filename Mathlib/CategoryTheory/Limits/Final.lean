@@ -359,7 +359,7 @@ theorem ι_colimitIso_inv [HasColimit G] (X : C) :
 colimit is isomorpic to taking the colimit on the codomain of `F`. -/
 def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
-  NatIso.ofComponents (fun G => colimitIso F G) fun f => by
+  NatIso.ofComponents (fun G => colimitIso F G) fun f ↦ by
     simp only [comp_obj, whiskeringLeft_obj_obj, colim_obj, comp_map, whiskeringLeft_obj_map,
       colim_map, colimitIso_hom]
     ext
@@ -698,7 +698,7 @@ def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
 limit is isomorpic to taking the limit on the codomain of `F`. -/
 def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
     (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
-  Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
+  Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f ↦ by
     simp only [comp_obj, whiskeringLeft_obj_obj, lim_obj, comp_map, whiskeringLeft_obj_map, lim_map,
       Iso.symm_hom, limitIso_inv]
     ext
@@ -970,14 +970,14 @@ open Functor
 /-- The functor `StructuredArrow.pre X T S` is final if `T` is final. -/
 instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
     Final (pre X T S) := by
-  refine ⟨fun f => ?_⟩
+  refine ⟨fun f ↦ ?_⟩
   rw [isConnected_iff_of_equivalence (StructuredArrow.preEquivalence T f)]
   exact Final.out f.right
 
 /-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial. -/
 instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
     Initial (CostructuredArrow.pre T S X) := by
-  refine ⟨fun f => ?_⟩
+  refine ⟨fun f ↦ ?_⟩
   rw [isConnected_iff_of_equivalence (CostructuredArrow.preEquivalence T f)]
   exact Initial.out f.left
 
@@ -997,7 +997,7 @@ def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
     StructuredArrow d G ⥤q StructuredArrow ⟨d, f⟩ (pre F G) where
   obj := fun X => StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).obj f⟩)
     (Grothendieck.Hom.mk (by exact X.hom) (by dsimp; exact 𝟙 _))
-  map := fun g => StructuredArrow.homMk
+  map := fun g ↦ StructuredArrow.homMk
     (Grothendieck.Hom.mk (by exact g.right)
       (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
     (by simp only [StructuredArrow.mk_right]

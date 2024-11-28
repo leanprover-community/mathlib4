@@ -183,7 +183,7 @@ theorem exists_goodδ :
         rcases Function.Embedding.exists_of_card_le_finset this with ⟨f, hf⟩
         exact ⟨f, f.injective, hf⟩
       simp only [range_subset_iff, Finset.mem_coe] at hfs
-      exact ⟨f, fun i => hs _ (hfs i), fun i j hij => h's _ (hfs i) _ (hfs j) (f_inj.ne hij)⟩
+      exact ⟨f, fun i ↦ hs _ (hfs i), fun i j hij => h's _ (hfs i) _ (hfs j) (f_inj.ne hij)⟩
     · exact
         ⟨fun _ => 0, by simp, fun i j _ => by
           simpa only [norm_zero, sub_nonpos, sub_self]⟩
@@ -204,15 +204,15 @@ theorem exists_goodδ :
       ∃ f ∈ closedBall (0 : Fin N → E) 2,
         ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto ((F ∘ u) ∘ φ) atTop (𝓝 f) :=
       IsCompact.tendsto_subseq (isCompact_closedBall _ _) A
-    refine ⟨f, fun i => ?_, fun i j hij => ?_⟩
+    refine ⟨f, fun i ↦ ?_, fun i j hij => ?_⟩
     · simp only [pi_norm_le_iff_of_nonneg zero_le_two, mem_closedBall, dist_zero_right] at fmem
       exact fmem i
-    · have A : Tendsto (fun n => ‖F (u (φ n)) i - F (u (φ n)) j‖) atTop (𝓝 ‖f i - f j‖) :=
+    · have A : Tendsto (fun n ↦ ‖F (u (φ n)) i - F (u (φ n)) j‖) atTop (𝓝 ‖f i - f j‖) :=
         ((hf.apply_nhds i).sub (hf.apply_nhds j)).norm
-      have B : Tendsto (fun n => 1 - u (φ n)) atTop (𝓝 (1 - 0)) :=
+      have B : Tendsto (fun n ↦ 1 - u (φ n)) atTop (𝓝 (1 - 0)) :=
         tendsto_const_nhds.sub (hu.comp φ_mono.tendsto_atTop)
       rw [sub_zero] at B
-      exact le_of_tendsto_of_tendsto' B A fun n => (hF (u (φ n)) (zero_lt_u _)).2 hij
+      exact le_of_tendsto_of_tendsto' B A fun n ↦ (hF (u (φ n)) (zero_lt_u _)).2 hij
   rcases this with ⟨f, hf, h'f⟩
   -- the range of `f` contradicts the definition of `multiplicity E`.
   have finj : Function.Injective f := by
@@ -446,13 +446,13 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
 theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (lastc : a.c (last N) = 0)
     (lastr : a.r (last N) = 1) (hτ : 1 ≤ τ) (δ : ℝ) (hδ1 : τ ≤ 1 + δ / 4) (hδ2 : δ ≤ 1) :
     ∃ c' : Fin N.succ → E, (∀ n, ‖c' n‖ ≤ 2) ∧ Pairwise fun i j => 1 - δ ≤ ‖c' i - c' j‖ := by
-  let c' : Fin N.succ → E := fun i => if ‖a.c i‖ ≤ 2 then a.c i else (2 / ‖a.c i‖) • a.c i
+  let c' : Fin N.succ → E := fun i ↦ if ‖a.c i‖ ≤ 2 then a.c i else (2 / ‖a.c i‖) • a.c i
   have norm_c'_le : ∀ i, ‖c' i‖ ≤ 2 := by
     intro i
     simp only [c']
     split_ifs with h; · exact h
     by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]
-  refine ⟨c', fun n => norm_c'_le n, fun i j inej => ?_⟩
+  refine ⟨c', fun n ↦ norm_c'_le n, fun i j inej => ?_⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
   · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_le hij)

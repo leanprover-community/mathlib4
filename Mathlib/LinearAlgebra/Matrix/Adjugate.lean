@@ -143,9 +143,9 @@ theorem sum_cramer {β} (s : Finset β) (f : β → n → α) :
 
 /-- Use linearity of `cramer` and vector evaluation to take `cramer A _ i` out of a summation. -/
 theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
-    (∑ x ∈ s, cramer A (fun j => f j x) i) = cramer A (fun j : n => ∑ x ∈ s, f j x) i :=
+    (∑ x ∈ s, cramer A (fun j ↦ f j x) i) = cramer A (fun j : n => ∑ x ∈ s, f j x) i :=
   calc
-    (∑ x ∈ s, cramer A (fun j => f j x) i) = (∑ x ∈ s, cramer A fun j => f j x) i :=
+    (∑ x ∈ s, cramer A (fun j ↦ f j x) i) = (∑ x ∈ s, cramer A fun j ↦ f j x) i :=
       (Finset.sum_apply i s _).symm
     _ = cramer A (fun j : n => ∑ x ∈ s, f j x) i := by
       rw [sum_cramer, cramer_apply, cramer_apply]
@@ -185,9 +185,9 @@ These will hold for any matrix over a commutative ring.
   facts about the `cramer` map.
 -/
 def adjugate (A : Matrix n n α) : Matrix n n α :=
-  of fun i => cramer Aᵀ (Pi.single i 1)
+  of fun i ↦ cramer Aᵀ (Pi.single i 1)
 
-theorem adjugate_def (A : Matrix n n α) : adjugate A = of fun i => cramer Aᵀ (Pi.single i 1) :=
+theorem adjugate_def (A : Matrix n n α) : adjugate A = of fun i ↦ cramer Aᵀ (Pi.single i 1) :=
   rfl
 
 theorem adjugate_apply (A : Matrix n n α) (i j : n) :
@@ -230,7 +230,7 @@ theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :
   rw [adjugate_apply, submatrix_apply, adjugate_apply, ← det_submatrix_equiv_self e,
     updateRow_submatrix_equiv]
   -- Porting note: added
-  suffices (fun j => Pi.single i 1 (e.symm j)) = Pi.single (e i) 1 by
+  suffices (fun j ↦ Pi.single i 1 (e.symm j)) = Pi.single (e i) 1 by
     erw [this]
   exact Function.update_comp_equiv _ e.symm _ _
 
@@ -306,14 +306,14 @@ theorem adjugate_one : adjugate (1 : Matrix n n α) = 1 := by
 
 @[simp]
 theorem adjugate_diagonal (v : n → α) :
-    adjugate (diagonal v) = diagonal fun i => ∏ j ∈ Finset.univ.erase i, v j := by
+    adjugate (diagonal v) = diagonal fun i ↦ ∏ j ∈ Finset.univ.erase i, v j := by
   ext i j
   simp only [adjugate_def, cramer_apply, diagonal_transpose, of_apply]
   obtain rfl | hij := eq_or_ne i j
   · rw [diagonal_apply_eq, diagonal_updateColumn_single, det_diagonal,
       prod_update_of_mem (Finset.mem_univ _), sdiff_singleton_eq_erase, one_mul]
   · rw [diagonal_apply_ne _ hij]
-    refine det_eq_zero_of_row_eq_zero j fun k => ?_
+    refine det_eq_zero_of_row_eq_zero j fun k ↦ ?_
     obtain rfl | hjk := eq_or_ne k j
     · rw [updateColumn_self, Pi.single_eq_of_ne' hij]
     · rw [updateColumn_ne hjk, diagonal_apply_ne' _ hjk]

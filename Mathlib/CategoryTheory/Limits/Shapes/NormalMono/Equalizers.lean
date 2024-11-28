@@ -127,7 +127,7 @@ def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g
             pullback.lift (Fork.ι s) (Fork.ι s) <|
               Limits.prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
                 (by simp only [prod.comp_lift, Fork.condition s]))
-          (fun s => by simp) fun s m h =>
+          (fun s ↦ by simp) fun s m h =>
           pullback.hom_ext (by simpa only [pullback.lift_fst] using h)
             (by simpa only [huv.symm, pullback.lift_fst] using h) }
 
@@ -285,7 +285,7 @@ def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair
             pushout.desc (Cofork.π s) (Cofork.π s) <|
               coprod.hom_ext (by simp only [coprod.inl_desc_assoc])
                 (by simp only [coprod.desc_comp, Cofork.condition s]))
-          (fun s => by simp only [pushout.inl_desc, Cofork.π_ofπ]) fun s m h =>
+          (fun s ↦ by simp only [pushout.inl_desc, Cofork.π_ofπ]) fun s m h =>
           pushout.hom_ext (by simpa only [pushout.inl_desc] using h)
             (by simpa only [huv.symm, pushout.inl_desc] using h) }
 

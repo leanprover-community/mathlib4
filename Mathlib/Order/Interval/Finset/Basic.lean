@@ -288,16 +288,16 @@ theorem Iic_filter_lt_of_lt_right {α} [Preorder α] [LocallyFiniteOrderBot α] 
 
 variable (a b) [Fintype α]
 
-theorem filter_lt_lt_eq_Ioo [DecidablePred fun j => a < j ∧ j < b] :
+theorem filter_lt_lt_eq_Ioo [DecidablePred fun j ↦ a < j ∧ j < b] :
     ({j | a < j ∧ j < b} : Finset _) = Ioo a b := by ext; simp
 
-theorem filter_lt_le_eq_Ioc [DecidablePred fun j => a < j ∧ j ≤ b] :
+theorem filter_lt_le_eq_Ioc [DecidablePred fun j ↦ a < j ∧ j ≤ b] :
     ({j | a < j ∧ j ≤ b} : Finset _) = Ioc a b := by ext; simp
 
-theorem filter_le_lt_eq_Ico [DecidablePred fun j => a ≤ j ∧ j < b] :
+theorem filter_le_lt_eq_Ico [DecidablePred fun j ↦ a ≤ j ∧ j < b] :
     ({j | a ≤ j ∧ j < b} : Finset _) = Ico a b := by ext; simp
 
-theorem filter_le_le_eq_Icc [DecidablePred fun j => a ≤ j ∧ j ≤ b] :
+theorem filter_le_le_eq_Icc [DecidablePred fun j ↦ a ≤ j ∧ j ≤ b] :
     ({j | a ≤ j ∧ j ≤ b} : Finset _) = Icc a b := by ext; simp
 
 end Filter

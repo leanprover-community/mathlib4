@@ -46,7 +46,7 @@ instance instStarAddMonoid : StarAddMonoid (CentroidHom α) where
   star_add _ _ := ext fun _ => star_add _ _
 
 instance : Star (Subsemiring.center (CentroidHom α)) where
-  star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g => ext (fun a =>
+  star f := ⟨star (f : CentroidHom α), Subsemiring.mem_center_iff.mpr (fun g ↦ ext (fun a =>
     calc
       g (star (f (star a))) = star (star g (f (star a))) := by rw [star_apply, star_star]
       _ = star ((star g * f) (star a)) := rfl

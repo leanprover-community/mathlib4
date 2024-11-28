@@ -945,7 +945,7 @@ instance Int.infinite : Infinite ℤ :=
 
 instance [Nonempty α] : Infinite (Multiset α) :=
   let ⟨x⟩ := ‹Nonempty α›
-  Infinite.of_injective (fun n => Multiset.replicate n x) (Multiset.replicate_left_injective _)
+  Infinite.of_injective (fun n ↦ Multiset.replicate n x) (Multiset.replicate_left_injective _)
 
 instance [Nonempty α] : Infinite (List α) :=
   Infinite.of_surjective ((↑) : List α → Multiset α) Quot.mk_surjective
@@ -1053,7 +1053,7 @@ theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f
   simpa [Injective, and_comm] using not_injective_infinite_finite f
 
 instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=
-  ⟨fun f => not_injective_infinite_finite f f.2⟩
+  ⟨fun f ↦ not_injective_infinite_finite f f.2⟩
 
 /-- The strong pigeonhole principle for infinitely many pigeons in
 finitely many pigeonholes.  If there are infinitely many pigeons in

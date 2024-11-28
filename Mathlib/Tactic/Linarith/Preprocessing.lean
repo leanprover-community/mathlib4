@@ -347,7 +347,7 @@ partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
-  let do_goal : MVarId → MetaM (List Branch) := fun g => do
+  let do_goal : MVarId → MetaM (List Branch) := fun g ↦ do
     let (f, h) ← g.intro1
     h.withContext do
       let ls ← removeNe_aux h <| hs.removeAll [e]

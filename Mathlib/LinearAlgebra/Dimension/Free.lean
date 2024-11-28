@@ -214,7 +214,7 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     {h : finrank R M = 1} {v : M} {i : ι} :
     (basisUnique ι h).repr v i = 0 ↔ v = 0 :=
   ⟨fun hv =>
-    (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
+    (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j ↦ Subsingleton.elim i j ▸ hv),
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 
 end Module

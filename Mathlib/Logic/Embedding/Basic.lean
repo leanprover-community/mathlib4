@@ -320,7 +320,7 @@ This embedding sends each `f : α → γ` to a function `g : β → γ` such tha
 `g y = default` whenever `y ∉ range e`. -/
 noncomputable def arrowCongrLeft {α : Sort u} {β : Sort v} {γ : Sort w} [Inhabited γ] (e : α ↪ β) :
     (α → γ) ↪ β → γ :=
-  ⟨fun f => extend e f default, fun f₁ f₂ h =>
+  ⟨fun f ↦ extend e f default, fun f₁ f₂ h =>
     funext fun x ↦ by simpa only [e.injective.extend_apply] using congr_fun h (e x)⟩
 
 /-- Restrict both domain and codomain of an embedding. -/

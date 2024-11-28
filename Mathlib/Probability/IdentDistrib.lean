@@ -293,9 +293,9 @@ theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → �
     (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ := by
   refine uniformIntegrable_of' hp hp' hfmeas fun ε hε => ?_
   by_cases hι : Nonempty ι
-  swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
+  swap; · exact ⟨0, fun i ↦ False.elim (hι <| Nonempty.intro i)⟩
   obtain ⟨C, hC₁, hC₂⟩ := hℒp.eLpNorm_indicator_norm_ge_pos_le (hfmeas _) hε
-  refine ⟨⟨C, hC₁.le⟩, fun i => le_trans (le_of_eq ?_) hC₂⟩
+  refine ⟨⟨C, hC₁.le⟩, fun i ↦ le_trans (le_of_eq ?_) hC₂⟩
   have : {x | (⟨C, hC₁.le⟩ : ℝ≥0) ≤ ‖f i x‖₊} = {x | C ≤ ‖f i x‖} := by
     ext x
     simp_rw [← norm_toNNReal]
@@ -318,9 +318,9 @@ theorem Memℒp.uniformIntegrable_of_identDistrib {ι : Type*} {f : ι → α �
     UniformIntegrable f p μ := by
   have hfmeas : ∀ i, AEStronglyMeasurable (f i) μ := fun i =>
     (hf i).aestronglyMeasurable_iff.2 hℒp.1
-  set g : ι → α → E := fun i => (hfmeas i).choose
-  have hgmeas : ∀ i, StronglyMeasurable (g i) := fun i => (Exists.choose_spec <| hfmeas i).1
-  have hgeq : ∀ i, g i =ᵐ[μ] f i := fun i => (Exists.choose_spec <| hfmeas i).2.symm
+  set g : ι → α → E := fun i ↦ (hfmeas i).choose
+  have hgmeas : ∀ i, StronglyMeasurable (g i) := fun i ↦ (Exists.choose_spec <| hfmeas i).1
+  have hgeq : ∀ i, g i =ᵐ[μ] f i := fun i ↦ (Exists.choose_spec <| hfmeas i).2.symm
   have hgℒp : Memℒp (g j) p μ := hℒp.ae_eq (hgeq j).symm
   exact UniformIntegrable.ae_eq
     (Memℒp.uniformIntegrable_of_identDistrib_aux hp hp' hgℒp hgmeas fun i =>

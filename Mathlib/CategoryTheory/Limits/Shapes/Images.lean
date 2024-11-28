@@ -816,7 +816,7 @@ variable {C}
 theorem HasStrongEpiMonoFactorisations.mk
     (d : ∀ {X Y : C} (f : X ⟶ Y), StrongEpiMonoFactorisation f) :
     HasStrongEpiMonoFactorisations C :=
-  ⟨fun f => Nonempty.intro <| d f⟩
+  ⟨fun f ↦ Nonempty.intro <| d f⟩
 
 instance (priority := 100) hasImages_of_hasStrongEpiMonoFactorisations
     [HasStrongEpiMonoFactorisations C] : HasImages C where
@@ -934,8 +934,8 @@ variable (C)
 noncomputable def functorialEpiMonoFactorizationData :
     FunctorialFactorizationData (epimorphisms C) (monomorphisms C) where
   Z := im
-  i := { app := fun f => factorThruImage f.hom }
-  p := { app := fun f => image.ι f.hom }
+  i := { app := fun f ↦ factorThruImage f.hom }
+  p := { app := fun f ↦ image.ι f.hom }
   hi _ := epimorphisms.infer_property _
   hp _ := monomorphisms.infer_property _
 

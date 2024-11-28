@@ -166,7 +166,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   classical
   rw [SetCoe.forall'] at h
   choose! φ u hu hUu hux hφ h2φ heφ using h
-  have heuφ : ∀ x : U, EqOn e (fun q => (q.1, φ x q.1 q.2)) (u x ×ˢ univ) := fun x p hp ↦ by
+  have heuφ : ∀ x : U, EqOn e (fun q ↦ (q.1, φ x q.1 q.2)) (u x ×ˢ univ) := fun x p hp ↦ by
     refine (heφ x).2 ?_
     rw [(heφ x).1]
     exact hp

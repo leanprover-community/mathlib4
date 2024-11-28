@@ -64,10 +64,10 @@ instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
 /-- A version of `CliffordAlgebra.ι` that maps directly into the graded structure. This is
 primarily an auxiliary construction used to provide `CliffordAlgebra.gradedAlgebra`. -/
 protected def GradedAlgebra.ι : M →ₗ[R] ⨁ i : ZMod 2, evenOdd Q i :=
-  DirectSum.lof R (ZMod 2) (fun i => ↥(evenOdd Q i)) 1 ∘ₗ (ι Q).codRestrict _ (ι_mem_evenOdd_one Q)
+  DirectSum.lof R (ZMod 2) (fun i ↦ ↥(evenOdd Q i)) 1 ∘ₗ (ι Q).codRestrict _ (ι_mem_evenOdd_one Q)
 
 theorem GradedAlgebra.ι_apply (m : M) :
-    GradedAlgebra.ι Q m = DirectSum.of (fun i => ↥(evenOdd Q i)) 1 ⟨ι Q m, ι_mem_evenOdd_one Q m⟩ :=
+    GradedAlgebra.ι Q m = DirectSum.of (fun i ↦ ↥(evenOdd Q i)) 1 ⟨ι Q m, ι_mem_evenOdd_one Q m⟩ :=
   rfl
 
 nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
@@ -78,7 +78,7 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     -- Porting note: added a second `by apply`
     lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩ x' =
-      DirectSum.of (fun i => evenOdd Q i) i' x' := by
+      DirectSum.of (fun i ↦ evenOdd Q i) i' x' := by
   cases' x' with x' hx'
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx' using Submodule.iSup_induction' with
@@ -129,7 +129,7 @@ theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := 
         ⨆ i : Σ i : ZMod 2, { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (i.2 : ℕ) := by
       rw [iSup_sigma]
     _ = ⨆ i : ℕ, LinearMap.range (ι Q) ^ i :=
-      Function.Surjective.iSup_congr (fun i => i.2) (fun i => ⟨⟨_, i, rfl⟩, rfl⟩) fun _ => rfl
+      Function.Surjective.iSup_congr (fun i ↦ i.2) (fun i ↦ ⟨⟨_, i, rfl⟩, rfl⟩) fun _ => rfl
 
 theorem evenOdd_isCompl : IsCompl (evenOdd Q 0) (evenOdd Q 1) :=
   (DirectSum.Decomposition.isInternal (evenOdd Q)).isCompl zero_ne_one <| by

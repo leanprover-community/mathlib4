@@ -120,7 +120,7 @@ theorem iInter_mem' {β : Sort v} {s : β → Set α} [Subsingleton β] :
 theorem exists_mem_subset_iff : (∃ t ∈ f, t ⊆ s) ↔ s ∈ f :=
   ⟨fun ⟨_, ht, ts⟩ => mem_of_superset ht ts, fun hs => ⟨s, hs, Subset.rfl⟩⟩
 
-theorem monotone_mem {f : Filter α} : Monotone fun s => s ∈ f := fun _ _ hst h =>
+theorem monotone_mem {f : Filter α} : Monotone fun s ↦ s ∈ f := fun _ _ hst h =>
   mem_of_superset h hst
 
 theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Antitone P)
@@ -336,7 +336,7 @@ theorem principal_empty : 𝓟 (∅ : Set α) = ⊥ :=
   bot_unique fun _ _ => empty_subset _
 
 theorem generate_eq_biInf (S : Set (Set α)) : generate S = ⨅ s ∈ S, 𝓟 s :=
-  eq_of_forall_le_iff fun f => by simp [le_generate_iff, le_principal_iff, subset_def]
+  eq_of_forall_le_iff fun f ↦ by simp [le_generate_iff, le_principal_iff, subset_def]
 
 /-! ### Lattice equations -/
 
@@ -448,7 +448,7 @@ theorem mem_biInf_of_directed {f : β → Filter α} {s : Set β} (h : DirectedO
 
 theorem biInf_sets_eq {f : β → Filter α} {s : Set β} (h : DirectedOn (f ⁻¹'o (· ≥ ·)) s)
     (ne : s.Nonempty) : (⨅ i ∈ s, f i).sets = ⋃ i ∈ s, (f i).sets :=
-  ext fun t => by simp [mem_biInf_of_directed h ne]
+  ext fun t ↦ by simp [mem_biInf_of_directed h ne]
 
 @[simp]
 theorem sup_join {f₁ f₂ : Filter (Filter α)} : join f₁ ⊔ join f₂ = join (f₁ ⊔ f₂) :=
@@ -513,7 +513,7 @@ theorem inf_principal {s t : Set α} : 𝓟 s ⊓ 𝓟 t = 𝓟 (s ∩ t) :=
 
 @[simp]
 theorem sup_principal {s t : Set α} : 𝓟 s ⊔ 𝓟 t = 𝓟 (s ∪ t) :=
-  Filter.ext fun u => by simp only [union_subset_iff, mem_sup, mem_principal]
+  Filter.ext fun u ↦ by simp only [union_subset_iff, mem_sup, mem_principal]
 
 @[simp]
 theorem iSup_principal {ι : Sort w} {s : ι → Set α} : ⨆ x, 𝓟 (s x) = 𝓟 (⋃ i, s i) :=
@@ -1304,7 +1304,7 @@ theorem eventually_pure {a : α} {p : α → Prop} : (∀ᶠ x in pure a, p x) �
 
 @[simp]
 theorem principal_singleton (a : α) : 𝓟 {a} = pure a :=
-  Filter.ext fun s => by simp only [mem_pure, mem_principal, singleton_subset_iff]
+  Filter.ext fun s ↦ by simp only [mem_pure, mem_principal, singleton_subset_iff]
 
 @[simp]
 theorem map_pure (f : α → β) (a : α) : map f (pure a) = pure (f a) :=
@@ -1399,7 +1399,7 @@ theorem map_const [NeBot f] {c : β} : (f.map fun _ => c) = pure c := by
   by_cases h : c ∈ s <;> simp [h]
 
 theorem comap_comap {m : γ → β} {n : β → α} : comap m (comap n f) = comap (n ∘ m) f :=
-  Filter.coext fun s => by simp only [compl_mem_comap, image_image, (· ∘ ·)]
+  Filter.coext fun s ↦ by simp only [compl_mem_comap, image_image, (· ∘ ·)]
 
 section comm
 
@@ -1590,7 +1590,7 @@ theorem map_comap_of_mem {f : Filter β} {m : α → β} (hf : range m ∈ f) : 
   rw [map_comap, inf_eq_left.2 (le_principal_iff.2 hf)]
 
 instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (Filter α) (Filter β) (map c) fun f => ∀ᶠ x : α in f, p x where
+    CanLift (Filter α) (Filter β) (map c) fun f ↦ ∀ᶠ x : α in f, p x where
   prf f hf := ⟨comap c f, map_comap_of_mem <| hf.mono CanLift.prf⟩
 
 theorem comap_le_comap_iff {f g : Filter β} {m : α → β} (hf : range m ∈ f) :
@@ -2030,7 +2030,7 @@ theorem bind_mono {f₁ f₂ : Filter α} {g₁ g₂ : α → Filter β} (hf : f
 
 theorem bind_inf_principal {f : Filter α} {g : α → Filter β} {s : Set β} :
     (f.bind fun x ↦ g x ⊓ 𝓟 s) = f.bind g ⊓ 𝓟 s :=
-  Filter.ext fun s => by simp only [mem_bind, mem_inf_principal]
+  Filter.ext fun s ↦ by simp only [mem_bind, mem_inf_principal]
 
 theorem sup_bind {f g : Filter α} {h : α → Filter β} : bind (f ⊔ g) h = bind f h ⊔ bind g h := rfl
 

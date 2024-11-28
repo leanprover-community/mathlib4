@@ -71,7 +71,7 @@ variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
 theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x ↦ ν (Prod.mk x ⁻¹' s) := by
   classical
-  refine induction_on_inter (C := fun s => Measurable fun x ↦ ν (Prod.mk x ⁻¹' s))
+  refine induction_on_inter (C := fun s ↦ Measurable fun x ↦ ν (Prod.mk x ⁻¹' s))
     generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ hs
   · simp
   · rintro _ ⟨s, hs, t, _, rfl⟩
@@ -119,7 +119,7 @@ theorem Measurable.map_prod_mk_right {μ : Measure α} [SFinite μ] :
 theorem Measurable.lintegral_prod_right' [SFinite ν] :
     ∀ {f : α × β → ℝ≥0∞}, Measurable f → Measurable fun x ↦ ∫⁻ y, f (x, y) ∂ν := by
   have m := @measurable_prod_mk_left
-  refine Measurable.ennreal_induction (P := fun f => Measurable fun (x : α) => ∫⁻ y, f (x, y) ∂ν)
+  refine Measurable.ennreal_induction (P := fun f ↦ Measurable fun (x : α) => ∫⁻ y, f (x, y) ∂ν)
     ?_ ?_ ?_
   · intro c s hs
     simp only [← indicator_comp_right]
@@ -131,7 +131,7 @@ theorem Measurable.lintegral_prod_right' [SFinite ν] :
     exact h2f.add h2g
   · intro f hf h2f h3f
     have : ∀ x, Monotone fun n y => f n (x, y) := fun x i j hij y => h2f hij (x, y)
-    conv => enter [1, x]; erw [lintegral_iSup (fun n => (hf n).comp m) (this x)]
+    conv => enter [1, x]; erw [lintegral_iSup (fun n ↦ (hf n).comp m) (this x)]
     exact .iSup h3f
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
@@ -400,8 +400,8 @@ noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)}
     (μ.prod ν).FiniteSpanningSetsIn (image2 (· ×ˢ ·) C D) := by
   haveI := hν.sigmaFinite
   refine
-    ⟨fun n => hμ.set n.unpair.1 ×ˢ hν.set n.unpair.2, fun n =>
-      mem_image2_of_mem (hμ.set_mem _) (hν.set_mem _), fun n => ?_, ?_⟩
+    ⟨fun n ↦ hμ.set n.unpair.1 ×ˢ hν.set n.unpair.2, fun n =>
+      mem_image2_of_mem (hμ.set_mem _) (hν.set_mem _), fun n ↦ ?_, ?_⟩
   · rw [prod_prod]
     exact mul_lt_top (hμ.finite _) (hν.finite _)
   · simp_rw [iUnion_unpair_prod, hμ.spanning, hν.spanning, univ_prod_univ]
@@ -754,7 +754,7 @@ theorem lintegral_prod_of_measurable :
     ∀ (f : α × β → ℝ≥0∞), Measurable f → ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ := by
   have m := @measurable_prod_mk_left
   refine Measurable.ennreal_induction
-    (P := fun f => ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) ?_ ?_ ?_
+    (P := fun f ↦ ∫⁻ z, f z ∂μ.prod ν = ∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) ?_ ?_ ?_
   · intro c s hs
     conv_rhs =>
       enter [2, x, 2, y]
@@ -772,7 +772,7 @@ theorem lintegral_prod_of_measurable :
   · intro f hf h2f h3f
     have kf : ∀ x n, Measurable fun y ↦ f n (x, y) := fun x n => (hf n).comp m
     have k2f : ∀ x, Monotone fun n y => f n (x, y) := fun x i j hij y => h2f hij (x, y)
-    have lf : ∀ n, Measurable fun x ↦ ∫⁻ y, f n (x, y) ∂ν := fun n => (hf n).lintegral_prod_right'
+    have lf : ∀ n, Measurable fun x ↦ ∫⁻ y, f n (x, y) ∂ν := fun n ↦ (hf n).lintegral_prod_right'
     have l2f : Monotone fun n x => ∫⁻ y, f n (x, y) ∂ν := fun i j hij x =>
       lintegral_mono (k2f x hij)
     simp only [lintegral_iSup hf h2f, lintegral_iSup (kf _), k2f, lintegral_iSup lf l2f, h3f]

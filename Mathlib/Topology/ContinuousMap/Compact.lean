@@ -42,9 +42,9 @@ equivalent to `C(α, β)`.
 -/
 @[simps (config := .asFn)]
 def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
-  ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f => by
+  ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f ↦ by
     ext
-    rfl, fun f => by
+    rfl, fun f ↦ by
     ext
     rfl⟩
 
@@ -445,7 +445,7 @@ variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
-    (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
+    (hF : ∀ K : Compacts X, Summable fun i ↦ ‖(F i).restrict K‖) : Summable F := by
   classical
   refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
   lift K to Compacts X using hK

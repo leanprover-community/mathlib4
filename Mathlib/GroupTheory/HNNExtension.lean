@@ -207,7 +207,7 @@ def ReducedWord.empty : ReducedWord G A B :=
 variable {G A B}
 /-- The product of a `ReducedWord` as an element of the `HNNExtension` -/
 def ReducedWord.prod : ReducedWord G A B → HNNExtension G A B φ :=
-  fun w => of w.head * (w.toList.map (fun x ↦ t ^ (x.1 : ℤ) * of x.2)).prod
+  fun w ↦ of w.head * (w.toList.map (fun x ↦ t ^ (x.1 : ℤ) * of x.2)).prod
 
 /-- Given a `TransversalPair`, we can make a normal form for words in the `HNNExtension G A B φ`.
 The normal form is a `head`, which is an element of `G`, followed by the product list of pairs,
@@ -453,7 +453,7 @@ noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1
     invFun := unitsSMul φ (-1),
     left_inv := fun _ => by rw [unitsSMul_neg]
-    right_inv := fun w => by convert unitsSMul_neg _ _ w; simp }
+    right_inv := fun w ↦ by convert unitsSMul_neg _ _ w; simp }
 
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     unitsSMul φ 1 ((g : G) • w) = (φ g : G) • (unitsSMul φ 1 w) := by
@@ -573,17 +573,17 @@ theorem prod_smul_empty (w : NormalWord d) :
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/
 noncomputable def equiv : HNNExtension G A B φ ≃ NormalWord d :=
-  { toFun := fun g => g • empty,
-    invFun := fun w => w.prod φ,
-    left_inv := fun g => by simp [prod_smul]
-    right_inv := fun w => by simp }
+  { toFun := fun g ↦ g • empty,
+    invFun := fun w ↦ w.prod φ,
+    left_inv := fun g ↦ by simp [prod_smul]
+    right_inv := fun w ↦ by simp }
 
 theorem prod_injective : Injective
-    (fun w => w.prod φ : NormalWord d → HNNExtension G A B φ) :=
+    (fun w ↦ w.prod φ : NormalWord d → HNNExtension G A B φ) :=
   (equiv φ d).symm.injective
 
 instance : FaithfulSMul (HNNExtension G A B φ) (NormalWord d) :=
-  ⟨fun h ↦ by simpa using congr_arg (fun w => w.prod φ) (h empty)⟩
+  ⟨fun h ↦ by simpa using congr_arg (fun w ↦ w.prod φ) (h empty)⟩
 
 end NormalWord
 

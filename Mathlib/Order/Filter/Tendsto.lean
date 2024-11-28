@@ -198,7 +198,7 @@ theorem tendsto_iInf' {f : α → β} {x : ι → Filter α} {y : Filter β} (i 
 
 theorem tendsto_iInf_iInf {f : α → β} {x : ι → Filter α} {y : ι → Filter β}
     (h : ∀ i, Tendsto f (x i) (y i)) : Tendsto f (iInf x) (iInf y) :=
-  tendsto_iInf.2 fun i => tendsto_iInf' i (h i)
+  tendsto_iInf.2 fun i ↦ tendsto_iInf' i (h i)
 
 @[simp]
 theorem tendsto_sup {f : α → β} {x₁ x₂ : Filter α} {y : Filter β} :
@@ -218,7 +218,7 @@ theorem tendsto_iSup {f : α → β} {x : ι → Filter α} {y : Filter β} :
 
 theorem tendsto_iSup_iSup {f : α → β} {x : ι → Filter α} {y : ι → Filter β}
     (h : ∀ i, Tendsto f (x i) (y i)) : Tendsto f (iSup x) (iSup y) :=
-  tendsto_iSup.2 fun i => (h i).mono_right <| le_iSup _ _
+  tendsto_iSup.2 fun i ↦ (h i).mono_right <| le_iSup _ _
 
 @[simp] theorem tendsto_principal {f : α → β} {l : Filter α} {s : Set β} :
     Tendsto f l (𝓟 s) ↔ ∀ᶠ a in l, f a ∈ s := by
@@ -249,7 +249,7 @@ theorem tendsto_pure_left {f : α → β} {a : α} {l : Filter β} :
 @[simp]
 theorem map_inf_principal_preimage {f : α → β} {s : Set β} {l : Filter α} :
     map f (l ⊓ 𝓟 (f ⁻¹' s)) = map f l ⊓ 𝓟 s :=
-  Filter.ext fun t => by simp only [mem_map', mem_inf_principal, mem_setOf_eq, mem_preimage]
+  Filter.ext fun t ↦ by simp only [mem_map', mem_inf_principal, mem_setOf_eq, mem_preimage]
 
 /-- If two filters are disjoint, then a function cannot tend to both of them along a non-trivial
 filter. -/

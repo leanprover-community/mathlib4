@@ -167,10 +167,10 @@ theorem dimH_singleton (x : X) : dimH ({x} : Set X) = 0 :=
 theorem dimH_iUnion {ι : Sort*} [Countable ι] (s : ι → Set X) :
     dimH (⋃ i, s i) = ⨆ i, dimH (s i) := by
   borelize X
-  refine le_antisymm (dimH_le fun d hd => ?_) (iSup_le fun i => dimH_mono <| subset_iUnion _ _)
+  refine le_antisymm (dimH_le fun d hd => ?_) (iSup_le fun i ↦ dimH_mono <| subset_iUnion _ _)
   contrapose! hd
   have : ∀ i, μH[d] (s i) = 0 := fun i =>
-    hausdorffMeasure_of_dimH_lt ((le_iSup (fun i => dimH (s i)) i).trans_lt hd)
+    hausdorffMeasure_of_dimH_lt ((le_iSup (fun i ↦ dimH (s i)) i).trans_lt hd)
   rw [measure_iUnion_null this]
   exact ENNReal.zero_ne_top
 
@@ -231,7 +231,7 @@ of a set `s` is the supremum over `x ∈ s` of the limit superiors of `dimH t` a
 theorem bsupr_limsup_dimH (s : Set X) : ⨆ x ∈ s, limsup dimH (𝓝[s] x).smallSets = dimH s := by
   refine le_antisymm (iSup₂_le fun x _ => ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
-    exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
+    exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t ↦ dimH_mono⟩
   · refine le_of_forall_ge_of_dense fun r hr => ?_
     rcases exists_mem_nhdsWithin_lt_dimH_of_lt_dimH hr with ⟨x, hxs, hxr⟩
     refine le_iSup₂_of_le x hxs ?_; rw [limsup_eq]; refine le_sInf fun b hb => ?_
@@ -244,7 +244,7 @@ of a set `s` is the supremum over all `x` of the limit superiors of `dimH t` alo
 theorem iSup_limsup_dimH (s : Set X) : ⨆ x, limsup dimH (𝓝[s] x).smallSets = dimH s := by
   refine le_antisymm (iSup_le fun x ↦ ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
-    exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
+    exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t ↦ dimH_mono⟩
   · rw [← bsupr_limsup_dimH]; exact iSup₂_le_iSup _ _
 
 end

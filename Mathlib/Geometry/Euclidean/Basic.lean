@@ -472,7 +472,7 @@ general sense of the word that includes both those common cases. -/
 def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection s.direction] :
     P ≃ᵃⁱ[ℝ] P :=
   AffineIsometryEquiv.mk'
-    (fun p => ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P))
+    (fun p ↦ ↑(orthogonalProjection s p) -ᵥ p +ᵥ (orthogonalProjection s p : P))
     (_root_.reflection s.direction) (↑(Classical.arbitrary s))
     (by
       intro p

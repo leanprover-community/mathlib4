@@ -59,7 +59,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
   if ¬b.isProp then
     throwError "invalid fun_prop declaration, has to be `Prop` valued function"
 
-  let lvls := info.levelParams.map (fun l => Level.param l)
+  let lvls := info.levelParams.map (fun l ↦ Level.param l)
   let e := mkAppN (.const declName lvls) xs
   let path ← DiscrTree.mkPath e {}
 
@@ -130,7 +130,7 @@ open Elab Term in
 /-- Turn tactic syntax into a discharger function. -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+    (fun r ↦ do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
     let mvar ← mkFreshExprSyntheticOpaqueMVar e `funProp.discharger
     let runTac? : TermElabM (Option Expr) :=
       try

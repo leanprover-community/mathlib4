@@ -198,7 +198,7 @@ variable {R : Type u} [CommRing R]
 /-- Lifting `idealPowersDiagram J` from a diagram valued in `ideals R` to a diagram
 valued in `SelfLERadical J`. -/
 def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
-  FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
+  FullSubcategory.lift _ (idealPowersDiagram J) fun k ↦ by
     change _ ≤ (J ^ unop k).radical
     cases' unop k with n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]

@@ -114,7 +114,7 @@ theorem kroneckerMap_diagonal_diagonal [Zero α] [Zero β] [Zero γ] [DecidableE
 
 theorem kroneckerMap_diagonal_right [Zero β] [Zero γ] [DecidableEq n] (f : α → β → γ)
     (hf : ∀ a, f a 0 = 0) (A : Matrix l m α) (b : n → β) :
-    kroneckerMap f A (diagonal b) = blockDiagonal fun i => A.map fun a ↦ f a (b i) := by
+    kroneckerMap f A (diagonal b) = blockDiagonal fun i ↦ A.map fun a ↦ f a (b i) := by
   ext ⟨i₁, i₂⟩ ⟨j₁, j₂⟩
   simp [diagonal, blockDiagonal, apply_ite (f (A i₁ j₁)), hf]
 
@@ -122,7 +122,7 @@ theorem kroneckerMap_diagonal_left [Zero α] [Zero γ] [DecidableEq l] (f : α �
     (hf : ∀ b, f 0 b = 0) (a : l → α) (B : Matrix m n β) :
     kroneckerMap f (diagonal a) B =
       Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
-        (blockDiagonal fun i => B.map fun b ↦ f (a i) b) := by
+        (blockDiagonal fun i ↦ B.map fun b ↦ f (a i) b) := by
   ext ⟨i₁, i₂⟩ ⟨j₁, j₂⟩
   simp [diagonal, blockDiagonal, apply_ite f, ite_apply, hf]
 
@@ -284,12 +284,12 @@ theorem diagonal_kronecker_diagonal [MulZeroClass α] [DecidableEq m] [Decidable
   kroneckerMap_diagonal_diagonal _ zero_mul mul_zero _ _
 
 theorem kronecker_diagonal [MulZeroClass α] [DecidableEq n] (A : Matrix l m α) (b : n → α) :
-    A ⊗ₖ diagonal b = blockDiagonal fun i => A <• b i :=
+    A ⊗ₖ diagonal b = blockDiagonal fun i ↦ A <• b i :=
   kroneckerMap_diagonal_right _ mul_zero _ _
 
 theorem diagonal_kronecker [MulZeroClass α] [DecidableEq l] (a : l → α) (B : Matrix m n α) :
     diagonal a ⊗ₖ B =
-      Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun i => a i • B) :=
+      Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun i ↦ a i • B) :=
   kroneckerMap_diagonal_left _ zero_mul _ _
 
 @[simp]
@@ -465,13 +465,13 @@ theorem diagonal_kroneckerTMul_diagonal [DecidableEq m] [DecidableEq n] (a : m �
   kroneckerMap_diagonal_diagonal _ (zero_tmul _) (tmul_zero _) _ _
 
 theorem kroneckerTMul_diagonal [DecidableEq n] (A : Matrix l m α) (b : n → α) :
-    A ⊗ₖₜ[R] diagonal b = blockDiagonal fun i => A.map fun a ↦ a ⊗ₜ[R] b i :=
+    A ⊗ₖₜ[R] diagonal b = blockDiagonal fun i ↦ A.map fun a ↦ a ⊗ₜ[R] b i :=
   kroneckerMap_diagonal_right _ (tmul_zero _) _ _
 
 theorem diagonal_kroneckerTMul [DecidableEq l] (a : l → α) (B : Matrix m n α) :
     diagonal a ⊗ₖₜ[R] B =
       Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
-        (blockDiagonal fun i => B.map fun b ↦ a i ⊗ₜ[R] b) :=
+        (blockDiagonal fun i ↦ B.map fun b ↦ a i ⊗ₜ[R] b) :=
   kroneckerMap_diagonal_left _ (zero_tmul _) _ _
 
 -- @[simp] -- Porting note: simp-normal form is `kroneckerTMul_assoc'`

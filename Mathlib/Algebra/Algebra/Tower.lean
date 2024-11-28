@@ -125,7 +125,7 @@ theorem algebraMap_apply (x : R) : algebraMap R A x = algebraMap S A (algebraMap
 @[ext]
 theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 h2 : Algebra S A)
     (h : ∀ (r : S) (x : A), (by have I := h1; exact r • x) = r • x) : h1 = h2 :=
-  Algebra.algebra_ext _ _ fun r => by
+  Algebra.algebra_ext _ _ fun r ↦ by
     simpa only [@Algebra.smul_def _ _ _ _ h1, @Algebra.smul_def _ _ _ _ h2, mul_one] using h r 1
 
 /-- In a tower, the canonical map from the middle element to the top element is an
@@ -186,7 +186,7 @@ namespace AlgHom
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
   { (f : A →+* B) with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       rw [algebraMap_apply R S A, algebraMap_apply R S B]
       exact f.commutes (algebraMap R S r) }
 
@@ -209,7 +209,7 @@ namespace AlgEquiv
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
   { (f : A ≃+* B) with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       rw [algebraMap_apply R S A, algebraMap_apply R S B]
       exact f.commutes (algebraMap R S r) }
 

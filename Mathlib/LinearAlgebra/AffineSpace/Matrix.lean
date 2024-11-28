@@ -61,12 +61,12 @@ theorem affineIndependent_of_toMatrix_right_inv [Fintype ι] [Finite ι'] [Decid
     ext j
     change (∑ i, w₁ i • b.coord j (p i)) = ∑ i, w₂ i • b.coord j (p i)
     -- Porting note: Added `u` because `∘` was causing trouble
-    have u : (fun i => b.coord j (p i)) = b.coord j ∘ p := by simp only [Function.comp_def]
+    have u : (fun i ↦ b.coord j (p i)) = b.coord j ∘ p := by simp only [Function.comp_def]
     rw [← Finset.univ.affineCombination_eq_linear_combination _ _ hw₁,
       ← Finset.univ.affineCombination_eq_linear_combination _ _ hw₂, u,
       ← Finset.univ.map_affineCombination p w₁ hw₁, ← Finset.univ.map_affineCombination p w₂ hw₂,
       hweq]
-  replace hweq' := congr_arg (fun w => w ᵥ* A) hweq'
+  replace hweq' := congr_arg (fun w ↦ w ᵥ* A) hweq'
   simpa only [Matrix.vecMul_vecMul, hA, Matrix.vecMul_one] using hweq'
 
 /-- Given a family of points `p : ι' → P` and an affine basis `b`, if the matrix whose rows are the

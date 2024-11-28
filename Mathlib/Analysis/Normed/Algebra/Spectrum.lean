@@ -225,7 +225,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   obtain ⟨N, hN⟩ := eventually_atTop.mp
     (ENNReal.eventually_pow_one_div_le (ENNReal.coe_ne_top : ↑‖(1 : A)‖₊ ≠ ∞) hε)
   refine le_trans ?_ (le_iSup _ (N + 1))
-  refine le_iInf fun n => ?_
+  refine le_iInf fun n ↦ ?_
   simp only [← add_assoc]
   refine (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans ?_
   norm_cast
@@ -245,7 +245,7 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 theorem hasDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ ρ a) :
     HasDerivAt (resolvent a) (-resolvent a k ^ 2) k := by
   have H₁ : HasFDerivAt Ring.inverse _ (↑ₐ k - a) := hasFDerivAt_ring_inverse (𝕜 := 𝕜) hk.unit
-  have H₂ : HasDerivAt (fun k => ↑ₐ k - a) 1 k := by
+  have H₂ : HasDerivAt (fun k ↦ ↑ₐ k - a) 1 k := by
     simpa using (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
 
@@ -287,10 +287,10 @@ power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻
 radius `‖a‖₊⁻¹`. -/
 theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
-      (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
+      (fun n ↦ ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
       refine le_of_forall_nnreal_lt fun r hr =>
-        le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => ?_
+        le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n ↦ ?_
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       cases' n with n
       · simp only [le_refl, mul_one, or_true, le_max_iff, pow_zero]
@@ -425,7 +425,7 @@ open Polynomial
 
 /-- The **spectral mapping theorem** for polynomials in a Banach algebra over `ℂ`. -/
 theorem map_polynomial_aeval (p : ℂ[X]) :
-    spectrum ℂ (aeval a p) = (fun k => eval k p) '' spectrum ℂ a :=
+    spectrum ℂ (aeval a p) = (fun k ↦ eval k p) '' spectrum ℂ a :=
   map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
 
 /-- A specialization of the spectral mapping theorem for polynomials in a Banach algebra over `ℂ`

@@ -41,8 +41,8 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   -- First, we have the topological basis of the cofiltered limit obtained by pulling back
   -- clopen sets from the factors in the limit. By continuity, all such sets are again clopen.
   have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, v} (F ⋙ Profinite.toTopCat)
-      (Profinite.toTopCat.mapCone C) (isLimitOfPreserves _ hC) (fun j => {W | IsClopen W}) ?_
-      (fun i => isClopen_univ) (fun i U1 U2 hU1 hU2 => hU1.inter hU2) ?_
+      (Profinite.toTopCat.mapCone C) (isLimitOfPreserves _ hC) (fun j ↦ {W | IsClopen W}) ?_
+      (fun i ↦ isClopen_univ) (fun i U1 U2 hU1 hU2 => hU1.inter hU2) ?_
   rotate_left
   · intro i
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
@@ -55,8 +55,8 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   -- are preimages of clopens from the factors in the limit.
   obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.2
   clear hB
-  let j : S → J := fun s => (hS s.2).choose
-  let V : ∀ s : S, Set (F.obj (j s)) := fun s => (hS s.2).choose_spec.choose
+  let j : S → J := fun s ↦ (hS s.2).choose
+  let V : ∀ s : S, Set (F.obj (j s)) := fun s ↦ (hS s.2).choose_spec.choose
   have hV : ∀ s : S, IsClopen (V s) ∧ s.1 = C.π.app (j s) ⁻¹' V s := fun s =>
     (hS s.2).choose_spec.choose_spec
 
@@ -83,7 +83,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   classical
   obtain ⟨j0, hj0⟩ := IsCofiltered.inf_objs_exists (G.image j)
   let f : ∀ s ∈ G, j0 ⟶ j s := fun s hs => (hj0 (Finset.mem_image.mpr ⟨s, hs, rfl⟩)).some
-  let W : S → Set (F.obj j0) := fun s => if hs : s ∈ G then F.map (f s hs) ⁻¹' V s else Set.univ
+  let W : S → Set (F.obj j0) := fun s ↦ if hs : s ∈ G then F.map (f s hs) ⁻¹' V s else Set.univ
   -- Conclude, using the `j0` and the clopen set of `F.obj j0` obtained above.
   refine ⟨j0, ⋃ (s : S) (_ : s ∈ G), W s, ?_, ?_⟩
   · apply isClopen_biUnion_finset
@@ -160,7 +160,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   obtain ⟨j, gg, h⟩ := exists_locallyConstant_finite_aux _ hC f
   classical
   let ι : α → α → Fin 2 := fun a b => if a = b then 0 else 1
-  let σ : (α → Fin 2) → α := fun f => if h : ∃ a : α, ι a = f then h.choose else default
+  let σ : (α → Fin 2) → α := fun f ↦ if h : ∃ a : α, ι a = f then h.choose else default
   refine ⟨j, gg.map σ, ?_⟩
   ext x
   simp only [Functor.const_obj_obj, LocallyConstant.coe_comap, LocallyConstant.map_apply,

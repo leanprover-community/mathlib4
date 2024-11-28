@@ -143,7 +143,7 @@ theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {s : Multiset α} {
   Quot.induction_on s (fun _ _ => List.Nodup.pmap hf) H
 
 instance nodupDecidable [DecidableEq α] (s : Multiset α) : Decidable (Nodup s) :=
-  Quotient.recOnSubsingleton s fun l => l.nodupDecidable
+  Quotient.recOnSubsingleton s fun l ↦ l.nodupDecidable
 
 theorem Nodup.erase_eq_filter [DecidableEq α] (a : α) {s} :
     Nodup s → s.erase a = Multiset.filter (· ≠ a) s :=

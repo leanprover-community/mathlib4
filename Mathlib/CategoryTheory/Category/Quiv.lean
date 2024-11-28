@@ -65,7 +65,7 @@ def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (Paths V)
   map F :=
     { obj := fun X => F.obj X
-      map := fun f => F.mapPath f
+      map := fun f ↦ F.mapPath f
       map_comp := fun f g => F.mapPath_comp f g }
   map_id V := by
     change (show Paths V ⥤ _ from _) = _

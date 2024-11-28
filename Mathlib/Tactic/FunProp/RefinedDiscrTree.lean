@@ -987,11 +987,11 @@ private def M.run (unify : Bool) (config : WhnfCoreConfig) (x : M (Trie α)) :
 
 /-- Increment the score by `n`. -/
 private def incrementScore (n : Nat) : M Unit :=
-  modify fun s => { s with score := s.score + n }
+  modify fun s ↦ { s with score := s.score + n }
 
 /-- Log a metavariable assignment in the `State`. -/
 private def insertStarAssignment (n : Nat) (e : DTExpr) : M Unit :=
-  modify fun s => { s with starAssignments := s.starAssignments.insert n e }
+  modify fun s ↦ { s with starAssignments := s.starAssignments.insert n e }
 
 /-- Log a metavariable assignment in the `State`. -/
 private def assignMVar (mvarId : MVarId) (e : Array Key) : M Unit := do
@@ -999,7 +999,7 @@ private def assignMVar (mvarId : MVarId) (e : Array Key) : M Unit := do
   match mvarAssignments[mvarId]? with
   | some e' => guard (e == e')
   | none =>
-    modify fun s => { s with mvarAssignments := s.mvarAssignments.insert mvarId e }
+    modify fun s ↦ { s with mvarAssignments := s.mvarAssignments.insert mvarId e }
 
 /-- Return the possible `Trie α` that match with `n` metavariable. -/
 partial def skipEntries (t : Trie α) (skipped : Array Key) : Nat → M (Array Key × Trie α)

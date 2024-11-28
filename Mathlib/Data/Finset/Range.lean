@@ -147,5 +147,5 @@ theorem coe_notMemRangeEquiv (k : ℕ) :
 
 @[simp]
 theorem coe_notMemRangeEquiv_symm (k : ℕ) :
-    ((notMemRangeEquiv k).symm : ℕ → { n // n ∉ range k }) = fun j => ⟨j + k, by simp⟩ :=
+    ((notMemRangeEquiv k).symm : ℕ → { n // n ∉ range k }) = fun j ↦ ⟨j + k, by simp⟩ :=
   rfl

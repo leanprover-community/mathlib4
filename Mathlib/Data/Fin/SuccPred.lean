@@ -22,7 +22,7 @@ namespace Fin
 instance : ∀ {n : ℕ}, SuccOrder (Fin n)
   | 0 => by constructor <;> intro a <;> exact elim0 a
   | n + 1 =>
-    SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
+    SuccOrder.ofCore (fun i ↦ if i < Fin.last n then i + 1 else i)
       (by
         intro a ha b
         rw [isMax_iff_eq_top, eq_top_iff, not_le, top_eq_last] at ha

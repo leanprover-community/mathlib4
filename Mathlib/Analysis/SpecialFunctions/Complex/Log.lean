@@ -158,7 +158,7 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
     refine hs.biUnion fun z hz => ?_
     rcases em (∃ w, exp w = z) with (⟨w, rfl⟩ | hne)
     · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
-      exact Set.countable_iUnion fun m => Set.countable_singleton _
+      exact Set.countable_iUnion fun m ↦ Set.countable_singleton _
     · push_neg at hne
       simp [Set.preimage, hne]
 
@@ -221,30 +221,30 @@ theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x :
     exact continuousAt_arg h
 
 theorem _root_.Filter.Tendsto.clog {l : Filter α} {f : α → ℂ} {x : ℂ} (h : Tendsto f l (𝓝 x))
-    (hx : x ∈ slitPlane) : Tendsto (fun t => log (f t)) l (𝓝 <| log x) :=
+    (hx : x ∈ slitPlane) : Tendsto (fun t ↦ log (f t)) l (𝓝 <| log x) :=
   (continuousAt_clog hx).tendsto.comp h
 
 variable [TopologicalSpace α]
 
 nonrec
 theorem _root_.ContinuousAt.clog {f : α → ℂ} {x : α} (h₁ : ContinuousAt f x)
-    (h₂ : f x ∈ slitPlane) : ContinuousAt (fun t => log (f t)) x :=
+    (h₂ : f x ∈ slitPlane) : ContinuousAt (fun t ↦ log (f t)) x :=
   h₁.clog h₂
 
 nonrec
 theorem _root_.ContinuousWithinAt.clog {f : α → ℂ} {s : Set α} {x : α}
     (h₁ : ContinuousWithinAt f s x) (h₂ : f x ∈ slitPlane) :
-    ContinuousWithinAt (fun t => log (f t)) s x :=
+    ContinuousWithinAt (fun t ↦ log (f t)) s x :=
   h₁.clog h₂
 
 nonrec
 theorem _root_.ContinuousOn.clog {f : α → ℂ} {s : Set α} (h₁ : ContinuousOn f s)
-    (h₂ : ∀ x ∈ s, f x ∈ slitPlane) : ContinuousOn (fun t => log (f t)) s := fun x hx =>
+    (h₂ : ∀ x ∈ s, f x ∈ slitPlane) : ContinuousOn (fun t ↦ log (f t)) s := fun x hx =>
   (h₁ x hx).clog (h₂ x hx)
 
 nonrec
 theorem _root_.Continuous.clog {f : α → ℂ} (h₁ : Continuous f)
-    (h₂ : ∀ x, f x ∈ slitPlane) : Continuous fun t => log (f t) :=
+    (h₂ : ∀ x, f x ∈ slitPlane) : Continuous fun t ↦ log (f t) :=
   continuous_iff_continuousAt.2 fun x ↦ h₁.continuousAt.clog (h₂ x)
 
 end LogDeriv
@@ -256,7 +256,7 @@ variable {α ι: Type*}
 open Real
 
 lemma Real.HasSum_rexp_HasProd (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
-    (hf : ∀ x : α, HasSum (fun n => log (f n x)) (∑' i, log (f i x))) (a : α) :
+    (hf : ∀ x : α, HasSum (fun n ↦ log (f n x)) (∑' i, log (f i x))) (a : α) :
        HasProd (fun b ↦ f b a) (∏' n : ι, (f n a)) := by
   have : HasProd (fun b ↦ f b a) ((rexp ∘ fun a ↦ ∑' (n : ι), log (f n a)) a) := by
     apply ((hf a).rexp).congr
@@ -269,7 +269,7 @@ lemma Real.HasSum_rexp_HasProd (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x
 /--The exponential of a infinite sum of real logs (which converges absolutely) is an infinite
 product.-/
 lemma Real.rexp_tsum_eq_tprod (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
-    (hf : ∀ x : α, Summable fun n => log ((f n x))) :
+    (hf : ∀ x : α, Summable fun n ↦ log ((f n x))) :
       (rexp ∘ (fun a : α => (∑' n : ι, log (f n a)))) = (fun a : α => ∏' n : ι, (f n a)) := by
   ext a
   apply (HasProd.tprod_eq ?_).symm
@@ -279,14 +279,14 @@ lemma Real.rexp_tsum_eq_tprod (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
   exact funext fun x ↦ exp_log (hfn a x)
 
 lemma Real.summable_cexp_multipliable (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
-    (hf : ∀ x : α, Summable fun n => log (f n x)) (a : α): Multipliable fun b ↦ f b a := by
+    (hf : ∀ x : α, Summable fun n ↦ log (f n x)) (a : α): Multipliable fun b ↦ f b a := by
   have := (Real.HasSum_rexp_HasProd f hfn fun a ↦ (hf a).hasSum) a
   use (∏' n : ι, (f n a))
 
 open Complex
 
 lemma Complex.HasSum_cexp_HasProd (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
-    (hf : ∀ x : α, HasSum (fun n => log (f n x)) (∑' i, log (f i x))) (a : α) :
+    (hf : ∀ x : α, HasSum (fun n ↦ log (f n x)) (∑' i, log (f i x))) (a : α) :
        HasProd (fun b ↦ f b a) (∏' n : ι, (f n a)) := by
   have : HasProd (fun b ↦ f b a) ((cexp ∘ fun a ↦ ∑' (n : ι), log (f n a)) a) := by
     apply ((hf a).cexp).congr
@@ -296,7 +296,7 @@ lemma Complex.HasSum_cexp_HasProd (f : ι → α → ℂ) (hfn : ∀ x n, f n x 
   rwa [HasProd.tprod_eq this]
 
 lemma Complex.summable_cexp_multipliable (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
-    (hf : ∀ x : α, Summable fun n => log (f n x)) (a : α):
+    (hf : ∀ x : α, Summable fun n ↦ log (f n x)) (a : α):
       Multipliable fun b ↦ f b a := by
   have := (Complex.HasSum_cexp_HasProd f hfn fun a ↦ (hf a).hasSum) a
   use (∏' n : ι, (f n a))
@@ -304,7 +304,7 @@ lemma Complex.summable_cexp_multipliable (f : ι → α → ℂ) (hfn : ∀ x n,
 /--The exponential of a infinite sum of comples logs (which converges absolutely) is an infinite
 product.-/
 lemma Complex.cexp_tsum_eq_tprod (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
-    (hf : ∀ x : α, Summable fun n => log (f n x)) :
+    (hf : ∀ x : α, Summable fun n ↦ log (f n x)) :
       (cexp ∘ (fun a : α => (∑' n : ι, log (f n a)))) = (fun a : α => ∏' n : ι, ((f n a))) := by
   ext a
   apply (HasProd.tprod_eq ?_).symm

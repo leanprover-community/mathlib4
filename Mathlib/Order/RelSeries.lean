@@ -447,7 +447,7 @@ lemma mem_snoc {p : RelSeries r} {newLast : α} {rel : r p.last newLast} {x : α
     Function.comp_id, mem_def, id_eq, Set.mem_range]
   constructor
   · rintro ⟨i, rfl⟩
-    exact Fin.lastCases (Or.inr <| Fin.append_right _ _ 0) (fun i => Or.inl ⟨⟨i.1, i.2⟩,
+    exact Fin.lastCases (Or.inr <| Fin.append_right _ _ 0) (fun i ↦ Or.inl ⟨⟨i.1, i.2⟩,
       (Fin.append_left _ _ _).symm⟩) i
   · intro h
     rcases h with (⟨i, rfl⟩ | rfl)
@@ -737,7 +737,7 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
 /-- The strict series `0 < … < n` in `ℕ`. -/
 def range (n : ℕ) : LTSeries ℕ where
   length := n
-  toFun := fun i => i
+  toFun := fun i ↦ i
   step i := Nat.lt_add_one i
 
 @[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl

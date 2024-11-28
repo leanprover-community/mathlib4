@@ -219,7 +219,7 @@ instance [Nonempty α] : Nontrivial (Opens α) where
 theorem coe_iSup {ι} (s : ι → Opens α) : ((⨆ i, s i : Opens α) : Set α) = ⋃ i, s i := by
   simp [iSup]
 
-theorem iSup_def {ι} (s : ι → Opens α) : ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i => (s i).2⟩ :=
+theorem iSup_def {ι} (s : ι → Opens α) : ⨆ i, s i = ⟨⋃ i, s i, isOpen_iUnion fun i ↦ (s i).2⟩ :=
   ext <| coe_iSup s
 
 @[simp]
@@ -334,16 +334,16 @@ theorem isCompactElement_iff (s : Opens α) :
   rw [isCompact_iff_finite_subcover, CompleteLattice.isCompactElement_iff]
   refine ⟨?_, fun H ι U hU => ?_⟩
   · introv H hU hU'
-    obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)
+    obtain ⟨t, ht⟩ := H ι (fun i ↦ ⟨U i, hU i⟩) (by simpa)
     refine ⟨t, Set.Subset.trans ht ?_⟩
     rw [coe_finset_sup, Finset.sup_eq_iSup]
     rfl
   · obtain ⟨t, ht⟩ :=
-      H (fun i => U i) (fun i => (U i).isOpen) (by simpa using show (s : Set α) ⊆ ↑(iSup U) from hU)
+      H (fun i ↦ U i) (fun i ↦ (U i).isOpen) (by simpa using show (s : Set α) ⊆ ↑(iSup U) from hU)
     refine ⟨t, Set.Subset.trans ht ?_⟩
     simp only [Set.iUnion_subset_iff]
     show ∀ i ∈ t, U i ≤ t.sup U
-    exact fun i => Finset.le_sup
+    exact fun i ↦ Finset.le_sup
 
 /-- The preimage of an open set, as an open set. -/
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
@@ -417,7 +417,7 @@ instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
   coe_injective' := SetLike.coe_injective.comp toOpens_injective
 
-instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
+instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s ↦ IsOpen s ∧ x ∈ s :=
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩
 
 protected theorem mem (U : OpenNhdsOf x) : x ∈ U :=

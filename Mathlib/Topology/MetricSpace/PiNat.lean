@@ -382,7 +382,7 @@ where the distance is given by `dist x y = (1/2)^n`, where `n` is the smallest i
 `y` differ. Not registered as a global instance by default. -/
 protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, UniformSpace (E n)]
     (h : ∀ n, uniformity (E n) = 𝓟 idRel) : MetricSpace (∀ n, E n) :=
-  haveI : ∀ n, DiscreteTopology (E n) := fun n => discreteTopology_of_discrete_uniformity (h n)
+  haveI : ∀ n, DiscreteTopology (E n) := fun n ↦ discreteTopology_of_discrete_uniformity (h n)
   { dist_triangle := PiNat.dist_triangle
     dist_comm := PiNat.dist_comm
     dist_self := PiNat.dist_self
@@ -421,9 +421,9 @@ def metricSpaceNatNat : MetricSpace (ℕ → ℕ) :=
 attribute [local instance] PiNat.metricSpace
 
 protected theorem completeSpace : CompleteSpace (∀ n, E n) := by
-  refine Metric.complete_of_convergent_controlled_sequences (fun n => (1 / 2) ^ n) (by simp) ?_
+  refine Metric.complete_of_convergent_controlled_sequences (fun n ↦ (1 / 2) ^ n) (by simp) ?_
   intro u hu
-  refine ⟨fun n => u n n, tendsto_pi_nhds.2 fun i => ?_⟩
+  refine ⟨fun n ↦ u n n, tendsto_pi_nhds.2 fun i ↦ ?_⟩
   refine tendsto_const_nhds.congr' ?_
   filter_upwards [Filter.Ici_mem_atTop i] with n hn
   exact apply_eq_of_dist_lt (hu i i n le_rfl hn) le_rfl
@@ -731,9 +731,9 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
         (tendsto_pow_atTop_nhds_zero_of_lt_one I0.le I1).const_mul _
       rw [mul_zero] at this
       exact
-        squeeze_zero (fun n => diam_nonneg) (fun n => diam_closedBall (pow_nonneg I0.le _)) this
-    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_ball)
-      (fun n => isBounded_closedBall) (fun N ↦ ?_) L
+        squeeze_zero (fun n ↦ diam_nonneg) (fun n ↦ diam_closedBall (pow_nonneg I0.le _)) this
+    refine nonempty_iInter_of_nonempty_biInter (fun n ↦ isClosed_ball)
+      (fun n ↦ isBounded_closedBall) (fun N ↦ ?_) L
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
     have E :
@@ -776,7 +776,7 @@ theorem dist_eq_tsum (x y : ∀ i, F i) :
 
 theorem dist_summable (x y : ∀ i, F i) :
     Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
-  refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
+  refine .of_nonneg_of_le (fun i ↦ ?_) (fun i ↦ min_le_left _ _)
     summable_geometric_two_encode
   exact le_min (pow_nonneg (by norm_num) _) dist_nonneg
 
@@ -854,7 +854,7 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
             refine add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) ?_
-            refine tsum_le_tsum (fun i => min_le_left _ _) ?_ ?_
+            refine tsum_le_tsum (fun i ↦ min_le_left _ _) ?_ ?_
             · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
             · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
           _ < (∑ _i ∈ K, δ) + ε / 2 := by

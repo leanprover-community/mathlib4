@@ -41,7 +41,7 @@ variable (L : Language.{u, v}) {M : Type w} [Nonempty M] [L.Structure M]
 Called `skolem₁` because it is the first step in building a Skolemization of a language. -/
 @[simps]
 def skolem₁ : Language :=
-  ⟨fun n => L.BoundedFormula Empty (n + 1), fun _ => Empty⟩
+  ⟨fun n ↦ L.BoundedFormula Empty (n + 1), fun _ => Empty⟩
 
 variable {L}
 
@@ -50,13 +50,13 @@ theorem card_functions_sum_skolem₁ :
   simp only [card_functions_sum, skolem₁_Functions, mk_sigma, sum_add_distrib']
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
   rw [add_comm, add_eq_max, max_eq_left]
-  · refine sum_le_sum _ _ fun n => ?_
+  · refine sum_le_sum _ _ fun n ↦ ?_
     rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{v}]
-    refine ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => ?_⟩⟩
+    refine ⟨⟨fun f ↦ (func f default).bdEqual (func f default), fun f g h => ?_⟩⟩
     rcases h with ⟨rfl, ⟨rfl⟩⟩
     rfl
   · rw [← mk_sigma]
-    exact infinite_iff.1 (Infinite.of_injective (fun n => ⟨n, ⊥⟩) fun x y xy =>
+    exact infinite_iff.1 (Infinite.of_injective (fun n ↦ ⟨n, ⊥⟩) fun x y xy =>
       (Sigma.mk.inj_iff.1 xy).1)
 
 theorem card_functions_sum_skolem₁_le : #(Σ n, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
@@ -86,7 +86,7 @@ theorem skolem₁_reduct_isElementary (S : (L.sum L.skolem₁).Substructure M) :
   · exact Classical.epsilon_spec (p := fun a ↦ BoundedFormula.Realize φ default
           (Fin.snoc (Subtype.val ∘ x) a)) ⟨a, h⟩
   · exact S.fun_mem (LHom.sumInr.onFunction φ) ((↑) ∘ x) (by
-      exact fun i => (x i).2)
+      exact fun i ↦ (x i).2)
 
 /-- Any `L.sum L.skolem₁`-substructure is an elementary `L`-substructure. -/
 noncomputable def elementarySkolem₁Reduct (S : (L.sum L.skolem₁).Substructure M) :

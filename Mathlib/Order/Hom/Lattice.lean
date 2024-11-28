@@ -294,16 +294,16 @@ end BooleanAlgebra
 variable [FunLike F α β]
 
 instance [Max α] [Max β] [SupHomClass F α β] : CoeTC F (SupHom α β) :=
-  ⟨fun f => ⟨f, map_sup f⟩⟩
+  ⟨fun f ↦ ⟨f, map_sup f⟩⟩
 
 instance [Min α] [Min β] [InfHomClass F α β] : CoeTC F (InfHom α β) :=
-  ⟨fun f => ⟨f, map_inf f⟩⟩
+  ⟨fun f ↦ ⟨f, map_inf f⟩⟩
 
 instance [Max α] [Max β] [Bot α] [Bot β] [SupBotHomClass F α β] : CoeTC F (SupBotHom α β) :=
-  ⟨fun f => ⟨f, map_bot f⟩⟩
+  ⟨fun f ↦ ⟨f, map_bot f⟩⟩
 
 instance [Min α] [Min β] [Top α] [Top β] [InfTopHomClass F α β] : CoeTC F (InfTopHom α β) :=
-  ⟨fun f => ⟨f, map_top f⟩⟩
+  ⟨fun f ↦ ⟨f, map_top f⟩⟩
 
 instance [Lattice α] [Lattice β] [LatticeHomClass F α β] : CoeTC F (LatticeHom α β) :=
   ⟨fun f =>

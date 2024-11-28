@@ -108,7 +108,7 @@ theorem isSubgroup_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set
   { inv_mem := fun ha =>
       let ⟨i, hi⟩ := Set.mem_iUnion.1 ha
       Set.mem_iUnion.2 ⟨i, (hs i).inv_mem hi⟩
-    toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i => (hs i).toIsSubmonoid) directed }
+    toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i ↦ (hs i).toIsSubmonoid) directed }
 
 end Group
 

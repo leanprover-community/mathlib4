@@ -147,9 +147,9 @@ condition. -/
 @[simps]
 def homEquiv :
     (PushoutI φ →* K) ≃ { f : (Π i, G i →* K) × (H →* K) // ∀ i, (f.1 i).comp (φ i) = f.2 } :=
-  { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
-      fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
-    invFun := fun f => lift f.1.1 f.1.2 f.2,
+  { toFun := fun f ↦ ⟨(fun i ↦ f.comp (of i), f.comp (base φ)),
+      fun i ↦ by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
+    invFun := fun f ↦ lift f.1.1 f.1.2 f.2,
     left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
       (by simp [DFunLike.ext_iff])
     right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, funext_iff] }
@@ -228,13 +228,13 @@ structure Transversal : Type _ where
   compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
-  choose t ht using fun i => (φ i).range.exists_right_transversal 1
+  choose t ht using fun i ↦ (φ i).range.exists_right_transversal 1
   apply Nonempty.intro
   exact
     { injective := hφ
       set := t
-      one_mem := fun i => (ht i).2
-      compl := fun i => (ht i).1 }
+      one_mem := fun i ↦ (ht i).2
+      compl := fun i ↦ (ht i).1 }
 
 variable {φ}
 
@@ -424,7 +424,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
           dsimp at hg
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   haveI leftInv : Function.LeftInverse (rcons i) toFun :=
-    fun w => ext_smul i <| by
+    fun w ↦ ext_smul i <| by
       simp only [rcons, Word.equivPair_symm,
         Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul,
         MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
@@ -558,16 +558,16 @@ theorem prod_smul_empty (w : NormalWord d) : w.prod • empty = w := by
 
 /-- The equivalence between normal forms and elements of the pushout -/
 noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
-  { toFun := fun g => g • .empty
-    invFun := fun w => w.prod
-    left_inv := fun g => by
+  { toFun := fun g ↦ g • .empty
+    invFun := fun w ↦ w.prod
+    left_inv := fun g ↦ by
       simp only [prod_smul, prod_empty, mul_one]
-    right_inv := fun w => prod_smul_empty w }
+    right_inv := fun w ↦ prod_smul_empty w }
 
 theorem prod_injective {ι : Type*} {G : ι → Type*} [(i : ι) → Group (G i)] {φ : (i : ι) → H →* G i}
     {d : Transversal φ} : Function.Injective (prod : NormalWord d → PushoutI φ) := by
   letI := Classical.decEq ι
-  letI := fun i => Classical.decEq (G i)
+  letI := fun i ↦ Classical.decEq (G i)
   classical exact equiv.symm.injective
 
 instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
@@ -591,7 +591,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     Function.Injective (of (φ := φ) i) := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   let _ := Classical.decEq ι
-  let _ := fun i => Classical.decEq (G i)
+  let _ := fun i ↦ Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
@@ -602,7 +602,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     Function.Injective (base φ) := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   let _ := Classical.decEq ι
-  let _ := fun i => Classical.decEq (G i)
+  let _ := fun i ↦ Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h

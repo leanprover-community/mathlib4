@@ -81,7 +81,7 @@ lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Injective f) {a : α} {l : List α} :
     f a ∈ map f l ↔ a ∈ l :=
-  ⟨fun m => let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩
+  ⟨fun m ↦ let ⟨_, m', e⟩ := exists_of_mem_map m; H e ▸ m', mem_map_of_mem _⟩
 
 @[simp]
 theorem _root_.Function.Involutive.exists_mem_and_apply_eq_iff {f : α → α}
@@ -685,7 +685,7 @@ theorem indexOf_cons_self (a : α) (l : List α) : indexOf a (a :: l) = 0 := by
 theorem indexOf_cons_eq {a b : α} (l : List α) : b = a → indexOf a (b :: l) = 0
   | e => by rw [← e]; exact indexOf_cons_self b l
 
--- fun n => if_neg n
+-- fun n ↦ if_neg n
 @[simp]
 theorem indexOf_cons_ne {a b : α} (l : List α) : b ≠ a → indexOf a (b :: l) = succ (indexOf a l)
   | h => by simp only [indexOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
@@ -850,7 +850,7 @@ end deprecated
 theorem modifyTailIdx_modifyTailIdx {f g : List α → List α} (m : ℕ) :
     ∀ (n) (l : List α),
       (l.modifyTailIdx f n).modifyTailIdx g (m + n) =
-        l.modifyTailIdx (fun l => (f l).modifyTailIdx g m) n
+        l.modifyTailIdx (fun l ↦ (f l).modifyTailIdx g m) n
   | 0, _ => rfl
   | _ + 1, [] => rfl
   | n + 1, a :: l => congr_arg (List.cons a) (modifyTailIdx_modifyTailIdx m n l)
@@ -861,7 +861,7 @@ alias modifyNthTail_modifyNthTail := modifyTailIdx_modifyTailIdx
 theorem modifyTailIdx_modifyTailIdx_le {f g : List α → List α} (m n : ℕ) (l : List α)
     (h : n ≤ m) :
     (l.modifyTailIdx f n).modifyTailIdx g m =
-      l.modifyTailIdx (fun l => (f l).modifyTailIdx g (m - n)) n := by
+      l.modifyTailIdx (fun l ↦ (f l).modifyTailIdx g (m - n)) n := by
   rcases Nat.exists_eq_add_of_le h with ⟨m, rfl⟩
   rw [Nat.add_comm, modifyTailIdx_modifyTailIdx, Nat.add_sub_cancel]
 

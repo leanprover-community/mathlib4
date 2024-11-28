@@ -137,7 +137,7 @@ instance commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpac
 instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G] :
     Group C^∞⟮I, N; I', G⟯ :=
   { SmoothMap.monoid with
-    inv := fun f => ⟨fun x ↦ (f x)⁻¹, f.contMDiff.inv⟩
+    inv := fun f ↦ ⟨fun x ↦ (f x)⁻¹, f.contMDiff.inv⟩
     inv_mul_cancel := fun a ↦ by ext; exact inv_mul_cancel _
     div := fun f g => ⟨f / g, f.contMDiff.div g.contMDiff⟩
     div_eq_mul_inv := fun f g => by ext; exact div_eq_mul_inv _ _ }
@@ -196,7 +196,7 @@ def compLeftRingHom {R' : Type*} [Ring R'] [TopologicalSpace R'] [ChartedSpace H
     C^∞⟮I, N; I', R'⟯ →+* C^∞⟮I, N; I'', R''⟯ :=
   { SmoothMap.compLeftMonoidHom I N φ.toMonoidHom hφ,
     SmoothMap.compLeftAddMonoidHom I N φ.toAddMonoidHom hφ with
-    toFun := fun f => ⟨φ ∘ f, hφ.comp f.contMDiff⟩ }
+    toFun := fun f ↦ ⟨φ ∘ f, hφ.comp f.contMDiff⟩ }
 
 variable (I') {N}
 
@@ -205,7 +205,7 @@ variable (I') {N}
 def restrictRingHom (R : Type*) [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [SmoothRing I' R]
     {U V : Opens N} (h : U ≤ V) : C^∞⟮I, V; I', R⟯ →+* C^∞⟮I, U; I', R⟯ :=
   { SmoothMap.restrictMonoidHom I I' R h, SmoothMap.restrictAddMonoidHom I I' R h with
-    toFun := fun f => ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩ }
+    toFun := fun f ↦ ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩ }
 
 variable {I I'}
 

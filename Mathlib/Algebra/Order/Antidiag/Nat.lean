@@ -119,12 +119,12 @@ theorem finMulAntidiag_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n)
   constructor
   · intro hf
     refine ⟨?_, prod_eq_of_mem_finMulAntidiag hf⟩
-    exact fun i => ⟨(dvd_of_mem_finMulAntidiag hf i).trans hmn, hn⟩
+    exact fun i ↦ ⟨(dvd_of_mem_finMulAntidiag hf i).trans hmn, hn⟩
   · rw [mem_finMulAntidiag]
     exact fun ⟨_, hprod⟩ => ⟨hprod, ne_zero_of_dvd_ne_zero hn hmn⟩
 
 lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
-    (finMulAntidiag d n).image (fun f => f i) = divisors n := by
+    (finMulAntidiag d n).image (fun f ↦ f i) = divisors n := by
   ext k
   simp only [mem_image, ne_eq, mem_divisors, Nat.isUnit_iff]
   constructor
@@ -138,7 +138,7 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
       · exact i.elim0
       omega
     obtain ⟨i', hi_ne⟩ := exists_ne i
-    use fun j => if j = i then k else if j = i' then r else 1
+    use fun j ↦ if j = i then k else if j = i' then r else 1
     simp only [ite_true, and_true, hn]
     rw [← Finset.mul_prod_erase (a:=i) (h:=mem_univ _),
       ← Finset.mul_prod_erase (a:= i')]
@@ -223,7 +223,7 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
     congr
     ext ⟨p, hp⟩
     refine ⟨by rintro rfl; apply hf, fun h ↦ (hf_unique p hp i h).symm⟩
-  rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
+  rw [prod_attach (f:=fun p ↦ if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [primeFactors_filter_dvd_of_dvd hn.ne_zero this]
   exact prod_primeFactors_of_squarefree <| hn.squarefree_of_dvd this
 

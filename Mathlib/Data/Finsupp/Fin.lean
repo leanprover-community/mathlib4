@@ -47,7 +47,7 @@ theorem cons_succ : cons y s i.succ = s i :=
 
 @[simp]
 theorem tail_cons : tail (cons y s) = s :=
-  ext fun k => by simp only [tail_apply, cons_succ]
+  ext fun k ↦ by simp only [tail_apply, cons_succ]
 
 @[simp]
 theorem cons_tail : cons (t 0) (tail t) = t := by

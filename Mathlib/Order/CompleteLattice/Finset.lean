@@ -32,7 +32,7 @@ theorem iSup_eq_iSup_finset (s : ι → α) : ⨆ i, s i = ⨆ t : Finset ι, �
   classical
   refine le_antisymm ?_ ?_
   · exact iSup_le fun b ↦ le_iSup_of_le {b} <| le_iSup_of_le b <| le_iSup_of_le (by simp) <| le_rfl
-  · exact iSup_le fun t => iSup_le fun b ↦ iSup_le fun _ => le_iSup _ _
+  · exact iSup_le fun t ↦ iSup_le fun b ↦ iSup_le fun _ => le_iSup _ _
 
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
 `⨆ i ∈ t, s i`. This version works for `ι : Sort*`. See `iSup_eq_iSup_finset` for a version

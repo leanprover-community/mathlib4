@@ -302,12 +302,12 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
   createsLimitOfFullyFaithfulOfLift' hl
     { pt := X
       π :=
-        { app := fun j => F.preimage (i.hom ≫ l.π.app j)
+        { app := fun j ↦ F.preimage (i.hom ≫ l.π.app j)
           naturality := fun Y Z f =>
             F.map_injective <| by
               dsimp
               simpa using (l.w f).symm } }
-    (Cones.ext i fun j => by simp only [Functor.map_preimage, Functor.mapCone_π_app])
+    (Cones.ext i fun j ↦ by simp only [Functor.map_preimage, Functor.mapCone_π_app])
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
@@ -438,12 +438,12 @@ def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.
   createsColimitOfFullyFaithfulOfLift' hl
     { pt := X
       ι :=
-        { app := fun j => F.preimage (l.ι.app j ≫ i.inv)
+        { app := fun j ↦ F.preimage (l.ι.app j ≫ i.inv)
           naturality := fun Y Z f =>
             F.map_injective <| by
               dsimp
               simpa [← cancel_mono i.hom] using l.w f } }
-    (Cocones.ext i fun j => by simp)
+    (Cocones.ext i fun j ↦ by simp)
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
@@ -505,7 +505,7 @@ def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K
         validLift :=
           Functor.mapConePostcompose F ≪≫
             (Cones.postcompose (isoWhiskerRight h F).hom).mapIso (liftedLimitMapsToOriginal t') ≪≫
-              Cones.ext (Iso.refl _) fun j => by
+              Cones.ext (Iso.refl _) fun j ↦ by
                 dsimp
                 rw [Category.assoc, ← F.map_comp]
                 simp } }
@@ -540,7 +540,7 @@ def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅
           Functor.mapCoconePrecompose F ≪≫
             (Cocones.precompose (isoWhiskerRight h F).inv).mapIso
                 (liftedColimitMapsToOriginal t') ≪≫
-              Cocones.ext (Iso.refl _) fun j => by
+              Cocones.ext (Iso.refl _) fun j ↦ by
                 dsimp
                 rw [← F.map_comp_assoc]
                 simp } }

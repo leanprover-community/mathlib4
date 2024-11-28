@@ -158,7 +158,7 @@ elab_rules : tactic
       let ty ← Term.levelMVarToParam ty
       let seenLevels := collectLevelParams {} ty
       let levels := (← Term.getLevelNames).filter
-                      fun u => seenLevels.visitedLevel.contains (.param u)
+                      fun u ↦ seenLevels.visitedLevel.contains (.param u)
       addAndCompile <| Declaration.axiomDecl
         { name := name
           levelParams := levels

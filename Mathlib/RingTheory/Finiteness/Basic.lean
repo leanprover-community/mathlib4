@@ -65,7 +65,7 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb
     refine
-      ⟨⋃ i, (LinearMap.single R _ i) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
+      ⟨⋃ i, (LinearMap.single R _ i) '' t i, Set.finite_iUnion fun i ↦ (htf i).image _, ?_⟩
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `span_image` into `span_image _`
     simp_rw [span_iUnion, span_image _, hts, Submodule.iSup_map_single]
 
@@ -154,7 +154,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
     -- Introduce shorthand for span of an element
     let sp : M → Submodule R M := fun a ↦ span R {a}
     -- Trivial rewrite lemma; a small hack since simp (only) & rw can't accomplish this smoothly.
-    have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
+    have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t ↦ by rfl
     constructor
     · rintro ⟨t, rfl⟩
       rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← Finset.sup_eq_iSup t sp]
@@ -222,7 +222,7 @@ instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMo
     [∀ i, Module R (M i)] [h : ∀ i, Module.Finite R (M i)] : Module.Finite R (∀ i, M i) :=
   ⟨by
     rw [← Submodule.pi_top]
-    exact Submodule.fg_pi fun i => (h i).1⟩
+    exact Submodule.fg_pi fun i ↦ (h i).1⟩
 
 variable (R)
 
@@ -331,7 +331,7 @@ work well with typeclass search. -/
 instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R V)
     [∀ i, Module.Finite R (S i)] : Module.Finite R (s.sup S : Submodule R V) := by
   refine
-    @Finset.sup_induction _ _ _ _ s S (fun i => Module.Finite R ↑i) (Module.Finite.bot R V)
+    @Finset.sup_induction _ _ _ _ s S (fun i ↦ Module.Finite R ↑i) (Module.Finite.bot R V)
       ?_ fun i _ => by infer_instance
   intro S₁ hS₁ S₂ hS₂
   exact Submodule.finite_sup S₁ S₂

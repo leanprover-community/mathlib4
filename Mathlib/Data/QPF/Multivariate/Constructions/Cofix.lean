@@ -440,7 +440,7 @@ elab_rules : tactic
       | none => `(rcasesPat| _)
     withMainContext do
       let e ← Tactic.elabTerm e none
-      let f ← liftMetaTacticAux fun g => do
+      let f ← liftMetaTacticAux fun g ↦ do
         let (#[fv], g) ← g.generalize #[{ expr := e }] | unreachable!
         return (mkFVar fv, [g])
       withMainContext do
@@ -454,17 +454,17 @@ elab_rules : tactic
               let ex₁ ← mkLambdaFVars #[f] xx
               let ex₂ ← mkAppM ``Exists #[ex₁]
               mkLambdaFVars #[v₀, v₁] ex₂
-        let R ← liftMetaTacticAux fun g => do
+        let R ← liftMetaTacticAux fun g ↦ do
           let g₁ ← g.define (idsn 0) (← mkArrow t (← mkArrow t (mkSort .zero))) ex
           let (Rv, g₂) ← g₁.intro1P
           return (mkFVar Rv, [g₂])
         withMainContext do
-          ids[0]?.forM fun s => addLocalVarInfoForBinderIdent R s
+          ids[0]?.forM fun s ↦ addLocalVarInfoForBinderIdent R s
           let sR ← exprToSyntax R
           evalTactic <| ← `(tactic|
             refine MvQPF.Cofix.bisim₂ $sR ?_ _ _ ⟨_, rfl, rfl⟩;
             rintro $(← idss 1) $(← idss 2) ⟨$(← idss 3), $(← idss 4), $(← idss 5)⟩)
-          liftMetaTactic fun g => return [← g.clear f.fvarId!]
+          liftMetaTactic fun g ↦ return [← g.clear f.fvarId!]
     for n in [6 : ids.size] do
       let name := ids[n]!
       logWarningAt name m!"unused name: {name}"

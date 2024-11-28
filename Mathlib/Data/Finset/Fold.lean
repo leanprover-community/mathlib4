@@ -92,7 +92,7 @@ theorem fold_disjUnion {s₁ s₂ : Finset α} {b₁ b₂ : β} (h) :
   (congr_arg _ <| Multiset.map_add _ _ _).trans (Multiset.fold_add _ _ _ _ _)
 
 theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
-    (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i => (t i).fold op (b i) f :=
+    (s.disjiUnion t h).fold op (s.fold op b₀ b) f = s.fold op b₀ fun i ↦ (t i).fold op (b i) f :=
   (congr_arg _ <| Multiset.map_bind _ _ _).trans (Multiset.fold_bind _ _ _ _ _)
 
 theorem fold_union_inter [DecidableEq α] {s₁ s₂ : Finset α} {b₁ b₂ : β} :
@@ -121,8 +121,8 @@ theorem fold_image_idem [DecidableEq α] {g : γ → α} {s : Finset γ} [hi : S
 an explicit proof of idempotency on the seed element, rather
 than relying on typeclass idempotency over the whole type. -/
 theorem fold_ite' {g : α → β} (hb : op b b = b) (p : α → Prop) [DecidablePred p] :
-    Finset.fold op b (fun i => ite (p i) (f i) (g i)) s =
-      op (Finset.fold op b f (s.filter p)) (Finset.fold op b g (s.filter fun i => ¬p i)) := by
+    Finset.fold op b (fun i ↦ ite (p i) (f i) (g i)) s =
+      op (Finset.fold op b f (s.filter p)) (Finset.fold op b g (s.filter fun i ↦ ¬p i)) := by
   classical
     induction' s using Finset.induction_on with x s hx IH
     · simp [hb]
@@ -130,7 +130,7 @@ theorem fold_ite' {g : α → β} (hb : op b b = b) (p : α → Prop) [Decidable
       split_ifs with h
       · have : x ∉ Finset.filter p s := by simp [hx]
         simp [Finset.filter_insert, h, Finset.fold_insert this, ha.assoc, IH]
-      · have : x ∉ Finset.filter (fun i => ¬ p i) s := by simp [hx]
+      · have : x ∉ Finset.filter (fun i ↦ ¬ p i) s := by simp [hx]
         simp [Finset.filter_insert, h, Finset.fold_insert this, IH, ← ha.assoc, hc.comm]
 
 /-- A weaker version of `Finset.fold_ite'`,
@@ -138,8 +138,8 @@ relying on typeclass idempotency over the whole type,
 instead of solely on the seed element.
 However, this is easier to use because it does not generate side goals. -/
 theorem fold_ite [Std.IdempotentOp op] {g : α → β} (p : α → Prop) [DecidablePred p] :
-    Finset.fold op b (fun i => ite (p i) (f i) (g i)) s =
-      op (Finset.fold op b f (s.filter p)) (Finset.fold op b g (s.filter fun i => ¬p i)) :=
+    Finset.fold op b (fun i ↦ ite (p i) (f i) (g i)) s =
+      op (Finset.fold op b f (s.filter p)) (Finset.fold op b g (s.filter fun i ↦ ¬p i)) :=
   fold_ite' (Std.IdempotentOp.idempotent _) _
 
 theorem fold_op_rel_iff_and {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y z) ↔ r x y ∧ r x z)

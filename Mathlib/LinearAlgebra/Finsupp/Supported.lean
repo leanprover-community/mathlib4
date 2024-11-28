@@ -66,14 +66,14 @@ theorem single_mem_supported {s : Set α} {a : α} (b : M) (h : a ∈ s) :
   Set.Subset.trans support_single_subset (Finset.singleton_subset_set_iff.2 h)
 
 theorem supported_eq_span_single (s : Set α) :
-    supported R R s = span R ((fun i => single i 1) '' s) := by
+    supported R R s = span R ((fun i ↦ single i 1) '' s) := by
   refine (span_eq_of_le _ ?_ (SetLike.le_def.2 fun l hl => ?_)).symm
   · rintro _ ⟨_, hp, rfl⟩
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]
     refine sum_mem fun i il => ?_
   -- Porting note: Needed to help this convert quite a bit replacing underscores
-    convert smul_mem (M := α →₀ R) (x := single i 1) (span R ((fun i => single i 1) '' s)) (l i) ?_
+    convert smul_mem (M := α →₀ R) (x := single i 1) (span R ((fun i ↦ single i 1) '' s)) (l i) ?_
     · simp [span]
     · apply subset_span
       apply Set.mem_image_of_mem _ (hl il)
@@ -123,7 +123,7 @@ theorem supported_univ : supported M R (Set.univ : Set α) = ⊤ :=
 
 theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     supported M R (⋃ i, s i) = ⨆ i, supported M R (s i) := by
-  refine le_antisymm ?_ (iSup_le fun i => supported_mono <| Set.subset_iUnion _ _)
+  refine le_antisymm ?_ (iSup_le fun i ↦ supported_mono <| Set.subset_iUnion _ _)
   haveI := Classical.decPred fun x ↦ x ∈ ⋃ i, s i
   suffices
     LinearMap.range ((Submodule.subtype _).comp (restrictDom M R (⋃ i, s i))) ≤
@@ -139,7 +139,7 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
     · simp only [mem_comap, coe_comp, coe_subtype, Function.comp_apply, restrictDom_apply,
         mem_iUnion, h, filter_single_of_pos]
       cases' h with i hi
-      exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
+      exact le_iSup (fun i ↦ supported M R (s i)) i (single_mem_supported R _ hi)
     · simp [h]
 
 theorem supported_union (s t : Set α) :

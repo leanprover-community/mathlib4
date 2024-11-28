@@ -71,7 +71,7 @@ variable [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
   [CoalgebraStruct R A] [CoalgebraStruct R B]
 
 /-- The equivalence of types underlying a coalgebra equivalence. -/
-def toEquiv : (A ≃ₗc[R] B) → A ≃ B := fun f => f.toLinearEquiv.toEquiv
+def toEquiv : (A ≃ₗc[R] B) → A ≃ B := fun f ↦ f.toLinearEquiv.toEquiv
 
 theorem toEquiv_injective : Function.Injective (toEquiv : (A ≃ₗc[R] B) → A ≃ B) :=
   fun ⟨_, _, _, _⟩ ⟨_, _, _, _⟩ h =>

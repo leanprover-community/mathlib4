@@ -131,33 +131,33 @@ theorem prod_hom_ne_zero {s : Multiset α} (hs : s ≠ 0) {F : Type*} [FunLike F
 theorem prod_hom (s : Multiset α) {F : Type*} [FunLike F α β]
     [MonoidHomClass F α β] (f : F) :
     (s.map f).prod = f s.prod :=
-  Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, map_coe, prod_coe]
+  Quotient.inductionOn s fun l ↦ by simp only [l.prod_hom f, quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive]
 theorem prod_hom' (s : Multiset ι) {F : Type*} [FunLike F α β]
     [MonoidHomClass F α β] (f : F)
-    (g : ι → α) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
+    (g : ι → α) : (s.map fun i ↦ f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
 
 @[to_additive]
 theorem prod_hom₂_ne_zero [CommMonoid γ] {s : Multiset ι} (hs : s ≠ 0) (f : α → β → γ)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → α) (f₂ : ι → β) :
-    (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod := by
+    (s.map fun i ↦ f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod := by
   induction s using Quotient.inductionOn; aesop (add simp List.prod_hom₂_nonempty)
 
 @[to_additive]
 theorem prod_hom₂ [CommMonoid γ] (s : Multiset ι) (f : α → β → γ)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (hf' : f 1 1 = 1) (f₁ : ι → α)
-    (f₂ : ι → β) : (s.map fun i => f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod :=
-  Quotient.inductionOn s fun l => by
+    (f₂ : ι → β) : (s.map fun i ↦ f (f₁ i) (f₂ i)).prod = f (s.map f₁).prod (s.map f₂).prod :=
+  Quotient.inductionOn s fun l ↦ by
     simp only [l.prod_hom₂ f hf hf', quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive]
 theorem prod_hom_rel (s : Multiset ι) {r : α → β → Prop} {f : ι → α} {g : ι → β}
     (h₁ : r 1 1) (h₂ : ∀ ⦃a b c⦄, r b c → r (f a * b) (g a * c)) :
     r (s.map f).prod (s.map g).prod :=
-  Quotient.inductionOn s fun l => by
+  Quotient.inductionOn s fun l ↦ by
     simp only [l.prod_hom_rel h₁ h₂, quot_mk_to_coe, map_coe, prod_coe]
 
 @[to_additive]
@@ -165,11 +165,11 @@ theorem prod_map_one : prod (m.map fun _ => (1 : α)) = 1 := by
   rw [map_const', prod_replicate, one_pow]
 
 @[to_additive (attr := simp)]
-theorem prod_map_mul : (m.map fun i => f i * g i).prod = (m.map f).prod * (m.map g).prod :=
+theorem prod_map_mul : (m.map fun i ↦ f i * g i).prod = (m.map f).prod * (m.map g).prod :=
   m.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 
 @[to_additive]
-theorem prod_map_pow {n : ℕ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n :=
+theorem prod_map_pow {n : ℕ} : (m.map fun i ↦ f i ^ n).prod = (m.map f).prod ^ n :=
   m.prod_hom' (powMonoidHom n : α →* α) f
 
 @[to_additive]
@@ -262,16 +262,16 @@ theorem prod_map_inv' (m : Multiset α) : (m.map Inv.inv).prod = m.prod⁻¹ :=
   m.prod_hom (invMonoidHom : α →* α)
 
 @[to_additive (attr := simp)]
-theorem prod_map_inv : (m.map fun i => (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
+theorem prod_map_inv : (m.map fun i ↦ (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
   -- Porting note: used `convert`
   simp_rw [← (m.map f).prod_map_inv', map_map, Function.comp_apply]
 
 @[to_additive (attr := simp)]
-theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map g).prod :=
+theorem prod_map_div : (m.map fun i ↦ f i / g i).prod = (m.map f).prod / (m.map g).prod :=
   m.prod_hom₂ (· / ·) mul_div_mul_comm (div_one _) _ _
 
 @[to_additive]
-theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n := by
+theorem prod_map_zpow {n : ℤ} : (m.map fun i ↦ f i ^ n).prod = (m.map f).prod ^ n := by
   convert (m.map f).prod_hom (zpowGroupHom n : α →* α)
   simp only [map_map, Function.comp_apply, zpowGroupHom_apply]
 

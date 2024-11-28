@@ -193,7 +193,7 @@ def cartesianClosedOfReflective : CartesianClosed D where
         apply (exp.adjunction (i.obj B)).restrictFullyFaithful i.fullyFaithfulOfReflective
           i.fullyFaithfulOfReflective
         · symm
-          refine NatIso.ofComponents (fun X => ?_) (fun f => ?_)
+          refine NatIso.ofComponents (fun X => ?_) (fun f ↦ ?_)
           · haveI :=
               Adjunction.rightAdjoint_preservesLimits.{0, 0} (reflectorAdjunction i)
             apply asIso (prodComparison i B X)

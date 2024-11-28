@@ -304,7 +304,7 @@ theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
     adjoin R (algebraMap S A '' s ∪ t) = (adjoin (adjoin R s) t).restrictScalars R :=
   le_antisymm
     (closure_mono <|
-      Set.union_subset (Set.range_subset_iff.2 fun r => Or.inl ⟨algebraMap R (adjoin R s) r,
+      Set.union_subset (Set.range_subset_iff.2 fun r ↦ Or.inl ⟨algebraMap R (adjoin R s) r,
         (IsScalarTower.algebraMap_apply _ _ _ _).symm⟩)
         (Set.union_subset_union_left _ fun _ ⟨_x, hx, hxs⟩ => hxs ▸ ⟨⟨_, subset_adjoin hx⟩, rfl⟩))
     (closure_le.2 <|
@@ -326,8 +326,8 @@ theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adj
 theorem adjoin_top {A} [Semiring A] [Algebra S A] (t : Set A) :
     adjoin (⊤ : Subalgebra R S) t = (adjoin S t).restrictScalars (⊤ : Subalgebra R S) :=
   let equivTop : Subalgebra (⊤ : Subalgebra R S) A ≃o Subalgebra S A :=
-    { toFun := fun s => { s with algebraMap_mem' := fun r => s.algebraMap_mem ⟨r, trivial⟩ }
-      invFun := fun s => s.restrictScalars _
+    { toFun := fun s ↦ { s with algebraMap_mem' := fun r ↦ s.algebraMap_mem ⟨r, trivial⟩ }
+      invFun := fun s ↦ s.restrictScalars _
       left_inv := fun _ => SetLike.coe_injective rfl
       right_inv := fun _ => SetLike.coe_injective rfl
       map_rel_iff' := @fun _ _ => Iff.rfl }

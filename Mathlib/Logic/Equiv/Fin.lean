@@ -53,7 +53,7 @@ mapping both `i.cast_succ` and `i.succ` to `i`. -/
 def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n) where
   toFun := i.insertNth none some
   invFun x := x.casesOn' i (Fin.succAbove i)
-  left_inv x := Fin.succAboveCases i (by simp) (fun j => by simp) x
+  left_inv x := Fin.succAboveCases i (by simp) (fun j ↦ by simp) x
   right_inv x := by cases x <;> dsimp <;> simp
 
 @[simp]
@@ -223,7 +223,7 @@ def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
   left_inv x := by cases' x with y y <;> dsimp <;> simp
-  right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
+  right_inv x := by refine Fin.addCases (fun i ↦ ?_) (fun i ↦ ?_) x <;> simp
 
 @[simp]
 theorem finSumFinEquiv_apply_left (i : Fin m) :
@@ -298,7 +298,7 @@ theorem finRotate_last : finRotate (n + 1) (Fin.last _) = 0 :=
   finRotate_last'
 
 theorem Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
-    @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
+    @Fin.snoc _ (fun _ => α) v a = fun i ↦ @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
   ext ⟨i, h⟩
   by_cases h' : i < n
   · rw [finRotate_of_lt h', Fin.snoc, Fin.cons, dif_pos h']

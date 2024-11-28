@@ -123,7 +123,7 @@ instance instInfSet : InfSet (Subspace K V) :=
 instance : CompleteLattice (Subspace K V) :=
   { __ := completeLatticeOfInf (Subspace K V)
       (by
-        refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
+        refine fun s ↦ ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
         rintro ⟨E, hE, rfl⟩
         exact ha hE hx)
     inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx

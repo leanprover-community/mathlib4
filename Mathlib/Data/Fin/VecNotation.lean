@@ -103,7 +103,7 @@ variable {m n : ℕ}
 instance _root_.PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
   reprPrec f _ :=
     Std.Format.bracket "![" (Std.Format.joinSep
-      ((List.finRange n).map fun n => repr (f n)) ("," ++ Std.Format.line)) "]"
+      ((List.finRange n).map fun n ↦ repr (f n)) ("," ++ Std.Format.line)) "]"
 
 end MatrixNotation
 
@@ -144,7 +144,7 @@ theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   simp [vecTail]
 
 @[simp]
-theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
+theorem empty_val' {n' : Type*} (j : n') : (fun i ↦ (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
 
 @[simp]

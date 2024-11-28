@@ -56,10 +56,10 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
     norm_mul := fun x y =>
       NNReal.coe_mono <|
         calc
-          (Finset.univ.sup fun i => ‖x i * y i‖₊) ≤
-              Finset.univ.sup ((fun i => ‖x i‖₊) * fun i => ‖y i‖₊) :=
+          (Finset.univ.sup fun i ↦ ‖x i * y i‖₊) ≤
+              Finset.univ.sup ((fun i ↦ ‖x i‖₊) * fun i ↦ ‖y i‖₊) :=
             Finset.sup_mono_fun fun _ _ => norm_mul_le _ _
-          _ ≤ (Finset.univ.sup fun i => ‖x i‖₊) * Finset.univ.sup fun i => ‖y i‖₊ :=
+          _ ≤ (Finset.univ.sup fun i ↦ ‖x i‖₊) * Finset.univ.sup fun i ↦ ‖y i‖₊ :=
             Finset.sup_mul_le_mul_sup_of_nonneg (fun _ _ => zero_le _) fun _ _ => zero_le _
            }
 

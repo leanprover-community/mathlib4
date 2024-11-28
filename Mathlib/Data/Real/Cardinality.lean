@@ -77,8 +77,8 @@ theorem cantorFunctionAux_zero (f : ℕ → Bool) : cantorFunctionAux c f 0 = co
   cases h : f 0 <;> simp [h]
 
 theorem cantorFunctionAux_succ (f : ℕ → Bool) :
-    (fun n => cantorFunctionAux c f (n + 1)) = fun n =>
-      c * cantorFunctionAux c (fun n => f (n + 1)) n := by
+    (fun n ↦ cantorFunctionAux c f (n + 1)) = fun n =>
+      c * cantorFunctionAux c (fun n ↦ f (n + 1)) n := by
   ext n
   cases h : f (n + 1) <;> simp [h, _root_.pow_succ']
 
@@ -100,7 +100,7 @@ theorem cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) 
   replace h3 : g n = true := h3 n h; simp [h, h3]
 
 theorem cantorFunction_succ (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
-    cantorFunction c f = cond (f 0) 1 0 + c * cantorFunction c fun n => f (n + 1) := by
+    cantorFunction c f = cond (f 0) 1 0 + c * cantorFunction c fun n ↦ f (n + 1) := by
   rw [cantorFunction, tsum_eq_zero_add (summable_cantor_function f h1 h2)]
   rw [cantorFunctionAux_succ, tsum_mul_left, cantorFunctionAux, _root_.pow_zero]
   rfl
@@ -115,14 +115,14 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
     apply h2.trans
     norm_num
   induction' n with n ih generalizing f g
-  · let f_max : ℕ → Bool := fun n => Nat.rec false (fun _ _ => true) n
+  · let f_max : ℕ → Bool := fun n ↦ Nat.rec false (fun _ _ => true) n
     have hf_max : ∀ n, f n → f_max n := by
       intro n hn
       cases n
       · rw [fn] at hn
         contradiction
       apply rfl
-    let g_min : ℕ → Bool := fun n => Nat.rec true (fun _ _ => false) n
+    let g_min : ℕ → Bool := fun n ↦ Nat.rec true (fun _ _ => false) n
     have hg_min : ∀ n, g_min n → g n := by
       intro n hn
       cases n

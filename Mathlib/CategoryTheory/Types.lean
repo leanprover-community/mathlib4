@@ -125,7 +125,7 @@ variable (J)
 @[simps]
 def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
   obj F := F.sections
-  map {F G} φ x := ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
+  map {F G} φ x := ⟨fun j ↦ φ.app j (x.1 j), fun {j j'} f =>
     (congr_fun (φ.naturality f) (x.1 j)).symm.trans (by simp [x.2 f])⟩
 
 end Functor

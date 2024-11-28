@@ -292,7 +292,7 @@ variable [Abelian C] [EnoughInjectives C] (Z : C)
 /-- Auxiliary definition for `InjectiveResolution.of`. -/
 def ofCocomplex : CochainComplex C ℕ :=
   CochainComplex.mk' (Injective.under Z) (Injective.syzygies (Injective.ι Z))
-    (Injective.d (Injective.ι Z)) fun f => ⟨_, Injective.d f, by simp⟩
+    (Injective.d (Injective.ι Z)) fun f ↦ ⟨_, Injective.d f, by simp⟩
 
 lemma ofCocomplex_d_0_1 :
     (ofCocomplex Z).d 0 1 = d (Injective.ι Z) := by
@@ -321,7 +321,7 @@ irreducible_def of : InjectiveResolution Z where
   cocomplex := ofCocomplex Z
   ι := (CochainComplex.fromSingle₀Equiv _ _).symm ⟨Injective.ι Z,
     by rw [ofCocomplex_d_0_1, cokernel.condition_assoc, zero_comp]⟩
-  quasiIso := ⟨fun n => by
+  quasiIso := ⟨fun n ↦ by
     cases n
     · rw [CochainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros]
       · refine (ShortComplex.exact_and_mono_f_iff_of_iso ?_).2

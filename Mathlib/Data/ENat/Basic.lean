@@ -264,7 +264,7 @@ lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
     (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
-  have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
+  have A : ∀ n : ℕ, P n := fun n ↦ Nat.recOn n h0 hsuc
   cases a
   · exact htop A
   · exact A _

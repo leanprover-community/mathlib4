@@ -72,14 +72,14 @@ namespace HasProducts
 
 /-- The pi-type gives a cone for a product. -/
 def product {J : Type v} (f : J → ωCPO.{v}) : Fan f :=
-  Fan.mk (of (∀ j, f j)) fun j => .mk (Pi.evalOrderHom j) fun _ => rfl
+  Fan.mk (of (∀ j, f j)) fun j ↦ .mk (Pi.evalOrderHom j) fun _ => rfl
 
 /-- The pi-type is a limit cone for the product. -/
 def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f) where
   lift s :=
     -- Porting note: Original proof didn't have `.toFun`
     ⟨⟨fun t j => (s.π.app ⟨j⟩).toFun t, fun _ _ h j => (s.π.app ⟨j⟩).monotone h⟩,
-      fun x ↦ funext fun j => (s.π.app ⟨j⟩).continuous x⟩
+      fun x ↦ funext fun j ↦ (s.π.app ⟨j⟩).continuous x⟩
   uniq s m w := by
     ext t; funext j -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext t j`
     change m.toFun t j = (s.π.app ⟨j⟩).toFun t

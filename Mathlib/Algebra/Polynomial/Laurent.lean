@@ -243,8 +243,8 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     intro n a
     refine Int.induction_on n ?_ ?_ ?_
     · simpa only [T_zero, mul_one] using h_C a
-    · exact fun m => h_C_mul_T m a
-    · exact fun m => h_C_mul_T_Z m a
+    · exact fun m ↦ h_C_mul_T m a
+    · exact fun m ↦ h_C_mul_T_Z m a
   have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p.toFun n) * T n) := by
     apply Finset.induction
     · convert h_C 0
@@ -313,7 +313,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
 @[simp]
 theorem leftInverse_trunc_toLaurent :
     Function.LeftInverse (trunc : R[T;T⁻¹] → R[X]) Polynomial.toLaurent := by
-  refine fun f => f.induction_on' ?_ ?_
+  refine fun f ↦ f.induction_on' ?_ ?_
   · intro f g hf hg
     simp only [hf, hg, _root_.map_add]
   · intro n r
@@ -501,7 +501,7 @@ theorem isLocalization : IsLocalization (Submonoid.powers (X : R[X])) R[T;T⁻¹
       obtain ⟨n, rfl⟩ := ht
       rw [algebraMap_eq_toLaurent, toLaurent_X_pow]
       exact isUnit_T ↑n
-    surj' := fun f => by
+    surj' := fun f ↦ by
       induction' f using LaurentPolynomial.induction_on_mul_T with f n
       have : X ^ n ∈ Submonoid.powers (X : R[X]) := ⟨n, rfl⟩
       refine ⟨(f, ⟨_, this⟩), ?_⟩

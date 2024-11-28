@@ -46,7 +46,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
   · have : IsEmpty α := Function.isEmpty f
     exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective⟩
   set F : Set α →o Set α :=
-    { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
+    { toFun := fun s ↦ (g '' (f '' s)ᶜ)ᶜ
       monotone' := fun s t hst =>
         compl_subset_compl.mpr <| image_subset _ <| compl_subset_compl.mpr <| image_subset _ hst }
   set s : Set α := F.lfp
@@ -113,7 +113,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
           hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
         let ⟨i⟩ := I
         hf i f this rfl
-  ⟨i, ⟨fun j => ⟨s.restrict (fun x ↦ x j) ∘ surjInv e,
+  ⟨i, ⟨fun j ↦ ⟨s.restrict (fun x ↦ x j) ∘ surjInv e,
     ((hs.1 j).injective).comp (injective_surjInv _)⟩⟩⟩
 
 end Wo

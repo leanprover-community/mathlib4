@@ -132,7 +132,7 @@ theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEuleri
 
 theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V}
     {p : G.Walk u v} (ht : p.IsEulerian) {s}
-    (h : s = (Finset.univ : Finset V).filter fun v => Odd (G.degree v)) :
+    (h : s = (Finset.univ : Finset V).filter fun v ↦ Odd (G.degree v)) :
     s.card = 0 ∨ s.card = 2 := by
   subst s
   simp only [← Nat.not_even_iff_odd, Finset.card_eq_zero]

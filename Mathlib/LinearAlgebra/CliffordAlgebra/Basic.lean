@@ -134,7 +134,7 @@ def lift :
         induction h
         rw [AlgHom.commutes, map_mul, TensorAlgebra.lift_ι_apply, f.prop]⟩
   invFun F :=
-    ⟨F.toLinearMap.comp (ι Q), fun m => by
+    ⟨F.toLinearMap.comp (ι Q), fun m ↦ by
       rw [LinearMap.comp_apply, AlgHom.toLinearMap_apply, comp_ι_sq_scalar]⟩
   left_inv f := by
     ext x
@@ -203,7 +203,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   letI h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
   let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
-      fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+      fun m ↦ Subtype.eq <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
     ext
@@ -295,7 +295,7 @@ See `CliffordAlgebra.equivOfIsometry` for the case when `f` is a `QuadraticForm.
 def map (f : Q₁ →qᵢ Q₂) :
     CliffordAlgebra Q₁ →ₐ[R] CliffordAlgebra Q₂ :=
   CliffordAlgebra.lift Q₁
-    ⟨ι Q₂ ∘ₗ f.toLinearMap, fun m => (ι_sq_scalar _ _).trans <| RingHom.congr_arg _ <| f.map_app m⟩
+    ⟨ι Q₂ ∘ₗ f.toLinearMap, fun m ↦ (ι_sq_scalar _ _).trans <| RingHom.congr_arg _ <| f.map_app m⟩
 
 @[simp]
 theorem map_comp_ι (f : Q₁ →qᵢ Q₂) :

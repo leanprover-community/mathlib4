@@ -161,7 +161,7 @@ set, then for `μ`-a.e. `x`, if the orbit of `x` visits `s` at least once, then 
 infinitely many times. -/
 theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ, ∀ k, f^[k] x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
-  refine ae_all_iff.2 fun k => ?_
+  refine ae_all_iff.2 fun k ↦ ?_
   refine (hf.ae_mem_imp_frequently_image_mem
     (hs.preimage <| hf.toQuasiMeasurePreserving.iterate k)).mono fun x hx hk => ?_
   rw [← map_add_atTop_eq_nat k, frequently_map]

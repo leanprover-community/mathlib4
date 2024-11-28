@@ -182,7 +182,7 @@ theorem coe_one : ⇑(1 : CircleDeg1Lift) = id :=
   rfl
 
 instance unitsHasCoeToFun : CoeFun CircleDeg1Liftˣ fun _ => ℝ → ℝ :=
-  ⟨fun f => ⇑(f : CircleDeg1Lift)⟩
+  ⟨fun f ↦ ⇑(f : CircleDeg1Lift)⟩
 
 @[simp]
 theorem units_inv_apply_apply (f : CircleDeg1Liftˣ) (x : ℝ) :
@@ -586,18 +586,18 @@ theorem transnumAuxSeq_dist_lt (n : ℕ) :
     _ < _ := by gcongr; exact (f ^ 2 ^ n).dist_map_map_zero_lt (f ^ 2 ^ n)
 
 theorem tendsto_translationNumber_aux : Tendsto f.transnumAuxSeq atTop (𝓝 <| τ f) :=
-  (cauchySeq_of_le_geometric_two fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
+  (cauchySeq_of_le_geometric_two fun n ↦ le_of_lt <| f.transnumAuxSeq_dist_lt n).tendsto_limUnder
 
 theorem dist_map_zero_translationNumber_le : dist (f 0) (τ f) ≤ 1 :=
   f.transnumAuxSeq_zero ▸
-    dist_le_of_le_geometric_two_of_tendsto₀ (fun n => le_of_lt <| f.transnumAuxSeq_dist_lt n)
+    dist_le_of_le_geometric_two_of_tendsto₀ (fun n ↦ le_of_lt <| f.transnumAuxSeq_dist_lt n)
       f.tendsto_translationNumber_aux
 
 theorem tendsto_translationNumber_of_dist_bounded_aux (x : ℕ → ℝ) (C : ℝ)
     (H : ∀ n : ℕ, dist ((f ^ n) 0) (x n) ≤ C) :
     Tendsto (fun n : ℕ => x (2 ^ n) / 2 ^ n) atTop (𝓝 <| τ f) := by
   apply f.tendsto_translationNumber_aux.congr_dist (squeeze_zero (fun _ => dist_nonneg) _ _)
-  · exact fun n => C / 2 ^ n
+  · exact fun n ↦ C / 2 ^ n
   · intro n
     have : 0 < (2 ^ n : ℝ) := pow_pos zero_lt_two _
     convert (div_le_div_iff_of_pos_right this).2 (H (2 ^ n)) using 1
@@ -668,7 +668,7 @@ theorem tendsto_translation_number₀' :
     Tendsto (fun n : ℕ => (f ^ (n + 1) : CircleDeg1Lift) 0 / ((n : ℝ) + 1)) atTop (𝓝 <| τ f) := by
   refine
     tendsto_iff_dist_tendsto_zero.2 <|
-      squeeze_zero (fun _ => dist_nonneg) (fun n => ?_)
+      squeeze_zero (fun _ => dist_nonneg) (fun n ↦ ?_)
         ((tendsto_const_div_atTop_nhds_zero_nat 1).comp (tendsto_add_atTop_nat 1))
   dsimp
   have : (0 : ℝ) < n + 1 := n.cast_add_one_pos
@@ -692,7 +692,7 @@ theorem tendsto_translation_number' (x : ℝ) :
   mod_cast (tendsto_add_atTop_iff_nat 1).2 (f.tendsto_translationNumber x)
 
 theorem translationNumber_mono : Monotone τ := fun f g h =>
-  le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n => by
+  le_of_tendsto_of_tendsto' f.tendsto_translation_number₀ g.tendsto_translation_number₀ fun n ↦ by
     gcongr; exact pow_mono h _ _
 
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=
@@ -833,7 +833,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
     ∃ F : CircleDeg1Lift, ∀ g, Semiconj F (f₁ g) (f₂ g) := by
   -- Equality of translation number guarantees that for each `x`
   -- the set `{f₂ g⁻¹ (f₁ g x) | g : G}` is bounded above.
-  have : ∀ x, BddAbove (range fun g => f₂ g⁻¹ (f₁ g x)) := by
+  have : ∀ x, BddAbove (range fun g ↦ f₂ g⁻¹ (f₁ g x)) := by
     refine fun x ↦ ⟨x + 2, ?_⟩
     rintro _ ⟨g, rfl⟩
     have : τ (f₂ g⁻¹) = -τ (f₂ g) := by
@@ -855,7 +855,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
   refine ⟨⟨⟨fun x ↦ ⨆ g', (F₂ g')⁻¹ (F₁ g' x), fun x y hxy => ?_⟩, fun x ↦ ?_⟩,
     csSup_div_semiconj F₂ F₁ fun x ↦ ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv, coe_mk]
-  · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
+  · exact ciSup_mono (this y) fun g ↦ mono _ (mono _ hxy)
   · simp only [map_add_one]
     exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)
       (monotone_id.add_const (1 : ℝ)) (this x)).symm

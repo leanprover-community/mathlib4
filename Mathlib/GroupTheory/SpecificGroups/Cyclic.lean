@@ -94,7 +94,7 @@ theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
     ∃ m : ℤ, ∀ g : G, σ g = g ^ m := by
   obtain ⟨h, hG⟩ := IsCyclic.exists_generator (α := G)
   obtain ⟨m, hm⟩ := hG (σ h)
-  refine ⟨m, fun g => ?_⟩
+  refine ⟨m, fun g ↦ ?_⟩
   obtain ⟨n, rfl⟩ := hG g
   rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
 @[deprecated (since := "2024-02-21")] alias
@@ -358,13 +358,13 @@ variable [DecidableEq α]
 
 @[to_additive]
 theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
-    Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
+    Finset.image (fun i ↦ a ^ i) (range (orderOf a)) = univ := by
   simp_rw [← SetLike.mem_coe] at ha
   simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
 
 @[to_additive]
 theorem IsCyclic.image_range_card (ha : ∀ x : α, x ∈ zpowers a) :
-    Finset.image (fun i => a ^ i) (range (Nat.card α)) = univ := by
+    Finset.image (fun i ↦ a ^ i) (range (Nat.card α)) = univ := by
   rw [← orderOf_eq_card_of_forall_mem_zpowers ha, IsCyclic.image_range_orderOf ha]
 
 @[to_additive]
@@ -483,7 +483,7 @@ end Totient
 @[to_additive]
 lemma IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ} (hd : d ∣ Fintype.card α) :
     #{a : α | orderOf a = d} = totient d := by
-  classical apply card_orderOf_eq_totient_aux₂ (fun n => IsCyclic.card_pow_eq_one_le) hd
+  classical apply card_orderOf_eq_totient_aux₂ (fun n ↦ IsCyclic.card_pow_eq_one_le) hd
 
 @[deprecated (since := "2024-02-21")]
 alias IsAddCyclic.card_orderOf_eq_totient := IsAddCyclic.card_addOrderOf_eq_totient

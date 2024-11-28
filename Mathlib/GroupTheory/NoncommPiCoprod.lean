@@ -99,14 +99,14 @@ namespace MonoidHom
 @[to_additive "The canonical homomorphism from a family of additive monoids. See also
 `LinearMap.lsum` for a linear version without the commutativity assumption."]
 def noncommPiCoprod : (∀ i : ι, N i) →* M where
-  toFun f := Finset.univ.noncommProd (fun i => ϕ i (f i)) fun _ _ _ _ h => hcomm h _ _
+  toFun f := Finset.univ.noncommProd (fun i ↦ ϕ i (f i)) fun _ _ _ _ h => hcomm h _ _
   map_one' := by
     apply (Finset.noncommProd_eq_pow_card _ _ _ _ _).trans (one_pow _)
     simp
   map_mul' f g := by
     classical
     simp only
-    convert @Finset.noncommProd_mul_distrib _ _ _ _ (fun i => ϕ i (f i)) (fun i => ϕ i (g i)) _ _ _
+    convert @Finset.noncommProd_mul_distrib _ _ _ _ (fun i ↦ ϕ i (f i)) (fun i ↦ ϕ i (g i)) _ _ _
     · exact map_mul _ _ _
     · rintro i - j - h
       exact hcomm h _ _
@@ -116,7 +116,7 @@ variable {hcomm}
 @[to_additive (attr := simp)]
 theorem noncommPiCoprod_mulSingle [DecidableEq ι] (i : ι) (y : N i) :
     noncommPiCoprod ϕ hcomm (Pi.mulSingle i y) = ϕ i y := by
-  change Finset.univ.noncommProd (fun j => ϕ j (Pi.mulSingle i y j)) (fun _ _ _ _ h => hcomm h _ _)
+  change Finset.univ.noncommProd (fun j ↦ ϕ j (Pi.mulSingle i y j)) (fun _ _ _ _ h => hcomm h _ _)
     = ϕ i y
   rw [← Finset.insert_erase (Finset.mem_univ i)]
   rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ (Finset.not_mem_erase i _)]
@@ -135,7 +135,7 @@ def noncommPiCoprodEquiv [DecidableEq ι] :
       ((∀ i, N i) →* M) where
   toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
   invFun f :=
-    ⟨fun i => f.comp (MonoidHom.mulSingle N i), fun _ _ hij x y =>
+    ⟨fun i ↦ f.comp (MonoidHom.mulSingle N i), fun _ _ hij x y =>
       Commute.map (Pi.mulSingle_commute hij x y) f⟩
   left_inv ϕ := by
     ext
@@ -205,7 +205,7 @@ theorem noncommPiCoprod_range [Fintype ι]
 @[to_additive]
 theorem injective_noncommPiCoprod_of_iSupIndep [Fintype ι]
     {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
-    (hind : iSupIndep fun i => (ϕ i).range)
+    (hind : iSupIndep fun i ↦ (ϕ i).range)
     (hinj : ∀ i, Function.Injective (ϕ i)) : Function.Injective (noncommPiCoprod ϕ hcomm) := by
   classical
     apply (MonoidHom.ker_eq_bot_iff _).mp
@@ -226,7 +226,7 @@ theorem independent_range_of_coprime_order
     (hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y))
     [Finite ι] [∀ i, Fintype (H i)]
     (hcoprime : Pairwise fun i j => Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
-    iSupIndep fun i => (ϕ i).range := by
+    iSupIndep fun i ↦ (ϕ i).range := by
   cases nonempty_fintype ι
   letI := Classical.decEq ι
   rintro i
@@ -287,7 +287,7 @@ theorem independent_of_coprime_order
     (hcoprime : Pairwise fun i j => Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
     iSupIndep H := by
   simpa using
-    MonoidHom.independent_range_of_coprime_order (fun i => (H i).subtype)
+    MonoidHom.independent_range_of_coprime_order (fun i ↦ (H i).subtype)
       (commute_subtype_of_commute hcomm) hcoprime
 
 variable [Fintype ι]
@@ -298,7 +298,7 @@ commute -/
 different subgroups commute"]
 def noncommPiCoprod (hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y) :
     (∀ i : ι, H i) →* G :=
-  MonoidHom.noncommPiCoprod (fun i => (H i).subtype) (commute_subtype_of_commute hcomm)
+  MonoidHom.noncommPiCoprod (fun i ↦ (H i).subtype) (commute_subtype_of_commute hcomm)
 
 @[to_additive (attr := simp)]
 theorem noncommPiCoprod_mulSingle [DecidableEq ι]

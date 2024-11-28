@@ -401,7 +401,7 @@ theorem _root_.LinearMap.iInf_invariant {σ : R →+* R} [RingHomSurjective σ] 
     rintro i - ⟨v, hv, rfl⟩
     exact hf i v hv
   suffices (iInf p).map f ≤ iInf p by exact fun v hv => this ⟨v, hv, rfl⟩
-  exact le_iInf fun i => (Submodule.map_mono (iInf_le p i)).trans (this i)
+  exact le_iInf fun i ↦ (Submodule.map_mono (iInf_le p i)).trans (this i)
 
 theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap p.subtype q = ⊥ := by
   rw [← (map_injective_of_injective (show Injective p.subtype from Subtype.coe_injective)).eq_iff,

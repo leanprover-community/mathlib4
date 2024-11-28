@@ -273,7 +273,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
 def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ([l] : SimplexCategory) ⟶ [n] :=
   SimplexCategory.mkHom {
-    toFun := fun i => ⟨i.1 + j, (by omega)⟩
+    toFun := fun i ↦ ⟨i.1 + j, (by omega)⟩
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
   }
 
@@ -745,8 +745,8 @@ section Concrete
 
 instance : ConcreteCategory.{0} SimplexCategory where
   forget :=
-    { obj := fun i => Fin (i.len + 1)
-      map := fun f => f.toOrderHom }
+    { obj := fun i ↦ Fin (i.len + 1)
+      map := fun f ↦ f.toOrderHom }
   forget_faithful := ⟨fun h ↦ by ext : 2; exact h⟩
 
 end Concrete
@@ -846,17 +846,17 @@ def orderIsoOfIso {x y : SimplexCategory} (e : x ≅ y) : Fin (x.len + 1) ≃o F
   Equiv.toOrderIso
     { toFun := e.hom.toOrderHom
       invFun := e.inv.toOrderHom
-      left_inv := fun i => by
+      left_inv := fun i ↦ by
         simpa only using congr_arg (fun φ => (Hom.toOrderHom φ) i) e.hom_inv_id
-      right_inv := fun i => by
+      right_inv := fun i ↦ by
         simpa only using congr_arg (fun φ => (Hom.toOrderHom φ) i) e.inv_hom_id }
     e.hom.toOrderHom.monotone e.inv.toOrderHom.monotone
 
 theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := by
   have h : (Finset.univ : Finset (Fin (x.len + 1))).card = x.len + 1 := Finset.card_fin (x.len + 1)
-  have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
+  have eq₁ := Finset.orderEmbOfFin_unique' h fun i ↦ Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
-    Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
+    Finset.orderEmbOfFin_unique' h fun i ↦ Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
   -- Porting note: the proof was rewritten from this point in https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta)
   -- It could be investigated again to see if the original can be restored.
   ext x

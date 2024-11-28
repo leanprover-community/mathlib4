@@ -47,9 +47,9 @@ lemma exact_of_degreewise_exact (hS : ∀ (i : ι), (S.map (eval C c i)).Exact) 
 lemma shortExact_of_degreewise_shortExact
     (hS : ∀ (i : ι), (S.map (eval C c i)).ShortExact) :
     S.ShortExact where
-  mono_f := mono_of_mono_f _ (fun i => (hS i).mono_f)
-  epi_g := epi_of_epi_f _ (fun i => (hS i).epi_g)
-  exact := exact_of_degreewise_exact S (fun i => (hS i).exact)
+  mono_f := mono_of_mono_f _ (fun i ↦ (hS i).mono_f)
+  epi_g := epi_of_epi_f _ (fun i ↦ (hS i).epi_g)
+  exact := exact_of_degreewise_exact S (fun i ↦ (hS i).exact)
 
 lemma exact_iff_degreewise_exact :
     S.Exact ↔ ∀ (i : ι), (S.map (eval C c i)).Exact := by

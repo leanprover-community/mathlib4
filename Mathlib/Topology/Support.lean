@@ -384,14 +384,14 @@ of open sets, then for any point we can find a neighbourhood on which only finit
 open sets, then for any point we can find a neighbourhood on which only finitely-many members of `f`
 are non-zero. "]
 theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
-    (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
+    (hlf : LocallyFinite fun i ↦ mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ (is : Finset ι), ∃ n, n ∈ 𝓝 x ∧ (n ⊆ ⋂ i ∈ is, U i) ∧
-      ∀ z ∈ n, (mulSupport fun i => f i z) ⊆ is := by
+      ∀ z ∈ n, (mulSupport fun i ↦ f i z) ⊆ is := by
   obtain ⟨n, hn, hnf⟩ := hlf x
   classical
-    let is := hnf.toFinset.filter fun i => x ∈ U i
-    let js := hnf.toFinset.filter fun j => x ∉ U j
+    let is := hnf.toFinset.filter fun i ↦ x ∈ U i
+    let js := hnf.toFinset.filter fun j ↦ x ∉ U j
     refine
       ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn ?_) ?_,
         inter_subset_right, fun z hz => ?_⟩
@@ -404,7 +404,7 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       replace hz := mem_of_mem_inter_right (mem_of_mem_inter_left hz)
       simp only [js, Finset.mem_filter, Finite.mem_toFinset, mem_setOf_eq, mem_iInter,
         and_imp] at hz
-      suffices (mulSupport fun i => f i z) ⊆ hnf.toFinset by
+      suffices (mulSupport fun i ↦ f i z) ⊆ hnf.toFinset by
         refine hnf.toFinset.subset_coe_filter_of_subset_forall _ this fun i hi => ?_
         specialize hz i ⟨z, ⟨hi, hzn⟩⟩
         contrapose hz

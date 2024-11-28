@@ -212,7 +212,7 @@ theorem inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_p
 @[to_additive "Negation is involutive on `Filter α` if it is on `α`."]
 protected def instInvolutiveInv : InvolutiveInv (Filter α) :=
   { Filter.instInv with
-    inv_inv := fun f => map_map.trans <| by rw [inv_involutive.comp_self, map_id] }
+    inv_inv := fun f ↦ map_map.trans <| by rw [inv_involutive.comp_self, map_id] }
 
 scoped[Pointwise] attribute [instance] Filter.instInvolutiveInv Filter.instInvolutiveNeg
 
@@ -550,14 +550,14 @@ theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
 
 @[to_additive]
 theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
-  refine top_le_iff.1 fun s => ?_
+  refine top_le_iff.1 fun s ↦ ?_
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [mul_univ_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
 
 @[to_additive]
 theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
-  refine top_le_iff.1 fun s => ?_
+  refine top_le_iff.1 fun s ↦ ?_
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [univ_mul_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
@@ -1026,7 +1026,7 @@ instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower �
 @[to_additive]
 instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Filter β) :=
-  ⟨fun _ f => (congr_arg fun m => map m f) <| funext fun _ => op_smul_eq_smul _ _⟩
+  ⟨fun _ f => (congr_arg fun m ↦ map m f) <| funext fun _ => op_smul_eq_smul _ _⟩
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
 `Filter α` on `Filter β`. -/

@@ -87,7 +87,7 @@ theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
     (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
   obtain ⟨i⟩ := bS.index_nonempty
-  have him : (Finset.univ.image fun k => abv (bS.repr a k)).Nonempty :=
+  have him : (Finset.univ.image fun k ↦ abv (bS.repr a k)).Nonempty :=
     ⟨_, Finset.mem_image.mpr ⟨i, Finset.mem_univ _, rfl⟩⟩
   set y' : ℤ := Finset.max' _ him with y'_def
   have hy' : ∀ k, abv (bS.repr a k) ≤ y' := by
@@ -200,7 +200,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     · linarith
   set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm with hμ
   let s : ι →₀ R := bS.repr a
-  have s_eq : ∀ i, s i = bS.repr a i := fun i => rfl
+  have s_eq : ∀ i, s i = bS.repr a i := fun i ↦ rfl
   let qs : Fin (cardM bS adm).succ → ι → R := fun j i => μ j * s i / b
   let rs : Fin (cardM bS adm).succ → ι → R := fun j i => μ j * s i % b
   have r_eq : ∀ j i, rs j i = μ j * s i % b := fun i j => rfl
@@ -226,7 +226,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     refine Finset.sum_congr rfl fun x _ => ?_
     ring
   rw [this, Algebra.norm_algebraMap_of_basis bS, abv.map_pow]
-  refine Int.cast_lt.mp ((norm_lt abv bS _ fun i => lt_of_le_of_lt ?_ (hjk' i)).trans_le ?_)
+  refine Int.cast_lt.mp ((norm_lt abv bS _ fun i ↦ lt_of_le_of_lt ?_ (hjk' i)).trans_le ?_)
   · apply le_of_eq
     congr
     simp_rw [map_sum, map_sub, map_smul, Finset.sum_apply',

@@ -421,7 +421,7 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
       · apply le_trans ?_ μr
         gcongr
         apply min_le_left
-    rcases exists_disjoint_covering_ae μ s t C (fun p => p.1) (fun p => p.2.1) (fun p => p.2.2)
+    rcases exists_disjoint_covering_ae μ s t C (fun p ↦ p.1) (fun p ↦ p.2.1) (fun p ↦ p.2.2)
         (fun p hp => hp.1) (fun p hp => hp.2.1) (fun p hp => hp.2.2.1) (fun p hp => hp.2.2.2.1) A
       with ⟨t', t't, _, t'_disj, μt'⟩
     refine ⟨(fun p : ℝ × α × Set α => p.2) '' t', ?_, ?_, ?_, ?_⟩

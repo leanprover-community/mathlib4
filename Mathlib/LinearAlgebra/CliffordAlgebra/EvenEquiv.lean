@@ -104,8 +104,8 @@ open EquivEven
 
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
-  refine CliffordAlgebra.lift Q ⟨?_, fun m => ?_⟩
-  · refine LinearMap.codRestrict _ ?_ fun m => Submodule.mem_iSup_of_mem ⟨2, rfl⟩ ?_
+  refine CliffordAlgebra.lift Q ⟨?_, fun m ↦ ?_⟩
+  · refine LinearMap.codRestrict _ ?_ fun m ↦ Submodule.mem_iSup_of_mem ⟨2, rfl⟩ ?_
     · exact (LinearMap.mulLeft R <| e0 Q).comp (v Q)
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
@@ -229,7 +229,7 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg
     { bilin := -(even.ι Q' : _).bilin
-      contract := fun m => by
+      contract := fun m ↦ by
         simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticMap.neg_apply, map_neg, neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h,

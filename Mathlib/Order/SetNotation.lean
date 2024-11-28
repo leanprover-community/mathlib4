@@ -147,10 +147,10 @@ end delaborators
 namespace Set
 
 instance : InfSet (Set α) :=
-  ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
+  ⟨fun s ↦ { a | ∀ t ∈ s, a ∈ t }⟩
 
 instance : SupSet (Set α) :=
-  ⟨fun s => { a | ∃ t ∈ s, a ∈ t }⟩
+  ⟨fun s ↦ { a | ∃ t ∈ s, a ∈ t }⟩
 
 /-- Intersection of a set of sets. -/
 def sInter (S : Set (Set α)) : Set α :=

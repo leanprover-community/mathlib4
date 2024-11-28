@@ -108,7 +108,7 @@ variable (V c)
 def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.symm where
   obj X := (unop X).op
   map f :=
-    { f := fun i => (f.unop.f i).op
+    { f := fun i ↦ (f.unop.f i).op
       comm' := fun i j _ => by simp only [op_d, ← op_comp, f.unop.comm] }
 
 /-- Auxiliary definition for `opEquivalence`. -/
@@ -116,7 +116,7 @@ def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.
 def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)ᵒᵖ where
   obj X := op X.unopSymm
   map f := Quiver.Hom.op
-    { f := fun i => (f.f i).unop
+    { f := fun i ↦ (f.f i).unop
       comm' := fun i j _ => by simp only [unopSymm_d, ← unop_comp, f.comm] }
 
 /-- Auxiliary definition for `opEquivalence`. -/
@@ -159,7 +159,7 @@ def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒ�
 def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V c.symm where
   obj X := (unop X).unop
   map f :=
-    { f := fun i => (f.unop.f i).unop
+    { f := fun i ↦ (f.unop.f i).unop
       comm' := fun i j _ => by simp only [unop_d, ← unop_comp, f.unop.comm] }
 
 /-- Auxiliary definition for `unopEquivalence`. -/
@@ -167,7 +167,7 @@ def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V 
 def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)ᵒᵖ where
   obj X := op X.opSymm
   map f := Quiver.Hom.op
-    { f := fun i => (f.f i).op
+    { f := fun i ↦ (f.f i).op
       comm' := fun i j _ => by simp only [opSymm_d, ← op_comp, f.comm] }
 
 /-- Auxiliary definition for `unopEquivalence`. -/

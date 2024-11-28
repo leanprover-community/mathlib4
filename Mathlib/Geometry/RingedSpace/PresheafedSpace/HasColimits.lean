@@ -179,7 +179,7 @@ def descCApp (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (U : (Opens 
     limit.lift _
         { pt := s.pt.presheaf.obj U
           π :=
-            { app := fun j => ?_
+            { app := fun j ↦ ?_
               naturality := fun j j' f => ?_ } } ≫
       (limitObjIsoLimitCompEvaluation _ _).inv
   -- We still need to construct the `app` and `naturality'` fields omitted above.
@@ -206,7 +206,7 @@ theorem desc_c_naturality (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F)
         (colimit.desc (F ⋙ forget C) ((forget C).mapCocone s) _* (colimitCocone F).pt.presheaf).map
           i := by
   dsimp [descCApp]
-  refine limit_obj_ext (fun j => ?_)
+  refine limit_obj_ext (fun j ↦ ?_)
   have w := Functor.congr_hom (congr_arg Opens.map
     (colimit.ι_desc ((PresheafedSpace.forget C).mapCocone s) (unop j))) i.unop
   simp only [Opens.map_comp_map] at w
@@ -253,7 +253,7 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       simp
     ext : 1
     · exact t
-    · refine NatTrans.ext (funext fun U => limit_obj_ext fun j => ?_)
+    · refine NatTrans.ext (funext fun U => limit_obj_ext fun j ↦ ?_)
       simp [desc, descCApp,
         PresheafedSpace.congr_app (w (unop j)).symm U,
         NatTrans.congr (limit.π (pushforwardDiagramToColimit F).leftOp j)

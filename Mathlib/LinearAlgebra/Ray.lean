@@ -366,7 +366,7 @@ namespace RayVector
 
 /-- Negating a nonzero vector. -/
 instance {R : Type*} : Neg (RayVector R M) :=
-  ⟨fun v => ⟨-v, neg_ne_zero.2 v.prop⟩⟩
+  ⟨fun v ↦ ⟨-v, neg_ne_zero.2 v.prop⟩⟩
 
 /-- Negating a nonzero vector commutes with coercion to the underlying module. -/
 @[simp, norm_cast]
@@ -389,7 +389,7 @@ variable (R)
 
 /-- Negating a ray. -/
 instance : Neg (Module.Ray R M) :=
-  ⟨Quotient.map (fun v => -v) fun _ _ => RayVector.equiv_neg_iff.2⟩
+  ⟨Quotient.map (fun v ↦ -v) fun _ _ => RayVector.equiv_neg_iff.2⟩
 
 /-- The ray given by the negation of a nonzero vector. -/
 @[simp]

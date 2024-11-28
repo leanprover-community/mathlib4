@@ -19,19 +19,19 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 @[aesop safe 20 apply (rule_sets := [Measurable])]
 theorem Measurable.inner {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
     [SecondCountableTopology E] {f g : α → E} (hf : Measurable f)
-    (hg : Measurable g) : Measurable fun t => ⟪f t, g t⟫ :=
+    (hg : Measurable g) : Measurable fun t ↦ ⟪f t, g t⟫ :=
   Continuous.measurable2 continuous_inner hf hg
 
 @[measurability]
 theorem Measurable.const_inner {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
     [SecondCountableTopology E] {c : E} {f : α → E} (hf : Measurable f) :
-    Measurable fun t => ⟪c, f t⟫ :=
+    Measurable fun t ↦ ⟪c, f t⟫ :=
   Measurable.inner measurable_const hf
 
 @[measurability]
 theorem Measurable.inner_const {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
     [SecondCountableTopology E] {c : E} {f : α → E} (hf : Measurable f) :
-    Measurable fun t => ⟪f t, c⟫ :=
+    Measurable fun t ↦ ⟪f t, c⟫ :=
   Measurable.inner hf measurable_const
 
 @[aesop safe 20 apply (rule_sets := [Measurable])]

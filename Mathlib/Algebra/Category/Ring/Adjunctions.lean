@@ -31,7 +31,7 @@ def free : Type u ⥤ CommRingCat.{u} where
   -- TODO these next two fields can be done by `tidy`, but the calls in `dsimp` and `simp` it
   -- generates are too slow.
   map_id _ := RingHom.ext <| rename_id
-  map_comp f g := RingHom.ext fun p => (rename_rename f g p).symm
+  map_comp f g := RingHom.ext fun p ↦ (rename_rename f g p).symm
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α ℤ :=

@@ -105,7 +105,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 -/
 @[simps!]
 def obj (X : SimplicialObject C) : ChainComplex C ℕ :=
-  ChainComplex.of (fun n => (objX X n : C))
+  ChainComplex.of (fun n ↦ (objX X n : C))
     (-- the coercion here picks a representative of the subobject
       objD X) (d_squared X)
 
@@ -116,14 +116,14 @@ variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 @[simps!]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom _ _ _ _ _ _
-    (fun n => factorThru _ (arrow _ ≫ f.app (op (SimplexCategory.mk n))) (by
+    (fun n ↦ factorThru _ (arrow _ ≫ f.app (op (SimplexCategory.mk n))) (by
       cases n <;> dsimp
       · apply top_factors
       · refine (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ ?_
         erw [Category.assoc, ← f.naturality,
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))
-    fun n => by
+    fun n ↦ by
     cases n <;> dsimp [objD, objX] <;> aesop_cat
 
 end NormalizedMooreComplex

@@ -387,7 +387,7 @@ theorem of_inverse {f' : Y → X} (h : Continuous f') (l_inv : LeftInverse f f')
 theorem isQuotientMap (open_map : IsOpenMap f) (cont : Continuous f) (surj : Surjective f) :
     IsQuotientMap f :=
   isQuotientMap_iff.2
-    ⟨surj, fun s => ⟨fun h ↦ h.preimage cont, fun h ↦ surj.image_preimage s ▸ open_map _ h⟩⟩
+    ⟨surj, fun s ↦ ⟨fun h ↦ h.preimage cont, fun h ↦ surj.image_preimage s ▸ open_map _ h⟩⟩
 
 @[deprecated (since := "2024-10-22")]
 alias to_quotientMap := isQuotientMap

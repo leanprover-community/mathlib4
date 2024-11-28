@@ -148,7 +148,7 @@ def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 @[mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
 
 /-- Any map `f : ι → α` factors through a map `rangeFactorization f : ι → range f`. -/
-def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_range_self i⟩
+def rangeFactorization (f : ι → α) : ι → range f := fun i ↦ ⟨f i, mem_range_self i⟩
 
 end Range
 

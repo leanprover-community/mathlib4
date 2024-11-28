@@ -80,7 +80,7 @@ theorem Finset.centerMass_eq_of_sum_1 (hw : ∑ i ∈ t, w i = 1) :
     t.centerMass w z = ∑ i ∈ t, w i • z i := by
   simp only [Finset.centerMass, hw, inv_one, one_smul]
 
-theorem Finset.centerMass_smul : (t.centerMass w fun i => c • z i) = c • t.centerMass w z := by
+theorem Finset.centerMass_smul : (t.centerMass w fun i ↦ c • z i) = c • t.centerMass w z := by
   simp only [Finset.centerMass, Finset.smul_sum, (mul_smul _ _ _).symm, mul_comm c, mul_assoc]
 
 /-- A convex combination of two centers of mass is a center of mass as well. This version
@@ -88,7 +88,7 @@ deals with two different index types. -/
 theorem Finset.centerMass_segment' (s : Finset ι) (t : Finset ι') (ws : ι → R) (zs : ι → E)
     (wt : ι' → R) (zt : ι' → E) (hws : ∑ i ∈ s, ws i = 1) (hwt : ∑ i ∈ t, wt i = 1) (a b : R)
     (hab : a + b = 1) : a • s.centerMass ws zs + b • t.centerMass wt zt = (s.disjSum t).centerMass
-    (Sum.elim (fun i => a * ws i) fun j => b * wt j) (Sum.elim zs zt) := by
+    (Sum.elim (fun i ↦ a * ws i) fun j ↦ b * wt j) (Sum.elim zs zt) := by
   rw [s.centerMass_eq_of_sum_1 _ hws, t.centerMass_eq_of_sum_1 _ hwt, smul_sum, smul_sum, ←
     Finset.sum_sum_elim, Finset.centerMass_eq_of_sum_1]
   · congr with ⟨⟩ <;> simp only [Sum.elim_inl, Sum.elim_inr, mul_smul]
@@ -99,14 +99,14 @@ works if two centers of mass share the set of original points. -/
 theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι → E)
     (hw₁ : ∑ i ∈ s, w₁ i = 1) (hw₂ : ∑ i ∈ s, w₂ i = 1) (a b : R) (hab : a + b = 1) :
     a • s.centerMass w₁ z + b • s.centerMass w₂ z =
-    s.centerMass (fun i => a * w₁ i + b * w₂ i) z := by
+    s.centerMass (fun i ↦ a * w₁ i + b * w₂ i) z := by
   have hw : (∑ i ∈ s, (a * w₁ i + b * w₂ i)) = 1 := by
     simp only [← mul_sum, sum_add_distrib, mul_one, *]
   simp only [Finset.centerMass_eq_of_sum_1, Finset.centerMass_eq_of_sum_1 _ _ hw,
     smul_sum, sum_add_distrib, add_smul, mul_smul, *]
 
 theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
-    t.centerMass (fun j => if i = j then (1 : R) else 0) z = z i := by
+    t.centerMass (fun j ↦ if i = j then (1 : R) else 0) z = z i := by
   rw [Finset.centerMass_eq_of_sum_1]
   · trans ∑ j ∈ t, if i = j then z i else 0
     · congr with i
@@ -190,7 +190,7 @@ theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E}
     by_contra H
     rw [finsum, dif_neg H] at h₁
     exact zero_ne_one h₁
-  have hsub : support ((fun i => w i • z i) ∘ PLift.down) ⊆ hfin_w.toFinset :=
+  have hsub : support ((fun i ↦ w i • z i) ∘ PLift.down) ⊆ hfin_w.toFinset :=
     (support_smul_subset_left _ _).trans hfin_w.coe_toFinset.ge
   rw [finsum_eq_sum_plift_of_support_subset hsub]
   refine hs.sum_mem (fun _ _ => h₀ _) ?_ fun i hi => hz _ ?_
@@ -275,7 +275,7 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
     obtain ⟨i, hi⟩ := Set.mem_range.mp hx
     exact ⟨{i}, Function.const ι (1 : R), by simp, by simp, by simp [hi]⟩
   · rintro x ⟨s, w, hw₀, hw₁, rfl⟩ y ⟨s', w', hw₀', hw₁', rfl⟩ a b ha hb hab
-    let W : ι → R := fun i => (if i ∈ s then a * w i else 0) + if i ∈ s' then b * w' i else 0
+    let W : ι → R := fun i ↦ (if i ∈ s then a * w i else 0) + if i ∈ s' then b * w' i else 0
     have hW₁ : (s ∪ s').sum W = 1 := by
       rw [sum_add_distrib, ← sum_subset subset_union_left,
         ← sum_subset subset_union_right, sum_ite_of_true,
@@ -400,7 +400,7 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
     · apply t.centerMass_mem_convexHull hw₀
       · simp only [hw₁, zero_lt_one]
       · exact fun i hi => Finset.mem_coe.2 (Finset.mem_image_of_mem _ hi)
-  · exact iUnion_subset fun i => iUnion_subset convexHull_mono
+  · exact iUnion_subset fun i ↦ iUnion_subset convexHull_mono
 
 theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHull R s)
     (hy : y ∈ convexHull R t) : (x, y) ∈ convexHull R (s ×ˢ t) := by
@@ -409,7 +409,7 @@ theorem mk_mem_convexHull_prod {t : Set F} {x : E} {y : F} (hx : x ∈ convexHul
   obtain ⟨κ, _, v, g, hv₀, hv₁, hgt, hg⟩ := hy
   have h_sum : ∑ i : ι × κ, w i.1 * v i.2 = 1 := by
     rw [Fintype.sum_prod_type, ← sum_mul_sum, hw₁, hv₁, mul_one]
-  refine ⟨ι × κ, inferInstance, fun p => w p.1 * v p.2, fun p ↦ (f p.1, g p.2),
+  refine ⟨ι × κ, inferInstance, fun p ↦ w p.1 * v p.2, fun p ↦ (f p.1, g p.2),
     fun p ↦ mul_nonneg (hw₀ _) (hv₀ _), h_sum, fun p ↦ ⟨hfs _, hgt _⟩, ?_⟩
   ext
   · simp_rw [Prod.fst_sum, Prod.smul_mk, Fintype.sum_prod_type, mul_comm (w _), mul_smul,

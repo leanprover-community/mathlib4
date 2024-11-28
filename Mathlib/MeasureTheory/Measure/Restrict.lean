@@ -271,12 +271,12 @@ theorem restrict_iUnion_apply_ae [Countable ι] {s : ι → Set α} (hd : Pairwi
   simp only [restrict_apply, ht, inter_iUnion]
   exact
     measure_iUnion₀ (hd.mono fun i j h => h.mono inter_subset_right inter_subset_right)
-      fun i => ht.nullMeasurableSet.inter (hm i)
+      fun i ↦ ht.nullMeasurableSet.inter (hm i)
 
 theorem restrict_iUnion_apply [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
     (hm : ∀ i, MeasurableSet (s i)) {t : Set α} (ht : MeasurableSet t) :
     μ.restrict (⋃ i, s i) t = ∑' i, μ.restrict (s i) t :=
-  restrict_iUnion_apply_ae hd.aedisjoint (fun i => (hm i).nullMeasurableSet) ht
+  restrict_iUnion_apply_ae hd.aedisjoint (fun i ↦ (hm i).nullMeasurableSet) ht
 
 theorem restrict_iUnion_apply_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed (· ⊆ ·) s)
     {t : Set α} (ht : MeasurableSet t) : μ.restrict (⋃ i, s i) t = ⨆ i, μ.restrict (s i) t := by
@@ -461,12 +461,12 @@ theorem ext_of_generateFrom_of_iUnion (C : Set (Set α)) (B : ℕ → Set α) (h
 
 @[simp]
 theorem restrict_sum (μ : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
-    (sum μ).restrict s = sum fun i => (μ i).restrict s :=
+    (sum μ).restrict s = sum fun i ↦ (μ i).restrict s :=
   ext fun t ht => by simp only [sum_apply, restrict_apply, ht, ht.inter hs]
 
 @[simp]
 theorem restrict_sum_of_countable [Countable ι] (μ : ι → Measure α) (s : Set α) :
-    (sum μ).restrict s = sum fun i => (μ i).restrict s := by
+    (sum μ).restrict s = sum fun i ↦ (μ i).restrict s := by
   ext t ht
   simp_rw [sum_apply _ ht, restrict_apply ht, sum_apply_of_countable]
 
@@ -476,15 +476,15 @@ lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s
   exact h htν
 
 theorem restrict_iUnion_ae [Countable ι] {s : ι → Set α} (hd : Pairwise (AEDisjoint μ on s))
-    (hm : ∀ i, NullMeasurableSet (s i) μ) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
+    (hm : ∀ i, NullMeasurableSet (s i) μ) : μ.restrict (⋃ i, s i) = sum fun i ↦ μ.restrict (s i) :=
   ext fun t ht => by simp only [sum_apply _ ht, restrict_iUnion_apply_ae hd hm ht]
 
 theorem restrict_iUnion [Countable ι] {s : ι → Set α} (hd : Pairwise (Disjoint on s))
-    (hm : ∀ i, MeasurableSet (s i)) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
-  restrict_iUnion_ae hd.aedisjoint fun i => (hm i).nullMeasurableSet
+    (hm : ∀ i, MeasurableSet (s i)) : μ.restrict (⋃ i, s i) = sum fun i ↦ μ.restrict (s i) :=
+  restrict_iUnion_ae hd.aedisjoint fun i ↦ (hm i).nullMeasurableSet
 
 theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
-    μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
+    μ.restrict (⋃ i, s i) ≤ sum fun i ↦ μ.restrict (s i) :=
   le_iff.2 fun t ht ↦ by simpa [ht, inter_iUnion] using measure_iUnion_le (t ∩ s ·)
 
 end Measure
@@ -492,8 +492,8 @@ end Measure
 @[simp]
 theorem ae_restrict_iUnion_eq [Countable ι] (s : ι → Set α) :
     ae (μ.restrict (⋃ i, s i)) = ⨆ i, ae (μ.restrict (s i)) :=
-  le_antisymm ((ae_sum_eq fun i => μ.restrict (s i)) ▸ ae_mono restrict_iUnion_le) <|
-    iSup_le fun i => ae_mono <| restrict_mono (subset_iUnion s i) le_rfl
+  le_antisymm ((ae_sum_eq fun i ↦ μ.restrict (s i)) ▸ ae_mono restrict_iUnion_le) <|
+    iSup_le fun i ↦ ae_mono <| restrict_mono (subset_iUnion s i) le_rfl
 
 @[simp]
 theorem ae_restrict_union_eq (s t : Set α) :
@@ -752,7 +752,7 @@ theorem Subtype.volume_univ (hu : NullMeasurableSet u) : volume (univ : Set u) =
   · congr
     simp only [image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
   · exact Subtype.coe_injective
-  · exact fun t => MeasurableSet.nullMeasurableSet_subtype_coe hu
+  · exact fun t ↦ MeasurableSet.nullMeasurableSet_subtype_coe hu
 
 theorem volume_subtype_coe_le_volume (hu : NullMeasurableSet u) (t : Set u) :
     volume (((↑) : u → δ) '' t) ≤ volume t :=

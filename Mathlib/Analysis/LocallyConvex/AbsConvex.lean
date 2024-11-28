@@ -163,7 +163,7 @@ variable (𝕜)
 includes `s`. -/
 @[simps! isClosed]
 def closedAbsConvexHull : ClosureOperator (Set E) :=
-  .ofCompletePred (fun s => AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
+  .ofCompletePred (fun s ↦ AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
 
 variable {𝕜}
 
@@ -233,7 +233,7 @@ theorem nhds_hasBasis_absConvex :
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
 theorem nhds_hasBasis_absConvex_open :
-    (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
+    (𝓝 (0 : E)).HasBasis (fun s ↦ (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
   refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
     refine ⟨interior s, ?_, interior_subset⟩

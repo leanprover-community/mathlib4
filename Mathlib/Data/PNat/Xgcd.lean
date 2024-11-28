@@ -61,7 +61,7 @@ namespace XgcdType
 variable (u : XgcdType)
 
 instance : SizeOf XgcdType :=
-  ⟨fun u => u.bp⟩
+  ⟨fun u ↦ u.bp⟩
 
 /-- The `Repr` instance converts terms to strings in a way that
  reflects the matrix/vector interpretation as above. -/

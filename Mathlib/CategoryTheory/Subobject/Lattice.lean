@@ -129,7 +129,7 @@ but we reuse all the names from `SemilatticeInf` because they will be used to co
 def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   obj f := pullback f.arrow ⋙ map f.arrow
   map k :=
-    { app := fun g => by
+    { app := fun g ↦ by
         apply homMk _ _
         · apply pullback.lift (pullback.fst _ _) (pullback.snd _ _ ≫ k.left) _
           rw [pullback.condition, assoc, w k]
@@ -196,7 +196,7 @@ section OrderTop
 instance orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind' fun f ↦ ?_
     exact ⟨MonoOver.leTop f⟩
 
 instance {X : C} : Inhabited (Subobject X) :=
@@ -262,7 +262,7 @@ variable [HasInitial C] [InitialMonoClass C]
 instance orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
-    refine Quotient.ind' fun f => ?_
+    refine Quotient.ind' fun f ↦ ?_
     exact ⟨MonoOver.botLE f⟩
 
 theorem bot_eq_initial_to {B : C} : (⊥ : Subobject B) = Subobject.mk (initial.to B) :=
@@ -548,7 +548,7 @@ def widePullbackι {A : C} (s : Set (Subobject A)) : widePullback s ⟶ A :=
 
 instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbackι s) :=
   ⟨fun u v h =>
-    limit.hom_ext fun j => by
+    limit.hom_ext fun j ↦ by
       cases j
       · exact h
       · apply (cancel_mono ((equivShrink (Subobject A)).symm _).arrow).1
@@ -660,7 +660,7 @@ open ZeroObject
 
 /-- A nonzero object has nontrivial subobject lattice. -/
 theorem nontrivial_of_not_isZero {X : C} (h : ¬IsZero X) : Nontrivial (Subobject X) :=
-  ⟨⟨mk (0 : 0 ⟶ X), mk (𝟙 X), fun w => h (IsZero.of_iso (isZero_zero C) (isoOfMkEqMk _ _ w).symm)⟩⟩
+  ⟨⟨mk (0 : 0 ⟶ X), mk (𝟙 X), fun w ↦ h (IsZero.of_iso (isZero_zero C) (isoOfMkEqMk _ _ w).symm)⟩⟩
 
 end ZeroObject
 

@@ -105,8 +105,8 @@ theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
   exact succ_pos n
 
 /-- `fib (n + 2)` is strictly monotone. -/
-theorem fib_add_two_strictMono : StrictMono fun n => fib (n + 2) := by
-  refine strictMono_nat_of_lt_succ fun n => ?_
+theorem fib_add_two_strictMono : StrictMono fun n ↦ fib (n + 2) := by
+  refine strictMono_nat_of_lt_succ fun n ↦ ?_
   rw [add_right_comm]
   exact fib_lt_fib_succ (self_le_add_left _ _)
 

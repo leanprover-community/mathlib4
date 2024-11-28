@@ -434,7 +434,7 @@ namespace Filter
 theorem extraction_of_frequently_atTop' {P : ℕ → Prop} (h : ∀ N, ∃ n > N, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
   choose u hu hu' using h
-  refine ⟨fun n => u^[n + 1] 0, strictMono_nat_of_lt_succ fun n => ?_, fun n => ?_⟩
+  refine ⟨fun n ↦ u^[n + 1] 0, strictMono_nat_of_lt_succ fun n ↦ ?_, fun n ↦ ?_⟩
   · exact Trans.trans (hu _) (Function.iterate_succ_apply' _ _ _).symm
   · simpa only [Function.iterate_succ_apply'] using hu' _
 
@@ -451,7 +451,7 @@ theorem extraction_forall_of_frequently {P : ℕ → ℕ → Prop} (h : ∀ n, �
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P n (φ n) := by
   simp only [frequently_atTop'] at h
   choose u hu hu' using h
-  use (fun n => Nat.recOn n (u 0 0) fun n v => u (n + 1) v : ℕ → ℕ)
+  use (fun n ↦ Nat.recOn n (u 0 0) fun n v => u (n + 1) v : ℕ → ℕ)
   constructor
   · apply strictMono_nat_of_lt_succ
     intro n
@@ -461,7 +461,7 @@ theorem extraction_forall_of_frequently {P : ℕ → ℕ → Prop} (h : ∀ n, �
 
 theorem extraction_forall_of_eventually {P : ℕ → ℕ → Prop} (h : ∀ n, ∀ᶠ k in atTop, P n k) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P n (φ n) :=
-  extraction_forall_of_frequently fun n => (h n).frequently
+  extraction_forall_of_frequently fun n ↦ (h n).frequently
 
 theorem extraction_forall_of_eventually' {P : ℕ → ℕ → Prop} (h : ∀ n, ∃ N, ∀ k ≥ N, P n k) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P n (φ n) :=
@@ -880,13 +880,13 @@ theorem tendsto_finset_range : Tendsto Finset.range atTop atTop :=
   Finset.range_mono.tendsto_atTop_atTop Finset.exists_nat_subset_range
 
 theorem atTop_finset_eq_iInf : (atTop : Filter (Finset α)) = ⨅ x : α, 𝓟 (Ici {x}) := by
-  refine le_antisymm (le_iInf fun i => le_principal_iff.2 <| mem_atTop ({i} : Finset α)) ?_
+  refine le_antisymm (le_iInf fun i ↦ le_principal_iff.2 <| mem_atTop ({i} : Finset α)) ?_
   refine
     le_iInf fun s =>
-      le_principal_iff.2 <| mem_iInf_of_iInter s.finite_toSet (fun i => mem_principal_self _) ?_
+      le_principal_iff.2 <| mem_iInf_of_iInter s.finite_toSet (fun i ↦ mem_principal_self _) ?_
   simp only [subset_def, mem_iInter, SetCoe.forall, mem_Ici, Finset.le_iff_subset,
     Finset.mem_singleton, Finset.subset_iff, forall_eq]
-  exact fun t => id
+  exact fun t ↦ id
 
 /-- If `f` is a monotone sequence of `Finset`s and each `x` belongs to one of `f n`, then
 `Tendsto f atTop atTop`. -/
@@ -955,7 +955,7 @@ theorem prod_map_atBot_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Pr
 theorem Tendsto.subseq_mem {F : Filter α} {V : ℕ → Set α} (h : ∀ n, V n ∈ F) {u : ℕ → α}
     (hu : Tendsto u atTop F) : ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, u (φ n) ∈ V n :=
   extraction_forall_of_eventually'
-    (fun n => tendsto_atTop'.mp hu _ (h n) : ∀ n, ∃ N, ∀ k ≥ N, u k ∈ V n)
+    (fun n ↦ tendsto_atTop'.mp hu _ (h n) : ∀ n, ∃ N, ∀ k ≥ N, u k ∈ V n)
 
 theorem tendsto_atBot_diagonal [Preorder α] : Tendsto (fun a : α => (a, a)) atBot atBot := by
   rw [← prod_atBot_atBot_eq]
@@ -1185,8 +1185,8 @@ theorem tendsto_sub_atTop_nat (k : ℕ) : Tendsto (fun a ↦ a - k) atTop atTop 
   le_of_eq (map_sub_atTop_eq_nat k)
 
 theorem tendsto_add_atTop_iff_nat {f : ℕ → α} {l : Filter α} (k : ℕ) :
-    Tendsto (fun n => f (n + k)) atTop l ↔ Tendsto f atTop l :=
-  show Tendsto (f ∘ fun n => n + k) atTop l ↔ Tendsto f atTop l by
+    Tendsto (fun n ↦ f (n + k)) atTop l ↔ Tendsto f atTop l :=
+  show Tendsto (f ∘ fun n ↦ n + k) atTop l ↔ Tendsto f atTop l by
     rw [← tendsto_map'_iff, map_add_atTop_eq_nat]
 
 theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a ↦ a / k) atTop = atTop :=
@@ -1301,7 +1301,7 @@ to `f`. -/
 theorem exists_seq_tendsto (f : Filter α) [IsCountablyGenerated f] [NeBot f] :
     ∃ x : ℕ → α, Tendsto x atTop f := by
   obtain ⟨B, h⟩ := f.exists_antitone_basis
-  choose x hx using fun n => Filter.nonempty_of_mem (h.mem n)
+  choose x hx using fun n ↦ Filter.nonempty_of_mem (h.mem n)
   exact ⟨x, h.tendsto hx⟩
 
 theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [Nonempty α]
@@ -1309,7 +1309,7 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type*) [Preorder α] [None
     ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
   obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
   choose c hleft hright using exists_ge_ge (α := α)
-  set xs : ℕ → α := fun n => (List.range n).foldl (fun x n ↦ c x (ys n)) (ys 0)
+  set xs : ℕ → α := fun n ↦ (List.range n).foldl (fun x n ↦ c x (ys n)) (ys 0)
   have hsucc (n : ℕ) : xs (n + 1) = c (xs n) (ys n) := by simp [xs, List.range_succ]
   refine ⟨xs, ?_, ?_⟩
   · refine monotone_nat_of_le_succ fun n ↦ ?_
@@ -1355,7 +1355,7 @@ theorem frequently_iff_seq_frequently {ι : Type*} {l : Filter ι} {p : ι → P
 
 theorem subseq_forall_of_frequently {ι : Type*} {x : ℕ → ι} {p : ι → Prop} {l : Filter ι}
     (h_tendsto : Tendsto x atTop l) (h : ∃ᶠ n in atTop, p (x n)) :
-    ∃ ns : ℕ → ℕ, Tendsto (fun n => x (ns n)) atTop l ∧ ∀ n, p (x (ns n)) := by
+    ∃ ns : ℕ → ℕ, Tendsto (fun n ↦ x (ns n)) atTop l ∧ ∀ n, p (x (ns n)) := by
   choose ns hge hns using frequently_atTop.1 h
   exact ⟨ns, h_tendsto.comp (tendsto_atTop_mono hge tendsto_id), hns⟩
 
@@ -1377,7 +1377,7 @@ lemma frequently_iff_seq_forall {ι : Type*} {l : Filter ι} {p : ι → Prop}
 theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {l : Filter ι}
     [l.IsCountablyGenerated]
     (hxy : ∀ ns : ℕ → ι, Tendsto ns atTop l →
-      ∃ ms : ℕ → ℕ, Tendsto (fun n => x (ns <| ms n)) atTop f) :
+      ∃ ms : ℕ → ℕ, Tendsto (fun n ↦ x (ns <| ms n)) atTop f) :
     Tendsto x l f := by
   contrapose! hxy
   obtain ⟨s, hs, hfreq⟩ : ∃ s ∈ f, ∃ᶠ n in l, x n ∉ s := by

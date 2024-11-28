@@ -280,7 +280,7 @@ variable (b : Basis ι R M)
 /-- The linear map from a vector space equipped with basis to its dual vector space,
 taking basis elements to corresponding dual basis elements. -/
 def toDual : M →ₗ[R] Module.Dual R M :=
-  b.constr ℕ fun v => b.constr ℕ fun w => if w = v then (1 : R) else 0
+  b.constr ℕ fun v ↦ b.constr ℕ fun w ↦ if w = v then (1 : R) else 0
 
 theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 := by
   erw [constr_basis b, constr_basis b]
@@ -345,9 +345,9 @@ theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation https://github.com/leanprover/lean4/issues/1629 LinearMap.range
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
-  refine eq_top_iff'.2 fun f => ?_
-  let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
-  refine ⟨Finsupp.linearCombination R b lin_comb, b.ext fun i => ?_⟩
+  refine eq_top_iff'.2 fun f ↦ ?_
+  let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i ↦ f (b i)
+  refine ⟨Finsupp.linearCombination R b lin_comb, b.ext fun i ↦ ?_⟩
   rw [b.toDual_eq_repr _ i, repr_linearCombination b]
   rfl
 
@@ -431,7 +431,7 @@ theorem coe_dualBasis : ⇑b.dualBasis = b.coord := by
 
 @[simp]
 theorem toDual_toDual : b.dualBasis.toDual.comp b.toDual = Dual.eval R M := by
-  refine b.ext fun i => b.dualBasis.ext fun j => ?_
+  refine b.ext fun i ↦ b.dualBasis.ext fun j ↦ ?_
   rw [LinearMap.comp_apply, toDual_apply_left, coe_toDual_self, ← coe_dualBasis,
     Dual.eval_apply, Basis.repr_self, Finsupp.single_apply, dualBasis_apply_self]
 
@@ -445,7 +445,7 @@ theorem eval_ker {ι : Type*} (b : Basis ι R M) :
   rw [ker_eq_bot']
   intro m hm
   simp_rw [LinearMap.ext_iff, Dual.eval_apply, zero_apply] at hm
-  exact (Basis.forall_coord_eq_zero_iff _).mp fun i => hm (b.coord i)
+  exact (Basis.forall_coord_eq_zero_iff _).mp fun i ↦ hm (b.coord i)
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation https://github.com/leanprover/lean4/issues/1629 LinearMap.range
 theorem eval_range {ι : Type*} [Finite ι] (b : Basis ι R M) :
@@ -914,7 +914,7 @@ theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '
   rwa [← lc_def, h.dual_lc] at hi
 
 theorem coe_dualBasis [DecidableEq ι] [_root_.Finite ι] : ⇑h.basis.dualBasis = ε :=
-  funext fun i => h.basis.ext fun j => by simp
+  funext fun i ↦ h.basis.ext fun j ↦ by simp
 
 end Module.DualBases
 

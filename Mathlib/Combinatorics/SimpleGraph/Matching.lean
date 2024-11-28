@@ -201,11 +201,11 @@ theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts
   -- Porting note: `SimpleGraph.Subgraph.coe_degree` does not trigger because it uses
   -- instance arguments instead of implicit arguments for the first `Fintype` argument.
   -- Using a `convert_to` to swap out the `Fintype` instance to the "right" one.
-  convert_to _ = Finset.sum Finset.univ fun v => SimpleGraph.degree (Subgraph.coe M) v using 3
+  convert_to _ = Finset.sum Finset.univ fun v ↦ SimpleGraph.degree (Subgraph.coe M) v using 3
   simp [h, Finset.card_univ]
 
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
-  refine ⟨?_, fun hm => ⟨fun v _ => hm v, fun v => ?_⟩⟩
+  refine ⟨?_, fun hm => ⟨fun v _ => hm v, fun v ↦ ?_⟩⟩
   · rintro ⟨hm, hs⟩ v
     exact hm (hs v)
   · obtain ⟨w, hw, -⟩ := hm v

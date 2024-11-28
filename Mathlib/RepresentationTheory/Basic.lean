@@ -320,7 +320,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
     x • y = (x * y : MonoidAlgebra k G) := -- by
   -- Porting note: trouble figuring out the motive
   x.induction_on (p := fun z ↦ z • y = z * y)
-    (fun g => by
+    (fun g ↦ by
       show asAlgebraHom (ofMulAction k G G) _ _ = _; ext
       simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
         ofMulAction_apply, smul_eq_mul]
@@ -408,7 +408,7 @@ module `V →ₗ[k] W`, where `G` acts by conjugation.
 -/
 def linHom : Representation k G (V →ₗ[k] W) where
   toFun g :=
-    { toFun := fun f => ρW g ∘ₗ f ∘ₗ ρV g⁻¹
+    { toFun := fun f ↦ ρW g ∘ₗ f ∘ₗ ρV g⁻¹
       map_add' := fun f₁ f₂ => by simp_rw [add_comp, comp_add]
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
   map_one' :=
@@ -429,7 +429,7 @@ where `f : Module.Dual k V`.
 -/
 def dual : Representation k G (Module.Dual k V) where
   toFun g :=
-    { toFun := fun f => f ∘ₗ ρV g⁻¹
+    { toFun := fun f ↦ f ∘ₗ ρV g⁻¹
       map_add' := fun f₁ f₂ => by simp only [add_comp]
       map_smul' := fun r f => by
         ext

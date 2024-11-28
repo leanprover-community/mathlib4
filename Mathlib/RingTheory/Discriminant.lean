@@ -181,7 +181,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   simp_rw [Fin.card_Ioi, Nat.sub_sub, add_comm 1]
   simp only [Nat.cast_sub, this, Finset.card_fin, nsmul_eq_mul, sum_const, sum_sub_distrib,
     Nat.cast_add, Nat.cast_one, sum_add_distrib, mul_one]
-  rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i => i, sum_range_id]
+  rw [← Nat.cast_sum, ← @Finset.sum_range ℕ _ pb.dim fun i ↦ i, sum_range_id]
   have hn : n = pb.dim := by
     rw [← AlgHom.card K L E, ← Fintype.card_fin pb.dim]
     -- FIXME: Without the `Fintype` namespace, why does it complain about `Finset.card_congr` being
@@ -265,9 +265,9 @@ theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyC
     simpa [← discr_def] using discr_isUnit_of_basis _ B.basis
   have H :
     (traceMatrix K B.basis).det • (traceMatrix K B.basis) *ᵥ (B.basis.equivFun z) =
-      (traceMatrix K B.basis).det • fun i => trace K L (z * B.basis i) := by
+      (traceMatrix K B.basis).det • fun i ↦ trace K L (z * B.basis i) := by
     congr; exact traceMatrix_of_basis_mulVec _ _
-  have cramer := mulVec_cramer (traceMatrix K B.basis) fun i => trace K L (z * B.basis i)
+  have cramer := mulVec_cramer (traceMatrix K B.basis) fun i ↦ trace K L (z * B.basis i)
   suffices ∀ i, ((traceMatrix K B.basis).det • B.basis.equivFun z) i ∈ (⊥ : Subalgebra R K) by
     rw [← B.basis.sum_repr z, Finset.smul_sum]
     refine Subalgebra.sum_mem _ fun i _ => ?_

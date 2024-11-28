@@ -243,10 +243,10 @@ theorem eventually_le_limsup (hf : IsBoundedUnder (· ≤ ·) f u := by isBounde
   · exact Eventually.of_forall fun _ => ha _
   by_cases H : IsGLB (Set.Ioi (f.limsup u)) (f.limsup u)
   · obtain ⟨u, -, -, hua, hu⟩ := H.exists_seq_antitone_tendsto ha
-    have := fun n => eventually_lt_of_limsup_lt (hu n) hf
+    have := fun n ↦ eventually_lt_of_limsup_lt (hu n) hf
     exact
       (eventually_countable_forall.2 this).mono fun b hb =>
-        ge_of_tendsto hua <| Eventually.of_forall fun n => (hb _).le
+        ge_of_tendsto hua <| Eventually.of_forall fun n ↦ (hb _).le
   · obtain ⟨x, hx, xa⟩ : ∃ x, (∀ ⦃b⦄, f.limsup u < b → x ≤ b) ∧ f.limsup u < x := by
       simp only [IsGLB, IsGreatest, lowerBounds, upperBounds, Set.mem_Ioi, Set.mem_setOf_eq,
         not_and, not_forall, not_le, exists_prop] at H

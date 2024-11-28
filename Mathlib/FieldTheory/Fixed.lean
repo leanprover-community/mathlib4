@@ -121,7 +121,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   rw [Finsupp.mem_span_image_iff_linearCombination] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.linearCombination_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
-    replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans (congr_fun hla 1)
+    replace hla := (sum_apply _ _ fun i ↦ l i • toFun G F i).symm.trans (congr_fun hla 1)
     simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
     refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
@@ -129,7 +129,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   intro i his g
   refine
     eq_of_sub_eq_zero
-      (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) ?_ ⟨i, his⟩
+      (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i ↦ g • l i - l i) ?_ ⟨i, his⟩
           (mem_attach _ _) :
         _)
   refine (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans ?_
@@ -198,7 +198,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
   refine
     Fintype.prod_dvd_of_coprime
       (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
-      QuotientGroup.induction_on y fun g => ?_
+      QuotientGroup.induction_on y fun g ↦ ?_
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
     IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring, h,

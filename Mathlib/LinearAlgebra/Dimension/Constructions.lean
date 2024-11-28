@@ -165,10 +165,10 @@ theorem rank_finsupp_self' {ι : Type u} : Module.rank R (ι →₀ R) = #ι := 
 @[simp]
 theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] :
-    Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) := by
+    Module.rank R (⨁ i, M i) = Cardinal.sum fun i ↦ Module.rank R (M i) := by
   let B i := chooseBasis R (M i)
-  let b : Basis _ R (⨁ i, M i) := DFinsupp.basis fun i => B i
-  simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
+  let b : Basis _ R (⨁ i, M i) := DFinsupp.basis fun i ↦ B i
+  simp [← b.mk_eq_rank'', fun i ↦ (B i).mk_eq_rank'']
 
 /-- If `m` and `n` are finite, the rank of `m × n` matrices over a module `M` is
 `(#m).lift * (#n).lift * rank R M`. -/
@@ -228,7 +228,7 @@ theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i 
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (⨁ i, M i) = ∑ i, finrank R (M i) := by
   letI := nontrivial_of_invariantBasisNumber R
-  simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
+  simp only [finrank, fun i ↦ rank_eq_card_chooseBasisIndex R (M i), rank_directSum, ← mk_sigma,
     mk_toNat_eq_card, card_sigma]
 
 /-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices over a module `M` is
@@ -253,11 +253,11 @@ open LinearMap
 -- this result is not true without the freeness assumption
 @[simp]
 theorem rank_pi [Finite η] : Module.rank R (∀ i, φ i) =
-    Cardinal.sum fun i => Module.rank R (φ i) := by
+    Cardinal.sum fun i ↦ Module.rank R (φ i) := by
   cases nonempty_fintype η
   let B i := chooseBasis R (φ i)
-  let b : Basis _ R (∀ i, φ i) := Pi.basis fun i => B i
-  simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
+  let b : Basis _ R (∀ i, φ i) := Pi.basis fun i ↦ B i
+  simp [← b.mk_eq_rank'', fun i ↦ (B i).mk_eq_rank'']
 
 variable (R)
 
@@ -273,7 +273,7 @@ theorem Module.finrank_pi_fintype
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
   letI := nontrivial_of_invariantBasisNumber R
-  simp only [finrank, fun i => rank_eq_card_chooseBasisIndex R (M i), rank_pi, ← mk_sigma,
+  simp only [finrank, fun i ↦ rank_eq_card_chooseBasisIndex R (M i), rank_pi, ← mk_sigma,
     mk_toNat_eq_card, Fintype.card_sigma]
 
 variable {R}

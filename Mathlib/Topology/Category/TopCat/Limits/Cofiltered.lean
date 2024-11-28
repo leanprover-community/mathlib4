@@ -64,7 +64,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
   ext U0
   constructor
   · rintro ⟨j, V, hV, rfl⟩
-    let U : ∀ i, Set (F.obj i) := fun i => if h : i = j then by rw [h]; exact V else Set.univ
+    let U : ∀ i, Set (F.obj i) := fun i ↦ if h : i = j then by rw [h]; exact V else Set.univ
     refine ⟨U, {j}, ?_, ?_⟩
     · simp only [Finset.mem_singleton]
       rintro i rfl

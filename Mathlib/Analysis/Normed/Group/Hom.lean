@@ -389,7 +389,7 @@ theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
 
 /-- Opposite of a normed group hom. -/
 instance neg : Neg (NormedAddGroupHom V₁ V₂) :=
-  ⟨fun f => (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v => by simp [le_opNorm f v]⟩
+  ⟨fun f ↦ (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v ↦ by simp [le_opNorm f v]⟩
 
 @[simp]
 theorem coe_neg (f : NormedAddGroupHom V₁ V₂) : ⇑(-f) = -f :=
@@ -474,7 +474,7 @@ instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
       map_add' := (n • f.toAddMonoidHom).map_add'
       bound' :=
         let ⟨b, hb⟩ := f.bound'
-        ⟨n • b, fun v => by
+        ⟨n • b, fun v ↦ by
           rw [Pi.smul_apply, nsmul_eq_mul, mul_assoc]
           exact (norm_nsmul_le _ _).trans (by gcongr; apply hb)⟩ }
 
@@ -492,7 +492,7 @@ instance zsmul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
       map_add' := (z • f.toAddMonoidHom).map_add'
       bound' :=
         let ⟨b, hb⟩ := f.bound'
-        ⟨‖z‖ • b, fun v => by
+        ⟨‖z‖ • b, fun v ↦ by
           rw [Pi.smul_apply, smul_eq_mul, mul_assoc]
           exact (norm_zsmul_le _ _).trans (by gcongr; apply hb)⟩ }
 
@@ -588,7 +588,7 @@ theorem norm_comp_le_of_le' {g : NormedAddGroupHom V₂ V₃} (C₁ C₂ C₃ : 
 def compHom : NormedAddGroupHom V₂ V₃ →+ NormedAddGroupHom V₁ V₂ →+ NormedAddGroupHom V₁ V₃ :=
   AddMonoidHom.mk'
     (fun g =>
-      AddMonoidHom.mk' (fun f => g.comp f)
+      AddMonoidHom.mk' (fun f ↦ g.comp f)
         (by
           intros
           ext
@@ -631,7 +631,7 @@ variable {V W V₁ V₂ V₃ : Type*} [SeminormedAddCommGroup V] [SeminormedAddC
 def incl (s : AddSubgroup V) : NormedAddGroupHom s V where
   toFun := (Subtype.val : s → V)
   map_add' _ _ := AddSubgroup.coe_add _ _ _
-  bound' := ⟨1, fun v => by rw [one_mul, AddSubgroup.coe_norm]⟩
+  bound' := ⟨1, fun v ↦ by rw [one_mul, AddSubgroup.coe_norm]⟩
 
 theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl _ x‖ = ‖x‖ :=
   rfl
@@ -719,17 +719,17 @@ def NormNoninc (f : NormedAddGroupHom V W) : Prop :=
 namespace NormNoninc
 
 theorem normNoninc_iff_norm_le_one : f.NormNoninc ↔ ‖f‖ ≤ 1 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ fun v => ?_⟩
-  · refine opNorm_le_bound _ zero_le_one fun v => ?_
+  refine ⟨fun h ↦ ?_, fun h ↦ fun v ↦ ?_⟩
+  · refine opNorm_le_bound _ zero_le_one fun v ↦ ?_
     simpa [one_mul] using h v
   · simpa using le_of_opNorm_le f h v
 
-theorem zero : (0 : NormedAddGroupHom V₁ V₂).NormNoninc := fun v => by simp
+theorem zero : (0 : NormedAddGroupHom V₁ V₂).NormNoninc := fun v ↦ by simp
 
 theorem id : (id V).NormNoninc := fun _v => le_rfl
 
 theorem comp {g : NormedAddGroupHom V₂ V₃} {f : NormedAddGroupHom V₁ V₂} (hg : g.NormNoninc)
-    (hf : f.NormNoninc) : (g.comp f).NormNoninc := fun v => (hg (f v)).trans (hf v)
+    (hf : f.NormNoninc) : (g.comp f).NormNoninc := fun v ↦ (hg (f v)).trans (hf v)
 
 @[simp]
 theorem neg_iff {f : NormedAddGroupHom V₁ V₂} : (-f).NormNoninc ↔ f.NormNoninc :=

@@ -74,7 +74,7 @@ protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : Out
             exists t
             contrapose! ht
             exact le_iInf ht
-        refine le_trans ?_ (ENNReal.tsum_le_tsum fun i => le_of_lt (hf i).2)
+        refine le_trans ?_ (ENNReal.tsum_le_tsum fun i ↦ le_of_lt (hf i).2)
         rw [← ENNReal.tsum_prod, ← Nat.pairEquiv.symm.tsum_eq]
         refine iInf_le_of_le _ (iInf_le _ ?_)
         apply iUnion_subset
@@ -118,7 +118,7 @@ theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → 
 variable {m m_empty}
 
 theorem ofFunction_le (s : Set α) : OuterMeasure.ofFunction m m_empty s ≤ m s :=
-  let f : ℕ → Set α := fun i => Nat.casesOn i s fun _ => ∅
+  let f : ℕ → Set α := fun i ↦ Nat.casesOn i s fun _ => ∅
   iInf_le_of_le f <|
     iInf_le_of_le (subset_iUnion f 0) <|
       le_of_eq <| tsum_eq_single 0 <| by
@@ -130,7 +130,7 @@ theorem ofFunction_eq (s : Set α) (m_mono : ∀ ⦃t : Set α⦄, s ⊆ t → m
     (m_subadd : ∀ s : ℕ → Set α, m (⋃ i, s i) ≤ ∑' i, m (s i)) :
     OuterMeasure.ofFunction m m_empty s = m s :=
   le_antisymm (ofFunction_le s) <|
-    le_iInf fun f => le_iInf fun hf => le_trans (m_mono hf) (m_subadd f)
+    le_iInf fun f ↦ le_iInf fun hf => le_trans (m_mono hf) (m_subadd f)
 
 theorem le_ofFunction {μ : OuterMeasure α} :
     μ ≤ OuterMeasure.ofFunction m m_empty ↔ ∀ s, μ s ≤ m s :=
@@ -164,7 +164,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
       _ = m (f i) := (h (f i) hs ht).symm
       _ ≤ ∑' i, m (f i) := ENNReal.le_tsum i
 
-  set I := fun s => { i : ℕ | (s ∩ f i).Nonempty }
+  set I := fun s ↦ { i : ℕ | (s ∩ f i).Nonempty }
   have hd : Disjoint (I s) (I t) := disjoint_iff_inf_le.mpr fun i hi => he ⟨i, hi⟩
   have hI : ∀ u ⊆ s ∪ t, μ u ≤ ∑' i : I u, μ (f i) := fun u hu =>
     calc
@@ -178,49 +178,49 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
       add_le_add (hI _ subset_union_left) (hI _ subset_union_right)
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
-      (tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable ENNReal.summable).symm
+      (tsum_union_disjoint (f := fun i ↦ μ (f i)) hd ENNReal.summable ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
       (tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _) (fun _ => le_rfl)
         ENNReal.summable ENNReal.summable)
-    _ ≤ ∑' i, m (f i) := ENNReal.tsum_le_tsum fun i => ofFunction_le _
+    _ ≤ ∑' i, m (f i) := ENNReal.tsum_le_tsum fun i ↦ ofFunction_le _
 
 theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) :
     comap f (OuterMeasure.ofFunction m m_empty) =
-      OuterMeasure.ofFunction (fun s => m (f '' s)) (by simp; simp [m_empty]) := by
-  refine le_antisymm (le_ofFunction.2 fun s => ?_) fun s => ?_
+      OuterMeasure.ofFunction (fun s ↦ m (f '' s)) (by simp; simp [m_empty]) := by
+  refine le_antisymm (le_ofFunction.2 fun s ↦ ?_) fun s ↦ ?_
   · rw [comap_apply]
     apply ofFunction_le
   · rw [comap_apply, ofFunction_apply, ofFunction_apply]
-    refine iInf_mono' fun t => ⟨fun k => f ⁻¹' t k, ?_⟩
+    refine iInf_mono' fun t ↦ ⟨fun k ↦ f ⁻¹' t k, ?_⟩
     refine iInf_mono' fun ht => ?_
     rw [Set.image_subset_iff, preimage_iUnion] at ht
-    refine ⟨ht, ENNReal.tsum_le_tsum fun n => ?_⟩
+    refine ⟨ht, ENNReal.tsum_le_tsum fun n ↦ ?_⟩
     cases' h with hl hr
     exacts [hl (image_preimage_subset _ _), (congr_arg m (hr.image_preimage (t n))).le]
 
 theorem map_ofFunction_le {β} (f : α → β) :
     map f (OuterMeasure.ofFunction m m_empty) ≤
-      OuterMeasure.ofFunction (fun s => m (f ⁻¹' s)) m_empty :=
-  le_ofFunction.2 fun s => by
+      OuterMeasure.ofFunction (fun s ↦ m (f ⁻¹' s)) m_empty :=
+  le_ofFunction.2 fun s ↦ by
     rw [map_apply]
     apply ofFunction_le
 
 theorem map_ofFunction {β} {f : α → β} (hf : Injective f) :
     map f (OuterMeasure.ofFunction m m_empty) =
-      OuterMeasure.ofFunction (fun s => m (f ⁻¹' s)) m_empty := by
-  refine (map_ofFunction_le _).antisymm fun s => ?_
+      OuterMeasure.ofFunction (fun s ↦ m (f ⁻¹' s)) m_empty := by
+  refine (map_ofFunction_le _).antisymm fun s ↦ ?_
   simp only [ofFunction_apply, map_apply, le_iInf_iff]
   intro t ht
-  refine iInf_le_of_le (fun n => (range f)ᶜ ∪ f '' t n) (iInf_le_of_le ?_ ?_)
+  refine iInf_le_of_le (fun n ↦ (range f)ᶜ ∪ f '' t n) (iInf_le_of_le ?_ ?_)
   · rw [← union_iUnion, ← inter_subset, ← image_preimage_eq_inter_range, ← image_iUnion]
     exact image_subset _ ht
-  · refine ENNReal.tsum_le_tsum fun n => le_of_eq ?_
+  · refine ENNReal.tsum_le_tsum fun n ↦ le_of_eq ?_
     simp [hf.preimage_image]
 
 -- TODO (kmill): change `m (t ∩ s)` to `m (s ∩ t)`
 theorem restrict_ofFunction (s : Set α) (hm : Monotone m) :
     restrict s (OuterMeasure.ofFunction m m_empty) =
-      OuterMeasure.ofFunction (fun t => m (t ∩ s)) (by simp; simp [m_empty]) := by
+      OuterMeasure.ofFunction (fun t ↦ m (t ∩ s)) (by simp; simp [m_empty]) := by
       rw [restrict]
       simp only [inter_comm _ s, LinearMap.comp_apply]
       rw [comap_ofFunction _ (Or.inl hm)]
@@ -244,7 +244,7 @@ variable {α : Type*} (m : Set α → ℝ≥0∞)
   satisfying `μ s ≤ m s` for all `s : Set α`. This is the same as `OuterMeasure.ofFunction`,
   except that it doesn't require `m ∅ = 0`. -/
 def boundedBy : OuterMeasure α :=
-  OuterMeasure.ofFunction (fun s => ⨆ _ : s.Nonempty, m s) (by simp [Set.not_nonempty_empty])
+  OuterMeasure.ofFunction (fun s ↦ ⨆ _ : s.Nonempty, m s) (by simp [Set.not_nonempty_empty])
 
 variable {m}
 
@@ -300,7 +300,7 @@ theorem smul_boundedBy {c : ℝ≥0∞} (hc : c ≠ ∞) : c • boundedBy m = b
 
 theorem comap_boundedBy {β} (f : β → α)
     (h : (Monotone fun s : { s : Set α // s.Nonempty } => m s) ∨ Surjective f) :
-    comap f (boundedBy m) = boundedBy fun s => m (f '' s) := by
+    comap f (boundedBy m) = boundedBy fun s ↦ m (f '' s) := by
   refine (comap_ofFunction _ ?_).trans ?_
   · refine h.imp (fun H s t hst => iSup_le fun hs => ?_) id
     have ht : t.Nonempty := hs.mono hst
@@ -341,7 +341,7 @@ theorem sInfGen_def (m : Set (OuterMeasure α)) (t : Set α) :
 theorem sInf_eq_boundedBy_sInfGen (m : Set (OuterMeasure α)) :
     sInf m = OuterMeasure.boundedBy (sInfGen m) := by
   refine le_antisymm ?_ ?_
-  · refine le_boundedBy.2 fun s => le_iInf₂ fun μ hμ => ?_
+  · refine le_boundedBy.2 fun s ↦ le_iInf₂ fun μ hμ => ?_
     apply sInf_le hμ
   · refine le_sInf ?_
     intro μ hμ t
@@ -410,8 +410,8 @@ theorem comap_iInf {ι β} (f : α → β) (m : ι → OuterMeasure β) :
   refine ((comap_mono f).map_iInf_le s).antisymm ?_
   simp only [comap_apply, iInf_apply' _ hs, iInf_apply' _ (hs.image _), le_iInf_iff,
     Set.image_subset_iff, preimage_iUnion]
-  refine fun t ht => iInf_le_of_le _ (iInf_le_of_le ht <| ENNReal.tsum_le_tsum fun k => ?_)
-  exact iInf_mono fun i => (m i).mono (image_preimage_subset _ _)
+  refine fun t ht => iInf_le_of_le _ (iInf_le_of_le ht <| ENNReal.tsum_le_tsum fun k ↦ ?_)
+  exact iInf_mono fun i ↦ (m i).mono (image_preimage_subset _ _)
 
 theorem map_iInf {ι β} {f : α → β} (hf : Injective f) (m : ι → OuterMeasure α) :
     map f (⨅ i, m i) = restrict (range f) (⨅ i, map f (m i)) := by
@@ -420,13 +420,13 @@ theorem map_iInf {ι β} {f : α → β} (hf : Injective f) (m : ι → OuterMea
 
 theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMeasure β) :
     map f (⨅ i, comap f (m i)) = ⨅ i, map f (comap f (m i)) := by
-  refine (map_iInf_le _ _).antisymm fun s => ?_
+  refine (map_iInf_le _ _).antisymm fun s ↦ ?_
   simp only [map_apply, comap_apply, iInf_apply, le_iInf_iff]
-  refine fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le ?_ ?_)
+  refine fun t ht => iInf_le_of_le (fun n ↦ f '' t n ∪ (range f)ᶜ) (iInf_le_of_le ?_ ?_)
   · rw [← iUnion_union, Set.union_comm, ← inter_subset, ← image_iUnion, ←
       image_preimage_eq_inter_range]
     exact image_subset _ ht
-  · refine ENNReal.tsum_le_tsum fun n => iInf_mono fun i => (m i).mono ?_
+  · refine ENNReal.tsum_le_tsum fun n ↦ iInf_mono fun i ↦ (m i).mono ?_
     simp only [preimage_union, preimage_compl, preimage_range, compl_univ, union_empty,
       image_subset_iff]
     exact subset_refl _

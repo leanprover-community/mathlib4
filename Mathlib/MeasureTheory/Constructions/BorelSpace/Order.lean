@@ -539,12 +539,12 @@ theorem measurable_of_Ici {f : δ → α} (hf : ∀ x, MeasurableSet (f ⁻¹' I
 then it is measurable. -/
 theorem Measurable.isLUB {ι} [Countable ι] {f : ι → δ → α} {g : δ → α} (hf : ∀ i, Measurable (f i))
     (hg : ∀ b, IsLUB { a | ∃ i, f i b = a } (g b)) : Measurable g := by
-  change ∀ b, IsLUB (range fun i => f i b) (g b) at hg
+  change ∀ b, IsLUB (range fun i ↦ f i b) (g b) at hg
   rw [‹BorelSpace α›.measurable_eq, borel_eq_generateFrom_Ioi α]
   apply measurable_generateFrom
   rintro _ ⟨a, rfl⟩
   simp_rw [Set.preimage, mem_Ioi, lt_isLUB_iff (hg _), exists_range_iff, setOf_exists]
-  exact MeasurableSet.iUnion fun i => hf i (isOpen_lt' _).measurableSet
+  exact MeasurableSet.iUnion fun i ↦ hf i (isOpen_lt' _).measurableSet
 
 /-- If a function is the least upper bound of countably many measurable functions on a measurable
 set `s`, and coincides with a measurable function outside of `s`, then it is measurable. -/
@@ -801,7 +801,7 @@ alias aemeasurable_iInf := AEMeasurable.iInf
 
 protected theorem Measurable.sSup {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable fun x ↦ sSup ((fun i => f i x) '' s) := by
+    Measurable fun x ↦ sSup ((fun i ↦ f i x) '' s) := by
   simp_rw [image_eq_range]
   have : Countable s := hs.to_subtype
   exact .iSup fun i ↦ hf i i.2
@@ -811,7 +811,7 @@ alias measurable_sSup := Measurable.sSup
 
 protected theorem Measurable.sInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countable)
     (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable fun x ↦ sInf ((fun i => f i x) '' s) :=
+    Measurable fun x ↦ sInf ((fun i ↦ f i x) '' s) :=
   .sSup (α := αᵒᵈ) hs hf
 
 @[deprecated (since := "2024-10-21")]
@@ -845,7 +845,7 @@ theorem AEMeasurable.biSup {ι} {μ : Measure δ} (s : Set ι) {f : ι → δ �
   have : ∀ i ∈ s, ∀ᵐ b ∂μ, f i b = g i b :=
     fun i hi ↦ by simpa [g, hi] using (hf i hi).ae_eq_mk
   filter_upwards [(ae_ball_iff hs).2 this] with b hb
-  exact iSup_congr fun i => iSup_congr (hb i)
+  exact iSup_congr fun i ↦ iSup_congr (hb i)
 
 @[deprecated (since := "2024-10-21")]
 alias aemeasurable_biSup := AEMeasurable.biSup
@@ -924,7 +924,7 @@ alias measurable_liminf' := Measurable.liminf'
 -/
 theorem Measurable.limsup' {ι ι'} {f : ι → δ → α} {u : Filter ι} (hf : ∀ i, Measurable (f i))
     {p : ι' → Prop} {s : ι' → Set ι} (hu : u.HasCountableBasis p s) (hs : ∀ i, (s i).Countable) :
-    Measurable fun x ↦ limsup (fun i => f i x) u :=
+    Measurable fun x ↦ limsup (fun i ↦ f i x) u :=
   .liminf' (α := αᵒᵈ) hf hu hs
 
 @[deprecated (since := "2024-10-21")]
@@ -934,7 +934,7 @@ alias measurable_limsup' := Measurable.limsup'
 -/
 @[measurability]
 theorem Measurable.liminf {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
-    Measurable fun x ↦ liminf (fun i => f i x) atTop :=
+    Measurable fun x ↦ liminf (fun i ↦ f i x) atTop :=
   .liminf' hf atTop_countable_basis fun _ => to_countable _
 
 @[deprecated (since := "2024-10-21")]
@@ -944,7 +944,7 @@ alias measurable_liminf := Measurable.liminf
 -/
 @[measurability]
 theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i)) :
-    Measurable fun x ↦ limsup (fun i => f i x) atTop :=
+    Measurable fun x ↦ limsup (fun i ↦ f i x) atTop :=
   .limsup' hf atTop_countable_basis fun _ => to_countable _
 
 @[deprecated (since := "2024-10-21")]

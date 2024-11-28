@@ -260,7 +260,7 @@ lemma preconnected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
     H.Preconnected ↔ ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   constructor
   · intro hc u v hu hv
-    refine (hc ⟨_, hu⟩ ⟨_, hv⟩).elim fun p => ?_
+    refine (hc ⟨_, hu⟩ ⟨_, hv⟩).elim fun p ↦ ?_
     exists p.map (Subgraph.hom _)
     simp [coeSubgraph_le]
   · intro hw
@@ -346,7 +346,7 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
     ∃ (t' : Finset V), t ⊆ t' ∧ (G.induce (t' : Set V)).Connected := by
   classical
   obtain ⟨u, ut⟩ := tn
-  refine ⟨t.biUnion (fun v => (Gpc u v).some.support.toFinset), fun v vt => ?_, ?_⟩
+  refine ⟨t.biUnion (fun v ↦ (Gpc u v).some.support.toFinset), fun v vt => ?_, ?_⟩
   · simp only [Finset.mem_biUnion, List.mem_toFinset, exists_prop]
     exact ⟨v, vt, Walk.end_mem_support _⟩
   · apply G.induce_connected_of_patches u

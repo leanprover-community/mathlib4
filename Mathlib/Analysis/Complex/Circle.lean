@@ -121,7 +121,7 @@ def ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : Circle where
   property := mem_sphere_zero_iff_norm.2 <| by
     rw [norm_div, RCLike.norm_conj, div_self]; exact Complex.abs.ne_zero hz
 
-/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
+/-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
 def exp : C(ℝ, Circle) where
   toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, abs_cos_add_sin_mul_I]⟩
   continuous_toFun := Continuous.subtype_mk (by fun_prop)
@@ -139,7 +139,7 @@ theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y :=
   Subtype.ext <| by
     simp only [coe_exp, Submonoid.coe_mul, ofReal_add, add_mul, Complex.exp_add, coe_mul]
 
-/-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
+/-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
 @[simps]
 def expHom : ℝ →+ Additive Circle where

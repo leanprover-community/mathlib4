@@ -128,7 +128,7 @@ theorem eq_singleton_iff_unique_mem {s : Finset α} {a : α} : s = {a} ↔ a ∈
     exact ⟨Finset.mem_singleton_self _, fun _ => Finset.mem_singleton.1⟩
   · ext
     rw [Finset.mem_singleton]
-    exact ⟨t.right _, fun r => r.symm ▸ t.left⟩
+    exact ⟨t.right _, fun r ↦ r.symm ▸ t.left⟩
 
 theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
     s = {a} ↔ s.Nonempty ∧ ∀ x ∈ s, x = a := by

@@ -354,7 +354,7 @@ theorem smul_closure (a : α) (s : Set G) : a • closure s = closure (a • s) 
 
 instance pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentralScalar α G] :
     IsCentralScalar α (Subgroup G) :=
-  ⟨fun _ S => (congr_arg fun f => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S => (congr_arg fun f ↦ S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
 
 theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     MulAut.conj (h : G) • P ≤ H := by
@@ -504,7 +504,7 @@ theorem mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubgroup A) :
 
 instance pointwise_isCentralScalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
     IsCentralScalar α (AddSubgroup A) :=
-  ⟨fun _ S => (congr_arg fun f => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S => (congr_arg fun f ↦ S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
 
 end Monoid
 

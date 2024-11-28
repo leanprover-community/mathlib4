@@ -147,10 +147,10 @@ exchanging the horizontal and vertical directions.
 @[simps]
 def flip (K : HomologicalComplex₂ C c₁ c₂) : HomologicalComplex₂ C c₂ c₁ where
   X i :=
-    { X := fun j => (K.X j).X i
+    { X := fun j ↦ (K.X j).X i
       d := fun j j' => (K.d j j').f i
       shape := fun _ _ w => K.shape_f _ _ w i }
-  d i i' := { f := fun j => (K.X j).d i i' }
+  d i i' := { f := fun j ↦ (K.X j).d i i' }
   shape i i' w := by
     ext j
     exact (K.X j).shape i i' w
@@ -167,7 +167,7 @@ def flipFunctor :
   obj K := K.flip
   map {K L} f :=
     { f := fun i =>
-        { f := fun j => (f.f j).f i
+        { f := fun j ↦ (f.f j).f i
           comm' := by intros; simp }
       comm' := by intros; ext; simp }
 

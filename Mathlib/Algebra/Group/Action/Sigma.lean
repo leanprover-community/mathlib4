@@ -67,7 +67,7 @@ protected theorem FaithfulSMul' [FaithfulSMul M (α i)] : FaithfulSMul M (Σi, �
 
 @[to_additive]
 instance [Nonempty ι] [∀ i, FaithfulSMul M (α i)] : FaithfulSMul M (Σi, α i) :=
-  (Nonempty.elim ‹_›) fun i => Sigma.FaithfulSMul' i
+  (Nonempty.elim ‹_›) fun i ↦ Sigma.FaithfulSMul' i
 
 end SMul
 

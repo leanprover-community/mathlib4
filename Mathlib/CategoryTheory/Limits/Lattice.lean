@@ -33,7 +33,7 @@ def finiteLimitCone [SemilatticeInf α] [OrderTop α] (F : J ⥤ α) : LimitCone
   cone :=
     { pt := Finset.univ.inf F.obj
       π := { app := fun _ => homOfLE (Finset.inf_le (Fintype.complete _)) } }
-  isLimit := { lift := fun s => homOfLE (Finset.le_inf fun j _ => (s.π.app j).down.down) }
+  isLimit := { lift := fun s ↦ homOfLE (Finset.le_inf fun j _ => (s.π.app j).down.down) }
 
 /--
 The colimit cocone over any functor from a finite diagram into a `SemilatticeSup` with `OrderBot`.
@@ -42,7 +42,7 @@ def finiteColimitCocone [SemilatticeSup α] [OrderBot α] (F : J ⥤ α) : Colim
   cocone :=
     { pt := Finset.univ.sup F.obj
       ι := { app := fun _ => homOfLE (Finset.le_sup (Fintype.complete _)) } }
-  isColimit := { desc := fun s => homOfLE (Finset.sup_le fun j _ => (s.ι.app j).down.down) }
+  isColimit := { desc := fun s ↦ homOfLE (Finset.sup_le fun j _ => (s.ι.app j).down.down) }
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasFiniteLimits_of_semilatticeInf_orderTop [SemilatticeInf α]

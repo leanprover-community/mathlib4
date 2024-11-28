@@ -182,7 +182,7 @@ theorem isClosed_iff_bsup :
         (∀ i hi, f i hi ∈ s) → bsup.{u, u} o f ∈ s := by
   rw [isClosed_iff_iSup]
   refine ⟨fun H o ho f hf => H (toType_nonempty_iff_ne_zero.2 ho) _ ?_, fun H ι hι f hf => ?_⟩
-  · exact fun i => hf _ _
+  · exact fun i ↦ hf _ _
   · rw [← Ordinal.sup, ← bsup_eq_sup]
     apply H (type_ne_zero_iff_nonempty.2 hι)
     exact fun i hi => hf _
@@ -216,7 +216,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
     suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
     rw [mem_iff_iSup_of_isClosed (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact
-      ⟨_, toType_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i => h _ (typein_lt_self i),
+      ⟨_, toType_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i ↦ h _ (typein_lt_self i),
         sup_typein_limit ho.2⟩
 
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
@@ -225,7 +225,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
   refine
     ⟨fun h ↦ isClosed_iff_iSup.2 fun {ι} hι f hf => ?_, fun h =>
       (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => ?_⟩⟩
-  · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso s hs).symm ⟨_, hf i⟩
+  · let g : ι → Ordinal.{u} := fun i ↦ (enumOrdOrderIso s hs).symm ⟨_, hf i⟩
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _

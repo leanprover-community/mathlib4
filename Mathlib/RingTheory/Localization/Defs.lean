@@ -591,7 +591,7 @@ theorem map_comp_map {A : Type*} [CommSemiring A] {U : Submonoid A} {W} [CommSem
     (map W l hl).comp (map Q g hy : S →+* _) = map W (l.comp g) fun _ hx => hl (hy hx) :=
   RingHom.ext fun x =>
     Submonoid.LocalizationMap.map_map (P := P) (toLocalizationMap M S) (fun y ↦ hy y.2)
-      (toLocalizationMap U W) (fun w => hl w.2) x
+      (toLocalizationMap U W) (fun w ↦ hl w.2) x
 
 /-- If `CommSemiring` homs `g : R →+* P, l : P →+* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/

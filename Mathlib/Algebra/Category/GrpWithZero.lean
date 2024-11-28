@@ -45,7 +45,7 @@ instance : LargeCategory.{u} GrpWithZero where
   assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
 instance {M N : GrpWithZero} : FunLike (M ⟶ N) M N :=
-  ⟨fun f => f.toFun, fun f g h => by
+  ⟨fun f ↦ f.toFun, fun f g h => by
     cases f
     cases g
     congr
@@ -59,7 +59,7 @@ lemma coe_comp {X Y Z : GrpWithZero} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X 
 instance groupWithZeroConcreteCategory : ConcreteCategory GrpWithZero where
   forget :=
   { obj := fun G => G
-    map := fun f => f.toFun }
+    map := fun f ↦ f.toFun }
   forget_faithful := ⟨fun h ↦ DFunLike.coe_injective h⟩
 
 @[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) :
@@ -68,12 +68,12 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GrpWithZero where
 instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
-        map := fun f => ⟨f, f.map_zero', f.map_one'⟩ }
+        map := fun f ↦ ⟨f, f.map_zero', f.map_one'⟩ }
 
 instance hasForgetToMon : HasForget₂ GrpWithZero MonCat where
   forget₂ :=
       { obj := fun X => ⟨ X , _ ⟩
-        map := fun f => f.toMonoidHom }
+        map := fun f ↦ f.toMonoidHom }
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]

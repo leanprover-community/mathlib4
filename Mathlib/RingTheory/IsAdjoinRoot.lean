@@ -369,7 +369,7 @@ Auxiliary definition for `IsAdjoinRootMonic.powerBasis`. -/
 def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
   Basis.ofRepr
     { toFun := fun x ↦ (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
-      invFun := fun g => h.map (ofFinsupp (g.mapDomain Fin.val))
+      invFun := fun g ↦ h.map (ofFinsupp (g.mapDomain Fin.val))
       left_inv := fun x ↦ by
         cases subsingleton_or_nontrivial R
         · subsingleton [h.subsingleton]
@@ -387,7 +387,7 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):added a `dsimp`
         rw [natDegree_lt_natDegree_iff hx]
         exact degree_modByMonic_lt _ h.Monic
-      right_inv := fun g => by
+      right_inv := fun g ↦ by
         nontriviality R
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
@@ -520,7 +520,7 @@ theorem coeff_algebraMap [Nontrivial S] (h : IsAdjoinRootMonic S f) (x : R) :
 theorem ext_elem (h : IsAdjoinRootMonic S f) ⦃x y : S⦄
     (hxy : ∀ i < natDegree f, h.coeff x i = h.coeff y i) : x = y :=
   EquivLike.injective h.basis.equivFun <|
-    funext fun i => by
+    funext fun i ↦ by
       rw [Basis.equivFun_apply, ← h.coeff_apply_coe, Basis.equivFun_apply, ← h.coeff_apply_coe,
         hxy i i.prop]
 

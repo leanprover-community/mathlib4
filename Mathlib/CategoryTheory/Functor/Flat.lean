@@ -87,12 +87,12 @@ instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
   obtain ⟨c₁⟩ := IsCofiltered.cone_nonempty (H ⋙ StructuredArrow.pre X F G)
   let H₂ : J ⥤ StructuredArrow c₁.pt.right F :=
-    { obj := fun j => StructuredArrow.mk (c₁.π.app j).right
+    { obj := fun j ↦ StructuredArrow.mk (c₁.π.app j).right
       map := fun {j j'} f =>
         StructuredArrow.homMk (H.map f).right (congrArg CommaMorphism.right (c₁.w f)) }
   obtain ⟨c₂⟩ := IsCofiltered.cone_nonempty H₂
   exact ⟨⟨StructuredArrow.mk (c₁.pt.hom ≫ G.map c₂.pt.hom),
-    ⟨fun j => StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp, (c₂.π.app j).w]),
+    ⟨fun j ↦ StructuredArrow.homMk (c₂.π.app j).right (by simp [← G.map_comp, (c₂.π.app j).w]),
      fun j j' f => by simpa using (c₂.w f).symm⟩⟩⟩
 
 section

@@ -352,7 +352,7 @@ theorem absNorm_span_singleton (r : S) :
   let b := Module.Free.chooseBasis ℤ S
   rw [← natAbs_det_equiv _ (b.equiv (basisSpanSingleton b hr) (Equiv.refl _))]
   congr
-  refine b.ext fun i => ?_
+  refine b.ext fun i ↦ ?_
   simp
 
 theorem absNorm_dvd_norm_of_mem {I : Ideal S} {x : S} (h : x ∈ I) :

@@ -102,7 +102,7 @@ protected theorem const (y : Y) : IsLocallyConstant (Function.const X y) :=
   of_constant _ fun _ _ => rfl
 
 protected theorem comp {f : X → Y} (hf : IsLocallyConstant f) (g : Y → Z) :
-    IsLocallyConstant (g ∘ f) := fun s => by
+    IsLocallyConstant (g ∘ f) := fun s ↦ by
   rw [Set.preimage_comp]
   exact hf _
 
@@ -116,7 +116,7 @@ theorem comp₂ {Y₁ Y₂ Z : Type*} {f : X → Y₁} {g : X → Y₂} (hf : Is
   (hf.prod_mk hg).comp fun x : Y₁ × Y₂ => h x.1 x.2
 
 theorem comp_continuous [TopologicalSpace Y] {g : Y → Z} {f : X → Y} (hg : IsLocallyConstant g)
-    (hf : Continuous f) : IsLocallyConstant (g ∘ f) := fun s => by
+    (hf : Continuous f) : IsLocallyConstant (g ∘ f) := fun s ↦ by
   rw [Set.preimage_comp]
   exact hf.isOpen_preimage _ (hg _)
 
@@ -172,7 +172,7 @@ theorem div [Div Y] ⦃f g : X → Y⦄ (hf : IsLocallyConstant f) (hg : IsLocal
 /-- If a composition of a function `f` followed by an injection `g` is locally
 constant, then the locally constant property descends to `f`. -/
 theorem desc {α β : Type*} (f : X → α) (g : α → β) (h : IsLocallyConstant (g ∘ f))
-    (inj : Function.Injective g) : IsLocallyConstant f := fun s => by
+    (inj : Function.Injective g) : IsLocallyConstant f := fun s ↦ by
   rw [← preimage_image_eq s inj, preimage_preimage]
   exact h (g '' s)
 
@@ -349,14 +349,14 @@ theorem map_comp {Y₁ Y₂ Y₃ : Type*} (g : Y₂ → Y₃) (f : Y₁ → Y₂
 functions with values in β indexed by α. -/
 def flip {X α β : Type*} [TopologicalSpace X] (f : LocallyConstant X (α → β)) (a : α) :
     LocallyConstant X β :=
-  f.map fun f => f a
+  f.map fun f ↦ f a
 
 /-- If α is finite, this constructs a locally constant function to `α → β` given a
 family of locally constant functions with values in β indexed by α. -/
 def unflip {X α β : Type*} [Finite α] [TopologicalSpace X] (f : α → LocallyConstant X β) :
     LocallyConstant X (α → β) where
   toFun x a := f a x
-  isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 fun g => by
+  isLocallyConstant := IsLocallyConstant.iff_isOpen_fiber.2 fun g ↦ by
     have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
       ext; simp [funext_iff]
     rw [this]
@@ -395,7 +395,7 @@ theorem comap_comap {W : Type*} [TopologicalSpace W] (f : C(W, X)) (g : C(X, Y))
     (x : LocallyConstant Y Z) : comap f (comap g x) = comap (g.comp f) x := rfl
 
 theorem comap_const (f : C(X, Y)) (y : Y) (h : ∀ x, f x = y) :
-    (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g => const X (g y) := by
+    (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g ↦ const X (g y) := by
   ext; simp [h]
 
 lemma comap_injective (f : C(X, Y)) (hfs : f.1.Surjective) :
@@ -435,7 +435,7 @@ variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
   otherwise. "]
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
-  isLocallyConstant := fun s => by
+  isLocallyConstant := fun s ↦ by
     rw [mulIndicator_preimage, Set.ite, Set.diff_eq]
     exact ((f.2 s).inter hU.isOpen).union ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
 

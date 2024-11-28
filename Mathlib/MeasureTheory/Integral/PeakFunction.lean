@@ -287,7 +287,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
       _root_.continuousOn_iff.1 hc x₀ h₀ (Ioi (0 : ℝ)) isOpen_Ioi hnc₀
     apply (hμ u u_open x₀_u).trans_le
     exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
-  have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n => by
+  have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n ↦ by
     rw [integral_mul_left, inv_mul_cancel₀ (P n).ne']
   have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 atTop (s \ u) := by
     intro u u_open x₀u
@@ -327,7 +327,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
       · exact hnc _ hx.1
       · exact ht x hx
     have N :
-      Tendsto (fun n => (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n) atTop
+      Tendsto (fun n ↦ (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n) atTop
         (𝓝 ((μ (v ∩ s)).toReal⁻¹ * 0)) := by
       apply Tendsto.mul tendsto_const_nhds _
       apply tendsto_pow_atTop_nhds_zero_of_lt_one (div_nonneg t_pos t'_pos.le)

@@ -49,7 +49,7 @@ theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
 
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
-  ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
+  ext fun n ↦ by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
 
 theorem divX_eq_zero_iff : divX p = 0 ↔ p = C (p.coeff 0) :=
   ⟨fun h ↦ by simpa [eq_comm, h] using divX_mul_X_add p, fun h ↦ by rw [h, divX_C]⟩

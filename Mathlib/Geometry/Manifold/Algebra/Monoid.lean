@@ -324,7 +324,7 @@ theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f 
 @[to_additive]
 theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
     ContMDiffWithinAt I' I n (∏ i ∈ t, f i) s x :=
-  Finset.prod_induction f (fun f => ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg => hf.mul hg)
+  Finset.prod_induction f (fun f ↦ ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg => hf.mul hg)
     (contMDiffWithinAt_const (c := 1)) h
 
 @[to_additive]
@@ -387,15 +387,15 @@ theorem contMDiff_finset_prod (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
 
 @[to_additive]
 theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
-    (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x ↦ ∏ᶠ i, f i x :=
+    (hfin : LocallyFinite fun i ↦ mulSupport (f i)) : ContMDiff I' I n fun x ↦ ∏ᶠ i, f i x :=
   fun x ↦ contMDiffAt_finprod hfin fun i ↦ h i x
 
 @[to_additive]
 theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
-    (hf : LocallyFinite fun i => mulSupport (f i)) :
+    (hf : LocallyFinite fun i ↦ mulSupport (f i)) :
     ContMDiff I' I n fun x ↦ ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
-  exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  exact contMDiff_finprod (fun i ↦ hc i i.2) (hf.comp_injective Subtype.coe_injective)
 
 @[deprecated (since := "2024-11-21")] alias smoothAt_finprod := contMDiffAt_finprod
 @[deprecated (since := "2024-11-21")] alias smoothAt_finsum := contMDiffAt_finsum

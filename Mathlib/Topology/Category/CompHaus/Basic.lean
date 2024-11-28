@@ -164,7 +164,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
           inferInstance
       prop := trivial }
     π := {
-      app := fun j => (TopCat.limitCone FF).π.app j
+      app := fun j ↦ (TopCat.limitCone FF).π.app j
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩

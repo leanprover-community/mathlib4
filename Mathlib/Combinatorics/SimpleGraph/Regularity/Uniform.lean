@@ -159,14 +159,14 @@ theorem nonuniformWitness_subset (h : ¬G.IsUniform ε s t) : G.nonuniformWitnes
   unfold nonuniformWitness
   split_ifs
   · exact G.left_nonuniformWitnesses_subset h
-  · exact G.right_nonuniformWitnesses_subset fun i => h i.symm
+  · exact G.right_nonuniformWitnesses_subset fun i ↦ h i.symm
 
 theorem le_card_nonuniformWitness (h : ¬G.IsUniform ε s t) :
     #s * ε ≤ #(G.nonuniformWitness ε s t) := by
   unfold nonuniformWitness
   split_ifs
   · exact G.left_nonuniformWitnesses_card h
-  · exact G.right_nonuniformWitnesses_card fun i => h i.symm
+  · exact G.right_nonuniformWitnesses_card fun i ↦ h i.symm
 
 theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) : ε ≤ |G.edgeDensity
     (G.nonuniformWitness ε s t) (G.nonuniformWitness ε t s) - G.edgeDensity s t| := by
@@ -176,7 +176,7 @@ theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) : 
     exact G.nonuniformWitnesses_spec h₂
   · cases h₁ rfl
   · rw [if_neg (asymm gt), if_pos gt, edgeDensity_comm, edgeDensity_comm _ s]
-    apply G.nonuniformWitnesses_spec fun i => h₂ i.symm
+    apply G.nonuniformWitnesses_spec fun i ↦ h₂ i.symm
 
 end SimpleGraph
 

@@ -101,7 +101,7 @@ local postfix:90 "/ₙ" => z
 
 theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
   have := bernsteinPolynomial.sum ℝ n
-  apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
+  apply_fun fun p ↦ Polynomial.aeval (x : ℝ) p at this
   simp? [map_sum, Finset.sum_range] at this says
     simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, Polynomial.eval_one] at this
   exact this
@@ -115,7 +115,7 @@ theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
   conv_lhs => simp only [Finset.sum_mul, z]
   conv_rhs => rw [div_mul_cancel₀ _ h']
   have := bernsteinPolynomial.variance ℝ n
-  apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
+  apply_fun fun p ↦ Polynomial.aeval (x : ℝ) p at this
   simp? [map_sum, Finset.sum_range, ← Polynomial.natCast_mul] at this says
     simp only [nsmul_eq_mul, Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval,
       Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_sub, Polynomial.eval_natCast,

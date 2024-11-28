@@ -46,10 +46,10 @@ theorem totient_eq_card_coprime (n : ℕ) : φ n = #{a ∈ range n | n.Coprime a
 /-- A characterisation of `Nat.totient` that avoids `Finset`. -/
 theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.Coprime m } := by
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
-    { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
-      left_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta]
-      right_inv := fun m => by simp only [Subtype.coe_mk, Subtype.coe_eta] }
+    { toFun := fun m ↦ ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
+      invFun := fun m ↦ ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using m.property⟩
+      left_inv := fun m ↦ by simp only [Subtype.coe_mk, Subtype.coe_eta]
+      right_inv := fun m ↦ by simp only [Subtype.coe_mk, Subtype.coe_eta] }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 
 theorem totient_le (n : ℕ) : φ n ≤ n :=
@@ -286,7 +286,7 @@ theorem totient_eq_div_primeFactors_mul (n : ℕ) :
     φ n = (n / ∏ p ∈ n.primeFactors, p) * ∏ p ∈ n.primeFactors, (p - 1) := by
   rw [← mul_div_left n.totient, totient_mul_prod_primeFactors, mul_comm,
     Nat.mul_div_assoc _ (prod_primeFactors_dvd n), mul_comm]
-  exact prod_pos (fun p => pos_of_mem_primeFactors)
+  exact prod_pos (fun p ↦ pos_of_mem_primeFactors)
 
 /-- Euler's product formula for the totient function. -/
 theorem totient_eq_mul_prod_factors (n : ℕ) :

@@ -218,7 +218,7 @@ theorem constantCoeff_inv (φ : MvPowerSeries σ k) :
 
 theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ k φ = 0 :=
   ⟨fun h ↦ by simpa using congr_arg (constantCoeff σ k) h, fun h =>
-    ext fun n => by
+    ext fun n ↦ by
       classical
       rw [coeff_inv]
       split_ifs <;>
@@ -251,7 +251,7 @@ protected theorem inv_mul_cancel (φ : MvPowerSeries σ k) (h : constantCoeff σ
 
 protected theorem eq_mul_inv_iff_mul_eq {φ₁ φ₂ φ₃ : MvPowerSeries σ k}
     (h : constantCoeff σ k φ₃ ≠ 0) : φ₁ = φ₂ * φ₃⁻¹ ↔ φ₁ * φ₃ = φ₂ :=
-  ⟨fun k => by simp [k, mul_assoc, MvPowerSeries.inv_mul_cancel _ h], fun k => by
+  ⟨fun k ↦ by simp [k, mul_assoc, MvPowerSeries.inv_mul_cancel _ h], fun k ↦ by
     simp [← k, mul_assoc, MvPowerSeries.mul_inv_cancel _ h]⟩
 
 protected theorem eq_inv_iff_mul_eq_one {φ ψ : MvPowerSeries σ k} (h : constantCoeff σ k ψ ≠ 0) :

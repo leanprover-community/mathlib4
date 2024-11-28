@@ -62,8 +62,8 @@ unsafe instance {α : Type*} {β : α → Type*} [Repr α] [∀ i, Repr (β i)] 
     Repr (Π₀ a, β a) where
   reprPrec f p :=
     let vals :=
-      ((f.support'.unquot.val.map fun i => (repr i, repr (f i))).filter
-        (fun p => toString p.2 != "0")).unquot
+      ((f.support'.unquot.val.map fun i ↦ (repr i, repr (f i))).filter
+        (fun p ↦ toString p.2 != "0")).unquot
     let vals_dedup := vals.foldl (fun xs x => x :: xs.eraseP (toString ·.1 == toString x.1)) []
     if vals.length = 0 then
       "0"

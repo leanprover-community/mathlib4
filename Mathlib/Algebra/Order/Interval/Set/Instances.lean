@@ -128,12 +128,12 @@ instance commMonoidWithZero {α : Type*} [OrderedCommSemiring α] :
 instance cancelMonoidWithZero {α : Type*} [OrderedRing α] [NoZeroDivisors α] :
     CancelMonoidWithZero (Icc (0 : α) 1) :=
   @Function.Injective.cancelMonoidWithZero α _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
-    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
+    (fun v ↦ v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 
 instance cancelCommMonoidWithZero {α : Type*} [OrderedCommRing α] [NoZeroDivisors α] :
     CancelCommMonoidWithZero (Icc (0 : α) 1) :=
   @Function.Injective.cancelCommMonoidWithZero α _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
-    (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
+    (fun v ↦ v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 
 variable {β : Type*} [OrderedRing β]
 

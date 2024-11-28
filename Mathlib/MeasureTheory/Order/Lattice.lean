@@ -218,7 +218,7 @@ theorem Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀
 
 @[measurability]
 theorem Finset.measurable_range_sup'' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
-    Measurable fun x ↦ (range (n + 1)).sup' nonempty_range_succ fun k => f k x := by
+    Measurable fun x ↦ (range (n + 1)).sup' nonempty_range_succ fun k ↦ f k x := by
   convert Finset.measurable_range_sup' hf using 1
   ext x
   simp

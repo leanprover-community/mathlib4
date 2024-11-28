@@ -111,9 +111,9 @@ can be discharged by `rfl`. -/
 def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1)
     (hmul : ∀ {i j} (ai : A i) (aj : A j), f _ (GradedMonoid.GMul.mul ai aj) = f _ ai * f _ aj) :
     (⨁ i, A i) →ₐ[R] B :=
-  { toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul with
-    toFun := toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul
-    commutes' := fun r => by
+  { toSemiring (fun i ↦ (f i).toAddMonoidHom) hone @hmul with
+    toFun := toSemiring (fun i ↦ (f i).toAddMonoidHom) hone @hmul
+    commutes' := fun r ↦ by
       show toModule R _ _ f (algebraMap R _ r) = _
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
         ← lof_eq_of R, toModule_lof, hone] }
@@ -127,7 +127,7 @@ theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
   AlgHom.toLinearMap_injective <| DirectSum.linearMap_ext _ h
 
 theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
-  algHom_ext' R A fun i => LinearMap.ext <| h i
+  algHom_ext' R A fun i ↦ LinearMap.ext <| h i
 
 /-- The piecewise multiplication from the `Mul` instance, as a bundled linear homomorphism.
 

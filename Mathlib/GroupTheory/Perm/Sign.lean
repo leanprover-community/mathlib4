@@ -142,7 +142,7 @@ is preserved under composition with a non-trivial swap, then `P` holds for all p
 @[elab_as_elim]
 theorem swap_induction_on' [Finite α] {P : Perm α → Prop} (f : Perm α) :
     P 1 → (∀ f x y, x ≠ y → P f → P (f * swap x y)) → P f := fun h1 IH =>
-  inv_inv f ▸ swap_induction_on f⁻¹ h1 fun f => IH f⁻¹
+  inv_inv f ▸ swap_induction_on f⁻¹ h1 fun f ↦ IH f⁻¹
 
 theorem isConj_swap {w x y z : α} (hwx : w ≠ x) (hyz : y ≠ z) : IsConj (swap w x) (swap y z) :=
   isConj_iff.2
@@ -367,7 +367,7 @@ theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : 
 permutations, `-1` for odd permutations. It is the unique surjective group homomorphism from
 `Perm α` to the group with two elements. -/
 def sign [Fintype α] : Perm α →* ℤˣ :=
-  MonoidHom.mk' (fun f => signAux3 f mem_univ) fun f g => (signAux3_mul_and_swap f g _ mem_univ).1
+  MonoidHom.mk' (fun f ↦ signAux3 f mem_univ) fun f g => (signAux3_mul_and_swap f g _ mem_univ).1
 
 section SignType.sign
 
@@ -457,7 +457,7 @@ theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) :
           rw [← l.prod_hom s, List.eq_replicate_length.2 this, List.prod_replicate, one_pow]
         rw [hl.1, hg] at this
         exact absurd this (by simp_all)
-  MonoidHom.ext fun f => by
+  MonoidHom.ext fun f ↦ by
     let ⟨l, hl₁, hl₂⟩ := (truncSwapFactors f).out
     have hsl : ∀ a ∈ l.map s, a = (-1 : ℤˣ) := fun a ha =>
       let ⟨g, hg⟩ := List.mem_map.1 ha

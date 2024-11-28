@@ -348,7 +348,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
   limit.lift (D.diagramOverOpen U)
     { pt := (D.U i).presheaf.obj (op U)
       π :=
-        { app := fun j => D.ιInvAppπApp U (unop j)
+        { app := fun j ↦ D.ιInvAppπApp U (unop j)
           naturality := fun {X Y} f' => by
             induction X using Opposite.rec' with | h X => ?_
             induction Y using Opposite.rec' with | h Y => ?_
@@ -502,7 +502,7 @@ Vᵢⱼ ⟶ Uᵢ
  Uⱼ ⟶ X
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
-  PullbackCone.isLimitAux' _ fun s => by
+  PullbackCone.isLimitAux' _ fun s ↦ by
     refine ⟨?_, ?_, ?_, ?_⟩
     · refine PresheafedSpace.IsOpenImmersion.lift (D.f i j) s.fst ?_
       erw [← D.toTopGlueData.preimage_range j i]

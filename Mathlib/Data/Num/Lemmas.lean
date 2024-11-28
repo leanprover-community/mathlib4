@@ -1280,7 +1280,7 @@ instance addCommGroup : AddCommGroup ZNum :=
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
     one := 1
-    natCast := fun n => ZNum.ofInt' n
+    natCast := fun n ↦ ZNum.ofInt' n
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
     natCast_succ := fun n =>
       show (Num.ofNat' (n + 1)).toZNum = (Num.ofNat' n).toZNum + 1 by

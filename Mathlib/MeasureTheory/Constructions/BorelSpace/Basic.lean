@@ -141,7 +141,7 @@ def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
   evalTactic <| ← `(tactic|
     have := @BorelSpace.measurable_eq $te _ _ _)
   try
-    liftMetaTactic fun m => return [← subst m i]
+    liftMetaTactic fun m ↦ return [← subst m i]
   catch _ =>
     let et ← synthInstance (← mkAppOptM ``TopologicalSpace #[e])
     throwError m!"\
@@ -314,7 +314,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
 
 instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
   rw [nhds, iInf_subtype']
-  refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => ?_
+  refine @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i ↦ ?_
   exact i.2.2.measurableSet.principal_isMeasurablyGenerated
 
 /-- If `s` is a measurable set, then `𝓝[s] a` is a measurably generated filter for
@@ -591,10 +591,10 @@ variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [Topological
 theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [∀ i, MeasurableSpace (π i)] [∀ i, BorelSpace (π i)] :
       MeasurableSpace.pi ≤ borel (∀ i, π i) := by
-  have : ‹∀ i, MeasurableSpace (π i)› = fun i => borel (π i) :=
-    funext fun i => BorelSpace.measurable_eq
+  have : ‹∀ i, MeasurableSpace (π i)› = fun i ↦ borel (π i) :=
+    funext fun i ↦ BorelSpace.measurable_eq
   rw [this]
-  exact iSup_le fun i => comap_le_iff_le_map.2 <| (continuous_apply i).borel_measurable
+  exact iSup_le fun i ↦ comap_le_iff_le_map.2 <| (continuous_apply i).borel_measurable
 
 theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   rw [‹BorelSpace α›.measurable_eq, ‹BorelSpace β›.measurable_eq]

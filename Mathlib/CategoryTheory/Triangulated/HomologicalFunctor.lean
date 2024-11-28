@@ -102,7 +102,7 @@ for all `n : ℤ`, `F.obj (X⟦n⟧)` is zero. -/
 def homologicalKernel [F.IsHomological] :
     Triangulated.Subcategory C := Triangulated.Subcategory.mk'
   (fun X => ∀ (n : ℤ), IsZero (F.obj (X⟦n⟧)))
-  (fun n => by
+  (fun n ↦ by
     rw [IsZero.iff_id_eq_zero, ← F.map_id, ← Functor.map_id,
       id_zero, Functor.map_zero, Functor.map_zero])
   (fun X a hX b => IsZero.of_iso (hX (a + b)) (F.mapIso ((shiftFunctorAdd C a b).app X).symm))
@@ -247,9 +247,9 @@ lemma mem_homologicalKernel_W_iff {X Y : C} (f : X ⟶ Y) :
     F.homologicalKernel.W f ↔ ∀ (n : ℤ), IsIso ((F.shift n).map f) := by
   obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f
   apply (F.homologicalKernel.mem_W_iff_of_distinguished _ hT).trans
-  have h₁ := fun n => (F.homologySequence_exact₃ _ hT n _ rfl).isZero_X₂_iff
-  have h₂ := fun n => F.homologySequence_mono_shift_map_mor₁_iff _ hT n _ rfl
-  have h₃ := fun n => F.homologySequence_epi_shift_map_mor₁_iff _ hT n
+  have h₁ := fun n ↦ (F.homologySequence_exact₃ _ hT n _ rfl).isZero_X₂_iff
+  have h₂ := fun n ↦ F.homologySequence_mono_shift_map_mor₁_iff _ hT n _ rfl
+  have h₃ := fun n ↦ F.homologySequence_epi_shift_map_mor₁_iff _ hT n
   dsimp at h₁ h₂ h₃ ⊢
   simp only [mem_homologicalKernel_iff, h₁, ← h₂, ← h₃]
   constructor

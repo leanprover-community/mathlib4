@@ -289,15 +289,15 @@ theorem essSup_add_le (f g : α → ℝ≥0∞) : essSup (f + g) μ ≤ essSup f
   limsup_add_le f g
 
 theorem essSup_liminf_le {ι} [Countable ι] [LinearOrder ι] (f : ι → α → ℝ≥0∞) :
-    essSup (fun x ↦ atTop.liminf fun n => f n x) μ ≤
-      atTop.liminf fun n => essSup (fun x ↦ f n x) μ := by
+    essSup (fun x ↦ atTop.liminf fun n ↦ f n x) μ ≤
+      atTop.liminf fun n ↦ essSup (fun x ↦ f n x) μ := by
   simp_rw [essSup]
   exact ENNReal.limsup_liminf_le_liminf_limsup fun a b => f b a
 
 theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ) f) :
     ((essSup f μ : ℝ≥0) : ℝ≥0∞) = essSup (fun x ↦ (f x : ℝ≥0∞)) μ :=
   (ENNReal.coe_sInf <| hf).trans <|
-    eq_of_forall_le_iff fun r => by
+    eq_of_forall_le_iff fun r ↦ by
       simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
 
 lemma essSup_restrict_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :

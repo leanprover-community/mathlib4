@@ -89,7 +89,7 @@ protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace �
   measurableSet_compl := fun _ ⟨s', h₁, h₂⟩ => ⟨s'ᶜ, m.measurableSet_compl _ h₁, h₂ ▸ rfl⟩
   measurableSet_iUnion s hs :=
     let ⟨s', hs'⟩ := Classical.axiom_of_choice hs
-    ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i => (hs' i).left, by simp [hs']⟩
+    ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i ↦ (hs' i).left, by simp [hs']⟩
 
 lemma measurableSet_comap {m : MeasurableSpace β} :
     MeasurableSet[m.comap f] s ↔ ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s := .rfl
@@ -100,7 +100,7 @@ theorem comap_eq_generateFrom (m : MeasurableSpace β) (f : α → β) :
 
 @[simp]
 theorem comap_id : m.comap id = m :=
-  MeasurableSpace.ext fun s => ⟨fun ⟨_, hs', h⟩ => h ▸ hs', fun h ↦ ⟨s, h, rfl⟩⟩
+  MeasurableSpace.ext fun s ↦ ⟨fun ⟨_, hs', h⟩ => h ▸ hs', fun h ↦ ⟨s, h, rfl⟩⟩
 
 @[simp]
 theorem comap_comp {f : β → α} {g : γ → β} : (m.comap f).comap g = m.comap (f ∘ g) :=
@@ -425,7 +425,7 @@ theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred 
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x ↦ Nat.find (hp x) := by
   refine measurable_to_nat fun x ↦ ?_
-  rw [preimage_find_eq_disjointed (fun k => {x | p x k})]
+  rw [preimage_find_eq_disjointed (fun k ↦ {x | p x k})]
   exact MeasurableSet.disjointed hm _
 
 end Nat
@@ -765,7 +765,7 @@ theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass 
 theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : ℕ → α → Prop}
     [∀ n, DecidablePred (p n)] (hf : ∀ n, Measurable (f n)) (hp : ∀ n, MeasurableSet { x | p n x })
     (h : ∀ x, ∃ n, p n x) : Measurable fun x ↦ f (Nat.find (h x)) x :=
-  have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable fun n => hf n
+  have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable fun n ↦ hf n
   this.comp (Measurable.prod_mk measurable_id (measurable_find h hp))
 
 /-- Let `t i` be a countable covering of a set `T` by measurable sets. Let `f i : t i → β` be a
@@ -776,7 +776,7 @@ theorem measurable_iUnionLift [Countable ι] {t : ι → Set α} {f : ∀ i, t i
     {T : Set α} (hT : T ⊆ ⋃ i, t i) (htm : ∀ i, MeasurableSet (t i)) (hfm : ∀ i, Measurable (f i)) :
     Measurable (iUnionLift t f htf T hT) := fun s hs => by
   rw [preimage_iUnionLift]
-  exact .preimage (.iUnion fun i => .image_inclusion _ (htm _) (hfm i hs)) (measurable_inclusion _)
+  exact .preimage (.iUnion fun i ↦ .image_inclusion _ (htm _) (hfm i hs)) (measurable_inclusion _)
 
 /-- Let `t i` be a countable covering of `α` by measurable sets. Let `f i : t i → β` be a family of
 functions that agree on the intersections `t i ∩ t j`. Then the function `Set.liftCover t f _ _`,
@@ -787,7 +787,7 @@ theorem measurable_liftCover [Countable ι] (t : ι → Set α) (htm : ∀ i, Me
     (htU : ⋃ i, t i = univ) :
     Measurable (liftCover t f hf htU) := fun s hs => by
   rw [preimage_liftCover]
-  exact .iUnion fun i => .subtype_image (htm i) <| hfm i hs
+  exact .iUnion fun i ↦ .subtype_image (htm i) <| hfm i hs
 
 /-- Let `t i` be a nonempty countable family of measurable sets in `α`. Let `g i : α → β` be a
 family of measurable functions such that `g i` agrees with `g j` on `t i ∩ t j`. Then there exists
@@ -799,7 +799,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
     (ht : Pairwise fun i j => EqOn (g i) (g j) (t i ∩ t j)) :
     ∃ f : α → β, Measurable f ∧ ∀ n, EqOn f (g n) (t n) := by
   inhabit ι
-  set g' : (i : ι) → t i → β := fun i => g i ∘ (↑)
+  set g' : (i : ι) → t i → β := fun i ↦ g i ∘ (↑)
   -- see https://github.com/leanprover-community/mathlib4/issues/2184
   have ht' : ∀ (i j) (x : α) (hxi : x ∈ t i) (hxj : x ∈ t j), g' i ⟨x, hxi⟩ = g' j ⟨x, hxj⟩ := by
     intro i j x hxi hxj
@@ -808,7 +808,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
     · exact ht hij ⟨hxi, hxj⟩
   set f : (⋃ i, t i) → β := iUnionLift t g' ht' _ Subset.rfl
   have hfm : Measurable f := measurable_iUnionLift _ _ t_meas
-    (fun i => (hg i).comp measurable_subtype_coe)
+    (fun i ↦ (hg i).comp measurable_subtype_coe)
   classical
     refine ⟨fun x ↦ if hx : x ∈ ⋃ i, t i then f ⟨x, hx⟩ else g default x,
       hfm.dite ((hg default).comp measurable_subtype_coe) (.iUnion t_meas), fun i x hx => ?_⟩
@@ -958,14 +958,14 @@ theorem measurableSet_pi {s : Set δ} {t : ∀ i, Set (π i)} (hs : s.Countable)
 
 instance Pi.instMeasurableSingletonClass [Countable δ] [∀ a, MeasurableSingletonClass (π a)] :
     MeasurableSingletonClass (∀ a, π a) :=
-  ⟨fun f => univ_pi_singleton f ▸ MeasurableSet.univ_pi fun t => measurableSet_singleton (f t)⟩
+  ⟨fun f ↦ univ_pi_singleton f ▸ MeasurableSet.univ_pi fun t ↦ measurableSet_singleton (f t)⟩
 
 variable (π)
 
 @[measurability]
 theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p] :
     Measurable (Equiv.piEquivPiSubtypeProd p π).symm := by
-  refine measurable_pi_iff.2 fun j => ?_
+  refine measurable_pi_iff.2 fun j ↦ ?_
   by_cases hj : p j
   · simp only [hj, dif_pos, Equiv.piEquivPiSubtypeProd_symm_apply]
     have : Measurable fun (f : ∀ i : { x // p x }, π i.1) => f ⟨j, hj⟩ :=
@@ -1012,7 +1012,7 @@ theorem measurable_tProd_elim [DecidableEq δ] :
 
 theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ l) :
     Measurable (TProd.elim' h : TProd π l → ∀ i, π i) :=
-  measurable_pi_lambda _ fun i => measurable_tProd_elim (h i)
+  measurable_pi_lambda _ fun i ↦ measurable_tProd_elim (h i)
 
 theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (π i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
@@ -1291,13 +1291,13 @@ instance iInf_isMeasurablyGenerated {f : ι → Filter α} [∀ i, IsMeasurablyG
   refine ⟨fun s hs => ?_⟩
   rw [← Equiv.plift.surjective.iInf_comp, mem_iInf] at hs
   rcases hs with ⟨t, ht, ⟨V, hVf, rfl⟩⟩
-  choose U hUf hU using fun i => IsMeasurablyGenerated.exists_measurable_subset (hVf i)
+  choose U hUf hU using fun i ↦ IsMeasurablyGenerated.exists_measurable_subset (hVf i)
   refine ⟨⋂ i : t, U i, ?_, ?_, ?_⟩
   · rw [← Equiv.plift.surjective.iInf_comp, mem_iInf]
     exact ⟨t, ht, U, hUf, rfl⟩
   · haveI := ht.countable.toEncodable.countable
-    exact MeasurableSet.iInter fun i => (hU i).1
-  · exact iInter_mono fun i => (hU i).2
+    exact MeasurableSet.iInter fun i ↦ (hU i).1
+  · exact iInter_mono fun i ↦ (hU i).2
 
 end Filter
 
@@ -1331,7 +1331,7 @@ theorem isCountablySpanning_measurableSet [MeasurableSpace α] :
 lemma IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsCountablySpanning C)
     (hD : IsCountablySpanning D) : IsCountablySpanning (image2 (· ×ˢ ·) C D) := by
   rcases hC, hD with ⟨⟨s, h1s, h2s⟩, t, h1t, h2t⟩
-  refine ⟨fun n => s n.unpair.1 ×ˢ t n.unpair.2, fun n => mem_image2_of_mem (h1s _) (h1t _), ?_⟩
+  refine ⟨fun n ↦ s n.unpair.1 ×ˢ t n.unpair.2, fun n ↦ mem_image2_of_mem (h1s _) (h1t _), ?_⟩
   rw [iUnion_unpair_prod, h2s, h2t, univ_prod_univ]
 
 namespace MeasurableSet
@@ -1473,13 +1473,13 @@ noncomputable instance Subtype.instBooleanAlgebra :
 theorem measurableSet_blimsup {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :
     MeasurableSet <| blimsup s atTop p := by
   simp only [blimsup_eq_iInf_biSup_of_nat, iSup_eq_iUnion, iInf_eq_iInter]
-  exact .iInter fun _ => .iUnion fun m => .iUnion fun hm => h m hm.1
+  exact .iInter fun _ => .iUnion fun m ↦ .iUnion fun hm => h m hm.1
 
 @[measurability]
 theorem measurableSet_bliminf {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :
     MeasurableSet <| Filter.bliminf s Filter.atTop p := by
   simp only [Filter.bliminf_eq_iSup_biInf_of_nat, iInf_eq_iInter, iSup_eq_iUnion]
-  exact .iUnion fun n => .iInter fun m => .iInter fun hm => h m hm.1
+  exact .iUnion fun n ↦ .iInter fun m ↦ .iInter fun hm => h m hm.1
 
 @[measurability]
 theorem measurableSet_limsup {s : ℕ → Set α} (hs : ∀ n, MeasurableSet <| s n) :

@@ -449,7 +449,7 @@ domains and pairwise disjoint ranges can be glued together
 to form an injective function. -/
 theorem piecewise_inj {β : Type*} {f : ι → α → β}
     (h_injOn : ∀ i, InjOn (f i) (s i))
-    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)) :
+    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i ↦ (f i) '' (s i)) :
     Injective (piecewise hs f) := by
   intro x y h
   suffices hs.index x = hs.index y by

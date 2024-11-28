@@ -101,7 +101,7 @@ def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
           contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
 
 theorem map_injective (hf : Function.Injective f) : Function.Injective (map f) := fun p q h =>
-  ext fun m => hf <| by rw [← coeff_map f, ← coeff_map f, h]
+  ext fun m ↦ hf <| by rw [← coeff_map f, ← coeff_map f, h]
 
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map f) := fun p =>
   Polynomial.induction_on' p
@@ -203,7 +203,7 @@ section
 variable [CommSemiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
 
 theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
-  DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
+  DFunLike.ext _ _ fun p ↦ p.coeff_zero_eq_eval_zero.symm
 
 end
 

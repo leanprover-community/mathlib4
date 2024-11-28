@@ -106,7 +106,7 @@ theorem Function.Injective.convexIndependent_iff_set {p : ι → E} (hi : Functi
     ConvexIndependent 𝕜 ((↑) : Set.range p → E) ↔ ConvexIndependent 𝕜 p :=
   ⟨fun hc =>
     hc.comp_embedding
-      (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
+      (⟨fun i ↦ ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
         ι ↪ Set.range p),
     ConvexIndependent.range⟩
 

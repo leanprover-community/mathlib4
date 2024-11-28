@@ -49,7 +49,7 @@ elab (name := registerHintStx) "register_hint" tac:tactic : command => liftTermE
   addHint tac
 
 initialize
-  Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
+  Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s ↦ s.insert ``registerHintStx
 
 /--
 Construct a suggestion for a tactic.
@@ -69,7 +69,7 @@ def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Sugge
       str := str ++ Format.pretty ("\n⊢ " ++ e)
     pure (some str)
   let style? := if goals.isEmpty then some .success else none
-  let msg? ← msgs.toList.findM? fun m => do pure <|
+  let msg? ← msgs.toList.findM? fun m ↦ do pure <|
     m.severity == MessageSeverity.information && (← m.data.toString).startsWith "Try this: "
   let suggestion ← match msg? with
   | some m => pure <| SuggestionText.string (((← m.data.toString).drop 10).takeWhile (· != '\n'))
@@ -89,7 +89,7 @@ We use this to inhibit the creation of widgets by subsidiary tactics.
 def withoutInfoTrees (t : TacticM Unit) : TacticM Unit := do
   let trees := (← getInfoState).trees
   t
-  modifyInfoState fun s => { s with trees }
+  modifyInfoState fun s ↦ { s with trees }
 
 /--
 Run all tactics registered using `register_hint`.
@@ -107,7 +107,7 @@ def hint (stx : Syntax) : TacticM Unit := do
       return some (← getGoals, ← suggestion t msgs)
     else
       return none
-  let results ← (results.toMLList.takeUpToFirst fun r => r.1.1.isEmpty).asArray
+  let results ← (results.toMLList.takeUpToFirst fun r ↦ r.1.1.isEmpty).asArray
   let results := results.qsort (·.1.1.length < ·.1.1.length)
   addSuggestions stx (results.map (·.1.2))
   match results.find? (·.1.1.isEmpty) with

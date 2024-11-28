@@ -62,7 +62,7 @@ instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects)) where
   id X := Types.Limit.mk.{v, v} (homDiagram X X) (fun _ => 𝟙 _) fun j j' f => by simp
   comp {X Y Z} f g :=
     Types.Limit.mk.{v, v} (homDiagram X Z)
-      (fun j => limit.π (homDiagram X Y) j f ≫ limit.π (homDiagram Y Z) j g) fun j j' h => by
+      (fun j ↦ limit.π (homDiagram X Y) j f ≫ limit.π (homDiagram Y Z) j g) fun j j' h => by
       simp [← congr_fun (limit.w (homDiagram X Y) h) f,
         ← congr_fun (limit.w (homDiagram Y Z) h) g]
   id_comp _ := by
@@ -83,7 +83,7 @@ def limitCone (F : J ⥤ Cat.{v, v}) : Cone F where
   π :=
     { app := fun j =>
         { obj := limit.π (F ⋙ Cat.objects) j
-          map := fun f => limit.π (homDiagram _ _) j f }
+          map := fun f ↦ limit.π (homDiagram _ _) j f }
       naturality := fun _ _ f =>
         CategoryTheory.Functor.ext (fun X => (congr_fun (limit.w (F ⋙ Cat.objects) f) X).symm)
           fun X Y h => (congr_fun (limit.w (homDiagram X Y) f) h).symm }
@@ -95,7 +95,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F wh
     limit.lift (F ⋙ Cat.objects)
       { pt := s.pt
         π :=
-          { app := fun j => (s.π.app j).obj
+          { app := fun j ↦ (s.π.app j).obj
             naturality := fun _ _ f => objects.congr_map (s.π.naturality f) } }
   map f := by
     fapply Types.Limit.mk.{v, v}
@@ -134,7 +134,7 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
       simp [Types.Limit.lift_π_apply', ← w j]
     · intro X Y f
       dsimp
-      simp [fun j => Functor.congr_hom (w j).symm f]
+      simp [fun j ↦ Functor.congr_hom (w j).symm f]
 
 end HasLimits
 

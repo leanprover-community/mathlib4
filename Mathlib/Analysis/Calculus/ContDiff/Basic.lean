@@ -467,7 +467,7 @@ theorem HasFTaylorSeriesUpToOn.prod {n : WithTop ℕ∞}
     (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
     HasFTaylorSeriesUpToOn n (fun y ↦ (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
-  set L := fun m => ContinuousMultilinearMap.prodL 𝕜 (fun _ : Fin m => E) F G
+  set L := fun m ↦ ContinuousMultilinearMap.prodL 𝕜 (fun _ : Fin m => E) F G
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
@@ -824,7 +824,7 @@ section SpecificBilinearMaps
 
 theorem ContDiff.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} (hg : ContDiff 𝕜 n g)
     (hf : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x ↦ (g x).comp (f x) :=
-  isBoundedBilinearMap_comp.contDiff.comp₂ (g := fun p => p.1.comp p.2) hg hf
+  isBoundedBilinearMap_comp.contDiff.comp₂ (g := fun p ↦ p.1.comp p.2) hg hf
 
 theorem ContDiffOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F} {s : Set X}
     (hg : ContDiffOn 𝕜 n g s) (hf : ContDiffOn 𝕜 n f s) :
@@ -862,7 +862,7 @@ theorem ContDiffWithinAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
 -- to speed up elaboration. In Lean 4 this isn't necessary anymore.
 theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x ↦ (f x).smulRight (g x) :=
-  isBoundedBilinearMap_smulRight.contDiff.comp₂ (g := fun p => p.1.smulRight p.2) hf hg
+  isBoundedBilinearMap_smulRight.contDiff.comp₂ (g := fun p ↦ p.1.smulRight p.2) hf hg
 
 theorem ContDiffOn.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x ↦ (f x).smulRight (g x)) s :=
@@ -997,7 +997,7 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
     exact le_rfl
   | ∞ =>
     rw [contDiffWithinAt_top]
-    exact fun m => this m (mod_cast le_top)
+    exact fun m ↦ this m (mod_cast le_top)
   | (m : ℕ) => exact this _ le_rfl
 
 /-- A special case of `ContDiffWithinAt.fderivWithin''` where we require that `s ⊆ g⁻¹(t)`. -/
@@ -1138,7 +1138,7 @@ variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i,
 
 theorem hasFTaylorSeriesUpToOn_pi {n : WithTop ℕ∞} :
     HasFTaylorSeriesUpToOn n (fun x i => φ i x)
-        (fun x m => ContinuousMultilinearMap.pi fun i => p' i x m) s ↔
+        (fun x m => ContinuousMultilinearMap.pi fun i ↦ p' i x m) s ↔
       ∀ i, HasFTaylorSeriesUpToOn n (φ i) (p' i) s := by
   set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
   letI : ∀ (m : ℕ) (i : ι), NormedSpace 𝕜 (E[×m]→L[𝕜] F' i) := fun m i => inferInstance
@@ -1150,9 +1150,9 @@ theorem hasFTaylorSeriesUpToOn_pi {n : WithTop ℕ∞} :
     exact (h i).zero_eq x hx
   · intro m hm x hx
     exact (L m).hasFDerivAt.comp_hasFDerivWithinAt x <|
-      hasFDerivWithinAt_pi.2 fun i => (h i).fderivWithin m hm x hx
+      hasFDerivWithinAt_pi.2 fun i ↦ (h i).fderivWithin m hm x hx
   · intro m hm
-    exact (L m).continuous.comp_continuousOn <| continuousOn_pi.2 fun i => (h i).cont m hm
+    exact (L m).continuous.comp_continuousOn <| continuousOn_pi.2 fun i ↦ (h i).cont m hm
 
 @[simp]
 theorem hasFTaylorSeriesUpToOn_pi' {n : WithTop ℕ∞} :
@@ -1166,13 +1166,13 @@ theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x ↦ Φ x i) s x := by
   set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
   refine ⟨fun h i => h.continuousLinearMap_comp (pr i), fun h m hm => ?_⟩
-  choose u hux p hp using fun i => h i m hm
+  choose u hux p hp using fun i ↦ h i m hm
   exact ⟨⋂ i, u i, Filter.iInter_mem.2 hux, _,
-    hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| iInter_subset _ _⟩
+    hasFTaylorSeriesUpToOn_pi.2 fun i ↦ (hp i).mono <| iInter_subset _ _⟩
 
 theorem contDiffOn_pi : ContDiffOn 𝕜 n Φ s ↔ ∀ i, ContDiffOn 𝕜 n (fun x ↦ Φ x i) s :=
   ⟨fun h _ x hx => contDiffWithinAt_pi.1 (h x hx) _, fun h x hx =>
-    contDiffWithinAt_pi.2 fun i => h i x hx⟩
+    contDiffWithinAt_pi.2 fun i ↦ h i x hx⟩
 
 theorem contDiffAt_pi : ContDiffAt 𝕜 n Φ x ↔ ∀ i, ContDiffAt 𝕜 n (fun x ↦ Φ x i) x :=
   contDiffWithinAt_pi
@@ -1422,7 +1422,7 @@ theorem ContDiff.mul {f g : E → 𝔸} (hf : ContDiff 𝕜 n f) (hg : ContDiff 
 
 theorem contDiffWithinAt_prod' {t : Finset ι} {f : ι → E → 𝔸'}
     (h : ∀ i ∈ t, ContDiffWithinAt 𝕜 n (f i) s x) : ContDiffWithinAt 𝕜 n (∏ i ∈ t, f i) s x :=
-  Finset.prod_induction f (fun f => ContDiffWithinAt 𝕜 n f s x) (fun _ _ => ContDiffWithinAt.mul)
+  Finset.prod_induction f (fun f ↦ ContDiffWithinAt 𝕜 n f s x) (fun _ _ => ContDiffWithinAt.mul)
     (contDiffWithinAt_const (c := 1)) h
 
 theorem contDiffWithinAt_prod {t : Finset ι} {f : ι → E → 𝔸'}
@@ -1728,8 +1728,8 @@ theorem contDiffAt_map_inverse [CompleteSpace E] (e : E ≃L[𝕜] F) :
   nontriviality E
   -- first, we use the lemma `to_ring_inverse` to rewrite in terms of `Ring.inverse` in the ring
   -- `E →L[𝕜] E`
-  let O₁ : (E →L[𝕜] E) → F →L[𝕜] E := fun f => f.comp (e.symm : F →L[𝕜] E)
-  let O₂ : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
+  let O₁ : (E →L[𝕜] E) → F →L[𝕜] E := fun f ↦ f.comp (e.symm : F →L[𝕜] E)
+  let O₂ : (E →L[𝕜] F) → E →L[𝕜] E := fun f ↦ (e.symm : F →L[𝕜] E).comp f
   have : ContinuousLinearMap.inverse = O₁ ∘ Ring.inverse ∘ O₂ := funext (to_ring_inverse e)
   rw [this]
   -- `O₁` and `O₂` are `ContDiff`,
@@ -1926,10 +1926,10 @@ theorem contDiffOn_top_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
   constructor
   · intro h
     refine ⟨h.differentiableOn (mod_cast le_top), ?_⟩
-    refine contDiffOn_top.2 fun n => ((contDiffOn_succ_iff_derivWithin hs).1 ?_).2
+    refine contDiffOn_top.2 fun n ↦ ((contDiffOn_succ_iff_derivWithin hs).1 ?_).2
     exact h.of_le (mod_cast le_top)
   · intro h
-    refine contDiffOn_top.2 fun n => ?_
+    refine contDiffOn_top.2 fun n ↦ ?_
     have A : (n : ℕ∞) ≤ ∞ := mod_cast le_top
     apply ((contDiffOn_succ_iff_derivWithin hs).2 ⟨h.1, h.2.of_le A⟩).of_le
     exact_mod_cast (Nat.le_succ n)

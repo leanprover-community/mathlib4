@@ -51,7 +51,7 @@ variable [Countable ι]
 
 theorem measurableSet_coe : MeasurableSet (I : Set (ι → ℝ)) := by
   rw [coe_eq_pi]
-  exact MeasurableSet.univ_pi fun i => measurableSet_Ioc
+  exact MeasurableSet.univ_pi fun i ↦ measurableSet_Ioc
 
 theorem measurableSet_Icc : MeasurableSet (Box.Icc I) :=
   _root_.measurableSet_Icc

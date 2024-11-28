@@ -440,7 +440,7 @@ lemma iff_zero_iff_lTensor_zero :
       (∀ {N : Type max u v} [AddCommGroup N] [Module R N]
         {N' : Type max u v} [AddCommGroup N'] [Module R N']
         (f : N →ₗ[R] N'), f.lTensor M = 0 ↔ f = 0)) :=
-  ⟨fun fl => ⟨inferInstance, fun f => zero_iff_lTensor_zero R M f |>.symm⟩,
+  ⟨fun fl => ⟨inferInstance, fun f ↦ zero_iff_lTensor_zero R M f |>.symm⟩,
     fun ⟨flat, Z⟩ => iff_flat_and_lTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
       have := Z (LinearMap.id : N →ₗ[R] N) |>.1 (by ext; exact Subsingleton.elim _ _)
       rw [subsingleton_iff_forall_eq 0]
@@ -455,7 +455,7 @@ lemma iff_zero_iff_rTensor_zero :
       (∀ {N : Type max u v} [AddCommGroup N] [Module R N]
         {N' : Type max u v} [AddCommGroup N'] [Module R N']
         (f : N →ₗ[R] N'), f.rTensor M = 0 ↔ (f = 0))) :=
-  ⟨fun fl => ⟨inferInstance, fun f => zero_iff_rTensor_zero R M f |>.symm⟩,
+  ⟨fun fl => ⟨inferInstance, fun f ↦ zero_iff_rTensor_zero R M f |>.symm⟩,
     fun ⟨flat, Z⟩ => iff_flat_and_rTensor_reflects_triviality R M |>.2 ⟨flat, fun N _ _ _ => by
       have := Z (LinearMap.id : N →ₗ[R] N) |>.1 (by ext; exact Subsingleton.elim _ _)
       rw [subsingleton_iff_forall_eq 0]

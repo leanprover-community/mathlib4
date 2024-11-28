@@ -222,7 +222,7 @@ theorem monotone_sizeUpTo : Monotone c.sizeUpTo :=
 a virtual point at the right of the last block, to make for a nice equiv with
 `CompositionAsSet n`. -/
 def boundary : Fin (c.length + 1) ↪o Fin (n + 1) :=
-  (OrderEmbedding.ofStrictMono fun i => ⟨c.sizeUpTo i, Nat.lt_succ_of_le (c.sizeUpTo_le i)⟩) <|
+  (OrderEmbedding.ofStrictMono fun i ↦ ⟨c.sizeUpTo i, Nat.lt_succ_of_le (c.sizeUpTo_le i)⟩) <|
     Fin.strictMono_iff_lt_succ.2 fun ⟨_, hi⟩ => c.sizeUpTo_strict_mono hi
 
 @[simp]
@@ -256,7 +256,7 @@ exactly `c.boundary`. -/
 theorem orderEmbOfFin_boundaries :
     c.boundaries.orderEmbOfFin c.card_boundaries_eq_succ_length = c.boundary := by
   refine (Finset.orderEmbOfFin_unique' _ ?_).symm
-  exact fun i => (Finset.mem_map' _).2 (Finset.mem_univ _)
+  exact fun i ↦ (Finset.mem_map' _).2 (Finset.mem_univ _)
 
 /-- Embedding the `i`-th block of a composition (identified with `Fin (c.blocksFun i)`) into
 `Fin n` at the relevant position. -/
@@ -452,7 +452,7 @@ theorem ones_embedding (i : Fin (ones n).length) (h : 0 < (ones n).blocksFun i) 
 theorem eq_ones_iff {c : Composition n} : c = ones n ↔ ∀ i ∈ c.blocks, i = 1 := by
   constructor
   · rintro rfl
-    exact fun i => eq_of_mem_replicate
+    exact fun i ↦ eq_of_mem_replicate
   · intro H
     ext1
     have A : c.blocks = replicate c.blocks.length 1 := eq_replicate_of_mem H

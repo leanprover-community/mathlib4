@@ -38,7 +38,7 @@ def nil : Vector3 α 0 :=
 
 /-- The vector cons operation -/
 @[match_pattern]
-def cons (a : α) (v : Vector3 α n) : Vector3 α (n + 1) := fun i => by
+def cons (a : α) (v : Vector3 α n) : Vector3 α (n + 1) := fun i ↦ by
   refine i.cases' ?_ ?_
   · exact a
   · exact v
@@ -87,13 +87,13 @@ def head (v : Vector3 α (n + 1)) : α :=
   v fz
 
 /-- Get the tail of a nonempty vector. -/
-def tail (v : Vector3 α (n + 1)) : Vector3 α n := fun i => v (fs i)
+def tail (v : Vector3 α (n + 1)) : Vector3 α n := fun i ↦ v (fs i)
 
 theorem eq_nil (v : Vector3 α 0) : v = [] :=
-  funext fun i => nomatch i
+  funext fun i ↦ nomatch i
 
 theorem cons_head_tail (v : Vector3 α (n + 1)) : (head v :: tail v) = v :=
-  funext fun i => Fin2.cases' rfl (fun _ => rfl) i
+  funext fun i ↦ Fin2.cases' rfl (fun _ => rfl) i
 
 /-- Eliminator for an empty vector. -/
 @[elab_as_elim]  -- Porting note: add `elab_as_elim`
@@ -161,13 +161,13 @@ def insert (a : α) (v : Vector3 α n) (i : Fin2 (n + 1)) : Vector3 α (n + 1) :
 
 @[simp]
 theorem insert_fz (a : α) (v : Vector3 α n) : insert a v fz = a :: v := by
-  refine funext fun j => j.cases' ?_ ?_ <;> intros <;> rfl
+  refine funext fun j ↦ j.cases' ?_ ?_ <;> intros <;> rfl
 
 @[simp]
 theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (n + 1)) :
     insert a (b :: v) (fs i) = b :: insert a v i :=
-  funext fun j => by
-    refine j.cases' ?_ fun j => ?_ <;> simp [insert, insertPerm]
+  funext fun j ↦ by
+    refine j.cases' ?_ fun j ↦ ?_ <;> simp [insert, insertPerm]
     refine Fin2.cases' ?_ ?_ (insertPerm i j) <;> simp [insertPerm]
 
 theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (n + 1))
@@ -194,12 +194,12 @@ open Vector3
 /-- "Curried" exists, i.e. `∃ x₁ ... xₙ, f [x₁, ..., xₙ]`. -/
 def VectorEx : ∀ k, (Vector3 α k → Prop) → Prop
   | 0, f => f []
-  | succ k, f => ∃ x : α, VectorEx k fun v => f (x :: v)
+  | succ k, f => ∃ x : α, VectorEx k fun v ↦ f (x :: v)
 
 /-- "Curried" forall, i.e. `∀ x₁ ... xₙ, f [x₁, ..., xₙ]`. -/
 def VectorAll : ∀ k, (Vector3 α k → Prop) → Prop
   | 0, f => f []
-  | succ k, f => ∀ x : α, VectorAll k fun v => f (x :: v)
+  | succ k, f => ∀ x : α, VectorAll k fun v ↦ f (x :: v)
 
 theorem exists_vector_zero (f : Vector3 α 0 → Prop) : Exists f ↔ f [] :=
   ⟨fun ⟨v, fv⟩ => by rw [← eq_nil v]; exact fv, fun f0 => ⟨[], f0⟩⟩
@@ -215,7 +215,7 @@ theorem vectorEx_iff_exists : ∀ {n} (f : Vector3 α n → Prop), VectorEx n f 
 theorem vectorAll_iff_forall : ∀ {n} (f : Vector3 α n → Prop), VectorAll n f ↔ ∀ v, f v
   | 0, _ => ⟨fun f0 v => v.nilElim f0, fun al => al []⟩
   | succ _, f =>
-    (forall_congr' fun x ↦ vectorAll_iff_forall fun v => f (x :: v)).trans
+    (forall_congr' fun x ↦ vectorAll_iff_forall fun v ↦ f (x :: v)).trans
       ⟨fun al v => v.consElim al, fun al x v => al (x :: v)⟩
 
 /-- `VectorAllP p v` is equivalent to `∀ i, p (v i)`, but unfolds directly to a conjunction,
@@ -246,7 +246,7 @@ theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
       (and_congr_right fun _ => IH).trans
         ⟨fun ⟨pa, h⟩ i => by
           refine i.cases' ?_ ?_
-          exacts [pa, h], fun h ↦ ⟨?_, fun i => ?_⟩⟩
+          exacts [pa, h], fun h ↦ ⟨?_, fun i ↦ ?_⟩⟩
     · simpa using h fz
     · simpa using h (fs i)
 

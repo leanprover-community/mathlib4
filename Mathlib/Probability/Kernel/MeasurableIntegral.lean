@@ -42,7 +42,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
   -- by boxes to prove the result by induction.
   -- Porting note: added motive
   refine MeasurableSpace.induction_on_inter
-    (C := fun t => Measurable fun a ↦ κ a (Prod.mk a ⁻¹' t))
+    (C := fun t ↦ Measurable fun a ↦ κ a (Prod.mk a ⁻¹' t))
     generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ ht
   ·-- case `t = ∅`
     simp only [preimage_empty, measure_empty, measurable_const]
@@ -91,7 +91,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
         have habj : {(a, b)} ⊆ f j := by rw [Set.singleton_subset_iff]; exact hsj hbs
         simpa only [Set.bot_eq_empty, Set.le_eq_subset, Set.singleton_subset_iff,
           Set.mem_empty_iff_false] using h_disj hij habi habj
-      · exact fun i => (@measurable_prod_mk_left α β _ _ a) (hf_meas i)
+      · exact fun i ↦ (@measurable_prod_mk_left α β _ _ a) (hf_meas i)
     rw [h_tsum]
     exact Measurable.ennreal_tsum hf
 
@@ -102,7 +102,7 @@ theorem measurable_kernel_prod_mk_left [IsSFiniteKernel κ] {t : Set (α × β)}
       ∑' n, Kernel.seq κ n a (Prod.mk a ⁻¹' t) := fun a =>
     Kernel.sum_apply' _ _ (measurable_prod_mk_left ht)
   simp_rw [this]
-  refine Measurable.ennreal_tsum fun n => ?_
+  refine Measurable.ennreal_tsum fun n ↦ ?_
   exact measurable_kernel_prod_mk_left_of_finite ht inferInstance
 
 theorem measurable_kernel_prod_mk_left' [IsSFiniteKernel η] {s : Set (β × γ)} (hs : MeasurableSet s)
@@ -149,12 +149,12 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
   have : ∀ a, (∫⁻ b, ⨆ n, F n (a, b) ∂κ a) = ⨆ n, ∫⁻ b, F n (a, b) ∂κ a := by
     intro a
     rw [lintegral_iSup]
-    · exact fun n => (F n).measurable.comp measurable_prod_mk_left
+    · exact fun n ↦ (F n).measurable.comp measurable_prod_mk_left
     · exact fun i j hij b => SimpleFunc.monotone_eapprox (uncurry f) hij _
   simp_rw [this]
-  refine .iSup fun n => ?_
+  refine .iSup fun n ↦ ?_
   refine SimpleFunc.induction
-    (P := fun f => Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) ?_ ?_ (F n)
+    (P := fun f ↦ Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) ?_ ?_ (F n)
   · intro c t ht
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
@@ -282,11 +282,11 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
         mem_setOf_eq]
       refine
         tendsto_integral_of_dominated_convergence (fun y ↦ ‖f x y‖ + ‖f x y‖)
-          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
+          (fun n ↦ (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
       · -- Porting note: was
-        -- exact fun n => Eventually.of_forall fun y =>
+        -- exact fun n ↦ Eventually.of_forall fun y =>
         --   SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-        exact fun n => Eventually.of_forall fun y =>
+        exact fun n ↦ Eventually.of_forall fun y =>
           SimpleFunc.norm_approxOn_zero_le hf.measurable (by simp) (x, y) n
       · refine Eventually.of_forall fun y ↦ SimpleFunc.tendsto_approxOn hf.measurable (by simp) ?_
         apply subset_closure

@@ -82,7 +82,7 @@ def beckAlgebraCofork : Cofork (FreeCoequalizer.topMap X) (FreeCoequalizer.botto
 free algebras.
 -/
 def beckAlgebraCoequalizer : IsColimit (beckAlgebraCofork X) :=
-  Cofork.IsColimit.mk' _ fun s => by
+  Cofork.IsColimit.mk' _ fun s ↦ by
     have h₁ : (T : C ⥤ C).map X.a ≫ s.π.f = T.μ.app X.A ≫ s.π.f :=
       congr_arg Monad.Algebra.Hom.f s.condition
     have h₂ : (T : C ⥤ C).map s.π.f ≫ s.pt.a = T.μ.app X.A ≫ s.π.f := s.π.h

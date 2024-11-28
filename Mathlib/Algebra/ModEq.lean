@@ -141,12 +141,12 @@ end ModEq
 @[simp]
 theorem zsmul_modEq_zsmul [NoZeroSMulDivisors ℤ α] (hn : z ≠ 0) :
     z • a ≡ z • b [PMOD z • p] ↔ a ≡ b [PMOD p] :=
-  exists_congr fun m => by rw [← smul_sub, smul_comm, smul_right_inj hn]
+  exists_congr fun m ↦ by rw [← smul_sub, smul_comm, smul_right_inj hn]
 
 @[simp]
 theorem nsmul_modEq_nsmul [NoZeroSMulDivisors ℕ α] (hn : n ≠ 0) :
     n • a ≡ n • b [PMOD n • p] ↔ a ≡ b [PMOD p] :=
-  exists_congr fun m => by rw [← smul_sub, smul_comm, smul_right_inj hn]
+  exists_congr fun m ↦ by rw [← smul_sub, smul_comm, smul_right_inj hn]
 
 alias ⟨ModEq.zsmul_cancel, _⟩ := zsmul_modEq_zsmul
 

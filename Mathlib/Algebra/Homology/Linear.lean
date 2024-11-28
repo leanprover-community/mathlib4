@@ -30,7 +30,7 @@ namespace HomologicalComplex
 variable {X Y : HomologicalComplex C c}
 
 instance : SMul R (X ⟶ Y) where
-  smul r f := { f := fun n => r • f.f n }
+  smul r f := { f := fun n ↦ r • f.f n }
 
 @[simp]
 lemma smul_f_apply (r : R) (f : X ⟶ Y) (n : ι) : (r • f).f n = r • f.f n := rfl

@@ -546,12 +546,12 @@ end Nat
 theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
     Subsingleton (FloorSemiring α) := by
   refine ⟨fun H₁ H₂ => ?_⟩
-  have : H₁.ceil = H₂.ceil := funext fun a ↦ (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n => rfl
+  have : H₁.ceil = H₂.ceil := funext fun a ↦ (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n ↦ rfl
   have : H₁.floor = H₂.floor := by
     ext a
     cases' lt_or_le a 0 with h h
     · rw [H₁.floor_of_neg, H₂.floor_of_neg] <;> exact h
-    · refine eq_of_forall_le_iff fun n => ?_
+    · refine eq_of_forall_le_iff fun n ↦ ?_
       rw [H₁.gc_floor, H₂.gc_floor] <;> exact h
   cases H₁
   cases H₂
@@ -1531,10 +1531,10 @@ theorem ceil_congr (h : ∀ n : ℕ, a ≤ n ↔ b ≤ n) : ⌈a⌉₊ = ⌈b⌉
   (ceil_le.2 <| (h _).2 <| le_ceil _).antisymm <| ceil_le.2 <| (h _).1 <| le_ceil _
 
 theorem map_floor (f : F) (hf : StrictMono f) (a : α) : ⌊f a⌋₊ = ⌊a⌋₊ :=
-  floor_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
+  floor_congr fun n ↦ by rw [← map_natCast f, hf.le_iff_le]
 
 theorem map_ceil (f : F) (hf : StrictMono f) (a : α) : ⌈f a⌉₊ = ⌈a⌉₊ :=
-  ceil_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
+  ceil_congr fun n ↦ by rw [← map_natCast f, hf.le_iff_le]
 
 end Nat
 
@@ -1550,10 +1550,10 @@ theorem ceil_congr (h : ∀ n : ℤ, a ≤ n ↔ b ≤ n) : ⌈a⌉ = ⌈b⌉ :=
   (ceil_le.2 <| (h _).2 <| le_ceil _).antisymm <| ceil_le.2 <| (h _).1 <| le_ceil _
 
 theorem map_floor (f : F) (hf : StrictMono f) (a : α) : ⌊f a⌋ = ⌊a⌋ :=
-  floor_congr fun n => by rw [← map_intCast f, hf.le_iff_le]
+  floor_congr fun n ↦ by rw [← map_intCast f, hf.le_iff_le]
 
 theorem map_ceil (f : F) (hf : StrictMono f) (a : α) : ⌈f a⌉ = ⌈a⌉ :=
-  ceil_congr fun n => by rw [← map_intCast f, hf.le_iff_le]
+  ceil_congr fun n ↦ by rw [← map_intCast f, hf.le_iff_le]
 
 theorem map_fract (f : F) (hf : StrictMono f) (a : α) : fract (f a) = f (fract a) := by
   simp_rw [fract, map_sub, map_intCast, map_floor _ hf]

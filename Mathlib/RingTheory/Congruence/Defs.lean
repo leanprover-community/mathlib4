@@ -280,7 +280,7 @@ section NatCast
 variable [AddMonoidWithOne R] [Mul R] (c : RingCon R)
 
 instance : NatCast c.Quotient :=
-  ⟨fun n => ↑(n : R)⟩
+  ⟨fun n ↦ ↑(n : R)⟩
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=

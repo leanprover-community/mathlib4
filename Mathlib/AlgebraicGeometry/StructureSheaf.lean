@@ -469,7 +469,7 @@ theorem coe_openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpect
     (hx : x ∈ U) :
     (openToLocalization R U x hx :
         (structureSheaf R).1.obj (op U) → Localization.AtPrime x.asIdeal) =
-      fun s => (s.1 ⟨x, hx⟩ : _) :=
+      fun s ↦ (s.1 ⟨x, hx⟩ : _) :=
   rfl
 
 theorem openToLocalization_apply (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
@@ -579,7 +579,7 @@ theorem toBasicOpen_mk' (s f : R) (g : Submonoid.powers s) :
 theorem localization_toBasicOpen (f : R) :
     RingHom.comp (toBasicOpen R f) (algebraMap R (Localization.Away f)) =
     toOpen R (PrimeSpectrum.basicOpen f) :=
-  RingHom.ext fun g => by
+  RingHom.ext fun g ↦ by
     rw [toBasicOpen, IsLocalization.Away.lift, RingHom.comp_apply, IsLocalization.lift_eq]
 
 @[simp]
@@ -721,10 +721,10 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   -- Since there are only finitely many indices involved, we can pick the supremum.
   let N := (t ×ˢ t).sup n
   have basic_opens_eq : ∀ i : ι, PrimeSpectrum.basicOpen (h i ^ (N + 1)) =
-    PrimeSpectrum.basicOpen (h i) := fun i => PrimeSpectrum.basicOpen_pow _ _ (by omega)
+    PrimeSpectrum.basicOpen (h i) := fun i ↦ PrimeSpectrum.basicOpen_pow _ _ (by omega)
   -- Expanding the fraction `a i / h i` by the power `(h i) ^ n` gives the desired normalization
   refine
-    ⟨fun i => a i * h i ^ N, fun i => h i ^ (N + 1), fun i => eqToHom (basic_opens_eq i) ≫ iDh i,
+    ⟨fun i ↦ a i * h i ^ N, fun i ↦ h i ^ (N + 1), fun i ↦ eqToHom (basic_opens_eq i) ≫ iDh i,
       ?_, ?_, ?_⟩
   · simpa only [basic_opens_eq] using h_cover
   · intro i hi j hj
@@ -770,7 +770,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   -- Since basic opens are compact, we can pass to a finite subcover
   obtain ⟨t, ht_cover'⟩ :=
     (PrimeSpectrum.isCompact_basicOpen f).elim_finite_subcover
-      (fun i : ι => PrimeSpectrum.basicOpen (h' i)) (fun i => PrimeSpectrum.isOpen_basicOpen)
+      (fun i : ι => PrimeSpectrum.basicOpen (h' i)) (fun i ↦ PrimeSpectrum.isOpen_basicOpen)
       -- Here, we need to show that our basic opens actually form a cover of `basicOpen f`
       fun x hx => by rw [Set.mem_iUnion]; exact ⟨⟨x, hx⟩, hxDh' ⟨x, hx⟩⟩
   simp only [← Opens.coe_iSup, SetLike.coe_subset_coe] at ht_cover'
@@ -785,7 +785,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   replace ht_cover : (PrimeSpectrum.basicOpen f : Set <| PrimeSpectrum R) ⊆
       ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _) := by
     convert ht_cover using 2
-    exact funext fun j => by rw [Opens.coe_iSup]
+    exact funext fun j ↦ by rw [Opens.coe_iSup]
   -- Next we show that some power of `f` is a linear combination of the `h i`
   obtain ⟨n, hn⟩ : f ∈ (Ideal.span (h '' ↑t)).radical := by
     rw [← PrimeSpectrum.vanishingIdeal_zeroLocus_eq_radical, PrimeSpectrum.zeroLocus_span]
@@ -1023,25 +1023,25 @@ def comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) (V : Opens (PrimeSpe
   toFun s := ⟨comapFun f U V hUV s.1, comapFunIsLocallyFraction f U V hUV s.1 s.2⟩
   map_one' :=
     Subtype.ext <|
-      funext fun p => by
+      funext fun p ↦ by
         dsimp
         rw [comapFun, (sectionsSubring R (op U)).coe_one, Pi.one_apply, RingHom.map_one]
         rfl
   map_zero' :=
     Subtype.ext <|
-      funext fun p => by
+      funext fun p ↦ by
         dsimp
         rw [comapFun, (sectionsSubring R (op U)).coe_zero, Pi.zero_apply, RingHom.map_zero]
         rfl
   map_add' s t :=
     Subtype.ext <|
-      funext fun p => by
+      funext fun p ↦ by
         dsimp
         rw [comapFun, (sectionsSubring R (op U)).coe_add, Pi.add_apply, RingHom.map_add]
         rfl
   map_mul' s t :=
     Subtype.ext <|
-      funext fun p => by
+      funext fun p ↦ by
         dsimp
         rw [comapFun, (sectionsSubring R (op U)).coe_mul, Pi.mul_apply, RingHom.map_mul]
         rfl
@@ -1061,7 +1061,7 @@ theorem comap_const (f : R →+* S) (U : Opens (PrimeSpectrum.Top R))
     comap f U V hUV (const R a b U hb) =
       const S (f a) (f b) V fun p hpV => hb (PrimeSpectrum.comap f p) (hUV hpV) :=
   Subtype.eq <|
-    funext fun p => by
+    funext fun p ↦ by
       rw [comap_apply, const_apply, const_apply, Localization.localRingHom_mk']
 
 /-- For an inclusion `i : V ⟶ U` between open sets of the prime spectrum of `R`, the comap of the
@@ -1073,7 +1073,7 @@ to OO_X(U) is the identity.
 theorem comap_id_eq_map (U V : Opens (PrimeSpectrum.Top R)) (iVU : V ⟶ U) :
     (comap (RingHom.id R) U V fun _ hpV => leOfHom iVU <| hpV) =
       (structureSheaf R).1.map iVU.op :=
-  RingHom.ext fun s => Subtype.eq <| funext fun p => by
+  RingHom.ext fun s ↦ Subtype.eq <| funext fun p ↦ by
     rw [comap_apply]
     -- Unfortunately, we cannot use `Localization.localRingHom_id` here, because
     -- `PrimeSpectrum.comap (RingHom.id R) p` is not *definitionally* equal to `p`. Instead, we use
@@ -1110,7 +1110,7 @@ theorem comap_comp (f : R →+* S) (g : S →+* P) (U : Opens (PrimeSpectrum.Top
       (comap g V W hVW).comp (comap f U V hUV) :=
   RingHom.ext fun s =>
     Subtype.eq <|
-      funext fun p => by
+      funext fun p ↦ by
         rw [comap_apply]
         rw [Localization.localRingHom_comp _ (PrimeSpectrum.comap g p.1).asIdeal] <;>
         -- refl works here, because `PrimeSpectrum.comap (g.comp f) p` is defeq to

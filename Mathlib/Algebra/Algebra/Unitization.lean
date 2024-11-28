@@ -647,7 +647,7 @@ theorem algHom_ext {F : Type*}
 lemma algHom_ext'' {F : Type*}
     [FunLike F (Unitization R A) C] [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
-  algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
+  algHom_ext h (fun r ↦ by simp only [AlgHomClass.commutes])
 
 /-- See note [partially-applied ext lemmas] -/
 @[ext 1100]
@@ -688,7 +688,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
         simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
           zero_add, φ.map_add]
         rw [add_add_add_comm]
-  commutes' := fun r => by
+  commutes' := fun r ↦ by
     simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
 
 

@@ -829,39 +829,39 @@ protected theorem Filter.Tendsto.min {b : Filter β} {a₁ a₂ : α} (hf : Tend
   (continuous_min.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
 
 protected theorem Filter.Tendsto.max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => max a (f i)) l (𝓝 a) := by
+    Tendsto (fun i ↦ max a (f i)) l (𝓝 a) := by
   convert ((continuous_max.comp (@Continuous.Prod.mk α α _ _ a)).tendsto a).comp h
   simp
 
 protected theorem Filter.Tendsto.max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => max (f i) a) l (𝓝 a) := by
+    Tendsto (fun i ↦ max (f i) a) l (𝓝 a) := by
   simp_rw [max_comm _ a]
   exact h.max_right
 
 theorem Filter.tendsto_nhds_max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
-    Tendsto (fun i => max a (f i)) l (𝓝[>] a) := by
+    Tendsto (fun i ↦ max a (f i)) l (𝓝[>] a) := by
   obtain ⟨h₁ : Tendsto f l (𝓝 a), h₂ : ∀ᶠ i in l, f i ∈ Ioi a⟩ := tendsto_nhdsWithin_iff.mp h
   exact tendsto_nhdsWithin_iff.mpr ⟨h₁.max_right, h₂.mono fun i hi => lt_max_of_lt_right hi⟩
 
 theorem Filter.tendsto_nhds_max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝[>] a)) :
-    Tendsto (fun i => max (f i) a) l (𝓝[>] a) := by
+    Tendsto (fun i ↦ max (f i) a) l (𝓝[>] a) := by
   simp_rw [max_comm _ a]
   exact Filter.tendsto_nhds_max_right h
 
 theorem Filter.Tendsto.min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => min a (f i)) l (𝓝 a) :=
+    Tendsto (fun i ↦ min a (f i)) l (𝓝 a) :=
   Filter.Tendsto.max_right (α := αᵒᵈ) h
 
 theorem Filter.Tendsto.min_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun i => min (f i) a) l (𝓝 a) :=
+    Tendsto (fun i ↦ min (f i) a) l (𝓝 a) :=
   Filter.Tendsto.max_left (α := αᵒᵈ) h
 
 theorem Filter.tendsto_nhds_min_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝[<] a)) :
-    Tendsto (fun i => min a (f i)) l (𝓝[<] a) :=
+    Tendsto (fun i ↦ min a (f i)) l (𝓝[<] a) :=
   Filter.tendsto_nhds_max_right (α := αᵒᵈ) h
 
 theorem Filter.tendsto_nhds_min_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝[<] a)) :
-    Tendsto (fun i => min (f i) a) l (𝓝[<] a) :=
+    Tendsto (fun i ↦ min (f i) a) l (𝓝[<] a) :=
   Filter.tendsto_nhds_max_left (α := αᵒᵈ) h
 
 theorem Dense.exists_between [DenselyOrdered α] {s : Set α} (hs : Dense s) {x y : α} (h : x < y) :
@@ -891,7 +891,7 @@ instance {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, Topol
     [∀ i, OrderClosedTopology (α i)] : OrderClosedTopology (∀ i, α i) := by
   constructor
   simp only [Pi.le_def, setOf_forall]
-  exact isClosed_iInter fun i => isClosed_le (continuous_apply i).fst' (continuous_apply i).snd'
+  exact isClosed_iInter fun i ↦ isClosed_le (continuous_apply i).fst' (continuous_apply i).snd'
 
 instance Pi.orderClosedTopology' [Preorder β] [TopologicalSpace β] [OrderClosedTopology β] :
     OrderClosedTopology (α → β) :=

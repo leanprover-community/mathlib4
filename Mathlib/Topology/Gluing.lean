@@ -391,18 +391,18 @@ variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
-      U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
+      U := fun i ↦ (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
       t := fun i j => ⟨fun x ↦ ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
         -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
         refine Continuous.subtype_mk ?_ ?_
         refine Continuous.subtype_mk ?_ ?_
         continuity⟩
-      V_id := fun i => by
+      V_id := fun i ↦ by
         ext
         -- Porting note: no longer needed `cases U i`!
         simp
-      t_id := fun i => by ext; rfl
+      t_id := fun i ↦ by ext; rfl
       t_inter := fun _ _ _ _ hx => hx
       cocycle := fun _ _ _ _ _ => rfl }
 

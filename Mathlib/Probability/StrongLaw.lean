@@ -331,7 +331,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
     _ ≤ ∑ k ∈ range K, 2 / (k + 1 : ℝ) * ∫ x in k..(k + 1 : ℕ), x ^ 2 ∂ρ := by
       apply sum_le_sum fun k _ => ?_
       refine mul_le_mul_of_nonneg_right (sum_Ioo_inv_sq_le _ _) ?_
-      refine intervalIntegral.integral_nonneg_of_forall ?_ fun u => sq_nonneg _
+      refine intervalIntegral.integral_nonneg_of_forall ?_ fun u ↦ sq_nonneg _
       simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
     _ ≤ ∑ k ∈ range K, ∫ x in k..(k + 1 : ℕ), 2 * x ∂ρ := by
       apply sum_le_sum fun k _ => ?_
@@ -394,8 +394,8 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
   have A : ∀ i, StronglyMeasurable (indicator (Set.Ioc (-i : ℝ) i) id) := fun i =>
     stronglyMeasurable_id.indicator measurableSet_Ioc
   set Y := fun n : ℕ => truncation (X n) n
-  set S := fun n => ∑ i ∈ range n, Y i with hS
-  let u : ℕ → ℕ := fun n => ⌊c ^ n⌋₊
+  set S := fun n ↦ ∑ i ∈ range n, Y i with hS
+  let u : ℕ → ℕ := fun n ↦ ⌊c ^ n⌋₊
   have u_mono : Monotone u := fun i j hij => Nat.floor_mono (pow_right_mono₀ c_one.le hij)
   have I1 : ∀ K, ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * Var[Y j] ≤ 2 * 𝔼[X 0] := by
     intro K
@@ -487,7 +487,7 @@ theorem strong_law_aux2 {c : ℝ} (c_one : 1 < c) :
   obtain ⟨v, -, v_pos, v_lim⟩ :
       ∃ v : ℕ → ℝ, StrictAnti v ∧ (∀ n : ℕ, 0 < v n) ∧ Tendsto v atTop (𝓝 0) :=
     exists_seq_strictAnti_tendsto (0 : ℝ)
-  have := fun i => strong_law_aux1 X hint hindep hident hnonneg c_one (v_pos i)
+  have := fun i ↦ strong_law_aux1 X hint hindep hident hnonneg c_one (v_pos i)
   filter_upwards [ae_all_iff.2 this] with ω hω
   apply Asymptotics.isLittleO_iff.2 fun ε εpos => ?_
   obtain ⟨i, hi⟩ : ∃ i, v i < ε := ((tendsto_order.1 v_lim).2 ε εpos).exists
@@ -499,8 +499,8 @@ include hint hident in
 /-- The expectation of the truncated version of `Xᵢ` behaves asymptotically like the whole
 expectation. This follows from convergence and Cesàro averaging. -/
 theorem strong_law_aux3 :
-    (fun n => 𝔼[∑ i ∈ range n, truncation (X i) i] - n * 𝔼[X 0]) =o[atTop] ((↑) : ℕ → ℝ) := by
-  have A : Tendsto (fun i => 𝔼[truncation (X i) i]) atTop (𝓝 𝔼[X 0]) := by
+    (fun n ↦ 𝔼[∑ i ∈ range n, truncation (X i) i] - n * 𝔼[X 0]) =o[atTop] ((↑) : ℕ → ℝ) := by
+  have A : Tendsto (fun i ↦ 𝔼[truncation (X i) i]) atTop (𝓝 𝔼[X 0]) := by
     convert (tendsto_integral_truncation hint).comp tendsto_natCast_atTop_atTop using 1
     ext i
     exact (hident i).truncation.integral_eq
@@ -588,7 +588,7 @@ theorem strong_law_aux7 :
     exists_seq_strictAnti_tendsto (1 : ℝ)
   have : ∀ k, ∀ᵐ ω,
       Tendsto (fun n : ℕ => (∑ i ∈ range ⌊c k ^ n⌋₊, X i ω) / ⌊c k ^ n⌋₊) atTop (𝓝 𝔼[X 0]) :=
-    fun k => strong_law_aux6 X hint hindep hident hnonneg (cone k)
+    fun k ↦ strong_law_aux6 X hint hindep hident hnonneg (cone k)
   filter_upwards [ae_all_iff.2 this] with ω hω
   apply tendsto_div_of_monotone_of_tendsto_div_floor_pow _ _ _ c cone clim _
   · intro m n hmn
@@ -626,10 +626,10 @@ theorem strong_law_ae_real {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure �
   have negm : Measurable neg := measurable_id'.neg.max measurable_const
   have A : ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, (pos ∘ X i) ω) / n) atTop (𝓝 𝔼[pos ∘ X 0]) :=
     strong_law_aux7 _ hint.pos_part (fun i j hij => (hindep hij).comp posm posm)
-      (fun i => (hident i).comp posm) fun i ω => le_max_right _ _
+      (fun i ↦ (hident i).comp posm) fun i ω => le_max_right _ _
   have B : ∀ᵐ ω, Tendsto (fun n : ℕ => (∑ i ∈ range n, (neg ∘ X i) ω) / n) atTop (𝓝 𝔼[neg ∘ X 0]) :=
     strong_law_aux7 _ hint.neg_part (fun i j hij => (hindep hij).comp negm negm)
-      (fun i => (hident i).comp negm) fun i ω => le_max_right _ _
+      (fun i ↦ (hident i).comp negm) fun i ω => le_max_right _ _
   filter_upwards [A, B] with ω hωpos hωneg
   convert hωpos.sub hωneg using 2
   · simp only [pos, neg, ← sub_div, ← sum_sub_distrib, max_zero_sub_max_neg_zero_eq_self,
@@ -717,7 +717,7 @@ lemma strong_law_ae_of_measurable
   have : Nonempty s := ⟨0, zero_s⟩
   -- sequence of approximating simple functions.
   let φ : ℕ → SimpleFunc E E :=
-    SimpleFunc.nearestPt (fun k => Nat.casesOn k 0 ((↑) ∘ denseSeq s) : ℕ → E)
+    SimpleFunc.nearestPt (fun k ↦ Nat.casesOn k 0 ((↑) ∘ denseSeq s) : ℕ → E)
   let Y : ℕ → ℕ → Ω → E := fun k i ↦ (φ k) ∘ (X i)
   -- strong law for `φ (X n)`
   have A : ∀ᵐ ω ∂μ, ∀ k,

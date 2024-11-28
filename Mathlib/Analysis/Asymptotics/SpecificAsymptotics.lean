@@ -86,10 +86,10 @@ section Real
 open Finset
 
 theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f : ℕ → α} {g : ℕ → ℝ}
-    (h : f =o[atTop] g) (hg : 0 ≤ g) (h'g : Tendsto (fun n => ∑ i ∈ range n, g i) atTop atTop) :
-    (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => ∑ i ∈ range n, g i := by
-  have A : ∀ i, ‖g i‖ = g i := fun i => Real.norm_of_nonneg (hg i)
-  have B : ∀ n, ‖∑ i ∈ range n, g i‖ = ∑ i ∈ range n, g i := fun n => by
+    (h : f =o[atTop] g) (hg : 0 ≤ g) (h'g : Tendsto (fun n ↦ ∑ i ∈ range n, g i) atTop atTop) :
+    (fun n ↦ ∑ i ∈ range n, f i) =o[atTop] fun n ↦ ∑ i ∈ range n, g i := by
+  have A : ∀ i, ‖g i‖ = g i := fun i ↦ Real.norm_of_nonneg (hg i)
+  have B : ∀ n, ‖∑ i ∈ range n, g i‖ = ∑ i ∈ range n, g i := fun n ↦ by
     rwa [Real.norm_eq_abs, abs_sum_of_nonneg']
   apply isLittleO_iff.2 fun ε εpos => _
   intro ε εpos
@@ -97,7 +97,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
     simpa only [A, eventually_atTop] using isLittleO_iff.mp h (half_pos εpos)
   have : (fun _ : ℕ => ∑ i ∈ range N, f i) =o[atTop] fun n : ℕ => ∑ i ∈ range n, g i := by
     apply isLittleO_const_left.2
-    exact Or.inr (h'g.congr fun n => (B n).symm)
+    exact Or.inr (h'g.congr fun n ↦ (B n).symm)
   filter_upwards [isLittleO_iff.1 this (half_pos εpos), Ici_mem_atTop N] with n hn Nn
   calc
     ‖∑ i ∈ range n, f i‖ = ‖(∑ i ∈ range N, f i) + ∑ i ∈ Ico N n, f i‖ := by
@@ -117,8 +117,8 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
 
 theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddCommGroup α]
     {f : ℕ → α} (h : Tendsto f atTop (𝓝 0)) :
-    (fun n => ∑ i ∈ range n, f i) =o[atTop] fun n => (n : ℝ) := by
-  have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i => zero_le_one
+    (fun n ↦ ∑ i ∈ range n, f i) =o[atTop] fun n ↦ (n : ℝ) := by
+  have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i ↦ zero_le_one
   simp only [sum_const, card_range, Nat.smul_one_eq_cast] at this
   exact this tendsto_natCast_atTop_atTop
 

@@ -170,7 +170,7 @@ theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finit
 
 /-- Pushforward for ultrafilters. -/
 nonrec def map (m : α → β) (f : Ultrafilter α) : Ultrafilter β :=
-  ofComplNotMemIff (map m f) fun s => @compl_not_mem_iff _ f (m ⁻¹' s)
+  ofComplNotMemIff (map m f) fun s ↦ @compl_not_mem_iff _ f (m ⁻¹' s)
 
 @[simp, norm_cast]
 theorem coe_map (m : α → β) (f : Ultrafilter α) : (map m f : Filter β) = Filter.map m ↑f :=
@@ -229,7 +229,7 @@ nonrec theorem comap_comap (f : Ultrafilter γ) {m : α → β} {n : β → γ} 
 
 /-- The principal ultrafilter associated to a point `x`. -/
 instance : Pure Ultrafilter :=
-  ⟨fun a ↦ ofComplNotMemIff (pure a) fun s => by simp⟩
+  ⟨fun a ↦ ofComplNotMemIff (pure a) fun s ↦ by simp⟩
 
 @[simp]
 theorem mem_pure {a : α} {s : Set α} : s ∈ (pure a : Ultrafilter α) ↔ a ∈ s :=
@@ -276,7 +276,7 @@ theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofini
 /-- Monadic bind for ultrafilters, coming from the one on filters
 defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
-  ofComplNotMemIff (Filter.bind ↑f fun x ↦ ↑(m x)) fun s => by
+  ofComplNotMemIff (Filter.bind ↑f fun x ↦ ↑(m x)) fun s ↦ by
     simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
 
 instance instBind : Bind Ultrafilter :=

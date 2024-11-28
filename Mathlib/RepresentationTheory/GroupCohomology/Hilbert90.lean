@@ -63,7 +63,7 @@ theorem aux_ne_zero (f : (L ≃ₐ[K] L) → Lˣ) : aux f ≠ 0 :=
 linear independence of characters -/
   have : LinearIndependent L (fun (f : L ≃ₐ[K] L) => (f : L → L)) :=
     LinearIndependent.comp (ι' := L ≃ₐ[K] L)
-      (linearIndependent_monoidHom L L) (fun f => f)
+      (linearIndependent_monoidHom L L) (fun f ↦ f)
       (fun x y h => by ext; exact DFunLike.ext_iff.1 h _)
   have h := linearIndependent_iff.1 this
     (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
@@ -92,8 +92,8 @@ theorem isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units
     map_inv, div_inv_eq_mul, inv_mul_eq_iff_eq_mul, Units.ext_iff, this,
     Units.val_mul, Units.coe_map, Units.val_mk0, MonoidHom.coe_coe] at hf ⊢
   simp_rw [map_sum, map_mul, Finset.sum_mul, mul_assoc, mul_comm _ (f _ : L), ← mul_assoc, ← hf g]
-  exact eq_comm.1 (Fintype.sum_bijective (fun i => g * i)
-    (Group.mulLeft_bijective g) _ _ (fun i => rfl))
+  exact eq_comm.1 (Fintype.sum_bijective (fun i ↦ g * i)
+    (Group.mulLeft_bijective g) _ _ (fun i ↦ rfl))
 
 end
 variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]

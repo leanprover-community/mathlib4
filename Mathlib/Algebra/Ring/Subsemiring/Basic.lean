@@ -652,7 +652,7 @@ open Subsemiring
 
 /-- Restriction of a ring homomorphism to a subsemiring of the codomain. -/
 def codRestrict (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) : R →+* s :=
-  { (f : R →* S).codRestrict s h, (f : R →+ S).codRestrict s h with toFun := fun n => ⟨f n, h n⟩ }
+  { (f : R →* S).codRestrict s h, (f : R →+ S).codRestrict s h with toFun := fun n ↦ ⟨f n, h n⟩ }
 
 @[simp]
 theorem codRestrict_apply (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) (x : R) :

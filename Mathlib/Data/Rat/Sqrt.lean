@@ -34,7 +34,7 @@ lemma sqrt_nonneg (q : ℚ) : 0 ≤ Rat.sqrt q := mkRat_nonneg (Int.sqrt_nonneg 
 
 /-- `IsSquare` can be decided on `ℚ` by checking against the square root. -/
 instance : DecidablePred (IsSquare : ℚ → Prop) :=
-  fun m => decidable_of_iff' (sqrt m * sqrt m = m) <| by
+  fun m ↦ decidable_of_iff' (sqrt m * sqrt m = m) <| by
     simp_rw [← exists_mul_self m, IsSquare, eq_comm]
 
 @[simp, norm_cast]

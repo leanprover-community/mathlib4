@@ -441,7 +441,7 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
   rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq (subset_affineSpan ℝ _) p] at hr
   cases' hr with r hr
   exact
-    s.eq_circumcenter_of_dist_eq (orthogonalProjection_mem p) fun i => hr _ (Set.mem_range_self i)
+    s.eq_circumcenter_of_dist_eq (orthogonalProjection_mem p) fun i ↦ hr _ (Set.mem_range_self i)
 
 /-- If a point has the same distance from all vertices of a simplex,
 the orthogonal projection of that point onto the subspace spanned by
@@ -490,7 +490,7 @@ instance pointsWithCircumcenterIndexInhabited (n : ℕ) : Inhabited (PointsWithC
 
 /-- `pointIndex` as an embedding. -/
 def pointIndexEmbedding (n : ℕ) : Fin (n + 1) ↪ PointsWithCircumcenterIndex n :=
-  ⟨fun i => pointIndex i, fun _ _ h => by injection h⟩
+  ⟨fun i ↦ pointIndex i, fun _ _ h => by injection h⟩
 
 /-- The sum of a function over `PointsWithCircumcenterIndex`. -/
 theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}

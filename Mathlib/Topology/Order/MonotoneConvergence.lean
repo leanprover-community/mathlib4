@@ -181,7 +181,7 @@ instance Pi.supConvergenceClass
     [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine ⟨fun f s h => ?_⟩
   simp only [isLUB_pi, ← range_restrict] at h
-  exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
+  exact tendsto_pi_nhds.2 fun i ↦ tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
 
 instance Pi.infConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
@@ -292,7 +292,7 @@ theorem iSup_eq_iSup_subseq_of_monotone {ι₁ ι₂ α : Type*} [Preorder ι₂
   le_antisymm
     (iSup_mono' fun i =>
       Exists.imp (fun j (hj : i ≤ φ j) => hf hj) (hφ.eventually <| eventually_ge_atTop i).exists)
-    (iSup_mono' fun i => ⟨φ i, le_rfl⟩)
+    (iSup_mono' fun i ↦ ⟨φ i, le_rfl⟩)
 
 theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type*} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Antitone f)
@@ -300,7 +300,7 @@ theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type*} [Preorder ι₂
   le_antisymm
     (iSup_mono' fun i =>
       Exists.imp (fun j (hj : φ j ≤ i) => hf hj) (hφ.eventually <| eventually_le_atBot i).exists)
-    (iSup_mono' fun i => ⟨φ i, le_rfl⟩)
+    (iSup_mono' fun i ↦ ⟨φ i, le_rfl⟩)
 
 theorem iInf_eq_iInf_subseq_of_monotone {ι₁ ι₂ α : Type*} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)

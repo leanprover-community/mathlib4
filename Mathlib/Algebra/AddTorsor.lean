@@ -293,11 +293,11 @@ open AddAction AddTorsor
 /-- A product of `AddTorsor`s is an `AddTorsor`. -/
 instance instAddTorsor [∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
   vadd g p i := g i +ᵥ p i
-  zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
-  add_vadd g₁ g₂ p := funext fun i => add_vadd (g₁ i) (g₂ i) (p i)
+  zero_vadd p := funext fun i ↦ zero_vadd (fg i) (p i)
+  add_vadd g₁ g₂ p := funext fun i ↦ add_vadd (g₁ i) (g₂ i) (p i)
   vsub p₁ p₂ i := p₁ i -ᵥ p₂ i
-  vsub_vadd' p₁ p₂ := funext fun i => vsub_vadd (p₁ i) (p₂ i)
-  vadd_vsub' g p := funext fun i => vadd_vsub (g i) (p i)
+  vsub_vadd' p₁ p₂ := funext fun i ↦ vsub_vadd (p₁ i) (p₂ i)
+  vadd_vsub' g p := funext fun i ↦ vadd_vsub (g i) (p i)
 
 end Pi
 
@@ -313,7 +313,7 @@ def vaddConst (p : P) : G ≃ P where
   right_inv _ := vsub_vadd _ _
 
 @[simp]
-theorem coe_vaddConst (p : P) : ⇑(vaddConst p) = fun v => v +ᵥ p :=
+theorem coe_vaddConst (p : P) : ⇑(vaddConst p) = fun v ↦ v +ᵥ p :=
   rfl
 
 @[simp]

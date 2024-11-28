@@ -61,7 +61,7 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       { toFun := fun x ↦ f x ^ n,
         map_one' := by simp,
         map_mul' := fun x y => by simp [mul_zpow] },
-    zpow_zero' := fun f => by
+    zpow_zero' := fun f ↦ by
       ext x
       simp,
     zpow_succ' := fun n f => by

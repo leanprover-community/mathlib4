@@ -71,7 +71,7 @@ lemma preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f f.inje
   coe_injective <| by simp only [coe_preimage, coe_map, Set.preimage_image_eq _ f.injective]
 
 theorem monotone_preimage {f : α → β} (h : Injective f) :
-    Monotone fun s => preimage s f h.injOn := fun _ _ H _ hx =>
+    Monotone fun s ↦ preimage s f h.injOn := fun _ _ H _ hx =>
   mem_preimage.2 (H <| mem_preimage.1 hx)
 
 theorem image_subset_iff_subset_preimage [DecidableEq β] {f : α → β} {s : Finset α} {t : Finset β}

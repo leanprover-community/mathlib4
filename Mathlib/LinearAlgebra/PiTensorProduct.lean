@@ -274,7 +274,7 @@ variable (R)
 
 /-- The canonical `MultilinearMap R s (⨂[R] i, s i)`.
 
-`tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
+`tprod R fun i ↦ f i` has notation `⨂ₜ[R] i, f i`. -/
 def tprod : MultilinearMap R s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
@@ -778,7 +778,7 @@ theorem map_reindex (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) (x : ⨂[R]
   DFunLike.congr_fun (map_comp_reindex_eq _ _) _
 
 theorem map_comp_reindex_symm (f : Π i, s i →ₗ[R] t i) (e : ι ≃ ι₂) :
-    map f ∘ₗ (reindex R s e).symm = (reindex R t e).symm ∘ₗ map (fun i => f (e.symm i)) := by
+    map f ∘ₗ (reindex R s e).symm = (reindex R t e).symm ∘ₗ map (fun i ↦ f (e.symm i)) := by
   ext m
   apply LinearEquiv.injective (reindex R t e)
   simp only [LinearMap.compMultilinearMap_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,

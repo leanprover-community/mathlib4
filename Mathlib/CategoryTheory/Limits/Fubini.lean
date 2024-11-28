@@ -102,7 +102,7 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
         (Q j).lift
           { pt := c.pt
             π :=
-              { app := fun k => c.π.app (j, k)
+              { app := fun k ↦ c.π.app (j, k)
                 naturality := fun k k' f => by
                   dsimp; simp only [Category.id_comp]
                   have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
@@ -136,7 +136,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
         (Q j).desc
           { pt := c.pt
             ι :=
-              { app := fun k => c.ι.app (j, k)
+              { app := fun k ↦ c.ι.app (j, k)
                 naturality := fun k k' f => by
                   dsimp; simp only [Category.comp_id]
                   conv_lhs =>
@@ -166,7 +166,7 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     P.lift
       { pt := s.pt
         π :=
-          { app := fun p => s.π.app p.1 ≫ (D.obj p.1).π.app p.2
+          { app := fun p ↦ s.π.app p.1 ≫ (D.obj p.1).π.app p.2
             naturality := fun p p' f => by
               dsimp; simp only [Category.id_comp, Category.assoc]
               rcases p with ⟨j, k⟩
@@ -205,7 +205,7 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
     P.desc
       { pt := s.pt
         ι :=
-          { app := fun p => (D.obj p.1).ι.app p.2 ≫ s.ι.app p.1
+          { app := fun p ↦ (D.obj p.1).ι.app p.2 ≫ s.ι.app p.1
             naturality := fun p p' f => by
               dsimp; simp only [Category.id_comp, Category.assoc]
               rcases p with ⟨j, k⟩
@@ -269,7 +269,7 @@ noncomputable def limitUncurryIsoLimitCompLim : limit (uncurry.obj F) ≅ limit 
   let c := limit.cone (uncurry.obj F)
   let P : IsLimit c := limit.isLimit _
   let G := DiagramOfCones.mkOfHasLimits F
-  let Q : ∀ j, IsLimit (G.obj j) := fun j => limit.isLimit _
+  let Q : ∀ j, IsLimit (G.obj j) := fun j ↦ limit.isLimit _
   have Q' := coneOfConeUncurryIsLimit Q P
   have Q'' := limit.isLimit (F ⋙ lim)
   exact IsLimit.conePointUniqueUpToIso Q' Q''
@@ -325,7 +325,7 @@ noncomputable def colimitUncurryIsoColimitCompColim :
   let c := colimit.cocone (uncurry.obj F)
   let P : IsColimit c := colimit.isColimit _
   let G := DiagramOfCocones.mkOfHasColimits F
-  let Q : ∀ j, IsColimit (G.obj j) := fun j => colimit.isColimit _
+  let Q : ∀ j, IsColimit (G.obj j) := fun j ↦ colimit.isColimit _
   have Q' := coconeOfCoconeUncurryIsColimit Q P
   have Q'' := colimit.isColimit (F ⋙ colim)
   exact IsColimit.coconePointUniqueUpToIso Q' Q''

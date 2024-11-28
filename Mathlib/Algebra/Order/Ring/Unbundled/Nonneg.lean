@@ -196,7 +196,7 @@ section AddMonoidWithOne
 variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
 
 instance natCast : NatCast { x : α // 0 ≤ x } :=
-  ⟨fun n => ⟨n, Nat.cast_nonneg' n⟩⟩
+  ⟨fun n ↦ ⟨n, Nat.cast_nonneg' n⟩⟩
 
 @[simp, norm_cast]
 protected theorem coe_natCast (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=

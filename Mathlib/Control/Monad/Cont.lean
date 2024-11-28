@@ -33,7 +33,7 @@ open MonadCont
 class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m]
     extends LawfulMonad m : Prop where
   callCC_bind_right {α ω γ} (cmd : m α) (next : Label ω m γ → α → m ω) :
-    (callCC fun f => cmd >>= next f) = cmd >>= fun x ↦ callCC fun f => next f x
+    (callCC fun f ↦ cmd >>= next f) = cmd >>= fun x ↦ callCC fun f ↦ next f x
   callCC_bind_left {α} (β) (x : α) (dead : Label α m β → β → m α) :
     (callCC fun f : Label α m β => goto f x >>= dead f) = pure x
   callCC_dummy {α β} (dummy : m α) : (callCC fun _ : Label α m β => dummy) = dummy
@@ -61,7 +61,7 @@ def map (f : m r → m r) (x : ContT r m α) : ContT r m α :=
 theorem run_contT_map_contT (f : m r → m r) (x : ContT r m α) : run (map f x) = f ∘ run x :=
   rfl
 
-def withContT (f : (β → m r) → α → m r) (x : ContT r m α) : ContT r m β := fun g => x <| f g
+def withContT (f : (β → m r) → α → m r) (x : ContT r m α) : ContT r m β := fun g ↦ x <| f g
 
 theorem run_withContT (f : (β → m r) → α → m r) (x : ContT r m α) :
     run (withContT f x) = run x ∘ f :=
@@ -73,7 +73,7 @@ protected theorem ext {x y : ContT r m α} (h : ∀ f, x.run f = y.run f) : x = 
 
 instance : Monad (ContT r m) where
   pure x f := f x
-  bind x f g := x fun i => f i g
+  bind x f g := x fun i ↦ f i g
 
 instance : LawfulMonad (ContT r m) := LawfulMonad.mk'
   (id_map := by intros; rfl)
@@ -196,14 +196,14 @@ instance (ω) [Monad m] [Monoid ω] [MonadCont m] : MonadCont (WriterT ω m) whe
   callCC := WriterT.callCC'
 
 def StateT.mkLabel {α β σ : Type u} : Label (α × σ) m (β × σ) → Label α (StateT σ m) β
-  | ⟨f⟩ => ⟨fun a ↦ StateT.mk (fun s => f (a, s))⟩
+  | ⟨f⟩ => ⟨fun a ↦ StateT.mk (fun s ↦ f (a, s))⟩
 
 theorem StateT.goto_mkLabel {α β σ : Type u} (x : Label (α × σ) m (β × σ)) (i : α) :
-    goto (StateT.mkLabel x) i = StateT.mk (fun s => goto x (i, s)) := by cases x; rfl
+    goto (StateT.mkLabel x) i = StateT.mk (fun s ↦ goto x (i, s)) := by cases x; rfl
 
 nonrec def StateT.callCC {σ} [MonadCont m] {α β : Type _}
     (f : Label α (StateT σ m) β → StateT σ m α) : StateT σ m α :=
-  StateT.mk (fun r => callCC fun f' => (f <| StateT.mkLabel f').run r)
+  StateT.mk (fun r ↦ callCC fun f' => (f <| StateT.mkLabel f').run r)
 
 instance {σ} [MonadCont m] : MonadCont (StateT σ m) where
   callCC := StateT.callCC
@@ -229,7 +229,7 @@ theorem ReaderT.goto_mkLabel {α ρ β} (x : Label α m β) (i : α) :
 
 nonrec def ReaderT.callCC {ε} [MonadCont m] {α β : Type _}
     (f : Label α (ReaderT ε m) β → ReaderT ε m α) : ReaderT ε m α :=
-  ReaderT.mk (fun r => callCC fun f' => (f <| ReaderT.mkLabel _ f').run r)
+  ReaderT.mk (fun r ↦ callCC fun f' => (f <| ReaderT.mkLabel _ f').run r)
 
 instance {ρ} [MonadCont m] : MonadCont (ReaderT ρ m) where
   callCC := ReaderT.callCC

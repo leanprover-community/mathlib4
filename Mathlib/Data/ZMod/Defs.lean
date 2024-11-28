@@ -120,64 +120,64 @@ theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/
 instance commRing (n : ℕ) : CommRing (ZMod n) where
-  add := Nat.casesOn n (@Add.add Int _) fun n => @Add.add (Fin n.succ) _
-  add_assoc := Nat.casesOn n (@add_assoc Int _) fun n => @add_assoc (Fin n.succ) _
-  zero := Nat.casesOn n (0 : Int) fun n => (0 : Fin n.succ)
-  zero_add := Nat.casesOn n (@zero_add Int _) fun n => @zero_add (Fin n.succ) _
-  add_zero := Nat.casesOn n (@add_zero Int _) fun n => @add_zero (Fin n.succ) _
-  neg := Nat.casesOn n (@Neg.neg Int _) fun n => @Neg.neg (Fin n.succ) _
-  sub := Nat.casesOn n (@Sub.sub Int _) fun n => @Sub.sub (Fin n.succ) _
-  sub_eq_add_neg := Nat.casesOn n (@sub_eq_add_neg Int _) fun n => @sub_eq_add_neg (Fin n.succ) _
+  add := Nat.casesOn n (@Add.add Int _) fun n ↦ @Add.add (Fin n.succ) _
+  add_assoc := Nat.casesOn n (@add_assoc Int _) fun n ↦ @add_assoc (Fin n.succ) _
+  zero := Nat.casesOn n (0 : Int) fun n ↦ (0 : Fin n.succ)
+  zero_add := Nat.casesOn n (@zero_add Int _) fun n ↦ @zero_add (Fin n.succ) _
+  add_zero := Nat.casesOn n (@add_zero Int _) fun n ↦ @add_zero (Fin n.succ) _
+  neg := Nat.casesOn n (@Neg.neg Int _) fun n ↦ @Neg.neg (Fin n.succ) _
+  sub := Nat.casesOn n (@Sub.sub Int _) fun n ↦ @Sub.sub (Fin n.succ) _
+  sub_eq_add_neg := Nat.casesOn n (@sub_eq_add_neg Int _) fun n ↦ @sub_eq_add_neg (Fin n.succ) _
   zsmul := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).zsmul fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul
+    (inferInstanceAs (CommRing ℤ)).zsmul fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).zsmul
   zsmul_zero' := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).zsmul_zero'
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul_zero'
+    fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).zsmul_zero'
   zsmul_succ' := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).zsmul_succ'
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul_succ'
+    fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).zsmul_succ'
   zsmul_neg' := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).zsmul_neg'
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).zsmul_neg'
+    fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).zsmul_neg'
   nsmul := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).nsmul fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul
+    (inferInstanceAs (CommRing ℤ)).nsmul fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).nsmul
   nsmul_zero := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).nsmul_zero
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_zero
+    fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).nsmul_zero
   nsmul_succ := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).nsmul_succ
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
+    fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
   -- Porting note: `match` didn't work here
-  neg_add_cancel := Nat.casesOn n (@neg_add_cancel Int _) fun n => @neg_add_cancel (Fin n.succ) _
-  add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
-  mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
-  mul_assoc := Nat.casesOn n (@mul_assoc Int _) fun n => @mul_assoc (Fin n.succ) _
-  one := Nat.casesOn n (1 : Int) fun n => (1 : Fin n.succ)
-  one_mul := Nat.casesOn n (@one_mul Int _) fun n => @one_mul (Fin n.succ) _
-  mul_one := Nat.casesOn n (@mul_one Int _) fun n => @mul_one (Fin n.succ) _
-  natCast := Nat.casesOn n ((↑) : ℕ → ℤ) fun n => ((↑) : ℕ → Fin n.succ)
-  natCast_zero := Nat.casesOn n (@Nat.cast_zero Int _) fun n => @Nat.cast_zero (Fin n.succ) _
-  natCast_succ := Nat.casesOn n (@Nat.cast_succ Int _) fun n => @Nat.cast_succ (Fin n.succ) _
-  intCast := Nat.casesOn n ((↑) : ℤ → ℤ) fun n => ((↑) : ℤ → Fin n.succ)
-  intCast_ofNat := Nat.casesOn n (@Int.cast_natCast Int _) fun n => @Int.cast_natCast (Fin n.succ) _
+  neg_add_cancel := Nat.casesOn n (@neg_add_cancel Int _) fun n ↦ @neg_add_cancel (Fin n.succ) _
+  add_comm := Nat.casesOn n (@add_comm Int _) fun n ↦ @add_comm (Fin n.succ) _
+  mul := Nat.casesOn n (@Mul.mul Int _) fun n ↦ @Mul.mul (Fin n.succ) _
+  mul_assoc := Nat.casesOn n (@mul_assoc Int _) fun n ↦ @mul_assoc (Fin n.succ) _
+  one := Nat.casesOn n (1 : Int) fun n ↦ (1 : Fin n.succ)
+  one_mul := Nat.casesOn n (@one_mul Int _) fun n ↦ @one_mul (Fin n.succ) _
+  mul_one := Nat.casesOn n (@mul_one Int _) fun n ↦ @mul_one (Fin n.succ) _
+  natCast := Nat.casesOn n ((↑) : ℕ → ℤ) fun n ↦ ((↑) : ℕ → Fin n.succ)
+  natCast_zero := Nat.casesOn n (@Nat.cast_zero Int _) fun n ↦ @Nat.cast_zero (Fin n.succ) _
+  natCast_succ := Nat.casesOn n (@Nat.cast_succ Int _) fun n ↦ @Nat.cast_succ (Fin n.succ) _
+  intCast := Nat.casesOn n ((↑) : ℤ → ℤ) fun n ↦ ((↑) : ℤ → Fin n.succ)
+  intCast_ofNat := Nat.casesOn n (@Int.cast_natCast Int _) fun n ↦ @Int.cast_natCast (Fin n.succ) _
   intCast_negSucc :=
-    Nat.casesOn n (@Int.cast_negSucc Int _) fun n => @Int.cast_negSucc (Fin n.succ) _
-  left_distrib := Nat.casesOn n (@left_distrib Int _ _ _) fun n => @left_distrib (Fin n.succ) _ _ _
+    Nat.casesOn n (@Int.cast_negSucc Int _) fun n ↦ @Int.cast_negSucc (Fin n.succ) _
+  left_distrib := Nat.casesOn n (@left_distrib Int _ _ _) fun n ↦ @left_distrib (Fin n.succ) _ _ _
   right_distrib :=
-    Nat.casesOn n (@right_distrib Int _ _ _) fun n => @right_distrib (Fin n.succ) _ _ _
-  mul_comm := Nat.casesOn n (@mul_comm Int _) fun n => @mul_comm (Fin n.succ) _
+    Nat.casesOn n (@right_distrib Int _ _ _) fun n ↦ @right_distrib (Fin n.succ) _ _ _
+  mul_comm := Nat.casesOn n (@mul_comm Int _) fun n ↦ @mul_comm (Fin n.succ) _
   -- Porting note: new, see
   -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
-  zero_mul := Nat.casesOn n (@zero_mul Int _) fun n => @zero_mul (Fin n.succ) _
-  mul_zero := Nat.casesOn n (@mul_zero Int _) fun n => @mul_zero (Fin n.succ) _
+  zero_mul := Nat.casesOn n (@zero_mul Int _) fun n ↦ @zero_mul (Fin n.succ) _
+  mul_zero := Nat.casesOn n (@mul_zero Int _) fun n ↦ @mul_zero (Fin n.succ) _
   npow := Nat.casesOn n
-    (inferInstanceAs (CommRing ℤ)).npow fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow
+    (inferInstanceAs (CommRing ℤ)).npow fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).npow
   npow_zero := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).npow_zero
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_zero
+    fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).npow_zero
   npow_succ := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).npow_succ
-    fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
+    fun n ↦ (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
 
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩

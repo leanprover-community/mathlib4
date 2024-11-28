@@ -80,7 +80,7 @@ instance : LE (ValueGroup A K) :=
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩; ext
         constructor
         · rintro ⟨e, he⟩; use (c⁻¹ : Aˣ) * e * d
-          apply_fun fun t => c⁻¹ • t at he
+          apply_fun fun t ↦ c⁻¹ • t at he
           simpa [mul_smul] using he
         · rintro ⟨e, he⟩; dsimp
           use c * e * (d⁻¹ : Aˣ)
@@ -170,7 +170,7 @@ noncomputable instance linearOrderedCommGroupWithZero :
     exists_pair_ne := by
       use 0, 1
       intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-      apply_fun fun t => d⁻¹ • t at hd
+      apply_fun fun t ↦ d⁻¹ • t at hd
       simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
     inv_zero := by apply Quotient.sound'; rw [inv_zero]
     mul_inv_cancel := by

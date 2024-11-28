@@ -678,10 +678,10 @@ theorem contDiffOn_top_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
   constructor
   · intro h
     refine ⟨h.differentiableOn (mod_cast le_top), ?_⟩
-    refine contDiffOn_top.2 fun n => ((contDiffOn_succ_iff_fderivWithin hs).1 ?_).2
+    refine contDiffOn_top.2 fun n ↦ ((contDiffOn_succ_iff_fderivWithin hs).1 ?_).2
     exact h.of_le (mod_cast le_top)
   · intro h
-    refine contDiffOn_top.2 fun n => ?_
+    refine contDiffOn_top.2 fun n ↦ ?_
     have A : (n : ℕ∞) ≤ ∞ := mod_cast le_top
     apply ((contDiffOn_succ_iff_fderivWithin hs).2 ⟨h.1, h.2.of_le A⟩).of_le
     exact_mod_cast (Nat.le_succ n)

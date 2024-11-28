@@ -75,7 +75,7 @@ theorem prod_mem_prod_iff [f.NeBot] [g.NeBot] : s ×ˢ t ∈ f ×ˢ g ↔ s ∈ 
 theorem mem_prod_principal {s : Set (α × β)} :
     s ∈ f ×ˢ 𝓟 t ↔ { a | ∀ b ∈ t, (a, b) ∈ s } ∈ f := by
   rw [← @exists_mem_subset_iff _ f, mem_prod_iff]
-  refine exists_congr fun u => Iff.rfl.and ⟨?_, fun h ↦ ⟨t, mem_principal_self t, ?_⟩⟩
+  refine exists_congr fun u ↦ Iff.rfl.and ⟨?_, fun h ↦ ⟨t, mem_principal_self t, ?_⟩⟩
   · rintro ⟨v, v_in, hv⟩ a a_in b b_in
     exact hv (mk_mem_prod a_in <| v_in b_in)
   · rintro ⟨x, y⟩ ⟨hx, hy⟩
@@ -198,7 +198,7 @@ theorem Eventually.diag_of_prod_right {f : Filter α} {g : Filter γ} {p : α ×
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
   exact (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
 
-theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ˢ f) :=
+theorem tendsto_diag : Tendsto (fun i ↦ (i, i)) f (f ×ˢ f) :=
   tendsto_iff_eventually.mpr fun _ hpr => hpr.diag_of_prod
 
 theorem prod_iInf_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :
@@ -412,7 +412,7 @@ theorem tendsto_prod_iff {f : α × β → γ} {x : Filter α} {y : Filter β} {
   simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff, exists_prop]
 
 theorem tendsto_prod_iff' {g' : Filter γ} {s : α → β × γ} :
-    Tendsto s f (g ×ˢ g') ↔ Tendsto (fun n => (s n).1) f g ∧ Tendsto (fun n => (s n).2) f g' := by
+    Tendsto s f (g ×ˢ g') ↔ Tendsto (fun n ↦ (s n).1) f g ∧ Tendsto (fun n ↦ (s n).2) f g' := by
   dsimp only [SProd.sprod]
   unfold Filter.prod
   simp only [tendsto_inf, tendsto_comap_iff, Function.comp_def]

@@ -293,7 +293,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
       exact SublistForall₂.cons hr (ih hl)
 
 instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) :=
-  ⟨fun l => sublistForall₂_iff.2 ⟨l, forall₂_refl l, Sublist.refl l⟩⟩
+  ⟨fun l ↦ sublistForall₂_iff.2 ⟨l, forall₂_refl l, Sublist.refl l⟩⟩
 
 instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (SublistForall₂ Rₐ) :=
   ⟨fun a b c => by

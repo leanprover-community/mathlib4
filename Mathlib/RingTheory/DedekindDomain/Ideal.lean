@@ -1211,7 +1211,7 @@ prime powers. -/
 theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f : ι → Ideal R)
     (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (f i))
     (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
-    (s.inf fun i => f i ^ e i) = ∏ i ∈ s, f i ^ e i := by
+    (s.inf fun i ↦ f i ^ e i) = ∏ i ∈ s, f i ^ e i := by
   letI := Classical.decEq ι
   revert prime coprime
   refine s.induction ?_ ?_
@@ -1286,8 +1286,8 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type*} {s
     (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → P i ≠ P j)
     (prod_eq : ∏ i ∈ s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
   IsDedekindDomain.quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i)
-    (fun i => prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
-    (_root_.trans (Finset.prod_coe_sort s fun i => P i ^ e i) prod_eq)
+    (fun i ↦ prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
+    (_root_.trans (Finset.prod_coe_sort s fun i ↦ P i ^ e i) prod_eq)
 
 /-- Corollary of the Chinese remainder theorem: given elements `x i : R / P i ^ e i`,
 we can choose a representative `y : R` such that `y ≡ x i (mod P i ^ e i)`. -/
@@ -1367,7 +1367,7 @@ theorem emultiplicity_eq_emultiplicity_span {a b : R} :
       apply lt_add_one
   · suffices ¬Finite (Ideal.span ({a} : Set R)) (Ideal.span ({b} : Set R)) by
       rw [emultiplicity_eq_top.2 h, emultiplicity_eq_top.2 this]
-    exact Finite.not_iff_forall.mpr fun n => by
+    exact Finite.not_iff_forall.mpr fun n ↦ by
       rw [Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd]
       exact Finite.not_iff_forall.mp h n
 

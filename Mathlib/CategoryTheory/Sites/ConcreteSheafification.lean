@@ -563,7 +563,7 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
     ext : 3
-    refine colimit.hom_ext (fun j => ?_)
+    refine colimit.hom_ext (fun j ↦ ?_)
     erw [colimit.ι_map, comp_zero, J.plusMap_zero, J.diagramNatTrans_zero, zero_comp]
 
 /-- The sheafification functor is left adjoint to the forgetful functor. -/
@@ -589,6 +589,6 @@ instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f
   (sheafToPresheaf J D).map_mono _
 
 theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
-  ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
+  ⟨fun m ↦ by infer_instance, fun m ↦ by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
 
 end CategoryTheory

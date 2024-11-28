@@ -155,7 +155,7 @@ theorem card_fixedPoints (σ : Equiv.Perm α) :
   congr; aesop
 
 theorem sign_of_cycleType' (σ : Perm α) :
-    sign σ = (σ.cycleType.map fun n => -(-1 : ℤˣ) ^ n).prod := by
+    sign σ = (σ.cycleType.map fun n ↦ -(-1 : ℤˣ) ^ n).prod := by
   induction σ using cycle_induction_on with
   | base_one => simp
   | base_cycles σ hσ => simp [hσ.cycleType, hσ.sign]
@@ -313,7 +313,7 @@ theorem mem_cycleType_iff {n : ℕ} {σ : Perm α} :
     rw [(List.perm_cons_erase cl).pairwise_iff @(Disjoint.symmetric)] at hld
     refine ⟨c, (l.erase c).prod, ?_, ?_, hlc _ cl, rfl⟩
     · rw [← List.prod_cons, (List.perm_cons_erase cl).symm.prod_eq' (hld.imp Disjoint.commute)]
-    · exact disjoint_prod_right _ fun g => List.rel_of_pairwise_cons hld
+    · exact disjoint_prod_right _ fun g ↦ List.rel_of_pairwise_cons hld
   · rintro ⟨c, t, rfl, hd, hc, rfl⟩
     simp [hd.cycleType, hc.cycleType]
 
@@ -481,13 +481,13 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
     VectorsProdEqOne.rotate_rotate v j k
   have hf3 : ∀ v, f p v = v := VectorsProdEqOne.rotate_length
   let σ :=
-    Equiv.mk (f 1) (f (p - 1)) (fun s => by rw [hf2, add_tsub_cancel_of_le hp.out.one_lt.le, hf3])
-      fun s => by rw [hf2, tsub_add_cancel_of_le hp.out.one_lt.le, hf3]
+    Equiv.mk (f 1) (f (p - 1)) (fun s ↦ by rw [hf2, add_tsub_cancel_of_le hp.out.one_lt.le, hf3])
+      fun s ↦ by rw [hf2, tsub_add_cancel_of_le hp.out.one_lt.le, hf3]
   have hσ : ∀ k v, (σ ^ k) v = f k v := fun k =>
-    Nat.rec (fun v => (hf1 v).symm) (fun k hk v => by
+    Nat.rec (fun v ↦ (hf1 v).symm) (fun k hk v => by
       rw [pow_succ, Perm.mul_apply, hk (σ v), Nat.succ_eq_one_add, ← hf2 1 k]
       simp only [σ, coe_fn_mk]) k
-  replace hσ : σ ^ p ^ 1 = 1 := Perm.ext fun v => by rw [pow_one, hσ, hf3, one_apply]
+  replace hσ : σ ^ p ^ 1 = 1 := Perm.ext fun v ↦ by rw [pow_one, hσ, hf3, one_apply]
   let v₀ : vectorsProdEqOne G p :=
     ⟨Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩
   have hv₀ : σ v₀ = v₀ := Subtype.ext (Subtype.ext (List.rotate_replicate (1 : G) p 1))
@@ -553,7 +553,7 @@ theorem parts_partition {σ : Perm α} :
   rfl
 
 theorem filter_parts_partition_eq_cycleType {σ : Perm α} :
-    ((partition σ).parts.filter fun n => 2 ≤ n) = σ.cycleType := by
+    ((partition σ).parts.filter fun n ↦ 2 ≤ n) = σ.cycleType := by
   rw [parts_partition, filter_add, Multiset.filter_eq_self.2 fun _ => two_le_of_mem_cycleType,
     Multiset.filter_eq_nil.2 fun a h => ?_, add_zero]
   rw [Multiset.eq_of_mem_replicate h]

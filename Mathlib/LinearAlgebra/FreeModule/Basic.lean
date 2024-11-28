@@ -152,7 +152,7 @@ instance prod [Module.Free R N] : Module.Free R (M × N) :=
 instance pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
     [∀ i : ι, Module.Free R (M i)] : Module.Free R (∀ i, M i) :=
   let ⟨_⟩ := nonempty_fintype ι
-  of_basis <| Pi.basis fun i => chooseBasis R (M i)
+  of_basis <| Pi.basis fun i ↦ chooseBasis R (M i)
 
 /-- The module of finite matrices is free. -/
 instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n M) :=
@@ -181,7 +181,7 @@ instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :
 
 instance dfinsupp {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
-  of_basis <| DFinsupp.basis fun i => chooseBasis R (M i)
+  of_basis <| DFinsupp.basis fun i ↦ chooseBasis R (M i)
 
 instance directSum {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (⨁ i, M i) :=

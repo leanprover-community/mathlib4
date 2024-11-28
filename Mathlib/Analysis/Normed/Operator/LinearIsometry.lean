@@ -152,7 +152,7 @@ theorem coe_toLinearMap : ⇑f.toLinearMap = f :=
 theorem coe_mk (f : E →ₛₗ[σ₁₂] E₂) (hf) : ⇑(mk f hf) = f :=
   rfl
 
-theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) (fun f => f) := by
+theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) (fun f ↦ f) := by
   rintro ⟨_⟩ ⟨_⟩
   simp
 

@@ -72,7 +72,7 @@ def comp : MorphismProperty C := fun _ _ f => Nonempty (MapFactorizationData W�
 lemma comp_eq_top_iff : W₁.comp W₂ = ⊤ ↔ HasFactorization W₁ W₂ := by
   constructor
   · intro h
-    refine ⟨fun f => ?_⟩
+    refine ⟨fun f ↦ ?_⟩
     have : W₁.comp W₂ f := by simp only [h, top_apply]
     exact ⟨this.some⟩
   · intro
@@ -161,11 +161,11 @@ variable (J : Type*) [Category J]
 @[simps]
 def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
   obj f :=
-    { obj := fun j => (data.factorizationData (f.hom.app j)).Z
+    { obj := fun j ↦ (data.factorizationData (f.hom.app j)).Z
       map := fun φ => data.mapZ
         { left := f.left.map φ
           right := f.right.map φ }
-      map_id := fun j => by
+      map_id := fun j ↦ by
         dsimp
         rw [← data.mapZ_id (f.hom.app j)]
         congr <;> simp
@@ -174,7 +174,7 @@ def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
         rw [← data.mapZ_comp]
         congr <;> simp }
   map τ :=
-    { app := fun j => data.mapZ
+    { app := fun j ↦ data.mapZ
         { left := τ.left.app j
           right := τ.right.app j
           w := congr_app τ.w j }
@@ -198,8 +198,8 @@ def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
 def functorCategory :
     FunctorialFactorizationData (W₁.functorCategory J) (W₂.functorCategory J) where
   Z := functorCategory.Z data J
-  i := { app := fun f => { app := fun j => (data.factorizationData (f.hom.app j)).i } }
-  p := { app := fun f => { app := fun j => (data.factorizationData (f.hom.app j)).p } }
+  i := { app := fun f ↦ { app := fun j ↦ (data.factorizationData (f.hom.app j)).i } }
+  p := { app := fun f ↦ { app := fun j ↦ (data.factorizationData (f.hom.app j)).p } }
   hi _ _ := data.hi _
   hp _ _ := data.hp _
 

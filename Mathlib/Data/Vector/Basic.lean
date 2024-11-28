@@ -44,7 +44,7 @@ theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.get v m = Vecto
 
 /-- The empty `Vector` is a `Subsingleton`. -/
 instance zero_subsingleton : Subsingleton (Vector α 0) :=
-  ⟨fun _ _ => Vector.ext fun m => Fin.elim0 m⟩
+  ⟨fun _ _ => Vector.ext fun m ↦ Fin.elim0 m⟩
 
 @[simp]
 theorem cons_val (a : α) : ∀ v : Vector α n, (a ::ᵥ v).val = a :: v.val
@@ -172,7 +172,7 @@ theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
 def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
-  ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
+  ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f ↦ funext <| Vector.get_ofFn f⟩
 
 theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by omega⟩ := by
   cases' i with i ih; dsimp
@@ -200,7 +200,7 @@ theorem singleton_tail : ∀ (v : Vector α 1), v.tail = Vector.nil
   | ⟨[_], _⟩ => rfl
 
 @[simp]
-theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i => f i.succ :=
+theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i ↦ f i.succ :=
   (ofFn_get _).symm.trans <| by
     congr
     funext i
@@ -383,11 +383,11 @@ def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector 
   | 0, _ => pure nil
   | _ + 1, f => do
     let a ← f 0
-    let v ← mOfFn fun i => f i.succ
+    let v ← mOfFn fun i ↦ f i.succ
     pure (a ::ᵥ v)
 
 theorem mOfFn_pure {m} [Monad m] [LawfulMonad m] {α} :
-    ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i => pure (f i)) = pure (ofFn f)
+    ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i ↦ pure (f i)) = pure (ofFn f)
   | 0, _ => rfl
   | n + 1, f => by
     rw [mOfFn, @mOfFn_pure m _ _ _ n _, ofFn]
@@ -719,7 +719,7 @@ instance : LawfulTraversable.{u} (flip Vector n) where
 -- Porting note: not porting meta instances
 -- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
 --     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
---   @Vector.inductionOn α (fun n => reflected _) n v
+--   @Vector.inductionOn α (fun n ↦ reflected _) n v
 --     ((by
 --           trace
 --             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:

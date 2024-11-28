@@ -118,7 +118,7 @@ theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ f : Dual 
         _ = M := by rw [hf₁, mul_one]
 
 theorem eq_zero_of_forall_dual_eq_zero {x : E} (h : ∀ f : Dual 𝕜 E, f x = (0 : 𝕜)) : x = 0 :=
-  norm_le_zero_iff.mp (norm_le_dual_bound 𝕜 x le_rfl fun f => by simp [h f])
+  norm_le_zero_iff.mp (norm_le_dual_bound 𝕜 x le_rfl fun f ↦ by simp [h f])
 
 theorem eq_zero_iff_forall_dual_eq_zero (x : E) : x = 0 ↔ ∀ g : Dual 𝕜 E, g x = 0 :=
   ⟨fun hx => by simp [hx], fun h ↦ eq_zero_of_forall_dual_eq_zero 𝕜 h⟩

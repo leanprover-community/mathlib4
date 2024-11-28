@@ -148,7 +148,7 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
 theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z : ι → ℝ)
     (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : 0 < ∑ i ∈ s, w i) (hz : ∀ i ∈ s, 0 ≤ z i) :
     (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹  ≤  (∑ i ∈ s, w i * z i) / (∑ i ∈ s, w i) := by
-  convert geom_mean_le_arith_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z ?_ ?_ hz using 2
+  convert geom_mean_le_arith_mean_weighted s (fun i ↦ (w i) / ∑ i ∈ s, w i) z ?_ ?_ hz using 2
   · rw [← finset_prod_rpow _ _ (fun i hi => rpow_nonneg (hz _ hi) _) _]
     refine Finset.prod_congr rfl (fun _ ih => ?_)
     rw [div_eq_mul_inv, rpow_mul (hz _ ih)]
@@ -286,7 +286,7 @@ theorem harm_mean_le_geom_mean_weighted (w z : ι → ℝ) (hs : s.Nonempty) (hw
 theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w : ι → ℝ)
     (z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 < z i) :
     (∑ i in s, w i) / (∑ i in s, w i / z i) ≤ (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹ := by
-  have := harm_mean_le_geom_mean_weighted s (fun i => (w i) / ∑ i in s, w i) z hs ?_ ?_ hz
+  have := harm_mean_le_geom_mean_weighted s (fun i ↦ (w i) / ∑ i in s, w i) z hs ?_ ?_ hz
   · simp only at this
     set n := ∑ i in s, w i
     nth_rw 1 [div_eq_mul_inv, (show n = (n⁻¹)⁻¹ by norm_num), ← mul_inv, Finset.mul_sum _ _ n⁻¹]
@@ -447,8 +447,8 @@ lemma inner_le_weight_mul_Lp (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι 
 functions. For an alternative version, convenient if the infinite sums are already expressed as
 `p`-th powers, see `inner_le_Lp_mul_Lq_hasSum`. -/
 theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsConjExponent q)
-    (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
-    (Summable fun i => f i * g i) ∧
+    (hf : Summable fun i ↦ f i ^ p) (hg : Summable fun i ↦ g i ^ q) :
+    (Summable fun i ↦ f i * g i) ∧
       ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
   have H₁ : ∀ s : Finset ι,
       ∑ i ∈ s, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
@@ -458,7 +458,7 @@ theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsCo
       exact sum_le_tsum _ (fun _ _ => zero_le _) hf
     · rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr hpq.symm.pos)]
       exact sum_le_tsum _ (fun _ _ => zero_le _) hg
-  have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, f i * g i) := by
+  have bdd : BddAbove (Set.range fun s ↦ ∑ i ∈ s, f i * g i) := by
     refine ⟨(∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q), ?_⟩
     rintro a ⟨s, rfl⟩
     exact H₁ s
@@ -466,12 +466,12 @@ theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsCo
   exact ⟨H₂, tsum_le_of_sum_le H₂ H₁⟩
 
 theorem summable_mul_of_Lp_Lq {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsConjExponent q)
-    (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
-    Summable fun i => f i * g i :=
+    (hf : Summable fun i ↦ f i ^ p) (hg : Summable fun i ↦ g i ^ q) :
+    Summable fun i ↦ f i * g i :=
   (inner_le_Lp_mul_Lq_tsum hpq hf hg).1
 
 theorem inner_le_Lp_mul_Lq_tsum' {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsConjExponent q)
-    (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
+    (hf : Summable fun i ↦ f i ^ p) (hg : Summable fun i ↦ g i ^ q) :
     ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) :=
   (inner_le_Lp_mul_Lq_tsum hpq hf hg).2
 
@@ -480,8 +480,8 @@ theorem inner_le_Lp_mul_Lq_tsum' {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.IsC
 functions. For an alternative version, convenient if the infinite sums are not already expressed as
 `p`-th powers, see `inner_le_Lp_mul_Lq_tsum`. -/
 theorem inner_le_Lp_mul_Lq_hasSum {f g : ι → ℝ≥0} {A B : ℝ≥0} {p q : ℝ}
-    (hpq : p.IsConjExponent q) (hf : HasSum (fun i => f i ^ p) (A ^ p))
-    (hg : HasSum (fun i => g i ^ q) (B ^ q)) : ∃ C, C ≤ A * B ∧ HasSum (fun i => f i * g i) C := by
+    (hpq : p.IsConjExponent q) (hf : HasSum (fun i ↦ f i ^ p) (A ^ p))
+    (hg : HasSum (fun i ↦ g i ^ q) (B ^ q)) : ∃ C, C ≤ A * B ∧ HasSum (fun i ↦ f i * g i) C := by
   obtain ⟨H₁, H₂⟩ := inner_le_Lp_mul_Lq_tsum hpq hf.summable hg.summable
   have hA : A = (∑' i : ι, f i ^ p) ^ (1 / p) := by rw [hf.tsum_eq, rpow_inv_rpow_self hpq.ne_zero]
   have hB : B = (∑' i : ι, g i ^ q) ^ (1 / q) := by
@@ -513,7 +513,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
     IsGreatest ((fun g : ι → ℝ≥0 => ∑ i ∈ s, f i * g i) '' { g | ∑ i ∈ s, g i ^ q ≤ 1 })
       ((∑ i ∈ s, f i ^ p) ^ (1 / p)) := by
   constructor
-  · use fun i => f i ^ p / f i / (∑ i ∈ s, f i ^ p) ^ (1 / q)
+  · use fun i ↦ f i ^ p / f i / (∑ i ∈ s, f i ^ p) ^ (1 / q)
     obtain hf | hf := eq_zero_or_pos (∑ i ∈ s, f i ^ p)
     · simp [hf, hpq.ne_zero, hpq.symm.ne_zero]
     · have A : p + q - q ≠ 0 := by simp [hpq.ne_zero]
@@ -550,9 +550,9 @@ theorem Lp_add_le (f g : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `NNReal`-valued functions. For an alternative version, convenient if the
 infinite sums are already expressed as `p`-th powers, see `Lp_add_le_hasSum_of_nonneg`. -/
-theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Summable fun i => f i ^ p)
-    (hg : Summable fun i => g i ^ p) :
-    (Summable fun i => (f i + g i) ^ p) ∧
+theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Summable fun i ↦ f i ^ p)
+    (hg : Summable fun i ↦ g i ^ p) :
+    (Summable fun i ↦ (f i + g i) ^ p) ∧
       (∑' i, (f i + g i) ^ p) ^ (1 / p) ≤
         (∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p) := by
   have pos : 0 < p := lt_of_lt_of_le zero_lt_one hp
@@ -565,7 +565,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
         rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr pos)] <;>
       refine sum_le_tsum _ (fun _ _ => zero_le _) ?_
     exacts [hf, hg]
-  have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, (f i + g i) ^ p) := by
+  have bdd : BddAbove (Set.range fun s ↦ ∑ i ∈ s, (f i + g i) ^ p) := by
     refine ⟨((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p, ?_⟩
     rintro a ⟨s, rfl⟩
     exact H₁ s
@@ -574,12 +574,12 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
   rw [one_div, NNReal.rpow_inv_le_iff pos, ← one_div]
   exact tsum_le_of_sum_le H₂ H₁
 
-theorem summable_Lp_add {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Summable fun i => f i ^ p)
-    (hg : Summable fun i => g i ^ p) : Summable fun i => (f i + g i) ^ p :=
+theorem summable_Lp_add {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Summable fun i ↦ f i ^ p)
+    (hg : Summable fun i ↦ g i ^ p) : Summable fun i ↦ (f i + g i) ^ p :=
   (Lp_add_le_tsum hp hf hg).1
 
-theorem Lp_add_le_tsum' {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Summable fun i => f i ^ p)
-    (hg : Summable fun i => g i ^ p) :
+theorem Lp_add_le_tsum' {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Summable fun i ↦ f i ^ p)
+    (hg : Summable fun i ↦ g i ^ p) :
     (∑' i, (f i + g i) ^ p) ^ (1 / p) ≤ (∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p) :=
   (Lp_add_le_tsum hp hf hg).2
 
@@ -588,8 +588,8 @@ equal to the infinite sum of the `L_p`-seminorms of the summands, if these infin
 exist. A version for `NNReal`-valued functions. For an alternative version, convenient if the
 infinite sums are not already expressed as `p`-th powers, see `Lp_add_le_tsum_of_nonneg`. -/
 theorem Lp_add_le_hasSum {f g : ι → ℝ≥0} {A B : ℝ≥0} {p : ℝ} (hp : 1 ≤ p)
-    (hf : HasSum (fun i => f i ^ p) (A ^ p)) (hg : HasSum (fun i => g i ^ p) (B ^ p)) :
-    ∃ C, C ≤ A + B ∧ HasSum (fun i => (f i + g i) ^ p) (C ^ p) := by
+    (hf : HasSum (fun i ↦ f i ^ p) (A ^ p)) (hg : HasSum (fun i ↦ g i ^ p) (B ^ p)) :
+    ∃ C, C ≤ A + B ∧ HasSum (fun i ↦ (f i + g i) ^ p) (C ^ p) := by
   have hp' : p ≠ 0 := (lt_of_lt_of_le zero_lt_one hp).ne'
   obtain ⟨H₁, H₂⟩ := Lp_add_le_tsum hp hf.summable hg.summable
   have hA : A = (∑' i : ι, f i ^ p) ^ (1 / p) := by rw [hf.tsum_eq, rpow_inv_rpow_self hp']
@@ -611,7 +611,7 @@ theorem inner_le_Lp_mul_Lq (hpq : IsConjExponent p q) :
     ∑ i ∈ s, f i * g i ≤ (∑ i ∈ s, |f i| ^ p) ^ (1 / p) * (∑ i ∈ s, |g i| ^ q) ^ (1 / q) := by
   have :=
     NNReal.coe_le_coe.2
-      (NNReal.inner_le_Lp_mul_Lq s (fun i => ⟨_, abs_nonneg (f i)⟩) (fun i => ⟨_, abs_nonneg (g i)⟩)
+      (NNReal.inner_le_Lp_mul_Lq s (fun i ↦ ⟨_, abs_nonneg (f i)⟩) (fun i ↦ ⟨_, abs_nonneg (g i)⟩)
         hpq)
   push_cast at this
   refine le_trans (sum_le_sum fun i _ => ?_) this
@@ -623,7 +623,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
     (∑ i ∈ s, |f i|) ^ p ≤ (#s : ℝ) ^ (p - 1) * ∑ i ∈ s, |f i| ^ p := by
   have :=
     NNReal.coe_le_coe.2
-      (NNReal.rpow_sum_le_const_mul_sum_rpow s (fun i => ⟨_, abs_nonneg (f i)⟩) hp)
+      (NNReal.rpow_sum_le_const_mul_sum_rpow s (fun i ↦ ⟨_, abs_nonneg (f i)⟩) hp)
   push_cast at this
   exact this
 
@@ -635,7 +635,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
       (∑ i ∈ s, |f i| ^ p) ^ (1 / p) + (∑ i ∈ s, |g i| ^ p) ^ (1 / p) := by
   have :=
     NNReal.coe_le_coe.2
-      (NNReal.Lp_add_le s (fun i => ⟨_, abs_nonneg (f i)⟩) (fun i => ⟨_, abs_nonneg (g i)⟩) hp)
+      (NNReal.Lp_add_le s (fun i ↦ ⟨_, abs_nonneg (f i)⟩) (fun i ↦ ⟨_, abs_nonneg (g i)⟩) hp)
   push_cast at this
   refine le_trans (rpow_le_rpow ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
     simp [sum_nonneg, rpow_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add,
@@ -679,8 +679,8 @@ lemma compact_inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1
 For an alternative version, convenient if the infinite sums are already expressed as `p`-th powers,
 see `inner_le_Lp_mul_Lq_hasSum_of_nonneg`. -/
 theorem inner_le_Lp_mul_Lq_tsum_of_nonneg (hpq : p.IsConjExponent q) (hf : ∀ i, 0 ≤ f i)
-    (hg : ∀ i, 0 ≤ g i) (hf_sum : Summable fun i => f i ^ p) (hg_sum : Summable fun i => g i ^ q) :
-    (Summable fun i => f i * g i) ∧
+    (hg : ∀ i, 0 ≤ g i) (hf_sum : Summable fun i ↦ f i ^ p) (hg_sum : Summable fun i ↦ g i ^ q) :
+    (Summable fun i ↦ f i * g i) ∧
       ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
@@ -690,12 +690,12 @@ theorem inner_le_Lp_mul_Lq_tsum_of_nonneg (hpq : p.IsConjExponent q) (hf : ∀ i
   exact NNReal.inner_le_Lp_mul_Lq_tsum hpq hf_sum hg_sum
 
 theorem summable_mul_of_Lp_Lq_of_nonneg (hpq : p.IsConjExponent q) (hf : ∀ i, 0 ≤ f i)
-    (hg : ∀ i, 0 ≤ g i) (hf_sum : Summable fun i => f i ^ p) (hg_sum : Summable fun i => g i ^ q) :
-    Summable fun i => f i * g i :=
+    (hg : ∀ i, 0 ≤ g i) (hf_sum : Summable fun i ↦ f i ^ p) (hg_sum : Summable fun i ↦ g i ^ q) :
+    Summable fun i ↦ f i * g i :=
   (inner_le_Lp_mul_Lq_tsum_of_nonneg hpq hf hg hf_sum hg_sum).1
 
 theorem inner_le_Lp_mul_Lq_tsum_of_nonneg' (hpq : p.IsConjExponent q) (hf : ∀ i, 0 ≤ f i)
-    (hg : ∀ i, 0 ≤ g i) (hf_sum : Summable fun i => f i ^ p) (hg_sum : Summable fun i => g i ^ q) :
+    (hg : ∀ i, 0 ≤ g i) (hf_sum : Summable fun i ↦ f i ^ p) (hg_sum : Summable fun i ↦ g i ^ q) :
     ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) :=
   (inner_le_Lp_mul_Lq_tsum_of_nonneg hpq hf hg hf_sum hg_sum).2
 
@@ -705,8 +705,8 @@ functions. For an alternative version, convenient if the infinite sums are not a
 `p`-th powers, see `inner_le_Lp_mul_Lq_tsum_of_nonneg`. -/
 theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.IsConjExponent q) {A B : ℝ} (hA : 0 ≤ A)
     (hB : 0 ≤ B) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i)
-    (hf_sum : HasSum (fun i => f i ^ p) (A ^ p)) (hg_sum : HasSum (fun i => g i ^ q) (B ^ q)) :
-    ∃ C : ℝ, 0 ≤ C ∧ C ≤ A * B ∧ HasSum (fun i => f i * g i) C := by
+    (hf_sum : HasSum (fun i ↦ f i ^ p) (A ^ p)) (hg_sum : HasSum (fun i ↦ g i ^ q) (B ^ q)) :
+    ∃ C : ℝ, 0 ≤ C ∧ C ≤ A * B ∧ HasSum (fun i ↦ f i * g i) C := by
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
@@ -741,8 +741,8 @@ equal to the infinite sum of the `L_p`-seminorms of the summands, if these infin
 exist. A version for `ℝ`-valued functions. For an alternative version, convenient if the infinite
 sums are already expressed as `p`-th powers, see `Lp_add_le_hasSum_of_nonneg`. -/
 theorem Lp_add_le_tsum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i)
-    (hf_sum : Summable fun i => f i ^ p) (hg_sum : Summable fun i => g i ^ p) :
-    (Summable fun i => (f i + g i) ^ p) ∧
+    (hf_sum : Summable fun i ↦ f i ^ p) (hg_sum : Summable fun i ↦ g i ^ p) :
+    (Summable fun i ↦ (f i + g i) ^ p) ∧
       (∑' i, (f i + g i) ^ p) ^ (1 / p) ≤
         (∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p) := by
   lift f to ι → ℝ≥0 using hf
@@ -753,12 +753,12 @@ theorem Lp_add_le_tsum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : �
   exact NNReal.Lp_add_le_tsum hp hf_sum hg_sum
 
 theorem summable_Lp_add_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i)
-    (hf_sum : Summable fun i => f i ^ p) (hg_sum : Summable fun i => g i ^ p) :
-    Summable fun i => (f i + g i) ^ p :=
+    (hf_sum : Summable fun i ↦ f i ^ p) (hg_sum : Summable fun i ↦ g i ^ p) :
+    Summable fun i ↦ (f i + g i) ^ p :=
   (Lp_add_le_tsum_of_nonneg hp hf hg hf_sum hg_sum).1
 
 theorem Lp_add_le_tsum_of_nonneg' (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i)
-    (hf_sum : Summable fun i => f i ^ p) (hg_sum : Summable fun i => g i ^ p) :
+    (hf_sum : Summable fun i ↦ f i ^ p) (hg_sum : Summable fun i ↦ g i ^ p) :
     (∑' i, (f i + g i) ^ p) ^ (1 / p) ≤ (∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p) :=
   (Lp_add_le_tsum_of_nonneg hp hf hg hf_sum hg_sum).2
 
@@ -767,9 +767,9 @@ equal to the infinite sum of the `L_p`-seminorms of the summands, if these infin
 exist. A version for `ℝ`-valued functions. For an alternative version, convenient if the infinite
 sums are not already expressed as `p`-th powers, see `Lp_add_le_tsum_of_nonneg`. -/
 theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : ∀ i, 0 ≤ g i) {A B : ℝ}
-    (hA : 0 ≤ A) (hB : 0 ≤ B) (hfA : HasSum (fun i => f i ^ p) (A ^ p))
-    (hgB : HasSum (fun i => g i ^ p) (B ^ p)) :
-    ∃ C, 0 ≤ C ∧ C ≤ A + B ∧ HasSum (fun i => (f i + g i) ^ p) (C ^ p) := by
+    (hA : 0 ≤ A) (hB : 0 ≤ B) (hfA : HasSum (fun i ↦ f i ^ p) (A ^ p))
+    (hgB : HasSum (fun i ↦ g i ^ p) (B ^ p)) :
+    ∃ C, 0 ≤ C ∧ C ≤ A + B ∧ HasSum (fun i ↦ (f i + g i) ^ p) (C ^ p) := by
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
@@ -807,8 +807,8 @@ theorem inner_le_Lp_mul_Lq (hpq : p.IsConjExponent q) :
   replace H' : (∀ i ∈ s, f i ≠ ⊤) ∧ ∀ i ∈ s, g i ≠ ⊤ := by
     simpa [ENNReal.rpow_eq_top_iff, asymm hpq.pos, asymm hpq.symm.pos, hpq.pos, hpq.symm.pos,
       ENNReal.sum_eq_top, not_or] using H'
-  have := ENNReal.coe_le_coe.2 (@NNReal.inner_le_Lp_mul_Lq _ s (fun i => ENNReal.toNNReal (f i))
-    (fun i => ENNReal.toNNReal (g i)) _ _ hpq)
+  have := ENNReal.coe_le_coe.2 (@NNReal.inner_le_Lp_mul_Lq _ s (fun i ↦ ENNReal.toNNReal (f i))
+    (fun i ↦ ENNReal.toNNReal (g i)) _ _ hpq)
   simp [ENNReal.coe_rpow_of_nonneg, hpq.pos.le, hpq.one_div_pos.le, hpq.symm.pos.le,
     hpq.symm.one_div_pos.le] at this
   convert this using 1 <;> [skip; congr 2] <;> [skip; skip; simp; skip; simp] <;>
@@ -876,7 +876,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
     simpa [ENNReal.rpow_eq_top_iff, asymm pos, pos, ENNReal.sum_eq_top, not_or] using H'
   have :=
     ENNReal.coe_le_coe.2
-      (@NNReal.Lp_add_le _ s (fun i => ENNReal.toNNReal (f i)) (fun i => ENNReal.toNNReal (g i)) _
+      (@NNReal.Lp_add_le _ s (fun i ↦ ENNReal.toNNReal (f i)) (fun i ↦ ENNReal.toNNReal (g i)) _
         hp)
   push_cast [ENNReal.coe_rpow_of_nonneg, le_of_lt pos, le_of_lt (one_div_pos.2 pos)] at this
   convert this using 2 <;> [skip; congr 1; congr 1] <;>

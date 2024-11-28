@@ -175,7 +175,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
   have he₁ : e (1, 0) = 1 := rfl; have he₂ : e (0, 1) = I := rfl
   simp only [he] at *
   set F : ℝ × ℝ → E := f ∘ e
-  set F' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E := fun p => (f' (e p)).comp (e : ℝ × ℝ →L[ℝ] ℂ)
+  set F' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E := fun p ↦ (f' (e p)).comp (e : ℝ × ℝ →L[ℝ] ℂ)
   have hF' : ∀ p : ℝ × ℝ, (-(I • F' p)) (1, 0) + F' p (0, 1) = -(I • f' (e p) 1 - f' (e p) I) := by
     rintro ⟨x, y⟩
     simp only [F', ContinuousLinearMap.neg_apply, ContinuousLinearMap.smul_apply,
@@ -192,8 +192,8 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
     fun p hp => (Hd (e p) hp).comp p e.hasFDerivAt
   simp_rw [← intervalIntegral.integral_smul, intervalIntegral.integral_symm w.im z.im, ←
     intervalIntegral.integral_neg, ← hF']
-  refine (integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (fun p => -(I • F p)) F
-    (fun p => -(I • F' p)) F' z.re w.im w.re z.im t (hs.preimage e.injective)
+  refine (integral2_divergence_prod_of_hasFDerivWithinAt_off_countable (fun p ↦ -(I • F p)) F
+    (fun p ↦ -(I • F' p)) F' z.re w.im w.re z.im t (hs.preimage e.injective)
     (htc.const_smul _).neg htc (fun p hp => ((htd p hp).const_smul I).neg) htd ?_).symm
   rw [← (volume_preserving_equiv_real_prod.symm _).integrableOn_comp_preimage
     (MeasurableEquiv.measurableEmbedding _)] at Hi
@@ -446,7 +446,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
   have hR : 0 < R := dist_nonneg.trans_lt hw
   suffices w ∈ closure (ball c R \ s) by
     lift R to ℝ≥0 using hR.le
-    have A : ContinuousAt (fun w => (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z) w := by
+    have A : ContinuousAt (fun w ↦ (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z) w := by
       have := hasFPowerSeriesOn_cauchy_integral
         ((hc.mono sphere_subset_closedBall).circleIntegrable R.coe_nonneg) hR
       refine this.continuousOn.continuousAt (EMetric.isOpen_ball.mem_nhds ?_)

@@ -58,7 +58,7 @@ def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→
     simp only [Sum.map_inr, Perm.sumCongrHom_apply, Perm.sumCongr_apply, Sum.map_inl,
       Function.comp_apply, Perm.coe_mul]
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`.
-    erw [← a.map_congr_perm fun i => v (σ₁ _), ← b.map_congr_perm fun i => v (σ₁ _)]
+    erw [← a.map_congr_perm fun i ↦ v (σ₁ _), ← b.map_congr_perm fun i ↦ v (σ₁ _)]
 
 theorem domCoprod.summand_mk'' (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
     (σ : Equiv.Perm (ιa ⊕ ιb)) :
@@ -148,7 +148,7 @@ The specialized version can be obtained by combining this definition with `finSu
 def domCoprod (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) :
     Mᵢ [⋀^ιa ⊕ ιb]→ₗ[R'] (N₁ ⊗[R'] N₂) :=
   { ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ with
-    toFun := fun v => (⇑(∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ)) v
+    toFun := fun v ↦ (⇑(∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ)) v
     map_eq_zero_of_eq' := fun v i j hv hij => by
       dsimp only
       rw [MultilinearMap.sum_apply]

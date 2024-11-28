@@ -496,7 +496,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] (U : Y.Opens) : IsIso (f ∣
 
 theorem morphismRestrict_base_coe {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) :
     @Coe.coe U Y (⟨fun x ↦ x.1⟩) ((f ∣_ U).base x) = f.base x.1 :=
-  congr_arg (fun f => (Scheme.Hom.toLRSHom f).base x)
+  congr_arg (fun f ↦ (Scheme.Hom.toLRSHom f).base x)
     (morphismRestrict_ι f U)
 
 theorem morphismRestrict_base {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :

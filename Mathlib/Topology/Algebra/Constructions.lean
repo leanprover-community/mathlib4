@@ -150,7 +150,7 @@ protected theorem continuous_iff {f : X → Mˣ} :
     unop_op]
 
 @[to_additive]
-theorem continuous_coe_inv : Continuous (fun u => ↑u⁻¹ : Mˣ → M) :=
+theorem continuous_coe_inv : Continuous (fun u ↦ ↑u⁻¹ : Mˣ → M) :=
   (Units.continuous_iff.1 continuous_id).2
 
 end Units

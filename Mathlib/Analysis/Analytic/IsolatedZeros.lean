@@ -39,20 +39,20 @@ namespace HasSum
 
 variable {a : ℕ → E}
 
-theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n => (0 : 𝕜) ^ n • a n) (a 0) := by
+theorem hasSum_at_zero (a : ℕ → E) : HasSum (fun n ↦ (0 : 𝕜) ^ n • a n) (a 0) := by
   convert hasSum_single (α := E) 0 fun b h ↦ _ <;> simp [*]
 
-theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m) s)
-    (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m => z ^ m • a (m + n)) t := by
+theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m ↦ z ^ m • a m) s)
+    (ha : ∀ k < n, a k = 0) : ∃ t : E, z ^ n • t = s ∧ HasSum (fun m ↦ z ^ m • a (m + n)) t := by
   obtain rfl | hn := n.eq_zero_or_pos
   · simpa
   by_cases h : z = 0
   · have : s = 0 := hs.unique (by simpa [ha 0 hn, h] using hasSum_at_zero a)
-    exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
+    exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m ↦ a (m + n)⟩
   · refine ⟨(z ^ n)⁻¹ • s, by field_simp [smul_smul], ?_⟩
     have h1 : ∑ i ∈ Finset.range n, z ^ i • a i = 0 :=
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
-    have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by
+    have h2 : HasSum (fun m ↦ z ^ (m + n) • a (m + n)) s := by
       simpa [h1] using (hasSum_nat_add_iff' n).mpr hs
     convert h2.const_smul (z⁻¹ ^ n) using 1
     · field_simp [pow_add, smul_smul]
@@ -70,8 +70,8 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
   refine hp.mono fun x hx => ?_
   by_cases h : x = 0
   · convert hasSum_single (α := E) 0 _ <;> intros <;> simp [*]
-  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n => by field_simp [h, _root_.pow_succ]
-    suffices HasSum (fun n => x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
+  · have hxx : ∀ n : ℕ, x⁻¹ * x ^ (n + 1) = x ^ n := fun n ↦ by field_simp [h, _root_.pow_succ]
+    suffices HasSum (fun n ↦ x⁻¹ • x ^ (n + 1) • p.coeff (n + 1)) (x⁻¹ • (f (z₀ + x) - f z₀)) by
       simpa [dslope, slope, h, smul_smul, hxx] using this
     simpa [hp0] using ((hasSum_nat_add_iff' 1).mpr hx).const_smul x⁻¹
 

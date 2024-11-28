@@ -100,7 +100,7 @@ theorem prime_def_lt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m < p, m ∣ p → 
     and_congr_right fun p2 =>
       forall_congr' fun _ =>
         ⟨fun h l d => (h d).resolve_right (ne_of_lt l), fun h d =>
-          (le_of_dvd (le_of_succ_le p2) d).lt_or_eq_dec.imp_left fun l => h l d⟩
+          (le_of_dvd (le_of_succ_le p2) d).lt_or_eq_dec.imp_left fun l ↦ h l d⟩
 
 theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m < p → ¬m ∣ p :=
   prime_def_lt.trans <|

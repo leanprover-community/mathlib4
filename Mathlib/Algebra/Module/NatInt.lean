@@ -121,7 +121,7 @@ theorem nat_smul_eq_nsmul (h : Module ℕ M) (n : ℕ) (x : M) : @SMul.smul ℕ 
 should normally have exactly one `ℕ`-module structure by design. -/
 def AddCommMonoid.uniqueNatModule : Unique (Module ℕ M) where
   default := by infer_instance
-  uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
+  uniq P := (Module.ext' P _) fun n ↦ by convert nat_smul_eq_nsmul P n
 
 instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
   smul_assoc n x y := by

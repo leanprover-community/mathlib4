@@ -60,7 +60,7 @@ instance : CommRing (InfiniteAdeleRing K) := Pi.commRing
 instance : Inhabited (InfiniteAdeleRing K) := ⟨0⟩
 
 instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
-  (inferInstanceAs <| Nonempty (InfinitePlace K)).elim fun w => Pi.nontrivial_at w
+  (inferInstanceAs <| Nonempty (InfinitePlace K)).elim fun w ↦ Pi.nontrivial_at w
 
 instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
 
@@ -86,7 +86,7 @@ abbrev ringEquiv_mixedSpace :
     (RingEquiv.prodCongr
       (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquiv_real_of_isReal hv))
       (RingEquiv.trans
-        (RingEquiv.piCongrRight (fun v => Completion.ringEquiv_complex_of_isComplex
+        (RingEquiv.piCongrRight (fun v ↦ Completion.ringEquiv_complex_of_isComplex
           ((not_isReal_iff_isComplex.1 v.2))))
         (RingEquiv.piCongrLeft (fun _ => ℂ) <|
           Equiv.subtypeEquivRight (fun _ => not_isReal_iff_isComplex))))

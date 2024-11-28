@@ -374,7 +374,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     have h : ∃ (n : ℕ) (r : R[X]), r.natDegree = n ∧ r.IsPrimitive ∧ p ∣ r ∧ q ∣ r :=
       ⟨(p * q).natDegree, p * q, rfl, hp.mul hq, dvd_mul_right _ _, dvd_mul_left _ _⟩
     rcases Nat.find_spec h with ⟨r, rdeg, rprim, pr, qr⟩
-    refine ⟨r, rprim, fun s => ⟨?_, fun rs => ⟨pr.trans rs, qr.trans rs⟩⟩⟩
+    refine ⟨r, rprim, fun s ↦ ⟨?_, fun rs => ⟨pr.trans rs, qr.trans rs⟩⟩⟩
     suffices hs : ∀ (n : ℕ) (s : R[X]), s.natDegree = n → p ∣ s ∧ q ∣ s → r ∣ s from
       hs s.natDegree s rfl
     clear s
@@ -425,7 +425,7 @@ noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMono
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
         q.isPrimitive_primPart with
       ⟨r, rprim, hr⟩
-    refine ⟨C (lcm p.content q.content) * r, fun s => ?_⟩
+    refine ⟨C (lcm p.content q.content) * r, fun s ↦ ?_⟩
     by_cases hs : s = 0
     · simp [hs]
     by_cases hpq : C (lcm p.content q.content) = 0

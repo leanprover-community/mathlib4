@@ -102,7 +102,7 @@ def conesEquivSieveCompatibleFamily :
       dsimp
       exact π.naturality (Quiver.Hom.op (Over.homMk _ (by rfl)))⟩
   invFun x :=
-    { app := fun f => x.1 f.unop.1.hom f.unop.2
+    { app := fun f ↦ x.1 f.unop.1.hom f.unop.2
       naturality := fun f f' g => by
         refine Eq.trans ?_ (x.2 f.unop.1.hom g.unop.left f.unop.2)
         dsimp
@@ -132,7 +132,7 @@ def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone :
 def homEquivAmalgamation :
     (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t } where
   toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
-  invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
+  invFun t := ⟨t.1, fun f ↦ t.2 f.unop.1.hom f.unop.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -423,7 +423,7 @@ def sheafBotEquivalence : Sheaf (⊥ : GrothendieckTopology C) A ≌ Cᵒᵖ ⥤
   functor := sheafToPresheaf _ _
   inverse :=
     { obj := fun P => ⟨P, Presheaf.isSheaf_bot P⟩
-      map := fun f => ⟨f⟩ }
+      map := fun f ↦ ⟨f⟩ }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
@@ -601,7 +601,7 @@ The left morphism of the fork diagram given in Equation (3) of [MM92], as well a
 of <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 def forkMap : P.obj (op U) ⟶ firstObj R P :=
-  Pi.lift fun f => P.map f.2.1.op
+  Pi.lift fun f ↦ P.map f.2.1.op
 
 variable [HasPullbacks C]
 
@@ -645,7 +645,7 @@ def isSheafForIsSheafFor' (P : Cᵒᵖ ⥤ A) (s : A ⥤ Type max v₁ u₁)
     parallelPair (Equalizer.Presieve.firstMap (P ⋙ s) R)
       (Equalizer.Presieve.secondMap (P ⋙ s) R) := by
     refine parallelPair.ext (PreservesProduct.iso s _) ((PreservesProduct.iso s _))
-      (limit.hom_ext (fun j => ?_)) (limit.hom_ext (fun j => ?_))
+      (limit.hom_ext (fun j ↦ ?_)) (limit.hom_ext (fun j ↦ ?_))
     · dsimp [Equalizer.Presieve.firstMap, firstMap]
       simp only [map_lift_piComparison, Functor.map_comp, limit.lift_π, Fan.mk_pt,
         Fan.mk_π_app, assoc, piComparison_comp_π_assoc]

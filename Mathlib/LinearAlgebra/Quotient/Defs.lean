@@ -50,7 +50,7 @@ theorem quotientRel_def {x y : M} : p.quotientRel x y ↔ x - y ∈ p :=
 
 /-- The quotient of a module `M` by a submodule `p ⊆ M`. -/
 instance hasQuotient : HasQuotient M (Submodule R M) :=
-  ⟨fun p => Quotient (quotientRel p)⟩
+  ⟨fun p ↦ Quotient (quotientRel p)⟩
 
 namespace Quotient
 /-- Map associating to an element of `M` the corresponding element of `M/p`,

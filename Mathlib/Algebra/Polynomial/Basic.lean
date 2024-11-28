@@ -739,12 +739,12 @@ theorem addHom_ext {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
 @[ext high]
 theorem addHom_ext' {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
-  addHom_ext fun n => DFunLike.congr_fun (h n)
+  addHom_ext fun n ↦ DFunLike.congr_fun (h n)
 
 @[ext high]
 theorem lhom_ext' {M : Type*} [AddCommMonoid M] [Module R M] {f g : R[X] →ₗ[R] M}
     (h : ∀ n, f.comp (monomial n) = g.comp (monomial n)) : f = g :=
-  LinearMap.toAddMonoidHom_injective <| addHom_ext fun n => LinearMap.congr_fun (h n)
+  LinearMap.toAddMonoidHom_injective <| addHom_ext fun n ↦ LinearMap.congr_fun (h n)
 
 -- this has the same content as the subsingleton
 theorem eq_zero_of_eq_zero (h : (0 : R) = (1 : R)) (p : R[X]) : p = 0 := by
@@ -1124,7 +1124,7 @@ instance nontrivial [Nontrivial R] : Nontrivial R[X] := by
 
 @[simp]
 theorem X_ne_zero [Nontrivial R] : (X : R[X]) ≠ 0 :=
-  mt (congr_arg fun p => coeff p 1) (by simp)
+  mt (congr_arg fun p ↦ coeff p 1) (by simp)
 
 end NonzeroSemiring
 

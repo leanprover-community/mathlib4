@@ -134,7 +134,7 @@ theorem extend_iUnion {β} [Countable β] {f : β → Set α} (hd : Pairwise (Di
   cases nonempty_encodable β
   rw [← Encodable.iUnion_decode₂, ← tsum_iUnion_decode₂]
   · exact
-      extend_iUnion_nat PU (fun n => Encodable.iUnion_decode₂_cases P0 hm)
+      extend_iUnion_nat PU (fun n ↦ Encodable.iUnion_decode₂_cases P0 hm)
         (mU _ (Encodable.iUnion_decode₂_disjoint_on hd))
   · exact extend_empty P0 m0
 
@@ -201,7 +201,7 @@ theorem inducedOuterMeasure_preimage (f : α ≃ α) (Pm : ∀ s : Set α, P (f 
     (mm : ∀ (s : Set α) (hs : P s), m (f ⁻¹' s) ((Pm _).mpr hs) = m s hs) {A : Set α} :
     inducedOuterMeasure m P0 m0 (f ⁻¹' A) = inducedOuterMeasure m P0 m0 A := by
     rw [inducedOuterMeasure_eq_iInf _ msU m_mono, inducedOuterMeasure_eq_iInf _ msU m_mono]; symm
-    refine f.injective.preimage_surjective.iInf_congr (preimage f) fun s => ?_
+    refine f.injective.preimage_surjective.iInf_congr (preimage f) fun s ↦ ?_
     refine iInf_congr_Prop (Pm s) ?_; intro hs
     refine iInf_congr_Prop f.surjective.preimage_subset_preimage_iff ?_
     intro _; exact mm s hs
@@ -276,7 +276,7 @@ theorem extend_iUnion_le_tsum_nat : ∀ s : ℕ → Set α,
   refine extend_iUnion_le_tsum_nat' MeasurableSet.iUnion ?_; intro f h
   simp (config := { singlePass := true }) only [iUnion_disjointed.symm]
   rw [mU (MeasurableSet.disjointed h) (disjoint_disjointed _)]
-  refine ENNReal.tsum_le_tsum fun i => ?_
+  refine ENNReal.tsum_le_tsum fun i ↦ ?_
   rw [← extend_eq m, ← extend_eq m]
   exact extend_mono m0 mU (MeasurableSet.disjointed h _) (disjointed_le f _)
 
@@ -356,11 +356,11 @@ theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=
       ((measure_mono (subset_univ s)).trans_eq <| trim_eq _ MeasurableSet.univ)
       (zero_le _)
 
-theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim) ≤ (sum m).trim :=
-  fun s => by
+theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i ↦ (m i).trim) ≤ (sum m).trim :=
+  fun s ↦ by
   simp only [sum_apply, trim_eq_iInf, le_iInf_iff]
   exact fun t st ht =>
-    ENNReal.tsum_le_tsum fun i => iInf_le_of_le t <| iInf_le_of_le st <| iInf_le _ ht
+    ENNReal.tsum_le_tsum fun i ↦ iInf_le_of_le t <| iInf_le_of_le st <| iInf_le _ ht
 
 theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t = m.trim s := by
@@ -383,7 +383,7 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     have : Tendsto (fun n : ℕ => ms + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (ms + 0)) :=
       tendsto_const_nhds.add ENNReal.tendsto_inv_nat_nhds_zero
     rw [add_zero] at this
-    refine le_antisymm (ge_of_tendsto' this fun n => ?_) ?_
+    refine le_antisymm (ge_of_tendsto' this fun n ↦ ?_) ?_
     · exact le_trans (measure_mono <| iInter_subset t n) (hm' n).le
     · refine iInf_le_of_le (⋂ n, t n) ?_
       refine iInf_le_of_le (subset_iInter hsub) ?_
@@ -398,10 +398,10 @@ theorem exists_measurable_superset_of_trim_eq_zero {m : OuterMeasure α} {s : Se
 a measurable set `t ⊇ s` such that `μ i t = (μ i).trim s` for all `i`. -/
 theorem exists_measurable_superset_forall_eq_trim {ι} [Countable ι] (μ : ι → OuterMeasure α)
     (s : Set α) : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ ∀ i, μ i t = (μ i).trim s := by
-  choose t hst ht hμt using fun i => (μ i).exists_measurable_superset_eq_trim s
+  choose t hst ht hμt using fun i ↦ (μ i).exists_measurable_superset_eq_trim s
   replace hst := subset_iInter hst
   replace ht := MeasurableSet.iInter ht
-  refine ⟨⋂ i, t i, hst, ht, fun i => le_antisymm ?_ ?_⟩
+  refine ⟨⋂ i, t i, hst, ht, fun i ↦ le_antisymm ?_ ?_⟩
   exacts [hμt i ▸ (μ i).mono (iInter_subset _ _), (measure_mono hst).trans_eq ((μ i).trim_eq ht)]
 
 /-- If `m₁ s = op (m₂ s) (m₃ s)` for all `s`, then the same is true for `m₁.trim`, `m₂.trim`,
@@ -428,7 +428,7 @@ theorem trim_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ �
 
 /-- `trim` sends the supremum of two outer measures to the supremum of the trimmed measures. -/
 theorem trim_sup (m₁ m₂ : OuterMeasure α) : (m₁ ⊔ m₂).trim = m₁.trim ⊔ m₂.trim :=
-  ext fun s => (trim_binop (sup_apply m₁ m₂) s).trans (sup_apply _ _ _).symm
+  ext fun s ↦ (trim_binop (sup_apply m₁ m₂) s).trans (sup_apply _ _ _).symm
 
 /-- `trim` sends the supremum of a countable family of outer measures to the supremum
 of the trimmed measures. -/
@@ -447,7 +447,7 @@ theorem trim_iSup {ι} [Countable ι] (μ : ι → OuterMeasure α) :
 This theorem shows that a restricted trimmed outer measure is a trimmed outer measure. -/
 theorem restrict_trim {μ : OuterMeasure α} {s : Set α} (hs : MeasurableSet s) :
     (restrict s μ).trim = restrict s μ.trim := by
-  refine le_antisymm (fun t => ?_) (le_trim_iff.2 fun t ht => ?_)
+  refine le_antisymm (fun t ↦ ?_) (le_trim_iff.2 fun t ht => ?_)
   · rw [restrict_apply]
     rcases μ.exists_measurable_superset_eq_trim (t ∩ s) with ⟨t', htt', ht', hμt'⟩
     rw [← hμt']

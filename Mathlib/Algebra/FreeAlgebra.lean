@@ -242,7 +242,7 @@ instance : Inhabited (FreeAlgebra R X) :=
 
 instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
   toRingHom := ({
-      toFun := fun r => Quot.mk _ r
+      toFun := fun r ↦ Quot.mk _ r
       map_one' := rfl
       map_mul' := fun _ _ => Quot.sound Rel.mul_scalar
       map_zero' := rfl

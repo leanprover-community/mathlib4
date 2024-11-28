@@ -88,7 +88,7 @@ def append1 (α : TypeVec n) (β : Type*) : TypeVec (n + 1)
 @[inherit_doc] infixl:67 " ::: " => append1
 
 /-- retain only a `n-length` prefix of the argument -/
-def drop (α : TypeVec.{u} (n + 1)) : TypeVec n := fun i => α i.fs
+def drop (α : TypeVec.{u} (n + 1)) : TypeVec n := fun i ↦ α i.fs
 
 /-- take the last value of a `(n+1)-length` vector -/
 def last (α : TypeVec.{u} (n + 1)) : Type _ :=
@@ -108,7 +108,7 @@ theorem last_append1 {α : TypeVec n} {β : Type*} : last (append1 α β) = β :
 
 @[simp]
 theorem append1_drop_last (α : TypeVec (n + 1)) : append1 (drop α) (last α) = α :=
-  funext fun i => by cases i <;> rfl
+  funext fun i ↦ by cases i <;> rfl
 
 /-- cases on `(n+1)-length` vectors -/
 @[elab_as_elim]
@@ -133,7 +133,7 @@ def appendFun {α α' : TypeVec n} {β β' : Type*} (f : α ⟹ α') (g : β →
 @[inherit_doc] infixl:0 " ::: " => appendFun
 
 /-- split off the prefix of an arrow -/
-def dropFun {α β : TypeVec (n + 1)} (f : α ⟹ β) : drop α ⟹ drop β := fun i => f i.fs
+def dropFun {α β : TypeVec (n + 1)} (f : α ⟹ β) : drop α ⟹ drop β := fun i ↦ f i.fs
 
 /-- split off the last function of an arrow -/
 def lastFun {α β : TypeVec (n + 1)} (f : α ⟹ β) : last α → last β :=
@@ -141,7 +141,7 @@ def lastFun {α β : TypeVec (n + 1)} (f : α ⟹ β) : last α → last β :=
 
 -- Porting note: Lean wasn't able to infer the motive in term mode
 /-- arrow in the category of `0-length` vectors -/
-def nilFun {α : TypeVec 0} {β : TypeVec 0} : α ⟹ β := fun i => by apply Fin2.elim0 i
+def nilFun {α : TypeVec 0} {β : TypeVec 0} : α ⟹ β := fun i ↦ by apply Fin2.elim0 i
 
 theorem eq_of_drop_last_eq {α β : TypeVec (n + 1)} {f g : α ⟹ β} (h₀ : dropFun f = dropFun g)
     (h₁ : lastFun f = lastFun g) : f = g := by
@@ -254,7 +254,7 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
 
 /-- cases distinction for 0-length type vector -/
 protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v :=
-  fun v => cast (by congr; funext i; cases i) f
+  fun v ↦ cast (by congr; funext i; cases i) f
 
 /-- cases distinction for (n+1)-length type vector -/
 protected def casesCons (n : ℕ) {β : TypeVec (n + 1) → Sort*}
@@ -439,7 +439,7 @@ def prod.diag : ∀ {n} {α : TypeVec.{u} n}, α ⟹ α ⊗ α
 
 /-- constructor for `prod` -/
 def prod.mk : ∀ {n} {α β : TypeVec.{u} n} (i : Fin2 n), α i → β i → (α ⊗ β) i
-  | succ _, α, β, Fin2.fs i => mk (α := fun i => α i.fs) (β := fun i => β i.fs) i
+  | succ _, α, β, Fin2.fs i => mk (α := fun i ↦ α i.fs) (β := fun i ↦ β i.fs) i
   | succ _, _, _, Fin2.fz   => Prod.mk
 
 end

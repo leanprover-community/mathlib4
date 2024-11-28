@@ -205,7 +205,7 @@ def NormalExpr.nodes (e : NormalExpr) : CoherenceM ρ (List (List Node)) :=
 
 /-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
 def pairs {α : Type} : List α → List (α × α) :=
-  fun l => l.zip (l.drop 1)
+  fun l ↦ l.zip (l.drop 1)
 
 /-- The list of strands associated with a 2-morphism. -/
 def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do
@@ -233,7 +233,7 @@ structure PenroseVar : Type where
   e : Expr
 
 instance : ToString PenroseVar :=
-  ⟨fun v => v.ident ++ v.indices.foldl (fun s x => s ++ s!"_{x}") ""⟩
+  ⟨fun v ↦ v.ident ++ v.indices.foldl (fun s x => s ++ s!"_{x}") ""⟩
 
 /-- The penrose variable associated with a node. -/
 def Node.toPenroseVar (n : Node) : PenroseVar :=
@@ -257,7 +257,7 @@ def addPenroseVar (tp : String) (v : PenroseVar) :
 /-- Add constructor `tp v := nm (vs)` to the substance program. -/
 def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List PenroseVar) :
     DiagramBuilderM Unit := do
-  let vs' := ", ".intercalate (vs.map (fun v => toString v))
+  let vs' := ", ".intercalate (vs.map (fun v ↦ toString v))
   addInstruction s!"{tp} {v} := {nm} ({vs'})"
 
 open scoped Jsx in

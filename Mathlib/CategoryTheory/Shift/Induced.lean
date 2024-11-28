@@ -92,7 +92,7 @@ noncomputable def induced : HasShift D A :=
     { F := s
       zero := Induced.zero F s i
       add := Induced.add F s i
-      zero_add_hom_app := fun n => by
+      zero_add_hom_app := fun n ↦ by
         suffices (Induced.add F s i 0 n).hom =
           eqToHom (by rw [zero_add]; rfl) ≫ whiskerRight (Induced.zero F s i ).inv (s n) by
           intro X
@@ -106,7 +106,7 @@ noncomputable def induced : HasShift D A :=
           eqToHom_refl, Category.id_comp, eqToHom_app, Induced.zero_inv_app_obj]
         erw [← NatTrans.naturality_assoc, Iso.hom_inv_id_app_assoc]
         rfl
-      add_zero_hom_app := fun n => by
+      add_zero_hom_app := fun n ↦ by
         suffices (Induced.add F s i n 0).hom =
             eqToHom (by rw [add_zero]; rfl) ≫ whiskerLeft (s n) (Induced.zero F s i).inv by
           intro X

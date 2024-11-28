@@ -59,7 +59,7 @@ theorem expand_monomial (r : R) : expand R p (monomial q r) = monomial (q * p) r
   simp_rw [← smul_X_eq_monomial, map_smul, map_pow, expand_X, mul_comm, pow_mul]
 
 theorem expand_expand (f : R[X]) : expand R p (expand R q f) = expand R (p * q) f :=
-  Polynomial.induction_on f (fun r => by simp_rw [expand_C])
+  Polynomial.induction_on f (fun r ↦ by simp_rw [expand_C])
     (fun f g ihf ihg => by simp_rw [map_add, ihf, ihg]) fun n r _ => by
     simp_rw [map_mul, expand_C, map_pow, expand_X, map_pow, expand_X, pow_mul]
 
@@ -71,7 +71,7 @@ theorem expand_zero (f : R[X]) : expand R 0 f = C (eval 1 f) := by simp [expand]
 
 @[simp]
 theorem expand_one (f : R[X]) : expand R 1 f = f :=
-  Polynomial.induction_on f (fun r => by rw [expand_C])
+  Polynomial.induction_on f (fun r ↦ by rw [expand_C])
     (fun f g ihf ihg => by rw [map_add, ihf, ihg]) fun n r _ => by
     rw [map_mul, expand_C, map_pow, expand_X, pow_one]
 
@@ -113,7 +113,7 @@ theorem coeff_expand_mul' {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :
 
 /-- Expansion is injective. -/
 theorem expand_injective {n : ℕ} (hn : 0 < n) : Function.Injective (expand R n) := fun g g' H =>
-  ext fun k => by rw [← coeff_expand_mul hn, H, coeff_expand_mul hn]
+  ext fun k ↦ by rw [← coeff_expand_mul hn, H, coeff_expand_mul hn]
 
 theorem expand_inj {p : ℕ} (hp : 0 < p) {f g : R[X]} : expand R p f = expand R p g ↔ f = g :=
   (expand_injective hp).eq_iff

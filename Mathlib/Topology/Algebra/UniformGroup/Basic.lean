@@ -92,12 +92,12 @@ theorem CauchySeq.mul {ι : Type*} [Preorder ι] {u v : ι → α} (hu : CauchyS
 
 @[to_additive]
 theorem CauchySeq.mul_const {ι : Type*} [Preorder ι] {u : ι → α} {x : α} (hu : CauchySeq u) :
-    CauchySeq fun n => u n * x :=
+    CauchySeq fun n ↦ u n * x :=
   (uniformContinuous_id.mul uniformContinuous_const).comp_cauchySeq hu
 
 @[to_additive]
 theorem CauchySeq.const_mul {ι : Type*} [Preorder ι] {u : ι → α} {x : α} (hu : CauchySeq u) :
-    CauchySeq fun n => x * u n :=
+    CauchySeq fun n ↦ x * u n :=
   (uniformContinuous_const.mul uniformContinuous_id).comp_cauchySeq hu
 
 @[to_additive]
@@ -438,14 +438,14 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     rw [QuotientGroup.mk_mul, QuotientGroup.mk_inv, hy, hg, inv_div, div_mul_cancel]
   /- Inductively construct a subsequence `φ : ℕ → ℕ` using `key₀` so that if `a b : ℕ` exceed
     `φ (n + 1)`, then we may find lifts whose quotients lie within `u n`. -/
-  set φ : ℕ → ℕ := fun n => Nat.recOn n (choose <| key₀ 0 0) fun k yk => choose <| key₀ (k + 1) yk
+  set φ : ℕ → ℕ := fun n ↦ Nat.recOn n (choose <| key₀ 0 0) fun k yk => choose <| key₀ (k + 1) yk
   have hφ :
     ∀ n : ℕ,
       φ n < φ (n + 1) ∧
         ∀ a b : ℕ,
           φ (n + 1) ≤ a →
             φ (n + 1) ≤ b → ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u (n + 1) ∧ x a = g' :=
-    fun n => choose_spec (key₀ (n + 1) (φ n))
+    fun n ↦ choose_spec (key₀ (n + 1) (φ n))
   /- Inductively construct a sequence `x' n : G` of lifts of `x (φ (n + 1))` such that quotients of
     successive terms lie in `x' n / x' (n + 1) ∈ u (n + 1)`. We actually need the proofs that each
     term is a lift to construct the next term, so we use a Σ-type. -/
@@ -460,8 +460,8 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     (choose_spec <| (hφ n).2 _ _ (hφ (n + 1)).1.le le_rfl (x' n).fst (x' n).snd).1
   /- The sequence `x'` is Cauchy. This is where we exploit the condition on `u`. The key idea
     is to show by decreasing induction that `x' m / x' n ∈ u m` if `m ≤ n`. -/
-  have x'_cauchy : CauchySeq fun n => (x' n).fst := by
-    have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
+  have x'_cauchy : CauchySeq fun n ↦ (x' n).fst := by
+    have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i ↦ { x | x.snd / x.fst ∈ u i } := by
       simpa [uniformity_eq_comap_nhds_one'] using hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']
     simp only [mem_setOf_eq, forall_true_left]
@@ -477,9 +477,9 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   refine
     ⟨↑x₀,
       tendsto_nhds_of_cauchySeq_of_subseq hx
-        (strictMono_nat_of_lt_succ fun n => (hφ (n + 1)).1).tendsto_atTop ?_⟩
+        (strictMono_nat_of_lt_succ fun n ↦ (hφ (n + 1)).1).tendsto_atTop ?_⟩
   convert ((continuous_coinduced_rng : Continuous ((↑) : G → G ⧸ N)).tendsto x₀).comp hx₀
-  exact funext fun n => (x' n).snd
+  exact funext fun n ↦ (x' n).snd
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
 is itself complete. In contrast to `QuotientGroup.completeSpace'`, in this version `G` is

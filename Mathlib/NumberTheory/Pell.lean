@@ -361,7 +361,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.natCast_pos.mpr q.pos) 2).ne'] at hq
     exact hd ⟨a, sq a ▸ hq.symm⟩
   haveI := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
-  let f : ℚ → ZMod m.natAbs × ZMod m.natAbs := fun q => (q.num, q.den)
+  let f : ℚ → ZMod m.natAbs × ZMod m.natAbs := fun q ↦ (q.num, q.den)
   obtain ⟨q₁, h₁ : q₁.num ^ 2 - d * (q₁.den : ℤ) ^ 2 = m,
       q₂, h₂ : q₂.num ^ 2 - d * (q₂.den : ℤ) ^ 2 = m, hne, hqf⟩ :=
     hm.exists_ne_map_eq_of_mapsTo (mapsTo_univ f _) finite_univ
@@ -502,7 +502,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     rcases hn.eq_or_lt with (rfl | hn)
     · simp only [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
-  refine strictMono_int_of_lt_succ fun n => ?_
+  refine strictMono_int_of_lt_succ fun n ↦ ?_
   rcases le_or_lt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1

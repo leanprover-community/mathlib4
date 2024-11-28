@@ -150,7 +150,7 @@ alias _root_.Subgroup.subtype_range := Subgroup.range_subtype
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.inclusion_range {H K : Subgroup G} (h_le : H ≤ K) :
     (inclusion h_le).range = H.subgroupOf K :=
-  Subgroup.ext fun g => Set.ext_iff.mp (Set.range_inclusion h_le) g
+  Subgroup.ext fun g ↦ Set.ext_iff.mp (Set.range_inclusion h_le) g
 
 @[to_additive]
 theorem subgroupOf_range_eq_of_le {G₁ G₂ : Type*} [Group G₁] [Group G₂] {K : Subgroup G₂}

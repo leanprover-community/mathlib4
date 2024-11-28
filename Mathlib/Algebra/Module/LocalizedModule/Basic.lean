@@ -492,7 +492,7 @@ end
 @[simps]
 def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
   toFun p :=
-    p.liftOn (fun p => mk p.1 (p.2 * s)) fun ⟨a, b⟩ ⟨a', b'⟩ ⟨c, eq1⟩ =>
+    p.liftOn (fun p ↦ mk p.1 (p.2 * s)) fun ⟨a, b⟩ ⟨a', b'⟩ ⟨c, eq1⟩ =>
       mk_eq.mpr ⟨c, by rw [mul_smul, mul_smul, smul_comm _ s, smul_comm _ s, eq1, smul_comm _ s,
         smul_comm _ s]⟩
   map_add' x y := by
@@ -605,7 +605,7 @@ there is a linear map `LocalizedModule S M → M''`.
 noncomputable def lift' (g : M →ₗ[R] M'')
     (h : ∀ x : S, IsUnit (algebraMap R (Module.End R M'') x)) : LocalizedModule S M → M'' :=
   fun m =>
-  m.liftOn (fun p => (h p.2).unit⁻¹.val <| g p.1) fun ⟨m, s⟩ ⟨m', s'⟩ ⟨c, eq1⟩ => by
+  m.liftOn (fun p ↦ (h p.2).unit⁻¹.val <| g p.1) fun ⟨m, s⟩ ⟨m', s'⟩ ⟨c, eq1⟩ => by
     -- Porting note: We remove `generalize_proofs h1 h2`. This does nothing here.
     dsimp only
     simp only [Submonoid.smul_def] at eq1

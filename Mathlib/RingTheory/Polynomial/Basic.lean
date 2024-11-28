@@ -38,7 +38,7 @@ variable [Semiring R]
 
 instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   let ⟨h⟩ := h
-  ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
+  ⟨fun n ↦ by rw [← map_natCast C, ← C_0, C_inj, h]⟩
 
 instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
   cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
@@ -63,7 +63,7 @@ theorem degreeLE_mono {m n : WithBot ℕ} (H : m ≤ n) : degreeLE R m ≤ degre
   mem_degreeLE.2 (le_trans (mem_degreeLE.1 hf) H)
 
 theorem degreeLE_eq_span_X_pow [DecidableEq R] {n : ℕ} :
-    degreeLE R n = Submodule.span R ↑((Finset.range (n + 1)).image fun n => (X : R[X]) ^ n) := by
+    degreeLE R n = Submodule.span R ↑((Finset.range (n + 1)).image fun n ↦ (X : R[X]) ^ n) := by
   apply le_antisymm
   · intro p hp
     replace hp := mem_degreeLE.1 hp
@@ -100,7 +100,7 @@ theorem degreeLT_mono {m n : ℕ} (H : m ≤ n) : degreeLT R m ≤ degreeLT R n 
   mem_degreeLT.2 (lt_of_lt_of_le (mem_degreeLT.1 hf) <| WithBot.coe_le_coe.2 H)
 
 theorem degreeLT_eq_span_X_pow [DecidableEq R] {n : ℕ} :
-    degreeLT R n = Submodule.span R ↑((Finset.range n).image fun n => X ^ n : Finset R[X]) := by
+    degreeLT R n = Submodule.span R ↑((Finset.range n).image fun n ↦ X ^ n : Finset R[X]) := by
   apply le_antisymm
   · intro p hp
     replace hp := mem_degreeLT.1 hp
@@ -259,7 +259,7 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
 /-- The finset of nonzero coefficients of a polynomial. -/
 def coeffs (p : R[X]) : Finset R :=
   letI := Classical.decEq R
-  Finset.image (fun n => p.coeff n) p.support
+  Finset.image (fun n ↦ p.coeff n) p.support
 
 @[deprecated (since := "2024-05-17")] noncomputable alias frange := coeffs
 
@@ -373,7 +373,7 @@ theorem support_restriction (p : R[X]) : support (restriction p) = support p := 
 @[simp]
 theorem map_restriction {R : Type u} [CommRing R] (p : R[X]) :
     p.restriction.map (algebraMap _ _) = p :=
-  ext fun n => by rw [coeff_map, Algebra.algebraMap_ofSubring_apply, coeff_restriction]
+  ext fun n ↦ by rw [coeff_map, Algebra.algebraMap_ofSubring_apply, coeff_restriction]
 
 @[simp]
 theorem degree_restriction {p : R[X]} : (restriction p).degree = p.degree := by simp [degree]
@@ -394,7 +394,7 @@ theorem restriction_zero : restriction (0 : R[X]) = 0 := by
 
 @[simp]
 theorem restriction_one : restriction (1 : R[X]) = 1 :=
-  ext fun i => Subtype.eq <| by rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
+  ext fun i ↦ Subtype.eq <| by rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
 
 variable [Semiring S] {f : R →+* S} {x : S}
 
@@ -461,7 +461,7 @@ theorem toSubring_one :
     toSubring (1 : R[X]) T
         (Set.Subset.trans coeffs_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
       1 :=
-  ext fun i => Subtype.eq <| by
+  ext fun i ↦ Subtype.eq <| by
     rw [coeff_toSubring', coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,
       OneMemClass.coe_one]
 
@@ -1141,7 +1141,7 @@ instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
 
 theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommRing S] [Finite σ] (ϕ : MvPolynomial σ R →+* S)
     (p : MvPolynomial σ R) :
-    ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
+    ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s ↦ ϕ (MvPolynomial.X s)) p := by
   cases nonempty_fintype σ
   refine Trans.trans (congr_arg ϕ (MvPolynomial.as_sum p)) ?_
   rw [MvPolynomial.eval₂_eq', map_sum ϕ]

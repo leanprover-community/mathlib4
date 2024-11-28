@@ -319,13 +319,13 @@ protected theorem equiv_empty (x : PSet) [IsEmpty x.Type] : Equiv x ∅ :=
 
 /-- Insert an element into a pre-set -/
 protected def insert (x y : PSet) : PSet :=
-  ⟨Option y.Type, fun o => Option.casesOn o x y.Func⟩
+  ⟨Option y.Type, fun o ↦ Option.casesOn o x y.Func⟩
 
 instance : Insert PSet PSet :=
   ⟨PSet.insert⟩
 
 instance : Singleton PSet PSet :=
-  ⟨fun s => insert s ∅⟩
+  ⟨fun s ↦ insert s ∅⟩
 
 instance : LawfulSingleton PSet PSet :=
   ⟨fun _ => rfl⟩
@@ -336,7 +336,7 @@ instance (x y : PSet) : Inhabited (insert x y).Type :=
 @[simp]
 theorem mem_insert_iff : ∀ {x y z : PSet.{u}}, x ∈ insert y z ↔ Equiv x y ∨ x ∈ z
   | x, y, ⟨α, A⟩ =>
-    show (x ∈ PSet.mk (Option α) fun o => Option.rec y A o) ↔ Equiv x y ∨ x ∈ PSet.mk α A from
+    show (x ∈ PSet.mk (Option α) fun o ↦ Option.rec y A o) ↔ Equiv x y ∨ x ∈ PSet.mk α A from
       ⟨fun m =>
         match m with
         | ⟨some a, ha⟩ => Or.inr ⟨a, ha⟩
@@ -355,7 +355,7 @@ theorem mem_insert_of_mem {y z : PSet} (x) (h : z ∈ y) : z ∈ insert x y :=
 @[simp]
 theorem mem_singleton {x y : PSet} : x ∈ ({y} : PSet) ↔ Equiv x y :=
   mem_insert_iff.trans
-    ⟨fun o => Or.rec id (fun n => absurd n (not_mem_empty _)) o, Or.inl⟩
+    ⟨fun o ↦ Or.rec id (fun n ↦ absurd n (not_mem_empty _)) o, Or.inl⟩
 
 theorem mem_pair {x y z : PSet} : x ∈ ({y, z} : PSet) ↔ Equiv x y ∨ Equiv x z := by
   simp
@@ -367,7 +367,7 @@ def ofNat : ℕ → PSet
 
 /-- The von Neumann ordinal ω -/
 def omega : PSet :=
-  ⟨ULift ℕ, fun n => ofNat n.down⟩
+  ⟨ULift ℕ, fun n ↦ ofNat n.down⟩
 
 /-- The pre-set separation operation `{x ∈ a | p x}` -/
 protected def sep (p : PSet → Prop) (x : PSet) : PSet :=
@@ -384,7 +384,7 @@ theorem mem_sep {p : PSet → Prop} (H : ∀ x y, Equiv x y → p x → p y) :
 
 /-- The pre-set powerset operator -/
 def powerset (x : PSet) : PSet :=
-  ⟨Set x.Type, fun p => ⟨{ a // p a }, fun y ↦ x.Func y.1⟩⟩
+  ⟨Set x.Type, fun p ↦ ⟨{ a // p a }, fun y ↦ x.Func y.1⟩⟩
 
 @[simp]
 theorem mem_powerset : ∀ {x y : PSet}, y ∈ powerset x ↔ y ⊆ x
@@ -622,7 +622,7 @@ def evalAux :
         evalAux.2 _ _ (a.2 _ _ h)
     ⟨F, fun b c h =>
       funext <|
-        (@Quotient.ind _ _ fun q => F b q = F c q) fun z =>
+        (@Quotient.ind _ _ fun q ↦ F b q = F c q) fun z =>
           evalAux.2 (Resp.f b z) (Resp.f c z) (h _ _ (PSet.Equiv.refl z))⟩
 
 /-- An equivalence-respecting function yields an n-ary ZFC set function. -/
@@ -683,7 +683,7 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
       intro x y h
       rw [@Quotient.sound PSet _ _ _ h]
       exact (Definable.Resp (F ⟦y⟧)).2
-    refine funext fun q => Quotient.inductionOn q fun x ↦ ?_
+    refine funext fun q ↦ Quotient.inductionOn q fun x ↦ ?_
     simp_rw [Resp.eval_val, Resp.f]
     exact @Definable.eq _ (F ⟦x⟧) (I ⟦x⟧)
 
@@ -734,7 +734,7 @@ theorem mem_toSet (a u : ZFSet.{u}) : a ∈ u.toSet ↔ a ∈ u :=
 
 instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
   Quotient.inductionOn x fun a ↦ by
-    let f : a.Type → (mk a).toSet := fun i => ⟨mk <| a.Func i, func_mem a i⟩
+    let f : a.Type → (mk a).toSet := fun i ↦ ⟨mk <| a.Func i, func_mem a i⟩
     suffices Function.Surjective f by exact small_of_surjective this
     rintro ⟨y, hb⟩
     induction y using Quotient.inductionOn
@@ -785,7 +785,7 @@ theorem toSet_subset_iff {x y : ZFSet} : x.toSet ⊆ y.toSet ↔ x ⊆ y := by
 
 @[ext]
 theorem ext {x y : ZFSet.{u}} : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
-  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w ↦ h ⟦w⟧)
 
 theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ext_iff.1 h
 
@@ -1631,7 +1631,7 @@ noncomputable def choice : ZFSet :=
 theorem choice_mem_aux (h : ∅ ∉ x) (y : ZFSet.{u}) (yx : y ∈ x) :
     (Classical.epsilon fun z : ZFSet.{u} => z ∈ y) ∈ y :=
   (@Classical.epsilon_spec _ fun z : ZFSet.{u} => z ∈ y) <|
-    by_contradiction fun n => h <| by rwa [← (eq_empty y).2 fun z zx => n ⟨z, zx⟩]
+    by_contradiction fun n ↦ h <| by rwa [← (eq_empty y).2 fun z zx => n ⟨z, zx⟩]
 
 theorem choice_isFunc (h : ∅ ∉ x) : IsFunc x (⋃₀ x) (choice x) :=
   (@map_isFunc _ (Classical.allZFSetDefinable _) _ _).2 fun y yx =>

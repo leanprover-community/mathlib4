@@ -156,7 +156,7 @@ This function is a morphism if the characteristic of `R` divides `n`.
 See `ZMod.castHom` for a bundled version. -/
 def cast : ∀ {n : ℕ}, ZMod n → R
   | 0 => Int.cast
-  | _ + 1 => fun i => i.val
+  | _ + 1 => fun i ↦ i.val
 
 
 @[simp]

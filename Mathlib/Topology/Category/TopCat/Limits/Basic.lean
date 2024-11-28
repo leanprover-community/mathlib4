@@ -35,7 +35,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
   pt := TopCat.of { u : ∀ j : J, F.obj j | ∀ {i j : J} (f : i ⟶ j), F.map f (u i) = u j }
   π :=
     { app := fun j =>
-        { toFun := fun u => u.val j
+        { toFun := fun u ↦ u.val j
           -- Porting note: `continuity` from the original mathlib3 proof failed here.
           continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
       naturality := fun X Y f => by
@@ -68,12 +68,12 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 def limitConeIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitCone.{v,u} F) where
   lift S :=
     { toFun := fun x =>
-        ⟨fun _ => S.π.app _ x, fun f => by
+        ⟨fun _ => S.π.app _ x, fun f ↦ by
           dsimp
           rw [← S.w f]
           rfl⟩
       continuous_toFun :=
-        Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).2) fun x i j f => by
+        Continuous.subtype_mk (continuous_pi fun j ↦ (S.π.app j).2) fun x i j f => by
           dsimp
           rw [← S.w f]
           rfl }
@@ -90,7 +90,7 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi.{v,u} F) := by
   refine IsLimit.ofFaithful forget (Types.limitConeIsLimit.{v,u} (F ⋙ forget))
     -- Porting note: previously could infer all ?_ except continuity
-    (fun s => ⟨fun v => ⟨fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
+    (fun s ↦ ⟨fun v ↦ ⟨fun j ↦ (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s ↦ ?_
   · dsimp [Functor.sections]
     intro _ _ _
     rw [← comp_apply', forget_map_eq_coe, ← s.π.naturality, forget_map_eq_coe]
@@ -149,7 +149,7 @@ def colimitCoconeIsColimit (F : J ⥤ TopCat.{max v u}) : IsColimit (colimitCoco
     IsColimit.ofFaithful forget (Types.TypeMax.colimitCoconeIsColimit.{v, u} _) (fun s =>
     -- Porting note: it appears notation for forget breaks dot notation (also above)
     -- Porting note: previously function was inferred
-      ⟨Quot.lift (fun p => (Functor.mapCocone forget s).ι.app p.fst p.snd) ?_, ?_⟩) fun s => ?_
+      ⟨Quot.lift (fun p ↦ (Functor.mapCocone forget s).ι.app p.fst p.snd) ?_, ?_⟩) fun s ↦ ?_
   · intro _ _ ⟨_, h⟩
     dsimp
     rw [h, Functor.comp_map, ← comp_apply', s.ι.naturality]
@@ -185,7 +185,7 @@ instance forget_preservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ T
 /-- The terminal object of `Top` is `PUnit`. -/
 def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
-    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
+    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f ↦ by ext; aesop⟩
   Limits.IsTerminal.ofUnique _
 
 /-- The terminal object of `Top` is `PUnit`. -/
@@ -195,7 +195,7 @@ def terminalIsoPUnit : ⊤_ TopCat.{u} ≅ TopCat.of PUnit :=
 /-- The initial object of `Top` is `PEmpty`. -/
 def isInitialPEmpty : IsInitial (TopCat.of PEmpty.{u + 1}) :=
   haveI : ∀ X, Unique (TopCat.of PEmpty.{u + 1} ⟶ X) := fun X =>
-    ⟨⟨⟨fun x ↦ x.elim, by continuity⟩⟩, fun f => by ext ⟨⟩⟩
+    ⟨⟨⟨fun x ↦ x.elim, by continuity⟩⟩, fun f ↦ by ext ⟨⟩⟩
   Limits.IsInitial.ofUnique _
 
 /-- The initial object of `Top` is `PEmpty`. -/

@@ -179,8 +179,8 @@ def MonCat.units : MonCat.{u} ⥤ Grp.{u} where
 /-- The forgetful-units adjunction between `Grp` and `MonCat`. -/
 def Grp.forget₂MonAdj : forget₂ Grp MonCat ⊣ MonCat.units.{u} := Adjunction.mk' {
   homEquiv := fun _ Y ↦
-    { toFun := fun f => MonoidHom.toHomUnits f
-      invFun := fun f => (Units.coeHom Y).comp f
+    { toFun := fun f ↦ MonoidHom.toHomUnits f
+      invFun := fun f ↦ (Units.coeHom Y).comp f
       left_inv := fun _ => MonoidHom.ext fun _ => rfl
       right_inv := fun _ => MonoidHom.ext fun _ => Units.ext rfl }
   unit :=
@@ -205,8 +205,8 @@ def CommMonCat.units : CommMonCat.{u} ⥤ CommGrp.{u} where
 def CommGrp.forget₂CommMonAdj : forget₂ CommGrp CommMonCat ⊣ CommMonCat.units.{u} :=
   Adjunction.mk' {
     homEquiv := fun _ Y ↦
-      { toFun := fun f => MonoidHom.toHomUnits f
-        invFun := fun f => (Units.coeHom Y).comp f
+      { toFun := fun f ↦ MonoidHom.toHomUnits f
+        invFun := fun f ↦ (Units.coeHom Y).comp f
         left_inv := fun _ => MonoidHom.ext fun _ => rfl
         right_inv := fun _ => MonoidHom.ext fun _ => Units.ext rfl }
     unit :=

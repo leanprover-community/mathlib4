@@ -334,7 +334,7 @@ theorem linearIsometryEquiv_comp_rightAngleRotation' (φ : E ≃ₗᵢ[ℝ] E)
 `![x, J x]` forms an (orthogonal) basis for `E`. -/
 def basisRightAngleRotation (x : E) (hx : x ≠ 0) : Basis (Fin 2) ℝ E :=
   @basisOfLinearIndependentOfCardEqFinrank ℝ _ _ _ _ _ _ _ ![x, J x]
-    (linearIndependent_of_ne_zero_of_inner_eq_zero (fun i => by fin_cases i <;> simp [hx])
+    (linearIndependent_of_ne_zero_of_inner_eq_zero (fun i ↦ by fin_cases i <;> simp [hx])
       (by
         intro i j hij
         fin_cases i <;> fin_cases j <;> simp_all))

@@ -68,7 +68,7 @@ variable {α : Type*} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid 
 @[to_additive "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
 def map (f : M →* N) : Mˣ →* Nˣ :=
   MonoidHom.mk'
-    (fun u => ⟨f u.val, f u.inv,
+    (fun u ↦ ⟨f u.val, f u.inv,
       by rw [← f.map_mul, u.val_inv, f.map_one],
       by rw [← f.map_mul, u.inv_val, f.map_one]⟩)
     fun x y => ext (f.map_mul x y)
@@ -152,7 +152,7 @@ and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -
   then its image lies in the `AddUnits` of `M`,
   and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`."]
 def toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
-  Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_cancel _),
+  Units.liftRight f (fun g ↦ ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_cancel _),
     map_mul_eq_one f (inv_mul_cancel _)⟩)
     fun _ => rfl
 

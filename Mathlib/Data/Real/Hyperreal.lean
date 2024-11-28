@@ -129,7 +129,7 @@ theorem ofSeq_lt_ofSeq {f g : ℕ → ℝ} : ofSeq f < ofSeq g ↔ ∀ᶠ n in h
 
 /-- A sample infinitesimal hyperreal -/
 noncomputable def epsilon : ℝ* :=
-  ofSeq fun n => n⁻¹
+  ofSeq fun n ↦ n⁻¹
 
 /-- A sample infinite hyperreal -/
 noncomputable def omega : ℝ* := ofSeq Nat.cast

@@ -57,7 +57,7 @@ theorem essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : Y ∈ essImage F) : Y' �
 -/
 theorem essImage.ofNatIso {F' : C ⥤ D} (h : F ≅ F') {Y : D} (hY : Y ∈ essImage F) :
     Y ∈ essImage F' :=
-  hY.imp fun X => Nonempty.map fun t => h.symm.app X ≪≫ t
+  hY.imp fun X => Nonempty.map fun t ↦ h.symm.app X ≪≫ t
 
 /-- Isomorphic functors have equal essential images. -/
 theorem essImage_eq_of_natIso {F' : C ⥤ D} (h : F ≅ F') : essImage F = essImage F' :=

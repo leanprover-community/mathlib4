@@ -71,7 +71,7 @@ instance (priority := 400) countable [Encodable α] : Countable α where
   exists_injective_nat' := ⟨_,encode_injective⟩
 
 theorem surjective_decode_iget (α : Type*) [Encodable α] [Inhabited α] :
-    Surjective fun n => ((Encodable.decode n).iget : α) := fun x =>
+    Surjective fun n ↦ ((Encodable.decode n).iget : α) := fun x =>
   ⟨Encodable.encode x, by simp_rw [Encodable.encodek]⟩
 
 /-- An encodable type has decidable equality. Not set as an instance because this is usually not the
@@ -82,7 +82,7 @@ def decidableEqOfEncodable (α) [Encodable α] : DecidableEq α
 /-- If `α` is encodable and there is an injection `f : β → α`, then `β` is encodable as well. -/
 def ofLeftInjection [Encodable α] (f : β → α) (finv : α → Option β)
     (linv : ∀ b, finv (f b) = some b) : Encodable β :=
-  ⟨fun b ↦ encode (f b), fun n => (decode n).bind finv, fun b ↦ by
+  ⟨fun b ↦ encode (f b), fun n ↦ (decode n).bind finv, fun b ↦ by
     simp [Encodable.encodek, linv]⟩
 
 /-- If `α` is encodable and `f : β → α` is invertible, then `β` is encodable as well. -/
@@ -120,7 +120,7 @@ instance (priority := 100) _root_.IsEmpty.toEncodable [IsEmpty α] : Encodable �
   ⟨isEmptyElim, fun _ => none, isEmptyElim⟩
 
 instance _root_.PUnit.encodable : Encodable PUnit :=
-  ⟨fun _ => 0, fun n => Nat.casesOn n (some PUnit.unit) fun _ => none, fun _ => by simp⟩
+  ⟨fun _ => 0, fun n ↦ Nat.casesOn n (some PUnit.unit) fun _ => none, fun _ => by simp⟩
 
 @[simp]
 theorem encode_star : encode PUnit.unit = 0 :=
@@ -136,8 +136,8 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 
 /-- If `α` is encodable, then so is `Option α`. -/
 instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Option α) :=
-  ⟨fun o => Option.casesOn o Nat.zero fun a ↦ succ (encode a), fun n =>
-    Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
+  ⟨fun o ↦ Option.casesOn o Nat.zero fun a ↦ succ (encode a), fun n =>
+    Nat.casesOn n (some none) fun m ↦ (decode m).map some, fun o ↦ by
     cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
 
 @[simp]
@@ -238,7 +238,7 @@ def decodeSum (n : ℕ) : Option (α ⊕ β) :=
 
 /-- If `α` and `β` are encodable, then so is their sum. -/
 instance _root_.Sum.encodable : Encodable (α ⊕ β) :=
-  ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
+  ⟨encodeSum, decodeSum, fun s ↦ by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
 
 -- Porting note: removing bit0 and bit1 from statement
 @[simp]
@@ -480,7 +480,7 @@ private def good : Option α → Prop
   | none => False
 
 private def decidable_good : DecidablePred (good p) :=
-  fun n => by
+  fun n ↦ by
     cases n <;> unfold good <;> dsimp <;> infer_instance
 attribute [local instance] decidable_good
 
@@ -604,7 +604,7 @@ theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
 
 /-- The quotient of an encodable space by a decidable equivalence relation is encodable. -/
 def encodableQuotient : Encodable (Quotient s) :=
-  ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode n, by
+  ⟨fun q ↦ encode q.rep, fun n ↦ Quotient.mk'' <$> decode n, by
     rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some ⟦l⟧.rep_spec⟩
 
 end Quotient

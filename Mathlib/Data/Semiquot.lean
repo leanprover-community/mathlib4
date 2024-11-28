@@ -159,7 +159,7 @@ instance partialOrder : PartialOrder (Semiquot α) where
 
 instance : SemilatticeSup (Semiquot α) :=
   { Semiquot.partialOrder with
-    sup := fun s => blur s.s
+    sup := fun s ↦ blur s.s
     le_sup_left := fun _ _ => Set.subset_union_left
     le_sup_right := fun _ _ => Set.subset_union_right
     sup_le := fun _ _ _ => Set.union_subset }

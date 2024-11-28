@@ -174,7 +174,7 @@ theorem pow_log_le_add_one (b : ℕ) : ∀ x, b ^ log b x ≤ x + 1
   | x + 1 => (pow_log_le_self b x.succ_ne_zero).trans (x + 1).le_succ
 
 theorem log_monotone {b : ℕ} : Monotone (log b) := by
-  refine monotone_nat_of_le_succ fun n => ?_
+  refine monotone_nat_of_le_succ fun n ↦ ?_
   rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb]
     exact zero_le _

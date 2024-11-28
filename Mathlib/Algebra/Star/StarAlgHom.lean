@@ -246,7 +246,7 @@ instance : MonoidWithZero (A →⋆ₙₐ[R] A) :=
   { inferInstanceAs (Monoid (A →⋆ₙₐ[R] A)),
     inferInstanceAs (Zero (A →⋆ₙₐ[R] A)) with
     zero_mul := fun _ => ext fun _ => rfl
-    mul_zero := fun f => ext fun _ => map_zero f }
+    mul_zero := fun f ↦ ext fun _ => map_zero f }
 
 @[simp]
 theorem coe_zero : ((0 : A →⋆ₙₐ[R] B) : A → B) = 0 :=

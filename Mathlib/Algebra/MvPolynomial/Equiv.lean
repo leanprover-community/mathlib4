@@ -109,7 +109,7 @@ theorem mapEquiv_symm [CommSemiring S₁] [CommSemiring S₂] (e : S₁ ≃+* S�
 @[simp]
 theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S₃] (e : S₁ ≃+* S₂)
     (f : S₂ ≃+* S₃) : (mapEquiv σ e).trans (mapEquiv σ f) = mapEquiv σ (e.trans f) :=
-  RingEquiv.ext fun p => by
+  RingEquiv.ext fun p ↦ by
     simp only [RingEquiv.coe_trans, comp_apply, mapEquiv_apply, RingEquiv.coe_ringHom_trans,
       map_map]
 
@@ -277,7 +277,7 @@ polynomials with coefficients in `MvPolynomial S₁ R`.
 -/
 @[simps!]
 def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolynomial S₁ R) :=
-  AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim Polynomial.X fun s => Polynomial.C (X s))
+  AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o ↦ o.elim Polynomial.X fun s ↦ Polynomial.C (X s))
     (Polynomial.aevalTower (MvPolynomial.rename some) (X none))
     (by ext : 2 <;> simp) (by ext i : 2; cases i <;> simp)
 
@@ -297,8 +297,8 @@ multivariable polynomials with coefficients in polynomials.
 -/
 @[simps!]
 def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ R[X] :=
-  AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim (C Polynomial.X) X)
-    (MvPolynomial.aevalTower (Polynomial.aeval (X none)) fun i => X (Option.some i))
+  AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o ↦ o.elim (C Polynomial.X) X)
+    (MvPolynomial.aevalTower (Polynomial.aeval (X none)) fun i ↦ X (Option.some i))
     (by
       ext : 2 <;>
         simp only [MvPolynomial.algebraMap_eq, Option.elim, AlgHom.coe_comp, AlgHom.id_comp,
@@ -329,7 +329,7 @@ def finSuccEquiv : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] Polynomial (MvPolynomi
 theorem finSuccEquiv_eq :
     (finSuccEquiv R n : MvPolynomial (Fin (n + 1)) R →+* Polynomial (MvPolynomial (Fin n) R)) =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R)) fun i : Fin (n + 1) =>
-        Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i := by
+        Fin.cases Polynomial.X (fun k ↦ Polynomial.C (X k)) i := by
   ext i : 2
   · simp only [finSuccEquiv, optionEquivLeft_apply, aeval_C, AlgEquiv.coe_trans, RingHom.coe_coe,
       coe_eval₂Hom, comp_apply, renameEquiv_apply, eval₂_C, RingHom.coe_comp, rename_C]
@@ -339,7 +339,7 @@ theorem finSuccEquiv_eq :
 theorem finSuccEquiv_apply (p : MvPolynomial (Fin (n + 1)) R) :
     finSuccEquiv R n p =
       eval₂Hom (Polynomial.C.comp (C : R →+* MvPolynomial (Fin n) R))
-        (fun i : Fin (n + 1) => Fin.cases Polynomial.X (fun k => Polynomial.C (X k)) i) p := by
+        (fun i : Fin (n + 1) => Fin.cases Polynomial.X (fun k ↦ Polynomial.C (X k)) i) p := by
   rw [← finSuccEquiv_eq, RingHom.coe_coe]
 
 theorem finSuccEquiv_comp_C_eq_C {R : Type u} [CommSemiring R] (n : ℕ) :
@@ -391,7 +391,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   -- turn this into a def `Polynomial.mapAlgHom`
   let φ : (MvPolynomial (Fin n) R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
-      commutes' := fun r => by
+      commutes' := fun r ↦ by
         convert Polynomial.map_C (eval s)
         exact (eval_C _).symm }
   show
@@ -432,7 +432,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
     exact hi
   -- Let σ be a monomial index of ((finSuccEquiv R n p).coeff i) of maximal total degree
   have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
-                          (fun s => Finsupp.sum s fun _ e => e)
+                          (fun s ↦ Finsupp.sum s fun _ e => e)
   -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
   let σ' : Fin (n+1) →₀ ℕ := cons i σ
   convert le_totalDegree (s := σ') _
@@ -497,8 +497,8 @@ theorem support_finSuccEquiv_nonempty {f : MvPolynomial (Fin (n + 1)) R} (h : f 
 theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
     (finSuccEquiv R n f).degree = degreeOf 0 f := by
   -- TODO: these should be lemmas
-  have h₀ : ∀ {α β : Type _} (f : α → β), (fun x ↦ x) ∘ f = f := fun f => rfl
-  have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x ↦ x) = f := fun f => rfl
+  have h₀ : ∀ {α β : Type _} (f : α → β), (fun x ↦ x) ∘ f = f := fun f ↦ rfl
+  have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x ↦ x) = f := fun f ↦ rfl
   have h₂ : WithBot.some = Nat.cast := rfl
 
   have h' : ((finSuccEquiv R n f).support.sup fun x ↦ x) = degreeOf 0 f := by

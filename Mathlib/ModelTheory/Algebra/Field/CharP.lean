@@ -41,7 +41,7 @@ noncomputable def eqZero (n : ℕ) : Language.ring.Sentence :=
 def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theory :=
   Theory.field ∪
   if p = 0
-  then (fun q => ∼(eqZero q)) '' {q : ℕ | q.Prime}
+  then (fun q ↦ ∼(eqZero q)) '' {q : ℕ | q.Prime}
   else if p.Prime then {eqZero p}
   else {⊥}
 

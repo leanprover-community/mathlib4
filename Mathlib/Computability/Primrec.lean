@@ -61,10 +61,10 @@ def unpaired {α} (f : ℕ → ℕ → α) (n : ℕ) : α :=
 protected inductive Primrec : (ℕ → ℕ) → Prop
   | zero : Nat.Primrec fun _ => 0
   | protected succ : Nat.Primrec succ
-  | left : Nat.Primrec fun n => n.unpair.1
-  | right : Nat.Primrec fun n => n.unpair.2
-  | pair {f g} : Nat.Primrec f → Nat.Primrec g → Nat.Primrec fun n => pair (f n) (g n)
-  | comp {f g} : Nat.Primrec f → Nat.Primrec g → Nat.Primrec fun n => f (g n)
+  | left : Nat.Primrec fun n ↦ n.unpair.1
+  | right : Nat.Primrec fun n ↦ n.unpair.2
+  | pair {f g} : Nat.Primrec f → Nat.Primrec g → Nat.Primrec fun n ↦ pair (f n) (g n)
+  | comp {f g} : Nat.Primrec f → Nat.Primrec g → Nat.Primrec fun n ↦ f (g n)
   | prec {f g} :
       Nat.Primrec f →
         Nat.Primrec g →
@@ -80,11 +80,11 @@ theorem const : ∀ n : ℕ, Nat.Primrec fun _ => n
   | n + 1 => Primrec.succ.comp (const n)
 
 protected theorem id : Nat.Primrec id :=
-  (left.pair right).of_eq fun n => by simp
+  (left.pair right).of_eq fun n ↦ by simp
 
 theorem prec1 {f} (m : ℕ) (hf : Nat.Primrec f) :
-    Nat.Primrec fun n => n.rec m fun y IH => f <| Nat.pair y IH :=
-  ((prec (const m) (hf.comp right)).comp (zero.pair Primrec.id)).of_eq fun n => by simp
+    Nat.Primrec fun n ↦ n.rec m fun y IH => f <| Nat.pair y IH :=
+  ((prec (const m) (hf.comp right)).comp (zero.pair Primrec.id)).of_eq fun n ↦ by simp
 
 theorem casesOn1 {f} (m : ℕ) (hf : Nat.Primrec f) : Nat.Primrec (Nat.casesOn · m f) :=
   (prec1 m (hf.comp left)).of_eq <| by simp
@@ -92,31 +92,31 @@ theorem casesOn1 {f} (m : ℕ) (hf : Nat.Primrec f) : Nat.Primrec (Nat.casesOn �
 -- Porting note: `Nat.Primrec.casesOn` is already declared as a recursor.
 theorem casesOn' {f g} (hf : Nat.Primrec f) (hg : Nat.Primrec g) :
     Nat.Primrec (unpaired fun z n => n.casesOn (f z) fun y ↦ g <| Nat.pair z y) :=
-  (prec hf (hg.comp (pair left (left.comp right)))).of_eq fun n => by simp
+  (prec hf (hg.comp (pair left (left.comp right)))).of_eq fun n ↦ by simp
 
 protected theorem swap : Nat.Primrec (unpaired (swap Nat.pair)) :=
-  (pair right left).of_eq fun n => by simp
+  (pair right left).of_eq fun n ↦ by simp
 
 theorem swap' {f} (hf : Nat.Primrec (unpaired f)) : Nat.Primrec (unpaired (swap f)) :=
-  (hf.comp .swap).of_eq fun n => by simp
+  (hf.comp .swap).of_eq fun n ↦ by simp
 
 theorem pred : Nat.Primrec pred :=
-  (casesOn1 0 Primrec.id).of_eq fun n => by cases n <;> simp [*]
+  (casesOn1 0 Primrec.id).of_eq fun n ↦ by cases n <;> simp [*]
 
 theorem add : Nat.Primrec (unpaired (· + ·)) :=
-  (prec .id ((Primrec.succ.comp right).comp right)).of_eq fun p => by
+  (prec .id ((Primrec.succ.comp right).comp right)).of_eq fun p ↦ by
     simp; induction p.unpair.2 <;> simp [*, Nat.add_assoc]
 
 theorem sub : Nat.Primrec (unpaired (· - ·)) :=
-  (prec .id ((pred.comp right).comp right)).of_eq fun p => by
+  (prec .id ((pred.comp right).comp right)).of_eq fun p ↦ by
     simp; induction p.unpair.2 <;> simp [*, Nat.sub_add_eq]
 
 theorem mul : Nat.Primrec (unpaired (· * ·)) :=
-  (prec zero (add.comp (pair left (right.comp right)))).of_eq fun p => by
+  (prec zero (add.comp (pair left (right.comp right)))).of_eq fun p ↦ by
     simp; induction p.unpair.2 <;> simp [*, mul_succ, add_comm _ (unpair p).fst]
 
 theorem pow : Nat.Primrec (unpaired (· ^ ·)) :=
-  (prec (const 1) (mul.comp (pair (right.comp right) left))).of_eq fun p => by
+  (prec (const 1) (mul.comp (pair (right.comp right) left))).of_eq fun p ↦ by
     simp; induction p.unpair.2 <;> simp [*, Nat.pow_succ]
 
 end Primrec
@@ -128,7 +128,7 @@ end Nat
 class Primcodable (α : Type*) extends Encodable α where
   -- Porting note: was `prim [] `.
   -- This means that `prim` does not take the type explicitly in Lean 4
-  prim : Nat.Primrec fun n => Encodable.encode (decode n)
+  prim : Nat.Primrec fun n ↦ Encodable.encode (decode n)
 
 namespace Primcodable
 
@@ -140,7 +140,7 @@ instance (priority := 10) ofDenumerable (α) [Denumerable α] : Primcodable α :
 /-- Builds a `Primcodable` instance from an equivalence to a `Primcodable` type. -/
 def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
   { __ := Encodable.ofEquiv α e
-    prim := (@Primcodable.prim α _).of_eq fun n => by
+    prim := (@Primcodable.prim α _).of_eq fun n ↦ by
       rw [decode_ofEquiv]
       cases (@decode α _ n) <;>
         simp [encode_ofEquiv] }
@@ -149,10 +149,10 @@ instance empty : Primcodable Empty :=
   ⟨zero⟩
 
 instance unit : Primcodable PUnit :=
-  ⟨(casesOn1 1 zero).of_eq fun n => by cases n <;> simp⟩
+  ⟨(casesOn1 1 zero).of_eq fun n ↦ by cases n <;> simp⟩
 
 instance option {α : Type*} [h : Primcodable α] : Primcodable (Option α) :=
-  ⟨(casesOn1 1 ((casesOn1 0 (.comp .succ .succ)).comp (@Primcodable.prim α _))).of_eq fun n => by
+  ⟨(casesOn1 1 ((casesOn1 0 (.comp .succ .succ)).comp (@Primcodable.prim α _))).of_eq fun n ↦ by
     cases n with
       | zero => rfl
       | succ n =>
@@ -160,7 +160,7 @@ instance option {α : Type*} [h : Primcodable α] : Primcodable (Option α) :=
         cases H : @decode α _ n <;> simp [H]⟩
 
 instance bool : Primcodable Bool :=
-  ⟨(casesOn1 1 (casesOn1 2 zero)).of_eq fun n => match n with
+  ⟨(casesOn1 1 (casesOn1 2 zero)).of_eq fun n ↦ match n with
     | 0 => rfl
     | 1 => rfl
     | (n + 2) => by rw [decode_ge_two] <;> simp⟩
@@ -170,7 +170,7 @@ end Primcodable
 /-- `Primrec f` means `f` is primitive recursive (after
   encoding its input and output as natural numbers). -/
 def Primrec {α β} [Primcodable α] [Primcodable β] (f : α → β) : Prop :=
-  Nat.Primrec fun n => encode ((@decode α _ n).map f)
+  Nat.Primrec fun n ↦ encode ((@decode α _ n).map f)
 
 namespace Primrec
 
@@ -180,38 +180,38 @@ variable [Primcodable α] [Primcodable β] [Primcodable σ]
 open Nat.Primrec
 
 protected theorem encode : Primrec (@encode α _) :=
-  (@Primcodable.prim α _).of_eq fun n => by cases @decode α _ n <;> rfl
+  (@Primcodable.prim α _).of_eq fun n ↦ by cases @decode α _ n <;> rfl
 
 protected theorem decode : Primrec (@decode α _) :=
   Nat.Primrec.succ.comp (@Primcodable.prim α _)
 
 theorem dom_denumerable {α β} [Denumerable α] [Primcodable β] {f : α → β} :
-    Primrec f ↔ Nat.Primrec fun n => encode (f (ofNat α n)) :=
-  ⟨fun h ↦ (pred.comp h).of_eq fun n => by simp, fun h =>
-    (Nat.Primrec.succ.comp h).of_eq fun n => by simp⟩
+    Primrec f ↔ Nat.Primrec fun n ↦ encode (f (ofNat α n)) :=
+  ⟨fun h ↦ (pred.comp h).of_eq fun n ↦ by simp, fun h =>
+    (Nat.Primrec.succ.comp h).of_eq fun n ↦ by simp⟩
 
 theorem nat_iff {f : ℕ → ℕ} : Primrec f ↔ Nat.Primrec f :=
   dom_denumerable
 
-theorem encdec : Primrec fun n => encode (@decode α _ n) :=
+theorem encdec : Primrec fun n ↦ encode (@decode α _ n) :=
   nat_iff.2 Primcodable.prim
 
 theorem option_some : Primrec (@some α) :=
-  ((casesOn1 0 (Nat.Primrec.succ.comp .succ)).comp (@Primcodable.prim α _)).of_eq fun n => by
+  ((casesOn1 0 (Nat.Primrec.succ.comp .succ)).comp (@Primcodable.prim α _)).of_eq fun n ↦ by
     cases @decode α _ n <;> simp
 
 theorem of_eq {f g : α → σ} (hf : Primrec f) (H : ∀ n, f n = g n) : Primrec g :=
   (funext H : f = g) ▸ hf
 
 theorem const (x : σ) : Primrec fun _ : α => x :=
-  ((casesOn1 0 (.const (encode x).succ)).comp (@Primcodable.prim α _)).of_eq fun n => by
+  ((casesOn1 0 (.const (encode x).succ)).comp (@Primcodable.prim α _)).of_eq fun n ↦ by
     cases @decode α _ n <;> rfl
 
 protected theorem id : Primrec (@id α) :=
   (@Primcodable.prim α).of_eq <| by simp
 
 theorem comp {f : β → σ} {g : α → β} (hf : Primrec f) (hg : Primrec g) : Primrec fun a ↦ f (g a) :=
-  ((casesOn1 0 (.comp hf (pred.comp hg))).comp (@Primcodable.prim α _)).of_eq fun n => by
+  ((casesOn1 0 (.comp hf (pred.comp hg))).comp (@Primcodable.prim α _)).of_eq fun n ↦ by
     cases @decode α _ n <;> simp [encodek]
 
 theorem succ : Primrec Nat.succ :=
@@ -221,10 +221,10 @@ theorem pred : Primrec Nat.pred :=
   nat_iff.2 Nat.Primrec.pred
 
 theorem encode_iff {f : α → σ} : (Primrec fun a ↦ encode (f a)) ↔ Primrec f :=
-  ⟨fun h ↦ Nat.Primrec.of_eq h fun n => by cases @decode α _ n <;> rfl, Primrec.encode.comp⟩
+  ⟨fun h ↦ Nat.Primrec.of_eq h fun n ↦ by cases @decode α _ n <;> rfl, Primrec.encode.comp⟩
 
 theorem ofNat_iff {α β} [Denumerable α] [Primcodable β] {f : α → β} :
-    Primrec f ↔ Primrec fun n => f (ofNat α n) :=
+    Primrec f ↔ Primrec fun n ↦ f (ofNat α n) :=
   dom_denumerable.trans <| nat_iff.symm.trans encode_iff
 
 protected theorem ofNat (α) [Denumerable α] : Primrec (ofNat α) :=
@@ -266,7 +266,7 @@ open Nat.Primrec
 instance prod {α β} [Primcodable α] [Primcodable β] : Primcodable (α × β) :=
   ⟨((casesOn' zero ((casesOn' zero .succ).comp (pair right ((@Primcodable.prim β).comp left)))).comp
           (pair right ((@Primcodable.prim α).comp left))).of_eq
-      fun n => by
+      fun n ↦ by
       simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
       cases @decode α _ n.unpair.1; · simp
       cases @decode β _ n.unpair.2 <;> simp⟩
@@ -284,7 +284,7 @@ theorem fst {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.fst α β
             ((casesOn' zero (Nat.Primrec.succ.comp left)).comp
               (pair right ((@Primcodable.prim β).comp left)))).comp
         (pair right ((@Primcodable.prim α).comp left))).of_eq
-    fun n => by
+    fun n ↦ by
     simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
@@ -294,7 +294,7 @@ theorem snd {α β} [Primcodable α] [Primcodable β] : Primrec (@Prod.snd α β
             ((casesOn' zero (Nat.Primrec.succ.comp right)).comp
               (pair right ((@Primcodable.prim β).comp left)))).comp
         (pair right ((@Primcodable.prim α).comp left))).of_eq
-    fun n => by
+    fun n ↦ by
     simp only [Nat.unpaired, Nat.unpair_pair, decode_prod_val]
     cases @decode α _ n.unpair.1 <;> simp
     cases @decode β _ n.unpair.2 <;> simp
@@ -305,16 +305,16 @@ theorem pair {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {f : 
             (Nat.Primrec.succ.comp <|
               .pair (Nat.Primrec.pred.comp hf) (Nat.Primrec.pred.comp hg))).comp
         (@Primcodable.prim α _)).of_eq
-    fun n => by cases @decode α _ n <;> simp [encodek]
+    fun n ↦ by cases @decode α _ n <;> simp [encodek]
 
 theorem unpair : Primrec Nat.unpair :=
-  (pair (nat_iff.2 .left) (nat_iff.2 .right)).of_eq fun n => by simp
+  (pair (nat_iff.2 .left) (nat_iff.2 .right)).of_eq fun n ↦ by simp
 
 theorem list_get?₁ : ∀ l : List α, Primrec l.get?
   | [] => dom_denumerable.2 zero
   | a :: l =>
     dom_denumerable.2 <|
-      (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_get?₁ l).of_eq fun n => by
+      (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_get?₁ l).of_eq fun n ↦ by
         cases n <;> simp
 
 end Primrec
@@ -474,7 +474,7 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
                           Nat.Primrec.pred.comp <| Nat.Primrec.right.comp .right).comp <|
                 Nat.Primrec.right.pair <| Nat.Primrec.right.comp Nat.Primrec.left).comp <|
           Nat.Primrec.id.pair <| (@Primcodable.prim α).comp Nat.Primrec.left).of_eq
-      fun n => by
+      fun n ↦ by
       simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
         Option.some_bind, Option.map_map, Option.map_some']
       cases' @decode α _ n.unpair.1 with a; · rfl
@@ -523,7 +523,7 @@ theorem option_bind {f : α → Option β} {g : α → β → Option σ} (hf : P
     Primrec fun a ↦ (f a).bind (g a) :=
   (option_casesOn hf (const none) hg).of_eq fun a ↦ by cases f a <;> rfl
 
-theorem option_bind₁ {f : α → Option σ} (hf : Primrec f) : Primrec fun o => Option.bind o f :=
+theorem option_bind₁ {f : α → Option σ} (hf : Primrec f) : Primrec fun o ↦ Option.bind o f :=
   option_bind .id (hf.comp snd).to₂
 
 theorem option_map {f : α → Option β} {g : α → β → σ} (hf : Primrec f) (hg : Primrec₂ g) :
@@ -534,10 +534,10 @@ theorem option_map₁ {f : α → σ} (hf : Primrec f) : Primrec (Option.map f) 
   option_map .id (hf.comp snd).to₂
 
 theorem option_iget [Inhabited α] : Primrec (@Option.iget α _) :=
-  (option_casesOn .id (const <| @default α _) .right).of_eq fun o => by cases o <;> rfl
+  (option_casesOn .id (const <| @default α _) .right).of_eq fun o ↦ by cases o <;> rfl
 
 theorem option_isSome : Primrec (@Option.isSome α) :=
-  (option_casesOn .id (const false) (const true).to₂).of_eq fun o => by cases o <;> rfl
+  (option_casesOn .id (const false) (const true).to₂).of_eq fun o ↦ by cases o <;> rfl
 
 theorem option_getD : Primrec₂ (@Option.getD α) :=
   Primrec.of_eq (option_casesOn Primrec₂.left Primrec₂.right .right) fun ⟨o, a⟩ => by
@@ -571,7 +571,7 @@ theorem ite {c : α → Prop} [DecidablePred c] {f : α → σ} {g : α → σ} 
   simpa [Bool.cond_decide] using cond hc hf hg
 
 theorem nat_le : PrimrecRel ((· ≤ ·) : ℕ → ℕ → Prop) :=
-  (nat_casesOn nat_sub (const true) (const false).to₂).of_eq fun p => by
+  (nat_casesOn nat_sub (const true) (const false).to₂).of_eq fun p ↦ by
     dsimp [swap]
     cases' e : p.1 - p.2 with n
     · simp [tsub_eq_zero_iff_le.1 e]
@@ -601,15 +601,15 @@ protected theorem or : Primrec₂ or :=
 
 theorem _root_.PrimrecPred.not {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) :
     PrimrecPred fun a ↦ ¬p a :=
-  (Primrec.not.comp hp).of_eq fun n => by simp
+  (Primrec.not.comp hp).of_eq fun n ↦ by simp
 
 theorem _root_.PrimrecPred.and {p q : α → Prop} [DecidablePred p] [DecidablePred q]
     (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a ↦ p a ∧ q a :=
-  (Primrec.and.comp hp hq).of_eq fun n => by simp
+  (Primrec.and.comp hp hq).of_eq fun n ↦ by simp
 
 theorem _root_.PrimrecPred.or {p q : α → Prop} [DecidablePred p] [DecidablePred q]
     (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a ↦ p a ∨ q a :=
-  (Primrec.or.comp hp hq).of_eq fun n => by simp
+  (Primrec.or.comp hp hq).of_eq fun n ↦ by simp
 
 -- Porting note: It is unclear whether we want to boolean versions
 -- of these lemmas, just the prop versions, or both
@@ -624,7 +624,7 @@ protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) :=
 protected theorem eq [DecidableEq α] : PrimrecRel (@Eq α) := Primrec.beq
 
 theorem nat_lt : PrimrecRel ((· < ·) : ℕ → ℕ → Prop) :=
-  (nat_le.comp snd fst).not.of_eq fun p => by simp
+  (nat_le.comp snd fst).not.of_eq fun p ↦ by simp
 
 theorem option_guard {p : α → β → Prop} [∀ a b, Decidable (p a b)] (hp : PrimrecRel p) {f : α → β}
     (hf : Primrec f) : Primrec fun a ↦ Option.guard (p a) (f a) :=
@@ -672,12 +672,12 @@ theorem nat_findGreatest {f : α → ℕ} {p : α → ℕ → Prop} [∀ x n, De
 theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
     (h₂ : PrimrecRel fun a b => f a = b) : Primrec f := by
   rcases h₁ with ⟨g, pg, hg : ∀ x, f x ≤ g x⟩
-  refine (nat_findGreatest pg h₂).of_eq fun n => ?_
+  refine (nat_findGreatest pg h₂).of_eq fun n ↦ ?_
   exact (Nat.findGreatest_spec (P := fun b ↦ f n = b) (hg n) rfl).symm
 
 -- We show that division is primitive recursive by showing that the graph is
 theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
-  refine of_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_
+  refine of_graph ⟨_, fst, fun p ↦ Nat.div_le_self _ _⟩ ?_
   have : PrimrecRel fun (a : ℕ × ℕ) (b : ℕ) => (a.2 = 0 ∧ b = 0) ∨
       (0 < a.2 ∧ b * a.2 ≤ a.1 ∧ a.1 < (b + 1) * a.2) :=
     PrimrecPred.or
@@ -700,11 +700,11 @@ theorem nat_mod : Primrec₂ ((· % ·) : ℕ → ℕ → ℕ) :=
     simp [add_comm (m % n), Nat.div_add_mod]
 
 theorem nat_bodd : Primrec Nat.bodd :=
-  (Primrec.beq.comp (nat_mod.comp .id (const 2)) (const 1)).of_eq fun n => by
+  (Primrec.beq.comp (nat_mod.comp .id (const 2)) (const 1)).of_eq fun n ↦ by
     cases H : n.bodd <;> simp [Nat.mod_two_of_bodd, H]
 
 theorem nat_div2 : Primrec Nat.div2 :=
-  (nat_div.comp .id (const 2)).of_eq fun n => n.div2_val.symm
+  (nat_div.comp .id (const 2)).of_eq fun n ↦ n.div2_val.symm
 
 theorem nat_double : Primrec (fun n : ℕ => 2 * n) :=
   nat_mul.comp (const _) Primrec.id
@@ -718,7 +718,7 @@ section
 
 variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
-variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
+variable (H : Nat.Primrec fun n ↦ Encodable.encode (@decode (List β) _ n))
 
 open Primrec
 
@@ -730,7 +730,7 @@ private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → �
   letI := prim H
   have :
     @Primrec _ (Option σ) _ _ fun a =>
-      (@decode (Option (β × List β)) _ (encode (f a))).map fun o => Option.casesOn o (g a) (h a) :=
+      (@decode (Option (β × List β)) _ (encode (f a))).map fun o ↦ Option.casesOn o (g a) (h a) :=
     ((@map_decode_iff _ (Option (β × List β)) _ _ _ _ _).2 <|
       to₂ <|
         option_casesOn snd (hg.comp fst) (hh.comp₂ (fst.comp₂ Primrec₂.left) Primrec₂.right)).comp
@@ -774,8 +774,8 @@ private theorem list_reverse' :
   letI := prim H
   (list_foldl' H .id (const []) <| to₂ <| ((list_cons' H).comp snd fst).comp snd).of_eq
     (suffices ∀ l r, List.foldl (fun (s : List β) (b : β) => b :: s) r l = List.reverseAux l r from
-      fun l => this l []
-    fun l => by induction l <;> simp [*, List.reverseAux])
+      fun l ↦ this l []
+    fun l ↦ by induction l <;> simp [*, List.reverseAux])
 
 end
 
@@ -812,7 +812,7 @@ instance list : Primcodable (List α) :=
       list_foldl' H ((list_reverse' H).comp (.ofNat (List ℕ))) (const (some []))
         (Primrec.comp₂ (bind_decode_iff.2 <| .swap this) Primrec₂.right)
     nat_iff.1 <|
-      (encode_iff.2 this).of_eq fun n => by
+      (encode_iff.2 this).of_eq fun n ↦ by
         rw [List.foldl_reverse]
         apply Nat.case_strong_induction_on n; · simp
         intro n IH; simp
@@ -826,7 +826,7 @@ instance list : Primcodable (List α) :=
         · rfl
         · injection IH
         · injection IH
-        · exact congr_arg (fun k => (Nat.pair (encode a) k).succ.succ) (Nat.succ.inj IH)⟩
+        · exact congr_arg (fun k ↦ (Nat.pair (encode a) k).succ.succ) (Nat.succ.inj IH)⟩
 end Primcodable
 
 namespace Primrec
@@ -872,14 +872,14 @@ theorem list_foldr {f : α → List β} {g : α → σ} {h : α → β × σ →
     fun a ↦ by simp [List.foldl_reverse]
 
 theorem list_head? : Primrec (@List.head? α) :=
-  (list_casesOn .id (const none) (option_some_iff.2 <| fst.comp snd).to₂).of_eq fun l => by
+  (list_casesOn .id (const none) (option_some_iff.2 <| fst.comp snd).to₂).of_eq fun l ↦ by
     cases l <;> rfl
 
 theorem list_headI [Inhabited α] : Primrec (@List.headI α _) :=
-  (option_iget.comp list_head?).of_eq fun l => l.head!_eq_head?.symm
+  (option_iget.comp list_head?).of_eq fun l ↦ l.head!_eq_head?.symm
 
 theorem list_tail : Primrec (@List.tail α) :=
-  (list_casesOn .id (const []) (snd.comp snd).to₂).of_eq fun l => by cases l <;> rfl
+  (list_casesOn .id (const []) (snd.comp snd).to₂).of_eq fun l ↦ by cases l <;> rfl
 
 theorem list_rec {f : α → List β} {g : α → σ} {h : α → β × List β × σ → σ} (hf : Primrec f)
     (hg : Primrec g) (hh : Primrec₂ h) :
@@ -942,11 +942,11 @@ theorem list_map {f : α → List β} {g : α → β → σ} (hf : Primrec f) (h
     fun a ↦ by induction f a <;> simp [*]
 
 theorem list_range : Primrec List.range :=
-  (nat_rec' .id (const []) ((list_concat.comp snd fst).comp snd).to₂).of_eq fun n => by
+  (nat_rec' .id (const []) ((list_concat.comp snd fst).comp snd).to₂).of_eq fun n ↦ by
     simp; induction n <;> simp [*, List.range_succ]
 
 theorem list_flatten : Primrec (@List.flatten α) :=
-  (list_foldr .id (const []) <| to₂ <| comp (@list_append α _) snd).of_eq fun l => by
+  (list_foldr .id (const []) <| to₂ <| comp (@list_append α _) snd).of_eq fun l ↦ by
     dsimp; induction l <;> simp [*]
 
 @[deprecated (since := "2024-10-15")] alias list_join := list_flatten
@@ -959,7 +959,7 @@ theorem list_flatMap {f : α → List β} {g : α → β → List σ} (hf : Prim
 theorem optionToList : Primrec (Option.toList : Option α → List α) :=
   (option_casesOn Primrec.id (const [])
     ((list_cons.comp Primrec.id (const [])).comp₂ Primrec₂.right)).of_eq
-  (fun o => by rcases o <;> simp)
+  (fun o ↦ by rcases o <;> simp)
 
 theorem listFilterMap {f : α → List β} {g : α → β → Option σ}
     (hf : Primrec f) (hg : Primrec₂ g) : Primrec fun a ↦ (f a).filterMap (g a) :=
@@ -968,7 +968,7 @@ theorem listFilterMap {f : α → List β} {g : α → β → Option σ}
 
 theorem list_length : Primrec (@List.length α) :=
   (list_foldr (@Primrec.id (List α) _) (const 0) <| to₂ <| (succ.comp <| snd.comp snd).to₂).of_eq
-    fun l => by dsimp; induction l <;> simp [*]
+    fun l ↦ by dsimp; induction l <;> simp [*]
 
 theorem list_findIdx {f : α → List β} {p : α → β → Bool}
     (hf : Primrec f) (hp : Primrec₂ p) : Primrec fun a ↦ (f a).findIdx (p a) :=
@@ -1090,7 +1090,7 @@ open Primrec
 
 /-- A subtype of a primitive recursive predicate is `Primcodable`. -/
 def subtype {p : α → Prop} [DecidablePred p] (hp : PrimrecPred p) : Primcodable (Subtype p) :=
-  ⟨have : Primrec fun n => (@decode α _ n).bind fun a ↦ Option.guard p a :=
+  ⟨have : Primrec fun n ↦ (@decode α _ n).bind fun a ↦ Option.guard p a :=
     option_bind .decode (option_guard (hp.comp snd).to₂ snd)
   nat_iff.1 <| (encode_iff.2 this).of_eq fun n =>
     show _ = encode ((@decode α _ n).bind fun _ => _) by
@@ -1115,8 +1115,8 @@ section ULower
 
 attribute [local instance] Encodable.decidableRangeEncode Encodable.decidableEqOfEncodable
 
-theorem mem_range_encode : PrimrecPred (fun n => n ∈ Set.range (encode : α → ℕ)) :=
-  have : PrimrecPred fun n => Encodable.decode₂ α n ≠ none :=
+theorem mem_range_encode : PrimrecPred (fun n ↦ n ∈ Set.range (encode : α → ℕ)) :=
+  have : PrimrecPred fun n ↦ Encodable.decode₂ α n ≠ none :=
     .not
       (Primrec.eq.comp
         (.option_bind .decode
@@ -1141,7 +1141,7 @@ theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
     Primrec (@Subtype.val α p) := by
   letI := Primcodable.subtype hp
-  refine (@Primcodable.prim (Subtype p)).of_eq fun n => ?_
+  refine (@Primcodable.prim (Subtype p)).of_eq fun n ↦ ?_
   rcases @decode (Subtype p) _ n with (_ | ⟨a, h⟩) <;> rfl
 
 theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f : α → Subtype p} :
@@ -1149,7 +1149,7 @@ theorem subtype_val_iff {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p}
     (Primrec fun a ↦ (f a).1) ↔ Primrec f := by
   letI := Primcodable.subtype hp
   refine ⟨fun h ↦ ?_, fun hf => subtype_val.comp hf⟩
-  refine Nat.Primrec.of_eq h fun n => ?_
+  refine Nat.Primrec.of_eq h fun n ↦ ?_
   cases' @decode α _ n with a; · rfl
   simp; rfl
 
@@ -1162,7 +1162,7 @@ theorem subtype_mk {p : β → Prop} [DecidablePred p] {hp : PrimrecPred p} {f :
 theorem option_get {f : α → Option β} {h : ∀ a, (f a).isSome} :
     Primrec f → Primrec fun a ↦ (f a).get (h a) := by
   intro hf
-  refine (Nat.Primrec.pred.comp hf).of_eq fun n => ?_
+  refine (Nat.Primrec.pred.comp hf).of_eq fun n ↦ ?_
   generalize hx : @decode α _ n = x
   cases x <;> simp
 
@@ -1209,13 +1209,13 @@ theorem vector_get {n} : Primrec₂ (@Vector.get α n) :=
       rfl
 
 theorem list_ofFn :
-    ∀ {n} {f : Fin n → α → σ}, (∀ i, Primrec (f i)) → Primrec fun a ↦ List.ofFn fun i => f i a
+    ∀ {n} {f : Fin n → α → σ}, (∀ i, Primrec (f i)) → Primrec fun a ↦ List.ofFn fun i ↦ f i a
   | 0, _, _ => by simp only [List.ofFn_zero]; exact const []
   | n + 1, f, hf => by
-    simpa [List.ofFn_succ] using list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
+    simpa [List.ofFn_succ] using list_cons.comp (hf 0) (list_ofFn fun i ↦ hf i.succ)
 
 theorem vector_ofFn {n} {f : Fin n → α → σ} (hf : ∀ i, Primrec (f i)) :
-    Primrec fun a ↦ Vector.ofFn fun i => f i a :=
+    Primrec fun a ↦ Vector.ofFn fun i ↦ f i a :=
   vector_toList_iff.1 <| by simp [list_ofFn hf]
 
 theorem vector_get' {n} : Primrec (@Vector.get α n) :=
@@ -1234,7 +1234,7 @@ theorem fin_curry₁ {n} {f : Fin n → α → σ} : Primrec₂ f ↔ ∀ i, Pri
 theorem fin_curry {n} {f : α → Fin n → σ} : Primrec f ↔ Primrec₂ f :=
   ⟨fun h ↦ fin_app.comp (h.comp fst) snd, fun h =>
     (vector_get'.comp
-          (vector_ofFn fun i => show Primrec fun a ↦ f a i from h.comp .id (const i))).of_eq
+          (vector_ofFn fun i ↦ show Primrec fun a ↦ f a i from h.comp .id (const i))).of_eq
       fun a ↦ by funext i; simp⟩
 
 end Primrec
@@ -1250,10 +1250,10 @@ open Mathlib.Vector
   in `to_prim` and `of_prim`. -/
 inductive Primrec' : ∀ {n}, (Vector ℕ n → ℕ) → Prop
   | zero : @Primrec' 0 fun _ => 0
-  | succ : @Primrec' 1 fun v => succ v.head
-  | get {n} (i : Fin n) : Primrec' fun v => v.get i
+  | succ : @Primrec' 1 fun v ↦ succ v.head
+  | get {n} (i : Fin n) : Primrec' fun v ↦ v.get i
   | comp {m n f} (g : Fin n → Vector ℕ m → ℕ) :
-      Primrec' f → (∀ i, Primrec' (g i)) → Primrec' fun a ↦ f (ofFn fun i => g i a)
+      Primrec' f → (∀ i, Primrec' (g i)) → Primrec' fun a ↦ f (ofFn fun i ↦ g i a)
   | prec {n f g} :
       @Primrec' n f →
         @Primrec' (n + 2) g →
@@ -1271,7 +1271,7 @@ theorem to_prim {n f} (pf : @Nat.Primrec' n f) : Primrec f := by
   | zero => exact .const 0
   | succ => exact _root_.Primrec.succ.comp .vector_head
   | get i => exact Primrec.vector_get.comp .id (.const i)
-  | comp _ _ _ hf hg => exact hf.comp (.vector_ofFn fun i => hg i)
+  | comp _ _ _ hf hg => exact hf.comp (.vector_ofFn fun i ↦ hg i)
   | @prec n f g _ _ hf hg =>
     exact
       .nat_rec' .vector_head (hf.comp Primrec.vector_tail)
@@ -1284,89 +1284,89 @@ theorem of_eq {n} {f g : Vector ℕ n → ℕ} (hf : Primrec' f) (H : ∀ i, f i
   (funext H : f = g) ▸ hf
 
 theorem const {n} : ∀ m, @Primrec' n fun _ => m
-  | 0 => zero.comp Fin.elim0 fun i => i.elim0
+  | 0 => zero.comp Fin.elim0 fun i ↦ i.elim0
   | m + 1 => succ.comp _ fun _ => const m
 
 theorem head {n : ℕ} : @Primrec' n.succ head :=
-  (get 0).of_eq fun v => by simp [get_zero]
+  (get 0).of_eq fun v ↦ by simp [get_zero]
 
-theorem tail {n f} (hf : @Primrec' n f) : @Primrec' n.succ fun v => f v.tail :=
-  (hf.comp _ fun i => @get _ i.succ).of_eq fun v => by
+theorem tail {n f} (hf : @Primrec' n f) : @Primrec' n.succ fun v ↦ f v.tail :=
+  (hf.comp _ fun i ↦ @get _ i.succ).of_eq fun v ↦ by
     rw [← ofFn_get v.tail]; congr; funext i; simp
 
 /-- A function from vectors to vectors is primitive recursive when all of its projections are. -/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) : Prop :=
-  ∀ i, Primrec' fun v => (f v).get i
+  ∀ i, Primrec' fun v ↦ (f v).get i
 
-protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i => i.elim0
+protected theorem nil {n} : @Vec n 0 fun _ => nil := fun i ↦ i.elim0
 
 protected theorem cons {n m f g} (hf : @Primrec' n f) (hg : @Vec n m g) :
-    Vec fun v => f v ::ᵥ g v := fun i => Fin.cases (by simp [*]) (fun i => by simp [hg i]) i
+    Vec fun v ↦ f v ::ᵥ g v := fun i ↦ Fin.cases (by simp [*]) (fun i ↦ by simp [hg i]) i
 
 theorem idv {n} : @Vec n n id :=
   get
 
-theorem comp' {n m f g} (hf : @Primrec' m f) (hg : @Vec n m g) : Primrec' fun v => f (g v) :=
-  (hf.comp _ hg).of_eq fun v => by simp
+theorem comp' {n m f g} (hf : @Primrec' m f) (hg : @Vec n m g) : Primrec' fun v ↦ f (g v) :=
+  (hf.comp _ hg).of_eq fun v ↦ by simp
 
-theorem comp₁ (f : ℕ → ℕ) (hf : @Primrec' 1 fun v => f v.head) {n g} (hg : @Primrec' n g) :
-    Primrec' fun v => f (g v) :=
+theorem comp₁ (f : ℕ → ℕ) (hf : @Primrec' 1 fun v ↦ f v.head) {n g} (hg : @Primrec' n g) :
+    Primrec' fun v ↦ f (g v) :=
   hf.comp _ fun _ => hg
 
-theorem comp₂ (f : ℕ → ℕ → ℕ) (hf : @Primrec' 2 fun v => f v.head v.tail.head) {n g h}
-    (hg : @Primrec' n g) (hh : @Primrec' n h) : Primrec' fun v => f (g v) (h v) := by
+theorem comp₂ (f : ℕ → ℕ → ℕ) (hf : @Primrec' 2 fun v ↦ f v.head v.tail.head) {n g h}
+    (hg : @Primrec' n g) (hh : @Primrec' n h) : Primrec' fun v ↦ f (g v) (h v) := by
   simpa using hf.comp' (hg.cons <| hh.cons Primrec'.nil)
 
 theorem prec' {n f g h} (hf : @Primrec' n f) (hg : @Primrec' n g) (hh : @Primrec' (n + 2) h) :
-    @Primrec' n fun v => (f v).rec (g v) fun y IH : ℕ => h (y ::ᵥ IH ::ᵥ v) := by
+    @Primrec' n fun v ↦ (f v).rec (g v) fun y IH : ℕ => h (y ::ᵥ IH ::ᵥ v) := by
   simpa using comp' (prec hg hh) (hf.cons idv)
 
-theorem pred : @Primrec' 1 fun v => v.head.pred :=
-  (prec' head (const 0) head).of_eq fun v => by simp; cases v.head <;> rfl
+theorem pred : @Primrec' 1 fun v ↦ v.head.pred :=
+  (prec' head (const 0) head).of_eq fun v ↦ by simp; cases v.head <;> rfl
 
-theorem add : @Primrec' 2 fun v => v.head + v.tail.head :=
-  (prec head (succ.comp₁ _ (tail head))).of_eq fun v => by
+theorem add : @Primrec' 2 fun v ↦ v.head + v.tail.head :=
+  (prec head (succ.comp₁ _ (tail head))).of_eq fun v ↦ by
     simp; induction v.head <;> simp [*, Nat.succ_add]
 
-theorem sub : @Primrec' 2 fun v => v.head - v.tail.head := by
+theorem sub : @Primrec' 2 fun v ↦ v.head - v.tail.head := by
   have : @Primrec' 2 fun v ↦ (fun a b ↦ b - a) v.head v.tail.head := by
-    refine (prec head (pred.comp₁ _ (tail head))).of_eq fun v => ?_
+    refine (prec head (pred.comp₁ _ (tail head))).of_eq fun v ↦ ?_
     simp; induction v.head <;> simp [*, Nat.sub_add_eq]
   simpa using comp₂ (fun a b => b - a) this (tail head) head
 
-theorem mul : @Primrec' 2 fun v => v.head * v.tail.head :=
-  (prec (const 0) (tail (add.comp₂ _ (tail head) head))).of_eq fun v => by
+theorem mul : @Primrec' 2 fun v ↦ v.head * v.tail.head :=
+  (prec (const 0) (tail (add.comp₂ _ (tail head) head))).of_eq fun v ↦ by
     simp; induction v.head <;> simp [*, Nat.succ_mul]; rw [add_comm]
 
 theorem if_lt {n a b f g} (ha : @Primrec' n a) (hb : @Primrec' n b) (hf : @Primrec' n f)
-    (hg : @Primrec' n g) : @Primrec' n fun v => if a v < b v then f v else g v :=
-  (prec' (sub.comp₂ _ hb ha) hg (tail <| tail hf)).of_eq fun v => by
+    (hg : @Primrec' n g) : @Primrec' n fun v ↦ if a v < b v then f v else g v :=
+  (prec' (sub.comp₂ _ hb ha) hg (tail <| tail hf)).of_eq fun v ↦ by
     cases e : b v - a v
     · simp [not_lt.2 (tsub_eq_zero_iff_le.mp e)]
     · simp [Nat.lt_of_sub_eq_succ e]
 
-theorem natPair : @Primrec' 2 fun v => v.head.pair v.tail.head :=
+theorem natPair : @Primrec' 2 fun v ↦ v.head.pair v.tail.head :=
   if_lt head (tail head) (add.comp₂ _ (tail <| mul.comp₂ _ head head) head)
     (add.comp₂ _ (add.comp₂ _ (mul.comp₂ _ head head) head) (tail head))
 
 protected theorem encode : ∀ {n}, @Primrec' n encode
-  | 0 => (const 0).of_eq fun v => by rw [v.eq_nil]; rfl
+  | 0 => (const 0).of_eq fun v ↦ by rw [v.eq_nil]; rfl
   | _ + 1 =>
     (succ.comp₁ _ (natPair.comp₂ _ head (tail Primrec'.encode))).of_eq fun ⟨_ :: _, _⟩ => rfl
 
-theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
+theorem sqrt : @Primrec' 1 fun v ↦ v.head.sqrt := by
   suffices H : ∀ n : ℕ, n.sqrt =
       n.rec 0 fun x y => if x.succ < y.succ * y.succ then y else y.succ by
     simp only [H, succ_eq_add_one]
     have :=
       @prec' 1 _ _
-        (fun v => by
+        (fun v ↦ by
           have x := v.head; have y := v.tail.head
           exact if x.succ < y.succ * y.succ then y else y.succ)
         head (const 0) ?_
     · exact this
-    have x1 : @Primrec' 3 fun v => v.head.succ := succ.comp₁ _ head
-    have y1 : @Primrec' 3 fun v => v.tail.head.succ := succ.comp₁ _ (tail head)
+    have x1 : @Primrec' 3 fun v ↦ v.head.succ := succ.comp₁ _ head
+    have y1 : @Primrec' 3 fun v ↦ v.tail.head.succ := succ.comp₁ _ (tail head)
     exact if_lt x1 (mul.comp₂ _ y1 y1) (tail head) y1
   introv; symm
   induction' n with n IH; · simp
@@ -1375,24 +1375,24 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
   · exact
       Nat.eq_sqrt.2 ⟨not_lt.1 h, Nat.sqrt_lt.1 <| Nat.lt_succ_iff.2 <| Nat.sqrt_succ_le_succ_sqrt _⟩
 
-theorem unpair₁ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.1 := by
+theorem unpair₁ {n f} (hf : @Primrec' n f) : @Primrec' n fun v ↦ (f v).unpair.1 := by
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
-  refine (if_lt fss s fss s).of_eq fun v => ?_
+  refine (if_lt fss s fss s).of_eq fun v ↦ ?_
   simp [Nat.unpair]; split_ifs <;> rfl
 
-theorem unpair₂ {n f} (hf : @Primrec' n f) : @Primrec' n fun v => (f v).unpair.2 := by
+theorem unpair₂ {n f} (hf : @Primrec' n f) : @Primrec' n fun v ↦ (f v).unpair.2 := by
   have s := sqrt.comp₁ _ hf
   have fss := sub.comp₂ _ hf (mul.comp₂ _ s s)
-  refine (if_lt fss s s (sub.comp₂ _ fss s)).of_eq fun v => ?_
+  refine (if_lt fss s s (sub.comp₂ _ fss s)).of_eq fun v ↦ ?_
   simp [Nat.unpair]; split_ifs <;> rfl
 
 theorem of_prim {n f} : Primrec f → @Primrec' n f :=
-  suffices ∀ f, Nat.Primrec f → @Primrec' 1 fun v => f v.head from fun hf =>
+  suffices ∀ f, Nat.Primrec f → @Primrec' 1 fun v ↦ f v.head from fun hf =>
     (pred.comp₁ _ <|
-          (this _ hf).comp₁ (fun m => Encodable.encode <| (@decode (Vector ℕ n) _ m).map f)
+          (this _ hf).comp₁ (fun m ↦ Encodable.encode <| (@decode (Vector ℕ n) _ m).map f)
             Primrec'.encode).of_eq
-      fun i => by simp [encodek]
+      fun i ↦ by simp [encodek]
   fun f hf => by
   induction hf with
   | zero => exact const 0
@@ -1410,19 +1410,19 @@ theorem of_prim {n f} : Primrec f → @Primrec' n f :=
 theorem prim_iff {n f} : @Primrec' n f ↔ Primrec f :=
   ⟨to_prim, of_prim⟩
 
-theorem prim_iff₁ {f : ℕ → ℕ} : (@Primrec' 1 fun v => f v.head) ↔ Primrec f :=
+theorem prim_iff₁ {f : ℕ → ℕ} : (@Primrec' 1 fun v ↦ f v.head) ↔ Primrec f :=
   prim_iff.trans
-    ⟨fun h ↦ (h.comp <| .vector_ofFn fun _ => .id).of_eq fun v => by simp, fun h =>
+    ⟨fun h ↦ (h.comp <| .vector_ofFn fun _ => .id).of_eq fun v ↦ by simp, fun h =>
       h.comp .vector_head⟩
 
-theorem prim_iff₂ {f : ℕ → ℕ → ℕ} : (@Primrec' 2 fun v => f v.head v.tail.head) ↔ Primrec₂ f :=
+theorem prim_iff₂ {f : ℕ → ℕ → ℕ} : (@Primrec' 2 fun v ↦ f v.head v.tail.head) ↔ Primrec₂ f :=
   prim_iff.trans
     ⟨fun h ↦ (h.comp <| Primrec.vector_cons.comp .fst <|
-      Primrec.vector_cons.comp .snd (.const nil)).of_eq fun v => by simp,
+      Primrec.vector_cons.comp .snd (.const nil)).of_eq fun v ↦ by simp,
     fun h ↦ h.comp .vector_head (Primrec.vector_head.comp .vector_tail)⟩
 
 theorem vec_iff {m n f} : @Vec m n f ↔ Primrec f :=
-  ⟨fun h ↦ by simpa using Primrec.vector_ofFn fun i => to_prim (h i), fun h i =>
+  ⟨fun h ↦ by simpa using Primrec.vector_ofFn fun i ↦ to_prim (h i), fun h i =>
     of_prim <| Primrec.vector_get.comp h (.const i)⟩
 
 end Nat.Primrec'

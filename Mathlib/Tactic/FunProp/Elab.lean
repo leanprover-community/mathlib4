@@ -26,7 +26,7 @@ syntax (name := funPropTacStx)
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+      (fun r ↦ do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
       pure none
 
 /-- Tactic to prove function properties -/
@@ -62,7 +62,7 @@ def funPropTac : Tactic
       let namesToUnfold : Array Name :=
         match names with
         | none => #[]
-        | .some ns => ns.getElems.map (fun n => n.getId)
+        | .some ns => ns.getElems.map (fun n ↦ n.getId)
 
       let namesToUnfold := namesToUnfold.append defaultNamesToUnfold
 

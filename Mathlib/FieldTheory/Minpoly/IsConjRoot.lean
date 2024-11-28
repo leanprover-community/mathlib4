@@ -340,7 +340,7 @@ a conjugate root of a nonzero element `x`, then `y` is not zero.
 -/
 theorem ne_zero_of_injective [Nontrivial R] [NoZeroSMulDivisors R S] {x y : S} (hx : x ≠ 0)
     (h : IsConjRoot R x y) (hf : Function.Injective (algebraMap R S)) : y ≠ 0 :=
-  fun g => hx (eq_zero_of_injective (g ▸ h.symm) hf)
+  fun g ↦ hx (eq_zero_of_injective (g ▸ h.symm) hf)
 
 /--
 If `y` is a conjugate root of a nonzero element `x`, then `y` is not zero.

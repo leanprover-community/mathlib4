@@ -70,11 +70,11 @@ turns remaining.
 def ofStateAux : ∀ (n : ℕ) (s : S), turnBound s ≤ n → PGame
   | 0, s, h =>
     PGame.mk { t // t ∈ l s } { t // t ∈ r s }
-      (fun t => by exfalso; exact turnBound_ne_zero_of_left_move t.2 (nonpos_iff_eq_zero.mp h))
-      fun t => by exfalso; exact turnBound_ne_zero_of_right_move t.2 (nonpos_iff_eq_zero.mp h)
+      (fun t ↦ by exfalso; exact turnBound_ne_zero_of_left_move t.2 (nonpos_iff_eq_zero.mp h))
+      fun t ↦ by exfalso; exact turnBound_ne_zero_of_right_move t.2 (nonpos_iff_eq_zero.mp h)
   | n + 1, s, h =>
     PGame.mk { t // t ∈ l s } { t // t ∈ r s }
-      (fun t => ofStateAux n t (turnBound_of_left t.2 n h)) fun t =>
+      (fun t ↦ ofStateAux n t (turnBound_of_left t.2 n h)) fun t =>
       ofStateAux n t (turnBound_of_right t.2 n h)
 
 /-- Two different (valid) turn bounds give equivalent games. -/
@@ -198,11 +198,11 @@ instance fintypeRightMovesOfStateAux (n : ℕ) (s : S) (h : turnBound s ≤ n) :
 instance shortOfStateAux : ∀ (n : ℕ) {s : S} (h : turnBound s ≤ n), Short (ofStateAux n s h)
   | 0, s, h =>
     Short.mk'
-      (fun i => by
+      (fun i ↦ by
         have i := (leftMovesOfStateAux _ _).toFun i
         exfalso
         exact turnBound_ne_zero_of_left_move i.2 (nonpos_iff_eq_zero.mp h))
-      fun j => by
+      fun j ↦ by
       have j := (rightMovesOfStateAux _ _).toFun j
       exfalso
       exact turnBound_ne_zero_of_right_move j.2 (nonpos_iff_eq_zero.mp h)

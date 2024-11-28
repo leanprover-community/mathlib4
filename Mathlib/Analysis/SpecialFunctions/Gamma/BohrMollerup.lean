@@ -124,7 +124,7 @@ theorem convexOn_Gamma : ConvexOn ℝ (Ioi 0) Gamma := by
       fun x hx => exp_log (Gamma_pos_of_pos hx)
   rw [convex_iff_isPreconnected]
   refine isPreconnected_Ioi.image _ fun x hx => ContinuousAt.continuousWithinAt ?_
-  refine (differentiableAt_Gamma fun m => ?_).continuousAt.log (Gamma_pos_of_pos hx).ne'
+  refine (differentiableAt_Gamma fun m ↦ ?_).continuousAt.log (Gamma_pos_of_pos hx).ne'
   exact (neg_lt_iff_pos_add.mpr (add_pos_of_pos_of_nonneg (mem_Ioi.mp hx) (Nat.cast_nonneg m))).ne'
 
 end Convexity
@@ -277,7 +277,7 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
                 x_1 +
               (fun b : ℕ => log (x - 1)) x_1) ∘
           fun a : ℕ => a + 1) =
-        fun n => logGammaSeq x n + x * (log (↑n + 1) - log ↑n) := by
+        fun n ↦ logGammaSeq x n + x * (log (↑n + 1) - log ↑n) := by
       ext1 n
       dsimp only [Function.comp_apply]
       rw [sub_add_cancel, Nat.add_sub_cancel]
@@ -382,7 +382,7 @@ theorem doublingGamma_one : doublingGamma 1 = 1 := by
 
 theorem log_doublingGamma_eq :
     EqOn (log ∘ doublingGamma)
-      (fun s => log (Gamma (s / 2)) + log (Gamma (s / 2 + 1 / 2)) + s * log 2 - log (2 * √π))
+      (fun s ↦ log (Gamma (s / 2)) + log (Gamma (s / 2 + 1 / 2)) + s * log 2 - log (2 * √π))
       (Ioi 0) := by
   intro s hs
   have h1 : √π ≠ 0 := sqrt_ne_zero'.mpr pi_pos

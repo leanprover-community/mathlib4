@@ -165,7 +165,7 @@ instance : CompleteLattice (ConvexCone 𝕜 E) :=
     inf := (· ⊓ ·)
     sInf := InfSet.sInf
     sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
-    sSup := fun s => sInf { T | ∀ S ∈ s, S ≤ T }
+    sSup := fun s ↦ sInf { T | ∀ S ∈ s, S ≤ T }
     le_sup_left := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.1 hx
     le_sup_right := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.2 hx
     sup_le := fun _ _ c ha hb _ hx => mem_sInf.1 hx c ⟨ha, hb⟩

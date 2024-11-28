@@ -213,7 +213,7 @@ variable (α β)
 
 @[simp]
 theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) = inducedMap α γ a :=
-  eq_of_forall_rat_lt_iff_lt fun q => by
+  eq_of_forall_rat_lt_iff_lt fun q ↦ by
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by

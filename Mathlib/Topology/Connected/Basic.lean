@@ -195,7 +195,7 @@ theorem IsConnected.iUnion_of_reflTransGen {ι : Type*} [Nonempty ι] {s : ι �
     (H : ∀ i, IsConnected (s i))
     (K : ∀ i j, ReflTransGen (fun i j : ι => (s i ∩ s j).Nonempty) i j) : IsConnected (⋃ n, s n) :=
   ⟨nonempty_iUnion.2 <| Nonempty.elim ‹_› fun i : ι => ⟨i, (H _).nonempty⟩,
-    IsPreconnected.iUnion_of_reflTransGen (fun i => (H i).isPreconnected) K⟩
+    IsPreconnected.iUnion_of_reflTransGen (fun i ↦ (H i).isPreconnected) K⟩
 
 section SuccOrder
 
@@ -688,7 +688,7 @@ instance [TopologicalSpace β] [ConnectedSpace α] [ConnectedSpace β] : Connect
 
 instance [∀ i, TopologicalSpace (π i)] [∀ i, PreconnectedSpace (π i)] :
     PreconnectedSpace (∀ i, π i) :=
-  ⟨by rw [← pi_univ univ]; exact isPreconnected_univ_pi fun i => isPreconnected_univ⟩
+  ⟨by rw [← pi_univ univ]; exact isPreconnected_univ_pi fun i ↦ isPreconnected_univ⟩
 
 instance [∀ i, TopologicalSpace (π i)] [∀ i, ConnectedSpace (π i)] : ConnectedSpace (∀ i, π i) :=
   ⟨inferInstance⟩

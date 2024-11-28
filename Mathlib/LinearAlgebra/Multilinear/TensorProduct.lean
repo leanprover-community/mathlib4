@@ -41,7 +41,7 @@ https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there.20code.20for.20X
 def domCoprod (a : MultilinearMap R (fun _ : ι₁ => N) N₁)
     (b : MultilinearMap R (fun _ : ι₂ => N) N₂) :
     MultilinearMap R (fun _ : ι₁ ⊕ ι₂ => N) (N₁ ⊗[R] N₂) where
-  toFun v := (a fun i => v (Sum.inl i)) ⊗ₜ b fun i => v (Sum.inr i)
+  toFun v := (a fun i ↦ v (Sum.inl i)) ⊗ₜ b fun i ↦ v (Sum.inr i)
   map_update_add' _ i p q := by
     letI := (@Sum.inl_injective ι₁ ι₂).decidableEq
     letI := (@Sum.inr_injective ι₁ ι₂).decidableEq

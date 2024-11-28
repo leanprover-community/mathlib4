@@ -30,7 +30,7 @@ def dedupBy (L : MLList m α) (f : α → m β) : MLList m α :=
   ((L.liftM : MLList (StateT (HashMap β Unit) m) α) >>= fun a ↦ do
       let b ← f a
       guard !(← get).contains b
-      modify fun s => s.insert b ()
+      modify fun s ↦ s.insert b ()
       pure a)
   |>.runState' ∅
 

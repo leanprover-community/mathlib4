@@ -69,7 +69,7 @@ elab_rules : tactic
         pure none
     trace[Tactic.congrm] "pattern: {pattern}"
     -- Chain together transformations as needed to convert the goal to an Eq if possible.
-    liftMetaTactic fun g => do
+    liftMetaTactic fun g ↦ do
       return [← (← g.iffOfEq).liftReflToEq]
     -- Apply `congr(...)`
     withMainContext do

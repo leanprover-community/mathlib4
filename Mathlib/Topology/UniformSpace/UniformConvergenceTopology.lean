@@ -311,7 +311,7 @@ protected theorem hasBasis_uniformity_of_basis {ι : Sort*} {p : ι → Prop} {s
 basis, for any basis `𝓑` of `𝓤 β`. -/
 protected theorem hasBasis_nhds_of_basis (f) {p : ι → Prop} {s : ι → Set (β × β)}
     (h : HasBasis (𝓤 β) p s) :
-    (𝓝 f).HasBasis p fun i => { g | (f, g) ∈ UniformFun.gen α β (s i) } :=
+    (𝓝 f).HasBasis p fun i ↦ { g | (f, g) ∈ UniformFun.gen α β (s i) } :=
   nhds_basis_uniformity' (UniformFun.hasBasis_uniformity_of_basis α β h)
 
 /-- For `f : α →ᵤ β`, `𝓝 f` admits the family `{g | ∀ x, (f x, g x) ∈ V}` for `V ∈ 𝓤 β` as a
@@ -359,7 +359,7 @@ protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
   -- This follows directly from the fact that the upper adjoint in a Galois connection maps
   -- infimas to infimas.
   rw [inf_eq_iInf, inf_eq_iInf, UniformFun.iInf_eq]
-  refine iInf_congr fun i => ?_
+  refine iInf_congr fun i ↦ ?_
   cases i <;> rfl
 
 /-- Post-composition by a uniform inducing function is
@@ -495,7 +495,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
     -- that some square commutes.
     @Equiv.toUniformEquivOfIsUniformInducing
     _ _ 𝒰(α, ∀ i, δ i, Pi.uniformSpace δ)
-    (@Pi.uniformSpace ι (fun i => α → δ i) fun i => 𝒰(α, δ i, _)) (Equiv.piComm _) <| by
+    (@Pi.uniformSpace ι (fun i ↦ α → δ i) fun i ↦ 𝒰(α, δ i, _)) (Equiv.piComm _) <| by
       refine @IsUniformInducing.mk ?_ ?_ ?_ ?_ ?_ ?_
       change comap (Prod.map Function.swap Function.swap) _ = _
       rw [← uniformity_comap]
@@ -503,7 +503,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
       unfold Pi.uniformSpace
       rw [UniformSpace.ofCoreEq_toCore, UniformSpace.ofCoreEq_toCore,
         UniformSpace.comap_iInf, UniformFun.iInf_eq]
-      refine iInf_congr fun i => ?_
+      refine iInf_congr fun i ↦ ?_
       rw [← UniformSpace.comap_comap, UniformFun.comap_eq]
       rfl
 
@@ -831,14 +831,14 @@ protected theorem iInf_eq {u : ι → UniformSpace γ} :
     𝒱(α, γ, 𝔖, ⨅ i, u i) = ⨅ i, 𝒱(α, γ, 𝔖, u i) := by
   simp_rw [UniformOnFun.uniformSpace, UniformFun.iInf_eq, UniformSpace.comap_iInf]
   rw [iInf_comm]
-  exact iInf_congr fun s => iInf_comm
+  exact iInf_congr fun s ↦ iInf_comm
 
 /-- If `u₁` and `u₂` are two uniform structures on `γ`, then
 `𝒱(α, γ, 𝔖, u₁ ⊓ u₂) = 𝒱(α, γ, 𝔖, u₁) ⊓ 𝒱(α, γ, 𝔖, u₂)`. -/
 protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
     𝒱(α, γ, 𝔖, u₁ ⊓ u₂) = 𝒱(α, γ, 𝔖, u₁) ⊓ 𝒱(α, γ, 𝔖, u₂) := by
   rw [inf_eq_iInf, inf_eq_iInf, UniformOnFun.iInf_eq]
-  refine iInf_congr fun i => ?_
+  refine iInf_congr fun i ↦ ?_
   cases i <;> rfl
 
 /-- If `u` is a uniform structure on `β` and `f : γ → β`, then
@@ -1051,7 +1051,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i : ι) → δ i)) ≃ᵤ 
     congr
     rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,
       UniformSpace.ofCoreEq_toCore, UniformSpace.comap_iInf, UniformOnFun.iInf_eq]
-    refine iInf_congr fun i => ?_
+    refine iInf_congr fun i ↦ ?_
     rw [← UniformSpace.comap_comap, UniformOnFun.comap_eq]
     rfl
 -- Like in the previous lemma, the diagram actually commutes by definition
@@ -1151,7 +1151,7 @@ theorem UniformContinuousOn.comp_tendstoUniformly (s : Set β) (F : ι → α �
 theorem UniformContinuousOn.comp_tendstoUniformly_eventually (s : Set β) (F : ι → α → β) (f : α → β)
     (hF : ∀ᶠ i in p, ∀ x, F i x ∈ s) (hf : ∀ x, f x ∈ s)
     {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
-    TendstoUniformly (fun i => fun x ↦ g (F i x)) (fun x ↦ g (f x)) p := by
+    TendstoUniformly (fun i ↦ fun x ↦ g (F i x)) (fun x ↦ g (f x)) p := by
   classical
   rw [eventually_iff_exists_mem] at hF
   obtain ⟨s', hs', hs⟩ := hF

@@ -184,7 +184,7 @@ end
 open Complex in
 @[simp]
 theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
-    (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
+    (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s ↦ c ^ n * exp (c * s) := by
   rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
 
 /-! ## `Real.exp` -/
@@ -348,5 +348,5 @@ end
 open Real in
 @[simp]
 theorem iteratedDeriv_exp_const_mul (n : ℕ) (c : ℝ) :
-    (iteratedDeriv n fun s => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
+    (iteratedDeriv n fun s ↦ exp (c * s)) = fun s ↦ c ^ n * exp (c * s) := by
   rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]

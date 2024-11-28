@@ -571,14 +571,14 @@ theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Inve
 def invertibleOfDiagonalInvertible (v : n → α) [Invertible (diagonal v)] : Invertible v where
   invOf := diag (⅟ (diagonal v))
   invOf_mul_self :=
-    funext fun i => by
+    funext fun i ↦ by
       letI : Invertible (diagonal v).det := detInvertibleOfInvertible _
       rw [invOf_eq, diag_smul, adjugate_diagonal, diag_diagonal]
       dsimp
       rw [mul_assoc, prod_erase_mul _ _ (Finset.mem_univ _), ← det_diagonal]
       exact mul_invOf_self _
   mul_invOf_self :=
-    funext fun i => by
+    funext fun i ↦ by
       letI : Invertible (diagonal v).det := detInvertibleOfInvertible _
       rw [invOf_eq, diag_smul, adjugate_diagonal, diag_diagonal]
       dsimp
@@ -625,7 +625,7 @@ to replace `Ring.inverse` with `⁻¹`.
 -/
 @[simp]
 theorem inv_subsingleton [Subsingleton m] [Fintype m] [DecidableEq m] (A : Matrix m m α) :
-    A⁻¹ = diagonal fun i => Ring.inverse (A i i) := by
+    A⁻¹ = diagonal fun i ↦ Ring.inverse (A i i) := by
   rw [inv_def, adjugate_subsingleton, smul_one_eq_diagonal]
   congr! with i
   exact det_eq_elem_of_subsingleton _ _

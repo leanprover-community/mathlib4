@@ -51,7 +51,7 @@ theorem isIso_iff_nonzero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X 
     intro h
     apply id_nonzero X
     simp only [← IsIso.hom_inv_id f, h, zero_comp],
-   fun w => isIso_of_hom_simple w⟩
+   fun w ↦ isIso_of_hom_simple w⟩
 
 open scoped Classical in
 /-- In any preadditive category with kernels,
@@ -82,7 +82,7 @@ the hom space between two non-isomorphic simple objects is 0-dimensional.
 theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜 C] {X Y : C}
     [Simple X] [Simple Y] (h : (X ≅ Y) → False) : finrank 𝕜 (X ⟶ Y) = 0 :=
   haveI :=
-    subsingleton_of_forall_eq (0 : X ⟶ Y) fun f => by
+    subsingleton_of_forall_eq (0 : X ⟶ Y) fun f ↦ by
       have p := not_congr (isIso_iff_nonzero f)
       simp only [Classical.not_not, Ne] at p
       exact p.mp fun _ => h (asIso f)

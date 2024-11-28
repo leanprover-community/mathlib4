@@ -68,10 +68,10 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
     { homEquiv := fun x y =>
         { toFun := fun u =>
             Over.homMk (pullback.lift u.left x.hom <| by simp)
-          invFun := fun v => Over.homMk (v.left ≫ pullback.fst _ _) <| by
+          invFun := fun v ↦ Over.homMk (v.left ≫ pullback.fst _ _) <| by
             simp [← Over.w v, pullback.condition]
           left_inv := by aesop_cat
-          right_inv := fun v => by
+          right_inv := fun v ↦ by
             ext
             dsimp
             ext
@@ -139,14 +139,14 @@ def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
 def mapPushoutAdj {X Y : C} (f : X ⟶ Y) : pushout f ⊣ map f :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun x y => {
-      toFun := fun u => Under.homMk (pushout.inl _ _ ≫ u.right) <| by
+      toFun := fun u ↦ Under.homMk (pushout.inl _ _ ≫ u.right) <| by
         simp only [map_obj_hom]
         rw [← Under.w u]
         simp only [Functor.const_obj_obj, map_obj_right, Functor.id_obj, pushout_obj, mk_right,
           mk_hom]
         rw [← assoc, ← assoc, pushout.condition]
-      invFun := fun v => Under.homMk (pushout.desc v.right y.hom <| by simp)
-      left_inv := fun u => by
+      invFun := fun v ↦ Under.homMk (pushout.desc v.right y.hom <| by simp)
+      left_inv := fun u ↦ by
         ext
         dsimp
         ext

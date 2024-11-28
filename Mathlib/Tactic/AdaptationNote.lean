@@ -41,11 +41,11 @@ def reportAdaptationNote (f : Syntax → Meta.Tactic.TryThis.Suggestion) : MetaM
 has been changed to accommodate a change in Lean core.
 They typically require further action/maintenance to be taken in the future. -/
 elab (name := adaptationNoteCmd) "#adaptation_note " (docComment)? : command => do
-  Elab.Command.liftTermElabM <| reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
+  Elab.Command.liftTermElabM <| reportAdaptationNote (fun s ↦ (⟨s⟩ : TSyntax `tactic))
 
 @[inherit_doc adaptationNoteCmd]
 elab "#adaptation_note " (docComment)? : tactic =>
-  reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
+  reportAdaptationNote (fun s ↦ (⟨s⟩ : TSyntax `tactic))
 
 @[inherit_doc adaptationNoteCmd]
 syntax (name := adaptationNoteTermStx) "#adaptation_note " (docComment)? term : term
@@ -54,7 +54,7 @@ syntax (name := adaptationNoteTermStx) "#adaptation_note " (docComment)? term : 
 @[term_elab adaptationNoteTermStx]
 def adaptationNoteTermElab : Elab.Term.TermElab
   | `(#adaptation_note $[$_]? $t) => fun expectedType? => do
-    reportAdaptationNote (fun s => (⟨s⟩ : Term))
+    reportAdaptationNote (fun s ↦ (⟨s⟩ : Term))
     Elab.Term.elabTerm t expectedType?
   | _ => fun _ => Elab.throwUnsupportedSyntax
 

@@ -37,8 +37,8 @@ instance decompositionSubgroupMulSemiringAction (A : ValuationSubring L) :
     MulSemiringAction (A.decompositionSubgroup K) A :=
   { SubMulAction.mulAction (A.subMulAction K) with
     smul_add := fun g k l => Subtype.ext <| smul_add (A := L) g k l
-    smul_zero := fun g => Subtype.ext <| smul_zero g
-    smul_one := fun g => Subtype.ext <| smul_one g
+    smul_zero := fun g ↦ Subtype.ext <| smul_zero g
+    smul_one := fun g ↦ Subtype.ext <| smul_one g
     smul_mul := fun g k l => Subtype.ext <| smul_mul' (A := L) g k l }
 
 /-- The inertia subgroup defined as the kernel of the group homomorphism from

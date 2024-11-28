@@ -36,7 +36,7 @@ end OrderTop
 theorem StrictMono.maximal_preimage_top [LinearOrder α] [Preorder β] [OrderTop β] {f : α → β}
     (H : StrictMono f) {a} (h_top : f a = ⊤) (x : α) : x ≤ a :=
   H.maximal_of_maximal_image
-    (fun p => by
+    (fun p ↦ by
       rw [h_top]
       exact le_top)
     x
@@ -56,7 +56,7 @@ end OrderBot
 theorem StrictMono.minimal_preimage_bot [LinearOrder α] [PartialOrder β] [OrderBot β] {f : α → β}
     (H : StrictMono f) {a} (h_bot : f a = ⊥) (x : α) : a ≤ x :=
   H.minimal_of_minimal_image
-    (fun p => by
+    (fun p ↦ by
       rw [h_bot]
       exact bot_le)
     x

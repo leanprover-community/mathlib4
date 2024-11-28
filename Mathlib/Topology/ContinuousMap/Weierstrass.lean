@@ -63,7 +63,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     -- Thus we take the statement of the Weierstrass approximation theorem for `[0,1]`,
     have p := polynomialFunctions_closure_eq_top'
     -- and pullback both sides, obtaining an equation between subalgebras of `C([a,b], ℝ)`.
-    apply_fun fun s => s.comap W at p
+    apply_fun fun s ↦ s.comap W at p
     simp only [Algebra.comap_top] at p
     -- Since the pullback operation is continuous, it commutes with taking `topologicalClosure`,
     rw [Subalgebra.topologicalClosure_comap_homeomorph _ W W' w] at p

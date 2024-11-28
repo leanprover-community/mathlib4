@@ -41,7 +41,7 @@ derivatives, then the series converges everywhere on the set. -/
 theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
     (h's : IsPreconnected s) (hf : ∀ n x, x ∈ s → HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, x ∈ s → ‖f' n x‖ ≤ u n) (hx₀ : x₀ ∈ s) (hf0 : Summable (f · x₀))
-    (hx : x ∈ s) : Summable fun n => f n x := by
+    (hx : x ∈ s) : Summable fun n ↦ f n x := by
   haveI := Classical.decEq α
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
   have A : UniformCauchySeqOn (fun t : Finset α => fun x ↦ ∑ i ∈ t, f' i x) atTop s :=
@@ -57,7 +57,7 @@ derivatives, then the series converges everywhere on the set. -/
 theorem summable_of_summable_hasDerivAt_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
     (h't : IsPreconnected t) (hg : ∀ n y, y ∈ t → HasDerivAt (g n) (g' n y) y)
     (hg' : ∀ n y, y ∈ t → ‖g' n y‖ ≤ u n) (hy₀ : y₀ ∈ t) (hg0 : Summable (g · y₀))
-    (hy : y ∈ t) : Summable fun n => g n y := by
+    (hy : y ∈ t) : Summable fun n ↦ g n y := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg
   refine summable_of_summable_hasFDerivAt_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
   simpa? says simpa only [ContinuousLinearMap.norm_smulRight_apply, norm_one, one_mul]
@@ -68,7 +68,7 @@ derivatives, then the series is differentiable on the set and its derivative is 
 derivatives. -/
 theorem hasFDerivAt_tsum_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
     (h's : IsPreconnected s) (hf : ∀ n x, x ∈ s → HasFDerivAt (f n) (f' n x) x)
-    (hf' : ∀ n x, x ∈ s → ‖f' n x‖ ≤ u n) (hx₀ : x₀ ∈ s) (hf0 : Summable fun n => f n x₀)
+    (hf' : ∀ n x, x ∈ s → ‖f' n x‖ ≤ u n) (hx₀ : x₀ ∈ s) (hf0 : Summable fun n ↦ f n x₀)
     (hx : x ∈ s) : HasFDerivAt (fun y ↦ ∑' n, f n y) (∑' n, f' n x) x := by
   classical
     have A :
@@ -86,7 +86,7 @@ derivatives, then the series is differentiable on the set and its derivative is 
 derivatives. -/
 theorem hasDerivAt_tsum_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
     (h't : IsPreconnected t) (hg : ∀ n y, y ∈ t → HasDerivAt (g n) (g' n y) y)
-    (hg' : ∀ n y, y ∈ t → ‖g' n y‖ ≤ u n) (hy₀ : y₀ ∈ t) (hg0 : Summable fun n => g n y₀)
+    (hg' : ∀ n y, y ∈ t → ‖g' n y‖ ≤ u n) (hy₀ : y₀ ∈ t) (hg0 : Summable fun n ↦ g n y₀)
     (hy : y ∈ t) : HasDerivAt (fun z ↦ ∑' n, g n z) (∑' n, g' n y) y := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg ⊢
   convert hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
@@ -99,7 +99,7 @@ point, and all functions in the series are differentiable with a summable bound 
 then the series converges everywhere. -/
 theorem summable_of_summable_hasFDerivAt (hu : Summable u)
     (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x) (hf' : ∀ n x, ‖f' n x‖ ≤ u n)
-    (hf0 : Summable fun n => f n x₀) (x : E) : Summable fun n => f n x := by
+    (hf0 : Summable fun n ↦ f n x₀) (x : E) : Summable fun n ↦ f n x := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   exact summable_of_summable_hasFDerivAt_of_isPreconnected hu isOpen_univ isPreconnected_univ
@@ -110,7 +110,7 @@ point, and all functions in the series are differentiable with a summable bound 
 then the series converges everywhere. -/
 theorem summable_of_summable_hasDerivAt (hu : Summable u)
     (hg : ∀ n y, HasDerivAt (g n) (g' n y) y) (hg' : ∀ n y, ‖g' n y‖ ≤ u n)
-    (hg0 : Summable fun n => g n y₀) (y : 𝕜) : Summable fun n => g n y := by
+    (hg0 : Summable fun n ↦ g n y₀) (y : 𝕜) : Summable fun n ↦ g n y := by
   exact summable_of_summable_hasDerivAt_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n x _ => hg n x) (fun n x _ => hg' n x) (mem_univ _) hg0 (mem_univ _)
 
@@ -118,7 +118,7 @@ theorem summable_of_summable_hasDerivAt (hu : Summable u)
 point, and all functions in the series are differentiable with a summable bound on the derivatives,
 then the series is differentiable and its derivative is the sum of the derivatives. -/
 theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
-    (hf' : ∀ n x, ‖f' n x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
+    (hf' : ∀ n x, ‖f' n x‖ ≤ u n) (hf0 : Summable fun n ↦ f n x₀) (x : E) :
     HasFDerivAt (fun y ↦ ∑' n, f n y) (∑' n, f' n x) x := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
@@ -129,7 +129,7 @@ theorem hasFDerivAt_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' 
 point, and all functions in the series are differentiable with a summable bound on the derivatives,
 then the series is differentiable and its derivative is the sum of the derivatives. -/
 theorem hasDerivAt_tsum (hu : Summable u) (hg : ∀ n y, HasDerivAt (g n) (g' n y) y)
-    (hg' : ∀ n y, ‖g' n y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) (y : 𝕜) :
+    (hg' : ∀ n y, ‖g' n y‖ ≤ u n) (hg0 : Summable fun n ↦ g n y₀) (y : 𝕜) :
     HasDerivAt (fun z ↦ ∑' n, g n z) (∑' n, g' n y) y := by
   exact hasDerivAt_tsum_of_isPreconnected hu isOpen_univ isPreconnected_univ
     (fun n y _ => hg n y) (fun n y _ => hg' n y) (mem_univ _) hg0 (mem_univ _)
@@ -140,7 +140,7 @@ Note that our assumptions do not ensure the pointwise convergence, but if there 
 convergence then the series is zero everywhere so the result still holds. -/
 theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) : Differentiable 𝕜 fun y ↦ ∑' n, f n y := by
-  by_cases h : ∃ x₀, Summable fun n => f n x₀
+  by_cases h : ∃ x₀, Summable fun n ↦ f n x₀
   · rcases h with ⟨x₀, hf0⟩
     intro x
     exact (hasFDerivAt_tsum hu hf hf' hf0 x).differentiableAt
@@ -160,23 +160,23 @@ theorem differentiable_tsum' (hu : Summable u) (hg : ∀ n y, HasDerivAt (g n) (
   simpa? says simpa only [ContinuousLinearMap.norm_smulRight_apply, norm_one, one_mul]
 
 theorem fderiv_tsum_apply (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
-    (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) (x : E) :
+    (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n ↦ f n x₀) (x : E) :
     fderiv 𝕜 (fun y ↦ ∑' n, f n y) x = ∑' n, fderiv 𝕜 (f n) x :=
   (hasFDerivAt_tsum hu (fun n x => (hf n x).hasFDerivAt) hf' hf0 _).fderiv
 
 theorem deriv_tsum_apply (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
-    (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) (y : 𝕜) :
+    (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n ↦ g n y₀) (y : 𝕜) :
     deriv (fun z ↦ ∑' n, g n z) y = ∑' n, deriv (g n) y :=
   (hasDerivAt_tsum hu (fun n y => (hg n y).hasDerivAt) hg' hg0 _).deriv
 
 theorem fderiv_tsum (hu : Summable u) (hf : ∀ n, Differentiable 𝕜 (f n))
-    (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n => f n x₀) :
+    (hf' : ∀ n x, ‖fderiv 𝕜 (f n) x‖ ≤ u n) (hf0 : Summable fun n ↦ f n x₀) :
     (fderiv 𝕜 fun y ↦ ∑' n, f n y) = fun x ↦ ∑' n, fderiv 𝕜 (f n) x := by
   ext1 x
   exact fderiv_tsum_apply hu hf hf' hf0 x
 
 theorem deriv_tsum (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
-    (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n => g n y₀) :
+    (hg' : ∀ n y, ‖deriv (g n) y‖ ≤ u n) (hg0 : Summable fun n ↦ g n y₀) :
     (deriv fun y ↦ ∑' n, g n y) = fun y ↦ ∑' n, deriv (g n) y := by
   ext1 x
   exact deriv_tsum_apply hu hg hg' hg0 x
@@ -195,10 +195,10 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     simp_rw [iteratedFDeriv_zero_eq_comp]
     exact (continuousMultilinearCurryFin0 𝕜 E F).symm.toContinuousLinearEquiv.map_tsum
   · have h'k : (k : ℕ∞) < N := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (Nat.lt_succ_self _)) hk
-    have A : Summable fun n => iteratedFDeriv 𝕜 k (f n) 0 :=
-      .of_norm_bounded (v k) (hv k h'k.le) fun n => h'f k n 0 h'k.le
+    have A : Summable fun n ↦ iteratedFDeriv 𝕜 k (f n) 0 :=
+      .of_norm_bounded (v k) (hv k h'k.le) fun n ↦ h'f k n 0 h'k.le
     simp_rw [iteratedFDeriv_succ_eq_comp_left, IH h'k.le]
-    rw [fderiv_tsum (hv _ hk) (fun n => (hf n).differentiable_iteratedFDeriv
+    rw [fderiv_tsum (hv _ hk) (fun n ↦ (hf n).differentiable_iteratedFDeriv
         (mod_cast h'k)) _ A]
     · ext1 x
       exact (continuousMultilinearCurryLeftEquiv 𝕜
@@ -276,7 +276,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
     apply (ContDiff.sum fun i _ => (hf i).of_le (mod_cast hm)).add
     have h'u : ∀ k : ℕ, (k : ℕ∞) ≤ m → Summable (v k ∘ ((↑) : { i // i ∉ T } → α)) := fun k hk =>
       (hv k (hk.trans hm)).subtype _
-    refine contDiff_tsum (fun i => (hf i).of_le (mod_cast hm)) h'u ?_
+    refine contDiff_tsum (fun i ↦ (hf i).of_le (mod_cast hm)) h'u ?_
     rintro k ⟨i, hi⟩ x hk
     simp only [t, T, Finite.mem_toFinset, mem_setOf_eq, Finset.mem_range, not_forall, not_le,
       exists_prop, not_exists, not_and, not_lt] at hi

@@ -32,7 +32,7 @@ in `C`.
 -/
 abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     WidePullbackShape J ⥤ C :=
-  WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
+  WidePullbackShape.wideCospan B (fun j ↦ (F.obj ⟨j⟩).left) fun j ↦ (F.obj ⟨j⟩).hom
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
@@ -55,7 +55,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
   obj := conesEquivInverseObj B F
   map f :=
     { hom := f.hom.left
-      w := fun j => by
+      w := fun j ↦ by
         cases' j with j
         · simp
         · dsimp
@@ -152,9 +152,9 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
     { cone :=
         { pt := Over.mk (𝟙 _)
           π :=
-            { app := fun p => p.as.elim } }
+            { app := fun p ↦ p.as.elim } }
       isLimit :=
-        { lift := fun s => Over.homMk s.pt.hom
+        { lift := fun s ↦ Over.homMk s.pt.hom
           fac := fun _ j => j.as.elim
           uniq := fun s m _ => by
             simp only

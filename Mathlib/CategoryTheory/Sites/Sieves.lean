@@ -131,7 +131,7 @@ theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
     exact ofArrows.mk PUnit.unit
 
 theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X) :
-    (ofArrows (fun i => pullback (g i) f) fun _ => pullback.snd _ _) =
+    (ofArrows (fun i ↦ pullback (g i) f) fun _ => pullback.snd _ _) =
       pullbackArrows f (ofArrows Z g) := by
   funext T
   ext h
@@ -262,7 +262,7 @@ theorem arrows_ext : ∀ {R S : Sieve X}, R.arrows = S.arrows → R = S := by
 
 @[ext]
 protected theorem ext {R S : Sieve X} (h : ∀ ⦃Y⦄ (f : Y ⟶ X), R f ↔ S f) : R = S :=
-  arrows_ext <| funext fun _ => funext fun f => propext <| h f
+  arrows_ext <| funext fun _ => funext fun f ↦ propext <| h f
 
 open Lattice
 

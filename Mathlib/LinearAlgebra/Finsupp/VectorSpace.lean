@@ -64,26 +64,26 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
   Basis.ofRepr
     { toFun := fun g =>
         { toFun := fun ix => (b ix.1).repr (g ix.1) ix.2
-          support := g.support.sigma fun i => ((b i).repr (g i)).support
+          support := g.support.sigma fun i ↦ ((b i).repr (g i)).support
           mem_support_toFun := fun ix => by
             simp only [Finset.mem_sigma, mem_support_iff, and_iff_right_iff_imp, Ne]
             intro b hg
             simp [hg] at b }
       invFun := fun g =>
-        { toFun := fun i => (b i).repr.symm (g.comapDomain _ sigma_mk_injective.injOn)
+        { toFun := fun i ↦ (b i).repr.symm (g.comapDomain _ sigma_mk_injective.injOn)
           support := g.support.image Sigma.fst
-          mem_support_toFun := fun i => by
+          mem_support_toFun := fun i ↦ by
             rw [Ne, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply,
                 DFunLike.ext_iff]
             simp only [exists_prop, LinearEquiv.map_zero, comapDomain_apply, zero_apply,
               exists_and_right, mem_support_iff, exists_eq_right, Sigma.exists, Finset.mem_image,
               not_forall] }
-      left_inv := fun g => by
+      left_inv := fun g ↦ by
         ext i
         rw [← (b i).repr.injective.eq_iff]
         ext x
         simp only [coe_mk, LinearEquiv.apply_symm_apply, comapDomain_apply]
-      right_inv := fun g => by
+      right_inv := fun g ↦ by
         ext ⟨i, x⟩
         simp only [coe_mk, LinearEquiv.apply_symm_apply, comapDomain_apply]
       map_add' := fun g h => by
@@ -109,7 +109,7 @@ theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
       · cases h
         simp only [basis_repr, single_eq_same, Basis.repr_self,
           Finsupp.single_apply_left sigma_mk_injective]
-      · have : Sigma.mk i x ≠ Sigma.mk j y := fun h' => h <| congrArg (fun s => s.fst) h'
+      · have : Sigma.mk i x ≠ Sigma.mk j y := fun h' => h <| congrArg (fun s ↦ s.fst) h'
         -- Porting note: previously `this` not needed
         simp only [basis_repr, single_apply, h, this, if_false, LinearEquiv.map_zero, zero_apply]
 
@@ -119,7 +119,7 @@ protected def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)
 
 @[simp]
-theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i => Finsupp.single i 1 :=
+theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i ↦ Finsupp.single i 1 :=
   funext fun _ => Basis.apply_eq_iff.mpr rfl
 
 end Semiring
@@ -136,7 +136,7 @@ Note that while this is stated for `DFinsupp` not `DirectSum`, the types are def
 noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σi, η i) R (Π₀ i, M i) :=
   .ofRepr
-    ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
+    ((mapRange.linearEquiv fun i ↦ (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
 
 end DFinsupp
 

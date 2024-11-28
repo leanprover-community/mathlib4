@@ -77,7 +77,7 @@ def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
 
 /-- Given an index for a connected component, produce the actual component as a full subcategory. -/
 def Component (j : ConnectedComponents J) : Type u₁ :=
-  FullSubcategory fun k => Quotient.mk'' k = j
+  FullSubcategory fun k ↦ Quotient.mk'' k = j
 
 instance {j : ConnectedComponents J} : Category (Component j) :=
   FullSubcategory.category _
@@ -116,7 +116,7 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   -- Everything in our chosen zigzag from `j₁` to `j₂` has a zigzag to `j₂`.
   have hf : ∀ a : J, a ∈ l → Zigzag a j₂ := by
     intro i hi
-    apply hl₁.backwards_induction (fun t => Zigzag t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
+    apply hl₁.backwards_induction (fun t ↦ Zigzag t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
     · intro j k
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl

@@ -34,7 +34,7 @@ def cartesianComon_ : C ⥤ Comon_ C where
   { X := X
     comul := diag X
     counit := terminal.from X }
-  map := fun f => { hom := f }
+  map := fun f ↦ { hom := f }
 
 variable {C}
 

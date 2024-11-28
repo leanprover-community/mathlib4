@@ -210,7 +210,7 @@ theorem mem_nhdsWithin_Ici_iff_exists_Ico_subset [NoMaxOrder α] {a : α} {s : S
   mem_nhdsWithin_Ici_iff_exists_Ico_subset' hu'
 
 theorem nhdsWithin_Ici_basis_Ico [NoMaxOrder α] (a : α) :
-    (𝓝[≥] a).HasBasis (fun u => a < u) (Ico a) :=
+    (𝓝[≥] a).HasBasis (fun u ↦ a < u) (Ico a) :=
   ⟨fun _ => mem_nhdsWithin_Ici_iff_exists_Ico_subset⟩
 
 /-- The filter of right neighborhoods has a basis of closed intervals. -/

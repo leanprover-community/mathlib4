@@ -206,7 +206,7 @@ def liftAlgHom {S : Type*} [Semiring S] [Algebra R S]
     LinearMap.map_mul_iff _ |>.mpr <| by aesop
 
 @[simp] lemma tprod_noncommProd {κ : Type*} (s : Finset κ) (x : κ → Π i, A i) (hx) :
-    tprod R (s.noncommProd x hx) = s.noncommProd (fun k => tprod R (x k))
+    tprod R (s.noncommProd x hx) = s.noncommProd (fun k ↦ tprod R (x k))
       (hx.imp fun _ _ => Commute.tprod) :=
   Finset.map_noncommProd s x _ (tprodMonoidHom R)
 

@@ -65,7 +65,7 @@ namespace DivisorChain
 theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (hp : Prime p) :
     ∃ c : Fin (n + 1) → Associates M,
       c 1 = p ∧ StrictMono c ∧ ∀ {r : Associates M}, r ≤ p ^ n ↔ ∃ i, r = c i := by
-  refine ⟨fun i => p ^ (i : ℕ), ?_, fun n m h => ?_, @fun y ↦ ⟨fun h ↦ ?_, ?_⟩⟩
+  refine ⟨fun i ↦ p ^ (i : ℕ), ?_, fun n m h => ?_, @fun y ↦ ⟨fun h ↦ ?_, ?_⟩⟩
   · dsimp only
     rw [Fin.val_one', Nat.mod_eq_of_lt, pow_one]
     exact Nat.lt_succ_of_le (Nat.one_le_iff_ne_zero.mpr hn)
@@ -179,7 +179,7 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : q = c 1 ^ n := by
   classical
-    obtain ⟨i, hi'⟩ := element_of_chain_eq_pow_second_of_chain hn h₁ (@fun r => h₂) (dvd_refl q) hq
+    obtain ⟨i, hi'⟩ := element_of_chain_eq_pow_second_of_chain hn h₁ (@fun r ↦ h₂) (dvd_refl q) hq
     convert hi'
     refine (Nat.lt_succ_iff.1 i.prop).antisymm' (Nat.le_of_succ_le_succ ?_)
     calc
@@ -248,11 +248,11 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
     rw [this]
     apply Subtype.prop (d ⟨p ^ s, hs'⟩)
   obtain ⟨c₁, rfl, hc₁', hc₁''⟩ := exists_chain_of_prime_pow hs (prime_of_normalized_factor p hp)
-  let c₂ : Fin (s + 1) → Associates N := fun t => d ⟨c₁ t, le_trans (hc₁''.2 ⟨t, by simp⟩) hs'⟩
-  have c₂_def : ∀ t, c₂ t = d ⟨c₁ t, _⟩ := fun t => rfl
+  let c₂ : Fin (s + 1) → Associates N := fun t ↦ d ⟨c₁ t, le_trans (hc₁''.2 ⟨t, by simp⟩) hs'⟩
+  have c₂_def : ∀ t, c₂ t = d ⟨c₁ t, _⟩ := fun t ↦ rfl
   rw [← c₂_def]
   refine (eq_pow_second_of_chain_of_has_chain hs (fun t u h => ?_)
-    (@fun r => ⟨@fun hr => ?_, ?_⟩) ?_).symm
+    (@fun r ↦ ⟨@fun hr => ?_, ?_⟩) ?_).symm
   · rw [c₂_def, c₂_def, Subtype.coe_lt_coe, d.lt_iff_lt, Subtype.mk_lt_mk, hc₁'.lt_iff_lt]
     exact h
   · have : r ≤ n := hr.trans (d ⟨c₁ 1 ^ s, _⟩).2

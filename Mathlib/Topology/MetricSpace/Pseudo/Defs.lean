@@ -604,8 +604,8 @@ For specific bases see `uniformity_basis_dist`, `uniformity_basis_dist_inv_nat_s
 and `uniformity_basis_dist_inv_nat_pos`. -/
 protected theorem mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ}
     (hf₀ : ∀ i, p i → 0 < f i) (hf : ∀ ⦃ε⦄, 0 < ε → ∃ i, p i ∧ f i ≤ ε) :
-    (𝓤 α).HasBasis p fun i => { p : α × α | dist p.1 p.2 < f i } := by
-  refine ⟨fun s => uniformity_basis_dist.mem_iff.trans ?_⟩
+    (𝓤 α).HasBasis p fun i ↦ { p : α × α | dist p.1 p.2 < f i } := by
+  refine ⟨fun s ↦ uniformity_basis_dist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases hf ε₀ with ⟨i, hi, H⟩
@@ -613,7 +613,7 @@ protected theorem mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β →
   · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, H⟩
 
 theorem uniformity_basis_dist_rat :
-    (𝓤 α).HasBasis (fun r : ℚ => 0 < r) fun r => { p : α × α | dist p.1 p.2 < r } :=
+    (𝓤 α).HasBasis (fun r : ℚ => 0 < r) fun r ↦ { p : α × α | dist p.1 p.2 < r } :=
   Metric.mk_uniformity_basis (fun _ => Rat.cast_pos.2) fun _ε hε =>
     let ⟨r, hr0, hrε⟩ := exists_rat_btwn hε
     ⟨r, Rat.cast_pos.1 hr0, hrε.le⟩
@@ -636,7 +636,7 @@ theorem uniformity_basis_dist_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     ⟨n, trivial, hn.le⟩
 
 theorem uniformity_basis_dist_lt {R : ℝ} (hR : 0 < R) :
-    (𝓤 α).HasBasis (fun r : ℝ => 0 < r ∧ r < R) fun r => { p : α × α | dist p.1 p.2 < r } :=
+    (𝓤 α).HasBasis (fun r : ℝ => 0 < r ∧ r < R) fun r ↦ { p : α × α | dist p.1 p.2 < r } :=
   Metric.mk_uniformity_basis (fun _ => And.left) fun r hr =>
     ⟨min r (R / 2), ⟨lt_min hr (half_pos hR), min_lt_iff.2 <| Or.inr (half_lt_self hR)⟩,
       min_le_left _ _⟩
@@ -650,7 +650,7 @@ More can be easily added if needed in the future. -/
 protected theorem mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x ↦ { p : α × α | dist p.1 p.2 ≤ f x } := by
-  refine ⟨fun s => uniformity_basis_dist.mem_iff.trans ?_⟩
+  refine ⟨fun s ↦ uniformity_basis_dist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases exists_between ε₀ with ⟨ε', hε'⟩
@@ -733,7 +733,7 @@ theorem nhds_basis_ball_inv_nat_succ :
   nhds_basis_uniformity uniformity_basis_dist_inv_nat_succ
 
 theorem nhds_basis_ball_inv_nat_pos :
-    (𝓝 x).HasBasis (fun n => 0 < n) fun n : ℕ => ball x (1 / ↑n) :=
+    (𝓝 x).HasBasis (fun n ↦ 0 < n) fun n : ℕ => ball x (1 / ↑n) :=
   nhds_basis_uniformity uniformity_basis_dist_inv_nat_pos
 
 theorem nhds_basis_ball_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :

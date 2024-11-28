@@ -72,7 +72,7 @@ def gen (s : Set (α × α)) : Set (CauchyFilter α × CauchyFilter α) :=
   { p | s ∈ p.1.val ×ˢ p.2.val }
 
 theorem monotone_gen : Monotone (gen : Set (α × α) → _) :=
-  monotone_setOf fun p => @Filter.monotone_mem _ (p.1.val ×ˢ p.2.val)
+  monotone_setOf fun p ↦ @Filter.monotone_mem _ (p.1.val ×ˢ p.2.val)
 
 -- Porting note: this was a calc proof, but I could not make it work
 private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lift' gen := by
@@ -85,7 +85,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
   have h₂ : (𝓤 α).lift' f ≤ (𝓤 α).lift' gen :=
     uniformity_lift_le_swap
       (monotone_principal.comp
-        (monotone_setOf fun p => @Filter.monotone_mem _ (p.2.val ×ˢ p.1.val)))
+        (monotone_setOf fun p ↦ @Filter.monotone_mem _ (p.2.val ×ˢ p.1.val)))
       (by
         have h := fun p : CauchyFilter α × CauchyFilter α => @Filter.prod_comm _ _ p.2.val p.1.val
         simp only [Function.comp, h, mem_map, f]
@@ -103,14 +103,14 @@ private theorem compRel_gen_gen_subset_gen_compRel {s t : Set (α × α)} :
     fun ⟨a, b⟩ ⟨(ha : a ∈ t₁), (hb : b ∈ t₄)⟩ =>
     ⟨x, h₁ (show (a, x) ∈ t₁ ×ˢ t₂ from ⟨ha, xt₂⟩), h₂ (show (x, b) ∈ t₃ ×ˢ t₄ from ⟨xt₃, hb⟩)⟩
 
-private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) ≤ (𝓤 α).lift' gen :=
+private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s ↦ compRel s s) ≤ (𝓤 α).lift' gen :=
   calc
-    (((𝓤 α).lift' gen).lift' fun s => compRel s s) =
-        (𝓤 α).lift' fun s => compRel (gen s) (gen s) := by
+    (((𝓤 α).lift' gen).lift' fun s ↦ compRel s s) =
+        (𝓤 α).lift' fun s ↦ compRel (gen s) (gen s) := by
       rw [lift'_lift'_assoc]
       · exact monotone_gen
       · exact monotone_id.compRel monotone_id
-    _ ≤ (𝓤 α).lift' fun s => gen <| compRel s s :=
+    _ ≤ (𝓤 α).lift' fun s ↦ gen <| compRel s s :=
       lift'_mono' fun _ _hs => compRel_gen_gen_subset_gen_compRel
     _ = ((𝓤 α).lift' fun s : Set (α × α) => compRel s s).lift' gen := by
       rw [lift'_lift'_assoc]
@@ -136,7 +136,7 @@ theorem basis_uniformity {ι : Sort*} {p : ι → Prop} {s : ι → Set (α × �
 
 theorem mem_uniformity' {s : Set (CauchyFilter α × CauchyFilter α)} :
     s ∈ 𝓤 (CauchyFilter α) ↔ ∃ t ∈ 𝓤 α, ∀ f g : CauchyFilter α, t ∈ f.1 ×ˢ g.1 → (f, g) ∈ s := by
-  refine mem_uniformity.trans (exists_congr (fun t => and_congr_right_iff.mpr (fun _h => ?_)))
+  refine mem_uniformity.trans (exists_congr (fun t ↦ and_congr_right_iff.mpr (fun _h => ?_)))
   exact ⟨fun h _f _g ht => h ht, fun h _p hp => h _ _ hp⟩
 
 /-- Embedding of `α` into its completion `CauchyFilter α` -/
@@ -164,7 +164,7 @@ theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_pureCauchy := isUniformEmbedding_pureCauchy
 
-theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f => by
+theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f ↦ by
   have h_ex : ∀ s ∈ 𝓤 (CauchyFilter α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>
     let ⟨t'', ht''₁, (ht''₂ : gen t'' ⊆ s)⟩ := (mem_lift'_sets monotone_gen).mp hs
     let ⟨t', ht'₁, ht'₂⟩ := comp_mem_uniformity_sets ht''₁

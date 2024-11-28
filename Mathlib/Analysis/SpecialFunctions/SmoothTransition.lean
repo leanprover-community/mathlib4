@@ -104,7 +104,7 @@ theorem continuous_polynomial_eval_inv_mul (p : ℝ[X]) :
 
 theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
     ContDiff ℝ n (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) := by
-  apply contDiff_all_iff_nat.2 (fun m => ?_) n
+  apply contDiff_all_iff_nat.2 (fun m ↦ ?_) n
   induction m generalizing p with
   | zero => exact contDiff_zero.2 <| continuous_polynomial_eval_inv_mul _
   | succ m ihm =>

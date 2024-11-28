@@ -66,7 +66,7 @@ The point of this cocone is `E.right.obj Y` -/
 def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
   pt := E.right.obj Y
   ι :=
-    { app := fun g => E.hom.app g.left ≫ E.right.map g.hom
+    { app := fun g ↦ E.hom.app g.left ≫ E.right.map g.hom
       naturality := fun g₁ g₂ φ => by
         dsimp
         rw [← CostructuredArrow.w φ]
@@ -339,17 +339,17 @@ noncomputable def pointwiseLeftKanExtension : D ⥤ H where
   map {Y₁ Y₂} f :=
     colimit.desc (CostructuredArrow.proj L Y₁ ⋙ F)
       (Cocone.mk (colimit (CostructuredArrow.proj L Y₂ ⋙ F))
-        { app := fun g => colimit.ι (CostructuredArrow.proj L Y₂ ⋙ F)
+        { app := fun g ↦ colimit.ι (CostructuredArrow.proj L Y₂ ⋙ F)
             ((CostructuredArrow.map f).obj g)
           naturality := fun g₁ g₂ φ => by
             simpa using colimit.w (CostructuredArrow.proj L Y₂ ⋙ F)
               ((CostructuredArrow.map f).map φ) })
-  map_id Y := colimit.hom_ext (fun j => by
+  map_id Y := colimit.hom_ext (fun j ↦ by
     dsimp
     simp only [colimit.ι_desc, comp_id]
     congr
     apply CostructuredArrow.map_id)
-  map_comp {Y₁ Y₂ Y₃} f f' := colimit.hom_ext (fun j => by
+  map_comp {Y₁ Y₂ Y₃} f f' := colimit.hom_ext (fun j ↦ by
     dsimp
     simp only [colimit.ι_desc, colimit.ι_desc_assoc, comp_obj, CostructuredArrow.proj_obj]
     congr 1
@@ -373,7 +373,7 @@ noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanEx
 extension of `F` along `L`. -/
 noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtension :
     (LeftExtension.mk _ (pointwiseLeftKanExtensionUnit L F)).IsPointwiseLeftKanExtension :=
-  fun X => IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (fun j => by
+  fun X => IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (fun j ↦ by
     dsimp
     simp only [comp_id, colimit.ι_desc, CostructuredArrow.map_mk]
     congr 1
@@ -442,12 +442,12 @@ noncomputable def pointwiseRightKanExtension : D ⥤ H where
           naturality := fun g₁ g₂ φ ↦ by
             simpa using (limit.w (StructuredArrow.proj Y₁ L ⋙ F)
               ((StructuredArrow.map f).map φ)).symm })
-  map_id Y := limit.hom_ext (fun j => by
+  map_id Y := limit.hom_ext (fun j ↦ by
     dsimp
     simp only [limit.lift_π, id_comp]
     congr
     apply StructuredArrow.map_id)
-  map_comp {Y₁ Y₂ Y₃} f f' := limit.hom_ext (fun j => by
+  map_comp {Y₁ Y₂ Y₃} f f' := limit.hom_ext (fun j ↦ by
     dsimp
     simp only [limit.lift_π, assoc]
     congr 1
@@ -472,7 +472,7 @@ noncomputable def pointwiseRightKanExtensionCounit :
 extension of `F` along `L`. -/
 noncomputable def pointwiseRightKanExtensionIsPointwiseRightKanExtension :
     (RightExtension.mk _ (pointwiseRightKanExtensionCounit L F)).IsPointwiseRightKanExtension :=
-  fun X => IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (fun j => by
+  fun X => IsLimit.ofIsoLimit (limit.isLimit _) (Cones.ext (Iso.refl _) (fun j ↦ by
     dsimp
     simp only [limit.lift_π, StructuredArrow.map_mk, id_comp]
     congr

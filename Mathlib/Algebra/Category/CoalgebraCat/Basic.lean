@@ -98,14 +98,14 @@ abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Modu
 instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
   forget :=
     { obj := fun M => M
-      map := fun f => f.toCoalgHom }
+      map := fun f ↦ f.toCoalgHom }
   forget_faithful :=
     { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => f.toCoalgHom.toLinearMap }
+      map := fun f ↦ f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgebraCat R) :

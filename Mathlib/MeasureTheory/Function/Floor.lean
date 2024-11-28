@@ -51,7 +51,7 @@ theorem Measurable.fract [BorelSpace R] {f : α → R} (hf : Measurable f) :
 theorem MeasurableSet.image_fract [BorelSpace R] {s : Set R} (hs : MeasurableSet s) :
     MeasurableSet (Int.fract '' s) := by
   simp only [Int.image_fract, sub_eq_add_neg, image_add_right']
-  exact MeasurableSet.iUnion fun m => (measurable_add_const _ hs).inter measurableSet_Ico
+  exact MeasurableSet.iUnion fun m ↦ (measurable_add_const _ hs).inter measurableSet_Ico
 
 end FloorRing
 
@@ -61,7 +61,7 @@ variable {α R : Type*} [MeasurableSpace α] [LinearOrderedSemiring R] [FloorSem
   [TopologicalSpace R] [OrderTopology R] [MeasurableSpace R] [OpensMeasurableSpace R] {f : α → R}
 
 theorem Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=
-  measurable_to_countable fun n => by
+  measurable_to_countable fun n ↦ by
     rcases eq_or_ne ⌊n⌋₊ 0 with h | h <;> simp [h, Nat.preimage_floor_of_ne_zero, -floor_eq_zero]
 
 @[measurability]
@@ -69,7 +69,7 @@ theorem Measurable.nat_floor (hf : Measurable f) : Measurable fun x ↦ ⌊f x�
   Nat.measurable_floor.comp hf
 
 theorem Nat.measurable_ceil : Measurable (Nat.ceil : R → ℕ) :=
-  measurable_to_countable fun n => by
+  measurable_to_countable fun n ↦ by
     rcases eq_or_ne ⌈n⌉₊ 0 with h | h <;> simp_all [h, Nat.preimage_ceil_of_ne_zero, -ceil_eq_zero]
 
 @[measurability]

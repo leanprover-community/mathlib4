@@ -72,7 +72,7 @@ theorem disjoint_nhds_cocompact [WeaklyLocallyCompactSpace X] (x : X) :
   disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
 
 theorem compact_basis_nhds [LocallyCompactSpace X] (x : X) :
-    (𝓝 x).HasBasis (fun s => s ∈ 𝓝 x ∧ IsCompact s) fun s => s :=
+    (𝓝 x).HasBasis (fun s ↦ s ∈ 𝓝 x ∧ IsCompact s) fun s ↦ s :=
   hasBasis_self.2 <| by simpa only [and_comm] using LocallyCompactSpace.local_compact_nhds x
 
 theorem local_compact_nhds [LocallyCompactSpace X] {x : X} {n : Set X} (h : n ∈ 𝓝 x) :
@@ -120,7 +120,7 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpac
     · exact forall₂_imp fun i _ hi' => hsub' i hi'
     · classical
       rw [← Set.univ_pi_ite]
-      refine isCompact_univ_pi fun i => ?_
+      refine isCompact_univ_pi fun i ↦ ?_
       by_cases h : i ∈ s
       · rw [if_pos h]
         exact hc i

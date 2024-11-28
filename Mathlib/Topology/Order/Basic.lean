@@ -266,7 +266,7 @@ theorem nhdsWithin_Iic_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α
   simp only [nhdsWithin_Iic_eq'', biInf_inf ha, inf_principal, Ioi_inter_Iic]
 
 theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
-    (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
+    (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u ↦ a < u) fun u ↦ Ico a u :=
   (nhdsWithin_Ici_eq' ha).symm ▸
     hasBasis_biInf_principal
       (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
@@ -274,16 +274,16 @@ theorem nhdsWithin_Ici_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopol
       ha
 
 theorem nhdsWithin_Iic_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
-    (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
+    (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l ↦ l < a) fun l ↦ Ioc l a := by
   convert nhdsWithin_Ici_basis' (α := αᵒᵈ) ha using 2
   exact dual_Ico.symm
 
 theorem nhdsWithin_Ici_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α]
-    (a : α) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
+    (a : α) : (𝓝[≥] a).HasBasis (fun u ↦ a < u) fun u ↦ Ico a u :=
   nhdsWithin_Ici_basis' (exists_gt a)
 
 theorem nhdsWithin_Iic_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMinOrder α]
-    (a : α) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a :=
+    (a : α) : (𝓝[≤] a).HasBasis (fun l ↦ l < a) fun l ↦ Ioc l a :=
   nhdsWithin_Iic_basis' (exists_lt a)
 
 theorem nhds_top_order [TopologicalSpace α] [Preorder α] [OrderTop α] [OrderTopology α] :
@@ -443,7 +443,7 @@ theorem mem_nhds_iff_exists_Ioo_subset [OrderTopology α] [NoMaxOrder α] [NoMin
 
 theorem nhds_basis_Ioo' [OrderTopology α] {a : α} (hl : ∃ l, l < a) (hu : ∃ u, a < u) :
     (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b ↦ Ioo b.1 b.2 :=
-  ⟨fun s => (mem_nhds_iff_exists_Ioo_subset' hl hu).trans <| by simp⟩
+  ⟨fun s ↦ (mem_nhds_iff_exists_Ioo_subset' hl hu).trans <| by simp⟩
 
 theorem nhds_basis_Ioo [OrderTopology α] [NoMaxOrder α] [NoMinOrder α] (a : α) :
     (𝓝 a).HasBasis (fun b : α × α => b.1 < a ∧ a < b.2) fun b ↦ Ioo b.1 b.2 :=
@@ -684,7 +684,7 @@ theorem pi_Iio_mem_nhds' (ha : ∀ i, x' i < a' i) : Iio a' ∈ 𝓝 x' :=
   pi_Iio_mem_nhds ha
 
 theorem pi_Ioi_mem_nhds (ha : ∀ i, a i < x i) : Ioi a ∈ 𝓝 x :=
-  pi_Iio_mem_nhds (π := fun i => (π i)ᵒᵈ) ha
+  pi_Iio_mem_nhds (π := fun i ↦ (π i)ᵒᵈ) ha
 
 theorem pi_Ioi_mem_nhds' (ha : ∀ i, a' i < x' i) : Ioi a' ∈ 𝓝 x' :=
   pi_Ioi_mem_nhds ha

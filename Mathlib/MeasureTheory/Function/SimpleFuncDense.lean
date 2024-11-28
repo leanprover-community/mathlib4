@@ -118,7 +118,7 @@ variable [MeasurableSpace β] {f : β → α}
 noncomputable def approxOn (f : β → α) (hf : Measurable f) (s : Set α) (y₀ : α) (h₀ : y₀ ∈ s)
     [SeparableSpace s] (n : ℕ) : β →ₛ α :=
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
-  comp (nearestPt (fun k => Nat.casesOn k y₀ ((↑) ∘ denseSeq s) : ℕ → α) n) f hf
+  comp (nearestPt (fun k ↦ Nat.casesOn k y₀ ((↑) ∘ denseSeq s) : ℕ → α) n) f hf
 
 @[simp]
 theorem approxOn_zero {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
@@ -140,7 +140,7 @@ theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Me
 
 theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s)
     [SeparableSpace s] {x : β} (hx : f x ∈ closure s) :
-    Tendsto (fun n => approxOn f hf s y₀ h₀ n x) atTop (𝓝 <| f x) := by
+    Tendsto (fun n ↦ approxOn f hf s y₀ h₀ n x) atTop (𝓝 <| f x) := by
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   rw [← @Subtype.range_coe _ s, ← image_univ, ← (denseRange_denseSeq s).closure_eq] at hx
   simp (config := { iota := false }) only [approxOn, coe_comp]

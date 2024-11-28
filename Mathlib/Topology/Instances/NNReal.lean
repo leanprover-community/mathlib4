@@ -104,7 +104,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
   ⟨(↑), continuous_coe⟩
 
 instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
-    CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
+    CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f ↦ ∀ x, 0 ≤ f x where
   prf f hf := ⟨⟨fun x ↦ ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
 
 @[simp, norm_cast]
@@ -178,7 +178,7 @@ protected theorem _root_.HasSum.toNNReal {f : α → ℝ} {y : ℝ} (hf₀ : ∀
   simpa [hasSum_coe] using hy
 
 theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n) (hf : Summable f) :
-    HasSum (fun n => Real.toNNReal (f n)) (Real.toNNReal (∑' n, f n)) :=
+    HasSum (fun n ↦ Real.toNNReal (f n)) (Real.toNNReal (∑' n, f n)) :=
   hf.hasSum.toNNReal hf_nonneg
 
 @[norm_cast]
@@ -188,7 +188,7 @@ theorem summable_coe {f : α → ℝ≥0} : (Summable fun a ↦ (f a : ℝ)) ↔
   · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
 
 theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    (@Summable ℝ≥0 _ _ _ fun n => ⟨f n, hf n⟩) ↔ Summable f :=
+    (@Summable ℝ≥0 _ _ _ fun n ↦ ⟨f n, hf n⟩) ↔ Summable f :=
   Iff.symm <| summable_coe (f := fun x ↦ ⟨f x, hf x⟩)
 
 @[norm_cast]
@@ -212,17 +212,17 @@ theorem summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable
   rw [← summable_coe] at hf ⊢
   exact hf.comp_injective hi
 
-theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Summable fun i => f (i + k) :=
+theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Summable fun i ↦ f (i + k) :=
   summable_comp_injective hf <| add_left_injective k
 
 nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
-    (Summable fun i => f (i + k)) ↔ Summable f := by
+    (Summable fun i ↦ f (i + k)) ↔ Summable f := by
   rw [← summable_coe, ← summable_coe]
-  exact @summable_nat_add_iff ℝ _ _ _ (fun i => (f i : ℝ)) k
+  exact @summable_nat_add_iff ℝ _ _ _ (fun i ↦ (f i : ℝ)) k
 
 nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
-    HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i ∈ range k, f i) := by
-  rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
+    HasSum (fun n ↦ f (n + k)) a ↔ HasSum f (a + ∑ i ∈ range k, f i) := by
+  rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n ↦ toReal (f n)) k]; norm_cast
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
     ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=
@@ -230,7 +230,7 @@ theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
 
 theorem iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
     ⨅ (n : ℝ) (_ : 0 < n), f n = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=
-  le_antisymm (iInf_mono' fun r => ⟨r, le_rfl⟩) (iInf₂_mono' fun r hr => ⟨⟨r, hr.le⟩, hr, le_rfl⟩)
+  le_antisymm (iInf_mono' fun r ↦ ⟨r, le_rfl⟩) (iInf₂_mono' fun r hr => ⟨⟨r, hr.le⟩, hr, le_rfl⟩)
 
 end coe
 
@@ -280,7 +280,7 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
     exact NNReal.coe_nonneg _
   obtain ⟨L, hL⟩ := Real.tendsto_of_bddBelow_antitone ⟨0, h_bdd_0⟩ h_ant
   have hL0 : 0 ≤ L :=
-    haveI h_glb : IsGLB (Set.range fun n => (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
+    haveI h_glb : IsGLB (Set.range fun n ↦ (f n : ℝ)) L := isGLB_of_tendsto_atTop h_ant hL
     (le_isGLB_iff h_glb).mpr h_bdd_0
   exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
 

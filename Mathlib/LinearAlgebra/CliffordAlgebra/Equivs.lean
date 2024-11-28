@@ -130,7 +130,7 @@ theorem Q_apply (r : ℝ) : Q r = -(r * r) :=
 `CliffordAlgebraComplex.Q` above can be converted to `ℂ`. -/
 def toComplex : CliffordAlgebra Q →ₐ[ℝ] ℂ :=
   CliffordAlgebra.lift Q
-    ⟨LinearMap.toSpanSingleton _ _ Complex.I, fun r => by
+    ⟨LinearMap.toSpanSingleton _ _ Complex.I, fun r ↦ by
       dsimp [LinearMap.toSpanSingleton, LinearMap.id]
       rw [mul_mul_mul_comm]
       simp⟩
@@ -263,9 +263,9 @@ variable {c₁ c₂}
 `CliffordAlgebraQuaternion.Q` can be converted to `ℍ[R,c₁,c₂]`. -/
 def toQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,c₂] :=
   CliffordAlgebra.lift (Q c₁ c₂)
-    ⟨{  toFun := fun v => (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂])
+    ⟨{  toFun := fun v ↦ (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,c₂])
         map_add' := fun v₁ v₂ => by simp
-        map_smul' := fun r v => by dsimp; rw [mul_zero] }, fun v => by
+        map_smul' := fun r v => by dsimp; rw [mul_zero] }, fun v ↦ by
       dsimp
       ext
       all_goals dsimp; ring⟩
@@ -365,7 +365,7 @@ theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : Quadra
 the dual numbers. -/
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
   AlgEquiv.ofAlgHom
-    (CliffordAlgebra.lift (0 : QuadraticForm R R) ⟨inrHom R _, fun m => inr_mul_inr _ m m⟩)
+    (CliffordAlgebra.lift (0 : QuadraticForm R R) ⟨inrHom R _, fun m ↦ inr_mul_inr _ m m⟩)
     (DualNumber.lift ⟨
       (Algebra.ofId _ _, ι (R := R) _ 1),
       ι_mul_ι (1 : R) 1,

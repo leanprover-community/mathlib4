@@ -49,7 +49,7 @@ is a unit.
 -/
 noncomputable def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
   | 0 => ↑a⁻¹
-  | n + 1 => succNthValUnits n a A fun i => inverseCoeff a A i.val
+  | n + 1 => succNthValUnits n a A fun i ↦ inverseCoeff a A i.val
 
 /--
 Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself, a unit in `𝕎 k`.

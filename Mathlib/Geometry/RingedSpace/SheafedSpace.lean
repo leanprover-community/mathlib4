@@ -200,7 +200,7 @@ noncomputable instance [HasLimits C] :
     ⟨fun {K} =>
       createsColimitOfFullyFaithfulOfIso
         ⟨(PresheafedSpace.colimitCocone (K ⋙ forgetToPresheafedSpace)).pt,
-          limit_isSheaf _ fun j => Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
+          limit_isSheaf _ fun j ↦ Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
         (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩⟩
 
 instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=

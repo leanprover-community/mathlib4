@@ -110,7 +110,7 @@ instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful
     apply DFunLike.coe_injective
     dsimp
     ext x
-    apply_fun (fun f => f x) at h
+    apply_fun (fun f ↦ f x) at h
     exact h ⟩
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between

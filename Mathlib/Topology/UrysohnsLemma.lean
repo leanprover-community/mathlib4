@@ -182,7 +182,7 @@ theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
     norm_num at this
     exact Iff.mpr (div_le_one zero_lt_two) this
 
-theorem bddAbove_range_approx (c : CU P) (x : X) : BddAbove (range fun n => c.approx n x) :=
+theorem bddAbove_range_approx (c : CU P) (x : X) : BddAbove (range fun n ↦ c.approx n x) :=
   ⟨1, fun _ ⟨n, hn⟩ => hn ▸ c.approx_le_one n x⟩
 
 theorem approx_le_approx_of_U_sub_C {c₁ c₂ : CU P} (h : c₁.U ⊆ c₂.C) (n₁ n₂ : ℕ) (x : X) :
@@ -212,8 +212,8 @@ theorem approx_le_succ (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ c.approx 
   · rw [approx, approx]
     exact midpoint_le_midpoint (ihn _) (ihn _)
 
-theorem approx_mono (c : CU P) (x : X) : Monotone fun n => c.approx n x :=
-  monotone_nat_of_le_succ fun n => c.approx_le_succ n x
+theorem approx_mono (c : CU P) (x : X) : Monotone fun n ↦ c.approx n x :=
+  monotone_nat_of_le_succ fun n ↦ c.approx_le_succ n x
 
 /-- A continuous function `f : X → ℝ` such that
 
@@ -224,7 +224,7 @@ protected noncomputable def lim (c : CU P) (x : X) : ℝ :=
   ⨆ n, c.approx n x
 
 theorem tendsto_approx_atTop (c : CU P) (x : X) :
-    Tendsto (fun n => c.approx n x) atTop (𝓝 <| c.lim x) :=
+    Tendsto (fun n ↦ c.approx n x) atTop (𝓝 <| c.lim x) :=
   tendsto_atTop_ciSup (c.approx_mono x) ⟨1, fun _ ⟨_, hn⟩ => hn ▸ c.approx_le_one _ _⟩
 
 theorem lim_of_mem_C (c : CU P) (x : X) (h : x ∈ c.C) : c.lim x = 0 := by

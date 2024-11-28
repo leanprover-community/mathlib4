@@ -303,7 +303,7 @@ protected theorem LocallyIntegrable.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜
 
 theorem locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → E}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i ∈ s, f i) μ :=
-  Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
+  Finset.sum_induction f (fun g ↦ LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
     locallyIntegrable_zero hf
 
 theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → E}

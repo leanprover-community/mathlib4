@@ -51,18 +51,18 @@ namespace Adapted
 
 @[to_additive]
 protected theorem mul [Mul β] [ContinuousMul β] (hu : Adapted f u) (hv : Adapted f v) :
-    Adapted f (u * v) := fun i => (hu i).mul (hv i)
+    Adapted f (u * v) := fun i ↦ (hu i).mul (hv i)
 
 @[to_additive]
 protected theorem div [Div β] [ContinuousDiv β] (hu : Adapted f u) (hv : Adapted f v) :
-    Adapted f (u / v) := fun i => (hu i).div (hv i)
+    Adapted f (u / v) := fun i ↦ (hu i).div (hv i)
 
 @[to_additive]
 protected theorem inv [Group β] [TopologicalGroup β] (hu : Adapted f u) :
-    Adapted f u⁻¹ := fun i => (hu i).inv
+    Adapted f u⁻¹ := fun i ↦ (hu i).inv
 
 protected theorem smul [SMul ℝ β] [ContinuousSMul ℝ β] (c : ℝ) (hu : Adapted f u) :
-    Adapted f (c • u) := fun i => (hu i).const_smul c
+    Adapted f (c • u) := fun i ↦ (hu i).const_smul c
 
 protected theorem stronglyMeasurable {i : ι} (hf : Adapted f u) : StronglyMeasurable[m] (u i) :=
   (hf i).mono (f.le i)
@@ -145,7 +145,7 @@ protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
 
 @[to_additive]
 protected theorem inv [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u) :
-    ProgMeasurable f fun i ω => (u i ω)⁻¹ := fun i => (hu i).inv
+    ProgMeasurable f fun i ω => (u i ω)⁻¹ := fun i ↦ (hu i).inv
 
 @[to_additive]
 protected theorem div [Group β] [TopologicalGroup β] (hu : ProgMeasurable f u)
@@ -161,7 +161,7 @@ theorem progMeasurable_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSp
     (h : ∀ l, ProgMeasurable f (U l)) (h_tendsto : Tendsto U fltr (𝓝 u)) : ProgMeasurable f u := by
   intro i
   apply @stronglyMeasurable_of_tendsto (Set.Iic i × Ω) β γ
-    (MeasurableSpace.prod _ (f i)) _ _ fltr _ _ _ _ fun l => h l i
+    (MeasurableSpace.prod _ (f i)) _ _ fltr _ _ _ _ fun l ↦ h l i
   rw [tendsto_pi_nhds] at h_tendsto ⊢
   intro x
   specialize h_tendsto x.fst
@@ -175,10 +175,10 @@ theorem progMeasurable_of_tendsto [MeasurableSpace ι] [PseudoMetrizableSpace β
 /-- A continuous and adapted process is progressively measurable. -/
 theorem Adapted.progMeasurable_of_continuous [TopologicalSpace ι] [MetrizableSpace ι]
     [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
-    [PseudoMetrizableSpace β] (h : Adapted f u) (hu_cont : ∀ ω, Continuous fun i => u i ω) :
+    [PseudoMetrizableSpace β] (h : Adapted f u) (hu_cont : ∀ ω, Continuous fun i ↦ u i ω) :
     ProgMeasurable f u := fun i =>
   @stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable _ _ (Set.Iic i) _ _ _ _ _ _ _
-    (f i) _ (fun ω => (hu_cont ω).comp continuous_induced_dom) fun j => (h j).mono (f.mono j.prop)
+    (f i) _ (fun ω => (hu_cont ω).comp continuous_induced_dom) fun j ↦ (h j).mono (f.mono j.prop)
 
 /-- For filtrations indexed by a discrete order, `Adapted` and `ProgMeasurable` are equivalent.
 This lemma provides `Adapted f u → ProgMeasurable f u`.
@@ -189,7 +189,7 @@ theorem Adapted.progMeasurable_of_discrete [TopologicalSpace ι] [DiscreteTopolo
   h.progMeasurable_of_continuous fun _ => continuous_of_discreteTopology
 
 -- this dot notation will make more sense once we have a more general definition for predictable
-theorem Predictable.adapted {f : Filtration ℕ m} {u : ℕ → Ω → β} (hu : Adapted f fun n => u (n + 1))
+theorem Predictable.adapted {f : Filtration ℕ m} {u : ℕ → Ω → β} (hu : Adapted f fun n ↦ u (n + 1))
     (hu0 : StronglyMeasurable[f 0] (u 0)) : Adapted f u := fun n =>
   match n with
   | 0 => hu0

@@ -48,9 +48,9 @@ variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] 
 /-- `pi` construction for linear functions. From a family of linear functions it produces a linear
 function into a family of modules. -/
 def pi (f : (i : ι) → M₂ →ₗ[R] φ i) : M₂ →ₗ[R] (i : ι) → φ i :=
-  { Pi.addHom fun i => (f i).toAddHom with
+  { Pi.addHom fun i ↦ (f i).toAddHom with
     toFun := fun c i => f i c
-    map_smul' := fun _ _ => funext fun i => (f i).map_smul _ _ }
+    map_smul' := fun _ _ => funext fun i ↦ (f i).map_smul _ _ }
 
 @[simp]
 theorem pi_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i : ι) : pi f c i = f i c :=
@@ -66,7 +66,7 @@ theorem pi_eq_zero (f : (i : ι) → M₂ →ₗ[R] φ i) : pi f = 0 ↔ ∀ i, 
 theorem pi_zero : pi (fun _ => 0 : (i : ι) → M₂ →ₗ[R] φ i) = 0 := by ext; rfl
 
 theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂) :
-    (pi f).comp g = pi fun i => (f i).comp g :=
+    (pi f).comp g = pi fun i ↦ (f i).comp g :=
   rfl
 
 /-- The projections from a family of modules are linear maps.
@@ -93,7 +93,7 @@ theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i
   bot_unique <|
     SetLike.le_def.2 fun a h => by
       simp only [mem_iInf, mem_ker, proj_apply] at h
-      exact (mem_bot _).2 (funext fun i => h i)
+      exact (mem_bot _).2 (funext fun i ↦ h i)
 
 instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
     [AddCommMonoid M] [AddCommMonoid N] [SMul R M] [SMul R N] [Module S M] [Module S N]
@@ -112,7 +112,7 @@ protected def compLeft (f : M₂ →ₗ[R] M₃) (I : Type*) : (I → M₂) →�
 
 theorem apply_single [AddCommMonoid M] [Module R M] [DecidableEq ι] (f : (i : ι) → φ i →ₗ[R] M)
     (i j : ι) (x : φ i) : f j (Pi.single i x j) = (Pi.single i (f i x) : ι → M) j :=
-  Pi.apply_single (fun i => f i) (fun i => (f i).map_zero) _ _ _
+  Pi.apply_single (fun i ↦ f i) (fun i ↦ (f i).map_zero) _ _ _
 
 variable (R φ)
 
@@ -141,7 +141,7 @@ theorem proj_comp_single_ne (i j : ι) (h : i ≠ j) : (proj i).comp (single R �
 
 theorem iSup_range_single_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (single R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
-  refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
+  refine iSup_le fun i ↦ iSup_le fun hi => range_le_iff_comap.2 ?_
   simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
   rw [proj_comp_single_ne R φ j i, zero_apply]
@@ -169,7 +169,7 @@ theorem iSup_range_single_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
     ⨆ i ∈ I, range (single R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine le_antisymm (iSup_range_single_le_iInf_ker_proj _ _ _ _ hd) ?_
   have : Set.univ ⊆ ↑hI.toFinset ∪ J := by rwa [hI.coe_toFinset]
-  refine le_trans (iInf_ker_proj_le_iSup_range_single R φ this) (iSup_mono fun i => ?_)
+  refine le_trans (iInf_ker_proj_le_iSup_range_single R φ this) (iSup_mono fun i ↦ ?_)
   rw [Set.Finite.mem_toFinset]
 
 theorem iSup_range_single [Finite ι] : ⨆ i, range (single R φ i) = ⊤ := by
@@ -249,13 +249,13 @@ variable (R φ)
 
 /-- If `I` and `J` are disjoint index sets, the product of the kernels of the `J`th projections of
 `φ` is linearly equivalent to the product over `I`. -/
-def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
+def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i ↦ i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
     (⨅ i ∈ J, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) ≃ₗ[R] (i : I) → φ i := by
   refine
-    LinearEquiv.ofLinear (pi fun i => (proj (i : ι)).comp (Submodule.subtype _))
-      (codRestrict _ (pi fun i => if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) ?_) ?_ ?_
+    LinearEquiv.ofLinear (pi fun i ↦ (proj (i : ι)).comp (Submodule.subtype _))
+      (codRestrict _ (pi fun i ↦ if h : i ∈ I then proj (⟨i, h⟩ : I) else 0) ?_) ?_ ?_
   · intro b
     simp only [mem_iInf, mem_ker, funext_iff, proj_apply, pi_apply]
     intro j hjJ
@@ -283,10 +283,10 @@ section
 
 /-- `diag i j` is the identity map if `i = j`. Otherwise it is the constant 0 map. -/
 def diag (i j : ι) : φ i →ₗ[R] φ j :=
-  @Function.update ι (fun j => φ i →ₗ[R] φ j) _ 0 i id j
+  @Function.update ι (fun j ↦ φ i →ₗ[R] φ j) _ 0 i id j
 
 theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
-    (update f i b j) c = update (fun i => f i c) i (b c) j := by
+    (update f i b j) c = update (fun i ↦ f i c) i (b c) j := by
   by_cases h : j = i
   · rw [h, update_same, update_same]
   · rw [update_noteq h, update_noteq h]
@@ -310,7 +310,7 @@ end
 /-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
 of the canonical basis. -/
 theorem pi_apply_eq_sum_univ [Fintype ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
-    f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
+    f x = ∑ i, x i • f fun j ↦ if i = j then 1 else 0 := by
   conv_lhs => rw [pi_eq_sum_univ x, map_sum]
   refine Finset.sum_congr rfl (fun _ _ => ?_)
   rw [map_smul]
@@ -327,7 +327,7 @@ open LinearMap
 `p : (i : ι) → Submodule R (φ i)`, `pi I s` is the submodule of dependent functions
 `f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
 def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
-  carrier := Set.pi I fun i => p i
+  carrier := Set.pi I fun i ↦ p i
   zero_mem' i _ := (p i).zero_mem
   add_mem' {_ _} hx hy i hi := (p i).add_mem (hx i hi) (hy i hi)
   smul_mem' c _ hx i hi := (p i).smul_mem c (hx i hi)
@@ -339,7 +339,7 @@ theorem mem_pi : x ∈ pi I p ↔ ∀ i ∈ I, x i ∈ p i :=
   Iff.rfl
 
 @[simp, norm_cast]
-theorem coe_pi : (pi I p : Set ((i : ι) → φ i)) = Set.pi I fun i => p i :=
+theorem coe_pi : (pi I p : Set ((i : ι) → φ i)) = Set.pi I fun i ↦ p i :=
   rfl
 
 @[simp]
@@ -366,12 +366,12 @@ theorem iInf_comap_proj :
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
     ⨆ i, map (LinearMap.single R φ i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
-  refine (iSup_le fun i => ?_).antisymm ?_
+  refine (iSup_le fun i ↦ ?_).antisymm ?_
   · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -
     rcases em (j = i) with (rfl | hj) <;> simp [*]
   · intro x hx
     rw [← Finset.univ_sum_single x]
-    exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
+    exact sum_mem_iSup fun i ↦ mem_map_of_mem (hx i trivial)
 
 theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)) {i} :
     p i ≤ Submodule.comap (LinearMap.single R φ i : φ i →ₗ[R] _) (Submodule.pi Set.univ p) := by
@@ -396,7 +396,7 @@ variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 
 This is `Equiv.piCongrRight` as a `LinearEquiv` -/
 def piCongrRight (e : (i : ι) → φ i ≃ₗ[R] ψ i) : ((i : ι) → φ i) ≃ₗ[R] (i : ι) → ψ i :=
-  { AddEquiv.piCongrRight fun j => (e j).toAddEquiv with
+  { AddEquiv.piCongrRight fun j ↦ (e j).toAddEquiv with
     toFun := fun f i => e i (f i)
     invFun := fun f i => (e i).symm (f i)
     map_smul' := fun c f => by ext; simp }
@@ -406,17 +406,17 @@ theorem piCongrRight_apply (e : (i : ι) → φ i ≃ₗ[R] ψ i) (f i) :
     piCongrRight e f i = e i (f i) := rfl
 
 @[simp]
-theorem piCongrRight_refl : (piCongrRight fun j => refl R (φ j)) = refl _ _ :=
+theorem piCongrRight_refl : (piCongrRight fun j ↦ refl R (φ j)) = refl _ _ :=
   rfl
 
 @[simp]
 theorem piCongrRight_symm (e : (i : ι) → φ i ≃ₗ[R] ψ i) :
-    (piCongrRight e).symm = piCongrRight fun i => (e i).symm :=
+    (piCongrRight e).symm = piCongrRight fun i ↦ (e i).symm :=
   rfl
 
 @[simp]
 theorem piCongrRight_trans (e : (i : ι) → φ i ≃ₗ[R] ψ i) (f : (i : ι) → ψ i ≃ₗ[R] χ i) :
-    (piCongrRight e).trans (piCongrRight f) = piCongrRight fun i => (e i).trans (f i) :=
+    (piCongrRight e).trans (piCongrRight f) = piCongrRight fun i ↦ (e i).trans (f i) :=
   rfl
 
 variable (R φ)
@@ -549,7 +549,7 @@ def piFinTwo (M : Fin 2 → Type v)
 @[simp]
 theorem piFinTwo_apply (M : Fin 2 → Type v)
     [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
-    (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
+    (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f ↦ (f 0, f 1) := rfl
 
 /-- Linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
 @[simps! (config := .asFn)]
@@ -566,7 +566,7 @@ variable (R) {η : Type x} [Semiring R] (s : ι → η)
 @[simps]
 noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → R :=
   { Function.ExtendByZero.hom R s with
-    toFun := fun f => Function.extend s f 0
+    toFun := fun f ↦ Function.extend s f 0
     map_smul' := fun r f => by simpa using Function.extend_smul r s f 0 }
 
 end Extend

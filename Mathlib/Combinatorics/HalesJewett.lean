@@ -295,7 +295,7 @@ def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (ι ⊕ ι') 
   idxFun := Sum.elim l.idxFun l'.idxFun
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 
-theorem apply_def (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x := rfl
+theorem apply_def (l : Line α ι) (x : α) : l x = fun i ↦ (l.idxFun i).getD x := rfl
 
 theorem apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = none) : l x i = x := by
   simp only [Option.getD_none, h, l.apply_def]
@@ -342,7 +342,7 @@ private theorem exists_mono_in_high_dimension' :
       forall_imp fun _ =>
         Exists.imp fun ι =>
           Exists.imp fun _ h C =>
-            let ⟨l, c, lc⟩ := h fun v => C (e ∘ v)
+            let ⟨l, c, lc⟩ := h fun v ↦ C (e ∘ v)
             ⟨l.map e, c, e.forall_congr_right.mp fun x ↦ by rw [← lc x, Line.map_apply]⟩)
   (by
     -- This deals with the degenerate case where `α` is empty.
@@ -422,7 +422,7 @@ private theorem exists_mono_in_high_dimension' :
             Sum.elim s.focus (l'.map some none), ?_, ?_⟩, ?_⟩
     -- Porting note: Needed to reorder the following two goals
     -- The product lines are almost monochromatic.
-    · refine fun p => ⟨p.line.prod (l'.map some), p.color, fun x ↦ ?_⟩
+    · refine fun p ↦ ⟨p.line.prod (l'.map some), p.color, fun x ↦ ?_⟩
       rw [Line.prod_apply, Line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
     -- The vertical line is almost monochromatic.
     · rw [vertical_apply, ← congr_fun (hl' x), Line.map_apply]
@@ -454,15 +454,15 @@ monoid, and `S` is a finite subset, then there exists a monochromatic homothetic
 theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
-  specialize hι fun v => C <| ∑ i, v i
+  specialize hι fun v ↦ C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
+  set s : Finset ι := Finset.univ.filter (fun i ↦ l.idxFun i = none) with hs
   refine
     ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i ∈ sᶜ, ((l.idxFun i).map ?_).getD 0,
       c, ?_⟩
   · rw [hs, Finset.mem_filter]
     exact ⟨Finset.mem_univ _, l.proper.choose_spec⟩
-  · exact fun m => m
+  · exact fun m ↦ m
   intro x xs
   rw [← hl ⟨x, xs⟩]
   clear hl; congr

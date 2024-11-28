@@ -58,7 +58,7 @@ theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
 @[simps!]
 def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
   ChainComplex.ofHom _ _ _ _ _ _
-    (fun n => factorThru _ _ (factors_normalizedMooreComplex_PInfty n)) fun n => by
+    (fun n ↦ factorThru _ _ (factors_normalizedMooreComplex_PInfty n)) fun n ↦ by
     rw [← cancel_mono (NormalizedMooreComplex.objX X n).arrow, assoc, assoc, factorThru_arrow,
       ← inclusionOfMooreComplexMap_f, ← normalizedMooreComplex_objD,
       ← (inclusionOfMooreComplexMap X).comm (n + 1) n, inclusionOfMooreComplexMap_f,

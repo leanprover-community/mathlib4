@@ -345,8 +345,8 @@ theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) : IsPullb
   of_isLimit' sq
     (by
       refine
-        PullbackCone.IsLimit.mk _ (fun s => s.fst ≫ inv fst) (by aesop_cat)
-          (fun s => ?_) (by aesop_cat)
+        PullbackCone.IsLimit.mk _ (fun s ↦ s.fst ≫ inv fst) (by aesop_cat)
+          (fun s ↦ ?_) (by aesop_cat)
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 
 lemma of_iso (h : IsPullback fst snd f g)
@@ -605,7 +605,7 @@ theorem zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X
   { w := by simp
     isLimit' :=
       ⟨{  lift := fun _ => 0
-          fac := fun s => by
+          fac := fun s ↦ by
             simpa [eq_iff_true_of_subsingleton] using
               @PullbackCone.equalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
                 (by simpa using (PullbackCone.condition s).symm) }⟩ }
@@ -907,7 +907,7 @@ theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0
   { w := by simp
     isColimit' :=
       ⟨{  desc := fun _ => 0
-          fac := fun s => by
+          fac := fun s ↦ by
             have c :=
               @PushoutCocone.coequalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
                 (by simp [eq_iff_true_of_subsingleton]) (by simpa using PushoutCocone.condition s)
@@ -1160,7 +1160,7 @@ theorem of_horiz_isIso [IsIso f] [IsIso inr] (sq : CommSq f g inl inr) : IsPusho
   of_isColimit' sq
     (by
       refine
-        PushoutCocone.IsColimit.mk _ (fun s => inv inr ≫ s.inr) (fun s => ?_)
+        PushoutCocone.IsColimit.mk _ (fun s ↦ inv inr ≫ s.inr) (fun s ↦ ?_)
           (by aesop_cat) (by aesop_cat)
       simp only [← cancel_epi f, s.condition, sq.w_assoc, IsIso.hom_inv_id_assoc])
 
@@ -1205,8 +1205,8 @@ variable {X Y Z : C} {f f' : X ⟶ Y} {g g' : Y ⟶ Z}
 `g` and `g'`. -/
 noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fork.ofι f H.w) := by
   fapply Fork.IsLimit.mk
-  · exact fun s => H.isLimit.lift (PullbackCone.mk s.ι s.ι s.condition)
-  · exact fun s => H.isLimit.fac _ WalkingCospan.left
+  · exact fun s ↦ H.isLimit.lift (PullbackCone.mk s.ι s.ι s.condition)
+  · exact fun s ↦ H.isLimit.fac _ WalkingCospan.left
   · intro s m e
     apply PullbackCone.IsLimit.hom_ext H.isLimit <;> refine e.trans ?_ <;> symm <;>
       exact H.isLimit.fac _ _
@@ -1216,8 +1216,8 @@ noncomputable def IsPullback.isLimitFork (H : IsPullback f f g g') : IsLimit (Fo
 noncomputable def IsPushout.isLimitFork (H : IsPushout f f' g g) :
     IsColimit (Cofork.ofπ g H.w) := by
   fapply Cofork.IsColimit.mk
-  · exact fun s => H.isColimit.desc (PushoutCocone.mk s.π s.π s.condition)
-  · exact fun s => H.isColimit.fac _ WalkingSpan.left
+  · exact fun s ↦ H.isColimit.desc (PushoutCocone.mk s.π s.π s.condition)
+  · exact fun s ↦ H.isColimit.fac _ WalkingSpan.left
   · intro s m e
     apply PushoutCocone.IsColimit.hom_ext H.isColimit <;> refine e.trans ?_ <;> symm <;>
       exact H.isColimit.fac _ _

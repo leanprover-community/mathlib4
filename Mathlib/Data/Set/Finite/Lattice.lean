@@ -86,7 +86,7 @@ instance finite_sUnion {s : Set (Set α)} [Finite s] [H : ∀ t : s, Finite (t :
 theorem finite_biUnion {ι : Type*} (s : Set ι) [Finite s] (t : ι → Set α)
     (H : ∀ i ∈ s, Finite (t i)) : Finite (⋃ x ∈ s, t x) := by
   rw [biUnion_eq_iUnion]
-  haveI : ∀ i : s, Finite (t i) := fun i => H i i.property
+  haveI : ∀ i : s, Finite (t i) := fun i ↦ H i i.property
   infer_instance
 
 instance finite_biUnion' {ι : Type*} (s : Set ι) [Finite s] (t : ι → Set α) [∀ i, Finite (t i)] :
@@ -121,7 +121,7 @@ after possibly setting up some `Fintype` and classical `Decidable` instances.
 section SetFiniteConstructors
 
 theorem finite_iUnion [Finite ι] {f : ι → Set α} (H : ∀ i, (f i).Finite) : (⋃ i, f i).Finite :=
-  haveI := fun i => (H i).to_subtype
+  haveI := fun i ↦ (H i).to_subtype
   toFinite _
 
 /-- Dependent version of `Finite.biUnion`. -/
@@ -280,17 +280,17 @@ theorem iSup_iInf_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [No
 theorem iSup_iInf_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
     ⨆ j, ⨅ i, f i j = ⨅ i, ⨆ j, f i j :=
-  @iSup_iInf_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ _ fun i => (hf i).dual_left
+  @iSup_iInf_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ _ fun i ↦ (hf i).dual_left
 
 theorem iInf_iSup_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (swap (· ≤ ·))] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
     ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j :=
-  iSup_iInf_of_antitone (α := αᵒᵈ) fun i => (hf i).dual_right
+  iSup_iInf_of_antitone (α := αᵒᵈ) fun i ↦ (hf i).dual_right
 
 theorem iInf_iSup_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
     ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j :=
-  iSup_iInf_of_monotone (α := αᵒᵈ) fun i => (hf i).dual_right
+  iSup_iInf_of_monotone (α := αᵒᵈ) fun i ↦ (hf i).dual_right
 
 /-- An increasing union distributes over finite intersection. -/
 theorem iUnion_iInter_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsDirected ι' (· ≤ ·)]
@@ -318,7 +318,7 @@ theorem iInter_iUnion_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι']
 
 theorem iUnion_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty ι'] {α : ι → Type*}
     {I : Set ι} {s : ∀ i, ι' → Set (α i)} (hI : I.Finite) (hs : ∀ i ∈ I, Monotone (s i)) :
-    ⋃ j : ι', I.pi (fun i => s i j) = I.pi fun i => ⋃ j, s i j := by
+    ⋃ j : ι', I.pi (fun i ↦ s i j) = I.pi fun i ↦ ⋃ j, s i j := by
   simp only [pi_def, biInter_eq_iInter, preimage_iUnion]
   haveI := hI.fintype.finite
   refine iUnion_iInter_of_monotone (ι' := ι') (fun (i : I) j₁ j₂ h => ?_)
@@ -326,7 +326,7 @@ theorem iUnion_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty ι'] 
 
 theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty ι'] [Finite ι]
     {α : ι → Type*} {s : ∀ i, ι' → Set (α i)} (hs : ∀ i, Monotone (s i)) :
-    ⋃ j : ι', pi univ (fun i => s i j) = pi univ fun i => ⋃ j, s i j :=
+    ⋃ j : ι', pi univ (fun i ↦ s i j) = pi univ fun i ↦ ⋃ j, s i j :=
   iUnion_pi_of_monotone finite_univ fun i _ => hs i
 
 section

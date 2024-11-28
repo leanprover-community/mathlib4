@@ -26,7 +26,7 @@ variable {J : Type v} [SmallCategory J]
 
 /-- The projection from the product as a bundled continuous map. -/
 abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
-  ⟨fun f => f i, continuous_apply i⟩
+  ⟨fun f ↦ f i, continuous_apply i⟩
 
 /-- The explicit fan of a family of topological spaces given by the pi type. -/
 @[simps! pt π_app]
@@ -37,7 +37,7 @@ def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan α :=
 def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where
   lift S :=
     { toFun := fun s i => S.π.app ⟨i⟩ s
-      continuous_toFun := continuous_pi (fun i => (S.π.app ⟨i⟩).2) }
+      continuous_toFun := continuous_pi (fun i ↦ (S.π.app ⟨i⟩).2) }
   uniq := by
     intro S m h
     apply ContinuousMap.ext; intro x
@@ -85,7 +85,7 @@ def sigmaCofan {ι : Type v} (α : ι → TopCat.{max v u}) : Cofan α :=
 def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit (sigmaCofan β) where
   desc S :=
     { toFun := fun (s : of (Σ i, β i)) => S.ι.app ⟨s.1⟩ s.2
-      continuous_toFun := continuous_sigma fun i => (S.ι.app ⟨i⟩).continuous_toFun }
+      continuous_toFun := continuous_sigma fun i ↦ (S.ι.app ⟨i⟩).continuous_toFun }
   uniq := by
     intro S m h
     ext ⟨i, x⟩
@@ -145,7 +145,7 @@ def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
 /-- The constructed binary fan is indeed a limit -/
 def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   lift := fun S : BinaryFan X Y => {
-    toFun := fun s => (S.fst s, S.snd s)
+    toFun := fun s ↦ (S.fst s, S.snd s)
     -- Porting note: continuity failed again here. Lean cannot infer
     -- ContinuousMapClass (X ⟶ Y) X Y for X Y : TopCat which may be one of the problems
     continuous_toFun := Continuous.prod_mk

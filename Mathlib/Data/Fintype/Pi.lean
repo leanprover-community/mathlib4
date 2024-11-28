@@ -72,7 +72,7 @@ lemma piFinset_of_isEmpty [IsEmpty α] (s : ∀ a, Finset (γ a)) : piFinset s =
   eq_univ_of_forall fun _ ↦ by simp
 
 @[simp]
-theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i => {f i} : ∀ i, Finset (δ i)) = {f} :=
+theorem piFinset_singleton (f : ∀ i, δ i) : piFinset (fun i ↦ {f i} : ∀ i, Finset (δ i)) = {f} :=
   ext fun _ => by simp only [funext_iff, Fintype.mem_piFinset, mem_singleton]
 
 theorem piFinset_subsingleton {f : ∀ i, Finset (δ i)} (hf : ∀ i, (f i : Set (δ i)).Subsingleton) :

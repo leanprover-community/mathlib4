@@ -242,7 +242,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   exact of_eq_of_gradedMonoid_eq (_root_.mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
 
 instance instNatCast : NatCast (⨁ i, A i) where
-  natCast := fun n => of _ _ (GSemiring.natCast n)
+  natCast := fun n ↦ of _ _ (GSemiring.natCast n)
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
 instance semiring : Semiring (⨁ i, A i) :=
@@ -252,7 +252,7 @@ instance semiring : Semiring (⨁ i, A i) :=
     mul_assoc := mul_assoc A
     toNatCast := instNatCast _
     natCast_zero := by simp only [NatCast.natCast, GSemiring.natCast_zero, map_zero]
-    natCast_succ := fun n => by
+    natCast_succ := fun n ↦ by
       simp_rw [NatCast.natCast, GSemiring.natCast_succ]
       rw [map_add]
       rfl }
@@ -523,7 +523,7 @@ theorem ringHom_ext' ⦃F G : (⨁ i, A i) →+* R⦄
 
 /-- Two `RingHom`s out of a direct sum are equal if they agree on the generators. -/
 theorem ringHom_ext ⦃f g : (⨁ i, A i) →+* R⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
-  ringHom_ext' fun i => AddMonoidHom.ext <| h i
+  ringHom_ext' fun i ↦ AddMonoidHom.ext <| h i
 
 /-- A family of `AddMonoidHom`s preserving `DirectSum.One.one` and `DirectSum.Mul.mul`
 describes a `RingHom`s on `⨁ i, A i`. This is a stronger version of `DirectSum.toMonoid`.

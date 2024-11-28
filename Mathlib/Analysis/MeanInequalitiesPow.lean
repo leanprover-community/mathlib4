@@ -223,8 +223,8 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
       toNNReal_rpow]
     -- use corresponding nnreal result
     refine
-      NNReal.rpow_arith_mean_le_arith_mean_rpow s (fun i => (w i).toNNReal)
-        (fun i => (z i).toNNReal) ?_ hp
+      NNReal.rpow_arith_mean_le_arith_mean_rpow s (fun i ↦ (w i).toNNReal)
+        (fun i ↦ (z i).toNNReal) ?_ hp
     -- verify the hypothesis `∑ i ∈ s, (w i).toNNReal = 1`, using `∑ i ∈ s, w i = 1` .
     have h_sum_nnreal : ∑ i ∈ s, w i = ↑(∑ i ∈ s, (w i).toNNReal) := by
       rw [coe_finset_sum]

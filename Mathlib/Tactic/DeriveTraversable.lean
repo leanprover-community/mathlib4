@@ -254,7 +254,7 @@ def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) :
     DerivingHandler := fun a ↦ do
   let #[n] := a | return false -- mutually inductive types are not supported yet
-  let ok ← deps.mapM fun f => f a
+  let ok ← deps.mapM fun f ↦ f a
   unless ok.and do return false
   liftTermElabM <| mkOneInstance n cls tac mkInst
   return true

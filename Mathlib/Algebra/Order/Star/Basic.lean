@@ -56,7 +56,7 @@ class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R]
     [StarRing R] : Prop where
   /-- characterization of the order in terms of the `StarRing` structure. -/
   le_iff :
-    ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
+    ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s ↦ star s * s) ∧ y = x + p
 
 namespace StarOrderedRing
 

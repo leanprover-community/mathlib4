@@ -249,14 +249,14 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
   · show Tendsto (fun n : ℕ => ∑ i ∈ range n, x ^ (i + 1) / (i + 1)) atTop (𝓝 (-log (1 - x)))
     rw [tendsto_iff_norm_sub_tendsto_zero]
     simp only [norm_eq_abs, sub_neg_eq_add]
-    refine squeeze_zero (fun n => abs_nonneg _) (abs_log_sub_add_sum_range_le h) ?_
+    refine squeeze_zero (fun n ↦ abs_nonneg _) (abs_log_sub_add_sum_range_le h) ?_
     suffices Tendsto (fun t : ℕ => |x| ^ (t + 1) / (1 - |x|)) atTop (𝓝 (|x| * 0 / (1 - |x|))) by
       simpa
     simp only [pow_succ']
     refine (tendsto_const_nhds.mul ?_).div_const _
     exact tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg _) h
   show Summable fun n : ℕ => x ^ (n + 1) / (n + 1)
-  refine .of_norm_bounded _ (summable_geometric_of_lt_one (abs_nonneg _) h) fun i => ?_
+  refine .of_norm_bounded _ (summable_geometric_of_lt_one (abs_nonneg _) h) fun i ↦ ?_
   calc
     ‖x ^ (i + 1) / (i + 1)‖ = |x| ^ (i + 1) / (i + 1) := by
       have : (0 : ℝ) ≤ i + 1 := le_of_lt (Nat.cast_add_one_pos i)

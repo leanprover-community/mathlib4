@@ -229,31 +229,31 @@ this fact, for functions having a derivative within a set. Its specific formulat
 tangent cone related discussions. -/
 theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l : Filter α)
     {c : α → 𝕜} {d : α → E} {v : E} (dtop : ∀ᶠ n in l, x + d n ∈ s)
-    (clim : Tendsto (fun n => ‖c n‖) l atTop) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
-    Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
-  have tendsto_arg : Tendsto (fun n => x + d n) l (𝓝[s] x) := by
+    (clim : Tendsto (fun n ↦ ‖c n‖) l atTop) (cdlim : Tendsto (fun n ↦ c n • d n) l (𝓝 v)) :
+    Tendsto (fun n ↦ c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
+  have tendsto_arg : Tendsto (fun n ↦ x + d n) l (𝓝[s] x) := by
     conv in 𝓝[s] x => rw [← add_zero x]
     rw [nhdsWithin, tendsto_inf]
     constructor
     · apply tendsto_const_nhds.add (tangentConeAt.lim_zero l clim cdlim)
     · rwa [tendsto_principal]
   have : (fun y ↦ f y - f x - f' (y - x)) =o[𝓝[s] x] fun y ↦ y - x := h.isLittleO
-  have : (fun n => f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n => x + d n - x :=
+  have : (fun n ↦ f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n ↦ x + d n - x :=
     this.comp_tendsto tendsto_arg
-  have : (fun n => f (x + d n) - f x - f' (d n)) =o[l] d := by simpa only [add_sub_cancel_left]
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun n => c n • d n :=
+  have : (fun n ↦ f (x + d n) - f x - f' (d n)) =o[l] d := by simpa only [add_sub_cancel_left]
+  have : (fun n ↦ c n • (f (x + d n) - f x - f' (d n))) =o[l] fun n ↦ c n • d n :=
     (isBigO_refl c l).smul_isLittleO this
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun _ => (1 : ℝ) :=
+  have : (fun n ↦ c n • (f (x + d n) - f x - f' (d n))) =o[l] fun _ => (1 : ℝ) :=
     this.trans_isBigO (cdlim.isBigO_one ℝ)
-  have L1 : Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n))) l (𝓝 0) :=
+  have L1 : Tendsto (fun n ↦ c n • (f (x + d n) - f x - f' (d n))) l (𝓝 0) :=
     (isLittleO_one_iff ℝ).1 this
-  have L2 : Tendsto (fun n => f' (c n • d n)) l (𝓝 (f' v)) :=
+  have L2 : Tendsto (fun n ↦ f' (c n • d n)) l (𝓝 (f' v)) :=
     Tendsto.comp f'.cont.continuousAt cdlim
   have L3 :
-    Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) l (𝓝 (0 + f' v)) :=
+    Tendsto (fun n ↦ c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) l (𝓝 (0 + f' v)) :=
     L1.add L2
   have :
-    (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) = fun n =>
+    (fun n ↦ c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) = fun n =>
       c n • (f (x + d n) - f x) := by
     ext n
     simp [smul_add, smul_sub]
@@ -439,8 +439,8 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x)
 
 /-- Directional derivative agrees with `HasFDeriv`. -/
 theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α → 𝕜} {l : Filter α}
-    (hc : Tendsto (fun n => ‖c n‖) l atTop) :
-    Tendsto (fun n => c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
+    (hc : Tendsto (fun n ↦ ‖c n‖) l atTop) :
+    Tendsto (fun n ↦ c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
   refine (hasFDerivWithinAt_univ.2 hf).lim _ univ_mem hc ?_
   intro U hU
   refine (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => ?_

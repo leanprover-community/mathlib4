@@ -57,7 +57,7 @@ lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α) where
   toFun f := f
   inj' f g h :=
-    Finsupp.ext fun i => by
+    Finsupp.ext fun i ↦ by
       dsimp at h
       rw [h]
   map_rel_iff' := coe_le_coe
@@ -107,7 +107,7 @@ end Preorder
 
 instance partialorder [PartialOrder α] : PartialOrder (ι →₀ α) :=
   { Finsupp.preorder with le_antisymm :=
-      fun _f _g hfg hgf => ext fun i => (hfg i).antisymm (hgf i) }
+      fun _f _g hfg hgf => ext fun i ↦ (hfg i).antisymm (hgf i) }
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (ι →₀ α) :=
   { Finsupp.partialorder with

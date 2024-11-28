@@ -122,7 +122,7 @@ theorem compProdFun_iUnion (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSF
 theorem compProdFun_tsum_right (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSFiniteKernel η] (a : α)
     (hs : MeasurableSet s) : compProdFun κ η a s = ∑' n, compProdFun κ (seq η n) a s := by
   simp_rw [compProdFun, (measure_sum_seq η _).symm]
-  have : ∫⁻ b, Measure.sum (fun n => seq η n (a, b)) {c : γ | (b, c) ∈ s} ∂κ a
+  have : ∫⁻ b, Measure.sum (fun n ↦ seq η n (a, b)) {c : γ | (b, c) ∈ s} ∂κ a
       = ∫⁻ b, ∑' n, seq η n (a, b) {c : γ | (b, c) ∈ s} ∂κ a := by
     congr with b
     rw [Measure.sum_apply]
@@ -384,11 +384,11 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   simp_rw [← h]
   have h_mono : Monotone F := fun i j hij b =>
     SimpleFunc.monotone_eapprox (Function.uncurry f) hij _
-  rw [lintegral_iSup (fun n => (F n).measurable) h_mono]
+  rw [lintegral_iSup (fun n ↦ (F n).measurable) h_mono]
   have : ∀ b, ∫⁻ c, ⨆ n, F n (b, c) ∂η (a, b) = ⨆ n, ∫⁻ c, F n (b, c) ∂η (a, b) := by
     intro a
     rw [lintegral_iSup]
-    · exact fun n => (F n).measurable.comp measurable_prod_mk_left
+    · exact fun n ↦ (F n).measurable.comp measurable_prod_mk_left
     · exact fun i j hij b => h_mono hij _
   simp_rw [this]
   have h_some_meas_integral :
@@ -404,7 +404,7 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
       ((SimpleFunc.measurable _).comp (measurable_fst.snd.prod_mk measurable_snd))
   rw [lintegral_iSup]
   rotate_left
-  · exact fun n => h_some_meas_integral (F n)
+  · exact fun n ↦ h_some_meas_integral (F n)
   · exact fun i j hij b => lintegral_mono fun c ↦ h_mono hij _
   congr
   ext1 n
@@ -491,11 +491,11 @@ theorem compProd_eq_tsum_compProd (κ : Kernel α β) [IsSFiniteKernel κ] (η :
   simp_rw [compProd_apply_eq_compProdFun _ _ _ hs]; exact compProdFun_eq_tsum κ η a hs
 
 theorem compProd_eq_sum_compProd (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ)
-    [IsSFiniteKernel η] : κ ⊗ₖ η = Kernel.sum fun n => Kernel.sum fun m => seq κ n ⊗ₖ seq η m := by
+    [IsSFiniteKernel η] : κ ⊗ₖ η = Kernel.sum fun n ↦ Kernel.sum fun m ↦ seq κ n ⊗ₖ seq η m := by
   ext a s hs; simp_rw [Kernel.sum_apply' _ a hs]; rw [compProd_eq_tsum_compProd κ η a hs]
 
 theorem compProd_eq_sum_compProd_left (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ) :
-    κ ⊗ₖ η = Kernel.sum fun n => seq κ n ⊗ₖ η := by
+    κ ⊗ₖ η = Kernel.sum fun n ↦ seq κ n ⊗ₖ η := by
   by_cases h : IsSFiniteKernel η
   swap
   · simp_rw [compProd_of_not_isSFiniteKernel_right _ _ h]
@@ -506,7 +506,7 @@ theorem compProd_eq_sum_compProd_left (κ : Kernel α β) [IsSFiniteKernel κ] (
     compProdFun_tsum_right _ η a hs]
 
 theorem compProd_eq_sum_compProd_right (κ : Kernel α β) (η : Kernel (α × β) γ)
-    [IsSFiniteKernel η] : κ ⊗ₖ η = Kernel.sum fun n => κ ⊗ₖ seq η n := by
+    [IsSFiniteKernel η] : κ ⊗ₖ η = Kernel.sum fun n ↦ κ ⊗ₖ seq η n := by
   by_cases hκ : IsSFiniteKernel κ
   swap
   · simp_rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]
@@ -554,7 +554,7 @@ instance IsSFiniteKernel.compProd (κ : Kernel α β) (η : Kernel (α × β) γ
   · rw [compProd_of_not_isSFiniteKernel_right _ _ h]
     infer_instance
   rw [compProd_eq_sum_compProd]
-  exact Kernel.isSFiniteKernel_sum fun n => Kernel.isSFiniteKernel_sum inferInstance
+  exact Kernel.isSFiniteKernel_sum fun n ↦ Kernel.isSFiniteKernel_sum inferInstance
 
 lemma compProd_add_left (μ κ : Kernel α β) (η : Kernel (α × β) γ)
     [IsSFiniteKernel μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
@@ -645,7 +645,7 @@ nonrec theorem lintegral_map (κ : Kernel α β) (hf : Measurable f) (a : α) {g
   rw [map_apply _ hf, lintegral_map hg hf]
 
 theorem sum_map_seq (κ : Kernel α β) [IsSFiniteKernel κ] (f : β → γ) :
-    (Kernel.sum fun n => map (seq κ n) f) = map κ f := by
+    (Kernel.sum fun n ↦ map (seq κ n) f) = map κ f := by
   by_cases hf : Measurable f
   · ext a s hs
     rw [Kernel.sum_apply, map_apply' κ hf a hs, Measure.sum_apply _ hs, ← measure_sum_seq κ,
@@ -675,7 +675,7 @@ instance IsFiniteKernel.map (κ : Kernel α β) [IsFiniteKernel κ] (f : β → 
 
 instance IsSFiniteKernel.map (κ : Kernel α β) [IsSFiniteKernel κ] (f : β → γ) :
     IsSFiniteKernel (map κ f) :=
-  ⟨⟨fun n => Kernel.map (seq κ n) f, inferInstance, (sum_map_seq κ f).symm⟩⟩
+  ⟨⟨fun n ↦ Kernel.map (seq κ n) f, inferInstance, (sum_map_seq κ f).symm⟩⟩
 
 @[simp]
 lemma map_const (μ : Measure α) {f : α → β} (hf : Measurable f) :
@@ -716,7 +716,7 @@ theorem lintegral_comap (κ : Kernel α β) (hg : Measurable g) (c : γ) (g' : �
   rfl
 
 theorem sum_comap_seq (κ : Kernel α β) [IsSFiniteKernel κ] (hg : Measurable g) :
-    (Kernel.sum fun n => comap (seq κ n) g hg) = comap κ g hg := by
+    (Kernel.sum fun n ↦ comap (seq κ n) g hg) = comap κ g hg := by
   ext a s hs
   rw [Kernel.sum_apply, comap_apply' κ hg a s, Measure.sum_apply _ hs, ← measure_sum_seq κ,
     Measure.sum_apply _ hs]
@@ -734,7 +734,7 @@ instance IsFiniteKernel.comap (κ : Kernel α β) [IsFiniteKernel κ] (hg : Meas
 
 instance IsSFiniteKernel.comap (κ : Kernel α β) [IsSFiniteKernel κ] (hg : Measurable g) :
     IsSFiniteKernel (comap κ g hg) :=
-  ⟨⟨fun n => Kernel.comap (seq κ n) g hg, inferInstance, (sum_comap_seq κ hg).symm⟩⟩
+  ⟨⟨fun n ↦ Kernel.comap (seq κ n) g hg, inferInstance, (sum_comap_seq κ hg).symm⟩⟩
 
 lemma comap_map_comm (κ : Kernel β γ) {f : α → β} {g : γ → δ}
     (hf : Measurable f) (hg : Measurable g) :

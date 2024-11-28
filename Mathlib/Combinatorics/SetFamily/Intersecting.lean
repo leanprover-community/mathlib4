@@ -181,7 +181,7 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
   push_neg at h
   obtain ⟨t, ht, hst⟩ := h
-  refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
+  refine (ih ?_ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u ↦ And.imp_left hst.1.trans
   rw [Nat.le_div_iff_mul_le Nat.two_pos, mul_comm]
   exact ht.card_le
 

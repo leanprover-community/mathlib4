@@ -137,8 +137,8 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : #(r
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
     convert Cardinal.lift_le.{v}.2 (basis_le_span' v hJ)
     simp
-  · let S : J → Set ι := fun j => ↑(v.repr j).support
-    let S' : J → Set M := fun j => v '' S j
+  · let S : J → Set ι := fun j ↦ ↑(v.repr j).support
+    let S' : J → Set M := fun j ↦ v '' S j
     have hs : range v ⊆ ⋃ j, S' j := by
       intro b hb
       rcases mem_range.1 hb with ⟨i, hi⟩
@@ -154,7 +154,7 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : #(r
     suffices #(⋃ j, S' j) < #(range v) by exact not_le_of_lt this ⟨Set.embeddingOfSubset _ _ hs⟩
     refine lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
       (Cardinal.sum_le_sum _ (fun _ => ℵ₀) ?_)) ?_
-    · exact fun j => (Cardinal.lt_aleph0_of_finite _).le
+    · exact fun j ↦ (Cardinal.lt_aleph0_of_finite _).le
     · simpa
 
 end RankCondition
@@ -176,7 +176,7 @@ theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
   -- We can do this linearly by constructing the map on a basis.
   fapply card_le_of_injective' R
   · apply Finsupp.linearCombination
-    exact fun i => Span.repr R w ⟨v i, s (mem_range_self i)⟩
+    exact fun i ↦ Span.repr R w ⟨v i, s (mem_range_self i)⟩
   · intro f g h
     apply_fun linearCombination R ((↑) : w → M) at h
     simp only [linearCombination_linearCombination, Submodule.coe_mk,
@@ -192,7 +192,7 @@ is itself finite.
 lemma LinearIndependent.finite_of_le_span_finite {ι : Type*} (v : ι → M) (i : LinearIndependent R v)
     (w : Set M) [Finite w] (s : range v ≤ span R w) : Finite ι :=
   letI := Fintype.ofFinite w
-  Fintype.finite <| fintypeOfFinsetCardLe (Fintype.card w) fun t => by
+  Fintype.finite <| fintypeOfFinsetCardLe (Fintype.card w) fun t ↦ by
     let v' := fun x : (t : Set ι) => v x
     have i' : LinearIndependent R v' := i.comp _ Subtype.val_injective
     have s' : range v' ≤ span R w := (range_comp_subset_range _ _).trans s
@@ -365,7 +365,7 @@ theorem Ideal.rank_eq {R S : Type*} [CommRing R] [StrongRankCondition R] [Ring S
     [Algebra R S] {n m : Type*} [Fintype n] [Fintype m] (b : Basis n R S) {I : Ideal S}
     (hI : I ≠ ⊥) (c : Basis m R I) : Fintype.card m = Fintype.card n := by
   obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr hI)
-  have : LinearIndependent R fun i => b i • a := by
+  have : LinearIndependent R fun i ↦ b i • a := by
     have hb := b.linearIndependent
     rw [Fintype.linearIndependent_iff] at hb ⊢
     intro g hg
@@ -428,7 +428,7 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
   -- Porting note: can't use `‹_›` as that pulls the unused `N` into the context
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
-  refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)
+  refine (ciSup_le' fun i ↦ ?_).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS
 
 noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R M]

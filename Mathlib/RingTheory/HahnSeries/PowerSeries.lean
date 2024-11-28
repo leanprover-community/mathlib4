@@ -49,7 +49,7 @@ variable [Semiring R]
 @[simps]
 def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
-  invFun f := ⟨fun n => PowerSeries.coeff R n f, (Nat.lt_wfRel.wf.isWF _).isPWO⟩
+  invFun f := ⟨fun n ↦ PowerSeries.coeff R n f, (Nat.lt_wfRel.wf.isWF _).isPWO⟩
   left_inv f := by
     ext
     simp
@@ -196,7 +196,7 @@ variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 @[simps!]
 def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       ext n
       cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
 

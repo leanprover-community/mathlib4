@@ -546,7 +546,7 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
     rw [comap_map_of_surjective _ hf]
     refine le_antisymm (le_sup_of_le_left le_rfl) (sup_le le_rfl ?_)
     refine fun p hp =>
-      polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Quotient.eq_zero_iff_mem.mp ?_
+      polynomial_mem_ideal_of_coeff_mem_ideal P p fun n ↦ Quotient.eq_zero_iff_mem.mp ?_
     simpa only [f, coeff_map, coe_mapRingHom] using (Polynomial.ext_iff.mp hp) n
   refine RingHom.IsIntegral.tower_bot _ _ (injective_quotient_le_comap_map P) ?_
   rw [← quotient_mk_maps_eq]
@@ -611,7 +611,7 @@ universe v w
 /-- The constant coefficient as an R-linear morphism -/
 private noncomputable def Cₐ (R : Type u) (S : Type v)
     [CommRing R] [CommRing S] [Algebra R S] : S →ₐ[R] S[X] :=
-  { Polynomial.C with commutes' := fun r => by rfl }
+  { Polynomial.C with commutes' := fun r ↦ by rfl }
 
 private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
   [CommRing R] [CommRing S] [CommRing T] [IsJacobsonRing S] [Algebra R S] [Algebra R T]
@@ -673,7 +673,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
     let g : MvPolynomial _ R ⧸ (RingHom.ker f') →+* S :=
       Ideal.Quotient.lift (RingHom.ker f') f' fun _ h => h
     have hfg : g.comp (Ideal.Quotient.mk (RingHom.ker f')) = f' :=
-      ringHom_ext (fun r => rfl) fun i => rfl
+      ringHom_ext (fun r ↦ rfl) fun i ↦ rfl
     rw [← hfg, RingHom.comp_assoc]
     refine (quotient_mk_comp_C_isIntegral_of_isJacobsonRing (RingHom.ker f')).trans _ g
       (g.isIntegral_of_surjective ?_)

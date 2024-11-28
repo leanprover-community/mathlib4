@@ -40,7 +40,7 @@ in terms of the elements of the uniformity. -/
 theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α)} (z : β)
     (D : α → α → β) (H : ∀ s, s ∈ U ↔ ∃ ε > z, ∀ {a b : α}, D a b < ε → (a, b) ∈ s) :
     U = ⨅ ε > z, 𝓟 { p : α × α | D p.1 p.2 < ε } :=
-  HasBasis.eq_biInf ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_setOf]⟩
+  HasBasis.eq_biInf ⟨fun s ↦ by simp only [H, subset_def, Prod.forall, mem_setOf]⟩
 
 open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 
@@ -156,7 +156,7 @@ For specific bases see `uniformity_basis_edist`, `uniformity_basis_edist'`,
 protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x ↦ { p : α × α | edist p.1 p.2 < f x } := by
-  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
+  refine ⟨fun s ↦ uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases hf ε ε₀ with ⟨i, hi, H⟩
@@ -170,7 +170,7 @@ For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_l
 protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x ↦ { p : α × α | edist p.1 p.2 ≤ f x } := by
-  refine ⟨fun s => uniformity_basis_edist.mem_iff.trans ?_⟩
+  refine ⟨fun s ↦ uniformity_basis_edist.mem_iff.trans ?_⟩
   constructor
   · rintro ⟨ε, ε₀, hε⟩
     rcases exists_between ε₀ with ⟨ε', hε'⟩
@@ -518,8 +518,8 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
         _ = r * 2 := (mul_two r).symm
   choose f hfs hf using this
   refine
-    ⟨⋃ n : ℕ, f n⁻¹ '' T n, iUnion_subset fun n => image_subset_iff.2 fun z _ => hfs _ _,
-      countable_iUnion fun n => (hTc n).image _, ?_⟩
+    ⟨⋃ n : ℕ, f n⁻¹ '' T n, iUnion_subset fun n ↦ image_subset_iff.2 fun z _ => hfs _ _,
+      countable_iUnion fun n ↦ (hTc n).image _, ?_⟩
   refine fun x hx => mem_closure_iff.2 fun ε ε0 => ?_
   rcases ENNReal.exists_inv_nat_lt (ENNReal.half_pos ε0.lt.ne').ne' with ⟨n, hn⟩
   rcases mem_iUnion₂.1 (hsT n hx) with ⟨y, hyn, hyx⟩

@@ -626,7 +626,7 @@ def ppParentOccsAux (ccs : CCState) (e : Expr) : MessageData :=
   match ccs.parents.find? e with
   | some poccs =>
     let r := ofExpr e ++ ofFormat (.line ++ ":=" ++ .line)
-    let ps := poccs.toList.map fun o => ofExpr o.expr
+    let ps := poccs.toList.map fun o ↦ ofExpr o.expr
     group (r ++ bracket "{" (group <| joinSep ps (ofFormat ("," ++ .line))) "}")
   | none => ofFormat .nil
 

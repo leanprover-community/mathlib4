@@ -76,7 +76,7 @@ theorem squarefree_iff_factorization_le_one {n : ℕ} (hn : n ≠ 0) :
 
 theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
     n = m ↔ ∀ p, Prime p → (p ∣ n ↔ p ∣ m) := by
-  refine ⟨by rintro rfl; simp, fun h ↦ eq_of_factorization_eq hn.ne_zero hm.ne_zero fun p => ?_⟩
+  refine ⟨by rintro rfl; simp, fun h ↦ eq_of_factorization_eq hn.ne_zero hm.ne_zero fun p ↦ ?_⟩
   by_cases hp : p.Prime
   · have h₁ := h _ hp
     rw [← not_iff_not, hp.dvd_iff_one_le_factorization hn.ne_zero, not_le, lt_one_iff,

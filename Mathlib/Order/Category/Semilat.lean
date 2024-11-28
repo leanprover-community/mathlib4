@@ -77,8 +77,8 @@ instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrd where
   forget₂ :=
     -- Porting note: was ⟨X⟩, see https://github.com/leanprover-community/mathlib4/issues/4998
     { obj := fun X => {α := X}
-      -- Porting note: was `map := fun f => f`
-      map := fun f => ⟨f.toSupHom, OrderHomClass.mono f.toSupHom⟩ }
+      -- Porting note: was `map := fun f ↦ f`
+      map := fun f ↦ ⟨f.toSupHom, OrderHomClass.mono f.toSupHom⟩ }
 
 @[simp]
 theorem coe_forget_to_partOrd (X : SemilatSupCat) :
@@ -126,8 +126,8 @@ instance : ConcreteCategory SemilatInfCat where
 instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrd where
   forget₂ :=
     { obj := fun X => ⟨X, inferInstance⟩
-      -- Porting note: was `map := fun f => f`
-      map := fun f => ⟨f.toInfHom, OrderHomClass.mono f.toInfHom⟩ }
+      -- Porting note: was `map := fun f ↦ f`
+      map := fun f ↦ ⟨f.toInfHom, OrderHomClass.mono f.toInfHom⟩ }
 
 @[simp]
 theorem coe_forget_to_partOrd (X : SemilatInfCat) :

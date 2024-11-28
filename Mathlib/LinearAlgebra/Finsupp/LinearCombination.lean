@@ -39,7 +39,7 @@ variable {α' : Type*} {M' : Type*} [AddCommMonoid M'] [Module R M'] (v : α →
 /-- Interprets (l : α →₀ R) as a linear combination of the elements in the family (v : α → M) and
     evaluates this linear combination. -/
 def linearCombination : (α →₀ R) →ₗ[R] M :=
-  Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (v i)
+  Finsupp.lsum ℕ fun i ↦ LinearMap.id.smulRight (v i)
 
 @[deprecated (since := "2024-08-29")] noncomputable alias total := linearCombination
 
@@ -51,7 +51,7 @@ theorem linearCombination_apply (l : α →₀ R) : linearCombination R v l = l.
 @[deprecated (since := "2024-08-29")] alias total_apply := linearCombination_apply
 
 theorem linearCombination_apply_of_mem_supported {l : α →₀ R} {s : Finset α}
-    (hs : l ∈ supported R R (↑s : Set α)) : linearCombination R v l = s.sum fun i => l i • v i :=
+    (hs : l ∈ supported R R (↑s : Set α)) : linearCombination R v l = s.sum fun i ↦ l i • v i :=
   Finset.sum_subset hs fun x _ hxg =>
     show l x • v x = 0 by rw [not_mem_support_iff.1 hxg, zero_smul]
 
@@ -292,7 +292,7 @@ theorem linearCombination_comp (f : α' → α) :
 
 theorem linearCombination_comapDomain (f : α → α') (l : α' →₀ R)
     (hf : Set.InjOn f (f ⁻¹' ↑l.support)) : linearCombination R v (Finsupp.comapDomain f l hf) =
-      (l.support.preimage f hf).sum fun i => l (f i) • v i := by
+      (l.support.preimage f hf).sum fun i ↦ l (f i) • v i := by
   rw [linearCombination_apply]; rfl
 
 @[deprecated (since := "2024-08-29")] alias total_comapDomain := linearCombination_comapDomain
@@ -327,7 +327,7 @@ See note [bundled maps over different rings] for why separate `R` and `S` semiri
 -/
 protected def Fintype.linearCombination : (α → M) →ₗ[S] (α → R) →ₗ[R] M where
   toFun v :=
-    { toFun := fun f => ∑ i, f i • v i
+    { toFun := fun f ↦ ∑ i, f i • v i
       map_add' := fun f g => by simp_rw [← Finset.sum_add_distrib, ← add_smul]; rfl
       map_smul' := fun r f => by simp_rw [Finset.smul_sum, smul_smul]; rfl }
   map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
@@ -394,7 +394,7 @@ theorem mem_span_range_iff_exists_fun :
   -- Porting note: `Finsupp.equivFunOnFinite.surjective.exists` should be come before `simp`.
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
-  exact exists_congr fun c ↦ Eq.congr_left <| Finsupp.sum_fintype _ _ fun i => zero_smul _ _
+  exact exists_congr fun c ↦ Eq.congr_left <| Finsupp.sum_fintype _ _ fun i ↦ zero_smul _ _
 
 /-- A family `v : α → V` is generating `V` iff every element `(x : V)`
 can be written as sum `∑ cᵢ • vᵢ = x`.

@@ -47,7 +47,7 @@ theorem bind_smallSets_gc :
   rfl
 
 protected theorem HasBasis.smallSets {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
-    HasBasis l.smallSets p fun i => 𝒫 s i :=
+    HasBasis l.smallSets p fun i ↦ 𝒫 s i :=
   h.lift' monotone_powerset
 
 theorem hasBasis_smallSets (l : Filter α) :
@@ -66,7 +66,7 @@ theorem eventually_smallSets {p : Set α → Prop} :
 theorem eventually_smallSets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t → p t → p s) :
     (∀ᶠ s in l.smallSets, p s) ↔ ∃ s ∈ l, p s :=
   eventually_smallSets.trans <|
-    exists_congr fun s => Iff.rfl.and ⟨fun H => H s Subset.rfl, fun hs _t ht => hp ht hs⟩
+    exists_congr fun s ↦ Iff.rfl.and ⟨fun H => H s Subset.rfl, fun hs _t ht => hp ht hs⟩
 
 theorem frequently_smallSets {p : Set α → Prop} :
     (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, ∃ s, s ⊆ t ∧ p s :=

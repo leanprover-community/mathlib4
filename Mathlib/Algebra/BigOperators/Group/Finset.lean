@@ -223,7 +223,7 @@ to show the domain type when the product is over `Finset.univ`. -/
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
   let ppDomain ← getPPOption getPPPiBinderTypes
-  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i ↦ do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
     let binder ←
@@ -244,7 +244,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
   let ppDomain ← getPPOption getPPPiBinderTypes
-  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
+  let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i ↦ do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
     let binder ←
@@ -742,7 +742,7 @@ lemma prod_diag [DecidableEq α] (s : Finset α) (f : α × α → β) :
 theorem prod_finset_product (r : Finset (γ × α)) (s : Finset γ) (t : γ → Finset α)
     (h : ∀ p : γ × α, p ∈ r ↔ p.1 ∈ s ∧ p.2 ∈ t p.1) {f : γ × α → β} :
     ∏ p ∈ r, f p = ∏ c ∈ s, ∏ a ∈ t c, f (c, a) := by
-  refine Eq.trans ?_ (prod_sigma s t fun p => f (p.1, p.2))
+  refine Eq.trans ?_ (prod_sigma s t fun p ↦ f (p.1, p.2))
   apply prod_equiv (Equiv.sigmaEquivProd _ _).symm <;> simp [h]
 
 @[to_additive]
@@ -755,7 +755,7 @@ theorem prod_finset_product' (r : Finset (γ × α)) (s : Finset γ) (t : γ →
 theorem prod_finset_product_right (r : Finset (α × γ)) (s : Finset γ) (t : γ → Finset α)
     (h : ∀ p : α × γ, p ∈ r ↔ p.2 ∈ s ∧ p.1 ∈ t p.2) {f : α × γ → β} :
     ∏ p ∈ r, f p = ∏ c ∈ s, ∏ a ∈ t c, f (a, c) := by
-  refine Eq.trans ?_ (prod_sigma s t fun p => f (p.2, p.1))
+  refine Eq.trans ?_ (prod_sigma s t fun p ↦ f (p.2, p.1))
   apply prod_equiv ((Equiv.prodComm _ _).trans (Equiv.sigmaEquivProd _ _).symm) <;> simp [h]
 
 @[to_additive]
@@ -1161,7 +1161,7 @@ theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
 @[to_additive]
 theorem prod_ite_index (p : Prop) [Decidable p] (s t : Finset α) (f : α → β) :
     ∏ x ∈ if p then s else t, f x = if p then ∏ x ∈ s, f x else ∏ x ∈ t, f x :=
-  apply_ite (fun s => ∏ x ∈ s, f x) _ _ _
+  apply_ite (fun s ↦ ∏ x ∈ s, f x) _ _ _
 
 @[to_additive (attr := simp)]
 theorem prod_ite_irrel (p : Prop) [Decidable p] (s : Finset α) (f g : α → β) :
@@ -1388,7 +1388,7 @@ open Multiset
 @[to_additive]
 theorem prod_multiset_map_count [DecidableEq α] (s : Multiset α) {M : Type*} [CommMonoid M]
     (f : α → M) : (s.map f).prod = ∏ m ∈ s.toFinset, f m ^ s.count m := by
-  refine Quot.induction_on s fun l => ?_
+  refine Quot.induction_on s fun l ↦ ?_
   simp [prod_list_map_count l f]
 
 @[to_additive]
@@ -1401,7 +1401,7 @@ theorem prod_multiset_count [DecidableEq α] [CommMonoid α] (s : Multiset α) :
 theorem prod_multiset_count_of_subset [DecidableEq α] [CommMonoid α] (m : Multiset α) (s : Finset α)
     (hs : m.toFinset ⊆ s) : m.prod = ∏ i ∈ s, i ^ m.count i := by
   revert hs
-  refine Quot.induction_on m fun l => ?_
+  refine Quot.induction_on m fun l ↦ ?_
   simp only [quot_mk_to_coe'', prod_coe, coe_count]
   apply prod_list_count_of_subset l s
 
@@ -2098,7 +2098,7 @@ theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
 
 theorem disjoint_sum_left {a : Multiset α} {i : Multiset (Multiset α)} :
     Disjoint i.sum a ↔ ∀ b ∈ i, Disjoint b a :=
-  Quotient.inductionOn i fun l => by
+  Quotient.inductionOn i fun l ↦ by
     rw [quot_mk_to_coe, Multiset.sum_coe]
     exact disjoint_list_sum_left
 

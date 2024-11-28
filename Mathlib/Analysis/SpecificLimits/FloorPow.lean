@@ -26,8 +26,8 @@ exponential growth rate arbitrarily close to `1`, then `u n / n` tends to `l`. -
 theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (l : ℝ)
     (hmono : Monotone u)
     (hlim : ∀ a : ℝ, 1 < a → ∃ c : ℕ → ℕ, (∀ᶠ n in atTop, (c (n + 1) : ℝ) ≤ a * c n) ∧
-      Tendsto c atTop atTop ∧ Tendsto (fun n => u (c n) / c n) atTop (𝓝 l)) :
-    Tendsto (fun n => u n / n) atTop (𝓝 l) := by
+      Tendsto c atTop atTop ∧ Tendsto (fun n ↦ u (c n) / c n) atTop (𝓝 l)) :
+    Tendsto (fun n ↦ u n / n) atTop (𝓝 l) := by
   /- To check the result up to some `ε > 0`, we use a sequence `c` for which the ratio
     `c (N+1) / c N` is bounded by `1 + ε`. Sandwiching a given `n` between two consecutive values of
     `c`, say `c N` and `c (N+1)`, one can then bound `u n / n` from above by `u (c N) / c (N - 1)`
@@ -37,9 +37,9 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     of different quantities. -/
   have lnonneg : 0 ≤ l := by
     rcases hlim 2 one_lt_two with ⟨c, _, ctop, clim⟩
-    have : Tendsto (fun n => u 0 / c n) atTop (𝓝 0) :=
+    have : Tendsto (fun n ↦ u 0 / c n) atTop (𝓝 0) :=
       tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_iff.2 ctop)
-    apply le_of_tendsto_of_tendsto' this clim fun n => ?_
+    apply le_of_tendsto_of_tendsto' this clim fun n ↦ ?_
     gcongr
     exact hmono (zero_le _)
   have A : ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop, u n - n * l ≤ ε * (1 + ε + l) * n := by
@@ -60,7 +60,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     obtain ⟨a, ha⟩ :
       ∃ a : ℕ, ∀ b : ℕ, a ≤ b → (c (b + 1) : ℝ) ≤ (1 + ε) * c b ∧ u (c b) - c b * l ≤ ε * c b :=
       eventually_atTop.1 (cgrowth.and L)
-    let M := ((Finset.range (a + 1)).image fun i => c i).max' (by simp)
+    let M := ((Finset.range (a + 1)).image fun i ↦ c i).max' (by simp)
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
@@ -115,7 +115,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       ∃ a : ℕ,
         ∀ b : ℕ, a ≤ b → (c (b + 1) : ℝ) ≤ (1 + ε) * c b ∧ (c b : ℝ) * l - u (c b) ≤ ε * c b :=
       eventually_atTop.1 (cgrowth.and L)
-    let M := ((Finset.range (a + 1)).image fun i => c i).max' (by simp)
+    let M := ((Finset.range (a + 1)).image fun i ↦ c i).max' (by simp)
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
@@ -185,12 +185,12 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
 theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : ℝ) (hmono : Monotone u)
     (c : ℕ → ℝ) (cone : ∀ k, 1 < c k) (clim : Tendsto c atTop (𝓝 1))
     (hc : ∀ k, Tendsto (fun n : ℕ => u ⌊c k ^ n⌋₊ / ⌊c k ^ n⌋₊) atTop (𝓝 l)) :
-    Tendsto (fun n => u n / n) atTop (𝓝 l) := by
+    Tendsto (fun n ↦ u n / n) atTop (𝓝 l) := by
   apply tendsto_div_of_monotone_of_exists_subseq_tendsto_div u l hmono
   intro a ha
   obtain ⟨k, hk⟩ : ∃ k, c k < a := ((tendsto_order.1 clim).2 a ha).exists
   refine
-    ⟨fun n => ⌊c k ^ n⌋₊, ?_,
+    ⟨fun n ↦ ⌊c k ^ n⌋₊, ?_,
       (tendsto_nat_floor_atTop (α := ℝ)).comp (tendsto_pow_atTop_atTop_of_one_lt (cone k)), hc k⟩
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c k ^ n⌋₊ := by
     intro n

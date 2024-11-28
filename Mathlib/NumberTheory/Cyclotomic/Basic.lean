@@ -639,7 +639,7 @@ instance [IsFractionRing A K] [IsDomain A] [NeZero ((n : ℕ) : A)] :
       Algebra.adjoin_induction
         (hx := ((IsCyclotomicExtension.iff_singleton n K (CyclotomicField n K)).1
             (CyclotomicField.isCyclotomicExtension n K)).2 x)
-        (fun y hy => ?_) (fun k => ?_) ?_ ?_
+        (fun y hy => ?_) (fun k ↦ ?_) ?_ ?_
 -- Porting note: the last goal was `by simpa` that now fails.
     · exact ⟨⟨⟨y, subset_adjoin hy⟩, 1⟩, by simp; rfl⟩
     · have : IsLocalization (nonZeroDivisors A) K := inferInstance

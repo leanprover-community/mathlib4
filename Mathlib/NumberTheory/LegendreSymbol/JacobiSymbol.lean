@@ -242,7 +242,7 @@ theorem list_prod_left {l : List ℤ} {n : ℕ} : J(l.prod | n) = (l.map fun a �
 
 /-- We can pull out a product over a list in the second argument of the Jacobi symbol. -/
 theorem list_prod_right {a : ℤ} {l : List ℕ} (hl : ∀ n ∈ l, n ≠ 0) :
-    J(a | l.prod) = (l.map fun n => J(a | n)).prod := by
+    J(a | l.prod) = (l.map fun n ↦ J(a | n)).prod := by
   induction' l with n l' ih
   · simp only [List.prod_nil, one_right, List.map_nil]
   · have hn := hl n (List.mem_cons_self n l')

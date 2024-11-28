@@ -109,7 +109,7 @@ instance : CoeSort Compactum Type* :=
   ⟨fun X => X.A⟩
 
 instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
-  ⟨fun f => f.f⟩
+  ⟨fun f ↦ f.f⟩
 
 instance : HasLimits Compactum :=
   hasLimits_of_hasLimits_createsLimits forget
@@ -425,7 +425,7 @@ instance faithful : compactumToCompHaus.Faithful where
     intro _ _ _ _ h
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
-    apply congrArg (fun f => f.toFun) h
+    apply congrArg (fun f ↦ f.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 def isoOfTopologicalSpace {D : CompHaus} :

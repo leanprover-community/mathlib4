@@ -362,7 +362,7 @@ theorem coe_fourierBasis : ⇑(@fourierBasis T hT) = @fourierLp T hT 2 _ :=
 
 /-- Under the isometric isomorphism `fourierBasis` from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`, the
 `i`-th coefficient is `fourierCoeff f i`, i.e., the integral over `AddCircle T` of
-`fun t => fourier (-i) t * f t` with respect to the Haar measure of total mass 1. -/
+`fun t ↦ fourier (-i) t * f t` with respect to the Haar measure of total mass 1. -/
 theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
     fourierBasis.repr f i = fourierCoeff f i := by
   trans ∫ t : AddCircle T, conj ((@fourierLp T hT 2 _ i : AddCircle T → ℂ) t) * f t ∂haarAddCircle
@@ -374,7 +374,7 @@ theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
 
 /-- The Fourier series of an `L2` function `f` sums to `f`, in the `L²` space of `AddCircle T`. -/
 theorem hasSum_fourier_series_L2 (f : Lp ℂ 2 <| @haarAddCircle T hT) :
-    HasSum (fun i => fourierCoeff f i • fourierLp 2 i) f := by
+    HasSum (fun i ↦ fourierCoeff f i • fourierLp 2 i) f := by
   simp_rw [← fourierBasis_repr]; rw [← coe_fourierBasis]
   exact HilbertBasis.hasSum_repr fourierBasis f
 
@@ -409,7 +409,7 @@ variable {f}
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
-    HasSum (fun i => fourierCoeff f i • fourier i) f := by
+    HasSum (fun i ↦ fourierCoeff f i • fourier i) f := by
   have sum_L2 := hasSum_fourier_series_L2 (toLp (E := ℂ) 2 haarAddCircle ℂ f)
   simp_rw [fourierCoeff_toLp] at sum_L2
   refine ContinuousMap.hasSum_of_hasSum_Lp (.of_norm ?_) sum_L2
@@ -419,7 +419,7 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series of `f`
 converges everywhere pointwise to `f`. -/
 theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff f))
-    (x : AddCircle T) : HasSum (fun i => fourierCoeff f i • fourier i x) (f x) := by
+    (x : AddCircle T) : HasSum (fun i ↦ fourierCoeff f i • fourier i x) (f x) := by
   convert (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
 
 end Convergence

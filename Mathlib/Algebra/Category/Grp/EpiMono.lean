@@ -252,12 +252,12 @@ theorem h_apply_fromCoset_nin_range (x : B) (hx : x ∈ f.range) (b : B) (hb : b
     @Equiv.swap_apply_of_ne_of_ne X' _ (fromCoset ⟨f.range, 1, one_leftCoset _⟩) ∞
       (fromCoset ⟨b • ↑f.range, b, rfl⟩) (fromCoset_ne_of_nin_range _ hb) (by simp)]
   simp only [g_apply_fromCoset, leftCoset_assoc]
-  refine Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r => hb ?_) (by simp)
+  refine Equiv.swap_apply_of_ne_of_ne (fromCoset_ne_of_nin_range _ fun r ↦ hb ?_) (by simp)
   convert Subgroup.mul_mem _ (Subgroup.inv_mem _ hx) r
   rw [← mul_assoc, inv_mul_cancel, one_mul]
 
 theorem agree : f.range = { x | h x = g x } := by
-  refine Set.ext fun b ↦ ⟨?_, fun hb : h b = g b => by_contradiction fun r => ?_⟩
+  refine Set.ext fun b ↦ ⟨?_, fun hb : h b = g b => by_contradiction fun r ↦ ?_⟩
   · rintro ⟨a, rfl⟩
     change h (f a) = g (f a)
     ext ⟨⟨_, ⟨y, rfl⟩⟩⟩

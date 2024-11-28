@@ -355,7 +355,7 @@ section HasStrongEpiMonoFactorisations
 
 /-- An abelian category has strong epi-mono factorisations. -/
 instance (priority := 100) : HasStrongEpiMonoFactorisations C :=
-  HasStrongEpiMonoFactorisations.mk fun f => imageStrongEpiMonoFactorisation f
+  HasStrongEpiMonoFactorisations.mk fun f ↦ imageStrongEpiMonoFactorisation f
 
 -- In particular, this means that it has well-behaved images.
 example : HasImages C := by infer_instance
@@ -561,7 +561,7 @@ def isLimitPullbackToBiproduct : IsLimit (pullbackToBiproductFork f g) :=
         sub_eq_zero.1 <| by
           rw [Category.assoc, Category.assoc, ← comp_sub, sub_eq_add_neg, ← comp_neg, ←
             biprod.desc_eq, KernelFork.condition s])
-    (fun s => by
+    (fun s ↦ by
       apply biprod.hom_ext <;> rw [Fork.ι_ofι, Category.assoc]
       · rw [biprod.lift_fst, pullback.lift_fst]
       · rw [biprod.lift_snd, pullback.lift_snd])
@@ -592,7 +592,7 @@ def isColimitBiproductToPushout : IsColimit (biproductToPushoutCofork f g) :=
         sub_eq_zero.1 <| by
           rw [← Category.assoc, ← Category.assoc, ← sub_comp, sub_eq_add_neg, ← neg_comp, ←
             biprod.lift_eq, Cofork.condition s, zero_comp])
-    (fun s => by apply biprod.hom_ext' <;> simp)
+    (fun s ↦ by apply biprod.hom_ext' <;> simp)
     fun s m h => by apply pushout.hom_ext <;> simp [← h]
 
 end BiproductToPushoutIsCokernel

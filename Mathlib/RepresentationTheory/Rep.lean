@@ -269,7 +269,7 @@ variable {k G}
 `g ↦ A.ρ(g)(x).` -/
 @[simps]
 noncomputable def leftRegularHom (A : Rep k G) (x : A) : Rep.ofMulAction k G G ⟶ A where
-  hom := Finsupp.lift _ _ _ fun g => A.ρ g x
+  hom := Finsupp.lift _ _ _ fun g ↦ A.ρ g x
   comm g := by
     refine Finsupp.lhom_ext' fun y ↦ LinearMap.ext_ring ?_
 /- Porting note: rest of broken proof was
@@ -333,7 +333,7 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
     { hom := ModuleCat.asHom (LinearMap.llcomp k _ _ _ f.hom)
-      comm := fun g => LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ by
+      comm := fun g ↦ LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ by
         show f.hom (X.ρ g _) = _
         simp only [hom_comm_apply]; rfl }
   map_id := fun _ => by ext; rfl
@@ -349,7 +349,7 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
 def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := (TensorProduct.curry f.hom).flip
-      comm := fun g => by
+      comm := fun g ↦ by
         refine LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ ?_
         change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
         rw [← hom_comm_apply]
@@ -358,7 +358,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
         rfl }
   invFun f :=
     { hom := TensorProduct.uncurry k _ _ _ f.hom.flip
-      comm := fun g => TensorProduct.ext' fun x y => by
+      comm := fun g ↦ TensorProduct.ext' fun x y => by
 /- Porting note: rest of broken proof was
         dsimp only [MonoidalCategory.tensorLeft_obj, ModuleCat.comp_def, LinearMap.comp_apply,
           tensor_ρ, ModuleCat.MonoidalCategory.hom_apply, TensorProduct.map_tmul]
@@ -525,7 +525,7 @@ def ofModuleMonoidAlgebra : ModuleCat.{u} (MonoidAlgebra k G) ⥤ Rep k G where
   obj M := Rep.of (Representation.ofModule M)
   map f :=
     { hom := { f with map_smul' := fun r x => f.map_smul (algebraMap k _ r) x }
-      comm := fun g => by ext; apply f.map_smul }
+      comm := fun g ↦ by ext; apply f.map_smul }
 
 theorem ofModuleMonoidAlgebra_obj_coe (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     (ofModuleMonoidAlgebra.obj M : Type u) = RestrictScalars k (MonoidAlgebra k G) M :=
@@ -586,7 +586,7 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
           erw [AddEquiv.trans_apply,
             Representation.asModuleEquiv_symm_map_smul]
           rfl })
-    fun g => by ext; apply unit_iso_comm
+    fun g ↦ by ext; apply unit_iso_comm
 
 /-- The categorical equivalence `Rep k G ≌ ModuleCat (MonoidAlgebra k G)`. -/
 def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k G) where

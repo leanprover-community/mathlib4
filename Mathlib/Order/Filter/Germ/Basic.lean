@@ -208,7 +208,7 @@ theorem map₂_coe (op : β → γ → δ) (f : α → β) (g : α → γ) :
 /-- A germ at `l` of maps from `α` to `β` tends to `lb : Filter β` if it is represented by a map
 which tends to `lb` along `l`. -/
 protected def Tendsto (f : Germ l β) (lb : Filter β) : Prop :=
-  liftOn f (fun f => Tendsto f l lb) fun _f _g H => propext (tendsto_congr' H)
+  liftOn f (fun f ↦ Tendsto f l lb) fun _f _g H => propext (tendsto_congr' H)
 
 @[simp, norm_cast]
 theorem coe_tendsto {f : α → β} {lb : Filter β} : (f : Germ l β).Tendsto lb ↔ Tendsto f l lb :=
@@ -219,7 +219,7 @@ alias ⟨_, _root_.Filter.Tendsto.germ_tendsto⟩ := coe_tendsto
 /-- Given two germs `f : Germ l β`, and `g : Germ lc α`, where `l : Filter α`, if `g` tends to `l`,
 then the composition `f ∘ g` is well-defined as a germ at `lc`. -/
 def compTendsto' (f : Germ l β) {lc : Filter γ} (g : Germ lc α) (hg : g.Tendsto l) : Germ lc β :=
-  liftOn f (fun f => g.map f) fun _f₁ _f₂ hF =>
+  liftOn f (fun f ↦ g.map f) fun _f₁ _f₂ hF =>
     inductionOn g (fun _g hg => coe_eq.2 <| hg.eventually hF) hg
 
 @[simp]
@@ -286,7 +286,7 @@ theorem const_compTendsto' {l : Filter α} (b : β) {lc : Filter γ} {g : Germ l
 
 /-- Lift a predicate on `β` to `Germ l β`. -/
 def LiftPred (p : β → Prop) (f : Germ l β) : Prop :=
-  liftOn f (fun f => ∀ᶠ x in l, p (f x)) fun _f _g H =>
+  liftOn f (fun f ↦ ∀ᶠ x in l, p (f x)) fun _f _g H =>
     propext <| eventually_congr <| H.mono fun _x hx => hx ▸ Iff.rfl
 
 @[simp]
@@ -619,17 +619,17 @@ theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c
 @[to_additive]
 instance instMulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
   one_smul f :=
-    inductionOn f fun f => by
+    inductionOn f fun f ↦ by
       norm_cast
       simp [one_smul]
   mul_smul c₁ c₂ f :=
-    inductionOn f fun f => by
+    inductionOn f fun f ↦ by
       norm_cast
       simp [mul_smul]
 
 @[to_additive]
 instance instMulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l β) where
-  one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
+  one_smul f := inductionOn f fun f ↦ by simp only [← coe_one, ← coe_smul', one_smul]
   mul_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
       norm_cast
@@ -653,11 +653,11 @@ instance instDistribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
 
 instance instModule [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M) where
   add_smul c₁ c₂ f :=
-    inductionOn f fun f => by
+    inductionOn f fun f ↦ by
       norm_cast
       simp [add_smul]
   zero_smul f :=
-    inductionOn f fun f => by
+    inductionOn f fun f ↦ by
       norm_cast
       simp [zero_smul, coe_zero]
 
@@ -667,7 +667,7 @@ instance instModule' [Semiring R] [AddCommMonoid M] [Module R M] :
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
       norm_cast
       simp [add_smul]
-  zero_smul f := inductionOn f fun f => by simp only [← coe_zero, ← coe_smul', zero_smul]
+  zero_smul f := inductionOn f fun f ↦ by simp only [← coe_zero, ← coe_smul', zero_smul]
 
 end Module
 

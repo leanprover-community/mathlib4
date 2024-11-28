@@ -265,7 +265,7 @@ variable (c) in
 In other words, each of these closures is a neighborhood of `c` and each neighborhood of `c`
 includes `tsupport f` for some `f : SmoothBumpFunction I c`. -/
 theorem nhds_basis_tsupport :
-    (𝓝 c).HasBasis (fun _ : SmoothBumpFunction I c => True) fun f => tsupport f := by
+    (𝓝 c).HasBasis (fun _ : SmoothBumpFunction I c => True) fun f ↦ tsupport f := by
   have :
     (𝓝 c).HasBasis (fun _ : SmoothBumpFunction I c => True) fun f =>
       (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) := by
@@ -279,7 +279,7 @@ theorem nhds_basis_tsupport :
 neighborhood of `c` and each neighborhood of `c` includes `support f` for some
 `f : SmoothBumpFunction I c` such that `tsupport f ⊆ s`. -/
 theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :
-    (𝓝 c).HasBasis (fun f : SmoothBumpFunction I c => tsupport f ⊆ s) fun f => support f :=
+    (𝓝 c).HasBasis (fun f : SmoothBumpFunction I c => tsupport f ⊆ s) fun f ↦ support f :=
   ((nhds_basis_tsupport c).restrict_subset hs).to_hasBasis'
     (fun f hf => ⟨f, hf.2, subset_closure⟩) fun f _ => f.support_mem_nhds
 

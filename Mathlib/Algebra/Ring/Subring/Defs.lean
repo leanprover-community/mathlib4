@@ -93,7 +93,7 @@ theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zs
 namespace SubringClass
 
 instance (priority := 75) toHasIntCast : IntCast s :=
-  ⟨fun n => ⟨n, intCast_mem s n⟩⟩
+  ⟨fun n ↦ ⟨n, intCast_mem s n⟩⟩
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/

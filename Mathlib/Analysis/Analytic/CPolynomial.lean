@@ -268,7 +268,7 @@ theorem HasFiniteFPowerSeriesOnBall.eq_partialSum
     ∀ y ∈ EMetric.ball (0 : E) r, ∀ m, n ≤ m →
     f (x + y) = p.partialSum m y :=
   fun y hy m hm ↦ (hf.hasSum hy).unique (hasSum_sum_of_ne_finset_zero
-    (f := fun m => p m (fun _ => y)) (s := Finset.range m)
+    (f := fun m ↦ p m (fun _ => y)) (s := Finset.range m)
     (fun N hN => by simp only; simp only [Finset.mem_range, not_lt] at hN
                     rw [hf.finite _ (le_trans hm hN), ContinuousMultilinearMap.zero_apply]))
 
@@ -416,7 +416,7 @@ lemma changeOriginSeries_sum_eq_partialSum_of_finite (p : FormalMultilinearSerie
     (p.changeOriginSeries k).sum = (p.changeOriginSeries k).partialSum (n - k) := by
   ext x
   rw [partialSum, FormalMultilinearSeries.sum,
-    tsum_eq_sum (f := fun m => p.changeOriginSeries k m (fun _ => x)) (s := Finset.range (n - k))]
+    tsum_eq_sum (f := fun m ↦ p.changeOriginSeries k m (fun _ => x)) (s := Finset.range (n - k))]
   intro m hm
   rw [Finset.mem_range, not_lt] at hm
   rw [p.changeOriginSeries_finite_of_finite hn k (by rw [add_comm]; exact Nat.le_add_of_sub_le hm),

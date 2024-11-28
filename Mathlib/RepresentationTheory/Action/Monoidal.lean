@@ -89,7 +89,7 @@ variable [BraidedCategory V]
 
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
-    (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by aesop_cat)
+    (fun g ↦ by simp [FunctorCategoryEquivalence.inverse])) (by aesop_cat)
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where
@@ -207,14 +207,14 @@ The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
 noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type u) (MonCat.of G)) :
     leftRegular G ⊗ X ≅ leftRegular G ⊗ Action.mk X.V 1 where
   hom :=
-    { hom := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
+    { hom := fun g ↦ ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
         change (X.ρ ((g * x₁)⁻¹ : G) * X.ρ g) x₂ = X.ρ _ _
         rw [mul_inv_rev, ← X.ρ.map_mul, inv_mul_cancel_right] }
   inv :=
-    { hom := fun g => ⟨g.1, X.ρ g.1 g.2⟩
+    { hom := fun g ↦ ⟨g.1, X.ρ g.1 g.2⟩
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
@@ -261,12 +261,12 @@ the categories of `G`-actions within those categories. -/
 instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
   ε' :=
     { hom := ε F
-      comm := fun g => by
+      comm := fun g ↦ by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
         rw [Category.id_comp, F.map_id, Category.comp_id] }
   μ' X Y :=
     { hom := μ F X.V Y.V
-      comm := fun g => μ_natural F (X.ρ g) (Y.ρ g) }
+      comm := fun g ↦ μ_natural F (X.ρ g) (Y.ρ g) }
   μ'_natural_left _ _ := by ext; simp
   μ'_natural_right _ _ := by ext; simp
   associativity' _ _ _ := by ext; simp
@@ -285,12 +285,12 @@ the categories of `G`-actions within those categories. -/
 instance [F.OplaxMonoidal] : (F.mapAction G).OplaxMonoidal where
   η' :=
     { hom := η F
-      comm := fun g => by
+      comm := fun g ↦ by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
         rw [map_id, Category.id_comp, Category.comp_id] }
   δ' X Y :=
     { hom := δ F X.V Y.V
-      comm := fun g => (δ_natural F (X.ρ g) (Y.ρ g)).symm }
+      comm := fun g ↦ (δ_natural F (X.ρ g) (Y.ρ g)).symm }
   δ'_natural_left _ _ := by ext; simp
   δ'_natural_right _ _ := by ext; simp
   oplax_associativity' _ _ _ := by ext; simp

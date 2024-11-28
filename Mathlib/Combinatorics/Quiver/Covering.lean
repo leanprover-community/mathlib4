@@ -115,7 +115,7 @@ theorem Prefunctor.IsCovering.of_comp_right (hψ : ψ.IsCovering) (hφψ : (φ �
 
 theorem Prefunctor.IsCovering.of_comp_left (hφ : φ.IsCovering) (hφψ : (φ ⋙q ψ).IsCovering)
     (φsur : Surjective φ.obj) : ψ.IsCovering := by
-  refine ⟨fun v => ?_, fun v => ?_⟩ <;> obtain ⟨u, rfl⟩ := φsur v
+  refine ⟨fun v ↦ ?_, fun v ↦ ?_⟩ <;> obtain ⟨u, rfl⟩ := φsur v
   exacts [(Bijective.of_comp_iff _ (hφ.star_bijective u)).mp (hφψ.star_bijective u),
     (Bijective.of_comp_iff _ (hφ.costar_bijective u)).mp (hφψ.costar_bijective u)]
 
@@ -157,7 +157,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
 
 protected theorem Prefunctor.IsCovering.symmetrify (hφ : φ.IsCovering) :
     φ.symmetrify.IsCovering := by
-  refine ⟨fun u => ?_, fun u => ?_⟩ <;>
+  refine ⟨fun u ↦ ?_, fun u ↦ ?_⟩ <;>
     -- Porting note: was
     -- simp [φ.symmetrifyStar, φ.symmetrifyCostar, hφ.star_bijective u, hφ.costar_bijective u]
     simp only [φ.symmetrifyStar, φ.symmetrifyCostar] <;>
@@ -237,7 +237,7 @@ theorem Prefunctor.pathStar_surjective (hφ : ∀ u, Surjective (φ.star u)) (u 
 
 theorem Prefunctor.pathStar_bijective (hφ : ∀ u, Bijective (φ.star u)) (u : U) :
     Bijective (φ.pathStar u) :=
-  ⟨φ.pathStar_injective (fun u => (hφ u).1) _, φ.pathStar_surjective (fun u => (hφ u).2) _⟩
+  ⟨φ.pathStar_injective (fun u ↦ (hφ u).1) _, φ.pathStar_surjective (fun u ↦ (hφ u).2) _⟩
 
 namespace Prefunctor.IsCovering
 
@@ -282,10 +282,10 @@ theorem Prefunctor.bijective_costar_iff_bijective_star (u : U) :
   rw [Prefunctor.costar_conj_star φ, EquivLike.comp_bijective, EquivLike.bijective_comp]
 
 theorem Prefunctor.isCovering_of_bijective_star (h : ∀ u, Bijective (φ.star u)) : φ.IsCovering :=
-  ⟨h, fun u => (φ.bijective_costar_iff_bijective_star u).2 (h u)⟩
+  ⟨h, fun u ↦ (φ.bijective_costar_iff_bijective_star u).2 (h u)⟩
 
 theorem Prefunctor.isCovering_of_bijective_costar (h : ∀ u, Bijective (φ.costar u)) :
     φ.IsCovering :=
-  ⟨fun u => (φ.bijective_costar_iff_bijective_star u).1 (h u), h⟩
+  ⟨fun u ↦ (φ.bijective_costar_iff_bijective_star u).1 (h u), h⟩
 
 end HasInvolutiveReverse

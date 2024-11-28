@@ -165,7 +165,7 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
       exact (lt_add_iff_pos_right _).2 hr
     exact hx
   intro x hx
-  have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 :=
+  have : ContinuousWithinAt (fun r ↦ B x + r * (x - a)) (Ioi 0) 0 :=
     continuousWithinAt_const.add (continuousWithinAt_id.mul continuousWithinAt_const)
   convert continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
 
@@ -1133,7 +1133,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ]
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ∃ z ∈ segment ℝ x y, f y - f x = f' z (y - x) := by
   -- Use `g = AffineMap.lineMap x y` to parametrize the segment
-  set g : ℝ → E := fun t => AffineMap.lineMap x y t
+  set g : ℝ → E := fun t ↦ AffineMap.lineMap x y t
   set I := Icc (0 : ℝ) 1
   have hsub : Ioo (0 : ℝ) 1 ⊆ I := Ioo_subset_Icc_self
   have hmaps : MapsTo g I s := hs.mapsTo_lineMap xs ys

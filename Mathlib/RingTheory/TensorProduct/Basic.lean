@@ -599,7 +599,7 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
 attribute [local instance] TensorProduct.rightAlgebra
 
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
-  IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
+  IsScalarTower.of_algebraMap_eq fun r ↦ (Algebra.TensorProduct.includeRight.commutes r).symm
 
 end RightAlgebra
 

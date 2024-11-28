@@ -81,7 +81,7 @@ theorem countable_meas_le_ne_meas_lt (g : α → R) :
 
 theorem meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
     (ν : Measure R) [NoAtoms ν] (g : α → R) :
-    (fun t => μ {a : α | t ≤ g a}) =ᵐ[ν] fun t => μ {a : α | t < g a} :=
+    (fun t ↦ μ {a : α | t ≤ g a}) =ᵐ[ν] fun t ↦ μ {a : α | t < g a} :=
   Set.Countable.measure_zero (countable_meas_le_ne_meas_lt μ g) _
 
 end
@@ -164,7 +164,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
   have aux₂ :
     (Function.uncurry fun (x : α) (y : ℝ) =>
         (Ioc 0 (f x)).indicator (fun t : ℝ => ENNReal.ofReal (g t)) y) =
-      {p : α × ℝ | p.2 ∈ Ioc 0 (f p.1)}.indicator fun p => ENNReal.ofReal (g p.2) := by
+      {p : α × ℝ | p.2 ∈ Ioc 0 (f p.1)}.indicator fun p ↦ ENNReal.ofReal (g p.2) := by
     funext p
     cases p with | mk p_fst p_snd => ?_
     rw [Function.uncurry_apply_pair]

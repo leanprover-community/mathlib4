@@ -166,8 +166,8 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
           rintro _ _ _ _ ⟨i₁⟩ ⟨i₂⟩
           exact
             propext
-              ⟨Nonempty.map fun f => i₁.inv ≫ f ≫ i₂.hom,
-                Nonempty.map fun f => i₁.hom ≫ f ≫ i₂.inv⟩)
+              ⟨Nonempty.map fun f ↦ i₁.inv ≫ f ≫ i₂.hom,
+                Nonempty.map fun f ↦ i₁.hom ≫ f ≫ i₂.inv⟩)
   le_refl := by
     refine Quotient.ind fun a ↦ ?_
     exact ⟨𝟙 _⟩
@@ -199,7 +199,7 @@ variable {C} {D}
 @[simps]
 def map (F : C ⥤ D) : ThinSkeleton C ⥤ ThinSkeleton D where
   obj := Quotient.map F.obj fun _ _ ⟨hX⟩ => ⟨F.mapIso hX⟩
-  map {X} {Y} := Quotient.recOnSubsingleton₂ X Y fun _ _ k => homOfLE (k.le.elim fun t => ⟨F.map t⟩)
+  map {X} {Y} := Quotient.recOnSubsingleton₂ X Y fun _ _ k => homOfLE (k.le.elim fun t ↦ ⟨F.map t⟩)
 
 theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkeleton C ⋙ map F :=
   rfl
@@ -233,7 +233,7 @@ def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ Th
       map := fun {y₁} {y₂} => @Quotient.recOnSubsingleton C (isIsomorphicSetoid C)
         (fun x ↦ (y₁ ⟶ y₂) → (map₂ObjMap F x y₁ ⟶ map₂ObjMap F x y₂)) _ x fun X
           => Quotient.recOnSubsingleton₂ y₁ y₂ fun _ _ hY =>
-            homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
+            homOfLE (hY.le.elim fun g ↦ ⟨(F.obj X).map g⟩) }
 
 /-- This provides natural transformations `map₂Functor F x₁ ⟶ map₂Functor F x₂` given
 `x₁ ⟶ x₂` -/
@@ -293,7 +293,7 @@ instance thinSkeletonPartialOrder : PartialOrder (ThinSkeleton C) :=
           apply Quotient.sound (equiv_of_both_ways f g)) }
 
 theorem skeletal : Skeletal (ThinSkeleton C) := fun X Y =>
-  Quotient.inductionOn₂ X Y fun _ _ h => h.elim fun i => i.1.le.antisymm i.2.le
+  Quotient.inductionOn₂ X Y fun _ _ h => h.elim fun i ↦ i.1.le.antisymm i.2.le
 
 theorem map_comp_eq (F : E ⥤ D) (G : D ⥤ C) : map (F ⋙ G) = map F ⋙ map G :=
   Functor.eq_of_iso skeletal <|

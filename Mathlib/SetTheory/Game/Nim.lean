@@ -155,7 +155,7 @@ theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 /-- `nim 1` has exactly the same moves as `star`. -/
 def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim_def]
-  refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
+  refine ⟨?_, ?_, fun i ↦ ?_, fun j ↦ ?_⟩
   any_goals dsimp; apply Equiv.equivOfUnique
   all_goals simpa [enumIsoToType] using nimZeroRelabelling
 
@@ -179,7 +179,7 @@ theorem neg_nim (o : Ordinal) : -nim o = nim o := by
 instance nim_impartial (o : Ordinal) : Impartial (nim o) := by
   induction' o using Ordinal.induction with o IH
   rw [impartial_def, neg_nim]
-  refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
+  refine ⟨equiv_rfl, fun i ↦ ?_, fun i ↦ ?_⟩ <;> simpa using IH _ (typein_lt_self _)
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
   rw [Impartial.fuzzy_zero_iff_lf, lf_zero_le]
@@ -215,7 +215,7 @@ This function takes a value in `Nimber`. This is a type synonym for the ordinals
 ordering, but addition in `Nimber` is such that it corresponds to the grundy value of the addition
 of games. See that file for more information on nimbers and their arithmetic. -/
 noncomputable def grundyValue (G : PGame.{u}) : Nimber.{u} :=
-  sInf (Set.range fun i => grundyValue (G.moveLeft i))ᶜ
+  sInf (Set.range fun i ↦ grundyValue (G.moveLeft i))ᶜ
 termination_by G
 
 theorem grundyValue_eq_sInf_moveLeft (G : PGame) :
@@ -225,14 +225,14 @@ theorem grundyValue_eq_sInf_moveLeft (G : PGame) :
 set_option linter.deprecated false in
 @[deprecated grundyValue_eq_sInf_moveLeft (since := "2024-09-16")]
 theorem grundyValue_eq_mex_left (G : PGame) :
-    grundyValue G = Ordinal.mex fun i => grundyValue (G.moveLeft i) :=
+    grundyValue G = Ordinal.mex fun i ↦ grundyValue (G.moveLeft i) :=
   grundyValue_eq_sInf_moveLeft G
 
 theorem grundyValue_ne_moveLeft {G : PGame} (i : G.LeftMoves) :
     grundyValue (G.moveLeft i) ≠ grundyValue G := by
   conv_rhs => rw [grundyValue_eq_sInf_moveLeft]
   have := csInf_mem (nonempty_of_not_bddAbove <|
-    Nimber.not_bddAbove_compl_of_small (Set.range fun i => grundyValue (G.moveLeft i)))
+    Nimber.not_bddAbove_compl_of_small (Set.range fun i ↦ grundyValue (G.moveLeft i)))
   rw [Set.mem_compl_iff, Set.mem_range, not_exists] at this
   exact this _
 
@@ -311,7 +311,7 @@ theorem grundyValue_eq_sInf_moveRight (G : PGame) [G.Impartial] :
 set_option linter.deprecated false in
 @[deprecated grundyValue_eq_sInf_moveRight (since := "2024-09-16")]
 theorem grundyValue_eq_mex_right (G : PGame) [G.Impartial] :
-    grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) :=
+    grundyValue G = Ordinal.mex.{u, u} fun i ↦ grundyValue (G.moveRight i) :=
   grundyValue_eq_sInf_moveRight G
 
 theorem grundyValue_ne_moveRight {G : PGame} [G.Impartial] (i : G.RightMoves) :

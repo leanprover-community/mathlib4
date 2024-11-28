@@ -169,8 +169,8 @@ If `q₁` and `q₂` when restricted to each subcategory `C i` agree, then `q₁
 -/
 @[simps]
 def natIso {q₁ q₂ : (Σi, C i) ⥤ D} (h : ∀ i, incl i ⋙ q₁ ≅ incl i ⋙ q₂) : q₁ ≅ q₂ where
-  hom := natTrans fun i => (h i).hom
-  inv := natTrans fun i => (h i).inv
+  hom := natTrans fun i ↦ (h i).hom
+  inv := natTrans fun i ↦ (h i).inv
 
 end
 
@@ -180,7 +180,7 @@ variable (C) {J : Type w₂} (g : J → I)
 
 /-- A function `J → I` induces a functor `Σ j, C (g j) ⥤ Σ i, C i`. -/
 def map : (Σj : J, C (g j)) ⥤ Σi : I, C i :=
-  desc fun j => incl (g j)
+  desc fun j ↦ incl (g j)
 
 @[simp]
 lemma map_obj (j : J) (X : C (g j)) : (Sigma.map C g).obj ⟨j, X⟩ = ⟨g j, X⟩ :=
@@ -202,7 +202,7 @@ variable (I)
 /-- The functor `Sigma.map` applied to the identity function is just the identity functor. -/
 @[simps!]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σi, C i) :=
-  natIso fun i => NatIso.ofComponents fun _ => Iso.refl _
+  natIso fun i ↦ NatIso.ofComponents fun _ => Iso.refl _
 
 variable {I} {K : Type w₃}
 
@@ -212,7 +212,7 @@ variable {I} {K : Type w₃}
 @[simps!]
 def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g : _) ≅ map C (g ∘ f) :=
   (descUniq _ _) fun k =>
-    (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g : _) : _) ≪≫ inclCompMap _ _ _
+    (isoWhiskerRight (inclCompMap (fun i ↦ C (g i)) f k) (map C g : _) : _) ≪≫ inclCompMap _ _ _
 
 end
 
@@ -224,7 +224,7 @@ variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
 /-- Assemble an `I`-indexed family of functors into a functor between the sigma types.
 -/
 def sigma (F : ∀ i, C i ⥤ D i) : (Σi, C i) ⥤ Σi, D i :=
-  desc fun i => F i ⋙ incl i
+  desc fun i ↦ F i ⋙ incl i
 
 end Functor
 

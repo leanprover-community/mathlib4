@@ -85,7 +85,7 @@ theorem elim_injective (γ : Type*) (fγ : (Σa : α, β a → γ) → γ)
     exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x : _)
 
 instance [hα : IsEmpty α] : IsEmpty (WType β) :=
-  ⟨fun w => WType.recOn w (IsEmpty.elim hα)⟩
+  ⟨fun w ↦ WType.recOn w (IsEmpty.elim hα)⟩
 
 theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : IsEmpty (β b)] :
     Infinite (WType β) :=
@@ -109,7 +109,7 @@ variable [∀ a : α, Fintype (β a)]
 
 /-- The depth of a finitely branching tree. -/
 def depth : WType β → ℕ
-  | ⟨_, f⟩ => (Finset.sup Finset.univ fun n => depth (f n)) + 1
+  | ⟨_, f⟩ => (Finset.sup Finset.univ fun n ↦ depth (f n)) + 1
 
 theorem depth_pos (t : WType β) : 0 < t.depth := by
   cases t
@@ -164,10 +164,10 @@ private def encodable_succ (n : Nat) (_ : Encodable (WType' β n)) : Encodable (
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
 instance : Encodable (WType β) := by
-  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
-  let f : WType β → Σn, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
-  let finv : (Σn, WType' β n) → WType β := fun p => p.2.1
-  have : ∀ t, finv (f t) = t := fun t => rfl
+  haveI h' : ∀ n, Encodable (WType' β n) := fun n ↦ Nat.rec encodable_zero encodable_succ n
+  let f : WType β → Σn, WType' β n := fun t ↦ ⟨t.depth, ⟨t, le_rfl⟩⟩
+  let finv : (Σn, WType' β n) → WType β := fun p ↦ p.2.1
+  have : ∀ t, finv (f t) = t := fun t ↦ rfl
   exact Encodable.ofLeftInverse f finv this
 
 end WType

@@ -85,11 +85,11 @@ instance (priority := 100) EsakiaHomClass.toPseudoEpimorphismClass [TopologicalS
 
 instance [Preorder α] [Preorder β] [PseudoEpimorphismClass F α β] :
     CoeTC F (PseudoEpimorphism α β) :=
-  ⟨fun f => ⟨f, exists_map_eq_of_map_le f⟩⟩
+  ⟨fun f ↦ ⟨f, exists_map_eq_of_map_le f⟩⟩
 
 instance [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β]
     [EsakiaHomClass F α β] : CoeTC F (EsakiaHom α β) :=
-  ⟨fun f => ⟨f, exists_map_eq_of_map_le f⟩⟩
+  ⟨fun f ↦ ⟨f, exists_map_eq_of_map_le f⟩⟩
 
 end Hom
 

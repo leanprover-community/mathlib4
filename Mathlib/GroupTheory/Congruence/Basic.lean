@@ -58,7 +58,7 @@ protected def prod (c : Con M) (d : Con N) : Con (M × N) :=
 /-- The product of an indexed collection of congruence relations. -/
 @[to_additive "The product of an indexed collection of additive congruence relations."]
 def pi {ι : Type*} {f : ι → Type*} [∀ i, Mul (f i)] (C : ∀ i, Con (f i)) : Con (∀ i, f i) :=
-  { @piSetoid _ _ fun i => (C i).toSetoid with
+  { @piSetoid _ _ fun i ↦ (C i).toSetoid with
     mul' := fun h1 h2 i => (C i).mul (h1 i) (h2 i) }
 
 /-- Makes an isomorphism of quotients by two congruence relations, given that the relations are

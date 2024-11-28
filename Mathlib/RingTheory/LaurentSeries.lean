@@ -214,7 +214,7 @@ theorem coeff_coe_powerSeries (x : R⟦X⟧) (n : ℕ) :
   Laurent series. If the Laurent series is nonzero, `powerSeriesPart` has a nonzero
   constant term. -/
 def powerSeriesPart (x : R⸨X⸩) : R⟦X⟧ :=
-  PowerSeries.mk fun n => x.coeff (x.order + n)
+  PowerSeries.mk fun n ↦ x.coeff (x.order + n)
 
 @[simp]
 theorem powerSeriesPart_coeff (x : R⸨X⸩) (n : ℕ) :
@@ -706,7 +706,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
 theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤₘ₀) ↔
     ∃ F : K⟦X⟧, F = f := by
   rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_lt_eq_zero]
-  refine ⟨fun h ↦ ⟨PowerSeries.mk fun n => f.coeff n, ?_⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨PowerSeries.mk fun n ↦ f.coeff n, ?_⟩, ?_⟩
   on_goal 1 => ext (_ | n)
   · simp only [Int.ofNat_eq_coe, coeff_coe_powerSeries, coeff_mk]
   on_goal 1 => simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]

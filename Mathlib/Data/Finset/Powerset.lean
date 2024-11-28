@@ -257,7 +257,7 @@ theorem pairwise_disjoint_powersetCard (s : Finset α) :
 
 theorem powerset_card_disjiUnion (s : Finset α) :
     Finset.powerset s =
-      (range (s.card + 1)).disjiUnion (fun i => powersetCard i s)
+      (range (s.card + 1)).disjiUnion (fun i ↦ powersetCard i s)
         (s.pairwise_disjoint_powersetCard.set_pairwise _) := by
   refine ext fun a ↦ ⟨fun ha => ?_, fun ha => ?_⟩
   · rw [mem_disjiUnion]
@@ -268,7 +268,7 @@ theorem powerset_card_disjiUnion (s : Finset α) :
     exact mem_powerset.mpr (mem_powersetCard.mp ha).1
 
 theorem powerset_card_biUnion [DecidableEq (Finset α)] (s : Finset α) :
-    Finset.powerset s = (range (s.card + 1)).biUnion fun i => powersetCard i s := by
+    Finset.powerset s = (range (s.card + 1)).biUnion fun i ↦ powersetCard i s := by
   simpa only [disjiUnion_eq_biUnion] using powerset_card_disjiUnion s
 
 theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.card) :
@@ -288,7 +288,7 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
 
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
-  ext fun t => by
+  ext fun t ↦ by
     simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
     constructor
     · classical

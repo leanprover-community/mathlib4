@@ -121,7 +121,7 @@ theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
 
 @[mono]
 theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
-  fun i => by simp only [map_coe, Function.comp_apply]; exists i; apply h
+  fun i ↦ by simp only [map_coe, Function.comp_apply]; exists i; apply h
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
 that have the same index. -/
@@ -198,7 +198,7 @@ theorem ωSup_total {c : Chain α} {x : α} (h : ∀ i, c i ≤ x ∨ x ≤ c i)
 
 @[mono]
 theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup c₀ ≤ ωSup c₁ :=
-  (ωSup_le _ _) fun i => by
+  (ωSup_le _ _) fun i ↦ by
     obtain ⟨_, h⟩ := h i
     exact le_trans h (le_ωSup _ _)
 
@@ -492,7 +492,7 @@ theorem flip₁_continuous' (f : ∀ x : α, γ → β x) (a : α) (hf : Continu
   Continuous.of_bundled _ (fun _ _ h => hf.to_monotone h a) fun c ↦ congr_fun (hf.to_bundled _ c) a
 
 @[deprecated ωScottContinuous.of_apply₂ (since := "2024-05-29")]
-theorem flip₂_continuous' (f : γ → ∀ x, β x) (hf : ∀ x, Continuous' fun g => f g x) :
+theorem flip₂_continuous' (f : γ → ∀ x, β x) (hf : ∀ x, Continuous' fun g ↦ f g x) :
     Continuous' f :=
   Continuous.of_bundled _ (fun _ _ h a => (hf a).to_monotone h)
     (by intro c; ext a; apply (hf a).to_bundled _ c)
@@ -517,7 +517,7 @@ protected def ωSup (c : Chain (α × β)) : α × β :=
 @[simps! ωSup_fst ωSup_snd]
 instance : OmegaCompletePartialOrder (α × β) where
   ωSup := Prod.ωSup
-  ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
+  ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i ↦ (h i).1, ωSup_le _ _ fun i ↦ (h i).2⟩
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
 
 theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := by
@@ -695,7 +695,7 @@ instance : OrderHomClass (α →𝒄 β) α β where
 -- instance : Coe (α →𝒄 β) (α →o β) where coe := ContinuousHom.toOrderHom
 
 instance : PartialOrder (α →𝒄 β) :=
-  (PartialOrder.lift fun f => f.toOrderHom.toFun) <| by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ h; congr
+  (PartialOrder.lift fun f ↦ f.toOrderHom.toFun) <| by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ h; congr
 
 namespace ContinuousHom
 
@@ -969,7 +969,7 @@ open Function
 
 /-- Iteration of a function on an initial element interpreted as a chain. -/
 def iterateChain (f : α →o α) (x : α) (h : x ≤ f x) : Chain α :=
-  ⟨fun n => f^[n] x, f.monotone.monotone_iterate_of_le_map h⟩
+  ⟨fun n ↦ f^[n] x, f.monotone.monotone_iterate_of_le_map h⟩
 
 variable (f : α →𝒄 α) (x : α)
 

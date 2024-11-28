@@ -95,7 +95,7 @@ instance bot : IsHausdorff (⊥ : Ideal R) M :=
 variable {M}
 
 protected theorem subsingleton (h : IsHausdorff (⊤ : Ideal R) M) : Subsingleton M :=
-  ⟨fun x y => eq_of_sub_eq_zero <| h.haus (x - y) fun n => by
+  ⟨fun x y => eq_of_sub_eq_zero <| h.haus (x - y) fun n ↦ by
     rw [Ideal.top_pow, top_smul]
     exact SModEq.top⟩
 
@@ -108,7 +108,7 @@ variable {I M}
 
 theorem iInf_pow_smul (h : IsHausdorff I M) : (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) = ⊥ :=
   eq_bot_iff.2 fun x hx =>
-    (mem_bot _).2 <| h.haus x fun n => SModEq.zero.2 <| (mem_iInf fun n : ℕ => I ^ n • ⊤).1 hx n
+    (mem_bot _).2 <| h.haus x fun n ↦ SModEq.zero.2 <| (mem_iInf fun n : ℕ => I ^ n • ⊤).1 hx n
 
 end IsHausdorff
 
@@ -129,9 +129,9 @@ variable (I M)
 
 instance : IsHausdorff I (Hausdorffification I M) :=
   ⟨fun x ↦ Quotient.inductionOn' x fun x hx =>
-    (Quotient.mk_eq_zero _).2 <| (mem_iInf _).2 fun n => by
+    (Quotient.mk_eq_zero _).2 <| (mem_iInf _).2 fun n ↦ by
       have := comap_map_mkQ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) (I ^ n • ⊤)
-      simp only [sup_of_le_right (iInf_le (fun n => (I ^ n • ⊤ : Submodule R M)) n)] at this
+      simp only [sup_of_le_right (iInf_le (fun n ↦ (I ^ n • ⊤ : Submodule R M)) n)] at this
       rw [← this, map_smul'', mem_comap, Submodule.map_top, range_mkQ, ← SModEq.zero]
       exact hx n⟩
 
@@ -161,7 +161,7 @@ end Hausdorffification
 namespace IsPrecomplete
 
 instance bot : IsPrecomplete (⊥ : Ideal R) M := by
-  refine ⟨fun f hf => ⟨f 1, fun n => ?_⟩⟩
+  refine ⟨fun f hf => ⟨f 1, fun n ↦ ?_⟩⟩
   cases' n with n
   · rw [pow_zero, Ideal.one_eq_top, top_smul]
     exact SModEq.top
@@ -170,12 +170,12 @@ instance bot : IsPrecomplete (⊥ : Ideal R) M := by
 
 instance top : IsPrecomplete (⊤ : Ideal R) M :=
   ⟨fun f _ =>
-    ⟨0, fun n => by
+    ⟨0, fun n ↦ by
       rw [Ideal.top_pow, top_smul]
       exact SModEq.top⟩⟩
 
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsPrecomplete I M :=
-  ⟨fun f _ => ⟨0, fun n => by rw [Subsingleton.elim (f n) 0]⟩⟩
+  ⟨fun f _ => ⟨0, fun n ↦ by rw [Subsingleton.elim (f n) 0]⟩⟩
 
 end IsPrecomplete
 
@@ -230,7 +230,7 @@ def incl : AdicCompletion I M →ₗ[R] (∀ n, M ⧸ (I ^ n • ⊤ : Submodule
 
 /-- The canonical linear map to the completion. -/
 def of : M →ₗ[R] AdicCompletion I M where
-  toFun x := ⟨fun n => mkQ (I ^ n • ⊤ : Submodule R M) x, fun _ => rfl⟩
+  toFun x := ⟨fun n ↦ mkQ (I ^ n • ⊤ : Submodule R M) x, fun _ => rfl⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -246,7 +246,7 @@ def eval (n : ℕ) : AdicCompletion I M →ₗ[R] M ⧸ (I ^ n • ⊤ : Submodu
 
 @[simp]
 theorem coe_eval (n : ℕ) :
-    (eval I M n : AdicCompletion I M → M ⧸ (I ^ n • ⊤ : Submodule R M)) = fun f => f.1 n :=
+    (eval I M n : AdicCompletion I M → M ⧸ (I ^ n • ⊤ : Submodule R M)) = fun f ↦ f.1 n :=
   rfl
 
 theorem eval_apply (n : ℕ) (f : AdicCompletion I M) : eval I M n f = f.1 n :=
@@ -531,7 +531,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   rw [← Ideal.neg_mem_iff, Ideal.mem_jacobson_bot]
   intro y
   rw [add_comm]
-  let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
+  let f : ℕ → R := fun n ↦ ∑ i ∈ range n, (x * y) ^ i
   have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] := by
     intro m n h
     simp only [f, Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]

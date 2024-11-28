@@ -83,7 +83,7 @@ theorem smul_closure (a : M) (s : Set R) : a • span s = span (a • s) :=
 
 instance pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralScalar M R] :
     IsCentralScalar M (Ideal R) :=
-  ⟨fun _ S => (congr_arg fun f => S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
+  ⟨fun _ S => (congr_arg fun f ↦ S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
 
 @[simp]
 theorem pointwise_smul_toAddSubmonoid (a : M) (S : Ideal R)

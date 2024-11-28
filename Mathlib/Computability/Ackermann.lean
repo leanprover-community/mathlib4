@@ -24,7 +24,7 @@ definition, we show that this isn't a primitive recursive function.
 We very broadly adapt the proof idea from
 https://www.planetmath.org/ackermannfunctionisnotprimitiverecursive. Namely, we prove that for any
 primitive recursive `f : ℕ → ℕ`, there exists `m` such that `f n < ack m n` for all `n`. This then
-implies that `fun n => ack n n` can't be primitive recursive, and so neither can `ack`. We aren't
+implies that `fun n ↦ ack n n` can't be primitive recursive, and so neither can `ack`. We aren't
 able to use the same bounds as in that proof though, since our approach of using pairing functions
 differs from their approach of using multivariate functions.
 
@@ -189,13 +189,13 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
       (ack_strict_mono_left' _ <| (add_lt_add_iff_right 1).1 h).trans
         (ack_strictMono_right _ <| ack_strict_mono_left' n h)
 
-theorem ack_strictMono_left (n : ℕ) : StrictMono fun m => ack m n := fun _m₁ _m₂ =>
+theorem ack_strictMono_left (n : ℕ) : StrictMono fun m ↦ ack m n := fun _m₁ _m₂ =>
   ack_strict_mono_left' n
 
-theorem ack_mono_left (n : ℕ) : Monotone fun m => ack m n :=
+theorem ack_mono_left (n : ℕ) : Monotone fun m ↦ ack m n :=
   (ack_strictMono_left n).monotone
 
-theorem ack_injective_left (n : ℕ) : Function.Injective fun m => ack m n :=
+theorem ack_injective_left (n : ℕ) : Function.Injective fun m ↦ ack m n :=
   (ack_strictMono_left n).injective
 
 @[simp]
@@ -277,15 +277,15 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
   -- Zero function:
   · exact ⟨0, ack_pos 0⟩
   -- Successor function:
-  · refine ⟨1, fun n => ?_⟩
+  · refine ⟨1, fun n ↦ ?_⟩
     rw [succ_eq_one_add]
     apply add_lt_ack
   -- Left projection:
-  · refine ⟨0, fun n => ?_⟩
+  · refine ⟨0, fun n ↦ ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_left_le n
   -- Right projection:
-  · refine ⟨0, fun n => ?_⟩
+  · refine ⟨0, fun n ↦ ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
   all_goals cases' IHf with a ha; cases' IHg with b hb
@@ -336,13 +336,13 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
             ack_succ_succ (_ + 8), add_assoc]
         exact ack_mono_left _ (Nat.add_le_add (le_max_right a b) le_rfl)
     -- The proof is now simple.
-    exact ⟨max a b + 9, fun n => this.trans_le <| ack_mono_right _ <| unpair_add_le n⟩
+    exact ⟨max a b + 9, fun n ↦ this.trans_le <| ack_mono_right _ <| unpair_add_le n⟩
 
-theorem not_nat_primrec_ack_self : ¬Nat.Primrec fun n => ack n n := fun h ↦ by
+theorem not_nat_primrec_ack_self : ¬Nat.Primrec fun n ↦ ack n n := fun h ↦ by
   cases' exists_lt_ack_of_nat_primrec h with m hm
   exact (hm m).false
 
-theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by
+theorem not_primrec_ack_self : ¬Primrec fun n ↦ ack n n := by
   rw [Primrec.nat_iff]
   exact not_nat_primrec_ack_self
 

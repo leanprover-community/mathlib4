@@ -400,7 +400,7 @@ end
 def codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : Submodule R N) (h : ∀ v, f v ∈ p) :
     M [⋀^ι]→ₗ[R] p :=
   { f.toMultilinearMap.codRestrict p h with
-    toFun := fun v => ⟨f v, h v⟩
+    toFun := fun v ↦ ⟨f v, h v⟩
     map_eq_zero_of_eq' := fun _ _ _ hv hij => Subtype.ext <| map_eq_zero_of_eq _ _ hv hij }
 
 end AlternatingMap
@@ -484,7 +484,7 @@ theorem subtype_compAlternatingMap_codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : 
 theorem compAlternatingMap_codRestrict (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N)
     (p : Submodule R N₂) (h) :
     (g.codRestrict p h).compAlternatingMap f =
-      (g.compAlternatingMap f).codRestrict p fun v => h (f v) :=
+      (g.compAlternatingMap f).codRestrict p fun v ↦ h (f v) :=
   AlternatingMap.ext fun _ => rfl
 
 end LinearMap
@@ -506,7 +506,7 @@ theorem coe_compLinearMap (f : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) :
 
 @[simp]
 theorem compLinearMap_apply (f : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R] M) (v : ι → M₂) :
-    f.compLinearMap g v = f fun i => g (v i) :=
+    f.compLinearMap g v = f fun i ↦ g (v i) :=
   rfl
 
 /-- Composing an alternating map twice with the same linear map in each argument is
@@ -657,7 +657,7 @@ This is the alternating version of `MultilinearMap.domDomCongr`. -/
 @[simps]
 def domDomCongr (σ : ι ≃ ι') (f : M [⋀^ι]→ₗ[R] N) : M [⋀^ι']→ₗ[R] N :=
   { f.toMultilinearMap.domDomCongr σ with
-    toFun := fun v => f (v ∘ σ)
+    toFun := fun v ↦ f (v ∘ σ)
     map_eq_zero_of_eq' := fun v i j hv hij =>
       f.map_eq_zero_of_eq (v ∘ σ) (i := σ.symm i) (j := σ.symm j)
         (by simpa using hv) (σ.symm.injective.ne hij) }
@@ -740,7 +740,7 @@ theorem domDomCongr_eq_zero_iff (σ : ι ≃ ι') (f : M [⋀^ι]→ₗ[R] N) :
 
 theorem domDomCongr_perm [Fintype ι] [DecidableEq ι] (σ : Equiv.Perm ι) :
     g.domDomCongr σ = Equiv.Perm.sign σ • g :=
-  AlternatingMap.ext fun v => g.map_perm v σ
+  AlternatingMap.ext fun v ↦ g.map_perm v σ
 
 @[norm_cast]
 theorem coe_domDomCongr (σ : ι ≃ ι') :
@@ -872,13 +872,13 @@ variable [Module R' N₁] [Module R' N₂]
 /-- Two alternating maps indexed by a `Fintype` are equal if they are equal when all arguments
 are distinct basis vectors. -/
 theorem Basis.ext_alternating {f g : N₁ [⋀^ι]→ₗ[R'] N₂} (e : Basis ι₁ R' N₁)
-    (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i => e (v i)) = g fun i => e (v i)) :
+    (h : ∀ v : ι → ι₁, Function.Injective v → (f fun i ↦ e (v i)) = g fun i ↦ e (v i)) :
     f = g := by
   classical
-    refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v => ?_)
+    refine AlternatingMap.coe_multilinearMap_injective (Basis.ext_multilinear e fun v ↦ ?_)
     by_cases hi : Function.Injective v
     · exact h v hi
-    · have : ¬Function.Injective fun i => e (v i) := hi.imp Function.Injective.of_comp
+    · have : ¬Function.Injective fun i ↦ e (v i) := hi.imp Function.Injective.of_comp
       rw [coe_multilinearMap, coe_multilinearMap, f.map_eq_zero_of_not_injective _ this,
         g.map_eq_zero_of_not_injective _ this]
 
@@ -906,7 +906,7 @@ def curryLeft {n : ℕ} (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') :
     M'' →ₗ[R'] M'' [⋀^Fin n]→ₗ[R'] N'' where
   toFun m :=
     { f.toMultilinearMap.curryLeft m with
-      toFun := fun v => f (Matrix.vecCons m v)
+      toFun := fun v ↦ f (Matrix.vecCons m v)
       map_eq_zero_of_eq' := fun v i j hv hij =>
         f.map_eq_zero_of_eq _ (by
           rwa [Matrix.cons_val_succ, Matrix.cons_val_succ]) ((Fin.succ_injective _).ne hij) }
@@ -952,7 +952,7 @@ theorem curryLeft_compAlternatingMap {n : ℕ} (g : N'' →ₗ[R'] N₂'')
 theorem curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
     (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') (m : M₂'') :
     (f.compLinearMap g).curryLeft m = (f.curryLeft (g m)).compLinearMap g :=
-  ext fun v => congr_arg f <| funext <| by
+  ext fun v ↦ congr_arg f <| funext <| by
     refine Fin.cases ?_ ?_
     · rfl
     · simp

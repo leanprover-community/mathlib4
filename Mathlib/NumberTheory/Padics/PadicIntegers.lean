@@ -171,7 +171,7 @@ theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by simp
 
 /-- A sequence of integers that is Cauchy with respect to the `p`-adic norm converges to a `p`-adic
 integer. -/
-def ofIntSeq (seq : ℕ → ℤ) (h : IsCauSeq (padicNorm p) fun n => seq n) : ℤ_[p] :=
+def ofIntSeq (seq : ℕ → ℤ) (h : IsCauSeq (padicNorm p) fun n ↦ seq n) : ℤ_[p] :=
   ⟨⟦⟨_, h⟩⟧,
     show ↑(PadicSeq.norm _) ≤ (1 : ℝ) by
       rw [PadicSeq.norm]
@@ -280,7 +280,7 @@ theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := padicNormE.norm_p
 theorem norm_p_pow (n : ℕ) : ‖(p : ℤ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by simp
 
 private def cauSeq_to_rat_cauSeq (f : CauSeq ℤ_[p] norm) : CauSeq ℚ_[p] fun a ↦ ‖a‖ :=
-  ⟨fun n => f n, fun _ hε => by simpa [norm, norm_def] using f.cauchy hε⟩
+  ⟨fun n ↦ f n, fun _ hε => by simpa [norm, norm_def] using f.cauchy hε⟩
 
 variable (p)
 
@@ -564,7 +564,7 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
       refine ⟨m, fun n hn => lt_of_le_of_lt ?_ hm⟩
       rw [← neg_sub, norm_neg]
       exact hx hn
-    · refine ⟨x'.lim, fun n => ?_⟩
+    · refine ⟨x'.lim, fun n ↦ ?_⟩
       have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := by
         apply zpow_pos
         exact mod_cast hp.1.pos

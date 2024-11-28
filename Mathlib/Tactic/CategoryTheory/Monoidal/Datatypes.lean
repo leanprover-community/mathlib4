@@ -436,7 +436,7 @@ partial def mor₁OfExpr (e : Expr) : MonoidalM Mor₁ := do
       MonadMor₁.comp₁M (← mor₁OfExpr f.e) (← mor₁OfExpr g.e)
     else
       return Mor₁.of ⟨e, ⟨none⟩, ⟨none⟩⟩
-  modify fun s => { s with cache := s.cache.insert e f }
+  modify fun s ↦ { s with cache := s.cache.insert e f }
   return f
 
 instance : MkMor₁ MonoidalM where

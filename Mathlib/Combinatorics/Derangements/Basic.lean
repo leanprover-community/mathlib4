@@ -52,7 +52,7 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
   calc
     derangements (Subtype p) ≃ { f : { f : Perm α // ∀ a, ¬p a → a ∈ fixedPoints f } //
         ∀ a, a ∈ fixedPoints f → ¬p a } := by
-      refine (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => ?_, ?_⟩
+      refine (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f ↦ ⟨fun hf a hfa ha => ?_, ?_⟩
       · refine hf ⟨a, ha⟩ (Subtype.ext ?_)
         simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
         Equiv.coe_fn_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
@@ -65,7 +65,7 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
     _ ≃ { f : Perm α // ∃ _h : ∀ a, ¬p a → a ∈ fixedPoints f, ∀ a, a ∈ fixedPoints f → ¬p a } :=
       subtypeSubtypeEquivSubtypeExists _ _
     _ ≃ { f : Perm α // ∀ a, ¬p a ↔ a ∈ fixedPoints f } :=
-      subtypeEquivRight fun f => by
+      subtypeEquivRight fun f ↦ by
         simp_rw [exists_prop, ← forall_and, ← iff_iff_implies_and_implies]
 
 universe u
@@ -90,7 +90,7 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (¬a ∈ fixedPoints ·)
     _ ≃ { f : Perm α // fixedPoints f = {a} } ⊕ { f : Perm α // fixedPoints f = ∅ } := by
-      refine Equiv.sumCongr (subtypeEquivRight fun f => ?_) (subtypeEquivRight fun f => ?_)
+      refine Equiv.sumCongr (subtypeEquivRight fun f ↦ ?_) (subtypeEquivRight fun f ↦ ?_)
       · rw [Set.eq_singleton_iff_unique_mem, and_comm]
         rfl
       · rw [Set.eq_empty_iff_forall_not_mem]
@@ -100,7 +100,7 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       refine
         Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
             subtypeEquivRight fun x ↦ ?_).symm
-          (subtypeEquivRight fun f => mem_derangements_iff_fixedPoints_eq_empty.symm)
+          (subtypeEquivRight fun f ↦ mem_derangements_iff_fixedPoints_eq_empty.symm)
       rw [eq_comm, Set.ext_iff]
       simp_rw [Set.mem_compl_iff, Classical.not_not]
 

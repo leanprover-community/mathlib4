@@ -64,7 +64,7 @@ def obj' : ModuleCat R where
 `M'` by means of restriction of scalars.
 -/
 def map' {M M' : ModuleCat.{v} S} (g : M ⟶ M') : obj' f M ⟶ obj' f M' :=
-  { g with map_smul' := fun r => g.map_smul (f r) }
+  { g with map_smul' := fun r ↦ g.map_smul (f r) }
 
 end RestrictScalars
 
@@ -369,7 +369,7 @@ theorem smul_apply' (s : S) (g : (restrictScalars f).obj ⟨S⟩ →ₗ[R] M) (s
 
 instance mulAction : MulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
   { CoextendScalars.hasSMul f _ with
-    one_smul := fun g => LinearMap.ext fun s : S => by simp
+    one_smul := fun g ↦ LinearMap.ext fun s : S => by simp
     mul_smul := fun (s t : S) g => LinearMap.ext fun x : S => by simp [mul_assoc] }
 
 instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
@@ -383,7 +383,7 @@ Hom(S, M).
 instance isModule : Module S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
   { CoextendScalars.distribMulAction f _ with
     add_smul := fun s1 s2 g => LinearMap.ext fun x : S => by simp [mul_add, LinearMap.map_add]
-    zero_smul := fun g => LinearMap.ext fun x : S => by simp [LinearMap.map_zero] }
+    zero_smul := fun g ↦ LinearMap.ext fun x : S => by simp [LinearMap.map_zero] }
 
 end Unbundled
 
@@ -542,7 +542,7 @@ identity functor.
 -- @[simps] Porting note: not in normal form and not used
 protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (ModuleCat R) where
   app X :=
-    { toFun := fun g => g.toFun (1 : S)
+    { toFun := fun g ↦ g.toFun (1 : S)
       map_add' := fun x1 x2 => by
         dsimp
         rw [LinearMap.add_apply]
@@ -569,12 +569,12 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
     homEquiv := fun X Y ↦
       { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u₁,u₂,v} f
         invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u₁,u₂,v} f
-        left_inv := fun g => LinearMap.ext fun x : X => by
+        left_inv := fun g ↦ LinearMap.ext fun x : X => by
           -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): once just simp
           rw [RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
             LinearMap.coe_toAddHom, RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
             one_smul]
-        right_inv := fun g => LinearMap.ext fun x ↦ LinearMap.ext fun s : S => by
+        right_inv := fun g ↦ LinearMap.ext fun x ↦ LinearMap.ext fun s : S => by
           -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): once just simp
           rw [RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
             RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
@@ -653,7 +653,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
   letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
   refine {toFun := fun z ↦ TensorProduct.lift ?_ z, map_add' := ?_, map_smul' := ?_}
   · refine
-    {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_,
+    {toFun := fun s ↦ HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_,
       map_smul' := fun (r : R) (s : S) => ?_}
     · ext
       dsimp only [evalAt_apply, LinearMap.add_apply]

@@ -227,7 +227,7 @@ instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
 instance Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Mul (C i)]
     [∀ i, ContinuousMul (C i)] : ContinuousMul (∀ i, C i) where
   continuous_mul :=
-    continuous_pi fun i => (continuous_apply i).fst'.mul (continuous_apply i).snd'
+    continuous_pi fun i ↦ (continuous_apply i).fst'.mul (continuous_apply i).snd'
 
 /-- A version of `Pi.continuousMul` for non-dependent functions. It is needed because sometimes
 Lean 3 fails to use `Pi.continuousMul` for non-dependent functions. -/
@@ -558,14 +558,14 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
 
 @[to_additive (attr := continuity)]
 theorem continuous_list_prod {f : ι → X → M} (l : List ι) (h : ∀ i ∈ l, Continuous (f i)) :
-    Continuous fun a ↦ (l.map fun i => f i a).prod :=
+    Continuous fun a ↦ (l.map fun i ↦ f i a).prod :=
   continuous_iff_continuousAt.2 fun x =>
     tendsto_list_prod l fun c hc => continuous_iff_continuousAt.1 (h c hc) x
 
 @[to_additive]
 theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
     (h : ∀ i ∈ l, ContinuousOn (f i) t) :
-    ContinuousOn (fun a ↦ (l.map fun i => f i a).prod) t := by
+    ContinuousOn (fun a ↦ (l.map fun i ↦ f i a).prod) t := by
   intro x hx
   rw [continuousWithinAt_iff_continuousAt_restrict _ hx]
   refine tendsto_list_prod _ fun i hi => ?_
@@ -734,13 +734,13 @@ theorem tendsto_finset_prod {f : ι → α → M} {x : Filter α} {a : ι → M}
 
 @[to_additive (attr := continuity)]
 theorem continuous_multiset_prod {f : ι → X → M} (s : Multiset ι) :
-    (∀ i ∈ s, Continuous (f i)) → Continuous fun a ↦ (s.map fun i => f i a).prod := by
+    (∀ i ∈ s, Continuous (f i)) → Continuous fun a ↦ (s.map fun i ↦ f i a).prod := by
   rcases s with ⟨l⟩
   simpa using continuous_list_prod l
 
 @[to_additive]
 theorem continuousOn_multiset_prod {f : ι → X → M} (s : Multiset ι) {t : Set X} :
-    (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a ↦ (s.map fun i => f i a).prod) t := by
+    (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a ↦ (s.map fun i ↦ f i a).prod) t := by
   rcases s with ⟨l⟩
   simpa using continuousOn_list_prod l
 
@@ -765,8 +765,8 @@ open Function
 
 @[to_additive]
 theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [CommMonoid M] {f : ι → X → M}
-    (hf : LocallyFinite fun i => mulSupport <| f i) (x₀ : X) :
-    ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, (mulSupport fun i => f i x) ⊆ I := by
+    (hf : LocallyFinite fun i ↦ mulSupport <| f i) (x₀ : X) :
+    ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, (mulSupport fun i ↦ f i x) ⊆ I := by
   rcases hf x₀ with ⟨U, hxU, hUf⟩
   refine ⟨hUf.toFinset, mem_of_superset hxU fun y hy i hi => ?_⟩
   rw [hUf.coe_toFinset]
@@ -774,14 +774,14 @@ theorem LocallyFinite.exists_finset_mulSupport {M : Type*} [CommMonoid M] {f : �
 
 @[to_additive]
 theorem finprod_eventually_eq_prod {M : Type*} [CommMonoid M] {f : ι → X → M}
-    (hf : LocallyFinite fun i => mulSupport (f i)) (x : X) :
+    (hf : LocallyFinite fun i ↦ mulSupport (f i)) (x : X) :
     ∃ s : Finset ι, ∀ᶠ y in 𝓝 x, ∏ᶠ i, f i y = ∏ i ∈ s, f i y :=
   let ⟨I, hI⟩ := hf.exists_finset_mulSupport x
   ⟨I, hI.mono fun _ hy => finprod_eq_prod_of_mulSupport_subset _ fun _ hi => hy hi⟩
 
 @[to_additive]
 theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
-    (hf : LocallyFinite fun i => mulSupport (f i)) : Continuous fun x ↦ ∏ᶠ i, f i x := by
+    (hf : LocallyFinite fun i ↦ mulSupport (f i)) : Continuous fun x ↦ ∏ᶠ i, f i x := by
   refine continuous_iff_continuousAt.2 fun x ↦ ?_
   rcases finprod_eventually_eq_prod hf x with ⟨s, hs⟩
   refine ContinuousAt.congr ?_ (EventuallyEq.symm hs)
@@ -789,10 +789,10 @@ theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
 
 @[to_additive]
 theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀ i, p i → Continuous (f i))
-    (hf : LocallyFinite fun i => mulSupport (f i)) :
+    (hf : LocallyFinite fun i ↦ mulSupport (f i)) :
     Continuous fun x ↦ ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
-  exact continuous_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  exact continuous_finprod (fun i ↦ hc i i.2) (hf.comp_injective Subtype.coe_injective)
 
 end
 

@@ -229,7 +229,7 @@ section PiLattice
 variable [∀ i, Lattice (α i)]
 
 @[simp]
-theorem pi_univ_uIcc (a b : ∀ i, α i) : (pi univ fun i => uIcc (a i) (b i)) = uIcc a b :=
+theorem pi_univ_uIcc (a b : ∀ i, α i) : (pi univ fun i ↦ uIcc (a i) (b i)) = uIcc a b :=
   pi_univ_Icc _ _
 
 variable [DecidableEq ι]

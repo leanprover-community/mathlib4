@@ -76,21 +76,21 @@ theorem Perfect.exists_nat_bool_injection
     (hC : Perfect C) (hnonempty : C.Nonempty) [CompleteSpace α] :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Injective f := by
   obtain ⟨u, -, upos', hu⟩ := exists_seq_strictAnti_tendsto' (zero_lt_one' ℝ≥0∞)
-  have upos := fun n => (upos' n).1
+  have upos := fun n ↦ (upos' n).1
   let P := Subtype fun E : Set α => Perfect E ∧ E.Nonempty
   choose C0 C1 h0 h1 hdisj using
     fun {C : Set α} (hC : Perfect C) (hnonempty : C.Nonempty) {ε : ℝ≥0∞} (hε : 0 < ε) =>
     hC.small_diam_splitting hnonempty hε
-  let DP : List Bool → P := fun l => by
+  let DP : List Bool → P := fun l ↦ by
     induction' l with a l ih; · exact ⟨C, ⟨hC, hnonempty⟩⟩
     cases a
     · use C0 ih.property.1 ih.property.2 (upos (l.length + 1))
       exact ⟨(h0 _ _ _).1, (h0 _ _ _).2.1⟩
     use C1 ih.property.1 ih.property.2 (upos (l.length + 1))
     exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
-  let D : List Bool → Set α := fun l => (DP l).val
+  let D : List Bool → Set α := fun l ↦ (DP l).val
   have hanti : ClosureAntitone D := by
-    refine Antitone.closureAntitone ?_ fun l => (DP l).property.1.closed
+    refine Antitone.closureAntitone ?_ fun l ↦ (DP l).property.1.closed
     intro l a
     cases a
     · exact (h0 _ _ _).2.2.1
@@ -114,7 +114,7 @@ theorem Perfect.exists_nat_bool_injection
     · exact hdisj _ _ _
     exact (hdisj _ _ _).symm
   have hdom : ∀ {x : ℕ → Bool}, x ∈ (inducedMap D).1 := fun {x} => by
-    rw [hanti.map_of_vanishingDiam hdiam fun l => (DP l).property.2]
+    rw [hanti.map_of_vanishingDiam hdiam fun l ↦ (DP l).property.2]
     apply mem_univ
   refine ⟨fun x ↦ (inducedMap D).2 ⟨x, hdom⟩, ?_, ?_, ?_⟩
   · rintro y ⟨x, rfl⟩

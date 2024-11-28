@@ -106,7 +106,7 @@ private theorem one_smul' [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodu
     (1 : ⨁ i, A i) • x = x := by
   suffices smulAddMonoidHom A M 1 = AddMonoidHom.id (⨁ i, M i) from DFunLike.congr_fun this x
   apply DirectSum.addHom_ext; intro i xi
-  rw [show (1 : DirectSum ιA fun i => A i) = (of A 0) GOne.one by rfl]
+  rw [show (1 : DirectSum ιA fun i ↦ A i) = (of A 0) GOne.one by rfl]
   rw [smulAddMonoidHom_apply_of_of]
   exact DirectSum.of_eq_of_gradedMonoid_eq (one_smul (GradedMonoid A) <| GradedMonoid.mk i xi)
 
@@ -161,7 +161,7 @@ variable (𝓜 : ιM → σ)
 namespace SetLike
 
 instance gmulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetLike.GradedMonoid 𝓐]
-    [SetLike.GradedSMul 𝓐 𝓜] : GradedMonoid.GMulAction (fun i => 𝓐 i) fun i => 𝓜 i :=
+    [SetLike.GradedSMul 𝓐 𝓜] : GradedMonoid.GMulAction (fun i ↦ 𝓐 i) fun i ↦ 𝓜 i :=
   { SetLike.toGSMul 𝓐 𝓜 with
     one_smul := fun ⟨_i, _m⟩ => Sigma.subtype_ext (zero_vadd _ _) (one_smul _ _)
     mul_smul := fun ⟨_i, _a⟩ ⟨_j, _a'⟩ ⟨_k, _b⟩ =>
@@ -169,7 +169,7 @@ instance gmulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetLike
 
 instance gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
     [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜] :
-    DirectSum.GdistribMulAction (fun i => 𝓐 i) fun i => 𝓜 i :=
+    DirectSum.GdistribMulAction (fun i ↦ 𝓐 i) fun i ↦ 𝓜 i :=
   { SetLike.gmulAction 𝓐 𝓜 with
     smul_add := fun _a _b _c => Subtype.ext <| smul_add _ _ _
     smul_zero := fun _a => Subtype.ext <| smul_zero _ }
@@ -179,7 +179,7 @@ variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
 
 /-- `[SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]` is the internal version of graded
   module, the internal version can be translated into the external version `gmodule`. -/
-instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
+instance gmodule : DirectSum.Gmodule (fun i ↦ 𝓐 i) fun i ↦ 𝓜 i :=
   { SetLike.gdistribMulAction 𝓐 𝓜 with
     smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.2 y.2⟩
     add_smul := fun _a _a' _b => Subtype.ext <| add_smul _ _ _

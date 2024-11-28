@@ -190,7 +190,7 @@ theorem coe_sub (f g : P →ᴬ[R] W) : ⇑(f - g) = f - g := rfl
 theorem sub_apply (f g : P →ᴬ[R] W) (x : P) : (f - g) x = f x - g x := rfl
 
 instance : Neg (P →ᴬ[R] W) :=
-  { neg := fun f => { -(f : P →ᵃ[R] W) with cont := f.continuous.neg } }
+  { neg := fun f ↦ { -(f : P →ᵃ[R] W) with cont := f.continuous.neg } }
 
 @[norm_cast, simp]
 theorem coe_neg (f : P →ᴬ[R] W) : ⇑(-f) = -f := rfl

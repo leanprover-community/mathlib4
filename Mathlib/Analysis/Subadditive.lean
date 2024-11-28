@@ -38,7 +38,7 @@ this limit is given in `Subadditive.tendsto_lim` -/
 protected def lim (_h : Subadditive u) :=
   sInf ((fun n : ℕ => u n / n) '' Ici 1)
 
-theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
+theorem lim_le_div (hbdd : BddBelow (range fun n ↦ u n / n)) {n : ℕ} (hn : n ≠ 0) :
     h.lim ≤ u n / n := by
   rw [Subadditive.lim]
   exact csInf_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
@@ -77,8 +77,8 @@ theorem eventually_div_lt_of_div_lt {L : ℝ} {n : ℕ} (hn : n ≠ 0) (hL : u n
   exact div_le_div_of_nonneg_right (h.apply_mul_add_le _ _ _) (Nat.cast_nonneg _)
 
 /-- Fekete's lemma: a subadditive sequence which is bounded below converges. -/
-theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
-    Tendsto (fun n => u n / n) atTop (𝓝 h.lim) := by
+theorem tendsto_lim (hbdd : BddBelow (range fun n ↦ u n / n)) :
+    Tendsto (fun n ↦ u n / n) atTop (𝓝 h.lim) := by
   refine tendsto_order.2 ⟨fun l hl => ?_, fun L hL => ?_⟩
   · refine eventually_atTop.2
       ⟨1, fun n hn => hl.trans_le (h.lim_le_div hbdd (zero_lt_one.trans_le hn).ne')⟩

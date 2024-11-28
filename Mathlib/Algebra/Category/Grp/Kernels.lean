@@ -26,7 +26,7 @@ def kernelCone : KernelFork f :=
 /-- The kernel of a group homomorphism is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit <| kernelCone f :=
   Fork.IsLimit.mk _
-    (fun s => (by exact Fork.ι s : _ →+ G).codRestrict _ fun c ↦ mem_ker.mpr <|
+    (fun s ↦ (by exact Fork.ι s : _ →+ G).codRestrict _ fun c ↦ mem_ker.mpr <|
       by exact DFunLike.congr_fun s.condition c)
     (fun _ => by rfl)
     (fun _ _ h => ext fun x ↦ Subtype.ext_iff_val.mpr <| by exact DFunLike.congr_fun h x)
@@ -39,7 +39,7 @@ def cokernelCocone : CokernelCofork f :=
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _
-    (fun s => lift _ _ <| (range_le_ker_iff _ _).mpr <| CokernelCofork.condition s)
+    (fun s ↦ lift _ _ <| (range_le_ker_iff _ _).mpr <| CokernelCofork.condition s)
     (fun _ => rfl)
     (fun _ _ h => have : Epi (cokernelCocone f).π := (epi_iff_surjective _).mpr <| mk'_surjective _
       (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using h)

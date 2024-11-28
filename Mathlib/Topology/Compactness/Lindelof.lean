@@ -389,12 +389,12 @@ theorem isLindelof_open_iff_eq_countable_iUnion_of_isTopologicalBasis (b : ι �
     have : b ∘ f' = f := funext hf'
     subst this
     obtain ⟨t, ht⟩ :=
-      h₁.elim_countable_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) Subset.rfl
+      h₁.elim_countable_subcover (b ∘ f') (fun i ↦ hb.isOpen (Set.mem_range_self _)) Subset.rfl
     refine ⟨t.image f', Countable.image (ht.1) f', le_antisymm ?_ ?_⟩
     · refine Set.Subset.trans ht.2 ?_
       simp only [Set.iUnion_subset_iff]
       intro i hi
-      rw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
+      rw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i ↦ b i.1]
       exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, mem_image_of_mem _ hi⟩
     · apply Set.iUnion₂_subset
       rintro i hi
@@ -452,7 +452,7 @@ def Filter.coclosedLindelof (X : Type*) [TopologicalSpace X] : Filter X :=
   ⨅ (s : Set X) (_ : IsClosed s) (_ : IsLindelof s), 𝓟 sᶜ
 
 theorem hasBasis_coclosedLindelof :
-    (Filter.coclosedLindelof X).HasBasis (fun s => IsClosed s ∧ IsLindelof s) compl := by
+    (Filter.coclosedLindelof X).HasBasis (fun s ↦ IsClosed s ∧ IsLindelof s) compl := by
   simp only [Filter.coclosedLindelof, iInf_and']
   refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isLindelof_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
@@ -502,7 +502,7 @@ theorem lindelofSpace_of_countable_subfamily_closed
     (h : ∀ {ι : Type u} (t : ι → Set X), (∀ i, IsClosed (t i)) → ⋂ i, t i = ∅ →
       ∃ u : Set ι, u.Countable ∧ ⋂ i ∈ u, t i = ∅) :
     LindelofSpace X where
-  isLindelof_univ := isLindelof_of_countable_subfamily_closed fun t => by simpa using h t
+  isLindelof_univ := isLindelof_of_countable_subfamily_closed fun t ↦ by simpa using h t
 
 theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
   isLindelof_univ.of_isClosed_subset h (subset_univ _)
@@ -691,7 +691,7 @@ instance {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ 
     LindelofSpace (Σi, X i) where
   isLindelof_univ := by
     rw [Sigma.univ]
-    exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk
+    exact isLindelof_iUnion fun i ↦ isLindelof_range continuous_sigmaMk
 
 instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofSpace (Quot r) where
   isLindelof_univ := by

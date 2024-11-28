@@ -141,7 +141,7 @@ theorem hasFDerivAt_stereoInvFunAux (v : E) :
     simp only [map_zero, smul_zero]
   have h₁ : HasFDerivAt (fun w : E => (‖w‖ ^ 2 + 4)⁻¹) (0 : E →L[ℝ] ℝ) 0 := by
     convert (hasFDerivAt_inv _).comp _ (h₀.add (hasFDerivAt_const 4 0)) <;> simp
-  have h₂ : HasFDerivAt (fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
+  have h₂ : HasFDerivAt (fun w ↦ (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
       ((4 : ℝ) • ContinuousLinearMap.id ℝ E) 0 := by
     convert ((hasFDerivAt_const (4 : ℝ) 0).smul (hasFDerivAt_id 0)).add
       ((h₀.sub (hasFDerivAt_const (4 : ℝ) 0)).smul (hasFDerivAt_const v 0)) using 1
@@ -163,7 +163,7 @@ theorem contDiff_stereoInvFunAux : ContDiff ℝ ∞ (stereoInvFunAux v) := by
     refine (h₀.add contDiff_const).inv ?_
     intro x
     nlinarith
-  have h₂ : ContDiff ℝ ∞ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
+  have h₂ : ContDiff ℝ ∞ fun w ↦ (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine (contDiff_const.smul contDiff_id).add ?_
     exact (h₀.sub contDiff_const).smul contDiff_const
   exact h₁.smul h₂

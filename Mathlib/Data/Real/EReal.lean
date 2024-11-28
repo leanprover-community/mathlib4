@@ -228,7 +228,7 @@ instance : MulZeroOneClass EReal where
 
 /-! ### Real coercion -/
 
-instance canLift : CanLift EReal ℝ (↑) fun r => r ≠ ⊤ ∧ r ≠ ⊥ where
+instance canLift : CanLift EReal ℝ (↑) fun r ↦ r ≠ ⊤ ∧ r ≠ ⊥ where
   prf x hx := by
     induction x
     · simp at hx

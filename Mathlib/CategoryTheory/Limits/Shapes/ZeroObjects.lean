@@ -99,8 +99,8 @@ def isoIsTerminal (hX : IsZero X) (hY : IsTerminal Y) : X ≅ Y :=
   IsTerminal.uniqueUpToIso hX.isTerminal hY
 
 theorem of_iso (hY : IsZero Y) (e : X ≅ Y) : IsZero X := by
-  refine ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f => ?_⟩⟩,
-    fun Z => ⟨⟨⟨hY.from_ Z ≫ e.inv⟩, fun f => ?_⟩⟩⟩
+  refine ⟨fun Z => ⟨⟨⟨e.hom ≫ hY.to_ Z⟩, fun f ↦ ?_⟩⟩,
+    fun Z => ⟨⟨⟨hY.from_ Z ≫ e.inv⟩, fun f ↦ ?_⟩⟩⟩
   · rw [← cancel_epi e.inv]
     apply hY.eq_of_src
   · rw [← cancel_mono e.hom]

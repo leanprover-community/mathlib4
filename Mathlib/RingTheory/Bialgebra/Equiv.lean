@@ -98,7 +98,7 @@ def toAlgEquiv (f : A ≃ₐc[R] B) : A ≃ₐ[R] B :=
     commutes' := AlgHomClass.commutes f.toBialgHom }
 
 /-- The equivalence of types underlying a bialgebra equivalence. -/
-def toEquiv : (A ≃ₐc[R] B) → A ≃ B := fun f => f.toCoalgEquiv.toEquiv
+def toEquiv : (A ≃ₐc[R] B) → A ≃ B := fun f ↦ f.toCoalgEquiv.toEquiv
 
 theorem toEquiv_injective : Function.Injective (toEquiv : (A ≃ₐc[R] B) → A ≃ B) :=
   fun ⟨_, _⟩ ⟨_, _⟩ h =>
@@ -112,10 +112,10 @@ theorem toBialgHom_injective : Function.Injective (toBialgHom : (A ≃ₐc[R] B)
   fun _ _ H => toEquiv_injective <| Equiv.ext <| BialgHom.congr_fun H
 
 instance : EquivLike (A ≃ₐc[R] B) A B where
-  inv := fun f => f.invFun
+  inv := fun f ↦ f.invFun
   coe_injective' _ _ h _ := toBialgHom_injective (DFunLike.coe_injective h)
-  left_inv := fun f => f.left_inv
-  right_inv := fun f => f.right_inv
+  left_inv := fun f ↦ f.left_inv
+  right_inv := fun f ↦ f.right_inv
 
 instance : FunLike (A ≃ₐc[R] B) A B where
   coe := DFunLike.coe

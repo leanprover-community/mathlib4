@@ -191,7 +191,7 @@ theorem subset_insert_iff_of_not_mem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ 
 theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := by
   rw [← subset_insert_iff, insert_eq_of_mem h]
 
-theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => erase s a :=
+theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s ↦ erase s a :=
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
 
 end Erase
@@ -382,8 +382,8 @@ theorem filter_union_right (s : Finset α) : s.filter p ∪ s.filter q = s.filte
   ext fun x ↦ by simp [mem_filter, mem_union, ← and_or_left]
 
 theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
-    (s.filter fun i => i ∈ t) = s ∩ t :=
-  ext fun i => by simp [mem_filter, mem_inter]
+    (s.filter fun i ↦ i ∈ t) = s ∩ t :=
+  ext fun i ↦ by simp [mem_filter, mem_inter]
 
 theorem filter_inter_distrib (s t : Finset α) : (s ∩ t).filter p = s.filter p ∩ t.filter p := by
   ext

@@ -215,11 +215,11 @@ theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
     ∃ t : ι → Set α,
       (∀ i, t i ⊆ s i) ∧
         (∀ i, s i =ᵐ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) := by
-  choose t ht_sub htm ht_eq using fun i => exists_measurable_subset_ae_eq (h i)
+  choose t ht_sub htm ht_eq using fun i ↦ exists_measurable_subset_ae_eq (h i)
   rcases exists_null_pairwise_disjoint_diff hd with ⟨u, hum, hu₀, hud⟩
   exact
-    ⟨fun i => t i \ u i, fun i => diff_subset.trans (ht_sub _), fun i =>
-      (ht_eq _).symm.trans (diff_null_ae_eq_self (hu₀ i)).symm, fun i => (htm i).diff (hum i),
+    ⟨fun i ↦ t i \ u i, fun i ↦ diff_subset.trans (ht_sub _), fun i =>
+      (ht_eq _).symm.trans (diff_null_ae_eq_self (hu₀ i)).symm, fun i ↦ (htm i).diff (hum i),
       hud.mono fun i j h =>
         h.mono (diff_subset_diff_left (ht_sub i)) (diff_subset_diff_left (ht_sub j))⟩
 
@@ -238,7 +238,7 @@ theorem measure_iUnion₀ [Countable ι] {f : ι → Set α} (hd : Pairwise (AED
   calc
     μ (⋃ i, f i) = μ (⋃ i, t i) := measure_congr (EventuallyEq.countable_iUnion ht_eq)
     _ = ∑' i, μ (t i) := measure_iUnion htd htm
-    _ = ∑' i, μ (f i) := tsum_congr fun i => measure_congr (ht_eq _).symm
+    _ = ∑' i, μ (f i) := tsum_congr fun i ↦ measure_congr (ht_eq _).symm
 
 theorem measure_union₀_aux (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hd : AEDisjoint μ s t) : μ (s ∪ t) = μ s + μ t := by

@@ -135,7 +135,7 @@ theorem coe_bot : ((⊥ : Subgroup G) : Set G) = {1} :=
 
 @[to_additive]
 instance : Unique (⊥ : Subgroup G) :=
-  ⟨⟨1⟩, fun g => Subtype.ext g.2⟩
+  ⟨⟨1⟩, fun g ↦ Subtype.ext g.2⟩
 
 @[to_additive (attr := simp)]
 theorem top_toSubmonoid : (⊤ : Subgroup G).toSubmonoid = ⊤ :=
@@ -281,7 +281,7 @@ theorem subsingleton_iff : Subsingleton (Subgroup G) ↔ Subsingleton G :=
       have : ∀ i : G, i = 1 := fun i =>
         mem_bot.mp <| Subsingleton.elim (⊤ : Subgroup G) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
-    fun _ => ⟨fun x y => Subgroup.ext fun i => Subsingleton.elim 1 i ▸ by simp [Subgroup.one_mem]⟩⟩
+    fun _ => ⟨fun x y => Subgroup.ext fun i ↦ Subsingleton.elim 1 i ▸ by simp [Subgroup.one_mem]⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Subgroup G) ↔ Nontrivial G :=
@@ -548,7 +548,7 @@ theorem disjoint_iff_mul_eq_one {H₁ H₂ : Subgroup G} :
 
 @[to_additive]
 theorem mul_injective_of_disjoint {H₁ H₂ : Subgroup G} (h : Disjoint H₁ H₂) :
-    Function.Injective (fun g => g.1 * g.2 : H₁ × H₂ → G) := by
+    Function.Injective (fun g ↦ g.1 * g.2 : H₁ × H₂ → G) := by
   intro x y hxy
   rw [← inv_mul_eq_iff_eq_mul, ← mul_assoc, ← mul_inv_eq_one, mul_assoc] at hxy
   replace hxy := disjoint_iff_mul_eq_one.mp h (y.1⁻¹ * x.1).prop (x.2 * y.2⁻¹).prop hxy

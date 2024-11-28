@@ -23,7 +23,7 @@ namespace StronglyMeasurable
 
 protected theorem inner {𝕜 : Type*} {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
     [InnerProductSpace 𝕜 E] {_ : MeasurableSpace α} {f g : α → E} (hf : StronglyMeasurable f)
-    (hg : StronglyMeasurable g) : StronglyMeasurable fun t => @inner 𝕜 _ _ (f t) (g t) :=
+    (hg : StronglyMeasurable g) : StronglyMeasurable fun t ↦ @inner 𝕜 _ _ (f t) (g t) :=
   Continuous.comp_stronglyMeasurable continuous_inner (hf.prod_mk hg)
 
 end StronglyMeasurable

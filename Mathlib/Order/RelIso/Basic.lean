@@ -398,7 +398,7 @@ theorem wellFounded_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
     WellFounded (Quotient.lift₂ r H) ↔ WellFounded r := by
   constructor
   · exact RelHomClass.wellFounded (Quotient.mkRelHom H)
-  · refine fun wf => ⟨fun q => ?_⟩
+  · refine fun wf => ⟨fun q ↦ ?_⟩
     obtain ⟨a, rfl⟩ := q.exists_rep
     exact acc_lift₂_iff.2 (wf.apply a)
 

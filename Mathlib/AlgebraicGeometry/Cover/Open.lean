@@ -139,10 +139,10 @@ The morphism in the category of open covers which proves that this is indeed a r
 `AlgebraicGeometry.Scheme.OpenCover.fromAffineRefinement`.
 -/
 def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineOpenCover where
-  J := (𝓤.bind fun j => (𝓤.obj j).affineCover).J
-  map := (𝓤.bind fun j => (𝓤.obj j).affineCover).map
-  f := (𝓤.bind fun j => (𝓤.obj j).affineCover).f
-  covers := (𝓤.bind fun j => (𝓤.obj j).affineCover).covers
+  J := (𝓤.bind fun j ↦ (𝓤.obj j).affineCover).J
+  map := (𝓤.bind fun j ↦ (𝓤.obj j).affineCover).map
+  f := (𝓤.bind fun j ↦ (𝓤.obj j).affineCover).f
+  covers := (𝓤.bind fun j ↦ (𝓤.obj j).affineCover).covers
 
 /-- The pullback of the affine refinement is the pullback of the affine cover. -/
 def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :

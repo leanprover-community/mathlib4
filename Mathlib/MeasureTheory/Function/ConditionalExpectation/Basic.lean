@@ -354,8 +354,8 @@ theorem tendsto_condexpL1_of_dominated_convergence (hm : m ≤ m0) [SigmaFinite 
     {fs : ℕ → α → F'} {f : α → F'} (bound_fs : α → ℝ)
     (hfs_meas : ∀ n, AEStronglyMeasurable (fs n) μ) (h_int_bound_fs : Integrable bound_fs μ)
     (hfs_bound : ∀ n, ∀ᵐ x ∂μ, ‖fs n x‖ ≤ bound_fs x)
-    (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
-    Tendsto (fun n => condexpL1 hm μ (fs n)) atTop (𝓝 (condexpL1 hm μ f)) :=
+    (hfs : ∀ᵐ x ∂μ, Tendsto (fun n ↦ fs n x) atTop (𝓝 (f x))) :
+    Tendsto (fun n ↦ condexpL1 hm μ (fs n)) atTop (𝓝 (condexpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
 
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
@@ -363,8 +363,8 @@ and verify dominated convergence hypotheses, then the conditional expectations o
 a.e. equal. -/
 theorem tendsto_condexp_unique (fs gs : ℕ → α → F') (f g : α → F')
     (hfs_int : ∀ n, Integrable (fs n) μ) (hgs_int : ∀ n, Integrable (gs n) μ)
-    (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x)))
-    (hgs : ∀ᵐ x ∂μ, Tendsto (fun n => gs n x) atTop (𝓝 (g x))) (bound_fs : α → ℝ)
+    (hfs : ∀ᵐ x ∂μ, Tendsto (fun n ↦ fs n x) atTop (𝓝 (f x)))
+    (hgs : ∀ᵐ x ∂μ, Tendsto (fun n ↦ gs n x) atTop (𝓝 (g x))) (bound_fs : α → ℝ)
     (h_int_bound_fs : Integrable bound_fs μ) (bound_gs : α → ℝ)
     (h_int_bound_gs : Integrable bound_gs μ) (hfs_bound : ∀ n, ∀ᵐ x ∂μ, ‖fs n x‖ ≤ bound_fs x)
     (hgs_bound : ∀ n, ∀ᵐ x ∂μ, ‖gs n x‖ ≤ bound_gs x) (hfg : ∀ n, μ[fs n|m] =ᵐ[μ] μ[gs n|m]) :
@@ -379,11 +379,11 @@ theorem tendsto_condexp_unique (fs gs : ℕ → α → F') (f g : α → F')
     ext1
     refine (condexp_ae_eq_condexpL1 hm (gs n)).symm.trans ((hfg n).symm.trans ?_)
     exact condexp_ae_eq_condexpL1 hm (fs n)
-  have hcond_fs : Tendsto (fun n => condexpL1 hm μ (fs n)) atTop (𝓝 (condexpL1 hm μ f)) :=
-    tendsto_condexpL1_of_dominated_convergence hm _ (fun n => (hfs_int n).1) h_int_bound_fs
+  have hcond_fs : Tendsto (fun n ↦ condexpL1 hm μ (fs n)) atTop (𝓝 (condexpL1 hm μ f)) :=
+    tendsto_condexpL1_of_dominated_convergence hm _ (fun n ↦ (hfs_int n).1) h_int_bound_fs
       hfs_bound hfs
-  have hcond_gs : Tendsto (fun n => condexpL1 hm μ (gs n)) atTop (𝓝 (condexpL1 hm μ g)) :=
-    tendsto_condexpL1_of_dominated_convergence hm _ (fun n => (hgs_int n).1) h_int_bound_gs
+  have hcond_gs : Tendsto (fun n ↦ condexpL1 hm μ (gs n)) atTop (𝓝 (condexpL1 hm μ g)) :=
+    tendsto_condexpL1_of_dominated_convergence hm _ (fun n ↦ (hgs_int n).1) h_int_bound_gs
       hgs_bound hgs
   exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (Eventually.of_forall hn_eq)
 

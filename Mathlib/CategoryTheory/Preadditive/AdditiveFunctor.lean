@@ -56,7 +56,7 @@ theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
-  AddMonoidHom.mk' (fun f => F.map f) fun _ _ => F.map_add
+  AddMonoidHom.mk' (fun f ↦ F.map f) fun _ _ => F.map_add
 
 theorem coe_mapAddHom {X Y : C} : ⇑(F.mapAddHom : (X ⟶ Y) →+ _) = F.map :=
   rfl

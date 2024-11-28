@@ -77,7 +77,7 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f :
   let s : ℕ → SimpleFunc (α × β) E :=
     SimpleFunc.approxOn _ hf.measurable (range (uncurry f) ∪ {0}) 0 (by simp)
   let s' : ℕ → α → SimpleFunc β E := fun n x => (s n).comp (Prod.mk x) measurable_prod_mk_left
-  let f' : ℕ → α → E := fun n => {x | Integrable (f x) ν}.indicator fun x ↦ (s' n x).integral ν
+  let f' : ℕ → α → E := fun n ↦ {x | Integrable (f x) ν}.indicator fun x ↦ (s' n x).integral ν
   have hf' : ∀ n, StronglyMeasurable (f' n) := by
     intro n; refine StronglyMeasurable.indicator ?_ (measurableSet_integrable hf)
     have : ∀ x, ((s' n x).range.filter fun x ↦ x ≠ 0) ⊆ (s n).range := by
@@ -100,8 +100,8 @@ theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f :
         mem_setOf_eq]
       refine
         tendsto_integral_of_dominated_convergence (fun y ↦ ‖f x y‖ + ‖f x y‖)
-          (fun n => (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
-      · refine fun n => Eventually.of_forall fun y =>
+          (fun n ↦ (s' n x).aestronglyMeasurable) (hfx.norm.add hfx.norm) ?_ ?_
+      · refine fun n ↦ Eventually.of_forall fun y =>
           SimpleFunc.norm_approxOn_zero_le ?_ ?_ (x, y) n
         -- Porting note: Lean 3 solved the following two subgoals on its own
         · exact hf.measurable
@@ -388,9 +388,9 @@ theorem continuous_integral_integral :
   simp_rw [←
     lintegral_fn_integral_sub (fun x ↦ (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
       (L1.integrable_coeFn g)]
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
-  · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖₊ ∂ν ∂μ
-  swap; · exact fun i => lintegral_mono fun x ↦ ennnorm_integral_le_lintegral_ennnorm _
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i ↦ zero_le _) _
+  · exact fun i ↦ ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖₊ ∂ν ∂μ
+  swap; · exact fun i ↦ lintegral_mono fun x ↦ ennnorm_integral_le_lintegral_ennnorm _
   show
     Tendsto (fun i : α × β →₁[μ.prod ν] E => ∫⁻ x, ∫⁻ y : β, ‖i (x, y) - g (x, y)‖₊ ∂ν ∂μ) (𝓝 g)
       (𝓝 0)

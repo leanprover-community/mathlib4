@@ -114,7 +114,7 @@ theorem sublistsAux_eq_array_foldl :
   simpa using this
 
 theorem sublistsAux_eq_flatMap :
-    sublistsAux = fun (a : α) (r : List (List α)) => r.flatMap fun l => [l, a :: l] :=
+    sublistsAux = fun (a : α) (r : List (List α)) => r.flatMap fun l ↦ [l, a :: l] :=
   funext fun a ↦ funext fun r =>
   List.reverseRecOn r
     (by simp [sublistsAux])
@@ -401,7 +401,7 @@ theorem revzip_sublists' (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip 
     · exact (IH _ _ h).cons _
 
 theorem range_bind_sublistsLen_perm (l : List α) :
-    ((List.range (l.length + 1)).flatMap fun n => sublistsLen n l) ~ sublists' l := by
+    ((List.range (l.length + 1)).flatMap fun n ↦ sublistsLen n l) ~ sublists' l := by
   induction' l with h tl l_ih
   · simp [range_succ]
   · simp_rw [range_succ_eq_map, length, flatMap_cons, flatMap_map, sublistsLen_succ_cons,
@@ -412,8 +412,8 @@ theorem range_bind_sublistsLen_perm (l : List α) :
     refine Perm.append ?_ (l_ih.map _)
     rw [List.range_succ, flatMap_append, flatMap_singleton,
       sublistsLen_of_length_lt (Nat.lt_succ_self _), append_nil,
-      ← List.flatMap_map Nat.succ fun n => sublistsLen n tl,
-      ← flatMap_cons 0 _ fun n => sublistsLen n tl, ← range_succ_eq_map]
+      ← List.flatMap_map Nat.succ fun n ↦ sublistsLen n tl,
+      ← flatMap_cons 0 _ fun n ↦ sublistsLen n tl, ← range_succ_eq_map]
     exact l_ih
 
 end List

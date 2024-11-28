@@ -213,7 +213,7 @@ def extend : ℝ → X :=
 
 /-- See Note [continuity lemma statement]. -/
 theorem _root_.Continuous.path_extend {γ : Y → Path x y} {f : Y → ℝ} (hγ : Continuous ↿γ)
-    (hf : Continuous f) : Continuous fun t => (γ t).extend (f t) :=
+    (hf : Continuous f) : Continuous fun t ↦ (γ t).extend (f t) :=
   Continuous.IccExtend hγ hf
 
 /-- A useful special case of `Continuous.path_extend`. -/
@@ -229,7 +229,7 @@ theorem _root_.Filter.Tendsto.path_extend
 
 theorem _root_.ContinuousAt.path_extend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
     {y : Y} (hγ : ContinuousAt (↿γ) (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
-    ContinuousAt (fun i => (γ i).extend (g i)) y :=
+    ContinuousAt (fun i ↦ (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x ↦ γ x) hg
 
 @[simp]
@@ -416,7 +416,7 @@ theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast 
 @[continuity, fun_prop]
 theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
-    Continuous ↿fun t => (γ t).symm :=
+    Continuous ↿fun t ↦ (γ t).symm :=
   h.comp (continuous_id.prodMap continuous_symm)
 
 @[continuity]
@@ -426,7 +426,7 @@ theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
 @[continuity]
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
-    Continuous ↿fun t => (γ t).extend := by
+    Continuous ↿fun t ↦ (γ t).extend := by
   apply h.comp (continuous_id.prodMap continuous_projIcc)
   exact zero_le_one
 
@@ -434,7 +434,7 @@ theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [Topological
 theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b c : ι → X} (γ₁ : ∀ t : ι, Path (a t) (b t)) (h₁ : Continuous ↿γ₁)
     (γ₂ : ∀ t : ι, Path (b t) (c t)) (h₂ : Continuous ↿γ₂) :
-    Continuous ↿fun t => (γ₁ t).trans (γ₂ t) := by
+    Continuous ↿fun t ↦ (γ₁ t).trans (γ₂ t) := by
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
   simp only [HasUncurry.uncurry, CoeFun.coe, Path.trans, (· ∘ ·)]
@@ -453,7 +453,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
 
 @[continuity]
 theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
-    Continuous f → Continuous g → Continuous fun t => (f t).trans (g t) := by
+    Continuous f → Continuous g → Continuous fun t ↦ (f t).trans (g t) := by
   intro hf hg
   apply continuous_uncurry_iff.mp
   exact trans_continuous_family _ (continuous_uncurry_iff.mpr hf) _ (continuous_uncurry_iff.mpr hg)
@@ -478,7 +478,7 @@ protected def prod (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) : Path (a�
 
 @[simp]
 theorem prod_coe (γ₁ : Path a₁ a₂) (γ₂ : Path b₁ b₂) :
-    ⇑(γ₁.prod γ₂) = fun t => (γ₁ t, γ₂ t) :=
+    ⇑(γ₁.prod γ₂) = fun t ↦ (γ₁ t, γ₂ t) :=
   rfl
 
 /-- Path composition commutes with products -/
@@ -499,7 +499,7 @@ variable {χ : ι → Type*} [∀ i, TopologicalSpace (χ i)] {as bs cs : ∀ i,
 /-- Given a family of paths, one in each Xᵢ, we take their pointwise product to get a path in
 Π i, Xᵢ. -/
 protected def pi (γ : ∀ i, Path (as i) (bs i)) : Path as bs where
-  toContinuousMap := ContinuousMap.pi fun i => (γ i).toContinuousMap
+  toContinuousMap := ContinuousMap.pi fun i ↦ (γ i).toContinuousMap
   source' := by simp
   target' := by simp
 
@@ -509,7 +509,7 @@ theorem pi_coe (γ : ∀ i, Path (as i) (bs i)) : ⇑(Path.pi γ) = fun t i => �
 
 /-- Path composition commutes with products -/
 theorem trans_pi_eq_pi_trans (γ₀ : ∀ i, Path (as i) (bs i)) (γ₁ : ∀ i, Path (bs i) (cs i)) :
-    (Path.pi γ₀).trans (Path.pi γ₁) = Path.pi fun i => (γ₀ i).trans (γ₁ i) := by
+    (Path.pi γ₀).trans (Path.pi γ₁) = Path.pi fun i ↦ (γ₀ i).trans (γ₁ i) := by
   ext t i
   unfold Path.trans
   simp only [Path.coe_mk_mk, Function.comp_apply, pi_coe]
@@ -731,14 +731,14 @@ theorem JoinedIn.somePath_mem (h : JoinedIn F x y) (t : I) : h.somePath t ∈ F 
 /-- If `x` and `y` are joined in the set `F`, then they are joined in the subtype `F`. -/
 theorem JoinedIn.joined_subtype (h : JoinedIn F x y) :
     Joined (⟨x, h.source_mem⟩ : F) (⟨y, h.target_mem⟩ : F) :=
-  ⟨{  toFun := fun t => ⟨h.somePath t, h.somePath_mem t⟩
+  ⟨{  toFun := fun t ↦ ⟨h.somePath t, h.somePath_mem t⟩
       continuous_toFun := by fun_prop
       source' := by simp
       target' := by simp }⟩
 
 theorem JoinedIn.ofLine {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h₁ : f 1 = y)
     (hF : f '' I ⊆ F) : JoinedIn F x y :=
-  ⟨Path.ofLine hf h₀ h₁, fun t => hF <| Path.ofLine_mem hf h₀ h₁ t⟩
+  ⟨Path.ofLine hf h₀ h₁, fun t ↦ hF <| Path.ofLine_mem hf h₀ h₁ t⟩
 
 theorem JoinedIn.joined (h : JoinedIn F x y) : Joined x y :=
   ⟨h.somePath⟩
@@ -752,7 +752,7 @@ theorem joinedIn_univ : JoinedIn univ x y ↔ Joined x y := by
   simp [JoinedIn, Joined, exists_true_iff_nonempty]
 
 theorem JoinedIn.mono {U V : Set X} (h : JoinedIn U x y) (hUV : U ⊆ V) : JoinedIn V x y :=
-  ⟨h.somePath, fun t => hUV (h.somePath_mem t)⟩
+  ⟨h.somePath, fun t ↦ hUV (h.somePath_mem t)⟩
 
 theorem JoinedIn.refl (h : x ∈ F) : JoinedIn F x x :=
   ⟨Path.refl x, fun _t => h⟩
@@ -973,7 +973,7 @@ theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU
 theorem IsPathConnected.exists_path_through_family {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
     ∃ γ : Path (p 0) (p n), range γ ⊆ s ∧ ∀ i, p i ∈ range γ := by
-  let p' : ℕ → X := fun k => if h : k < n + 1 then p ⟨k, h⟩ else p ⟨0, n.zero_lt_succ⟩
+  let p' : ℕ → X := fun k ↦ if h : k < n + 1 then p ⟨k, h⟩ else p ⟨0, n.zero_lt_succ⟩
   obtain ⟨γ, hγ⟩ : ∃ γ : Path (p' 0) (p' n), (∀ i ≤ n, p' i ∈ range γ) ∧ range γ ⊆ s := by
     have hp' : ∀ i ≤ n, p' i ∈ s := by
       intro i hi

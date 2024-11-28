@@ -186,8 +186,8 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
     · exact (length l)
     · rfl⟩
 
-@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i => (L.take i).prod := by
-  refine monotone_nat_of_le_succ fun n => ?_
+@[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i ↦ (L.take i).prod := by
+  refine monotone_nat_of_le_succ fun n ↦ ?_
   cases' lt_or_le n L.length with h h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul

@@ -71,7 +71,7 @@ instance instNonUnitalSubsemiringClass :
   zero_mem {s} := s.zero_mem'
 
 instance instSMulMemClass : SMulMemClass (NonUnitalSubalgebra R A) R A where
-  smul_mem := @fun s => s.smul_mem'
+  smul_mem := @fun s ↦ s.smul_mem'
 
 theorem mem_carrier {s : NonUnitalSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -972,7 +972,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
   subst hT
   exact
       { toFun :=
-          Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
+          Set.iUnionLift (fun i ↦ ↑(K i)) (fun i x => f i x)
             (fun i j x hxi hxj => by
               let ⟨k, hik, hjk⟩ := dir i j
               simp only
@@ -990,7 +990,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
           dsimp
           apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
           all_goals simp
-        map_smul' := fun r => by
+        map_smul' := fun r ↦ by
           dsimp
           apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
             (fun _ _ => rfl)

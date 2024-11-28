@@ -54,7 +54,7 @@ instance [Nonempty P] : Nonempty (Sphere P) :=
   ⟨⟨Classical.arbitrary P, 0⟩⟩
 
 instance : Coe (Sphere P) (Set P) :=
-  ⟨fun s => Metric.sphere s.center s.radius⟩
+  ⟨fun s ↦ Metric.sphere s.center s.radius⟩
 
 instance : Membership P (Sphere P) :=
   ⟨fun s p => p ∈ (s : Set P)⟩
@@ -219,7 +219,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
     have he : p 1 = p 0 := by simpa [h] using hv 1
     exact (by decide : (1 : Fin 3) ≠ 0) (hpi he)
   rcases hs with ⟨c, r, hs⟩
-  have hs' := fun i => hs (p i) (Set.mem_of_mem_of_subset (Set.mem_range_self _) hps)
+  have hs' := fun i ↦ hs (p i) (Set.mem_of_mem_of_subset (Set.mem_range_self _) hps)
   choose f hf using hv
   have hsd : ∀ i, dist (f i • v +ᵥ p 0) c = r := by
     intro i
@@ -235,7 +235,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
     rw [h, ← hf j] at hi
     exact hpi hi
   simp_rw [← hsd 0, hf0, zero_smul, zero_vadd, dist_smul_vadd_eq_dist (p 0) c hv0] at hsd
-  have hfn0 : ∀ i, i ≠ 0 → f i ≠ 0 := fun i => (hfi.ne_iff' hf0).2
+  have hfn0 : ∀ i, i ≠ 0 → f i ≠ 0 := fun i ↦ (hfi.ne_iff' hf0).2
   have hfn0' : ∀ i, i ≠ 0 → f i = -2 * ⟪v, p 0 -ᵥ c⟫ / ⟪v, v⟫ := by
     intro i hi
     have hsdi := hsd i

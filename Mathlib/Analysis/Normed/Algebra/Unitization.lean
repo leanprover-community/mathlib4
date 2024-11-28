@@ -226,7 +226,7 @@ algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology an
 that they coincide with `𝕜 × A`. -/
 noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
   (normedRingAux.toMetricSpace.replaceUniformity uniformity_eq_aux).replaceBornology
-    fun s => Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
+    fun s ↦ Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/

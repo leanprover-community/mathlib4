@@ -100,7 +100,7 @@ theorem mem_spanPoints (p : P) (s : Set P) : p ∈ s → p ∈ spanPoints k s
   | hp => ⟨p, hp, 0, Submodule.zero_mem _, (zero_vadd V p).symm⟩
 
 /-- A set is contained in its `spanPoints`. -/
-theorem subset_spanPoints (s : Set P) : s ⊆ spanPoints k s := fun p => mem_spanPoints k p s
+theorem subset_spanPoints (s : Set P) : s ⊆ spanPoints k s := fun p ↦ mem_spanPoints k p s
 
 /-- The `spanPoints` of a set is nonempty if and only if that set is. -/
 @[simp]
@@ -552,7 +552,7 @@ instance : CompleteLattice (AffineSubspace k P) :=
       { carrier := ∅
         smul_vsub_vadd_mem := fun _ _ _ _ => False.elim }
     bot_le := fun _ _ => False.elim
-    sSup := fun s => affineSpan k (⋃ s' ∈ s, (s' : Set P))
+    sSup := fun s ↦ affineSpan k (⋃ s' ∈ s, (s' : Set P))
     sInf := fun s =>
       mk (⋂ s' ∈ s, (s' : Set P)) fun c p1 p2 p3 hp1 hp2 hp3 =>
         Set.mem_iInter₂.2 fun s2 hs2 => by
@@ -1121,7 +1121,7 @@ end WithLocalInstance
 spans `P`. -/
 theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P)
     (h : Submodule.span k (Set.range ((↑) : s → V)) = ⊤) :
-    affineSpan k ({p} ∪ (fun v => v +ᵥ p) '' s) = ⊤ := by
+    affineSpan k ({p} ∪ (fun v ↦ v +ᵥ p) '' s) = ⊤ := by
   convert ext_of_direction_eq _
       ⟨p, mem_affineSpan k (Set.mem_union_left _ (Set.mem_singleton _)), mem_top k V p⟩
   rw [direction_affineSpan, direction_top,

@@ -49,7 +49,7 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
 def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
-      map := fun g => F.map (𝟙 X, g)
+      map := fun g ↦ F.map (𝟙 X, g)
       map_id := fun Y => by simp only [F.map_id]; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
       map_comp := fun f g => by simp [← F.map_comp]}
   map f :=

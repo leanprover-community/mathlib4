@@ -35,7 +35,7 @@ def fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) : Matrix (m₁ �
 /-- Concatenate together two matrices B₁[m × n₁] and B₂[m × n₂] with the same rows (M) to get a
 bigger matrix indexed by [m × (n₁ ⊕ n₂)] -/
 def fromColumns (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂ R) : Matrix m (n₁ ⊕ n₂) R :=
-  of fun i => Sum.elim (B₁ i) (B₂ i)
+  of fun i ↦ Sum.elim (B₁ i) (B₂ i)
 
 /-- Given a column partitioned matrix extract the first column -/
 def toColumns₁ (A : Matrix m (n₁ ⊕ n₂) R) : Matrix m n₁ R := of fun i j => (A i (Sum.inl j))

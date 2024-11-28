@@ -97,14 +97,14 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : F α) :
   constructor
   · rintro ⟨y, hy⟩
     cases' h : repr y with a f
-    use a, fun i => (f i).val
+    use a, fun i ↦ (f i).val
     constructor
     · rw [← hy, ← abs_repr y, h, ← abs_map]
       rfl
     intro i
     apply (f i).property
   rintro ⟨a, f, h₀, h₁⟩
-  use abs ⟨a, fun i => ⟨f i, h₁ i⟩⟩
+  use abs ⟨a, fun i ↦ ⟨f i, h₁ i⟩⟩
   rw [← abs_map, h₀]; rfl
 
 theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
@@ -112,7 +112,7 @@ theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
   constructor
   · rintro ⟨y, hy⟩
     cases' h : repr y with a f
-    use ⟨a, fun i => (f i).val⟩
+    use ⟨a, fun i ↦ (f i).val⟩
     dsimp
     constructor
     · rw [← hy, ← abs_repr y, h, ← abs_map]
@@ -120,7 +120,7 @@ theorem liftp_iff' {α : Type u} (p : α → Prop) (x : F α) :
     intro i
     apply (f i).property
   rintro ⟨⟨a, f⟩, h₀, h₁⟩; dsimp at *
-  use abs ⟨a, fun i => ⟨f i, h₁ i⟩⟩
+  use abs ⟨a, fun i ↦ ⟨f i, h₁ i⟩⟩
   rw [← abs_map, ← h₀]; rfl
 
 theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : F α) :
@@ -128,7 +128,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : F α) :
   constructor
   · rintro ⟨u, xeq, yeq⟩
     cases' h : repr u with a f
-    use a, fun i => (f i).val.fst, fun i => (f i).val.snd
+    use a, fun i ↦ (f i).val.fst, fun i ↦ (f i).val.snd
     constructor
     · rw [← xeq, ← abs_repr u, h, ← abs_map]
       rfl
@@ -138,7 +138,7 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : F α) :
     intro i
     exact (f i).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
-  use abs ⟨a, fun i => ⟨(f₀ i, f₁ i), h i⟩⟩
+  use abs ⟨a, fun i ↦ ⟨(f₀ i, f₁ i), h i⟩⟩
   constructor
   · rw [xeq, ← abs_map]
     rfl
@@ -459,7 +459,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
   repr {α} := by
     dsimp [Functor.Comp]
     intro y
-    refine ⟨⟨(repr y).1, fun u => (repr ((repr y).2 u)).1⟩, ?_⟩
+    refine ⟨⟨(repr y).1, fun u ↦ (repr ((repr y).2 u)).1⟩, ?_⟩
     dsimp [PFunctor.comp]
     intro x
     exact (repr ((repr y).2 x.1)).snd x.2
@@ -534,9 +534,9 @@ theorem mem_supp {α : Type u} (x : F α) (u : α) :
     u ∈ supp x ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f '' univ := by
   rw [supp]; dsimp; constructor
   · intro h a f haf
-    have : Liftp (fun u => u ∈ f '' univ) x := by
+    have : Liftp (fun u ↦ u ∈ f '' univ) x := by
       rw [liftp_iff]
-      exact ⟨a, f, haf.symm, fun i => mem_image_of_mem _ (mem_univ _)⟩
+      exact ⟨a, f, haf.symm, fun i ↦ mem_image_of_mem _ (mem_univ _)⟩
     exact h this
   intro h p; rw [liftp_iff]
   rintro ⟨a, f, xeq, h'⟩
@@ -605,7 +605,7 @@ theorem liftp_iff_of_isUniform (h : q.IsUniform) {α : Type u} (x : F α) (p : �
     rw [← hi]
     apply hf
   intro h'
-  refine ⟨a, f, rfl, fun i => h' _ ?_⟩
+  refine ⟨a, f, rfl, fun i ↦ h' _ ?_⟩
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 

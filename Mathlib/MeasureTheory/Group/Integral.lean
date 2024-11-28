@@ -29,7 +29,7 @@ variable [Group G] [MeasurableInv G]
 
 @[to_additive]
 theorem Integrable.comp_inv [IsInvInvariant μ] {f : G → F} (hf : Integrable f μ) :
-    Integrable (fun t => f t⁻¹) μ :=
+    Integrable (fun t ↦ f t⁻¹) μ :=
   (hf.mono_measure (map_inv_eq_self μ).le).comp_measurable measurable_inv
 
 @[to_additive]
@@ -90,17 +90,17 @@ theorem integral_eq_zero_of_mul_right_eq_neg [IsMulRightInvariant μ] (hf' : ∀
 
 @[to_additive]
 theorem Integrable.comp_mul_left {f : G → F} [IsMulLeftInvariant μ] (hf : Integrable f μ) (g : G) :
-    Integrable (fun t => f (g * t)) μ :=
+    Integrable (fun t ↦ f (g * t)) μ :=
   (hf.mono_measure (map_mul_left_eq_self μ g).le).comp_measurable <| measurable_const_mul g
 
 @[to_additive]
 theorem Integrable.comp_mul_right {f : G → F} [IsMulRightInvariant μ] (hf : Integrable f μ)
-    (g : G) : Integrable (fun t => f (t * g)) μ :=
+    (g : G) : Integrable (fun t ↦ f (t * g)) μ :=
   (hf.mono_measure (map_mul_right_eq_self μ g).le).comp_measurable <| measurable_mul_const g
 
 @[to_additive]
 theorem Integrable.comp_div_right {f : G → F} [IsMulRightInvariant μ] (hf : Integrable f μ)
-    (g : G) : Integrable (fun t => f (t / g)) μ := by
+    (g : G) : Integrable (fun t ↦ f (t / g)) μ := by
   simp_rw [div_eq_mul_inv]
   exact hf.comp_mul_right g⁻¹
 
@@ -108,12 +108,12 @@ variable [MeasurableInv G]
 
 @[to_additive]
 theorem Integrable.comp_div_left {f : G → F} [IsInvInvariant μ] [IsMulLeftInvariant μ]
-    (hf : Integrable f μ) (g : G) : Integrable (fun t => f (g / t)) μ :=
+    (hf : Integrable f μ) (g : G) : Integrable (fun t ↦ f (g / t)) μ :=
   ((measurePreserving_div_left μ g).integrable_comp hf.aestronglyMeasurable).mpr hf
 
 @[to_additive] -- Porting note: was `@[simp]`
 theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
-    Integrable (fun t => f (g / t)) μ ↔ Integrable f μ := by
+    Integrable (fun t ↦ f (g / t)) μ ↔ Integrable f μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.comp_div_left g⟩
   convert h.comp_inv.comp_mul_left g⁻¹
   simp_rw [div_inv_eq_mul, mul_inv_cancel_left]

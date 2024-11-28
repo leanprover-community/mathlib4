@@ -38,8 +38,8 @@ of their groups of units. -/
 def mapEquiv (h : M ≃* N) : Mˣ ≃* Nˣ :=
   { map h.toMonoidHom with
     invFun := map h.symm.toMonoidHom,
-    left_inv := fun u => ext <| h.left_inv u,
-    right_inv := fun u => ext <| h.right_inv u }
+    left_inv := fun u ↦ ext <| h.left_inv u,
+    right_inv := fun u ↦ ext <| h.right_inv u }
 
 @[simp]
 theorem mapEquiv_symm (h : M ≃* N) : (mapEquiv h).symm = mapEquiv h.symm :=

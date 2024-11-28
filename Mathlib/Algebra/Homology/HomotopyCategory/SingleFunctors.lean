@@ -35,7 +35,7 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
   functor n := single _ _ n
   shiftIso n a a' ha' := NatIso.ofComponents
     (fun X => Hom.isoOfComponents
-      (fun i => eqToIso (by
+      (fun i ↦ eqToIso (by
         obtain rfl : a' = a + n := by omega
         by_cases h : i = a
         · subst h

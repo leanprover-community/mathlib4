@@ -95,7 +95,7 @@ theorem op_eq_self_of_principal (hao : a < o) (H : IsNormal (op a))
   exact fun b hbo => (ho hao hbo).le
 
 theorem nfp_le_of_principal (hao : a < o) (ho : Principal op o) : nfp (op a) a ≤ o :=
-  nfp_le fun n => (ho.iterate_lt hao n).le
+  nfp_le fun n ↦ (ho.iterate_lt hao n).le
 
 end Arbitrary
 

@@ -51,7 +51,7 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
   Cofork.IsColimit.mk _
     (fun s =>
       f.range.liftQ (Cofork.π s) <| LinearMap.range_le_ker_iff.2 <| CokernelCofork.condition s)
-    (fun s => f.range.liftQ_mkQ (Cofork.π s) _) fun s m h => by
+    (fun s ↦ f.range.liftQ_mkQ (Cofork.π s) _) fun s m h => by
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11036): broken dot notation
     haveI : Epi (asHom (LinearMap.range f).mkQ) :=
       (epi_iff_range_eq_top _).mpr (Submodule.range_mkQ _)
@@ -65,11 +65,11 @@ end
 
 /-- The category of R-modules has kernels, given by the inclusion of the kernel submodule. -/
 theorem hasKernels_moduleCat : HasKernels (ModuleCat R) :=
-  ⟨fun f => HasLimit.mk ⟨_, kernelIsLimit f⟩⟩
+  ⟨fun f ↦ HasLimit.mk ⟨_, kernelIsLimit f⟩⟩
 
 /-- The category of R-modules has cokernels, given by the projection onto the quotient. -/
 theorem hasCokernels_moduleCat : HasCokernels (ModuleCat R) :=
-  ⟨fun f => HasColimit.mk ⟨_, cokernelIsColimit f⟩⟩
+  ⟨fun f ↦ HasColimit.mk ⟨_, cokernelIsColimit f⟩⟩
 
 open ModuleCat
 

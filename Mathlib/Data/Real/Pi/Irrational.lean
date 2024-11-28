@@ -261,7 +261,7 @@ For any real `a`, we have that `a ^ (2n+1) / n!` tends to `0` as `n → ∞`.  T
 reformulation of tendsto_pow_div_factorial_atTop, which asserts the same for `a ^ n / n!`
 -/
 private lemma tendsto_pow_div_factorial_at_top_aux (a : ℝ) :
-    Tendsto (fun n => (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by
+    Tendsto (fun n ↦ (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by
   rw [← mul_zero a]
   refine ((FloorSemiring.tendsto_pow_div_factorial_atTop (a ^ 2)).const_mul a).congr (fun x ↦ ?_)
   rw [← pow_mul, mul_div_assoc', _root_.pow_succ']

@@ -275,12 +275,12 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
     Measurable g := by
   rcases u.exists_seq_tendsto with ⟨x, hx⟩
   rw [tendsto_pi_nhds] at lim
-  have : (fun y ↦ liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop) = g := by
+  have : (fun y ↦ liminf (fun n ↦ (f (x n) y : ℝ≥0∞)) atTop) = g := by
     ext1 y
     exact ((lim y).comp hx).liminf_eq
   rw [← this]
-  show Measurable fun y ↦ liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
-  exact .liminf fun n => hf (x n)
+  show Measurable fun y ↦ liminf (fun n ↦ (f (x n) y : ℝ≥0∞)) atTop
+  exact .liminf fun n ↦ hf (x n)
 
 @[deprecated (since := "2024-03-09")] alias
 _root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
@@ -372,7 +372,7 @@ theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0�
 theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (h : ∀ i, Measurable (f i)) :
     Measurable fun x ↦ ∑' i, f i x := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
-  exact (Measurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
+  exact (Measurable.ennreal_tsum fun i ↦ (h i).coe_nnreal_ennreal).ennreal_toNNReal
 
 @[measurability, fun_prop]
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
@@ -385,7 +385,7 @@ theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Typ
     {f : ι → α → NNReal} {μ : Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
     AEMeasurable (fun x : α => ∑' i : ι, f i x) μ := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
-  exact (AEMeasurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
+  exact (AEMeasurable.ennreal_tsum fun i ↦ (h i).coe_nnreal_ennreal).ennreal_toNNReal
 
 @[measurability, fun_prop]
 theorem measurable_coe_real_ereal : Measurable ((↑) : ℝ → EReal) :=
@@ -482,13 +482,13 @@ theorem exists_spanning_measurableSet_le {f : α → ℝ≥0} (hf : Measurable f
     exact exists_nat_ge (f x)
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by
-    refine fun n => MeasurableSet.inter ?_ ?_
+    refine fun n ↦ MeasurableSet.inter ?_ ?_
     · exact measurableSet_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
-    refine fun n => (measure_mono Set.inter_subset_left).trans_lt ?_
+    refine fun n ↦ (measure_mono Set.inter_subset_left).trans_lt ?_
     exact measure_spanningSets_lt_top μ n
-  refine ⟨sets, fun n => ⟨h_meas n, h_finite n, ?_⟩, ?_⟩
+  refine ⟨sets, fun n ↦ ⟨h_meas n, h_finite n, ?_⟩, ?_⟩
   · exact fun x hx => hx.2
   · have :
       ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by

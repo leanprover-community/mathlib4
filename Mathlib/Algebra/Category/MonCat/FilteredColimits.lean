@@ -293,7 +293,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   uniq t m h := MonoidHom.ext fun y ↦ congr_fun
       ((Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
         ((forget MonCat).map m)
-        fun j => funext fun x ↦ DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y
+        fun j ↦ funext fun x ↦ DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y
 
 @[to_additive]
 instance forget_preservesFilteredColimits :
@@ -365,7 +365,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     DFunLike.coe_injective (i := CommMonCat.instFunLike _ _) <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).uniq
         ((forget CommMonCat.{max v u}).mapCocone t)
-        ((forget CommMonCat.{max v u}).map m) fun j => funext fun x =>
+        ((forget CommMonCat.{max v u}).map m) fun j ↦ funext fun x =>
           DFunLike.congr_fun (i := CommMonCat.instFunLike _ _) (h j) x
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]

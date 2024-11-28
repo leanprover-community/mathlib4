@@ -112,12 +112,12 @@ instance funLike : FunLike (A →ₐc[R] B) A B where
     simp_all
 
 instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
-  map_add := fun f => f.map_add'
-  map_smulₛₗ := fun f => f.map_smul'
-  counit_comp := fun f => f.counit_comp
-  map_comp_comul := fun f => f.map_comp_comul
-  map_mul := fun f => f.map_mul'
-  map_one := fun f => f.map_one'
+  map_add := fun f ↦ f.map_add'
+  map_smulₛₗ := fun f ↦ f.map_smul'
+  counit_comp := fun f ↦ f.counit_comp
+  map_comp_comul := fun f ↦ f.map_comp_comul
+  map_mul := fun f ↦ f.map_mul'
+  map_one := fun f ↦ f.map_one'
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R α β : Type*} [CommSemiring R]

@@ -335,7 +335,7 @@ theorem preAleph_le_of_isLimit {o : Ordinal} (l : o.IsLimit) {c} :
     exact h _ h'⟩
 
 theorem preAleph_limit {o : Ordinal} (ho : o.IsLimit) : preAleph o = ⨆ a : Iio o, preAleph a := by
-  refine le_antisymm ?_ (ciSup_le' fun i => preAleph_le_preAleph.2 i.2.le)
+  refine le_antisymm ?_ (ciSup_le' fun i ↦ preAleph_le_preAleph.2 i.2.le)
   rw [preAleph_le_of_isLimit ho]
   exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
 
@@ -742,7 +742,7 @@ theorem isNormal_beth : IsNormal (ord ∘ beth) := by
   exact ciSup_le' fun b ↦ ord_le.1 (ha _ b.2)
 
 @[deprecated isNormal_beth (since := "2024-10-11")]
-theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
+theorem beth_normal : IsNormal.{u} fun o ↦ (beth o).ord :=
   isNormal_beth
 
 end Cardinal

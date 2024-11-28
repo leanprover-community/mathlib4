@@ -68,7 +68,7 @@ variable (ρ : Representation k G V)
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
 -/
 def invariants : Submodule k V where
-  carrier := setOf fun v => ∀ g : G, ρ g v = v
+  carrier := setOf fun v ↦ ∀ g : G, ρ g v = v
   zero_mem' g := by simp only [map_zero]
   add_mem' hv hw g := by simp only [hv g, hw g, map_add]
   smul_mem' r v hv g := by simp only [hv g, LinearMap.map_smulₛₗ, RingHom.id_apply]
@@ -93,7 +93,7 @@ noncomputable def averageMap : V →ₗ[k] V :=
 
 /-- The `averageMap` sends elements of `V` to the subspace of invariants.
 -/
-theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g => by
+theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun g ↦ by
   rw [averageMap, ← asAlgebraHom_single_one, ← LinearMap.mul_apply, ← map_mul (asAlgebraHom ρ),
     mul_average_left]
 
@@ -130,10 +130,10 @@ theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) 
 homomorphisms from `X` to `Y`. -/
 @[simps]
 def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
-  toFun f := ⟨f.val, fun g => (mem_invariants_iff_comm _ g).1 (f.property g)⟩
+  toFun f := ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 (f.property g)⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun f := ⟨f.hom, fun g => (mem_invariants_iff_comm _ g).2 (f.comm g)⟩
+  invFun f := ⟨f.hom, fun g ↦ (mem_invariants_iff_comm _ g).2 (f.comm g)⟩
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
 

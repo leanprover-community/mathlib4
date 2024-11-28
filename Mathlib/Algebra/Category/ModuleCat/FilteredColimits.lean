@@ -98,7 +98,7 @@ instance colimitMulAction : MulAction R (M F) where
 
 instance colimitSMulWithZero : SMulWithZero R (M F) :=
 { colimitMulAction F with
-  smul_zero := fun r => by
+  smul_zero := fun r ↦ by
     erw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
     rfl
   zero_smul := fun x ↦ by
@@ -168,7 +168,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   uniq t _ h :=
     LinearMap.coe_injective <|
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).uniq
-        ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x ↦ LinearMap.congr_fun (h j) x
+        ((forget (ModuleCat R)).mapCocone t) _ fun j ↦ funext fun x ↦ LinearMap.congr_fun (h j) x
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrp.{u}) where

@@ -274,7 +274,7 @@ instance IsFiniteKernel.restrict (κ : Kernel α β) [IsFiniteKernel κ] (hs : M
 
 instance IsSFiniteKernel.restrict (κ : Kernel α β) [IsSFiniteKernel κ] (hs : MeasurableSet s) :
     IsSFiniteKernel (κ.restrict hs) := by
-  refine ⟨⟨fun n => Kernel.restrict (seq κ n) hs, inferInstance, ?_⟩⟩
+  refine ⟨⟨fun n ↦ Kernel.restrict (seq κ n) hs, inferInstance, ?_⟩⟩
   ext1 a
   simp_rw [sum_apply, restrict_apply, ← Measure.restrict_sum _ hs, ← sum_apply, kernel_sum_seq]
 
@@ -304,7 +304,7 @@ theorem comapRight_apply (κ : Kernel α β) (hf : MeasurableEmbedding f) (a : �
 theorem comapRight_apply' (κ : Kernel α β) (hf : MeasurableEmbedding f) (a : α) {t : Set γ}
     (ht : MeasurableSet t) : comapRight κ hf a t = κ a (f '' t) := by
   rw [comapRight_apply,
-    Measure.comap_apply _ hf.injective (fun s => hf.measurableSet_image.mpr) _ ht]
+    Measure.comap_apply _ hf.injective (fun s ↦ hf.measurableSet_image.mpr) _ ht]
 
 @[simp]
 lemma comapRight_id (κ : Kernel α β) : comapRight κ MeasurableEmbedding.id = κ := by
@@ -325,13 +325,13 @@ instance IsFiniteKernel.comapRight (κ : Kernel α β) [IsFiniteKernel κ]
 
 protected instance IsSFiniteKernel.comapRight (κ : Kernel α β) [IsSFiniteKernel κ]
     (hf : MeasurableEmbedding f) : IsSFiniteKernel (comapRight κ hf) := by
-  refine ⟨⟨fun n => comapRight (seq κ n) hf, inferInstance, ?_⟩⟩
+  refine ⟨⟨fun n ↦ comapRight (seq κ n) hf, inferInstance, ?_⟩⟩
   ext1 a
   rw [sum_apply]
   simp_rw [comapRight_apply _ hf]
   have :
-    (Measure.sum fun n => Measure.comap f (seq κ n a)) =
-      Measure.comap f (Measure.sum fun n => seq κ n a) := by
+    (Measure.sum fun n ↦ Measure.comap f (seq κ n a)) =
+      Measure.comap f (Measure.sum fun n ↦ seq κ n a) := by
     ext1 t ht
     rw [Measure.comap_apply _ hf.injective (fun s' => hf.measurableSet_image.mpr) _ ht,
       Measure.sum_apply _ ht, Measure.sum_apply _ (hf.measurableSet_image.mpr ht)]
@@ -372,7 +372,7 @@ instance IsFiniteKernel.piecewise [IsFiniteKernel κ] [IsFiniteKernel η] :
 
 protected instance IsSFiniteKernel.piecewise [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     IsSFiniteKernel (piecewise hs κ η) := by
-  refine ⟨⟨fun n => piecewise hs (seq κ n) (seq η n), inferInstance, ?_⟩⟩
+  refine ⟨⟨fun n ↦ piecewise hs (seq κ n) (seq η n), inferInstance, ?_⟩⟩
   ext1 a
   simp_rw [sum_apply, Kernel.piecewise_apply]
   split_ifs <;> exact (measure_sum_seq _ a).symm

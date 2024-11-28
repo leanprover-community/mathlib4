@@ -192,7 +192,7 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
       naturality := fun Y Z f => by
         cases Y <;> cases Z <;> cases f
         · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` can't see `limit.hom_ext` applies here:
-          refine limit.hom_ext fun i => ?_
+          refine limit.hom_ext fun i ↦ ?_
           dsimp
           simp only [limit.lift_π, Category.id_comp, Fan.mk_π_app, CategoryTheory.Functor.map_id,
             Category.assoc]
@@ -215,7 +215,7 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
           dsimp at h
           simpa using h
         · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` can't see `limit.hom_ext` applies here:
-          refine limit.hom_ext fun i => ?_
+          refine limit.hom_ext fun i ↦ ?_
           dsimp
           simp only [limit.lift_π, Category.id_comp, Fan.mk_π_app, CategoryTheory.Functor.map_id,
             Category.assoc]
@@ -232,10 +232,10 @@ def coneEquivFunctor :
   obj c := coneEquivFunctorObj F U c
   map {c c'} f :=
     { hom := f.hom
-      w := fun j => by
+      w := fun j ↦ by
         cases j <;>
           · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` can't see `limit.hom_ext` applies here:
-            refine limit.hom_ext fun i => ?_
+            refine limit.hom_ext fun i ↦ ?_
             simp only [Limits.Fan.mk_π_app, Limits.ConeMorphism.w, Limits.limit.lift_π,
               Category.assoc, coneEquivFunctorObj_π_app] }
 
@@ -312,14 +312,14 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
       (coneEquivFunctor F U ⋙ coneEquivInverse F U).obj c where
   hom :=
     { hom := 𝟙 _
-      w := fun j => by
+      w := fun j ↦ by
         induction j using Opposite.rec' with | h j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
   inv :=
     { hom := 𝟙 _
-      w := fun j => by
+      w := fun j ↦ by
         induction j using Opposite.rec' with | h j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]

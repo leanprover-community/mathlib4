@@ -342,13 +342,13 @@ instance addCommGroup : AddCommGroup ℂ :=
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=
   { Complex.addCommGroup with
-    natCast := fun n => ⟨n, 0⟩
+    natCast := fun n ↦ ⟨n, 0⟩
     natCast_zero := by
       ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_zero]
     natCast_succ := fun _ => by ext <;> simp [Nat.cast, AddMonoidWithOne.natCast_succ]
-    intCast := fun n => ⟨n, 0⟩
+    intCast := fun n ↦ ⟨n, 0⟩
     intCast_ofNat := fun _ => by ext <;> rfl
-    intCast_negSucc := fun n => by
+    intCast_negSucc := fun n ↦ by
       ext
       · simp [AddGroupWithOne.intCast_negSucc]
         show -(1 : ℝ) + (-n) = -(↑(n + 1))

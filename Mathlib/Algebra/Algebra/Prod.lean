@@ -68,7 +68,7 @@ variable {R A B}
 @[simps!]
 def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
   { f.toRingHom.prod g.toRingHom with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       simp only [toRingHom_eq_coe, RingHom.toFun_eq_coe, RingHom.prod_apply, coe_toRingHom,
         commutes, Prod.algebraMap_apply] }
 
@@ -98,6 +98,6 @@ def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C) wher
 def prodMap {D : Type*} [Semiring D] [Algebra R D] (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
     A × C →ₐ[R] B × D :=
   { toRingHom := f.toRingHom.prodMap g.toRingHom
-    commutes' := fun r => by simp [commutes] }
+    commutes' := fun r ↦ by simp [commutes] }
 
 end AlgHom

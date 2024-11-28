@@ -27,7 +27,7 @@ variable [Monoid α] [HasDistribNeg α]
 
 /-- Each element of the group of units of a ring has an additive inverse. -/
 instance : Neg αˣ :=
-  ⟨fun u => ⟨-↑u, -↑u⁻¹, by simp, by simp⟩⟩
+  ⟨fun u ↦ ⟨-↑u, -↑u⁻¹, by simp, by simp⟩⟩
 
 /-- Representing an element of a ring's unit group as an element of the ring commutes with
     mapping this element to its additive inverse. -/

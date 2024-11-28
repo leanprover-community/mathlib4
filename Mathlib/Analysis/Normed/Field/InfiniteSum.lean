@@ -88,7 +88,7 @@ open Finset.Nat
 
 theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
     (hf : Summable fun x ↦ ‖f x‖) (hg : Summable fun x ↦ ‖g x‖) :
-    Summable fun n => ‖∑ kl ∈ antidiagonal n, f kl.1 * g kl.2‖ := by
+    Summable fun n ↦ ‖∑ kl ∈ antidiagonal n, f kl.1 * g kl.2‖ := by
   have :=
     summable_sum_mul_antidiagonal_of_summable_mul
       (Summable.mul_of_nonneg hf hg (fun _ => norm_nonneg _) fun _ => norm_nonneg _)
@@ -101,7 +101,7 @@ theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
 theorem summable_sum_mul_antidiagonal_of_summable_norm' {f g : ℕ → R}
     (hf : Summable fun x ↦ ‖f x‖) (h'f : Summable f)
     (hg : Summable fun x ↦ ‖g x‖) (h'g : Summable g) :
-    Summable fun n => ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=
+    Summable fun n ↦ ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 :=
   summable_sum_mul_antidiagonal_of_summable_mul (summable_mul_of_summable_norm' hf h'f hg h'g)
 
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
@@ -121,14 +121,14 @@ theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm' {f g : ℕ → 
   tsum_mul_tsum_eq_tsum_sum_antidiagonal h'f h'g (summable_mul_of_summable_norm' hf h'f hg h'g)
 
 theorem summable_norm_sum_mul_range_of_summable_norm {f g : ℕ → R} (hf : Summable fun x ↦ ‖f x‖)
-    (hg : Summable fun x ↦ ‖g x‖) : Summable fun n => ‖∑ k ∈ range (n + 1), f k * g (n - k)‖ := by
+    (hg : Summable fun x ↦ ‖g x‖) : Summable fun n ↦ ‖∑ k ∈ range (n + 1), f k * g (n - k)‖ := by
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact summable_norm_sum_mul_antidiagonal_of_summable_norm hf hg
 
 theorem summable_sum_mul_range_of_summable_norm' {f g : ℕ → R}
     (hf : Summable fun x ↦ ‖f x‖) (h'f : Summable f)
     (hg : Summable fun x ↦ ‖g x‖) (h'g : Summable g) :
-    Summable fun n => ∑ k ∈ range (n + 1), f k * g (n - k) := by
+    Summable fun n ↦ ∑ k ∈ range (n + 1), f k * g (n - k) := by
   simp_rw [← sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact summable_sum_mul_antidiagonal_of_summable_norm' hf h'f hg h'g
 

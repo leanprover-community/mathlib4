@@ -67,7 +67,7 @@ then `{⋃ x ∈ K, UniformSpace.ball x (V i) | p i}` is a basis of `𝓝ˢ K`.
 Here "`{s i | p i}` is a basis of a filter `l`" means `Filter.HasBasis l p s`. -/
 theorem IsCompact.nhdsSet_basis_uniformity {p : ι → Prop} {V : ι → Set (α × α)}
     (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K) :
-    (𝓝ˢ K).HasBasis p fun i => ⋃ x ∈ K, ball x (V i) where
+    (𝓝ˢ K).HasBasis p fun i ↦ ⋃ x ∈ K, ball x (V i) where
   mem_iff' U := by
     constructor
     · intro H

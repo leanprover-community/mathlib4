@@ -359,8 +359,8 @@ theorem emultiplicity_eq_emultiplicity_iff {c d : β} :
     emultiplicity a b = emultiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b ↔ c ^ n ∣ d :=
   ⟨fun h n =>
     ⟨emultiplicity_le_emultiplicity_iff.1 h.le n, emultiplicity_le_emultiplicity_iff.1 h.ge n⟩,
-    fun h ↦ le_antisymm (emultiplicity_le_emultiplicity_iff.2 fun n => (h n).mp)
-      (emultiplicity_le_emultiplicity_iff.2 fun n => (h n).mpr)⟩
+    fun h ↦ le_antisymm (emultiplicity_le_emultiplicity_iff.2 fun n ↦ (h n).mp)
+      (emultiplicity_le_emultiplicity_iff.2 fun n ↦ (h n).mpr)⟩
 
 theorem le_emultiplicity_map {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
     (f : F) {a b : α} :

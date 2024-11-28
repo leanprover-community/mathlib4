@@ -264,7 +264,7 @@ instance : Monoid (X q) :=
     mul_one := fun x ↦ by ext <;> simp }
 
 instance : NatCast (X q) where
-    natCast := fun n => ⟨n, 0⟩
+    natCast := fun n ↦ ⟨n, 0⟩
 
 @[simp] theorem fst_natCast (n : ℕ) : (n : X q).fst = (n : ZMod q) := rfl
 
@@ -285,9 +285,9 @@ instance : AddGroupWithOne (X q) :=
       inferInstanceAs (NatCast (X q)) with
     natCast_zero := by ext <;> simp
     natCast_succ := fun _ ↦ by ext <;> simp
-    intCast := fun n => ⟨n, 0⟩
-    intCast_ofNat := fun n => by ext <;> simp
-    intCast_negSucc := fun n => by ext <;> simp }
+    intCast := fun n ↦ ⟨n, 0⟩
+    intCast_ofNat := fun n ↦ by ext <;> simp
+    intCast_negSucc := fun n ↦ by ext <;> simp }
 
 theorem left_distrib (x y z : X q) : x * (y + z) = x * y + x * z := by
   ext <;> dsimp <;> ring

@@ -83,11 +83,11 @@ theorem hasDerivWithinAt_pi :
 
 theorem derivWithin_pi (h : ∀ i, DifferentiableWithinAt 𝕜 (fun x ↦ φ x i) s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin φ s x = fun i => derivWithin (fun x ↦ φ x i) s x :=
-  (hasDerivWithinAt_pi.2 fun i => (h i).hasDerivWithinAt).derivWithin hs
+    derivWithin φ s x = fun i ↦ derivWithin (fun x ↦ φ x i) s x :=
+  (hasDerivWithinAt_pi.2 fun i ↦ (h i).hasDerivWithinAt).derivWithin hs
 
 theorem deriv_pi (h : ∀ i, DifferentiableAt 𝕜 (fun x ↦ φ x i) x) :
-    deriv φ x = fun i => deriv (fun x ↦ φ x i) x :=
-  (hasDerivAt_pi.2 fun i => (h i).hasDerivAt).deriv
+    deriv φ x = fun i ↦ deriv (fun x ↦ φ x i) x :=
+  (hasDerivAt_pi.2 fun i ↦ (h i).hasDerivAt).deriv
 
 end Pi

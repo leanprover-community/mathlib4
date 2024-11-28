@@ -67,7 +67,7 @@ theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
 /-- `stdSimplex ℝ ι` is closed. -/
 theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
   (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
+    IsClosed.inter (isClosed_iInter fun i ↦ isClosed_le continuous_const (continuous_apply i))
       (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
 
 /-- `stdSimplex ℝ ι` is compact. -/
@@ -281,7 +281,7 @@ variable (𝕜)
 
 /-- The convex closed hull of a set `s` is the minimal convex closed set that includes `s`. -/
 @[simps! isClosed]
-def closedConvexHull : ClosureOperator (Set E) := .ofCompletePred (fun s => Convex 𝕜 s ∧ IsClosed s)
+def closedConvexHull : ClosureOperator (Set E) := .ofCompletePred (fun s ↦ Convex 𝕜 s ∧ IsClosed s)
   fun _ ↦ convex_closed_sInter
 
 variable {𝕜}

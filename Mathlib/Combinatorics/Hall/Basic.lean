@@ -61,9 +61,9 @@ def hallMatchingsOn {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Fi
 /-- Given a matching on a finset, construct the restriction of that matching to a subset. -/
 def hallMatchingsOn.restrict {ι : Type u} {α : Type v} (t : ι → Finset α) {ι' ι'' : Finset ι}
     (h : ι' ⊆ ι'') (f : hallMatchingsOn t ι'') : hallMatchingsOn t ι' := by
-  refine ⟨fun i => f.val ⟨i, h i.property⟩, ?_⟩
+  refine ⟨fun i ↦ f.val ⟨i, h i.property⟩, ?_⟩
   cases' f.property with hinj hc
-  refine ⟨?_, fun i => hc ⟨i, h i.property⟩⟩
+  refine ⟨?_, fun i ↦ hc ⟨i, h i.property⟩⟩
   rintro ⟨i, hi⟩ ⟨j, hj⟩ hh
   simpa only [Subtype.mk_eq_mk] using hinj hh
 

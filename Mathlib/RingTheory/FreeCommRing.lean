@@ -109,7 +109,7 @@ protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing 
   have hn : ∀ x, C x → C (-x) := fun x ih => neg_one_mul x ▸ hm _ _ hn1 ih
   have h1 : C 1 := neg_neg (1 : FreeCommRing α) ▸ hn _ hn1
   FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeCommRing α) ▸ ha _ _ hn1 h1)
-    (fun m => Multiset.induction_on m h1 fun a m ih => by
+    (fun m ↦ Multiset.induction_on m h1 fun a m ih => by
       convert hm (of a) _ (hb a) ih
       apply of_cons)
     (fun _ ih => hn _ ih) ha
@@ -122,7 +122,7 @@ variable {R : Type v} [CommRing R] (f : α → R)
 currently exist. -/
 private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R) where
   toFun f :=
-    { toFun := fun s => (s.toAdd.map f).prod
+    { toFun := fun s ↦ (s.toAdd.map f).prod
       map_mul' := fun x y =>
         calc
           _ = Multiset.prod (Multiset.map f x + Multiset.map f y) := by
@@ -268,7 +268,7 @@ theorem map_subtype_val_restriction {x} (s : Set α) [DecidablePred (· ∈ s)]
 
 theorem exists_finite_support (x : FreeCommRing α) : ∃ s : Set α, Set.Finite s ∧ IsSupported x s :=
   FreeCommRing.induction_on x ⟨∅, Set.finite_empty, isSupported_neg isSupported_one⟩
-    (fun p => ⟨{p}, Set.finite_singleton p, isSupported_of.2 <| Set.mem_singleton _⟩)
+    (fun p ↦ ⟨{p}, Set.finite_singleton p, isSupported_of.2 <| Set.mem_singleton _⟩)
     (fun _ _ ⟨s, hfs, hxs⟩ ⟨t, hft, hxt⟩ =>
       ⟨s ∪ t, hfs.union hft,
         isSupported_add (isSupported_upwards hxs Set.subset_union_left)

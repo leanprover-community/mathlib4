@@ -106,7 +106,7 @@ theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 := by
   · exact fun n _ _ => p.coeff_mirror n
 
 theorem mirror_mirror : p.mirror.mirror = p :=
-  Polynomial.ext fun n => by
+  Polynomial.ext fun n ↦ by
     rw [coeff_mirror, coeff_mirror, mirror_natDegree, mirror_natTrailingDegree, revAt_invol]
 
 variable {p q}

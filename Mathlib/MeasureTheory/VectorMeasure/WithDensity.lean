@@ -40,7 +40,7 @@ open Classical in
 the vector measure which maps the set `s` to `∫ₛ f ∂μ`. -/
 def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α → E) : VectorMeasure α E :=
   if hf : Integrable f μ then
-    { measureOf' := fun s => if MeasurableSet s then ∫ x in s, f x ∂μ else 0
+    { measureOf' := fun s ↦ if MeasurableSet s then ∫ x in s, f x ∂μ else 0
       empty' := by simp
       not_measurable' := fun _ hs => if_neg hs
       m_iUnion' := fun s hs₁ hs₂ => by

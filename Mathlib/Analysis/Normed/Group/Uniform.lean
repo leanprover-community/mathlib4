@@ -391,10 +391,10 @@ end SeparationQuotient
 
 @[to_additive]
 theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n ≥ N, u n = v n)
-    (hv : CauchySeq fun n => ∏ k ∈ range (n + 1), v k) :
-    CauchySeq fun n => ∏ k ∈ range (n + 1), u k := by
-  let d : ℕ → E := fun n => ∏ k ∈ range (n + 1), u k / v k
-  rw [show (fun n => ∏ k ∈ range (n + 1), u k) = d * fun n => ∏ k ∈ range (n + 1), v k
+    (hv : CauchySeq fun n ↦ ∏ k ∈ range (n + 1), v k) :
+    CauchySeq fun n ↦ ∏ k ∈ range (n + 1), u k := by
+  let d : ℕ → E := fun n ↦ ∏ k ∈ range (n + 1), u k / v k
+  rw [show (fun n ↦ ∏ k ∈ range (n + 1), u k) = d * fun n ↦ ∏ k ∈ range (n + 1), v k
       by ext n; simp [d]]
   suffices ∀ n ≥ N, d n = d N from (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn

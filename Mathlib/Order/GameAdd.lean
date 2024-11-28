@@ -177,7 +177,7 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
     Acc (Sym2.GameAdd rα) s(a, b) := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
-  refine Acc.intro _ fun s => ?_
+  refine Acc.intro _ fun s ↦ ?_
   induction' s with c d
   rw [Sym2.GameAdd]
   dsimp
@@ -191,7 +191,7 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
 
 /-- The `Sym2.GameAdd` relation on well-founded inputs is well-founded. -/
 theorem WellFounded.sym2_gameAdd (h : WellFounded rα) : WellFounded (Sym2.GameAdd rα) :=
-  ⟨fun i => Sym2.inductionOn i fun x y => (h.apply x).sym2_gameAdd (h.apply y)⟩
+  ⟨fun i ↦ Sym2.inductionOn i fun x y => (h.apply x).sym2_gameAdd (h.apply y)⟩
 
 namespace Sym2
 

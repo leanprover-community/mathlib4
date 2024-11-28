@@ -99,7 +99,7 @@ lemma sup_nhds' [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tend
   (continuous_sup.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
 
 lemma sup_nhds [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
-    Tendsto (fun i => f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
+    Tendsto (fun i ↦ f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
   hf.sup_nhds' hg
 
 lemma inf_nhds' [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
@@ -107,7 +107,7 @@ lemma inf_nhds' [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tend
   (continuous_inf.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
 
 lemma inf_nhds [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
-    Tendsto (fun i => f i ⊓ g i) l (𝓝 (x ⊓ y)) :=
+    Tendsto (fun i ↦ f i ⊓ g i) l (𝓝 (x ⊓ y)) :=
   hf.inf_nhds' hg
 
 end SupInf

@@ -81,11 +81,11 @@ theorem nhdsWithin_eq (a : α) (s : Set α) :
   rw [nhdsWithin, principal_univ, inf_top_eq]
 
 theorem nhdsWithin_hasBasis {p : β → Prop} {s : β → Set α} {a : α} (h : (𝓝 a).HasBasis p s)
-    (t : Set α) : (𝓝[t] a).HasBasis p fun i => s i ∩ t :=
+    (t : Set α) : (𝓝[t] a).HasBasis p fun i ↦ s i ∩ t :=
   h.inf_principal t
 
 theorem nhdsWithin_basis_open (a : α) (t : Set α) :
-    (𝓝[t] a).HasBasis (fun u => a ∈ u ∧ IsOpen u) fun u => u ∩ t :=
+    (𝓝[t] a).HasBasis (fun u ↦ a ∈ u ∧ IsOpen u) fun u ↦ u ∩ t :=
   nhdsWithin_hasBasis (nhds_basis_opens a) t
 
 theorem mem_nhdsWithin {t : Set α} {a : α} {s : Set α} :
@@ -315,7 +315,7 @@ theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x
         ⨅ (i) (_ : i ∉ I), comap (fun x ↦ x i) (𝓝 (x i)) := by
   simp only [nhdsWithin, nhds_pi, Filter.pi, pi_def, ← iInf_principal_finite hI, comap_inf,
     comap_principal, eval]
-  rw [iInf_split _ fun i => i ∈ I, inf_right_comm]
+  rw [iInf_split _ fun i ↦ i ∈ I, inf_right_comm]
   simp only [iInf_inf_eq]
 
 theorem nhdsWithin_pi_univ_eq [Finite ι] (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
@@ -398,7 +398,7 @@ theorem mem_closure_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace
   simp only [mem_closure_iff_nhdsWithin_neBot, nhdsWithin_pi_neBot]
 
 theorem closure_pi_set {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] (I : Set ι)
-    (s : ∀ i, Set (α i)) : closure (pi I s) = pi I fun i => closure (s i) :=
+    (s : ∀ i, Set (α i)) : closure (pi I s) = pi I fun i ↦ closure (s i) :=
   Set.ext fun _ => mem_closure_pi
 
 theorem dense_pi {ι : Type*} {α : ι → Type*} [∀ i, TopologicalSpace (α i)] {s : ∀ i, Set (α i)}
@@ -679,7 +679,7 @@ theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α
     delta ContinuousWithinAt
     simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]
-    exact forall_congr' fun t => forall_swap
+    exact forall_congr' fun t ↦ forall_swap
 
 -- Porting note: dropped an unneeded assumption
 theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
@@ -1162,7 +1162,7 @@ theorem continuousWithinAt_pi {ι : Type*} {π : ι → Type*} [∀ i, Topologic
 
 theorem continuousOn_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     {f : α → ∀ i, π i} {s : Set α} : ContinuousOn f s ↔ ∀ i, ContinuousOn (fun y ↦ f y i) s :=
-  ⟨fun h i x hx => tendsto_pi_nhds.1 (h x hx) i, fun h x hx => tendsto_pi_nhds.2 fun i => h i x hx⟩
+  ⟨fun h i x hx => tendsto_pi_nhds.1 (h x hx) i, fun h x hx => tendsto_pi_nhds.2 fun i ↦ h i x hx⟩
 
 @[fun_prop]
 theorem continuousOn_pi' {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]

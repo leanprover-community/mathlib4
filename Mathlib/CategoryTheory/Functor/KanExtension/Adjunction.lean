@@ -120,7 +120,7 @@ noncomputable def leftKanExtensionIsoFiberwiseColimit [HasLeftKanExtension L F] 
   Iso.symm <| NatIso.ofComponents
     (fun X => HasColimit.isoOfNatIso (isoWhiskerRight (ιCompGrothendieckProj L X) F) ≪≫
       (leftKanExtensionObjIsoColimit L F X).symm)
-    fun f => colimit.hom_ext (by simp)
+    fun f ↦ colimit.hom_ext (by simp)
 
 end
 

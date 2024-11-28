@@ -51,7 +51,7 @@ instance : Category TopCommRingCat.{u} where
 instance : ConcreteCategory TopCommRingCat.{u} where
   forget :=
     { obj := fun R => R
-      map := fun f => f.val }
+      map := fun f ↦ f.val }
   -- Porting note: Old proof was `forget_faithful := { }`
   forget_faithful :=
     { map_injective := fun {_ _ _ _} h => Subtype.ext <| RingHom.coe_inj h }
@@ -77,7 +77,7 @@ instance forgetTopologicalRing (R : TopCommRingCat) :
   R.isTopologicalRing
 
 instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
-  HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl) (fun f => f.val) HEq.rfl
+  HasForget₂.mk' (fun R => CommRingCat.of R) (fun _ => rfl) (fun f ↦ f.val) HEq.rfl
 
 instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
     TopologicalSpace ((forget₂ TopCommRingCat CommRingCat).obj R) :=
@@ -85,7 +85,7 @@ instance forgetToCommRingCatTopologicalSpace (R : TopCommRingCat) :
 
 /-- The forgetful functor to `TopCat`. -/
 instance hasForgetToTopCat : HasForget₂ TopCommRingCat TopCat :=
-  HasForget₂.mk' (fun R => TopCat.of R) (fun _ => rfl) (fun f => ⟨⇑f.1, f.2⟩) HEq.rfl
+  HasForget₂.mk' (fun R => TopCat.of R) (fun _ => rfl) (fun f ↦ ⟨⇑f.1, f.2⟩) HEq.rfl
 
 instance forgetToTopCatCommRing (R : TopCommRingCat) :
     CommRing ((forget₂ TopCommRingCat TopCat).obj R) :=

@@ -494,7 +494,7 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
         return e.constName
     if (← get).contains e then
       failure
-    modify fun s => s.insert e
+    modify fun s ↦ s.insert e
     match e with
     | x@(.app e a)       =>
         visit e true <|> do
@@ -1163,7 +1163,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         `@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both \
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Elab.Tactic.Ext.extExtension
-      (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
+      (fun b n => (b.tree.values.any fun t ↦ t.declName = n)) thisAttr `ext src tgt
     warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
     warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
     warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt

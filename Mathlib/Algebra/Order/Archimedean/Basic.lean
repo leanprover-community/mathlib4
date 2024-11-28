@@ -420,7 +420,7 @@ instance : Archimedean ℤ :=
           mul_le_mul_of_nonneg_left (Int.add_one_le_iff.2 m0) (Int.ofNat_zero_le n.toNat)⟩⟩
 
 instance : Archimedean ℚ :=
-  archimedean_iff_rat_le.2 fun q => ⟨q, by rw [Rat.cast_id]⟩
+  archimedean_iff_rat_le.2 fun q ↦ ⟨q, by rw [Rat.cast_id]⟩
 
 instance Nonneg.instArchimedean [OrderedAddCommMonoid α] [Archimedean α] :
     Archimedean { x : α // 0 ≤ x } :=

@@ -161,7 +161,7 @@ theorem ciInf_const [Nonempty ι] {a : α} : ⨅ _ : ι, a = a :=
 
 @[simp]
 theorem ciSup_unique [Unique ι] {s : ι → α} : ⨆ i, s i = s default := by
-  have : ∀ i, s i = s default := fun i => congr_arg s (Unique.eq_default i)
+  have : ∀ i, s i = s default := fun i ↦ congr_arg s (Unique.eq_default i)
   simp only [this, ciSup_const]
 
 @[simp]
@@ -169,10 +169,10 @@ theorem ciInf_unique [Unique ι] {s : ι → α} : ⨅ i, s i = s default :=
   ciSup_unique (α := αᵒᵈ)
 
 theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
-  @ciSup_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
+  @ciSup_unique α ι _ ⟨⟨i⟩, fun j ↦ Subsingleton.elim j i⟩ _
 
 theorem ciInf_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨅ i, s i = s i :=
-  @ciInf_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
+  @ciInf_unique α ι _ ⟨⟨i⟩, fun j ↦ Subsingleton.elim j i⟩ _
 
 @[simp]
 theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp :=
@@ -235,15 +235,15 @@ theorem ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → �
 `f n ≤ g n` for all `n`, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
 theorem Monotone.ciSup_mem_iInter_Icc_of_antitone [SemilatticeSup β] {f g : β → α} (hf : Monotone f)
     (hg : Antitone g) (h : f ≤ g) : (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) := by
-  refine mem_iInter.2 fun n => ?_
+  refine mem_iInter.2 fun n ↦ ?_
   haveI : Nonempty β := ⟨n⟩
-  have : ∀ m, f m ≤ g n := fun m => hf.forall_le_of_antitone hg h m n
+  have : ∀ m, f m ≤ g n := fun m ↦ hf.forall_le_of_antitone hg h m n
   exact ⟨le_ciSup ⟨g <| n, forall_mem_range.2 this⟩ _, ciSup_le this⟩
 
 /-- Nested intervals lemma: if `[f n, g n]` is an antitone sequence of nonempty
 closed intervals, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
 theorem ciSup_mem_iInter_Icc_of_antitone_Icc [SemilatticeSup β] {f g : β → α}
-    (h : Antitone fun n => Icc (f n) (g n)) (h' : ∀ n, f n ≤ g n) :
+    (h : Antitone fun n ↦ Icc (f n) (g n)) (h' : ∀ n, f n ≤ g n) :
     (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) :=
   Monotone.ciSup_mem_iInter_Icc_of_antitone
     (fun _ n hmn => ((Icc_subset_Icc_iff (h' n)).1 (h hmn)).1)
@@ -483,7 +483,7 @@ theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : �
 
 theorem ciSup_mono' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove (range g))
     (h : ∀ i, ∃ i', f i ≤ g i') : iSup f ≤ iSup g :=
-  ciSup_le' fun i => Exists.elim (h i) (le_ciSup_of_le hg)
+  ciSup_le' fun i ↦ Exists.elim (h i) (le_ciSup_of_le hg)
 
 lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by

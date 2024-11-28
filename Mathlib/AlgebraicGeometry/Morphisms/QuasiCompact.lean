@@ -67,7 +67,7 @@ theorem isCompactOpen_iff_eq_finset_affine_union {X : Scheme} (U : Set X) :
   apply Opens.IsBasis.isCompact_open_iff_eq_finite_iUnion
     (fun (U : X.affineOpens) => (U : X.Opens))
   · rw [Subtype.range_coe]; exact isBasis_affine_open X
-  · exact fun i => i.2.isCompact
+  · exact fun i ↦ i.2.isCompact
 
 theorem isCompactOpen_iff_eq_basicOpen_union {X : Scheme} [IsAffine X] (U : Set X) :
     IsCompact U ∧ IsOpen U ↔
@@ -141,7 +141,7 @@ instance : HasAffineProperty @QuasiCompact (fun X _ _ _ ↦ CompactSpace X) wher
         rw [← hS]
         dsimp [Opens.map]
         simp only [Opens.iSup_mk, Opens.coe_mk, Set.preimage_iUnion]
-        exact isCompact_iUnion fun i => isCompact_iff_compactSpace.mpr (hS' i)
+        exact isCompact_iUnion fun i ↦ isCompact_iff_compactSpace.mpr (hS' i)
       · exact isAffineOpen_top _
 
 theorem quasiCompact_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :

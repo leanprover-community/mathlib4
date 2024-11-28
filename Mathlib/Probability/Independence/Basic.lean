@@ -504,7 +504,7 @@ theorem indep_iff_forall_indepSet (μ : Measure Ω) :
   Kernel.indep_iff_forall_indepSet m₁ m₂ _ _
 
 theorem iIndep_comap_mem_iff {f : ι → Set Ω} :
-    iIndep (fun i => MeasurableSpace.comap (· ∈ f i) ⊤) μ ↔ iIndepSet f μ :=
+    iIndep (fun i ↦ MeasurableSpace.comap (· ∈ f i) ⊤) μ ↔ iIndepSet f μ :=
   Kernel.iIndep_comap_mem_iff
 
 alias ⟨_, iIndepSet.iIndep_comap_mem⟩ := iIndep_comap_mem_iff
@@ -716,7 +716,7 @@ end CommMonoid
 
 theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β} {s : ι → Set Ω}
     (hs : iIndepSet s μ) :
-    iIndepFun (fun _n => m) (fun n => (s n).indicator fun _ω => 1) μ :=
+    iIndepFun (fun _n => m) (fun n ↦ (s n).indicator fun _ω => 1) μ :=
   Kernel.iIndepSet.iIndepFun_indicator hs
 
 end IndepFun

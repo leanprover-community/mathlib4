@@ -113,7 +113,7 @@ theorem ofScalars_apply_eq' (x : E) :
 noncomputable def ofScalarsSum := (ofScalars E c).sum
 
 theorem ofScalars_sum_eq (x : E) : ofScalarsSum c x =
-    ∑' n, c n • x ^ n := tsum_congr fun n => ofScalars_apply_eq c x n
+    ∑' n, c n • x ^ n := tsum_congr fun n ↦ ofScalars_apply_eq c x n
 
 theorem ofScalarsSum_eq_tsum : ofScalarsSum c =
     fun (x : E) => ∑' n : ℕ, c n • x ^ n := funext (ofScalars_sum_eq c)

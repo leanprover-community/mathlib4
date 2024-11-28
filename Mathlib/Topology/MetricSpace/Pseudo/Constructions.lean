@@ -31,7 +31,7 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
   toUniformSpace := UniformSpace.comap f m.toUniformSpace
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
-  cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
+  cobounded_sets := Set.ext fun s ↦ mem_comap_iff_compl.trans <| by
     simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_setOf]
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
@@ -153,7 +153,7 @@ instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
     (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
       simp only [dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
         Prod.edist_eq]
-  i.replaceBornology fun s => by
+  i.replaceBornology fun s ↦ by
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]
     rfl

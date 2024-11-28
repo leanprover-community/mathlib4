@@ -405,7 +405,7 @@ protected def univPi {α : Type*} {β : α → Type*} (s : ∀ a, Set (β a)) :
 /-- If a function `f` is injective on a set `s`, then `s` is equivalent to `f '' s`. -/
 protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H : InjOn f s) :
     s ≃ f '' s :=
-  ⟨fun p => ⟨f p, mem_image_of_mem f p.2⟩, fun p =>
+  ⟨fun p ↦ ⟨f p, mem_image_of_mem f p.2⟩, fun p =>
     ⟨Classical.choose p.2, (Classical.choose_spec p.2).1⟩, fun ⟨_, h⟩ =>
     Subtype.eq
       (H (Classical.choose_spec (mem_image_of_mem f h)).1 h
@@ -430,7 +430,7 @@ theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Se
 /-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`. -/
 @[simps]
 protected def congr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
-  ⟨fun s => e '' s, fun t => e.symm '' t, symm_image_image e, symm_image_image e.symm⟩
+  ⟨fun s ↦ e '' s, fun t ↦ e.symm '' t, symm_image_image e, symm_image_image e.symm⟩
 
 /-- The set `{x ∈ s | t x}` is equivalent to the set of `x : s` such that `t x`. -/
 protected def sep {α : Type u} (s : Set α) (t : α → Prop) :
@@ -565,7 +565,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i := by
   ext ⟨f, g⟩
   simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
-  refine forall_congr' fun i => ?_
+  refine forall_congr' fun i ↦ ?_
   dsimp only [Subtype.coe_mk]
   by_cases hi : p i <;> simp [hi]
 

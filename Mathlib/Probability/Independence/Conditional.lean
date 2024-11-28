@@ -801,7 +801,7 @@ end CommMonoid
 
 theorem iCondIndepSet.iCondIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β}
     {s : ι → Set Ω} (hs : iCondIndepSet m' hm' s μ) :
-    iCondIndepFun m' hm' (fun _n => m) (fun n => (s n).indicator fun _ω => 1) μ :=
+    iCondIndepFun m' hm' (fun _n => m) (fun n ↦ (s n).indicator fun _ω => 1) μ :=
   Kernel.iIndepSet.iIndepFun_indicator hs
 
 end CondIndepFun

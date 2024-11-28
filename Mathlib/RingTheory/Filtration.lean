@@ -84,18 +84,18 @@ def _root_.Ideal.trivialFiltration (I : Ideal R) (N : Submodule R M) : I.Filtrat
 /-- The `sup` of two `I.Filtration`s is an `I.Filtration`. -/
 instance : Max (I.Filtration M) :=
   ⟨fun F F' =>
-    ⟨F.N ⊔ F'.N, fun i => sup_le_sup (F.mono i) (F'.mono i), fun i =>
+    ⟨F.N ⊔ F'.N, fun i ↦ sup_le_sup (F.mono i) (F'.mono i), fun i =>
       (Submodule.smul_sup _ _ _).trans_le <| sup_le_sup (F.smul_le i) (F'.smul_le i)⟩⟩
 
 /-- The `sSup` of a family of `I.Filtration`s is an `I.Filtration`. -/
 instance : SupSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sSup (Ideal.Filtration.N '' S)
-      mono := fun i => by
+      mono := fun i ↦ by
         apply sSup_le_sSup_of_forall_exists_le _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
-      smul_le := fun i => by
+      smul_le := fun i ↦ by
         rw [sSup_eq_iSup', iSup_apply, Submodule.smul_iSup, iSup_apply]
         apply iSup_mono _
         rintro ⟨_, F, hF, rfl⟩
@@ -104,18 +104,18 @@ instance : SupSet (I.Filtration M) :=
 /-- The `inf` of two `I.Filtration`s is an `I.Filtration`. -/
 instance : Min (I.Filtration M) :=
   ⟨fun F F' =>
-    ⟨F.N ⊓ F'.N, fun i => inf_le_inf (F.mono i) (F'.mono i), fun i =>
+    ⟨F.N ⊓ F'.N, fun i ↦ inf_le_inf (F.mono i) (F'.mono i), fun i =>
       (smul_inf_le _ _ _).trans <| inf_le_inf (F.smul_le i) (F'.smul_le i)⟩⟩
 
 /-- The `sInf` of a family of `I.Filtration`s is an `I.Filtration`. -/
 instance : InfSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sInf (Ideal.Filtration.N '' S)
-      mono := fun i => by
+      mono := fun i ↦ by
         apply sInf_le_sInf_of_forall_exists_le _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
-      smul_le := fun i => by
+      smul_le := fun i ↦ by
         rw [sInf_eq_iInf', iInf_apply, iInf_apply]
         refine smul_iInf_le.trans ?_
         apply iInf_mono _
@@ -314,7 +314,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
       -- `fun i hi => Set.Subset.trans (Set.subset_iUnion₂ i hi) Submodule.subset_span`
       intro i hi
       refine Set.Subset.trans ?_ Submodule.subset_span
-      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
+      refine @Set.subset_iUnion₂ _ _ _ (fun i ↦ fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
       exact hi
     induction' i with j hj
     · exact this _ (zero_le _)
@@ -344,7 +344,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
       rw [Submodule.span_le, Set.iUnion₂_subset_iff]
       intro i hi
       refine Set.Subset.trans ?_ Submodule.subset_span
-      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
+      refine @Set.subset_iUnion₂ _ _ _ (fun i ↦ fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
       exact hi.trans e
     · dsimp
       rw [← Submodule.span_iUnion, ← submodule_span_single]
@@ -397,7 +397,7 @@ theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [Module.Finite R
     x ∈ (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) ↔ ∃ r : I, (r : R) • x = x := by
   let N := (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M)
   have hN : ∀ k, (I.stableFiltration ⊤ ⊓ I.trivialFiltration N).N k = N :=
-    fun k => inf_eq_right.mpr ((iInf_le _ k).trans <| le_of_eq <| by simp)
+    fun k ↦ inf_eq_right.mpr ((iInf_le _ k).trans <| le_of_eq <| by simp)
   constructor
   · obtain ⟨r, hr₁, hr₂⟩ :=
       Submodule.exists_mem_and_smul_eq_self_of_fg_of_le_smul I N (IsNoetherian.noetherian N) (by

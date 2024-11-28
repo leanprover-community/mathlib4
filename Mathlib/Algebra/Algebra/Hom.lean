@@ -415,7 +415,7 @@ variable {R S : Type*}
 def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
   { f with
     toFun := f
-    commutes' := fun n => by simp }
+    commutes' := fun n ↦ by simp }
 
 @[simp]
 lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
@@ -426,7 +426,7 @@ lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with commutes' := fun n => by simp }
+  { f with commutes' := fun n ↦ by simp }
 
 @[simp]
 lemma toIntAlgHom_coe [Ring R] [Ring S] (f : R →+* S) :
@@ -517,6 +517,6 @@ def toAlgHom (m : M) : A →ₐ[R] A :=
 
 theorem toAlgHom_injective [FaithfulSMul M A] :
     Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h =>
-  eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
+  eq_of_smul_eq_smul fun r ↦ AlgHom.ext_iff.1 h r
 
 end MulSemiringAction

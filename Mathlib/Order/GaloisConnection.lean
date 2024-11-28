@@ -289,7 +289,7 @@ protected theorem dfun {ι : Type u} {α : ι → Type v} {β : ι → Type w} [
     [∀ i, Preorder (β i)] (l : ∀ i, α i → β i) (u : ∀ i, β i → α i)
     (gc : ∀ i, GaloisConnection (l i) (u i)) :
     GaloisConnection (fun (a : ∀ i, α i) i => l i (a i)) fun b i => u i (b i) := fun a b =>
-  forall_congr' fun i => gc i (a i) (b i)
+  forall_congr' fun i ↦ gc i (a i) (b i)
 
 protected theorem compl [BooleanAlgebra α] [BooleanAlgebra β] {l : α → β} {u : β → α}
     (gc : GaloisConnection l u) :
@@ -403,7 +403,7 @@ end OrderIso
 namespace Nat
 
 theorem galoisConnection_mul_div {k : ℕ} (h : 0 < k) :
-    GaloisConnection (fun n => n * k) fun n => n / k := fun _ _ => (le_div_iff_mul_le h).symm
+    GaloisConnection (fun n ↦ n * k) fun n ↦ n / k := fun _ _ => (le_div_iff_mul_le h).symm
 
 end Nat
 
@@ -484,7 +484,7 @@ theorem l_iSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion
     (f : ι → β) : l (⨆ i, u (f i)) = ⨆ i, f i :=
   calc
     l (⨆ i : ι, u (f i)) = ⨆ i : ι, l (u (f i)) := gi.gc.l_iSup
-    _ = ⨆ i : ι, f i := congr_arg _ <| funext fun i => gi.l_u_eq (f i)
+    _ = ⨆ i : ι, f i := congr_arg _ <| funext fun i ↦ gi.l_u_eq (f i)
 
 theorem l_biSup_u [CompleteLattice α] [CompleteLattice β] (gi : GaloisInsertion l u) {ι : Sort x}
     {p : ι → Prop} (f : ∀ i, p i → β) : l (⨆ (i) (hi), u (f i hi)) = ⨆ (i) (hi), f i hi := by
@@ -592,15 +592,15 @@ abbrev liftBoundedOrder [Preorder α] [BoundedOrder α] (gi : GaloisInsertion l 
 /-- Lift all suprema and infima along a Galois insertion -/
 abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : CompleteLattice β :=
   { gi.liftBoundedOrder, gi.liftLattice with
-    sSup := fun s => l (sSup (u '' s))
+    sSup := fun s ↦ l (sSup (u '' s))
     sSup_le := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).2
     le_sSup := fun _ => (gi.isLUB_of_u_image (isLUB_sSup _)).1
     sInf := fun s =>
       gi.choice (sInf (u '' s)) <|
         (isGLB_sInf _).2 <|
           gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
-    sInf_le := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
-    le_sInf := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
+    sInf_le := fun s ↦ by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
+    le_sInf := fun s ↦ by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
 
 end lift
 
@@ -803,8 +803,8 @@ abbrev liftBoundedOrder
 /-- Lift all suprema and infima along a Galois coinsertion -/
 abbrev liftCompleteLattice [CompleteLattice β] (gi : GaloisCoinsertion l u) : CompleteLattice α :=
   { @OrderDual.instCompleteLattice αᵒᵈ gi.dual.liftCompleteLattice with
-    sInf := fun s => u (sInf (l '' s))
-    sSup := fun s => gi.choice (sSup (l '' s)) _ }
+    sInf := fun s ↦ u (sInf (l '' s))
+    sSup := fun s ↦ gi.choice (sSup (l '' s)) _ }
 
 end lift
 

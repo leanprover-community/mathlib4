@@ -69,8 +69,8 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
 
 instance Pi.infinite_of_left {ι : Sort*} {π : ι → Type*} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by
-  choose m n hm using fun i => exists_pair_ne (π i)
-  refine Infinite.of_injective (fun i => update m i (n i)) fun x y h => of_not_not fun hne => ?_
+  choose m n hm using fun i ↦ exists_pair_ne (π i)
+  refine Infinite.of_injective (fun i ↦ update m i (n i)) fun x y h => of_not_not fun hne => ?_
   simp_rw [update_eq_iff, update_noteq hne] at h
   exact (hm x h.1.symm).elim
 

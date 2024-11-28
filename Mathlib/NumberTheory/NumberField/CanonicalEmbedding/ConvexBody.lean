@@ -109,9 +109,9 @@ theorem convexBodyLT_volume :
       simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
         coe_mul, coe_finset_prod, ENNReal.coe_pow]
       congr 2
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞))).symm
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w ↦ (f w : ℝ≥0∞))).symm
         exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞) ^ 2)).symm
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w ↦ (f w : ℝ≥0∞) ^ 2)).symm
         exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
 
 variable {f}
@@ -246,9 +246,9 @@ theorem convexBodyLT'_volume :
       simp_rw [mult, pow_ite, pow_one, Finset.prod_ite, ofReal_coe_nnreal, not_isReal_iff_isComplex,
         coe_mul, coe_finset_prod, ENNReal.coe_pow, mul_assoc]
       congr 3
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞))).symm
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w ↦ (f w : ℝ≥0∞))).symm
         exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
-      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w => (f w : ℝ≥0∞) ^ 2)).symm
+      · refine (Finset.prod_subtype (Finset.univ.filter _) ?_ (fun w ↦ (f w : ℝ≥0∞) ^ 2)).symm
         exact fun _ => by simp only [Finset.mem_univ, forall_true_left, Finset.mem_filter, true_and]
 
 end convexBodyLT'

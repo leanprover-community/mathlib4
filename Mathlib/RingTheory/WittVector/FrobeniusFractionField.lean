@@ -69,7 +69,7 @@ def succNthDefiningPoly (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) 
   X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1)) - X * C (a₂.coeff 0 ^ p ^ (n + 1)) +
     C
       (a₁.coeff (n + 1) * (bs 0 ^ p) ^ p ^ (n + 1) +
-            nthRemainder p n (fun v => bs v ^ p) (truncateFun (n + 1) a₁) -
+            nthRemainder p n (fun v ↦ bs v ^ p) (truncateFun (n + 1) a₁) -
           a₂.coeff (n + 1) * bs 0 ^ p ^ (n + 1) -
         nthRemainder p n bs (truncateFun (n + 1) a₂))
 
@@ -117,7 +117,7 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
     (ha₂ : a₂.coeff 0 ≠ 0) :
     succNthVal p n a₁ a₂ bs ha₁ ha₂ ^ p * a₁.coeff 0 ^ p ^ (n + 1) +
           a₁.coeff (n + 1) * (bs 0 ^ p) ^ p ^ (n + 1) +
-        nthRemainder p n (fun v => bs v ^ p) (truncateFun (n + 1) a₁) =
+        nthRemainder p n (fun v ↦ bs v ^ p) (truncateFun (n + 1) a₁) =
       succNthVal p n a₁ a₂ bs ha₁ ha₂ * a₂.coeff 0 ^ p ^ (n + 1) +
           a₂.coeff (n + 1) * bs 0 ^ p ^ (n + 1) +
         nthRemainder p n bs (truncateFun (n + 1) a₂) := by
@@ -186,7 +186,7 @@ variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 @[semireducible] noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ℕ → k
   | 0 => solution p a₁ a₂
-  | n + 1 => succNthVal p n a₁ a₂ (fun i => frobeniusRotationCoeff ha₁ ha₂ i.val) ha₁ ha₂
+  | n + 1 => succNthVal p n a₁ a₂ (fun i ↦ frobeniusRotationCoeff ha₁ ha₂ i.val) ha₁ ha₂
 
 /-- For nonzero `a₁` and `a₂`, `frobeniusRotation a₁ a₂` is a Witt vector that satisfies the
 equation `frobenius (frobeniusRotation a₁ a₂) * a₁ = (frobeniusRotation a₁ a₂) * a₂`.

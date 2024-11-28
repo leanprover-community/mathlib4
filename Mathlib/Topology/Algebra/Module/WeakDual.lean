@@ -67,7 +67,7 @@ theorem topDualPairing_apply [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Contin
   rfl
 
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
-functionals `fun v => v x` are continuous. -/
+functionals `fun v ↦ v x` are continuous. -/
 def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
@@ -203,7 +203,7 @@ their weak topologies. -/
 def map (f : E →L[𝕜] F) : WeakSpace 𝕜 E →L[𝕜] WeakSpace 𝕜 F :=
   { f with
     cont :=
-      WeakBilin.continuous_of_continuous_eval _ fun l => WeakBilin.eval_continuous _ (l ∘L f) }
+      WeakBilin.continuous_of_continuous_eval _ fun l ↦ WeakBilin.eval_continuous _ (l ∘L f) }
 
 theorem map_apply (f : E →L[𝕜] F) (x : E) : WeakSpace.map f x = f x :=
   rfl
@@ -250,7 +250,7 @@ theorem WeakSpace.isOpen_of_isOpen (V : Set E)
 theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
     {x : WeakDual 𝕜 E} :
     Tendsto f l (𝓝 x) ↔
-      ∀ y, Tendsto (fun i => topDualPairing 𝕜 E (f i) y) l (𝓝 (topDualPairing 𝕜 E x y)) :=
+      ∀ y, Tendsto (fun i ↦ topDualPairing 𝕜 E (f i) y) l (𝓝 (topDualPairing 𝕜 E x y)) :=
   WeakBilin.tendsto_iff_forall_eval_tendsto _ ContinuousLinearMap.coe_injective
 
 end Semiring

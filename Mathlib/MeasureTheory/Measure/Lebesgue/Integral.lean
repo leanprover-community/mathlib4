@@ -54,7 +54,7 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
   refine integrable_of_summable_norm_restrict (.of_nonneg_of_le
     (fun n : ℤ => mul_nonneg (norm_nonneg
       (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
-        ENNReal.toReal_nonneg) (fun n => ?_) hf) ?_
+        ENNReal.toReal_nonneg) (fun n ↦ ?_) hf) ?_
   · simp only [Compacts.coe_mk, Real.volume_Icc, add_sub_cancel_left,
       ENNReal.toReal_ofReal zero_le_one, mul_one, norm_le _ (norm_nonneg _)]
     intro x

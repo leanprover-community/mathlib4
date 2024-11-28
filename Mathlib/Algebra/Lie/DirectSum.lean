@@ -70,7 +70,7 @@ variable (R ι L M)
 def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
   { lof R ι M j with
     map_lie' := fun {x m} => by
-      refine DFinsupp.ext fun i => ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext i`
+      refine DFinsupp.ext fun i ↦ ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext i`
       by_cases h : j = i
       · rw [← h]; simp
       · -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
@@ -121,7 +121,7 @@ theorem lie_of_same [DecidableEq ι] {i : ι} (x y : L i) :
 
 theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = 0 := by
-  refine DFinsupp.ext fun k => ?_
+  refine DFinsupp.ext fun k ↦ ?_
   rw [bracket_apply]
   obtain rfl | hik := Decidable.eq_or_ne i k
   · rw [of_eq_of_ne _ _ _ hij.symm, lie_zero, zero_apply]
@@ -148,7 +148,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
   { lof R ι L j with
     toFun := of L j
     map_lie' := fun {x y} => by
-      refine DFinsupp.ext fun i => ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext i`
+      refine DFinsupp.ext fun i ↦ ?_ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext i`
       by_cases h : j = i
       · rw [← h]
         -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
@@ -189,8 +189,8 @@ then this map is a morphism of Lie algebras. -/
 def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L']
     (f : ∀ i, L i →ₗ⁅R⁆ L') (hf : Pairwise fun i j => ∀ (x : L i) (y : L j), ⁅f i x, f j y⁆ = 0) :
     (⨁ i, L i) →ₗ⁅R⁆ L' :=
-  { toModule R ι L' fun i => (f i : L i →ₗ[R] L') with
-    toFun := toModule R ι L' fun i => (f i : L i →ₗ[R] L')
+  { toModule R ι L' fun i ↦ (f i : L i →ₗ[R] L') with
+    toFun := toModule R ι L' fun i ↦ (f i : L i →ₗ[R] L')
     map_lie' := fun {x y} => by
       let f' i := (f i : L i →ₗ[R] L')
       /- The goal is linear in `y`. We can use this to reduce to the case that `y` has only one
@@ -229,11 +229,11 @@ variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
 Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
-  DirectSum.lieRing fun i => ↥(I i)
+  DirectSum.lieRing fun i ↦ ↥(I i)
 
 /-- See `DirectSum.lieRingOfIdeals` comment. -/
 instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) :=
-  DirectSum.lieAlgebra fun i => ↥(I i)
+  DirectSum.lieAlgebra fun i ↦ ↥(I i)
 
 end Ideals
 

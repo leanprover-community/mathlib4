@@ -149,7 +149,7 @@ theorem coe_subtype (h : P ≤ N) : P.subtype h = subgroupOf P N :=
 theorem subtype_injective {P Q : Sylow p G} {hP : P ≤ N} {hQ : Q ≤ N}
     (h : P.subtype hP = Q.subtype hQ) : P = Q := by
   rw [SetLike.ext_iff] at h ⊢
-  exact fun g => ⟨fun hg => (h ⟨g, hP hg⟩).mp hg, fun hg => (h ⟨g, hQ hg⟩).mpr hg⟩
+  exact fun g ↦ ⟨fun hg => (h ⟨g, hP hg⟩).mp hg, fun hg => (h ⟨g, hQ hg⟩).mpr hg⟩
 
 end Sylow
 
@@ -798,7 +798,7 @@ noncomputable def directProductOfNormal [Finite G]
   refine MulEquiv.trans (N := ∀ p : ps, P p) ?_ ?_
   -- There is only one Sylow subgroup for each p, so the inner product is trivial
   · -- here we need to help the elaborator with an explicit instantiation
-    apply @MulEquiv.piCongrRight ps (fun p => ∀ P : Sylow p G, P) (fun p => P p) _ _
+    apply @MulEquiv.piCongrRight ps (fun p ↦ ∀ P : Sylow p G, P) (fun p ↦ P p) _ _
     rintro ⟨p, hp⟩
     haveI hp' := Fact.mk (Nat.prime_of_mem_primeFactors hp)
     letI := unique_of_normal _ (hn (P p))
@@ -821,7 +821,7 @@ noncomputable def directProductOfNormal [Finite G]
         congr 1 with ⟨p, hp⟩
         exact @card_eq_multiplicity _ _ _ p ⟨Nat.prime_of_mem_primeFactors hp⟩ (P p)
       _ = ∏ p ∈ ps, p ^ (Nat.card G).factorization p :=
-        (Finset.prod_finset_coe (fun p => p ^ (Nat.card G).factorization p) _)
+        (Finset.prod_finset_coe (fun p ↦ p ^ (Nat.card G).factorization p) _)
       _ = (Nat.card G).factorization.prod (· ^ ·) := rfl
       _ = Nat.card G := Nat.factorization_prod_pow_eq_self Nat.card_pos.ne'
 

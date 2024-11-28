@@ -92,7 +92,7 @@ instance : CoeHead αˣ α :=
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
 instance instInv : Inv αˣ :=
-  ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
+  ⟨fun u ↦ ⟨u.2, u.1, u.4, u.3⟩⟩
 attribute [instance] AddUnits.instNeg
 
 /- porting note: the result of these definitions is syntactically equal to `Units.val` because of
@@ -258,7 +258,7 @@ instance instDivInvMonoid : DivInvMonoid αˣ where
 /-- Units of a monoid form a group. -/
 @[to_additive "Additive units of an additive monoid form an additive group."]
 instance instGroup : Group αˣ where
-  inv_mul_cancel := fun u => ext u.inv_val
+  inv_mul_cancel := fun u ↦ ext u.inv_val
 
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive "Additive units of an additive commutative monoid form
@@ -446,7 +446,7 @@ theorem Units.isUnit_mul_units [Monoid M] (a : M) (u : Mˣ) : IsUnit (a * u) ↔
     (fun ⟨v, hv⟩ => by
       have : IsUnit (a * ↑u * ↑u⁻¹) := by exists v * u⁻¹; rw [← hv, Units.val_mul]
       rwa [mul_assoc, Units.mul_inv, mul_one] at this)
-    fun v => v.mul u.isUnit
+    fun v ↦ v.mul u.isUnit
 
 /-- Multiplication by a `u : Mˣ` on the left doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)

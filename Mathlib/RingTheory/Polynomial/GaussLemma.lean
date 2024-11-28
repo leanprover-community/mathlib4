@@ -58,7 +58,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
       (SetLike.ext_iff.mp (integralClosure R g.SplittingField).range_algebraMap _).mpr <|
         roots_mem_integralClosure hf ?_
   · rw [lifts_iff_coeff_lifts, ← RingHom.coe_range, Subalgebra.range_algebraMap] at this
-    refine (lifts_iff_coeff_lifts _).2 fun n => ?_
+    refine (lifts_iff_coeff_lifts _).2 fun n ↦ ?_
     rw [← RingHom.coe_range, Subalgebra.range_algebraMap]
     obtain ⟨p, hp, he⟩ := SetLike.mem_coe.mp (this n); use p, hp
     rw [IsScalarTower.algebraMap_eq R K, coeff_map, ← eval₂_map, eval₂_at_apply] at he

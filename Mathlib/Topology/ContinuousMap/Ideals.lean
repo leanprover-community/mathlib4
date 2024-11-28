@@ -133,7 +133,7 @@ theorem setOfTop_eq_univ [Nontrivial R] : setOfIdeal (⊤ : Ideal C(X, R)) = Set
 
 @[simp]
 theorem idealOfEmpty_eq_bot : idealOfSet R (∅ : Set X) = ⊥ :=
-  Ideal.ext fun f => by
+  Ideal.ext fun f ↦ by
     simp only [mem_idealOfSet, Set.compl_empty, Set.mem_univ, forall_true_left, Ideal.mem_bot,
       DFunLike.ext_iff, zero_apply]
 
@@ -321,7 +321,7 @@ variable (X)
 `fun s ↦ ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
 def idealOpensGI :
-    GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s where
+    GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s ↦ idealOfSet 𝕜 s where
   choice I _ := opensOfIdeal I.closure
   gc I s := ideal_gc X 𝕜 I s
   le_l_u s := (setOfIdeal_ofSet_of_isOpen 𝕜 s.isOpen).ge
@@ -387,7 +387,7 @@ variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 `WeakDual.characterSpace 𝕜 C(X, 𝕜)` which sends `x : X` to point evaluation at `x`. -/
 def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
   toFun x :=
-    ⟨{  toFun := fun f => f x
+    ⟨{  toFun := fun f ↦ f x
         map_add' := fun _ _ => rfl
         map_smul' := fun _ _ => rfl
         cont := continuous_eval_const x }, by
@@ -415,7 +415,7 @@ theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
       RCLike.ofReal_inj] using
       ((fx (Set.mem_singleton x)).symm ▸ (fy (Set.mem_singleton y)).symm ▸ zero_ne_one : f x ≠ f y)
   · obtain ⟨x, hx⟩ := (ideal_isMaximal_iff (RingHom.ker φ)).mp inferInstance
-    refine ⟨x, CharacterSpace.ext_ker <| Ideal.ext fun f => ?_⟩
+    refine ⟨x, CharacterSpace.ext_ker <| Ideal.ext fun f ↦ ?_⟩
     simpa only [RingHom.mem_ker, continuousMapEval_apply_apply, mem_idealOfSet_compl_singleton,
       RingHom.mem_ker] using SetLike.ext_iff.mp hx f
 

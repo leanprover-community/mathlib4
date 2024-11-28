@@ -314,7 +314,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
     have := fun i : Fin m => hf (f' <| X i)
     choose h hh using this
     let aeval_h : RXm →ₐ[R] RXn := aeval h
-    let g' : Fin n → RXn := fun i => X i - aeval_h (g i)
+    let g' : Fin n → RXn := fun i ↦ X i - aeval_h (g i)
     refine ⟨Finset.univ.image g' ∪ s.image aeval_h, ?_⟩
     simp only [Finset.coe_image, Finset.coe_union, Finset.coe_univ, Set.image_univ]
     have hh' : ∀ x, f (aeval_h x) = f' x := by
@@ -323,7 +323,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
       simp_rw [AlgHom.coe_toRingHom, hh]
       rw [AlgHom.comp_algebraMap, ← aeval_eq_eval₂Hom,
         -- Porting note: added line below
-        ← funext fun i => Function.comp_apply (f := ↑f') (g := MvPolynomial.X),
+        ← funext fun i ↦ Function.comp_apply (f := ↑f') (g := MvPolynomial.X),
         ← aeval_unique]
     let s' := Set.range g' ∪ aeval_h '' s
     have leI : Ideal.span s' ≤ RingHom.ker f.toRingHom := by

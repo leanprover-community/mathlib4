@@ -131,11 +131,11 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
       intro s w hw hs i hi
       rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s w p hw (p i1), ←
         s.weightedVSubOfPoint_erase w p i1, Finset.weightedVSubOfPoint_apply] at hs
-      let f : ι → V := fun i => w i • (p i -ᵥ p i1)
-      have hs2 : (∑ i ∈ (s.erase i1).subtype fun i => i ≠ i1, f i) = 0 := by
+      let f : ι → V := fun i ↦ w i • (p i -ᵥ p i1)
+      have hs2 : (∑ i ∈ (s.erase i1).subtype fun i ↦ i ≠ i1, f i) = 0 := by
         rw [← hs]
         convert Finset.sum_subtype_of_mem f fun x ↦ Finset.ne_of_mem_erase
-      have h2 := h ((s.erase i1).subtype fun i => i ≠ i1) (fun x ↦ w x) hs2
+      have h2 := h ((s.erase i1).subtype fun i ↦ i ≠ i1) (fun x ↦ w x) hs2
       simp_rw [Finset.mem_subtype] at h2
       have h2b : ∀ i ∈ s, i ≠ i1 → w i = 0 := fun i his hi =>
         h2 ⟨i, hi⟩ (Finset.mem_erase_of_ne_of_mem hi his)
@@ -144,12 +144,12 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
 /-- A set is affinely independent if and only if the differences from
 a base point in that set are linearly independent. -/
 theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} (hp₁ : p₁ ∈ s) :
-    AffineIndependent k (fun p => p : s → P) ↔
-      LinearIndependent k (fun v => v : (fun p => (p -ᵥ p₁ : V)) '' (s \ {p₁}) → V) := by
-  rw [affineIndependent_iff_linearIndependent_vsub k (fun p => p : s → P) ⟨p₁, hp₁⟩]
+    AffineIndependent k (fun p ↦ p : s → P) ↔
+      LinearIndependent k (fun v ↦ v : (fun p ↦ (p -ᵥ p₁ : V)) '' (s \ {p₁}) → V) := by
+  rw [affineIndependent_iff_linearIndependent_vsub k (fun p ↦ p : s → P) ⟨p₁, hp₁⟩]
   constructor
   · intro h
-    have hv : ∀ v : (fun p => (p -ᵥ p₁ : V)) '' (s \ {p₁}), (v : V) +ᵥ p₁ ∈ s \ {p₁} := fun v =>
+    have hv : ∀ v : (fun p ↦ (p -ᵥ p₁ : V)) '' (s \ {p₁}), (v : V) +ᵥ p₁ ∈ s \ {p₁} := fun v =>
       (vsub_left_injective p₁).mem_set_image.1 ((vadd_vsub (v : V) p₁).symm ▸ v.property)
     let f : (fun p : P => (p -ᵥ p₁ : V)) '' (s \ {p₁}) → { x : s // x ≠ ⟨p₁, hp₁⟩ } := fun x =>
       ⟨⟨(x : V) +ᵥ p₁, Set.mem_of_mem_diff (hv x)⟩, fun hx =>
@@ -168,11 +168,11 @@ theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} 
 given a point `p₁`, the vectors added to `p₁` and `p₁` itself are
 affinely independent. -/
 theorem linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Set V}
-    (hs : ∀ v ∈ s, v ≠ (0 : V)) (p₁ : P) : LinearIndependent k (fun v => v : s → V) ↔
-    AffineIndependent k (fun p => p : ({p₁} ∪ (fun v => v +ᵥ p₁) '' s : Set P) → P) := by
+    (hs : ∀ v ∈ s, v ≠ (0 : V)) (p₁ : P) : LinearIndependent k (fun v ↦ v : s → V) ↔
+    AffineIndependent k (fun p ↦ p : ({p₁} ∪ (fun v ↦ v +ᵥ p₁) '' s : Set P) → P) := by
   rw [affineIndependent_set_iff_linearIndependent_vsub k
       (Set.mem_union_left _ (Set.mem_singleton p₁))]
-  have h : (fun p => (p -ᵥ p₁ : V)) '' (({p₁} ∪ (fun v => v +ᵥ p₁) '' s) \ {p₁}) = s := by
+  have h : (fun p ↦ (p -ᵥ p₁ : V)) '' (({p₁} ∪ (fun v ↦ v +ᵥ p₁) '' s) \ {p₁}) = s := by
     simp_rw [Set.union_diff_left, Set.image_diff (vsub_left_injective p₁), Set.image_image,
       Set.image_singleton, vsub_self, vadd_vsub, Set.image_id']
     exact Set.diff_singleton_eq_self fun h ↦ hs 0 h rfl
@@ -259,10 +259,10 @@ independent.
 
 This is the affine version of `LinearIndependent.units_smul`. -/
 theorem AffineIndependent.units_lineMap {p : ι → P} (hp : AffineIndependent k p) (j : ι)
-    (w : ι → Units k) : AffineIndependent k fun i => AffineMap.lineMap (p j) (p i) (w i : k) := by
+    (w : ι → Units k) : AffineIndependent k fun i ↦ AffineMap.lineMap (p j) (p i) (w i : k) := by
   rw [affineIndependent_iff_linearIndependent_vsub k _ j] at hp ⊢
   simp only [AffineMap.lineMap_vsub_left, AffineMap.coe_const, AffineMap.lineMap_same, const_apply]
-  exact hp.units_smul fun i => w i
+  exact hp.units_smul fun i ↦ w i
 
 theorem AffineIndependent.indicator_eq_of_affineCombination_eq {p : ι → P}
     (ha : AffineIndependent k p) (s₁ s₂ : Finset ι) (w₁ w₂ : ι → k) (hw₁ : ∑ i ∈ s₁, w₁ i = 1)
@@ -342,7 +342,7 @@ theorem AffineIndependent.of_set_of_injective {p : ι → P}
     (ha : AffineIndependent k (fun x ↦ x : Set.range p → P)) (hi : Function.Injective p) :
     AffineIndependent k p :=
   ha.comp_embedding
-    (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
+    (⟨fun i ↦ ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
       ι ↪ Set.range p)
 
 section Composition
@@ -551,8 +551,8 @@ variable [AffineSpace V P] {ι : Type*}
 /-- An affinely independent set of points can be extended to such a
 set that spans the whole space. -/
 theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
-    (h : AffineIndependent k (fun p => p : s → P)) :
-    ∃ t : Set P, s ⊆ t ∧ AffineIndependent k (fun p => p : t → P) ∧ affineSpan k t = ⊤ := by
+    (h : AffineIndependent k (fun p ↦ p : s → P)) :
+    ∃ t : Set P, s ⊆ t ∧ AffineIndependent k (fun p ↦ p : t → P) ∧ affineSpan k t = ⊤ := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p₁, hp₁⟩)
   · have p₁ : P := AddTorsor.nonempty.some
     let hsv := Basis.ofVectorSpace k V
@@ -564,7 +564,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
       simpa [hsv] using hsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     exact
-      ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' _, Set.empty_subset _, hsvi,
+      ⟨{p₁} ∪ (fun v ↦ v +ᵥ p₁) '' _, Set.empty_subset _, hsvi,
         affineSpan_singleton_union_vadd_eq_top_of_span_eq_top p₁ hsvt⟩
   · rw [affineIndependent_set_iff_linearIndependent_vsub k hp₁] at h
     let bsv := Basis.extend h
@@ -576,7 +576,7 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
       intro v hv
       simpa [bsv] using bsv.ne_zero ⟨v, hv⟩
     rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
-    refine ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
+    refine ⟨{p₁} ∪ (fun v ↦ v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
     · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_subset _ hsv))
       simp [Set.image_image]
     · use hsvi

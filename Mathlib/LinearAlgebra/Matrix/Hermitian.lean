@@ -264,7 +264,7 @@ theorem IsHermitian.coe_re_apply_self {A : Matrix n n α} (h : A.IsHermitian) (i
 
 /-- The diagonal elements of a complex hermitian matrix are real. -/
 theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
-    (fun i => (re (A.diag i) : α)) = A.diag :=
+    (fun i ↦ (re (A.diag i) : α)) = A.diag :=
   funext h.coe_re_apply_self
 
 /-- A matrix is hermitian iff the corresponding linear map is self adjoint. -/

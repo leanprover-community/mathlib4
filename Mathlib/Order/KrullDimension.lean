@@ -704,7 +704,7 @@ proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
   obtain ⟨f, hstrictmono⟩ := Nat.exists_strictMono ↑(Set.Ioi a)
   apply coheight_eq_top_iff.mpr
   intro m
-  use {length := m, toFun := fun i => if i = 0 then a else f i, step := ?step }
+  use {length := m, toFun := fun i ↦ if i = 0 then a else f i, step := ?step }
   case h => simp [RelSeries.head]
   case step =>
     intro ⟨i, hi⟩
@@ -748,7 +748,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
         apply LT.lt.ne_bot (a := p.head)
         apply p.strictMono
         exact compare_gt_iff_gt.mp rfl)
-      step := fun i => by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by omega⟩ }
+      step := fun i ↦ by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by omega⟩ }
     have hlast' : p'.last = x := by
       simp only [RelSeries.last, Fin.val_last, WithBot.unbot_eq_iff, ← hlast, Fin.last]
       congr
@@ -772,13 +772,13 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     -- essentially p' := p.map untop
     let p' : LTSeries α := {
       length := p.length
-      toFun := fun i => (p i).untop (by
+      toFun := fun i ↦ (p i).untop (by
         apply WithTop.lt_top_iff_ne_top.mp
         apply lt_of_le_of_lt
         · exact p.monotone (Fin.le_last _)
         · rw [RelSeries.last] at hlast
           simp [hlast])
-      step := fun i => by simpa only [WithTop.untop_lt_iff, WithTop.coe_untop] using p.step i }
+      step := fun i ↦ by simpa only [WithTop.untop_lt_iff, WithTop.coe_untop] using p.step i }
     have hlast' : p'.last = x := by
       simp only [RelSeries.last, Fin.val_last, WithTop.untop_eq_iff, ← hlast]
     suffices p'.length ≤ height p'.last by

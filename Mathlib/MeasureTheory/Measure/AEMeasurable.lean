@@ -74,19 +74,19 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
   classical
   nontriviality β
   inhabit β
-  set s : ι → Set α := fun i => toMeasurable (μ i) { x | f x ≠ (h i).mk f x }
+  set s : ι → Set α := fun i ↦ toMeasurable (μ i) { x | f x ≠ (h i).mk f x }
   have hsμ : ∀ i, μ i (s i) = 0 := by
     intro i
     rw [measure_toMeasurable]
     exact (h i).ae_eq_mk
   have hsm : MeasurableSet (⋂ i, s i) :=
-    MeasurableSet.iInter fun i => measurableSet_toMeasurable _ _
+    MeasurableSet.iInter fun i ↦ measurableSet_toMeasurable _ _
   have hs : ∀ i x, x ∉ s i → f x = (h i).mk f x := by
     intro i x hx
     contrapose! hx
     exact subset_toMeasurable _ _ hx
   set g : α → β := (⋂ i, s i).piecewise (const α default) f
-  refine ⟨g, measurable_of_restrict_of_restrict_compl hsm ?_ ?_, ae_sum_iff.mpr fun i => ?_⟩
+  refine ⟨g, measurable_of_restrict_of_restrict_compl hsm ?_ ?_, ae_sum_iff.mpr fun i ↦ ?_⟩
   · rw [restrict_piecewise]
     simp only [s, Set.restrict, const]
     exact measurable_const

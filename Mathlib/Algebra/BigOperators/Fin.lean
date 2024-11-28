@@ -169,7 +169,7 @@ theorem prod_congr' {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h 
 @[to_additive]
 theorem prod_univ_add {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M) :
     (∏ i : Fin (a + b), f i) = (∏ i : Fin a, f (castAdd b i)) * ∏ i : Fin b, f (natAdd a i) := by
-  rw [Fintype.prod_equiv finSumFinEquiv.symm f fun i => f (finSumFinEquiv.toFun i)]
+  rw [Fintype.prod_equiv finSumFinEquiv.symm f fun i ↦ f (finSumFinEquiv.toFun i)]
   · apply Fintype.prod_sum_type
   · intro x
     simp only [Equiv.toFun_as_coe, Equiv.apply_symm_apply]
@@ -268,7 +268,7 @@ end Fin
 @[simps!]
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
-    (fun f => ⟨∑ i, f i * m ^ (i : ℕ), by
+    (fun f ↦ ⟨∑ i, f i * m ^ (i : ℕ), by
       induction n with
       | zero => simp
       | succ n ih =>
@@ -312,7 +312,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
-    (fun f => ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
+    (fun f ↦ ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
       induction m with
       | zero => simp
       | succ m ih =>
@@ -351,9 +351,9 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         simp_rw [Fin.sum_univ_succ, Fin.cons_succ]
         have := fun i : Fin n =>
           Fintype.prod_equiv (finCongr <| Fin.val_succ i)
-            (fun j => (Fin.cons x xs : _ → ℕ) (Fin.castLE (Fin.is_lt _).le j))
-            (fun j => (Fin.cons x xs : _ → ℕ) (Fin.castLE (Nat.succ_le_succ (Fin.is_lt _).le) j))
-            fun j => rfl
+            (fun j ↦ (Fin.cons x xs : _ → ℕ) (Fin.castLE (Fin.is_lt _).le j))
+            (fun j ↦ (Fin.cons x xs : _ → ℕ) (Fin.castLE (Nat.succ_le_succ (Fin.is_lt _).le) j))
+            fun j ↦ rfl
         simp_rw [this]
         clear this
         dsimp only [Fin.val_zero]
@@ -404,8 +404,8 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
     by_cases h : i < n
     · have : i < length (ofFn f) := by rwa [length_ofFn f]
       rw [prod_take_succ _ _ this]
-      have A : ((Finset.univ : Finset (Fin n)).filter fun j => j.val < i + 1) =
-          ((Finset.univ : Finset (Fin n)).filter fun j => j.val < i) ∪ {(⟨i, h⟩ : Fin n)} := by
+      have A : ((Finset.univ : Finset (Fin n)).filter fun j ↦ j.val < i + 1) =
+          ((Finset.univ : Finset (Fin n)).filter fun j ↦ j.val < i) ∪ {(⟨i, h⟩ : Fin n)} := by
         ext ⟨_, _⟩
         simp [Nat.lt_succ_iff_lt_or_eq]
       have B : _root_.Disjoint (Finset.filter (fun j : Fin n => j.val < i) Finset.univ)

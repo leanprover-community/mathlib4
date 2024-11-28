@@ -39,7 +39,7 @@ def Lean.Meta.synthSubsingletonInst (ty : Expr)
         let res' := res.abstract fvars
         for i in [0 : fvars.size] do
           if res'.hasLooseBVar (fvars.size - i - 1) then
-            uss[i]!.forM fun u => do
+            uss[i]!.forM fun u ↦ do
               let u ← instantiateLevelMVars u
               if u.isMVar then
                 -- This shouldn't happen, `synthInstance` should solve for all level metavariables
@@ -180,7 +180,7 @@ elab_rules : tactic
   | `(tactic| subsingleton $[[$[$instTerms?],*]]?) => withMainContext do
     let recover := (← read).recover
     let insts ← elabSubsingletonInsts instTerms?
-    Elab.Tactic.liftMetaTactic1 fun g => do
+    Elab.Tactic.liftMetaTactic1 fun g ↦ do
       let (fvars, g) ← g.intros
       -- note: `insts` are still valid after `intros`
       try

@@ -161,7 +161,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
       IsAlgClosed.algebraMap_surjective_of_isIntegral' ϕ
         (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)⟩
   obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
-  let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
+  let x : σ → k := fun s ↦ φ ((Ideal.Quotient.mk I) (X s))
   have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>
     hφ ((Ideal.Quotient.mk I) (X s))
   refine ⟨x, (IsMaximal.eq_of_le (by infer_instance) hI.ne_top ?_).symm⟩

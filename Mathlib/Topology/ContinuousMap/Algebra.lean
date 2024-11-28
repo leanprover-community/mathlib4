@@ -86,7 +86,7 @@ theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
 /-! ### `Nat.cast` -/
 
 instance [NatCast β] : NatCast C(α, β) :=
-  ⟨fun n => ContinuousMap.const _ n⟩
+  ⟨fun n ↦ ContinuousMap.const _ n⟩
 
 @[simp, norm_cast]
 theorem coe_natCast [NatCast β] (n : ℕ) : ((n : C(α, β)) : α → β) = n :=
@@ -105,7 +105,7 @@ alias nat_cast_apply := natCast_apply
 /-! ### `Int.cast` -/
 
 instance [IntCast β] : IntCast C(α, β) :=
-  ⟨fun n => ContinuousMap.const _ n⟩
+  ⟨fun n ↦ ContinuousMap.const _ n⟩
 
 @[simp, norm_cast]
 theorem coe_intCast [IntCast β] (n : ℤ) : ((n : C(α, β)) : α → β) = n :=
@@ -640,7 +640,7 @@ variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Ty
 def continuousSubalgebra : Subalgebra R (α → A) :=
   { continuousSubsemiring α A with
     carrier := { f : α → A | Continuous f }
-    algebraMap_mem' := fun r => (continuous_const : Continuous fun _ : α => algebraMap R A r) }
+    algebraMap_mem' := fun r ↦ (continuous_const : Continuous fun _ : α => algebraMap R A r) }
 
 end Subtype
 

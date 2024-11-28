@@ -293,7 +293,7 @@ theorem const_neg (x : β) : const (-x) = -const x :=
   rfl
 
 instance : Sub (CauSeq β abv) :=
-  ⟨fun f g => ofEq (f + -g) (fun x ↦ f x - g x) fun i => by simp [sub_eq_add_neg]⟩
+  ⟨fun f g => ofEq (f + -g) (fun x ↦ f x - g x) fun i ↦ by simp [sub_eq_add_neg]⟩
 
 @[simp, norm_cast]
 theorem coe_sub (f g : CauSeq β abv) : ⇑(f - g) = (f : ℕ → β) - g :=
@@ -333,9 +333,9 @@ instance addGroup : AddGroup (CauSeq β abv) :=
   Function.Injective.addGroup Subtype.val Subtype.val_injective rfl coe_add coe_neg coe_sub
     (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
-instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
+instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n ↦ const n⟩
 
-instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n => const n⟩
+instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n ↦ const n⟩
 
 instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
   Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective rfl rfl
@@ -347,7 +347,7 @@ instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
 
 instance : Pow (CauSeq β abv) ℕ :=
   ⟨fun f n =>
-    (ofEq (npowRec n f) fun i => f i ^ n) <| by induction n <;> simp [*, npowRec, pow_succ]⟩
+    (ofEq (npowRec n f) fun i ↦ f i ^ n) <| by induction n <;> simp [*, npowRec, pow_succ]⟩
 
 @[simp, norm_cast]
 theorem coe_pow (f : CauSeq β abv) (n : ℕ) : ⇑(f ^ n) = (f : ℕ → β) ^ n :=
@@ -366,7 +366,7 @@ instance ring : Ring (CauSeq β abv) :=
 
 instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
-    mul_comm := fun a b => ext fun n => by simp [mul_left_comm, mul_comm] }
+    mul_comm := fun a b => ext fun n ↦ by simp [mul_left_comm, mul_comm] }
 
 /-- `LimZero f` holds when `f` approaches 0. -/
 def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
@@ -415,7 +415,7 @@ theorem const_limZero {x : β} : LimZero (const x) ↔ x = 0 :=
 
 instance equiv : Setoid (CauSeq β abv) :=
   ⟨fun f g => LimZero (f - g),
-    ⟨fun f => by simp [zero_limZero],
+    ⟨fun f ↦ by simp [zero_limZero],
     fun f ε hε => by simpa using neg_limZero f ε hε,
     fun fg gh => by simpa using add_limZero fg gh⟩⟩
 
@@ -436,7 +436,7 @@ theorem equiv_def₃ {f g : CauSeq β abv} (h : f ≈ g) {ε : α} (ε0 : 0 < ε
     rwa [sub_add_sub_cancel', add_halves] at this
 
 theorem limZero_congr {f g : CauSeq β abv} (h : f ≈ g) : LimZero f ↔ LimZero g :=
-  ⟨fun l => by simpa using add_limZero (Setoid.symm h) l, fun l => by simpa using add_limZero h l⟩
+  ⟨fun l ↦ by simpa using add_limZero (Setoid.symm h) l, fun l ↦ by simpa using add_limZero h l⟩
 
 theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
     ∃ K > 0, ∃ i, ∀ j ≥ i, K ≤ abv (f j) := by

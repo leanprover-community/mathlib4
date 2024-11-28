@@ -106,12 +106,12 @@ theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
 
 /-- The coproduct of the cofinite filters on two types is the cofinite filter on their product. -/
 theorem coprod_cofinite : (cofinite : Filter α).coprod (cofinite : Filter β) = cofinite :=
-  Filter.coext fun s => by
+  Filter.coext fun s ↦ by
     simp only [compl_mem_coprod, mem_cofinite, compl_compl, finite_image_fst_and_snd_iff]
 
 theorem coprodᵢ_cofinite {α : ι → Type*} [Finite ι] :
-    (Filter.coprodᵢ fun i => (cofinite : Filter (α i))) = cofinite :=
-  Filter.coext fun s => by
+    (Filter.coprodᵢ fun i ↦ (cofinite : Filter (α i))) = cofinite :=
+  Filter.coext fun s ↦ by
     simp only [compl_mem_coprodᵢ, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
 
 theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s := by

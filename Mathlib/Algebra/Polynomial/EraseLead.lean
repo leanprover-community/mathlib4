@@ -301,7 +301,7 @@ theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
     (fc : ∀ {n m}, k ≤ n → n < m → fu n < fu m) (φ_k : ∀ {f : R[X]}, f.natDegree < k → φ f = 0)
     (φ_mon_nat : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = fu n) :
     (φ p).natDegree = fu p.natDegree := by
-  refine induction_with_natDegree_le (fun p => (φ p).natDegree = fu p.natDegree)
+  refine induction_with_natDegree_le (fun p ↦ (φ p).natDegree = fu p.natDegree)
     p.natDegree (by simp [fu0]) ?_ ?_ _ rfl.le
   · intro n r r0 _
     rw [natDegree_C_mul_X_pow _ _ r0, C_mul_X_pow_eq_monomial, φ_mon_nat _ _ r0]
@@ -320,7 +320,7 @@ theorem map_natDegree_eq_sub {S F : Type*} [Semiring S]
     {p : R[X]} {k : ℕ} (φ_k : ∀ f : R[X], f.natDegree < k → φ f = 0)
     (φ_mon : ∀ n c, c ≠ 0 → (φ (monomial n c)).natDegree = n - k) :
     (φ p).natDegree = p.natDegree - k :=
-  mono_map_natDegree_eq k (fun j => j - k) (by simp_all)
+  mono_map_natDegree_eq k (fun j ↦ j - k) (by simp_all)
     (@fun _ _ h => (tsub_lt_tsub_iff_right h).mpr)
     (φ_k _) φ_mon
 
@@ -337,7 +337,7 @@ theorem card_support_eq' {n : ℕ} (k : Fin n → ℕ) (x : Fin n → R) (hk : F
     rw [this, univ.card_image_of_injective hk, card_fin]
   simp_rw [Finset.ext_iff, mem_support_iff, finset_sum_coeff, coeff_C_mul_X_pow, mem_image,
     mem_univ, true_and]
-  refine fun i => ⟨fun h ↦ ?_, ?_⟩
+  refine fun i ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨j, _, h⟩ := exists_ne_zero_of_sum_ne_zero h
     exact ⟨j, (ite_ne_right_iff.mp h).1.symm⟩
   · rintro ⟨j, _, rfl⟩

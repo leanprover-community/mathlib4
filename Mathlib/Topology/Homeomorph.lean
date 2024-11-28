@@ -686,12 +686,12 @@ def piCongrRight {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpac
     [∀ i, TopologicalSpace (Y₂ i)] (F : ∀ i, Y₁ i ≃ₜ Y₂ i) : (∀ i, Y₁ i) ≃ₜ ∀ i, Y₂ i where
   continuous_toFun := Pi.continuous_postcomp' fun i ↦ (F i).continuous
   continuous_invFun := Pi.continuous_postcomp' fun i ↦ (F i).symm.continuous
-  toEquiv := Equiv.piCongrRight fun i => (F i).toEquiv
+  toEquiv := Equiv.piCongrRight fun i ↦ (F i).toEquiv
 
 @[simp]
 theorem piCongrRight_symm {ι : Type*} {Y₁ Y₂ : ι → Type*} [∀ i, TopologicalSpace (Y₁ i)]
     [∀ i, TopologicalSpace (Y₂ i)] (F : ∀ i, Y₁ i ≃ₜ Y₂ i) :
-    (piCongrRight F).symm = piCongrRight fun i => (F i).symm :=
+    (piCongrRight F).symm = piCongrRight fun i ↦ (F i).symm :=
   rfl
 
 /-- `Equiv.piCongr` as a homeomorphism: this is the natural homeomorphism
@@ -835,9 +835,9 @@ def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, Topologica
     [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
   continuous_toFun := by
-    apply Continuous.prod_mk <;> exact continuous_pi fun j => continuous_apply j.1
+    apply Continuous.prod_mk <;> exact continuous_pi fun j ↦ continuous_apply j.1
   continuous_invFun :=
-    continuous_pi fun j => by
+    continuous_pi fun j ↦ by
       dsimp only [Equiv.piEquivPiSubtypeProd]; split_ifs
       exacts [(continuous_apply _).comp continuous_fst, (continuous_apply _).comp continuous_snd]
 
@@ -849,9 +849,9 @@ variable [DecidableEq ι] (i : ι)
 def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
     (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j where
   toEquiv := Equiv.piSplitAt i Y
-  continuous_toFun := (continuous_apply i).prod_mk (continuous_pi fun j => continuous_apply j.1)
+  continuous_toFun := (continuous_apply i).prod_mk (continuous_pi fun j ↦ continuous_apply j.1)
   continuous_invFun :=
-    continuous_pi fun j => by
+    continuous_pi fun j ↦ by
       dsimp only [Equiv.piSplitAt]
       split_ifs with h
       · subst h

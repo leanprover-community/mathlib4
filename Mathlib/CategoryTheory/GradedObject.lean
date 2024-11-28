@@ -88,7 +88,7 @@ variable {X Y}
 -- this lemma is not an instance as it may create a loop with `isIso_apply_of_isIso`
 lemma isIso_of_isIso_apply (f : X ⟶ Y) [hf : ∀ i, IsIso (f i)] :
     IsIso f := by
-  change IsIso (isoMk X Y (fun i => asIso (f i))).hom
+  change IsIso (isoMk X Y (fun i ↦ asIso (f i))).hom
   infer_instance
 
 instance isIso_apply_of_isIso (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
@@ -197,7 +197,7 @@ end
 
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
-    { F := fun n => comap C fun b : β => b + n • s
+    { F := fun n ↦ comap C fun b : β => b + n • s
       zero := comapEq C (by aesop_cat) ≪≫ Pi.comapId β fun _ => C
       add := fun m n => comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
           (Pi.comapComp _ _ _).symm }
@@ -235,8 +235,8 @@ open ZeroObject
 
 instance hasZeroObject [HasZeroObject C] [HasZeroMorphisms C] (β : Type w) :
     HasZeroObject.{max w v} (GradedObject β C) := by
-  refine ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b ↦ 0⟩, fun f => ?_⟩⟩, fun X =>
-    ⟨⟨⟨fun b ↦ 0⟩, fun f => ?_⟩⟩⟩⟩ <;> aesop_cat
+  refine ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b ↦ 0⟩, fun f ↦ ?_⟩⟩, fun X =>
+    ⟨⟨⟨fun b ↦ 0⟩, fun f ↦ ?_⟩⟩⟩⟩ <;> aesop_cat
 
 end
 
@@ -257,7 +257,7 @@ section
 -/
 noncomputable def total : GradedObject β C ⥤ C where
   obj X := ∐ fun i : β => X i
-  map f := Limits.Sigma.map fun i => f i
+  map f := Limits.Sigma.map fun i ↦ f i
 
 end
 
@@ -310,7 +310,7 @@ for all `j : J`, the coproduct of all `X i` such `p i = j` exists. -/
 abbrev HasMap : Prop := ∀ (j : J), HasCoproduct (X.mapObjFun p j)
 
 variable {X Y} in
-lemma hasMap_of_iso (e : X ≅ Y) (p: I → J) [HasMap X p] : HasMap Y p := fun j => by
+lemma hasMap_of_iso (e : X ≅ Y) (p: I → J) [HasMap X p] : HasMap Y p := fun j ↦ by
   have α : Discrete.functor (X.mapObjFun p j) ≅ Discrete.functor (Y.mapObjFun p j) :=
     Discrete.natIso (fun ⟨i, _⟩ => (GradedObject.eval i).mapIso e)
   exact hasColimitOfIso α.symm
@@ -320,7 +320,7 @@ variable [X.HasMap p] [Y.HasMap p]
 
 /-- Given `X : GradedObject I C` and `p : I → J`, `X.mapObj p` is the graded object by `J`
 which in degree `j` consists of the coproduct of the `X i` such that `p i = j`. -/
-noncomputable def mapObj : GradedObject J C := fun j => ∐ (X.mapObjFun p j)
+noncomputable def mapObj : GradedObject J C := fun j ↦ ∐ (X.mapObjFun p j)
 
 /-- The canonical inclusion `X i ⟶ X.mapObj p j` when `i : I` and `j : J` are such
 that `p i = j`. -/
@@ -372,7 +372,7 @@ end
 namespace CofanMapObjFun
 
 lemma hasMap (c : ∀ j, CofanMapObjFun X p j) (hc : ∀ j, IsColimit (c j)) :
-    X.HasMap p := fun j => ⟨_, hc j⟩
+    X.HasMap p := fun j ↦ ⟨_, hc j⟩
 
 variable {j X p}
 variable [X.HasMap p]
@@ -470,7 +470,7 @@ the point of this latter cofan computes the coproduct of the `X i` such that `r 
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=
   mkCofanColimit _
-    (fun s => Cofan.IsColimit.desc hc'
+    (fun s ↦ Cofan.IsColimit.desc hc'
       (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
         (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
           simp only [Set.mem_preimage, Set.mem_singleton_iff, ← hpqr, hi, hj]⟩)))
@@ -487,7 +487,7 @@ def isColimitCofanMapObjComp :
 
 include hpqr in
 lemma hasMap_comp [(X.mapObj p).HasMap q] : X.HasMap r :=
-  fun k => ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
+  fun k ↦ ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
     (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
 
 end

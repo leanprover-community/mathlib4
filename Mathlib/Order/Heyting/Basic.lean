@@ -107,10 +107,10 @@ instance [∀ i, HImp (π i)] : HImp (∀ i, π i) :=
 instance [∀ i, HNot (π i)] : HNot (∀ i, π i) :=
   ⟨fun a i => ￢a i⟩
 
-theorem himp_def [∀ i, HImp (π i)] (a b : ∀ i, π i) : a ⇨ b = fun i => a i ⇨ b i :=
+theorem himp_def [∀ i, HImp (π i)] (a b : ∀ i, π i) : a ⇨ b = fun i ↦ a i ⇨ b i :=
   rfl
 
-theorem hnot_def [∀ i, HNot (π i)] (a : ∀ i, π i) : ￢a = fun i => ￢a i :=
+theorem hnot_def [∀ i, HNot (π i)] (a : ∀ i, π i) : ￢a = fun i ↦ ￢a i :=
   rfl
 
 @[simp]

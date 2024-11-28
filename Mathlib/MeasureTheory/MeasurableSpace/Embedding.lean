@@ -478,9 +478,9 @@ variable {π π' : δ' → Type*} [∀ x, MeasurableSpace (π x)] [∀ x, Measur
 def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π' a where
   toEquiv := .piCongrRight fun a ↦ (e a).toEquiv
   measurable_toFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_toFun.comp (measurable_pi_apply i)
+    measurable_pi_lambda _ fun i ↦ (e i).measurable_toFun.comp (measurable_pi_apply i)
   measurable_invFun :=
-    measurable_pi_lambda _ fun i => (e i).measurable_invFun.comp (measurable_pi_apply i)
+    measurable_pi_lambda _ fun i ↦ (e i).measurable_invFun.comp (measurable_pi_apply i)
 
 variable (π) in
 /-- Moving a dependent type along an equivalence of coordinates, as a measurable equivalence. -/
@@ -490,7 +490,7 @@ def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a where
   measurable_invFun := by
     simp only [invFun_as_coe, coe_fn_symm_mk]
     rw [measurable_pi_iff]
-    exact fun i => measurable_pi_apply (f i)
+    exact fun i ↦ measurable_pi_apply (f i)
 
 theorem coe_piCongrLeft (f : δ ≃ δ') :
     ⇑(MeasurableEquiv.piCongrLeft π f) = f.piCongrLeft π := by rfl
@@ -569,7 +569,7 @@ def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpac
   measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun _ =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
-    ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩
+    ⟨by simp [measurable_fst], fun j ↦ by simpa using (measurable_pi_apply _).comp measurable_snd⟩
 
 variable (π)
 
@@ -720,7 +720,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
     exact (hg.equivImage _).symm
   have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h =>
     compl_subset_compl.mpr <| Set.image_subset _ <| compl_subset_compl.mpr <| Set.image_subset _ h
-  let X : ℕ → Set α := fun n => F^[n] univ
+  let X : ℕ → Set α := fun n ↦ F^[n] univ
   refine ⟨iInter X, ?_, ?_⟩
   · apply MeasurableSet.iInter
     intro n

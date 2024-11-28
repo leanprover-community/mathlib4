@@ -310,7 +310,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       ext1 n
       rw [neg_div, ← sub_eq_add_neg]
   -- let `convert` identify the remaining goals
-  convert tendsto_integral_of_dominated_convergence _ (fun n => (f_ible n).1)
+  convert tendsto_integral_of_dominated_convergence _ (fun n ↦ (f_ible n).1)
     (Real.GammaIntegral_convergent hs) _
     ((ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ f_tends)) using 1
   -- limit of f is the integrand we want
@@ -434,7 +434,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
       conv_lhs => rw [← Complex.re_add_im s]
       rw [h_im, ofReal_zero, zero_mul, add_zero]
     rw [this, Gamma_ofReal, ofReal_ne_zero]
-    refine Real.Gamma_ne_zero fun n => ?_
+    refine Real.Gamma_ne_zero fun n ↦ ?_
     specialize hs n
     contrapose! hs
     rwa [this, ← ofReal_natCast, ← ofReal_neg, ofReal_inj]
@@ -455,7 +455,7 @@ theorem Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
 
 /-- A weaker, but easier-to-apply, version of `Complex.Gamma_ne_zero`. -/
 theorem Gamma_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gamma s ≠ 0 := by
-  refine Gamma_ne_zero fun m => ?_
+  refine Gamma_ne_zero fun m ↦ ?_
   contrapose! hs
   simpa only [hs, neg_re, ← ofReal_natCast, ofReal_re, neg_nonpos] using Nat.cast_nonneg _
 
@@ -522,7 +522,7 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
   | succ n ihn =>
     rw [funext one_div_Gamma_eq_self_mul_one_div_Gamma_add_one]
     specialize ihn (s + 1) (by rwa [add_re, one_re, neg_add', sub_lt_iff_lt_add, ← Nat.cast_succ])
-    exact differentiableAt_id.mul (ihn.comp s (f := fun s => s + 1) <|
+    exact differentiableAt_id.mul (ihn.comp s (f := fun s ↦ s + 1) <|
       differentiableAt_id.add_const (1 : ℂ))
 
 end Complex
@@ -559,7 +559,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     refine (Differentiable.mul ?_ (differentiable_const _)).differentiableOn
     apply Differentiable.mul
     · exact differentiable_one_div_Gamma.comp (differentiable_id'.const_mul _)
-    · refine fun t => DifferentiableAt.const_cpow ?_ (Or.inl two_ne_zero)
+    · refine fun t ↦ DifferentiableAt.const_cpow ?_ (Or.inl two_ne_zero)
       exact DifferentiableAt.sub_const (differentiableAt_id.const_mul _) _
   have h3 : Tendsto ((↑) : ℝ → ℂ) (𝓝[≠] 1) (𝓝[≠] 1) := by
     rw [tendsto_nhdsWithin_iff]; constructor

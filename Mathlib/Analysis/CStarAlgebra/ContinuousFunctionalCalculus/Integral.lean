@@ -18,10 +18,10 @@ that the integral commutes with the continuous functional calculus under appropr
 ## Main declarations
 
 + `cfc_integral`: given a function `f : X → 𝕜 → 𝕜`, we have that
-  `cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ`
+  `cfc (fun r ↦ ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ`
   under appropriate conditions
 + `cfcₙ_integral`: given a function `f : X → 𝕜 → 𝕜`, we have that
-  `cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ`
+  `cfcₙ (fun r ↦ ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ`
   under appropriate conditions
 
 ## TODO
@@ -58,7 +58,7 @@ lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜
     (hf₂ : Continuous (fun x ↦ (⟨_, hf₁ x |>.restrict⟩ : C(spectrum 𝕜 a, 𝕜))))
     (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
-    cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
+    cfc (fun r ↦ ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
   let fc : X → C(spectrum 𝕜 a, 𝕜) := fun x ↦ ⟨_, (hf₁ x).restrict⟩
   have fc_integrable : Integrable fc μ := by
     refine ⟨hf₂.aestronglyMeasurable, ?_⟩
@@ -67,7 +67,7 @@ lemma cfc_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 𝕜
     exact fun z ↦ hbound x z.1 z.2
   have h_int_fc : (spectrum 𝕜 a).restrict (∫ x, f x · ∂μ) = ∫ x, fc x ∂μ := by
     ext; simp [integral_apply fc_integrable, fc]
-  have hcont₂ : ContinuousOn (fun r => ∫ x, f x r ∂μ) (spectrum 𝕜 a) := by
+  have hcont₂ : ContinuousOn (fun r ↦ ∫ x, f x r ∂μ) (spectrum 𝕜 a) := by
     rw [continuousOn_iff_continuous_restrict]
     convert map_continuous (∫ x, fc x ∂μ)
   rw [integral_congr_ae (.of_forall fun _ ↦ cfc_apply ..), cfc_apply ..,
@@ -80,7 +80,7 @@ lemma cfc_integral' [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
     (hf : Continuous (fun x ↦ (spectrum 𝕜 a).restrict (f x)).uncurry)
     (hbound : ∀ x, ∀ z ∈ spectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
-    cfc (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
+    cfc (fun r ↦ ∫ x, f x r ∂μ) a = ∫ x, cfc (f x) a ∂μ := by
   refine cfc_integral f bound a ?_ ?_ hbound hbound_finite_integral
   · exact (continuousOn_iff_continuous_restrict.mpr <| hf.uncurry_left ·)
   · exact ContinuousMap.curry ⟨_, hf⟩ |>.continuous
@@ -113,7 +113,7 @@ lemma cfcₙ_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
     (hf₃ : Continuous (fun x ↦ (⟨⟨_, hf₁ x |>.restrict⟩, hf₂ x⟩ : C(quasispectrum 𝕜 a, 𝕜)₀)))
     (hbound : ∀ x, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
-    cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
+    cfcₙ (fun r ↦ ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
   let fc : X → C(quasispectrum 𝕜 a, 𝕜)₀ := fun x ↦ ⟨⟨_, (hf₁ x).restrict⟩, hf₂ x⟩
   have fc_integrable : Integrable fc μ := by
     refine ⟨hf₃.aestronglyMeasurable, ?_⟩
@@ -123,7 +123,7 @@ lemma cfcₙ_integral [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → �
     exact fun z ↦ hbound x z.1 z.2
   have h_int_fc : (quasispectrum 𝕜 a).restrict (∫ x, f x · ∂μ) = ∫ x, fc x ∂μ := by
     ext; simp [integral_apply fc_integrable, fc]
-  have hcont₂ : ContinuousOn (fun r => ∫ x, f x r ∂μ) (quasispectrum 𝕜 a) := by
+  have hcont₂ : ContinuousOn (fun r ↦ ∫ x, f x r ∂μ) (quasispectrum 𝕜 a) := by
     rw [continuousOn_iff_continuous_restrict]
     convert map_continuous (∫ x, fc x ∂μ)
   rw [integral_congr_ae (.of_forall fun _ ↦ cfcₙ_apply ..), cfcₙ_apply ..,
@@ -137,7 +137,7 @@ lemma cfcₙ_integral' [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 
     (hf₂ : ∀ x, f x 0 = 0)
     (hbound : ∀ x, ∀ z ∈ quasispectrum 𝕜 a, ‖f x z‖ ≤ ‖bound x‖)
     (hbound_finite_integral : HasFiniteIntegral bound μ) (ha : p a := by cfc_tac) :
-    cfcₙ (fun r => ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
+    cfcₙ (fun r ↦ ∫ x, f x r ∂μ) a = ∫ x, cfcₙ (f x) a ∂μ := by
   refine cfcₙ_integral f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
   · exact (continuousOn_iff_continuous_restrict.mpr <| hf.uncurry_left ·)
   · let g := ((↑) : C(quasispectrum 𝕜 a, 𝕜)₀ → C(quasispectrum 𝕜 a, 𝕜))

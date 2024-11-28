@@ -143,7 +143,7 @@ theorem irreducible_or_factor {M} [Monoid M] (x : M) (h : ¬IsUnit x) :
   simp? [h, irreducible_iff] at H ⊢ says
     simp only [exists_and_left, not_exists, not_and, irreducible_iff, h, not_false_eq_true,
       true_and] at H ⊢
-  refine fun a b h => by_contradiction fun o => ?_
+  refine fun a b h => by_contradiction fun o ↦ ?_
   simp? [not_or] at o says simp only [not_or] at o
   exact H _ o.1 _ o.2 h.symm
 

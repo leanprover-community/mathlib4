@@ -113,7 +113,7 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
 /-- In this version of the spectral mapping theorem, we assume the spectrum
 is nonempty instead of assuming the degree of the polynomial is positive. -/
 theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X])
-    (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k => eval k p) '' σ a := by
+    (hnon : (σ a).Nonempty) : σ (aeval a p) = (fun k ↦ eval k p) '' σ a := by
   nontriviality A
   refine Or.elim (le_or_gt (degree p) 0) (fun h ↦ ?_) (map_polynomial_aeval_of_degree_pos a p)
   rw [eq_C_of_degree_le_zero h]

@@ -44,12 +44,12 @@ birthdays of its left and right games. It may be thought as the "step" in which 
 constructed. -/
 noncomputable def birthday : PGame.{u} → Ordinal.{u}
   | ⟨_, _, xL, xR⟩ =>
-    max (lsub.{u, u} fun i => birthday (xL i)) (lsub.{u, u} fun i => birthday (xR i))
+    max (lsub.{u, u} fun i ↦ birthday (xL i)) (lsub.{u, u} fun i ↦ birthday (xR i))
 
 theorem birthday_def (x : PGame) :
     birthday x =
-      max (lsub.{u, u} fun i => birthday (x.moveLeft i))
-        (lsub.{u, u} fun i => birthday (x.moveRight i)) := by
+      max (lsub.{u, u} fun i ↦ birthday (x.moveLeft i))
+        (lsub.{u, u} fun i ↦ birthday (x.moveRight i)) := by
   cases x; rw [birthday]; rfl
 
 theorem birthday_moveLeft_lt {x : PGame} (i : x.LeftMoves) :
@@ -147,8 +147,8 @@ theorem birthday_add : ∀ x y : PGame, (x + y).birthday = x.birthday ♯ y.birt
     any_goals
       exact
         max_le_iff.2
-          ⟨lsub_le_iff.2 fun i => lt_blsub _ _ (birthday_moveLeft_lt _),
-            lsub_le_iff.2 fun i => lt_blsub _ _ (birthday_moveRight_lt _)⟩
+          ⟨lsub_le_iff.2 fun i ↦ lt_blsub _ _ (birthday_moveLeft_lt _),
+            lsub_le_iff.2 fun i ↦ lt_blsub _ _ (birthday_moveRight_lt _)⟩
     all_goals
       refine blsub_le_iff.2 fun i hi => ?_
       rcases lt_birthday_iff.1 hi with (⟨j, hj⟩ | ⟨j, hj⟩)

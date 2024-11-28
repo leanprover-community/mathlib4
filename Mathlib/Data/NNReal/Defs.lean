@@ -82,7 +82,7 @@ instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 theorem val_eq_coe (n : ℝ≥0) : n.val = n :=
   rfl
 
-instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
+instance canLift : CanLift ℝ ℝ≥0 toReal fun r ↦ 0 ≤ r :=
   Subtype.canLift _
 
 @[ext] protected theorem eq {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) → n = m :=

@@ -243,7 +243,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 
 /-- Composition with `Cube.insertAt` as a continuous map. -/
 abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
-  ⟨fun f => f.comp (Cube.insertAt i),
+  ⟨fun f ↦ f.comp (Cube.insertAt i),
     (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
@@ -261,7 +261,7 @@ theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| C
 
 theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     Homotopic p q → (toLoop i p).Homotopic (toLoop i q) := by
-  refine Nonempty.map fun H => ⟨⟨⟨fun t => ⟨homotopyTo i H t, ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩
+  refine Nonempty.map fun H => ⟨⟨⟨fun t ↦ ⟨homotopyTo i H t, ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩
   · rintro y ⟨i, iH⟩
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
@@ -308,7 +308,7 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
 /-- Concatenation of two `GenLoop`s along the `i`th coordinate. -/
 def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
   copy (fromLoop i <| (toLoop i f).trans <| toLoop i g)
-    (fun t => if (t i : ℝ) ≤ 1 / 2
+    (fun t ↦ if (t i : ℝ) ≤ 1 / 2
       then f (Function.update t i <| Set.projIcc 0 1 zero_le_one (2 * t i))
       else g (Function.update t i <| Set.projIcc 0 1 zero_le_one (2 * t i - 1)))
     (by
@@ -322,7 +322,7 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
 
 /-- Reversal of a `GenLoop` along the `i`th coordinate. -/
 def symmAt (i : N) (f : Ω^ N X x) : Ω^ N X x :=
-  (copy (fromLoop i (toLoop i f).symm) fun t => f fun j => if j = i then σ (t i) else t j) <| by
+  (copy (fromLoop i (toLoop i f).symm) fun t ↦ f fun j ↦ if j = i then σ (t i) else t j) <| by
     ext1; change _ = f _; congr; ext1; simp
 
 theorem transAt_distrib {i j : N} (h : i ≠ j) (a b c d : Ω^ N X x) :
@@ -388,7 +388,7 @@ def homotopyGroupEquivZerothHomotopyOfIsEmpty (N x) [IsEmpty N] :
       intros a₁ a₂
       constructor <;> rintro ⟨H⟩
       exacts
-        [⟨{ toFun := fun t => H ⟨t, isEmptyElim⟩
+        [⟨{ toFun := fun t ↦ H ⟨t, isEmptyElim⟩
             source' := (H.apply_zero _).trans (congr_arg a₁ <| Subsingleton.elim _ _)
             target' := (H.apply_one _).trans (congr_arg a₂ <| Subsingleton.elim _ _) }⟩,
         ⟨{  toFun := fun t0 => H t0.fst
@@ -403,7 +403,7 @@ def HomotopyGroup.pi0EquivZerothHomotopy : π_ 0 X x ≃ ZerothHomotopy X :=
 /-- The 1-dimensional generalized loops based at `x` are in bijection with loops at `x`. -/
 def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
   toFun p :=
-    Path.mk ⟨fun t => p fun _ => t, by continuity⟩
+    Path.mk ⟨fun t ↦ p fun _ => t, by continuity⟩
       (GenLoop.boundary _ (fun _ => 0) ⟨default, Or.inl rfl⟩)
       (GenLoop.boundary _ (fun _ => 1) ⟨default, Or.inr rfl⟩)
   invFun p :=

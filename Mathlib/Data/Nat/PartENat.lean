@@ -380,7 +380,7 @@ theorem eq_top_iff_forall_le (x : PartENat) : x = ⊤ ↔ ∀ n : ℕ, (n : Part
 theorem pos_iff_one_le {x : PartENat} : 0 < x ↔ 1 ≤ x :=
   PartENat.casesOn x
     (by simp only [le_top, natCast_lt_top, ← @Nat.cast_zero PartENat])
-    fun n => by
+    fun n ↦ by
       rw [← Nat.cast_zero, ← Nat.cast_one, PartENat.coe_lt_coe, PartENat.coe_le_coe]
       rfl
 

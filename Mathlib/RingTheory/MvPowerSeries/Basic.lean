@@ -209,7 +209,7 @@ theorem monomial_zero_one : monomial R (0 : σ →₀ ℕ) 1 = 1 :=
 
 instance : AddMonoidWithOne (MvPowerSeries σ R) :=
   { show AddMonoid (MvPowerSeries σ R) by infer_instance with
-    natCast := fun n => monomial R 0 n
+    natCast := fun n ↦ monomial R 0 n
     natCast_zero := by simp [Nat.cast]
     natCast_succ := by simp [Nat.cast, monomial_zero_one]
     one := 1 }
@@ -224,10 +224,10 @@ theorem coeff_mul [DecidableEq σ] :
   rw [Subsingleton.elim (Classical.decEq σ) ‹DecidableEq σ›]
 
 protected theorem zero_mul : (0 : MvPowerSeries σ R) * φ = 0 :=
-  ext fun n => by classical simp [coeff_mul]
+  ext fun n ↦ by classical simp [coeff_mul]
 
 protected theorem mul_zero : φ * 0 = 0 :=
-  ext fun n => by classical simp [coeff_mul]
+  ext fun n ↦ by classical simp [coeff_mul]
 
 theorem coeff_monomial_mul (a : R) :
     coeff R m (monomial R n a * φ) = if n ≤ m then a * coeff R (m - n) φ else 0 := by
@@ -272,17 +272,17 @@ theorem commute_monomial {a : R} {n} :
     split_ifs <;> [apply h; rfl]
 
 protected theorem one_mul : (1 : MvPowerSeries σ R) * φ = φ :=
-  ext fun n => by simpa using coeff_add_monomial_mul 0 n φ 1
+  ext fun n ↦ by simpa using coeff_add_monomial_mul 0 n φ 1
 
 protected theorem mul_one : φ * 1 = φ :=
-  ext fun n => by simpa using coeff_add_mul_monomial n 0 φ 1
+  ext fun n ↦ by simpa using coeff_add_mul_monomial n 0 φ 1
 
 protected theorem mul_add (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * (φ₂ + φ₃) = φ₁ * φ₂ + φ₁ * φ₃ :=
-  ext fun n => by
+  ext fun n ↦ by
     classical simp only [coeff_mul, mul_add, Finset.sum_add_distrib, LinearMap.map_add]
 
 protected theorem add_mul (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : (φ₁ + φ₂) * φ₃ = φ₁ * φ₃ + φ₂ * φ₃ :=
-  ext fun n => by
+  ext fun n ↦ by
     classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, LinearMap.map_add]
 
 protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * φ₂ * φ₃ = φ₁ * (φ₂ * φ₃) := by
@@ -309,7 +309,7 @@ end Semiring
 instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
   { show Semiring (MvPowerSeries σ R) by infer_instance with
     mul_comm := fun φ ψ =>
-      ext fun n => by
+      ext fun n ↦ by
         classical
         simpa only [coeff_mul, mul_comm] using
           sum_antidiagonal_swap n fun a b => coeff R a φ * coeff R b ψ }
@@ -507,7 +507,7 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
         · simp only [RingHom.map_ite_one_zero, ite_true, map_one, h]
         · simp only [RingHom.map_ite_one_zero, ite_false, map_zero, h]
   map_add' φ ψ :=
-    ext fun n => show f ((coeff R n) (φ + ψ)) = f ((coeff R n) φ) + f ((coeff R n) ψ) by simp
+    ext fun n ↦ show f ((coeff R n) (φ + ψ)) = f ((coeff R n) φ) + f ((coeff R n) ψ) by simp
   map_mul' φ ψ :=
     ext fun n =>
       show f _ = _ by
@@ -568,7 +568,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     rw [← hij, Finsupp.add_apply, Finsupp.single_eq_same]
     exact Nat.le_add_right n _
   · intro h
-    refine ⟨fun m => coeff R (m + single s n) φ, ?_⟩
+    refine ⟨fun m ↦ coeff R (m + single s n) φ, ?_⟩
     ext m
     by_cases H : m - single s n + single s n = m
     · rw [coeff_mul, Finset.sum_eq_single (single s n, m - single s n)]
@@ -765,7 +765,7 @@ def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=
 instance coeToMvPowerSeries : Coe (MvPolynomial σ R) (MvPowerSeries σ R) :=
   ⟨toMvPowerSeries⟩
 
-theorem coe_def : (φ : MvPowerSeries σ R) = fun n => coeff n φ :=
+theorem coe_def : (φ : MvPowerSeries σ R) = fun n ↦ coeff n φ :=
   rfl
 
 @[simp, norm_cast]
@@ -775,7 +775,7 @@ theorem coeff_coe (n : σ →₀ ℕ) : MvPowerSeries.coeff R n ↑φ = coeff n 
 @[simp, norm_cast]
 theorem coe_monomial (n : σ →₀ ℕ) (a : R) :
     (monomial n a : MvPowerSeries σ R) = MvPowerSeries.monomial R n a :=
-  MvPowerSeries.ext fun m => by
+  MvPowerSeries.ext fun m ↦ by
     classical
     rw [coeff_coe, coeff_monomial, MvPowerSeries.coeff_monomial]
     split_ifs with h₁ h₂ <;> first |rfl|subst m; contradiction
@@ -794,7 +794,7 @@ theorem coe_add : ((φ + ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ + ψ
 
 @[simp, norm_cast]
 theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ :=
-  MvPowerSeries.ext fun n => by
+  MvPowerSeries.ext fun n ↦ by
     classical
     simp only [coeff_coe, MvPowerSeries.coeff_mul, coeff_mul]
 
@@ -856,7 +856,7 @@ as an algebra homomorphism.
 -/
 def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :=
   { (MvPowerSeries.map σ (algebraMap R A)).comp coeToMvPowerSeries.ringHom with
-    commutes' := fun r => by simp [algebraMap_apply, MvPowerSeries.algebraMap_apply] }
+    commutes' := fun r ↦ by simp [algebraMap_apply, MvPowerSeries.algebraMap_apply] }
 
 @[simp]
 theorem coeToMvPowerSeries.algHom_apply :

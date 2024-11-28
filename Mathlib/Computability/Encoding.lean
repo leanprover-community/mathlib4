@@ -102,10 +102,10 @@ def decodePosNum : List Bool → PosNum
   | _          => PosNum.one
 
 /-- A decoding function from `List Bool` to the binary numbers. -/
-def decodeNum : List Bool → Num := fun l => ite (l = []) Num.zero <| decodePosNum l
+def decodeNum : List Bool → Num := fun l ↦ ite (l = []) Num.zero <| decodePosNum l
 
 /-- A decoding function from `List Bool` to ℕ. -/
-def decodeNat : List Bool → Nat := fun l => decodeNum l
+def decodeNat : List Bool → Nat := fun l ↦ decodeNum l
 
 theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m => List.cons_ne_nil _ _) fun _m =>

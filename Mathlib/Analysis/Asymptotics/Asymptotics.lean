@@ -1403,7 +1403,7 @@ theorem IsLittleO.mul {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f
   h₁.mul_isBigO h₂.isBigO
 
 theorem IsBigOWith.pow' {f : α → R} {g : α → 𝕜} (h : IsBigOWith c l f g) :
-    ∀ n : ℕ, IsBigOWith (Nat.casesOn n ‖(1 : R)‖ fun n => c ^ (n + 1))
+    ∀ n : ℕ, IsBigOWith (Nat.casesOn n ‖(1 : R)‖ fun n ↦ c ^ (n + 1))
       l (fun x ↦ f x ^ n) fun x ↦ g x ^ n
   | 0 => by simpa using isBigOWith_const_const (1 : R) (one_ne_zero' 𝕜) l
   | 1 => by simpa
@@ -1894,7 +1894,7 @@ theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, Norme
 
 theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =O[atTop] g) :
-    (fun (n : ℕ) => f n) =O[atTop] (fun n => g n) :=
+    (fun (n : ℕ) => f n) =O[atTop] (fun n ↦ g n) :=
   IsBigO.comp_tendsto h tendsto_natCast_atTop_atTop
 
 @[deprecated (since := "2024-04-17")]
@@ -1902,7 +1902,7 @@ alias IsBigO.nat_cast_atTop := IsBigO.natCast_atTop
 
 theorem IsLittleO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =o[atTop] g) :
-    (fun (n : ℕ) => f n) =o[atTop] (fun n => g n) :=
+    (fun (n : ℕ) => f n) =o[atTop] (fun n ↦ g n) :=
   IsLittleO.comp_tendsto h tendsto_natCast_atTop_atTop
 
 @[deprecated (since := "2024-04-17")]

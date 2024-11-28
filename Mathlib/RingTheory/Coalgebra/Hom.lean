@@ -102,10 +102,10 @@ instance funLike : FunLike (A →ₗc[R] B) A B where
     congr
 
 instance coalgHomClass : CoalgHomClass (A →ₗc[R] B) R A B where
-  map_add := fun f => f.map_add'
-  map_smulₛₗ := fun f => f.map_smul'
-  counit_comp := fun f => f.counit_comp
-  map_comp_comul := fun f => f.map_comp_comul
+  map_add := fun f ↦ f.map_add'
+  map_smulₛₗ := fun f ↦ f.map_smul'
+  counit_comp := fun f ↦ f.counit_comp
+  map_comp_comul := fun f ↦ f.map_comp_comul
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R α β : Type*} [CommSemiring R]

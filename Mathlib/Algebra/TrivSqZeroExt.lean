@@ -482,7 +482,7 @@ instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMul
 
 instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
   { TrivSqZeroExt.addMonoid, TrivSqZeroExt.one with
-    natCast := fun n => inl n
+    natCast := fun n ↦ inl n
     natCast_zero := by simp [Nat.cast]
     natCast_succ := fun _ => by ext <;> simp [Nat.cast] }
 
@@ -572,7 +572,7 @@ In the commutative case this becomes the simpler $(r + m)^n = r^n + nr^{n-1}m$.
 instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     Pow (tsze R M) ℕ :=
   ⟨fun x n =>
-    ⟨x.fst ^ n, ((List.range n).map fun i => x.fst ^ (n.pred - i) •> x.snd <• x.fst ^ i).sum⟩⟩
+    ⟨x.fst ^ n, ((List.range n).map fun i ↦ x.fst ^ (n.pred - i) •> x.snd <• x.fst ^ i).sum⟩⟩
 
 @[simp]
 theorem fst_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
@@ -581,7 +581,7 @@ theorem fst_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
 
 theorem snd_pow_eq_sum [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     (x : tsze R M) (n : ℕ) :
-    snd (x ^ n) = ((List.range n).map fun i => x.fst ^ (n.pred - i) •> x.snd <• x.fst ^ i).sum :=
+    snd (x ^ n) = ((List.range n).map fun i ↦ x.fst ^ (n.pred - i) •> x.snd <• x.fst ^ i).sum :=
   rfl
 
 theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
@@ -1045,11 +1045,11 @@ def liftEquivOfComm :
     { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) := by
   refine Equiv.trans ?_ liftEquiv
   exact {
-    toFun := fun f => ⟨(Algebra.ofId _ _, f.val), f.prop,
+    toFun := fun f ↦ ⟨(Algebra.ofId _ _, f.val), f.prop,
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply],
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply, Algebra.commutes]⟩
     invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩
-    left_inv := fun f => rfl
+    left_inv := fun f ↦ rfl
     right_inv := fun fg => Subtype.ext <|
       Prod.ext (AlgHom.toLinearMap_injective <| LinearMap.ext_ring <| by simp)
       rfl }

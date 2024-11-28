@@ -242,7 +242,7 @@ theorem range_mem_leftTransversals {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q
   mem_leftTransversals_iff_bijective.mpr
     ⟨by rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
         exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂),
-      fun q => ⟨⟨f q, q, rfl⟩, hf q⟩⟩
+      fun q ↦ ⟨⟨f q, q, rfl⟩, hf q⟩⟩
 
 @[to_additive]
 theorem range_mem_rightTransversals {f : Quotient (QuotientGroup.rightRel H) → G}
@@ -250,14 +250,14 @@ theorem range_mem_rightTransversals {f : Quotient (QuotientGroup.rightRel H) →
   mem_rightTransversals_iff_bijective.mpr
     ⟨by rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
         exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂),
-      fun q => ⟨⟨f q, q, rfl⟩, hf q⟩⟩
+      fun q ↦ ⟨⟨f q, q, rfl⟩, hf q⟩⟩
 
 @[to_additive]
 lemma exists_left_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ leftTransversals (H : Set G), g ∈ S := by
   classical
     refine
-      ⟨Set.range (Function.update Quotient.out _ g), range_mem_leftTransversals fun q => ?_,
+      ⟨Set.range (Function.update Quotient.out _ g), range_mem_leftTransversals fun q ↦ ?_,
         Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
     by_cases hq : q = Quotient.mk'' g
     · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
@@ -269,7 +269,7 @@ lemma exists_right_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ rightTransversals (H : Set G), g ∈ S := by
   classical
     refine
-      ⟨Set.range (Function.update Quotient.out _ g), range_mem_rightTransversals fun q => ?_,
+      ⟨Set.range (Function.update Quotient.out _ g), range_mem_rightTransversals fun q ↦ ?_,
         Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
     by_cases hq : q = Quotient.mk'' g
     · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
@@ -554,7 +554,7 @@ variable {F : Type*} [Group F] [MulAction F G] [QuotientAction F H]
 noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
   smul f T :=
     ⟨f • (T : Set G), by
-      refine mem_leftTransversals_iff_existsUnique_inv_mul_mem.mpr fun g => ?_
+      refine mem_leftTransversals_iff_existsUnique_inv_mul_mem.mpr fun g ↦ ?_
       obtain ⟨t, ht1, ht2⟩ := mem_leftTransversals_iff_existsUnique_inv_mul_mem.mp T.2 (f⁻¹ • g)
       refine ⟨⟨f • (t : G), Set.smul_mem_smul_set t.2⟩, ?_, ?_⟩
       · exact smul_inv_smul f g ▸ QuotientAction.inv_mul_mem f ht1
@@ -568,7 +568,7 @@ noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
 @[to_additive]
 theorem smul_toFun (f : F) (T : leftTransversals (H : Set G)) (g : G) :
     (f • (toFun T.2 g : G)) = toFun (f • T).2 (f • g) :=
-  Subtype.ext_iff.mp <| @ExistsUnique.unique (↥(f • (T : Set G))) (fun s => (↑s)⁻¹ * f • g ∈ H)
+  Subtype.ext_iff.mp <| @ExistsUnique.unique (↥(f • (T : Set G))) (fun s ↦ (↑s)⁻¹ * f • g ∈ H)
     (mem_leftTransversals_iff_existsUnique_inv_mul_mem.mp (f • T).2 (f • g))
     ⟨f • (toFun T.2 g : G), Set.smul_mem_smul_set (Subtype.coe_prop _)⟩ (toFun (f • T).2 (f • g))
     (QuotientAction.inv_mul_mem f (inv_toFun_mul_mem T.2 g)) (inv_toFun_mul_mem (f • T).2 (f • g))
@@ -576,7 +576,7 @@ theorem smul_toFun (f : F) (T : leftTransversals (H : Set G)) (g : G) :
 @[to_additive]
 theorem smul_toEquiv (f : F) (T : leftTransversals (H : Set G)) (q : G ⧸ H) :
     f • (toEquiv T.2 q : G) = toEquiv (f • T).2 (f • q) :=
-  Quotient.inductionOn' q fun g => smul_toFun f T g
+  Quotient.inductionOn' q fun g ↦ smul_toFun f T g
 
 @[to_additive]
 theorem smul_apply_eq_smul_apply_inv_smul (f : F) (T : leftTransversals (H : Set G)) (q : G ⧸ H) :
@@ -623,7 +623,7 @@ theorem IsComplement'.card_mul (h : IsComplement' H K) :
 
 theorem isComplement'_of_disjoint_and_mul_eq_univ (h1 : Disjoint H K)
     (h2 : ↑H * ↑K = (Set.univ : Set G)) : IsComplement' H K := by
-  refine ⟨mul_injective_of_disjoint h1, fun g => ?_⟩
+  refine ⟨mul_injective_of_disjoint h1, fun g ↦ ?_⟩
   obtain ⟨h, hh, k, hk, hg⟩ := Set.eq_univ_iff_forall.mp h2 g
   exact ⟨(⟨h, hh⟩, ⟨k, hk⟩), hg⟩
 
@@ -645,7 +645,7 @@ theorem isComplement'_of_coprime [Finite G]
 theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :
     IsComplement' H (MulAction.stabilizer G a) := by
-  refine isComplement_iff_existsUnique.mpr fun g => ?_
+  refine isComplement_iff_existsUnique.mpr fun g ↦ ?_
   obtain ⟨h, hh⟩ := h2 g
   have hh' : (↑h * g) • a = a := by rwa [mul_smul]
   refine ⟨⟨h⁻¹, h * g, hh'⟩, inv_mul_cancel_left ↑h g, ?_⟩
@@ -668,7 +668,7 @@ variable {G : Type u} [Group G] (H : Subgroup G) (g : G)
 noncomputable def quotientEquivSigmaZMod :
     G ⧸ H ≃ Σq : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out) :=
   (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)).trans
-    (sigmaCongrRight fun q => orbitZPowersEquiv g q.out)
+    (sigmaCongrRight fun q ↦ orbitZPowersEquiv g q.out)
 
 theorem quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out)) :

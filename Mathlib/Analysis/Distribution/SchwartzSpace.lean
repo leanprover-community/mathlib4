@@ -432,7 +432,7 @@ variable (E F)
 
 /-- The family of Schwartz seminorms. -/
 def _root_.schwartzSeminormFamily : SeminormFamily 𝕜 𝓢(E, F) (ℕ × ℕ) :=
-  fun m => SchwartzMap.seminorm 𝕜 m.1 m.2
+  fun m ↦ SchwartzMap.seminorm 𝕜 m.1 m.2
 
 @[simp]
 theorem schwartzSeminormFamily_apply (n k : ℕ) :
@@ -453,7 +453,7 @@ Note that the constant is far from optimal. -/
 theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m.1) (hn : n ≤ m.2)
     (f : 𝓢(E, F)) (x : E) :
     (1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤
-      2 ^ m.1 * (Finset.Iic m).sup (fun m => SchwartzMap.seminorm 𝕜 m.1 m.2) f := by
+      2 ^ m.1 * (Finset.Iic m).sup (fun m ↦ SchwartzMap.seminorm 𝕜 m.1 m.2) f := by
   rw [add_comm, add_pow]
   simp only [one_pow, mul_one, Finset.sum_congr, Finset.sum_mul]
   norm_cast
@@ -708,9 +708,9 @@ def mkCLM [RingHomIsometric σ] (A : (D → E) → F → G)
     change Continuous (mkLM A hadd hsmul hsmooth hbound : 𝓢(D, E) →ₛₗ[σ] 𝓢(F, G))
     refine
       Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 D E)
-        (schwartz_withSeminorms 𝕜' F G) _ fun n => ?_
+        (schwartz_withSeminorms 𝕜' F G) _ fun n ↦ ?_
     rcases hbound n with ⟨s, C, hC, h⟩
-    refine ⟨s, ⟨C, hC⟩, fun f => ?_⟩
+    refine ⟨s, ⟨C, hC⟩, fun f ↦ ?_⟩
     exact (mkLM A hadd hsmul hsmooth hbound f).seminorm_le_bound 𝕜' n.1 n.2 (by positivity) (h f)
   toLinearMap := mkLM A hadd hsmul hsmooth hbound
 
@@ -740,7 +740,7 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
 protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
   mkCLM (fun f x => f x m) (fun _ _ _ => rfl) (fun _ _ _ => rfl)
-    (fun f => ContDiff.clm_apply f.2 contDiff_const) <| by
+    (fun f ↦ ContDiff.clm_apply f.2 contDiff_const) <| by
   rintro ⟨k, n⟩
   use {(k, n)}, ‖m‖, norm_nonneg _
   intro f x
@@ -770,7 +770,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
     (fun _ _ _ => by
       simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         RingHom.id_apply])
-    (fun f => (B.isBoundedBilinearMap.contDiff.restrict_scalars ℝ).comp (f.smooth'.prod hg.1)) ?_
+    (fun f ↦ (B.isBoundedBilinearMap.contDiff.restrict_scalars ℝ).comp (f.smooth'.prod hg.1)) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
   use
@@ -823,7 +823,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) := by
   refine mkCLM (fun f x => f (g x))
     (fun _ _ _ => by simp only [add_left_inj, Pi.add_apply, eq_self_iff_true]) (fun _ _ _ => rfl)
-    (fun f => f.smooth'.comp hg.1) ?_
+    (fun f ↦ f.smooth'.comp hg.1) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
   rcases hg_upper with ⟨kg, Cg, hg_upper'⟩
@@ -934,7 +934,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
   mkCLM (fderiv ℝ) (fun f g _ => fderiv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => fderiv_const_smul f.differentiableAt a)
-    (fun f => (contDiff_top_iff_fderiv.mp f.smooth').2) fun ⟨k, n⟩ =>
+    (fun f ↦ (contDiff_top_iff_fderiv.mp f.smooth').2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
       simpa only [schwartzSeminormFamily_apply, Seminorm.comp_apply, Finset.sup_singleton,
         one_smul, norm_iteratedFDeriv_fderiv, one_mul] using f.le_seminorm 𝕜 k (n + 1) x⟩
@@ -947,7 +947,7 @@ theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv �
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
   mkCLM deriv (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
     (fun a f _ => deriv_const_smul a f.differentiableAt)
-    (fun f => (contDiff_top_iff_deriv.mp f.smooth').2) fun ⟨k, n⟩ =>
+    (fun f ↦ (contDiff_top_iff_deriv.mp f.smooth').2) fun ⟨k, n⟩ =>
     ⟨{⟨k, n + 1⟩}, 1, zero_le_one, fun f x => by
       simpa only [Real.norm_eq_abs, Finset.sup_singleton, schwartzSeminormFamily_apply, one_mul,
         norm_iteratedFDeriv_eq_norm_iteratedDeriv, ← iteratedDeriv_succ'] using

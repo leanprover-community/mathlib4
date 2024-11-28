@@ -532,7 +532,7 @@ theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank
   haveI := nontrivial_of_invariantBasisNumber R
   rcases eq_or_ne v 0 with (rfl | hn)
   · haveI :=
-      _root_.subsingleton_of_forall_eq (0 : M) fun w => by
+      _root_.subsingleton_of_forall_eq (0 : M) fun w ↦ by
         obtain ⟨c, rfl⟩ := h w
         simp
     rw [finrank_zero_of_subsingleton]

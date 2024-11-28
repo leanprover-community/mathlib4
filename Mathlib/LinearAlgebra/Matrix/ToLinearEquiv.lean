@@ -117,7 +117,7 @@ theorem exists_mulVec_eq_zero_iff_aux {K : Type*} [DecidableEq n] [Field K] {M :
           LinearMap.toMatrix'
             ((LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).symm : (n → K) →ₗ[K] n → K) =
         1 := by
-      refine Matrix.toLin'.injective (LinearMap.ext fun v => ?_)
+      refine Matrix.toLin'.injective (LinearMap.ext fun v ↦ ?_)
       rw [Matrix.toLin'_mul, Matrix.toLin'_one, Matrix.toLin'_toMatrix', LinearMap.comp_apply]
       exact (LinearEquiv.ofInjectiveEndo (Matrix.toLin' M) this).apply_symm_apply v
     exact Matrix.det_ne_zero_of_right_inverse this
@@ -129,7 +129,7 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
     exists_mulVec_eq_zero_iff_aux
   rw [← RingHom.map_det, IsFractionRing.to_map_eq_zero_iff] at this
   refine Iff.trans ?_ this; constructor <;> rintro ⟨v, hv, mul_eq⟩
-  · refine ⟨fun i => algebraMap _ _ (v i), mt (fun h ↦ funext fun i => ?_) hv, ?_⟩
+  · refine ⟨fun i ↦ algebraMap _ _ (v i), mt (fun h ↦ funext fun i ↦ ?_) hv, ?_⟩
     · exact IsFractionRing.to_map_eq_zero_iff.mp (congr_fun h i)
     · ext i
       refine (RingHom.map_mulVec _ _ _ i).symm.trans ?_
@@ -139,8 +139,8 @@ theorem exists_mulVec_eq_zero_iff' {A : Type*} (K : Type*) [DecidableEq n] [Comm
       IsLocalization.exist_integer_multiples_of_finset (nonZeroDivisors A) (Finset.univ.image v)
     choose f hf using ba_eq
     refine
-      ⟨fun i => f _ (Finset.mem_image.mpr ⟨i, Finset.mem_univ i, rfl⟩),
-        mt (fun h ↦ funext fun i => ?_) hv, ?_⟩
+      ⟨fun i ↦ f _ (Finset.mem_image.mpr ⟨i, Finset.mem_univ i, rfl⟩),
+        mt (fun h ↦ funext fun i ↦ ?_) hv, ?_⟩
     · have := congr_arg (algebraMap A K) (congr_fun h i)
       rw [hf, Subtype.coe_mk, Pi.zero_apply, RingHom.map_zero, Algebra.smul_def, mul_eq_zero,
         IsFractionRing.to_map_eq_zero_iff] at this
@@ -173,7 +173,7 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
     obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
     simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq, not_true] at hwMv
   · intro h v hv
-    refine not_imp_not.mp (h v) (funext fun i => ?_)
+    refine not_imp_not.mp (h v) (funext fun i ↦ ?_)
     simpa only [dotProduct_mulVec, dotProduct_single, mul_one] using hv (Pi.single i 1)
 
 alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero

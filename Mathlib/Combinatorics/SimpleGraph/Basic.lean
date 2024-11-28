@@ -329,7 +329,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
     sInf := sInf
     sInf_le := fun _ _ hG _ _ hab => hab.1 hG
     le_sInf := fun _ _ hG _ _ hab => ⟨fun _ hH => hG _ hH hab, hab.ne⟩
-    iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
+    iInf_iSup_eq := fun f ↦ by ext; simp [Classical.skolem] }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
@@ -749,7 +749,7 @@ theorem commonNeighbors_subset_neighborSet_right (v w : V) :
 
 instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
     DecidablePred (· ∈ G.commonNeighbors v w) :=
-  inferInstanceAs <| DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w
+  inferInstanceAs <| DecidablePred fun u ↦ u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w
 
 theorem commonNeighbors_top_eq {v w : V} :
     (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by

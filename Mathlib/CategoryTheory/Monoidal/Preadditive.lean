@@ -134,12 +134,12 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
 variable [HasFiniteBiproducts C]
 
 /-- The isomorphism showing how tensor product on the left distributes over direct sums. -/
-def leftDistributor {J : Type} [Fintype J] (X : C) (f : J → C) : X ⊗ ⨁ f ≅ ⨁ fun j => X ⊗ f j :=
+def leftDistributor {J : Type} [Fintype J] (X : C) (f : J → C) : X ⊗ ⨁ f ≅ ⨁ fun j ↦ X ⊗ f j :=
   (tensorLeft X).mapBiproduct f
 
 theorem leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
     (leftDistributor X f).hom =
-      ∑ j : J, (X ◁ biproduct.π f j) ≫ biproduct.ι (fun j => X ⊗ f j) j := by
+      ∑ j : J, (X ◁ biproduct.π f j) ≫ biproduct.ι (fun j ↦ X ⊗ f j) j := by
   ext
   dsimp [leftDistributor, Functor.mapBiproduct, Functor.mapBicone]
   erw [biproduct.lift_π]
@@ -161,7 +161,7 @@ theorem leftDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (X : C) (f 
 
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) (j : J) :
-    (X ◁ biproduct.ι _ j) ≫ (leftDistributor X f).hom = biproduct.ι (fun j => X ⊗ f j) j := by
+    (X ◁ biproduct.ι _ j) ≫ (leftDistributor X f).hom = biproduct.ι (fun j ↦ X ⊗ f j) j := by
   simp [leftDistributor_hom, Preadditive.comp_sum, ← MonoidalCategory.whiskerLeft_comp_assoc,
     biproduct.ι_π, whiskerLeft_dite, dite_comp]
 
@@ -190,12 +190,12 @@ theorem leftDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
   simp
 
 /-- The isomorphism showing how tensor product on the right distributes over direct sums. -/
-def rightDistributor {J : Type} [Fintype J] (f : J → C) (X : C) : (⨁ f) ⊗ X ≅ ⨁ fun j => f j ⊗ X :=
+def rightDistributor {J : Type} [Fintype J] (f : J → C) (X : C) : (⨁ f) ⊗ X ≅ ⨁ fun j ↦ f j ⊗ X :=
   (tensorRight X).mapBiproduct f
 
 theorem rightDistributor_hom {J : Type} [Fintype J] (f : J → C) (X : C) :
     (rightDistributor f X).hom =
-      ∑ j : J, (biproduct.π f j ▷ X) ≫ biproduct.ι (fun j => f j ⊗ X) j := by
+      ∑ j : J, (biproduct.π f j ▷ X) ≫ biproduct.ι (fun j ↦ f j ⊗ X) j := by
   ext
   dsimp [rightDistributor, Functor.mapBiproduct, Functor.mapBicone]
   erw [biproduct.lift_π]
@@ -216,7 +216,7 @@ theorem rightDistributor_hom_comp_biproduct_π {J : Type} [Fintype J] (f : J →
 
 @[reassoc (attr := simp)]
 theorem biproduct_ι_comp_rightDistributor_hom {J : Type} [Fintype J] (f : J → C) (X : C) (j : J) :
-    (biproduct.ι _ j ▷ X) ≫ (rightDistributor f X).hom = biproduct.ι (fun j => f j ⊗ X) j := by
+    (biproduct.ι _ j ▷ X) ≫ (rightDistributor f X).hom = biproduct.ι (fun j ↦ f j ⊗ X) j := by
   simp [rightDistributor_hom, Preadditive.comp_sum, ← comp_whiskerRight_assoc, biproduct.ι_π,
     dite_whiskerRight, dite_comp]
 

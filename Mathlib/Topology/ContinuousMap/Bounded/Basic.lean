@@ -158,7 +158,7 @@ theorem dist_le (C0 : (0 : ℝ) ≤ C) : dist f g ≤ C ↔ ∀ x : α, dist (f 
 
 theorem dist_le_iff_of_nonempty [Nonempty α] : dist f g ≤ C ↔ ∀ x, dist (f x) (g x) ≤ C :=
   ⟨fun h x => le_trans (dist_coe_le_dist x) h,
-    fun w => (dist_le (le_trans dist_nonneg (w (Nonempty.some ‹_›)))).mpr w⟩
+    fun w ↦ (dist_le (le_trans dist_nonneg (w (Nonempty.some ‹_›)))).mpr w⟩
 
 theorem dist_lt_of_nonempty_compact [Nonempty α] [CompactSpace α]
     (w : ∀ x : α, dist (f x) (g x) < C) : dist f g < C := by
@@ -224,7 +224,7 @@ theorem nndist_eq_iSup : nndist f g = ⨆ x : α, nndist (f x) (g x) :=
   Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nndist]
 
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f : α →ᵇ β} {l : Filter ι} :
-    Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l :=
+    Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i ↦ F i) f l :=
   Iff.intro
     (fun h =>
       tendstoUniformly_iff.2 fun ε ε0 =>
@@ -242,7 +242,7 @@ theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f :
 /-- The topology on `α →ᵇ β` is exactly the topology induced by the natural map to `α →ᵤ β`. -/
 theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) := by
   rw [isInducing_iff_nhds]
-  refine fun f => eq_of_forall_le_iff fun l => ?_
+  refine fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
   rw [← tendsto_iff_comap, ← tendsto_id', tendsto_iff_tendstoUniformly,
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
@@ -288,7 +288,7 @@ theorem continuous_eval_const {x : α} : Continuous fun f : α →ᵇ β => f x 
 /-- The evaluation map is continuous, as a joint function of `u` and `x`. -/
 @[continuity]
 theorem continuous_eval : Continuous fun p : (α →ᵇ β) × α => p.1 p.2 :=
-  (continuous_prod_of_continuous_lipschitzWith _ 1 fun f => f.continuous) <| lipschitz_evalx
+  (continuous_prod_of_continuous_lipschitzWith _ 1 fun f ↦ f.continuous) <| lipschitz_evalx
 
 /-- Bounded continuous functions taking values in a complete space form a complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
@@ -298,7 +298,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
       it is a continuous bounded function, and then check the norm convergence. -/
     rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, b0, b_bound, b_lim⟩
     have f_bdd := fun x n m N hn hm => le_trans (dist_coe_le_dist x) (b_bound n m N hn hm)
-    have fx_cau : ∀ x, CauchySeq fun n => f n x :=
+    have fx_cau : ∀ x, CauchySeq fun n ↦ f n x :=
       fun x ↦ cauchySeq_iff_le_tendsto_0.2 ⟨b, b0, f_bdd x, b_lim⟩
     choose F hF using fun x ↦ cauchySeq_tendsto_of_complete (fx_cau x)
     /- `F : α → β`, `hF : ∀ (x : α), Tendsto (fun n ↦ ↑(f n) x) atTop (𝓝 (F x))`
@@ -866,7 +866,7 @@ theorem norm_const_eq [h : Nonempty α] (b : β) : ‖const α b‖ = ‖b‖ :=
 function taking values in a normed group. -/
 def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [SeminormedAddCommGroup β]
     (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) : α →ᵇ β :=
-  ⟨⟨fun n => f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
+  ⟨⟨fun n ↦ f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
 
 @[simp]
 theorem coe_ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α]
@@ -1214,7 +1214,7 @@ instance hasNatPow : Pow (α →ᵇ R) ℕ where
       map_bounded' := by simpa [coe_npowRec] using (npowRec n f).map_bounded' }
 
 instance : NatCast (α →ᵇ R) :=
-  ⟨fun n => BoundedContinuousFunction.const _ n⟩
+  ⟨fun n ↦ BoundedContinuousFunction.const _ n⟩
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
@@ -1226,7 +1226,7 @@ theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
   rfl
 
 instance : IntCast (α →ᵇ R) :=
-  ⟨fun n => BoundedContinuousFunction.const _ n⟩
+  ⟨fun n ↦ BoundedContinuousFunction.const _ n⟩
 
 @[simp, norm_cast]
 theorem coe_intCast (n : ℤ) : ((n : α →ᵇ R) : α → R) = n := rfl
@@ -1351,7 +1351,7 @@ instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
       (fun c _ _ => ext fun a ↦ smul_add (c a) _ _)
       (fun _ _ _ => ext fun _ => add_smul _ _ _)
       (fun _ _ _ => ext fun _ => mul_smul _ _ _)
-      (fun f => ext fun x ↦ one_smul 𝕜 (f x))
+      (fun f ↦ ext fun x ↦ one_smul 𝕜 (f x))
 
 /- TODO: When `NormedModule` has been added to `Analysis.Normed.Module.Basic`, this
 shows that the space of bounded continuous functions from `α` to `β` is naturally a normed
@@ -1373,7 +1373,7 @@ section NormedLatticeOrderedGroup
 variable [TopologicalSpace α] [NormedLatticeAddCommGroup β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
-  PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
+  PartialOrder.lift (fun f ↦ f.toFun) (by simp [Injective])
 
 instance instSup : Max (α →ᵇ β) where
   max f g :=
@@ -1426,9 +1426,9 @@ instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β
       exact h₁ _
     solid := by
       intro f g h
-      have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
+      have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t ↦ HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
-      exact fun t => (i1 t).trans (norm_coe_le_norm g t)
+      exact fun t ↦ (i1 t).trans (norm_coe_le_norm g t)
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 

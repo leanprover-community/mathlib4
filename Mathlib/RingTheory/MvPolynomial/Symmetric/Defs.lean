@@ -67,7 +67,7 @@ def esymm (s : Multiset R) (n : ℕ) : R :=
   ((s.powersetCard n).map Multiset.prod).sum
 
 theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
-    (s.val.map f).esymm n = (s.powersetCard n).sum fun t => t.prod f := by
+    (s.val.map f).esymm n = (s.powersetCard n).sum fun t ↦ t.prod f := by
   simp only [esymm, powersetCard_map, ← Finset.map_val_val_powersetCard, map_map]
   rfl
 
@@ -167,8 +167,8 @@ def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
   AlgEquiv.ofAlgHom
     (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x ↦ x.2.rename e)
     (((rename e.symm).comp <| Subalgebra.val _).codRestrict _ <| fun x ↦ x.2.rename e.symm)
-    (AlgHom.ext <| fun p => Subtype.ext <| by simp)
-    (AlgHom.ext <| fun p => Subtype.ext <| by simp)
+    (AlgHom.ext <| fun p ↦ Subtype.ext <| by simp)
+    (AlgHom.ext <| fun p ↦ Subtype.ext <| by simp)
 
 variable (σ R : Type*) [CommSemiring R] [CommSemiring S] [Fintype σ] [Fintype τ]
 
@@ -190,7 +190,7 @@ def esymmPart {n : ℕ} (μ : n.Partition) : MvPolynomial σ R := (μ.parts.map 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
 theorem esymm_eq_multiset_esymm : esymm σ R = (univ.val.map X).esymm := by
-  exact funext fun n => (esymm_map_val X _ n).symm
+  exact funext fun n ↦ (esymm_map_val X _ n).symm
 
 theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (n : ℕ) (f : σ → S) :
     aeval f (esymm σ R n) = (univ.val.map f).esymm n := by
@@ -263,14 +263,14 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
   all_goals intro x y; simp [Finsupp.support_single_disjoint]
 
 theorem support_esymm' [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
-    (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i ∈ t, Finsupp.single i 1} := by
+    (powersetCard n (univ : Finset σ)).biUnion fun t ↦ {∑ i ∈ t, Finsupp.single i 1} := by
   rw [support_esymm'']
   congr
   funext
   exact Finsupp.support_single_ne_zero _ one_ne_zero
 
 theorem support_esymm [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
-    (powersetCard n (univ : Finset σ)).image fun t => ∑ i ∈ t, Finsupp.single i 1 := by
+    (powersetCard n (univ : Finset σ)).image fun t ↦ ∑ i ∈ t, Finsupp.single i 1 := by
   rw [support_esymm']
   exact biUnion_singleton
 

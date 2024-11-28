@@ -56,7 +56,7 @@ theorem row_apply (v : n → α) (i : ι) (j) : row ι v i j = v j :=
 
 theorem col_injective [Nonempty ι] : Function.Injective (col ι : (m → α) → Matrix m ι α) := by
   inhabit ι
-  exact fun _x _y h => funext fun i => congr_fun₂ h i default
+  exact fun _x _y h => funext fun i ↦ congr_fun₂ h i default
 
 @[simp] theorem col_inj [Nonempty ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
   col_injective.eq_iff
@@ -77,7 +77,7 @@ theorem col_smul [SMul R α] (x : R) (v : m → α) : col ι (x • v) = x • c
 
 theorem row_injective [Nonempty ι] : Function.Injective (row ι : (n → α) → Matrix ι n α) := by
   inhabit ι
-  exact fun _x _y h => funext fun j => congr_fun₂ h default j
+  exact fun _x _y h => funext fun j ↦ congr_fun₂ h default j
 
 @[simp] theorem row_inj [Nonempty ι] {v w : n → α} : row ι v = row ι w ↔ v = w :=
   row_injective.eq_iff
@@ -172,7 +172,7 @@ def updateRow [DecidableEq m] (M : Matrix m n α) (i : m) (b : n → α) : Matri
 
 /-- Update, i.e. replace the `j`th column of matrix `A` with the values in `b`. -/
 def updateColumn [DecidableEq n] (M : Matrix m n α) (j : n) (b : m → α) : Matrix m n α :=
-  of fun i => Function.update (M i) j (b i)
+  of fun i ↦ Function.update (M i) j (b i)
 
 variable {M : Matrix m n α} {i : m} {j : n} {b : n → α} {c : m → α}
 
@@ -261,8 +261,8 @@ theorem updateRow_eq_self [DecidableEq m] (A : Matrix m n α) (i : m) : A.update
 
 @[simp]
 theorem updateColumn_eq_self [DecidableEq n] (A : Matrix m n α) (i : n) :
-    (A.updateColumn i fun j => A j i) = A :=
-  funext fun j => Function.update_eq_self i (A j)
+    (A.updateColumn i fun j ↦ A j i) = A :=
+  funext fun j ↦ Function.update_eq_self i (A j)
 
 theorem diagonal_updateColumn_single [DecidableEq n] [Zero α] (v : n → α) (i : n) (x : α) :
     (diagonal v).updateColumn i (Pi.single i x) = diagonal (Function.update v i x) := by
@@ -286,24 +286,24 @@ theorem diagonal_updateRow_single [DecidableEq n] [Zero α] (v : n → α) (i : 
 
 theorem updateRow_submatrix_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : l)
     (r : o → α) (e : l ≃ m) (f : o ≃ n) :
-    updateRow (A.submatrix e f) i r = (A.updateRow (e i) fun j => r (f.symm j)).submatrix e f := by
+    updateRow (A.submatrix e f) i r = (A.updateRow (e i) fun j ↦ r (f.symm j)).submatrix e f := by
   ext i' j
   simp only [submatrix_apply, updateRow_apply, Equiv.apply_eq_iff_eq, Equiv.symm_apply_apply]
 
 theorem submatrix_updateRow_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : m)
     (r : n → α) (e : l ≃ m) (f : o ≃ n) :
-    (A.updateRow i r).submatrix e f = updateRow (A.submatrix e f) (e.symm i) fun i => r (f i) :=
+    (A.updateRow i r).submatrix e f = updateRow (A.submatrix e f) (e.symm i) fun i ↦ r (f i) :=
   Eq.trans (by simp_rw [Equiv.apply_symm_apply]) (updateRow_submatrix_equiv A _ _ e f).symm
 
 theorem updateColumn_submatrix_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : o)
     (c : l → α) (e : l ≃ m) (f : o ≃ n) : updateColumn (A.submatrix e f) j c =
-    (A.updateColumn (f j) fun i => c (e.symm i)).submatrix e f := by
+    (A.updateColumn (f j) fun i ↦ c (e.symm i)).submatrix e f := by
   simpa only [← transpose_submatrix, updateRow_transpose] using
     congr_arg transpose (updateRow_submatrix_equiv Aᵀ j c f e)
 
 theorem submatrix_updateColumn_equiv [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : n)
     (c : m → α) (e : l ≃ m) (f : o ≃ n) : (A.updateColumn j c).submatrix e f =
-    updateColumn (A.submatrix e f) (f.symm j) fun i => c (e i) :=
+    updateColumn (A.submatrix e f) (f.symm j) fun i ↦ c (e i) :=
   Eq.trans (by simp_rw [Equiv.apply_symm_apply]) (updateColumn_submatrix_equiv A _ _ e f).symm
 
 /-! `reindex` versions of the above `submatrix` lemmas for convenience. -/
@@ -311,22 +311,22 @@ theorem submatrix_updateColumn_equiv [DecidableEq o] [DecidableEq n] (A : Matrix
 
 theorem updateRow_reindex [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : l) (r : o → α)
     (e : m ≃ l) (f : n ≃ o) :
-    updateRow (reindex e f A) i r = reindex e f (A.updateRow (e.symm i) fun j => r (f j)) :=
+    updateRow (reindex e f A) i r = reindex e f (A.updateRow (e.symm i) fun j ↦ r (f j)) :=
   updateRow_submatrix_equiv _ _ _ _ _
 
 theorem reindex_updateRow [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : m) (r : n → α)
     (e : m ≃ l) (f : n ≃ o) :
-    reindex e f (A.updateRow i r) = updateRow (reindex e f A) (e i) fun i => r (f.symm i) :=
+    reindex e f (A.updateRow i r) = updateRow (reindex e f A) (e i) fun i ↦ r (f.symm i) :=
   submatrix_updateRow_equiv _ _ _ _ _
 
 theorem updateColumn_reindex [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : o) (c : l → α)
     (e : m ≃ l) (f : n ≃ o) :
-    updateColumn (reindex e f A) j c = reindex e f (A.updateColumn (f.symm j) fun i => c (e i)) :=
+    updateColumn (reindex e f A) j c = reindex e f (A.updateColumn (f.symm j) fun i ↦ c (e i)) :=
   updateColumn_submatrix_equiv _ _ _ _ _
 
 theorem reindex_updateColumn [DecidableEq o] [DecidableEq n] (A : Matrix m n α) (j : n) (c : m → α)
     (e : m ≃ l) (f : n ≃ o) :
-    reindex e f (A.updateColumn j c) = updateColumn (reindex e f A) (f j) fun i => c (e.symm i) :=
+    reindex e f (A.updateColumn j c) = updateColumn (reindex e f A) (f j) fun i ↦ c (e.symm i) :=
   submatrix_updateColumn_equiv _ _ _ _ _
 
 end Matrix

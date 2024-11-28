@@ -68,7 +68,7 @@ variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [Topolo
 @[simps!]
 def HomotopyRel.pi (homotopies : ∀ i : I, HomotopyRel (f i) (g i) S) :
     HomotopyRel (pi f) (pi g) S :=
-  { Homotopy.pi fun i => (homotopies i).toHomotopy with
+  { Homotopy.pi fun i ↦ (homotopies i).toHomotopy with
     prop' := by
       intro t x hx
       dsimp only [coe_mk, pi_eval, toFun_eq_coe, HomotopyWith.coe_toContinuousMap]
@@ -125,7 +125,7 @@ def pi (γ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) : Path.Homotopic.Quot
     Nonempty.map (piHomotopy x y) (Classical.nonempty_pi.mpr hxy)) (Quotient.choice γ)
 
 theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
-    (Path.Homotopic.pi fun i => ⟦γ i⟧) = ⟦Path.pi γ⟧ := by unfold pi; simp
+    (Path.Homotopic.pi fun i ↦ ⟦γ i⟧) = ⟦Path.pi γ⟧ := by unfold pi; simp
 
 /-- Composition and products commute.
   This is `Path.trans_pi_eq_pi_trans` descended to path homotopy classes. -/
@@ -150,7 +150,7 @@ theorem proj_pi (i : ι) (paths : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) 
   congr
 
 @[simp]
-theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p := by
+theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i ↦ proj i p) = p := by
   induction p using Quotient.inductionOn
   simp_rw [proj, ← Path.Homotopic.map_lift]
   erw [pi_lift]

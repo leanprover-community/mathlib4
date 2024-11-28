@@ -196,7 +196,7 @@ lemma continuous_dual_apply (x : E) (y : F⋆) : Continuous fun (A : E →WOT[�
 @[fun_prop]
 lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g : α → E →WOT[𝕜] F}
     (h : ∀ x (y : F⋆), Continuous fun a ↦ y (g a x)) : Continuous g :=
-  continuous_induced_rng.2 (continuous_pi_iff.mpr fun p => h p.1 p.2)
+  continuous_induced_rng.2 (continuous_pi_iff.mpr fun p ↦ h p.1 p.2)
 
 lemma isInducing_inducingFn : IsInducing (inducingFn 𝕜 E F) := ⟨rfl⟩
 

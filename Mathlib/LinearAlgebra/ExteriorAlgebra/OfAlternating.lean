@@ -72,7 +72,7 @@ theorem liftAlternating_ι (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M) :
 theorem liftAlternating_ι_mul (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) (m : M)
     (x : ExteriorAlgebra R M) :
     liftAlternating (R := R) (M := M) (N := N) f (ι R m * x) =
-    liftAlternating (R := R) (M := M) (N := N) (fun i => (f i.succ).curryLeft m) x := by
+    liftAlternating (R := R) (M := M) (N := N) (fun i ↦ (f i.succ).curryLeft m) x := by
   dsimp [liftAlternating]
   rw [foldl_mul, foldl_ι]
   rfl
@@ -111,7 +111,7 @@ theorem liftAlternating_comp_ιMulti {n : ℕ} (f : ∀ i, M [⋀^Fin i]→ₗ[R
 
 @[simp]
 theorem liftAlternating_comp (g : N →ₗ[R] N') (f : ∀ i, M [⋀^Fin i]→ₗ[R] N) :
-    (liftAlternating (R := R) (M := M) (N := N') fun i => g.compAlternatingMap (f i)) =
+    (liftAlternating (R := R) (M := M) (N := N') fun i ↦ g.compAlternatingMap (f i)) =
     g ∘ₗ liftAlternating (R := R) (M := M) (N := N) f := by
   ext v
   rw [LinearMap.comp_apply]

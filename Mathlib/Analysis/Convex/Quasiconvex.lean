@@ -71,7 +71,7 @@ theorem QuasilinearOn.dual : QuasilinearOn 𝕜 s f → QuasilinearOn 𝕜 s (to
   And.symm
 
 theorem Convex.quasiconvexOn_of_convex_le (hs : Convex 𝕜 s) (h : ∀ r, Convex 𝕜 { x | f x ≤ r }) :
-    QuasiconvexOn 𝕜 s f := fun r => hs.inter (h r)
+    QuasiconvexOn 𝕜 s f := fun r ↦ hs.inter (h r)
 
 theorem Convex.quasiconcaveOn_of_convex_ge (hs : Convex 𝕜 s) (h : ∀ r, Convex 𝕜 { x | r ≤ f x }) :
     QuasiconcaveOn 𝕜 s f :=

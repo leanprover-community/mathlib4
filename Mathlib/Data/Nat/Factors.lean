@@ -170,7 +170,7 @@ theorem primeFactorsList_unique {n : ℕ} {l : List ℕ} (h₁ : prod l = n) (h�
   · simp_rw [← prime_iff]
     exact h₂
   · simp_rw [← prime_iff]
-    exact fun p => prime_of_mem_primeFactorsList
+    exact fun p ↦ prime_of_mem_primeFactorsList
 
 theorem Prime.primeFactorsList_pow {p : ℕ} (hp : p.Prime) (n : ℕ) :
     (p ^ n).primeFactorsList = List.replicate n p := by

@@ -45,7 +45,7 @@ it on each subalgebra, and proving that it agrees on the intersection of subalge
 noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
     (T : Subalgebra R A) (hT : T = iSup K): ↥T →ₐ[R] B :=
-  { toFun := Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
+  { toFun := Set.iUnionLift (fun i ↦ ↑(K i)) (fun i x => f i x)
         (fun i j x hxi hxj => by
           let ⟨k, hik, hjk⟩ := dir i j
           dsimp
@@ -62,7 +62,7 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
       subst hT; dsimp
       apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
       all_goals simp
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       dsimp
       apply Set.iUnionLift_const _ (fun _ => algebraMap R _ r) <;> simp }
 

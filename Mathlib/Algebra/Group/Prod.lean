@@ -106,7 +106,7 @@ theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * 
 
 @[to_additive]
 instance instInv [Inv M] [Inv N] : Inv (M × N) :=
-  ⟨fun p => (p.1⁻¹, p.2⁻¹)⟩
+  ⟨fun p ↦ (p.1⁻¹, p.2⁻¹)⟩
 
 @[to_additive (attr := simp)]
 theorem fst_inv [Inv G] [Inv H] (p : G × H) : p⁻¹.1 = p.1⁻¹ :=

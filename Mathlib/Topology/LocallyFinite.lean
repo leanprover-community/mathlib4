@@ -102,7 +102,7 @@ protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i
     Continuous g :=
   continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
 
-protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
+protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i ↦ closure (f i) := by
   intro x
   rcases hf x with ⟨s, hsx, hsf⟩
   refine ⟨interior s, interior_mem_nhds.2 hsx, hsf.subset fun i hi => ?_⟩
@@ -121,10 +121,10 @@ theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
 theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
     (⋂ (i) (_ : x ∉ f i), (f i)ᶜ) ∈ 𝓝 x := by
-  refine IsOpen.mem_nhds ?_ (mem_iInter₂.2 fun i => id)
+  refine IsOpen.mem_nhds ?_ (mem_iInter₂.2 fun i ↦ id)
   suffices IsClosed (⋃ i : { i // x ∉ f i }, f i) by
     rwa [← isOpen_compl_iff, compl_iUnion, iInter_subtype] at this
-  exact (hf.comp_injective Subtype.val_injective).isClosed_iUnion fun i => hc _
+  exact (hf.comp_injective Subtype.val_injective).isClosed_iUnion fun i ↦ hc _
 
 /-- Let `f : ℕ → Π a, β a` be a sequence of (dependent) functions on a topological space. Suppose
 that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. Then there exists a
@@ -133,7 +133,7 @@ interval `[N, +∞)` and a neighbourhood of `x`.
 
 We formulate the conclusion in terms of the product of filter `Filter.atTop` and `𝓝 x`. -/
 theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x : X, π x}
-    (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
+    (hf : LocallyFinite fun n ↦ { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ p : ℕ × X in atTop ×ˢ 𝓝 x, f p.1 p.2 = F p.2 := by
   choose U hUx hU using hf
   choose N hN using fun x ↦ (hU x).bddAbove
@@ -154,7 +154,7 @@ that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. T
 function `F : Π a, β a` such that for any `x`, for sufficiently large values of `n`, we have
 `f n y = F y` in a neighbourhood of `x`. -/
 theorem exists_forall_eventually_atTop_eventually_eq' {π : X → Sort*} {f : ℕ → ∀ x : X, π x}
-    (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
+    (hf : LocallyFinite fun n ↦ { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ n : ℕ in atTop, ∀ᶠ y : X in 𝓝 x, f n y = F y :=
   hf.exists_forall_eventually_eq_prod.imp fun _F hF x => (hF x).curry
 
@@ -163,7 +163,7 @@ that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. T
 function `F :  α → β` such that for any `x`, for sufficiently large values of `n`, we have
 `f n =ᶠ[𝓝 x] F`. -/
 theorem exists_forall_eventually_atTop_eventuallyEq {f : ℕ → X → α}
-    (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
+    (hf : LocallyFinite fun n ↦ { x | f (n + 1) x ≠ f n x }) :
     ∃ F : X → α, ∀ x, ∀ᶠ n : ℕ in atTop, f n =ᶠ[𝓝 x] F :=
   hf.exists_forall_eventually_atTop_eventually_eq'
 

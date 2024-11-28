@@ -134,7 +134,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   obtain ⟨d, ⟨hcd, hd₀⟩, hd⟩ : ∃ d, (c < d ∧ 0 < d) ∧ d < π / 2 / b := by
     simpa only [max_lt_iff] using exists_between (max_lt hc hπb)
   have hb' : d * b < π / 2 := (lt_div_iff₀ hb).1 hd
-  set aff := (fun w => d * (w - a * I) : ℂ → ℂ)
+  set aff := (fun w ↦ d * (w - a * I) : ℂ → ℂ)
   set g := fun (ε : ℝ) (w : ℂ) => exp (ε * (exp (aff w) + exp (-aff w)))
   /- Since `g ε z → 1` as `ε → 0⁻`, it suffices to prove that `‖g ε z • f z‖ ≤ C`
     for all negative `ε`. -/
@@ -199,7 +199,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   have hgd : Differentiable ℂ (g ε) :=
     ((((differentiable_id.sub_const _).const_mul _).cexp.add
             ((differentiable_id.sub_const _).const_mul _).neg.cexp).const_mul _).cexp
-  replace hd : DiffContOnCl ℂ (fun w => g ε w • f w) (Ioo (-R) R ×ℂ Ioo (a - b) (a + b)) :=
+  replace hd : DiffContOnCl ℂ (fun w ↦ g ε w • f w) (Ioo (-R) R ×ℂ Ioo (a - b) (a + b)) :=
     (hgd.diffContOnCl.smul hfd).mono inter_subset_right
   convert norm_le_of_forall_mem_frontier_norm_le ((isBounded_Ioo _ _).reProdIm (isBounded_Ioo _ _))
     hd (fun w hw => _) _
@@ -375,7 +375,7 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
         refine (hd.continuousOn _ ?_).mono subset_closure
         simp [closure_reProdIm, mem_reProdIm]
       refine ((hc.tendsto.comp <| tendsto_exp_comap_re_atBot.inf H.tendsto).isBigO_one ℝ).trans
-        (isBigO_of_le _ fun w => ?_)
+        (isBigO_of_le _ fun w ↦ ?_)
       rw [norm_one, Real.norm_of_nonneg (Real.exp_pos _).le, Real.one_le_exp_iff]
       positivity
     · -- For the estimate as `ζ.re → ∞`, we reuse the upper estimate on `f`

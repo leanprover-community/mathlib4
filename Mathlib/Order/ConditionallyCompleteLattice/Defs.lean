@@ -96,14 +96,14 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
   [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
     ConditionallyCompleteLinearOrderBot α :=
   { i₁, i₂, LinearOrder.toLattice with
-    sInf := fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥
+    sInf := fun s ↦ if hs : s.Nonempty then h.wf.min s hs else ⊥
     csInf_le := fun s a _ has => by
       have s_ne : s.Nonempty := ⟨a, has⟩
       simpa [s_ne] using not_lt.1 (h.wf.not_lt_min s s_ne has)
     le_csInf := fun s a hs has => by
       simp only [hs, dif_pos]
       exact has (h.wf.min_mem s hs)
-    sSup := fun s => if hs : (upperBounds s).Nonempty then h.wf.min _ hs else ⊥
+    sSup := fun s ↦ if hs : (upperBounds s).Nonempty then h.wf.min _ hs else ⊥
     le_csSup := fun s a hs has => by
       have h's : (upperBounds s).Nonempty := hs
       simp only [h's, dif_pos]
@@ -167,7 +167,7 @@ def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 :
       (isLUB_sSup (lowerBounds {a, b}) (Nonempty.bddAbove_lowerBounds ⟨a, mem_insert _ _⟩)
             ⟨c, forall_insert_of_forall (forall_eq.mpr hcb) hca⟩).1
         (forall_insert_of_forall (forall_eq.mpr hcb) hca)
-    sInf := fun s => sSup (lowerBounds s)
+    sInf := fun s ↦ sSup (lowerBounds s)
     csSup_le := fun s a hs ha => (isLUB_sSup s ⟨a, ha⟩ hs).2 ha
     le_csSup := fun s a hs ha => (isLUB_sSup s hs ⟨a, ha⟩).1 ha
     csInf_le := fun s a hs ha =>
@@ -218,7 +218,7 @@ def conditionallyCompleteLatticeOfsInf (α : Type*) [H1 : PartialOrder α] [H2 :
       (isGLB_sInf (upperBounds {a, b}) (Nonempty.bddBelow_upperBounds ⟨a, mem_insert _ _⟩)
             ⟨c, forall_insert_of_forall (forall_eq.mpr hbc) hac⟩).1
         (forall_insert_of_forall (forall_eq.mpr hbc) hac)
-    sSup := fun s => sInf (upperBounds s)
+    sSup := fun s ↦ sInf (upperBounds s)
     le_csInf := fun s a hs ha => (isGLB_sInf s ⟨a, ha⟩ hs).2 ha
     csInf_le := fun s a hs ha => (isGLB_sInf s hs ⟨a, ha⟩).1 ha
     le_csSup := fun s a hs ha =>

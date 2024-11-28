@@ -60,7 +60,7 @@ theorem coe_splitLower : (splitLower I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   rw [splitLower, coe_mk']
   ext y
   simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and, ← Pi.le_def,
-    le_update_iff, le_min_iff, and_assoc, and_forall_ne (p := fun j => y j ≤ upper I j) i, mem_def]
+    le_update_iff, le_min_iff, and_assoc, and_forall_ne (p := fun j ↦ y j ≤ upper I j) i, mem_def]
   rw [and_comm (a := y i ≤ x)]
 
 theorem splitLower_le : I.splitLower i x ≤ I :=
@@ -96,7 +96,7 @@ theorem coe_splitUpper : (splitUpper I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   ext y
   simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and,
     forall_update_iff I.lower fun j z => z < y j, max_lt_iff, and_assoc (a := x < y i),
-    and_forall_ne (p := fun j => lower I j < y j) i, mem_def]
+    and_forall_ne (p := fun j ↦ lower I j < y j) i, mem_def]
   exact and_comm
 
 theorem splitUpper_le : I.splitUpper i x ≤ I :=
@@ -201,7 +201,7 @@ theorem coe_eq_of_mem_split_of_lt_mem {y : ι → ℝ} (h₁ : J ∈ split I i x
 theorem restrict_split (h : I ≤ J) (i : ι) (x : ℝ) : (split J i x).restrict I = split I i x := by
   refine ((isPartitionSplit J i x).restrict h).eq_of_boxes_subset ?_
   simp only [Finset.subset_iff, mem_boxes, mem_restrict', exists_prop, mem_split_iff']
-  have : ∀ s, (I ∩ s : Set (ι → ℝ)) ⊆ J := fun s => inter_subset_left.trans h
+  have : ∀ s, (I ∩ s : Set (ι → ℝ)) ⊆ J := fun s ↦ inter_subset_left.trans h
   rintro J₁ ⟨J₂, H₂ | H₂, H₁⟩ <;> [left; right] <;>
     simp [H₁, H₂, inter_left_comm (I : Set (ι → ℝ)), this]
 
@@ -212,7 +212,7 @@ theorem inf_split (π : Prepartition I) (i : ι) (x : ℝ) :
 /-- Split a box along many hyperplanes `{y | y i = x}`; each hyperplane is given by the pair
 `(i x)`. -/
 def splitMany (I : Box ι) (s : Finset (ι × ℝ)) : Prepartition I :=
-  s.inf fun p => split I p.1 p.2
+  s.inf fun p ↦ split I p.1 p.2
 
 @[simp]
 theorem splitMany_empty (I : Box ι) : splitMany I ∅ = ⊤ :=
@@ -274,8 +274,8 @@ theorem eventually_not_disjoint_imp_le_of_mem_splitMany (s : Finset (Box ι)) :
       ¬Disjoint (J : WithBot (Box ι)) J' → J' ≤ J := by
   cases nonempty_fintype ι
   refine eventually_atTop.2
-    ⟨s.biUnion fun J => Finset.univ.biUnion fun i => {(i, J.lower i), (i, J.upper i)},
-      fun t ht I J hJ J' hJ' => not_disjoint_imp_le_of_subset_of_mem_splitMany (fun i => ?_) hJ'⟩
+    ⟨s.biUnion fun J => Finset.univ.biUnion fun i ↦ {(i, J.lower i), (i, J.upper i)},
+      fun t ht I J hJ J' hJ' => not_disjoint_imp_le_of_subset_of_mem_splitMany (fun i ↦ ?_) hJ'⟩
   exact fun p hp =>
     ht (Finset.mem_biUnion.2 ⟨J, hJ, Finset.mem_biUnion.2 ⟨i, Finset.mem_univ _, hp⟩⟩)
 

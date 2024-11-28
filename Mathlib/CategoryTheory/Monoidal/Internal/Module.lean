@@ -93,7 +93,7 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
       toFun := f.hom
       map_one' := LinearMap.congr_fun f.one_hom (1 : R)
       map_mul' := fun x y => LinearMap.congr_fun f.mul_hom (x ⊗ₜ y)
-      commutes' := fun r => LinearMap.congr_fun f.one_hom r }
+      commutes' := fun r ↦ LinearMap.congr_fun f.one_hom r }
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/

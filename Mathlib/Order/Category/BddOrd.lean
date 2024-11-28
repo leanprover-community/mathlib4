@@ -73,7 +73,7 @@ instance hasForgetToPartOrd : HasForget₂ BddOrd PartOrd where
 instance hasForgetToBipointed : HasForget₂ BddOrd Bipointed where
   forget₂ :=
     { obj := fun X => ⟨X, ⊥, ⊤⟩
-      map := fun f => ⟨f, f.map_bot', f.map_top'⟩ }
+      map := fun f ↦ ⟨f, f.map_bot', f.map_top'⟩ }
   forget_comp := rfl
 
 /-- `OrderDual` as a functor. -/

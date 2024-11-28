@@ -276,7 +276,7 @@ instance : CoeOut (r ≺i s) (r ↪r s) :=
   ⟨PrincipalSeg.toRelEmbedding⟩
 
 instance : CoeFun (r ≺i s) fun _ => α → β :=
-  ⟨fun f => f⟩
+  ⟨fun f ↦ f⟩
 
 theorem toRelEmbedding_injective [IsIrrefl β s] [IsTrichotomous β s] :
     Function.Injective (@toRelEmbedding α β r s) := by
@@ -326,7 +326,7 @@ theorem surjOn (f : r ≺i s) : Set.SurjOn f Set.univ { b | s b f.top } := by
 
 /-- A principal segment is in particular an initial segment. -/
 instance hasCoeInitialSeg [IsTrans β s] : Coe (r ≺i s) (r ≼i s) :=
-  ⟨fun f => ⟨f.toRelEmbedding, fun _ _ => f.mem_range_of_rel⟩⟩
+  ⟨fun f ↦ ⟨f.toRelEmbedding, fun _ _ => f.mem_range_of_rel⟩⟩
 
 theorem coe_coe_fn' [IsTrans β s] (f : r ≺i s) : ((f : r ≼i s) : α → β) = f :=
   rfl
@@ -361,7 +361,7 @@ theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : Fals
   exact _root_.irrefl _ h
 
 instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
-  ⟨fun f => f.irrefl⟩
+  ⟨fun f ↦ f.irrefl⟩
 
 /-- Composition of a principal segment with an initial segment, as a principal segment -/
 def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=

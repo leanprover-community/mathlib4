@@ -86,7 +86,7 @@ protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s 
 
 theorem cons_injective2 : Function.Injective2 (cons : α → Seq α → Seq α) := fun x y s t h =>
   ⟨by rw [← Option.some_inj, ← get?_cons_zero, h, get?_cons_zero],
-    Seq.ext fun n => by simp_rw [← get?_cons_succ x s n, h, get?_cons_succ]⟩
+    Seq.ext fun n ↦ by simp_rw [← get?_cons_succ x s n, h, get?_cons_succ]⟩
 
 theorem cons_left_injective (s : Seq α) : Function.Injective fun x ↦ cons x s :=
   cons_injective2.left _
@@ -200,7 +200,7 @@ theorem destruct_nil : destruct (nil : Seq α) = none :=
 theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
   | ⟨f, al⟩ => by
     unfold cons destruct Functor.map
-    apply congr_arg fun s => some (a, s)
+    apply congr_arg fun s ↦ some (a, s)
     apply Subtype.eq; dsimp [tail]
 
 -- Porting note: needed universe annotation to avoid universe issues
@@ -331,7 +331,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
     match t₁, t₂, e with
     | _, _, ⟨s, s', rfl, rfl, r⟩ => by
       suffices head s = head s' ∧ R (tail s) (tail s') from
-        And.imp id (fun r => ⟨tail s, tail s', by cases s; rfl, by cases s'; rfl, r⟩) this
+        And.imp id (fun r ↦ ⟨tail s, tail s', by cases s; rfl, by cases s'; rfl, r⟩) this
       have := bisim r; revert r this
       apply recOn s _ _ <;> apply recOn s' _ _
       · intro r _
@@ -360,7 +360,7 @@ theorem coinduction :
       head s₁ = head s₂ →
         (∀ (β : Type u) (fr : Seq α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂
   | _, _, hh, ht =>
-    Subtype.eq (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
+    Subtype.eq (Stream'.coinduction hh fun β fr => ht β fun s ↦ fr s.1)
 
 theorem coinduction2 (s) (f g : Seq α → Seq β)
     (H :
@@ -512,7 +512,7 @@ section ZipWith
 
 /-- Combine two sequences with a function -/
 def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
-  ⟨fun n => Option.map₂ f (s₁.get? n) (s₂.get? n), fun {_} hn =>
+  ⟨fun n ↦ Option.map₂ f (s₁.get? n) (s₂.get? n), fun {_} hn =>
     Option.map₂_eq_none_iff.2 <| (Option.map₂_eq_none_iff.1 hn).imp s₁.2 s₂.2⟩
 
 @[simp]

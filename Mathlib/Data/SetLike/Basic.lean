@@ -109,7 +109,7 @@ instance (priority := 100) instMembership : Membership B A :=
   ⟨fun p x => x ∈ (p : Set B)⟩
 
 instance (priority := 100) : CoeSort A (Type _) :=
-  ⟨fun p => { x : B // x ∈ p }⟩
+  ⟨fun p ↦ { x : B // x ∈ p }⟩
 
 section Delab
 open Lean PrettyPrinter.Delaborator SubExpr

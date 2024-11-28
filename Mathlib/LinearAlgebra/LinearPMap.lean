@@ -379,7 +379,7 @@ instance instMulAction : MulAction M (E →ₗ.[R] F) where
 end SMul
 
 instance instNeg : Neg (E →ₗ.[R] F) :=
-  ⟨fun f => ⟨f.domain, -f.toFun⟩⟩
+  ⟨fun f ↦ ⟨f.domain, -f.toFun⟩⟩
 
 @[simp]
 theorem neg_domain (f : E →ₗ.[R] F) : (-f).domain = f.domain := rfl
@@ -389,7 +389,7 @@ theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
   rfl
 
 instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
-  ⟨fun f => by
+  ⟨fun f ↦ by
     ext x y hxy
     · rfl
     · simp only [neg_apply, neg_neg]
@@ -416,11 +416,11 @@ instance instAddSemigroup : AddSemigroup (E →ₗ.[R] F) :=
     · simp only [add_apply, hxy, add_assoc]⟩
 
 instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
-  ⟨fun f => by
+  ⟨fun f ↦ by
     ext x y hxy
     · simp [add_domain]
     · simp only [add_apply, hxy, zero_apply, zero_add],
-  fun f => by
+  fun f ↦ by
     ext x y hxy
     · simp [add_domain]
     · simp only [add_apply, hxy, zero_apply, add_zero]⟩

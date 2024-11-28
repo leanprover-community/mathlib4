@@ -31,7 +31,7 @@ variable {α : Type*} [DecidableEq α] {s : Multiset α}
   does not respect multiplicities, unlike `cons`, but it is suitable as
   an insert operation on `Finset`. -/
 def ndinsert (a : α) (s : Multiset α) : Multiset α :=
-  Quot.liftOn s (fun l => (l.insert a : Multiset α)) fun _ _ p => Quot.sound (p.insert a)
+  Quot.liftOn s (fun l ↦ (l.insert a : Multiset α)) fun _ _ p => Quot.sound (p.insert a)
 
 @[simp]
 theorem coe_ndinsert (a : α) (l : List α) : ndinsert a l = (insert a l : List α) :=
@@ -88,13 +88,13 @@ theorem ndinsert_le {a : α} {s t : Multiset α} : ndinsert a s ≤ t ↔ s ≤ 
 
 theorem attach_ndinsert (a : α) (s : Multiset α) :
     (s.ndinsert a).attach =
-      ndinsert ⟨a, mem_ndinsert_self a s⟩ (s.attach.map fun p => ⟨p.1, mem_ndinsert_of_mem p.2⟩) :=
+      ndinsert ⟨a, mem_ndinsert_self a s⟩ (s.attach.map fun p ↦ ⟨p.1, mem_ndinsert_of_mem p.2⟩) :=
   have eq :
     ∀ h : ∀ p : { x // x ∈ s }, p.1 ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=
     fun _ => funext fun _ => Subtype.eq rfl
   have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
-      (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
+      (s.attach.map fun p ↦ ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
     intro t ht
     by_cases h : a ∈ s
     · rw [ndinsert_of_mem h] at ht

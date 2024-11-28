@@ -129,7 +129,7 @@ theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
   rw [add_assoc, add_tsub_cancel_left, antidiagonalTuple_zero_succ]
 
 theorem antidiagonalTuple_two (n : ℕ) :
-    antidiagonalTuple 2 n = (antidiagonal n).map fun i => ![i.1, i.2] := by
+    antidiagonalTuple 2 n = (antidiagonal n).map fun i ↦ ![i.1, i.2] := by
   rw [antidiagonalTuple]
   simp_rw [antidiagonalTuple_one, List.map_singleton]
   rw [List.map_eq_flatMap]
@@ -192,7 +192,7 @@ theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = {![n]} :=
   congr_arg _ (List.Nat.antidiagonalTuple_one n)
 
 theorem antidiagonalTuple_two (n : ℕ) :
-    antidiagonalTuple 2 n = (antidiagonal n).map fun i => ![i.1, i.2] :=
+    antidiagonalTuple 2 n = (antidiagonal n).map fun i ↦ ![i.1, i.2] :=
   congr_arg _ (List.Nat.antidiagonalTuple_two n)
 
 end Multiset.Nat

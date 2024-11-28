@@ -118,19 +118,19 @@ variable (𝒜)
 /-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
 theorem gc_ideal :
     @GaloisConnection (Ideal A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
-      (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
+      (fun I => zeroLocus 𝒜 I) fun t ↦ (vanishingIdeal t).toIdeal :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
 /-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
-      (fun s => zeroLocus 𝒜 s) fun t => vanishingIdeal t := by
+      (fun s ↦ zeroLocus 𝒜 s) fun t ↦ vanishingIdeal t := by
   have ideal_gc : GaloisConnection Ideal.span _ := (Submodule.gi A _).gc
   simpa [zeroLocus_span, Function.comp_def] using GaloisConnection.compose ideal_gc (gc_ideal 𝒜)
 
 theorem gc_homogeneousIdeal :
     @GaloisConnection (HomogeneousIdeal 𝒜) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
-      (fun I => zeroLocus 𝒜 I) fun t => vanishingIdeal t :=
+      (fun I => zeroLocus 𝒜 I) fun t ↦ vanishingIdeal t :=
   fun I t => by
   simpa [show I.toIdeal ≤ (vanishingIdeal t).toIdeal ↔ I ≤ vanishingIdeal t from Iff.rfl] using
     subset_zeroLocus_iff_le_vanishingIdeal t I.toIdeal
@@ -279,7 +279,7 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
     (by
       intro Zs h
       rw [Set.sInter_eq_iInter]
-      let f : Zs → Set _ := fun i => Classical.choose (h i.2)
+      let f : Zs → Set _ := fun i ↦ Classical.choose (h i.2)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
       convert H using 2

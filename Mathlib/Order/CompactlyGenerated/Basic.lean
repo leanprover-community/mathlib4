@@ -145,7 +145,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
 theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElement k) {ι : Type*}
     (f : ι → α) (h : k ≤ ⨆ i, f i) : ∃ s : Finset ι, k ≤ ⨆ i ∈ s, f i := by
   classical
-    let g : Finset ι → α := fun s => ⨆ i ∈ s, f i
+    let g : Finset ι → α := fun s ↦ ⨆ i ∈ s, f i
     have h1 : DirectedOn (· ≤ ·) (Set.range g) := by
       rintro - ⟨s, rfl⟩ - ⟨t, rfl⟩
       exact
@@ -190,7 +190,7 @@ theorem isCompactElement_finsetSup {α β : Type*} [CompleteLattice α] {f : β 
     simpa only [exists_prop]
 
 theorem WellFoundedGT.isSupFiniteCompact [WellFoundedGT α] :
-    IsSupFiniteCompact α := fun s => by
+    IsSupFiniteCompact α := fun s ↦ by
   let S := { x | ∃ t : Finset α, ↑t ⊆ s ∧ t.sup id = x }
   obtain ⟨m, ⟨t, ⟨ht₁, rfl⟩⟩, hm⟩ := wellFounded_gt.has_min S ⟨⊥, ∅, by simp⟩
   refine ⟨t, ht₁, (sSup_le _ _ fun y hy => ?_).antisymm ?_⟩

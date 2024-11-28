@@ -308,7 +308,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     (hf' : ∀ i (h : i < n), f i h ∈ s)
     (f_inj : ∀ i j (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : #s = n := by
   classical
-  have : s = (range n).attach.image fun i => f i.1 (mem_range.1 i.2) := by
+  have : s = (range n).attach.image fun i ↦ f i.1 (mem_range.1 i.2) := by
     ext a
     suffices _ : a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a by
       simpa only [mem_image, mem_attach, true_and, Subtype.exists]
@@ -316,7 +316,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     · intro ha; obtain ⟨i, hi, rfl⟩ := hf a ha; use i, mem_range.2 hi
     · rintro ⟨i, hi, rfl⟩; apply hf'
   calc
-    #s = #((range n).attach.image fun i => f i.1 (mem_range.1 i.2)) := by rw [this]
+    #s = #((range n).attach.image fun i ↦ f i.1 (mem_range.1 i.2)) := by rw [this]
     _ = #(range n).attach := ?_
     _ = #(range n) := card_attach
     _ = n := card_range n

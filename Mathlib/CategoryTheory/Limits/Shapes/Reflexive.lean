@@ -276,7 +276,7 @@ def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair
   obj := fun x ↦ match x with
     | one => WalkingReflexivePair.zero
     | zero => WalkingReflexivePair.one
-  map := fun f => match f with
+  map := fun f ↦ match f with
     | .left => WalkingReflexivePair.Hom.left
     | .right => WalkingReflexivePair.Hom.right
     | .id _ => WalkingReflexivePair.Hom.id _

@@ -274,17 +274,17 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
   let b := Module.basisUnique ι h
   let h : b.repr v default ≠ 0 := mt Module.basisUnique_repr_eq_zero_iff.mp hv
   Basis.ofRepr
-    { toFun := fun w => Finsupp.single default (b.repr w default / b.repr v default)
-      invFun := fun f => f default • v
+    { toFun := fun w ↦ Finsupp.single default (b.repr w default / b.repr v default)
+      invFun := fun f ↦ f default • v
       map_add' := by simp [add_div]
       map_smul' := by simp [mul_div]
-      left_inv := fun w => by
+      left_inv := fun w ↦ by
         apply_fun b.repr using b.repr.toEquiv.injective
         apply_fun Equiv.finsuppUnique
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
         exact div_mul_cancel₀ _ h
-      right_inv := fun f => by
+      right_inv := fun f ↦ by
         ext
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
@@ -394,7 +394,7 @@ work well with typeclass search. -/
 instance finiteDimensional_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule K V)
     [∀ i, FiniteDimensional K (S i)] : FiniteDimensional K (s.sup S : Submodule K V) := by
   refine
-    @Finset.sup_induction _ _ _ _ s S (fun i => FiniteDimensional K ↑i) (finiteDimensional_bot K V)
+    @Finset.sup_induction _ _ _ _ s S (fun i ↦ FiniteDimensional K ↑i) (finiteDimensional_bot K V)
       ?_ fun i _ => by infer_instance
   intro S₁ hS₁ S₂ hS₂
   exact Submodule.finiteDimensional_sup S₁ S₂

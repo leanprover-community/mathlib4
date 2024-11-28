@@ -247,7 +247,7 @@ elab_rules : tactic
   | `(tactic| algebraize $cfg:optConfig $args) => withMainContext do
     let cfg ← elabAlgebraizeConfig cfg
     let t ← match args with
-    | `(algebraizeTermSeq| [$rs,*]) => rs.getElems.mapM fun i => Term.elabTerm i none
+    | `(algebraizeTermSeq| [$rs,*]) => rs.getElems.mapM fun i ↦ Term.elabTerm i none
     | _ =>
       throwError ""
     if t.size == 0 then

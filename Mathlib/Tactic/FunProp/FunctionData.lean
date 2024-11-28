@@ -180,7 +180,7 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
       return .none
 
 
-/-- Decomposes `fun x ↦ f y₁ ... yₙ` into `(fun g => g yₙ) ∘ (fun x y => f y₁ ... yₙ₋₁ y)`
+/-- Decomposes `fun x ↦ f y₁ ... yₙ` into `(fun g ↦ g yₙ) ∘ (fun x y => f y₁ ... yₙ₋₁ y)`
 
 Returns none if:
   - `n=0`
@@ -275,7 +275,7 @@ def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat)
 
   withLCtx fData.lctx fData.insts do
 
-  let gxs := args.map (fun i => fData.args[i]!.expr)
+  let gxs := args.map (fun i ↦ fData.args[i]!.expr)
 
   try
     let gx ← mkProdElem gxs -- this can crash if we have dependent types

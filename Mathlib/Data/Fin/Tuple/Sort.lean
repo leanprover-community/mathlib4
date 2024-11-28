@@ -36,12 +36,12 @@ variable {α : Type*} [LinearOrder α]
 equipped with the lexicographic order.
 -/
 def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
-  Finset.univ.image fun i => (f i, i)
+  Finset.univ.image fun i ↦ (f i, i)
 
 /-- Given `p : α ×ₗ (Fin n) := (f i, i)` with `p ∈ graph f`,
 `graph.proj p` is defined to be `f i`.
 -/
-def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
+def graph.proj {f : Fin n → α} : graph f → α := fun p ↦ p.1.1
 
 @[simp]
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
@@ -126,7 +126,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α 
   intro _ h
   contrapose! h
   rw [← Fin.card_Iio, Fintype.card_subtype]
-  refine Finset.card_mono (fun i => Function.mtr ?_)
+  refine Finset.card_mono (fun i ↦ Function.mtr ?_)
   simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
   intro hij hia
   apply h

@@ -101,7 +101,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
     `P →ₗ N` and a random splitting of the surjection `M →ₗ N`, and we get
     a map `φ : (P →₀ R) →ₗ M`.
     -/
-  let φ : (P →₀ R) →ₗ[R] M := Finsupp.linearCombination _ fun p => Function.surjInv hf (g p)
+  let φ : (P →₀ R) →ₗ[R] M := Finsupp.linearCombination _ fun p ↦ Function.surjInv hf (g p)
   -- By projectivity we have a map `P →ₗ (P →₀ R)`;
   cases' h.out with s hs
   -- Compose to get `P →ₗ M`. This works.
@@ -148,7 +148,7 @@ instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
 theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
   -- get it from `ι → (P →₀ R)` coming from `b`.
-  use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
+  use b.constr ℕ fun i ↦ Finsupp.single (b i) (1 : R)
   intro m
   simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.linearCombination_single,
     map_finsupp_sum]

@@ -31,14 +31,14 @@ instance : CanLift Int Nat (fun n : Nat ↦ n) (0 ≤ ·) :=
 instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → α i) (P : ∀ i, α i → Prop)
     [∀ i, CanLift (α i) (β i) (coe i) (P i)] :
     CanLift (∀ i, α i) (∀ i, β i) (fun f i ↦ coe i (f i)) fun f ↦ ∀ i, P i (f i) where
-  prf f hf := ⟨fun i => Classical.choose (CanLift.prf (f i) (hf i)),
-    funext fun i => Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
+  prf f hf := ⟨fun i ↦ Classical.choose (CanLift.prf (f i) (hf i)),
+    funext fun i ↦ Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
 
 theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i, Nonempty (α i)]
     {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
     ∃ g : ∀ i : ι, α i, (fun i : Subtype p => g i) = f := by
   haveI : DecidablePred p := fun i ↦ Classical.propDecidable (p i)
-  exact ⟨fun i => if hi : p i then f ⟨i, hi⟩ else Classical.choice (ne i),
+  exact ⟨fun i ↦ if hi : p i then f ⟨i, hi⟩ else Classical.choice (ne i),
     funext fun i ↦ dif_pos i.2⟩
 
 instance PiSubtype.canLift (ι : Sort*) (α : ι → Sort*) [∀ i, Nonempty (α i)] (p : ι → Prop) :

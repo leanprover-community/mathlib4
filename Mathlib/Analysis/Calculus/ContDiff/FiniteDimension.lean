@@ -39,7 +39,7 @@ theorem contDiffOn_clm_apply {f : D → E →L[𝕜] F} {s : Set D} [FiniteDimen
   let e₁ := ContinuousLinearEquiv.ofFinrankEq hd
   let e₂ := (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
   rw [← id_comp f, ← e₂.symm_comp_self]
-  exact e₂.symm.contDiff.comp_contDiffOn (contDiffOn_pi.mpr fun i => h _)
+  exact e₂.symm.contDiff.comp_contDiffOn (contDiffOn_pi.mpr fun i ↦ h _)
 
 theorem contDiff_clm_apply_iff {f : D → E →L[𝕜] F} [FiniteDimensional 𝕜 E] :
     ContDiff 𝕜 n f ↔ ∀ y, ContDiff 𝕜 n fun x ↦ f x y := by

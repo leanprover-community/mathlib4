@@ -215,7 +215,7 @@ theorem linearIndependent_iff'' :
   exact linearIndependent_iff'.trans
     ⟨fun H s g hg hv i => if his : i ∈ s then H s g hv i his else hg i his, fun H s g hg i hi => by
       convert
-        H s (fun j => if j ∈ s then g j else 0) (fun j hj => if_neg hj)
+        H s (fun j ↦ if j ∈ s then g j else 0) (fun j hj => if_neg hj)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, hg]) i
       exact (if_pos hi).symm⟩
 
@@ -563,7 +563,7 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulActio
   rw [linearIndependent_iff''] at hv ⊢
   intro s g hgs hsum i
   refine (smul_eq_zero_iff_eq (w i)).1 ?_
-  refine hv s (fun i => w i • g i) (fun i hi => ?_) ?_ i
+  refine hv s (fun i ↦ w i • g i) (fun i hi => ?_) ?_ i
   · dsimp only
     exact (hgs i hi).symm ▸ smul_zero _
   · rw [← hsum, Finset.sum_congr rfl _]
@@ -578,7 +578,7 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
   rw [linearIndependent_iff''] at hv ⊢
   intro s g hgs hsum i
   rw [← (w i).mul_left_eq_zero]
-  refine hv s (fun i => g i • (w i : R)) (fun i hi => ?_) ?_ i
+  refine hv s (fun i ↦ g i • (w i : R)) (fun i hi => ?_) ?_ i
   · dsimp only
     exact (hgs i hi).symm ▸ zero_smul _ _
   · rw [← hsum, Finset.sum_congr rfl _]
@@ -641,11 +641,11 @@ theorem LinearIndependent.maximal_iff {ι : Type w} {R : Type u} [Ring R] [Nontr
     exact range_eq_univ.mp (image_injective.mpr i'.injective p)
   · intro p w i' h
     specialize
-      p w ((↑) : w → M) i' (fun i => ⟨v i, range_subset_iff.mp h i⟩)
+      p w ((↑) : w → M) i' (fun i ↦ ⟨v i, range_subset_iff.mp h i⟩)
         (by
           ext
           simp)
-    have q := congr_arg (fun s => ((↑) : w → M) '' s) p.range_eq
+    have q := congr_arg (fun s ↦ ((↑) : w → M) '' s) p.range_eq
     dsimp at q
     rw [← image_univ, image_image] at q
     simpa using q
@@ -762,7 +762,7 @@ theorem linearIndependent_iUnion_finite_subtype {ι : Type*} {f : ι → Set M}
   rw [iUnion_eq_iUnion_finset f]
   apply linearIndependent_iUnion_of_directed
   · apply directed_of_isDirected_le
-    exact fun t₁ t₂ ht => iUnion_mono fun i => iUnion_subset_iUnion_const fun h ↦ ht h
+    exact fun t₁ t₂ ht => iUnion_mono fun i ↦ iUnion_subset_iUnion_const fun h ↦ ht h
   intro t
   induction' t using Finset.induction_on with i s his ih
   · refine (linearIndependent_empty R M).mono ?_
@@ -794,7 +794,7 @@ theorem linearIndependent_iUnion_finite {η : Type*} {ιs : η → Type*} {f : �
         exact subset_span (mem_range_self y₂)
       exact False.elim ((hindep x₁).ne_zero _ h0)
   rw [range_sigma_eq_iUnion_range]
-  apply linearIndependent_iUnion_finite_subtype (fun j => (hindep j).to_subtype_range) hd
+  apply linearIndependent_iUnion_finite_subtype (fun j ↦ (hindep j).to_subtype_range) hd
 
 end Subtype
 
@@ -915,8 +915,8 @@ theorem linearIndependent_iff_not_smul_mem_span :
 
 /-- See also `iSupIndep_iff_linearIndependent_of_ne_zero`. -/
 theorem LinearIndependent.iSupIndep_span_singleton (hv : LinearIndependent R v) :
-    iSupIndep fun i => R ∙ v i := by
-  refine iSupIndep_def.mp fun i => ?_
+    iSupIndep fun i ↦ R ∙ v i := by
+  refine iSupIndep_def.mp fun i ↦ ?_
   rw [disjoint_iff_inf_le]
   intro m hm
   simp only [mem_inf, mem_span_singleton, iSup_subtype'] at hm
@@ -1059,7 +1059,7 @@ theorem linearIndependent_inl_union_inr' {v : ι → M} {v' : ι' → M'} (hv : 
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing L]
-    [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
+    [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f ↦ f : (G →* L) → G → L) := by
   -- Porting note: Some casts are required.
   letI := Classical.decEq (G →* L)
   letI : MulAction L L := DistribMulAction.toMulAction
@@ -1083,7 +1083,7 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
             -- We prove these expressions are equal by showing
             -- the differences of their values on each monoid element `x` is zero
             eq_of_sub_eq_zero <|
-            ih (fun j => g j * j x - g j * a x)
+            ih (fun j ↦ g j * j x - g j * a x)
               (funext fun y : G => calc
                 -- After that, it's just a chase scene.
                 (∑ i ∈ s, ((g i * i x - g i * a x) • (i : G → L))) y =
@@ -1242,7 +1242,7 @@ protected theorem LinearIndependent.insert (hs : LinearIndependent K (fun b ↦ 
   rwa [disjoint_span_singleton' x0]
 
 theorem linearIndependent_option' :
-    LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) ↔
+    LinearIndependent K (fun o ↦ Option.casesOn' o x v : Option ι → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   -- Porting note: Explicit universe level is required in `Equiv.optionEquivSumPUnit`.
   rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{u', _} ι).symm, linearIndependent_sum,
@@ -1254,7 +1254,7 @@ theorem linearIndependent_option' :
 
 theorem LinearIndependent.option (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) :
-    LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) :=
+    LinearIndependent K (fun o ↦ Option.casesOn' o x v : Option ι → V) :=
   linearIndependent_option'.2 ⟨hv, hx⟩
 
 theorem linearIndependent_option {v : Option ι → V} : LinearIndependent K v ↔

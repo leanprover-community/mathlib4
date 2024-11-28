@@ -219,7 +219,7 @@ def natIso {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.o
 
 instance {I : Type*} {F G : Discrete I ⥤ C} (f : ∀ i, F.obj i ⟶ G.obj i) [∀ i, IsIso (f i)] :
     IsIso (Discrete.natTrans f) := by
-  change IsIso (Discrete.natIso (fun i => asIso (f i))).hom
+  change IsIso (Discrete.natIso (fun i ↦ asIso (f i))).hom
   infer_instance
 
 @[simp]
@@ -246,9 +246,9 @@ def equivalence {I : Type u₁} {J : Type u₂} (e : I ≃ J) : Discrete I ≌ D
   functor := Discrete.functor (Discrete.mk ∘ (e : I → J))
   inverse := Discrete.functor (Discrete.mk ∘ (e.symm : J → I))
   unitIso :=
-    Discrete.natIso fun i => eqToIso (by aesop_cat)
+    Discrete.natIso fun i ↦ eqToIso (by aesop_cat)
   counitIso :=
-    Discrete.natIso fun j => eqToIso (by aesop_cat)
+    Discrete.natIso fun j ↦ eqToIso (by aesop_cat)
 
 /-- We can convert an equivalence of `discrete` categories to a type-level `Equiv`. -/
 @[simps]
@@ -292,7 +292,7 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
     (J → C) ≌ (Discrete J ⥤ C) where
   functor :=
     { obj := fun F => Discrete.functor F
-      map := fun f => Discrete.natTrans (fun j => f j.as) }
+      map := fun f ↦ Discrete.natTrans (fun j ↦ f j.as) }
   inverse :=
     { obj := fun F j => F.obj ⟨j⟩
       map := fun f j => f.app ⟨j⟩ }

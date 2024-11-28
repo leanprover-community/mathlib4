@@ -60,7 +60,7 @@ theorem IsPrimePow.exists_ordCompl_eq_one {n : ℕ} (h : IsPrimePow n) :
   · refine absurd ?_ hk0.ne'
     simp [← Nat.factorization_eq_zero_of_non_prime n pp, h1]
   refine ⟨p, pp, ?_⟩
-  refine Nat.eq_of_factorization_eq (Nat.ordCompl_pos p hn0).ne' (by simp) fun q => ?_
+  refine Nat.eq_of_factorization_eq (Nat.ordCompl_pos p hn0).ne' (by simp) fun q ↦ ?_
   rw [Nat.factorization_ordCompl n p, h1]
   simp
 
@@ -108,7 +108,7 @@ theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ I
   apply existsUnique_congr
   simp only [and_congr_right_iff]
   intro p hp
-  exact ⟨hp.dvd_of_dvd_pow, fun t => t.trans (dvd_pow_self _ hk)⟩
+  exact ⟨hp.dvd_of_dvd_pow, fun t ↦ t.trans (dvd_pow_self _ hk)⟩
 
 theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn : IsPrimePow n) :
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
@@ -120,8 +120,8 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
     simp [hab, Finset.filter_singleton, not_isPrimePow_one]
   refine
     ⟨?_, fun h =>
-      Or.elim h (fun i => i.trans ((@dvd_mul_right a b a hab).mpr (dvd_refl a)))
-          fun i => i.trans ((@dvd_mul_left a b b hab.symm).mpr (dvd_refl b))⟩
+      Or.elim h (fun i ↦ i.trans ((@dvd_mul_right a b a hab).mpr (dvd_refl a)))
+          fun i ↦ i.trans ((@dvd_mul_left a b b hab.symm).mpr (dvd_refl b))⟩
   obtain ⟨p, k, hp, _, rfl⟩ := (isPrimePow_nat_iff _).1 hn
   simp only [hp.pow_dvd_iff_le_factorization (mul_ne_zero ha hb), Nat.factorization_mul ha hb,
     hp.pow_dvd_iff_le_factorization ha, hp.pow_dvd_iff_le_factorization hb, Pi.add_apply,

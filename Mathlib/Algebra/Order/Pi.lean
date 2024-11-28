@@ -28,14 +28,14 @@ instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMo
     OrderedCommMonoid (∀ i, Z i) where
   __ := Pi.partialOrder
   __ := Pi.commMonoid
-  mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left' (w i) _
+  mul_le_mul_left _ _ w _ := fun i ↦ mul_le_mul_left' (w i) _
 
 @[to_additive]
 instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ i, Mul (α i)]
     [∀ i, ExistsMulOfLE (α i)] : ExistsMulOfLE (∀ i, α i) :=
   ⟨fun h =>
-    ⟨fun i => (exists_mul_of_le <| h i).choose,
-      funext fun i => (exists_mul_of_le <| h i).choose_spec⟩⟩
+    ⟨fun i ↦ (exists_mul_of_le <| h i).choose,
+      funext fun i ↦ (exists_mul_of_le <| h i).choose_spec⟩⟩
 
 /-- The product of a family of canonically ordered monoids is a canonically ordered monoid. -/
 @[to_additive
@@ -65,7 +65,7 @@ instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i
   __ := Pi.semiring
   __ := Pi.partialOrder
   add_le_add_left _ _ hab _ := fun _ => add_le_add_left (hab _) _
-  zero_le_one := fun i => zero_le_one (α := f i)
+  zero_le_one := fun i ↦ zero_le_one (α := f i)
   mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
   mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
 

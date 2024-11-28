@@ -104,7 +104,7 @@ theorem isOpen_iUnion {f : ι → Set X} (h : ∀ i, IsOpen (f i)) : IsOpen (⋃
 
 theorem isOpen_biUnion {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋃ i ∈ s, f i) :=
-  isOpen_iUnion fun i => isOpen_iUnion fun hi => h i hi
+  isOpen_iUnion fun i ↦ isOpen_iUnion fun hi => h i hi
 
 theorem IsOpen.union (h₁ : IsOpen s₁) (h₂ : IsOpen s₂) : IsOpen (s₁ ∪ s₂) := by
   rw [union_eq_iUnion]; exact isOpen_iUnion (Bool.forall_bool.2 ⟨h₂, h₁⟩)
@@ -176,7 +176,7 @@ theorem isClosed_iInter {f : ι → Set X} (h : ∀ i, IsClosed (f i)) : IsClose
 
 theorem isClosed_biInter {s : Set α} {f : α → Set X} (h : ∀ i ∈ s, IsClosed (f i)) :
     IsClosed (⋂ i ∈ s, f i) :=
-  isClosed_iInter fun i => isClosed_iInter <| h i
+  isClosed_iInter fun i ↦ isClosed_iInter <| h i
 
 @[simp]
 theorem isClosed_compl_iff {s : Set X} : IsClosed sᶜ ↔ IsOpen s := by
@@ -334,7 +334,7 @@ theorem interior_sInter_subset (S : Set (Set X)) : interior (⋂₀ S) ⊆ ⋂ s
     _ ⊆ ⋂ s ∈ S, interior s := interior_iInter₂_subset _ _
 
 theorem Filter.HasBasis.lift'_interior {l : Filter X} {p : ι → Prop} {s : ι → Set X}
-    (h : l.HasBasis p s) : (l.lift' interior).HasBasis p fun i => interior (s i) :=
+    (h : l.HasBasis p s) : (l.lift' interior).HasBasis p fun i ↦ interior (s i) :=
   h.lift' fun _ _ ↦ interior_mono
 
 theorem Filter.lift'_interior_le (l : Filter X) : l.lift' interior ≤ l := fun _s hs ↦
@@ -495,7 +495,7 @@ theorem Filter.le_lift'_closure (l : Filter X) : l ≤ l.lift' closure :=
   le_lift'.2 fun _ h => mem_of_superset h subset_closure
 
 theorem Filter.HasBasis.lift'_closure {l : Filter X} {p : ι → Prop} {s : ι → Set X}
-    (h : l.HasBasis p s) : (l.lift' closure).HasBasis p fun i => closure (s i) :=
+    (h : l.HasBasis p s) : (l.lift' closure).HasBasis p fun i ↦ closure (s i) :=
   h.lift' (monotone_closure X)
 
 theorem Filter.HasBasis.lift'_closure_eq_self {l : Filter X} {p : ι → Prop} {s : ι → Set X}
@@ -695,7 +695,7 @@ theorem nhds_def' (x : X) : 𝓝 x = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s
 /-- The open sets containing `x` are a basis for the neighborhood filter. See `nhds_basis_opens'`
 for a variant using open neighborhoods instead. -/
 theorem nhds_basis_opens (x : X) :
-    (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsOpen s) fun s => s := by
+    (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsOpen s) fun s ↦ s := by
   rw [nhds_def]
   exact hasBasis_biInf_principal
     (fun s ⟨has, hs⟩ t ⟨hat, ht⟩ =>
@@ -703,7 +703,7 @@ theorem nhds_basis_opens (x : X) :
     ⟨univ, ⟨mem_univ x, isOpen_univ⟩⟩
 
 theorem nhds_basis_closeds (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∉ s ∧ IsClosed s) compl :=
-  ⟨fun t => (nhds_basis_opens x).mem_iff.trans <|
+  ⟨fun t ↦ (nhds_basis_opens x).mem_iff.trans <|
     compl_surjective.exists.trans <| by simp only [isOpen_compl_iff, mem_compl_iff]⟩
 
 @[simp]
@@ -1105,7 +1105,7 @@ theorem isClosed_iff_frequently : IsClosed s ↔ ∀ x, (∃ᶠ y in 𝓝 x, y �
 of a sequence is closed. -/
 theorem isClosed_setOf_clusterPt {f : Filter X} : IsClosed { x | ClusterPt x f } := by
   simp only [ClusterPt, inf_neBot_iff_frequently_left, setOf_forall, imp_iff_not_or]
-  refine isClosed_iInter fun p => IsClosed.union ?_ ?_ <;> apply isClosed_compl_iff.2
+  refine isClosed_iInter fun p ↦ IsClosed.union ?_ ?_ <;> apply isClosed_compl_iff.2
   exacts [isOpen_setOf_eventually_nhds, isOpen_const]
 
 theorem mem_closure_iff_clusterPt : x ∈ closure s ↔ ClusterPt x (𝓟 s) :=

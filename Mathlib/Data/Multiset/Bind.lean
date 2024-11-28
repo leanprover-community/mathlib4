@@ -196,14 +196,14 @@ theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : 
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed because not in normal form
 theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
-    (s.attach.bind fun i => f i) = s.bind f :=
+    (s.attach.bind fun i ↦ f i) = s.bind f :=
   congr_arg join <| attach_map_val' _ _
 
 variable {f s t}
 
 @[simp] lemma nodup_bind :
     Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise (Disjoint on f) := by
-  have : ∀ a, ∃ l : List β, f a = l := fun a ↦ Quot.induction_on (f a) fun l => ⟨l, rfl⟩
+  have : ∀ a, ∃ l : List β, f a = l := fun a ↦ Quot.induction_on (f a) fun l ↦ ⟨l, rfl⟩
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
   have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm

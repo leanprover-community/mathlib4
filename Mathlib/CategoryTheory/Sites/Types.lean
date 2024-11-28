@@ -156,7 +156,7 @@ noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u
   unitIso := NatIso.ofComponents
       (fun _α => -- α ≅ PUnit ⟶ α
         { hom := fun x _ => x
-          inv := fun f => f PUnit.unit
+          inv := fun f ↦ f PUnit.unit
           hom_inv_id := funext fun _ => rfl
           inv_hom_id := funext fun _ => funext fun y ↦ PUnit.casesOn y rfl })
       fun _ => rfl

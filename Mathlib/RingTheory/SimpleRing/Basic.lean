@@ -66,7 +66,7 @@ lemma injective_ringHom_or_subsingleton_codomain
 protected theorem _root_.RingHom.injective
     {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocSemiring S] [Nontrivial S]
     (f : R →+* S) : Function.Injective f :=
-  injective_ringHom_or_subsingleton_codomain f |>.resolve_right fun r => not_subsingleton _ r
+  injective_ringHom_or_subsingleton_codomain f |>.resolve_right fun r ↦ not_subsingleton _ r
 
 universe u in
 lemma iff_injective_ringHom_or_subsingleton_codomain (R : Type u) [NonAssocRing R] [Nontrivial R] :

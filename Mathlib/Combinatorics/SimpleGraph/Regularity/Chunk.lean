@@ -183,10 +183,10 @@ theorem card_eq_of_mem_parts_chunk (hs : s ∈ (chunk hP G ε hU).parts) :
   split_ifs at hs <;> exact card_eq_of_mem_parts_equitabilise hs
 
 theorem m_le_card_of_mem_chunk_parts (hs : s ∈ (chunk hP G ε hU).parts) : m ≤ #s :=
-  (card_eq_of_mem_parts_chunk hs).elim ge_of_eq fun i => by simp [i]
+  (card_eq_of_mem_parts_chunk hs).elim ge_of_eq fun i ↦ by simp [i]
 
 theorem card_le_m_add_one_of_mem_chunk_parts (hs : s ∈ (chunk hP G ε hU).parts) : #s ≤ m + 1 :=
-  (card_eq_of_mem_parts_chunk hs).elim (fun i => by simp [i]) fun i => i.le
+  (card_eq_of_mem_parts_chunk hs).elim (fun i ↦ by simp [i]) fun i ↦ i.le
 
 theorem card_biUnion_star_le_m_add_one_card_star_mul :
     (#((star hP G ε hU V).biUnion id) : ℝ) ≤ #(star hP G ε hU V) * (m + 1) :=

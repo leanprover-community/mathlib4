@@ -154,7 +154,7 @@ def MatchState.pushFold (s : MatchState) (name : Name) (t : Term) : MatchState :
 
 /-- Matcher that assigns the current `SubExpr` into the match state;
 if a value already exists, then it checks for equality. -/
-def matchVar (c : Name) : Matcher := fun s => do
+def matchVar (c : Name) : Matcher := fun s ↦ do
   if let some (se, _, _) := s.vars[c]? then
     guard <| se.expr == (← getExpr)
     return s
@@ -162,28 +162,28 @@ def matchVar (c : Name) : Matcher := fun s => do
     s.captureSubexpr c
 
 /-- Matcher for an expression satisfying a given predicate. -/
-def matchExpr (p : Expr → Bool) : Matcher := fun s => do
+def matchExpr (p : Expr → Bool) : Matcher := fun s ↦ do
   guard <| p (← getExpr)
   return s
 
 /-- Matcher for `Expr.fvar`.
 It checks that the user name agrees and that the type of the expression is matched by `matchTy`. -/
-def matchFVar (userName : Name) (matchTy : Matcher) : Matcher := fun s => do
+def matchFVar (userName : Name) (matchTy : Matcher) : Matcher := fun s ↦ do
   let .fvar fvarId ← getExpr | failure
   guard <| userName == (← fvarId.getUserName)
   withType (matchTy s)
 
 /-- Matcher that checks that the type of the expression is matched by `matchTy`. -/
-def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
+def matchTypeOf (matchTy : Matcher) : Matcher := fun s ↦ do
   withType (matchTy s)
 
 /-- Matches raw nat lits. -/
-def natLitMatcher (n : Nat) : Matcher := fun s => do
+def natLitMatcher (n : Nat) : Matcher := fun s ↦ do
   guard <| (← getExpr).rawNatLit? == n
   return s
 
 /-- Matches applications. -/
-def matchApp (matchFun matchArg : Matcher) : Matcher := fun s => do
+def matchApp (matchFun matchArg : Matcher) : Matcher := fun s ↦ do
   guard <| (← getExpr).isApp
   let s ← withAppFn <| matchFun s
   let s ← withAppArg <| matchArg s
@@ -191,14 +191,14 @@ def matchApp (matchFun matchArg : Matcher) : Matcher := fun s => do
 
 /-- Matches pi types. The name `n` should be unique, and `matchBody` should use `n`
 as the `userName` of its fvar. -/
-def matchForall (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s => do
+def matchForall (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s ↦ do
   guard <| (← getExpr).isForall
   let s ← withBindingDomain <| matchDom s
   let s ← withBindingBodyUnusedName' fun _ arg => matchBody arg s
   return s
 
 /-- Matches lambdas. The `matchBody` takes the fvar introduced when visiting the body. -/
-def matchLambda (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s => do
+def matchLambda (matchDom : Matcher) (matchBody : Expr → Matcher) : Matcher := fun s ↦ do
   guard <| (← getExpr).isLambda
   let s ← withBindingDomain <| matchDom s
   let s ← withBindingBodyUnusedName' fun _ arg => matchBody arg s
@@ -319,7 +319,7 @@ Runs `smatcher`, extracts the resulting `scopeId` variable, processes this value
 (which must be a lambda) to produce a binder, and loops. -/
 partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := go #[] where
   /-- Variant of `matchScoped` after some number of `binders` have already been captured. -/
-  go (binders : Array (TSyntax ``extBinderParenthesized)) : Matcher := fun s => do
+  go (binders : Array (TSyntax ``extBinderParenthesized)) : Matcher := fun s ↦ do
     -- `lit` is bound to the SubExpr that the `scoped` syntax produced
     s.withVar lit do
     try
@@ -367,7 +367,7 @@ partial def mkScopedMatcher (lit scopeId : Name) (scopedTerm : Term) (boundNames
 
 /-- Matcher for expressions produced by `foldl`. -/
 partial def matchFoldl (lit x y : Name) (smatcher : Matcher) (sinit : Matcher) :
-    Matcher := fun s => do
+    Matcher := fun s ↦ do
   s.withVar lit do
     let expr ← getExpr
     -- Clear x and y state before running smatcher so it can store new values
@@ -508,8 +508,8 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs <| ←
         `(macroArg| $id:ident:sepBy(term $(prec?)?, $sep:str))
       -- N.B. `Syntax.getId` returns `.anonymous` for non-idents
-      let scopedTerm' ← scopedTerm.replaceM fun s => pure boundValues[s.getId]?
-      let init' ← init.replaceM fun s => pure boundValues[s.getId]?
+      let scopedTerm' ← scopedTerm.replaceM fun s ↦ pure boundValues[s.getId]?
+      let init' ← init.replaceM fun s ↦ pure boundValues[s.getId]?
       boundIdents := boundIdents.insert id.getId id
       match kind with
         | `(foldKind| foldl) =>
@@ -533,7 +533,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
         `(macroArg| $lit:ident:term $(prec?)?)
       matchers := matchers.push <|
         mkScopedMatcher lit.getId scopedId.getId scopedTerm boundNames
-      let scopedTerm' ← scopedTerm.replaceM fun s => pure boundValues[s.getId]?
+      let scopedTerm' ← scopedTerm.replaceM fun s ↦ pure boundValues[s.getId]?
       boundIdents := boundIdents.insert lit.getId lit
       boundValues := boundValues.insert lit.getId <| ←
         `(expand_binders% ($scopedId => $scopedTerm') $$binders:extBinders,
@@ -562,7 +562,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
   let fullName := currNamespace ++ name
   trace[notation3] "syntax declaration has name {fullName}"
   let pat : Term := ⟨mkNode fullName pattArgs⟩
-  let val' ← val.replaceM fun s => pure boundValues[s.getId]?
+  let val' ← val.replaceM fun s ↦ pure boundValues[s.getId]?
   let mut macroDecl ← `(macro_rules | `($pat) => `($val'))
   if isLocalAttrKind attrKind then
     -- For local notation, take section variables into account
@@ -597,7 +597,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       elabCommand <| ← `(command|
         /-- Pretty printer defined by `notation3` command. -/
         def $(Lean.mkIdent delabName) : Delab := whenPPOption getPPNotation <|
-          getExpr >>= fun e ↦ $matcher MatchState.empty >>= fun s => $result)
+          getExpr >>= fun e ↦ $matcher MatchState.empty >>= fun s ↦ $result)
       trace[notation3] "Defined delaborator {currNamespace ++ delabName}"
       let delabKeys := ms.foldr (·.1 ++ ·) []
       trace[notation3] "Adding `delab` attribute for keys {delabKeys}"

@@ -526,7 +526,7 @@ theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
     (tsub_le_iff_right.1 <| le_iInf fun _ => tsub_le_iff_right.2 <| iInf_le _ _)
 
 theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
-  le_antisymm (tsub_le_iff_right.2 <| iSup_le fun i => tsub_le_iff_right.1 <| le_iSup (f · - a) i)
+  le_antisymm (tsub_le_iff_right.2 <| iSup_le fun i ↦ tsub_le_iff_right.1 <| le_iSup (f · - a) i)
     (iSup_le fun _ => tsub_le_tsub (le_iSup _ _) (le_refl a))
 
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by

@@ -233,7 +233,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l
   rcases this.choice with ⟨x, hx⟩
   refine Filter.frequently_false l (Filter.Eventually.frequently ?_)
   filter_upwards [hx,
-    (H (_ ∘ x) fun n => (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n => id
+    (H (_ ∘ x) fun n ↦ (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n ↦ id
 
 /-- Given any sequence `ε` of scalars which tends to `𝓝[≠] 0`, we have that a set `S` is bounded
   if and only if for any sequence `x : ℕ → S`, `ε • x` tends to 0. This actually works for any

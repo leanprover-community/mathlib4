@@ -383,7 +383,7 @@ lemma isZero₃_of_isIso₁ (h : IsIso T.mor₁) : IsZero T.obj₃ := (T.isZero�
 lemma shift_distinguished (n : ℤ) :
     (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ distTriang C := by
   revert T hT
-  let H : ℤ → Prop := fun n => ∀ (T : Triangle C) (_ : T ∈ distTriang C),
+  let H : ℤ → Prop := fun n ↦ ∀ (T : Triangle C) (_ : T ∈ distTriang C),
     (Triangle.shiftFunctor C n).obj T ∈ distTriang C
   change H n
   have H_zero : H 0 := fun T hT =>
@@ -555,19 +555,19 @@ def completeDistinguishedTriangleMorphism (T₁ T₂ : Triangle C)
 /-- A product of distinguished triangles is distinguished -/
 lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     (hT : ∀ j, T j ∈ distTriang C)
-    [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
-    [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)] :
+    [HasProduct (fun j ↦ (T j).obj₁)] [HasProduct (fun j ↦ (T j).obj₂)]
+    [HasProduct (fun j ↦ (T j).obj₃)] [HasProduct (fun j ↦ (T j).obj₁⟦(1 : ℤ)⟧)] :
     productTriangle T ∈ distTriang C := by
   /- The proof proceeds by constructing a morphism of triangles
     `φ' : T' ⟶ productTriangle T` with `T'` distinguished, and such that
     `φ'.hom₁` and `φ'.hom₂` are identities. Then, it suffices to show that
     `φ'.hom₃` is an isomorphism, which is achieved by using Yoneda's lemma
     and diagram chases. -/
-  let f₁ := Limits.Pi.map (fun j => (T j).mor₁)
+  let f₁ := Limits.Pi.map (fun j ↦ (T j).mor₁)
   obtain ⟨Z, f₂, f₃, hT'⟩ := distinguished_cocone_triangle f₁
   let T' := Triangle.mk f₁ f₂ f₃
   change T' ∈ distTriang C at hT'
-  let φ : ∀ j, T' ⟶ T j := fun j => completeDistinguishedTriangleMorphism _ _
+  let φ : ∀ j, T' ⟶ T j := fun j ↦ completeDistinguishedTriangleMorphism _ _
     hT' (hT j) (Pi.π _ j) (Pi.π _ j) (by simp [f₁, T'])
   let φ' := productTriangle.lift _ φ
   have h₁ : φ'.hom₁ = 𝟙 _ := by aesop_cat
@@ -589,14 +589,14 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     have hf' : f ≫ T'.mor₃ = 0 := by
       rw [← cancel_mono (φ'.hom₁⟦1⟧'), zero_comp, assoc, φ'.comm₃, reassoc_of% hf, zero_comp]
     obtain ⟨g, hg⟩ := T'.coyoneda_exact₃ hT' f hf'
-    have hg' : ∀ j, (g ≫ Pi.π _ j) ≫ (T j).mor₂ = 0 := fun j => by
+    have hg' : ∀ j, (g ≫ Pi.π _ j) ≫ (T j).mor₂ = 0 := fun j ↦ by
       have : g ≫ T'.mor₂ ≫ φ'.hom₃ ≫ Pi.π _ j = 0 := by
         rw [← reassoc_of% hg, reassoc_of% hf, zero_comp]
       rw [φ'.comm₂_assoc, h₂, id_comp] at this
       simpa using this
-    have hg'' := fun j => (T j).coyoneda_exact₂ (hT j) _ (hg' j)
-    let α := fun j => (hg'' j).choose
-    have hα : ∀ j, _ = α j ≫ _ := fun j => (hg'' j).choose_spec
+    have hg'' := fun j ↦ (T j).coyoneda_exact₂ (hT j) _ (hg' j)
+    let α := fun j ↦ (hg'' j).choose
+    have hα : ∀ j, _ = α j ≫ _ := fun j ↦ (hg'' j).choose_spec
     have hg''' : g = Pi.lift α ≫ T'.mor₁ := by dsimp [f₁, T']; ext j; rw [hα]; simp
     rw [hg, hg''', assoc, comp_distTriang_mor_zero₁₂ _ hT', comp_zero]
   · intro a
@@ -614,10 +614,10 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       erw [← (productTriangle.π T j).comm₃]
       rw [← φ'.comm₃_assoc]
       rw [reassoc_of% ha', sub_eq_zero, h₁, Functor.map_id, id_comp])
-    let b := fun j => (ha'' j).choose
-    have hb : ∀ j, _  = b j ≫ _ := fun j => (ha'' j).choose_spec
+    let b := fun j ↦ (ha'' j).choose
+    have hb : ∀ j, _  = b j ≫ _ := fun j ↦ (ha'' j).choose_spec
     have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
-      Limits.Pi.hom_ext _ _ (fun j => by rw [hb]; simp)
+      Limits.Pi.hom_ext _ _ (fun j ↦ by rw [hb]; simp)
     have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by
       rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel]
     exact ⟨_, this⟩

@@ -31,7 +31,7 @@ theorem Integrable.fin_nat_prod {n : ℕ} {E : Fin n → Type*}
   | zero => simp only [Finset.univ_eq_empty, Finset.prod_empty, volume_pi,
       integrable_const_iff, one_ne_zero, pi_empty_univ, ENNReal.one_lt_top, or_true]
   | succ n n_ih =>
-      have := ((measurePreserving_piFinSuccAbove (fun i => (volume : Measure (E i))) 0).symm)
+      have := ((measurePreserving_piFinSuccAbove (fun i ↦ (volume : Measure (E i))) 0).symm)
       rw [volume_pi, ← this.integrable_comp_emb (MeasurableEquiv.measurableEmbedding _)]
       simp_rw [MeasurableEquiv.piFinSuccAbove_symm_apply, Fin.insertNthEquiv,
         Fin.prod_univ_succ, Fin.insertNth_zero]
@@ -75,7 +75,7 @@ theorem integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Type*}
         _ = ∫ x : E 0 × ((i : Fin n) → E (Fin.succ i)),
             f 0 x.1 * ∏ i : Fin n, f (Fin.succ i) (x.2 i) := by
           rw [volume_pi, ← ((measurePreserving_piFinSuccAbove
-            (fun i => (volume : Measure (E i))) 0).symm).integral_comp']
+            (fun i ↦ (volume : Measure (E i))) 0).symm).integral_comp']
           simp_rw [MeasurableEquiv.piFinSuccAbove_symm_apply, Fin.insertNthEquiv,
             Fin.prod_univ_succ, Fin.insertNth_zero, Equiv.coe_fn_mk, Fin.cons_succ, volume_eq_prod,
             volume_pi, Fin.zero_succAbove, cast_eq, Fin.cons_zero]

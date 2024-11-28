@@ -72,7 +72,7 @@ theorem exists_forall_closedBall_subset_aux₂ (y : X) :
     Convex ℝ
       (Ioi (0 : ℝ) ∩ ENNReal.ofReal ⁻¹' ⋂ (i) (_ : y ∈ K i), { r | closedBall y r ⊆ U i }) :=
   (convex_Ioi _).inter <| OrdConnected.convex <| OrdConnected.preimage_ennreal_ofReal <|
-    ordConnected_iInter fun i => ordConnected_iInter fun (_ : y ∈ K i) =>
+    ordConnected_iInter fun i ↦ ordConnected_iInter fun (_ : y ∈ K i) =>
       ordConnected_setOf_closedBall_subset y (U i)
 
 /-- Let `X` be an extended metric space. Let `K : ι → Set X` be a locally finite family of closed

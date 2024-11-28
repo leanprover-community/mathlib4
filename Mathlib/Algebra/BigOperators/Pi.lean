@@ -56,7 +56,7 @@ theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Fin
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
 theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]
-    (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
+    (x : ι → R) : x = ∑ i, (x i) • fun j ↦ if i = j then (1 : R) else 0 := by
   ext
   simp
 
@@ -113,7 +113,7 @@ note [partially-applied ext lemmas]. -/
       explained in note [partially-applied ext lemmas]."]
 theorem MonoidHom.functions_ext' [Finite I] (M : Type*) [CommMonoid M] (g h : (∀ i, Z i) →* M)
     (H : ∀ i, g.comp (MonoidHom.mulSingle Z i) = h.comp (MonoidHom.mulSingle Z i)) : g = h :=
-  g.functions_ext M h fun i => DFunLike.congr_fun (H i)
+  g.functions_ext M h fun i ↦ DFunLike.congr_fun (H i)
 
 end MulSingle
 

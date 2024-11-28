@@ -91,7 +91,7 @@ The setoid corresponding to group expressions modulo abelian group relations and
 -/
 def colimitSetoid : Setoid (Prequotient.{w} F) where
   r := Relation F
-  iseqv := ⟨Relation.refl, fun r => Relation.symm _ _ r, fun r => Relation.trans _ _ _ r⟩
+  iseqv := ⟨Relation.refl, fun r ↦ Relation.symm _ _ r, fun r ↦ Relation.trans _ _ _ r⟩
 
 attribute [instance] colimitSetoid
 

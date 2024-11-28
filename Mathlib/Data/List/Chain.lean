@@ -35,7 +35,7 @@ theorem Chain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {a : �
 
 theorem Chain.iff_mem {a : α} {l : List α} :
     Chain R a l ↔ Chain (fun x y => x ∈ a :: l ∧ y ∈ l ∧ R x y) a l :=
-  ⟨fun p => by
+  ⟨fun p ↦ by
     induction p with
     | nil => exact nil
     | @cons _ _ _ r _ IH =>

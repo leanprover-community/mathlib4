@@ -114,7 +114,7 @@ def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ᵍ⊗[R] 
           ∘ₗ (evenOdd Q₁ 1).subtype ∘ₗ (ι Q₁).codRestrict _ (ι_mem_evenOdd_one Q₁))
       ((GradedTensorProduct.includeRight (evenOdd Q₁) (evenOdd Q₂)).toLinearMap
           ∘ₗ (evenOdd Q₂ 1).subtype ∘ₗ (ι Q₂).codRestrict _ (ι_mem_evenOdd_one Q₂)),
-    fun m => by
+    fun m ↦ by
       simp_rw [LinearMap.coprod_apply, LinearMap.coe_comp, Function.comp_apply,
         AlgHom.toLinearMap_apply, QuadraticMap.prod_apply, Submodule.coe_subtype,
         GradedTensorProduct.includeLeft_apply, GradedTensorProduct.includeRight_apply, map_add,

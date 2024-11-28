@@ -324,9 +324,9 @@ theorem of_card_aut_eq_finrank [FiniteDimensional F E]
     finrank_mul_finrank, ← h, one_mul, IntermediateField.finrank_fixedField_eq_card]
   apply Fintype.card_congr
   exact
-    { toFun := fun g => ⟨g, Subgroup.mem_top g⟩
+    { toFun := fun g ↦ ⟨g, Subgroup.mem_top g⟩
       invFun := (↑)
-      left_inv := fun g => rfl
+      left_inv := fun g ↦ rfl
       right_inv := fun _ => by ext; rfl }
 
 variable {F} {E}
@@ -352,7 +352,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
       Σ f : K →ₐ[F] E, @AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f) := by
     change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
     exact algHomEquivSigma
-  haveI : ∀ f : K →ₐ[F] E, Fintype (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
+  haveI : ∀ f : K →ₐ[F] E, Fintype (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f ↦ by
     have := Fintype.ofEquiv _ key_equiv
     apply Fintype.ofInjective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2
   rw [Fintype.card_congr key_equiv, Fintype.card_sigma, IntermediateField.adjoin.finrank h]

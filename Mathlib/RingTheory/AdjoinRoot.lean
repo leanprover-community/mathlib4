@@ -265,7 +265,7 @@ variable (f) [Algebra R S]
 a root of `f` in `S`. -/
 def liftHom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S :=
   { lift (algebraMap R S) x hfx with
-    commutes' := fun r => show lift _ _ hfx r = _ from lift_of hfx }
+    commutes' := fun r ↦ show lift _ _ hfx r = _ from lift_of hfx }
 
 @[simp]
 theorem coe_liftHom (x : S) (hfx : aeval x f = 0) :
@@ -422,9 +422,9 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
     { toFun := fun f i => (modByMonicHom hg f).coeff i
       invFun := fun c ↦ mk g <| ∑ i : Fin g.natDegree, monomial i (c i)
       map_add' := fun f₁ f₂ =>
-        funext fun i => by simp only [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
+        funext fun i ↦ by simp only [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
       map_smul' := fun f₁ f₂ =>
-        funext fun i => by
+        funext fun i ↦ by
           simp only [(modByMonicHom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
       -- Porting note: another proof that I converted to tactic mode
       left_inv := by
@@ -435,7 +435,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
         rw [modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel]
         exact dvd_mul_right _ _
       right_inv := fun x =>
-        funext fun i => by
+        funext fun i ↦ by
           nontriviality R
           simp only [modByMonicHom_mk]
           rw [(modByMonic_eq_self_iff hg).mpr, finset_sum_coeff]

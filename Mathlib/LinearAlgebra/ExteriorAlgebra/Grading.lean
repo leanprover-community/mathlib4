@@ -26,8 +26,8 @@ open scoped DirectSum
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 protected def GradedAlgebra.ι :
     M →ₗ[R] ⨁ i : ℕ, ⋀[R]^i M :=
-  DirectSum.lof R ℕ (fun i => ⋀[R]^i M) 1 ∘ₗ
-    (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
+  DirectSum.lof R ℕ (fun i ↦ ⋀[R]^i M) 1 ∘ₗ
+    (ι R).codRestrict _ fun m ↦ by simpa only [pow_one] using LinearMap.mem_range_self _ m
 
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
@@ -55,7 +55,7 @@ def GradedAlgebra.liftι :
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 
 theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
-    GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
+    GradedAlgebra.liftι R M x = DirectSum.of (fun i ↦ ⋀[R]^i M) i x := by
   cases' x with x hx
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   induction hx using Submodule.pow_induction_on_left' with
@@ -86,7 +86,7 @@ lemma ιMulti_span :
     Submodule.span R (Set.range fun x : Σ n, (Fin n → M) => ιMulti R x.1 x.2) = ⊤ := by
   rw [Submodule.eq_top_iff']
   intro x
-  induction x using DirectSum.Decomposition.inductionOn fun i => ⋀[R]^i M with
+  induction x using DirectSum.Decomposition.inductionOn fun i ↦ ⋀[R]^i M with
   | h_zero => exact Submodule.zero_mem _
   | h_add _ _ hm hm' => exact Submodule.add_mem _ hm hm'
   | h_homogeneous hm =>

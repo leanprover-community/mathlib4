@@ -705,7 +705,7 @@ def starAe : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R,c₁,c₂]ᵐᵒᵖ :=
     toFun := op ∘ star
     invFun := star ∘ unop
     map_mul' := fun x y => by simp
-    commutes' := fun r => by simp }
+    commutes' := fun r ↦ by simp }
 
 @[simp]
 theorem coe_starAe : ⇑(starAe : ℍ[R,c₁,c₂] ≃ₐ[R] _) = op ∘ star :=

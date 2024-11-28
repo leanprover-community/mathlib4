@@ -53,7 +53,7 @@ section ULift
 instance _root_.ULift.algebra : Algebra R (ULift A) :=
   { ULift.module',
     (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
-    toFun := fun r => ULift.up (algebraMap R A r)
+    toFun := fun r ↦ ULift.up (algebraMap R A r)
     commutes' := fun r x => ULift.down_injective <| Algebra.commutes r x.down
     smul_def' := fun r x => ULift.down_injective <| Algebra.smul_def' r x.down }
 

@@ -22,7 +22,7 @@ variable {α β : Type*} [DecidableEq α]
 
 /-- `dedup s` removes duplicates from `s`, yielding a `nodup` multiset. -/
 def dedup (s : Multiset α) : Multiset α :=
-  Quot.liftOn s (fun l => (l.dedup : Multiset α)) fun _ _ p => Quot.sound p.dedup
+  Quot.liftOn s (fun l ↦ (l.dedup : Multiset α)) fun _ _ p => Quot.sound p.dedup
 
 @[simp]
 theorem coe_dedup (l : List α) : @dedup α _ l = l.dedup :=
@@ -98,7 +98,7 @@ theorem dedup_ext {s t : Multiset α} : dedup s = dedup t ↔ ∀ a, a ∈ s ↔
 theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.Injective f)
     (s : Multiset α) :
     (s.map f).dedup = s.dedup.map f :=
-  Quot.induction_on s fun l => by simp [List.dedup_map_of_injective hf l]
+  Quot.induction_on s fun l ↦ by simp [List.dedup_map_of_injective hf l]
 
 theorem dedup_map_dedup_eq [DecidableEq β] (f : α → β) (s : Multiset α) :
     dedup (map f (dedup s)) = dedup (map f s) := by

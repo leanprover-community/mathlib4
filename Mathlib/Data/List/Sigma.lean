@@ -186,7 +186,7 @@ theorem mem_dlookup {a} {b : β a} {l : List (Sigma β)} (nd : l.NodupKeys) (h :
   exact h'
 
 theorem map_dlookup_eq_find (a : α) :
-    ∀ l : List (Sigma β), (dlookup a l).map (Sigma.mk a) = find? (fun s => a = s.1) l
+    ∀ l : List (Sigma β), (dlookup a l).map (Sigma.mk a) = find? (fun s ↦ a = s.1) l
   | [] => rfl
   | ⟨a', b'⟩ :: l => by
     by_cases h : a = a'
@@ -319,7 +319,7 @@ theorem dlookup_append (l₁ l₂ : List (Sigma β)) (a : α) :
 
 /-- Replaces the first value with key `a` by `b`. -/
 def kreplace (a : α) (b : β a) : List (Sigma β) → List (Sigma β) :=
-  lookmap fun s => if a = s.1 then some ⟨a, b⟩ else none
+  lookmap fun s ↦ if a = s.1 then some ⟨a, b⟩ else none
 
 theorem kreplace_of_forall_not (a : α) (b : β a) {l : List (Sigma β)}
     (H : ∀ b : β a, Sigma.mk a b ∉ l) : kreplace a b l = l :=
@@ -366,7 +366,7 @@ theorem Perm.kreplace {a : α} {b : β a} {l₁ l₂ : List (Sigma β)} (nd : l�
 
 /-- Remove the first pair with the key `a`. -/
 def kerase (a : α) : List (Sigma β) → List (Sigma β) :=
-  eraseP fun s => a = s.1
+  eraseP fun s ↦ a = s.1
 
 @[simp]
 theorem kerase_nil {a} : @kerase _ β _ a [] = [] :=

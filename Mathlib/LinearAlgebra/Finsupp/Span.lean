@@ -59,7 +59,7 @@ theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
   · apply disjoint_compl_right
   · apply disjoint_compl_right
   rw [disjoint_iff_inf_le]
-  refine le_trans (le_iInf fun i => ?_) iInf_ker_lapply_le_bot
+  refine le_trans (le_iInf fun i ↦ ?_) iInf_ker_lapply_le_bot
   classical
     by_cases his : i ∈ s
     · by_cases hit : i ∈ t
@@ -90,7 +90,7 @@ theorem Submodule.exists_finset_of_mem_iSup {ι : Sort _} (p : ι → Submodule 
 theorem Submodule.mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule R M} {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∃ s : Finset ι, m ∈ ⨆ i ∈ s, p i :=
   ⟨Submodule.exists_finset_of_mem_iSup p, fun ⟨_, hs⟩ =>
-    iSup_mono (fun i => (iSup_const_le : _ ≤ p i)) hs⟩
+    iSup_mono (fun i ↦ (iSup_const_le : _ ≤ p i)) hs⟩
 
 theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
     m ∈ sSup S ↔ ∃ s : Finset (Submodule R M), ↑s ⊆ S ∧ m ∈ ⨆ i ∈ s, i := by

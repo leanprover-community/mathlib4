@@ -282,7 +282,7 @@ theorem disjiUnion_map {s : Finset α} {t : α → Finset β} {f : β ↪ γ} {h
 end Map
 
 theorem range_add_one' (n : ℕ) :
-    range (n + 1) = insert 0 ((range n).map ⟨fun i => i + 1, fun i j => by simp⟩) := by
+    range (n + 1) = insert 0 ((range n).map ⟨fun i ↦ i + 1, fun i j => by simp⟩) := by
   ext (⟨⟩ | ⟨n⟩) <;> simp [Nat.zero_lt_succ n]
 
 /-! ### image -/
@@ -329,7 +329,7 @@ theorem mem_image_const_self : b ∈ s.image (const α b) ↔ s.Nonempty :=
   mem_image_const.trans <| and_iff_left rfl
 
 instance canLift (c) (p) [CanLift β α c p] :
-    CanLift (Finset β) (Finset α) (image c) fun s => ∀ x ∈ s, p x where
+    CanLift (Finset β) (Finset α) (image c) fun s ↦ ∀ x ∈ s, p x where
   prf := by
     rintro ⟨⟨l⟩, hd : l.Nodup⟩ hl
     lift l to List α using hl
@@ -494,7 +494,7 @@ theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
 
 theorem mem_range_iff_mem_finset_range_of_mod_eq' [DecidableEq α] {f : ℕ → α} {a : α} {n : ℕ}
     (hn : 0 < n) (h : ∀ i, f (i % n) = f i) :
-    a ∈ Set.range f ↔ a ∈ (Finset.range n).image fun i => f i := by
+    a ∈ Set.range f ↔ a ∈ (Finset.range n).image fun i ↦ f i := by
   constructor
   · rintro ⟨i, hi⟩
     simp only [mem_image, exists_prop, mem_range]

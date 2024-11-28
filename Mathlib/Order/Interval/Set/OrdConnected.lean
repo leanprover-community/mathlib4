@@ -145,7 +145,7 @@ instance ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnec
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem ordConnected_biInter {ι : Sort*} {p : ι → Prop} {s : ∀ i, p i → Set α}
     (hs : ∀ i hi, OrdConnected (s i hi)) : OrdConnected (⋂ (i) (hi), s i hi) :=
-  ordConnected_iInter fun i => ordConnected_iInter <| hs i
+  ordConnected_iInter fun i ↦ ordConnected_iInter <| hs i
 
 theorem ordConnected_pi {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} (h : ∀ i ∈ s, OrdConnected (t i)) : OrdConnected (s.pi t) :=

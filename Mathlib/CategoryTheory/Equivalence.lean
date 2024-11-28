@@ -537,7 +537,7 @@ noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   inverse := F.inv
   unitIso := NatIso.ofComponents
     (fun X => (F.preimageIso <| F.objObjPreimageIso <| F.obj X).symm)
-      (fun f => F.map_injective (by simp [inv]))
+      (fun f ↦ F.map_injective (by simp [inv]))
   counitIso := NatIso.ofComponents F.objObjPreimageIso (by simp [inv])
 
 instance isEquivalence_refl : IsEquivalence (𝟭 C) :=

@@ -67,11 +67,11 @@ theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
 def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A] [Module R M]
     (f : ℕ → A →ₗ[R] M) : A[X] →ₗ[R] M where
   toFun p := p.sum (f · ·)
-  map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
+  map_add' p q := sum_add_index p q _ (fun n ↦ (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
     -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
     dsimp only
-    rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
+    rw [sum_eq_of_subset (f · ·) (fun n ↦ (f n).map_zero) (support_smul c p)]
     simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
 
 variable (R)
@@ -281,11 +281,11 @@ theorem coeff_monomial_zero_mul (p : R[X]) (d : ℕ) (r : R) :
   coeff_monomial_mul p 0 d r
 
 theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
-  ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
+  ext fun k ↦ (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
   suffices IsLeftRegular (X^n : R[X]) from
-    ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
+    ⟨this, this.right_of_commute (fun p ↦ commute_X_pow p n)⟩
   intro P Q (hPQ : X^n * P = X^n * Q)
   ext i
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
@@ -317,7 +317,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
   · intro h
     choose c hc using h
     classical
-      let c' : ℕ → R := fun i => if i ∈ φ.support then c i else 0
+      let c' : ℕ → R := fun i ↦ if i ∈ φ.support then c i else 0
       let ψ : R[X] := ∑ i ∈ φ.support, monomial i (c' i)
       use ψ
       ext i
@@ -351,7 +351,7 @@ theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
-    apply_fun fun p => p.coeff 0 at h
+    apply_fun fun p ↦ p.coeff 0 at h
     simpa using h
   · rintro rfl
     rfl
@@ -370,7 +370,7 @@ alias int_cast_coeff_zero := intCast_coeff_zero
 theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
-    apply_fun fun p => p.coeff 0 at h
+    apply_fun fun p ↦ p.coeff 0 at h
     simpa using h
   · rintro rfl
     rfl

@@ -180,7 +180,7 @@ def elabCHoleExpand : Term.TermElab := fun stx expectedType? =>
 
 /-- Replace all `term` antiquotations in a term using the given `expand` function. -/
 def processAntiquot (t : Term) (expand : Term → Term.TermElabM Term) : Term.TermElabM Term := do
-  let t' ← t.raw.replaceM fun s => do
+  let t' ← t.raw.replaceM fun s ↦ do
     if s.isAntiquots then
       let ks := s.antiquotKinds
       unless ks.any (fun (k, _) => k == `term) do

@@ -104,7 +104,7 @@ theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : �
 theorem nfpFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (a) :
     f i (nfpFamily f a) = nfpFamily f a := by
   rw [nfpFamily, H.map_iSup]
-  apply le_antisymm <;> refine Ordinal.iSup_le fun l => ?_
+  apply le_antisymm <;> refine Ordinal.iSup_le fun l ↦ ?_
   · exact Ordinal.le_iSup _ (i::l)
   · exact H.le_apply.trans (Ordinal.le_iSup _ _)
 
@@ -187,13 +187,13 @@ theorem le_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
     · intro h₁
       refine ⟨0, le_antisymm ?_ h₁⟩
       rw [derivFamily_zero]
-      exact nfpFamily_le_fp (fun i => (H i).monotone) (Ordinal.zero_le _) ha
+      exact nfpFamily_le_fp (fun i ↦ (H i).monotone) (Ordinal.zero_le _) ha
     · intro h₁
       rcases le_or_lt a (derivFamily f o) with h | h
       · exact IH h
       refine ⟨succ o, le_antisymm ?_ h₁⟩
       rw [derivFamily_succ]
-      exact nfpFamily_le_fp (fun i => (H i).monotone) (succ_le_of_lt h) ha
+      exact nfpFamily_le_fp (fun i ↦ (H i).monotone) (succ_le_of_lt h) ha
     · intro h₁
       cases' eq_or_lt_of_le h₁ with h h
       · exact ⟨_, h.symm⟩
@@ -431,7 +431,7 @@ set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided."  (since := "2024-08-27")]
 theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
     (sup fun n : ℕ => f^[n] a) = nfp f a := by
-  refine le_antisymm ?_ (sup_le fun l => ?_)
+  refine le_antisymm ?_ (sup_le fun l ↦ ?_)
   · rw [sup_le_iff]
     intro n
     rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]

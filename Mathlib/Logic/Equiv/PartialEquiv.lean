@@ -768,11 +768,11 @@ theorem prod_target (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
 
 @[simp, mfld_simps]
 theorem prod_coe (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
-    (e.prod e' : α × γ → β × δ) = fun p => (e p.1, e' p.2) :=
+    (e.prod e' : α × γ → β × δ) = fun p ↦ (e p.1, e' p.2) :=
   rfl
 
 theorem prod_coe_symm (e : PartialEquiv α β) (e' : PartialEquiv γ δ) :
-    ((e.prod e').symm : β × δ → α × γ) = fun p => (e.symm p.1, e'.symm p.2) :=
+    ((e.prod e').symm : β × δ → α × γ) = fun p ↦ (e.symm p.1, e'.symm p.2) :=
   rfl
 
 @[simp, mfld_simps]
@@ -845,12 +845,12 @@ variable {ι : Type*} {αi βi γi : ι → Type*}
 protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ i, αi i) (∀ i, βi i) where
   toFun := Pi.map fun i ↦ ei i
   invFun := Pi.map fun i ↦ (ei i).symm
-  source := pi univ fun i => (ei i).source
-  target := pi univ fun i => (ei i).target
+  source := pi univ fun i ↦ (ei i).source
+  target := pi univ fun i ↦ (ei i).target
   map_source' _ hf i hi := (ei i).map_source (hf i hi)
   map_target' _ hf i hi := (ei i).map_target (hf i hi)
-  left_inv' _ hf := funext fun i => (ei i).left_inv (hf i trivial)
-  right_inv' _ hf := funext fun i => (ei i).right_inv (hf i trivial)
+  left_inv' _ hf := funext fun i ↦ (ei i).left_inv (hf i trivial)
+  right_inv' _ hf := funext fun i ↦ (ei i).right_inv (hf i trivial)
 
 @[simp, mfld_simps]
 theorem pi_symm (ei : ∀ i, PartialEquiv (αi i) (βi i)) :

@@ -135,7 +135,7 @@ variable [Semigroup G] {a b c : G}
 -- 287929-mathlib4/topic/dsimp.20before.20rw/near/317063489
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_left (h : SemiconjBy a b c) :
-    Function.Semiconj (a * ·) (b * ·) (c * ·) := fun j => by
+    Function.Semiconj (a * ·) (b * ·) (c * ·) := fun j ↦ by
   beta_reduce; rw [← mul_assoc, h.eq, mul_assoc]
 
 @[to_additive]
@@ -145,7 +145,7 @@ theorem Commute.function_commute_mul_left (h : Commute a b) :
 
 @[to_additive]
 theorem SemiconjBy.function_semiconj_mul_right_swap (h : SemiconjBy a b c) :
-    Function.Semiconj (· * a) (· * c) (· * b) := fun j => by simp_rw [mul_assoc, ← h.eq]
+    Function.Semiconj (· * a) (· * c) (· * b) := fun j ↦ by simp_rw [mul_assoc, ← h.eq]
 
 @[to_additive]
 theorem Commute.function_commute_mul_right (h : Commute a b) :

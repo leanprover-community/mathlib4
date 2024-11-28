@@ -225,7 +225,7 @@ theorem MeasurableSpace.measurableSet_injective : Injective (@MeasurableSet α)
 @[ext]
 theorem MeasurableSpace.ext {m₁ m₂ : MeasurableSpace α}
     (h : ∀ s : Set α, MeasurableSet[m₁] s ↔ MeasurableSet[m₂] s) : m₁ = m₂ :=
-  measurableSet_injective <| funext fun s => propext (h s)
+  measurableSet_injective <| funext fun s ↦ propext (h s)
 
 /-- A typeclass mixin for `MeasurableSpace`s such that each singleton is measurable. -/
 class MeasurableSingletonClass (α : Type*) [MeasurableSpace α] : Prop where
@@ -372,7 +372,7 @@ theorem mkOfClosure_sets {s : Set (Set α)} {hs : { t | MeasurableSet[generateFr
 
 /-- We get a Galois insertion between `σ`-algebras on `α` and `Set (Set α)` by using `generate_from`
   on one side and the collection of measurable sets on the other side. -/
-def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m => { t | MeasurableSet[m] t } where
+def giGenerateFrom : GaloisInsertion (@generateFrom α) fun m ↦ { t | MeasurableSet[m] t } where
   gc _ := generateFrom_le_iff
   le_l_u _ _ := measurableSet_generateFrom
   choice g hg := MeasurableSpace.mkOfClosure g <| le_antisymm hg <| (generateFrom_le_iff _).1 le_rfl
@@ -417,13 +417,13 @@ theorem generateFrom_insert_empty (S : Set (Set α)) :
 
 theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ ∨ s = univ :=
   let b : MeasurableSpace α :=
-    { MeasurableSet' := fun s => s = ∅ ∨ s = univ
+    { MeasurableSet' := fun s ↦ s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp +contextual [or_imp]
       measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
     bot_unique fun _ hs =>
-      hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
+      hs.elim (fun s ↦ s.symm ▸ @measurableSet_empty _ ⊥) fun s =>
         s.symm ▸ @MeasurableSet.univ _ ⊥
   this ▸ Iff.rfl
 

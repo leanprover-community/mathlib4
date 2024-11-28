@@ -73,7 +73,7 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
     have t : od = pd := propext H1
-    cases t; rw [show o = p from funext fun p => H2 p p]
+    cases t; rw [show o = p from funext fun p ↦ H2 p p]
 
 /-- `Part` eta expansion -/
 @[simp]
@@ -323,7 +323,7 @@ theorem of_toOption (o : Part α) [Decidable o.Dom] : ofOption (toOption o) = o 
 /-- `Part α` is (classically) equivalent to `Option α`. -/
 noncomputable def equivOption : Part α ≃ Option α :=
   haveI := Classical.dec
-  ⟨fun o => toOption o, ofOption, fun o => of_toOption o, fun o =>
+  ⟨fun o ↦ toOption o, ofOption, fun o ↦ of_toOption o, fun o =>
     Eq.trans (by dsimp; congr) (to_ofOption o)⟩
 
 /-- We give `Part α` the order where everything is greater than `none`. -/

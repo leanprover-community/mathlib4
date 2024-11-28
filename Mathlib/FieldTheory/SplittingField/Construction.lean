@@ -163,7 +163,7 @@ theorem algebraMap_succ (n : ℕ) (f : K[X]) :
 protected theorem splits (n : ℕ) :
     ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (algebraMap K <| SplittingFieldAux n f) f :=
-  Nat.recOn (motive := fun n => ∀ {K : Type u} [Field K],
+  Nat.recOn (motive := fun n ↦ ∀ {K : Type u} [Field K],
       ∀ (f : K[X]) (_hfn : f.natDegree = n), Splits (algebraMap K <| SplittingFieldAux n f) f) n
     (fun {_} _ _ hf =>
       splits_of_degree_le_one _

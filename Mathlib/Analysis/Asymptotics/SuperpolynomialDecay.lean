@@ -84,11 +84,11 @@ theorem SuperpolynomialDecay.mul [ContinuousMul β] (hf : SuperpolynomialDecay l
   simpa only [mul_assoc, one_mul, mul_zero, pow_zero] using (hf z).mul (hg 0)
 
 theorem SuperpolynomialDecay.mul_const [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
-    SuperpolynomialDecay l k fun n => f n * c := fun z ↦ by
+    SuperpolynomialDecay l k fun n ↦ f n * c := fun z ↦ by
   simpa only [← mul_assoc, zero_mul] using Tendsto.mul_const c (hf z)
 
 theorem SuperpolynomialDecay.const_mul [ContinuousMul β] (hf : SuperpolynomialDecay l k f) (c : β) :
-    SuperpolynomialDecay l k fun n => c * f n :=
+    SuperpolynomialDecay l k fun n ↦ c * f n :=
   (hf.mul_const c).congr fun _ => mul_comm _ _
 
 theorem SuperpolynomialDecay.param_mul (hf : SuperpolynomialDecay l k f) :
@@ -176,12 +176,12 @@ section Field
 variable [TopologicalSpace β] [Field β] (l k f)
 
 theorem superpolynomialDecay_mul_const_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
-    (SuperpolynomialDecay l k fun n => f n * c) ↔ SuperpolynomialDecay l k f :=
+    (SuperpolynomialDecay l k fun n ↦ f n * c) ↔ SuperpolynomialDecay l k f :=
   ⟨fun h ↦ (h.mul_const c⁻¹).congr fun x ↦ by simp [mul_assoc, mul_inv_cancel₀ hc0], fun h =>
     h.mul_const c⟩
 
 theorem superpolynomialDecay_const_mul_iff [ContinuousMul β] {c : β} (hc0 : c ≠ 0) :
-    (SuperpolynomialDecay l k fun n => c * f n) ↔ SuperpolynomialDecay l k f :=
+    (SuperpolynomialDecay l k fun n ↦ c * f n) ↔ SuperpolynomialDecay l k f :=
   ⟨fun h ↦ (h.const_mul c⁻¹).congr fun x ↦ by simp [← mul_assoc, inv_mul_cancel₀ hc0], fun h =>
     h.const_mul c⟩
 

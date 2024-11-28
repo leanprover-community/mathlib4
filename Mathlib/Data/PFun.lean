@@ -109,7 +109,7 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 /-- The type of partial functions `α →. β` is equivalent to
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
-  ⟨fun f => ⟨fun a ↦ (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h ↦ f.2 ⟨x, h⟩⟩, fun _ =>
+  ⟨fun f ↦ ⟨fun a ↦ (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h ↦ f.2 ⟨x, h⟩⟩, fun _ =>
     funext fun _ => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
@@ -192,7 +192,7 @@ instance monad : Monad (PFun α) where
 
 instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_pure_comp := fun _ _ => funext fun _ => Part.bind_some_eq_map _ _)
-  (id_map := fun f => by funext a; dsimp [Functor.map, PFun.map]; cases f a; rfl)
+  (id_map := fun f ↦ by funext a; dsimp [Functor.map, PFun.map]; cases f a; rfl)
   (pure_bind := fun x f => funext fun _ => Part.bind_some _ (f x))
   (bind_assoc := fun f g k => funext fun a ↦ (f a).bind_assoc (fun b ↦ g b a) fun b ↦ k b a)
 

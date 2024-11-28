@@ -301,7 +301,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
   have : ∀ b > (1 : ℕ), ∀ᶠ m : ℕ in atTop, ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| := by
     intro b hb
     replace hb : (1 : ℝ) < b := Nat.one_lt_cast.2 hb
-    have H : Tendsto (fun m => 1 / (b : ℝ) ^ m : ℕ → ℝ) atTop (𝓝 0) := by
+    have H : Tendsto (fun m ↦ 1 / (b : ℝ) ^ m : ℕ → ℝ) atTop (𝓝 0) := by
       simp only [one_div]
       exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt hb)
     refine (H.eventually (hx.irrational.eventually_forall_le_dist_cast_div b)).mono ?_

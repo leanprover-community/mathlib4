@@ -46,7 +46,7 @@ def pretopology : Pretopology Scheme.{u} where
   transitive := by
     rintro X _ T ⟨U, rfl⟩ H
     choose V hV using H
-    use U.bind (fun j => V (U.map j) ⟨j⟩)
+    use U.bind (fun j ↦ V (U.map j) ⟨j⟩)
     simpa only [Cover.bind, ← hV] using Presieve.ofArrows_bind U.obj U.map _
       (fun _ f H => (V f H).obj) (fun _ f H => (V f H).map)
 

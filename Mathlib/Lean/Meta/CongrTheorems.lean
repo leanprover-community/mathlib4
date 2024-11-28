@@ -211,7 +211,7 @@ partial def mkRichHCongr (fType : Expr) (info : FunInfo)
     (forceHEq : Bool := false) :
     MetaM CongrTheorem := do
   trace[Meta.CongrTheorems] "ftype: {fType}"
-  trace[Meta.CongrTheorems] "deps: {info.paramInfo.map (fun p => p.backDeps)}"
+  trace[Meta.CongrTheorems] "deps: {info.paramInfo.map (fun p ↦ p.backDeps)}"
   trace[Meta.CongrTheorems] "fixedFun={fixedFun}, fixedParams={fixedParams}"
   doubleTelescope fType info.getArity fixedParams fun xs ys fixedParams => do
     trace[Meta.CongrTheorems] "xs = {xs}"
@@ -317,7 +317,7 @@ where
         if fixedParams[i]! then
           loop (i+1) (kinds.push .fixed) (eqs.push none)
         else
-          let deps := info.paramInfo[i]!.backDeps.filterMap (fun j => eqs[j]!)
+          let deps := info.paramInfo[i]!.backDeps.filterMap (fun j ↦ eqs[j]!)
           let eq' ← mkForallFVars (deps.map fun (eq, _, _) => eq) (← mkEqHEq x y)
           withLocalDeclD ((`e).appendIndexAfter (i+1)) (← mkEqHEq x y) fun h =>
           withLocalDeclD ((`e').appendIndexAfter (i+1)) eq' fun h' => do

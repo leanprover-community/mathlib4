@@ -116,8 +116,8 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
       · rw [sdiff_eq_empty_iff_subset.2 subset_union_left]
         exact bot_le
       refine
-        (card_le_card fun i => ?_).trans
-          (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
+        (card_le_card fun i ↦ ?_).trans
+          (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i ↦ hut <| i.antisymm htu, rfl⟩)
       -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined differently
       simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
         id, not_or]

@@ -664,7 +664,7 @@ theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
     (ofSupportFinite f hf : α → M) = f :=
   rfl
 
-instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
+instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f ↦ (Function.support f).Finite where
   prf f hf := ⟨ofSupportFinite f hf, rfl⟩
 
 end OfSupportFinite
@@ -1087,7 +1087,7 @@ theorem induction_on_max (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
     p f := by
   suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  refine fun s ↦ s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
   · rwa [support_eq_empty.1 h]
   · have hs' : (erase a f).support = s := by
       rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
@@ -1111,7 +1111,7 @@ theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
     (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
     p f := by
   suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
-  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  refine fun s ↦ s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
   · rwa [support_eq_empty.1 h]
   · have hs' : (erase a f).support = s := by
       rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]

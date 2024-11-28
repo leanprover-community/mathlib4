@@ -145,7 +145,7 @@ instance id_preservesLimitsOfSize : PreservesLimitsOfSize.{w', w} (𝟭 C) where
     {
       preservesLimit := fun {K} =>
         ⟨fun {c} h =>
-          ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun _ _ f => s.π.naturality f⟩, by
+          ⟨fun s ↦ h.lift ⟨s.pt, fun j ↦ s.π.app j, fun _ _ f => s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
             cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
@@ -159,7 +159,7 @@ instance id_preservesColimitsOfSize : PreservesColimitsOfSize.{w', w} (𝟭 C) w
     {
       preservesColimit := fun {K} =>
         ⟨fun {c} h =>
-          ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun _ _ f => s.ι.naturality f⟩, by
+          ⟨fun s ↦ h.desc ⟨s.pt, fun j ↦ s.ι.app j, fun _ _ f => s.ι.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
             cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
@@ -296,7 +296,7 @@ lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e 
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
-        refine Cones.ext (Iso.refl _) fun j => ?_
+        refine Cones.ext (Iso.refl _) fun j ↦ ?_
         dsimp
         simp [equ, ← Functor.map_comp]⟩ }
 
@@ -403,7 +403,7 @@ lemma preservesColimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isColimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
-        refine Cocones.ext (Iso.refl _) fun j => ?_
+        refine Cocones.ext (Iso.refl _) fun j ↦ ?_
         dsimp
         simp [equ, ← Functor.map_comp]⟩ }
 
@@ -583,7 +583,7 @@ instance id_reflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
   reflectsLimitsOfShape {J} 𝒥 :=
     { reflectsLimit := fun {K} =>
         ⟨fun {c} h =>
-          ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun _ _ f => s.π.naturality f⟩, by
+          ⟨fun s ↦ h.lift ⟨s.pt, fun j ↦ s.π.app j, fun _ _ f => s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
             cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
@@ -595,7 +595,7 @@ instance id_reflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
   reflectsColimitsOfShape {J} 𝒥 :=
     { reflectsColimit := fun {K} =>
         ⟨fun {c} h =>
-          ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun _ _ f => s.ι.naturality f⟩, by
+          ⟨fun s ↦ h.desc ⟨s.pt, fun j ↦ s.ι.app j, fun _ _ f => s.ι.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
             cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }

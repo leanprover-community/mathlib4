@@ -156,7 +156,7 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
 
 lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     bitwise f =
-    binaryRec (fun n => cond (f false true) n 0) fun a m Ia =>
+    binaryRec (fun n ↦ cond (f false true) n 0) fun a m Ia =>
       binaryRec (cond (f true false) (bit a m) 0) fun b n _ => bit (f a b) (Ia n) := by
   funext x y
   induction x using binaryRec' generalizing y with
@@ -175,7 +175,7 @@ theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n 
   induction' n using Nat.binaryRec with b n hn
   · rfl
   · have : b = false := by simpa using h 0
-    rw [this, bit_false, hn fun i => by rw [← h (i + 1), testBit_bit_succ]]
+    rw [this, bit_false, hn fun i ↦ by rw [← h (i + 1), testBit_bit_succ]]
 
 theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
   simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
@@ -219,7 +219,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
   · subst hi
     simp only [testBit_bit_zero] at hn hm
     have : n = m :=
-      eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
+      eq_of_testBit_eq fun i ↦ by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
       <;> rw [testBit_bit_succ]
     rw [hn, hm, this, bit_false, bit_true]
     exact Nat.lt_succ_self _
@@ -264,7 +264,7 @@ theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
   bitwise_comm Bool.and_comm n m
 
 lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
-  refine eq_of_testBit_eq fun j => ?_
+  refine eq_of_testBit_eq fun j ↦ ?_
   obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
   · simp [h]
   · simp [h]
@@ -300,7 +300,7 @@ theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := by
 theorem xor_right_injective {n : ℕ} : Function.Injective (HXor.hXor n : ℕ → ℕ) := fun m m' h => by
   rw [← xor_cancel_left n m, ← xor_cancel_left n m', h]
 
-theorem xor_left_injective {n : ℕ} : Function.Injective fun m => m ^^^ n :=
+theorem xor_left_injective {n : ℕ} : Function.Injective fun m ↦ m ^^^ n :=
   fun m m' (h : m ^^^ n = m' ^^^ n) => by
   rw [← xor_cancel_right n m, ← xor_cancel_right n m', h]
 

@@ -67,7 +67,7 @@ theorem diagonal_eq_diagonal_iff [Zero α] {d₁ d₂ : n → α} :
     rw [show d₁ = d₂ from funext h]⟩
 
 theorem diagonal_injective [Zero α] : Function.Injective (diagonal : (n → α) → Matrix n n α) :=
-  fun d₁ d₂ h => funext fun i => by simpa using Matrix.ext_iff.mpr h i i
+  fun d₁ d₂ h => funext fun i ↦ by simpa using Matrix.ext_iff.mpr h i i
 
 @[simp]
 theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := by
@@ -83,7 +83,7 @@ theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal
 
 @[simp]
 theorem diagonal_add [AddZeroClass α] (d₁ d₂ : n → α) :
-    diagonal d₁ + diagonal d₂ = diagonal fun i => d₁ i + d₂ i := by
+    diagonal d₁ + diagonal d₂ = diagonal fun i ↦ d₁ i + d₂ i := by
   ext i j
   by_cases h : i = j <;>
   simp [h]
@@ -96,14 +96,14 @@ theorem diagonal_smul [Zero α] [SMulZeroClass R α] (r : R) (d : n → α) :
 
 @[simp]
 theorem diagonal_neg [NegZeroClass α] (d : n → α) :
-    -diagonal d = diagonal fun i => -d i := by
+    -diagonal d = diagonal fun i ↦ -d i := by
   ext i j
   by_cases h : i = j <;>
   simp [h]
 
 @[simp]
 theorem diagonal_sub [SubNegZeroMonoid α] (d₁ d₂ : n → α) :
-    diagonal d₁ - diagonal d₂ = diagonal fun i => d₁ i - d₂ i := by
+    diagonal d₁ - diagonal d₂ = diagonal fun i ↦ d₁ i - d₂ i := by
   ext i j
   by_cases h : i = j <;>
   simp [h]
@@ -136,7 +136,7 @@ theorem diagonal_intCast' [Zero α] [IntCast α] (m : ℤ) : diagonal ((m : n �
 
 @[simp]
 theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n → α} :
-    (diagonal d).map f = diagonal fun m => f (d m) := by
+    (diagonal d).map f = diagonal fun m ↦ f (d m) := by
   ext
   simp only [diagonal_apply, map_apply]
   split_ifs <;> simp [h]

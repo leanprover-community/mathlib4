@@ -166,17 +166,17 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
   out n :=
     { has_biproduct := fun f =>
         hasBiproduct_of_total
-          { pt := ⟨Σ j, (f j).ι, fun p => (f p.1).X p.2⟩
+          { pt := ⟨Σ j, (f j).ι, fun p ↦ (f p.1).X p.2⟩
             π := fun j x y => by
               refine if h : x.1 = j then ?_ else 0
-              refine if h' : @Eq.ndrec (Fin n) x.1 (fun j => (f j).ι) x.2 _ h = y then ?_ else 0
+              refine if h' : @Eq.ndrec (Fin n) x.1 (fun j ↦ (f j).ι) x.2 _ h = y then ?_ else 0
               apply eqToHom
               substs h h'
               rfl
             -- Notice we were careful not to use `subst` until we had a goal in `Prop`.
             ι := fun j x y => by
               refine if h : y.1 = j then ?_ else 0
-              refine if h' : @Eq.ndrec _ y.1 (fun j => (f j).ι) y.2 _ h = x then ?_ else 0
+              refine if h' : @Eq.ndrec _ y.1 (fun j ↦ (f j).ι) y.2 _ h = x then ?_ else 0
               apply eqToHom
               substs h h'
               rfl
@@ -241,7 +241,7 @@ attribute [local simp] Mat_.id_apply eqToHom_map
 -/
 @[simps]
 def mapMat_ (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ Mat_ D where
-  obj M := ⟨M.ι, fun i => F.obj (M.X i)⟩
+  obj M := ⟨M.ι, fun i ↦ F.obj (M.X i)⟩
   map f i j := F.map (f i j)
 
 /-- The identity functor induces the identity functor on matrix categories.
@@ -297,7 +297,7 @@ variable {C}
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
 -/
 @[simps]
-def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M.X i) where
+def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i ↦ (embedding C).obj (M.X i) where
   hom := biproduct.lift fun i j _ => if h : j = i then eqToHom (congr_arg M.X h) else 0
   inv := biproduct.desc fun i _ k => if h : i = k then eqToHom (congr_arg M.X h) else 0
   hom_inv_id := by
@@ -330,7 +330,7 @@ variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
 -- Porting note: added because it was not found automatically
 instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
-    HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
+    HasBiproduct (fun i ↦ F.obj ((embedding C).obj (M.X i))) :=
   F.hasBiproduct_of_preserves _
 
 -- Porting note: removed the @[simps] attribute as the automatically generated lemmas
@@ -338,7 +338,7 @@ instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
 -- definition in order to ease the proof of `additiveObjIsoBiproduct_naturality`
 /-- Every `M` is a direct sum of objects from `C`, and `F` preserves biproducts. -/
 def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
-    F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=
+    F.obj M ≅ ⨁ fun i ↦ F.obj ((embedding C).obj (M.X i)) :=
   F.mapIso (isoBiproductEmbedding M) ≪≫ F.mapBiproduct _
 
 @[reassoc (attr := simp)]
@@ -390,7 +390,7 @@ attribute [local simp] biproduct.lift_desc
 a functor `Mat_ C ⥤ D`. -/
 @[simps]
 def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
-  obj X := ⨁ fun i => F.obj (X.X i)
+  obj X := ⨁ fun i ↦ F.obj (X.X i)
   map f := biproduct.matrix fun i j => F.map (f i j)
   map_id X := by
     dsimp
@@ -416,10 +416,10 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
   NatIso.ofComponents
     (fun M =>
       additiveObjIsoBiproduct L M ≪≫
-        (biproduct.mapIso fun i => α.app (M.X i)) ≪≫
-          (biproduct.mapIso fun i => (embeddingLiftIso F).symm.app (M.X i)) ≪≫
+        (biproduct.mapIso fun i ↦ α.app (M.X i)) ≪≫
+          (biproduct.mapIso fun i ↦ (embeddingLiftIso F).symm.app (M.X i)) ≪≫
             (additiveObjIsoBiproduct (lift F) M).symm)
-    fun f => by
+    fun f ↦ by
       dsimp only [Iso.trans_hom, Iso.symm_hom, biproduct.mapIso_hom]
       simp only [additiveObjIsoBiproduct_naturality_assoc]
       simp only [biproduct.matrix_map_assoc, Category.assoc]

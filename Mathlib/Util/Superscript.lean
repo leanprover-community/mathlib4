@@ -211,10 +211,10 @@ def _root_.Std.Format.mapStringsM {m} [Monad m] (f : Format) (f' : String → m 
 /-- Formatter for the script parser. -/
 def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) :
     Formatter := do
-  let stack ← modifyGet fun s => (s.stack, {s with stack := #[]})
+  let stack ← modifyGet fun s ↦ (s.stack, {s with stack := #[]})
   Formatter.node.formatter k p
   let st ← get
-  let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
+  let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s ↦ do
     let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
     .ok ⟨s⟩)
   match transformed with

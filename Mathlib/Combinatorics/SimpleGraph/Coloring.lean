@@ -230,7 +230,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     exact Fin.is_lt (color v)
   · rintro ⟨C, Cf⟩
     refine ⟨Coloring.mk ?_ ?_⟩
-    · exact fun v => ⟨C v, Cf v⟩
+    · exact fun v ↦ ⟨C v, Cf v⟩
     · rintro v w hvw
       simp only [Fin.mk_eq_mk, Ne]
       exact C.valid hvw
@@ -391,7 +391,7 @@ theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
 /-- The bicoloring of a complete bipartite graph using whether a vertex
 is on the left or on the right. -/
 def CompleteBipartiteGraph.bicoloring (V W : Type*) : (completeBipartiteGraph V W).Coloring Bool :=
-  Coloring.mk (fun v => v.isRight)
+  Coloring.mk (fun v ↦ v.isRight)
     (by
       intro v w
       cases v <;> cases w <;> simp)

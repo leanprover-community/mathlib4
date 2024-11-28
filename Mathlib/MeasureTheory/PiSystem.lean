@@ -362,7 +362,7 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
         exists_const] using hs
 
 theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
-    piiUnionInter (fun i => ({s i} : Set (Set α))) S =
+    piiUnionInter (fun i ↦ ({s i} : Set (Set α))) S =
       { s' : Set α | ∃ (t : Finset ι) (_ : ↑t ⊆ S), s' = ⋂ i ∈ t, s i } := by
   ext1 s'
   simp_rw [piiUnionInter, Set.mem_singleton_iff, exists_prop, Set.mem_setOf_eq]
@@ -374,7 +374,7 @@ theorem piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
   assumption
 
 theorem generateFrom_piiUnionInter_singleton_left (s : ι → Set α) (S : Set ι) :
-    generateFrom (piiUnionInter (fun k => {s k}) S) = generateFrom { t | ∃ k ∈ S, s k = t } := by
+    generateFrom (piiUnionInter (fun k ↦ {s k}) S) = generateFrom { t | ∃ k ∈ S, s k = t } := by
   refine le_antisymm (generateFrom_le ?_) (generateFrom_mono ?_)
   · rintro _ ⟨I, hI, f, hf, rfl⟩
     refine Finset.measurableSet_biInter _ fun m hm => measurableSet_generateFrom ?_
@@ -453,7 +453,7 @@ theorem subset_piiUnionInter {π : ι → Set (Set α)} {S : Set ι} {i : ι} (h
 
 theorem mem_piiUnionInter_of_measurableSet (m : ι → MeasurableSpace α) {S : Set ι} {i : ι}
     (hiS : i ∈ S) (s : Set α) (hs : MeasurableSet[m i] s) :
-    s ∈ piiUnionInter (fun n => { s | MeasurableSet[m n] s }) S :=
+    s ∈ piiUnionInter (fun n ↦ { s | MeasurableSet[m n] s }) S :=
   subset_piiUnionInter hiS hs
 
 theorem le_generateFrom_piiUnionInter {π : ι → Set (Set α)} (S : Set ι) {x : ι} (hxS : x ∈ S) :
@@ -461,7 +461,7 @@ theorem le_generateFrom_piiUnionInter {π : ι → Set (Set α)} (S : Set ι) {x
   generateFrom_mono (subset_piiUnionInter hxS)
 
 theorem measurableSet_iSup_of_mem_piiUnionInter (m : ι → MeasurableSpace α) (S : Set ι) (t : Set α)
-    (ht : t ∈ piiUnionInter (fun n => { s | MeasurableSet[m n] s }) S) :
+    (ht : t ∈ piiUnionInter (fun n ↦ { s | MeasurableSet[m n] s }) S) :
     MeasurableSet[⨆ i ∈ S, m i] t := by
   rcases ht with ⟨pt, hpt, ft, ht_m, rfl⟩
   refine pt.measurableSet_biInter fun i hi => ?_
@@ -470,7 +470,7 @@ theorem measurableSet_iSup_of_mem_piiUnionInter (m : ι → MeasurableSpace α) 
   exact le_iSup₂ (f := fun i (_ : i ∈ S) => m i) i hi'
 
 theorem generateFrom_piiUnionInter_measurableSet (m : ι → MeasurableSpace α) (S : Set ι) :
-    generateFrom (piiUnionInter (fun n => { s | MeasurableSet[m n] s }) S) = ⨆ i ∈ S, m i := by
+    generateFrom (piiUnionInter (fun n ↦ { s | MeasurableSet[m n] s }) S) = ⨆ i ∈ S, m i := by
   refine le_antisymm ?_ ?_
   · rw [← @generateFrom_measurableSet α (⨆ i ∈ S, m i)]
     exact generateFrom_mono (measurableSet_iSup_of_mem_piiUnionInter m S)
@@ -551,7 +551,7 @@ instance : PartialOrder (DynkinSystem α) :=
   { DynkinSystem.instLEDynkinSystem with
     le_refl := fun _ _ => le_rfl
     le_trans := fun _ _ _ hab hbc => le_def.mpr (le_trans hab hbc)
-    le_antisymm := fun _ _ h₁ h₂ => ext fun s => ⟨h₁ s, h₂ s⟩ }
+    le_antisymm := fun _ _ h₁ h₂ => ext fun s ↦ ⟨h₁ s, h₂ s⟩ }
 
 /-- Every measurable space (σ-algebra) forms a Dynkin system -/
 def ofMeasurableSpace (m : MeasurableSpace α) : DynkinSystem α where
@@ -682,7 +682,7 @@ theorem induction_on_inter {C : Set α → Prop} {s : Set (Set α)} [m : Measura
         rw [eq]
         exact ht)
     fun {f} hf ht =>
-    h_union f hf fun i => by
+    h_union f hf fun i ↦ by
       rw [eq]
       exact ht _
 

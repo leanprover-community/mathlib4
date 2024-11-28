@@ -168,7 +168,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     -- We show the sheaf condition in terms of unique gluing.
     -- First we obtain a family of sections for the underlying sheaf of functions,
     -- by forgetting that the predicate holds
-    let sf' : ∀ i : ι, (presheafToTypes X T).obj (op (U i)) := fun i => (sf i).val
+    let sf' : ∀ i : ι, (presheafToTypes X T).obj (op (U i)) := fun i ↦ (sf i).val
     -- Since our original family is compatible, this one is as well
     have sf'_comp : (presheafToTypes X T).IsCompatible U sf' := fun i j =>
       congr_arg Subtype.val (sf_comp i j)
@@ -190,10 +190,10 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
     -- It remains to show that the chosen lift is really a gluing for the subsheaf and
     -- that it is unique. Both of which follow immediately from the corresponding facts
     -- in the sheaf of functions without the local predicate.
-    · exact fun i => Subtype.ext (gl_spec i)
+    · exact fun i ↦ Subtype.ext (gl_spec i)
     · intro gl' hgl'
       refine Subtype.ext ?_
-      exact gl_uniq gl'.1 fun i => congr_arg Subtype.val (hgl' i)
+      exact gl_uniq gl'.1 fun i ↦ congr_arg Subtype.val (hgl' i)
 
 end subpresheafToTypes
 
@@ -226,7 +226,7 @@ every point in the fiber `T x` has an allowed section passing through it.
 -/
 theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
     (w : ∀ t : T x, ∃ (U : OpenNhds x) (f : ∀ y : U.1, T y) (_ : P.pred f), f ⟨x, U.2⟩ = t) :
-    Function.Surjective (stalkToFiber P x) := fun t => by
+    Function.Surjective (stalkToFiber P x) := fun t ↦ by
   rcases w t with ⟨U, f, h, rfl⟩
   fconstructor
   · exact (subsheafToTypes P).presheaf.germ _ x U.2 ⟨f, h⟩
@@ -259,7 +259,7 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   specialize w (unop U) (unop V) fU hU fV hV h
   rcases w with ⟨W, iU, iV, w⟩
   -- and put it back together again in the correct order.
-  refine ⟨op W, fun w => fU (iU w : (unop U).1), P.res ?_ _ hU, ?_⟩
+  refine ⟨op W, fun w ↦ fU (iU w : (unop U).1), P.res ?_ _ hU, ?_⟩
   · rcases W with ⟨W, m⟩
     exact iU
   · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩

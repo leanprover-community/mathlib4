@@ -591,12 +591,12 @@ namespace Pi
 
 variable [OrderedSemiring 𝕜] [∀ i, AddCommMonoid (π i)] [∀ i, Module 𝕜 (π i)] {s : Set ι}
 
-theorem segment_subset (x y : ∀ i, π i) : segment 𝕜 x y ⊆ s.pi fun i => segment 𝕜 (x i) (y i) := by
+theorem segment_subset (x y : ∀ i, π i) : segment 𝕜 x y ⊆ s.pi fun i ↦ segment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
   exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
 
 theorem openSegment_subset (x y : ∀ i, π i) :
-    openSegment 𝕜 x y ⊆ s.pi fun i => openSegment 𝕜 (x i) (y i) := by
+    openSegment 𝕜 x y ⊆ s.pi fun i ↦ openSegment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
   exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
 

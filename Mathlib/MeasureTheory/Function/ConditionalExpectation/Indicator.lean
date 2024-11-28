@@ -153,7 +153,7 @@ theorem condexp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
   swap
   · have : StronglyMeasurable[m] (μ[s.indicator f|m]) := stronglyMeasurable_condexp
     refine this.aeStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on hm hs_m
-      (fun t => (hs t).mp) ?_
+      (fun t ↦ (hs t).mp) ?_
     exact condexp_ae_eq_restrict_zero hs_m.compl (indicator_ae_eq_restrict_compl (hm _ hs_m))
   intro t ht _
   have : ∫ x in t, (μ[s.indicator f|m]) x ∂μ = ∫ x in s ∩ t, (μ[s.indicator f|m]) x ∂μ := by

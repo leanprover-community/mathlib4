@@ -322,7 +322,7 @@ theorem extend_comp_eq [MeasurableSpace β] (f₁ : α →ₛ γ) {g : α → β
 /-- If `f` is a simple function taking values in `β → γ` and `g` is another simple function
 with the same domain and codomain `β`, then `f.seq g = f a (g a)`. -/
 def seq (f : α →ₛ β → γ) (g : α →ₛ β) : α →ₛ γ :=
-  f.bind fun f => g.map f
+  f.bind fun f ↦ g.map f
 
 @[simp]
 theorem seq_apply (f : α →ₛ β → γ) (g : α →ₛ β) (a : α) : f.seq g a = f a (g a) :=
@@ -367,7 +367,7 @@ instance instDiv [Div β] : Div (α →ₛ β) :=
 
 @[to_additive]
 instance instInv [Inv β] : Inv (α →ₛ β) :=
-  ⟨fun f => f.map Inv.inv⟩
+  ⟨fun f ↦ f.map Inv.inv⟩
 
 instance instSup [Max β] : Max (α →ₛ β) :=
   ⟨fun f g => (f.map (· ⊔ ·)).seq g⟩
@@ -503,43 +503,43 @@ theorem zpow_apply [DivInvMonoid β] (z : ℤ) (f : α →ₛ β) (a : α) : (f 
 section Additive
 
 instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) :=
-  Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
+  Function.Injective.addMonoid (fun f ↦ show α → β from f) coe_injective coe_zero coe_add
     fun _ _ => coe_smul _ _
 
 instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
-  Function.Injective.addCommMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
+  Function.Injective.addCommMonoid (fun f ↦ show α → β from f) coe_injective coe_zero coe_add
     fun _ _ => coe_smul _ _
 
 instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
-  Function.Injective.addGroup (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
+  Function.Injective.addGroup (fun f ↦ show α → β from f) coe_injective coe_zero coe_add coe_neg
     coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
-  Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective coe_zero coe_add
+  Function.Injective.addCommGroup (fun f ↦ show α → β from f) coe_injective coe_zero coe_add
     coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 end Additive
 
 @[to_additive existing]
 instance instMonoid [Monoid β] : Monoid (α →ₛ β) :=
-  Function.Injective.monoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
+  Function.Injective.monoid (fun f ↦ show α → β from f) coe_injective coe_one coe_mul coe_pow
 
 @[to_additive existing]
 instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
-  Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
+  Function.Injective.commMonoid (fun f ↦ show α → β from f) coe_injective coe_one coe_mul coe_pow
 
 @[to_additive existing]
 instance instGroup [Group β] : Group (α →ₛ β) :=
-  Function.Injective.group (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
+  Function.Injective.group (fun f ↦ show α → β from f) coe_injective coe_one coe_mul coe_inv
     coe_div coe_pow coe_zpow
 
 @[to_additive existing]
 instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
-  Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
+  Function.Injective.commGroup (fun f ↦ show α → β from f) coe_injective coe_one coe_mul coe_inv
     coe_div coe_pow coe_zpow
 
 instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
-  Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
+  Function.Injective.module K ⟨⟨fun f ↦ show α → β from f, coe_zero⟩, coe_add⟩
     coe_injective coe_smul
 
 theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k • ·) :=
@@ -684,11 +684,11 @@ variable [SemilatticeSup β] [OrderBot β] [Zero β]
 by simple functions is defined so that in case `β = ℝ≥0∞` it sends each `a` to the supremum
 of the set `{i k | k ≤ n ∧ i k ≤ f a}`, see `approx_apply` and `iSup_approx_apply` for details. -/
 def approx (i : ℕ → β) (f : α → β) (n : ℕ) : α →ₛ β :=
-  (Finset.range n).sup fun k => restrict (const α (i k)) { a : α | i k ≤ f a }
+  (Finset.range n).sup fun k ↦ restrict (const α (i k)) { a : α | i k ≤ f a }
 
 theorem approx_apply [TopologicalSpace β] [OrderClosedTopology β] [MeasurableSpace β]
     [OpensMeasurableSpace β] {i : ℕ → β} {f : α → β} {n : ℕ} (a : α) (hf : Measurable f) :
-    (approx i f n : α →ₛ β) a = (Finset.range n).sup fun k => if i k ≤ f a then i k else 0 := by
+    (approx i f n : α →ₛ β) a = (Finset.range n).sup fun k ↦ if i k ≤ f a then i k else 0 := by
   dsimp only [approx]
   rw [finset_sup_apply]
   congr
@@ -711,7 +711,7 @@ end
 theorem iSup_approx_apply [TopologicalSpace β] [CompleteLattice β] [OrderClosedTopology β] [Zero β]
     [MeasurableSpace β] [OpensMeasurableSpace β] (i : ℕ → β) (f : α → β) (a : α) (hf : Measurable f)
     (h_zero : (0 : β) = ⊥) : ⨆ n, (approx i f n : α →ₛ β) a = ⨆ (k) (_ : i k ≤ f a), i k := by
-  refine le_antisymm (iSup_le fun n => ?_) (iSup_le fun k => iSup_le fun hk => ?_)
+  refine le_antisymm (iSup_le fun n ↦ ?_) (iSup_le fun k ↦ iSup_le fun hk => ?_)
   · rw [approx_apply a hf, h_zero]
     refine Finset.sup_le fun k _ => ?_
     split_ifs with h
@@ -762,7 +762,7 @@ lemma eapprox_mono {m n : ℕ} (hmn : m ≤ n) : eapprox f m ≤ eapprox f n := 
 
 lemma iSup_eapprox_apply (hf : Measurable f) (a : α) : ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
   rw [eapprox, iSup_approx_apply ennrealRatEmbed f a hf rfl]
-  refine le_antisymm (iSup_le fun i => iSup_le fun hi => hi) (le_of_not_gt ?_)
+  refine le_antisymm (iSup_le fun i ↦ iSup_le fun hi => hi) (le_of_not_gt ?_)
   intro h
   rcases ENNReal.lt_iff_exists_rat_btwn.1 h with ⟨q, _, lt_q, q_lt⟩
   have :
@@ -1213,7 +1213,7 @@ theorem Measurable.ennreal_induction {P : (α → ℝ≥0∞) → Prop}
       ∀ ⦃f : ℕ → α → ℝ≥0∞⦄, (∀ n, Measurable (f n)) → Monotone f → (∀ n, P (f n)) →
         P fun x ↦ ⨆ n, f n x)
     ⦃f : α → ℝ≥0∞⦄ (hf : Measurable f) : P f := by
-  convert h_iSup (fun n => (eapprox f n).measurable) (monotone_eapprox f) _ using 2
+  convert h_iSup (fun n ↦ (eapprox f n).measurable) (monotone_eapprox f) _ using 2
   · rw [iSup_eapprox_apply hf]
   · exact fun n =>
       SimpleFunc.induction (fun c s hs => h_ind c hs)

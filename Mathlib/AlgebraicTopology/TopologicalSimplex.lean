@@ -33,7 +33,7 @@ instance (x : SimplexCategory) : Fintype (ConcreteCategory.forget.obj x) :=
 def toTopObj (x : SimplexCategory) := { f : x → ℝ≥0 | ∑ i, f i = 1 }
 
 instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => x → ℝ≥0 :=
-  ⟨fun f => (f : x → ℝ≥0)⟩
+  ⟨fun f ↦ (f : x → ℝ≥0)⟩
 
 @[ext]
 theorem toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : x → ℝ≥0) = g → f = g :=
@@ -42,7 +42,7 @@ theorem toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : x → ℝ�
 open Classical in
 /-- A morphism in `SimplexCategory` induces a map on the associated topological spaces. -/
 def toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) : y.toTopObj :=
-  ⟨fun i => ∑ j ∈ Finset.univ.filter (f · = i), g j, by
+  ⟨fun i ↦ ∑ j ∈ Finset.univ.filter (f · = i), g j, by
     simp only [toTopObj, Set.mem_setOf]
     rw [← Finset.sum_biUnion]
     · have hg : ∑ i : (forget SimplexCategory).obj x, g i = 1 := g.2
@@ -58,7 +58,7 @@ theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i :
 
 @[continuity]
 theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
-  refine Continuous.subtype_mk (continuous_pi fun i => ?_) _
+  refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
   dsimp only [coe_toTopMap]
   exact continuous_finset_sum _ (fun j _ => (continuous_apply _).comp continuous_subtype_val)
 
@@ -84,7 +84,7 @@ def toTop : SimplexCategory ⥤ TopCat where
     simp only [comp_apply, TopCat.coe_of_of, ContinuousMap.coe_mk, coe_toTopMap]
     rw [← Finset.sum_biUnion]
     · apply Finset.sum_congr
-      · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
+      · exact Finset.ext (fun j ↦ ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
       · tauto
     · apply Set.pairwiseDisjoint_filter
 

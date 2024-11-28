@@ -45,7 +45,7 @@ maps `k : ∀ i, I i` to `∏ᶜ fun (s : α) => (F s).obj (k s)`. -/
 @[simps]
 noncomputable def pointwiseProduct : (∀ i, I i) ⥤ C where
   obj k := ∏ᶜ fun (s : α) => (F s).obj (k s)
-  map f := Pi.map (fun s => (F s).map (f s))
+  map f := Pi.map (fun s ↦ (F s).map (f s))
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
@@ -54,7 +54,7 @@ cone point `∏ᶜ (fun s : α) => colimit (F s)`. -/
 @[simps]
 noncomputable def coconePointwiseProduct : Cocone (pointwiseProduct F) where
   pt := ∏ᶜ fun (s : α) => colimit (F s)
-  ι := { app := fun k => Pi.map fun s => colimit.ι _ _ }
+  ι := { app := fun k ↦ Pi.map fun s ↦ colimit.ι _ _ }
 
 /-- The natural morphism `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)`.
 We will say that a category has the `IPC` property if this morphism is an isomorphism as long
@@ -83,9 +83,9 @@ taking the pointwise product `k ↦ ∏ᶜ fun (s : α) => ((F s).obj (k s)).obj
 @[simps!]
 noncomputable def pointwiseProductCompEvaluation (d : D) :
     pointwiseProduct F ⋙ (evaluation D C).obj d ≅
-      pointwiseProduct (fun s => F s ⋙ (evaluation _ _).obj d) :=
-  NatIso.ofComponents (fun k => piObjIso _ _)
-    (fun f => Pi.hom_ext _ _ (by simp [← NatTrans.comp_app]))
+      pointwiseProduct (fun s ↦ F s ⋙ (evaluation _ _).obj d) :=
+  NatIso.ofComponents (fun k ↦ piObjIso _ _)
+    (fun f ↦ Pi.hom_ext _ _ (by simp [← NatTrans.comp_app]))
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
@@ -99,7 +99,7 @@ theorem colimitPointwiseProductToProductColimit_app (d : D) :
   rw [← Iso.inv_comp_eq]
   simp only [← Category.assoc]
   rw [Iso.eq_comp_inv]
-  refine Pi.hom_ext _ _ (fun s => colimit.hom_ext (fun k => ?_))
+  refine Pi.hom_ext _ _ (fun s ↦ colimit.hom_ext (fun k ↦ ?_))
   simp [← NatTrans.comp_app]
 
 end functorCategory
@@ -141,8 +141,8 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
       simp only [yk', Types.Colimit.w_apply', hyk₀']
     dsimp only [pointwiseProduct_obj] at yk yk'
     have hch : ∀ (s : α), ∃ (i' : I s) (hi' : k s ⟶ i'),
-        (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk) =
-          (F s).map hi' (Pi.π (fun s => (F s).obj (k s)) s yk') := by
+        (F s).map hi' (Pi.π (fun s ↦ (F s).obj (k s)) s yk) =
+          (F s).map hi' (Pi.π (fun s ↦ (F s).obj (k s)) s yk') := by
       intro s
       have hy₁ := congrFun (ι_colimitPointwiseProductToProductColimit_π F k s) yk
       have hy₂ := congrFun (ι_colimitPointwiseProductToProductColimit_π F k s) yk'
@@ -156,7 +156,7 @@ theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ 
     apply Types.colimit_sound' f f
     exact Types.limit_ext' _ _ _ (fun ⟨s⟩ => by simpa using hk' _)
   · have hch : ∀ (s : α), ∃ (i : I s) (xi : (F s).obj i), colimit.ι (F s) i xi =
-        Pi.π (fun s => colimit (F s)) s x := fun s => Types.jointly_surjective' _
+        Pi.π (fun s ↦ colimit (F s)) s x := fun s ↦ Types.jointly_surjective' _
     choose k p hk using hch
     refine ⟨colimit.ι (pointwiseProduct F) k ((Types.productIso _).inv p), ?_⟩
     refine Types.limit_ext' _ _ _ (fun ⟨s⟩ => ?_)

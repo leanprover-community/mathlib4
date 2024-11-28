@@ -43,7 +43,7 @@ private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM 
 /-- Telescope consuming only let bindings -/
 def letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
     (k : Array Expr → Expr → n α) : n α :=
-  map2MetaM (fun k => letTelescopeImpl e k) k
+  map2MetaM (fun k ↦ letTelescopeImpl e k) k
 
 /--
   Swaps bvars indices `i` and `j`

@@ -128,7 +128,7 @@ set_option linter.deprecated false in
 @[deprecated "You can probably use Finsupp.single_eq_pi_single here" (since := "2024-08-09")]
 theorem stdBasis_eq_single {a : R} :
     (fun i : ι => (stdBasis R (fun _ : ι => R) i) a) = fun i : ι => ↑(Finsupp.single i a) :=
-  funext fun i => (Finsupp.single_eq_pi_single i a).symm
+  funext fun i ↦ (Finsupp.single_eq_pi_single i a).symm
 
 end LinearMap
 
@@ -161,7 +161,7 @@ theorem linearIndependent_single [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, M
   have h₁ :
     span R (range fun i : ιs j => LinearMap.single R Ms j (v j i)) ≤
       ⨆ i ∈ ({j} : Set _), LinearMap.range (LinearMap.single R Ms i) := by
-    rw [@iSup_singleton _ _ _ fun i => LinearMap.range (LinearMap.single R (Ms) i)]
+    rw [@iSup_singleton _ _ _ fun i ↦ LinearMap.range (LinearMap.single R (Ms) i)]
     apply h₀
   have h₂ :
     ⨆ j ∈ J, span R (range fun i : ιs j => LinearMap.single R Ms j (v j i)) ≤
@@ -194,7 +194,7 @@ For the standard basis over `R` on the finite-dimensional space `η → R` see `
 protected noncomputable def basis (s : ∀ j, Basis (ιs j) R (Ms j)) :
     Basis (Σj, ιs j) R (∀ j, Ms j) :=
   Basis.ofRepr
-    ((LinearEquiv.piCongrRight fun j => (s j).repr) ≪≫ₗ
+    ((LinearEquiv.piCongrRight fun j ↦ (s j).repr) ≪≫ₗ
       (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm)
 
 @[simp]

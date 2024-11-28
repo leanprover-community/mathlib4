@@ -288,7 +288,7 @@ noncomputable def zero [HasZeroObject V] : HomologicalComplex V c where
   d _ _ := 0
 
 theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) := by
-  refine ⟨fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => ?_⟩⟩⟩
+  refine ⟨fun X => ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩, fun X => ⟨⟨⟨0⟩, fun f ↦ ?_⟩⟩⟩
   all_goals
     ext
     dsimp only [zero]
@@ -501,10 +501,10 @@ def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
     (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by aesop_cat) :
     C₁ ≅ C₂ where
   hom :=
-    { f := fun i => (f i).hom
+    { f := fun i ↦ (f i).hom
       comm' := hf }
   inv :=
-    { f := fun i => (f i).inv
+    { f := fun i ↦ (f i).inv
       comm' := fun i j hij =>
         calc
           (f i).inv ≫ C₁.d i j = (f i).inv ≫ (C₁.d i j ≫ (f j).hom) ≫ (f j).inv := by simp
@@ -525,7 +525,7 @@ theorem isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
   simp
 
 theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
-  (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n)).isIso_hom
+  (HomologicalComplex.Hom.isoOfComponents fun n ↦ asIso (f.f n)).isIso_hom
 
 /-! Lemmas relating chain maps and `dTo`/`dFrom`. -/
 
@@ -685,8 +685,8 @@ and returns the next object, its differential, and the fact it composes appropri
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
 def mk : ChainComplex V ℕ :=
-  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₃) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).g)
-    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
+  of (fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₃) (fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).g)
+    fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
 
 @[simp]
 theorem mk_X_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 0 = X₀ :=
@@ -905,8 +905,8 @@ and returns the next object, its differential, and the fact it composes appropri
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
 def mk : CochainComplex V ℕ :=
-  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₁) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).f)
-    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
+  of (fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₁) (fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).f)
+    fun n ↦ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
 
 @[simp]
 theorem mk_X_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).X 0 = X₀ :=

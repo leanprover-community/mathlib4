@@ -159,7 +159,7 @@ theorem weightedVSubOfPoint_indicator_subset (w : ι → k) (p : ι → P) (b : 
     s₁.weightedVSubOfPoint p b w = s₂.weightedVSubOfPoint p b (Set.indicator (↑s₁) w) := by
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply]
   exact Eq.symm <|
-    sum_indicator_subset_of_eq_zero w (fun i wi => wi • (p i -ᵥ b : V)) h fun i => zero_smul k _
+    sum_indicator_subset_of_eq_zero w (fun i wi => wi • (p i -ᵥ b : V)) h fun i ↦ zero_smul k _
 
 /-- A weighted sum, over the image of an embedding, equals a weighted
 sum with the same points and weights over the original
@@ -205,7 +205,7 @@ theorem weightedVSubOfPoint_sdiff_sub [DecidableEq ι] {s₂ : Finset ι} (h : s
 /-- A weighted sum over `s.subtype pred` equals one over `{x ∈ s | pred x}`. -/
 theorem weightedVSubOfPoint_subtype_eq_filter (w : ι → k) (p : ι → P) (b : P) (pred : ι → Prop)
     [DecidablePred pred] :
-    ((s.subtype pred).weightedVSubOfPoint (fun i => p i) b fun i => w i) =
+    ((s.subtype pred).weightedVSubOfPoint (fun i ↦ p i) b fun i ↦ w i) =
       {x ∈ s | pred x}.weightedVSubOfPoint p b w := by
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply, ← sum_subtype_eq_sum_filter]
 
@@ -322,7 +322,7 @@ theorem weightedVSub_sdiff_sub [DecidableEq ι] {s₂ : Finset ι} (h : s₂ ⊆
 /-- A weighted sum over `s.subtype pred` equals one over `{x ∈ s | pred x}`. -/
 theorem weightedVSub_subtype_eq_filter (w : ι → k) (p : ι → P) (pred : ι → Prop)
     [DecidablePred pred] :
-    ((s.subtype pred).weightedVSub (fun i => p i) fun i => w i) =
+    ((s.subtype pred).weightedVSub (fun i ↦ p i) fun i ↦ w i) =
       {x ∈ s | pred x}.weightedVSub p w :=
   s.weightedVSubOfPoint_subtype_eq_filter _ _ _ _
 
@@ -407,8 +407,8 @@ theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w 
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
   simp only [affineCombination, weightedVSubOfPoint_apply, id, vadd_right_cancel_iff,
     Function.comp_apply, AffineMap.coe_mk]
-  let g₁ : s → V := fun i => w (f i) • (f i -ᵥ Classical.choice S.nonempty)
-  let g₂ : P → V := fun i => w i • (i -ᵥ Classical.choice S.nonempty)
+  let g₁ : s → V := fun i ↦ w (f i) • (f i -ᵥ Classical.choice S.nonempty)
+  let g₂ : P → V := fun i ↦ w i • (i -ᵥ Classical.choice S.nonempty)
   change univ.sum g₁ = (image f univ).sum g₂
   have hgf : g₁ = g₂ ∘ f := by
     ext
@@ -510,7 +510,7 @@ theorem affineCombination_eq_of_weightedVSub_eq_zero_of_eq_neg_one {w : ι → k
 /-- An affine combination over `s.subtype pred` equals one over `{x ∈ s | pred x}`. -/
 theorem affineCombination_subtype_eq_filter (w : ι → k) (p : ι → P) (pred : ι → Prop)
     [DecidablePred pred] :
-    ((s.subtype pred).affineCombination k (fun i => p i) fun i => w i) =
+    ((s.subtype pred).affineCombination k (fun i ↦ p i) fun i ↦ w i) =
       {x ∈ s | pred x}.affineCombination k p w := by
   rw [affineCombination_apply, affineCombination_apply, weightedVSubOfPoint_subtype_eq_filter]
 
@@ -539,7 +539,7 @@ theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V}
     simp_rw [weightedVSubOfPoint_apply]
     constructor
     · rintro ⟨fs, hfs, w, rfl, rfl⟩
-      exact ⟨fs.subtype s, fun i => w i, sum_subtype_of_mem _ hfs, (sum_subtype_of_mem _ hfs).symm⟩
+      exact ⟨fs.subtype s, fun i ↦ w i, sum_subtype_of_mem _ hfs, (sum_subtype_of_mem _ hfs).symm⟩
     · rintro ⟨fs, w, rfl, rfl⟩
       refine
           ⟨fs.map (Function.Embedding.subtype _), map_subtype_subset _, fun i =>
@@ -907,7 +907,7 @@ theorem weightedVSub_mem_vectorSpan {s : Finset ι} {w : ι → k} (h : ∑ i �
         Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero s w p h (p i0),
         Finset.weightedVSubOfPoint_apply]
       let w' := Set.indicator (↑s) w
-      have hwx : ∀ i, w' i ≠ 0 → i ∈ s := fun i => Set.mem_of_indicator_ne_zero
+      have hwx : ∀ i, w' i ≠ 0 → i ∈ s := fun i ↦ Set.mem_of_indicator_ne_zero
       use Finsupp.onFinset s w' hwx, Set.subset_univ _
       rw [Finsupp.linearCombination_apply, Finsupp.onFinset_sum hwx]
       · apply Finset.sum_congr rfl
@@ -967,7 +967,7 @@ theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
             Function.const_apply, Finset.sum_const_zero, add_zero, sub_self]
         use hw
         have hz : w i0 • (p i0 -ᵥ p i0 : V) = 0 := (vsub_self (p i0)).symm ▸ smul_zero _
-        change (fun i => w i • (p i -ᵥ p i0 : V)) i0 = 0 at hz
+        change (fun i ↦ w i • (p i -ᵥ p i0 : V)) i0 = 0 at hz
         rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ w p hw (p i0),
           Finset.weightedVSubOfPoint_apply, ← hv, Finsupp.linearCombination_apply,
           @Finset.sum_insert_zero _ _ l.support i0 _ _ _ hz]

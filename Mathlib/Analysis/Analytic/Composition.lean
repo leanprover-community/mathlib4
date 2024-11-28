@@ -225,7 +225,7 @@ In general, the composition `q ∘ p` only makes sense when the constant coeffic
 We give a general formula but which ignores the value of `p 0` instead.
 -/
 protected def comp (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F) :
-    FormalMultilinearSeries 𝕜 E G := fun n => ∑ c : Composition n, q.compAlongComposition p c
+    FormalMultilinearSeries 𝕜 E G := fun n ↦ ∑ c : Composition n, q.compAlongComposition p c
 
 /-- The `0`-th coefficient of `q.comp p` is `q 0`. Since these maps are multilinear maps in zero
 variables, but on different spaces, we can not state this directly, so we state it when applied to
@@ -454,7 +454,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
     q.nnnorm_mul_pow_le_of_lt_radius hrq.2
   obtain ⟨Cp, hCp1, hCp⟩ : ∃ Cp ≥ 1, ∀ n, ‖p n‖₊ * rp ^ n ≤ Cp := by
     rcases p.nnnorm_mul_pow_le_of_lt_radius hrp.2 with ⟨Cp, -, hCp⟩
-    exact ⟨max Cp 1, le_max_right _ _, fun n => (hCp n).trans (le_max_left _ _)⟩
+    exact ⟨max Cp 1, le_max_right _ _, fun n ↦ (hCp n).trans (le_max_left _ _)⟩
   let r0 : ℝ≥0 := (4 * Cp)⁻¹
   have r0_pos : 0 < r0 := inv_pos.2 (mul_pos zero_lt_four (zero_lt_one.trans_le hCp1))
   set r : ℝ≥0 := rp * rq * r0
@@ -490,7 +490,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
     intro n
     convert hasSum_fintype fun c : Composition n => (4 ^ n : ℝ≥0)⁻¹
     simp [Finset.card_univ, composition_card, div_eq_mul_inv]
-  refine NNReal.summable_sigma.2 ⟨fun n => (this n).summable, (NNReal.summable_nat_add_iff 1).1 ?_⟩
+  refine NNReal.summable_sigma.2 ⟨fun n ↦ (this n).summable, (NNReal.summable_nat_add_iff 1).1 ?_⟩
   convert (NNReal.summable_geometric (NNReal.div_lt_one_of_lt one_lt_two)).mul_left (1 / 4) using 1
   ext1 n
   rw [(this _).tsum_eq, add_tsub_cancel_right]
@@ -507,7 +507,7 @@ theorem le_comp_radius_of_summable (q : FormalMultilinearSeries 𝕜 F G)
     (r : ℝ≥0∞) ≤ (q.comp p).radius := by
   refine
     le_radius_of_bound_nnreal _
-      (∑' i : Σ n, Composition n, ‖compAlongComposition q p i.snd‖₊ * r ^ i.fst) fun n => ?_
+      (∑' i : Σ n, Composition n, ‖compAlongComposition q p i.snd‖₊ * r ^ i.fst) fun n ↦ ?_
   calc
     ‖FormalMultilinearSeries.comp q p n‖₊ * r ^ n ≤
         ∑' c : Composition n, ‖compAlongComposition q p c‖₊ * r ^ n := by
@@ -763,12 +763,12 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
       rw [eq_sub_iff_add_eq', Finset.range_eq_Ico, ← Hf.coeff_zero fun _i => y,
         Finset.sum_eq_sum_Ico_succ_bot hn]
     have :
-      Tendsto (fun n => (∑ a ∈ Finset.range n, p a fun _b => y) - f x) atTop
+      Tendsto (fun n ↦ (∑ a ∈ Finset.range n, p a fun _b => y) - f x) atTop
         (𝓝 (f (x + y) - f x)) :=
       (Hf.hasSum h'y y_mem).tendsto_sum_nat.sub tendsto_const_nhds
     exact Tendsto.congr' L this
   -- Second step: the composition of the partial sums of `q` and `p` converges to `g (f (x + y))`.
-  have B : Tendsto (fun n => q.partialSum n (∑ a ∈ Finset.Ico 1 n, p a fun _b ↦ y)) atTop
+  have B : Tendsto (fun n ↦ q.partialSum n (∑ a ∈ Finset.Ico 1 n, p a fun _b ↦ y)) atTop
       (𝓝 (g (f (x + y)))) := by
     -- we use the fact that the partial sums of `q` converge to `g (f (x + y))`, uniformly on a
     -- neighborhood of `f (x + y)`.
@@ -783,7 +783,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   -- consequence of the second step
   have C :
     Tendsto
-      (fun n => ∑ i ∈ compPartialSumTarget 0 n n, q.compAlongComposition p i.2 fun _j => y)
+      (fun n ↦ ∑ i ∈ compPartialSumTarget 0 n n, q.compAlongComposition p i.2 fun _j => y)
       atTop (𝓝 (g (f (x + y)))) := by
     simpa [comp_partialSum] using B
   -- Fourth step: the sum over all compositions is `g (f (x + y))`. This follows from the
@@ -814,7 +814,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   -- the sum over all compositions, by grouping together the compositions of the same
   -- integer `n`. The convergence of the whole sum therefore implies the converence of the sum
   -- of `q.comp p n`
-  have E : HasSum (fun n => (q.comp p) n fun _j => y) (g (f (x + y))) := by
+  have E : HasSum (fun n ↦ (q.comp p) n fun _j => y) (g (f (x + y))) := by
     apply D.sigma
     intro n
     dsimp [FormalMultilinearSeries.comp]
@@ -981,7 +981,7 @@ theorem sigma_composition_eq_iff (i j : Σ a : Composition n, Composition a.leng
 non-dependent terms with lists, requiring that the lists of blocks coincide. -/
 theorem sigma_pi_composition_eq_iff
     (u v : Σ c : Composition n, ∀ i : Fin c.length, Composition (c.blocksFun i)) :
-    u = v ↔ (ofFn fun i => (u.2 i).blocks) = ofFn fun i => (v.2 i).blocks := by
+    u = v ↔ (ofFn fun i ↦ (u.2 i).blocks) = ofFn fun i ↦ (v.2 i).blocks := by
   refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases u with ⟨a, b⟩
   rcases v with ⟨a', b'⟩
@@ -1128,15 +1128,15 @@ def sigmaEquivSigmaPi (n : ℕ) :
       Σ c : Composition n, ∀ i : Fin c.length, Composition (c.blocksFun i) where
   toFun i := ⟨i.1.gather i.2, i.1.sigmaCompositionAux i.2⟩
   invFun i :=
-    ⟨{  blocks := (ofFn fun j => (i.2 j).blocks).flatten
+    ⟨{  blocks := (ofFn fun j ↦ (i.2 j).blocks).flatten
         blocks_pos := by
           simp only [and_imp, List.mem_flatten, exists_imp, forall_mem_ofFn_iff]
           exact @fun i j hj => Composition.blocks_pos _ hj
         blocks_sum := by simp [sum_ofFn, Composition.blocks_sum, Composition.sum_blocksFun] },
-      { blocks := ofFn fun j => (i.2 j).length
+      { blocks := ofFn fun j ↦ (i.2 j).length
         blocks_pos := by
           intro k hk
-          refine ((forall_mem_ofFn_iff (P := fun i => 0 < i)).2 fun j => ?_) k hk
+          refine ((forall_mem_ofFn_iff (P := fun i ↦ 0 < i)).2 fun j ↦ ?_) k hk
           exact Composition.length_pos_of_pos _ (Composition.blocks_pos' _ _ _)
         blocks_sum := by dsimp only [Composition.length]; simp [sum_ofFn] }⟩
   left_inv := by
@@ -1151,12 +1151,12 @@ def sigmaEquivSigmaPi (n : ℕ) :
       have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
         simp only [length, gather, length_map, length_splitWrtComposition]
       congr! 2
-      exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
+      exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i ↦ rfl
     · have B : Composition.length (Composition.gather a b) = List.length b.blocks :=
         Composition.length_gather _ _
       conv_rhs => rw [← ofFn_getElem b.blocks]
       congr 1
-      refine (Fin.heq_fun_iff B).2 fun i => ?_
+      refine (Fin.heq_fun_iff B).2 fun i ↦ ?_
       rw [sigmaCompositionAux, Composition.length, List.getElem_map_rev List.length,
         List.getElem_of_eq (map_length_splitWrtComposition _ _)]
   right_inv := by

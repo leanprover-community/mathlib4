@@ -75,7 +75,7 @@ open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
-  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
+  hmul := ⟨fun p ↦ (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
     -- Porting note: was `continuity`
     exact ((map_continuous HSpace.hmul).comp ((continuous_fst.comp continuous_fst).prod_mk
         (continuous_fst.comp continuous_snd))).prod_mk ((map_continuous HSpace.hmul).comp
@@ -86,7 +86,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
   eHmul := by
-    let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
+    let G : I × X × Y → X × Y := fun p ↦ (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
     have hG : Continuous G :=
       (Continuous.comp HSpace.eHmul.1.1.2
           (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
@@ -101,7 +101,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
       replace h := Prod.mk.inj_iff.mp h
       exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
-    let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
+    let G : I × X × Y → X × Y := fun p ↦ (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
     have hG : Continuous G :=
       (Continuous.comp HSpace.hmulE.1.1.2
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk

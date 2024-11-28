@@ -801,12 +801,12 @@ theorem HasBasis.limsup_eq_sInf_univ_of_empty {f : ι → α} {v : Filter ι}
 
 @[simp]
 theorem liminf_nat_add (f : ℕ → α) (k : ℕ) :
-    liminf (fun i => f (i + k)) atTop = liminf f atTop := by
+    liminf (fun i ↦ f (i + k)) atTop = liminf f atTop := by
   change liminf (f ∘ (· + k)) atTop = liminf f atTop
   rw [liminf, liminf, ← map_map, map_add_atTop_eq_nat]
 
 @[simp]
-theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i => f (i + k)) atTop = limsup f atTop :=
+theorem limsup_nat_add (f : ℕ → α) (k : ℕ) : limsup (fun i ↦ f (i + k)) atTop = limsup f atTop :=
   @liminf_nat_add αᵒᵈ _ f k
 
 end ConditionallyCompleteLattice
@@ -992,15 +992,15 @@ theorem le_limsup_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α}
 `a : α` is a fixed point. -/
 @[simp]
 theorem _root_.CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (a : α) :
-    f (limsup (fun n => f^[n] a) atTop) = limsup (fun n => f^[n] a) atTop := by
+    f (limsup (fun n ↦ f^[n] a) atTop) = limsup (fun n ↦ f^[n] a) atTop := by
   rw [limsup_eq_iInf_iSup_of_nat', map_iInf]
   simp_rw [_root_.map_iSup, ← Function.comp_apply (f := f), ← Function.iterate_succ' f,
     ← Nat.add_succ]
   conv_rhs => rw [iInf_split _ (0 < ·)]
   simp only [not_lt, Nat.le_zero, iInf_iInf_eq_left, add_zero, iInf_nat_gt_zero_eq, left_eq_inf]
-  refine (iInf_le (fun i => ⨆ j, f^[j + (i + 1)] a) 0).trans ?_
+  refine (iInf_le (fun i ↦ ⨆ j, f^[j + (i + 1)] a) 0).trans ?_
   simp only [zero_add, Function.comp_apply, iSup_le_iff]
-  exact fun i => le_iSup (fun i => f^[i] a) (i + 1)
+  exact fun i ↦ le_iSup (fun i ↦ f^[i] a) (i + 1)
 
 @[deprecated (since := "2024-07-21")]
 alias CompleteLatticeHom.apply_limsup_iterate := CompleteLatticeHom.apply_limsup_iterate
@@ -1008,7 +1008,7 @@ alias CompleteLatticeHom.apply_limsup_iterate := CompleteLatticeHom.apply_limsup
 /-- If `f : α → α` is a morphism of complete lattices, then the liminf of its iterates of any
 `a : α` is a fixed point. -/
 theorem _root_.CompleteLatticeHom.apply_liminf_iterate (f : CompleteLatticeHom α α) (a : α) :
-    f (liminf (fun n => f^[n] a) atTop) = liminf (fun n => f^[n] a) atTop :=
+    f (liminf (fun n ↦ f^[n] a) atTop) = liminf (fun n ↦ f^[n] a) atTop :=
   (CompleteLatticeHom.dual f).apply_limsup_iterate _
 
 @[deprecated (since := "2024-07-21")]
@@ -1262,7 +1262,7 @@ theorem exists_forall_mem_of_hasBasis_mem_blimsup {l : Filter β} {b : ι → Se
   rw [blimsup_eq_iInf_biSup] at hx
   simp only [iSup_eq_iUnion, iInf_eq_iInter, mem_iInter, mem_iUnion, exists_prop] at hx
   choose g hg hg' using hx
-  refine ⟨fun i : { i | q i } => g (b i) (hl.mem_of_mem i.2), fun i => ⟨?_, ?_⟩⟩
+  refine ⟨fun i : { i | q i } => g (b i) (hl.mem_of_mem i.2), fun i ↦ ⟨?_, ?_⟩⟩
   · exact hg' (b i) (hl.mem_of_mem i.2)
   · exact hg (b i) (hl.mem_of_mem i.2)
 
@@ -1270,7 +1270,7 @@ theorem exists_forall_mem_of_hasBasis_mem_blimsup' {l : Filter β} {b : ι → S
     (hl : l.HasBasis (fun _ => True) b) {u : β → Set α} {p : β → Prop} {x : α}
     (hx : x ∈ blimsup u l p) : ∃ f : ι → β, ∀ i, x ∈ u (f i) ∧ p (f i) ∧ f i ∈ b i := by
   obtain ⟨f, hf⟩ := exists_forall_mem_of_hasBasis_mem_blimsup hl hx
-  exact ⟨fun i => f ⟨i, trivial⟩, fun i => hf ⟨i, trivial⟩⟩
+  exact ⟨fun i ↦ f ⟨i, trivial⟩, fun i ↦ hf ⟨i, trivial⟩⟩
 
 end SetLattice
 
@@ -1564,7 +1564,7 @@ theorem OrderIso.limsup_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
   refine le_antisymm ((OrderIso.to_galoisConnection g).l_limsup_le hgu hu_co) ?_
   rw [← g.symm.symm_apply_apply <| limsup (fun x ↦ g (u x)) f, g.symm_symm]
   refine g.monotone ?_
-  have hf : u = fun i => g.symm (g (u i)) := funext fun i => (g.symm_apply_apply (u i)).symm
+  have hf : u = fun i ↦ g.symm (g (u i)) := funext fun i ↦ (g.symm_apply_apply (u i)).symm
   -- Porting note: nth_rw 1 to nth_rw 2
   nth_rw 2 [hf]
   refine (OrderIso.to_galoisConnection g.symm).l_limsup_le ?_ hgu_co

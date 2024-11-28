@@ -166,7 +166,7 @@ theorem toMatrix_isIntegral {B B' : PowerBasis K S} {P : R[X]} (h : aeval B.gen 
     ∀ i j, IsIntegral R (B.basis.toMatrix B'.basis i j) := by
   intro i j
   rw [B.basis.toMatrix_apply, B'.coe_basis]
-  refine repr_pow_isIntegral hB (fun i => ?_) hmin _ _
+  refine repr_pow_isIntegral hB (fun i ↦ ?_) hmin _ _
   rw [← h, aeval_eq_sum_range, map_sum, Finset.sum_apply']
   refine IsIntegral.sum _ fun n _ => ?_
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R K S, ← Algebra.smul_def,

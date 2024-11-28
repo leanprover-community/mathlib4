@@ -319,7 +319,7 @@ lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.restrict⟩ := by
 
 lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
-    (fun i => cfc (f i) a) = (fun i => cfcHom (a := a) ha ⟨_, (hf i).restrict⟩) := by
+    (fun i ↦ cfc (f i) a) = (fun i ↦ cfcHom (a := a) ha ⟨_, (hf i).restrict⟩) := by
   ext i
   simp only [cfc_apply (f i) a ha (hf i)]
 

@@ -204,7 +204,7 @@ def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
 
 @[simp]
 theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
-    (toStepOfLE k m n h : Step k m → Step k n) = Nat.leRecOn h @fun n => toStepSucc k n :=
+    (toStepOfLE k m n h : Step k m → Step k n) = Nat.leRecOn h @fun n ↦ toStepSucc k n :=
   rfl
 
 instance Step.algebra (n) : Algebra k (Step k n) :=
@@ -212,7 +212,7 @@ instance Step.algebra (n) : Algebra k (Step k n) :=
 
 instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
   IsScalarTower.of_algebraMap_eq fun z =>
-    @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n => toStepSucc k n) z
+    @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n ↦ toStepSucc k n) z
 
 -- Porting note: Added to make `Step.isIntegral` faster
 private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :

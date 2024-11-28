@@ -154,13 +154,13 @@ attribute [reassoc (attr := simp)] left_triangle_components right_triangle_compo
 @[simps (config := .lemmasOnly)]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y) where
-  toFun := fun f => adj.unit.app X ≫ G.map f
-  invFun := fun g => F.map g ≫ adj.counit.app Y
-  left_inv := fun f => by
+  toFun := fun f ↦ adj.unit.app X ≫ G.map f
+  invFun := fun g ↦ F.map g ≫ adj.counit.app Y
+  left_inv := fun f ↦ by
     dsimp
     rw [F.map_comp, assoc, ← Functor.comp_map, adj.counit.naturality, ← assoc]
     simp
-  right_inv := fun g => by
+  right_inv := fun g ↦ by
     simp only [Functor.comp_obj, Functor.map_comp]
     rw [← assoc, ← Functor.comp_map, ← adj.unit.naturality]
     simp

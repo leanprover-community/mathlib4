@@ -88,7 +88,7 @@ alias ⟨SameCycle.of_inv, SameCycle.inv⟩ := sameCycle_inv
 
 @[simp]
 theorem sameCycle_conj : SameCycle (g * f * g⁻¹) x y ↔ SameCycle f (g⁻¹ x) (g⁻¹ y) :=
-  exists_congr fun i => by simp [conj_zpow, eq_inv_iff_eq]
+  exists_congr fun i ↦ by simp [conj_zpow, eq_inv_iff_eq]
 
 theorem SameCycle.conj : SameCycle f x y → SameCycle (g * f * g⁻¹) (g x) (g y) := by
   simp [sameCycle_conj]
@@ -162,14 +162,14 @@ theorem SameCycle.of_zpow {n : ℤ} : SameCycle (f ^ n) x y → SameCycle f x y 
 @[simp]
 theorem sameCycle_subtypePerm {h} {x y : { x // p x }} :
     (f.subtypePerm h).SameCycle x y ↔ f.SameCycle x y :=
-  exists_congr fun n => by simp [Subtype.ext_iff]
+  exists_congr fun n ↦ by simp [Subtype.ext_iff]
 
 alias ⟨_, SameCycle.subtypePerm⟩ := sameCycle_subtypePerm
 
 @[simp]
 theorem sameCycle_extendDomain {p : β → Prop} [DecidablePred p] {f : α ≃ Subtype p} :
     SameCycle (g.extendDomain f) (f x) (f y) ↔ g.SameCycle x y :=
-  exists_congr fun n => by
+  exists_congr fun n ↦ by
     rw [← extendDomain_zpow, extendDomain_apply_image, Subtype.coe_inj, f.injective.eq_iff]
 
 alias ⟨_, SameCycle.extendDomain⟩ := sameCycle_extendDomain
@@ -826,12 +826,12 @@ theorem IsCycleOn.exists_pow_eq' (hs : s.Finite) (hf : f.IsCycleOn s) (ha : a �
   exact ⟨n, hn⟩
 
 theorem IsCycleOn.range_pow (hs : s.Finite) (h : f.IsCycleOn s) (ha : a ∈ s) :
-    Set.range (fun n => (f ^ n) a : ℕ → α) = s :=
+    Set.range (fun n ↦ (f ^ n) a : ℕ → α) = s :=
   Set.Subset.antisymm (Set.range_subset_iff.2 fun _ => h.1.mapsTo.perm_pow _ ha) fun _ =>
     h.exists_pow_eq' hs ha
 
 theorem IsCycleOn.range_zpow (h : f.IsCycleOn s) (ha : a ∈ s) :
-    Set.range (fun n => (f ^ n) a : ℤ → α) = s :=
+    Set.range (fun n ↦ (f ^ n) a : ℤ → α) = s :=
   Set.Subset.antisymm (Set.range_subset_iff.2 fun _ => (h.1.perm_zpow _).mapsTo ha) <| h.2 ha
 
 theorem IsCycleOn.of_pow {n : ℕ} (hf : (f ^ n).IsCycleOn s) (h : Set.BijOn f s s) : f.IsCycleOn s :=
@@ -930,7 +930,7 @@ variable {f : Perm α} {s : Finset α}
 
 theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
     (range #s : Set ℕ).PairwiseDisjoint fun k =>
-      s.map ⟨fun i => (i, (f ^ k) i), fun _ _ => congr_arg Prod.fst⟩ := by
+      s.map ⟨fun i ↦ (i, (f ^ k) i), fun _ _ => congr_arg Prod.fst⟩ := by
   obtain hs | _ := (s : Set α).subsingleton_or_nontrivial
   · refine Set.Subsingleton.pairwise ?_ _
     simp_rw [Set.Subsingleton, mem_coe, ← card_le_one] at hs ⊢
@@ -958,7 +958,7 @@ The diagonals are given by the cycle `f`.
 theorem product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
     s ×ˢ s =
       (range #s).disjiUnion
-        (fun k => s.map ⟨fun i => (i, (f ^ k) i), fun _ _ => congr_arg Prod.fst⟩)
+        (fun k ↦ s.map ⟨fun i ↦ (i, (f ^ k) i), fun _ _ => congr_arg Prod.fst⟩)
         (product_self_eq_disjiUnion_perm_aux hf) := by
   ext ⟨a, b⟩
   simp only [mem_product, Equiv.Perm.coe_pow, mem_disjiUnion, mem_range, mem_map,
@@ -1058,7 +1058,7 @@ theorem IsCycle.commute_iff {g c : Perm α} (hc : c.IsCycle) :
       ∃ hc' : ∀ x : α, x ∈ c.support ↔ g x ∈ c.support,
         ofSubtype (subtypePerm g hc') ∈ Subgroup.zpowers c := by
   simp_rw [hc.commute_iff', Subgroup.mem_zpowers_iff]
-  refine exists_congr fun hc' => exists_congr fun k => ?_
+  refine exists_congr fun hc' => exists_congr fun k ↦ ?_
   rw [subtypePermOfSupport, subtypePerm_zpow c k]
   simp only [Perm.ext_iff, subtypePerm_apply, Subtype.mk.injEq, Subtype.forall]
   apply forall_congr'

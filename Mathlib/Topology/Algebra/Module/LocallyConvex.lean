@@ -59,7 +59,7 @@ theorem LocallyConvexSpace.ofBases {ι : Type*} (b : E → ι → Set E) (p : E 
       ⟨(hbasis x).index s hs.1, ⟨(hbasis x).property_index hs.1, (hbasis x).set_index_subset hs.1⟩⟩⟩
 
 theorem LocallyConvexSpace.convex_basis_zero [LocallyConvexSpace 𝕜 E] :
-    (𝓝 0 : Filter E).HasBasis (fun s => s ∈ (𝓝 0 : Filter E) ∧ Convex 𝕜 s) id :=
+    (𝓝 0 : Filter E).HasBasis (fun s ↦ s ∈ (𝓝 0 : Filter E) ∧ Convex 𝕜 s) id :=
   LocallyConvexSpace.convex_basis 0
 
 theorem locallyConvexSpace_iff_exists_convex_subset :
@@ -104,7 +104,7 @@ variable (𝕜 E : Type*) [LinearOrderedField 𝕜] [AddCommGroup E] [Module �
   [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem LocallyConvexSpace.convex_open_basis_zero [LocallyConvexSpace 𝕜 E] :
-    (𝓝 0 : Filter E).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ Convex 𝕜 s) id :=
+    (𝓝 0 : Filter E).HasBasis (fun s ↦ (0 : E) ∈ s ∧ IsOpen s ∧ Convex 𝕜 s) id :=
   (LocallyConvexSpace.convex_basis_zero 𝕜 E).to_hasBasis
     (fun s hs =>
       ⟨interior s, ⟨mem_interior_iff_mem_nhds.mpr hs.1, isOpen_interior, hs.2.interior⟩,
@@ -143,7 +143,7 @@ theorem locallyConvexSpace_sInf {ts : Set (TopologicalSpace E)}
     LocallyConvexSpace.ofBases 𝕜 E (fun _ => fun If : Set ts × (ts → Set E) => ⋂ i ∈ If.1, If.2 i)
       (fun x ↦ fun If : Set ts × (ts → Set E) =>
         If.1.Finite ∧ ∀ i ∈ If.1, If.2 i ∈ @nhds _ (↑i) x ∧ Convex 𝕜 (If.2 i))
-      (fun x ↦ ?_) fun x If hif => convex_iInter fun i => convex_iInter fun hi => (hif.2 i hi).2
+      (fun x ↦ ?_) fun x If hif => convex_iInter fun i ↦ convex_iInter fun hi => (hif.2 i hi).2
   rw [nhds_sInf, ← iInf_subtype'']
   exact hasBasis_iInf' fun i : ts => (@locallyConvexSpace_iff 𝕜 E _ _ _ ↑i).mp (h (↑i) i.2) x
 
@@ -171,7 +171,7 @@ theorem locallyConvexSpace_induced {t : TopologicalSpace F} [LocallyConvexSpace 
 instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :
     LocallyConvexSpace 𝕜 (∀ i, X i) :=
-  locallyConvexSpace_iInf fun i => locallyConvexSpace_induced (LinearMap.proj i)
+  locallyConvexSpace_iInf fun i ↦ locallyConvexSpace_induced (LinearMap.proj i)
 
 instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=

@@ -145,7 +145,7 @@ theorem coe_basisOneI_repr (z : ℂ) : ⇑(basisOneI.repr z) = ![z.re, z.im] :=
 theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
   funext fun i =>
     Basis.apply_eq_iff.mpr <|
-      Finsupp.ext fun j => by
+      Finsupp.ext fun j ↦ by
         fin_cases i <;> fin_cases j <;>
           -- Porting note: removed `only`, consider squeezing again
           simp [coe_basisOneI_repr, Finsupp.single_eq_of_ne, Matrix.cons_val_zero,

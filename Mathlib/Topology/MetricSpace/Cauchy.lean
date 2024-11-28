@@ -39,7 +39,7 @@ theorem Metric.complete_of_convergent_controlled_sequences (B : ℕ → Real) (h
       ∃ x, Tendsto u atTop (𝓝 x)) :
     CompleteSpace α :=
   UniformSpace.complete_of_convergent_controlled_sequences
-    (fun n => { p : α × α | dist p.1 p.2 < B n }) (fun n => dist_mem_uniformity <| hB n) H
+    (fun n ↦ { p : α × α | dist p.1 p.2 < B n }) (fun n ↦ dist_mem_uniformity <| hB n) H
 
 /-- A pseudo-metric space is complete iff every Cauchy sequence converges. -/
 theorem Metric.complete_of_cauchySeq_tendsto :
@@ -109,8 +109,8 @@ theorem cauchySeq_bdd {u : ℕ → α} (hu : CauchySeq u) : ∃ R > 0, ∀ m n, 
   rsuffices ⟨R, R0, H⟩ : ∃ R > 0, ∀ n, dist (u n) (u N) < R
   · exact ⟨_, add_pos R0 R0, fun m n =>
       lt_of_le_of_lt (dist_triangle_right _ _ _) (add_lt_add (H m) (H n))⟩
-  let R := Finset.sup (Finset.range N) fun n => nndist (u n) (u N)
-  refine ⟨↑R + 1, add_pos_of_nonneg_of_pos R.2 zero_lt_one, fun n => ?_⟩
+  let R := Finset.sup (Finset.range N) fun n ↦ nndist (u n) (u N)
+  refine ⟨↑R + 1, add_pos_of_nonneg_of_pos R.2 zero_lt_one, fun n ↦ ?_⟩
   rcases le_or_lt N n with h | h
   · exact lt_of_lt_of_le (hN _ h) (le_add_of_nonneg_left R.2)
   · have : _ ≤ R := Finset.le_sup (Finset.mem_range.2 h)
@@ -137,8 +137,8 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     -- Prove that it bounds the distances of points in the Cauchy sequence
     have ub : ∀ m n N, N ≤ m → N ≤ n → dist (s m) (s n) ≤ sSup (S N) := fun m n N hm hn =>
       le_csSup (hS N) ⟨⟨_, _⟩, ⟨hm, hn⟩, rfl⟩
-    have S0m : ∀ n, (0 : ℝ) ∈ S n := fun n => ⟨⟨n, n⟩, ⟨le_rfl, le_rfl⟩, dist_self _⟩
-    have S0 := fun n => le_csSup (hS n) (S0m n)
+    have S0m : ∀ n, (0 : ℝ) ∈ S n := fun n ↦ ⟨⟨n, n⟩, ⟨le_rfl, le_rfl⟩, dist_self _⟩
+    have S0 := fun n ↦ le_csSup (hS n) (S0m n)
     -- Prove that it tends to `0`, by using the Cauchy property of `s`
     refine ⟨fun N => sSup (S N), S0, ub, Metric.tendsto_atTop.2 fun ε ε0 => ?_⟩
     refine (Metric.cauchySeq_iff.1 hs (ε / 2) (half_pos ε0)).imp fun N hN n hn => ?_

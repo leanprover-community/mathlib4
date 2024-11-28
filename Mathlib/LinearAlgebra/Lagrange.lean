@@ -351,7 +351,7 @@ theorem interpolate_eq_iff_values_eq_on (hvs : Set.InjOn v s) :
   ⟨values_eq_on_of_interpolate_eq _ _ hvs, interpolate_eq_of_values_eq_on _ _⟩
 
 theorem eq_interpolate {f : F[X]} (hvs : Set.InjOn v s) (degree_f_lt : f.degree < #s) :
-    f = interpolate s v fun i => f.eval (v i) :=
+    f = interpolate s v fun i ↦ f.eval (v i) :=
   eq_of_degrees_lt_of_eval_index_eq _ hvs degree_f_lt (degree_interpolate_lt _ hvs) fun _ hi =>
     (eval_interpolate_at_node (fun x ↦ eval (v x) f) hvs hi).symm
 

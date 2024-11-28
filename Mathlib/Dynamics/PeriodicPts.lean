@@ -221,7 +221,7 @@ theorem iUnion_pNat_ptsOfPeriod : ⋃ n : ℕ+, ptsOfPeriod f n = periodicPts f 
 
 theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
   iUnion_pNat_ptsOfPeriod f ▸
-    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pNat f) fun i => bijOn_ptsOfPeriod f i.pos
+    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pNat f) fun i ↦ bijOn_ptsOfPeriod f i.pos
 
 variable {f}
 
@@ -415,16 +415,16 @@ the minimal period of `x`.
 
 If `x` is not a periodic point, then this is the empty (aka nil) cycle. -/
 def periodicOrbit (f : α → α) (x : α) : Cycle α :=
-  (List.range (minimalPeriod f x)).map fun n => f^[n] x
+  (List.range (minimalPeriod f x)).map fun n ↦ f^[n] x
 
 /-- The definition of a periodic orbit, in terms of `List.map`. -/
 theorem periodicOrbit_def (f : α → α) (x : α) :
-    periodicOrbit f x = (List.range (minimalPeriod f x)).map fun n => f^[n] x :=
+    periodicOrbit f x = (List.range (minimalPeriod f x)).map fun n ↦ f^[n] x :=
   rfl
 
 /-- The definition of a periodic orbit, in terms of `Cycle.map`. -/
 theorem periodicOrbit_eq_cycle_map (f : α → α) (x : α) :
-    periodicOrbit f x = (List.range (minimalPeriod f x) : Cycle ℕ).map fun n => f^[n] x :=
+    periodicOrbit f x = (List.range (minimalPeriod f x) : Cycle ℕ).map fun n ↦ f^[n] x :=
   rfl
 
 @[simp]

@@ -534,7 +534,7 @@ instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H ⊓ K) :=
 @[to_additive]
 theorem finiteIndex_iInf {ι : Type*} [Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).FiniteIndex) : (⨅ i, f i).FiniteIndex :=
-  ⟨index_iInf_ne_zero fun i => (hf i).finiteIndex⟩
+  ⟨index_iInf_ne_zero fun i ↦ (hf i).finiteIndex⟩
 
 @[to_additive]
 theorem finiteIndex_iInf' {ι : Type*} {s : Finset ι}

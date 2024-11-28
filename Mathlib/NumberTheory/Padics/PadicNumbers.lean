@@ -227,7 +227,7 @@ open PadicSeq
 /-
 private unsafe def index_simp_core (hh hf hg : expr)
     (at_ : Interactive.Loc := Interactive.Loc.ns [none]) : tactic Unit := do
-  let [v1, v2, v3] ← [hh, hf, hg].mapM fun n => tactic.mk_app `` stationary_point [n] <|> return n
+  let [v1, v2, v3] ← [hh, hf, hg].mapM fun n ↦ tactic.mk_app `` stationary_point [n] <|> return n
   let e1 ← tactic.mk_app `` lift_index_left_left [hh, v2, v3] <|> return q(True)
   let e2 ← tactic.mk_app `` lift_index_left [hf, v1, v3] <|> return q(True)
   let e3 ← tactic.mk_app `` lift_index_right [hg, v1, v2] <|> return q(True)

@@ -108,7 +108,7 @@ variable (f : X → F X)
 of the final coalgebra of `f` -/
 def sCorec : X → ∀ n, CofixA F n
   | _, 0 => CofixA.continue
-  | j, succ _ => CofixA.intro (f j).1 fun i => sCorec ((f j).2 i) _
+  | j, succ _ => CofixA.intro (f j).1 fun i ↦ sCorec ((f j).2 i) _
 
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction' n with n n_ih generalizing i
@@ -207,7 +207,7 @@ def head (x : M F) :=
 /-- return all the subtrees of the root of a tree `x : M F` -/
 def children (x : M F) (i : F.B (head x)) : M F :=
   let H := fun n : ℕ => @head_succ' _ n 0 x.1 x.2
-  { approx := fun n => children' (x.1 _) (cast (congr_arg _ <| by simp only [head, H]) i)
+  { approx := fun n ↦ children' (x.1 _) (cast (congr_arg _ <| by simp only [head, H]) i)
     consistent := by
       intro n
       have P' := x.2 (succ n)
@@ -237,14 +237,14 @@ theorem truncate_approx (x : M F) (n : ℕ) : truncate (x.approx <| n + 1) = x.a
 
 /-- unfold an M-type -/
 def dest : M F → F (M F)
-  | x => ⟨head x, fun i => children x i⟩
+  | x => ⟨head x, fun i ↦ children x i⟩
 
 namespace Approx
 
 /-- generates the approximations needed for `M.mk` -/
 protected def sMk (x : F (M F)) : ∀ n, CofixA F n
   | 0 => CofixA.continue
-  | succ n => CofixA.intro x.1 fun i => (x.2 i).approx n
+  | succ n => CofixA.intro x.1 fun i ↦ (x.2 i).approx n
 
 protected theorem P_mk (x : F (M F)) : AllAgree (Approx.sMk x)
   | 0 => by constructor
@@ -315,7 +315,7 @@ protected def casesOn' {r : M F → Sort w} (x : M F) (f : ∀ a f, r (M.mk ⟨a
   M.casesOn x (fun ⟨a, g⟩ => f a g)
 
 theorem approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
-    (M.mk ⟨a, f⟩).approx (succ i) = CofixA.intro a fun j => (f j).approx i :=
+    (M.mk ⟨a, f⟩).approx (succ i) = CofixA.intro a fun j ↦ (f j).approx i :=
   rfl
 
 @[simp]
@@ -625,11 +625,11 @@ theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
 theorem bisim_equiv (R : M P → M P → Prop)
     (h : ∀ x y, R x y → ∃ a f f', M.dest x = ⟨a, f⟩ ∧ M.dest y = ⟨a, f'⟩ ∧ ∀ i, R (f i) (f' i)) :
     ∀ x y, R x y → x = y := fun x y Rxy =>
-  let Q : M P × M P → Prop := fun p => R p.fst p.snd
+  let Q : M P × M P → Prop := fun p ↦ R p.fst p.snd
   bisim' Q Prod.fst Prod.snd
     (fun p Qp =>
       let ⟨a, f, f', hx, hy, h'⟩ := h p.fst p.snd Qp
-      ⟨a, f, f', hx, hy, fun i => ⟨⟨f i, f' i⟩, h' i, rfl, rfl⟩⟩)
+      ⟨a, f, f', hx, hy, fun i ↦ ⟨⟨f i, f' i⟩, h' i, rfl, rfl⟩⟩)
     ⟨x, y⟩ Rxy
 
 theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f x) = P.map f (g x)) :

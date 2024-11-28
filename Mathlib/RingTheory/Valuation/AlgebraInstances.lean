@@ -57,7 +57,7 @@ instance : IsScalarTower v.valuationSubring L E := Subring.instIsScalarTowerSubt
 instance algebra :
     Algebra (integralClosure v.valuationSubring L) (integralClosure v.valuationSubring E) :=
   RingHom.toAlgebra
-    { toFun := fun k => ⟨algebraMap L E k, IsIntegral.algebraMap k.2⟩
+    { toFun := fun k ↦ ⟨algebraMap L E k, IsIntegral.algebraMap k.2⟩
       map_zero' :=
         Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, _root_.map_zero]
       map_one' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_one, _root_.map_one]

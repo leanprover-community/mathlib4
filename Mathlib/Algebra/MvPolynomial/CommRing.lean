@@ -149,7 +149,7 @@ is determined by the evaluations f(X_1), f(X_2), ... -/
 theorem eval₂Hom_X {R : Type u} (c : ℤ →+* S) (f : MvPolynomial R ℤ →+* S) (x : MvPolynomial R ℤ) :
     eval₂ c (f ∘ X) x = f x := by
   apply MvPolynomial.induction_on x
-    (fun n => by
+    (fun n ↦ by
       rw [hom_C f, eval₂_C]
       exact eq_intCast c n)
     (fun p q hp hq => by

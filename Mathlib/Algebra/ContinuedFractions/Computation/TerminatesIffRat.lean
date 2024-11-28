@@ -325,7 +325,7 @@ theorem terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q :
     (fun terminates_v : (of v).Terminates =>
       show ∃ q : ℚ, v = (q : K) from exists_rat_eq_of_terminates terminates_v)
     fun exists_q_eq_v : ∃ q : ℚ, v = (↑q : K) =>
-    Exists.elim exists_q_eq_v fun q => fun v_eq_q : v = ↑q =>
+    Exists.elim exists_q_eq_v fun q ↦ fun v_eq_q : v = ↑q =>
       have : (of q).Terminates := terminates_of_rat q
       (of_terminates_iff_of_rat_terminates v_eq_q).mpr this
 

@@ -110,7 +110,7 @@ theorem atom_le_iSup [Order.Frame α] {a : α} (ha : IsAtom a) {f : ι → α} :
   refine fun h ↦ of_not_not fun ha' => ?_
   push_neg at ha'
   have ha'' : Disjoint a (⨆ i, f i) :=
-    disjoint_iSup_iff.2 fun i => fun x hxa hxf => le_bot_iff.2 <| of_not_not fun hx =>
+    disjoint_iSup_iff.2 fun i ↦ fun x hxa hxf => le_bot_iff.2 <| of_not_not fun hx =>
       have hxa : x < a := (le_iff_eq_or_lt.1 hxa).resolve_left (by rintro rfl; exact ha' _ hxf)
       hx (ha.2 _ hxa)
   obtain rfl := le_bot_iff.1 (ha'' le_rfl h)
@@ -724,8 +724,8 @@ open Classical in
 protected noncomputable def completeLattice : CompleteLattice α :=
   { (inferInstance : Lattice α),
     (inferInstance : BoundedOrder α) with
-    sSup := fun s => if ⊤ ∈ s then ⊤ else ⊥
-    sInf := fun s => if ⊥ ∈ s then ⊥ else ⊤
+    sSup := fun s ↦ if ⊤ ∈ s then ⊤ else ⊥
+    sInf := fun s ↦ if ⊥ ∈ s then ⊥ else ⊤
     le_sSup := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · exact bot_le
@@ -1058,7 +1058,7 @@ universe u
 variable {ι : Type*} {π : ι → Type u}
 
 protected theorem eq_bot_iff [∀ i, Bot (π i)] {f : ∀ i, π i} : f = ⊥ ↔ ∀ i, f i = ⊥ :=
-  ⟨(· ▸ by simp), fun h ↦ funext fun i => by simp [h]⟩
+  ⟨(· ▸ by simp), fun h ↦ funext fun i ↦ by simp [h]⟩
 
 theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] :
     IsAtom f ↔ ∃ i, IsAtom (f i) ∧ ∀ j, j ≠ i → f j = ⊥ := by
@@ -1066,7 +1066,7 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
   constructor
   case mpr =>
     rintro ⟨i, ⟨hfi, hlt⟩, hbot⟩
-    refine ⟨fun h ↦ hfi ((Pi.eq_bot_iff.1 h) _), fun g hgf => Pi.eq_bot_iff.2 fun j => ?_⟩
+    refine ⟨fun h ↦ hfi ((Pi.eq_bot_iff.1 h) _), fun g hgf => Pi.eq_bot_iff.2 fun j ↦ ?_⟩
     have ⟨hgf, k, hgfk⟩ := Pi.lt_def.1 hgf
     obtain rfl : i = k := of_not_not fun hki => by rw [hbot _ (Ne.symm hki)] at hgfk; simp at hgfk
     if hij : j = i then subst hij; refine hlt _ hgfk else
@@ -1080,13 +1080,13 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
       have := h (Function.update ⊥ i b)
       simp only [lt_def, le_def, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
       simpa using this
-        (fun j => by by_cases h : j = i; { subst h; simpa using le_of_lt hb }; simp [h])
+        (fun j ↦ by by_cases h : j = i; { subst h; simpa using le_of_lt hb }; simp [h])
         i (by simpa using hb) i
     case d =>
       intro j hj
       have := h (Function.update ⊥ j (f j))
       simp only [lt_def, le_def, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
-      simpa using this (fun k => by by_cases h : k = j; { subst h; simp }; simp [h]) i
+      simpa using this (fun k ↦ by by_cases h : k = j; { subst h; simp }; simp [h]) i
         (by rwa [Function.update_noteq (Ne.symm hj), bot_apply, bot_lt_iff_ne_bot]) j
 
 theorem isAtom_single {i : ι} [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)]
@@ -1100,7 +1100,7 @@ theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]
   case mp =>
     intro h
     have ⟨i, h, hbot⟩ := isAtom_iff.1 h
-    refine ⟨_, _, h, funext fun j => if hij : j = i then hij ▸ by simp else ?_⟩
+    refine ⟨_, _, h, funext fun j ↦ if hij : j = i then hij ▸ by simp else ?_⟩
     rw [Function.update_noteq hij, hbot _ hij, bot_apply]
   case mpr =>
     rintro ⟨i, a, h, rfl⟩
@@ -1130,7 +1130,7 @@ instance isAtomistic [∀ i, CompleteLattice (π i)] [∀ i, IsAtomistic (π i)]
     refine le_antisymm ?le ?ge
     case le =>
       refine sSup_le fun a ⟨ha, hle⟩ => ?_
-      refine le_sSup ⟨⟨_, ⟨_, _, ha, rfl⟩, fun j => ?_⟩, by simp⟩
+      refine le_sSup ⟨⟨_, ⟨_, _, ha, rfl⟩, fun j ↦ ?_⟩, by simp⟩
       if hij : j = i then subst hij; simpa else simp [hij]
     case ge =>
       refine sSup_le ?_

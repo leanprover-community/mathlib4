@@ -44,7 +44,7 @@ def limit (F : J ⥤ Mon_ C) : Mon_ C :=
 def limitCone (F : J ⥤ Mon_ C) : Cone F where
   pt := limit F
   π :=
-    { app := fun j => { hom := limit.π (F ⋙ Mon_.forget C) j }
+    { app := fun j ↦ { hom := limit.π (F ⋙ Mon_.forget C) j }
       naturality := fun j j' f => by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
 
 /-- The image of the proposed limit cone for `F : J ⥤ Mon_ C` under the forgetful functor
@@ -70,7 +70,7 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
   fac s h := by ext; simp
   uniq s m w := by
     ext1
-    refine limit.hom_ext (fun j => ?_)
+    refine limit.hom_ext (fun j ↦ ?_)
     dsimp; simp only [Mon_.forget_map, limit.lift_π, Functor.mapCone_π_app]
     exact congr_arg Mon_.Hom.hom (w j)
 

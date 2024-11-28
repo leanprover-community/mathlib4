@@ -167,13 +167,13 @@ def whiskerIsoMapGenerateCocone (hY : Y = iSup U) :
       F.mapCone (Sieve.generate (presieveOfCoveringAux U Y)).arrows.cocone.op where
   hom :=
     { hom := F.map (eqToHom (congr_arg op hY.symm))
-      w := fun j => by
+      w := fun j ↦ by
         erw [← F.map_comp]
         dsimp
         congr 1 }
   inv :=
     { hom := F.map (eqToHom (congr_arg op hY))
-      w := fun j => by
+      w := fun j ↦ by
         erw [← F.map_comp]
         dsimp
         congr 1 }

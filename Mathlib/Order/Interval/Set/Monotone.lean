@@ -192,7 +192,7 @@ theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot �
     (hφ : StrictMonoOn φ (Set.Iic n)) : ∀ m ≤ n, m ≤ φ m := by
   revert hφ
   refine
-    Succ.rec_bot (fun n => StrictMonoOn φ (Set.Iic n) → ∀ m ≤ n, m ≤ φ m)
+    Succ.rec_bot (fun n ↦ StrictMonoOn φ (Set.Iic n) → ∀ m ≤ n, m ≤ φ m)
       (fun _ _ hm => hm.trans bot_le) ?_ _
   rintro k ih hφ m hm
   by_cases hk : IsMax k

@@ -377,10 +377,10 @@ theorem ne_zero_of_one_div_ne_zero {a : G₀} (h : 1 / a ≠ 0) : a ≠ 0 := fun
 theorem eq_zero_of_one_div_eq_zero {a : G₀} (h : 1 / a = 0) : a = 0 :=
   Classical.byCases (fun ha => ha) fun ha => ((one_div_ne_zero ha) h).elim
 
-theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a * g := fun g =>
+theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g ↦ a * g := fun g =>
   ⟨a⁻¹ * g, by simp [← mul_assoc, mul_inv_cancel₀ h]⟩
 
-theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
+theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g ↦ g * a := fun g =>
   ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel₀ h]⟩
 
 lemma zero_zpow : ∀ n : ℤ, n ≠ 0 → (0 : G₀) ^ n = 0

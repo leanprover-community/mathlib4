@@ -884,7 +884,7 @@ def simplicialCosimplicialAugmentedEquiv :
     (SimplicialObject.Augmented C)ᵒᵖ ≌ CosimplicialObject.Augmented Cᵒᵖ where
   functor := simplicialToCosimplicialAugmented _
   inverse := cosimplicialToSimplicialAugmented _
-  unitIso := NatIso.ofComponents (fun X => X.unop.rightOpLeftOpIso.op) fun f => by
+  unitIso := NatIso.ofComponents (fun X => X.unop.rightOpLeftOpIso.op) fun f ↦ by
       dsimp
       rw [← f.op_unop]
       simp_rw [← op_comp]

@@ -153,9 +153,9 @@ theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
 @[simp]
 theorem coord_apply_ne (h : i ≠ j) : b.coord i (b j) = 0 := by
   -- Porting note:
-  -- in mathlib3 we didn't need to given the `fun j => j ≠ i` argument to `Subtype.coe_mk`,
+  -- in mathlib3 we didn't need to given the `fun j ↦ j ≠ i` argument to `Subtype.coe_mk`,
   -- but I don't think we can complain: this proof was over-golfed.
-  rw [coord, AffineMap.coe_mk, ← @Subtype.coe_mk _ (fun j => j ≠ i) j h.symm, ← b.basisOf_apply,
+  rw [coord, AffineMap.coe_mk, ← @Subtype.coe_mk _ (fun j ↦ j ≠ i) j h.symm, ← b.basisOf_apply,
     Basis.sumCoords_self_apply, sub_self]
 
 theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j then 1 else 0 := by
@@ -186,7 +186,7 @@ theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := 
 
 @[simp]
 theorem affineCombination_coord_eq_self [Fintype ι] (q : P) :
-    (Finset.univ.affineCombination k b fun i => b.coord i q) = q := by
+    (Finset.univ.affineCombination k b fun i ↦ b.coord i q) = q := by
   have hq : q ∈ affineSpan k (range b) := by
     rw [b.tot]
     exact AffineSubspace.mem_top k V q

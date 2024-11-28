@@ -154,11 +154,11 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : L
     slice_lhs 1 3 =>
       rw [comp_whiskerRight, assoc, ← G.mapComp_naturality_left_assoc]
     simp only [assoc]
-  map₂_leftUnitor := fun f => by
+  map₂_leftUnitor := fun f ↦ by
     dsimp
     simp only [map₂_leftUnitor, PrelaxFunctor.map₂_comp, assoc, mapComp_naturality_left_assoc,
       comp_whiskerRight]
-  map₂_rightUnitor := fun f => by
+  map₂_rightUnitor := fun f ↦ by
     dsimp
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, assoc, mapComp_naturality_right_assoc,
       Bicategory.whiskerLeft_comp]

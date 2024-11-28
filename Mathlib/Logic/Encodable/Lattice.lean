@@ -45,7 +45,7 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     simp [Set.ext_iff]
 
 theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
-    Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
+    Pairwise (Disjoint on fun i ↦ ⋃ b ∈ decode₂ β i, f b) := by
   rintro i j ij
   refine disjoint_left.mpr fun x ↦ ?_
   suffices ∀ a, encode a = i → x ∈ f a → ∀ b, encode b = j → x ∉ f b by simpa [decode₂_eq_some]

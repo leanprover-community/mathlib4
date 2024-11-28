@@ -74,7 +74,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm ?_).symm
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
-      exact funext fun n => neK _ _
+      exact funext fun n ↦ neK _ _
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f).comp (ContinuousMap.addRight n) x := by
       simp only [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
       simp_rw [eadd]
@@ -85,7 +85,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       convert hf ⟨Icc 0 1, isCompact_Icc⟩ using 1
       simp_rw [mul_comp] at eadd ⊢
       simp_rw [eadd]
-      exact funext fun n => neK ⟨Icc 0 1, isCompact_Icc⟩ _
+      exact funext fun n ↦ neK ⟨Icc 0 1, isCompact_Icc⟩ _
     -- Minor tidying to finish
     _ = 𝓕 f m := by
       rw [fourierIntegral_real_eq_integral_exp_smul]

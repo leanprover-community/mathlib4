@@ -115,7 +115,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
 
 /-- The alternating face map complex, on objects -/
 def obj : ChainComplex C ℕ :=
-  ChainComplex.of (fun n => X _[n]) (objD X) (d_squared X)
+  ChainComplex.of (fun n ↦ X _[n]) (objD X) (d_squared X)
 
 @[simp]
 theorem obj_X (X : SimplicialObject C) (n : ℕ) : (AlternatingFaceMapComplex.obj X).X n = X _[n] :=
@@ -131,7 +131,7 @@ variable {X} {Y}
 
 /-- The alternating face map complex, on morphisms -/
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op [n])) fun n => by
+  ChainComplex.ofHom _ _ _ _ _ _ (fun n ↦ f.app (op [n])) fun n ↦ by
     dsimp
     rw [comp_sum, sum_comp]
     refine Finset.sum_congr rfl fun _ _ => ?_
@@ -245,7 +245,7 @@ def inclusionOfMooreComplexMap (X : SimplicialObject A) :
     (normalizedMooreComplex A).obj X ⟶ (alternatingFaceMapComplex A).obj X := by
   dsimp only [normalizedMooreComplex, NormalizedMooreComplex.obj,
     alternatingFaceMapComplex, AlternatingFaceMapComplex.obj]
-  apply ChainComplex.ofHom _ _ _ _ _ _ (fun n => (NormalizedMooreComplex.objX X n).arrow)
+  apply ChainComplex.ofHom _ _ _ _ _ _ (fun n ↦ (NormalizedMooreComplex.objX X n).arrow)
   /- we have to show the compatibility of the differentials on the alternating
            face map complex with those defined on the normalized Moore complex:
            we first get rid of the terms of the alternating sum that are obviously
@@ -299,14 +299,14 @@ theorem d_squared (n : ℕ) : objD X n ≫ objD X (n + 1) = 0 := by
 
 /-- The alternating coface map complex, on objects -/
 def obj : CochainComplex C ℕ :=
-  CochainComplex.of (fun n => X.obj [n]) (objD X) (d_squared X)
+  CochainComplex.of (fun n ↦ X.obj [n]) (objD X) (d_squared X)
 
 variable {X} {Y}
 
 /-- The alternating face map complex, on morphisms -/
 @[simp]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app [n]) fun n => by
+  CochainComplex.ofHom _ _ _ _ _ _ (fun n ↦ f.app [n]) fun n ↦ by
     dsimp
     rw [comp_sum, sum_comp]
     refine Finset.sum_congr rfl fun x _ => ?_

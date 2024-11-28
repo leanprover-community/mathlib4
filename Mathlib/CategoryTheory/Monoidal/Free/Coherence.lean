@@ -160,7 +160,7 @@ def fullNormalize : F C ⥤ N C where
     the tensor product `n ⊗ X` in the free monoidal category is functorial in both `X` and `n`. -/
 @[simp]
 def tensorFunc : F C ⥤ N C ⥤ F C where
-  obj X := Discrete.functor fun n => inclusion.obj ⟨n⟩ ⊗ X
+  obj X := Discrete.functor fun n ↦ inclusion.obj ⟨n⟩ ⊗ X
   map f := Discrete.natTrans (fun _ => _ ◁ f)
 
 theorem tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f).app n = _ ◁ f :=
@@ -234,7 +234,7 @@ variable {C}
 theorem normalizeObj_congr (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶ Y) :
     normalizeObj X n = normalizeObj Y n := by
   rcases f with ⟨f'⟩
-  apply @congr_fun _ _ fun n => normalizeObj X n
+  apply @congr_fun _ _ fun n ↦ normalizeObj X n
   clear n f
   induction f' with
   | comp _ _ _ _ => apply Eq.trans <;> assumption
@@ -289,7 +289,7 @@ def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
       dsimp
       rw [leftUnitor_inv_naturality_assoc, Category.assoc, Iso.cancel_iso_inv_left]
       exact
-        congr_arg (fun f => NatTrans.app f (Discrete.mk NormalMonoidalObject.unit))
+        congr_arg (fun f ↦ NatTrans.app f (Discrete.mk NormalMonoidalObject.unit))
           ((normalizeIso.{u} C).hom.naturality f))
 
 end
@@ -327,7 +327,7 @@ end
 
 instance : Groupoid.{u} (F C) :=
   { (inferInstance : Category (F C)) with
-    inv := Quotient.lift (fun f => ⟦inverseAux f⟧) (by aesop_cat) }
+    inv := Quotient.lift (fun f ↦ ⟦inverseAux f⟧) (by aesop_cat) }
 
 end Groupoid
 

@@ -30,7 +30,7 @@ theorem setOf_liouville_eq_iInter_iUnion :
 
 theorem IsGδ.setOf_liouville : IsGδ { x | Liouville x } := by
   rw [setOf_liouville_eq_iInter_iUnion]
-  refine .iInter fun n => IsOpen.isGδ ?_
+  refine .iInter fun n ↦ IsOpen.isGδ ?_
   refine isOpen_iUnion fun a ↦ isOpen_iUnion fun b ↦ isOpen_iUnion fun _hb => ?_
   exact isOpen_ball.inter isClosed_singleton.isOpen_compl
 
@@ -43,9 +43,9 @@ theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
   refine Subset.antisymm ?_ ?_
   · refine subset_inter (fun x hx => hx.irrational) ?_
     rw [setOf_liouville_eq_iInter_iUnion]
-    exact iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun _hb => diff_subset
+    exact iInter_mono fun n ↦ iUnion₂_mono fun a b => iUnion_mono fun _hb => diff_subset
   · simp only [inter_iInter, inter_iUnion, setOf_liouville_eq_iInter_iUnion]
-    refine iInter_mono fun n => iUnion₂_mono fun a b => iUnion_mono fun hb => ?_
+    refine iInter_mono fun n ↦ iUnion₂_mono fun a b => iUnion_mono fun hb => ?_
     rw [inter_comm]
     exact diff_subset_diff Subset.rfl (singleton_subset_iff.2 ⟨a / b, by norm_cast⟩)
 
@@ -54,11 +54,11 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
   rw [Filter.Eventually, setOf_liouville_eq_irrational_inter_iInter_iUnion]
   refine eventually_residual_irrational.and ?_
   refine residual_of_dense_Gδ ?_ (Rat.isDenseEmbedding_coe_real.dense.mono ?_)
-  · exact .iInter fun n => IsOpen.isGδ <|
+  · exact .iInter fun n ↦ IsOpen.isGδ <|
           isOpen_iUnion fun a ↦ isOpen_iUnion fun b ↦ isOpen_iUnion fun _hb => isOpen_ball
   · rintro _ ⟨r, rfl⟩
     simp only [mem_iInter, mem_iUnion]
-    refine fun n => ⟨r.num * 2, r.den * 2, ?_, ?_⟩
+    refine fun n ↦ ⟨r.num * 2, r.den * 2, ?_, ?_⟩
     · have := Int.ofNat_le.2 r.pos; rw [Int.ofNat_one] at this; omega
     · convert @mem_ball_self ℝ _ (r : ℝ) _ _
       · push_cast; norm_cast; simp [Rat.divInt_mul_right (two_ne_zero), Rat.mkRat_self]

@@ -65,14 +65,14 @@ noncomputable def colimitPresheafOfModules : PresheafOfModules R where
   obj X := colimit (F ⋙ evaluation R X)
   map {_ Y} f := colimMap (whiskerLeft F (restriction R f)) ≫
     (preservesColimitIso (ModuleCat.restrictScalars (R.map f)) (F ⋙ evaluation R Y)).inv
-  map_id X := colimit.hom_ext (fun j => by
+  map_id X := colimit.hom_ext (fun j ↦ by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app]
     erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X))),
       ModuleCat.restrictScalarsId'App_inv_naturality]
     rw [map_id]
     dsimp)
-  map_comp {X Y Z} f g := colimit.hom_ext (fun j => by
+  map_comp {X Y Z} f g := colimit.hom_ext (fun j ↦ by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app, assoc, ι_colimMap_assoc]
     erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g))),

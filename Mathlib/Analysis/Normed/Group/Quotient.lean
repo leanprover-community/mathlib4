@@ -256,7 +256,7 @@ open NormedAddGroupHom
 /-- The morphism from a seminormed group to the quotient by a subgroup. -/
 noncomputable def normedMk (S : AddSubgroup M) : NormedAddGroupHom M (M ⧸ S) :=
   { QuotientAddGroup.mk' S with
-    bound' := ⟨1, fun m => by simpa [one_mul] using quotient_norm_mk_le _ m⟩ }
+    bound' := ⟨1, fun m ↦ by simpa [one_mul] using quotient_norm_mk_le _ m⟩ }
 
 /-- `S.normedMk` agrees with `QuotientAddGroup.mk' S`. -/
 @[simp]
@@ -273,7 +273,7 @@ theorem ker_normedMk (S : AddSubgroup M) : S.normedMk.ker = S :=
 
 /-- The operator norm of the projection is at most `1`. -/
 theorem norm_normedMk_le (S : AddSubgroup M) : ‖S.normedMk‖ ≤ 1 :=
-  NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp [quotient_norm_mk_le']
+  NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m ↦ by simp [quotient_norm_mk_le']
 
 theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : NormedAddGroupHom M N)
     (hf : ∀ x ∈ S, f x = 0) (x : M ⧸ S) : ‖lift S f.toAddMonoidHom hf x‖ ≤ ‖f‖ * ‖x‖ := by
@@ -314,7 +314,7 @@ namespace NormedAddGroupHom
 by the kernel of `f`. -/
 structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
   protected surjective : Function.Surjective f
-  protected norm : ∀ x, ‖f x‖ = sInf ((fun m => ‖x + m‖) '' f.ker)
+  protected norm : ∀ x, ‖f x‖ = sInf ((fun m ↦ ‖x + m‖) '' f.ker)
 
 /-- Given `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ S`, where,
 `S : AddSubgroup M` is closed, the induced morphism `NormedAddGroupHom (M ⧸ S) N`. -/
@@ -339,7 +339,7 @@ theorem lift_unique {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
 
 /-- `S.normedMk` satisfies `IsQuotient`. -/
 theorem isQuotientQuotient (S : AddSubgroup M) : IsQuotient S.normedMk :=
-  ⟨S.surjective_normedMk, fun m => by simpa [S.ker_normedMk] using quotient_norm_mk_eq _ m⟩
+  ⟨S.surjective_normedMk, fun m ↦ by simpa [S.ker_normedMk] using quotient_norm_mk_eq _ m⟩
 
 theorem IsQuotient.norm_lift {f : NormedAddGroupHom M N} (hquot : IsQuotient f) {ε : ℝ} (hε : 0 < ε)
     (n : N) : ∃ m : M, f m = n ∧ ‖m‖ < ‖n‖ + ε := by

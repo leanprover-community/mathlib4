@@ -87,7 +87,7 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
 @[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`.  If `s` is a normal
  subgroup, `α ⧸ s` is a group"]
 instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
-  ⟨fun s => Quotient (leftRel s)⟩
+  ⟨fun s ↦ Quotient (leftRel s)⟩
 
 @[to_additive]
 instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
@@ -126,12 +126,12 @@ instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s
 @[to_additive "Right cosets are in bijection with left cosets."]
 def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) ≃ α ⧸ s where
   toFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b => by
+    Quotient.map' (fun g ↦ g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h ↦ (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
       -- Porting note: replace with `by group`
   invFun :=
-    Quotient.map' (fun g => g⁻¹) fun a b => by
+    Quotient.map' (fun g ↦ g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h ↦ (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
       -- Porting note: replace with `by group`

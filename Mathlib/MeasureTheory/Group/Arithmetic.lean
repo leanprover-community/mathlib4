@@ -140,8 +140,8 @@ instance (priority := 100) MeasurableMul₂.toMeasurableMul [MeasurableMul₂ M]
 @[to_additive]
 instance Pi.measurableMul {ι : Type*} {α : ι → Type*} [∀ i, Mul (α i)]
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableMul (α i)] : MeasurableMul (∀ i, α i) :=
-  ⟨fun _ => measurable_pi_iff.mpr fun i => (measurable_pi_apply i).const_mul _, fun _ =>
-    measurable_pi_iff.mpr fun i => (measurable_pi_apply i).mul_const _⟩
+  ⟨fun _ => measurable_pi_iff.mpr fun i ↦ (measurable_pi_apply i).const_mul _, fun _ =>
+    measurable_pi_iff.mpr fun i ↦ (measurable_pi_apply i).mul_const _⟩
 
 @[to_additive Pi.measurableAdd₂]
 instance Pi.measurableMul₂ {ι : Type*} {α : ι → Type*} [∀ i, Mul (α i)]
@@ -166,7 +166,7 @@ export MeasurablePow (measurable_pow)
 /-- `Monoid.Pow` is measurable. -/
 instance Monoid.measurablePow (M : Type*) [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M] :
     MeasurablePow M ℕ :=
-  ⟨measurable_from_prod_countable fun n => by
+  ⟨measurable_from_prod_countable fun n ↦ by
       induction' n with n ih
       · simp only [pow_zero, ← Pi.one_def, measurable_one]
       · simp only [pow_succ]
@@ -291,8 +291,8 @@ instance (priority := 100) MeasurableDiv₂.toMeasurableDiv [MeasurableDiv₂ G]
 @[to_additive]
 instance Pi.measurableDiv {ι : Type*} {α : ι → Type*} [∀ i, Div (α i)]
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableDiv (α i)] : MeasurableDiv (∀ i, α i) :=
-  ⟨fun _ => measurable_pi_iff.mpr fun i => (measurable_pi_apply i).const_div _, fun _ =>
-    measurable_pi_iff.mpr fun i => (measurable_pi_apply i).div_const _⟩
+  ⟨fun _ => measurable_pi_iff.mpr fun i ↦ (measurable_pi_apply i).const_div _, fun _ =>
+    measurable_pi_iff.mpr fun i ↦ (measurable_pi_apply i).div_const _⟩
 
 @[to_additive Pi.measurableSub₂]
 instance Pi.measurableDiv₂ {ι : Type*} {α : ι → Type*} [∀ i, Div (α i)]
@@ -336,7 +336,7 @@ theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [Measurab
     ext1 x
     simp only [Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_eq_right']
   rw [this]
-  refine MeasurableSet.iUnion fun j => MeasurableSet.inter ?_ ?_
+  refine MeasurableSet.iUnion fun j ↦ MeasurableSet.inter ?_ ?_
   · exact hf (measurableSet_singleton j)
   · exact hg (measurableSet_singleton j)
 
@@ -410,7 +410,7 @@ theorem aemeasurable_inv_iff₀ {G₀ : Type*} [GroupWithZero G₀] [MeasurableS
 @[to_additive]
 instance Pi.measurableInv {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableInv (α i)] : MeasurableInv (∀ i, α i) :=
-  ⟨measurable_pi_iff.mpr fun i => (measurable_pi_apply i).inv⟩
+  ⟨measurable_pi_iff.mpr fun i ↦ (measurable_pi_apply i).inv⟩
 
 @[to_additive]
 theorem MeasurableSet.inv {s : Set G} (hs : MeasurableSet s) : MeasurableSet s⁻¹ :=
@@ -452,7 +452,7 @@ theorem AEMeasurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpa
 /-- `DivInvMonoid.Pow` is measurable. -/
 instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSpace G]
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
-  ⟨measurable_from_prod_countable fun n => by
+  ⟨measurable_from_prod_countable fun n ↦ by
       cases' n with n n
       · simp_rw [Int.ofNat_eq_coe, zpow_natCast]
         exact measurable_id.pow_const _
@@ -590,7 +590,7 @@ theorem AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable 
 instance Pi.measurableSMul {ι : Type*} {α : ι → Type*} [∀ i, SMul M (α i)]
     [∀ i, MeasurableSpace (α i)] [∀ i, MeasurableSMul M (α i)] :
     MeasurableSMul M (∀ i, α i) :=
-  ⟨fun _ => measurable_pi_iff.mpr fun i => (measurable_pi_apply i).const_smul _, fun _ =>
+  ⟨fun _ => measurable_pi_iff.mpr fun i ↦ (measurable_pi_apply i).const_smul _, fun _ =>
     measurable_pi_iff.mpr fun _ => measurable_smul_const _⟩
 
 /-- `AddMonoid.SMul` is measurable. -/
@@ -598,7 +598,7 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     [MeasurableAdd₂ M] : MeasurableSMul₂ ℕ M :=
   ⟨by
     suffices Measurable fun p : M × ℕ => p.2 • p.1 by apply this.comp measurable_swap
-    refine measurable_from_prod_countable fun n => ?_
+    refine measurable_from_prod_countable fun n ↦ ?_
     induction' n with n ih
     · simp only [zero_smul, ← Pi.zero_def, measurable_zero]
     · simp only [succ_nsmul]
@@ -609,7 +609,7 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     [MeasurableAdd₂ M] [MeasurableNeg M] : MeasurableSMul₂ ℤ M :=
   ⟨by
     suffices Measurable fun p : M × ℤ => p.2 • p.1 by apply this.comp measurable_swap
-    refine measurable_from_prod_countable fun n => ?_
+    refine measurable_from_prod_countable fun n ↦ ?_
     induction' n with n n ih
     · simp only [Int.ofNat_eq_coe, natCast_zsmul]
       exact measurable_const_smul _

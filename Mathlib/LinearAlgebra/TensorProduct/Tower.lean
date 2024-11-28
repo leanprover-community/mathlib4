@@ -161,7 +161,7 @@ canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map 
 def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
   LinearEquiv.ofLinear (uncurry R A B M N P) (lcurry R A B M N P)
     (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
-    (LinearMap.ext fun f => LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ lift_tmul f x y)
+    (LinearMap.ext fun f ↦ LinearMap.ext fun x ↦ LinearMap.ext fun y ↦ lift_tmul f x y)
 
 /-- Heterobasic version of `TensorProduct.mk`:
 
@@ -443,9 +443,9 @@ def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
         ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
     -- explicit `Eq.refl`s here help with performance, but also make it clear that the `ext` are
     -- letting us prove the result as an equality of pure tensors.
-    (TensorProduct.ext <| ext fun m q => LinearMap.ext fun p => Eq.refl <|
+    (TensorProduct.ext <| ext fun m q => LinearMap.ext fun p ↦ Eq.refl <|
       (m ⊗ₜ[R] q) ⊗ₜ[A] p)
-    (curry_injective <| TensorProduct.ext' fun m p => LinearMap.ext fun q => Eq.refl <|
+    (curry_injective <| TensorProduct.ext' fun m p => LinearMap.ext fun q ↦ Eq.refl <|
       (m ⊗ₜ[A] p) ⊗ₜ[R] q)
 
 variable {M N P Q}

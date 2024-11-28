@@ -145,7 +145,7 @@ theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
 
 @[simp]
 theorem eval₂_mul_X : eval₂ f x (p * X) = eval₂ f x p * x := by
-  refine _root_.trans (eval₂_mul_noncomm _ _ fun k => ?_) (by rw [eval₂_X])
+  refine _root_.trans (eval₂_mul_noncomm _ _ fun k ↦ ?_) (by rw [eval₂_X])
   rcases em (k = 1) with (rfl | hk)
   · simp
   · simp [coeff_X_of_ne_one hk]
@@ -174,7 +174,7 @@ def eval₂RingHom' (f : R →+* S) (x : S) (hf : ∀ a, Commute (f a) x) : R[X]
   toFun := eval₂ f x
   map_add' _ _ := eval₂_add _ _
   map_zero' := eval₂_zero _ _
-  map_mul' _p q := eval₂_mul_noncomm f x fun k => hf <| coeff q k
+  map_mul' _p q := eval₂_mul_noncomm f x fun k ↦ hf <| coeff q k
   map_one' := eval₂_one _ _
 
 end
@@ -522,7 +522,7 @@ protected theorem map_one : (1 : R[X]).map f = 1 :=
 @[simp]
 protected theorem map_mul : (p * q).map f = p.map f * q.map f := by
   rw [map, eval₂_mul_noncomm]
-  exact fun k => (commute_X _).symm
+  exact fun k ↦ (commute_X _).symm
 
 -- `map` is a ring-hom unconditionally, and theoretically the definition could be replaced,
 -- but this turns out not to be easy because `p.map f` does not resolve to `Polynomial.map`
@@ -637,7 +637,7 @@ def compRingHom : R[X] → R[X] →+* R[X] :=
   eval₂RingHom C
 
 @[simp]
-theorem coe_compRingHom (q : R[X]) : (compRingHom q : R[X] → R[X]) = fun p => comp p q :=
+theorem coe_compRingHom (q : R[X]) : (compRingHom q : R[X] → R[X]) = fun p ↦ comp p q :=
   rfl
 
 theorem coe_compRingHom_apply (p q : R[X]) : (compRingHom q : R[X] → R[X]) p = comp p q :=

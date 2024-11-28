@@ -102,7 +102,7 @@ theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
 
 /-- `1.toPGame` has the same moves as `1`. -/
 noncomputable def oneToPGameRelabelling : toPGame 1 ≡r 1 :=
-  ⟨Equiv.equivOfUnique _ _, Equiv.equivOfIsEmpty _ _, fun i => by
+  ⟨Equiv.equivOfUnique _ _, Equiv.equivOfIsEmpty _ _, fun i ↦ by
     simpa using zeroToPGameRelabelling, isEmptyElim⟩
 
 theorem toPGame_one : toPGame 1 ≈ 1 :=
@@ -112,7 +112,7 @@ theorem toPGame_lf {a b : Ordinal} (h : a < b) : a.toPGame ⧏ b.toPGame := by
   convert moveLeft_lf (toLeftMovesToPGame ⟨a, h⟩); rw [toPGame_moveLeft]
 
 theorem toPGame_le {a b : Ordinal} (h : a ≤ b) : a.toPGame ≤ b.toPGame := by
-  refine le_iff_forall_lf.2 ⟨fun i => ?_, isEmptyElim⟩
+  refine le_iff_forall_lf.2 ⟨fun i ↦ ?_, isEmptyElim⟩
   rw [toPGame_moveLeft']
   exact toPGame_lf ((toLeftMovesToPGame_symm_lt i).trans_le h)
 
@@ -192,7 +192,7 @@ theorem toGame_eq_iff {a b : Ordinal} : toGame a = toGame b ↔ a = b :=
 
 /-- The natural addition of ordinals corresponds to their sum as games. -/
 theorem toPGame_nadd (a b : Ordinal) : (a ♯ b).toPGame ≈ a.toPGame + b.toPGame := by
-  refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
+  refine ⟨le_of_forall_lf (fun i ↦ ?_) isEmptyElim, le_of_forall_lf (fun i ↦ ?_) isEmptyElim⟩
   · rw [toPGame_moveLeft']
     rcases lt_nadd_iff.1 (toLeftMovesToPGame_symm_lt i) with (⟨c, hc, hc'⟩ | ⟨c, hc, hc'⟩) <;>
     rw [← toPGame_le_iff, le_congr_right (toPGame_nadd _ _)] at hc' <;>
@@ -216,7 +216,7 @@ theorem toGame_nadd (a b : Ordinal) : (a ♯ b).toGame = a.toGame + b.toGame :=
 
 /-- The natural multiplication of ordinals corresponds to their product as pre-games. -/
 theorem toPGame_nmul (a b : Ordinal) : (a ⨳ b).toPGame ≈ a.toPGame * b.toPGame := by
-  refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_) isEmptyElim⟩
+  refine ⟨le_of_forall_lf (fun i ↦ ?_) isEmptyElim, le_of_forall_lf (fun i ↦ ?_) isEmptyElim⟩
   · rw [toPGame_moveLeft']
     rcases lt_nmul_iff.1 (toLeftMovesToPGame_symm_lt i) with ⟨c, hc, d, hd, h⟩
     rw [← toPGame_le_iff, le_iff_game_le, ← toGame, ← toGame, toGame_nadd _ _, toGame_nadd _ _,

@@ -978,7 +978,7 @@ theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G}
 @[to_additive]
 theorem image_range_orderOf [DecidableEq G] :
     letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
-    Finset.image (fun i => x ^ i) (Finset.range (orderOf x)) = (zpowers x : Set G).toFinset := by
+    Finset.image (fun i ↦ x ^ i) (Finset.range (orderOf x)) = (zpowers x : Set G).toFinset := by
   letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
   ext x
   rw [Set.mem_toFinset, SetLike.mem_coe, mem_zpowers_iff_mem_range_orderOf]

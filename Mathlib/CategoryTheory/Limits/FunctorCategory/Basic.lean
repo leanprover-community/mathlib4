@@ -48,9 +48,9 @@ limiting you can show it's pointwise limiting.
 def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
     (t : ∀ k : K, IsLimit (((evaluation K C).obj k).mapCone c)) : IsLimit c where
   lift s :=
-    { app := fun k => (t k).lift ⟨s.pt.obj k, whiskerRight s.π ((evaluation K C).obj k)⟩
+    { app := fun k ↦ (t k).lift ⟨s.pt.obj k, whiskerRight s.π ((evaluation K C).obj k)⟩
       naturality := fun X Y f =>
-        (t Y).hom_ext fun j => by
+        (t Y).hom_ext fun j ↦ by
           rw [assoc, (t Y).fac _ j]
           simpa using
             ((t X).fac_assoc ⟨s.pt.obj X, whiskerRight s.π ((evaluation K C).obj X)⟩ j _).symm }
@@ -69,15 +69,15 @@ them together to give a cone for the diagram `F`.
 @[simps]
 def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) : Cone F where
   pt :=
-    { obj := fun k => (c k).cone.pt
+    { obj := fun k ↦ (c k).cone.pt
       map := fun {k₁} {k₂} f => (c k₂).isLimit.lift ⟨_, (c k₁).cone.π ≫ F.flip.map f⟩
       map_id := fun k =>
-        (c k).isLimit.hom_ext fun j => by
+        (c k).isLimit.hom_ext fun j ↦ by
           dsimp
           simp
-      map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₃).isLimit.hom_ext fun j => by simp }
+      map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₃).isLimit.hom_ext fun j ↦ by simp }
   π :=
-    { app := fun j => { app := fun k => (c k).cone.π.app j }
+    { app := fun j ↦ { app := fun k ↦ (c k).cone.π.app j }
       naturality := fun j₁ j₂ g => by ext k; exact (c k).cone.π.naturality g }
 
 /-- The stitched together cones each project down to the original given cones (up to iso). -/
@@ -98,9 +98,9 @@ colimiting you can show it's pointwise colimiting.
 def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
     (t : ∀ k : K, IsColimit (((evaluation K C).obj k).mapCocone c)) : IsColimit c where
   desc s :=
-    { app := fun k => (t k).desc ⟨s.pt.obj k, whiskerRight s.ι ((evaluation K C).obj k)⟩
+    { app := fun k ↦ (t k).desc ⟨s.pt.obj k, whiskerRight s.ι ((evaluation K C).obj k)⟩
       naturality := fun X Y f =>
-        (t X).hom_ext fun j => by
+        (t X).hom_ext fun j ↦ by
           rw [(t X).fac_assoc _ j]
           erw [← (c.ι.app j).naturality_assoc f]
           erw [(t Y).fac ⟨s.pt.obj _, whiskerRight s.ι _⟩ j]
@@ -122,15 +122,15 @@ them together to give a cocone for the diagram `F`.
 @[simps]
 def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) : Cocone F where
   pt :=
-    { obj := fun k => (c k).cocone.pt
+    { obj := fun k ↦ (c k).cocone.pt
       map := fun {k₁} {k₂} f => (c k₁).isColimit.desc ⟨_, F.flip.map f ≫ (c k₂).cocone.ι⟩
       map_id := fun k =>
-        (c k).isColimit.hom_ext fun j => by
+        (c k).isColimit.hom_ext fun j ↦ by
           dsimp
           simp
-      map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₁).isColimit.hom_ext fun j => by simp }
+      map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₁).isColimit.hom_ext fun j ↦ by simp }
   ι :=
-    { app := fun j => { app := fun k => (c k).cocone.ι.app j }
+    { app := fun j ↦ { app := fun k ↦ (c k).cocone.ι.app j }
       naturality := fun j₁ j₂ g => by ext k; exact (c k).cocone.ι.naturality g }
 
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/
@@ -181,7 +181,7 @@ instance hasLimitCompEvalution (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj
 instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :
     PreservesLimit F ((evaluation K C).obj k) :=
     -- Porting note: added a let because X was not inferred
-  let X : (k : K) → LimitCone (F.flip.obj k) := fun k => getLimitCone (F.flip.obj k)
+  let X : (k : K) → LimitCone (F.flip.obj k) := fun k ↦ getLimitCone (F.flip.obj k)
   preservesLimit_of_preserves_limit_cone (combinedIsLimit _ X) <|
     IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
 
@@ -266,7 +266,7 @@ instance hasColimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasColimit (F.fli
 instance evaluation_preservesColimit (F : J ⥤ K ⥤ C) [∀ k, HasColimit (F.flip.obj k)] (k : K) :
     PreservesColimit F ((evaluation K C).obj k) :=
   -- Porting note: added a let because X was not inferred
-  let X : (k : K) → ColimitCocone (F.flip.obj k) := fun k => getColimitCocone (F.flip.obj k)
+  let X : (k : K) → ColimitCocone (F.flip.obj k) := fun k ↦ getColimitCocone (F.flip.obj k)
   preservesColimit_of_preserves_colimit_cocone (combinedIsColimit _ X) <|
     IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
 

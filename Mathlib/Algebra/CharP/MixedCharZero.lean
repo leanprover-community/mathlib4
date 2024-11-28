@@ -180,7 +180,7 @@ theorem PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (
 
 @[coe]
 noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : ℕ+ → Rˣ :=
-  fun n => (PNat.isUnit_natCast n).unit
+  fun n ↦ (PNat.isUnit_natCast n).unit
 
 /-- Internal: Not intended to be used outside this local construction. -/
 noncomputable instance coePNatUnits

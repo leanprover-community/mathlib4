@@ -96,7 +96,7 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 @[simps!]
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       dsimp }
 
 variable {R}

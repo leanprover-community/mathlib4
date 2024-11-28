@@ -237,7 +237,7 @@ lemma iInf_iSup_eq' (f : ∀ a, κ a → α) :
     _ = ⨅ a : range (range <| f ·), ⨆ b : a.1, b.1 := by
       simp_rw [iInf_subtype, iInf_range, iSup_subtype, iSup_range]
     _ = _ := minAx.iInf_iSup_eq _
-    _ ≤ _ := iSup_le fun g => by
+    _ ≤ _ := iSup_le fun g ↦ by
       refine le_trans ?_ <| le_iSup _ fun a ↦ Classical.choose (g ⟨_, a, rfl⟩).2
       refine le_iInf fun a ↦ le_trans (iInf_le _ ⟨range (f a), a, rfl⟩) ?_
       rw [← Classical.choose_spec (g ⟨_, a, rfl⟩).2]
@@ -248,7 +248,7 @@ lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
   let _ := minAx.toCompleteLattice
   refine le_antisymm iSup_iInf_le ?_
   rw [minAx.iInf_iSup_eq']
-  refine iSup_le fun g => ?_
+  refine iSup_le fun g ↦ ?_
   have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := of_not_not fun h ↦ by
     push_neg at h
     choose h hh using h
@@ -407,7 +407,7 @@ theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ �
     (hf : Monotone f) (hg : Monotone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i := by
   refine (le_iSup_inf_iSup f g).antisymm ?_
   rw [iSup_inf_iSup]
-  refine iSup_mono' fun i => ?_
+  refine iSup_mono' fun i ↦ ?_
   rcases directed_of (· ≤ ·) i.1 i.2 with ⟨j, h₁, h₂⟩
   exact ⟨j, inf_le_inf (hf h₁) (hg h₂)⟩
 
@@ -582,7 +582,7 @@ variable [CompleteBooleanAlgebra α] {s : Set α} {f : ι → α}
 
 theorem compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
   le_antisymm
-    (compl_le_of_compl_le <| le_iInf fun i => compl_le_of_compl_le <|
+    (compl_le_of_compl_le <| le_iInf fun i ↦ compl_le_of_compl_le <|
       le_iSup (HasCompl.compl ∘ f) i)
     (iSup_le fun _ => compl_le_compl <| iInf_le _ _)
 

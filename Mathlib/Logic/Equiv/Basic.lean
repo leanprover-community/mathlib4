@@ -122,7 +122,7 @@ theorem prodComm_symm (α β) : (prodComm α β).symm = prodComm β α :=
 /-- Type product is associative up to an equivalence. -/
 @[simps]
 def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
-  ⟨fun p => (p.1.1, p.1.2, p.2), fun p => ((p.1, p.2.1), p.2.2), fun ⟨⟨_, _⟩, _⟩ => rfl,
+  ⟨fun p ↦ (p.1.1, p.1.2, p.2), fun p ↦ ((p.1, p.2.1), p.2.2), fun ⟨⟨_, _⟩, _⟩ => rfl,
     fun ⟨_, ⟨_, _⟩⟩ => rfl⟩
 
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
@@ -151,7 +151,7 @@ section
 /-- `PUnit` is a right identity for type product up to an equivalence. -/
 @[simps]
 def prodPUnit (α) : α × PUnit ≃ α :=
-  ⟨fun p => p.1, fun a ↦ (a, PUnit.unit), fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
+  ⟨fun p ↦ p.1, fun a ↦ (a, PUnit.unit), fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
 
 /-- `PUnit` is a left identity for type product up to an equivalence. -/
 @[simps!]
@@ -163,7 +163,7 @@ def punitProd (α) : PUnit × α ≃ α :=
 /-- `PUnit` is a right identity for dependent type product up to an equivalence. -/
 @[simps]
 def sigmaPUnit (α) : (_ : α) × PUnit ≃ α :=
-  ⟨fun p => p.1, fun a ↦ ⟨a, PUnit.unit⟩, fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
+  ⟨fun p ↦ p.1, fun a ↦ ⟨a, PUnit.unit⟩, fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
 
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
 def prodUnique (α β) [Unique β] : α × β ≃ α :=
@@ -324,7 +324,7 @@ end Perm
 /-- `Bool` is equivalent the sum of two `PUnit`s. -/
 def boolEquivPUnitSumPUnit : Bool ≃ PUnit.{u + 1} ⊕ PUnit.{v + 1} :=
   ⟨fun b ↦ b.casesOn (inl PUnit.unit) (inr PUnit.unit) , Sum.elim (fun _ => false) fun _ => true,
-    fun b ↦ by cases b <;> rfl, fun s => by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
+    fun b ↦ by cases b <;> rfl, fun s ↦ by rcases s with (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> rfl⟩
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/
 @[simps (config := .asFn) apply]
@@ -413,9 +413,9 @@ theorem emptySum_apply_inr {α β} [IsEmpty α] (b : β) : emptySum α β (Sum.i
 
 /-- `Option α` is equivalent to `α ⊕ PUnit` -/
 def optionEquivSumPUnit (α) : Option α ≃ α ⊕ PUnit :=
-  ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
-    fun o => by cases o <;> rfl,
-    fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
+  ⟨fun o ↦ o.elim (inr PUnit.unit) inl, fun s ↦ s.elim some fun _ => none,
+    fun o ↦ by cases o <;> rfl,
+    fun s ↦ by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
 
 @[simp]
 theorem optionEquivSumPUnit_none {α} : optionEquivSumPUnit α none = Sum.inr PUnit.unit :=
@@ -460,11 +460,11 @@ def piOptionEquivProd {α} {β : Option α → Type*} :
 sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
 def sumEquivSigmaBool (α β) : α ⊕ β ≃ Σ b : Bool, b.casesOn α β :=
-  ⟨fun s => s.elim (fun x ↦ ⟨false, x⟩) fun x ↦ ⟨true, x⟩, fun s =>
+  ⟨fun s ↦ s.elim (fun x ↦ ⟨false, x⟩) fun x ↦ ⟨true, x⟩, fun s =>
     match s with
     | ⟨false, a⟩ => inl a
     | ⟨true, b⟩ => inr b,
-    fun s => by cases s <;> rfl, fun s => by rcases s with ⟨_ | _, _⟩ <;> rfl⟩
+    fun s ↦ by cases s <;> rfl, fun s ↦ by rcases s with ⟨_ | _, _⟩ <;> rfl⟩
 
 -- See also `Equiv.sigmaPreimageEquiv`.
 /-- `sigmaFiberEquiv f` for `f : α → β` is the natural equivalence between
@@ -815,10 +815,10 @@ section
 /-- The type of functions to a product `α × β` is equivalent to the type of pairs of functions
 `γ → α` and `γ → β`. -/
 def arrowProdEquivProdArrow (α β γ : Type*) : (γ → α × β) ≃ (γ → α) × (γ → β) where
-  toFun := fun f => (fun c ↦ (f c).1, fun c ↦ (f c).2)
+  toFun := fun f ↦ (fun c ↦ (f c).1, fun c ↦ (f c).2)
   invFun := fun p c => (p.1 c, p.2 c)
   left_inv := fun _ => rfl
-  right_inv := fun p => by cases p; rfl
+  right_inv := fun p ↦ by cases p; rfl
 
 open Sum
 
@@ -827,7 +827,7 @@ functions on `ι` and on `ι'`. This is a dependent version of `Equiv.sumArrowEq
 @[simps]
 def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
     (∀ i, π i) ≃ (∀ i, π (inl i)) × ∀ i', π (inr i') where
-  toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
+  toFun f := ⟨fun i ↦ f (inl i), fun i' => f (inr i')⟩
   invFun g := Sum.rec g.1 g.2
   left_inv f := by ext (i | i) <;> rfl
   right_inv _ := Prod.ext rfl rfl
@@ -842,7 +842,7 @@ def prodPiEquivSumPi {ι ι'} (π : ι → Type u) (π' : ι' → Type u) :
 /-- The type of functions on a sum type `α ⊕ β` is equivalent to the type of pairs of functions
 on `α` and on `β`. -/
 def sumArrowEquivProdArrow (α β γ : Type*) : (α ⊕ β → γ) ≃ (α → γ) × (β → γ) :=
-  ⟨fun f => (f ∘ inl, f ∘ inr), fun p => Sum.elim p.1 p.2, fun f => by ext ⟨⟩ <;> rfl, fun p => by
+  ⟨fun f ↦ (f ∘ inl, f ∘ inr), fun p ↦ Sum.elim p.1 p.2, fun f ↦ by ext ⟨⟩ <;> rfl, fun p ↦ by
     cases p
     rfl⟩
 
@@ -868,8 +868,8 @@ theorem sumArrowEquivProdArrow_symm_apply_inr {α β γ} (f : α → γ) (g : β
 
 /-- Type product is right distributive with respect to type sum up to an equivalence. -/
 def sumProdDistrib (α β γ) : (α ⊕ β) × γ ≃ α × γ ⊕ β × γ :=
-  ⟨fun p => p.1.map (fun x ↦ (x, p.2)) fun x ↦ (x, p.2),
-    fun s => s.elim (Prod.map inl id) (Prod.map inr id), by
+  ⟨fun p ↦ p.1.map (fun x ↦ (x, p.2)) fun x ↦ (x, p.2),
+    fun s ↦ s.elim (Prod.map inl id) (Prod.map inr id), by
       rintro ⟨_ | _, _⟩ <;> rfl, by rintro (⟨_, _⟩ | ⟨_, _⟩) <;> rfl⟩
 
 @[simp]
@@ -923,17 +923,17 @@ theorem prodSumDistrib_symm_apply_right {α β γ} (a : α × γ) :
 @[simps]
 def sigmaSumDistrib {ι} (α β : ι → Type*) :
     (Σ i, α i ⊕ β i) ≃ (Σ i, α i) ⊕ (Σ i, β i) :=
-  ⟨fun p => p.2.map (Sigma.mk p.1) (Sigma.mk p.1),
-    Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p => by
-    rcases p with ⟨i, a | b⟩ <;> rfl, fun p => by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
+  ⟨fun p ↦ p.2.map (Sigma.mk p.1) (Sigma.mk p.1),
+    Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p ↦ by
+    rcases p with ⟨i, a | b⟩ <;> rfl, fun p ↦ by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
 
 /-- The product of an indexed sum of types (formally, a `Sigma`-type `Σ i, α i`) by a type `β` is
 equivalent to the sum of products `Σ i, (α i × β)`. -/
 @[simps apply symm_apply]
 def sigmaProdDistrib {ι} (α : ι → Type*) (β) : (Σ i, α i) × β ≃ Σ i, α i × β :=
-  ⟨fun p => ⟨p.1.1, (p.1.2, p.2)⟩, fun p => (⟨p.1, p.2.1⟩, p.2.2), fun p => by
+  ⟨fun p ↦ ⟨p.1.1, (p.1.2, p.2)⟩, fun p ↦ (⟨p.1, p.2.1⟩, p.2.2), fun p ↦ by
     rcases p with ⟨⟨_, _⟩, _⟩
-    rfl, fun p => by
+    rfl, fun p ↦ by
     rcases p with ⟨_, ⟨_, _⟩⟩
     rfl⟩
 
@@ -941,7 +941,7 @@ def sigmaProdDistrib {ι} (α : ι → Type*) (β) : (Σ i, α i) × β ≃ Σ i
 def sigmaNatSucc (f : ℕ → Type u) : (Σ n, f n) ≃ f 0 ⊕ Σ n, f (n + 1) :=
   ⟨fun x =>
     @Sigma.casesOn ℕ f (fun _ => f 0 ⊕ Σ n, f (n + 1)) x fun n =>
-      @Nat.casesOn (fun i => f i → f 0 ⊕ Σ n : ℕ, f (n + 1)) n (fun x : f 0 => Sum.inl x)
+      @Nat.casesOn (fun i ↦ f i → f 0 ⊕ Σ n : ℕ, f (n + 1)) n (fun x : f 0 => Sum.inl x)
         fun (n : ℕ) (x : f n.succ) => Sum.inr ⟨n, x⟩,
     Sum.elim (Sigma.mk 0) (Sigma.map Nat.succ fun _ => id), by rintro ⟨n | n, x⟩ <;> rfl, by
     rintro (x | ⟨n, x⟩) <;> rfl⟩
@@ -1166,7 +1166,7 @@ def sigmaOptionEquivOfSome {α} (p : Option α → Type v) (h : p none → False
 `Sigma` type such that for all `i` we have `(f i).fst = i`. -/
 def piEquivSubtypeSigma (ι) (π : ι → Type*) :
     (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
-  toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun _ => rfl⟩
+  toFun := fun f ↦ ⟨fun i ↦ ⟨i, f i⟩, fun _ => rfl⟩
   invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
   left_inv := fun _ => funext fun _ => rfl
   right_inv := fun ⟨f, hf⟩ =>
@@ -1178,7 +1178,7 @@ to the type of functions `∀ a, {b : β a // p a b}`. -/
 def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
     { f : ∀ a, β a // ∀ a, p a (f a) } ≃ ∀ a, { b : β a // p a b } where
   toFun := fun f a => ⟨f.1 a, f.2 a⟩
-  invFun := fun f => ⟨fun a ↦ (f a).1, fun a ↦ (f a).2⟩
+  invFun := fun f ↦ ⟨fun a ↦ (f a).1, fun a ↦ (f a).2⟩
   left_inv := by
     rintro ⟨f, h⟩
     rfl
@@ -1236,7 +1236,7 @@ def piEquivPiSubtypeProd {α : Type*} (p : α → Prop) (β : α → Type*) [Dec
 @[simps]
 def piSplitAt {α : Type*} [DecidableEq α] (i : α) (β : α → Type*) :
     (∀ j, β j) ≃ β i × ∀ j : { j // j ≠ i }, β j where
-  toFun f := ⟨f i, fun j => f j⟩
+  toFun f := ⟨f i, fun j ↦ f j⟩
   invFun f j := if h : j = i then h.symm.rec f.1 else f.2 ⟨j, h⟩
   right_inv f := by
     ext x
@@ -1407,15 +1407,15 @@ theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
 /-- `swap a b` is the permutation that swaps `a` and `b` and
   leaves other values as is. -/
 def swap (a b : α) : Perm α :=
-  ⟨swapCore a b, swapCore a b, fun r => swapCore_swapCore r a b,
-    fun r => swapCore_swapCore r a b⟩
+  ⟨swapCore a b, swapCore a b, fun r ↦ swapCore_swapCore r a b,
+    fun r ↦ swapCore_swapCore r a b⟩
 
 @[simp]
 theorem swap_self (a : α) : swap a a = Equiv.refl _ :=
-  ext fun r => swapCore_self r a
+  ext fun r ↦ swapCore_self r a
 
 theorem swap_comm (a b : α) : swap a b = swap b a :=
-  ext fun r => swapCore_comm r _ _
+  ext fun r ↦ swapCore_comm r _ _
 
 theorem swap_apply_def (a b x : α) : swap a b x = if x = a then b else if x = b then a else x :=
   rfl

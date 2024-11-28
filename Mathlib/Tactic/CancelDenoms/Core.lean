@@ -329,13 +329,13 @@ open Elab Tactic
 def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
   let t ← instantiateMVars (← fvar.getDecl).type
   let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType t
-  liftMetaTactic' fun g => do
+  liftMetaTactic' fun g ↦ do
     let res ← g.replaceLocalDecl fvar new eqPrf
     return res.mvarId
 
 def cancelDenominatorsTarget : TacticM Unit := do
   let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType (← getMainTarget)
-  liftMetaTactic' fun g => g.replaceTargetEq new eqPrf
+  liftMetaTactic' fun g ↦ g.replaceTargetEq new eqPrf
 
 def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget

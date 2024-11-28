@@ -106,7 +106,7 @@ theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
 
 /-- Every nonzero natural number has a unique prime factorization -/
 theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun a ha b hb h =>
-  eq_of_factorization_eq ha hb fun p => by simp [h]
+  eq_of_factorization_eq ha hb fun p ↦ by simp [h]
 
 @[simp]
 theorem factorization_zero : factorization 0 = 0 := by ext; simp [factorization]

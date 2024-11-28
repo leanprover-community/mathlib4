@@ -113,7 +113,7 @@ Then the map `x ↦ sSup s(x)` semiconjugates each `f₁ g'` to `f₂ g'`.
 This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
 cohomologie bornée][ghys87:groupes]. -/
 theorem csSup_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α)
-    (hbdd : ∀ x, BddAbove (range fun g => (f₁ g)⁻¹ (f₂ g x))) (g : G) :
+    (hbdd : ∀ x, BddAbove (range fun g ↦ (f₁ g)⁻¹ (f₂ g x))) (g : G) :
     Function.Semiconj (fun x ↦ ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
   semiconj_of_isLUB f₁ f₂ (fun x ↦ isLUB_csSup (range_nonempty _) (hbdd x)) _
 

@@ -656,7 +656,7 @@ protected theorem Reachable.elim {p : Prop} {u v : V} (h : G.Reachable u v)
   Nonempty.elim h hp
 
 protected theorem Reachable.elim_path {p : Prop} {u v : V} (h : G.Reachable u v)
-    (hp : G.Path u v → p) : p := by classical exact h.elim fun q => hp q.toPath
+    (hp : G.Path u v → p) : p := by classical exact h.elim fun q ↦ hp q.toPath
 
 protected theorem Walk.reachable {G : SimpleGraph V} {u v : V} (p : G.Walk u v) : G.Reachable u v :=
   ⟨p⟩
@@ -671,7 +671,7 @@ protected theorem Reachable.rfl {u : V} : G.Reachable u u := Reachable.refl _
 
 @[symm]
 protected theorem Reachable.symm {u v : V} (huv : G.Reachable u v) : G.Reachable v u :=
-  huv.elim fun p => ⟨p.reverse⟩
+  huv.elim fun p ↦ ⟨p.reverse⟩
 
 theorem reachable_comm {u v : V} : G.Reachable u v ↔ G.Reachable v u :=
   ⟨Reachable.symm, Reachable.symm⟩
@@ -695,7 +695,7 @@ theorem reachable_iff_reflTransGen (u v : V) :
 
 protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G →g G')
     (h : G.Reachable u v) : G'.Reachable (f u) (f v) :=
-  h.elim fun p => ⟨p.map f⟩
+  h.elim fun p ↦ ⟨p.map f⟩
 
 @[mono]
 protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
@@ -704,7 +704,7 @@ protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
 
 theorem Iso.reachable_iff {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u v : V} :
     G'.Reachable (φ u) (φ v) ↔ G.Reachable u v :=
-  ⟨fun r => φ.left_inv u ▸ φ.left_inv v ▸ r.map φ.symm.toHom, Reachable.map φ.toHom⟩
+  ⟨fun r ↦ φ.left_inv u ▸ φ.left_inv v ▸ r.map φ.symm.toHom, Reachable.map φ.toHom⟩
 
 theorem Iso.symm_apply_reachable {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u : V}
     {v : V'} : G.Reachable (φ.symm v) u ↔ G'.Reachable v (φ u) := by
@@ -767,7 +767,7 @@ lemma connected_iff_exists_forall_reachable : G.Connected ↔ ∃ v, ∀ w, G.Re
   rw [connected_iff]
   constructor
   · rintro ⟨hp, ⟨v⟩⟩
-    exact ⟨v, fun w => hp v w⟩
+    exact ⟨v, fun w ↦ hp v w⟩
   · rintro ⟨v, h⟩
     exact ⟨fun u w => (h u).symm.trans (h w), ⟨v⟩⟩
 
@@ -878,11 +878,11 @@ def recOn
     (h : ∀ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ConnectedComponent.sound p.reachable ▸ f u = f v) :
     motive c :=
-  Quot.recOn c f fun u v r => r.elim_path fun p => h u v p p.2
+  Quot.recOn c f fun u v r => r.elim_path fun p ↦ h u v p p.2
 
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
-  C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p _ =>
+  C.lift (fun v ↦ G'.connectedComponentMk (φ v)) fun _ _ p _ =>
     ConnectedComponent.eq.mpr (p.map φ).reachable
 
 @[simp]
@@ -906,14 +906,14 @@ variable {φ : G ≃g G'} {v : V} {v' : V'}
 @[simp]
 theorem iso_image_comp_eq_map_iff_eq_comp {C : G.ConnectedComponent} :
     G'.connectedComponentMk (φ v) = C.map ↑(↑φ : G ↪g G') ↔ G.connectedComponentMk v = C := by
-  refine C.ind fun u => ?_
+  refine C.ind fun u ↦ ?_
   simp only [Iso.reachable_iff, ConnectedComponent.map_mk, RelEmbedding.coe_toRelHom,
     RelIso.coe_toRelEmbedding, ConnectedComponent.eq]
 
 @[simp]
 theorem iso_inv_image_comp_eq_iff_eq_map {C : G.ConnectedComponent} :
     G.connectedComponentMk (φ.symm v') = C ↔ G'.connectedComponentMk v' = C.map φ := by
-  refine C.ind fun u => ?_
+  refine C.ind fun u ↦ ?_
   simp only [Iso.symm_apply_reachable, ConnectedComponent.eq, ConnectedComponent.map_mk,
     RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding]
 
@@ -927,9 +927,9 @@ def connectedComponentEquiv (φ : G ≃g G') : G.ConnectedComponent ≃ G'.Conne
   toFun := ConnectedComponent.map φ
   invFun := ConnectedComponent.map φ.symm
   left_inv C := ConnectedComponent.ind
-    (fun v => congr_arg G.connectedComponentMk (Equiv.left_inv φ.toEquiv v)) C
+    (fun v ↦ congr_arg G.connectedComponentMk (Equiv.left_inv φ.toEquiv v)) C
   right_inv C := ConnectedComponent.ind
-    (fun v => congr_arg G'.connectedComponentMk (Equiv.right_inv φ.toEquiv v)) C
+    (fun v ↦ congr_arg G'.connectedComponentMk (Equiv.right_inv φ.toEquiv v)) C
 
 @[simp]
 theorem connectedComponentEquiv_refl :

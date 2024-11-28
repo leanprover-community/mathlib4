@@ -64,11 +64,11 @@ theorem pushoutCocone_pt :
 
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
 def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
-  Limits.PushoutCocone.isColimitAux' _ fun s => by
+  Limits.PushoutCocone.isColimitAux' _ fun s ↦ by
     letI := RingHom.toAlgebra (s.inl.comp (algebraMap R A))
     let f' : A →ₐ[R] s.pt :=
       { s.inl with
-        commutes' := fun r => rfl }
+        commutes' := fun r ↦ rfl }
     let g' : B →ₐ[R] s.pt :=
       { s.inr with
         commutes' := DFunLike.congr_fun ((s.ι.naturality Limits.WalkingSpan.Hom.snd).trans
@@ -86,7 +86,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     intro h eq1 eq2
     let h' : A ⊗[R] B →ₐ[R] s.pt :=
       { h with
-        commutes' := fun r => by
+        commutes' := fun r ↦ by
           change h (algebraMap R A r ⊗ₜ[R] 1) = s.inl (algebraMap R A r)
           rw [← eq1]
           simp only [pushoutCocone_pt, coe_of, AlgHom.toRingHom_eq_coe]

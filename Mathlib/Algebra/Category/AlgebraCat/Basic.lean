@@ -130,7 +130,7 @@ instance : Inhabited (AlgebraCat R) :=
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
-      map := fun f => f.hom }
+      map := fun f ↦ f.hom }
   forget_faithful := ⟨fun h ↦ by ext x; simpa using congrFun h x⟩
 
 lemma forget_obj {A : AlgebraCat.{v} R} : (forget (AlgebraCat.{v} R)).obj A = A := rfl
@@ -148,12 +148,12 @@ instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
 instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
   forget₂ :=
     { obj := fun A => RingCat.of A
-      map := fun f => RingCat.ofHom f.hom.toRingHom }
+      map := fun f ↦ RingCat.ofHom f.hom.toRingHom }
 
 instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => ModuleCat.asHom f.hom.toLinearMap }
+      map := fun f ↦ ModuleCat.asHom f.hom.toLinearMap }
 
 @[simp]
 lemma forget₂_module_obj (X : AlgebraCat.{v} R) :

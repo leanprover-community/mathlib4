@@ -1360,12 +1360,12 @@ theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ :
 
 theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ i ∉ s, f₂ i ≤ g i) :
-    s.piecewise f₁ f₂ ≤ g := fun i => if h : i ∈ s then by simp [*] else by simp [*]
+    s.piecewise f₁ f₂ ≤ g := fun i ↦ if h : i ∈ s then by simp [*] else by simp [*]
 
 theorem le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
     {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ i ∉ s, g i ≤ f₂ i) :
     g ≤ s.piecewise f₁ f₂ :=
-  @piecewise_le α (fun i => (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
+  @piecewise_le α (fun i ↦ (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
 
 @[gcongr]
 theorem piecewise_mono {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
@@ -1489,7 +1489,7 @@ theorem RightInverse.rightInvOn {g : β → α} (h : RightInverse f g) (s : Set 
 
 theorem LeftInverse.rightInvOn_range {g : β → α} (h : LeftInverse f g) :
     RightInvOn f g (range g) :=
-  forall_mem_range.2 fun i => congr_arg g (h i)
+  forall_mem_range.2 fun i ↦ congr_arg g (h i)
 
 namespace Semiconj
 
@@ -1545,7 +1545,7 @@ end Semiconj
 
 theorem update_comp_eq_of_not_mem_range' {α : Sort*} {β : Type*} {γ : β → Sort*} [DecidableEq β]
     (g : ∀ b, γ b) {f : α → β} {i : β} (a : γ i) (h : i ∉ Set.range f) :
-    (fun j => update g i a (f j)) = fun j => g (f j) :=
+    (fun j ↦ update g i a (f j)) = fun j ↦ g (f j) :=
   (update_comp_eq_of_forall_ne' _ _) fun x hx => h ⟨x, hx⟩
 
 /-- Non-dependent version of `Function.update_comp_eq_of_not_mem_range'` -/

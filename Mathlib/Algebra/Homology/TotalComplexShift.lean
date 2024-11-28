@@ -189,7 +189,7 @@ expressing the compatibility of the total complex with the shift on the first in
 This isomorphism does not involve signs. -/
 noncomputable def totalShift₁Iso :
     ((shiftFunctor₁ C x).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦x⟧ :=
-  HomologicalComplex.Hom.isoOfComponents (fun n => K.totalShift₁XIso x n (n + x) rfl)
+  HomologicalComplex.Hom.isoOfComponents (fun n ↦ K.totalShift₁XIso x n (n + x) rfl)
     (fun n n' _ => by
       dsimp
       simp only [total_d, Preadditive.add_comp, Preadditive.comp_add, smul_add,
@@ -306,7 +306,7 @@ This isomorphism involves signs: on the summand in degree `(p, q)` of `K`, it is
 multiplication by `(p * y).negOnePow`. -/
 noncomputable def totalShift₂Iso :
     ((shiftFunctor₂ C y).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦y⟧ :=
-  HomologicalComplex.Hom.isoOfComponents (fun n => K.totalShift₂XIso y n (n + y) rfl)
+  HomologicalComplex.Hom.isoOfComponents (fun n ↦ K.totalShift₂XIso y n (n + y) rfl)
     (fun n n' _ => by
       dsimp
       simp only [total_d, Preadditive.add_comp, Preadditive.comp_add, smul_add,

@@ -92,11 +92,11 @@ section MomentGeneratingFunction
 
 variable {t : ℝ}
 
-/-- Moment generating function of a real random variable `X`: `fun t => μ[exp(t*X)]`. -/
+/-- Moment generating function of a real random variable `X`: `fun t ↦ μ[exp(t*X)]`. -/
 def mgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
   μ[fun ω => exp (t * X ω)]
 
-/-- Cumulant generating function of a real random variable `X`: `fun t => log μ[exp(t*X)]`. -/
+/-- Cumulant generating function of a real random variable `X`: `fun t ↦ log μ[exp(t*X)]`. -/
 def cgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
   log (mgf X μ t)
 
@@ -187,7 +187,7 @@ theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
 /-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
 theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
     IndepFun (fun ω => exp (s * X ω)) (fun ω => exp (t * Y ω)) μ := by
-  have h_meas : ∀ t, Measurable fun x ↦ exp (t * x) := fun t => (measurable_id'.const_mul t).exp
+  have h_meas : ∀ t, Measurable fun x ↦ exp (t * x) := fun t ↦ (measurable_id'.const_mul t).exp
   change IndepFun ((fun x ↦ exp (s * x)) ∘ X) ((fun x ↦ exp (t * x)) ∘ Y) μ
   exact IndepFun.comp h_indep (h_meas s) (h_meas t)
 

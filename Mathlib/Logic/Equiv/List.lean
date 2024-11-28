@@ -42,7 +42,7 @@ def decodeList : ℕ → Option (List α)
 /-- If `α` is encodable, then so is `List α`. This uses the `pair` and `unpair` functions from
 `Data.Nat.Pairing`. -/
 instance _root_.List.encodable : Encodable (List α) :=
-  ⟨encodeList, decodeList, fun l => by
+  ⟨encodeList, decodeList, fun l ↦ by
     induction' l with a l IH <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
 
 instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
@@ -102,7 +102,7 @@ def decodeMultiset (n : ℕ) : Option (Multiset α) :=
 
 /-- If `α` is encodable, then so is `Multiset α`. -/
 instance _root_.Multiset.encodable : Encodable (Multiset α) :=
-  ⟨encodeMultiset, decodeMultiset, fun s => by simp [encodeMultiset, decodeMultiset, encodek]⟩
+  ⟨encodeMultiset, decodeMultiset, fun s ↦ by simp [encodeMultiset, decodeMultiset, encodek]⟩
 
 /-- If `α` is countable, then so is `Multiset α`. -/
 instance _root_.Multiset.countable {α : Type*} [Countable α] : Countable (Multiset α) :=
@@ -284,11 +284,11 @@ instance multiset : Denumerable (Multiset α) :=
     ⟨fun s : Multiset α => encode <| lower ((s.map encode).sort (· ≤ ·)) 0,
      fun n =>
       Multiset.map (ofNat α) (raise (ofNat (List ℕ) n) 0),
-     fun s => by
+     fun s ↦ by
       have :=
         raise_lower (List.sorted_cons.2 ⟨fun n _ => Nat.zero_le n, (s.map encode).sort_sorted _⟩)
       simp [-Multiset.map_coe, this],
-     fun n => by
+     fun n ↦ by
       simp [-Multiset.map_coe, List.mergeSort_eq_self (raise_sorted _ _), lower_raise]⟩
 
 end Multiset
@@ -342,7 +342,7 @@ instance finset : Denumerable (Finset α) :=
       Finset.eq_of_veq <| by
         simp [-Multiset.map_coe, raise'Finset,
           raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
-      fun n => by
+      fun n ↦ by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
         List.mergeSort_eq_self ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
 

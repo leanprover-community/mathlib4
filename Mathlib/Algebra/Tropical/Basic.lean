@@ -347,9 +347,9 @@ theorem untrop_one [Zero R] : untrop (1 : Tropical R) = 0 :=
 instance instAddMonoidWithOneTropical [LinearOrder R] [OrderTop R] [Zero R] :
     AddMonoidWithOne (Tropical R) :=
   { instOneTropical, instAddCommMonoidTropical with
-    natCast := fun n => if n = 0 then 0 else 1
+    natCast := fun n ↦ if n = 0 then 0 else 1
     natCast_zero := rfl
-    natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp [Nat.cast]) }
+    natCast_succ := fun n ↦ (untrop_inj_iff _ _).1 (by cases n <;> simp [Nat.cast]) }
 
 instance [Zero R] : Nontrivial (Tropical (WithTop R)) :=
   ⟨⟨0, 1, trop_injective.ne WithTop.top_ne_coe⟩⟩

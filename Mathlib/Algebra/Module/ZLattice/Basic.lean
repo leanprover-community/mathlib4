@@ -157,7 +157,7 @@ theorem fract_fract (m : E) : fract b (fract b m) = fract b m :=
 theorem fract_zSpan_add (m : E) {v : E} (h : v ∈ span ℤ (Set.range b)) :
     fract b (v + m) = fract b m := by
   classical
-  refine (Basis.ext_elem_iff b).mpr fun i => ?_
+  refine (Basis.ext_elem_iff b).mpr fun i ↦ ?_
   simp_rw [repr_fract_apply, Int.fract_eq_fract]
   use (b.restrictScalars ℤ).repr ⟨v, h⟩ i
   rw [map_add, Finsupp.coe_add, Pi.add_apply, add_tsub_cancel_right,
@@ -253,7 +253,7 @@ and `ZSpan.fundamentalDomain b`. -/
 def quotientEquiv [Fintype ι] :
     E ⧸ span ℤ (Set.range b) ≃ (fundamentalDomain b) := by
   refine Equiv.ofBijective ?_ ⟨fun x y => ?_, fun x ↦ ?_⟩
-  · refine fun q => Quotient.liftOn q (fractRestrict b) (fun _ _ h => ?_)
+  · refine fun q ↦ Quotient.liftOn q (fractRestrict b) (fun _ _ h => ?_)
     rw [Subtype.mk.injEq, fractRestrict_apply, fractRestrict_apply, fract_eq_fract]
     exact QuotientAddGroup.leftRel_apply.mp h
   · refine Quotient.inductionOn₂ x y (fun _ _ hxy => ?_)
@@ -286,7 +286,7 @@ theorem discreteTopology_pi_basisFun [Finite ι] :
   ext x
   rw [Set.mem_preimage, mem_ball_zero_iff, pi_norm_lt_iff zero_lt_one, Set.mem_singleton_iff]
   simp_rw [← coe_eq_zero, funext_iff, Pi.zero_apply, Real.norm_eq_abs]
-  refine forall_congr' (fun i => ?_)
+  refine forall_congr' (fun i ↦ ?_)
   rsuffices ⟨y, hy⟩ : ∃ (y : ℤ), (y : ℝ) = (x : ι → ℝ) i
   · rw [← hy, ← Int.cast_abs, ← Int.cast_one,  Int.cast_lt, Int.abs_lt_one_iff, Int.cast_eq_zero]
   exact ((Pi.basisFun ℝ ι).mem_span_iff_repr_mem ℤ x).mp (SetLike.coe_mem x) i

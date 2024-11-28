@@ -99,11 +99,11 @@ theorem isLowerSet_iUnion {f : ι → Set α} (hf : ∀ i, IsLowerSet (f i)) : I
 
 theorem isUpperSet_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsUpperSet (f i j)) :
     IsUpperSet (⋃ (i) (j), f i j) :=
-  isUpperSet_iUnion fun i => isUpperSet_iUnion <| hf i
+  isUpperSet_iUnion fun i ↦ isUpperSet_iUnion <| hf i
 
 theorem isLowerSet_iUnion₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsLowerSet (f i j)) :
     IsLowerSet (⋃ (i) (j), f i j) :=
-  isLowerSet_iUnion fun i => isLowerSet_iUnion <| hf i
+  isLowerSet_iUnion fun i ↦ isLowerSet_iUnion <| hf i
 
 theorem isUpperSet_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsUpperSet s) : IsUpperSet (⋂₀ S) :=
   fun _ _ h => forall₂_imp fun s hs => hf s hs h
@@ -119,11 +119,11 @@ theorem isLowerSet_iInter {f : ι → Set α} (hf : ∀ i, IsLowerSet (f i)) : I
 
 theorem isUpperSet_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsUpperSet (f i j)) :
     IsUpperSet (⋂ (i) (j), f i j) :=
-  isUpperSet_iInter fun i => isUpperSet_iInter <| hf i
+  isUpperSet_iInter fun i ↦ isUpperSet_iInter <| hf i
 
 theorem isLowerSet_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsLowerSet (f i j)) :
     IsLowerSet (⋂ (i) (j), f i j) :=
-  isLowerSet_iInter fun i => isLowerSet_iInter <| hf i
+  isLowerSet_iInter fun i ↦ isLowerSet_iInter <| hf i
 
 @[simp]
 theorem isLowerSet_preimage_ofDual_iff : IsLowerSet (ofDual ⁻¹' s) ↔ IsUpperSet s :=
@@ -922,7 +922,7 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+  DFunLike.ext _ _ fun s ↦ ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
 
 @[simp]
 theorem mem_map : b ∈ map f s ↔ f.symm b ∈ s := by
@@ -961,7 +961,7 @@ def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+  DFunLike.ext _ _ fun s ↦ ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
 
 @[simp]
 theorem mem_map {f : α ≃o β} {b : β} : b ∈ map f s ↔ f.symm b ∈ s := by

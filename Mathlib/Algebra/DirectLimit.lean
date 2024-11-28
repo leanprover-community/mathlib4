@@ -141,7 +141,7 @@ theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
 
 theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →ₗ[R] P) (x) :
     F x =
-      lift R ι G f (fun i => F.comp <| of R ι G f i)
+      lift R ι G f (fun i ↦ F.comp <| of R ι G f i)
         (fun i j hij x => by rw [LinearMap.comp_apply, of_f]; rfl) x := by
   cases isEmpty_or_nonempty ι
   · simp_rw [Subsingleton.elim x 0, _root_.map_zero]
@@ -261,8 +261,8 @@ variable {G f}
 
 theorem toModule_totalize_of_le [∀ i (k : G i), Decidable (k ≠ 0)] {x : DirectSum ι G} {i j : ι}
     (hij : i ≤ j) (hx : ∀ k ∈ x.support, k ≤ i) :
-    DirectSum.toModule R ι (G j) (fun k => totalize G f k j) x =
-      f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) := by
+    DirectSum.toModule R ι (G j) (fun k ↦ totalize G f k j) x =
+      f i j hij (DirectSum.toModule R ι (G i) (fun k ↦ totalize G f k i) x) := by
   rw [← @DFinsupp.sum_single ι G _ _ _ x]
   unfold DFinsupp.sum
   simp only [map_sum]
@@ -274,7 +274,7 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
     {x : DirectSum ι G} (H : (Submodule.Quotient.mk x : DirectLimit G f) = (0 : DirectLimit G f)) :
     ∃ j,
       (∀ k ∈ x.support, k ≤ j) ∧
-        DirectSum.toModule R ι (G j) (fun i => totalize G f i j) x = (0 : G j) :=
+        DirectSum.toModule R ι (G j) (fun i ↦ totalize G f i j) x = (0 : G j) :=
   Nonempty.elim (by infer_instance) fun ind : ι =>
     span_induction (hx := (Quotient.mk_eq_zero _).1 H)
       (fun x ⟨i, j, hij, y, hxy⟩ =>
@@ -384,7 +384,7 @@ that respect the directed system structure (i.e. make some diagram commute) give
 to a unique map out of the direct limit. -/
 def lift : DirectLimit G f →+ P :=
   (Module.DirectLimit.lift ℤ ι G (fun i j hij => (f i j hij).toIntLinearMap)
-    (fun i => (g i).toIntLinearMap) Hg).toAddMonoidHom
+    (fun i ↦ (g i).toIntLinearMap) Hg).toAddMonoidHom
 
 variable {G f}
 
@@ -393,12 +393,12 @@ theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   Module.DirectLimit.lift_of
     -- Note: had to make these arguments explicit https://github.com/leanprover-community/mathlib4/pull/8386
     (f := (fun i j hij => (f i j hij).toIntLinearMap))
-    (fun i => (g i).toIntLinearMap)
+    (fun i ↦ (g i).toIntLinearMap)
     Hg
     x
 
 theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+ P) (x) :
-    F x = lift G f P (fun i => F.comp (of G f i)) (fun i j hij x => by simp) x := by
+    F x = lift G f P (fun i ↦ F.comp (of G f i)) (fun i j hij x => by simp) x := by
   cases isEmpty_or_nonempty ι
   · simp_rw [Subsingleton.elim x 0, _root_.map_zero]
   · exact DirectLimit.induction_on x fun i x => by simp
@@ -797,7 +797,7 @@ theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   FreeCommRing.lift_of _ _
 
 theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+* P) (x) :
-    F x = lift G f P (fun i => F.comp <| of G f i) (fun i j hij x => by simp [of_f]) x := by
+    F x = lift G f P (fun i ↦ F.comp <| of G f i) (fun i j hij x => by simp [of_f]) x := by
   cases isEmpty_or_nonempty ι
   · apply DFunLike.congr_fun
     apply Ideal.Quotient.ringHom_ext

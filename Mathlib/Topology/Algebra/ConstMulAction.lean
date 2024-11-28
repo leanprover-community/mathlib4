@@ -127,7 +127,7 @@ instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
 @[to_additive]
 instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
     [∀ i, ContinuousConstSMul M (γ i)] : ContinuousConstSMul M (∀ i, γ i) :=
-  ⟨fun _ => continuous_pi fun i => (continuous_apply i).const_smul _⟩
+  ⟨fun _ => continuous_pi fun i ↦ (continuous_apply i).const_smul _⟩
 
 @[to_additive]
 theorem IsCompact.smul {α β} [SMul α β] [TopologicalSpace β] [ContinuousConstSMul α β] (a : α)

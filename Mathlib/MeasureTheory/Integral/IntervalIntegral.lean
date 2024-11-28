@@ -175,7 +175,7 @@ theorem norm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (fun x ↦ �
 
 theorem intervalIntegrable_norm_iff {f : ℝ → E} {μ : Measure ℝ} {a b : ℝ}
     (hf : AEStronglyMeasurable f (μ.restrict (Ι a b))) :
-    IntervalIntegrable (fun t => ‖f t‖) μ a b ↔ IntervalIntegrable f μ a b := by
+    IntervalIntegrable (fun t ↦ ‖f t‖) μ a b ↔ IntervalIntegrable f μ a b := by
   simp_rw [intervalIntegrable_iff, IntegrableOn]; exact integrable_norm_iff hf
 
 theorem abs {f : ℝ → ℝ} (h : IntervalIntegrable f μ a b) :
@@ -1077,7 +1077,7 @@ theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral (hfi : Integrabl
   simp_rw [integral_of_le (le_add_of_nonneg_right zero_le_one)]
   rw [← setIntegral_univ, ← iUnion_Ioc_add_intCast y]
   exact
-    hasSum_integral_iUnion (fun i => measurableSet_Ioc) (pairwise_disjoint_Ioc_add_intCast y)
+    hasSum_integral_iUnion (fun i ↦ measurableSet_Ioc) (pairwise_disjoint_Ioc_add_intCast y)
       hfi.integrableOn
 
 theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral_comp_add_int (hfi : Integrable f) :

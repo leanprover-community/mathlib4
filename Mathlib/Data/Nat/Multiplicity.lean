@@ -64,7 +64,7 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
     _ = #{i ∈ Ico 1 b | m ^ i ∣ n} :=
       congr_arg _ <|
         congr_arg card <|
-          Finset.ext fun i => by
+          Finset.ext fun i ↦ by
             simp only [mem_Ico, Nat.lt_succ_iff,
               fin.pow_dvd_iff_le_multiplicity, mem_filter,
               and_assoc, and_congr_right_iff, iff_and_self]

@@ -473,7 +473,7 @@ def glue : Ordnode α → Ordnode α → Ordnode α
      merge {1, 2} {3, 4} = {1, 2, 3, 4}
      merge {3, 4} {1, 2} = precondition violation -/
 def merge (l : Ordnode α) : Ordnode α → Ordnode α :=
-  (Ordnode.recOn (motive := fun _ => Ordnode α → Ordnode α) l fun r => r)
+  (Ordnode.recOn (motive := fun _ => Ordnode α → Ordnode α) l fun r ↦ r)
     fun ls ll lx lr _ IHlr r =>
       (Ordnode.recOn (motive := fun _ => Ordnode α) r (node ls ll lx lr))
         fun rs rl rx rr IHrl _ =>
@@ -591,11 +591,11 @@ def toRevList (t : Ordnode α) : List α :=
   foldl (flip List.cons) [] t
 
 instance [ToString α] : ToString (Ordnode α) :=
-  ⟨fun t => "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
+  ⟨fun t ↦ "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
 
 -- Porting note removed unsafe
 instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
-  format := fun t => Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
+  format := fun t ↦ Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
 
 /-- O(n). True if the trees have the same elements, ignoring structural differences.
 

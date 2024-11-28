@@ -144,7 +144,7 @@ theorem eq_of_infinite_eval_eq (p q : R[X]) (h : Set.Infinite { x | eval x p = e
 
 theorem roots_mul {p q : R[X]} (hpq : p * q ≠ 0) : (p * q).roots = p.roots + q.roots := by
   classical
-  exact Multiset.ext.mpr fun r => by
+  exact Multiset.ext.mpr fun r ↦ by
     rw [count_add, count_roots, count_roots, count_roots, rootMultiplicity_mul hpq]
 
 theorem roots.le_of_dvd (h : q ≠ 0) : p ∣ q → roots p ≤ roots q := by
@@ -172,7 +172,7 @@ theorem roots_C (x : R) : (C x).roots = 0 := by
   classical exact
   if H : x = 0 then by rw [H, C_0, roots_zero]
   else
-    Multiset.ext.mpr fun r => (by
+    Multiset.ext.mpr fun r ↦ (by
       rw [count_roots, count_zero, rootMultiplicity_eq_zero (not_isRoot_C _ _ H)])
 
 @[simp]
@@ -205,7 +205,7 @@ theorem roots_multiset_prod (m : Multiset R[X]) : (0 : R[X]) ∉ m → m.prod.ro
   simpa only [Multiset.prod_coe, quot_mk_to_coe''] using roots_list_prod L
 
 theorem roots_prod {ι : Type*} (f : ι → R[X]) (s : Finset ι) :
-    s.prod f ≠ 0 → (s.prod f).roots = s.val.bind fun i => roots (f i) := by
+    s.prod f ≠ 0 → (s.prod f).roots = s.val.bind fun i ↦ roots (f i) := by
   rcases s with ⟨m, hm⟩
   simpa [Multiset.prod_eq_zero_iff, Multiset.bind_map] using roots_multiset_prod (m.map f)
 
@@ -616,7 +616,7 @@ theorem _root_.Multiset.prod_X_sub_C_dvd_iff_le_roots {p : R[X]} (hp : p ≠ 0) 
     (s.map fun a ↦ X - C a).prod ∣ p ↔ s ≤ p.roots := by
   classical exact
   ⟨fun h =>
-    Multiset.le_iff_count.2 fun r => by
+    Multiset.le_iff_count.2 fun r ↦ by
       rw [count_roots, le_rootMultiplicity_iff hp, ← Multiset.prod_replicate, ←
         Multiset.map_replicate fun a ↦ X - C a, ← Multiset.filter_eq]
       exact (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| s.filter_le _).trans h,

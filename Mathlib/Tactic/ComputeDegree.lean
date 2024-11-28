@@ -368,8 +368,8 @@ metavariables followed by the rest.
 def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
   let (yesMV, noMV) := ← mvs.partitionM fun mv =>
                           return hasExprMVar (← instantiateMVars (← mv.getDecl).type)
-  let tried_rfl := ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
-  let assignable := ← yesMV.mapM fun g => do
+  let tried_rfl := ← noMV.mapM fun g ↦ g.applyConst ``rfl <|> return [g]
+  let assignable := ← yesMV.mapM fun g ↦ do
     let tgt := ← instantiateMVars (← g.getDecl).type
     match tgt.eq? with
       | some (_, lhs, rhs) =>

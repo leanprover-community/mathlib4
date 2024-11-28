@@ -63,7 +63,7 @@ instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Alg
 -- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubalgebra R A) A`
 instance starRing (s : StarSubalgebra R A) : StarRing s :=
   { StarMemClass.instStar s with
-    star_involutive := fun r => Subtype.ext (star_star (r : A))
+    star_involutive := fun r ↦ Subtype.ext (star_star (r : A))
     star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : A) (r₂ : A))
     star_add := fun r₁ r₂ => Subtype.ext (star_add (r₁ : A) (r₂ : A)) }
 
@@ -308,7 +308,7 @@ instance involutiveStar : InvolutiveStar (Subalgebra R A) where
         simp only [Set.mem_star, Subalgebra.mem_carrier] at *
         exact (star_add x y).symm ▸ add_mem hx hy
       zero_mem' := Set.mem_star.mp ((star_zero A).symm ▸ zero_mem S : star (0 : A) ∈ S)
-      algebraMap_mem' := fun r => by
+      algebraMap_mem' := fun r ↦ by
         simpa only [Set.mem_star, Subalgebra.mem_carrier, ← algebraMap_star_comm] using
           S.algebraMap_mem (star r) }
   star_involutive S :=
@@ -685,7 +685,7 @@ theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
     [AlgHomClass F R (adjoin R s) B] [StarHomClass F (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
   refine DFunLike.ext f g fun a =>
-    adjoin_induction_subtype (p := fun y ↦ f y = g y) a (fun x hx => ?_) (fun r => ?_)
+    adjoin_induction_subtype (p := fun y ↦ f y = g y) a (fun x hx => ?_) (fun r ↦ ?_)
     (fun x y hx hy => ?_) (fun x y hx hy => ?_) fun x hx => ?_
   · exact h ⟨x, subset_adjoin R s hx⟩ hx
   · simp only [AlgHomClass.commutes]

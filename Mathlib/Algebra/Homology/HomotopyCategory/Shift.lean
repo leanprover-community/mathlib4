@@ -39,7 +39,7 @@ multiplies the differentials by `(-1)^n`. -/
 @[simps]
 def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
   obj K :=
-    { X := fun i => K.X (i + n)
+    { X := fun i ↦ K.X (i + n)
       d := fun _ _ => n.negOnePow • K.d _ _
       d_comp_d' := by
         intros
@@ -81,7 +81,7 @@ functor when `n = 0`. -/
 def shiftFunctorZero' (n : ℤ) (h : n = 0) :
     shiftFunctor C n ≅ 𝟭 _ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
+    (fun i ↦ K.shiftFunctorObjXIso _ _ _ (by omega))
     (fun _ _ _ => by dsimp; simp [h])) (fun _ ↦ by ext; dsimp; simp)
 
 /-- The compatibility of the shift functors on `CochainComplex C ℤ` with respect
@@ -90,7 +90,7 @@ to the addition of integers. -/
 def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
     shiftFunctor C n₁₂ ≅ shiftFunctor C n₁ ⋙ shiftFunctor C n₂ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
+    (fun i ↦ K.shiftFunctorObjXIso _ _ _ (by omega))
     (fun _ _ _ => by
       subst h
       dsimp
@@ -281,7 +281,7 @@ def shift {K L : CochainComplex C ℤ} {φ₁ φ₂ : K ⟶ L} (h : Homotopy φ�
     intro hij'
     dsimp at hij hij'
     omega
-  comm := fun i => by
+  comm := fun i ↦ by
     rw [dNext_eq _ (show (ComplexShape.up ℤ).Rel i (i + 1) by simp),
       prevD_eq _ (show (ComplexShape.up ℤ).Rel (i - 1) i by simp)]
     dsimp

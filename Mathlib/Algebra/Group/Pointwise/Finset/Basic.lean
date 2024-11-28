@@ -501,7 +501,7 @@ theorem card_mul_le : (s * t).card ≤ s.card * t.card :=
 
 @[to_additive]
 theorem card_mul_iff :
-    (s * t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 :=
+    (s * t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun p ↦ p.1 * p.2 :=
   card_image₂_iff
 
 @[to_additive (attr := simp)]
@@ -1020,13 +1020,13 @@ theorem coe_list_prod (s : List (Finset α)) : (↑s.prod : Set α) = (s.map (�
 
 @[to_additive]
 theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
-    a ∈ (List.ofFn s).prod ↔ ∃ f : ∀ i : Fin n, s i, (List.ofFn fun i => (f i : α)).prod = a := by
+    a ∈ (List.ofFn s).prod ↔ ∃ f : ∀ i : Fin n, s i, (List.ofFn fun i ↦ (f i : α)).prod = a := by
   rw [← mem_coe, coe_list_prod, List.map_ofFn, Set.mem_prod_list_ofFn]
   rfl
 
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
-    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
+    a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i ↦ ↑(f i)).prod = a := by
   simp [← mem_coe, coe_pow, Set.mem_pow]
 
 @[to_additive]
@@ -1519,7 +1519,7 @@ variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] (s t : Finset α) (a : �
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
-    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 := by
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × α)).InjOn fun p ↦ p.1 * p.2 := by
   simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff]
 
 @[to_additive (attr := simp)]

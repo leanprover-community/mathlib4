@@ -96,7 +96,7 @@ theorem ThreeGPFree.prod {t : Set β} (hs : ThreeGPFree s) (ht : ThreeGPFree t) 
 theorem threeGPFree_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {s : ∀ i, Set (α i)}
     (hs : ∀ i, ThreeGPFree (s i)) : ThreeGPFree ((univ : Set ι).pi s) :=
   fun _ ha _ hb _ hc h ↦
-  funext fun i => hs i (ha i trivial) (hb i trivial) (hc i trivial) <| congr_fun h i
+  funext fun i ↦ hs i (ha i trivial) (hb i trivial) (hc i trivial) <| congr_fun h i
 
 end Monoid
 
@@ -255,7 +255,7 @@ The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see `roth
 def mulRothNumber : Finset α →o ℕ :=
   ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, #t = m ∧ ThreeGPFree (t : Set α)) #s, by
     rintro t u htu
-    refine Nat.findGreatest_mono (fun m => ?_) (card_le_card htu)
+    refine Nat.findGreatest_mono (fun m ↦ ?_) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 
@@ -398,7 +398,7 @@ Trivially, `rothNumberNat N ≤ N`, but Roth's theorem (proved in 1953) shows th
 A significant refinement of Roth's theorem by Bloom and Sisask announced in 2020 gives
 `rothNumberNat N = O(N / (log N)^(1+c))` for an absolute constant `c`. -/
 def rothNumberNat : ℕ →o ℕ :=
-  ⟨fun n => addRothNumber (range n), addRothNumber.mono.comp range_mono⟩
+  ⟨fun n ↦ addRothNumber (range n), addRothNumber.mono.comp range_mono⟩
 
 theorem rothNumberNat_def (n : ℕ) : rothNumberNat n = addRothNumber (range n) :=
   rfl

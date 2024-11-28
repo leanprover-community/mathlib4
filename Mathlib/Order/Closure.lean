@@ -265,7 +265,7 @@ theorem sInf_isClosed {c : ClosureOperator α} {S : Set α}
 
 @[simp]
 theorem closure_iSup_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
-  le_antisymm (le_closure_iff.1 <| iSup_le fun i => c.monotone <| le_iSup f i) <|
+  le_antisymm (le_closure_iff.1 <| iSup_le fun i ↦ c.monotone <| le_iSup f i) <|
     c.monotone <| iSup_mono fun _ => c.le_closure _
 
 @[simp]

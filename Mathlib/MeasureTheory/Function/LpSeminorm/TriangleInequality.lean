@@ -163,7 +163,7 @@ theorem eLpNorm'_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hq1 : 1 ≤ q) :
     eLpNorm' (∑ i ∈ s, f i) q μ ≤ ∑ i ∈ s, eLpNorm' (f i) q μ :=
   Finset.le_sum_of_subadditive_on_pred (fun f : α → E => eLpNorm' f q μ)
-    (fun f => AEStronglyMeasurable f μ) (eLpNorm'_zero (zero_lt_one.trans_le hq1))
+    (fun f ↦ AEStronglyMeasurable f μ) (eLpNorm'_zero (zero_lt_one.trans_le hq1))
     (fun _f _g hf hg => eLpNorm'_add_le hf hg hq1) (fun _f _g hf hg => hf.add hg) _ hfs
 
 @[deprecated (since := "2024-07-27")]
@@ -173,7 +173,7 @@ theorem eLpNorm_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hp1 : 1 ≤ p) :
     eLpNorm (∑ i ∈ s, f i) p μ ≤ ∑ i ∈ s, eLpNorm (f i) p μ :=
   Finset.le_sum_of_subadditive_on_pred (fun f : α → E => eLpNorm f p μ)
-    (fun f => AEStronglyMeasurable f μ) eLpNorm_zero (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
+    (fun f ↦ AEStronglyMeasurable f μ) eLpNorm_zero (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
 
 @[deprecated (since := "2024-07-27")]

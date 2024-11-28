@@ -120,7 +120,7 @@ instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
 /-- Continuous linear maps themselves form a normed space with respect to
     the operator norm. -/
 instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
-  NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
+  NormedAddCommGroup.ofSeparation fun f ↦ (opNorm_zero_iff f).mp
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
 instance toNormedRing : NormedRing (E →L[𝕜] E) :=

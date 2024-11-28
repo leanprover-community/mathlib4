@@ -155,7 +155,7 @@ theorem sub_im (z w : ℤ√d) : (z - w).im = z.im - w.im :=
 
 instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
   { Zsqrtd.addCommGroup with
-    natCast := fun n => ofInt n
+    natCast := fun n ↦ ofInt n
     intCast := ofInt
     one := 1 }
 

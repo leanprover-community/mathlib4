@@ -52,7 +52,7 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const
     μ[f n|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] f i := by
   refine Filter.EventuallyEq.trans ?_ (ae_restrict_of_ae (h.condexp_ae_eq hin))
   refine condexp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le (ℱ.le i)
-    (hτ.measurableSet_eq' i) fun t => ?_
+    (hτ.measurableSet_eq' i) fun t ↦ ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 
 theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingale f ℱ μ)
@@ -62,7 +62,7 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingal
   by_cases hin : i ≤ n
   · refine Filter.EventuallyEq.trans ?_ (ae_restrict_of_ae (h.condexp_ae_eq hin))
     refine condexp_ae_eq_restrict_of_measurableSpace_eq_on (hτ.measurableSpace_le_of_le hτ_le)
-      (ℱ.le i) (hτ.measurableSet_eq' i) fun t => ?_
+      (ℱ.le i) (hτ.measurableSet_eq' i) fun t ↦ ?_
     rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
   · suffices {x : Ω | τ x = i} = ∅ by simp [this]; norm_cast
     ext1 x

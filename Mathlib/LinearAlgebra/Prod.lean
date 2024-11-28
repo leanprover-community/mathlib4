@@ -753,8 +753,8 @@ protected def skewProd (f : M →ₗ[R] M₄) : (M × M₃) ≃ₗ[R] M₂ × M�
       ((e₂ : M₃ →ₗ[R] M₄).comp (LinearMap.snd R M M₃) +
         f.comp (LinearMap.fst R M M₃)) with
     invFun := fun p : M₂ × M₄ => (e₁.symm p.1, e₂.symm (p.2 - f (e₁.symm p.1)))
-    left_inv := fun p => by simp
-    right_inv := fun p => by simp }
+    left_inv := fun p ↦ by simp
+    right_inv := fun p ↦ by simp }
 
 @[simp]
 theorem skewProd_apply (f : M →ₗ[R] M₄) (x) : e₁.skewProd e₂ f x = (e₁ x.1, e₂ x.2 + f x.1) :=
@@ -859,8 +859,8 @@ all isomorphic to `M`.
 @[deprecated "No deprecation message was provided."  (since := "2024-06-05")]
 def tunnel (f : M × N →ₗ[R] M) (i : Injective f) : ℕ →o (Submodule R M)ᵒᵈ :=
   -- Note: the hint `(α := _)` had to be added in https://github.com/leanprover-community/mathlib4/pull/8386
-  ⟨fun n => OrderDual.toDual (α := Submodule R M) (tunnel' f i n).1,
-    monotone_nat_of_le_succ fun n => by
+  ⟨fun n ↦ OrderDual.toDual (α := Submodule R M) (tunnel' f i n).1,
+    monotone_nat_of_le_succ fun n ↦ by
       dsimp [tunnel', tunnelAux]
       rw [Submodule.map_comp, Submodule.map_comp]
       apply Submodule.map_subtype_le⟩

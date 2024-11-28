@@ -319,7 +319,7 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
 
 /-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
 instance : IsometricSMul SL(2, ℝ) ℍ :=
-  ⟨fun g => by
+  ⟨fun g ↦ by
     have h₀ : Isometry (fun z ↦ ModularGroup.S • z : ℍ → ℍ) :=
       Isometry.of_dist_eq fun y₁ y₂ => by
         have h₁ : 0 ≤ im y₁ * im y₂ := mul_nonneg y₁.property.le y₂.property.le

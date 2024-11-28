@@ -152,7 +152,7 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
     (hanti : ClosureAntitone A) (hnonempty : ∀ l, (A l).Nonempty) : (inducedMap A).1 = univ := by
   rw [eq_univ_iff_forall]
   intro x
-  choose u hu using fun n => hnonempty (res x n)
+  choose u hu using fun n ↦ hnonempty (res x n)
   have umem : ∀ n m : ℕ, n ≤ m → u m ∈ A (res x n) := by
     have : Antitone fun n : ℕ => A (res x n) := by
       refine antitone_nat_of_succ_le ?_

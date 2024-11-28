@@ -133,9 +133,9 @@ noncomputable def pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction :
     pointedToTwoPFst ⊣ forget₂ TwoP Bipointed ⋙ bipointedToPointedFst :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        { toFun := fun f => ⟨f.toFun ∘ Option.some, f.map_fst⟩
-          invFun := fun f => ⟨fun o => o.elim Y.toTwoPointing.toProd.2 f.toFun, f.map_point, rfl⟩
-          left_inv := fun f => by
+        { toFun := fun f ↦ ⟨f.toFun ∘ Option.some, f.map_fst⟩
+          invFun := fun f ↦ ⟨fun o ↦ o.elim Y.toTwoPointing.toProd.2 f.toFun, f.map_point, rfl⟩
+          left_inv := fun f ↦ by
             apply Bipointed.Hom.ext
             funext x
             cases x
@@ -152,9 +152,9 @@ noncomputable def pointedToTwoPSndForgetCompBipointedToPointedSndAdjunction :
     pointedToTwoPSnd ⊣ forget₂ TwoP Bipointed ⋙ bipointedToPointedSnd :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        { toFun := fun f => ⟨f.toFun ∘ Option.some, f.map_snd⟩
-          invFun := fun f => ⟨fun o => o.elim Y.toTwoPointing.toProd.1 f.toFun, rfl, f.map_point⟩
-          left_inv := fun f => by
+        { toFun := fun f ↦ ⟨f.toFun ∘ Option.some, f.map_snd⟩
+          invFun := fun f ↦ ⟨fun o ↦ o.elim Y.toTwoPointing.toProd.1 f.toFun, rfl, f.map_point⟩
+          left_inv := fun f ↦ by
             apply Bipointed.Hom.ext
             funext x
             cases x

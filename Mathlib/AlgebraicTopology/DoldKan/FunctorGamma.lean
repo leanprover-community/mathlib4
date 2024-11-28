@@ -290,7 +290,7 @@ def Γ₀' : ChainComplex C ℕ ⥤ SimplicialObject.Split C where
   map {K K'} f :=
     { F := Γ₀.map f
       f := f.f
-      comm := fun n => by
+      comm := fun n ↦ by
         dsimp
         simp only [← Splitting.cofan_inj_id, (Γ₀.splitting K).ι_desc]
         rfl }

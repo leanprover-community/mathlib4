@@ -122,7 +122,7 @@ instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid
 def singleOneAlgHom {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     A →ₐ[k] MonoidAlgebra A G :=
   { singleOneRingHom with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       ext
       simp
       rfl }
@@ -400,7 +400,7 @@ instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
 @[simps! apply]
 def singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] : k →ₐ[R] k[G] :=
   { singleZeroRingHom with
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       ext
       simp
       rfl }
@@ -442,7 +442,7 @@ variable (k G A)
 `k[G] →ₐ[k] A`. -/
 def lift : (Multiplicative G →* A) ≃ (k[G] →ₐ[k] A) :=
   { @MonoidAlgebra.lift k (Multiplicative G) _ _ A _ _ with
-    invFun := fun f => (f : k[G] →* A).comp (of k G)
+    invFun := fun f ↦ (f : k[G] →* A).comp (of k G)
     toFun := fun F =>
       { @MonoidAlgebra.lift k (Multiplicative G) _ _ A _ _ F with
         toFun := liftNCAlgHom (Algebra.ofId k A) F fun _ _ => Algebra.commutes _ _ } }
@@ -573,10 +573,10 @@ variable [CommSemiring R]
 def AddMonoidAlgebra.toMultiplicativeAlgEquiv [Semiring k] [Algebra R k] [AddMonoid G] :
     AddMonoidAlgebra k G ≃ₐ[R] MonoidAlgebra k (Multiplicative G) :=
   { AddMonoidAlgebra.toMultiplicative k G with
-    commutes' := fun r => by simp [AddMonoidAlgebra.toMultiplicative] }
+    commutes' := fun r ↦ by simp [AddMonoidAlgebra.toMultiplicative] }
 
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
 def MonoidAlgebra.toAdditiveAlgEquiv [Semiring k] [Algebra R k] [Monoid G] :
     MonoidAlgebra k G ≃ₐ[R] AddMonoidAlgebra k (Additive G) :=
-  { MonoidAlgebra.toAdditive k G with commutes' := fun r => by simp [MonoidAlgebra.toAdditive] }
+  { MonoidAlgebra.toAdditive k G with commutes' := fun r ↦ by simp [MonoidAlgebra.toAdditive] }

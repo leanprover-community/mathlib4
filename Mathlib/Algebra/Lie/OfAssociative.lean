@@ -177,9 +177,9 @@ See also `LieModule.toModuleHom`. -/
 @[simps]
 def LieModule.toEnd : L →ₗ⁅R⁆ Module.End R M where
   toFun x :=
-    { toFun := fun m => ⁅x, m⁆
+    { toFun := fun m ↦ ⁅x, m⁆
       map_add' := lie_add x
-      map_smul' := fun t => lie_smul t x }
+      map_smul' := fun t ↦ lie_smul t x }
   map_add' x y := by ext m; apply add_lie
   map_smul' t x := by ext m; apply smul_lie
   map_lie' {x y} := by ext m; apply lie_lie

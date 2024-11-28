@@ -38,7 +38,7 @@ def mkRecNames (all : List Name) (numMotives : Nat) : List Name :=
   else
     let main := all[0]!
     all.map mkRecName ++
-      (List.range (numMotives - all.length)).map (fun i => main.str s!"rec_{i+1}")
+      (List.range (numMotives - all.length)).map (fun i ↦ main.str s!"rec_{i+1}")
 
 private def addAndCompile' (decl : Declaration) : CoreM Unit := do
   try addAndCompile decl

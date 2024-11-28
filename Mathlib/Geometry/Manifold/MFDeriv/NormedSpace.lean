@@ -260,18 +260,18 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
 theorem MDifferentiableWithinAt.smul {f : M → 𝕜} {g : M → V}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) (hg : MDifferentiableWithinAt I 𝓘(𝕜, V) g s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, V) (fun p => f p • g p) s x :=
+    MDifferentiableWithinAt I 𝓘(𝕜, V) (fun p ↦ f p • g p) s x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable le_rfl _).comp_mdifferentiableWithinAt x
     (hf.prod_mk hg)
 
 theorem MDifferentiableAt.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
-    (hg : MDifferentiableAt I 𝓘(𝕜, V) g x) : MDifferentiableAt I 𝓘(𝕜, V) (fun p => f p • g p) x :=
+    (hg : MDifferentiableAt I 𝓘(𝕜, V) g x) : MDifferentiableAt I 𝓘(𝕜, V) (fun p ↦ f p • g p) x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable le_rfl _).comp x (hf.prod_mk hg)
 
 theorem MDifferentiableOn.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableOn I 𝓘(𝕜) f s)
-    (hg : MDifferentiableOn I 𝓘(𝕜, V) g s) : MDifferentiableOn I 𝓘(𝕜, V) (fun p => f p • g p) s :=
+    (hg : MDifferentiableOn I 𝓘(𝕜, V) g s) : MDifferentiableOn I 𝓘(𝕜, V) (fun p ↦ f p • g p) s :=
   fun x hx => (hf x hx).smul (hg x hx)
 
 theorem MDifferentiable.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiable I 𝓘(𝕜) f)
-    (hg : MDifferentiable I 𝓘(𝕜, V) g) : MDifferentiable I 𝓘(𝕜, V) fun p => f p • g p := fun x =>
+    (hg : MDifferentiable I 𝓘(𝕜, V) g) : MDifferentiable I 𝓘(𝕜, V) fun p ↦ f p • g p := fun x =>
   (hf x).smul (hg x)

@@ -473,7 +473,7 @@ theorem inter_preimage_subset (s : Set α) (t : Set β) (f : α → β) :
 
 theorem union_preimage_subset (s : Set α) (t : Set β) (f : α → β) :
     s ∪ f ⁻¹' t ⊆ f ⁻¹' (f '' s ∪ t) := fun _ h =>
-  Or.elim h (fun l => Or.inl <| mem_image_of_mem _ l) fun r => Or.inr r
+  Or.elim h (fun l ↦ Or.inl <| mem_image_of_mem _ l) fun r ↦ Or.inr r
 
 theorem subset_image_union (f : α → β) (s : Set α) (t : Set β) : f '' (s ∪ f ⁻¹' t) ⊆ f '' s ∪ t :=
   image_subset_iff.2 (union_preimage_subset _ _ _)
@@ -846,7 +846,7 @@ theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
   range_quot_lift _
 
 instance canLift (c) (p) [CanLift α β c p] :
-    CanLift (Set α) (Set β) (c '' ·) fun s => ∀ x ∈ s, p x where
+    CanLift (Set α) (Set β) (c '' ·) fun s ↦ ∀ x ∈ s, p x where
   prf _ hs := subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
 
 theorem range_const_subset {c : α} : (range fun _ : ι => c) ⊆ {c} :=

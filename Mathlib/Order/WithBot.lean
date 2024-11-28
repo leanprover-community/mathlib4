@@ -137,7 +137,7 @@ def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
 theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : WithBot α).unbot h = x :=
   rfl
 
-instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
+instance canLift : CanLift (WithBot α) α (↑) fun r ↦ r ≠ ⊥ where
   prf x h := ⟨x.unbot h, coe_unbot _ _⟩
 
 instance instTop [Top α] : Top (WithBot α) where
@@ -719,7 +719,7 @@ def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
 theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : WithTop α).untop h = x :=
   rfl
 
-instance canLift : CanLift (WithTop α) α (↑) fun r => r ≠ ⊤ where
+instance canLift : CanLift (WithTop α) α (↑) fun r ↦ r ≠ ⊤ where
   prf x h := ⟨x.untop h, coe_untop _ _⟩
 
 instance instBot [Bot α] : Bot (WithTop α) where

@@ -134,8 +134,8 @@ variable (ψ : L'' →ᴸ L')
 /-- A language map defined on two factors of a sum. -/
 @[simps]
 protected def sumElim : L.sum L'' →ᴸ L' where
-  onFunction _n := Sum.elim (fun f => ϕ.onFunction f) fun f => ψ.onFunction f
-  onRelation _n := Sum.elim (fun f => ϕ.onRelation f) fun f => ψ.onRelation f
+  onFunction _n := Sum.elim (fun f ↦ ϕ.onFunction f) fun f ↦ ψ.onFunction f
+  onRelation _n := Sum.elim (fun f ↦ ϕ.onRelation f) fun f ↦ ψ.onRelation f
 
 theorem sumElim_comp_inl (ψ : L'' →ᴸ L') : ϕ.sumElim ψ ∘ᴸ LHom.sumInl = ϕ :=
   LHom.funext (funext fun _ => rfl) (funext fun _ => rfl)
@@ -159,8 +159,8 @@ variable {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂)
 /-- The map between two sum-languages induced by maps on the two factors. -/
 @[simps]
 def sumMap : L.sum L₁ →ᴸ L'.sum L₂ where
-  onFunction _n := Sum.map (fun f => ϕ.onFunction f) fun f => ψ.onFunction f
-  onRelation _n := Sum.map (fun f => ϕ.onRelation f) fun f => ψ.onRelation f
+  onFunction _n := Sum.map (fun f ↦ ϕ.onFunction f) fun f ↦ ψ.onFunction f
+  onRelation _n := Sum.map (fun f ↦ ϕ.onRelation f) fun f ↦ ψ.onRelation f
 
 @[simp]
 theorem sumMap_comp_inl : ϕ.sumMap ψ ∘ᴸ LHom.sumInl = LHom.sumInl ∘ᴸ ϕ :=
@@ -338,7 +338,7 @@ instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α
   inferInstanceAs (IsEmpty PEmpty)
 
 instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn α) :=
-  fun n => Nat.casesOn n _ie inferInstance
+  fun n ↦ Nat.casesOn n _ie inferInstance
 
 theorem card_constantsOn : (constantsOn α).card = #α := by
   simp [card_eq_card_functions_add_card_relations, sum_nat_eq_add_sum_succ]

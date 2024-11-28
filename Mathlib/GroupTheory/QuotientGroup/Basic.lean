@@ -56,7 +56,7 @@ local notation " Q " => G ⧸ N
 
 @[to_additive (attr := simp)]
 theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f : ι → G} :
-    ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i => (f i : G ⧸ N)) :=
+    ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i ↦ (f i : G ⧸ N)) :=
   map_prod (QuotientGroup.mk' N) _ _
 
 @[to_additive QuotientAddGroup.strictMono_comap_prod_map]

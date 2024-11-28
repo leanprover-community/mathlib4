@@ -50,7 +50,7 @@ def variation (counts : List Nat) : List Nat :=
   let counts' := counts.map toFloat
   let μ : Float := counts'.foldl (· + ·) 0 / toFloat counts.length
   let stddev : Float := Float.sqrt <|
-    ((counts'.map fun i => (i - μ)^2).foldl (· + ·) 0) / toFloat counts.length
+    ((counts'.map fun i ↦ (i - μ)^2).foldl (· + ·) 0) / toFloat counts.length
   [min, max, toNat stddev]
 
 /--

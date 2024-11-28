@@ -47,7 +47,7 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
 -- /-- Arrays converted to lists are the same as `of_fn` on the indexing function of the array. -/
 -- theorem array_eq_of_fn {n} (a : Array' n α) : a.toList = ofFn a.read :=
 --   by
---   suffices ∀ {m h l}, DArray.revIterateAux a (fun i => cons) m h l =
+--   suffices ∀ {m h l}, DArray.revIterateAux a (fun i ↦ cons) m h l =
 --      ofFnAux (DArray.read a) m h l
 --     from this
 --   intros; induction' m with m IH generalizing l; · rfl
@@ -65,14 +65,14 @@ theorem ofFn_zero (f : Fin 0 → α) : ofFn f = [] :=
   ext_get (by simp) (fun i hi₁ hi₂ => by contradiction)
 
 @[simp]
-theorem ofFn_succ {n} (f : Fin (succ n) → α) : ofFn f = f 0 :: ofFn fun i => f i.succ :=
+theorem ofFn_succ {n} (f : Fin (succ n) → α) : ofFn f = f 0 :: ofFn fun i ↦ f i.succ :=
   ext_get (by simp) (fun i hi₁ hi₂ => by
     cases i
     · simp
     · simp)
 
 theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
-    ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
+    ofFn f = (ofFn fun i ↦ f (Fin.castSucc i)).concat (f (Fin.last _)) := by
   induction' n with n IH
   · rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]
     rfl
@@ -86,7 +86,7 @@ theorem ofFn_eq_nil_iff {n : ℕ} {f : Fin n → α} : ofFn f = [] ↔ n = 0 := 
 /-- Note this matches the convention of `List.ofFn_succ'`, putting the `Fin m` elements first. -/
 theorem ofFn_add {m n} (f : Fin (m + n) → α) :
     List.ofFn f =
-      (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
+      (List.ofFn fun i ↦ f (Fin.castAdd n i)) ++ List.ofFn fun j ↦ f (Fin.natAdd m j) := by
   induction' n with n IH
   · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.cast_refl]
     rfl
@@ -246,7 +246,7 @@ def equivSigmaTuple : List α ≃ Σn, Fin n → α where
   invFun f := List.ofFn f.2
   left_inv := List.ofFn_get
   right_inv := fun ⟨_, f⟩ =>
-    Fin.sigma_eq_of_eq_comp_cast (length_ofFn _) <| funext fun i => get_ofFn f i
+    Fin.sigma_eq_of_eq_comp_cast (length_ofFn _) <| funext fun i ↦ get_ofFn f i
 
 /-- A recursor for lists that expands a list into a function mapping to its elements.
 
@@ -259,7 +259,7 @@ def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofF
 @[simp]
 theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
     (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f :=
-  equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
+  equivSigmaTuple.rightInverse_symm.cast_eq (fun s ↦ h s.1 s.2) ⟨n, f⟩
 
 theorem exists_iff_exists_tuple {P : List α → Prop} :
     (∃ l : List α, P l) ↔ ∃ (n : _) (f : Fin n → α), P (List.ofFn f) :=

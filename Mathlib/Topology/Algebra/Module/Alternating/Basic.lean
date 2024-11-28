@@ -64,7 +64,7 @@ theorem range_toContinuousMultilinearMap :
         (toContinuousMultilinearMap :
           M [⋀^ι]→L[R] N → ContinuousMultilinearMap R (fun _ : ι => M) N) =
       {f | ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → f v = 0} :=
-  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h ↦ ⟨⟨f, h⟩, rfl⟩⟩
+  Set.ext fun f ↦ ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h ↦ ⟨⟨f, h⟩, rfl⟩⟩
 
 instance funLike : FunLike (M [⋀^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
@@ -102,7 +102,7 @@ theorem toAlternatingMap_injective :
 theorem range_toAlternatingMap :
     Set.range (toAlternatingMap : M [⋀^ι]→L[R] N → (M [⋀^ι]→ₗ[R] N)) =
       {f : M [⋀^ι]→ₗ[R] N | Continuous f} :=
-  Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h ↦ ⟨{ f with cont := h }, DFunLike.ext' rfl⟩⟩
+  Set.ext fun f ↦ ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h ↦ ⟨{ f with cont := h }, DFunLike.ext' rfl⟩⟩
 
 @[simp]
 theorem map_update_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
@@ -227,7 +227,7 @@ instance addCommMonoid : AddCommMonoid (M [⋀^ι]→L[R] N) :=
 
 /-- Evaluation of a `ContinuousAlternatingMap` at a vector as an `AddMonoidHom`. -/
 def applyAddHom (v : ι → M) : M [⋀^ι]→L[R] N →+ N :=
-  ⟨⟨fun f => f v, rfl⟩, fun _ _ => rfl⟩
+  ⟨⟨fun f ↦ f v, rfl⟩, fun _ _ => rfl⟩
 
 @[simp]
 theorem sum_apply {α : Type*} (f : α → M [⋀^ι]→L[R] N) (m : ι → M) {s : Finset α} :
@@ -237,7 +237,7 @@ theorem sum_apply {α : Type*} (f : α → M [⋀^ι]→L[R] N) (m : ι → M) {
 /-- Projection to `ContinuousMultilinearMap`s as a bundled `AddMonoidHom`. -/
 @[simps]
 def toMultilinearAddHom : M [⋀^ι]→L[R] N →+ ContinuousMultilinearMap R (fun _ : ι => M) N :=
-  ⟨⟨fun f => f.1, rfl⟩, fun _ _ => rfl⟩
+  ⟨⟨fun f ↦ f.1, rfl⟩, fun _ _ => rfl⟩
 
 end ContinuousAdd
 
@@ -257,8 +257,8 @@ def prod (f : M [⋀^ι]→L[R] N) (g : M [⋀^ι]→L[R] N') : M [⋀^ι]→L[R
 continuous alternating map taking values in the space of functions `Π i, M' i`. -/
 def pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)] [∀ i, TopologicalSpace (M' i)]
     [∀ i, Module R (M' i)] (f : ∀ i, M [⋀^ι]→L[R] M' i) : M [⋀^ι]→L[R] ∀ i, M' i :=
-  ⟨ContinuousMultilinearMap.pi fun i => (f i).1,
-    (AlternatingMap.pi fun i => (f i).toAlternatingMap).map_eq_zero_of_eq⟩
+  ⟨ContinuousMultilinearMap.pi fun i ↦ (f i).1,
+    (AlternatingMap.pi fun i ↦ (f i).toAlternatingMap).map_eq_zero_of_eq⟩
 
 @[simp]
 theorem coe_pi {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
@@ -418,14 +418,14 @@ sum of `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions wit
 `r n ∈ Aₙ`. This follows from multilinearity by expanding successively with respect to each
 coordinate. -/
 theorem map_sum_finset :
-    (f fun i => ∑ j ∈ A i, g' i j) = ∑ r ∈ piFinset A, f fun i => g' i (r i) :=
+    (f fun i ↦ ∑ j ∈ A i, g' i j) = ∑ r ∈ piFinset A, f fun i ↦ g' i (r i) :=
   f.toMultilinearMap.map_sum_finset _ _
 
 /-- If `f` is continuous alternating, then `f (Σ_{j₁} g₁ j₁, ..., Σ_{jₙ} gₙ jₙ)` is the sum of
 `f (g₁ (r 1), ..., gₙ (r n))` where `r` ranges over all functions `r`. This follows from
 multilinearity by expanding successively with respect to each coordinate. -/
 theorem map_sum [∀ i, Fintype (α i)] :
-    (f fun i => ∑ j, g' i j) = ∑ r : ∀ i, α i, f fun i => g' i (r i) :=
+    (f fun i ↦ ∑ j, g' i j) = ∑ r : ∀ i, α i, f fun i ↦ g' i (r i) :=
   f.toMultilinearMap.map_sum _
 
 end ApplySum
@@ -467,7 +467,7 @@ section TopologicalAddGroup
 variable [TopologicalAddGroup N]
 
 instance : Neg (M [⋀^ι]→L[R] N) :=
-  ⟨fun f => { -f.toAlternatingMap with toContinuousMultilinearMap := -f.1 }⟩
+  ⟨fun f ↦ { -f.toAlternatingMap with toContinuousMultilinearMap := -f.1 }⟩
 
 @[simp]
 theorem coe_neg : ⇑(-f) = -f :=
@@ -499,13 +499,13 @@ variable {R M N ι : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   (f : M [⋀^ι]→L[R] N)
 
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ι → M) (s : Finset ι) :
-    f (s.piecewise (fun i => c i • m i) m) = (∏ i ∈ s, c i) • f m :=
+    f (s.piecewise (fun i ↦ c i • m i) m) = (∏ i ∈ s, c i) • f m :=
   f.toMultilinearMap.map_piecewise_smul _ _ _
 
 /-- Multiplicativity of a continuous alternating map along all coordinates at the same time,
 writing `f (fun i ↦ c i • m i)` as `(∏ i, c i) • f m`. -/
 theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ι → M) :
-    (f fun i => c i • m i) = (∏ i, c i) • f m :=
+    (f fun i ↦ c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
 
 end CommSemiring

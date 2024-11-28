@@ -115,7 +115,7 @@ theorem _root_.Subalgebra.topologicalClosure_star_comm (s : Subalgebra R A) :
     (star s).topologicalClosure = star s.topologicalClosure := by
   suffices ∀ t : Subalgebra R A, (star t).topologicalClosure ≤ star t.topologicalClosure from
     le_antisymm (this s) (by simpa only [star_star] using Subalgebra.star_mono (this (star s)))
-  exact fun t => (star t).topologicalClosure_minimal (Subalgebra.star_mono subset_closure)
+  exact fun t ↦ (star t).topologicalClosure_minimal (Subalgebra.star_mono subset_closure)
     (isClosed_closure.preimage continuous_star)
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
@@ -277,7 +277,7 @@ theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
   refine StarAlgHomClass.ext_topologicalClosure hφ hψ fun x ↦ ?_
   refine adjoin_induction_subtype x ?_ ?_ ?_ ?_ ?_
-  exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r => by
+  exacts [fun y hy => by simpa only [Set.mem_singleton_iff.mp hy] using h, fun r ↦ by
     simp only [AlgHomClass.commutes], fun x y hx hy => by simp only [map_add, hx, hy],
     fun x y hx hy => by simp only [map_mul, hx, hy], fun x hx => by simp only [map_star, hx]]
 

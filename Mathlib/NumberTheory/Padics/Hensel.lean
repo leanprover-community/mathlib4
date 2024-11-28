@@ -48,7 +48,7 @@ theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] (F : Polynomial ℤ_[p]) 
 open Filter Metric
 
 private theorem comp_tendsto_lim {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p]}
-    (ncs : CauSeq ℤ_[p] norm) : Tendsto (fun i => F.eval (ncs i)) atTop (𝓝 (F.eval ncs.lim)) :=
+    (ncs : CauSeq ℤ_[p] norm) : Tendsto (fun i ↦ F.eval (ncs i)) atTop (𝓝 (F.eval ncs.lim)) :=
   Filter.Tendsto.comp (@Polynomial.continuousAt _ _ _ _ F _) ncs.tendsto_limit
 
 section
@@ -57,13 +57,13 @@ section
 variable {p : ℕ} [Fact p.Prime] {ncs : CauSeq ℤ_[p] norm} {F : Polynomial ℤ_[p]}
   {a : ℤ_[p]} (ncs_der_val : ∀ n, ‖F.derivative.eval (ncs n)‖ = ‖F.derivative.eval a‖)
 private theorem ncs_tendsto_lim :
-    Tendsto (fun i => ‖F.derivative.eval (ncs i)‖) atTop (𝓝 ‖F.derivative.eval ncs.lim‖) :=
+    Tendsto (fun i ↦ ‖F.derivative.eval (ncs i)‖) atTop (𝓝 ‖F.derivative.eval ncs.lim‖) :=
   Tendsto.comp (continuous_iff_continuousAt.1 continuous_norm _) (comp_tendsto_lim _)
 
 include ncs_der_val
 
 private theorem ncs_tendsto_const :
-    Tendsto (fun i => ‖F.derivative.eval (ncs i)‖) atTop (𝓝 ‖F.derivative.eval a‖) := by
+    Tendsto (fun i ↦ ‖F.derivative.eval (ncs i)‖) atTop (𝓝 ‖F.derivative.eval a‖) := by
   convert @tendsto_const_nhds ℝ ℕ _ _ _; rw [ncs_der_val]
 
 private theorem norm_deriv_eq : ‖F.derivative.eval ncs.lim‖ = ‖F.derivative.eval a‖ :=
@@ -75,10 +75,10 @@ section
 
 -- Porting note: replaced `parameter` with `variable`
 variable {p : ℕ} [Fact p.Prime] {ncs : CauSeq ℤ_[p] norm} {F : Polynomial ℤ_[p]}
-  (hnorm : Tendsto (fun i => ‖F.eval (ncs i)‖) atTop (𝓝 0))
+  (hnorm : Tendsto (fun i ↦ ‖F.eval (ncs i)‖) atTop (𝓝 0))
 include hnorm
 
-private theorem tendsto_zero_of_norm_tendsto_zero : Tendsto (fun i => F.eval (ncs i)) atTop (𝓝 0) :=
+private theorem tendsto_zero_of_norm_tendsto_zero : Tendsto (fun i ↦ F.eval (ncs i)) atTop (𝓝 0) :=
   tendsto_iff_norm_sub_tendsto_zero.2 (by simpa using hnorm)
 
 theorem limit_zero_of_norm_tendsto_zero : F.eval ncs.lim = 0 :=
@@ -336,11 +336,11 @@ private theorem soln_deriv_norm : ‖F.derivative.eval soln‖ = ‖F.derivative
   norm_deriv_eq (newton_seq_deriv_norm hnorm)
 
 private theorem newton_seq_norm_tendsto_zero :
-    Tendsto (fun i => ‖F.eval (newton_cau_seq hnorm i)‖) atTop (𝓝 0) :=
+    Tendsto (fun i ↦ ‖F.eval (newton_cau_seq hnorm i)‖) atTop (𝓝 0) :=
   squeeze_zero (fun _ => norm_nonneg _) (newton_seq_norm_le hnorm) (bound'_sq hnorm)
 
 private theorem newton_seq_dist_tendsto' :
-    Tendsto (fun n => ‖newton_cau_seq hnorm n - a‖) atTop (𝓝 ‖soln - a‖) :=
+    Tendsto (fun n ↦ ‖newton_cau_seq hnorm n - a‖) atTop (𝓝 ‖soln - a‖) :=
   (continuous_norm.tendsto _).comp ((newton_cau_seq hnorm).tendsto_limit.sub tendsto_const_nhds)
 
 private theorem eval_soln : F.eval soln = 0 :=
@@ -392,7 +392,7 @@ private theorem newton_seq_dist_to_a :
         newton_seq_dist_to_a (k + 1) (succ_pos _)
 
 private theorem newton_seq_dist_tendsto :
-    Tendsto (fun n => ‖newton_cau_seq hnorm n - a‖)
+    Tendsto (fun n ↦ ‖newton_cau_seq hnorm n - a‖)
     atTop (𝓝 (‖F.eval a‖ / ‖F.derivative.eval a‖)) :=
   tendsto_const_nhds.congr' (eventually_atTop.2
     ⟨1, fun _ hx => (newton_seq_dist_to_a hnorm hnsol _ hx).symm⟩)

@@ -50,7 +50,7 @@ variable (obj : ∀ ⦃α⦄, c α → c' α)
 /-- A custom constructor for forgetful functor
 between concrete categories defined using `UnbundledHom`. -/
 def mkHasForget₂ : HasForget₂ (Bundled c) (Bundled c') :=
-  BundledHom.mkHasForget₂ obj (fun f => ⟨f.val, map f.property⟩) fun _ => rfl
+  BundledHom.mkHasForget₂ obj (fun f ↦ ⟨f.val, map f.property⟩) fun _ => rfl
 
 end HasForget₂
 

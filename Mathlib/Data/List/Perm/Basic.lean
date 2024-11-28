@@ -136,7 +136,7 @@ theorem Perm.foldr_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : l₁
 end
 
 theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
-  refine ⟨fun p => ?_, fun e ↦ e ▸ Perm.refl _⟩
+  refine ⟨fun p ↦ ?_, fun e ↦ e ▸ Perm.refl _⟩
   cases' o₁ with a <;> cases' o₂ with b; · rfl
   · cases p.length_eq
   · cases p.length_eq

@@ -171,7 +171,7 @@ noncomputable def rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   | 0 => ContinuousMultilinearMap.uncurry0 𝕜 _ x
   | 1 => (continuousMultilinearCurryFin1 𝕜 F E).symm i.symm
   | n + 2 =>
-    let q : FormalMultilinearSeries 𝕜 F E := fun k => if k < n + 2 then rightInv p i x k else 0;
+    let q : FormalMultilinearSeries 𝕜 F E := fun k ↦ if k < n + 2 then rightInv p i x k else 0;
     -(i.symm : F →L[𝕜] E).compContinuousMultilinearMap ((p.comp q) (n + 2))
 
 @[simp]
@@ -393,7 +393,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
       simp only [Set.mem_toFinset (s := {c | 1 < Composition.length c}), mem_Ico, mem_sigma,
         Set.mem_setOf_eq] at hd
       simp only [mem_compPartialSumTarget_iff]
-      refine ⟨hd.2, c.length_le.trans_lt hd.1.2, fun j => ?_⟩
+      refine ⟨hd.2, c.length_le.trans_lt hd.1.2, fun j ↦ ?_⟩
       have : c ≠ Composition.single k (zero_lt_two.trans_le hd.1.1) := by
         simp [Composition.eq_single_iff_length, ne_of_gt hd.2]
       rw [Composition.ne_single_iff] at this
@@ -473,8 +473,8 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {x : E} {n : ℕ} (hn : 2 ≤ n +
       gcongr _ + _ * _ * ?_
       simp_rw [mul_pow]
       apply
-        radius_right_inv_pos_of_radius_pos_aux1 n (fun k => ‖p.rightInv i x k‖)
-          (fun k => norm_nonneg _) hr ha
+        radius_right_inv_pos_of_radius_pos_aux1 n (fun k ↦ ‖p.rightInv i x k‖)
+          (fun k ↦ norm_nonneg _) hr ha
 
 /-- If a a formal multilinear series has a positive radius of convergence, then its right inverse
 also has a positive radius of convergence. -/

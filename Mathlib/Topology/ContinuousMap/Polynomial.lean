@@ -209,7 +209,7 @@ theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
     (Algebra.adjoin_le fun _ h => ⟨X, trivial, (Set.mem_singleton_iff.1 h).symm⟩)
   rintro - ⟨p, -, rfl⟩
   rw [AlgHom.coe_toRingHom]
-  refine p.induction_on (fun r => ?_) (fun f g hf hg => ?_) fun n r hn => ?_
+  refine p.induction_on (fun r ↦ ?_) (fun f g hf hg => ?_) fun n r hn => ?_
   · rw [Polynomial.C_eq_algebraMap, AlgHomClass.commutes]
     exact Subalgebra.algebraMap_mem _ r
   · rw [map_add]

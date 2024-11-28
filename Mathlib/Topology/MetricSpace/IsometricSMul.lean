@@ -405,13 +405,13 @@ instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
 @[to_additive]
 instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
     [∀ i, IsometricSMul M (X i)] : IsometricSMul M (∀ i, X i) :=
-  ⟨fun c ↦ .piMap (fun _ => (c • ·)) fun i => isometry_smul (X i) c⟩
+  ⟨fun c ↦ .piMap (fun _ => (c • ·)) fun i ↦ isometry_smul (X i) c⟩
 
 @[to_additive]
 instance Pi.isometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul (M i) (X i)]
     [∀ i, PseudoEMetricSpace (X i)] [∀ i, IsometricSMul (M i) (X i)] :
     IsometricSMul (∀ i, M i) (∀ i, X i) :=
-  ⟨fun c ↦ .piMap (fun i => (c i • ·)) fun _ => isometry_smul _ _⟩
+  ⟨fun c ↦ .piMap (fun i ↦ (c i • ·)) fun _ => isometry_smul _ _⟩
 
 @[to_additive]
 instance Pi.isometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M i)]

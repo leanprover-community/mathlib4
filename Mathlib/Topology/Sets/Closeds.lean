@@ -87,7 +87,7 @@ instance completeLattice : CompleteLattice (Closeds α) :=
     ⟨∅, isClosed_empty⟩ (SetLike.coe_injective closure_empty.symm)
     -- sup
     (fun s t => ⟨s ∪ t, s.2.union t.2⟩)
-    (funext fun s => funext fun t => SetLike.coe_injective (s.2.union t.2).closure_eq.symm)
+    (funext fun s ↦ funext fun t ↦ SetLike.coe_injective (s.2.union t.2).closure_eq.symm)
     -- inf
     (fun s t => ⟨s ∩ t, s.2.inter t.2⟩) rfl
     -- sSup
@@ -158,7 +158,7 @@ theorem coe_iInf {ι} (s : ι → Closeds α) : ((⨅ i, s i : Closeds α) : Set
   ext; simp
 
 theorem iInf_def {ι} (s : ι → Closeds α) :
-    ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).2⟩ := by ext1; simp
+    ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i ↦ (s i).2⟩ := by ext1; simp
 
 @[simp]
 theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
@@ -297,7 +297,7 @@ instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
 instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
 instance : HImp (Clopens α) where himp s t := ⟨s ⇨ t, s.isClopen.himp t.isClopen⟩
-instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
+instance : HasCompl (Clopens α) := ⟨fun s ↦ ⟨sᶜ, s.isClopen.compl⟩⟩
 
 @[simp, norm_cast] lemma coe_sup (s t : Clopens α) : ↑(s ⊔ t) = (s ∪ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_inf (s t : Clopens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl

@@ -58,25 +58,25 @@ end Order
 @[to_additive]
 theorem Monotone.mulIndicator_eventuallyEq_iUnion {ι} [Preorder ι] [One β] (s : ι → Set α)
     (hs : Monotone s) (f : α → β) (a : α) :
-    (fun i => mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋃ i, s i) f a := by
+    (fun i ↦ mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋃ i, s i) f a := by
   classical exact hs.piecewise_eventually_eq_iUnion f 1 a
 
 @[to_additive]
 theorem Monotone.tendsto_mulIndicator {ι} [Preorder ι] [One β] (s : ι → Set α) (hs : Monotone s)
     (f : α → β) (a : α) :
-    Tendsto (fun i => mulIndicator (s i) f a) atTop (pure <| mulIndicator (⋃ i, s i) f a) :=
+    Tendsto (fun i ↦ mulIndicator (s i) f a) atTop (pure <| mulIndicator (⋃ i, s i) f a) :=
   tendsto_pure.2 <| hs.mulIndicator_eventuallyEq_iUnion s f a
 
 @[to_additive]
 theorem Antitone.mulIndicator_eventuallyEq_iInter {ι} [Preorder ι] [One β] (s : ι → Set α)
     (hs : Antitone s) (f : α → β) (a : α) :
-    (fun i => mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋂ i, s i) f a := by
+    (fun i ↦ mulIndicator (s i) f a) =ᶠ[atTop] fun _ ↦ mulIndicator (⋂ i, s i) f a := by
   classical exact hs.piecewise_eventually_eq_iInter f 1 a
 
 @[to_additive]
 theorem Antitone.tendsto_mulIndicator {ι} [Preorder ι] [One β] (s : ι → Set α) (hs : Antitone s)
     (f : α → β) (a : α) :
-    Tendsto (fun i => mulIndicator (s i) f a) atTop (pure <| mulIndicator (⋂ i, s i) f a) :=
+    Tendsto (fun i ↦ mulIndicator (s i) f a) atTop (pure <| mulIndicator (⋂ i, s i) f a) :=
   tendsto_pure.2 <| hs.mulIndicator_eventuallyEq_iInter s f a
 
 @[to_additive]

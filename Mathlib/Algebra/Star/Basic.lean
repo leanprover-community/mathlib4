@@ -339,7 +339,7 @@ If that's not the case try reordering lemmas or adding @[priority].
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 
 instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
-  toStar := { star := fun f => RingHom.comp (starRingEnd R) f }
+  toStar := { star := fun f ↦ RingHom.comp (starRingEnd R) f }
   star_involutive := by
     intro
     ext

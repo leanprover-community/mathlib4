@@ -167,7 +167,7 @@ definitional equalities. -/
 def copy (f : A →A[R] B) (f' : A → B) (h : f' = ⇑f) : A →A[R] B where
   toAlgHom := {
     toRingHom := (f : A →A[R] B).toRingHom.copy f' h
-    commutes' := fun r => by
+    commutes' := fun r ↦ by
       simp only [AlgHom.toRingHom_eq_coe, h, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
         MonoidHom.toOneHom_coe, MonoidHom.coe_coe, RingHom.coe_copy, AlgHomClass.commutes f r] }
   cont := show Continuous f' from h.symm ▸ f.continuous

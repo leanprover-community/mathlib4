@@ -154,7 +154,7 @@ ring operations on `𝕎 R`. For example, `WittVector.wittAdd` is such a `φ` wi
 evaluating this at `(x₀, x₁)` gives us the sum of two Witt vectors `x₀ + x₁`.
 -/
 def eval {k : ℕ} (φ : ℕ → MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k → 𝕎 R) : 𝕎 R :=
-  mk p fun n => peval (φ n) fun i => (x i).coeff
+  mk p fun n ↦ peval (φ n) fun i ↦ (x i).coeff
 
 instance : Zero (𝕎 R) :=
   ⟨eval (wittZero p) ![]⟩

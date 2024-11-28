@@ -64,7 +64,7 @@ namespace Lean.Elab.Tactic
 -- I'd prefer to call that `liftMetaTactic1`,
 -- but that is taken in core by a function that lifts a `tac : MVarId → MetaM (Option MVarId)`.
 def liftMetaTactic' (tac : MVarId → MetaM MVarId) : TacticM Unit :=
-  liftMetaTactic fun g => do pure [← tac g]
+  liftMetaTactic fun g ↦ do pure [← tac g]
 
 variable {α : Type}
 
@@ -81,7 +81,7 @@ variable {α : Type}
 def run_for (mvarId : MVarId) (x : TacticM α) : TermElabM (Option α × List MVarId) :=
   mvarId.withContext do
    let pendingMVarsSaved := (← get).pendingMVars
-   modify fun s => { s with pendingMVars := [] }
+   modify fun s ↦ { s with pendingMVars := [] }
    let aux : TacticM (Option α × List MVarId) :=
      /- Important: the following `try` does not backtrack the state.
         This is intentional because we don't want to backtrack the error message
@@ -98,6 +98,6 @@ def run_for (mvarId : MVarId) (x : TacticM α) : TermElabM (Option α × List MV
    try
      aux.runCore' { elaborator := .anonymous } { goals := [mvarId] }
    finally
-     modify fun s => { s with pendingMVars := pendingMVarsSaved }
+     modify fun s ↦ { s with pendingMVars := pendingMVarsSaved }
 
 end Lean.Elab.Tactic

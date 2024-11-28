@@ -126,7 +126,7 @@ theorem sup_bot (s : Finset β) : (s.sup fun _ => ⊥) = (⊥ : α) := by
   · exact sup_const hs _
 
 theorem sup_ite (p : β → Prop) [DecidablePred p] :
-    (s.sup fun i => ite (p i) (f i) (g i)) = (s.filter p).sup f ⊔ (s.filter fun i => ¬p i).sup g :=
+    (s.sup fun i ↦ ite (p i) (f i) (g i)) = (s.filter p).sup f ⊔ (s.filter fun i ↦ ¬p i).sup g :=
   fold_ite _
 
 @[gcongr]
@@ -147,11 +147,11 @@ theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x ↦ f x
 
 /-- See also `Finset.product_biUnion`. -/
 theorem sup_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
-    (s ×ˢ t).sup f = s.sup fun i => t.sup fun i' => f ⟨i, i'⟩ :=
+    (s ×ˢ t).sup f = s.sup fun i ↦ t.sup fun i' => f ⟨i, i'⟩ :=
   eq_of_forall_ge_iff fun a ↦ by simp [@forall_swap _ γ]
 
 theorem sup_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) :
-    (s ×ˢ t).sup f = t.sup fun i' => s.sup fun i => f ⟨i, i'⟩ := by
+    (s ×ˢ t).sup f = t.sup fun i' => s.sup fun i ↦ f ⟨i, i'⟩ := by
   rw [sup_product_left, Finset.sup_comm]
 
 section Prod
@@ -370,11 +370,11 @@ theorem inf_attach (s : Finset β) (f : β → α) : (s.attach.inf fun x ↦ f x
   @sup_attach αᵒᵈ _ _ _ _ _
 
 theorem inf_product_left (s : Finset β) (t : Finset γ) (f : β × γ → α) :
-    (s ×ˢ t).inf f = s.inf fun i => t.inf fun i' => f ⟨i, i'⟩ :=
+    (s ×ˢ t).inf f = s.inf fun i ↦ t.inf fun i' => f ⟨i, i'⟩ :=
   @sup_product_left αᵒᵈ _ _ _ _ _ _ _
 
 theorem inf_product_right (s : Finset β) (t : Finset γ) (f : β × γ → α) :
-    (s ×ˢ t).inf f = t.inf fun i' => s.inf fun i => f ⟨i, i'⟩ :=
+    (s ×ˢ t).inf f = t.inf fun i' => s.inf fun i ↦ f ⟨i, i'⟩ :=
   @sup_product_right αᵒᵈ _ _ _ _ _ _ _
 
 section Prod
@@ -451,13 +451,13 @@ section OrderBot
 variable [OrderBot α] {s : Finset ι} {t : Finset κ} {f : ι → α} {g : κ → α} {a : α}
 
 theorem sup_inf_distrib_left (s : Finset ι) (f : ι → α) (a : α) :
-    a ⊓ s.sup f = s.sup fun i => a ⊓ f i := by
+    a ⊓ s.sup f = s.sup fun i ↦ a ⊓ f i := by
   induction s using Finset.cons_induction with
   | empty => simp_rw [Finset.sup_empty, inf_bot_eq]
   | cons _ _ _ h => rw [sup_cons, sup_cons, inf_sup_left, h]
 
 theorem sup_inf_distrib_right (s : Finset ι) (f : ι → α) (a : α) :
-    s.sup f ⊓ a = s.sup fun i => f i ⊓ a := by
+    s.sup f ⊓ a = s.sup fun i ↦ f i ⊓ a := by
   rw [_root_.inf_comm, s.sup_inf_distrib_left]
   simp_rw [_root_.inf_comm]
 
@@ -468,7 +468,7 @@ protected theorem disjoint_sup_left : Disjoint (s.sup f) a ↔ ∀ ⦃i⦄, i �
   simp only [disjoint_iff, sup_inf_distrib_right, Finset.sup_eq_bot_iff]
 
 theorem sup_inf_sup (s : Finset ι) (t : Finset κ) (f : ι → α) (g : κ → α) :
-    s.sup f ⊓ t.sup g = (s ×ˢ t).sup fun i => f i.1 ⊓ g i.2 := by
+    s.sup f ⊓ t.sup g = (s ×ˢ t).sup fun i ↦ f i.1 ⊓ g i.2 := by
   simp_rw [Finset.sup_inf_distrib_right, Finset.sup_inf_distrib_left, sup_product_left]
 
 end OrderBot
@@ -478,11 +478,11 @@ section OrderTop
 variable [OrderTop α] {f : ι → α} {g : κ → α} {s : Finset ι} {t : Finset κ} {a : α}
 
 theorem inf_sup_distrib_left (s : Finset ι) (f : ι → α) (a : α) :
-    a ⊔ s.inf f = s.inf fun i => a ⊔ f i :=
+    a ⊔ s.inf f = s.inf fun i ↦ a ⊔ f i :=
   @sup_inf_distrib_left αᵒᵈ _ _ _ _ _ _
 
 theorem inf_sup_distrib_right (s : Finset ι) (f : ι → α) (a : α) :
-    s.inf f ⊔ a = s.inf fun i => f i ⊔ a :=
+    s.inf f ⊔ a = s.inf fun i ↦ f i ⊔ a :=
   @sup_inf_distrib_right αᵒᵈ _ _ _ _ _ _
 
 protected theorem codisjoint_inf_right :
@@ -494,7 +494,7 @@ protected theorem codisjoint_inf_left :
   @Finset.disjoint_sup_left αᵒᵈ _ _ _ _ _ _
 
 theorem inf_sup_inf (s : Finset ι) (t : Finset κ) (f : ι → α) (g : κ → α) :
-    s.inf f ⊔ t.inf g = (s ×ˢ t).inf fun i => f i.1 ⊔ g i.2 :=
+    s.inf f ⊔ t.inf g = (s ×ˢ t).inf fun i ↦ f i.1 ⊔ g i.2 :=
   @sup_inf_sup αᵒᵈ _ _ _ _ _ _ _ _
 
 end OrderTop
@@ -505,8 +505,8 @@ variable [BoundedOrder α] [DecidableEq ι]
 
 --TODO: Extract out the obvious isomorphism `(insert i s).pi t ≃ t i ×ˢ s.pi t` from this proof
 theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
-    (s.inf fun i => (t i).sup (f i)) =
-      (s.pi t).sup fun g => s.attach.inf fun i => f _ <| g _ i.2 := by
+    (s.inf fun i ↦ (t i).sup (f i)) =
+      (s.pi t).sup fun g ↦ s.attach.inf fun i ↦ f _ <| g _ i.2 := by
   induction' s using Finset.induction with i s hi ih
   · simp
   rw [inf_insert, ih, attach_insert, sup_inf_sup]
@@ -530,7 +530,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   · simpa [ne_of_mem_of_not_mem hj hi] using hg _ _
 
 theorem sup_inf {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
-    (s.sup fun i => (t i).inf (f i)) = (s.pi t).inf fun g => s.attach.sup fun i => f _ <| g _ i.2 :=
+    (s.sup fun i ↦ (t i).inf (f i)) = (s.pi t).inf fun g ↦ s.attach.sup fun i ↦ f _ <| g _ i.2 :=
   @inf_sup αᵒᵈ _ _ _ _ _ _ _ _
 
 end BoundedOrder
@@ -572,11 +572,11 @@ theorem sup_himp_left (hs : s.Nonempty) (f : ι → α) (a : α) :
   @inf_sdiff_right αᵒᵈ _ _ _ hs _ _
 
 @[simp]
-protected theorem compl_sup (s : Finset ι) (f : ι → α) : (s.sup f)ᶜ = s.inf fun i => (f i)ᶜ :=
+protected theorem compl_sup (s : Finset ι) (f : ι → α) : (s.sup f)ᶜ = s.inf fun i ↦ (f i)ᶜ :=
   map_finset_sup (OrderIso.compl α) _ _
 
 @[simp]
-protected theorem compl_inf (s : Finset ι) (f : ι → α) : (s.inf f)ᶜ = s.sup fun i => (f i)ᶜ :=
+protected theorem compl_inf (s : Finset ι) (f : ι → α) : (s.inf f)ᶜ = s.sup fun i ↦ (f i)ᶜ :=
   map_finset_inf (OrderIso.compl α) _ _
 
 end BooleanAlgebra
@@ -760,11 +760,11 @@ protected theorem sup'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) 
   eq_of_forall_ge_iff fun a ↦ by simpa using forall₂_swap
 
 theorem sup'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
-    (s ×ˢ t).sup' h f = s.sup' h.fst fun i => t.sup' h.snd fun i' => f ⟨i, i'⟩ :=
+    (s ×ˢ t).sup' h f = s.sup' h.fst fun i ↦ t.sup' h.snd fun i' => f ⟨i, i'⟩ :=
   eq_of_forall_ge_iff fun a ↦ by simp [@forall_swap _ γ]
 
 theorem sup'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
-    (s ×ˢ t).sup' h f = t.sup' h.snd fun i' => s.sup' h.fst fun i => f ⟨i, i'⟩ := by
+    (s ×ˢ t).sup' h f = t.sup' h.snd fun i' => s.sup' h.fst fun i ↦ f ⟨i, i'⟩ := by
   rw [sup'_product_left, Finset.sup'_comm]
 
 section Prod
@@ -925,11 +925,11 @@ protected theorem inf'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) 
   @Finset.sup'_comm αᵒᵈ _ _ _ _ _ hs ht _
 
 theorem inf'_product_left {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
-    (s ×ˢ t).inf' h f = s.inf' h.fst fun i => t.inf' h.snd fun i' => f ⟨i, i'⟩ :=
+    (s ×ˢ t).inf' h f = s.inf' h.fst fun i ↦ t.inf' h.snd fun i' => f ⟨i, i'⟩ :=
   sup'_product_left (α := αᵒᵈ) h f
 
 theorem inf'_product_right {t : Finset γ} (h : (s ×ˢ t).Nonempty) (f : β × γ → α) :
-    (s ×ˢ t).inf' h f = t.inf' h.snd fun i' => s.inf' h.fst fun i => f ⟨i, i'⟩ :=
+    (s ×ˢ t).inf' h f = t.inf' h.snd fun i' => s.inf' h.fst fun i ↦ f ⟨i, i'⟩ :=
   sup'_product_right (α := αᵒᵈ) h f
 
 section Prod
@@ -1083,21 +1083,21 @@ theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
   | cons _ _ _ hs ih => simp_rw [sup'_cons hs, inf_sup_left, ih]
 
 theorem sup'_inf_distrib_right (f : ι → α) (a : α) :
-    s.sup' hs f ⊓ a = s.sup' hs fun i => f i ⊓ a := by
+    s.sup' hs f ⊓ a = s.sup' hs fun i ↦ f i ⊓ a := by
   rw [inf_comm, sup'_inf_distrib_left]; simp_rw [inf_comm]
 
 theorem sup'_inf_sup' (f : ι → α) (g : κ → α) :
-    s.sup' hs f ⊓ t.sup' ht g = (s ×ˢ t).sup' (hs.product ht) fun i => f i.1 ⊓ g i.2 := by
+    s.sup' hs f ⊓ t.sup' ht g = (s ×ˢ t).sup' (hs.product ht) fun i ↦ f i.1 ⊓ g i.2 := by
   simp_rw [Finset.sup'_inf_distrib_right, Finset.sup'_inf_distrib_left, sup'_product_left]
 
-theorem inf'_sup_distrib_left (f : ι → α) (a : α) : a ⊔ s.inf' hs f = s.inf' hs fun i => a ⊔ f i :=
+theorem inf'_sup_distrib_left (f : ι → α) (a : α) : a ⊔ s.inf' hs f = s.inf' hs fun i ↦ a ⊔ f i :=
   @sup'_inf_distrib_left αᵒᵈ _ _ _ hs _ _
 
-theorem inf'_sup_distrib_right (f : ι → α) (a : α) : s.inf' hs f ⊔ a = s.inf' hs fun i => f i ⊔ a :=
+theorem inf'_sup_distrib_right (f : ι → α) (a : α) : s.inf' hs f ⊔ a = s.inf' hs fun i ↦ f i ⊔ a :=
   @sup'_inf_distrib_right αᵒᵈ _ _ _ hs _ _
 
 theorem inf'_sup_inf' (f : ι → α) (g : κ → α) :
-    s.inf' hs f ⊔ t.inf' ht g = (s ×ˢ t).inf' (hs.product ht) fun i => f i.1 ⊔ g i.2 :=
+    s.inf' hs f ⊔ t.inf' ht g = (s ×ˢ t).inf' (hs.product ht) fun i ↦ f i.1 ⊔ g i.2 :=
   @sup'_inf_sup' αᵒᵈ _ _ _ _ _ hs ht _ _
 
 end DistribLattice

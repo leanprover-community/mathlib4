@@ -90,7 +90,7 @@ instance (G H : ProfiniteGrp) : ContinuousMapClass (G ⟶ H) G H :=
 instance : ConcreteCategory ProfiniteGrp where
   forget :=
   { obj := fun G => G
-    map := fun f => f }
+    map := fun f ↦ f }
   forget_faithful :=
     { map_injective := by
         intro G H f g h
@@ -153,13 +153,13 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
-    map := fun f => ⟨f, by continuity⟩ }
+    map := fun f ↦ ⟨f, by continuity⟩ }
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp Grp where
   forget₂ := {
     obj := fun P => ⟨P, P.group⟩
-    map := fun f => f.toMonoidHom
+    map := fun f ↦ f.toMonoidHom
   }
 
 /-- A closed subgroup of a profinite group is profinite. -/
@@ -214,7 +214,7 @@ instance : TopologicalGroup (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.
 abbrev limitCone : Limits.Cone F where
   pt := ofProfinite (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v u})).pt
   π :=
-  { app := fun j => {
+  { app := fun j ↦ {
       toFun := fun x ↦ x.1 j
       map_one' := rfl
       map_mul' := fun x y => rfl

@@ -77,7 +77,7 @@ def dgoToHomologicalComplex :
     DifferentialObject ℤ (GradedObjectWithShift b V) ⥤
       HomologicalComplex V (ComplexShape.up' b) where
   obj X :=
-    { X := fun i => X.obj i
+    { X := fun i ↦ X.obj i
       d := fun i j =>
         if h : i + b = j then X.d i ≫ X.objEqToHom (show i + (1 : ℤ) • b = j by simp [h]) else 0
       shape := fun i j w => by dsimp at w; convert dif_neg w
@@ -101,8 +101,8 @@ def homologicalComplexToDGO :
     HomologicalComplex V (ComplexShape.up' b) ⥤
       DifferentialObject ℤ (GradedObjectWithShift b V) where
   obj X :=
-    { obj := fun i => X.X i
-      d := fun i => X.d i _ }
+    { obj := fun i ↦ X.X i
+      d := fun i ↦ X.d i _ }
   map {X Y} f := { f := f.f }
 
 /-- The unit isomorphism for `dgoEquivHomologicalComplex`.
@@ -112,8 +112,8 @@ def dgoEquivHomologicalComplexUnitIso :
     𝟭 (DifferentialObject ℤ (GradedObjectWithShift b V)) ≅
       dgoToHomologicalComplex b V ⋙ homologicalComplexToDGO b V :=
   NatIso.ofComponents (fun X =>
-    { hom := { f := fun i => 𝟙 (X.obj i) }
-      inv := { f := fun i => 𝟙 (X.obj i) } })
+    { hom := { f := fun i ↦ 𝟙 (X.obj i) }
+      inv := { f := fun i ↦ 𝟙 (X.obj i) } })
 
 /-- The counit isomorphism for `dgoEquivHomologicalComplex`.
 -/
@@ -122,8 +122,8 @@ def dgoEquivHomologicalComplexCounitIso :
     homologicalComplexToDGO b V ⋙ dgoToHomologicalComplex b V ≅
       𝟭 (HomologicalComplex V (ComplexShape.up' b)) :=
   NatIso.ofComponents (fun X =>
-    { hom := { f := fun i => 𝟙 (X.X i) }
-      inv := { f := fun i => 𝟙 (X.X i) } })
+    { hom := { f := fun i ↦ 𝟙 (X.X i) }
+      inv := { f := fun i ↦ 𝟙 (X.X i) } })
 
 /-- The category of differential graded objects in `V` is equivalent
 to the category of homological complexes in `V`.

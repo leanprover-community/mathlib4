@@ -160,19 +160,19 @@ theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N]
 @[to_additive]
 theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
     (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → M) (f₂ : ι → N) (hl : l ≠ []) :
-    (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
+    (l.map fun i ↦ f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
   match l, hl with | x :: xs, hl => induction xs generalizing x <;> aesop
 
 @[to_additive]
 theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d)
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
-    (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
+    (l.map fun i ↦ f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
   rw [prod, prod, prod, foldr_map, foldr_map, foldr_map,
     ← l.foldr_hom₂ f _ _ (fun x y => f (f₁ x) (f₂ x) * y) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α} :
-    (l.map fun i => f i * g i).prod = (l.map f).prod * (l.map g).prod :=
+    (l.map fun i ↦ f i * g i).prod = (l.map f).prod * (l.map g).prod :=
   l.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 
 @[to_additive]

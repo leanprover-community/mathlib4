@@ -38,7 +38,7 @@ with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 def linearYoneda : C ⥤ Cᵒᵖ ⥤ ModuleCat R where
   obj X :=
     { obj := fun Y => ModuleCat.of R (unop Y ⟶ X)
-      map := fun f => ModuleCat.asHom (Linear.leftComp R _ f.unop) }
+      map := fun f ↦ ModuleCat.asHom (Linear.leftComp R _ f.unop) }
   map {X₁ X₂} f :=
     { app := fun Y => @ModuleCat.asHom R _ (Y.unop ⟶ X₁) (Y.unop ⟶ X₂) _ _ _ _
         (Linear.rightComp R _ f) }
@@ -50,7 +50,7 @@ with value on `X : C` given by `ModuleCat.of R (unop Y ⟶ X)`. -/
 def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat R where
   obj Y :=
     { obj := fun X => ModuleCat.of R (unop Y ⟶ X)
-      map := fun f => ModuleCat.asHom (Linear.rightComp R _ f) }
+      map := fun f ↦ ModuleCat.asHom (Linear.rightComp R _ f) }
   map {Y₁ Y₂} f :=
     { app := fun X => @ModuleCat.asHom R _ (unop Y₁ ⟶ X) (unop Y₂ ⟶ X) _ _ _ _
         (Linear.leftComp _ _ f.unop) }

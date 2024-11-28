@@ -118,14 +118,14 @@ theorem EventuallyLE.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
 
 theorem EventuallyEq.cardinal_iUnion {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i =ᶠ[l] t i) : ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
-  (EventuallyLE.cardinal_iUnion hic fun i => (h i).le).antisymm
-    (EventuallyLE.cardinal_iUnion hic fun i => (h i).symm.le)
+  (EventuallyLE.cardinal_iUnion hic fun i ↦ (h i).le).antisymm
+    (EventuallyLE.cardinal_iUnion hic fun i ↦ (h i).symm.le)
 
 theorem EventuallyLE.cardinal_bUnion {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
-  exact EventuallyLE.cardinal_iUnion hS fun i => h i i.2
+  exact EventuallyLE.cardinal_iUnion hS fun i ↦ h i i.2
 
 theorem EventuallyEq.cardinal_bUnion {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
@@ -136,18 +136,18 @@ theorem EventuallyEq.cardinal_bUnion {S : Set ι} (hS : #S < c)
 theorem EventuallyLE.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i ≤ᶠ[l] t i) : ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
   ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs =>
-    mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
+    mem_iInter.2 fun i ↦ hst _ (mem_iInter.1 hs i)
 
 theorem EventuallyEq.cardinal_iInter {s t : ι → Set α} (hic : #ι < c)
     (h : ∀ i, s i =ᶠ[l] t i) : ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
-  (EventuallyLE.cardinal_iInter hic fun i => (h i).le).antisymm
-    (EventuallyLE.cardinal_iInter hic fun i => (h i).symm.le)
+  (EventuallyLE.cardinal_iInter hic fun i ↦ (h i).le).antisymm
+    (EventuallyLE.cardinal_iInter hic fun i ↦ (h i).symm.le)
 
 theorem EventuallyLE.cardinal_bInter {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
-  exact EventuallyLE.cardinal_iInter hS fun i => h i i.2
+  exact EventuallyLE.cardinal_iInter hS fun i ↦ h i i.2
 
 theorem EventuallyEq.cardinal_bInter {S : Set ι} (hS : #S < c)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
@@ -323,7 +323,7 @@ theorem mem_cardinaleGenerate_iff {s : Set α} {hreg : c.IsRegular} :
 theorem le_cardinalGenerate_iff_of_cardinalInterFilter {f : Filter α} [CardinalInterFilter f c]
     (hc : 2 < c) : f ≤ cardinalGenerate g hc ↔ g ⊆ f.sets := by
   constructor <;> intro h
-  · exact subset_trans (fun s => CardinalGenerateSets.basic) h
+  · exact subset_trans (fun s ↦ CardinalGenerateSets.basic) h
   intro s hs
   induction hs with
   | basic hs => exact h hs
@@ -334,7 +334,7 @@ theorem le_cardinalGenerate_iff_of_cardinalInterFilter {f : Filter α} [Cardinal
 /-- `cardinalGenerate g hc` is the greatest `cardinalInterFilter c` containing `g`. -/
 theorem cardinalGenerate_isGreatest (hc : 2 < c) :
     IsGreatest { f : Filter α | CardinalInterFilter f c ∧ g ⊆ f.sets } (cardinalGenerate g hc) := by
-  refine ⟨⟨cardinalInter_ofCardinalGenerate _ _, fun s => CardinalGenerateSets.basic⟩, ?_⟩
+  refine ⟨⟨cardinalInter_ofCardinalGenerate _ _, fun s ↦ CardinalGenerateSets.basic⟩, ?_⟩
   rintro f ⟨fct, hf⟩
   rwa [le_cardinalGenerate_iff_of_cardinalInterFilter]
 

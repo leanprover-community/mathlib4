@@ -44,7 +44,7 @@ def binaryProductLimitCone (M N : ModuleCat.{v} R) : Limits.LimitCone (pair M N)
               WalkingPair.casesOn j (LinearMap.fst R M N) (LinearMap.snd R M N)
           naturality := by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟨⟩⟩⟩ <;> rfl } }
   isLimit :=
-    { lift := fun s => LinearMap.prod (s.π.app ⟨WalkingPair.left⟩) (s.π.app ⟨WalkingPair.right⟩)
+    { lift := fun s ↦ LinearMap.prod (s.π.app ⟨WalkingPair.left⟩) (s.π.app ⟨WalkingPair.right⟩)
       fac := by rintro s (⟨⟩ | ⟨⟩) <;> rfl
       uniq := fun s m w => by
         simp_rw [← w ⟨WalkingPair.left⟩, ← w ⟨WalkingPair.right⟩]
@@ -100,7 +100,7 @@ def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j) where
 def productLimitCone : Limits.LimitCone (Discrete.functor f) where
   cone :=
     { pt := ModuleCat.of R (∀ j, f j)
-      π := Discrete.natTrans fun j => (LinearMap.proj j.as : (∀ j, f j) →ₗ[R] f j.as) }
+      π := Discrete.natTrans fun j ↦ (LinearMap.proj j.as : (∀ j, f j) →ₗ[R] f j.as) }
   isLimit :=
     { lift := lift.{_, v} f
       fac := fun _ _ => rfl

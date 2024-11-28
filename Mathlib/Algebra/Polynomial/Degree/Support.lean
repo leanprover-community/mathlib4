@@ -78,7 +78,7 @@ theorem sum_fin [AddCommMonoid S] (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) 
     intro i _
     exact hf i
   rw [sum_over_range' _ hf n ((natDegree_lt_iff_degree_lt hp).mpr hn),
-    Fin.sum_univ_eq_sum_range fun i => f i (p.coeff i)]
+    Fin.sum_univ_eq_sum_range fun i ↦ f i (p.coeff i)]
 
 theorem as_sum_range' (p : R[X]) (n : ℕ) (w : p.natDegree < n) :
     p = ∑ i ∈ range n, monomial i (coeff p i) :=

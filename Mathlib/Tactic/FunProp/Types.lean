@@ -125,7 +125,7 @@ def defaultUnfoldPred : Name → Bool :=
 /-- Get predicate on names indicating if theys shoulds be unfolded. -/
 def unfoldNamePred : FunPropM (Name → Bool) := do
   let toUnfold := (← read).constToUnfold
-  return fun n => toUnfold.contains n
+  return fun n ↦ toUnfold.contains n
 
 /-- Increase heartbeat, throws error when `maxSteps` was reached -/
 def increaseSteps : FunPropM Unit := do
@@ -133,7 +133,7 @@ def increaseSteps : FunPropM Unit := do
   let maxSteps := (← read).config.maxSteps
   if numSteps > maxSteps then
      throwError s!"fun_prop failed, maximum number({maxSteps}) of steps exceeded"
-  modify (fun s => {s with numSteps := s.numSteps + 1})
+  modify (fun s ↦ {s with numSteps := s.numSteps + 1})
 
 /-- Increase transition depth. Return `none` if maximum transition depth has been reached. -/
 def withIncreasedTransitionDepth {α} (go : FunPropM (Option α)) : FunPropM (Option α) := do
@@ -146,7 +146,7 @@ def withIncreasedTransitionDepth {α} (go : FunPropM (Option α)) : FunPropM (Op
     `fun_prop (config := \{maxTransitionDepth := {newDepth}})`"
     return none
   else
-    withReader (fun s => {s with transitionDepth := newDepth}) go
+    withReader (fun s ↦ {s with transitionDepth := newDepth}) go
 
 /-- Log error message that will displayed to the user at the end.
 

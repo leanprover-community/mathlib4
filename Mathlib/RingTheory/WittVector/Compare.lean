@@ -162,7 +162,7 @@ theorem zmodEquivTrunc_compat (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂) :
 composed with `PadicInt.toZModPow` to a ring hom `ℤ_[p] →+* 𝕎 (ZMod p)`.
 -/
 def fromPadicInt : ℤ_[p] →+* 𝕎 (ZMod p) :=
-  (WittVector.lift fun k => (zmodEquivTrunc p k).toRingHom.comp (PadicInt.toZModPow k)) <|
+  (WittVector.lift fun k ↦ (zmodEquivTrunc p k).toRingHom.comp (PadicInt.toZModPow k)) <|
     zmodEquivTrunc_compat _
 
 theorem toPadicInt_comp_fromPadicInt : (toPadicInt p).comp (fromPadicInt p) = RingHom.id ℤ_[p] := by

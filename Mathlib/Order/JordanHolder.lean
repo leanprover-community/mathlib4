@@ -263,13 +263,13 @@ theorem refl (s : CompositionSeries X) : Equivalent s s :=
 
 @[symm]
 theorem symm {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : Equivalent s₂ s₁ :=
-  ⟨h.choose.symm, fun i => iso_symm (by simpa using h.choose_spec (h.choose.symm i))⟩
+  ⟨h.choose.symm, fun i ↦ iso_symm (by simpa using h.choose_spec (h.choose.symm i))⟩
 
 @[trans]
 theorem trans {s₁ s₂ s₃ : CompositionSeries X} (h₁ : Equivalent s₁ s₂) (h₂ : Equivalent s₂ s₃) :
     Equivalent s₁ s₃ :=
   ⟨h₁.choose.trans h₂.choose,
-    fun i => iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
+    fun i ↦ iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
 
 protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
@@ -296,7 +296,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
       Fin (s₁.length + 1) ≃ Option (Fin s₁.length) := finSuccEquivLast
       _ ≃ Option (Fin s₂.length) := Functor.mapEquiv Option hequiv.choose
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
-  ⟨e, fun i => by
+  ⟨e, fun i ↦ by
     refine Fin.lastCases ?_ ?_ i
     · simpa [e, apply_last] using hlast
     · intro i
@@ -321,14 +321,14 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
   ⟨e, by
     intro i
     dsimp only [e]
-    refine Fin.lastCases ?_ (fun i => ?_) i
+    refine Fin.lastCases ?_ (fun i ↦ ?_) i
     · erw [Equiv.swap_apply_left, snoc_castSucc,
       show (snoc s x₁ hsat₁).toFun (Fin.last _) = x₁ from last_snoc _ _ _, Fin.succ_last,
       show ((s.snoc x₁ hsat₁).snoc y₁ hsaty₁).toFun (Fin.last _) = y₁ from last_snoc _ _ _,
       snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
       show (s.snoc _ hsat₂).toFun (Fin.last _) = x₂ from last_snoc _ _ _]
       exact hr₂
-    · refine Fin.lastCases ?_ (fun i => ?_) i
+    · refine Fin.lastCases ?_ (fun i ↦ ?_) i
       · erw [Equiv.swap_apply_right, snoc_castSucc, snoc_castSucc, snoc_castSucc,
           Fin.succ_castSucc, snoc_castSucc, Fin.succ_last, last_snoc', last_snoc', last_snoc']
         exact hr₁

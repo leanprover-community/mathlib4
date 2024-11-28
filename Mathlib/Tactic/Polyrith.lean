@@ -247,7 +247,7 @@ def Poly.sumM {m : Type → Type*} {α : Type*} [Monad m] (a : Array α) (f : α
 
 instance : FromJson Poly where
   fromJson? j := do
-    Poly.sumM (← j.getArr?) fun j => do
+    Poly.sumM (← j.getArr?) fun j ↦ do
       let mut mon := .const (← fromJson? (← j.getArrVal? 1))
       for j in ← (← j.getArrVal? 0).getArr? do
         mon := mon.mul' (.pow' (← fromJson? (← j.getArrVal? 0)) (← fromJson? (← j.getArrVal? 1)))

@@ -64,7 +64,7 @@ theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 
 instance _root_.Module.End.instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
   obtain ⟨m, ne⟩ := exists_ne (0 : M)
-  exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
+  exact nontrivial_of_ne 1 0 fun p ↦ ne (LinearMap.congr_fun p m)
 
 instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
@@ -351,11 +351,11 @@ variable (S)
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=
-    { toFun := fun f => f v
+    { toFun := fun f ↦ f v
       map_add' := fun f g => f.add_apply g v
       map_smul' := fun x f => f.smul_apply x v }
-  map_zero' := LinearMap.ext fun f => f.map_zero
-  map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
+  map_zero' := LinearMap.ext fun f ↦ f.map_zero
+  map_add' _ _ := LinearMap.ext fun f ↦ f.map_add _ _
 
 end Module
 
@@ -383,8 +383,8 @@ This is the `LinearMap` version of `toAddMonoidHom.eval`. -/
 @[simps]
 def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
   { applyₗ' R with
-    toFun := fun v => { applyₗ' R v with toFun := fun f => f v }
-    map_smul' := fun _ _ => LinearMap.ext fun f => map_smul f _ _ }
+    toFun := fun v ↦ { applyₗ' R v with toFun := fun f ↦ f v }
+    map_smul' := fun _ _ => LinearMap.ext fun f ↦ map_smul f _ _ }
 
 /--
 The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x ∈ M`, is linear in `f`, `x`.

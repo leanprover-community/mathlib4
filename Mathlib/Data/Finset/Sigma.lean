@@ -39,7 +39,7 @@ variable {α : ι → Type*} {β : Type*} (s s₁ s₂ : Finset ι) (t t₁ t₂
 
 /-- `s.sigma t` is the finset of dependent pairs `⟨i, a⟩` such that `i ∈ s` and `a ∈ t i`. -/
 protected def sigma : Finset (Σi, α i) :=
-  ⟨_, s.nodup.sigma fun i => (t i).nodup⟩
+  ⟨_, s.nodup.sigma fun i ↦ (t i).nodup⟩
 
 variable {s s₁ s₂ t t₁ t₂}
 
@@ -69,7 +69,7 @@ theorem sigma_mono (hs : s₁ ⊆ s₂) (ht : ∀ i, t₁ i ⊆ t₂ i) : s₁.s
   mem_sigma.2 ⟨hs hi, ht i ha⟩
 
 theorem pairwiseDisjoint_map_sigmaMk :
-    (s : Set ι).PairwiseDisjoint fun i => (t i).map (Embedding.sigmaMk i) := by
+    (s : Set ι).PairwiseDisjoint fun i ↦ (t i).map (Embedding.sigmaMk i) := by
   intro i _ j _ hij
   rw [Function.onFun, disjoint_left]
   simp_rw [mem_map, Function.Embedding.sigmaMk_apply]
@@ -78,26 +78,26 @@ theorem pairwiseDisjoint_map_sigmaMk :
 
 @[simp]
 theorem disjiUnion_map_sigma_mk :
-    s.disjiUnion (fun i => (t i).map (Embedding.sigmaMk i)) pairwiseDisjoint_map_sigmaMk =
+    s.disjiUnion (fun i ↦ (t i).map (Embedding.sigmaMk i)) pairwiseDisjoint_map_sigmaMk =
       s.sigma t :=
   rfl
 
 theorem sigma_eq_biUnion [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, Finset (α i)) :
-    s.sigma t = s.biUnion fun i => (t i).map <| Embedding.sigmaMk i := by
+    s.sigma t = s.biUnion fun i ↦ (t i).map <| Embedding.sigmaMk i := by
   ext ⟨x, y⟩
   simp [and_left_comm]
 
 variable (s t) (f : (Σi, α i) → β)
 
 theorem sup_sigma [SemilatticeSup β] [OrderBot β] :
-    (s.sigma t).sup f = s.sup fun i => (t i).sup fun b ↦ f ⟨i, b⟩ := by
+    (s.sigma t).sup f = s.sup fun i ↦ (t i).sup fun b ↦ f ⟨i, b⟩ := by
   simp only [le_antisymm_iff, Finset.sup_le_iff, mem_sigma, and_imp, Sigma.forall]
   exact
     ⟨fun i a hi ha => (le_sup hi).trans' <| le_sup (f := fun a ↦ f ⟨i, a⟩) ha, fun i hi a ha =>
       le_sup <| mem_sigma.2 ⟨hi, ha⟩⟩
 
 theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
-    (s.sigma t).inf f = s.inf fun i => (t i).inf fun b ↦ f ⟨i, b⟩ :=
+    (s.sigma t).inf f = s.inf fun i ↦ (t i).inf fun b ↦ f ⟨i, b⟩ :=
   @sup_sigma _ _ βᵒᵈ _ _ _ _ _
 
 theorem _root_.biSup_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))

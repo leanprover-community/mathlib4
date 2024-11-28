@@ -126,7 +126,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     DFunLike.coe_injective' <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget Grp)).uniq
       ((forget Grp).mapCocone t) _
-        fun j => funext fun x ↦ DFunLike.congr_fun (h j) x
+        fun j ↦ funext fun x ↦ DFunLike.congr_fun (h j) x
 
 @[to_additive forget₂AddMon_preservesFilteredColimits]
 noncomputable instance forget₂Mon_preservesFilteredColimits :
@@ -195,7 +195,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   uniq t _ h :=
     DFunLike.coe_injective <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommGrp)).uniq
-        ((forget CommGrp).mapCocone t) _ fun j => funext fun x ↦ DFunLike.congr_fun (h j) x
+        ((forget CommGrp).mapCocone t) _ fun j ↦ funext fun x ↦ DFunLike.congr_fun (h j) x
 
 @[to_additive]
 noncomputable instance forget₂Group_preservesFilteredColimits :

@@ -148,7 +148,7 @@ theorem trace_prod_apply [Module.Free R S] [Module.Free R T] [Module.Finite R S]
 
 theorem trace_prod [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Module.Finite R T] :
     trace R (S × T) = (trace R S).coprod (trace R T) :=
-  LinearMap.ext fun p => by rw [coprod_apply, trace_prod_apply]
+  LinearMap.ext fun p ↦ by rw [coprod_apply, trace_prod_apply]
 
 section TraceForm
 

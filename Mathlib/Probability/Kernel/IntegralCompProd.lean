@@ -203,9 +203,9 @@ theorem Kernel.continuous_integral_integral :
   simp_rw [←
     Kernel.lintegral_fn_integral_sub (fun x ↦ (‖x‖₊ : ℝ≥0∞)) (L1.integrable_coeFn _)
       (L1.integrable_coeFn g)]
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
-  · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖₊ ∂η (a, x) ∂κ a
-  swap; · exact fun i => lintegral_mono fun x ↦ ennnorm_integral_le_lintegral_ennnorm _
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i ↦ zero_le _) _
+  · exact fun i ↦ ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖₊ ∂η (a, x) ∂κ a
+  swap; · exact fun i ↦ lintegral_mono fun x ↦ ennnorm_integral_le_lintegral_ennnorm _
   show
     Tendsto
       (fun i : β × γ →₁[(κ ⊗ₖ η) a] E => ∫⁻ x, ∫⁻ y : γ, ‖i (x, y) - g (x, y)‖₊ ∂η (a, x) ∂κ a)

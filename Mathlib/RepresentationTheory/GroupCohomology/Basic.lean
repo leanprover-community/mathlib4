@@ -100,7 +100,7 @@ calculate group cohomology. -/
 @[simps]
 def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin (n + 1) → G) → A where
   toFun f g :=
-    A.ρ (g 0) (f fun i => g i.succ) +
+    A.ρ (g 0) (f fun i ↦ g i.succ) +
       Finset.univ.sum fun j : Fin (n + 1) =>
         (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
   map_add' f g := by
@@ -174,8 +174,8 @@ open inhomogeneousCochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
-  CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
-    (fun n => inhomogeneousCochains.d n A) fun n => by
+  CochainComplex.of (fun n ↦ ModuleCat.of k ((Fin n → G) → A))
+    (fun n ↦ inhomogeneousCochains.d n A) fun n ↦ by
 /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
     ext x y
     have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))

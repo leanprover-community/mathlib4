@@ -188,7 +188,7 @@ theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R 
       Set.image_subset_image_iff (Subtype.coe_injective.comp f.injective), Set.subset_def]
     simp only [Set.mem_setOf_eq]
     exact ⟨fun hab x => le_trans hab, fun h ↦ h _ le_rfl⟩
-  exact ⟨⟨fun n => span R (Subtype.val ∘ f '' { m | n ≤ m }), fun x y => by
+  exact ⟨⟨fun n ↦ span R (Subtype.val ∘ f '' { m | n ≤ m }), fun x y => by
     rw [le_antisymm_iff, ← this y x, ← this x y]
     exact fun ⟨h₁, h₂⟩ => le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
     intro a b
@@ -327,7 +327,7 @@ theorem range_smul_pow_stabilizes (r : R) :
       LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M) =
       LinearMap.range (r ^ m • LinearMap.id : M →ₗ[R] M) :=
   monotone_stabilizes
-    ⟨fun n => LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M), fun n m h x ⟨y, hy⟩ =>
+    ⟨fun n ↦ LinearMap.range (r ^ n • LinearMap.id : M →ₗ[R] M), fun n m h x ⟨y, hy⟩ =>
       ⟨r ^ (m - n) • y, by
         dsimp at hy ⊢
         rw [← smul_assoc, smul_eq_mul, ← pow_add, ← hy, add_tsub_cancel_of_le h]⟩⟩
@@ -379,7 +379,7 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
   haveI := Classical.decEq R
   have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
   refine @isArtinian_of_surjective _ ((↑s : Set M) →₀ R) N _ _ _ _ _ ?_ ?_ isArtinian_finsupp
-  · exact Finsupp.linearCombination R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
+  · exact Finsupp.linearCombination R (fun i ↦ ⟨i, hs ▸ subset_span i.2⟩)
   · rw [← LinearMap.range_eq_top, eq_top_iff,
        ← map_le_map_iff_of_injective (show Injective (Submodule.subtype N)
          from Subtype.val_injective), Submodule.map_top, range_subtype,
@@ -423,7 +423,7 @@ variable {R : Type*} [CommRing R] [IsArtinianRing R]
 @[stacks 00J8]
 theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
   let Jac := Ideal.jacobson (⊥ : Ideal R)
-  let f : ℕ →o (Ideal R)ᵒᵈ := ⟨fun n => Jac ^ n, fun _ _ h => Ideal.pow_le_pow_right h⟩
+  let f : ℕ →o (Ideal R)ᵒᵈ := ⟨fun n ↦ Jac ^ n, fun _ _ h => Ideal.pow_le_pow_right h⟩
   obtain ⟨n, hn⟩ : ∃ n, ∀ m, n ≤ m → Jac ^ n = Jac ^ m := IsArtinian.monotone_stabilizes f
   refine ⟨n, ?_⟩
   let J : Ideal R := annihilator (Jac ^ n)

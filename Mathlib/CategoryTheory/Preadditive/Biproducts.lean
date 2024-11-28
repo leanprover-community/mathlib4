@@ -87,7 +87,7 @@ any bicone `b` for `f` satisfying `total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b
 def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.pt) :
     b.IsBilimit where
   isLimit :=
-    { lift := fun s => ∑ j : J, s.π.app ⟨j⟩ ≫ b.ι j
+    { lift := fun s ↦ ∑ j : J, s.π.app ⟨j⟩ ≫ b.ι j
       uniq := fun s m h => by
         erw [← Category.comp_id m, ← total, comp_sum]
         apply Finset.sum_congr rfl
@@ -102,7 +102,7 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
         dsimp
         simp }
   isColimit :=
-    { desc := fun s => ∑ j : J, b.π j ≫ s.ι.app ⟨j⟩
+    { desc := fun s ↦ ∑ j : J, b.π j ≫ s.ι.app ⟨j⟩
       uniq := fun s m h => by
         erw [← Category.id_comp m, ← total, sum_comp]
         apply Finset.sum_congr rfl
@@ -115,7 +115,7 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
 
 theorem IsBilimit.total {f : J → C} {b : Bicone f} (i : b.IsBilimit) :
     ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.pt :=
-  i.isLimit.hom_ext fun j => by
+  i.isLimit.hom_ext fun j ↦ by
     cases j
     simp [sum_comp, b.ι_π, comp_dite]
 
@@ -134,7 +134,7 @@ theorem hasBiproduct_of_total {f : J → C} (b : Bicone f)
     bicone. -/
 def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.IsBilimit :=
   isBilimitOfTotal _ <|
-    ht.hom_ext fun j => by
+    ht.hom_ext fun j ↦ by
       cases j
       simp [sum_comp, t.ι_π, dite_comp, comp_dite]
 
@@ -147,7 +147,7 @@ def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functo
     bicone. -/
 def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone) : t.IsBilimit :=
   isBilimitOfTotal _ <|
-    ht.hom_ext fun j => by
+    ht.hom_ext fun j ↦ by
       cases j
       simp_rw [Bicone.toCocone_ι_app, comp_sum, ← Category.assoc, t.ι_π, dite_comp]
       simp
@@ -227,7 +227,7 @@ theorem biproduct.map_eq [HasFiniteBiproducts C] {f g : J → C} {h : ∀ j, f j
 @[reassoc]
 theorem biproduct.lift_matrix {K : Type} [Finite K] [HasFiniteBiproducts C] {f : J → C} {g : K → C}
     {P} (x : ∀ j, P ⟶ f j) (m : ∀ j k, f j ⟶ g k) :
-    biproduct.lift x ≫ biproduct.matrix m = biproduct.lift fun k => ∑ j, x j ≫ m j k := by
+    biproduct.lift x ≫ biproduct.matrix m = biproduct.lift fun k ↦ ∑ j, x j ≫ m j k := by
   ext
   simp [biproduct.lift_desc]
 
@@ -240,7 +240,7 @@ variable {J K : Type} [Finite J] {f : J → C} [HasFiniteBiproducts C]
 @[reassoc]
 theorem biproduct.matrix_desc [Fintype K] {f : J → C} {g : K → C}
     (m : ∀ j k, f j ⟶ g k) {P} (x : ∀ k, g k ⟶ P) :
-    biproduct.matrix m ≫ biproduct.desc x = biproduct.desc fun j => ∑ k, m j k ≫ x k := by
+    biproduct.matrix m ≫ biproduct.desc x = biproduct.desc fun j ↦ ∑ k, m j k ≫ x k := by
   ext
   simp [lift_desc]
 
@@ -309,7 +309,7 @@ def isBinaryBilimitOfTotal {X Y : C} (b : BinaryBicone X Y)
 
 theorem IsBilimit.binary_total {X Y : C} {b : BinaryBicone X Y} (i : b.IsBilimit) :
     b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.pt :=
-  i.isLimit.hom_ext fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
+  i.isLimit.hom_ext fun j ↦ by rcases j with ⟨⟨⟩⟩ <;> simp
 
 /-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
 any binary bicone `b` satisfying `total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.X`.
@@ -395,7 +395,7 @@ def binaryBiconeIsBilimitOfColimitCoconeOfIsColimit {X Y : C} {t : Cocone (pair 
     (ht : IsColimit t) : (BinaryBicone.ofColimitCocone ht).IsBilimit :=
   isBinaryBilimitOfIsColimit (BinaryBicone.ofColimitCocone ht) <|
     IsColimit.ofIsoColimit ht <|
-      Cocones.ext (Iso.refl _) fun j => by
+      Cocones.ext (Iso.refl _) fun j ↦ by
         rcases j with ⟨⟨⟩⟩ <;> simp
 
 /-- In a preadditive category, if the coproduct of `X` and `Y` exists, then the
@@ -942,7 +942,7 @@ lemma preservesBinaryProduct_of_preservesBinaryBiproduct {X Y : C}
   preserves {c} hc := ⟨IsLimit.ofIsoLimit
         ((IsLimit.postcomposeInvEquiv (diagramIsoPair _) _).symm
           (isBinaryBilimitOfPreserves F (binaryBiconeIsBilimitOfLimitConeOfIsLimit hc)).isLimit) <|
-      Cones.ext (by dsimp; rfl) fun j => by
+      Cones.ext (by dsimp; rfl) fun j ↦ by
         rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
 section
@@ -964,7 +964,7 @@ lemma preservesBinaryBiproduct_of_preservesBinaryProduct {X Y : C} [PreservesLim
   preserves {b} hb := ⟨isBinaryBilimitOfIsLimit _ <| IsLimit.ofIsoLimit
           ((IsLimit.postcomposeHomEquiv (diagramIsoPair _) (F.mapCone b.toCone)).symm
             (isLimitOfPreserves F hb.isLimit)) <|
-        Cones.ext (by dsimp; rfl) fun j => by
+        Cones.ext (by dsimp; rfl) fun j ↦ by
           rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
 /-- If the (product-like) biproduct comparison for `F`, `X` and `Y` is a monomorphism, then
@@ -1009,7 +1009,7 @@ lemma preservesBinaryCoproduct_of_preservesBinaryBiproduct {X Y : C}
         ((IsColimit.precomposeHomEquiv (diagramIsoPair _) _).symm
           (isBinaryBilimitOfPreserves F
               (binaryBiconeIsBilimitOfColimitCoconeOfIsColimit hc)).isColimit) <|
-      Cocones.ext (by dsimp; rfl) fun j => by
+      Cocones.ext (by dsimp; rfl) fun j ↦ by
         rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
 section
@@ -1034,7 +1034,7 @@ lemma preservesBinaryBiproduct_of_preservesBinaryCoproduct {X Y : C}
       IsColimit.ofIsoColimit
           ((IsColimit.precomposeInvEquiv (diagramIsoPair _) (F.mapCocone b.toCocone)).symm
             (isColimitOfPreserves F hb.isColimit)) <|
-        Cocones.ext (Iso.refl _) fun j => by
+        Cocones.ext (Iso.refl _) fun j ↦ by
           rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary coproducts
