@@ -55,7 +55,7 @@ Recursive type with indices
 
 inductive I : Nat → Type
   | a (n : Nat) : I n
-  | b (n : Nat) (x : Nat) (c : I x): I (n + 1)
+  | b (n : Nat) (x : Nat) (c : I x) : I (n + 1)
   deriving Countable
 
 example : Countable (I 37) := inferInstance

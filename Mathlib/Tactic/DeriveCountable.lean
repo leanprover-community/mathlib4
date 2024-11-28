@@ -61,7 +61,7 @@ private noncomputable def encode {α : Sort*} [Countable α] : α → ℕ :=
 
 private noncomputable def encode_injective {α : Sort*} [Countable α] :
     Function.Injective (encode : α → ℕ) :=
-    (Countable.exists_injective_nat α).choose_spec
+  (Countable.exists_injective_nat α).choose_spec
 
 /--
 Initialize the injectivity argument. Pops the constructor tag.
