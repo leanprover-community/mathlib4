@@ -23,8 +23,6 @@ Weyl group.
 
 ## Main results:
  * `RootPairing.rootForm_rootPositive`: `RootForm` is root-positive.
- * `RootPairing.polarization_domRestrict_injective`: The polarization restricted to the span of
-   roots is injective.
  * `RootPairing.rootForm_pos_of_nonzero`: `RootForm` is strictly positive on non-zero linear
   combinations of roots. This gives us a convenient way to eliminate certain Dynkin diagrams from
   the classification, since it suffices to produce a nonzero linear combination of simple roots with
