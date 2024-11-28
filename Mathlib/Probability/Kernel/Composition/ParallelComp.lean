@@ -63,7 +63,7 @@ lemma parallelComp_apply (κ : Kernel α β) [IsSFiniteKernel κ]
     (κ ∥ₖ η) x = (κ x.1).prod (η x.2) := by
   rw [parallelComp, prod_apply, prodMkRight_apply, prodMkLeft_apply]
 
-theorem lintegral_parallelComp (κ : Kernel α β) [IsSFiniteKernel κ]
+lemma lintegral_parallelComp (κ : Kernel α β) [IsSFiniteKernel κ]
     (η : Kernel γ δ) [IsSFiniteKernel η]
     (ac : α × γ) {g : β × δ → ℝ≥0∞} (hg : Measurable g) :
     ∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ b, ∫⁻ d, g (b, d) ∂η ac.2 ∂κ ac.1 := by
