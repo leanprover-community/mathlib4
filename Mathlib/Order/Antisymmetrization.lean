@@ -40,11 +40,8 @@ def AntisymmRel (a b : α) : Prop :=
 /-- The antisymmetrization relation `a ⋚ b` means that both `a ≤ b` and `b ≤ a`. -/
 infix:50 " ⋚ "  => AntisymmRel (· ≤ ·)
 
-theorem AntisymmRel.le [LE α] {a b : α} (h : a ⋚ b) : a ≤ b :=
-  h.1
-
-theorem AntisymmRel.ge [LE α] {a b : α} (h : a ⋚ b) : b ≤ a :=
-  h.2
+theorem AntisymmRel.le [LE α] {a b : α} (h : a ⋚ b) : a ≤ b := h.1
+theorem AntisymmRel.ge [LE α] {a b : α} (h : a ⋚ b) : b ≤ a := h.2
 
 theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext fun _ => funext fun _ => propext and_comm
