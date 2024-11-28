@@ -53,7 +53,7 @@ theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨refl _, refl _⟩
 
 instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
-  refl a := antisymmRel_refl r a
+  refl := antisymmRel_refl r
 
 variable {r}
 
@@ -198,6 +198,13 @@ theorem AntisymmRel.antisymmRel_congr_left (h : a ⋚ b) : a ⋚ c ↔ b ⋚ c :
 
 theorem AntisymmRel.antisymmRel_congr_right (h : b ⋚ c) : a ⋚ b ↔ a ⋚ c :=
   (antisymmRel_refl _ a).antisymmRel_congr h
+
+theorem lt_or_antisymmRel_of_le (h : a ≤ b) : a < b ∨ a ⋚ b := by
+  by_cases h' : b ≤ a
+  · exact Or.inr ⟨h, h'⟩
+  · exact Or.inl (lt_of_le_not_le h h')
+
+alias LE.le.lt_or_antisymmRel := lt_or_antisymmRel_of_le
 
 theorem AntisymmRel.image (h : a ⋚ b) {f : α → β} (hf : Monotone f) : f a ⋚ f b :=
   ⟨hf h.1, hf h.2⟩
