@@ -22,7 +22,7 @@ variable (n : Type*) [DecidableEq n] [Fintype n] (R : Type*) [CommRing R]
 /--The subtype of matrices with fixed determinant `m`. -/
 def FixedDetMatrix (m : R) := { A : Matrix n n R // A.det = m }
 
-namespace FixedDetMatrix
+namespace FixedDetMatrices
 
 open Matrix hiding mul_smul
 open ModularGroup SpecialLinearGroup MatrixGroups
@@ -244,4 +244,4 @@ theorem induction_on {C : Δ m → Prop} {A : Δ m} (hm : m ≠ 0)
 
 end IntegralFixedDetMatrices
 
-end FixedDetMatrix
+end FixedDetMatrices
