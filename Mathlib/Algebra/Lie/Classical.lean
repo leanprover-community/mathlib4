@@ -175,7 +175,7 @@ theorem pso_inv {i : R} (hi : i * i = -1) : Pso p q R i * Pso p q R (-i) = 1 := 
 
 /-- There is a constructive inverse of `Pso p q R i`. -/
 def invertiblePso {i : R} (hi : i * i = -1) : Invertible (Pso p q R i) :=
-  invertibleOfRightInverse _ _ (pso_inv p q R hi)
+  invertibleOfRightInverse (pso_inv p q R hi)
 
 theorem indefiniteDiagonal_transform {i : R} (hi : i * i = -1) :
     (Pso p q R i)ᵀ * indefiniteDiagonal p q R * Pso p q R i = 1 := by
@@ -253,7 +253,7 @@ theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟ (2 : R) • (PD l
   simp
 
 instance invertiblePD [Fintype l] [Invertible (2 : R)] : Invertible (PD l R) :=
-  invertibleOfRightInverse _ _ (pd_inv l R)
+  invertibleOfRightInverse (pd_inv l R)
 
 /-- An equivalence between two possible definitions of the classical Lie algebra of type D. -/
 noncomputable def typeDEquivSo' [Fintype l] [Invertible (2 : R)] : typeD l R ≃ₗ⁅R⁆ so' l l R := by
@@ -312,7 +312,7 @@ theorem pb_inv [Invertible (2 : R)] : PB l R * Matrix.fromBlocks 1 0 0 (⅟ (PD 
     Matrix.fromBlocks_one]
 
 instance invertiblePB [Invertible (2 : R)] : Invertible (PB l R) :=
-  invertibleOfRightInverse _ _ (pb_inv l R)
+  invertibleOfRightInverse (pb_inv l R)
 
 theorem jb_transform : (PB l R)ᵀ * JB l R * PB l R = (2 : R) • Matrix.fromBlocks 1 0 0 (S l R) := by
   simp [PB, JB, jd_transform, Matrix.fromBlocks_transpose, Matrix.fromBlocks_multiply,
