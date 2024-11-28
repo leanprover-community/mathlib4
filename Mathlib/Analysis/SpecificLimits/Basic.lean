@@ -273,8 +273,14 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
     simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
     simpa [← ENNReal.inv_pow] using obs <| ENNReal.inv_lt_one.mpr r_gt_one
 
-/-! ### Geometric series -/
+lemma ENNReal.eq_zero_of_le_mul_pow {x r : ℝ≥0∞} {ε : ℝ≥0} (hr : r < 1)
+    (h : ∀ n : ℕ, x ≤ ε * r ^ n) : x = 0 := by
+  rw [← nonpos_iff_eq_zero]
+  refine ge_of_tendsto' (f := fun (n : ℕ) ↦ ε * r ^ n) (x := atTop) ?_ h
+  rw [← mul_zero (M₀ := ℝ≥0∞) (a := ε)]
+  exact Tendsto.const_mul (tendsto_pow_atTop_nhds_zero_of_lt_one hr) (Or.inr coe_ne_top)
 
+/-! ### Geometric series -/
 
 section Geometric
 
