@@ -277,6 +277,41 @@ lemma homologySequenceComposableArrows₅_exact :
       (exact_of_δ₀ (F.homologySequence_exact₁ T hT n₀ n₁ h).exact_toComposableArrows
         (F.homologySequence_exact₂ T hT n₁).exact_toComposableArrows))
 
+/-- The exact sequence with six terms starting from `T.obj₁` until `(F.shift a).obj T.obj₃` when
+`T` is a distinguished triangle, `a = 1` and `F` a homological functor. -/
+@[simp] noncomputable def homologySequenceComposableArrows₅_start_zero :
+    ComposableArrows A 5 :=
+  mk₅ (F.map T.mor₁) (F.map T.mor₂) (F.map T.mor₃ ≫ (F.isoShift (1 : ℤ)).hom.app _)
+  ((F.shift (1 : ℤ)).map T.mor₁) ((F.shift (1 : ℤ)).map T.mor₂)
+
+noncomputable def homologySequenceComposableArrows₅_start_zero_iso :
+    F.homologySequenceComposableArrows₅ T 0 1 (by simp) ≅
+    F.homologySequenceComposableArrows₅_start_zero T := by
+  refine ComposableArrows.isoMk ?_ ?_
+  · intro i
+    match i with
+    | 0 => exact (F.isoShiftZero ℤ).app _
+    | 1 => exact (F.isoShiftZero ℤ).app _
+    | 2 => exact (F.isoShiftZero ℤ).app _
+    | 3 => exact Iso.refl _
+    | 4 => exact Iso.refl _
+    | 5 => exact Iso.refl _
+  · intro i _
+    match i with
+    | 0 => exact (F.isoShiftZero ℤ).hom.naturality _
+    | 1 => exact (F.isoShiftZero ℤ).hom.naturality _
+    | 2 => simp; change _ ≫ _ = _ ≫ _ ≫ _
+           conv_rhs => rw [← assoc, ← (F.isoShiftZero ℤ).hom.naturality, assoc]
+           congr 1; simp [isoShift]
+    | 3 => simp; rfl
+    | 4 => simp; rfl
+
+include hT in
+lemma homologySequenceComposableArrows₅_start_zero_exact :
+    (F.homologySequenceComposableArrows₅_start_zero T).Exact :=
+  exact_of_iso (homologySequenceComposableArrows₅_start_zero_iso F T)
+  (homologySequenceComposableArrows₅_exact F T hT 0 1 (by simp))
+
 end
 
 end Functor
