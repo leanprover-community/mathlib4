@@ -198,10 +198,10 @@ nonrec theorem isLeast_opNorm (f : E [⋀^ι]→L[𝕜] F) :
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`. -/
 theorem le_opNorm (f : E [⋀^ι]→L[𝕜] F) (m : ι → E) : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.1.le_opNorm m
 
-nonrec theorem le_mul_prod_of_le_opNorm_of_le
+nonrec theorem le_mul_prod_of_opNorm_le_of_le
     {m : ι → E} {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ ≤ C) (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ C * ∏ i, b i :=
-  f.le_mul_prod_of_le_opNorm_of_le hC hm
+  f.le_mul_prod_of_opNorm_le_of_le hC hm
 
 theorem le_opNorm_mul_prod_of_le (f : E [⋀^ι]→L[𝕜] F) {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) :
     ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
