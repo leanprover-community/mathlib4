@@ -10,13 +10,27 @@ import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 # Posterior kernel
 
+For `μ : Measure α` (called prior measure), seen as a measure on a parameter, and a kernel
+`κ : Kernel α β` that gives the conditional distribution of "data" in `β` given the prior parameter,
+we can get the distribution of the data with `κ ∘ₘ μ`, and the joint distribution of parameter and
+data `μ ⊗ₘ κ : Measure (α × β)`.
+
+The posterior distribution of the parameter given the data is a Markov kernel `κ†μ : Kernel β α`
+such that `(κ ∘ₘ μ) ⊗ₘ κ†μ = (μ ⊗ₘ κ).map Prod.swap`. That is, the joint distribution of parameter
+and data can be recovered from the distribution of the data and the posterior.
+
 ## Main definitions
 
 * `posterior κ μ`: posterior of a kernel `κ` for a prior measure `μ`.
 
 ## Main statements
 
-*
+* `compProd_posterior_eq_map_swap`: the main property of the posterior,
+  `(κ ∘ₘ μ) ⊗ₘ κ†μ = (μ ⊗ₘ κ).map Prod.swap`.
+* `ae_eq_posterior_of_compProd_eq`
+* `posterior_comp_self`: `(κ†μ) ∘ₘ κ ∘ₘ μ = μ`
+* `posterior_posterior`: `(κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ`
+* `posterior_comp`: `(η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] (κ†μ) ∘ₖ η†(κ ∘ₘ μ)`
 
 ## Notation
 
@@ -148,7 +162,7 @@ lemma posterior_comp [StandardBorelSpace β] [Nonempty β] {η : Kernel β γ} [
     rw [Kernel.swap_parallelComp, Kernel.comp_assoc, ← Kernel.comp_assoc (Kernel.swap α β),
       Kernel.swap_parallelComp, Kernel.comp_assoc, Kernel.swap_copy]
 
-/-- For a deterministic kernel `κ`, `κ ∘ₖ (κ†μ)` is `μ`-a.e. equal to the identity kernel. -/
+/-- For a deterministic kernel `κ`, `κ ∘ₖ (κ†μ)` is `μ.map f`-a.e. equal to the identity kernel. -/
 lemma deterministic_comp_posterior [StandardBorelSpace β] [Nonempty β]
     {f : α → β} (hf : Measurable f) :
     Kernel.deterministic f hf ∘ₖ ((Kernel.deterministic f hf)†μ) =ᵐ[μ.map f] Kernel.id := by
