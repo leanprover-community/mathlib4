@@ -195,11 +195,8 @@ lemma dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
     Measure.dirac () ⊗ₘ Kernel.const Unit μ = μ.map (Prod.mk ()) := by
   rw [dirac_unit_compProd, Kernel.const_apply]
 
-@[simp]
 lemma snd_dirac_unit_compProd_const (μ : Measure β) [IsFiniteMeasure μ] :
-    snd (Measure.dirac () ⊗ₘ Kernel.const Unit μ) = μ := by
-  rw [dirac_unit_compProd_const, snd, map_map measurable_snd measurable_prod_mk_left]
-  simp
+    snd (Measure.dirac () ⊗ₘ Kernel.const Unit μ) = μ := by simp
 
 instance : SFinite (μ ⊗ₘ κ) := by rw [compProd]; infer_instance
 
