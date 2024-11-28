@@ -695,7 +695,8 @@ protected theorem ContDiffOn.ftaylorSeriesWithin
     exact ((Hp.mono ho).cont m le_rfl).congr fun y hy => (A y hy).symm
 
 /-- On a set with unique differentiability, an analytic function is automatically `C^ω`, as its
-successive derivatives are also analytic. This does not require completeness of the space. -/
+successive derivatives are also analytic. This does not require completeness of the space. See
+also `AnalyticOn.contDiffOn_of_completeSpace`.-/
 theorem AnalyticOn.contDiffOn (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s := by
   suffices ContDiffOn 𝕜 ω f s from this.of_le le_top
@@ -709,9 +710,20 @@ theorem AnalyticOn.contDiffOn (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 
 alias AnalyticWithinOn.contDiffOn := AnalyticOn.contDiffOn
 
 /-- On a set with unique differentiability, an analytic function is automatically `C^ω`, as its
-successive derivatives are also analytic. This does not require completeness of the space. -/
+successive derivatives are also analytic. This does not require completeness of the space. See
+also `AnalyticOnNhd.contDiffOn_of_completeSpace`. -/
 theorem AnalyticOnNhd.contDiffOn (h : AnalyticOnNhd 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s := h.analyticOn.contDiffOn hs
+
+/-- An analytic function is automatically `C^ω` in a complete space -/
+theorem AnalyticOn.contDiffOn_of_completeSpace [CompleteSpace F] (h : AnalyticOn 𝕜 f s) :
+    ContDiffOn 𝕜 n f s :=
+  fun x hx ↦ (h x hx).contDiffWithinAt
+
+/-- An analytic function is automatically `C^ω` in a complete space -/
+theorem AnalyticOnNhd.contDiffOn_of_completeSpace [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
+    ContDiffOn 𝕜 n f s :=
+  h.analyticOn.contDiffOn_of_completeSpace
 
 theorem contDiffOn_of_continuousOn_differentiableOn {n : ℕ∞}
     (Hcont : ∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s)
