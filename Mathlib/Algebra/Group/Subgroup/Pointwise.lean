@@ -67,10 +67,23 @@ lemma mul_subgroupClosure (hs : s.Nonempty) : s * closure s = closure s := by
     smul_coe_set <| subset_closure ha
   simp +contextual [h, hs]
 
+open scoped RightActions in
 @[to_additive (attr := simp)]
-lemma mul_subgroupClosure_pow (hs : s.Nonempty) : ∀ n, s ^ n * closure s = closure s
+lemma subgroupClosure_mul (hs : s.Nonempty) : closure s * s = closure s := by
+  rw [← Set.iUnion_op_smul_set]
+  have h a (ha : a ∈ s) :  (closure s : Set G) <• a = closure s :=
+    op_smul_coe_set <| subset_closure ha
+  simp +contextual [h, hs]
+
+@[to_additive (attr := simp)]
+lemma pow_mul_subgroupClosure (hs : s.Nonempty) : ∀ n, s ^ n * closure s = closure s
   | 0 => by simp
-  | n + 1 => by rw [pow_add, pow_one, mul_assoc, mul_subgroupClosure hs, mul_subgroupClosure_pow hs]
+  | n + 1 => by rw [pow_succ, mul_assoc, mul_subgroupClosure hs, pow_mul_subgroupClosure hs]
+
+@[to_additive (attr := simp)]
+lemma subgroupClosure_mul_pow (hs : s.Nonempty) : ∀ n, closure s * s ^ n = closure s
+  | 0 => by simp
+  | n + 1 => by rw [pow_succ', ← mul_assoc, subgroupClosure_mul hs, subgroupClosure_mul_pow hs]
 
 end Set
 
