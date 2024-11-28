@@ -136,6 +136,7 @@ variable {K : Type*} [Field K] [Algebra F K]
 If `K` is a simple finite field extension of `F` `K = F(k)`, then we can
 define a `Differential` on `K`.
 -/
+@[reducible]
 noncomputable def differentialOfAdjoinEqTop [FiniteDimensional F K]
     (k : K) (h : F⟮k⟯ = ⊤) : Differential K :=
   have : Fact (minpoly F k).Monic := ⟨minpoly.monic (IsAlgebraic.of_finite ..).isIntegral⟩
