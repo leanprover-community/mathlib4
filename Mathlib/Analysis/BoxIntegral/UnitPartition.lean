@@ -122,7 +122,7 @@ theorem tag_mem (ν : ι → ℤ) :
   refine mem_box_iff.mpr fun _ ↦ ?_
   rw [tag, add_div]
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
-  refine ⟨lt_add_of_pos_right _ (by positivity), le_rfl⟩
+  exact ⟨lt_add_of_pos_right _ (by positivity), le_rfl⟩
 
 /-- For `x : ι → ℝ`, its index is the index of the unique `unitPartition.box` to which
 it belongs. -/
