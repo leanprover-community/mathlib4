@@ -330,7 +330,6 @@ theorem _root_.Polynomial.toLaurent_injective :
 theorem _root_.Polynomial.toLaurent_inj (f g : R[X]) : toLaurent f = toLaurent g ↔ f = g :=
   ⟨fun h => Polynomial.toLaurent_injective h, congr_arg _⟩
 
-@[simp]
 theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : toLaurent f ≠ 0 ↔ f ≠ 0 :=
   map_ne_zero_iff _ Polynomial.toLaurent_injective
 
