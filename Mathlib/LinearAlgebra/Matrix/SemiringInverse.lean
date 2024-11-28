@@ -21,7 +21,7 @@ namespace Matrix
 
 open Equiv Finset
 
-variable {n R : Type*} [Fintype n] [DecidableEq n] [CommSemiring R]
+variable {n m R : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommSemiring R]
 
 variable (s : ℤˣ) (A B : Matrix n n R) (i j : n)
 
@@ -240,5 +240,36 @@ theorem mul_eq_one_comm : A * B = 1 ↔ B * A = 1 := by
     smul_add, smul_add, add_add_add_comm, smul_smul, smul_smul, ← add_smul,
     ((isAddUnit_detp_smul_mul_adjp hAB).add
       ((isAddUnit_detp_mul_detp hAB).smul _)).add_left_inj] at h
+
+/-- We can construct an instance of invertible A if A has a left inverse. -/
+def invertibleOfLeftInverse (h : B * A = 1) : Invertible A :=
+  ⟨B, h, mul_eq_one_comm.mp h⟩
+
+/-- We can construct an instance of invertible A if A has a right inverse. -/
+def invertibleOfRightInverse (h : A * B = 1) : Invertible A :=
+  ⟨B, mul_eq_one_comm.mp h, h⟩
+
+theorem isUnit_of_left_inverse (h : B * A = 1) : IsUnit A :=
+  ⟨⟨A, B, mul_eq_one_comm.mp h, h⟩, rfl⟩
+
+theorem exists_left_inverse_iff_isUnit : (∃ B, B * A = 1) ↔ IsUnit A :=
+  ⟨fun ⟨_, h⟩ ↦ isUnit_of_left_inverse h, fun h ↦ have := h.invertible; ⟨⅟A, invOf_mul_self' A⟩⟩
+
+theorem isUnit_of_right_inverse (h : A * B = 1) : IsUnit A :=
+  ⟨⟨A, B, h, mul_eq_one_comm.mp h⟩, rfl⟩
+
+theorem exists_right_inverse_iff_isUnit : (∃ B, A * B = 1) ↔ IsUnit A :=
+  ⟨fun ⟨_, h⟩ ↦ isUnit_of_right_inverse h, fun h ↦ have := h.invertible; ⟨⅟A, mul_invOf_self' A⟩⟩
+
+section
+
+/-- A version of `mul_eq_one_comm` that works for square matrices with rectangular types. -/
+theorem mul_eq_one_comm_of_equiv {A : Matrix m n R} {B : Matrix n m R} (e : m ≃ n) :
+    A * B = 1 ↔ B * A = 1 := by
+  refine (reindex e e).injective.eq_iff.symm.trans ?_
+  rw [reindex_apply, reindex_apply, submatrix_one_equiv, ← submatrix_mul_equiv _ _ _ (.refl _),
+    mul_eq_one_comm, submatrix_mul_equiv, coe_refl, submatrix_id_id]
+
+end
 
 end Matrix

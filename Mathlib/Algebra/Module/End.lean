@@ -57,7 +57,7 @@ def smulAddHom : R →+ M →+ M :=
 variable {R M}
 
 @[simp]
-theorem smulAddHom_apply (r : R) (x : M) : smulAddHom R M r x = r • x :=
+theorem smulAddHom_apply : smulAddHom R M r x = r • x :=
   rfl
 
 variable {r}
