@@ -3,6 +3,7 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
+import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
@@ -10,18 +11,14 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 /-!
 # Coskeletal simplicial sets
 
-The identity natural transformation exhibits a simplicial set `X` as a right extension of its
-restriction along `(Truncated.inclusion (n := n)).op` recorded by `rightExtensionInclusion X n`.
-
-The simplicial set `X` is *n-coskeletal* if
-`(rightExtensionInclusion X n).IsPointwiseRightKanExtension` holds.
-
 In this file, we prove that if `X` is `StrictSegal` then `X` is 2-coskeletal defining
+`X ≅ (cosk 2).obj X` In particular, nerves of categories are 2-coskeletal.
 
-`StrictSegal.cosk2Iso : X ≅ (Truncated.cosk 2).obj ((truncation 2).obj X)`
-
-In particular, nerves of categories are 2-coskeletal.
+This isomorphism follows from the fact that `rightExtensionInclusion X 2` is a right Kan
+extension. In fact, we show that when `X` is `StrictSegal` then
+`(rightExtensionInclusion X n).IsPointwiseRightKanExtension` holds.
 -/
+
 
 universe v u
 
@@ -36,7 +33,7 @@ restriction along `(Truncated.inclusion (n := n)).op`.-/
 @[simps!]
 def rightExtensionInclusion (X : SSet.{u}) (n : ℕ) :
     RightExtension (Truncated.inclusion (n := n)).op
-      (Functor.op Truncated.inclusion ⋙ X) := RightExtension.mk _ (𝟙 _)
+      ((Truncated.inclusion n).op ⋙ X) := RightExtension.mk _ (𝟙 _)
 
 end Truncated
 
@@ -61,13 +58,13 @@ abbrev strArrowMk₂ {i : ℕ} {n : ℕ} (φ : [i] ⟶ [n]) (hi : i ≤ 2) :
     StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op :=
   StructuredArrow.mk (Y := op ⟨[i], hi⟩) (by exact φ.op)
 
-/-- Given a term in the cone over the diagram `(StructuredArrow.proj (op [n])`
-`(Truncated.inclusion (n := 2)).op ⋙ (Truncated.inclusion (n := 2)).op ⋙ X)` where `X` is
-Strict Segal, one can produce an `n`-simplex in `X`.-/
+/-- Given a term in the cone over the diagram
+`(proj (op [n]) ((Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X)` where `X` is
+Strict Segal, one can produce an `n`-simplex in `X`. -/
 @[simp]
 noncomputable def lift {X : SSet.{u}} [StrictSegal X] {n}
-    (s : Cone (StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙
-      (Truncated.inclusion (n := 2)).op ⋙ X)) (x : s.pt) : X _[n] :=
+    (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙
+      (Truncated.inclusion 2).op ⋙ X)) (x : s.pt) : X _[n] :=
   StrictSegal.spineToSimplex {
     vertex := fun i ↦ s.π.app (.mk (Y := op [0]₂) (.op (SimplexCategory.const _ _ i))) x
     arrow := fun i ↦ s.π.app (.mk (Y := op [1]₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x
@@ -86,7 +83,7 @@ noncomputable def lift {X : SSet.{u}} [StrictSegal X] {n}
       exact congr_fun (s.w φ) x }
 
 lemma fac_aux₁ {n : ℕ}
-    (s : Cone (proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙ Truncated.inclusion.op ⋙ X))
+    (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt)
     (i : ℕ) (hi : i < n) :
     X.map (mkOfSucc ⟨i, hi⟩).op (lift s x) =
@@ -96,7 +93,7 @@ lemma fac_aux₁ {n : ℕ}
   rfl
 
 lemma fac_aux₂ {n : ℕ}
-    (s : Cone (proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙ Truncated.inclusion.op ⋙ X))
+    (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt)
     (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
     X.map (mkOfLe ⟨i, by omega⟩ ⟨j, by omega⟩ hij).op (lift s x) =
@@ -167,7 +164,7 @@ lemma fac_aux₂ {n : ℕ}
       dsimp
 
 lemma fac_aux₃ {n : ℕ}
-    (s : Cone (proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙ Truncated.inclusion.op ⋙ X))
+    (s : Cone (proj (op [n]) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt)
     (φ : [1] ⟶ [n]) :
     X.map φ.op (lift s x) = s.π.app (strArrowMk₂ φ (by omega)) x := by
@@ -221,45 +218,17 @@ noncomputable def isPointwiseRightKanExtension :
     RightExtension.IsPointwiseRightKanExtension (rightExtensionInclusion X 2) :=
   fun Δ => isPointwiseRightKanExtensionAt X Δ.unop.len
 
-/-- Since `rightExtensionInclusion X 2` is a pointwise right Kan extension,
-`rightExtensionInclusion X 2` is universal as a costructured arrow.-/
-noncomputable def isPointwiseRightKanExtension.isUniversal :
-    CostructuredArrow.IsUniversal (rightExtensionInclusion X 2) :=
-  RightExtension.IsPointwiseRightKanExtension.isUniversal (isPointwiseRightKanExtension X)
-
 theorem isRightKanExtension :
     (rightExtensionInclusion X 2).left.IsRightKanExtension (rightExtensionInclusion X 2).hom :=
   RightExtension.IsPointwiseRightKanExtension.isRightKanExtension
     (isPointwiseRightKanExtension X)
 
-/-- There is a map of costructured arrows from `rightExtensionInclusion X 2` to the right extension
-of the 2-truncation of `X` defined by the counit of `coskAdj 2`.-/
-noncomputable def cosk2RightExtension.hom : rightExtensionInclusion X 2 ⟶
-    RightExtension.mk _
-      ((Truncated.inclusion (n := 2)).op.ranCounit.app ((Truncated.inclusion (n := 2)).op ⋙ X)) :=
-  CostructuredArrow.homMk ((coskAdj 2).unit.app X) ((coskAdj 2).left_triangle_components X)
+/-- When `X` is `StrictSegal`, `X` is 2-coskeletal. -/
+instance isCoskeletal : SimplicialObject.IsCoskeletal X 2 where
+  isRightKanExtension := isRightKanExtension X
 
-/-- The map `cosk2RightExtension.hom X` is a natural transformation between two right Kan extensions
-of the diagram `((Truncated.inclusion (n := 2)).op ⋙ X)` and thus is an isomorphism. -/
-instance cosk2RightExtension.hom_isIso : IsIso (cosk2RightExtension.hom X) :=
-  isIso_of_isTerminal (isPointwiseRightKanExtension.isUniversal X)
-    (((Truncated.cosk 2).obj
-      ((Truncated.inclusion (n := 2)).op ⋙ X)).isUniversalOfIsRightKanExtension
-        ((Truncated.inclusion (n := 2)).op.ranCounit.app ((Truncated.inclusion (n := 2)).op ⋙ X)))
-      (cosk2RightExtension.hom X)
-
-/-- The map `cosk2RightExtension.hom X` is a natural transformation between two right Kan extensions
-of the diagram `((Truncated.inclusion (n := 2)).op ⋙ X)` and thus is an isomorphism. -/
-noncomputable def cosk2RightExtension.homIso : rightExtensionInclusion X 2 ≅
-   RightExtension.mk _
-      ((Truncated.inclusion (n := 2)).op.ranCounit.app ((Truncated.inclusion (n := 2)).op ⋙ X)) :=
-  asIso (cosk2RightExtension.hom X)
-
-/-- The isomorphism `X ≅ (Truncated.cosk 2).obj X\` which shows that the nerve is
-2-coskeletal.-/
-noncomputable def cosk2Iso : X ≅ (Truncated.cosk 2).obj ((truncation 2).obj X) :=
-  (CostructuredArrow.proj ((whiskeringLeft _ _ _).obj (Truncated.inclusion (n := 2)).op)
-    ((Truncated.inclusion (n := 2)).op ⋙ X)).mapIso (cosk2RightExtension.homIso X)
+/-- The canonical isomorphism `X ≅ (cosk 2).obj X` defined when `X` is `StrictSegal`. -/
+noncomputable def isoCosk2 : X ≅ (cosk 2).obj X := SimplicialObject.isoCoskOfIsCoskeletal X 2
 
 end StrictSegal
 
@@ -272,6 +241,9 @@ namespace CategoryTheory
 namespace Nerve
 
 open SSet
+
+instance isCoskeletal (C : Type u) [Category.{v} C] :
+    SimplicialObject.IsCoskeletal (nerve C) 2 := by infer_instance
 
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
 recorded by the composite functor `nerveFunctor₂`.-/
@@ -289,7 +261,7 @@ noncomputable def cosk2Iso : nerveFunctor.{u, u} ≅ nerveFunctor₂.{u, u} ⋙ 
   refine NatIso.ofComponents ?_ ?_
   · intro C
     dsimp [nerveFunctor, nerveFunctor₂]
-    exact (StrictSegal.cosk2Iso (nerve C))
+    exact (StrictSegal.isoCosk2 (nerve C))
   · simp only [nerveFunctor_obj, comp_obj, id_eq, Functor.comp_map]
     convert cosk2NatTrans.naturality
 
