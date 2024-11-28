@@ -109,10 +109,14 @@ lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B
   | zero => use 1; simp
   | succ k ih =>
     replace hB := hB ⟨g 0⟩
-    by_cases hfr : ∃ i : Fin (k + 1), (f i).isRight
-    · simp only [Sum.isRight_iff] at hfr
-      obtain ⟨i, j, hfi⟩ := hfr
-      have hAB := det_succ_row ((fromRows A B).submatrix f g) i
+    -- Either `f` is `inr` somewhere or `inl` everywhere
+    obtain ⟨i, j, hfi⟩ | ⟨f', rfl⟩ : (∃ i j, f i = .inr j) ∨ (∃ f', f = .inl ∘ f') := by
+      simp_rw [← Sum.isRight_iff, or_iff_not_imp_left, not_exists, Bool.not_eq_true,
+        Sum.isRight_eq_false, Sum.isLeft_iff]
+      intro hfr
+      choose f' hf' using hfr
+      exact ⟨f', funext hf'⟩
+    · have hAB := det_succ_row ((fromRows A B).submatrix f g) i
       simp only [submatrix_apply, hfi, fromRows_apply_inr] at hAB
       obtain ⟨j', s, hj'⟩ := hB j
       · simp only [hj', Function.update_apply] at hAB
@@ -132,10 +136,7 @@ lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B
         · rw [not_exists] at hj''
           use 0
           simpa [hj''] using hAB.symm
-    · simp only [not_exists, Bool.not_eq_true, Sum.isRight_eq_false, Sum.isLeft_iff] at hfr
-      choose f' hf' using hfr
-      rw [isTotallyUnimodular_iff] at hA
-      rw [funext hf']
+    · rw [isTotallyUnimodular_iff] at hA
       apply hA
 
 /-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1`,
