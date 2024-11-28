@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
 # Opposite categories of complexes
@@ -213,7 +214,80 @@ instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
   (inferInstance : (K.sc i).unop.HasHomology)
 
+instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
+    ((opFunctor _ _).obj (op K)).HasHomology i := by
+  dsimp
+  infer_instance
+
+instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
+    ((unopFunctor _ _).obj (op K)).HasHomology i := by
+  dsimp
+  infer_instance
+
 variable {V c}
+
+lemma quasiIsoAt_opFunctor_map_iff
+    {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] :
+    QuasiIsoAt ((opFunctor _ _).map φ.op) i ↔ QuasiIsoAt φ i := by
+  simp only [quasiIsoAt_iff]
+  exact ShortComplex.quasiIso_opMap_iff ((shortComplexFunctor V c i).map φ)
+
+lemma quasiIsoAt_unopFunctor_map_iff
+    {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] :
+    QuasiIsoAt ((unopFunctor _ _).map φ.op) i ↔ QuasiIsoAt φ i := by
+  rw [← quasiIsoAt_opFunctor_map_iff]
+  rfl
+
+instance {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] [QuasiIsoAt φ i] :
+    QuasiIsoAt ((opFunctor _ _).map φ.op) i := by
+  rw [quasiIsoAt_opFunctor_map_iff]
+  infer_instance
+
+instance {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L) (i : ι)
+    [K.HasHomology i] [L.HasHomology i] [QuasiIsoAt φ i] :
+    QuasiIsoAt ((unopFunctor _ _).map φ.op) i := by
+  rw [quasiIsoAt_unopFunctor_map_iff]
+  infer_instance
+
+lemma quasiIso_opFunctor_map_iff
+    {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
+    QuasiIso ((opFunctor _ _).map φ.op) ↔ QuasiIso φ := by
+  simp only [quasiIso_iff, quasiIsoAt_opFunctor_map_iff]
+
+lemma quasiIso_unopFunctor_map_iff
+    {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
+    QuasiIso ((unopFunctor _ _).map φ.op) ↔ QuasiIso φ := by
+  simp only [quasiIso_iff, quasiIsoAt_unopFunctor_map_iff]
+
+instance {K L : HomologicalComplex V c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] [QuasiIso φ] :
+    QuasiIso ((opFunctor _ _).map φ.op) := by
+  rw [quasiIso_opFunctor_map_iff]
+  infer_instance
+
+instance {K L : HomologicalComplex Vᵒᵖ c} (φ : K ⟶ L)
+    [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] [QuasiIso φ] :
+    QuasiIso ((unopFunctor _ _).map φ.op) := by
+  rw [quasiIso_unopFunctor_map_iff]
+  infer_instance
+
+lemma ExactAt.op {K : HomologicalComplex V c} {i : ι} (h : K.ExactAt i) :
+    K.op.ExactAt i := sorry
+
+lemma ExactAt.unop {K : HomologicalComplex Vᵒᵖ c} {i : ι} (h : K.ExactAt i) :
+    K.unop.ExactAt i := sorry
+
+lemma exactAt_op_iff (K : HomologicalComplex V c) {i : ι} :
+    K.op.ExactAt i ↔ K.ExactAt i := sorry
+
+lemma acyclic_op_iff (K : HomologicalComplex V c) :
+    K.op.Acyclic ↔ K.Acyclic := by
+  simp only [acyclic_iff, exactAt_op_iff]
 
 /-- If `K` is a homological complex, then the homology of `K.op` identifies to
 the opposite of the homology of `K`. -/
@@ -226,6 +300,57 @@ then the homology of `K.unop` identifies to the opposite of the homology of `K`.
 def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.homology i ≅ unop (K.homology i) :=
   (K.unop.homologyOp i).unop
+
+section
+
+variable (K : HomologicalComplex V c) (i : ι) [K.HasHomology i]
+
+/-- The canonical isomorphism `K.op.cycles i ≅ op (K.opcycles i)`. -/
+def cyclesOpIso : K.op.cycles i ≅ op (K.opcycles i) :=
+  (K.sc i).cyclesOpIso
+
+/-- The canonical isomorphism `K.op.opcycles i ≅ op (K.cycles i)`. -/
+def opcyclesOpIso : K.op.opcycles i ≅ op (K.cycles i) :=
+  (K.sc i).opcyclesOpIso
+
+variable (j : ι)
+
+@[reassoc (attr := simp)]
+lemma opcyclesOpIso_hom_toCycles_op :
+    (K.opcyclesOpIso i).hom ≫ (K.toCycles j i).op = K.op.fromOpcycles i j := by
+  by_cases hij : c.Rel j i
+  · obtain rfl := c.prev_eq' hij
+    exact (K.sc i).opcyclesOpIso_hom_toCycles_op
+  · rw [K.toCycles_eq_zero hij, K.op.fromOpcycles_eq_zero hij, op_zero, comp_zero]
+
+@[reassoc (attr := simp)]
+lemma fromOpcycles_op_cyclesOpIso_inv :
+    (K.fromOpcycles i j).op ≫ (K.cyclesOpIso i).inv = K.op.toCycles j i := by
+  by_cases hij : c.Rel i j
+  · obtain rfl := c.next_eq' hij
+    exact (K.sc i).fromOpcycles_op_cyclesOpIso_inv
+  · rw [K.op.toCycles_eq_zero hij, K.fromOpcycles_eq_zero hij, op_zero, zero_comp]
+
+end
+
+section
+
+variable {K L : HomologicalComplex V c} (φ : K ⟶ L) (i : ι)
+  [K.HasHomology i] [L.HasHomology i]
+
+@[reassoc]
+lemma opcyclesOpIso_hom_naturality :
+    (L.opcyclesOpIso i).hom ≫ (cyclesMap φ i).op =
+      opcyclesMap ((opFunctor _ _).map φ.op) _ ≫ (K.opcyclesOpIso i).hom :=
+  ShortComplex.opcyclesOpIso_hom_naturality ((shortComplexFunctor V c i).map φ)
+
+@[reassoc]
+lemma cyclesOpIso_inv_naturality :
+    (opcyclesMap φ i).op ≫ (K.cyclesOpIso i).inv =
+      (L.cyclesOpIso i).inv ≫ cyclesMap ((opFunctor _ _).map φ.op) _ :=
+  ShortComplex.cyclesOpIso_inv_naturality ((shortComplexFunctor V c i).map φ)
+
+end
 
 end
 
