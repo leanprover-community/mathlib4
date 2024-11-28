@@ -100,7 +100,7 @@ lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃
 
 /-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1` or
 a single `-1` then `fromRows A B` is totally unimodular. -/
-lemma IsTotallyUnimodular.fromRows_one_aux [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}
+lemma IsTotallyUnimodular.fromRows_unitlike [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}
     (hA : A.IsTotallyUnimodular)
     (hB : Nonempty n → ∀ i : m', ∃ j : n, ∃ s : SignType, B i = Pi.single j s.cast) :
     (fromRows A B).IsTotallyUnimodular := by
@@ -143,7 +143,7 @@ then `fromRows A B` is totally unimodular. -/
 lemma fromRows_isTotallyUnimodular_iff_rows [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}
     (hB : Nonempty n → ∀ i : m', ∃ j : n, ∃ s : SignType, B i = Pi.single j s.cast) :
     (fromRows A B).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
-  ⟨.submatrix Sum.inl id, fun hA => hA.fromRows_one_aux hB⟩
+  ⟨.submatrix Sum.inl id, fun hA => hA.fromRows_unitlike hB⟩
 
 lemma fromRows_one_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     (fromRows A (1 : Matrix n n R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
